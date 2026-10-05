@@ -323,6 +323,7 @@
       const c = deck[cur];
       boxes[c.en] = ok ? Math.min(5, (boxes[c.en] || 0) + 1) : 0;
       store.set(KEY, boxes);
+      K.bump && K.bump("cards");
       K.check && K.check();
       if (++cur >= deck.length) {
         K.celebrate();
@@ -393,6 +394,7 @@
         st.streak = alive ? st.streak + (st.last === today() ? 0 : 1) : 1;
         st.best = Math.max(st.best || 0, st.streak);
         st.last = today(); st.day = today(); st.ok = ok;
+        K.bump && K.bump("daily");
         store.set("cs50kz:daily", st);
         K.check && K.check();
         el.querySelector(".streak b").textContent = st.streak;
@@ -921,6 +923,7 @@
       const r = el.querySelector(".bh-result");
       r.hidden = false;
       r.innerHTML = `<p><b>${ok ? "Дұрыс! ✓" : `Қате жол — ${b.bug + 1}-жол.`}</b> ${b.why}</p><p class="bh-fixlabel">Түзетілгені:</p><pre class="bh-fix">${esc(b.fix)}</pre>`;
+      if (ok && !solved[i]) K.bump && K.bump("trainer");
       if (ok) { solved[i] = 1; store.set(KEY, solved); K.mark && K.mark("bughunt"); if (Object.keys(solved).length === all.length) K.celebrate(); }
       el.querySelector(".bh-score").textContent = `Табылды: ${Object.keys(solved).length} / ${all.length}`;
       el.querySelectorAll(".bh-dots button")[i].classList.toggle("ok", !!solved[i]);
@@ -980,6 +983,7 @@
       const ex = box.querySelector(".mq-explain");
       ex.hidden = false;
       ex.innerHTML = `<b>${ok ? "Дұрыс! ✓" : "Қате ✗"}</b> ${esc(t.e)}`;
+      if (ok && !solved[i]) K.bump && K.bump("trainer");
       if (ok) { solved[i] = 1; store.set(KEY, solved); K.mark && K.mark("trace"); if (Object.keys(solved).length === all.length) K.celebrate(); }
       el.querySelector(".bh-score").textContent = `Шешілді: ${Object.keys(solved).length} / ${all.length}`;
       el.querySelectorAll(".bh-dots button")[i].classList.toggle("ok", !!solved[i]);
@@ -987,6 +991,100 @@
     el.querySelector(".bh-next").addEventListener("click", () => { i = (i + 1) % all.length; render(); });
     el.querySelector(".bh-prev").addEventListener("click", () => { i = (i - 1 + all.length) % all.length; render(); });
     el.querySelector(".bh-dots").addEventListener("click", (e) => { if (e.target.dataset.k) { i = +e.target.dataset.k; render(); } });
+    render();
+  }
+
+  // ================= Автотексеруші (check50 браузерде) =================
+  async function autograder(el) {
+    await K.loadScript("assets/data/checks.js");
+    const keys = el.dataset.check.split(",");
+    let key = keys[0];
+    const norm = (t) => t.replace(/\r/g, "").split("\n").map((l) => l.replace(/\s+$/, "")).join("\n").replace(/\n+$/, "");
+    el.innerHTML = `
+      <div class="ag-head"><b>✅ Автотексеруші</b><span>check50 сияқты, бірақ браузерде</span></div>
+      ${keys.length > 1 ? `<div class="seg ag-seg">${keys.map((k, i) => `<button type="button" data-k="${k}" class="${i ? "" : "on"}">${esc(window.CS50KZ_CHECKS[k].title.replace("Sentimental: ", ""))}</button>`).join("")}</div>` : ""}
+      <p class="ag-note">Шешіміңізді (<code class="ag-file"></code>) осында қойып, «Тексеру» басыңыз. Бағдарлама жасырын кірістермен бірнеше рет іске қосылып, шығысы күтілген нәтижемен салыстырылады. Код браузеріңізде сақталады.</p>
+      <textarea class="pg-editor ag-code" spellcheck="false" autocapitalize="off" aria-label="Python коды"></textarea>
+      <div class="pg-actions"><button type="button" class="btn gold ag-run">▶ Тексеру</button><span class="ag-score"></span></div>
+      <ul class="ag-results"></ul>`;
+    const ed = el.querySelector(".ag-code");
+    const load = () => {
+      const c = window.CS50KZ_CHECKS[key];
+      el.querySelector(".ag-file").textContent = c.file;
+      ed.value = store.get("ag:" + key, null) ?? c.starter;
+      el.querySelector(".ag-results").innerHTML = c.tests.map((t) => `<li class="wait"><span class="ag-ico">○</span>${esc(t.n)}</li>`).join("");
+      el.querySelector(".ag-score").textContent = "";
+    };
+    ed.addEventListener("input", () => store.set("ag:" + key, ed.value));
+    ed.addEventListener("keydown", (e) => {
+      if (e.key === "Tab" && !e.shiftKey) { e.preventDefault(); ed.setRangeText("    ", ed.selectionStart, ed.selectionEnd, "end"); store.set("ag:" + key, ed.value); }
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); run(); }
+    });
+    el.querySelector(".ag-seg")?.addEventListener("click", (e) => {
+      if (!e.target.dataset.k) return;
+      key = e.target.dataset.k;
+      el.querySelectorAll(".ag-seg button").forEach((b) => b.classList.toggle("on", b === e.target));
+      load();
+    });
+    async function run() {
+      const c = window.CS50KZ_CHECKS[key], list = el.querySelector(".ag-results"), btn = el.querySelector(".ag-run");
+      btn.disabled = true;
+      el.querySelector(".ag-score").textContent = "Python жүктелуде...";
+      let py;
+      try { py = await K.getPyodide(); } catch (e) {
+        el.querySelector(".ag-score").textContent = "Python жүктелмеді. Интернетті тексеріп, қайта көріңіз.";
+        btn.disabled = false; return;
+      }
+      const runOne = py.globals.get("__cs50kz_run");
+      let pass = 0;
+      el.querySelector(".ag-score").textContent = "Тексерілуде...";
+      const items = [...list.children];
+      for (let i = 0; i < c.tests.length; i++) {
+        const t = c.tests[i], li = items[i];
+        await sleep(30);
+        let out = "", err = null;
+        try { [out, err] = runOne(ed.value, py.toPy(t.in)).toJs(); } catch (e) { err = String(e.message || e); }
+        const ok = !err && norm(out) === norm(t.out);
+        if (ok) pass++;
+        li.className = ok ? "ok" : "bad";
+        li.innerHTML = `<span class="ag-ico">${ok ? "✓" : "✗"}</span>${esc(t.n)}` + (ok ? "" :
+          `<div class="ag-diff"><div><small>Кіріс</small><pre>${esc(t.in.join("\n"))}</pre></div><div><small>Күтілген</small><pre>${esc(t.out)}</pre></div><div><small>Сіздің шығысыңыз</small><pre>${esc(err ? (out ? out + "\n" : "") + err : out || "(бос)")}</pre></div></div>`);
+      }
+      el.querySelector(".ag-score").textContent = `${pass} / ${c.tests.length} тест өтті`;
+      if (pass === c.tests.length) {
+        K.celebrate();
+        const g = store.get("cs50kz:graded", {}); g[key] = Date.now(); store.set("cs50kz:graded", g);
+        K.check && K.check();
+      }
+      btn.disabled = false;
+    }
+    el.querySelector(".ag-run").addEventListener("click", run);
+    load();
+  }
+
+  // ================= Апталық челлендж =================
+  function weekly(el) {
+    const GOALS = [
+      { k: "read", n: 2, ico: "📖", t: "2 лекция оқу" },
+      { k: "cards", n: 30, ico: "🃏", t: "30 карточка қайталау" },
+      { k: "trainer", n: 5, ico: "🐞", t: "5 тренажер жаттығуы" },
+      { k: "daily", n: 4, ico: "🔥", t: "4 күн «Күннің сұрағы»" },
+    ];
+    const render = () => {
+      const id = window.CS50KZ_weekId();
+      let w = store.get("cs50kz:week", {});
+      if (w.id !== id) w = { id };
+      const done = GOALS.filter((g) => (w[g.k] || 0) >= g.n).length;
+      const d = new Date(), left = 7 - (d.getDay() || 7);
+      el.innerHTML = `<div class="wk-head"><b>🎯 Апталық челлендж</b><span>${done === GOALS.length ? "Орындалды! 🏆" : `${done}/4 · ${left ? left + " күн қалды" : "бүгін соңғы күн"}`}</span></div>
+        <div class="wk-goals">${GOALS.map((g) => { const v = Math.min(w[g.k] || 0, g.n); return `<div class="wk-goal ${v >= g.n ? "done" : ""}"><span>${g.ico}</span><div><b>${g.t}</b><i><em style="width:${(v / g.n) * 100}%"></em></i><small>${v} / ${g.n}</small></div></div>`; }).join("")}</div>`;
+      if (done === GOALS.length && !w.done) {
+        w.done = true; store.set("cs50kz:week", w);
+        const wins = store.get("cs50kz:weeks-won", 0) + 1; store.set("cs50kz:weeks-won", wins);
+        K.celebrate(); K.check && K.check();
+      }
+    };
+    document.addEventListener("cs50kz:week", render);
     render();
   }
 
@@ -1021,5 +1119,7 @@
   document.querySelectorAll(".mixed-quiz").forEach(mixedQuiz);
   document.querySelectorAll(".bug-hunt").forEach(bugHunt);
   document.querySelectorAll(".trace-quiz").forEach(traceQuiz);
+  document.querySelectorAll(".autograder").forEach(autograder);
+  document.querySelectorAll(".weekly").forEach(weekly);
   document.querySelectorAll(".course-map").forEach(courseMap);
 })();
