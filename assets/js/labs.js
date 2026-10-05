@@ -898,7 +898,7 @@
       <div class="bh-top"><div class="bh-dots"></div><span class="bh-score"></span></div>
       <div class="bh-card">
         <div class="bh-meta"></div>
-        <p class="bh-task">Бұл кодта бір қате бар. <b>Қате жолды басыңыз.</b></p>
+        <p class="bh-task"><span class="bota-mini" aria-hidden="true"></span>Бұл кодта бір қате бар. <b>Қате жолды басыңыз.</b></p>
         <pre class="bh-code"></pre>
         <div class="bh-result" hidden></div>
         <div class="bh-nav"><button type="button" class="btn secondary bh-prev">← Алдыңғы</button><button type="button" class="btn gold bh-next">Келесі →</button></div>
@@ -909,7 +909,7 @@
       const done = Object.keys(solved).length;
       el.querySelector(".bh-score").textContent = `Табылды: ${done} / ${all.length}`;
       el.querySelector(".bh-dots").innerHTML = all.map((x, k) => `<button type="button" data-k="${k}" class="${solved[k] ? "ok" : ""} ${k === i ? "cur" : ""}" aria-label="${k + 1}-жаттығу">${k + 1}</button>`).join("");
-      el.querySelector(".bh-meta").innerHTML = `<span>${esc(b.w)}</span><b>${esc(b.t)}</b><code>${b.lang === "c" ? "C" : "Python"}</code>`;
+      el.querySelector(".bh-meta").innerHTML = `<span>${esc(b.w)}</span><b>${esc(b.t)}</b><code>${{ c: "C", python: "Python", sql: "SQL", html: "HTML", javascript: "JavaScript" }[b.lang] || b.lang}</code>`;
       el.querySelector(".bh-code").innerHTML = b.code.map((l, n) => `<span class="bh-line" data-n="${n}"><i>${n + 1}</i>${esc(l) || " "}</span>`).join("");
       el.querySelector(".bh-result").hidden = true;
       el.querySelector(".bh-code").classList.remove("solved");
@@ -934,6 +934,55 @@
         line.classList.add("miss");
         if (++tries >= 2) reveal(false);
       }
+    });
+    el.querySelector(".bh-next").addEventListener("click", () => { i = (i + 1) % all.length; render(); });
+    el.querySelector(".bh-prev").addEventListener("click", () => { i = (i - 1 + all.length) % all.length; render(); });
+    el.querySelector(".bh-dots").addEventListener("click", (e) => { if (e.target.dataset.k) { i = +e.target.dataset.k; render(); } });
+    render();
+  }
+
+  // ================= «Не шығарады?» тренажері =================
+  async function traceQuiz(el) {
+    await K.loadScript("assets/data/trace.js");
+    const all = window.CS50KZ_TRACE || [];
+    const KEY = "cs50kz:trace";
+    const solved = store.get(KEY, {});
+    let i = all.findIndex((t, k) => !solved[k]); if (i < 0) i = 0;
+    el.innerHTML = `
+      <div class="bh-top"><div class="bh-dots"></div><span class="bh-score"></span></div>
+      <div class="bh-card">
+        <div class="bh-meta"></div>
+        <p class="bh-task"><span class="bota-mini" aria-hidden="true"></span>Кодты іске қоспай, басыңызда «орындаңыз». <b>Экранға не шығады?</b></p>
+        <pre class="tr-code"><code></code></pre>
+        <div class="tr-q"></div>
+        <div class="bh-nav"><button type="button" class="btn secondary bh-prev">← Алдыңғы</button><button type="button" class="btn gold bh-next">Келесі →</button></div>
+      </div>`;
+    const render = () => {
+      const t = all[i];
+      el.querySelector(".bh-score").textContent = `Шешілді: ${Object.keys(solved).length} / ${all.length}`;
+      el.querySelector(".bh-dots").innerHTML = all.map((x, k) => `<button type="button" data-k="${k}" class="${solved[k] ? "ok" : ""} ${k === i ? "cur" : ""}">${k + 1}</button>`).join("");
+      el.querySelector(".bh-meta").innerHTML = `<span>${esc(t.w)}</span><code>${t.lang === "c" ? "C" : "Python"}</code>`;
+      const code = el.querySelector(".tr-code code");
+      code.className = "language-" + (t.lang === "c" ? "c" : "python");
+      code.textContent = t.code;
+      if (window.hljs) { code.removeAttribute("data-highlighted"); window.hljs.highlightElement(code); }
+      const box = el.querySelector(".tr-q");
+      box.dataset.done = "";
+      box.innerHTML = `<div class="mq-opts tr-opts">${t.o.map((o, k) => `<button type="button" data-i="${k}"><code>${esc(o)}</code></button>`).join("")}</div><div class="mq-explain" hidden></div>`;
+    };
+    el.querySelector(".tr-q").addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-i]"), box = el.querySelector(".tr-q");
+      if (!b || box.dataset.done) return;
+      box.dataset.done = 1;
+      const t = all[i], ok = +b.dataset.i === t.a;
+      box.querySelectorAll("button").forEach((x, k) => { x.disabled = true; if (k === t.a) x.classList.add("right"); });
+      if (!ok) b.classList.add("wrong");
+      const ex = box.querySelector(".mq-explain");
+      ex.hidden = false;
+      ex.innerHTML = `<b>${ok ? "Дұрыс! ✓" : "Қате ✗"}</b> ${esc(t.e)}`;
+      if (ok) { solved[i] = 1; store.set(KEY, solved); K.mark && K.mark("trace"); if (Object.keys(solved).length === all.length) K.celebrate(); }
+      el.querySelector(".bh-score").textContent = `Шешілді: ${Object.keys(solved).length} / ${all.length}`;
+      el.querySelectorAll(".bh-dots button")[i].classList.toggle("ok", !!solved[i]);
     });
     el.querySelector(".bh-next").addEventListener("click", () => { i = (i + 1) % all.length; render(); });
     el.querySelector(".bh-prev").addEventListener("click", () => { i = (i - 1 + all.length) % all.length; render(); });
@@ -971,5 +1020,6 @@
   document.querySelectorAll(".daily-card").forEach(daily);
   document.querySelectorAll(".mixed-quiz").forEach(mixedQuiz);
   document.querySelectorAll(".bug-hunt").forEach(bugHunt);
+  document.querySelectorAll(".trace-quiz").forEach(traceQuiz);
   document.querySelectorAll(".course-map").forEach(courseMap);
 })();

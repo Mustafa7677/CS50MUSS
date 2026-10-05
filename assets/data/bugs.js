@@ -72,4 +72,100 @@ window.CS50KZ_BUGS = [
     "username = input(\"Username: \")", "rows = db.execute(f\"SELECT * FROM users WHERE username = '{username}'\")", "if rows:", "    print(\"Welcome!\")"],
     bug: 1, fix: "rows = db.execute(\"SELECT * FROM users WHERE username = ?\", username)",
     why: "Пайдаланушы енгізгені тікелей сұрауға қойылды. <code>admin'--</code> деп жазса, сұраудың қалғаны түсініктемеге айналады. Әрқашан <code>?</code> орын толтырғышын қолданыңыз." },
+  { w: "1-апта", t: "do-while", lang: "c", code: [
+    "int n;", "do", "{", "    n = get_int(\"Height: \");", "}", "while (n < 1)", "printf(\"Stored: %i\\n\", n);"],
+    bug: 5, fix: "while (n < 1);",
+    why: "<code>do-while</code> циклі нүктелі үтірмен аяқталады. Онсыз компилятор «expected ';' after do/while statement» дейді." },
+  { w: "1-апта", t: "Айнымалының аясы", lang: "c", code: [
+    "for (int i = 0; i < 3; i++)", "{", "    int total = i * 2;", "}", "printf(\"%i\\n\", total);"],
+    bug: 4, fix: "int total = 0;\nfor (int i = 0; i < 3; i++)\n{\n    total = i * 2;\n}\nprintf(\"%i\\n\", total);",
+    why: "<code>total</code> фигуралы жақшалардың ішінде жарияланды, сондықтан цикл аяқталғанда «жоғалады». Айнымалыны ол керек болатын ең сыртқы аяда жариялаңыз." },
+  { w: "1-апта", t: "Шарттар тізбегі", lang: "c", code: [
+    "int score = get_int(\"Score: \");", "if (score >= 50)", "{", "    printf(\"Pass\\n\");", "}", "if (score >= 90)", "{", "    printf(\"Excellent\\n\");", "}"],
+    bug: 5, fix: "if (score >= 90) { ... }\nelse if (score >= 50) { ... }",
+    why: "Логикалық қате: 95 ұпай болса, екі хабар да шығады. Шарттарды ең қатаңынан бастап <code>if / else if</code> тізбегімен жазыңыз." },
+  { w: "1-апта", t: "Функция прототипі", lang: "c", code: [
+    "#include <stdio.h>", "", "int main(void)", "{", "    meow(3);", "}", "", "void meow(int n)", "{", "    for (int i = 0; i < n; i++) printf(\"meow\\n\");", "}"],
+    bug: 1, fix: "void meow(int n);",
+    why: "C файлды жоғарыдан төменге оқиды: <code>main</code> ішінде <code>meow</code> әлі белгісіз. Файлдың басына прототип (функцияның «уәдесі») жазыңыз." },
+  { w: "2-апта", t: "Командалық жол", lang: "c", code: [
+    "int main(int argc, string argv[])", "{", "    printf(\"hello, %s\\n\", argv[1]);", "}"],
+    bug: 2, fix: "if (argc != 2)\n{\n    printf(\"Usage: ./greet name\\n\");\n    return 1;\n}\nprintf(\"hello, %s\\n\", argv[1]);",
+    why: "Пайдаланушы аргумент бермесе, <code>argv[1]</code> жоқ (NULL), бағдарлама құлайды. Алдымен <code>argc</code>-ті тексеріңіз." },
+  { w: "2-апта", t: "Жолдың соңы", lang: "c", code: [
+    "char word[3];", "word[0] = 'H';", "word[1] = 'I';", "word[2] = '!';", "printf(\"%s\\n\", word);"],
+    bug: 0, fix: "char word[4];\n...\nword[3] = '\\0';",
+    why: "C жолы <code>\\0</code> (NUL) таңбасымен аяқталуы керек. Онсыз <code>printf</code> жадта әрі қарай не жатса, соны да шығарады. 3 әріпке 4 байт керек." },
+  { w: "2-апта", t: "Цезарь шифры", lang: "c", code: [
+    "char c = 'z';", "int key = 3;", "char shifted = c + key;", "printf(\"%c\\n\", shifted);"],
+    bug: 2, fix: "char shifted = 'a' + (c - 'a' + key) % 26;",
+    why: "'z' + 3 әліпбиден шығып кетеді ('}' таңбасы). Әріптің индексін (0–25) алып, 26-ға бөлгендегі қалдықты (<code>%</code>) қолданыңыз." },
+  { w: "3-апта", t: "Екілік іздеу", lang: "c", code: [
+    "int low = 0, high = n - 1;", "while (low <= high)", "{", "    int mid = (low + high) / 2;", "    if (a[mid] == x) return true;", "    else if (a[mid] < x) low = mid;", "    else high = mid - 1;", "}"],
+    bug: 5, fix: "    else if (a[mid] < x) low = mid + 1;",
+    why: "<code>low = mid</code> болса, кейде аралық кішіреймейді (мысалы, low = 2, high = 3), цикл мәңгі жүреді. Ортаңғы элемент тексерілді, оны тастаңыз: <code>mid + 1</code>." },
+  { w: "3-апта", t: "Ауыстыру", lang: "c", code: [
+    "if (a[j] > a[j + 1])", "{", "    a[j] = a[j + 1];", "    a[j + 1] = a[j];", "}"],
+    bug: 2, fix: "    int tmp = a[j];\n    a[j] = a[j + 1];\n    a[j + 1] = tmp;",
+    why: "Бірінші жолдан кейін <code>a[j]</code>-дің ескі мәні жоғалады, екі ұяшықта да бірдей сан қалады. Уақытша айнымалы керек." },
+  { w: "3-апта", t: "Құрылым", lang: "c", code: [
+    "typedef struct", "{", "    string name;", "    string number;", "}", "person;", "", "person p;", "p->name = \"David\";"],
+    bug: 8, fix: "p.name = \"David\";",
+    why: "<code>p</code> — көрсеткіш емес, құрылымның өзі. Өріске нүктемен қатынасамыз: <code>p.name</code>. Көрсетігі (<code>-&gt;</code>) көрсеткіштер үшін." },
+  { w: "4-апта", t: "Бос көрсеткіш", lang: "c", code: [
+    "int *x;", "*x = 42;", "printf(\"%i\\n\", *x);"],
+    bug: 1, fix: "int *x = malloc(sizeof(int));\n*x = 42;",
+    why: "<code>x</code>-те қоқыс мекенжай тұр (Binky есіңізде ме?). Оған жазу — белгісіз жадқа жазу. Алдымен көрсеткішке нақты жад беріңіз." },
+  { w: "4-апта", t: "sizeof", lang: "c", code: [
+    "int *numbers = malloc(10);", "for (int i = 0; i < 10; i++)", "{", "    numbers[i] = i;", "}"],
+    bug: 0, fix: "int *numbers = malloc(10 * sizeof(int));",
+    why: "<code>malloc(10)</code> — 10 <strong>байт</strong>, ал 10 int-ке 40 байт керек. Valgrind «invalid write» деп көрсетеді." },
+  { w: "4-апта", t: "fopen тексерісі", lang: "c", code: [
+    "FILE *file = fopen(\"phonebook.csv\", \"a\");", "fprintf(file, \"%s,%s\\n\", name, number);", "fclose(file);"],
+    bug: 0, fix: "FILE *file = fopen(\"phonebook.csv\", \"a\");\nif (file == NULL)\n{\n    return 1;\n}",
+    why: "Файл ашылмаса, <code>fopen</code> <code>NULL</code> қайтарады. Тексермей <code>fprintf</code> шақырсаңыз, бағдарлама құлайды." },
+  { w: "5-апта", t: "Тізімнің басы", lang: "c", code: [
+    "node *n = malloc(sizeof(node));", "n->number = 5;", "list = n;", "n->next = list;"],
+    bug: 2, fix: "n->next = list;\nlist = n;",
+    why: "Рет маңызды! Алдымен <code>list = n</code> болса, ескі тізім жоғалады (жад ағады), ал <code>n-&gt;next</code> өзіне сілтейді. Алдымен жаңа түйінді ескі басқа қосыңыз." },
+  { w: "5-апта", t: "Хэш-функция", lang: "c", code: [
+    "unsigned int hash(const char *word)", "{", "    return word[0] - 'A';", "}"],
+    bug: 2, fix: "    return toupper(word[0]) - 'A';",
+    why: "Сөз кіші әріптен басталса ('a' = 97), нәтиже 32 болады: 26 шелектен тыс! <code>toupper</code> қолданыңыз." },
+  { w: "6-апта", t: "Сөздіктің кілті", lang: "python", code: [
+    "people = {\"Carter\": \"617-495-1000\", \"David\": \"949-468-2750\"}", "name = input(\"Name: \")", "print(people[name])"],
+    bug: 2, fix: "if name in people:\n    print(people[name])\nelse:\n    print(\"Not found\")",
+    why: "Кілт жоқ болса, Python <code>KeyError</code> береді. Алдымен <code>in</code> арқылы тексеріңіз (не <code>people.get(name)</code>)." },
+  { w: "6-апта", t: "range", lang: "python", code: [
+    "names = [\"Aigerim\", \"Arman\", \"Dana\"]", "for i in range(len(names) + 1):", "    print(names[i])"],
+    bug: 1, fix: "for name in names:\n    print(name)",
+    why: "<code>range(len(names) + 1)</code> соңында 3-индексті береді: <code>IndexError</code>. Python-да тізімді тікелей аралау оңай әрі қауіпсіз." },
+  { w: "6-апта", t: "Әдепкі тізім", lang: "python", code: [
+    "def add_item(item, items=[]):", "    items.append(item)", "    return items", "", "print(add_item(\"a\"))", "print(add_item(\"b\"))"],
+    bug: 0, fix: "def add_item(item, items=None):\n    if items is None:\n        items = []",
+    why: "Әдепкі мән функция анықталғанда бір рет жасалады. Екінші шақыру <code>['a', 'b']</code> қайтарады! Өзгермелі әдепкі мәндерден сақ болыңыз." },
+  { w: "7-апта", t: "WHERE-сіз DELETE", lang: "sql", code: [
+    "-- Тек Scratch-ты таңдағандарды өшіру керек", "DELETE FROM favorites;"],
+    bug: 1, fix: "DELETE FROM favorites WHERE language = 'Scratch';",
+    why: "<code>WHERE</code>-сіз <code>DELETE</code> кестедегі <strong>барлық</strong> жолды өшіреді. <code>UPDATE</code> мен <code>DELETE</code>-те әрқашан <code>WHERE</code>-ді тексеріңіз." },
+  { w: "7-апта", t: "NULL-мен салыстыру", lang: "sql", code: [
+    "SELECT COUNT(*) FROM shows", "WHERE year = NULL;"],
+    bug: 1, fix: "WHERE year IS NULL;",
+    why: "<code>NULL</code> «белгісіз» дегенді білдіреді, оны <code>=</code>-мен салыстыруға болмайды. <code>IS NULL</code> не <code>IS NOT NULL</code> қолданыңыз." },
+  { w: "8-апта", t: "Сілтеме", lang: "html", code: [
+    "<p>", "    Visit <a src=\"https://www.harvard.edu/\">Harvard</a>.", "</p>"],
+    bug: 1, fix: "    Visit <a href=\"https://www.harvard.edu/\">Harvard</a>.",
+    why: "Сілтеменің мекенжайы <code>href</code> атрибутында. <code>src</code> суреттер мен скрипттерге арналған." },
+  { w: "8-апта", t: "querySelector", lang: "javascript", code: [
+    "<input id=\"name\" type=\"text\">", "<script>", "    let name = document.querySelector('name').value;", "</script>"],
+    bug: 2, fix: "    let name = document.querySelector('#name').value;",
+    why: "<code>querySelector</code> CSS селекторын қабылдайды: ID үшін <code>#</code> керек. <code>'name'</code> <code>&lt;name&gt;</code> тегін іздейді, нәтиже <code>null</code>." },
+  { w: "9-апта", t: "POST маршруты", lang: "python", code: [
+    "@app.route(\"/register\")", "def register():", "    name = request.form.get(\"name\")", "    ...", "", "# HTML: <form action=\"/register\" method=\"post\">"],
+    bug: 0, fix: "@app.route(\"/register\", methods=[\"POST\"])",
+    why: "Flask маршруттары әдепкіде тек <code>GET</code>-ті қабылдайды. Форма <code>POST</code> жіберсе, «405 Method Not Allowed» шығады." },
+  { w: "9-апта", t: "args пен form", lang: "python", code: [
+    "# HTML: <form action=\"/greet\" method=\"post\">", "", "@app.route(\"/greet\", methods=[\"POST\"])", "def greet():", "    name = request.args.get(\"name\")", "    return render_template(\"greet.html\", name=name)"],
+    bug: 4, fix: "    name = request.form.get(\"name\")",
+    why: "<code>request.args</code> — URL параметрлері (GET). POST деректері <code>request.form</code>-да. Әйтпесе <code>name</code> әрқашан <code>None</code>." },
 ];

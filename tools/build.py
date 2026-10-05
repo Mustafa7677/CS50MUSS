@@ -110,7 +110,7 @@ def sections(name, s, meta):
         heading = strip_tags(parts[i])
         body = strip_tags(re.sub(r"<pre\b.*?</pre>", " ", parts[i + 1], flags=re.S))
         out.append({"l": meta["num"] + ": " + meta["title"], "h": heading,
-                    "u": f"{meta['url']}#{hid}", "t": body[:1500]})
+                    "u": f"{meta['url']}#{hid}", "t": body[:900]})
     return out
 
 
