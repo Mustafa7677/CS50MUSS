@@ -53,6 +53,7 @@ def nav_block(prefix, active):
         {item("playground.html", "Сынақ алаңы", "playground", "hide-sm")}
         {item("glossary.html", "Сөздік", "glossary", "hide-sm")}
         <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Оқу баптаулары" title="Оқу баптаулары">Аа</button>
         <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
       </nav>"""
 
@@ -73,12 +74,14 @@ def process_page(path, prefix, active):
     links = (f'<!-- build:footer --><p class="footer-links"><a href="{prefix}index.html">Лекциялар</a> · '
              f'<a href="{prefix}practice.html">Жаттығу</a> · <a href="{prefix}flashcards.html">Флэш-карточкалар</a> · '
              f'<a href="{prefix}viz.html">Визуализациялар</a> · <a href="{prefix}playground.html">Сынақ алаңы</a> · <a href="{prefix}glossary.html">Сөздік</a> · <a href="{prefix}certificate.html">Сертификат</a> · '
-             f'<a href="{prefix}about.html">Курс туралы</a> · '
+             f'<a href="{prefix}teacher.html">Мұғалім беті</a> · <a href="{prefix}about.html">Курс туралы</a> · '
              f'<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a></p><!-- /build:footer -->')
     if "<!-- build:footer -->" in s:
         s = re.sub(r"<!-- build:footer -->.*?<!-- /build:footer -->", links, s, flags=re.S)
     else:
         s = s.replace('<div class="footer-inner">', '<div class="footer-inner">\n      ' + links, 1)
+    s = s.replace('<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>',
+                  '<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>')
     path.write_text(s, encoding="utf-8")
     return s
 
@@ -198,7 +201,8 @@ def main():
     for page, active in [("index.html", "index"), ("about.html", "about"),
                          ("glossary.html", "glossary"), ("certificate.html", ""),
                          ("playground.html", "playground"), ("practice.html", "practice"),
-                         ("flashcards.html", "practice"), ("viz.html", "practice")]:
+                         ("flashcards.html", "practice"), ("viz.html", "practice"),
+                         ("teacher.html", ""), ("404.html", "")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
     (ROOT / "assets/data/lectures.js").write_text(
@@ -207,6 +211,12 @@ def main():
         "window.CS50KZ_INDEX = " + json.dumps(index, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     (ROOT / "assets/data/quiz.js").write_text(
         "window.CS50KZ_QUIZ = " + json.dumps(quiz, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
+    pages = ["", "practice.html", "playground.html", "viz.html", "flashcards.html", "glossary.html",
+             "certificate.html", "teacher.html", "about.html"] + [l["url"] for l in lectures]
+    (ROOT / "sitemap.xml").write_text(
+        '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
+        "".join(f"  <url><loc>{SITE_URL}{u}</loc></url>\n" for u in pages) + "</urlset>\n", encoding="utf-8")
+    (ROOT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {SITE_URL}sitemap.xml\n", encoding="utf-8")
     print(f"{len(lectures)} лекция, {len(index)} бөлім, {n} термин, {len(quiz)} сұрақ")
 
 

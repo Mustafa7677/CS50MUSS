@@ -12,6 +12,21 @@
     if (saved) root.dataset.theme = saved;
   } catch (e) {}
 
+  // Оқу баптаулары (қаріп өлшемі, жол аралығы, ені, анимация)
+  const PREF_KEY = "cs50kz:prefs";
+  function applyPrefs(pr) {
+    root.style.setProperty("--fs", pr.fs + "px");
+    root.style.setProperty("--lh", pr.lh);
+    root.style.setProperty("--cw", pr.cw + "px");
+    root.classList.toggle("reduce-motion", !!pr.rm);
+  }
+  function loadPrefs() {
+    let pr = {};
+    try { pr = JSON.parse(localStorage.getItem(PREF_KEY) || "{}"); } catch (e) {}
+    return { fs: pr.fs || 17, lh: pr.lh || 1.7, cw: pr.cw || 760, rm: !!pr.rm };
+  }
+  applyPrefs(loadPrefs());
+
   document.addEventListener("DOMContentLoaded", () => {
     // Басты беттегі аударма прогресі
     const bar = document.querySelector(".progress-bar span");
@@ -56,6 +71,9 @@
     window.CS50KZ = { ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements };
     if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz")) loadScript("assets/js/labs.js");
     initAchievements();
+    initPrefs();
+    initShare();
+    initTeacher();
   });
 
   // Код блоктарына «Көшіру» батырмасы
@@ -382,8 +400,13 @@
     meta.innerHTML = `<span>⏱ ≈ ${Math.max(5, Math.round(words / 160))} мин оқу</span>` +
       `<span>📝 ${article.querySelectorAll(".question").length} сұрақ</span>` +
       `<span>🧩 ${article.querySelectorAll(".task").length} тапсырма</span>` +
-      (p.read[PAGE] ? '<span class="done">✓ Оқылды</span>' : "");
+      (p.read[PAGE] ? '<span class="done">✓ Оқылды</span>' : "") +
+      '<span class="print-btn" role="button" tabindex="0">🖨 PDF / басып шығару</span>';
     head.querySelector(".source-link").before(meta);
+    meta.querySelector(".print-btn").addEventListener("click", () => {
+      document.querySelectorAll("details").forEach((d) => (d.open = true));
+      print();
+    });
 
     // Оқу прогресінің жолағы
     const bar = document.createElement("div");
@@ -474,6 +497,7 @@
           <div class="dash-actions">
             ${cont ? `<a class="btn gold" href="${ROOT_URL + cont.url}">${read || last ? "Жалғастыру" : "Бастау"}: ${escapeHtml(cont.num)} →</a>` : `<a class="btn gold" href="${ROOT_URL}certificate.html">Сертификатты алу 🎓</a>`}
             <a class="btn ghost-dark" href="${ROOT_URL}certificate.html">Сертификат</a>
+            <button type="button" class="btn ghost-dark share-progress">👩‍🏫 Мұғалімге жіберу</button>
           </div>
         </div>`;
 
@@ -915,5 +939,163 @@ sys.modules["cs50"] = cs50
       try { localStorage.setItem("cs50kz:ach-seen", JSON.stringify(seen)); } catch (e) {}
     }
     renderAchievements();
+  }
+
+  // ---------- Оқу баптаулары панелі ----------
+  function initPrefs() {
+    const btn = document.querySelector(".prefs-open");
+    if (!btn) return;
+    let panel;
+    const render = () => {
+      const pr = loadPrefs();
+      panel.innerHTML = `
+        <div class="pp-row"><span>Қаріп өлшемі</span><div class="pp-ctl"><button type="button" data-a="fs-">A−</button><b>${pr.fs}</b><button type="button" data-a="fs+">A+</button></div></div>
+        <div class="pp-row"><span>Жол аралығы</span><div class="seg"><button type="button" data-lh="1.6" class="${pr.lh == 1.6 ? "on" : ""}">Тығыз</button><button type="button" data-lh="1.7" class="${pr.lh == 1.7 ? "on" : ""}">Қалыпты</button><button type="button" data-lh="1.95" class="${pr.lh == 1.95 ? "on" : ""}">Кең</button></div></div>
+        <div class="pp-row"><span>Мәтін ені</span><div class="seg"><button type="button" data-cw="680" class="${pr.cw == 680 ? "on" : ""}">Тар</button><button type="button" data-cw="760" class="${pr.cw == 760 ? "on" : ""}">Қалыпты</button><button type="button" data-cw="900" class="${pr.cw == 900 ? "on" : ""}">Кең</button></div></div>
+        <label class="pp-row pp-check"><span>Анимацияны азайту</span><input type="checkbox" ${pr.rm ? "checked" : ""}></label>
+        <button type="button" class="pp-reset">Әдепкі баптаулар</button>`;
+    };
+    const save = (pr) => { try { localStorage.setItem(PREF_KEY, JSON.stringify(pr)); } catch (e) {} applyPrefs(pr); render(); };
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      if (!panel) {
+        panel = document.createElement("div");
+        panel.className = "prefs-panel";
+        panel.setAttribute("role", "dialog");
+        panel.setAttribute("aria-label", "Оқу баптаулары");
+        document.body.appendChild(panel);
+        panel.addEventListener("click", (ev) => {
+          ev.stopPropagation();
+          const t = ev.target, pr = loadPrefs();
+          if (t.dataset.a === "fs-") pr.fs = Math.max(14, pr.fs - 1);
+          else if (t.dataset.a === "fs+") pr.fs = Math.min(23, pr.fs + 1);
+          else if (t.dataset.lh) pr.lh = +t.dataset.lh;
+          else if (t.dataset.cw) pr.cw = +t.dataset.cw;
+          else if (t.classList.contains("pp-reset")) { save({ fs: 17, lh: 1.7, cw: 760, rm: false }); return; }
+          else if (t.type === "checkbox") pr.rm = t.checked;
+          else return;
+          save(pr);
+        });
+        document.addEventListener("click", () => panel.classList.remove("open"));
+        document.addEventListener("keydown", (ev) => ev.key === "Escape" && panel.classList.remove("open"));
+      }
+      render();
+      panel.classList.toggle("open");
+    });
+  }
+
+  // ---------- Прогресті мұғалімге жіберу ----------
+  const ORDER = ["week-0", "week-1", "week-2", "week-3", "week-4", "week-5", "week-6", "week-7", "ai", "week-8", "week-9", "week-10"];
+  function b64url(str) { return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
+  function unb64url(s) { s = s.replace(/-/g, "+").replace(/_/g, "/"); return decodeURIComponent(escape(atob(s + "===".slice((s.length + 3) % 4)))); }
+  function progressCode(name) {
+    const p = Progress.load();
+    const daily = readJson("cs50kz:daily", {});
+    const data = {
+      v: 1, n: name,
+      r: ORDER.map((id) => (p.read[id] ? 1 : 0)).join(""),
+      q: ORDER.map((id) => (p.quiz[id] ? `${p.quiz[id].best}/${p.quiz[id].total}` : "")).join(","),
+      t: ORDER.reduce((n, id) => n + Progress.tasksDone(id), 0),
+      s: Math.max(daily.streak || 0, daily.best || 0),
+      a: achievementList().filter((a) => a.done).length,
+      d: new Date().toISOString().slice(0, 10),
+    };
+    return "KZ1." + b64url(JSON.stringify(data));
+  }
+  function parseCode(code) {
+    const m = String(code).trim().match(/KZ1\.([A-Za-z0-9_-]+)/);
+    if (!m) return null;
+    try { const d = JSON.parse(unb64url(m[1])); return d && d.v === 1 && typeof d.n === "string" ? d : null; } catch (e) { return null; }
+  }
+
+  function initShare() {
+    document.addEventListener("click", async (e) => {
+      if (!e.target.closest(".share-progress")) return;
+      const p = Progress.load();
+      const modal = document.createElement("div");
+      modal.className = "search-modal open";
+      modal.innerHTML = `<div class="search-box share-box" role="dialog" aria-modal="true" aria-label="Прогресті жіберу">
+        <h3>Прогресті мұғалімге жіберу</h3>
+        <p class="sql-msg">Мұғалім QR-кодты телефон камерасымен сканерлейді не кодты өзінің <a href="${ROOT_URL}teacher.html">мұғалім бетіне</a> қояды. Ешқандай тіркелу жоқ, деректер тек кодтың ішінде.</p>
+        <input class="share-name" type="text" maxlength="40" placeholder="Аты-жөніңіз" value="${escapeHtml(p.name || "")}" aria-label="Аты-жөніңіз">
+        <div class="share-qr"></div>
+        <div class="share-code"><code></code><button type="button" class="btn gold share-copy">Көшіру</button></div>
+        <button type="button" class="btn secondary share-close">Жабу</button>
+      </div>`;
+      document.body.appendChild(modal);
+      const nameIn = modal.querySelector(".share-name");
+      if (!window.qrcode) await loadScript("assets/vendor/qrcode/qrcode.js").catch(() => {});
+      const update = () => {
+        const name = nameIn.value.trim() || "Аты жоқ";
+        const q = Progress.load(); q.name = nameIn.value.trim(); Progress.save(q);
+        const code = progressCode(name);
+        modal.querySelector(".share-code code").textContent = code;
+        if (window.qrcode) {
+          const qr = window.qrcode(0, "M");
+          qr.addData(ROOT_URL + "teacher.html#add=" + code);
+          qr.make();
+          modal.querySelector(".share-qr").innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
+        }
+      };
+      nameIn.addEventListener("input", update);
+      update();
+      modal.querySelector(".share-copy").addEventListener("click", async () => {
+        try { await navigator.clipboard.writeText(modal.querySelector(".share-code code").textContent); toast("Код көшірілді ✓"); } catch (err) { toast("Көшіру мүмкін болмады"); }
+      });
+      const close = () => modal.remove();
+      modal.querySelector(".share-close").addEventListener("click", close);
+      modal.addEventListener("click", (ev) => ev.target === modal && close());
+    });
+  }
+
+  // ---------- Мұғалім беті ----------
+  function initTeacher() {
+    const box = document.querySelector(".teacher");
+    if (!box) return;
+    const KEY = "cs50kz:class";
+    let cls = readJson(KEY, []);
+    const save = () => { try { localStorage.setItem(KEY, JSON.stringify(cls)); } catch (e) {} render(); };
+    const add = (text) => {
+      let added = 0, bad = 0;
+      String(text).split(/\s+/).filter(Boolean).forEach((tok) => {
+        const d = parseCode(tok);
+        if (!d) { if (/KZ1\./.test(tok)) bad++; return; }
+        const i = cls.findIndex((x) => x.n.toLowerCase() === d.n.toLowerCase());
+        if (i >= 0) cls[i] = d; else cls.push(d);
+        added++;
+      });
+      save();
+      toast(added ? `${added} оқушы қосылды/жаңартылды` : bad ? "Код қате" : "Код табылмады");
+    };
+    const render = () => {
+      const tbody = box.querySelector("tbody");
+      box.querySelector(".t-count").textContent = `${cls.length} оқушы`;
+      if (!cls.length) { tbody.innerHTML = `<tr><td colspan="7" class="t-empty">Әзірге оқушы жоқ. Оқушының кодын жоғарыға қойыңыз не QR-кодын сканерлеңіз.</td></tr>`; return; }
+      const rows = cls.slice().sort((a, b) => b.r.split("1").length - a.r.split("1").length);
+      tbody.innerHTML = rows.map((d) => {
+        const read = (d.r.match(/1/g) || []).length;
+        const qs = d.q.split(",").filter(Boolean).map((x) => x.split("/").map(Number));
+        const qpct = qs.length ? Math.round((qs.reduce((n, x) => n + x[0], 0) / qs.reduce((n, x) => n + x[1], 0)) * 100) + "%" : "—";
+        return `<tr><td><b>${escapeHtml(d.n)}</b></td>
+          <td><div class="t-cells">${d.r.split("").map((c, i) => `<i class="${c === "1" ? "on" : ""}" title="${ORDER[i]}"></i>`).join("")}</div><small>${read}/12</small></td>
+          <td>${qpct}</td><td>${d.t}</td><td>🔥 ${d.s}</td><td>🏅 ${d.a}</td><td><small>${escapeHtml(d.d)}</small> <button type="button" class="t-del" data-n="${escapeHtml(d.n)}" aria-label="Өшіру">✕</button></td></tr>`;
+      }).join("");
+    };
+    box.querySelector(".t-add").addEventListener("click", () => { add(box.querySelector(".t-input").value); box.querySelector(".t-input").value = ""; });
+    box.addEventListener("click", (e) => {
+      if (e.target.classList.contains("t-del")) { cls = cls.filter((x) => x.n !== e.target.dataset.n); save(); }
+    });
+    box.querySelector(".t-csv").addEventListener("click", () => {
+      const head = ["Аты", ...ORDER, "Тест", "Тапсырма", "Стрик", "Жетістік", "Күні"];
+      const lines = [head.join(",")].concat(cls.map((d) => [JSON.stringify(d.n), ...d.r.split(""), JSON.stringify(d.q), d.t, d.s, d.a, d.d].join(",")));
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(new Blob(["﻿" + lines.join("\n")], { type: "text/csv" }));
+      a.download = "cs50kz-synyp.csv";
+      a.click();
+    });
+    box.querySelector(".t-clear").addEventListener("click", () => { if (confirm("Бүкіл сынып тізімін өшіру керек пе?")) { cls = []; save(); } });
+    const m = location.hash.match(/add=(KZ1\.[A-Za-z0-9_-]+)/);
+    if (m) { add(m[1]); history.replaceState(null, "", location.pathname); }
+    render();
   }
 })();
