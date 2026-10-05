@@ -32,6 +32,7 @@
       render();
       toggle.addEventListener("click", () => {
         root.dataset.theme = isDark() ? "light" : "dark";
+        if (root.dataset.theme === "dark") mark("dark");
         try { localStorage.setItem("theme", root.dataset.theme); } catch (e) {}
         render();
       });
@@ -52,10 +53,9 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
-    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz")) {
-      window.CS50KZ = { ROOT_URL, loadScript, escapeHtml, celebrate, toast };
-      loadScript("assets/js/labs.js");
-    }
+    window.CS50KZ = { ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements };
+    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz")) loadScript("assets/js/labs.js");
+    initAchievements();
   });
 
   // Код блоктарына «Көшіру» батырмасы
@@ -153,6 +153,7 @@
           if (!prev || correct >= prev.best) p.quiz[PAGE] = { best: correct, total: questions.length };
           Progress.save(p);
           if (correct === questions.length) celebrate();
+          checkAchievements();
         }
       });
     });
@@ -197,6 +198,7 @@
             : `Орындалды: ${done} / ${boxes.length}`;
         }
         try { localStorage.setItem(key, JSON.stringify(boxes.map((b) => b.checked))); } catch (e) {}
+        if (done === boxes.length) checkAchievements();
       };
       boxes.forEach((b) => b.addEventListener("change", update));
       update();
@@ -300,6 +302,7 @@
     };
 
     const open = () => {
+      mark("search");
       if (!modal) build();
       modal.classList.add("open");
       document.body.classList.add("no-scroll");
@@ -424,6 +427,7 @@
         if (q.read[PAGE]) delete q.read[PAGE];
         else { q.read[PAGE] = Date.now(); celebrate(); toast("Лекция оқылды деп белгіленді 🎉"); }
         Progress.save(q);
+        checkAchievements();
         render();
       });
     };
@@ -512,6 +516,7 @@
           pre.after(out);
         }
         out.textContent = pyodideReady ? "Орындалып жатыр..." : "Python жүктелуде (бірінші рет ~10 секунд)...";
+        mark("python");
         btn.disabled = true;
         try {
           out.textContent = (await runPython(pre.querySelector("code").innerText)) || "(шығыс жоқ)";
@@ -710,6 +715,7 @@ sys.modules["cs50"] = cs50
         out.innerHTML = '<p class="sql-msg">SQLite жүктелуде...</p>';
         try {
           const db = await getDb(name);
+          mark("sql");
           out.innerHTML = sqlResultHtml(db, db.exec(code)) +
             `<p class="sql-db">Дерекқор: <code>${name}.db</code> (демо үлгі) · <a href="${ROOT_URL}playground.html#sql">Сынақ алаңында ашу →</a></p>`;
         } catch (e) {
@@ -778,6 +784,7 @@ sys.modules["cs50"] = cs50
     async function run() {
       const code = editor.value;
       store("pg:" + lang, code);
+      mark(lang);
       if (lang === "python") {
         out.innerHTML = `<pre class="run-output">${pyodideReady ? "Орындалып жатыр..." : "Python жүктелуде (бірінші рет ~10 секунд)..."}</pre>`;
         const box = out.firstChild;
@@ -824,5 +831,89 @@ sys.modules["cs50"] = cs50
       }
     });
     setLang(lang);
+  }
+
+  // ---------- Жетістіктер ----------
+  function readJson(key, def) {
+    try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch (e) { return def; }
+  }
+  function mark(flag) {
+    const used = readJson("cs50kz:used", {});
+    if (used[flag]) return;
+    used[flag] = Date.now();
+    try { localStorage.setItem("cs50kz:used", JSON.stringify(used)); } catch (e) {}
+    checkAchievements();
+  }
+
+  function achievementList() {
+    const p = Progress.load();
+    const read = Object.keys(p.read).length;
+    const perfect = Object.values(p.quiz).filter((q) => q.best === q.total).length;
+    const daily = readJson("cs50kz:daily", {});
+    const streak = Math.max(daily.best || 0, daily.streak || 0);
+    const cards = Object.values(readJson("cs50kz:cards", {})).filter((b) => b >= 3).length;
+    const mixed = readJson("cs50kz:mixed-best", 0);
+    const used = readJson("cs50kz:used", {});
+    const viz = Object.keys(used).filter((k) => k.startsWith("viz-")).length;
+    let tasks = 0;
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k.startsWith("check:")) { const a = JSON.parse(localStorage.getItem(k) || "[]"); if (a.length && a.every(Boolean)) tasks++; }
+      }
+    } catch (e) {}
+    const A = (id, ico, name, desc, cur, goal) => ({ id, ico, name, desc, cur: Math.min(cur, goal), goal, done: cur >= goal });
+    return [
+      A("first-read", "📖", "Алғашқы қадам", "Бір лекцияны оқып шығу", read, 1),
+      A("half", "🌗", "Жарты жол", "6 лекцияны оқу", read, 6),
+      A("graduate", "🎓", "Курс бітті", "Барлық 12 лекцияны оқу", read, 12),
+      A("perfect", "💯", "Мінсіз тест", "Бір лекция тестінен 100%", perfect, 1),
+      A("scholar", "🧠", "Білгір", "5 лекция тестінен 100%", perfect, 5),
+      A("streak-3", "🔥", "Үш күн қатарынан", "Күннің сұрағына 3 күн қатарынан жауап беру", streak, 3),
+      A("streak-7", "🌋", "Бір апта", "7 күн қатарынан", streak, 7),
+      A("cards", "🃏", "Сөз шебері", "50 терминді меңгеру", cards, 50),
+      A("sniper", "🎯", "Мерген", "Аралас тестте 10/10", mixed, 10),
+      A("task", "✅", "Тапсырма орындалды", "Бір тапсырманың барлық тексеруінен өту", tasks, 1),
+      A("python", "🐍", "Питонист", "Python кодын іске қосу", used.python ? 1 : 0, 1),
+      A("sql", "🗄", "Дерекқор шебері", "SQL сұрауын іске қосу", used.sql ? 1 : 0, 1),
+      A("explorer", "📊", "Зерттеуші", "5 түрлі визуализацияны қолдану", viz, 5),
+      A("search", "🔍", "Іздеуші", "Сайт бойынша іздеуді қолдану", used.search ? 1 : 0, 1),
+      A("owl", "🌙", "Түнгі үкі", "Түнгі режимді қосу", used.dark ? 1 : 0, 1),
+    ];
+  }
+
+  function checkAchievements() {
+    const list = achievementList();
+    const seen = readJson("cs50kz:ach-seen", {});
+    let changed = false;
+    list.filter((a) => a.done && !seen[a.id]).forEach((a, i) => {
+      seen[a.id] = Date.now(); changed = true;
+      setTimeout(() => toast(`🏅 Жаңа жетістік: ${a.ico} ${a.name}`), 400 + i * 2800);
+    });
+    if (changed) {
+      try { localStorage.setItem("cs50kz:ach-seen", JSON.stringify(seen)); } catch (e) {}
+      renderAchievements();
+    }
+  }
+
+  function renderAchievements() {
+    document.querySelectorAll(".achievements").forEach((box) => {
+      const list = achievementList();
+      const done = list.filter((a) => a.done).length;
+      box.innerHTML = `<div class="ach-head"><b>Жетістіктер</b><span>${done} / ${list.length}</span></div><div class="ach-grid">` +
+        list.map((a) => `<div class="ach ${a.done ? "done" : ""}" title="${escapeHtml(a.desc)}">
+          <span class="ach-ico">${a.ico}</span><b>${escapeHtml(a.name)}</b><small>${escapeHtml(a.desc)}</small>
+          ${a.done ? "" : `<span class="ach-bar"><i style="width:${(a.cur / a.goal) * 100}%"></i></span>`}</div>`).join("") + "</div>";
+    });
+  }
+
+  function initAchievements() {
+    // Бұрын-соңды жиналғандары үшін хабарлама шығармаймыз: тек бүгінгі жаңалары
+    if (localStorage.getItem("cs50kz:ach-seen") === null) {
+      const seen = {};
+      achievementList().filter((a) => a.done).forEach((a) => (seen[a.id] = Date.now()));
+      try { localStorage.setItem("cs50kz:ach-seen", JSON.stringify(seen)); } catch (e) {}
+    }
+    renderAchievements();
   }
 })();

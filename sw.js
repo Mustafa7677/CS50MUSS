@@ -1,6 +1,6 @@
 // CS50 қазақша — офлайн режим.
 // Беттер желіден алынады, ал желі жоқ кезде кэштегі соңғы нұсқа көрсетіледі.
-const CACHE = "cs50kz-v3";
+const CACHE = "cs50kz-v4";
 const CORE = [
   "./", "index.html", "about.html", "glossary.html", "certificate.html", "playground.html", "practice.html", "flashcards.html", "viz.html",
   "assets/css/style.css", "assets/js/main.js", "assets/js/labs.js",
