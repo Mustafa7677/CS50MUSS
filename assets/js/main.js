@@ -23,6 +23,7 @@
       });
     }
 
+    if (window.hljs) document.querySelectorAll("pre code").forEach((el) => window.hljs.highlightElement(el));
     addCopyButtons();
     buildToc();
     initQuizzes();
