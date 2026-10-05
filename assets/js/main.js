@@ -52,6 +52,10 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
+    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz")) {
+      window.CS50KZ = { ROOT_URL, loadScript, escapeHtml, celebrate, toast };
+      loadScript("assets/js/labs.js");
+    }
   });
 
   // Код блоктарына «Көшіру» батырмасы

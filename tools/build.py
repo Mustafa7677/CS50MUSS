@@ -49,9 +49,9 @@ def nav_block(prefix, active):
         return f'<a href="{prefix}{href}"{cls}>{label}</a>'
     return f"""<nav class="nav">
         {item("index.html", "Лекциялар", "index")}
+        {item("practice.html", "Жаттығу", "practice")}
         {item("playground.html", "Сынақ алаңы", "playground", "hide-sm")}
         {item("glossary.html", "Сөздік", "glossary", "hide-sm")}
-        {item("about.html", "Курс туралы", "about", "hide-sm")}
         <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
         <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
       </nav>"""
@@ -71,7 +71,8 @@ def process_page(path, prefix, active):
         s = s.replace("</title>", "</title>\n  " + block, 1)
     s = re.sub(r'<nav class="nav">.*?</nav>', nav_block(prefix, active), s, count=1, flags=re.S)
     links = (f'<!-- build:footer --><p class="footer-links"><a href="{prefix}index.html">Лекциялар</a> · '
-             f'<a href="{prefix}playground.html">Сынақ алаңы</a> · <a href="{prefix}glossary.html">Сөздік</a> · <a href="{prefix}certificate.html">Сертификат</a> · '
+             f'<a href="{prefix}practice.html">Жаттығу</a> · <a href="{prefix}flashcards.html">Флэш-карточкалар</a> · '
+             f'<a href="{prefix}viz.html">Визуализациялар</a> · <a href="{prefix}playground.html">Сынақ алаңы</a> · <a href="{prefix}glossary.html">Сөздік</a> · <a href="{prefix}certificate.html">Сертификат</a> · '
              f'<a href="{prefix}about.html">Курс туралы</a> · '
              f'<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a></p><!-- /build:footer -->')
     if "<!-- build:footer -->" in s:
@@ -120,6 +121,23 @@ def glossary_terms(name, s, meta):
     return terms
 
 
+def quiz_questions(name, s, meta):
+    """Лекциядағы тест сұрақтары → күннің сұрағы мен аралас тест үшін."""
+    out = []
+    for m in re.finditer(r'<div class="question" data-answer="([a-d])">(.*?)</div>', s, re.S):
+        block = m.group(2)
+        q = re.search(r'<p class="q-text">(.*?)</p>', block, re.S)
+        opts = re.findall(r'<label><input type="radio" value="([a-d])">(.*?)</label>', block, re.S)
+        ex = re.search(r'<p class="explain">(.*?)</p>', block, re.S)
+        if not q or len(opts) < 2:
+            continue
+        text = re.sub(r"^\s*\d+\.\s*", "", q.group(1).strip())
+        out.append({"q": text, "o": [o[1].strip() for o in opts], "a": "abcd".index(m.group(1)),
+                    "e": ex.group(1).strip() if ex else "", "l": meta["num"] + ": " + meta["title"],
+                    "u": meta["url"] + "#quiz"})
+    return out
+
+
 def build_glossary(terms):
     seen = {}
     for t in terms:
@@ -127,6 +145,8 @@ def build_glossary(terms):
         if key not in seen:
             seen[key] = t
     items = sorted(seen.values(), key=lambda t: t["kz"].lower())
+    (ROOT / "assets/data/glossary.js").write_text(
+        "window.CS50KZ_GLOSSARY = " + json.dumps(items, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     letters = []
     rows = []
     for t in items:
@@ -163,7 +183,7 @@ def build_glossary(terms):
 
 
 def main():
-    lectures, index, terms = [], [], []
+    lectures, index, terms, quiz = [], [], [], []
     for name in ORDER:
         p = ROOT / "lectures" / f"{name}.html"
         if not p.exists():
@@ -173,17 +193,21 @@ def main():
         lectures.append(meta)
         index += sections(name, s, meta)
         terms += glossary_terms(name, s, meta)
+        quiz += quiz_questions(name, s, meta)
     n = build_glossary(terms)
     for page, active in [("index.html", "index"), ("about.html", "about"),
                          ("glossary.html", "glossary"), ("certificate.html", ""),
-                         ("playground.html", "playground")]:
+                         ("playground.html", "playground"), ("practice.html", "practice"),
+                         ("flashcards.html", "practice"), ("viz.html", "practice")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
     (ROOT / "assets/data/lectures.js").write_text(
         "window.CS50KZ_LECTURES = " + json.dumps(lectures, ensure_ascii=False, indent=1) + ";\n", encoding="utf-8")
     (ROOT / "assets/data/search-index.js").write_text(
         "window.CS50KZ_INDEX = " + json.dumps(index, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
-    print(f"{len(lectures)} лекция, {len(index)} бөлім, {n} термин")
+    (ROOT / "assets/data/quiz.js").write_text(
+        "window.CS50KZ_QUIZ = " + json.dumps(quiz, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
+    print(f"{len(lectures)} лекция, {len(index)} бөлім, {n} термин, {len(quiz)} сұрақ")
 
 
 if __name__ == "__main__":
