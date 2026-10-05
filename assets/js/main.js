@@ -9,6 +9,16 @@
   } catch (e) {}
 
   document.addEventListener("DOMContentLoaded", () => {
+    // Басты беттегі аударма прогресі
+    const bar = document.querySelector(".progress-bar span");
+    if (bar) {
+      const cards = document.querySelectorAll(".week-card");
+      const ready = document.querySelectorAll(".week-card .status.ready").length;
+      const count = document.querySelector(".ready-count");
+      if (count) count.textContent = `${ready} / ${cards.length}`;
+      requestAnimationFrame(() => (bar.style.width = `${(ready / cards.length) * 100}%`));
+    }
+
     const toggle = document.querySelector(".theme-toggle");
     if (toggle) {
       const isDark = () =>
@@ -67,6 +77,18 @@
       li.appendChild(a);
       toc.appendChild(li);
     });
+
+    // Телефонда мазмұны жиналып тұрады
+    const tocBox = toc.closest(".toc");
+    const tocTitle = tocBox && tocBox.querySelector("h4");
+    if (tocTitle) {
+      tocTitle.setAttribute("role", "button");
+      tocTitle.tabIndex = 0;
+      const flip = () => tocBox.classList.toggle("open");
+      tocTitle.addEventListener("click", flip);
+      tocTitle.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
+      toc.addEventListener("click", (e) => { if (e.target.tagName === "A") tocBox.classList.remove("open"); });
+    }
 
     const links = toc.querySelectorAll("a");
     const observer = new IntersectionObserver(
