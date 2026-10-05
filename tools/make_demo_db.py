@@ -172,7 +172,75 @@ CREATE TABLE songs (id INTEGER, name TEXT, artist_id INTEGER, danceability REAL,
     return sql
 
 
-data = {"favorites": favorites(), "shows": shows(), "songs": songs()}
+def movies():
+    """Movies тапсырмасына арналған ойдан шығарылған фильмдер базасы."""
+    r = random.Random(77)
+    first = ["Aidos", "Aiganym", "Alisher", "Amina", "Anuar", "Ardak", "Arman", "Asem", "Ayan", "Baurzhan", "Diana",
+             "Dinara", "Elnur", "Inkar", "Kanat", "Karina", "Laura", "Maksat", "Nazerke", "Nursultan", "Olzhas",
+             "Raushan", "Sanzhar", "Timur", "Ulan", "Yerlan", "Zhansaya", "Zhanibek"]
+    last = ["Abdrakhmanov", "Beisenov", "Dosov", "Ermukhanov", "Galimov", "Kenzhebek", "Mamyrov", "Nurgaliev",
+            "Ospanov", "Rakhimov", "Saparov", "Temirov", "Ualiev", "Zhakupov"]
+    people, names = [], set()
+    pid = 100
+    while len(people) < 70:
+        n = f"{r.choice(first)} {r.choice(last)}"
+        if n in names or n == "Arman Saparov":
+            continue
+        names.add(n); pid += r.randint(1, 40)
+        people.append([pid, n, r.randint(1950, 2005)])
+    # аттас екі актер: туған жылы бойынша ажыратылады
+    bacon = [9001, "Arman Saparov", 1958]; people.append(bacon); people.append([9002, "Arman Saparov", 1991])
+    star_a = [9101, "Aiganym Dosova", 1985]; star_b = [9102, "Kanat Mamyrov", 1979]; lead = [9103, "Dinara Ospanova", 1990]
+    people += [star_a, star_b, lead]
+    titles = ["Golden Eagle", "Silent Steppe", "The Last Nomad", "Apple City", "Wind over Charyn", "Night Train to Aral",
+              "Little Yurt Story", "Snow Leopard", "The Silk Merchant", "Two Rivers", "Blue Mountains", "The Dombyra Maker",
+              "Endless Road", "Moonlight Bazaar", "The Falconer", "Desert Rose", "Spring in Medeu", "City Lights of Astana",
+              "The Old Well", "Red Tulips", "Shepherd's Song", "Iron Horse", "The Lost Caravan", "Morning Over Balkhash",
+              "The Clockmaker", "Paper Kites", "Summer of 1986", "Northern Wind", "The Glass Bridge", "Seven Stars"]
+    movies, mid = [], 1000
+    for t in titles:
+        mid += r.randint(3, 50)
+        movies.append([mid, t, r.choice([2004, 2008, 2010, 2010, 2012, 2012, 2015, 2018, 2019, 2021, 2023])])
+    saga = []
+    for k, y in enumerate([2001, 2003, 2006, 2009], 1):
+        mid += 7; saga.append([mid, f"Dala Batyrlary {k}", y]); movies.append(saga[-1])
+    ratings = {m[0]: [round(r.uniform(5.0, 9.4), 1), r.randint(500, 90000)] for m in movies}
+    for m in movies[2:4]:
+        ratings[m[0]][0] = 10.0
+    for m in movies[5:8]:
+        ratings[m[0]][0] = round(r.uniform(9.0, 9.6), 1)
+    actors = [p for p in people if p[0] < 9000]
+    stars, directors = [], []
+    for m in movies:
+        for p in r.sample(actors, 4):
+            stars.append([m[0], p[0]])
+        directors.append([m[0], r.choice(actors[:20])[0]])
+    def add(mi, p):
+        if [movies[mi][0], p[0]] not in stars:
+            stars.append([movies[mi][0], p[0]])
+    for mi in (1, 4, 9, 13, 20):
+        add(mi, bacon)                      # «Arman Saparov» (1958)
+    add(9, [9002]); add(22, [9002])         # аттасы (1991)
+    for mi in (3, 11, 17):
+        add(mi, star_a); add(mi, star_b)    # екеуі бірге ойнаған фильмдер
+    add(14, star_a); add(25, star_b)
+    for mi in (0, 2, 5, 8, 12, 19, 27):
+        add(mi, lead)                       # Dinara Ospanova: ең жоғары рейтингті 5 фильм
+    sql = """CREATE TABLE movies (id INTEGER, title TEXT NOT NULL, year NUMERIC, PRIMARY KEY(id));
+CREATE TABLE people (id INTEGER, name TEXT NOT NULL, birth NUMERIC, PRIMARY KEY(id));
+CREATE TABLE stars (movie_id INTEGER NOT NULL, person_id INTEGER NOT NULL);
+CREATE TABLE directors (movie_id INTEGER NOT NULL, person_id INTEGER NOT NULL);
+CREATE TABLE ratings (movie_id INTEGER NOT NULL, rating REAL NOT NULL, votes INTEGER NOT NULL);
+"""
+    sql += inserts("movies", ["id", "title", "year"], movies) + "\n"
+    sql += inserts("people", ["id", "name", "birth"], people) + "\n"
+    sql += inserts("stars", ["movie_id", "person_id"], stars) + "\n"
+    sql += inserts("directors", ["movie_id", "person_id"], directors) + "\n"
+    sql += inserts("ratings", ["movie_id", "rating", "votes"], [[k] + v for k, v in ratings.items()]) + "\n"
+    return sql
+
+
+data = {"favorites": favorites(), "shows": shows(), "songs": songs(), "movies": movies()}
 (ROOT / "assets/data/db.js").write_text(
     "// tools/make_demo_db.py арқылы жасалған. Қолмен өзгертпеңіз.\nwindow.CS50KZ_DB = " +
     json.dumps(data, ensure_ascii=False) + ";\n", encoding="utf-8")

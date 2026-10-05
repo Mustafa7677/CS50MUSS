@@ -68,7 +68,7 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
-    window.CS50KZ = { ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump };
+    window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump };
     if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .detective")) loadScript("assets/js/labs.js");
     initAchievements();
     initPrefs();
@@ -465,7 +465,7 @@
     if (pager) pager.before(done);
     const tip = document.createElement("div");
     tip.className = "bota-tip";
-    tip.innerHTML = `<img src="${ROOT_URL}assets/img/bota.svg" alt="" width="64" height="64"><p><b>Ботаның кеңесі:</b> ${BOTA_TIPS[(PAGE.length * 7 + new Date().getDate()) % BOTA_TIPS.length]}</p>`;
+    tip.innerHTML = `<img src="${ROOT_URL}assets/img/bota-think.svg" alt="" width="64" height="64"><p><b>Ботаның кеңесі:</b> ${BOTA_TIPS[(PAGE.length * 7 + new Date().getDate()) % BOTA_TIPS.length]}</p>`;
     done.before(tip);
 
     // ← → пернелерімен лекциялар арасында жүру
@@ -498,7 +498,7 @@
       panel.innerHTML = `
         <div class="dash-ring" style="--pct:${pct}"><div><b>${pct}%</b><span>курс</span></div></div>
         <div class="dash-main">
-          <div class="bota-greet"><img src="${ROOT_URL}assets/img/bota.svg" alt="" width="54" height="54"><div><small>Бота:</small><h3>${greeting(read, lectures.length, p.name)}</h3></div></div>
+          <div class="bota-greet"><img src="${ROOT_URL}assets/img/${read ? "bota-happy" : "bota"}.svg" alt="" width="54" height="54"><div><small>Бота:</small><h3>${greeting(read, lectures.length, p.name)}</h3></div></div>
           <div class="dash-stats">
             <div><b>${read}<small>/${lectures.length}</small></b><span>лекция оқылды</span></div>
             <div><b>${qTotal ? Math.round((qBest / qTotal) * 100) + "%" : "—"}</b><span>тест нәтижесі</span></div>
@@ -1198,12 +1198,12 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     "Код — адамдарға арналған мәтін, компьютер оны тек орындайды. Әдемі жазыңыз!",
   ];
 
-  function botaSay(text) {
+  function botaSay(text, mood = "happy") {
     const old = document.querySelector(".bota-pop");
     if (old) old.remove();
     const b = document.createElement("div");
     b.className = "bota-pop";
-    b.innerHTML = `<img src="${ROOT_URL}assets/img/bota.svg" alt="Бота" width="72" height="72"><p>${escapeHtml(text)}</p><button type="button" aria-label="Жабу">✕</button>`;
+    b.innerHTML = `<img src="${ROOT_URL}assets/img/bota-${mood}.svg" alt="Бота" width="72" height="72"><p>${escapeHtml(text)}</p><button type="button" aria-label="Жабу">✕</button>`;
     document.body.appendChild(b);
     requestAnimationFrame(() => b.classList.add("show"));
     const close = () => { b.classList.remove("show"); setTimeout(() => b.remove(), 300); };
