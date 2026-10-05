@@ -99,8 +99,8 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: var(--font);
-  font-size: 17px;
-  line-height: 1.7;
+  font-size: var(--fs, 17px);
+  line-height: var(--lh, 1.7);
   -webkit-font-smoothing: antialiased;
 }
 a { color: var(--link); text-decoration: none; }
@@ -149,7 +149,7 @@ img { max-width: 100%; height: auto; border-radius: 8px; }
 .toc li a.active { color: var(--accent); border-left-color: var(--accent); font-weight: 600; }
 .toc li.sub a { padding-left: 22px; font-size: 13px; }
 
-.content { max-width: 760px; min-width: 0; }
+.content { max-width: var(--cw, 760px); min-width: 0; }
 .content h1 { font-family: var(--display); font-weight: 700; font-size: clamp(28px, 5vw, 42px); line-height: 1.15; margin: 10px 0 12px; letter-spacing: -.01em; }
 .content h2 {
   font-family: var(--display); font-weight: 700; font-size: 25px; margin: 60px 0 16px; line-height: 1.3;
@@ -311,7 +311,7 @@ details > .details-body > :first-child { margin-top: 0; }
   .nav a.hide-sm { display: none; }
 }
 @media (max-width: 560px) {
-  body { font-size: 16px; }
+  body { font-size: calc(var(--fs, 17px) - 1px); }
   .content h2 { font-size: 24px; margin-top: 44px; }
   pre { font-size: 13px; padding: 14px 16px; margin-left: -4px; margin-right: -4px; }
   .task { padding: 18px; }
@@ -676,9 +676,9 @@ pre.run-output.err::before { content: "Қате"; color: #ff8a80; }
 .certificate.locked { filter: grayscale(.7); opacity: .75; }
 @media print {
   @page { size: A4 landscape; margin: 0; }
-  body * { visibility: hidden; }
-  .certificate, .certificate * { visibility: visible; }
-  .certificate { position: fixed; inset: 0; margin: 0; box-shadow: none; border-radius: 0; aspect-ratio: auto; filter: none; opacity: 1; }
+  body:has(.certificate) * { visibility: hidden; }
+  body:has(.certificate) .certificate, body:has(.certificate) .certificate * { visibility: visible; }
+  body:has(.certificate) .certificate { position: fixed; inset: 0; margin: 0; box-shadow: none; border-radius: 0; aspect-ratio: auto; filter: none; opacity: 1; }
 }
 
 @media (max-width: 720px) {
@@ -989,3 +989,82 @@ pre[data-lang="sql"]::before { right: 168px; }
 .question label, .question .q-text, .mq-opts button { overflow-wrap: anywhere; min-width: 0; }
 .question label code, .mq-opts button code { word-break: break-word; }
 @media (min-width: 900px) { .ach-grid { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+
+/* ---------- Оқу баптаулары ---------- */
+.prefs-open {
+  height: 36px; min-width: 40px; padding: 0 8px; border: 1px solid var(--border); background: var(--surface);
+  color: var(--text); border-radius: 8px; cursor: pointer; font: 700 15px var(--display);
+}
+.prefs-panel {
+  position: fixed; top: 64px; right: 16px; z-index: 40; width: min(340px, calc(100vw - 32px)); display: none;
+  background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 14px 16px;
+  box-shadow: 0 18px 44px rgba(0,0,0,.22);
+}
+.prefs-panel.open { display: block; animation: fade .15s ease; }
+.pp-row { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 14.5px; }
+.pp-ctl { display: flex; align-items: center; gap: 10px; }
+.pp-ctl button { width: 38px; height: 32px; border-radius: 8px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-weight: 700; cursor: pointer; }
+.pp-ctl b { font-family: var(--mono); min-width: 24px; text-align: center; }
+.pp-check input { width: 20px; height: 20px; accent-color: var(--gold); }
+.pp-reset { margin-top: 10px; border: 0; background: none; color: var(--accent); font-weight: 600; cursor: pointer; padding: 4px 0; }
+.reduce-motion *, .reduce-motion *::before, .reduce-motion *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+.reduce-motion .confetti { display: none; }
+
+/* ---------- Прогресті жіберу ---------- */
+.share-box { padding: 20px; gap: 10px; max-width: 460px; overflow-y: auto; }
+.share-box h3 { margin: 0; font: 700 19px var(--display); }
+.share-name { padding: 10px 14px; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font: 500 16px var(--font); }
+.share-qr { display: flex; justify-content: center; background: #fff; border-radius: 12px; padding: 10px; }
+.share-qr svg { width: min(240px, 70vw); height: auto; }
+.share-code { display: flex; gap: 8px; align-items: center; }
+.share-code code { flex: 1; min-width: 0; overflow-wrap: anywhere; font-size: 11.5px; max-height: 70px; overflow-y: auto; }
+
+/* ---------- Мұғалім беті ---------- */
+.t-form textarea {
+  width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); font: 13.5px var(--mono); resize: vertical;
+}
+.t-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 10px 0 18px; }
+.t-count { margin-left: auto; font-weight: 700; color: var(--accent); }
+.t-table { overflow-x: auto; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); }
+.content .t-table table { display: table; margin: 0; font-size: 14px; }
+.t-table th, .t-table td { border: 0; border-bottom: 1px solid var(--border); white-space: nowrap; vertical-align: middle; }
+.t-cells { display: inline-flex; gap: 2px; margin-right: 6px; vertical-align: middle; }
+.t-cells i { width: 10px; height: 16px; border-radius: 3px; background: var(--surface-2); }
+.t-cells i.on { background: var(--ok); }
+.t-del { border: 0; background: none; color: var(--bad); cursor: pointer; font-size: 14px; margin-left: 6px; }
+.t-empty { text-align: center; color: var(--muted); padding: 22px !important; white-space: normal !important; }
+
+/* ---------- Сурет сүзгілері ---------- */
+.ft-grid { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 12px; align-items: start; }
+.ft-canvas canvas { width: 100%; height: auto; border-radius: 12px; display: block; cursor: crosshair; image-rendering: auto; background: #000; }
+.ft-pixel { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; font-size: 12.5px; }
+.ft-pixel .sw { width: 22px; height: 22px; border-radius: 6px; border: 1px solid var(--border); background: #000; }
+.ft-code { margin: 0; font-size: 12.5px; white-space: pre-wrap; }
+.ft-upload { cursor: pointer; }
+
+/* ---------- 404 ---------- */
+.nf { text-align: center; padding: 40px 0 20px; }
+.nf-code { font: 800 clamp(90px, 22vw, 180px)/1 var(--display); color: var(--accent); letter-spacing: -.02em; }
+.nf-code span { color: var(--gold); display: inline-block; animation: spin 8s linear infinite; }
+.nf .hero-actions { justify-content: center; }
+.nf .search-open { height: auto; padding: 10px 18px; font-weight: 600; color: var(--text); }
+
+/* ---------- Лекцияны басып шығару ---------- */
+.print-btn { cursor: pointer; }
+@media print {
+  body:not(:has(.certificate)) .topbar, body:not(:has(.certificate)) .toc, body:not(:has(.certificate)) .footer,
+  .read-bar, .to-top, .mark-read, .pager, .run-btn, .copy-btn, .viz, .quiz-check, .answer-check button,
+  .source-link, .lecture-meta, .search-modal, .prefs-panel, .toast, .confetti { display: none !important; }
+  body:not(:has(.certificate)) { background: #fff; color: #000; font-size: 11.5pt; }
+  body:not(:has(.certificate)) .layout { display: block; padding: 0; }
+  body:not(:has(.certificate)) .content { max-width: none; }
+  body:not(:has(.certificate)) .content .lecture-head { background: none; color: #000; box-shadow: none; border: 2px solid #0a4c7a; }
+  body:not(:has(.certificate)) .content .lecture-head h1, body:not(:has(.certificate)) .content .lecture-head p { color: #000; }
+  pre { white-space: pre-wrap; break-inside: avoid; }
+  h2, h3 { break-after: avoid; }
+  .task, .callout, .question { break-inside: avoid; box-shadow: none; }
+  details > .details-body { display: block; }
+}
+@media (max-width: 720px) { .ft-grid { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .prefs-open { min-width: 34px; padding: 0 4px; font-size: 13px; } }

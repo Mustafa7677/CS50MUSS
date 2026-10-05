@@ -627,7 +627,7 @@
       <div class="viz-head"><b>Хэш-кесте</b><span class="viz-big">hash(name) = name[0] − 'A'</span></div>
       <p class="viz-note">26 «шелек» (bucket), әрқайсысы — байланысқан тізім. Хэш-функция атты бірінші әрпі бойынша шелекке жібереді. Бір шелекке түскен аттар — <b>коллизия</b>: олар тізімге тізбектеледі.</p>
       <div class="viz-controls">
-        <input class="viz-input hs-in" type="text" maxlength="14" placeholder="Аты (латынша)" aria-label="Аты" style="width:170px">
+        <input class="viz-input hs-in" type="text" maxlength="14" placeholder="Аты: Aruzhan" aria-label="Аты" style="width:170px">
         <button type="button" class="btn gold hs-add">Қосу</button>
         <button type="button" class="btn secondary hs-find">Іздеу</button>
       </div>
@@ -662,7 +662,7 @@
       render(b); msg(`${esc(w)} жоқ: ${b}-шелекте ${table[b].length} атты тексердік.`);
     });
     el.querySelector(".hs-in").addEventListener("keydown", (e) => e.key === "Enter" && el.querySelector(".hs-add").click());
-    ["Mario", "Luigi", "Peach", "Bowser", "Link", "Zelda", "Ganon", "Lakitu", "Toad", "Yoshi"].forEach((w) => table[hash(w)].push(w));
+    ["Aigerim", "Arman", "Bauyrzhan", "Bolat", "Dana", "Dauren", "Erlan", "Nurlan", "Saule", "Zhanna", "Timur"].forEach((w) => table[hash(w)].push(w));
     render();
   }
 
@@ -727,7 +727,166 @@
     fill([50, 25, 75, 12, 37, 62, 87]);
   }
 
-  const MODULES = { sort: vizSort, search: vizSearch, list: vizList, binary: vizBinary, swap: vizSwap, stackqueue: vizStackQueue, hash: vizHash, bst: vizBst };
+  // ================= Сурет сүзгілері (4-апта, Filter) =================
+  function drawSteppe(ctx, W, H) {
+    // Кодпен салынған түпнұсқа сурет: дала, күн, тау, киіз үй
+    const sky = ctx.createLinearGradient(0, 0, 0, H * 0.65);
+    sky.addColorStop(0, "#1d6fa5"); sky.addColorStop(1, "#9fd8ef");
+    ctx.fillStyle = sky; ctx.fillRect(0, 0, W, H);
+    const sun = ctx.createRadialGradient(W * 0.78, H * 0.22, 4, W * 0.78, H * 0.22, H * 0.16);
+    sun.addColorStop(0, "#fff6c2"); sun.addColorStop(1, "#f2b705");
+    ctx.fillStyle = sun; ctx.beginPath(); ctx.arc(W * 0.78, H * 0.22, H * 0.12, 0, 7); ctx.fill();
+    ctx.fillStyle = "#5f7f9c";
+    ctx.beginPath(); ctx.moveTo(0, H * 0.62);
+    [[0.12, 0.38], [0.24, 0.55], [0.38, 0.32], [0.52, 0.56], [0.66, 0.44], [0.8, 0.6], [1, 0.48]].forEach(([x, y]) => ctx.lineTo(W * x, H * y));
+    ctx.lineTo(W, H * 0.7); ctx.lineTo(0, H * 0.7); ctx.fill();
+    ctx.fillStyle = "#eef4f7";
+    [[0.38, 0.32], [0.12, 0.38]].forEach(([x, y]) => { ctx.beginPath(); ctx.moveTo(W * x, H * y); ctx.lineTo(W * (x - 0.04), H * (y + 0.07)); ctx.lineTo(W * (x + 0.04), H * (y + 0.07)); ctx.fill(); });
+    const grass = ctx.createLinearGradient(0, H * 0.62, 0, H);
+    grass.addColorStop(0, "#7fb24a"); grass.addColorStop(1, "#3e7a2c");
+    ctx.fillStyle = grass; ctx.fillRect(0, H * 0.64, W, H);
+    // киіз үй
+    const yx = W * 0.3, yy = H * 0.66, yw = W * 0.2;
+    ctx.fillStyle = "#f4ead6"; ctx.fillRect(yx - yw / 2, yy, yw, H * 0.16);
+    ctx.fillStyle = "#c4342d"; ctx.beginPath(); ctx.moveTo(yx - yw / 2 - 4, yy + 2); ctx.quadraticCurveTo(yx, yy - H * 0.17, yx + yw / 2 + 4, yy + 2); ctx.fill();
+    ctx.fillStyle = "#c4342d"; ctx.fillRect(yx - yw / 2, yy + H * 0.04, yw, 4);
+    ctx.fillStyle = "#6b3e1f"; ctx.fillRect(yx - 9, yy + H * 0.07, 18, H * 0.09);
+    ctx.strokeStyle = "#f2b705"; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(yx, yy - H * 0.085, 6, 0, 7); ctx.stroke();
+    // шөп пен гүлдер (кездейсоқ, бірақ тұрақты)
+    let seed = 7; const r = () => ((seed = (seed * 16807) % 2147483647) / 2147483647);
+    for (let i = 0; i < 260; i++) {
+      const x = r() * W, y = H * 0.66 + r() * H * 0.34;
+      ctx.strokeStyle = r() > 0.5 ? "#2f6b22" : "#9cc95a"; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + r() * 4 - 2, y - 4 - r() * 6); ctx.stroke();
+    }
+    for (let i = 0; i < 26; i++) { ctx.fillStyle = ["#f2b705", "#ffffff", "#e0457b"][i % 3]; ctx.beginPath(); ctx.arc(r() * W, H * 0.72 + r() * H * 0.26, 2.2, 0, 7); ctx.fill(); }
+  }
+
+  const FILTERS = {
+    original: { name: "Түпнұсқа", code: "// Сүзгіні таңдаңыз" },
+    grayscale: {
+      name: "Grayscale",
+      code: "int avg = round((r + g + b) / 3.0);\nimage[i][j].rgbtRed = avg;\nimage[i][j].rgbtGreen = avg;\nimage[i][j].rgbtBlue = avg;",
+      fn(d) { for (let i = 0; i < d.length; i += 4) { const a = Math.round((d[i] + d[i + 1] + d[i + 2]) / 3); d[i] = d[i + 1] = d[i + 2] = a; } },
+    },
+    sepia: {
+      name: "Sepia",
+      code: "int sr = round(.393 * r + .769 * g + .189 * b);\nint sg = round(.349 * r + .686 * g + .168 * b);\nint sb = round(.272 * r + .534 * g + .131 * b);\n// 255-тен асса, 255 етіп шектейміз\nimage[i][j].rgbtRed = sr > 255 ? 255 : sr;",
+      fn(d) {
+        for (let i = 0; i < d.length; i += 4) {
+          const [r, g, b] = [d[i], d[i + 1], d[i + 2]];
+          d[i] = Math.min(255, Math.round(0.393 * r + 0.769 * g + 0.189 * b));
+          d[i + 1] = Math.min(255, Math.round(0.349 * r + 0.686 * g + 0.168 * b));
+          d[i + 2] = Math.min(255, Math.round(0.272 * r + 0.534 * g + 0.131 * b));
+        }
+      },
+    },
+    reflect: {
+      name: "Reflect",
+      code: "for (int j = 0; j < width / 2; j++)\n{\n    RGBTRIPLE tmp = image[i][j];\n    image[i][j] = image[i][width - 1 - j];\n    image[i][width - 1 - j] = tmp;\n}",
+      fn(d, w, h) {
+        for (let y = 0; y < h; y++) for (let x = 0; x < w / 2; x++) {
+          const a = (y * w + x) * 4, b = (y * w + (w - 1 - x)) * 4;
+          for (let k = 0; k < 3; k++) [d[a + k], d[b + k]] = [d[b + k], d[a + k]];
+        }
+      },
+    },
+    blur: {
+      name: "Blur",
+      code: "// 3×3 «қорап»: көршілердің орташасы\n// бастапқы суреттің КӨШІРМЕСІНЕН оқимыз!\nfor (int di = -1; di <= 1; di++)\n    for (int dj = -1; dj <= 1; dj++)\n        if (ішінде) { sum += copy[i+di][j+dj]; count++; }\nimage[i][j] = sum / count;",
+      fn(d, w, h) {
+        const src = d.slice();
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+          let s = [0, 0, 0], n = 0;
+          for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) {
+            const yy = y + dy, xx = x + dx;
+            if (yy < 0 || yy >= h || xx < 0 || xx >= w) continue;
+            const o = (yy * w + xx) * 4; s[0] += src[o]; s[1] += src[o + 1]; s[2] += src[o + 2]; n++;
+          }
+          const o = (y * w + x) * 4;
+          for (let k = 0; k < 3; k++) d[o + k] = Math.round(s[k] / n);
+        }
+      },
+    },
+    edges: {
+      name: "Edges",
+      code: "// Собель операторы: Gx және Gy ядролары\n// Gx = {{-1,0,1},{-2,0,2},{-1,0,1}}\n// Gy = {{-1,-2,-1},{0,0,0},{1,2,1}}\n// шетінен тыс пиксель = қара (0)\nint v = round(sqrt(gx * gx + gy * gy));\nimage[i][j].rgbtRed = v > 255 ? 255 : v;",
+      fn(d, w, h) {
+        const src = d.slice();
+        const GX = [-1, 0, 1, -2, 0, 2, -1, 0, 1], GY = [-1, -2, -1, 0, 0, 0, 1, 2, 1];
+        for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+          const o = (y * w + x) * 4;
+          for (let k = 0; k < 3; k++) {
+            let gx = 0, gy = 0, t = 0;
+            for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++, t++) {
+              const yy = y + dy, xx = x + dx;
+              const v = yy < 0 || yy >= h || xx < 0 || xx >= w ? 0 : src[(yy * w + xx) * 4 + k];
+              gx += GX[t] * v; gy += GY[t] * v;
+            }
+            d[o + k] = Math.min(255, Math.round(Math.sqrt(gx * gx + gy * gy)));
+          }
+        }
+      },
+    },
+  };
+
+  function vizFilter(el) {
+    el.innerHTML = `
+      <div class="viz-head"><b>Сурет сүзгілері</b><span class="viz-big">Problem Set 4: Filter</span></div>
+      <p class="viz-note">Сурет — пиксельдер торы, әр пиксель — үш байт: қызыл, жасыл, көк (RGB). Сүзгіні таңдаңыз, ал тышқанды (не саусақты) суреттің үстіне апарып, пиксельдің мәнін көріңіз.</p>
+      <div class="viz-controls">
+        <div class="seg ft-seg">${Object.entries(FILTERS).map(([k, f], i) => `<button type="button" data-f="${k}" class="${i ? "" : "on"}">${f.name}</button>`).join("")}</div>
+        <label class="btn secondary ft-upload">📷 Өз суретім<input type="file" accept="image/*" hidden></label>
+      </div>
+      <div class="ft-grid">
+        <div class="ft-canvas"><canvas width="480" height="300"></canvas><div class="ft-pixel"><span class="sw"></span><code>x, y</code><code>RGB</code><code>#</code></div></div>
+        <pre class="ft-code"></pre>
+      </div>`;
+    const cv = el.querySelector("canvas"), ctx = cv.getContext("2d", { willReadFrequently: true });
+    let base, cur = "original";
+    const loadBase = () => { base = ctx.getImageData(0, 0, cv.width, cv.height); apply(); };
+    const apply = () => {
+      const img = new ImageData(new Uint8ClampedArray(base.data), base.width, base.height);
+      if (FILTERS[cur].fn) FILTERS[cur].fn(img.data, img.width, img.height);
+      ctx.putImageData(img, 0, 0);
+      el.querySelector(".ft-code").textContent = FILTERS[cur].code;
+    };
+    el.querySelector(".ft-seg").addEventListener("click", (e) => {
+      if (!e.target.dataset.f) return;
+      cur = e.target.dataset.f;
+      el.querySelectorAll(".ft-seg button").forEach((b) => b.classList.toggle("on", b === e.target));
+      apply(); K.mark && K.mark("viz-filter");
+    });
+    el.querySelector(".ft-upload input").addEventListener("change", (e) => {
+      const f = e.target.files[0];
+      if (!f) return;
+      const img = new Image();
+      img.onload = () => {
+        const sc = Math.min(1, 480 / img.width, 360 / img.height);
+        cv.width = Math.round(img.width * sc); cv.height = Math.round(img.height * sc);
+        ctx.drawImage(img, 0, 0, cv.width, cv.height);
+        URL.revokeObjectURL(img.src);
+        loadBase();
+      };
+      img.src = URL.createObjectURL(f);
+    });
+    const inspect = (ev) => {
+      const r = cv.getBoundingClientRect(), t = ev.touches ? ev.touches[0] : ev;
+      const x = Math.floor(((t.clientX - r.left) / r.width) * cv.width), y = Math.floor(((t.clientY - r.top) / r.height) * cv.height);
+      if (x < 0 || y < 0 || x >= cv.width || y >= cv.height) return;
+      const [R, G, B] = ctx.getImageData(x, y, 1, 1).data;
+      const hex = [R, G, B].map((v) => v.toString(16).padStart(2, "0")).join("").toUpperCase();
+      const c = el.querySelectorAll(".ft-pixel code");
+      el.querySelector(".ft-pixel .sw").style.background = "#" + hex;
+      c[0].textContent = `[${y}][${x}]`; c[1].textContent = `R ${R} · G ${G} · B ${B}`; c[2].textContent = "#" + hex;
+    };
+    cv.addEventListener("mousemove", inspect);
+    cv.addEventListener("touchmove", (e) => { inspect(e); }, { passive: true });
+    drawSteppe(ctx, cv.width, cv.height);
+    loadBase();
+  }
+
+  const MODULES = { filter: vizFilter, sort: vizSort, search: vizSearch, list: vizList, binary: vizBinary, swap: vizSwap, stackqueue: vizStackQueue, hash: vizHash, bst: vizBst };
   document.querySelectorAll(".viz[data-viz]").forEach((el) => MODULES[el.dataset.viz] && MODULES[el.dataset.viz](el));
   document.querySelectorAll(".flashcards").forEach(flashcards);
   document.querySelectorAll(".daily-card").forEach(daily);
