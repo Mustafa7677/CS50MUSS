@@ -47,6 +47,8 @@
     initLecturePage();
     initDashboard();
     initPythonRunner();
+    initSqlRunner();
+    initPlayground();
     initGlossary();
     initCertificate();
     initServiceWorker();
@@ -508,12 +510,7 @@
         out.textContent = pyodideReady ? "Орындалып жатыр..." : "Python жүктелуде (бірінші рет ~10 секунд)...";
         btn.disabled = true;
         try {
-          const py = await getPyodide();
-          let buf = "";
-          py.setStdout({ batched: (s) => (buf += s + "\n") });
-          py.setStderr({ batched: (s) => (buf += s + "\n") });
-          await py.runPythonAsync(pre.querySelector("code").innerText);
-          out.textContent = buf || "(шығыс жоқ)";
+          out.textContent = (await runPython(pre.querySelector("code").innerText)) || "(шығыс жоқ)";
           out.classList.remove("err");
         } catch (e) {
           if (e instanceof Event || !pyodideReady) {
@@ -529,6 +526,24 @@
         btn.disabled = false;
       });
     });
+  }
+
+  async function runPython(code) {
+    const py = await getPyodide();
+    let buf = "";
+    py.setStdout({ batched: (s) => (buf += s + "\n") });
+    py.setStderr({ batched: (s) => (buf += s + "\n") });
+    try {
+      await py.runPythonAsync(code);
+    } catch (e) {
+      e.partial = buf;
+      throw e;
+    }
+    return buf;
+  }
+
+  function pythonError(e) {
+    return String(e.message || e).split("\n").filter((l) => !/File "\/lib|_pyodide|pyodide\./.test(l)).join("\n");
   }
 
   async function getPyodide() {
@@ -630,5 +645,180 @@ sys.modules["cs50"] = cs50
     if ("serviceWorker" in navigator && location.protocol === "https:") {
       navigator.serviceWorker.register(ROOT_URL + "sw.js").catch(() => {});
     }
+  }
+
+  // ---------- SQL браузерде (sql.js — SQLite-тің WebAssembly нұсқасы) ----------
+  let sqlReady = null;
+  const dbs = {};
+  function getSql() {
+    if (!sqlReady) {
+      const wasm = /^https?:/.test(location.protocol) && typeof WebAssembly === "object";
+      sqlReady = loadScript("assets/vendor/sqljs/" + (wasm ? "sql-wasm.js" : "sql-asm.js"))
+        .then(() => window.initSqlJs({ locateFile: (f) => ROOT_URL + "assets/vendor/sqljs/" + f }))
+        .catch((e) => { sqlReady = null; throw e; });
+    }
+    return sqlReady;
+  }
+
+  async function getDb(name, fresh = false) {
+    const SQL = await getSql();
+    if (!window.CS50KZ_DB) await loadScript("assets/data/db.js");
+    if (fresh || !dbs[name]) {
+      if (dbs[name]) dbs[name].close();
+      dbs[name] = new SQL.Database();
+      dbs[name].run(window.CS50KZ_DB[name]);
+    }
+    return dbs[name];
+  }
+
+  function sqlResultHtml(db, results) {
+    if (!results.length) {
+      const n = db.getRowsModified();
+      return `<p class="sql-msg">✓ Сұрау орындалды${n ? `: ${n} жол өзгерді` : ""}.</p>`;
+    }
+    return results.map((r) => {
+      const rows = r.values.slice(0, 200);
+      return `<div class="sql-table"><table><thead><tr>${r.columns.map((c) => `<th>${escapeHtml(c)}</th>`).join("")}</tr></thead>` +
+        `<tbody>${rows.map((row) => `<tr>${row.map((v) => `<td>${v === null ? '<span class="null">NULL</span>' : escapeHtml(String(v))}</td>`).join("")}</tr>`).join("")}</tbody></table></div>` +
+        `<p class="sql-msg">${r.values.length} жол${r.values.length > 200 ? " (алғашқы 200-і көрсетілді)" : ""}</p>`;
+    }).join("");
+  }
+
+  function initSqlRunner() {
+    document.querySelectorAll('pre[data-lang="sql"]').forEach((pre) => {
+      const code = pre.querySelector("code").innerText;
+      if (/CREATE TABLE|^\s*\.|\.\.\.|sqlite>/m.test(code)) return;
+      const name = /favorites/i.test(code) ? "favorites"
+        : /\b(shows|people|stars|ratings|genres)\b/i.test(code) ? "shows" : null;
+      if (!name) return;
+      const btn = document.createElement("button");
+      btn.className = "run-btn";
+      btn.type = "button";
+      btn.textContent = "▶ Іске қосу";
+      pre.appendChild(btn);
+      btn.addEventListener("click", async () => {
+        let out = pre.nextElementSibling;
+        if (!out || !out.classList.contains("sql-output")) {
+          out = document.createElement("div");
+          out.className = "sql-output";
+          pre.after(out);
+        }
+        out.innerHTML = '<p class="sql-msg">SQLite жүктелуде...</p>';
+        try {
+          const db = await getDb(name);
+          out.innerHTML = sqlResultHtml(db, db.exec(code)) +
+            `<p class="sql-db">Дерекқор: <code>${name}.db</code> (демо үлгі) · <a href="${ROOT_URL}playground.html#sql">Сынақ алаңында ашу →</a></p>`;
+        } catch (e) {
+          out.innerHTML = `<p class="sql-msg err">Қате: ${escapeHtml(String(e.message || e))}</p>`;
+        }
+      });
+    });
+  }
+
+  // ---------- Сынақ алаңы ----------
+  function initPlayground() {
+    const pg = document.querySelector(".playground");
+    if (!pg) return;
+    const EXAMPLES = {
+      python: {
+        "Сәлем": 'name = input("What\'s your name? ")\nprint(f"hello, {name}")',
+        "Марио": 'n = int(input("Height: "))\nfor i in range(1, n + 1):\n    print(" " * (n - i) + "#" * i)',
+        "Тиындар": 'cents = int(input("Change owed: "))\ncoins = 0\nfor coin in [25, 10, 5, 1]:\n    coins += cents // coin\n    cents %= coin\nprint(coins)',
+        "Фибоначчи": 'def fib(n):\n    a, b = 0, 1\n    for _ in range(n):\n        a, b = b, a + b\n    return a\n\nprint([fib(i) for i in range(15)])',
+        "Сөздік": 'phonebook = {"Carter": "+1-617-495-1000", "David": "+1-949-468-2750"}\nname = input("Name: ")\nif name in phonebook:\n    print(f"Number: {phonebook[name]}")\nelse:\n    print("Not found")',
+      },
+      sql: {
+        "Тілдер": "SELECT language, COUNT(*) AS n\nFROM favorites\nGROUP BY language\nORDER BY n DESC;",
+        "Ең танымал есеп": "SELECT problem, COUNT(*) AS n\nFROM favorites\nGROUP BY problem\nORDER BY n DESC\nLIMIT 5;",
+        "The Office актерлері": "SELECT name FROM people WHERE id IN (\n    SELECT person_id FROM stars WHERE show_id = (\n        SELECT id FROM shows WHERE title = 'The Office' AND year = 2005\n    )\n);",
+        "JOIN: рейтинг": "SELECT title, year, rating\nFROM shows\nJOIN ratings ON shows.id = ratings.show_id\nORDER BY rating DESC\nLIMIT 10;",
+        "Комедиялар": "SELECT title FROM shows\nJOIN genres ON shows.id = genres.show_id\nWHERE genre = 'Comedy'\nORDER BY title;",
+      },
+    };
+    const tabs = pg.querySelectorAll(".pg-tab");
+    const editor = pg.querySelector(".pg-editor");
+    const out = pg.querySelector(".pg-output");
+    const chips = pg.querySelector(".pg-examples");
+    const dbSelect = pg.querySelector(".pg-db");
+    const schema = pg.querySelector(".pg-schema");
+    let lang = location.hash === "#sql" ? "sql" : "python";
+
+    const store = (k, v) => { try { v === undefined ? (v = localStorage.getItem(k)) : localStorage.setItem(k, v); } catch (e) {} return v; };
+    const setLang = (l) => {
+      if (editor.value) store("pg:" + lang, editor.value);
+      lang = l;
+      pg.dataset.lang = l;
+      tabs.forEach((t) => t.classList.toggle("active", t.dataset.lang === l));
+      editor.value = store("pg:" + l) || Object.values(EXAMPLES[l])[0];
+      chips.innerHTML = Object.keys(EXAMPLES[l]).map((k) => `<button type="button">${escapeHtml(k)}</button>`).join("");
+      out.innerHTML = `<p class="sql-msg">${l === "python" ? "Python кодын жазып, «Іске қосу» басыңыз (Ctrl+Enter)." : "SQL сұрауын жазып, «Іске қосу» басыңыз (Ctrl+Enter)."}</p>`;
+      if (l === "sql") showSchema();
+      history.replaceState(null, "", "#" + l);
+    };
+
+    async function showSchema() {
+      schema.innerHTML = '<p class="sql-msg">Кестелер жүктелуде...</p>';
+      try {
+        const db = await getDb(dbSelect.value);
+        const tables = db.exec("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")[0]?.values.map((r) => r[0]) || [];
+        schema.innerHTML = tables.map((t) => {
+          const cols = db.exec(`PRAGMA table_info(${t})`)[0].values.map((c) => `<span>${escapeHtml(c[1])} <small>${escapeHtml(c[2])}</small></span>`).join("");
+          const n = db.exec(`SELECT COUNT(*) FROM ${t}`)[0].values[0][0];
+          return `<div class="pg-table"><b>${escapeHtml(t)}</b> <small>${n} жол</small><div>${cols}</div></div>`;
+        }).join("");
+      } catch (e) {
+        schema.innerHTML = `<p class="sql-msg err">SQLite жүктелмеді.</p>`;
+      }
+    }
+
+    async function run() {
+      const code = editor.value;
+      store("pg:" + lang, code);
+      if (lang === "python") {
+        out.innerHTML = `<pre class="run-output">${pyodideReady ? "Орындалып жатыр..." : "Python жүктелуде (бірінші рет ~10 секунд)..."}</pre>`;
+        const box = out.firstChild;
+        try {
+          box.textContent = (await runPython(code)) || "(шығыс жоқ)";
+        } catch (e) {
+          box.classList.add("err");
+          box.textContent = e instanceof Event || !pyodideReady
+            ? "Python жүктелмеді. Интернет байланысын тексеріп, қайта көріңіз."
+            : (e.partial || "") + pythonError(e);
+          if (e instanceof Event) pyodideReady = null;
+        }
+      } else {
+        out.innerHTML = '<p class="sql-msg">Орындалып жатыр...</p>';
+        try {
+          const db = await getDb(dbSelect.value);
+          out.innerHTML = sqlResultHtml(db, db.exec(code));
+          if (/\b(CREATE|DROP|ALTER)\b/i.test(code)) showSchema();
+        } catch (e) {
+          out.innerHTML = `<p class="sql-msg err">Қате: ${escapeHtml(String(e.message || e))}</p>`;
+        }
+      }
+    }
+
+    tabs.forEach((t) => t.addEventListener("click", () => setLang(t.dataset.lang)));
+    chips.addEventListener("click", (e) => {
+      if (e.target.tagName !== "BUTTON") return;
+      editor.value = EXAMPLES[lang][e.target.textContent];
+      if (lang === "sql") dbSelect.value = /favorites/.test(editor.value) ? "favorites" : "shows", showSchema();
+      run();
+    });
+    dbSelect.addEventListener("change", showSchema);
+    pg.querySelector(".pg-run").addEventListener("click", run);
+    pg.querySelector(".pg-reset").addEventListener("click", async () => {
+      if (lang === "sql") { await getDb(dbSelect.value, true); showSchema(); toast("Дерекқор бастапқы күйіне келтірілді"); }
+      else { editor.value = Object.values(EXAMPLES.python)[0]; store("pg:python", editor.value); }
+    });
+    editor.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); run(); }
+      else if (e.key === "Tab" && !e.shiftKey) {
+        e.preventDefault();
+        const { selectionStart: a, selectionEnd: b } = editor;
+        editor.setRangeText("    ", a, b, "end");
+      }
+    });
+    setLang(lang);
   }
 })();
