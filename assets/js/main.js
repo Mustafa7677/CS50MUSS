@@ -69,7 +69,7 @@
     initCertificate();
     initServiceWorker();
     window.CS50KZ = { ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements };
-    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz")) loadScript("assets/js/labs.js");
+    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map")) loadScript("assets/js/labs.js");
     initAchievements();
     initPrefs();
     initShare();
@@ -901,6 +901,7 @@ sys.modules["cs50"] = cs50
       A("python", "🐍", "Питонист", "Python кодын іске қосу", used.python ? 1 : 0, 1),
       A("sql", "🗄", "Дерекқор шебері", "SQL сұрауын іске қосу", used.sql ? 1 : 0, 1),
       A("explorer", "📊", "Зерттеуші", "5 түрлі визуализацияны қолдану", viz, 5),
+      A("debugger", "🐞", "Қате аңшысы", "«Қатені тап» тренажерінде 10 қатені табу", Object.keys(readJson("cs50kz:bugs", {})).length, 10),
       A("search", "🔍", "Іздеуші", "Сайт бойынша іздеуді қолдану", used.search ? 1 : 0, 1),
       A("owl", "🌙", "Түнгі үкі", "Түнгі режимді қосу", used.dark ? 1 : 0, 1),
     ];

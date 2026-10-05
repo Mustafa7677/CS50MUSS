@@ -886,9 +886,90 @@
     loadBase();
   }
 
+  // ================= «Қатені тап» тренажері =================
+  async function bugHunt(el) {
+    await K.loadScript("assets/data/bugs.js");
+    const all = window.CS50KZ_BUGS || [];
+    const KEY = "cs50kz:bugs";
+    const solved = store.get(KEY, {});
+    let i = all.findIndex((b, k) => !solved[k]); if (i < 0) i = 0;
+    let tries = 0;
+    el.innerHTML = `
+      <div class="bh-top"><div class="bh-dots"></div><span class="bh-score"></span></div>
+      <div class="bh-card">
+        <div class="bh-meta"></div>
+        <p class="bh-task">Бұл кодта бір қате бар. <b>Қате жолды басыңыз.</b></p>
+        <pre class="bh-code"></pre>
+        <div class="bh-result" hidden></div>
+        <div class="bh-nav"><button type="button" class="btn secondary bh-prev">← Алдыңғы</button><button type="button" class="btn gold bh-next">Келесі →</button></div>
+      </div>`;
+    const render = () => {
+      const b = all[i];
+      tries = 0;
+      const done = Object.keys(solved).length;
+      el.querySelector(".bh-score").textContent = `Табылды: ${done} / ${all.length}`;
+      el.querySelector(".bh-dots").innerHTML = all.map((x, k) => `<button type="button" data-k="${k}" class="${solved[k] ? "ok" : ""} ${k === i ? "cur" : ""}" aria-label="${k + 1}-жаттығу">${k + 1}</button>`).join("");
+      el.querySelector(".bh-meta").innerHTML = `<span>${esc(b.w)}</span><b>${esc(b.t)}</b><code>${b.lang === "c" ? "C" : "Python"}</code>`;
+      el.querySelector(".bh-code").innerHTML = b.code.map((l, n) => `<span class="bh-line" data-n="${n}"><i>${n + 1}</i>${esc(l) || " "}</span>`).join("");
+      el.querySelector(".bh-result").hidden = true;
+      el.querySelector(".bh-code").classList.remove("solved");
+    };
+    const reveal = (ok) => {
+      const b = all[i];
+      el.querySelector(".bh-code").classList.add("solved");
+      el.querySelectorAll(".bh-line")[b.bug].classList.add("bug");
+      const r = el.querySelector(".bh-result");
+      r.hidden = false;
+      r.innerHTML = `<p><b>${ok ? "Дұрыс! ✓" : `Қате жол — ${b.bug + 1}-жол.`}</b> ${b.why}</p><p class="bh-fixlabel">Түзетілгені:</p><pre class="bh-fix">${esc(b.fix)}</pre>`;
+      if (ok) { solved[i] = 1; store.set(KEY, solved); K.mark && K.mark("bughunt"); if (Object.keys(solved).length === all.length) K.celebrate(); }
+      el.querySelector(".bh-score").textContent = `Табылды: ${Object.keys(solved).length} / ${all.length}`;
+      el.querySelectorAll(".bh-dots button")[i].classList.toggle("ok", !!solved[i]);
+    };
+    el.querySelector(".bh-code").addEventListener("click", (e) => {
+      const line = e.target.closest(".bh-line");
+      if (!line || el.querySelector(".bh-code").classList.contains("solved")) return;
+      const n = +line.dataset.n;
+      if (n === all[i].bug) { line.classList.add("hit"); reveal(true); }
+      else {
+        line.classList.add("miss");
+        if (++tries >= 2) reveal(false);
+      }
+    });
+    el.querySelector(".bh-next").addEventListener("click", () => { i = (i + 1) % all.length; render(); });
+    el.querySelector(".bh-prev").addEventListener("click", () => { i = (i - 1 + all.length) % all.length; render(); });
+    el.querySelector(".bh-dots").addEventListener("click", (e) => { if (e.target.dataset.k) { i = +e.target.dataset.k; render(); } });
+    render();
+  }
+
+  // ================= Курс картасы =================
+  async function courseMap(el) {
+    await K.loadScript("assets/data/lectures.js");
+    const lecs = window.CS50KZ_LECTURES || [];
+    const p = store.get("cs50kz:progress", {}) || {};
+    const read = p.read || {}, quiz = p.quiz || {};
+    const LANG = { "week-0": "Scratch", "week-1": "C", "week-2": "C", "week-3": "C", "week-4": "C", "week-5": "C", "week-6": "Python", "week-7": "SQL", ai: "AI", "week-8": "HTML · CSS · JS", "week-9": "Flask", "week-10": "🎓" };
+    const next = lecs.find((l) => !read[l.id]);
+    el.innerHTML = `<div class="map-legend"><span class="lg read">Оқылды</span><span class="lg next">Келесі</span><span class="lg todo">Алда</span></div>` +
+      lecs.map((l, k) => {
+        const st = read[l.id] ? "read" : l === next ? "next" : "todo";
+        const q = quiz[l.id];
+        return `<div class="map-stop ${st} ${k % 2 ? "right" : "left"}">
+          <div class="map-dot">${read[l.id] ? "✓" : k}</div>
+          <div class="map-card">
+            <div class="map-top"><span class="map-num">${esc(l.num)}</span><span class="map-lang">${esc(LANG[l.id] || "")}</span></div>
+            <a class="map-title" href="${K.ROOT_URL + l.url}">${esc(l.title)}</a>
+            <div class="map-topics">${l.topics.slice(0, 8).map((t) => `<a href="${K.ROOT_URL + l.url}#${t.id}">${esc(t.t)}</a>`).join("")}</div>
+            <div class="map-foot"><span>⏱ ${l.minutes} мин</span>${q ? `<span>📝 ${q.best}/${q.total}</span>` : ""}${st === "next" ? `<a class="btn gold" href="${K.ROOT_URL + l.url}">Бастау →</a>` : ""}</div>
+          </div>
+        </div>`;
+      }).join("");
+  }
+
   const MODULES = { filter: vizFilter, sort: vizSort, search: vizSearch, list: vizList, binary: vizBinary, swap: vizSwap, stackqueue: vizStackQueue, hash: vizHash, bst: vizBst };
   document.querySelectorAll(".viz[data-viz]").forEach((el) => MODULES[el.dataset.viz] && MODULES[el.dataset.viz](el));
   document.querySelectorAll(".flashcards").forEach(flashcards);
   document.querySelectorAll(".daily-card").forEach(daily);
   document.querySelectorAll(".mixed-quiz").forEach(mixedQuiz);
+  document.querySelectorAll(".bug-hunt").forEach(bugHunt);
+  document.querySelectorAll(".course-map").forEach(courseMap);
 })();

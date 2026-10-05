@@ -73,7 +73,8 @@ def process_page(path, prefix, active):
     s = re.sub(r'<nav class="nav">.*?</nav>', nav_block(prefix, active), s, count=1, flags=re.S)
     links = (f'<!-- build:footer --><p class="footer-links"><a href="{prefix}index.html">Лекциялар</a> · '
              f'<a href="{prefix}practice.html">Жаттығу</a> · <a href="{prefix}flashcards.html">Флэш-карточкалар</a> · '
-             f'<a href="{prefix}viz.html">Визуализациялар</a> · <a href="{prefix}playground.html">Сынақ алаңы</a> · <a href="{prefix}glossary.html">Сөздік</a> · <a href="{prefix}certificate.html">Сертификат</a> · '
+             f'<a href="{prefix}viz.html">Визуализациялар</a> · <a href="{prefix}debug.html">Қатені тап</a> · '
+             f'<a href="{prefix}cheatsheet.html">Шпаргалка</a> · <a href="{prefix}map.html">Курс картасы</a> · <a href="{prefix}playground.html">Сынақ алаңы</a> · <a href="{prefix}glossary.html">Сөздік</a> · <a href="{prefix}certificate.html">Сертификат</a> · '
              f'<a href="{prefix}teacher.html">Мұғалім беті</a> · <a href="{prefix}about.html">Курс туралы</a> · '
              f'<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a></p><!-- /build:footer -->')
     if "<!-- build:footer -->" in s:
@@ -91,7 +92,9 @@ def lecture_meta(name, s):
     title = strip_tags(re.search(r"<h1>(.*?)</h1>", s, re.S).group(1))
     article = s[s.index('<article class="content">'):s.index("</article>")]
     words = len(strip_tags(article).split())
-    return {"id": name, "num": num, "title": title, "url": f"lectures/{name}.html",
+    skip = {"intro", "summary", "quiz", "practice", "problem-set"}
+    topics = [{"t": strip_tags(t), "id": i} for i, t in re.findall(r'<h2 id="([^"]+)">(.*?)</h2>', article, re.S) if i not in skip]
+    return {"id": name, "num": num, "title": title, "url": f"lectures/{name}.html", "topics": topics,
             "minutes": max(5, round(words / 160)),
             "quiz": article.count('class="question"'),
             "tasks": article.count('class="checklist"')}
@@ -141,6 +144,38 @@ def quiz_questions(name, s, meta):
     return out
 
 
+def build_cheatsheet(entries):
+    """Әр лекцияның «Қорытынды» бөлімінен бір беттік шпаргалка."""
+    tpl = (ROOT / "about.html").read_text(encoding="utf-8")
+    top = tpl[:tpl.index('<div class="layout"')]
+    top = re.sub(r"<!-- build:head -->.*?<!-- /build:head -->", "", top, flags=re.S)
+    top = re.sub(r"<title>.*?</title>", "<title>Шпаргалка — CS50 қазақша</title>", top)
+    top = top.replace('<meta name="author"', '<meta name="description" content="CS50 қазақша: барлық 12 лекцияның қысқаша конспектісі бір бетте, басып шығаруға ыңғайлы.">\n  <meta name="author"', 1)
+    foot = tpl[tpl.index("  <footer"):]
+    cards = "\n".join(
+        f'''      <section class="cs-card" id="{m["id"]}">
+        <h2><span>{html.escape(m["num"])}</span> {html.escape(m["title"])}</h2>
+        {ul}
+        <a class="cs-more" href="{m["url"]}">Толық лекция →</a>
+      </section>''' for m, ul in entries)
+    page = top + f"""<div class="layout single wide">
+    <article class="content cheatsheet">
+      <div class="lecture-head">
+        <div class="num">Шпаргалка</div>
+        <h1>Бүкіл курс бір бетте</h1>
+        <p>Әр лекцияның ең маңызды ұғымдары мен синтаксисі. Емтиханға не тапсырмаға дайындалғанда қолданыңыз. Басып шығаруға ыңғайлы.</p>
+        <button type="button" class="btn gold cs-print" onclick="print()">🖨 Басып шығару / PDF</button>
+      </div>
+      <div class="cs-grid">
+{cards}
+      </div>
+    </article>
+  </div>
+
+""" + foot
+    (ROOT / "cheatsheet.html").write_text(page, encoding="utf-8")
+
+
 def build_glossary(terms):
     seen = {}
     for t in terms:
@@ -186,7 +221,7 @@ def build_glossary(terms):
 
 
 def main():
-    lectures, index, terms, quiz = [], [], [], []
+    lectures, index, terms, quiz, sheets = [], [], [], [], []
     for name in ORDER:
         p = ROOT / "lectures" / f"{name}.html"
         if not p.exists():
@@ -197,12 +232,17 @@ def main():
         index += sections(name, s, meta)
         terms += glossary_terms(name, s, meta)
         quiz += quiz_questions(name, s, meta)
+        sm = re.search(r'<h2 id="summary">.*?</h2>\s*(<ul>.*?</ul>|<table>.*?</table>)', s, re.S)
+        if sm:
+            sheets.append((meta, sm.group(1)))
+    build_cheatsheet(sheets)
     n = build_glossary(terms)
     for page, active in [("index.html", "index"), ("about.html", "about"),
                          ("glossary.html", "glossary"), ("certificate.html", ""),
                          ("playground.html", "playground"), ("practice.html", "practice"),
                          ("flashcards.html", "practice"), ("viz.html", "practice"),
-                         ("teacher.html", ""), ("404.html", "")]:
+                         ("teacher.html", ""), ("404.html", ""), ("cheatsheet.html", "practice"),
+                         ("debug.html", "practice"), ("map.html", "practice")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
     (ROOT / "assets/data/lectures.js").write_text(
@@ -212,7 +252,7 @@ def main():
     (ROOT / "assets/data/quiz.js").write_text(
         "window.CS50KZ_QUIZ = " + json.dumps(quiz, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     pages = ["", "practice.html", "playground.html", "viz.html", "flashcards.html", "glossary.html",
-             "certificate.html", "teacher.html", "about.html"] + [l["url"] for l in lectures]
+             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html"] + [l["url"] for l in lectures]
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"  <url><loc>{SITE_URL}{u}</loc></url>\n" for u in pages) + "</urlset>\n", encoding="utf-8")
