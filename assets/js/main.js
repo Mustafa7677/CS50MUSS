@@ -1,6 +1,10 @@
 // CS50 қазақша — интерактив элементтер
 
 (function () {
+  // Сайттың түбір мекенжайы (main.js-тің орнынан анықталады: file:// пен GitHub Pages-те де жұмыс істейді)
+  const ROOT_URL = new URL("../../", document.currentScript.src).href;
+  const PAGE = (location.pathname.match(/lectures\/([\w-]+)\.html$/) || [])[1] || null;
+
   // Түнгі / күндізгі режим
   const root = document.documentElement;
   try {
@@ -39,6 +43,13 @@
     initQuizzes();
     initAnswerChecks();
     initChecklists();
+    initSearch();
+    initLecturePage();
+    initDashboard();
+    initPythonRunner();
+    initGlossary();
+    initCertificate();
+    initServiceWorker();
   });
 
   // Код блоктарына «Көшіру» батырмасы
@@ -130,6 +141,13 @@
         });
         result.textContent = `Нәтиже: ${correct} / ${questions.length}`;
         result.className = "result " + (correct === questions.length ? "ok" : "bad");
+        if (PAGE) {
+          const p = Progress.load();
+          const prev = p.quiz[PAGE];
+          if (!prev || correct >= prev.best) p.quiz[PAGE] = { best: correct, total: questions.length };
+          Progress.save(p);
+          if (correct === questions.length) celebrate();
+        }
       });
     });
   }
@@ -177,5 +195,440 @@
       boxes.forEach((b) => b.addEventListener("change", update));
       update();
     });
+  }
+
+  // ---------- Көмекші функциялар ----------
+  function loadScript(rel) {
+    return new Promise((resolve, reject) => {
+      const el = document.createElement("script");
+      el.src = /^https?:/.test(rel) ? rel : ROOT_URL + rel;
+      el.onload = resolve;
+      el.onerror = reject;
+      document.head.appendChild(el);
+    });
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  }
+
+  // Оқушының прогресі браузерде сақталады (тіркелусіз)
+  const Progress = {
+    key: "cs50kz:progress",
+    load() {
+      let p = {};
+      try { p = JSON.parse(localStorage.getItem(this.key) || "{}"); } catch (e) {}
+      return { read: p.read || {}, quiz: p.quiz || {}, last: p.last || null, name: p.name || "" };
+    },
+    save(p) {
+      try { localStorage.setItem(this.key, JSON.stringify(p)); } catch (e) {}
+    },
+    tasksDone(id) {
+      let done = 0;
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const k = localStorage.key(i);
+          if (!k.startsWith("check:") || !k.includes("/" + id + ".html:")) continue;
+          const arr = JSON.parse(localStorage.getItem(k) || "[]");
+          if (arr.length && arr.every(Boolean)) done++;
+        }
+      } catch (e) {}
+      return done;
+    },
+  };
+
+  function celebrate() {
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const box = document.createElement("div");
+    box.className = "confetti";
+    const colors = ["#f2b705", "#00afca", "#0a4c7a", "#ffd75e", "#3cc8e2"];
+    for (let i = 0; i < 80; i++) {
+      const c = document.createElement("i");
+      c.style.left = Math.random() * 100 + "vw";
+      c.style.background = colors[i % colors.length];
+      c.style.animationDelay = Math.random() * 0.6 + "s";
+      c.style.transform = `rotate(${Math.random() * 360}deg)`;
+      box.appendChild(c);
+    }
+    document.body.appendChild(box);
+    setTimeout(() => box.remove(), 3200);
+  }
+
+  function toast(text) {
+    const t = document.createElement("div");
+    t.className = "toast";
+    t.textContent = text;
+    document.body.appendChild(t);
+    requestAnimationFrame(() => t.classList.add("show"));
+    setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 300); }, 2600);
+  }
+
+  // ---------- Іздеу (Ctrl+K) ----------
+  function initSearch() {
+    const openers = document.querySelectorAll(".search-open");
+    let modal, input, list, items = [], active = 0, loaded = null;
+
+    const build = () => {
+      modal = document.createElement("div");
+      modal.className = "search-modal";
+      modal.innerHTML = `
+        <div class="search-box" role="dialog" aria-modal="true" aria-label="Іздеу">
+          <div class="search-input"><span>⌕</span><input type="search" placeholder="Лекциялардан іздеу: рекурсия, malloc, SQL JOIN..." autocomplete="off"><kbd>Esc</kbd></div>
+          <ul class="search-results"></ul>
+          <div class="search-foot"><span><kbd>↑</kbd><kbd>↓</kbd> таңдау</span><span><kbd>Enter</kbd> ашу</span></div>
+        </div>`;
+      document.body.appendChild(modal);
+      input = modal.querySelector("input");
+      list = modal.querySelector(".search-results");
+      modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
+      input.addEventListener("input", run);
+      input.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+          e.preventDefault();
+          active = Math.max(0, Math.min(items.length - 1, active + (e.key === "ArrowDown" ? 1 : -1)));
+          paint();
+        } else if (e.key === "Enter" && items[active]) {
+          location.href = ROOT_URL + items[active].u;
+        } else if (e.key === "Escape") close();
+      });
+    };
+
+    const open = () => {
+      if (!modal) build();
+      modal.classList.add("open");
+      document.body.classList.add("no-scroll");
+      input.value = "";
+      list.innerHTML = '<li class="search-hint">Іздеу үшін кемінде 2 әріп жазыңыз</li>';
+      setTimeout(() => input.focus(), 30);
+      loaded = loaded || loadScript("assets/data/search-index.js").catch(() => {});
+    };
+    const close = () => {
+      modal.classList.remove("open");
+      document.body.classList.remove("no-scroll");
+    };
+
+    function run() {
+      const q = input.value.trim().toLowerCase();
+      if (q.length < 2) { items = []; list.innerHTML = '<li class="search-hint">Іздеу үшін кемінде 2 әріп жазыңыз</li>'; return; }
+      loaded.then(() => {
+        const words = q.split(/\s+/);
+        const scored = [];
+        for (const s of window.CS50KZ_INDEX || []) {
+          const h = s.h.toLowerCase(), t = s.t.toLowerCase();
+          if (!words.every((w) => h.includes(w) || t.includes(w))) continue;
+          let score = 0;
+          for (const w of words) score += (h.includes(w) ? 10 : 0) + Math.min(5, t.split(w).length - 1);
+          scored.push([score, s]);
+        }
+        scored.sort((a, b) => b[0] - a[0]);
+        items = scored.slice(0, 30).map((x) => x[1]);
+        active = 0;
+        paint(words);
+      });
+    }
+
+    function snippet(t, words) {
+      const low = t.toLowerCase();
+      let i = Math.max(0, low.indexOf(words[0]));
+      const start = Math.max(0, i - 50);
+      let s = escapeHtml((start ? "…" : "") + t.slice(start, start + 170) + "…");
+      for (const w of words) {
+        if (w.length < 2) continue;
+        s = s.replace(new RegExp(w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "gi"), (m) => `<mark>${m}</mark>`);
+      }
+      return s;
+    }
+
+    function paint(words = input.value.trim().toLowerCase().split(/\s+/)) {
+      if (!items.length) { list.innerHTML = '<li class="search-hint">Ештеңе табылмады 🤔</li>'; return; }
+      list.innerHTML = items.map((s, i) => `
+        <li class="${i === active ? "active" : ""}"><a href="${ROOT_URL + s.u}">
+          <span class="sr-lec">${escapeHtml(s.l)}</span>
+          <span class="sr-h">${escapeHtml(s.h)}</span>
+          <span class="sr-t">${snippet(s.t, words)}</span>
+        </a></li>`).join("");
+      const el = list.querySelector(".active");
+      if (el) el.scrollIntoView({ block: "nearest" });
+    }
+
+    openers.forEach((b) => b.addEventListener("click", open));
+    document.addEventListener("keydown", (e) => {
+      const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
+      if ((e.key === "k" || e.key === "K" || e.key === "қ") && (e.ctrlKey || e.metaKey)) { e.preventDefault(); open(); }
+      else if (e.key === "/" && !typing) { e.preventDefault(); open(); }
+    });
+  }
+
+  // ---------- Лекция беті: оқу жолағы, уақыт, «Оқыдым», пернетақта ----------
+  function initLecturePage() {
+    const article = document.querySelector("article.content");
+    if (!PAGE || !article) return;
+    const p = Progress.load();
+
+    // Оқу уақыты
+    const head = article.querySelector(".lecture-head");
+    const words = article.innerText.split(/\s+/).length;
+    const meta = document.createElement("div");
+    meta.className = "lecture-meta";
+    meta.innerHTML = `<span>⏱ ≈ ${Math.max(5, Math.round(words / 160))} мин оқу</span>` +
+      `<span>📝 ${article.querySelectorAll(".question").length} сұрақ</span>` +
+      `<span>🧩 ${article.querySelectorAll(".task").length} тапсырма</span>` +
+      (p.read[PAGE] ? '<span class="done">✓ Оқылды</span>' : "");
+    head.querySelector(".source-link").before(meta);
+
+    // Оқу прогресінің жолағы
+    const bar = document.createElement("div");
+    bar.className = "read-bar";
+    document.body.appendChild(bar);
+    const top = document.createElement("button");
+    top.className = "to-top";
+    top.type = "button";
+    top.setAttribute("aria-label", "Жоғарыға");
+    top.textContent = "↑";
+    top.addEventListener("click", () => scrollTo({ top: 0 }));
+    document.body.appendChild(top);
+    let lastSaved = 0;
+    const onScroll = () => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      const ratio = max > 0 ? Math.min(1, scrollY / max) : 0;
+      bar.style.transform = `scaleX(${ratio})`;
+      top.classList.toggle("show", scrollY > 900);
+      if (Date.now() - lastSaved > 2000) {
+        lastSaved = Date.now();
+        const q = Progress.load();
+        q.last = { id: PAGE, title: document.querySelector("h1").textContent, num: head.querySelector(".num").textContent, y: Math.round(ratio * 100) };
+        Progress.save(q);
+      }
+    };
+    addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+
+    // «Оқыдым» батырмасы
+    const pager = article.querySelector(".pager");
+    const done = document.createElement("div");
+    done.className = "mark-read";
+    const render = () => {
+      const read = !!Progress.load().read[PAGE];
+      done.innerHTML = read
+        ? `<div><strong>Бұл лекция оқылды ✓</strong><p>Керемет! Келесі лекцияға өтіңіз.</p></div><button type="button" class="btn secondary">Белгіні алып тастау</button>`
+        : `<div><strong>Лекцияны оқып шықтыңыз ба?</strong><p>Белгілеп қойыңыз, прогресіңіз басты бетте көрінеді.</p></div><button type="button" class="btn gold">Оқыдым ✓</button>`;
+      done.classList.toggle("is-read", read);
+      done.querySelector("button").addEventListener("click", () => {
+        const q = Progress.load();
+        if (q.read[PAGE]) delete q.read[PAGE];
+        else { q.read[PAGE] = Date.now(); celebrate(); toast("Лекция оқылды деп белгіленді 🎉"); }
+        Progress.save(q);
+        render();
+      });
+    };
+    render();
+    if (pager) pager.before(done);
+
+    // ← → пернелерімен лекциялар арасында жүру
+    document.addEventListener("keydown", (e) => {
+      if (/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName) || e.ctrlKey || e.metaKey || e.altKey) return;
+      const links = pager ? pager.querySelectorAll("a") : [];
+      if (e.key === "ArrowLeft" && links[0]) location.href = links[0].href;
+      if (e.key === "ArrowRight" && links[1]) location.href = links[1].href;
+    });
+  }
+
+  // ---------- Басты бет: жеке прогресс панелі ----------
+  function initDashboard() {
+    const panel = document.querySelector(".dashboard");
+    if (!panel) return;
+    loadScript("assets/data/lectures.js").then(() => {
+      const lectures = window.CS50KZ_LECTURES || [];
+      const p = Progress.load();
+      const read = lectures.filter((l) => p.read[l.id]).length;
+      let qBest = 0, qTotal = 0;
+      lectures.forEach((l) => { const q = p.quiz[l.id]; if (q) { qBest += q.best; qTotal += q.total; } });
+      const tasks = lectures.reduce((n, l) => n + Progress.tasksDone(l.id), 0);
+      const totalTasks = lectures.reduce((n, l) => n + l.tasks, 0);
+      const minutes = lectures.filter((l) => !p.read[l.id]).reduce((n, l) => n + l.minutes, 0);
+      const pct = lectures.length ? Math.round((read / lectures.length) * 100) : 0;
+      const next = lectures.find((l) => !p.read[l.id]);
+      const last = p.last && lectures.find((l) => l.id === p.last.id);
+      const cont = last && !p.read[last.id] ? last : next;
+
+      panel.innerHTML = `
+        <div class="dash-ring" style="--pct:${pct}"><div><b>${pct}%</b><span>курс</span></div></div>
+        <div class="dash-main">
+          <h3>${read ? "Жарайсыз, жалғастырыңыз!" : "Курсты бастауға дайынсыз ба?"}</h3>
+          <div class="dash-stats">
+            <div><b>${read}<small>/${lectures.length}</small></b><span>лекция оқылды</span></div>
+            <div><b>${qTotal ? Math.round((qBest / qTotal) * 100) + "%" : "—"}</b><span>тест нәтижесі</span></div>
+            <div><b>${tasks}<small>/${totalTasks}</small></b><span>тапсырма тексерілді</span></div>
+            <div><b>${Math.round(minutes / 60 * 10) / 10}</b><span>сағат оқу қалды</span></div>
+          </div>
+          <div class="dash-actions">
+            ${cont ? `<a class="btn gold" href="${ROOT_URL + cont.url}">${read || last ? "Жалғастыру" : "Бастау"}: ${escapeHtml(cont.num)} →</a>` : `<a class="btn gold" href="${ROOT_URL}certificate.html">Сертификатты алу 🎓</a>`}
+            <a class="btn ghost-dark" href="${ROOT_URL}certificate.html">Сертификат</a>
+          </div>
+        </div>`;
+
+      // Әр картаға белгі
+      document.querySelectorAll(".week-card").forEach((card) => {
+        const id = (card.getAttribute("href").match(/([\w-]+)\.html$/) || [])[1];
+        const l = lectures.find((x) => x.id === id);
+        if (!l || card.classList.contains("soon")) return;
+        const meta = document.createElement("div");
+        meta.className = "card-meta";
+        const q = p.quiz[id];
+        meta.innerHTML = `<span>⏱ ${l.minutes} мин</span>` + (q ? `<span>📝 ${q.best}/${q.total}</span>` : "");
+        card.querySelector(".status").before(meta);
+        if (p.read[id]) {
+          card.classList.add("is-read");
+          card.querySelector(".status").textContent = "Оқылды ✓";
+        }
+      });
+    });
+  }
+
+  // ---------- Python кодын браузерде іске қосу (Pyodide) ----------
+  let pyodideReady = null;
+  function initPythonRunner() {
+    const blocks = [...document.querySelectorAll('pre[data-lang="python"]')].filter((pre) => {
+      const code = pre.textContent;
+      return !/flask|openai|from cs50 import SQL|sys\.argv|import csv|open\(|import requests|qrcode|cowsay|pyttsx3|face_recognition|PIL|speech_recognition|^\s*\.\.\./m.test(code);
+    });
+    blocks.forEach((pre) => {
+      const btn = document.createElement("button");
+      btn.className = "run-btn";
+      btn.type = "button";
+      btn.textContent = "▶ Іске қосу";
+      pre.appendChild(btn);
+      btn.addEventListener("click", async () => {
+        let out = pre.nextElementSibling;
+        if (!out || !out.classList.contains("run-output")) {
+          out = document.createElement("pre");
+          out.className = "run-output";
+          pre.after(out);
+        }
+        out.textContent = pyodideReady ? "Орындалып жатыр..." : "Python жүктелуде (бірінші рет ~10 секунд)...";
+        btn.disabled = true;
+        try {
+          const py = await getPyodide();
+          let buf = "";
+          py.setStdout({ batched: (s) => (buf += s + "\n") });
+          py.setStderr({ batched: (s) => (buf += s + "\n") });
+          await py.runPythonAsync(pre.querySelector("code").innerText);
+          out.textContent = buf || "(шығыс жоқ)";
+          out.classList.remove("err");
+        } catch (e) {
+          if (e instanceof Event || !pyodideReady) {
+            pyodideReady = null;
+            out.textContent = "Python жүктелмеді. Интернет байланысын тексеріп, қайта басып көріңіз.";
+            out.classList.add("err");
+            btn.disabled = false;
+            return;
+          }
+          out.textContent = String(e.message || e).split("\n").filter((l) => !/File "\/lib|_pyodide|pyodide\./.test(l)).join("\n");
+          out.classList.add("err");
+        }
+        btn.disabled = false;
+      });
+    });
+  }
+
+  async function getPyodide() {
+    if (!pyodideReady) {
+      const loading = (async () => {
+        await loadScript("https://cdn.jsdelivr.net/npm/pyodide@0.26.4/full/pyodide.js");
+        const py = await window.loadPyodide();
+        // input() мен cs50 кітапханасын браузерге бейімдеу
+        py.runPython(`
+import builtins, sys, types
+from js import prompt
+def _input(p=""):
+    v = prompt(str(p))
+    if v is None:
+        raise EOFError("енгізу тоқтатылды")
+    print(str(p) + v)
+    return v
+builtins.input = _input
+cs50 = types.ModuleType("cs50")
+def get_string(p=""): return _input(p)
+def get_int(p=""):
+    while True:
+        try: return int(_input(p))
+        except ValueError: pass
+def get_float(p=""):
+    while True:
+        try: return float(_input(p))
+        except ValueError: pass
+cs50.get_string, cs50.get_int, cs50.get_float = get_string, get_int, get_float
+sys.modules["cs50"] = cs50
+`);
+        return py;
+      })();
+      pyodideReady = loading;
+      loading.catch(() => { if (pyodideReady === loading) pyodideReady = null; });
+    }
+    return pyodideReady;
+  }
+
+  // ---------- Сөздік: сүзгі ----------
+  function initGlossary() {
+    const box = document.querySelector(".g-search input");
+    if (!box) return;
+    const rows = [...document.querySelectorAll(".g-row")];
+    const letters = [...document.querySelectorAll(".g-letter")];
+    const count = document.querySelector(".g-count");
+    const run = () => {
+      const q = box.value.trim().toLowerCase();
+      let n = 0;
+      rows.forEach((r) => { const ok = !q || r.dataset.q.includes(q); r.hidden = !ok; if (ok) n++; });
+      letters.forEach((h) => {
+        let el = h.nextElementSibling, any = false;
+        while (el && el.classList.contains("g-row")) { if (!el.hidden) any = true; el = el.nextElementSibling; }
+        h.hidden = !any;
+      });
+      count.textContent = `${n} термин`;
+    };
+    box.addEventListener("input", run);
+    run();
+  }
+
+  // ---------- Сертификат ----------
+  function initCertificate() {
+    const cert = document.querySelector(".certificate");
+    if (!cert) return;
+    loadScript("assets/data/lectures.js").then(() => {
+      const lectures = window.CS50KZ_LECTURES || [];
+      const p = Progress.load();
+      const left = lectures.filter((l) => !p.read[l.id]);
+      const gate = document.querySelector(".cert-gate");
+      const nameInput = document.querySelector(".cert-name-input");
+      const nameOut = cert.querySelector(".cert-name");
+      const date = cert.querySelector(".cert-date");
+      const months = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
+      const d = new Date();
+      date.textContent = `${d.getFullYear()} ж. ${d.getDate()} ${months[d.getMonth()]}`;
+      nameInput.value = p.name;
+      const sync = () => {
+        nameOut.textContent = nameInput.value.trim() || "Сіздің атыңыз";
+        const q = Progress.load(); q.name = nameInput.value.trim(); Progress.save(q);
+      };
+      nameInput.addEventListener("input", sync);
+      sync();
+      if (left.length) {
+        cert.classList.add("locked");
+        gate.innerHTML = `<strong>Сертификат ашылу үшін тағы ${left.length} лекцияны оқу керек:</strong> ` +
+          left.map((l) => `<a href="${ROOT_URL + l.url}">${escapeHtml(l.num)}</a>`).join(", ") +
+          `. Әр лекцияның соңындағы «Оқыдым ✓» батырмасын басыңыз.`;
+      } else {
+        gate.innerHTML = "<strong>Құттықтаймыз! 🎉</strong> Барлық лекцияны оқыдыңыз. Атыңызды жазып, сертификатты басып шығарыңыз не PDF ретінде сақтаңыз.";
+        document.querySelector(".cert-print").disabled = false;
+      }
+      document.querySelector(".cert-print").addEventListener("click", () => print());
+    });
+  }
+
+  // ---------- Офлайн режим ----------
+  function initServiceWorker() {
+    if ("serviceWorker" in navigator && location.protocol === "https:") {
+      navigator.serviceWorker.register(ROOT_URL + "sw.js").catch(() => {});
+    }
   }
 })();
