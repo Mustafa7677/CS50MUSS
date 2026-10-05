@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>8-апта: HTML, CSS, JavaScript — CS50 қазақша</title>
+  <meta name="description" content="CS50 8-апта: интернет қалай жұмыс істейді (TCP/IP, DNS, DHCP, HTTP), HTML, CSS және JavaScript.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../assets/js/main.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../index.html">Лекциялар</a>
+        <a href="../about.html" class="hide-sm">Курс туралы</a>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content">
+      <div class="lecture-head">
+        <div class="num">8-апта</div>
+        <h1>HTML, CSS, JavaScript</h1>
+        <p>Интернет қалай жұмыс істейді: маршрутизаторлар, TCP/IP, DNS, DHCP және HTTP. Веб-беттің құрылымы — HTML, оның сыртқы түрі — CSS, ал интерактивтілігі — JavaScript.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/x/weeks/8/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <h2 id="intro">Кіріспе</h2>
+      <p>Бұл CS50, 8-апта. Осы уақытқа дейін біз тек командалық жолда, ақ-қара терминал терезесінде, пернетақтамен жұмыс істедік. Бірақ күнде қолданатын қосымшаларымыздың көбі — веб-браузерде немесе телефонда. Сондықтан бүгіннен бастап және семестрдің соңына дейін бұрынғы барлық құрылыс блоктарын <strong>веб-қосымшалар</strong> контекстінде қолданамыз. Қаласаңыз, соңғы жобаңыз мобильді қосымша да бола алады.</p>
+      <p>Бүгін күнде қолданатын интернеттің қалай жұмыс істейтінін түсінеміз. Сосын үш тілмен танысамыз:</p>
+      <ul>
+        <li><strong>HTML</strong> — веб-беттер жазылатын тіл;</li>
+        <li><strong>CSS</strong> — веб-беттерді безендіретін тіл;</li>
+        <li><strong>JavaScript</strong> — осы үшеуінің ішіндегі жалғыз нағыз <em>бағдарламалау</em> тілі. Оған көп уақыт бөлмейміз, бірақ синтаксисі мен мүмкіндіктері C мен Python-ға өте ұқсас екенін көресіз.</li>
+      </ul>
+
+      <h2 id="internet">Интернет деген не?</h2>
+      <p><strong>Желі</strong> (<span class="term-en">network</span>) — сыммен не сымсыз байланысқан компьютерлер жиыны. Үйде, кампуста, компанияда желілер бар. Желілерді бір-бірімен байланыстырсаңыз, яғни «желілердің желісін» жасасаңыз, <strong>интернет</strong> шығады: компьютерлердің, серверлердің және сансыз құрылғылардың жаһандық байланысы.</p>
+      <p>Ол қайдан шықты? 1969 жылы интернеттің бастапқы түрі <strong>ARPANET</strong> деп аталды (АҚШ Қорғаныс министрлігінің Advanced Research Projects Agency жобасы). Оның мақсаты — сол кездегі санаулы суперкомпьютерлерді, географиялық тұрғыдан алыс зерттеушілерге қолжетімді ету үшін, өзара байланыстыру. Басында UCLA және тағы бірнеше түйін ғана болды. Бір жылдан кейін шығыс жағалаудағы Гарвард, MIT және басқалар қосылды. Ал бүгін деректерді әлемнің кез келген нүктесіне жеткізе аламыз.</p>
+      <div class="callout term">
+        <span class="callout-title">Термин: маршрутизатор және пакет</span>
+        <strong>Маршрутизатор</strong> (<span class="term-en">router</span>) — деректерді жоғары, төмен, солға, оңға, яғни бір сымнан екіншісіне бағыттайтын компьютер. Ол <strong>пакеттерді</strong> (<span class="term-en">packets</span>) тасымалдайды. Пакетті кәдімгі поштамен жіберілетін кішкене ақ конверт деп елестетуге болады.
+      </div>
+      <p>Лекцияда CS50 көмекшілері Zoom арқылы шағын көрініс ойнады. Әр адам маршрутизатор рөлінде болды, ал конверт төменгі оң жақтағы Филлистен жоғарғы сол жақтағы Брайанға адамнан адамға беріліп жетті. (Олар күліп, қол соқты, себебі бұл түсірілімге қаншама дубль кетті!) Басты сабақ: пакет кез келген жолмен жүре алар еді: алдымен жоғары сосын солға, алдымен солға сосын жоғары, иректеліп. Шын интернетте де солай: А нүктесінен Б нүктесіне жеткізудің көп жолы бар. Пакет ең қысқа жолмен емес, ең арзан жолмен немесе серверлер мен адамдар маршруттарды қалай баптағанына қарай жүруі мүмкін.</p>
+
+      <h2 id="tcp-ip">TCP/IP</h2>
+      <p>Интернеттегі барлық құрылғылар, маршрутизаторлар да, қалтаңыздағы телефон да, <strong>TCP/IP</strong> деген «тілде», дәлірек айтқанда <strong>хаттамада</strong> (<span class="term-en">protocol</span>) сөйлейді. Хаттама — компьютерлердің қалай әрекет ететінін анықтайтын келісімдер жиыны. Адамдарда да хаттамалар бар: біреумен алғаш кездескенде қол созасыз, ол да қолын созады деп үміттенесіз. Серверлердің хаттамалары да осындай, бірақ олар мәтінге не биттерге негізделген. TCP мен IP — екі түрлі мәселені шешетін екі түрлі хаттама.</p>
+
+      <h3 id="ip">IP</h3>
+      <p><strong>IP</strong> (<span class="term-en">Internet Protocol</span>) әлемдегі әр компьютерге бірегей мекенжай береді. Бұл <strong>IP-мекенжай</strong>. Шын өмірде де мекенжайлар бар: мысалы, лекция өтетін Memorial Hall ғимараты: 45 Quincy Street, Cambridge, Massachusetts 02138, USA. Ол хатты әлемнің кез келген жерінен осы жерге жеткізуге мүмкіндік береді. IP-мекенжай да сан, бірақ әдетте нүктелі ондық жазумен жазылады:</p>
+<pre data-lang="text"><code class="language-plaintext">#.#.#.#</code></pre>
+      <p>Әр <code>#</code> — 0-ден 255-ке дейінгі сан. 256 мүмкіндік = 2<sup>8</sup>, яғни әр сан 8 бит. Төрт сан болғандықтан, IP-мекенжай <strong>32 бит</strong>. Бұл 2<sup>32</sup>, шамамен <strong>4 миллиард</strong> құрылғы. Көп сияқты, бірақ адамдар да көп, ал әрқайсымызда телефон, ноутбук, «ақылды үй» құрылғылары бар. Сондықтан әлем біртіндеп <strong>IPv4</strong>-тен <strong>IPv6</strong>-ке көшіп жатыр. Ол 128 бит қолданады, бұл болашаққа жетерліктей. (Әділін айтсақ, бұл көшу туралы 20–30 жыл бойы айтылып келеді.) Қарапайым болу үшін біз IPv4-ті қолданамыз.</p>
+      <p>Ресми спецификацияда <strong>IP датаграммасы</strong>, яғни пакет, биттер торы ретінде сызылған: әр жолда 32 бит. Бізге екі өріс маңызды: <strong>жіберушінің мекенжайы</strong> (<span class="term-en">source address</span>) және <strong>алушының мекенжайы</strong> (<span class="term-en">destination address</span>). Мысалы, Брайанның IP-мекенжайы <code>1.2.3.4</code> болса, Филлис оны конверттің ортасына жазады. Брайан жауап бере алуы үшін өз мекенжайын, мысалы <code>5.6.7.8</code>-ді, конверттің жоғарғы сол жақ бұрышына жазады. Түптеп келгенде, бұның бәрі белгілі бір ретпен жіберілетін биттер ғана.</p>
+
+      <h3 id="tcp">TCP</h3>
+      <p>Бір сервер көп нәрсе істей алады: электрондық пошта, чат, бейнеконференция, ойын сервері және т.б. <strong>Сервер</strong> — басқаларға ақпарат беретін компьютер. Ал біздің ноутбуктеріміз — <strong>клиенттер</strong>, олар тек бізге қызмет етеді. Түптеп келгенде, екеуі де жай компьютер.</p>
+      <p><strong>TCP</strong> (<span class="term-en">Transmission Control Protocol</span>) серверге қай <em>қызметке</em> келген пакет екенін ажыратуға мүмкіндік береді. Ол үшін конвертке IP-мекенжайдан бөлек <strong>порт нөмірі</strong> (<span class="term-en">port</span>) жазылады. Порттар стандартталған:</p>
+      <table>
+        <tr><th>Порт</th><th>Қызмет</th></tr>
+        <tr><td><code>80</code></td><td>HTTP — веб-беттер</td></tr>
+        <tr><td><code>443</code></td><td>HTTPS — қауіпсіз (шифрланған) веб-беттер</td></tr>
+      </table>
+      <p>Бұл сандарды бірнеше жыл бұрын бір бөлмеде отырған адамдар таңдаған, басқа мағынасы жоқ. Филлис қауіпсіз веб-беттің қызметін сұраса, конвертке <code>1.2.3.4:443</code> сияқты жазады. Брайан конвертті ашқанда, бұл хат не чат емес, веб-бет сұрауы екенін біледі. Филлис өз мекенжайының қасына да порт нөмірін жазады. Сондықтан оның компьютерінде бірнеше бет, Zoom, чат ашық болса да, келген пакеттер қай бағдарламаға тиесілі екені белгілі.</p>
+      <p>TCP тақырыбында 16 биттік порт нөмірлері (он мыңдаған мүмкіндік) және 32 биттік <strong>реттік нөмір</strong> (<span class="term-en">sequence number</span>) бар. Ол не үшін керек? Бір адам үлкен файл жүктеп жатқанда, интернеттің қалғаны тоқтап қалмауы керек. Мысалы, үлкен JPEG мысық суретін төрт бөлікке бөліп, төрт конвертке салайық. Әр конвертке «4-тен 1», «4-тен 2», ... деп жазамыз. Алушы барлық бөлікті алғанын тексереді. Бірі жетпесе, «маған 3-бөлік жетпеді, қайта жіберші» дейді. Сонымен:</p>
+      <ul>
+        <li><strong>IP</strong> компьютерлерді бірегей анықтайды;</li>
+        <li><strong>TCP</strong> жеткізуге кепілдік береді және бір құрылғыдағы бірнеше қызметті ажыратады (<span class="term-en">multiplexing</span>).</li>
+      </ul>
+
+      <h2 id="dns">DNS</h2>
+      <p>Браузерге IP-мекенжай теру ыңғайсыз болар еді. Біз <code>google.com</code>, <code>harvard.edu</code> сияқты <strong>домен атауларын</strong> жазамыз. Оларды IP-мекенжайға <strong>DNS</strong> (<span class="term-en">Domain Name System</span>) аударады. DNS серверлері үйде, кампуста, компанияда — барлық жерде бар. Ішінде екі бағанды кесте сияқты нәрсе: домен атаулары және сәйкес IP-мекенжайлар. Құрылғыңыз алғаш қосылғанда ешбір IP-ді білмейді (Apple не Google миллиардтаған мекенжайды алдын ала орнатпайды), сондықтан жергілікті желіден сұрайды да, жауапты конвертке жазады.</p>
+      <p>Техникалық тұрғыдан бұлар <strong>толық анықталған домен атаулары</strong> (<span class="term-en">fully qualified domain names</span>). Өз доменіңізді <strong>тіркеушіден</strong> (<span class="term-en">registrar</span>) жалға аласыз, бір, үш не бес жылға. Бағасы жылына бір доллардан мыңдаған долларға дейін болуы мүмкін. Сосын бір DNS серверіне сіздің сайтыңыздың IP-мекенжайын көрсетесіз.</p>
+      <p>DNS <strong>иерархиялық</strong> әрі <strong>рекурсивті</strong>: компьютеріңіз алдымен үйдегі маршрутизатордағы не кампустағы DNS серверінен сұрайды. Ол білмесе, сұрақ жоғары көтеріліп, ақырында барлық <code>.com</code>, <code>.edu</code> және т.б. серверлерін білетін <strong>түбір серверлерге</strong> (<span class="term-en">root servers</span>) жетеді. Жауап жол бойындағы серверлерде <strong>кэштеледі</strong>, яғни есте сақталады.</p>
+
+      <h2 id="dhcp">DHCP</h2>
+      <p>Менің IP-мекенжайым қандай болуы керек? DNS серверінің, маршрутизатордың мекенжайы қандай? Бұрын адамдар оларды қолмен теретін. Қазір <strong>DHCP</strong> (<span class="term-en">Dynamic Host Configuration Protocol</span>) сервері бар. Құрылғыңыз қосылғанда желіге «Сәлем, әлем, менің IP-мекенжайым қандай?» деп хабар таратады. DHCP сервері құрылғыңыздың IP-мекенжайын, маршрутизатор мен DNS серверлерінің мекенжайларын айтады. Сондықтан Wi-Fi-ға қосылсаңыз, бәрі бірден жұмыс істейді.</p>
+
+      <h2 id="http">HTTP</h2>
+      <p>Енді конверттің <em>ішіне</em> қарайық. <strong>HTTP</strong> (<span class="term-en">Hypertext Transfer Protocol</span>) — веб-беттерді сұрау және алу хаттамасы. Ол конверттің ішіне не жазылатынын стандарттайды. Электрондық поштаның, Zoom-ның, Discord-тың өз хаттамалары бар. <strong>HTTPS</strong> — оның қауіпсіз нұсқасы.</p>
+
+      <h3 id="url">URL құрылымы</h3>
+<pre data-lang="text"><code class="language-plaintext">https://www.example.com/</code></pre>
+      <ul>
+        <li><code>/</code> — сайттың <strong>түбірі</strong> (<span class="term-en">root</span>), яғни әдепкі бет. Шын мәнінде сіз файл аласыз, әдетте <code>index.html</code>. Бірақ оны теріп отырмас үшін сервер түбірді өзі қайтарады.</li>
+        <li>Домен атауынан кейін <strong>жол</strong> (<span class="term-en">path</span>) болуы мүмкін: <code>/file.html</code>, <code>/folder/</code>, <code>/folder/file.html</code>.</li>
+        <li><code>example.com</code> — домен атауы, ал <code>.com</code> (commercial) — <strong>жоғарғы деңгейлі домен</strong> (<span class="term-en">top-level domain, TLD</span>). Бұрын олар аз еді: <code>.gov</code>, <code>.com</code>, <code>.net</code>, <code>.org</code>, <code>.edu</code>. Қазір жүздеген, тіпті мыңдаған. Кейбірі — елдердің екі әріпті кодтары. Мысалы, CS50 көп қолданатын <code>.io</code> бір елге тиесілі, ал <code>.tv</code> те солай. (Қазақстанның коды — <code>.kz</code>.)</li>
+        <li><code>www</code> — <strong>хост атауы</strong> (<span class="term-en">hostname</span>), сұралып отырған сервердің аты. Ол жүздеген, мыңдаған серверден тұратын кластерді білдіруі мүмкін.</li>
+        <li><code>https://</code> — <strong>схема</strong> (<span class="term-en">scheme</span>), яғни қолданылатын хаттама.</li>
+      </ul>
+
+      <h3 id="requests">Сұрау және жауап</h3>
+      <p>HTTP бірнеше «етістікті» қолдайды: <code>GET</code>, <code>POST</code> және т.б. Филлис Брайаннан (енді ол <code>www.harvard.edu</code>) бетті алғысы келсе, конвертке мынадай мәтін салады. Бұл код емес: функция, цикл, айнымалы жоқ. Бұл жай келісілген хабар:</p>
+<pre data-lang="text"><code class="language-plaintext">GET / HTTP/2
+Host: www.harvard.edu
+...</code></pre>
+      <p><code>GET /</code> — түбір бетті бер. <code>HTTP/2</code> — хаттама нұсқасы. <code>Host</code> — бір физикалық серверде бірнеше домен болуы мүмкін болғандықтан, нақты қай сайт керек екені. Бәрі дұрыс болса, Брайан былай жауап береді:</p>
+<pre data-lang="text"><code class="language-plaintext">HTTP/2 200
+Content-Type: text/html
+...</code></pre>
+      <p><code>200</code> — <strong>күй коды</strong> (<span class="term-en">status code</span>), «бәрі жақсы» дегенді білдіреді. <code>Content-Type</code> — конверттің ішіндегі мазмұнның түрі: HTML, JPEG, GIF және т.б.</p>
+      <p>Мұны өзіміз көре аламыз. <code>curl</code> (connect URL) — «бассыз» браузер. Ол серверге сұрау жіберіп, жауапты көрсетеді. <code>-I</code> тек тақырыптарды (<span class="term-en">headers</span>) шығарады:</p>
+<pre class="terminal"><code class="language-plaintext">$ curl -I https://www.harvard.edu/
+HTTP/2 200
+date: ...
+content-type: text/html; charset=UTF-8
+...</code></pre>
+      <p>Енді қауіпсіз емес <code>http://</code> нұсқасын сұрайық:</p>
+<pre class="terminal"><code class="language-plaintext">$ curl -I http://www.harvard.edu/
+HTTP/1.1 301 Moved Permanently
+Location: https://www.harvard.edu/
+...</code></pre>
+      <p><code>301</code> — «біржола көшірілді». Бұл серверге «мұнда ештеңе жоқ, мына жаққа бар» деген айналма жол белгісін қойғанмен бірдей. Браузер сізді автоматты түрде <code>Location</code>-дағы қауіпсіз нұсқаға <strong>бағыттайды</strong> (<span class="term-en">redirect</span>). Ал жоқ бетті сұрасақ:</p>
+<pre class="terminal"><code class="language-plaintext">$ curl -I https://www.harvard.edu/cats
+HTTP/2 404
+...</code></pre>
+      <table>
+        <tr><th>Код</th><th>Мағынасы</th></tr>
+        <tr><td><code>200</code></td><td>OK, бәрі жақсы</td></tr>
+        <tr><td><code>301</code></td><td>Moved Permanently, біржола көшірілді</td></tr>
+        <tr><td><code>302</code></td><td>Found, уақытша басқа жерде</td></tr>
+        <tr><td><code>304</code></td><td>Not Modified, өзгерген жоқ (кэштегіні қолдан)</td></tr>
+        <tr><td><code>400</code></td><td>Bad Request, қате сұрау</td></tr>
+        <tr><td><code>401</code></td><td>Unauthorized, кіру керек</td></tr>
+        <tr><td><code>403</code></td><td>Forbidden, тыйым салынған</td></tr>
+        <tr><td><code>404</code></td><td>Not Found, табылмады</td></tr>
+        <tr><td><code>418</code></td><td>I'm a Teapot, «мен шәйнекпін» (1 сәуірдегі әзіл)</td></tr>
+        <tr><td><code>500</code></td><td>Internal Server Error, сервердің ішкі қатесі</td></tr>
+        <tr><td><code>503</code></td><td>Service Unavailable, қызмет қолжетімсіз</td></tr>
+      </table>
+      <p>300-дер «басқа жерге бар», 400-дер «пайдаланушы (не оның коды) бір нәрсені қате істеді», ал 500-дер «серверде ақау бар» дегенді білдіреді. <code>418</code> шын нәрсе емес: бірнеше жыл бұрын адамдар әзіл ретінде сервердің «мен шәйнекпін» деп жауап беруінің толық спецификациясын жазып шыққан.</p>
+      <div class="callout note">
+        <span class="callout-title">Гарвард пен Йель бәсекесі</span>
+        <code>curl -I http://safetyschool.org/</code> командасы <code>301 Moved Permanently</code> мен <code>Location: https://www.yale.edu/</code> қайтарады. («Safety school» — «кепілді түсетін, резервтегі университет».) Шамасы, бір Гарвард түлегі 20 жылдай осы домен үшін ақша төлеп келеді. Бұл әзіл HTTP-ді түсінуге негізделген.
+      </div>
+
+      <h3 id="devtools">Әзірлеуші құралдары</h3>
+      <p>Кез келген заманауи браузерде <strong>әзірлеуші құралдары</strong> (<span class="term-en">developer tools</span>) бар. Chrome-да бетті тышқанның оң жағымен басып, <em>Inspect</em> таңдаңыз. (Дэвид әр нәрсені алғаш рет жасағандай болуы үшін cookie мен тарихты сақтамайтын Incognito режимін қолданды.)</p>
+      <ul>
+        <li><strong>Network</strong> қойындысы браузердің серверге жіберген барлық сұрауын көрсетеді. <em>Preserve log</em> және <em>Disable cache</em> белгілеңіз. <code>safetyschool.org</code>-ге кіру 61 HTTP сұрауды тудырды! Бірінші жолда сол <code>301</code>, ал <code>harvard.edu/cats</code> үшін <code>404</code> көрінеді.</li>
+        <li><strong>Elements</strong> қойындысы беттің HTML кодын көрсетеді. Мысалы, <code>stanford.edu</code>-дағы «Stanford» сөзін тышқанның оң жағымен басып, <em>Inspect</em> таңдасаңыз, сол сөзді жасаған код жолына бірден барасыз.</li>
+      </ul>
+      <p>Маңызды айырмашылық: Scratch-та не C-да кодыңыз пайдаланушыға берілмейтін. Ал вебте сервердегі кодтың <strong>көшірмесі</strong> браузерге жіберіледі, оны <em>клиент</em> жоғарыдан төменге, солдан оңға оқып, көрсетеді. Сондықтан «Stanford» сөзін «Harvard» деп өзгертуге болады. Стэнфорд сайтын «бұзғандай» көрінеді, бірақ тек <em>өз көшірмеңізді</em> өзгерттіңіз: бетті қайта жүктесеңіз, бәрі қалпына келеді. Бұл басқа сайттардың қалай жасалғанын үйренудің тамаша тәсілі.</p>
+
+      <h2 id="html">HTML</h2>
+      <p><strong>HTML</strong> (<span class="term-en">HyperText Markup Language</span>) — бағдарламалау тілі емес, <strong>белгілеу тілі</strong>. Онда цикл, шарт, айнымалы жоқ, тек браузерге не көрсету керегін айтатын құрылыс блоктары бар. Екі негізгі термин бар: <strong>тегтер</strong> (<span class="term-en">tags</span>) және <strong>атрибуттар</strong> (<span class="term-en">attributes</span>). Ең қарапайым бет:</p>
+<pre data-lang="html"><code class="language-xml">&lt;!DOCTYPE html&gt;
+
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;
+            hello, title
+        &lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        hello, body
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>HTML-дің соңғы нұсқасы (5) бойынша жазылған кез келген бет <code>&lt;!DOCTYPE html&gt;</code> жолынан басталады. Мұны жаттап аласыз не көшіресіз. Леп белгісі басқа жерде, HTML түсініктемелерінен (<code>&lt;!-- ... --&gt;</code>) басқа, кездеспейді.</p>
+      <ul>
+        <li><strong>Элемент</strong> ашылатын тег пен жабылатын тегтен тұрады: <code>&lt;html&gt;</code> ... <code>&lt;/html&gt;</code>. «Браузер, мынау менің HTML-ім. Браузер, HTML-ім бітті».</li>
+        <li><code>lang="en"</code> — <strong>атрибут</strong>: элементтің әдепкі мінезін өзгертеді. <code>lang</code> — кілт, <code>"en"</code> — мәні (ағылшын тілі; қазақша үшін <code>"kk"</code>). Тағы да кілт-мән жұптары! Мән тырнақшаға алынады: қос не дара, бірақ бірізді болсын.</li>
+        <li><code>head</code> — беттің басы, <code>title</code> — браузер қойындысындағы атау. <code>body</code> — беттің денесі, экранның 95%-ы.</li>
+        <li>Шегініс міндетті емес: браузерлер артық бос орындарды елемейді. Бірақ адамдар оқуы үшін әдемі жазамыз.</li>
+      </ul>
+
+      <h3 id="http-server">http-server</h3>
+      <p>HTML файлын компиляцияламаймыз, оны браузер ашады. Mac-та сақтап, браузерде ашуға болады, бірақ оны тек сіз көресіз. Сондықтан файлдарды HTTP арқылы таратамыз. <code>cs50.dev</code>-те <code>http-server</code> командасы бар:</p>
+<pre class="terminal"><code class="language-plaintext">$ http-server</code></pre>
+      <p>Жасыл <em>Open in Browser</em> батырмасы шығады. Бірақ бір мәселе бар: <code>cs50.dev</code> (GitHub Codespaces) өзі веб-қосымша, ол 80 және 443 порттарын алып қойған. Сондықтан <code>http-server</code> әзірлеушілер жиі қолданатын <strong>8080</strong> портын пайдаланады (80 екі рет, жай келісім). Терминалдағы <em>Ports</em> қойындысында TCP порттың шын көрінісін көресіз. Беттің мекенжайындағы «fluffy-meme» сияқты кездейсоқ сөздерді GitHub бірегейлік үшін жасайды.</p>
+
+      <h3 id="dom">DOM: жадтағы ағаш</h3>
+      <p>Браузер HTML-ді оқып отырып, жадта <strong>ағаш</strong> құрады (5-аптадағы ағаштар есіңізде ме?). Түбірінде құжат (<code>document</code>), оның баласы — <code>html</code>, оның балалары — <code>head</code> пен <code>body</code>. <code>head</code> ішінде <code>title</code> және «hello, title» мәтіні, <code>body</code> ішінде «hello, body» мәтіні. Браузер өз тілінде (malloc немесе соған ұқсас нәрсемен) түйін артынан түйін бөліп, осы құрылымды толтырады.</p>
+
+      <h3 id="paragraphs">Абзацтар мен тақырыптар</h3>
+      <p>Дэвид үйректен информатика туралы үш абзац жазып беруді сұрады да, оларды <code>paragraphs.html</code>-ге қойды. Бірақ браузерде бір үлкен мәтін болып шықты: бос орындар еленбейді! Браузерге «мұнда абзац» деп нақты айту керек. Ол үшін <code>p</code> тегі бар:</p>
+<pre data-lang="html"><code class="language-xml">&lt;body&gt;
+    &lt;p&gt;
+        Бірінші абзац...
+    &lt;/p&gt;
+    &lt;p&gt;
+        Екінші абзац...
+    &lt;/p&gt;
+&lt;/body&gt;</code></pre>
+      <p>Өзгерісті көру үшін бетті <strong>қайта жүктеу</strong> керек: браузер бұрын жүктелген көшірмені көрсетіп тұр. <code>h1</code>, <code>h2</code>, ..., <code>h6</code> тегтері тақырыптар жасайды: ең үлкен әрі қалыңнан кішірек әрі қалыңға дейін. Олар мағыналық иерархияны да білдіреді: <code>h1</code> — беттегі ең маңызды нәрсе.</p>
+
+      <h3 id="lists">Тізімдер</h3>
+      <p><code>foo</code>, <code>bar</code>, <code>baz</code> (информатиктердің x, y, z-і) сөздерін жай жазсақ, бір жолға шығады. Таңбалы тізім үшін <code>ul</code> (unordered list), ал оның элементтері үшін <code>li</code> (list item):</p>
+<pre data-lang="html"><code class="language-xml">&lt;ul&gt;
+    &lt;li&gt;foo&lt;/li&gt;
+    &lt;li&gt;bar&lt;/li&gt;
+    &lt;li&gt;baz&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+      <p>Нөмірленген тізім керек болса, сандарды қолмен жазбаңыз (ортасына элемент қоссаңыз, бәрін қайта нөмірлеуге тура келеді). <code>ul</code>-ді <code>ol</code>-ге (ordered list) өзгертсеңіз, браузер өзі санайды. Google Docs-тағы тізімдер де ішінде дәл осы тегтерді қолданады.</p>
+
+      <h3 id="tables">Кестелер</h3>
+<pre data-lang="html"><code class="language-xml">&lt;table&gt;
+    &lt;tr&gt;
+        &lt;td&gt;1&lt;/td&gt;
+        &lt;td&gt;2&lt;/td&gt;
+        &lt;td&gt;3&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;4&lt;/td&gt;
+        &lt;td&gt;5&lt;/td&gt;
+        &lt;td&gt;6&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;7&lt;/td&gt;
+        &lt;td&gt;8&lt;/td&gt;
+        &lt;td&gt;9&lt;/td&gt;
+    &lt;/tr&gt;
+    &lt;tr&gt;
+        &lt;td&gt;*&lt;/td&gt;
+        &lt;td&gt;0&lt;/td&gt;
+        &lt;td&gt;#&lt;/td&gt;
+    &lt;/tr&gt;
+&lt;/table&gt;</code></pre>
+      <p><code>tr</code> — кесте жолы (table row), <code>td</code> — кесте ұяшығы (table data). Нәтижесі — телефонның сандық пернетақтасы! Күрделірек кестелерде <code>thead</code> (тақырып бөлігі), <code>tbody</code> (дене) және <code>th</code> (бағанның тақырыбы) бар. Дэвид 7-аптадағы Google Forms деректерін (Timestamp, language, problem) <code>favorites0.html</code> деген HTML кестесіне айналдырып көрсетті.</p>
+
+      <h3 id="images">Суреттер мен бейнелер</h3>
+<pre data-lang="html"><code class="language-xml">&lt;img alt="Harvard University" src="bridge.png"&gt;</code></pre>
+      <ul>
+        <li><code>src</code> (source) — сурет файлы.</li>
+        <li><code>alt</code> — <strong>балама мәтін</strong>. Оны көру қабілеті нашар адамдарға арналған экран оқу бағдарламалары оқиды. Сурет баяу жүктелсе не жоқ болса да көрсетіледі.</li>
+        <li><code>img</code>-нің жабылатын тегі жоқ! Ол <strong>бос элемент</strong> (<span class="term-en">empty element</span>): суреттің «басталып, аяқталуының» мағынасы жоқ, ол не бар, не жоқ.</li>
+      </ul>
+<pre data-lang="html"><code class="language-xml">&lt;video controls muted&gt;
+    &lt;source src="video.mp4" type="video/mp4"&gt;
+&lt;/video&gt;</code></pre>
+      <p><code>video</code> ішінде бірнеше <code>source</code> болуы мүмкін (түрлі сапа не формат үшін). Бір қызығы: тегтің аты қысқартылмаған <code>source</code>, ал атрибуты қысқартылған <code>src</code>. <code>controls</code> ойнату/кідірту басқару элементтерін қосады, <code>muted</code> дыбысты әдепкіде өшіреді. Бұл атрибуттардың мәні жоқ: олардың бар болуының өзі жеткілікті.</p>
+
+      <h3 id="links">Сілтемелер</h3>
+      <p>HTML-дегі «H» — <strong>гипермәтін</strong>, яғни бір беттен екіншісіне сілтеме. <code>Visit harvard.edu</code>, тіпті <code>https://www.harvard.edu/</code> деп жазсаңыз да, сілтеме болмайды. Әлеуметтік желілер мен Google Docs URL-ді автоматты түрде сілтемеге айналдырады, бірақ бұл — біреу Python не JavaScript-те жазған, үлгілерді іздейтін код. HTML-де нақты айту керек:</p>
+<pre data-lang="html"><code class="language-xml">Visit &lt;a href="https://www.harvard.edu/"&gt;Harvard&lt;/a&gt;.</code></pre>
+      <p><code>a</code> — anchor (зәкір), <code>href</code> — hyper-reference, қайда апаратыны. Ашылатын және жабылатын тег арасындағы мәтін — пайдаланушы көретін нәрсе.</p>
+      <div class="callout warn">
+        <span class="callout-title">Фишинг</span>
+        Мәтін бір нәрсені көрсетіп, <code>href</code> басқа жаққа апаруы мүмкін: <code>&lt;a href="https://www.yale.edu/"&gt;https://www.harvard.edu/&lt;/a&gt;</code>. Бұл күлкілі әзіл сияқты, бірақ PayPal не банк сайттарының көшірмесіне апарса, пайдаланушы атын, құпиясөзді, карта нөмірін ұрлау оңай. Бұл <strong>фишинг</strong> (<span class="term-en">phishing</span>) шабуылдары. Сілтеменің шын мекенжайын браузердің төменгі сол жақ бұрышынан көруге болады.
+      </div>
+
+      <h3 id="forms">URL параметрлері және формалар</h3>
+      <p>URL-дің жолынан кейін <code>?</code> және кілт-мән жұптары болуы мүмкін. Бірнеше жұп болса, <code>&amp;</code>-пен бөлінеді:</p>
+<pre data-lang="text"><code class="language-plaintext">https://www.example.com/path?key=value&amp;key=value</code></pre>
+      <p>Бұлар <strong>HTTP параметрлері</strong>, серверге кіріс берудің бір тәсілі. Google-да «cats» деп іздесеңіз, URL ұзын болады (бақылау, жарнама үшін), бірақ оның мәні мынау: <code>https://www.google.com/search?q=cats</code>. <code>/search</code> — Google серверіндегі бағдарлама, <code>q</code> (query, сұрау) — параметр. <code>q=dogs</code> деп өзіңіз жазсаңыз, иттер туралы нәтиже шығады. Бұл — <code>GET</code> етістігі.</p>
+      <p>Google-дың <strong>бэкенді</strong> (деректерді беретін бөлігі) қалай жұмыс істейтінін білсек, өз <strong>фронтендімізді</strong> (пайдаланушы көретін бөлікті) жасай аламыз:</p>
+<pre data-lang="html"><code class="language-xml">&lt;form action="https://www.google.com/search" method="get"&gt;
+    &lt;input autocomplete="off" autofocus name="q" placeholder="Query" type="search"&gt;
+    &lt;input type="submit" value="Google Search"&gt;
+&lt;/form&gt;</code></pre>
+      <ul>
+        <li><code>action</code> — форма қайда жіберіледі. Онсыз форма өзі тұрған бетке жіберіледі (<code>search.html?q=cats</code>), ал бізде мысықтар туралы ештеңе жоқ.</li>
+        <li><code>method="get"</code> — әдепкі мән, бірақ анық жазған дұрыс. Атрибутта кіші әріппен, ал конверттің ішінде <code>GET</code> болады.</li>
+        <li><code>name="q"</code> — Google күтетін параметр аты.</li>
+        <li><code>type="search"</code> өрісті тазалайтын кішкене × белгісін қосады, <code>value</code> батырманың жазуын өзгертеді.</li>
+        <li><code>autocomplete="off"</code> браузердің бұрын енгізгенді ұсынуын өшіреді, <code>autofocus</code> курсорды бірден өріске қояды, <code>placeholder</code> сұр түсті көмекші мәтін көрсетеді.</li>
+      </ul>
+      <p>«Іздеу» батырмасын бассаңыз, Google нәтижелері ашылады. Өз Google-ымызды жасадық, бірақ қиын бөлігін емес!</p>
+
+      <h3 id="regex">Тұрақты өрнектер және енгізуді тексеру</h3>
+      <p><strong>Тұрақты өрнектер</strong> (<span class="term-en">regular expressions, regex</span>) — үлгілерді сипаттау тәсілі. Олар HTML-де, Python-да және басқа тілдерде бар.</p>
+      <table>
+        <tr><th>Белгі</th><th>Мағынасы</th></tr>
+        <tr><td><code>.</code></td><td>кез келген таңба (нүкте емес!)</td></tr>
+        <tr><td><code>*</code></td><td>0 не одан көп рет</td></tr>
+        <tr><td><code>+</code></td><td>1 не одан көп рет</td></tr>
+        <tr><td><code>?</code></td><td>0 не 1 рет</td></tr>
+        <tr><td><code>{n}</code></td><td>дәл n рет</td></tr>
+        <tr><td><code>{n,m}</code></td><td>n-нен m-ге дейін рет</td></tr>
+        <tr><td><code>[0123456789]</code></td><td>осы таңбалардың бірі</td></tr>
+        <tr><td><code>[0-9]</code></td><td>0-ден 9-ға дейінгі цифр</td></tr>
+        <tr><td><code>\d</code></td><td>кез келген цифр</td></tr>
+        <tr><td><code>\D</code></td><td>цифр емес кез келген таңба</td></tr>
+      </table>
+<pre data-lang="html"><code class="language-xml">&lt;form&gt;
+    &lt;input autocomplete="off" autofocus name="email" pattern=".+@.+\.edu" placeholder="Email" type="text"&gt;
+    &lt;button&gt;Register&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+      <p><code>.+@.+\.edu</code>: бір не одан көп кез келген таңба (пайдаланушы аты), <code>@</code>, тағы бір не одан көп таңба, сосын нақты нүкте (<code>\.</code> — 2-аптадағы сияқты, арнайы таңбаны экрандау) және <code>edu</code>. «malan» деп жазсаңыз, браузер «Please match the requested format» дейді. <code>malan@harvard.edu</code> болса, келіседі. <code>button</code> элементі де форманы жібереді.</p>
+      <p>Оңайырақ тәсіл бар: <code>type="email"</code> үлгіні өзі тексереді. Бірақ электрондық пошта мекенжайларын дұрыс тексеру өте күрделі: кейбір браузерлер қолданатын тұрақты өрнек өте ұзын әрі қорқынышты.</p>
+      <div class="callout warn">
+        <span class="callout-title">Пайдаланушы енгізгеніне ешқашан сенбеңіз</span>
+        HTML пайдаланушының компьютеріне жүктеліп, сонда орындалады. Әзірлеуші құралдарымен <code>type="email"</code>-ді <code>type="text"</code>-ке өзгерту оңай, сонда тексеру жоғалады. Бір адам дерекқорды, екіншісі HTML-ді жазып, біріншісі «HTML-де <code>pattern</code> бар, экрандау керек емес» десе, бұл қате. 7-аптадағы SQL инъекциясы сияқты, бұл да шабуыл векторы. Келесі аптада қорғанысты <strong>серверде</strong> жасауды үйренеміз.
+      </div>
+      <p>HTML-ді тексеру үшін <a href="https://validator.w3.org/" target="_blank" rel="noopener">validator.w3.org</a> құралы бар. Бұл HTML-ді стандарттайтын ұйымның сайты. Кодыңызды <em>Validate by Direct Input</em> бөліміне қойып, ашылған тегтердің жабылғанын, тырнақшалар мен жақшалардың орнында екенін тексеріңіз.</p>
+
+      <h2 id="css">CSS</h2>
+      <p><strong>CSS</strong> (<span class="term-en">Cascading Style Sheets</span>) да бағдарламалау тілі емес (бірақ оған барған сайын көбірек мүмкіндік қосылып жатыр). HTML — беттің <em>қаңқасы</em>, құрылымы. CSS — оның <em>терісі</em>, эстетикасы: орналасу, түстер, қаріп өлшемдері. CSS-те де бәрі кілт-мән жұптары, бірақ оларды <strong>қасиеттер</strong> (<span class="term-en">properties</span>) деп атайды. Неге тағы басқа сөз? Себебі бұл тілді басқа бөлмеде басқа адамдар ойлап тапқан.</p>
+      <p>Джон Гарвардтың қарапайым үй беті:</p>
+<pre data-lang="html"><code class="language-xml">&lt;!DOCTYPE html&gt;
+
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;home&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;p style="font-size: large; text-align: center;"&gt;
+            John Harvard
+        &lt;/p&gt;
+        &lt;p style="font-size: medium; text-align: center;"&gt;
+            Welcome to my home page!
+        &lt;/p&gt;
+        &lt;p style="font-size: small; text-align: center;"&gt;
+            Copyright (c) John Harvard
+        &lt;/p&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p><code>style</code> атрибутының ішіндегінің бәрі — CSS. Нүктелі үтірлер қайта оралды (соңғы қасиеттен кейін міндетті емес, бірақ бірізділік үшін қоямыз). Мәтін ортаға тураланды, үлкен, орташа, кіші. Бірақ не жаман? <code>text-align: center</code> үш рет қайталанады. Және бұлар шын мәнінде абзац емес.</p>
+      <p>Абзацтың орнына жалпы <code>div</code> (division, бөлім) тегін қолданайық: ол беттің тікбұрышты аймағы. (Абзацтар арасындағы бос орын жоғалады.) Ал қайталанудан арылу үшін CSS-тегі «C» — <strong>каскадтық</strong> қасиетті пайдаланамыз: ата-ана элементтің қасиеті балаларына «ағып» түседі. <code>text-align: center</code>-ді <code>body</code>-ге қойсақ, үш <code>div</code>-ке де әсер етеді.</p>
+
+      <h3 id="semantic">Мағыналық тегтер</h3>
+      <p><strong>Мағыналық веб</strong> (<span class="term-en">semantic web</span>) — HTML-ге іздеу жүйелері сияқты серверлер бет туралы көбірек түсінетін белгілер қосу. <code>div div div</code>-тің орнына:</p>
+<pre data-lang="html"><code class="language-xml">&lt;body style="text-align: center"&gt;
+    &lt;header style="font-size: large"&gt;
+        John Harvard
+    &lt;/header&gt;
+    &lt;main style="font-size: medium"&gt;
+        Welcome to my home page!
+    &lt;/main&gt;
+    &lt;footer style="font-size: small"&gt;
+        Copyright &amp;#169; John Harvard
+    &lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+      <p>Енді Google мен Bing «John Harvard» тақырыпта, яғни маңызды екенін, ал авторлық құқық төменгі колонтитулда, онша маңызды емес екенін біледі. <code>&amp;#169;</code> — <strong>HTML нысаны</strong> (<span class="term-en">HTML entity</span>), © белгісі. <code>(c)</code>-дан әдемірек.</p>
+
+      <h3 id="selectors">style тегі және селекторлар</h3>
+      <p>Деректер мен олардың көрінісі араласып жатыр. CSS-ті бір жерге жинайық. <code>head</code> ішіне <code>style</code> тегін қойып, <strong>селекторлар</strong> (<span class="term-en">selectors</span>) арқылы элементтерді таңдаймыз. Фигуралы жақшалар қайта оралды:</p>
+<pre data-lang="html"><code class="language-xml">&lt;style&gt;
+
+    body {
+        text-align: center;
+    }
+
+    header {
+        font-size: large;
+    }
+
+    main {
+        font-size: medium;
+    }
+
+    footer {
+        font-size: small;
+    }
+
+&lt;/style&gt;</code></pre>
+      <p>Бұл <strong>тип селекторлары</strong>: тегтің атымен таңдаймыз. Бірақ олар қайта қолдануға ыңғайсыз. Өз <strong>класымызды</strong> жасайық: атының алдына нүкте қоямыз.</p>
+<pre data-lang="html"><code class="language-xml">&lt;style&gt;
+
+    .centered {
+        text-align: center;
+    }
+
+    .large {
+        font-size: large;
+    }
+
+    .medium {
+        font-size: medium;
+    }
+
+    .small {
+        font-size: small;
+    }
+
+&lt;/style&gt;
+...
+&lt;body class="centered"&gt;
+    &lt;header class="large"&gt;
+        John Harvard
+    &lt;/header&gt;
+    &lt;main class="medium"&gt;
+        Welcome to my home page!
+    &lt;/main&gt;
+    &lt;footer class="small"&gt;
+        Copyright &amp;#169; John Harvard
+    &lt;/footer&gt;
+&lt;/body&gt;</code></pre>
+      <p>CSS класы — бір не бірнеше қасиеттің жиыны. Оны кез келген HTML тегіне қолдануға болады. Бұл функция емес, бірақ Scratch, C, Python-дағы модульдеуге ұқсас ой. Енді CSS-ті жеке <code>home.css</code> файлына көшірейік. <code>style</code> тегінің орнына:</p>
+<pre data-lang="html"><code class="language-xml">&lt;link href="home.css" rel="stylesheet"&gt;</code></pre>
+      <p>Бұл <code>link</code> гиперсілтемеге қатысы жоқ, жай басқа файлды қосады. <code>rel</code> — бұл файлдың бетке қатынасы: стильдер кестесі. Бұл тегтің де жабылатын тегі жоқ.</p>
+
+      <h3 id="bootstrap">Фреймворктар: Bootstrap</h3>
+      <p><strong>Фреймворк</strong> (<span class="term-en">framework</span>) — басқа біреу жазған кітапхана және оны қолданудың келісімдері. Ең танымал әрі жақсы құжатталғандарының бірі — <a href="https://getbootstrap.com/" target="_blank" rel="noopener">Bootstrap</a>, ашық кодты CSS кластары мен басқа мүмкіндіктер жиыны. Дэвид құжаттамадан бір жолды көшіріп алды:</p>
+<pre data-lang="html"><code class="language-xml">&lt;link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"&gt;
+...
+&lt;table class="table table-striped"&gt;</code></pre>
+      <p>jsDelivr — <strong>CDN</strong> (<span class="term-en">content delivery network</span>), басқаларға контент таратушы сервер. Кестеге екі класс қосылды, HTML өзгерген жоқ. Енді <code>favorites1.html</code> кестесі ақ-сұр жолақты, Gmail-дағы сияқты әдемі болды.</p>
+
+      <h3 id="pseudo">Сілтемелерді безендіру, псевдо-селекторлар, ID</h3>
+<pre data-lang="html"><code class="language-xml">&lt;style&gt;
+
+    #harvard {
+        color: #ff0000;
+    }
+
+    #yale {
+        color: #0000ff;
+    }
+
+    a {
+        text-decoration: none;
+    }
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+&lt;/style&gt;
+...
+Visit &lt;a href="https://www.harvard.edu/" id="harvard"&gt;Harvard&lt;/a&gt; or &lt;a href="https://www.yale.edu/" id="yale"&gt;Yale&lt;/a&gt;.</code></pre>
+      <ul>
+        <li><code>color: red</code> немесе он алтылық <code>#ff0000</code>: көп қызыл, жасыл жоқ, көк жоқ. 4-аптадағы RGB кодтары есіңізде ме?</li>
+        <li><code>text-decoration: none</code> асты сызуды алып тастайды.</li>
+        <li><code>a:hover</code> — <strong>псевдо-селектор</strong>: тышқанды сілтеменің үстіне апарғанда ғана асты сызылады.</li>
+        <li><code>id="harvard"</code> — элементтің бірегей идентификаторы (ар-ұжданға сеніп, беттегі басқа элементке бұл ID-ді бермейміз). CSS-те оны <code>#harvard</code> деп таңдаймыз. Атрибуттың мәнінде <code>#</code> жазылмайды.</li>
+      </ul>
+      <p>Әзірлеуші құралдарының <em>Elements</em> қойындысындағы <em>Styles</em> бөлімі таңдалған элементке қолданылатын барлық CSS-ті көрсетеді. Қасиеттерді белгілеп/алып тастап не мәндерін өзгертіп (мысалы, <code>#00ff00</code>, жасыл), тез тәжірибе жасауға болады. Бірақ бұл тек сіздің көшірмеңізде.</p>
+      <p>HTML мен CSS бойынша үйрететініміз осы. Қалғаны бәрі сол үлгілермен жүреді: басқа кластар, атрибуттар, тег аттары. Оларды тәжірибе, анықтамалықтар мен құжаттама арқылы үйренесіз.</p>
+
+      <h2 id="javascript">JavaScript</h2>
+      <p><strong>JavaScript</strong> — шын бағдарламалау тілі. Интерактивті сайттардың бәрі дерлік оны қолданады. Ол көбіне <strong>клиент жағында</strong> орындалады: адамдар кодты серверге жазады, бірақ браузеріңіз оны жүктеп, Mac, PC не телефоныңызда іске қосады. (Қазір JavaScript серверде де танымал.) Оның ең күшті мүмкіндігі — жадтағы ағашты нақты уақытта <strong>өзгерту</strong>.</p>
+      <p>Мысалы, электрондық пошта жәшігі — кесте, жол артынан жол. Бұрын жаңа хат бар-жоғын білу үшін бүкіл бетті қайта жүктейтінбіз. JavaScript-пен деректерді бір рет жүктеп, сосын, мысалы, әр 30 секунд сайын жаңа хаттарды сұрап, ағашқа жаңа <code>tr</code> түйінін қосуға болады. Бұл ағаш <strong>DOM</strong> (<span class="term-en">Document Object Model</span>) деп аталады.</p>
+
+      <h3 id="js-syntax">Синтаксис</h3>
+      <table>
+        <tr><th>Scratch</th><th>JavaScript</th></tr>
+        <tr><td>шарттар</td><td><code>if (x &lt; y) { ... } else if (x &gt; y) { ... } else { ... }</code> — C-дағыдай, Python-дағы <code>elif</code> емес</td></tr>
+        <tr><td>counter-ді 0-ге теңестіру</td><td><code>let counter = 0;</code> — типті айтпаймыз, «counter болсын» деп сыпайы сұраймыз</td></tr>
+        <tr><td>counter-ді 1-ге өзгерту</td><td><code>counter = counter + 1;</code>, <code>counter += 1;</code> не <code>counter++;</code> (C-дағыдай, Python-да жоқ)</td></tr>
+        <tr><td>3 рет қайтала</td><td><code>for (let i = 0; i &lt; 3; i++) { ... }</code></td></tr>
+        <tr><td>мәңгі</td><td><code>while (true) { ... }</code></td></tr>
+      </table>
+      <p>Шегініс маңызды емес (Python-нан айырмашылығы), бірақ стиль үшін керек. Нүктелі үтірлер оралды. Браузерлер олардың қай жерде маңызды екенін өздері біледі, бірақ біз әрқашан қоямыз деп есептейік.</p>
+      <p>JavaScript-ті бетке <code>script</code> тегімен қосамыз: <code>style</code> сияқты <code>head</code> ішінде, жеке файлда, не <code>body</code>-дің соңында. <code>head</code>-та жазсаңыз, код әлі жоқ элементтерді өзгертуге тырысуы мүмкін: бет төменде анықталады. Бұл бір түрлі жарыс жағдайы. Сондықтан <code>script</code>-ті жиі <code>body</code> жабылар алдында қояды. (Бұл Python-дағы <code>def</code> мәселесіне не C-дағы прототиптер мәселесіне ұқсас.)</p>
+
+      <h3 id="js-hello">hello.html: аты бойынша сәлемдесу</h3>
+<pre data-lang="html"><code class="language-xml">&lt;!DOCTYPE html&gt;
+
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;script&gt;
+
+            function greet()
+            {
+                let name = document.querySelector('#name').value;
+                alert('hello, ' + name);
+            }
+
+        &lt;/script&gt;
+        &lt;title&gt;hello&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form onsubmit="greet(); return false;"&gt;
+            &lt;input autocomplete="off" autofocus id="name" placeholder="Name" type="text"&gt;
+            &lt;input type="submit"&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <ul>
+        <li><code>onsubmit</code> атрибуты: форма жіберілгенде <code>greet</code> функциясын шақыр.</li>
+        <li><code>function greet()</code> — JavaScript-те функция осылай анықталады.</li>
+        <li><code>document</code> — бүкіл веб-бетті білдіретін глобалды айнымалы.</li>
+        <li><code>querySelector</code> элементтерді <strong>CSS селекторлары</strong> арқылы таңдайды: <code>'#name'</code> — ID-і <code>name</code> элемент. Нүктелер мен <code>#</code> қайта оралды. ID-ді <code>foo</code> деп өзгертсеңіз, <code>'#foo'</code> деп жазасыз.</li>
+        <li><code>.value</code> — өріске енгізілген мән. Нүкте C-да құрылымның өрісіне, Python-да объектінің ішіндегіге қатынау еді.</li>
+        <li><code>alert</code> — қалқымалы терезе. <code>+</code> жолдарды біріктіреді, Python-дағыдай.</li>
+        <li><code>return false</code> — әйтпесе браузер форманы бәрібір серверге жіберуге тырысып, біздің кодты үзеді. Бұл сәл «қолдан жасалған» тәсіл.</li>
+      </ul>
+      <p>«David» деп жазып, батырманы бассаңыз, «hello, David» деген терезе шығады. Ол әдемі емес: Chrome сайттың кездейсоқ атын да көрсетеді. Бірақ маңыздысы: код форманың жіберілуін <strong>тыңдап</strong>, сол кезде функцияны шақырады.</p>
+
+      <h3 id="events">Оқиғалар</h3>
+      <p>0-аптадағы Scratch-та «жасыл жалауша басылғанда» сияқты <strong>оқиғалар</strong> (<span class="term-en">events</span>) болды. Вебте де солай:</p>
+      <p><code>blur</code>, <code>change</code>, <code>click</code>, <code>drag</code>, <code>focus</code>, <code>keyup</code>, <code>load</code>, <code>mousedown</code>, <code>mouseover</code>, <code>mouseup</code>, <code>submit</code>, <code>touchmove</code>, <code>unload</code>, ...</p>
+      <p>Gmail-дағы жаңарту белгісін бассаңыз, JavaScript Google серверімен сөйлесіп, жаңа хаттарды алады. Google Maps-те картаны сүйрегенде, JavaScript тышқанның басылып сүйрелгенін тыңдап, жаңа тайлдарды (картаның тікбұрышты суреттерін) жүктейді.</p>
+      <p>JavaScript-ті HTML-ден бөлейік (<code>hello2.html</code>), <code>script</code>-ті беттің соңына қоямыз:</p>
+<pre data-lang="html"><code class="language-xml">&lt;form&gt;
+    &lt;input autocomplete="off" autofocus id="name" placeholder="Name" type="text"&gt;
+    &lt;input type="submit"&gt;
+&lt;/form&gt;
+&lt;script&gt;
+
+    document.querySelector('form').addEventListener('submit', function(event) {
+        alert('hello, ' + document.querySelector('#name').value);
+        event.preventDefault();
+    });
+
+&lt;/script&gt;</code></pre>
+      <ul>
+        <li><code>document.querySelector('form')</code> — жадтағы ағаштағы <code>form</code> түйініне сілтеме (көрсеткіш сияқты).</li>
+        <li><code>addEventListener</code> элементке оқиғаны тыңдауды айтады. <code>submit</code> болғанда, <strong>анонимді функцияны</strong> (<span class="term-en">anonymous function, lambda</span>) шақырады, яғни фигуралы жақшалар арасындағы кодты.</li>
+        <li><code>event.preventDefault()</code> браузердің форманы серверге жіберуіне жол бермейді.</li>
+        <li>JavaScript қауымдастығында дара тырнақшалар жиі қолданылады: Shift-ті азырақ басу үшін. Бірізді болсаңыз, екеуі де дұрыс.</li>
+      </ul>
+      <p>Тағы бір тәсіл (<code>hello3.html</code>): <code>script</code>-ті <code>head</code>-та қалдырып, бәрін <code>DOMContentLoaded</code> оқиғасының ішіне орау. Бұл «бүкіл ағаш жадқа жүктелгенде, мынаны істе» дегенді білдіреді:</p>
+<pre data-lang="javascript"><code class="language-javascript">document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('form').addEventListener('submit', function(event) {
+        alert('hello, ' + document.querySelector('#name').value);
+        event.preventDefault();
+    });
+});</code></pre>
+      <p>Ал <code>hello4.html</code>-да бұл код жеке <code>hello.js</code> файлына көшірілген: <code>&lt;script src="hello.js"&gt;&lt;/script&gt;</code>.</p>
+
+      <h3 id="dom-change">DOM-ды өзгерту</h3>
+      <p><code>hello5.html</code>-да батырма жоқ: әріп терген сайын бет өзі өзгереді.</p>
+<pre data-lang="html"><code class="language-xml">&lt;script&gt;
+
+    document.addEventListener('DOMContentLoaded', function() {
+        let input = document.querySelector('input');
+        input.addEventListener('keyup', function(event) {
+            let name = document.querySelector('p');
+            if (input.value) {
+                name.innerHTML = `hello, ${input.value}`;
+            }
+            else {
+                name.innerHTML = 'hello, whoever you are';
+            }
+        });
+    });
+
+&lt;/script&gt;
+...
+&lt;form&gt;
+    &lt;input autocomplete="off" autofocus placeholder="Name" type="text"&gt;
+&lt;/form&gt;
+&lt;p&gt;&lt;/p&gt;</code></pre>
+      <ul>
+        <li><code>keyup</code> — саусақ пернеден көтерілгенде.</li>
+        <li><code>if (input.value)</code> — өріс бос емес пе.</li>
+        <li><code>innerHTML</code> — элементтің ішіндегі HTML. Әзірлеуші құралдарында «D», «Da», «Dav» дегендердің бос <code>p</code>-ның ішінде пайда болғанын көресіз: JavaScript DOM-ды өзгертіп жатыр.</li>
+        <li><code>`hello, ${input.value}`</code> — <strong>үлгі литерал</strong> (<span class="term-en">template literal</span>), Python-дағы f-жолға ұқсас. Синтаксисі әдемі емес: доллар белгісі, фигуралы жақша, «кері тырнақша». Шамасы, тіл ескі кодпен үйлесімді болуы үшін, жабайы табиғатта кездеспейтін таңбаларды таңдаған.</li>
+      </ul>
+
+      <h3 id="css-js">CSS-ті JavaScript-пен өзгерту</h3>
+<pre data-lang="html"><code class="language-xml">&lt;button id="red"&gt;R&lt;/button&gt;
+&lt;button id="green"&gt;G&lt;/button&gt;
+&lt;button id="blue"&gt;B&lt;/button&gt;
+&lt;script&gt;
+
+    let body = document.querySelector('body');
+    document.querySelector('#red').addEventListener('click', function() {
+        body.style.backgroundColor = 'red';
+    });
+    document.querySelector('#green').addEventListener('click', function() {
+        body.style.backgroundColor = 'green';
+    });
+    document.querySelector('#blue').addEventListener('click', function() {
+        body.style.backgroundColor = 'blue';
+    });
+
+&lt;/script&gt;</code></pre>
+      <p>R, G, B батырмаларын басқанда, әзірлеуші құралдарында <code>body</code>-ге <code>background-color: red</code> қосылғанын көресіз. Неге CSS-тегі <code>background-color</code> JavaScript-те <code>backgroundColor</code>? JavaScript-те дефис — алу амалы, яғни «background минус color». Сондықтан дефистен кейінгі әріпті бас әріп етеді. Бұл <strong>camelCase</strong> (түйенің өркеші сияқты ортасындағы бас әріп).</p>
+      <p>Бұрын HTML-де <code>blink</code> тегі болды, ол мәтінді жыпылықтатады. Ол соншалық ұсқынсыз болғаны сонша, тілден <em>алынып тасталды</em> (бұл сирек болады). Оны JavaScript-пен қайта жасауға болады:</p>
+<pre data-lang="html"><code class="language-xml">&lt;script&gt;
+
+    function blink()
+    {
+        let body = document.querySelector('body');
+        if (body.style.visibility == 'hidden')
+        {
+            body.style.visibility = 'visible';
+        }
+        else
+        {
+            body.style.visibility = 'hidden';
+        }
+    }
+
+    window.setInterval(blink, 500);
+
+&lt;/script&gt;</code></pre>
+      <p><code>window</code> — тағы бір глобалды айнымалы. <code>setInterval</code> функцияны әр 500 миллисекунд сайын шақырады. Қызығы: CSS-те <code>visible</code>-дің қарама-қарсысы <code>invisible</code> емес, <code>hidden</code>. Мұндай нәрселерді жай жаттап аласыз.</p>
+
+      <h3 id="autocomplete">Автотолықтыру</h3>
+      <p><code>large.js</code> файлында 5-аптадағы speller тапсырмасының 100 000-нан астам сөзі JavaScript массиві ретінде сақталған: <code>let WORDS = [...];</code>.</p>
+<pre data-lang="html"><code class="language-xml">&lt;input autocomplete="off" autofocus placeholder="Query" type="text"&gt;
+
+&lt;ul&gt;&lt;/ul&gt;
+
+&lt;script src="large.js"&gt;&lt;/script&gt;
+&lt;script&gt;
+
+    let input = document.querySelector('input');
+    input.addEventListener('keyup', function(event) {
+        let html = '';
+        if (input.value) {
+            for (word of WORDS) {
+                if (word.startsWith(input.value)) {
+                    html += `&lt;li&gt;${word}&lt;/li&gt;`;
+                }
+            }
+        }
+        document.querySelector('ul').innerHTML = html;
+    });
+
+&lt;/script&gt;</code></pre>
+      <p><code>for (word of WORDS)</code> — C мен Python-ның қоспасы: Python-дағы <code>in</code>-нің орнына <code>of</code>. Терген әріптермен басталатын әр сөз үшін <code>li</code> жолын жасап, бос <code>ul</code>-дің ішіне қоямыз. «cats» деп терсеңіз, тек 4 сөз қалады. Google-дағы автотолықтыру да осылай: біреу <code>keyup</code>-ты тыңдап, тізімді динамикалық түрде толтыратын JavaScript жазған. Сайттардың көбі HTML-ді қолмен жазбайды, оны <strong>генерациялайтын</strong> код жазады.</p>
+
+      <h3 id="more-js">Bootstrap мәзірі және геолокация</h3>
+      <p>Bootstrap-та CSS-тен бөлек JavaScript мүмкіндіктері де бар: ашылмалы мәзірлер, навигация жолағы (<span class="term-en">navbar</span>). Терезені тарылтсаңыз (мобильді режим), мәзір «гамбургер» белгісіне жиналады, ал оны басқанда JavaScript мәзірді ашады. CS50 сайты да солай жұмыс істейді.</p>
+<pre data-lang="javascript"><code class="language-javascript">navigator.geolocation.getCurrentPosition(function(position) {
+    document.write(position.coords.latitude + ", " + position.coords.longitude);
+});</code></pre>
+      <p><code>navigator</code> — тағы бір глобалды айнымалы. <code>getCurrentPosition</code>-ға анонимді функция береміз: GPS координаттарын анықтау уақыт алуы мүмкін, сондықтан «дайын болғанда, осыны шақыр». Браузер жеке өмірді қорғау үшін рұқсат сұрайды. Дэвид координаттарды Google Maps-ке қойғанда, ғимараттың бұрышындағы Wi-Fi нүктесіне жақын жер шықты: тамақ не такси жеткізуге жеткілікті дәл.</p>
+      <p>Лекция көмекшілердің пакет көрінісін түсіру кезіндегі сәтсіз дубльдерінің қысқа бейнесімен аяқталды.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li><strong>Интернет</strong> — желілердің желісі. <strong>Маршрутизаторлар</strong> <strong>пакеттерді</strong> тасымалдайды.</li>
+        <li><strong>IP</strong> әр құрылғыға мекенжай береді (IPv4 — 32 бит, IPv6 — 128 бит). <strong>TCP</strong> порттар (80, 443) арқылы қызметтерді ажыратады және реттік нөмірлер арқылы жеткізуге кепілдік береді.</li>
+        <li><strong>DNS</strong> домен атауларын IP-ге аударады. <strong>DHCP</strong> құрылғыға IP, маршрутизатор және DNS мекенжайларын береді.</li>
+        <li><strong>HTTP/HTTPS</strong>: <code>GET</code>, <code>POST</code>; күй кодтары 200, 301, 404, 500 және т.б. Құралдар: <code>curl -I</code>, әзірлеуші құралдары.</li>
+        <li><strong>HTML</strong>: тегтер мен атрибуттар; <code>p</code>, <code>h1</code>–<code>h6</code>, <code>ul</code>/<code>ol</code>/<code>li</code>, <code>table</code>, <code>img</code>, <code>video</code>, <code>a</code>, <code>form</code>/<code>input</code>. Браузер одан <strong>DOM</strong> ағашын құрады.</li>
+        <li>URL параметрлері: <code>?key=value&amp;key=value</code>. Тұрақты өрнектер. Клиенттегі тексеруге сенуге болмайды.</li>
+        <li><strong>CSS</strong>: қасиеттер; тип, класс (<code>.</code>), ID (<code>#</code>) селекторлары, псевдо-селекторлар (<code>:hover</code>); каскад; сыртқы <code>.css</code> файлы; Bootstrap сияқты фреймворктар.</li>
+        <li><strong>JavaScript</strong>: C-ға ұқсас синтаксис; <code>querySelector</code>, <code>addEventListener</code>, оқиғалар, <code>innerHTML</code>, <code>style</code>, <code>setInterval</code>; DOM-ды өзгерту.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. IPv4 мекенжайы неше бит?</p>
+          <label><input type="radio" value="a"> 8</label>
+          <label><input type="radio" value="b"> 16</label>
+          <label><input type="radio" value="c"> 32</label>
+          <label><input type="radio" value="d"> 128</label>
+          <p class="explain">0–255 аралығындағы төрт сан, әрқайсысы 8 бит. 128 бит — IPv6.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">2. Бір серверде пошта мен веб-сайтты ажыратуға не мүмкіндік береді?</p>
+          <label><input type="radio" value="a"> IP-мекенжай</label>
+          <label><input type="radio" value="b"> TCP порт нөмірі</label>
+          <label><input type="radio" value="c"> DNS</label>
+          <label><input type="radio" value="d"> DHCP</label>
+          <p class="explain">Мысалы, HTTPS үшін 443 порты.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. DNS не істейді?</p>
+          <label><input type="radio" value="a"> Деректерді шифрлайды</label>
+          <label><input type="radio" value="b"> Құрылғыға IP-мекенжай береді</label>
+          <label><input type="radio" value="c"> Пакеттерді бөлшектейді</label>
+          <label><input type="radio" value="d"> Домен атауларын IP-мекенжайларға аударады</label>
+          <p class="explain">IP-мекенжайды DHCP береді, ал бөлшектеу мен қайта жинауды TCP басқарады.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">4. Сервер <code>301</code> кодын қайтарса, браузер не істейді?</p>
+          <label><input type="radio" value="a"> <code>Location</code> тақырыбындағы мекенжайға барады</label>
+          <label><input type="radio" value="b"> «Бет табылмады» дейді</label>
+          <label><input type="radio" value="c"> Бетті кэштен көрсетеді</label>
+          <label><input type="radio" value="d"> Серверді қайта іске қосады</label>
+          <p class="explain">301 — Moved Permanently, біржола көшірілді.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">5. Нөмірленген тізім үшін қандай тег керек?</p>
+          <label><input type="radio" value="a"> <code>ul</code></label>
+          <label><input type="radio" value="b"> <code>li</code></label>
+          <label><input type="radio" value="c"> <code>ol</code></label>
+          <label><input type="radio" value="d"> <code>list</code></label>
+          <p class="explain">ordered list. <code>ul</code> таңбалы, <code>li</code> — тізім элементі.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">6. CSS-те <code>.large</code> және <code>#harvard</code> нені таңдайды?</p>
+          <label><input type="radio" value="a"> <code>large</code> тегін және <code>harvard</code> класын</label>
+          <label><input type="radio" value="b"> <code>large</code> класын және ID-і <code>harvard</code> элементті</label>
+          <label><input type="radio" value="c"> Екеуі де класс</label>
+          <label><input type="radio" value="d"> Екеуі де ID</label>
+          <p class="explain">Нүкте — класс, <code>#</code> — ID.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. Неге HTML <code>pattern</code> атрибутына қауіпсіздік үшін сенуге болмайды?</p>
+          <label><input type="radio" value="a"> Пайдаланушы өз браузерінде HTML-ді өзгерте алады</label>
+          <label><input type="radio" value="b"> Барлық браузер оны қолдамайды</label>
+          <label><input type="radio" value="c"> Тұрақты өрнектер тым баяу</label>
+          <label><input type="radio" value="d"> Ол тек электрондық поштаға жұмыс істейді</label>
+          <p class="explain">Тексеруді әрқашан серверде де жасау керек.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">8. JavaScript-те CSS-тің <code>background-color</code> қасиеті қалай жазылады?</p>
+          <label><input type="radio" value="a"> <code>background-color</code></label>
+          <label><input type="radio" value="b"> <code>background_color</code></label>
+          <label><input type="radio" value="c"> <code>BackgroundColor</code></label>
+          <label><input type="radio" value="d"> <code>backgroundColor</code></label>
+          <p class="explain">camelCase: JavaScript-те дефис — алу амалы.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <span class="result"></span>
+      </div>
+
+      <h2 id="practice">Жаттығулар</h2>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-ipv6">IPv6 қанша мекенжай?</h3></div>
+        <p>IPv4 32 бит, шамамен 2<sup>32</sup> мекенжай береді. IPv6 128 бит. IPv6 мекенжайлары IPv4-тен неше есе көп? Жауапты 2-нің дәрежесі ретінде жазыңыз (мысалы, <code>2^10</code>).</p>
+        <div class="answer-check" data-answer="2^96|2**96"><input type="text" placeholder="2^..."><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Шешімі</summary><div class="details-body"><p>2<sup>128</sup> / 2<sup>32</sup> = 2<sup>96</sup>.</p></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-status">Күй коды</h3></div>
+        <p>Сіз сайттағы бетті сұрадыңыз, бірақ сервердегі бағдарламашының кодында қате болып, ол «құлап» қалды. Сервер қандай күй кодын қайтаруы мүмкін?</p>
+        <div class="answer-check" data-answer="500"><input type="text" placeholder="Код"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-regex">Тұрақты өрнек</h3></div>
+        <p>Қазақстандық ұялы телефон нөмірі <code>+7</code>-ден басталып, артынан дәл 10 цифр келеді деп есептейік (мысалы, <code>+77011234567</code>). HTML <code>pattern</code> атрибутына арналған тұрақты өрнек жазыңыз. (<code>+</code> арнайы таңба екенін ұмытпаңыз.)</p>
+        <div class="answer-check" data-answer="\+7\d{10}|\+7[0-9]{10}"><input type="text" placeholder="pattern"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="html"><code class="language-xml">&lt;input name="phone" pattern="\+7\d{10}" placeholder="+7..." type="tel"&gt;</code></pre>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-counter">Санағыш</h3></div>
+        <p>«+1» батырмасы бар бет жасаңыз. Әр басқанда беттегі сан бірге артсын. Сан 10-ға бөлінгенде, ол қызыл түске боялсын.</p>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="html"><code class="language-xml">&lt;!DOCTYPE html&gt;
+
+&lt;html lang="kk"&gt;
+    &lt;head&gt;
+        &lt;title&gt;counter&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;button&gt;+1&lt;/button&gt;
+        &lt;p id="count"&gt;0&lt;/p&gt;
+        &lt;script&gt;
+
+            let counter = 0;
+            let p = document.querySelector('#count');
+            document.querySelector('button').addEventListener('click', function() {
+                counter++;
+                p.innerHTML = counter;
+                p.style.color = (counter % 10 == 0) ? 'red' : 'black';
+            });
+
+        &lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+        </div></details>
+      </div>
+
+      <h2 id="problem-set">Тапсырмалар жинағы 8</h2>
+      <p><span class="term-en">(Problem Set 8)</span> Ресми тапсырма беті: <a href="https://cs50.harvard.edu/x/psets/8/" target="_blank" rel="noopener">cs50.harvard.edu/x/psets/8</a>. Бұл аптадағы тапсырмалар үшін <code>check50</code> жоқ: төмендегі тізім бойынша өзіңіз тексеріп, <code>submit50</code> арқылы жібересіз. Беттерді <code>http-server</code> арқылы ашып көріңіз.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-trivia">Trivia</h3></div>
+        <p>Викторина сұрақтары бар веб-бет жасаңыз. <code>index.html</code>, <code>styles.css</code> файлдары берілген.</p>
+        <ul>
+          <li><strong>1-бөлім:</strong> көп нұсқалы сұрақ. Әр жауап нұсқасы — <code>button</code>. Дұрыс жауапты басса, батырма жасыл болып, астында «Correct!» шығады. Қате болса, қызыл болып, «Incorrect» шығады.</li>
+          <li><strong>2-бөлім:</strong> еркін жауапты сұрақ. Мәтіндік өріс пен тексеру батырмасы. Дұрыс болса, өріс жасыл болып, «Correct!», қате болса, қызыл болып, «Incorrect» шығады.</li>
+        </ul>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li>Барлық кодты <code>DOMContentLoaded</code> ішіне жазыңыз.</li>
+            <li>Бірнеше элементке: <code>document.querySelectorAll('.incorrect')</code>, сосын <code>for</code> циклімен әрқайсысына <code>addEventListener('click', ...)</code>.</li>
+            <li>Басылған батырма: <code>event.target</code>. Түсі: <code>event.target.style.backgroundColor = 'green'</code>.</li>
+            <li>Нәтиже мәтіні: <code>document.querySelector('#feedback1').innerHTML = 'Correct!'</code>.</li>
+            <li>Дұрыс жауап батырмасына <code>id</code> не <code>class</code> беріңіз, сонда оны оңай табасыз.</li>
+          </ul>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="trivia">
+            <li><input type="checkbox"> <span>Көп нұсқалы сұрақта кемінде 3 батырма бар.</span></li>
+            <li><input type="checkbox"> <span>Дұрыс батырма жасылға, қатесі қызылға боялады, хабар шығады.</span></li>
+            <li><input type="checkbox"> <span>Еркін жауапты сұрақ форма арқылы тексеріледі.</span></li>
+            <li><input type="checkbox"> <span>Бет қайта жүктелмейді (тексеру JavaScript-те).</span></li>
+            <li><input type="checkbox"> <span><code>submit50 cs50/problems/2026/x/trivia</code></span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pset-homepage">Homepage</h3></div>
+        <p>Өзіңіз туралы, хоббиіңіз, сүйікті нәрсеңіз не кез келген тақырып бойынша жеке веб-сайт жасаңыз.</p>
+        <ul>
+          <li>Кемінде <strong>4 түрлі</strong> <code>.html</code> беті, олар бір-біріне сілтемелермен байланысқан.</li>
+          <li>Кемінде <strong>10 түрлі</strong> HTML тегі (<code>&lt;html&gt;</code>, <code>&lt;head&gt;</code>, <code>&lt;body&gt;</code>, <code>&lt;title&gt;</code>-ден басқа).</li>
+          <li>Кемінде бір <strong>Bootstrap</strong> компоненті.</li>
+          <li>Кемінде бір <code>.css</code> файлында кемінде <strong>5 түрлі</strong> CSS қасиеті және кемінде 5 түрлі селектор (кемінде бір <code>#id</code>, кемінде бір <code>.class</code>).</li>
+          <li><strong>JavaScript</strong>-пен бір интерактивті мүмкіндік.</li>
+          <li>Беттерде сайттың барлық бетіне сілтемесі бар ортақ навигация болсын.</li>
+        </ul>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li>Алдымен бір бетті толық жасап, сосын оны үлгі ретінде көшіріңіз.</li>
+            <li>Bootstrap құжаттамасындағы <em>Navbar</em>, <em>Card</em>, <em>Carousel</em> компоненттері жеке сайтқа жақсы келеді.</li>
+            <li>Әр бетті <a href="https://validator.w3.org/" target="_blank" rel="noopener">validator.w3.org</a> арқылы тексеріңіз.</li>
+            <li>Ұнаған сайттың қалай жасалғанын әзірлеуші құралдарынан қарап үйреніңіз.</li>
+          </ul>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="homepage">
+            <li><input type="checkbox"> <span>4+ HTML беті, бәрі сілтемелермен байланысқан.</span></li>
+            <li><input type="checkbox"> <span>10+ түрлі HTML тегі.</span></li>
+            <li><input type="checkbox"> <span>Bootstrap компоненті бар.</span></li>
+            <li><input type="checkbox"> <span>5+ CSS қасиеті, 5+ селектор, оның ішінде <code>#id</code> және <code>.class</code>.</span></li>
+            <li><input type="checkbox"> <span>JavaScript мүмкіндігі бар.</span></li>
+            <li><input type="checkbox"> <span>W3C валидаторы қате көрсетпейді.</span></li>
+            <li><input type="checkbox"> <span><code>submit50 cs50/problems/2026/x/homepage</code></span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="ai.html"><small>Алдыңғы</small>← Жасанды интеллект</a>
+        <a class="next" href="week-9.html"><small>Келесі</small>9-апта: Flask →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50x 2026 (Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan.</p>
+      <p>Қазақшаға аударған: <strong>Sagid Mustafa</strong> · Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></p>
+    </div>
+  </footer>
+</body>
+</html>
