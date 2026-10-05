@@ -518,6 +518,9 @@
         if (p.read[id]) {
           card.classList.add("is-read");
           card.querySelector(".status").textContent = "Оқылды ✓";
+        } else {
+          card.querySelector(".status").textContent = p.last && p.last.id === id ? "Жалғастыру →" : "Оқу →";
+          card.querySelector(".status").classList.remove("ready");
         }
       });
     });
@@ -966,6 +969,15 @@ def __cs50kz_run(src, inputs, limit=2000000):
     document.querySelectorAll(".achievements").forEach((box) => {
       const list = achievementList();
       const done = list.filter((a) => a.done).length;
+      if (box.classList.contains("compact")) {
+        // Басты бетте ықшам: алынғандар, сосын ең жақын 3 мақсат
+        const got = list.filter((a) => a.done);
+        const near = list.filter((a) => !a.done).sort((a, b) => b.cur / b.goal - a.cur / a.goal).slice(0, Math.max(3, 8 - got.length));
+        box.innerHTML = `<div class="ach-head"><b>Жетістіктер</b><span>${done} / ${list.length}</span></div><div class="ach-row">` +
+          got.concat(near).slice(0, 8).map((a) => `<div class="ach-chip ${a.done ? "done" : ""}" title="${escapeHtml(a.name + ": " + a.desc)}"><span>${a.ico}</span><small>${escapeHtml(a.name)}</small>${a.done ? "" : `<i style="width:${(a.cur / a.goal) * 100}%"></i>`}</div>`).join("") +
+          `<a class="ach-all" href="${ROOT_URL}practice.html#achievements">Барлығы →</a></div>`;
+        return;
+      }
       box.innerHTML = `<div class="ach-head"><b>Жетістіктер</b><span>${done} / ${list.length}</span></div><div class="ach-grid">` +
         list.map((a) => `<div class="ach ${a.done ? "done" : ""}" title="${escapeHtml(a.desc)}">
           <span class="ach-ico">${a.ico}</span><b>${escapeHtml(a.name)}</b><small>${escapeHtml(a.desc)}</small>

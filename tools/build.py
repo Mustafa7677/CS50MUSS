@@ -81,16 +81,25 @@ def process_page(path, prefix, active):
         s = re.sub(r"<!-- build:footer -->.*?<!-- /build:footer -->", links, s, flags=re.S)
     else:
         s = s.replace('<div class="footer-inner">', '<div class="footer-inner">\n      ' + links, 1)
+    if 'class="skip-link"' not in s:
+        s = s.replace("<body>", '<body>\n  <a class="skip-link" href="#main">Мазмұнға өту</a>', 1)
+    if 'id="main"' not in s:
+        s = re.sub(r'<(article class="content[^"]*"|main class="weeks")', lambda m: "<" + m.group(1) + ' id="main"', s, count=1)
     s = s.replace('<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>',
                   '<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>')
     path.write_text(s, encoding="utf-8")
     return s
 
 
+def article_of(s):
+    m = re.search(r'<article class="content[^"]*"[^>]*>', s)
+    return s[m.start():s.index("</article>")]
+
+
 def lecture_meta(name, s):
     num = strip_tags(re.search(r'<div class="lecture-head">\s*<div class="num">(.*?)</div>', s, re.S).group(1))
     title = strip_tags(re.search(r"<h1>(.*?)</h1>", s, re.S).group(1))
-    article = s[s.index('<article class="content">'):s.index("</article>")]
+    article = article_of(s)
     words = len(strip_tags(article).split())
     skip = {"intro", "summary", "quiz", "practice", "problem-set"}
     topics = [{"t": strip_tags(t), "id": i} for i, t in re.findall(r'<h2 id="([^"]+)">(.*?)</h2>', article, re.S) if i not in skip]
@@ -102,7 +111,7 @@ def lecture_meta(name, s):
 
 def sections(name, s, meta):
     """Мақаланы h2/h3 бойынша бөліктерге бөлу (іздеу үшін)."""
-    article = s[s.index('<article class="content">'):s.index("</article>")]
+    article = article_of(s)
     parts = re.split(r'(<h[23] id="[^"]+">.*?</h[23]>)', article, flags=re.S)
     out = []
     for i in range(1, len(parts) - 1, 2):
@@ -115,7 +124,7 @@ def sections(name, s, meta):
 
 
 def glossary_terms(name, s, meta):
-    article = s[s.index('<article class="content">'):s.index("</article>")]
+    article = article_of(s)
     terms = []
     last_id = "intro"
     for m in re.finditer(r'<h[23] id="([^"]+)"|<strong>([^<]{2,60})</strong> \(<span class="term-en">([^<]{2,60})</span>\)', article):
