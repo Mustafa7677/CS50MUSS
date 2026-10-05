@@ -146,7 +146,33 @@ CREATE TABLE stars (
     return sql
 
 
-data = {"favorites": favorites(), "shows": shows()}
+def songs():
+    """Songs тапсырмасына арналған ойдан шығарылған әншілер мен әндер."""
+    artists = ["Dala Sazy", "Altyn Kun", "Kok Tobe Beats", "Aru Voice", "Nomad Echo", "Steppe Wind", "Qyzyl Tan"]
+    titles = ["Steppe Morning", "Golden Road", "Night in Almaty", "Seven Rivers", "Blue Yurt", "Eagle Song",
+              "Dombyra Dreams", "Silk Way", "Spring Rain", "Mountain Light", "Desert Stars", "City of Apples",
+              "Wind of Sary-Arka", "First Snow", "Caspian Waves", "Summer Pasture", "Northern Lights", "Old Bazaar",
+              "Shining Lake", "Long Way Home", "Morning Tea", "Hidden Valley", "Red Sunset", "Moonlit Steppe",
+              "Fast Horses", "Quiet Village", "Endless Sky", "Dancing Flames"]
+    rows = []
+    for i, t in enumerate(titles, 1):
+        a = rnd.randint(1, len(artists))
+        if i in (5, 12, 19, 26):
+            t += f" (feat. {artists[(a % len(artists))]})"
+        rows.append((i, t, a, round(rnd.uniform(0.3, 0.95), 3), round(rnd.uniform(0.25, 0.95), 3), rnd.randint(0, 11),
+                     round(rnd.uniform(-12, -3), 3), round(rnd.uniform(0.03, 0.4), 3), round(rnd.uniform(0.1, 0.95), 3),
+                     round(rnd.uniform(70, 180), 3), rnd.randint(150000, 290000)))
+    sql = """CREATE TABLE artists (id INTEGER, name TEXT, PRIMARY KEY(id));
+CREATE TABLE songs (id INTEGER, name TEXT, artist_id INTEGER, danceability REAL, energy REAL, key INTEGER,
+    loudness REAL, speechiness REAL, valence REAL, tempo REAL, duration_ms INTEGER);
+"""
+    sql += inserts("artists", ["id", "name"], list(enumerate(artists, 1))) + "\n"
+    sql += inserts("songs", ["id", "name", "artist_id", "danceability", "energy", "key", "loudness",
+                             "speechiness", "valence", "tempo", "duration_ms"], rows) + "\n"
+    return sql
+
+
+data = {"favorites": favorites(), "shows": shows(), "songs": songs()}
 (ROOT / "assets/data/db.js").write_text(
     "// tools/make_demo_db.py арқылы жасалған. Қолмен өзгертпеңіз.\nwindow.CS50KZ_DB = " +
     json.dumps(data, ensure_ascii=False) + ";\n", encoding="utf-8")

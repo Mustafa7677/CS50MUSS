@@ -225,5 +225,80 @@ window.CS50KZ_CHECKS = {
     "out": "Grade 16+"
    }
   ]
+ },
+ "dna": {
+  "title": "DNA",
+  "file": "dna.py",
+  "starter": "import csv\nimport sys\n\n\ndef main():\n    # TODO: sys.argv-ты тексеру, CSV мен тізбекті оқу, әр STR үшін longest_match\n    pass\n\n\ndef longest_match(sequence, subsequence):\n    \"\"\"Тізбектегі subsequence-тің қатарынан ең көп қайталану саны.\"\"\"\n    longest_run = 0\n    subsequence_length = len(subsequence)\n    sequence_length = len(sequence)\n    for i in range(sequence_length):\n        count = 0\n        while True:\n            start = i + count * subsequence_length\n            end = start + subsequence_length\n            if sequence[start:end] == subsequence:\n                count += 1\n            else:\n                break\n        longest_run = max(longest_run, count)\n    return longest_run\n\n\nmain()\n",
+  "note": "Тесттер өз демо деректеріміздегі виртуалды файлдарды қолданады: databases/small.csv және sequences/1–5.txt.",
+  "files": {
+   "databases/small.csv": "name,AGATC,AATG,TATC\nAruzhan,2,8,3\nBauyrzhan,4,1,5\nDana,3,2,5\nErlan,5,6,1\n",
+   "sequences/1.txt": "GACTTTCAAAGATCAGATCGATATGAGATCTGGGTAGAGGTAATGAATGAATGAATGAATGAATGAATGAATGGAGGTTAAATGAATGAATGAATGAATGAATGAATGTATTTGTTACCAATTATCTATCTATCCTCATTGTGTTTTATCTATCCGGAACTTGCGTTTT",
+   "sequences/2.txt": "AGGTATGTCTTAGTGAAGATCAGATCAGATCTCTAAATAAGATCAGATCCCAAGGCAGTCCTCGATAATGAATGCGTTCCTAATGATAAGGAATATCTATCTATCTATCTATCGGTGATTCCCTGTATCTATCTATCTATCTCATACCAATCTACC",
+   "sequences/3.txt": "CCCTGTTATGCGCGTTTGTCAGATCAGATCAGATCAGATCAGATCTTAGACCAATAGATCAGATCAGATCAGATCGTCAGCGCAGCGGCAGATAATGAATGAATGAATGAATGAATGAAGCAGGAATGAATGAATGAATGAATGAGGCGGAATGTAAACAGTATCAAGGTATGCTTAGGT",
+   "sequences/4.txt": "GATAGGGAGTGAAGATCAGATCAGATCAGATCCAACAAACGGAGATCAGATCAGATCTCGTTTCTAATGAATGAATGAATGAATGAATGAATGAATGCCATGCCAAATGAATGAATGAATGAATGAATGAATGGTTGGCACTATCTATCTATCGGGAATATCTATCCTACCTGCGGCGGTT",
+   "sequences/5.txt": "TGCCTCTAGTACAGGGAGATCAGATCAGATCAGATCAACGATTAGATCAGATCAGATCCAACTGGGACCGGGGCAATGCATTGCACGCCAAATATCTATCTATCTATCTATCAGGCCCCAGTTATCTATCTATCTATCAATGGAGTTACGTGA"
+  },
+  "tests": [
+   {
+    "n": "sequences/1.txt → Aruzhan",
+    "argv": [
+     "dna.py",
+     "databases/small.csv",
+     "sequences/1.txt"
+    ],
+    "in": [],
+    "out": "Aruzhan"
+   },
+   {
+    "n": "sequences/2.txt → Dana",
+    "argv": [
+     "dna.py",
+     "databases/small.csv",
+     "sequences/2.txt"
+    ],
+    "in": [],
+    "out": "Dana"
+   },
+   {
+    "n": "sequences/3.txt → Erlan",
+    "argv": [
+     "dna.py",
+     "databases/small.csv",
+     "sequences/3.txt"
+    ],
+    "in": [],
+    "out": "Erlan"
+   },
+   {
+    "n": "sequences/4.txt → No match",
+    "argv": [
+     "dna.py",
+     "databases/small.csv",
+     "sequences/4.txt"
+    ],
+    "in": [],
+    "out": "No match"
+   },
+   {
+    "n": "sequences/5.txt → Bauyrzhan",
+    "argv": [
+     "dna.py",
+     "databases/small.csv",
+     "sequences/5.txt"
+    ],
+    "in": [],
+    "out": "Bauyrzhan"
+   },
+   {
+    "n": "Аргумент саны қате → Usage хабары",
+    "argv": [
+     "dna.py"
+    ],
+    "in": [],
+    "out": "Usage: python dna.py data.csv sequence.txt",
+    "contains": "Usage"
+   }
+  ]
  }
 };

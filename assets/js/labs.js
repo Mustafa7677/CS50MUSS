@@ -1004,6 +1004,7 @@
       <div class="ag-head"><b>✅ Автотексеруші</b><span>check50 сияқты, бірақ браузерде</span></div>
       ${keys.length > 1 ? `<div class="seg ag-seg">${keys.map((k, i) => `<button type="button" data-k="${k}" class="${i ? "" : "on"}">${esc(window.CS50KZ_CHECKS[k].title.replace("Sentimental: ", ""))}</button>`).join("")}</div>` : ""}
       <p class="ag-note">Шешіміңізді (<code class="ag-file"></code>) осында қойып, «Тексеру» басыңыз. Бағдарлама жасырын кірістермен бірнеше рет іске қосылып, шығысы күтілген нәтижемен салыстырылады. Код браузеріңізде сақталады.</p>
+      <p class="ag-note ag-extra"></p>
       <textarea class="pg-editor ag-code" spellcheck="false" autocapitalize="off" aria-label="Python коды"></textarea>
       <div class="pg-actions"><button type="button" class="btn gold ag-run">▶ Тексеру</button><span class="ag-score"></span></div>
       <ul class="ag-results"></ul>`;
@@ -1011,6 +1012,7 @@
     const load = () => {
       const c = window.CS50KZ_CHECKS[key];
       el.querySelector(".ag-file").textContent = c.file;
+      el.querySelector(".ag-extra").textContent = c.note || "";
       ed.value = store.get("ag:" + key, null) ?? c.starter;
       el.querySelector(".ag-results").innerHTML = c.tests.map((t) => `<li class="wait"><span class="ag-ico">○</span>${esc(t.n)}</li>`).join("");
       el.querySelector(".ag-score").textContent = "";
@@ -1043,12 +1045,14 @@
         const t = c.tests[i], li = items[i];
         await sleep(30);
         let out = "", err = null;
-        try { [out, err] = runOne(ed.value, py.toPy(t.in)).toJs(); } catch (e) { err = String(e.message || e); }
-        const ok = !err && norm(out) === norm(t.out);
+        try { [out, err] = runOne(ed.value, py.toPy(t.in), t.argv ? py.toPy(t.argv) : null, c.files ? py.toPy(c.files) : null).toJs(); } catch (e) { err = String(e.message || e); }
+        const ok = t.contains
+          ? (out || "").toLowerCase().includes(t.contains.toLowerCase())
+          : !err && norm(out) === norm(t.out);
         if (ok) pass++;
         li.className = ok ? "ok" : "bad";
         li.innerHTML = `<span class="ag-ico">${ok ? "✓" : "✗"}</span>${esc(t.n)}` + (ok ? "" :
-          `<div class="ag-diff"><div><small>Кіріс</small><pre>${esc(t.in.join("\n"))}</pre></div><div><small>Күтілген</small><pre>${esc(t.out)}</pre></div><div><small>Сіздің шығысыңыз</small><pre>${esc(err ? (out ? out + "\n" : "") + err : out || "(бос)")}</pre></div></div>`);
+          `<div class="ag-diff"><div><small>${t.argv ? "Команда" : "Кіріс"}</small><pre>${esc(t.argv ? "python " + t.argv.join(" ") : t.in.join("\n"))}</pre></div><div><small>Күтілген</small><pre>${esc(t.out)}</pre></div><div><small>Сіздің шығысыңыз</small><pre>${esc(err ? (out ? out + "\n" : "") + err : out || "(бос)")}</pre></div></div>`);
       }
       el.querySelector(".ag-score").textContent = `${pass} / ${c.tests.length} тест өтті`;
       if (pass === c.tests.length) {
@@ -1060,6 +1064,69 @@
     }
     el.querySelector(".ag-run").addEventListener("click", run);
     load();
+  }
+
+  // ================= SQL автотексерушісі =================
+  async function sqlGrader(el) {
+    await K.loadScript("assets/data/sqlchecks.js");
+    const set = window.CS50KZ_SQLCHECKS[el.dataset.set];
+    const KEY = "sqlg:" + el.dataset.set;
+    const saved = store.get(KEY, {});
+    const passed = store.get(KEY + ":ok", {});
+    let i = 0;
+    el.innerHTML = `
+      <div class="ag-head"><b>✅ SQL автотексерушісі</b><span>${set.tasks.length} сұрау · нағыз SQLite</span></div>
+      <p class="ag-note">${esc(set.note)}</p>
+      <div class="sg-tabs"></div>
+      <p class="sg-task"></p>
+      <textarea class="pg-editor ag-code sg-code" spellcheck="false" autocapitalize="off" aria-label="SQL сұрауы"></textarea>
+      <div class="pg-actions"><button type="button" class="btn gold sg-run">▶ Тексеру</button><span class="ag-score sg-msg"></span></div>
+      <div class="sg-out"></div>`;
+    const ed = el.querySelector(".sg-code");
+    const tabs = () => {
+      el.querySelector(".sg-tabs").innerHTML = set.tasks.map((t, k) => `<button type="button" data-k="${k}" class="${k === i ? "on" : ""} ${passed[k] ? "ok" : ""}">${esc(t.f)}</button>`).join("") +
+        `<span class="sg-count">${Object.keys(passed).length} / ${set.tasks.length} ✓</span>`;
+    };
+    const show = () => {
+      tabs();
+      el.querySelector(".sg-task").innerHTML = `<b>${esc(set.tasks[i].f)}:</b> ${esc(set.tasks[i].t)}`;
+      ed.value = saved[i] || "";
+      el.querySelector(".sg-out").innerHTML = "";
+      el.querySelector(".sg-msg").textContent = "";
+    };
+    const canon = (v) => (typeof v === "number" ? Math.round(v * 1e6) / 1e6 : v);
+    const rowsOf = (res) => (res[0] ? res[0].values.map((r) => r.map(canon)) : []);
+    async function run() {
+      const q = ed.value.trim(), t = set.tasks[i], msg = el.querySelector(".sg-msg"), out = el.querySelector(".sg-out");
+      saved[i] = ed.value; store.set(KEY, saved);
+      if (!q) { msg.textContent = "Сұрау жазыңыз"; return; }
+      msg.textContent = "SQLite жүктелуде...";
+      let db;
+      try { db = await K.getDb(set.db, true); } catch (e) { msg.textContent = "SQLite жүктелмеді"; return; }
+      let got, want;
+      try { got = db.exec(q); } catch (e) { msg.textContent = "✗ Қате"; out.innerHTML = `<p class="sql-msg err">${esc(String(e.message || e))}</p>`; return; }
+      want = (await K.getDb(set.db, true)).exec(t.ref);
+      const g = rowsOf(got), w = rowsOf(want);
+      const ordered = /ORDER BY/i.test(t.ref);
+      const key = (rows) => JSON.stringify(ordered ? rows : rows.map((r) => JSON.stringify(r)).sort());
+      let verdict;
+      if (got.length && got[0].columns.length !== (want[0] ? want[0].columns.length : 0)) verdict = `баған саны ${got[0].columns.length}, ал керегі ${want[0].columns.length}`;
+      else if (g.length !== w.length) verdict = `${g.length} жол шықты, ал керегі ${w.length}`;
+      else if (key(g) !== key(w)) verdict = ordered && JSON.stringify(g.slice().sort()) === JSON.stringify(w.slice().sort()) ? "жолдар дұрыс, бірақ реті қате" : "мәндер сәйкес келмейді";
+      const ok = !verdict;
+      msg.textContent = ok ? "✓ Дұрыс!" : "✗ " + verdict;
+      msg.className = "ag-score sg-msg " + (ok ? "good" : "badc");
+      out.innerHTML = got.length ? `<div class="sql-table"><table><thead><tr>${got[0].columns.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${got[0].values.slice(0, 50).map((r) => `<tr>${r.map((v) => `<td>${v === null ? "NULL" : esc(String(v))}</td>`).join("")}</tr>`).join("")}</tbody></table></div><p class="sql-msg">${got[0].values.length} жол</p>` : '<p class="sql-msg">Нәтиже бос</p>';
+      if (ok) {
+        if (!passed[i]) { passed[i] = 1; store.set(KEY + ":ok", passed); }
+        if (Object.keys(passed).length === set.tasks.length) { K.celebrate(); const gr = store.get("cs50kz:graded", {}); gr["sql-" + el.dataset.set] = Date.now(); store.set("cs50kz:graded", gr); K.check && K.check(); }
+        tabs();
+      }
+    }
+    el.querySelector(".sg-tabs").addEventListener("click", (e) => { if (e.target.dataset.k) { saved[i] = ed.value; store.set(KEY, saved); i = +e.target.dataset.k; show(); } });
+    el.querySelector(".sg-run").addEventListener("click", run);
+    ed.addEventListener("keydown", (e) => { if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); run(); } });
+    show();
   }
 
   // ================= Апталық челлендж =================
@@ -1120,6 +1187,7 @@
   document.querySelectorAll(".bug-hunt").forEach(bugHunt);
   document.querySelectorAll(".trace-quiz").forEach(traceQuiz);
   document.querySelectorAll(".autograder").forEach(autograder);
+  document.querySelectorAll(".sql-grader").forEach(sqlGrader);
   document.querySelectorAll(".weekly").forEach(weekly);
   document.querySelectorAll(".course-map").forEach(courseMap);
 })();

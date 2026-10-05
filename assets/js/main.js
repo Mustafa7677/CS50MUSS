@@ -68,8 +68,8 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
-    window.CS50KZ = { ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, bump: weekBump };
-    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly")) loadScript("assets/js/labs.js");
+    window.CS50KZ = { ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump };
+    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader")) loadScript("assets/js/labs.js");
     initAchievements();
     initPrefs();
     initShare();
@@ -620,8 +620,18 @@ def get_float(p=""):
 cs50.get_string, cs50.get_int, cs50.get_float = get_string, get_int, get_float
 sys.modules["cs50"] = cs50
 
-def __cs50kz_run(src, inputs, limit=2000000):
+def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
+    import os
     q = list(inputs)
+    if files:
+        for name, text in dict(files).items():
+            d = os.path.dirname(name)
+            if d:
+                os.makedirs(d, exist_ok=True)
+            with open(name, "w") as f:
+                f.write(text)
+    old_argv = sys.argv
+    sys.argv = list(argv) if argv else ["student.py"]
     def _inp(p=""):
         if not q:
             raise EOFError("кіріс таусылды: бағдарлама тағы кіріс күтті")
@@ -647,6 +657,7 @@ def __cs50kz_run(src, inputs, limit=2000000):
     finally:
         sys.settrace(None)
         builtins.input = old
+        sys.argv = old_argv
     return [buf.getvalue(), err]
 `);
         return py;
