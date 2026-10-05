@@ -49,6 +49,7 @@ def nav_block(prefix, active):
         return f'<a href="{prefix}{href}"{cls}>{label}</a>'
     return f"""<nav class="nav">
         {item("index.html", "Лекциялар", "index")}
+        {item("playground.html", "Сынақ алаңы", "playground", "hide-sm")}
         {item("glossary.html", "Сөздік", "glossary", "hide-sm")}
         {item("about.html", "Курс туралы", "about", "hide-sm")}
         <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
@@ -70,7 +71,7 @@ def process_page(path, prefix, active):
         s = s.replace("</title>", "</title>\n  " + block, 1)
     s = re.sub(r'<nav class="nav">.*?</nav>', nav_block(prefix, active), s, count=1, flags=re.S)
     links = (f'<!-- build:footer --><p class="footer-links"><a href="{prefix}index.html">Лекциялар</a> · '
-             f'<a href="{prefix}glossary.html">Сөздік</a> · <a href="{prefix}certificate.html">Сертификат</a> · '
+             f'<a href="{prefix}playground.html">Сынақ алаңы</a> · <a href="{prefix}glossary.html">Сөздік</a> · <a href="{prefix}certificate.html">Сертификат</a> · '
              f'<a href="{prefix}about.html">Курс туралы</a> · '
              f'<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a></p><!-- /build:footer -->')
     if "<!-- build:footer -->" in s:
@@ -174,7 +175,8 @@ def main():
         terms += glossary_terms(name, s, meta)
     n = build_glossary(terms)
     for page, active in [("index.html", "index"), ("about.html", "about"),
-                         ("glossary.html", "glossary"), ("certificate.html", "")]:
+                         ("glossary.html", "glossary"), ("certificate.html", ""),
+                         ("playground.html", "playground")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
     (ROOT / "assets/data/lectures.js").write_text(
