@@ -69,7 +69,7 @@
     initCertificate();
     initServiceWorker();
     window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump };
-    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .detective")) loadScript("assets/js/labs.js");
+    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
     initAchievements();
     initPrefs();
     initShare();
@@ -834,14 +834,15 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     const chips = pg.querySelector(".pg-examples");
     const dbSelect = pg.querySelector(".pg-db");
     const schema = pg.querySelector(".pg-schema");
-    let lang = location.hash === "#sql" ? "sql" : "python";
+    let lang = location.hash === "#sql" ? "sql" : location.hash === "#web" ? "web" : "python";
 
     const store = (k, v) => { try { v === undefined ? (v = localStorage.getItem(k)) : localStorage.setItem(k, v); } catch (e) {} return v; };
     const setLang = (l) => {
-      if (editor.value) store("pg:" + lang, editor.value);
+      if (editor.value && lang !== "web") store("pg:" + lang, editor.value);
       lang = l;
       pg.dataset.lang = l;
       tabs.forEach((t) => t.classList.toggle("active", t.dataset.lang === l));
+      if (l === "web") { history.replaceState(null, "", "#web"); mark("web"); return; }
       editor.value = store("pg:" + l) || Object.values(EXAMPLES[l])[0];
       chips.innerHTML = Object.keys(EXAMPLES[l]).map((k) => `<button type="button">${escapeHtml(k)}</button>`).join("");
       out.innerHTML = `<p class="sql-msg">${l === "python" ? "Python кодын жазып, «Іске қосу» басыңыз (Ctrl+Enter)." : "SQL сұрауын жазып, «Іске қосу» басыңыз (Ctrl+Enter)."}</p>`;
@@ -965,6 +966,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       A("weekly", "🏆", "Апта чемпионы", "Апталық челленджді орындау", readJson("cs50kz:weeks-won", 0), 1),
       A("check50", "✅", "check50 өтті", "Автотексерушіде бір тапсырманың барлық тестінен өту", Object.keys(readJson("cs50kz:graded", {})).length, 1),
       A("detective", "🕵️", "SQL детектив", "«Алтын домбыраның құпиясын» ашу", readJson("cs50kz:used", {}).detective ? 1 : 0, 1),
+      A("webdev", "🌐", "Веб-әзірлеуші", "Homepage тексерушісінен барлық талаппен өту", readJson("cs50kz:graded", {}).homepage ? 1 : 0, 1),
       A("search", "🔍", "Іздеуші", "Сайт бойынша іздеуді қолдану", used.search ? 1 : 0, 1),
       A("owl", "🌙", "Түнгі үкі", "Түнгі режимді қосу", used.dark ? 1 : 0, 1),
     ];

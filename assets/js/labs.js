@@ -1238,6 +1238,192 @@
     if (st.solved) { el.querySelector(".dt-verdict").innerHTML = "✓ Сіз бұл құпияны ашқансыз. Қайта шешіп көруге болады!"; el.querySelector(".dt-verdict").className = "dt-verdict good"; }
   }
 
+  // ================= Веб-жоба редакторы (HTML/CSS/JS, алдын ала қарау) =================
+  const WEB_EXAMPLES = {
+    "Сәлем": {
+      "index.html": '<!DOCTYPE html>\n<html lang="kk">\n    <head>\n        <meta name="viewport" content="width=device-width, initial-scale=1">\n        <link href="styles.css" rel="stylesheet">\n        <title>Сәлем</title>\n    </head>\n    <body>\n        <h1 class="title">Сәлем, әлем!</h1>\n        <p id="lead">Бұл менің алғашқы веб-бетім.</p>\n    </body>\n</html>\n',
+      "styles.css": "body {\n    font-family: sans-serif;\n    text-align: center;\n    background: #f7f5ef;\n}\n\n.title {\n    color: #0a4c7a;\n}\n\n#lead {\n    color: #8a6500;\n}\n",
+      "script.js": "",
+    },
+    "Санағыш (JS)": {
+      "index.html": '<!DOCTYPE html>\n<html lang="kk">\n    <head>\n        <link href="styles.css" rel="stylesheet">\n        <title>Санағыш</title>\n    </head>\n    <body>\n        <button id="plus">+1</button>\n        <p id="count">0</p>\n        <script src="script.js"></script>\n    </body>\n</html>\n',
+      "styles.css": "body {\n    font-family: sans-serif;\n    display: grid;\n    place-items: center;\n    height: 90vh;\n}\n\n#plus {\n    font-size: 28px;\n    padding: 12px 28px;\n    border-radius: 12px;\n    border: 0;\n    background: #f2b705;\n    cursor: pointer;\n}\n\n#count {\n    font-size: 64px;\n    margin: 0;\n}\n",
+      "script.js": "let counter = 0;\nlet p = document.querySelector('#count');\n\ndocument.querySelector('#plus').addEventListener('click', function() {\n    counter++;\n    p.innerHTML = counter;\n    p.style.color = counter % 10 == 0 ? 'red' : 'black';\n});\n",
+    },
+    "Bootstrap карточка": {
+      "index.html": '<!DOCTYPE html>\n<html lang="kk">\n    <head>\n        <meta name="viewport" content="width=device-width, initial-scale=1">\n        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">\n        <title>Карточка</title>\n    </head>\n    <body class="p-4">\n        <div class="card" style="max-width: 360px">\n            <div class="card-body">\n                <h5 class="card-title">CS50 қазақша</h5>\n                <p class="card-text">Bootstrap кластары: card, btn, p-4...</p>\n                <a href="#" class="btn btn-warning">Оқуды бастау</a>\n            </div>\n        </div>\n    </body>\n</html>\n',
+      "styles.css": "", "script.js": "",
+    },
+    "CSS анимация": {
+      "index.html": '<!DOCTYPE html>\n<html lang="kk">\n    <head>\n        <link href="styles.css" rel="stylesheet">\n        <title>Күн</title>\n    </head>\n    <body>\n        <div class="sun"></div>\n    </body>\n</html>\n',
+      "styles.css": "body {\n    background: linear-gradient(#0093ad, #0a4c7a);\n    height: 90vh;\n    display: grid;\n    place-items: center;\n}\n\n.sun {\n    width: 120px;\n    height: 120px;\n    border-radius: 50%;\n    background: #f2b705;\n    box-shadow: 0 0 60px #ffd75e;\n    animation: pulse 2s ease-in-out infinite;\n}\n\n@keyframes pulse {\n    50% { transform: scale(1.15); }\n}\n",
+      "script.js": "",
+    },
+  };
+
+  function webAssemble(files, name) {
+    let html = files[name] ?? `<p>${esc(name)} файлы жоқ</p>`;
+    html = html.replace(/<link\b[^>]*href=["']([^"':]+\.css)["'][^>]*>/gi, (m, f) => (files[f] != null ? `<style>\n${files[f]}\n</style>` : m));
+    html = html.replace(/<script\b[^>]*src=["']([^"':]+\.js)["'][^>]*>\s*<\/script>/gi, (m, f) => (files[f] != null ? `<script>\n${files[f].replace(/<\/script/gi, "<\\/script")}\n<\/script>` : m));
+    // Беттер арасындағы сілтемелерді алдын ала қарауда ашу
+    const nav = `<script>document.addEventListener("click",function(e){var a=e.target.closest("a[href]");if(!a)return;var h=a.getAttribute("href");if(/^[\\w.-]+\\.html$/.test(h)){e.preventDefault();parent.postMessage({cs50kzNav:h},"*");}});<\/script>`;
+    return /<\/body>/i.test(html) ? html.replace(/<\/body>/i, nav + "</body>") : html + nav;
+  }
+
+  function webEditor(el, opts) {
+    const KEY = opts.key;
+    let files = store.get(KEY, null) || JSON.parse(JSON.stringify(opts.start));
+    let cur = Object.keys(files)[0], page = "index.html", timer;
+    el.innerHTML = `
+      ${opts.examples ? `<div class="pg-examples we-examples">${Object.keys(WEB_EXAMPLES).map((k) => `<button type="button">${esc(k)}</button>`).join("")}</div>` : ""}
+      <div class="we-grid">
+        <div class="we-edit">
+          <div class="we-tabs"></div>
+          <textarea class="pg-editor we-code" spellcheck="false" autocapitalize="off" aria-label="Файл мазмұны"></textarea>
+        </div>
+        <div class="we-view">
+          <div class="we-bar"><span class="we-dots"><i></i><i></i><i></i></span><span class="we-url"></span><button type="button" class="we-refresh" aria-label="Жаңарту">↻</button></div>
+          <iframe class="we-frame" sandbox="allow-scripts allow-modals" title="Алдын ала қарау"></iframe>
+        </div>
+      </div>`;
+    const ed = el.querySelector(".we-code"), frame = el.querySelector(".we-frame");
+    const save = () => store.set(KEY, files);
+    const tabs = () => {
+      el.querySelector(".we-tabs").innerHTML = Object.keys(files).map((f) => `<button type="button" data-f="${esc(f)}" class="${f === cur ? "on" : ""}">${esc(f)}${opts.multi && f !== "index.html" ? `<span class="we-x" data-del="${esc(f)}" title="Өшіру">×</span>` : ""}</button>`).join("") +
+        (opts.multi ? `<button type="button" class="we-add" title="Жаңа файл">+ файл</button>` : "");
+    };
+    const preview = () => {
+      if (!files[page]) page = "index.html";
+      el.querySelector(".we-url").textContent = page;
+      frame.srcdoc = webAssemble(files, page);
+    };
+    const open = (f) => { cur = f; ed.value = files[f]; tabs(); if (f.endsWith(".html")) { page = f; preview(); } };
+    el.querySelector(".we-tabs").addEventListener("click", (e) => {
+      const del = e.target.dataset.del;
+      if (del) { if (confirm(`${del} файлын өшіру керек пе?`)) { delete files[del]; save(); open("index.html"); } return; }
+      if (e.target.classList.contains("we-add")) {
+        const n = (prompt("Файл аты (мысалы, about.html, styles.css, script.js):") || "").trim();
+        if (!/^[\w-]+\.(html|css|js)$/.test(n)) { if (n) K.toast("Атау: латын әріптері + .html / .css / .js"); return; }
+        if (!files[n]) files[n] = n.endsWith(".html") ? `<!DOCTYPE html>\n<html lang="kk">\n    <head>\n        <link href="styles.css" rel="stylesheet">\n        <title>${n.replace(".html", "")}</title>\n    </head>\n    <body>\n        <a href="index.html">Басты бет</a>\n    </body>\n</html>\n` : "";
+        save(); open(n); return;
+      }
+      const f = e.target.closest("button[data-f]");
+      if (f) open(f.dataset.f);
+    });
+    ed.addEventListener("input", () => { files[cur] = ed.value; save(); clearTimeout(timer); timer = setTimeout(preview, 350); });
+    ed.addEventListener("keydown", (e) => { if (e.key === "Tab" && !e.shiftKey) { e.preventDefault(); ed.setRangeText("    ", ed.selectionStart, ed.selectionEnd, "end"); files[cur] = ed.value; save(); } });
+    el.querySelector(".we-refresh").addEventListener("click", preview);
+    window.addEventListener("message", (e) => {
+      if (e.source === frame.contentWindow && e.data && e.data.cs50kzNav) { page = e.data.cs50kzNav; preview(); }
+    });
+    el.querySelector(".we-examples")?.addEventListener("click", (e) => {
+      if (e.target.tagName !== "BUTTON") return;
+      files = JSON.parse(JSON.stringify(WEB_EXAMPLES[e.target.textContent])); save(); open("index.html");
+      K.mark && K.mark("web");
+    });
+    open(cur);
+    return { files: () => files };
+  }
+
+  function webLab(el) {
+    webEditor(el, { key: "pg:web", start: WEB_EXAMPLES["Сәлем"], examples: true, multi: false });
+  }
+
+  // ================= Homepage тексерушісі =================
+  function homepageCheck(files) {
+    const VOID = new Set(["area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"]);
+    const names = Object.keys(files), html = names.filter((n) => n.endsWith(".html"));
+    const res = [];
+    const add = (ok, t, d = "") => res.push({ ok, t, d });
+    add(html.length >= 4, `Кемінде 4 HTML беті (${html.length})`, html.length >= 4 ? "" : "«+ файл» арқылы about.html, hobbies.html сияқты беттер қосыңыз.");
+    // Сілтемелер: index.html-ден барлық бетке жетуге бола ма
+    const links = {};
+    html.forEach((f) => { links[f] = [...files[f].matchAll(/<a\b[^>]*href=["']\.?\/?([\w-]+\.html)(?:#[^"']*)?["']/gi)].map((m) => m[1]); });
+    const seen = new Set(["index.html"]), q = ["index.html"];
+    while (q.length) { const f = q.shift(); (links[f] || []).forEach((t) => { if (files[t] != null && !seen.has(t)) { seen.add(t); q.push(t); } }); }
+    const lost = html.filter((f) => !seen.has(f));
+    const broken = html.flatMap((f) => (links[f] || []).filter((t) => files[t] == null).map((t) => `${f} → ${t}`));
+    add(files["index.html"] != null && !lost.length && html.length > 1, "Барлық бетке index.html-ден сілтеме арқылы жетуге болады", lost.length ? "Жетуге болмайтын беттер: " + lost.join(", ") : "");
+    add(!broken.length, "Сынған сілтеме жоқ", broken.join("; "));
+    // Тегтер
+    const tags = new Set();
+    html.forEach((f) => [...files[f].matchAll(/<([a-zA-Z][a-zA-Z0-9]*)\b/g)].forEach((m) => tags.add(m[1].toLowerCase())));
+    ["html", "head", "body", "title"].forEach((t) => tags.delete(t));
+    add(tags.size >= 10, `Кемінде 10 түрлі HTML тегі (${tags.size})`, [...tags].sort().join(", "));
+    // Bootstrap
+    const all = html.map((f) => files[f]).join("\n");
+    const bsLink = /bootstrap[^"']*\.css/i.test(all);
+    const bsComp = /class=["'][^"']*\b(navbar|card|btn|carousel|alert|badge|accordion|modal|list-group|nav-tabs|dropdown|table)\b/i.test(all);
+    add(bsLink && bsComp, "Bootstrap қосылған және кемінде бір компонент қолданылған", !bsLink ? "<head>-ке Bootstrap CSS сілтемесін қосыңыз." : !bsComp ? "navbar, card, btn, carousel сияқты компонент қолданыңыз." : "");
+    // CSS
+    const css = names.filter((n) => n.endsWith(".css")).map((n) => files[n]).join("\n") + [...all.matchAll(/<style[^>]*>([\s\S]*?)<\/style>/gi)].map((m) => m[1]).join("\n");
+    const clean = css.replace(/\/\*[\s\S]*?\*\//g, "");
+    const sels = new Set(), props = new Set();
+    [...clean.matchAll(/([^{}]+)\{([^{}]*)\}/g)].forEach((m) => {
+      const sel = m[1].trim();
+      if (/^(from|to|\d+%)$/.test(sel) || sel.startsWith("@")) return;
+      sel.split(",").map((x) => x.trim()).filter(Boolean).forEach((x) => sels.add(x));
+      m[2].split(";").forEach((d) => { const pr = d.split(":")[0].trim().toLowerCase(); if (/^[a-z-]+$/.test(pr)) props.add(pr); });
+    });
+    const linkedCss = html.some((f) => /<link\b[^>]*href=["'][\w-]+\.css["']/i.test(files[f]));
+    add(names.some((n) => n.endsWith(".css")) && linkedCss, "Жеке .css файлы бар және беттерге қосылған", linkedCss ? "" : '<link href="styles.css" rel="stylesheet"> жолын қосыңыз.');
+    add(props.size >= 5, `Кемінде 5 түрлі CSS қасиеті (${props.size})`, [...props].join(", "));
+    add(sels.size >= 5, `Кемінде 5 түрлі CSS селекторы (${sels.size})`, [...sels].join(", "));
+    add([...sels].some((x) => /#[\w-]/.test(x)), "Кемінде бір #id селекторы", "");
+    add([...sels].some((x) => /\.[a-zA-Z_][\w-]*/.test(x)), "Кемінде бір .class селекторы", "");
+    // JavaScript
+    const js = names.filter((n) => n.endsWith(".js")).some((n) => files[n].trim()) && /<script\b[^>]*src=["'][\w-]+\.js["']/i.test(all);
+    const inline = [...all.matchAll(/<script\b(?![^>]*src)[^>]*>([\s\S]*?)<\/script>/gi)].some((m) => m[1].trim());
+    add(js || inline, "JavaScript-пен интерактив мүмкіндік", js || inline ? "" : "script.js жазып, <script src=\"script.js\"></script> арқылы қосыңыз.");
+    // HTML дұрыстығы
+    const probs = [];
+    html.forEach((f) => {
+      const t = files[f];
+      if (!/^\s*<!DOCTYPE html>/i.test(t)) probs.push(`${f}: <!DOCTYPE html> жоқ`);
+      if (!/<html\b[^>]*\blang=/i.test(t)) probs.push(`${f}: <html lang="..."> жоқ`);
+      if (!/<title>[^<]+<\/title>/i.test(t)) probs.push(`${f}: <title> жоқ`);
+      const stack = [];
+      const src = t.replace(/<!--[\s\S]*?-->/g, "").replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1>/gi, "");
+      for (const m of src.matchAll(/<(\/?)([a-zA-Z][a-zA-Z0-9]*)\b[^>]*?(\/?)>/g)) {
+        const [, close, name, self] = m, n = name.toLowerCase();
+        if (VOID.has(n) || self) continue;
+        if (!close) stack.push(n);
+        else if (stack[stack.length - 1] === n) stack.pop();
+        else if (["p", "li", "td", "th", "tr", "option"].includes(stack[stack.length - 1]) && stack.includes(n)) { while (stack.pop() !== n); }
+        else { probs.push(`${f}: </${n}> күтілмеген жерде${stack.length ? ` (ашық тұрған: <${stack[stack.length - 1]}>)` : ""}`); break; }
+      }
+      const rest = stack.filter((x) => !["p", "li", "td", "th", "tr", "option"].includes(x));
+      if (rest.length) probs.push(`${f}: жабылмаған тег <${rest[rest.length - 1]}>`);
+    });
+    add(!probs.length, "HTML құрылымы дұрыс (DOCTYPE, lang, title, тегтер жабылған)", probs.slice(0, 4).join("; "));
+    return res;
+  }
+
+  function homepage(el) {
+    el.innerHTML = `
+      <div class="ag-head"><b>✅ Homepage тексерушісі</b><span>талаптар автоматты түрде тексеріледі</span></div>
+      <p class="ag-note">Сайтыңыздың файлдарын осында жасаңыз не көшіріп қойыңыз. Оң жақта нәтиже бірден көрінеді, ал сілтемелерді басып беттер арасында жүруге болады. «Тексеру» тапсырманың барлық талабын қарайды. Ресми тапсыру бәрібір <code>submit50</code> арқылы.</p>
+      <div class="hp-editor"></div>
+      <div class="pg-actions"><button type="button" class="btn gold hp-run">▶ Тексеру</button><span class="ag-score hp-score"></span></div>
+      <ul class="ag-results hp-results"></ul>`;
+    const start = {
+      "index.html": '<!DOCTYPE html>\n<html lang="kk">\n    <head>\n        <meta name="viewport" content="width=device-width, initial-scale=1">\n        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">\n        <link href="styles.css" rel="stylesheet">\n        <title>Менің сайтым</title>\n    </head>\n    <body>\n        <h1 id="title">Сәлем! Мен — ...</h1>\n        <p class="lead">Өзіңіз туралы жазыңыз.</p>\n        <script src="script.js"></script>\n    </body>\n</html>\n',
+      "styles.css": "#title {\n    color: #0a4c7a;\n}\n",
+      "script.js": "",
+    };
+    const ed = webEditor(el.querySelector(".hp-editor"), { key: "hp:files", start, multi: true });
+    el.querySelector(".hp-run").addEventListener("click", () => {
+      const r = homepageCheck(ed.files());
+      const pass = r.filter((x) => x.ok).length;
+      el.querySelector(".hp-results").innerHTML = r.map((x) => `<li class="${x.ok ? "ok" : "bad"}"><span class="ag-ico">${x.ok ? "✓" : "✗"}</span>${esc(x.t)}${x.d ? `<div class="hp-detail">${esc(x.d)}</div>` : ""}</li>`).join("");
+      el.querySelector(".hp-score").textContent = `${pass} / ${r.length} талап орындалды`;
+      if (pass === r.length) {
+        K.celebrate(); K.botaSay && K.botaSay("Тамаша сайт! Енді оны submit50 арқылы тапсырыңыз 🎉", "happy");
+        const g = store.get("cs50kz:graded", {}); g.homepage = Date.now(); store.set("cs50kz:graded", g); K.check && K.check();
+      }
+    });
+  }
+
   // ================= Апталық челлендж =================
   function weekly(el) {
     const GOALS = [
@@ -1298,6 +1484,8 @@
   document.querySelectorAll(".autograder").forEach(autograder);
   document.querySelectorAll(".sql-grader").forEach(sqlGrader);
   document.querySelectorAll(".detective").forEach(detective);
+  document.querySelectorAll(".web-lab").forEach(webLab);
+  document.querySelectorAll(".homepage-check").forEach(homepage);
   document.querySelectorAll(".weekly").forEach(weekly);
   document.querySelectorAll(".course-map").forEach(courseMap);
 })();
