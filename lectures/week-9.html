@@ -1,0 +1,792 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>9-апта: Flask — CS50 қазақша</title>
+  <meta name="description" content="CS50 9-апта: Flask, маршруттар, Jinja шаблондары, GET және POST, формалар, дерекқор, cookie мен сессиялар, MVC, API және JSON.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../assets/js/main.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../index.html">Лекциялар</a>
+        <a href="../about.html" class="hide-sm">Курс туралы</a>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content">
+      <div class="lecture-head">
+        <div class="num">9-апта</div>
+        <h1>Flask</h1>
+        <p>Python мен SQL-ды вебке қайтарамыз: Flask фреймворкі, маршруттар, Jinja шаблондары, GET және POST, Frosh IMs тіркеу сайты, cookie мен сессиялар, дүкен себеті, MVC, API және JSON.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/x/weeks/9/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <h2 id="intro">Кіріспе</h2>
+      <p>Бұл CS50, 9-апта. Бұл апта курстан кейін бағдарламалауды жалғастырсаңыз, шын өмірде істейтініңізге ең жақын. Оған ең ұқсасы 6-апта болды: онда жаңа ұғымдар аз еді, біз бәрін C-дан Python-ға аудардық. Бұл аптаның мақсаты — соңғы 10 аптаны біріктіру. Құралдар жәшігіңіздегі құрылыс блоктарын жаңа мәселеге, <strong>веб-бағдарламалауға</strong> қолданамыз.</p>
+      <p>Өткен аптада HTML, CSS және клиент жағындағы JavaScript-ті көрдік. Бүгін <strong>сервер жағын</strong> қайтарамыз: қайтадан Python мен SQL жазып, өз толыққанды веб-қосымшаларымызды жасаймыз.</p>
+
+      <h2 id="routes">Статикалық беттерден маршруттарға</h2>
+      <p>Өткен аптада <code>http-server</code> қолдандық. Ол ағымдағы қалтадағы файлдарды жай <strong>статикалық</strong> түрде таратады. URL-дер нақты файлға сілтейтін: <code>/file.html</code>, <code>/folder/</code>, <code>/folder/file.html</code>. Жалпы айтқанда, бұл сервердегі <strong>жол</strong> (<span class="term-en">path</span>).</p>
+      <p>Бүгін URL-дегі осы бөлікті <strong>маршрут</strong> (<span class="term-en">route</span>) деп атаймыз. Ол енді міндетті түрде файл емес: доменнен кейінгі бөлікті талдап, оны серверге жай кіріс ретінде қолданамыз. Параметрлер бұрынғыдай: <code>/route?key=value&amp;key=value</code>. Google-да мысықтарды іздегенде, конвертте мынау болды:</p>
+<pre data-lang="text"><code class="language-plaintext">GET /search?q=cats HTTP/2
+Host: www.google.com</code></pre>
+      <p><code>/search</code> — <code>search.html</code> емес, қалта да емес. Бұл Google серверінде жұмыс істейтін бағдарламаның аты, яғни біз бүгін өзіміз бағдарламалайтын <em>маршрут</em>.</p>
+
+      <h2 id="flask">Flask</h2>
+      <p>Веб-серверді C-да жазу азап болар еді: тым төменгі деңгейлі тіл. Python-да да бәрін нөлден жасасақ, конверттің ішін талдап, кірістерді шығарып алатын көп код жазу керек. Әлем әдетте мұны қайта ойлап таппайды. Біз <strong>Flask</strong> қолданамыз. Бұл <strong>фреймворк</strong>, дәлірек айтқанда <strong>микрофреймворк</strong>: басқалар жазған кітапхана, ол GET және POST сұрауларын өңдеу, URL-ден кілт-мән жұптарын алу сияқты кез келген веб-қосымшаға керек «тауарлық» жұмысты істейді. Bootstrap сияқты, фреймворк — кітапхана және оны қолдану келісімдері. Оларды құжаттамадан не осындай курстан үйренесіз.</p>
+      <p><code>http-server</code>-дің орнына енді мына команданы іске қосамыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ flask run</code></pre>
+      <p>Ол ағымдағы қалтадан келісімге сай кодты іздейді. Ең аз дегенде <code>app.py</code> файлы керек. Сондай-ақ келісім бойынша <code>requirements.txt</code> файлы болады: ішінде қосымша қолданатын кітапханалардың аттары, әр жолға біреуден. Flask-ты өзіңіз орнатуға болады:</p>
+<pre class="terminal"><code class="language-plaintext">$ pip install flask</code></pre>
+      <p>Ал <code>requirements.txt</code> болса, кітапханаларды есте сақтап, қолмен теріп отырудың қажеті жоқ.</p>
+
+      <h3 id="hello-flask">Ең қарапайым қосымша</h3>
+<pre data-lang="python"><code class="language-python">from flask import Flask
+
+app = Flask(__name__)
+
+
+@app.route("/")
+def index():
+    return "hello, world"</code></pre>
+      <ul>
+        <li><code>from flask import Flask</code> — <code>flask</code> пакетінен (кіші әріппен) <code>Flask</code> функциясын (бас әріппен) аламыз. Бұл көшіріп қоятын жол.</li>
+        <li><code>app = Flask(__name__)</code> — «осы файлды Flask қосымшасына айналдыр». <code>__name__</code> — ағымдағы файлдың аты, 6-аптадағы <code>if __name__ == "__main__":</code> есіңізде ме?</li>
+        <li><code>@app.route("/")</code> — Python <strong>декораторы</strong> (<span class="term-en">decorator</span>): келесі функцияның мінезіне әсер ететін функция. «<code>/</code> маршрутын <code>index</code> функциясымен байланыстыр».</li>
+        <li>Функцияны кез келген атпен атауға болады, бірақ <code>/</code> сайттың әдепкі беті болғандықтан, келісім бойынша <code>index</code>.</li>
+      </ul>
+      <p><code>flask run</code> іске қосылғанда, жасыл батырма шығады. <code>http-server</code> 8080 портын қолданатын, ал Flask әдепкіде <strong>5000</strong> портын қолданады. Браузерде «hello, world» көрінеді. Бірақ <em>View page source</em> ашсаңыз, HTML жоқ, тек бір жол мәтін. Әзірлеуші құралдары браузердің бос орындарды өзі толтырғанын көрсетеді.</p>
+      <p>Толық HTML-ді Python жолы ретінде қайтаруға болар еді, бірақ бұл ақымақтық. HTML-ді бөлек файлға шығарайық:</p>
+<pre data-lang="python"><code class="language-python">from flask import Flask, render_template
+
+app = Flask(__name__)
+
+
+@app.route("/")
+def index():
+    return render_template("index.html")</code></pre>
+      <p><code>render_template</code> HTML <strong>шаблонын</strong> «шығарады». Flask құжаттамасы бойынша HTML файлдарын <code>templates</code> атты қалтаға салу керек (бас әріптер маңызды). Сонымен құрылым мынадай:</p>
+<pre data-lang="text"><code class="language-plaintext">app.py
+requirements.txt
+templates/
+    index.html</code></pre>
+
+      <h3 id="args">URL-ден кіріс алу</h3>
+      <p><code>?name=David</code> берсек, «hello, David» көргіміз келеді. URL-ді <code>?</code>, <code>=</code>, <code>&amp;</code> бойынша өзіміз бөлшектеудің қажеті жоқ: Flask-та <code>request.args</code> деген арнайы глобалды айнымалы бар. <code>args</code> — HTTP сұрауымен берілген аргументтер (параметрлер).</p>
+<pre data-lang="python"><code class="language-python">from flask import Flask, render_template, request
+
+app = Flask(__name__)
+
+
+@app.route("/")
+def index():
+    name = request.args["name"]
+    return render_template("index.html", placeholder=name)</code></pre>
+      <p><code>render_template</code>-ке 6-аптадағы <strong>атаулы аргумент</strong> беріп отырмыз. Ал шаблонда:</p>
+<pre data-lang="html"><code class="language-xml">&lt;!DOCTYPE html&gt;
+
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;hello&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        hello, {{ placeholder }}
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Қос фигуралы жақша Flask-қа айнымалының мәнін <strong>қою</strong> (<span class="term-en">interpolate</span>) керегін айтады. Бұл — тағы бір синтаксис: Python-да f-жолдар, C-да <code>%s</code> болды. Енді <code>?name=David</code> → «hello, David», <code>?name=Kelly</code> → «hello, Kelly». JavaScript мысалдарынан айырмашылығы: <em>View page source</em> көрсеткендей, «David» сөзі <strong>серверден</strong> келді.</p>
+      <div class="callout term">
+        <span class="callout-title">Термин: Jinja және шаблон</span>
+        Flask <strong>Jinja</strong> деген басқа кітапхананы қолданады. Ол <strong>шаблондау тілі</strong> (<span class="term-en">templating language</span>): қос фигуралы жақшадағы айнымалылардың орнына мәнді қоюды біледі. Flask авторлары бұл дөңгелекті қайта ойлап таппады. <strong>Шаблон</strong> — пайдаланушы көретін беттің жобасы (<span class="term-en">blueprint</span>), ол мәндерді қою арқылы динамикалық түрде жасалады. Сондықтан ол <code>templates</code> қалтасында.
+      </div>
+      <p>Бірақ қате бар: параметрсіз <code>/</code>-ге кірсек, <strong>400 Bad Request</strong> шығады, яғни пайдаланушы күтілген параметрді бермеді. URL-ді ешкім қолмен термейді, бұл бизнес үшін жаман. Шарт қосайық:</p>
+<pre data-lang="python"><code class="language-python">@app.route("/")
+def index():
+    if "name" in request.args:
+        name = request.args["name"]
+    else:
+        name = "world"
+    return render_template("index.html", placeholder=name)</code></pre>
+      <p><code>?name=</code> деп мәнсіз берсек, «hello,» ғана шығады: кілт бар, бірақ мәні жоқ. Бұл өрнек соншалық жиі қолданылатындықтан, қысқа жолы бар:</p>
+<pre data-lang="python"><code class="language-python">@app.route("/")
+def index():
+    name = request.args.get("name", "world")
+    return render_template("index.html", name=name)</code></pre>
+      <p><code>get</code> (HTTP етістігіне қатысы жоқ) — «маған мынаны бер, болмаса әдепкі мәнді бер». Төрт жол бір жолға айналды. <code>name=name</code> оғаш көрінеді, бірақ Flask-та бұл келісім: сол жақтағысы — шаблондағы айнымалының аты, оң жақтағысы — мәні. Шаблонда енді <code>hello, {{ name }}</code>.</p>
+
+      <h2 id="forms">Формалар және екінші маршрут</h2>
+      <p>Пайдаланушыны URL теруге мәжбүрлемей, форма көрсетейік. <code>index.html</code>:</p>
+<pre data-lang="html"><code class="language-xml">&lt;form action="/greet" method="get"&gt;
+    &lt;input autocomplete="off" autofocus name="name" placeholder="Name" type="text"&gt;
+    &lt;button type="submit"&gt;Greet&lt;/button&gt;
+&lt;/form&gt;</code></pre>
+      <p>Мұндағы <code>name="name"</code> — HTML атрибуты, Python-дағы <code>name</code> емес. <code>action="/greet"</code> — біз ойлап тапқан маршрут. Оны <code>app.py</code>-ге қосамыз:</p>
+<pre data-lang="python"><code class="language-python">@app.route("/")
+def index():
+    return render_template("index.html")
+
+
+@app.route("/greet")
+def greet():
+    return render_template("greet.html", name=request.args.get("name", "world"))</code></pre>
+      <p>Функция атын маршрутпен бірдей қойдық: шешім саны азаяды. Форманы жібергенде, URL <code>/greet?name=David</code> болады. Google-дан айырмашылығы: <code>action</code> өз серверімізде. Бірақ <strong>500 Internal Server Error</strong> шығады! Бұл «сенің кінәң» дегенді білдіреді. Пайдаланушыға тек жалпы қара-ақ хабар көрінеді: сервердегі қателерді көрсету киберқауіпсіздік үшін жаман. Ал <code>flask run</code> іске қосылған терминалда:</p>
+<pre class="terminal"><code class="language-plaintext">jinja2.exceptions.TemplateNotFound: greet.html</code></pre>
+      <p>Мен жай <code>greet.html</code>-ды жасамадым. Оны жасағаннан кейін бәрі жұмыс істейді. (Екі терминал ыңғайлы: біреуінде сервер жұмыс істеп тұрады, екіншісінде команда тересіз.)</p>
+
+      <h2 id="layout">Шаблондарды мұралау: layout.html</h2>
+      <p><code>index.html</code> мен <code>greet.html</code> салыстырсақ, форма мен «hello» бөлігінен басқа бәрі бірдей. Үш, төрт, бес маршрут болса, бірдей HTML-ді қайта-қайта жазу ақымақтық. Ортақ бөлікті <code>layout.html</code>-ге шығарамыз (Flask құжаттамасындағы келісім):</p>
+<pre data-lang="html"><code class="language-xml">&lt;!DOCTYPE html&gt;
+
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;meta name="viewport" content="initial-scale=1, width=device-width"&gt;
+        &lt;title&gt;hello&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        {% block body %}{% endblock %}
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p><code>{% ... %}</code> — Jinja тегтері. <code>block body</code> — <code>body</code> деп атаған (кез келген атау болар еді) блок. Бұл бір сөз емес, тұтас <em>код блогына</em> арналған орын. HTML авторлары бұрыштық жақшаларды, Jinja авторлары фигуралы жақша мен пайыз белгісін таңдады: олар кәдімгі HTML-мен шатаспайды.</p>
+      <p>Енді <code>index.html</code>:</p>
+<pre data-lang="html"><code class="language-xml">{% extends "layout.html" %}
+
+{% block body %}
+
+    &lt;form action="/greet" method="get"&gt;
+        &lt;input autocomplete="off" autofocus name="name" placeholder="Name" type="text"&gt;
+        &lt;button type="submit"&gt;Greet&lt;/button&gt;
+    &lt;/form&gt;
+
+{% endblock %}</code></pre>
+      <p>және <code>greet.html</code>:</p>
+<pre data-lang="html"><code class="language-xml">{% extends "layout.html" %}
+
+{% block body %}
+
+    hello, {{ name }}
+
+{% endblock %}</code></pre>
+      <p>Беттер оғаш көрінеді, бірақ олар мәніне дейін «сығылды». <code>viewport</code> тегі бетті мобильді құрылғыларға бейімдейді: онсыз телефонда бәрі кішкентай болады. Браузерге жіберілген HTML-де шегіністер онша әдемі емес, бірақ браузерге бәрібір.</p>
+
+      <h2 id="post">GET-тен POST-қа</h2>
+      <p>Неге әр мысалда атымыз URL-де көрінеді? <code>GET</code> осылай жұмыс істейді: параметрлер URL-ге жазылып, браузер тарихында сақталады. Қызық бауырыңыз браузеріңізге отырса, бәрін көреді. Ал бұл аты емес, пайдаланушы аты, құпиясөз, карта нөмірі болса ше? <code>GET</code> Google іздеуі сияқты маңызы аз нәрселерге, не тікелей сілтеме беруге ыңғайлы. Ал <code>POST</code> деректерді конверттің тереңіне салады: URL-де көрінбейді, бірақ сервер оқи алады.</p>
+<pre data-lang="html"><code class="language-xml">&lt;form action="/greet" method="post"&gt;</code></pre>
+      <p>Енді URL жай <code>/greet</code>, бірақ <strong>405 Method Not Allowed</strong> шығады. Flask маршруттар әдепкіде тек <code>GET</code>-ті қолдайды деп есептейді:</p>
+<pre data-lang="python"><code class="language-python">@app.route("/greet", methods=["POST"])
+def greet():
+    return render_template("greet.html", name=request.form.get("name", "world"))</code></pre>
+      <p>Маңызды: <code>GET</code> параметрлері <code>request.args</code>-та, ал <code>POST</code> параметрлері <code>request.form</code>-да. Екеуі де формалардан келетіндіктен, атаулары түсініксіз, оны жай есте сақтау керек. Әзірлеуші құралдарының <em>Network</em> қойындысында сұрауды таңдап, <em>Payload</em> бөлімінде <code>name: David</code> деген форма деректерін көресіз. Gmail-ға кіргенде де өз пернетақтаңыз жіберген деректерді осылай көре аласыз.</p>
+
+      <h3 id="one-route">Бір маршрутпен</h3>
+      <p>Әр форма үшін екі маршрут (біреуі форманы көрсетеді, біреуі өңдейді) болса, маршруттар екі есе көбейеді. Біріктірейік:</p>
+<pre data-lang="python"><code class="language-python">@app.route("/", methods=["GET", "POST"])
+def index():
+    if request.method == "POST":
+        return render_template("greet.html", name=request.form.get("name", "world"))
+    return render_template("index.html")</code></pre>
+      <p>Пайдаланушы мұнда <code>POST</code> арқылы келсе, демек форманы жіберді, сәлемдесеміз. Әйтпесе (<code>GET</code>, жай сайтқа кірді), форманы көрсетеміз. <code>else</code> жазудың қажеті жоқ: тек екі етістік қолдайтындықтан, <code>GET</code> болғаны анық. <code>index.html</code>-дағы <code>action</code>-ды <code>"/"</code>-ке өзгерту керек (не <code>action</code>-ды мүлде алып тастау: сонда форма өзі келген жерге жіберіледі).</p>
+      <p>Логиканы шаблонға да қоюға болады. Jinja Python-ға ұқсас шарттарды қолдайды:</p>
+<pre data-lang="html"><code class="language-xml">{% extends "layout.html" %}
+
+{% block body %}
+
+    hello,
+    {% if name %}
+        {{ name }}
+    {% else %}
+        world
+    {% endif %}
+
+{% endblock %}</code></pre>
+      <p>«hello,»-дан кейін көп бос орын бар, бірақ HTML артық бос орындарды бір бос орынға жинайды.</p>
+
+      <h2 id="froshims">Frosh IMs</h2>
+      <p>Дэвид CS50-ді екінші курста оқығанда, курста веб-бағдарламалау болған жоқ, әлемде веб те әлі жаңа еді. Бірінші курс студенттерінің спорт бағдарламасына (<em>freshman intramural sports, Frosh IMs</em>) тіркелу үшін Matthews ғимаратынан Wigglesworth-қа қағаз парақ алып барып, проктордың есігінің астынан итеретін. Курстан кейін Дэвидтің алғашқы жобаларының бірі сол кезде танымал Perl тілі мен CSV файлдарын қолданып, тіркелуге арналған веб-сайт жасау болды. (Қайталанатын фон суреттері 1997 жылы да сәнді емес еді.) Соның бастамасын қайта жасайық.</p>
+<pre data-lang="html"><code class="language-xml">{% extends "layout.html" %}
+
+{% block body %}
+    &lt;h1&gt;Register&lt;/h1&gt;
+    &lt;form action="/register" method="post"&gt;
+        &lt;input autocomplete="off" autofocus name="name" placeholder="Name" type="text"&gt;
+        &lt;select name="sport"&gt;
+            &lt;option disabled selected value=""&gt;Sport&lt;/option&gt;
+            &lt;option value="Basketball"&gt;Basketball&lt;/option&gt;
+            &lt;option value="Soccer"&gt;Soccer&lt;/option&gt;
+            &lt;option value="Ultimate Frisbee"&gt;Ultimate Frisbee&lt;/option&gt;
+        &lt;/select&gt;
+        &lt;button type="submit"&gt;Register&lt;/button&gt;
+    &lt;/form&gt;
+{% endblock %}</code></pre>
+      <ul>
+        <li><code>POST</code> — бөлмелестер бір-бірінің қайда тіркелгенін тарихтан көрмеуі үшін.</li>
+        <li><code>select</code> — <strong>ашылмалы мәзір</strong>. Еркін мәтіндік өріс қателерге, түрлі бас әріптерге толы болар еді. Мәзір пайдаланушының таңдауын стандарттайды.</li>
+        <li><code>option</code>-ның <code>value</code>-і серверге жіберіледі, ал тегтер арасындағы мәтінді пайдаланушы көреді.</li>
+        <li>Басында баскетболды таңдап қою — пайдаланушы абайсызда тіркелуі мүмкін. Сондықтан мәні бос «Sport» нұсқасы әдепкіде таңдалған (<code>selected</code>).</li>
+      </ul>
+<pre data-lang="python"><code class="language-python">@app.route("/register", methods=["POST"])
+def register():
+    if not request.form.get("name") or not request.form.get("sport"):
+        return render_template("failure.html")
+    return render_template("success.html")</code></pre>
+      <p>Есімі не спорты жоқ болса, «You are not registered», әйтпесе «You are registered». (Дэвид екі рет тырнақшаны жабуды ұмытып, екі рет 500 қатесін алды. Терминал қатені тіпті астын сызып көрсетеді. Сол бетті қайта жүктесеңіз, браузер форманы қайта жіберуді растауды сұрайды.)</p>
+
+      <h3 id="validation">Сервер жағында тексеру</h3>
+      <p>Студент волейболға тіркелгісі келсе ше? Әзірлеуші құралдарында <em>Edit as HTML</em> арқылы <code>&lt;option value="Volleyball"&gt;Volleyball&lt;/option&gt;</code> қосып, Келли «волейболға тіркелді». <strong>Пайдаланушы енгізгеніне ешқашан сенбеңіз.</strong> Абайсыздықтан, ақымақтықтан не, Келлидің жағдайындағыдай, әдейі. Шешімі — серверде тексеру.</p>
+      <p>Спорттарды <code>app.py</code>-де де, <code>index.html</code>-да да қолмен жазу — қайталау. Глобалды тізім жасайық (бас әріптер — «өзгертпе» деген ар-ұждан келісімі, Python-да C-дағыдай <code>const</code> жоқ):</p>
+<pre data-lang="python"><code class="language-python">SPORTS = [
+    "Basketball",
+    "Soccer",
+    "Ultimate Frisbee"
+]
+
+
+@app.route("/")
+def index():
+    return render_template("index.html", sports=SPORTS)
+
+
+@app.route("/register", methods=["POST"])
+def register():
+    if not request.form.get("name") or request.form.get("sport") not in SPORTS:
+        return render_template("failure.html")
+    return render_template("success.html")</code></pre>
+      <p>Ал шаблонда опцияларды Jinja циклімен генерациялаймыз:</p>
+<pre data-lang="html"><code class="language-xml">&lt;select name="sport"&gt;
+    &lt;option disabled selected value=""&gt;Sport&lt;/option&gt;
+    {% for sport in sports %}
+        &lt;option value="{{ sport }}"&gt;{{ sport }}&lt;/option&gt;
+    {% endfor %}
+&lt;/select&gt;</code></pre>
+      <p>Енді 3 не 30 спорт болса да, бәрін <code>app.py</code>-дегі бір тізімнен басқарамыз. Ашылмалы мәзірдің орнына <strong>радио батырмалар</strong> да болады, олар өзара жоққа шығарады:</p>
+<pre data-lang="html"><code class="language-xml">{% for sport in sports %}
+    &lt;input name="sport" type="radio" value="{{ sport }}"&gt; {{ sport }}
+{% endfor %}</code></pre>
+      <p>Браузер тек біреуін таңдауға рұқсат беретінін қайдан біледі? Барлығының <code>name</code>-і бірдей. Серверге бәрібір: <code>request.form</code>-да бәрібір <code>sport</code>.</p>
+
+      <h3 id="errors">Түсінікті қате хабарлары</h3>
+      <p>«You are not registered» деп қана айту — нашар UX (<span class="term-en">user experience</span>). Не дұрыс емес екенін айтайық. <code>error.html</code>:</p>
+<pre data-lang="html"><code class="language-xml">{% extends "layout.html" %}
+
+{% block body %}
+    &lt;h1&gt;Error&lt;/h1&gt;
+    &lt;p&gt;{{ message }}&lt;/p&gt;
+    &lt;img alt="Grumpy Cat" src="/static/cat.jpg"&gt;
+{% endblock %}</code></pre>
+<pre data-lang="python"><code class="language-python">@app.route("/register", methods=["POST"])
+def register():
+
+    # Атын тексеру
+    name = request.form.get("name")
+    if not name:
+        return render_template("error.html", message="Missing name")
+
+    # Спортты тексеру
+    sport = request.form.get("sport")
+    if not sport:
+        return render_template("error.html", message="Missing sport")
+    if sport not in SPORTS:
+        return render_template("error.html", message="Invalid sport")
+
+    # Тіркелді
+    return render_template("success.html")</code></pre>
+      <p>(Дэвид бұл жолы <code>block body</code>-дің орнына <code>body block</code> деп жазып қойды, Jinja «unknown tag» деп ескертті.) Суреттер, CSS және JavaScript сияқты <strong>статикалық</strong> файлдарды Flask-та <code>static</code> қалтасына салу керек. Сурет <code>app.py</code>-дің қасында жатса, көрінбейді: <code>mv cat.jpg static/</code> және HTML-де <code>/static/cat.jpg</code>. Бірақ <code>render_template</code> <code>templates</code> қалтасын өзі біледі, онда <code>templates/</code> деп жазбаймыз.</p>
+
+      <h3 id="registrants">Тіркелгендерді сақтау</h3>
+      <p>Деректерді лақтырып тастамай, есте сақтайық. Бірінші нұсқа — жадтағы сөздік:</p>
+<pre data-lang="python"><code class="language-python">from flask import Flask, redirect, render_template, request
+
+app = Flask(__name__)
+
+REGISTRANTS = {}
+
+...
+
+
+@app.route("/register", methods=["POST"])
+def register():
+    ...
+    REGISTRANTS[name] = sport
+    return redirect("/registrants")
+
+
+@app.route("/registrants")
+def registrants():
+    return render_template("registrants.html", registrants=REGISTRANTS)</code></pre>
+      <p><code>{}</code> — бос сөздік (<code>dict()</code>-пен бірдей, бірақ Python-ға тән жазу). <code>redirect</code> пайдаланушыны басқа маршрутқа жібереді, өткен аптадағы <code>301</code> сияқты. <code>registrants.html</code>:</p>
+<pre data-lang="html"><code class="language-xml">{% extends "layout.html" %}
+
+{% block body %}
+    &lt;h1&gt;Registrants&lt;/h1&gt;
+    &lt;table&gt;
+        &lt;thead&gt;
+            &lt;tr&gt;
+                &lt;th&gt;Name&lt;/th&gt;
+                &lt;th&gt;Sport&lt;/th&gt;
+            &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+            {% for name in registrants %}
+                &lt;tr&gt;
+                    &lt;td&gt;{{ name }}&lt;/td&gt;
+                    &lt;td&gt;{{ registrants[name] }}&lt;/td&gt;
+                &lt;/tr&gt;
+            {% endfor %}
+        &lt;/tbody&gt;
+    &lt;/table&gt;
+{% endblock %}</code></pre>
+      <p>Gmail не Outlook жәшігі де шамамен осылай: жадта деректер бар, ал Jinja-ға ұқсас кодпен <code>tr</code> артынан <code>tr</code> шығарылады. Бірақ мәселе: <kbd>Ctrl</kbd>+<kbd>C</kbd> басып Flask-ты тоқтатсаңыз (не сервер қайта жүктелсе, не <code>app.py</code> өзгергенде Flask өзі қайта жүктесе), глобалды айнымалы жоғалады, жад босатылады. Doug дерекқорда жалғыз қалғаны сондықтан болды.</p>
+
+      <h3 id="sql">SQLite дерекқоры</h3>
+      <p>Шешімі — нағыз дерекқор. 7-аптадағы бәрі қайта оралады. Курстың «жетектегіш дөңгелектерін» алып тастасақ та, CS50-дің SQL кітапханасы Python-да SQL-ды әлдеқайда оңай етеді. Дэвид алдын ала <code>froshims.db</code> жасаған:</p>
+<pre class="terminal"><code class="language-plaintext">$ sqlite3 froshims.db
+sqlite&gt; .schema
+CREATE TABLE registrants (
+    id INTEGER,
+    name TEXT NOT NULL,
+    sport TEXT NOT NULL,
+    PRIMARY KEY(id)
+);</code></pre>
+<pre data-lang="python"><code class="language-python">from cs50 import SQL
+from flask import Flask, redirect, render_template, request
+
+app = Flask(__name__)
+
+db = SQL("sqlite:///froshims.db")
+
+...
+
+
+@app.route("/register", methods=["POST"])
+def register():
+    ...
+    db.execute("INSERT INTO registrants (name, sport) VALUES(?, ?)", name, sport)
+    return redirect("/registrants")
+
+
+@app.route("/registrants")
+def registrants():
+    registrants = db.execute("SELECT * FROM registrants")
+    return render_template("registrants.html", registrants=registrants)</code></pre>
+      <p>F-жолдар жоқ, пайдаланушы енгізгенін тікелей қоспаймыз: SQL инъекциясынан қорғану үшін <code>?</code> орын толтырғыштарын қолданамыз. Бірақ <code>db.execute</code> енді сөздік емес, <strong>сөздіктер тізімін</strong> қайтарады. Шаблонды түзету керек (әйтпесе экранда сөздіктің өзі шығады):</p>
+<pre data-lang="html"><code class="language-xml">{% for registrant in registrants %}
+    &lt;tr&gt;
+        &lt;td&gt;{{ registrant.name }}&lt;/td&gt;
+        &lt;td&gt;{{ registrant.sport }}&lt;/td&gt;
+    &lt;/tr&gt;
+{% endfor %}</code></pre>
+      <p>Енді Flask-ты тоқтатып, қайта іске қоссаңыз да, тіркелгендер сақталады: дерекқор <strong>тұрақты</strong>. Flask іске қосылған терминалда жіберілген SQL командалары жасыл (сәтті), сары не қызыл (мәселе) түспен көрінеді. Қателерді іздеуде бұл өте пайдалы.</p>
+
+      <h3 id="deregister">Тіркеуден шығару</h3>
+      <p>Келли футболда онша спорттық мінез көрсетпеді делік. Оны тіркеуден шығаратын батырма керек. Браузер серверге не жіберуі керек? Аты емес, <strong>ID</strong>: екі Келли болса, екеуін де не қате Келлиді өшірмеу үшін. Бастапқы кілт жолды бірегей анықтайды.</p>
+<pre data-lang="html"><code class="language-xml">{% for registrant in registrants %}
+    &lt;tr&gt;
+        &lt;td&gt;{{ registrant.name }}&lt;/td&gt;
+        &lt;td&gt;{{ registrant.sport }}&lt;/td&gt;
+        &lt;td&gt;
+            &lt;form action="/deregister" method="post"&gt;
+                &lt;input name="id" type="hidden" value="{{ registrant.id }}"&gt;
+                &lt;button type="submit"&gt;Deregister&lt;/button&gt;
+            &lt;/form&gt;
+        &lt;/td&gt;
+    &lt;/tr&gt;
+{% endfor %}</code></pre>
+      <p><code>type="hidden"</code> — пайдаланушы көрмейтін өріс, бірақ ол <em>View page source</em>-та бар: 1 — Дэвид, 2 — Келли және т.б. (Дэвид алдымен <code>registrants.id</code> деп көпше жазып қойды, мән бос болды. Цикл айнымалысы — <code>registrant</code>.)</p>
+<pre data-lang="python"><code class="language-python">@app.route("/deregister", methods=["POST"])
+def deregister():
+    id = request.form.get("id")
+    if id:
+        db.execute("DELETE FROM registrants WHERE id = ?", id)
+    return redirect("/registrants")</code></pre>
+      <div class="callout warn">
+        <span class="callout-title">Неге POST, GET емес?</span>
+        ID-лер жеке ақпарат емес. Бірақ <code>GET</code> болса, маршрутқа жай сілтеме арқылы кіруге болады. Зиянкес проктордың поштасына <code>/deregister?id=4</code> сілтемесін жіберіп, проктор оны абайсызда басса, Doug тіркеуден шығып кетеді. Бұл фишингке ұқсас шабуыл. Ереже: <strong>GET сұраулары серверде деректерді өзгертпеуі керек.</strong> <code>POST</code>-ты тудыру үшін әдетте батырманы басу керек. Бұл қосымша қорғаныс қабаты.
+      </div>
+
+      <h3 id="checkboxes">Белгілеу ұяшықтары</h3>
+      <p>Бір рет бірнеше спортқа тіркелу үшін <code>type="radio"</code>-ны <code>type="checkbox"</code>-ке өзгертеміз. Серверде бірнеше мән алу үшін <code>getlist</code>:</p>
+<pre data-lang="python"><code class="language-python">sports = request.form.getlist("sport")
+if not sports:
+    return render_template("error.html", message="Missing sport")
+for sport in sports:
+    if sport not in SPORTS:
+        return render_template("error.html", message="Invalid sport")
+
+for sport in sports:
+    db.execute("INSERT INTO registrants (name, sport) VALUES(?, ?)", name, sport)</code></pre>
+      <p>Енді Дэвид дерекқорда екі рет жазылды. Жақсырақ дизайн: студенттердің жеке кестесі (ID және аты) және IMDb мысалындағыдай, тіркеу кестесінде аттардың орнына студенттердің ID-лерін сақтау.</p>
+
+      <h2 id="mvc">MVC</h2>
+      <p>Біздің қалтамыз: <code>app.py</code>, <code>requirements.txt</code>, <code>static/</code>, <code>templates/</code>. Бұл Flask-қа ғана тән емес жалпы парадигма, <strong>MVC</strong> (<span class="term-en">model–view–controller</span>):</p>
+      <ul>
+        <li><strong>Controller</strong> (контроллер) — бизнес-логика: айнымалылар, функциялар, шарттар, циклдер. Біздің <code>app.py</code>.</li>
+        <li><strong>View</strong> (көрініс) — пайдаланушы көретін және әрекеттесетін интерфейс. Біздің <code>templates</code>.</li>
+        <li><strong>Model</strong> (модель) — тұрақты деректер. Алдымен жадтағы сөздік, сосын <code>froshims.db</code>.</li>
+      </ul>
+      <p>Шекара анық емес: көріністерде де айнымалылар, циклдер, шарттар бар. Бұл — мәселелерді ойлауға арналған ой үлгісі.</p>
+
+      <h2 id="cookies">Cookie</h2>
+      <p>Gmail-ға кіріп, «Келесі» батырмасын басқанда, браузер Google серверіне шамамен мынаны жібереді:</p>
+<pre data-lang="text"><code class="language-plaintext">POST / HTTP/2
+Host: accounts.google.com
+...</code></pre>
+      <p>Ішінде пайдаланушы аты мен құпиясөз. Бәрі дұрыс болса, сервер жауап береді, бірақ ішінде тағы бір тақырып бар:</p>
+<pre data-lang="text"><code class="language-plaintext">HTTP/2 200
+Set-Cookie: session=value
+...</code></pre>
+      <p><strong>Cookie</strong> — компьютеріңізге орнатылатын кілт-мән жұбы. Оның жаман атағы бар: бақылау мен жарнамаға жиі қолданылады. Бірақ негізінде ол пайдалы HTTP мүмкіндігі. Google cookie-ге пайдаланушы аты мен құпиясөзді сақтаса, бұл қауіпті болар еді: бөлмелесіңіз оларды браузерден табады. Сондықтан әдетте үлкен кездейсоқ мән сақталады. Ертең Gmail-ды ашып, бір хатты бассаңыз, браузер сол cookie-ді қайта жібереді:</p>
+<pre data-lang="text"><code class="language-plaintext">GET / HTTP/2
+Host: gmail.com
+Cookie: session=value</code></pre>
+      <p>Бұл барға, клубқа не саябаққа кіргенде қолыңызға басылатын мөр сияқты: билетті бір рет көрсетесіз, сосын кіріп-шыққанда тек қолыңызды көрсетесіз. <code>Set-Cookie</code> — мөр басу, <code>Cookie</code> — мөрді көрсету. Жарнама берушілер де сізді осылай таниды. Incognito режимі терезені жапқанда cookie-лерді өшіреді, яғни мөрді сүртеді.</p>
+
+      <h2 id="sessions">Сессиялар</h2>
+      <p><strong>Сессия</strong> (<span class="term-en">session</span>) — HTTP <strong>күйсіз</strong> (<span class="term-en">stateless</span>) болса да, яғни серверге тұрақты байланыс болмаса да, браузер мен сервер арасындағы тұрақты байланыстың иллюзиясы. Ноутбукты жауып, ертеңіне ашсаңыз да, «кірген» күйде қаласыз. Python тұрғысынан сессия — әр пайдаланушыға тиесілі <strong>кілт-мән сөздігі</strong>. Мөрді көрсету сервердің қай жұптар сізге тиесілі екенін білуін қамтамасыз етеді.</p>
+<pre data-lang="python"><code class="language-python">from flask import Flask, redirect, render_template, request, session
+from flask_session import Session
+
+app = Flask(__name__)
+
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
+
+
+@app.route("/")
+def index():
+    return render_template("index.html", name=session.get("name"))
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        session["name"] = request.form.get("name")
+        return redirect("/")
+    return render_template("login.html")
+
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")</code></pre>
+      <ul>
+        <li><code>session</code> — сөздік сияқты. Flask әр пайдаланушыға оның <em>өз</em> көшірмесін береді. Кодты бір ғана пайдаланушы бар сияқты жазасыз.</li>
+        <li><code>flask_session</code> — cookie-лерді HTTP тақырыптарын білмей-ақ қолдануға мүмкіндік беретін үшінші тарап кітапханасы.</li>
+        <li>Конфигурация жолдары: сессия деректерін серверде файлдарда сақта. Көшіріп қоятын код.</li>
+        <li><code>/login</code>: <code>POST</code> болса, пайдаланушы енгізген атты сессияға сақтап, басты бетке бағыттаймыз. Әйтпесе, форманы көрсетеміз.</li>
+        <li><code>/logout</code>: <code>session.clear()</code> сессияны тазалайды, пайдаланушы шығады.</li>
+      </ul>
+<pre data-lang="html"><code class="language-xml">{% extends "layout.html" %}
+
+{% block body %}
+
+    {% if name %}
+        You are logged in as {{ name }}. &lt;a href="/logout"&gt;Log out&lt;/a&gt;.
+    {% else %}
+        You are not logged in. &lt;a href="/login"&gt;Log in&lt;/a&gt;.
+    {% endif %}
+
+{% endblock %}</code></pre>
+      <p>Мысал қарапайым: құпиясөз жоқ. 9-тапсырмада құпиясөздер мен басқа қауіпсіздік шаралары қосылады. Бірақ Facebook, Gmail не Outlook сізді шамамен осылай «кіргізеді».</p>
+
+      <h3 id="store">Дүкен себеті</h3>
+      <p>Сессияның тағы бір жақсы метафорасы — <strong>сауда себеті</strong>. Амазонда Дэвид пен Келли бір уақытта отырса, бір-бірінің себетін көрмейді: олардың қолындағы мөрлер әртүрлі. <code>store.db</code>-де Amazon-ның алғашқы нұсқасы сияқты кітап дүкені бар:</p>
+<pre class="terminal"><code class="language-plaintext">$ sqlite3 store.db
+sqlite&gt; .schema
+CREATE TABLE books (
+    id INTEGER,
+    title TEXT NOT NULL,
+    PRIMARY KEY(id)
+);
+sqlite&gt; SELECT * FROM books;</code></pre>
+      <p>Онда 5 кітап: <em>The Hitchhiker's Guide to the Galaxy</em> және оның жалғастары. <code>books.html</code>-да әр кітаптың атауы (<code>h2</code>) және <code>/cart</code>-қа <code>POST</code> жіберетін, кітаптың <code>id</code>-і жасырын өрісте тұрған «Add to Cart» формасы бар. Атаудағы апостроф HTML нысаны ретінде шығады.</p>
+<pre data-lang="python"><code class="language-python">@app.route("/")
+def index():
+    books = db.execute("SELECT * FROM books")
+    return render_template("books.html", books=books)
+
+
+@app.route("/cart", methods=["GET", "POST"])
+def cart():
+
+    # Себет бар екеніне көз жеткізу
+    if "cart" not in session:
+        session["cart"] = []
+
+    # POST
+    if request.method == "POST":
+        book_id = request.form.get("id")
+        if book_id:
+            session["cart"].append(book_id)
+        return redirect("/cart")
+
+    # GET
+    books = db.execute("SELECT * FROM books WHERE id IN (?)", session["cart"])
+    return render_template("cart.html", books=books)</code></pre>
+      <p>Себет — сессиядағы кітап ID-лерінің тізімі. Пайдаланушы алғаш келгенде, ол бос. <code>redirect</code> әрқашан <code>GET</code> қолданады, сондықтан кейін <code>SELECT ... WHERE id IN (...)</code> орындалып, <code>cart.html</code> себеттегі кітаптарды нөмірленген тізіммен көрсетеді.</p>
+
+      <h2 id="api">API және JSON</h2>
+      <p><code>shows.db</code> — 7-аптадағы IMDb дерекқоры. Қарапайым іздеу:</p>
+<pre data-lang="python"><code class="language-python">@app.route("/search")
+def search():
+    shows = db.execute("SELECT * FROM shows WHERE title = ?", request.args.get("q"))
+    return render_template("search.html", shows=shows)</code></pre>
+      <p>«The Office» деп ізделсе, британдық, американдық және басқа нұсқалар шығады. Бірақ «the office» деп кіші әріппен жазсақ, ештеңе табылмайды. Жақсартылған нұсқа <code>LIKE</code> қолданады:</p>
+<pre data-lang="python"><code class="language-python">shows = db.execute("SELECT * FROM shows WHERE title LIKE ?", "%" + request.args.get("q") + "%")</code></pre>
+      <p>Орын толтырғыш — <code>?</code>, бірақ пайдаланушы енгізгеннің екі жағына <code>%</code> қосамыз: сол және оң жақта 0 не одан көп кез келген таңба. Енді регистрге қарамай, атауының кез келген жерінде «the office» бар шоулар табылады.</p>
+      <p>Тағы бір тәсіл: бүкіл бетті емес, тек <em>деректерді</em> қайтару. Сонда біз де, үшінші тарап та оны өз қосымшасына қоса алады. Бұл <strong>API</strong> (<span class="term-en">application programming interface</span>): әдетте HTTP арқылы шақырылатын веб-функциялар. <code>shows2</code> нұсқасында іздеу батырмасы жоқ: әріп терген сайын JavaScript <code>/search</code>-қа сұрау жібереді (өткен аптадағы автотолықтыру сияқты). <em>Network</em> қойындысы жауапта толық бет емес, тек <code>li</code> тегтері келгенін көрсетеді: <code>search.html</code> енді <code>layout.html</code>-ды кеңейтпейді.</p>
+      <p>Бірақ контекстсіз HTML кесегін қайтарып, пайдаланушыны <code>li</code> қолдануға мәжбүрлеу онша таза емес. Шикі деректерді жіберген дұрыс. <strong>JSON</strong> (<span class="term-en">JavaScript Object Notation</span>):</p>
+<pre data-lang="text"><code class="language-plaintext">[
+    {"id": 386676, "title": "The Office", "year": 2005, "episodes": 188},
+    {"id": 1791001, "title": "The Office", "year": 2001, "episodes": 14},
+    ...
+]</code></pre>
+      <p>Python тізімдері мен сөздіктеріне өте ұқсас: тік жақша — тізім (массив), фигуралы жақша — сөздік. Бірақ техникалық тұрғыдан бұл JavaScript. Жасанды интеллект лекциясында OpenAI API-ы да осындай JSON қайтарды, біз одан тек мысықтың жауабын алдық.</p>
+<pre data-lang="python"><code class="language-python">from flask import Flask, jsonify, render_template, request
+
+...
+
+
+@app.route("/search")
+def search():
+    q = request.args.get("q")
+    if q:
+        shows = db.execute("SELECT * FROM shows WHERE title LIKE ? LIMIT 50", "%" + q + "%")
+    else:
+        shows = []
+    return jsonify(shows)</code></pre>
+      <p><code>jsonify</code> — Flask-тың функциясы: SQL-дан келген сөздіктер тізімін JSON-ға айналдырады. Енді деректерімізді интернеттегі кез келген адамға, өзімізге де, қызмет ретінде бере аламыз.</p>
+      <p>Веб-бағдарламалау осымен бітті. 0-аптадан бергі барлық құрылыс блоктары енді қолыңызда: өз веб-қосымшаңызды, қаласаңыз мобильді қосымшаңызды жасай аласыз. Бәрі әлі де өрт сөндіргіштен су ішкендей көрінсе, соңғы жоба барысында бәрі әлдеқайда түсінікті болады.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li><strong>Flask</strong> — Python микрофреймворкі. <code>flask run</code>, 5000 порты. Құрылым: <code>app.py</code>, <code>requirements.txt</code>, <code>templates/</code>, <code>static/</code>.</li>
+        <li><code>@app.route("/path", methods=["GET", "POST"])</code> — маршрутты функциямен байланыстыратын декоратор.</li>
+        <li><code>render_template("file.html", key=value)</code>; <code>redirect("/path")</code>; <code>jsonify(data)</code>.</li>
+        <li>GET параметрлері — <code>request.args</code>, POST параметрлері — <code>request.form</code>; <code>.get(key, default)</code>, <code>.getlist(key)</code>; <code>request.method</code>.</li>
+        <li><strong>Jinja</strong>: <code>{{ variable }}</code>, <code>{% if %}</code>, <code>{% for %}</code>, <code>{% extends "layout.html" %}</code>, <code>{% block body %}{% endblock %}</code>.</li>
+        <li><strong>Пайдаланушы енгізгеніне сенбеңіз</strong>: серверде тексеріңіз, SQL-да <code>?</code> қолданыңыз. Деректерді өзгертетін әрекеттерге POST.</li>
+        <li><strong>Cookie</strong> («қолдағы мөр»): <code>Set-Cookie</code> және <code>Cookie</code> тақырыптары. <strong>Сессиялар</strong>: <code>session</code> сөздігі, <code>flask_session</code>; кіру, шығу, сауда себеті.</li>
+        <li><strong>MVC</strong>: модель (дерекқор), көрініс (шаблондар), контроллер (<code>app.py</code>).</li>
+        <li><strong>API</strong> және <strong>JSON</strong>: бүкіл беттің орнына деректерді қайтару.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. Flask-та POST арқылы жіберілген форма деректері қайда?</p>
+          <label><input type="radio" value="a"> <code>request.args</code></label>
+          <label><input type="radio" value="b"> <code>request.form</code></label>
+          <label><input type="radio" value="c"> <code>request.post</code></label>
+          <label><input type="radio" value="d"> <code>session</code></label>
+          <p class="explain"><code>request.args</code> — GET (URL) параметрлері.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">2. Маршрут тек GET-ті қолдаса, оған POST жіберсек, қандай код шығады?</p>
+          <label><input type="radio" value="a"> 404</label>
+          <label><input type="radio" value="b"> 500</label>
+          <label><input type="radio" value="c"> 405</label>
+          <label><input type="radio" value="d"> 301</label>
+          <p class="explain">405 Method Not Allowed. <code>methods=["POST"]</code> қосу керек.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. Flask шаблондарды қай қалтадан іздейді?</p>
+          <label><input type="radio" value="a"> <code>templates</code></label>
+          <label><input type="radio" value="b"> <code>static</code></label>
+          <label><input type="radio" value="c"> <code>views</code></label>
+          <label><input type="radio" value="d"> Ағымдағы қалтадан</label>
+          <p class="explain">Суреттер, CSS, JS — <code>static</code>-та.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">4. <code>{% extends "layout.html" %}</code> не істейді?</p>
+          <label><input type="radio" value="a"> <code>layout.html</code>-ды браузерге жібереді</label>
+          <label><input type="radio" value="b"> Python модулін импорттайды</label>
+          <label><input type="radio" value="c"> <code>layout.html</code>-ды көшіріп, жаңа файл жасайды</label>
+          <label><input type="radio" value="d"> Шаблонды <code>layout.html</code> жобасына негіздейді, ал блоктар оның орындарына қойылады</label>
+          <p class="explain">Ортақ HTML бір жерде жазылады, әр бет тек өз блогын анықтайды.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. Неге <code>/deregister</code> маршруты POST-ты қолдануы керек?</p>
+          <label><input type="radio" value="a"> POST жылдамырақ</label>
+          <label><input type="radio" value="b"> GET сілтемесін басу арқылы деректер абайсызда өзгеруі мүмкін</label>
+          <label><input type="radio" value="c"> ID-лер құпия</label>
+          <label><input type="radio" value="d"> Flask GET-пен <code>DELETE</code> орындай алмайды</label>
+          <p class="explain">Деректерді өзгертетін әрекеттер GET арқылы болмауы керек.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">6. Cookie-ге не сақтаған дұрыс?</p>
+          <label><input type="radio" value="a"> Пайдаланушы аты мен құпиясөзді</label>
+          <label><input type="radio" value="b"> Карта нөмірін</label>
+          <label><input type="radio" value="c"> Сессияны анықтайтын үлкен кездейсоқ мәнді</label>
+          <label><input type="radio" value="d"> Бүкіл дерекқорды</label>
+          <p class="explain">Деректердің өзі серверде сақталады, cookie — тек «мөр».</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. MVC-да <code>app.py</code> қай рөлде?</p>
+          <label><input type="radio" value="a"> Controller</label>
+          <label><input type="radio" value="b"> View</label>
+          <label><input type="radio" value="c"> Model</label>
+          <label><input type="radio" value="d"> Ешқайсысы</label>
+          <p class="explain">Шаблондар — View, дерекқор — Model.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <span class="result"></span>
+      </div>
+
+      <h2 id="practice">Жаттығулар</h2>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-port">Flask порты</h3></div>
+        <p><code>flask run</code> әдепкіде қай портты қолданады?</p>
+        <div class="answer-check" data-answer="5000"><input type="text" placeholder="Порт"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-square">Квадрат</h3></div>
+        <p>Flask қосымшасын жазыңыз: <code>/square?n=7</code> маршруты «49» шығарсын. <code>n</code> берілмесе не сан болмаса, «Invalid number» шығарсын.</p>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="python"><code class="language-python">from flask import Flask, request
+
+app = Flask(__name__)
+
+
+@app.route("/square")
+def square():
+    try:
+        n = int(request.args.get("n", ""))
+    except ValueError:
+        return "Invalid number", 400
+    return str(n * n)</code></pre>
+        <p>Flask-та функция <code>(мәтін, код)</code> қайтарса, сол күй кодымен жауап береді.</p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="ex-visits">Кіру санағышы</h3></div>
+        <p>Сессияны қолданып, пайдаланушы басты бетке неше рет кіргенін көрсетіңіз: «Сіз бұл бетке 3 рет кірдіңіз». <code>/reset</code> маршруты санағышты нөлдесін.</p>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="python"><code class="language-python">from flask import Flask, redirect, session
+from flask_session import Session
+
+app = Flask(__name__)
+app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_TYPE"] = "filesystem"
+Session(app)
+
+
+@app.route("/")
+def index():
+    session["visits"] = session.get("visits", 0) + 1
+    return f"Сіз бұл бетке {session['visits']} рет кірдіңіз"
+
+
+@app.route("/reset")
+def reset():
+    session.clear()
+    return redirect("/")</code></pre>
+        <p>Басқа браузерден (не Incognito-дан) кірсеңіз, санағыш бөлек болады: cookie әртүрлі.</p>
+        </div></details>
+      </div>
+
+      <h2 id="problem-set">Тапсырмалар жинағы 9</h2>
+      <p><span class="term-en">(Problem Set 9)</span> Ресми тапсырма беті: <a href="https://cs50.harvard.edu/x/psets/9/" target="_blank" rel="noopener">cs50.harvard.edu/x/psets/9</a>.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-birthdays">Birthdays</h3></div>
+        <p>Достардың туған күндерін сақтайтын веб-қосымша. <code>birthdays.db</code>-де <code>birthdays</code> кестесі бар: <code>id</code>, <code>name</code>, <code>month</code>, <code>day</code>.</p>
+        <ul>
+          <li><code>index.html</code>-да аты, айы, күні бар форма. Ол <code>/</code>-ге <code>POST</code> жібереді.</li>
+          <li><code>app.py</code>: <code>POST</code> болса, жаңа туған күнді дерекқорға қосып, <code>/</code>-ге бағыттаңыз. <code>GET</code> болса, барлық туған күндерді кестеде көрсетіңіз.</li>
+        </ul>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li><code>db.execute("INSERT INTO birthdays (name, month, day) VALUES(?, ?, ?)", name, month, day)</code></li>
+            <li><code>birthdays = db.execute("SELECT * FROM birthdays")</code>, сосын <code>render_template("index.html", birthdays=birthdays)</code>.</li>
+            <li>Шаблонда: <code>{% for birthday in birthdays %}</code>, <code>{{ birthday.name }}</code>, <code>{{ birthday.month }}/{{ birthday.day }}</code>.</li>
+            <li>Бос өрістер мен жарамсыз ай/күнді серверде тексеріңіз.</li>
+            <li>Қосымша: туған күнді өшіру не өңдеу мүмкіндігін қосыңыз.</li>
+          </ul>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="birthdays">
+            <li><input type="checkbox"> <span>Форма жаңа туған күнді қосады.</span></li>
+            <li><input type="checkbox"> <span>Кестеде дерекқордағы барлық жазба көрсетіледі.</span></li>
+            <li><input type="checkbox"> <span>Бет қайта жүктелгенде жазбалар сақталады.</span></li>
+            <li><input type="checkbox"> <span>SQL-да тек <code>?</code> орын толтырғыштары.</span></li>
+            <li><input type="checkbox"> <span><code>submit50 cs50/problems/2026/x/birthdays</code></span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pset-finance">Finance</h3></div>
+        <p>Акцияларды «сатып алу» мен «сатуды» модельдейтін <strong>C$50 Finance</strong> веб-қосымшасын жасаңыз. Бағаларды <code>helpers.py</code>-дегі <code>lookup(symbol)</code> функциясы алады. Әр жаңа пайдаланушыда $10 000 виртуалды ақша бар. <code>login</code>, <code>logout</code> дайын. Сіз іске асырасыз:</p>
+        <ul>
+          <li><strong>register</strong> — пайдаланушы аты, құпиясөз, құпиясөзді растау. Құпиясөзді <code>generate_password_hash</code> арқылы <em>хэштеп</em> сақтаңыз.</li>
+          <li><strong>quote</strong> — акция символы бойынша бағаны көрсету.</li>
+          <li><strong>buy</strong> — акция сатып алу (ақша жеткілікті ме тексеріңіз).</li>
+          <li><strong>index</strong> — пайдаланушының акциялары, саны, ағымдағы бағасы, жалпы құны, қолма-қол ақшасы.</li>
+          <li><strong>sell</strong> — бар акцияларды сату.</li>
+          <li><strong>history</strong> — барлық операциялар тарихы.</li>
+          <li><strong>personal touch</strong> — өз мүмкіндігіңіз: құпиясөзді өзгерту, ақша қосу және т.б.</li>
+        </ul>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li>Операцияларды сақтайтын жаңа кесте жасаңыз (мысалы, <code>transactions</code>: <code>user_id</code>, <code>symbol</code>, <code>shares</code>, <code>price</code>, <code>timestamp</code>). Сыртқы кілт пен индекстер туралы ойланыңыз.</li>
+            <li>Ағымдағы пайдаланушы: <code>session["user_id"]</code>.</li>
+            <li>Қателер үшін дайын <code>apology(message, code)</code> функциясы бар.</li>
+            <li>Ақша үшін <code>usd(value)</code> сүзгісі: <code>{{ value | usd }}</code>.</li>
+            <li>Портфельді <code>GROUP BY symbol</code> және <code>SUM(shares)</code> арқылы есептеңіз.</li>
+            <li>Сандарды тексеріңіз: оң бүтін сан ба? <code>"1.5"</code>, <code>"-1"</code>, <code>"foo"</code> жарамсыз.</li>
+            <li>Тапсырма бетіндегі сілтеме арқылы қызметкерлердің шешімін көріп, мінезін салыстырыңыз.</li>
+          </ul>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="finance">
+            <li><input type="checkbox"> <span>Тіркелу: бос өрістер, құпиясөздердің сәйкес келмеуі, бос емес пайдаланушы аты тексеріледі.</span></li>
+            <li><input type="checkbox"> <span>Quote: жарамсыз символға қате хабары.</span></li>
+            <li><input type="checkbox"> <span>Buy: ақша жетпесе, сатып алмайды; ақша азаяды.</span></li>
+            <li><input type="checkbox"> <span>Index: акциялар, бағалар, жалпы сома дұрыс.</span></li>
+            <li><input type="checkbox"> <span>Sell: бардан көп сатуға болмайды.</span></li>
+            <li><input type="checkbox"> <span>History: барлық операция көрсетіледі.</span></li>
+            <li><input type="checkbox"> <span>Personal touch қосылды.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2026/x/finance</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-8.html"><small>Алдыңғы</small>← 8-апта: HTML, CSS, JavaScript</a>
+        <a class="next" href="week-10.html"><small>Келесі</small>10-апта: Соңы →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50x 2026 (Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan.</p>
+      <p>Қазақшаға аударған: <strong>Sagid Mustafa</strong> · Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></p>
+    </div>
+  </footer>
+</body>
+</html>
