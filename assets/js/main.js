@@ -28,6 +28,35 @@
   applyPrefs(loadPrefs());
 
   document.addEventListener("DOMContentLoaded", () => {
+    // Жылжыған кезде блоктардың біртіндеп көрінуі және баннердегі сандар
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches || root.classList.contains("reduce-motion");
+    if (!still && "IntersectionObserver" in window) {
+      const items = document.querySelectorAll(".week-card, .feature, .task, .question, .tool, .content h2, .callout, .ft-col");
+      const io = new IntersectionObserver((ents) => {
+        ents.forEach((e) => {
+          if (!e.isIntersecting) return;
+          e.target.classList.add("in");
+          io.unobserve(e.target);
+          setTimeout(() => e.target.classList.remove("reveal", "in"), 900);
+        });
+      }, { rootMargin: "0px 0px -8% 0px" });
+      items.forEach((el, i) => {
+        if (el.getBoundingClientRect().top < innerHeight) return;
+        el.classList.add("reveal");
+        el.style.setProperty("--d", (i % 3) * 70 + "ms");
+        io.observe(el);
+      });
+      document.querySelectorAll(".hero-stats [data-count]").forEach((b) => {
+        const n = +b.dataset.count, t0 = performance.now();
+        const step = (t) => {
+          const k = Math.min(1, (t - t0) / 1100);
+          b.textContent = Math.round(n * (1 - Math.pow(1 - k, 3)));
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+    }
+
     // Басты беттегі аударма прогресі
     const bar = document.querySelector(".progress-bar span");
     if (bar) {

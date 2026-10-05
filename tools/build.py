@@ -58,6 +58,25 @@ def nav_block(prefix, active):
       </nav>"""
 
 
+def footer_block(p):
+    def col(title, items):
+        lis = "".join(f'<li><a href="{p}{h}">{t}</a></li>' for h, t in items)
+        return f'<div class="ft-col"><h4>{title}</h4><ul>{lis}</ul></div>'
+    return (
+        '<footer class="footer">\n    <div class="footer-inner">\n'
+        f'      <div class="ft-brand"><a class="ft-logo" href="{p}index.html"><img src="{p}assets/img/bota.svg" alt="" width="52" height="52">'
+        '<span><b>CS50</b> қазақша</span></a>'
+        '<p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>\n'
+        + "      " + col("Оқу", [("index.html#main", "Лекциялар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік")])
+        + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив")])
+        + col("Жоба", [("about.html", "Курс туралы"), ("certificate.html", "Сертификат"), ("teacher.html", "Мұғалім беті")])
+        + '\n      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. '
+        'Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p>'
+        '<p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · '
+        '<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a></p></div>\n'
+        '    </div>\n  </footer>')
+
+
 def process_page(path, prefix, active):
     s = path.read_text(encoding="utf-8")
     title = re.search(r"<title>(.*?)</title>", s, re.S).group(1).strip()
@@ -71,16 +90,7 @@ def process_page(path, prefix, active):
     else:
         s = s.replace("</title>", "</title>\n  " + block, 1)
     s = re.sub(r'<nav class="nav">.*?</nav>', nav_block(prefix, active), s, count=1, flags=re.S)
-    links = (f'<!-- build:footer --><p class="footer-links"><a href="{prefix}index.html">Лекциялар</a> · '
-             f'<a href="{prefix}practice.html">Жаттығу</a> · <a href="{prefix}flashcards.html">Флэш-карточкалар</a> · '
-             f'<a href="{prefix}viz.html">Визуализациялар</a> · <a href="{prefix}debug.html">Қатені тап</a> · '
-             f'<a href="{prefix}cheatsheet.html">Шпаргалка</a> · <a href="{prefix}map.html">Курс картасы</a> · <a href="{prefix}playground.html">Сынақ алаңы</a> · <a href="{prefix}glossary.html">Сөздік</a> · <a href="{prefix}certificate.html">Сертификат</a> · '
-             f'<a href="{prefix}teacher.html">Мұғалім беті</a> · <a href="{prefix}about.html">Курс туралы</a> · '
-             f'<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a></p><!-- /build:footer -->')
-    if "<!-- build:footer -->" in s:
-        s = re.sub(r"<!-- build:footer -->.*?<!-- /build:footer -->", links, s, flags=re.S)
-    else:
-        s = s.replace('<div class="footer-inner">', '<div class="footer-inner">\n      ' + links, 1)
+    s = re.sub(r'<footer class="footer">.*?</footer>', lambda _: footer_block(prefix), s, count=1, flags=re.S)
     if 'class="skip-link"' not in s:
         s = s.replace("<body>", '<body>\n  <a class="skip-link" href="#main">Мазмұнға өту</a>', 1)
     if 'id="main"' not in s:
