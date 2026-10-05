@@ -99,6 +99,7 @@
     initServiceWorker();
     window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump };
     if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
+    if (document.querySelector(".flask-lab")) loadScript("assets/js/flask.js");
     initAchievements();
     initPrefs();
     initShare();
@@ -995,6 +996,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       A("weekly", "🏆", "Апта чемпионы", "Апталық челленджді орындау", readJson("cs50kz:weeks-won", 0), 1),
       A("check50", "✅", "check50 өтті", "Автотексерушіде бір тапсырманың барлық тестінен өту", Object.keys(readJson("cs50kz:graded", {})).length, 1),
       A("detective", "🕵️", "SQL детектив", "«Алтын домбыраның құпиясын» ашу", readJson("cs50kz:used", {}).detective ? 1 : 0, 1),
+      A("flask", "🧪", "Flask шебері", "Flask зертханасының 4 тапсырмасынан өту", Object.keys(readJson("cs50kz:flask", {})).length, 4),
       A("webdev", "🌐", "Веб-әзірлеуші", "Homepage тексерушісінен барлық талаппен өту", readJson("cs50kz:graded", {}).homepage ? 1 : 0, 1),
       A("search", "🔍", "Іздеуші", "Сайт бойынша іздеуді қолдану", used.search ? 1 : 0, 1),
       A("owl", "🌙", "Түнгі үкі", "Түнгі режимді қосу", used.dark ? 1 : 0, 1),
