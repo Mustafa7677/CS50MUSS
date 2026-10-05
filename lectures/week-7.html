@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>7-апта: SQL — CS50 қазақша</title>
+  <meta name="description" content="CS50 7-апта: жалпақ файлды деректер базасы, CSV, реляциялық деректер базасы, SQL: SELECT, INSERT, UPDATE, DELETE, JOIN, индекстер, SQL инъекциясы және жарыс жағдайлары.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../assets/css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../assets/js/main.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../index.html">Лекциялар</a>
+        <a href="../about.html" class="hide-sm">Курс туралы</a>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content">
+      <div class="lecture-head">
+        <div class="num">7-апта</div>
+        <h1>SQL</h1>
+        <p>Деректермен жұмыс: CSV файлдары, реляциялық деректер базалары, SQL тілі (SELECT, INSERT, UPDATE, DELETE), кестелер арасындағы байланыстар, JOIN, индекстер, Python-нан SQL пайдалану, SQL инъекциясы және жарыс жағдайлары.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/x/weeks/7/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <h2 id="intro">Кіріспе</h2>
+      <p>Бұл CS50, 7-апта. Бүгін тағы бір тіл енгіземіз: <strong>құрылымдық сұраныстар тілі</strong> (<span class="term-en">Structured Query Language</span>), қысқаша <strong>SQL</strong> («сиквел» деп те оқылады). SQL өткен апталардағы есептердің көбін шешуге мүмкіндік береді, бірақ көп жағдайда <em>оңайырақ</em> шешеді. Бүгінгі мақсаттардың бірі: бір есепті шешуге бірнеше құрал жарайтынын көрсету.</p>
+      <p>SQL есеп шешуге басқаша қарайды. C, ішінара Python да — <strong>процедуралық</strong> тілдер: компьютерге не істеу керегін циклдер, шарттар арқылы қадам-қадаммен айтатын функциялар жазасыз. Ал SQL — <strong>декларативті</strong> (<span class="term-en">declarative</span>) тіл: сіз қандай есепті шешкіңіз келетінін не қандай сұрағыңыз бар екенін <em>жариялайсыз</em>, ал циклдер мен шарттар арқылы жауапты қалай табу керегін тілдің өзі шешеді.</p>
+      <p>Сонымен бүгін тағы бір тілді үйретеміз. Оның мақсаты — жаңа тілдерді өзіңізге өзіңіз үйретуге дағдылану. Курстан кейін процедуралық, объектіге бағытталған және бүгінгі декларативті сияқты әртүрлі парадигмаларды көргендіктен, жаңа тіл үйрену онша қиын болмайды. Бүгінгі тақырып — <strong>деректер</strong>.</p>
+
+      <h2 id="favorites">Деректерді жинау: Google Forms</h2>
+      <p>Сабақ басында студенттер телефондарымен QR кодты сканерлеп, Google Forms-тағы екі сұраққа жауап берді: <strong>«Қай тілді ұнатасыз?»</strong> (Scratch, C, Python) және <strong>«Қай тапсырма ұнады?»</strong>. Google Forms жауаптарды жинап, әдемі дөңгелек диаграммалар көрсетеді. Python бірден 70%-дан астам дауыспен көш бастады, Scratch-та 11%, C-да 18%.</p>
+      <p>Бірақ бізге диаграммалардан гөрі <strong>шикі деректер</strong> маңыздырақ. Google Forms-та «View in Sheets» батырмасы бар, ол жауаптарды Google Sheets кестесіне ашады. Кестеден деректерді Excel, мәтін, PDF түрінде жүктеуге болады. Біз оны <strong>CSV</strong> (comma-separated values) түрінде жүктейміз: File → Download → Comma Separated Values. Кестедегі деректерді кодқа жүктеудің ең қарапайым тәсілі осы. Файлды <code>favorites.csv</code> деп қысқартып атадық та, VS Code-қа сүйреп әкелдік. Бұл файлды сол сәттегі күйінде жүктеп салады.</p>
+<pre class="terminal"><code class="language-plaintext">Timestamp,language,problem
+10/27/2025 13:30:12,Python,Hello World
+10/27/2025 13:30:15,Python,Mario
+10/27/2025 13:30:16,C,Credit
+...</code></pre>
+      <div class="callout term">
+        <span class="callout-title">Термин: жалпақ файлды деректер базасы</span>
+        Бұл — <strong>жалпақ файлды деректер базасы</strong> (<span class="term-en">flat-file database</span>): көп дерек сақтайтын жеңіл база, ол жай ғана мәтіндік файл. Дәстүр бойынша мәндер үтірмен бөлінеді. Басқа дәстүрлер де бар: <strong>TSV</strong> (tab-separated values, табуляциямен бөлінген), <strong>PSV</strong> (тік сызықпен бөлінген). Деректерде кездеспейтін таңбаны таңдап, жолдар мен бағандарды бөледі.
+      </div>
+      <p>Google Sheets бізге үш баған берді: автоматты түрде жасалған уақыт белгісі (<span class="term-en">timestamp</span>), тіл және тапсырма. Кейбір студенттер бүгінгі деректерге асығып, тым ерте жауап берген, ал қалғандары шамамен 13:30-дан бастап. Бағандардың ені әртүрлі, себебі кейбір жауаптар ұзын, кейбірі қысқа. Бірақ үтірлер бір бағанның қай жерде аяқталып, келесісі қай жерде басталатынын көрсетуге жеткілікті.</p>
+
+      <h3 id="csv-reader">CSV-ді Python-мен оқу</h3>
+      <p>Ең танымал тіл мен тапсырма қайсы? Google Forms мұны пай-диаграммамен көрсетті. Бірақ ол мұны қалай есептейді? Олар да осындай код жазған шығар:</p>
+<pre data-lang="python"><code class="language-python">import csv
+
+with open("favorites.csv", "r") as file:
+    reader = csv.reader(file)
+    for row in reader:
+        print(row[1])</code></pre>
+      <ul>
+        <li><code>csv</code> — Python-мен бірге келетін кітапхана. Оны біреу жылдар бұрын жазған, үтірлердің қайда екенін табу кодын өзіміз жазбаймыз.</li>
+        <li><code>"r"</code> — файлды тек оқу (read) режимінде ашамыз. Бұл әдепкі режим, бірақ анық жаздық. C-дағы <code>fopen</code> сияқты.</li>
+        <li><code>csv.reader(file)</code> ашылған файлды алып, үтірлерді табады. Цикл әр жолда бізге бір <strong>тізім</strong> береді: <code>row[0]</code> бірінші баған, <code>row[1]</code> екінші, <code>row[2]</code> үшінші.</li>
+      </ul>
+      <p>Нәтижесінде барлық тілдер шығады, бірақ ең жоғарыда <strong>«language»</strong> сөзі тұр. Бұл қате: біз тек тілдерді көргіміз келді. Студент айтқандай, бұл тақырып жолы. Оны өткізіп жіберу үшін циклдан бұрын <code>next(reader)</code> шақырамыз. <code>reader</code> өзінің қай жерде тұрғанын <strong>есте сақтайды</strong> (<span class="term-en">stateful</span>). C-дағы <code>fread</code> да солай болатын: ескі кассета не бейненің төменгі жолағы сияқты, келесі бөлікті оқиды, ал жадтағы бірдеңе оның орнын біледі.</p>
+      <p>Бірақ бағандар реті өзгерсе ше? Біреу Excel не Google Sheets-те бағанды сүйреп, «timestamp, problem, language» не уақытты ең оң жаққа қоюы мүмкін. Сонда 0, 1, 2 индекстері бұзылады. Шешімі: <strong><code>csv.DictReader</code></strong>. Ол әр жолды тізім емес, <strong>сөздік</strong> ретінде береді, сондықтан сандардың орнына сөздерді индекс ретінде пайдаланамыз:</p>
+<pre data-lang="python"><code class="language-python">import csv
+
+with open("favorites.csv", "r") as file:
+    reader = csv.DictReader(file)
+    for row in reader:
+        favorite = row["language"]
+        print(favorite)</code></pre>
+      <p><code>DictReader</code> бірінші жолды автоматты түрде «жейді», себебі баған аттарын сол жолдан алады. Сондықтан <code>next</code> керек емес.</p>
+
+      <h3 id="counting">Дауыстарды санау</h3>
+      <p>Бірінші тәсіл: үш айнымалы.</p>
+<pre data-lang="python"><code class="language-python">scratch, c, python = 0, 0, 0
+
+for row in reader:
+    favorite = row["language"]
+    if favorite == "Scratch":
+        scratch += 1
+    elif favorite == "C":
+        c += 1
+    elif favorite == "Python":
+        python += 1
+
+print(f"Scratch: {scratch}")
+print(f"C: {c}")
+print(f"Python: {python}")</code></pre>
+      <p>(<code>scratch, c, python = 0, 0, 0</code> — Python-да бірнеше айнымалыны бір жолда инициализациялаудың тәсілі. Соңғы <code>else</code> емес, <code>elif</code>, себебі келесі семестрде формаға төртінші тіл қосылса, Scratch не C емес нәрсенің бәрі Python деп есептемеу керек.) Алғашқы нұсқада <code>f</code> әрпін ұмытып кеттім. Нәтижесі: Python 109, C 58, Scratch 24.</p>
+      <p>Бұл неге жақсы жобаланбаған? Студент айтқандай, тілдер көбейсе, 4-ші, 5-ші, 10-шы, 20-шы тіл үшін айнымалы көбейе береді. Мұнда <strong>сөздік</strong> керек: кілттері тілдер, мәндері сандар.</p>
+<pre data-lang="python"><code class="language-python">counts = {}
+
+for row in reader:
+    favorite = row["language"]
+    if favorite not in counts:
+        counts[favorite] = 0
+    counts[favorite] += 1
+
+for favorite in counts:
+    print(f"{favorite}: {counts[favorite]}")</code></pre>
+      <p><code>counts = {}</code> не <code>counts = dict()</code> — бос сөздік. Бірінші нұсқада тек <code>counts[favorite] += 1</code> жазып, <strong><code>KeyError</code></strong> алдым. Студент айтқандай, ең алғашқы айналымда сөздікте «Python», «C» не «Scratch» кілті әлі жоқ, ал <code>+=</code> сол жерге барып, мәнді арттырмақ болады. Сондықтан кілт жоқ болса, алдымен 0 қоямыз. Мұны бірнеше тәсілмен шешуге болады: <code>if/else</code> арқылы 1 не +1, немесе ерекше жағдай арқылы:</p>
+<pre data-lang="python"><code class="language-python">try:
+    counts[favorite] += 1
+except KeyError:
+    counts[favorite] = 1</code></pre>
+
+      <h3 id="sorting-py">Сұрыптау</h3>
+<pre data-lang="python"><code class="language-python">for favorite in sorted(counts):                                 # кілт бойынша (алфавит)
+    ...
+for favorite in sorted(counts, key=counts.get):                 # мән бойынша
+    ...
+for favorite in sorted(counts, key=counts.get, reverse=True):   # кемуі бойынша
+    ...</code></pre>
+      <p>Сөздікті <code>sorted</code> функциясына берсеңіз, ол кілттер бойынша сұрыпталады. Мән бойынша сұрыптау үшін <code>key</code> атаулы параметріне сөздіктің <code>get</code> әдісін береміз, ал кері рет үшін <code>reverse=True</code>. Қысқасы, бұл қарапайым сұраққа жауап беру үшін көп код жазу тітіркендіреді. Google Sheets, Apple Numbers не Excel-де бағанды белгілесеңіз, жауап төменгі оң жақ бұрышта бірден көрінеді, не кестедегі функцияны пайдаланасыз. 20-ға жуық жол «қызба» сияқты. Жақсырақ жол бар сияқты, және ол шынымен бар.</p>
+
+      <h2 id="relational">Реляциялық деректер базасы және SQL</h2>
+      <p>Жалпақ файлдың орнына <strong>реляциялық деректер базасына</strong> (<span class="term-en">relational database</span>) көшейік. Бұл — деректер арасында <strong>байланыстар</strong> (relations) анықтауға болатын база. Қазір бұл онша маңызды емес (уақыт белгісі тілмен, тіл тапсырмамен байланысты), бірақ деректер үлкейіп, күрделенгенде, бірнеше дерек арасындағы байланыстарды көрсету өте құнды болады.</p>
+      <p><strong>SQL</strong> — осындай базамен жұмыс істейтін тіл. Ол жаңа тіл, бірақ оның тек <strong>4 негізгі амалы</strong> бар. Бүгін басталған тілден бүгін-ақ шығамыз 🙂 Әрине, кез келген тілді меңгеру үшін уақыт пен жаттығу керек, бірақ SQL-да тек осы 4 амал бар:</p>
+      <table>
+        <tr><th>Амал</th><th>CRUD</th><th>SQL командасы</th></tr>
+        <tr><td>Жасау (<span class="term-en">create</span>)</td><td>C</td><td><code>CREATE</code>, <code>INSERT</code></td></tr>
+        <tr><td>Оқу (<span class="term-en">read</span>)</td><td>R</td><td><code>SELECT</code></td></tr>
+        <tr><td>Жаңарту (<span class="term-en">update</span>)</td><td>U</td><td><code>UPDATE</code></td></tr>
+        <tr><td>Жою (<span class="term-en">delete</span>)</td><td>D</td><td><code>DELETE</code>, <code>DROP</code></td></tr>
+      </table>
+      <p>Бұлардың аббревиатурасы <strong>CRUD</strong>. Реляциялық базада деректерді жасай, оқи, жаңарта және жоя аласыз. Бұл толық мүмкіндіктер жиыны.</p>
+      <div class="callout term">
+        <span class="callout-title">Термин: деректер базасы</span>
+        <strong>Деректер базасы</strong> (<span class="term-en">database</span>) — компьютерде (Mac, PC, бұлт, не веб-серверлер кластері) жұмыс істейтін бағдарлама. Оның ішінде көп дерек сақталады, ал ол сол деректерге кез келген уақытта қол жеткізуге мүмкіндік береді.
+      </div>
+      <p>Техникалық тұрғыдан SQL-да «оқу» <strong><code>SELECT</code></strong> деп аталады. Ал қалған үшеуі деректерді <em>жазу</em>, яғни өзгерту туралы. Деректерді <code>INSERT</code> арқылы <em>қосамыз</em>, ал тек жеке жолдарды емес, тұтас кестелерді <code>DROP</code> арқылы <em>өшіреміз</em>.</p>
+<pre data-lang="sql"><code class="language-sql">CREATE TABLE table (column type, ...);</code></pre>
+      <p>Кестені «қолмен» жасау үшін <code>CREATE TABLE</code> деп, кестенің (яғни электрондық кестедегі парақтың) атын жазып, барлық бағандарды көрсетесіз. Терминология өзгереді: электрондық кестеде <em>парақтар</em> (sheets) бар, оларда жолдар мен бағандар бар. Деректер базасында <strong>кестелер</strong> (<span class="term-en">tables</span>) бар, оларда да жолдар мен бағандар бар. Атауы басқа, мәні бірдей.</p>
+      <div class="callout note">
+        <span class="callout-title">SQLite</span>
+        CS50-де SQL-дың нақты бір нұсқасын, <strong>SQLite</strong>-ты пайдаланамыз. Бұл — SQL-дың жеңіл нұсқасы. Ол веб және мобильді қосымшаларда өте кең қолданылады, бірақ Oracle, SQL Server, PostgreSQL, MySQL, Microsoft Access сияқты коммерциялық және ашық кодты өнімдердің барлық мүмкіндіктері не масштабы жоқ. Олар — SQL-дың үлкенірек әрі жылдамырақ нұсқалары. Команданың өзі <strong><code>sqlite3</code></strong>, ол код кеңістігіңізге алдын ала орнатылған.
+      </div>
+
+      <h3 id="import">CSV-ді SQLite-қа жүктеу</h3>
+<pre class="terminal"><code class="language-plaintext">$ sqlite3 favorites.db
+Are you sure you want to create favorites.db? [y/N] y
+sqlite&gt; .mode csv
+sqlite&gt; .import favorites.csv favorites
+sqlite&gt; .quit
+$ ls
+favorites.csv  favorites.db  favorites.py</code></pre>
+      <ul>
+        <li><code>sqlite3 favorites.db</code> жаңа база жасайды (<code>.db</code> — database дәстүрі). Енді шақыру <code>sqlite&gt;</code> болды. SQL кодын бөлек <code>.sql</code> файлдарында да жазуға болады (7-тапсырмада көресіз), бірақ қазір интерактивті түрде теріп, Enter басып отырамыз.</li>
+        <li><strong>Нүктемен</strong> басталатын командалар SQLite-қа тән. Нүктесіз командалар көп SQL базаларында жұмыс істейді.</li>
+        <li><code>.mode csv</code> — CSV деректерін жүктейтінімізді айтамыз.</li>
+        <li><code>.import favorites.csv favorites</code> — файлды <code>favorites</code> атты кестеге жүктейміз.</li>
+        <li>Қате хабары жоқ, демек бәрі жақсы өтті.</li>
+      </ul>
+      <p><code>favorites.db</code>-ны VS Code-та ашсақ, «This file is not displayed in the text editor because it is either binary...» деген хабар шығады. Бұл күтілген нәрсе: база 0 мен 1 түрінде, <strong>екілік</strong> форматта сақталады. Оны <code>sqlite3</code> бағдарламасы оқи алады. Деректерді екілік түрде сақтау таза мәтіннен тиімдірек, себебі апталар бойы талқылаған деректер құрылымдары мен алгоритмдерді қолдануға оңайырақ.</p>
+<pre class="terminal"><code class="language-plaintext">sqlite&gt; .schema
+CREATE TABLE IF NOT EXISTS "favorites"(
+"Timestamp" TEXT, "language" TEXT, "problem" TEXT);</code></pre>
+      <p><strong>Схема</strong> (<span class="term-en">schema</span>) — деректер базасының құрылымы: қандай кестелер, жолдар, бағандар бар. <code>.import</code> бізге 3 бағаны бар кесте жасады, бәрі <code>TEXT</code> (шикі мәтін) типінде. Кейін типтерді өзіміз басқарамыз. Бірақ <code>.import</code> CSV-ді SQLite базасына айналдырудың ең оңай тәсілі.</p>
+
+      <h2 id="select">SELECT: деректерді оқу</h2>
+      <p>Деректерді алу үшін <strong><code>SELECT</code></strong> қолданылады. Ол <strong>декларативті</strong>: тек қандай деректерді <em>таңдағымыз</em> келетінін жариялаймыз. Файлды ашу, <code>for</code> не <code>while</code> циклі, айнымалылар туралы ойламаймыз.</p>
+<pre data-lang="sql"><code class="language-sql">SELECT * FROM favorites;</code></pre>
+      <p>Өкінішке қарай, SQL кодында <strong>нүктелі үтір</strong> қайта оралды. Нәтиже — кестенің ASCII-сурет түріндегі нұсқасы, ол тіпті шикі CSV-дан да жақсы көрінеді. <code>*</code> (жұлдызша) — <strong>барлық бағандарды</strong> білдіретін «қалқымалы таңба» (<span class="term-en">wildcard</span>). Деректер хронологиялық ретпен шықты, базаға қалай жүктелсе, солай.</p>
+<pre data-lang="sql"><code class="language-sql">SELECT language FROM favorites;
+SELECT language, problem FROM favorites;</code></pre>
+      <p>Тек керек бағандарды таңдауға болады. Python-дағы 12-ге жуық жолдың орнына дерекқордан не керек екенін ғана айтамыз.</p>
+
+      <h3 id="sql-functions">Функциялар</h3>
+      <p>Excel, Numbers, Google Sheets сияқты, SQLite-та да кірістірілген функциялар көп:</p>
+      <table>
+        <tr><th>Функция</th><th>Не істейді</th></tr>
+        <tr><td><code>AVG</code></td><td>орташа мән</td></tr>
+        <tr><td><code>COUNT</code></td><td>жолдар санау</td></tr>
+        <tr><td><code>DISTINCT</code></td><td>қайталанбайтын мәндер</td></tr>
+        <tr><td><code>LOWER</code>, <code>UPPER</code></td><td>кіші не бас әріпке айналдыру</td></tr>
+        <tr><td><code>MAX</code>, <code>MIN</code></td><td>ең үлкен, ең кіші мән</td></tr>
+      </table>
+<pre data-lang="sql"><code class="language-sql">SELECT COUNT(*) FROM favorites;
+-- 272
+
+SELECT DISTINCT(language) FROM favorites;
+-- C, Python, Scratch
+
+SELECT COUNT(DISTINCT(language)) FROM favorites;
+-- 3</code></pre>
+      <p>Файлды жүктеген сәтте <strong>272</strong> жауап болды. <code>DISTINCT</code> арқылы ешкім қате дерек енгізбегеніне көз жеткіземіз: тек 3 тіл бар. Мұны көзбен көру оңай, бірақ әр сұраққа солдан оңға оқылатын, ағылшын тіліне ұқсас бір ғана нұсқау жеткілікті.</p>
+
+      <h3 id="where">WHERE, LIKE, GROUP BY, ORDER BY, LIMIT</h3>
+      <p>SQL нұсқауларына қосуға болатын кілт сөздер:</p>
+      <table>
+        <tr><th>Кілт сөз</th><th>Не істейді</th></tr>
+        <tr><td><code>WHERE</code></td><td>шарт (Python-дағы <code>if</code>-ке ұқсас, бірақ қысқа)</td></tr>
+        <tr><td><code>LIKE</code></td><td>жолды шамамен (үлгі бойынша) салыстыру</td></tr>
+        <tr><td><code>GROUP BY</code></td><td>бірдей мәндерді топтау</td></tr>
+        <tr><td><code>ORDER BY</code></td><td>сұрыптау</td></tr>
+        <tr><td><code>LIMIT</code></td><td>жолдар санын шектеу</td></tr>
+      </table>
+<pre data-lang="sql"><code class="language-sql">SELECT COUNT(*) FROM favorites WHERE language = 'C';
+-- 58
+
+SELECT COUNT(*) FROM favorites WHERE language = 'C' AND problem = 'Hello, World';
+-- 5</code></pre>
+      <p>58 адам C-ны таңдады, оның 5-еуінің сүйікті тапсырмасы «Hello, World» 🙂 SQL-да бір теңдік белгісі <code>=</code> теңдікті тексереді (C мен Python-дағы <code>==</code> емес).</p>
+      <p>«Hello, It's Me» тапсырмасы ше? Апостроф бізді шатастырады: ортасындағы апостроф бірінші тырнақшаға жата ма, екіншісіне ме? C-да кері қиғаш сызықпен «қашар» едік. SQLite-та басқаша: <strong>екі жалқы тырнақша</strong> жазасыз. Мұны есте сақтау не іздеп табу керек.</p>
+<pre data-lang="sql"><code class="language-sql">SELECT COUNT(*) FROM favorites WHERE language = 'C' AND problem = 'Hello, It''s Me';
+-- 0
+
+SELECT COUNT(*) FROM favorites
+WHERE language = 'C' AND (problem = 'Hello, World' OR problem = 'Hello, It''s Me');
+
+SELECT COUNT(*) FROM favorites WHERE language = 'C' AND problem LIKE 'Hello, %';</code></pre>
+      <p>C-ны таңдап, «Hello, It's Me»-ні ұнатқандар жоқ болып шықты. <strong><code>LIKE</code></strong> арқылы <em>үлгі</em> іздеуге болады: SQL жолында <strong><code>%</code></strong> «нөл не одан көп кез келген таңба» дегенді білдіреді. Сонда «Hello, » деп басталатын екі тапсырманың бірі де табылады.</p>
+      <p><strong>— Регистр маңызды ма?</strong> <code>=</code> үшін иә, ал <code>LIKE</code> регистрге тәуелсіз.</p>
+      <div class="callout note">
+        <span class="callout-title">Стиль: неге бас әріп?</span>
+        CS50 және көп компания мен қауымдастықтың стилі бойынша SQL кілт сөздерін <strong>бас әріппен</strong> жазамыз. Сонда сіз таңдаған кесте мен баған аттарынан (кіші әріппен) олар ерекшеленіп тұрады. Бұл тек келісім, әрқашан бірізді болыңыз.
+      </div>
+<pre data-lang="sql"><code class="language-sql">SELECT language, COUNT(*) FROM favorites GROUP BY language;</code></pre>
+<pre class="terminal"><code class="language-plaintext">+----------+----------+
+| language | COUNT(*) |
++----------+----------+
+| C        | 58       |
+| Python   | 190      |
+| Scratch  | 24       |
++----------+----------+</code></pre>
+      <p>Python-дағы 20 жолдық кодтың орнына бір жол! <code>GROUP BY</code> бірдей тілдерді бір топқа жинап, әр топтың санын береді. Бастығыңыз CSV беріп, оны талдауды сұраса, оны SQLite-қа жүктеп, бір команда орындап, нәтиже бере аласыз.</p>
+<pre data-lang="sql"><code class="language-sql">SELECT language, COUNT(*) AS n FROM favorites GROUP BY language ORDER BY n DESC;
+
+SELECT language, COUNT(*) AS n FROM favorites GROUP BY language ORDER BY n DESC LIMIT 1;</code></pre>
+      <ul>
+        <li><code>ORDER BY n DESC</code> — кемуі бойынша (descending) сұрыптау. <code>ASC</code> — өсуі бойынша.</li>
+        <li><code>AS n</code> — <strong>бүркеншік ат</strong> (<span class="term-en">alias</span>), бағанның уақытша атауы. <code>COUNT(*)</code>-ты екі рет жазбаймыз.</li>
+        <li><code>LIMIT 1</code> — тек бірінші жол: Python, 190.</li>
+      </ul>
+      <p>Әр <code>SELECT</code> іс жүзінде уақытша кесте қайтарады. Ол еш жерде сақталмайды. Жауап алған соң, компьютер жадынан жоғалады. <code>.import</code> бүкіл деректерді жадқа жүктеді, ал біз оның сұрағымызға жауап беретін бөлігін ғана аламыз.</p>
+
+      <h2 id="write">INSERT, NULL, DELETE, UPDATE, DROP</h2>
+<pre data-lang="sql"><code class="language-sql">INSERT INTO table (column, ...) VALUES(value, ...);</code></pre>
+      <p>Форманы таратқанда 7-тапсырма әлі берілмеген еді. Бірақ онда <strong>Fiftyville</strong> атты тапсырма бар, ол бір аптадан кейін біреудің сүйіктісі болуы мүмкін. Оны алдын ала қосайық:</p>
+<pre data-lang="sql"><code class="language-sql">INSERT INTO favorites (language, problem) VALUES ('SQL', 'Fiftyville');
+SELECT * FROM favorites;</code></pre>
+      <p>Уақыт белгісінің пішімін ойламау үшін оны көрсетпедім. Кестенің соңында жаңа жол пайда болды, бірақ уақыт белгісі бос емес, онда <strong><code>NULL</code></strong> тұр. Бұл көрсеткіштегі NULL емес, тек аты бірдей. Ол <strong>деректің саналы түрде жоқ екенін</strong> білдіреді.</p>
+      <p>Бұл пайдалы. Google Sheets не Excel-де бос ұяшық нені білдіреді? Онда шынымен ештеңе жоқ па, әлде дерек белгісіз бе? «N/A» деп жазып, «қолмен» шешуге болар еді. Бірақ сонда ешкім «NA» деп жауап бере алмайды. Ал SQL-да <code>NULL</code> бос жол <code>''</code> емес, ол деректің <em>саналы</em> түрде жоқ екенін білдіреді.</p>
+<pre data-lang="sql"><code class="language-sql">DELETE FROM table WHERE condition;
+
+DELETE FROM favorites WHERE Timestamp IS NULL;</code></pre>
+      <p><strong>— Неге <code>NULL</code> тырнақшада емес?</strong> <code>NULL</code> ерекше белгі. Тырнақшаға алсаңыз, CSV-де сөзбе-сөз «NULL» деп жазылған мәтінді (мысалы, тілдің не тапсырманың аты) іздейсіз. Бізге деректің мүлдем болмауы керек. Ол <code>IS NULL</code> арқылы тексеріледі.</p>
+      <div class="callout warn">
+        <span class="callout-title">DELETE өте қауіпті!</span>
+        <code>DELETE FROM favorites;</code> деп, <code>WHERE</code>-ді жазуды ұмытып, Enter-ді ерте басып қалсаңыз, <strong>бүкіл кестедегі</strong> деректер жойылады. Google-да компанияның дерекқорына тым көп рұқсаты бар тағылымдамашылардың (интерндердің) дәл осылай істегені туралы мақалалар бар. Резервтік көшірмелер не нұсқалар болмаса, деректер біржола жоғалады. Әрқашан <code>WHERE</code> жазып, оның дұрыс екеніне көз жеткізіңіз!
+      </div>
+<pre data-lang="sql"><code class="language-sql">UPDATE table SET column = value WHERE condition;
+
+UPDATE favorites SET language = 'SQL', problem = 'Fiftyville';</code></pre>
+      <p>Fiftyville бір күнде бәрінің сүйікті тапсырмасына айналды делік. Бұл жолы шартсыз <code>UPDATE</code> орындадық. <code>SELECT * FROM favorites;</code>: бәрі «SQL, Fiftyville» болды, ал алдыңғы нұсқаға қайтудың жолы жоқ (тек CSV-ді қайта импорттау арқылы).</p>
+<pre data-lang="sql"><code class="language-sql">DELETE FROM favorites;
+DROP TABLE favorites;</code></pre>
+      <p><code>DELETE</code> барлық жолды жойды, ал <code>DROP TABLE</code> кестенің өзін жойды: <code>.schema</code> енді ештеңе көрсетпейді. Бұл одан да нашар. Не істеп отырғаныңызды білмесеңіз, бұл командаларды іске қоспаңыз.</p>
+      <p><strong>— Деректерді ұдайы резервтік көшіріп отыра ма?</strong> Иә, әрине. CS50-дің барлық веб-қосымшалары белгілі бір кестемен резервтік көшіріледі. Бірақ күнделікті болса, 23 сағат 59 минуттық деректі жоғалтуыңыз мүмкін. Компаниялар деректерді әр 5 минут, әр минут сайын нұсқалауы мүмкін, бірақ бұл көп орын алады. Тағы да таңдау. Сонымен қатар <strong>қол жеткізуді басқару</strong> (<span class="term-en">access control</span>) бар. SQLite-та қолданушы аты не құпиясөз жоқ, деректерге қол жеткізсеңіз, бәрін өзгерте аласыз. Ал Oracle, SQL Server, PostgreSQL, MySQL-да тағылымдамашыға тек <code>SELECT</code> жасауға, бірақ <code>UPDATE</code>, <code>DELETE</code> не <code>INSERT</code> жасамауға рұқсат беруге болады.</p>
+
+      <h2 id="imdb">Нақты деректер: IMDb</h2>
+      <p>Нақты өмірдегі деректермен ойнайық. <strong>IMDb</strong> (Internet Movie Database) — фильмдер, телешоулар, актерлер туралы деректер қоры. Оның сайтынан деректерді <strong>TSV</strong> (tab-separated values) түрінде жүктеуге болады. Біз оларды телешоуларға қатысты бірнеше SQL кестесіне айналдырдық.</p>
+      <h3 id="modeling">Деректерді модельдеу</h3>
+      <p>Алдымен телешоу деректерін өзім кестеде қалай сақтар едім? АҚШ-тағы «The Office» сериалында Стив Карелл және басқалар ойнады. Бірінші нұсқа:</p>
+      <table>
+        <tr><th>title</th><th>star</th><th>star</th><th>star</th><th>star</th><th>star</th></tr>
+        <tr><td>The Office</td><td>Steve Carell</td><td>Rainn Wilson</td><td>John Krasinski</td><td>Jenna Fischer</td><td>B.J. Novak</td></tr>
+      </table>
+      <p>Жаман жері? Студенттер айтқандай: «star, star, star» <strong>қайталанады</strong>, ал актер саны әр шоуда әртүрлі. Аз актерлі шоуларда бос ұяшықтар көп, ал көп актерлі шоуларға бағандар жетпейді. Кесте өте «сирек» болады.</p>
+      <table>
+        <tr><th>title</th><th>star</th></tr>
+        <tr><td>The Office</td><td>Steve Carell</td></tr>
+        <tr><td>The Office</td><td>Rainn Wilson</td></tr>
+        <tr><td>The Office</td><td>John Krasinski</td></tr>
+      </table>
+      <p>Екінші нұсқа: бір «тесікті» жапсақ, басқа жерден ағып кетеді. Енді «The Office» қайталанады. Қолмен терсек, бірінде қате жазылып, бірдеңе бұзылады. Үшінші нұсқа ақыры әрі «академиялық» тұрғыдан дұрыс, оны үш парақпен (sheet) жасадым:</p>
+      <table>
+        <tr><th colspan="2">shows</th><th></th><th colspan="2">people</th><th></th><th colspan="2">stars</th></tr>
+        <tr><td><strong>id</strong></td><td><strong>title</strong></td><td></td><td><strong>id</strong></td><td><strong>name</strong></td><td></td><td><strong>show_id</strong></td><td><strong>person_id</strong></td></tr>
+        <tr><td>386676</td><td>The Office</td><td></td><td>136797</td><td>Steve Carell</td><td></td><td>386676</td><td>136797</td></tr>
+        <tr><td></td><td></td><td></td><td>…</td><td>…</td><td></td><td>386676</td><td>…</td></tr>
+      </table>
+      <p>Гарвард студентінің не қызметкердің бірегей нөмірі сияқты, «The Office»-қа да IMDb-дағыдай бірегей идентификатор бердім. Адамдардың да бірегей ID-лері бар. Ал үшінші парақ шоулар мен адамдарды байланыстырады. Бір қарағанда бұл ең түсініксіз нұсқа, тек сандар. Бірақ біз деректерді <strong>қалыпқа келтірдік</strong> (<span class="term-en">normalized</span>): тек бүтін сандар ғана қайталанады. Бүтін сандардың өлшемі тұрақты (32 не 64 бит), олар массивте сақтауға не екілік іздеуге ыңғайлы, себебі бір-бірінен бірдей қашықтықта тұрады. Ал «Steve Carell» не «John Krasinski» сияқты аттардың ұзындығы әртүрлі. Кестенің өзі адамға онша түсінікті емес, бірақ осы жерде SQL көмекке келеді. Бүгінгі веб және мобильді қосымшалар көп деректі CSV-де емес, SQLite, MySQL, PostgreSQL, Oracle сияқты SQL базаларында сақтайды. IMDb-ның өзі де солай істейтін шығар.</p>
+      <h3 id="shows-db">shows.db</h3>
+      <p>Біз <code>shows.db</code> базасын дайындадық, онда жүздеген мың жол бар. Оның 6 кестесі бар: <code>people</code>, <code>shows</code>, <code>stars</code>, <code>writers</code>, <code>ratings</code>, <code>genres</code>. Олардың арасында <strong>байланыстар</strong> бар, реляциялық базаның «реляциясы» осы.</p>
+<pre class="terminal"><code class="language-plaintext">people (id, name, birth)        shows (id, title, year, episodes)
+        ▲                              ▲    ▲    ▲
+        │                              │    │    │
+stars (show_id, person_id) ───────────┘    │    │
+writers (show_id, person_id)               │    │
+ratings (show_id, rating, votes) ──────────┘    │
+genres (show_id, genre) ────────────────────────┘</code></pre>
+<pre data-lang="sql"><code class="language-sql">.schema shows
+SELECT * FROM shows LIMIT 10;
+SELECT COUNT(*) FROM shows;    -- 250 087
+SELECT COUNT(*) FROM people;   -- 704 315</code></pre>
+      <p><code>SELECT * FROM shows;</code> орындасақ, деректер экранда шексіз ағып өтеді, кейбір атаулар өте ұзын. <kbd>Ctrl</kbd>+<kbd>C</kbd> арқылы тоқтатамыз. <code>LIMIT 10</code> арқылы алғашқы 10-ын көреміз, олар 1970-жылдардан басталады. Жаңа деректер жиынын түсінудің ең жақсы тәсілі — деректерді жай ғана <code>SELECT</code> арқылы қарау.</p>
+
+      <h2 id="types">SQLite типтері және шектеулер</h2>
+      <table>
+        <tr><th>Тип</th><th>Мағынасы</th></tr>
+        <tr><td><code>INTEGER</code></td><td>бүтін сан</td></tr>
+        <tr><td><code>NUMERIC</code></td><td>уақыт, күн және басқа сандық мәндер үшін жалпы тип</td></tr>
+        <tr><td><code>REAL</code></td><td>ондық бөлшегі бар сан (float сияқты)</td></tr>
+        <tr><td><code>TEXT</code></td><td>мәтін</td></tr>
+        <tr><td><code>BLOB</code></td><td>binary large object: шикі 0 мен 1 (мысалы, файлдар). Файлдарды базада сақтау әдетте құпталмайды, бірақ кейде керек</td></tr>
+      </table>
+      <p>SQLite-та тек осы 5 тип бар. Oracle, MySQL, PostgreSQL-да типтер одан да көп.</p>
+      <ul>
+        <li><strong><code>NOT NULL</code></strong>: бағанда <code>NULL</code> болмауы керек. Мысалы, уақыт белгісі бос болмасын десеңіз, кестені жасағанда осыны жазасыз. Сонда <code>NULL</code> мәні бар жол енгізу сәтсіз болады. Python не электрондық кестеден айырмашылығы осы: деректеріңізді өзіңізден және басқалардан қорғайтын кірістірілген қорғаныстар бар.</li>
+        <li><strong><code>UNIQUE</code></strong>: бағандағы барлық мән бірегей болуы керек. Мысалы, екі адамға бірдей ID берілмейді.</li>
+      </ul>
+      <div class="callout term">
+        <span class="callout-title">Термин: бастапқы кілт және сыртқы кілт</span>
+        <strong>Бастапқы кілт</strong> (<span class="term-en">primary key</span>) — кестедегі әр жолды бірегей түрде анықтайтын баған: шоу ID, адам ID, Гарвард ID, қызметкер ID. Ол көбіне бүтін сан. <strong>Сыртқы кілт</strong> (<span class="term-en">foreign key</span>) — <em>басқа</em> кестеде кездесетін сол ID. Ол «бөтен» кестеде тұрғандықтан, сыртқы деп аталады. Екеуі де бір нәрсені білдіреді.
+      </div>
+<pre data-lang="sql"><code class="language-sql">CREATE TABLE shows (
+    id INTEGER,
+    title TEXT NOT NULL,
+    year NUMERIC,
+    episodes INTEGER,
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE ratings (
+    show_id INTEGER NOT NULL UNIQUE,
+    rating REAL NOT NULL,
+    votes INTEGER NOT NULL,
+    FOREIGN KEY(show_id) REFERENCES shows(id)
+);</code></pre>
+      <p><code>ratings</code> кестесінде <code>show_id</code> <code>UNIQUE</code>: бір шоудың тек бір рейтингі болады. Бұл <strong>бір-біріне</strong> (<span class="term-en">one-to-one</span>) байланыс. Рейтингті <code>shows</code> кестесінің өзіне қосуға да болар еді. Бірақ IMDb рейтингтерді жеке TSV файлында береді, сондықтан біз де солай сақтадық.</p>
+
+      <h2 id="nested">Ішкі сұраулар</h2>
+      <p>Енді рейтингі жақсы шоуларды тапқымыз келеді. Алдымен рейтингі 6.0 және одан жоғары шоулардың ID-ін табайық:</p>
+<pre data-lang="sql"><code class="language-sql">SELECT show_id FROM ratings WHERE rating &gt;= 6.0 LIMIT 10;</code></pre>
+      <p>Бірақ бізге сандар емес, атаулар керек. Атаулар <code>shows</code> кестесінде. Бір сұраудың нәтижесін екінші сұрауға беруге болады. Бұл <strong>ішкі сұрау</strong> (<span class="term-en">nested query, subquery</span>):</p>
+<pre data-lang="sql"><code class="language-sql">SELECT title FROM shows
+WHERE id IN (
+    SELECT show_id FROM ratings WHERE rating &gt;= 6.0
+)
+LIMIT 10;</code></pre>
+      <p>Жақша ішіндегі сұрау бірінші орындалады (математикадағы сияқты). Ол ID тізімін береді, ал <code>IN</code> «осы тізімде бар ма» деп тексереді. Сұрауды бірнеше жолға бөліп, шегініспен жазу оқуды жеңілдетеді.</p>
+
+      <h2 id="join">JOIN: кестелерді біріктіру</h2>
+      <p>Бірақ енді атауларды көрдік, ал рейтингтерді көрмейміз. Екі кестені бірге көргіміз келеді. Бір кестеде <code>id</code> мен <code>title</code>, екіншісінде <code>show_id</code> мен <code>rating</code> бар. Екі кестедегі ID-лер бірдей болатын жолдарды «тігіп», бір кең кесте жасауға болады. Бұл <code>JOIN</code>:</p>
+<pre data-lang="sql"><code class="language-sql">SELECT * FROM shows
+JOIN ratings ON shows.id = ratings.show_id
+WHERE rating &gt;= 6.0
+LIMIT 10;</code></pre>
+      <p><code>ON</code> кестелерді қандай бағандар арқылы біріктіретінін айтады. <code>shows.id</code> — <code>shows</code> кестесіндегі <code>id</code> бағаны (C-дағы құрылымның өрісі сияқты нүкте белгісі). Нәтижеде <code>id</code>, <code>title</code>, <code>year</code>, <code>episodes</code>, сосын <code>show_id</code>, <code>rating</code>, <code>votes</code> бағандары қатар тұрады. Тек керек бағандарды таңдауға болады:</p>
+<pre data-lang="sql"><code class="language-sql">SELECT title, rating FROM shows
+JOIN ratings ON shows.id = ratings.show_id
+WHERE rating &gt;= 6.0
+LIMIT 10;</code></pre>
+
+      <h2 id="one-to-many">Бір-көпке: жанрлар</h2>
+      <p>Бір шоудың бірнеше жанры болуы мүмкін (комедия, драма, ...). Бұл <strong>бір-көпке</strong> (<span class="term-en">one-to-many</span>) байланыс. <code>genres</code> кестесі:</p>
+<pre data-lang="sql"><code class="language-sql">CREATE TABLE genres (
+    show_id INTEGER NOT NULL,
+    genre TEXT NOT NULL,
+    FOREIGN KEY(show_id) REFERENCES shows(id)
+);</code></pre>
+      <p>Мұнда <code>show_id</code> <code>UNIQUE</code> емес: бір шоу бірнеше жолда кездеседі. Мысалы, 1970-жылдардағы <em>Catweazle</em> шоуы (ID 63881):</p>
+<pre data-lang="sql"><code class="language-sql">SELECT genre FROM genres WHERE show_id = 63881;
+-- Adventure
+-- Comedy
+-- Family</code></pre>
+      <p>Екі кестені біріктірсек, шоу ақпараты әр жанр үшін қайталанады:</p>
+<pre data-lang="sql"><code class="language-sql">SELECT * FROM shows
+JOIN genres ON shows.id = genres.show_id
+WHERE id = 63881;</code></pre>
+      <p>Нәтижеде <em>Catweazle</em> үш рет көрінеді. Бұл деректердің базада қайталанғанын білдірмейді. Бұл тек уақытша нәтиже, көз алдымызға келтіру үшін жасалған. Базада атау тек бір рет сақталған.</p>
+
+      <h2 id="many-to-many">Көп-көпке: актерлер</h2>
+      <p>Бір шоуда көп актер ойнайды, бір актер көп шоуда ойнайды. Бұл <strong>көп-көпке</strong> (<span class="term-en">many-to-many</span>) байланыс. Оны үшінші, «байланыстырушы» <code>stars</code> кестесі арқылы көрсетеміз:</p>
+<pre data-lang="sql"><code class="language-sql">CREATE TABLE people (
+    id INTEGER,
+    name TEXT NOT NULL,
+    birth NUMERIC,
+    PRIMARY KEY(id)
+);
+
+CREATE TABLE stars (
+    show_id INTEGER NOT NULL,
+    person_id INTEGER NOT NULL,
+    FOREIGN KEY(show_id) REFERENCES shows(id),
+    FOREIGN KEY(person_id) REFERENCES people(id)
+);</code></pre>
+      <p><code>stars</code> кестесінде тек екі сан бар. Ол «осы адам осы шоуда ойнады» дегенді білдіреді. Мысалы, <em>The Office</em> шоуында кім ойнады? Алдымен шоуды табамыз:</p>
+<pre data-lang="sql"><code class="language-sql">SELECT id FROM shows WHERE title = 'The Office';</code></pre>
+      <p>Бірнеше <em>The Office</em> бар екен (түрлі елдердің нұсқалары). Бізге американдық нұсқа керек, ол 2005 жылы шыққан:</p>
+<pre data-lang="sql"><code class="language-sql">SELECT id FROM shows WHERE title = 'The Office' AND year = 2005;
+-- 386676</code></pre>
+      <p>Енді ID-ді қолмен жазбай, сұрауларды бір-біріне салайық:</p>
+<pre data-lang="sql"><code class="language-sql">SELECT name FROM people WHERE id IN (
+    SELECT person_id FROM stars WHERE show_id = (
+        SELECT id FROM shows WHERE title = 'The Office' AND year = 2005
+    )
+);</code></pre>
+      <p>Ең ішкі сұрау шоу ID-ін береді, ортаңғысы сол шоудағы адамдардың ID-лерін, ал сыртқысы олардың аттарын. Нәтижеде Steve Carell, Rainn Wilson, John Krasinski, Jenna Fischer және басқалар шығады.</p>
+      <p>Керісінше: Steve Carell қай шоуларда ойнады?</p>
+<pre data-lang="sql"><code class="language-sql">SELECT title FROM shows WHERE id IN (
+    SELECT show_id FROM stars WHERE person_id = (
+        SELECT id FROM people WHERE name = 'Steve Carell'
+    )
+);</code></pre>
+      <p>Steve Carell есімді адам бір ғана болса, бұл дұрыс жұмыс істейді. (Оның ID-і 136797.) Сол сұрауды <code>JOIN</code> арқылы да жазуға болады:</p>
+<pre data-lang="sql"><code class="language-sql">SELECT title FROM shows
+JOIN stars ON shows.id = stars.show_id
+JOIN people ON stars.person_id = people.id
+WHERE name = 'Steve Carell';</code></pre>
+      <p>Немесе <strong>жасырын</strong> (<span class="term-en">implicit</span>) біріктіру арқылы: кестелерді үтірмен тізіп, байланыс шарттарын <code>WHERE</code>-ге жазамыз:</p>
+<pre data-lang="sql"><code class="language-sql">SELECT title FROM shows, stars, people
+WHERE shows.id = stars.show_id
+AND people.id = stars.person_id
+AND name = 'Steve Carell';</code></pre>
+      <p>Үш тәсіл де бірдей нәтиже береді. Қайсысы өзіңізге түсінікті болса, соны қолданыңыз.</p>
+      <div class="callout tip">
+        <span class="callout-title">Кеңес</span>
+        Атауды толық білмесеңіз, <code>LIKE</code> қолданыңыз: <code>WHERE name LIKE 'Steve C%'</code>. Бірақ ол бірнеше адамды табуы мүмкін, сондықтан <code>=</code> орнына <code>IN</code> жазыңыз.
+      </div>
+
+      <h2 id="indexes">Индекстер</h2>
+      <p>Деректер көп болғанда сұраулар баяулайды. Уақытты өлшеп көрейік:</p>
+<pre class="terminal"><code class="language-plaintext">sqlite&gt; .timer on
+sqlite&gt; SELECT * FROM shows WHERE title = 'The Office';
+...
+Run Time: real 0.042</code></pre>
+      <p>0.042 секунд көп емес сияқты. Бірақ бұл бір ғана сұрау. Миллиондаған қолданушысы бар сайт секундына мыңдаған сұрау жібереді. SQLite атауды табу үшін барлық 250 мың жолды басынан аяғына дейін қарайды, яғни сызықтық іздеу жасайды.</p>
+      <p>Шешімі — <strong>индекс</strong> (<span class="term-en">index</span>):</p>
+<pre data-lang="sql"><code class="language-sql">CREATE INDEX title_index ON shows (title);</code></pre>
+<pre class="terminal"><code class="language-plaintext">sqlite&gt; SELECT * FROM shows WHERE title = 'The Office';
+...
+Run Time: real 0.001</code></pre>
+      <p>Енді 0.001 секунд! Индекс құру біраз уақыт алады, бірақ бір-ақ рет жасалады. Сосын әр іздеу әлдеқайда жылдам.</p>
+      <div class="callout term">
+        <span class="callout-title">Термин: B-ағаш</span>
+        Индекс ішінде <strong>B-ағаш</strong> (<span class="term-en">B-tree</span>) деп аталатын деректер құрылымы қолданылады. Ол 5-аптадағы екілік іздеу ағашына ұқсайды, бірақ әр түйіннің екіден көп баласы болуы мүмкін. Сондықтан ағаш өте <em>аласа</em> әрі кең болады, ал іздеу логарифмдік уақыт алады.
+      </div>
+      <p>Индекстер тегін емес. Олар қосымша жад алады, ал <code>INSERT</code> және <code>UPDATE</code> әрекеттерін баяулатады, себебі ағашты да жаңарту керек. Сондықтан индексті барлық бағанға емес, жиі іздейтін бағандарға ғана жасаймыз. Мысалы, <code>JOIN</code>-де жиі қолданылатын сыртқы кілттерге:</p>
+<pre data-lang="sql"><code class="language-sql">CREATE INDEX person_index ON stars (person_id);
+CREATE INDEX show_index ON stars (show_id);
+CREATE INDEX name_index ON people (name);</code></pre>
+      <p>Осы индекстерден кейін Steve Carell туралы күрделі сұрау бірнеше есе жылдам орындалады. Бастапқы кілттерге SQLite индексті автоматты түрде жасайды.</p>
+
+      <h2 id="python-sql">Python және SQL</h2>
+      <p>SQL-ды Python-нан да шақыруға болады. Бұл жерде CS50 кітапханасының <code>SQL</code> функциясын қолданамыз (кейін веб-бағдарламалауда да керек болады):</p>
+<pre data-lang="python"><code class="language-python">from cs50 import SQL
+
+db = SQL("sqlite:///favorites.db")
+
+favorite = input("Favorite: ")
+
+rows = db.execute("SELECT COUNT(*) AS n FROM favorites WHERE problem = ?", favorite)
+
+row = rows[0]
+
+print(row["n"])</code></pre>
+      <ul>
+        <li><code>SQL("sqlite:///favorites.db")</code> — базаға қосылу. Үш қиғаш сызық — URL синтаксисі.</li>
+        <li><code>db.execute(...)</code> SQL-ды орындап, <strong>сөздіктер тізімін</strong> қайтарады. Әр сөздік — бір жол, кілттері — баған аттары.</li>
+        <li><code>?</code> — <strong>орын толтырғыш</strong> (<span class="term-en">placeholder</span>). C-дағы <code>printf</code>-тің <code>%s</code>-і сияқты: оның орнына келесі аргумент қойылады.</li>
+        <li><code>COUNT(*) AS n</code> бағанға қысқа ат береді. Сондықтан <code>row["n"]</code> деп жаза аламыз.</li>
+      </ul>
+<pre class="terminal"><code class="language-plaintext">$ python favorites.py
+Favorite: Hello, World
+...</code></pre>
+      <p>Python-да CSV-ді оқып, сөздікпен санағанда ондаған жол код жаздық. SQL-да бір ғана жол жеткілікті. Әр құралдың өз орны бар: SQL деректерді алу мен сұрыптауға жақсы, ал Python қалған логикаға.</p>
+
+      <h2 id="injection">SQL инъекциясы</h2>
+      <p>Неге <code>?</code> қолдандық? Неге f-жолмен сұрауды өзіміз құрастырмадық? Себебі қолданушы енгізгенді ешқашан тікелей сұрауға қоспау керек. Мысалы, GitHub сияқты сайтқа кіру формасы бар деп елестетейік. Сервер мынадай сұрау жасауы мүмкін:</p>
+<pre data-lang="python"><code class="language-python"># ҚАУІПТІ! Мұны ешқашан жасамаңыз
+rows = db.execute(f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'")
+
+if rows:
+    ...  # қолданушы кірді</code></pre>
+      <p>Зиянкес пайдаланушы аты ретінде <code>malan@harvard.edu'--</code> деп жазса не болады? SQL-да <code>--</code> — түсініктеме. Сұрау мынаған айналады:</p>
+<pre data-lang="sql"><code class="language-sql">SELECT * FROM users WHERE username = 'malan@harvard.edu'--' AND password = '...'</code></pre>
+      <p>Тырнақша жолды жабады, ал <code>--</code> құпия сөзді тексеретін бөлікті түсініктемеге айналдырады. Нәтижеде зиянкес құпия сөзсіз басқа біреудің аккаунтына кіреді! Бұл <strong>SQL инъекциясы</strong> (<span class="term-en">SQL injection attack</span>). Дәл осылай деректерді өшіруге не ұрлауға да болады.</p>
+      <p>Дұрыс тәсіл — орын толтырғыштар:</p>
+<pre data-lang="python"><code class="language-python">rows = db.execute("SELECT * FROM users WHERE username = ? AND password = ?", username, password)</code></pre>
+      <p>Кітапхана (немесе база) енгізілген мәндегі қауіпті таңбаларды <strong>экрандайды</strong> (<span class="term-en">escape</span>). Мысалы, жалғыз тырнақшаны екі тырнақшаға айналдырады (<code>''</code>), сонда ол мәтіннің бөлігі болып қалады. Мұны өзіңіз қолмен жасамаңыз: кітапханалар мұны көп жылдар бойы сыналған тәсілмен жасайды.</p>
+      <div class="callout note">
+        <span class="callout-title">Әзіл</span>
+        Лекцияда XKCD-тің атақты «Bobby Tables» комиксі көрсетілді. Онда ана баласына оқушылар базасын өшіретін SQL командасы бар ат қояды. Сондай-ақ көлік нөміріне SQL командасын жазып, жылдамдық камераларын «алдамақ» болған адамның суреті көрсетілді. Екеуі де инъекцияның шын қауіп екенін еске салады.
+      </div>
+
+      <h2 id="race">Жарыс жағдайлары</h2>
+      <p>Тағы бір мәселе: бір уақытта көп адам базамен жұмыс істегенде не болады? Мұны түсіну үшін тоңазытқыш туралы оқиға бар. Сіз үйге келіп, тоңазытқышта сүт жоқ екенін көресіз. Дүкенге сүт алуға кетесіз. Сол кезде бөлмелесіңіз де келіп, сүт жоқ екенін көріп, ол да дүкенге кетеді. Нәтижесінде үйде сүт екі есе көп болады. Мәселе: сіз тоңазытқыштың <em>күйін</em> тексердіңіз, бірақ оны өзгертпей тұрып кетіп қалдыңыз. Шешімдердің бірі — тоңазытқышқа «сүтке кеттім» деп жазып қою немесе оны құлыптау.</p>
+      <p>Базада да солай. Instagram-да атақты біреудің жазбасына бір уақытта мыңдаған адам «ұнату» басады дейік. Әр серверде мынадай код орындалуы мүмкін:</p>
+<pre data-lang="python"><code class="language-python">rows = db.execute("SELECT likes FROM posts WHERE id = ?", id)
+likes = rows[0]["likes"]
+db.execute("UPDATE posts SET likes = ? WHERE id = ?", likes + 1, id)</code></pre>
+      <p>Екі сервер бір уақытта <code>likes</code>-ті оқыса (мысалы, екеуі де 100 алса), екеуі де 101 жазады. Бір «ұнату» жоғалып кетеді! Бұл <strong>жарыс жағдайы</strong> (<span class="term-en">race condition</span>).</p>
+      <p>Шешімі — <strong>транзакциялар</strong> (<span class="term-en">transactions</span>). Олар бірнеше әрекетті бөлінбейтін (<span class="term-en">atomic</span>) етеді: не бәрі бірге орындалады, не ештеңе орындалмайды.</p>
+<pre data-lang="python"><code class="language-python">db.execute("BEGIN TRANSACTION")
+rows = db.execute("SELECT likes FROM posts WHERE id = ?", id)
+likes = rows[0]["likes"]
+db.execute("UPDATE posts SET likes = ? WHERE id = ?", likes + 1, id)
+db.execute("COMMIT")</code></pre>
+      <ul>
+        <li><code>BEGIN TRANSACTION</code> — транзакцияны бастау.</li>
+        <li><code>COMMIT</code> — өзгерістерді сақтау.</li>
+        <li><code>ROLLBACK</code> — бір нәрсе дұрыс болмаса, барлық өзгерісті болдырмау.</li>
+      </ul>
+      <p>Бағасы — жылдамдық: бір транзакция жүріп жатқанда басқалар күтуі мүмкін. Бірақ деректер дұрыс болады. Банктер, бағалар, тапсырыстар сияқты маңызды деректер үшін бұл міндетті.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li>Жалпақ файлды база (CSV) қарапайым, бірақ үлкен деректерге ыңғайсыз. Python-мен <code>csv.reader</code>, <code>csv.DictReader</code>, сөздіктер және <code>sorted</code> арқылы талдай аламыз.</li>
+        <li><strong>Реляциялық база</strong> — кестелер, жолдар, бағандар және олардың арасындағы байланыстар. SQL <strong>декларативті</strong> тіл: <em>не</em> керек екенін айтамыз, <em>қалай</em> екенін емес.</li>
+        <li>CRUD: <code>CREATE</code>/<code>INSERT</code>, <code>SELECT</code>, <code>UPDATE</code>, <code>DELETE</code>/<code>DROP</code>.</li>
+        <li><code>WHERE</code>, <code>LIKE</code>, <code>GROUP BY</code>, <code>ORDER BY</code>, <code>LIMIT</code>, <code>AS</code>; функциялар: <code>COUNT</code>, <code>AVG</code>, <code>MAX</code>, <code>MIN</code>, <code>SUM</code>, <code>DISTINCT</code>, <code>LOWER</code>, <code>UPPER</code>.</li>
+        <li>SQLite типтері: <code>INTEGER</code>, <code>NUMERIC</code>, <code>REAL</code>, <code>TEXT</code>, <code>BLOB</code>. Шектеулер: <code>NOT NULL</code>, <code>UNIQUE</code>.</li>
+        <li><strong>Бастапқы кілт</strong> жолды анықтайды, <strong>сыртқы кілт</strong> басқа кестеге сілтейді. Байланыстар: бір-біріне, бір-көпке, көп-көпке.</li>
+        <li>Ішкі сұраулар (<code>IN</code>), <code>JOIN ... ON ...</code> және жасырын біріктіру.</li>
+        <li><strong>Индекстер</strong> (B-ағаштар) іздеуді жылдамдатады, бірақ жад алады және жазуды баяулатады.</li>
+        <li>Python-да <code>db.execute</code> және <code>?</code> орын толтырғыштары. Олар <strong>SQL инъекциясынан</strong> қорғайды.</li>
+        <li><strong>Жарыс жағдайлары</strong> транзакциялармен шешіледі: <code>BEGIN TRANSACTION</code>, <code>COMMIT</code>, <code>ROLLBACK</code>.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. SQL қандай тіл?</p>
+          <label><input type="radio" value="a"> Процедуралық: компьютерге қадамдарды айтамыз</label>
+          <label><input type="radio" value="b"> Декларативті: не керек екенін айтамыз</label>
+          <label><input type="radio" value="c"> Компиляцияланатын, C сияқты</label>
+          <label><input type="radio" value="d"> Белгілеу тілі, HTML сияқты</label>
+          <p class="explain">SQL-да нәтижені сипаттаймыз, ал оны қалай табуды база өзі шешеді.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">2. Әр тілді неше адам таңдағанын санау үшін қандай сөз керек?</p>
+          <label><input type="radio" value="a"> <code>ORDER BY language</code></label>
+          <label><input type="radio" value="b"> <code>WHERE language</code></label>
+          <label><input type="radio" value="c"> <code>GROUP BY language</code></label>
+          <label><input type="radio" value="d"> <code>DISTINCT language</code></label>
+          <p class="explain"><code>SELECT language, COUNT(*) FROM favorites GROUP BY language;</code></p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. <code>DELETE FROM favorites;</code> (WHERE-сіз) не істейді?</p>
+          <label><input type="radio" value="a"> Кестедегі барлық жолды өшіреді</label>
+          <label><input type="radio" value="b"> Қате береді</label>
+          <label><input type="radio" value="c"> Соңғы жолды ғана өшіреді</label>
+          <label><input type="radio" value="d"> Кестенің өзін өшіреді</label>
+          <p class="explain">Сондықтан <code>DELETE</code> және <code>UPDATE</code>-те <code>WHERE</code>-ді ұмытпаңыз. Кестені өзін <code>DROP TABLE</code> өшіреді.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">4. Шоулар мен актерлер арасындағы байланыс қандай?</p>
+          <label><input type="radio" value="a"> Бір-біріне</label>
+          <label><input type="radio" value="b"> Бір-көпке</label>
+          <label><input type="radio" value="c"> Байланыс жоқ</label>
+          <label><input type="radio" value="d"> Көп-көпке</label>
+          <p class="explain">Бір шоуда көп актер, бір актер көп шоуда. Сондықтан <code>stars</code> кестесі керек.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. Индекстің кемшілігі қандай?</p>
+          <label><input type="radio" value="a"> Іздеуді баяулатады</label>
+          <label><input type="radio" value="b"> Қосымша жад алады және енгізу/жаңартуды баяулатады</label>
+          <label><input type="radio" value="c"> Тек сандарға жұмыс істейді</label>
+          <label><input type="radio" value="d"> Кемшілігі жоқ</label>
+          <p class="explain">Әр <code>INSERT</code>/<code>UPDATE</code> кезінде B-ағашты да жаңарту керек.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">6. SQL инъекциясынан қалай қорғанамыз?</p>
+          <label><input type="radio" value="a"> Сұрауды f-жолмен құрастырамыз</label>
+          <label><input type="radio" value="b"> Пайдаланушыға тырнақша жазуға тыйым саламыз</label>
+          <label><input type="radio" value="c"> <code>?</code> орын толтырғыштарын қолданамыз</label>
+          <label><input type="radio" value="d"> <code>--</code> түсініктемелерін өшіреміз</label>
+          <p class="explain">Кітапхана мәндерді өзі дұрыс экрандайды.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. Екі сервер бір уақытта «ұнату» санын оқып, екеуі де +1 жазса, не болады?</p>
+          <label><input type="radio" value="a"> Бір «ұнату» жоғалады (жарыс жағдайы)</label>
+          <label><input type="radio" value="b"> Сан 2-ге артады</label>
+          <label><input type="radio" value="c"> База бұзылады</label>
+          <label><input type="radio" value="d"> SQLite қате береді</label>
+          <p class="explain">Транзакция (<code>BEGIN TRANSACTION</code> ... <code>COMMIT</code>) мұның алдын алады.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <span class="result"></span>
+      </div>
+
+      <h2 id="practice">Жаттығулар</h2>
+      <p>Төмендегілер лекциядағы <code>shows.db</code>-ға арналған. Оны <a href="https://cs50.harvard.edu/x/weeks/7/" target="_blank" rel="noopener">лекция бетінен</a> жүктеп, <code>sqlite3 shows.db</code> арқылы ашыңыз. Нақты сандар базаның нұсқасына қарай өзгеруі мүмкін, сондықтан мұнда тек шешімдерді тексеріңіз.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-sql-count">2005 жылғы шоулар</h3></div>
+        <p>2005 жылы шыққан шоулар санын табатын сұрау жазыңыз.</p>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="sql"><code class="language-sql">SELECT COUNT(*) FROM shows WHERE year = 2005;</code></pre>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-sql-top">Ең жақсы 10 комедия</h3></div>
+        <p>Жанры <code>Comedy</code> болатын, кемінде 10 000 дауысы бар шоулардың ішінен рейтингі ең жоғары 10 шоудың атауы мен рейтингін шығарыңыз.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Үш кесте керек: <code>shows</code>, <code>ratings</code>, <code>genres</code>. Екі <code>JOIN</code>, сосын <code>ORDER BY rating DESC LIMIT 10</code>.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="sql"><code class="language-sql">SELECT title, rating FROM shows
+JOIN ratings ON shows.id = ratings.show_id
+JOIN genres ON shows.id = genres.show_id
+WHERE genre = 'Comedy' AND votes &gt;= 10000
+ORDER BY rating DESC
+LIMIT 10;</code></pre>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-sql-injection">Қауіпті кодты табыңыз</h3></div>
+        <p>Төмендегі жолдардың қайсысы SQL инъекциясына осал? Жауап ретінде әріпті жазыңыз (a, b немесе c).</p>
+<pre data-lang="python"><code class="language-python"># a
+db.execute("SELECT * FROM shows WHERE title = ?", title)
+# b
+db.execute(f"SELECT * FROM shows WHERE title = '{title}'")
+# c
+db.execute("SELECT * FROM shows WHERE year = ?", int(year))</code></pre>
+        <div class="answer-check" data-answer="b"><input type="text" placeholder="a, b немесе c"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Түсіндірме</summary><div class="details-body"><p><code>b</code> қолданушы енгізгенді тікелей сұрауға қояды. <code>title</code> ішінде <code>'</code> болса, ол сұраудың құрылымын өзгертеді.</p></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="ex-sql-python">Python-дан іздеу</h3></div>
+        <p>Қолданушыдан актер атын сұрап, ол ойнаған шоулардың атауларын әліпби бойынша шығаратын <code>search.py</code> бағдарламасын жазыңыз. Орын толтырғышты қолданыңыз.</p>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="python"><code class="language-python">from cs50 import SQL
+
+db = SQL("sqlite:///shows.db")
+
+name = input("Name: ")
+
+rows = db.execute("""
+    SELECT title FROM shows
+    JOIN stars ON shows.id = stars.show_id
+    JOIN people ON stars.person_id = people.id
+    WHERE name = ?
+    ORDER BY title
+""", name)
+
+for row in rows:
+    print(row["title"])</code></pre>
+        </div></details>
+      </div>
+
+      <h2 id="problem-set">Тапсырмалар: Problem Set 7</h2>
+      <p>Ресми тапсырма беті: <a href="https://cs50.harvard.edu/x/psets/7/" target="_blank" rel="noopener">cs50.harvard.edu/x/psets/7</a>. Бұл аптада әр сұрауды жеке <code>.sql</code> файлына жазасыз (<code>1.sql</code>, <code>2.sql</code>, ...). Әр файлда тек бір SQL сұрауы болуы керек. Тексеру үшін: <code>cat 1.sql | sqlite3 songs.db</code>.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pset-songs">Songs</h3></div>
+        <p>2018 жылғы Spotify-дың ең көп тыңдалған 100 әні туралы <code>songs.db</code> базасы берілген. Онда екі кесте бар: <code>songs</code> (атауы, орындаушы ID, danceability, energy, key, loudness, speechiness, valence, tempo, duration_ms) және <code>artists</code> (id, name). 8 сұрау жазасыз, мысалы:</p>
+        <ul>
+          <li><code>1.sql</code>: барлық әннің атауы.</li>
+          <li><code>2.sql</code>: әндердің атаулары <code>tempo</code> бойынша өсу ретімен.</li>
+          <li><code>3.sql</code>: ең ұзын 5 әннің атауы.</li>
+          <li><code>4.sql</code>: danceability, energy және valence мәндері 0.75-тен жоғары әндер.</li>
+          <li><code>5.sql</code>: барлық әннің орташа <code>energy</code> мәні.</li>
+          <li><code>6.sql</code>: Post Malone-ның әндері.</li>
+          <li><code>7.sql</code>: Drake әндерінің орташа <code>energy</code> мәні.</li>
+          <li><code>8.sql</code>: басқа орындаушылар қатысқан әндер (атауында «feat.» бар).</li>
+        </ul>
+        <p>Сонымен қатар <code>answers.txt</code> файлында сұраққа жауап бересіз: осы деректер бойынша тыңдаушының «аурасын» (Spotify Wrapped сияқты) қалай сипаттауға болады және бұл тәсілдің кемшілігі неде?</p>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li>Орындаушының аты <code>artists</code> кестесінде. 6 және 7 сұрауларда ішкі сұрау не <code>JOIN</code> керек.</li>
+            <li>Орташа мән: <code>AVG(energy)</code>.</li>
+            <li>«feat.» үшін: <code>WHERE name LIKE '%feat.%'</code>.</li>
+            <li>ID-лерді қолмен жазбаңыз (мысалы, <code>artist_id = 54</code>). Сұрау кез келген деректермен жұмыс істеуі керек.</li>
+          </ul>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="songs">
+            <li><input type="checkbox"> <span>8 файлдың әрқайсысында бір ғана сұрау бар.</span></li>
+            <li><input type="checkbox"> <span><code>1.sql</code> 100 жол қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>3.sql</code> және басқа реттеу сұрауларында <code>ORDER BY</code> және <code>LIMIT</code> дұрыс.</span></li>
+            <li><input type="checkbox"> <span>Ешбір сұрауда ID қолмен жазылмаған.</span></li>
+            <li><input type="checkbox"> <span><code>answers.txt</code> толтырылды.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2026/x/songs</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-movies">Movies</h3></div>
+        <p>IMDb деректері бар <code>movies.db</code> базасы берілген. Кестелер: <code>movies</code>, <code>people</code>, <code>stars</code>, <code>directors</code>, <code>ratings</code>. 13 сұрау жазасыз, мысалы:</p>
+        <ul>
+          <li>2008 жылғы фильмдердің атаулары; Эмма Стоунның туған жылы.</li>
+          <li>2018 жылдан бастап шыққан фильмдер әліпби ретімен; рейтингі 10.0 фильмдер саны.</li>
+          <li>Гарри Поттер фильмдерінің атаулары мен жылдары; 2012 жылғы фильмдердің орташа рейтингі.</li>
+          <li>2010 жылғы фильмдер рейтингі бойынша (тең болса, атауы бойынша).</li>
+          <li><em>Toy Story</em>-дегі актерлер; 2004 жылғы фильмдердегі актерлер туған жылы бойынша.</li>
+          <li>Рейтингі 9.0 және одан жоғары фильмдердің режиссерлері.</li>
+          <li>Чедвик Боузманның ең жоғары рейтингті 5 фильмі.</li>
+          <li>Джонни Депп пен Хелена Бонем Картер бірге ойнаған фильмдер.</li>
+          <li>Кевин Бейконмен (1958 ж.т.) бірге ойнаған адамдар (Бейконның өзінен басқа).</li>
+        </ul>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li>Әр сұрауды кішкене бөліктерден құрыңыз: алдымен ең ішкі сұрауды жазып, оның нәтижесін тексеріңіз.</li>
+            <li>Бір адам бір фильмде бірнеше рет кездеспеуі үшін <code>DISTINCT</code> керек болуы мүмкін.</li>
+            <li>«Бірге ойнаған» фильмдер үшін: бір адамның фильмдері <code>IN</code> екінші адамның фильмдері. Немесе <code>INTERSECT</code>.</li>
+            <li>Кевин Бейкон есімді бірнеше адам бар, сондықтан туған жылын да тексеріңіз.</li>
+            <li>Ауыр сұраулар баяу болса, <code>.timer on</code> қосып, уақытты бақылаңыз.</li>
+          </ul>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="movies">
+            <li><input type="checkbox"> <span>13 файл, әрқайсысында бір сұрау.</span></li>
+            <li><input type="checkbox"> <span>Сұраулар нәтижесі тапсырма бетіндегі күтілген жол санына сәйкес келеді.</span></li>
+            <li><input type="checkbox"> <span>Кевин Бейконның өзі <code>13.sql</code> нәтижесінде жоқ.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2026/x/movies</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pset-fiftyville">Fiftyville</h3></div>
+        <p>CS50 үйрегі Fiftyville қаласында ұрланды! Сіз детективсіз. Ұрлық 2024 жылдың 28 шілдесінде Humphrey Street-те болғаны белгілі. <code>fiftyville.db</code> базасында қаланың деректері бар: қылмыс есептері, сұхбаттар, тұрақ журналдары, банкомат операциялары, телефон қоңыраулары, ұшақ рейстері, жолаушылар, адамдар.</p>
+        <p>Мақсатыңыз:</p>
+        <ul>
+          <li>Ұры кім?</li>
+          <li>Ол қай қалаға қашты?</li>
+          <li>Оған кім көмектесті (сыбайлас)?</li>
+        </ul>
+        <p>Барлық орындаған сұрауларыңызды түсініктемелерімен <code>log.sql</code> файлына жазыңыз, ал жауаптарды <code>answers.txt</code>-ке.</p>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li>Алдымен <code>.tables</code> және <code>.schema</code> арқылы базаны зерттеңіз.</li>
+            <li><code>crime_scene_reports</code> кестесінен бастаңыз: сол күн мен көшеге сәйкес есептерді табыңыз.</li>
+            <li>Есепте куәлар туралы айтылса, <code>interviews</code> кестесіндегі сол күнгі сұхбаттарды оқыңыз.</li>
+            <li>Әр куәның айтқанын тексеріңіз: тұрақ камерасы, банкомат, телефон, рейс. Әр жолы күдіктілер тізімі тарылады.</li>
+            <li>Күдіктілер тізімін бірнеше <code>IN (...)</code> шартымен қиыстыруға болады.</li>
+            <li>Детектив тәрізді ойланыңыз: асықпаңыз және әр қадамды <code>log.sql</code>-ге жазыңыз.</li>
+          </ul>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="fiftyville">
+            <li><input type="checkbox"> <span>Қылмыс есебі мен сұхбаттар табылды.</span></li>
+            <li><input type="checkbox"> <span>Тұрақ, банкомат, телефон деректері бойынша күдіктілер тарылды.</span></li>
+            <li><input type="checkbox"> <span>Ұры, қала және сыбайлас анықталды.</span></li>
+            <li><input type="checkbox"> <span><code>log.sql</code> түсініктемелермен толтырылды.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2026/x/fiftyville</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-6.html"><small>Алдыңғы</small>← 6-апта: Python</a>
+        <a class="next" href="ai.html"><small>Келесі</small>Жасанды интеллект →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50x 2026 (Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan.</p>
+      <p>Қазақшаға аударған: <strong>Sagid Mustafa</strong> · Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a></p>
+    </div>
+  </footer>
+</body>
+</html>
