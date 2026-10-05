@@ -141,7 +141,7 @@
       el.querySelectorAll(".viz-data button").forEach((b) => b.classList.toggle("on", b === e.target));
       data = e.target.dataset.d; full();
     });
-    el.querySelector(".viz-play").addEventListener("click", play);
+    el.querySelector(".viz-play").addEventListener("click", () => { K.mark && K.mark("viz-sort"); play(); });
     el.querySelector(".viz-step").addEventListener("click", () => { if (done) full(); stop(); step(); });
     full();
   }
@@ -204,7 +204,7 @@
         : `<b>${target}</b> массивте жоқ. Сызықтық іздеу бәрін тексерді (<b>${ls}</b> қадам), екілік іздеу <b>${bs}</b> қадамда «жоқ» деп білді.`;
       running = false;
     }
-    el.querySelector(".viz-go").addEventListener("click", go);
+    el.querySelector(".viz-go").addEventListener("click", () => { K.mark && K.mark("viz-search"); go(); });
     el.querySelector(".viz-input").addEventListener("keydown", (e) => e.key === "Enter" && go());
     el.querySelector(".viz-new").addEventListener("click", () => { if (!running) { make(); draw(); el.querySelector(".lin-n").textContent = el.querySelector(".bin-n").textContent = "—"; el.querySelector(".viz-result").textContent = ""; } });
     make(); draw();
@@ -251,6 +251,7 @@
     el.querySelector(".viz-controls").addEventListener("click", async (e) => {
       const op = e.target.dataset.op;
       if (!op || busy) return;
+      K.mark && K.mark("viz-list");
       const input = el.querySelector(".viz-input");
       let x = parseInt(input.value, 10);
       if (Number.isNaN(x)) x = op === "find" || op === "del" ? list[Math.floor(Math.random() * list.length)] ?? 1 : Math.floor(Math.random() * 50);
@@ -322,6 +323,7 @@
       const c = deck[cur];
       boxes[c.en] = ok ? Math.min(5, (boxes[c.en] || 0) + 1) : 0;
       store.set(KEY, boxes);
+      K.check && K.check();
       if (++cur >= deck.length) {
         K.celebrate();
         el.querySelector(".fc-card").innerHTML = `<span class="fc-face"><b>Жарайсыз! 🎉</b><small>20 карточка қайталанды. Меңгерілген: ${mastered()} / ${cards.length}</small></span><span class="fc-hint">Жаңа жиынтық үшін басыңыз</span>`;
@@ -392,6 +394,7 @@
         st.best = Math.max(st.best || 0, st.streak);
         st.last = today(); st.day = today(); st.ok = ok;
         store.set("cs50kz:daily", st);
+        K.check && K.check();
         el.querySelector(".streak b").textContent = st.streak;
         el.querySelector(".streak").classList.add("bump");
         if (ok) K.celebrate();
@@ -442,6 +445,7 @@
       next.hidden = true;
       const pct = Math.round((score / qs.length) * 100);
       if (qs.length === 10 && score > store.get("cs50kz:mixed-best", 0)) store.set("cs50kz:mixed-best", score);
+      K.check && K.check();
       if (pct >= 80) K.celebrate();
       box.innerHTML = `<div class="mq-final"><b>${score} / ${qs.length}</b><p>${pct >= 80 ? "Керемет нәтиже! 🎉" : pct >= 50 ? "Жақсы! Қате кеткен тақырыптарды қайталаңыз." : "Лекцияларды тағы бір оқып шығыңыз, сосын қайталаңыз."}</p><button type="button" class="btn gold mq-again">Қайта бастау</button></div>`;
       box.querySelector(".mq-again").addEventListener("click", start);
@@ -450,7 +454,280 @@
     start();
   }
 
-  const MODULES = { sort: vizSort, search: vizSearch, list: vizList };
+  // ================= Екілік жүйе (0-апта) =================
+  function vizBinary(el) {
+    const bits = Array(8).fill(0);
+    let target = 0;
+    el.innerHTML = `
+      <div class="viz-head"><b>Екілік жүйе: шамдарды жағыңыз</b><span class="viz-big">8 бит = 1 байт</span></div>
+      <p class="viz-note">Әр бит — шам: қосулы (1) не өшік (0). Шамды басып, санды құрастырыңыз. Әр орынның мәні — 2-нің дәрежесі.</p>
+      <div class="bin-bits">${[128, 64, 32, 16, 8, 4, 2, 1].map((v, i) => `<button type="button" data-i="${i}"><span class="bulb"></span><b>0</b><small>${v}</small></button>`).join("")}</div>
+      <div class="bin-out">
+        <div><small>Ондық</small><b class="dec">0</b></div>
+        <div><small>Он алтылық</small><b class="hex">0x00</b></div>
+        <div><small>ASCII</small><b class="chr">—</b></div>
+      </div>
+      <div class="viz-controls">
+        <span class="bin-goal"></span>
+        <button type="button" class="btn secondary bin-new">Жаңа тапсырма</button>
+        <button type="button" class="btn secondary bin-clear">Бәрін өшіру</button>
+      </div>`;
+    const newGoal = () => {
+      target = 1 + Math.floor(Math.random() * 126);
+      el.querySelector(".bin-goal").innerHTML = `Тапсырма: <b>${target}</b> санын жасаңыз`;
+    };
+    const render = () => {
+      const n = bits.reduce((acc, b) => acc * 2 + b, 0);
+      el.querySelectorAll(".bin-bits button").forEach((b, i) => { b.classList.toggle("on", !!bits[i]); b.querySelector("b").textContent = bits[i]; });
+      el.querySelector(".dec").textContent = n;
+      el.querySelector(".hex").textContent = "0x" + n.toString(16).toUpperCase().padStart(2, "0");
+      el.querySelector(".chr").textContent = n >= 33 && n <= 126 ? String.fromCharCode(n) : n === 32 ? "␣" : "—";
+      if (n === target) {
+        el.querySelector(".bin-goal").innerHTML = `<b>${target}</b> = ${bits.join("")} ✓ Жарайсыз!`;
+        K.celebrate(); target = -1;
+        setTimeout(newGoal, 1800);
+      }
+    };
+    el.querySelector(".bin-bits").addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (!b) return;
+      bits[b.dataset.i] ^= 1; render(); K.mark && K.mark("viz-binary");
+    });
+    el.querySelector(".bin-new").addEventListener("click", newGoal);
+    el.querySelector(".bin-clear").addEventListener("click", () => { bits.fill(0); render(); });
+    newGoal(); render();
+  }
+
+  // ================= Жад: swap мәнмен vs көрсеткішпен (4-апта) =================
+  function vizSwap(el) {
+    const PROGS = {
+      value: {
+        code: ["void swap(int a, int b)", "{", "    int tmp = a;", "    a = b;", "    b = tmp;", "}", "", "int main(void)", "{", "    int x = 1;", "    int y = 2;", "    swap(x, y);", '    printf("x is %i, y is %i\\n", x, y);', "}"],
+        steps: [
+          { line: 9, main: { x: 1 }, note: "main стектің түбінде: x айнымалысына 1 жазылды." },
+          { line: 10, main: { x: 1, y: 2 }, note: "y айнымалысына 2 жазылды." },
+          { line: 0, main: { x: 1, y: 2 }, swap: { a: 1, b: 2 }, note: "swap шақырылды: стекке жаңа кадр қосылды. a мен b — x пен y-тің КӨШІРМЕЛЕРІ." },
+          { line: 2, main: { x: 1, y: 2 }, swap: { a: 1, b: 2, tmp: 1 }, ch: ["tmp"], note: "tmp = a = 1." },
+          { line: 3, main: { x: 1, y: 2 }, swap: { a: 2, b: 2, tmp: 1 }, ch: ["a"], note: "a = b. Көшірме ғана өзгерді!" },
+          { line: 4, main: { x: 1, y: 2 }, swap: { a: 2, b: 1, tmp: 1 }, ch: ["b"], note: "b = tmp. swap ішінде мәндер ауысты..." },
+          { line: 5, main: { x: 1, y: 2 }, note: "swap аяқталды: оның кадры стектен «жойылды». x пен y өзгерген жоқ!" },
+          { line: 12, main: { x: 1, y: 2 }, out: "x is 1, y is 2", note: "Қате! Мәнмен беру (by value) көшірмелерді ғана ауыстырады." },
+        ],
+      },
+      ref: {
+        code: ["void swap(int *a, int *b)", "{", "    int tmp = *a;", "    *a = *b;", "    *b = tmp;", "}", "", "int main(void)", "{", "    int x = 1;", "    int y = 2;", "    swap(&x, &y);", '    printf("x is %i, y is %i\\n", x, y);', "}"],
+        steps: [
+          { line: 9, main: { x: 1 }, note: "x = 1." },
+          { line: 10, main: { x: 1, y: 2 }, note: "y = 2." },
+          { line: 0, main: { x: 1, y: 2 }, swap: { a: "&x", b: "&y" }, note: "swap-қа x пен y-тің МЕКЕНЖАЙЛАРЫ берілді: a мен b — көрсеткіштер." },
+          { line: 2, main: { x: 1, y: 2 }, swap: { a: "&x", b: "&y", tmp: 1 }, ch: ["tmp"], note: "tmp = *a: a көрсететін жерге барып (x), 1-ді аламыз." },
+          { line: 3, main: { x: 2, y: 2 }, swap: { a: "&x", b: "&y", tmp: 1 }, ch: ["x"], note: "*a = *b: x-тің өзіне 2 жазылды!" },
+          { line: 4, main: { x: 2, y: 1 }, swap: { a: "&x", b: "&y", tmp: 1 }, ch: ["y"], note: "*b = tmp: y-ке 1 жазылды." },
+          { line: 5, main: { x: 2, y: 1 }, note: "swap кадры жойылды, бірақ өзгерістер main-де қалды." },
+          { line: 12, main: { x: 2, y: 1 }, out: "x is 2, y is 1", note: "Дұрыс! Сілтеме бойынша беру (by reference)." },
+        ],
+      },
+    };
+    const ADDR = { x: "0x7ffc1c", y: "0x7ffc18", a: "0x7ffbf8", b: "0x7ffbf0", tmp: "0x7ffbec" };
+    let prog = "value", i = 0;
+    el.innerHTML = `
+      <div class="viz-head"><b>Жад: swap мәнмен және көрсеткішпен</b><span class="viz-big">стек</span></div>
+      <div class="viz-controls"><div class="seg sw-mode"><button type="button" data-p="value" class="on">Мәнмен (қате)</button><button type="button" data-p="ref">Көрсеткішпен (дұрыс)</button></div></div>
+      <div class="sw-grid">
+        <pre class="sw-code"></pre>
+        <div class="sw-mem"></div>
+      </div>
+      <p class="sw-note"></p>
+      <div class="viz-controls">
+        <button type="button" class="btn secondary sw-prev">← Артқа</button>
+        <button type="button" class="btn gold sw-next">Келесі қадам →</button>
+        <span class="viz-stats sw-count"></span>
+      </div>`;
+    const frame = (name, vars, ch = []) => `<div class="sw-frame"><div class="sw-fname">${name}</div>${Object.entries(vars).map(([k, v]) => {
+      const ptr = typeof v === "string";
+      return `<div class="sw-var ${ch.includes(k) ? "ch" : ""}"><span class="sw-addr">${ADDR[k]}</span><span class="sw-name">${k}</span><span class="sw-val">${ptr ? ADDR[v.slice(1)] + ` <em>→ ${v.slice(1)}</em>` : v}</span></div>`;
+    }).join("")}</div>`;
+    const render = () => {
+      const P = PROGS[prog], st = P.steps[i];
+      el.querySelector(".sw-code").innerHTML = P.code.map((l, n) => `<span class="${n === st.line ? "cur" : ""}">${esc(l) || " "}</span>`).join("\n");
+      el.querySelector(".sw-mem").innerHTML = `<div class="sw-label">Стек ↑</div>` + (st.swap ? frame("swap", st.swap, st.ch) : "") + frame("main", st.main, st.ch) +
+        `<div class="sw-term"><small>Терминал</small>${st.out ? "$ ./swap<br>" + esc(st.out) : "$ ./swap"}</div>`;
+      el.querySelector(".sw-note").textContent = st.note;
+      el.querySelector(".sw-count").textContent = `Қадам ${i + 1} / ${P.steps.length}`;
+      el.querySelector(".sw-prev").disabled = i === 0;
+      el.querySelector(".sw-next").textContent = i === P.steps.length - 1 ? "↺ Басынан" : "Келесі қадам →";
+    };
+    el.querySelector(".sw-next").addEventListener("click", () => { i = i === PROGS[prog].steps.length - 1 ? 0 : i + 1; render(); K.mark && K.mark("viz-swap"); });
+    el.querySelector(".sw-prev").addEventListener("click", () => { if (i) { i--; render(); } });
+    el.querySelector(".sw-mode").addEventListener("click", (e) => {
+      if (!e.target.dataset.p) return;
+      prog = e.target.dataset.p; i = 0;
+      el.querySelectorAll(".sw-mode button").forEach((b) => b.classList.toggle("on", b === e.target));
+      render();
+    });
+    render();
+  }
+
+  // ================= Стек және кезек (5-апта) =================
+  function vizStackQueue(el) {
+    let mode = "stack", items = [], next = 1;
+    el.innerHTML = `
+      <div class="viz-head"><b>Стек және кезек</b><span class="viz-big sq-big">LIFO</span></div>
+      <div class="viz-controls"><div class="seg sq-mode"><button type="button" data-m="stack" class="on">Стек (LIFO)</button><button type="button" data-m="queue">Кезек (FIFO)</button></div></div>
+      <p class="viz-note sq-note"></p>
+      <div class="sq-box"></div>
+      <div class="viz-controls">
+        <button type="button" class="btn gold sq-in"></button>
+        <button type="button" class="btn secondary sq-out"></button>
+        <span class="viz-stats sq-msg"></span>
+      </div>`;
+    const TXT = {
+      stack: { big: "LIFO", note: "Last In, First Out — соңғы кірген бірінші шығады. Асханадағы науалар сияқты: үстіне қоясыз, үстінен аласыз. Gmail жәшігі де — стек.", in: "push (үстіне қою)", out: "pop (үстінен алу)" },
+      queue: { big: "FIFO", note: "First In, First Out — бірінші кірген бірінші шығады. Дүкендегі кезек сияқты: соңына тұрасыз, басынан шығасыз.", in: "enqueue (соңына)", out: "dequeue (басынан)" },
+    };
+    const render = (fresh = -1) => {
+      const t = TXT[mode];
+      el.querySelector(".sq-big").textContent = t.big;
+      el.querySelector(".sq-note").textContent = t.note;
+      el.querySelector(".sq-in").textContent = t.in;
+      el.querySelector(".sq-out").textContent = t.out;
+      const box = el.querySelector(".sq-box");
+      box.className = "sq-box " + mode;
+      box.innerHTML = items.length
+        ? items.map((v, i) => `<span class="${i === fresh ? "fresh" : ""}">${v}</span>`).join("")
+        : `<em>${mode === "stack" ? "Стек бос" : "Кезек бос"}</em>`;
+    };
+    el.querySelector(".sq-in").addEventListener("click", () => {
+      if (items.length >= 8) { el.querySelector(".sq-msg").textContent = "Толы! (сыйымдылығы 8)"; return; }
+      items.push(next++); render(items.length - 1);
+      el.querySelector(".sq-msg").textContent = `${items[items.length - 1]} қосылды`;
+      K.mark && K.mark("viz-stackqueue");
+    });
+    el.querySelector(".sq-out").addEventListener("click", () => {
+      if (!items.length) { el.querySelector(".sq-msg").textContent = "Бос — алатын ештеңе жоқ"; return; }
+      const v = mode === "stack" ? items.pop() : items.shift();
+      el.querySelector(".sq-msg").textContent = `${v} шықты`;
+      render();
+    });
+    el.querySelector(".sq-mode").addEventListener("click", (e) => {
+      if (!e.target.dataset.m) return;
+      mode = e.target.dataset.m; items = []; next = 1;
+      el.querySelectorAll(".sq-mode button").forEach((b) => b.classList.toggle("on", b === e.target));
+      el.querySelector(".sq-msg").textContent = "";
+      render();
+    });
+    [1, 2, 3].forEach(() => items.push(next++));
+    render();
+  }
+
+  // ================= Хэш-кесте (5-апта) =================
+  function vizHash(el) {
+    const table = Array.from({ length: 26 }, () => []);
+    el.innerHTML = `
+      <div class="viz-head"><b>Хэш-кесте</b><span class="viz-big">hash(name) = name[0] − 'A'</span></div>
+      <p class="viz-note">26 «шелек» (bucket), әрқайсысы — байланысқан тізім. Хэш-функция атты бірінші әрпі бойынша шелекке жібереді. Бір шелекке түскен аттар — <b>коллизия</b>: олар тізімге тізбектеледі.</p>
+      <div class="viz-controls">
+        <input class="viz-input hs-in" type="text" maxlength="14" placeholder="Аты (латынша)" aria-label="Аты" style="width:170px">
+        <button type="button" class="btn gold hs-add">Қосу</button>
+        <button type="button" class="btn secondary hs-find">Іздеу</button>
+      </div>
+      <p class="viz-result hs-msg"></p>
+      <div class="hs-table"></div>`;
+    const hash = (w) => w.toUpperCase().charCodeAt(0) - 65;
+    const render = (hb = -1, hi = -1, cls = "look") => {
+      el.querySelector(".hs-table").innerHTML = table.map((chain, b) => `
+        <div class="hs-row ${b === hb ? "hl" : ""} ${chain.length ? "" : "empty"}"><span class="hs-idx">${b}<small>${String.fromCharCode(65 + b)}</small></span>
+        ${chain.map((w, i) => `<span class="hs-node ${b === hb && i === hi ? cls : ""}">${esc(w)}</span>`).join('<span class="arrow">→</span>')}</div>`).join("");
+    };
+    const msg = (t) => (el.querySelector(".hs-msg").innerHTML = t);
+    const valid = (w) => /^[A-Za-z][A-Za-z'-]*$/.test(w);
+    el.querySelector(".hs-add").addEventListener("click", () => {
+      const inp = el.querySelector(".hs-in"), w = inp.value.trim();
+      if (!valid(w)) return msg("Латын әрпінен басталатын ат жазыңыз (мысалы, Hermione).");
+      const b = hash(w);
+      if (table[b].some((x) => x.toLowerCase() === w.toLowerCase())) return msg(`${esc(w)} кестеде бар.`);
+      table[b].push(w[0].toUpperCase() + w.slice(1));
+      render(b, table[b].length - 1, "fresh");
+      msg(`hash("${esc(w)}") = <b>${b}</b>. ${table[b].length > 1 ? `Коллизия! ${b}-шелекте енді ${table[b].length} ат.` : "Шелек бос еді — O(1)."}`);
+      inp.value = ""; K.mark && K.mark("viz-hash");
+    });
+    el.querySelector(".hs-find").addEventListener("click", async () => {
+      const w = el.querySelector(".hs-in").value.trim();
+      if (!valid(w)) return msg("Іздейтін атты жазыңыз.");
+      const b = hash(w);
+      for (let i = 0; i < table[b].length; i++) {
+        render(b, i); await sleep(400);
+        if (table[b][i].toLowerCase() === w.toLowerCase()) { render(b, i, "found"); return msg(`Табылды: ${b}-шелек, ${i + 1}-қадам. Бүкіл кестені емес, тек бір шелекті тексердік.`); }
+      }
+      render(b); msg(`${esc(w)} жоқ: ${b}-шелекте ${table[b].length} атты тексердік.`);
+    });
+    el.querySelector(".hs-in").addEventListener("keydown", (e) => e.key === "Enter" && el.querySelector(".hs-add").click());
+    ["Mario", "Luigi", "Peach", "Bowser", "Link", "Zelda", "Ganon", "Lakitu", "Toad", "Yoshi"].forEach((w) => table[hash(w)].push(w));
+    render();
+  }
+
+  // ================= Екілік іздеу ағашы (5-апта) =================
+  function vizBst(el) {
+    let root = null;
+    const ins = (node, v) => {
+      if (!node) return { v, l: null, r: null };
+      if (v < node.v) node.l = ins(node.l, v); else if (v > node.v) node.r = ins(node.r, v);
+      return node;
+    };
+    const height = (n) => (n ? 1 + Math.max(height(n.l), height(n.r)) : 0);
+    const count = (n) => (n ? 1 + count(n.l) + count(n.r) : 0);
+    el.innerHTML = `
+      <div class="viz-head"><b>Екілік іздеу ағашы</b><span class="viz-big bst-big"></span></div>
+      <p class="viz-note">Сол жақтағы бала кіші, оң жақтағы бала үлкен. Іздегенде әр қадамда ағаштың жартысын тастаймыз — теңдестірілген ағашта O(log n). Бірақ сандарды ретімен қоссаңыз, ағаш «тізімге» айналады: O(n).</p>
+      <div class="viz-controls">
+        <input class="viz-input bst-in" type="number" min="0" max="99" placeholder="Сан" aria-label="Сан">
+        <button type="button" class="btn gold bst-add">Қосу</button>
+        <button type="button" class="btn secondary bst-find">Іздеу</button>
+        <button type="button" class="btn secondary bst-good">Теңдестірілген</button>
+        <button type="button" class="btn secondary bst-bad">Ретімен (нашар)</button>
+      </div>
+      <p class="viz-result bst-msg"></p>
+      <div class="bst-svg"></div>`;
+    const render = (path = [], found = null) => {
+      const nodes = [], edges = [];
+      let idx = 0;
+      const walk = (n, d) => { if (!n) return; walk(n.l, d + 1); n.x = idx++; n.d = d; nodes.push(n); walk(n.r, d + 1); };
+      walk(root, 0);
+      const W = Math.max(1, nodes.length), H = height(root);
+      const X = (n) => 30 + (n.x + 0.5) * (Math.max(320, W * 52) - 60) / W, Y = (n) => 30 + n.d * 62;
+      nodes.forEach((n) => [n.l, n.r].forEach((c) => c && edges.push(`<line x1="${X(n)}" y1="${Y(n)}" x2="${X(c)}" y2="${Y(c)}"/>`)));
+      const w = Math.max(320, W * 52), h = Math.max(80, H * 62);
+      el.querySelector(".bst-svg").innerHTML = root
+        ? `<svg viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${edges.join("")}${nodes.map((n) => `<g class="${n === found ? "found" : path.includes(n) ? "look" : ""}"><circle cx="${X(n)}" cy="${Y(n)}" r="19"/><text x="${X(n)}" y="${Y(n) + 5}">${n.v}</text></g>`).join("")}</svg>`
+        : '<p class="viz-note">Ағаш бос.</p>';
+      el.querySelector(".bst-big").textContent = `n = ${count(root)}, биіктігі = ${H}`;
+    };
+    const fill = (arr) => { root = null; arr.forEach((v) => (root = ins(root, v))); render(); };
+    el.querySelector(".bst-add").addEventListener("click", () => {
+      const inp = el.querySelector(".bst-in"); let v = parseInt(inp.value, 10);
+      if (Number.isNaN(v)) v = Math.floor(Math.random() * 99);
+      root = ins(root, v); render(); inp.value = "";
+      el.querySelector(".bst-msg").textContent = `${v} қосылды.`;
+      K.mark && K.mark("viz-bst");
+    });
+    el.querySelector(".bst-find").addEventListener("click", async () => {
+      const v = parseInt(el.querySelector(".bst-in").value, 10);
+      if (Number.isNaN(v)) { el.querySelector(".bst-msg").textContent = "Іздейтін санды жазыңыз."; return; }
+      K.mark && K.mark("viz-bst");
+      const path = []; let n = root;
+      while (n) {
+        path.push(n); render(path); await sleep(450);
+        if (v === n.v) { render(path, n); el.querySelector(".bst-msg").textContent = `${v} табылды: ${path.length} салыстыру.`; return; }
+        n = v < n.v ? n.l : n.r;
+      }
+      el.querySelector(".bst-msg").textContent = `${v} жоқ: ${path.length} салыстырудан кейін NULL-ға жеттік.`;
+    });
+    el.querySelector(".bst-good").addEventListener("click", () => { fill([50, 25, 75, 12, 37, 62, 87, 6, 18, 31, 43]); el.querySelector(".bst-msg").textContent = "11 түйін, биіктігі 4 ≈ log₂11."; });
+    el.querySelector(".bst-bad").addEventListener("click", () => { fill([10, 20, 30, 40, 50, 60]); el.querySelector(".bst-msg").textContent = "Ретімен қосылды: ағаш байланысқан тізімге айналды, биіктігі = n."; });
+    fill([50, 25, 75, 12, 37, 62, 87]);
+  }
+
+  const MODULES = { sort: vizSort, search: vizSearch, list: vizList, binary: vizBinary, swap: vizSwap, stackqueue: vizStackQueue, hash: vizHash, bst: vizBst };
   document.querySelectorAll(".viz[data-viz]").forEach((el) => MODULES[el.dataset.viz] && MODULES[el.dataset.viz](el));
   document.querySelectorAll(".flashcards").forEach(flashcards);
   document.querySelectorAll(".daily-card").forEach(daily);
