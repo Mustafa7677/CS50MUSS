@@ -100,6 +100,7 @@
     window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump };
     if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
     if (document.querySelector(".flask-lab")) loadScript("assets/js/flask.js");
+    if (document.querySelector(".exam")) loadScript("assets/js/exam.js");
     initAchievements();
     initPrefs();
     initShare();
@@ -747,6 +748,12 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
         nameOut.textContent = nameInput.value.trim() || "Сіздің атыңыз";
         const q = Progress.load(); q.name = nameInput.value.trim(); Progress.save(q);
       };
+      const ex = readJson("cs50kz:exam", {});
+      const exOut = cert.querySelector(".cert-exam");
+      if (exOut && ex.best >= 70) {
+        exOut.hidden = false;
+        exOut.innerHTML = `Қорытынды емтихан нәтижесі: <b>${ex.best}%</b>${ex.best >= 90 ? " · <b>үздік</b>" : ""}`;
+      }
       nameInput.addEventListener("input", sync);
       sync();
       if (left.length) {
@@ -996,6 +1003,8 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       A("weekly", "🏆", "Апта чемпионы", "Апталық челленджді орындау", readJson("cs50kz:weeks-won", 0), 1),
       A("check50", "✅", "check50 өтті", "Автотексерушіде бір тапсырманың барлық тестінен өту", Object.keys(readJson("cs50kz:graded", {})).length, 1),
       A("detective", "🕵️", "SQL детектив", "«Алтын домбыраның құпиясын» ашу", readJson("cs50kz:used", {}).detective ? 1 : 0, 1),
+      A("exam", "📝", "Емтихан тапсырылды", "Қорытынды емтиханнан 70% жинау", (readJson("cs50kz:exam", {}).best || 0) >= 70 ? 1 : 0, 1),
+      A("exam-top", "🏆", "Үздік түлек", "Қорытынды емтиханнан 90% жинау", (readJson("cs50kz:exam", {}).best || 0) >= 90 ? 1 : 0, 1),
       A("flask", "🧪", "Flask шебері", "Flask зертханасының 4 тапсырмасынан өту", Object.keys(readJson("cs50kz:flask", {})).length, 4),
       A("webdev", "🌐", "Веб-әзірлеуші", "Homepage тексерушісінен барлық талаппен өту", readJson("cs50kz:graded", {}).homepage ? 1 : 0, 1),
       A("search", "🔍", "Іздеуші", "Сайт бойынша іздеуді қолдану", used.search ? 1 : 0, 1),
@@ -1104,6 +1113,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       t: ORDER.reduce((n, id) => n + Progress.tasksDone(id), 0),
       s: Math.max(daily.streak || 0, daily.best || 0),
       a: achievementList().filter((a) => a.done).length,
+      e: readJson("cs50kz:exam", {}).best ?? null,
       d: new Date().toISOString().slice(0, 10),
     };
     return "KZ1." + b64url(JSON.stringify(data));
@@ -1111,7 +1121,20 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
   function parseCode(code) {
     const m = String(code).trim().match(/KZ1\.([A-Za-z0-9_-]+)/);
     if (!m) return null;
-    try { const d = JSON.parse(unb64url(m[1])); return d && d.v === 1 && typeof d.n === "string" ? d : null; } catch (e) { return null; }
+    try {
+      const d = JSON.parse(unb64url(m[1]));
+      if (!d || d.v !== 1 || typeof d.n !== "string") return null;
+      // Код оқушыдан келеді: сандар мен жолдарды қатаң тексереміз
+      const num = (x) => (Number.isFinite(+x) ? Math.max(0, Math.round(+x)) : 0);
+      return {
+        v: 1, n: d.n.slice(0, 60),
+        r: /^[01]{0,12}$/.test(d.r) ? d.r.padEnd(12, "0") : "0".repeat(12),
+        q: /^[\d/,]*$/.test(d.q || "") ? d.q : "",
+        t: num(d.t), s: num(d.s), a: num(d.a),
+        e: d.e == null || !Number.isFinite(+d.e) ? null : Math.min(100, num(d.e)),
+        d: String(d.d || "").slice(0, 10),
+      };
+    } catch (e) { return null; }
   }
 
   function initShare() {
@@ -1176,7 +1199,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     const render = () => {
       const tbody = box.querySelector("tbody");
       box.querySelector(".t-count").textContent = `${cls.length} оқушы`;
-      if (!cls.length) { tbody.innerHTML = `<tr><td colspan="7" class="t-empty">Әзірге оқушы жоқ. Оқушының кодын жоғарыға қойыңыз не QR-кодын сканерлеңіз.</td></tr>`; return; }
+      if (!cls.length) { tbody.innerHTML = `<tr><td colspan="8" class="t-empty">Әзірге оқушы жоқ. Оқушының кодын жоғарыға қойыңыз не QR-кодын сканерлеңіз.</td></tr>`; return; }
       const rows = cls.slice().sort((a, b) => b.r.split("1").length - a.r.split("1").length);
       tbody.innerHTML = rows.map((d) => {
         const read = (d.r.match(/1/g) || []).length;
@@ -1184,7 +1207,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
         const qpct = qs.length ? Math.round((qs.reduce((n, x) => n + x[0], 0) / qs.reduce((n, x) => n + x[1], 0)) * 100) + "%" : "—";
         return `<tr><td><b>${escapeHtml(d.n)}</b></td>
           <td><div class="t-cells">${d.r.split("").map((c, i) => `<i class="${c === "1" ? "on" : ""}" title="${ORDER[i]}"></i>`).join("")}</div><small>${read}/12</small></td>
-          <td>${qpct}</td><td>${d.t}</td><td>🔥 ${d.s}</td><td>🏅 ${d.a}</td><td><small>${escapeHtml(d.d)}</small> <button type="button" class="t-del" data-n="${escapeHtml(d.n)}" aria-label="Өшіру">✕</button></td></tr>`;
+          <td>${qpct}</td><td>${d.t}</td><td>🔥 ${d.s}</td><td>🏅 ${d.a}</td><td>${d.e != null ? `<b class="${d.e >= 70 ? "t-pass" : ""}">${d.e}%</b>` : "—"}</td><td><small>${escapeHtml(d.d)}</small> <button type="button" class="t-del" data-n="${escapeHtml(d.n)}" aria-label="Өшіру">✕</button></td></tr>`;
       }).join("");
     };
     box.querySelector(".t-add").addEventListener("click", () => { add(box.querySelector(".t-input").value); box.querySelector(".t-input").value = ""; });
@@ -1192,8 +1215,8 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       if (e.target.classList.contains("t-del")) { cls = cls.filter((x) => x.n !== e.target.dataset.n); save(); }
     });
     box.querySelector(".t-csv").addEventListener("click", () => {
-      const head = ["Аты", ...ORDER, "Тест", "Тапсырма", "Стрик", "Жетістік", "Күні"];
-      const lines = [head.join(",")].concat(cls.map((d) => [JSON.stringify(d.n), ...d.r.split(""), JSON.stringify(d.q), d.t, d.s, d.a, d.d].join(",")));
+      const head = ["Аты", ...ORDER, "Тест", "Тапсырма", "Стрик", "Жетістік", "Емтихан", "Күні"];
+      const lines = [head.join(",")].concat(cls.map((d) => [JSON.stringify(d.n), ...d.r.split(""), JSON.stringify(d.q), d.t, d.s, d.a, d.e ?? "", d.d].join(",")));
       const a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob(["﻿" + lines.join("\n")], { type: "text/csv" }));
       a.download = "cs50kz-synyp.csv";
