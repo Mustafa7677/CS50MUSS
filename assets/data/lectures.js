@@ -443,7 +443,7 @@ window.CS50KZ_LECTURES = [
     "id": "race"
    }
   ],
-  "minutes": 36,
+  "minutes": 37,
   "quiz": 7,
   "tasks": 3
  },

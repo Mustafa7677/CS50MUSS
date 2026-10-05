@@ -1129,6 +1129,114 @@
     show();
   }
 
+  // ================= SQL детектив: «Алтын домбыраның құпиясы» =================
+  async function detective(el) {
+    await K.loadScript("assets/data/mystery.js");
+    window.CS50KZ_DB = window.CS50KZ_DB || {};
+    window.CS50KZ_DB.mystery = window.CS50KZ_MYSTERY.sql;
+    const KEY = "cs50kz:mystery";
+    const st = store.get(KEY, { notes: "", hints: 0, solved: false, q: "" });
+    const HINTS = [
+      "Алдымен оқиға орнынан бастаңыз: <code>crime_scene_reports</code> кестесінен 2026 жылғы 21 наурыздағы, Abai Street-тегі есепті табыңыз.",
+      "Есепте куәлар туралы айтылды. <code>interviews</code> кестесінен сол күнгі сұхбаттарды оқыңыз. Әр куә бір ізді көрсетеді.",
+      "Бірінші куә: <code>museum_parking_logs</code> кестесінен сағат 10:15–10:25 аралығында (<code>activity = 'exit'</code>) шыққан көліктерді табыңыз, сосын <code>people</code>-ден олардың иелерін.",
+      "Екінші куә: <code>atm_transactions</code> → <code>bank_accounts</code> → <code>people</code>. Үшінші куә: сол күнгі 60 секундтан қысқа <code>phone_calls</code>. Күдіктілердің тізімдерін <code>IN (...)</code> арқылы қиыстырыңыз.",
+      "Ертеңгі (22 наурыз) Алмалыдан ұшатын ең ерте рейс: <code>flights</code>-ті <code>ORDER BY hour, minute LIMIT 1</code> арқылы табыңыз, сосын <code>passengers</code>. Сыбайлас — ұры қоңырау шалған адам (<code>receiver</code>).",
+    ];
+    el.innerHTML = `
+      <div class="dt-story">
+        <img src="${K.ROOT_URL}assets/img/bota.svg" alt="" width="96" height="96">
+        <div>
+          <p><b>Бота:</b> Детектив, көмегіңіз керек! Наурыз мейрамында, <b>2026 жылғы 21 наурызда</b>, Алмалы қаласындағы <b>Абай көшесіндегі мұражайдан</b> халықтың мақтанышы — <b>алтын домбыра</b> ұрланды!</p>
+          <p>Қаланың барлық деректері — тұрақ камерасы, банкоматтар, телефон қоңыраулары, әуежай — SQL дерекқорында. Табыңыз: <b>ұры кім</b>, ол <b>қай қалаға қашты</b> және оған <b>кім көмектесті</b>?</p>
+        </div>
+      </div>
+      <div class="dt-grid">
+        <div class="dt-main">
+          <textarea class="pg-editor dt-code" spellcheck="false" autocapitalize="off" aria-label="SQL сұрауы" placeholder="SELECT description FROM crime_scene_reports WHERE ...;"></textarea>
+          <div class="pg-actions"><button type="button" class="btn gold dt-run">▶ Орындау</button><span class="pg-hint"><kbd>Ctrl</kbd>+<kbd>Enter</kbd></span><span class="ag-score dt-msg"></span></div>
+          <div class="dt-out"><p class="sql-msg">Нәтиже осында шығады. Бастау үшін <code>.schema</code> орнына оң жақтағы кестелер тізімін қараңыз.</p></div>
+        </div>
+        <aside class="dt-side">
+          <h3>📋 Кестелер</h3>
+          <div class="dt-schema"></div>
+          <h3>📓 Детектив дәптері</h3>
+          <textarea class="dt-notes" placeholder="Күдіктілер, нөмірлер, ойлар..." aria-label="Детектив дәптері"></textarea>
+          <h3>💡 Ботаның кеңестері</h3>
+          <div class="dt-hints"></div>
+        </aside>
+      </div>
+      <div class="dt-answer">
+        <h3>🔍 Жауабыңыз</h3>
+        <div class="dt-fields">
+          <label>Ұры <input class="dt-thief" type="text" placeholder="Аты-жөні (латынша)"></label>
+          <label>Қай қалаға қашты <input class="dt-city" type="text" placeholder="Қала"></label>
+          <label>Сыбайлас <input class="dt-acc" type="text" placeholder="Аты-жөні (латынша)"></label>
+        </div>
+        <button type="button" class="btn gold dt-check">Жауапты тексеру</button>
+        <p class="dt-verdict" aria-live="polite"></p>
+      </div>`;
+    const code = el.querySelector(".dt-code"), notes = el.querySelector(".dt-notes");
+    code.value = st.q || "SELECT description\nFROM crime_scene_reports\nWHERE year = 2026 AND month = 3 AND day = 21 AND street = 'Abai Street';";
+    notes.value = st.notes || "";
+    const save = () => { st.q = code.value; st.notes = notes.value; store.set(KEY, st); };
+    notes.addEventListener("input", save);
+    const renderHints = () => {
+      el.querySelector(".dt-hints").innerHTML = HINTS.slice(0, st.hints).map((h, i) => `<p><b>${i + 1}.</b> ${h}</p>`).join("") +
+        (st.hints < HINTS.length ? `<button type="button" class="btn secondary dt-hint">Кеңес алу (${st.hints + 1}/${HINTS.length})</button>` : "");
+    };
+    el.querySelector(".dt-hints").addEventListener("click", (e) => { if (e.target.classList.contains("dt-hint")) { st.hints++; save(); renderHints(); } });
+    renderHints();
+    let db;
+    const ensureDb = async () => (db = db || (await K.getDb("mystery")));
+    (async () => {
+      try {
+        await ensureDb();
+        const tables = db.exec("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY rowid")[0].values.map((r) => r[0]);
+        el.querySelector(".dt-schema").innerHTML = tables.map((t) => {
+          const cols = db.exec(`PRAGMA table_info(${t})`)[0].values.map((c) => c[1]);
+          return `<details><summary><code>${t}</code></summary><div class="details-body">${cols.map((c) => `<code>${c}</code>`).join(" ")}</div></details>`;
+        }).join("");
+      } catch (e) { el.querySelector(".dt-schema").textContent = "SQLite жүктелмеді."; }
+    })();
+    async function run() {
+      save();
+      const msg = el.querySelector(".dt-msg"), out = el.querySelector(".dt-out");
+      try {
+        await ensureDb();
+        const res = db.exec(code.value);
+        msg.textContent = "";
+        out.innerHTML = res.length ? res.map((r) => `<div class="sql-table"><table><thead><tr>${r.columns.map((c) => `<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>${r.values.slice(0, 200).map((row) => `<tr>${row.map((v) => `<td>${v === null ? '<span class="null">NULL</span>' : esc(String(v))}</td>`).join("")}</tr>`).join("")}</tbody></table></div><p class="sql-msg">${r.values.length} жол</p>`).join("") : '<p class="sql-msg">Нәтиже бос.</p>';
+        K.mark && K.mark("sql");
+      } catch (e) {
+        out.innerHTML = `<p class="sql-msg err">Қате: ${esc(String(e.message || e))}</p>`;
+      }
+    }
+    el.querySelector(".dt-run").addEventListener("click", run);
+    code.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); run(); }
+      if (e.key === "Tab" && !e.shiftKey) { e.preventDefault(); code.setRangeText("    ", code.selectionStart, code.selectionEnd, "end"); }
+    });
+    const sha = async (t) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t.trim().toLowerCase())))].map((b) => b.toString(16).padStart(2, "0")).join("");
+    el.querySelector(".dt-check").addEventListener("click", async () => {
+      const A = window.CS50KZ_MYSTERY.answers, v = el.querySelector(".dt-verdict");
+      const r = [await sha(el.querySelector(".dt-thief").value) === A.thief, await sha(el.querySelector(".dt-city").value) === A.city, await sha(el.querySelector(".dt-acc").value) === A.accomplice];
+      ["dt-thief", "dt-city", "dt-acc"].forEach((c, i) => el.querySelector("." + c).classList.toggle("bad", !r[i]));
+      ["dt-thief", "dt-city", "dt-acc"].forEach((c, i) => el.querySelector("." + c).classList.toggle("good", r[i]));
+      if (r.every(Boolean)) {
+        v.innerHTML = "🎉 <b>Құпия ашылды!</b> Алтын домбыра мұражайға оралды. Сіз — нағыз SQL детективісіз!";
+        v.className = "dt-verdict good";
+        if (!st.solved) { st.solved = true; save(); K.mark && K.mark("detective"); }
+        K.celebrate();
+      } else {
+        const n = r.filter(Boolean).length;
+        v.textContent = n ? `${n} / 3 дұрыс. Тергеуді жалғастырыңыз!` : "Әзірге дұрыс емес. Деректерді тағы бір тексеріңіз.";
+        v.className = "dt-verdict bad";
+      }
+    });
+    if (st.solved) { el.querySelector(".dt-verdict").innerHTML = "✓ Сіз бұл құпияны ашқансыз. Қайта шешіп көруге болады!"; el.querySelector(".dt-verdict").className = "dt-verdict good"; }
+  }
+
   // ================= Апталық челлендж =================
   function weekly(el) {
     const GOALS = [
@@ -1188,6 +1296,7 @@
   document.querySelectorAll(".trace-quiz").forEach(traceQuiz);
   document.querySelectorAll(".autograder").forEach(autograder);
   document.querySelectorAll(".sql-grader").forEach(sqlGrader);
+  document.querySelectorAll(".detective").forEach(detective);
   document.querySelectorAll(".weekly").forEach(weekly);
   document.querySelectorAll(".course-map").forEach(courseMap);
 })();

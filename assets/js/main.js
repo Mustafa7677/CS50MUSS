@@ -69,7 +69,7 @@
     initCertificate();
     initServiceWorker();
     window.CS50KZ = { ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump };
-    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader")) loadScript("assets/js/labs.js");
+    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .detective")) loadScript("assets/js/labs.js");
     initAchievements();
     initPrefs();
     initShare();
@@ -281,10 +281,17 @@
   }
 
   function toast(text) {
+    let stack = document.querySelector(".toast-stack");
+    if (!stack) {
+      stack = document.createElement("div");
+      stack.className = "toast-stack";
+      stack.setAttribute("aria-live", "polite");
+      document.body.appendChild(stack);
+    }
     const t = document.createElement("div");
     t.className = "toast";
     t.textContent = text;
-    document.body.appendChild(t);
+    stack.appendChild(t);
     requestAnimationFrame(() => t.classList.add("show"));
     setTimeout(() => { t.classList.remove("show"); setTimeout(() => t.remove(), 300); }, 2600);
   }
@@ -957,6 +964,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       A("tracer", "🔎", "Компьютер-ми", "«Не шығарады?» тренажерінде 10 жаттығу", Object.keys(readJson("cs50kz:trace", {})).length, 10),
       A("weekly", "🏆", "Апта чемпионы", "Апталық челленджді орындау", readJson("cs50kz:weeks-won", 0), 1),
       A("check50", "✅", "check50 өтті", "Автотексерушіде бір тапсырманың барлық тестінен өту", Object.keys(readJson("cs50kz:graded", {})).length, 1),
+      A("detective", "🕵️", "SQL детектив", "«Алтын домбыраның құпиясын» ашу", readJson("cs50kz:used", {}).detective ? 1 : 0, 1),
       A("search", "🔍", "Іздеуші", "Сайт бойынша іздеуді қолдану", used.search ? 1 : 0, 1),
       A("owl", "🌙", "Түнгі үкі", "Түнгі режимді қосу", used.dark ? 1 : 0, 1),
     ];
@@ -968,7 +976,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     let changed = false;
     list.filter((a) => a.done && !seen[a.id]).forEach((a, i) => {
       seen[a.id] = Date.now(); changed = true;
-      setTimeout(() => toast(`🏅 Жаңа жетістік: ${a.ico} ${a.name}`), 400 + i * 2800);
+      setTimeout(() => toast(`🏅 Жаңа жетістік: ${a.ico} ${a.name}`), 400 + i * 700);
     });
     if (changed) {
       try { localStorage.setItem("cs50kz:ach-seen", JSON.stringify(seen)); } catch (e) {}
