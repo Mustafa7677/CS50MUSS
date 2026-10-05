@@ -1162,7 +1162,7 @@
           <div class="dt-schema"></div>
           <h3>📓 Детектив дәптері</h3>
           <textarea class="dt-notes" placeholder="Күдіктілер, нөмірлер, ойлар..." aria-label="Детектив дәптері"></textarea>
-          <h3>💡 Ботаның кеңестері</h3>
+          <h3><img src="${K.ROOT_URL}assets/img/bota-think.svg" alt="" width="28" height="28" class="inline-bota"> Ботаның кеңестері</h3>
           <div class="dt-hints"></div>
         </aside>
       </div>
@@ -1224,6 +1224,7 @@
       ["dt-thief", "dt-city", "dt-acc"].forEach((c, i) => el.querySelector("." + c).classList.toggle("bad", !r[i]));
       ["dt-thief", "dt-city", "dt-acc"].forEach((c, i) => el.querySelector("." + c).classList.toggle("good", r[i]));
       if (r.every(Boolean)) {
+        K.botaSay && K.botaSay("Рахмет, детектив! Алтын домбыра орнына оралды! 🎉", "happy");
         v.innerHTML = "🎉 <b>Құпия ашылды!</b> Алтын домбыра мұражайға оралды. Сіз — нағыз SQL детективісіз!";
         v.className = "dt-verdict good";
         if (!st.solved) { st.solved = true; save(); K.mark && K.mark("detective"); }
