@@ -77,6 +77,21 @@ def footer_block(p):
         '    </div>\n  </footer>')
 
 
+# Әр беттің баннер түсі (басты беттегі карталармен бірдей) және лекция нөмірі
+HEAD_STYLE = {
+    "lectures/week-0.html": ("#f2b705", "0"), "lectures/week-1.html": ("#2b7bd6", "1"),
+    "lectures/week-2.html": ("#2b7bd6", "2"), "lectures/week-3.html": ("#2b7bd6", "3"),
+    "lectures/week-4.html": ("#2b7bd6", "4"), "lectures/week-5.html": ("#2b7bd6", "5"),
+    "lectures/week-6.html": ("#2fa36b", "6"), "lectures/week-7.html": ("#8b5cf6", "7"),
+    "lectures/ai.html": ("#e0457b", "AI"), "lectures/week-8.html": ("#f08a24", "8"),
+    "lectures/week-9.html": ("#f08a24", "9"), "lectures/week-10.html": ("#c99500", "10"),
+    "practice.html": ("#2fa36b", ""), "playground.html": ("#2b7bd6", ""), "flask.html": ("#8b5cf6", ""),
+    "exam.html": ("#c99500", ""), "detective.html": ("#b5651d", ""), "viz.html": ("#e0457b", ""),
+    "flashcards.html": ("#f08a24", ""), "debug.html": ("#e04545", ""), "glossary.html": ("#2b7bd6", ""),
+    "cheatsheet.html": ("#2fa36b", ""), "map.html": ("#8b5cf6", ""), "teacher.html": ("#f08a24", ""),
+}
+
+
 def process_page(path, prefix, active):
     s = path.read_text(encoding="utf-8")
     title = re.search(r"<title>(.*?)</title>", s, re.S).group(1).strip()
@@ -91,6 +106,10 @@ def process_page(path, prefix, active):
         s = s.replace("</title>", "</title>\n  " + block, 1)
     s = re.sub(r'<nav class="nav">.*?</nav>', nav_block(prefix, active), s, count=1, flags=re.S)
     s = re.sub(r'<footer class="footer">.*?</footer>', lambda _: footer_block(prefix), s, count=1, flags=re.S)
+    hs = HEAD_STYLE.get(rel)
+    if hs:
+        attrs = f' style="--lc:{hs[0]}"' + (f' data-n="{hs[1]}"' if hs[1] else "")
+        s = re.sub(r'<div class="lecture-head"[^>]*>', f'<div class="lecture-head"{attrs}>', s, count=1)
     if 'class="skip-link"' not in s:
         s = s.replace("<body>", '<body>\n  <a class="skip-link" href="#main">Мазмұнға өту</a>', 1)
     if 'id="main"' not in s:
@@ -107,7 +126,7 @@ def article_of(s):
 
 
 def lecture_meta(name, s):
-    num = strip_tags(re.search(r'<div class="lecture-head">\s*<div class="num">(.*?)</div>', s, re.S).group(1))
+    num = strip_tags(re.search(r'<div class="lecture-head"[^>]*>\s*<div class="num">(.*?)</div>', s, re.S).group(1))
     title = strip_tags(re.search(r"<h1>(.*?)</h1>", s, re.S).group(1))
     article = article_of(s)
     words = len(strip_tags(article).split())
@@ -195,19 +214,48 @@ def build_cheatsheet(entries):
     (ROOT / "cheatsheet.html").write_text(page, encoding="utf-8")
 
 
+KZ_ALPHABET = "аәбвгғдеёжзийкқлмнңоөпрстуұүфхһцчшщъыіьэюя"
+
+
+def kz_strip(word):
+    return word.lstrip("«»\"'“”„(").strip()
+
+
+def kz_key(word):
+    """Қазақ әліпбиі бойынша сұрыптау: кириллица → латын → сандар."""
+    w = kz_strip(word).lower()
+    out = []
+    for ch in w:
+        if ch in KZ_ALPHABET:
+            out.append((0, KZ_ALPHABET.index(ch)))
+        elif "a" <= ch <= "z":
+            out.append((1, ord(ch)))
+        elif ch.isdigit():
+            out.append((2, ord(ch)))
+        else:
+            out.append((3, ord(ch)))
+    first = out[0][0] if out else 3
+    return (first, out)
+
+
+def kz_letter(word):
+    ch = kz_strip(word)[:1].upper()
+    return "#" if ch.isdigit() or not ch else ch
+
+
 def build_glossary(terms):
     seen = {}
     for t in terms:
         key = t["en"].lower()
         if key not in seen:
             seen[key] = t
-    items = sorted(seen.values(), key=lambda t: t["kz"].lower())
+    items = sorted(seen.values(), key=lambda t: kz_key(t["kz"]))
     (ROOT / "assets/data/glossary.js").write_text(
         "window.CS50KZ_GLOSSARY = " + json.dumps(items, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     letters = []
     rows = []
     for t in items:
-        letter = t["kz"][0].upper()
+        letter = kz_letter(t["kz"])
         if letter not in letters:
             letters.append(letter)
             rows.append(f'      <h2 class="g-letter" id="l-{len(letters)}">{html.escape(letter)}</h2>')
