@@ -1130,25 +1130,56 @@
   }
 
   // ================= SQL детектив: «Алтын домбыраның құпиясы» =================
-  async function detective(el) {
-    await K.loadScript("assets/data/mystery.js");
+  const CASES = {
+    domb: {
+      script: "assets/data/mystery.js", data: () => window.CS50KZ_MYSTERY, db: "mystery", key: "cs50kz:mystery", flag: "detective",
+      bota: "bota.svg",
+      story: `<p><b>Бота:</b> Детектив, көмегіңіз керек! Наурыз мейрамында, <b>2026 жылғы 21 наурызда</b>, Алмалы қаласындағы <b>Абай көшесіндегі мұражайдан</b> халықтың мақтанышы — <b>алтын домбыра</b> ұрланды!</p>
+          <p>Қаланың барлық деректері — тұрақ камерасы, банкоматтар, телефон қоңыраулары, әуежай — SQL дерекқорында. Табыңыз: <b>ұры кім</b>, ол <b>қай қалаға қашты</b> және оған <b>кім көмектесті</b>?</p>`,
+      start: "SELECT description\nFROM crime_scene_reports\nWHERE year = 2026 AND month = 3 AND day = 21 AND street = 'Abai Street';",
+      hints: [
+        "Алдымен оқиға орнынан бастаңыз: <code>crime_scene_reports</code> кестесінен 2026 жылғы 21 наурыздағы, Abai Street-тегі есепті табыңыз.",
+        "Есепте куәлар туралы айтылды. <code>interviews</code> кестесінен сол күнгі сұхбаттарды оқыңыз. Әр куә бір ізді көрсетеді.",
+        "Бірінші куә: <code>museum_parking_logs</code> кестесінен сағат 10:15–10:25 аралығында (<code>activity = 'exit'</code>) шыққан көліктерді табыңыз, сосын <code>people</code>-ден олардың иелерін.",
+        "Екінші куә: <code>atm_transactions</code> → <code>bank_accounts</code> → <code>people</code>. Үшінші куә: сол күнгі 60 секундтан қысқа <code>phone_calls</code>. Күдіктілердің тізімдерін <code>IN (...)</code> арқылы қиыстырыңыз.",
+        "Ертеңгі (22 наурыз) Алмалыдан ұшатын ең ерте рейс: <code>flights</code>-ті <code>ORDER BY hour, minute LIMIT 1</code> арқылы табыңыз, сосын <code>passengers</code>. Сыбайлас — ұры қоңырау шалған адам (<code>receiver</code>).",
+      ],
+      win: "🎉 <b>Құпия ашылды!</b> Алтын домбыра мұражайға оралды. Сіз — нағыз SQL детективісіз!",
+      winBota: "Рахмет, детектив! Алтын домбыра орнына оралды! 🎉",
+    },
+    baikonur: {
+      script: "assets/data/mystery2.js", data: () => window.CS50KZ_MYSTERY2, db: "baikonur", key: "cs50kz:mystery2", flag: "detective2",
+      bota: "bota-wow.svg",
+      story: `<p><b>Бота:</b> Детектив, тағы да сізге жүгініп тұрмын! <b>2026 жылғы 12 сәуірде</b>, Ғарышкерлер күні мерекесі кезінде, <b>Байқоңыр</b> космодромының Конструкторлық бюросынан жаңа <b>«Тұлпар-1»</b> зымыранының құпия сызбалары жоғалды!</p>
+          <p>Космодромның пропуск сканерлері, принтерлері, электрондық поштасы мен Төретам станциясының билеттері SQL дерекқорында. Бұл жолы <code>JOIN</code>, <code>GROUP BY</code> мен <code>LIKE</code> керек болады. Табыңыз: <b>ұры кім</b>, ол <b>қай қалаға қашты</b> және сызбаларды <b>кімге жіберді</b>?</p>`,
+      start: "SELECT description\nFROM incident_reports\nWHERE date = '2026-04-12' AND building = 'Design Bureau';",
+      hints: [
+        "Оқиғадан бастаңыз: <code>incident_reports</code> кестесінен 2026-04-12 күнгі, <code>Design Bureau</code> ғимаратындағы есепті оқыңыз. Сосын сол күнгі <code>interviews</code>.",
+        "Уақыт мәтін ретінде сақталған: <code>'2026-04-12 14:07'</code>. Мұндай мәтіндерді <code>BETWEEN '2026-04-12 14:00' AND '2026-04-12 15:00'</code> не <code>LIKE '2026-04-12%'</code> арқылы салыстыруға болады.",
+        "Бірінші куә: <code>badge_scans</code>-тан архив есігінен (<code>door = 'archive'</code>) 14:00–15:00 аралығында кіріп, 16:00-ге дейін шыққандарды табыңыз. Кестені өзімен <code>JOIN</code> жасаңыз (кіру мен шығу), сосын <code>employees</code>-пен <code>badge_id</code> арқылы байланыстырыңыз.",
+        "Екінші куә: <code>printer_jobs</code>-тан B-2 принтерінде сол күні барлығы 50-ден көп парақ басқандар: <code>GROUP BY employee_id HAVING SUM(pages) &gt; 50</code>. Үшінші куә: <code>emails</code>-тен <code>size_kb &gt; 5000</code> және <code>recipient NOT LIKE '%@baikonur.kz'</code>.",
+        "Пойыз: <code>stations</code> мен <code>trains</code>-ті <code>JOIN</code> жасап, 13 сәуірде Toretam-нан шығатын ең ерте пойызды табыңыз (<code>ORDER BY departure LIMIT 1</code>), сосын <code>tickets</code>. Сыбайлас — ұрының үлкен хатын алған адам (<code>people.email</code>).",
+      ],
+      win: "🚀 <b>Құпия ашылды!</b> «Тұлпар-1» сызбалары Байқоңырға оралды. Сіз — ғарыш деңгейіндегі SQL детективісіз!",
+      winBota: "Керемет! Сызбалар табылды, «Тұлпар-1» ұшуға дайын! 🚀",
+    },
+  };
+
+  async function detective(el, caseId) {
+    caseId = CASES[caseId] ? caseId : "domb";
+    const C = CASES[caseId];
+    el.dataset.theme = caseId;
+    await K.loadScript(C.script);
     window.CS50KZ_DB = window.CS50KZ_DB || {};
-    window.CS50KZ_DB.mystery = window.CS50KZ_MYSTERY.sql;
-    const KEY = "cs50kz:mystery";
+    window.CS50KZ_DB[C.db] = C.data().sql;
+    const KEY = C.key;
     const st = store.get(KEY, { notes: "", hints: 0, solved: false, q: "" });
-    const HINTS = [
-      "Алдымен оқиға орнынан бастаңыз: <code>crime_scene_reports</code> кестесінен 2026 жылғы 21 наурыздағы, Abai Street-тегі есепті табыңыз.",
-      "Есепте куәлар туралы айтылды. <code>interviews</code> кестесінен сол күнгі сұхбаттарды оқыңыз. Әр куә бір ізді көрсетеді.",
-      "Бірінші куә: <code>museum_parking_logs</code> кестесінен сағат 10:15–10:25 аралығында (<code>activity = 'exit'</code>) шыққан көліктерді табыңыз, сосын <code>people</code>-ден олардың иелерін.",
-      "Екінші куә: <code>atm_transactions</code> → <code>bank_accounts</code> → <code>people</code>. Үшінші куә: сол күнгі 60 секундтан қысқа <code>phone_calls</code>. Күдіктілердің тізімдерін <code>IN (...)</code> арқылы қиыстырыңыз.",
-      "Ертеңгі (22 наурыз) Алмалыдан ұшатын ең ерте рейс: <code>flights</code>-ті <code>ORDER BY hour, minute LIMIT 1</code> арқылы табыңыз, сосын <code>passengers</code>. Сыбайлас — ұры қоңырау шалған адам (<code>receiver</code>).",
-    ];
+    const HINTS = C.hints;
     el.innerHTML = `
       <div class="dt-story">
-        <img src="${K.ROOT_URL}assets/img/bota.svg" alt="" width="96" height="96">
+        <img src="${K.ROOT_URL}assets/img/${C.bota}" alt="" width="96" height="96">
         <div>
-          <p><b>Бота:</b> Детектив, көмегіңіз керек! Наурыз мейрамында, <b>2026 жылғы 21 наурызда</b>, Алмалы қаласындағы <b>Абай көшесіндегі мұражайдан</b> халықтың мақтанышы — <b>алтын домбыра</b> ұрланды!</p>
-          <p>Қаланың барлық деректері — тұрақ камерасы, банкоматтар, телефон қоңыраулары, әуежай — SQL дерекқорында. Табыңыз: <b>ұры кім</b>, ол <b>қай қалаға қашты</b> және оған <b>кім көмектесті</b>?</p>
+          ${C.story}
         </div>
       </div>
       <div class="dt-grid">
@@ -1177,7 +1208,7 @@
         <p class="dt-verdict" aria-live="polite"></p>
       </div>`;
     const code = el.querySelector(".dt-code"), notes = el.querySelector(".dt-notes");
-    code.value = st.q || "SELECT description\nFROM crime_scene_reports\nWHERE year = 2026 AND month = 3 AND day = 21 AND street = 'Abai Street';";
+    code.value = st.q || C.start;
     notes.value = st.notes || "";
     const save = () => { st.q = code.value; st.notes = notes.value; store.set(KEY, st); };
     notes.addEventListener("input", save);
@@ -1188,7 +1219,7 @@
     el.querySelector(".dt-hints").addEventListener("click", (e) => { if (e.target.classList.contains("dt-hint")) { st.hints++; save(); renderHints(); } });
     renderHints();
     let db;
-    const ensureDb = async () => (db = db || (await K.getDb("mystery")));
+    const ensureDb = async () => (db = db || (await K.getDb(C.db)));
     (async () => {
       try {
         await ensureDb();
@@ -1219,15 +1250,15 @@
     });
     const sha = async (t) => [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(t.trim().toLowerCase())))].map((b) => b.toString(16).padStart(2, "0")).join("");
     el.querySelector(".dt-check").addEventListener("click", async () => {
-      const A = window.CS50KZ_MYSTERY.answers, v = el.querySelector(".dt-verdict");
+      const A = C.data().answers, v = el.querySelector(".dt-verdict");
       const r = [await sha(el.querySelector(".dt-thief").value) === A.thief, await sha(el.querySelector(".dt-city").value) === A.city, await sha(el.querySelector(".dt-acc").value) === A.accomplice];
       ["dt-thief", "dt-city", "dt-acc"].forEach((c, i) => el.querySelector("." + c).classList.toggle("bad", !r[i]));
       ["dt-thief", "dt-city", "dt-acc"].forEach((c, i) => el.querySelector("." + c).classList.toggle("good", r[i]));
       if (r.every(Boolean)) {
-        K.botaSay && K.botaSay("Рахмет, детектив! Алтын домбыра орнына оралды! 🎉", "happy");
-        v.innerHTML = "🎉 <b>Құпия ашылды!</b> Алтын домбыра мұражайға оралды. Сіз — нағыз SQL детективісіз!";
+        K.botaSay && K.botaSay(C.winBota, "happy");
+        v.innerHTML = C.win;
         v.className = "dt-verdict good";
-        if (!st.solved) { st.solved = true; save(); K.mark && K.mark("detective"); }
+        if (!st.solved) { st.solved = true; save(); K.mark && K.mark(C.flag); }
         K.celebrate();
       } else {
         const n = r.filter(Boolean).length;
@@ -1483,7 +1514,22 @@
   document.querySelectorAll(".trace-quiz").forEach(traceQuiz);
   document.querySelectorAll(".autograder").forEach(autograder);
   document.querySelectorAll(".sql-grader").forEach(sqlGrader);
-  document.querySelectorAll(".detective").forEach(detective);
+  document.querySelectorAll(".detective").forEach((el) => {
+    const tabs = document.querySelector(".dt-cases");
+    const pick = (id) => {
+      id = CASES[id] ? id : "domb";
+      tabs && tabs.querySelectorAll("[data-case]").forEach((b) => b.classList.toggle("on", b.dataset.case === id));
+      detective(el, id);
+    };
+    tabs && tabs.addEventListener("click", (e) => {
+      const b = e.target.closest("[data-case]");
+      if (!b) return;
+      e.preventDefault();
+      history.replaceState(null, "", "#" + b.dataset.case);
+      pick(b.dataset.case);
+    });
+    pick(location.hash.slice(1) || el.dataset.case);
+  });
   document.querySelectorAll(".web-lab").forEach(webLab);
   document.querySelectorAll(".homepage-check").forEach(homepage);
   document.querySelectorAll(".weekly").forEach(weekly);
