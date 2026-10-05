@@ -68,8 +68,8 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
-    window.CS50KZ = { ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements };
-    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz")) loadScript("assets/js/labs.js");
+    window.CS50KZ = { ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, bump: weekBump };
+    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly")) loadScript("assets/js/labs.js");
     initAchievements();
     initPrefs();
     initShare();
@@ -170,7 +170,7 @@
           const prev = p.quiz[PAGE];
           if (!prev || correct >= prev.best) p.quiz[PAGE] = { best: correct, total: questions.length };
           Progress.save(p);
-          if (correct === questions.length) celebrate();
+          if (correct === questions.length) { celebrate(); botaSay("Керемет! Тестті 100% өттіңіз. Сіз нағыз бағдарламашысыз! 🎉"); }
           checkAchievements();
         }
       });
@@ -448,7 +448,7 @@
       done.querySelector("button").addEventListener("click", () => {
         const q = Progress.load();
         if (q.read[PAGE]) delete q.read[PAGE];
-        else { q.read[PAGE] = Date.now(); celebrate(); toast("Лекция оқылды деп белгіленді 🎉"); }
+        else { q.read[PAGE] = Date.now(); celebrate(); toast("Лекция оқылды деп белгіленді 🎉"); weekBump("read"); }
         Progress.save(q);
         checkAchievements();
         render();
@@ -456,6 +456,10 @@
     };
     render();
     if (pager) pager.before(done);
+    const tip = document.createElement("div");
+    tip.className = "bota-tip";
+    tip.innerHTML = `<img src="${ROOT_URL}assets/img/bota.svg" alt="" width="64" height="64"><p><b>Ботаның кеңесі:</b> ${BOTA_TIPS[(PAGE.length * 7 + new Date().getDate()) % BOTA_TIPS.length]}</p>`;
+    done.before(tip);
 
     // ← → пернелерімен лекциялар арасында жүру
     document.addEventListener("keydown", (e) => {
@@ -487,7 +491,7 @@
       panel.innerHTML = `
         <div class="dash-ring" style="--pct:${pct}"><div><b>${pct}%</b><span>курс</span></div></div>
         <div class="dash-main">
-          <h3>${read ? "Жарайсыз, жалғастырыңыз!" : "Курсты бастауға дайынсыз ба?"}</h3>
+          <div class="bota-greet"><img src="${ROOT_URL}assets/img/bota.svg" alt="" width="54" height="54"><div><small>Бота:</small><h3>${greeting(read, lectures.length, p.name)}</h3></div></div>
           <div class="dash-stats">
             <div><b>${read}<small>/${lectures.length}</small></b><span>лекция оқылды</span></div>
             <div><b>${qTotal ? Math.round((qBest / qTotal) * 100) + "%" : "—"}</b><span>тест нәтижесі</span></div>
@@ -584,29 +588,63 @@
       const loading = (async () => {
         await loadScript("https://cdn.jsdelivr.net/npm/pyodide@0.26.4/full/pyodide.js");
         const py = await window.loadPyodide();
-        // input() мен cs50 кітапханасын браузерге бейімдеу
+        // input() мен cs50 кітапханасын браузерге бейімдеу; __cs50kz_run — автотексеруші қабығы
         py.runPython(`
-import builtins, sys, types
+import builtins
 from js import prompt
-def _input(p=""):
+def _prompt_input(p=""):
     v = prompt(str(p))
     if v is None:
         raise EOFError("енгізу тоқтатылды")
     print(str(p) + v)
     return v
-builtins.input = _input
+builtins.input = _prompt_input
+import builtins, sys, types, io, contextlib
+
+def _cs50_input(p=""):
+    return builtins.input(p)
+
 cs50 = types.ModuleType("cs50")
-def get_string(p=""): return _input(p)
+def get_string(p=""): return _cs50_input(p)
 def get_int(p=""):
     while True:
-        try: return int(_input(p))
+        try: return int(_cs50_input(p))
         except ValueError: pass
 def get_float(p=""):
     while True:
-        try: return float(_input(p))
+        try: return float(_cs50_input(p))
         except ValueError: pass
 cs50.get_string, cs50.get_int, cs50.get_float = get_string, get_int, get_float
 sys.modules["cs50"] = cs50
+
+def __cs50kz_run(src, inputs, limit=2000000):
+    q = list(inputs)
+    def _inp(p=""):
+        if not q:
+            raise EOFError("кіріс таусылды: бағдарлама тағы кіріс күтті")
+        return q.pop(0)
+    count = [0]
+    def tracer(frame, event, arg):
+        count[0] += 1
+        if count[0] > limit:
+            raise TimeoutError("бағдарлама тым ұзақ орындалды (шексіз цикл?)")
+        return tracer
+    buf = io.StringIO()
+    old = builtins.input
+    builtins.input = _inp
+    err = None
+    sys.settrace(tracer)
+    try:
+        with contextlib.redirect_stdout(buf):
+            exec(compile(src, "student.py", "exec"), {"__name__": "__main__"})
+    except SystemExit:
+        pass
+    except BaseException as e:
+        err = f"{type(e).__name__}: {e}"
+    finally:
+        sys.settrace(None)
+        builtins.input = old
+    return [buf.getvalue(), err]
 `);
         return py;
       })();
@@ -903,6 +941,8 @@ sys.modules["cs50"] = cs50
       A("explorer", "📊", "Зерттеуші", "5 түрлі визуализацияны қолдану", viz, 5),
       A("debugger", "🐞", "Қате аңшысы", "«Қатені тап» тренажерінде 20 қатені табу", Object.keys(readJson("cs50kz:bugs", {})).length, 20),
       A("tracer", "🔎", "Компьютер-ми", "«Не шығарады?» тренажерінде 10 жаттығу", Object.keys(readJson("cs50kz:trace", {})).length, 10),
+      A("weekly", "🏆", "Апта чемпионы", "Апталық челленджді орындау", readJson("cs50kz:weeks-won", 0), 1),
+      A("check50", "✅", "check50 өтті", "Автотексерушіде бір тапсырманың барлық тестінен өту", Object.keys(readJson("cs50kz:graded", {})).length, 1),
       A("search", "🔍", "Іздеуші", "Сайт бойынша іздеуді қолдану", used.search ? 1 : 0, 1),
       A("owl", "🌙", "Түнгі үкі", "Түнгі режимді қосу", used.dark ? 1 : 0, 1),
     ];
@@ -1100,4 +1140,62 @@ sys.modules["cs50"] = cs50
     if (m) { add(m[1]); history.replaceState(null, "", location.pathname); }
     render();
   }
+
+  // ---------- Бота ----------
+  function greeting(read, total, name) {
+    const h = new Date().getHours();
+    const hi = h < 5 ? "Түн жарымы болды" : h < 12 ? "Қайырлы таң" : h < 18 ? "Қайырлы күн" : "Қайырлы кеш";
+    const who = name ? ", " + escapeHtml(name.split(" ")[0]) : "";
+    if (!read) return `${hi}${who}! Курсты бірге бастайық па?`;
+    if (read === total) return `${hi}${who}! Сіз бүкіл курсты бітірдіңіз! 🎓`;
+    if (read >= total / 2) return `${hi}${who}! Жартысынан астын өттіңіз, тоқтамаңыз!`;
+    return `${hi}${who}! Жақсы бастадыңыз, жалғастырайық!`;
+  }
+
+  const BOTA_TIPS = [
+    "Тапсырманы бастамас бұрын, оны қағазға псевдокод ретінде жазып көріңіз.",
+    "Код жұмыс істемесе, резеңке үйрекке (не маған!) түсіндіріп көріңіз: қате көбіне сөйлеп тұрғанда табылады.",
+    "Компилятордың бірінші қате хабарламасынан бастаңыз: қалғандары көбіне соның салдары.",
+    "printf пен print — ең қарапайым әрі ең күшті дебаггер. Айнымалының мәнін басып шығарыңыз!",
+    "Шешімді көшірмеңіз: 30 минут өзіңіз ойлансаңыз, ол 3 сағат оқығаннан пайдалы.",
+    "Әр функция бір ғана іс істесін. Функция ұзын болса, оны бөліңіз.",
+    "Шаршасаңыз, демалыңыз. Миыңыз мәселені ұйықтап жатқанда да шешеді.",
+    "Айнымалыға түсінікті ат беріңіз: x емес, height немесе coins.",
+    "check50-ге дейін өзіңіз тексеріңіз: шеткі жағдайларды (0, теріс сан, бос жол) ұмытпаңыз.",
+    "Флэш-карточкалармен күніне 10 минут терминдерді қайталаңыз: аз-аздан, бірақ күнде.",
+    "Қиналсаңыз, «Кеңес» бөлімін ашыңыз, шешімді тек соңында қараңыз.",
+    "Код — адамдарға арналған мәтін, компьютер оны тек орындайды. Әдемі жазыңыз!",
+  ];
+
+  function botaSay(text) {
+    const old = document.querySelector(".bota-pop");
+    if (old) old.remove();
+    const b = document.createElement("div");
+    b.className = "bota-pop";
+    b.innerHTML = `<img src="${ROOT_URL}assets/img/bota.svg" alt="Бота" width="72" height="72"><p>${escapeHtml(text)}</p><button type="button" aria-label="Жабу">✕</button>`;
+    document.body.appendChild(b);
+    requestAnimationFrame(() => b.classList.add("show"));
+    const close = () => { b.classList.remove("show"); setTimeout(() => b.remove(), 300); };
+    b.querySelector("button").addEventListener("click", close);
+    setTimeout(close, 6500);
+  }
+
+  // ---------- Апталық челлендж: санағыштар ----------
+  function weekId(d = new Date()) {
+    // ISO апта нөмірі
+    const t = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const day = t.getUTCDay() || 7;
+    t.setUTCDate(t.getUTCDate() + 4 - day);
+    const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
+    return t.getUTCFullYear() + "-W" + Math.ceil(((t - y0) / 86400000 + 1) / 7);
+  }
+  function weekBump(key, n = 1) {
+    const w = readJson("cs50kz:week", {});
+    const id = weekId();
+    const cur = w.id === id ? w : { id, read: 0, cards: 0, trainer: 0, daily: 0, done: false };
+    cur[key] = (cur[key] || 0) + n;
+    try { localStorage.setItem("cs50kz:week", JSON.stringify(cur)); } catch (e) {}
+    document.dispatchEvent(new CustomEvent("cs50kz:week"));
+  }
+  window.CS50KZ_weekId = weekId;
 })();
