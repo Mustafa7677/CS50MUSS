@@ -1006,6 +1006,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       A("exam", "📝", "Емтихан тапсырылды", "Қорытынды емтиханнан 70% жинау", (readJson("cs50kz:exam", {}).best || 0) >= 70 ? 1 : 0, 1),
       A("exam-top", "🏆", "Үздік түлек", "Қорытынды емтиханнан 90% жинау", (readJson("cs50kz:exam", {}).best || 0) >= 90 ? 1 : 0, 1),
       A("flask", "🧪", "Flask шебері", "Flask зертханасының 4 тапсырмасынан өту", Object.keys(readJson("cs50kz:flask", {})).length, 4),
+      A("detective2", "🚀", "Байқоңыр детективі", "«Байқоңыр құпиясын» ашу", readJson("cs50kz:used", {}).detective2 ? 1 : 0, 1),
       A("webdev", "🌐", "Веб-әзірлеуші", "Homepage тексерушісінен барлық талаппен өту", readJson("cs50kz:graded", {}).homepage ? 1 : 0, 1),
       A("search", "🔍", "Іздеуші", "Сайт бойынша іздеуді қолдану", used.search ? 1 : 0, 1),
       A("owl", "🌙", "Түнгі үкі", "Түнгі режимді қосу", used.dark ? 1 : 0, 1),
