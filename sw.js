@@ -1,8 +1,8 @@
 // CS50 қазақша — офлайн режим.
 // Беттер желіден алынады, ал желі жоқ кезде кэштегі соңғы нұсқа көрсетіледі.
-const CACHE = "cs50kz-v9";
+const CACHE = "cs50kz-v10";
 const CORE = [
-  "./", "index.html", "about.html", "glossary.html", "certificate.html", "playground.html", "practice.html", "flashcards.html", "viz.html", "teacher.html", "debug.html", "map.html", "cheatsheet.html", "assets/data/bugs.js", "assets/data/trace.js", "assets/data/checks.js", "assets/data/sqlchecks.js", "assets/img/bota.svg", "assets/vendor/qrcode/qrcode.js",
+  "./", "index.html", "about.html", "glossary.html", "certificate.html", "playground.html", "practice.html", "flashcards.html", "viz.html", "teacher.html", "debug.html", "detective.html", "assets/data/mystery.js", "map.html", "cheatsheet.html", "assets/data/bugs.js", "assets/data/trace.js", "assets/data/checks.js", "assets/data/sqlchecks.js", "assets/img/bota.svg", "assets/vendor/qrcode/qrcode.js",
   "assets/css/style.css", "assets/js/main.js", "assets/js/labs.js",
   "assets/data/lectures.js", "assets/data/search-index.js", "assets/data/db.js", "assets/data/quiz.js", "assets/data/glossary.js",
   "assets/vendor/sqljs/sql-wasm.js", "assets/vendor/sqljs/sql-wasm.wasm",

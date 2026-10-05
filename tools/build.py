@@ -251,7 +251,8 @@ def main():
                          ("playground.html", "playground"), ("practice.html", "practice"),
                          ("flashcards.html", "practice"), ("viz.html", "practice"),
                          ("teacher.html", ""), ("404.html", ""), ("cheatsheet.html", "practice"),
-                         ("debug.html", "practice"), ("map.html", "practice")]:
+                         ("debug.html", "practice"), ("map.html", "practice"),
+                         ("detective.html", "practice")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
     (ROOT / "assets/data/lectures.js").write_text(
@@ -261,7 +262,7 @@ def main():
     (ROOT / "assets/data/quiz.js").write_text(
         "window.CS50KZ_QUIZ = " + json.dumps(quiz, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     pages = ["", "practice.html", "playground.html", "viz.html", "flashcards.html", "glossary.html",
-             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html"] + [l["url"] for l in lectures]
+             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html"] + [l["url"] for l in lectures]
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"  <url><loc>{SITE_URL}{u}</loc></url>\n" for u in pages) + "</urlset>\n", encoding="utf-8")
