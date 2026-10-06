@@ -97,11 +97,13 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
-    window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList() };
+    window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), summary: summaryData, ORDER };
     if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
     if (document.querySelector(".flask-lab")) loadScript("assets/js/flask.js");
     if (document.querySelector(".exam")) loadScript("assets/js/exam.js");
     if (document.querySelector(".profile")) loadScript("assets/js/profile.js");
+    // Бұлттық синхрондау: қосылған болса әр бетте, профиль мен мұғалім бетінде әрқашан
+    if (readJson("cs50kz:cloud", {}).on || document.querySelector(".profile, .teacher")) loadScript("assets/js/cloud.js").catch(() => {});
     initAchievements();
     initPrefs();
     initShare();
@@ -256,14 +258,19 @@
   }
 
   // ---------- Көмекші функциялар ----------
+  const loaded = {};
   function loadScript(rel) {
-    return new Promise((resolve, reject) => {
-      const el = document.createElement("script");
-      el.src = /^https?:/.test(rel) ? rel : ROOT_URL + rel;
-      el.onload = resolve;
-      el.onerror = reject;
-      document.head.appendChild(el);
-    });
+    const src = /^https?:/.test(rel) ? rel : ROOT_URL + rel;
+    if (!loaded[src]) {
+      loaded[src] = new Promise((resolve, reject) => {
+        const el = document.createElement("script");
+        el.src = src;
+        el.onload = resolve;
+        el.onerror = () => { delete loaded[src]; reject(new Error("script: " + rel)); };
+        document.head.appendChild(el);
+      });
+    }
+    return loaded[src];
   }
 
   function escapeHtml(s) {
@@ -1131,11 +1138,11 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
   const ORDER = ["week-0", "week-1", "week-2", "week-3", "week-4", "week-5", "week-6", "week-7", "ai", "week-8", "week-9", "week-10"];
   function b64url(str) { return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""); }
   function unb64url(s) { s = s.replace(/-/g, "+").replace(/_/g, "/"); return decodeURIComponent(escape(atob(s + "===".slice((s.length + 3) % 4)))); }
-  function progressCode(name) {
+  function summaryData(name) {
     const p = Progress.load();
     const daily = readJson("cs50kz:daily", {});
-    const data = {
-      v: 1, n: name, i: profile().id,
+    return {
+      v: 1, n: name ?? p.name ?? "", i: profile().id,
       r: ORDER.map((id) => (p.read[id] ? 1 : 0)).join(""),
       q: ORDER.map((id) => (p.quiz[id] ? `${p.quiz[id].best}/${p.quiz[id].total}` : "")).join(","),
       t: ORDER.reduce((n, id) => n + Progress.tasksDone(id), 0),
@@ -1144,7 +1151,9 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       e: readJson("cs50kz:exam", {}).best ?? null,
       d: new Date().toISOString().slice(0, 10),
     };
-    return "KZ1." + b64url(JSON.stringify(data));
+  }
+  function progressCode(name) {
+    return "KZ1." + b64url(JSON.stringify(summaryData(name)));
   }
   function parseCode(code) {
     const m = String(code).trim().match(/KZ1\.([A-Za-z0-9_-]+)/);
