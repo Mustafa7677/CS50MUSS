@@ -183,3 +183,42 @@ grant execute on function
   public.cs50kz_class_view(text, text),
   public.cs50kz_class_remove(text, text, text)
 to anon, authenticated;
+
+-- ---------- Кері байланыс: аударма қатесі, түсініксіз жер, ұсыныс ----------
+-- Тек қосуға болады; оқу — Supabase панелінен (Table Editor → cs50kz_feedback).
+create table if not exists public.cs50kz_feedback (
+  id         bigserial primary key,
+  kind       text not null check (kind in ('translation', 'code', 'unclear', 'idea', 'other')),
+  page       text not null check (length(page) <= 200),
+  section    text not null default '' check (length(section) <= 200),
+  quote      text not null default '' check (length(quote) <= 600),
+  message    text not null check (length(message) between 1 and 2000),
+  student_id text,
+  status     text not null default 'new' check (status in ('new', 'fixed', 'wontfix')),
+  created_at timestamptz not null default now()
+);
+alter table public.cs50kz_feedback enable row level security;
+revoke all on public.cs50kz_feedback from anon, authenticated;
+
+create or replace function public.cs50kz_feedback_send(
+  p_kind text, p_page text, p_section text, p_quote text, p_message text, p_student text)
+returns jsonb
+language plpgsql security definer set search_path = public as $$
+declare new_id bigint;
+begin
+  if coalesce(trim(p_message), '') = '' then
+    raise exception 'empty message' using errcode = '22023';
+  end if;
+  -- Қарапайым шектеу: соңғы минутта барлығы 30-дан көп хабар қабылданбайды
+  if (select count(*) from public.cs50kz_feedback where created_at > now() - interval '1 minute') >= 30 then
+    raise exception 'too many messages, try later' using errcode = '54000';
+  end if;
+  insert into public.cs50kz_feedback(kind, page, section, quote, message, student_id)
+  values (coalesce(nullif(p_kind, ''), 'other'), left(coalesce(p_page, ''), 200), left(coalesce(p_section, ''), 200),
+          left(coalesce(p_quote, ''), 600), left(trim(p_message), 2000),
+          case when p_student ~ '^KZ-[0-9A-Z]{4}-[0-9A-Z]{4}$' then p_student end)
+  returning id into new_id;
+  return jsonb_build_object('id', new_id);
+end $$;
+
+grant execute on function public.cs50kz_feedback_send(text, text, text, text, text, text) to anon, authenticated;
