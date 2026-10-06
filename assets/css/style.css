@@ -383,7 +383,7 @@ pre code.hljs { background: none; padding: 0; }
   flex: 0 0 44px; height: 44px; border-radius: 12px; display: grid; place-items: center;
   background: var(--accent-soft); color: var(--accent); font-family: var(--display); font-weight: 700; font-size: 18px;
 }
-.feature h3 { margin: 0 0 4px; font-size: 17px; }
+.feature h3, .feature .feature-title { margin: 0 0 4px; font-size: 17px; }
 .feature p { margin: 0; font-size: 14.5px; color: var(--muted); line-height: 1.5; }
 
 /* Бөлім тақырыбы */
@@ -1254,7 +1254,7 @@ pre[data-lang="sql"]::before { right: 168px; }
   .features { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: -24px; }
   .feature { flex-direction: column; align-items: center; text-align: center; padding: 12px 8px; gap: 6px; }
   .feature .ico { flex-basis: auto; width: 34px; height: 34px; font-size: 15px; }
-  .feature h3 { font-size: 13px; margin: 0; }
+  .feature h3, .feature .feature-title { font-size: 13px; margin: 0; }
   .feature p { display: none; }
   .ach-chip small { display: none; }
   .ach-chip { padding: 8px 10px; }
@@ -1374,12 +1374,14 @@ pre[data-lang="sql"]::before { right: 168px; }
 
 /* Баннер: жылт еткен жарық және сандар жолағы */
 .hero-inner { position: relative; z-index: 1; }
+/* Жылтыр: тек transform (GPU) — бүкіл баннерді әр кадрда қайта салмайды */
 .hero::before {
-  content: ""; position: absolute; inset: 0; pointer-events: none;
-  background: linear-gradient(115deg, transparent 35%, rgba(255,255,255,.11) 47%, transparent 58%) 0 0 / 260% 100% no-repeat;
+  content: ""; position: absolute; top: 0; bottom: 0; left: 0; width: 55%; pointer-events: none;
+  background: linear-gradient(105deg, transparent 20%, rgba(255,255,255,.12) 50%, transparent 80%);
+  transform: translateX(-120%); will-change: transform;
   animation: sheen 10s ease-in-out infinite;
 }
-@keyframes sheen { 0% { background-position: 130% 0; } 55%, 100% { background-position: -130% 0; } }
+@keyframes sheen { 0% { transform: translateX(-120%); } 55%, 100% { transform: translateX(260%); } }
 .hero-stats {
   display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1px; margin-top: 30px; max-width: 580px;
   border-radius: 16px; overflow: hidden; background: rgba(255,255,255,.2); border: 1px solid rgba(255,255,255,.24);
@@ -1866,3 +1868,15 @@ pre[data-lang="sql"]::before { right: 168px; }
 .fb-result.ok { color: var(--ok); }
 .fb-result.bad { color: var(--bad); }
 @media print { .fb-fab { display: none !important; } }
+
+/* Қолжетімділік: мәтін ішіндегі сілтемелер тек түспен ажыратылмасын */
+.content p a, .content li a, .content td a, .callout a, .ft-bottom a, .mq-explain a {
+  text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, currentColor 45%, transparent);
+}
+.content p a:hover, .content li a:hover, .ft-bottom a:hover { text-decoration-color: currentColor; }
+.content .lecture-head a, .content a.btn, .content p a.btn, .content .pf-box a.btn { text-decoration: none; }
+/* Мазмұн тақырыбы — нағыз батырма */
+.toc-toggle { all: unset; flex: 1; cursor: default; }
+.toc-toggle:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; border-radius: 4px; }
+@media (max-width: 900px) { .toc-toggle { cursor: pointer; } }
