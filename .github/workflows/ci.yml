@@ -1,0 +1,82 @@
+# CS50 қазақша — әр push пен PR сайын автоматты тексеру
+name: CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  static:
+    name: Генерацияланған файлдар мен JS синтаксисі
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: JS синтаксисі
+        run: for f in assets/js/*.js sw.js; do node --check "$f"; done
+      - name: Build пен генераторлар қайталанатын болуы керек
+        run: |
+          python3 tools/build.py
+          python3 tools/make_mystery.py
+          python3 tools/make_mystery2.py
+          python3 tools/make_demo_db.py
+          git diff --stat --exit-code || (echo "::error::Генерацияланған файлдар ескірген: python3 tools/build.py іске қосып, commit жасаңыз" && exit 1)
+      - name: Flask бумасы бүтін
+        run: python3 -c "import zipfile; z = zipfile.ZipFile('assets/vendor/flask/flask-bundle.zip'); assert z.testzip() is None; assert 'flask/__init__.py' in z.namelist()"
+
+  e2e:
+    name: Браузерлік тесттер (Playwright)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      CLOUD_DSN: host=127.0.0.1 port=5432 user=postgres password=postgres dbname=postgres
+      CLOUD_MOCK: http://127.0.0.1:8799
+      PGPASSWORD: postgres
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: tests/package-lock.json
+      - name: Supabase схемасы (нағыз SQL) + PostgREST-мок
+        run: |
+          psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 -c "create role anon nologin; create role authenticated nologin; grant usage on schema public to anon, authenticated;"
+          psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 -q -f supabase/schema.sql
+          psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 -q -f supabase/schema.sql
+          pip install psycopg2-binary
+          nohup python3 tests/support/rest_mock.py > /tmp/rest_mock.log 2>&1 &
+      - name: Тәуелділіктер
+        working-directory: tests
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+      - name: Тесттер
+        working-directory: tests
+        run: npx playwright test
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: playwright-report
+          path: tests/playwright-report
+          retention-days: 7
