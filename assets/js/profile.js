@@ -27,7 +27,10 @@
       }
     });
     const p = K.profile();
-    return { v: 1, id: p.id, n: (get("cs50kz:progress", {}).name || ""), t: Date.now(), d };
+    const out = { v: 1, id: p.id, n: (get("cs50kz:progress", {}).name || ""), t: Date.now(), d };
+    const cl = get("cs50kz:cloud", {});
+    if (cl.on && cl.secret) out.c = { s: cl.secret, k: cl.cls || null }; // жаңа құрылғы бұлтқа бірден қосылсын
+    return out;
   }
 
   // ---------- Сығу (deflate) + base64url ----------
@@ -118,7 +121,11 @@
   }
 
   async function importCode(code) {
-    const obj = await decode(code);
+    return applyData(await decode(code));
+  }
+
+  // Келген деректерді (код, файл не бұлт) осы құрылғыға біріктіру
+  function applyData(obj) {
     const before = summary();
     let n = 0;
     Object.entries(obj.d).forEach(([k, v]) => {
@@ -132,6 +139,11 @@
       if (prof.id !== obj.id) { prof.prev = prof.prev || []; prof.prev.push(prof.id); prof.id = obj.id; }
       prof.synced = Date.now();
       put("cs50kz:profile", prof);
+      if (obj.c && /^[0-9A-Z]{8}$/.test(obj.c.s || "")) {
+        const cl = get("cs50kz:cloud", {});
+        put("cs50kz:cloud", Object.assign(cl, { on: true, secret: obj.c.s, cls: cl.cls || obj.c.k || null, hash: null, pulled: 0 }));
+        document.dispatchEvent(new CustomEvent("cs50kz:cloud-login"));
+      }
     }
     const p = get("cs50kz:progress", {});
     if (!p.name && obj.n) { p.name = obj.n; put("cs50kz:progress", p); }
@@ -163,6 +175,7 @@
         </div>
       </div>
       <div class="pf-stats"></div>
+      <section class="pf-box pf-cloud" aria-live="polite"><p class="pf-small">Бұлт жүктелуде…</p></section>
 
       <div class="pf-grid">
         <section class="pf-box">
@@ -266,8 +279,9 @@
     }
     render();
     document.addEventListener("cs50kz:week", render);
+    document.addEventListener("cs50kz:synced", render);
   }
 
-  window.CS50KZ_SYNC = { encode, decode, importCode, snapshot, mergeKey };
+  window.CS50KZ_SYNC = { encode, decode, importCode, applyData, snapshot, mergeKey, summary };
   document.querySelectorAll(".profile").forEach(page);
 })();
