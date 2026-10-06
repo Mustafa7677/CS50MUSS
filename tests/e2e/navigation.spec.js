@@ -1,0 +1,34 @@
+// Мазмұн (TOC) сілтемелері бөлімге дәл апаруы керек.
+// Ескерту: content-visibility: auto осыны бұзады (бірінші секіріс 800px+ қате түседі) — қолданбаңыз.
+const { test, expect } = require("@playwright/test");
+const { blockFonts, collectErrors } = require("../support/helpers");
+
+for (const lec of ["week-3", "week-6"]) {
+  test(`${lec}: TOC және тікелей якорь бөлімге дәл түседі`, async ({ page, context }) => {
+    await blockFonts(context);
+    const errs = collectErrors(page);
+    await page.goto(`lectures/${lec}.html`);
+    const hrefs = await page.evaluate(() => [...document.querySelectorAll(".toc a")].map((a) => a.getAttribute("href")));
+    expect(hrefs.length).toBeGreaterThan(10);
+    for (const h of hrefs.slice(-5)) {
+      await page.click(`.toc a[href="${h}"]`);
+      await expect.poll(() => page.evaluate((h) => Math.round(document.querySelector(h).getBoundingClientRect().top), h), { timeout: 4000 }).toBeLessThan(160);
+    }
+    await page.goto(`lectures/${lec}.html#problem-set`);
+    await expect.poll(() => page.evaluate(() => Math.round(document.querySelector("#problem-set").getBoundingClientRect().top))).toBeLessThan(160);
+    expect(errs).toEqual([]);
+  });
+}
+
+test("телефонда мазмұн батырма арқылы ашылып-жабылады", async ({ page, context }) => {
+  await blockFonts(context);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("lectures/week-1.html");
+  const btn = page.locator(".toc-toggle");
+  await expect(btn).toHaveAttribute("aria-expanded", "false");
+  await btn.click();
+  await expect(btn).toHaveAttribute("aria-expanded", "true");
+  await expect(page.locator(".toc ol")).toBeVisible();
+  await page.locator(".toc ol a").nth(3).click();
+  await expect(page.locator(".toc")).not.toHaveClass(/open/);
+});

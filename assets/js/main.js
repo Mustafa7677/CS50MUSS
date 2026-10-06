@@ -32,20 +32,25 @@
     const still = matchMedia("(prefers-reduced-motion: reduce)").matches || root.classList.contains("reduce-motion");
     if (!still && "IntersectionObserver" in window) {
       const items = document.querySelectorAll(".week-card, .feature, .task, .question, .tool, .content h2, .callout, .ft-col");
+      // Өлшемді өзіміз оқымаймыз (layout мәжбүрлемейміз): бірінші есепте экраннан тыс тұрғандарын ғана жасырамыз
+      const seen = new WeakSet();
       const io = new IntersectionObserver((ents) => {
         ents.forEach((e) => {
+          const el = e.target;
+          if (!seen.has(el)) {
+            seen.add(el);
+            if (e.isIntersecting || e.boundingClientRect.top < 0) { io.unobserve(el); return; }
+            el.classList.add("reveal");
+            el.style.setProperty("--d", (Math.round(e.boundingClientRect.left / 300) % 3) * 70 + "ms");
+            return;
+          }
           if (!e.isIntersecting) return;
-          e.target.classList.add("in");
-          io.unobserve(e.target);
-          setTimeout(() => e.target.classList.remove("reveal", "in"), 900);
+          el.classList.add("in");
+          io.unobserve(el);
+          setTimeout(() => el.classList.remove("reveal", "in"), 900);
         });
       }, { rootMargin: "0px 0px -8% 0px" });
-      items.forEach((el, i) => {
-        if (el.getBoundingClientRect().top < innerHeight) return;
-        el.classList.add("reveal");
-        el.style.setProperty("--d", (i % 3) * 70 + "ms");
-        io.observe(el);
-      });
+      items.forEach((el) => io.observe(el));
       document.querySelectorAll(".hero-stats [data-count]").forEach((b) => {
         const n = +b.dataset.count, t0 = performance.now();
         const step = (t) => {
@@ -153,11 +158,15 @@
     const tocBox = toc.closest(".toc");
     const tocTitle = tocBox && tocBox.querySelector("h4");
     if (tocTitle) {
-      tocTitle.setAttribute("role", "button");
-      tocTitle.tabIndex = 0;
-      const flip = () => tocBox.classList.toggle("open");
+      const tb = document.createElement("button");
+      tb.type = "button";
+      tb.className = "toc-toggle";
+      tb.textContent = tocTitle.textContent;
+      tb.setAttribute("aria-expanded", "false");
+      tocTitle.textContent = "";
+      tocTitle.appendChild(tb);
+      const flip = () => tb.setAttribute("aria-expanded", String(tocBox.classList.toggle("open")));
       tocTitle.addEventListener("click", flip);
-      tocTitle.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); flip(); } });
       toc.addEventListener("click", (e) => { if (e.target.tagName === "A") tocBox.classList.remove("open"); });
     }
 
@@ -242,7 +251,10 @@
       const progress = list.parentElement.querySelector(".progress");
       let state = [];
       try { state = JSON.parse(localStorage.getItem(key) || "[]"); } catch (e) {}
-      boxes.forEach((b, i) => (b.checked = !!state[i]));
+      boxes.forEach((b, i) => {
+        b.checked = !!state[i];
+        if (!b.closest("label") && !b.getAttribute("aria-label")) b.setAttribute("aria-label", (b.parentElement.textContent || "").trim().slice(0, 140));
+      });
 
       const update = () => {
         const done = boxes.filter((b) => b.checked).length;

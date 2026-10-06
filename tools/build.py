@@ -53,7 +53,7 @@ def nav_block(prefix, active):
         {item("playground.html", "Сынақ алаңы", "playground", "hide-sm")}
         {item("glossary.html", "Сөздік", "glossary", "hide-sm")}
         <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
-        <button class="prefs-open" type="button" aria-label="Оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="prefs-open" type="button" aria-label="Аа — оқу баптаулары" title="Оқу баптаулары">Аа</button>
         <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
         <a class="profile-open{' active' if active == 'profile' else ''}" href="{prefix}profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
       </nav>"""
