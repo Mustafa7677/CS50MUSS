@@ -97,10 +97,11 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
-    window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump };
+    window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList() };
     if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
     if (document.querySelector(".flask-lab")) loadScript("assets/js/flask.js");
     if (document.querySelector(".exam")) loadScript("assets/js/exam.js");
+    if (document.querySelector(".profile")) loadScript("assets/js/profile.js");
     initAchievements();
     initPrefs();
     initShare();
@@ -270,6 +271,21 @@
   }
 
   // Оқушының прогресі браузерде сақталады (тіркелусіз)
+  // Оқушының жеке ID-і: бір рет жасалады, басқа құрылғыға прогреспен бірге көшеді
+  function profile() {
+    let pr = null;
+    try { pr = JSON.parse(localStorage.getItem("cs50kz:profile")); } catch (e) {}
+    if (!pr || !/^KZ-[0-9A-Z]{4}-[0-9A-Z]{4}$/.test(pr.id || "")) {
+      const ABC = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+      const r = new Uint8Array(8);
+      (window.crypto || {}).getRandomValues ? crypto.getRandomValues(r) : r.forEach((_, i) => (r[i] = Math.random() * 256));
+      const c = [...r].map((x) => ABC[x % ABC.length]).join("");
+      pr = { id: `KZ-${c.slice(0, 4)}-${c.slice(4)}`, created: Date.now() };
+      try { localStorage.setItem("cs50kz:profile", JSON.stringify(pr)); } catch (e) {}
+    }
+    return pr;
+  }
+
   const Progress = {
     key: "cs50kz:progress",
     load() {
@@ -1007,6 +1023,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       A("exam-top", "🏆", "Үздік түлек", "Қорытынды емтиханнан 90% жинау", (readJson("cs50kz:exam", {}).best || 0) >= 90 ? 1 : 0, 1),
       A("flask", "🧪", "Flask шебері", "Flask зертханасының 4 тапсырмасынан өту", Object.keys(readJson("cs50kz:flask", {})).length, 4),
       A("detective2", "🚀", "Байқоңыр детективі", "«Байқоңыр құпиясын» ашу", readJson("cs50kz:used", {}).detective2 ? 1 : 0, 1),
+      A("nomad", "🐎", "Көшпенді", "Прогресті басқа құрылғыға көшіру кодын жасау", used.sync ? 1 : 0, 1),
       A("webdev", "🌐", "Веб-әзірлеуші", "Homepage тексерушісінен барлық талаппен өту", readJson("cs50kz:graded", {}).homepage ? 1 : 0, 1),
       A("search", "🔍", "Іздеуші", "Сайт бойынша іздеуді қолдану", used.search ? 1 : 0, 1),
       A("owl", "🌙", "Түнгі үкі", "Түнгі режимді қосу", used.dark ? 1 : 0, 1),
@@ -1068,6 +1085,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
         <div class="pp-row"><span>Қаріп өлшемі</span><div class="pp-ctl"><button type="button" data-a="fs-">A−</button><b>${pr.fs}</b><button type="button" data-a="fs+">A+</button></div></div>
         <div class="pp-row"><span>Жол аралығы</span><div class="seg"><button type="button" data-lh="1.6" class="${pr.lh == 1.6 ? "on" : ""}">Тығыз</button><button type="button" data-lh="1.7" class="${pr.lh == 1.7 ? "on" : ""}">Қалыпты</button><button type="button" data-lh="1.95" class="${pr.lh == 1.95 ? "on" : ""}">Кең</button></div></div>
         <div class="pp-row"><span>Мәтін ені</span><div class="seg"><button type="button" data-cw="680" class="${pr.cw == 680 ? "on" : ""}">Тар</button><button type="button" data-cw="760" class="${pr.cw == 760 ? "on" : ""}">Қалыпты</button><button type="button" data-cw="900" class="${pr.cw == 900 ? "on" : ""}">Кең</button></div></div>
+        <div class="pp-row"><span>Түс</span><div class="seg">${(() => { const d = root.dataset.theme === "dark" || (!root.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches); return `<button type="button" data-th="light" class="${d ? "" : "on"}">☀ Жарық</button><button type="button" data-th="dark" class="${d ? "on" : ""}">☾ Қараңғы</button>`; })()}</div></div>
         <label class="pp-row pp-check"><span>Анимацияны азайту</span><input type="checkbox" ${pr.rm ? "checked" : ""}></label>
         <button type="button" class="pp-reset">Әдепкі баптаулар</button>`;
     };
@@ -1087,6 +1105,15 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
           else if (t.dataset.a === "fs+") pr.fs = Math.min(23, pr.fs + 1);
           else if (t.dataset.lh) pr.lh = +t.dataset.lh;
           else if (t.dataset.cw) pr.cw = +t.dataset.cw;
+          else if (t.dataset.th) {
+            root.dataset.theme = t.dataset.th;
+            if (t.dataset.th === "dark") mark("dark");
+            try { localStorage.setItem("theme", t.dataset.th); } catch (e) {}
+            const tg = document.querySelector(".theme-toggle");
+            if (tg) tg.textContent = t.dataset.th === "dark" ? "☀" : "☾";
+            render();
+            return;
+          }
           else if (t.classList.contains("pp-reset")) { save({ fs: 17, lh: 1.7, cw: 760, rm: false }); return; }
           else if (t.type === "checkbox") pr.rm = t.checked;
           else return;
@@ -1108,7 +1135,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     const p = Progress.load();
     const daily = readJson("cs50kz:daily", {});
     const data = {
-      v: 1, n: name,
+      v: 1, n: name, i: profile().id,
       r: ORDER.map((id) => (p.read[id] ? 1 : 0)).join(""),
       q: ORDER.map((id) => (p.quiz[id] ? `${p.quiz[id].best}/${p.quiz[id].total}` : "")).join(","),
       t: ORDER.reduce((n, id) => n + Progress.tasksDone(id), 0),
@@ -1129,6 +1156,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       const num = (x) => (Number.isFinite(+x) ? Math.max(0, Math.round(+x)) : 0);
       return {
         v: 1, n: d.n.slice(0, 60),
+        i: /^KZ-[0-9A-Z]{4}-[0-9A-Z]{4}$/.test(d.i || "") ? d.i : null,
         r: /^[01]{0,12}$/.test(d.r) ? d.r.padEnd(12, "0") : "0".repeat(12),
         q: /^[\d/,]*$/.test(d.q || "") ? d.q : "",
         t: num(d.t), s: num(d.s), a: num(d.a),
@@ -1190,7 +1218,8 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       String(text).split(/\s+/).filter(Boolean).forEach((tok) => {
         const d = parseCode(tok);
         if (!d) { if (/KZ1\./.test(tok)) bad++; return; }
-        const i = cls.findIndex((x) => x.n.toLowerCase() === d.n.toLowerCase());
+        // Бір оқушы — бір жол: алдымен ID бойынша, ID жоқ ескі кодтарда аты бойынша
+        const i = cls.findIndex((x) => (d.i && x.i) ? x.i === d.i : x.n.toLowerCase() === d.n.toLowerCase());
         if (i >= 0) cls[i] = d; else cls.push(d);
         added++;
       });
@@ -1206,18 +1235,21 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
         const read = (d.r.match(/1/g) || []).length;
         const qs = d.q.split(",").filter(Boolean).map((x) => x.split("/").map(Number));
         const qpct = qs.length ? Math.round((qs.reduce((n, x) => n + x[0], 0) / qs.reduce((n, x) => n + x[1], 0)) * 100) + "%" : "—";
-        return `<tr><td><b>${escapeHtml(d.n)}</b></td>
+        return `<tr><td><b>${escapeHtml(d.n)}</b>${d.i ? `<small class="t-id">${d.i}</small>` : ""}</td>
           <td><div class="t-cells">${d.r.split("").map((c, i) => `<i class="${c === "1" ? "on" : ""}" title="${ORDER[i]}"></i>`).join("")}</div><small>${read}/12</small></td>
-          <td>${qpct}</td><td>${d.t}</td><td>🔥 ${d.s}</td><td>🏅 ${d.a}</td><td>${d.e != null ? `<b class="${d.e >= 70 ? "t-pass" : ""}">${d.e}%</b>` : "—"}</td><td><small>${escapeHtml(d.d)}</small> <button type="button" class="t-del" data-n="${escapeHtml(d.n)}" aria-label="Өшіру">✕</button></td></tr>`;
+          <td>${qpct}</td><td>${d.t}</td><td>🔥 ${d.s}</td><td>🏅 ${d.a}</td><td>${d.e != null ? `<b class="${d.e >= 70 ? "t-pass" : ""}">${d.e}%</b>` : "—"}</td><td><small>${escapeHtml(d.d)}</small> <button type="button" class="t-del" data-n="${escapeHtml(d.n)}" data-i="${d.i || ""}" aria-label="Өшіру">✕</button></td></tr>`;
       }).join("");
     };
     box.querySelector(".t-add").addEventListener("click", () => { add(box.querySelector(".t-input").value); box.querySelector(".t-input").value = ""; });
     box.addEventListener("click", (e) => {
-      if (e.target.classList.contains("t-del")) { cls = cls.filter((x) => x.n !== e.target.dataset.n); save(); }
+      if (e.target.classList.contains("t-del")) {
+        const { n, i } = e.target.dataset;
+        cls = cls.filter((x) => (i ? x.i !== i : x.n !== n)); save();
+      }
     });
     box.querySelector(".t-csv").addEventListener("click", () => {
-      const head = ["Аты", ...ORDER, "Тест", "Тапсырма", "Стрик", "Жетістік", "Емтихан", "Күні"];
-      const lines = [head.join(",")].concat(cls.map((d) => [JSON.stringify(d.n), ...d.r.split(""), JSON.stringify(d.q), d.t, d.s, d.a, d.e ?? "", d.d].join(",")));
+      const head = ["Аты", "ID", ...ORDER, "Тест", "Тапсырма", "Стрик", "Жетістік", "Емтихан", "Күні"];
+      const lines = [head.join(",")].concat(cls.map((d) => [JSON.stringify(d.n), d.i || "", ...d.r.split(""), JSON.stringify(d.q), d.t, d.s, d.a, d.e ?? "", d.d].join(",")));
       const a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob(["﻿" + lines.join("\n")], { type: "text/csv" }));
       a.download = "cs50kz-synyp.csv";
