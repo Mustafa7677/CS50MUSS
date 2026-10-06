@@ -222,3 +222,6 @@ begin
 end $$;
 
 grant execute on function public.cs50kz_feedback_send(text, text, text, text, text, text) to anon, authenticated;
+
+-- Supabase API (PostgREST) жаңа функцияларды бірден көруі үшін кэшті жаңарту
+notify pgrst, 'reload schema';
