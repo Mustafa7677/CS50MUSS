@@ -1,0 +1,29 @@
+# Нағыз Supabase жобасын тексеру (қолмен іске қосылады). Ештеңе жазбайды:
+# әр функция әдейі қате аргументпен шақырылады — функция бар, кілт жұмыс істейді ме, соны көреміз.
+name: Supabase диагностика
+
+on:
+  workflow_dispatch:
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    env:
+      URL: https://fuzkjjfpknnpauykzfip.supabase.co/rest/v1/rpc
+      KEY: sb_publishable_Pc_d_L6MuzJI8_Ugs3QZ1Q_LqnRfzk_
+    steps:
+      - name: RPC функцияларын тексеру
+        run: |
+          call() {
+            echo "=== $1  $2"
+            curl -sS -m 20 -X POST "$URL/$1" -H "apikey: $KEY" -H "Content-Type: application/json" \
+              -H "Origin: https://mustafa7677.github.io" -d "$2" -w "\nHTTP %{http_code}\n" -D - | grep -iE "^HTTP|access-control-allow-origin|^\{|^\[|null" || true
+          }
+          call cs50kz_class_info   '{"p_code":"ZZZZZZ"}'
+          call cs50kz_class_create '{"p_title":"probe","p_teacher_secret":"x"}'
+          call cs50kz_class_view   '{"p_code":"ZZZZZZ","p_teacher_secret":"xxxxxx"}'
+          call cs50kz_pull         '{"p_id":"KZ-ZZZZ-ZZZZ","p_secret":"ZZZZZZZZ"}'
+          call cs50kz_feedback_send '{"p_kind":"bogus","p_page":"x","p_section":"","p_quote":"","p_message":"","p_student":null}'
+          echo "=== CORS preflight"
+          curl -sS -m 20 -X OPTIONS "$URL/cs50kz_class_create" -H "Origin: https://mustafa7677.github.io" \
+            -H "Access-Control-Request-Method: POST" -H "Access-Control-Request-Headers: apikey,content-type" -D - -o /dev/null | grep -iE "^HTTP|access-control"
