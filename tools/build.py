@@ -74,7 +74,8 @@ def footer_block(p):
         + '\n      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. '
         'Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p>'
         '<p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · '
-        '<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a></p></div>\n'
+        '<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · '
+        '<a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>\n'
         '    </div>\n  </footer>')
 
 

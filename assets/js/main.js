@@ -104,6 +104,8 @@
     if (document.querySelector(".profile")) loadScript("assets/js/profile.js");
     // Бұлттық синхрондау: қосылған болса әр бетте, профиль мен мұғалім бетінде әрқашан
     if (readJson("cs50kz:cloud", {}).on || document.querySelector(".profile, .teacher")) loadScript("assets/js/cloud.js").catch(() => {});
+    // Кері байланыс: бет жүктеліп болған соң, асықпай
+    (window.requestIdleCallback || ((f) => setTimeout(f, 800)))(() => loadScript("assets/js/feedback.js").catch(() => {}));
     initAchievements();
     initPrefs();
     initShare();
@@ -1031,6 +1033,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       A("flask", "🧪", "Flask шебері", "Flask зертханасының 4 тапсырмасынан өту", Object.keys(readJson("cs50kz:flask", {})).length, 4),
       A("detective2", "🚀", "Байқоңыр детективі", "«Байқоңыр құпиясын» ашу", readJson("cs50kz:used", {}).detective2 ? 1 : 0, 1),
       A("nomad", "🐎", "Көшпенді", "Прогресті басқа құрылғыға көшіру кодын жасау", used.sync ? 1 : 0, 1),
+      A("helper", "🤝", "Серіктес", "Сайтқа пікір не тапқан қатені жіберу", used.feedback ? 1 : 0, 1),
       A("webdev", "🌐", "Веб-әзірлеуші", "Homepage тексерушісінен барлық талаппен өту", readJson("cs50kz:graded", {}).homepage ? 1 : 0, 1),
       A("search", "🔍", "Іздеуші", "Сайт бойынша іздеуді қолдану", used.search ? 1 : 0, 1),
       A("owl", "🌙", "Түнгі үкі", "Түнгі режимді қосу", used.dark ? 1 : 0, 1),
