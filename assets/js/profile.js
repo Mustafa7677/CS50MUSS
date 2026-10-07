@@ -77,6 +77,7 @@
         Object.entries(mine.quiz || {}).forEach(([id, q]) => { if (!quiz[id] || (q.best || 0) >= (quiz[id].best || 0)) quiz[id] = q; });
         return { read: unionObj(mine.read, theirs.read), quiz, last: mine.last || theirs.last || null, name: mine.name || theirs.name || "" };
       }
+      case "cs50kz:days": // бір күн екі құрылғыда — көбі сақталады (қайта синхрондағанда екі есе өспейді)
       case "cs50kz:cards": {
         const out = Object.assign({}, theirs);
         Object.entries(mine).forEach(([id, box]) => (out[id] = maxNum(box, out[id])));
@@ -154,6 +155,52 @@
     return { n, before, after, from: obj };
   }
 
+  // ---------- Белсенділік күнтізбесі (соңғы 40 апта, GitHub стилі) ----------
+  const MON = ["қаң", "ақп", "нау", "сәу", "мам", "мау", "шіл", "там", "қыр", "қаз", "қар", "жел"];
+  const MONTHS = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
+  function calendar(days) {
+    const WEEKS = 40, key = K.dayKey;
+    const today = new Date(); today.setHours(12, 0, 0, 0);
+    const dow = (today.getDay() + 6) % 7; // дүйсенбі = 0
+    const start = new Date(today); start.setDate(today.getDate() - dow - (WEEKS - 1) * 7);
+    const level = (n) => (!n ? 0 : n < 3 ? 1 : n < 6 ? 2 : n < 10 ? 3 : 4);
+    let cells = "", months = "", lastM = -1, active = 0, total = 0;
+    for (let w = 0; w < WEEKS; w++) {
+      const first = new Date(start); first.setDate(start.getDate() + w * 7);
+      const soon = new Date(first); soon.setDate(first.getDate() + 14);
+      if (first.getMonth() !== lastM && (w || soon.getMonth() === first.getMonth())) { months += `<span style="grid-column:${w + 1}">${MON[first.getMonth()]}</span>`; lastM = first.getMonth(); }
+      else if (!w) lastM = first.getMonth();
+      for (let d = 0; d < 7; d++) {
+        const day = new Date(first); day.setDate(first.getDate() + d);
+        if (day > today) { cells += `<i class="fut"></i>`; continue; }
+        const n = +days[key(day)] || 0;
+        if (n) { active++; total += n; }
+        const label = `${day.getDate()} ${MONTHS[day.getMonth()]}: ${n ? n + " әрекет" : "белсенділік жоқ"}`;
+        cells += `<i class="l${level(n)}" title="${label}" aria-label="${label}"></i>`;
+      }
+    }
+    // Қатарынан күндер: бүгін әлі ештеңе жасамаса, кешеден бастап санаймыз
+    let streak = 0, best = 0, run = 0;
+    const d = new Date(today);
+    if (!days[key(d)]) d.setDate(d.getDate() - 1);
+    while (days[key(d)]) { streak++; d.setDate(d.getDate() - 1); }
+    Object.keys(days).sort().forEach((k, i, arr) => {
+      const prev = i && new Date(arr[i - 1] + "T12:00:00");
+      run = prev && (new Date(k + "T12:00:00") - prev) / 86_400_000 === 1 ? run + 1 : 1;
+      if (days[k]) best = Math.max(best, run);
+    });
+    const tip = !active ? "Лекция оқыңыз, тест не тапсырма орындаңыз — күнтізбе толады 🌱"
+      : days[key(today)] ? "Бүгін де оқыдыңыз — керемет! 🔥" : streak ? `Бүгін бір әрекет жасасаңыз, ${streak + 1} күн қатарынан болады 🔥` : "Бүгін бір лекция не тест — жаңа серия бастаңыз!";
+    return `<div class="cal-head"><h3>📅 Белсенділік</h3>
+        <div class="cal-kpi"><span><b>${streak}</b> күн қатарынан</span><span><b>${best}</b> ең ұзақ серия</span><span><b>${active}</b> белсенді күн</span><span><b>${total}</b> әрекет</span></div></div>
+      <div class="cal-wrap"><div class="cal">
+        <div class="cal-m" style="grid-template-columns:repeat(${WEEKS},var(--c))">${months}</div>
+        <div class="cal-d"><span>Дс</span><span></span><span>Ср</span><span></span><span>Жм</span><span></span><span></span></div>
+        <div class="cal-g" role="img" aria-label="Соңғы ${WEEKS} аптада ${active} белсенді күн">${cells}</div>
+      </div></div>
+      <div class="cal-foot"><p>${tip}</p><span class="cal-leg">аз <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> көп</span></div>`;
+  }
+
   // ---------- Бет ----------
   async function page(el) {
     const prof = K.profile();
@@ -166,6 +213,8 @@
       ].map(([i, v, t]) => `<div><span>${i}</span><b>${esc(String(v))}</b><small>${t}</small></div>`).join("");
       const nm = el.querySelector(".pf-name");
       if (document.activeElement !== nm) nm.value = p.name || "";
+      el.querySelector(".pf-cal").innerHTML = calendar(get("cs50kz:days", {}));
+      const cw = el.querySelector(".cal-wrap"); cw.scrollLeft = cw.scrollWidth; // тар экранда соңғы апталар көрінсін
     };
     el.innerHTML = `
       <div class="pf-card">
@@ -177,6 +226,7 @@
         </div>
       </div>
       <div class="pf-stats"></div>
+      <section class="pf-box pf-cal" aria-label="Белсенділік күнтізбесі"></section>
       <section class="pf-box pf-cloud" aria-live="polite"><p class="pf-small">Бұлт жүктелуде…</p></section>
 
       <div class="pf-grid">

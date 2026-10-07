@@ -102,7 +102,7 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
-    window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), summary: summaryData, ORDER };
+    window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), summary: summaryData, ORDER, dayKey };
     if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
     if (document.querySelector(".flask-lab")) loadScript("assets/js/flask.js");
     if (document.querySelector(".exam")) loadScript("assets/js/exam.js");
@@ -215,6 +215,7 @@
           const prev = p.quiz[PAGE];
           if (!prev || correct >= prev.best) p.quiz[PAGE] = { best: correct, total: questions.length };
           Progress.save(p);
+          logDay();
           if (correct === questions.length) { celebrate(); botaSay("Керемет! Тестті 100% өттіңіз. Сіз нағыз бағдарламашысыз! 🎉"); }
           checkAchievements();
         }
@@ -266,7 +267,7 @@
         try { localStorage.setItem(key, JSON.stringify(boxes.map((b) => b.checked))); } catch (e) {}
         if (done === boxes.length) checkAchievements();
       };
-      boxes.forEach((b) => b.addEventListener("change", update));
+      boxes.forEach((b) => b.addEventListener("change", () => { update(); if (b.checked) logDay(); }));
       update();
     });
   }
@@ -505,6 +506,7 @@
         const q = Progress.load();
         q.last = { id: PAGE, title: document.querySelector("h1").textContent, num: head.querySelector(".num").textContent, y: Math.round(ratio * 100) };
         Progress.save(q);
+        if (!onScroll.logged && ratio > 0.1) { onScroll.logged = true; logDay(); }
       }
     };
     addEventListener("scroll", onScroll, { passive: true });
@@ -1339,7 +1341,18 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     const y0 = new Date(Date.UTC(t.getUTCFullYear(), 0, 1));
     return t.getUTCFullYear() + "-W" + Math.ceil(((t - y0) / 86400000 + 1) / 7);
   }
+  // Белсенділік күнтізбесі: күн сайын неше әрекет жасалды (лекция, тест, тапсырма, жаттықтырушы…)
+  function dayKey(d = new Date()) { return new Date(d.getTime() - d.getTimezoneOffset() * 60_000).toISOString().slice(0, 10); }
+  function logDay(n = 1) {
+    const days = readJson("cs50kz:days", {});
+    const t = dayKey();
+    days[t] = (days[t] || 0) + n;
+    const keys = Object.keys(days).sort();
+    while (keys.length > 400) delete days[keys.shift()];
+    try { localStorage.setItem("cs50kz:days", JSON.stringify(days)); } catch (e) {}
+  }
   function weekBump(key, n = 1) {
+    logDay(n);
     const w = readJson("cs50kz:week", {});
     const id = weekId();
     const cur = w.id === id ? w : { id, read: 0, cards: 0, trainer: 0, daily: 0, done: false };
