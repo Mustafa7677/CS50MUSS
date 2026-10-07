@@ -264,6 +264,58 @@
       try { show(await rpc("cs50kz_class_view", { p_code: cur.code, p_teacher_secret: cur.pw })); }
       catch (e) { const st = box.querySelector(".cl-live"); if (st) st.textContent = "⚠ " + human(e); }
     }
+    // Сынып аналитикасы: көрсеткіштер + лекциялар бойынша бағандар (бір серия, бір түс)
+    function analytics(list) {
+      const n = list.length;
+      if (!n) return "";
+      const LAB = ORDER.map((id) => (id === "ai" ? "AI" : id.replace("week-", "")));
+      const nm = (l) => (l === "AI" ? "AI" : l + "-апта");
+      const reads = list.map((st) => (st.summary && st.summary.r ? st.summary.r.padEnd(12, "0") : "0".repeat(12)));
+      const perLec = ORDER.map((_, i) => reads.filter((r) => r[i] === "1").length);
+      const avgRead = reads.reduce((a, r) => a + (r.match(/1/g) || []).length, 0) / n;
+      let qa = 0, qb = 0;
+      list.forEach((st) => (st.summary && st.summary.q ? st.summary.q : "").split(",").filter(Boolean).forEach((x) => { const [a, b] = x.split("/").map(Number); qa += a || 0; qb += b || 0; }));
+      const examTaken = list.filter((st) => st.summary && st.summary.e != null);
+      const examPass = examTaken.filter((st) => st.summary.e >= 70).length;
+      const active = list.filter((st) => Date.now() - new Date(st.updated_at).getTime() < 86_400_000).length;
+      // Ең үлкен құлдырау: көрші екі лекция арасында оқығандар саны ең көп азайған жер
+      let drop = { d: 0, i: -1 };
+      for (let i = 1; i < perLec.length; i++) if (perLec[i - 1] - perLec[i] > drop.d) drop = { d: perLec[i - 1] - perLec[i], i };
+      const tiles = [
+        ["Оқушы", n, ""],
+        ["Орташа оқылған", avgRead.toFixed(1), "/ 12 лекция"],
+        ["Тест нәтижесі", qb ? Math.round((qa / qb) * 100) + "%" : "—", "орташа"],
+        ["Емтиханнан өтті", examPass, `/ ${examTaken.length} тапсырған`],
+        ["Белсенді", active, "соңғы 24 сағат"],
+      ];
+      const cols = perLec.map((c, i) => {
+        const pct = n ? (c / n) * 100 : 0;
+        return `<button type="button" class="ca-col" style="--h:${pct}%" data-tip="${esc(LAB[i] === "AI" ? "AI лекциясы" : LAB[i] + "-апта")}: ${c} / ${n} оқушы (${Math.round(pct)}%)" aria-label="${esc(LAB[i])}: ${c} оқушы оқыды"><i></i><span>${esc(LAB[i])}</span></button>`;
+      }).join("");
+      return `<div class="ca">
+        <div class="ca-tiles">${tiles.map(([l, v, sub]) => `<div><small>${l}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ""}</div>`).join("")}</div>
+        <figure class="ca-chart">
+          <figcaption>Әр лекцияны неше оқушы оқып шықты</figcaption>
+          <div class="ca-plot"><div class="ca-axis"><span>${n}</span><span>${n % 2 ? "" : n / 2}</span><span>0</span></div><div class="ca-cols">${cols}</div><div class="ca-tip" hidden></div></div>
+          ${drop.i > 0 && drop.d >= Math.max(2, n * 0.2) ? `<p class="ca-insight">⚠ Ең көп тоқтайтын жер: <b>${esc(nm(LAB[drop.i - 1]))} → ${esc(nm(LAB[drop.i]))}</b>. Оқығандар саны: ${perLec[drop.i - 1]} → ${perLec[drop.i]}. Сол лекцияға сабақта көбірек уақыт бөлген жөн.</p>` : ""}
+        </figure>
+      </div>`;
+    }
+    // Бағанға апарғанда/фокуста түсініктеме
+    const tipOn = (e) => {
+      const col = e.target.closest && e.target.closest(".ca-col");
+      const tip = box.querySelector(".ca-tip");
+      if (!tip) return;
+      if (!col) { tip.hidden = true; return; }
+      const plot = col.closest(".ca-plot").getBoundingClientRect(), r = col.getBoundingClientRect();
+      tip.textContent = col.dataset.tip;
+      tip.hidden = false;
+      tip.style.left = Math.min(plot.width - 10, Math.max(10, r.left - plot.left + r.width / 2)) + "px";
+    };
+    box.addEventListener("mouseover", tipOn);
+    box.addEventListener("focusin", tipOn);
+    box.addEventListener("mouseleave", () => { const tip = box.querySelector(".ca-tip"); if (tip) tip.hidden = true; });
+
     function show(v) {
       const rows = v.students.map((st) => {
         const d = st.summary || {}, r = (d.r || "").padEnd(12, "0");
@@ -278,6 +330,7 @@
       }).join("");
       box.innerHTML = `
         <div class="cl-head"><h3>🏫 ${esc(v.title)}</h3><span class="cl-live">● Жанды · әр 30 секунд сайын жаңарады</span></div>
+        ${analytics(v.students)}
         <div class="cl-bigcode"><small>Сынып коды — оқушыларға беріңіз</small><b>${esc(v.code)}</b></div>
         <div class="t-actions"><button type="button" class="btn secondary cl-refresh">↻ Жаңарту</button><button type="button" class="btn secondary cl-csv">CSV</button><button type="button" class="btn secondary cl-back">← Сыныптар</button><span class="t-count">${v.students.length} оқушы</span></div>
         <div class="t-table"><table><thead><tr><th>Оқушы</th><th>Лекциялар</th><th>Тест</th><th>Тапсырма</th><th>Емтихан</th><th>Жетістік</th><th>Белсенділік</th><th></th></tr></thead>

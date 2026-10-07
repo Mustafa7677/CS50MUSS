@@ -54,6 +54,11 @@ test("мұғалім сыныбы, екі құрылғы, автоматты с�
 
   await T.click(".cl-refresh");
   await expect(T.locator(".t-cloud tbody")).toContainText("4/12");
+  // Аналитика: 1 оқушы, 4 лекция; 12 баған, 0-апта бағаны толық
+  await expect(T.locator(".ca-tiles")).toContainText("Оқушы");
+  await expect(T.locator(".ca-col")).toHaveCount(12);
+  await T.locator(".ca-col").first().hover();
+  await expect(T.locator(".ca-tip")).toHaveText("0-апта: 1 / 1 оқушы (100%)");
 
   const C = await mk({ viewport: { width: 390, height: 800 } });
   await C.goto(`profile.html#login=${id}.${secret}`);
