@@ -11,6 +11,8 @@ test("қорытынды емтихан: тапсыру, сақталу, нәт�
   expect(n).toBe(24);
   for (let i = 0; i < n; i++) {
     if (i === 3) { await page.reload(); await expect(page.locator(".ex-meta span").first()).toHaveText("Сұрақ 4 / 24"); }
+    // Келесі сұрақ шынымен шыққанын күтеміз: әйтпесе жүктеме кезінде алдыңғы сұрақтың батырмасы басылып кетеді
+    await expect(page.locator(".ex-meta span").first()).toHaveText(`Сұрақ ${i + 1} / 24`);
     const a = await page.evaluate((i) => JSON.parse(localStorage.getItem("cs50kz:exam-run")).qs[i].a, i);
     const cnt = await page.locator(".ex-opts button").count();
     await page.locator(".ex-opts button").nth(i < 20 ? a : (a + 1) % cnt).click();
