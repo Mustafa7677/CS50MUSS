@@ -182,12 +182,16 @@ test("мұғалім тапсырма береді: оқушы баннерді 
   await expect(S.locator(".tk-home .tk-banner .btn")).toHaveAttribute("href", /lectures\/week-1\.html/);
 
   // Оқушы лекцияны оқыды → баннер жасыл, мұғалімде 1/1
-  await S.evaluate(() => { const p = JSON.parse(localStorage.getItem("cs50kz:progress") || "{}"); p.read = Object.assign(p.read || {}, { "week-1": 1 }); localStorage.setItem("cs50kz:progress", JSON.stringify(p)); });
+  await S.evaluate(() => { const p = JSON.parse(localStorage.getItem("cs50kz:progress") || "{}"); p.read = Object.assign(p.read || {}, { "week-1": 1 }); p.quiz = Object.assign(p.quiz || {}, { "week-1": { best: 2, total: 5 } }); localStorage.setItem("cs50kz:progress", JSON.stringify(p)); });
   await S.evaluate(() => window.CS50KZ_CLOUD.cycle({ force: true }));
   await S.reload();
   await expect(S.locator(".tk-home .tk-banner.done")).toContainText("Орындалды");
   await T.click(".cl-refresh");
   await expect(T.locator(".tk-now")).toContainText("1 / 1 орындады");
+  await expect(T.locator(".ca-hard .ca-hrow.low")).toContainText("1-апта");
+  await expect(T.locator(".ca-hard .ca-hrow.low b")).toHaveText("40%");
+  await expect(T.locator(".ca-hard .ca-insight")).toContainText("қайталау сабағы");
+  await T.locator(".ca").screenshot({ path: test.info().outputPath("hard.png") });
 
   // Оқушы профилінде сыныптағы орны (аттарсыз): 1/1, тапсырманы орындағандар 1/1
   await S.goto("profile.html");
