@@ -14,7 +14,9 @@
   const keys = () => { const out = []; try { for (let i = 0; i < localStorage.length; i++) out.push(localStorage.key(i)); } catch (e) {} return out; };
 
   // Прогресс кілттері (QR-ға сыятын «жеңіл» бөлік) және код жобалары (тек файлда)
-  const SKIP = new Set(["cs50kz:prefs", "cs50kz:exam-run", "cs50kz:class", "cs50kz:profile", "flask:url", "cs50kz:theme"]);
+  // Құрылғыға тән баптаулар мен КІРУ ДЕРЕКТЕРІ ешқашан синхрондалмайды/экспортталмайды
+  // (cloud — оқушының кіру коды, tclasses — мұғалімнің сынып құпиясөздері)
+  const SKIP = new Set(["cs50kz:prefs", "cs50kz:exam-run", "cs50kz:class", "cs50kz:profile", "flask:url", "cs50kz:theme", "cs50kz:cloud", "cs50kz:tclasses"]);
   const isProgress = (k) => !SKIP.has(k) && (k.startsWith("cs50kz:") || k.startsWith("check:"));
   const isDraft = (k) => !SKIP.has(k) && /^(ag|pg|hp|flask):/.test(k);
 
@@ -271,12 +273,15 @@
     });
 
     // QR арқылы ашылған сілтеме: #import=KZP1...
-    const m = location.hash.match(/import=(KZP1\.[A-Za-z0-9_-]+)/);
-    if (m) {
+    const importHash = () => {
+      const m = location.hash.match(/import=(KZP1\.[A-Za-z0-9_-]+)/);
+      if (!m) return;
       history.replaceState(null, "", location.pathname);
       el.querySelector(".pf-in").value = m[1];
       if (confirm("Басқа құрылғыдан келген прогресті осы құрылғыға біріктіру керек пе?")) doImport(m[1]);
-    }
+    };
+    importHash();
+    window.addEventListener("hashchange", importHash); // профиль ашық тұрғанда сілтеме басылса да
     render();
     document.addEventListener("cs50kz:week", render);
     document.addEventListener("cs50kz:synced", render);

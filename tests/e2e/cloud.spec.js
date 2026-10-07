@@ -90,3 +90,57 @@ test("оқушы мұғалімнің сілтемесі арқылы бір қ�
   await expect(T.locator(".t-cloud tbody")).toContainText("Әлихан Бөкейхан");
   for (const p of [T, S]) expect(p.errs).toEqual([]);
 });
+
+test("код-ревью регрессиялары: құпия синхрондалмайды, бос push жоқ, шығарылған оқушы қайтпайды, ескі күймен қосылу", async ({ browser }) => {
+  test.setTimeout(120_000);
+  const mk = async (opts) => { const c = await browser.newContext(opts); await blockFonts(c); await routeSupabase(c, MOCK); const p = await c.newPage(); p.errs = collectErrors(p); return p; };
+  const T = await mk({ viewport: { width: 1280, height: 900 } });
+  await T.goto("teacher.html");
+  await T.fill(".cl-new [name=title]", "Регрессия"); await T.fill(".cl-new [name=pw]", "mugalim3"); await T.click(".cl-new button");
+  const code = (await T.locator(".cl-bigcode b").innerText()).trim();
+
+  const S = await mk({ viewport: { width: 1280, height: 900 } });
+  S.removeAllListeners("dialog");
+  S.on("dialog", (d) => d.accept(d.type() === "prompt" ? "Регрессия Оқушы" : undefined));
+  await S.goto("profile.html");
+  await S.click(".cl-enable");
+  await expect(S.locator(".cl-status.ok")).toBeVisible();
+
+  // 1) Кіру коды мен мұғалім құпиясөздері синхрондалатын/экспортталатын деректерде жоқ
+  await S.evaluate(() => localStorage.setItem("cs50kz:tclasses", JSON.stringify([{ code: "ZZZZZZ", title: "x", pw: "teacherpw" }])));
+  const keys = await S.evaluate(async () => Object.keys(window.CS50KZ_SYNC.snapshot(true).d));
+  expect(keys).not.toContain("cs50kz:cloud");
+  expect(keys).not.toContain("cs50kz:tclasses");
+
+  // 2) Өзгеріс жоқ болса, қайта push болмайды
+  await S.evaluate(() => window.CS50KZ_CLOUD.push(false)); // жетістік белгісі сияқты соңғы өзгерістер жіберілсін
+  let pushes = 0;
+  S.on("request", (r) => { if (/cs50kz_push/.test(r.url())) pushes++; });
+  await S.evaluate(() => window.CS50KZ_CLOUD.push(false));
+  await S.evaluate(() => window.CS50KZ_CLOUD.push(false));
+  expect(pushes).toBe(0);
+
+  // 3) Бұлт ертеден қосулы (pulled ескі) оқушы сілтеме арқылы қосылады — сынып жоғалмайды
+  await S.evaluate(() => { const c = JSON.parse(localStorage.getItem("cs50kz:cloud")); c.pulled = 0; localStorage.setItem("cs50kz:cloud", JSON.stringify(c)); });
+  await S.goto(`profile.html#join=${code}`);
+  await expect(S.locator(".cl-msg.ok")).toContainText("Регрессия");
+  await T.click(".cl-refresh");
+  await expect(T.locator(".t-cloud tbody tr")).toHaveCount(1);
+
+  // 4) Мұғалім шығарды → оқушының келесі синхрондауы оны қайта қоспайды
+  await T.click(".cl-rm");
+  await expect(T.locator(".t-cloud tbody")).toContainText("Әзірге ешкім қосылмаған");
+  await S.evaluate(() => { const p = JSON.parse(localStorage.getItem("cs50kz:progress") || "{}"); p.read = { "week-0": 1 }; localStorage.setItem("cs50kz:progress", JSON.stringify(p)); });
+  await S.evaluate(() => window.CS50KZ_CLOUD.cycle({ force: true, throw: true }));
+  await T.click(".cl-refresh");
+  await expect(T.locator(".t-cloud tbody")).toContainText("Әзірге ешкім қосылмаған");
+  expect(await S.evaluate(() => JSON.parse(localStorage.getItem("cs50kz:cloud")).cls)).toBeNull();
+
+  // 5) Құрылғыда өшіріп, қайта қосу сол ID-мен жұмыс істейді (жаңа код ойлап таппайды)
+  const id = await S.evaluate(() => CS50KZ.profile().id);
+  await S.click(".cl-off");
+  await S.click(".cl-enable");
+  await expect(S.locator(".cl-status.ok")).toBeVisible();
+  expect(await S.evaluate(() => CS50KZ.profile().id)).toBe(id);
+  for (const p of [T, S]) expect(p.errs).toEqual([]);
+});

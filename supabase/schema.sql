@@ -6,6 +6,7 @@
 -- Қауіпсіздік моделі:
 --   * Клиент кестелерге тікелей қол жеткізе алмайды (RLS қосулы, саясат жоқ, құқықтар алынған).
 --   * Барлық әрекет SECURITY DEFINER функциялары арқылы ғана жүреді.
+--   * Әр функция құпияны алдымен тексереді (NULL/бос құпия қабылданбайды), салыстыру IS DISTINCT FROM арқылы.
 --   * Оқушы: жария ID (KZ-XXXX-XXXX) + құпия код. Құпия тек bcrypt-хэш түрінде сақталады.
 --   * Мұғалім: сынып коды + мұғалім құпиясөзі (bcrypt). Сынып тізімін тек сол көреді.
 --   * Сақталатыны: аты, сынып коды, прогресс (JSON). Электрондық пошта, телефон т.б. жоқ.
@@ -68,7 +69,7 @@ begin
             coalesce(p_data, '{}'::jsonb), coalesce(p_summary, '{}'::jsonb))
     returning * into r;
   else
-    if r.secret_hash <> crypt(p_secret, r.secret_hash) then
+    if r.secret_hash is distinct from crypt(p_secret, r.secret_hash) then
       raise exception 'wrong secret' using errcode = '28000';
     end if;
     update public.cs50kz_students
@@ -92,7 +93,7 @@ declare r public.cs50kz_students;
 begin
   perform public.cs50kz_check_secret(p_secret, 8);
   select * into r from public.cs50kz_students where id = p_id;
-  if not found or r.secret_hash <> crypt(p_secret, r.secret_hash) then
+  if not found or r.secret_hash is distinct from crypt(p_secret, r.secret_hash) then
     perform pg_sleep(0.5); -- құпияны теріп табуды баяулату
     raise exception 'not found or wrong secret' using errcode = '28000';
   end if;
@@ -107,8 +108,9 @@ returns void
 language plpgsql security definer set search_path = public, extensions as $$
 declare r public.cs50kz_students;
 begin
+  perform public.cs50kz_check_secret(p_secret, 8);
   select * into r from public.cs50kz_students where id = p_id;
-  if not found or r.secret_hash <> crypt(p_secret, r.secret_hash) then
+  if not found or r.secret_hash is distinct from crypt(p_secret, r.secret_hash) then
     raise exception 'wrong secret' using errcode = '28000';
   end if;
   update public.cs50kz_students set class_code = null, updated_at = now() where id = p_id;
@@ -149,8 +151,9 @@ returns jsonb
 language plpgsql security definer set search_path = public, extensions as $$
 declare k public.cs50kz_classes;
 begin
+  perform public.cs50kz_check_secret(p_teacher_secret, 6);
   select * into k from public.cs50kz_classes where code = upper(trim(p_code));
-  if not found or k.teacher_hash <> crypt(p_teacher_secret, k.teacher_hash) then
+  if not found or k.teacher_hash is distinct from crypt(p_teacher_secret, k.teacher_hash) then
     perform pg_sleep(0.5);
     raise exception 'wrong class or password' using errcode = '28000';
   end if;
@@ -166,8 +169,9 @@ returns void
 language plpgsql security definer set search_path = public, extensions as $$
 declare k public.cs50kz_classes;
 begin
+  perform public.cs50kz_check_secret(p_teacher_secret, 6);
   select * into k from public.cs50kz_classes where code = upper(trim(p_code));
-  if not found or k.teacher_hash <> crypt(p_teacher_secret, k.teacher_hash) then
+  if not found or k.teacher_hash is distinct from crypt(p_teacher_secret, k.teacher_hash) then
     raise exception 'wrong class or password' using errcode = '28000';
   end if;
   update public.cs50kz_students set class_code = null where id = p_id and class_code = k.code;
