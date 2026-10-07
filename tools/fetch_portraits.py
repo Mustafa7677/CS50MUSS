@@ -147,6 +147,10 @@ def main():
         m = re.search(r"=\s*(\{.*\});", pj.read_text(encoding="utf-8"), re.S)
         prev = json.loads(m.group(1)) if m else {}
     for name, slug, ru, en in PEOPLE:
+        if prev.get(name, {}).get("manual") and (OUT / f"{slug}.jpg").exists():
+            meta[name] = prev[name]  # қолмен қосылған сурет — өзгертпейміз
+            print(f"= {name}: қолмен қосылған")
+            continue
         done = False
         for fname, hosts in candidates(slug, name, ru, en)[:14]:
             try:
@@ -178,7 +182,7 @@ def main():
             else:
                 (OUT / f"{slug}.jpg").unlink(missing_ok=True)
     (ROOT / "assets/data/portraits.js").write_text(
-        "// tools/fetch_portraits.py жасаған (Wikimedia Commons, еркін лицензиялар). Қолмен өзгертпеңіз.\n"
+        "// tools/fetch_portraits.py жасаған (Wikimedia Commons, еркін лицензиялар); \"manual\" — қолмен қосылған, скрипт өзгертпейді.\n"
         "window.CS50KZ_PORTRAITS = " + json.dumps(meta, ensure_ascii=False, indent=1) + ";\n", encoding="utf-8")
     print(f"{len(meta)} / {len(PEOPLE)} портрет")
     return 0 if meta else 1
