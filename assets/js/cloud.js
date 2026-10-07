@@ -70,7 +70,7 @@
       p_id: K.profile().id, p_secret: s.secret, p_name: snap.n, p_class: s.joining ? s.cls : null,
       p_data: snap.d, p_summary: K.summary(snap.n),
     }, keepalive);
-    setState({ hash: fp, at: Date.now(), cls: r.class_code, clsTitle: r.class_title, task: r.class_task || null, joining: false, err: null });
+    setState({ hash: fp, at: Date.now(), cls: r.class_code, clsTitle: r.class_title, task: r.class_task || null, msg: r.class_msg || null, joining: false, err: null });
     document.dispatchEvent(new CustomEvent("cs50kz:synced"));
     return r;
   }
@@ -81,7 +81,7 @@
     const r = await rpc("cs50kz_pull", { p_id: K.profile().id, p_secret: s.secret });
     const res = X.applyData({ v: 1, id: r.id, n: r.name, d: r.data || {} });
     const now = state();
-    setState({ pulled: Date.now(), cls: now.joining ? now.cls : r.class_code, clsTitle: now.joining ? now.clsTitle : r.class_title, task: now.joining ? now.task : r.class_task || null, err: null });
+    setState({ pulled: Date.now(), cls: now.joining ? now.cls : r.class_code, clsTitle: now.joining ? now.clsTitle : r.class_title, task: now.joining ? now.task : r.class_task || null, msg: now.joining ? now.msg : r.class_msg || null, err: null });
     return res;
   }
 
@@ -139,7 +139,7 @@
     setState({ on: true, secret, hash: null });
     const X = await sync();
     X.applyData({ v: 1, id: r.id, n: r.name, d: r.data || {} });
-    setState({ pulled: Date.now(), cls: r.class_code, clsTitle: r.class_title, task: r.class_task || null });
+    setState({ pulled: Date.now(), cls: r.class_code, clsTitle: r.class_title, task: r.class_task || null, msg: r.class_msg || null });
     await push(true);
     startAuto();
     K.mark && K.mark("cloud");
@@ -194,12 +194,23 @@
       ${read ? "" : `<a class="btn gold" href="${K.ROOT_URL}${l ? l.url : "lectures/" + t.lecture + ".html"}">Оқу →</a>`}
     </div>`;
   }
-  // Басты бетте де көрсетеміз (бұлт қосулы, сыныпта, тапсырма бар болса)
+  // Мұғалімнің сыныпқа хабарламасы
+  function msgBanner(s) {
+    const m = s && s.on && s.cls && s.msg;
+    if (!m || !m.text) return "";
+    const when = m.set ? kzDate(new Date(m.set)) : "";
+    return `<div class="ms-banner" role="status">
+      <span class="ms-ico" aria-hidden="true">📣</span>
+      <div><small>${esc(s.clsTitle || "Сынып")} · мұғалім хабарламасы${when ? " · " + esc(when) : ""}</small>
+        <p>${esc(m.text)}</p></div>
+    </div>`;
+  }
+  // Басты бетте де көрсетеміз (бұлт қосулы, сыныпта, тапсырма не хабарлама бар болса)
   function homeBanner() {
     const host = document.querySelector(".dashboard-wrap");
     if (!host) return;
     let box = document.querySelector(".tk-home");
-    const html = taskBanner(state());
+    const html = msgBanner(state()) + taskBanner(state());
     if (!html) { box && box.remove(); return; }
     if (!box) { box = document.createElement("div"); box.className = "tk-home"; host.prepend(box); }
     box.innerHTML = html;
@@ -280,7 +291,7 @@
         </div>
         <div class="cl-qr" hidden></div>
         <p class="pf-small">Жаңа телефонда профиль бетін ашып, «Кіру» арқылы ID мен кодты жазыңыз не QR-ды сканерлеңіз. Кодты ешкімге бермеңіз — мұғалімге тек сынып арқылы көрінесіз.</p>
-        ${taskBanner(s)}
+        ${msgBanner(s)}${taskBanner(s)}
         <div class="cl-class">${s.cls
           ? `<span>🏫 Сынып: <b>${esc(s.clsTitle || s.cls)}</b> <code>${esc(s.cls)}</code></span><button type="button" class="btn secondary cl-leave">Сыныптан шығу</button>`
           : `<input class="cl-code" maxlength="6" placeholder="Сынып коды (мұғалімнен)" autocapitalize="characters" spellcheck="false" aria-label="Сынып коды"><button type="button" class="btn gold cl-join">Сыныпқа қосылу</button>`}</div>
@@ -569,6 +580,15 @@
           <button class="btn gold">${t ? "Жаңарту" : "Тапсырма беру"}</button>
           ${t ? `<button type="button" class="btn secondary tk-clear">Алып тастау</button>` : ""}
         </form>
+      </section>
+      <section class="tk-box ms-box">
+        <h4>📣 Сыныпқа хабарлама</h4>
+        ${v.msg && v.msg.text ? `<div class="ms-now"><p>${esc(v.msg.text)}</p><small>${v.msg.set ? esc(kzDate(new Date(v.msg.set), true)) : ""} · оқушылар басты бетте және профильде көреді</small></div>` : `<p class="pf-small">Хабарлама жоқ. Мысалы: «Ертең бақылау жұмысы, 3-аптаны қайталаңыздар».</p>`}
+        <form class="ms-form">
+          <input name="text" maxlength="300" placeholder="Хабарлама мәтіні" aria-label="Хабарлама" value="">
+          <button class="btn gold">${v.msg && v.msg.text ? "Жаңарту" : "Жіберу"}</button>
+          ${v.msg && v.msg.text ? `<button type="button" class="btn secondary ms-clear">Өшіру</button>` : ""}
+        </form>
       </section>`;
     }
 
@@ -680,6 +700,16 @@ ${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}
     box.addEventListener("submit", async (e) => {
       e.preventDefault();
       const f = e.target, data = Object.fromEntries(new FormData(f));
+      if (f.classList.contains("ms-form")) {
+        if (!data.text.trim()) { K.toast("Хабарлама мәтінін жазыңыз"); return; }
+        try {
+          await rpc("cs50kz_class_set_msg", { p_code: cur.code, p_teacher_secret: cur.pw, p_text: data.text });
+          K.toast("📣 Хабарлама жіберілді");
+          document.activeElement && document.activeElement.blur();
+          await refresh();
+        } catch (err) { K.toast("Қате: " + human(err)); }
+        return;
+      }
       if (f.classList.contains("tk-form")) {
         if (!data.lecture) { K.toast("Алдымен лекцияны таңдаңыз"); return; }
         try {
@@ -710,6 +740,12 @@ ${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}
         if (t.classList.contains("cl-join-qr")) {
           qrOpen = !qrOpen;
           await drawQr();
+          return;
+        }
+        if (t.classList.contains("ms-clear")) {
+          if (!confirm("Хабарламаны өшіру керек пе?")) return;
+          await rpc("cs50kz_class_set_msg", { p_code: cur.code, p_teacher_secret: cur.pw, p_text: "" });
+          await refresh();
           return;
         }
         if (t.classList.contains("tk-clear")) {

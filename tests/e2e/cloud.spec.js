@@ -209,6 +209,20 @@ test("мұғалім тапсырма береді: оқушы баннерді 
   await expect(S.locator(".cp-legend")).toContainText("1 / 12 дәріс");
   await S.screenshot({ path: test.info().outputPath("pulse.png"), fullPage: true });
 
+  // Мұғалім хабарламасы оқушының басты бетінде шығады, өшірсе жоғалады
+  await T.fill(".ms-form [name=text]", "Ертең бақылау жұмысы!");
+  await T.click(".ms-form .btn.gold");
+  await expect(T.locator(".ms-now")).toContainText("Ертең бақылау жұмысы!");
+  await S.evaluate(() => window.CS50KZ_CLOUD.cycle({ pull: true, force: true }));
+  await S.goto("index.html");
+  await expect(S.locator(".tk-home .ms-banner")).toContainText("Ертең бақылау жұмысы!");
+  await S.locator(".tk-home").screenshot({ path: test.info().outputPath("msg.png") });
+  await T.click(".ms-clear");
+  await expect(T.locator(".ms-now")).toHaveCount(0);
+  await S.evaluate(() => window.CS50KZ_CLOUD.cycle({ pull: true, force: true }));
+  await S.reload();
+  await expect(S.locator(".ms-banner")).toHaveCount(0);
+
   // Алып тастау
   await T.click(".tk-clear");
   await expect(T.locator(".tk-now")).toHaveCount(0);

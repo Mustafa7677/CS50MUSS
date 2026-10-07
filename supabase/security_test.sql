@@ -49,5 +49,12 @@ begin
     raise exception 'FAIL: pulse қате: %', public.cs50kz_class_pulse('KZ-CISE-PLS2', 'secret12');
   end if;
   if public.cs50kz_class_pulse('KZ-CISE-CTST', 'secret12') is not null then raise exception 'FAIL: сыныпсыз pulse'; end if;
+  -- 7) Хабарламаны тек мұғалім жаза алады; оқушы pull арқылы көреді
+  begin perform public.cs50kz_class_set_msg(c, null, 'x'); raise exception 'FAIL: set_msg NULL өтті'; exception when sqlstate '22023' then null; end;
+  begin perform public.cs50kz_class_set_msg(c, 'wrongpass', 'x'); raise exception 'FAIL: set_msg қате пароль өтті'; exception when sqlstate '28000' then null; end;
+  perform public.cs50kz_class_set_msg(c, 'mugalim9', '  Ертең бақылау жұмысы  ');
+  if (public.cs50kz_pull('KZ-CISE-PLS1', 'secret12')->'class_msg'->>'text') is distinct from 'Ертең бақылау жұмысы' then raise exception 'FAIL: хабарлама оқушыға жетпеді'; end if;
+  perform public.cs50kz_class_set_msg(c, 'mugalim9', '');
+  if (public.cs50kz_class_view(c, 'mugalim9')->'msg') <> 'null'::jsonb then raise exception 'FAIL: хабарлама өшпеді'; end if;
   raise notice 'Қауіпсіздік тесттері: бәрі өтті ✓';
 end $$;
