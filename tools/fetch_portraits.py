@@ -20,6 +20,10 @@ PEOPLE = [  # (сайттағы аты, файл атауы, ru / en мақал�
     ("Сұлтанмахмұт Торайғыров", "toraighyrov", "Торайгыров, Султанмахмут", "Sultanmahmut Toraighyrov"),
     ("Ыбырай Алтынсарин", "altynsarin", "Алтынсарин, Ибрай", "Ibrai Altynsarin"),
     ("Абай Құнанбайұлы", "abai", "Абай Кунанбаев", "Abai Qunanbaiuly"),
+    ("Мұхтар Әуезов", "auezov", "Ауэзов, Мухтар Омарханович", "Mukhtar Auezov"),
+    ("Қадыр Мырза Әли", "myrzaali", "Мырзалиев, Кадыр", "Kadyr Myrza Ali"),
+    ("Жұбан Молдағалиев", "moldagaliev", "Молдагалиев, Жубан", "Zhuban Moldagaliyev"),
+    ("Әбу Насыр әл-Фараби", "farabi", "Аль-Фараби", "Al-Farabi"),
 ]
 # Файл атауында тұлғаның аты болуы керек (мақаланың басты суретінен басқалары үшін)
 TOKENS = {
@@ -31,6 +35,10 @@ TOKENS = {
     "toraighyrov": ["торайғыр", "торайгыр", "toraig", "toraygir", "toraigyr"],
     "altynsarin": ["алтынсарин", "altynsarin", "altinsarin"],
     "abai": ["абай", "abai", "abay"],
+    "auezov": ["әуезов", "ауэзов", "auezov", "auyezov", "awezov"],
+    "myrzaali": ["мырза", "мырзалиев", "myrza", "myrzaliyev", "myrzaliev"],
+    "moldagaliev": ["молдағали", "молдагали", "moldagali"],
+    "farabi": ["фараби", "farabi", "alpharabius"],
 }
 # Портрет емес суреттер: марка, тиын, ескерткіш, мұражай т.б.
 NOT_PORTRAIT = re.compile(r"stamp|марка|coin|монет|banknote|купюр|памятник|monument|statue|мүсін|grave|могил|зират|ескерткіш|mausoleum|мавзолей|кесене|museum|музей|мұражай|house|school|школ|мектеп|district|аудан|badge|знак|logo|book|кітап|жинағы|signature|подпись|autograph|\.svg$|\.pdf$|\.tif", re.I)

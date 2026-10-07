@@ -99,6 +99,7 @@
     initDashboard();
     initQuote();
     initAlashPortraits();
+    document.querySelectorAll(".qt-slot").forEach(miniQuote);
     initPythonRunner();
     initSqlRunner();
     initPlayground();
@@ -270,7 +271,11 @@
         try { localStorage.setItem(key, JSON.stringify(boxes.map((b) => b.checked))); } catch (e) {}
         if (done === boxes.length) checkAchievements();
       };
-      boxes.forEach((b) => b.addEventListener("change", () => { update(); if (b.checked) logDay(); }));
+      boxes.forEach((b) => b.addEventListener("change", () => {
+        update();
+        if (b.checked) logDay();
+        if (b.checked && boxes.every((x) => x.checked)) quoteCheer("Тапсырма орындалды!"); // тапсырма соңы - ұлағатты сөз
+      }));
       update();
     });
   }
@@ -536,6 +541,10 @@
     };
     render();
     if (pager) pager.before(done);
+    const mini = document.createElement("figure");
+    mini.className = "qt-mini";
+    done.after(mini);
+    miniQuote(mini);
     const tip = document.createElement("div");
     tip.className = "bota-tip";
     tip.innerHTML = `<img src="${ROOT_URL}assets/img/bota-think.svg" alt="" width="64" height="64"><p><b>Ботаның кеңесі:</b> ${BOTA_TIPS[(PAGE.length * 7 + new Date().getDate()) % BOTA_TIPS.length]}</p>`;
@@ -581,7 +590,6 @@
   }
 
   // ---------- Күн сөзі: Алаш зиялылары мен ағартушылар ----------
-  const dayNum = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60_000) / 86_400_000);
   function initQuote() {
     const card = document.querySelector(".qt-card");
     if (!card) return;
@@ -589,7 +597,14 @@
       const Q = window.CS50KZ_QUOTES || [];
       if (!Q.length) return;
       const EVERY = 12_000; // әр сөз 12 секунд тұрады
-      let i = dayNum() % Q.length, timer = null, hover = false;
+      // Кезекпен емес, кездейсоқ ретпен: араластырылған тізім, соңына жеткенде қайта араласады
+      const shuffle = (prevLast) => {
+        const a = Q.map((_, k) => k);
+        for (let k = a.length - 1; k > 0; k--) { const r = Math.floor(Math.random() * (k + 1)); [a[k], a[r]] = [a[r], a[k]]; }
+        if (a.length > 1 && a[0] === prevLast) [a[0], a[1]] = [a[1], a[0]]; // қатарынан бір сөз қайталанбасын
+        return a;
+      };
+      let order = shuffle(-1), pos = 0, i = order[0], timer = null, hover = false;
       let paused = matchMedia("(prefers-reduced-motion: reduce)").matches; // қозғалысты азайтқандарға өзі ауыспайды
       card.innerHTML = `
         <span class="qt-mark" aria-hidden="true">“</span>
@@ -614,6 +629,7 @@
         if (!b) return;
         const own = Q.map((q, k) => (q.a === b.dataset.a ? k : -1)).filter((k) => k >= 0);
         i = own.find((k) => k > i && Q[i].a === b.dataset.a) ?? own[0];
+        pos = order.indexOf(i);
         draw();
       });
       const draw = () => {
@@ -625,7 +641,7 @@
             <span><b>${escapeHtml(q.a)}</b><small>${escapeHtml(q.y)}${q.src ? " · " + escapeHtml(q.src) : ""}</small></span>
           </figcaption>
           ${q.cs ? `<p class="qt-cs">💡 ${escapeHtml(q.cs)}</p>` : ""}`;
-        card.querySelector(".qt-count").textContent = `${i + 1} / ${Q.length}`;
+        card.querySelector(".qt-count").textContent = `${pos + 1} / ${Q.length}`;
         faces.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.a === q.a)));
         schedule();
       };
@@ -641,9 +657,15 @@
         if (!running()) return;
         bar.style.animationDuration = EVERY + "ms";
         bar.classList.add("run");
-        timer = setTimeout(() => { i = (i + 1) % Q.length; draw(); }, EVERY);
+        timer = setTimeout(() => go(1), EVERY);
       }
-      const go = (d) => { i = (i + d + Q.length) % Q.length; draw(); };
+      function go(d) {
+        pos += d;
+        if (pos >= Q.length) { order = shuffle(i); pos = 0; }
+        if (pos < 0) pos = Q.length - 1;
+        i = order[pos];
+        draw();
+      }
       draw();
       card.addEventListener("mouseenter", () => { hover = true; schedule(); });
       card.addEventListener("mouseleave", () => { hover = false; schedule(); });
@@ -733,13 +755,39 @@
     setTimeout(() => URL.revokeObjectURL(a.href), 30_000);
     toast("Сурет жүктелді 🖼");
   }
+  // Шағын «Ұлағатты сөз» (лекция соңы, жаттығу беті): кездейсоқ сөз, «Тағы бір» батырмасы
+  function miniQuote(box) {
+    if (!box) return;
+    Promise.all([loadScript("assets/data/quotes.js"), portraits()]).then(([, P]) => {
+      const Q = window.CS50KZ_QUOTES || [];
+      if (!Q.length) return;
+      let i = Math.floor(Math.random() * Q.length);
+      const draw = () => {
+        const q = Q[i];
+        box.innerHTML = `${faceHtml(q.a, P, "qt-mono")}
+          <div class="qm-body"><small class="qt-label">Ұлағатты сөз</small>
+            <blockquote>${q.t.split(" / ").map(escapeHtml).join("<br>")}</blockquote>
+            <figcaption><b>${escapeHtml(q.a)}</b> <span>${escapeHtml(q.y)}</span></figcaption>
+            <div class="qm-actions"><button type="button" class="qm-next">↻ Тағы бір сөз</button><a href="${ROOT_URL}alash.html">Тұлғалар туралы →</a></div>
+          </div>`;
+      };
+      draw();
+      box.addEventListener("click", (e) => {
+        if (!e.target.closest(".qm-next")) return;
+        let k = i;
+        while (Q.length > 1 && k === i) k = Math.floor(Math.random() * Q.length);
+        i = k; draw(); box.querySelector(".qm-next").focus();
+      });
+    }).catch(() => {});
+  }
+
   // Лекция оқылғанда Бота ұлы сөзбен құттықтайды
-  function quoteCheer() {
+  function quoteCheer(head = "Жарайсыз!") {
     loadScript("assets/data/quotes.js").then(() => {
       const Q = window.CS50KZ_QUOTES || [];
       if (!Q.length) return;
       const q = Q[Math.floor(Math.random() * Q.length)];
-      botaSay(`Жарайсыз! ${q.a}: «${q.t.replace(/ \/ /g, " ")}»`, "happy");
+      botaSay(`${head} ${q.a}: «${q.t.replace(/ \/ /g, " ")}»`, "happy");
     }).catch(() => {});
   }
 
@@ -1578,12 +1626,15 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     try { localStorage.setItem("cs50kz:days", JSON.stringify(days)); } catch (e) {}
     const goal = goalOf();
     if (before < goal && days[t] >= goal) {
-      setTimeout(() => {
+      // Бота басқа нәрсе айтып тұрса (мысалы, тапсырма сөзі), соны жаппай күтеміз
+      const say = (tries = 0) => {
+        if (document.querySelector(".bota-pop") && tries < 6) return setTimeout(() => say(tries + 1), 2500);
         celebrate();
         const g = goalStats();
         botaSay(`🎯 Бүгінгі мақсат орындалды! ${g.streak > 1 ? g.streak + " күн қатарынан - " : ""}Ертең де келіңіз, жалғастырамыз.`, "wow");
         checkAchievements();
-      }, 900);
+      };
+      setTimeout(say, 900);
     }
     document.dispatchEvent(new CustomEvent("cs50kz:day"));
   }

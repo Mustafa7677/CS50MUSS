@@ -57,7 +57,7 @@ test("басты бет: күн сөзі шығады, «Келесі» ауыс
   await expect(page.locator(".qt-card")).toHaveClass(/is-paused/);
   await expect(q).toHaveText(third);
   // Тұлғалар жолағы: Абайды бассақ — Абайдың сөзі, тағы бассақ — оның келесі сөзі
-  await expect(page.locator(".qt-faces button")).toHaveCount(7); // сөзі бар тұлғалар
+  await expect(page.locator(".qt-faces button")).toHaveCount(11); // сөзі бар тұлғалар
   await page.click('.qt-faces button[data-a="Абай Құнанбайұлы"]');
   await expect(page.locator(".qt-card figcaption b")).toHaveText("Абай Құнанбайұлы");
   await expect(page.locator('.qt-faces button[data-a="Абай Құнанбайұлы"]')).toHaveAttribute("aria-pressed", "true");
@@ -91,5 +91,25 @@ test("күн сөзі суретке айналады (PNG жүктеледі)",
   const [dl] = await Promise.all([page.waitForEvent("download"), page.click(".qt-img")]);
   expect(dl.suggestedFilename()).toBe("cs50kz-soz.png");
   await dl.saveAs(test.info().outputPath("quote-share.png"));
+  expect(errs).toEqual([]);
+});
+
+test("ұлағатты сөз лекция соңында және жаттығу бетінде; тапсырма біткенде Бота сөз айтады", async ({ page }) => {
+  const errs = collectErrors(page);
+  await page.goto("lectures/week-1.html");
+  const m = page.locator(".qt-mini");
+  await expect(m.locator("blockquote")).not.toBeEmpty();
+  const t1 = await m.locator("blockquote").textContent();
+  await m.locator(".qm-next").click();
+  await expect(m.locator("blockquote")).not.toHaveText(t1);
+  await m.screenshot({ path: test.info().outputPath("mini.png") });
+  // Тапсырманың барлық тексеруін белгілеу
+  const list = page.locator(".checklist[data-id]").first();
+  const boxes = list.locator("input[type=checkbox]");
+  const n = await boxes.count();
+  for (let k = 0; k < n; k++) await boxes.nth(k).check();
+  await expect(page.locator(".bota-pop")).toContainText("Тапсырма орындалды!");
+  await page.goto("practice.html");
+  await expect(page.locator(".qt-slot blockquote")).not.toBeEmpty();
   expect(errs).toEqual([]);
 });
