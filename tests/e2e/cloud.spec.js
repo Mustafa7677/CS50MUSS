@@ -193,6 +193,15 @@ test("мұғалім тапсырма береді: оқушы баннерді 
   await expect(T.locator(".ca-hard .ca-insight")).toContainText("қайталау сабағы");
   await T.locator(".ca").screenshot({ path: test.info().outputPath("hard.png") });
 
+  // Басып шығаруға арналған есеп жаңа бетте ашылады
+  const [R] = await Promise.all([T.context().waitForEvent("page"), T.click(".cl-print")]);
+  await R.waitForLoadState();
+  await expect(R.locator("h1")).toHaveText("Тапсырма сыныбы");
+  await expect(R.locator("tbody").last()).toContainText("Тапсырма Оқушы");
+  await expect(R.locator(".task")).toContainText("1 / 1");
+  await R.screenshot({ path: test.info().outputPath("report.png"), fullPage: true });
+  await R.close();
+
   // Оқушы профилінде сыныптағы орны (аттарсыз): 1/1, тапсырманы орындағандар 1/1
   await S.goto("profile.html");
   await expect(S.locator(".cp-rank b")).toHaveText("1/1");

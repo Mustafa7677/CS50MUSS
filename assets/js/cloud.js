@@ -166,14 +166,15 @@
   const LEC = () => window.CS50KZ_LECTURES || [];
   K.loadScript("assets/data/lectures.js").then(() => document.dispatchEvent(new CustomEvent("cs50kz:lectures"))).catch(() => {});
   const lecName = (id) => { const l = LEC().find((x) => x.id === id); return l ? `${l.num}: ${l.title}` : id; };
+  const MONTHS = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
+  const kzDate = (d, year) => `${d.getDate()} ${MONTHS[d.getMonth()]}${year ? " " + d.getFullYear() : ""}`;
   function dueText(due) {
     if (!due) return "";
     // Күнтізбелік күн: бүгін мен мерзімнің арасы (уақытқа емес, күнге қараймыз)
     const today = new Date(); today.setHours(0, 0, 0, 0);
     const days = Math.round((new Date(due + "T00:00:00") - today) / 86_400_000);
     const d = new Date(due + "T12:00:00");
-    const months = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
-    const when = `${d.getDate()} ${months[d.getMonth()]}`;
+    const when = kzDate(d);
     if (days > 1) return `${when} дейін · ${days} күн қалды`;
     if (days === 1) return `${when} дейін · ертең соңғы күн`;
     if (days === 0) return `${when} · бүгін соңғы күн`;
@@ -571,6 +572,76 @@
       </section>`;
     }
 
+    // Басып шығаруға (не PDF-ке сақтауға) арналған сынып есебі: жеке бетте, A4
+    function report(v) {
+      const n = v.students.length, L = (i) => lecName(ORDER[i]);
+      const qOf = (d) => (d.q || "").split(",");
+      const stat = (st) => {
+        const d = st.summary || {}, r = (d.r || "").padEnd(12, "0");
+        const qs = qOf(d).filter((x) => /^\d+\/\d+$/.test(x)).map((x) => x.split("/").map(Number));
+        const b = qs.reduce((m, x) => m + x[1], 0);
+        return { d, read: (r.match(/1/g) || []).length, r, q: b ? Math.round((qs.reduce((m, x) => m + x[0], 0) / b) * 100) : null };
+      };
+      const S = v.students.map((st) => Object.assign({ st }, stat(st))).sort((a, b) => (a.st.name || "").localeCompare(b.st.name || "", "kk"));
+      const avg = (arr) => (arr.length ? arr.reduce((a, x) => a + x, 0) / arr.length : null);
+      const qAvg = avg(S.filter((x) => x.q != null).map((x) => x.q));
+      const exam = S.filter((x) => x.d.e != null);
+      const act7 = S.filter((x) => Date.now() - new Date(x.st.updated_at).getTime() < 7 * 86_400_000).length;
+      const lec = ORDER.map((_, i) => {
+        let a = 0, b = 0;
+        S.forEach((x) => { const m = (qOf(x.d)[i] || "").match(/^(\d+)\/(\d+)$/); if (m) { a += +m[1]; b += +m[2]; } });
+        return { name: L(i), read: S.filter((x) => x.r[i] === "1").length, q: b ? Math.round((a / b) * 100) : null };
+      });
+      const t = v.task && v.task.lecture ? v.task : null;
+      const tDone = t ? S.filter((x) => x.r[ORDER.indexOf(t.lecture)] === "1").length : 0;
+      const now = new Date(), date = kzDate(now, true);
+      const hhmm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      const bar = (c, max) => `<span class="bar"><i style="width:${max ? (c / max) * 100 : 0}%"></i></span>`;
+      const html = `<!doctype html><html lang="kk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Сынып есебі — ${esc(v.title)}</title><style>
+@page { size: A4; margin: 14mm; }
+* { box-sizing: border-box; } body { font: 13px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1d2433; margin: 0 auto; max-width: 820px; padding: 24px 16px; background: #fff; }
+header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; border-bottom: 3px solid #007f97; padding-bottom: 10px; margin-bottom: 16px; }
+h1 { margin: 0; font-size: 22px; } header small { color: #5b6475; } .code { font: 700 15px ui-monospace, monospace; letter-spacing: .1em; color: #007f97; }
+h2 { font-size: 14px; margin: 20px 0 8px; text-transform: uppercase; letter-spacing: .05em; color: #5b6475; }
+.kpi { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; } .kpi div { border: 1px solid #dfe3ea; border-radius: 10px; padding: 8px 10px; }
+.kpi small { display: block; color: #5b6475; font-size: 11px; } .kpi b { font-size: 20px; }
+table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; } th, td { text-align: left; padding: 5px 8px; border-bottom: 1px solid #e6e9ef; }
+th { font-size: 11px; color: #5b6475; text-transform: uppercase; letter-spacing: .04em; } tr { break-inside: avoid; }
+.n { text-align: right; } .low { color: #b4231a; font-weight: 700; } .ok { color: #1f7a3a; font-weight: 700; }
+.bar { display: inline-block; width: 90px; height: 8px; background: #edf0f4; border-radius: 9px; vertical-align: middle; margin-right: 6px; overflow: hidden; } .bar i { display: block; height: 100%; background: #007f97; }
+.task { border: 1px solid #dfe3ea; border-left: 4px solid #c99a2e; border-radius: 8px; padding: 8px 12px; }
+footer { margin-top: 24px; color: #8a92a3; font-size: 11px; display: flex; justify-content: space-between; }
+.tools { position: sticky; top: 0; text-align: right; margin-bottom: 8px; } .tools button { font: 600 14px system-ui; padding: 8px 16px; border-radius: 999px; border: 0; background: #007f97; color: #fff; cursor: pointer; }
+@media print { .tools { display: none; } body { padding: 0; } }
+@media (max-width: 600px) { .kpi { grid-template-columns: repeat(2, 1fr); } .bar { width: 50px; } }
+</style></head><body>
+<div class="tools"><button onclick="print()">🖨 Басып шығару / PDF</button></div>
+<header><div><small>CS50 қазақша · сынып есебі</small><h1>${esc(v.title)}</h1></div><div style="text-align:right"><div class="code">${esc(v.code)}</div><small>${esc(date)}</small></div></header>
+<div class="kpi">
+  <div><small>Оқушы</small><b>${n}</b></div>
+  <div><small>Орташа оқылған</small><b>${n ? avg(S.map((x) => x.read)).toFixed(1) : "—"}</b> <small>/ 12 лекция</small></div>
+  <div><small>Тест нәтижесі</small><b>${qAvg != null ? Math.round(qAvg) + "%" : "—"}</b></div>
+  <div><small>Емтиханнан өтті</small><b>${exam.filter((x) => x.d.e >= 70).length}</b> <small>/ ${exam.length} тапсырған</small></div>
+  <div><small>Апта ішінде белсенді</small><b>${act7}</b></div>
+</div>
+${t ? `<h2>Ағымдағы тапсырма</h2><div class="task"><b>${esc(lecName(t.lecture))}</b>${t.due ? " · мерзімі: " + esc(kzDate(new Date(t.due + "T12:00:00"), true)) : ""}${t.note ? " · " + esc(t.note) : ""}<br>Орындағандар: <b>${tDone} / ${n}</b></div>` : ""}
+<h2>Лекциялар бойынша</h2>
+<table><thead><tr><th>Лекция</th><th>Оқығандар</th><th class="n">Тест (орташа)</th></tr></thead><tbody>
+${lec.map((l) => `<tr><td>${esc(l.name)}</td><td>${bar(l.read, n)}${l.read} / ${n}</td><td class="n ${l.q != null && l.q < 60 ? "low" : ""}">${l.q != null ? l.q + "%" : "—"}</td></tr>`).join("")}
+</tbody></table>
+<h2>Оқушылар</h2>
+<table><thead><tr><th>№</th><th>Аты-жөні</th><th>Лекция</th><th class="n">Тест</th><th class="n">Тапсырма</th><th class="n">Емтихан</th><th>Соңғы кіру</th><th>Ескерту</th></tr></thead><tbody>
+${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}</td><td>${bar(x.read, 12)}${x.read}/12</td><td class="n ${x.q != null && x.q < 50 ? "low" : ""}">${x.q != null ? x.q + "%" : "—"}</td><td class="n">${+x.d.t || 0}</td><td class="n ${x.d.e >= 70 ? "ok" : ""}">${x.d.e != null ? +x.d.e + "%" : "—"}</td><td>${esc(kzDate(new Date(x.st.updated_at)))}</td><td>${flags(x.st).map((f) => esc(f[1])).join(", ")}</td></tr>`).join("") || `<tr><td colspan="8">Әзірге оқушы жоқ.</td></tr>`}
+</tbody></table>
+<footer><span>mustafa7677.github.io/CS50MUSS</span><span>Жасалды: ${esc(date)}, ${hhmm}</span></footer>
+</body></html>`;
+      const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+      const w = window.open(url, "_blank");
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
+      if (!w) K.toast("Браузер жаңа терезені бұғаттады — рұқсат беріп, қайталаңыз");
+    }
+
     function show(v) {
       const list = onlyFlagged ? v.students.filter((st) => flags(st).length) : v.students;
       const rows = list.map((st) => {
@@ -599,7 +670,7 @@
           </div>
         </div>
         <div class="cl-join-qrbox" hidden></div>
-        <div class="t-actions"><button type="button" class="btn secondary cl-refresh">↻ Жаңарту</button><button type="button" class="btn secondary cl-csv">CSV</button><button type="button" class="btn secondary cl-back">← Сыныптар</button>${flagged ? `<button type="button" class="btn ${onlyFlagged ? "gold" : "secondary"} cl-flagged">⚠ Көмек керек: ${flagged}</button>` : ""}<span class="t-count">${v.students.length} оқушы</span></div>
+        <div class="t-actions"><button type="button" class="btn secondary cl-refresh">↻ Жаңарту</button><button type="button" class="btn secondary cl-print">🖨 Есеп</button><button type="button" class="btn secondary cl-csv">CSV</button><button type="button" class="btn secondary cl-back">← Сыныптар</button>${flagged ? `<button type="button" class="btn ${onlyFlagged ? "gold" : "secondary"} cl-flagged">⚠ Көмек керек: ${flagged}</button>` : ""}<span class="t-count">${v.students.length} оқушы</span></div>
         <div class="t-table"><table><thead><tr><th>Оқушы</th><th>Лекциялар</th><th>Тест</th><th>Тапсырма</th><th>Емтихан</th><th>Жетістік</th><th>Белсенділік</th><th></th></tr></thead>
         <tbody>${rows || `<tr><td colspan="8" class="t-empty">Әзірге ешкім қосылмаған. Оқушылар профиль бетінде <b>${esc(v.code)}</b> кодын енгізуі керек.</td></tr>`}</tbody></table></div>`;
       box._last = v;
@@ -659,6 +730,8 @@
         else if (t.classList.contains("cl-rm")) {
           if (!confirm("Оқушыны сыныптан шығару керек пе? Оның прогресі өшпейді.")) return;
           await rpc("cs50kz_class_remove", { p_code: cur.code, p_teacher_secret: cur.pw, p_id: t.dataset.id }); await refresh();
+        } else if (t.classList.contains("cl-print") && box._last) {
+          report(box._last);
         } else if (t.classList.contains("cl-csv") && box._last) {
           const head = ["Аты", "ID", ...ORDER, "Тест", "Тапсырма", "Емтихан", "Жетістік", "Соңғы белсенділік"];
           const lines = [head.join(",")].concat(box._last.students.map((st) => { const d = st.summary || {}; return [JSON.stringify(st.name || ""), st.id, ...(d.r || "").padEnd(12, "0").split(""), JSON.stringify(d.q || ""), +d.t || 0, d.e ?? "", +d.a || 0, st.updated_at].join(","); }));
