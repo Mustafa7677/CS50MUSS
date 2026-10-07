@@ -113,7 +113,7 @@ def image_info(fname, hosts):
 
 
 _cascade = None
-def face_crop(img):
+def face_crop(img, scale=3.2):
     """Ең үлкен бетті тауып, 4:5 кадрды соның айналасынан қияды (бет жоғарғы үштен бірде)."""
     global _cascade
     import numpy as np, cv2
@@ -126,7 +126,7 @@ def face_crop(img):
     W, H = img.size
     # Ең үлкен әрі ортаға жақын бет (топтық суретте басты кейіпкер әдетте ортада)
     x, y, fw, fh = max(faces, key=lambda f: f[2] * f[3] * (1.5 - abs((f[0] + f[2] / 2) / W - 0.5)))
-    ch = min(H, int(fh * 3.2)); cw = int(ch * 0.8)
+    ch = min(H, int(fh * scale)); cw = int(ch * 0.8)
     if cw > W:
         cw = W; ch = int(cw / 0.8)
     cx, cy = x + fw / 2, y + fh / 2
@@ -158,7 +158,7 @@ def main():
                 if not FREE.search(lic) or re.search(r"fair use|несвобод|non-free", lic, re.I):
                     print(f"  – {fname} ({host}): лицензия еркін емес ({lic or 'көрсетілмеген'})"); continue
                 img = Image.open(io.BytesIO(get(ii.get("thumburl") or ii["url"]))).convert("RGB")
-                crop = face_crop(img)
+                crop = face_crop(img, 1.75 if STAMP.search(fname) else 3.2)  # маркада жазу түспесін
                 if crop is None:
                     print(f"  – {fname}: бет табылмады"); continue
                 crop.resize((320, 400), Image.LANCZOS).save(OUT / f"{slug}.jpg", "JPEG", quality=84, optimize=True, progressive=True)
