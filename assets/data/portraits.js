@@ -1,4 +1,4 @@
-// tools/fetch_portraits.py жасаған (Wikimedia Commons, еркін лицензиялар); "manual" — қолмен қосылған, скрипт өзгертпейді.
+// tools/fetch_portraits.py жасаған (Wikimedia Commons, еркін лицензиялар); "manual" - қолмен қосылған, скрипт өзгертпейді.
 window.CS50KZ_PORTRAITS = {
  "Әлихан Бөкейхан": {
   "img": "assets/img/alash/bokeikhan.jpg",

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""CS50 қазақша — сайтты құрастыру скрипті.
+"""CS50 қазақша - сайтты құрастыру скрипті.
 
 Іске қосу (репозиторийдің түбірінен):  python3 tools/build.py
 
 Не істейді:
   1. Әр беттің <head> бөліміне favicon, PWA манифесі, Open Graph тегтерін қосады.
   2. Барлық беттегі навигацияны бірдей етеді.
-  3. assets/data/lectures.js — лекциялар тізімі (прогресс панелі үшін).
-  4. assets/data/search-index.js — бүкіл сайт бойынша іздеу индексі.
-  5. glossary.html — лекциялардағы терминдерден қазақша–ағылшынша сөздік.
+  3. assets/data/lectures.js - лекциялар тізімі (прогресс панелі үшін).
+  4. assets/data/search-index.js - бүкіл сайт бойынша іздеу индексі.
+  5. glossary.html - лекциялардағы терминдерден қазақша–ағылшынша сөздік.
 Скрипт идемпотентті: қайта-қайта іске қоса беруге болады.
 """
 import html
@@ -56,7 +56,7 @@ def nav_block(prefix, active):
         {item("playground.html", "Сынақ алаңы", "playground", "hide-sm")}
         {item("glossary.html", "Сөздік", "glossary", "hide-sm")}
         <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
-        <button class="prefs-open" type="button" aria-label="Аа — оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
         <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
         <a class="profile-open{' active' if active == 'profile' else ''}" href="{prefix}profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
       </nav>"""
@@ -193,7 +193,7 @@ def build_cheatsheet(entries):
     tpl = (ROOT / "about.html").read_text(encoding="utf-8")
     top = tpl[:tpl.index('<div class="layout')]
     top = re.sub(r"<!-- build:head -->.*?<!-- /build:head -->", "", top, flags=re.S)
-    top = re.sub(r"<title>.*?</title>", "<title>Шпаргалка — CS50 қазақша</title>", top)
+    top = re.sub(r"<title>.*?</title>", "<title>Шпаргалка - CS50 қазақша</title>", top)
     top = top.replace('<meta name="author"', '<meta name="description" content="CS50 қазақша: барлық 12 лекцияның қысқаша конспектісі бір бетте, басып шығаруға ыңғайлы.">\n  <meta name="author"', 1)
     foot = tpl[tpl.index("  <footer"):]
     cards = "\n".join(
@@ -272,7 +272,7 @@ def build_glossary(terms):
             f'<a class="g-src" href="{t["url"]}">{html.escape(t["src"])} →</a></div>')
     tpl = (ROOT / "about.html").read_text(encoding="utf-8")
     top = tpl[:tpl.index('<div class="layout')]
-    top = re.sub(r"<title>.*?</title>", "<title>Терминдер сөздігі — CS50 қазақша</title>", top)
+    top = re.sub(r"<title>.*?</title>", "<title>Терминдер сөздігі - CS50 қазақша</title>", top)
     top = top.replace('<meta name="author"', '<meta name="description" content="Информатика терминдерінің қазақша–ағылшынша сөздігі: CS50 лекцияларынан жиналған.">\n  <meta name="author"', 1) if 'name="description"' not in top else top
     foot = tpl[tpl.index("  <footer"):]
     page = top + f"""<div class="layout single">

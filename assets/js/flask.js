@@ -1,4 +1,4 @@
-// CS50 қазақша — Flask зертханасы: нағыз Flask (Pyodide) + жалған браузер + сервер логы + автотексеру.
+// CS50 қазақша - Flask зертханасы: нағыз Flask (Pyodide) + жалған браузер + сервер логы + автотексеру.
 // main.js .flask-lab бар бетте ғана жүктейді.
 
 (function () {
@@ -147,7 +147,7 @@ def _inline(html, client):
 
 
 def __flask_req(method, url, pairs=None, body=None, ctype=None, mode="view"):
-    """mode: view — браузер (cookie сақталады); check-new — тексеру үшін жаңа клиент; check — сол клиент."""
+    """mode: view - браузер (cookie сақталады); check-new - тексеру үшін жаңа клиент; check - сол клиент."""
     app = _state["app"]
     if app is None:
         return json.dumps({"status": 0})
@@ -502,7 +502,7 @@ def search():
   const TASKS = [
     {
       id: "hello", t: "Сәлем, есім!", lvl: "Оңай",
-      d: "<code>/</code> маршруты <code>?name=</code> параметрін оқып, «Сәлем, Аружан!» деп шығарсын. Есім берілмесе — «Сәлем, әлем!». Есімді шаблон арқылы шығарыңыз: Jinja HTML-ді өзі экрандайды.",
+      d: "<code>/</code> маршруты <code>?name=</code> параметрін оқып, «Сәлем, Аружан!» деп шығарсын. Есім берілмесе - «Сәлем, әлем!». Есімді шаблон арқылы шығарыңыз: Jinja HTML-ді өзі экрандайды.",
       start: {
         "app.py": `from flask import Flask, render_template, request
 
@@ -543,7 +543,7 @@ app = Flask(__name__)
 @app.route("/add")
 def add():
     # TODO: a мен b-ны оқып, int-ке айналдырыңыз
-    # TODO: сан болмаса — abort(400)
+    # TODO: сан болмаса - abort(400)
     return "?"
 `,
       },
@@ -624,7 +624,7 @@ def registrants():
         <h1>Қатысушылар</h1>
         <ul>
             {% for name in registrants %}
-                <li>{{ name }} — {{ registrants[name] }}</li>
+                <li>{{ name }} - {{ registrants[name] }}</li>
             {% endfor %}
         </ul>
     </body>
@@ -716,7 +716,7 @@ addEventListener("message",function(e){var d=e.data&&e.data.cs50kzFetchRes;if(!d
         <button type="button" class="btn gold fl-run">▶ flask run</button>
         <span class="fl-routes"></span>
       </div>
-      <div class="fl-term" role="log" aria-live="polite"><div class="fl-term-head"><span class="we-dots"><i></i><i></i><i></i></span>Терминал — сервер логы<button type="button" class="fl-clear">тазалау</button></div><pre class="fl-log"></pre></div>`;
+      <div class="fl-term" role="log" aria-live="polite"><div class="fl-term-head"><span class="we-dots"><i></i><i></i><i></i></span>Терминал - сервер логы<button type="button" class="fl-clear">тазалау</button></div><pre class="fl-log"></pre></div>`;
     const $ = (s) => el.querySelector(s);
     const ed = $(".fl-code"), frame = $(".fl-frame"), log = $(".fl-log"), urlIn = $(".fl-url");
     const save = () => store.set(KEY, files);
@@ -914,7 +914,7 @@ addEventListener("message",function(e){var d=e.data&&e.data.cs50kzFetchRes;if(!d
       list.innerHTML = t.steps.map((s) => `<li class="wait"><span class="ag-ico">○</span>${esc(s.n)}</li>`).join("");
       card.scrollIntoView({ behavior: "smooth", block: "nearest" });
       let py;
-      try { py = await getFlask(); } catch (e) { score.textContent = "Python жүктелмеді — интернетті тексеріңіз"; return; }
+      try { py = await getFlask(); } catch (e) { score.textContent = "Python жүктелмеді - интернетті тексеріңіз"; return; }
       if (/\bSQL\s*\(|sqlite3/.test(Object.values(files).join("\n"))) await py.loadPackage("sqlite3");
       const fl = py.toPy(files), load = py.globals.get("__flask_load"), req = py.globals.get("__flask_req");
       const boot = JSON.parse(load(fl, null));
@@ -980,7 +980,7 @@ addEventListener("message",function(e){var d=e.data&&e.data.cs50kzFetchRes;if(!d
           if ($(".fl-boot").hidden) run(true);
         }
         if (e.target.classList.contains("fl-test")) {
-          if (task !== t.id) { K.toast("Алдымен «Зертханада бастау» басыңыз — тексеру зертханадағы кодқа жасалады"); return; }
+          if (task !== t.id) { K.toast("Алдымен «Зертханада бастау» басыңыз - тексеру зертханадағы кодқа жасалады"); return; }
           checkTask(t.id);
         }
       });

@@ -1,4 +1,4 @@
-// CS50 қазақша — интерактив зертханалар: визуализациялар, флэш-карточкалар,
+// CS50 қазақша - интерактив зертханалар: визуализациялар, флэш-карточкалар,
 // күннің сұрағы, аралас тест. main.js керек беттерде ғана жүктейді.
 
 (function () {
@@ -163,8 +163,8 @@
         <button type="button" class="btn gold viz-go">⌕ Іздеу</button>
         <button type="button" class="btn secondary viz-new">Жаңа сандар</button>
       </div>
-      <div class="viz-row"><span>Сызықтық</span><div class="viz-cells lin"></div><b class="lin-n">—</b></div>
-      <div class="viz-row"><span>Екілік</span><div class="viz-cells bin"></div><b class="bin-n">—</b></div>
+      <div class="viz-row"><span>Сызықтық</span><div class="viz-cells lin"></div><b class="lin-n">-</b></div>
+      <div class="viz-row"><span>Екілік</span><div class="viz-cells bin"></div><b class="bin-n">-</b></div>
       <p class="viz-result"></p>`;
     const draw = () => ["lin", "bin"].forEach((k) => {
       el.querySelector(".viz-cells." + k).innerHTML = arr.map((v) => `<i>${v}</i>`).join("");
@@ -200,13 +200,13 @@
         await sleep(260);
       }
       el.querySelector(".viz-result").innerHTML = lf >= 0
-        ? `<b>${target}</b> табылды. Сызықтық іздеу — <b>${ls}</b> қадам, екілік іздеу — <b>${bs}</b> қадам. ${N} элементте екілік іздеу ең көбі log₂${N} ≈ ${Math.ceil(Math.log2(N + 1))} қадам жасайды.`
+        ? `<b>${target}</b> табылды. Сызықтық іздеу - <b>${ls}</b> қадам, екілік іздеу - <b>${bs}</b> қадам. ${N} элементте екілік іздеу ең көбі log₂${N} ≈ ${Math.ceil(Math.log2(N + 1))} қадам жасайды.`
         : `<b>${target}</b> массивте жоқ. Сызықтық іздеу бәрін тексерді (<b>${ls}</b> қадам), екілік іздеу <b>${bs}</b> қадамда «жоқ» деп білді.`;
       running = false;
     }
     el.querySelector(".viz-go").addEventListener("click", () => { K.mark && K.mark("viz-search"); go(); });
     el.querySelector(".viz-input").addEventListener("keydown", (e) => e.key === "Enter" && go());
-    el.querySelector(".viz-new").addEventListener("click", () => { if (!running) { make(); draw(); el.querySelector(".lin-n").textContent = el.querySelector(".bin-n").textContent = "—"; el.querySelector(".viz-result").textContent = ""; } });
+    el.querySelector(".viz-new").addEventListener("click", () => { if (!running) { make(); draw(); el.querySelector(".lin-n").textContent = el.querySelector(".bin-n").textContent = "-"; el.querySelector(".viz-result").textContent = ""; } });
     make(); draw();
   }
 
@@ -215,7 +215,7 @@
     let list = [1, 2, 3], busy = false;
     el.innerHTML = `
       <div class="viz-head"><b>Байланысқан тізім</b><span class="viz-big">node *list</span></div>
-      <p class="viz-note">Әр түйінде сан (<code>number</code>) және келесі түйінге көрсеткіш (<code>next</code>) бар. Басына қосу — O(1), соңына қосу мен іздеу — O(n).</p>
+      <p class="viz-note">Әр түйінде сан (<code>number</code>) және келесі түйінге көрсеткіш (<code>next</code>) бар. Басына қосу - O(1), соңына қосу мен іздеу - O(n).</p>
       <div class="viz-controls">
         <input class="viz-input" type="number" min="0" max="999" placeholder="Сан" aria-label="Сан">
         <button type="button" class="btn secondary" data-op="head">Басына қосу</button>
@@ -242,7 +242,7 @@
       return -1;
     };
     const CODE = {
-      head: "node *n = malloc(sizeof(node));\nn->number = X;\nn->next = list;   // жаңа түйін бұрынғы басқа сілтейді\nlist = n;         // енді ол — тізімнің басы",
+      head: "node *n = malloc(sizeof(node));\nn->number = X;\nn->next = list;   // жаңа түйін бұрынғы басқа сілтейді\nlist = n;         // енді ол - тізімнің басы",
       tail: "for (node *ptr = list; ptr != NULL; ptr = ptr->next)\n{\n    if (ptr->next == NULL)   // соңғы түйінді таптық\n    {\n        ptr->next = n;\n        break;\n    }\n}",
       sorted: "// X-тен үлкен бірінші түйіннің алдына кірістіреміз\nfor (node *ptr = list; ptr != NULL; ptr = ptr->next)\n{\n    if (ptr->next == NULL || n->number < ptr->next->number)\n    {\n        n->next = ptr->next;\n        ptr->next = n;\n        break;\n    }\n}",
       find: "for (node *ptr = list; ptr != NULL; ptr = ptr->next)\n{\n    if (ptr->number == X)\n    {\n        return true;\n    }\n}\nreturn false;",
@@ -462,12 +462,12 @@
     let target = 0;
     el.innerHTML = `
       <div class="viz-head"><b>Екілік жүйе: шамдарды жағыңыз</b><span class="viz-big">8 бит = 1 байт</span></div>
-      <p class="viz-note">Әр бит — шам: қосулы (1) не өшік (0). Шамды басып, санды құрастырыңыз. Әр орынның мәні — 2-нің дәрежесі.</p>
+      <p class="viz-note">Әр бит - шам: қосулы (1) не өшік (0). Шамды басып, санды құрастырыңыз. Әр орынның мәні - 2-нің дәрежесі.</p>
       <div class="bin-bits">${[128, 64, 32, 16, 8, 4, 2, 1].map((v, i) => `<button type="button" data-i="${i}"><span class="bulb"></span><b>0</b><small>${v}</small></button>`).join("")}</div>
       <div class="bin-out">
         <div><small>Ондық</small><b class="dec">0</b></div>
         <div><small>Он алтылық</small><b class="hex">0x00</b></div>
-        <div><small>ASCII</small><b class="chr">—</b></div>
+        <div><small>ASCII</small><b class="chr">-</b></div>
       </div>
       <div class="viz-controls">
         <span class="bin-goal"></span>
@@ -483,7 +483,7 @@
       el.querySelectorAll(".bin-bits button").forEach((b, i) => { b.classList.toggle("on", !!bits[i]); b.querySelector("b").textContent = bits[i]; });
       el.querySelector(".dec").textContent = n;
       el.querySelector(".hex").textContent = "0x" + n.toString(16).toUpperCase().padStart(2, "0");
-      el.querySelector(".chr").textContent = n >= 33 && n <= 126 ? String.fromCharCode(n) : n === 32 ? "␣" : "—";
+      el.querySelector(".chr").textContent = n >= 33 && n <= 126 ? String.fromCharCode(n) : n === 32 ? "␣" : "-";
       if (n === target) {
         el.querySelector(".bin-goal").innerHTML = `<b>${target}</b> = ${bits.join("")} ✓ Жарайсыз!`;
         K.celebrate(); target = -1;
@@ -508,7 +508,7 @@
         steps: [
           { line: 9, main: { x: 1 }, note: "main стектің түбінде: x айнымалысына 1 жазылды." },
           { line: 10, main: { x: 1, y: 2 }, note: "y айнымалысына 2 жазылды." },
-          { line: 0, main: { x: 1, y: 2 }, swap: { a: 1, b: 2 }, note: "swap шақырылды: стекке жаңа кадр қосылды. a мен b — x пен y-тің КӨШІРМЕЛЕРІ." },
+          { line: 0, main: { x: 1, y: 2 }, swap: { a: 1, b: 2 }, note: "swap шақырылды: стекке жаңа кадр қосылды. a мен b - x пен y-тің КӨШІРМЕЛЕРІ." },
           { line: 2, main: { x: 1, y: 2 }, swap: { a: 1, b: 2, tmp: 1 }, ch: ["tmp"], note: "tmp = a = 1." },
           { line: 3, main: { x: 1, y: 2 }, swap: { a: 2, b: 2, tmp: 1 }, ch: ["a"], note: "a = b. Көшірме ғана өзгерді!" },
           { line: 4, main: { x: 1, y: 2 }, swap: { a: 2, b: 1, tmp: 1 }, ch: ["b"], note: "b = tmp. swap ішінде мәндер ауысты..." },
@@ -521,7 +521,7 @@
         steps: [
           { line: 9, main: { x: 1 }, note: "x = 1." },
           { line: 10, main: { x: 1, y: 2 }, note: "y = 2." },
-          { line: 0, main: { x: 1, y: 2 }, swap: { a: "&x", b: "&y" }, note: "swap-қа x пен y-тің МЕКЕНЖАЙЛАРЫ берілді: a мен b — көрсеткіштер." },
+          { line: 0, main: { x: 1, y: 2 }, swap: { a: "&x", b: "&y" }, note: "swap-қа x пен y-тің МЕКЕНЖАЙЛАРЫ берілді: a мен b - көрсеткіштер." },
           { line: 2, main: { x: 1, y: 2 }, swap: { a: "&x", b: "&y", tmp: 1 }, ch: ["tmp"], note: "tmp = *a: a көрсететін жерге барып (x), 1-ді аламыз." },
           { line: 3, main: { x: 2, y: 2 }, swap: { a: "&x", b: "&y", tmp: 1 }, ch: ["x"], note: "*a = *b: x-тің өзіне 2 жазылды!" },
           { line: 4, main: { x: 2, y: 1 }, swap: { a: "&x", b: "&y", tmp: 1 }, ch: ["y"], note: "*b = tmp: y-ке 1 жазылды." },
@@ -584,8 +584,8 @@
         <span class="viz-stats sq-msg"></span>
       </div>`;
     const TXT = {
-      stack: { big: "LIFO", note: "Last In, First Out — соңғы кірген бірінші шығады. Асханадағы науалар сияқты: үстіне қоясыз, үстінен аласыз. Gmail жәшігі де — стек.", in: "push (үстіне қою)", out: "pop (үстінен алу)" },
-      queue: { big: "FIFO", note: "First In, First Out — бірінші кірген бірінші шығады. Дүкендегі кезек сияқты: соңына тұрасыз, басынан шығасыз.", in: "enqueue (соңына)", out: "dequeue (басынан)" },
+      stack: { big: "LIFO", note: "Last In, First Out - соңғы кірген бірінші шығады. Асханадағы науалар сияқты: үстіне қоясыз, үстінен аласыз. Gmail жәшігі де - стек.", in: "push (үстіне қою)", out: "pop (үстінен алу)" },
+      queue: { big: "FIFO", note: "First In, First Out - бірінші кірген бірінші шығады. Дүкендегі кезек сияқты: соңына тұрасыз, басынан шығасыз.", in: "enqueue (соңына)", out: "dequeue (басынан)" },
     };
     const render = (fresh = -1) => {
       const t = TXT[mode];
@@ -606,7 +606,7 @@
       K.mark && K.mark("viz-stackqueue");
     });
     el.querySelector(".sq-out").addEventListener("click", () => {
-      if (!items.length) { el.querySelector(".sq-msg").textContent = "Бос — алатын ештеңе жоқ"; return; }
+      if (!items.length) { el.querySelector(".sq-msg").textContent = "Бос - алатын ештеңе жоқ"; return; }
       const v = mode === "stack" ? items.pop() : items.shift();
       el.querySelector(".sq-msg").textContent = `${v} шықты`;
       render();
@@ -627,7 +627,7 @@
     const table = Array.from({ length: 26 }, () => []);
     el.innerHTML = `
       <div class="viz-head"><b>Хэш-кесте</b><span class="viz-big">hash(name) = name[0] − 'A'</span></div>
-      <p class="viz-note">26 «шелек» (bucket), әрқайсысы — байланысқан тізім. Хэш-функция атты бірінші әрпі бойынша шелекке жібереді. Бір шелекке түскен аттар — <b>коллизия</b>: олар тізімге тізбектеледі.</p>
+      <p class="viz-note">26 «шелек» (bucket), әрқайсысы - байланысқан тізім. Хэш-функция атты бірінші әрпі бойынша шелекке жібереді. Бір шелекке түскен аттар - <b>коллизия</b>: олар тізімге тізбектеледі.</p>
       <div class="viz-controls">
         <input class="viz-input hs-in" type="text" maxlength="14" placeholder="Аты: Aruzhan" aria-label="Аты" style="width:170px">
         <button type="button" class="btn gold hs-add">Қосу</button>
@@ -650,7 +650,7 @@
       if (table[b].some((x) => x.toLowerCase() === w.toLowerCase())) return msg(`${esc(w)} кестеде бар.`);
       table[b].push(w[0].toUpperCase() + w.slice(1));
       render(b, table[b].length - 1, "fresh");
-      msg(`hash("${esc(w)}") = <b>${b}</b>. ${table[b].length > 1 ? `Коллизия! ${b}-шелекте енді ${table[b].length} ат.` : "Шелек бос еді — O(1)."}`);
+      msg(`hash("${esc(w)}") = <b>${b}</b>. ${table[b].length > 1 ? `Коллизия! ${b}-шелекте енді ${table[b].length} ат.` : "Шелек бос еді - O(1)."}`);
       inp.value = ""; K.mark && K.mark("viz-hash");
     });
     el.querySelector(".hs-find").addEventListener("click", async () => {
@@ -680,7 +680,7 @@
     const count = (n) => (n ? 1 + count(n.l) + count(n.r) : 0);
     el.innerHTML = `
       <div class="viz-head"><b>Екілік іздеу ағашы</b><span class="viz-big bst-big"></span></div>
-      <p class="viz-note">Сол жақтағы бала кіші, оң жақтағы бала үлкен. Іздегенде әр қадамда ағаштың жартысын тастаймыз — теңдестірілген ағашта O(log n). Бірақ сандарды ретімен қоссаңыз, ағаш «тізімге» айналады: O(n).</p>
+      <p class="viz-note">Сол жақтағы бала кіші, оң жақтағы бала үлкен. Іздегенде әр қадамда ағаштың жартысын тастаймыз - теңдестірілген ағашта O(log n). Бірақ сандарды ретімен қоссаңыз, ағаш «тізімге» айналады: O(n).</p>
       <div class="viz-controls">
         <input class="viz-input bst-in" type="number" min="0" max="99" placeholder="Сан" aria-label="Сан">
         <button type="button" class="btn gold bst-add">Қосу</button>
@@ -835,7 +835,7 @@
   function vizFilter(el) {
     el.innerHTML = `
       <div class="viz-head"><b>Сурет сүзгілері</b><span class="viz-big">Problem Set 4: Filter</span></div>
-      <p class="viz-note">Сурет — пиксельдер торы, әр пиксель — үш байт: қызыл, жасыл, көк (RGB). Сүзгіні таңдаңыз, ал тышқанды (не саусақты) суреттің үстіне апарып, пиксельдің мәнін көріңіз.</p>
+      <p class="viz-note">Сурет - пиксельдер торы, әр пиксель - үш байт: қызыл, жасыл, көк (RGB). Сүзгіні таңдаңыз, ал тышқанды (не саусақты) суреттің үстіне апарып, пиксельдің мәнін көріңіз.</p>
       <div class="viz-controls">
         <div class="seg ft-seg">${Object.entries(FILTERS).map(([k, f], i) => `<button type="button" data-f="${k}" class="${i ? "" : "on"}">${f.name}</button>`).join("")}</div>
         <label class="btn secondary ft-upload">📷 Өз суретім<input type="file" accept="image/*" hidden></label>
@@ -922,7 +922,7 @@
       el.querySelectorAll(".bh-line")[b.bug].classList.add("bug");
       const r = el.querySelector(".bh-result");
       r.hidden = false;
-      r.innerHTML = `<p><b>${ok ? "Дұрыс! ✓" : `Қате жол — ${b.bug + 1}-жол.`}</b> ${b.why}</p><p class="bh-fixlabel">Түзетілгені:</p><pre class="bh-fix">${esc(b.fix)}</pre>`;
+      r.innerHTML = `<p><b>${ok ? "Дұрыс! ✓" : `Қате жол - ${b.bug + 1}-жол.`}</b> ${b.why}</p><p class="bh-fixlabel">Түзетілгені:</p><pre class="bh-fix">${esc(b.fix)}</pre>`;
       if (ok && !solved[i]) K.bump && K.bump("trainer");
       if (ok) { solved[i] = 1; store.set(KEY, solved); K.mark && K.mark("bughunt"); if (Object.keys(solved).length === all.length) K.celebrate(); }
       el.querySelector(".bh-score").textContent = `Табылды: ${Object.keys(solved).length} / ${all.length}`;
@@ -1134,17 +1134,17 @@
     domb: {
       script: "assets/data/mystery.js", data: () => window.CS50KZ_MYSTERY, db: "mystery", key: "cs50kz:mystery", flag: "detective",
       bota: "bota.svg",
-      story: `<p><b>Бота:</b> Детектив, көмегіңіз керек! Наурыз мейрамында, <b>2026 жылғы 21 наурызда</b>, Алмалы қаласындағы <b>Абай көшесіндегі мұражайдан</b> халықтың мақтанышы — <b>алтын домбыра</b> ұрланды!</p>
-          <p>Қаланың барлық деректері — тұрақ камерасы, банкоматтар, телефон қоңыраулары, әуежай — SQL дерекқорында. Табыңыз: <b>ұры кім</b>, ол <b>қай қалаға қашты</b> және оған <b>кім көмектесті</b>?</p>`,
+      story: `<p><b>Бота:</b> Детектив, көмегіңіз керек! Наурыз мейрамында, <b>2026 жылғы 21 наурызда</b>, Алмалы қаласындағы <b>Абай көшесіндегі мұражайдан</b> халықтың мақтанышы - <b>алтын домбыра</b> ұрланды!</p>
+          <p>Қаланың барлық деректері - тұрақ камерасы, банкоматтар, телефон қоңыраулары, әуежай - SQL дерекқорында. Табыңыз: <b>ұры кім</b>, ол <b>қай қалаға қашты</b> және оған <b>кім көмектесті</b>?</p>`,
       start: "SELECT description\nFROM crime_scene_reports\nWHERE year = 2026 AND month = 3 AND day = 21 AND street = 'Abai Street';",
       hints: [
         "Алдымен оқиға орнынан бастаңыз: <code>crime_scene_reports</code> кестесінен 2026 жылғы 21 наурыздағы, Abai Street-тегі есепті табыңыз.",
         "Есепте куәлар туралы айтылды. <code>interviews</code> кестесінен сол күнгі сұхбаттарды оқыңыз. Әр куә бір ізді көрсетеді.",
         "Бірінші куә: <code>museum_parking_logs</code> кестесінен сағат 10:15–10:25 аралығында (<code>activity = 'exit'</code>) шыққан көліктерді табыңыз, сосын <code>people</code>-ден олардың иелерін.",
         "Екінші куә: <code>atm_transactions</code> → <code>bank_accounts</code> → <code>people</code>. Үшінші куә: сол күнгі 60 секундтан қысқа <code>phone_calls</code>. Күдіктілердің тізімдерін <code>IN (...)</code> арқылы қиыстырыңыз.",
-        "Ертеңгі (22 наурыз) Алмалыдан ұшатын ең ерте рейс: <code>flights</code>-ті <code>ORDER BY hour, minute LIMIT 1</code> арқылы табыңыз, сосын <code>passengers</code>. Сыбайлас — ұры қоңырау шалған адам (<code>receiver</code>).",
+        "Ертеңгі (22 наурыз) Алмалыдан ұшатын ең ерте рейс: <code>flights</code>-ті <code>ORDER BY hour, minute LIMIT 1</code> арқылы табыңыз, сосын <code>passengers</code>. Сыбайлас - ұры қоңырау шалған адам (<code>receiver</code>).",
       ],
-      win: "🎉 <b>Құпия ашылды!</b> Алтын домбыра мұражайға оралды. Сіз — нағыз SQL детективісіз!",
+      win: "🎉 <b>Құпия ашылды!</b> Алтын домбыра мұражайға оралды. Сіз - нағыз SQL детективісіз!",
       winBota: "Рахмет, детектив! Алтын домбыра орнына оралды! 🎉",
     },
     baikonur: {
@@ -1158,9 +1158,9 @@
         "Уақыт мәтін ретінде сақталған: <code>'2026-04-12 14:07'</code>. Мұндай мәтіндерді <code>BETWEEN '2026-04-12 14:00' AND '2026-04-12 15:00'</code> не <code>LIKE '2026-04-12%'</code> арқылы салыстыруға болады.",
         "Бірінші куә: <code>badge_scans</code>-тан архив есігінен (<code>door = 'archive'</code>) 14:00–15:00 аралығында кіріп, 16:00-ге дейін шыққандарды табыңыз. Кестені өзімен <code>JOIN</code> жасаңыз (кіру мен шығу), сосын <code>employees</code>-пен <code>badge_id</code> арқылы байланыстырыңыз.",
         "Екінші куә: <code>printer_jobs</code>-тан B-2 принтерінде сол күні барлығы 50-ден көп парақ басқандар: <code>GROUP BY employee_id HAVING SUM(pages) &gt; 50</code>. Үшінші куә: <code>emails</code>-тен <code>size_kb &gt; 5000</code> және <code>recipient NOT LIKE '%@baikonur.kz'</code>.",
-        "Пойыз: <code>stations</code> мен <code>trains</code>-ті <code>JOIN</code> жасап, 13 сәуірде Toretam-нан шығатын ең ерте пойызды табыңыз (<code>ORDER BY departure LIMIT 1</code>), сосын <code>tickets</code>. Сыбайлас — ұрының үлкен хатын алған адам (<code>people.email</code>).",
+        "Пойыз: <code>stations</code> мен <code>trains</code>-ті <code>JOIN</code> жасап, 13 сәуірде Toretam-нан шығатын ең ерте пойызды табыңыз (<code>ORDER BY departure LIMIT 1</code>), сосын <code>tickets</code>. Сыбайлас - ұрының үлкен хатын алған адам (<code>people.email</code>).",
       ],
-      win: "🚀 <b>Құпия ашылды!</b> «Тұлпар-1» сызбалары Байқоңырға оралды. Сіз — ғарыш деңгейіндегі SQL детективісіз!",
+      win: "🚀 <b>Құпия ашылды!</b> «Тұлпар-1» сызбалары Байқоңырға оралды. Сіз - ғарыш деңгейіндегі SQL детективісіз!",
       winBota: "Керемет! Сызбалар табылды, «Тұлпар-1» ұшуға дайын! 🚀",
     },
   };
@@ -1438,7 +1438,7 @@
       <div class="pg-actions"><button type="button" class="btn gold hp-run">▶ Тексеру</button><span class="ag-score hp-score"></span></div>
       <ul class="ag-results hp-results"></ul>`;
     const start = {
-      "index.html": '<!DOCTYPE html>\n<html lang="kk">\n    <head>\n        <meta name="viewport" content="width=device-width, initial-scale=1">\n        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">\n        <link href="styles.css" rel="stylesheet">\n        <title>Менің сайтым</title>\n    </head>\n    <body>\n        <h1 id="title">Сәлем! Мен — ...</h1>\n        <p class="lead">Өзіңіз туралы жазыңыз.</p>\n        <script src="script.js"></script>\n    </body>\n</html>\n',
+      "index.html": '<!DOCTYPE html>\n<html lang="kk">\n    <head>\n        <meta name="viewport" content="width=device-width, initial-scale=1">\n        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">\n        <link href="styles.css" rel="stylesheet">\n        <title>Менің сайтым</title>\n    </head>\n    <body>\n        <h1 id="title">Сәлем! Мен - ...</h1>\n        <p class="lead">Өзіңіз туралы жазыңыз.</p>\n        <script src="script.js"></script>\n    </body>\n</html>\n',
       "styles.css": "#title {\n    color: #0a4c7a;\n}\n",
       "script.js": "",
     };

@@ -1,5 +1,5 @@
-// CS50 қазақша — кері байланыс: мәтінді белгілеп «Қатені хабарлау» не футердегі «Пікір қалдыру».
-// Хабар Supabase-ке (cs50kz_feedback_send) жіберіледі; болмаса — GitHub issue сілтемесі ұсынылады.
+// CS50 қазақша - кері байланыс: мәтінді белгілеп «Қатені хабарлау» не футердегі «Пікір қалдыру».
+// Хабар Supabase-ке (cs50kz_feedback_send) жіберіледі; болмаса - GitHub issue сілтемесі ұсынылады.
 
 (function () {
   const K = window.CS50KZ;
@@ -50,8 +50,8 @@
 
   // ---------- Терезе ----------
   function githubUrl(d) {
-    const title = `[${(KINDS.find((k) => k[0] === d.kind) || KINDS[4])[1]}] ${d.page}${d.section ? " — " + d.section : ""}`.slice(0, 120);
-    const body = `**Бет:** ${d.page}\n**Бөлім:** ${d.section || "—"}\n\n${d.quote ? "**Үзінді:**\n> " + d.quote.replace(/\n/g, "\n> ") + "\n\n" : ""}**Ұсыныс:**\n${d.message}\n`;
+    const title = `[${(KINDS.find((k) => k[0] === d.kind) || KINDS[4])[1]}] ${d.page}${d.section ? " - " + d.section : ""}`.slice(0, 120);
+    const body = `**Бет:** ${d.page}\n**Бөлім:** ${d.section || "-"}\n\n${d.quote ? "**Үзінді:**\n> " + d.quote.replace(/\n/g, "\n> ") + "\n\n" : ""}**Ұсыныс:**\n${d.message}\n`;
     return `${REPO}?labels=feedback&title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`;
   }
 

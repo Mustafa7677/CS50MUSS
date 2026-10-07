@@ -3,9 +3,9 @@
 
   python3 tools/make_demo_db.py   →   assets/data/db.js
 
-favorites — лекциядағы Google Forms сауалнамасына ұқсас 272 жауап
+favorites - лекциядағы Google Forms сауалнамасына ұқсас 272 жауап
             (сандары лекциямен бірдей: C 58, Python 190, Scratch 24).
-shows     — IMDb дерекқорының шағын үлгісі (shows, ratings, genres,
+shows     - IMDb дерекқорының шағын үлгісі (shows, ratings, genres,
             people, stars). Бұл оқуға арналған демо деректер, толық база емес.
 """
 import json

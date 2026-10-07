@@ -1,4 +1,4 @@
-// CS50 қазақша — бұлттық синхрондау (Supabase).
+// CS50 қазақша - бұлттық синхрондау (Supabase).
 // Оқушы: ID + 8 таңбалы кіру коды → кез келген құрылғыда прогресс өзі жалғасады.
 // Мұғалім: сынып коды + құпиясөз → сыныптың жанды кестесі.
 // Деректер тек supabase/schema.sql-дегі қорғалған функциялар арқылы жазылады/оқылады.
@@ -17,7 +17,7 @@
   const setState = (patch) => { const s = Object.assign(state(), patch); put(ST, s); return s; };
   const rand = (n) => { const r = new Uint8Array(n); crypto.getRandomValues(r); return [...r].map((x) => ABC[x % ABC.length]).join(""); };
   const ago = (t) => {
-    if (!t) return "—";
+    if (!t) return "-";
     const s = Math.max(0, (Date.now() - new Date(t).getTime()) / 1000);
     if (s < 60) return "жаңа ғана";
     if (s < 3600) return Math.floor(s / 60) + " мин бұрын";
@@ -44,7 +44,7 @@
   }
   // Сайттың жария мекенжайы (файлдан ашылса да QR нағыз сайтқа апарсын)
   const siteUrl = (path) => K.ROOT_URL.replace(/^file:.*/, "https://mustafa7677.github.io/CS50MUSS/") + path;
-  const human = (e) => e.auth ? "ID не код қате" : e.code === "PGRST202" || /Could not find the function/i.test(e.message) ? "бұлт әлі бапталмаған — кейінірек қайталаңыз" : /Failed to fetch|NetworkError|Load failed/i.test(e.message) ? "интернет жоқ" : e.message;
+  const human = (e) => e.auth ? "ID не код қате" : e.code === "PGRST202" || /Could not find the function/i.test(e.message) ? "бұлт әлі бапталмаған - кейінірек қайталаңыз" : /Failed to fetch|NetworkError|Load failed/i.test(e.message) ? "интернет жоқ" : e.message;
 
   let S = null; // profile.js біріктіру функциялары
   const sync = async () => (S = S || (await K.loadScript("assets/js/profile.js"), window.CS50KZ_SYNC));
@@ -98,7 +98,7 @@
             const r = await pull();
             if (r && r.n && !opts.quiet) K.toast && K.toast("☁️ Басқа құрылғыдағы прогресс қосылды");
           } catch (e) {
-            if (!(e.auth && !s.at)) throw e; // жаңа ID: бұлтта әлі жоқ — бірінші push тіркейді
+            if (!(e.auth && !s.at)) throw e; // жаңа ID: бұлтта әлі жоқ - бірінші push тіркейді
           }
         }
         await push(opts.force);
@@ -112,7 +112,7 @@
     return busy;
   }
 
-  // Бұлтты қосу (профильдегі батырма не сынып сілтемесі). Бұл ID бұлтта басқа кодпен бұрыннан бар болса —
+  // Бұлтты қосу (профильдегі батырма не сынып сілтемесі). Бұл ID бұлтта басқа кодпен бұрыннан бар болса -
   // жаңа код ойлап таппаймыз, бұлтты қайта өшіріп, «Кіру» арқылы бұрынғы кодты сұраймыз.
   async function activate(patch = {}) {
     const st = state();
@@ -190,7 +190,7 @@
       <span class="tk-ico">${read ? "✅" : "📌"}</span>
       <div><small>${esc(s.clsTitle || "Сынып")} · мұғалім тапсырмасы</small>
         <b>${esc(lecName(t.lecture))}</b>
-        <span class="tk-meta">${read ? "Орындалды — жарайсыз!" : esc(dueText(t.due) || "Мерзімі көрсетілмеген")}${t.note ? " · " + esc(t.note) : ""}</span></div>
+        <span class="tk-meta">${read ? "Орындалды - жарайсыз!" : esc(dueText(t.due) || "Мерзімі көрсетілмеген")}${t.note ? " · " + esc(t.note) : ""}</span></div>
       ${read ? "" : `<a class="btn gold" href="${K.ROOT_URL}${l ? l.url : "lectures/" + t.lecture + ".html"}">Оқу →</a>`}
     </div>`;
   }
@@ -230,7 +230,7 @@
       : p.rank === 1 ? "🏆 Сынып көшбасшысысыз! Осы қарқынмен жалғастырыңыз."
       : diff > 0 ? `Сынып орташасынан ${diff} дәріс алдасыз 💪`
       : diff < 0 ? `Сынып орташасына жету үшін тағы ${Math.ceil(-diff)} дәріс оқыңыз 📚`
-      : "Сынып орташасы деңгейіндесіз — бір дәріс алға шығарады!";
+      : "Сынып орташасы деңгейіндесіз - бір дәріс алға шығарады!";
     return `<div class="cp-card" aria-label="Сыныптағы орның">
       <div class="cp-rank"><small>Сыныптағы орның</small><b>${p.rank}<span>/${p.size}</span></b></div>
       <div class="cp-body">
@@ -238,7 +238,7 @@
           <i class="cp-fill" style="width:${pct(p.my_read)}%"></i>
           <i class="cp-avg ${pct(p.avg_read) < 12 ? "l" : pct(p.avg_read) > 88 ? "r" : ""}" style="left:${pct(p.avg_read)}%"><span>орташа ${p.avg_read}</span></i>
         </div>
-        <div class="cp-legend"><span><b>${p.my_read}</b> / ${total} дәріс — сіз</span><span>ең көбі: ${p.max_read}</span></div>
+        <div class="cp-legend"><span><b>${p.my_read}</b> / ${total} дәріс - сіз</span><span>ең көбі: ${p.max_read}</span></div>
         <p class="cp-note">${note}</p>
         <div class="cp-chips">
           <span>👥 ${p.size} оқушы</span>
@@ -258,7 +258,7 @@
       const p = await rpc("cs50kz_class_pulse", { p_id: K.profile().id, p_secret: s.secret });
       setState({ pulse: p || null });
       document.dispatchEvent(new CustomEvent("cs50kz:pulse"));
-    } catch (e) { /* бұлт әлі жаңартылмаса — жай көрсетпейміз */ }
+    } catch (e) { /* бұлт әлі жаңартылмаса - жай көрсетпейміз */ }
   }
 
   // ---------- Оқушы панелі (профиль беті) ----------
@@ -270,7 +270,7 @@
           <h3>☁️ Бұлтта сақтау</h3>
           <p>Қоссаңыз, прогресіңіз бұлтта сақталады: басқа телефонда <b>ID</b> мен <b>кіру кодын</b> жазсаңыз, бәрі өзі жалғасады. Мұғаліміңіз сынып кодын берсе, ол сіздің нәтижеңізді жанды кестеден көреді. Бұлтқа тек атыңыз бен оқу прогресі жіберіледі.</p>
           <div class="pf-actions"><button type="button" class="btn gold cl-enable">☁️ Бұлтта сақтауды қосу</button></div>
-          <details class="cl-login-wrap"${s.lastId ? " open" : ""}><summary>Бұрын басқа құрылғыда қосқанмын — кіру</summary>
+          <details class="cl-login-wrap"${s.lastId ? " open" : ""}><summary>Бұрын басқа құрылғыда қосқанмын - кіру</summary>
             <div class="cl-login">
               <input class="cl-id" placeholder="KZ-XXXX-XXXX" value="${esc(s.lastId || "")}" autocapitalize="characters" spellcheck="false" aria-label="ID">
               <input class="cl-secret" placeholder="Кіру коды: XXXX-XXXX" autocapitalize="characters" spellcheck="false" aria-label="Кіру коды">
@@ -290,7 +290,7 @@
           <button type="button" class="btn secondary cl-qr-btn">📱 QR</button>
         </div>
         <div class="cl-qr" hidden></div>
-        <p class="pf-small">Жаңа телефонда профиль бетін ашып, «Кіру» арқылы ID мен кодты жазыңыз не QR-ды сканерлеңіз. Кодты ешкімге бермеңіз — мұғалімге тек сынып арқылы көрінесіз.</p>
+        <p class="pf-small">Жаңа телефонда профиль бетін ашып, «Кіру» арқылы ID мен кодты жазыңыз не QR-ды сканерлеңіз. Кодты ешкімге бермеңіз - мұғалімге тек сынып арқылы көрінесіз.</p>
         ${msgBanner(s)}${taskBanner(s)}
         <div class="cl-class">${s.cls
           ? `<span>🏫 Сынып: <b>${esc(s.clsTitle || s.cls)}</b> <code>${esc(s.cls)}</code></span><button type="button" class="btn secondary cl-leave">Сыныптан шығу</button>`
@@ -403,8 +403,8 @@
       qrOpen = false;
       onlyFlagged = false;
       box.innerHTML = `
-        <div class="cl-head"><h3>☁️ Бұлттағы сынып — жанды кесте</h3></div>
-        <p>Сынып ашыңыз да, оқушыларға <b>сынып кодын</b> беріңіз. Олар «Профиль» бетінде бұлтты қосып, кодты енгізеді — сол сәттен бастап нәтижелері осында өзі жаңарып тұрады.</p>
+        <div class="cl-head"><h3>☁️ Бұлттағы сынып - жанды кесте</h3></div>
+        <p>Сынып ашыңыз да, оқушыларға <b>сынып кодын</b> беріңіз. Олар «Профиль» бетінде бұлтты қосып, кодты енгізеді - сол сәттен бастап нәтижелері осында өзі жаңарып тұрады.</p>
         ${classes().length ? `<div class="cl-saved">${classes().map((c) => `<button type="button" class="btn secondary cl-open-saved" data-code="${esc(c.code)}">🏫 ${esc(c.title)} <code>${esc(c.code)}</code></button>`).join("")}</div>` : ""}
         <div class="cl-tforms">
           <form class="cl-new"><b>Жаңа сынып</b><input name="title" maxlength="80" placeholder="Мысалы: 10А информатика" required><input name="pw" type="password" minlength="6" placeholder="Мұғалім құпиясөзі (6+ таңба)" required><button class="btn gold">Сынып ашу</button></form>
@@ -461,7 +461,7 @@
       const tiles = [
         ["Оқушы", n, ""],
         ["Орташа оқылған", avgRead.toFixed(1), "/ 12 лекция"],
-        ["Тест нәтижесі", qb ? Math.round((qa / qb) * 100) + "%" : "—", "орташа"],
+        ["Тест нәтижесі", qb ? Math.round((qa / qb) * 100) + "%" : "-", "орташа"],
         ["Емтиханнан өтті", examPass, `/ ${examTaken.length} тапсырған`],
         ["Белсенді", active, "соңғы 24 сағат"],
       ];
@@ -483,7 +483,7 @@
       const hardHtml = hard.length ? `<div class="ca-hard">
           <h5>Сыныпқа ең қиын тесттер</h5>
           ${hard.map((h) => `<div class="ca-hrow ${h.pct < 60 ? "low" : ""}"><span>${esc(nm(LAB[h.i]))}</span><i><em style="width:${h.pct}%"></em></i><b>${h.pct}%</b><small>${h.c} оқушы</small></div>`).join("")}
-          ${hard[0].pct < 60 ? `<p class="ca-insight">💡 <b>${esc(nm(LAB[hard[0].i]))}</b> тестінде сынып орташа ${hard[0].pct}% алды — сол тақырыпқа қайталау сабағы пайдалы болады.</p>` : ""}
+          ${hard[0].pct < 60 ? `<p class="ca-insight">💡 <b>${esc(nm(LAB[hard[0].i]))}</b> тестінде сынып орташа ${hard[0].pct}% алды - сол тақырыпқа қайталау сабағы пайдалы болады.</p>` : ""}
         </div>` : "";
       return `<div class="ca">
         <div class="ca-tiles">${tiles.map(([l, v, sub]) => `<div><small>${l}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ""}</div>`).join("")}</div>
@@ -532,7 +532,7 @@
         const [x, y] = (q[i] || "").split("/").map(Number);
         const pct = y ? Math.round((x / y) * 100) : null;
         return `<li class="${r[i] === "1" ? "on" : ""}"><span class="sc-lec">${LAB[id] || id.replace("week-", "") + "-апта"}</span>
-          <span class="sc-read">${r[i] === "1" ? `✓<span class="sc-w"> оқыды</span>` : "—"}</span>
+          <span class="sc-read">${r[i] === "1" ? `✓<span class="sc-w"> оқыды</span>` : "-"}</span>
           <span class="sc-quiz">${pct == null ? `<small>тест жоқ</small>` : `<i><em style="width:${pct}%" class="${pct < 50 ? "low" : ""}"></em></i><small>${x}/${y}</small>`}</span></li>`;
       }).join("");
       const m = document.createElement("div");
@@ -542,9 +542,9 @@
         ${flags(st).length ? `<p class="sc-flags">${flags(st).map(([i, t]) => `<span class="cl-flag">${i} ${t}</span>`).join("")}</p>` : ""}
         <div class="sc-tiles">
           <div><small>Лекция</small><b>${read}/12</b></div>
-          <div><small>Тест</small><b>${qb ? Math.round((qa / qb) * 100) + "%" : "—"}</b></div>
+          <div><small>Тест</small><b>${qb ? Math.round((qa / qb) * 100) + "%" : "-"}</b></div>
           <div><small>Тапсырма</small><b>${+d.t || 0}</b></div>
-          <div><small>Емтихан</small><b>${d.e != null ? +d.e + "%" : "—"}</b></div>
+          <div><small>Емтихан</small><b>${d.e != null ? +d.e + "%" : "-"}</b></div>
           <div><small>Жетістік</small><b>${+d.a || 0}</b></div>
           <div><small>Стрик</small><b>🔥 ${+d.s || 0}</b></div>
         </div>
@@ -572,9 +572,9 @@
           <div><b>${esc(lecName(t.lecture))}</b><span class="tk-meta">${esc(dueText(t.due) || "мерзімсіз")}${t.note ? " · " + esc(t.note) : ""}</span></div>
           <div class="tk-prog"><i><em style="width:${n ? (done.length / n) * 100 : 0}%"></em></i><span>${done.length} / ${n} орындады</span></div>
           ${todo.length ? `<p class="tk-todo">Әлі оқымағандар: ${todo.slice(0, 10).map((st) => esc(st.name || st.id)).join(", ")}${todo.length > 10 ? ` және тағы ${todo.length - 10}` : ""}</p>` : n ? `<p class="tk-todo ok">Барлығы орындады 🎉</p>` : ""}
-        </div>` : `<p class="pf-small">Тапсырма берілмеген. Лекцияны таңдаңыз — оқушылар оны басты бетте және профильде көреді.</p>`}
+        </div>` : `<p class="pf-small">Тапсырма берілмеген. Лекцияны таңдаңыз - оқушылар оны басты бетте және профильде көреді.</p>`}
         <form class="tk-form">
-          <select name="lecture" aria-label="Лекция"><option value="">— лекция таңдаңыз —</option>${opts}</select>
+          <select name="lecture" aria-label="Лекция"><option value="">- лекция таңдаңыз -</option>${opts}</select>
           <input name="due" type="date" aria-label="Мерзімі" value="${t && t.due ? esc(t.due) : ""}">
           <input name="note" maxlength="200" placeholder="Ескертпе (міндетті емес)" aria-label="Ескертпе" value="${t && t.note ? esc(t.note) : ""}">
           <button class="btn gold">${t ? "Жаңарту" : "Тапсырма беру"}</button>
@@ -618,7 +618,7 @@
       const hhmm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
       const bar = (c, max) => `<span class="bar"><i style="width:${max ? (c / max) * 100 : 0}%"></i></span>`;
       const html = `<!doctype html><html lang="kk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Сынып есебі — ${esc(v.title)}</title><style>
+<title>Сынып есебі - ${esc(v.title)}</title><style>
 @page { size: A4; margin: 14mm; }
 * { box-sizing: border-box; } body { font: 13px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #1d2433; margin: 0 auto; max-width: 820px; padding: 24px 16px; background: #fff; }
 header { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; border-bottom: 3px solid #007f97; padding-bottom: 10px; margin-bottom: 16px; }
@@ -640,26 +640,26 @@ footer { margin-top: 24px; color: #8a92a3; font-size: 11px; display: flex; justi
 <header><div><small>CS50 қазақша · сынып есебі</small><h1>${esc(v.title)}</h1></div><div style="text-align:right"><div class="code">${esc(v.code)}</div><small>${esc(date)}</small></div></header>
 <div class="kpi">
   <div><small>Оқушы</small><b>${n}</b></div>
-  <div><small>Орташа оқылған</small><b>${n ? avg(S.map((x) => x.read)).toFixed(1) : "—"}</b> <small>/ 12 лекция</small></div>
-  <div><small>Тест нәтижесі</small><b>${qAvg != null ? Math.round(qAvg) + "%" : "—"}</b></div>
+  <div><small>Орташа оқылған</small><b>${n ? avg(S.map((x) => x.read)).toFixed(1) : "-"}</b> <small>/ 12 лекция</small></div>
+  <div><small>Тест нәтижесі</small><b>${qAvg != null ? Math.round(qAvg) + "%" : "-"}</b></div>
   <div><small>Емтиханнан өтті</small><b>${exam.filter((x) => x.d.e >= 70).length}</b> <small>/ ${exam.length} тапсырған</small></div>
   <div><small>Апта ішінде белсенді</small><b>${act7}</b></div>
 </div>
 ${t ? `<h2>Ағымдағы тапсырма</h2><div class="task"><b>${esc(lecName(t.lecture))}</b>${t.due ? " · мерзімі: " + esc(kzDate(new Date(t.due + "T12:00:00"), true)) : ""}${t.note ? " · " + esc(t.note) : ""}<br>Орындағандар: <b>${tDone} / ${n}</b></div>` : ""}
 <h2>Лекциялар бойынша</h2>
 <table><thead><tr><th>Лекция</th><th>Оқығандар</th><th class="n">Тест (орташа)</th></tr></thead><tbody>
-${lec.map((l) => `<tr><td>${esc(l.name)}</td><td>${bar(l.read, n)}${l.read} / ${n}</td><td class="n ${l.q != null && l.q < 60 ? "low" : ""}">${l.q != null ? l.q + "%" : "—"}</td></tr>`).join("")}
+${lec.map((l) => `<tr><td>${esc(l.name)}</td><td>${bar(l.read, n)}${l.read} / ${n}</td><td class="n ${l.q != null && l.q < 60 ? "low" : ""}">${l.q != null ? l.q + "%" : "-"}</td></tr>`).join("")}
 </tbody></table>
 <h2>Оқушылар</h2>
 <table><thead><tr><th>№</th><th>Аты-жөні</th><th>Лекция</th><th class="n">Тест</th><th class="n">Тапсырма</th><th class="n">Емтихан</th><th>Соңғы кіру</th><th>Ескерту</th></tr></thead><tbody>
-${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}</td><td>${bar(x.read, 12)}${x.read}/12</td><td class="n ${x.q != null && x.q < 50 ? "low" : ""}">${x.q != null ? x.q + "%" : "—"}</td><td class="n">${+x.d.t || 0}</td><td class="n ${x.d.e >= 70 ? "ok" : ""}">${x.d.e != null ? +x.d.e + "%" : "—"}</td><td>${esc(kzDate(new Date(x.st.updated_at)))}</td><td>${flags(x.st).map((f) => esc(f[1])).join(", ")}</td></tr>`).join("") || `<tr><td colspan="8">Әзірге оқушы жоқ.</td></tr>`}
+${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}</td><td>${bar(x.read, 12)}${x.read}/12</td><td class="n ${x.q != null && x.q < 50 ? "low" : ""}">${x.q != null ? x.q + "%" : "-"}</td><td class="n">${+x.d.t || 0}</td><td class="n ${x.d.e >= 70 ? "ok" : ""}">${x.d.e != null ? +x.d.e + "%" : "-"}</td><td>${esc(kzDate(new Date(x.st.updated_at)))}</td><td>${flags(x.st).map((f) => esc(f[1])).join(", ")}</td></tr>`).join("") || `<tr><td colspan="8">Әзірге оқушы жоқ.</td></tr>`}
 </tbody></table>
 <footer><span>mustafa7677.github.io/CS50MUSS</span><span>Жасалды: ${esc(date)}, ${hhmm}</span></footer>
 </body></html>`;
       const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
       const w = window.open(url, "_blank");
       setTimeout(() => URL.revokeObjectURL(url), 60_000);
-      if (!w) K.toast("Браузер жаңа терезені бұғаттады — рұқсат беріп, қайталаңыз");
+      if (!w) K.toast("Браузер жаңа терезені бұғаттады - рұқсат беріп, қайталаңыз");
     }
 
     function show(v) {
@@ -667,11 +667,11 @@ ${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}
       const rows = list.map((st) => {
         const d = st.summary || {}, r = (d.r || "").padEnd(12, "0");
         const qs = (d.q || "").split(",").filter(Boolean).map((x) => x.split("/").map(Number));
-        const qpct = qs.length ? Math.round((qs.reduce((n, x) => n + x[0], 0) / Math.max(1, qs.reduce((n, x) => n + x[1], 0))) * 100) + "%" : "—";
+        const qpct = qs.length ? Math.round((qs.reduce((n, x) => n + x[0], 0) / Math.max(1, qs.reduce((n, x) => n + x[1], 0))) * 100) + "%" : "-";
         const fresh = Date.now() - new Date(st.updated_at).getTime() < 10 * 60_000;
         return `<tr><td><button type="button" class="cl-st" data-id="${esc(st.id)}"><b>${esc(st.name || "Аты жоқ")}</b><small class="t-id">${esc(st.id)}</small></button>${flags(st).map(([ico, t]) => `<span class="cl-flag" title="${t}">${ico} ${t}</span>`).join("")}</td>
           <td><div class="t-cells">${r.split("").map((c, i) => `<i class="${c === "1" ? "on" : ""}" title="${ORDER[i] || ""}"></i>`).join("")}</div><small>${(r.match(/1/g) || []).length}/12</small></td>
-          <td>${qpct}</td><td>${+d.t || 0}</td><td>${d.e != null ? `<b class="${d.e >= 70 ? "t-pass" : ""}">${+d.e}%</b>` : "—"}</td><td>🏅 ${+d.a || 0}</td>
+          <td>${qpct}</td><td>${+d.t || 0}</td><td>${d.e != null ? `<b class="${d.e >= 70 ? "t-pass" : ""}">${+d.e}%</b>` : "-"}</td><td>🏅 ${+d.a || 0}</td>
           <td><span class="cl-dot ${fresh ? "on" : ""}"></span>${ago(st.updated_at)}</td>
           <td><button type="button" class="t-del cl-rm" data-id="${esc(st.id)}" aria-label="Сыныптан шығару">✕</button></td></tr>`;
       }).join("");
@@ -681,10 +681,10 @@ ${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}
         ${analytics(v.students)}
         ${taskBox(v)}
         <div class="cl-join-box">
-          <div class="cl-bigcode"><small>Сынып коды — оқушыларға беріңіз</small><b>${esc(v.code)}</b></div>
+          <div class="cl-bigcode"><small>Сынып коды - оқушыларға беріңіз</small><b>${esc(v.code)}</b></div>
           <div class="cl-join-how">
             <b>Оқушылар қалай қосылады?</b>
-            <p>Ең оңайы — QR-ды тақтаға шығарыңыз не сілтемені чатқа жіберіңіз: оқушы ашып, атын жазса болды.</p>
+            <p>Ең оңайы - QR-ды тақтаға шығарыңыз не сілтемені чатқа жіберіңіз: оқушы ашып, атын жазса болды.</p>
             <div class="pf-actions"><button type="button" class="btn gold cl-join-qr">📱 QR көрсету</button><button type="button" class="btn secondary cl-join-copy">🔗 Сілтемені көшіру</button></div>
             <p class="pf-small">Не: Профиль → «☁️ Бұлтта сақтауды қосу» → сынып коды.</p>
           </div>
@@ -694,7 +694,7 @@ ${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}
         <div class="t-table"><table><thead><tr><th>Оқушы</th><th>Лекциялар</th><th>Тест</th><th>Тапсырма</th><th>Емтихан</th><th>Жетістік</th><th>Белсенділік</th><th></th></tr></thead>
         <tbody>${rows || `<tr><td colspan="8" class="t-empty">Әзірге ешкім қосылмаған. Оқушылар профиль бетінде <b>${esc(v.code)}</b> кодын енгізуі керек.</td></tr>`}</tbody></table></div>`;
       box._last = v;
-      drawQr().catch(() => { const q = box.querySelector(".cl-join-qrbox"); if (q) q.innerHTML = "<p>QR жүктелмеді — сілтемені көшіріп жіберіңіз.</p>"; });
+      drawQr().catch(() => { const q = box.querySelector(".cl-join-qrbox"); if (q) q.innerHTML = "<p>QR жүктелмеді - сілтемені көшіріп жіберіңіз.</p>"; });
     }
     document.addEventListener("cs50kz:lectures", () => { if (box._last && !box.contains(document.activeElement)) show(box._last); });
     box.addEventListener("submit", async (e) => {

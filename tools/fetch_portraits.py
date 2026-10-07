@@ -83,7 +83,7 @@ def candidates(slug, name, ru, en):
                             named.append(f)
         except Exception as e:
             print(f"  {host}: {e}")
-    # Commons іздеуі — тек файл атауында тұлғаның аты болса (бөтен адам түсіп кетпес үшін)
+    # Commons іздеуі - тек файл атауында тұлғаның аты болса (бөтен адам түсіп кетпес үшін)
     for term in (en, ru.split(",")[0], name.split()[-1]):
         try:
             q = api("commons.wikimedia.org", action="query", list="search", srsearch=term, srnamespace=6, srlimit=20)
@@ -103,7 +103,7 @@ def candidates(slug, name, ru, en):
 
 
 def image_info(fname, hosts):
-    """Алдымен Commons, жоқ болса — суреттің өз уикиіндегі (жергілікті) сипаттамасы."""
+    """Алдымен Commons, жоқ болса - суреттің өз уикиіндегі (жергілікті) сипаттамасы."""
     for host in ["commons.wikimedia.org"] + hosts:
         pg = api(host, action="query", titles="File:" + fname, prop="imageinfo",
                  iiprop="url|extmetadata|size", iiurlwidth="800")["query"]["pages"][0]
@@ -148,7 +148,7 @@ def main():
         prev = json.loads(m.group(1)) if m else {}
     for name, slug, ru, en in PEOPLE:
         if prev.get(name, {}).get("manual") and (OUT / f"{slug}.jpg").exists():
-            meta[name] = prev[name]  # қолмен қосылған сурет — өзгертпейміз
+            meta[name] = prev[name]  # қолмен қосылған сурет - өзгертпейміз
             print(f"= {name}: қолмен қосылған")
             continue
         done = False
@@ -182,7 +182,7 @@ def main():
             else:
                 (OUT / f"{slug}.jpg").unlink(missing_ok=True)
     (ROOT / "assets/data/portraits.js").write_text(
-        "// tools/fetch_portraits.py жасаған (Wikimedia Commons, еркін лицензиялар); \"manual\" — қолмен қосылған, скрипт өзгертпейді.\n"
+        "// tools/fetch_portraits.py жасаған (Wikimedia Commons, еркін лицензиялар); \"manual\" - қолмен қосылған, скрипт өзгертпейді.\n"
         "window.CS50KZ_PORTRAITS = " + json.dumps(meta, ensure_ascii=False, indent=1) + ";\n", encoding="utf-8")
     print(f"{len(meta)} / {len(PEOPLE)} портрет")
     return 0 if meta else 1

@@ -1,4 +1,4 @@
-// CS50 қазақша — Менің профилім: жеке ID, прогресті басқа құрылғыға көшіру (код, QR, файл).
+// CS50 қазақша - Менің профилім: жеке ID, прогресті басқа құрылғыға көшіру (код, QR, файл).
 // Деректер біріктіріледі (merge): ешнәрсе өшірілмейді, әр көрсеткіштің ең жақсысы сақталады.
 // main.js .profile бар бетте ғана жүктейді.
 
@@ -15,7 +15,7 @@
 
   // Прогресс кілттері (QR-ға сыятын «жеңіл» бөлік) және код жобалары (тек файлда)
   // Құрылғыға тән баптаулар мен КІРУ ДЕРЕКТЕРІ ешқашан синхрондалмайды/экспортталмайды
-  // (cloud — оқушының кіру коды, tclasses — мұғалімнің сынып құпиясөздері)
+  // (cloud - оқушының кіру коды, tclasses - мұғалімнің сынып құпиясөздері)
   const SKIP = new Set(["cs50kz:prefs", "cs50kz:exam-run", "cs50kz:class", "cs50kz:profile", "flask:url", "cs50kz:theme", "cs50kz:cloud", "cs50kz:tclasses"]);
   const isProgress = (k) => !SKIP.has(k) && (k.startsWith("cs50kz:") || k.startsWith("check:"));
   const isDraft = (k) => !SKIP.has(k) && /^(ag|pg|hp|flask):/.test(k);
@@ -77,7 +77,7 @@
         Object.entries(mine.quiz || {}).forEach(([id, q]) => { if (!quiz[id] || (q.best || 0) >= (quiz[id].best || 0)) quiz[id] = q; });
         return { read: unionObj(mine.read, theirs.read), quiz, last: mine.last || theirs.last || null, name: mine.name || theirs.name || "" };
       }
-      case "cs50kz:days": // бір күн екі құрылғыда — көбі сақталады (қайта синхрондағанда екі есе өспейді)
+      case "cs50kz:days": // бір күн екі құрылғыда - көбі сақталады (қайта синхрондағанда екі есе өспейді)
       case "cs50kz:cards": {
         const out = Object.assign({}, theirs);
         Object.entries(mine).forEach(([id, box]) => (out[id] = maxNum(box, out[id])));
@@ -136,7 +136,7 @@
       const merged = mergeKey(k, get(k, null), v);
       if (JSON.stringify(merged) !== raw(k)) { put(k, merged); n++; }
     });
-    // ID: бір оқушы — бір ID. Келген кодтың ID-і қабылданады.
+    // ID: бір оқушы - бір ID. Келген кодтың ID-і қабылданады.
     if (/^KZ-[0-9A-Z]{4}-[0-9A-Z]{4}$/.test(obj.id || "")) {
       const prof = K.profile();
       if (prof.id !== obj.id) { prof.prev = prof.prev || []; prof.prev.push(prof.id); prof.id = obj.id; }
@@ -189,8 +189,8 @@
       run = prev && (new Date(k + "T12:00:00") - prev) / 86_400_000 === 1 ? run + 1 : 1;
       if (days[k]) best = Math.max(best, run);
     });
-    const tip = !active ? "Лекция оқыңыз, тест не тапсырма орындаңыз — күнтізбе толады 🌱"
-      : days[key(today)] ? "Бүгін де оқыдыңыз — керемет! 🔥" : streak ? `Бүгін бір әрекет жасасаңыз, ${streak + 1} күн қатарынан болады 🔥` : "Бүгін бір лекция не тест — жаңа серия бастаңыз!";
+    const tip = !active ? "Лекция оқыңыз, тест не тапсырма орындаңыз - күнтізбе толады 🌱"
+      : days[key(today)] ? "Бүгін де оқыдыңыз - керемет! 🔥" : streak ? `Бүгін бір әрекет жасасаңыз, ${streak + 1} күн қатарынан болады 🔥` : "Бүгін бір лекция не тест - жаңа серия бастаңыз!";
     return `<div class="cal-head"><h3>📅 Белсенділік</h3>
         <div class="cal-kpi"><span><b>${streak}</b> күн қатарынан</span><span><b>${best}</b> ең ұзақ серия</span><span><b>${active}</b> белсенді күн</span><span><b>${total}</b> әрекет</span></div></div>
       <div class="cal-wrap"><div class="cal">
@@ -208,8 +208,8 @@
       const s = summary(), p = get("cs50kz:progress", {});
       el.querySelector(".pf-id").textContent = K.profile().id;
       el.querySelector(".pf-stats").innerHTML = [
-        ["📖", `${s.read}/12`, "лекция"], ["✅", s.tasks, "тапсырма"], ["📝", s.quiz != null ? s.quiz + "%" : "—", "тест"],
-        ["🎓", s.exam != null ? s.exam + "%" : "—", "емтихан"], ["🏅", s.ach ?? "—", "жетістік"],
+        ["📖", `${s.read}/12`, "лекция"], ["✅", s.tasks, "тапсырма"], ["📝", s.quiz != null ? s.quiz + "%" : "-", "тест"],
+        ["🎓", s.exam != null ? s.exam + "%" : "-", "емтихан"], ["🏅", s.ach ?? "-", "жетістік"],
       ].map(([i, v, t]) => `<div><span>${i}</span><b>${esc(String(v))}</b><small>${t}</small></div>`).join("");
       const nm = el.querySelector(".pf-name");
       if (document.activeElement !== nm) nm.value = p.name || "";
@@ -222,7 +222,7 @@
         <div class="pf-main">
           <label class="pf-label">Аты-жөніңіз<input class="pf-name" type="text" maxlength="40" placeholder="Мысалы: Аружан Серікқызы" autocomplete="name"></label>
           <div class="pf-idrow"><span class="pf-label">Жеке ID</span><code class="pf-id"></code><button type="button" class="btn secondary pf-copy-id">Көшіру</button></div>
-          <p class="pf-note">ID — сіздің оқушы нөміріңіз. Ол мұғалімге жіберілетін кодта да тұрады, сондықтан мұғалім сізді басқа телефоннан жіберсеңіз де таниды.</p>
+          <p class="pf-note">ID - сіздің оқушы нөміріңіз. Ол мұғалімге жіберілетін кодта да тұрады, сондықтан мұғалім сізді басқа телефоннан жіберсеңіз де таниды.</p>
         </div>
       </div>
       <div class="pf-stats"></div>
@@ -240,7 +240,7 @@
             <p class="pf-small">Код ұзын болса, QR орнына оны мессенджермен өзіңізге жіберіңіз.</p>
           </div>
           <hr>
-          <p><b>Толық көшірме файлы</b> — прогреспен бірге жазған кодтарыңызды да (сынақ алаңы, автотексеруші, Flask, Homepage) сақтайды.</p>
+          <p><b>Толық көшірме файлы</b> - прогреспен бірге жазған кодтарыңызды да (сынақ алаңы, автотексеруші, Flask, Homepage) сақтайды.</p>
           <button type="button" class="btn secondary pf-file">⬇ Файлды жүктеп алу</button>
         </section>
         <section class="pf-box">
@@ -282,7 +282,7 @@
         qr.make();
         qrBox.innerHTML = qr.createSvgTag({ cellSize: 4, margin: 2, scalable: true });
       } catch (e) {
-        qrBox.innerHTML = `<p class="pf-small">Прогресс тым көп, QR-ға сыймады — кодты не файлды қолданыңыз.</p>`;
+        qrBox.innerHTML = `<p class="pf-small">Прогресс тым көп, QR-ға сыймады - кодты не файлды қолданыңыз.</p>`;
       }
       K.mark && K.mark("sync");
     });
@@ -304,8 +304,8 @@
         res.className = "pf-result ok";
         res.innerHTML = `<b>✓ Прогресс біріктірілді.</b> ` +
           (r.n ? `Лекция: ${r.after.read}/12${d("read") ? ` (+${d("read")})` : ""} · тапсырма: ${r.after.tasks}${d("tasks") ? ` (+${d("tasks")})` : ""}` +
-            (r.after.exam != null ? ` · емтихан: ${r.after.exam}%` : "") : "Жаңа дерек жоқ — бұл құрылғыда бәрі бар екен.") +
-          (r.from.n ? `<br><small>Оқушы: ${esc(r.from.n)} · ID ${esc(r.from.id || "—")}</small>` : "");
+            (r.after.exam != null ? ` · емтихан: ${r.after.exam}%` : "") : "Жаңа дерек жоқ - бұл құрылғыда бәрі бар екен.") +
+          (r.from.n ? `<br><small>Оқушы: ${esc(r.from.n)} · ID ${esc(r.from.id || "-")}</small>` : "");
         el.querySelector(".pf-in").value = "";
         K.celebrate && r.n && K.celebrate();
         render();
