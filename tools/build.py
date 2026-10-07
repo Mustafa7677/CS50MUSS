@@ -27,7 +27,7 @@ def strip_tags(s):
     return re.sub(r"\s+", " ", html.unescape(s)).strip()
 
 
-def head_block(prefix, title, desc, url):
+def head_block(prefix, title, desc, url, image="assets/img/og.jpg"):
     return f"""<!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
   <link rel="icon" href="{prefix}assets/img/icon.svg" type="image/svg+xml">
@@ -38,8 +38,11 @@ def head_block(prefix, title, desc, url):
   <meta property="og:title" content="{html.escape(title)}">
   <meta property="og:description" content="{html.escape(desc)}">
   <meta property="og:url" content="{url}">
-  <meta property="og:image" content="{SITE_URL}assets/img/og.png">
+  <meta property="og:image" content="{SITE_URL}{image}">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{SITE_URL}{image}">
   <!-- /build:head -->"""
 
 
@@ -101,7 +104,8 @@ def process_page(path, prefix, active):
     desc = m.group(1) if m else "Гарвардтың CS50 курсы қазақ тілінде: лекциялар, тесттер, тапсырмалар."
     rel = path.relative_to(ROOT).as_posix()
     url = SITE_URL + ("" if rel == "index.html" else rel)
-    block = head_block(prefix, title, desc, url)
+    og = f"assets/img/og/{path.stem}.jpg" if rel.startswith("lectures/") else "assets/img/og.jpg"
+    block = head_block(prefix, title, desc, url, og if (ROOT / og).exists() else "assets/img/og.jpg")
     if "<!-- build:head -->" in s:
         s = re.sub(r"<!-- build:head -->.*?<!-- /build:head -->", block, s, flags=re.S)
     else:
