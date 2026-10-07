@@ -457,6 +457,22 @@
         const pct = n ? (c / n) * 100 : 0;
         return `<button type="button" class="ca-col" style="--h:${pct}%" data-tip="${esc(LAB[i] === "AI" ? "AI лекциясы" : LAB[i] + "-апта")}: ${c} / ${n} оқушы (${Math.round(pct)}%)" aria-label="${esc(LAB[i])}: ${c} оқушы оқыды"><i></i><span>${esc(LAB[i])}</span></button>`;
       }).join("");
+      // Сынып қай тестте қиналады: әр лекцияның тест нәтижесі (q жолы ORDER ретімен, үтірмен бөлінген)
+      const perQuiz = ORDER.map((_, i) => {
+        let a = 0, b = 0, c = 0;
+        list.forEach((st) => {
+          const x = ((st.summary && st.summary.q) || "").split(",")[i];
+          const m = x && x.match(/^(\d+)\/(\d+)$/);
+          if (m && +m[2] > 0) { a += +m[1]; b += +m[2]; c++; }
+        });
+        return { i, c, pct: b ? Math.round((a / b) * 100) : null };
+      }).filter((x) => x.c > 0).sort((x, y) => x.pct - y.pct || y.c - x.c);
+      const hard = perQuiz.slice(0, 3);
+      const hardHtml = hard.length ? `<div class="ca-hard">
+          <h5>Сыныпқа ең қиын тесттер</h5>
+          ${hard.map((h) => `<div class="ca-hrow ${h.pct < 60 ? "low" : ""}"><span>${esc(nm(LAB[h.i]))}</span><i><em style="width:${h.pct}%"></em></i><b>${h.pct}%</b><small>${h.c} оқушы</small></div>`).join("")}
+          ${hard[0].pct < 60 ? `<p class="ca-insight">💡 <b>${esc(nm(LAB[hard[0].i]))}</b> тестінде сынып орташа ${hard[0].pct}% алды — сол тақырыпқа қайталау сабағы пайдалы болады.</p>` : ""}
+        </div>` : "";
       return `<div class="ca">
         <div class="ca-tiles">${tiles.map(([l, v, sub]) => `<div><small>${l}</small><b>${v}</b>${sub ? `<em>${sub}</em>` : ""}</div>`).join("")}</div>
         <figure class="ca-chart">
@@ -464,6 +480,7 @@
           <div class="ca-plot"><div class="ca-axis"><span>${n}</span><span>${n % 2 ? "" : n / 2}</span><span>0</span></div><div class="ca-cols">${cols}</div><div class="ca-tip" hidden></div></div>
           ${drop.i > 0 && drop.d >= Math.max(2, n * 0.2) ? `<p class="ca-insight">⚠ Ең көп тоқтайтын жер: <b>${esc(nm(LAB[drop.i - 1]))} → ${esc(nm(LAB[drop.i]))}</b>. Оқығандар саны: ${perLec[drop.i - 1]} → ${perLec[drop.i]}. Сол лекцияға сабақта көбірек уақыт бөлген жөн.</p>` : ""}
         </figure>
+        ${hardHtml}
       </div>`;
     }
     // Бағанға апарғанда/фокуста түсініктеме
