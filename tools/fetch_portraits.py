@@ -71,6 +71,16 @@ def candidates(slug, name, ru, en):
                         named.append(f)
         except Exception as e:
             print(f"  {host}: {e}")
+    # Commons іздеуі — тек файл атауында тұлғаның аты болса (бөтен адам түсіп кетпес үшін)
+    for term in (en, ru.split(",")[0], name.split()[-1]):
+        try:
+            q = api("commons.wikimedia.org", action="query", list="search", srsearch=term, srnamespace=6, srlimit=20)
+            for h in q["query"]["search"]:
+                f = h["title"].split(":", 1)[1]
+                if any(t in f.lower() for t in toks) and f not in named:
+                    named.append(f)
+        except Exception as e:
+            print(f"  commons: {e}")
     ok = lambda f: re.search(r"\.(jpe?g|png)$", f, re.I) and not NOT_PORTRAIT.search(f)
     return [f for f in lead if ok(f)] + [f for f in named if ok(f) and f not in lead]
 
