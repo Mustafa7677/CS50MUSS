@@ -687,8 +687,24 @@
     const lh = size * 1.45, top = 300 + (640 - lines.length * lh) / 2;
     g.fillStyle = "#ffffff"; g.font = serif(size);
     lines.forEach((l, k) => g.fillText(l, 120, top + k * lh + size));
+    // Портрет (бар болса) — оң жақта, алтын рамкада
+    const pr = (window.CS50KZ_PORTRAITS || {})[q.a];
+    if (pr) {
+      try {
+        const im = new Image();
+        im.src = ROOT_URL + pr.img;
+        await im.decode();
+        const px = W - 120 - 176, py = 940, pw = 176, ph = 220;
+        g.save(); g.beginPath(); g.roundRect(px - 6, py - 6, pw + 12, ph + 12, 22); g.fillStyle = "#f2b705"; g.fill();
+        g.beginPath(); g.roundRect(px, py, pw, ph, 18); g.clip(); g.drawImage(im, px, py, pw, ph); g.restore();
+      } catch (e) { /* сурет жүктелмесе — онсыз */ }
+    }
     g.fillStyle = "#f2b705"; g.fillRect(120, 1010, 90, 6);
-    g.fillStyle = "#ffffff"; g.font = "700 46px Unbounded, Inter, system-ui, sans-serif"; g.fillText(q.a, 120, 1080);
+    // Есім портретке тимесін: орын тар болса, қаріп кішірейеді
+    const maxW = (pr ? W - 120 - 176 - 40 : W - 120) - 120;
+    let fs = 46;
+    do { g.font = `700 ${fs}px Unbounded, Inter, system-ui, sans-serif`; fs -= 2; } while (g.measureText(q.a).width > maxW && fs > 26);
+    g.fillStyle = "#ffffff"; g.fillText(q.a, 120, 1080);
     g.fillStyle = "rgba(255,255,255,.75)"; g.font = "500 30px Inter, system-ui, sans-serif"; g.fillText(q.y + (q.src ? " · " + q.src : ""), 120, 1126);
     g.fillStyle = "rgba(255,255,255,.85)"; g.font = "700 28px Inter, system-ui, sans-serif"; g.textAlign = "center";
     g.fillText("CS50 қазақша · mustafa7677.github.io/CS50MUSS", W / 2, H - 70);
