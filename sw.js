@@ -1,6 +1,6 @@
 // CS50 қазақша — офлайн режим.
 // Беттер желіден алынады, ал желі жоқ кезде кэштегі соңғы нұсқа көрсетіледі.
-const CACHE = "cs50kz-v46";
+const CACHE = "cs50kz-v47";
 const CORE = [
   "./", "index.html", "about.html", "glossary.html", "certificate.html", "playground.html", "practice.html", "flashcards.html", "viz.html", "teacher.html", "debug.html", "detective.html", "flask.html", "exam.html", "assets/js/exam.js", "profile.html", "assets/js/profile.js", "assets/js/cloud.js", "assets/js/feedback.js", "assets/js/flask.js", "assets/data/mystery.js", "assets/data/mystery2.js", "assets/data/quotes.js", "assets/data/portraits.js", "alash.html", "map.html", "cheatsheet.html", "assets/data/bugs.js", "assets/data/trace.js", "assets/data/checks.js", "assets/data/sqlchecks.js", "assets/img/bota.svg", "assets/img/bota-happy.svg", "assets/img/bota-think.svg", "assets/img/bota-wow.svg", "assets/vendor/qrcode/qrcode.js",
   "assets/css/style.css", "assets/js/main.js", "assets/js/labs.js",
@@ -28,8 +28,12 @@ self.addEventListener("fetch", (e) => {
   const req = e.request;
   if (req.method !== "GET") return;
   // Желі бірінші, сосын кэш: сайт жаңарғанда оқушы бірден жаңа нұсқаны көреді
+  // Сайттың өз файлдары (JS, деректер, суреттер) серверден тексеріліп алынады: браузердің 10 минуттық
+  // HTTP кэші ескі нұсқаны бермесін. Бет навигациясын өзгертпейміз (redirect-пен қате бермесін).
+  const own = new URL(req.url).origin === location.origin;
+  const net = own && req.mode !== "navigate" ? new Request(req, { cache: "no-cache" }) : req;
   e.respondWith(
-    fetch(req)
+    fetch(net)
       .then((res) => {
         if (res.ok && (new URL(req.url).origin === location.origin || /fonts|cdnjs|jsdelivr/.test(req.url))) {
           const copy = res.clone();
