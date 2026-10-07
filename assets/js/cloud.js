@@ -70,7 +70,7 @@
       p_id: K.profile().id, p_secret: s.secret, p_name: snap.n, p_class: s.joining ? s.cls : null,
       p_data: snap.d, p_summary: K.summary(snap.n),
     }, keepalive);
-    setState({ hash: fp, at: Date.now(), cls: r.class_code, clsTitle: r.class_title, joining: false, err: null });
+    setState({ hash: fp, at: Date.now(), cls: r.class_code, clsTitle: r.class_title, task: r.class_task || null, joining: false, err: null });
     document.dispatchEvent(new CustomEvent("cs50kz:synced"));
     return r;
   }
@@ -81,7 +81,7 @@
     const r = await rpc("cs50kz_pull", { p_id: K.profile().id, p_secret: s.secret });
     const res = X.applyData({ v: 1, id: r.id, n: r.name, d: r.data || {} });
     const now = state();
-    setState({ pulled: Date.now(), cls: now.joining ? now.cls : r.class_code, clsTitle: now.joining ? now.clsTitle : r.class_title, err: null });
+    setState({ pulled: Date.now(), cls: now.joining ? now.cls : r.class_code, clsTitle: now.joining ? now.clsTitle : r.class_title, task: now.joining ? now.task : r.class_task || null, err: null });
     return res;
   }
 
@@ -139,7 +139,7 @@
     setState({ on: true, secret, hash: null });
     const X = await sync();
     X.applyData({ v: 1, id: r.id, n: r.name, d: r.data || {} });
-    setState({ pulled: Date.now(), cls: r.class_code, clsTitle: r.class_title });
+    setState({ pulled: Date.now(), cls: r.class_code, clsTitle: r.class_title, task: r.class_task || null });
     await push(true);
     startAuto();
     K.mark && K.mark("cloud");
@@ -161,6 +161,51 @@
     startAuto();
   }
   document.addEventListener("cs50kz:cloud-login", () => cycle({ pull: true, force: true }));
+
+  // ---------- Мұғалім тапсырмасы ----------
+  const LEC = () => window.CS50KZ_LECTURES || [];
+  K.loadScript("assets/data/lectures.js").then(() => document.dispatchEvent(new CustomEvent("cs50kz:lectures"))).catch(() => {});
+  const lecName = (id) => { const l = LEC().find((x) => x.id === id); return l ? `${l.num}: ${l.title}` : id; };
+  function dueText(due) {
+    if (!due) return "";
+    // Күнтізбелік күн: бүгін мен мерзімнің арасы (уақытқа емес, күнге қараймыз)
+    const today = new Date(); today.setHours(0, 0, 0, 0);
+    const days = Math.round((new Date(due + "T00:00:00") - today) / 86_400_000);
+    const d = new Date(due + "T12:00:00");
+    const months = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
+    const when = `${d.getDate()} ${months[d.getMonth()]}`;
+    if (days > 1) return `${when} дейін · ${days} күн қалды`;
+    if (days === 1) return `${when} дейін · ертең соңғы күн`;
+    if (days === 0) return `${when} · бүгін соңғы күн`;
+    return `${when} · мерзімі өтті`;
+  }
+  function taskBanner(s) {
+    const t = s && s.on && s.cls && s.task;
+    if (!t || !t.lecture) return "";
+    let read = false;
+    try { read = !!(JSON.parse(localStorage.getItem("cs50kz:progress")) || {}).read?.[t.lecture]; } catch (e) {}
+    const l = LEC().find((x) => x.id === t.lecture);
+    return `<div class="tk-banner ${read ? "done" : ""}">
+      <span class="tk-ico">${read ? "✅" : "📌"}</span>
+      <div><small>${esc(s.clsTitle || "Сынып")} · мұғалім тапсырмасы</small>
+        <b>${esc(lecName(t.lecture))}</b>
+        <span class="tk-meta">${read ? "Орындалды — жарайсыз!" : esc(dueText(t.due) || "Мерзімі көрсетілмеген")}${t.note ? " · " + esc(t.note) : ""}</span></div>
+      ${read ? "" : `<a class="btn gold" href="${K.ROOT_URL}${l ? l.url : "lectures/" + t.lecture + ".html"}">Оқу →</a>`}
+    </div>`;
+  }
+  // Басты бетте де көрсетеміз (бұлт қосулы, сыныпта, тапсырма бар болса)
+  function homeBanner() {
+    const host = document.querySelector(".dashboard-wrap");
+    if (!host) return;
+    let box = document.querySelector(".tk-home");
+    const html = taskBanner(state());
+    if (!html) { box && box.remove(); return; }
+    if (!box) { box = document.createElement("div"); box.className = "tk-home"; host.prepend(box); }
+    box.innerHTML = html;
+  }
+  document.addEventListener("cs50kz:synced", homeBanner);
+  document.addEventListener("cs50kz:lectures", homeBanner);
+  homeBanner();
 
   // ---------- Оқушы панелі (профиль беті) ----------
   function studentPanel(box) {
@@ -192,6 +237,7 @@
         </div>
         <div class="cl-qr" hidden></div>
         <p class="pf-small">Жаңа телефонда профиль бетін ашып, «Кіру» арқылы ID мен кодты жазыңыз не QR-ды сканерлеңіз. Кодты ешкімге бермеңіз — мұғалімге тек сынып арқылы көрінесіз.</p>
+        ${taskBanner(s)}
         <div class="cl-class">${s.cls
           ? `<span>🏫 Сынып: <b>${esc(s.clsTitle || s.cls)}</b> <code>${esc(s.cls)}</code></span><button type="button" class="btn secondary cl-leave">Сыныптан шығу</button>`
           : `<input class="cl-code" maxlength="6" placeholder="Сынып коды (мұғалімнен)" autocapitalize="characters" spellcheck="false" aria-label="Сынып коды"><button type="button" class="btn gold cl-join">Сыныпқа қосылу</button>`}</div>
@@ -251,6 +297,7 @@
       }
     });
     document.addEventListener("cs50kz:synced", () => { if (!box.contains(document.activeElement)) { render(); paint(); } });
+    document.addEventListener("cs50kz:lectures", () => { if (!box.contains(document.activeElement)) { render(); paint(); } });
     render();
     // QR не сілтеме: #login=ID.SECRET не #join=КОД. Бет ашылғанда да, профиль ашық тұрғанда сілтеме басылса да (hashchange)
     const handleHash = () => {
@@ -316,9 +363,11 @@
       saveClass(cur);
       show(v);
       clearInterval(timer);
-      timer = setInterval(() => document.visibilityState === "visible" && refresh(), 30_000);
+      timer = setInterval(() => document.visibilityState === "visible" && refresh(true), 30_000);
     }
-    async function refresh() {
+    async function refresh(auto) {
+      // Мұғалім форманы толтырып жатса, автоматты жаңарту оны өшірмесін
+      if (auto && box.contains(document.activeElement) && /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return;
       try { show(await rpc("cs50kz_class_view", { p_code: cur.code, p_teacher_secret: cur.pw })); }
       catch (e) { const st = box.querySelector(".cl-live"); if (st) st.textContent = "⚠ " + human(e); }
     }
@@ -435,6 +484,31 @@
       m.querySelector(".sc-close").focus();
     }
 
+    // Сыныпқа тапсырма: форма + орындалу прогресі
+    function taskBox(v) {
+      const t = v.task || null;
+      const idx = t ? ORDER.indexOf(t.lecture) : -1;
+      const done = idx < 0 ? [] : v.students.filter((st) => ((st.summary && st.summary.r) || "")[idx] === "1");
+      const todo = idx < 0 ? [] : v.students.filter((st) => !done.includes(st));
+      const n = v.students.length;
+      const opts = LEC().map((l) => `<option value="${l.id}" ${t && t.lecture === l.id ? "selected" : ""}>${esc(l.num + ": " + l.title)}</option>`).join("");
+      return `<section class="tk-box">
+        <h4>📌 Сыныпқа тапсырма</h4>
+        ${t ? `<div class="tk-now">
+          <div><b>${esc(lecName(t.lecture))}</b><span class="tk-meta">${esc(dueText(t.due) || "мерзімсіз")}${t.note ? " · " + esc(t.note) : ""}</span></div>
+          <div class="tk-prog"><i><em style="width:${n ? (done.length / n) * 100 : 0}%"></em></i><span>${done.length} / ${n} орындады</span></div>
+          ${todo.length ? `<p class="tk-todo">Әлі оқымағандар: ${todo.slice(0, 10).map((st) => esc(st.name || st.id)).join(", ")}${todo.length > 10 ? ` және тағы ${todo.length - 10}` : ""}</p>` : n ? `<p class="tk-todo ok">Барлығы орындады 🎉</p>` : ""}
+        </div>` : `<p class="pf-small">Тапсырма берілмеген. Лекцияны таңдаңыз — оқушылар оны басты бетте және профильде көреді.</p>`}
+        <form class="tk-form">
+          <select name="lecture" aria-label="Лекция"><option value="">— лекция таңдаңыз —</option>${opts}</select>
+          <input name="due" type="date" aria-label="Мерзімі" value="${t && t.due ? esc(t.due) : ""}">
+          <input name="note" maxlength="200" placeholder="Ескертпе (міндетті емес)" aria-label="Ескертпе" value="${t && t.note ? esc(t.note) : ""}">
+          <button class="btn gold">${t ? "Жаңарту" : "Тапсырма беру"}</button>
+          ${t ? `<button type="button" class="btn secondary tk-clear">Алып тастау</button>` : ""}
+        </form>
+      </section>`;
+    }
+
     function show(v) {
       const list = onlyFlagged ? v.students.filter((st) => flags(st).length) : v.students;
       const rows = list.map((st) => {
@@ -452,6 +526,7 @@
       box.innerHTML = `
         <div class="cl-head"><h3>🏫 ${esc(v.title)}</h3><span class="cl-live">● Жанды · әр 30 секунд сайын жаңарады</span></div>
         ${analytics(v.students)}
+        ${taskBox(v)}
         <div class="cl-join-box">
           <div class="cl-bigcode"><small>Сынып коды — оқушыларға беріңіз</small><b>${esc(v.code)}</b></div>
           <div class="cl-join-how">
@@ -468,9 +543,20 @@
       box._last = v;
       drawQr().catch(() => { const q = box.querySelector(".cl-join-qrbox"); if (q) q.innerHTML = "<p>QR жүктелмеді — сілтемені көшіріп жіберіңіз.</p>"; });
     }
+    document.addEventListener("cs50kz:lectures", () => { if (box._last && !box.contains(document.activeElement)) show(box._last); });
     box.addEventListener("submit", async (e) => {
       e.preventDefault();
       const f = e.target, data = Object.fromEntries(new FormData(f));
+      if (f.classList.contains("tk-form")) {
+        if (!data.lecture) { K.toast("Алдымен лекцияны таңдаңыз"); return; }
+        try {
+          await rpc("cs50kz_class_set_task", { p_code: cur.code, p_teacher_secret: cur.pw, p_lecture: data.lecture, p_due: data.due || null, p_note: data.note || "" });
+          K.toast("📌 Тапсырма берілді");
+          document.activeElement && document.activeElement.blur();
+          await refresh();
+        } catch (err) { K.toast("Қате: " + human(err)); }
+        return;
+      }
       try {
         if (f.classList.contains("cl-new")) {
           const c = await rpc("cs50kz_class_create", { p_title: data.title, p_teacher_secret: data.pw });
@@ -491,6 +577,12 @@
         if (t.classList.contains("cl-join-qr")) {
           qrOpen = !qrOpen;
           await drawQr();
+          return;
+        }
+        if (t.classList.contains("tk-clear")) {
+          if (!confirm("Тапсырманы алып тастау керек пе?")) return;
+          await rpc("cs50kz_class_set_task", { p_code: cur.code, p_teacher_secret: cur.pw, p_lecture: "", p_due: null, p_note: "" });
+          await refresh();
           return;
         }
         if (t.classList.contains("cl-st") && box._last) {

@@ -33,5 +33,11 @@ begin
   if jsonb_array_length(public.cs50kz_class_view(c, 'mugalim9')->'students') <> 0 then
     raise exception 'FAIL: шығарылған оқушы қайта қосылды';
   end if;
+  -- 5) Тапсырманы тек мұғалім қоя алады; лекция атауы тексеріледі
+  begin perform public.cs50kz_class_set_task(c, null, 'week-3', null, 'x'); raise exception 'FAIL: set_task NULL өтті'; exception when sqlstate '22023' then null; end;
+  begin perform public.cs50kz_class_set_task(c, 'wrongpass', 'week-3', null, 'x'); raise exception 'FAIL: set_task қате пароль өтті'; exception when sqlstate '28000' then null; end;
+  begin perform public.cs50kz_class_set_task(c, 'mugalim9', 'week-99', null, 'x'); raise exception 'FAIL: set_task жоқ лекция өтті'; exception when sqlstate '22023' then null; end;
+  perform public.cs50kz_class_set_task(c, 'mugalim9', 'week-3', '2026-10-10', 'Жұмаға дейін');
+  if (public.cs50kz_class_view(c, 'mugalim9')->'task'->>'lecture') <> 'week-3' then raise exception 'FAIL: тапсырма сақталмады'; end if;
   raise notice 'Қауіпсіздік тесттері: бәрі өтті ✓';
 end $$;

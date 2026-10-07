@@ -150,3 +150,47 @@ test("код-ревью регрессиялары: құпия синхронд�
   expect(await S.evaluate(() => CS50KZ.profile().id)).toBe(id);
   for (const p of [T, S]) expect(p.errs).toEqual([]);
 });
+
+test("мұғалім тапсырма береді: оқушы баннерді көреді, орындағаны мұғалімге көрінеді", async ({ browser }) => {
+  test.setTimeout(120_000);
+  const mk = async (opts) => { const c = await browser.newContext(opts); await blockFonts(c); await routeSupabase(c, MOCK); const p = await c.newPage(); p.errs = collectErrors(p); return p; };
+  const T = await mk({ viewport: { width: 1280, height: 900 } });
+  await T.goto("teacher.html");
+  await T.fill(".cl-new [name=title]", "Тапсырма сыныбы"); await T.fill(".cl-new [name=pw]", "mugalim4"); await T.click(".cl-new button");
+  const code = (await T.locator(".cl-bigcode b").innerText()).trim();
+
+  const S = await mk({ viewport: { width: 390, height: 844 } });
+  S.removeAllListeners("dialog");
+  S.on("dialog", (d) => d.accept(d.type() === "prompt" ? "Тапсырма Оқушы" : undefined));
+  await S.goto(`profile.html#join=${code}`);
+  await expect(S.locator(".cl-msg.ok")).toBeVisible();
+
+  // Мұғалім: 1-апта, мерзімі ертең
+  const due = new Date(Date.now() + 86_400_000).toISOString().slice(0, 10);
+  await T.selectOption(".tk-form [name=lecture]", "week-1");
+  await T.fill(".tk-form [name=due]", due);
+  await T.fill(".tk-form [name=note]", "Жұмаға дейін");
+  await T.click(".tk-form .btn.gold");
+  await expect(T.locator(".tk-now")).toContainText("0 / 1 орындады");
+  await expect(T.locator(".tk-todo")).toContainText("Тапсырма Оқушы");
+
+  // Оқушы: синхрондаған соң басты бетте баннер шығады
+  await S.evaluate(() => window.CS50KZ_CLOUD.cycle({ pull: true, force: true }));
+  await S.goto("index.html");
+  await expect(S.locator(".tk-home .tk-banner")).toContainText("1-апта");
+  await expect(S.locator(".tk-home .tk-banner")).toContainText("Жұмаға дейін");
+  await expect(S.locator(".tk-home .tk-banner .btn")).toHaveAttribute("href", /lectures\/week-1\.html/);
+
+  // Оқушы лекцияны оқыды → баннер жасыл, мұғалімде 1/1
+  await S.evaluate(() => { const p = JSON.parse(localStorage.getItem("cs50kz:progress") || "{}"); p.read = Object.assign(p.read || {}, { "week-1": 1 }); localStorage.setItem("cs50kz:progress", JSON.stringify(p)); });
+  await S.evaluate(() => window.CS50KZ_CLOUD.cycle({ force: true }));
+  await S.reload();
+  await expect(S.locator(".tk-home .tk-banner.done")).toContainText("Орындалды");
+  await T.click(".cl-refresh");
+  await expect(T.locator(".tk-now")).toContainText("1 / 1 орындады");
+
+  // Алып тастау
+  await T.click(".tk-clear");
+  await expect(T.locator(".tk-now")).toHaveCount(0);
+  for (const p of [T, S]) expect(p.errs).toEqual([]);
+});

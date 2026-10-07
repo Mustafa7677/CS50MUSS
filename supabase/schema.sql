@@ -21,6 +21,9 @@ create table if not exists public.cs50kz_classes (
   created_at  timestamptz not null default now()
 );
 
+-- Мұғалімнің сыныпқа берген тапсырмасы: {"lecture": "week-3", "due": "2026-10-10", "note": "..."}
+alter table public.cs50kz_classes add column if not exists task jsonb;
+
 create table if not exists public.cs50kz_students (
   id          text primary key check (id ~ '^KZ-[0-9A-Z]{4}-[0-9A-Z]{4}$'),
   secret_hash text not null,
@@ -82,7 +85,8 @@ begin
      returning * into r;
   end if;
   return jsonb_build_object('updated_at', r.updated_at, 'class_code', r.class_code,
-    'class_title', (select title from public.cs50kz_classes where code = r.class_code));
+    'class_title', (select title from public.cs50kz_classes where code = r.class_code),
+    'class_task', (select task from public.cs50kz_classes where code = r.class_code));
 end $$;
 
 -- ---------- Оқушы: прогресті алу (басқа құрылғыда кіру) ----------
@@ -99,6 +103,7 @@ begin
   end if;
   return jsonb_build_object('id', r.id, 'name', r.name, 'class_code', r.class_code,
     'class_title', (select title from public.cs50kz_classes where code = r.class_code),
+    'class_task', (select task from public.cs50kz_classes where code = r.class_code),
     'data', r.data, 'updated_at', r.updated_at);
 end $$;
 
@@ -157,7 +162,7 @@ begin
     perform pg_sleep(0.5);
     raise exception 'wrong class or password' using errcode = '28000';
   end if;
-  return jsonb_build_object('code', k.code, 'title', k.title, 'students', coalesce((
+  return jsonb_build_object('code', k.code, 'title', k.title, 'task', k.task, 'students', coalesce((
     select jsonb_agg(jsonb_build_object('id', s.id, 'name', s.name, 'summary', s.summary, 'updated_at', s.updated_at)
                      order by s.name)
       from public.cs50kz_students s where s.class_code = k.code), '[]'::jsonb));
@@ -177,6 +182,29 @@ begin
   update public.cs50kz_students set class_code = null where id = p_id and class_code = k.code;
 end $$;
 
+-- ---------- Мұғалім: сыныпқа тапсырма беру (p_lecture бос болса — тапсырманы алып тастау) ----------
+create or replace function public.cs50kz_class_set_task(p_code text, p_teacher_secret text, p_lecture text, p_due date, p_note text)
+returns jsonb
+language plpgsql security definer set search_path = public, extensions as $$
+declare k public.cs50kz_classes; t jsonb;
+begin
+  perform public.cs50kz_check_secret(p_teacher_secret, 6);
+  select * into k from public.cs50kz_classes where code = upper(trim(p_code));
+  if not found or k.teacher_hash is distinct from crypt(p_teacher_secret, k.teacher_hash) then
+    perform pg_sleep(0.5);
+    raise exception 'wrong class or password' using errcode = '28000';
+  end if;
+  if coalesce(p_lecture, '') = '' then
+    t := null;
+  elsif p_lecture !~ '^(week-([0-9]|10)|ai)$' then
+    raise exception 'bad lecture' using errcode = '22023';
+  else
+    t := jsonb_build_object('lecture', p_lecture, 'due', p_due, 'note', left(coalesce(trim(p_note), ''), 200), 'set', now());
+  end if;
+  update public.cs50kz_classes set task = t where code = k.code;
+  return coalesce(t, 'null'::jsonb);
+end $$;
+
 revoke all on function public.cs50kz_check_secret(text, int) from public, anon, authenticated;
 grant execute on function
   public.cs50kz_push(text, text, text, text, jsonb, jsonb),
@@ -185,7 +213,8 @@ grant execute on function
   public.cs50kz_class_info(text),
   public.cs50kz_class_create(text, text),
   public.cs50kz_class_view(text, text),
-  public.cs50kz_class_remove(text, text, text)
+  public.cs50kz_class_remove(text, text, text),
+  public.cs50kz_class_set_task(text, text, text, date, text)
 to anon, authenticated;
 
 -- ---------- Кері байланыс: аударма қатесі, түсініксіз жер, ұсыныс ----------
