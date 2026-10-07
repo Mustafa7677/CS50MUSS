@@ -18,6 +18,12 @@ window.CS50KZ_PORTRAITS = {
   "artist": "Unknown photographer",
   "src": "https://commons.wikimedia.org/wiki/File:Dulatov_Mirjakip.jpg"
  },
+ "Сұлтанмахмұт Торайғыров": {
+  "img": "assets/img/alash/toraighyrov.jpg",
+  "license": "CC BY-SA 4.0",
+  "artist": "Geliktop",
+  "src": "https://commons.wikimedia.org/wiki/File:%D0%A2%D0%BE%D1%80%D0%B0%D0%B9%D0%B3%D1%8B%D1%80%D0%BE%D0%B2.jpg"
+ },
  "Ыбырай Алтынсарин": {
   "img": "assets/img/alash/altynsarin.jpg",
   "license": "Public domain",
