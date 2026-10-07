@@ -66,3 +66,27 @@ test("мұғалім сыныбы, екі құрылғы, автоматты с�
   expect(await C.evaluate(() => CS50KZ.profile().id)).toBe(id);
   for (const p of [T, A, B, C]) expect(p.errs).toEqual([]);
 });
+
+test("оқушы мұғалімнің сілтемесі арқылы бір қадаммен сыныпқа қосылады", async ({ browser }) => {
+  const mk = async (opts) => { const c = await browser.newContext(opts); await blockFonts(c); await routeSupabase(c, MOCK); const p = await c.newPage(); p.errs = collectErrors(p); return p; };
+  const T = await mk({ viewport: { width: 1280, height: 900 } });
+  await T.goto("teacher.html");
+  await T.fill(".cl-new [name=title]", "9Б сыныбы"); await T.fill(".cl-new [name=pw]", "mugalim2"); await T.click(".cl-new button");
+  const code = (await T.locator(".cl-bigcode b").innerText()).trim();
+  await T.click(".cl-join-qr");
+  await expect(T.locator(".cl-join-qrbox svg")).toBeVisible();
+  await T.click(".cl-refresh");
+  await expect(T.locator(".cl-join-qrbox svg")).toBeVisible(); // жаңартудан кейін де QR қалады
+
+  const S = await mk({ viewport: { width: 390, height: 844 } });
+  S.removeAllListeners("dialog");
+  S.on("dialog", (d) => d.accept(d.type() === "prompt" ? "Әлихан Бөкейхан" : undefined));
+  await S.goto(`profile.html#join=${code.toLowerCase()}`);
+  await expect(S.locator(".cl-msg.ok")).toContainText("9Б сыныбы", { timeout: 10_000 });
+  await expect(S.locator(".cl-class")).toContainText(code);
+  expect(await S.evaluate(() => JSON.parse(localStorage.getItem("cs50kz:progress")).name)).toBe("Әлихан Бөкейхан");
+
+  await T.click(".cl-refresh");
+  await expect(T.locator(".t-cloud tbody")).toContainText("Әлихан Бөкейхан");
+  for (const p of [T, S]) expect(p.errs).toEqual([]);
+});

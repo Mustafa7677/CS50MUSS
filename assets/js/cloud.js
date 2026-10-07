@@ -231,6 +231,31 @@
         login(m[1], m[2]).then(() => { render(); msg("✓ Кірдіңіз. Прогресс осы құрылғыға біріктірілді."); }).catch((err) => { render(); msg("Қате: " + human(err), true); });
       }
     }
+    // Мұғалім берген сілтеме не QR: #join=СЫНЫП_КОДЫ → бұлт өзі қосылып, оқушы сыныпқа кіреді
+    const j = location.hash.match(/join=([2-9A-Za-z]{6})/);
+    if (j && !m) {
+      history.replaceState(null, "", location.pathname);
+      (async () => {
+        try {
+          const info = await rpc("cs50kz_class_info", { p_code: j[1].toUpperCase() });
+          if (!info) return msg("Мұндай сынып коды жоқ. Мұғаліміңізден сілтемені қайта сұраңыз.", true);
+          const prog = get("cs50kz:progress", {});
+          let name = (prog.name || "").trim();
+          if (!name) {
+            name = (prompt(`«${info.title}» сыныбына қосыласыз.\nМұғалім сізді тануы үшін аты-жөніңізді жазыңыз:`) || "").trim().slice(0, 40);
+            if (!name) return msg("Сыныпқа қосылу үшін аты-жөніңізді жазу керек.", true);
+            prog.name = name; put("cs50kz:progress", prog);
+          } else if (!confirm(`${name}, «${info.title}» сыныбына қосылу керек пе? Мұғалім атыңыз бен прогресіңізді көреді.`)) return;
+          const st = state();
+          setState({ on: true, secret: st.on && st.secret ? st.secret : st.secret || rand(8), hash: null, pulled: st.on ? st.pulled : Date.now(), cls: info.code, clsTitle: info.title });
+          await cycle({ force: true, throw: true });
+          K.mark && K.mark("cloud");
+          render();
+          msg(`✓ «${info.title}» сыныбына қосылдыңыз! Енді прогресіңіз мұғалімге өзі көрінеді.`);
+          K.celebrate && K.celebrate();
+        } catch (err) { render(); msg("Қате: " + human(err), true); }
+      })();
+    }
   }
 
   // ---------- Мұғалімнің жанды кестесі ----------
@@ -264,6 +289,21 @@
       try { show(await rpc("cs50kz_class_view", { p_code: cur.code, p_teacher_secret: cur.pw })); }
       catch (e) { const st = box.querySelector(".cl-live"); if (st) st.textContent = "⚠ " + human(e); }
     }
+    // Қосылу QR-ы: кесте 30 секунд сайын жаңарса да ашық күйі сақталады
+    let qrOpen = false;
+    async function drawQr() {
+      const q = box.querySelector(".cl-join-qrbox");
+      if (!q || !cur) return;
+      q.hidden = !qrOpen;
+      const b = box.querySelector(".cl-join-qr");
+      if (b) b.textContent = qrOpen ? "✕ QR жабу" : "📱 QR көрсету";
+      if (!qrOpen) return;
+      if (!window.qrcode) await K.loadScript("assets/vendor/qrcode/qrcode.js");
+      const url = K.ROOT_URL.replace(/^file:.*/, "https://mustafa7677.github.io/CS50MUSS/") + "profile.html#join=" + cur.code;
+      const qr = window.qrcode(0, "M"); qr.addData(url); qr.make();
+      q.innerHTML = qr.createSvgTag({ cellSize: 6, margin: 2, scalable: true }) + `<p><b>${esc(cur.title)}</b> · <code>${esc(cur.code)}</code><br>Телефон камерасымен сканерлеңіз</p>`;
+    }
+
     // Сынып аналитикасы: көрсеткіштер + лекциялар бойынша бағандар (бір серия, бір түс)
     function analytics(list) {
       const n = list.length;
@@ -331,11 +371,21 @@
       box.innerHTML = `
         <div class="cl-head"><h3>🏫 ${esc(v.title)}</h3><span class="cl-live">● Жанды · әр 30 секунд сайын жаңарады</span></div>
         ${analytics(v.students)}
-        <div class="cl-bigcode"><small>Сынып коды — оқушыларға беріңіз</small><b>${esc(v.code)}</b></div>
+        <div class="cl-join-box">
+          <div class="cl-bigcode"><small>Сынып коды — оқушыларға беріңіз</small><b>${esc(v.code)}</b></div>
+          <div class="cl-join-how">
+            <b>Оқушылар қалай қосылады?</b>
+            <p>Ең оңайы — QR-ды тақтаға шығарыңыз не сілтемені чатқа жіберіңіз: оқушы ашып, атын жазса болды.</p>
+            <div class="pf-actions"><button type="button" class="btn gold cl-join-qr">📱 QR көрсету</button><button type="button" class="btn secondary cl-join-copy">🔗 Сілтемені көшіру</button></div>
+            <p class="pf-small">Не: Профиль → «☁️ Бұлтта сақтауды қосу» → сынып коды.</p>
+          </div>
+        </div>
+        <div class="cl-join-qrbox" hidden></div>
         <div class="t-actions"><button type="button" class="btn secondary cl-refresh">↻ Жаңарту</button><button type="button" class="btn secondary cl-csv">CSV</button><button type="button" class="btn secondary cl-back">← Сыныптар</button><span class="t-count">${v.students.length} оқушы</span></div>
         <div class="t-table"><table><thead><tr><th>Оқушы</th><th>Лекциялар</th><th>Тест</th><th>Тапсырма</th><th>Емтихан</th><th>Жетістік</th><th>Белсенділік</th><th></th></tr></thead>
         <tbody>${rows || `<tr><td colspan="8" class="t-empty">Әзірге ешкім қосылмаған. Оқушылар профиль бетінде <b>${esc(v.code)}</b> кодын енгізуі керек.</td></tr>`}</tbody></table></div>`;
       box._last = v;
+      drawQr();
     }
     box.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -352,6 +402,16 @@
       const t = e.target.closest("button");
       if (!t) return;
       try {
+        const joinUrl = () => K.ROOT_URL.replace(/^file:.*/, "https://mustafa7677.github.io/CS50MUSS/") + "profile.html#join=" + cur.code;
+        if (t.classList.contains("cl-join-copy")) {
+          try { await navigator.clipboard.writeText(joinUrl()); K.toast("Сілтеме көшірілді ✓"); } catch (er) { prompt("Сілтемені көшіріңіз:", joinUrl()); }
+          return;
+        }
+        if (t.classList.contains("cl-join-qr")) {
+          qrOpen = !qrOpen;
+          await drawQr();
+          return;
+        }
         if (t.classList.contains("cl-open-saved")) { const c = classes().find((x) => x.code === t.dataset.code); await open(c.code, c.pw); }
         else if (t.classList.contains("cl-refresh")) await refresh();
         else if (t.classList.contains("cl-back")) start();
