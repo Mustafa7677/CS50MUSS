@@ -77,7 +77,8 @@ test("Алаш тұлғалары беті: карталар, дәйексөзд
   await page.goto("index.html");
   await page.click(".qt-more");
   await expect(page).toHaveURL(/alash\.html$/);
-  await expect(page.locator(".al-card")).toHaveCount(8);
+  await expect(page.locator(".al-card")).toHaveCount(12);
+  await expect(page.locator(".al-card.has-portrait")).toHaveCount(12); // барлығы портретпен
   await expect(page.locator(".al-card").first()).toContainText("Әлихан Бөкейхан");
   await expect(page.locator('pre[data-lang="python"] .run-btn')).toHaveCount(3);
   await page.screenshot({ path: test.info().outputPath("alash.png"), fullPage: true });
