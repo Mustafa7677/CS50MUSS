@@ -35,6 +35,7 @@ test("телефонда мазмұн батырма арқылы ашылып-�
 
 test("басты бет: күн сөзі шығады, «Келесі» ауыстырады; лекция оқылғанда Бота ұлы сөз айтады", async ({ page }) => {
   const errs = collectErrors(page);
+  await page.clock.install();
   await page.goto("index.html");
   const q = page.locator(".qt-card blockquote");
   await expect(q).not.toBeEmpty();
@@ -42,6 +43,19 @@ test("басты бет: күн сөзі шығады, «Келесі» ауыс
   const first = await q.innerText();
   await page.click(".qt-next");
   await expect(q).not.toHaveText(first);
+  await expect(page.locator(".qt-count")).toHaveText(/^\d+ \/ 1[7-9]$|^\d+ \/ [2-9]\d$/);
+  // Өзі ауысады (уақытты жылдамдатамыз): тінтуір картадан тыс тұрғанда
+  await page.mouse.move(0, 0);
+  const second = await q.innerText();
+  await page.clock.runFor(13_000);
+  await expect(q).not.toHaveText(second);
+  // Тоқтату батырмасы
+  await page.click(".qt-play");
+  await page.mouse.move(0, 0);
+  const third = await q.textContent();
+  await page.clock.runFor(30_000);
+  await expect(page.locator(".qt-card")).toHaveClass(/is-paused/);
+  await expect(q).toHaveText(third);
   await page.locator(".qt-card").screenshot({ path: test.info().outputPath("quote.png") });
   await page.goto("lectures/week-0.html");
   await page.locator(".mark-read .btn.gold").click();
@@ -54,7 +68,7 @@ test("Алаш тұлғалары беті: карталар, дәйексөзд
   await page.goto("index.html");
   await page.click(".qt-more");
   await expect(page).toHaveURL(/alash\.html$/);
-  await expect(page.locator(".al-card")).toHaveCount(7);
+  await expect(page.locator(".al-card")).toHaveCount(8);
   await expect(page.locator(".al-card").first()).toContainText("Әлихан Бөкейхан");
   await expect(page.locator('pre[data-lang="python"] .run-btn')).toHaveCount(3);
   await page.screenshot({ path: test.info().outputPath("alash.png"), fullPage: true });

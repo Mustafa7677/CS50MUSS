@@ -556,32 +556,72 @@
     loadScript("assets/data/quotes.js").then(() => {
       const Q = window.CS50KZ_QUOTES || [];
       if (!Q.length) return;
-      let i = dayNum() % Q.length;
+      const EVERY = 12_000; // әр сөз 12 секунд тұрады
+      let i = dayNum() % Q.length, timer = null, hover = false;
+      let paused = matchMedia("(prefers-reduced-motion: reduce)").matches; // қозғалысты азайтқандарға өзі ауыспайды
       const initials = (a) => a.split(/\s+/).map((w) => w[0]).join("").slice(0, 2);
+      card.innerHTML = `
+        <span class="qt-mark" aria-hidden="true">“</span>
+        <div class="qt-top"><small class="qt-label">Ұлағатты сөз</small><span class="qt-count" aria-hidden="true"></span></div>
+        <div class="qt-body" aria-live="polite"></div>
+        <div class="qt-actions">
+          <a class="qt-more" href="${ROOT_URL}alash.html">Тұлғалар туралы →</a>
+          <button type="button" class="qt-prev" aria-label="Алдыңғы сөз">‹</button>
+          <button type="button" class="qt-play" aria-label="Тоқтату"></button>
+          <button type="button" class="qt-next" aria-label="Келесі сөз">›</button>
+          <button type="button" class="qt-img">🖼 Сурет</button><button type="button" class="qt-copy">Көшіру</button>
+        </div>
+        <i class="qt-time" aria-hidden="true"></i>`;
+      const body = card.querySelector(".qt-body"), bar = card.querySelector(".qt-time"), play = card.querySelector(".qt-play");
       const draw = () => {
         const q = Q[i];
-        card.innerHTML = `
-          <span class="qt-mark" aria-hidden="true">“</span>
-          <small class="qt-label">Күн сөзі</small>
+        body.innerHTML = `
           <blockquote>${q.t.split(" / ").map(escapeHtml).join("<br>")}</blockquote>
           <figcaption>
             <span class="qt-mono" aria-hidden="true">${escapeHtml(initials(q.a))}</span>
             <span><b>${escapeHtml(q.a)}</b><small>${escapeHtml(q.y)}${q.src ? " · " + escapeHtml(q.src) : ""}</small></span>
           </figcaption>
-          ${q.cs ? `<p class="qt-cs">💡 ${escapeHtml(q.cs)}</p>` : ""}
-          <div class="qt-actions"><a class="qt-more" href="${ROOT_URL}alash.html">Тұлғалар туралы →</a><button type="button" class="qt-next" aria-label="Келесі сөз">↻ Келесі</button><button type="button" class="qt-img">🖼 Сурет</button><button type="button" class="qt-copy">Көшіру</button></div>`;
+          ${q.cs ? `<p class="qt-cs">💡 ${escapeHtml(q.cs)}</p>` : ""}`;
+        card.querySelector(".qt-count").textContent = `${i + 1} / ${Q.length}`;
+        schedule();
       };
+      const running = () => !paused && !hover && !card.querySelector(":focus-visible") && document.visibilityState === "visible";
+      function schedule() {
+        clearTimeout(timer);
+        bar.classList.remove("run"); void bar.offsetWidth; // жолақ анимациясын басынан бастау
+        play.innerHTML = paused
+          ? '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><path d="M4 2.5v11l9-5.5z" fill="currentColor"/></svg>'
+          : '<svg viewBox="0 0 16 16" width="12" height="12" aria-hidden="true"><rect x="3" y="2.5" width="3.5" height="11" rx="1" fill="currentColor"/><rect x="9.5" y="2.5" width="3.5" height="11" rx="1" fill="currentColor"/></svg>';
+        play.setAttribute("aria-label", paused ? "Өзі ауыссын" : "Тоқтату");
+        card.classList.toggle("is-paused", !running());
+        if (!running()) return;
+        bar.style.animationDuration = EVERY + "ms";
+        bar.classList.add("run");
+        timer = setTimeout(() => { i = (i + 1) % Q.length; draw(); }, EVERY);
+      }
+      const go = (d) => { i = (i + d + Q.length) % Q.length; draw(); };
       draw();
+      card.addEventListener("mouseenter", () => { hover = true; schedule(); });
+      card.addEventListener("mouseleave", () => { hover = false; schedule(); });
+      card.addEventListener("focusout", () => setTimeout(schedule, 0));
+      document.addEventListener("visibilitychange", schedule);
       card.addEventListener("click", async (e) => {
-        if (e.target.closest(".qt-next")) { i = (i + 1) % Q.length; draw(); card.querySelector(".qt-next").focus(); }
+        if (e.target.closest(".qt-next")) go(1);
+        if (e.target.closest(".qt-prev")) go(-1);
+        if (e.target.closest(".qt-play")) { paused = !paused; schedule(); }
         if (e.target.closest(".qt-img")) quoteImage(Q[i]);
         if (e.target.closest(".qt-copy")) {
           const q = Q[i];
           try { await navigator.clipboard.writeText(`«${q.t.replace(/ \/ /g, "\n")}»\n— ${q.a}`); toast("Көшірілді ✓"); } catch (er) {}
         }
       });
+      // Телефонда саусақпен солға/оңға сырғыту
+      let x0 = null;
+      card.addEventListener("touchstart", (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+      card.addEventListener("touchend", (e) => { if (x0 == null) return; const dx = e.changedTouches[0].clientX - x0; x0 = null; if (Math.abs(dx) > 50) go(dx < 0 ? 1 : -1); });
     }).catch(() => {});
   }
+
   // Күн сөзін әлеуметтік желіге арналған суретке айналдыру (1080×1350 PNG)
   async function quoteImage(q) {
     const W = 1080, H = 1350, c = document.createElement("canvas");
