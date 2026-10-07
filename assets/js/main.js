@@ -1,4 +1,4 @@
-// CS50 қазақша — интерактив элементтер
+// CS50 қазақша - интерактив элементтер
 
 (function () {
   // Сайттың түбір мекенжайы (main.js-тің орнынан анықталады: file:// пен GitHub Pages-те де жұмыс істейді)
@@ -553,7 +553,7 @@
   // ---------- Портреттер (Wikimedia Commons, tools/fetch_portraits.py) ----------
   let portraitsP = null;
   const portraits = () => (portraitsP = portraitsP || loadScript("assets/data/portraits.js").then(() => window.CS50KZ_PORTRAITS || {}).catch(() => ({})));
-  // Портрет бар болса — сурет, жоқ болса — бас әріптер (монограмма)
+  // Портрет бар болса - сурет, жоқ болса - бас әріптер (монограмма)
   function faceHtml(name, P, cls) {
     const p = P[name];
     const ini = name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2);
@@ -575,7 +575,7 @@
       if (!used.length) return;
       const box = document.createElement("details");
       box.className = "al-credits";
-      box.innerHTML = `<summary>Суреттердің дерек көзі</summary><ul>${used.map((n) => `<li>${escapeHtml(n)} — ${escapeHtml(P[n].artist)}, ${escapeHtml(P[n].license)}${P[n].src ? `. <a href="${escapeHtml(P[n].src)}" target="_blank" rel="noopener">Wikimedia Commons</a>` : ""}</li>`).join("")}</ul>`;
+      box.innerHTML = `<summary>Суреттердің дерек көзі</summary><ul>${used.map((n) => `<li>${escapeHtml(n)} - ${escapeHtml(P[n].artist)}, ${escapeHtml(P[n].license)}${P[n].src ? `. <a href="${escapeHtml(P[n].src)}" target="_blank" rel="noopener">Wikimedia Commons</a>` : ""}</li>`).join("")}</ul>`;
       document.querySelector(".alash .al-note")?.after(box);
     });
   }
@@ -656,7 +656,7 @@
         if (e.target.closest(".qt-img")) quoteImage(Q[i]);
         if (e.target.closest(".qt-copy")) {
           const q = Q[i];
-          try { await navigator.clipboard.writeText(`«${q.t.replace(/ \/ /g, "\n")}»\n— ${q.a}`); toast("Көшірілді ✓"); } catch (er) {}
+          try { await navigator.clipboard.writeText(`«${q.t.replace(/ \/ /g, "\n")}»\n- ${q.a}`); toast("Көшірілді ✓"); } catch (er) {}
         }
       });
       // Телефонда саусақпен солға/оңға сырғыту
@@ -701,7 +701,7 @@
     const lh = size * 1.45, top = 300 + (640 - lines.length * lh) / 2;
     g.fillStyle = "#ffffff"; g.font = serif(size);
     lines.forEach((l, k) => g.fillText(l, 120, top + k * lh + size));
-    // Портрет (бар болса) — оң жақта, алтын рамкада
+    // Портрет (бар болса) - оң жақта, алтын рамкада
     const pr = (window.CS50KZ_PORTRAITS || {})[q.a];
     if (pr) {
       try {
@@ -711,7 +711,7 @@
         const px = W - 120 - 176, py = 940, pw = 176, ph = 220;
         g.save(); g.beginPath(); g.roundRect(px - 6, py - 6, pw + 12, ph + 12, 22); g.fillStyle = "#f2b705"; g.fill();
         g.beginPath(); g.roundRect(px, py, pw, ph, 18); g.clip(); g.drawImage(im, px, py, pw, ph); g.restore();
-      } catch (e) { /* сурет жүктелмесе — онсыз */ }
+      } catch (e) { /* сурет жүктелмесе - онсыз */ }
     }
     g.fillStyle = "#f2b705"; g.fillRect(120, 1010, 90, 6);
     // Есім портретке тимесін: орын тар болса, қаріп кішірейеді
@@ -757,7 +757,7 @@
       </svg>
       <div class="goal-txt">
         <b>🎯 Бүгінгі мақсат: ${g.goal} әрекет</b>
-        <span>${done ? "Орындалды — керемет! 🎉" : g.today ? `Тағы ${g.goal - g.today} әрекет қалды` : "Лекция бөлімі, тест, карточка не тапсырма — бәрі саналады"}${g.streak ? ` · 🔥 ${g.streak} күн қатарынан` : ""}</span>
+        <span>${done ? "Орындалды - керемет! 🎉" : g.today ? `Тағы ${g.goal - g.today} әрекет қалды` : "Лекция бөлімі, тест, карточка не тапсырма - бәрі саналады"}${g.streak ? ` · 🔥 ${g.streak} күн қатарынан` : ""}</span>
       </div>
       <div class="goal-pick" role="group" aria-label="Күнделікті мақсат">${goalChoices().map((n) => `<button type="button" data-g="${n}" aria-pressed="${n === g.goal}">${n}</button>`).join("")}</div>`;
     box.querySelectorAll(".goal-pick button").forEach((b) => b.addEventListener("click", () => {
@@ -791,7 +791,7 @@
           <div class="bota-greet"><img src="${ROOT_URL}assets/img/${read ? "bota-happy" : "bota"}.svg" alt="" width="54" height="54"><div><small>Бота:</small><h3>${greeting(read, lectures.length, p.name)}</h3></div></div>
           <div class="dash-stats">
             <div><b>${read}<small>/${lectures.length}</small></b><span>лекция оқылды</span></div>
-            <div><b>${qTotal ? Math.round((qBest / qTotal) * 100) + "%" : "—"}</b><span>тест нәтижесі</span></div>
+            <div><b>${qTotal ? Math.round((qBest / qTotal) * 100) + "%" : "-"}</b><span>тест нәтижесі</span></div>
             <div><b>${tasks}<small>/${totalTasks}</small></b><span>тапсырма тексерілді</span></div>
             <div><b>${Math.round(minutes / 60 * 10) / 10}</b><span>сағат оқу қалды</span></div>
           </div>
@@ -892,7 +892,7 @@
       const loading = (async () => {
         await loadScript("https://cdn.jsdelivr.net/npm/pyodide@0.26.4/full/pyodide.js");
         const py = await window.loadPyodide();
-        // input() мен cs50 кітапханасын браузерге бейімдеу; __cs50kz_run — автотексеруші қабығы
+        // input() мен cs50 кітапханасын браузерге бейімдеу; __cs50kz_run - автотексеруші қабығы
         py.runPython(`
 import builtins
 from js import prompt
@@ -1022,7 +1022,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       const done = lectures.length - left.length;
       const steps = lectures.map((l) => `<a href="${ROOT_URL + l.url}" class="cg-step ${p.read[l.id] ? "on" : ""}" title="${escapeHtml(l.num + ": " + l.title)}">${p.read[l.id] ? "✓" : escapeHtml(l.id === "ai" ? "AI" : l.id.replace("week-", ""))}</a>`).join("");
       const exBest = readJson("cs50kz:exam", {}).best;
-      const exam = exBest >= 70 ? `<span class="cg-exam ok">🎓 Емтихан: ${exBest}%</span>` : `<a class="cg-exam" href="${ROOT_URL}exam.html">📝 Емтихан ${exBest != null ? `(${exBest}%) — қайта тапсыру` : "— тапсыру"} →</a>`;
+      const exam = exBest >= 70 ? `<span class="cg-exam ok">🎓 Емтихан: ${exBest}%</span>` : `<a class="cg-exam" href="${ROOT_URL}exam.html">📝 Емтихан ${exBest != null ? `(${exBest}%) - қайта тапсыру` : "- тапсыру"} →</a>`;
       if (left.length) {
         cert.classList.add("locked");
         gate.innerHTML = `<div class="cg-head"><b>${done} / ${lectures.length} лекция оқылды</b>${exam}</div>
@@ -1045,7 +1045,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     }
   }
 
-  // ---------- SQL браузерде (sql.js — SQLite-тің WebAssembly нұсқасы) ----------
+  // ---------- SQL браузерде (sql.js - SQLite-тің WebAssembly нұсқасы) ----------
   let sqlReady = null;
   const dbs = {};
   function getSql() {
@@ -1475,7 +1475,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       String(text).split(/\s+/).filter(Boolean).forEach((tok) => {
         const d = parseCode(tok);
         if (!d) { if (/KZ1\./.test(tok)) bad++; return; }
-        // Бір оқушы — бір жол: алдымен ID бойынша, ID жоқ ескі кодтарда аты бойынша
+        // Бір оқушы - бір жол: алдымен ID бойынша, ID жоқ ескі кодтарда аты бойынша
         const i = cls.findIndex((x) => (d.i && x.i) ? x.i === d.i : x.n.toLowerCase() === d.n.toLowerCase());
         if (i >= 0) cls[i] = d; else cls.push(d);
         added++;
@@ -1491,10 +1491,10 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       tbody.innerHTML = rows.map((d) => {
         const read = (d.r.match(/1/g) || []).length;
         const qs = d.q.split(",").filter(Boolean).map((x) => x.split("/").map(Number));
-        const qpct = qs.length ? Math.round((qs.reduce((n, x) => n + x[0], 0) / qs.reduce((n, x) => n + x[1], 0)) * 100) + "%" : "—";
+        const qpct = qs.length ? Math.round((qs.reduce((n, x) => n + x[0], 0) / qs.reduce((n, x) => n + x[1], 0)) * 100) + "%" : "-";
         return `<tr><td><b>${escapeHtml(d.n)}</b>${d.i ? `<small class="t-id">${d.i}</small>` : ""}</td>
           <td><div class="t-cells">${d.r.split("").map((c, i) => `<i class="${c === "1" ? "on" : ""}" title="${ORDER[i]}"></i>`).join("")}</div><small>${read}/12</small></td>
-          <td>${qpct}</td><td>${d.t}</td><td>🔥 ${d.s}</td><td>🏅 ${d.a}</td><td>${d.e != null ? `<b class="${d.e >= 70 ? "t-pass" : ""}">${d.e}%</b>` : "—"}</td><td><small>${escapeHtml(d.d)}</small> <button type="button" class="t-del" data-n="${escapeHtml(d.n)}" data-i="${d.i || ""}" aria-label="Өшіру">✕</button></td></tr>`;
+          <td>${qpct}</td><td>${d.t}</td><td>🔥 ${d.s}</td><td>🏅 ${d.a}</td><td>${d.e != null ? `<b class="${d.e >= 70 ? "t-pass" : ""}">${d.e}%</b>` : "-"}</td><td><small>${escapeHtml(d.d)}</small> <button type="button" class="t-del" data-n="${escapeHtml(d.n)}" data-i="${d.i || ""}" aria-label="Өшіру">✕</button></td></tr>`;
       }).join("");
     };
     box.querySelector(".t-add").addEventListener("click", () => { add(box.querySelector(".t-input").value); box.querySelector(".t-input").value = ""; });
@@ -1533,7 +1533,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     "Тапсырманы бастамас бұрын, оны қағазға псевдокод ретінде жазып көріңіз.",
     "Код жұмыс істемесе, резеңке үйрекке (не маған!) түсіндіріп көріңіз: қате көбіне сөйлеп тұрғанда табылады.",
     "Компилятордың бірінші қате хабарламасынан бастаңыз: қалғандары көбіне соның салдары.",
-    "printf пен print — ең қарапайым әрі ең күшті дебаггер. Айнымалының мәнін басып шығарыңыз!",
+    "printf пен print - ең қарапайым әрі ең күшті дебаггер. Айнымалының мәнін басып шығарыңыз!",
     "Шешімді көшірмеңіз: 30 минут өзіңіз ойлансаңыз, ол 3 сағат оқығаннан пайдалы.",
     "Әр функция бір ғана іс істесін. Функция ұзын болса, оны бөліңіз.",
     "Шаршасаңыз, демалыңыз. Миыңыз мәселені ұйықтап жатқанда да шешеді.",
@@ -1541,7 +1541,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     "check50-ге дейін өзіңіз тексеріңіз: шеткі жағдайларды (0, теріс сан, бос жол) ұмытпаңыз.",
     "Флэш-карточкалармен күніне 10 минут терминдерді қайталаңыз: аз-аздан, бірақ күнде.",
     "Қиналсаңыз, «Кеңес» бөлімін ашыңыз, шешімді тек соңында қараңыз.",
-    "Код — адамдарға арналған мәтін, компьютер оны тек орындайды. Әдемі жазыңыз!",
+    "Код - адамдарға арналған мәтін, компьютер оны тек орындайды. Әдемі жазыңыз!",
   ];
 
   function botaSay(text, mood = "happy") {
@@ -1581,14 +1581,14 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       setTimeout(() => {
         celebrate();
         const g = goalStats();
-        botaSay(`🎯 Бүгінгі мақсат орындалды! ${g.streak > 1 ? g.streak + " күн қатарынан — " : ""}Ертең де келіңіз, жалғастырамыз.`, "wow");
+        botaSay(`🎯 Бүгінгі мақсат орындалды! ${g.streak > 1 ? g.streak + " күн қатарынан - " : ""}Ертең де келіңіз, жалғастырамыз.`, "wow");
         checkAchievements();
       }, 900);
     }
     document.dispatchEvent(new CustomEvent("cs50kz:day"));
   }
   // Күнделікті мақсат: күніне неше әрекет (әдепкі 3)
-  // (функция — const болса, бет ерте жүктелгенде TDZ қатесі шығуы мүмкін)
+  // (функция - const болса, бет ерте жүктелгенде TDZ қатесі шығуы мүмкін)
   function goalChoices() { return [1, 3, 5, 10]; }
   function goalOf() { const g = +readJson("cs50kz:goal", 3); return goalChoices().includes(g) ? g : 3; }
   function goalStats() {

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""«Алтын домбыраның құпиясы» — SQL детектив ойынының деректері.
+"""«Алтын домбыраның құпиясы» - SQL детектив ойынының деректері.
 
 Барлық кейіпкерлер, оқиғалар мен деректер ойдан шығарылған.
   python3 tools/make_mystery.py  →  assets/data/mystery.js
@@ -43,7 +43,7 @@ thief = car[7]; accomplice = people[63]
 fake = car[12:20]            # тұрақтан сол уақытта шыққан басқалар
 atm_fake = car[15:19] + [people[90], people[91], people[92]]  # банкоматтан ақша алған басқалар
 call_fake = car[16:18]       # сол күні қысқа қоңырау шалған басқалар
-flight_fake = [car[18], people[95], people[96], people[97]]   # ертеңгі ең ерте рейстегі басқалар (car[18] — үш сүзгіден өтетін «алдамшы» күдікті)
+flight_fake = [car[18], people[95], people[96], people[97]]   # ертеңгі ең ерте рейстегі басқалар (car[18] - үш сүзгіден өтетін «алдамшы» күдікті)
 
 # ---- қылмыс есептері
 streets = ["Abai Street", "Tole Bi Street", "Dostyk Avenue", "Satpayev Street", "Zhibek Zholy Street"]

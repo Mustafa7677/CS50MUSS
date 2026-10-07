@@ -1,4 +1,4 @@
-// «Қатені тап» тренажерінің жаттығулары. bug — қате жолдың нөмірі (0-ден), fix — түзетілген жол.
+// «Қатені тап» тренажерінің жаттығулары. bug - қате жолдың нөмірі (0-ден), fix - түзетілген жол.
 window.CS50KZ_BUGS = [
   { w: "1-апта", t: "Сәлемдесу", lang: "c", code: [
     "#include <stdio.h>", "", "int main(void)", "{", "    string name = get_string(\"What's your name? \");", "    printf(\"hello, %s\\n\", name);", "}"],
@@ -7,11 +7,11 @@ window.CS50KZ_BUGS = [
   { w: "1-апта", t: "Салыстыру", lang: "c", code: [
     "int x = get_int(\"x: \");", "int y = get_int(\"y: \");", "if (x = y)", "{", "    printf(\"x is equal to y\\n\");", "}"],
     bug: 2, fix: "if (x == y)",
-    why: "<code>=</code> — меншіктеу, <code>==</code> — салыстыру. <code>x = y</code> x-ке y-ті жазып жібереді, ал шарт y нөл болмаса әрқашан ақиқат." },
+    why: "<code>=</code> - меншіктеу, <code>==</code> - салыстыру. <code>x = y</code> x-ке y-ті жазып жібереді, ал шарт y нөл болмаса әрқашан ақиқат." },
   { w: "1-апта", t: "Мысық үш рет", lang: "c", code: [
     "#include <stdio.h>", "", "int main(void)", "{", "    for (int i = 0; i <= 3; i++)", "    {", "        printf(\"meow\\n\");", "    }", "}"],
     bug: 4, fix: "    for (int i = 0; i < 3; i++)",
-    why: "0-ден бастап <code>&lt;= 3</code> дегенде цикл 4 рет қайталанады: 0, 1, 2, 3. Бұл — «бірге қателесу» (off-by-one)." },
+    why: "0-ден бастап <code>&lt;= 3</code> дегенде цикл 4 рет қайталанады: 0, 1, 2, 3. Бұл - «бірге қателесу» (off-by-one)." },
   { w: "1-апта", t: "Бөлу", lang: "c", code: [
     "int x = get_int(\"x: \");", "int y = get_int(\"y: \");", "float z = x / y;", "printf(\"%f\\n\", z);"],
     bug: 2, fix: "float z = (float) x / y;",
@@ -39,11 +39,11 @@ window.CS50KZ_BUGS = [
   { w: "4-апта", t: "Жолдарды салыстыру", lang: "c", code: [
     "char *s = get_string(\"s: \");", "char *t = get_string(\"t: \");", "if (s == t)", "{", "    printf(\"Same\\n\");", "}"],
     bug: 2, fix: "if (strcmp(s, t) == 0)",
-    why: "<code>s</code> мен <code>t</code> — көрсеткіштер. <code>==</code> мекенжайларды салыстырады, ал олар әрқашан әртүрлі. Мазмұнды салыстыру үшін <code>strcmp</code> (string.h)." },
+    why: "<code>s</code> мен <code>t</code> - көрсеткіштер. <code>==</code> мекенжайларды салыстырады, ал олар әрқашан әртүрлі. Мазмұнды салыстыру үшін <code>strcmp</code> (string.h)." },
   { w: "4-апта", t: "Жолды көшіру", lang: "c", code: [
     "char *s = get_string(\"s: \");", "char *t = s;", "t[0] = toupper(t[0]);", "printf(\"s: %s\\n\", s);"],
     bug: 1, fix: "char *t = malloc(strlen(s) + 1);\nstrcpy(t, s);",
-    why: "<code>t = s</code> жолды емес, мекенжайды көшіреді: екеуі бір жолға қарайды, сондықтан <code>s</code> да өзгереді. <code>malloc</code> + <code>strcpy</code> керек (+1 — <code>\\0</code> үшін)." },
+    why: "<code>t = s</code> жолды емес, мекенжайды көшіреді: екеуі бір жолға қарайды, сондықтан <code>s</code> да өзгереді. <code>malloc</code> + <code>strcpy</code> керек (+1 - <code>\\0</code> үшін)." },
   { w: "4-апта", t: "malloc тексерісі", lang: "c", code: [
     "int *list = malloc(3 * sizeof(int));", "list[0] = 1;", "list[1] = 2;", "list[2] = 3;", "free(list);"],
     bug: 0, fix: "int *list = malloc(3 * sizeof(int));\nif (list == NULL)\n{\n    return 1;\n}",
@@ -59,7 +59,7 @@ window.CS50KZ_BUGS = [
   { w: "5-апта", t: "Тізімді босату", lang: "c", code: [
     "node *ptr = list;", "while (ptr != NULL)", "{", "    free(ptr);", "    ptr = ptr->next;", "}"],
     bug: 3, fix: "    node *next = ptr->next;\n    free(ptr);\n    ptr = next;",
-    why: "<code>free(ptr)</code>-тен кейін <code>ptr-&gt;next</code>-ке қарау — босатылған жадқа қатынау. Алдымен келесі түйінді уақытша айнымалыға сақтаңыз." },
+    why: "<code>free(ptr)</code>-тен кейін <code>ptr-&gt;next</code>-ке қарау - босатылған жадқа қатынау. Алдымен келесі түйінді уақытша айнымалыға сақтаңыз." },
   { w: "6-апта", t: "input() және сан", lang: "python", code: [
     "x = input(\"x: \")", "y = input(\"y: \")", "print(x + y)"],
     bug: 0, fix: "x = int(input(\"x: \"))\ny = int(input(\"y: \"))",
@@ -111,15 +111,15 @@ window.CS50KZ_BUGS = [
   { w: "3-апта", t: "Құрылым", lang: "c", code: [
     "typedef struct", "{", "    string name;", "    string number;", "}", "person;", "", "person p;", "p->name = \"David\";"],
     bug: 8, fix: "p.name = \"David\";",
-    why: "<code>p</code> — көрсеткіш емес, құрылымның өзі. Өріске нүктемен қатынасамыз: <code>p.name</code>. Көрсетігі (<code>-&gt;</code>) көрсеткіштер үшін." },
+    why: "<code>p</code> - көрсеткіш емес, құрылымның өзі. Өріске нүктемен қатынасамыз: <code>p.name</code>. Көрсетігі (<code>-&gt;</code>) көрсеткіштер үшін." },
   { w: "4-апта", t: "Бос көрсеткіш", lang: "c", code: [
     "int *x;", "*x = 42;", "printf(\"%i\\n\", *x);"],
     bug: 1, fix: "int *x = malloc(sizeof(int));\n*x = 42;",
-    why: "<code>x</code>-те қоқыс мекенжай тұр (Binky есіңізде ме?). Оған жазу — белгісіз жадқа жазу. Алдымен көрсеткішке нақты жад беріңіз." },
+    why: "<code>x</code>-те қоқыс мекенжай тұр (Binky есіңізде ме?). Оған жазу - белгісіз жадқа жазу. Алдымен көрсеткішке нақты жад беріңіз." },
   { w: "4-апта", t: "sizeof", lang: "c", code: [
     "int *numbers = malloc(10);", "for (int i = 0; i < 10; i++)", "{", "    numbers[i] = i;", "}"],
     bug: 0, fix: "int *numbers = malloc(10 * sizeof(int));",
-    why: "<code>malloc(10)</code> — 10 <strong>байт</strong>, ал 10 int-ке 40 байт керек. Valgrind «invalid write» деп көрсетеді." },
+    why: "<code>malloc(10)</code> - 10 <strong>байт</strong>, ал 10 int-ке 40 байт керек. Valgrind «invalid write» деп көрсетеді." },
   { w: "4-апта", t: "fopen тексерісі", lang: "c", code: [
     "FILE *file = fopen(\"phonebook.csv\", \"a\");", "fprintf(file, \"%s,%s\\n\", name, number);", "fclose(file);"],
     bug: 0, fix: "FILE *file = fopen(\"phonebook.csv\", \"a\");\nif (file == NULL)\n{\n    return 1;\n}",
@@ -167,5 +167,5 @@ window.CS50KZ_BUGS = [
   { w: "9-апта", t: "args пен form", lang: "python", code: [
     "# HTML: <form action=\"/greet\" method=\"post\">", "", "@app.route(\"/greet\", methods=[\"POST\"])", "def greet():", "    name = request.args.get(\"name\")", "    return render_template(\"greet.html\", name=name)"],
     bug: 4, fix: "    name = request.form.get(\"name\")",
-    why: "<code>request.args</code> — URL параметрлері (GET). POST деректері <code>request.form</code>-да. Әйтпесе <code>name</code> әрқашан <code>None</code>." },
+    why: "<code>request.args</code> - URL параметрлері (GET). POST деректері <code>request.form</code>-да. Әйтпесе <code>name</code> әрқашан <code>None</code>." },
 ];
