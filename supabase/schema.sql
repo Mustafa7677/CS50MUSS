@@ -23,6 +23,8 @@ create table if not exists public.cs50kz_classes (
 
 -- Мұғалімнің сыныпқа берген тапсырмасы: {"lecture": "week-3", "due": "2026-10-10", "note": "..."}
 alter table public.cs50kz_classes add column if not exists task jsonb;
+-- Мұғалімнің сыныпқа хабарламасы: {"text": "...", "set": "2026-10-07T..."}
+alter table public.cs50kz_classes add column if not exists msg jsonb;
 
 create table if not exists public.cs50kz_students (
   id          text primary key check (id ~ '^KZ-[0-9A-Z]{4}-[0-9A-Z]{4}$'),
@@ -86,7 +88,8 @@ begin
   end if;
   return jsonb_build_object('updated_at', r.updated_at, 'class_code', r.class_code,
     'class_title', (select title from public.cs50kz_classes where code = r.class_code),
-    'class_task', (select task from public.cs50kz_classes where code = r.class_code));
+    'class_task', (select task from public.cs50kz_classes where code = r.class_code),
+    'class_msg', (select msg from public.cs50kz_classes where code = r.class_code));
 end $$;
 
 -- ---------- Оқушы: прогресті алу (басқа құрылғыда кіру) ----------
@@ -104,6 +107,7 @@ begin
   return jsonb_build_object('id', r.id, 'name', r.name, 'class_code', r.class_code,
     'class_title', (select title from public.cs50kz_classes where code = r.class_code),
     'class_task', (select task from public.cs50kz_classes where code = r.class_code),
+    'class_msg', (select msg from public.cs50kz_classes where code = r.class_code),
     'data', r.data, 'updated_at', r.updated_at);
 end $$;
 
@@ -162,7 +166,7 @@ begin
     perform pg_sleep(0.5);
     raise exception 'wrong class or password' using errcode = '28000';
   end if;
-  return jsonb_build_object('code', k.code, 'title', k.title, 'task', k.task, 'students', coalesce((
+  return jsonb_build_object('code', k.code, 'title', k.title, 'task', k.task, 'msg', k.msg, 'students', coalesce((
     select jsonb_agg(jsonb_build_object('id', s.id, 'name', s.name, 'summary', s.summary, 'updated_at', s.updated_at)
                      order by s.name)
       from public.cs50kz_students s where s.class_code = k.code), '[]'::jsonb));
@@ -203,6 +207,24 @@ begin
   end if;
   update public.cs50kz_classes set task = t where code = k.code;
   return coalesce(t, 'null'::jsonb);
+end $$;
+
+-- ---------- Мұғалім: сыныпқа хабарлама (бос мәтін — алып тастау) ----------
+create or replace function public.cs50kz_class_set_msg(p_code text, p_teacher_secret text, p_text text)
+returns jsonb
+language plpgsql security definer set search_path = public, extensions as $$
+declare k public.cs50kz_classes; m jsonb;
+begin
+  perform public.cs50kz_check_secret(p_teacher_secret, 6);
+  select * into k from public.cs50kz_classes where code = upper(trim(p_code));
+  if not found or k.teacher_hash is distinct from crypt(p_teacher_secret, k.teacher_hash) then
+    perform pg_sleep(0.5);
+    raise exception 'wrong class or password' using errcode = '28000';
+  end if;
+  m := case when coalesce(trim(p_text), '') = '' then null
+            else jsonb_build_object('text', left(trim(p_text), 300), 'set', now()) end;
+  update public.cs50kz_classes set msg = m where code = k.code;
+  return coalesce(m, 'null'::jsonb);
 end $$;
 
 -- ---------- Оқушы: сыныптың жалпы көрінісі (аттарсыз) ----------
@@ -254,7 +276,8 @@ grant execute on function
   public.cs50kz_class_view(text, text),
   public.cs50kz_class_remove(text, text, text),
   public.cs50kz_class_set_task(text, text, text, date, text),
-  public.cs50kz_class_pulse(text, text)
+  public.cs50kz_class_pulse(text, text),
+  public.cs50kz_class_set_msg(text, text, text)
 to anon, authenticated;
 
 -- ---------- Кері байланыс: аударма қатесі, түсініксіз жер, ұсыныс ----------
