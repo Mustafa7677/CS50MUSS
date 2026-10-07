@@ -189,6 +189,13 @@ test("мұғалім тапсырма береді: оқушы баннерді 
   await T.click(".cl-refresh");
   await expect(T.locator(".tk-now")).toContainText("1 / 1 орындады");
 
+  // Оқушы профилінде сыныптағы орны (аттарсыз): 1/1, тапсырманы орындағандар 1/1
+  await S.goto("profile.html");
+  await expect(S.locator(".cp-rank b")).toHaveText("1/1");
+  await expect(S.locator(".cp-card")).toContainText("тапсырманы орындағандар: 1/1");
+  await expect(S.locator(".cp-legend")).toContainText("1 / 12 дәріс");
+  await S.screenshot({ path: test.info().outputPath("pulse.png"), fullPage: true });
+
   // Алып тастау
   await T.click(".tk-clear");
   await expect(T.locator(".tk-now")).toHaveCount(0);

@@ -207,6 +207,48 @@
   document.addEventListener("cs50kz:lectures", homeBanner);
   homeBanner();
 
+  // ---------- Сынып көрінісі (аттарсыз): орның, орташа көрсеткіш, тапсырманы орындағандар ----------
+  function pulseCard(s) {
+    const p = s.on && s.cls && s.pulse;
+    if (!p || !p.size) return "";
+    const total = (K.ORDER || []).length || 12;
+    const pct = (n) => Math.round((Math.min(n, total) / total) * 100);
+    const diff = Math.round((p.my_read - p.avg_read) * 10) / 10;
+    const note = p.size < 2 ? "Сыныптастарыңыз қосылғанда салыстыру пайда болады."
+      : p.rank === 1 ? "🏆 Сынып көшбасшысысыз! Осы қарқынмен жалғастырыңыз."
+      : diff > 0 ? `Сынып орташасынан ${diff} дәріс алдасыз 💪`
+      : diff < 0 ? `Сынып орташасына жету үшін тағы ${Math.ceil(-diff)} дәріс оқыңыз 📚`
+      : "Сынып орташасы деңгейіндесіз — бір дәріс алға шығарады!";
+    return `<div class="cp-card" aria-label="Сыныптағы орның">
+      <div class="cp-rank"><small>Сыныптағы орның</small><b>${p.rank}<span>/${p.size}</span></b></div>
+      <div class="cp-body">
+        <div class="cp-track" role="img" aria-label="Сіз ${p.my_read} дәріс оқыдыңыз, сынып орташасы ${p.avg_read}, ең көбі ${p.max_read}">
+          <i class="cp-fill" style="width:${pct(p.my_read)}%"></i>
+          <i class="cp-avg ${pct(p.avg_read) < 12 ? "l" : pct(p.avg_read) > 88 ? "r" : ""}" style="left:${pct(p.avg_read)}%"><span>орташа ${p.avg_read}</span></i>
+        </div>
+        <div class="cp-legend"><span><b>${p.my_read}</b> / ${total} дәріс — сіз</span><span>ең көбі: ${p.max_read}</span></div>
+        <p class="cp-note">${note}</p>
+        <div class="cp-chips">
+          <span>👥 ${p.size} оқушы</span>
+          <span>🔥 осы аптада белсенді: ${p.active7}</span>
+          ${p.task_done == null ? "" : `<span>📌 тапсырманы орындағандар: ${p.task_done}/${p.size}</span>`}
+        </div>
+      </div>
+    </div>`;
+  }
+  let pulseAt = 0;
+  async function loadPulse(force) {
+    const s = state();
+    if (!s.on || !s.cls || !s.secret) return;
+    if (!force && Date.now() - pulseAt < 60_000) return;
+    pulseAt = Date.now();
+    try {
+      const p = await rpc("cs50kz_class_pulse", { p_id: K.profile().id, p_secret: s.secret });
+      setState({ pulse: p || null });
+      document.dispatchEvent(new CustomEvent("cs50kz:pulse"));
+    } catch (e) { /* бұлт әлі жаңартылмаса — жай көрсетпейміз */ }
+  }
+
   // ---------- Оқушы панелі (профиль беті) ----------
   function studentPanel(box) {
     const render = () => {
@@ -241,6 +283,7 @@
         <div class="cl-class">${s.cls
           ? `<span>🏫 Сынып: <b>${esc(s.clsTitle || s.cls)}</b> <code>${esc(s.cls)}</code></span><button type="button" class="btn secondary cl-leave">Сыныптан шығу</button>`
           : `<input class="cl-code" maxlength="6" placeholder="Сынып коды (мұғалімнен)" autocapitalize="characters" spellcheck="false" aria-label="Сынып коды"><button type="button" class="btn gold cl-join">Сыныпқа қосылу</button>`}</div>
+        ${pulseCard(s)}
         <div class="pf-actions"><button type="button" class="btn secondary cl-now">↻ Қазір синхрондау</button><button type="button" class="btn secondary cl-off">Бұл құрылғыда өшіру</button></div>
         <p class="cl-msg"></p>`;
     };
@@ -280,14 +323,14 @@
           const info = await rpc("cs50kz_class_info", { p_code: code });
           if (!info) return msg("Мұндай сынып коды жоқ. Мұғаліміңізден қайта сұраңыз.", true);
           if (!confirm(`«${info.title}» сыныбына қосылу керек пе? Мұғалім атыңыз бен прогресіңізді көреді.`)) return;
-          setState({ cls: info.code, clsTitle: info.title, joining: true });
+          setState({ cls: info.code, clsTitle: info.title, joining: true, pulse: null }); pulseAt = 0;
           await cycle({ force: true, throw: true }); render(); msg("✓ Сыныпқа қосылдыңыз!");
         } else if (t.classList.contains("cl-leave")) {
           if (!confirm("Сыныптан шығу керек пе? Мұғалім бұдан былай сізді көрмейді.")) return;
           await rpc("cs50kz_leave_class", { p_id: K.profile().id, p_secret: s.secret });
-          setState({ cls: null, clsTitle: null, joining: false, hash: null }); render();
+          setState({ cls: null, clsTitle: null, joining: false, hash: null, pulse: null }); render();
         } else if (t.classList.contains("cl-now")) {
-          t.disabled = true; await cycle({ pull: true, force: true, throw: true }); render(); msg("✓ Синхрондалды");
+          t.disabled = true; await cycle({ pull: true, force: true, throw: true }); await loadPulse(true); render(); msg("✓ Синхрондалды");
         } else if (t.classList.contains("cl-off")) {
           if (!confirm("Бұл құрылғыда бұлтты өшіру керек пе? Деректер бұлтта қалады, кейін ID мен кодпен қайта кіре аласыз.")) return;
           disconnect(); render();
@@ -296,9 +339,11 @@
         render(); msg("Қате: " + human(err), true);
       }
     });
-    document.addEventListener("cs50kz:synced", () => { if (!box.contains(document.activeElement)) { render(); paint(); } });
+    document.addEventListener("cs50kz:synced", () => { loadPulse(); if (!box.contains(document.activeElement)) { render(); paint(); } });
+    document.addEventListener("cs50kz:pulse", () => { if (!box.contains(document.activeElement)) { render(); paint(); } });
     document.addEventListener("cs50kz:lectures", () => { if (!box.contains(document.activeElement)) { render(); paint(); } });
     render();
+    loadPulse(true);
     // QR не сілтеме: #login=ID.SECRET не #join=КОД. Бет ашылғанда да, профиль ашық тұрғанда сілтеме басылса да (hashchange)
     const handleHash = () => {
       const m = location.hash.match(/login=(KZ-[0-9A-Z]{4}-[0-9A-Z]{4})\.([0-9A-Z]{8})/);
