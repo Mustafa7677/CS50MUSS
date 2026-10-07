@@ -26,6 +26,7 @@ for (const [label, viewport, colorScheme] of [["desktop-light", { width: 1280, h
             noName: [...document.querySelectorAll("button, a")].filter((e) => !e.textContent.trim() && !e.getAttribute("aria-label") && !e.querySelector('img[alt]:not([alt=""])') && e.offsetParent).map((e) => e.outerHTML.slice(0, 80)),
             noLabel: [...document.querySelectorAll("input:not([type=hidden]):not([type=radio]):not([type=checkbox]):not([type=file]), textarea, select")].filter((e) => !e.getAttribute("aria-label") && !e.closest("label") && !e.placeholder && !(e.id && document.querySelector(`label[for="${e.id}"]`))).length,
             links: [...document.querySelectorAll("a[href]")].map((a) => a.getAttribute("href")).filter((h) => !/^(https?:|mailto:|javascript:)/.test(h)),
+            ogImage: document.querySelector('meta[property="og:image"]')?.content || "",
           };
         });
         expect(errs, "JS қателері: " + errs.join(" | ")).toEqual([]);
@@ -44,6 +45,9 @@ for (const [label, viewport, colorScheme] of [["desktop-light", { width: 1280, h
             if (hash && target.endsWith(".html") && !/^(add=|import=|login=|sql)/.test(hash) && !idsOf(target).has(hash)) broken.push("якорь " + h);
           }
           expect(broken, "сынған сілтемелер").toEqual([]);
+          // Әлеуметтік желі суреті нақты бар файлға сілтеуі керек
+          const og = r.ogImage.replace("https://mustafa7677.github.io/CS50MUSS/", "");
+          expect(og && fs.existsSync(path.join(ROOT, og)), "og:image файлы: " + og).toBeTruthy();
         }
       });
     }
