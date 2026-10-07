@@ -97,6 +97,7 @@
     initLecturePage();
     initDashboard();
     initQuote();
+    initAlashPortraits();
     initPythonRunner();
     initSqlRunner();
     initPlayground();
@@ -548,18 +549,47 @@
     });
   }
 
+  // ---------- Портреттер (Wikimedia Commons, tools/fetch_portraits.py) ----------
+  let portraitsP = null;
+  const portraits = () => (portraitsP = portraitsP || loadScript("assets/data/portraits.js").then(() => window.CS50KZ_PORTRAITS || {}).catch(() => ({})));
+  // Портрет бар болса — сурет, жоқ болса — бас әріптер (монограмма)
+  function faceHtml(name, P, cls) {
+    const p = P[name];
+    const ini = name.split(/\s+/).map((w) => w[0]).join("").slice(0, 2);
+    return p
+      ? `<span class="${cls} has-img"><img src="${ROOT_URL + p.img}" alt="${escapeHtml(name)}" width="320" height="400" loading="lazy" decoding="async"></span>`
+      : `<span class="${cls}" aria-hidden="true">${escapeHtml(ini)}</span>`;
+  }
+  function initAlashPortraits() {
+    if (!document.querySelector(".alash .al-card")) return;
+    portraits().then((P) => {
+      const used = [];
+      document.querySelectorAll(".alash .al-card").forEach((card) => {
+        const name = card.querySelector("h3").textContent.trim(), mono = card.querySelector(".al-mono");
+        if (!P[name] || !mono) return;
+        mono.outerHTML = faceHtml(name, P, "al-mono");
+        card.classList.add("has-portrait");
+        used.push(name);
+      });
+      if (!used.length) return;
+      const box = document.createElement("details");
+      box.className = "al-credits";
+      box.innerHTML = `<summary>Суреттердің дерек көзі</summary><ul>${used.map((n) => `<li>${escapeHtml(n)} — ${escapeHtml(P[n].artist)}, ${escapeHtml(P[n].license)}. <a href="${escapeHtml(P[n].src)}" target="_blank" rel="noopener">Wikimedia Commons</a></li>`).join("")}</ul>`;
+      document.querySelector(".alash .al-note")?.after(box);
+    });
+  }
+
   // ---------- Күн сөзі: Алаш зиялылары мен ағартушылар ----------
   const dayNum = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60_000) / 86_400_000);
   function initQuote() {
     const card = document.querySelector(".qt-card");
     if (!card) return;
-    loadScript("assets/data/quotes.js").then(() => {
+    Promise.all([loadScript("assets/data/quotes.js"), portraits()]).then(([, P]) => {
       const Q = window.CS50KZ_QUOTES || [];
       if (!Q.length) return;
       const EVERY = 12_000; // әр сөз 12 секунд тұрады
       let i = dayNum() % Q.length, timer = null, hover = false;
       let paused = matchMedia("(prefers-reduced-motion: reduce)").matches; // қозғалысты азайтқандарға өзі ауыспайды
-      const initials = (a) => a.split(/\s+/).map((w) => w[0]).join("").slice(0, 2);
       card.innerHTML = `
         <span class="qt-mark" aria-hidden="true">“</span>
         <div class="qt-top"><small class="qt-label">Ұлағатты сөз</small><span class="qt-count" aria-hidden="true"></span></div>
@@ -578,7 +608,7 @@
         body.innerHTML = `
           <blockquote>${q.t.split(" / ").map(escapeHtml).join("<br>")}</blockquote>
           <figcaption>
-            <span class="qt-mono" aria-hidden="true">${escapeHtml(initials(q.a))}</span>
+            ${faceHtml(q.a, P, "qt-mono")}
             <span><b>${escapeHtml(q.a)}</b><small>${escapeHtml(q.y)}${q.src ? " · " + escapeHtml(q.src) : ""}</small></span>
           </figcaption>
           ${q.cs ? `<p class="qt-cs">💡 ${escapeHtml(q.cs)}</p>` : ""}`;
