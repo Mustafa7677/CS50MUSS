@@ -569,17 +569,69 @@
             <span><b>${escapeHtml(q.a)}</b><small>${escapeHtml(q.y)}${q.src ? " · " + escapeHtml(q.src) : ""}</small></span>
           </figcaption>
           ${q.cs ? `<p class="qt-cs">💡 ${escapeHtml(q.cs)}</p>` : ""}
-          <div class="qt-actions"><a class="qt-more" href="${ROOT_URL}alash.html">Тұлғалар туралы →</a><button type="button" class="qt-next" aria-label="Келесі сөз">↻ Келесі</button><button type="button" class="qt-copy">Көшіру</button></div>`;
+          <div class="qt-actions"><a class="qt-more" href="${ROOT_URL}alash.html">Тұлғалар туралы →</a><button type="button" class="qt-next" aria-label="Келесі сөз">↻ Келесі</button><button type="button" class="qt-img">🖼 Сурет</button><button type="button" class="qt-copy">Көшіру</button></div>`;
       };
       draw();
       card.addEventListener("click", async (e) => {
         if (e.target.closest(".qt-next")) { i = (i + 1) % Q.length; draw(); card.querySelector(".qt-next").focus(); }
+        if (e.target.closest(".qt-img")) quoteImage(Q[i]);
         if (e.target.closest(".qt-copy")) {
           const q = Q[i];
           try { await navigator.clipboard.writeText(`«${q.t.replace(/ \/ /g, "\n")}»\n— ${q.a}`); toast("Көшірілді ✓"); } catch (er) {}
         }
       });
     }).catch(() => {});
+  }
+  // Күн сөзін әлеуметтік желіге арналған суретке айналдыру (1080×1350 PNG)
+  async function quoteImage(q) {
+    const W = 1080, H = 1350, c = document.createElement("canvas");
+    c.width = W; c.height = H;
+    const g = c.getContext("2d");
+    const bg = g.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, "#0a4c7a"); bg.addColorStop(1, "#007f97");
+    g.fillStyle = bg; g.fillRect(0, 0, W, H);
+    // Алтын жиек пен оюлы бұрыштар
+    g.strokeStyle = "rgba(242,183,5,.85)"; g.lineWidth = 6; g.strokeRect(48, 48, W - 96, H - 96);
+    const horn = (x, y, s) => {
+      g.save(); g.translate(x, y); g.scale(s, s); g.strokeStyle = "rgba(242,183,5,.9)"; g.lineWidth = 3; g.lineCap = "round";
+      g.beginPath(); g.moveTo(0, 30); g.bezierCurveTo(0, 0, -30, -14, -42, 2); g.bezierCurveTo(-52, 16, -36, 30, -26, 20); g.stroke();
+      g.beginPath(); g.moveTo(0, 30); g.bezierCurveTo(0, 0, 30, -14, 42, 2); g.bezierCurveTo(52, 16, 36, 30, 26, 20); g.stroke();
+      g.restore();
+    };
+    horn(W / 2, 92, 1.2); horn(W / 2, H - 190, 1.2);
+    g.fillStyle = "rgba(242,183,5,.6)"; g.font = "bold 360px Georgia, serif"; g.fillText("“", 70, 420);
+    // Мәтінді жолдарға бөлу
+    const serif = (px) => `600 ${px}px Georgia, "Times New Roman", serif`;
+    const wrap = (text, max) => {
+      const out = [];
+      text.split(" / ").forEach((part) => {
+        let line = "";
+        part.split(" ").forEach((w) => { const t = line ? line + " " + w : w; if (g.measureText(t).width > max && line) { out.push(line); line = w; } else line = t; });
+        out.push(line);
+      });
+      return out;
+    };
+    let size = 64, lines;
+    do { g.font = serif(size); lines = wrap(q.t, W - 240); size -= 4; } while (lines.length * size * 1.45 > 640 && size > 36);
+    size += 4;
+    const lh = size * 1.45, top = 300 + (640 - lines.length * lh) / 2;
+    g.fillStyle = "#ffffff"; g.font = serif(size);
+    lines.forEach((l, k) => g.fillText(l, 120, top + k * lh + size));
+    g.fillStyle = "#f2b705"; g.fillRect(120, 1010, 90, 6);
+    g.fillStyle = "#ffffff"; g.font = "700 46px Unbounded, Inter, system-ui, sans-serif"; g.fillText(q.a, 120, 1080);
+    g.fillStyle = "rgba(255,255,255,.75)"; g.font = "500 30px Inter, system-ui, sans-serif"; g.fillText(q.y + (q.src ? " · " + q.src : ""), 120, 1126);
+    g.fillStyle = "rgba(255,255,255,.85)"; g.font = "700 28px Inter, system-ui, sans-serif"; g.textAlign = "center";
+    g.fillText("CS50 қазақша · mustafa7677.github.io/CS50MUSS", W / 2, H - 70);
+    const blob = await new Promise((r) => c.toBlob(r, "image/png"));
+    if (!blob) return;
+    const file = new File([blob], "cs50kz-soz.png", { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try { await navigator.share({ files: [file], title: q.a }); return; } catch (e) { if (e.name === "AbortError") return; }
+    }
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob); a.download = file.name; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 30_000);
+    toast("Сурет жүктелді 🖼");
   }
   // Лекция оқылғанда Бота ұлы сөзбен құттықтайды
   function quoteCheer() {

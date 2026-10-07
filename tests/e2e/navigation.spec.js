@@ -60,3 +60,13 @@ test("Алаш тұлғалары беті: карталар, дәйексөзд
   await page.screenshot({ path: test.info().outputPath("alash.png"), fullPage: true });
   expect(errs).toEqual([]);
 });
+
+test("күн сөзі суретке айналады (PNG жүктеледі)", async ({ page }) => {
+  const errs = collectErrors(page);
+  await page.goto("index.html");
+  await expect(page.locator(".qt-card blockquote")).not.toBeEmpty();
+  const [dl] = await Promise.all([page.waitForEvent("download"), page.click(".qt-img")]);
+  expect(dl.suggestedFilename()).toBe("cs50kz-soz.png");
+  await dl.saveAs(test.info().outputPath("quote-share.png"));
+  expect(errs).toEqual([]);
+});
