@@ -40,3 +40,33 @@ test("профиль: код арқылы басқа құрылғыға көші
   await expect(T.locator(".teacher tbody")).toContainText(idA);
   for (const p of [A, B, T]) expect(p.errs).toEqual([]);
 });
+
+test("белсенділік күнтізбесі: тест күнді белгілейді, серия саналады, синхрондағанда біріктіріледі", async ({ page }) => {
+  const errs = collectErrors(page);
+  await blockFonts(page.context());
+  await page.goto("index.html");
+  // Кеше мен алдыңғы күні белсенді болған
+  await page.evaluate(() => {
+    const k = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return CS50KZ.dayKey(d); };
+    localStorage.setItem("cs50kz:days", JSON.stringify({ [k(1)]: 4, [k(2)]: 12 }));
+  });
+  await page.goto("profile.html");
+  await expect(page.locator(".cal-kpi")).toContainText("2 күн қатарынан");
+  await expect(page.locator(".cal-foot p")).toContainText("3 күн қатарынан");
+  await expect(page.locator(".cal-g i.l2")).toHaveCount(1);
+  await expect(page.locator(".cal-g i.l4")).toHaveCount(1);
+
+  // Тест тапсыру бүгінгі күнді белгілейді
+  await page.goto("lectures/week-0.html");
+  await page.locator(".quiz .question").first().locator("input").first().check();
+  await page.locator(".quiz-check").first().click();
+  await page.goto("profile.html");
+  await expect(page.locator(".cal-kpi")).toContainText("3 күн қатарынан");
+  await expect(page.locator(".cal-foot p")).toContainText("Бүгін де оқыдыңыз");
+  await page.locator(".pf-cal").screenshot({ path: test.info().outputPath("cal.png") });
+
+  // Біріктіру ережесі: бір күн — көбі сақталады
+  const m = await page.evaluate(() => CS50KZ_SYNC.mergeKey("cs50kz:days", { a: 2, b: 5 }, { a: 7, c: 1 }));
+  expect(m).toEqual({ a: 7, b: 5, c: 1 });
+  expect(errs).toEqual([]);
+});

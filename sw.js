@@ -1,6 +1,6 @@
 // CS50 қазақша — офлайн режим.
 // Беттер желіден алынады, ал желі жоқ кезде кэштегі соңғы нұсқа көрсетіледі.
-const CACHE = "cs50kz-v31";
+const CACHE = "cs50kz-v32";
 const CORE = [
   "./", "index.html", "about.html", "glossary.html", "certificate.html", "playground.html", "practice.html", "flashcards.html", "viz.html", "teacher.html", "debug.html", "detective.html", "flask.html", "exam.html", "assets/js/exam.js", "profile.html", "assets/js/profile.js", "assets/js/cloud.js", "assets/js/feedback.js", "assets/js/flask.js", "assets/data/mystery.js", "assets/data/mystery2.js", "map.html", "cheatsheet.html", "assets/data/bugs.js", "assets/data/trace.js", "assets/data/checks.js", "assets/data/sqlchecks.js", "assets/img/bota.svg", "assets/img/bota-happy.svg", "assets/img/bota-think.svg", "assets/img/bota-wow.svg", "assets/vendor/qrcode/qrcode.js",
   "assets/css/style.css", "assets/js/main.js", "assets/js/labs.js",
