@@ -55,20 +55,32 @@ def api(host, **params):
     return json.loads(get(f"https://{host}/w/api.php?" + urllib.parse.urlencode(params)))
 
 
+STAMP = re.compile(r"stamp|марка", re.I)
+
+
 def candidates(slug, name, ru, en):
-    """Мақалалардың басты суреті (тұлғаның өзі) және атауында тұлғаның аты бар суреттер."""
-    lead, named = [], []
+    """(файл, қай уикиде кездесті) тізімі: алдымен мақалалардың басты суреті, сосын атауында
+    тұлғаның аты бар суреттер, соңында (басқа ештеңе болмаса) маркадағы портрет."""
+    lead, named, stamps, where = [], [], [], {}
     toks = TOKENS[slug]
+    def note(f, host):
+        where.setdefault(f, [])
+        if host not in where[f]:
+            where[f].append(host)
     for host, title in (("kk.wikipedia.org", name), ("ru.wikipedia.org", ru), ("en.wikipedia.org", en)):
         try:
             q = api(host, action="query", titles=title, redirects=1, prop="pageimages|images", piprop="name", imlimit=50)
             for p in q["query"]["pages"]:
-                if p.get("pageimage") and p["pageimage"] not in lead:
-                    lead.append(p["pageimage"])
+                if p.get("pageimage"):
+                    note(p["pageimage"], host)
+                    if p["pageimage"] not in lead:
+                        lead.append(p["pageimage"])
                 for im in p.get("images", []):
                     f = im["title"].split(":", 1)[1]
-                    if any(t in f.lower() for t in toks) and f not in named:
-                        named.append(f)
+                    if any(t in f.lower() for t in toks):
+                        note(f, host)
+                        if f not in named:
+                            named.append(f)
         except Exception as e:
             print(f"  {host}: {e}")
     # Commons іздеуі — тек файл атауында тұлғаның аты болса (бөтен адам түсіп кетпес үшін)
@@ -81,8 +93,23 @@ def candidates(slug, name, ru, en):
                     named.append(f)
         except Exception as e:
             print(f"  commons: {e}")
-    ok = lambda f: re.search(r"\.(jpe?g|png)$", f, re.I) and not NOT_PORTRAIT.search(f)
-    return [f for f in lead if ok(f)] + [f for f in named if ok(f) and f not in lead]
+    img = lambda f: re.search(r"\.(jpe?g|png)$", f, re.I)
+    for f in lead + named:
+        if img(f) and STAMP.search(f) and not re.search(r"coin|монет|banknote|купюр", f, re.I) and f not in stamps:
+            stamps.append(f)
+    ok = lambda f: img(f) and not NOT_PORTRAIT.search(f)
+    out = [f for f in lead if ok(f)] + [f for f in named if ok(f) and f not in lead] + stamps
+    return [(f, where.get(f, [])) for f in out]
+
+
+def image_info(fname, hosts):
+    """Алдымен Commons, жоқ болса — суреттің өз уикиіндегі (жергілікті) сипаттамасы."""
+    for host in ["commons.wikimedia.org"] + hosts:
+        pg = api(host, action="query", titles="File:" + fname, prop="imageinfo",
+                 iiprop="url|extmetadata|size", iiurlwidth="800")["query"]["pages"][0]
+        if "imageinfo" in pg:
+            return host, pg["imageinfo"][0]
+    return None, None
 
 
 _cascade = None
@@ -121,17 +148,15 @@ def main():
         prev = json.loads(m.group(1)) if m else {}
     for name, slug, ru, en in PEOPLE:
         done = False
-        for fname in candidates(slug, name, ru, en)[:12]:
+        for fname, hosts in candidates(slug, name, ru, en)[:14]:
             try:
-                info = api("commons.wikimedia.org", action="query", titles="File:" + fname, prop="imageinfo",
-                           iiprop="url|extmetadata|size", iiurlwidth="800")["query"]["pages"][0]
-                if "imageinfo" not in info:
-                    print(f"  – {fname}: Commons-та жоқ"); continue
-                ii = info["imageinfo"][0]
+                host, ii = image_info(fname, hosts)
+                if not ii:
+                    print(f"  – {fname}: файл табылмады"); continue
                 em = ii.get("extmetadata", {})
                 lic = strip(em.get("LicenseShortName", {}).get("value", ""))
-                if not FREE.search(lic):
-                    print(f"  – {fname}: лицензия еркін емес ({lic})"); continue
+                if not FREE.search(lic) or re.search(r"fair use|несвобод|non-free", lic, re.I):
+                    print(f"  – {fname} ({host}): лицензия еркін емес ({lic or 'көрсетілмеген'})"); continue
                 img = Image.open(io.BytesIO(get(ii.get("thumburl") or ii["url"]))).convert("RGB")
                 crop = face_crop(img)
                 if crop is None:
@@ -140,7 +165,7 @@ def main():
                 artist = strip(em.get("Artist", {}).get("value", ""))
                 artist = re.sub(r"^(Unknown \w+)\1?$", r"\1", artist.replace("Unknown authorUnknown author", "Unknown author"))[:120]
                 meta[name] = {"img": f"assets/img/alash/{slug}.jpg", "license": lic, "artist": artist or "белгісіз", "src": ii.get("descriptionurl", "")}
-                print(f"✓ {name}: {fname} ({lic})")
+                print(f"✓ {name}: {fname} ({lic}, {host})")
                 done = True
                 break
             except Exception as e:
