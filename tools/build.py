@@ -187,7 +187,7 @@ def quiz_questions(name, s, meta):
 def build_cheatsheet(entries):
     """Әр лекцияның «Қорытынды» бөлімінен бір беттік шпаргалка."""
     tpl = (ROOT / "about.html").read_text(encoding="utf-8")
-    top = tpl[:tpl.index('<div class="layout"')]
+    top = tpl[:tpl.index('<div class="layout')]
     top = re.sub(r"<!-- build:head -->.*?<!-- /build:head -->", "", top, flags=re.S)
     top = re.sub(r"<title>.*?</title>", "<title>Шпаргалка — CS50 қазақша</title>", top)
     top = top.replace('<meta name="author"', '<meta name="description" content="CS50 қазақша: барлық 12 лекцияның қысқаша конспектісі бір бетте, басып шығаруға ыңғайлы.">\n  <meta name="author"', 1)
@@ -267,7 +267,7 @@ def build_glossary(terms):
             f'<span class="g-en">{html.escape(t["en"])}</span>'
             f'<a class="g-src" href="{t["url"]}">{html.escape(t["src"])} →</a></div>')
     tpl = (ROOT / "about.html").read_text(encoding="utf-8")
-    top = tpl[:tpl.index('<div class="layout"')]
+    top = tpl[:tpl.index('<div class="layout')]
     top = re.sub(r"<title>.*?</title>", "<title>Терминдер сөздігі — CS50 қазақша</title>", top)
     top = top.replace('<meta name="author"', '<meta name="description" content="Информатика терминдерінің қазақша–ағылшынша сөздігі: CS50 лекцияларынан жиналған.">\n  <meta name="author"', 1) if 'name="description"' not in top else top
     foot = tpl[tpl.index("  <footer"):]

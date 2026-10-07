@@ -793,13 +793,19 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       }
       nameInput.addEventListener("input", sync);
       sync();
+      const done = lectures.length - left.length;
+      const steps = lectures.map((l) => `<a href="${ROOT_URL + l.url}" class="cg-step ${p.read[l.id] ? "on" : ""}" title="${escapeHtml(l.num + ": " + l.title)}">${p.read[l.id] ? "✓" : escapeHtml(l.id === "ai" ? "AI" : l.id.replace("week-", ""))}</a>`).join("");
+      const exBest = readJson("cs50kz:exam", {}).best;
+      const exam = exBest >= 70 ? `<span class="cg-exam ok">🎓 Емтихан: ${exBest}%</span>` : `<a class="cg-exam" href="${ROOT_URL}exam.html">📝 Емтихан ${exBest != null ? `(${exBest}%) — қайта тапсыру` : "— тапсыру"} →</a>`;
       if (left.length) {
         cert.classList.add("locked");
-        gate.innerHTML = `<strong>Сертификат ашылу үшін тағы ${left.length} лекцияны оқу керек:</strong> ` +
-          left.map((l) => `<a href="${ROOT_URL + l.url}">${escapeHtml(l.num)}</a>`).join(", ") +
-          `. Әр лекцияның соңындағы «Оқыдым ✓» батырмасын басыңыз.`;
+        gate.innerHTML = `<div class="cg-head"><b>${done} / ${lectures.length} лекция оқылды</b>${exam}</div>
+          <div class="cg-bar"><span style="width:${(done / lectures.length) * 100}%"></span></div>
+          <div class="cg-steps">${steps}</div>
+          <p>Сертификат ашылу үшін әр лекцияның соңындағы «Оқыдым ✓» батырмасын басыңыз. Келесісі: <a href="${ROOT_URL + left[0].url}">${escapeHtml(left[0].num + ": " + left[0].title)} →</a></p>`;
       } else {
-        gate.innerHTML = "<strong>Құттықтаймыз! 🎉</strong> Барлық лекцияны оқыдыңыз. Атыңызды жазып, сертификатты басып шығарыңыз не PDF ретінде сақтаңыз.";
+        gate.classList.add("open");
+        gate.innerHTML = `<div class="cg-head"><b>Құттықтаймыз! 🎉 Барлық ${lectures.length} лекция оқылды</b>${exam}</div><div class="cg-bar"><span style="width:100%"></span></div><p>Атыңызды жазып, сертификатты басып шығарыңыз не PDF ретінде сақтаңыз.</p>`;
         document.querySelector(".cert-print").disabled = false;
       }
       document.querySelector(".cert-print").addEventListener("click", () => print());
