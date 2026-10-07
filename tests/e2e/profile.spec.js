@@ -70,3 +70,32 @@ test("белсенділік күнтізбесі: тест күнді белг�
   expect(m).toEqual({ a: 7, b: 5, c: 1 });
   expect(errs).toEqual([]);
 });
+
+test("бүгінгі мақсат: сақина, мақсатты таңдау, орындалғанда Бота құттықтайды", async ({ page }) => {
+  const errs = collectErrors(page);
+  await blockFonts(page.context());
+  await page.goto("index.html");
+  await page.evaluate(() => {
+    const k = (n) => { const d = new Date(); d.setDate(d.getDate() - n); return CS50KZ.dayKey(d); };
+    localStorage.setItem("cs50kz:days", JSON.stringify({ [k(0)]: 1, [k(1)]: 3, [k(2)]: 4 }));
+  });
+  await page.reload();
+  const g = page.locator(".dash-goal");
+  await expect(g).toContainText("Бүгінгі мақсат: 3 әрекет");
+  await expect(g).toContainText("Тағы 2 әрекет қалды");
+  await expect(g).toContainText("2 күн қатарынан");
+  await g.locator('button[data-g="1"]').click();
+  await expect(g).toHaveClass(/done/);
+  await expect(g).toContainText("3 күн қатарынан");
+  await g.locator('button[data-g="5"]').click();
+  await expect(g.locator('button[data-g="5"]')).toHaveAttribute("aria-pressed", "true");
+  await page.locator(".dashboard-wrap").first().screenshot({ path: test.info().outputPath("goal.png") });
+  // Мақсат 3: бүгін 1 → тест тапсырсақ 2, тағы бір → 3 → Бота
+  await g.locator('button[data-g="3"]').click();
+  await page.goto("lectures/week-0.html");
+  await page.locator(".quiz .question").first().locator("input").first().check();
+  await page.locator(".quiz-check").first().click();
+  await page.locator(".quiz-check").first().click();
+  await expect(page.locator(".bota-pop")).toContainText("Бүгінгі мақсат орындалды", { timeout: 5000 });
+  expect(errs).toEqual([]);
+});

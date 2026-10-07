@@ -729,6 +729,30 @@
     }).catch(() => {});
   }
 
+  // Басты беттегі «Бүгінгі мақсат» виджеті
+  function drawGoal(box) {
+    if (!box) return;
+    const g = goalStats(), done = g.today >= g.goal;
+    const r = 26, C = 2 * Math.PI * r, frac = Math.min(1, g.today / g.goal);
+    box.classList.toggle("done", done);
+    box.innerHTML = `
+      <svg class="goal-ring" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Бүгін ${g.today} / ${g.goal} әрекет">
+        <circle cx="32" cy="32" r="${r}" class="goal-bg"/>
+        <circle cx="32" cy="32" r="${r}" class="goal-fg" stroke-dasharray="${C}" stroke-dashoffset="${C * (1 - frac)}"/>
+        <text x="32" y="37" text-anchor="middle">${done ? "✓" : `${Math.min(g.today, g.goal)}/${g.goal}`}</text>
+      </svg>
+      <div class="goal-txt">
+        <b>🎯 Бүгінгі мақсат: ${g.goal} әрекет</b>
+        <span>${done ? "Орындалды — керемет! 🎉" : g.today ? `Тағы ${g.goal - g.today} әрекет қалды` : "Лекция бөлімі, тест, карточка не тапсырма — бәрі саналады"}${g.streak ? ` · 🔥 ${g.streak} күн қатарынан` : ""}</span>
+      </div>
+      <div class="goal-pick" role="group" aria-label="Күнделікті мақсат">${goalChoices().map((n) => `<button type="button" data-g="${n}" aria-pressed="${n === g.goal}">${n}</button>`).join("")}</div>`;
+    box.querySelectorAll(".goal-pick button").forEach((b) => b.addEventListener("click", () => {
+      try { localStorage.setItem("cs50kz:goal", b.dataset.g); } catch (e) {}
+      drawGoal(box);
+      box.querySelector(`.goal-pick button[data-g="${b.dataset.g}"]`).focus();
+    }));
+  }
+
   // ---------- Басты бет: жеке прогресс панелі ----------
   function initDashboard() {
     const panel = document.querySelector(".dashboard");
@@ -757,12 +781,16 @@
             <div><b>${tasks}<small>/${totalTasks}</small></b><span>тапсырма тексерілді</span></div>
             <div><b>${Math.round(minutes / 60 * 10) / 10}</b><span>сағат оқу қалды</span></div>
           </div>
+          <div class="dash-goal"></div>
           <div class="dash-actions">
             ${cont ? `<a class="btn gold" href="${ROOT_URL + cont.url}">${read || last ? "Жалғастыру" : "Бастау"}: ${escapeHtml(cont.num)} →</a>` : `<a class="btn gold" href="${ROOT_URL}certificate.html">Сертификатты алу 🎓</a>`}
             <a class="btn ghost-dark" href="${ROOT_URL}certificate.html">Сертификат</a>
             <button type="button" class="btn ghost-dark share-progress">👩‍🏫 Мұғалімге жіберу</button>
           </div>
         </div>`;
+
+      drawGoal(panel.querySelector(".dash-goal"));
+      document.addEventListener("cs50kz:day", () => drawGoal(panel.querySelector(".dash-goal")));
 
       // Әр картаға белгі
       document.querySelectorAll(".week-card").forEach((card) => {
@@ -1239,6 +1267,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       A("webdev", "🌐", "Веб-әзірлеуші", "Homepage тексерушісінен барлық талаппен өту", readJson("cs50kz:graded", {}).homepage ? 1 : 0, 1),
       A("search", "🔍", "Іздеуші", "Сайт бойынша іздеуді қолдану", used.search ? 1 : 0, 1),
       A("owl", "🌙", "Түнгі үкі", "Түнгі режимді қосу", used.dark ? 1 : 0, 1),
+      A("goal7", "🎯", "Мақсатшыл", "Күнделікті мақсатты 7 күн қатарынан орындау", goalStats().best, 7),
     ];
   }
 
@@ -1528,10 +1557,41 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
   function logDay(n = 1) {
     const days = readJson("cs50kz:days", {});
     const t = dayKey();
-    days[t] = (days[t] || 0) + n;
+    const before = days[t] || 0;
+    days[t] = before + n;
     const keys = Object.keys(days).sort();
     while (keys.length > 400) delete days[keys.shift()];
     try { localStorage.setItem("cs50kz:days", JSON.stringify(days)); } catch (e) {}
+    const goal = goalOf();
+    if (before < goal && days[t] >= goal) {
+      setTimeout(() => {
+        celebrate();
+        const g = goalStats();
+        botaSay(`🎯 Бүгінгі мақсат орындалды! ${g.streak > 1 ? g.streak + " күн қатарынан — " : ""}Ертең де келіңіз, жалғастырамыз.`, "wow");
+        checkAchievements();
+      }, 900);
+    }
+    document.dispatchEvent(new CustomEvent("cs50kz:day"));
+  }
+  // Күнделікті мақсат: күніне неше әрекет (әдепкі 3)
+  // (функция — const болса, бет ерте жүктелгенде TDZ қатесі шығуы мүмкін)
+  function goalChoices() { return [1, 3, 5, 10]; }
+  function goalOf() { const g = +readJson("cs50kz:goal", 3); return goalChoices().includes(g) ? g : 3; }
+  function goalStats() {
+    const days = readJson("cs50kz:days", {}), goal = goalOf();
+    const ok = (k) => (+days[k] || 0) >= goal;
+    const d = new Date();
+    const today = +days[dayKey(d)] || 0;
+    let streak = 0;
+    if (!ok(dayKey(d))) d.setDate(d.getDate() - 1);
+    while (ok(dayKey(d))) { streak++; d.setDate(d.getDate() - 1); }
+    let best = 0, run = 0, prev = null;
+    Object.keys(days).sort().forEach((k) => {
+      const t = new Date(k + "T12:00:00");
+      run = ok(k) ? (prev && (t - prev) / 86_400_000 === 1 && run ? run + 1 : 1) : 0;
+      best = Math.max(best, run); prev = t;
+    });
+    return { goal, today, streak, best: Math.max(best, streak) };
   }
   function weekBump(key, n = 1) {
     logDay(n);
