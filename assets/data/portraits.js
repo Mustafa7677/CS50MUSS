@@ -18,16 +18,10 @@ window.CS50KZ_PORTRAITS = {
   "artist": "Unknown photographer",
   "src": "https://commons.wikimedia.org/wiki/File:Dulatov_Mirjakip.jpg"
  },
- "Мағжан Жұмабаев": {
-  "img": "assets/img/alash/zhumabayev.jpg",
-  "license": "Public domain",
-  "artist": "Post of Kazakhstan",
-  "src": "https://commons.wikimedia.org/wiki/File:Magzhan_Zhumabai_2018_stamp_of_Kazakhstan.jpg"
- },
  "Ыбырай Алтынсарин": {
   "img": "assets/img/alash/altynsarin.jpg",
   "license": "Public domain",
-  "artist": "Unknown authorUnknown author",
+  "artist": "Unknown author",
   "src": "https://commons.wikimedia.org/wiki/File:Altynsarin.jpg"
  },
  "Абай Құнанбайұлы": {
