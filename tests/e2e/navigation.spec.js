@@ -48,3 +48,15 @@ test("басты бет: күн сөзі шығады, «Келесі» ауыс
   await expect(page.locator(".bota-pop")).toContainText("Жарайсыз!");
   expect(errs).toEqual([]);
 });
+
+test("Алаш тұлғалары беті: карталар, дәйексөздер, Python блоктары", async ({ page }) => {
+  const errs = collectErrors(page);
+  await page.goto("index.html");
+  await page.click(".qt-more");
+  await expect(page).toHaveURL(/alash\.html$/);
+  await expect(page.locator(".al-card")).toHaveCount(7);
+  await expect(page.locator(".al-card").first()).toContainText("Әлихан Бөкейхан");
+  await expect(page.locator('pre[data-lang="python"] .run-btn')).toHaveCount(3);
+  await page.screenshot({ path: test.info().outputPath("alash.png"), fullPage: true });
+  expect(errs).toEqual([]);
+});

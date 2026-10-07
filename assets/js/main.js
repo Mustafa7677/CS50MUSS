@@ -569,7 +569,7 @@
             <span><b>${escapeHtml(q.a)}</b><small>${escapeHtml(q.y)}${q.src ? " · " + escapeHtml(q.src) : ""}</small></span>
           </figcaption>
           ${q.cs ? `<p class="qt-cs">💡 ${escapeHtml(q.cs)}</p>` : ""}
-          <div class="qt-actions"><button type="button" class="qt-next" aria-label="Келесі сөз">↻ Келесі</button><button type="button" class="qt-copy">Көшіру</button></div>`;
+          <div class="qt-actions"><a class="qt-more" href="${ROOT_URL}alash.html">Тұлғалар туралы →</a><button type="button" class="qt-next" aria-label="Келесі сөз">↻ Келесі</button><button type="button" class="qt-copy">Көшіру</button></div>`;
       };
       draw();
       card.addEventListener("click", async (e) => {
