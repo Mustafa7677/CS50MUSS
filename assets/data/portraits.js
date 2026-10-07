@@ -18,6 +18,12 @@ window.CS50KZ_PORTRAITS = {
   "artist": "Unknown photographer",
   "src": "https://commons.wikimedia.org/wiki/File:Dulatov_Mirjakip.jpg"
  },
+ "Мағжан Жұмабаев": {
+  "img": "assets/img/alash/zhumabayev.jpg",
+  "license": "Public domain",
+  "artist": "Post of Kazakhstan",
+  "src": "https://commons.wikimedia.org/wiki/File:Magzhan_Zhumabai_2018_stamp_of_Kazakhstan.jpg"
+ },
  "Сұлтанмахмұт Торайғыров": {
   "img": "assets/img/alash/toraighyrov.jpg",
   "license": "CC BY-SA 4.0",
