@@ -574,7 +574,7 @@
       if (!used.length) return;
       const box = document.createElement("details");
       box.className = "al-credits";
-      box.innerHTML = `<summary>Суреттердің дерек көзі</summary><ul>${used.map((n) => `<li>${escapeHtml(n)} — ${escapeHtml(P[n].artist)}, ${escapeHtml(P[n].license)}. <a href="${escapeHtml(P[n].src)}" target="_blank" rel="noopener">Wikimedia Commons</a></li>`).join("")}</ul>`;
+      box.innerHTML = `<summary>Суреттердің дерек көзі</summary><ul>${used.map((n) => `<li>${escapeHtml(n)} — ${escapeHtml(P[n].artist)}, ${escapeHtml(P[n].license)}${P[n].src ? `. <a href="${escapeHtml(P[n].src)}" target="_blank" rel="noopener">Wikimedia Commons</a>` : ""}</li>`).join("")}</ul>`;
       document.querySelector(".alash .al-note")?.after(box);
     });
   }

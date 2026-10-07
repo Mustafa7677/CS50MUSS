@@ -1,4 +1,4 @@
-// tools/fetch_portraits.py жасаған (Wikimedia Commons, еркін лицензиялар). Қолмен өзгертпеңіз.
+// tools/fetch_portraits.py жасаған (Wikimedia Commons, еркін лицензиялар); "manual" — қолмен қосылған, скрипт өзгертпейді.
 window.CS50KZ_PORTRAITS = {
  "Әлихан Бөкейхан": {
   "img": "assets/img/alash/bokeikhan.jpg",
@@ -20,9 +20,17 @@ window.CS50KZ_PORTRAITS = {
  },
  "Мағжан Жұмабаев": {
   "img": "assets/img/alash/zhumabayev.jpg",
-  "license": "Public domain",
-  "artist": "Post of Kazakhstan",
-  "src": "https://commons.wikimedia.org/wiki/File:Magzhan_Zhumabai_2018_stamp_of_Kazakhstan.jpg"
+  "license": "сайт авторы ұсынған",
+  "artist": "кескіндеме портрет, суретшісі белгісіз",
+  "src": "",
+  "manual": true
+ },
+ "Жүсіпбек Аймауытұлы": {
+  "img": "assets/img/alash/aimauytuly.jpg",
+  "license": "сайт авторы ұсынған",
+  "artist": "кескіндеме портрет, суретшісі белгісіз",
+  "src": "",
+  "manual": true
  },
  "Сұлтанмахмұт Торайғыров": {
   "img": "assets/img/alash/toraighyrov.jpg",
