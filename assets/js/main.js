@@ -44,7 +44,8 @@
             el.style.setProperty("--d", (Math.round(e.boundingClientRect.left / 300) % 3) * 70 + "ms");
             return;
           }
-          if (!e.isIntersecting) return;
+          // Экраннан жылдам өтіп кетсе де (жоғарыда қалса) жасырын қалмасын
+          if (!e.isIntersecting && e.boundingClientRect.top > 0) return;
           el.classList.add("in");
           io.unobserve(el);
           setTimeout(() => el.classList.remove("reveal", "in"), 900);
@@ -594,6 +595,7 @@
         <span class="qt-mark" aria-hidden="true">“</span>
         <div class="qt-top"><small class="qt-label">Ұлағатты сөз</small><span class="qt-count" aria-hidden="true"></span></div>
         <div class="qt-body" aria-live="polite"></div>
+        <div class="qt-faces" role="group" aria-label="Тұлғаны таңдау"></div>
         <div class="qt-actions">
           <a class="qt-more" href="${ROOT_URL}alash.html">Тұлғалар туралы →</a>
           <button type="button" class="qt-prev" aria-label="Алдыңғы сөз">‹</button>
@@ -603,6 +605,17 @@
         </div>
         <i class="qt-time" aria-hidden="true"></i>`;
       const body = card.querySelector(".qt-body"), bar = card.querySelector(".qt-time"), play = card.querySelector(".qt-play");
+      // Тұлғалар жолағы: басқанда сол тұлғаның (келесі) сөзі шығады
+      const faces = card.querySelector(".qt-faces");
+      const authors = [...new Set(Q.map((q) => q.a))];
+      faces.innerHTML = authors.map((a) => `<button type="button" data-a="${escapeHtml(a)}" title="${escapeHtml(a)}" aria-label="${escapeHtml(a)}">${faceHtml(a, P, "qt-face")}</button>`).join("");
+      faces.addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-a]");
+        if (!b) return;
+        const own = Q.map((q, k) => (q.a === b.dataset.a ? k : -1)).filter((k) => k >= 0);
+        i = own.find((k) => k > i && Q[i].a === b.dataset.a) ?? own[0];
+        draw();
+      });
       const draw = () => {
         const q = Q[i];
         body.innerHTML = `
@@ -613,6 +626,7 @@
           </figcaption>
           ${q.cs ? `<p class="qt-cs">💡 ${escapeHtml(q.cs)}</p>` : ""}`;
         card.querySelector(".qt-count").textContent = `${i + 1} / ${Q.length}`;
+        faces.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.a === q.a)));
         schedule();
       };
       const running = () => !paused && !hover && !card.querySelector(":focus-visible") && document.visibilityState === "visible";
