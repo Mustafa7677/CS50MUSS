@@ -88,6 +88,12 @@ test("оқушы мұғалімнің сілтемесі арқылы бір қ�
 
   await T.click(".cl-refresh");
   await expect(T.locator(".t-cloud tbody")).toContainText("Әлихан Бөкейхан");
+  // Оқушы картасы: атын басқанда ашылады, 12 лекция жолы, Escape жабады
+  await T.locator(".cl-st", { hasText: "Әлихан" }).click();
+  await expect(T.locator(".sc-box h3")).toHaveText("Әлихан Бөкейхан");
+  await expect(T.locator(".sc-list li")).toHaveCount(12);
+  await T.keyboard.press("Escape");
+  await expect(T.locator(".sc-box")).toHaveCount(0);
   for (const p of [T, S]) expect(p.errs).toEqual([]);
 });
 
