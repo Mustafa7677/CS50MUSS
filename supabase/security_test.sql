@@ -39,5 +39,15 @@ begin
   begin perform public.cs50kz_class_set_task(c, 'mugalim9', 'week-99', null, 'x'); raise exception 'FAIL: set_task жоқ лекция өтті'; exception when sqlstate '22023' then null; end;
   perform public.cs50kz_class_set_task(c, 'mugalim9', 'week-3', '2026-10-10', 'Жұмаға дейін');
   if (public.cs50kz_class_view(c, 'mugalim9')->'task'->>'lecture') <> 'week-3' then raise exception 'FAIL: тапсырма сақталмады'; end if;
+  -- 6) Сынып көрінісі: тек өз құпиясымен, аттарсыз; бөтен мәтін summary-ді бұзбайды
+  perform public.cs50kz_push('KZ-CISE-PLS1', 'secret12', 'А', c, '{}'::jsonb, '{"r":"111100000000","t":"5"}'::jsonb);
+  perform public.cs50kz_push('KZ-CISE-PLS2', 'secret12', 'Б', c, '{}'::jsonb, '{"r":"110000000000","t":"abc"}'::jsonb);
+  begin perform public.cs50kz_class_pulse('KZ-CISE-PLS1', null); raise exception 'FAIL: pulse NULL өтті'; exception when sqlstate '22023' then null; end;
+  begin perform public.cs50kz_class_pulse('KZ-CISE-PLS1', 'wrongwrong'); raise exception 'FAIL: pulse қате құпия өтті'; exception when sqlstate '28000' then null; end;
+  if public.cs50kz_class_pulse('KZ-CISE-PLS2', 'secret12') is distinct from
+     '{"size":2,"rank":2,"my_read":2,"avg_read":3.0,"max_read":4,"active7":2,"task_done":1}'::jsonb then
+    raise exception 'FAIL: pulse қате: %', public.cs50kz_class_pulse('KZ-CISE-PLS2', 'secret12');
+  end if;
+  if public.cs50kz_class_pulse('KZ-CISE-CTST', 'secret12') is not null then raise exception 'FAIL: сыныпсыз pulse'; end if;
   raise notice 'Қауіпсіздік тесттері: бәрі өтті ✓';
 end $$;

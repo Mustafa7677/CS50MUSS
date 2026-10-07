@@ -205,6 +205,45 @@ begin
   return coalesce(t, 'null'::jsonb);
 end $$;
 
+-- ---------- Оқушы: сыныптың жалпы көрінісі (аттарсыз) ----------
+-- Тек өз құпиясын білетін сынып мүшесі: сынып көлемі, өз орны, орташа көрсеткіш, тапсырманы орындағандар саны.
+-- Басқа оқушылардың аты не жеке нәтижесі қайтарылмайды.
+create or replace function public.cs50kz_class_pulse(p_id text, p_secret text)
+returns jsonb
+language plpgsql security definer set search_path = public, extensions as $$
+declare
+  r public.cs50kz_students;
+  lec text;
+  pos int;
+  res jsonb;
+begin
+  perform public.cs50kz_check_secret(p_secret, 8);
+  select * into r from public.cs50kz_students where id = p_id;
+  if not found or r.secret_hash is distinct from crypt(p_secret, r.secret_hash) then
+    perform pg_sleep(0.5);
+    raise exception 'not found or wrong secret' using errcode = '28000';
+  end if;
+  if r.class_code is null then return null; end if;
+  select task->>'lecture' into lec from public.cs50kz_classes where code = r.class_code;
+  pos := array_position(array['week-0','week-1','week-2','week-3','week-4','week-5','week-6','week-7','ai','week-8','week-9','week-10'], lec);
+  with s as (
+    select id, updated_at, summary->>'r' as rs,
+           length(regexp_replace(coalesce(summary->>'r', ''), '[^1]', '', 'g')) as rd,
+           case when summary->>'t' ~ '^[0-9]{1,5}$' then (summary->>'t')::int else 0 end as tk
+      from public.cs50kz_students where class_code = r.class_code
+  ), sc as (select *, rd * 100 + tk as score from s), me as (select score, rd from sc where id = p_id)
+  select jsonb_build_object(
+    'size', count(*),
+    'rank', 1 + count(*) filter (where sc.score > me.score),
+    'my_read', max(me.rd),
+    'avg_read', round(avg(sc.rd), 1),
+    'max_read', max(sc.rd),
+    'active7', count(*) filter (where sc.updated_at > now() - interval '7 days'),
+    'task_done', case when pos is null then null else count(*) filter (where substr(coalesce(sc.rs, ''), pos, 1) = '1') end)
+    into res from sc, me;
+  return res;
+end $$;
+
 revoke all on function public.cs50kz_check_secret(text, int) from public, anon, authenticated;
 grant execute on function
   public.cs50kz_push(text, text, text, text, jsonb, jsonb),
@@ -214,7 +253,8 @@ grant execute on function
   public.cs50kz_class_create(text, text),
   public.cs50kz_class_view(text, text),
   public.cs50kz_class_remove(text, text, text),
-  public.cs50kz_class_set_task(text, text, text, date, text)
+  public.cs50kz_class_set_task(text, text, text, date, text),
+  public.cs50kz_class_pulse(text, text)
 to anon, authenticated;
 
 -- ---------- Кері байланыс: аударма қатесі, түсініксіз жер, ұсыныс ----------
