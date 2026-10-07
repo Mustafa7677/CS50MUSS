@@ -297,6 +297,7 @@
     const start = () => {
       clearInterval(timer);
       qrOpen = false;
+      onlyFlagged = false;
       box.innerHTML = `
         <div class="cl-head"><h3>☁️ Бұлттағы сынып — жанды кесте</h3></div>
         <p>Сынып ашыңыз да, оқушыларға <b>сынып кодын</b> беріңіз. Олар «Профиль» бетінде бұлтты қосып, кодты енгізеді — сол сәттен бастап нәтижелері осында өзі жаңарып тұрады.</p>
@@ -386,18 +387,68 @@
     box.addEventListener("focusin", tipOn);
     box.addEventListener("mouseleave", () => { const tip = box.querySelector(".ca-tip"); if (tip) tip.hidden = true; });
 
+    // Назар аудару керек оқушылар: ұзақ кірмеген не тест нәтижесі төмен
+    let onlyFlagged = false;
+    function flags(st) {
+      const d = st.summary || {}, out = [];
+      const days = (Date.now() - new Date(st.updated_at).getTime()) / 86_400_000;
+      if (days >= 7) out.push(["😴", Math.floor(days) + " күн кірмеген"]);
+      const qs = (d.q || "").split(",").filter(Boolean).map((x) => x.split("/").map(Number));
+      const a = qs.reduce((n, x) => n + x[0], 0), b = qs.reduce((n, x) => n + x[1], 0);
+      if (qs.length >= 2 && b && a / b < 0.5) out.push(["📉", "тест " + Math.round((a / b) * 100) + "%"]);
+      return out;
+    }
+    // Оқушының жеке картасы: әр лекция бойынша оқу мен тест
+    function studentCard(st) {
+      const d = st.summary || {}, r = (d.r || "").padEnd(12, "0"), q = (d.q || "").split(",");
+      const read = (r.match(/1/g) || []).length;
+      const qs = q.filter(Boolean).map((x) => x.split("/").map(Number));
+      const qa = qs.reduce((n, x) => n + x[0], 0), qb = qs.reduce((n, x) => n + x[1], 0);
+      const LAB = { ai: "AI лекциясы" };
+      const lines = ORDER.map((id, i) => {
+        const [x, y] = (q[i] || "").split("/").map(Number);
+        const pct = y ? Math.round((x / y) * 100) : null;
+        return `<li class="${r[i] === "1" ? "on" : ""}"><span class="sc-lec">${LAB[id] || id.replace("week-", "") + "-апта"}</span>
+          <span class="sc-read">${r[i] === "1" ? `✓<span class="sc-w"> оқыды</span>` : "—"}</span>
+          <span class="sc-quiz">${pct == null ? `<small>тест жоқ</small>` : `<i><em style="width:${pct}%" class="${pct < 50 ? "low" : ""}"></em></i><small>${x}/${y}</small>`}</span></li>`;
+      }).join("");
+      const m = document.createElement("div");
+      m.className = "search-modal open sc-modal";
+      m.innerHTML = `<div class="search-box sc-box" role="dialog" aria-modal="true" aria-label="Оқушы картасы">
+        <div class="sc-head"><div><h3>${esc(st.name || "Аты жоқ")}</h3><small class="t-id">${esc(st.id)} · соңғы белсенділік: ${ago(st.updated_at)}</small></div><button type="button" class="btn secondary sc-close" aria-label="Жабу">✕</button></div>
+        ${flags(st).length ? `<p class="sc-flags">${flags(st).map(([i, t]) => `<span class="cl-flag">${i} ${t}</span>`).join("")}</p>` : ""}
+        <div class="sc-tiles">
+          <div><small>Лекция</small><b>${read}/12</b></div>
+          <div><small>Тест</small><b>${qb ? Math.round((qa / qb) * 100) + "%" : "—"}</b></div>
+          <div><small>Тапсырма</small><b>${+d.t || 0}</b></div>
+          <div><small>Емтихан</small><b>${d.e != null ? +d.e + "%" : "—"}</b></div>
+          <div><small>Жетістік</small><b>${+d.a || 0}</b></div>
+          <div><small>Стрик</small><b>🔥 ${+d.s || 0}</b></div>
+        </div>
+        <ol class="sc-list">${lines}</ol>
+      </div>`;
+      document.body.appendChild(m);
+      const close = () => { m.remove(); document.removeEventListener("keydown", onKey); };
+      const onKey = (e) => e.key === "Escape" && close();
+      document.addEventListener("keydown", onKey);
+      m.addEventListener("click", (e) => { if (e.target === m || e.target.closest(".sc-close")) close(); });
+      m.querySelector(".sc-close").focus();
+    }
+
     function show(v) {
-      const rows = v.students.map((st) => {
+      const list = onlyFlagged ? v.students.filter((st) => flags(st).length) : v.students;
+      const rows = list.map((st) => {
         const d = st.summary || {}, r = (d.r || "").padEnd(12, "0");
         const qs = (d.q || "").split(",").filter(Boolean).map((x) => x.split("/").map(Number));
         const qpct = qs.length ? Math.round((qs.reduce((n, x) => n + x[0], 0) / Math.max(1, qs.reduce((n, x) => n + x[1], 0))) * 100) + "%" : "—";
         const fresh = Date.now() - new Date(st.updated_at).getTime() < 10 * 60_000;
-        return `<tr><td><b>${esc(st.name || "Аты жоқ")}</b><small class="t-id">${esc(st.id)}</small></td>
+        return `<tr><td><button type="button" class="cl-st" data-id="${esc(st.id)}"><b>${esc(st.name || "Аты жоқ")}</b><small class="t-id">${esc(st.id)}</small></button>${flags(st).map(([ico, t]) => `<span class="cl-flag" title="${t}">${ico} ${t}</span>`).join("")}</td>
           <td><div class="t-cells">${r.split("").map((c, i) => `<i class="${c === "1" ? "on" : ""}" title="${ORDER[i] || ""}"></i>`).join("")}</div><small>${(r.match(/1/g) || []).length}/12</small></td>
           <td>${qpct}</td><td>${+d.t || 0}</td><td>${d.e != null ? `<b class="${d.e >= 70 ? "t-pass" : ""}">${+d.e}%</b>` : "—"}</td><td>🏅 ${+d.a || 0}</td>
           <td><span class="cl-dot ${fresh ? "on" : ""}"></span>${ago(st.updated_at)}</td>
           <td><button type="button" class="t-del cl-rm" data-id="${esc(st.id)}" aria-label="Сыныптан шығару">✕</button></td></tr>`;
       }).join("");
+      const flagged = v.students.filter((st) => flags(st).length).length;
       box.innerHTML = `
         <div class="cl-head"><h3>🏫 ${esc(v.title)}</h3><span class="cl-live">● Жанды · әр 30 секунд сайын жаңарады</span></div>
         ${analytics(v.students)}
@@ -411,7 +462,7 @@
           </div>
         </div>
         <div class="cl-join-qrbox" hidden></div>
-        <div class="t-actions"><button type="button" class="btn secondary cl-refresh">↻ Жаңарту</button><button type="button" class="btn secondary cl-csv">CSV</button><button type="button" class="btn secondary cl-back">← Сыныптар</button><span class="t-count">${v.students.length} оқушы</span></div>
+        <div class="t-actions"><button type="button" class="btn secondary cl-refresh">↻ Жаңарту</button><button type="button" class="btn secondary cl-csv">CSV</button><button type="button" class="btn secondary cl-back">← Сыныптар</button>${flagged ? `<button type="button" class="btn ${onlyFlagged ? "gold" : "secondary"} cl-flagged">⚠ Көмек керек: ${flagged}</button>` : ""}<span class="t-count">${v.students.length} оқушы</span></div>
         <div class="t-table"><table><thead><tr><th>Оқушы</th><th>Лекциялар</th><th>Тест</th><th>Тапсырма</th><th>Емтихан</th><th>Жетістік</th><th>Белсенділік</th><th></th></tr></thead>
         <tbody>${rows || `<tr><td colspan="8" class="t-empty">Әзірге ешкім қосылмаған. Оқушылар профиль бетінде <b>${esc(v.code)}</b> кодын енгізуі керек.</td></tr>`}</tbody></table></div>`;
       box._last = v;
@@ -442,6 +493,12 @@
           await drawQr();
           return;
         }
+        if (t.classList.contains("cl-st") && box._last) {
+          const st = box._last.students.find((x) => x.id === t.dataset.id);
+          if (st) studentCard(st);
+          return;
+        }
+        if (t.classList.contains("cl-flagged") && box._last) { onlyFlagged = !onlyFlagged; show(box._last); return; }
         if (t.classList.contains("cl-open-saved")) { const c = classes().find((x) => x.code === t.dataset.code); await open(c.code, c.pw); }
         else if (t.classList.contains("cl-refresh")) await refresh();
         else if (t.classList.contains("cl-back")) start();
