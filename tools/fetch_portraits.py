@@ -21,14 +21,33 @@ PEOPLE = [  # (сайттағы аты, файл атауы, ru / en мақал�
     ("Ыбырай Алтынсарин", "altynsarin", "Алтынсарин, Ибрай", "Ibrai Altynsarin"),
     ("Абай Құнанбайұлы", "abai", "Абай Кунанбаев", "Abai Qunanbaiuly"),
 ]
+# Файл атауында тұлғаның аты болуы керек (мақаланың басты суретінен басқалары үшін)
+TOKENS = {
+    "bokeikhan": ["бөкейхан", "букейхан", "bukeikh", "bokeikh", "bukeyk", "bukeykh"],
+    "baitursynuly": ["байтұрсын", "байтурсын", "baitursyn", "baytursyn"],
+    "dulatuly": ["дулат", "dulat"],
+    "zhumabayev": ["жұмабай", "жумабай", "zhumabai", "zhumabay", "jumabay", "magzhan", "мағжан", "магжан"],
+    "aimauytuly": ["аймауыт", "аймаут", "aimauyt", "aimaut", "aymauyt"],
+    "toraighyrov": ["торайғыр", "торайгыр", "toraig", "toraygir", "toraigyr"],
+    "altynsarin": ["алтынсарин", "altynsarin", "altinsarin"],
+    "abai": ["абай", "abai", "abay"],
+}
 # Портрет емес суреттер: марка, тиын, ескерткіш, мұражай т.б.
-NOT_PORTRAIT = re.compile(r"stamp|марка|coin|монет|banknote|купюр|памятник|monument|statue|мүсін|grave|могил|museum|музей|house|дом|signature|подпись|autograph|\.svg$|\.pdf$|\.tif", re.I)
+NOT_PORTRAIT = re.compile(r"stamp|марка|coin|монет|banknote|купюр|памятник|monument|statue|мүсін|grave|могил|зират|ескерткіш|mausoleum|мавзолей|кесене|museum|музей|мұражай|house|school|школ|мектеп|district|аудан|badge|знак|logo|book|кітап|жинағы|signature|подпись|autograph|\.svg$|\.pdf$|\.tif", re.I)
 FREE = re.compile(r"public domain|^pd|cc0|cc[- ]by(-sa)?( |$|-)", re.I)
 
 
 def get(url):
-    with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=30) as r:
-        return r.read()
+    import time, urllib.error
+    for attempt in range(5):
+        time.sleep(1.0)  # Wikimedia-ға сыпайы: секундына бір сұраныс
+        try:
+            with urllib.request.urlopen(urllib.request.Request(url, headers=UA), timeout=30) as r:
+                return r.read()
+        except urllib.error.HTTPError as e:
+            if e.code != 429 or attempt == 4:
+                raise
+            time.sleep(5 * (attempt + 1))
 
 
 def api(host, **params):
@@ -36,29 +55,24 @@ def api(host, **params):
     return json.loads(get(f"https://{host}/w/api.php?" + urllib.parse.urlencode(params)))
 
 
-def candidates(name, ru, en):
-    """Мүмкін файл атаулары: kk/ru/en мақалаларының басты суреті, мақаладағы суреттер, Commons іздеуі."""
-    seen = []
-    def add(f):
-        if f and f not in seen:
-            seen.append(f)
+def candidates(slug, name, ru, en):
+    """Мақалалардың басты суреті (тұлғаның өзі) және атауында тұлғаның аты бар суреттер."""
+    lead, named = [], []
+    toks = TOKENS[slug]
     for host, title in (("kk.wikipedia.org", name), ("ru.wikipedia.org", ru), ("en.wikipedia.org", en)):
         try:
-            q = api(host, action="query", titles=title, redirects=1, prop="pageimages|images", piprop="name", imlimit=30)
+            q = api(host, action="query", titles=title, redirects=1, prop="pageimages|images", piprop="name", imlimit=50)
             for p in q["query"]["pages"]:
-                add(p.get("pageimage"))
+                if p.get("pageimage") and p["pageimage"] not in lead:
+                    lead.append(p["pageimage"])
                 for im in p.get("images", []):
-                    add(im["title"].split(":", 1)[1])
+                    f = im["title"].split(":", 1)[1]
+                    if any(t in f.lower() for t in toks) and f not in named:
+                        named.append(f)
         except Exception as e:
             print(f"  {host}: {e}")
-    for term in (en, ru.split(",")[0] + " " + ru.split(",")[-1].strip().split()[0] if "," in ru else ru):
-        try:
-            q = api("commons.wikimedia.org", action="query", list="search", srsearch=term, srnamespace=6, srlimit=10)
-            for h in q["query"]["search"]:
-                add(h["title"].split(":", 1)[1])
-        except Exception as e:
-            print(f"  commons: {e}")
-    return [f for f in seen if re.search(r"\.(jpe?g|png)$", f, re.I) and not NOT_PORTRAIT.search(f)]
+    ok = lambda f: re.search(r"\.(jpe?g|png)$", f, re.I) and not NOT_PORTRAIT.search(f)
+    return [f for f in lead if ok(f)] + [f for f in named if ok(f) and f not in lead]
 
 
 _cascade = None
@@ -72,8 +86,9 @@ def face_crop(img):
     faces = _cascade.detectMultiScale(g, scaleFactor=1.1, minNeighbors=5, minSize=(40, 40))
     if not len(faces):
         return None
-    x, y, fw, fh = max(faces, key=lambda f: f[2] * f[3])
     W, H = img.size
+    # Ең үлкен әрі ортаға жақын бет (топтық суретте басты кейіпкер әдетте ортада)
+    x, y, fw, fh = max(faces, key=lambda f: f[2] * f[3] * (1.5 - abs((f[0] + f[2] / 2) / W - 0.5)))
     ch = min(H, int(fh * 3.2)); cw = int(ch * 0.8)
     if cw > W:
         cw = W; ch = int(cw / 0.8)
@@ -89,10 +104,14 @@ def strip(html):
 
 def main():
     OUT.mkdir(parents=True, exist_ok=True)
-    meta = {}
+    meta, prev = {}, {}
+    pj = ROOT / "assets/data/portraits.js"
+    if pj.exists():
+        m = re.search(r"=\s*(\{.*\});", pj.read_text(encoding="utf-8"), re.S)
+        prev = json.loads(m.group(1)) if m else {}
     for name, slug, ru, en in PEOPLE:
         done = False
-        for fname in candidates(name, ru, en)[:25]:
+        for fname in candidates(slug, name, ru, en)[:12]:
             try:
                 info = api("commons.wikimedia.org", action="query", titles="File:" + fname, prop="imageinfo",
                            iiprop="url|extmetadata|size", iiurlwidth="800")["query"]["pages"][0]
@@ -118,7 +137,11 @@ def main():
                 print(f"  – {fname}: {e}")
         if not done:
             print(f"✗ {name}: еркін лицензиялы портрет табылмады")
-            (OUT / f"{slug}.jpg").unlink(missing_ok=True)
+            old = prev.get(name)
+            if old and (OUT / f"{slug}.jpg").exists() and not NOT_PORTRAIT.search(urllib.parse.unquote(old.get("src", ""))):
+                meta[name] = old  # бұрынғы жақсы сурет қалады
+            else:
+                (OUT / f"{slug}.jpg").unlink(missing_ok=True)
     (ROOT / "assets/data/portraits.js").write_text(
         "// tools/fetch_portraits.py жасаған (Wikimedia Commons, еркін лицензиялар). Қолмен өзгертпеңіз.\n"
         "window.CS50KZ_PORTRAITS = " + json.dumps(meta, ensure_ascii=False, indent=1) + ";\n", encoding="utf-8")
