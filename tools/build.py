@@ -73,7 +73,7 @@ def footer_block(p):
         '<p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>\n'
         + "      " + col("Оқу", [("index.html#main", "Лекциялар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік"), ("exam.html", "Қорытынды емтихан")])
         + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы")])
-        + col("Жоба", [("about.html", "Курс туралы"), ("certificate.html", "Сертификат"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің профилім")])
+        + col("Жоба", [("about.html", "Курс туралы"), ("alash.html", "Алаш тұлғалары"), ("certificate.html", "Сертификат"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің профилім")])
         + '\n      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. '
         'Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p>'
         '<p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · '
@@ -93,7 +93,7 @@ HEAD_STYLE = {
     "practice.html": ("#2fa36b", ""), "playground.html": ("#2b7bd6", ""), "flask.html": ("#8b5cf6", ""),
     "exam.html": ("#c99500", ""), "detective.html": ("#b5651d", ""), "viz.html": ("#e0457b", ""),
     "flashcards.html": ("#f08a24", ""), "debug.html": ("#e04545", ""), "glossary.html": ("#2b7bd6", ""),
-    "cheatsheet.html": ("#2fa36b", ""), "map.html": ("#8b5cf6", ""), "teacher.html": ("#f08a24", ""), "profile.html": ("#0f9fb5", ""),
+    "cheatsheet.html": ("#2fa36b", ""), "map.html": ("#8b5cf6", ""), "teacher.html": ("#f08a24", ""), "profile.html": ("#0f9fb5", ""), "alash.html": ("#c99500", ""),
 }
 
 
@@ -316,7 +316,7 @@ def main():
                          ("flashcards.html", "practice"), ("viz.html", "practice"),
                          ("teacher.html", ""), ("404.html", ""), ("cheatsheet.html", "practice"),
                          ("debug.html", "practice"), ("map.html", "practice"),
-                         ("detective.html", "practice"), ("flask.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile")]:
+                         ("detective.html", "practice"), ("flask.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("alash.html", "about")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
     (ROOT / "assets/data/lectures.js").write_text(
@@ -326,7 +326,7 @@ def main():
     (ROOT / "assets/data/quiz.js").write_text(
         "window.CS50KZ_QUIZ = " + json.dumps(quiz, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     pages = ["", "practice.html", "playground.html", "viz.html", "flashcards.html", "glossary.html",
-             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "exam.html", "profile.html"] + [l["url"] for l in lectures]
+             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "exam.html", "profile.html", "alash.html"] + [l["url"] for l in lectures]
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"  <url><loc>{SITE_URL}{u}</loc></url>\n" for u in pages) + "</urlset>\n", encoding="utf-8")
