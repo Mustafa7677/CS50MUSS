@@ -96,6 +96,7 @@
     initSearch();
     initLecturePage();
     initDashboard();
+    initQuote();
     initPythonRunner();
     initSqlRunner();
     initPlayground();
@@ -525,7 +526,7 @@
       done.querySelector("button").addEventListener("click", () => {
         const q = Progress.load();
         if (q.read[PAGE]) delete q.read[PAGE];
-        else { q.read[PAGE] = Date.now(); celebrate(); toast("Лекция оқылды деп белгіленді 🎉"); weekBump("read"); }
+        else { q.read[PAGE] = Date.now(); celebrate(); toast("Лекция оқылды деп белгіленді 🎉"); weekBump("read"); quoteCheer(); }
         Progress.save(q);
         checkAchievements();
         render();
@@ -545,6 +546,49 @@
       if (e.key === "ArrowLeft" && links[0]) location.href = links[0].href;
       if (e.key === "ArrowRight" && links[1]) location.href = links[1].href;
     });
+  }
+
+  // ---------- Күн сөзі: Алаш зиялылары мен ағартушылар ----------
+  const dayNum = () => Math.floor((Date.now() - new Date().getTimezoneOffset() * 60_000) / 86_400_000);
+  function initQuote() {
+    const card = document.querySelector(".qt-card");
+    if (!card) return;
+    loadScript("assets/data/quotes.js").then(() => {
+      const Q = window.CS50KZ_QUOTES || [];
+      if (!Q.length) return;
+      let i = dayNum() % Q.length;
+      const initials = (a) => a.split(/\s+/).map((w) => w[0]).join("").slice(0, 2);
+      const draw = () => {
+        const q = Q[i];
+        card.innerHTML = `
+          <span class="qt-mark" aria-hidden="true">“</span>
+          <small class="qt-label">Күн сөзі</small>
+          <blockquote>${q.t.split(" / ").map(escapeHtml).join("<br>")}</blockquote>
+          <figcaption>
+            <span class="qt-mono" aria-hidden="true">${escapeHtml(initials(q.a))}</span>
+            <span><b>${escapeHtml(q.a)}</b><small>${escapeHtml(q.y)}${q.src ? " · " + escapeHtml(q.src) : ""}</small></span>
+          </figcaption>
+          ${q.cs ? `<p class="qt-cs">💡 ${escapeHtml(q.cs)}</p>` : ""}
+          <div class="qt-actions"><button type="button" class="qt-next" aria-label="Келесі сөз">↻ Келесі</button><button type="button" class="qt-copy">Көшіру</button></div>`;
+      };
+      draw();
+      card.addEventListener("click", async (e) => {
+        if (e.target.closest(".qt-next")) { i = (i + 1) % Q.length; draw(); card.querySelector(".qt-next").focus(); }
+        if (e.target.closest(".qt-copy")) {
+          const q = Q[i];
+          try { await navigator.clipboard.writeText(`«${q.t.replace(/ \/ /g, "\n")}»\n— ${q.a}`); toast("Көшірілді ✓"); } catch (er) {}
+        }
+      });
+    }).catch(() => {});
+  }
+  // Лекция оқылғанда Бота ұлы сөзбен құттықтайды
+  function quoteCheer() {
+    loadScript("assets/data/quotes.js").then(() => {
+      const Q = window.CS50KZ_QUOTES || [];
+      if (!Q.length) return;
+      const q = Q[Math.floor(Math.random() * Q.length)];
+      botaSay(`Жарайсыз! ${q.a}: «${q.t.replace(/ \/ /g, " ")}»`, "happy");
+    }).catch(() => {});
   }
 
   // ---------- Басты бет: жеке прогресс панелі ----------

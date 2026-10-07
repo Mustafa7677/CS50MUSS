@@ -32,3 +32,19 @@ test("телефонда мазмұн батырма арқылы ашылып-�
   await page.locator(".toc ol a").nth(3).click();
   await expect(page.locator(".toc")).not.toHaveClass(/open/);
 });
+
+test("басты бет: күн сөзі шығады, «Келесі» ауыстырады; лекция оқылғанда Бота ұлы сөз айтады", async ({ page }) => {
+  const errs = collectErrors(page);
+  await page.goto("index.html");
+  const q = page.locator(".qt-card blockquote");
+  await expect(q).not.toBeEmpty();
+  await expect(page.locator(".qt-card figcaption b")).not.toBeEmpty();
+  const first = await q.innerText();
+  await page.click(".qt-next");
+  await expect(q).not.toHaveText(first);
+  await page.locator(".qt-card").screenshot({ path: test.info().outputPath("quote.png") });
+  await page.goto("lectures/week-0.html");
+  await page.locator(".mark-read .btn.gold").click();
+  await expect(page.locator(".bota-pop")).toContainText("Жарайсыз!");
+  expect(errs).toEqual([]);
+});
