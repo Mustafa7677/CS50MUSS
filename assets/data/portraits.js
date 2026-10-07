@@ -49,5 +49,33 @@ window.CS50KZ_PORTRAITS = {
   "license": "Public domain",
   "artist": "белгісіз",
   "src": "https://commons.wikimedia.org/wiki/File:Abai_Kunanbaev.jpg"
+ },
+ "Мұхтар Әуезов": {
+  "img": "assets/img/alash/auezov.jpg",
+  "license": "сайт авторы ұсынған",
+  "artist": "фотопортрет",
+  "src": "",
+  "manual": true
+ },
+ "Қадыр Мырза Әли": {
+  "img": "assets/img/alash/myrzaali.jpg",
+  "license": "сайт авторы ұсынған",
+  "artist": "фотопортрет",
+  "src": "",
+  "manual": true
+ },
+ "Жұбан Молдағалиев": {
+  "img": "assets/img/alash/moldagaliev.jpg",
+  "license": "сайт авторы ұсынған",
+  "artist": "Қазақстан пошта маркасы (2020)",
+  "src": "",
+  "manual": true
+ },
+ "Әбу Насыр әл-Фараби": {
+  "img": "assets/img/alash/farabi.jpg",
+  "license": "сайт авторы ұсынған",
+  "artist": "кескіндеме портрет (шартты бейне)",
+  "src": "",
+  "manual": true
  }
 };
