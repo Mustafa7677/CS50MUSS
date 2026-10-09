@@ -49,7 +49,7 @@ CATALOG = [
     {"id": "ai", "code": "CS50 AI", "href": "ai/", "c": "#d0306f", "c2": "#6e1640", "title": "Жасанды интеллект",
      "desc": "Іздеу, логика, ықтималдық, оңтайландыру, машиналық оқыту, нейрон желілер және тіл модельдері.",
      "tags": ["іздеу", "ықтималдық", "ML", "нейрон желі"], "lec": 7, "tasks": "12 жоба", "state": "wip", "total": 7},
-    {"id": "web", "code": "CS50 Web", "href": "web/", "c": "#e2620f", "c2": "#8a2f08", "title": "Веб-бағдарламалау",
+    {"id": "web", "code": "CS50 Web", "href": "web/", "c": "#c2410c", "c2": "#7a2a06", "title": "Веб-бағдарламалау",
      "desc": "Толық веб-қосымшалар: HTML, CSS, Git, Django, SQL, JavaScript, React, тестілеу және қауіпсіздік.",
      "tags": ["Django", "JavaScript", "React", "Git"], "lec": 9, "tasks": "5 жоба", "state": "wip", "total": 9},
 ]

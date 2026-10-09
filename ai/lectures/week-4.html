@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 AI 4-апта: Оқыту - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 AI 4-апта: Оқыту - CS50 қазақша">
+  <meta property="og:description" content="CS50 AI 4-апта: бақыланатын оқыту, k ең жақын көрші, перцептрон, тірек векторлар әдісі, регрессия, шығын функциялары, артық үйрену, k-means және Q-оқыту.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/ai/lectures/week-4.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 AI 4-апта: бақыланатын оқыту, k ең жақын көрші, перцептрон, тірек векторлар әдісі, регрессия, шығын функциялары, артық үйрену, k-means және Q-оқыту.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#c42a68" data-n="4">
+        <div class="num">4-апта</div>
+        <h1>Оқыту</h1>
+        <p>Компьютерге нұсқау емес, дерек береміз де, заңдылықты өзі табуын күтеміз: жуық көршіден перцептронға, регрессиядан Q-оқытуға және k-means кластерлеуіне дейін.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/ai/notes/4/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Осы уақытқа дейін біз компьютерге <em>қалай</em> шешу керегін өзіміз айтып келдік: іздеу алгоритмі, логика, ықтималдық. Енді тәсіл өзгереді. Компьютерге нұсқау емес, <strong>дерек</strong> береміз, ал заңдылықты ол өзі табады. Апта соңында екі тапсырма бар: онлайн-дүкен сатып алушыларының ниетін болжайтын жуық көрші жіктеуіші (Shopping) және өз-өзімен ойнап, Nim ойынын үйренетін жасанды интеллект (Nim).</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді. «Өзіміз жазып көрейік» деп белгіленген шағын таза Python мысалдарын сайт авторы қосты: лекцияда олар жоқ, бірақ идеяны қолмен ұстап көруге көмектеседі, оларды осы беттің өзінде іске қосуға болады.</p>
+
+      <h2 id="machine-learning">Машиналық оқыту</h2>
+      <p>Бұрынғы апталарда біз бағдарламаны былай жазатынбыз: «егер мынау болса, мынаны істе, әйтпесе анау». Яғни әр қадамды компьютерге өзіміз айтып отырдық. Енді басқаша ойлап көрейік. Компьютерге нұсқауды емес, <strong>деректі</strong> берсек ше? Ол сол деректерге қарап, заңдылықтарды өзі байқап, тапсырманы өзі орындауды үйренсе ше?</p>
+      <p>Осыны <strong>машиналық оқыту</strong> (<span class="term-en">machine learning</span>) дейді. Мысалға, бала «мысық» дегенді қалай үйренеді? Ата-анасы оған ережелер тізімін (құлағы үшкір, мұрты бар...) оқып бермейді, жай ғана мысықты көрсетіп, «мынау мысық» дейді. Бірнеше рет көргеннен кейін бала мысықты өзі таниды. Машиналық оқытудың идеясы да дәл осындай. Біз мұны бірнеше түрге бөліп қарастырамыз, ең алдымен - ең көп қолданылатынынан бастаймыз.</p>
+
+      <h2 id="supervised">Бақыланатын оқыту</h2>
+      <p><strong>Бақыланатын оқыту</strong> (<span class="term-en">supervised learning</span>) - компьютер кіріс пен шығыс жұптарынан тұратын деректер жиынына қарап, кірісті шығысқа айналдыратын функцияны үйренетін тапсырма. «Бақыланатын» дегеніміз: деректердің әрқайсысында дұрыс жауап бар, яғни оқытушы біреу «міне, дұрыс жауап осы» деп отырғандай.</p>
+      <p>Бақыланатын оқытудың ішінде бірнеше тапсырма бар. Біріншісі - <strong>жіктеу</strong> (<span class="term-en">classification</span>). Мұнда функция кірісті <em>дискретті</em> шығысқа сәйкестендіреді, яғни санаулы нұсқаның біреуін таңдайды. Мысалы, белгілі бір күнгі ауаның ылғалдылығы мен қысымы белгілі (кіріс), ал компьютер сол күні жаңбыр жауа ма, жоқ па (шығыс) деп болжауы керек. Оған не көмектеседі? Бұрынғы көп күннің деректері: әр күн үшін ылғалдылық пен қысым және сол күні шынымен жаңбыр жауғаны, жаумағаны бұрыннан белгілі.</p>
+      <p>Мұны сәл формальдырақ етіп айтайық. Табиғатта <em>f(humidity, pressure)</em> деген функция бар делік: ол ылғалдылық пен қысымды алып, <code>Rain</code> не <code>No Rain</code> деген дискретті мән береді. Бірақ бұл функция бізден жасырын, және оған біз білмейтін көп басқа факторлар да әсер етеді. Біздің мақсатымыз - <em>f</em>-тің мінезін жуықтайтын <em>h(humidity, pressure)</em> функциясын құру. Мұны суретпен көруге болады: күндерді ылғалдылық пен қысым осьтеріне саламыз, жаңбыр жауған күнді көкпен, жаумаған күнді қызылмен белгілейміз. Ақ нүктенің тек кірісі бар (ылғалдылығы мен қысымы), ал шығысын компьютер табуы керек.</p>
+            <figure class="diagram" style="margin:18px 0"><svg viewBox="0 0 320 240" role="img" aria-label="Диаграмма: ылғалдылық пен қысым осьтеріндегі Rain және No Rain күндері, ақ нүкте - белгісіз күн" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto"><line x1="40" y1="200" x2="300" y2="200" style="stroke:var(--muted);stroke-width:1.6" /><line x1="40" y1="200" x2="40" y2="20" style="stroke:var(--muted);stroke-width:1.6" /><text x="170.0" y="218" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:500">x₁ (ылғалдылық)</text><text transform="translate(24,110.0) rotate(-90)" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">x₂ (қысым)</text><circle cx="70" cy="70" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="95" cy="55" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="120" cy="85" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="85" cy="100" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="60" cy="105" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="224" y="144" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="194" y="164" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="244" y="114" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="209" y="124" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="174" y="144" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><circle cx="110" cy="120" r="7" style="fill:var(--surface);stroke:var(--text);stroke-width:2.2"/><text x="110" y="140" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">?</text><circle cx="150" cy="38" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><text x="162" y="38" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;font-weight:500">Rain</text><rect x="214" y="32" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><text x="232" y="38" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;font-weight:500">No Rain</text></svg></figure>
+      <p>Диаграммада көк - <code>Rain</code>, қызыл - <code>No Rain</code>. Көру қиын емес: жоғарғы сол жақта жаңбырлы күндер, төменгі оң жақта жаңбырсыз күндер шоғырланған. Ақ нүкте қайда жатыр? Енді дәл осыны компьютерге қалай үйретеміз?</p>
+
+      <h2 id="nearest-neighbor">Ең жақын көрші жіктеуі</h2>
+      <p>Ең қарапайым жол: белгісіз нүктеге оған ең жақын бақыланған нүктенің мәнін беру. Жоғарғы суреттегі ақ нүктеге ең жақыны көк, демек ол да көк болады. Бұл <strong>ең жақын көрші жіктеуі</strong> (<span class="term-en">nearest-neighbor classification</span>). Кейде жақсы жұмыс істейді. Бірақ мына жағдайды қарайық.</p>
+            <figure class="diagram" style="margin:18px 0"><svg viewBox="0 0 320 232" role="img" aria-label="Диаграмма: жаңа нүктенің ең жақын көршісі қызыл, бірақ 3 ең жақын көршінің екеуі көк" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto"><line x1="40" y1="200" x2="300" y2="200" style="stroke:var(--muted);stroke-width:1.6" /><line x1="40" y1="200" x2="40" y2="20" style="stroke:var(--muted);stroke-width:1.6" /><text x="170.0" y="218" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:500">x₁ (ылғалдылық)</text><text transform="translate(24,110.0) rotate(-90)" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">x₂ (қысым)</text><circle cx="150" cy="110" r="46" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-dasharray:5 4"/><circle cx="120" cy="80" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="175" cy="78" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="118" cy="140" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="185" cy="138" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="100" cy="105" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="205" cy="105" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="60" cy="60" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="75" cy="150" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="148" y="116" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="249" y="164" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="264" y="124" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="244" y="54" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><circle cx="150" cy="110" r="7" style="fill:var(--surface);stroke:var(--text);stroke-width:2.2"/><text x="136" y="98" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">?</text><text x="204" y="40" text-anchor="start" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:600">k = 3 шеңбері</text></svg><figcaption style="text-align:center;color:var(--muted);font-size:.9rem;margin-top:6px">Ең жақын көрші - қызыл, бірақ шеңбер ішіндегі 3 көршінің екеуі көк.</figcaption></figure>
+      <p>Сол стратегиямен ақ нүкте қызыл болуы керек, себебі оған ең жақын нүкте қызыл. Ал үлкен суретке қарасақ ше? Айналасындағы нүктелердің көбі көк. Сезім айтады: ең жақыны қызыл болса да, көк деп болжау жақсырақ. Бір ғана «көршіге» сенудің қауіпі осында: ол кездейсоқ ауытқу, дерек ішіндегі «шу» болуы мүмкін.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: ең жақыны қызыл болса, неге ақ нүктені көк деп жіктегіміз келеді?</summary>
+        <div class="details-body"><p>Бір нүкте жеке пікір сияқты: ол қате немесе ерекше жағдай болуы мүмкін. Ал айналадағы бірнеше нүкте - ортақ пікір. Базардағы баға сияқты: бір сатушының бағасына сенгеннен гөрі, бірнеше сатушыдан сұрап, көпшілік айтқанды алған сенімдірек.</p></div>
+      </details>
+      <p>Осы шектеуден шығудың жолы - <strong>k ең жақын көрші жіктеуі</strong> (<span class="term-en">k-nearest-neighbors classification</span>). Мұнда нүкте <em>k</em> ең жақын көршісінің ең жиі кездесетін түсіне боялады. <em>k</em> дегеніміз қаншасын санау керегін бағдарламашы өзі шешеді. Мысалы, 3 ең жақын көрші дегенде жоғарыдағы ақ нүкте көк болады, ал бұл интуицияға көбірек сәйкес келеді.</p>
+      <p>Бұл әдістің бір кемшілігі бар. Аңқау түрде жасасақ, алгоритм белгісіз нүктеден <em>әр</em> бақыланған нүктеге дейінгі қашықтықты өлшеуі керек. Деректер көп болса, бұл есептеуге өте қымбат түседі. Оны жылдамдату үшін көршілерді тез табуға мүмкіндік беретін деректер құрылымдарын қолданады немесе қажетсіз бақылауларды алдын ала «қиып тастайды» (<span class="term-en">pruning</span>).</p>
+      <h3 id="knn-code">Өзіміз жазып көрейік: k ең жақын көрші</h3>
+      <p>Тұжырымдаманы кодпен ұстап көрейік. Төменде кішкентай деректер жиыны бар: әр күнге (ылғалдылық, қысым) және жауап қосылған. Қашықтықты Евклид формуласымен өлшеп, <em>k</em> көршіні таңдап, олардың ішіндегі жиі кездесетінін аламыз. Бір жаңа күнге <code>k = 1</code>, <code>3</code> және <code>5</code> деп көрейік:</p>
+      <pre data-lang="python"><code class="language-python"># (ылғалдылық, қысым) -&gt; "Rain" не "No Rain"
+days = [
+    ((0.9, 0.2), "Rain"), ((0.8, 0.3), "Rain"), ((0.7, 0.25), "Rain"),
+    ((0.75, 0.6), "Rain"), ((0.85, 0.55), "Rain"),
+    ((0.2, 0.8), "No Rain"), ((0.3, 0.7), "No Rain"), ((0.25, 0.9), "No Rain"),
+    ((0.65, 0.5), "No Rain"),   # аралаға кіріп кеткен "қызыл" күн
+]
+
+def distance(a, b):
+    return ((a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2) ** 0.5
+
+def classify(point, k):
+    # барлық күнге дейінгі қашықтықты өлшеп, ең жақын k көршіні аламыз
+    nearest = sorted(days, key=lambda day: distance(point, day[0]))[:k]
+    labels = [label for _, label in nearest]
+    return max(set(labels), key=labels.count)
+
+new_day = (0.68, 0.52)
+for k in (1, 3, 5):
+    print(f"k = {k}: {classify(new_day, k)}")</code></pre>
+      <pre class="terminal"><code class="language-plaintext">k = 1: No Rain
+k = 3: Rain
+k = 5: Rain</code></pre>
+      <p>Байқадыңыз ба? <code>k = 1</code> болғанда ең жақын нүкте (қызыл болып аралаға кіріп кеткені) жауапты бұзды, ал <em>k</em> ұлғайған сайын көпшілік дауыс шешеді. <em>k</em> таңдау - бағдарламашының жұмысы: тым кіші болса шуға сезімтал, тым үлкен болса барлығын «орташа» етіп жібереді.</p>
+
+      <h2 id="perceptron">Перцептрондық оқыту</h2>
+      <p>Енді басқа тәсіл. Ең жақын көрші стратегиясында әр жаңа нүктеге жеке қарап, жергілікті көршілерін іздедік. Ал деректерге <em>тұтас</em> қарап, оларды бөлетін шекара жүргізсек ше? Екі өлшемді деректерде бұл жай ғана екі түрлі бақылаудың арасына түзу сызық жүргізу. Содан кейін әр жаңа нүкте сызықтың қай жағына түссе, сол жақтың мәнімен жіктеледі. Мұны <strong>шешім шекарасы</strong> (<span class="term-en">decision boundary</span>) дейді.</p>
+            <figure class="diagram" style="margin:18px 0"><svg viewBox="0 0 320 240" role="img" aria-label="Диаграмма: екі топты бөлетін түзу сызық - шешім шекарасы" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto"><line x1="40" y1="200" x2="300" y2="200" style="stroke:var(--muted);stroke-width:1.6" /><line x1="40" y1="200" x2="40" y2="20" style="stroke:var(--muted);stroke-width:1.6" /><text x="170.0" y="218" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:500">x₁ (ылғалдылық)</text><text transform="translate(24,110.0) rotate(-90)" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">x₂ (қысым)</text><circle cx="65" cy="65" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="90" cy="50" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="120" cy="80" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="80" cy="100" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="55" cy="110" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="150" cy="55" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="105" cy="125" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="234" y="144" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="199" y="169" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="249" y="109" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="214" y="119" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="169" y="154" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="264" y="169" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="194" y="99" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><line x1="60" y1="175" x2="260" y2="30" style="stroke:var(--text);stroke-width:2.4" /><text x="190" y="60" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;font-weight:600">w₀ + w₁x₁ + w₂x₂ = 0</text><circle cx="110" cy="160" r="7" style="fill:var(--surface);stroke:var(--text);stroke-width:2.2"/></svg></figure>
+      <p>Шындығында, дерек ретсіз болады: екі топты қатесіз бөліп тұратын түзуді сирек табасыз. Көбіне келісімге келеміз: бақылауларды «жиірек дұрыс, бірақ кейде қате» жіктейтін шекара жүргіземіз.</p>
+      <p>Енді мұны математикалық түрде жазайық. Кіріс:</p>
+      <ul>
+        <li><em>x₁</em> = ылғалдылық (humidity)</li>
+        <li><em>x₂</em> = қысым (pressure)</li>
+      </ul>
+      <p>Бұл екеуі <em>h(x₁, x₂)</em> гипотеза функциясына беріледі, ол жаңбыр жауатыны не жаумайтыны туралы болжам шығарады. Функция мұны бақылаудың шекараның қай жағына түскенін тексеру арқылы жасайды. Дәлірек айтсақ, әр кірісті бір салмаққа көбейтіп, соған тұрақты қосып, сызықтық теңдеу аламыз:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">Rain       егер w₀ + w₁x₁ + w₂x₂ ≥ 0
+No Rain    әйтпесе</code></pre>
+      <p>Шығысты көбіне 1 және 0 деп кодтайды: теңдеу нөлден үлкен не тең болса шығыс 1 (<code>Rain</code>), әйтпесе 0 (<code>No Rain</code>).</p>
+      <p>Салмақтар мен мәндер <strong>векторлармен</strong> (<span class="term-en">vector</span>) беріледі, яғни сандар тізбегімен (Python-да тізім не кортеж). Біз <strong>салмақ векторын</strong> <em><strong>w</strong></em> : (w₀, w₁, w₂) және <strong>кіріс векторын</strong> <em><strong>x</strong></em> : (1, x₁, x₂) аламыз. Машиналық оқыту алгоритмінің мақсаты - ең жақсы салмақ векторын табу. Кіріс векторының бірінші мәні неге 1? Себебі w₀-ге көбейткенде ол тұрақты болып қала берсін деп.</p>
+      <p>Екі вектордың <strong>скаляр көбейтіндісін</strong> (<span class="term-en">dot product</span>) аламыз: біріншісінің әр мәнін екіншісінің сәйкес мәніне көбейтіп, қосамыз. Нәтижесінде жоғарыдағы өрнек шығады: w₀ + w₁x₁ + w₂x₂. Сонда гипотеза функциясын былай жазуға болады:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">h(x) = 1   егер w · x ≥ 0
+h(x) = 0   әйтпесе</code></pre>
+      <p>Алгоритмнің міндеті - ең жақсы салмақ векторын табу, сондықтан жаңа деректі көрген сайын ол ағымдағы салмақтарды жаңартады. Мұны <strong>перцептрондық оқыту ережесі</strong> (<span class="term-en">perceptron learning rule</span>) арқылы жасайды:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">wᵢ  ←  wᵢ + α · (y - h(x)) · xᵢ</code></pre>
+      <p>Ережеден шығатын басты ой: әр деректі нүкте үшін функцияны дәлірек ету мақсатында салмақтарды түзетеміз. Егжей-тегжейі мұншалықты маңызды емес, бірақ түсінген жөн: әр салмақ өз-өзіне жақшадағы бір мәнді қосқанға тең болады. Мұндағы <em>y</em> - бақыланған мән, ал <em>h(x)</em> - біздің болжамымыз. Егер екеуі бірдей болса, жақшадағы өрнек нөлге тең, демек салмақ өзгермейді. Егер біз <strong>төмен болжасақ</strong> (жаңбыр жауған, ал біз «жаумайды» деп қойғанбыз), жақшадағы мән 1 болады да, салмақ <em>xᵢ</em> шамасына, оқу коэффициенті α-ға көбейтіліп, <em>артады</em>. Егер біз <strong>жоғары болжасақ</strong> (жаңбыр жаумаған, біз «жауады» дегенбіз), жақшадағы мән -1 болады да, салмақ сол шамаға <em>кемиді</em>. α неғұрлым үлкен болса, әр жаңа оқиға салмаққа соғұрлым күшті әсер етеді.</p>
+      <h3 id="perceptron-code">Өзіміз жазып көрейік: перцептрон</h3>
+      <p>Ережені шынымен жұмыс істеп жатқанын көрейік. Төмендегі бағдарлама сегіз күннің деректерін алып, салмақтарды нөлден бастап, әр қателікте түзете отырып, бірнеше рет (эпоха) өтеді:</p>
+      <pre data-lang="python"><code class="language-python"># Перцептрон ережесі: w_i &lt;- w_i + alpha * (y - h(x)) * x_i
+data = [  # (x1 = ылғалдылық, x2 = қысым), y: 1 = Rain, 0 = No Rain
+    ((0.9, 0.2), 1), ((0.8, 0.3), 1), ((0.7, 0.4), 1), ((0.85, 0.1), 1),
+    ((0.2, 0.8), 0), ((0.3, 0.7), 0), ((0.1, 0.9), 0), ((0.25, 0.6), 0),
+]
+
+def h(w, x):
+    # қатты табалдырық: w0 + w1*x1 + w2*x2 &gt;= 0 болса 1, әйтпесе 0
+    total = w[0] * 1 + w[1] * x[0] + w[2] * x[1]
+    return 1 if total &gt;= 0 else 0
+
+w = [0.0, 0.0, 0.0]
+alpha = 0.1
+
+for epoch in range(20):
+    mistakes = 0
+    for x, y in data:
+        error = y - h(w, x)          # 0, +1 немесе -1
+        if error != 0:
+            mistakes += 1
+        inputs = (1, x[0], x[1])     # x векторы: (1, x1, x2)
+        for i in range(3):
+            w[i] = w[i] + alpha * error * inputs[i]
+    if mistakes == 0:
+        print(f"{epoch + 1}-эпохада қате қалмады")
+        break
+
+print("Салмақтар:", [round(v, 2) for v in w])
+print("Жаңа күн (0.8, 0.25):", "Rain" if h(w, (0.8, 0.25)) else "No Rain")
+print("Жаңа күн (0.15, 0.85):", "Rain" if h(w, (0.15, 0.85)) else "No Rain")</code></pre>
+      <pre class="terminal"><code class="language-plaintext">3-эпохада қате қалмады
+Салмақтар: [0.0, 0.07, -0.06]
+Жаңа күн (0.8, 0.25): Rain
+Жаңа күн (0.15, 0.85): No Rain</code></pre>
+      <p>Салмақтар бірте-бірте түзеліп, үшінші өтуде бірде-бір қате қалмады: сызық екі топты бөліп алды. Содан кейін жаңа күндерді жіктеп көрдік.</p>
+      <p>Мұндай процестің нәтижесі - <strong>табалдырық функциясы</strong> (<span class="term-en">threshold function</span>): бағаланған мән белгілі бір шекті кесіп өткенде 0-ден 1-ге секіреді.</p>
+            <figure class="diagram" style="margin:18px 0"><svg viewBox="0 0 430 175" role="img" aria-label="Графиктер: қатты табалдырық 0-ден 1-ге секіреді, ал жұмсақ табалдырық біртіндеп өседі" style="display:block;width:100%;max-width:560px;height:auto;margin:0 auto"><line x1="30" y1="130" x2="180" y2="130" style="stroke:var(--muted);stroke-width:1.6" /><line x1="30" y1="130" x2="30" y2="20" style="stroke:var(--muted);stroke-width:1.6" /><text x="22" y="30" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px;font-weight:500">1</text><text x="22" y="125" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px;font-weight:500">0</text><line x1="30" y1="30" x2="180" y2="30" style="stroke:var(--border);stroke-width:1;stroke-dasharray:3 3" /><polyline points="30,125 105,125 105,30 180,30" style="fill:none;stroke:var(--accent);stroke-width:2.6"/><text x="105" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">қатты табалдырық</text><text x="105" y="145" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px;font-weight:500">w · x</text><line x1="250" y1="130" x2="400" y2="130" style="stroke:var(--muted);stroke-width:1.6" /><line x1="250" y1="130" x2="250" y2="20" style="stroke:var(--muted);stroke-width:1.6" /><text x="242" y="30" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px;font-weight:500">1</text><text x="242" y="125" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px;font-weight:500">0</text><line x1="250" y1="30" x2="400" y2="30" style="stroke:var(--border);stroke-width:1;stroke-dasharray:3 3" /><polyline points="250,124.6 255,124.4 260,124.1 265,123.7 270,123.2 275,122.4 280,121.3 285,119.8 290,117.8 295,115.0 300,111.4 305,106.6 310,100.8 315,93.8 320,85.9 325,77.5 330,69.1 335,61.2 340,54.2 345,48.4 350,43.6 355,40.0 360,37.2 365,35.2 370,33.7 375,32.6 380,31.8 385,31.3 390,30.9 395,30.6 400,30.4" style="fill:none;stroke:var(--accent);stroke-width:2.6"/><text x="325" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">жұмсақ табалдырық</text><text x="325" y="145" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px;font-weight:500">w · x</text></svg></figure>
+      <p>Сол жақтағы функцияның мәселесі: ол тек 0 не 1 бола алады, сондықтан <strong>белгісіздікті</strong> білдіре алмайды. Мұны <strong>қатты табалдырық</strong> (<span class="term-en">hard threshold</span>) дейді. Одан құтылудың бір жолы - <strong>логистикалық функция</strong> (<span class="term-en">logistic function</span>), ол <strong>жұмсақ табалдырықты</strong> (<span class="term-en">soft threshold</span>) қолданады. Логистикалық функция 0 мен 1 аралығындағы нақты сан бере алады, және ол санның өзі болжамға деген сенімділікті көрсетеді. Мән 1-ге жақындаған сайын жаңбыр жауу ықтималдығы жоғары.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: ауа райы болжамшысы «жаңбыр жауады» не «жаумайды» деп қана айтса, бұл неге жеткіліксіз?</summary>
+        <div class="details-body"><p>«Жауады» деген жауап сенімділікті көрсетпейді: 51% сенімді бе, 99% сенімді ме? Қолшатыр алу-алмауды біз дәл осы сенімділікке қарап шешеміз. Сондықтан 0 мен 1 арасындағы жұмсақ мән қатты «иә/жоқ»-қа қарағанда әлдеқайда пайдалы.</p></div>
+      </details>
+
+      <h2 id="svm">Тірек векторлар әдісі</h2>
+      <p>Ең жақын көрші мен сызықтық шекараға қоса, жіктеудің тағы бір тәсілі бар - <strong>тірек векторлар әдісі</strong> (<span class="term-en">Support Vector Machine, SVM</span>). Ол шешім шекарасының жанындағы қосымша векторларды (<strong>тірек векторлар</strong>) қолданып, деректерді бөлудің ең жақсы жолын таңдайды. Мына мысалды қарайық.</p>
+            <figure class="diagram" style="margin:18px 0"><svg viewBox="0 0 480 182" role="img" aria-label="Диаграмма: үш шекара де топтарды дұрыс бөледі, бірақ оң жақтағысы екі топтан да ең алыс - максималды қуысты бөлгіш" style="display:block;width:100%;max-width:600px;height:auto;margin:0 auto"><rect x="5" y="0" width="150" height="150" rx="8" style="fill:none;stroke:var(--border);stroke-width:1.2"/><circle cx="30" cy="30" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="55" cy="22" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="35" cy="60" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="65" cy="52" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="99" y="94" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="124" y="84" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="109" y="122" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="134" y="116" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><line x1="40" y1="75" x2="90" y2="8" style="stroke:var(--text);stroke-width:2.2" /><rect x="165" y="0" width="150" height="150" rx="8" style="fill:none;stroke:var(--border);stroke-width:1.2"/><circle cx="190" cy="30" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="215" cy="22" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="195" cy="60" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="225" cy="52" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="259" y="94" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="284" y="84" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="269" y="122" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="294" y="116" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><line x1="177" y1="105" x2="260" y2="70" style="stroke:var(--text);stroke-width:2.2" /><rect x="325" y="0" width="150" height="150" rx="8" style="fill:none;stroke:var(--border);stroke-width:1.2"/><circle cx="350" cy="30" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="375" cy="22" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="355" cy="60" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="385" cy="52" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="419" y="94" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="444" y="84" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="429" y="122" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="454" y="116" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><polygon points="385,150 475,150 475,40 435,0 405,0" style="fill:none"/><line x1="365" y1="110" x2="435" y2="35" style="stroke:var(--text);stroke-width:2.4" /><line x1="383" y1="112" x2="453" y2="37" style="stroke:var(--accent);stroke-width:1.4;stroke-dasharray:5 4" /><line x1="347" y1="108" x2="417" y2="33" style="stroke:var(--accent);stroke-width:1.4;stroke-dasharray:5 4" /><text x="80" y="168" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:500">шекараға тым жақын</text><text x="240" y="168" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:500">шекараға тым жақын</text><text x="400" y="168" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:12px;font-weight:700">максималды қуыс</text></svg></figure>
+      <p>Үш шекара да деректерді қатесіз бөліп тұр. Бірақ олар бірдей жақсы ма? Сол жақтағы екеуі кейбір бақылауларға тым жақын өтеді. Бұл жаңа деректі нүкте бір топтан сәл ғана ерекшеленсе, оның басқа топқа қате жіктелуі мүмкін дегенді білдіреді. Ал оң жақтағы шекара екі топтан да мүмкіндігінше алыс жүр, сондықтан әр топтың ішіндегі өзгерістерге ең көп орын қалдырады. Екі топтан да ең алыс болатын мұндай шекараны <strong>максималды қуысты бөлгіш</strong> (<span class="term-en">Maximum Margin Separator</span>) дейді.</p>
+      <p>Тірек векторлар әдісінің тағы бір артықшылығы: ол екіден көп өлшемдегі шекараны, сондай-ақ сызықтық емес шекараны да (мысалы, шеңбер түріндегі) бейнелей алады. Яғни кейбір деректерді түзумен бөлу мүмкін болмаса, SVM иілген шекара жүргізе алады.</p>
+      <p>Қорыта айтқанда, жіктеу есептерін шешудің бірнеше жолы бар, және бірде-бірі әрқашан басқасынан жақсы емес. Әрқайсысының өз кемшілігі бар, әр жағдайда өзге әдіс тиімдірек болуы мүмкін.</p>
+
+      <h2 id="regression">Регрессия</h2>
+      <p><strong>Регрессия</strong> (<span class="term-en">regression</span>) - бақыланатын оқытудың тағы бір түрі: кіріс нүктесін үздіксіз мәнге, яғни кез келген нақты санға сәйкестендіретін функцияны үйрену. Жіктеуден айырмашылығы: жіктеуде шығыс дискретті (<code>Rain</code> не <code>No Rain</code>), ал регрессияда шығыс - сан.</p>
+      <p>Мысал: компания «жарнамаға жұмсалған ақша сатылымнан түсетін табысты қалай болжайды?» деген сұраққа жауап іздейді. Бақыланған <em>f(advertising)</em> функциясы жарнамаға жұмсалған ақшадан кейін түскен табысты білдіреді (функция бірнеше кіріс айнымалысын да алуы мүмкін). Бастапқы деректеріміз - осы. Осылардан <em>f</em>-тің мінезін жуықтайтын <em>h(advertising)</em> гипотеза функциясын шығарғымыз келеді. Бұл жолы <em>h</em> сызған сызықтың мақсаты бақылау түрлерін бөлу емес, кіріске қарап шығыстың мәнін болжау.</p>
+            <figure class="diagram" style="margin:18px 0"><svg viewBox="0 0 320 215" role="img" aria-label="Диаграмма: жарнама шығыны мен табыс нүктелері және регрессия түзуі" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto"><line x1="40" y1="200" x2="300" y2="200" style="stroke:var(--muted);stroke-width:1.6" /><line x1="40" y1="200" x2="40" y2="20" style="stroke:var(--muted);stroke-width:1.6" /><text x="170.0" y="218" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:500">жарнамаға шыққан ақша</text><text transform="translate(24,110.0) rotate(-90)" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">сатылымнан түскен табыс</text><circle cx="50" cy="170" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="80" cy="150" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="110" cy="150" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="140" cy="110" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="170" cy="115" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="200" cy="80" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="230" cy="85" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="260" cy="45" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><line x1="45" y1="186.9" x2="290" y2="35.0" style="stroke:var(--text);stroke-width:2.4" /><text x="250" y="22" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:700">h(жарнама)</text></svg></figure>
+
+      <h2 id="loss">Шығын функциялары</h2>
+      <p><strong>Шығын функциялары</strong> (<span class="term-en">loss functions</span>) - жоғарыдағы шешім ережелерінің қаншалықты пайда жоғалтатынын сандық түрде өлшеу тәсілі. Болжам неғұрлым дәл болмаса, шығын соғұрлым үлкен.</p>
+      <p>Жіктеу есептері үшін <strong>0-1 шығын функциясын</strong> (<span class="term-en">0-1 loss function</span>) қолдануға болады:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">L(actual, predicted) = 0   егер actual = predicted
+L(actual, predicted) = 1   әйтпесе</code></pre>
+      <p>Сөзбен айтсақ: болжам дұрыс болмаса, функция «ұпай» жинайды (шығын 1), ал дұрыс болса (бақыланған және болжамдалған мән сәйкес келсе) ештеңе жинамайды (шығын 0).</p>
+            <figure class="diagram" style="margin:18px 0"><svg viewBox="0 0 320 215" role="img" aria-label="Диаграмма: шекара қате жіктеген екі нүкте 0-1 шығынын құрайды" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto"><line x1="40" y1="200" x2="300" y2="200" style="stroke:var(--muted);stroke-width:1.6" /><line x1="40" y1="200" x2="40" y2="20" style="stroke:var(--muted);stroke-width:1.6" /><text x="170.0" y="218" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:500">x₁ (ылғалдылық)</text><text transform="translate(24,110.0) rotate(-90)" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">x₂ (қысым)</text><line x1="60" y1="190" x2="270" y2="35" style="stroke:var(--text);stroke-width:2.2" /><circle cx="70" cy="60" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="100" cy="50" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="125" cy="90" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="85" cy="110" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="160" cy="80" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="239" y="144" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="209" y="159" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="259" y="109" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="179" y="144" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="219" y="99" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="99" y="144" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><circle cx="105" cy="150" r="12" style="fill:none;stroke:var(--bad);stroke-width:2"/><circle cx="260" cy="60" r="0" /><circle cx="230" cy="70" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="230" cy="70" r="12" style="fill:none;stroke:var(--bad);stroke-width:2"/></svg><figcaption style="text-align:center;color:var(--muted);font-size:.9rem;margin-top:6px">Дөңгелектелген екі нүкте қате жіктелген: әрқайсысы 1 шығын береді.</figcaption></figure>
+      <p>Жоғарыдағы мысалда шығыны 0 болатын күндер - ауа райын дұрыс болжаған күндер (жаңбырлы күндер сызықтың бір жағында, жаңбырсыз күндер екінші жағында). Ал сызықтың «қате» жағына түскен күндер, яғни болжай алмаған күндеріміз бар: әрқайсысына 1 шығын береміз. Оларды қосып, шешім шекарамыздың қаншалықты «шығынды» екенін эмпирикалық түрде бағалаймыз.</p>
+      <p>Үздіксіз мәнді болжағанда <strong>L₁</strong> және <strong>L₂</strong> шығын функциялары қолданылады. Бұл жағдайда әр болжам бақыланған мәннен <em>қаншаға</em> ауытқығанын өлшегіміз келеді. Ол үшін бақыланған мен болжамдалған мәннің айырмасының не модулін, не квадратын аламыз (болжам бақыланған мәннен қаншалықты алыс екенін өлшейміз):</p>
+<pre data-lang="plaintext"><code class="language-plaintext">L₁:  L(actual, predicted) = |actual - predicted|
+L₂:  L(actual, predicted) = (actual - predicted)²</code></pre>
+      <p>Мақсатыңызға ең жақсы қызмет ететін шығын функциясын таңдауға болады. L₂ айырманы квадраттайтындықтан, ауытқуларды (<span class="term-en">outliers</span>) L₁-ге қарағанда қатаңырақ жазалайды. L₁-ді көзге елестету үшін әр бақыланған нүктеден регрессия сызығындағы болжамға дейінгі қашықтықтарды қосамыз:</p>
+            <figure class="diagram" style="margin:18px 0"><svg viewBox="0 0 320 215" role="img" aria-label="Диаграмма: жарнама шығыны мен табыс нүктелері және регрессия түзуі, қызыл кесінділер L1 шығынын көрсетеді" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto"><line x1="40" y1="200" x2="300" y2="200" style="stroke:var(--muted);stroke-width:1.6" /><line x1="40" y1="200" x2="40" y2="20" style="stroke:var(--muted);stroke-width:1.6" /><text x="170.0" y="218" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:500">жарнамаға шыққан ақша</text><text transform="translate(24,110.0) rotate(-90)" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">сатылымнан түскен табыс</text><line x1="50" y1="170" x2="50" y2="183.8" style="stroke:var(--bad);stroke-width:2" /><line x1="80" y1="150" x2="80" y2="165.2" style="stroke:var(--bad);stroke-width:2" /><line x1="110" y1="150" x2="110" y2="146.6" style="stroke:var(--bad);stroke-width:2" /><line x1="140" y1="110" x2="140" y2="128.0" style="stroke:var(--bad);stroke-width:2" /><line x1="170" y1="115" x2="170" y2="109.4" style="stroke:var(--bad);stroke-width:2" /><line x1="200" y1="80" x2="200" y2="90.8" style="stroke:var(--bad);stroke-width:2" /><line x1="230" y1="85" x2="230" y2="72.2" style="stroke:var(--bad);stroke-width:2" /><line x1="260" y1="45" x2="260" y2="53.599999999999994" style="stroke:var(--bad);stroke-width:2" /><circle cx="50" cy="170" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="80" cy="150" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="110" cy="150" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="140" cy="110" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="170" cy="115" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="200" cy="80" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="230" cy="85" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="260" cy="45" r="5.5" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><line x1="45" y1="186.9" x2="290" y2="35.0" style="stroke:var(--text);stroke-width:2.4" /><text x="250" y="22" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:700">h(жарнама)</text></svg><figcaption style="text-align:center;color:var(--muted);font-size:.9rem;margin-top:6px">Қызыл кесінділер: |нақты - болжам|, яғни L₁ шығынының құрамдас бөліктері.</figcaption></figure>
+      <h3 id="loss-code">Өзіміз жазып көрейік: шығындарды санау</h3>
+      <p>Үш шығынды да қолмен есептеп көрейік. Соңғы болжам (50-ге 30) ауытқу екенін байқаңыз: L₁ оны «жай ғана 20» деп санайды, ал L₂ оны 400 деп, қалғанының бәрінен әлдеқайда ауыр жазалайды:</p>
+      <pre data-lang="python"><code class="language-python"># 0-1 шығын: классификация үшін
+actual    = ["Rain", "Rain", "No Rain", "No Rain", "Rain"]
+predicted = ["Rain", "No Rain", "No Rain", "Rain", "Rain"]
+loss01 = sum(0 if a == p else 1 for a, p in zip(actual, predicted))
+print("0-1 шығын:", loss01)
+
+# L1 және L2: үздіксіз мән үшін (сатылым, мың теңге)
+actual_sales    = [10, 12, 15, 20, 50]
+predicted_sales = [11, 12, 14, 21, 30]   # соңғысы - ауытқу (outlier)
+l1 = sum(abs(a - p) for a, p in zip(actual_sales, predicted_sales))
+l2 = sum((a - p) ** 2 for a, p in zip(actual_sales, predicted_sales))
+print("L1:", l1)
+print("L2:", l2)</code></pre>
+      <pre class="terminal"><code class="language-plaintext">0-1 шығын: 2
+L1: 23
+L2: 403</code></pre>
+
+      <h2 id="overfitting">Артық үйрену</h2>
+      <p><strong>Артық үйрену</strong> (<span class="term-en">overfitting</span>) - модель оқыту деректеріне соншалықты дәл бейімделіп, басқа деректер жиынына жалпылана алмай қалатын жағдай. Бұл тұрғыдан шығын функциялары екі жүзді пышақ сияқты. Төмендегі суретте шығынды нөлге дейін азайтуға болады, бірақ жаңа деректерге ол жақсы үйлеспейтіні анық.</p>
+            <figure class="diagram" style="margin:18px 0"><svg viewBox="0 0 440 200" role="img" aria-label="Диаграмма: сол жақта артық үйренген шиырша шекара, оң жақта қарапайым түзу" style="display:block;width:100%;max-width:600px;height:auto;margin:0 auto"><rect x="5" y="0" width="200" height="170" rx="8" style="fill:none;stroke:var(--border);stroke-width:1.2"/><circle cx="35" cy="30" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="65" cy="45" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="50" cy="80" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="95" cy="40" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="75" cy="100" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="115" cy="70" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="169" y="134" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="139" y="119" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="159" y="84" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="119" y="134" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="94" y="144" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="49" y="134" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><circle cx="29" cy="146" r="7" style="fill:var(--surface);stroke:var(--text);stroke-width:2.2"/><path d="M5,100 L40,110 L52,122 L12,126 L12,166 L68,166 L68,122 L80,112 L110,108 L130,80 L150,60 L170,55 L205,22" style="fill:none;stroke:var(--text);stroke-width:2.2"/><text x="105" y="186" text-anchor="middle" dominant-baseline="central" style="fill:var(--bad);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:700">артық үйренген</text><rect x="225" y="0" width="200" height="170" rx="8" style="fill:none;stroke:var(--border);stroke-width:1.2"/><circle cx="255" cy="30" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="285" cy="45" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="270" cy="80" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="315" cy="40" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="295" cy="100" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="335" cy="70" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="389" y="134" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="359" y="119" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="379" y="84" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="339" y="134" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="314" y="144" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="269" y="134" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><circle cx="249" cy="146" r="7" style="fill:var(--surface);stroke:var(--text);stroke-width:2.2"/><line x1="225" y1="172" x2="425" y2="78" style="stroke:var(--text);stroke-width:2.4" /><text x="325" y="186" text-anchor="middle" dominant-baseline="central" style="fill:var(--ok);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:700">қарапайым шекара</text></svg><figcaption style="text-align:center;color:var(--muted);font-size:.9rem;margin-top:6px">Сол жақта шығын 0, бірақ қызыл шаршыға жақын жаңа нүкте (ақ шеңбер) қате No Rain болып кетеді. Оң жақта шекара қарапайым, шығын 0 емес, бірақ жаңа деректе дұрысырақ.</figcaption></figure>
+      <p>Мысалы, сол жақтағы суретте төменгі жақтағы қызыл нүктенің қасындағы нүкте жаңбыр (көк) болуы ықтимал. Бірақ артық үйренген модельмен ол <code>No Rain</code> (қызыл) деп жіктеледі, өйткені модель бір жалғыз қызыл нүктенің айналасына шиыршық шекара жүргізіп алған.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: оқыту деректерінде шығыны нөл болған модель - ең жақсы модель ме?</summary>
+        <div class="details-body"><p>Міндетті түрде емес. Емтиханға билеттерді жаттап алған оқушы сияқты: жаттаған билеттерде 100 алады, бірақ сұрақ сәл өзгерсе, шатасады. Модельдің нағыз бағасы - ол <em>көрмеген</em> деректердегі нәтижесі. Сондықтан тек оқыту шығынына қарап қанағаттануға болмайды.</p></div>
+      </details>
+
+      <h2 id="regularization">Регуляризация</h2>
+      <p><strong>Регуляризация</strong> (<span class="term-en">regularization</span>) - күрделірек гипотезаларды жазалап, қарапайым әрі жалпы гипотезаларға басымдық беру процесі. Артық үйренуден сақтану үшін қолданамыз.</p>
+      <p>Регуляризацияда <em>h</em> гипотеза функциясының құнын оның шығыны мен күрделілік өлшемін қосу арқылы бағалаймыз:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">cost(h) = loss(h) + λ · complexity(h)</code></pre>
+      <p>Лямбда (λ) - күрделілікті құн функциясында қаншалықты қатты жазалау керегін реттейтін тұрақты. λ неғұрлым үлкен болса, күрделілік соғұрлым «қымбат».</p>
+      <p>Модельді артық үйреніп қойғанымызды тексерудің бір жолы - <strong>ұстап қалу әдісімен кросс-валидация</strong> (<span class="term-en">holdout cross validation</span>). Бұл тәсілде барлық деректі екіге бөлеміз: <strong>оқыту жиыны</strong> (<span class="term-en">training set</span>) және <strong>тест жиыны</strong> (<span class="term-en">test set</span>). Оқыту алгоритмін оқыту жиынында іске қосамыз, сосын ол тест жиынындағы деректерді қаншалықты жақсы болжайтынын қараймыз. Идея мынада: оқытуда қолданылмаған деректермен тексерсек, үйренудің қаншалықты жалпыланатынын өлшей аламыз.</p>
+      <p>Ұстап қалу әдісінің кемшілігі: деректердің бір бөлігі бағалауға кететіндіктен, модельді оларда үйрете алмаймыз. Бұған қарсы әдіс - <strong>k-бүктемелі кросс-валидация</strong> (<span class="term-en">k-fold cross-validation</span>). Мұнда деректерді <em>k</em> бөлікке бөлеміз. Оқытуды <em>k</em> рет іске қосамыз, әр жолы бір бөлікті тест ретінде қалдырып, қалғанында үйретеміз. Нәтижесінде модельдің <em>k</em> түрлі бағасын аламыз, оларды орташалап, ешбір деректі жоғалтпай, модельдің жалпылау қабілетін бағалаймыз.</p>
+
+      <h2 id="scikit-learn">scikit-learn</h2>
+      <p>Python-да жиі болатындай, машиналық оқыту алгоритмдерін ыңғайлы қолдануға мүмкіндік беретін бірнеше кітапхана бар. Солардың бірі - <strong>scikit-learn</strong>.</p>
+      <p>Мысал ретінде жалған банкноттар туралы <a href="https://en.wikipedia.org/wiki/Comma-separated_values" target="_blank" rel="noopener">CSV</a> деректер жиынын аламыз. Алғашқы төрт баған - банкноттың шынайы не жалған екенін болжауға болатын деректер (өлшемдер). Соңғы баған - адам берген сыртқы мәлімет: 0 не 1 деп кодталған (0 - шынайы, 1 - жалған). Енді моделімізді осы деректермен үйретіп, жаңа банкноттардың шынайы не жалған екенін болжай алатынымызды көрейік.</p>
+      <div class="callout note">
+        <span class="callout-title">Браузерде іске қосылмайды</span>
+        <p>Төмендегі мысалдар <code>scikit-learn</code> кітапханасы мен <code>banknotes.csv</code> файлын қажет етеді, ал бұл сайттың браузерлік Python ортасында олар жоқ. Сондықтан кодты өз компьютеріңізде орындаңыз (<code>pip3 install scikit-learn</code>); бұл жерде код тек оқуға арналған.</p>
+      </div>
+<pre data-lang="python" data-norun><code class="language-python">import csv
+import random
+
+from sklearn import svm
+from sklearn.linear_model import Perceptron
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neighbors import KNeighborsClassifier
+
+# model = KNeighborsClassifier(n_neighbors=1)
+# model = svm.SVC()
+model = Perceptron()</code></pre>
+      <p>Кітапханаларды импорттаған соң қай модельді қолданатынымызды таңдаймыз. Қалған код өзгеріссіз қала береді. <code>SVC</code> - Support Vector Classifier, яғни біз білетін тірек векторлар әдісі. <code>KNeighborsClassifier</code> k көрші стратегиясын қолданады және қанша көршіні алу керегін кіріс ретінде сұрайды.</p>
+<pre data-lang="python" data-norun><code class="language-python"># Деректерді файлдан оқимыз
+with open("banknotes.csv") as f:
+    reader = csv.reader(f)
+    next(reader)
+
+    data = []
+    for row in reader:
+        data.append({
+            "evidence": [float(cell) for cell in row[:4]],
+            "label": "Authentic" if row[4] == "0" else "Counterfeit"
+        })
+
+# Деректерді оқыту және тест топтарына бөлеміз
+holdout = int(0.40 * len(data))
+random.shuffle(data)
+testing = data[:holdout]
+training = data[holdout:]
+
+# Модельді оқыту жиынында үйретеміз
+X_training = [row["evidence"] for row in training]
+y_training = [row["label"] for row in training]
+model.fit(X_training, y_training)
+
+# Тест жиынында болжам жасаймыз
+X_testing = [row["evidence"] for row in testing]
+y_testing = [row["label"] for row in testing]
+predictions = model.predict(X_testing)
+
+# Қаншалықты жақсы жұмыс істегенімізді есептейміз
+correct = 0
+incorrect = 0
+total = 0
+for actual, predicted in zip(y_testing, predictions):
+    total += 1
+    if actual == predicted:
+        correct += 1
+    else:
+        incorrect += 1
+
+# Нәтижелерді шығарамыз
+print(f"Results for model {type(model).__name__}")
+print(f"Correct: {correct}")
+print(f"Incorrect: {incorrect}")
+print(f"Accuracy: {100 * correct / total:.2f}%")</code></pre>
+      <p>Алгоритмді осылайша қолмен іске қосатын нұсқасы осы лекцияның бастапқы кодында <code>banknotes0.py</code> деген атпен бар. Бұл алгоритм жиі осындай түрде қолданылатындықтан, scikit-learn кодты одан да қысқа әрі ыңғайлы ететін қосымша функцияларды ұсынады: ол нұсқа <code>banknotes1.py</code>-да.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: кодта деректердің 40%-ын неге «тестке» бөліп қойдық?</summary>
+        <div class="details-body"><p>Бұл жоғарыда айтқан ұстап қалу әдісі (<code>holdout = int(0.40 * len(data))</code>). Модель тест жиынын үйрену кезінде көрмейді, сондықтан соңғы <code>Accuracy</code> шынайы жалпылау дәлдігін көрсетеді. Тексеріп көріңіз: алдымен <code>random.shuffle(data)</code> деректерді араластырады, сондықтан әр іске қосқанда нәтиже сәл өзгеруі мүмкін.</p></div>
+      </details>
+
+      <h2 id="reinforcement">Күшейтілген оқыту</h2>
+      <p><strong>Күшейтілген оқыту</strong> (<span class="term-en">reinforcement learning</span>) - машиналық оқытудың тағы бір тәсілі. Мұнда агент әр әрекеттен кейін <strong>сыйақы</strong> немесе <strong>жаза</strong> түрінде кері байланыс алады (оң не теріс сандық мән).</p>
+            <figure class="diagram" style="margin:18px 0"><svg viewBox="0 0 420 175" role="img" aria-label="Диаграмма: агент әрекет жасайды, орта жаңа күй мен сыйақы немесе жаза қайтарады" style="display:block;width:100%;max-width:520px;height:auto;margin:0 auto"><defs><marker id="rl-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="20" y="60" width="110" height="50" rx="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="75.0" y="85.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:15px;font-weight:700">Агент</text><rect x="270" y="60" width="130" height="50" rx="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="335.0" y="85.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:15px;font-weight:700">Орта</text><polyline points="130,72 200,72 270,72" style="stroke:var(--muted);stroke-width:1.8;fill:none" marker-end="url(#rl-arr)"/><text x="200" y="58" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">әрекет</text><polyline points="335,110 335,150 75,150 75,112" style="stroke:var(--muted);stroke-width:1.8;fill:none" marker-end="url(#rl-arr)"/><text x="205" y="138" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">жаңа күй + сыйақы / жаза</text></svg></figure>
+      <p>Оқу процесі былай басталады: <strong>орта</strong> (<span class="term-en">environment</span>) <strong>агентке</strong> (<span class="term-en">agent</span>) бір <strong>күйді</strong> (<span class="term-en">state</span>) береді. Агент сол күйде бір <strong>әрекет</strong> (<span class="term-en">action</span>) жасайды. Осы әрекетке сәйкес орта агентке жаңа күй мен сыйақы қайтарады. Сыйақы оң болса, бұл мінез-құлықтың болашақта қайталану ықтималдығын арттырады, ал теріс болса (яғни жаза), оны азайтады.</p>
+      <p>Мұндай алгоритмді, мысалы, жүруге үйренетін роботтарды оқытуға қолдануға болады: әр қадам оң сан (сыйақы) қайтарады, әр құлау теріс сан (жаза) қайтарады. Үйретуші «былай жүр» деп айтпайды, робот қадам мен құлаудың салдарынан өзі үйренеді.</p>
+
+      <h2 id="mdp">Марков шешім процестері</h2>
+      <p>Күшейтілген оқытуды <strong>Марков шешім процесі</strong> (<span class="term-en">Markov decision process</span>) ретінде қарастыруға болады. Ол мына құрамдастардан тұрады:</p>
+      <ul>
+        <li>Күйлер жиыны <strong><em>S</em></strong></li>
+        <li>Әрекеттер жиыны <strong><em>Actions(S)</em></strong></li>
+        <li><strong>Ауысу моделі</strong> (<span class="term-en">transition model</span>) <strong><em>P(s’ | s, a)</em></strong></li>
+        <li><strong>Сыйақы функциясы</strong> (<span class="term-en">reward function</span>) <strong><em>R(s, a, s’)</em></strong></li>
+      </ul>
+      <p>Мысалы, мына тапсырманы қарайық:</p>
+            <figure class="diagram" style="margin:18px 0"><svg viewBox="0 0 320 225" role="img" aria-label="Диаграмма: 4 x 3 тор, агент сол жақ төменгі бұрышта, мақсат оң жақ жоғарғы бұрышта, үш қызыл шаршы - жаза" style="display:block;width:100%;max-width:420px;height:auto;margin:0 auto"><rect x="20" y="10" width="70" height="70" style="fill:var(--surface);stroke:var(--border);stroke-width:1.5"/><rect x="90" y="10" width="70" height="70" style="fill:var(--bad-soft, #fbe9e7);stroke:var(--border);stroke-width:1.5"/><rect x="160" y="10" width="70" height="70" style="fill:var(--surface);stroke:var(--border);stroke-width:1.5"/><rect x="230" y="10" width="70" height="70" style="fill:var(--ok-soft, #e4f4ec);stroke:var(--border);stroke-width:1.5"/><rect x="20" y="80" width="70" height="70" style="fill:var(--surface);stroke:var(--border);stroke-width:1.5"/><rect x="90" y="80" width="70" height="70" style="fill:var(--surface);stroke:var(--border);stroke-width:1.5"/><rect x="160" y="80" width="70" height="70" style="fill:var(--surface);stroke:var(--border);stroke-width:1.5"/><rect x="230" y="80" width="70" height="70" style="fill:var(--bad-soft, #fbe9e7);stroke:var(--border);stroke-width:1.5"/><rect x="20" y="150" width="70" height="70" style="fill:var(--surface);stroke:var(--border);stroke-width:1.5"/><rect x="90" y="150" width="70" height="70" style="fill:var(--bad-soft, #fbe9e7);stroke:var(--border);stroke-width:1.5"/><rect x="160" y="150" width="70" height="70" style="fill:var(--surface);stroke:var(--border);stroke-width:1.5"/><rect x="230" y="150" width="70" height="70" style="fill:var(--surface);stroke:var(--border);stroke-width:1.5"/><rect x="119.0" y="39.0" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="119.0" y="179.0" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="259.0" y="109.0" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><text x="265.0" y="45.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--ok);font-family:var(--font, sans-serif);font-size:12px;font-weight:700">мақсат</text><circle cx="55.0" cy="185.0" r="22" style="fill:var(--gold, #f2b705);stroke:var(--text);stroke-width:1.8"/><text x="55.0" y="185.0" text-anchor="middle" dominant-baseline="central" style="fill:#14213d;font-family:var(--font, sans-serif);font-size:10px;font-weight:700">агент</text></svg><figcaption style="text-align:center;color:var(--muted);font-size:.9rem;margin-top:6px">Қызыл шаршы: теріс сыйақы (жаза). Жасыл ұяшық: мақсат.</figcaption></figure>
+      <p>Агент - сары шеңбер. Ол жасыл шаршыға жетуі керек, ал қызыл шаршылардан аулақ жүруі керек. Тордағы әр шаршының өзі - бір күй. Жоғары, төмен не бүйірге жылжу - әрекет. Ауысу моделі әрекеттен кейінгі жаңа күйді береді, ал сыйақы функциясы агент қандай кері байланыс алатынын анықтайды. Мысалы, агент оңға жүруді таңдап, қызыл шаршыға түссе, теріс кері байланыс алады. Демек ол «төменгі сол жақ шаршы күйінде тұрғанда оңға жүруден аулақ болу керек» деп үйренеді. Осылайша агент кеңістікті зерттей бастайды, қай «күй-әрекет» жұптарынан аулақ болу керегін біртіндеп біледі. Алгоритм ықтималдық түрінде де болуы мүмкін: әр күйде түрлі әрекеттерді белгілі бір ықтималдықпен таңдайды, ал ол ықтималдық сыйақыға қарай артады не кемиді. Агент жасыл шаршыға жеткенде оң сыйақы алады да, алдыңғы күйде жасаған әрекеті тиімді екенін үйренеді.</p>
+
+      <h2 id="q-learning">Q-оқыту</h2>
+      <p><strong>Q-оқыту</strong> (<span class="term-en">Q-learning</span>) - күшейтілген оқытудың бір моделі. Мұнда <strong><em>Q(s, a)</em></strong> функциясы <em>s</em> күйінде <em>a</em> әрекетін жасаудың құндылығын бағалап береді.</p>
+      <p>Модель барлық бағаны нөлден бастайды: барлық <em>s, a</em> үшін <strong><em>Q(s, a)</em> = 0</strong>. Әрекет жасалып, сыйақы алынғанда функция екі іс істейді: 1) <strong><em>Q(s, a)</em></strong>-ның жаңа бағасын ағымдағы сыйақы мен күтілетін болашақ сыйақы негізінде есептейді, 2) <strong><em>Q(s, a)</em></strong>-ны ескі баға мен жаңа бағаны екеуін де ескеріп жаңартады. Осылай біз алгоритмді бұрынғы білімін жақсарта алатындай етеміз, оны әр жолы нөлден бастамаймыз.</p>
+<pre data-lang="plaintext"><code class="language-plaintext">Q(s, a) ← Q(s, a) + α · (жаңа мәннің бағасы - Q(s, a))</code></pre>
+      <p>Жаңартылған <em>Q(s, a)</em> оның алдыңғы мәніне қандай да бір жаңарту мәнін қосқанға тең. Бұл мән жаңа мен ескі мәннің айырмасы ретінде есептеліп, α оқу коэффициентіне көбейтіледі. α = 1 болса, жаңа баға ескісін жай ғана алмастырады. α = 0 болса, баға ешқашан жаңармайды. α-ны үлкейтіп-кішірейту арқылы бұрынғы білімнің жаңа бағалармен қаншалықты тез жаңарып отыратынын реттейміз.</p>
+      <p><strong>Жаңа мәннің бағасын</strong> сыйақының (<em>r</em>) және болашақ сыйақы бағасының қосындысы ретінде жазуға болады. Болашақ сыйақыны бағалау үшін соңғы әрекеттен кейін келген жаңа күйді қараймыз да, сол жаңа күйдегі ең жоғары сыйақыға жеткізетін әрекеттің бағасын қосамыз. Осылайша <em>s</em> күйіндегі <em>a</em> әрекетінің пайдасын тек алған сыйақысымен ғана емес, келесі қадамның күтілетін пайдасымен де бағалаймыз. Болашақ сыйақы бағасы кейде болашақ сыйақыны қаншалықты бағалау керегін реттейтін гамма (γ) коэффициентімен жазылады. Нәтижесінде мына теңдеу шығады:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">Q(s, a) ← Q(s, a) + α · ( (r + γ · max Q(s', a')) - Q(s, a) )
+                                       a'</code></pre>
+      <p><strong>Ашкөз шешім қабылдау</strong> (<span class="term-en">greedy decision-making</span>) алгоритмі болашақ күтілетін сыйақыны мүлде ескермейді: ағымдағы <em>s</em> күйінде ең жоғары <em>Q(s, a)</em> мәні бар <em>a</em> әрекетін әрқашан таңдайды.</p>
+      <p>Осыдан біз <strong>зерттеу мен пайдалану</strong> (<span class="term-en">explore vs. exploit</span>) арасындағы таңдауға келеміз. Ашкөз алгоритм әрқашан пайдаланады: жақсы нәтижеге апаратыны бұрыннан белгілі әрекеттерді жасайды. Бірақ ол әрқашан шешімге бір жолмен барады да, одан жақсырақ жолды ешқашан таппайды. Ал <strong>зерттеу</strong> дегеніміз - алгоритм мақсатқа бару жолында бұрын сынамаған бағытты қолдануы мүмкін, сөйтіп жолшыбай тиімдірек шешімдерді табады. Мысалы, егер сіз бір ғана әндерді әр жолы тыңдасаңыз, олардың ұнайтынын білесіз, бірақ ұнату мүмкін одан да жақсы жаңа әндермен ешқашан таныспайсыз!</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: барлық Q-мәні 0-ден басталса, ашкөз агент алғашқы сыйақы алған жолдан неге шықпай қалуы мүмкін?</summary>
+        <div class="details-body"><p>Бастапқыда бәрі 0. Агент кездейсоқ бір әрекет жасап, аздап оң сыйақы алса, сол әрекеттің бағасы 0-ден үлкен болады, ал басқа әрекеттердікі 0 болып қалады. Ашкөз агент енді тек сол «белгілі» әрекетті таңдайды, 0 бағалы басқаларын мүлде сынамайды. Осылайша мүмкін болатын жақсырақ жолды ешқашан тапмайды. Шешімі - кейде әдейі кездейсоқ әрекет жасау.</p></div>
+      </details>
+      <p>Зерттеу мен пайдалануды іске асыру үшін <strong>ε-ашкөз</strong> (<span class="term-en">ε (epsilon) greedy</span>) алгоритмін қолдануға болады. Мұнда ε-ді «қаншалықты жиі кездейсоқ жүру керек» деп белгілейміз. 1-ε ықтималдығымен алгоритм ең жақсы жүрісті таңдайды (пайдалану). ε ықтималдығымен кездейсоқ жүріс таңдайды (зерттеу).</p>
+      <h3 id="q-code">Өзіміз жазып көрейік: дәліздегі Q-оқыту</h3>
+      <p>Формулаларды кодқа айналдырайық. Агент 0-ден 4-ке дейінгі дәлізде тұр, мақсаты 4-ші ұяшыққа жету (жеткенде сыйақы 1, қалған қадамдарда 0). Әрекет тек екеу: солға не оңға. Төмендегі бағдарламада <code>q</code> - сөздік, кілті - (күй, әрекет) жұбы, мәні - баға. Білмейтініміздің бәрі 0. Әр қадамда ε-ашкөз әрекет таңдап, жоғарыдағы теңдеумен жаңартамыз:</p>
+      <pre data-lang="python"><code class="language-python">import random
+
+# Дәліз: 0 1 2 3 4 (4 - мақсат). Әрекет: -1 (солға), +1 (оңға)
+random.seed(1)
+alpha, gamma, epsilon = 0.5, 0.9, 0.2
+q = {}                                   # (күй, әрекет) -&gt; баға
+
+def get_q(s, a):
+    return q.get((s, a), 0)              # білмейтініміз 0
+
+def best_future(s):
+    return max(get_q(s, a) for a in (-1, 1))
+
+for episode in range(60):
+    s = 0
+    while s != 4:
+        if random.random() &lt; epsilon:    # зерттеу
+            a = random.choice((-1, 1))
+        else:                            # пайдалану
+            a = max((-1, 1), key=lambda act: get_q(s, act))
+        s2 = max(0, min(4, s + a))
+        r = 1 if s2 == 4 else 0
+        old = get_q(s, a)
+        new_estimate = r + gamma * best_future(s2)
+        q[(s, a)] = old + alpha * (new_estimate - old)
+        s = s2
+
+for s in range(4):
+    print(f"күй {s}: солға {get_q(s, -1):.2f}, оңға {get_q(s, 1):.2f}")</code></pre>
+      <pre class="terminal"><code class="language-plaintext">күй 0: солға 0.60, оңға 0.73
+күй 1: солға 0.62, оңға 0.81
+күй 2: солға 0.68, оңға 0.90
+күй 3: солға 0.81, оңға 1.00</code></pre>
+      <p>Оңға жүру әрқашан жақсырақ бағаға ие, ал мақсатқа жақындаған сайын бағалар өседі (1-ге дейін). Сыйақы тек соңғы ұяшықта берілгеніне қарамастан, ол «артқа таралып», алыстағы күйлердің бағасына да әсер етті. Мұны болашақ сыйақы бағасы (<code>best_future</code>) жасады.</p>
+      <p>Кері байланысты әр қадамда емес, бүкіл процесс аяқталғанда да беруге болады. Мысалы, <strong>Nim</strong> ойынын алайық. Бұл ойында үйінділерге түрлі санда заттар бөлінген. Әр ойыншы кез келген бір үйіндіден кез келген санды алады, ал <em>соңғы затты алған ойыншы жеңіледі</em>. Мұндай ойында жаттықпаған жасанды интеллект кездейсоқ ойнайды да, оны жеңу оңай. Оны үйрету үшін алдымен кездейсоқ ойнатамыз, ал соңында жеңіске 1, жеңіліске -1 сыйақы береміз. Мысалы, 10 000 ойында үйретілгеннен кейін ол өзіне қарсы жеңу қиын болатындай ақылды болады. Дәл осы Nim - бұл аптаның тапсырмасы.</p>
+      <p>Шахмат сияқты күй мен әрекет саны көп ойындарда бұл тәсіл есептеуге өте ауыр болады: әр күйдегі әр жүріске баға сақтау мүмкін емес. Мұндай жағдайда <strong>функцияны жуықтау</strong> (<span class="term-en">function approximation</span>) қолданамыз. Ол <em>Q(s, a)</em> мәнін әр «күй-әрекет» жұбына бөлек сақтаудың орнына, басқа түрлі белгілер арқылы жуықтауға мүмкіндік береді. Осылайша алгоритм қай жүрістердің бір-біріне жеткілікті ұқсас екенін, сондықтан олардың бағасы да ұқсас болуы керегін тани алады және шешім қабылдауда осы эвристиканы пайдаланады.</p>
+
+      <h2 id="unsupervised">Бақылаусыз оқыту</h2>
+      <p>Бұған дейінгі барлық жағдайда, бақыланатын оқытудағыдай, алгоритм үйрене алатын белгіленген деректеріміз болды. Мысалы, жалған банкноттарды танитын алгоритмді үйреткенде әр банкноттың төрт айнымалысы (кіріс деректері) және оның жалған не жалған емес екені (белгі) бізде болды. <strong>Бақылаусыз оқытуда</strong> (<span class="term-en">unsupervised learning</span>) тек кіріс деректері ғана бар, ал жасанды интеллект осы деректердегі заңдылықтарды өзі табады.</p>
+      <p><strong>Кластерлеу</strong> (<span class="term-en">clustering</span>) - бақылаусыз оқытудың тапсырмасы: кіріс деректерін ұқсас объектілер бір топқа түсетіндей етіп топтарға бөледі. Мысалы, генетикалық зерттеулерде ұқсас гендерді табу үшін, не суретті сегменттеуде, яғни пиксельдердің ұқсастығына қарап суреттің түрлі бөліктерін анықтау үшін қолданылады.</p>
+
+      <h2 id="kmeans">k-means кластерлеуі</h2>
+      <p><strong>k-means кластерлеуі</strong> (<span class="term-en">k-means clustering</span>) - кластерлеу тапсырмасын орындайтын алгоритм. Ол барлық деректі нүктелерді кеңістікке салады да, <em>k</em> <strong>кластер орталығын</strong> кездейсоқ орналастырады (қанша болатынын бағдарламашы шешеді; бұл - сол жақтағы бастапқы күй). Әр кластер орталығы - кеңістіктегі жай бір нүкте. Содан кейін әр кластерге басқа орталықтардан гөрі өз орталығына жақын орналасқан барлық нүкте беріледі (ортадағы сурет). Одан кейін итеративті процесте кластер орталығы осы нүктелердің ортасына жылжиды (оң жақтағы күй), содан соң нүктелер қайтадан орталығы енді өзіне ең жақын кластерге қайта бөлінеді. Процесті қайталағанда әр нүкте бұрынғы кластерінде қала берсе, біз тепе-теңдікке жеттік: алгоритм аяқталады, нүктелер кластерлер арасында бөлініп қалады.</p>
+            <figure class="diagram" style="margin:18px 0"><svg viewBox="0 0 485 182" role="img" aria-label="Диаграмма: k-means үш қадамда - орталықтарды қою, нүктелерді жақын орталыққа бөлу, орталықтарды топтың ортасына жылжыту" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto"><rect x="5" y="0" width="150" height="150" rx="8" style="fill:none;stroke:var(--border);stroke-width:1.2"/><circle cx="35" cy="40" r="5.5" style="fill:var(--muted)"/><circle cx="55" cy="60" r="5.5" style="fill:var(--muted)"/><circle cx="45" cy="80" r="5.5" style="fill:var(--muted)"/><circle cx="75" cy="40" r="5.5" style="fill:var(--muted)"/><circle cx="100" cy="105" r="5.5" style="fill:var(--muted)"/><circle cx="120" cy="95" r="5.5" style="fill:var(--muted)"/><circle cx="110" cy="125" r="5.5" style="fill:var(--muted)"/><circle cx="135" cy="112" r="5.5" style="fill:var(--muted)"/><path d="M37,50 L53,50 M45,42 L45,58" style="stroke:var(--accent);stroke-width:3.2;stroke-linecap:round"/><circle cx="45" cy="50" r="10" style="fill:none;stroke:var(--accent);stroke-width:1.6"/><path d="M52,95 L68,95 M60,87 L60,103" style="stroke:var(--bad);stroke-width:3.2;stroke-linecap:round"/><circle cx="60" cy="95" r="10" style="fill:none;stroke:var(--bad);stroke-width:1.6"/><text x="80" y="166" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;font-weight:600">1. бастапқы күй</text><rect x="165" y="0" width="150" height="150" rx="8" style="fill:none;stroke:var(--border);stroke-width:1.2"/><circle cx="195" cy="40" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="215" cy="60" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="199" y="74" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><circle cx="235" cy="40" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="254" y="99" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="274" y="89" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="264" y="119" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="289" y="106" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><path d="M197,50 L213,50 M205,42 L205,58" style="stroke:var(--accent);stroke-width:3.2;stroke-linecap:round"/><circle cx="205" cy="50" r="10" style="fill:none;stroke:var(--accent);stroke-width:1.6"/><path d="M212,95 L228,95 M220,87 L220,103" style="stroke:var(--bad);stroke-width:3.2;stroke-linecap:round"/><circle cx="220" cy="95" r="10" style="fill:none;stroke:var(--bad);stroke-width:1.6"/><text x="240" y="166" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;font-weight:600">2. бөлу</text><rect x="325" y="0" width="150" height="150" rx="8" style="fill:none;stroke:var(--border);stroke-width:1.2"/><circle cx="355" cy="40" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><circle cx="375" cy="60" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="359" y="74" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><circle cx="395" cy="40" r="6" style="fill:var(--accent);stroke:var(--surface);stroke-width:1.5"/><rect x="414" y="99" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="434" y="89" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="424" y="119" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><rect x="449" y="106" width="12" height="12" rx="2" style="fill:var(--bad);stroke:var(--surface);stroke-width:1.5"/><line x1="365" y1="50" x2="375" y2="47" style="stroke:var(--accent);stroke-width:1.6;stroke-dasharray:3 3" /><path d="M367,47 L383,47 M375,39 L375,55" style="stroke:var(--accent);stroke-width:3.2;stroke-linecap:round"/><circle cx="375" cy="47" r="10" style="fill:none;stroke:var(--accent);stroke-width:1.6"/><line x1="380" y1="95" x2="422" y2="103" style="stroke:var(--bad);stroke-width:1.6;stroke-dasharray:3 3" /><path d="M414,103 L430,103 M422,95 L422,111" style="stroke:var(--bad);stroke-width:3.2;stroke-linecap:round"/><circle cx="422" cy="103" r="10" style="fill:none;stroke:var(--bad);stroke-width:1.6"/><text x="400" y="166" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;font-weight:600">3. жылжыту</text></svg><figcaption style="text-align:center;color:var(--muted);font-size:.9rem;margin-top:6px">Орталықтар (айқыш белгі) алдымен кездейсоқ қойылады, нүктелер ең жақын орталыққа бөлінеді, сосын әр орталық өз тобының ортасына жылжиды.</figcaption></figure>
+      <h3 id="kmeans-code">Өзіміз жазып көрейік: k-means</h3>
+      <p>Алгоритмнің үш қадамын (орталықтарды қою, нүктелерді жақын орталыққа бөлу, орталықтарды жылжыту) кодқа салайық. Деректерде екі айқын топ бар, <code>k = 2</code>. Орталықтарды кездейсоқ нүктелерден аламыз да, ештеңе өзгермей қалғанша қайталаймыз:</p>
+      <pre data-lang="python"><code class="language-python">import random
+
+points = [(1, 1), (1.5, 2), (2, 1.5), (1, 2),          # бір топ
+          (8, 8), (9, 8.5), (8.5, 9.5), (9.5, 9)]      # екінші топ
+
+def dist2(a, b):
+    return (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2
+
+def mean(group):
+    return (sum(p[0] for p in group) / len(group),
+            sum(p[1] for p in group) / len(group))
+
+random.seed(3)
+centers = random.sample(points, 2)       # k = 2 орталықты кездейсоқ қоямыз
+
+for step in range(10):
+    clusters = [[] for _ in centers]
+    for p in points:                     # әр нүкте ең жақын орталыққа
+        i = min(range(len(centers)), key=lambda c: dist2(p, centers[c]))
+        clusters[i].append(p)
+    new_centers = [mean(g) if g else centers[i] for i, g in enumerate(clusters)]
+    if new_centers == centers:           # ештеңе өзгермеді - тоқтаймыз
+        print(f"{step}-қадамда тепе-теңдік")
+        break
+    centers = new_centers
+
+for c, g in zip(centers, clusters):
+    print("Орталық:", (round(c[0], 2), round(c[1], 2)), "нүктелер:", len(g))</code></pre>
+      <pre class="terminal"><code class="language-plaintext">1-қадамда тепе-теңдік
+Орталық: (1.38, 1.62) нүктелер: 4
+Орталық: (8.75, 8.75) нүктелер: 4</code></pre>
+      <p>Алгоритм екі топты өзі тапты: бізге «мынау бір топ, анау екінші топ» деп ешкім айтқан жоқ. Бақылаусыз оқыту дегеніміз осы.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li><strong>Машиналық оқыту</strong> - компьютерге нұсқау емес, дерек беріп, заңдылықты өзі табуға үйрету.</li>
+        <li><strong>Бақыланатын оқытуда</strong> кіріс-шығыс жұптары бар. <strong>Жіктеу</strong> дискретті шығыс (<code>Rain</code>/<code>No Rain</code>) береді, <strong>регрессия</strong> үздіксіз сан береді.</li>
+        <li><strong>Ең жақын көрші</strong> жаңа нүктеге ең жақын бақылаудың мәнін береді; <strong>k ең жақын көрші</strong> <em>k</em> көршінің көпшілік дауысын алады.</li>
+        <li><strong>Перцептрон</strong> түзу шешім шекарасын салмақтар арқылы үйренеді: <code>wᵢ ← wᵢ + α(y - h(x))xᵢ</code>. Қатты табалдырық 0/1 береді, жұмсақ (логистикалық) табалдырық сенімділікті білдіреді.</li>
+        <li><strong>Тірек векторлар әдісі</strong> екі топтан ең алыс <em>максималды қуысты</em> шекараны таңдайды және сызықтық емес шекараны да құра алады.</li>
+        <li><strong>Шығын функциялары</strong> болжамның қателігін өлшейді: 0-1 (жіктеу), L₁ және L₂ (үздіксіз мән; L₂ ауытқуларды қатты жазалайды).</li>
+        <li><strong>Артық үйрену</strong> - оқыту деректеріне тым дәл бейімделу. Қарсы құрал: <strong>регуляризация</strong> <code>cost(h) = loss(h) + λ·complexity(h)</code>, сонымен қатар ұстап қалу не <em>k</em>-бүктемелі кросс-валидациямен тексеру.</li>
+        <li><strong>scikit-learn</strong> моделін (<code>KNeighborsClassifier</code>, <code>SVC</code>, <code>Perceptron</code>) алмастыру үшін бір жолды ауыстыру жеткілікті.</li>
+        <li><strong>Күшейтілген оқыту</strong>: агент әрекет жасайды, орта жаңа күй мен сыйақы не жаза қайтарады. Ол <strong>Марков шешім процесі</strong> (күйлер, әрекеттер, ауысу моделі, сыйақы функциясы).</li>
+        <li><strong>Q-оқыту</strong> <code>Q(s, a)</code> бағасын жаңартады; <strong>ε-ашкөз</strong> алгоритмі зерттеу мен пайдалануды теңестіреді. Күйлер көп болса, <strong>функцияны жуықтау</strong> қолданылады.</li>
+        <li><strong>Бақылаусыз оқытуда</strong> белгілер жоқ. <strong>k-means кластерлеуі</strong> нүктелерді жақын орталыққа бөліп, орталықтарды топтың ортасына жылжытып, тепе-теңдікке дейін қайталайды.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. Белгісіз нүктеге ең жақын бақылау қызыл. Одан кейінгі екі жақын көрші көк. <code>k = 3</code> болғанда нүкте қандай түске боялады?</p>
+          <label><input type="radio" value="a"> Қызыл, себебі ең жақыны қызыл</label>
+          <label><input type="radio" value="b"> Көк, себебі 3 көршінің екеуі көк</label>
+          <label><input type="radio" value="c"> Екі түс те тең, сондықтан бағдарлама қате береді</label>
+          <label><input type="radio" value="d"> Түсі кездейсоқ таңдалады</label>
+          <p class="explain">k ең жақын көрші көршілердің көпшілік дауысын алады: екі көк бір қызылдан артық. Ең жақын көршінің бір өзі шешпейді.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">2. Перцептрон үшін <code>w₁ = 0.4</code>, <code>α = 0.5</code>, <code>x₁ = 2</code>. Бақыланған мән <code>y = 1</code> (<code>Rain</code>), ал модель <code>h(x) = 0</code> деп болжады. Ереже бойынша <code>w₁</code> қандай болады?</p>
+          <label><input type="radio" value="a"> 0.4, өзгермейді</label>
+          <label><input type="radio" value="b"> -0.6</label>
+          <label><input type="radio" value="c"> 0.9</label>
+          <label><input type="radio" value="d"> 1.4</label>
+          <p class="explain"><code>w₁ ← 0.4 + 0.5 · (1 - 0) · 2 = 1.4</code>. Төмен болжағанда (<code>y - h(x) = 1</code>) салмақ артады. Өзгермеу болжам дұрыс болғанда ғана болар еді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. Төмендегі тапсырмалардың қайсысы <em>регрессияға</em> жатады?</p>
+          <label><input type="radio" value="a"> Ертеңгі температураны градуспен болжау</label>
+          <label><input type="radio" value="b"> Хат спам немесе спам емес екенін анықтау</label>
+          <label><input type="radio" value="c"> Банкноттың шынайы не жалған екенін анықтау</label>
+          <label><input type="radio" value="d"> Ертең жаңбыр жауады не жаумайды деп болжау</label>
+          <p class="explain">Регрессияның шығысы үздіксіз сан (температура). Қалған үшеуінің шығысы дискретті екі нұсқа: бұл жіктеу.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">4. Нақты мәндер <code>[10, 20]</code>, болжамдар <code>[12, 15]</code>. L₁ және L₂ шығындарының қосындысы қандай?</p>
+          <label><input type="radio" value="a"> L₁ = 3, L₂ = 9</label>
+          <label><input type="radio" value="b"> L₁ = 7, L₂ = 7</label>
+          <label><input type="radio" value="c"> L₁ = 7, L₂ = 29</label>
+          <label><input type="radio" value="d"> L₁ = 29, L₂ = 7</label>
+          <p class="explain">L₁ = |10-12| + |20-15| = 2 + 5 = 7. L₂ = 2² + 5² = 4 + 25 = 29. Үлкен қателік (5) квадраттағанда қатты өседі: сондықтан L₂ ауытқуларды қаттырақ жазалайды.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. Модель оқыту деректерінде 100%, ал оқытуда қолданылмаған тест деректерінде 60% дәлдік көрсетті. Не болды?</p>
+          <label><input type="radio" value="a"> Модель тым қарапайым, оны күрделендіру керек</label>
+          <label><input type="radio" value="b"> Модель артық үйренген: оқыту деректерін жаттап алған, жалпыламайды</label>
+          <label><input type="radio" value="c"> Тест деректері қате, ескермеуге болады</label>
+          <label><input type="radio" value="d"> Бұл өте жақсы нәтиже, ештеңе істеудің қажеті жоқ</label>
+          <p class="explain">Оқыту мен тест нәтижелерінің арасындағы үлкен алшақтық - артық үйренудің басты белгісі. Оны регуляризация және кросс-валидация арқылы бақылайды.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">6. Q-оқытуда <code>Q(s, a) = 0</code>, <code>α = 0.5</code>, жаңа әрекеттен кейінгі сыйақы <code>-1</code>, болашақ сыйақы бағасы <code>0</code>. Жаңартудан кейін <code>Q(s, a)</code> неге тең?</p>
+          <label><input type="radio" value="a"> -1</label>
+          <label><input type="radio" value="b"> 0</label>
+          <label><input type="radio" value="c"> -0.5</label>
+          <label><input type="radio" value="d"> 0.5</label>
+          <p class="explain"><code>Q ← 0 + 0.5 · ((-1 + 0) - 0) = -0.5</code>. α = 1 болса ғана жаңа баға ескіні толық алмастырар еді (-1). α = 0.5 кезінде қадам жартылай ғана жасалады.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. ε-ашкөз алгоритмде <code>ε = 0.1</code>. Бұл нені білдіреді?</p>
+          <label><input type="radio" value="a"> Агент әрқашан ең жақсы әрекетті таңдайды</label>
+          <label><input type="radio" value="b"> Агент 90% жағдайда кездейсоқ жүреді</label>
+          <label><input type="radio" value="c"> Оқу коэффициенті 0.1-ге тең</label>
+          <label><input type="radio" value="d"> Агент шамамен 10% жағдайда кездейсоқ әрекет жасайды (зерттейді), қалғанында ең жақсысын таңдайды (пайдаланады)</label>
+          <p class="explain">ε ықтималдығымен кездейсоқ жүріс (зерттеу), 1-ε ықтималдығымен ең жақсы жүріс (пайдалану). ε = 0 болса, алгоритм таза ашкөз болып, жаңа жолдарды ешқашан сынамайды.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">8. Қайсысы k-means кластерлеуін (бақылаусыз оқыту) дұрыс сипаттайды?</p>
+          <label><input type="radio" value="a"> Белгілер жоқ; алгоритм нүктелерді жақын орталыққа бөліп, орталықтарды жылжытады және ештеңе өзгермей қалғанда тоқтайды</label>
+          <label><input type="radio" value="b"> Әр нүктенің дұрыс жауабы алдын ала беріледі, алгоритм соны жаттайды</label>
+          <label><input type="radio" value="c"> Алгоритм әр қадамда сыйақы мен жаза алады</label>
+          <label><input type="radio" value="d"> Кластер саны <code>k</code>-ны алгоритм өзі автоматты түрде анықтайды</label>
+          <p class="explain">Бақылаусыз оқытуда тек кіріс бар. Орталықтар кездейсоқ қойылып, нүктелерді бөлу мен орталықты жылжыту қайталанады. <em>k</em>-ны бағдарламашы алдын ала таңдайды.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Problem Set 4 (Тапсырмалар жинағы 4)</h2>
+      <p>Ресми тапсырма беті: <a href="https://cs50.harvard.edu/ai/projects/4/" target="_blank" rel="noopener">cs50.harvard.edu/ai/projects/4</a>. Екі тапсырманы да орындау керек: <strong>Shopping</strong> және <strong>Nim</strong>. Python-ның ұсынылатын жоғарғы нұсқасы - 3.12.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-shopping">Shopping (Онлайн-сатып алу)</h3></div>
+        <p>Онлайн-дүкен клиенттерінің сатып алуды аяқтайтынын болжайтын жасанды интеллект жазыңыз.</p>
+<pre class="terminal"><code class="language-plaintext">$ python shopping.py shopping.csv
+Correct: 4088
+Incorrect: 844
+True Positive Rate: 41.02%
+True Negative Rate: 90.55%</code></pre>
+        <h4>Фон</h4>
+        <p>Адамдар онлайн сауда жасағанда, бәрі бірдей бірдеңе сатып ала бермейді. Шындығында, дүкен сайтына кірушілердің көбі сол сессияда сатып алуға жетпейді. Сонда да сайт пайдаланушының сатып алуға ниеті бар-жоғын болжай алса пайдалы болар еді: мысалы, пайдаланушы сатып алғысы келмейтін сияқты болса, оған жеңілдік ұсынысын көрсетуге болады. Пайдаланушының сатып алу ниетін сайт қалай біледі? Міне, мұнда машиналық оқыту көмектеседі.</p>
+        <p>Сіздің міндетіңіз - осы есепті шешетін <strong>ең жақын көрші жіктеуішін</strong> құру. Пайдаланушы туралы ақпаратқа (қанша бет қараған, демалыс күні сауда жасап жатыр ма, қай браузерді қолданады, т.с.с.) қарап, жіктеуіш пайдаланушының сатып алатынын не алмайтынын болжайды. Жіктеуіш мінсіз дәл болмайды (адам мінез-құлқын мінсіз модельдеу осы курстың аясынан әлдеқайда тыс), бірақ кездейсоқ болжаудан жақсы болуы керек. Жіктеуішті үйрету үшін сізге шамамен 12 000 пайдаланушы сессиясынан тұратын дүкен сайтының деректері беріледі.</p>
+        <p>Мұндай жүйенің дәлдігін қалай өлшейміз? Тест деректері болса, жіктеуішті сонда іске қосып, пайдаланушы ниетін дұрыс жіктеген үлесті есептеуге болады. Бұл бір ғана дәлдік пайызын береді. Бірақ ол сан жаңылыстыруы мүмкін. Мысалы, барлық пайдаланушылардың шамамен 15%-ы сатып алуға жетеді дейік. Әрқашан «сатып алмайды» деп болжайтын жіктеуіш 85% дәл болар еді: ол тек сатып алатын 15%-ды ғана қателеседі. 85% дәлдік жақсы естіледі, бірақ мұндай жіктеуіш пайдасыз.</p>
+        <p>Сондықтан біз екі шаманы өлшейміз: <strong>сезімталдық</strong> (<span class="term-en">sensitivity</span>, «шын оң көрсеткіш») және <strong>ерекшелік</strong> (<span class="term-en">specificity</span>, «шын теріс көрсеткіш»). Сезімталдық - дұрыс анықталған оң мысалдардың үлесі, яғни сатып алуға жеткен пайдаланушылардың қаншасы дұрыс анықталғаны. Ерекшелік - дұрыс анықталған теріс мысалдардың үлесі, яғни сатып алмаған пайдаланушылардың қаншасы дұрыс анықталғаны. Әрқашан «жоқ» дейтін жіктеуіштің ерекшелігі мінсіз (1.0), бірақ сезімталдығы нөл (0.0). Біздің мақсат - екі көрсеткіште де жақсы жұмыс істейтін жіктеуіш құру.</p>
+        <h4>Бастау</h4>
+        <ul>
+          <li>Дистрибутив кодын <a href="https://cdn.cs50.net/ai/2023/x/projects/4/shopping.zip" target="_blank" rel="noopener">cdn.cs50.net/ai/2023/x/projects/4/shopping.zip</a> адресінен жүктеп алып, ашыңыз.</li>
+          <li>Егер әлі орнатылмаған болса, <code>pip3 install scikit-learn</code> орындаңыз: бұл тапсырмаға қажет.</li>
+        </ul>
+        <h4>Түсіну</h4>
+        <p>Алдымен осы жобаға берілген деректер жиыны - <code>shopping.csv</code> файлын ашыңыз. Оны мәтіндік редакторда да ашуға болады, бірақ Microsoft Excel, Apple Numbers не Google Sheets сияқты кесте бағдарламасында көру ыңғайлырақ.</p>
+        <p>Кестеде шамамен 12 000 пайдаланушы сессиясы бар: әр сессия - бір жол. Алғашқы алты баған пайдаланушы қарап шыққан бет түрлерін өлшейді: <code>Administrative</code>, <code>Informational</code> және <code>ProductRelated</code> бағандары сол түрдегі беттердің қаншасын қарағанын, ал сәйкес <code>_Duration</code> бағандары сол беттерге қанша уақыт жұмсағанын көрсетеді. <code>BounceRates</code>, <code>ExitRates</code> және <code>PageValues</code> бағандары пайдаланушы қараған бет туралы Google Analytics ақпаратын береді. <code>SpecialDay</code> - пайдаланушының сессиясы ерекше күнге (мысалы, Әулие Валентин күні не Аналар күні) қаншалықты жақын екенін өлшейтін мән. <code>Month</code> - пайдаланушы кірген айдың қысқартылған атауы. <code>OperatingSystems</code>, <code>Browser</code>, <code>Region</code> және <code>TrafficType</code> - пайдаланушының өзі туралы бүтін сандар. <code>VisitorType</code> қайта келген пайдаланушы үшін <code>Returning_Visitor</code> мәнін, басқасы үшін өзге жолды қабылдайды. <code>Weekend</code> - пайдаланушы демалыс күні кірген-кірмегеніне қарай <code>TRUE</code> не <code>FALSE</code>.</p>
+        <p>Бәлкім, ең маңыздысы - соңғы баған: <code>Revenue</code>. Ол пайдаланушының ақыр соңында сатып алғанын не алмағанын көрсетеді: сатып алса <code>TRUE</code>, әйтпесе <code>FALSE</code>. Біз болжауды үйренгіміз келетін баған (<strong>белгі</strong>, <span class="term-en">label</span>) - осы, ал қалған бағандардың мәндері (<strong>дәлел</strong>, <span class="term-en">evidence</span>) негізінде болжаймыз.</p>
+        <p>Енді <code>shopping.py</code> файлын ашыңыз. <code>main</code> функциясы <code>load_data</code> функциясын шақырып, CSV кестесінен деректерді жүктейді және оларды оқыту мен тест жиынына бөледі. Содан кейін <code>train_model</code> функциясы оқыту деректерінде машиналық оқыту моделін үйретеді. Сосын модель тест жиынында болжам жасайды. Соңында <code>evaluate</code> функциясы модельдің сезімталдығы мен ерекшелігін анықтайды, нәтижелер терминалға шығарылады.</p>
+        <p><code>load_data</code>, <code>train_model</code> және <code>evaluate</code> функциялары бос қалдырылған. Міне, сіздің жұмысыңыз осында.</p>
+        <h4>Талаптар</h4>
+        <p><code>shopping.py</code> ішінде <code>load_data</code>, <code>train_model</code> және <code>evaluate</code> функцияларын аяқтаңыз.</p>
+        <p><code>load_data</code> функциясы CSV файл атауын аргумент ретінде қабылдап, сол файлды ашып, <code>(evidence, labels)</code> кортежін қайтаруы керек. <code>evidence</code> - әр деректі нүктенің барлық дәлелдерінің тізімі, <code>labels</code> - әр деректі нүктенің белгілерінің тізімі.</p>
+        <ul>
+          <li>Кестенің әр жолына бір дәлел мен бір белгі келетіндіктен, <code>evidence</code> және <code>labels</code> тізімдерінің ұзындығы CSV кестесіндегі жолдар санына (тақырып жолынан басқа) тең болуы керек. Тізімдер кестедегі пайдаланушылардың ретімен орналасуы тиіс: <code>evidence[0]</code> - бірінші пайдаланушының дәлелі, <code>labels[0]</code> - бірінші пайдаланушының белгісі.</li>
+          <li><code>evidence</code> тізімінің әр элементі өзі тізім болуы керек. Ол тізімнің ұзындығы 17: кестедегі соңғы (белгі) бағанынан басқа бағандар саны.</li>
+          <li>Әр <code>evidence</code> тізіміндегі мәндер кестедегі бағандар ретімен бірдей болуы керек. <code>shopping.csv</code> бағандарының реті әрқашан осындай деп есептей аласыз.</li>
+          <li>Ең жақын көрші жіктеуішін құру үшін барлық деректер сандық болуы керек. Мәндер мына түрде болсын:
+            <ul>
+              <li><code>Administrative</code>, <code>Informational</code>, <code>ProductRelated</code>, <code>Month</code>, <code>OperatingSystems</code>, <code>Browser</code>, <code>Region</code>, <code>TrafficType</code>, <code>VisitorType</code> және <code>Weekend</code> - барлығы <code>int</code> түрінде;</li>
+              <li><code>Administrative_Duration</code>, <code>Informational_Duration</code>, <code>ProductRelated_Duration</code>, <code>BounceRates</code>, <code>ExitRates</code>, <code>PageValues</code> және <code>SpecialDay</code> - барлығы <code>float</code> түрінде.</li>
+            </ul>
+          </li>
+          <li><code>Month</code> қаңтар үшін <code>0</code>, ақпан үшін <code>1</code>, наурыз үшін <code>2</code>, т.с.с., желтоқсан үшін <code>11</code> болуы керек.</li>
+          <li><code>VisitorType</code> қайта келген пайдаланушы үшін <code>1</code>, қайта келмеген үшін <code>0</code> болуы керек.</li>
+          <li><code>Weekend</code> пайдаланушы демалыс күні кірсе <code>1</code>, әйтпесе <code>0</code> болуы керек.</li>
+          <li><code>labels</code> мәндері пайдаланушы сатып алса бүтін <code>1</code>, әйтпесе <code>0</code> болуы керек.</li>
+          <li>Мысалы, бірінші дәлел тізімі <code>[0, 0.0, 0, 0.0, 1, 0.0, 0.2, 0.2, 0.0, 0.0, 1, 1, 1, 1, 1, 1, 0]</code>, ал бірінші белгі <code>0</code> болуы керек.</li>
+        </ul>
+        <p><code>train_model</code> функциясы дәлелдер тізімі мен белгілер тізімін қабылдап, сол деректермен үйретілген <code>scikit-learn</code> ең жақын көрші жіктеуішін (<code>k = 1</code> болатын k ең жақын көрші жіктеуішін) қайтаруы керек.</p>
+        <ul>
+          <li>Біз сіз үшін <code>from sklearn.neighbors import KNeighborsClassifier</code> импортын жасап қойдық. Осы функцияда <code>KNeighborsClassifier</code> қолданасыз.</li>
+        </ul>
+        <p><code>evaluate</code> функциясы <code>labels</code> тізімін (тест жиынындағы пайдаланушылардың шын белгілері) және <code>predictions</code> тізімін (жіктеуіш болжаған белгілер) қабылдап, екі нақты сан <code>(sensitivity, specificity)</code> қайтаруы керек.</p>
+        <ul>
+          <li><code>sensitivity</code> - 0-ден 1-ге дейінгі нақты сан, «шын оң көрсеткіш»: оң белгілердің дұрыс анықталған үлесі.</li>
+          <li><code>specificity</code> - 0-ден 1-ге дейінгі нақты сан, «шын теріс көрсеткіш»: теріс белгілердің дұрыс анықталған үлесі.</li>
+          <li>Әр белгі оң нәтиже үшін (сатып алған пайдаланушылар) <code>1</code>, теріс нәтиже үшін (сатып алмағандар) <code>0</code> деп есептеуге болады.</li>
+          <li>Шын белгілер тізімінде кемінде бір оң және кемінде бір теріс белгі бар деп есептеуге болады.</li>
+        </ul>
+        <p><code>shopping.py</code>-да ерекше талап етілген функциялардан басқа ештеңені өзгертпеңіз, бірақ қосымша функциялар жазуға және/не басқа Python стандартты кітапхана модульдерін импорттауға болады. Сонымен қатар <code>numpy</code> не <code>pandas</code> не <code>scikit-learn</code> ішінен кез келген нәрсені импорттауға болады (таныс болсаңыз), бірақ басқа үшінші тарап Python модульдерін қолданбаңыз. <code>shopping.csv</code> файлын өзгертпеңіз.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>CSV файлынан деректерді қалай жүктеуге болатыны туралы мысалдар мен ақпаратты Python-ның <a href="https://docs.python.org/3/library/csv.html" target="_blank" rel="noopener">CSV құжаттамасынан</a> қараңыз. Ай атауларын сандарға айналдыру үшін <code>["Jan", "Feb", ...]</code> тізімін жасап, <code>index</code> қолдануға болады (желтоқсанның қысқартылған атауына назар аударыңыз). Сезімталдық пен ерекшелікті есептеу үшін шын оң және шын теріс жауаптарды санап, оларды сәйкесінше барлық оң және барлық теріс белгілер санына бөліңіз.</p></div></details>
+        <div class="callout note">
+          <span class="callout-title">Бұл тапсырма компьютеріңізде орындалады</span>
+          <p>Shopping тапсырмасы <code>scikit-learn</code> кітапханасын және <code>shopping.csv</code> файлын қажет етеді: браузердегі Python ортасында олар жоқ, сондықтан бұл тапсырмаға сайтта автотексеруші жоқ. Дистрибутивті жүктеп алып, өз компьютеріңізде (не cs50.dev-те) орындаңыз және төмендегі ресми <code>check50</code> командасымен тексеріңіз. Жеке <code>evaluate</code> функциясын (таза Python) сайттың «Сынақ алаңында» тексеруге болады.</p>
+        </div>
+        <p><strong>Тестілеу.</strong> Қаласаңыз, <code>check50</code>-ді орнатып, мына команданы орындаңыз (міндетті емес: тапсырған кезде дәл сол тесттер серверде орындалады). Код стилін <code>style50</code>-пен тексеріңіз:</p>
+<pre class="terminal"><code class="language-plaintext">$ check50 ai50/projects/2024/x/shopping
+$ style50 shopping.py</code></pre>
+        <p>Ескерту: стандартты кітапханадан және жоғарыда рұқсат етілгеннен басқа модульдерді импорттамаңыз, әйтпесе <code>check50</code> жұмыс істемейді және <code>submit50</code> тапсырманы бағалай алмайды. Дистрибутив кодын рұқсатсыз өзгертпеңіз.</p>
+        <p><strong>Тапсыру.</strong> Командалық жолда: <code>submit50 ai50/projects/2024/x/shopping</code>. Не болмаса Git арқылы жұмысыңызды <code>https://github.com/me50/USERNAME.git</code> адресіне <code>ai50/projects/2024/x/shopping</code> тармағына жіберіңіз.</p>
+        <p>Деректер жиыны: Sakar, C.O., Polat, S.O., Katircioglu, M. және т.б., Neural Comput &amp; Applic (2018).</p>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="ai4-shopping">
+            <li><input type="checkbox"> <span><code>load_data</code> 17 элементті <code>evidence</code> тізімін және <code>1</code>/<code>0</code> белгілерін, көрсетілген түрлермен (<code>int</code>/<code>float</code>), <code>Month</code> 0-11 деп қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>train_model</code> <code>k = 1</code> болатын <code>KNeighborsClassifier</code> қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>evaluate</code> <code>(sensitivity, specificity)</code> қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>check50 ai50/projects/2024/x/shopping</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="pset-nim">Nim (Nim ойыны)</h3></div>
+        <p>Күшейтілген оқыту арқылы Nim ойынын өзі үйренетін жасанды интеллект жазыңыз.</p>
+<pre class="terminal"><code class="language-plaintext">$ python play.py
+Playing training game 1
+Playing training game 2
+Playing training game 3
+...
+Playing training game 9999
+Playing training game 10000
+Done training
+
+Piles:
+Pile 0: 1
+Pile 1: 3
+Pile 2: 5
+Pile 3: 7
+
+AI's Turn
+AI chose to take 1 from pile 2.</code></pre>
+        <h4>Фон</h4>
+        <p>Nim ойынында біз бірнеше үйіндіден бастаймыз, әр үйіндіде бірнеше зат бар. Ойыншылар кезекпен жүреді: өз кезегінде ойыншы бос емес кез келген бір үйіндіден теріс емес кез келген санда зат алады. <strong>Соңғы затты алған жеңіледі.</strong></p>
+        <p>Бұл ойынның қарапайым стратегиясын елестетуге болады: егер бір ғана үйінді қалып, онда үш зат болса және кезек сізде болса, ең жақсысы - екі затты алып, қарсыласыңызға үшінші, соңғы затты алуды қалдыру. Бірақ үйінділер көп болса, стратегия әлдеқайда күрделенеді. Бұл тапсырмада күшейтілген оқыту арқылы осы ойынның стратегиясын үйрететін жасанды интеллект құрамыз. Өзімен-өзі көп рет ойнап, тәжірибеден үйрене отырып, ол ақыр соңында қандай әрекеттерді жасау керегін және қайсысынан аулақ болу керегін біледі.</p>
+        <p>Атап айтқанда, біз осы жобада Q-оқытуды қолданамыз. Q-оқытуда әр <code>(state, action)</code> жұбы үшін сыйақы мәнін (санды) үйренуге тырысатынымызды еске түсіріңіз. Ойында жеңілтетін әрекеттің сыйақысы -1, қарсыласты жеңілтетін әрекеттікі 1, ал ойынды жалғастыратын әрекеттің лезде берілетін сыйақысы 0, бірақ оның болашақ сыйақысы да болады.</p>
+        <p>Күйлер мен әрекеттерді Python бағдарламасында қалай көрсетеміз? Nim ойынының «күйі» - барлық үйінділердің ағымдағы өлшемі. Мысалы, <code>[1, 1, 3, 5]</code> күйі 0-үйіндіде 1 зат, 1-үйіндіде 1 зат, 2-үйіндіде 3 зат, 3-үйіндіде 5 зат бар екенін білдіреді. Nim-дегі «әрекет» - <code>(i, j)</code> бүтін сандар жұбы: <code>i</code>-үйіндіден <code>j</code> зат алу. Сонымен <code>(3, 5)</code> әрекеті «3-үйіндіден 5 зат алу» дегенді білдіреді. Бұл әрекетті <code>[1, 1, 3, 5]</code> күйіне қолдансақ, жаңа күй <code>[1, 1, 3, 0]</code> болады.</p>
+        <p>Q-оқытудың негізгі формуласын еске түсіріңіз. <code>s</code> күйінде болып, <code>a</code> әрекетін жасаған сайын <code>Q(s, a)</code> Q-мәнін мынаған сәйкес жаңартуға болады:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">Q(s, a) &lt;- Q(s, a) + alpha * (new value estimate - old value estimate)</code></pre>
+        <p>Мұндағы <code>alpha</code> - оқу жылдамдығы (жаңа ақпаратты бұрыннан бар ақпаратпен салыстырғанда қаншалықты бағалаймыз). <code>new value estimate</code> - ағымдағы әрекет үшін алынған сыйақы мен ойыншы алатын барлық болашақ сыйақының бағасының қосындысы. <code>old value estimate</code> - <code>Q(s, a)</code>-ның бұрыннан бар мәні. Бұл формуланы жасанды интеллект жаңа әрекет жасаған сайын қолдану арқылы ол уақыт өте келе қай күйде қай әрекет жақсы екенін үйрене бастайды.</p>
+        <h4>Бастау</h4>
+        <ul>
+          <li>Дистрибутив кодын <a href="https://cdn.cs50.net/ai/2023/x/projects/4/nim.zip" target="_blank" rel="noopener">cdn.cs50.net/ai/2023/x/projects/4/nim.zip</a> адресінен жүктеп алып, ашыңыз.</li>
+        </ul>
+        <h4>Түсіну</h4>
+        <p>Алдымен <code>nim.py</code> файлын ашыңыз. Онда екі класс (<code>Nim</code> және <code>NimAI</code>) және екі функция (<code>train</code> және <code>play</code>) анықталған. <code>Nim</code>, <code>train</code> және <code>play</code> сіз үшін жазылып қойған, ал <code>NimAI</code>-да бірнеше функцияны сіз жазуыңыз керек.</p>
+        <p><code>Nim</code> класына қараңыз: ол Nim ойынының қалай ойналатынын анықтайды. <code>__init__</code> функциясында әр Nim ойыны үйінділер тізімін, ағымдағы ойыншыны (0 не 1) және ойын жеңімпазын (бар болса) бақылап отыруы керегіне назар аударыңыз. <code>available_actions</code> функциясы күйдегі барлық қолжетімді әрекеттер жиынын қайтарады. Мысалы, <code>Nim.available_actions([2, 1, 0, 0])</code> <code>{(0, 1), (1, 1), (0, 2)}</code> жиынын қайтарады, себебі үш мүмкін әрекет бар: 0-үйіндіден 1 не 2 зат алу, не 1-үйіндіден 1 зат алу.</p>
+        <p>Қалған функциялар ойынды анықтайды: <code>other_player</code> берілген ойыншының қарсыласын анықтайды, <code>switch_player</code> ағымдағы ойыншыны қарсыласына ауыстырады, ал <code>move</code> әрекетті ағымдағы күйге қолданып, ағымдағы ойыншыны қарсыласына ауыстырады.</p>
+        <p>Енді <code>NimAI</code> класына қараңыз: ол Nim ойнауды үйренетін жасанды интеллектімізді анықтайды. <code>__init__</code> функциясында біз бос <code>self.q</code> сөздігінен бастайтынымызға назар аударыңыз. <code>self.q</code> сөздігі жасанды интеллектіміз үйренген барлық ағымдағы Q-мәндерін бақылап, <code>(state, action)</code> жұптарын сандық мәнге сәйкестендіреді. Іске асыру ерекшелігі: күйді әдетте тізім ретінде көрсететініміз болса да, тізімдерді Python сөздігінің кілті ретінде қолдануға болмайтындықтан, <code>self.q</code>-да мән алғанда не орнатқанда күйдің кортеж нұсқасын қолданамыз.</p>
+        <p>Мысалы, <code>[0, 0, 0, 2]</code> күйі мен <code>(3, 2)</code> әрекетінің Q-мәнін <code>-1</code> етіп орнатқымыз келсе, мынаған ұқсас жазамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">self.q[(0, 0, 0, 2), (3, 2)] = -1</code></pre>
+        <p>Сонымен қатар әр <code>NimAI</code> объектісінің сәйкесінше Q-оқыту мен әрекет таңдау үшін қолданылатын <code>alpha</code> және <code>epsilon</code> мәндері бар екенін ескеріңіз.</p>
+        <p><code>update</code> функциясы сіз үшін жазылған. Ол кіріс ретінде <code>old_state</code> күйін, сол күйде жасалған <code>action</code> әрекетін, әрекеттен кейінгі жаңа <code>new_state</code> күйін және сол әрекет үшін лезде берілетін <code>reward</code> сыйақысын алады. Содан кейін функция Q-оқытуды жүргізеді: алдымен күй мен әрекеттің ағымдағы Q-мәнін алады (<code>get_q_value</code> шақыру арқылы), ең жақсы мүмкін болашақ сыйақыны анықтайды (<code>best_future_reward</code> шақыру арқылы), сосын осы екі мәнді қолданып Q-мәнді жаңартады (<code>update_q_value</code> арқылы). Осы үш функцияны сіз жазасыз.</p>
+        <p>Ең соңғы жазылмаған функция - <code>choose_action</code>: ол берілген күйде қандай әрекет таңдау керегін анықтайды (не ашкөздікпен, не ε-ашкөз алгоритммен).</p>
+        <p><code>Nim</code> және <code>NimAI</code> кластары <code>train</code> және <code>play</code> функцияларында қолданылады. <code>train</code> функциясы өзіне қарсы <code>n</code> модельдік ойын ойнатып, жасанды интеллектті үйретеді де, толық үйретілген жасанды интеллектті қайтарады. <code>play</code> функциясы үйретілген жасанды интеллектті кіріс ретінде алып, адам ойыншыға онымен Nim ойнауға мүмкіндік береді.</p>
+        <h4>Талаптар</h4>
+        <p><code>nim.py</code> ішінде <code>get_q_value</code>, <code>update_q_value</code>, <code>best_future_reward</code> және <code>choose_action</code> функцияларын аяқтаңыз. Осы функциялардың әрқайсысында <code>state</code> кіріс болса, оны бүтін сандар тізімі деп, <code>action</code> кіріс болса, оны <code>(i, j)</code> бүтін сандар жұбы (<code>i</code> үйіндісі мен <code>j</code> зат саны) деп есептей аласыз.</p>
+        <p><code>get_q_value</code> функциясы кіріс ретінде <code>state</code> мен <code>action</code> алып, сәйкес Q-мәнін қайтаруы керек.</p>
+        <ul>
+          <li>Q-мәндері <code>self.q</code> сөздігінде сақталатынын еске түсіріңіз. <code>self.q</code> кілттері <code>(state, action)</code> жұптары түрінде болуы керек, мұндағы <code>state</code> - барлық үйінді өлшемдерінің ретімен алынған кортежі, ал <code>action</code> - үйінді мен санды көрсететін <code>(i, j)</code> кортежі.</li>
+          <li>Егер <code>self.q</code> ішінде күй/әрекет жұбы үшін Q-мәні болмаса, функция <code>0</code> қайтаруы керек.</li>
+        </ul>
+        <p><code>update_q_value</code> функциясы <code>state</code> күйін, <code>action</code> әрекетін, бұрыннан бар <code>old_q</code> Q-мәнін, ағымдағы <code>reward</code> сыйақысын және болашақ сыйақылар бағасы <code>future_rewards</code> мәнін алып, күй/әрекет жұбының Q-мәнін Q-оқыту формуласына сәйкес жаңартады.</p>
+        <ul>
+          <li>Q-оқыту формуласы: <code>Q(s, a) &lt;- old value estimate + alpha * (new value estimate - old value estimate)</code></li>
+          <li><code>alpha</code> - <code>NimAI</code> объектісіне байланысты оқу жылдамдығы.</li>
+          <li>Ескі мән бағасы - күй/әрекет жұбының бұрыннан бар Q-мәні. Жаңа мән бағасы - ағымдағы сыйақы мен болашақ сыйақы бағасының қосындысы болуы керек.</li>
+        </ul>
+        <p><code>best_future_reward</code> функциясы <code>state</code> кірісін алып, <code>self.q</code> деректері бойынша сол күйдегі кез келген қолжетімді әрекет үшін ең жақсы мүмкін сыйақыны қайтарады.</p>
+        <ul>
+          <li>Берілген күй үшін <code>self.q</code>-да әлі жоқ кез келген әрекеттің Q-мәні <code>0</code> деп есептеңіз.</li>
+          <li>Күйде қолжетімді әрекет болмаса, <code>0</code> қайтарыңыз.</li>
+        </ul>
+        <p><code>choose_action</code> функциясы <code>state</code> кірісін (және қаласаңыз, ε-ашкөз алгоритмді қолдану керек пе дегенді көрсететін <code>epsilon</code> жалауын) алып, сол күйдегі қолжетімді әрекетті қайтарады.</p>
+        <ul>
+          <li><code>epsilon</code> <code>False</code> болса, функция ашкөз түрде жүріп, сол күйдегі ең жақсы мүмкін әрекетті (Q-мәні ең жоғары әрекетті, Q-мәні белгісіз болса 0 деп алып) қайтаруы керек.</li>
+          <li><code>epsilon</code> <code>True</code> болса, функция ε-ашкөз алгоритмге сәйкес: <code>self.epsilon</code> ықтималдығымен кездейсоқ қолжетімді әрекетті, әйтпесе қолжетімді ең жақсы әрекетті таңдауы керек.</li>
+          <li>Бірнеше әрекеттің Q-мәні бірдей болса, олардың кез келгені қабылданады.</li>
+        </ul>
+        <p><code>nim.py</code>-да талап етілген функциялардан басқа ештеңені өзгертпеңіз, бірақ қосымша функциялар жазуға және/не басқа Python стандартты кітапхана модульдерін импорттауға болады. Сондай-ақ таныс болсаңыз, <code>numpy</code> не <code>pandas</code> импорттауға болады, бірақ басқа үшінші тарап Python модульдерін қолданбаңыз. Өзіңіз сынау үшін <code>play.py</code> файлын өзгертуге болады.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Егер <code>lst</code> тізім болса, <code>tuple(lst)</code> арқылы оны кортежге айналдыруға болады. <code>choose_action</code> ішінде қолжетімді әрекеттерді <code>Nim.available_actions(state)</code> арқылы аласыз; ең жоғарыны табу үшін <code>get_q_value</code>-ны қолданыңыз (ол белгісіз жұп үшін 0 қайтарады, сондықтан жеке тексеру қажет емес). <code>best_future_reward</code>-та тек <code>self.q</code>-дағы бар жазбаларды қарап қоймаңыз: белгісіз әрекеттің бағасы 0, ал ол теріс бағалардан жақсы болуы мүмкін.</p></div></details>
+        <div class="callout note">
+          <span class="callout-title">Браузердегі автотексеруші туралы</span>
+          <p>Nim - таза Python, сондықтан <code>NimAI</code> әдістерін тікелей шақырып тексереміз. Ресми <code>nim.py</code>-дағы <code>Nim</code> класы мен <code>train</code> функциясы төмендегі қаңқаға дайын қосылған (<code>train</code> мұнда жеңілдетілген: <code>train(n, initial=[1, 2])</code>, бастапқы үйінділерді өзіміз береміз, сонда браузерде жылдам жұмыс істейді). Сіз тек төрт әдісті (<code>get_q_value</code>, <code>update_q_value</code>, <code>best_future_reward</code>, <code>choose_action</code>) толтырасыз, сосын нағыз <code>nim.py</code>-ға дәл сол кодты көшіріп, <code>python play.py</code> арқылы 10 000 ойында үйретіп көріңіз. Бұл сайттың өз жаттығуы, ресми <code>check50</code> емес.</p>
+        </div>
+        <div class="autograder" data-check="py-nim" data-src="ai/checks/week-4.js"></div>
+        <p><strong>Тестілеу.</strong> Компьютеріңізде ресми тексеруді орындаңыз және стильді тексеріңіз:</p>
+<pre class="terminal"><code class="language-plaintext">$ check50 ai50/projects/2024/x/nim
+$ style50 nim.py</code></pre>
+        <p>Ескерту: стандартты кітапханадан және жоғарыда рұқсат етілгеннен басқа модульдерді импорттамаңыз, әйтпесе <code>check50</code> жұмыс істемейді және <code>submit50</code> тапсырманы бағалай алмайды.</p>
+        <p><strong>Тапсыру.</strong> <code>submit50 ai50/projects/2024/x/nim</code>. Не болмаса Git арқылы жұмысыңызды <code>https://github.com/me50/USERNAME.git</code> адресіне <code>ai50/projects/2024/x/nim</code> тармағына жіберіңіз. Git-пен тапсырсаңыз, тапсырма талабында көрсетілмеген файлдар мен қалталарды қоспаңыз (бүкіл қалтаңызды жүктемеңіз).</p>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="ai4-nim">
+            <li><input type="checkbox"> <span><code>get_q_value</code> кілті <code>(tuple(state), action)</code> болатын мәнді қайтарады, жазба болмаса <code>0</code>.</span></li>
+            <li><input type="checkbox"> <span><code>update_q_value</code> Q-оқыту формуласын (<code>old + alpha * (reward + future - old)</code>) қолданады.</span></li>
+            <li><input type="checkbox"> <span><code>best_future_reward</code> белгісіз әрекеттерді 0 деп санайды және әрекет жоқ күйде 0 қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>choose_action</code> <code>epsilon=False</code> болғанда ашкөз, <code>epsilon=True</code> болғанда ε-ашкөз.</span></li>
+            <li><input type="checkbox"> <span><code>check50 ai50/projects/2024/x/nim</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-3.html"><small>Алдыңғы</small>← 3-апта: Оңтайландыру</a>
+        <a class="next" href="week-5.html"><small>Келесі</small>5-апта: Нейрон желілер →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 AI (CS50's Introduction to Artificial Intelligence with Python, Гарвард университеті, David J. Malan, Brian Yu) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

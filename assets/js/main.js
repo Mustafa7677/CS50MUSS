@@ -975,6 +975,7 @@
     py.setStdout({ batched: (s) => (buf += s + "\n") });
     py.setStderr({ batched: (s) => (buf += s + "\n") });
     try {
+      if (/^\s*(import|from)\s+sqlite3\b/m.test(code)) { try { await py.loadPackage("sqlite3"); } catch (_) {} }
       await py.runPythonAsync(code);
     } catch (e) {
       e.partial = buf;
@@ -1292,11 +1293,11 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
         const onMsg = (e) => { if (e.source !== f.contentWindow || !e.data || e.data.tag !== tag) return; out.textContent += e.data.line + "\n"; };
         window.addEventListener("message", onMsg);
         setTimeout(() => { window.removeEventListener("message", onMsg); f.remove(); if (!out.textContent) out.textContent = "(шығыс жоқ)"; }, 2500);
-        f.srcdoc = `<script>const __s=(l)=>parent.postMessage({tag:${JSON.stringify(tag)},line:l},"*");
+        f.srcdoc = `<!doctype html><meta charset="utf-8"><body><script>const __s=(l)=>parent.postMessage({tag:${JSON.stringify(tag)},line:l},"*");
 const __f=(a)=>a.map(x=>typeof x==="string"?x:(()=>{try{return JSON.stringify(x)}catch(e){return String(x)}})()).join(" ");
 console.log=(...a)=>__s(__f(a));console.error=(...a)=>__s("Қате: "+__f(a));
 addEventListener("error",e=>__s("Қате: "+e.message));
-try{${code.replace(/<\/script/gi, "<\\/script")}}catch(e){__s("Қате: "+e.message)}<\/script>`;
+try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e.message)}<\/script>`;
         document.body.appendChild(f);
         mark("web");
       });

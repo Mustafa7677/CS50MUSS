@@ -1,0 +1,1571 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 Web 6-апта: Пайдаланушы интерфейстері - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 Web 6-апта: Пайдаланушы интерфейстері - CS50 қазақша">
+  <meta property="og:description" content="CS50 Web 6-апта: бір беттік қосымшалар, History API, айналдыру, шексіз айналдыру, CSS және JavaScript анимациясы, React (JSX, компоненттер, күй, хуктар).">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/web/lectures/week-6.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 Web 6-апта: бір беттік қосымшалар, History API, айналдыру, шексіз айналдыру, CSS және JavaScript анимациясы, React (JSX, компоненттер, күй, хуктар).">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#d4580c" data-n="6">
+        <div class="num">6-апта</div>
+        <h1>Пайдаланушы интерфейстері</h1>
+        <p>Сайт тек жұмыс істеп қана қоймай, пайдаланушыға ыңғайлы болуы керек: бет қайта жүктелмей ауысу, шексіз айналдыру, анимациялар және React.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/web/notes/6/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+                  <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Алдыңғы аптада сайтымызға JavaScript қостық. Бүгін соны «адам жайлы» ету жолдарын қарастырамыз: беттер арасында бет қайта жүктелмей ауысу, төмен айналдырғанда жаңа мазмұн келіп тұру, жылпылдаған анимациялар және осының бәрін ықшамдайтын <strong>React</strong>. Мысалдардың көбін бетте-ақ «▶» батырмасымен іске қосып көре аласыз. Серверді қажет ететін Django мысалдарын біз өз бетімізде «жалған сервермен» (қарапайым JavaScript функциясымен) ауыстырып көрсетеміз, ал нағыз Django коды өз күйінде жазылған.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="introduction">Кіріспе</h2>
+      <p>Қысқаша есімізге түсіріп алайық. Біз HTML мен CSS арқылы қарапайым беттерді жасай білеміз. Git пен GitHub арқылы кодтағы өзгерістерді қадағалап, басқалармен бірге жұмыс істейміз. Python тілімен танысып, Django арқылы веб-қосымшалар жаздық, Django модельдерімен мәліметті сайтта сақтауды үйрендік. Ең соңында JavaScript келді де, беттерімізді интерактивті етті.</p>
+      <p>Бүгін біз <strong>пайдаланушы интерфейстерінің</strong> (<span class="term-en">user interface</span>) жалпы қабылданған тәсілдерін қарастырамыз: сайтты пайдаланушыға мейлінше ыңғайлы ету үшін JavaScript пен CSS-ті қалай қолдануға болады.</p>
+
+      <h2 id="user-interfaces">Пайдаланушы интерфейстері</h2>
+      <p><strong>Пайдаланушы интерфейсі</strong> дегеніміз - сайтқа кірген адам бетпен қалай әрекеттесетіні. Біз, веб-әзірлеушілер, осы әрекеттесуді мүмкіндігінше жағымды қылуымыз керек. Дүкенге кіргенде бәрі қолыңның астында тұрса, ештеңе іздеп қиналмасаң, сол дүкенге қайта келесің. Сайт та солай. Ыңғайлы болудың бірнеше әдісі бар, бүгін соның ең танымалдарын көреміз.</p>
+
+      <h2 id="single-page-applications">Бір беттік қосымшалар</h2>
+      <p>Бұрын көп беттері бар сайт жасағымыз келсе, оны Django-дағы әртүрлі <em>маршруттар</em> (route) арқылы жасадық: әр маршрут - жеке бет. Енді бізде басқа мүмкіндік бар: <strong>бір ғана бетті</strong> жүктеп алып, одан әрі DOM-ды JavaScript-пен өзгерту. Мұндай сайт <strong>бір беттік қосымша</strong> (<span class="term-en">Single Page Application, SPA</span>) деп аталады.</p>
+      <p>Мұның басты артықшылығы неде? Бетте <em>шынымен өзгеретін</em> бөлікті ғана жаңартамыз. Мысалы, сайттың жоғарғы навигация жолағы бір беттен екінші бетке өткенде өзгермейді. Сонда оны әр жолы қайтадан салып отырудың қажеті не? Мектептегі сабақ кестесіндей: бөлме де, парталар да сол күйінде, ауысатыны тек тақтадағы жазу.</p>
+
+      <svg viewBox="0 0 640 210" role="img" aria-label="Көп беттік сайтта әр ауысуда бүкіл бет жаңарады, бір беттік қосымшада тек мазмұн бөлігі жаңарады" style="width:100%;max-width:640px;height:auto;display:block;margin:1rem auto;font-family:inherit">
+        <text x="150" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Көп беттік сайт</text>
+        <rect x="30" y="35" width="240" height="150" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+        <rect x="42" y="47" width="216" height="30" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="150" y="67" text-anchor="middle" font-size="12" fill="currentColor">навигация (қайта салынады)</text>
+        <rect x="42" y="87" width="216" height="86" rx="6" fill="none" stroke="var(--accent)" stroke-width="2"/>
+        <text x="150" y="134" text-anchor="middle" font-size="12" fill="currentColor">мазмұн (қайта салынады)</text>
+        <text x="490" y="22" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">Бір беттік қосымша</text>
+        <rect x="370" y="35" width="240" height="150" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+        <rect x="382" y="47" width="216" height="30" rx="6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 4"/>
+        <text x="490" y="67" text-anchor="middle" font-size="12" fill="currentColor">навигация (өзгермейді)</text>
+        <rect x="382" y="87" width="216" height="86" rx="6" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="490" y="134" text-anchor="middle" font-size="12" font-weight="700" fill="var(--accent)">тек осы бөлік жаңарады</text>
+      </svg>
+
+      <h3 id="spa-switching">Беттерді JavaScript-пен ауыстыру</h3>
+      <p>Беттер арасындағы ауысуды JavaScript-те қалай бейнелеуге болатынын көрейік. Мынау - HTML:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Single Page&lt;/title&gt;
+        &lt;style&gt;
+            div {
+                display: none;
+            }
+        &lt;/style&gt;
+        &lt;script src=&quot;singlepage.js&quot;&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;button data-page=&quot;page1&quot;&gt;Page 1&lt;/button&gt;
+        &lt;button data-page=&quot;page2&quot;&gt;Page 2&lt;/button&gt;
+        &lt;button data-page=&quot;page3&quot;&gt;Page 3&lt;/button&gt;
+        &lt;div id=&quot;page1&quot;&gt;
+            &lt;h1&gt;This is page 1&lt;/h1&gt;
+        &lt;/div&gt;
+        &lt;div id=&quot;page2&quot;&gt;
+            &lt;h1&gt;This is page 2&lt;/h1&gt;
+        &lt;/div&gt;
+        &lt;div id=&quot;page3&quot;&gt;
+            &lt;h1&gt;This is page 3&lt;/h1&gt;
+        &lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>HTML-де үш түйме мен үш <code>div</code> бар екеніне назар аударыңыз. Қазір <code>div</code>-терде азғана мәтін ғана тұр, бірақ әрқайсысының ішінде сайттың бір толық бетінің мазмұны тұр деп елестетіңіз. CSS-те барлық <code>div</code>-ке <code>display: none</code> бердік, яғни әуелде бәрі жасырын. Енді түймелермен беттерді ауыстыратын JavaScript қосайық:</p>
+<pre data-lang="javascript"><code class="language-javascript">// Shows one page and hides the other two
+function showPage(page) {
+
+    // Hide all of the divs:
+    document.querySelectorAll('div').forEach(div =&gt; {
+        div.style.display = 'none';
+    });
+
+    // Show the div provided in the argument
+    document.querySelector(`#${page}`).style.display = 'block';
+}
+
+// Wait for page to loaded:
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Select all buttons
+    document.querySelectorAll('button').forEach(button =&gt; {
+
+        // When a button is clicked, switch to that page
+        button.onclick = function() {
+            showPage(this.dataset.page);
+        }
+    })
+});</code></pre>
+      <p>Логика қарапайым: <code>showPage</code> алдымен барлық <code>div</code>-ті жасырады, сосын сұралған біреуін ғана көрсетеді. Түймелердің <code>data-page</code> атрибуты қай <code>div</code>-ті ашу керегін айтады. Екеуін біріктіріп, төменде бір бетке жинадық (скрипт файлын бөлек жасамай, тікелей ішіне қойдық). Түймелерді басып көріңіз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Single Page&lt;/title&gt;
+        &lt;style&gt;
+            div {
+                display: none;
+            }
+        &lt;/style&gt;
+        &lt;script&gt;
+            function showPage(page) {
+                document.querySelectorAll('div').forEach(div =&gt; {
+                    div.style.display = 'none';
+                });
+                document.querySelector(`#${page}`).style.display = 'block';
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('button').forEach(button =&gt; {
+                    button.onclick = function() {
+                        showPage(this.dataset.page);
+                    }
+                })
+            });
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;button data-page=&quot;page1&quot;&gt;Page 1&lt;/button&gt;
+        &lt;button data-page=&quot;page2&quot;&gt;Page 2&lt;/button&gt;
+        &lt;button data-page=&quot;page3&quot;&gt;Page 3&lt;/button&gt;
+        &lt;div id=&quot;page1&quot;&gt;
+            &lt;h1&gt;This is page 1&lt;/h1&gt;
+        &lt;/div&gt;
+        &lt;div id=&quot;page2&quot;&gt;
+            &lt;h1&gt;This is page 2&lt;/h1&gt;
+        &lt;/div&gt;
+        &lt;div id=&quot;page3&quot;&gt;
+            &lt;h1&gt;This is page 3&lt;/h1&gt;
+        &lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <h3 id="spa-server">Мазмұнды серверден алу</h3>
+      <p>Бірақ көп жағдайда сайтқа алғаш кіргенде бүкіл беттердің мазмұнын бірден жүктеу тиімсіз. Жаңалықтар сайтын елестетіңіз: ол ашылғанда сайттағы бар мақаланы жүктей берсе, бет мәңгі жүктелер еді. Сондықтан жаңа мәліметті керек кезде <strong>серверден</strong> сұраймыз. Бұл өткен аптадағы валюта бағамын жүктеуге ұқсас тәсіл. Бұл жолы Django-ны қолданып, бір беттік қосымшамызбен ақпарат алмасуды көрейік. Қарапайым Django қосымшасының <code>urls.py</code> файлында екі URL үлгісі бар:</p>
+<pre data-lang="python" data-norun><code class="language-python">urlpatterns = [
+    path(&quot;&quot;, views.index, name=&quot;index&quot;),
+    path(&quot;sections/&lt;int:num&gt;&quot;, views.section, name=&quot;section&quot;)
+]</code></pre>
+      <p>Ал <code>views.py</code>-да оларға сәйкес екі маршрут бар. <code>section</code> маршруты бүтін санды қабылдап, сол санға байланысты мәтіндік жолды HTTP жауабы ретінде қайтарады:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.http import Http404, HttpResponse
+from django.shortcuts import render
+
+# Create your views here.
+def index(request):
+    return render(request, &quot;singlepage/index.html&quot;)
+
+# The texts are much longer in reality, but have
+# been shortened here to save space
+texts = [&quot;Text 1&quot;, &quot;Text 2&quot;, &quot;Text 3&quot;]
+
+def section(request, num):
+    if 1 &lt;= num &lt;= 3:
+        return HttpResponse(texts[num - 1])
+    else:
+        raise Http404(&quot;No such section&quot;)</code></pre>
+      <p>Енді <code>index.html</code> файлында өткен лекцияда үйренген AJAX-ты қолданамыз: серверден белгілі бір бөлімнің мәтінін сұрап алып, экранға шығарамыз:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Single Page&lt;/title&gt;
+        &lt;style&gt;
+        &lt;/style&gt;
+        &lt;script&gt;
+
+            // Shows given section
+            function showSection(section) {
+                
+                // Find section text from server
+                fetch(`/sections/${section}`)
+                .then(response =&gt; response.text())
+                .then(text =&gt; {
+                    // Log text and display on page
+                    console.log(text);
+                    document.querySelector('#content').innerHTML = text;
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Add button functionality
+                document.querySelectorAll('button').forEach(button =&gt; {
+                    button.onclick = function() {
+                        showSection(this.dataset.section);
+                    };
+                });
+            });
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello!&lt;/h1&gt;
+        &lt;button data-section=&quot;1&quot;&gt;Section 1&lt;/button&gt;
+        &lt;button data-section=&quot;2&quot;&gt;Section 2&lt;/button&gt;
+        &lt;button data-section=&quot;3&quot;&gt;Section 3&lt;/button&gt;
+        &lt;div id=&quot;content&quot;&gt;
+        &lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Міне, енді бүкіл HTML бетін қайта жүктемей-ақ, серверден жаңа мәліметті алатын сайт жасадық! Біздің сайтта Django жоқ, сондықтан <code>fetch</code> орнына «жалған сервер» қойдық: ол да <code>Promise</code> қайтарады, сондықтан <code>.then</code> тізбегі өзгеріссіз жұмыс істейді. Түймелерді басыңыз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Single Page&lt;/title&gt;
+        &lt;script&gt;
+            // Жалған сервер: шынайы fetch(`/sections/${n}`) орнына
+            const texts = [&quot;Text 1&quot;, &quot;Text 2&quot;, &quot;Text 3&quot;];
+            function fakeFetch(section) {
+                return Promise.resolve({ text: () =&gt; Promise.resolve(texts[section - 1]) });
+            }
+
+            function showSection(section) {
+                fakeFetch(section)
+                .then(response =&gt; response.text())
+                .then(text =&gt; {
+                    console.log(text);
+                    document.querySelector('#content').innerHTML = text;
+                });
+            }
+
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelectorAll('button').forEach(button =&gt; {
+                    button.onclick = function() {
+                        showSection(this.dataset.section);
+                    };
+                });
+            });
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello!&lt;/h1&gt;
+        &lt;button data-section=&quot;1&quot;&gt;Section 1&lt;/button&gt;
+        &lt;button data-section=&quot;2&quot;&gt;Section 2&lt;/button&gt;
+        &lt;button data-section=&quot;3&quot;&gt;Section 3&lt;/button&gt;
+        &lt;div id=&quot;content&quot;&gt;&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <h3 id="spa-history">Тарих API (History API)</h3>
+      <p>Бірақ біздің сайттың бір кемшілігі бар: URL енді аз ақпарат береді. Түпнұсқа бейнеде көрінетіндей, бөлімнен бөлімге көшкенде мекенжай жолағы өзгермей тұра береді. Қазір не болып жатқанын сіз де байқайсыз: Section 2-ні ашып, Артқа түймесін бассаңыз, бұрынғы бөлімге емес, мүлде басқа жерге кетіп қаласыз. Бұл мәселені <strong>JavaScript тарих API-мен</strong> (<span class="term-en">History API</span>) шешеміз. Ол браузердің тарихына ақпарат қосып, URL-ді қолмен жаңартуға мүмкіндік береді. Алдыңғы жоба сияқты Django жобасы бар делік, тек скриптті тарих API-ді қолданатындай өзгертеміз:</p>
+<pre data-lang="javascript"><code class="language-javascript">// When back arrow is clicked, show previous section
+window.onpopstate = function(event) {
+    console.log(event.state.section);
+    showSection(event.state.section);
+}
+
+function showSection(section) {
+    fetch(`/sections/${section}`)
+    .then(response =&gt; response.text())
+    .then(text =&gt; {
+        console.log(text);
+        document.querySelector('#content').innerHTML = text;
+    });
+
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('button').forEach(button =&gt; {
+        button.onclick = function() {
+            const section = this.dataset.section;
+
+            // Add the current state to the history
+            history.pushState({section: section}, &quot;&quot;, `section${section}`);
+            showSection(section);
+        };
+    });
+});</code></pre>
+      <p>Мұнда <code>history.pushState</code> функциясын қолдандық. Ол браузердің тарихына жаңа жазба қосады және үш аргумент алады:</p>
+      <ol>
+        <li>күйге байланысты кез келген мәлімет (біздегі <code>{section: section}</code>);</li>
+        <li>тақырып параметрі, оны көптеген браузерлер елемейді (сондықтан бос жол <code>""</code> береміз);</li>
+        <li>URL жолағында не көрінуі керек.</li>
+      </ol>
+      <p>Екінші өзгеріс - <code>onpopstate</code> параметрі. Ол пайдаланушы артқа көрсеткіні басқанда не істейтінімізді көрсетеді. Біздің жағдайда алдыңғы бөлімді қайта көрсетеміз: тарихқа жазылған <code>event.state.section</code> дәл сол үшін керек еді. Енді сайт әлдеқайда ыңғайлы.</p>
+      <div class="callout note">
+        <span class="callout-title">Сайттағы мысал туралы</span>
+        <p><code>history.pushState</code> нақты мекенжайға (сервер немесе <code>localhost</code>) байланысты жұмыс істейді. Біздің сайттағы қорғалған мысал терезесінде URL-ді өзгерту рұқсат етілмейді, сондықтан төмендегі мысал тарихтың жұмысын <em>модельдейді</em>: біз тарихты өзіміз массив ретінде ұстаймыз. Негізгі идея - әр басуда тарихқа күй қосу және «Артқа» басқанда соңғы күйге оралу - сол күйінде.</p>
+      </div>
+<pre data-lang="html" data-preview><code class="language-html">&lt;button data-section=&quot;1&quot;&gt;Section 1&lt;/button&gt;
+&lt;button data-section=&quot;2&quot;&gt;Section 2&lt;/button&gt;
+&lt;button data-section=&quot;3&quot;&gt;Section 3&lt;/button&gt;
+&lt;button id=&quot;back&quot;&gt;Артқа&lt;/button&gt;
+&lt;p&gt;Тарих: &lt;span id=&quot;stack&quot;&gt;&lt;/span&gt;&lt;/p&gt;
+&lt;div id=&quot;content&quot;&gt;&lt;/div&gt;
+
+&lt;script&gt;
+    const texts = [&quot;Text 1&quot;, &quot;Text 2&quot;, &quot;Text 3&quot;];
+    const historyStack = [];   // history.pushState орнына
+
+    function showSection(section) {
+        document.querySelector('#content').innerHTML = texts[section - 1];
+        document.querySelector('#stack').innerHTML = historyStack.map(s =&gt; 'section' + s).join(' &gt; ') || '(бос)';
+    }
+
+    document.querySelectorAll('button[data-section]').forEach(button =&gt; {
+        button.onclick = function() {
+            const section = this.dataset.section;
+            historyStack.push(section);      // ~ history.pushState({section: section}, &quot;&quot;, `section${section}`)
+            showSection(section);
+        };
+    });
+
+    // ~ window.onpopstate
+    document.querySelector('#back').onclick = () =&gt; {
+        historyStack.pop();
+        const previous = historyStack[historyStack.length - 1];
+        if (previous) showSection(previous);
+        else { document.querySelector('#content').innerHTML = ''; document.querySelector('#stack').innerHTML = '(бос)'; }
+    };
+&lt;/script&gt;</code></pre>
+
+      <h2 id="scroll">Айналдыру (Scroll)</h2>
+      <p>Браузер тарихын жаңарту үшін біз маңызды JavaScript объектісін қолдандық: <a href="https://www.w3schools.com/js/js_window.asp" target="_blank" rel="noopener"><code>window</code></a>. Сайтымызды көркемдеу үшін қолдануға болатын тағы бірнеше қасиеті бар:</p>
+      <ul>
+        <li><code>window.innerWidth</code>: терезенің ені (пиксельмен);</li>
+        <li><code>window.innerHeight</code>: терезенің биіктігі (пиксельмен).</li>
+      </ul>
+      <p>Бұл жерде «терезе» мен «құжатты» ажырату керек. <code>window</code> - қазір пайдаланушыға <em>көрініп тұрған</em> бөлік, ал <a href="https://www.w3schools.com/js/js_htmldom_document.asp" target="_blank" rel="noopener"><code>document</code></a> - бүкіл веб-бет. Құжат терезеден әлдеқайда ұзын болуы мүмкін, сондықтан біз жоғары-төмен айналдырамыз. Айналдыруды басқару үшін мына шамалар бар:</p>
+      <ul>
+        <li><code>window.scrollY</code>: беттің жоғарғы шетінен қанша пиксельге айналдырғанымыз;</li>
+        <li><code>document.body.offsetHeight</code>: бүкіл құжаттың биіктігі (пиксельмен).</li>
+      </ul>
+
+      <svg viewBox="0 0 640 260" role="img" aria-label="Құжат пен терезе: scrollY терезенің жоғарғы шетіне дейінгі қашықтық, innerHeight терезенің биіктігі, offsetHeight бүкіл құжаттың биіктігі" style="width:100%;max-width:640px;height:auto;display:block;margin:1rem auto;font-family:inherit">
+        <rect x="150" y="10" width="170" height="240" rx="6" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="235" y="30" text-anchor="middle" font-size="12" fill="currentColor">құжат</text>
+        <rect x="150" y="80" width="170" height="90" rx="6" fill="var(--accent)" fill-opacity="0.15" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="235" y="130" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent)">терезе</text>
+        <path d="M120 10 V80" stroke="currentColor" stroke-width="2" marker-end="url(#arr6)"/>
+        <text x="112" y="50" text-anchor="end" font-size="13" fill="currentColor">scrollY</text>
+        <path d="M345 80 V170" stroke="var(--accent)" stroke-width="2" marker-start="url(#arr6)" marker-end="url(#arr6)"/>
+        <text x="353" y="130" font-size="13" fill="var(--accent)">innerHeight</text>
+        <path d="M120 250 V10" stroke="currentColor" stroke-width="1.5" stroke-dasharray="4 4" marker-end="url(#arr6)"/>
+        <text x="112" y="200" text-anchor="end" font-size="13" fill="currentColor">offsetHeight</text>
+        <text x="112" y="217" text-anchor="end" font-size="11" fill="currentColor">(бүкіл құжат)</text>
+        <defs><marker id="arr6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+      </svg>
+
+      <p>Осы шамалармен пайдаланушы беттің <em>соңына</em> жеткенін білуге болады: <code>window.scrollY + window.innerHeight &gt;= document.body.offsetHeight</code>. Қалай ойлайсыз, неге дәл осылай? Жоғарыдан қанша айналдырдық (<code>scrollY</code>) және терезенің өзі қанша орын алады (<code>innerHeight</code>) - екеуін қосқанда, терезенің <em>төменгі</em> шеті құжаттың қай жерінде тұрғанын аламыз. Ол құжаттың биіктігіне жетсе (не асса), төменге жеттік.</p>
+      <p>Мысалы, мына бет төменгі шетке жеткенде фон түсін жасылға ауыстырады:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Scroll&lt;/title&gt;
+        &lt;script&gt;
+
+            // Event listener for scrolling
+            window.onscroll = () =&gt; {
+
+                // Check if we're at the bottom
+                if (window.innerHeight + window.scrollY &gt;= document.body.offsetHeight) {
+
+                    // Change color to green
+                    document.querySelector('body').style.background = 'green';
+                } else {
+
+                    // Change color to white
+                    document.querySelector('body').style.background = 'white';
+                }
+
+            };
+
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;p&gt;1&lt;/p&gt;
+        &lt;p&gt;2&lt;/p&gt;
+        &lt;!-- More paragraphs left out to save space --&gt;
+        &lt;p&gt;99&lt;/p&gt;
+        &lt;p&gt;100&lt;/p&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Түпнұсқада орын үнемдеу үшін аралық абзацтар қалдырылған. Төмендегі тірі нұсқада 100 абзацты цикл арқылы жасадық. Нәтиже терезесін төмен қарай айналдырыңыз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Scroll&lt;/title&gt;
+        &lt;script&gt;
+            window.onscroll = () =&gt; {
+                if (window.innerHeight + window.scrollY &gt;= document.body.offsetHeight) {
+                    document.querySelector('body').style.background = 'green';
+                } else {
+                    document.querySelector('body').style.background = 'white';
+                }
+            };
+
+            document.addEventListener('DOMContentLoaded', () =&gt; {
+                for (let i = 1; i &lt;= 100; i++) {
+                    const p = document.createElement('p');
+                    p.innerHTML = i;
+                    document.body.append(p);
+                }
+            });
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <h3 id="infinite-scroll">Шексіз айналдыру (Infinite Scroll)</h3>
+      <p>Төменге жеткенде фон түсін өзгерту онша пайдалы емес шығар. Бірақ беттің соңына жеткенімізді анықтау қабілеті бізге <strong>шексіз айналдыруды</strong> (<span class="term-en">infinite scroll</span>) жасауға мүмкіндік береді. Әлеуметтік желіні қарап көріңіз: бүкіл жазбаны бірден жүктемейді, алғашқы он жазбаны береді, ал төменге жеткенде келесі ондықты әкеледі. Осындай Django қосымшасына қарайық. <code>urls.py</code>-да екі жол бар:</p>
+<pre data-lang="python" data-norun><code class="language-python">urlpatterns = [
+    path(&quot;&quot;, views.index, name=&quot;index&quot;),
+    path(&quot;posts&quot;, views.posts, name=&quot;posts&quot;)
+]</code></pre>
+      <p>Ал <code>views.py</code>-да екі сәйкес көрініс:</p>
+<pre data-lang="python" data-norun><code class="language-python">import time
+
+from django.http import JsonResponse
+from django.shortcuts import render
+
+# Create your views here.
+def index(request):
+    return render(request, &quot;posts/index.html&quot;)
+
+def posts(request):
+
+    # Get start and end points
+    start = int(request.GET.get(&quot;start&quot;) or 0)
+    end = int(request.GET.get(&quot;end&quot;) or (start + 9))
+
+    # Generate list of posts
+    data = []
+    for i in range(start, end + 1):
+        data.append(f&quot;Post #{i}&quot;)
+
+    # Artificially delay speed of response
+    time.sleep(1)
+
+    # Return list of posts
+    return JsonResponse({
+        &quot;posts&quot;: data
+    })</code></pre>
+      <p><code>posts</code> көрінісі екі аргумент күтетінін байқаңыз: <code>start</code> (басталу) және <code>end</code> (аяқталу) нүктелері. Бұл көрініс арқылы біз өз <strong>API</strong>-мізді жасадық. Оны <code>localhost:8000/posts?start=10&amp;end=15</code> мекенжайына кіріп тексеруге болады, ол мынадай JSON қайтарады:</p>
+<pre data-lang="json"><code class="language-json">{
+    &quot;posts&quot;: [
+        &quot;Post #10&quot;,
+        &quot;Post #11&quot;, 
+        &quot;Post #12&quot;, 
+        &quot;Post #13&quot;, 
+        &quot;Post #14&quot;, 
+        &quot;Post #15&quot;
+    ]
+}</code></pre>
+      <p>Енді сайт жүктейтін <code>index.html</code> үлгісінде денеде бос қана <code>div</code> мен азғана стиль бар. Статикалық файлдарды бастапқыда жүктеп алып, сосын <code>static</code> қалтасындағы JavaScript файлына сілтеме жасағанымызды байқаңыз:</p>
+<pre data-lang="html"><code class="language-html">{% load static %}
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;My Webpage&lt;/title&gt;
+        &lt;style&gt;
+            .post {
+                background-color: #77dd11;
+                padding: 20px;
+                margin: 10px;
+            }
+
+            body {
+                padding-bottom: 50px;
+            }
+        &lt;/style&gt;
+        &lt;script scr=&quot;{% static 'posts/script.js' %}&quot;&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div id=&quot;posts&quot;&gt;
+        &lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <div class="callout warn">
+        <span class="callout-title">Түпнұсқадағы қате</span>
+        <p>Лекция конспектісінде <code>&lt;script scr=...&gt;</code> деп жазылған: бұл жазу қатесі. Дұрысы - <code>src</code>. Біз кодты түпнұсқадағыдай қалдырдық, бірақ нағыз жобаңызда <code>src</code> деп жазыңыз, әйтпесе скрипт жүктелмейді.</p>
+      </div>
+      <p>Енді JavaScript-пен пайдаланушы беттің соңына жеткенше күтіп, содан кейін API арқылы жаңа жазбаларды жүктейміз:</p>
+<pre data-lang="javascript"><code class="language-javascript">// Start with first post
+let counter = 1;
+
+// Load posts 20 at a time
+const quantity = 20;
+
+// When DOM loads, render the first 20 posts
+document.addEventListener('DOMContentLoaded', load);
+
+// If scrolled to bottom, load the next 20 posts
+window.onscroll = () =&gt; {
+    if (window.innerHeight + window.scrollY &gt;= document.body.offsetHeight) {
+        load();
+    }
+};
+
+// Load next set of posts
+function load() {
+
+    // Set start and end post numbers, and update counter
+    const start = counter;
+    const end = start + quantity - 1;
+    counter = end + 1;
+
+    // Get new posts and add posts
+    fetch(`/posts?start=${start}&amp;end=${end}`)
+    .then(response =&gt; response.json())
+    .then(data =&gt; {
+        data.posts.forEach(add_post);
+    })
+};
+
+// Add a new post with given contents to DOM
+function add_post(contents) {
+
+    // Create new post
+    const post = document.createElement('div');
+    post.className = 'post';
+    post.innerHTML = contents;
+
+    // Add post to DOM
+    document.querySelector('#posts').append(post);
+};</code></pre>
+      <p>Кодты ретімен оқып көрейік. <code>counter</code> - келесі жүктелетін жазбаның нөмірі (1-ден бастаймыз), ал <code>quantity</code> - бір жолғы жүктеу көлемі (20). Бет жүктелгенде <code>load</code> шақырылады. Ол <code>start</code> пен <code>end</code> нөмірлерін есептейді, <code>counter</code>-ді келесі жолға жылжытады да, API-ға сұраныс жібереді. Жауап келгенде әр жазба үшін <code>add_post</code> шақырылады: ол жаңа <code>div</code> жасап, оны <code>#posts</code> ішіне қосады. Ал <code>window.onscroll</code> төменге жеткен сайын <code>load</code>-ты қайта шақырады. Нәтижесінде шексіз айналдыру шықты!</p>
+      <p>Төмендегі тірі мысалда Django орнына «жалған API» бар: ол нағыз серверді еске түсіру үшін жарты секундтай кідіріп жауап береді. Айналдырып көріңіз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;My Webpage&lt;/title&gt;
+        &lt;style&gt;
+            .post {
+                background-color: #77dd11;
+                padding: 20px;
+                margin: 10px;
+            }
+
+            body {
+                padding-bottom: 50px;
+            }
+        &lt;/style&gt;
+        &lt;script&gt;
+            // Жалған API: шынайы fetch(`/posts?start=...&amp;end=...`) орнына
+            function fakePosts(start, end) {
+                const data = [];
+                for (let i = start; i &lt;= end; i++) data.push(`Post #${i}`);
+                return new Promise(resolve =&gt; setTimeout(() =&gt; resolve({ posts: data }), 500));
+            }
+
+            let counter = 1;
+            const quantity = 20;
+
+            document.addEventListener('DOMContentLoaded', load);
+
+            window.onscroll = () =&gt; {
+                if (window.innerHeight + window.scrollY &gt;= document.body.offsetHeight) {
+                    load();
+                }
+            };
+
+            function load() {
+                const start = counter;
+                const end = start + quantity - 1;
+                counter = end + 1;
+
+                fakePosts(start, end).then(data =&gt; {
+                    data.posts.forEach(add_post);
+                });
+            };
+
+            function add_post(contents) {
+                const post = document.createElement('div');
+                post.className = 'post';
+                post.innerHTML = contents;
+                document.querySelector('#posts').append(post);
+            };
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div id=&quot;posts&quot;&gt;
+        &lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <details class="think"><summary>Ойланып көріңіз: <code>counter = end + 1</code> жолын <code>fetch</code> шақырылғаннан кейін, <code>then</code> ішінде жазсақ не болады?</summary><div class="details-body"><p>Алдымен болжап көріңіз. Жауап (жарты секунд, не сервер баяу болса одан да ұзақ) келгенше пайдаланушы айналдыруды жалғастырады, ал <code>onscroll</code> бірнеше рет <code>load</code>-ты шақырады. Егер <code>counter</code> әлі жаңармаса, барлық шақыру бір ғана <code>start</code> нөмірін алып, бірдей жазбаларды қайталап жүктейді. Сондықтан есептегішті жауап келмей тұрып, <code>fetch</code>-ке дейін жаңартамыз.</p></div></details>
+
+      <h2 id="animation">Анимация</h2>
+      <p>Сайтымызды қызықтырақ етудің тағы бір жолы - анимация қосу. Тек стильмен шектелмей, CSS HTML элементтерін <strong>анимациялауды</strong> да оңай етеді.</p>
+      <h3 id="animation-keyframes">CSS анимациясы: @keyframes</h3>
+      <p>CSS-те анимация жасау үшін төмендегі пішімді қолданамыз. Анимацияның егжей-тегжейінде басталу мен аяқталу стильдері (<code>from</code> және <code>to</code>) не ұзақтықтың әр кезеңіндегі стильдер (<code>0%</code>-дан <code>100%</code>-ға дейін) болады. Мысалы:</p>
+<pre data-lang="css"><code class="language-css">@keyframes animation_name {
+    from {
+        /* Some styling for the start */
+    }
+
+    to {
+        /* Some styling for the end */
+    }
+}</code></pre>
+      <p>Не болмаса:</p>
+<pre data-lang="css"><code class="language-css">@keyframes animation_name {
+    0% {
+        /* Some styling for the start */
+    }
+
+    75% {
+        /* Some styling after 3/4 of animation */
+    }
+
+    100% {
+        /* Some styling for the end */
+    }
+}</code></pre>
+      <p>Анимацияны элементке қолдану үшін <code>animation-name</code> (аты), <code>animation-duration</code> (секундпен ұзақтығы) және <code>animation-fill-mode</code> (әдетте <code>forwards</code>) қосамыз. Мысалы, бетке кіргенде тақырып өсіп шығатын бет:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Animate&lt;/title&gt;
+        &lt;style&gt;
+            @keyframes grow {
+                from {
+                    font-size: 20px;
+                }
+                to {
+                    font-size: 100px;
+                }
+            }
+
+            h1 {
+                animation-name: grow;
+                animation-duration: 2s;
+                animation-fill-mode: forwards;
+            }
+        &lt;/style&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Welcome!&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Тек өлшемді емес, басқа нәрсені де өзгертуге болады. Міне, бірнеше жолды ауыстырып, тақырыптың орнын жылжытамыз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Animate&lt;/title&gt;
+        &lt;style&gt;
+            @keyframes move {
+                from {
+                    left: 0%;
+                }
+                to {
+                    left: 50%;
+                }
+            }
+
+            h1 {
+                position: relative;
+                animation-name: move;
+                animation-duration: 2s;
+                animation-fill-mode: forwards;
+            }
+        &lt;/style&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Welcome!&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Енді аралық кезеңдердің стильдерін де орнатайық. Кез келген пайыздық кезеңде стиль көрсетуге болады. Төмендегі мысалда тақырыпты солдан оңға, сосын қайтадан солға жылжытамыз. Жоғарғы мысалдан тек анимацияны ғана өзгерттік:</p>
+<pre data-lang="css"><code class="language-css">@keyframes move {
+    0% {
+        left: 0%;
+    }
+    50% {
+        left: 50%;
+    }
+    100% {
+        left: 0%;
+    }
+}</code></pre>
+      <p>Анимацияны бірнеше рет қайталағымыз келсе, <code>animation-iteration-count</code> мәнін біреуден үлкен санға (не шексіз қайталау үшін <code>infinite</code>) ауыстырамыз. Анимацияның аспектілерін өзгертетін басқа да көптеген <a href="https://www.w3schools.com/cssref/css3_pr_animation.asp" target="_blank" rel="noopener">қасиеттер</a> бар. Төменде артқа-алға қозғалатын, шексіз қайталанатын тақырып:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Animate&lt;/title&gt;
+        &lt;style&gt;
+            @keyframes move {
+                0% {
+                    left: 0%;
+                }
+                50% {
+                    left: 50%;
+                }
+                100% {
+                    left: 0%;
+                }
+            }
+
+            h1 {
+                position: relative;
+                animation-name: move;
+                animation-duration: 2s;
+                animation-fill-mode: forwards;
+                animation-iteration-count: infinite;
+            }
+        &lt;/style&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Welcome!&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <h3 id="animation-js">Анимацияны JavaScript-пен басқару</h3>
+      <p>CSS-тен басқа, анимацияны басқару үшін JavaScript-ті де қолдануға болады. Шексіз қайталанатын қозғалатын тақырыбымыздың мысалында анимацияны бастайтын және тоқтататын түйме жасайық. Анимация, түйме және тақырып дайын болса, анимацияны іске қосу және кідірту үшін мына скриптті қосамыз:</p>
+<pre data-lang="javascript"><code class="language-javascript">document.addEventListener('DOMContentLoaded', function() {
+
+    // Find heading
+    const h1 = document.querySelector('h1');
+
+    // Pause Animation by default
+    h1.style.animationPlayState = 'paused';
+
+    // Wait for button to be clicked
+    document.querySelector('button').onclick = () =&gt; {
+
+        // If animation is currently paused, begin playing it
+        if (h1.style.animationPlayState == 'paused') {
+            h1.style.animationPlayState = 'running';
+        }
+
+        // Otherwise, pause the animation
+        else {
+            h1.style.animationPlayState = 'paused';
+        }
+    }
+
+})</code></pre>
+      <p>Оны бетке қосып, түймені басып көріңіз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Animate&lt;/title&gt;
+        &lt;style&gt;
+            @keyframes move {
+                0% {
+                    left: 0%;
+                }
+                50% {
+                    left: 50%;
+                }
+                100% {
+                    left: 0%;
+                }
+            }
+
+            h1 {
+                position: relative;
+                animation-name: move;
+                animation-duration: 2s;
+                animation-fill-mode: forwards;
+                animation-iteration-count: infinite;
+            }
+        &lt;/style&gt;
+        &lt;script&gt;
+            document.addEventListener('DOMContentLoaded', function() {
+                const h1 = document.querySelector('h1');
+                h1.style.animationPlayState = 'paused';
+
+                document.querySelector('button').onclick = () =&gt; {
+                    if (h1.style.animationPlayState == 'paused') {
+                        h1.style.animationPlayState = 'running';
+                    }
+                    else {
+                        h1.style.animationPlayState = 'paused';
+                    }
+                }
+            })
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;button&gt;Start / Pause&lt;/button&gt;
+        &lt;h1&gt;Welcome!&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <h3 id="animation-hide">Жазбаны жасыру анимациясы</h3>
+      <p>Енді жаңа білгенімізді бұрынғы жазбалар бетіне қолданайық. Айталық, оқып болған жазбаларды жасыру мүмкіндігін қосқымыз келеді. Бұрынғымен бірдей Django жобасы, тек HTML мен JavaScript сәл басқаша. Бірінші өзгеріс - <code>add_post</code> функциясында жазбаның оң жағына түйме қосамыз:</p>
+<pre data-lang="javascript"><code class="language-javascript">// Add a new post with given contents to DOM
+function add_post(contents) {
+
+    // Create new post
+    const post = document.createElement('div');
+    post.className = 'post';
+    post.innerHTML = `${contents} &lt;button class=&quot;hide&quot;&gt;Hide&lt;/button&gt;`;
+
+    // Add post to DOM
+    document.querySelector('#posts').append(post);
+};</code></pre>
+      <p>Енді <code>hide</code> түймесі басылғанда жазбаны жасыруға көшейік. Ол үшін бетте кез келген жерді басқанда іске қосылатын оқиға тыңдаушысын қосамыз. Функция оқиғаны <code>event</code> аргументі ретінде алады. Бұл ыңғайлы, себебі <code>event.target</code> арқылы нақты нені басқанымызды білеміз. Сондай-ақ <code>parentElement</code> арқылы берілген элементтің DOM-дағы <em>ата-анасын</em> табамыз.</p>
+<pre data-lang="javascript"><code class="language-javascript">// If hide button is clicked, delete the post
+document.addEventListener('click', event =&gt; {
+
+    // Find what was clicked on
+    const element = event.target;
+
+    // Check if the user clicked on a hide button
+    if (element.className === 'hide') {
+        element.parentElement.remove()
+    }
+    
+});</code></pre>
+      <p>Жасыру түймесі жұмыс істейді, бірақ ол онша әдемі емес: жазба кенеттен жоқ болып кетеді. Жазба жойылмай тұрып, баяу өшіп, кішірейсе жақсы болар еді. Ол үшін алдымен CSS анимациясын жасаймыз. Төмендегі анимация уақытының 75%-ын <code>opacity</code> мәнін 1-ден 0-ге дейін өзгертуге жұмсайды, яғни жазба баяу өшеді. Қалған уақытта биіктікке қатысты барлық қасиетті нөлге жеткізіп, жазбаны жоққа дейін кішірейтеді:</p>
+<pre data-lang="css"><code class="language-css">@keyframes hide {
+    0% {
+        opacity: 1;
+        height: 100%;
+        line-height: 100%;
+        padding: 20px;
+        margin-bottom: 10px;
+    }
+    75% {
+        opacity: 0;
+        height: 100%;
+        line-height: 100%;
+        padding: 20px;
+        margin-bottom: 10px;
+    }
+    100% {
+        opacity: 0;
+        height: 0px;
+        line-height: 0px;
+        padding: 0px;
+        margin-bottom: 0px;
+    }
+}</code></pre>
+      <p>Келесі қадамда осы анимацияны жазбаның CSS-іне қосамыз. Бастапқыда <code>animation-play-state</code> мәнін <code>paused</code> қойғанымызға назар аударыңыз: яғни жазба әдепкіде жасырылмайды.</p>
+<pre data-lang="css"><code class="language-css">.post {
+    background-color: #77dd11;
+    padding: 20px;
+    margin-bottom: 10px;
+    animation-name: hide;
+    animation-duration: 2s;
+    animation-fill-mode: forwards;
+    animation-play-state: paused;
+}</code></pre>
+      <p>Ақырында <code>hide</code> түймесі басылғанда анимацияны іске қосып, содан кейін жазбаны жою керек. Ол үшін JavaScript-ті өзгертеміз:</p>
+<pre data-lang="javascript"><code class="language-javascript">// If hide button is clicked, delete the post
+document.addEventListener('click', event =&gt; {
+
+    // Find what was clicked on
+    const element = event.target;
+
+    // Check if the user clicked on a hide button
+    if (element.className === 'hide') {
+        element.parentElement.style.animationPlayState = 'running';
+        element.parentElement.addEventListener('animationend', () =&gt; {
+            element.parentElement.remove();
+        });
+    }
+    
+});</code></pre>
+      <p>Көріп отырғаныңыздай, жасыру енді әлдеқайда әдемі. Бұл жерде <code>animationend</code> оқиғасы маңызды: ол анимация аяқталғанда ғана жазбаны DOM-нан жояды, яғни өшіп-кішірею соңына дейін көрінеді. Ресми қосымша серверді қажет еткені үшін, төмендегі мысалда бес дайын жазбамен жұмыс істейміз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;style&gt;
+            @keyframes hide {
+                0% {
+                    opacity: 1;
+                    height: 100%;
+                    line-height: 100%;
+                    padding: 20px;
+                    margin-bottom: 10px;
+                }
+                75% {
+                    opacity: 0;
+                    height: 100%;
+                    line-height: 100%;
+                    padding: 20px;
+                    margin-bottom: 10px;
+                }
+                100% {
+                    opacity: 0;
+                    height: 0px;
+                    line-height: 0px;
+                    padding: 0px;
+                    margin-bottom: 0px;
+                }
+            }
+
+            .post {
+                background-color: #77dd11;
+                padding: 20px;
+                margin-bottom: 10px;
+                animation-name: hide;
+                animation-duration: 2s;
+                animation-fill-mode: forwards;
+                animation-play-state: paused;
+            }
+
+            .hide {
+                float: right;
+            }
+        &lt;/style&gt;
+        &lt;script&gt;
+            function add_post(contents) {
+                const post = document.createElement('div');
+                post.className = 'post';
+                post.innerHTML = `${contents} &lt;button class=&quot;hide&quot;&gt;Hide&lt;/button&gt;`;
+                document.querySelector('#posts').append(post);
+            };
+
+            document.addEventListener('DOMContentLoaded', () =&gt; {
+                for (let i = 1; i &lt;= 5; i++) add_post(`Post #${i}`);
+            });
+
+            document.addEventListener('click', event =&gt; {
+                const element = event.target;
+                if (element.className === 'hide') {
+                    element.parentElement.style.animationPlayState = 'running';
+                    element.parentElement.addEventListener('animationend', () =&gt; {
+                        element.parentElement.remove();
+                    });
+                }
+            });
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div id=&quot;posts&quot;&gt;&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <details class="think"><summary>Ойланып көріңіз: неге түймеге емес, бүкіл <code>document</code>-ке <code>click</code> тыңдаушысын қойдық?</summary><div class="details-body"><p>Түймелер бет жүктелгенде жоқ: оларды <code>add_post</code> кейін, жазбалар келген сайын жасайды. Егер әр түймеге тыңдаушыны бет жүктелгенде қоясақ, кейін қосылған жазбалардың түймелері тыңдаушысыз қалар еді. Ал <code>document</code>-тегі бір тыңдаушы кез келген басуды ұстайды, ал <code>event.target</code> оның түйме екенін айтады. Мұндай тәсіл <strong>оқиға делегациясы</strong> (<span class="term-en">event delegation</span>) деп аталады.</p></div></details>
+
+      <h2 id="react">React</h2>
+      <div class="callout warn">
+        <span class="callout-title">React мысалдары үшін интернет керек</span>
+        <p>Осы бөлімдегі «▶ Көрсету» мысалдары React, ReactDOM және Babel кітапханаларын <code>unpkg.com</code> желісінен жүктейді. Сондықтан оларды іске қосу үшін интернет қосылған болуы керек. Ал код блоктарын оқуға интернет қажет емес.</p>
+      </div>
+      <p>Күрделірек сайтқа қанша JavaScript коды керек болатынын елестете аласыз. Қажет кодтың көлемін <strong>JavaScript фреймворкі</strong> арқылы азайтуға болады. Дәл CSS жазуды қысқарту үшін Bootstrap қолданғанымыз сияқты. Ең танымал JavaScript фреймворктерінің бірі - <a href="https://reactjs.org/" target="_blank" rel="noopener">React</a> деп аталатын кітапхана.</p>
+
+      <h3 id="react-declarative">Императивті және декларативті бағдарламалау</h3>
+      <p>Осы курста біз әзірге <strong>императивті бағдарламалау</strong> (<span class="term-en">imperative programming</span>) әдісін қолдандық: компьютерге орындайтын нұсқауларды қатар-қатар береміз. Мысалы, беттегі санауышты жаңарту үшін мынадай код жазуымыз мүмкін.</p>
+      <p>Көрініс (View):</p>
+<pre data-lang="html"><code class="language-html">&lt;h1&gt;0&lt;/h1&gt;</code></pre>
+      <p>Логика (Logic):</p>
+<pre data-lang="javascript"><code class="language-javascript">let num = parseInt(document.querySelector(&quot;h1&quot;).innerHTML);
+num += 1;
+document.querySelector(&quot;h1&quot;).innerHTML = num;</code></pre>
+      <p>React бізге <strong>декларативті бағдарламалауды</strong> (<span class="term-en">declarative programming</span>) қолдануға мүмкіндік береді: біз <em>не</em> көрсеткіміз келетінін жазамыз, ал оны <em>қалай</em> көрсету керегін ойламаймыз. Тапсырыс беру сияқты: асханада «шай әкеліңіз» дейсіз, шайды қалай қайнату керегін айтып отырмайсыз. React-те санауыш мынадай көрінеді.</p>
+      <p>Көрініс (View):</p>
+<pre data-lang="html"><code class="language-html">&lt;h1&gt;{num}&lt;/h1&gt;</code></pre>
+      <p>Логика (Logic):</p>
+<pre data-lang="javascript"><code class="language-javascript">num += 1;</code></pre>
+      <p>React-тің негізінде <strong>компоненттер</strong> (<span class="term-en">components</span>) идеясы жатыр, олардың әрқайсысында өзінің <strong>күйі</strong> (<span class="term-en">state</span>) болуы мүмкін. Компонент - веб-беттегі көзге көрінетін нәрсе: мысалы, жазба немесе навигация жолағы. Ал күй - сол компонентке байланысты айнымалылар жиыны. React-тің сұлулығы мынада: күй өзгергенде React DOM-ды өзі автоматты түрде өзгертеді. Біз «DOM-ды қалай жаңартамыз» деп алаңдамаймыз.</p>
+
+      <svg viewBox="0 0 640 140" role="img" aria-label="React-те күй өзгереді, React DOM-ды автоматты түрде жаңартады" style="width:100%;max-width:640px;height:auto;display:block;margin:1rem auto;font-family:inherit">
+        <rect x="10" y="40" width="170" height="60" rx="12" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="95" y="76" text-anchor="middle" font-size="15" fill="currentColor">Күй (state) өзгереді</text>
+        <rect x="235" y="40" width="170" height="60" rx="12" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="320" y="76" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent)">React қайта салады</text>
+        <rect x="460" y="40" width="170" height="60" rx="12" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="545" y="76" text-anchor="middle" font-size="15" fill="currentColor">DOM жаңарады</text>
+        <path d="M184 70 H231" stroke="currentColor" stroke-width="2" marker-end="url(#arr6b)"/>
+        <path d="M409 70 H456" stroke="currentColor" stroke-width="2" marker-end="url(#arr6b)"/>
+        <defs><marker id="arr6b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+      </svg>
+
+      <h3 id="react-hello">Алғашқы React қосымшасы</h3>
+      <p>React-ті қолданудың көптеген жолы бар (соның ішінде Facebook шығарған танымал <a href="https://reactjs.org/docs/create-a-new-react-app.html" target="_blank" rel="noopener">create-react-app</a> командасы), бірақ бүгін тікелей HTML файлынан бастаймыз. Ол үшін үш JavaScript пакетін қосу керек:</p>
+      <ul>
+        <li><code>React</code>: компоненттерді және олардың мінез-құлқын анықтайды;</li>
+        <li><code>ReactDOM</code>: React компоненттерін алып, DOM-ға салады;</li>
+        <li><code>Babel</code>: біз React-те жазатын <a href="https://reactjs.org/docs/introducing-jsx.html" target="_blank" rel="noopener">JSX</a> тілін браузер түсінетін қарапайым JavaScript-ке аударады. <strong>JSX</strong> (<span class="term-en">JSX</span>) JavaScript-ке өте ұқсас, бірақ қосымша мүмкіндіктері бар: оның ішінде код ішінде HTML-ді жазуға болады.</li>
+      </ul>
+      <p>Бірінші React қосымшамызды жасайық!</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;script src=&quot;https://unpkg.com/react@17.0.2/umd/react.production.min.js&quot; crossorigin&gt;&lt;/script&gt;
+        &lt;script src=&quot;https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js&quot; crossorigin&gt;&lt;/script&gt;
+        &lt;script src=&quot;https://unpkg.com/babel-standalone@6.26.0/babel.min.js&quot;&gt;&lt;/script&gt;
+        &lt;title&gt;Hello&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+
+        &lt;script type=&quot;text/babel&quot;&gt;
+            function App() {
+                return (
+                    &lt;div&gt;
+                        Hello!
+                    &lt;/div&gt;
+                );
+            }
+
+            ReactDOM.render(&lt;App /&gt;, document.querySelector(&quot;#app&quot;));
+        &lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <div class="callout note">
+        <span class="callout-title">Нұсқалар туралы</span>
+        <p>Түпнұсқа конспектте <code>react@17</code> және <code>babel-standalone@6</code> нұсқалары қолданылған (нақты нұсқасын көрсетпей). Біз тұрақты болу үшін нақты нұсқаларын жаздық: <code>react@17.0.2</code>, <code>babel-standalone@6.26.0</code>. Жаңа React нұсқаларында <code>ReactDOM.render</code> орнына басқа жазу ұсынылады, бірақ бұл лекцияда түпнұсқадағыдай қолданамыз.</p>
+      </div>
+      <p>Бұл біздің алғашқы React қосымшамыз, сондықтан әр бөлікті егжей-тегжейлі талдайық:</p>
+      <ul>
+        <li>Тақырыптан жоғарғы үш жолда React, ReactDOM және Babel-дің нұсқаларын импорттаймыз.</li>
+        <li>Денеде <code>id</code> мәні <code>app</code> болатын жалғыз <code>div</code> бар. Оны әрдайым дерлік бос қалдырамыз да, төмендегі React кодымен толтырамыз.</li>
+        <li>Скрипт тегінде <code>type="text/babel"</code> көрсетеміз. Бұл браузерге: «келесі скриптті алдымен Babel-мен аудару керек» дегенді білдіреді.</li>
+        <li>Содан кейін <code>App</code> деп аталатын компонент жасаймыз. React-те компоненттерді JavaScript функциялары ретінде бейнелеуге болады.</li>
+        <li>Компонент DOM-ға салғымыз келетін нәрсені қайтарады. Біздің жағдайда жай ғана <code>&lt;div&gt;Hello!&lt;/div&gt;</code>.</li>
+        <li>Скрипттің соңғы жолы <code>ReactDOM.render</code> функциясын қолданады. Оның екі аргументі бар: 1) салынатын компонент; 2) компонент салынатын DOM элементі.</li>
+      </ul>
+      <p>Код не істейтінін түсінген соң, нәтиже бетіне қарасақ: экранда «Hello!» жазуы шығады.</p>
+
+      <h3 id="react-props">Компоненттер мен пропстар</h3>
+      <p>React-тің пайдалы мүмкіндігі - компоненттерді басқа компоненттердің ішіне салу. Мұны көрсету үшін <code>Hello</code> деп аталатын тағы бір компонент жасайық:</p>
+<pre data-lang="javascript"><code class="language-javascript">function Hello(props) {
+    return (
+        &lt;h1&gt;Hello&lt;/h1&gt;
+    );
+}</code></pre>
+      <p>Енді <code>App</code> компонентінің ішіне үш <code>Hello</code> компонентін саламыз:</p>
+<pre data-lang="javascript"><code class="language-javascript">function App() {
+    return (
+        &lt;div&gt;
+            &lt;Hello /&gt;
+            &lt;Hello /&gt;
+            &lt;Hello /&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+      <p>Бұл бізге үш «Hello» тақырыбы бар бетті береді. Әзірге компоненттер өте қызықсыз: барлығы дәл бірдей. Оларды икемді ету үшін қасиеттер (React тілінде <strong>props</strong>, <span class="term-en">properties</span>) қосуға болады. Мысалы, үш түрлі адамға сәлем бергіміз келсін. Олардың аттарын HTML атрибуттарына ұқсас түрде береміз:</p>
+<pre data-lang="javascript"><code class="language-javascript">function App() {
+    return (
+        &lt;div&gt;
+            &lt;Hello name=&quot;Harry&quot; /&gt;
+            &lt;Hello name=&quot;Ron&quot; /&gt;
+            &lt;Hello name=&quot;Hermione&quot; /&gt;
+        &lt;/div&gt;
+    );
+}</code></pre>
+      <p>Оларға <code>props.PROP_NAME</code> арқылы қол жеткіземіз. Оны JSX ішіне ирек жақшамен (<code>{ }</code>) қыстырамыз:</p>
+<pre data-lang="javascript"><code class="language-javascript">function Hello(props) {
+    return (
+        &lt;h1&gt;Hello, {props.name}!&lt;/h1&gt;
+    );
+}</code></pre>
+      <p>Енді бетімізде үш есім көрінеді! Түгел бетті мына жерде көріңіз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;script src=&quot;https://unpkg.com/react@17.0.2/umd/react.production.min.js&quot; crossorigin&gt;&lt;/script&gt;
+        &lt;script src=&quot;https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js&quot; crossorigin&gt;&lt;/script&gt;
+        &lt;script src=&quot;https://unpkg.com/babel-standalone@6.26.0/babel.min.js&quot;&gt;&lt;/script&gt;
+        &lt;title&gt;Hello&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+
+        &lt;script type=&quot;text/babel&quot;&gt;
+            function Hello(props) {
+                return (
+                    &lt;h1&gt;Hello, {props.name}!&lt;/h1&gt;
+                );
+            }
+
+            function App() {
+                return (
+                    &lt;div&gt;
+                        &lt;Hello name=&quot;Harry&quot; /&gt;
+                        &lt;Hello name=&quot;Ron&quot; /&gt;
+                        &lt;Hello name=&quot;Hermione&quot; /&gt;
+                    &lt;/div&gt;
+                );
+            }
+
+            ReactDOM.render(&lt;App /&gt;, document.querySelector(&quot;#app&quot;));
+        &lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <h3 id="react-state">Күй және useState хугы</h3>
+      <p>Енді React-ті пайдаланып, JavaScript-пен алғаш жұмыс істегенде жасаған санауыш бетін қайта жасап көрейік. Жалпы құрылым бұрынғыдай қалады, бірақ <code>App</code> компонентінің ішінде оған күй қосу үшін React-тің <code>useState</code> <strong>хугын</strong> (<span class="term-en">hook</span>) қолданамыз. <code>useState</code> аргументі - күйдің бастапқы мәні, біз оны <code>0</code> етіп қоямыз. Функция екі нәрсе қайтарады: күйді білдіретін айнымалы және күйді жаңартуға мүмкіндік беретін функция.</p>
+<pre data-lang="javascript"><code class="language-javascript">const [count, setCount] = React.useState(0);</code></pre>
+      <p>Енді функция нені салатынына көшейік: тақырып пен түйме. Түйме басылғанда оқиға тыңдаушысын да қосамыз. React мұны <code>onClick</code> атрибуты арқылы өңдейді:</p>
+<pre data-lang="javascript"><code class="language-javascript">return (
+    &lt;div&gt;
+        &lt;h1&gt;{count}&lt;/h1&gt;
+        &lt;button onClick={updateCount}&gt;Count&lt;/button&gt;
+    &lt;/div&gt;
+);</code></pre>
+      <p>Ақырында <code>updateCount</code> функциясын анықтайық. Ол үшін <code>setCount</code> функциясын қолданамыз, оның аргументі күйдің жаңа мәні болады:</p>
+<pre data-lang="javascript"><code class="language-javascript">function updateCount() {
+    setCount(count + 1);
+}</code></pre>
+      <p>Міне, жұмыс істейтін санауыш сайтымыз! Барлығын жинап көрейік:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;script src=&quot;https://unpkg.com/react@17.0.2/umd/react.production.min.js&quot; crossorigin&gt;&lt;/script&gt;
+        &lt;script src=&quot;https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js&quot; crossorigin&gt;&lt;/script&gt;
+        &lt;script src=&quot;https://unpkg.com/babel-standalone@6.26.0/babel.min.js&quot;&gt;&lt;/script&gt;
+        &lt;title&gt;Counter&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+
+        &lt;script type=&quot;text/babel&quot;&gt;
+            function App() {
+                const [count, setCount] = React.useState(0);
+
+                function updateCount() {
+                    setCount(count + 1);
+                }
+
+                return (
+                    &lt;div&gt;
+                        &lt;h1&gt;{count}&lt;/h1&gt;
+                        &lt;button onClick={updateCount}&gt;Count&lt;/button&gt;
+                    &lt;/div&gt;
+                );
+            }
+
+            ReactDOM.render(&lt;App /&gt;, document.querySelector(&quot;#app&quot;));
+        &lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <details class="think"><summary>Ойланып көріңіз: <code>updateCount</code> ішінде <code>count = count + 1</code> деп жазсақ не болады?</summary><div class="details-body"><p>Алдымен болжап көріңіз. <code>count</code> - жай айнымалы, оның мәнін қолмен өзгертсек, React бұл туралы <em>білмейді</em>, сондықтан бет қайта салынбайды. Түйме басылса да, экрандағы сан өзгермей қалады. Күйді тек <code>setCount</code> арқылы өзгерту керек: сонда React күйдің өзгергенін біліп, компонентті қайта салады.</p></div></details>
+
+      <h3 id="react-addition">Қосу ойыны</h3>
+      <p>React-пен танысып алған соң, білгенімізді қолданып, пайдаланушылар қосу есептерін шығаратын ойын тәрізді сайт жасайық. Басқа React беттеріндегідей баптаудан бастаймыз. Қосымшаны құру үшін күйде нені сақтау керек екенін ойланайық. Бет ашық тұрғанда өзгеруі мүмкін барлық нәрсе күйде болуы керек. Біздің күйде мыналар болады:</p>
+      <ul>
+        <li><code>num1</code>: қосылатын бірінші сан;</li>
+        <li><code>num2</code>: қосылатын екінші сан;</li>
+        <li><code>response</code>: пайдаланушы теріп жатқан жауап;</li>
+        <li><code>score</code>: пайдаланушы дұрыс жауап берген сұрақтар саны.</li>
+      </ul>
+      <p>Күйіміз осы ақпараттың бәрін қамтитын JavaScript объектісі бола алады:</p>
+<pre data-lang="javascript"><code class="language-javascript">const [state, setState] = React.useState({
+    num1: 1,
+    num2: 1,
+    response: &quot;&quot;,
+    score: 0
+});</code></pre>
+      <p>Енді күйдегі мәндерді пайдаланып, қарапайым интерфейсті салуға болады:</p>
+<pre data-lang="javascript"><code class="language-javascript">return (
+    &lt;div&gt;
+        &lt;div&gt;{state.num1} + {state.num2}&lt;/div&gt;
+        &lt;input value={state.response} /&gt;
+        &lt;div&gt;Score: {state.score}&lt;/div&gt;
+    &lt;/div&gt;
+);</code></pre>
+      <p>Сайттың негізгі көрінісі осындай болады (түпнұсқада скриншот): жоғарыда «1 + 1», астында енгізу өрісі, ең төменде «Score: 0».</p>
+      <p>Қазір пайдаланушы енгізу өрісіне ештеңе тере алмайды, себебі өрістің мәні <code>state.response</code> деп бекітілген, ол әзірге бос жол. Мұны түзету үшін <code>input</code> элементіне <code>onChange</code> атрибутын қосып, оны <code>updateResponse</code> функциясына теңейміз:</p>
+<pre data-lang="javascript"><code class="language-javascript">onChange={updateResponse}</code></pre>
+      <p>Енді <code>updateResponse</code> функциясын анықтаймыз. Ол функцияны шақырған оқиғаны аргумент ретінде алады да, <code>response</code> мәнін өрістің қазіргі мәніне қояды. Осылай пайдаланушы тере алады, ал терген мәтіні <code>state</code>-те сақталады:</p>
+<pre data-lang="javascript"><code class="language-javascript">function updateResponse(event) {
+    setState({
+        ...state,
+        response: event.target.value
+    });
+}</code></pre>
+      <p>Мұндағы <code>...state</code> жазуына назар аударыңыз: ол «<code>state</code> объектісіндегі барлық өрісті көшір» дегенді білдіреді, сосын тек <code>response</code> өрісін жаңасымен ауыстырамыз. Егер <code>...state</code> болмаса, жаңа объектіде тек <code>response</code> қалып, <code>num1</code>, <code>num2</code> және <code>score</code> жоғалып кетер еді.</p>
+      <p>Енді пайдаланушыға есепті жіберу мүмкіндігін қосайық. Алдымен тағы бір оқиға тыңдаушысын қосып, оны жазатын функцияға байлаймыз:</p>
+<pre data-lang="javascript"><code class="language-javascript">onKeyPress={inputKeyPress}</code></pre>
+      <p>Енді <code>inputKeyPress</code> функциясын анықтаймыз. Бұл функцияда алдымен <code>Enter</code> пернесі басылғанын, содан кейін жауаптың дұрыс-бұрыстығын тексереміз. Пайдаланушы дұрыс жауап берсе, ұпайды 1-ге арттырамыз, келесі есепке кездейсоқ сандар таңдаймыз және жауап өрісін тазалаймыз. Жауап қате болса, ұпайды 1-ге азайтып, өрісті тазалаймыз:</p>
+<pre data-lang="javascript"><code class="language-javascript">function inputKeyPress(event) {
+    if (event.key === &quot;Enter&quot;) {
+        const answer = parseInt(state.response);
+        if (answer === state.num1 + state.num2) {
+            // User got question right
+            setState({
+                ...state,
+                score: state.score + 1,
+                response: &quot;&quot;,
+                num1: Math.ceil(Math.random() * 10),
+                num2: Math.ceil(Math.random() * 10)
+            });
+        } else {
+            // User got question wrong
+            setState({
+                ...state,
+                score: state.score - 1,
+                response: &quot;&quot;
+            })
+        }
+    }
+}</code></pre>
+      <p>Қосымшаға соңғы әдемілік беру үшін бетке стиль қосайық. Қосымшаның бәрін ортаға орналастырамыз, есептің өзін үлкейту үшін есеп тұрған <code>div</code>-ке <code>problem</code> деген <code>id</code> береміз де, <code>style</code> тегіне мына CSS-ті қосамыз:</p>
+<pre data-lang="css"><code class="language-css">#app {
+    text-align: center;
+    font-family: sans-serif;
+}
+
+#problem {
+    font-size: 72px;
+}</code></pre>
+      <p>Ең соңында 10 ұпай жинағанда ойында жеңіс мүмкіндігін қосайық. Ол үшін <code>render</code> функциясына шарт қосамыз: 10 ұпай болғанда мүлде басқа нәрсе қайтарамыз:</p>
+<pre data-lang="javascript"><code class="language-javascript">if (state.score === 10) {
+    return (
+        &lt;div id=&quot;winner&quot;&gt;You won!&lt;/div&gt;
+    );
+}</code></pre>
+      <p>Жеңісті қызықтырақ ету үшін балама <code>div</code>-ке де стиль береміз:</p>
+<pre data-lang="css"><code class="language-css">#winner {
+    font-size: 72px;
+    color: green;
+}</code></pre>
+      <p>Енді дайын қосымшамызға қарайық! Жиналған толық нұсқа мынау. Жауабын теріп, <code>Enter</code> басыңыз. Қате жауап ұпайды азайтатынын, сондықтан ұпай теріс болуы да мүмкін екенін ұмытпаңыз.</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;script src=&quot;https://unpkg.com/react@17.0.2/umd/react.production.min.js&quot; crossorigin&gt;&lt;/script&gt;
+        &lt;script src=&quot;https://unpkg.com/react-dom@17.0.2/umd/react-dom.production.min.js&quot; crossorigin&gt;&lt;/script&gt;
+        &lt;script src=&quot;https://unpkg.com/babel-standalone@6.26.0/babel.min.js&quot;&gt;&lt;/script&gt;
+        &lt;title&gt;Addition&lt;/title&gt;
+        &lt;style&gt;
+            #app {
+                text-align: center;
+                font-family: sans-serif;
+            }
+
+            #problem {
+                font-size: 72px;
+            }
+
+            #winner {
+                font-size: 72px;
+                color: green;
+            }
+        &lt;/style&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div id=&quot;app&quot;&gt;&lt;/div&gt;
+
+        &lt;script type=&quot;text/babel&quot;&gt;
+            function App() {
+                const [state, setState] = React.useState({
+                    num1: 1,
+                    num2: 1,
+                    response: &quot;&quot;,
+                    score: 0
+                });
+
+                function updateResponse(event) {
+                    setState({
+                        ...state,
+                        response: event.target.value
+                    });
+                }
+
+                function inputKeyPress(event) {
+                    if (event.key === &quot;Enter&quot;) {
+                        const answer = parseInt(state.response);
+                        if (answer === state.num1 + state.num2) {
+                            // User got question right
+                            setState({
+                                ...state,
+                                score: state.score + 1,
+                                response: &quot;&quot;,
+                                num1: Math.ceil(Math.random() * 10),
+                                num2: Math.ceil(Math.random() * 10)
+                            });
+                        } else {
+                            // User got question wrong
+                            setState({
+                                ...state,
+                                score: state.score - 1,
+                                response: &quot;&quot;
+                            })
+                        }
+                    }
+                }
+
+                if (state.score === 10) {
+                    return (
+                        &lt;div id=&quot;winner&quot;&gt;You won!&lt;/div&gt;
+                    );
+                }
+
+                return (
+                    &lt;div&gt;
+                        &lt;div id=&quot;problem&quot;&gt;{state.num1} + {state.num2}&lt;/div&gt;
+                        &lt;input
+                            autoFocus={true}
+                            onKeyPress={inputKeyPress}
+                            value={state.response}
+                            onChange={updateResponse}
+                        /&gt;
+                        &lt;div&gt;Score: {state.score}&lt;/div&gt;
+                    &lt;/div&gt;
+                );
+            }
+
+            ReactDOM.render(&lt;App /&gt;, document.querySelector(&quot;#app&quot;));
+        &lt;/script&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <details class="think"><summary>Ойланып көріңіз: неге ойында жеңіс туралы шарт <code>useState</code> шақырылғаннан кейін жазылады?</summary><div class="details-body"><p><code>useState</code> сияқты хуктар компонент әр қайта салынғанда бірдей ретпен шақырылуы керек. Егер <code>return</code> хуктан бұрын орындалып кетсе, келесі қайта салуда хуктардың саны өзгеріп, React шатасады. Сондықтан алдымен күйді жарияласақ, содан кейін ғана «не салу керек» деген шарттарды жазамыз. Ал мұндағы <code>score === 10</code> шарты ескі көріністің орнына мүлде басқа <code>div</code> қайтарады, мұны декларативті жазудың артықшылығы деуге болады: тек «күй мынадай болса, көрініс мынадай» деп сипаттаймыз.</p></div></details>
+      <p>Бүгінгі лекция осымен біткен. Келесі жолы үлкенірек веб-қосымшалар құрудың үздік тәжірибелері туралы айтамыз.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li><strong>Бір беттік қосымша (SPA)</strong>: бір ғана бет жүктеледі, ал мазмұнның өзгеретін бөлігін JavaScript DOM-ды өзгертіп (не <code>fetch</code> арқылы серверден мәлімет алып) жаңартады.</li>
+        <li><strong>History API</strong>: <code>history.pushState(күй, тақырып, url)</code> тарихқа жазба қосып, URL-ді жаңартады, ал <code>window.onpopstate</code> «Артқа» басқанда не істеу керегін анықтайды.</li>
+        <li><strong>Айналдыру</strong>: <code>window.innerHeight</code>, <code>window.scrollY</code>, <code>document.body.offsetHeight</code> шамалары арқылы беттің соңына жеткенімізді анықтаймыз: <code>window.scrollY + window.innerHeight &gt;= document.body.offsetHeight</code>.</li>
+        <li><strong>Шексіз айналдыру</strong>: төменге жеткенде <code>fetch</code> арқылы API-дан келесі жазбалар бөлігін жүктейміз.</li>
+        <li><strong>CSS анимациясы</strong>: <code>@keyframes</code> (<code>from</code>/<code>to</code> не <code>0%</code>...<code>100%</code>) және <code>animation-name</code>, <code>animation-duration</code>, <code>animation-fill-mode</code>, <code>animation-iteration-count</code>, <code>animation-play-state</code> қасиеттері.</li>
+        <li><strong>JavaScript + анимация</strong>: <code>style.animationPlayState</code> арқылы анимацияны іске қосу/кідірту, <code>animationend</code> оқиғасымен анимациядан кейін элементті жою.</li>
+        <li><strong>React</strong> декларативті: біз көріністі күйге сүйеніп сипаттаймыз, ал DOM-ды React жаңартады. Негізгі ұғымдар: компонент (функция), JSX, пропстар (<code>props</code>), күй (<code>useState</code>).</li>
+        <li><strong>Күйді жаңарту</strong>: күйді тікелей өзгертпейміз, <code>setState</code>/<code>setCount</code> шақырамыз; объект күйде қалған өрістерді <code>...state</code> арқылы сақтаймыз.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. SPA-да <code>history.pushState({section: 2}, "", "section2")</code> шақырылды, URL өзгерді. Бірақ пайдаланушы «Артқа» түймесін басқанда, URL бұрынғыға қайтады да, бет мазмұны өзгермей қалады. Негізгі себеп қандай?</p>
+          <label><input type="radio" value="a"> <code>pushState</code> тек бірінші рет қана жұмыс істейді</label>
+          <label><input type="radio" value="b"> <code>pushState</code> тек тарихқа жазба қосып, URL-ді өзгертеді; бетті жаңартуды <code>window.onpopstate</code> өңдеушісі жасауы керек, ал ол жазылмаған</label>
+          <label><input type="radio" value="c"> Тақырып (екінші аргумент) бос болмауы керек</label>
+          <label><input type="radio" value="d"> Күйге нөмірді емес, тек жол беруге болады</label>
+          <p class="explain"><code>pushState</code> бетті өзгертпейді. Бет мазмұнын біз өзіміз <code>showSection</code> арқылы жаңартамыз. «Артқа» басылғанда <code>onpopstate</code> оқиғасы шығады, ал онда <code>event.state</code> арқылы бұрынғы күйді алып, бетті қайта көрсету керек.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">2. Терезе биіктігі <code>window.innerHeight</code> = 700, <code>window.scrollY</code> = 1250, ал <code>document.body.offsetHeight</code> = 2000. <code>window.innerHeight + window.scrollY &gt;= document.body.offsetHeight</code> шарты қандай болады?</p>
+          <label><input type="radio" value="a"><code>true</code>, себебі 1250 &gt; 700</label>
+          <label><input type="radio" value="b"><code>true</code>, себебі 700 + 1250 = 1950, бұл 2000-ға жақын</label>
+          <label><input type="radio" value="c">Қате шығады, өйткені үш шама әртүрлі нәрсені өлшейді</label>
+          <label><input type="radio" value="d"><code>false</code>: 700 + 1250 = 1950 &lt; 2000, беттің төменгі шетіне әлі 50 пиксель қалды</label>
+          <p class="explain"><code>scrollY + innerHeight</code> - терезенің төменгі шетінің құжаттағы орны. Ол құжат биіктігіне тең не одан үлкен болғанда ғана төменге жеттік деген сөз.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. Шексіз айналдыру кодында <code>counter = 1</code>, <code>quantity = 20</code>. Бет жүктелгенде <code>load</code> бір рет шақырылды, пайдаланушы төменге жетіп, екінші рет шақырылды. Екінші <code>fetch</code> қандай URL-ге барады?</p>
+          <label><input type="radio" value="a"><code>/posts?start=21&amp;end=40</code></label>
+          <label><input type="radio" value="b"><code>/posts?start=20&amp;end=40</code></label>
+          <label><input type="radio" value="c"><code>/posts?start=1&amp;end=20</code> (қайталанады)</label>
+          <label><input type="radio" value="d"><code>/posts?start=21&amp;end=41</code></label>
+          <p class="explain">Бірінші шақыруда <code>start = 1</code>, <code>end = 1 + 20 - 1 = 20</code>, содан кейін <code>counter = end + 1 = 21</code>. Екінші шақыруда <code>start = 21</code>, <code>end = 21 + 20 - 1 = 40</code>.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">4. <code>h1</code> элементіне <code>grow</code> анимациясы (20px-тен 100px-ке) берілген, бірақ <code>animation-fill-mode: forwards</code> жазылмаған. Анимация аяқталған соң не болады?</p>
+          <label><input type="radio" value="a">Тақырып 100px күйінде қалады</label>
+          <label><input type="radio" value="b">Анимация мүлде басталмайды</label>
+          <label><input type="radio" value="c">Анимация біткен соң тақырып бастапқы өлшеміне (CSS-тегі әдепкі стиліне) секіріп оралады</label>
+          <label><input type="radio" value="d">Анимация шексіз қайталанады</label>
+          <p class="explain"><code>forwards</code> анимацияның соңғы кадрындағы стильді сақтайды. Онсыз элемент анимациядан кейін алғашқы стиліне оралады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. Жазбаны жасыру кодында неге <code>element.parentElement.remove()</code> шақыруын тікелей емес, <code>animationend</code> оқиғасының ішінде жазамыз?</p>
+          <label><input type="radio" value="a"><code>remove()</code> тек оқиға ішінде жұмыс істейді</label>
+          <label><input type="radio" value="b">Жазбаны бірден жойсақ, өшіп-кішірею анимациясын көре алмаймыз; жою анимация біткен соң болуы керек</label>
+          <label><input type="radio" value="c"><code>animationend</code> анимацияны тезірек орындатады</label>
+          <label><input type="radio" value="d">Әйтпесе <code>animation-play-state</code> <code>paused</code> болып қалады</label>
+          <p class="explain">Алдымен <code>animationPlayState = 'running'</code> анимацияны іске қосады. Анимация 2 секундқа созылады, ал <code>animationend</code> оқиғасы оның аяқталғанын хабарлайды. Сол кезде ғана жазбаны DOM-нан жоямыз.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">6. Төмендегілердің қайсысы <strong>декларативті</strong> жазу стиліне жатады?</p>
+          <label><input type="radio" value="a"><code>let num = parseInt(document.querySelector("h1").innerHTML);</code></label>
+          <label><input type="radio" value="b"><code>document.querySelector("h1").innerHTML = num;</code></label>
+          <label><input type="radio" value="c"><code>document.querySelectorAll("button").forEach(...)</code></label>
+          <label><input type="radio" value="d"><code>&lt;h1&gt;{num}&lt;/h1&gt;</code> (<code>num</code> өзгергенде бет өзі жаңарады)</label>
+          <p class="explain">Үш бірінші нұсқа - DOM-мен қадам-қадаммен жұмыс істейтін императивті код. React-те тек «<code>num</code> мәнін көрсет» деп сипаттаймыз, ал DOM-ды жаңартуды React өзі жасайды.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. React санауышында түйме басылғанда <code>count = count + 1;</code> деп жазылды (<code>setCount</code> орнына). Нәтиже қандай?</p>
+          <label><input type="radio" value="a">React күйдің өзгергенін білмейді, сондықтан бет қайта салынбайды, экрандағы сан өзгермейді</label>
+          <label><input type="radio" value="b">Сан бір-бірден артады, нәтиже бірдей</label>
+          <label><input type="radio" value="c"><code>count</code> бірден 0-ге оралады</label>
+          <label><input type="radio" value="d">React қате туралы хабарлама көрсетіп, қосымшаны тоқтатады</label>
+          <p class="explain">Күйді жаңартудың жалғыз жолы - <code>useState</code> қайтарған функцияны (<code>setCount</code>) шақыру. Тікелей өзгерту көрініске жетпейді.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">8. Қосу ойынында <code>updateResponse</code> функциясын былай жазып қойдық: <code>setState({response: event.target.value})</code> (<code>...state</code> жоқ). Пайдаланушы өріске бір әріп тергенде не болады?</p>
+          <label><input type="radio" value="a">Ештеңе өзгермейді</label>
+          <label><input type="radio" value="b">Тек <code>score</code> нөлге қайтады</label>
+          <label><input type="radio" value="c">Күй толық ауысады: енді <code>num1</code>, <code>num2</code> және <code>score</code> жоқ, сондықтан есеп пен ұпай қате (<code>undefined</code>) көрінеді</label>
+          <label><input type="radio" value="d">React жетпейтін өрістерді автоматты түрде ескі күйден толтырады</label>
+          <p class="explain"><code>setState</code> күйді қосып емес, <em>толық ауыстырады</em> (<code>useState</code>-ның бұл түрінде). Сондықтан қалған өрістерді сақтау үшін <code>...state</code> жазамыз.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="practice">Жаттығулар: күй редьюсері және массивті жаңарту</h2>
+      <div class="callout note">
+        <span class="callout-title">Сайттың өз жаттығулары, ресми тапсырма емес</span>
+        <p>Төмендегі үш жаттығуды біз осы сайт үшін қостық. Бұл CS50 ресми problem set-і емес. Лекцияда React-тің ең басты қағидасын көрдік: <em>күйді тікелей өзгертпейміз, ал жаңа күйді (жаңа объект немесе массив) жасап, соны береміз</em> (<code>{...state, score: state.score + 1}</code>). Бұл ойды таза JavaScript функциясына бөліп алуға болады: <strong>редьюсер</strong> (<span class="term-en">reducer</span>) - ескі күй мен <code>action</code> (не істеу керек) алып, жаңа күйді қайтаратын функция. Оны React-сіз-ақ, браузердегі кәдімгі JS-те тексеруге болады. Кодыңызды <code>.js</code> файлына жазып, автотексерушіге жүктеңіз (немесе қойыңыз): ол кодты браузерде, бөлек ағында (Web Worker) орындайды, шексіз цикл қауіпсіз тоқтатылады.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-reducer-counter">reducer: санауыш</h3></div>
+        <p><code>reducer(state, action)</code> функциясын жазыңыз. <code>state</code> - <code>{count: 0, label: "Санауыш"}</code> түріндегі объект. <code>action.type</code> мәніне қарай <em>жаңа</em> объект қайтарсын: <code>"increment"</code> - <code>count</code> 1-ге артады; <code>"decrement"</code> - 1-ге кемиді; <code>"add"</code> - <code>count</code> мәніне <code>action.amount</code> қосылады; <code>"reset"</code> - <code>count</code> 0 болады. Белгісіз түр келсе, бұрынғы <code>state</code>-ті қайтарыңыз. Бастапқы <code>state</code> объектісі өзгермеуі керек, <code>label</code> өрісі сақталуы керек.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>switch (action.type) { case "increment": return {...state, count: state.count + 1}; ... default: return state; }</code> жазылымын қолданыңыз. <code>...state</code> ескі объектінің барлық өрісін (соның ішінде <code>label</code>) жаңа объектіге көшіреді, ал содан кейін жазылған <code>count</code> оны қайта жазады. <code>state.count += 1</code> деп жазбаңыз: бұл бастапқы объектіні бұзады.</p></div></details>
+        <div class="js-grader" data-check="js-reducer-counter" data-src="web/checks/week-6.js"></div>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-reducer-game">reducer: қосу ойыны</h3></div>
+        <p>Лекциядағы қосу ойынының логикасын редьюсерге айналдырыңыз. <code>state</code> - <code>{num1, num2, response, score}</code>. <code>{type: "respond", value}</code> келсе, <code>response</code> өрісін <code>value</code> етіп өзгертіңіз (қалған өрістер сақталады). <code>{type: "submit", next: [a, b]}</code> келсе: егер <code>parseInt(state.response) === state.num1 + state.num2</code> болса - <code>score</code> 1-ге артады, <code>response</code> бос жол <code>""</code> болады, <code>num1 = a</code> және <code>num2 = b</code> болады; әйтпесе <code>score</code> 1-ге кемиді, <code>response</code> бос жол болады, ал <code>num1</code> мен <code>num2</code> өзгермейді. Белгісіз түр үшін <code>state</code>-тің өзін қайтарыңыз. Кездейсоқ сандарды редьюсердің өзі таңдамайды: оларды <code>action.next</code> арқылы береміз (сонда функцияны тексеру оңай болады).</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Бұл лекциядағы <code>updateResponse</code> мен <code>inputKeyPress</code> функцияларындағы <code>setState({...})</code> шақыруларының дәл өзі, тек <code>setState</code> орнына нәтижені <code>return</code> етесіз. Әр <code>return</code>-да <code>...state</code> жазуды ұмытпаңыз, әйтпесе қалған өрістер жоғалады.</p></div></details>
+        <div class="js-grader" data-check="js-reducer-game" data-src="web/checks/week-6.js"></div>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-posts">addPost, likePost, removePost (массивті өзгертпей жаңарту)</h3></div>
+        <p>Әр жазба - объект <code>{id, text, likes}</code>. Үш функцияны жазыңыз, олардың әрқайсысы <em>жаңа</em> массив қайтарсын, бастапқы массивті өзгертпесін. <code>addPost(posts, text)</code> тізімнің соңына <code>{id, text, likes: 0}</code> қосады, мұндағы <code>id</code> - бар <code>id</code> мәндерінің ең үлкені + 1 (массив бос болса <code>1</code>). <code>likePost(posts, id)</code> сол <code>id</code>-ге ие жазбаның <code>likes</code> мәнін 1-ге арттырады, қалған жазбалар өзгермейді (жоқ <code>id</code> берілсе, ештеңе өзгермейді). <code>removePost(posts, id)</code> сол <code>id</code>-лі жазбаны алып тастайды.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Қосу үшін <code>[...posts, newPost]</code>, жаңарту үшін <code>posts.map(p =&gt; p.id === id ? {...p, likes: p.likes + 1} : p)</code>, жою үшін <code>posts.filter(p =&gt; p.id !== id)</code> қолданыңыз. <code>push</code>, <code>splice</code> және <code>p.likes++</code> бастапқы массивті өзгертеді, сондықтан оларды қолданбаңыз. <code>id</code>-ті <code>posts.length + 1</code> деп алмаңыз: жазбалар жойылса, <code>id</code> қайталанып кетуі мүмкін.</p></div></details>
+        <div class="js-grader" data-check="js-posts" data-src="web/checks/week-6.js"></div>
+      </div>
+
+      <h2 id="problem-set">Project 4: Network (Желі)</h2>
+      <p><span class="term-en">(Project 4)</span> CS50 Web-те апталар мен жобалар арасында бір-біріне бір-бір сәйкестік жоқ. Ресми беттер: <a href="https://cs50.harvard.edu/web/projects/4/" target="_blank" rel="noopener">cs50.harvard.edu/web/projects/4</a> және <a href="https://cs50.harvard.edu/web/projects/4/network/" target="_blank" rel="noopener">Network</a>. 4-жоба бойынша тапсыратын жалғыз жұмыс - <strong>Network</strong>. Ресми нұсқаулық ескертеді: егер сіз кемінде 7-лекцияны көрмеген болсаңыз, бұл жобаны тым ерте бастап жатырсыз!</p>
+      <div class="callout note">
+        <span class="callout-title">Компьютерде орындалады</span>
+        <p>Бұл жоба толыққанды Django жобасы (серверде Python, деректер қоры, тіркеу/кіру, JavaScript-пен <code>fetch</code>), сондықтан оны сайттың ішінде орындау мүмкін емес. Оны өз компьютеріңізде (немесе cs50.dev-те) орындайсыз: Python, Django және код редакторы керек. Сайттағы автотексеруші бұл жоба үшін жоқ: ресми талаптарды төмендегі тексеру тізімі арқылы өзіңіз тексересіз.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="pset-network">Network (Желі)</h3></div>
+        <p>Threads-қа ұқсас әлеуметтік желі сайтын жасаңыз: жазбалар жазуға және басқа пайдаланушыларға жазылуға болады. (Түпнұсқада жобаның скриншоты бар: жоғарында «New Post» жазба жазу өрісі, астында «All Posts» тізімі.)</p>
+
+        <h4>Бастау</h4>
+        <ol>
+          <li>Таратылатын кодты <a href="https://cdn.cs50.net/web/2020/spring/projects/4/network.zip" target="_blank" rel="noopener">https://cdn.cs50.net/web/2020/spring/projects/4/network.zip</a> мекенжайынан жүктеп алып, архивті ашыңыз.</li>
+          <li>Терминалда <code>project4</code> қалтасына <code>cd</code> арқылы кіріңіз.</li>
+          <li><code>network</code> қосымшасының миграцияларын жасау үшін <code>python manage.py makemigrations network</code> орындаңыз.</li>
+          <li>Миграцияларды қолдану үшін <code>python manage.py migrate</code> орындаңыз.</li>
+        </ol>
+<pre class="terminal"><code class="language-plaintext">$ cd project4
+$ python manage.py makemigrations network
+$ python manage.py migrate
+$ python manage.py runserver</code></pre>
+
+        <h4>Түсіну</h4>
+        <p>Таратылатын кодта <code>project4</code> деп аталатын Django жобасы бар, ішінде <code>network</code> деген жалғыз қосымша тұр. Құрылымы 2-жобадағы <code>auctions</code> қосымшасына ұқсас.</p>
+        <p>Алдымен <code>network/urls.py</code> файлын ашыңыз: бұл қосымшаның URL конфигурациясы. Біз сізге бірнеше URL-ді жазып қойдық: әдепкі <code>index</code> маршруты, <code>/login</code>, <code>/logout</code> және <code>/register</code> маршруттары.</p>
+        <p><code>network/views.py</code> файлынан әр маршрутқа қандай көрініс сәйкес келетінін қараңыз. <code>index</code> көрінісі әзірге дерлік бос <code>index.html</code> үлгісін қайтарады. <code>login_view</code> пайдаланушы бетті GET арқылы ашқанда кіру формасын көрсетеді; форма POST әдісімен жіберілгенде пайдаланушы аутентификацияланып, жүйеге кіреді және индекс бетіне қайта бағытталады. <code>logout_view</code> пайдаланушыны жүйеден шығарып, индекс бетіне қайта бағыттайды. Ақырында, <code>register</code> маршруты тіркелу формасын көрсетеді және форма жіберілгенде жаңа пайдаланушы жасайды. Мұның бәрі таратылатын кодта дайын, сондықтан қосымшаны қазір іске қосып, бірнеше пайдаланушы тіркей аласыз.</p>
+        <p><code>python manage.py runserver</code> командасымен Django веб-серверін іске қосып, сайтты браузерде ашыңыз. «Register» сілтемесін басып, аккаунт тіркеңіз. Енді «Signed in as» жазуын көресіз, ал жоғарғы жақтағы сілтемелер өзгереді. HTML қалай өзгерді? <code>network/templates/network/layout.html</code> файлында қосымшаның HTML макетін көріңіз. Үлгінің бірнеше бөлігі <code>user.is_authenticated</code> тексерісіне оралғанын байқаңыз: пайдаланушы жүйеге кірген-кірмегеніне байланысты әртүрлі мазмұн көрсетіледі. Қаласаңыз, бұл файлға өзгеріс енгізіп, макетке бірдеңе қоса аласыз!</p>
+        <p>Ақырында <code>network/models.py</code> файлын қараңыз. Веб-қосымшаңыздың модельдерін осында жазасыз: әр модель дерекқорда сақтағыңыз келетін бір түрлі мәліметті білдіреді. Біз сізге қосымшаның әр пайдаланушысын білдіретін <code>User</code> моделін дайындап бердік. Ол <code>AbstractUser</code>-ден мұра алатындықтан, онда пайдаланушы аты, email, құпиясөз және т.б. өрістер бар, бірақ пайдаланушы туралы қосымша ақпарат сақтағыңыз келсе, <code>User</code> класына жаңа өрістер қоса аласыз. Сондай-ақ жазбалар, лайктар және жазылушылар туралы мәліметті бейнелеу үшін осы файлға қосымша модельдер қосуыңыз керек. <code>network/models.py</code> файлында бірдеңе өзгерткен сайын алдымен <code>python manage.py makemigrations</code>, сосын <code>python manage.py migrate</code> орындауды ұмытпаңыз.</p>
+
+        <h4>Талаптар (Specification)</h4>
+        <p>Python, JavaScript, HTML және CSS қолданып, пайдаланушылар жазба жаза алатын, басқа пайдаланушыларға жазыла алатын және жазбаларға «лайк» бере алатын әлеуметтік желіні аяқтаңыз. Мына талаптарды орындауыңыз керек:</p>
+        <ul>
+          <li><strong>New Post (Жаңа жазба):</strong> жүйеге кірген пайдаланушылар мәтін аймағына мәтін жазып, түймені басу арқылы жаңа мәтіндік жазба жасай алуы керек. Талаптардың басындағы скриншотта «New Post» өрісі «All Posts» бетінің жоғарғы жағында тұр. Сіз де осылай жасай аласыз, не «New Post» мүмкіндігін бөлек бет қылуыңызға болады.</li>
+          <li><strong>All Posts (Барлық жазбалар):</strong> навигация жолағындағы «All Posts» сілтемесі пайдаланушыны барлық пайдаланушылардың барлық жазбасын көре алатын бетке апаруы керек, ең жаңа жазбалар бірінші. Әр жазбада жазған пайдаланушының аты, жазбаның мәтіні, жазба жасалған күн мен уақыт және жазбаның «лайктар» саны көрсетілуі керек (лайк мүмкіндігін кейін жасағанша бәрі үшін 0 болады).</li>
+          <li><strong>Profile Page (Профиль беті):</strong> пайдаланушы атын басқанда сол пайдаланушының профиль беті ашылуы керек. Бұл бетте:
+            <ul>
+              <li>пайдаланушының жазылушылар саны және ол өзі жазылған адамдар саны көрсетіледі;</li>
+              <li>пайдаланушының барлық жазбасы кері хронологиялық ретпен көрсетіледі;</li>
+              <li>жүйеге кірген кез келген <em>басқа</em> пайдаланушыға «Follow» (жазылу) не «Unfollow» (жазылудан бас тарту) түймесі көрсетіледі: ол арқылы ағымдағы пайдаланушы осы адамның жазбаларына жазылуды қосып-өшіре алады. Бұл тек «басқа» пайдаланушыларға қатысты: пайдаланушы өзіне жаза алмауы керек.</li>
+            </ul>
+          </li>
+          <li><strong>Following (Жазылғандар):</strong> навигация жолағындағы «Following» сілтемесі пайдаланушыны ағымдағы пайдаланушы жазылған адамдардың барлық жазбасын көретін бетке апаруы керек. Бұл бет «All Posts» бетіндей жұмыс істеуі тиіс, тек жазбалар жиыны шағынырақ. Бұл бет тек жүйеге кірген пайдаланушыларға қолжетімді болуы керек.</li>
+          <li><strong>Pagination (Беттеу):</strong> жазбалар көрсетілетін кез келген бетте бір бетке тек 10 жазба көрсетілуі керек. Он жазбадан көп болса, келесі жазбалар бетіне апаратын «Next» түймесі пайда болуы керек (ол бет қазіргіден ескірек жазбаларды көрсетеді). Бірінші бетте болмасаңыз, алдыңғы бетке апаратын «Previous» түймесі де көрінуі керек. Іске асыру жолдары туралы кеңесті төмендегі <em>Кеңестер</em> бөлімінен қараңыз.</li>
+          <li><strong>Edit Post (Жазбаны өңдеу):</strong> пайдаланушылар өз жазбаларының кез келгенінде «Edit» түймесін (не сілтемесін) басып, жазбаны өңдей алуы керек.
+            <ul>
+              <li>Пайдаланушы өз жазбасының «Edit» түймесін басқанда, жазба мазмұны орнына жазбаны өңдеуге болатын <code>textarea</code> шығуы керек.</li>
+              <li>Содан кейін пайдаланушы өңделген жазбаны «Save» арқылы сақтай алуы керек. JavaScript арқылы мұны бүкіл бетті қайта жүктемей жасау керек.</li>
+              <li>Қауіпсіздік үшін қосымшаңыз ешбір жолмен пайдаланушының басқа адамның жазбасын өңдей алмайтындай жасалуы керек.</li>
+            </ul>
+          </li>
+          <li><strong>«Like» және «Unlike»:</strong> пайдаланушылар кез келген жазбаға түйме не сілтеме арқылы «лайк» басып-алып тастай алуы керек. JavaScript арқылы серверге лайк санын жаңарту туралы <em>асинхронды түрде</em> хабарлаңыз (мысалы, <code>fetch</code> шақыруымен), сосын бетте көрсетілген жазба лайктарының санын бүкіл бетті қайта жүктемей жаңартыңыз.</li>
+        </ul>
+
+        <h4>Кеңестер (Hints)</h4>
+        <ul>
+          <li><code>fetch</code> шақыруларының JavaScript мысалдары үшін 3-жобадағы кейбір маршруттарды қарап шығуға болады.</li>
+          <li>Қажетті мәліметті сақтау үшін <code>network/models.py</code> файлында бір не бірнеше модель жасауыңыз және/немесе бар <code>User</code> моделін өзгертуіңіз керек шығар.</li>
+          <li>Django-ның <a href="https://docs.djangoproject.com/en/4.0/topics/pagination/" target="_blank" rel="noopener">Paginator</a> класы беттеуді серверде (Python кодында) жасауға көмектеседі.</li>
+          <li>Bootstrap-тың <a href="https://getbootstrap.com/docs/4.4/components/pagination/" target="_blank" rel="noopener">Pagination</a> мүмкіндіктері беттерді алдыңғы жақта (HTML-де) көрсетуге көмектеседі.</li>
+        </ul>
+
+        <h4>Қалай тапсыру керек</h4>
+        <p>Жобаны тапсырғанда, <code>web50/projects/2020/x/network</code> тармағындағы файлдар құрылымы бастапқы таратылған кодтың құрылымымен бірдей болуы керек. Яғни файлдарыңыз өзіңіз жасаған ешқандай қалтаның ішіне салынбауы керек. Тармақта басқа жобалардың коды болмауы тиіс, тек осы жоба. Бұл талапты бұзсаңыз, жұмысыңыз қабылданбауы мүмкін. Мысалы, бағалаушылар <code>https://github.com/me50/USERNAME/tree/web50/projects/2020/x/network</code> бетіне кірсе, екі қалтаны (<code>network</code>, <code>project4</code>) және <code>manage.py</code> файлын көруі керек.</p>
+        <ol>
+          <li>Ресми беттегі шақыру сілтемесі арқылы GitHub аккаунтыңызбен кіріп, <strong>Authorize cs50</strong> түймесін басыңыз, содан кейін курс қызметкерлеріне жұмыстарыңызға қолжетімділік беретін құсбелгіні қойып, <strong>Join course</strong> басыңыз.</li>
+          <li>Git орнатыңыз және қаласаңыз, <code>submit50</code> орнатыңыз.</li>
+          <li><code>submit50</code> орнатылған болса, мынаны орындаңыз:</li>
+        </ol>
+<pre class="terminal"><code class="language-plaintext">$ submit50 web50/projects/2020/x/network</code></pre>
+        <p>Әйтпесе Git арқылы жұмысыңызды <code>https://github.com/me50/USERNAME.git</code> репозиториясына, <code>web50/projects/2020/x/network</code> деген тармаққа жіберіңіз (мұндағы <code>USERNAME</code> - GitHub пайдаланушы атыңыз).</p>
+        <ol start="4">
+          <li><strong>Скринкаст жазыңыз</strong> (5 минуттан аспайтын), онда веб-қосымшаңыздың функционалдығын көрсетіңіз. Бейнені YouTube-қа жүктеңіз (жасырын сілтемемен не ашық; жеке емес). Бейне талаптары: YouTube «short» болмауы; бейне слайдпен не мәтіндік қабатпен басталып, онда сіздің edX және GitHub пайдаланушы аттарыңыз <strong>екеуі де</strong> көрсетілуі; веб-қосымша тікелей жұмыс істеп тұрғанын көрсету (кодты түсіндіріп шықпаңыз); талаптардың жеті (7) пунктінің бәрі орындалғанын көрсету; бейне сипаттамасында әр пункт алғаш көрсетілген уақыт белгісі болуы; бейне форманы тапсырғаннан бір айдан аз бұрын жүктелген болуы.</li>
+          <li>Ресми беттегі форманы толтырып жіберіңіз.</li>
+        </ol>
+        <p>Содан кейін прогрессіңізді <a href="https://cs50.me/cs50w" target="_blank" rel="noopener">cs50.me/cs50w</a> бетінде көре аласыз.</p>
+
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web6-network">
+            <li><input type="checkbox"> <span>Таратылатын код жүктелді, миграциялар жасалып қолданылды, <code>python manage.py runserver</code> жұмыс істейді және аккаунт тіркелді.</span></li>
+            <li><input type="checkbox"> <span><strong>New Post:</strong> жүйеге кірген пайдаланушы мәтін аймағы мен түйме арқылы жаңа мәтіндік жазба жасай алады.</span></li>
+            <li><input type="checkbox"> <span><strong>All Posts:</strong> барлық пайдаланушының жазбасы ең жаңасы бірінші көрсетіледі; әр жазбада пайдаланушы аты, мәтін, күн мен уақыт және лайк саны бар.</span></li>
+            <li><input type="checkbox"> <span><strong>Profile Page:</strong> пайдаланушы атын басқанда профиль ашылады: жазылушылар саны, жазылғандар саны, пайдаланушының жазбалары кері хронологиялық ретпен; басқа адамның профилінде «Follow»/«Unfollow» түймесі бар, өз профиліңде жоқ (өзіңе жазыла алмайсың).</span></li>
+            <li><input type="checkbox"> <span><strong>Following:</strong> тек жүйеге кірген пайдаланушыға қолжетімді; тек өзің жазылған адамдардың жазбалары көрсетіледі, «All Posts» бетіндей жұмыс істейді.</span></li>
+            <li><input type="checkbox"> <span><strong>Pagination:</strong> кез келген жазба беті бір бетке 10 жазба көрсетеді; «Next» пен «Previous» түймелері қажет жерде ғана көрінеді, келесі бет ескірек жазбаларды береді.</span></li>
+            <li><input type="checkbox"> <span><strong>Edit Post:</strong> «Edit» түймесі өз жазбаңда <code>textarea</code> ашады, «Save» бетті қайта жүктемей (JavaScript, <code>fetch</code>) жаңартады; басқа адамның жазбасын ешбір жолмен өңдеуге болмайды (сервер жағында да тексерілген).</span></li>
+            <li><input type="checkbox"> <span><strong>Like / Unlike:</strong> түйме <code>fetch</code> арқылы серверді асинхронды жаңартады және бетті қайта жүктемей лайк санын өзгертеді.</span></li>
+            <li><input type="checkbox"> <span>Файлдар құрылымы таратылған кодпен бірдей (<code>network</code>, <code>project4</code>, <code>manage.py</code>), басқа жобалардың коды жоқ.</span></li>
+            <li><input type="checkbox"> <span>Скринкаст жазылды (5 минуттан аспайды), 7 талап көрсетілді, сипаттамада уақыт белгілері бар.</span></li>
+            <li><input type="checkbox"> <span><code>submit50 web50/projects/2020/x/network</code> орындалды (немесе <code>web50/projects/2020/x/network</code> тармағына push жасалды).</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+
+
+      <nav class="pager">
+        <a href="week-5.html"><small>Алдыңғы</small>← 5-апта: JavaScript</a>
+        <a class="next" href="week-7.html"><small>Келесі</small>7-апта: Тестілеу, CI/CD →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 Web (CS50's Web Programming with Python and JavaScript, Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

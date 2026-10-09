@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 SQL 4-апта: Көріністер - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 SQL 4-апта: Көріністер - CS50 қазақша">
+  <meta property="og:description" content="CS50 SQL 4-апта: көріністер (VIEW), жеңілдету, агрегаттау, CTE, бөлектеу, қауіпсіздік және жұмсақ жою триггерлері.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/sql/lectures/week-4.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 SQL 4-апта: көріністер (VIEW), жеңілдету, агрегаттау, CTE, бөлектеу, қауіпсіздік және жұмсақ жою триггерлері.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#7c3aed" data-n="4">
+        <div class="num">4-апта</div>
+        <h1>Көріністер</h1>
+        <p>Күрделі сұраудың нәтижесін жаңа, «виртуалды» кестедей сақтап, оны қайтадан қарапайым кестедей сұрауды үйренеміз: жеңілдету, жинақтау, бөлектеу, деректі жасыру және жұмсақ жою.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/sql/notes/4/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Алдыңғы апталарда дерекқорды жобалауды және оған дерек жазуды үйрендік. Енді керісінше: сол дерекқордан деректі <strong>ыңғайлы етіп көру</strong> жолдарын қарастырамыз. Бір ғана жаңа ұғым бар, ол - <code>VIEW</code>, бірақ оны төрт түрлі мақсатқа пайдалана аламыз. Мысалдардағы «▶ Іске қосу» батырмасы нағыз SQLite-та жұмыс істейді. Әр басқанда дерекқор жаңадан жасалады, сондықтан кейбір мысалға дайын көрінісі бар нұсқасы беріледі.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="introduction">Кіріспе</h2>
+      <p>Осы уақытқа дейін біз күрделі дерекқорларды <em>жобалауды</em> және оларға деректі <em>жазуды</em> үйрендік. Ал енді сол дерекқордан деректі қалай ыңғайлы <strong>көруге</strong> болатынын қарастырайық.</p>
+      <p>Халықаралық Букер сыйлығының ұзын тізіміне (longlist) енген кітаптар дерекқорына қайта оралайық. Мына суретте сол дерекқордағы үш кесте бейнеленген деп елестетіңіз: <code>books</code> (кітаптар), <code>authors</code> (авторлар) және олардың арасындағы көпке-көп байланыс кестесі <code>authored</code>.</p>
+      <p>Айталық, Хан Кандың (Han Kang) қандай кітап жазғанын білгіміз келеді. Не істейміз? Үш кестенің үшеуін де аралауымыз керек: алдымен авторлар кестесінен оның ID-ін табамыз, сосын <code>authored</code>-тан сол ID-ге сәйкес кітап ID-лерін, ең соңында <code>books</code>-тан сол ID-лердің атауларын. Базардан бір зат іздеп жүріп, үш қатарды түгел аралап шыққандай ғой. Сұрақ туады: қатысты ақпаратты үш кестеден жинап, <em>бір көріністе</em> көрсетудің жолы жоқ па?</p>
+      <p>Бар. Біз <code>JOIN</code> командасымен бірнеше кестенің жолдарын байланысқан баған бойынша біріктіре аламыз. Төмендегі сызбада үш кестенің авторлар мен олардың кітаптарын қалай бір қатарға тізіп беретіні көрсетілген.</p>
+
+      <figure class="diagram">
+        <svg viewBox="0 0 640 230" role="img" aria-label="authors, authored және books кестелері JOIN арқылы бір көрініске біріктіріледі" style="width:100%;max-width:640px;height:auto;color:currentColor">
+          <g fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="10" y="12" width="150" height="62" rx="6"/>
+            <rect x="10" y="84" width="150" height="62" rx="6"/>
+            <rect x="10" y="156" width="150" height="62" rx="6"/>
+            <rect x="400" y="62" width="230" height="106" rx="6" stroke="var(--accent, #7c3aed)" stroke-width="2.5"/>
+            <path d="M165 43 C 270 43, 300 100, 392 105" stroke="var(--accent, #7c3aed)"/>
+            <path d="M165 115 L 392 115" stroke="var(--accent, #7c3aed)"/>
+            <path d="M165 187 C 270 187, 300 130, 392 125" stroke="var(--accent, #7c3aed)"/>
+          </g>
+          <g fill="currentColor" font-family="JetBrains Mono, monospace" font-size="12">
+            <text x="22" y="34" font-weight="700">authors</text><text x="22" y="54">id | name</text>
+            <text x="22" y="106" font-weight="700">authored</text><text x="22" y="126">author_id | book_id</text>
+            <text x="22" y="178" font-weight="700">books</text><text x="22" y="198">id | title | year</text>
+            <text x="412" y="86" font-weight="700" fill="var(--accent, #7c3aed)">JOIN нәтижесі</text>
+            <text x="412" y="112">name | title</text>
+            <text x="412" y="132">Han Kang | The White Book</text>
+            <text x="412" y="152">Olga Tokarczuk | Flights</text>
+          </g>
+        </svg>
+        <figcaption>Үш кесте <code>JOIN</code> арқылы «автор - кітап» деген бір көріністе тұр.</figcaption>
+      </figure>
+
+      <p>Қараңыз, енді Хан Кандың «The White Book» жазғаны бірден көрінеді. Тіпті ID бағандарын алып тастасақ та болады: бізге тек автор мен кітаптың аты ғана керек. Сонда көрініс «name | title» деген екі бағанға дейін қысқарады. Міне, осы «көріністі» сақтап қоюға болады, және ол - бүгінгі тақырып.</p>
+
+      <h2 id="views">Көріністер</h2>
+      <p><strong>Көрініс</strong> (<span class="term-en">view</span>) - сұраумен анықталған <strong>виртуалды кесте</strong> (<span class="term-en">virtual table</span>). Яғни үш кестені біріктіретін сұрауды жазып, керек бағандарды таңдап, нәтижесін ат беріп сақтап қоямыз. Сосын сол атты кәдімгі кесте сияқты қайта-қайта сұрай аламыз.</p>
+      <p>Көріністер не үшін керек? Негізгі төрт мақсатты атайық:</p>
+      <ul>
+        <li><strong>жеңілдету</strong> (<span class="term-en">simplifying</span>): әртүрлі кестелердің деректерін біріктіріп, оны одан әрі оңай сұрау;</li>
+        <li><strong>агрегаттау</strong> (<span class="term-en">aggregating</span>): агрегат функцияларын (мысалы, қосынды) есептеп, нәтижесін сақтау;</li>
+        <li><strong>бөлектеу</strong> (<span class="term-en">partitioning</span>): деректі қисынды бөліктерге бөлу;</li>
+        <li><strong>қорғау</strong> (<span class="term-en">securing</span>): құпия болуы тиіс бағандарды жасыру.</li>
+      </ul>
+      <p>Көріністердің пайдасы мұнымен бітпейді, бірақ бүгін осы төртеуіне тоқталамыз.</p>
+
+      <h2 id="simplifying">Жеңілдету</h2>
+      <p>Ең алдымен <code>longlist.db</code> дерекқорын SQLite-та ашып, <code>.schema</code> командасымен үш кестенің бар екенін тексерейік: <code>authors</code>, <code>authored</code> және <code>books</code>.</p>
+      <p>Айталық, Фернанда Мелчор (Fernanda Melchor) жазған кітаптарды тапқымыз келеді. Бұрынғы білімімізбен былай, <strong>кірістірілген сұрау</strong> (<span class="term-en">nested query</span>) жазамыз:</p>
+<pre data-lang="sql" data-db="w4_longlist" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT "title" FROM "books"
+WHERE "id" IN (
+    SELECT "book_id" FROM "authored"
+    WHERE "author_id" = (
+        SELECT "id" FROM "authors"
+        WHERE "name" = 'Fernanda Melchor'
+    )
+);</code></pre>
+      <p>Жұмыс істейді, бірақ қараңызшы: бір сұрау ішінде үш <code>SELECT</code>! Мұны жазу да, кейін оқу да қиын. Оңайлатайық. Алдымен <code>JOIN</code> арқылы авторлар мен олардың кітаптарын біріктіретін көріністі жасаймыз. Жаңа терминалда <code>longlist.db</code>-ге қайта қосылып, мына сұрауды орындаймыз:</p>
+<pre data-lang="sql" data-db="w4_longlist" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT "name", "title" FROM "authors"
+JOIN "authored" ON "authors"."id" = "authored"."author_id"
+JOIN "books" ON "books"."id" = "authored"."book_id";</code></pre>
+      <p>Назар аударыңыз: екі кестені <em>қандай баған бойынша</em> (<code>ON</code>) байланыстыруды көрсету өте маңызды. Оны айтпасаңыз, SQL қайсысы кімге сәйкес екенін білмейді. Кішкентай кеңес: әдетте бір кестенің бастапқы кілті (primary key) екінші кестенің сәйкес сыртқы кілтімен (foreign key) байланыстырылады.</p>
+      <p>Бұл сұрау әр автордың атын оның жазған кітаптарының аттарымен қатарластырып шығарады. Ал енді осы виртуалды кестені көріністе сақтау үшін сұрауды сәл өзгертеміз: алдына <code>CREATE VIEW</code> қосамыз.</p>
+<pre data-lang="sql" data-db="w4_longlist" data-dbsrc="sql/data/week-4.js"><code class="language-sql">CREATE VIEW "longlist" AS
+SELECT "name", "title" FROM "authors"
+JOIN "authored" ON "authors"."id" = "authored"."author_id"
+JOIN "books" ON "books"."id" = "authored"."book_id";</code></pre>
+      <p>Біз жасаған көріністің аты - <code>longlist</code>. Енді оны SQL-де кәдімгі кесте сияқты қолдана аламыз. Ішіндегінің бәрін көрелік. (Бұл және келесі мысалдарда көрініс дерекқорда дайын тұрады, өйткені әр басқанда дерекқор жаңартылады.)</p>
+<pre data-lang="sql" data-db="w4_longlist_views" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT * FROM "longlist";</code></pre>
+      <p>Ал Фернанда Мелчордың кітаптарын табатын сұрау енді қаншалықты қысқарғанын қараңыз. Міне, нағыз <strong>жеңілдету</strong>:</p>
+<pre data-lang="sql" data-db="w4_longlist_views" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT "title" FROM "longlist" WHERE "name" = 'Fernanda Melchor';</code></pre>
+      <p>Үш <code>SELECT</code>-тің орнына бір ғана қарапайым сұрау. Бір маңызды нәрсе: көрініс виртуалды кесте болғандықтан, диск орнын көп алмайды. Деректің өзі бұрынғыдай негізгі кестелерде жатыр, ал көрініс оларға тек ыңғайлы терезе ашып береді.</p>
+      <div class="callout term">
+        <span class="callout-title">Терезе ұқсастығы</span>
+        <p>Көріністі үйдің терезесіндей елестетіңіз. Үй (кестелер) өз орнында, ештеңе көшірілмейді. Бірақ терезеден қарағанда сіз бүкіл үйді емес, керек бөлігін ғана, керек бұрыштан көресіз.</p>
+      </div>
+
+      <h3 id="simplifying-questions">Сұрақтар</h3>
+      <p><em>Көріністерді реттеуге немесе басқаша көрсетуге бола ма?</em></p>
+      <p>Болады. Көрініс жолдарын кәдімгі кестедегідей реттей аламыз. Мысалы, <code>longlist</code> ішіндегіні кітап атауы бойынша реттеп көрейік:</p>
+<pre data-lang="sql" data-db="w4_longlist_views" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT "name", "title"
+FROM  "longlist"
+ORDER BY "title";</code></pre>
+      <p>Сонымен қатар көрініс <em>өзі</em> реттелген болуы да мүмкін. Ол үшін көріністі жасайтын сұрауға <code>ORDER BY</code> қосу жеткілікті.</p>
+
+      <h2 id="aggregating">Агрегаттау</h2>
+      <p><code>longlist.db</code>-де әр кітапқа берілген жеке бағалар сақталған кесте бар (<code>ratings</code>). Алдыңғы апталарда әр кітаптың орташа бағасын екі таңбаға дейін дөңгелектеп есептеуді үйрендік:</p>
+<pre data-lang="sql" data-db="w4_longlist" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT "book_id", ROUND(AVG("rating"), 2) AS "rating"
+FROM "ratings"
+GROUP BY "book_id";</code></pre>
+      <p>Бірақ <code>book_id</code> деген сан көп нәрсе айтпайды ғой. Нәтиже пайдалырақ болуы үшін кітаптың атауын және ұзын тізімге қай жылы енгенін де көрсетейік. Бұл ақпарат <code>books</code> кестесінде тұр:</p>
+<pre data-lang="sql" data-db="w4_longlist" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT "book_id", "title", "year", ROUND(AVG("rating"), 2) AS "rating"
+FROM "ratings"
+JOIN "books" ON "ratings"."book_id" = "books"."id"
+GROUP BY "book_id";</code></pre>
+      <p>Мұнда <code>ratings</code> және <code>books</code> кестелерін кітап ID бағаны бойынша <code>JOIN</code> арқылы біріктірдік. Сұраудағы <em>әрекеттер ретіне</em> назар аударыңыз: алдымен екі кесте біріктіріледі, содан кейін ғана, сұраудың соңында <code>GROUP BY</code> топтастыру жасалады.</p>
+      <p>Осы <strong>агрегатталған</strong> (<span class="term-en">aggregated</span>) деректі көріністе сақтап қоюға болады:</p>
+<pre data-lang="sql" data-db="w4_longlist" data-dbsrc="sql/data/week-4.js"><code class="language-sql">CREATE VIEW "average_book_ratings" AS
+SELECT "book_id" AS "id", "title", "year", ROUND(AVG("rating"), 2) AS "rating"
+FROM "ratings"
+JOIN "books" ON "ratings"."book_id" = "books"."id"
+GROUP BY "book_id";</code></pre>
+      <p>Енді көрініс ішіндегіні қарайық:</p>
+<pre data-lang="sql" data-db="w4_longlist_views" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT * FROM "average_book_ratings";</code></pre>
+      <p>Тамаша жері мынада: <code>ratings</code> кестесіне жаңа баға қосылса, жаңартылған орташаны көру үшін жоғарыдағыдай <code>SELECT</code> сұрауын қайта орындау жеткілікті. Көрініс әр сұрау сайын деректі қайтадан негізгі кестелерден алады.</p>
+      <p>Көрініс жасаған сайын ол дерекқор схемасына қосылады. Мұны <code>.schema</code> командасымен тексеруге болады: <code>longlist</code> және <code>average_book_ratings</code> енді осы дерекқордың схемасының бөлігі.</p>
+      <p>Ал схемада тұрақты қалмайтын <strong>уақытша көрініс</strong> (<span class="term-en">temporary view</span>) қажет болса, <code>CREATE TEMPORARY VIEW</code> командасын қолданамыз. Ол тек дерекқормен байланысымыз (connection) жалғасқанша өмір сүреді.</p>
+      <p>Енді кітаптардың жыл бойынша орташа бағасын табайық. Дайын көріністі қолдансақ болады:</p>
+<pre data-lang="sql" data-db="w4_longlist_views" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT "year", ROUND(AVG("rating"), 2) AS "rating"
+FROM "average_book_ratings"
+GROUP BY "year";</code></pre>
+      <p>Назар аударыңыз: біз <code>average_book_ratings</code> көрінісінен <code>rating</code> бағанын аламыз, ал ол бағанда әр <em>кітаптың</em> орташа бағасы тұр. Оларды жыл бойынша топтап, орташасын қайта есептейміз. Нәтижесінде <em>жылдың</em> орташа бағасын аламыз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: бұл «орташаның орташасы» әрқашан барлық жеке бағаның орташасына тең бе?</summary>
+        <div class="details-body"><p>Болжап көріңіз. Жоқ, әрқашан емес. Бір кітапқа 100 баға, екіншісіне тек 2 баға берілсе, көрініс екеуін де бір «дауыс» деп санайды, ал барлық бағаның орташасында үлкен кітаптың салмағы көбірек болар еді. Сондықтан қандай орташа керек екенін алдын ала ойлаңыз.</p></div>
+      </details>
+      <p>Осы нәтижені де уақытша көріністе сақтауға болады:</p>
+<pre data-lang="sql" data-db="w4_longlist_views" data-dbsrc="sql/data/week-4.js"><code class="language-sql">CREATE TEMPORARY VIEW "average_ratings_by_year" AS
+SELECT "year", ROUND(AVG("rating"), 2) AS "rating" FROM "average_book_ratings"
+GROUP BY "year";</code></pre>
+
+      <h3 id="aggregating-questions">Сұрақтар</h3>
+      <p><em>Сұрау жұмыс істей ме, жоқ па деп тексеру үшін уақытша көріністерді қолдануға бола ма?</em></p>
+      <p>Иә, бұл уақытша көріністің тамаша қолданылуы! Жалпылай айтсақ, уақытша көріністерді деректі қандай да бір тәртіппен <em>ұйымдастырып көргіміз</em> келгенде қолданамыз, бірақ ол ұйымдастыруды дерекқорда ұзақ сақтағымыз келмегенде.</p>
+
+      <h2 id="cte">Жалпы кесте өрнегі (CTE)</h2>
+      <p>Қалыпты көрініс дерекқор схемасында мәңгі тұрады. Уақытша көрініс дерекқормен байланысымыз тұрғанша өмір сүреді. Ал <strong>жалпы кесте өрнегі</strong> (<span class="term-en">common table expression, CTE</span>) - тек <em>бір ғана сұрау</em> ішінде өмір сүретін көрініс.</p>
+
+      <figure class="diagram">
+        <svg viewBox="0 0 640 170" role="img" aria-label="Көріністің үш түрінің өмір ұзақтығы: қалыпты көрініс, уақытша көрініс, CTE" style="width:100%;max-width:640px;height:auto;color:currentColor">
+          <g font-family="Inter, sans-serif" font-size="13" fill="currentColor">
+            <text x="10" y="32">VIEW</text>
+            <text x="10" y="82">TEMPORARY VIEW</text>
+            <text x="10" y="132">CTE (WITH)</text>
+          </g>
+          <g stroke="none">
+            <rect x="170" y="16" width="460" height="22" rx="5" fill="var(--accent, #7c3aed)"/>
+            <rect x="170" y="66" width="260" height="22" rx="5" fill="var(--accent, #7c3aed)" opacity=".65"/>
+            <rect x="170" y="116" width="70" height="22" rx="5" fill="var(--accent, #7c3aed)" opacity=".4"/>
+          </g>
+          <g font-family="Inter, sans-serif" font-size="12" fill="currentColor">
+            <text x="180" y="53" opacity=".8">схемада тұрады, дерекқор бар болғанша</text>
+            <text x="180" y="103" opacity=".8">байланыс жабылғанша</text>
+            <text x="250" y="153" opacity=".8">бір сұрау ғана</text>
+          </g>
+        </svg>
+        <figcaption>Үш түрлі көріністің «өмір ұзақтығы».</figcaption>
+      </figure>
+
+      <p>Жыл бойынша орташа бағаны енді уақытша көрініссіз, CTE арқылы қайта жасап көрейік. Алдымен бұрынғы <code>average_book_ratings</code> атауын қайта қолдану үшін ескі көріністі өшіру керек:</p>
+<pre data-lang="sql" data-db="w4_longlist_views" data-dbsrc="sql/data/week-4.js"><code class="language-sql">DROP VIEW "average_book_ratings";</code></pre>
+      <p>Содан кейін <em>әр кітаптың</em> орташа бағасы бар CTE жасаймыз да, сол арқылы <em>әр жылдың</em> орташасын есептейміз. Бұрынғыдай, бірақ енді бәрі бір сұрауда:</p>
+<pre data-lang="sql" data-db="w4_longlist" data-dbsrc="sql/data/week-4.js"><code class="language-sql">WITH "average_book_ratings" AS (
+    SELECT "book_id", "title", "year", ROUND(AVG("rating"), 2) AS "rating" FROM "ratings"
+    JOIN "books" ON "ratings"."book_id" = "books"."id"
+    GROUP BY "book_id"
+)
+SELECT "year", ROUND(AVG("rating"), 2) AS "rating" FROM "average_book_ratings"
+GROUP BY "year";</code></pre>
+      <p>Қараңыз: <code>WITH ... AS (...)</code> бөлігі «бұл сұраудың ішінде осындай уақытша кесте болсын» дегенді білдіреді. Сұрау біткен соң ол жоғалады, схемаға ештеңе қалмайды.</p>
+
+      <h2 id="partitioning">Бөлектеу</h2>
+      <p>Көріністерді деректі <strong>бөлектеу</strong> үшін, яғни оны өзімізге немесе қосымшаға пайдалы кіші бөліктерге бөлу үшін де қолдануға болады. Мысалы, Халықаралық Букер сыйлығының сайтында сыйлық берілген әр жылға арналған ұзын тізім беті бар. Ал біздің дерекқорда барлық кітаптар бір кестеде жатыр. Сайтты жасау үшін (немесе басқа мақсатта) әр жылға арналған бөлек кесте (дәлірек, көрініс) болғаны ыңғайлы болар еді.</p>
+      <p>2022 жылғы ұзын тізімге енген кітаптарды сақтайтын көрініс жасайық:</p>
+<pre data-lang="sql" data-db="w4_longlist" data-dbsrc="sql/data/week-4.js"><code class="language-sql">CREATE VIEW "2022" AS
+SELECT "id", "title" FROM "books"
+WHERE "year" = 2022;</code></pre>
+      <p>Көрініс аты саннан басталатындықтан, оны тырнақшаға алу керек екенін байқаңыз. Ішіндегі деректі де көреміз:</p>
+<pre data-lang="sql" data-db="w4_longlist_views" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT * FROM "2022";</code></pre>
+
+      <h3 id="partitioning-questions">Сұрақтар</h3>
+      <p><em>Көріністерді жаңартуға (өзгертуге) бола ма?</em></p>
+      <p>Жоқ, себебі көріністің кестедегідей өз деректері жоқ. Көрініс әр сұрау сайын деректі негізгі кестелерден алады. Демек, негізгі кесте өзгерсе, көріністі келесі сұраған кезде жаңартылған дерек көрінеді!</p>
+
+      <h2 id="securing">Қорғау</h2>
+      <p>Көріністер белгілі бір деректерге қол жеткізуді шектеу арқылы дерекқор <strong>қауіпсіздігін</strong> арттыра алады.</p>
+      <p>Көлік шақыру компаниясының (rideshare) дерекқорын елестетіңіз. Онда <code>rides</code> кестесі бар: әр жолда жолдың басталған жері, баратын жері және жолаушы.</p>
+      <p>Бұл деректі талдаушыға берейік дейік. Оның міндеті - ең танымал бағыттарды табу. Оған жолаушылардың аты не үшін керек? Керегі жоқ, әрі қауіпсіз де емес. Жолаушылар аттары <strong>жеке тұлғаны анықтайтын деректерге</strong> (<span class="term-en">personally identifiable information, PII</span>) жатады, ал компаниялардың мұндай деректі кез келген адамға беруге құқығы жоқ.</p>
+      <p>Бұл жерде көрініс көмектеседі: талдаушыға жолаушы аттарынсыз, тек жол басы мен соңы бар көріністі береміз. Тәжірибе жасайық: терминалда <code>rideshare.db</code> дерекқорын ашамыз. <code>.schema</code> бұл дерекқорда <code>rides</code> деген бір ғана кесте барын көрсетеді.</p>
+      <p>Қажетті бағандары бар көрініс жасаймыз, ал <code>rider</code> бағанын мүлде алып тастаудың орнына, сәл әрі қарай барып, <strong>анонимделген</strong> (<span class="term-en">anonymized</span>) <code>rider</code> бағанын жасаймыз: әр жолда «Anonymous» деп тұрады. Сонда талдаушы дерекқорда жолаушы аттары бар екенін, бірақ олардың қорғалғанын көреді.</p>
+<pre data-lang="sql" data-db="w4_rideshare" data-dbsrc="sql/data/week-4.js"><code class="language-sql">CREATE VIEW "analysis" AS
+SELECT "id", "origin", "destination", 'Anonymous' AS "rider"
+FROM "rides";</code></pre>
+      <p>Көрініс қауіпсіз екенін сұрап көріп тексерейік:</p>
+<pre data-lang="sql" data-db="w4_rideshare_v" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT * FROM "analysis";</code></pre>
+      <div class="callout warn">
+        <span class="callout-title">Назар аударыңыз</span>
+        <p>Анонимделген көрініс жасай аламыз, бірақ SQLite-та <strong>қолжетімділікті басқару</strong> (access control) жоқ. Яғни талдаушы бізбен күресе отырып жасырған атаулардың бәрін негізгі <code>rides</code> кестесін тікелей сұрап көре алады. Мұны төмендегі мысалдан көріңіз.</p>
+      </div>
+<pre data-lang="sql" data-db="w4_rideshare_v" data-dbsrc="sql/data/week-4.js"><code class="language-sql">-- Біздің өз мысалымыз: көрініс жасырды, бірақ кестенің өзі ашық тұр
+SELECT * FROM "rides";</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: онда SQLite-та көрініс қорғау үшін не береді?</summary>
+        <div class="details-body"><p>Көрініс пен қолжетімділік бақылауы бірге жұмыс істегенде ғана нағыз қорғаныс болады: көріністі ашасыз, негізгі кестені жабасыз. Мұны үлкен дерекқор жүйелері (мысалы, MySQL, PostgreSQL) істей алады, оны келесі апталарда көреміз. SQLite-та көрініс - тек ыңғайлы әрі ниетті «сыпайы» қорғау, қатаң құлып емес.</p></div>
+      </details>
+
+      <h2 id="soft-deletions">Жұмсақ жою</h2>
+      <p>Алдыңғы апталарда көргеніміздей, <strong>жұмсақ жою</strong> (<span class="term-en">soft deletion</span>) дегеніміз - жолды кестеден физикалық түрде өшірудің орнына, оны «өшірілген» деп белгілеу.</p>
+      <p>Мысалы, өнер туындысы «Farmers working at dawn» (Таң ата жұмыс істеп жатқан диқандар) <code>collections</code> кестесінде өшірілген деп белгіленеді: <code>deleted</code> бағанындағы мән 0-ден 1-ге ауысады. Жол кестеде қала береді, тек «өшірілді» деген белгісі бар.</p>
+      <p>Енді тек өшірілмеген туындыларды көрсететін көрініс жасаймыз деп елестетіңіз. Тәжірибе үшін терминалда <code>mfa.db</code> дерекқорын ашайық (Бейнелеу өнері мұражайы). Бұл дерекқордағы <code>collections</code> кестесінде әзірге <code>deleted</code> бағаны жоқ, сондықтан оны қосуымыз керек. Әдепкі мәні 0 болады, яғни жол өшірілмеген.</p>
+<pre data-lang="sql" data-db="w4_mfa" data-dbsrc="sql/data/week-4.js"><code class="language-sql">ALTER TABLE "collections"
+ADD COLUMN "deleted" INTEGER DEFAULT 0;</code></pre>
+      <p>Ал енді «Farmers working at dawn» туындысын жұмсақ жоямыз, яғни оның <code>deleted</code> мәнін 1 етіп жаңартамыз:</p>
+<pre data-lang="sql" data-db="w4_mfa_col" data-dbsrc="sql/data/week-4.js"><code class="language-sql">UPDATE "collections"
+SET "deleted" = 1
+WHERE "title" = 'Farmers working at dawn';</code></pre>
+      <p>Өшірілмеген жолдар туралы ақпаратты көрсететін көріністі жасаймыз:</p>
+<pre data-lang="sql" data-db="w4_mfa_col" data-dbsrc="sql/data/week-4.js"><code class="language-sql">CREATE VIEW "current_collections" AS
+SELECT "id", "title", "accession_number", "acquired"
+FROM "collections"
+WHERE "deleted" = 0;</code></pre>
+      <p>Көріністегі деректі көріп, «Farmers working at dawn» онда жоқ екенін тексерейік:</p>
+<pre data-lang="sql" data-db="w4_mfa_soft" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT * FROM "current_collections";</code></pre>
+      <p>Негізгі <code>collections</code> кестесінен жолды жұмсақ жойсақ, келесі сұрауда ол <code>current_collections</code> көрінісінен автоматты түрде жоғалады.</p>
+
+      <h3 id="instead-of">INSTEAD OF триггерлері</h3>
+      <p>Біз бұрыннан білеміз: көрінісіне дерек <em>қосуға</em> да, одан дерек <em>өшіруге</em> де болмайды. Бірақ бір айла бар: негізгі кестеге қосатын не өшіретін <strong>триггер</strong> (<span class="term-en">trigger</span>) жасауға болады. Бұған <code>INSTEAD OF</code> триггері мүмкіндік береді, яғни «осы әрекеттің орнына мынаны істе».</p>
+<pre data-lang="sql" data-db="w4_mfa_soft" data-dbsrc="sql/data/week-4.js"><code class="language-sql">CREATE TRIGGER "delete"
+INSTEAD OF DELETE ON "current_collections"
+FOR EACH ROW
+BEGIN
+    UPDATE "collections" SET "deleted" = 1
+    WHERE "id" = OLD."id";
+END;</code></pre>
+      <p>Енді көріністен жол өшіргіміз келген сайын бұл триггер оның орнына негізгі <code>collections</code> кестесінде сол жолдың <code>deleted</code> бағанын жаңартады. Сонымен жұмсақ жою аяқталады. Мұндағы <code>OLD</code> кілт сөзі: «<code>collections</code> ішінде жаңартылатын жолдың ID-і біз <code>current_collections</code>-тан өшірмекші болған жолдың ID-іне тең болсын» дегенді білдіреді.</p>
+      <p>Енді көріністен жолды өшіріп көрейік:</p>
+<pre data-lang="sql" data-db="w4_mfa_trig" data-dbsrc="sql/data/week-4.js"><code class="language-sql">DELETE FROM "current_collections"
+WHERE "title" = 'Imaginative landscape';</code></pre>
+      <p>Нәтижені көріністі сұрап тексереміз. (Мұнда «Imaginative landscape» өшіру алдын ала орындалған дерекқор алынды.)</p>
+<pre data-lang="sql" data-db="w4_mfa_after" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT * FROM "current_collections";</code></pre>
+      <p>Дәл осылай көріністі <em>толтыратын</em> триггер де жасай аламыз: көріністі қосқанымызда деректер негізгі кестеге түседі. Мұнда екі жағдайды ескеру керек. Біріншісі: көрінісіне қосқымыз келген жол негізгі кестеде бұрыннан бар, бірақ жұмсақ жойылған. Бұл жағдайды мына триггер өңдейді:</p>
+<pre data-lang="sql" data-db="w4_mfa_soft" data-dbsrc="sql/data/week-4.js"><code class="language-sql">CREATE TRIGGER "insert_when_exists"
+INSTEAD OF INSERT ON "current_collections"
+FOR EACH ROW
+WHEN NEW."accession_number" IN (
+    SELECT "accession_number" FROM "collections"
+)
+BEGIN
+    UPDATE "collections"
+    SET "deleted" = 0
+    WHERE "accession_number" = NEW."accession_number";
+END;</code></pre>
+      <p><code>WHEN</code> кілт сөзімен туындының инвентарлық нөмірі (<code>accession_number</code>) <code>collections</code> кестесінде бар-жоғын тексереміз. Бұл жұмыс істейді, өйткені алдыңғы апталардан білеміз: инвентарлық нөмір бұл кестедегі әр туындыны бірегей анықтайды. Туынды негізгі кестеде бар болса, оның <code>deleted</code> мәнін 0 етеміз, яғни жұмсақ жоюды кері қайтарамыз.</p>
+      <p>Екінші жағдай: қосқалы отырған жол негізгі кестеде мүлде жоқ. Мұны мына триггер өңдейді:</p>
+<pre data-lang="sql" data-db="w4_mfa_soft" data-dbsrc="sql/data/week-4.js"><code class="language-sql">CREATE TRIGGER "insert_when_new"
+INSTEAD OF INSERT ON "current_collections"
+FOR EACH ROW
+WHEN NEW."accession_number" NOT IN (
+    SELECT "accession_number" FROM "collections"
+)
+BEGIN
+    INSERT INTO "collections" ("title", "accession_number", "acquired")
+    VALUES (NEW."title", NEW."accession_number", NEW."acquired");
+END;</code></pre>
+      <p>Қосылатын деректің инвентарлық нөмірі <code>collections</code>-та әлі жоқ болса, жол кестеге қосылады.</p>
+      <p>Үш триггер бірге қалай жұмыс істейтінін өз көзіңізбен көріңіз. Мына мысал біздің қосымша тәжірибеміз (лекцияда жоқ): алдымен жұмсақ жойылған туындыны «қосамыз», сосын мүлде жаңасын:</p>
+<pre data-lang="sql" data-db="w4_mfa_trig" data-dbsrc="sql/data/week-4.js"><code class="language-sql">-- 1) Жұмсақ жойылған жолды қайта «қосу»: insert_when_exists жұмыс істейді
+INSERT INTO "current_collections" ("title", "accession_number", "acquired")
+VALUES ('Farmers working at dawn', '56.257', '1956-09-12');
+
+-- 2) Мүлде жаңа туынды: insert_when_new жұмыс істейді
+INSERT INTO "current_collections" ("title", "accession_number", "acquired")
+VALUES ('Golden eagle', '99.001', '1999-05-09');
+
+SELECT * FROM "current_collections";</code></pre>
+
+      <h2 id="fin">Аяқтау</h2>
+      <p>Осымен 4-лекция, SQL-дегі «Көріністер» тақырыбы аяқталды!</p>
+
+      <h2 id="summary">Қорытынды тезистер</h2>
+      <ul>
+        <li><strong>көрініс</strong> - сұраумен анықталған виртуалды кесте: <code>CREATE VIEW ... AS SELECT ...</code>; ол деректі өзінде сақтамайды, әр сұрауда негізгі кестелерден алады;</li>
+        <li><strong>жеңілдету</strong>: <code>JOIN</code> арқылы біріктірілген деректі көріністе сақтап, үш деңгейлі кірістірілген сұрауды бір қысқа <code>SELECT</code>-ке айналдыруға болады;</li>
+        <li><strong>агрегаттау</strong>: <code>GROUP BY</code> + <code>AVG</code> сияқты есептеулерді көріністе сақтауға болады, жаңа дерек қосылса, көріністі қайта сұрау жеткілікті;</li>
+        <li><code>CREATE TEMPORARY VIEW</code> - тек байланыс жалғасқанша өмір сүретін уақытша көрініс, ал <strong>CTE</strong> (<code>WITH ... AS (...)</code>) - бір ғана сұраудың ішіндегі көрініс;</li>
+        <li><strong>бөлектеу</strong>: бір кестені қисынды бөліктерге (мысалы, жыл бойынша) бөлетін көріністер;</li>
+        <li><strong>қорғау</strong>: көрініс бағандарды жасыра немесе анонимдей алады, бірақ SQLite-та қолжетімділікті басқару жоқ, сондықтан негізгі кесте ашық қалады;</li>
+        <li>көріністі жаңартуға болмайды, бірақ <code>INSTEAD OF</code> триггері арқылы көріністегі <code>DELETE</code>/<code>INSERT</code> әрекеттерін негізгі кестедегі <code>UPDATE</code>/<code>INSERT</code> әрекеттеріне айналдыруға болады, осылай <strong>жұмсақ жоюды</strong> іске асырамыз.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. <code>CREATE VIEW "longlist" AS SELECT ...</code> орындалғаннан кейін көрініс туралы қайсысы дұрыс?</p>
+          <label><input type="radio" value="a"> Нәтиже жолдары жаңа кестеге көшіріліп, диск орнын көп алады</label>
+          <label><input type="radio" value="b"> Көрініс бір рет жасалады да, негізгі кестелер өзгергенде өзгермейді</label>
+          <label><input type="radio" value="c"> Көрініс деректі өзінде сақтамайды, оны сұраған сайын негізгі кестелерден есептейді</label>
+          <label><input type="radio" value="d"> Көріністі тек оны жасаған байланыста ғана көруге болады</label>
+          <p class="explain">Көрініс - виртуалды кесте, яғни сақталған сұрау. Деректі әр сұрау сайын негізгі кестелерден алады, сондықтан әрқашан жаңа болады.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">2. <code>ratings</code> кестесіне жаңа баға қосылды. <code>average_book_ratings</code> көрінісіндегі орташа баға қалай жаңарады?</p>
+          <label><input type="radio" value="a"> Ештеңе істеудің керегі жоқ: көріністі қайта <code>SELECT</code> жасасақ, жаңа орташа шығады</label>
+          <label><input type="radio" value="b"> Көріністі <code>DROP VIEW</code> арқылы өшіріп, қайта жасау керек</label>
+          <label><input type="radio" value="c"> Көрініске <code>UPDATE</code> жасау керек</label>
+          <label><input type="radio" value="d"> Көрініс жаңармайды, ол жасалған сәттегі күйінде қалады</label>
+          <p class="explain">Көрініс әр сұрауда негізгі кестелерден деректі қайтадан оқиды, сондықтан қайта сұрау жеткілікті.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. Бір күрделі сұрау ішінде ғана керек уақытша кесте қажет. Қайсысы ең дұрыс таңдау?</p>
+          <label><input type="radio" value="a"> <code>CREATE VIEW</code>, себебі ол ең жылдам</label>
+          <label><input type="radio" value="b"> <code>CREATE TEMPORARY VIEW</code>, ол дерекқорды біржола өзгертеді</label>
+          <label><input type="radio" value="c"> Жаңа кесте жасап, оған дерек көшіру</label>
+          <label><input type="radio" value="d"> <code>WITH ... AS (...)</code>: CTE тек сол бір сұрауда өмір сүреді және схемаға ештеңе қалдырмайды</label>
+          <p class="explain">CTE бір сұраудың ішінде ғана тұрады. Уақытша көрініс байланыс жабылғанша қалады, ал қалыпты көрініс схемада мәңгі тұрады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">4. Мына сұраудың нәтижесі не?</p>
+<pre data-lang="sql"><code class="language-sql">CREATE VIEW "2022" AS
+SELECT "id", "title" FROM "books"
+WHERE "year" = 2022;
+
+INSERT INTO "books" ("title", "year") VALUES ('New Book', 2022);
+SELECT COUNT(*) FROM "2022";</code></pre>
+          <label><input type="radio" value="a"> Жаңа кітап есепке алынбайды, себебі көрініс жасалған кезде оның жолы жоқ еді</label>
+          <label><input type="radio" value="b"> Жаңа кітап саналады, себебі көрініс әр сұрауда <code>books</code> кестесінен деректі қайта оқиды</label>
+          <label><input type="radio" value="c"> Қате шығады, себебі көрініс аты саннан басталады</label>
+          <label><input type="radio" value="d"> Қате шығады, себебі көрініс бар кестеге <code>INSERT</code> жасауға болмайды</label>
+          <p class="explain">Көрініс тырнақшамен жазылған болса, аты санмен басталса да болады. <code>INSERT</code> негізгі <code>books</code> кестесіне жасалды, ал көрініс оны келесі сұрауда көреді.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">5. Талдаушыға тек <code>analysis</code> көрінісін беріп, <code>rides</code> кестесін жасырмадық. SQLite-та не болады?</p>
+          <label><input type="radio" value="a"> Талдаушы аттарды көре алмайды, себебі көріністе жасырылған</label>
+          <label><input type="radio" value="b"> Талдаушы көріністі де көре алмайды</label>
+          <label><input type="radio" value="c"> SQLite-та қолжетімділікті басқару жоқ, сондықтан талдаушы <code>rides</code> кестесін сұрап, жолаушы аттарын көре алады</label>
+          <label><input type="radio" value="d"> <code>rides</code> кестесінің аттары автоматты түрде <code>Anonymous</code> болып өзгереді</label>
+          <p class="explain">Көрініс негізгі кестені қорғамайды. Нағыз қорғаныс үшін қолжетімділікті басқаратын дерекқор жүйесі керек.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">6. <code>SELECT "title" FROM "current_collections"</code> сұрауы жұмсақ жойылған туындыны не үшін көрсетпейді?</p>
+          <label><input type="radio" value="a"> Себебі жұмсақ жойылған жол кестеден физикалық түрде өшіріледі</label>
+          <label><input type="radio" value="b"> Себебі көріністі жасайтын сұрауда <code>WHERE "deleted" = 0</code> шарты бар</label>
+          <label><input type="radio" value="c"> Себебі <code>current_collections</code> бос көрініс</label>
+          <label><input type="radio" value="d"> Себебі триггер жолды көрініске жазбаған</label>
+          <p class="explain">Жұмсақ жоюда жол кестеде қалады, тек <code>deleted</code> = 1 болады. Көрініс оны <code>WHERE</code> шартымен сүзіп тастайды.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. <code>INSTEAD OF DELETE ON "current_collections"</code> триггерінің ішіндегі <code>OLD."id"</code> нені білдіреді?</p>
+          <label><input type="radio" value="a"> Жаңадан қосылатын жолдың ID-ін</label>
+          <label><input type="radio" value="b"> Кестедегі ең бірінші жолдың ID-ін</label>
+          <label><input type="radio" value="c"> <code>deleted</code> бағанының ескі мәнін</label>
+          <label><input type="radio" value="d"> Көріністен өшірілмекші болған жолдың ID-ін, соның негізінде негізгі кестедегі сәйкес жолды табамыз</label>
+          <p class="explain"><code>OLD</code> - өшірілетін (немесе өзгертілетін) жолдың ескі күйі. Триггер сол ID арқылы <code>collections</code>-тағы жолды <code>deleted = 1</code> етеді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">8. <code>average_book_ratings</code> көрінісінен жыл бойынша <code>AVG("rating")</code> алынды. Бұл нені береді?</p>
+          <label><input type="radio" value="a"> Әр кітаптың орташа бағасының жыл бойынша орташасы (орташаның орташасы)</label>
+          <label><input type="radio" value="b"> Жылдағы барлық жеке бағаның орташасы, әр кітаптың баға санын ескеріп</label>
+          <label><input type="radio" value="c"> Жылдағы кітап саны</label>
+          <label><input type="radio" value="d"> Қате, себебі агрегатты көрініске қайта қолдануға болмайды</label>
+          <p class="explain">Көріністегі <code>rating</code> бағанында әр кітаптың орташасы тұр. Оны жыл бойынша қайта орташалау «орташаның орташасын» береді, әр кітап бір «дауыс» болады.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Problem Set 4 (Тапсырмалар жинағы 4)</h2>
+      <p>Ресми тапсырма беті: <a href="https://cs50.harvard.edu/sql/psets/4/" target="_blank" rel="noopener">cs50.harvard.edu/sql/psets/4</a>. Үш тапсырма бар: <strong>Census Taker</strong>, <strong>The Private Eye</strong> және <strong>Bed and Breakfast</strong>. Үшеуінде де көріністер жасайсыз. Бір ескерту: ресми ережеге сәйкес бір-бірінен көшіруге болмайды, ал көмек сұрағанда басқаның орнына жұмыс істеп бермеуі тиіс (академиялық адалдық).</p>
+      <div class="callout note">
+        <span class="callout-title">Қайда орындалады</span>
+        <p>Ресми тапсырма <code>cs50.dev</code> ортасында орындалады: онда <code>sqlite3</code>, <code>.read</code> командасы, <code>check50</code> және <code>submit50</code> бар. Ресми дерекқорлар (<code>bnb.db</code>, <code>census.db</code>, <code>private.db</code>) үлкен, сондықтан сайтта олар жоқ. Орнына әр тапсырманың астында <strong>сайттың өз жаттығуы</strong> тұр (ресми тапсырма емес): сол логикаға ұқсас, бірақ Қазақстан деректерімен жасалған шағын демо дерекқорда <em>нағыз SQLite</em> орындайды. Ол жерде көріністі жасаудың орнына, оның ішіндегі <code>SELECT</code> сұрауын жазасыз, сайт нәтижесін эталонмен салыстырады. Нағыз <code>CREATE VIEW</code> жазып, ресми <code>check50</code>-ті компьютеріңізде міндетті түрде орындаңыз.</p>
+      </div>
+      <p>Кеңестер (ресми): лекциядағы Картердің SQL сұрауларын <a href="https://cs50.harvard.edu/sql/weeks/4/" target="_blank" rel="noopener">4-апта</a> бастапқы кодынан өзіңіз қайталап көріңіз, <a href="https://cs50.harvard.edu/sql/notes/4/" target="_blank" rel="noopener">4-апта конспектісін</a> қарап шығыңыз, SQL синтаксисі бойынша <a href="https://www.w3schools.com/sql/" target="_blank" rel="noopener">w3schools.com/sql</a> ыңғайлы анықтамалық.</p>
+      <p>Әр көрініс <strong>өз алдына тұруы</strong> тиіс: көріністі басқа көріністен жасауға болады, бірақ сіздің шешімдеріңіз бұрынғы көріністерге сүйенбеуі керек.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pset-census">Census Taker (Санақ жүргізуші)</h3></div>
+        <p>Сіз Непал үкіметінде санақ жүргізушісіз. Соңғы төбеден асып өткенде, Гималай таңының алдыңыздағы ауылды алтындай жарқыратқан көрінісі тынысыңызды тарылтады. Жергілікті жол бастаушыңыз кенет тоқтайды. Санақ қағаздарыңыздың сыбдырының астынан қызығушылық оянады: сіздің жұмысыңыз әр күні мұндай ауылға әкеле бермейді ғой.</p>
+        <p><code>census.db</code> дерекқорында деректі Непал үкіметі жазба жүргізу үшін қолдана алатын көріністерге өңдеңіз.</p>
+        <details><summary>Дистрибутивті код</summary><div class="details-body">
+          <p><code>census.db</code> дерекқорын және сұрауларыңызды жазатын бірнеше <code>.sql</code> файлын жүктеу керек. <a href="https://cs50.dev/" target="_blank" rel="noopener">cs50.dev</a>-ке кіріп, терминалда <code>cd</code> орындаңыз (промпт <code>$</code> болуы керек), сосын:</p>
+<pre class="terminal"><code class="language-plaintext">$ wget https://cdn.cs50.net/sql/2024/x/psets/4/census.zip
+$ unzip census.zip
+$ rm census.zip
+$ cd census
+census/ $ ls</code></pre>
+          <p><code>ls</code> нәтижесінде <code>census.db</code> және бірнеше <code>.sql</code> файлын көруіңіз керек. Көрінбесе, қадамдарды қайталап, қайда қателескеніңізді іздеңіз.</p>
+        </div></details>
+        <p><strong>Схема.</strong> <code>census.db</code> дерекқорында бір ғана кесте бар, <code>census</code>. Оның бағандары:</p>
+        <ul>
+          <li><code>id</code> - әр санақ жазбасын бірегей анықтайды;</li>
+          <li><code>district</code> - санақ жазбасының ауданының (округінің) атауы;</li>
+          <li><code>locality</code> - ауданның ішіндегі елді мекеннің (муниципалитеттің) атауы;</li>
+          <li><code>families</code> - жазбаға қатысты отбасылар саны;</li>
+          <li><code>households</code> - үй шаруашылықтарының жалпы саны (бір шаруашылықта бірнеше отбасы тұруы мүмкін);</li>
+          <li><code>population</code> - халық саны;</li>
+          <li><code>male</code> - ер азамат ретінде тіркелгендер саны;</li>
+          <li><code>female</code> - әйел азамат ретінде тіркелгендер саны.</li>
+        </ul>
+        <p><strong>Талаптар.</strong> Сәйкес <code>.sql</code> файлдарының әрқайсысына төмендегі көріністерді жасайтын SQL операторын жазыңыз:</p>
+        <ul>
+          <li><strong><code>rural.sql</code>:</strong> аты <code>rural</code> көрінісі. Ауылдық муниципалитетке қатысты (атауында «rural» сөзі бар) барлық санақ жазбалары. Көрініс <code>census</code> кестесінің барлық бағанын қамтуы керек.</li>
+          <li><strong><code>total.sql</code>:</strong> аты <code>total</code>. Барлық аудандар мен елді мекендер бойынша <code>census</code>-тегі әр сандық бағанның қосындысы: <code>families</code>, <code>households</code>, <code>population</code>, <code>male</code>, <code>female</code> (Непалдың барлық елді мекендерінің қосындысы).</li>
+          <li><strong><code>by_district.sql</code>:</strong> аты <code>by_district</code>. Әр <code>district</code> бойынша топталған сандық бағандардың қосындылары. Бағандар: <code>district</code>, <code>families</code>, <code>households</code>, <code>population</code>, <code>male</code>, <code>female</code>.</li>
+          <li><strong><code>most_populated.sql</code>:</strong> аты <code>most_populated</code>. Непалдың <em>аудандары</em> халқы көптен азға қарай реттелген. Бағандары <code>by_district</code>-тегідей: <code>district</code>, <code>families</code>, <code>households</code>, <code>population</code>, <code>male</code>, <code>female</code>.</li>
+        </ul>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Бағандарды қосу үшін <code>SUM</code>, топтау үшін <code>GROUP BY</code>, «rural» сөзін іздеу үшін <code>LIKE '%rural%'</code> қолданыңыз. Көріністі қайта жасау үшін алдымен <code>DROP VIEW атауы;</code> орындаңыз. Файлды <code>.read rural.sql</code> арқылы тексеріңіз.</p></div></details>
+        <p><strong>Қалай тексеру керек.</strong> Ресми дерекқорда мына сұрақтарды өз көріністеріңізбен сынап көріңіз: <code>rural</code> көрінісінен аудандар (жазбалар) саны мен отбасылар саны (461 жазба, 2 229 834 отбасы); <code>total</code> көрінісінен Непалдағы үй шаруашылықтары (5 642 674); <code>by_district</code> көрінісінен отбасы саны бойынша екінші ең аз аудан (Mustang, 3 751 отбасы); <code>most_populated</code> көрінісінен ең көп халықты аудан (Kathmandu, 275 806 үй шаруашылығы). Ескерту: <code>check50</code> жылдамдық үшін кішірек дерекқорды қолданады, сондықтан сандар сәйкес келмеуі мүмкін.</p>
+        <div class="callout note">
+          <span class="callout-title">Сайттың өз жаттығуы</span>
+          <p>Төмендегі тексеруші ресми Непал дерекқорын емес, ойдан шығарылған Қазақстан санағын (облыстар мен округтер) қолданады. Логика сол: <code>LIKE</code>, <code>SUM</code>, <code>GROUP BY</code>, <code>ORDER BY</code>.</p>
+        </div>
+        <div class="sql-grader" data-set="sql4-census" data-src="sql/data/week-4.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql4-census">
+            <li><input type="checkbox"> <span><code>rural.sql</code>, <code>total.sql</code>, <code>by_district.sql</code>, <code>most_populated.sql</code> файлдарында сәйкес атты көріністер жасалған.</span></li>
+            <li><input type="checkbox"> <span>Әр көрініс өз алдына тұр (басқа көріністі қолданбайды), бағандардың аттары талапқа сай.</span></li>
+            <li><input type="checkbox"> <span><code>.read</code> арқылы тексеріп, жоғарыдағы сұрақтарға ресми жауаптар шықты.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/census</code> өтеді (<code>submit50 cs50/problems/2024/sql/census</code>).</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-private">The Private Eye (Жеке тінтуір)</h3></div>
+        <p>CS50-дің «үйрек-түзетушісі» (duck debugger) тағы жоғалды, сізге детектив керек. Қаланың жоғарғы жағында тұратын, өз жұмысында әрқашан құпиялы, тек өзі қаламағанда көрінбейтін детектив туралы әңгіме естігенсіз. Күтпегендей, ол сізге қолжетпес болып шықты. Бірақ міне, сіз бір пошта қызметкерінен оның мекенжайын біліп алып, оның кабинетінде тұрсыз.</p>
+        <p>Қызыл ағаш үстелінде жаңа ақ қағаз жарқырайды. Оған мына кесте жазылған:</p>
+        <div class="sql-table"><table><thead><tr><th></th><th></th><th></th></tr></thead><tbody>
+          <tr><td>14</td><td>98</td><td>4</td></tr><tr><td>114</td><td>3</td><td>5</td></tr><tr><td>618</td><td>72</td><td>9</td></tr><tr><td>630</td><td>7</td><td>3</td></tr>
+          <tr><td>932</td><td>12</td><td>5</td></tr><tr><td>2230</td><td>50</td><td>7</td></tr><tr><td>2346</td><td>44</td><td>10</td></tr><tr><td>3041</td><td>14</td><td>5</td></tr>
+        </tbody></table></div>
+        <p>Қағаздың астында тозған кітап жатыр: <em>The Adventures of Sherlock Holmes</em> («Шерлок Холмстың шытырман оқиғалары»).</p>
+        <details><summary>Дистрибутивті код</summary><div class="details-body">
+          <p><code>private.db</code> және <code>private.sql</code> файлдарын жүктеңіз. <code>cs50.dev</code> терминалында <code>cd</code> жазып, сосын:</p>
+<pre class="terminal"><code class="language-plaintext">$ wget https://cdn.cs50.net/sql/2024/x/psets/4/private.zip
+$ unzip private.zip
+$ rm private.zip
+$ cd private
+private/ $ ls</code></pre>
+          <p><code>private.db</code> және <code>private.sql</code> көрінуі тиіс. <code>sqlite3 private.db</code> дерекқорды ашады.</p>
+        </div></details>
+        <p><strong>Негізгі идея.</strong> Қағаз кітаппен қатар жатқандықтан, бұл <strong>кітап шифрының</strong> (<span class="term-en">book cipher</span>) бір түрі сияқты. Оның бір нұсқасында шифрды құрастырушы «үштіктер» (үш саннан тұратын жиын) тізімін береді. Әр үштік мынадай:</p>
+        <ul>
+          <li>үштіктің бірінші саны - кодтаушы сілтеме жасаған <em>сөйлем нөмірі</em>;</li>
+          <li>екінші саны - сол сөйлемдегі, хабар басталатын <em>таңба нөмірі</em>;</li>
+          <li>үшінші саны - хабардың таңбамен өлшенген <em>ұзындығы</em> (бірінші таңбадан бастап қанша таңба оқу керек, бос орындар мен тыныс белгілерін қоса).</li>
+        </ul>
+        <p>Мысалы, мына сөйлемдер үшін <strong>2, 1, 8</strong> үштігін қарайық: <em>«Quite so! You have not observed. And yet you have seen.»</em> Мұндағы <strong>2</strong> - 2-сөйлем, яғни «You have not observed.»; <strong>1</strong> - сол сөйлемдегі 1-таңба, «Y»; <strong>8</strong> - сол таңбадан бастап хабар ұзындығы. 2-сөйлемнің 1-таңбасынан бастап 8 таңба (бос орынды қоса) оқысақ: <em>«You have»</em>. Осындай бірнеше үштікті тізіп, ұзынырақ хабар жазуға болады. Мүмкін, детектив дәл осыны істеген шығар!</p>
+        <p><strong>Схема.</strong> <code>private.db</code> дерекқорында <code>sentences</code> кестесі бар. Онда <em>The Adventures of Sherlock Holmes</em> кітабындағы барлық сөйлем тұр. Бағандары: <code>id</code> - сөйлем ID-і, <code>sentence</code> - сөйлемнің өзі.</p>
+        <p><strong>Талап.</strong> Детектив қалдырған шифрды шешу керек. Оны қалай шешетініңіз өз еркіңіз, бірақ процестің соңында төмендегідей құрылымды <strong>көрініс</strong> болуы тиіс:</p>
+        <ul>
+          <li>көріністің аты - <code>message</code>;</li>
+          <li>көріністе бір ғана баған болсын, <code>phrase</code>;</li>
+          <li><code>private.db</code>-де <code>SELECT "phrase" FROM "message";</code> орындалғанда әр жолда хабардың бір фразасы тұратын бір баған қайтарылуы керек.</li>
+        </ul>
+        <p><code>private.sql</code> файлына көріністі қайта жасауға қажетті <em>барлық</em> SQL операторларын жазыңыз. Яғни, көрініс үшін бөлек кесте жасап, оған дерек қосу қажет болса, ол операторлар да <code>private.sql</code>-де болуы керек (кесте қосудан қорықпаңыз). <code>private.sql</code> таза <code>private.db</code> көшірмесінде орындалғанда көріністі толық қалпына келтіруі тиіс.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>SQLite-та кітап шифрын дәл орындайтын функция бар: <code>substr</code>. Ол үш аргумент алады: <em>жол</em>, одан қай таңбадан бастау (бірінші таңба - 1-нөмір) және <em>ұзындық</em>. Мысалы, <code>sentences</code> кестесінде <code>1 | Quite so!</code>, <code>2 | You have not observed.</code>, <code>3 | And yet you have seen.</code> жолдары болса, <code>SELECT substr("sentence", 1, 2) FROM "sentences";</code> нәтижесінде <code>Qu</code>, <code>Yo</code>, <code>An</code> шығады. Есіңізде болсын: <code>substr</code>-тың басқа аргументтері тұтас бағандар да бола алады!</p></div></details>
+<pre data-lang="sql" data-db="w4_private" data-dbsrc="sql/data/week-4.js"><code class="language-sql">-- Біздің демо дерекқордағы substr мысалы (қазақша сөйлемдер)
+SELECT "id", substr("sentence", 1, 2) FROM "sentences" LIMIT 3;</code></pre>
+        <p><strong>Қалай тексеру керек.</strong> Дұрыстығын <code>check50</code> арқылы тексеріңіз.</p>
+        <div class="callout note">
+          <span class="callout-title">Сайттың өз жаттығуы</span>
+          <p>Демо нұсқада кітап - қазақша қысқа сөйлемдер жинағы, ал үштіктер дайын <code>cipher</code> кестесінде тұр (<code>sentence_id</code>, <code>start</code>, <code>length</code>). Сондықтан сіз <code>substr</code> және <code>JOIN</code> арқылы шифрды шешесіз. Ресми тапсырмада үштіктерді өзіңіз жазасыз.</p>
+        </div>
+        <div class="sql-grader" data-set="sql4-private" data-src="sql/data/week-4.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql4-private">
+            <li><input type="checkbox"> <span><code>private.sql</code>-де <code>message</code> көрінісі бар және ол бір ғана <code>phrase</code> бағанын қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>substr</code> қолданылады, фразалар ретімен оқылады.</span></li>
+            <li><input type="checkbox"> <span><code>private.sql</code> таза <code>private.db</code>-де орындалса, көріністі толық қалпына келтіреді.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/private</code> өтеді (<code>submit50 cs50/problems/2024/sql/private</code>).</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="pset-bnb">Bed and Breakfast (Қонақүй мен таңғы ас)</h3></div>
+        <p>BnB (Bed and Breakfast - «төсек пен таңғы ас») - қонақүйге ұқсас қысқа мерзімді тұратын орын: қонақ иесіне қызметі үшін ақы төлейді. Соңғы жылдары <a href="https://www.airbnb.com/" target="_blank" rel="noopener">AirBnB</a> кез келген адамға өз үйін, ұқсас шағын үйді, тіпті ағаш үйді жалға беруге мүмкіндік берді.</p>
+        <p>Сіз Бостон қаласының деректер талдаушысысыз және AirBnB-дің өрлеуі жергілікті туризм саласын қалай өзгерткенін білгіңіз келеді. Сіз тіпті AirBnB-дің өз деректерімен <code>bnb.db</code> дерекқорын жинап қойғансыз. <code>bnb.db</code> ішінде Бостонға AirBnB-дің әсерін анығырақ көрсететін бірнеше көрініс жасаңыз.</p>
+        <details><summary>Дистрибутивті код</summary><div class="details-body">
+          <p><code>bnb.db</code> және сұрауларыңызды жазатын бірнеше <code>.sql</code> файлы керек. <code>cs50.dev</code> терминалында <code>cd</code> жазып, сосын:</p>
+<pre class="terminal"><code class="language-plaintext">$ wget https://cdn.cs50.net/sql/2024/x/psets/4/bnb.zip
+$ unzip bnb.zip
+$ rm bnb.zip
+$ cd bnb
+bnb/ $ ls</code></pre>
+          <p><code>ls</code> <code>bnb.db</code> және бірнеше <code>.sql</code> файлын көрсетуі тиіс.</p>
+        </div></details>
+        <p><strong>Схема.</strong> <code>bnb.db</code> ішінде үш кесте бар: <code>listings</code> (тізімдер), <code>reviews</code> (пікірлер) және <code>availabilities</code> (бос күндер). Бір тізімнің көптеген пікірі болады (<code>Listing ||--o{ Review</code>), бір тізімнің бірнеше бос күні болады (<code>Listing ||--|{ Availability</code>).</p>
+        <ul>
+          <li><strong><code>listings</code>:</strong> <code>id</code> - тізім ID-і; <code>property_type</code> - тізім түрі (мысалы, «Entire rental unit», «Private room in rental unit»); <code>host_name</code> - иесінің AirBnB-дегі аты; <code>accommodates</code> - ең көп сыятын адам саны; <code>bedrooms</code> - ұйықтайтын бөлме саны; <code>description</code> - AirBnB-дегі сипаттама.</li>
+          <li><strong><code>reviews</code>:</strong> <code>id</code> - пікір ID-і; <code>listing_id</code> - пікір алған тізімнің ID-і; <code>date</code> - пікір жазылған күн; <code>reviewer_name</code> - пікір жазушының аты; <code>comments</code> - пікір мәтіні.</li>
+          <li><strong><code>availabilities</code>:</strong> <code>id</code> - бос күн ID-і; <code>listing_id</code> - сәйкес тізім ID-і; <code>date</code> - күн; <code>available</code> - күннің брондауға әлі бос екені (<code>TRUE</code> немесе <code>FALSE</code>); <code>price</code> - сол күнге тұрудың бағасы.</li>
+        </ul>
+        <p><strong>Талаптар.</strong> Сәйкес <code>.sql</code> файлдарының әрқайсысына <code>bnb.db</code> деректерінен төмендегі көріністерді жасайтын SQL операторын жазыңыз. Әр көрініс өз алдына тұруы керек (басқа көріністі қолданбайды).</p>
+        <ul>
+          <li><strong><code>no_descriptions.sql</code>, <code>no_descriptions</code> көрінісі.</strong> Қарасаңыз, <code>SELECT * FROM "listings" LIMIT 5;</code> нәтижесі «тұрпайы» көрінеді: <code>description</code> бағанында жол үзілістері көп, терминалда әрқайсысы бөлек жолға шығады. Көрініс <code>listings</code> кестесінің <code>description</code>-нан басқа <em>барлық</em> бағанын қамтуы тиіс.</li>
+          <li><strong><code>one_bedrooms.sql</code>, <code>one_bedrooms</code> көрінісі.</strong> Дәл бір ұйықтайтын бөлмесі бар барлық тізімдер. Бағандары: <code>id</code> (<code>listings</code>-тегі тізім ID-і), <code>property_type</code>, <code>host_name</code>, <code>accommodates</code> (бәрі <code>listings</code>-тен).</li>
+          <li><strong><code>available.sql</code>, <code>available</code> көрінісі.</strong> Барлық тізімдердегі барлық бос күндер. Бағандары: <code>id</code> (<code>listings</code>-тегі тізім ID-і), <code>property_type</code>, <code>host_name</code> (<code>listings</code>-тен), <code>date</code> (<code>availabilities</code>-тен, бос күн).</li>
+          <li><strong><code>frequently_reviewed.sql</code>, <code>frequently_reviewed</code> көрінісі.</strong> Ең жиі пікір алған 100 тізім, көптен азға қарай реттелген. Бағандары: <code>id</code>, <code>property_type</code>, <code>host_name</code>, <code>reviews</code> (тізімнің алған пікір саны). Екі тізімнің пікір саны тең болса, алдымен <code>property_type</code> (алфавит бойынша), сосын <code>host_name</code> (алфавит бойынша) реттеңіз.</li>
+          <li><strong><code>june_vacancies.sql</code>, <code>june_vacancies</code> көрінісі.</strong> Барлық тізімдер және 2023 жылғы маусымда олардың қанша күн бос болғаны. Бағандары: <code>id</code>, <code>property_type</code>, <code>host_name</code> (<code>listings</code>-тен), <code>days_vacant</code> (берілген тізім 2023 жылғы маусымда қанша күн бос деп белгіленгені).</li>
+        </ul>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Бағандарды таңдау үшін <code>SELECT</code>-те тізімдеу, кестелерді біріктіру үшін <code>JOIN</code>, санау үшін <code>COUNT</code>, топтау үшін <code>GROUP BY</code>, реттеу мен шектеу үшін <code>ORDER BY</code> және <code>LIMIT</code> қолданыңыз. Күндерді салыстыру үшін <code>BETWEEN</code> не <code>LIKE '2023-06%'</code> жарайды. Файлдарды <code>.read файл.sql</code> арқылы тексеріңіз, көріністі қайта жасау үшін алдымен <code>DROP VIEW атауы;</code> істеңіз.</p></div></details>
+        <p><strong>Қалай тексеру керек.</strong> Ресми дерекқорда мынаны сынап көріңіз: <code>no_descriptions</code> көрінісінде тізімдер жалпы 3 973; <code>one_bedrooms</code> көрінісінде 1 228 бір бөлмелі тізімнен 222-сі 4 адамға жетеді; <code>available</code> көрінісінде 2023-12-31 күні 2 251 тізім бос, соның ішінде 7-еуі қайықта (Жаңа жылды суда өткізіңіз!); <code>frequently_reviewed</code> көрінісінде ең көп пікірлі тізімде 860 пікір бар, иесі Tiffany; <code>june_vacancies</code> көрінісінде 2023 жылғы маусымда 1 895 бос орын болған. <code>check50</code> жылдамдық үшін кішірек дерекқорды қолданады, сондықтан сандар сәйкес келмеуі мүмкін. Сіздің жүктеген дерекқорыңызда сұрау дұрыс жұмыс істесе, <code>check50</code>-те де дұрыс жұмыс істейді.</p>
+        <div class="callout note">
+          <span class="callout-title">Сайттың өз жаттығуы</span>
+          <p>Бостон мен AirBnB-дің орнына, бұл тексеруші Қазақстандағы үй жалдау/қонақүй тізімдерінің ойдан шығарылған шағын дерекқорын қолданады (киіз үйлер мен қайықтар да бар). Сондықтан «ең жиі пікір алған 100» орнына тек 10 тізім сұралады, ал соңғы сұрауда «Жаңа жылды қайықта» тақырыбы бар. Ресми тапсырмада көрініс жасайсыз, ал сайтта көріністің ішіндегі <code>SELECT</code> сұрауын жазасыз.</p>
+        </div>
+        <div class="sql-grader" data-set="sql4-bnb" data-src="sql/data/week-4.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql4-bnb">
+            <li><input type="checkbox"> <span><code>no_descriptions.sql</code>, <code>one_bedrooms.sql</code>, <code>available.sql</code>, <code>frequently_reviewed.sql</code>, <code>june_vacancies.sql</code> файлдарында сәйкес атты көріністер жасалған.</span></li>
+            <li><input type="checkbox"> <span>Әр көрініс өз алдына тұр және бағандардың аттары талапқа сай (<code>reviews</code>, <code>days_vacant</code> т.б.).</span></li>
+            <li><input type="checkbox"> <span><code>frequently_reviewed</code> тең жағдайда <code>property_type</code>, сосын <code>host_name</code> бойынша реттеледі.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/bnb</code> өтеді (<code>submit50 cs50/problems/2024/sql/bnb</code>).</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+        <p>Деректер <a href="https://insideairbnb.com/" target="_blank" rel="noopener">insideairbnb.com</a> сайтынан алынған. Census деректері Open Data Nepal-дан (<a href="https://opendatanepal.com/" target="_blank" rel="noopener">opendatanepal.com</a>), <em>The Adventures of Sherlock Holmes</em> мәтіні қоғамдық меншіктегі шығарма.</p>
+      </div>
+
+      <nav class="pager">
+        <a href="week-3.html"><small>Алдыңғы</small>← 3-апта: Жазу</a>
+        <a class="next" href="week-5.html"><small>Келесі</small>5-апта: Оңтайландыру →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 SQL (CS50's Introduction to Databases with SQL, Гарвард университеті, Carter Zenke) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

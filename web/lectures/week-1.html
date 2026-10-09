@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 Web 1-апта: Git - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 Web 1-апта: Git - CS50 қазақша">
+  <meta property="og:description" content="CS50 Web 1-апта: Git, GitHub, коммиттер, тармақтар, біріктіру қайшылықтары, fork, pull request және GitHub Pages.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/web/lectures/week-1.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 Web 1-апта: Git, GitHub, коммиттер, тармақтар, біріктіру қайшылықтары, fork, pull request және GitHub Pages.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#d4580c" data-n="1">
+        <div class="num">1-апта</div>
+        <h1>Git</h1>
+        <p>Кодты қалай сақтаймыз, командамен қалай бөлісеміз, қате жасасақ қалай артқа қайтамыз? Git пен GitHub: коммиттер, тармақтар, біріктіру, fork, pull request және GitHub Pages.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/web/notes/1/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Бұл жолы код жазбаймыз, жазылған кодты <strong>қалай сақтау мен бөлісуді</strong> үйренеміз. Git - кез келген бағдарламашының күнделікті құралы: онсыз бірде-бір жоба, бірде-бір команда жұмыс істемейді. Интернет жоқ жерде де, терминал мен браузер ғана болса, барлығын бір апта ішінде үйреніп алуға болады. Алдағы Django, JavaScript апталарының бәрінде код GitHub-та жатады.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен командалардың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="intro">Кіріспе</h2>
+      <p>Қайта қош келдіңіздер! Нөлінші лекцияда HTML, CSS және Sass арқылы қарапайым веб-беттер жасауды үйрендік. Ал бүгін мүлде басқа сұрақ қоямыз: бет жасалып қойған соң, оны <em>қалай сақтаймыз</em>? Егер екі адам бір сайтты бірге жасаса ше? Ал кеше жұмыс істеп тұрған код бүгін бұзылып қалса, кешегі нұсқаға қалай оралуға болады?</p>
+      <p>Мектепте реферат жазғанда файлды «реферат_нұсқа1», «реферат_нұсқа2», «реферат_СОҢҒЫ», «реферат_СОҢҒЫ_шын» деп сақтап жүргеніңіз есіңізде ме? Міне, дәл осы қиындықты Git автоматты түрде, әрі әлдеқайда ақылды түрде шешеді. Бүгін Git пен GitHub-ты үйренеміз.</p>
+
+      <h2 id="git">Git</h2>
+      <p><strong>Git</strong> - команда жолынан (терминалдан) жұмыс істейтін құрал. Оның міндетін <strong>нұсқаларды басқару</strong> (<span class="term-en">version control</span>) деп атайды. Нақтырақ айтқанда, Git бізге мына төрт нәрсені береді.</p>
+      <ul>
+        <li><strong>Өзгерістерді қадағалау.</strong> Git кодымыздың белгілі бір сәттегі «суретін» сақтап қояды. Бұл суреттің аты - <strong>коммит</strong> (<span class="term-en">commit</span>). Файлды өзгерткен сайын жаңа сурет түсіре аламыз да, бүкіл тарихты көре аламыз.</li>
+        <li><strong>Адамдар арасында синхрондау.</strong> Бір жобамен бірнеше адам жұмыс істей алады. Әрқайсысы интернеттегі ортақ репозиторийден ақпаратты <em>тартып алады</em> (pull) және өз өзгерісін оған <em>жібереді</em> (push).</li>
+        <li><strong>Тармақтар.</strong> Негізгі кодты бұзбай, бөлек <strong>тармақта</strong> (<span class="term-en">branch</span>) жаңа нәрсені сынап көруге болады. Ұнаса, кейін екеуін біріктіреміз.</li>
+        <li><strong>Артқа қайту.</strong> Қате жасап алсақ, кодтың бұрынғы жұмыс істеген нұсқасына оралуға болады.</li>
+      </ul>
+      <svg viewBox="0 0 720 230" role="img" aria-label="Коммиттер: кодтың үш суреті уақыт бойынша тізбектеліп тұр" style="display:block;width:100%;max-width:720px;height:auto;margin:18px auto"><defs><marker id="g1-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="g1-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#d9534f"/></marker><marker id="g1-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs><text x="360" y="18" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">уақыт</text><polyline points="40,34 680,34" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:6 4" marker-end="url(#g1-a)"/><rect x="15" y="56" width="190" height="62" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="110.0" y="77.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:700">Коммит 1</text><text x="110.0" y="97.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px">index.html</text><circle cx="110" cy="160" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="110" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">a1f</text><text x="110" y="202" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">&quot;Бастапқы бет&quot;</text><polyline points="110,118 110,141" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#g1-a)"/><rect x="265" y="56" width="190" height="62" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="360.0" y="77.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:700">Коммит 2</text><text x="360.0" y="97.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px">index.html + style.css</text><circle cx="360" cy="160" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="360" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">7c3</text><text x="360" y="202" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">&quot;Стиль қостым&quot;</text><polyline points="360,118 360,141" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#g1-a)"/><rect x="515" y="56" width="190" height="62" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="610.0" y="77.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:700">Коммит 3</text><text x="610.0" y="97.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px">+ script.js</text><circle cx="610" cy="160" r="17" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><text x="610" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">e92</text><text x="610" y="202" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">&quot;Түймені жаздым&quot;</text><polyline points="610,118 610,141" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#g1-a)"/><polyline points="130,160 340,160" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g1-c)"/><polyline points="380,160 590,160" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g1-c)"/></svg>
+      <p>Сызбаға қараңыз: әр коммит - сол сәттегі бүкіл жобаның суреті. Үшінші коммитте <code>script.js</code> қосылған, ал бірінші коммитте әлі тек <code>index.html</code> бар. Қалаған кезде осы суреттердің кез келгеніне қайта ораламыз.</p>
+      <p>Жоғарыда «репозиторий» дедік, бірақ оның не екенін айтпадық. <strong>Репозиторий</strong> (<span class="term-en">repository</span>) - бір жобаға қатысты барлық файлдар сақталатын орын. Ол екі түрлі болады: <strong>қашықтағы</strong> (<span class="term-en">remote</span>), яғни интернетте сақталған, және <strong>жергілікті</strong> (<span class="term-en">local</span>), яғни сіздің компьютеріңіздегі. Ең басты ұғым осы: бір жобаның бірнеше көшірмесі бар, ал Git солардың арасын байланыстырады.</p>
+
+      <h2 id="github">GitHub</h2>
+      <p><strong>GitHub</strong> - Git репозиторийлерін интернетте сақтайтын сайт. Git - құрал, ал GitHub - сол құралмен жасалған жұмыс сақталатын «қойма». Дәл осылай электрондық пошта хаты бар да, оны сақтайтын Gmail бар.</p>
+      <p>Алдымен интернетте жаңа репозиторий жасап көрейік.</p>
+      <ol>
+        <li>GitHub-та аккаунтыңыз бар екеніне көз жеткізіңіз. Жоқ болса, <a href="https://github.com/join" target="_blank" rel="noopener">github.com/join</a> бетінен тіркеліңіз.</li>
+        <li>Жоғарғы оң бұрыштағы <strong>+</strong> белгісін басып, «New repository» таңдаңыз.</li>
+        <li>Репозиторийге жобаңызды сипаттайтын ат беріңіз.</li>
+        <li>(Міндетті емес) Репозиторийдің сипаттамасын жазыңыз.</li>
+        <li>Репозиторий <strong>жария</strong> (public, интернеттегі кез келген адам көреді) немесе <strong>жеке</strong> (private, тек сіз және өзіңіз рұқсат берген адамдар көреді) болатынын таңдаңыз.</li>
+        <li>(Міндетті емес) <strong>README</strong> қосуды таңдаңыз. README - репозиторий туралы сипаттама жазылатын файл.</li>
+      </ol>
+      <p>Репозиторий дайын болды. Бірақ ол әзірге интернетте ғана тұр, ал бізге оған файл қосу керек. Ол үшін қашықтағы репозиторийдің компьютерімізде <strong>көшірмесін</strong> жасаймыз. Бұл әрекетті <strong>клондау</strong> (<span class="term-en">clone</span>) дейді. Нәтижесінде компьютерімізде жергілікті репозиторий пайда болады.</p>
+      <ol>
+        <li>Терминалға <code>git</code> деп жазып, Git орнатылғанын тексеріңіз. Орнатылмаған болса, <a href="https://git-scm.com/downloads" target="_blank" rel="noopener">git-scm.com/downloads</a> бетінен жүктеңіз.</li>
+        <li>Репозиторийіңіздің бетіндегі жасыл «Code» (бұрын «Clone or Download») түймесін басып, ашылған сілтемені көшіріп алыңыз. README жасамаған болсаңыз, сілтеме беттің жоғарғы жағындағы «Quick Setup» бөлімінде тұрады.</li>
+        <li>Терминалда мынаны орындаңыз:</li>
+      </ol>
+<pre class="terminal"><code class="language-plaintext">$ git clone &lt;репозиторий сілтемесі&gt;
+Cloning into 'my-site'...
+warning: You appear to have cloned into an empty repository.</code></pre>
+      <p>README қоспаған болсаңыз, «You appear to have cloned into an empty repository» деген ескерту шығады. Қорықпаңыз, бұл қалыпты жағдай: репозиторий жай ғана бос. Әрі қарай:</p>
+      <ol start="4">
+        <li><code>ls</code> командасы ағымдағы қалтадағы файлдар мен қалталарды көрсетеді. Енді жаңа ғана клондаған репозиторийдің атын көресіз.</li>
+        <li><code>cd &lt;репозиторий аты&gt;</code> арқылы сол қалтаға кіріңіз.</li>
+        <li><code>touch &lt;жаңа файл аты&gt;</code> командасымен жаңа файл жасаңыз, енді оны өзгерте аласыз. Балама: қалтаны мәтін редакторында ашып, файлды қолмен қосуға болады.</li>
+        <li>Git жаңа файлды қадағалауы үшін оған айту керек: <code>git add &lt;файл аты&gt;</code> бір файлды, ал <code>git add .</code> қалтадағы барлық файлды қадағалауға қосады.</li>
+      </ol>
+<pre class="terminal"><code class="language-plaintext">$ ls
+my-site
+$ cd my-site
+$ touch index.html
+$ git add index.html</code></pre>
+
+      <h2 id="commits">Коммиттер</h2>
+      <p>Міне, Git-тің шын мәнінде пайдалы жері осы жерден басталады. Файлға өзгеріс енгізген соң, оны <strong>коммит</strong> жасай аламыз, яғни кодтың қазіргі күйінің суретін түсіреміз. Ол үшін:</p>
+<pre class="terminal"><code class="language-plaintext">$ git commit -m "some message"</code></pre>
+      <p>Тырнақшадағы хабарда нақты не өзгергенін қысқаша жазасыз: «Бастапқы бет қостым», «Түймені түзеттім». Үш айдан кейін тарихқа қарағанда осы хабарлар сізді құтқарады, сондықтан «жаңа» не «қате түзедім» деп ғана жазудан аулақ болыңыз.</p>
+      <svg viewBox="0 0 780 250" role="img" aria-label="Git-тің төрт аймағы: жұмыс қалтасы, дайындық аймағы, жергілікті репозиторий, GitHub" style="display:block;width:100%;max-width:780px;height:auto;margin:18px auto"><defs><marker id="g2-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="g2-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#d9534f"/></marker><marker id="g2-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs><rect x="20" y="60" width="155" height="80" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="97.5" y="90.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Жұмыс қалтасы</text><text x="97.5" y="109.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">файлдарды өзгертесіз</text><rect x="215" y="60" width="155" height="80" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="292.5" y="90.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Дайындық аймағы</text><text x="292.5" y="109.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">staging area</text><rect x="410" y="60" width="155" height="80" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="487.5" y="90.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Жергілікті репо</text><text x="487.5" y="109.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">коммиттер тарихы</text><rect x="605" y="60" width="155" height="80" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="682.5" y="90.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">GitHub</text><text x="682.5" y="109.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">қашықтағы репо</text><polyline points="177,100 213,100" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g2-c)"/><text x="195.0" y="80" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11px">git add</text><polyline points="372,100 408,100" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g2-c)"/><text x="390.0" y="80" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11px">git commit -m</text><polyline points="567,100 603,100" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g2-c)"/><text x="585.0" y="80" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11px">git push</text><polyline points="682,140 682,200 487,200 487,142" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:6 4" marker-end="url(#g2-a)"/><text x="584.5" y="218" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">git pull</text><polyline points="440,142 440,175 97,175 97,142" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:6 4" marker-end="url(#g2-a)"/><text x="270.0" y="190" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11px">git reset --hard</text><text x="390" y="22" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">Өзгеріс солдан оңға қарай жүреді</text></svg>
+      <p>Сызбада өзгерістің қалай жүретіні көрсетілген. Файлдарды жұмыс қалтасында өзгертесіз, <code>git add</code> оларды коммитке дайындайды (бұл аралық орынды <strong>дайындық аймағы</strong> деп атайды, ағылшынша <span class="term-en">staging area</span>), <code>git commit</code> суретті жергілікті репозиторийге сақтайды, ал <code>git push</code> оны GitHub-қа жібереді. Қайтарым жолы да бар: <code>git pull</code> GitHub-тағы өзгерісті сізге әкеледі.</p>
+      <p>Коммиттен кейін <code>git status</code> командасын орындасақ, жергілікті кодымыздың қашықтағы репозиторийге қатысты күйін көреміз:</p>
+<pre class="terminal"><code class="language-plaintext">$ git status
+On branch main
+Your branch is ahead of 'origin/main' by 1 commit.
+  (use "git push" to publish your local commits)
+
+nothing to commit, working tree clean</code></pre>
+      <p>«Ahead by 1 commit» дегені: сізде GitHub-та әлі жоқ бір коммит бар. Оны жариялауға дайын болған кезде:</p>
+<pre class="terminal"><code class="language-plaintext">$ git push</code></pre>
+      <p>Енді GitHub бетін браузерде жаңартсаңыз, өзгерістеріңізді сол жерден көресіз.</p>
+      <p>Бір ыңғайлы лайфхак. Егер файлдарды жаңадан жасамай, тек бар файлдарды өзгерткен болсаңыз, <code>git add .</code> пен <code>git commit ...</code> командасының орнына екеуін бірден орындайтын қысқа команда бар:</p>
+<pre class="terminal"><code class="language-plaintext">$ git commit -am "some message"</code></pre>
+      <p>Бұл команда сіз өзгерткен барлық бұрыннан қадағаланатын файлды коммитке қосады. Назар аударыңыз: ол <em>жаңа</em> файлдарды қосмайды, олар үшін <code>git add</code> бәрібір керек.</p>
+      <p>Кейде керісінше болады: GitHub-тағы нұсқа компьютеріңіздегіден жаңарақ болып шығады (мысалы, серіктесіңіз код жіберіп қойды). Онда алдымен өз өзгерістеріңізді коммит жасап, сосын:</p>
+<pre class="terminal"><code class="language-plaintext">$ git pull</code></pre>
+      <p>Бұл қашықтағы өзгерістерді сіздің жергілікті репозиторийіңізге алып келеді.</p>
+      <svg viewBox="0 0 720 300" role="img" aria-label="Екі адам бір GitHub репозиторийімен push және pull арқылы жұмыс істейді" style="display:block;width:100%;max-width:720px;height:auto;margin:18px auto"><defs><marker id="g3-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="g3-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#d9534f"/></marker><marker id="g3-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs><rect x="250" y="20" width="220" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="360.0" y="44.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:15px;font-weight:700">GitHub</text><text x="360.0" y="65.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:13.5px">қашықтағы репозиторий</text><rect x="30" y="200" width="200" height="70" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="130.0" y="225.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Ана компьютері</text><text x="130.0" y="244.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">жергілікті репо</text><rect x="490" y="200" width="200" height="70" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="590.0" y="225.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Дәурен компьютері</text><text x="590.0" y="244.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">жергілікті репо</text><polyline points="120,198 120,140 250,70" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g3-c)"/><text x="100" y="150" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">git push</text><polyline points="255,85 150,150 170,198" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:6 4" marker-end="url(#g3-a)"/><text x="215" y="150" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">git pull</text><polyline points="600,198 600,140 470,70" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g3-c)"/><text x="620" y="150" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">git push</text><polyline points="465,85 570,150 550,198" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:6 4" marker-end="url(#g3-a)"/><text x="505" y="150" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">git pull</text></svg>
+      <p>Үшеуінің қарым-қатынасы осындай: Ана код жазып, <code>push</code> жасайды, Дәурен <code>pull</code> жасап, жаңалықты алады, өз өзгерісін қосып <code>push</code> жасайды, Ана қайтадан <code>pull</code> жасайды. GitHub - ортақ қойма болғандықтан, екеуі де бір-бірінің жұмысын көреді.</p>
+
+      <h2 id="merge-conflicts">Біріктіру қайшылықтары</h2>
+      <p>Бірге жұмыс істегенде міндетті түрде кездесетін мәселе бар: <strong>біріктіру қайшылығы</strong> (<span class="term-en">merge conflict</span>). Ол екі адам бір файлды бір-біріне қайшы етіп өзгерткенде пайда болады. Қарапайым мысал: Ана да, Дәурен де бір жолды өзгертті, бірақ әрқайсысы өзінше. Git «қайсысын қалдыруым керек?» деп қиналып қалады да, шешімді адамға қалдырады.</p>
+      <svg viewBox="0 0 760 300" role="img" aria-label="Біріктіру қайшылығы: екі тармақ бір жолды әртүрлі өзгертті" style="display:block;width:100%;max-width:760px;height:auto;margin:18px auto"><defs><marker id="g7-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="g7-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#d9534f"/></marker><marker id="g7-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs><circle cx="70" cy="150" r="17" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><text x="70" y="150" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C1</text><rect x="20" y="195" width="100" height="40" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="70.0" y="215.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px">b = 1</text><polyline points="87,150 270,70" style="stroke:var(--accent);stroke-width:2.2;fill:none"/><polyline points="87,150 270,230" style="stroke:var(--accent);stroke-width:2.2;fill:none"/><circle cx="290" cy="70" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="290" y="70" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">A</text><circle cx="290" cy="230" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="290" y="230" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">B</text><rect x="266.8" y="18" width="46.4" height="24" rx="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.5"/><text x="290" y="30" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:700">main</text><rect x="245.0" y="258" width="90" height="24" rx="12" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.5"/><text x="290" y="270" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:700">feature</text><rect x="330" y="52" width="120" height="36" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="390.0" y="70.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px">b = 2</text><rect x="330" y="212" width="120" height="36" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="390.0" y="230.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px">b = 3</text><polyline points="308,74 590,140" style="stroke:#d9534f;stroke-width:1.6;fill:none" marker-end="url(#g7-r)"/><polyline points="308,226 590,165" style="stroke:#d9534f;stroke-width:1.6;fill:none" marker-end="url(#g7-r)"/><rect x="600" y="110" width="140" height="80" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="670.0" y="140.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:700">КАЙШЫЛЫҚ</text><text x="670.0" y="160.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px">қайсысын қалдырамыз?</text></svg>
+      <p>Қайшылық әдетте <code>git push</code> немесе <code>git pull</code> жасағанда шығады. Сондайда Git файлды автоматты түрде өзгертіп, қайшылықтың қайда екенін анық көрсететін пішінге келтіреді. Мысалы, бір жолға екі адам әртүрлі мән жазған жағдай:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">a = 1
+&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+b = 2
+=======
+b = 3
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; 56782736387980937883
+c = 3
+d = 4
+e = 5</code></pre>
+      <p>Мұнда сіз <code>b = 2</code> деген жолды қостыңыз, ал басқа біреу <code>b = 3</code> деп жазды. Енді біреуін таңдауымыз керек. <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> пен <code>=======</code> арасындағы бөлік - сіздікі, <code>=======</code> пен <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> арасындағы бөлік - екінші адамдікі. Ұзын санды <strong>хэш</strong> (<span class="term-en">hash</span>) дейді: ол сіздің өзгерісіңізбен қайшылыққа түскен коммитті білдіреді.</p>
+      <div class="callout note">
+        <span class="callout-title">Белгілердің саны</span>
+        <p>Лекция конспектісінде белгілер бес таңбамен жазылған, ал нақты Git жеті таңба (<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>) қояды. Мәні бірдей. Қайшылықты түзеткен соң, осы үш белгі жолын міндетті түрде өшіріп тастау керек, әйтпесе олар кодыңыздың бір бөлігіне айналып кетеді.</p>
+      </div>
+      <p>Мұны қолмен өшірудің қажеті жоқ: көптеген мәтін редакторлары (VS Code сияқты) қайшылықты бөлектеп көрсетіп, «Accept Current» (менікін қалдыр) және «Accept Incoming» (келгенін қалдыр) деген түймелер ұсынады. Түймені басасыз, белгілер өздігінен жойылады. Екеуін де қалдырғыңыз келсе, файлды қолмен өңдеп аласыз. Түзеткен соң файлды қайта <code>add</code> және <code>commit</code> жасайсыз, қайшылық шешілді.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: екеуі де бір файлды өзгертсе, қайшылық міндетті түрде шыға ма?</summary>
+        <div class="details-body"><p>Жоқ. Қайшылық тек екеуі <em>бір жолды</em> (немесе іргелес жолдарды) әртүрлі етіп өзгерткенде шығады. Ана файлдың жоғарғы жағын, Дәурен төменгі жағын өзгертсе, Git екі өзгерісті өздігінен біріктіреді. Сондықтан командада жұмысты бөліп алу қайшылықтарды азайтады.</p></div>
+      </details>
+
+      <h3 id="git-log">Тарихты көру: git log</h3>
+      <p>Тағы бір пайдалы команда - <code>git log</code>. Ол репозиториядағы барлық коммиттердің тарихын көрсетеді:</p>
+<pre class="terminal"><code class="language-plaintext">$ git log
+commit e92b1c4a7f03d18c5b6e2a9d0f4817c3b5a6d2e1 (HEAD -&gt; main, origin/main)
+Author: Ana &lt;ana@example.com&gt;
+Date:   Mon Jan 8 14:32:10 2024 +0500
+
+    Түймені жаздым
+
+commit 7c3d9a05b8e41f26a1c0d7e9b3f5428a6c1d0e7b
+Author: Ana &lt;ana@example.com&gt;
+Date:   Mon Jan 8 13:05:44 2024 +0500
+
+    Стиль қостым
+
+commit a1f04e7c2b9d3586e1a0f7d4c8b23955e6a1f0d3
+Author: Ana &lt;ana@example.com&gt;
+Date:   Mon Jan 8 11:47:02 2024 +0500
+
+    Бастапқы бет</code></pre>
+      <p>Әр коммитте ұзын хэш, автор, уақыт және сіз жазған хабар бар. Міне, жақсы хабардың пайдасы осында. Хэш - әр коммиттің жеке «жеке куәлік нөмірі».</p>
+
+      <h3 id="git-reset">Артқа қайту: git reset</h3>
+      <p>Одан да пайдалысы: қате жасап алғаныңызды түсінсеңіз, алдыңғы коммитке қайта аласыз. Ол үшін <code>git reset</code> командасы бар, екі түрлі қолданылады.</p>
+      <ul>
+        <li><code>git reset --hard &lt;коммит&gt;</code> кодыңызды көрсетілген коммиттен кейінгі күйге дәл қайтарады. Коммитті көрсету үшін <code>git log</code> арқылы тапқан хэшті қолданасыз.</li>
+        <li><code>git reset --hard origin/master</code> кодыңызды GitHub-та сақталған нұсқаға қайтарады. Жергілікті өзгерістерді «жоққа шығарып», GitHub-тағыға оралғыңыз келгенде керек.</li>
+      </ul>
+<pre class="terminal"><code class="language-plaintext">$ git reset --hard 7c3d9a05
+HEAD is now at 7c3d9a0 Стиль қостым</code></pre>
+      <svg viewBox="0 0 720 200" role="img" aria-label="git reset --hard: main көрсеткіші C4-тен C2-ге қайтады" style="display:block;width:100%;max-width:720px;height:auto;margin:18px auto"><defs><marker id="g5-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="g5-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#d9534f"/></marker><marker id="g5-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs><circle cx="80" cy="100" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="80" y="100" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C1</text><circle cx="200" cy="100" r="17" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><text x="200" y="100" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C2</text><polyline points="99,100 181,100" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g5-c)"/><circle cx="320" cy="100" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2;opacity:.45"/><text x="320" y="100" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C3</text><polyline points="219,100 301,100" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#g5-a)"/><circle cx="440" cy="100" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2;opacity:.45"/><text x="440" y="100" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C4</text><polyline points="339,100 421,100" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#g5-a)"/><rect x="375.0" y="33" width="130" height="24" rx="12" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.5"/><text x="440" y="45" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:700">main (бұрын)</text><rect x="135.0" y="33" width="130" height="24" rx="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.5"/><text x="200" y="45" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:700">main (қазір)</text><polyline points="440,58 440,78" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:6 4" marker-end="url(#g5-a)"/><polyline points="200,58 200,78" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g5-c)"/><text x="380" y="155" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px">C3 мен C4 күңгірттенді: main оларды енді көрмейді</text><text x="380" y="180" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">git reset --hard &lt;C2 хэші&gt;</text></svg>
+      <div class="callout warn">
+        <span class="callout-title">Абай болыңыз</span>
+        <p><code>--hard</code> коммит жасалмаған өзгерістерді мәңгіге өшіреді. Мұны жасамас бұрын не жоғалатыныңызды ойлаңыз. Және бір ескерту: бұрынғы Git нұсқаларында негізгі тармақ <code>master</code> деп аталатын, қазір GitHub оны әдепкіде <code>main</code> деп атайды. Лекцияда <code>master</code> айтылады, ал сіздің репозиторийіңізде <code>main</code> болуы мүмкін. Екеуі де бір нәрсе.</p>
+      </div>
+
+      <h2 id="branching">Тармақтау</h2>
+      <p>Жобаңызбен біраз жұмыс істедіңіз делік. Енді соған жаңа функция қосқыңыз келеді. Қарапайым жол - жаңа функцияның коммиттерін де сол бір жолға жалғай беру:</p>
+      <svg viewBox="0 0 720 200" role="img" aria-label="Бір тармақта жұмыс: жаңа функцияның коммиттері басты жолмен араласып кетеді" style="display:block;width:100%;max-width:720px;height:auto;margin:18px auto"><defs><marker id="g4-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="g4-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#d9534f"/></marker><marker id="g4-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs><circle cx="70" cy="90" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="70" y="90" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C1</text><circle cx="190" cy="90" r="17" style="fill:var(--surface);stroke:#d9534f;stroke-width:2"/><text x="190" y="90" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C2</text><polyline points="89,90 171,90" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g4-c)"/><circle cx="310" cy="90" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="310" y="90" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C3</text><polyline points="209,90 291,90" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g4-c)"/><circle cx="430" cy="90" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="430" y="90" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C4</text><polyline points="329,90 411,90" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g4-c)"/><circle cx="550" cy="90" r="17" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><text x="550" y="90" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C5</text><polyline points="449,90 531,90" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g4-c)"/><rect x="526.8" y="28" width="46.4" height="24" rx="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.5"/><text x="550" y="40" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:700">main</text><text x="70" y="140" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">бастапқы код</text><text x="190" y="140" text-anchor="middle" dominant-baseline="central" style="fill:#d9534f;font-family:var(--font, sans-serif);font-size:12px;font-weight:700">қате осында!</text><text x="430" y="140" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">жаңа функция</text><text x="550" y="140" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">жаңа функция</text><text x="360" y="180" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px">C2 қатесін түзетейін десек, C3-C5 жаңа функциясы да қозғалады</text></svg>
+      <p>Бірақ мынандай жағдай болса ше? Бір күні бастапқы кодта қате (баг) табылды, оны түзеткіңіз келеді, ал жаңа функция әлі аяқталмаған. Түзеткен кезде жаңа функцияның жартылай жазылған коды да араласып кетеді. Дәл осы жерде <strong>тармақтау</strong> керек болады.</p>
+      <p>Тармақтау дегеніміз - жаңа функцияны бөлек бағытта жазып, дайын болған соң ғана негізгі бөлікпен, яғни <strong>негізгі тармақпен</strong> біріктіру. Мұны ағаштың бұтағына ұқсатуға болады: діңі (<code>main</code>) өсе береді, ал жаңа бұтақ (<code>feature</code>) бөлек өседі де, пісіп жетілген соң діңге қайта қосылады.</p>
+      <svg viewBox="0 0 760 260" role="img" aria-label="Тармақ: feature тармағы main-нен бөлініп, кейін біріктіріледі" style="display:block;width:100%;max-width:760px;height:auto;margin:18px auto"><defs><marker id="g6-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="g6-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#d9534f"/></marker><marker id="g6-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs><polyline points="60,90 640,90" style="stroke:var(--accent);stroke-width:2.2;fill:none"/><polyline points="170,90 230,190 410,190" style="stroke:var(--accent);stroke-width:2.2;fill:none"/><polyline points="410,190 460,190 620,104" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#g6-c)"/><circle cx="60" cy="90" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="60" y="90" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C1</text><circle cx="170" cy="90" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="170" y="90" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C2</text><circle cx="280" cy="90" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="280" y="90" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C3</text><circle cx="480" cy="90" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="480" y="90" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C5</text><circle cx="640" cy="90" r="17" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><text x="640" y="90" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">M</text><circle cx="260" cy="190" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="260" y="190" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C4a</text><circle cx="380" cy="190" r="17" style="fill:var(--surface);stroke:var(--muted);stroke-width:2"/><text x="380" y="190" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">C4b</text><rect x="36.8" y="28" width="46.4" height="24" rx="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.5"/><text x="60" y="40" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:700">main</text><rect x="275.0" y="223" width="90" height="24" rx="12" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.5"/><text x="320" y="235" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:700">feature</text><rect x="605.0" y="28" width="70" height="24" rx="12" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.5"/><text x="640" y="40" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:700">HEAD</text><polyline points="640,53 640,70" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:6 4" marker-end="url(#g6-a)"/><text x="250" y="120" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11px">git checkout -b feature</text><text x="520" y="160" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11px">git merge feature</text></svg>
+      <p>Сызбада <code>main</code> жолы жоғарыда, <code>feature</code> тармағы төменде. <code>C2</code> коммитінен кейін жаңа тармақ бөлініп, <code>C4a</code> мен <code>C4b</code> коммиттері сонда жиналды. Сол уақытта <code>main</code>-де жұмыс жалғасып, <code>C3</code> қосылды. Соңында екі жол <code>M</code> коммитінде қосылды.</p>
+      <p>Қазіргі уақытта қай тармақта тұрғаныңызды <code>HEAD</code> анықтайды. Ол екі тармақтың біріне нұсқап тұрады. Әдепкіде <code>HEAD</code> негізгі тармақты көрсетеді, бірақ біз басқа тармаққа да «ауыса» аламыз (ағылшынша <span class="term-en">check out</span> дейді).</p>
+      <p>Енді бұл нәрсені іс жүзінде қалай жасайтынымызды көрейік.</p>
+      <ol>
+        <li><code>git branch</code> командасы қай тармақта тұрғаныңызды көрсетеді: оның атының сол жағында жұлдызша (<code>*</code>) болады.</li>
+      </ol>
+<pre class="terminal"><code class="language-plaintext">$ git branch
+* main</code></pre>
+      <ol start="2">
+        <li>Жаңа тармақ жасау үшін <code>git checkout -b &lt;жаңа тармақ аты&gt;</code> орындаймыз. Бұл команда тармақты жасайды және бірден сол тармаққа ауысады.</li>
+      </ol>
+<pre class="terminal"><code class="language-plaintext">$ git checkout -b feature
+Switched to a new branch 'feature'
+$ git branch
+* feature
+  main</code></pre>
+      <ol start="3">
+        <li>Тармақтар арасында <code>git checkout &lt;тармақ аты&gt;</code> арқылы ауысасыз. Әр тармақтағы өзгерістерді сол тармақта коммит жасайсыз. Файлдарыңыз тармақты ауыстырған сайын сәйкесінше өзгеріп тұрады, ол өте таңқаларлық көрінеді.</li>
+        <li>Екі тармақты біріктіруге дайын болғанда, <em>қалдырғыңыз келетін</em> тармаққа ауысасыз (көбіне негізгі тармақ) да, мынаны орындайсыз:</li>
+      </ol>
+<pre class="terminal"><code class="language-plaintext">$ git checkout main
+Switched to branch 'main'
+$ git merge feature
+Updating 7c3d9a0..e92b1c4
+Fast-forward
+ script.js | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)</code></pre>
+      <p><code>git merge</code> push не pull сияқты жұмыс істейді, сондықтан бұл жерде де біріктіру қайшылықтары шығуы мүмкін. Шықса, жоғарыда үйренгеніміздей шешесіз.</p>
+      <div class="callout note">
+        <span class="callout-title">Қазіргі команда</span>
+        <p>Жаңа Git нұсқаларында тармақ ауыстыру үшін жеке команда да бар: <code>git switch &lt;тармақ&gt;</code> және <code>git switch -c &lt;жаңа тармақ&gt;</code>. Олар <code>git checkout</code> мен <code>git checkout -b</code> командаларымен бірдей жұмыс істейді, тек оқуға оңай. Лекцияда <code>checkout</code> қолданылады, сондықтан біз де соны қолданамыз.</p>
+      </div>
+      <details class="think">
+        <summary>Ойланып көріңіз: тармақты біріктіргенде қай тармақта тұру керек?</summary>
+        <div class="details-body"><p>Біріктіру <em>қалатын</em> тармақта жасалады. <code>feature</code>-ды <code>main</code>-ге қосқыңыз келсе, алдымен <code>git checkout main</code>, сосын <code>git merge feature</code>. Егер <code>feature</code>-де тұрып <code>git merge main</code> жазсаңыз, керісінше, негізгі тармақтың өзгерістерін өз тармағыңызға аласыз. Бұл да керек, бірақ мақсат басқа.</p></div>
+      </details>
+
+      <h3 id="github-features">GitHub-тың қосымша мүмкіндіктері</h3>
+      <p>Жоба үстінде жұмыс істегенде көмектесетін, тек GitHub-қа тән бірнеше мүмкіндік бар.</p>
+
+      <h4 id="forking">Форк (Forking)</h4>
+      <p>GitHub пайдаланушысы ретінде сізде рұқсат бар кез келген репозиторийді <strong>форктай</strong> (<span class="term-en">fork</span>) аласыз. Бұл дегеніміз - репозиторийдің иесі сіз болатын жеке көшірмесін жасау. Ол үшін беттің жоғарғы оң бұрышындағы «Fork» түймесін басасыз. Көшірме сіздің аккаунтыңызда пайда болады, онымен не істесеңіз де, түпнұсқаға әсер етпейді.</p>
+
+      <h4 id="pull-requests">Pull request</h4>
+      <p>Репозиторийді форктап, өз нұсқаңызға өзгеріс енгізген соң, сол өзгерістерді негізгі нұсқаға қосуды сұрағыңыз келуі мүмкін. Мұны <strong>pull request</strong> (қазақша «қосып алу сұрауы») деп атайды. Мысалы, Bootstrap-қа жаңа мүмкіндік қосқыңыз келсе, Bootstrap репозиторийін форктайсыз, өзгерістер жасайсыз да, pull request жібересіз. Оны Bootstrap-ты жүргізетін адамдар қарап шығады, ұнаса, қабылдайды.</p>
+      <svg viewBox="0 0 780 330" role="img" aria-label="Fork пен pull request: түпнұсқа репо, сіздің форкіңіз және жергілікті көшірме" style="display:block;width:100%;max-width:780px;height:auto;margin:18px auto"><defs><marker id="g8-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="g8-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#d9534f"/></marker><marker id="g8-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs><rect x="290" y="20" width="200" height="64" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="390.0" y="42.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Түпнұсқа репо</text><text x="390.0" y="61.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">upstream (мысалы, Bootstrap)</text><rect x="290" y="130" width="200" height="64" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="390.0" y="152.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Сіздің форкіңіз</text><text x="390.0" y="171.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">GitHub-та, иесі - сіз</text><rect x="290" y="240" width="200" height="64" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="390.0" y="262.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Жергілікті көшірме</text><text x="390.0" y="281.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">сіздің компьютеріңіз</text><polyline points="360,86 360,128" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g8-c)"/><text x="345" y="107" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;font-weight:700">Fork</text><polyline points="360,196 360,238" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g8-c)"/><text x="345" y="217" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">git clone</text><polyline points="430,238 430,196" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g8-c)"/><text x="445" y="217" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">git push</text><polyline points="490,162 560,162 560,52 492,52" style="stroke:#d9534f;stroke-width:2;fill:none" marker-end="url(#g8-r)"/><text x="575" y="107" text-anchor="start" dominant-baseline="central" style="fill:#d9534f;font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Pull request</text><text x="575" y="128" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">«өзгерісімді қосып алыңызшы»</text></svg>
+      <p>Адамдардың аздап өзгеріс жасап, оны негізгі репозиторийге қосуды сұрау үрдісі <strong>ашық бастапқы кодты бағдарламалық жасақтама</strong> (<span class="term-en">open source software</span>) үшін өте маңызды. Мұндай бағдарламалардың коды ашық, оны көптеген әзірлеушілер бірге жазады. Біздің Linux, Python, Bootstrap сияқты құралдарымыз дәл осылай жасалған.</p>
+
+      <h4 id="github-pages">GitHub Pages</h4>
+      <p><strong>GitHub Pages</strong> - статикалық сайтты интернетке шығарудың ең оңай жолы. (Статикалық және динамикалық сайттардың айырмашылығын кейінірек үйренеміз.) Ол үшін:</p>
+      <ol>
+        <li>Жаңа GitHub репозиторийін жасаңыз.</li>
+        <li>Репозиторийді клондап, өзгерістерді жергілікті түрде жасаңыз. Міндетті түрде <code>index.html</code> файлы болсын: ол сайттың бастапқы беті болады.</li>
+        <li>Өзгерістерді GitHub-қа <code>push</code> жасаңыз.</li>
+        <li>Репозиторийдің <strong>Settings</strong> бетіне барып, GitHub Pages бөліміне дейін төмен түсіңіз де, ашылмалы мәзірден негізгі тармақты (лекцияда <code>master</code>) таңдаңыз.</li>
+        <li>Қайтадан GitHub Pages бөліміне барыңыз. Бірнеше минуттан кейін «Your site is published at: ...» деген хабарландыру пайда болады, онда сайтыңыздың сілтемесі көрсетіледі.</li>
+      </ol>
+      <svg viewBox="0 0 780 150" role="img" aria-label="GitHub Pages: push жасаңыз, баптауда тармақты таңдаңыз, сайт жарияланады" style="display:block;width:100%;max-width:780px;height:auto;margin:18px auto"><defs><marker id="g9-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="g9-r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:#d9534f"/></marker><marker id="g9-c" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs><rect x="10" y="40" width="175" height="70" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="97.5" y="65.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">1. index.html</text><text x="97.5" y="84.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">жергілікті қалтада</text><rect x="205" y="40" width="175" height="70" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="292.5" y="65.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">2. git push</text><text x="292.5" y="84.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">GitHub-қа жіберу</text><polyline points="187,75 203,75" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g9-c)"/><rect x="400" y="40" width="175" height="70" rx="8" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1.4"/><text x="487.5" y="65.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">3. Settings &gt; Pages</text><text x="487.5" y="84.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">тармақты таңдау</text><polyline points="382,75 398,75" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g9-c)"/><rect x="595" y="40" width="175" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="682.5" y="65.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">4. Сайт жарияланды</text><text x="682.5" y="84.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">username.github.io/repo</text><polyline points="577,75 593,75" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#g9-c)"/></svg>
+      <p>Міне, бүгінгі лекция осымен біткен. Келесі жолы Python-ды үйренеміз!</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Бүгін Git пен GitHub-тың негізін үйрендік. Қысқаша қайталайық:</p>
+      <ul>
+        <li><strong>Git</strong> - нұсқаларды басқаратын құрал: өзгерістерді қадағалау, адамдар арасында синхрондау, тармақтау және артқа қайту.</li>
+        <li><strong>репозиторий</strong> (қашықтағы және жергілікті) және <strong>GitHub</strong> қашықтағы репозиторийлерді сақтайтын сайт екені;</li>
+        <li><code>git clone</code>, <code>git add</code>, <code>git commit -m</code> / <code>git commit -am</code>, <code>git push</code>, <code>git pull</code>, <code>git status</code>;</li>
+        <li><strong>біріктіру қайшылығы</strong> және белгілері <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code>; оны қолмен немесе редактор көмегімен шешу;</li>
+        <li><code>git log</code> арқылы тарихты көру; <code>git reset --hard</code> арқылы артқа қайту;</li>
+        <li><strong>тармақтар</strong>: <code>git branch</code>, <code>git checkout -b</code>, <code>git checkout</code>, <code>git merge</code>; <code>HEAD</code> ұғымы;</li>
+        <li>GitHub мүмкіндіктері: <strong>fork</strong>, <strong>pull request</strong>, <strong>GitHub Pages</strong>.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. Ана GitHub-тағы репозиторийдің компьютерінде көшірмесін алғысы келеді. Қай команда керек?</p>
+          <label><input type="radio" value="a"> <code>git push</code></label>
+          <label><input type="radio" value="b"> <code>git commit</code></label>
+          <label><input type="radio" value="c"> <code>git clone &lt;сілтеме&gt;</code></label>
+          <label><input type="radio" value="d"> <code>git merge</code></label>
+          <p class="explain"><code>git clone</code> қашықтағы репозиторийдің жергілікті көшірмесін жасайды. <code>push</code> керісінше, жергілікті коммиттерді GitHub-қа жібереді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">2. Ана жаңа <code>style.css</code> файлын жасады. Содан кейін <code>git commit -am "стиль"</code> жазды. Не болады?</p>
+          <label><input type="radio" value="a"> Коммит жасалады, бірақ жаңа файл оған кірмейді, себебі оған алдымен <code>git add</code> керек еді</label>
+          <label><input type="radio" value="b"> Жаңа файл да коммитке кіреді</label>
+          <label><input type="radio" value="c"> Файл GitHub-қа автоматты түрде жіберіледі</label>
+          <label><input type="radio" value="d"> Git қате шығарып, ештеңе істемейді</label>
+          <p class="explain"><code>-a</code> тек бұрыннан қадағаланатын файлдардағы өзгерістерді қосады. Жаңа файл үшін алдымен <code>git add</code> орындау қажет.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. <code>git commit</code> жасадыңыз, бірақ GitHub бетінде өзгерісті көрмейсіз. Неге?</p>
+          <label><input type="radio" value="a"> Коммит әрқашан бір күннен кейін ғана көрінеді</label>
+          <label><input type="radio" value="b"> Репозиторий жеке болғандықтан</label>
+          <label><input type="radio" value="c"> Алдымен <code>git log</code> жазу керек</label>
+          <label><input type="radio" value="d"> Коммит жергілікті репозиторийде тұр, оны GitHub-қа <code>git push</code> арқылы жіберу керек</label>
+          <p class="explain">Коммит - жергілікті сурет. GitHub-қа жіберу үшін бөлек <code>git push</code> қажет, <code>git status</code> «ahead by 1 commit» деп еске салады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">4. Мына файлда не болды?</p>
+<pre data-lang="plaintext"><code class="language-plaintext">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+title = "Басты бет"
+=======
+title = "Үй"
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; 4f2a9c1</code></pre>
+          <label><input type="radio" value="a"> Файл зақымданды, оны қайта жүктеу керек</label>
+          <label><input type="radio" value="b"> Біріктіру қайшылығы: бір жолды екі адам әртүрлі өзгертті, біреуін таңдап, белгілерді өшіру керек</label>
+          <label><input type="radio" value="c"> Git екі нұсқаны сәтті біріктірді</label>
+          <label><input type="radio" value="d"> Бұл Git-тің жаңа тармақ жасағаны</label>
+          <p class="explain"><code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code> және <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> белгілері қайшылықты көрсетеді. Қалдыратын бөлікті таңдап, белгілерді өшірген соң, файлды қайта <code>add</code> және <code>commit</code> жасаймыз.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">5. <code>feature</code> тармағындағы жұмысты <code>main</code>-ге қосу үшін дұрыс ретті таңдаңыз.</p>
+          <label><input type="radio" value="a"> <code>git checkout main</code>, сосын <code>git merge feature</code></label>
+          <label><input type="radio" value="b"> <code>git checkout feature</code>, сосын <code>git push main</code></label>
+          <label><input type="radio" value="c"> <code>git merge main</code>, сосын <code>git checkout feature</code></label>
+          <label><input type="radio" value="d"> <code>git branch main feature</code></label>
+          <p class="explain">Біріктіру қалдыратын тармақта жасалады: алдымен <code>main</code>-ге ауысамыз, сосын <code>feature</code>-ды соған қосамыз.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">6. <code>git branch</code> шығысы мынадай болса, сіз қазір қай тармақтасыз?</p>
+<pre class="terminal"><code class="language-plaintext">  main
+* login
+  feature</code></pre>
+          <label><input type="radio" value="a"> <code>main</code></label>
+          <label><input type="radio" value="b"> <code>feature</code></label>
+          <label><input type="radio" value="c"> <code>login</code></label>
+          <label><input type="radio" value="d"> Үшеуінде бірден</label>
+          <p class="explain">Қазіргі тармақтың атының сол жағында жұлдызша (<code>*</code>) тұрады. <code>HEAD</code> дәл соған нұсқап тұр.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. Біреудің ашық репозиторийіне өз түзетуіңізді ұсынғыңыз келеді, бірақ оған жазу рұқсатыңыз жоқ. Қалай жасайсыз?</p>
+          <label><input type="radio" value="a"> <code>git reset --hard</code> арқылы репозиторийді өзгертесіз</label>
+          <label><input type="radio" value="b"> GitHub Pages арқылы жариялайсыз</label>
+          <label><input type="radio" value="c"> Иесінен құпия сөзін сұрайсыз</label>
+          <label><input type="radio" value="d"> Репозиторийді форктап, өз көшірмеңізде өзгертесіз де, pull request жібересіз</label>
+          <p class="explain">Ашық бастапқы кодты жобалардың дәстүрлі жолы осы: fork, өзгерту, pull request. Иесі қарап, қабылдауы немесе қабылдамауы мүмкін.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">8. Жобаңыздағы кодты екі коммит бұрынғы күйге қайтарғыңыз келеді, ал соңғы екі коммиттегі жұмысты керек етпейсіз. Қай команда сәйкес келеді?</p>
+          <label><input type="radio" value="a"> <code>git pull</code></label>
+          <label><input type="radio" value="b"> <code>git reset --hard &lt;керекті коммиттің хэші&gt;</code></label>
+          <label><input type="radio" value="c"> <code>git status</code></label>
+          <label><input type="radio" value="d"> <code>git add .</code></label>
+          <p class="explain"><code>git log</code> арқылы керекті коммиттің хэшін тауып, <code>git reset --hard</code> береміз. Соңғы коммиттер тарихтан алынып тасталады, сондықтан абай болу керек.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Жаттығу</h2>
+      <p>Бұл апта үшін жеке тапсырмалар жинағы жоқ: алғашқы жоба (<strong>Project 0: Search</strong>) нөлінші аптаның материалына жатады. Бірақ Git тек оқумен үйренілмейді, қолмен жасау керек. Төменде бес-алты командадан тұратын шағын сеанс бар, сосын төрт жаттығу.</p>
+      <div class="callout note">
+        <span class="callout-title">Git сайтта жоқ</span>
+        <p>Бұл сайтта нағыз Git жұмыс істемейді, сондықтан интерактивті терминал жасамадық. Орнына төмендегі терминал блоктарында командалардың нақты шығысын көрсетеміз. Командалар компьютеріңіздегі терминалда орындалады: <a href="https://git-scm.com/downloads" target="_blank" rel="noopener">Git орнатыңыз</a> да, қатарынан қайталап көріңіз. Бұл жаттығулардың автотексерушісі жоқ, өзіңізді checklist арқылы тексересіз.</p>
+      </div>
+
+      <h3 id="git-session">Алты команданың бір сеансы</h3>
+      <p>Ең алдымен бос қалта жасап, ішінде репозиторий бастайық. Әр команданың астындағы шығысты өз терминалыңызда да көресіз.</p>
+<pre class="terminal"><code class="language-plaintext">$ mkdir my-site
+$ cd my-site
+$ git init
+Initialized empty Git repository in /home/ana/my-site/.git/
+$ git status
+On branch main
+
+No commits yet
+
+nothing to commit (create/copy files and use "git add" to track)</code></pre>
+      <p><code>git init</code> қалтаны Git репозиторийіне айналдырады (ішінде жасырын <code>.git</code> қалтасы пайда болады). Енді бір файл жасап, күйді қайта қарайық:</p>
+<pre class="terminal"><code class="language-plaintext">$ echo "&lt;h1&gt;Сәлем&lt;/h1&gt;" &gt; index.html
+$ git status
+On branch main
+
+No commits yet
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+	index.html
+
+nothing added to commit but untracked files present (use "git add" to track)
+$ git add index.html
+$ git status
+On branch main
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached &lt;file&gt;..." to unstage)
+	new file:   index.html</code></pre>
+      <p>Байқадыңыз ба? Файл алдымен «Untracked» (қадағаланбайды) болды, <code>git add</code>-тен кейін «Changes to be committed» (коммитке дайын) болды. Бұл - жоғарыдағы дайындық аймағы. Енді коммит жасап, тарихты қараймыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ git commit -m "Бастапқы бет"
+[main (root-commit) a1f04e7] Бастапқы бет
+ 1 file changed, 1 insertion(+)
+ create mode 100644 index.html
+$ git log --oneline
+a1f04e7 (HEAD -&gt; main) Бастапқы бет
+$ git branch
+* main</code></pre>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-first-repo">Алғашқы репозиторий</h3></div>
+        <p>Жоғарыдағы сеансты өз компьютеріңізде қайталаңыз, бірақ өз сайтыңызбен. <code>git init</code> жасаңыз, <code>index.html</code> мен <code>style.css</code> файлдарын жасаңыз. Алдымен тек біреуін <code>git add</code> етіп, <code>git status</code> шығысын қараңыз: екінші файл қай бөлімде тұр? Сосын екеуін де қосып, екі бөлек коммитке бөліңіз: «Бет қостым», «Стиль қостым». Соңында <code>git log</code> жасаңыз.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Екі бөлек коммит жасау үшін: <code>git add index.html</code>, <code>git commit -m "Бет қостым"</code>, сосын <code>git add style.css</code>, <code>git commit -m "Стиль қостым"</code>. <code>git log --oneline</code> тарихты бір жолға сыйғызып көрсетеді.</p></div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web1-first-repo">
+            <li><input type="checkbox"> <span><code>git status</code> жаңа файлды «Untracked files» ретінде көрсетті, <code>git add</code>-тен кейін «Changes to be committed» болды.</span></li>
+            <li><input type="checkbox"> <span><code>git log</code> екі коммитті екі түрлі хабармен көрсетеді.</span></li>
+            <li><input type="checkbox"> <span><code>git status</code> соңында «nothing to commit, working tree clean» дейді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-branch">Тармақ жасап, біріктіру</h3></div>
+        <p>Алдыңғы репозиторийде <code>git checkout -b contact</code> орындаңыз. <code>contact.html</code> файлын жасап, коммит жасаңыз. Сосын <code>git checkout main</code> жасап, <code>ls</code> шығысын қараңыз: <code>contact.html</code> қайда кетті? Содан кейін <code>git merge contact</code> жасап, <code>ls</code> шығысын қайта қараңыз.</p>
+<pre class="terminal"><code class="language-plaintext">$ git checkout -b contact
+Switched to a new branch 'contact'
+$ touch contact.html
+$ git add contact.html
+$ git commit -m "Байланыс беті"
+$ git checkout main
+$ ls
+index.html  style.css
+$ git merge contact
+$ ls
+contact.html  index.html  style.css</code></pre>
+        <p>Мұндағы шығыс - сіздің компьютеріңізде шығуы тиіс нәрсе. Егер шығыс өзгеше болса, неге екенін ойланыңыз.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>contact.html</code> файлы <code>main</code>-ге ауысқанда жоғалып кетеді, өйткені ол тек <code>contact</code> тармағының коммитінде бар. <code>merge</code>-ден кейін ол <code>main</code>-ге де келеді. Тармақты біріктіру кезінде қай тармақта тұрғаныңызды <code>git branch</code> арқылы тексеріңіз.</p></div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web1-branch">
+            <li><input type="checkbox"> <span><code>git branch</code> екі тармақты көрсетеді, жұлдызша қазіргі тармақтың жанында тұр.</span></li>
+            <li><input type="checkbox"> <span><code>main</code>-ге ауысқанда <code>contact.html</code> көрінбейді, ал <code>merge</code>-ден кейін пайда болады.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-conflict">Қайшылықты шешу</h3></div>
+        <p>Әдейі қайшылық жасап көріңіз. <code>main</code>-де <code>index.html</code> ішіндегі тақырыпты <code>&lt;h1&gt;Басты бет&lt;/h1&gt;</code> етіп өзгертіп, коммит жасаңыз. Сосын <code>git checkout contact</code> тармағына өтіп, сол <code>index.html</code> жолын <code>&lt;h1&gt;Үй&lt;/h1&gt;</code> етіп өзгертіңіз, коммит жасаңыз. Соңында <code>git checkout main</code> жасап, <code>git merge contact</code> орындаңыз. Git мынаны айтады:</p>
+<pre class="terminal"><code class="language-plaintext">$ git merge contact
+Auto-merging index.html
+CONFLICT (content): Merge conflict in index.html
+Automatic merge failed; fix conflicts and then commit the result.</code></pre>
+        <p><code>index.html</code> файлын ашсаңыз, мынаны көресіз:</p>
+<pre data-lang="html"><code class="language-html">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+&lt;h1&gt;Басты бет&lt;/h1&gt;
+=======
+&lt;h1&gt;Үй&lt;/h1&gt;
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; contact</code></pre>
+        <p>Тапсырма: қай жолдың қайсысының өзгерісі екенін анықтаңыз, «Басты бет» нұсқасын қалдырыңыз, белгілерді өшіріңіз, сосын <code>git add index.html</code> және <code>git commit</code> жасаңыз.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>HEAD</code> белгісінен кейінгі бөлік - сіз тұрған тармақтың (<code>main</code>) нұсқасы, ал <code>=======</code>-тен кейінгісі - <code>contact</code> тармағынан келгені. Соңында файлда тек <code>&lt;h1&gt;Басты бет&lt;/h1&gt;</code> жолы қалуы керек. Біріктіруді <code>git commit</code> аяқтайды, жаңа хабар жазбасаңыз да, Git өзі ұсынады.</p></div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web1-conflict">
+            <li><input type="checkbox"> <span>Git қайшылық туралы хабар шығарды және файлда үш белгі жолы пайда болды.</span></li>
+            <li><input type="checkbox"> <span>Түзетілген файлда <code>&lt;&lt;&lt;&lt;&lt;&lt;&lt;</code>, <code>=======</code>, <code>&gt;&gt;&gt;&gt;&gt;&gt;&gt;</code> белгілері қалған жоқ.</span></li>
+            <li><input type="checkbox"> <span><code>git log</code> біріктіру коммитін көрсетеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="ex-github-pages">GitHub-қа жіберіп, сайт жариялау</h3></div>
+        <p>GitHub-та жаңа жария репозиторий жасаңыз, клондаңыз, ішіне <code>index.html</code> салыңыз (кез келген мазмұн), <code>add</code>, <code>commit</code>, <code>push</code> жасаңыз. Сосын Settings бетінде GitHub Pages-ті қосып, сайтыңыздың сілтемесін ашыңыз. Одан кейін бетке бір сөйлем қосып, қайтадан <code>git commit -am</code> және <code>git push</code> жасаңыз; бірнеше минуттан кейін сайт жаңарғанын тексеріңіз.</p>
+        <details class="think">
+          <summary>Ойланып көріңіз: <code>git commit -am</code> жаңа файлды неге қоспайды?</summary>
+          <div class="details-body"><p><code>-a</code> тек Git бұрыннан білетін (қадағалап жүрген) файлдарға әсер етеді. Жаңа файл Git үшін «бейтаныс», оны бір рет <code>git add</code> арқылы таныстыру керек. Содан кейін ол да бұрыннан қадағаланатын файлға айналады.</p></div>
+        </details>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Pages баптауы GitHub-тың интерфейсіне байланысты өзгеріп тұрады: «Settings», сосын «Pages» бөлімінен «Deploy from a branch» және негізгі тармақты таңдайсыз. Сайт сілтемесі әдетте <code>https://&lt;аты&gt;.github.io/&lt;репозиторий&gt;/</code> түрінде болады.</p></div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web1-pages">
+            <li><input type="checkbox"> <span>Репозиторий GitHub-та, <code>index.html</code> файлы онда көрінеді.</span></li>
+            <li><input type="checkbox"> <span>GitHub Pages сілтемесі ашылып, бетіңізді көрсетеді.</span></li>
+            <li><input type="checkbox"> <span>Екінші <code>push</code>-тен кейін бет жаңарды.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-0.html"><small>Алдыңғы</small>← 0-апта: HTML, CSS</a>
+        <a class="next" href="week-2.html"><small>Келесі</small>2-апта: Python →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 Web (CS50's Web Programming with Python and JavaScript, Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

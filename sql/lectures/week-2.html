@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 SQL 2-апта: Жобалау - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 SQL 2-апта: Жобалау - CS50 қазақша">
+  <meta property="og:description" content="CS50 SQL 2-апта: дерекқор схемасын жобалау, нормалау, ER диаграммасы, CREATE TABLE, деректер типтері, тип афинитеттері, кесте және баған шектеулері, ALTER TABLE.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/sql/lectures/week-2.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 SQL 2-апта: дерекқор схемасын жобалау, нормалау, ER диаграммасы, CREATE TABLE, деректер типтері, тип афинитеттері, кесте және баған шектеулері, ALTER TABLE.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+
+      <div class="lecture-head" style="--lc:#7c3aed" data-n="2">
+        <div class="num">2-апта</div>
+        <h1>Жобалау</h1>
+        <p>Бүгін дайын дерекқорды қолданудан оны өзіміз жобалауға көшеміз: кестелерді қалай бөлеміз, бағандарға қандай тип береміз, қандай шектеулер қоямыз және кейін схеманы қалай өзгертеміз.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/sql/notes/2/" target="_blank" rel="noopener">▶ Түпнұсқа конспект (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Осы уақытқа дейін біз басқа біреу жасаған кестелерге <code>SELECT</code> жазып келдік. Енді «сәулетші» болатын кез келді: кестені өзіміз сызамыз. Бетте <code>CREATE TABLE</code> бар мысалдардың көбін «▶ Іске қосу» арқылы нағыз SQLite-та орындап көруге болады; әр басқанда дерекқор таза күйінде басталады.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <div class="callout note">
+        <span class="callout-title">Браузердегі нұсқа туралы</span>
+        <p><code>.schema</code> сияқты нүктемен басталатын командалар - SQL емес, <code>sqlite3</code> бағдарламасының өз командалары, сондықтан браузерде жұмыс істемейді. Оның орнына бетте <code>SELECT "name", "sql" FROM "sqlite_master";</code> сұрауын қолданамыз: ол дәл сол ақпаратты, яғни кестелерді жасаған сұрауларды көрсетеді. Іске қосылатын мысалдардың соңына осы сұрауды (комментариймен белгілеп) қосып қойдым.</p>
+      </div>
+
+      <h2 id="introduction">Кіріспе</h2>
+      <p>Алғашқы екі аптада біз бір дерекқормен жұмыс істедік: Халықаралық Букер сыйлығының ұзақ тізіміне (longlist) кірген кітаптар. Сұрау жазып, кестелерді біріктіріп, нәтижелерін қарадық. Бірақ бір сұрақ ашық қалды: ол дерекқорды кім және қалай жасады? Бүгін дәл осыны ашамыз, яғни перде артына үңіліп, дерекқорды <strong>схема</strong> (<span class="term-en">schema</span>) деңгейінен өзіміз құруды үйренеміз.</p>
+      <p>Алдымен 0-аптадағы <code>longlist.db</code> дерекқорын терминалда ашып көрейік. Еске салайын, онда <code>longlist</code> деген бір ғана кесте болатын. Оның «суретін» мына сұраумен көреміз:</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-2.js"><code class="language-sql">SELECT "author", "title"
+FROM "longlist"
+LIMIT 5;</code></pre>
+      <p>Сайттағы демо-кестеде кітаптар мен авторлар ойдан шығарылған, бірақ құрылымы ресмидегідей. Бұл сұрау <code>longlist</code> кестесінің алғашқы 5 жолындағы автор мен атауды береді.</p>
+      <p>Енді SQLite-тың бір командасына назар аударайық. Бұл SQL кілт сөзі емес, <code>sqlite3</code> бағдарламасының өз командасы:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">.schema</code></pre>
+      <p>Оны іске қосқанда <code>longlist</code> кестесін жасау үшін қолданылған SQL операторын көреміз. Ол бізге кестедегі бағандарды және әр баған қандай деректі сақтай алатынын көрсетеді. Браузерде мұны былай ашамыз:</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-2.js"><code class="language-sql">SELECT "name", "sql"
+FROM "sqlite_master";</code></pre>
+      <p>Одан кейін 1-аптадағы <code>longlist.db</code> нұсқасын ашайық. Онда кестелер бір-бірімен байланысқан еді. Тағы <code>.schema</code> жазсақ, енді көп команда шығады: бір кесте үшін бір команда. Бір ғана кестенің схемасын көргіміз келсе, оның атын қосамыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">.schema books</code></pre>
+      <p>Енді <code>books</code> кестесін жасаған оператор көрінеді. Бағандар мен олардың типтері де анық: мысалы, <code>"title"</code> бағаны мәтін қабылдайды, ал <code>"publisher_id"</code> бағаны бүтін сан.</p>
+
+      <h2 id="schema">Дерекқор схемасын жасау</h2>
+      <p>Дайын схеманы көрдік, енді өзіміз жасап көрейік. Мақсат мынадай: Бостон қаласының метро жүйесін дерекқор схемасымен сипаттау керек. Онда станциялар, пойыз желілері және пойызбен жүретін адамдар болуы тиіс. Төмендегі сызба - нақты картаның қарапайым көрінісі: төрт түсті желі, олар кей станцияларда қиылысады.</p>
+      <svg viewBox="0 0 540 285" role="img" aria-label="Бостон метросының схемалық көрінісі: Red, Orange, Blue және Green желілері бірнеше станцияда қиылысады" style="display:block;width:100%;max-width:540px;height:auto;margin:18px auto"><polyline points="40,40 110,72 180,100 255,135 320,170 385,205" style="fill:none;stroke:#d6362b;stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/><polyline points="60,245 150,220 320,170 385,120 460,80" style="fill:none;stroke:#e87d1e;stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/><polyline points="300,35 330,80 385,120 440,160 500,195" style="fill:none;stroke:#2a64b8;stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/><polyline points="330,80 255,135 190,170 110,205" style="fill:none;stroke:#1f9d55;stroke-width:7;stroke-linecap:round;stroke-linejoin:round"/><circle cx="40" cy="40" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="110" cy="72" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="180" cy="100" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="255" cy="135" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="320" cy="170" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="385" cy="205" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="60" cy="245" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="150" cy="220" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="385" cy="120" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="460" cy="80" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="300" cy="35" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="330" cy="80" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="440" cy="160" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="500" cy="195" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="190" cy="170" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><circle cx="110" cy="205" r="6" style="fill:var(--surface);stroke:var(--text);stroke-width:2"/><text x="40" y="26" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Alewife</text><text x="110" y="58" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Harvard</text><text x="180" y="86" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Kendall/MIT</text><text x="243" y="159" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Park Street</text><text x="316" y="196" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Downtown Crossing</text><text x="385" y="227" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">South Station</text><text x="60" y="231" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Forest Hills</text><text x="150" y="244" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Back Bay</text><text x="399" y="108" text-anchor="start" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">State</text><text x="460" y="66" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Oak Grove</text><text x="300" y="21" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Bowdoin</text><text x="318" y="66" text-anchor="end" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Government Center</text><text x="440" y="184" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Aquarium</text><text x="500" y="219" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Airport</text><text x="188" y="194" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Boylston</text><text x="110" y="229" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px">Kenmore</text><rect x="20" y="262" width="22" height="7" rx="3" style="fill:#d6362b"/><text x="48" y="266" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">Red</text><rect x="120" y="262" width="22" height="7" rx="3" style="fill:#e87d1e"/><text x="148" y="266" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">Orange</text><rect x="220" y="262" width="22" height="7" rx="3" style="fill:#2a64b8"/><text x="248" y="266" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">Blue</text><rect x="320" y="262" width="22" height="7" rx="3" style="fill:#1f9d55"/><text x="348" y="266" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">Green</text></svg>
+      <p>Бұл сұрақты бөлшектеп алайық. Шешуіміз керек үш нәрсе бар:</p>
+      <ul>
+        <li>Бостон метросының дерекқорында қандай <strong>кестелер</strong> болады;</li>
+        <li>әр кестеде қандай <strong>бағандар</strong> болады;</li>
+        <li>әр бағанға қандай <strong>типтегі</strong> деректі салуға болады.</li>
+      </ul>
+
+      <h3 id="normalizing">Нормалау</h3>
+      <p>Бірінші әрекетті қарапайым жасайық: бәрін бір кестеге салайық. Кестеде метродағы жолаушының аты, ол қазір тұрған станция және сол станцияда жасаған әрекеті («кірді», «шықты») болады. Сонымен қатар төленген жол ақысы мен карточкадағы қалдық сома жазылады. Әр жолдың өз нөмірі бар: ол әр «транзакцияны» бөлек сәйкестендіреді және бастапқы кілт болады.</p>
+      <div class="sql-table"><table>
+        <thead><tr><th>id</th><th>rider</th><th>station</th><th>action</th><th>fare</th><th>balance</th></tr></thead>
+        <tbody>
+          <tr><td>1</td><td>Аружан Сейітова</td><td>Park Street</td><td>enter</td><td>2.40</td><td>17.60</td></tr>
+          <tr><td>2</td><td>Аружан Сейітова</td><td>Harvard</td><td>exit</td><td>0.00</td><td>17.60</td></tr>
+          <tr><td>3</td><td>Бекзат Қасымов</td><td>Park Street</td><td>enter</td><td>2.40</td><td>7.60</td></tr>
+          <tr><td>4</td><td>Аружан Сейітова</td><td>Park Street</td><td>enter</td><td>2.40</td><td>15.20</td></tr>
+          <tr><td>5</td><td>Бекзат Қасымов</td><td>South Station</td><td>exit</td><td>0.00</td><td>7.60</td></tr>
+        </tbody>
+      </table></div>
+      <p class="note-small">Бұл - түпнұсқадағы суреттің орнына жасалған ойдан шығарылған мысал кесте.</p>
+      <p>Осы кестеге қарап, не артық екенін байқайсыз ба? Аружанның аты бірнеше рет қайталанып тұр. «Park Street» те қайта-қайта жазылған. Кесте ұлғайған сайын бұл қайталаулар көбейе береді, мыңдаған жолда бір ғана атты мыңдаған рет сақтаймыз. Не істеуге болады?</p>
+      <ul>
+        <li>Жолаушылардың аттарын <strong>бөлек кестеге</strong> шығарамыз да, әрқайсысына бір <code>id</code> береміз. Сол <code>id</code> арқылы жаңа кестені бастапқы кестемен байланыстырамыз.</li>
+        <li>Станциялармен де осылай істейміз: бөлек кестеге шығарып, әрқайсысына <code>id</code> береміз. Ол бастапқы кестеде <strong>сыртқы кілт</strong> болады.</li>
+      </ul>
+      <p>Деректерді осылай бөлу процесін <strong>нормалау</strong> (<span class="term-en">normalizing</span>) дейді. Қағида қарапайым: әр <strong>нысан</strong> (<span class="term-en">entity</span>) өз кестесіне түседі, біз жолаушылар мен станциялармен дәл осылай жасадық. Нысанға қатысты кез келген ақпарат, мысалы жолаушының мекенжайы, тек сол нысанның өз кестесіне жазылады.</p>
+      <p>Базардан мысал: дүкенші әр сатылымның қағазына сатып алушының толық аты-жөнін, үйінің мекенжайын қайталап жазбайды. Оның орнына «тұрақты клиенттер дәптері» болады, ал чекке дәптердегі нөмір ғана қойылады. Нормалау дәл осы дәптер.</p>
+
+      <h3 id="relating">Байланыстыру</h3>
+      <p>Енді нысандарымыздың (жолаушылар мен станциялардың) бір-бірімен қалай байланысатынын шешу керек. Жолаушы, сірә, бірнеше станцияға барады. Ал станцияда да бірнеше жолаушы болады. Демек, бұл - <strong>көп-көптік байланыс</strong> (<span class="term-en">many-to-many relationship</span>).</p>
+      <p>Мұндай байланысты <strong>ER диаграммасымен</strong> (<span class="term-en">entity-relationship diagram</span>, «нысан - байланыс» диаграммасы) көрсетуге болады.</p>
+      <svg viewBox="0 0 560 170" role="img" aria-label="ER диаграмма: жолаушы бір немесе бірнеше станцияға барады, станцияда жолаушы болмауы да, көп болуы да мүмкін" style="display:block;width:100%;max-width:560px;height:auto;margin:18px auto"><rect x="30" y="40" width="150" height="84" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><path d="M30,70 H180" style="stroke:var(--accent);stroke-width:1.2;fill:none"/><text x="105.0" y="56" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:700">Rider</text><text x="40" y="85.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">id</text><text x="40" y="109.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">name</text><rect x="370" y="30" width="160" height="108" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><path d="M370,60 H530" style="stroke:var(--accent);stroke-width:1.2;fill:none"/><text x="450.0" y="46" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:700">Station</text><text x="380" y="75.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">id</text><text x="380" y="99.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">name</text><text x="380" y="123.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">line</text><path d="M180,85 H370" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><path d="M196,85 L180,76 M196,85 L180,85 M196,85 L180,94" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><circle cx="205" cy="85" r="5" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8"/><path d="M354,85 L370,76 M354,85 L370,85 M354,85 L370,94" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><path d="M346,77 V93" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><text x="275" y="73" text-anchor="middle" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">visits</text><text x="275" y="107" text-anchor="middle" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px">көп-көптік (many-to-many)</text></svg>
+      <p>Диаграммаға мұқият қараңыз. Әр жолаушы кемінде бір станцияға барған болуы керек, әйтпесе ол жолаушы болып саналмайды. Ал станцияда жолаушы болмауы мүмкін, мысалы ол уақытша жұмыс істемей тұрған шығар. Бірақ көбіне станцияға көп жолаушы келеді: диаграммадағы «қарға тырнағы» (<span class="term-en">crow's foot</span>) дәл осыны білдіреді. Жолдың шетіндегі белгілер былай оқылады: кішкентай шеңбер - «нөл», тік сызықша - «бір», тырнақ - «көп».</p>
+
+      <h3 id="schema-questions">Сұрақтар</h3>
+      <p><strong>Жолаушы мен станция арасындағы байланыс дәл осылай болуы міндетті ме? Мысалы, станцияда неге 0 жолаушы болуы мүмкін?</strong></p>
+      <p>Жоқ, міндетті емес. Дерекқорды жобалаушы нысандар арасындағы байланысты өзі шешеді. Қаласаңыз, «станция болу үшін кемінде бір жолаушы болуы керек» деген шектеу де қоса аласыз.</p>
+
+      <h2 id="create-table"><code>CREATE TABLE</code></h2>
+      <p>Екі кестенің схемасы дайын, енді оларды шынымен жасайық. <code>mbta.db</code> деген жаңа дерекқор ашамыз. MBTA - Massachusetts Bay Transportation Authority, яғни Бостон метросын басқаратын ұйым. Онда <code>.schema</code> жазсақ, ештеңе шықпайды, өйткені дерекқор әлі бос.</p>
+      <p>Жолаушылар кестесін мына командамен жасаймыз:</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">CREATE TABLE riders (
+    "id",
+    "name"
+);
+
+-- .schema орнына:
+SELECT "name", "sql" FROM "sqlite_master";</code></pre>
+      <p>Терминалда бұл команда ешқандай нәтиже шығармайды. Бірақ <code>.schema</code> қайта жазсақ, өзіміз анықтаған <code>riders</code> кестесінің схемасы пайда болады. Жоғарыдағы блоктың төменгі жолындағы <code>SELECT</code> да дәл осыны көрсетеді.</p>
+      <p>Станциялар кестесін де жасайық:</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">CREATE TABLE stations (
+    "id",
+    "name",
+    "line"
+);
+
+-- .schema орнына:
+SELECT "name", "sql" FROM "sqlite_master";</code></pre>
+      <p>Мұнда қосымша <code>"line"</code> бағанын қостық: станция қай пойыз желісіне жататынын сақтайды.</p>
+      <p>Енді <code>.schema</code> екі кестенің схемасын да көрсетеді. Ал үшінші кесте - екі нысанды байланыстыратын кесте. Оны <strong>аралық кесте</strong> (<span class="term-en">junction table</span>) дейді; кейде «байланыстырушы нысан» (<span class="term-en">associative entity</span>) немесе «қосу кестесі» (<span class="term-en">join table</span>) деп те атайды.</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">CREATE TABLE visits (
+    "rider_id",
+    "station_id"
+);
+
+-- .schema орнына:
+SELECT "name", "sql" FROM "sqlite_master";</code></pre>
+      <p><code>visits</code> кестесінің әр жолы былай оқылады: «мына жолаушы мына станцияға барды».</p>
+
+      <h3 id="create-table-questions">Сұрақтар</h3>
+      <p><strong><code>CREATE TABLE</code> жақшасының ішіндегі жолдарды шегіндіру міндетті ме?</strong></p>
+      <p>Жоқ, қатаң міндетті емес. Бірақ әдеттегідей, оқуға жеңіл болу үшін, баған аттарын шегіндіріп жазамыз. Бұл - стиль дәстүрі.</p>
+
+      <h2 id="types">Деректер типтері мен сақтау кластары</h2>
+      <p>Бағандарды жасадық, бірақ олар «не сақтайды» деген сұрақ ашық. SQLite-та бес <strong>сақтау класы</strong> (<span class="term-en">storage class</span>) бар:</p>
+      <ul>
+        <li><strong>Null</strong>: ештеңе, яғни бос мән;</li>
+        <li><strong>Integer</strong>: ондық нүктесіз сандар;</li>
+        <li><strong>Real</strong>: ондық бөлшегі бар немесе қалқымалы үтірлі сандар;</li>
+        <li><strong>Text</strong>: таңбалар мен жолдар;</li>
+        <li><strong>Blob</strong> (Binary Large Object): екілік форматтағы нысандар, мысалы сурет пен дыбыс.</li>
+      </ul>
+      <p>Бір сақтау класына бірнеше нақты деректер типі кіре алады. Мысалы, Integer класына мына типтер жатады:</p>
+      <svg viewBox="0 0 560 218" role="img" aria-label="SQLite-тың бес сақтау класы және INTEGER класына жататын деректер типтері" style="display:block;width:100%;max-width:560px;height:auto;margin:18px auto"><rect x="10" y="10" width="100" height="50" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/><text x="60" y="29" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">NULL</text><text x="60" y="47" text-anchor="middle" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px">бос мән</text><rect x="118" y="10" width="100" height="50" rx="8" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2.2"/><text x="168" y="29" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">INTEGER</text><text x="168" y="47" text-anchor="middle" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px">бүтін сан</text><rect x="226" y="10" width="100" height="50" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/><text x="276" y="29" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">REAL</text><text x="276" y="47" text-anchor="middle" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px">бөлшек сан</text><rect x="334" y="10" width="100" height="50" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/><text x="384" y="29" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">TEXT</text><text x="384" y="47" text-anchor="middle" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px">мәтін</text><rect x="442" y="10" width="100" height="50" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/><text x="492" y="29" text-anchor="middle" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">BLOB</text><text x="492" y="47" text-anchor="middle" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px">екілік дерек</text><path d="M168,60 V84" style="stroke:var(--accent);stroke-width:2;fill:none"/><rect x="4" y="84" width="552" height="124" rx="10" style="fill:none;stroke:var(--accent);stroke-width:1.6;stroke-dasharray:5 4"/><rect x="16" y="94" width="128" height="28" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="80.0" y="108" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:11.5px">INT</text><rect x="156" y="94" width="128" height="28" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="220.0" y="108" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:11.5px">INTEGER</text><rect x="296" y="94" width="128" height="28" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="360.0" y="108" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:11.5px">TINYINT</text><rect x="436" y="94" width="128" height="28" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="500.0" y="108" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:11.5px">SMALLINT</text><rect x="16" y="132" width="128" height="28" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="80.0" y="146" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:11.5px">MEDIUMINT</text><rect x="156" y="132" width="128" height="28" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="220.0" y="146" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:11.5px">BIGINT</text><rect x="296" y="132" width="128" height="28" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="360.0" y="146" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:11.5px">UNSIGNED BIG INT</text><rect x="436" y="132" width="128" height="28" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="500.0" y="146" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:11.5px">INT2</text><rect x="16" y="170" width="128" height="28" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="80.0" y="184" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:11.5px">INT8</text><text x="290" y="184" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">Integer сақтау класына жататын типтер</text></svg>
+      <p>Жақсы жаңалық: ішінен нақты қайсысын таңдауды SQLite өзі шешеді. Біз тек сақтау класын таңдаймыз, қалғанын ол өзі реттейді. Мысалы, Integer мәнін ол мөлшеріне қарай 1-ден 8 байтқа дейін ықшам сақтайды.</p>
+      <p>Енді шынайы сұрақ қояйық: жол ақысын (fare) қай сақтау класымен жазамыз? Әр таңдаудың өз артықшылығы мен кемшілігі бар:</p>
+      <ul>
+        <li><strong>Integer</strong>. 10 центтік жол ақысын <code>10</code> деп жазуға болады, бірақ онда бұл 10 цент пе, 10 доллар ма деген түсініксіз болып қалады.</li>
+        <li><strong>Text</strong>. «$0.10» деп жазуға болады. Бірақ сонда жолаушының барлық жол ақысын қосу сияқты математикалық амалдарды орындау қиын болады.</li>
+        <li><strong>Real</strong>. 0.10 деп жазуға болады, бірақ қалқымалы үтірлі сандарды екілік жүйеде дәл сақтау мүмкін емес. Қаншалықты дәлдік керек екеніне қарай, бұл кейін қателесіп есептеуге әкелуі мүмкін.</li>
+      </ul>
+      <details class="think">
+        <summary>Ойланып көріңіз: 0.1 + 0.2 шынымен 0.3-ке тең бе?</summary>
+        <div class="details-body"><p>Қарапайым математикада иә. Ал компьютерде? Төмендегі сұрауды іске қосып көріңіз.</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">SELECT 0.1 + 0.2, 0.1 + 0.2 = 0.3;</code></pre>
+        <p>Нәтиже <code>0.30000000000000004</code>, ал салыстыру <code>0</code> (жалған) береді. Себебі 0.1 мен 0.2 екілік жүйеде дәл жазылмайды, 1/3 санын ондық бөлшекпен дәл жаза алмайтынымыз сияқты. Ақшамен жұмыс істегенде мұндай ұсақ қателер жиналып, үлкен қателікке айналуы мүмкін. Сондықтан ақшаны көбіне ең кіші бірлікпен (центпен, тиынмен) Integer ретінде сақтайды.</p></div>
+      </details>
+
+      <h2 id="affinities">Тип афинитеттері</h2>
+      <p>Кестені жасағанда бағанның деректер типін көрсетуге болады. Бірақ SQLite-тағы бағандар әрдайым бір ғана типті сақтай бермейді. Оларда <strong>тип афинитеті</strong> (<span class="term-en">type affinity</span>) бар: баған кіріс мәнін өзі «ұнататын» типке түрлендіруге тырысады.</p>
+      <p>SQLite-та бес тип афинитеті бар: Text, Numeric (мәнге қарап бүтін немесе нақты санға айналады), Integer, Real және Blob.</p>
+      <p>Мысалы, Integer афинитеті бар бағанға «25» деген мәтінді (25 саны, бірақ мәтін ретінде) салсақ, ол бүтін санға айналады. Керісінше, мәтін афинитетті бағанға 25 бүтін санын салсақ, ол «25» мәтініне түрленеді. Мұны өзіңіз тексеріңіз:</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">CREATE TABLE "demo" ("a" INTEGER, "b" TEXT, "c");
+INSERT INTO "demo" VALUES ('25', 25, '25');
+SELECT typeof("a"), typeof("b"), typeof("c") FROM "demo";</code></pre>
+      <p>Бұл - қосымша мысал (<code>INSERT</code>-ті 3-аптада толық үйренеміз). Нәтижесінде <code>a</code> бағанындағы «25» бүтін санға (<code>integer</code>), ал <code>b</code> бағанындағы 25 мәтінге (<code>text</code>) айналғанын көресіз. Типі көрсетілмеген <code>c</code> бағанында мән өзгеріссіз қалды.</p>
+
+      <h2 id="adding-types">Кестелерімізге типтер қосу</h2>
+      <p>Кестелерді типтермен қайта жасау үшін алдымен бұрынғыларын <strong>тастау</strong> (<span class="term-en">drop</span>), яғни жою керек. Мына командаларды көрейік:</p>
+<pre data-lang="sql" data-db="mbta0" data-dbsrc="sql/data/week-2.js"><code class="language-sql">DROP TABLE "riders";
+
+-- қалған кестелер:
+SELECT "name" FROM "sqlite_master";</code></pre>
+<pre data-lang="sql" data-db="mbta0" data-dbsrc="sql/data/week-2.js"><code class="language-sql">DROP TABLE "stations";
+
+-- қалған кестелер:
+SELECT "name" FROM "sqlite_master";</code></pre>
+<pre data-lang="sql" data-db="mbta0" data-dbsrc="sql/data/week-2.js"><code class="language-sql">DROP TABLE "visits";
+
+-- қалған кестелер:
+SELECT "name" FROM "sqlite_master";</code></pre>
+      <p>Бұл операторлар ешқандай нәтиже бермейді, бірақ <code>.schema</code> кестелердің жойылғанын көрсетеді. (Мысалда әр блок бастапқы үш кестесі бар таза дерекқорда жұмыс істейді.)</p>
+      <p>Келесі қадам: кестелерді нөлден жасай алатын <strong>схема файлын</strong> жазайық. Бұл алдыңғы әдістен әлдеқайда жақсы. Әр <code>CREATE TABLE</code> командасын терминалға қайта-қайта теріп отырмаймыз, ал бүкіл схеманы бір жерден көріп, оңай өзгерте аламыз.</p>
+      <p><code>schema.sql</code> деген файл жасаңыз. <code>.sql</code> кеңейтуі редакторға SQL кілт сөздерін бояп көрсетуге мүмкіндік береді. Файлдың ішіне схемаларды қайта жазамыз, бірақ енді афинитет типтерімен:</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">CREATE TABLE riders (
+    "id" INTEGER,
+    "name" TEXT
+);
+
+CREATE TABLE stations (
+    "id" INTEGER,
+    "name" TEXT,
+    "line" TEXT
+);
+
+CREATE TABLE visits (
+    "rider_id" INTEGER,
+    "station_id" INTEGER
+);
+
+-- .schema орнына:
+SELECT "name", "sql" FROM "sqlite_master";</code></pre>
+      <p>Содан кейін осы файлды дерекқордың ішінде оқимыз, сонда кестелер шынымен жасалады (<code>sqlite3</code> ішінде <code>.read schema.sql</code>). Төменде типтері көрсетілген жаңартылған ER диаграммасы. Аралық кесте <code>visits</code> енді диаграммада анық көрінеді:</p>
+      <svg viewBox="0 0 570 150" role="img" aria-label="ER диаграмма типтермен: Rider, аралық кесте visits және Station" style="display:block;width:100%;max-width:570px;height:auto;margin:18px auto"><rect x="10" y="30" width="150" height="84" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><path d="M10,60 H160" style="stroke:var(--accent);stroke-width:1.2;fill:none"/><text x="85.0" y="46" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:700">Rider</text><text x="20" y="75.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">id</text><text x="150" y="75.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">INTEGER</text><text x="20" y="99.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">name</text><text x="150" y="99.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">TEXT</text><rect x="205" y="40" width="160" height="84" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><path d="M205,70 H365" style="stroke:var(--accent);stroke-width:1.2;fill:none"/><text x="285.0" y="56" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:700">visits</text><text x="215" y="85.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">rider_id</text><text x="355" y="85.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">INTEGER</text><text x="215" y="109.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">station_id</text><text x="355" y="109.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">INTEGER</text><rect x="410" y="20" width="150" height="108" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><path d="M410,50 H560" style="stroke:var(--accent);stroke-width:1.2;fill:none"/><text x="485.0" y="36" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:700">Station</text><text x="420" y="65.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">id</text><text x="550" y="65.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">INTEGER</text><text x="420" y="89.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">name</text><text x="550" y="89.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">TEXT</text><text x="420" y="113.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">line</text><text x="550" y="113.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">TEXT</text><path d="M160,90 H205" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><path d="M170,82 V98 M177,82 V98" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><path d="M189,90 L205,81 M189,90 L205,90 M189,90 L205,99" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><circle cx="180" cy="90" r="5" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8"/><path d="M365,90 H410" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><path d="M381,90 L365,81 M381,90 L365,90 M381,90 L365,99" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><circle cx="390" cy="90" r="5" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8"/><path d="M400,82 V98 M393,82 V98" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/></svg>
+
+      <h3 id="adding-types-questions">Сұрақтар</h3>
+      <p><strong>Бұрын кестелерден сұрау жазып, нәтижені кесте түрінде көретінбіз. Мұнда сондай нәтиже қалай шығады?</strong></p>
+      <p>Кестелерге әлі дерек қоспадық, сондықтан көретін ештеңе жоқ. 3-апта да дәл осыған арналған: онда кестелерге жол қосуды, өзгертуді және жоюды үйренеміз.</p>
+      <p><strong>SQLite-та Boolean үшін афинитет бар ма?</strong></p>
+      <p>Жоқ. Басқа ДҚБЖ-лерде (<span class="term-en">DBMS</span>) бұл мүмкіндік болуы мүмкін. SQLite-та айналма жол бар: <code>0</code> мен <code>1</code> бүтін сандарын логикалық мәндер ретінде қолданамыз.</p>
+
+      <h2 id="table-constraints">Кесте шектеулері</h2>
+      <p><strong>Кесте шектеулерімен</strong> (<span class="term-en">table constraints</span>) кестедегі мәндерге талап қоюға болады. Мысалы, <strong>бастапқы кілт</strong> (<span class="term-en">primary key</span>) бағанындағы мәндер бірегей болуы керек. Бұл шектеу <code>PRIMARY KEY</code> деп аталады.</p>
+      <p>Сол сияқты, <strong>сыртқы кілттің</strong> (<span class="term-en">foreign key</span>) мәні байланысты кестенің бастапқы кілт бағанынан табылуы тиіс. Бұл шектеудің аты да заңды: <code>FOREIGN KEY</code>. Бастапқы және сыртқы кілттерді <code>schema.sql</code> файлына қосайық:</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">CREATE TABLE riders (
+    "id" INTEGER,
+    "name" TEXT,
+    PRIMARY KEY("id")
+);
+
+CREATE TABLE stations (
+    "id" INTEGER,
+    "name" TEXT,
+    "line" TEXT,
+    PRIMARY KEY("id")
+);
+
+CREATE TABLE visits (
+    "rider_id" INTEGER,
+    "station_id" INTEGER,
+    FOREIGN KEY("rider_id") REFERENCES "riders"("id"),
+    FOREIGN KEY("station_id") REFERENCES "stations"("id")
+);
+
+-- .schema орнына:
+SELECT "name", "sql" FROM "sqlite_master";</code></pre>
+      <p>Назар аударыңыз: екі бастапқы кілт жасадық, яғни <code>riders</code> және <code>stations</code> кестелерінің <code>id</code> бағандары. Содан кейін оларға <code>visits</code> кестесінде сыртқы кілт ретінде сілтеме жасадық.</p>
+      <p><code>visits</code> кестесінде бастапқы кілт жоқ. Алайда SQLite әр кестеге әдепкіде бастапқы кілт береді: ол <strong>жол идентификаторы</strong> (<span class="term-en">row ID</span>). Ол жасырын болса да, оны сұрауға болады:</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">CREATE TABLE "visits" ("rider_id" INTEGER, "station_id" INTEGER);
+INSERT INTO "visits" VALUES (1, 5), (1, 5), (2, 5);
+SELECT rowid, "rider_id", "station_id" FROM "visits";</code></pre>
+      <p>Бұл - қосымша мысал: көріп отырсыз, <code>rowid</code> бағанын біз жасамағанымызбен, ол бар.</p>
+      <p>Екі бағаннан тұратын <strong>құрама бастапқы кілт</strong> жасауға да болады. Мысалы, <code>visits</code> кестесіне жолаушы мен станция <code>id</code>-інен тұратын кілт берсек:</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">CREATE TABLE visits (
+    "rider_id" INTEGER,
+    "station_id" INTEGER,
+    PRIMARY KEY("rider_id", "station_id")
+);
+
+-- .schema орнына:
+SELECT "name", "sql" FROM "sqlite_master";</code></pre>
+      <p>Бірақ бұл жағдайда жолаушының бір станцияға бірнеше рет баруына рұқсат бергіміз келетін шығар, сондықтан бұл жолмен жүрмейміз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: құрама кілт болса, жолаушы бір станцияға екінші рет барғанда не болады?</summary>
+        <div class="details-body"><p>Құрама кілт жұптың бірегей болуын талап етеді. Төмендегі мысалда екінші <code>INSERT</code> дәл сол жұпты қайта қосуға тырысады. Іске қосып, қатені оқыңыз.</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">CREATE TABLE "visits" (
+    "rider_id" INTEGER,
+    "station_id" INTEGER,
+    PRIMARY KEY("rider_id", "station_id")
+);
+INSERT INTO "visits" VALUES (1, 5);
+INSERT INTO "visits" VALUES (1, 5);</code></pre>
+        <p>Қате: <code>UNIQUE constraint failed</code>. Метродағы жолаушы әр күні бір станциядан өтеді, сондықтан мұндай шектеу біздің жағдайға жарамайды.</p></div>
+      </details>
+
+      <h3 id="table-constraints-questions">Сұрақтар</h3>
+      <p><strong><code>visits</code> кестесіне өз бастапқы кілтімізді қосуға бола ма?</strong></p>
+      <p>Болады! Егер қандай да бір себеппен <code>visits</code> кестесіне айқын бастапқы кілт керек болса, <code>id</code> бағанын жасап, оны бастапқы кілт етіп белгілейміз.</p>
+
+      <h2 id="column-constraints">Баған шектеулері</h2>
+      <p><strong>Баған шектеуі</strong> (<span class="term-en">column constraint</span>) - кестенің нақты бір бағанына қатысты шектеу. SQLite-та төрт баған шектеуі бар:</p>
+      <ul>
+        <li><code>CHECK</code>: шартты тексереді, мысалы бағандағы барлық мән 0-ден үлкен болуы керек;</li>
+        <li><code>DEFAULT</code>: жолға мән берілмесе, әдепкі мәнді қолданады;</li>
+        <li><code>NOT NULL</code>: бағанға бос (null) мән салуға тыйым салады;</li>
+        <li><code>UNIQUE</code>: бағандағы әр мән бірегей болуы керек.</li>
+      </ul>
+      <p>Осы шектеулермен жаңартылған схема мынадай:</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">CREATE TABLE riders (
+    "id" INTEGER,
+    "name" TEXT,
+    PRIMARY KEY("id")
+);
+
+CREATE TABLE stations (
+    "id" INTEGER,
+    "name" TEXT NOT NULL UNIQUE,
+    "line" TEXT NOT NULL,
+    PRIMARY KEY("id")
+);
+
+CREATE TABLE visits (
+    "rider_id" INTEGER,
+    "station_id" INTEGER,
+    FOREIGN KEY("rider_id") REFERENCES "riders"("id"),
+    FOREIGN KEY("station_id") REFERENCES "stations"("id")
+);
+
+-- .schema орнына:
+SELECT "name", "sql" FROM "sqlite_master";</code></pre>
+      <p><code>NOT NULL</code> станцияның аты мен желісі міндетті түрде көрсетілуін қамтамасыз етеді. Ал жолаушылар аттарын айтуға міндетті емес, өйткені жолаушы аттарына ешқандай шектеу қойылмаған. Сол сияқты, әр станцияның аты бірегей болуы керек: оны <code>UNIQUE</code> шектеуі талап етеді.</p>
+      <p>Бастапқы кілт бағандары, демек сыртқы кілт бағандары да, әрдайым бірегей және бос емес болуы керек. Сондықтан оларға <code>NOT NULL</code> не <code>UNIQUE</code> деп жеке жазудың қажеті жоқ: <code>PRIMARY KEY</code> кесте шектеуі бұларды қамтиды.</p>
+      <p>Шектеулердің шынымен жұмыс істейтінін көрейік. Төмендегі дерекқорда <code>Park Street</code> станциясы бар. Дәл сол атпен тағы бір станция қосып көрейік:</p>
+<pre data-lang="sql" data-db="mbta_final" data-dbsrc="sql/data/week-2.js"><code class="language-sql">INSERT INTO "stations" ("name", "line")
+VALUES ('Park Street', 'Red');</code></pre>
+      <p>Қате: <code>UNIQUE constraint failed: stations.name</code>. Ал енді сипау түріне ойдан шығарылған мән беріп көрейік (бұл дерекқорда келесі бөлімдегі <code>swipes</code> кестесі бар):</p>
+<pre data-lang="sql" data-db="mbta_final" data-dbsrc="sql/data/week-2.js"><code class="language-sql">INSERT INTO "swipes" ("card_id", "station_id", "type", "amount")
+VALUES (1, 1, 'fly', -2.4);</code></pre>
+      <p>Бұл жолы <code>CHECK constraint failed: type</code>. Шектеу өз міндетін атқарды: «fly» (ұшу) метроға кіру емес.</p>
+
+      <h2 id="altering">Кестелерді өзгерту</h2>
+      <p>Енді ER диаграммасын жаңартайық. «Жолаушы» нысанын жаңа «Карта» нысанымен алмастырамыз: ол Бостон метросындағы <em>CharlieCard</em> карточкасын көрсетеді. CharlieCard-қа ақша салып қоюға болады, ал станцияға кіргенде (кейде шыққанда да) оны сипайды.</p>
+      <svg viewBox="0 0 600 140" role="img" aria-label="Жаңартылған ER диаграмма: Card, Swipe және Station; карта көп рет сипалады, әр сипау бір станцияда болады" style="display:block;width:100%;max-width:600px;height:auto;margin:18px auto"><rect x="10" y="40" width="140" height="60" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><path d="M10,70 H150" style="stroke:var(--accent);stroke-width:1.2;fill:none"/><text x="80.0" y="56" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:700">Card</text><text x="20" y="85.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">id</text><text x="140" y="85.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">INTEGER</text><rect x="200" y="10" width="190" height="132" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><path d="M200,40 H390" style="stroke:var(--accent);stroke-width:1.2;fill:none"/><text x="295.0" y="26" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:700">Swipe</text><text x="210" y="55.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">id</text><text x="380" y="55.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">INTEGER</text><text x="210" y="79.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">type</text><text x="380" y="79.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">TEXT</text><text x="210" y="103.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">datetime</text><text x="380" y="103.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">NUMERIC</text><text x="210" y="127.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">amount</text><text x="380" y="127.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">NUMERIC</text><rect x="440" y="20" width="150" height="108" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/><path d="M440,50 H590" style="stroke:var(--accent);stroke-width:1.2;fill:none"/><text x="515.0" y="36" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:700">Station</text><text x="450" y="65.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">id</text><text x="580" y="65.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">INTEGER</text><text x="450" y="89.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">name</text><text x="580" y="89.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">TEXT</text><text x="450" y="113.0" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:12.5px">line</text><text x="580" y="113.0" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">TEXT</text><path d="M150,66 H200" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><path d="M160,58 V74 M167,58 V74" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><path d="M184,66 L200,57 M184,66 L200,66 M184,66 L200,75" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><circle cx="175" cy="66" r="5" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8"/><path d="M390,66 H440" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><path d="M406,66 L390,57 M406,66 L390,66 M406,66 L390,75" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/><circle cx="415" cy="66" r="5" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8"/><path d="M430,58 V74 M423,58 V74" style="stroke:var(--muted);stroke-width:1.8;fill:none;"/></svg>
+      <p>Назар аударыңыз: бір карта көп рет сипалуы мүмкін, бірақ белгілі бір сәтте тек бір станцияда. «Карта» нысанының өз <code>id</code>-і бар, ол оның бастапқы кілті. Енді «Сипау» (<span class="term-en">swipe</span>) нысаны бар: оның да <code>id</code>-і, түрі, сипау уақыты және алынған сома бар (бұл - метроға түсуге кеткен ақша).</p>
+      <p>Бұл өзгерісті дерекқорда жүзеге асыру үшін алдымен <code>riders</code> кестесін тастау керек:</p>
+<pre data-lang="sql" data-db="mbta1" data-dbsrc="sql/data/week-2.js"><code class="language-sql">DROP TABLE "riders";
+
+-- .schema орнына:
+SELECT "name", "sql" FROM "sqlite_master";</code></pre>
+      <p>Содан кейін <code>.schema</code> жаңартылған схеманы <code>riders</code> кестесінсіз көрсетеді. Келесі қадам: ER диаграммасындағы «Сипау» нысанын көрсететін <code>swipes</code> кестесі керек. Жаңасын нөлден жасаудың орнына, <code>visits</code> кестесін өзгертуге болады:</p>
+<pre data-lang="sql" data-db="mbta1" data-dbsrc="sql/data/week-2.js"><code class="language-sql">ALTER TABLE "visits"
+RENAME TO "swipes";
+
+-- .schema орнына:
+SELECT "name", "sql" FROM "sqlite_master";</code></pre>
+      <p>Енді <code>visits</code> кестесінің аты <code>swipes</code> болып өзгергенін көреміз. Бірақ бұл жеткіліксіз: сипау түрі сияқты бағандарды қосу керек.</p>
+<pre data-lang="sql" data-db="mbta_sw1" data-dbsrc="sql/data/week-2.js"><code class="language-sql">ALTER TABLE "swipes"
+ADD COLUMN "swipetype" TEXT;
+
+-- .schema орнына:
+SELECT "name", "type" FROM pragma_table_info('swipes');</code></pre>
+      <p>Баған қосқанда <code>TEXT</code> афинитетін де жазғанымызға назар аударыңыз. <code>ALTER TABLE</code> арқылы бағанның атын да өзгертуге болады. Егер <code>"swipetype"</code> тым ұзын болса, оны қысқартып көрейік:</p>
+<pre data-lang="sql" data-db="mbta_sw2" data-dbsrc="sql/data/week-2.js"><code class="language-sql">ALTER TABLE "swipes"
+RENAME COLUMN "swipetype" TO "type";
+
+-- .schema орнына:
+SELECT "name", "type" FROM pragma_table_info('swipes');</code></pre>
+      <p>Ең соңында бағанды <strong>тастауға</strong> (жоюға) да болады:</p>
+<pre data-lang="sql" data-db="mbta_sw3" data-dbsrc="sql/data/week-2.js"><code class="language-sql">ALTER TABLE "swipes"
+DROP COLUMN "type";
+
+-- .schema орнына:
+SELECT "name", "type" FROM pragma_table_info('swipes');</code></pre>
+      <p><code>.schema</code> қайта жазсақ, <code>"type"</code> бағанының жойылғанын көреміз.</p>
+      <p>Тағы бір жол бар: бастапқы <code>schema.sql</code> файлына оралып, өзгерістерді сол жерде жасау, яғни кестені <code>ALTER TABLE</code> арқылы өзгертпеу. Жаңартылған <code>schema.sql</code> мынадай:</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">CREATE TABLE "cards" (
+    "id" INTEGER,
+    PRIMARY KEY("id")
+);
+
+CREATE TABLE "stations" (
+    "id" INTEGER,
+    "name" TEXT NOT NULL UNIQUE,
+    "line" TEXT NOT NULL,
+    PRIMARY KEY("id")
+);
+
+CREATE TABLE "swipes" (
+    "id" INTEGER,
+    "card_id" INTEGER,
+    "station_id" INTEGER,
+    "type" TEXT NOT NULL CHECK("type" IN ('enter', 'exit', 'deposit')),
+    "datetime" NUMERIC NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "amount" NUMERIC NOT NULL CHECK("amount" != 0),
+    PRIMARY KEY("id"),
+    FOREIGN KEY("station_id") REFERENCES "stations"("id"),
+    FOREIGN KEY("card_id") REFERENCES "cards"("id")
+);
+
+-- .schema орнына:
+SELECT "name", "sql" FROM "sqlite_master";</code></pre>
+      <p>Бір-екі минут бөліп, жаңа схеманы мұқият оқып шығайық және не өзгергенін өзіңіз атап көріңіз:</p>
+      <ul>
+        <li><code>cards</code> және <code>swipes</code> кестелері қосылды, ал <code>swipes</code> кестесінде кейбір мәндерді міндетті ету үшін <code>NOT NULL</code> қолданылған.</li>
+        <li><code>"datetime"</code> бағанына Numeric афинитеті берілген: себебі Numeric типтер күн мен уақыт мәндерін сақтап, көрсете алады.</li>
+        <li>Сыртқы кілттер қажетінше түзетілген: <code>"card_id"</code> енді <code>cards</code> кестесінің <code>id</code>-іне сілтейді.</li>
+        <li><code>"datetime"</code> бағанына әдепкі мән берілген: мән көрсетілмесе, баған ағымдағы уақытты өзі алады. <code>CURRENT_TIMESTAMP</code> жыл, ай, күн, сағат, минут және секундты бір мәнге біріктіріп қайтарады.</li>
+        <li>Сипау сомасы 0 болмауы үшін тексеру бар. Ол <code>CHECK</code> баған шектеуімен, <code>"amount" != 0</code> өрнегімен жасалған.</li>
+        <li>Дәл осылай <code>"type"</code> мәні 'enter', 'exit' немесе 'deposit' болуы тексеріледі. CharlieCard-ты әдетте осы үш мақсатқа сипайды, сондықтан <code>"type"</code> тек осы мәндерді қабылдаса, жөн. <code>IN</code> кілт сөзін қолданғанымызға назар аударыңыз!</li>
+      </ul>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>IN</code> орнына <code>OR</code> операторымен бұл тексеруді қалай жазамыз?</summary>
+        <div class="details-body"><p>Үш мәнді бір-бірімен <code>OR</code> арқылы жалғаймыз:</p>
+<pre data-lang="sql" data-db="empty" data-dbsrc="sql/data/week-2.js"><code class="language-sql">CREATE TABLE "swipes_or" (
+    "type" TEXT NOT NULL CHECK("type" = 'enter' OR "type" = 'exit' OR "type" = 'deposit')
+);
+INSERT INTO "swipes_or" VALUES ('enter');
+INSERT INTO "swipes_or" VALUES ('fly');</code></pre>
+        <p>Бірінші <code>INSERT</code> өтеді, екіншісі <code>CHECK constraint failed</code> қатесін береді. <code>IN</code> жай ғана қысқарақ әрі оқуға жеңілірек жазылу.</p></div>
+      </details>
+      <p>Енді шектеулердің қалғандарын көрейік. Жоғарыдағы схемадағы <code>DEFAULT</code> шынымен жұмыс істей ме? Уақытты көрсетпей сипау жасап көрейік:</p>
+<pre data-lang="sql" data-db="mbta_final" data-dbsrc="sql/data/week-2.js"><code class="language-sql">INSERT INTO "swipes" ("card_id", "station_id", "type", "amount")
+VALUES (1, 1, 'enter', -2.4);
+
+SELECT * FROM "swipes";</code></pre>
+      <p><code>datetime</code> бағанын біз толтырмадық, бірақ ол ағымдағы уақытпен өздігінен толды. Ал <code>amount</code> 0 болса, <code>CHECK constraint failed: amount</code> қатесі шығады:</p>
+<pre data-lang="sql" data-db="mbta_final" data-dbsrc="sql/data/week-2.js"><code class="language-sql">INSERT INTO "swipes" ("card_id", "station_id", "type", "amount")
+VALUES (1, 1, 'enter', 0);</code></pre>
+      <p>Сыртқы кілт те тексеріледі, бірақ SQLite-та ол әдепкіде <em>өшірулі</em>, оны <code>PRAGMA foreign_keys = ON</code> командасымен қосу керек. Онда жоқ картаға сілтейтін сипауды қосуға тырысайық:</p>
+<pre data-lang="sql" data-db="mbta_final" data-dbsrc="sql/data/week-2.js"><code class="language-sql">PRAGMA foreign_keys = ON;
+
+INSERT INTO "swipes" ("card_id", "station_id", "type", "amount")
+VALUES (99, 1, 'enter', -2.4);</code></pre>
+      <p>Нәтижесінде <code>FOREIGN KEY constraint failed</code>: <code>cards</code> кестесінде <code>id = 99</code> жоқ.</p>
+
+      <h3 id="altering-questions">Сұрақтар</h3>
+      <p><strong><code>riders</code> кестесін тастағымыз келгенде қате шығады, өйткені оның <code>id</code>-і сыртқы кілт ретінде қолданылып тұр. Мұндайда кестені қалай тастаймыз?</strong></p>
+      <p>Кестені тастағанда дерекқордағы сыртқы кілт шектеулері тексеріледі. Сондықтан <code>riders</code> кестесін тастамас бұрын алдымен сыртқы кілт бағанын, яғни <code>"rider_id"</code> бағанын тастау керек. (Қосымша ескертпе: нақты SQLite-та мұндай қате, егер сыртқы кілттерді тексеру қосулы болса және кестеде оған сілтейтін жолдар қалса ғана шығады. Басқа ДҚБЖ-лерде, мысалы MySQL мен PostgreSQL-да, сілтеме бар болса, кестені тікелей тастауға болмайды.)</p>
+      <p><strong>MySQL не PostgreSQL сияқты басқа ДҚБЖ-нің синтаксисі қаншалықты өзгеше?</strong></p>
+      <p>SQLite синтаксисінің көбі басқа ДҚБЖ-лерге де қолданылады. Бірақ SQLite кодын көшірсеңіз, аздаған өзгерістер қажет болады.</p>
+      <p><strong>SQLite-та баған афинитетін көрсетпесек не болады?</strong></p>
+      <p>Лекцияда айтылғандай, әдепкі афинитет Numeric деп алынады. (Күмәнді жер: SQLite құжаттамасында типсіз бағанның афинитеті «BLOB» (жоғарыдағы <code>typeof</code> мысалындағыдай, мән өзгеріссіз сақталады) деп жазылған. Практикалық қорытынды бірдей: типті әрдайым өзіңіз көрсетіңіз.)</p>
+
+      <h2 id="fin">Қорытынды сөз</h2>
+      <p>Осымен 2-дәрісті, яғни SQL-де дерекқорды жобалауды аяқтадық! CharlieCard атауының шығу тегі туралы қызықты әңгіме бар: <a href="https://www.celebrateboston.com/mbta/charlie-card-origin.htm" target="_blank" rel="noopener">Celebrate Boston</a> мақаласын оқып көріңіз (ағылшынша).</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li>дерекқорды жобалау үш сұрақтан басталады: қандай кестелер, қандай бағандар, қандай типтер;</li>
+        <li>нормалау - әр нысанды (жолаушы, станция) өз кестесіне шығарып, қайталауды жою; кестелер <code>id</code> және сыртқы кілт арқылы байланысады;</li>
+        <li>көп-көптік байланысты аралық кесте (<code>visits</code>, <code>swipes</code>) шешеді; ER диаграммасындағы «қарға тырнағы» «көп» дегенді білдіреді;</li>
+        <li><code>CREATE TABLE</code> кестені жасайды, <code>DROP TABLE</code> жояды, <code>.schema</code> (браузерде <code>sqlite_master</code>) схеманы көрсетеді;</li>
+        <li>SQLite-та бес сақтау класы бар (Null, Integer, Real, Text, Blob) және бес тип афинитеті; ақшаны Real-мен сақтау дәл емес;</li>
+        <li>кесте шектеулері: <code>PRIMARY KEY</code>, <code>FOREIGN KEY</code> (құрама кілт те мүмкін);</li>
+        <li>баған шектеулері: <code>CHECK</code>, <code>DEFAULT</code>, <code>NOT NULL</code>, <code>UNIQUE</code>;</li>
+        <li><code>ALTER TABLE</code>: <code>RENAME TO</code>, <code>ADD COLUMN</code>, <code>RENAME COLUMN</code>, <code>DROP COLUMN</code>; немесе <code>schema.sql</code> файлын түзетіп, қайта оқу.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. Бір кестеде жолаушының аты 1000 жолда қайталанып тұр. Нормалау бұған не істейді?</p>
+          <label><input type="radio" value="a"> Барлық аттарды бас әріппен жазуға мәжбүрлейді</label>
+          <label><input type="radio" value="b"> Жолаушыларды бөлек кестеге шығарып, негізгі кестеде тек олардың <code>id</code>-ін сақтайды</label>
+          <label><input type="radio" value="c"> Қайталанатын жолдарды автоматты түрде жояды</label>
+          <label><input type="radio" value="d"> Кестені екі дерекқорға бөледі</label>
+          <p class="explain">Нормалау - әр нысанды өз кестесіне шығару. Атты бір рет сақтап, басқа кестелерден <code>id</code> (сыртқы кілт) арқылы сілтейміз.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">2. Жолаушылар мен станциялар көп-көптік байланыста. Мұны кестелермен қалай бейнелейміз?</p>
+          <label><input type="radio" value="a"> <code>riders</code> кестесінің ішіне барлық станция аттарын үтірмен жазамыз</label>
+          <label><input type="radio" value="b"> <code>stations</code> кестесіне жолаушының аты бағанын қосамыз</label>
+          <label><input type="radio" value="c"> Екі кестені бір атпен біріктіреміз</label>
+          <label><input type="radio" value="d"> Үшінші, аралық кесте жасаймыз (<code>rider_id</code>, <code>station_id</code>)</label>
+          <p class="explain">Көп-көптік байланысты аралық кесте (junction table) шешеді: әр жолы «мына жолаушы мына станцияға барды» дегенді білдіреді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. Жол ақысын неге <code>REAL</code> бағанында сақтау қауіпті бола алады?</p>
+          <label><input type="radio" value="a"> Қалқымалы үтірлі сандар екілік жүйеде дәл сақталмайды, есептеулерде ұсақ қате жиналуы мүмкін</label>
+          <label><input type="radio" value="b"> <code>REAL</code> тек теріс сандарды сақтайды</label>
+          <label><input type="radio" value="c"> <code>REAL</code> бағанына сан салуға болмайды</label>
+          <label><input type="radio" value="d"> <code>REAL</code> бағандары <code>SUM</code>-мен қосылмайды</label>
+          <p class="explain">Мысалы, <code>0.1 + 0.2 = 0.3</code> SQLite-та 0 (жалған) береді. Сондықтан ақшаны көбіне центпен, Integer ретінде сақтайды.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">4. <code>"a" INTEGER</code> бағанына <code>INSERT</code>-пен <code>'25'</code> (мәтін) салынды. <code>typeof("a")</code> не қайтарады?</p>
+          <label><input type="radio" value="a"> <code>text</code>, баған мәнді өзгертпейді</label>
+          <label><input type="radio" value="b"> Қате шығады</label>
+          <label><input type="radio" value="c"> <code>integer</code>, Integer афинитеті мәнді бүтін санға түрлендіреді</label>
+          <label><input type="radio" value="d"> <code>null</code></label>
+          <p class="explain">Тип афинитеті - баған кіріс мәнін өзі ұнататын типке түрлендіруге тырысады. «25» мәтіні бүтін 25-ке айналады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. Мына схема бар: <code>"name" TEXT NOT NULL UNIQUE</code>. Қай <code>INSERT</code> сәтсіз болады, егер <code>'Harvard'</code> аты кестеде бұрыннан бар болса?</p>
+          <label><input type="radio" value="a"> <code>VALUES ('Kendall')</code></label>
+          <label><input type="radio" value="b"> <code>VALUES ('Harvard')</code> немесе аты көрсетілмеген (NULL) жол</label>
+          <label><input type="radio" value="c"> <code>VALUES ('harvard station')</code></label>
+          <label><input type="radio" value="d"> Ешқайсысы, бәрі өтеді</label>
+          <p class="explain"><code>UNIQUE</code> қайталануға, ал <code>NOT NULL</code> бос мәнге жол бермейді.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">6. <code>visits</code> кестесіне <code>PRIMARY KEY("rider_id", "station_id")</code> қойдық. Қандай проблема шығады?</p>
+          <label><input type="radio" value="a"> Кестеге ешқандай жол қосуға болмайды</label>
+          <label><input type="radio" value="b"> Жолаушылар аттары қайталана алмайды</label>
+          <label><input type="radio" value="c"> Станция тек бір жолаушыға тиесілі болады</label>
+          <label><input type="radio" value="d"> Жолаушы бір станцияға екінші рет бара алмайды, өйткені жұп бірегей болуы керек</label>
+          <p class="explain">Құрама кілт жұптың бірегейлігін талап етеді. Біз жолаушының бір станцияға бірнеше рет баруына рұқсат бергіміз келеді, сондықтан бұл жол жарамайды.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. <code>swipes</code> кестесіндегі <code>"type"</code> бағанының атын <code>"swipetype"</code>-тан <code>"type"</code>-қа өзгертетін команда қайсы?</p>
+          <label><input type="radio" value="a"> <code>ALTER TABLE "swipes" RENAME COLUMN "swipetype" TO "type";</code></label>
+          <label><input type="radio" value="b"> <code>ALTER TABLE "swipes" RENAME TO "type";</code></label>
+          <label><input type="radio" value="c"> <code>UPDATE "swipes" SET "swipetype" = "type";</code></label>
+          <label><input type="radio" value="d"> <code>DROP COLUMN "swipetype";</code></label>
+          <p class="explain"><code>RENAME TO</code> кестенің атын өзгертеді, ал бағанның атын <code>RENAME COLUMN ... TO ...</code> өзгертеді.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">8. <code>CHECK("amount" != 0)</code> шектеуі бар. Қай жол <code>INSERT</code> кезінде қабылданбайды?</p>
+          <label><input type="radio" value="a"> <code>amount = -2.4</code></label>
+          <label><input type="radio" value="b"> <code>amount = 20</code></label>
+          <label><input type="radio" value="c"> <code>amount = 0</code></label>
+          <label><input type="radio" value="d"> <code>amount = 0.5</code></label>
+          <p class="explain">Шарт «0-ге тең емес» дейді, сондықтан тек <code>0</code> өтпейді. Теріс сома (жол ақысы) да, оң сома (ақша салу) да дұрыс.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="practice">Жаттығу: MBTA схемасымен</h2>
+      <p>Бұл - сайттың өз жаттығуы, ресми problem set емес. Төменде әр сұрауды жазып, «Тексеру» батырмасын басыңыз: сіздің нәтижеңіз эталонмен салыстырылады. Алғашқы бес тапсырма нормалау идеясын сұрау арқылы сезінуге арналған, соңғы екеуінде <code>CREATE TABLE</code> жазасыз.</p>
+      <div class="sql-grader" data-set="sql2-mbta" data-src="sql/data/week-2.js"></div>
+
+      <h2 id="problem-set">Problem Set 2 (Тапсырмалар жинағы 2)</h2>
+      <p>Ресми беті: <a href="https://cs50.harvard.edu/sql/psets/2/" target="_blank" rel="noopener">cs50.harvard.edu/sql/psets/2</a>. Бұл жолы дайын дерекқорға сұрау жазбайсыз: <strong>дерекқорды нөлден өзіңіз жобалайсыз</strong>. Үш тапсырма бар: ATL, Happy to Connect және Union Square Donuts. Әрқайсысында <code>schema.sql</code> файлына <code>CREATE TABLE</code> операторларын жазасыз.</p>
+      <div class="callout note">
+        <span class="callout-title">Ресми тапсырма cs50.dev-те орындалады</span>
+        <p>Ресми тапсырмалар <code>cs50.dev</code> ортасында (<code>sqlite3</code>, <code>check50</code>, <code>submit50</code>) орындалып, тапсырылады. Алдымен GitHub аккаунтыңызбен <code>cs50.dev</code>-ке кіріп, терминалда <code>update50</code> жүргізіңіз. Бұл ортада өз қалтаңыз бен файлыңызды жасайсыз: ол үшін <code>mkdir атауы</code> (қалта жасау, <span class="term-en">make directory</span>), <code>cd атауы</code> (қалтаға кіру) және <code>code schema.sql</code> (файл жасау) командалары керек. Әр тапсырмадағы жұмыс: <code>sqlite3 атауы.db</code> деп бос дерекқор жасайсыз да, ішінде <code>.read schema.sql</code> деп схеманы оқисыз; кестені қайта жасау керек болса, <code>DROP TABLE кесте_аты</code> қолданасыз. Сайттағы автотексеруші - қосымша жаттығу, ресми тексеруді алмастырмайды.</p>
+      </div>
+      <p>Кеңестер: дәріс мысалдарын қайталап көріңіз, бұл апта үшін жоғарыдағы конспект - ең жақсы анықтамалық. Ресми <code>check50</code> тексерісі бар, бірақ дерекқоры талаптарға сай екенін және үлгі деректерді тиімді сақтай алатынын тек сіз өзіңіз біле аласыз. <strong>Дерекқорыңыз толық нормаланған ба?</strong> - осыны ойлаңыз.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-atl">ATL (ATL әуежайы)</h3></div>
+        <h4>Шешілетін мәселе</h4>
+        <p>Атлантадағы (Джорджия, АҚШ) Хартсфилд-Джексон халықаралық әуежайы, IATA коды бойынша «ATL», 1998 жылдан бері әлемдегі ең жүктемелі әуежай. 2022 жылы ол 93,7 миллион жолаушыға қызмет көрсеткен. Мүмкін, сіз де солардың бірісіз!</p>
+        <p>Сізді ATL өз дерекқор жүйесін қайта жобалауға жалдады делік. <code>atl</code> қалтасындағы <code>schema.sql</code> файлына әуежай жолаушылары мен олардың рейстерін қадағалауға жарайтын дерекқорды жобалайтын SQL операторлар жиынын жазыңыз.</p>
+        <h4>Талаптар</h4>
+        <p>Әуежайдың IT жөніндегі бас менеджердің көмекшісімен сөйлескен әңгімеңіз бойынша талаптар:</p>
+        <ul>
+          <li><strong>Жолаушылар.</strong> Бізге тек негізгісі керек: аты, тегі және жасы. Одан артық ештеңе керек емес.</li>
+          <li><strong>Check-in (тіркелу).</strong> Жолаушылар әуежайға келгенде рейске «тіркеледі», яғни «мен осындамын, отыруға дайынмын» дейді. Осындай сәттердің ретті журналын жүргізгіміз келеді. Журналда: жолаушы тіркелген <em>нақты күн мен уақыт</em> және ол қай <em>рейске</em> тіркеліп жатқаны болуы керек.</li>
+          <li><strong>Авиакомпаниялар.</strong> ATL көптеген ішкі және халықаралық авиакомпанияның хабы: Delta, British Airways, Air France, Korean Air, Turkish Airlines және т.б. Біз мыналарды бақылаймыз: авиакомпания аты және «concourse» (әуежайдың авиакомпания жұмыс істейтін бөлімі). Бізде 7 concourse бар: A, B, C, D, E, F және T.</li>
+          <li><strong>Рейстер.</strong> Күніне 1000-ға дейін рейс қызмет көрсетеміз. Жолаушылар рейс туралы маңызды мәліметті біліп жүруі үшін мыналарды сақтағымыз келеді: рейс нөмірі (мысалы «900»; бірақ рейс нөмірлерін кейде қайта қолданамыз), рейсті орындайтын авиакомпания (бір рейсті бір авиакомпания орындайды деп алыңыз), ұшып шығатын әуежай коды (мысалы «ATL» не «BOS»), баратын әуежай коды, күтілетін ұшу күні мен уақыты (минутына дейін), күтілетін қону күні мен уақыты (дәл сол дәлдікпен).</li>
+        </ul>
+        <h4>Үлгі деректер</h4>
+        <p>Дерекқорыңыз мыналарды бейнелей алуы керек:</p>
+        <ul>
+          <li>Жолаушы <strong>Amelia Earhart</strong>, 39 жаста;</li>
+          <li>Авиакомпания <strong>Delta</strong>, ол A, B, C, D және T concourse-тарында жұмыс істейді;</li>
+          <li>Рейс <strong>Delta Flight 300</strong>: 2023 жылғы 3 тамызда 18:46-да ATL-ден ұшады және сол күні 21:09-да BOS-қа қонады;</li>
+          <li>Amelia Earhart-тың Delta Flight 300 рейсіне <strong>check-in</strong>-і: 2023 жылғы 3 тамыз, 15:03.</li>
+        </ul>
+        <details><summary>Кеңес: қалай ойлауға болады</summary><div class="details-body"><p>Алдымен нысандарды (жолаушы, авиакомпания, рейс, check-in) тізіп жазыңыз, сосын олардың арасындағы байланыстарды ER диаграммасымен сызыңыз. Өзіңізден сұраңыз: авиакомпания бірнеше concourse-та жұмыс істей ала ма және concourse-та бірнеше авиакомпания бола ала ма? Бұл қандай байланыс және оны қандай кестемен бейнелейміз? Рейс нөмірі бірегей бола ма (мәтінде «қайта қолданамыз» делінген)? Күн мен уақытқа қандай афинитет жарасады? Concourse-ке қандай шектеу қойсаңыз болады?</p></div></details>
+        <details><summary>Қалай тексеру керек</summary><div class="details-body"><p>Қалтада <code>sqlite3 atl.db</code> іске қосып, <code>.read schema.sql</code> жасаңыз; <code>.schema</code> арқылы нәтижені қараңыз. Сосын үлгі деректерді <code>INSERT</code>-пен (3-аптада үйренеміз) сыйғызып көріңіз. Ресми тексеру:</p>
+<pre class="terminal"><code class="language-plaintext">$ check50 cs50/problems/2024/sql/atl</code></pre></div></details>
+        <p>Бұл тапсырманың браузердегі жаттығуы төменде: Алматы әуежайы (ALA) дерекқоры, сұраулар және жаңа кесте жобалау.</p>
+        <div class="sql-grader" data-set="sql2-atl" data-src="sql/data/week-2.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql2-atl">
+            <li><input type="checkbox"> <span><code>atl/schema.sql</code> файлы бар және <code>.read schema.sql</code> қатесіз орындалады.</span></li>
+            <li><input type="checkbox"> <span>Жолаушылар, авиакомпаниялар, рейстер және check-in-дер өз кестелерінде; авиакомпания мен concourse арасындағы байланыс аралық кестемен шешілген.</span></li>
+            <li><input type="checkbox"> <span>Үлгі деректердің бәрін (Amelia, Delta, 300-рейс, check-in) сақтауға болады.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/atl</code> өтеді, ал өткізу үшін <code>submit50 cs50/problems/2024/sql/atl</code>.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-connect">Happy to Connect (Байланысқа шығайық)</h3></div>
+        <h4>Шешілетін мәселе</h4>
+        <p><a href="https://about.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a> - «әлемдегі ең үлкен кәсіби желі», оның миссиясы - «әлемдегі мамандарды байланыстырып, оларды өнімдірек әрі табысты ету». Мүмкін, сізде де аккаунт бар. Платформада қолданушылар кәсіби тәжірибесін (бұрынғы жұмысы, білімі) жариялап, жеке немесе онлайн кездескен адамдармен байланыс орнатады.</p>
+        <p><code>connect</code> қалтасындағы <code>schema.sql</code> файлына LinkedIn қолдана алатын дерекқорды жобалайтын SQL операторларын жазыңыз.</p>
+        <h4>Талаптар</h4>
+        <p><strong>Қолданушылар.</strong> Платформаның жүрегі - адамдар. Дерекқор қолданушы туралы мыналарды сақтай алсын: аты мен тегі, пайдаланушы аты (username), құпиясөзі. Компания дұрыс тәжірибені ұстанса, құпиясөздер «хэштеледі» (<span class="term-en">hashed</span>), бірақ мұнда хэштеу туралы уайымдамаңыз.</p>
+        <p><strong>Мектептер мен университеттер.</strong> Мектептің немесе университеттің ресми аккаунты болуы мүмкін (мысалы Гарвардтікі), сонда түлектер өз қатысын көрсете алады. Әр мектеп туралы сақтаңыз: атауы, түрі («Elementary School», «Middle School», «High School», «Lower School», «Upper School», «College», «University» және т.б.), орналасқан жері және құрылған жылы.</p>
+        <p><strong>Компаниялар.</strong> Компаниялар да өз бетін жасай алады (мысалы LinkedIn-нің өзі), сонда қызметкерлер өткен не қазіргі жұмысын көрсетеді. Әр компания туралы сақтаңыз: атауы, саласы («Education», «Technology», «Finance» және т.б.) және орналасқан жері.</p>
+        <p><strong>Байланыстар.</strong> LinkedIn-нің мәні - адамдар арасында байланыс орнату. Дерекқор мына байланыстарды қолдауы тиіс:</p>
+        <ul>
+          <li><strong>Адамдармен байланыс.</strong> Қолданушылар арасындағы өзара (екі жақты) байланысты бейнелей алу керек. Бір жақты байланыс («A қолданушы B-ны ізбасады, ал B A-ны емес») туралы ойланбаңыз.</li>
+          <li><strong>Мектептермен байланыс.</strong> Қолданушы мектеппен қатысын жасай алсын, ал мектеп өз түлектерін таба алсын. Сонымен қатар қолданушы мыналарды көрсете алсын: қатыстың басталу күні (оқуды бастаған күні), аяқталу күні (бітірген күні, бар болса), алынған/ізделген дәреже түрі («BA», «MA», «PhD» және т.б.).</li>
+          <li><strong>Компаниялармен байланыс.</strong> Қолданушы компаниямен қатысын жасай алсын, ал компания қазіргі және бұрынғы қызметкерлерін таба алсын. Қосымша: басталу күні (жұмысқа кірген күні), аяқталу күні (кеткен күні, бар болса), лауазымы.</li>
+        </ul>
+        <h4>Үлгі деректер</h4>
+        <ul>
+          <li>Қолданушы <strong>Alan Garber</strong>: username «alan», құпиясөз «password»;</li>
+          <li>Қолданушы <strong>Reid Hoffman</strong>: username «reid», құпиясөз «password»;</li>
+          <li>Мектеп <strong>Harvard University</strong>: университет, Кембридж (Массачусетс), 1636 жылы құрылған;</li>
+          <li>Компания <strong>LinkedIn</strong>: технологиялық компания, штаб-пәтері Саннивейлде (Калифорния);</li>
+          <li>Alan Garber-дің <strong>Гарвардтағы бакалавр білімі</strong>: BA, 1973 жылғы 1 қыркүйектен 1976 жылғы 1 маусымға дейін;</li>
+          <li>Reid Hoffman-ның <strong>LinkedIn-дегі жұмысы</strong>: CEO және Chairman, 2003 жылғы 1 қаңтардан 2007 жылғы 1 ақпанға дейін.</li>
+        </ul>
+        <details><summary>Кеңес: қалай ойлауға болады</summary><div class="details-body"><p>Үш нысан бар (қолданушы, мектеп, компания) және үш түрлі байланыс. Қолданушы - қолданушы байланысын бір кестемен қалай жазасыз? Қолданушы мен мектеп арасындағы байланыстың өз қосымша деректері (күндер, дәреже) бар, демек оны қайда сақтайсыз? Сол сияқты компания үшін. Күн мен уақытқа қандай афинитет қолайлы және аяқталу күні көрсетілмесе не болады (<code>NOT NULL</code> қоюға бола ма)?</p></div></details>
+        <details><summary>Қалай тексеру керек</summary><div class="details-body"><pre class="terminal"><code class="language-plaintext">$ sqlite3 connect.db
+sqlite> .read schema.sql
+$ check50 cs50/problems/2024/sql/connect</code></pre></div></details>
+        <p>Браузердегі жаттығу: қазақстандық «байланыс желісінің» дайын деректері, сұраулар және жаңа <code>messages</code> кестесін жобалау.</p>
+        <div class="sql-grader" data-set="sql2-connect" data-src="sql/data/week-2.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql2-connect">
+            <li><input type="checkbox"> <span><code>connect/schema.sql</code> қатесіз орындалады (<code>.read schema.sql</code>).</span></li>
+            <li><input type="checkbox"> <span>Қолданушылар, мектептер мен компаниялар бөлек кестелерде; қолданушылар арасындағы өзара байланыс бейнеленген.</span></li>
+            <li><input type="checkbox"> <span>Мектеппен және компаниямен қатыс: басталу күні, аяқталу күні (міндетті емес), дәреже не лауазым сақталады.</span></li>
+            <li><input type="checkbox"> <span>Үлгі деректердің бәрін сақтауға болады.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/connect</code> өтеді, ал өткізу үшін <code>submit50 cs50/problems/2024/sql/connect</code>.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-donuts">Union Square Donuts (Union Square Donuts дүкені)</h3></div>
+        <h4>Шешілетін мәселе</h4>
+        <p>Бостон, Бруклайн және Сомервилль айналасында Union Square Donuts дүкенін көруіңіз мүмкін: ол өзінің дәмді кондитерлік тағамдарымен танымал. Дүкен көптен бері жұмыс істейді делік. Қағаз чектер әзірге жақсы жұмыс істеді, бірақ олар көбірек тұтынушыға қызмет көрсетуге көмектесетін жүйені қалайды. Сізді дүкенге лайық дерекқорды жобалауға жалдады. Ақысына, мүмкін, тегін донаттар? 🍩</p>
+        <p><code>donuts</code> қалтасындағы <code>schema.sql</code> файлына Union Square Donuts күнделікті жұмысын басқара алатын дерекқорды құратын SQL операторларын жазыңыз.</p>
+        <h4>Күтімдер</h4>
+        <p>Команда не қалайтынын түсіну үшін, дүкен жабылған соң олармен сөйлестіңіз:</p>
+        <ul>
+          <li><strong>Ингредиенттер.</strong> Ингредиенттерді міндетті түрде бақылауымыз керек. Әдетте ұн, ашытқы, май, сары май және бірнеше түрлі қантты қолданамыз. Сонымен қатар ингредиенттің бір өлшем бірлігіне (фунтқа, граммға және т.б.) төлейтін бағамызды сақтағымыз келеді.</li>
+          <li><strong>Донаттар.</strong> Мәзірдегі бұрынғы және қазіргі донаттардың бәрін енгізгіміз келеді. Әр донат үшін үш нәрсе: донаттың атауы, глютенсіз бе (<span class="term-en">gluten-free</span>), бір донаттың бағасы. Және әр донаттың <em>ингредиенттерін</em> табуға болуы маңызды!</li>
+          <li><strong>Тапсырыстар.</strong> Тұтынушыларды жеке көргенді жақсы көреміз, бірақ қазір көпшілік онлайн тапсырыс береді. Сол онлайн тапсырыстарды бақылағымыз келеді. Сақтау керек: ішкі бақылауға арналған тапсырыс нөмірі, тапсырыстағы барлық донаттар, тапсырысты берген тұтынушы (бір тапсырысты бір ғана тұтынушы береді деп есептейміз).</li>
+          <li><strong>Тұтынушылар.</strong> Әр тұтынушы туралы ақпаратты сақтау жақсы болар еді: аты мен тегі, және олардың тапсырыстар тарихы.</li>
+        </ul>
+        <h4>Үлгі деректер</h4>
+        <ul>
+          <li><strong>Cocoa</strong> (какао): Union Square Donuts бір фунт үшін $5.00 төлейді;</li>
+          <li><strong>Sugar</strong> (қант): бір фунт үшін $2.00;</li>
+          <li><strong>«Belgian Dark Chocolate»</strong> донаты: глютенсіз <em>емес</em>, бағасы $4.00, ингредиенттері: Cocoa, Flour (ұн), Buttermilk (айран), Sugar;</li>
+          <li><strong>«Back-To-School Sprinkles»</strong> донаты: глютенсіз <em>емес</em>, бағасы $4.00, ингредиенттері: Flour, Buttermilk, Sugar, Sprinkles (қант сеппесі);</li>
+          <li>Luis Singh-тің <strong>1-тапсырысы</strong>: 3 Belgian Dark Chocolate және 2 Back-To-School Sprinkles донаты.</li>
+        </ul>
+        <details><summary>Кеңес: қалай ойлауға болады</summary><div class="details-body"><p>Донат пен ингредиент арасындағы байланыс қандай: бір донатта көп ингредиент бар, ал бір ингредиент көп донатта кездеседі. Тапсырыс пен донат арасында да солай, бірақ мұнда тағы бір қосымша дерек бар: әр донаттан неше дана тапсырылды? Оны қайда сақтайсыз? Тұтынушы мен тапсырыс арасындағы байланыс қай бағыттағы «көп»? Бағаға қандай афинитет берсеңіз болады?</p></div></details>
+        <details><summary>Қалай тексеру керек</summary><div class="details-body"><pre class="terminal"><code class="language-plaintext">$ sqlite3 donuts.db
+sqlite> .read schema.sql
+$ check50 cs50/problems/2024/sql/donuts</code></pre></div></details>
+        <p>Браузердегі жаттығу: қазақстандық донат дүкенінің дайын деректері, JOIN сұраулары және жеңілдіктер кестесін жобалау.</p>
+        <div class="sql-grader" data-set="sql2-donuts" data-src="sql/data/week-2.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql2-donuts">
+            <li><input type="checkbox"> <span><code>donuts/schema.sql</code> қатесіз орындалады (<code>.read schema.sql</code>).</span></li>
+            <li><input type="checkbox"> <span>Ингредиенттер, донаттар, тапсырыстар мен тұтынушылар бөлек кестелерде; донат-ингредиент және тапсырыс-донат байланыстары аралық кестелермен шешілген.</span></li>
+            <li><input type="checkbox"> <span>Тапсырыстағы донат санын (3 және 2) сақтауға болады.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/donuts</code> өтеді, ал өткізу үшін <code>submit50 cs50/problems/2024/sql/donuts</code>.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-1.html"><small>Алдыңғы</small>← 1-апта: Байланыстар</a>
+        <a class="next" href="week-3.html"><small>Келесі</small>3-апта: Жазу →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 SQL (CS50's Introduction to Databases with SQL, Гарвард университеті, Carter Zenke) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

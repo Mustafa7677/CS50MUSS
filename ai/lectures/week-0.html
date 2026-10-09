@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 AI 0-апта: Іздеу - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 AI 0-апта: Іздеу - CS50 қазақша">
+  <meta property="og:description" content="CS50 AI 0-апта: іздеу есептері, DFS, BFS, ашкөз іздеу, A*, minimax, альфа-бета кесу, тереңдігі шектелген minimax, Degrees және Tic-Tac-Toe жобалары.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/ai/lectures/week-0.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 AI 0-апта: іздеу есептері, DFS, BFS, ашкөз іздеу, A*, minimax, альфа-бета кесу, тереңдігі шектелген minimax, Degrees және Tic-Tac-Toe жобалары.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#c42a68" data-n="0">
+        <div class="num">0-апта</div>
+        <h1>Іздеу</h1>
+        <p>Навигатор үйден мақсатқа баратын жолды қалай табады, ал компьютер ойында келесі жүрісті қалай таңдайды? Мұны іздеу алгоритмдері шешеді: DFS, BFS, A* және ойындарға арналған minimax.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/ai/notes/0/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">CS50 AI туралы</span>
+        <p>Бұл курс жасанды интеллекттің негізіндегі идеяларды ашады. Кодтың көбі Python-да, және сайттағы мысалдардың көпшілігін «▶ Іске қосу» батырмасымен браузерде тікелей орындай аласыз. Апта соңында Degrees және Tic-Tac-Toe жобалары мен автотексерушілер күтіп тұр.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+<h2 id="ai-intro">Жасанды интеллект</h2>
+<p>Сәлем, CS50 AI-ға қош келдіңіздер! Бастамас бұрын бір сұрақ: «жасанды интеллект» дегенде көз алдыңызға не келеді? Біреулер фильмдегі роботты елестетеді, біреулер телефондағы дауыстық көмекшіні. Шын мәнінде <strong>жасанды интеллект</strong> (<span class="term-en">Artificial Intelligence, AI</span>) - компьютердің өзін «саналы» ұстауға мәжбүр ететін әдістердің жиынтығы. Әлеуметтік желіде фотодағы бетті танып беретін де, шахматта әлем чемпионын жеңген де, телефонға «Siri» деп сөйлегенде сізді түсінетін де - осы әдістер.</p>
+<p>Бұл курста біз сол сиқырдың артында тұрған идеяларды бірінен соң бірін ашамыз:</p>
+<ol>
+  <li><strong>Іздеу</strong> (<span class="term-en">Search</span>). Мәселенің шешімін табу: навигатор үйден мақсатқа баратын ең жақсы жолды қалай табады, ойында келесі жүрісті қалай таңдаймыз.</li>
+  <li><strong>Білім</strong> (<span class="term-en">Knowledge</span>). Ақпаратты қалай көрсетіп, одан қорытынды шығарамыз.</li>
+  <li><strong>Белгісіздік</strong> (<span class="term-en">Uncertainty</span>). Анық емес оқиғалармен ықтималдық арқылы жұмыс істеу.</li>
+  <li><strong>Оңтайландыру</strong> (<span class="term-en">Optimization</span>). Есепті жай ғана дұрыс емес, жақсырақ, тіпті ең жақсы жолмен шешу.</li>
+  <li><strong>Оқыту</strong> (<span class="term-en">Learning</span>). Деректер мен тәжірибеге сүйеніп нәтижені жақсарту. Мысалы, поштаңыз бұрынғы тәжірибеден спамды спам емес хаттан ажыратады.</li>
+  <li><strong>Нейрон желілері</strong> (<span class="term-en">Neural Networks</span>). Адам миынан шабыт алған бағдарлама құрылымы, тапсырмаларды тиімді орындайды.</li>
+  <li><strong>Тіл</strong> (<span class="term-en">Language</span>). Адамдар шығаратын және түсінетін табиғи тілді өңдеу.</li>
+</ol>
+<p>Бүгін біз нөлінші тақырыптан, іздеуден бастаймыз.</p>
+
+<h3 id="search-problem">Іздеу есебі деген не?</h3>
+<p>Іздеу есебінде бізде <strong>агент</strong> бар, оған <em>бастапқы күй</em> мен <em>мақсатты күй</em> беріледі, ал агент біріншіден екіншісіне қалай жетуге болатынын қайтарады. Навигаторды алайық: агент (бағдарламаның «ойланатын» бөлігі) кіріс ретінде сіздің орныңызды және барғыңыз келетін жерді алады да, іздеу алгоритмі арқылы жол ұсынады. Бірақ іздеу есептері тек карталармен шектелмейді: жұмбақтар мен лабиринттер де осындай.</p>
+<figure class="diagram" style="margin:1.4rem 0;text-align:center"><div style="max-width:220px;margin-left:auto;margin-right:auto"><svg viewBox="0 0 176 176" role="img" aria-label="15 puzzle" style="width:100%"><rect x="8" y="8" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="27" y="33" text-anchor="middle" font-size="16" fill="currentColor">3</text><rect x="48" y="8" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="67" y="33" text-anchor="middle" font-size="16" fill="currentColor">7</text><rect x="88" y="8" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="107" y="33" text-anchor="middle" font-size="16" fill="currentColor">11</text><rect x="128" y="8" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="147" y="33" text-anchor="middle" font-size="16" fill="currentColor">2</text><rect x="8" y="48" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="27" y="73" text-anchor="middle" font-size="16" fill="currentColor">1</text><rect x="48" y="48" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="67" y="73" text-anchor="middle" font-size="16" fill="currentColor">5</text><rect x="88" y="48" width="38" height="38" rx="6" style="fill:none;stroke-dasharray:4 3;stroke:var(--accent)"/><rect x="128" y="48" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="147" y="73" text-anchor="middle" font-size="16" fill="currentColor">8</text><rect x="8" y="88" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="27" y="113" text-anchor="middle" font-size="16" fill="currentColor">9</text><rect x="48" y="88" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="67" y="113" text-anchor="middle" font-size="16" fill="currentColor">13</text><rect x="88" y="88" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="107" y="113" text-anchor="middle" font-size="16" fill="currentColor">6</text><rect x="128" y="88" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="147" y="113" text-anchor="middle" font-size="16" fill="currentColor">4</text><rect x="8" y="128" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="27" y="153" text-anchor="middle" font-size="16" fill="currentColor">14</text><rect x="48" y="128" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="67" y="153" text-anchor="middle" font-size="16" fill="currentColor">10</text><rect x="88" y="128" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="107" y="153" text-anchor="middle" font-size="16" fill="currentColor">15</text><rect x="128" y="128" width="38" height="38" rx="6" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="147" y="153" text-anchor="middle" font-size="16" fill="currentColor">12</text></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">15 жұмбағы: іздеу алгоритмі қажет есеп.</figcaption></figure>
+<p>Мысалы, «15 жұмбағын» (<span class="term-en">15 puzzle</span>) шешу үшін де іздеу алгоритмі керек: бос шаршыны жылжыта отырып, сандарды ретке келтіру керек.</p>
+
+<h3 id="terms">Негізгі ұғымдар</h3>
+<p>Әңгімені бір тілде жүргізу үшін бірнеше терминді келісіп алайық. Мен оларды 15 жұмбағы мен навигатор арқылы түсіндіремін.</p>
+<ul>
+  <li><strong>Агент</strong> (<span class="term-en">Agent</span>) - қоршаған ортаны қабылдап, оған әсер ететін нысан. Навигаторда агент - қай жолмен жүруді шешуі керек көліктің үлгісі.</li>
+  <li><strong>Күй</strong> (<span class="term-en">State</span>) - агенттің ортадағы нақты жағдайы. 15 жұмбағында күй - сандардың тақтадағы кез келген орналасуы.
+    <ul><li><strong>Бастапқы күй</strong> (<span class="term-en">Initial State</span>) - іздеу басталатын күй. Навигаторда ол - қазіргі орныңыз.</li></ul></li>
+  <li><strong>Әрекеттер</strong> (<span class="term-en">Actions</span>) - күйде жасауға болатын таңдаулар. Дәлірек айтсақ, әрекеттер функция түрінде беріледі: <code>Actions(s)</code> <code>s</code> күйін алып, сол күйде орындауға болатын әрекеттер жиынын қайтарады. 15 жұмбағында әрекеттер - шаршыны жылжытудың жолдары: бос орын ортада болса 4, қабырғаға тақау болса 3, бұрышта болса 2.</li>
+  <li><strong>Ауысу моделі</strong> (<span class="term-en">Transition Model</span>) - кез келген күйде кез келген әрекетті жасасақ, қандай күй шығатынының сипаттамасы. Бұл да функция: <code>Result(s, a)</code> <code>s</code> күйі мен <code>a</code> әрекетін алып, нәтиже күйді қайтарады. Жұмбақта шаршыны жылжытсаңыз, тақтаның жаңа орналасуы шығады.</li>
+  <li><strong>Күй кеңістігі</strong> (<span class="term-en">State Space</span>) - бастапқы күйден кез келген әрекеттер тізбегімен жетуге болатын барлық күйлер жиыны. 15 жұмбағында бұл - бастапқы күйден жетуге болатын 16!/2 орналасу. Күй кеңістігін бағытталған граф ретінде елестетуге болады: күйлер - түйіндер, әрекеттер - түйіндерді жалғайтын көрсеткілер.</li>
+  <li><strong>Мақсатты тексеру</strong> (<span class="term-en">Goal Test</span>) - берілген күйдің мақсат екенін анықтайтын шарт. Навигаторда: көліктің орны межелі жермен сәйкес пе? Сәйкес болса - есеп шешілді, болмаса іздей береміз.</li>
+  <li><strong>Жол құны</strong> (<span class="term-en">Path Cost</span>) - жолға тағайындалған сан. Навигатор жай ғана мақсатқа жеткізбейді, жол құнын азайтып, ең жылдам жолды табады.</li>
+</ul>
+<figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 520 140" role="img" aria-label="Күй кеңістігі: күйлер түйін, әрекеттер көрсеткі" style="width:100%"><defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs><line x1="81" y1="63" x2="167" y2="33" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar1)"/><text x="131" y="42" font-size="13" font-style="italic" fill="currentColor">a</text><line x1="81" y1="77" x2="167" y2="107" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar1)"/><text x="131" y="88" font-size="13" font-style="italic" fill="currentColor">b</text><line x1="211" y1="32" x2="307" y2="63" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar1)"/><text x="266" y="42" font-size="13" font-style="italic" fill="currentColor">c</text><line x1="211" y1="108" x2="307" y2="77" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar1)"/><text x="266" y="88" font-size="13" font-style="italic" fill="currentColor">d</text><line x1="352" y1="70" x2="436" y2="70" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar1)"/><text x="401" y="65" font-size="13" font-style="italic" fill="currentColor">e</text><line x1="190" y1="47" x2="190" y2="91" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar1)"/><text x="196" y="65" font-size="13" font-style="italic" fill="currentColor">f</text><circle cx="60" cy="70" r="21" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><text x="60" y="75" text-anchor="middle" font-size="14" fill="currentColor">S0</text><circle cx="190" cy="25" r="21" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><text x="190" y="30" text-anchor="middle" font-size="14" fill="currentColor">S1</text><circle cx="190" cy="115" r="21" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><text x="190" y="120" text-anchor="middle" font-size="14" fill="currentColor">S2</text><circle cx="330" cy="70" r="21" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><text x="330" y="75" text-anchor="middle" font-size="14" fill="currentColor">S3</text><circle cx="460" cy="70" r="21" style="fill:var(--gold-soft);stroke:var(--gold-text);stroke-width:2"/><text x="460" y="75" text-anchor="middle" font-size="14" fill="currentColor">S4</text></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">Күй кеңістігі: күйлер түйін, әрекеттер көрсеткі.</figcaption></figure>
+<p>Суретте күй кеңістігі көрсетілген: <code>S0</code> - бастапқы күй, <code>S4</code> - мақсат. Әр көрсеткі - бір әрекет (<code>a</code>, <code>b</code>, ...). Іздеу дегеніміз - осы графтан <code>S0</code>-ден <code>S4</code>-ке апаратын жолды табу.</p>
+
+<details class="think"><summary>Ойланып көріңіз: 15 жұмбағында бос шаршы тақтаның дәл ортасында болса, неше әрекет бар?</summary><div class="details-body"><p>Алдымен өзіңіз болжап көріңіз. Жауабы: төрт. Көрші шаршылардың кез келгенін бос орынға жылжыта аламыз: жоғарыдағыны, төмендегіні, солдағыны, оңдағыны. Бүйірде тұрса - үш, бұрышта тұрса - екі. Міне, <code>Actions(s)</code> күйге байланысты екенін осылай көреміз.</p></div></details>
+
+<h2 id="solving-search">Іздеу есептерін шешу</h2>
+<p>Енді шешімнің өзі не екенін анықтайық. <strong>Шешім</strong> (<span class="term-en">Solution</span>) - бастапқы күйден мақсатты күйге апаратын әрекеттер тізбегі. Ал <strong>оңтайлы шешім</strong> (<span class="term-en">Optimal Solution</span>) - барлық шешімдердің ішінде жол құны ең аз шешім.</p>
+<p>Іздеу барысында деректерді әдетте <strong>түйінде</strong> (<span class="term-en">node</span>) сақтайды. Бұл мынадай ақпарат ұстайтын деректер құрылымы:</p>
+<ul>
+  <li><em>күй</em> (state);</li>
+  <li><em>ата-ана түйіні</em> (parent): ағымдағы түйін қай түйіннен пайда болды;</li>
+  <li><em>әрекет</em> (action): ата-ана күйіне қандай әрекет қолданғанда осы түйінге келдік;</li>
+  <li><em>жол құны</em> (path cost): бастапқы күйден осы түйінге дейінгі құн.</li>
+</ul>
+<figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 560 120" role="img" aria-label="Түйіндер тізбегі" style="width:100%"><defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs><rect x="10" y="14" width="150" height="92" rx="8" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6"/><text x="22" y="38" font-size="13" font-family="monospace" fill="currentColor">state: S3</text><text x="22" y="58" font-size="13" font-family="monospace" fill="currentColor">parent: →</text><text x="22" y="78" font-size="13" font-family="monospace" fill="currentColor">action: c</text><text x="22" y="98" font-size="13" font-family="monospace" fill="currentColor">cost: 2</text><line x1="160" y1="60" x2="198" y2="60" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar2)"/><rect x="200" y="14" width="150" height="92" rx="8" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6"/><text x="212" y="38" font-size="13" font-family="monospace" fill="currentColor">state: S1</text><text x="212" y="58" font-size="13" font-family="monospace" fill="currentColor">parent: →</text><text x="212" y="78" font-size="13" font-family="monospace" fill="currentColor">action: a</text><text x="212" y="98" font-size="13" font-family="monospace" fill="currentColor">cost: 1</text><line x1="350" y1="60" x2="388" y2="60" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar2)"/><rect x="390" y="14" width="150" height="92" rx="8" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6"/><text x="402" y="38" font-size="13" font-family="monospace" fill="currentColor">state: S0</text><text x="402" y="58" font-size="13" font-family="monospace" fill="currentColor">parent: None</text><text x="402" y="78" font-size="13" font-family="monospace" fill="currentColor">action: None</text><text x="402" y="98" font-size="13" font-family="monospace" fill="currentColor">cost: 0</text></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">Түйіндер тізбегі: ата-ана арқылы артқа қарай жолды қайта жинаймыз.</figcaption></figure>
+<p>Түйіндер өте пайдалы: күйді <em>мақсатты тексеру</em> арқылы тексеріп, мақсатқа жеттік пе, жоқ па біле аламыз. Жеткен болсақ, жол құндарын салыстырып оңтайлысын таңдаймыз. Түйін таңдалған соң, ата-анасы мен әрекетін сақтағандықтан, артқа қарай бүкіл жолды қайта жинай аламыз: басынан осы түйінге дейінгі әрекеттер тізбегі - дәл шешімнің өзі.</p>
+<p>Бірақ түйін - жай ғана деректер құрылымы, ол іздемейді, ақпарат сақтайды. Іздеуді <strong>шекара</strong> (<span class="term-en">frontier</span>) жүргізеді: ол түйіндерді «басқаратын» механизм. Шекара бастапқы күйден және бос <em>қарап шыққан күйлер</em> (explored set) жиынынан басталады да, шешімге жеткенше мынаны қайталайды:</p>
+<ol>
+  <li>Егер шекара бос болса, <em>тоқта</em>: есептің шешімі жоқ.</li>
+  <li>Шекарадан бір түйінді алып шық. Дәл осы түйін қарастырылады.</li>
+  <li>Егер түйін мақсатты күйді қамтыса, шешімді қайтар да <em>тоқта</em>.<br>Әйтпесе: түйінді <em>кеңейт</em> (осы түйіннен жетуге болатын барлық жаңа түйіндерді тап) және нәтиже түйіндерді шекараға қос. Ағымдағы түйінді қарап шыққандар жиынына қос.</li>
+</ol>
+<p>Байқадыңыз ба, бұл сипаттамада бір нәрсе айтылмай қалды? Екінші қадамда <em>қай</em> түйінді алу керек? Осы таңдау шешімнің сапасына да, оның қаншалықты тез табылатынына да әсер етеді. Таңдаудың көптеген жолы бар, олардың екеуі - екі деректер құрылымы: <strong>стек</strong> (<span class="term-en">stack</span>, тереңдік бойынша іздеуде) және <strong>кезек</strong> (<span class="term-en">queue</span>, ені бойынша іздеуде).</p>
+<figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 520 150" role="img" aria-label="Стек пен кезек" style="width:100%"><defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor"/></marker></defs><text x="20" y="18" font-size="14" font-weight="700" fill="currentColor">Стек (LIFO)</text><rect x="40" y="100" width="90" height="26" rx="4" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="85" y="118" text-anchor="middle" font-size="14" fill="currentColor">түйін 1</text><rect x="40" y="70" width="90" height="26" rx="4" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="85" y="88" text-anchor="middle" font-size="14" fill="currentColor">түйін 2</text><rect x="40" y="40" width="90" height="26" rx="4" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="85" y="58" text-anchor="middle" font-size="14" fill="currentColor">түйін 3</text><line x1="150" y1="35" x2="150" y2="70" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar3)"/><text x="158" y="50" font-size="12" fill="currentColor">қосу/алу</text><text x="158" y="64" font-size="12" fill="currentColor">тек жоғарыдан</text><text x="290" y="18" font-size="14" font-weight="700" fill="currentColor">Кезек (FIFO)</text><rect x="290" y="60" width="66" height="30" rx="4" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="323" y="80" text-anchor="middle" font-size="14" fill="currentColor">түйін 1</text><rect x="362" y="60" width="66" height="30" rx="4" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="395" y="80" text-anchor="middle" font-size="14" fill="currentColor">түйін 2</text><rect x="434" y="60" width="66" height="30" rx="4" style="fill:var(--accent-soft);stroke:var(--accent)"/><text x="467" y="80" text-anchor="middle" font-size="14" fill="currentColor">түйін 3</text><line x1="270" y1="105" x2="288" y2="105" stroke="currentColor" stroke-width="1.6" marker-end="url(#ar3)"/><text x="200" y="124" font-size="12" fill="currentColor">алу (ертерек келген)</text><line x1="540" y1="105" x2="508" y2="105" stroke="currentColor" stroke-width="0"/><text x="440" y="124" font-size="12" fill="currentColor">қосу (соңына)</text></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">Стек пен кезек: түйінді қай жақтан алуымыз іздеу түрін анықтайды.</figcaption></figure>
+
+<h3 id="dfs">Тереңдік бойынша іздеу (DFS)</h3>
+<p><strong>Тереңдік бойынша іздеу</strong> (<span class="term-en">Depth-First Search, DFS</span>) бір бағытты түгел сарқып болмай, екінші бағытқа өтпейді. Мұнда шекара <em>стек</em> ретінде жұмыс істейді. Есіңізде болатын ұран: «<em>last-in first-out</em>», яғни соңғы келген бірінші шығады. Шекараға түйіндер қосылған соң, бірінші қарастырылатыны - ең соңғы қосылғаны. Нәтижесінде алгоритм алдынан шыққан бірінші бағытпен мүмкіндігінше терең кетеді де, қалған бағыттарды кейінге қалдырады.</p>
+<p>Лекциядан тыс мысал: кілтіңізді іздеп жатырсыз делік. Тереңдік бойынша іздесеңіз, шалбардан бастап, оның әр қалтасын біртіндеп босатып, ішіндегінің бәрін мұқият қарап шығасыз. Шалбардың барлық қалтасын түгел сарқымайынша, басқа жерге өтпейсіз.</p>
+<ul>
+  <li><strong>Артықшылығы:</strong> ең жақсы жағдайда бұл алгоритм ең жылдам. Егер ол «бағы жанып», кездейсоқ әрқашан дұрыс жолды таңдаса, шешімге ең аз уақытта жетеді.</li>
+  <li><strong>Кемшіліктері:</strong> табылған шешім оңтайлы болмауы мүмкін. Ең нашар жағдайда барлық мүмкін жолды аралап шығып барып шешім табады, яғни ең ұзақ уақыт кетеді.</li>
+</ul>
+<p>Кодта бұл жалғыз ғана әдістің айырмашылығы. Шекара түйінді қалай алып шығатынын анықтайтын <code>remove</code> әдісі мынадай:</p>
+<pre data-lang="python" data-norun><code class="language-python">    # Define the function that removes a node from the frontier and returns it.
+    def remove(self):
+        # Шекара бос болса, іздеуді тоқтатамыз: шешім жоқ.
+        if self.empty():
+            raise Exception("empty frontier")
+        else:
+            # Тізімдегі соңғы элементті (ең жаңа қосылған түйін) сақтаймыз
+            node = self.frontier[-1]
+            # Соңғысынан басқа барлығын сақтаймыз (яғни соңғы түйінді өшіреміз)
+            self.frontier = self.frontier[:-1]
+            return node</code></pre>
+
+<h3 id="bfs">Ені бойынша іздеу (BFS)</h3>
+<p>Тереңдік бойынша іздеудің қарама-қарсысы - <strong>ені бойынша іздеу</strong> (<span class="term-en">Breadth-First Search, BFS</span>). Ол бірнеше бағытпен бірдей уақытта жүреді: әр бағытта бір қадам жасайды, сосын екінші қадамға көшеді. Мұнда шекара <em>кезек</em> болады, ұраны - «<em>first-in first-out</em>», бірінші келген бірінші шығады. Жаңа түйіндер кезекке тұрады да, олар қосылу ретімен қарастырылады (кім бұрын келді, сол бұрын қызмет алады!). Нәтижесінде алгоритм кез келген бағытта екінші қадам жасамас бұрын, әр бағытта бір қадам жасап шығады.</p>
+<p>Кілт мысалына оралсақ: алдымен оң қалтаны қарайсыз. Сосын сол қалтаға көшудің орнына, бір жәшікке қарайсыз. Одан кейін үстелге. Осылай ойыңызға келген әр жерді аралайсыз, барлық орынды қарап шыққан соңғана шалбардың келесі қалтасына ораласыз.</p>
+<ul>
+  <li><strong>Артықшылығы:</strong> бұл алгоритм оңтайлы шешімді табуға кепілдік береді.</li>
+  <li><strong>Кемшіліктері:</strong> ең аз уақыттан гөрі ұзағырақ жұмыс істейтіні дерлік анық. Ең нашар жағдайда ең ұзақ уақыт кетеді.</li>
+</ul>
+<pre data-lang="python" data-norun><code class="language-python">    # Define the function that removes a node from the frontier and returns it.
+    def remove(self):
+        # Шекара бос болса, іздеуді тоқтатамыз: шешім жоқ.
+        if self.empty():
+            raise Exception("empty frontier")
+        else:
+            # Тізімдегі ең ескі элементті (ең бірінші қосылған түйін) сақтаймыз
+            node = self.frontier[0]
+            # Біріншісінен басқа барлығын сақтаймыз (яғни бірінші түйінді өшіреміз)
+            self.frontier = self.frontier[1:]
+            return node</code></pre>
+<p>Міне, көрдіңіз бе: екі алгоритмнің бар айырмасы - <code>[-1]</code> мен <code>[0]</code>. Енді екеуін толық кластармен жинап, іске қосып көрейік. Төмендегі кодта <code>Node</code>, <code>StackFrontier</code> және <code>QueueFrontier</code> бар, соңында үш түйінді екі шекараға да бірдей ретпен салып, қандай ретпен шығатынын көреміз:</p>
+<pre data-lang="python"><code class="language-python">class Node():
+    def __init__(self, state, parent, action):
+        self.state = state
+        self.parent = parent
+        self.action = action
+
+
+class StackFrontier():
+    def __init__(self):
+        self.frontier = []
+
+    def add(self, node):
+        self.frontier.append(node)
+
+    def contains_state(self, state):
+        return any(node.state == state for node in self.frontier)
+
+    def empty(self):
+        return len(self.frontier) == 0
+
+    def remove(self):
+        if self.empty():
+            raise Exception("empty frontier")
+        else:
+            node = self.frontier[-1]
+            self.frontier = self.frontier[:-1]
+            return node
+
+
+class QueueFrontier(StackFrontier):
+
+    def remove(self):
+        if self.empty():
+            raise Exception("empty frontier")
+        else:
+            node = self.frontier[0]
+            self.frontier = self.frontier[1:]
+            return node
+
+
+# Үш түйінді (1, 2, 3 күйлері) екі шекараға да бірдей ретпен саламыз
+for Frontier in (StackFrontier, QueueFrontier):
+    f = Frontier()
+    for state in (1, 2, 3):
+        f.add(Node(state, None, None))
+    order = []
+    while not f.empty():
+        order.append(f.remove().state)
+    print(Frontier.__name__, "-&gt;", order)</code></pre>
+<p>Стек <code>[3, 2, 1]</code> береді (соңғы кірген бірінші шығады), кезек - <code>[1, 2, 3]</code>. Бүкіл алгоритмнің мінезі осы екі жолдан шығады.</p>
+
+<h3 id="maze">Лабиринтті шешу</h3>
+<p>Енді осыны лабиринтте көрейік. Мұнда күйлер - лабиринттің бос ұяшықтары, <code>A</code> - бастапқы, <code>B</code> - мақсат, әрекеттер - жоғары, төмен, солға, оңға. Лабиринттің өзін сипаттайтын <code>Maze</code> класы мен оны шешетін <code>solve</code> әдісін жазайық. Мұнда шекараны <em>қарап шыққан күйлер жиыны</em> (<code>explored</code>) қосады: бір ұяшыққа екі рет кіріп, шеңберде айналып кетпеу үшін.</p>
+<p>Лекциядағы <code>Maze</code> лабиринтті файлдан оқиды. Ол былай басталады:</p>
+<pre data-lang="python" data-norun><code class="language-python">class Maze():
+
+    def __init__(self, filename):
+
+        # Read file and set height and width of maze
+        with open(filename) as f:
+            contents = f.read()
+
+        # Validate start and goal
+        if contents.count("A") != 1:
+            raise Exception("maze must have exactly one start point")
+        if contents.count("B") != 1:
+            raise Exception("maze must have exactly one goal")
+
+        # Determine height and width of maze
+        contents = contents.splitlines()
+        self.height = len(contents)
+        self.width = max(len(line) for line in contents)</code></pre>
+<p>Браузерде файл оқи алмайтындықтан, төмендегі нұсқада лабиринт тікелей жол (<code>str</code>) ретінде беріледі, қалғаны бірдей. Іске қосып көріңіз: <code>solve("dfs")</code> мен <code>solve("bfs")</code> бір лабиринтте қандай әртүрлі нәтиже беретінін салыстырыңыз (<code>*</code> - табылған жол).</p>
+<pre data-lang="python"><code class="language-python">class Node():
+    def __init__(self, state, parent, action):
+        self.state = state
+        self.parent = parent
+        self.action = action
+
+
+class StackFrontier():
+    def __init__(self):
+        self.frontier = []
+
+    def add(self, node):
+        self.frontier.append(node)
+
+    def contains_state(self, state):
+        return any(node.state == state for node in self.frontier)
+
+    def empty(self):
+        return len(self.frontier) == 0
+
+    def remove(self):
+        if self.empty():
+            raise Exception("empty frontier")
+        else:
+            node = self.frontier[-1]
+            self.frontier = self.frontier[:-1]
+            return node
+
+
+class QueueFrontier(StackFrontier):
+
+    def remove(self):
+        if self.empty():
+            raise Exception("empty frontier")
+        else:
+            node = self.frontier[0]
+            self.frontier = self.frontier[1:]
+            return node
+
+
+MAZE = """
+#########
+#A      #
+## ## # #
+#       #
+# # # # #
+#      B#
+#########
+"""
+
+
+class Maze():
+
+    def __init__(self, contents):
+        # Лабиринтті жолдар тізімі ретінде оқимыз
+        contents = contents.strip("\n")
+        lines = contents.splitlines()
+        self.height = len(lines)
+        self.width = max(len(line) for line in lines)
+
+        # Қабырғаларды, бастапқы (A) және мақсат (B) нүктелерін табамыз
+        self.walls = []
+        for i in range(self.height):
+            row = []
+            for j in range(self.width):
+                try:
+                    if lines[i][j] == "A":
+                        self.start = (i, j)
+                        row.append(False)
+                    elif lines[i][j] == "B":
+                        self.goal = (i, j)
+                        row.append(False)
+                    elif lines[i][j] == " ":
+                        row.append(False)
+                    else:
+                        row.append(True)
+                except IndexError:
+                    row.append(False)
+            self.walls.append(row)
+        self.solution = None
+
+    def print(self):
+        solution = self.solution[1] if self.solution is not None else None
+        print()
+        for i, row in enumerate(self.walls):
+            for j, col in enumerate(row):
+                if col:
+                    print("█", end="")
+                elif (i, j) == self.start:
+                    print("A", end="")
+                elif (i, j) == self.goal:
+                    print("B", end="")
+                elif solution is not None and (i, j) in solution:
+                    print("*", end="")
+                else:
+                    print(" ", end="")
+            print()
+        print()
+
+    def neighbors(self, state):
+        row, col = state
+        candidates = [
+            ("up", (row - 1, col)),
+            ("down", (row + 1, col)),
+            ("left", (row, col - 1)),
+            ("right", (row, col + 1))
+        ]
+
+        result = []
+        for action, (r, c) in candidates:
+            if 0 &lt;= r &lt; self.height and 0 &lt;= c &lt; self.width and not self.walls[r][c]:
+                result.append((action, (r, c)))
+        return result
+
+    def solve(self, method="dfs"):
+        """Лабиринттің шешімін табады (әдіс: "dfs" немесе "bfs")."""
+
+        # Қанша күй қарап шықтық
+        self.num_explored = 0
+
+        # Шекараны бастапқы күймен іске қосамыз
+        start = Node(state=self.start, parent=None, action=None)
+        frontier = StackFrontier() if method == "dfs" else QueueFrontier()
+        frontier.add(start)
+
+        # Қарап шыққан күйлер жиыны (басында бос)
+        self.explored = set()
+
+        # Шешім табылғанша қайталаймыз
+        while True:
+
+            # Шекара бос болса, шешім жоқ
+            if frontier.empty():
+                raise Exception("no solution")
+
+            # Шекарадан түйін алып шығамыз
+            node = frontier.remove()
+            self.num_explored += 1
+
+            # Мақсатқа жеттік пе?
+            if node.state == self.goal:
+                actions = []
+                cells = []
+                while node.parent is not None:
+                    actions.append(node.action)
+                    cells.append(node.state)
+                    node = node.parent
+                actions.reverse()
+                cells.reverse()
+                self.solution = (actions, cells)
+                return
+
+            # Күйді қарап шыққанға жатқызамыз
+            self.explored.add(node.state)
+
+            # Көршілерді шекараға қосамыз
+            for action, state in self.neighbors(node.state):
+                if not frontier.contains_state(state) and state not in self.explored:
+                    child = Node(state=state, parent=node, action=action)
+                    frontier.add(child)
+
+
+for method in ("dfs", "bfs"):
+    m = Maze(MAZE)
+    m.solve(method)
+    print(method.upper(), ": қарап шыққан күй =", m.num_explored, ", жол ұзындығы =", len(m.solution[0]))
+    m.print()</code></pre>
+<p>Нәтижесі өзі сөйлейді: DFS қарап шыққан күйлері аз, бірақ жолы 22 қадамдық ирелең, ал BFS көбірек күй қарап шықты, бірақ ең қысқа, 10 қадамдық жолды тапты.</p>
+<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center"><div style="flex:1 1 230px;min-width:0"><figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 234 182" role="img" aria-label="DFS нәтижесі" style="width:100%;max-width:304px;height:auto"><rect x="0" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="156" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="208" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="26" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="26" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="39.0" y="44.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--ok)">A</text><rect x="52" y="26" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="26" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="26" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="26" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="26" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="26" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="26" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="52" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="52" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="52" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="78" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="78" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="78" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="78" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="78" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="78" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="78" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="78" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="78" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="104" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="104" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="104" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="104" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="130" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="130" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="130" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="130" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="130" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="130" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="130" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="130" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="195.0" y="148.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--bad)">B</text><rect x="208" y="130" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="156" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="208" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">DFS: жол 22 қадам</figcaption></figure></div><div style="flex:1 1 230px;min-width:0"><figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 234 182" role="img" aria-label="BFS нәтижесі" style="width:100%;max-width:304px;height:auto"><rect x="0" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="156" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="208" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="26" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="26" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="39.0" y="44.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--ok)">A</text><rect x="52" y="26" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="26" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="52" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="52" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="52" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="78" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="78" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="78" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="78" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="78" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="78" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="78" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="78" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="78" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="104" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="104" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="104" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="104" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="130" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="130" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="130" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="130" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="130" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="130" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="130" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="130" width="26" height="26" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="195.0" y="148.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--bad)">B</text><rect x="208" y="130" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="156" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="208" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">BFS: жол 10 қадам</figcaption></figure></div></div>
+<p>Суретте бір лабиринттің екі іздеуі. Көгілдір - қарап шыққан ұяшықтар, сары - табылған жол. DFS бірден оңға кетіп, лабиринттің жартысын айналып барды, ал BFS барлық бағытты бірдей жайып отырып, ең қысқа жолды тапты.</p>
+<p>Шекара қалай өзгеретінін қадам-қадаммен қарағыңыз келсе, төмендегі «анимацияны» іске қосыңыз. <code>o</code> - қарап шыққан ұяшық, <code>+</code> - шекарада күтіп тұрған. BFS-те <code>+</code> белгілері лабиринт бойымен толқын сияқты кеңейеді, DFS-те бір ұзын «жіп» болып созылады:</p>
+<pre data-lang="python"><code class="language-python"># Шекара қалай өзгеретінін қадам-қадаммен қарап көрейік.
+# "#" - қабырға, "o" - қарап шыққан, "+" - шекарада күтіп тұрған күй.
+MAZE = """
+#########
+#A      #
+## ## # #
+#       #
+# # # # #
+#      B#
+#########
+""".strip("\n").splitlines()
+
+START, GOAL = (1, 1), (5, 7)
+
+
+def neighbors(state):
+    r, c = state
+    for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):  # up, down, left, right
+        nr, nc = r + dr, c + dc
+        if MAZE[nr][nc] != "#":
+            yield (nr, nc)
+
+
+def show(explored, frontier, step):
+    print(f"--- {step}-қадам: қарап шыққан {len(explored)}, шекарада {len(frontier)} ---")
+    for i, line in enumerate(MAZE):
+        row = ""
+        for j, ch in enumerate(line):
+            if ch == "#":
+                row += "█"
+            elif (i, j) == START:
+                row += "A"
+            elif (i, j) == GOAL:
+                row += "B"
+            elif (i, j) in explored:
+                row += "o"
+            elif (i, j) in frontier:
+                row += "+"
+            else:
+                row += " "
+        print(row)
+
+
+def animate(method, frames=(3, 8, 14)):
+    print("=====", method.upper(), "=====")
+    frontier, explored, step = [START], set(), 0
+    while frontier:
+        state = frontier.pop() if method == "dfs" else frontier.pop(0)
+        step += 1
+        if state == GOAL:
+            print("Мақсатқа жеттік!", step, "қадамда")
+            return
+        explored.add(state)
+        for n in neighbors(state):
+            if n not in explored and n not in frontier:
+                frontier.append(n)
+        if step in frames:
+            show(explored, frontier, step)
+
+
+animate("bfs")
+animate("dfs")</code></pre>
+<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center"><div style="flex:1 1 230px;min-width:0"><figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 234 182" role="img" aria-label="BFS 3-қадам" style="width:100%;max-width:304px;height:auto"><rect x="0" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="156" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="208" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="26" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="39.0" y="44.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--ok)">A</text><rect x="52" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="26" width="26" height="26" style="fill:var(--note);fill-opacity:.55" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="26" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="26" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="26" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="26" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="26" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="52" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="52" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="52" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="78" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="78" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="78" width="26" height="26" style="fill:var(--note);fill-opacity:.55" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="78" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="78" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="78" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="78" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="78" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="78" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="104" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="104" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="104" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="104" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="130" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="195.0" y="148.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--bad)">B</text><rect x="208" y="130" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="156" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="208" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">BFS, 3-қадамнан кейін</figcaption></figure></div><div style="flex:1 1 230px;min-width:0"><figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 234 182" role="img" aria-label="BFS 8-қадам" style="width:100%;max-width:304px;height:auto"><rect x="0" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="156" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="208" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="26" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="39.0" y="44.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--ok)">A</text><rect x="52" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="26" width="26" height="26" style="fill:var(--note);fill-opacity:.55" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="26" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="26" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="26" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="52" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="52" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="52" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="78" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="78" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="78" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="78" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="78" width="26" height="26" style="fill:var(--note);fill-opacity:.55" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="78" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="78" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="78" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="78" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="104" width="26" height="26" style="fill:var(--note);fill-opacity:.55" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="104" width="26" height="26" style="fill:var(--note);fill-opacity:.55" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="104" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="104" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="130" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="195.0" y="148.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--bad)">B</text><rect x="208" y="130" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="156" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="208" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">BFS, 8-қадамнан кейін</figcaption></figure></div><div style="flex:1 1 230px;min-width:0"><figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 234 182" role="img" aria-label="BFS 14-қадам" style="width:100%;max-width:304px;height:auto"><rect x="0" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="156" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="208" y="0" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="26" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="39.0" y="44.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--ok)">A</text><rect x="52" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="26" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="26" width="26" height="26" style="fill:var(--note);fill-opacity:.55" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="26" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="52" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="52" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="52" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="52" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="78" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="78" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="78" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="78" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="78" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="78" width="26" height="26" style="fill:var(--note);fill-opacity:.55" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="78" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="78" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="78" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="104" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="104" width="26" height="26" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="104" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="104" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="208" y="104" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="130" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="130" width="26" height="26" style="fill:var(--note);fill-opacity:.55" stroke="currentColor" stroke-opacity=".18"/><rect x="52" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="78" y="130" width="26" height="26" style="fill:var(--note);fill-opacity:.55" stroke="currentColor" stroke-opacity=".18"/><rect x="104" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="156" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="182" y="130" width="26" height="26" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="195.0" y="148.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--bad)">B</text><rect x="208" y="130" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="0" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="26" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="52" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="78" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="104" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="130" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="156" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="182" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/><rect x="208" y="156" width="26" height="26" fill="currentColor" fill-opacity=".72"/></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">BFS, 14-қадамнан кейін</figcaption></figure></div></div><p style="text-align:center;color:var(--muted);font-size:14px">Көгілдір - қарап шыққан, көк - шекарада тұрған ұяшықтар. Шекара лабиринт бойымен толқын сияқты жайылады.</p>
+<div class="callout tip"><span class="callout-title">Өзіңіз байқап көріңіз</span><p>Кодтағы <code>MAZE</code> жолын өзгертіп (қабырға қосыңыз немесе алып тастаңыз), <code>frames=(3, 8, 14)</code> мәндерін ауыстырып көріңіз. DFS пен BFS қай жерде бірдей, қай жерде әртүрлі жұмыс істейтінін өзіңіз табасыз.</p></div>
+
+<details class="think"><summary>Ойланып көріңіз: лабиринтте тек бір ғана жол болса, DFS пен BFS арасында айырма болар ма?</summary><div class="details-body"><p>Болжап көріңіз. Жол жалғыз болса, екі алгоритм де соны тауып, нәтиже (жол) бірдей болады. Айырма тек дұрыс жолға дейін қанша ұяшық қарап шығатынымызда ғана. Ал жол көп болғанда (бұрынғы мысалдағыдай) DFS ұзағырақ жолмен кетіп қалуы мүмкін, BFS болса әрқашан ең қысқасын табады.</p></div></details>
+
+<h3 id="greedy">Ашкөз ең жақсыны алдымен іздеу</h3>
+<p>Ені бойынша және тереңдік бойынша іздеу екеуі де <strong>ақпаратсыз</strong> (<span class="term-en">uninformed</span>) алгоритмдер: олар есеп туралы өз зерттеуінен басқа ештеңе білмейді. Ал шын өмірде есеп туралы бір нәрсе әрқашан дерлік белгілі. Лабиринттегі адам жол айрығына келгенде, қай жолдың жалпы мақсат жаққа бағытталғанын, қайсысының кері кеткенін көреді ғой. Жасанды интеллект те мұны істей алады. Қосымша білімді пайдаланып өнімділікті арттыруға тырысатын алгоритмді <strong>ақпаратты</strong> (<span class="term-en">informed</span>) іздеу алгоритмі дейді.</p>
+<p><strong>Ашкөз ең жақсыны алдымен іздеу</strong> (<span class="term-en">Greedy Best-First Search</span>) мақсатқа ең жақын түйінді кеңейтеді. «Жақындықты» <strong>эвристикалық функция</strong> (<span class="term-en">heuristic function</span>) <em>h(n)</em> бағалайды. Аты айтып тұрғандай, ол келесі түйіннің мақсатқа қаншалықты жақын екенін <em>болжайды</em>, сондықтан қателесуі де мүмкін. Алгоритмнің тиімділігі эвристиканың қаншалықты жақсы екеніне байланысты.</p>
+<p>Лабиринтте жиі қолданылатын эвристика - <strong>Манхэттен қашықтығы</strong> (<span class="term-en">Manhattan distance</span>). Ол қабырғаларды ескермей, ағымдағы ұяшықтан мақсатқа дейін жоғары-төмен және оңға-солға неше қадам керек екенін санайды. Манхэттен көшелері тор тәрізді болғандықтан, осылай аталған. Оны (x, y) координаталарынан оп-оңай есептеуге болады.</p>
+<figure class="diagram" style="margin:1.4rem 0;text-align:center"><div style="max-width:420px;margin-left:auto;margin-right:auto"><svg viewBox="0 0 300 170" role="img" aria-label="Манхэттен қашықтығы" style="width:100%"><rect x="10" y="10" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="40" y="10" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="70" y="10" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="100" y="10" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="10" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="160" y="10" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="190" y="10" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="220" y="10" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="250" y="10" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="10" y="40" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="40" y="40" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="70" y="40" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="100" y="40" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="40" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="160" y="40" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="190" y="40" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="220" y="40" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="250" y="40" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="10" y="70" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="40" y="70" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="70" y="70" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="100" y="70" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="70" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="160" y="70" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="190" y="70" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="220" y="70" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="250" y="70" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="10" y="100" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="40" y="100" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="70" y="100" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="100" y="100" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="100" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="160" y="100" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="190" y="100" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="220" y="100" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="250" y="100" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="10" y="130" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="40" y="130" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="70" y="130" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="100" y="130" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="130" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="160" y="130" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="190" y="130" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="220" y="130" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="250" y="130" width="30" height="30" fill="none" stroke="currentColor" stroke-opacity=".18"/><rect x="130" y="70" width="30" height="30" fill="currentColor" fill-opacity=".72"/><rect x="130" y="100" width="30" height="30" fill="currentColor" fill-opacity=".72"/><path d="M25 25 H235 V115" fill="none" style="stroke:var(--gold)" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 9"/><text x="25" y="31" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--ok)">A</text><text x="235" y="121" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--bad)">B</text><text x="130" y="160" text-anchor="middle" font-size="13" fill="currentColor">7 оңға + 3 төмен = 10 (қабырға есепке алынбайды)</text></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">Манхэттен қашықтығы.</figcaption></figure>
+<p>Бірақ кез келген эвристика сияқты, бұл да адастыруы мүмкін: алгоритмді ақпаратсыз алгоритм жүрмейтін баяуырақ жолға түсіріп жіберуі мүмкін. Ақпаратсыз алгоритм кейде жақсырақ шешімді тезірек тауып қоюы мүмкін, бірақ ақпаратты алгоритмге қарағанда оның ықтималдығы аз.</p>
+
+<h3 id="astar">A* іздеу</h3>
+<p>Ашкөз алгоритмнің дамыған түрі - <strong>A* іздеу</strong> (<span class="term-en">A* search</span>). Ол тек <em>h(n)</em>-ді, яғни қазіргі орыннан мақсатқа дейінгі болжамды құнды ғана емес, <em>g(n)</em>-ді де, яғни осы орынға дейін жиналған құнды ескереді. Екеуін қосып, шешімнің құнын дәлірек бағалайды да, таңдауын жолшыбай оңтайландырады. Алгоритм (<em>осы уақытқа дейінгі жол құны</em> + <em>мақсатқа дейінгі болжамды құн</em>) мәнін есептеп отырады. Бұл мән бұрынғы бір таңдаудың болжамды құнынан асып кетсе, алгоритм ағымдағы жолды тастап, алдыңғы таңдауға қайта оралады. Осылайша <em>h(n)</em> қате «ең жақсы» деп белгілеген ұзақ, тиімсіз жолға түсіп кетпейді.</p>
+<p>Бұл да эвристикаға сүйенетіндіктен, эвристикасы қандай болса, өзі де сондай. Кейбір жағдайда ол ашкөз алгоритмнен немесе тіпті ақпаратсыз алгоритмдерден тиімсіз болуы мүмкін. A* <em>оңтайлы</em> болуы үшін <em>h(n)</em> мына екі шартты қанағаттандыруы керек:</p>
+<ol>
+  <li><strong>Рұқсат етілген</strong> (<span class="term-en">admissible</span>): нақты құнды ешқашан <em>асыра бағаламайды</em>.</li>
+  <li><strong>Келісімді</strong> (<span class="term-en">consistent</span>): жаңа түйіннен мақсатқа дейінгі болжамды құн мен алдыңғы түйінден оған өту құнының қосындысы алдыңғы түйіннің мақсатқа дейінгі болжамды құнынан кем емес. Формуламен: әр <em>n</em> түйіні мен қадам құны <em>c</em> болатын оның ізбасар түйіні <em>n'</em> үшін <em>h(n) ≤ h(n') + c</em>.</li>
+</ol>
+<p>Манхэттен қашықтығы лабиринтте екі шартты да қанағаттандырады: қабырғасыз да кем дегенде осынша қадам керек, тікелей жүріп өту оданда қысқа бола алмайды. Енді ашкөз алгоритм мен A*-ты бір лабиринтте салыстырайық. Код жоғарыдағы <code>solve</code>-ке ұқсас, тек шекарадан түйінді таңдау ережесі басқа: ашкөзде <em>h(n)</em> ең аз, A*-та <em>g(n) + h(n)</em> ең аз түйін алынады.</p>
+<pre data-lang="python"><code class="language-python">MAZE = """
+###########
+#A        #
+# ####### #
+#     #   #
+# ### # # #
+#   #   #B#
+###########
+""".strip("\n").splitlines()
+
+START, GOAL = (1, 1), (5, 9)
+
+
+def manhattan(state):
+    # h(n): қабырғаларды елемей, мақсатқа дейін қанша қадам (жоғары/төмен/оңға/солға)
+    return abs(state[0] - GOAL[0]) + abs(state[1] - GOAL[1])
+
+
+def neighbors(state):
+    r, c = state
+    for dr, dc in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+        if MAZE[r + dr][c + dc] != "#":
+            yield (r + dr, c + dc)
+
+
+def solve(method):
+    # шекарадағы әр жазба: (күй, ата-анасы, g = осы уақытқа дейінгі жол құны)
+    frontier = [(START, None, 0)]
+    explored = set()
+    count = 0
+    while frontier:
+        if method == "greedy":      # h(n) ең кіші түйінді аламыз
+            node = min(frontier, key=lambda n: manhattan(n[0]))
+        else:                       # A*: g(n) + h(n) ең кіші түйінді аламыз
+            node = min(frontier, key=lambda n: n[2] + manhattan(n[0]))
+        frontier.remove(node)
+        state, parent, g = node
+        count += 1
+        if state == GOAL:
+            path = []
+            while node is not None:
+                path.append(node[0])
+                node = node[1]
+            return count, path[::-1]
+        explored.add(state)
+        for n in neighbors(state):
+            if n not in explored and all(f[0] != n for f in frontier):
+                frontier.append((n, node, g + 1))
+
+
+for method in ("greedy", "astar"):
+    count, path = solve(method)
+    print(method, ": қарап шыққан =", count, ", жол ұзындығы =", len(path) - 1)
+    for i, line in enumerate(MAZE):
+        print("".join("█" if ch == "#" else ("*" if (i, j) in path and ch == " " else ch)
+                      for j, ch in enumerate(line)))</code></pre>
+<div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:center"><div style="flex:1 1 230px;min-width:0"><figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 264 168" role="img" aria-label="Ашкөз іздеу" style="width:100%;max-width:343px;height:auto"><rect x="0" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="48" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="72" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="96" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="120" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="144" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="168" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="192" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="216" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="240" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="0" y="24" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="24" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="36.0" y="41.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--ok)">A</text><rect x="48" y="24" width="24" height="24" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="60.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">11</text><rect x="72" y="24" width="24" height="24" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="84.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">10</text><rect x="96" y="24" width="24" height="24" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="108.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">9</text><rect x="120" y="24" width="24" height="24" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="132.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">8</text><rect x="144" y="24" width="24" height="24" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="156.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">7</text><rect x="168" y="24" width="24" height="24" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="180.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">6</text><rect x="192" y="24" width="24" height="24" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="204.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">5</text><rect x="216" y="24" width="24" height="24" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="228.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">4</text><rect x="240" y="24" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="0" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="48" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="36.0" y="64.0" text-anchor="middle" font-size="11" fill="currentColor">11</text><rect x="48" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="72" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="96" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="120" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="144" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="168" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="192" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="216" y="48" width="24" height="24" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="228.0" y="64.0" text-anchor="middle" font-size="11" fill="currentColor">3</text><rect x="240" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="0" y="72" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="72" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="36.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">10</text><rect x="48" y="72" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="60.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">9</text><rect x="72" y="72" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="84.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">8</text><rect x="96" y="72" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="108.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">7</text><rect x="120" y="72" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="132.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">6</text><rect x="144" y="72" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="168" y="72" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="180.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">4</text><rect x="192" y="72" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="204.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">3</text><rect x="216" y="72" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="228.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">2</text><rect x="240" y="72" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="0" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="96" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="36.0" y="112.0" text-anchor="middle" font-size="11" fill="currentColor">9</text><rect x="48" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="72" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="96" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="120" y="96" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="132.0" y="112.0" text-anchor="middle" font-size="11" fill="currentColor">5</text><rect x="144" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="168" y="96" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="180.0" y="112.0" text-anchor="middle" font-size="11" fill="currentColor">3</text><rect x="192" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="216" y="96" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="228.0" y="112.0" text-anchor="middle" font-size="11" fill="currentColor">1</text><rect x="240" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="0" y="120" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="120" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="36.0" y="136.0" text-anchor="middle" font-size="11" fill="currentColor">8</text><rect x="48" y="120" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="60.0" y="136.0" text-anchor="middle" font-size="11" fill="currentColor">7</text><rect x="72" y="120" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="84.0" y="136.0" text-anchor="middle" font-size="11" fill="currentColor">6</text><rect x="96" y="120" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="120" y="120" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="132.0" y="136.0" text-anchor="middle" font-size="11" fill="currentColor">4</text><rect x="144" y="120" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="156.0" y="136.0" text-anchor="middle" font-size="11" fill="currentColor">3</text><rect x="168" y="120" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="180.0" y="136.0" text-anchor="middle" font-size="11" fill="currentColor">2</text><rect x="192" y="120" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="216" y="120" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="228.0" y="137.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--bad)">B</text><rect x="240" y="120" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="0" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="48" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="72" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="96" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="120" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="144" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="168" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="192" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="216" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="240" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">Ашкөз: жол 16 (сандар - Манхэттен қашықтығы)</figcaption></figure></div><div style="flex:1 1 230px;min-width:0"><figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 264 168" role="img" aria-label="A* іздеу" style="width:100%;max-width:343px;height:auto"><rect x="0" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="48" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="72" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="96" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="120" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="144" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="168" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="192" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="216" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="240" y="0" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="0" y="24" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="24" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="36.0" y="41.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--ok)">A</text><rect x="48" y="24" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="60.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">11</text><rect x="72" y="24" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="84.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">10</text><rect x="96" y="24" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="108.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">9</text><rect x="120" y="24" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="132.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">8</text><rect x="144" y="24" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="156.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">7</text><rect x="168" y="24" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="180.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">6</text><rect x="192" y="24" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="204.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">5</text><rect x="216" y="24" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="228.0" y="40.0" text-anchor="middle" font-size="11" fill="currentColor">4</text><rect x="240" y="24" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="0" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="48" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="36.0" y="64.0" text-anchor="middle" font-size="11" fill="currentColor">11</text><rect x="48" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="72" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="96" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="120" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="144" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="168" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="192" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="216" y="48" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="228.0" y="64.0" text-anchor="middle" font-size="11" fill="currentColor">3</text><rect x="240" y="48" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="0" y="72" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="72" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="36.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">10</text><rect x="48" y="72" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="60.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">9</text><rect x="72" y="72" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="84.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">8</text><rect x="96" y="72" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="108.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">7</text><rect x="120" y="72" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="132.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">6</text><rect x="144" y="72" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="168" y="72" width="24" height="24" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="180.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">4</text><rect x="192" y="72" width="24" height="24" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="204.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">3</text><rect x="216" y="72" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="228.0" y="88.0" text-anchor="middle" font-size="11" fill="currentColor">2</text><rect x="240" y="72" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="0" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="96" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="36.0" y="112.0" text-anchor="middle" font-size="11" fill="currentColor">9</text><rect x="48" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="72" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="96" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="120" y="96" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="132.0" y="112.0" text-anchor="middle" font-size="11" fill="currentColor">5</text><rect x="144" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="168" y="96" width="24" height="24" fill="none" stroke="currentColor" stroke-opacity=".18"/><text x="180.0" y="112.0" text-anchor="middle" font-size="11" fill="currentColor">3</text><rect x="192" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="216" y="96" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="228.0" y="112.0" text-anchor="middle" font-size="11" fill="currentColor">1</text><rect x="240" y="96" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="0" y="120" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="120" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="36.0" y="136.0" text-anchor="middle" font-size="11" fill="currentColor">8</text><rect x="48" y="120" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="60.0" y="136.0" text-anchor="middle" font-size="11" fill="currentColor">7</text><rect x="72" y="120" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="84.0" y="136.0" text-anchor="middle" font-size="11" fill="currentColor">6</text><rect x="96" y="120" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="120" y="120" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="132.0" y="136.0" text-anchor="middle" font-size="11" fill="currentColor">4</text><rect x="144" y="120" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="156.0" y="136.0" text-anchor="middle" font-size="11" fill="currentColor">3</text><rect x="168" y="120" width="24" height="24" style="fill:var(--accent);fill-opacity:.35" stroke="currentColor" stroke-opacity=".18"/><text x="180.0" y="136.0" text-anchor="middle" font-size="11" fill="currentColor">2</text><rect x="192" y="120" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="216" y="120" width="24" height="24" style="fill:var(--gold)" stroke="currentColor" stroke-opacity=".18"/><text x="228.0" y="137.0" text-anchor="middle" font-size="15" font-weight="700" style="fill:var(--bad)">B</text><rect x="240" y="120" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="0" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="24" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="48" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="72" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="96" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="120" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="144" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="168" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="192" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="216" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/><rect x="240" y="144" width="24" height="24" fill="currentColor" fill-opacity=".72"/></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">A*: жол 12</figcaption></figure></div></div>
+<p>Ашкөз алгоритм мақсатқа қарай тікелей ұмтылды да, тұйыққа ұрынып, шалғай айналма жолмен, 16 қадамда барды. A* күйлерді көбірек қарап шықты, бірақ оңтайлы, 12 қадамдық жолды тапты. Жылдамдық пен сапа арасындағы мәміле осылай көрінеді.</p>
+<details class="think"><summary>Ойланып көріңіз: A*-та h(n) ≡ 0 алсақ, алгоритм қандай болады?</summary><div class="details-body"><p>Болжап көріңіз. <em>h(n) = 0</em> әрқашан рұқсат етілген және келісімді (еш нәрсені асыра бағаламайды), ал таңдау ережесі <em>g(n)</em> ең аз түйінді алуға айналады. Яғни алгоритм «ең арзан жолды алдымен» қарайды. Егер әр қадамның құны 1 болса, бұл - дәл ені бойынша іздеу (BFS). A*-тың жақсы эвристикасы осы алгоритмді «бағыт көрсетумен» байытады.</p></div></details>
+
+<h2 id="adversarial-search">Қарсыластық іздеу</h2>
+<p>Осыған дейін біз сұраққа жауап табуға тиіс алгоритмдерді қарастырдық. Ал <strong>қарсыластық іздеуде</strong> (<span class="term-en">adversarial search</span>) алгоритмнің қарсыласы бар және ол керісінше мақсатқа ұмтылады. Мұндай жасанды интеллект көбіне ойындарда кездеседі, мысалы, tic-tac-toe (ХО ойыны, «крестики-нолики»).</p>
+
+<h3 id="minimax">Minimax</h3>
+<p><strong>Minimax</strong> - қарсыластық іздеудегі алгоритм түрі. Ол ұтыс шарттарын бір тарап үшін (-1), екінші тарап үшін (+1) деп көрсетеді. Одан әрі әрекеттер осы мәндерге бағынады: <em>минимайзер</em> (азайтушы) ең төмен ұпайды алуға тырысады, ал <em>максимайзер</em> (арттырушы) ең жоғарысын.</p>
+<p><strong>Tic-tac-toe жасанды интеллектін қалай сипаттаймыз:</strong></p>
+<ul>
+  <li><em>S₀</em> - бастапқы күй (біздің жағдайда бос 3x3 тақта);</li>
+  <li><em>Player(s)</em> - <code>s</code> күйін алып, кімнің кезегі екенін (X немесе O) қайтаратын функция;</li>
+  <li><em>Actions(s)</em> - <code>s</code> күйінде мүмкін жүрістерді (тақтадағы бос ұяшықтарды) қайтарады;</li>
+  <li><em>Result(s, a)</em> - <code>s</code> күйі мен <code>a</code> әрекетінен шығатын жаңа күйді (жүрістен кейінгі тақтаны) қайтарады;</li>
+  <li><em>Terminal(s)</em> - күй ойынның соңғы қадамы ма (біреу жеңді ме немесе тең ойнады ма) екенін тексереді: ойын біткен болса <code>True</code>, әйтпесе <code>False</code>;</li>
+  <li><em>Utility(s)</em> - терминал күйдің утилитасын қайтарады: -1, 0 немесе 1.</li>
+</ul>
+<p><strong>Алгоритм қалай жұмыс істейді.</strong> Алгоритм рекурсивті түрде ағымдағы күйден бастап терминал күйге дейін болуы мүмкін барлық ойынды модельдейді. Әр терминал күй (-1), 0 немесе (+1) болып бағаланады.</p>
+<figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 560 250" role="img" aria-label="Tic-Tac-Toe ағашы: тақта және оның ұрпақтары" style="width:100%"><rect x="262.0" y="8" width="36" height="36" fill="none" stroke="currentColor" stroke-opacity=".6"/><line x1="274.0" y1="8" x2="274.0" y2="44" stroke="currentColor" stroke-opacity=".4"/><line x1="262.0" y1="20" x2="298.0" y2="20" stroke="currentColor" stroke-opacity=".4"/><line x1="286.0" y1="8" x2="286.0" y2="44" stroke="currentColor" stroke-opacity=".4"/><line x1="262.0" y1="32" x2="298.0" y2="32" stroke="currentColor" stroke-opacity=".4"/><text x="268.0" y="17" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="280.0" y="17" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="292.0" y="17" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="268.0" y="29" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="280.0" y="29" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="268.0" y="41" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="322.0" y="30" font-size="12" fill="currentColor">X жүреді: ?</text><line x1="280.0" y1="48" x2="93.33333333333333" y2="92" stroke="currentColor" stroke-opacity=".5"/><rect x="75.33333333333333" y="94" width="36" height="36" fill="none" stroke="currentColor" stroke-opacity=".6"/><line x1="87.33333333333333" y1="94" x2="87.33333333333333" y2="130" stroke="currentColor" stroke-opacity=".4"/><line x1="75.33333333333333" y1="106" x2="111.33333333333333" y2="106" stroke="currentColor" stroke-opacity=".4"/><line x1="99.33333333333333" y1="94" x2="99.33333333333333" y2="130" stroke="currentColor" stroke-opacity=".4"/><line x1="75.33333333333333" y1="118" x2="111.33333333333333" y2="118" stroke="currentColor" stroke-opacity=".4"/><text x="81.33333333333333" y="103" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="93.33333333333333" y="103" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="105.33333333333333" y="103" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="81.33333333333333" y="115" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="93.33333333333333" y="115" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><rect x="99.33333333333333" y="106" width="12" height="12" style="fill:var(--gold);fill-opacity:.35"/><text x="105.33333333333333" y="115" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="81.33333333333333" y="127" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><line x1="93.33333333333333" y1="132" x2="38.33333333333333" y2="172" stroke="currentColor" stroke-opacity=".5"/><rect x="20.33333333333333" y="174" width="36" height="36" fill="none" stroke="currentColor" stroke-opacity=".6"/><line x1="32.33333333333333" y1="174" x2="32.33333333333333" y2="210" stroke="currentColor" stroke-opacity=".4"/><line x1="20.33333333333333" y1="186" x2="56.33333333333333" y2="186" stroke="currentColor" stroke-opacity=".4"/><line x1="44.33333333333333" y1="174" x2="44.33333333333333" y2="210" stroke="currentColor" stroke-opacity=".4"/><line x1="20.33333333333333" y1="198" x2="56.33333333333333" y2="198" stroke="currentColor" stroke-opacity=".4"/><text x="26.33333333333333" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="38.33333333333333" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="50.33333333333333" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="26.33333333333333" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="38.33333333333333" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="50.33333333333333" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="26.33333333333333" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><rect x="32.33333333333333" y="198" width="12" height="12" style="fill:var(--gold);fill-opacity:.35"/><text x="38.33333333333333" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="38.33333333333333" y="236" text-anchor="middle" font-size="13" font-weight="700" style="fill:var(--bad)">-1</text><line x1="93.33333333333333" y1="132" x2="148.33333333333331" y2="172" stroke="currentColor" stroke-opacity=".5"/><rect x="130.33333333333331" y="174" width="36" height="36" fill="none" stroke="currentColor" stroke-opacity=".6"/><line x1="142.33333333333331" y1="174" x2="142.33333333333331" y2="210" stroke="currentColor" stroke-opacity=".4"/><line x1="130.33333333333331" y1="186" x2="166.33333333333331" y2="186" stroke="currentColor" stroke-opacity=".4"/><line x1="154.33333333333331" y1="174" x2="154.33333333333331" y2="210" stroke="currentColor" stroke-opacity=".4"/><line x1="130.33333333333331" y1="198" x2="166.33333333333331" y2="198" stroke="currentColor" stroke-opacity=".4"/><text x="136.33333333333331" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="148.33333333333331" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="160.33333333333331" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="136.33333333333331" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="148.33333333333331" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="160.33333333333331" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="136.33333333333331" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><rect x="154.33333333333331" y="198" width="12" height="12" style="fill:var(--gold);fill-opacity:.35"/><text x="160.33333333333331" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="148.33333333333331" y="236" text-anchor="middle" font-size="13" font-weight="700" style="fill:currentColor">0</text><text x="117.33333333333333" y="108" font-size="13" font-weight="700" fill="currentColor">-1</text><line x1="280.0" y1="48" x2="280.0" y2="92" stroke="currentColor" stroke-opacity=".5"/><rect x="262.0" y="94" width="36" height="36" fill="none" stroke="currentColor" stroke-opacity=".6"/><line x1="274.0" y1="94" x2="274.0" y2="130" stroke="currentColor" stroke-opacity=".4"/><line x1="262.0" y1="106" x2="298.0" y2="106" stroke="currentColor" stroke-opacity=".4"/><line x1="286.0" y1="94" x2="286.0" y2="130" stroke="currentColor" stroke-opacity=".4"/><line x1="262.0" y1="118" x2="298.0" y2="118" stroke="currentColor" stroke-opacity=".4"/><text x="268.0" y="103" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="280.0" y="103" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="292.0" y="103" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="268.0" y="115" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="280.0" y="115" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="268.0" y="127" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><rect x="274.0" y="118" width="12" height="12" style="fill:var(--gold);fill-opacity:.35"/><text x="280.0" y="127" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><line x1="280.0" y1="132" x2="225.0" y2="172" stroke="currentColor" stroke-opacity=".5"/><rect x="207.0" y="174" width="36" height="36" fill="none" stroke="currentColor" stroke-opacity=".6"/><line x1="219.0" y1="174" x2="219.0" y2="210" stroke="currentColor" stroke-opacity=".4"/><line x1="207.0" y1="186" x2="243.0" y2="186" stroke="currentColor" stroke-opacity=".4"/><line x1="231.0" y1="174" x2="231.0" y2="210" stroke="currentColor" stroke-opacity=".4"/><line x1="207.0" y1="198" x2="243.0" y2="198" stroke="currentColor" stroke-opacity=".4"/><text x="213.0" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="225.0" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="237.0" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="213.0" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="225.0" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><rect x="231.0" y="186" width="12" height="12" style="fill:var(--gold);fill-opacity:.35"/><text x="237.0" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="213.0" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="225.0" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="225.0" y="236" text-anchor="middle" font-size="13" font-weight="700" style="fill:var(--bad)">-1</text><line x1="280.0" y1="132" x2="335.0" y2="172" stroke="currentColor" stroke-opacity=".5"/><rect x="317.0" y="174" width="36" height="36" fill="none" stroke="currentColor" stroke-opacity=".6"/><line x1="329.0" y1="174" x2="329.0" y2="210" stroke="currentColor" stroke-opacity=".4"/><line x1="317.0" y1="186" x2="353.0" y2="186" stroke="currentColor" stroke-opacity=".4"/><line x1="341.0" y1="174" x2="341.0" y2="210" stroke="currentColor" stroke-opacity=".4"/><line x1="317.0" y1="198" x2="353.0" y2="198" stroke="currentColor" stroke-opacity=".4"/><text x="323.0" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="335.0" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="347.0" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="323.0" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="335.0" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="323.0" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="335.0" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><rect x="341.0" y="198" width="12" height="12" style="fill:var(--gold);fill-opacity:.35"/><text x="347.0" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="335.0" y="236" text-anchor="middle" font-size="13" font-weight="700" style="fill:currentColor">0</text><text x="304.0" y="108" font-size="13" font-weight="700" fill="currentColor">-1</text><line x1="280.0" y1="48" x2="466.6666666666667" y2="92" stroke="currentColor" stroke-opacity=".5"/><rect x="448.6666666666667" y="94" width="36" height="36" fill="none" stroke="currentColor" stroke-opacity=".6"/><line x1="460.6666666666667" y1="94" x2="460.6666666666667" y2="130" stroke="currentColor" stroke-opacity=".4"/><line x1="448.6666666666667" y1="106" x2="484.6666666666667" y2="106" stroke="currentColor" stroke-opacity=".4"/><line x1="472.6666666666667" y1="94" x2="472.6666666666667" y2="130" stroke="currentColor" stroke-opacity=".4"/><line x1="448.6666666666667" y1="118" x2="484.6666666666667" y2="118" stroke="currentColor" stroke-opacity=".4"/><text x="454.6666666666667" y="103" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="466.6666666666667" y="103" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="478.6666666666667" y="103" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="454.6666666666667" y="115" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="466.6666666666667" y="115" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="454.6666666666667" y="127" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><rect x="472.6666666666667" y="118" width="12" height="12" style="fill:var(--gold);fill-opacity:.35"/><text x="478.6666666666667" y="127" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><line x1="466.6666666666667" y1="132" x2="411.6666666666667" y2="172" stroke="currentColor" stroke-opacity=".5"/><rect x="393.6666666666667" y="174" width="36" height="36" fill="none" stroke="currentColor" stroke-opacity=".6"/><line x1="405.6666666666667" y1="174" x2="405.6666666666667" y2="210" stroke="currentColor" stroke-opacity=".4"/><line x1="393.6666666666667" y1="186" x2="429.6666666666667" y2="186" stroke="currentColor" stroke-opacity=".4"/><line x1="417.6666666666667" y1="174" x2="417.6666666666667" y2="210" stroke="currentColor" stroke-opacity=".4"/><line x1="393.6666666666667" y1="198" x2="429.6666666666667" y2="198" stroke="currentColor" stroke-opacity=".4"/><text x="399.6666666666667" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="411.6666666666667" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="423.6666666666667" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="399.6666666666667" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="411.6666666666667" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><rect x="417.6666666666667" y="186" width="12" height="12" style="fill:var(--gold);fill-opacity:.35"/><text x="423.6666666666667" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="399.6666666666667" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="423.6666666666667" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="411.6666666666667" y="236" text-anchor="middle" font-size="13" font-weight="700" style="fill:var(--bad)">-1</text><line x1="466.6666666666667" y1="132" x2="521.6666666666667" y2="172" stroke="currentColor" stroke-opacity=".5"/><rect x="503.66666666666674" y="174" width="36" height="36" fill="none" stroke="currentColor" stroke-opacity=".6"/><line x1="515.6666666666667" y1="174" x2="515.6666666666667" y2="210" stroke="currentColor" stroke-opacity=".4"/><line x1="503.66666666666674" y1="186" x2="539.6666666666667" y2="186" stroke="currentColor" stroke-opacity=".4"/><line x1="527.6666666666667" y1="174" x2="527.6666666666667" y2="210" stroke="currentColor" stroke-opacity=".4"/><line x1="503.66666666666674" y1="198" x2="539.6666666666667" y2="198" stroke="currentColor" stroke-opacity=".4"/><text x="509.66666666666674" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="521.6666666666667" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="533.6666666666667" y="183" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="509.66666666666674" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="521.6666666666667" y="195" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="509.66666666666674" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><rect x="515.6666666666667" y="198" width="12" height="12" style="fill:var(--gold);fill-opacity:.35"/><text x="521.6666666666667" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--bad)">O</text><text x="533.6666666666667" y="207" text-anchor="middle" font-size="10" font-weight="700" style="fill:var(--accent)">X</text><text x="521.6666666666667" y="236" text-anchor="middle" font-size="13" font-weight="700" style="fill:var(--bad)">-1</text><text x="490.6666666666667" y="108" font-size="13" font-weight="700" fill="currentColor">-1</text></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">Tic-tac-toe: ағымдағы позициядан барлық жалғасу және олардың мәндері.</figcaption></figure>
+<p>Суретте соңғы үш жүріс қалған позиция: X жүреді, барлық жалғасу қарастырылған. Төменгі қатардағы сандар - терминал күйлердің утилитасы (+1 - X жеңді, -1 - O жеңді, 0 - тең), ал ортаңғы қатардағы сандар - олардан жоғарыға көтерілген minimax мәндері.</p>
+<p>Күйге қарап кімнің кезегі екенін білгендіктен, алгоритм ағымдағы ойыншының төмен немесе жоғары мәнді күйге апаратын әрекетті таңдайтынын біледі. Осылай минимизациялау мен максимизацияны кезек-кезек алмастыра отырып, ол әр мүмкін әрекеттен шығатын күйге мән береді. Нақтырақ айтсақ, максимайзер әр жүрісте былай сұрайды: «Мен осы әрекетті жасасам, жаңа күй шығады. Минимайзер оңтайлы ойнаса, ол менің ең төмен мәніме апаратын қандай әрекетті жасайды?» Бұған жауап беру үшін максимайзер минимайзердің ойына кіріп, сол процесті қайталауы керек: «Минимайзер былай сұрайды: мен осы әрекетті жасасам, максимайзер ең жоғары мәнге апаратын қандай әрекет жасайды?» Бұл - рекурсивті процесс, басында қиын көрінуі мүмкін; төмендегі псевдокод түсінуге көмектеседі. Осы рекурсивті ойдың соңында максимайзер ағымдағы күйдегі барлық мүмкін әрекеттен шығатын күйлердің мәнін алады да, ең жоғарысын таңдайды.</p>
+<figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 520 230" role="img" aria-label="Minimax ағашы" style="width:100%"><line x1="260.0" y1="60" x2="90" y2="108" stroke="currentColor" stroke-opacity=".5"/><line x1="90" y1="130" x2="30" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="90" y1="130" x2="90" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="90" y1="130" x2="150" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="260.0" y1="60" x2="260" y2="108" stroke="currentColor" stroke-opacity=".5"/><line x1="260" y1="130" x2="200" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="260" y1="130" x2="260" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="260" y1="130" x2="320" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="260.0" y1="60" x2="430" y2="108" stroke="currentColor" stroke-opacity=".5"/><line x1="430" y1="130" x2="370" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="430" y1="130" x2="430" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="430" y1="130" x2="490" y2="182" stroke="currentColor" stroke-opacity="0.5" /><polygon points="260.0,30 282.0,64 238.0,64" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><text x="260.0" y="58" text-anchor="middle" font-size="13" fill="currentColor">6</text><polygon points="90,134 112,100 68,100" style="fill:var(--gold-soft);stroke:var(--gold-text);stroke-width:2"/><text x="90" y="116" text-anchor="middle" font-size="13" fill="currentColor">4</text><rect x="14" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="30" y="201" text-anchor="middle" font-size="13" fill="currentColor">4</text><rect x="74" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="90" y="201" text-anchor="middle" font-size="13" fill="currentColor">8</text><rect x="134" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="150" y="201" text-anchor="middle" font-size="13" fill="currentColor">5</text><polygon points="260,134 282,100 238,100" style="fill:var(--gold-soft);stroke:var(--gold-text);stroke-width:2"/><text x="260" y="116" text-anchor="middle" font-size="13" fill="currentColor">-10</text><rect x="184" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="200" y="201" text-anchor="middle" font-size="13" fill="currentColor">3</text><rect x="244" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="260" y="201" text-anchor="middle" font-size="13" fill="currentColor">10</text><rect x="304" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="320" y="201" text-anchor="middle" font-size="13" fill="currentColor">-10</text><polygon points="430,134 452,100 408,100" style="fill:var(--gold-soft);stroke:var(--gold-text);stroke-width:2"/><text x="430" y="116" text-anchor="middle" font-size="13" fill="currentColor">6</text><rect x="354" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="370" y="201" text-anchor="middle" font-size="13" fill="currentColor">9</text><rect x="414" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="430" y="201" text-anchor="middle" font-size="13" fill="currentColor">6</text><rect x="474" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="490" y="201" text-anchor="middle" font-size="13" fill="currentColor">7</text></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">Minimax: жапырақтардан жоғары қарай. MIN түйіндері (▽) ең кішісін, MAX түйіні (△) ең үлкенін алады: 6.</figcaption></figure>
+<p>Псевдокодпен былай жазылады:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">Берілген күй s
+
+Максимайзер Actions(s) ішінен Min-Value(Result(s, a)) ең жоғары болатын a әрекетін таңдайды.
+Минимайзер Actions(s) ішінен Max-Value(Result(s, a)) ең төмен болатын a әрекетін таңдайды.
+
+Max-Value(state):
+    v = -∞
+    if Terminal(state):
+        return Utility(state)
+    for action in Actions(state):
+        v = Max(v, Min-Value(Result(state, action)))
+    return v
+
+Min-Value(state):
+    v = ∞
+    if Terminal(state):
+        return Utility(state)
+    for action in Actions(state):
+        v = Min(v, Max-Value(Result(state, action)))
+    return v</code></pre>
+<p>Мұны Python-да шағын ойын ағашында ұстап көрейік. Ағаш - кірістірілген тізімдер: жапырақтағы сан - утилита. Түбір - MAX, келесі деңгей - MIN. Коддың екінші жартысын біраз кейін, альфа-бета кесуді талқылағанда қарастырамыз, ал әзірше «minimax» жолына назар аударыңыз.</p>
+<pre data-lang="python"><code class="language-python"># Ойын ағашы: сан - жапырақтағы (терминал күйдегі) утилита, тізім - күй.
+# Түбір - MAX ойыншы, одан кейінгі деңгей - MIN, т.с.с.
+tree = [[4, 8, 5], [3, 10, -10], [9, 6, 7]]
+
+visited = 0
+
+
+def max_value(state):
+    global visited
+    if not isinstance(state, list):          # терминал күй
+        visited += 1
+        return state
+    v = float("-inf")
+    for child in state:
+        v = max(v, min_value(child))
+    return v
+
+
+def min_value(state):
+    global visited
+    if not isinstance(state, list):
+        visited += 1
+        return state
+    v = float("inf")
+    for child in state:
+        v = min(v, max_value(child))
+    return v
+
+
+print("minimax:", max_value(tree), ", қаралған жапырақ:", visited)
+
+
+# Енді сол ағаш үшін альфа-бета кесу
+visited = 0
+
+
+def ab_max(state, alpha, beta):
+    global visited
+    if not isinstance(state, list):
+        visited += 1
+        return state
+    v = float("-inf")
+    for child in state:
+        v = max(v, ab_min(child, alpha, beta))
+        alpha = max(alpha, v)
+        if alpha &gt;= beta:        # MIN жоғарыда бұдан жақсысын бере алады: қиып тастаймыз
+            break
+    return v
+
+
+def ab_min(state, alpha, beta):
+    global visited
+    if not isinstance(state, list):
+        visited += 1
+        return state
+    v = float("inf")
+    for child in state:
+        v = min(v, ab_max(child, alpha, beta))
+        beta = min(beta, v)
+        if alpha &gt;= beta:        # MAX мұндай тармақты таңдамайды: қиып тастаймыз
+            break
+    return v
+
+
+print("альфа-бета:", ab_max(tree, float("-inf"), float("inf")), ", қаралған жапырақ:", visited)</code></pre>
+<details class="think"><summary>Ойланып көріңіз: tic-tac-toe-да екі ойыншы да минимаксты қолданса, ойын немен аяқталады?</summary><div class="details-body"><p>Болжап көріңіз. Екі жағы да қатесіз ойнаса, tic-tac-toe әрқашан тең аяқталады (утилита 0). Сондықтан problem set-тегі жасанды интеллектті жеңе алмайсыз, тек ұтылып қалуыңыз мүмкін.</p></div></details>
+
+<h3 id="alpha-beta">Альфа-бета кесу</h3>
+<p><strong>Альфа-бета кесу</strong> (<span class="term-en">Alpha-Beta Pruning</span>) - minimax-ты оңтайландыру тәсілі: ол анық тиімсіз рекурсивті есептеулердің кейбірін өткізіп жібереді. Бір әрекеттің мәні белгілі болғаннан кейін, келесі әрекет қарсыласқа бұрынғыдан жақсырақ ұпай алуға мүмкіндік беретіні туралы алғашқы белгі көрінсе, оны әрі зерттеудің қажеті жоқ: ол бұрын табылғаннан міндетті түрде нашар болады.</p>
+<p>Мұны мысалмен көрсеткен оңай. Максимайзер келесі қадамда минимайзер ең төмен ұпайды алуға тырысатынын біледі. Максимайзерде үш мүмкін әрекет бар делік, біріншісінің мәні 4. Сосын ол екінші әрекеттің мәнін есептей бастайды: ол үшін, максимайзер осы әрекетті жасаса, минимайзердің әрекеттерінің мәндерін есептейді, минимайзер ең төменін таңдайтынын біле отырып. Бірақ минимайзердің барлық мүмкін әрекеттерін есептеп біткенге дейін-ақ ол бір нұсқаның мәні 3 екенін көреді. Демек, минимайзердің қалған әрекеттерін зерттей берудің қажеті жоқ. Есептелмеген әрекеттің мәні 10 болсын, (-10) болсын - маңызды емес. Егер 10 болса, минимайзер ең төменін, яғни 3-ті таңдайды, бұл алдын ала белгілі 4-тен нашар. Ал есептелмеген әрекет (-10) болып шықса, минимайзер соны таңдайды, бұл максимайзерге одан да тиімсіз. Сондықтан бұл тұста минимайзердің қосымша әрекеттерін есептеу максимайзер үшін мәнсіз: оның қолында мәні 4 болатын айқын жақсырақ таңдау бар.</p>
+<figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 520 230" role="img" aria-label="Minimax ағашы" style="width:100%"><line x1="260.0" y1="60" x2="90" y2="108" stroke="currentColor" stroke-opacity=".5"/><line x1="90" y1="130" x2="30" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="90" y1="130" x2="90" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="90" y1="130" x2="150" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="260.0" y1="60" x2="260" y2="108" stroke="currentColor" stroke-opacity=".5"/><line x1="260" y1="130" x2="200" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="260" y1="130" x2="260" y2="182" stroke="currentColor" stroke-opacity="0.2" stroke-dasharray="4 3"/><text x="260" y="158" text-anchor="middle" font-size="16" style="fill:var(--bad)" font-weight="700">//</text><line x1="260" y1="130" x2="320" y2="182" stroke="currentColor" stroke-opacity="0.2" stroke-dasharray="4 3"/><text x="290" y="158" text-anchor="middle" font-size="16" style="fill:var(--bad)" font-weight="700">//</text><line x1="260.0" y1="60" x2="430" y2="108" stroke="currentColor" stroke-opacity=".5"/><line x1="430" y1="130" x2="370" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="430" y1="130" x2="430" y2="182" stroke="currentColor" stroke-opacity="0.5" /><line x1="430" y1="130" x2="490" y2="182" stroke="currentColor" stroke-opacity="0.5" /><polygon points="260.0,30 282.0,64 238.0,64" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><text x="260.0" y="58" text-anchor="middle" font-size="13" fill="currentColor">6</text><polygon points="90,134 112,100 68,100" style="fill:var(--gold-soft);stroke:var(--gold-text);stroke-width:2"/><text x="90" y="116" text-anchor="middle" font-size="13" fill="currentColor">4</text><rect x="14" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="30" y="201" text-anchor="middle" font-size="13" fill="currentColor">4</text><rect x="74" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="90" y="201" text-anchor="middle" font-size="13" fill="currentColor">8</text><rect x="134" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="150" y="201" text-anchor="middle" font-size="13" fill="currentColor">5</text><polygon points="260,134 282,100 238,100" style="fill:var(--gold-soft);stroke:var(--gold-text);stroke-width:2"/><text x="260" y="116" text-anchor="middle" font-size="13" fill="currentColor">≤3</text><rect x="184" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="200" y="201" text-anchor="middle" font-size="13" fill="currentColor">3</text><rect x="244" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.25"/><text x="260" y="201" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.45">?</text><rect x="304" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.25"/><text x="320" y="201" text-anchor="middle" font-size="13" fill="currentColor" opacity="0.45">?</text><polygon points="430,134 452,100 408,100" style="fill:var(--gold-soft);stroke:var(--gold-text);stroke-width:2"/><text x="430" y="116" text-anchor="middle" font-size="13" fill="currentColor">6</text><rect x="354" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="370" y="201" text-anchor="middle" font-size="13" fill="currentColor">9</text><rect x="414" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="430" y="201" text-anchor="middle" font-size="13" fill="currentColor">6</text><rect x="474" y="182" width="32" height="28" rx="5" fill="none" stroke="currentColor" stroke-opacity="0.6"/><text x="490" y="201" text-anchor="middle" font-size="13" fill="currentColor">7</text></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">Альфа-бета: екінші MIN түйінінде 3 көрінісімен қалған екі жапырақ қиылды.</figcaption></figure>
+<p>Суретте үзік сызықпен белгіленген тармақтар қиылған: бірінші жапырақ 3 болған соң, екінші MIN түйіні ≤3 екені белгілі, ал бұл 4-тен нашар. Кодтағы <code>ab_max</code> / <code>ab_min</code> дәл осыны істейді: алдыңғы код блогын іске қосқанда «қаралған жапырақ» саны 9-дан 7-ге азайғанын көрдіңіз. Нәтиже (6) өзгермеді, тек жұмыс азайды.</p>
+
+<h3 id="depth-limited">Тереңдігі шектелген minimax</h3>
+<p>Tic-tac-toe-ның барлығы 255 168 мүмкін ойыны бар, ал шахматта 10<sup>29000</sup>. Біз осы кезге дейін қарастырған minimax белгілі бір күйден терминал шартқа дейінгі барлық гипотетикалық ойындарды құруды қажет етеді. Заманауи компьютер үшін tic-tac-toe-ның бәрін есептеу қиын емес, ал шахматта бұл қазіргі уақытта мүмкін емес.</p>
+<p><strong>Тереңдігі шектелген minimax</strong> (<span class="term-en">Depth-limited Minimax</span>) алдын ала белгіленген жүріс санын ғана қарастырып, терминал күйге жетпей тоқтайды. Бірақ гипотетикалық ойындардың соңына жетпегендіктен, әр әрекеттің нақты мәнін алу мүмкін емес. Бұл мәселені шешу үшін ол <strong>бағалау функциясына</strong> (<span class="term-en">evaluation function</span>) сүйенеді: ол берілген күйден ойынның күтілетін утилитасын бағалайды, басқаша айтқанда күйлерге мән береді. Мысалы, шахматта бағалау функциясы тақтаның ағымдағы орналасуын алып (әр ойыншыда қандай фигуралар бар және олар қайда тұр), оның күтілетін утилитасын бағалап, тақта бір ойыншыға қарсы екіншісіне қаншалықты тиімді екенін көрсететін оң немесе теріс мән қайтарады. Осы мәндер дұрыс әрекетті таңдауға қолданылады. Бағалау функциясы қаншалықты жақсы болса, оған сүйенетін minimax та соншалықты жақсы.</p>
+<figure class="diagram" style="margin:1.4rem 0;text-align:center"><div><svg viewBox="0 0 520 220" role="img" aria-label="Тереңдігі шектелген minimax" style="width:100%"><line x1="10" y1="150" x2="510" y2="150" stroke="currentColor" stroke-dasharray="6 4" style="stroke:var(--bad)"/><text x="12" y="144" font-size="12" style="fill:var(--bad)">тереңдік шегі</text><circle cx="260" cy="26" r="16" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><line x1="260" y1="42" x2="110" y2="84" stroke="currentColor" stroke-opacity=".5"/><circle cx="110" cy="98" r="14" style="fill:var(--gold-soft);stroke:var(--gold-text);stroke-width:2"/><line x1="110" y1="112" x2="65" y2="150" stroke="currentColor" stroke-opacity=".5"/><circle cx="65" cy="150" r="13" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><line x1="110" y1="112" x2="155" y2="150" stroke="currentColor" stroke-opacity=".5"/><circle cx="155" cy="150" r="13" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><line x1="260" y1="42" x2="260" y2="84" stroke="currentColor" stroke-opacity=".5"/><circle cx="260" cy="98" r="14" style="fill:var(--gold-soft);stroke:var(--gold-text);stroke-width:2"/><line x1="260" y1="112" x2="215" y2="150" stroke="currentColor" stroke-opacity=".5"/><circle cx="215" cy="150" r="13" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><line x1="260" y1="112" x2="305" y2="150" stroke="currentColor" stroke-opacity=".5"/><circle cx="305" cy="150" r="13" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><line x1="260" y1="42" x2="410" y2="84" stroke="currentColor" stroke-opacity=".5"/><circle cx="410" cy="98" r="14" style="fill:var(--gold-soft);stroke:var(--gold-text);stroke-width:2"/><line x1="410" y1="112" x2="365" y2="150" stroke="currentColor" stroke-opacity=".5"/><circle cx="365" cy="150" r="13" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><line x1="410" y1="112" x2="455" y2="150" stroke="currentColor" stroke-opacity=".5"/><circle cx="455" cy="150" r="13" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:2"/><text x="65" y="154" text-anchor="middle" font-size="11" fill="currentColor">+0.4</text><path d="M65 165 V184" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 3"/><text x="65" y="200" text-anchor="middle" font-size="18" fill="currentColor" opacity=".5">⋯</text><text x="155" y="154" text-anchor="middle" font-size="11" fill="currentColor">-0.2</text><path d="M155 165 V184" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 3"/><text x="155" y="200" text-anchor="middle" font-size="18" fill="currentColor" opacity=".5">⋯</text><text x="215" y="154" text-anchor="middle" font-size="11" fill="currentColor">+0.1</text><path d="M215 165 V184" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 3"/><text x="215" y="200" text-anchor="middle" font-size="18" fill="currentColor" opacity=".5">⋯</text><text x="305" y="154" text-anchor="middle" font-size="11" fill="currentColor">+0.7</text><path d="M305 165 V184" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 3"/><text x="305" y="200" text-anchor="middle" font-size="18" fill="currentColor" opacity=".5">⋯</text><text x="365" y="154" text-anchor="middle" font-size="11" fill="currentColor">-0.5</text><path d="M365 165 V184" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 3"/><text x="365" y="200" text-anchor="middle" font-size="18" fill="currentColor" opacity=".5">⋯</text><text x="455" y="154" text-anchor="middle" font-size="11" fill="currentColor">+0.3</text><path d="M455 165 V184" stroke="currentColor" stroke-opacity=".4" stroke-dasharray="3 3"/><text x="455" y="200" text-anchor="middle" font-size="18" fill="currentColor" opacity=".5">⋯</text><text x="260" y="218" text-anchor="middle" font-size="12" fill="currentColor">төменгі бөлігі есептелмейді: орнына бағалау функциясы</text></svg></div><figcaption style="color:var(--muted);font-size:14px;margin-top:6px">Тереңдігі шектелген minimax: шектен төменгісін бағалау функциясы алмастырады.</figcaption></figure>
+<div class="callout note"><span class="callout-title">Қысқаша салыстыру</span><p>Алгоритмдердің бәрін бір кестеде қарастырсақ: DFS - стек, шешім оңтайлы болмауы мүмкін; BFS - кезек, оңтайлы шешімге кепілдік; ашкөз - <em>h(n)</em> бойынша, жылдам, бірақ оңтайлы емес; A* - <em>g(n) + h(n)</em> бойынша, жақсы эвристикада оңтайлы; minimax - екі адамдық ойындар үшін; альфа-бета - сол minimax-ты жылдамдату; тереңдігі шектелген minimax - үлкен ойындарға арналған.</p></div>
+
+<h2 id="summary">Қорытынды</h2>
+<ul>
+  <li>Іздеу есебі: агент, күй, бастапқы күй, әрекеттер, ауысу моделі, күй кеңістігі, мақсатты тексеру, жол құны. Шешім - бастапқы күйден мақсатқа апаратын әрекеттер тізбегі, оңтайлысы - ең аз құнды шешім.</li>
+  <li>Түйін күй, ата-ана, әрекет және жол құнын сақтайды; шекара түйіндерді басқарады, қарап шыққан күйлер жиыны қайталануды болдырмайды.</li>
+  <li>DFS шекараны стек (LIFO) ретінде қолданады: жылдам болуы мүмкін, бірақ оңтайлы емес. BFS - кезек (FIFO): оңтайлы, бірақ баяуырақ.</li>
+  <li>Ашкөз іздеу эвристикалық <em>h(n)</em> (мысалы, Манхэттен қашықтығы) бойынша мақсатқа ең жақын түйінді алады. A* <em>g(n) + h(n)</em> қосындысын қолданады; <em>h</em> рұқсат етілген және келісімді болса, оңтайлы.</li>
+  <li>Қарсыластық іздеуде minimax: MAX ең жоғары, MIN ең төмен мәнді таңдайды; мәндерді рекурсия арқылы терминал күйлерден жоғары көтереді.</li>
+  <li>Альфа-бета кесу нәтижені өзгертпей, пайдасыз тармақтарды қияды. Тереңдігі шектелген minimax тереңдік шегінен кейін бағалау функциясын қолданады.</li>
+</ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. Іздеу есебінде <strong>ауысу моделі</strong> (<code>Result(s, a)</code>) нені қайтарады?</p>
+          <label><input type="radio" value="a"> Күйдегі мүмкін әрекеттер жиынын</label>
+          <label><input type="radio" value="b"> <code>s</code> күйінде <code>a</code> әрекетін жасағаннан шығатын жаңа күйді</label>
+          <label><input type="radio" value="c"> Күйдің мақсат екенін көрсететін True/False</label>
+          <label><input type="radio" value="d"> Бастапқы күйден <code>s</code>-ке дейінгі жол құнын</label>
+          <p class="explain"><code>Actions(s)</code> әрекеттер жиынын, ал <code>Result(s, a)</code> нәтиже күйді береді. Мақсатты тексеру True/False қайтарады, жол құны бөлек ұғым.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">2. Түйін (<code>Node</code>) мен шекараның (frontier) рөлі қалай бөлінеді?</p>
+          <label><input type="radio" value="a"> Түйін іздейді, ал шекара деректерді сақтайды</label>
+          <label><input type="radio" value="b"> Екеуі де тек күйді сақтайды</label>
+          <label><input type="radio" value="c"> Шекара жолдың құнын есептейді, түйіннің қажеті жоқ</label>
+          <label><input type="radio" value="d"> Түйін күй, ата-ана, әрекет, құнды сақтайды; шекара келесіде қай түйінді алуды басқарады</label>
+          <p class="explain">Түйін - жай ғана деректер құрылымы, ол іздемейді. Іздеуді шекара басқарады: стек болса DFS, кезек болса BFS. Ата-ана мен әрекет жолды артқа қарай қайта жинауға керек.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. Шекараны стек етіп алсақ (<code>self.frontier[-1]</code>), қандай алгоритм шығады?</p>
+          <label><input type="radio" value="a"> Тереңдік бойынша іздеу (DFS)</label>
+          <label><input type="radio" value="b"> Ені бойынша іздеу (BFS)</label>
+          <label><input type="radio" value="c"> Ашкөз ең жақсыны алдымен іздеу</label>
+          <label><input type="radio" value="d"> A* іздеу</label>
+          <p class="explain">Соңғы қосылған түйін бірінші алынады (LIFO): алгоритм бір бағытпен мүмкіндігінше терең кетеді. Кезек (<code>[0]</code>) BFS береді.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">4. Лабиринтте BFS жолы 10 қадам, DFS жолы 22 қадам шықты. Бұл нені көрсетеді?</p>
+          <label><input type="radio" value="a"> BFS-тің коды қате, екеуі бірдей болуы тиіс</label>
+          <label><input type="radio" value="b"> DFS әрқашан BFS-тен ұзын жол табады</label>
+          <label><input type="radio" value="c"> BFS ең қысқа жолды табуға кепіл береді, ал DFS кездейсоқ ұзын жолды таңдап қалуы мүмкін</label>
+          <label><input type="radio" value="d"> DFS-те қарап шыққан күйлер жиыны жоқ</label>
+          <p class="explain">DFS «бағына қарай» дұрыс жолды тез табуы да, ұзын айналма жолға кетіп қалуы да мүмкін. BFS бір қадамдық құнда әрқашан оңтайлы. «Әрқашан ұзын» деу қате: кейде DFS те оңтайлы жолды табады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. Манхэттен қашықтығы (4, 1) ұяшығынан (1, 5) мақсатына дейін неге тең?</p>
+          <label><input type="radio" value="a"> 3</label>
+          <label><input type="radio" value="b"> 7</label>
+          <label><input type="radio" value="c"> 4</label>
+          <label><input type="radio" value="d"> 5</label>
+          <p class="explain">|4 - 1| + |1 - 5| = 3 + 4 = 7. Қабырғалар есепке алынбайды.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">6. A* іздеу ашкөз іздеуден нешімен ерекшеленеді?</p>
+          <label><input type="radio" value="a"> A* тек <em>h(n)</em>-ді қолданады, ашкөз <em>g(n)</em>-ді де қолданады</label>
+          <label><input type="radio" value="b"> A* үшін эвристика қажет емес</label>
+          <label><input type="radio" value="c"> A* әрқашан ашкөзден аз күй қарап шығады</label>
+          <label><input type="radio" value="d"> A* <em>g(n) + h(n)</em> қосындысын қарайды, яғни жүріп өткен құнды да ескереді</label>
+          <p class="explain">Ашкөз тек болжамды құнға (<em>h</em>) қарайды. A* оған осы уақытқа дейінгі құнды (<em>g</em>) қосады, сондықтан ұзақ жолға түсіп кетсе, оралып, басқа нұсқаны қарастырады. Қарап шығатын күй саны әрқашан аз бола бермейді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. Minimax-та минимайзер (O) қай мәнді таңдайды?</p>
+          <label><input type="radio" value="a"> Ең төмен мәнді (utility -1-ге жақын)</label>
+          <label><input type="radio" value="b"> Ең жоғары мәнді</label>
+          <label><input type="radio" value="c"> Ең бірінші табылған мәнді</label>
+          <label><input type="radio" value="d"> Әрқашан 0-ді</label>
+          <p class="explain">X (максимайзер) утилитаны арттырады, ал O (минимайзер) азайтады. Алгоритм екі деңгейде кезек-кезек <code>max</code> және <code>min</code> алады.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">8. Альфа-бета кесу туралы қайсысы дұрыс?</p>
+          <label><input type="radio" value="a"> Ол minimax нәтижесін жуықтап, кейде басқа жүріс береді</label>
+          <label><input type="radio" value="b"> Ол тек шахматта жұмыс істейді</label>
+          <label><input type="radio" value="c"> Ол minimax-тың нәтижесін өзгертпейді, тек бос тармақтарды қарамай, жылдамдатады</label>
+          <label><input type="radio" value="d"> Ол бағалау функциясын қажет етеді</label>
+          <p class="explain">Қиылған тармақтар қорытынды шешімге әсер ете алмайтыны дәлелденген, сондықтан жауап дәл сол күйінде қалады. Бағалау функциясы тереңдігі шектелген minimax-қа керек.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Problem Set 0 (Тапсырмалар жинағы 0)</h2>
+      <p>Ресми беттер: <a href="https://cs50.harvard.edu/ai/projects/0/degrees/" target="_blank" rel="noopener">Degrees</a> және <a href="https://cs50.harvard.edu/ai/projects/0/tictactoe/" target="_blank" rel="noopener">Tic-Tac-Toe</a>. Екеуін де орындау керек. Курсқа Python 3.12 нұсқасы жеткілікті.</p>
+      <div class="callout note">
+        <span class="callout-title">Қайда орындалады</span>
+        <p>Ресми жобалар компьютеріңізде орындалады: бастапқы кодты (<code>degrees.zip</code>, <code>tictactoe.zip</code>) жүктеп, <code>check50</code> пен <code>submit50</code> арқылы тексеріп тапсырасыз. Tic-Tac-Toe-ның графикалық бөлігі (<code>runner.py</code>) <code>pygame</code> керек етеді, ол браузерде жоқ. Сондықтан сайтта тек Python бөлігін тексеретін автотексеруші бар: ол <em>ойдан шығарылған</em> «Қазақ киносы» шағын деректерімен жұмыс істейді. Бұл сайттың өз жаттығуы, ресми <code>check50</code> емес. Әр автотексерушіге ресми қаңқаны (starter) салып қойдық: оған өз шешіміңізді жазыңыз.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-degrees">Degrees (Бөліну дәрежелері)</h3></div>
+        <p>Екі актердің арасында неше «бөліну дәрежесі» барын анықтайтын бағдарлама жазыңыз.</p>
+<pre class="terminal"><code class="language-plaintext">$ python degrees.py large
+Loading data...
+Data loaded.
+Name: Emma Watson
+Name: Jennifer Lawrence
+3 degrees of separation.
+1: Emma Watson and Brendan Gleeson starred in Harry Potter and the Order of the Phoenix
+2: Brendan Gleeson and Michael Fassbender starred in Trespass Against Us
+3: Michael Fassbender and Jennifer Lawrence starred in X-Men: First Class</code></pre>
+        <h4>Фон</h4>
+        <p>«Кевин Бейконмен алты қадам» (<span class="term-en">Six Degrees of Kevin Bacon</span>) ойынына сәйкес, Голливудтағы кез келген адамды Кевин Бейконмен алты қадамнан артық емес байланыстыруға болады, мұнда әр қадам - екі актер бірге түскен фильм. Біз кез келген екі актердің арасындағы ең қысқа жолды табамыз. Мысалы, Дженнифер Лоуренс пен Том Хэнкс арасындағы ең қысқа жол - 2: Лоуренс пен Бейкон «X-Men: First Class» фильмінде, Бейкон мен Хэнкс «Apollo 13» фильмінде бірге түскен.</p>
+        <p>Мұны іздеу есебі ретінде қоямыз: <strong>күйлер - адамдар</strong>, <strong>әрекеттер - фильмдер</strong> (фильм бір актерден екіншісіне апарады), бастапқы және мақсатты күйлер - жалғастырғымыз келетін екі адам. Ені бойынша іздеу (BFS) ең қысқа жолды береді.</p>
+        <h4>Түсіну</h4>
+        <p>Дистрибутив кодында екі деректер жинағы бар: <code>large</code> және <code>small</code> (тесттеуге арналған кішкентай). Әрқайсысында үш CSV файл бар: <code>people.csv</code> (<code>id</code>, <code>name</code>, <code>birth</code>), <code>movies.csv</code> (<code>id</code>, <code>title</code>, <code>year</code>) және <code>stars.csv</code> (<code>person_id</code>, <code>movie_id</code> жұптары: кім қай фильмде түскен).</p>
+        <p><code>degrees.py</code> файлының басында деректер құрылымдары бар. <code>names</code> сөздігі аты бойынша адамды табады (аты бірдей адамдар болуы мүмкін, сондықтан мәні - <code>id</code> жиыны). <code>people</code> - әр адамның <code>id</code>-інен <code>name</code>, <code>birth</code> және түскен фильмдер жиыны <code>movies</code> бар сөздікке. <code>movies</code> - әр фильмнің <code>id</code>-інен <code>title</code>, <code>year</code> және <code>stars</code> жиыны бар сөздікке. <code>load_data</code> CSV-дан деректерді жүктейді. <code>main</code> деректерді жүктеп, екі есім сұрайды (<code>person_id_for_name</code> есімдер қайталанса нақтылап сұрайды), сосын <code>shortest_path</code> шақырып, жолды басып шығарады.</p>
+        <p>Ал <code>shortest_path</code> функциясы <strong>орындалмаған</strong>. Дәл осы - сіздің жұмысыңыз!</p>
+        <h4>Талаптар</h4>
+        <p><code>shortest_path</code> функциясын <code>id</code>-і <code>source</code> адамнан <code>id</code>-і <code>target</code> адамға дейінгі ең қысқа жолды қайтаратындай етіп аяқтаңыз.</p>
+        <ul>
+          <li>Егер <code>source</code>-тан <code>target</code>-ке жол болса, функция тізім қайтарсын: әр элемент - жолдағы келесі <code>(movie_id, person_id)</code> жұбы. Әр жұп - екі жолдан тұратын tuple. Мысалы, қайтарылған мән <code>[(1, 2), (3, 4)]</code> болса: бастапқы адам 1-фильмде 2-адаммен, 2-адам 3-фильмде 4-адаммен түскен, 4-адам - мақсат.</li>
+          <li>Ең қысқа жолдар бірнешеу болса, кез келгенін қайтаруға болады.</li>
+          <li>Жол жоқ болса, функция <code>None</code> қайтарсын.</li>
+          <li><code>neighbors_for_person</code> функциясын шақыруға болады: ол адамның <code>id</code>-ін алып, онымен бірге бір фильмде түскен барлық адамдардың <code>(movie_id, person_id)</code> жұптарының жиынын қайтарады.</li>
+        </ul>
+        <p>Файлда <code>shortest_path</code>-тан басқасын өзгертпеңіз, бірақ қосымша функциялар жазуға және Python стандартты кітапханасының басқа модульдерін импорттауға болады.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Лекциядағы іздеу мақсатты түйінді шекарадан <em>алғанда</em> тексереді. Ал тиімділікті арттыру үшін мақсатты түйінді шекараға <em>қосқанда</em> тексеруге болады: мақсат табылса, оны шекараға салмай-ақ шешімді бірден қайтарыңыз. Лекциядағы <code>Node</code>, <code>StackFrontier</code>, <code>QueueFrontier</code> кодын еркін қолданыңыз (ресми дистрибутивте олар <code>util.py</code>-да; сайттағы қаңқада дәл сол кластар файлдың өзінде берілген).</p></div></details>
+        <details><summary>Қалай тексеру керек</summary><div class="details-body"><p>Компьютеріңізде: <code>python degrees.py small</code>. Ресми тексеру:</p>
+<pre class="terminal"><code class="language-plaintext">$ check50 ai50/projects/2024/x/degrees
+$ style50 degrees.py</code></pre>
+        <p>Тапсыру: <code>submit50 ai50/projects/2024/x/degrees</code> (тек стандартты кітапхана модульдерін импорттауға болады).</p></div></details>
+        <p>Төмендегі автотексеруші сіздің толық <code>degrees.py</code> файлыңызды «Қазақ киносы» деректерінде (<code>kazakh</code> қалтасы) іске қосады: есімдер бойынша ең қысқа жолды, бірнеше тең жолды, байланыс жоқ жағдайды және барлық жұптарды тексереді.</p>
+        <div class="autograder" data-check="py-degrees" data-src="ai/checks/week-0.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="ai0-degrees">
+            <li><input type="checkbox"> <span><code>shortest_path</code> ең қысқа жолды <code>(movie_id, person_id)</code> tuple-дерінің тізімі ретінде қайтарады.</span></li>
+            <li><input type="checkbox"> <span>Жол жоқ болса <code>None</code> қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>shortest_path</code>-тан басқа ештеңе өзгертілмеген.</span></li>
+            <li><input type="checkbox"> <span><code>check50 ai50/projects/2024/x/degrees</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="pset-tictactoe">Tic-Tac-Toe (Крестики-нолики)</h3></div>
+        <p>Minimax арқылы tic-tac-toe ойынын оңтайлы ойнайтын жасанды интеллект жазыңыз.</p>
+        <h4>Түсіну</h4>
+        <p>Жобада екі негізгі файл бар: <code>runner.py</code> және <code>tictactoe.py</code>. <code>tictactoe.py</code> ойын логикасы мен оңтайлы жүрістерді қамтиды. <code>runner.py</code> дайын, графикалық интерфейсті іске қосады. <code>tictactoe.py</code>-дағы барлық функцияны аяқтаған соң, <code>python runner.py</code> арқылы жасанды интеллектпен ойнай аласыз.</p>
+        <p>Файлда үш айнымалы бар: <code>X</code>, <code>O</code>, <code>EMPTY</code> - тақтадағы мүмкін мәндер. <code>initial_state</code> тақтаның бастапқы күйін қайтарады. Тақта - үш тізімнен (үш жол) тұратын тізім, әр ішкі тізімде <code>X</code>, <code>O</code> немесе <code>EMPTY</code> болатын үш мән бар. Қалған функцияларды өзіңіз жазасыз.</p>
+        <h4>Талаптар</h4>
+        <p><code>player</code>, <code>actions</code>, <code>result</code>, <code>winner</code>, <code>terminal</code>, <code>utility</code> және <code>minimax</code> функцияларын аяқтаңыз.</p>
+        <ul>
+          <li><code>player</code>: <code>board</code> алып, кімнің кезегі екенін (<code>X</code> немесе <code>O</code>) қайтарады. Бастапқы күйде бірінші <code>X</code> жүреді, кейін кезекпен ауысады. Ойын біткен тақта берілсе, кез келген мән жарайды.</li>
+          <li><code>actions</code>: тақтадағы барлық мүмкін әрекеттердің <code>set</code>-ін қайтарады. Әр әрекет - <code>(i, j)</code> tuple, <code>i</code> - жол (0, 1 немесе 2), <code>j</code> - жолдағы ұяшық (0, 1 немесе 2). Мүмкін жүрістер - <code>X</code> не <code>O</code> жоқ ұяшықтар. Біткен тақтада кез келген мән жарайды.</li>
+          <li><code>result</code>: <code>board</code> мен <code>action</code> алып, <strong>бастапқы тақтаны өзгертпей</strong> жаңа тақта қайтарады. <code>action</code> тақта үшін жарамсыз болса, бағдарлама <em>exception</em> көтеруі керек. Жаңа тақта - кезегі келген ойыншы көрсетілген ұяшыққа жүріс жасаған тақта. Minimax көптеген түрлі күйді қарастыратындықтан, <code>board</code>-тағы ұяшықты тікелей өзгерту қате; алдымен тақтаның терең көшірмесін (<code>copy.deepcopy</code>) жасаңыз.</li>
+          <li><code>winner</code>: <code>board</code> алып, жеңімпазды (бар болса) қайтарады: <code>X</code> жеңсе <code>X</code>, <code>O</code> жеңсе <code>O</code>. Үш жүрісті жолмен, бағанмен немесе диагональмен қатарластыру жеңіс. Жеңімпаз ең көбі біреу деп есептеңіз. Жеңімпаз жоқ болса (ойын жүріп жатыр немесе тең) - <code>None</code>.</li>
+          <li><code>terminal</code>: ойын біткен болса (біреу жеңді немесе барлық ұяшық толды) <code>True</code>, әйтпесе <code>False</code>.</li>
+          <li><code>utility</code>: біткен тақтаның утилитасын қайтарады: <code>X</code> жеңсе <code>1</code>, <code>O</code> жеңсе <code>-1</code>, тең болса <code>0</code>. Ол тек <code>terminal(board)</code> <code>True</code> болғанда шақырылады деп есептеңіз.</li>
+          <li><code>minimax</code>: тақтада кезегі келген ойыншы үшін оңтайлы жүрісті <code>(i, j)</code> түрінде қайтарады. Тең оңтайлы жүрістер көп болса, кез келгені жарайды. Тақта біткен болса, <code>None</code> қайтарады.</li>
+        </ul>
+        <p><code>board</code> кіретін барлық функцияда тақта дұрыс (үш жол, әр жолда <code>X</code>, <code>O</code> немесе <code>EMPTY</code>) деп есептей аласыз. Функцияларды жариялау түрін (аргументтер ретін, санын) өзгертпеңіз. Tic-tac-toe екі жақ та оңтайлы ойнағанда тең аяқталады, сондықтан жасанды интеллектті жеңе алмауыңыз керек (өзіңіз қателессеңіз, ол сізді жеңуі мүмкін).</p>
+        <details><summary>Кеңес</summary><div class="details-body"><ul>
+          <li>Функцияларыңызды басқа файлда тексергіңіз келсе: <code>from tictactoe import initial_state</code> сияқты импорттаңыз.</li>
+          <li>Көмекші функциялар қосуға болады, тек аттары бар функциялармен/айнымалылармен қайталанбасын.</li>
+          <li>Альфа-бета кесу міндетті емес, бірақ жасанды интеллектті тиімдірек етеді.</li>
+          <li><code>player</code> үшін тақтадағы <code>X</code> мен <code>O</code> санын салыстырсаңыз жеткілікті. <code>winner</code> үшін 8 сызықты (3 жол, 3 баған, 2 диагональ) тексеріңіз.</li>
+        </ul></div></details>
+        <details><summary>Қалай тексеру керек</summary><div class="details-body">
+<pre class="terminal"><code class="language-plaintext">$ pip3 install -r requirements.txt
+$ python runner.py
+$ check50 ai50/projects/2024/x/tictactoe
+$ style50 tictactoe.py</code></pre>
+        <p>Тапсыру: <code>submit50 ai50/projects/2024/x/tictactoe</code>. Git арқылы тапсырсаңыз, тек өзгерткен файлды жіберіңіз.</p></div></details>
+        <p>Автотексеруші барлық функцияны тікелей шақырады, ал <code>minimax</code>-тың жүрісі тәуелсіз эталонмен салыстырылады: бірнеше нақты позицияда (бірден жеңу, қарсыласты тоқтату, екі жақты шабуылдан қашу) оңтайлы жүріс таңдалуы тиіс.</p>
+        <div class="autograder" data-check="py-tictactoe" data-src="ai/checks/week-0.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="ai0-tictactoe">
+            <li><input type="checkbox"> <span><code>player</code>, <code>actions</code>, <code>result</code>, <code>winner</code>, <code>terminal</code>, <code>utility</code> дұрыс жұмыс істейді.</span></li>
+            <li><input type="checkbox"> <span><code>result</code> бастапқы тақтаны өзгертпейді және жарамсыз жүріске exception көтереді.</span></li>
+            <li><input type="checkbox"> <span><code>minimax</code> біткен тақтада <code>None</code>, әйтпесе оңтайлы <code>(i, j)</code> қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>python runner.py</code> арқылы жасанды интеллектті жеңе алмайсыз.</span></li>
+            <li><input type="checkbox"> <span><code>check50 ai50/projects/2024/x/tictactoe</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="../index.html"><small>Алдыңғы</small>← CS50 AI: барлық лекциялар</a>
+        <a class="next" href="week-1.html"><small>Келесі</small>1-апта: Білім →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 AI (CS50's Introduction to Artificial Intelligence with Python, Гарвард университеті, David J. Malan, Brian Yu) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

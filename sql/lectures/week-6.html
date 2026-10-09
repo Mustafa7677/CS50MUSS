@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 SQL 6-апта: Масштабтау - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 SQL 6-апта: Масштабтау - CS50 қазақша">
+  <meta property="og:description" content="CS50 SQL 6-апта: масштабтау, MySQL және PostgreSQL, репликация мен шардинг, қатынас бақылауы, SQL-инъекция және дайындалған сұраулар.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/sql/lectures/week-6.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 SQL 6-апта: масштабтау, MySQL және PostgreSQL, репликация мен шардинг, қатынас бақылауы, SQL-инъекция және дайындалған сұраулар.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#7c3aed" data-n="6">
+        <div class="num">6-апта</div>
+        <h1>Масштабтау</h1>
+        <p>Дерекқор өсіп, қолданушы көбейгенде не істейміз? MySQL мен PostgreSQL-ге көшіп, репликация мен шардингті, қатынас бақылауы мен SQL-инъекциядан қорғануды үйренеміз. Курстың соңғы лекциясы.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/sql/notes/6/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Бұл - курстың <strong>соңғы лекциясы</strong>. Осы уақытқа дейін дерекқорды жобалауды, оған жазуды-оқуды және сұрауларды жылдамдатуды үйрендік. Енді сұрақ мынау: дерекқор үлкейіп, қолданушылар көбейсе не болады? Бүгін SQLite-тан MySQL мен PostgreSQL-ге көшеміз, репликация мен шардингті талқылаймыз, дерекқорды қорғауды (қатынас бақылауы мен SQL-инъекция) үйренеміз.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+      <div class="callout note">
+        <span class="callout-title">MySQL мысалдары браузерде жұмыс істемейді</span>
+        <p>Сайттағы «▶ Іске қосу» батырмасы SQLite-та жұмыс істейді. MySQL мен PostgreSQL - <em>сервер</em>, оларды браузерге салу мүмкін емес, сондықтан олардың командалары (<code>CREATE DATABASE</code>, <code>DELIMITER</code>, <code>CREATE USER</code>, <code>PREPARE</code>...) тек оқуға арналған. Ал SQLite-та көрсетуге болатын нәрселерді (float қателігі, view арқылы soft delete, SQL-инъекция) тікелей осы бетте іске қосып көресіз.</p>
+      </div>
+
+      <h2 id="intro">Кіріспе: масштабтау</h2>
+      <p>Қысқаша еске түсірейік. Біз дерекқорды қалай <em>жобалауды</em> білеміз, оған деректі қалай <em>жазып-оқуды</em> білеміз, ал өткен аптада сұрауларды <em>оңтайландыруды</em> да үйрендік. Енді осының бәрін үлкен масштабта істеуді қарастырамыз.</p>
+      <p>Бұл жерде басты ұғым - <strong>масштабталу</strong> (<span class="term-en">scalability</span>): қолданбаның немесе дерекқордың сыйымдылығын сұранысқа қарай арттыра не азайта алу қабілеті. Түсінікті болу үшін Наурыздағы базарды елестетіңіз: бір күні сатушы аз, келуші аз. Ал мерекеге таяғанда адам лық толады, сонда не істейміз? Тезірек жұмыс істейтін сатушы тауып аламыз немесе сатушыларды көбейтеміз. Дерекқорда да дәл осы екі жол бар, оған кейінірек келеміз.</p>
+      <p>Қандай қолданбаларға масштабтау керек? Әлеуметтік желі мен банк жүйесі - классикалық мысал: пайдаланушы көбейген сайын олар да өсуі тиіс.</p>
+      <p>Біздің бүгінгі кейіпкерлеріміз - <strong>MySQL</strong> және <strong>PostgreSQL</strong>. Олардың SQLite-тан басты айырмашылығы: SQLite - <strong>кіріктірілген</strong> (<span class="term-en">embedded</span>) дерекқор, яғни қолданбаның ішіндегі жай файл. Ал MySQL мен PostgreSQL - <strong>дерекқор серверлері</strong> (<span class="term-en">database server</span>): олар көбіне өз жеке жабдығында жұмыс істейді, ал біз оған интернет арқылы қосылып, сұрауларымызды жібереміз. Сервердің тағы бір артықшылығы бар: деректі <strong>жедел жадта</strong> (<span class="term-en">RAM</span>) сақтай алады, ал жад дискіден әлдеқайда жылдам, демек сұраулар да тезірек орындалады.</p>
+
+      <h2 id="mysql">MySQL</h2>
+      <p>Бұрынғы лекциялардан таныс <strong>MBTA</strong> дерекқорын алайық (Бостондағы метро). Мынау - оның ER диаграммасы: үш сущность, <code>cards</code>, <code>swipes</code> және <code>stations</code>, және олардың арасындағы байланыс.</p>
+      <svg viewBox="0 0 760 175" role="img" aria-label="ER диаграммасы: cards, swipes, stations" style="display:block;width:100%;max-width:760px;height:auto;margin:18px auto"><defs><marker id="er-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="20" y="40" width="120" height="80" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="70.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px">cards</text><text x="80.0" y="89.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px">id</text><rect x="300" y="20" width="140" height="120" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="370.0" y="35.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">swipes</text><text x="370.0" y="53.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">id</text><text x="370.0" y="71.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">card_id</text><text x="370.0" y="89.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">station_id</text><text x="370.0" y="107.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">type, datetime</text><text x="370.0" y="125.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">amount</text><rect x="600" y="40" width="140" height="80" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="670.0" y="71.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">stations</text><text x="670.0" y="89.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">id, name, line</text><polyline points="300,80 142,80" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#er-a)"/><polyline points="440,80 598,80" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#er-a)"/><text x="221" y="64" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">1 : N</text><text x="519" y="64" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">N : 1</text><text x="380" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">картаны жанап өту = бір жол (swipe)</text></svg>
+      <p>Еске салайын: метроға мінетін жолаушының <em>CharlieCard</em> деген картасы болады, оны станцияда жанап өтіп, турникеттен өтеді. Картаны толтыруға болады, ал кейбір жағдайда станциядан шығарда да жанау керек. MBTA жолаушылар туралы ештеңе сақтамайды, тек карталарды ғана қадағалайды. Бұл жолы мақсат - дәл осы схеманы <strong>MySQL</strong>-де жасау.</p>
+      <p>Терминалға шығып, MySQL серверіне қосылайық:</p>
+<pre class="terminal"><code class="language-plaintext">$ mysql -u root -h 127.0.0.1 -P 3306 -p</code></pre>
+      <p>Әр бөлігін ажыратып қарайық:</p>
+      <ul>
+        <li><code>-u</code> - пайдаланушы (<span class="term-en">user</span>). Біз <code>root</code> ретінде кіреміз. Бұл - дерекқор әкімшісінің синонимі.</li>
+        <li><code>127.0.0.1</code> - «localhost» мекенжайы, яғни біздің өз компьютеріміз.</li>
+        <li><code>3306</code> - қосылатын порт; MySQL әдетте осы портта тұрады. Хост пен портты қосып, қосылғалы жатқан дерекқордың «мекенжайы» деп ойлаңыз.</li>
+        <li><code>-p</code> - соңында тұрған бұл жалауша «қосылғанда құпиясөз сұра» дегенді білдіреді.</li>
+      </ul>
+      <p>Бұл - толыққанды сервер, ішінде бірнеше дерекқор болуы мүмкін. Барларын көру үшін:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">SHOW DATABASES;</code></pre>
+      <p>Нәтижесінде серверде әдепкіде бар бірнеше дерекқор шығады. Енді MBTA-ны құрайық. SQLite-та мұның бәрін істеп көрдік, сондықтан тек <strong>синтаксис айырмашылықтарына</strong> көңіл бөлеміз. Жаңа дерекқор жасау:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE DATABASE `mbta`;</code></pre>
+      <p>Назар аударыңыз: кесте мен баған атауларын тырнақшаға емес, <strong>кері апострофқа</strong> (<span class="term-en">backtick</span>, <code>`</code>) саламыз. Ағымдағы дерекқорды ауыстыру:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">USE `mbta`;</code></pre>
+
+      <h2 id="cards-table"><code>cards</code> кестесін жасау</h2>
+      <p>MySQL-де типтер SQLite-қа қарағанда <strong>әлдеқайда нақты</strong>. Мысалы, бүтін сан бір ғана <code>INTEGER</code> емес: сақтайтын санның өлшеміне қарай <code>TINYINT</code>, <code>SMALLINT</code>, <code>MEDIUMINT</code>, <code>INT</code> немесе <code>BIGINT</code> таңдаймыз. Мұнда әрқайсысының өлшемі мен диапазоны (таңбалы, <code>signed</code> сандар үшін):</p>
+      <table>
+        <thead><tr><th>Тип</th><th>Өлшемі</th><th>Ең кіші мән</th><th>Ең үлкен мән</th></tr></thead>
+        <tbody>
+          <tr><td><code>TINYINT</code></td><td>1 байт</td><td>-128</td><td>127</td></tr>
+          <tr><td><code>SMALLINT</code></td><td>2 байт</td><td>-32 768</td><td>32 767</td></tr>
+          <tr><td><code>MEDIUMINT</code></td><td>3 байт</td><td>-8 388 608</td><td>8 388 607</td></tr>
+          <tr><td><code>INT</code></td><td>4 байт</td><td>-2 147 483 648</td><td>2 147 483 647</td></tr>
+          <tr><td><code>BIGINT</code></td><td>8 байт</td><td>-2<sup>63</sup></td><td>2<sup>63</sup> - 1</td></tr>
+        </tbody>
+      </table>
+      <p>Бұл диапазондар <em>таңбалы</em> бүтін сан үшін. Егер <strong>таңбасыз</strong> (<span class="term-en">unsigned</span>) сан қолдансақ, теріс сандарға орын кетпейді, сондықтан әр типтің ең үлкен мәні шамамен екі есе артады.</p>
+      <p>Ал енді <code>cards</code> кестесін <code>INT</code> типімен жасаймыз. <code>INT</code> шамамен 2 миллиардқа дейін (таңбасыз болса 4 миллиардқа дейін) сақтайды, яғни біздің жағдайға жеткілікті.</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE TABLE `cards` (
+    `id` INT AUTO_INCREMENT,
+    PRIMARY KEY(`id`)
+);</code></pre>
+      <p><code>AUTO_INCREMENT</code> кілт сөзіне назар аударыңыз: MySQL жаңа жол қосылғанда келесі нөмірді <em>өзі</em> қояды. SQLite-тағы <code>AUTOINCREMENT</code> сияқты, тек жазылуы басқаша (астыңғы сызықпен).</p>
+      <h3 id="cards-questions">Сұрақтар</h3>
+      <p><em>ID бағанын неге таңбасыз жасамаймыз? Оны қалай көрсетеміз?</em> Дұрыс ескерту. ID ешқашан теріс болмайды, сондықтан типке <code>UNSIGNED</code> кілт сөзін қосуға болады, сонда диапазон екі есе кеңейеді.</p>
+
+      <h2 id="stations-table"><code>stations</code> кестесін жасау</h2>
+      <p>Кесте жасалған соң, барлық кестелердің тізімін көреміз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">SHOW TABLES;</code></pre>
+      <p>Ал нақты бір кестенің толық сипаттамасын <code>DESCRIBE</code> береді:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">DESCRIBE `cards`;</code></pre>
+      <div class="callout tip">
+        <span class="callout-title">SQLite-та аналогы</span>
+        <p><code>DESCRIBE</code> SQLite-та жоқ, бірақ оның орнына <code>PRAGMA table_info(...)</code> қолдануға болады. Төмендегі мысал SQLite-тағы MBTA-ның шағын көшірмесінде жұмыс істейді.</p>
+      </div>
+<pre data-lang="sql" data-db="mbta6" data-dbsrc="sql/data/week-6.js"><code class="language-sql">PRAGMA table_info(swipes);</code></pre>
+      <p>Мәтінмен жұмыс істеу үшін MySQL-де типтер көп. Екеуі өте жиі қолданылады: <strong>CHAR</strong> - тұрақты ұзындықты жол, ал <strong>VARCHAR</strong> - ұзындығы өзгермелі жол. <code>TEXT</code> тип те бар, бірақ SQLite-тан өзгешелігі: MySQL-де ол <em>ұзын</em> мәтін үшін (абзацтар, кітап беттері). Ұзындығына қарай ол <code>TINYTEXT</code>, <code>TEXT</code>, <code>MEDIUMTEXT</code> немесе <code>LONGTEXT</code> болуы мүмкін. Бұған қоса екілік жолдарды сақтайтын <code>BLOB</code> бар.</p>
+      <p>Тағы екі қызық мәтіндік тип: <strong>ENUM</strong> және <strong>SET</strong>. <code>ENUM</code> бағанды берілген тізімдегі <em>бір ғана</em> мәнмен шектейді: мысалы, көйлектің өлшемі M, L, XL. <code>SET</code> болса бір ұяшықта <em>бірнеше</em> таңдауды сақтауға мүмкіндік береді, мысалы, фильмнің жанрлары (комедия және драма бірге).</p>
+      <p>Енді MySQL-де <code>stations</code> кестесін жасайық:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE TABLE `stations` (
+    `id` INT AUTO_INCREMENT,
+    `name` VARCHAR(32) NOT NULL UNIQUE,
+    `line` ENUM('blue', 'green', 'orange', 'red') NOT NULL,
+    PRIMARY KEY(`id`)
+);</code></pre>
+      <p>Станция атын <code>VARCHAR</code> қылдық, себебі атаудың ұзындығын алдын ала білмейміз. Ал желі (line) Бостонда бар метро желілерінің бірі, яғни мүмкін мәндерді біз біліп отырмыз, сондықтан <code>ENUM</code> дәл келеді. <code>UNIQUE</code> мен <code>NOT NULL</code> шектеулері SQLite-тағыдай жұмыс істейді.</p>
+      <p>Бұл кестені <code>DESCRIBE</code> арқылы қарасақ, әр бағанның сипаттамасы шығады. <code>Key</code> өрісінде бастапқы кілт <code>PRI</code>, ал мәндері бірегей баған <code>UNI</code> деп белгіленеді. <code>NULL</code> өрісі қай бағанда <code>NULL</code> болуы мүмкін екенін айтады; <code>stations</code> кестесінде ондай баған жоқ.</p>
+      <h3 id="stations-questions">Сұрақтар</h3>
+      <p><em>ENUM-ның мәндері ретінде кестені беруге бола ма?</em> Мүмкін, ішкі <code>SELECT</code> арқылы, бірақ бұл жақсы идея емес: кестедегі мәндер уақыт өте өзгеруі мүмкін. Тізімді <code>ENUM</code>-ның ішінде нақты жазып қойған дұрыс.</p>
+      <p><em>Мәтіннің ұзындығын білмесем, <code>VARCHAR(300)</code> деп қоя берсем болады ма?</em> Болады, бірақ келісім бар: әр жолға 300 байт жадты «брондап» қоясыз, ал егер іс жүзінде тек қысқа жолдар сақталса, бұл ысырап. Кішірек ұзындықтан бастап, қажет болса кейін кестені <code>ALTER</code> арқылы үлкейткен тиімдірек.</p>
+
+      <h2 id="swipes-table"><code>swipes</code> кестесін жасау</h2>
+      <p>SQLite-та күн мен уақытты сандық типпен сақтауға тура келген еді. MySQL-де ол үшін арнайы типтер бар: <code>DATE</code>, <code>YEAR</code>, <code>TIME</code>, <code>DATETIME</code> және <code>TIMESTAMP</code>. Соңғы үшеуі уақыттың дәлдігін көрсететін қосымша параметр қабылдайды.</p>
+      <p>SQLite-тағы <code>REAL</code> типінің орнына мұнда <code>FLOAT</code> мен <code>DOUBLE PRECISION</code> бар: біріншісі 4 байт, екіншісі 8 байт жад алады. Дәлдікті байтпен көрсетуіміздің себебі - <strong>өзгермелі нүктелі сандардың дәлсіздігі</strong> (<span class="term-en">floating-point imprecision</span>): шектеулі жадта нақты санды белгілі бір дәлдікке дейін ғана жазуға болады, байт көп болған сайын дәлдік артады. Мұны SQLite-та өз көзімізбен көрейік:</p>
+<pre data-lang="sql" data-db="mbta6" data-dbsrc="sql/data/week-6.js"><code class="language-sql">SELECT 0.1 + 0.2 AS qosyndy, 0.1 + 0.2 = 0.3 AS teng_be;</code></pre>
+      <p>Көзге 0.3 болуы тиіс сияқты, бірақ 0.30000000000000004 шығады, ал теңдік тексеруі <code>0</code> (жалған) қайтарады. Ақша есептегенде бұл қолайсыз. Сондықтан MySQL-де <strong>DECIMAL</strong> (бекітілген дәлдікті сан) бар: сан нешеу цифрдан тұратынын және үтірден кейін нешеуі тұратынын өзіміз көрсетеміз.</p>
+      <p>Енді <code>swipes</code> кестесін жасаймыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE TABLE `swipes` (
+    `id` INT AUTO_INCREMENT,
+    `card_id` INT,
+    `station_id` INT,
+    `type` ENUM('enter', 'exit', 'deposit') NOT NULL,
+    `datetime` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    `amount` DECIMAL(5,2) NOT NULL CHECK(`amount` != 0),
+    PRIMARY KEY(`id`),
+    FOREIGN KEY(`station_id`) REFERENCES `stations`(`id`),
+    FOREIGN KEY(`card_id`) REFERENCES `cards`(`id`)
+);</code></pre>
+      <ul>
+        <li><code>DEFAULT CURRENT_TIMESTAMP</code> - уақыт көрсетілмесе, қазіргі уақыт өздігінен жазылады.</li>
+        <li><code>DECIMAL(5,2)</code> - барлығы 5 цифр, оның 2-еуі үтірден кейін. Сонда центтер қосылғанда да, алынғанда да <em>дөңгелектеусіз</em> дәл есептеледі.</li>
+        <li>SQLite-тағы шектеулер сақталды, оның ішінде <code>amount</code> нөл болмауын тексеретін <code>CHECK</code>.</li>
+      </ul>
+      <p>Кестені <code>DESCRIBE</code>-пен қарасақ, көп нәрсе таныс. <code>Key</code> өрісінде жаңа мән - <code>MUL</code> (<em>multiple</em>, «бірнеше») - сыртқы кілт бағандарында көрінеді: олардағы мәндер қайталана береді.</p>
+      <h3 id="swipes-questions">Сұрақтар</h3>
+      <p><em>Бағанға бірнеше шектеу қойсақ, олардың басымдығы бар ма?</em> Жоқ. Шектеулер бірге, біріктіріліп жұмыс істейді; MySQL оларды кестені жасағанда кез келген ретпен жазуға рұқсат береді.</p>
+      <p><em>MySQL-де тип аффиниттілігі (<span class="term-en">type affinity</span>) бар ма?</em> Дәл сондай емес. MySQL-де <code>INT</code>, <code>VARCHAR</code> сияқты нақты типтер бар, бірақ SQLite-тан айырмашылығы: ол басқа типтегі мәнді енгізуге және оны түрлендіруге тырысуға жол бермейді.</p>
+
+      <h2 id="alter-tables">Кестелерді өзгерту</h2>
+      <p>MySQL кестені SQLite-қа қарағанда әлдеқайда терең өзгертуге мүмкіндік береді. Мысалы, станцияның желілерінің арасына «silver» (күміс) желісін қосқымыз келсін:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">ALTER TABLE `stations`
+MODIFY `line` ENUM('blue', 'green', 'orange', 'red', 'silver') NOT NULL;</code></pre>
+      <p>Мұнда біз <code>line</code> бағанын өзгертіп, оның типін қайта анықтадық: <code>ENUM</code>-ға енді «silver» де кірді. Таныс <code>ALTER TABLE</code> конструкциясына <code>MODIFY</code> кілт сөзі қосылғанына назар аударыңыз.</p>
+
+      <h2 id="stored-procedures">Сақталған процедуралар</h2>
+      <p><strong>Сақталған процедура</strong> (<span class="term-en">stored procedure</span>) - SQL командаларын автоматтандырып, оларды қайта-қайта іске қосу тәсілі. Бағдарламалаудағы функцияға ұқсайды. Көрсету үшін тағы да бұрынғы лекциядан таныс <strong>Бостон бейнелеу өнері мұражайының (MFA)</strong> дерекқорын аламыз.</p>
+      <p>Еске салайық: SQLite-та біз <code>collections</code> кестесіне <strong>soft delete</strong> (жолды шынымен өшірмей, «өшірілді» деп белгілеу) жасадық: <code>current_collections</code> view-і өшірілмеген жинақтарды ғана көрсететін. Енді MySQL-де дәл осыны <em>сақталған процедурамен</em> істейміз. Алдымен MFA дерекқорына өтеміз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">USE `mfa`;</code></pre>
+      <p><code>collections</code> кестесін сипаттасақ, <code>deleted</code> бағаны жоқ екенін көреміз. Оны қосайық:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">ALTER TABLE `collections`
+ADD COLUMN `deleted` TINYINT DEFAULT 0;</code></pre>
+      <p><code>deleted</code>-те тек 0 немесе 1 болатындықтан, <code>TINYINT</code> жеткілікті. Әдепкі мәнді 0 қойдық, себебі қазірдің өзінде кестеде тұрған барлық жинақ өшірілмеген болып қалуы керек.</p>
+      <p>Процедураны жасамас бұрын, бір ұсақ, бірақ маңызды тәсіл бар: <strong>бөлгішті</strong> (<span class="term-en">delimiter</span>) <code>;</code>-тен басқа нәрсеге ауыстыру керек. Себебі процедураның денесінде бірнеше команда болып, әрқайсысы <code>;</code>-пен аяқталады, ал MySQL <code>;</code> көрген бойда команданы «бітті» деп ойлап, процедураны ортасынан үзіп жібереді. SQLite-та <code>BEGIN</code> мен <code>END</code> арасына <code>;</code> қоя беруге болатын, MySQL-де олай емес. Сондықтан алдымен бөлгішті өзгертеміз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">delimiter //</code></pre>
+      <p>Енді процедураны жазамыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE PROCEDURE `current_collection`()
+BEGIN
+    SELECT `title`, `accession_number`, `acquired`
+    FROM `collections`
+    WHERE `deleted` = 0;
+END//</code></pre>
+      <p>Атаудың жанындағы бос жақшаға назар аударыңыз: бұл басқа тілдердегі функцияларды еске түсіреді. Функция сияқты, процедураны да <em>шақырып</em> іске қосамыз. Алдымен бөлгішті қайтаруды ұмытпайық:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">delimiter ;</code></pre>
+      <p>Енді процедураны шақырайық. Әзірге ештеңе «өшірілмегендіктен», кестедегі барлық жол шығады:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CALL current_collection();</code></pre>
+      <p>Енді «Farmers working at dawn» суретін soft-delete жасап, процедураны қайта шақырамыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">UPDATE `collections`
+SET `deleted` = 1
+WHERE `title` = 'Farmers working at dawn';</code></pre>
+      <p>Қайта <code>CALL current_collection();</code> десек, өшірілген жол нәтижеде жоқ. Ал бұл идеяны SQLite-та view арқылы жасап, дәл осы бетте көре аласыз:</p>
+<pre data-lang="sql" data-db="mfa" data-dbsrc="sql/data/week-6.js"><code class="language-sql">CREATE VIEW current_collections AS
+SELECT title, accession_number, acquired
+FROM collections
+WHERE deleted = 0;
+
+UPDATE collections SET deleted = 1 WHERE title = 'Farmers working at dawn';
+
+SELECT * FROM current_collections;</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>deleted</code> бағанын <code>TINYINT</code> етіп алғанымыз дұрыс па?</summary>
+        <div class="details-body"><p>Алдымен болжаңыз: тек 0 және 1 сақтайтын баған үшін 4 байттық <code>INT</code> қажет пе? Жоқ. <code>TINYINT</code> бір байт алады және -128-ден 127-ге дейінгіні сақтайды, бұл 0 мен 1 үшін артығымен жетеді. Миллиондаған жолы бар кестеде әр жолдан үнемделген үш байт жиналып, көп жадты босатады.</p></div>
+      </details>
+      <h3 id="procedures-questions">Сұрақтар</h3>
+      <p><em>Процедураға параметр беруге бола ма?</em> Болады, мысалын жақын арада көреміз.</p>
+      <p><em>Бір процедурадан екіншісін шақыруға бола ма?</em> Иә. Процедураның ішіне жазатын кез келген SQL командасын ол жерде қолдана аласыз.</p>
+      <p><em>MySQL кестелерінде түсініктеме қалдыруға бола ма?</em> Ыңғайлы мүмкіндік. Схеманың әр бөлігінің мақсатын <code>schema.sql</code> файлында комментариймен жазып қоюға болады, ал кестенің өзінде түсініктеме қосудың тәсілдері де бар.</p>
+
+      <h2 id="procedures-params">Параметрлі сақталған процедуралар</h2>
+      <p>MFA дерекқорында бұрын <code>transactions</code> кестесі болған: онда туындының сатып алынғаны немесе сатылғаны жазылады. Оны мұнда да жасаймыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE TABLE `transactions` (
+    `id` INT AUTO_INCREMENT,
+    `title` VARCHAR(64) NOT NULL,
+    `action` ENUM('bought', 'sold') NOT NULL,
+    PRIMARY KEY(`id`)
+);</code></pre>
+      <p>Енді айталық, туынды сатылғандықтан <code>collections</code>-тан «өшірілді», және бұл жайт <code>transactions</code>-қа да жазылуы керек. Әдетте бұл екі бөлек сұрау болар еді. Ал сақталған процедура арқылы бұл екі қадамды бір атаумен біріктіруге болады:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">delimiter //
+CREATE PROCEDURE `sell`(IN `sold_id` INT)
+BEGIN
+    UPDATE `collections` SET `deleted` = 1
+    WHERE `id` = `sold_id`;
+    INSERT INTO `transactions` (`title`, `action`)
+    VALUES ((SELECT `title` FROM `collections` WHERE `id` = `sold_id`), 'sold');
+END//
+delimiter ;</code></pre>
+      <p>Бұл жолы жақшаның ішінде <code>IN `sold_id` INT</code> деген параметр бар. Параметр ретінде туындының ID-ін алдық, себебі ол бірегей идентификатор. Енді «Imaginative landscape» суретін сатайық:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CALL `sell`(2);</code></pre>
+      <p><code>collections</code> және <code>transactions</code> кестелерін қарап, екі өзгеріс те орындалғанына көз жеткізуге болады. SQLite-та бұл екі қадамды қолмен орындап көрейік (SQLite-та процедура жоқ, сондықтан екі командасын бірінен соң бірін жазамыз):</p>
+<pre data-lang="sql" data-db="mfa" data-dbsrc="sql/data/week-6.js"><code class="language-sql">UPDATE collections SET deleted = 1 WHERE id = 2;
+INSERT INTO transactions (title, action)
+VALUES ((SELECT title FROM collections WHERE id = 2), 'sold');
+
+SELECT * FROM transactions;</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>sell(2)</code>-ні екі рет шақырсақ не болады?</summary>
+        <div class="details-body"><p>Алдымен болжаңыз. Процедура ешнәрсені тексермейді: ол сатылған жолды қайтадан «өшірілді» деп белгілейді (ештеңе өзгермейді) және <code>transactions</code>-қа <strong>тағы бір</strong> «sold» жолын қосады. Нәтижесінде бір туынды екі рет сатылған болып жазылады. Лектор осы қауіпті атап өтті. Шешімі: процедураны қарапайым бағдарламалау конструкцияларымен күшейту, мысалы, <code>IF</code> арқылы алдымен жолдың өшірілмегенін тексеру.</p></div>
+      </details>
+      <p>Сақталған процедураларды қарапайым бағдарламалау конструкциялары арқылы әлдеқайда күрделі және ақылды етуге болады. MySQL-де кеңінен қолданылатындар: шартты тармақтар (<code>IF</code>, <code>CASE</code>) және циклдар (<code>WHILE</code>, <code>REPEAT</code>, <code>LOOP</code>). Яғни процедураның ішінде де кәдімгі бағдарламадағыдай «егер... онда...» деп ойлай аласыз.</p>
+
+      <h2 id="postgresql">PostgreSQL</h2>
+      <p>Осы уақытқа дейін <strong>MySQL</strong>-мен жұмыс істедік, ол SQLite-қа қарағанда біршама масштабтау мүмкіндігін береді. Енді <strong>PostgreSQL</strong> (<span class="term-en">PostgreSQL</span>, көбіне «постгрес» дейді) мүмкіндіктерін сол жолмен қарастырамыз: бар SQLite дерекқорларын алып, PostgreSQL-ге аударамыз.</p>
+      <p>Тағы да MBTA-дағы <code>cards</code> кестесінен бастайық. PostgreSQL-де қандай типтер бар?</p>
+      <h3 id="pg-integers">Бүтін сандар және SERIAL</h3>
+      <table>
+        <thead><tr><th>Тип</th><th>Өлшемі</th></tr></thead>
+        <tbody>
+          <tr><td><code>SMALLINT</code></td><td>2 байт</td></tr>
+          <tr><td><code>INTEGER</code></td><td>4 байт</td></tr>
+          <tr><td><code>BIGINT</code></td><td>8 байт</td></tr>
+        </tbody>
+      </table>
+      <p>Көріп отырсыз, мұнда нұсқалар MySQL-ден аз. Түпнұсқа конспектте PostgreSQL де таңбасыз бүтін сандарды қолдайды деп жазылған.</p>
+      <div class="callout warn">
+        <span class="callout-title">Аудармашының түзетуі</span>
+        <p>Іс жүзінде PostgreSQL-де <code>UNSIGNED</code> типі <em>жоқ</em>: оны <code>CHECK(баған &gt;= 0)</code> шектеуімен алмастырады. <code>UNSIGNED</code> - MySQL ерекшелігі. Лекциядағы осы жолды оқығанда осыны ескеріңіз.</p>
+      </div>
+      <p>Бұдан бөлек <strong>SERIAL</strong> бар. Бұл да бүтін сан, бірақ «сериялық нөмір», көбіне бастапқы кілт үшін қолданылады. Ол MySQL-дегі <code>AUTO_INCREMENT</code> рөлін атқарады: келесі нөмірді өзі береді.</p>
+      <h3 id="pg-connect">PostgreSQL серверіне қосылу</h3>
+      <p>Серверге <strong>psql</strong> арқылы қосылайық (PostgreSQL-дің командалық жолындағы интерфейсі):</p>
+<pre class="terminal"><code class="language-plaintext">$ psql postgresql://postgres@127.0.0.1:5432/postgres</code></pre>
+      <p>Мұнда әдепкі <code>postgres</code> пайдаланушысы (әкімші) ретінде кіреміз. Адрес құрылымы таныс: хост <code>127.0.0.1</code>, порт <code>5432</code> (PostgreSQL-дің әдепкі порты). Барлық дерекқорларды көру үшін:</p>
+<pre class="terminal"><code class="language-plaintext">postgres=# \l</code></pre>
+      <p>MBTA дерекқорын жасау (бұл жолы кері апостроф емес, <strong>қос тырнақша</strong> қолданамыз):</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE DATABASE "mbta";</code></pre>
+      <p>Нақты осы дерекқорға қосылу:</p>
+<pre class="terminal"><code class="language-plaintext">postgres=# \c "mbta"</code></pre>
+      <p>Кестелер тізімін <code>\dt</code> көрсетеді; әзірге дерекқорда ешқандай кесте жоқ. Енді <code>cards</code> кестесін <code>SERIAL</code> типімен жасаймыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE TABLE "cards" (
+    "id" SERIAL,
+    PRIMARY KEY("id")
+);</code></pre>
+      <p>Кестені сипаттау үшін <code>\d "cards"</code> командасын қолданамыз. Ақпарат шығады, бірақ MySQL-дің <code>DESCRIBE</code> нәтижесінен сәл өзге форматта.</p>
+      <h3 id="pg-questions">Сұрақтар</h3>
+      <p><em>PostgreSQL-де сұрау қатемен аяқталғанын қайдан білемін?</em> Егер Enter басқанда сервер ештеңе деп жауап бермесе (бос күтіп тұрса), қате болуы мүмкін екенін білесіз. Көп жағдайда PostgreSQL дұрыс бағыт көрсететін түсінікті қате хабарын да береді.</p>
+
+      <h2 id="pg-tables">PostgreSQL кестелерін жасау</h2>
+      <p><code>stations</code> кестесі MySQL-дегідей жасалады:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE TABLE "stations" (
+    "id" SERIAL,
+    "name" VARCHAR(32) NOT NULL UNIQUE,
+    "line" VARCHAR(32) NOT NULL,
+    PRIMARY KEY("id")
+);</code></pre>
+      <p><code>VARCHAR</code> дәл MySQL-дегідей жұмыс істейді. Жеңілдету үшін <code>line</code> бағанын да <code>VARCHAR</code> қылдық.</p>
+      <p>Келесі - <code>swipes</code>. Жанап өту типі кіру, шығу немесе картаға ақша салу болуы мүмкін екенін еске түсірейік. MySQL-дегідей <code>ENUM</code> қолданамыз, бірақ оны баған анықтамасының ішінде жазбаймыз. Оның орнына <strong>өз типімізді</strong> жасаймыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE TYPE "swipe_type" AS ENUM('enter', 'exit', 'deposit');</code></pre>
+      <p>Күн мен уақыт үшін PostgreSQL-де <code>TIMESTAMP</code>, <code>DATE</code>, <code>TIME</code> және <code>INTERVAL</code> бар. <code>INTERVAL</code> - бір нәрсенің қанша уақыт созылғанын, не уақыт аралығын сақтау үшін. MySQL-дегідей, дәлдікті көрсетуге болады. Нақты сандарда басты айырмашылық: <code>DECIMAL</code> типі мұнда <strong><code>NUMERIC</code></strong> деп аталады.</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE TABLE "swipes" (
+    "id" SERIAL,
+    "card_id" INT,
+    "station_id" INT,
+    "type" "swipe_type" NOT NULL,
+    "datetime" TIMESTAMP NOT NULL DEFAULT now(),
+    "amount" NUMERIC(5,2) NOT NULL CHECK("amount" != 0),
+    PRIMARY KEY("id"),
+    FOREIGN KEY("station_id") REFERENCES "stations"("id"),
+    FOREIGN KEY("card_id") REFERENCES "cards"("id")
+);</code></pre>
+      <p>Әдепкі уақыт ретінде PostgreSQL берген <code>now()</code> функциясын қолдандық: ол қазіргі уақытты қайтарады. PostgreSQL-ден шығу үшін:</p>
+<pre class="terminal"><code class="language-plaintext">postgres=# \q</code></pre>
+
+      <div class="callout term">
+        <span class="callout-title">Қысқаша салыстыру: SQLite, MySQL, PostgreSQL</span>
+        <p>Автоматты нөмір: <code>AUTOINCREMENT</code> (SQLite), <code>AUTO_INCREMENT</code> (MySQL), <code>SERIAL</code> (PostgreSQL). Идентификатор тырнақшасы: тырнақша немесе кері апостроф (SQLite), кері апостроф (MySQL), қос тырнақша (PostgreSQL). Бекітілген дәлдікті сан: <code>DECIMAL</code> (MySQL) және <code>NUMERIC</code> (PostgreSQL). Тізім типі: <code>ENUM</code> баған ішінде (MySQL) немесе <code>CREATE TYPE</code> арқылы бөлек (PostgreSQL).</p>
+      </div>
+
+      <h2 id="scaling">MySQL-мен масштабтау</h2>
+      <p>Қолданбаға сұраныс өсіп жатқан дерекқор серверін елестетіңіз. Қолданбадан келетін оқу мен жазу сұраулары көбейген сайын, сервердің оларды өңдеуіне кететін күту уақыты да артады. Базардағы бір сатушы тым көп сатып алушыға қызмет көрсетуге тырысып жатқандай. Не істейміз?</p>
+      <p>Бірінші жол - <strong>тік масштабтау</strong> (<span class="term-en">vertical scaling</span>): сервердің есептеу қуатын арттыру, яғни жылдамырақ процессор, көбірек жад қою. Бұл - «сатушыны күштірек етіп алу».</p>
+      <p>Екінші жол - <strong>көлденең масштабтау</strong> (<span class="term-en">horizontal scaling</span>): жүктемені <em>бірнеше сервер</em> арасында бөлу. Бұл - «сатушыларды көбейту». Көлденең масштабтағанда дерекқордың көшірмелерін бірнеше серверде ұстаймыз. Бұл тәсіл <strong>репликация</strong> (<span class="term-en">replication</span>) деп аталады.</p>
+      <p>Репликацияның үш негізгі моделі бар: <strong>бір жетекшілі</strong> (<span class="term-en">single-leader</span>), <strong>көп жетекшілі</strong> (<span class="term-en">multi-leader</span>) және <strong>жетекшісіз</strong> (<span class="term-en">leaderless</span>). Бір жетекшілі модельде барлық жазуды бір дерекқор сервері өңдеп, өзгерістерді басқа серверлерге көшіреді. Көп жетекшілі модельде жаңартуды бірнеше сервер қабылдайды, бұл жүйені күрделендіреді. Жетекшісіз репликацияда бұл мағынадағы жетекшілердің қажеті жоқ, мүлде өзге тәсіл қолданылады.</p>
+      <p>Біз <strong>бір жетекшілі модельге</strong> тоқталамыз. Мұнда жетекшіге ілесетін сервер - <strong>оқу репликасы</strong> (<span class="term-en">read replica</span>), яғни дерекқордың көшірмесі, одан тек <em>оқуға</em> болады. Ал жазуды <strong>жетекші</strong> (<span class="term-en">leader</span>) сервері ғана өңдейді.</p>
+      <svg viewBox="0 0 700 240" role="img" aria-label="Бір жетекшілі репликация: жетекші жазады, репликалар көшіреді" style="display:block;width:100%;max-width:700px;height:auto;margin:18px auto"><defs><marker id="rp-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="260" y="10" width="180" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="350.0" y="26.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px">Жетекші (leader)</text><text x="350.0" y="44.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px">жазуды өңдейді</text><rect x="20" y="150" width="170" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="105.0" y="175.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px">Оқу репликасы 1</text><rect x="265" y="150" width="170" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="350.0" y="175.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px">Оқу репликасы 2</text><rect x="510" y="150" width="170" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="595.0" y="175.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px">Оқу репликасы 3</text><polyline points="310,60 105,148" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 4" marker-end="url(#rp-a)"/><polyline points="350,60 350,148" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 4" marker-end="url(#rp-a)"/><polyline points="390,60 595,148" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 4" marker-end="url(#rp-a)"/><text x="130" y="95" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px">өзгерістерді көшіру</text><text x="30" y="30" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">жазу (write)</text><polyline points="20,45 258,40" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#rp-a)"/><text x="350" y="222" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">оқу (read) сұраулары репликаларға таралады</text></svg>
+      <p>Жетекші жазу сұрауын өңдегенде бір мәселе туады: ол келесі істі бастамас бұрын репликалардың өзгерісті көшіріп алғанын <em>күте ме</em>, күтпей ме? Күтсе, бұл <strong>синхронды репликация</strong> (<span class="term-en">synchronous replication</span>). Артықшылығы: дерекқор әрдайым дәйекті, барлық көшірме бірдей. Кемшілігі: жауап беру баяулауы мүмкін. Қаржы немесе денсаулық сақтау сияқты деректің дәлдігі өте маңызды салаларда осы кемшілікке қарамай синхронды әдісті таңдауымыз мүмкін.</p>
+      <p>Басқасы - <strong>асинхронды репликация</strong> (<span class="term-en">asynchronous replication</span>): жетекші репликаларға өзгерісті «ақырындап, тоқтамай» жеткізіп отырады, бірақ күтіп тұрмайды. Ол жауап жылдамдығы аса маңызды әлеуметтік желіге қолайлы.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: банк аудармасы мен фото «лайкын» қай репликациямен сақтаймыз?</summary>
+        <div class="details-body"><p>Алдымен өзіңіз болжап көріңіз. Банкте аударылған ақша барлық көшірмеде бірдей көрінуі тиіс, әйтпесе есепшотта жалған қалдық көрінуі мүмкін, сондықтан синхронды репликация тиімді (баяулау ақталады). «Лайк» санының бірнеше секундқа ескі көрінуі ешкімге зиян келтірмейді, ал қолданба жылдам жауап беруі маңызды, сондықтан асинхронды репликация дұрыс.</p></div>
+      </details>
+      <p>Масштабтаудың тағы бір танымал жолы - <strong>шардинг</strong> (<span class="term-en">sharding</span>). Мұнда дерекқорды бөліктерге, <strong>шардтарға</strong> (<span class="term-en">shard</span>) бөліп, әр бөлікті өз серверіне саламыз. Бұл репликациядан өзгеше: репликацияда әр серверде <em>бүкіл</em> көшірме болса, шардингте әр серверде деректің тек <em>бір бөлігі</em> тұрады.</p>
+      <svg viewBox="0 0 700 240" role="img" aria-label="Шардинг: деректер үш серверге бөлінген" style="display:block;width:100%;max-width:700px;height:auto;margin:18px auto"><defs><marker id="sh-a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="250" y="10" width="200" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="350.0" y="32.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px">Қолданба</text><rect x="20" y="130" width="190" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="115.0" y="156.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px">Шард 1</text><text x="115.0" y="174.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px">аты A-H</text><rect x="255" y="130" width="190" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="350.0" y="156.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px">Шард 2</text><text x="350.0" y="174.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px">аты I-P</text><rect x="490" y="130" width="190" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="585.0" y="156.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px">Шард 3</text><text x="585.0" y="174.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px">аты Q-Z</text><polyline points="300,54 115,128" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#sh-a)"/><polyline points="350,54 350,128" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#sh-a)"/><polyline points="400,54 585,128" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#sh-a)"/><text x="350" y="222" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">әр шардта деректердің бір бөлігі ғана бар</text></svg>
+      <p>Шардингте бір сақтық бар: <strong>қызу нүктеден</strong> (<span class="term-en">hotspot</span>) аулақ болу керек. Яғни басқаларға қарағанда жиі қатынайтын сервер болмауы тиіс, әйтпесе сол сервер шамадан тыс жүктеліп қалады. Бұл тақырыпқа «From the Deep» тапсырмасында тереңірек тоқталамыз.</p>
+      <p>Тағы бір мәселе: шардингті репликациясыз қолдансақ және серверлердің бірі істен шықса, дерекқор <em>толық болмай қалады</em>. Бұл - <strong>жалғыз ақаулық нүктесі</strong> (<span class="term-en">single point of failure</span>): бір жүйе құласа, бүкіл жүйе қолданыссыз болады. Тізбектің ең әлсіз буыны үзілсе, бүкіл тізбек үзіледі.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: шардинг пен репликацияны қосуға бола ма?</summary>
+        <div class="details-body"><p>Болады, іс жүзінде жиі солай істейді. Әр шардтың өз репликалары болады: шард серверлерінің бірі құласа, оның көшірмесі жұмысты жалғастырады, сондықтан жалғыз ақаулық нүктесі жойылады. Ал шардингтің пайдасы: деректің жалпы көлемін бірнеше серверге таратуға болады.</p></div>
+      </details>
+
+      <h2 id="access-controls">Қатынас бақылауы</h2>
+      <p>Осы уақытқа дейін MySQL-ге <code>root</code> пайдаланушысымен кірдік. Бірақ қосымша пайдаланушылар жасап, оларға дерекқорға белгілі бір деңгейде қатынас беруге болады. Бұл - <strong>қатынас бақылауы</strong> (<span class="term-en">access control</span>). Мысалы, «carter» деген жаңа пайдаланушы жасайық (өз атыңызбен істеп көріңіз):</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE USER 'carter' IDENTIFIED BY 'password';</code></pre>
+      <p>Енді жаңа пайдаланушымен кіруге болады, <code>root</code>-пен кіргендегідей. Жаңа пайдаланушының құқығы (<span class="term-en">privilege</span>) әдепкіде өте аз. Мына сұрауды орындап көріңіз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">SHOW DATABASES;</code></pre>
+      <p>Тек бірнеше әдепкі дерекқор көрінеді. <code>root</code>-пен кіріп, сол сұрауды қайта орындасақ, әлдеқайда көп дерекқор шығады: <code>root</code>-тың қатынасы бүкіл серверге жетеді.</p>
+      <p>Қатынасты қалай беретінімізді өткен апталардағы мысалмен көрейік. Бізде <code>rideshare</code> дерекқоры мен <code>rides</code> кестесі болды. Онда жолаушылардың аты-жөні сақталады, бұл - <strong>жеке басты анықтайтын ақпарат</strong> (<span class="term-en">personally identifiable information, PII</span>). Біз <code>analysis</code> деген view жасап, аттарды анонимдедік, мақсатымыз - тек осы view-ді талдаушымен бөлісу. Осы <code>analysis</code> view-ін жаңа пайдаланушымен бөлісу үшін, <code>root</code> ретінде кіріп, мынаны орындаймыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">GRANT SELECT ON `rideshare`.`analysis` TO 'carter';</code></pre>
+      <p>Енді carter ретінде кіріп, оның қатынасы бар-жоғын тексерейік. Мына команда жұмыс істейді:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">USE `rideshare`;</code></pre>
+      <p>Бірақ бұл пайдаланушы дерекқордың тек <code>analysis</code> view-іне ғана қол жеткізе алады: view-дегі деректі көреді, ал түпнұсқа <code>rides</code> кестесіндегіні көре алмайды. Міне, MySQL қатынас бақылауының пайдасы: дерекқорды бірнеше адам пайдалана алады, бірақ құпия деректі тек керек адамдар ғана көреді. Мұны <strong>ең аз құқық қағидасы</strong> дейді: әр адамға тек өз жұмысына қажетін береміз.</p>
+
+      <h2 id="sql-injection">SQL-инъекция шабуылдары</h2>
+      <p>Дерекқор қауіпсіздігін арттырудың бір жолы - қатынас бақылауы мен әр пайдаланушыға тек қажетті құқықты беру. Бірақ SQL дерекқорын пайдаланатын <em>қолданбаларымыз</em> да шабуылға ұшырауы мүмкін. Солардың бірі - <strong>SQL-инъекция шабуылы</strong> (<span class="term-en">SQL injection attack</span>).</p>
+      <p>Атауынан-ақ түсінікті: зиянкес пайдаланушы қолданбадағы бар сұрауды өзіне пайдалы етіп аяқтау үшін оған <em>өзінің SQL бөлшегін «енгізеді»</em>. Мысалы, сайтқа логин мен құпиясөз енгізетін форма бар делік. Сайт дерекқорға мынадай сұрау жіберуі мүмкін:</p>
+<pre data-lang="sql" data-db="inject" data-dbsrc="sql/data/week-6.js"><code class="language-sql">SELECT id FROM users
+WHERE user = 'Carter' AND password = 'password';</code></pre>
+      <p>Мұнда Carter аты мен құпиясөзін әдеттегідей енгізді, сұрау оның <code>id</code>-ін қайтарады. Ал егер құпиясөзді қате жазса, нәтиже бос болады:</p>
+<pre data-lang="sql" data-db="inject" data-dbsrc="sql/data/week-6.js"><code class="language-sql">SELECT id FROM users
+WHERE user = 'Carter' AND password = 'wrong';</code></pre>
+      <p>Енді зиянкес басқаша істейді. Құпиясөз өрісіне мынадай жол жазады: <code>wrong' OR '1' = '1</code>. Қолданба бұл жолды сұраудың ішіне жай <em>жымдастырып</em> қойса, сұрау былай болады. <strong>Байқап көріңіз:</strong></p>
+<pre data-lang="sql" data-db="inject" data-dbsrc="sql/data/week-6.js"><code class="language-sql">SELECT id FROM users
+WHERE user = 'Carter' AND password = 'wrong' OR '1' = '1';</code></pre>
+      <p>Қараңыз: құпиясөзді білмей-ақ, бүкіл пайдаланушылар тізімі шықты! Себебі <code>'1' = '1'</code> әрдайым ақиқат, ал <code>OR</code> бүкіл шартты ақиқат қылады. (Түпнұсқа конспектте құпиясөз ретінде <code>password' OR '1' = 1</code> жолы алынған; түсінік бірдей.) Бұл - зиянкестің бүкіл пайдаланушылар мен құпиясөздер базасына қол жеткізуге әрекеті.</p>
+      <p>Ал егер қолданба пайдаланушы енгізген барлық нәрсені <strong>бір дерекке</strong> (мәтіндік мәнге) айналдырса, апострофтардың алдына қашу белгісі қойылып, сұрау былай көрінеді:</p>
+<pre data-lang="sql" data-db="inject" data-dbsrc="sql/data/week-6.js"><code class="language-sql">SELECT id FROM users
+WHERE user = 'Carter' AND password = 'wrong'' OR ''1'' = ''1';</code></pre>
+      <p>Енді нәтиже бос: бүкіл <code>wrong' OR '1' = '1</code> жолы <em>құпиясөз ретінде</em> салыстырылды, ал ондай құпиясөзі бар пайдаланушы жоқ. Дәл осыны (<strong>қашу</strong>, <span class="term-en">escaping</span>) дайындалған сұрау істейді.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>--</code> (комментарий) арқылы шабуыл жасай аламыз ба?</summary>
+        <div class="details-body"><p>Болжап көріңіз: зиянкес логинге <code>admin' --</code> жазса, сұрау былай болады: <code>WHERE user = 'admin' --' AND password = ...</code>. <code>--</code> кейінгі бәрін комментарийге айналдырады, сондықтан құпиясөз тексерілмей-ақ, admin ретінде кіреді. Қорғаныс бірдей: пайдаланушы мәнін ешқашан сұраудың мәтініне жымдастырмау.</p></div>
+      </details>
+      <h3 id="prepared-statements">Дайындалған сұраулар</h3>
+      <p>MySQL-де SQL-инъекциядан қорғану үшін <strong>дайындалған сұраулар</strong> (<span class="term-en">prepared statement</span>) қолданылады. Енді <code>carter</code> пайдаланушысымен қосылып, <code>bank</code> дерекқорына өтейік. <code>accounts</code> кестесіндегі барлық шотты көрсететін шабуыл мысалы мынау:</p>
+<pre data-lang="sql" data-db="inject" data-dbsrc="sql/data/week-6.js"><code class="language-sql">SELECT * FROM accounts
+WHERE id = 1 UNION SELECT * FROM accounts;</code></pre>
+      <p>Бір ғана шотты сұрағымыз келген еді, ал <code>UNION</code> арқылы барлық шот шықты. Ал <strong>дайындалған сұрау</strong> дегеніміз - кейін мән енгізуге болатын SQL командасы. Жоғарыдағы сұрау үшін оны былай жазамыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">PREPARE `balance_check`
+FROM 'SELECT * FROM `accounts`
+WHERE `id` = ?';</code></pre>
+      <p>Сұрақ белгісі (<code>?</code>) - күтпеген SQL кодының орындалуынан сақтайтын қорғаныс. Енді сұрауды орындау үшін пайдаланушы енгізген мәнді айнымалыға аламыз да, дайындалған сұраудың ішіне саламыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">SET @id = 1;
+EXECUTE `balance_check` USING @id;</code></pre>
+      <p><code>SET</code> жолын қолданбаның пайдаланушыдан ID алуы деп елестетіңіз. MySQL-де айнымалылар <code>@</code> белгісімен басталады - бұл келісім. Дайындалған сұрау енгізілген мәнді тазалап, зиянды SQL кодының өтпеуін қамтамасыз етеді. Енді дәл сол шабуылды зиянды ID арқылы көрейік:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">SET @id = '1 UNION SELECT * FROM `accounts`';
+EXECUTE `balance_check` USING @id;</code></pre>
+      <p>Нәтиже алдыңғысындай: тек ID 1 пайдаланушының қалдығы шықты, басқа ештеңе жоқ. Яғни SQL-инъекцияны болдырмадық. SQLite-та да принцип сол: бүкіл жолды <em>жеке мән</em> ретінде салыстырамыз, нәтижесі бос (немесе ең көбі бір шот).</p>
+<pre data-lang="sql" data-db="inject" data-dbsrc="sql/data/week-6.js"><code class="language-sql">SELECT * FROM accounts
+WHERE id = '1 UNION SELECT * FROM accounts';</code></pre>
+      <div class="callout note">
+        <span class="callout-title">MySQL мен SQLite айырмашылығы</span>
+        <p>SQLite-та бұл сұрау бос нәтиже қайтарады, себебі <code>'1 UNION ...'</code> жолы санға айналмайды. MySQL болса жолдың басындағы <code>1</code>-ді санға айналдырып, ID 1 шотын шығарады (лекциядағыдай). Екі жағдайда да негізгісі бірдей: <strong>басқа шоттар көрінбейді</strong>.</p>
+      </div>
+      <h3 id="injection-questions">Сұрақтар</h3>
+      <p><em>Дайындалған сұрау тек айнымалының бірінші шартын ғана ескере ме?</em> Дайындалған сұрау «қашу» (<span class="term-en">escaping</span>) деген нәрсені істейді: айнымалының ішіндегі зиянды болуы мүмкін бөліктердің бәрін тауып, олардың алдынан қашу белгісін қояды, сонда олар шынымен орындалмайды.</p>
+      <p><em>Бұл Python-да SQL сұрауын орындау үшін форматталған жолдарды (f-string) қолданбау себебіне ұқсай ма?</em> Иә. Python-дағы форматталған жолдарда да дәл осы олқылық бар: олар SQL-инъекцияға ұшырайды. Сондықтан жолды өзіңіз жымдастырмай, орынбасар белгіні (<code>?</code>) қолданыңыз:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Қауіпті: пайдаланушы мәні сұраудың ішіне жымдастырылған
+db.execute(f"SELECT id FROM users WHERE user = '{user}' AND password = '{password}'")
+
+# Қауіпсіз: ? орнына мәндерді дерекқор кітапханасы өзі қауіпсіз енгізеді
+db.execute("SELECT id FROM users WHERE user = ? AND password = ?", user, password)</code></pre>
+
+      <h2 id="fin">Fin (Соңы)</h2>
+      <p>Осымен 6-лекция, яғни SQL-де масштабтау тақырыбы және бүкіл курс - <strong>CS50's Introduction to Databases with SQL</strong> - аяқталды!</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Бүгін біз дерекқорды үлкен масштабқа көтеруді қарастырдық. Негізгі идеялар:</p>
+      <ul>
+        <li><strong>масштабталу</strong>: сұранысқа қарай сыйымдылықты арттыру/азайту; SQLite кіріктірілген, ал MySQL мен PostgreSQL - дерекқор серверлері;</li>
+        <li>MySQL: <code>mysql -u -h -P -p</code>, <code>SHOW DATABASES</code>, <code>USE</code>, кері апостроф, <code>AUTO_INCREMENT</code>;</li>
+        <li>MySQL типтері: <code>TINYINT</code>...<code>BIGINT</code> (<code>UNSIGNED</code>), <code>CHAR</code>/<code>VARCHAR</code>/<code>TEXT</code>, <code>ENUM</code>/<code>SET</code>, <code>DATE</code>/<code>DATETIME</code>/<code>TIMESTAMP</code>, <code>FLOAT</code>/<code>DOUBLE</code> және дәл <code>DECIMAL</code>;</li>
+        <li><code>DESCRIBE</code>, <code>SHOW TABLES</code>, <code>ALTER TABLE ... MODIFY</code>;</li>
+        <li><strong>сақталған процедуралар</strong>: <code>delimiter</code>, <code>CREATE PROCEDURE</code>, <code>CALL</code>, параметрлер (<code>IN</code>);</li>
+        <li>PostgreSQL: <code>psql</code>, <code>\l</code>, <code>\c</code>, <code>\dt</code>, <code>\d</code>, <code>SERIAL</code>, <code>CREATE TYPE</code>, <code>NUMERIC</code>, <code>now()</code>;</li>
+        <li>масштабтау: тік (күшті сервер) және көлденең (көп сервер); репликация (синхронды, асинхронды); шардинг, қызу нүкте, жалғыз ақаулық нүктесі;</li>
+        <li>қатынас бақылауы: <code>CREATE USER</code>, <code>GRANT</code>, ең аз құқық қағидасы;</li>
+        <li>SQL-инъекция және <strong>дайындалған сұраулар</strong> (<code>PREPARE</code>, <code>EXECUTE</code>).</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. <code>mysql -u root -h 127.0.0.1 -P 3306 -p</code> командасындағы соңғы <code>-p</code> нені білдіреді?</p>
+          <label><input type="radio" value="a"> Порт нөмірін</label>
+          <label><input type="radio" value="b"> Дерекқордың атын</label>
+          <label><input type="radio" value="c"> Қосылғанда құпиясөзді сұрауды</label>
+          <label><input type="radio" value="d"> Пайдаланушының рөлін (<code>root</code>)</label>
+          <p class="explain">Порт - <code>-P</code> (бас әріп), пайдаланушы - <code>-u</code>, хост - <code>-h</code>. Кіші <code>-p</code> серверге «құпиясөзді сұра» дегенді айтады.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">2. Станцияның метро желісі тек <code>blue</code>, <code>green</code>, <code>orange</code>, <code>red</code> болуы мүмкін. MySQL-де бұған қай тип қолайлы?</p>
+          <label><input type="radio" value="a"> <code>ENUM('blue', 'green', 'orange', 'red')</code></label>
+          <label><input type="radio" value="b"> <code>TEXT</code>, себебі ол кез келген жолды сақтайды</label>
+          <label><input type="radio" value="c"> <code>BLOB</code></label>
+          <label><input type="radio" value="d"> <code>DECIMAL(4,0)</code></label>
+          <p class="explain">Мүмкін мәндерді алдын ала білсек, <code>ENUM</code> бағанды сол тізіммен шектейді. Жаңа желі (мысалы, silver) қосылса, <code>ALTER TABLE ... MODIFY</code> жасаймыз.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. MySQL-де сақталған процедураны жасамас бұрын неге <code>delimiter //</code> деп жазамыз?</p>
+          <label><input type="radio" value="a"> Процедура тек <code>//</code> арқылы ғана іске қосылады</label>
+          <label><input type="radio" value="b"> Бұл процедураның атын көрсетеді</label>
+          <label><input type="radio" value="c"> Бұл кестедегі баған шектеуін қояды</label>
+          <label><input type="radio" value="d"> Әйтпесе процедура денесіндегі бірінші <code>;</code> көрген бойда MySQL команданы бітті деп санап, процедураны үзіп жібереді</label>
+          <p class="explain">Процедураның ішіндегі әр команда <code>;</code>-пен аяқталады. Бөлгішті уақытша <code>//</code> қылсақ, MySQL процедураны <code>END//</code> дейін бір бүтін ретінде оқиды. Соңында <code>delimiter ;</code> деп қайтарамыз.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">4. Әлеуметтік желіде пост «лайктарының» саны бірнеше секундқа ескі көрінсе де, жауап жылдамдығы өте маңызды. Қай репликацияны таңдаймыз?</p>
+          <label><input type="radio" value="a"> Синхронды: жетекші барлық репликаның көшіргенін күтеді</label>
+          <label><input type="radio" value="b"> Асинхронды: жетекші күтіп тұрмайды, өзгерісті репликаларға ақырындап жеткізеді</label>
+          <label><input type="radio" value="c"> Репликация қажет емес, тек <code>root</code> дерекқор қызметін атқарады</label>
+          <label><input type="radio" value="d"> Қателікті болдырмау үшін тек қолмен көшіру</label>
+          <p class="explain">Деректің бірнеше секундқа «ескіруі» әлеуметтік желіге қауіпсіз, ал жылдамдық маңызды. Қаржы мен денсаулық сақтауда керісінше синхронды әдіс таңдалады.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">5. Дерекқор 3 серверге <strong>шардталған</strong>, бірақ реплика жоқ. Серверлердің бірі істен шықты. Не болады?</p>
+          <label><input type="radio" value="a"> Дерекқор толық емес болып қалады: бұл - жалғыз ақаулық нүктесі мәселесі</label>
+          <label><input type="radio" value="b"> Қалған екі сервер құлаған серверді автоматты түрде толық көшіреді</label>
+          <label><input type="radio" value="c"> Ештеңе өзгермейді, себебі шардинг репликацияны қамтиды</label>
+          <label><input type="radio" value="d"> Қызу нүкте жоғалады</label>
+          <p class="explain">Шардингте әр серверде деректің тек бір бөлігі болады. Көшірмесіз сервер құласа, сол бөлік қолжетімсіз, ал жүйе жартылай жарамсыз. Шешім - шардтарға репликаларды қосу.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">6. <code>root</code> ретінде <code>GRANT SELECT ON `rideshare`.`analysis` TO 'carter';</code> орындалды (<code>analysis</code> - view). Carter-ге не қолжетімді?</p>
+          <label><input type="radio" value="a"> <code>rideshare</code> дерекқорындағы барлық кестелер</label>
+          <label><input type="radio" value="b"> Сервердегі барлық дерекқор</label>
+          <label><input type="radio" value="c"> Тек <code>analysis</code> view-інен <code>SELECT</code> жасау; түпнұсқа <code>rides</code> кестесі көрінбейді</label>
+          <label><input type="radio" value="d"> Ештеңе, view-ге құқық беруге болмайды</label>
+          <p class="explain">Құқық дәл көрсетілген объектіге ғана беріледі. Сондықтан атаулары анонимделген view-ді көреді, ал жолаушылардың шын аттары бар <code>rides</code> кестесін көрмейді.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. Қолданба сұрауды жолдарды жымдастырып жасайды: <code>WHERE user = 'Carter' AND password = '...'</code>. Зиянкес құпиясөз өрісіне <code>x' OR '1' = '1</code> жазды. Не болады?</p>
+          <label><input type="radio" value="a"> Ештеңе: сервер қате шығарады және сұрауды тоқтатады</label>
+          <label><input type="radio" value="b"> Тек Carter-дің жолы қайтады</label>
+          <label><input type="radio" value="c"> Нәтиже бос болады, себебі құпиясөз дұрыс емес</label>
+          <label><input type="radio" value="d"> <code>OR '1' = '1'</code> әрдайым ақиқат, сондықтан барлық пайдаланушының жолдары қайтады</label>
+          <p class="explain">Жымдастырылған сұрау: <code>... password = 'x' OR '1' = '1'</code>. Шарттың екінші бөлігі әрдайым ақиқат, сондықтан кестедегі әр жол сәйкес келеді. Қорғаныс - дайындалған сұрау (<code>?</code> орынбасары).</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">8. <code>PREPARE</code> жасалған <code>... WHERE `id` = ?</code> сұрауына <code>SET @id = '1 UNION SELECT * FROM `accounts`';</code> беріп, <code>EXECUTE</code> істеді. Нәтижесі қандай?</p>
+          <label><input type="radio" value="a"> <code>accounts</code> кестесіндегі барлық шот</label>
+          <label><input type="radio" value="b"> Тек ID-і 1 шот; <code>UNION</code> бөлігі орындалмайды, ол мәннің бір бөлігі ретінде өңделеді</label>
+          <label><input type="radio" value="c"> Синтаксис қатесі, себебі <code>UNION</code> жазуға болмайды</label>
+          <label><input type="radio" value="d"> <code>accounts</code> кестесі жойылады</label>
+          <p class="explain">Дайындалған сұраудағы <code>?</code> орнына қойылған мән SQL коды болып орындалмайды, ол - тек деректің мәні. Сондықтан шабуыл орындалмайды.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Problem Set 6 (Тапсырмалар жинағы 6)</h2>
+      <p>Ресми тапсырма беті: <a href="https://cs50.harvard.edu/sql/psets/6/" target="_blank" rel="noopener">cs50.harvard.edu/sql/psets/6</a>. Бұл - курстың <strong>соңғы</strong> тапсырмалар жинағы. Ресми нұсқаулық: <strong>cs50.dev</strong>-ке GitHub аккаунтыңызбен кіріңіз, терминалда <code>update50</code> орындап, шақыру шыққанда <strong>Rebuild now</strong> басыңыз, сосын тапсырмаларды жасап тапсырыңыз. Тапсырмалар: <em>Happy to Connect (Sentimental)</em>, <em>From the Deep</em> және <em>Don't Panic! (Sentimental)</em> (Python не Java нұсқасы - біреуін таңдайсыз).</p>
+      <div class="callout note">
+        <span class="callout-title">Бұл тапсырмалар қайда орындалады</span>
+        <p>«Happy to Connect» нағыз <strong>MySQL</strong> серверін қажет етеді (<strong>cs50.dev</strong> ішінде Docker-мен іске қосылады), ал «From the Deep» - <code>answers.md</code> файлындағы жазбаша талдау. Екеуін де бұл сайтта тексеру мүмкін емес, сондықтан тапсырма ретінде аударылды. Дегенмен әр тапсырмаға сай сайттың <em>өз</em> жаттығу жиыны бар (SQLite-та орындалады, демо деректер, ресми тапсырма емес), ол ойды бекітуге көмектеседі. «Don't Panic!» тапсырмасы осы жинақта аударылмады: оның материалдары біздің түпнұсқа дерек көзінде жоқ, оны ресми бетте оқыңыз.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-connect">Happy to Connect (Байланыста болайық)</h3></div>
+        <p>Бұрынғы 2-тапсырмалар жинағынан <a href="https://www.linkedin.com/" target="_blank" rel="noopener">LinkedIn</a>-ді еске түсіріңіз: ол «әлемдегі ең үлкен кәсіби желі». Бүкіл әлемде <a href="https://www.digitalocean.com/community/tutorials/what-is-high-availability" target="_blank" rel="noopener">жоғары қолжетімді</a> болу үшін LinkedIn толыққанды дерекқор серверлерін қолданатыны анық.</p>
+        <p><strong>Міндет.</strong> <code>sentimental-connect</code> қалтасындағы <code>schema.sql</code> файлына LinkedIn қолдана алатын <strong>MySQL</strong> дерекқор схемасын жасайтын SQL командаларын жазыңыз. Іске асыру сізге байланысты, бірақ дерекқор төменде берілген <em>платформа талаптарына</em> сай болуы және <em>үлгі деректі</em> сақтай алуы керек. SQLite-та жасаған дизайныңызды қолдана (немесе жақсарта) аласыз, тек енді MySQL-дің <a href="https://dev.mysql.com/doc/refman/8.0/en/data-types.html" target="_blank" rel="noopener">жаңа типтері</a> қолыңызда екенін ескеріңіз.</p>
+        <h4>Платформа</h4>
+        <p><strong>Пайдаланушылар.</strong> Платформаның жүрегі - адамдар. Дерекқор пайдаланушы туралы мына ақпаратты сақтай алуы тиіс: аты мен тегі, пайдаланушы аты (username), құпиясөзі. Құпиясөздер «хэштеледі» (best practice): мұнда хэштеу туралы алаңдамаңыз, тек кейбір хэштеу алгоритмдері 128 таңбаға дейінгі жол шығаратынын біліңіз.</p>
+        <p><strong>Мектептер мен университеттер.</strong> LinkedIn-де ресми мектеп не университет аккаунттары болады (мысалы, Гарвардтікі), сонда түлектер өз қатысын көрсете алады. Әр мектеп туралы сақталатын мәліметтер: мектептің атауы, түрі, орналасқан жері, құрылған жылы. Түр тек үшеуінің бірі болады: «Primary» (бастауыш), «Secondary» (орта), «Higher Education» (жоғары білім).</p>
+        <p><strong>Компаниялар.</strong> Компаниялар өз беттерін жасай алады, сонда қызметкерлер өткен не қазіргі жұмыс орнын көрсетеді. Әр компания үшін: атауы, саласы, орналасқан жері. Сала үшеуінің бірі: «Technology», «Education», «Business».</p>
+        <p><strong>Байланыстар.</strong> LinkedIn-нің мәні - адамдар арасындағы байланыс.</p>
+        <ul>
+          <li><em>Адамдармен байланыс:</em> пайдаланушылар арасындағы <strong>өзара</strong> (екіжақты) байланыс. Біржақты «жазылу» (A, B-ға жазылса, B, A-ға жазылмайды) туралы ойлаудың қажеті жоқ.</li>
+          <li><em>Мектептермен байланыс:</em> пайдаланушы мектеппен қатыс жасай алады, ал мектеп өз түлектерін таба алуы керек. Сонымен қатар: қатыстың басталу күні (оқуға түскен), аяқталу күні (бітірген; қолданылса), алынған/алынып жатқан дәреже түрі («BA», «MA», «PhD» және т.б.).</li>
+          <li><em>Компаниялармен байланыс:</em> пайдаланушы компаниямен қатыс жасай алады, ал компания қазіргі және бұрынғы қызметкерлерін таба алуы керек. Қосымша: жұмыс басталған күн, аяқталған күн (қолданылса). (Үлгі деректе қызмет атауы да бар.)</li>
+        </ul>
+        <h4>Үлгі деректер</h4>
+        <p>Дерекқор мынаны сақтай алуы тиіс:</p>
+        <ul>
+          <li>Пайдаланушы <strong>Claudine Gay</strong>: username «claudine», құпиясөзі «password».</li>
+          <li>Пайдаланушы <strong>Reid Hoffman</strong>: username «reid», құпиясөзі «password».</li>
+          <li>Мектеп <strong>Harvard University</strong>: университет, Кембридж (Массачусетс), 1636 жылы құрылған.</li>
+          <li>Компания <strong>LinkedIn</strong>: технологиялық компания, штаб-пәтері Саннивейлде (Калифорния).</li>
+          <li>Claudine Gay-дің <strong>Harvard-пен байланысы</strong>: PhD, 1993 жылғы 1 қаңтардан 1998 жылғы 31 желтоқсанға дейін.</li>
+          <li>Reid Hoffman-ның <strong>LinkedIn-мен байланысы</strong>: қызметі «CEO and Chairman», 2003 жылғы 1 қаңтардан 2007 жылғы 1 ақпанға дейін.</li>
+        </ul>
+        <h4>Кеңестер және іске қосу</h4>
+        <p>MySQL-дің <a href="https://dev.mysql.com/doc/refman/8.0/en/data-types.html" target="_blank" rel="noopener">типтер құжаттамасын</a> және <a href="https://dev.mysql.com/doc/refman/8.0/en/choosing-types.html" target="_blank" rel="noopener">дұрыс тип таңдау кеңесін</a> оқыңыз. Басты кеңес: өз жағдайыңызға ең <em>дәл</em> типті таңдаңыз. Мысалы, бағанда тек оң сан болса, <code>INT UNSIGNED</code> немесе <code>TINYINT UNSIGNED</code> қолданып, диапазоннан ең көп пайда алыңыз.</p>
+        <p>MySQL серверін cs50.dev-те Docker арқылы іске қосыңыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ docker container run --name mysql -p 3306:3306 -v /workspaces/$RepositoryName:/mnt -e MYSQL_ROOT_PASSWORD=crimson -d mysql</code></pre>
+        <p>Сосын қосылыңыз; құпиясөз ретінде <strong>crimson</strong> теріңіз:</p>
+<pre class="terminal"><code class="language-plaintext">$ mysql -h 127.0.0.1 -P 3306 -u root -p</code></pre>
+        <p>Бірінші рет кіргенде жаңа дерекқор жасау керек:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE DATABASE `linkedin`;
+USE `linkedin`;</code></pre>
+        <p>«Query OK, 1 row affected» сияқты жауап шығуы керек. Сосын лекциядағы MySQL командаларын пайдаланыңыз. Қосылымды жабу үшін <code>quit</code> деп жазыңыз. Codespace қайта іске қосылғаннан кейін мына қате шықса:</p>
+<pre class="terminal"><code class="language-plaintext">ERROR 2003 (HY000): Can't connect to MySQL server on '127.0.0.1:3306' (111)</code></pre>
+        <p>контейнерді қайта қосыңыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ docker container start mysql</code></pre>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>check50</code> бар болса да, дерекқордың платформа талаптарына сай екенін және үлгі деректі тиімді сақтай алатынын тек өзіңіз тексере аласыз. Дерекқордың <strong>толық нормаланғанын</strong> ойланыңыз. Өзара байланысты (адам-адам) бір жолмен сақтау үшін екі пайдаланушының ID-ін бір кестеде ұстаған жөн; мектеп пен компания қатысы үшін байланыстырушы кестелер ойластырыңыз.</p></div></details>
+        <details class="think">
+          <summary>Ойланып көріңіз: өзара байланысты қалай сақтаймыз?</summary>
+          <div class="details-body"><p>Алдымен болжаңыз: A мен B дос болса, бір жол жеткілікті ме, әлде екі жол керек пе? Екі нұсқа да болады. Біреуі - әр жұпты бір рет қана жазу (мысалы, <code>user_a &lt; user_b</code> шартымен), сонда «A-ның бүкіл достарын табу» үшін екі бағанды да қарау керек. Екіншісі - әр байланысты екі жол етіп сақтау, сонда сұрау оңай, бірақ деректің көшірмесі көп. Төмендегі сайт жаттығуында бірінші нұсқа қолданылған.</p></div>
+        </details>
+        <p><strong>Жаттығу (сайттың өз жиыны).</strong> SQLite-та жасалған шағын LinkedIn деректері бойынша 6 сұрау жазыңыз. Бұл - ресми тапсырма емес, MySQL схемаңызды жобалап болған соң сұрауларды жаттықтыру үшін.</p>
+        <div class="sql-grader" data-set="sql6-linkedin" data-src="sql/data/week-6.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql6-connect">
+            <li><input type="checkbox"> <span><code>sentimental-connect/schema.sql</code> файлы бар, MySQL-де қатесіз орындалады.</span></li>
+            <li><input type="checkbox"> <span>Пайдаланушылар, мектептер, компаниялар, өзара байланыстар, пайдаланушының мектеппен және компаниямен қатысы ұсынылған.</span></li>
+            <li><input type="checkbox"> <span>Мектеп түрі мен компания саласы шектелген (<code>ENUM</code>), типтер дәл таңдалған (мысалы, <code>UNSIGNED</code>, <code>CHAR</code>/<code>VARCHAR</code>, <code>DATE</code>, <code>YEAR</code>).</span></li>
+            <li><input type="checkbox"> <span>Үлгі деректердің бәрі (Claudine Gay, Reid Hoffman, Harvard, LinkedIn және екі қатыс) сақталады, дерекқор нормаланған.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/sentimental/connect</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span><code>submit50 cs50/problems/2024/sql/sentimental/connect</code> орындалды.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-deep">From the Deep (Тереңнен)</h3></div>
+        <p>Сіз - қашықтан басқарылатын сүңгуір қайық <strong>AquaByte Explorer</strong> зерттеушісіз. Ол мұхит түбінен бақылаулар жинайды (AquaByte ойдан шығарылған, бірақ нағыз SuBastion қайығына ұқсас!). AquaByte деректі тереңнен жоғары жібереді, ал дерекқор мұхит бетіндегі бірнеше қайыққа таралған.</p>
+        <p><strong>Міндет.</strong> <code>answers.md</code> файлында AquaByte-тың <em>таратылған дерекқор жүйесінің</em> бірнеше нұсқасының техникалық артықшылықтары мен кемшіліктерін талдаңыз.</p>
+        <h4>Дайындама</h4>
+        <p>cs50.dev-те терминалды ашып, <code>cd</code> деп жазыңыз (промпт <code>$</code> болуы керек), сосын:</p>
+<pre class="terminal"><code class="language-plaintext">$ wget https://cdn.cs50.net/sql/2024/x/psets/6/deep.zip
+$ unzip deep.zip
+$ rm deep.zip
+$ cd deep
+$ ls
+answers.md</code></pre>
+        <p>(<code>rm</code> кезінде «y» деп растаңыз.) Тапсырманы <a href="https://cdn.cs50.net/sql/2024/x/psets/6/deep.zip" target="_blank" rel="noopener">deep.zip</a> ішіндегі <code>answers.md</code> файлында орындайсыз.</p>
+        <h4>Негіз</h4>
+        <p>AquaByte минутына бірнеше мың бақылау жібере алады, көбіне белгілі бір уақытта. Мысалы, кейбір балықтар жиі көрінетін кеште және ерте таңертеңде ол ең белсенді. Жіберілген әр жолдың <strong>бастапқы кілті</strong> - бақылаудың нақты уақыт белгісі, форматы <code>YYYY-MM-DD HH:MM:SS.SSS</code> (бұл - ISO8601 форматы).</p>
+        <p>Қарапайымдық үшін 2023 жылғы 1 қарашада AquaByte 6 бақылау жіберді делік. Әрбір бақылау өз бастапқы кілтімен (уақыт белгісімен) белгіленген көк тіктөртбұрыш ретінде көрсетілген. Ескерту сұрағы: ең көп бақылау қашан болды? <em>Жауап: 1 қарашада түнгі 12-ден таңғы 1-ге дейін.</em></p>
+        <h4>Бөліктер (partitions)</h4>
+        <p>AquaByte алты бақылауды жер бетіндегі қайықтар желісіне жібереді: <strong>A қайығы, B қайығы, C қайығы</strong>. Қайық көп болса, бір қайыққа сыймайтын көп деректі жіберуге болады, бірақ жүйе күрделенеді. Деректі бір рет сақтап қойған соң оны қозғамасақ, әр бақылауды <em>қай қайыққа</em> жіберу керек? Бұл - деректі <strong>бөлу</strong> (<span class="term-en">partitioning</span>) мәселесі. Үш тәсілді талдайсыз: әр тәсілде екі-үш ой сұрағына жауап беріп, <code>answers.md</code>-дегі тиісті бөлімге 2-3 сөйлем жазасыз.</p>
+
+        <h4>1) Кездейсоқ бөлу (Random Partitioning)</h4>
+        <p>AquaByte бақылауларды әр қайыққа кездейсоқ жібереді.</p>
+        <details class="think"><summary>Ой сұрағы: бақылаулар қайықтарға тең бөлінеді ме (ең көп бақылау түн ортасы мен таңғы 1 аралығында болса да)?</summary><div class="details-body"><p><strong>Иә, тең бөлінеді.</strong> Әр бақылау кез келген қайыққа бірдей ықтималдықпен түседі, сондықтан түнгі 12-ден 1-ге дейін көп бақылау жиналса да, олар қайықтарға тең таралады.</p></div></details>
+        <details class="think"><summary>Ой сұрағы: түн ортасынан таңғы 1-ге дейінгі барлық бақылауды сұрау үшін қанша қайықта сұрау орындалады?</summary><div class="details-body"><p><strong>Барлық қайықта.</strong> Әр бақылау үш қайықтың кез келгенінде болуы мүмкін. Сұрауды бір қайықта ғана орындасақ, басқа қайықтардағы бақылауларды жіберіп алуымыз мүмкін.</p></div></details>
+        <p>Енді жазыңыз: осы тәсілді қолдану <em>себептері</em> мен <em>қолданбау себептері</em> туралы 2-3 сөйлемді <code>answers.md</code>-дегі «Random Partitioning» бөліміне.</p>
+
+        <h4>2) Сағат бойынша бөлу (Partitioning by Hour)</h4>
+        <p>Енді жоғарыдағы себептермен кездейсоқ тәсілден бас тартып, деректі <strong>тәулік уақыты</strong> бойынша бөлуді ұсынады:</p>
+        <table>
+          <thead><tr><th>Қайық</th><th>Сағат аралығы</th></tr></thead>
+          <tbody>
+            <tr><td>A</td><td>0-7 (түн ортасынан 7:59-ға дейін)</td></tr>
+            <tr><td>B</td><td>8-15 (8:00-ден 15:59-ға дейін)</td></tr>
+            <tr><td>C</td><td>16-23 (16:00-ден 23:59-ға дейін)</td></tr>
+          </tbody>
+        </table>
+        <details class="think"><summary>Ой сұрағы: бақылаулар қайықтарға тең бөлінеді ме?</summary><div class="details-body"><p><strong>Жоқ.</strong> Бақылаулардың көбі түн ортасы мен таңғы 1 аралығында болса, ал 0-7 сағаттар A қайығына тиесілі болса, бақылаулардың басым бөлігі A қайығына түседі.</p></div></details>
+        <details class="think"><summary>Ой сұрағы: түн ортасынан таңғы 1-ге дейінгі бақылауды сұрағанда қанша қайыққа жүгінеміз?</summary><div class="details-body"><p><strong>Тек біреуіне</strong> (A қайығына). Барлық түнгі 12-1 аралығындағы бақылау A қайығында екенін білеміз.</p></div></details>
+        <p>Осы тәсілдің себептері мен кемшіліктері туралы 2-3 сөйлемді «Partitioning by Hour» бөліміне жазыңыз.</p>
+
+        <h4>3) Хэш мәні бойынша бөлу (Partitioning by Hash Value)</h4>
+        <p>Команда бақылауларды уақыт белгісінің <strong>хэш мәні</strong> бойынша бөлуді ұсынады. <strong>Хэш функциясы</strong> (<span class="term-en">hash function</span>) - кіріс деректі (мысалы, уақыт белгісін) алып, кірістің негізінде ерікті санды (хэш мәнін) шығаратын алгоритм. Айталық, команда әр мүмкін бастапқы кілтке 0-ден 1 499-ға дейін мән беретін хэш функциясын жасады. Мысалы:</p>
+        <ul>
+          <li><code>2023-11-01 00:00:01.020</code> үшін хэш мәні 45;</li>
+          <li><code>2023-11-01 16:21:59.924</code> үшін хэш мәні 588;</li>
+          <li><code>2023-11-01 00:00:04.127</code> үшін хэш мәні 1200.</li>
+        </ul>
+        <p>Функция <strong>дәйекті</strong>: бірдей уақыт белгісіне әрдайым бірдей мән береді. Және ол уақыт белгілерін барлық мүмкін мәндерге <strong>тең</strong> таратады: бір бақылаудың белгілі бір мәнді алу ықтималдығы басқасынан артық емес.</p>
+        <details class="think"><summary>Ой сұрағы: бақылаулар қайықтарға тең бөлінеді ме?</summary><div class="details-body"><p><strong>Иә.</strong> Әр бақылаудың бір хэш мәнін алу ықтималдығы басқасынан артық емес, сондықтан кез келген бақылау үш қайықтың кез келгеніне түсе алады.</p></div></details>
+        <details class="think"><summary>Ой сұрағы: түн ортасынан таңғы 1-ге дейінгі бақылаулар <em>аралығын</em> сұрағанда қанша қайыққа жүгінеміз?</summary><div class="details-body"><p><strong>Көбіне барлығына.</strong> Нақты бір бақылаудың хэш мәнін білуге болады, бірақ бақылаулар <em>аралығындағы</em> әр бақылау ерікті хэш мәнін алуы мүмкін: хэш мәндерінің өзі белгілі бір аралықта тұрмайды. Сондықтан сұрауды барлық қайықта орындаған дұрыс.</p></div></details>
+        <details class="think"><summary>Ой сұрағы: нақты бір бақылауды (<code>2023-11-01 00:00:01.020</code>) іздегенде қанша қайыққа жүгінеміз?</summary><div class="details-body"><p><strong>Тек біреуіне.</strong> Нақты уақыт белгісінің хэш мәнін есептеуге болады, ал ол сол бақылаудың қай қайықта екенін көрсетеді.</p></div></details>
+        <p>Осы тәсілдің себептері мен кемшіліктері туралы 2-3 сөйлемді «Partitioning by Hash Value» бөліміне жазыңыз.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Үш тәсілді екі өлшем бойынша салыстырыңыз: (1) <em>жүктеме қаншалықты тең бөлінеді</em> (қызу нүкте бар ма?); (2) <em>қандай сұрау бірнеше қайыққа жүгінуді талап етеді</em> (аралық сұрау ма, әлде нақты бір кілт пе?). Бірде-бір тәсіл бәрінде жақсы емес: әр жерде келісім бар. Жауапты тек өз сөзіңізбен жазыңыз.</p></div></details>
+        <p><strong>Жаттығу (сайттың өз жиыны).</strong> Осы үш тәсілді нақты деректерде сезініп көріңіз: <code>observations</code> кестесінде 1 қарашаның бақылаулары, көбі түнгі сағатта. Бұл - ресми тапсырма емес, талдауды деректермен бекіту үшін.</p>
+        <div class="sql-grader" data-set="sql6-deep" data-src="sql/data/week-6.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql6-deep">
+            <li><input type="checkbox"> <span><code>answers.md</code> ішінде үш бөлімнің әрқайсысында 2-3 сөйлем бар.</span></li>
+            <li><input type="checkbox"> <span>Әр бөлімде тәсілді қолдану себебі де, қолданбау себебі де айтылған.</span></li>
+            <li><input type="checkbox"> <span>Жүктеменің тең бөлінуі мен сұрау қанша қайыққа жүгінетіні ескерілген.</span></li>
+            <li><input type="checkbox"> <span><code>submit50 cs50/problems/2024/sql/deep</code> орындалды.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <h2 id="congrats">Құттықтаймыз: курс аяқталды!</h2>
+      <div class="callout tip">
+        <span class="callout-title">Сіз CS50 SQL курсын бітірдіңіз</span>
+        <p>Алты апта бұрын сіз SQLite-та алғашқы <code>SELECT</code> сұрауын жазған едіңіз. Бүгін сіз дерекқорды <strong>жобалай</strong> аласыз, оған <strong>деректі жаза және оқи</strong> аласыз, сұрауларды <strong>оңтайландыра</strong> аласыз және дерекқорды <strong>масштабтап, қорғай</strong> аласыз. Осының бәрін MySQL мен PostgreSQL-де де істеуге болатын тұғыр қалыптастырдыңыз. Бұл - сүйсінерлік жетістік. Жарайсыз!</p>
+      </div>
+      <p>Бір-ақ жолмен қайталайық: әр апта бір қабатты қосты. Ең алдымен <em>сұрау</em> (SELECT, WHERE, GROUP BY), сосын <em>байланыстар</em> (JOIN, кілттер), <em>дизайн</em> (ER диаграмма, нормалау), <em>жазу</em> (INSERT, UPDATE, DELETE, транзакциялар), <em>оңтайландыру</em> (индекс, view, сұраулардың жылдамдығы) және, ақыры, <em>масштабтау</em> мен <em>қауіпсіздік</em>.</p>
+      <p>Алдағы жолыңыз: үйренгеніңізді нақты жобада қолданыңыз. Өз қолданбаңыз үшін дерекқор жобалаңыз, шағын жоба жасаңыз, ал дерекқор қауіпсіздігін әрдайым есте ұстаңыз: ең аз құқық қағидасы мен дайындалған сұраулар. Сіздің еңбегіңіз марапатқа лайық!</p>
+      <p><a class="btn" href="../../certificate.html?course=sql">🎓 CS50 SQL сертификатын алу</a></p>
+
+            <nav class="pager">
+        <a href="week-5.html"><small>Алдыңғы</small>← 5-апта: Оңтайландыру</a>
+        <a class="next" href="../index.html"><small>Келесі</small>CS50 SQL: барлық лекциялар →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 SQL (CS50's Introduction to Databases with SQL, Гарвард университеті, David J. Malan, Carter Zenke) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

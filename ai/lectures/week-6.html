@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 AI 6-апта: Тіл - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 AI 6-апта: Тіл - CS50 қазақша">
+  <meta property="og:description" content="CS50 AI 6-апта: тіл, контексттен бос грамматика, n-граммалар, сөз векторлары (word2vec), назар аудару және трансформерлер.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/ai/lectures/week-6.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 AI 6-апта: тіл, контексттен бос грамматика, n-граммалар, сөз векторлары (word2vec), назар аудару және трансформерлер.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+        <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#c42a68" data-n="6">
+        <div class="num">6-апта</div>
+        <h1>Тіл</h1>
+        <p>Соңғы лекцияда компьютерге адам тілін үйретеміз: сөйлемнің құрылымын грамматикамен сызамыз, сөздерді сандарға айналдырамыз, ал «назар аудару» мен трансформерлер арқылы бүгінгі тілдік модельдердің қалай жұмыс істейтінін көреміз.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/ai/notes/6/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Осыған дейін біз тапсырмаларды және деректерді жасанды интеллект өңдей алатындай етіп өзіміз «пішімдеп» бердік: торлар, графтар, кестелер, сандар. Бүгін керісінше: компьютер адамның өз тіліндегі мәтінді тікелей қабылдайды. Лекция соңында ChatGPT сияқты жүйелердің негізінде жатқан идеяларға, яғни <strong>трансформерге</strong> жетеміз. Бұл - CS50 AI-дың соңғы лекциясы.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="nlp">Тіл және табиғи тілді өңдеу</h2>
+      <p>Курстың басынан бері бір заңдылықты байқаған шығарсыз: жасанды интеллектке тапсырманы беру үшін алдымен оны компьютер түсінетін пішінге келтіретінбіз. Лабиринтті торға айналдырдық, білімді логикалық формулаларға, оқиғаларды ықтималдықтарға, суретті пиксельдер матрицасына. Ал бүгін біз өте үлкен сұрақты қоямыз: ал адамның өз тілін, яғни қазақшаны, ағылшыншаны, орысшаны компьютер қалай «түсінеді»? Мұны <strong>табиғи тілді өңдеу</strong> (<span class="term-en">natural language processing, NLP</span>) дейді. Бұл - жасанды интеллект адам тілін кіріс ретінде алатын барлық тапсырмалардың жиынтық аты.</p>
+      <p>Мысалдарды санап көрелік, олардың көбін күнделікті өмірде қолданып жүрміз:</p>
+      <ul>
+        <li><strong>автоматты қысқартпа жасау</strong> (<span class="term-en">automatic summarization</span>): ЖИ-ге ұзын мәтін береміз, ол қысқаша мазмұнын шығарады;</li>
+        <li><strong>ақпаратты бөліп алу</strong> (<span class="term-en">information extraction</span>): мәтіндер жиынынан (корпустан) нақты деректерді шығарып беру;</li>
+        <li><strong>тілді анықтау</strong> (<span class="term-en">language identification</span>): мәтін қай тілде жазылғанын айту;</li>
+        <li><strong>машиналық аударма</strong> (<span class="term-en">machine translation</span>): бір тілдегі мәтінді екінші тілге аудару (дәл осындай жүйелер Google Translate-тің ішінде);</li>
+        <li><strong>атаулы бірліктерді тану</strong> (<span class="term-en">named entity recognition</span>): мәтіндегі ұйымдардың, адамдардың, жерлердің аттарын тауып алу, мысалы компаниялар атауларын;</li>
+        <li><strong>сөйлеуді тану</strong> (<span class="term-en">speech recognition</span>): дауысты мәтінге айналдыру (телефондағы дауыстық диктовка);</li>
+        <li><strong>мәтінді жіктеу</strong> (<span class="term-en">text classification</span>): мәтіннің қандай түрге жататынын анықтау, мысалы спам не спам емес;</li>
+        <li><strong>сөз мағынасын ажырату</strong> (<span class="term-en">word sense disambiguation</span>): көп мағыналы сөздің дұрыс мағынасын таңдау. Ағылшынша <em>bank</em> сөзі қаржы мекемесін де, өзеннің жағасын да білдіреді. Қазақшада да сондай мысал көп: «жүз» (сан және бет), «қол» (дене мүшесі және су жайылған жерді білдіретін «қол», яғни сағасы).</li>
+      </ul>
+      <p>Бұл тапсырмалардың бәрінің тамыры бір: компьютер тілдің құрылымы мен мағынасын қалайда ұстап алуы керек. Осы екі ұғымнан бастайық.</p>
+
+      <h2 id="syntax-semantics">Синтаксис және семантика</h2>
+      <p>Алдымен екі сөзді ажыратып алайық. <strong>Синтаксис</strong> (<span class="term-en">syntax</span>) - сөйлемнің құрылымы, яғни сөздердің қалай тізілетіні. Ана тілінде сөйлейтін адам ретінде біз грамматикалық сөйлемді жасауға да, қате сөйлемді «құлағымызбен» ұстап алуға да қиналмаймыз. Лектордың өз мысалы: ағылшынша <em>«Just before nine o'clock Sherlock Holmes stepped briskly into the room»</em> («Сағат тоғызға аз қалғанда Шерлок Холмс бөлмеге жеделдете кірді») - грамматикалық дұрыс. Ал сөздерін шатастырып, <em>«Just before Sherlock Holmes nine o'clock stepped briskly the room»</em> десек, дәл сол сөздер, бірақ сөйлем құлаққа жат, яғни грамматикалық емес.</p>
+      <p>Синтаксис дұрыс болғанның өзінде сөйлем <strong>екіұшты</strong> болуы мүмкін. Мына сөйлемді қараңыз: <em>«I saw the man with the telescope»</em>. Мен кімді көрдім: дүрбісі бар адамды ма (the man with the telescope), әлде адамды дүрбімен қарап тұрып көрдім бе? Сөйлем бір, құрылым екі. Қазақшада да солай: «Мен дүрбісі бар адамды көрдім» не «Мен адамды дүрбімен көрдім» деп бір сөйлемді екіге бөлуге болады. Яғни, адам тілін талдайтын және шығаратын ЖИ синтаксисті меңгеруі керек.</p>
+      <p><strong>Семантика</strong> (<span class="term-en">semantics</span>) - сөздің не сөйлемнің мағынасы. Жоғарыдағы Холмс сөйлемін сөздерінің ретін өзгертіп, <em>«Sherlock Holmes stepped briskly into the room just before nine o'clock»</em> деп жазсақ, синтаксис басқа, бірақ мазмұн іс жүзінде бірдей. Тіпті <em>«A few minutes before nine, Sherlock Holmes walked quickly into the room»</em> дегенде сөздер де басқа, ал мағына тағы да өте жақын. Керісінше, сөйлем мінсіз грамматикалық бола тұра, мағынасы мүлде жоқ болуы мүмкін. Дәйексөзге айналған Хомскийдің мысалы: <em>«Colorless green ideas sleep furiously»</em> («Түссіз жасыл ойлар қаһарлана ұйықтайды»). Грамматикасы тап-тұйнақтай, мағынасы - ойдан шығарылған бос сөз. Тіл жүйесі үшін семантиканы да меңгеру қажет.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: Хомскийдің сөйлемі синтаксис бойынша дұрыс па, семантика бойынша ма?</summary>
+        <div class="details-body"><p>Синтаксис бойынша дұрыс: сын есім, сын есім, зат есім, етістік, үстеу - ағылшын тілінің заңына сай. Семантика бойынша мағынасыз: идея түссіз де, жасыл да бола алмайды, оның үстіне ұйықтамайды. Бұл жаттығу құрылым мен мағына екі бөлек нәрсе екенін көрсетеді, сондықтан біз оларды бөлек-бөлек үйретеміз.</p></div>
+      </details>
+
+      <h2 id="cfg">Контексттен бос грамматика</h2>
+      <p>Алдымен синтаксисті қарастырайық. <strong>Формалды грамматика</strong> (<span class="term-en">formal grammar</span>) - тілдегі сөйлемдерді жасайтын ережелер жүйесі. Біз қолданатын түрі - <strong>контексттен бос грамматика</strong> (<span class="term-en">context-free grammar, CFG</span>). Мұнда мәтін мағынасынан «тазартылады» да, сөйлемнің тек құрылымы формалды ережелермен сипатталады. Мысалы, мына қарапайым сөйлемді алайық:</p>
+      <ul><li>She saw the city. («Ол қаланы көрді.»)</li></ul>
+      <p>Бұл - қарапайым грамматикалық сөйлем, біздің мақсатымыз - оның құрылымын көрсететін <strong>синтаксистік ағаш</strong> (<span class="term-en">syntax tree</span>) жасау. Қалай бастаймыз? Әр сөзге оның <strong>сөз табын</strong> (<span class="term-en">part of speech</span>) беріп шығамыз. <em>She</em> мен <em>city</em> - зат есімдер, оларды <code>N</code> (noun) деп белгілейміз. <em>Saw</em> - етістік, <code>V</code> (verb). <em>The</em> - <strong>детерминатив</strong> (<span class="term-en">determiner</span>): ол келесі зат есімді белгілі немесе белгісіз ететін сөз (қазақ тілінде артикль жоқ, сондықтан бұл сөз табын «the», «a» арқылы елестетіңіз), оны <code>D</code> деп белгілейміз. Сонда сөйлем былай жазылады:</p>
+      <ul><li><code>N V D N</code></li></ul>
+      <p>Яғни әр сөзді мағынасынан сөз табына дейін «қысқарттық». Бірақ сөйлемдегі сөздер бір-бірімен байланысқан, түсіну үшін сол байланысты көру керек. <strong>Зат есім тіркесі</strong> (<span class="term-en">noun phrase, NP</span>) - зат есімге қосылатын сөздер тобы. Мысалы, <em>she</em> сөзі өз алдына зат есім тіркесі. <em>The city</em> да зат есім тіркесі, ол детерминатив пен зат есімнен тұрады. <strong>Етістік тіркесі</strong> (<span class="term-en">verb phrase, VP</span>) - етістікке қосылатын сөздер тобы. <em>Saw</em> - өзі бір етістік тіркесі, ал <em>saw the city</em> да етістік тіркесі: бұл жолы етістік пен зат есім тіркесінен, ал ол өз кезегінде детерминатив пен зат есімнен құралады. Ең соңында бүкіл сөйлем (<code>S</code>) мынадай ағашқа жиналады:</p>
+      <svg viewBox="0 0 440 290" role="img" aria-label="Синтаксистік ағаш: She saw the city" style="display:block;width:100%;max-width:460px;height:auto;margin:18px auto"><defs><marker id="ar-7631" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><line x1="220" y1="40" x2="60" y2="76" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="220" y1="40" x2="250" y2="76" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="60" y1="100" x2="60" y2="136" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="250" y1="100" x2="170" y2="136" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="250" y1="100" x2="335" y2="136" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="335" y1="160" x2="290" y2="196" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="335" y1="160" x2="380" y2="196" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><text x="220" y="28" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:16px;font-weight:700;" >S</text><text x="60" y="88" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:16px;font-weight:700;" >NP</text><text x="250" y="88" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:16px;font-weight:700;" >VP</text><text x="60" y="148" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:16px;font-weight:700;" >N</text><text x="170" y="148" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:16px;font-weight:700;" >V</text><text x="335" y="148" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:16px;font-weight:700;" >NP</text><text x="290" y="208" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:16px;font-weight:700;" >D</text><text x="380" y="208" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:16px;font-weight:700;" >N</text><line x1="60" y1="160" x2="60" y2="252" style="stroke:var(--border);stroke-width:1.2;fill:none"/><text x="60" y="268" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:15px;" >she</text><line x1="170" y1="160" x2="170" y2="252" style="stroke:var(--border);stroke-width:1.2;fill:none"/><text x="170" y="268" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:15px;" >saw</text><line x1="290" y1="220" x2="290" y2="252" style="stroke:var(--border);stroke-width:1.2;fill:none"/><text x="290" y="268" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:15px;" >the</text><line x1="380" y1="220" x2="380" y2="252" style="stroke:var(--border);stroke-width:1.2;fill:none"/><text x="380" y="268" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:15px;" >city</text></svg>
+      <p>Ағашты төменнен жоғары оқыңыз: сөздер - жапырақтар, олар сөз табына (<code>N</code>, <code>V</code>, <code>D</code>), одан тіркестерге (<code>NP</code>, <code>VP</code>) жиналып, ең жоғарыда <code>S</code> болып бір түйінге бірігеді. Осылай формалды грамматика арқылы ЖИ сөйлем құрылымын көрсете алады. Біздегі ережелер осы қарапайым сөйлемге жетеді, ал күрделі сөйлемдерді сипаттау үшін грамматикаға көбірек ереже қосуға тура келеді.</p>
+      <div class="callout term">
+        <span class="callout-title">Терминал және нетерминал</span>
+        <p>Грамматикада <strong>терминал символдар</strong> (<span class="term-en">terminal symbols</span>) - нақты сөздер (<code>"she"</code>, <code>"city"</code>): олар қайта жазылмайды, ағаштың жапырақтары. <strong>Нетерминал символдар</strong> (<span class="term-en">nonterminal symbols</span>) - <code>S</code>, <code>NP</code>, <code>VP</code>, <code>N</code> сияқты белгілер: олар ережелер арқылы басқа символдарға айналады. Бастапқы символ әрқашан <code>S</code> (сөйлем).</p>
+      </div>
+      <details class="think">
+        <summary>Ойланып көріңіз: бұл ережелер қазақ сөйлемі үшін де жарай ма?</summary>
+        <div class="details-body"><p>Жартылай ғана. Ағылшынша етістік зат есімнен бұрын келеді (<code>VP -> V NP</code>): «she saw the city». Қазақшада «Ол қаланы көрді»: зат есім бұрын, етістік соңында (<code>VP -> NP V</code>). Сонымен қатар қазақ тілінде артикль жоқ, ал жалғаулар (қаланы, қалада) мәселені басқаша шешеді. Яғни әр тілдің грамматикасын өзінше жазуға тура келеді. Бірақ идея бір: сөйлемді тіркестерге, тіркестерді сөздерге жіктейтін ережелер.</p></div>
+      </details>
+
+      <h2 id="nltk">nltk кітапханасы</h2>
+      <p>Python-да әдеттегідей, бұл идеяны біреу бізден бұрын жүзеге асырып қойған. Көптеген кітапхана бар, соның бірі - <strong>nltk</strong> (<span class="term-en">Natural Language Toolkit</span>). Жоғарыдағы сөйлемді талдау үшін алгоритмге грамматика ережелерін береміз:</p>
+<pre data-lang="python" data-norun><code class="language-python">import nltk
+
+grammar = nltk.CFG.fromstring("""
+    S -&gt; NP VP
+
+    NP -&gt; D N | N
+    VP -&gt; V | V NP
+
+    D -&gt; "the" | "a"
+    N -&gt; "she" | "city" | "car"
+    V -&gt; "saw" | "walked"
+""")
+
+parser = nltk.ChartParser(grammar)</code></pre>
+      <p>Біз жоғарыда қолмен істегенді осында ережелермен жазып тұрмыз: қандай символ қандай символдардан тұра алатынын айтамыз. Сөйлем зат есім тіркесі мен етістік тіркесінен тұрады (<code>S -&gt; NP VP</code>). Тіркестердің өзі басқа тіркестерден, зат есімдерден, етістіктерден құралуы мүмкін. Тік сызық <code>|</code> «не біреуі, не екіншісі» дегенді білдіреді: <code>NP -&gt; D N | N</code> - «зат есім тіркесі не детерминатив пен зат есім, не жай ғана зат есім». Ең соңында әр сөз табына нақты сөздер беріледі.</p>
+<pre data-lang="python" data-norun><code class="language-python">sentence = input("Sentence: ").split()
+try:
+    for tree in parser.parse(sentence):
+        tree.pretty_print()
+        tree.draw()
+except ValueError:
+    print("No parse tree possible.")</code></pre>
+      <p>Енді сөйлемді сөздер тізіміне бөліп (<code>.split()</code>), парсерге береміз. Бағдарлама табылған синтаксистік ағашты мәтін түрінде шығарады (<code>pretty_print</code>) және сурет терезесін де ашады (<code>draw</code>). Егер сөйлемді грамматикамыз бойынша талдау мүмкін болмаса, <code>ValueError</code> шығады, біз оны ұстап, «ағаш жоқ» деп жазамыз. Бұл процесті <strong>синтаксистік талдау</strong> (<span class="term-en">parsing</span>) дейді.</p>
+      <div class="callout note">
+        <span class="callout-title">Сайтта орындалмайды</span>
+        <p><code>nltk</code> кітапханасы браузердегі Python-да (Pyodide) жоқ, сондықтан бұл мысалдар «іске қосу» батырмасынсыз берілген. Оларды өз компьютеріңізде <code>pip install nltk</code> арқылы орнатып, іске қосып көріңіз. Дәл осы құралмен Problem Set 6-ның Parser тапсырмасын орындайсыз.</p>
+      </div>
+
+      <h2 id="ngrams"><i>n</i>-граммалар</h2>
+      <p>Енді ережелерден тыс, мәтіннің өзіне, яғни статистикаға көшейік. <strong><i>n</i>-грамма</strong> (<span class="term-en"><i>n</i>-gram</span>) - мәтіннен алынған <i>n</i> элементтен тұратын қатар. Элементтер таңбалар болса, бұл <strong>таңбалық <i>n</i>-грамма</strong> (<span class="term-en">character <i>n</i>-gram</span>), сөздер болса - <strong>сөздік <i>n</i>-грамма</strong> (<span class="term-en">word <i>n</i>-gram</span>). Бір, екі, үш элементтен тұратын қатарларды <strong>униграмма</strong>, <strong>биграмма</strong>, <strong>триграмма</strong> дейді. Мына сөйлемдегі алғашқы үш сөздік триграмма - «how often have», «often have I» және «have I said»:</p>
+      <blockquote><p>“How often have I said to you that when you have eliminated the impossible whatever remains, however improbable, must be the truth?”</p></blockquote>
+      <p>(«Мүмкін еместі алып тастағанда, қалғаны қаншалықты күмәнді көрінсе де, шындық болуға тиіс екенін сізге неше рет айттым?» - Шерлок Холмс).</p>
+      <p>Бұл не үшін керек? Модель бүкіл сөйлемді бұрын көрмеген болуы мүмкін, бірақ оның бөліктерін, мысалы «have I said» тіркесін, міндетті түрде көрген. Және кейбір сөздер басқаларына қарағанда жиі қатар жүреді. Демек, келесі сөзді белгілі бір ықтималдықпен болжауға болады. Смартфон пернетақтасы келесі сөзді дәл осылай ұсынады: соңғы бірнеше сөзіңізге қарап, ықтималдық үлестірімінен ең ықтимал сөздерді көрсетеді. Сондықтан мәтінді <i>n</i>-граммаларға бөлу табиғи тілді өңдеудегі пайдалы қадам.</p>
+      <p>Мұны өзіміз қолмен көрейік. Қазақша үш сөйлемнен биграммалар жасап, «мен» сөзінен кейін қандай сөз келетінін санап көреміз:</p>
+<pre data-lang="python"><code class="language-python">from collections import Counter
+
+text = "мен кітап оқимын. мен шай ішемін. мен кітап жазамын."
+words = text.replace(".", "").split()
+
+bigrams = list(zip(words, words[1:]))
+print(bigrams[:4])
+
+# "мен" сөзінен кейін қандай сөз келеді?
+after = Counter(b for a, b in bigrams if a == "мен")
+total = sum(after.values())
+for word, count in after.items():
+    print(f"P({word} | мен) = {count}/{total} = {count / total:.2f}")</code></pre>
+      <p>Нәтижесінде «мен» сөзінен кейін «кітап» үштің екеуінде (0.67), «шай» біреуінде (0.33) келетінін көресіз. Міне, келесі сөзді болжайтын ең қарапайым модель осы. Бағдарламаның үш жолы бар, ал смартфондағы болжам да негізінен осы идеяға сүйенеді, тек мәтіні әлдеқайда көп.</p>
+
+      <h2 id="tokenization">Токенизация</h2>
+      <p><i>n</i>-граммалармен жұмыс істеу үшін алдымен мәтінді бөліктерге бөліп алуымыз керек. <strong>Токенизация</strong> (<span class="term-en">tokenization</span>) - таңбалар қатарын бөліктерге (<strong>токендерге</strong>, <span class="term-en">tokens</span>) бөлу міндеті. Токендер сөздер де, сөйлемдер де болуы мүмкін. Сәйкесінше бұл <strong>сөздік токенизация</strong> (<span class="term-en">word tokenization</span>) және <strong>сөйлемдік токенизация</strong> (<span class="term-en">sentence tokenization</span>) деп аталады. Бізге ол <i>n</i>-граммалар үшін қажет: олар токендер қатарына сүйенеді.</p>
+      <p>Ең қарапайым бастама: мәтінді бос орын таңбасы бойынша сөздерге бөлу. Жақсы бастама, бірақ жеткіліксіз: нәтижеде тыныс белгісі жабысқан сөздер қалады, мысалы «remains,» (үтірмен). Онда тыныс белгілерін алып тастайық дейміз. Бірақ жаңа қиындықтар шығады: апострофы бар сөздер (<em>o'clock</em>), дефисі бар сөздер (<em>pearl-grey</em>). Оның үстіне кейбір тыныс белгілері сөйлем құрылымы үшін маңызды, мысалы нүкте. Ал «Mr.» сөзінің соңындағы нүктені сөйлем соңындағы нүктеден қалай ажыратамыз? Қазақшада да сондай: «т.б.», «ж.», «Қ. Сәтбаев». Осы сұрақтарды шешу - токенизацияның өзі. Токендерді алған соң ғана <i>n</i>-граммаларға көшеміз.</p>
+
+      <h2 id="markov">Марков модельдері</h2>
+      <p>Алдыңғы лекциялардан білетініміздей, <strong>Марков модельдері</strong> (<span class="term-en">Markov models</span>) түйіндерден тұрады және әр түйіннің мәні өзінен бұрынғы шектеулі санды түйіндерге байланысты ықтималдық үлестірімімен беріледі. Осы модельдермен мәтін де жасауға болады. Модельді мәтінге үйретеміз де, <i>n</i>-граммадағы әрбір <i>n</i>-ші токеннің ықтималдығын одан бұрынғы сөздер бойынша белгілейміз. Мысалы, триграммалармен жұмыс істесек: модельде екі сөз бар болғанда, үшіншісін сол екі сөзге негізделген ықтималдық үлестірімінен таңдайды. Сосын екінші және үшінші сөз бойынша төртіншісін таңдайды, және солай жалғаса береді.</p>
+      <p>Курстың бастапқы кодында <code>generator.py</code> бар: онда <code>nltk</code> көмегімен осындай модель Шекспир мәтіндеріне үйретіліп, «шекспирше» сөйлемдер жасайды. Нәтиже таңқаларлық: сөйлемдер көбіне грамматикалық дұрыс және адам тіліне үстірт ұқсайды. Бірақ оқып көрсеңіз, мағынасы мен мақсаты жоқ екенін сезесіз. Модель сөздердің қатар жүруін ғана біледі, нені айтқысы келетінін білмейді.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: триграммалық модельге неге сөйлемнің басы мен соңы «түсініксіз» болып қала береді?</summary>
+        <div class="details-body"><p>Себебі ол тек соңғы екі сөзге қарайды. Бастапқы ойды, тақырыпты, тіпті бір абзацтың басындағы сөзді «ұмытып» қояды. Сондықтан ұзын мәтінде тақырыптан алшақтап кетеді. Осы әлсіздіктен кейінірек «назар аудару» идеясына келеміз.</p></div>
+      </details>
+
+      <h2 id="bag-of-words">Сөздер қапшығы моделі</h2>
+      <p><strong>Сөздер қапшығы</strong> (<span class="term-en">bag-of-words</span>) - мәтінді сөздердің реттелмеген жиыны ретінде көрсететін модель. Қапшыққа бір уыс сөзді салып, шайқап жібергендей: ретін, яғни синтаксисті, ескермейді, тек сөздердің мағынасына қарайды. Бұл тәсіл кейбір жіктеу тапсырмаларында тамаша жұмыс істейді. Мысалы, <strong>сезімді талдауда</strong> (<span class="term-en">sentiment analysis</span>) (тағы бір жіктеу мысалы - қарапайым хатты спам хаттан ажырату). Сезімді талдауды, мәселен, тауар пікірлерін оң немесе теріс деп бөлуге қолдануға болады. Мына төрт сөйлемді қараңыз:</p>
+      <ol>
+        <li>“My grandson loved it! So much fun!” («Немерем ұнатты! Қандай қызық!»)</li>
+        <li>“Product broke after a few days.” («Тауар бірнеше күннен кейін сынды.»)</li>
+        <li>“One of the best games I've played in a long time.” («Көптен бергі ең жақсы ойындардың бірі.»)</li>
+        <li>“Kind of cheap and flimsy, not worth it.” («Арзан әрі нәзік, тұрмайды.»)</li>
+      </ol>
+      <p>Грамматиканы ескермей, тек сөздерге қарасақ, 1 және 3 сөйлем оң («loved», «fun», «best»), ал 2 және 4 теріс («broke», «cheap», «flimsy») екені көрініп тұр. Сөздер өздері үшін сөйлейді.</p>
+
+      <h2 id="naive-bayes">Аңғал Байес</h2>
+      <p><strong>Аңғал Байес</strong> (<span class="term-en">naive Bayes</span>) - сөздер қапшығы моделімен бірге сезімді талдауда қолданылатын тәсіл. Біз мына сұраққа жауап іздейміз: «сөйлемдегі сөздерді білгенде, сөйлемнің оң (не теріс) болу ықтималдығы қандай?». Бұл шартты ықтималдық, сондықтан 2-лекциядағы <strong>Байес ережесін</strong> еске түсірейік:</p>
+      <p style="text-align:center"><code>P(b | a) = P(a | b) · P(b) / P(a)</code></p>
+      <p>Біздің мақсат - <code>P(сезім | мәтін)</code> табу, мысалы <code>P(positive | "my grandson loved it")</code>. Алдымен кірісті токендерге бөлеміз: <code>P(positive | "my", "grandson", "loved", "it")</code>. Байес ережесін тікелей қолдансақ, былай шығады:</p>
+      <p style="text-align:center"><code>P("my","grandson","loved","it" | positive) · P(positive) / P("my","grandson","loved","it")</code></p>
+      <p>Бұл күрделі өрнек дәл жауап береді. Бірақ егер біз <em>тең</em> емес, тек <em>пропорционал</em> жауапқа келісетін болсақ, оны жеңілдетуге болады. Себебі ықтималдықтар қосындысы 1 болуы керек, сондықтан соңында шыққан мәндерді нормалдап (қосындыға бөліп), нақты ықтималдыққа айналдырамыз. Яғни бөлгіштен құтыламыз да, тек алымын қалдырамыз: <code>P("my","grandson","loved","it" | positive) · P(positive)</code>. Тағы бір жеңілдету: <code>a</code> берілгенде <code>b</code>-ның шартты ықтималдығы <code>a</code> мен <code>b</code>-ның бірлескен ықтималдығына пропорционал. Сонда өрнек <code>P(positive, "my", "grandson", "loved", "it")</code> болады.</p>
+      <p>Бірақ бұл бірлескен ықтималдықты есептеу қиын: әр сөздің ықтималдығы өзінен бұрынғы сөздерге байланысты. Тізбектей жазсақ, мынау шығады:</p>
+      <p style="text-align:center"><code>P(positive) · P("my" | positive) · P("grandson" | positive, "my") · P("loved" | positive, "my", "grandson") · P("it" | positive, "my", "grandson", "loved")</code></p>
+      <p>Міне, осы жерде Байес ережесін «аңғалдықпен» қолданамыз: <strong>әр сөздің ықтималдығы басқа сөздерге тәуелсіз</strong> деп есептейміз. Шындығында олай емес («grandson» мен «loved» бір-біріне әсер етеді), бірақ осындай дәлсіздікке қарамастан, аңғал Байес сезімді жақсы бағалайды. Осы жорамалмен өрнек әлдеқайда қарапайым болады:</p>
+      <p style="text-align:center"><code>P(positive) · P("my" | positive) · P("grandson" | positive) · P("loved" | positive) · P("it" | positive)</code></p>
+      <p>Мұны есептеу қиын емес. <code>P(positive)</code> - оң үлгілер санын барлық үлгілер санына бөлгенге тең. <code>P("loved" | positive)</code> - «loved» сөзі бар оң үлгілер санын барлық оң үлгілер санына бөлгенге тең. Лекциядағы мысалды қараңыз (онда «оң» және «теріс» сөздері күлетін және қабағын түйген смайликтермен белгіленген). Мұнда бірінші кестеде сөйлемнің оң немесе теріс болу ықтималдығы, екіншісінде әр сөздің оң және теріс сөйлемде кездесу ықтималдығы берілген:</p>
+      <table>
+        <thead><tr><th>Сөйлем түрі</th><th>P(түрі)</th></tr></thead>
+        <tbody><tr><td>оң (positive)</td><td>0.49</td></tr><tr><td>теріс (negative)</td><td>0.51</td></tr></tbody>
+      </table>
+      <table>
+        <thead><tr><th>Сөз</th><th>P(сөз | оң)</th><th>P(сөз | теріс)</th></tr></thead>
+        <tbody>
+          <tr><td>my</td><td>0.30</td><td>0.20</td></tr>
+          <tr><td>grandson</td><td>0.01</td><td>0.02</td></tr>
+          <tr><td>loved</td><td>0.32</td><td>0.08</td></tr>
+          <tr><td>it</td><td>0.30</td><td>0.40</td></tr>
+        </tbody>
+      </table>
+      <p>Көбейтіндіні есептесек, оң үшін <code>0.00014112</code>, теріс үшін <code>0.00006528</code> шығады. Бұл сандар бір-бірімен салыстырғанда ғана мәнді, ықтималдық ретінде көп нәрсе айтпайды. Ықтималдыққа айналдыру үшін нормалдаймыз: <code>P(positive) = 0.6837</code> және <code>P(negative) = 0.3163</code>. Аңғал Байестің күші - бір түрлі сөйлемде екіншісіне қарағанда жиірек кездесетін сөздерге сезімтал болуында. Біздің мысалда «loved» оң сөйлемдерде әлдеқайда жиі кездеседі, сондықтан бүкіл сөйлем оңға қарай «ауады». Өзіңіз де есептеп көріңіз:</p>
+<pre data-lang="python"><code class="language-python"># Аңғал Байес: P(оң) және P(теріс) ықтималдықтарын салыстыру
+p_pos, p_neg = 0.49, 0.51
+
+p_word_pos = {"my": 0.30, "grandson": 0.01, "loved": 0.32, "it": 0.30}
+p_word_neg = {"my": 0.20, "grandson": 0.02, "loved": 0.08, "it": 0.40}
+
+words = ["my", "grandson", "loved", "it"]
+
+pos, neg = p_pos, p_neg
+for w in words:
+    pos *= p_word_pos[w]
+    neg *= p_word_neg[w]
+
+print(f"оң (пропорционал):    {pos:.8f}")
+print(f"теріс (пропорционал): {neg:.8f}")
+
+# нормалдау: екеуінің қосындысы 1 болсын
+total = pos + neg
+print(f"P(positive) = {pos / total:.4f}")
+print(f"P(negative) = {neg / total:.4f}")</code></pre>
+      <p>Курстың бастапқы кодындағы <code>sentiment.py</code> файлында дәл осындай сезімді бағалау <code>nltk</code> кітапханасымен жасалған.</p>
+
+      <h3 id="smoothing">Қосымша тегістеу</h3>
+      <p>Мұнда бір қиындық бар. Кейбір сөздер белгілі бір түрдегі сөйлемде ешқашан кездеспеуі мүмкін. Айталық, біздің үлгідегі оң сөйлемдердің ешқайсысында «grandson» сөзі жоқ. Сонда <code>P("grandson" | positive) = 0</code>, ал көбейтіндіде бір нөл бәрін нөлге айналдырады: сөйлемнің оң болу ықтималдығы 0 болып шығады. Бірақ шындығында олай емес: немере туралы барлық сөйлем теріс емес қой. Бұл мәселенің бір шешімі - <strong>қосымша тегістеу</strong> (<span class="term-en">additive smoothing</span>): үлестірімдегі әр мәнге α шамасын қосып, деректерді «тегістейміз». Сонда мән нөл болса да, оған α қосылып, бүкіл көбейтіндіні нөлге көбейтіп жібермейміз. Оның <strong>Лаплас тегістеуі</strong> (<span class="term-en">Laplace smoothing</span>) деген жеке түрі әр мәнге 1 қосады, яғни барлық мән кемінде бір рет кездескен сияқты көрінеді.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: егер тегістеусіз, бір сөз үшін ықтималдық 0 болса, не болады?</summary>
+        <div class="details-body"><p>Көбейтінді толықтай 0 болады, сөйлемдегі қалған барлық сөз («loved», «best», «fun») жоққа шығады, олардың дәлелі ескерілмейді. Бір ғана сирек сөз бүкіл сөйлемнің бағасын құртып жібереді. Лаплас тегістеуі әр санауышқа 1 қосып, мұны болдырмайды.</p></div>
+      </details>
+
+      <h2 id="word-representation">Сөзді ұсыну</h2>
+      <p>Енді негізгі сұраққа келейік: сөздердің <em>мағынасын</em> ЖИ-де қалай көрсетеміз? Бұрын көргеніміздей, ЖИ-ге кірісті сандар түрінде беру ыңғайлы. Бір жол - <strong>one-hot ұсыну</strong> (<span class="term-en">one-hot representation</span>). Мұнда әр сөз вектормен беріледі, оның ұзындығы сөздер санына тең. Біреуінен басқасының бәрі 0, ал бір орында 1 тұрады. Сөздерді «қай орында 1 тұр» деген белгі арқылы ажыратамыз да, әр сөзге бірегей вектор аламыз. Мысалы, <em>He wrote a book</em> («Ол кітап жазды») сөйлемін төрт вектор етіп жазуға болады:</p>
+      <table>
+        <thead><tr><th>Сөз</th><th colspan="4">Вектор</th></tr></thead>
+        <tbody>
+          <tr><td>he</td><td>1</td><td>0</td><td>0</td><td>0</td></tr>
+          <tr><td>wrote</td><td>0</td><td>1</td><td>0</td><td>0</td></tr>
+          <tr><td>a</td><td>0</td><td>0</td><td>1</td><td>0</td></tr>
+          <tr><td>book</td><td>0</td><td>0</td><td>0</td><td>1</td></tr>
+        </tbody>
+      </table>
+      <p>Төрт сөзі бар әлемде бұл жұмыс істейді. Бірақ шын сөздікті алсақ, онда 50&nbsp;000 сөз болуы мүмкін, сонда ұзындығы 50&nbsp;000 болатын 50&nbsp;000 вектор шығады. Бұл қайран қалдырарлықтай тиімсіз. Екінші мәселе одан да маңызды: мұндай ұсынуда «wrote» мен «authored» сөздерінің ұқсастығын көрсете алмаймыз. Екеуі де бірдей мағынада, бірақ олардың векторлары бір-біріне мүлдем ұқсамайды: әрқайсысының 1-і өз орнында, барлық сөз бірдей «алшақ».</p>
+      <p>Сондықтан басқа идеяға, яғни <strong>үлестірілген ұсынуға</strong> (<span class="term-en">distributed representation</span>) жүгінеміз. Мұнда мағына вектордың көптеген мәніне <em>таратылады</em>. Әр вектордың мәндер саны шектеулі (50&nbsp;000-нан әлдеқайда аз) және мынадай түрде болады:</p>
+      <table>
+        <thead><tr><th>Сөз</th><th colspan="5">Вектор</th></tr></thead>
+        <tbody>
+          <tr><td>he</td><td>-0.34</td><td>-0.08</td><td>0.02</td><td>-0.18</td><td>…</td></tr>
+          <tr><td>wrote</td><td>-0.27</td><td>0.40</td><td>0.00</td><td>-0.65</td><td>…</td></tr>
+          <tr><td>a</td><td>-0.12</td><td>-0.25</td><td>0.29</td><td>-0.09</td><td>…</td></tr>
+          <tr><td>book</td><td>-0.23</td><td>-0.16</td><td>-0.05</td><td>-0.57</td><td>…</td></tr>
+        </tbody>
+      </table>
+      <p>Бұл әр сөзге бірегей мәндер береді, векторлар да әлдеқайда қысқа. Сонымен қатар енді сөздер арасындағы ұқсастықты олардың векторларындағы мәндердің қаншалықты өзгеше екені бойынша көрсетуге болады. Екі вектордың «қаншалықты ұқсас» екенін өлшеудің кең тараған тәсілі - <strong>косинус ұқсастығы</strong> (<span class="term-en">cosine similarity</span>): векторлар арасындағы бұрыштың косинусы. Бір бағытқа қараған векторлар үшін ол 1-ге жақын, перпендикуляр векторлар үшін 0. Мына кішкентай мысалда тексеріп көріңіз (векторлар ойдан шығарылған):</p>
+<pre data-lang="python"><code class="language-python">import math
+
+
+def cosine(a, b):
+    dot = sum(x * y for x, y in zip(a, b))
+    na = math.sqrt(sum(x * x for x in a))
+    nb = math.sqrt(sum(y * y for y in b))
+    return dot / (na * nb)
+
+
+# ойдан шығарылған шағын "сөз векторлары"
+vectors = {
+    "wrote":    [-0.27, 0.40, 0.00, -0.65],
+    "authored": [-0.25, 0.38, 0.05, -0.60],
+    "book":     [-0.23, -0.16, -0.05, -0.57],
+    "he":       [-0.34, -0.08, 0.02, -0.18],
+}
+
+for word in ("authored", "book", "he"):
+    print(f"wrote ~ {word}: {cosine(vectors['wrote'], vectors[word]):.3f}")</code></pre>
+      <p>«wrote» пен «authored» арасындағы ұқсастық 1-ге өте жақын (0.998), ал «he» сөзімен әлдеқайда төмен. Біздің үлестірілген ұсыну дәл осыған қабілетті, ал one-hot ұсынуда мұның бәрі бірдей болар еді.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: one-hot векторлары үшін «wrote» мен «authored» арасындағы косинус ұқсастығы неге тең?</summary>
+        <div class="details-body"><p>0-ге. Екі one-hot вектордың 1-дері әр түрлі орында тұрғандықтан, олардың скаляр көбейтіндісі нөл, яғни олар «перпендикуляр». Бұл ұсыну кез келген екі сөзді бірдей алшақ көреді: «wrote» мен «authored» да, «wrote» мен «банан» да. Ұқсастықты көрсету үшін жаңа тәсіл керек болды.</p></div>
+      </details>
+      <p>Ағылшын лингвисі Дж. Р. Фирттің атақты сөзі бар: <em>«You shall know a word by the company it keeps»</em> («Сөзді оның жанындағы «сырласына» қарап танисың»). Қазақ мақалы да осыны айтады: «Досыңды көрсет, мен сені айтайын». Осы идеяға сүйеніп, сөзді оның көршілері арқылы анықтауға болады. Мысалы, <em>«for ___ he ate»</em> («... үшін ол жеді») сөйлемін толықтыратын сөздер шектеулі: «breakfast», «lunch», «dinner» болар. Демек, сөз қандай ортада жүретінін қарап, оның мағынасын болжай аламыз.</p>
+
+      <h2 id="word2vec">word2vec</h2>
+      <p><strong>word2vec</strong> - сөздердің үлестірілген ұсыныстарын жасайтын алгоритм. Ол мұны <strong>skip-gram архитектурасы</strong> (<span class="term-en">skip-gram architecture</span>) арқылы жасайды. Бұл - берілген мақсатты сөзге қарап, оның <em>контекстін</em> болжайтын нейрон желісінің құрылымы. Желіде әр мақсатты сөзге арналған бір кіріс бөлігі бар. Кішірек, бір жасырын қабат (мысалы, 50 не 100 бөліктен тұратын, бұл сан еркін таңдалады) сөздердің үлестірілген ұсыныстарын құрайтын мәндерді шығарады. Жасырын қабаттағы әр бөлік кіріс қабатындағы әр бөлікпен байланысқан. Шығыс қабаты мақсатты сөзбен ұқсас контексте кездесетін сөздерді береді. Өткен лекциядағыдай, бұл желіні оқыту деректерімен, кері таралу алгоритмімен үйрету керек.</p>
+      <svg viewBox="0 0 560 275" role="img" aria-label="Skip-gram архитектурасы: кіріс, жасырын және шығыс қабаттар" style="display:block;width:100%;max-width:560px;height:auto;margin:18px auto"><defs><marker id="ar-3914" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><line x1="102" y1="40" x2="258" y2="70" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="40" x2="258" y2="120" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="40" x2="258" y2="170" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="85" x2="258" y2="70" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="85" x2="258" y2="120" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="85" x2="258" y2="170" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="130" x2="258" y2="70" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="130" x2="258" y2="120" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="130" x2="258" y2="170" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="175" x2="258" y2="70" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="175" x2="258" y2="120" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="175" x2="258" y2="170" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="220" x2="258" y2="70" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="220" x2="258" y2="120" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="102" y1="220" x2="258" y2="170" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="70" x2="438" y2="40" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="70" x2="438" y2="85" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="70" x2="438" y2="130" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="70" x2="438" y2="175" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="70" x2="438" y2="220" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="120" x2="438" y2="40" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="120" x2="438" y2="85" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="120" x2="438" y2="130" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="120" x2="438" y2="175" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="120" x2="438" y2="220" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="170" x2="438" y2="40" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="170" x2="438" y2="85" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="170" x2="438" y2="130" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="170" x2="438" y2="175" style="stroke:var(--border);stroke-width:1;fill:none"/><line x1="282" y1="170" x2="438" y2="220" style="stroke:var(--border);stroke-width:1;fill:none"/><circle cx="90" cy="40" r="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="68" y="40" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >he</text><circle cx="90" cy="85" r="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="68" y="85" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >wrote</text><circle cx="90" cy="130" r="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="68" y="130" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >a</text><circle cx="90" cy="175" r="12" style="fill:var(--accent);stroke:var(--accent);stroke-width:1.8"/><text x="68" y="175" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >book</text><circle cx="90" cy="220" r="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="68" y="220" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >the</text><circle cx="270" cy="70" r="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><circle cx="270" cy="120" r="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><circle cx="270" cy="170" r="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><circle cx="450" cy="40" r="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="472" y="40" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >wrote</text><circle cx="450" cy="85" r="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="472" y="85" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >a</text><circle cx="450" cy="130" r="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="472" y="130" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >book</text><circle cx="450" cy="175" r="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="472" y="175" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >the</text><circle cx="450" cy="220" r="12" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="472" y="220" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >…</text><text x="90" y="258" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;" >кіріс қабаты</text><text x="270" y="258" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;" >жасырын қабат</text><text x="450" y="258" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;" >шығыс қабаты</text></svg>
+      <p>Бұл нейрон желісі өте қуатты болып шықты. Процестің соңында әр сөз жай ғана вектор, яғни сандар қатары болады. Мысалы:</p>
+<pre data-lang="plaintext" data-norun><code class="language-plaintext">book: [-0.226776 -0.155999 -0.048995 -0.569774 0.053220 0.124401 -0.091108 -0.606255 -0.114630 0.473384 0.061061 0.551323 -0.245151 -0.014248 -0.210003 0.316162 0.340426 0.232053 0.386477 -0.025104 -0.024492 0.342590 0.205586 -0.554390 -0.037832 -0.212766 -0.048781 -0.088652 0.042722 0.000270 0.356324 0.212374 -0.188433 0.196112 -0.223294 -0.014591 0.067874 -0.448922 -0.290960 -0.036474 -0.148416 0.448422 0.016454 0.071613 -0.078306 0.035400 0.330418 0.293890 0.202701 0.555509 0.447660 -0.361554 -0.266283 -0.134947 0.105315 0.131263 0.548085 -0.195238 0.062958 -0.011117 -0.226676 0.050336 -0.295650 -0.201271 0.014450 0.026845 0.403077 -0.221277 -0.236224 0.213415 -0.163396 -0.218948 -0.242459 -0.346984 0.282615 0.014165 -0.342011 0.370489 -0.372362 0.102479 0.547047 0.020831 -0.202521 -0.180814 0.035923 -0.296322 -0.062603 0.232734 0.191323 0.251916 0.150993 -0.024009 0.129037 -0.033097 0.029713 0.125488 -0.018356 -0.226277 0.437586 0.004913]</code></pre>
+      <p>Өздігінен бұл сандардың мағынасы жоқ. Бірақ корпустағы қай сөздердің векторлары «book» векторына ең ұқсас екенін тауып, соларды шығаратын функция жазсақ, мынау шығады: <em>book, books, essay, memoir, essays, novella, anthology, blurb, autobiography, audiobook</em>. Компьютер үшін бұл өте жақсы нәтиже! Өздерінде ешқандай мағынасы жоқ сандар арқылы ЖИ «кітапқа» әріптері мен дыбысымен емес, <em>мағынасымен</em> ұқсас сөздерді тауып береді.</p>
+      <p>Тағы бір таңғажайып нәрсе: сөздер арасындағы айырмашылықты да вектор айырмасы ретінде есептеуге болады. <em>King</em> мен <em>man</em> арасындағы айырма <em>queen</em> мен <em>woman</em> арасындағы айырмаға ұқсас. Яғни <em>king</em> мен <em>man</em> векторларының айырмасын <em>woman</em> векторына қоссақ, нәтиже векторына ең жақын сөз - <em>queen</em>! Сол сияқты, <em>ramen</em> мен <em>japan</em> арасындағы айырманы <em>america</em>-ға қоссақ, <em>burritos</em> шығады («Жапонияда рамен қандай, Америкада бурритос сондай»). Нейрон желілері мен үлестірілген ұсыныстардың арқасында ЖИ тілдегі сөздердің семантикалық ұқсастығын «түсінеді». Бұл - адам тілін түсіне және шығара алатын ЖИ-ге бір қадам жақындау.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: «king - man + woman» теңдеуін қалай оқуға болады?</summary>
+        <div class="details-body"><p>«King» сөзінен «ер адам» бөлігін алып тастап, орнына «әйел» бөлігін қоссаң, не қалады? Қазақшаға салсақ: «хан - ер адам + әйел = ханым». Әрине, нақты желіде бұл дәл осылай емес, векторларға жақындау ғана, бірақ идея сол: мағыналық қатынастар вектор бағыттарына айналады.</p></div>
+      </details>
+
+      <h2 id="neural-networks">Нейрон желілері</h2>
+      <p>Еске түсірейік: <strong>нейрон желісі</strong> (<span class="term-en">neural network</span>) кіріс алып, желіге береді де, шығыс жасайды. Желіге оқыту деректерін берген сайын ол кірісті шығысқа дәлірек айналдырады. Нейрон желілері машиналық аудармада кеңінен қолданылады. Бірақ іс жүзінде біз жеке сөзді емес, сөйлемді не абзацты аударғымыз келеді. Мұнда қиындық бар: сөйлемдердің ұзындығы әр түрлі, ал желінің кірісі мен шығысы тұрақты ұзындықты күтеді. Яғни, біз бір тізбекті басқа тізбекке аударуымыз керек, ал олардың өлшемі тұрақты емес. Чатботпен сөйлесіп көрсеңіз, ол да сөздер тізбегін түсініп, орынды тізбекпен жауап беруі керек екенін байқайсыз.</p>
+      <p><strong>Рекурренттік нейрон желілері</strong> (<span class="term-en">recurrent neural networks, RNN</span>) нейрон желісін бірнеше рет қайта іске қосады және барлық қажетті ақпаратты сақтайтын <strong>күйді</strong> (<span class="term-en">hidden state</span>) қадағалап отырады. Кірісті желіге береміз, ол жасырын күй жасайды. Екінші кірісті бірінші жасырын күймен бірге кодтаушыға (<span class="term-en">encoder</span>) бергенде, жаңа жасырын күй шығады. Бұл процесс соңғы белгі (<span class="term-en">end token</span>) берілгенше қайталанады. Содан кейін декодтау кезеңі басталады: декодтаушы (<span class="term-en">decoder</span>) жасырын күйді кезек-кезек жасай отырып, соңғы сөзге және тағы бір соңғы белгіге жетеді.</p>
+      <svg viewBox="0 0 544 190" role="img" aria-label="Рекурренттік желі: кодтаушы бүкіл сөйлемді бір күйге сығады" style="display:block;width:100%;max-width:640px;height:auto;margin:18px auto"><defs><marker id="ar-163" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="ar-rnn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="10" y="90" width="62" height="38" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="41.0" y="109.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:700;" >h1</text><text x="41.0" y="150" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >What</text><line x1="41.0" y1="154" x2="41.0" y2="132" style="stroke:var(--border);stroke-width:1.2;fill:none"/><rect x="86" y="90" width="62" height="38" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="117.0" y="109.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:700;" >h2</text><text x="117.0" y="150" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >is</text><line x1="117.0" y1="154" x2="117.0" y2="132" style="stroke:var(--border);stroke-width:1.2;fill:none"/><line x1="72" y1="109.0" x2="84" y2="109.0" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar-rnn)"/><rect x="162" y="90" width="62" height="38" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="193.0" y="109.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:700;" >h3</text><text x="193.0" y="150" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >…</text><line x1="193.0" y1="154" x2="193.0" y2="132" style="stroke:var(--border);stroke-width:1.2;fill:none"/><line x1="148" y1="109.0" x2="160" y2="109.0" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar-rnn)"/><rect x="238" y="90" width="62" height="38" rx="8" style="fill:var(--accent-soft, var(--surface));stroke:var(--accent);stroke-width:1.8"/><text x="269.0" y="109.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:700;" >h4</text><text x="269.0" y="150" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >‹end›</text><line x1="269.0" y1="154" x2="269.0" y2="132" style="stroke:var(--border);stroke-width:1.2;fill:none"/><line x1="224" y1="109.0" x2="236" y2="109.0" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar-rnn)"/><rect x="390" y="90" width="62" height="38" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="421.0" y="109.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:700;" >d1</text><text x="421.0" y="68" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >Boston</text><line x1="421.0" y1="88" x2="421.0" y2="78" style="stroke:var(--border);stroke-width:1.2;fill:none"/><rect x="466" y="90" width="62" height="38" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="497.0" y="109.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:700;" >d2</text><text x="497.0" y="68" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;" >‹end›</text><line x1="497.0" y1="88" x2="497.0" y2="78" style="stroke:var(--border);stroke-width:1.2;fill:none"/><line x1="452" y1="109.0" x2="464" y2="109.0" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar-rnn)"/><line x1="300" y1="109.0" x2="388" y2="109.0" style="stroke:var(--accent);stroke-width:2.2;fill:none" marker-end="url(#ar-rnn)"/><text x="345.0" y="66" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:12px;font-weight:600;" >бір ғана</text><text x="345.0" y="82" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:12px;font-weight:600;" >соңғы күй</text><text x="193.0" y="28" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:13px;" >кодтаушы (encoder)</text><text x="452.0" y="28" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:13px;" >декодтаушы (decoder)</text></svg>
+      <p>Бірақ бұл тәсілдің екі мәселесі бар. Біріншісі - кодтаушы кезеңінде: кірістегі барлық ақпарат <em>бір ғана</em> соңғы күйге сыюға тиіс. Ұзын тізбек үшін бүкіл ақпаратты бір күйге сыйғызу өте қиын. Бір бетті бір ауыз сөзге сыйғызуға тырысқандай. Барлық жасырын күйлерді қалайда біріктіре алсақ жақсы болар еді. Екіншісі: кірістегі кейбір жасырын күйлер басқаларынан маңыздырақ. Қай күйлердің (яғни қай сөздердің) маңызды екенін білудің жолы бар ма?</p>
+
+      <h2 id="attention">Назар аудару</h2>
+      <p><strong>Назар аудару</strong> (<span class="term-en">attention</span>) - нейрон желісінің қай мәндердің басқаларынан маңыздырақ екенін өзі шешу қабілеті. Мысалы, «What is the capital of Massachusetts» («Массачусетстің астанасы қайсы») сөйлемі бар. Назар аудару желіге жауапты жасау кезеңінің әр қадамында қай мәндерге көңіл бөлетінін шешуге мүмкіндік береді. Мұндай есептеу жауаптың соңғы сөзін шығарған кезде «capital» мен «Massachusetts» ең маңызды екенін көрсетеді. «The» немесе «is» бұл сәтте онша керек емес. Желі назар ұпайларын (<span class="term-en">attention scores</span>) алып, оларды өзі жасаған жасырын күй мәндеріне көбейтіп, қосып шығады. Нәтижесінде декодтаушы соңғы сөзді есептеуге қолданатын <strong>контекст векторы</strong> (<span class="term-en">context vector</span>) пайда болады. Мұны өз қолыңызбен көріңіз (ұпайлар ойдан шығарылған):</p>
+<pre data-lang="python"><code class="language-python">import math
+
+
+def softmax(scores):
+    exps = [math.exp(s) for s in scores]
+    total = sum(exps)
+    return [e / total for e in exps]
+
+
+words = ["What", "is", "the", "capital", "of", "Massachusetts"]
+scores = [0.1, 0.2, 0.1, 2.0, 0.3, 2.5]   # ойдан шығарылған "маңыздылық ұпайлары"
+
+weights = softmax(scores)
+for w, a in zip(words, weights):
+    print(f"{w:14} {a:.2f} " + "#" * round(a * 40))
+print("қосынды:", round(sum(weights), 2))</code></pre>
+      <p>Мұнда <code>softmax</code> кез келген ұпайларды қосындысы 1 болатын салмақтарға айналдырады. «Massachusetts» пен «capital» ең үлкен үлесті алады (0.50 және 0.30), ал қалғандары 0.05-0.06 шамасында. Бұл салмақтарды жасырын күйлерге көбейтіп қоссақ, контекст векторы шығады.</p>
+      <p>Назар аудару матрицасын кесте түрінде де көрсетуге болады: әр жол - «қарап тұрған» токен, әр баған - ол «қарайтын» токен, ал ұяның қою болуы назардың күшті екенін білдіреді. Төмендегі сызба - схема (нақты мәндер емес). Мұнда токендердің әрқайсысы өзінен кейінгі токенге назар аударады. Дәл осындай үлгіні Problem Set 6-да BERT-тің нақты назар «бастарынан» көресіз.</p>
+      <svg viewBox="0 0 410 414" role="img" aria-label="Назар аудару матрицасы: әр токен келесі токенге қарайды" style="display:block;width:100%;max-width:440px;height:auto;margin:18px auto"><defs><marker id="ar-4309" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="110.0" y="78" text-anchor="start" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px" transform="rotate(-50 110.0 78)">[CLS]</text><text x="146.0" y="78" text-anchor="start" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px" transform="rotate(-50 146.0 78)">then</text><text x="182.0" y="78" text-anchor="start" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px" transform="rotate(-50 182.0 78)">i</text><text x="218.0" y="78" text-anchor="start" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px" transform="rotate(-50 218.0 78)">picked</text><text x="254.0" y="78" text-anchor="start" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px" transform="rotate(-50 254.0 78)">up</text><text x="290.0" y="78" text-anchor="start" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px" transform="rotate(-50 290.0 78)">a</text><text x="326.0" y="78" text-anchor="start" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px" transform="rotate(-50 326.0 78)">[MASK]</text><text x="362.0" y="78" text-anchor="start" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px" transform="rotate(-50 362.0 78)">[SEP]</text><text x="84" y="104.0" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;" >[CLS]</text><rect x="92" y="86" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="128" y="86" width="36" height="36" style="fill:var(--accent);fill-opacity:0.86;stroke:var(--border);stroke-width:1"/><rect x="164" y="86" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="200" y="86" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="236" y="86" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="272" y="86" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="308" y="86" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="344" y="86" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><text x="84" y="140.0" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;" >then</text><rect x="92" y="122" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="128" y="122" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="164" y="122" width="36" height="36" style="fill:var(--accent);fill-opacity:0.86;stroke:var(--border);stroke-width:1"/><rect x="200" y="122" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="236" y="122" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="272" y="122" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="308" y="122" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="344" y="122" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><text x="84" y="176.0" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;" >i</text><rect x="92" y="158" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="128" y="158" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="164" y="158" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="200" y="158" width="36" height="36" style="fill:var(--accent);fill-opacity:0.86;stroke:var(--border);stroke-width:1"/><rect x="236" y="158" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="272" y="158" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="308" y="158" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="344" y="158" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><text x="84" y="212.0" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;" >picked</text><rect x="92" y="194" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="128" y="194" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="164" y="194" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="200" y="194" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="236" y="194" width="36" height="36" style="fill:var(--accent);fill-opacity:0.86;stroke:var(--border);stroke-width:1"/><rect x="272" y="194" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="308" y="194" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="344" y="194" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><text x="84" y="248.0" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;" >up</text><rect x="92" y="230" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="128" y="230" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="164" y="230" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="200" y="230" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="236" y="230" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="272" y="230" width="36" height="36" style="fill:var(--accent);fill-opacity:0.86;stroke:var(--border);stroke-width:1"/><rect x="308" y="230" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="344" y="230" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><text x="84" y="284.0" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;" >a</text><rect x="92" y="266" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="128" y="266" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="164" y="266" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="200" y="266" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="236" y="266" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="272" y="266" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="308" y="266" width="36" height="36" style="fill:var(--accent);fill-opacity:0.86;stroke:var(--border);stroke-width:1"/><rect x="344" y="266" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><text x="84" y="320.0" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;" >[MASK]</text><rect x="92" y="302" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="128" y="302" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="164" y="302" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="200" y="302" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="236" y="302" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="272" y="302" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="308" y="302" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="344" y="302" width="36" height="36" style="fill:var(--accent);fill-opacity:0.86;stroke:var(--border);stroke-width:1"/><text x="84" y="356.0" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;" >[SEP]</text><rect x="92" y="338" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="128" y="338" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="164" y="338" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="200" y="338" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="236" y="338" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="272" y="338" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="308" y="338" width="36" height="36" style="fill:var(--accent);fill-opacity:0.04;stroke:var(--border);stroke-width:1"/><rect x="344" y="338" width="36" height="36" style="fill:var(--accent);fill-opacity:0.86;stroke:var(--border);stroke-width:1"/><text x="236.0" y="396" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;" >қай токенге назар аударылады (баған)</text></svg>
+      <p>Бірақ мұндай есептеулерде өз қиындығымыз бар: рекурренттік нейрон желілері сөзді сөзден кейін <em>кезекпен</em> үйренуі керек. Алдыңғы қадам бітпей, келесіні бастай алмайды, сондықтан бұл өте көп уақыт алады. Үлкен тілдік модельдер өскен сайын оларды оқыту ұзағырақ болып барады. Деректер көлемі үлкейген сайын <strong>параллельдікке</strong> (бір мезгілде есептеуге) қажеттілік арта береді. Сондықтан жаңа архитектура ойлап табылды.</p>
+
+      <h2 id="transformers">Трансформерлер</h2>
+      <p><strong>Трансформерлер</strong> (<span class="term-en">transformers</span>) - оқытудың жаңа архитектурасы: онда кірістегі әр сөз нейрон желісі арқылы <em>бір мезгілде</em> өтеді. Кіріс сөзі желіге түсіп, кодталған ұсыныс (<span class="term-en">encoded representation</span>) ретінде сақталады. Бірақ барлық сөз желіге бір мезгілде берілетіндіктен, сөздердің ретін оңай жоғалтып аламыз. Қазақшада «Мен сені сүйемін» мен «Сені мен сүйемін» бірдей емес қой. Сондықтан кіріске <strong>позициялық кодтау</strong> (<span class="term-en">position encoding</span>) қосылады. Сонда желі кодталған ұсыныста сөзді де, сөздің орнын да қолданады.</p>
+      <p>Одан басқа, оқылып жатқан сөздің контекстін анықтауға көмектесетін <strong>self-attention</strong> (<span class="term-en">self-attention</span>, «өзіне назар аудару») қадамы қосылады. Бұл - сөйлемдегі әр сөздің сол сөйлемдегі басқа сөздерге назар аударуы. Контексті тереңірек түсіну үшін желілер әдетте бірнеше self-attention қадамын қолданады. Бұл процесс тізбектегі әр сөз үшін бірнеше рет қайталанады. Нәтижесінде ақпаратты декодтау кезінде пайдалы болатын кодталған ұсыныстар шығады.</p>
+      <p>Декодтау қадамында алдыңғы шығыс сөз бен оның позициялық кодтауы бірнеше self-attention қадамына және нейрон желісіне беріледі. Сонымен қатар бірнеше attention қадамына кодтау процесінен шыққан кодталған ұсыныс та беріледі де, нейрон желісіне жіберіледі. Осылайша сөздер бір-біріне назар аудара алады. Және де параллель өңдеу мүмкін, есептеулер жылдам әрі дәл болады.</p>
+      <svg viewBox="0 0 560 392" role="img" aria-label="Трансформер: кодтаушы мен декодтаушы" style="display:block;width:100%;max-width:560px;height:auto;margin:18px auto"><defs><marker id="ar-7650" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="ar-tr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="30" y="262" width="200" height="36" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.6"/><text x="130" y="280" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;" >кіріс сөздер</text><rect x="30" y="210" width="200" height="36" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.6"/><text x="130" y="228" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;" >+ позициялық кодтау</text><rect x="30" y="158" width="200" height="36" rx="8" style="fill:var(--accent-soft, var(--surface));stroke:var(--accent);stroke-width:1.6"/><text x="130" y="176" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;" >self-attention (бірнеше рет)</text><rect x="30" y="106" width="200" height="36" rx="8" style="fill:var(--accent-soft, var(--surface));stroke:var(--accent);stroke-width:1.6"/><text x="130" y="124" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;" >нейрон желі</text><line x1="130" y1="260" x2="130" y2="248" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar-tr)"/><line x1="130" y1="208" x2="130" y2="196" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar-tr)"/><line x1="130" y1="156" x2="130" y2="144" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar-tr)"/><rect x="330" y="314" width="200" height="36" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.6"/><text x="430" y="332" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;" >алдыңғы шығыс сөз</text><rect x="330" y="262" width="200" height="36" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.6"/><text x="430" y="280" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;" >+ позициялық кодтау</text><rect x="330" y="210" width="200" height="36" rx="8" style="fill:var(--accent-soft, var(--surface));stroke:var(--accent);stroke-width:1.6"/><text x="430" y="228" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;" >self-attention (бірнеше рет)</text><rect x="330" y="158" width="200" height="36" rx="8" style="fill:var(--accent-soft, var(--surface));stroke:var(--accent);stroke-width:1.6"/><text x="430" y="176" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;" >attention (кодтаушыға)</text><rect x="330" y="106" width="200" height="36" rx="8" style="fill:var(--accent-soft, var(--surface));stroke:var(--accent);stroke-width:1.6"/><text x="430" y="124" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;" >нейрон желі</text><line x1="430" y1="312" x2="430" y2="300" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar-tr)"/><line x1="430" y1="260" x2="430" y2="248" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar-tr)"/><line x1="430" y1="208" x2="430" y2="196" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar-tr)"/><line x1="430" y1="156" x2="430" y2="144" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar-tr)"/><text x="130" y="376" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:14px;font-weight:700;" >Кодтаушы (encoder)</text><text x="430" y="376" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:14px;font-weight:700;" >Декодтаушы (decoder)</text><polyline points="230,124 280,124 280,176 328,176" style="stroke:var(--accent);stroke-width:2;fill:none" marker-end="url(#ar-tr)"/><line x1="430" y1="104" x2="430" y2="34" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar-tr)"/><text x="430" y="18" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:600;" >келесі сөз</text></svg>
+      <div class="callout note">
+        <span class="callout-title">BERT және GPT</span>
+        <p>Бұл архитектурадан әйгілі модельдер туды. <strong>BERT</strong> (Google) - трансформердің кодтаушы бөлігіне негізделген, сөйлемдегі «жасырылған» сөзді айналасындағы сөздер арқылы болжауға үйретілген модель: осы апталық тапсырмада дәл соны қолданасыз. <strong>GPT</strong> сияқты үлкен тілдік модельдер негізінен трансформердің декодтаушы бөлігіне сүйеніп, келесі сөзді (токенді) бірінен кейін бірін болжай отырып, тұтас мәтін жазады. Лекциядағы идея - сол: позициялық кодтау, self-attention және параллель есептеу.</p>
+      </div>
+
+      <h2 id="summing-up">Курсты қорытындылау</h2>
+      <p>Осы курста жасанды интеллектті өте кең түрде қарастырдық. <strong>Іздеу</strong> есептерінде ЖИ шешімді қалай іздейтінін көрдік. <strong>Білімді</strong> қалай ұсынып, жаңа білімді қалай жасайтынын қарастырдық. <strong>Белгісіздікпен</strong> жұмыс істеуді, яғни ЖИ бірдеңені нақты білмеген кезде қалай әрекет ететінін үйрендік. <strong>Оңтайландыруда</strong> функцияларды максимумға не минимумға жеткізуді қарастырдық. <strong>Машиналық оқытуда</strong> оқыту деректерінен заңдылықтарды іздедік. <strong>Нейрон желілерінде</strong> салмақтар арқылы кірістен шығысқа қалай жететінімізді білдік. Бүгін <strong>тілдің</strong> өзімен жұмыс істедік: компьютерге біздің тілімізді қалай «түсіндіруге» болатынын көрдік. Бұл процестің тек бетін ғана қозғадық. Осы сапарды сіздермен бірге өткізгеніміз қуантады. Бұл - «Python-мен жасанды интеллектке кіріспе» курсы еді.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Осы лекцияда сіз мыналарды үйрендіңіз:</p>
+      <ul>
+        <li><strong>табиғи тілді өңдеу</strong> (NLP): қысқартпа, аударма, жіктеу, сөйлеуді тану, сөз мағынасын ажырату сияқты тапсырмалар;</li>
+        <li><strong>синтаксис пен семантика</strong> айырмасы: құрылым мен мағына, екіұшты және мағынасыз, бірақ грамматикалық сөйлемдер;</li>
+        <li><strong>контексттен бос грамматика</strong>: терминал мен нетерминал, <code>S -&gt; NP VP</code> түріндегі ережелер, синтаксистік ағаш;</li>
+        <li><code>nltk</code> көмегімен грамматикаға сүйеніп талдау (<code>CFG</code>, <code>ChartParser</code>);</li>
+        <li><strong><i>n</i>-граммалар</strong> және <strong>токенизация</strong>: мәтінді бөліктерге бөлу және келесі сөзді болжау;</li>
+        <li><strong>Марков модельдері</strong>: мәтін жасау, бірақ мағынасыз;</li>
+        <li><strong>сөздер қапшығы</strong> және <strong>аңғал Байес</strong>: сезімді талдау, тәуелсіздік жорамалы, нормалдау;</li>
+        <li><strong>қосымша тегістеу</strong> (Лаплас): нөлдік ықтималдықтан құтылу;</li>
+        <li><strong>one-hot</strong> және <strong>үлестірілген ұсыну</strong>, косинус ұқсастығы, <strong>word2vec</strong> пен skip-gram;</li>
+        <li><strong>рекурренттік желілер</strong> және олардың екі мәселесі (бір күй, кезектік оқыту);</li>
+        <li><strong>назар аудару</strong>, <strong>трансформерлер</strong>, <strong>позициялық кодтау</strong>, <strong>self-attention</strong>, BERT пен GPT.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. «Colorless green ideas sleep furiously» сөйлемі туралы қайсысы дұрыс?</p>
+          <label><input type="radio" value="a"> Синтаксис бойынша да, семантика бойынша да дұрыс</label>
+          <label><input type="radio" value="b"> Синтаксис бойынша қате, бірақ мағынасы түсінікті</label>
+          <label><input type="radio" value="c"> Синтаксис бойынша дұрыс, бірақ семантикасы (мағынасы) жоқ</label>
+          <label><input type="radio" value="d"> Сөздері бар болғандықтан, оны сөздер қапшығы дұрыс деп санайды</label>
+          <p class="explain">Грамматикасы мінсіз (сын есім, сын есім, зат есім, етістік, үстеу), бірақ мағынасы бос. Құрылым мен мағына бөлек нәрсе.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">2. Мына грамматика бойынша қай сөйлемді талдауға болады?</p>
+<pre data-lang="plaintext" data-norun><code class="language-plaintext">S  -&gt; NP VP
+NP -&gt; D N | N
+VP -&gt; V | V NP
+D  -&gt; "the" | "a"
+N  -&gt; "she" | "city" | "car"
+V  -&gt; "saw" | "walked"</code></pre>
+          <label><input type="radio" value="a"> the car walked the city</label>
+          <label><input type="radio" value="b"> car the saw</label>
+          <label><input type="radio" value="c"> she saw the the city</label>
+          <label><input type="radio" value="d"> walked she saw</label>
+          <p class="explain">«the car» = NP (D N), «walked the city» = VP (V NP). Мағынасы ақылға сыймайды, бірақ грамматикалық құрылым дұрыс: бұл - CFG-нің мағынаға қарамайтынының мысалы. «the the» екі детерминатив қатар келетін ереже жоқ.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. Жеті сөзден тұратын сөйлемде қанша сөздік биграмма болады?</p>
+          <label><input type="radio" value="a"> 7</label>
+          <label><input type="radio" value="b"> 8</label>
+          <label><input type="radio" value="c"> 14</label>
+          <label><input type="radio" value="d"> 6</label>
+          <p class="explain">Әр сөз өзінен кейінгі сөзбен жұп құрайды, ал соңғы сөздің «келесісі» жоқ. Сондықтан <i>n</i> сөзден <i>n - 1</i> биграмма шығады: 7 - 1 = 6.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">4. Аңғал Байестегі «аңғалдық» нені білдіреді?</p>
+          <label><input type="radio" value="a"> Модель тек оң сөйлемдерге үйретіледі</label>
+          <label><input type="radio" value="b"> Сөйлемдегі әр сөздің ықтималдығы басқа сөздерге тәуелсіз деп есептеледі</label>
+          <label><input type="radio" value="c"> Байес ережесі қолданылмайды</label>
+          <label><input type="radio" value="d"> Сөздердің ретін міндетті түрде ескереді</label>
+          <p class="explain">Шындығында сөздер бір-біріне байланысты, бірақ тәуелсіздік жорамалы есепті жеңілдетеді, және соған қарамастан нәтиже жақсы.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">5. Лаплас тегістеуі (әр санауышқа 1 қосу) нені болдырмау үшін керек?</p>
+          <label><input type="radio" value="a"> Мәтінде тыныс белгілерінің көп болуын</label>
+          <label><input type="radio" value="b"> Сөз векторларының тым ұзын болуын</label>
+          <label><input type="radio" value="c"> Бір сөз белгілі түрде кездеспегендіктен, бүкіл көбейтіндінің 0 болып кетуін</label>
+          <label><input type="radio" value="d"> Сөйлемнің ұзын болуын</label>
+          <p class="explain">Егер P(сөз | оң) = 0 болса, көбейтінді толық нөл болады. Тегістеу барлық мәнге «кемінде бір рет кездескен» деп қарауға мәжбүр етеді.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">6. One-hot ұсынудың басты кемшілігі қандай?</p>
+          <label><input type="radio" value="a"> Сөздерді бір-бірінен ажырата алмайды</label>
+          <label><input type="radio" value="b"> Тек ағылшын тілінде жұмыс істейді</label>
+          <label><input type="radio" value="c"> Векторлары тым қысқа болады</label>
+          <label><input type="radio" value="d"> 50&nbsp;000 сөзге ұзындығы 50&nbsp;000 векторлар керек және сөздердің ұқсастығын көрсете алмайды</label>
+          <p class="explain">One-hot әр сөзге бірегей вектор береді (ажырата алады), бірақ вектор ұзын және барлық сөз бір-бірінен бірдей алшақ, «wrote» мен «authored» ұқсас екені көрінбейді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. word2vec векторларымен «king - man + woman» есептесек, нәтиже векторына ең жақын сөз қандай болады?</p>
+          <label><input type="radio" value="a"> queen</label>
+          <label><input type="radio" value="b"> man</label>
+          <label><input type="radio" value="c"> kings</label>
+          <label><input type="radio" value="d"> burritos</label>
+          <p class="explain">King мен man арасындағы айырма queen мен woman арасындағы айырмаға ұқсас, сондықтан king - man + woman нәтижесі queen-ге жақын. («burritos» - ramen, japan, america мысалынан.)</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">8. Трансформерлер неге рекурренттік желілерден жылдамырақ оқытылады, және позициялық кодтау неге қажет?</p>
+          <label><input type="radio" value="a"> Олар сөздерді кезекпен өңдейді, ал позициялық кодтау жылдамдықты арттырады</label>
+          <label><input type="radio" value="b"> Барлық сөз бір мезгілде өңделеді (параллель), сондықтан сөз ретін сақтау үшін позициялық кодтау қосылады</label>
+          <label><input type="radio" value="c"> Олар назар аударуды қолданбайды, сондықтан жеңіл</label>
+          <label><input type="radio" value="d"> Олар тек one-hot векторларымен жұмыс істейді</label>
+          <p class="explain">Параллель өңдеу жылдамдық береді, бірақ сөз ретін жоғалтуы мүмкін, сондықтан сөздің орны да кодталады. Сонымен қатар self-attention контексті түсіндіреді.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Problem Set 6 (Тапсырмалар жинағы 6)</h2>
+      <p>Ресми тапсырма беті: <a href="https://cs50.harvard.edu/ai/projects/6/" target="_blank" rel="noopener">cs50.harvard.edu/ai/projects/6</a>. Екі жобаны да орындау керек: <strong>Parser</strong> және <strong>Attention</strong>. Үшінші және төртінші тапсырма - сайттың өз жаттығулары, олар ресми емес және браузерде автотексерілетін таза Python тапсырмалары.</p>
+      <div class="callout note">
+        <span class="callout-title">Қайда орындалады</span>
+        <p>Ресми жобалар компьютеріңізде (немесе cs50.dev-те) орындалады: оларға <code>nltk</code>, <code>transformers</code> және <code>tensorflow</code> кітапханалары қажет, ал браузердегі Python-да олар жоқ. Сондықтан бұл екеуіне автотексеруші жасалмады: тексеруді ресми <code>check50</code> орындайды. Ал соңғы екі жаттығуда тек стандартты кітапхана керек, оларды осы беттің өзінде тексере аласыз.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="pset-parser">Parser (Синтаксистік талдаушы)</h3></div>
+        <p>Сөйлемдерді талдап, олардан зат есім тіркестерін бөліп алатын ЖИ жазыңыз.</p>
+<pre class="terminal"><code class="language-plaintext">$ python parser.py
+Sentence: Holmes sat.
+        S
+   _____|___
+  NP        VP
+  |         |
+  N         V
+  |         |
+holmes     sat
+
+Noun Phrase Chunks
+holmes</code></pre>
+        <h4>Алғышарт</h4>
+        <p>Табиғи тілді өңдеудің жиі кездесетін міндеті - <strong>синтаксистік талдау</strong>: сөйлемнің құрылымын анықтау. Бұл бірнеше себептен пайдалы: сөйлем құрылымын білсе, компьютер сөйлем мағынасын жақсырақ түсінеді және одан ақпарат шығарып ала алады. Әсіресе сөйлемнен зат есім тіркестерін бөліп алу сөйлем не туралы екенін түсінуге көмектеседі.</p>
+        <p>Бұл жобада ағылшын сөйлемдерін талдау үшін контексттен бос грамматиканы қолданамыз. Есіңізде болсын: CFG-де біз ережелерді қайта-қайта қолданып, бір символдарды басқаларына айналдырамыз. Мақсат - бастапқы нетерминал <code>S</code> (сөйлем) символынан бастап, толық терминал символдар (яғни сөздер) сөйлемін жасағанша CFG ережелерін қолдана беру. Мысалы, <code>S -&gt; N V</code> ережесі <code>S</code> символын <code>N V</code> (зат есім, одан кейін етістік) деп қайта жазуға болатынын білдіреді. Егер бізде <code>N -&gt; "Holmes"</code> және <code>V -&gt; "sat"</code> ережелері де болса, толық <code>"Holmes sat."</code> сөйлемін жасай аламыз.</p>
+        <p>Әрине, зат есім тіркестері әрдайым «Holmes» сияқты бір сөз бола бермейді. Бізде <code>"my companion"</code>, <code>"a country walk"</code>, <code>"the day before Thursday"</code> сияқты тіркестер болуы мүмкін, ол үшін күрделірек ережелер керек. <code>"my companion"</code> үшін мынадай ереже ойлауға болады:</p>
+<pre data-lang="plaintext" data-norun><code class="language-plaintext">NP -&gt; N | Det N</code></pre>
+        <p>Бұл ереже былай дейді: <code>NP</code> («noun phrase», зат есім тіркесі) не жай зат есім (<code>N</code>), не детерминатив (<code>Det</code>) пен зат есім болуы мүмкін; детерминативтерге <code>"a"</code>, <code>"the"</code>, <code>"my"</code> сияқты сөздер жатады. Тік сызық (<code>|</code>) <code>NP</code>-ны қайта жазудың бірнеше жолы бар екенін көрсетеді.</p>
+        <p>Бұл ережені сөйлемді (<code>S</code>) талдауға қосу үшін <code>S -&gt; N V</code> ережесін де өзгерту керек: зат есім тіркестері (<code>NP</code>) сөйлем бастауышы бола алсын. Көріп тұрсыз ба? Ал күрделірек зат есім тіркестері үшін грамматиканы тіпті көбірек өзгертуге тура келуі мүмкін.</p>
+        <h4>Бастау</h4>
+        <ul>
+          <li>Бастапқы кодты <a href="https://cdn.cs50.net/ai/2023/x/projects/6/parser.zip" target="_blank" rel="noopener">parser.zip</a> сілтемесінен жүктеп алып, архивті ашыңыз.</li>
+          <li><code>parser</code> қалтасының ішінде <code>pip3 install -r requirements.txt</code> командасымен жобаның тәуелділігін, яғни табиғи тілді өңдеуге арналған <code>nltk</code> кітапханасын орнатыңыз.</li>
+        </ul>
+        <h4>Түсіну</h4>
+        <p>Алдымен <code>sentences</code> қалтасындағы мәтіндік файлдарды қараңыз. Әр файлда бір ағылшын сөйлемі бар. Сіздің мақсатыңыз - осы сөйлемдердің бәрін талдай алатын талдаушы жазу.</p>
+        <p>Енді <code>parser.py</code> файлын ашыңыз: файлдың басындағы контексттен бос грамматика ережелеріне назар аударыңыз. Терминал символдарды құрайтын ережелер жиынын (<code>TERMINALS</code> жаһандық айнымалысында) біз сіз үшін алдын ала жасап қойдық. <code>Adj</code> - сын есімдерді, <code>Adv</code> - үстеулерді, <code>Conj</code> - жалғаулықтарды, <code>Det</code> - детерминативтерді, <code>N</code> - зат есімдерді (оқуға ыңғайлы болу үшін бірнеше жолға бөлінген), <code>P</code> - предлогтарды, <code>V</code> - етістіктерді шығаратын нетерминал.</p>
+        <p>Одан әрі <code>NONTERMINALS</code> анықтамасы келеді: онда нетерминал символдарды шығаратын барлық ережелер болуы керек. Қазір онда бір ғана ереже бар: <code>S -&gt; N V</code>. Тек осымен «Holmes arrived.» немесе «He chuckled.» сияқты сөйлемдерді жасай аламыз, одан күрделілерін жасай алмаймыз. Барлық сөйлемді талдауға болатындай <code>NONTERMINALS</code> ережелерін өзгерту - сіздің міндетіңіз.</p>
+        <p>Содан кейін <code>main</code> функциясын қараңыз. Ол алдымен сөйлемді файлдан не пайдаланушы кірісінен қабылдайды. Сөйлем алдын ала өңделіп (<code>preprocess</code> функциясымен), файлда анықталған контексттен бос грамматика бойынша талданады. Шыққан ағаштар басылады, және барлық «зат есім тіркесі бөліктері» (Specification бөлімінде анықталған) да <code>np_chunk</code> функциясы арқылы басылады.</p>
+        <p>Талдау үшін грамматика ережелерін жазудан басқа, <code>preprocess</code> және <code>np_chunk</code> функциялары да сіздің еншіңізде.</p>
+        <h4>Талаптар</h4>
+        <p><code>preprocess</code> және <code>np_chunk</code> функцияларын аяқтаңыз, және <code>NONTERMINALS</code> ішіндегі контексттен бос грамматика ережелерін толықтырыңыз.</p>
+        <ul>
+          <li><code>preprocess</code> функциясы кіріс ретінде <code>sentence</code> алып, оның сөздерінің кіші әріпке айналдырылған тізімін қайтаруы керек.
+            <ul>
+              <li><code>sentence</code> - жол (<code>str</code>) деп есептеуге болады.</li>
+              <li>Токенизация үшін <code>nltk</code>-тің <code>word_tokenize</code> функциясын қолдану керек.</li>
+              <li>Функция сөздер тізімін қайтарады, әр сөз кіші әріппен жазылған жол.</li>
+              <li>Кемінде бір әріп таңбасы жоқ кез келген сөз (мысалы, <code>.</code> немесе <code>28</code>) қайтарылатын тізімге кірмеуі керек.</li>
+            </ul>
+          </li>
+          <li><code>NONTERMINALS</code> жаһандық айнымалысы <code>sentences/</code> қалтасындағы барлық сөйлемді <code>TERMINALS</code> ережелерімен бірге талдауға мүмкіндік беретін контексттен бос грамматика ережелерімен ауыстырылуы керек.
+            <ul>
+              <li>Әр ереже бөлек жолда тұруы керек. Әр ережеде қай символ ауыстырылатынын көрсету үшін <code>-&gt;</code> таңбалары болуы керек, ал бірнеше жолмен қайта жазуға болатын болса, міндетті емес <code>|</code> белгілері болуы мүмкін.</li>
+              <li>Бар <code>S -&gt; N V</code> ережесін сақтау міндетті емес, бірақ бірінші ереже <code>S -&gt;</code> деп басталуы керек, өйткені <code>S</code> (сөйлем) - бастапқы символ.</li>
+              <li>Қалағаныңызша нетерминал символ қоса аласыз.</li>
+              <li>«Зат есім тіркесін», мысалы сөйлем бастауышын, белгілеу үшін <code>NP</code> нетерминал символын қолданыңыз.</li>
+            </ul>
+          </li>
+          <li><code>np_chunk</code> функциясы сөйлем синтаксисін көрсететін <code>tree</code> қабылдап, сол сөйлемдегі барлық зат есім тіркесі бөліктерінің (<span class="term-en">noun phrase chunk</span>) тізімін қайтаруы керек.
+            <ul>
+              <li>Бұл есепте «зат есім тіркесі бөлігі» - ішінде басқа зат есім тіркестері жоқ зат есім тіркесі. Формальдырақ айтқанда, бұл - бастапқы ағаштың белгісі <code>NP</code> болатын, және өзінде басқа зат есім тіркестері ішкі ағаш ретінде жоқ ішкі ағашы. Мысалы, <code>"the home"</code> зат есім тіркесі бөлігі болса, <code>"the armchair in the home"</code> бөлік емес, өйткені соңғысында алдыңғысы ішкі ағаш ретінде бар.</li>
+              <li>Кіріс - белгісі <code>S</code> болатын <code>nltk.tree</code> нысаны деп есептеуге болады (яғни кіріс сөйлемді көрсететін ағаш).</li>
+              <li>Функция <code>nltk.tree</code> нысандарының тізімін қайтаруы керек, әр элементтің белгісі <code>NP</code> болуы тиіс.</li>
+              <li><code>nltk.tree</code> құжаттамасы (<a href="https://www.nltk.org/_modules/nltk/tree.html" target="_blank" rel="noopener">nltk.org</a>) <code>nltk.tree</code> нысанымен жұмыс істеуге көмектеседі.</li>
+            </ul>
+          </li>
+        </ul>
+        <p><code>parser.py</code> ішінде спецификация сұрайтын функциялардан басқа ештеңені өзгертпеңіз, дегенмен қосымша функциялар жазуға және Python стандартты кітапханасының басқа модульдерін импорттауға болады. <code>NONTERMINALS</code> анықтамасын өзгерту керек, бірақ <code>TERMINALS</code> анықтамасын өзгертпеңіз.</p>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li>Парсеріңіз кейде сіз грамматикалық не семантикалық тұрғыдан дұрыс емес деп есептейтін сөйлемдерді де талдауы мүмкін. Мысалы, <code>"His Thursday chuckled in a paint."</code> сияқты мағынасыз сөйлемдерді талдауына бола береді. Бұған алаңдамаңыз.</li>
+            <li>Сонда да ережелердің <em>артық жасауынан</em> (over-generation) мүмкіндігінше аулақ болыңыз. Мысалы, парсер <code>"Armchair on the sat Holmes."</code> сияқты сөйлемді қабылдамауы керек.</li>
+            <li><em>Кем жасаудан</em> (under-generation) да аулақ болыңыз. <code>S -&gt; N V Det Adj Adj Adj N P Det N P Det N</code> сияқты ереже 10-сөйлемді формалды түрде талдар еді, бірақ бұл пайдасыз әрі жалпыланбайды.</li>
+            <li>Лекциядағы ережелер әдейі өте жеңілдетілген, сондықтан артық жасауы мүмкін. Оларды өзгертіп, артық жасамай, мүмкіндігінше жалпы ету керек. Мысалы, парсеріңіз <code>"Holmes sat in the armchair."</code> (және <code>"Holmes sat in the red armchair."</code>, <code>"Holmes sat in the little red armchair."</code>) сөйлемдерін қабылдап, ал <code>"Holmes sat in the the armchair."</code> сөйлемін <em>қабылдамайтындай</em> ету жолын ойланыңыз.</li>
+            <li>Парсеріңіз бір сөйлемді бірнеше жолмен талдауы мүмкін. Ағылшын грамматикасы табиғатынан екіұшты.</li>
+            <li><code>nltk.tree</code> құжаттамасында <code>label</code> және <code>subtrees</code> функциялары әсіресе пайдалы болады.</li>
+            <li>Зат есім тіркесін бөлуге көшпес бұрын парсерді тексеру үшін <code>np_chunk</code> функциясын уақытша бос тізім <code>[]</code> қайтаратындай қалдырсаңыз ыңғайлы.</li>
+          </ul>
+        </div></details>
+        <h4>Тексеру</h4>
+        <p>Қаласаңыз, <code>check50</code> орнатқаннан кейін (<a href="https://cs50.readthedocs.io/projects/check50/en/latest/index.html" target="_blank" rel="noopener">нұсқаулық</a>) кодыңыздың дұрыстығын мына командамен тексеріңіз. Бұл міндетті емес, сервердегі тесттер дәл сондай. Кодыңызды өзіңіз де тексеріңіз.</p>
+<pre class="terminal"><code class="language-plaintext">$ check50 ai50/projects/2024/x/parser</code></pre>
+        <p>Кодыңыздың стилін <code>style50</code> арқылы тексеруге болады:</p>
+<pre class="terminal"><code class="language-plaintext">$ style50 parser.py</code></pre>
+        <p>Есіңізде болсын: стандартты кітапханадан және осы жерде нақты рұқсат етілген кітапханалардан басқа <strong>ешқандай модуль импорттауға болмайды</strong>. Әйтпесе <code>check50</code> істемейді де, <code>submit50</code> та жұмысыңызды бағалай алмайды.</p>
+        <h4>Тапсыру</h4>
+        <p>Жұмысыңызды <a href="https://submit.cs50.io/invites/d03c31aef1984c29b5e7b268c3a87b7b" target="_blank" rel="noopener">осы сілтемеден</a> курсқа қосылып, GitHub аккаунтымен жібересіз. <code>submit50</code> орнатылған болса:</p>
+<pre class="terminal"><code class="language-plaintext">$ submit50 ai50/projects/2024/x/parser</code></pre>
+        <p>Әйтпесе Git арқылы жұмысыңызды <code>https://github.com/me50/USERNAME.git</code> мекенжайына, <code>ai50/projects/2024/x/parser</code> бұтағына жіберіңіз (мұндағы <code>USERNAME</code> - GitHub аты). Тек өзгертуге нұсқау берілген файлдарды жіберіңіз.</p>
+        <div class="callout note">
+          <span class="callout-title">Автотексеруші жоқ</span>
+          <p>Бұл тапсырма <code>nltk</code> кітапханасын қажет етеді, ол браузерде жоқ. Әсіресе <code>np_chunk</code> функциясы <code>nltk.Tree</code> нысандарымен жұмыс істейтіндіктен, оны сайтта тексере алмаймыз. Жобаны компьютерде орындап, <code>check50</code> командасын іске қосыңыз.</p>
+        </div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="ai6-parser">
+            <li><input type="checkbox"> <span><code>preprocess</code> кіші әріпті сөздер тізімін қайтарады, әріпсіз токендерді (<code>.</code>, <code>28</code>) тастайды.</span></li>
+            <li><input type="checkbox"> <span><code>NONTERMINALS</code> бірінші ережесі <code>S -&gt;</code> деп басталады, <code>NP</code> нетерминалы қолданылған; барлық <code>sentences/</code> файлдары талданады.</span></li>
+            <li><input type="checkbox"> <span><code>np_chunk</code> ішінде басқа <code>NP</code> жоқ <code>NP</code> ағаштарын ғана қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>check50 ai50/projects/2024/x/parser</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="pset-attention">Attention (Назар аудару)</h3></div>
+        <p>Мәтін тізбегіндегі «жасырылған» (masked) сөзді болжайтын ЖИ жазыңыз.</p>
+<pre class="terminal"><code class="language-plaintext">$ python mask.py
+Text: We turned down a narrow lane and passed through a small [MASK].
+We turned down a narrow lane and passed through a small field.
+We turned down a narrow lane and passed through a small clearing.
+We turned down a narrow lane and passed through a small park.
+
+$ python mask.py
+Text: Then I picked up a [MASK] from the table.
+Then I picked up a book from the table.
+Then I picked up a bottle from the table.
+Then I picked up a plate from the table.</code></pre>
+        <h4>Алғышарт</h4>
+        <p>Тілдік модельдерді жасаудың бір жолы - <strong>жасырылған тілдік модель</strong> (<span class="term-en">Masked Language Model</span>): оған мәтін тізбегінен «жасырылған» (түсіп қалған) сөзді болжауды үйретеді. <a href="https://arxiv.org/abs/1810.04805" target="_blank" rel="noopener">BERT</a> - Google жасаған трансформерге негізделген тілдік модель, және ол дәл осылай үйретілген: жасырылған сөзді айналасындағы контекст сөздері бойынша болжауға.</p>
+        <p>BERT трансформер архитектурасын, сондықтан тілді түсіну үшін назар аудару механизмін қолданады. BERT-тің базалық моделінде трансформер 12 қабатты қолданады, әр қабатта 12 self-attention «басы» бар, барлығы 144 self-attention басы.</p>
+        <p>Бұл жоба екі бөліктен тұрады. Бірінші бөлікте Hugging Face компаниясы жасаған <a href="https://huggingface.co/docs/transformers/index" target="_blank" rel="noopener"><code>transformers</code> Python кітапханасын</a> қолданып, BERT арқылы жасырылған сөздерді болжайтын бағдарлама жазасыз. Бағдарлама назар ұпайларын көрсететін диаграммалар да жасайды: 144 назар басының әрқайсысы үшін бір диаграмма. Екінші бөлікте осы диаграммаларды талдап, BERT-тің назар аудару бастары адам тілін түсінуге тырысқанда нені «қарап» тұрғанын түсінуге талпынасыз.</p>
+        <h4>Бастау</h4>
+        <ul>
+          <li>Бастапқы кодты <a href="https://cdn.cs50.net/ai/2023/x/projects/6/attention.zip" target="_blank" rel="noopener">attention.zip</a> сілтемесінен жүктеп алып, архивті ашыңыз.</li>
+          <li><code>attention</code> қалтасының ішінде <code>pip3 install -r requirements.txt</code> командасымен тәуелділіктерді орнатыңыз.</li>
+        </ul>
+        <h4>Түсіну</h4>
+        <p>Алдымен <code>mask.py</code> бағдарламасын қараңыз. <code>main</code> функциясында пайдаланушыдан мәтін сұралады. Мәтінде тілдік модель болжауы керек сөзді білдіретін <code>[MASK]</code> белгісі болуы тиіс. Сосын функция кірісті токендерге бөлу үшін <a href="https://huggingface.co/docs/transformers/v4.31.0/en/model_doc/auto#transformers.AutoTokenizer" target="_blank" rel="noopener"><code>AutoTokenizer</code></a> қолданады.</p>
+        <p>BERT моделінде әр бөлек токеннің өз ID нөмірі бар. Бір ID (<code>tokenizer.mask_token_id</code>) <code>[MASK]</code> токеніне сәйкес келеді. Басқа токендердің көбі сөздерді білдіреді, кейбір ерекшеліктерден басқа: <code>[CLS]</code> токені әрқашан мәтін тізбегінің басында тұрады; <code>[SEP]</code> токені тізбектің соңында тұрады және тізбектерді бір-бірінен бөлу үшін қолданылады. Кейде бір сөз бірнеше токенге бөлінеді: мысалы, BERT «intelligently» сөзін екі токен деп санайды: <code>intelligent</code> және <code>##ly</code>.</p>
+        <p>Одан кейін BERT тілдік моделімен жасырылған токенді болжау үшін <a href="https://huggingface.co/docs/transformers/v4.31.0/en/model_doc/bert#transformers.TFBertForMaskedLM" target="_blank" rel="noopener"><code>TFBertForMaskedLM</code></a> данасы қолданылады. Кіріс токендері (<code>inputs</code>) модельге беріліп, ең үздік <code>K</code> шығыс токені алынады. Бастапқы тізбек шығарылады, онда маска токені әр болжанған токенмен ауыстырылады.</p>
+        <p>Соңында бағдарлама <code>visualize_attentions</code> функциясын шақырады: ол BERT-тің әр назар басы үшін кіріс тізбегінің назар мәндерінің диаграммаларын жасауы керек.</p>
+        <p>Кодтың көбі сіз үшін жазылған, бірақ <code>get_mask_token_index</code>, <code>get_color_for_attention_score</code> және <code>visualize_attentions</code> іске асыруы сізге қалдырылған. Осы үш функцияны аяқтағанда, <code>mask.py</code> назар диаграммаларын жасайды. Бұл диаграммалар тілді түсінуге тырысқанда BERT нені үйренгенін аздап көрсетеді. Мысалы, төменде «Then I picked up a [MASK] from the table.» сөйлемін өңдеу кезіндегі 3-қабат, 10-бастың диаграммасы туралы айтылады.</p>
+        <p>Есіңізде болсын: ашық түстер назар салмағы жоғары, қою түстер төмен екенін білдіреді. Бұл жағдайда бұл назар басы өте айқын заңдылықты үйренген сияқты: әр сөз өзінен кейінгі сөзге назар аударады. Мысалы, «then» сөзі диаграммада екінші жол, ал сол жолдағы ең ашық ұя «i» бағанына сәйкес келеді: «then» сөзі «i» сөзіне қатты назар аударады. Сөйлемдегі басқа токендер үшін де солай. (Біздің жоғарыдағы схема дәл осы заңдылықты көрсетеді.)</p>
+        <p><code>mask.py</code> бағдарламасын басқа сөйлемдермен іске қосып, 3-қабат, 10-бас осы заңдылықты сақтайтынын тексере аласыз. Бұл түсінікті де: мәтіндегі сөзді түсіну көбіне оның артынан қандай сөз келетінін білуге байланысты, сондықтан келесі сөзге назар аударатын бас (немесе бірнеше бас) BERT үшін пайдалы болуы мүмкін.</p>
+        <p>Бұл назар басы әсіресе айқын, ал көбіне назар бастары шуылдырақ болады және BERT нені қарап тұрғанын болжау үшін көбірек түсіндіруді қажет етеді.</p>
+        <p>Мысалы, BERT үстеулердің рөлін ескере ме екен деп білгіміз келсін. Модельге «The turtle moved slowly across the [MASK].» сияқты сөйлем беріп, шыққан назар бастарын қарап, тілдік модель «slowly» сөзінің «moved» сөзін анықтайтын үстеу екенін байқай ма, соны көруге болады. Диаграммаларда көзге түсетін біреуі - 4-қабат, 11-бас. Бұл бас шуылдырақ: оның не істеп тұрғаны бірден көрінбейді. Бірақ байқаңыз: «slowly» үстеуі өзі анықтайтын етістікке, яғни «moved» сөзіне ең көп назар аударады. Етістік пен үстеудің ретін ауыстырсақ та солай. Тіпті үстеу мен етістік тікелей қатар тұрмаған сөйлемде де солай болып шығады.</p>
+        <p>Сонымен, бұл назар басы үстеулер мен олар анықтайтын сөздер арасындағы қатынасқа назар аударуды үйренген деп болжауға болады. Назар қабаттары әрдайым сөздер арасындағы қатынас туралы біздің күтуімізге сай болмайды, және адамға түсінікті қатынасқа мүлде сәйкес келмеуі де мүмкін. Бірақ олардың нені білдіретіні туралы болжам жасай аламыз, және осы жобада сіз дәл солай істейсіз.</p>
+        <h4>Талаптар</h4>
+        <p>Алдымен <code>get_mask_token_index</code>, <code>get_color_for_attention_score</code> және <code>visualize_attentions</code> функцияларының іске асырылуын аяқтаңыз.</p>
+        <ul>
+          <li><code>get_mask_token_index</code> функциясы маска токенінің ID-ін (<code>int</code>) және токенайзер жасаған <code>inputs</code> (түрі <code>transformers.BatchEncoding</code>) қабылдайды. Ол кіріс токендер тізбегіндегі маска токенінің индексін қайтаруы керек.
+            <ul>
+              <li>Индекс 0-ден басталады: мысалы, үшінші кіріс ID маска токенінің ID-і болса, функция <code>2</code> қайтарады.</li>
+              <li>Маска токені кіріс тізбегінде мүлде жоқ болса, функция <code>None</code> қайтарады.</li>
+              <li>Кіріс тізбегінде маска токені біреуден артық болмайды деп есептеуге болады.</li>
+              <li><code>transformers</code> құжаттамасында, әсіресе <a href="https://huggingface.co/docs/transformers/v4.31.0/en/main_classes/tokenizer#transformers.PreTrainedTokenizer.__call__" target="_blank" rel="noopener">токенайзерді шақырғанда қайтатын мәнді</a> қараған пайдалы: <code>BatchEncoding</code> қандай өрістерге ие екенін көресіз.</li>
+            </ul>
+          </li>
+          <li><code>get_color_for_attention_score</code> функциясы назар ұпайын (0-ден 1-ге дейінгі, қоса алғанда, мән) қабылдап, назар диаграммасындағы сол ұяның түсін көрсететін RGB үштігін (қызыл, жасыл, көк) білдіретін үш бүтін санның кортежін қайтаруы керек.
+            <ul>
+              <li>Назар ұпайы <code>0</code> болса, түс толық қара (<code>(0, 0, 0)</code>) болуы керек. Ұпай <code>1</code> болса, түс толық ақ (<code>(255, 255, 255)</code>). Аралық ұпайлар үшін түс ұпайға сызықтық масштабталатын сұр реңк болуы керек.</li>
+              <li>Түс сұр реңк болу үшін қызыл, көк және жасыл мәндер бірдей болуы керек.</li>
+              <li>Қызыл, жасыл және көк мәндер бүтін сан болуы керек, бірақ мәндерді қиюға не дөңгелектеуге еркіңіз бар. Мысалы, <code>0.25</code> ұпайы үшін функция <code>(63, 63, 63)</code> не <code>(64, 64, 64)</code> қайтара алады, себебі 255-тің 25%-ы - 63.75.</li>
+            </ul>
+          </li>
+          <li><code>visualize_attentions</code> функциясы токендер тізбегін (<code>tokens</code>, жолдар тізімі) және модель жасаған барлық назар ұпайларын қамтитын <code>attentions</code> қабылдайды. Әр назар басы үшін функция <code>generate_diagram</code> шақырғандағыдай бір назар диаграммасын жасауы керек.
+            <ul>
+              <li><code>attentions</code> мәні - тензорлар кортежі (мұнда «тензорды» көпөлшемді массив деп елестетуге болады).</li>
+              <li>Белгілі бір назар басының мәндерін алу үшін <code>attentions[i][j][k]</code> деп индекстейсіз: <code>i</code> - назар қабатының индексі, <code>j</code> - сәуле (beam) нөмірінің индексі (біздің жағдайда әрқашан <code>0</code>), <code>k</code> - қабаттағы назар басының индексі.</li>
+              <li>Бұл функцияда бар іске асыру тек бір назар диаграммасын жасайды: бірінші қабаттағы бірінші бас үшін. Сіздің міндетіңіз - оны барлық бастар мен қабаттар үшін диаграмма жасайтындай кеңейту.</li>
+              <li><code>generate_diagram</code> функциясы алғашқы екі кіріс ретінде қабат нөмірін және бас нөмірін күтеді. Бұл нөмірлер 1-ден басталуы керек: яғни бірінші бас пен бірінші қабат үшін (екеуінің де индексі 0) <code>layer_number</code> да <code>1</code>, <code>head_number</code> да <code>1</code> болуы тиіс.</li>
+            </ul>
+          </li>
+        </ul>
+        <p>Жоғарыдағы үш функцияны аяқтаған соң, <code>mask.py</code> бағдарламасын іске қосып, жасырылған сөздерді болжап, назар диаграммаларын жасай аласыз. Жобаның екінші бөлігі - өз қалауыңызша таңдаған сөйлемдер үшін осы диаграммаларды талдап, нақты назар бастарының тілді түсіну процесінде қандай рөл атқаратыны туралы қорытынды жасау. Талдауыңызды <code>analysis.md</code> файлына толтырасыз.</p>
+        <ul>
+          <li><code>analysis.md</code> ішіндегі <code>TODO</code>-ларды орындаңыз.
+            <ul>
+              <li>Сөздер арасындағы қандай да бір қатынасты үйренген сияқты кемінде екі назар басын сипаттаңыз. Әр жағдайда назар басы нені «қарап» тұрғанын бір-екі сөйлеммен жазып, қорытындыға келу үшін модельге берген кемінде екі мысал сөйлем көрсетіңіз.</li>
+              <li>Жоба спецификациясының «Түсіну» бөлімінде екі мысал бар: 3-қабат, 10-бас (токендер өздерінен кейінгі токендерге назар аударады) және 4-қабат, 11-бас (үстеулер өздері анықтайтын етістіктерге назар аударады). Сіз тапқан тіл аспектілері осы екеуінен өзгеше болуы керек.</li>
+              <li>Назар бастары шуылдақ болуы мүмкін, сондықтан әрдайым айқын адами түсіндірме болмайды. Кейде олар сіз сипаттаған қатынастан көбірек нәрсеге назар аударады, кейде сіз сипаттаған қатынасты әр сөйлемде таппайды. Бұл жақсы. Мақсат - тіл туралы адами түйсігімізге сүйеніп назар туралы қорытынды жасау, ал әр назар басының рөлін нақты анықтау міндетті емес.</li>
+              <li>Сізді қызықтыратын кез келген қатынасты қарауға болады. Идея іздесеңіз: етістіктер мен олардың тура толықтауыштары, предлогтар, есімдіктер, сын есімдер, детерминативтер, не токендердің өздерінен бұрынғы токендерге назар аударуы.</li>
+            </ul>
+          </li>
+        </ul>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li>Назар диаграммаларын талдағанда, көптеген назар басында көптеген токен <code>[SEP]</code> не <code>[CLS]</code> токендеріне қатты назар аударатынын байқайсыз. Бұл берілген басқа бастың назар аударатындай сөзі болмаған жағдайда болады.</li>
+            <li><code>get_color_for_attention_score</code> үшін сызықтық формула жеткілікті: ұпайды 255-ке көбейтіп, бүтінге айналдырыңыз.</li>
+          </ul>
+        </div></details>
+        <h4>Тексеру</h4>
+        <p>Қаласаңыз, <code>check50</code> орнатқаннан кейін кодыңызды мына командамен тексеріңіз (міндетті емес, тапсырғанда сервер дәл осы тесттерді өзі жүргізеді):</p>
+<pre class="terminal"><code class="language-plaintext">$ check50 ai50/projects/2024/x/attention</code></pre>
+        <p>Стильді <code>style50</code> арқылы тексеріңіз:</p>
+<pre class="terminal"><code class="language-plaintext">$ style50 mask.py</code></pre>
+        <p>Стандартты кітапханадан және осында нақты рұқсат етілген кітапханалардан басқа модульдерді импорттауға <strong>болмайды</strong>.</p>
+        <h4>Тапсыру</h4>
+        <p>Жұмысты <a href="https://submit.cs50.io/invites/d03c31aef1984c29b5e7b268c3a87b7b" target="_blank" rel="noopener">осы сілтеме</a> арқылы курсқа қосылып, GitHub аккаунтымен жібересіз. <code>submit50</code> орнатылған болса:</p>
+<pre class="terminal"><code class="language-plaintext">$ submit50 ai50/projects/2024/x/attention</code></pre>
+        <p>Әйтпесе Git арқылы <code>https://github.com/me50/USERNAME.git</code> мекенжайына, <code>ai50/projects/2024/x/attention</code> бұтағына жіберіңіз. Бүкіл қалтаны емес, тек өзгертуге нұсқау берілген файлдарды ғана жіберіңіз. Жұмыс бес минут шамасында бағаланады, ал <a href="https://cs50.me/cs50ai" target="_blank" rel="noopener">cs50.me/cs50ai</a> сілтемесінде өз жетістігіңізді көре аласыз.</p>
+        <div class="callout note">
+          <span class="callout-title">Автотексеруші жоқ</span>
+          <p>Бұл тапсырма BERT пен <code>tensorflow</code>, <code>transformers</code> кітапханаларын, ірі модельді жүктеуді қажет етеді. Бұл браузерде мүмкін емес, сондықтан автотексеруші жоқ. Тапсырманы өз компьютеріңізде (не cs50.dev-те) орындап, <code>check50</code> іске қосыңыз.</p>
+        </div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="ai6-attention">
+            <li><input type="checkbox"> <span><code>get_mask_token_index</code> 0-ден басталатын индексті қайтарады, маска жоқ болса <code>None</code>.</span></li>
+            <li><input type="checkbox"> <span><code>get_color_for_attention_score</code> <code>(0, 0, 0)</code> мен <code>(255, 255, 255)</code> арасындағы сұр реңк кортежін қайтарады (бүтін сандар).</span></li>
+            <li><input type="checkbox"> <span><code>visualize_attentions</code> барлық қабат пен бас үшін диаграмма жасайды (нөмірлері 1-ден басталады).</span></li>
+            <li><input type="checkbox"> <span><code>analysis.md</code> ішінде кемінде екі назар басы және әрқайсысы үшін екі мысал сөйлем бар.</span></li>
+            <li><input type="checkbox"> <span><code>check50 ai50/projects/2024/x/attention</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <h3 id="pset-extra">Сайттың өз жаттығулары (ресми емес)</h3>
+      <div class="callout tip">
+        <span class="callout-title">Ресми тапсырма емес</span>
+        <p>Төмендегі екі тапсырма - CS50 AI жинағының бөлігі емес, біздің сайттың өз жаттығуы. Олар осы лекцияның ең жеңіл идеяларын (<i>n</i>-граммалар мен косинус ұқсастығы) таза Python-да жаттықтырады және браузерде автоматты түрде тексеріледі. Нағыз курстағы <code>check50</code>-ке ешқандай қатысы жоқ.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pset-ngrams">n-grams (n-граммалар жасау)</h3></div>
+        <p><code>ngrams.py</code> файлында үш функция жазыңыз:</p>
+        <ul>
+          <li><code>tokenize(text)</code>: мәтінді кіші әріпке айналдырып, тек әріптерден тұратын сөздердің тізімін қайтарады (тыныс белгілері мен сандар тасталады; бұл тапсырмада дефис те бөлгіш болады).</li>
+          <li><code>ngrams(tokens, n)</code>: токендер тізімінен ұзындығы <code>n</code> болатын барлық қатар тұрған кортеждердің (<code>tuple</code>) тізімін қайтарады. <code>n</code> тізімнен ұзын болса, бос тізім қайтарады.</li>
+          <li><code>most_common(tokens, n)</code>: ең жиі кездесетін <code>n</code>-граммды қайтарады. Бірнеше <i>n</i>-грамма бірдей жиі болса, бірінші кездескенін қайтарыңыз. <i>n</i>-грамма мүлде жоқ болса, <code>None</code>.</li>
+        </ul>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Сөздерді әріптерден бөліп алу үшін <code>re.findall(r"[^\W\d_]+", text.lower())</code> жеткілікті: бұл өрнек қазақ әріптерін де (қ, ғ, ү...) таниды. <code>ngrams</code> үшін тізімнің кесіндісін (<code>tokens[i:i + n]</code>) қолданыңыз. Жиілікті санау үшін сөздік не <code>collections.Counter</code>, тек тең жиілікте «бірінші кездескен» ережесіне назар аударыңыз.</p></div></details>
+        <div class="autograder" data-check="py-ngrams" data-src="ai/checks/week-6.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="ai6-ngrams">
+            <li><input type="checkbox"> <span><code>tokenize</code> кіші әріпке айналдырады және тек әріптерден тұратын сөздерді қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>ngrams</code> <code>len(tokens) - n + 1</code> кортеж қайтарады (не бос тізім).</span></li>
+            <li><input type="checkbox"> <span><code>most_common</code> тең жиілікте бірінші кездескенін, ал <i>n</i>-грамма жоқ болса <code>None</code> қайтарады.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-cosine">Cosine similarity (Косинус ұқсастығы)</h3></div>
+        <p><code>similarity.py</code> файлында екі функция жазыңыз:</p>
+        <ul>
+          <li><code>cosine(a, b)</code>: екі вектордың (сандар тізімінің) косинус ұқсастығын, яғни <code>(a · b) / (|a| · |b|)</code> мәнін қайтарады. Векторлардың ұзындығы әр түрлі болса не біреуі нөлдік вектор (барлық мәні 0) болса, <code>ValueError</code> көтеріңіз.</li>
+          <li><code>most_similar(word, vectors)</code>: <code>vectors</code> - <code>{сөз: вектор}</code> сөздігі. <code>word</code> сөзіне косинус ұқсастығы бойынша ең жақын <em>басқа</em> сөзді қайтарыңыз (сөздің өзін есепке алмаңыз).</li>
+        </ul>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Скаляр көбейтінді: <code>sum(x * y for x, y in zip(a, b))</code>. Вектор ұзындығы: <code>math.sqrt(sum(x * x for x in a))</code>. Нәтиженің 1-ге тең болуы - бір бағыттағы векторлар, 0 - перпендикуляр, -1 - қарама-қарсы бағыттағы векторлар. Бұл - лекциядағы «wrote ~ authored» тәжірибесінің дәл өзі.</p></div></details>
+        <div class="autograder" data-check="py-cosine" data-src="ai/checks/week-6.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="ai6-cosine">
+            <li><input type="checkbox"> <span><code>cosine</code> бір бағыттағы векторларға 1, перпендикулярға 0, қарама-қарсыға -1 береді.</span></li>
+            <li><input type="checkbox"> <span>Ұзындықтары әр түрлі не нөлдік вектор болса, <code>ValueError</code> көтеріледі.</span></li>
+            <li><input type="checkbox"> <span><code>most_similar</code> сөздің өзін қайтармайды, ең ұқсас басқа сөзді қайтарады.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <h2 id="course-end">Курстың қорытындысы</h2>
+      <p>Міне, біз CS50 AI-дың соңына да жеттік. Алты апта бойы жасанды интеллектті бір-бірден ашып көрдік: <strong>іздеу</strong> (лабиринттен шығу жолын табу), <strong>білім</strong> (логикамен қорытынды шығару), <strong>белгісіздік</strong> (ықтималдықпен ойлау), <strong>оңтайландыру</strong> (ең жақсы шешімді іздеу), <strong>машиналық оқыту</strong> (деректерден заңдылық үйрену), <strong>нейрон желілері</strong> (мидың ұйымдасуына ұқсас есептеу) және, ең соңында, <strong>тіл</strong>. Басында ЖИ сізге жұмбақ сияқты көрінген шығар. Енді ChatGPT-дің «магиясы» дегеннің негізінде екі нәрсе жатқанын білесіз: сөздерді сандарға (векторға) айналдыру және назар аудару арқылы контексті ескеру. Және ең бастысы, мұның бәрін өзіңіз Python-да жазып шықтыңыз.</p>
+      <div class="callout tip">
+        <span class="callout-title">Құттықтаймыз!</span>
+        <p>Сіз курстың барлық лекциясынан өттіңіз. Енді жүрісті жалғастырыңыз: ресми жобаларды орындап, өз идеяңызды ЖИ-мен жүзеге асырып көріңіз. Курсты аяқтағаныңыз туралы сертификат алу үшін <a href="../../certificate.html?course=ai"><strong>CS50 AI сертификатына өту</strong></a>.</p>
+      </div>
+
+      <nav class="pager">
+        <a href="week-5.html"><small>Алдыңғы</small>← 5-апта: Нейрон желілер</a>
+        <a class="next" href="../index.html"><small>Келесі</small>CS50 AI: барлық лекциялар →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 AI (CS50's Introduction to Artificial Intelligence with Python, Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+</article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

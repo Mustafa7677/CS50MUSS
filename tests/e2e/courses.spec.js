@@ -50,7 +50,8 @@ test("курстар беті және CS50P: лекция, тест, «Оқыд
   await expect(page.locator(".cx-home .cx-card")).toHaveCount(4);
   // Іздеу CS50P бөлімдерін табады
   await page.keyboard.press("Control+k");
-  await page.keyboard.type("f-жол");
+  await expect(page.locator(".search-modal input")).toBeFocused();
+  await page.keyboard.type("Жолдарды пішімдеу");
   await expect(page.locator(".search-modal")).toContainText("CS50P");
   expect(errs).toEqual([]);
 });
@@ -91,5 +92,65 @@ test("сертификат: CS50x/CS50P ауыстырғыш, CS50P сертиф
   await page.goto("certificate.html");
   await expect(page.locator(".cert-switch a.on")).toHaveText("CS50x");
   await expect(page.locator(".cert-gate")).toContainText("0 / 12");
+  expect(errs).toEqual([]);
+});
+
+test("CS50 SQL / Web: лекциядағы мысалдар мен автотексерушілер жұмыс істейді", async ({ page }) => {
+  test.setTimeout(120_000);
+  const errs = collectErrors(page);
+  await blockFonts(page.context());
+  // SQL: өз демо дерекқорында нағыз SQLite
+  await page.goto("sql/lectures/week-0.html");
+  const sqlBtn = page.locator('pre[data-lang="sql"][data-db] .run-btn').first();
+  await sqlBtn.scrollIntoViewIfNeeded();
+  await sqlBtn.click();
+  await expect(page.locator(".sql-output .sql-table").first()).toBeVisible({ timeout: 60_000 });
+  // SQL автотексеруші: бірінші тапсырма - эталон сұраумен өтеді
+  const sg = page.locator(".sql-grader").first();
+  await sg.scrollIntoViewIfNeeded();
+  const ref = await page.evaluate(async (el) => {
+    const src = el.dataset.src, set = el.dataset.set;
+    await window.CS50KZ.loadScript(src);
+    return window.CS50KZ_SQLCHECKS[set].tasks[0].ref;
+  }, await sg.elementHandle());
+  await sg.locator(".sg-code").fill(ref);
+  await sg.locator(".sg-run").click();
+  await expect(sg.locator(".sg-msg")).toContainText("Дұрыс", { timeout: 60_000 });
+  await sg.locator(".sg-code").fill("SELECT 1;");
+  await sg.locator(".sg-run").click();
+  await expect(sg.locator(".sg-msg")).toContainText("✗");
+  // Web: JS мысалы, HTML алдын ала көрсету, JS автотексеруші (шексіз цикл бетті қатырмайды)
+  await page.goto("web/lectures/week-5.html");
+  const jsBtn = page.locator('pre[data-lang="javascript"][data-run] .run-btn').first();
+  await jsBtn.scrollIntoViewIfNeeded();
+  await jsBtn.click();
+  await expect(page.locator("pre.run-output").first()).toContainText("Hello, world!", { timeout: 10_000 });
+  const pv = page.locator('pre[data-lang="html"][data-preview] .run-btn').first();
+  await pv.scrollIntoViewIfNeeded();
+  await pv.click();
+  await expect(page.locator(".web-preview iframe").first()).toBeVisible();
+  const jg = page.locator('.js-grader[data-check="js-capitalize"]');
+  await jg.scrollIntoViewIfNeeded();
+  await jg.locator(".ag-code").fill("function capitalize(w) { return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase(); }");
+  await jg.locator(".ag-run").click();
+  await expect(jg.locator(".ag-score")).toContainText(/(\d+) \/ \1 тест өтті/, { timeout: 15_000 });
+  await jg.locator(".ag-code").fill("while (true) {}");
+  await jg.locator(".ag-run").click();
+  await expect(jg.locator(".ag-score")).toContainText(/^0 \/ \d+/, { timeout: 15_000 });
+  expect(errs).toEqual([]);
+});
+
+test("барлық 5 курстың басты беттері мен сертификат ауыстырғыш", async ({ page }) => {
+  const errs = collectErrors(page);
+  await blockFonts(page.context());
+  await page.goto("courses.html");
+  await expect(page.locator(".cx-card")).toHaveCount(5);
+  for (const [code, n] of [["python", 10], ["sql", 7], ["ai", 7], ["web", 9]]) {
+    await page.goto(`${code}/index.html`);
+    await expect(page.locator(".week-card")).toHaveCount(n);
+    await expect(page.locator(".week-card:not(.soon)")).toHaveCount(n);
+    await page.goto(`certificate.html?course=${code}`);
+    await expect(page.locator(".cert-gate")).toContainText(`0 / ${n} лекция оқылды`);
+  }
   expect(errs).toEqual([]);
 });

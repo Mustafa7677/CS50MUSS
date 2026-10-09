@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 Web 8-апта: Масштабтау, қауіпсіздік - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 Web 8-апта: Масштабтау, қауіпсіздік - CS50 қазақша">
+  <meta property="og:description" content="CS50 Web 8-апта: масштабтау (жүктемені бөлу, автомасштабтау, репликация, кэш) және қауіпсіздік (хэштеу, шифрлау, API-кілттер, XSS, CSRF, SQL-инъекция), қорытынды жоба.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/web/lectures/week-8.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 Web 8-апта: масштабтау (жүктемені бөлу, автомасштабтау, репликация, кэш) және қауіпсіздік (хэштеу, шифрлау, API-кілттер, XSS, CSRF, SQL-инъекция), қорытынды жоба.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#d4580c" data-n="8">
+        <div class="num">8-апта</div>
+        <h1>Масштабтау, қауіпсіздік</h1>
+        <p>Курстың соңғы лекциясы: сайтымыз мыңдаған қолданушыға төтеп беруі үшін не істеу керек және оны қарақшылардан қалай қорғауға болады. Соңында қорытынды жобаңыз күтіп тұр.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/web/notes/8/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Осы кезге дейін сайттарымыз тек өз компьютеріміздің ішінде жұмыс істеп келді. Бүгін екі үлкен сұраққа жауап іздейміз: <strong>сайтымызға бір мезгілде мыңдаған адам кірсе, ол шыдай ма?</strong> (масштабтау) және <strong>біреу сайтымызды бұзғысы келсе, не болады?</strong> (қауіпсіздік). Қауіпсіздік мысалдарының көбін бетте-ақ «▶» батырмасымен қауіпсіз түрде іске қосып көре аласыз. Лекция соңында <a href="#final-project">қорытынды жобаның</a> сипаттамасы бар.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="introduction">Кіріспе</h2>
+      <p>Ең алдымен, жүріп өткен жолымызға көз жүгіртейік. Біз HTML мен CSS арқылы қарапайым беттер жасадық. Git пен GitHub арқылы кодтағы өзгерістерді қадағалап, басқалармен бірге жұмыс істеуді үйрендік. Python-мен танысып, Django арқылы веб-қосымшалар жаздық, ал Django модельдері арқылы мәліметті сайтымызда сақтадық. Кейін JavaScript келіп, беттерді тірілтті, анимация мен React интерфейстерді жақсартты. Соңғы аптада бағдарламалық жасақтаманың жақсы тәжірибелері мен оларға көмектесетін технологияларды (тестілеу, CI/CD) талқыладық.</p>
+      <p>Бүгін, соңғы лекцияда, екі үлкен тақырып бар: веб-қосымшаны <strong>үлкейту</strong> (масштабтау) және оны <strong>қорғау</strong>. Екеуі де «сайт бар» дегеннен «сайт нағыз өмірде жұмыс істейді» дегенге өтетін көпір.</p>
+
+      <h2 id="scalability">Масштабталу</h2>
+      <p>Қазір біздің барлық қосымшамыз тек өз компьютерімізде жүріп тұр. Бірақ ертең оны интернеттегі кез келген адам ашсын десек, қосымшаны <strong>серверде</strong> (<span class="term-en">server</span>) іске қосу керек. Сервер дегеніміз - қосымшаларды жүргізуге арнайы бөлінген нақты құрылғы, яғни компьютер.</p>
+      <p>Серверді екі жолмен ұстауға болады. Біріншісі - <strong>өз ғимаратыңызда</strong> (<span class="term-en">on-premise</span>): серверлерді өзіңіз сатып аласыз, орнатасыз, күтесіз. Екіншісі - <strong>бұлтта</strong> (<span class="term-en">cloud</span>): серверлер Amazon немесе Google сияқты басқа компанияның иелігінде, сіз оның орнын жалға аласыз. Екі жолдың да артықшылығы мен кемшілігі бар. Төрт өлшем бойынша салыстырайық:</p>
+      <ul>
+        <li><strong>Икемділік (customization)</strong>. Өз серверіңізде бәрін қалағаныңызша баптай аласыз. Бұлтта бұл еркіндік азырақ.</li>
+        <li><strong>Білім (expertise)</strong>. Қосымшаны бұлтқа қою әлдеқайда оңай. Өз серверлеріңізді күту үшін мықты маман керек.</li>
+        <li><strong>Баға (cost)</strong>. Бұлт компаниялары пайда табуы керек, сондықтан олар өз серверін күтуге кеткен шығыннан қымбатырақ ақы алады. Бірақ керісінше, өз серверлеріңізді сатып алу бастапқыда өте қымбат, оларды орнататын маман да керек.</li>
+        <li><strong>Масштабталу (scalability)</strong>. Бұлтта үлкейту оңайырақ. Мысалы, сайтқа күніне 500 адам кіретін болсын, ал бір күні 500 000 кірді делік. Өз серверіңіз болса, жаңа серверлерді тапсырыс беріп, орнатуыңыз керек, ал сол аралықта көп қолданушы сайтқа кіре алмай қалады. Бұлт компаниялары серверді икемді жалға береді, сіз сайтыңыздағы жүктемеге қарай төлейсіз.</li>
+      </ul>
+      <p>Қолданушы осы серверге HTTP сұрауын жібергенде, сервер жауап қайтаруы тиіс. Бірақ шын мәнінде сервер бір мезгілде бір ғана сұрау алмайды, олар көп келеді:</p>
+      <figure style="margin:1.2rem 0"><svg viewBox="0 0 560 150" width="560" style="max-width:100%;height:auto;display:block;margin:0 auto" role="img" aria-label="Бір серверге бірнеше қолданушының сұрауы келеді"><defs><marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker></defs><rect x="10" y="10" width="90" height="32" rx="8" fill="var(--surface)" stroke="var(--muted)" stroke-width="2"/><text x="55.0" y="30.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Қолданушы 1</text><rect x="10" y="52" width="90" height="32" rx="8" fill="var(--surface)" stroke="var(--muted)" stroke-width="2"/><text x="55.0" y="72.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Қолданушы 2</text><rect x="10" y="94" width="90" height="32" rx="8" fill="var(--surface)" stroke="var(--muted)" stroke-width="2"/><text x="55.0" y="114.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Қолданушы 3</text><line x1="100" y1="26" x2="270" y2="56" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/><line x1="100" y1="68" x2="270" y2="70" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/><line x1="100" y1="110" x2="270" y2="84" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah1)"/><rect x="280" y="40" width="140" height="70" rx="8" fill="var(--bad-soft)" stroke="var(--bad)" stroke-width="2"/><text x="350.0" y="72.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Сервер</text><text x="350.0" y="88.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">бір ғана сервер</text><text x="490" y="70" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="12">Сұраулар көп,</text><text x="490" y="88" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="12">сервер шаршайды</text></svg></figure>
+      <p>Міне, масштабталу мәселесі осы жерден басталады. Бір сервер бір мезгілде тек белгілі бір санды сұрауды ғана көтере алады. Сондықтан жалғыз сервер шаршап қалған кезде не істейміз деп алдын ала ойлануымыз керек. Өз ғимаратымызда ұстайық па, бұлтта ма, бәрібір бір сервер құлап қалмай қанша сұрау көтеретінін білуіміз қажет. Мұны <strong>салыстырмалы сынақ</strong> (<span class="term-en">benchmarking</span>) құралдары өлшейді, мысалы Apache Bench.</p>
+
+      <h2 id="scaling">Масштабтау тәсілдері</h2>
+      <p>Серверіміз қанша сұрау көтеретінін білген соң, оны үлкейтудің жолын таңдаймыз. Екі негізгі тәсіл бар:</p>
+      <ol>
+        <li><strong>Тік масштабтау</strong> (<span class="term-en">vertical scaling</span>). Сервер әлсіреген кезде одан күштірек серверді сатып аламыз не жасаймыз. Бұл жол ұзаққа бармайды: жалғыз сервер қаншалықты қуатты болса да, оның шегі бар.</li>
+        <li><strong>Көлденең масштабтау</strong> (<span class="term-en">horizontal scaling</span>). Сервер әлсіреген кезде тағы бірнеше сервер алып, сұрауларды солардың арасына бөлеміз. Бұл ұқсатуға болады: бір ұста қанша күшті болса да, көп ұсталы шеберхана көбірек жұмыс бітіреді.</li>
+      </ol>
+
+      <h2 id="load-balancing">Жүктемені бөлу</h2>
+      <p>Көлденең масштабтауға көшкенде жаңа сұрақ туады: <em>қай сұрау қай серверге барады?</em> Оны шешетін құрылғы <strong>жүктеме бөлгіш</strong> (<span class="term-en">load balancer</span>) деп аталады. Ол кіріп келе жатқан сұрауларды ұстап алып, серверлердің біріне жолдайды:</p>
+      <figure style="margin:1.2rem 0"><svg viewBox="0 0 620 230" width="620" style="max-width:100%;height:auto;display:block;margin:0 auto" role="img" aria-label="Жүктеме бөлгіш сұрауларды үш серверге таратады"><defs><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker></defs><rect x="10" y="20" width="90" height="32" rx="8" fill="var(--surface)" stroke="var(--muted)" stroke-width="2"/><text x="55.0" y="40.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Қолданушы 1</text><rect x="10" y="70" width="90" height="32" rx="8" fill="var(--surface)" stroke="var(--muted)" stroke-width="2"/><text x="55.0" y="90.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Қолданушы 2</text><rect x="10" y="120" width="90" height="32" rx="8" fill="var(--surface)" stroke="var(--muted)" stroke-width="2"/><text x="55.0" y="140.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Қолданушы 3</text><line x1="100" y1="36" x2="205" y2="88" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah2)"/><line x1="100" y1="86" x2="205" y2="100" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah2)"/><line x1="100" y1="136" x2="205" y2="112" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah2)"/><rect x="210" y="70" width="120" height="60" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><text x="270.0" y="97.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Жүктеме</text><text x="270.0" y="113.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">бөлгіш (load balancer)</text><rect x="450" y="10" width="130" height="44" rx="8" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/><text x="515.0" y="36.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Сервер A</text><rect x="450" y="78" width="130" height="44" rx="8" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/><text x="515.0" y="104.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Сервер B</text><rect x="450" y="146" width="130" height="44" rx="8" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/><text x="515.0" y="172.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Сервер C</text><line x1="330" y1="90" x2="445" y2="34" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah2)"/><line x1="330" y1="100" x2="445" y2="100" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah2)"/><line x1="330" y1="112" x2="445" y2="168" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah2)"/><text x="310" y="215" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="12" fill="var(--muted)">Бөлгіш әр сұрауды бір серверге бағыттайды</text></svg></figure>
+      <h3 id="balancing-methods">Бөлу әдістері</h3>
+      <p>Қай серверге жіберуді шешудің бірнеше жолы бар. Үшеуін қарастырайық:</p>
+      <ul>
+        <li><strong>Кездейсоқ</strong> (<span class="term-en">random</span>). Ең қарапайымы: бөлгіш серверді жай ғана кездейсоқ таңдайды.</li>
+        <li><strong>Кезекпен</strong> (<span class="term-en">round-robin</span>). Бөлгіш серверлерді кезекпен ауыстырып отырады. Үш сервер болса, бірінші сұрау A-ға, екіншісі B-ға, үшіншісі C-ға, төртіншісі қайтадан A-ға барады.</li>
+        <li><strong>Ең аз қосылым</strong> (<span class="term-en">fewest connections</span>). Бөлгіш қазір ең аз сұрау өңдеп жатқан серверді іздеп, жаңа сұрауды соған береді. Сонда бір сервер артық жұмыстан қажымайды. Бірақ мұның бір кемшілігі бар: әр серверде қанша сұрау барын санау кездейсоқ таңдаудан гөрі көбірек уақыт алады.</li>
+      </ul>
+      <p>Мұны өзіңіз көрсеңіз жақсы түсінесіз. Төменде үш әдісті кішкентай модельмен салыстырамыз. Сұраулар бірінен соң бірі келеді, әрқайсысы серверде бірнеше «такт» жұмыс істейді (кейбірі ұзақ, кейбірі қысқа), ал біз әр серверде бір мезгілде ең көп қанша сұрау жиналғанын санаймыз:</p>
+<pre data-lang="javascript" data-run><code class="language-javascript">const servers = ["A", "B", "C"];
+// Әр сұрау серверде қанша такт жұмыс істейді (барлық әдіске бірдей сұраулар)
+const durations = [5, 1, 1, 6, 1, 2, 7, 1, 1, 5, 1, 2, 6, 1, 1, 7, 2, 1, 5, 1];
+
+// 1) Кездейсоқ
+function random(busy) {
+    return Math.floor(Math.random() * servers.length);
+}
+
+// 2) Кезекпен
+let next = 0;
+function roundRobin(busy) {
+    const i = next;
+    next = (next + 1) % servers.length;
+    return i;
+}
+
+// 3) Ең аз қосылым: қазір ең аз сұрау өңдеп жатқан сервер
+function fewest(busy) {
+    const counts = busy.map(list => list.length);
+    return counts.indexOf(Math.min(...counts));
+}
+
+function simulate(name, pick) {
+    const busy = [[], [], []];     // әр серверде әлі бітпеген сұраулардың қалған уақыты
+    const peak = [0, 0, 0];        // әр серверде бір мезгілде ең көп қанша сұрау болды
+    for (const d of durations) {
+        const i = pick(busy);
+        busy[i].push(d);
+        peak[i] = Math.max(peak[i], busy[i].length);
+        // бір такт өтті: барлық сұрау бір қадам жақындайды
+        for (let k = 0; k &lt; busy.length; k++) {
+            busy[k] = busy[k].map(t => t - 1).filter(t => t &gt; 0);
+        }
+    }
+    console.log(name, "ең көп жүктеме:", servers.map((s, i) => s + "=" + peak[i]).join(" "));
+}
+
+simulate("кездейсоқ ", random);
+next = 0;
+simulate("кезекпен  ", roundRobin);
+simulate("ең аз қос.", fewest);</code></pre>
+      <p>Кездейсоқ әдіс әр жолы әртүрлі нәтиже береді: кейде бір сервер ауырлап кетеді. Кезекпен әдіс сұрау ұзақтығын ескермейді, сондықтан ұзақ сұраулар кездейсоқ бір серверге жиналып қалуы мүмкін. Ал ең аз қосылым әдісі жүктемені көбіне теңестіреді, бірақ әр қадамда санау керек. Бұл мысал өте дөрекі, бірақ ойды көрсетеді: «ең жақсы» әдіс жоқ, әрқайсысының өз бағасы бар.</p>
+
+      <h3 id="sessions">Сессия мәселесі</h3>
+      <p>Көлденең масштабтағанда тағы бір ұсақ, бірақ қиын мәселе шығады. Қолданушы бір серверде жүйеге кірді делік, сессиясы сол серверде сақталды. Келесі сұрауын бөлгіш басқа серверге жіберді, ал ол сервер бұл адамды танымайды! Қолданушы қайтадан деректерін енгізе беруі керек пе? Әрине, жоқ. Бұл мәселені шешудің де бірнеше жолы бар:</p>
+      <ul>
+        <li><strong>Жабысқақ сессиялар</strong> (<span class="term-en">sticky sessions</span>). Қолданушы сайтқа алғаш кірген кезде бөлгіш оның қай серверге түскенін есте сақтап, келесі жолдары да сол серверге жібереді. Қауіпті жері: бір серверге жабысып қалған қолданушылар тым көп болып кетсе, сол сервер құлап қалуы мүмкін.</li>
+        <li><strong>Дерекқордағы сессиялар</strong> (<span class="term-en">database sessions</span>). Барлық сессия барлық серверге қолжетімді ортақ дерекқорда сақталады. Қолданушы қай серверге түссе де, оның мәліметі бар. Кемшілігі: дерекқордан оқу мен оған жазуға қосымша уақыт пен есептеу қуаты кетеді.</li>
+        <li><strong>Клиент жағындағы сессиялар</strong> (<span class="term-en">client-side sessions</span>). Мәліметті серверде емес, қолданушының өз браузерінде, cookie ретінде сақтаймыз. Кемшіліктері: қолданушы жалған cookie жасап, басқа адам болып кіріп кетуі мүмкін (қауіпсіздік мәселесі), және cookie әр сұраумен бірге алға-артқа жіберіледі (есептеу мен трафик мәселесі).</li>
+      </ul>
+      <p>Жүктемені бөлудегідей, мұнда да ең жақсы жалғыз жауап жоқ. Таңдау нақты жағдайыңызға байланысты.</p>
+
+      <h2 id="autoscaling">Автомасштабтау</h2>
+      <p>Тағы бір мәселе: көптеген сайттарға кейбір уақытта басқа кездегіден әлдеқайда көп кіреді. Мысалы, бұрынғы «Is it New Year&#39;s?» («Жаңа жыл ма?») қосымшамызды іске қоссақ, оған желтоқсанның соңы мен қаңтардың басында адам көп кіреді, ал жылдың қалған уақытында азырақ. Қыстағы жүктемеге жететін серверлерді сатып алсақ, олар қалған жылы бос тұрып, орын мен қуатты босқа жейді.</p>
+      <p>Мұның шешімі - <strong>автомасштабтау</strong> (<span class="term-en">autoscaling</span>), бұлттық есептеуде кең тараған идея: сайтыңыз пайдаланатын серверлер саны сұрау санына қарай өздігінен өсіп-кемиді. Той алдында үстелдер санын көбейтіп, тойдан кейін жинап қоятын мейрамхана сияқты.</p>
+      <p>Бірақ автомасштабтау да мінсіз емес. Жаңа сервер керек екенін анықтауға және оны іске қосуға уақыт кетеді, ал сол кезде жүктеме өсіп кетуі мүмкін. Тағы бір мәселе: жұмыс істеп тұрған сервер қанша көп болса, соның біреуі істен шығу ықтималдығы да соншалықты жоғары.</p>
+
+      <h3 id="server-failure">Сервердің істен шығуы</h3>
+      <p>Бірақ бірнеше сервердің бір пайдасы бар: ол <strong>жалғыз ақаулы нүктеден</strong> (<span class="term-en">single point of failure</span>) құтқарады. Бұл - істен шықса, бүкіл сайтты құлататын құрылғы. Жалғыз сервер болса, ол дәл осындай нүкте. Ал көлденең масштабтағанда жүктеме бөлгіш әр серверге үнемі шағын «жүрегің соғып тұр ма?» сұрауларын (<strong>жүрек соғысы</strong>, <span class="term-en">heartbeat</span>) жіберіп отырады. Жауап бермеген серверді құлады деп санап, оған жаңа сұрау жіберуді тоқтатады.</p>
+      <p>Бірақ тоқтаңыз: енді жалғыз ақаулы нүкте жүктеме бөлгіштің өзіне ауысып кеткен жоқ па? Дұрыс байқадыңыз. Мұны да шешуге болады: негізгі бөлгіш құлап қалса, оның орнын басатын қосалқы бөлгіштер ұстаймыз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: жүрек соғысы (heartbeat) жоқ болса, не болар еді?</summary>
+        <div class="details-body"><p>Бөлгіш серверлердің құлағанын білмес еді де, сұраулардың бір бөлігін өлі серверге жіберіп отырар еді. Сонда әр үшінші қолданушы қателік көрер еді (үш сервер болып, біреуі құласа). Жүрек соғысы бөлгішке құлаған серверді жылдам «ұмытуға» мүмкіндік береді.</p></div>
+      </details>
+
+      <h2 id="scaling-databases">Дерекқорларды масштабтау</h2>
+      <p>Сұрауларды өңдейтін серверлерді ғана емес, <strong>дерекқорды</strong> да ойлауымыз керек. Біз бұл курсте SQLite қолдандық, ол деректі серверде бір файлда сақтайды. Бірақ деректер көбейген сайын оларды бірнеше файлға, тіпті бөлек серверге бөлген тиімді болады. Сонда дерекқор серверінің өзі келіп жатқан сұрауларға шыдамай қалса, не істейміз? Бұл жерде де бірнеше әдіс бар:</p>
+      <ul>
+        <li><strong>Тік бөлу</strong> (<span class="term-en">vertical partitioning</span>). Бұл SQL-ді бастағанда істегенімізге ұқсас: артық қайталанатын мәліметті бір кестеде ұстамай, бірнеше кестеге бөлеміз. (4-лекцияда <code>flights</code> кестесін <code>flights</code> және <code>airports</code> деп бөлгенімізді еске түсіріңіз.)</li>
+        <li><strong>Көлденең бөлу</strong> (<span class="term-en">horizontal partitioning</span>). Бір пішінді, бірақ әртүрлі мәліметі бар бірнеше кесте ұстаймыз. Мысалы, <code>flights</code> кестесін <code>domestic_flights</code> (ішкі рейстер) және <code>international_flights</code> (халықаралық рейстер) деп бөлуге болады. Сонда JFK-дан LHR-ға рейс іздегенде, ішкі рейстерге толы кестені аралап уақыт жоғалтпаймыз. Кемшілігі: бөлінген кестелерді кейін біріктіру (<code>JOIN</code>) қымбатқа түседі.</li>
+      </ul>
+
+      <h3 id="database-replication">Дерекқор репликациясы</h3>
+      <p>Дерекқорды масштабтап болған соң да бір мәселе қалады: жалғыз ақаулы нүкте. Дерекқор сервері құлап қалса, бүкіл деректіміз жоғалуы мүмкін. Жалғыз сервердің орнына бірнеше сервер қосқандай, дерекқордың да <strong>көшірмелерін</strong> жасаймыз, сонда біреуі істен шықса да қосымша тоқтамайды. Бұл <strong>репликация</strong> (<span class="term-en">replication</span>) деп аталады. Ең танымал екі тәсілі бар:</p>
+      <figure style="margin:1.2rem 0"><svg viewBox="0 0 640 250" width="640" style="max-width:100%;height:auto;display:block;margin:0 auto" role="img" aria-label="Бір бастапқы және көп бастапқы репликация схемалары"><defs><marker id="ah4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker></defs><text x="150" y="18" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Single-primary</text><rect x="90" y="30" width="120" height="40" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><text x="150.0" y="47.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Primary</text><text x="150.0" y="63.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">оқу + жазу</text><rect x="10" y="140" width="110" height="40" rx="8" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/><text x="65.0" y="157.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Replica</text><text x="65.0" y="173.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">тек оқу</text><rect x="180" y="140" width="110" height="40" rx="8" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/><text x="235.0" y="157.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Replica</text><text x="235.0" y="173.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">тек оқу</text><line x1="130" y1="70" x2="70" y2="135" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah4)"/><line x1="170" y1="70" x2="230" y2="135" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah4)"/><text x="150" y="215" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">Жазу тек біреуіне</text><text x="480" y="18" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Multi-primary</text><rect x="340" y="120" width="120" height="44" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><text x="400.0" y="139.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Primary 1</text><text x="400.0" y="155.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">оқу + жазу</text><rect x="500" y="120" width="120" height="44" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><text x="560.0" y="139.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Primary 2</text><text x="560.0" y="155.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">оқу + жазу</text><rect x="420" y="40" width="120" height="44" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><text x="480.0" y="59.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Primary 3</text><text x="480.0" y="75.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">оқу + жазу</text><line x1="430" y1="90" x2="400" y2="115" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah4)"/><line x1="470" y1="85" x2="500" y2="115" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah4)"/><line x1="460" y1="142" x2="495" y2="142" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah4)"/><line x1="500" y1="150" x2="465" y2="150" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah4)"/><text x="480" y="215" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">Бәрі бір-бірімен синхрондалады, қақтығыс болуы мүмкін</text></svg></figure>
+      <ul>
+        <li><strong>Бір бастапқылы репликация</strong> (<span class="term-en">single-primary replication</span>). Дерекқор көп, бірақ тек біреуі «негізгі» (primary). Негізгіден оқып та, оған жаза да аласыз, ал қалғандарынан тек оқисыз. Негізгі дерекқор жаңарғанда, қалғандары соған қарап жаңартылады. Кемшілігі: жазу жағынан жалғыз ақаулы нүкте әлі қалады.</li>
+        <li><strong>Көп бастапқылы репликация</strong> (<span class="term-en">multi-primary replication</span>). Барлық дерекқордан оқуға да, оған жазуға да болады. Бұл жалғыз ақаулы нүктені жояды, бірақ бір шығыны бар: енді барлық дерекқорды өзекті күйде ұстау әлдеқайда қиын, өйткені әрқайсысы қалғандарындағы өзгерістен хабардар болуы керек. Сондай-ақ <strong>қақтығыстар</strong> туындауы мүмкін:
+          <ul>
+            <li><strong>Жаңарту қақтығысы</strong> (<span class="term-en">update conflict</span>). Бір қолданушы бір дерекқорда жолды өзгертіп жатқанда, екіншісі басқа дерекқорда дәл сол жолды өзгертеді. Дерекқорлар синхрондалғанда қайсысы дұрыс?</li>
+            <li><strong>Бірегейлік қақтығысы</strong> (<span class="term-en">uniqueness conflict</span>). SQL дерекқорындағы әр жолдың бірегей идентификаторы болады. Екі түрлі дерекқорда екі бөлек жазбаға бірдей <code>id</code> беріліп кетуі мүмкін.</li>
+            <li><strong>Жою қақтығысы</strong> (<span class="term-en">delete conflict</span>). Бір қолданушы жолды жойып жатқанда, екіншісі сол жолды жаңартып жатуы мүмкін.</li>
+          </ul>
+        </li>
+      </ul>
+      <details class="think">
+        <summary>Ойланып көріңіз: банк шотындағы қалдық үшін қай репликация қауіпті?</summary>
+        <div class="details-body"><p>Көп бастапқылы репликацияда екі бөлек дерекқорда бір шоттан бір мезгілде ақша шешілсе, екеуі де «қалдық жеткілікті» деп ойлауы мүмкін. Синхрондалғанда қалдық теріс болып қалады. Сондықтан мұндай деректерде көбіне бір бастапқылы схема таңдалады, ал көп бастапқылыға қақтығыстарды шешетін қосымша ережелер керек.</p></div>
+      </details>
+
+      <h2 id="caching">Кэштеу</h2>
+      <p>Дерекқормен жұмыс істегенде есте ұстайтын нәрсе: дерекқорға әр жолғы жүгіну <em>қымбат</em>. Сондықтан оған шақыру санын азайтқымыз келеді. Мысалы, <a href="https://www.nytimes.com/" target="_blank" rel="noopener">The New York Times</a> сайтын алайық. Олардың барлық мақаласы бір дерекқорда болуы мүмкін, ал басты бетті біреу ашқан сайын дерекқорға сұрау жасалып, шаблон қайта құрастырылса, бұл ысырап болар еді: басты беттегі мақалалар секунд сайын өзгермейді ғой.</p>
+      <p>Мұны <strong>кэштеу</strong> (<span class="term-en">caching</span>) шешеді. Идея мынау: жақын арада қайта керек болады деп күтсек, ақпаратты қолжетімдірек жерге сақтап қоямыз. Мектептегі сөздікке ұқсас: сөзді қайта-қайта қалың сөздіктен іздегенше, үстелге жазып қоясыз.</p>
+      <figure style="margin:1.2rem 0"><svg viewBox="0 0 640 190" width="640" style="max-width:100%;height:auto;display:block;margin:0 auto" role="img" aria-label="Браузер кэші және серверлерге ортақ кэш"><defs><marker id="ah3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker></defs><rect x="10" y="70" width="100" height="50" rx="8" fill="var(--surface)" stroke="var(--muted)" stroke-width="2"/><text x="60.0" y="92.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Браузер</text><text x="60.0" y="108.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">жергілікті кэш</text><rect x="190" y="20" width="100" height="44" rx="8" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/><text x="240.0" y="46.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Сервер 1</text><rect x="190" y="76" width="100" height="44" rx="8" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/><text x="240.0" y="102.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Сервер 2</text><rect x="190" y="132" width="100" height="44" rx="8" fill="var(--ok-soft)" stroke="var(--ok)" stroke-width="2"/><text x="240.0" y="158.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Сервер 3</text><rect x="370" y="70" width="100" height="50" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="2"/><text x="420.0" y="92.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Кэш</text><text x="420.0" y="108.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">(ортақ, жылдам)</text><rect x="530" y="70" width="100" height="50" rx="8" fill="var(--bad-soft)" stroke="var(--bad)" stroke-width="2"/><text x="580.0" y="92.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Дерекқор</text><text x="580.0" y="108.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">(баяу, қымбат)</text><line x1="110" y1="95" x2="185" y2="42" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah3)"/><line x1="110" y1="98" x2="185" y2="98" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah3)"/><line x1="110" y1="101" x2="185" y2="154" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah3)"/><line x1="290" y1="42" x2="365" y2="88" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah3)"/><line x1="290" y1="98" x2="365" y2="98" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah3)"/><line x1="290" y1="154" x2="365" y2="108" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah3)"/><line x1="470" y1="95" x2="525" y2="95" stroke="var(--muted)" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#ah3)"/><text x="498" y="140" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">кэсте жоқ болса ғана</text></svg></figure>
+      <p>Кэшті бірнеше жерде жасауға болады. Біріншісі - қолданушының өз браузерінде. Сонда бет қайта ашылғанда серверге сұрау жіберудің өзі керек емес. Ол үшін HTTP жауабының тақырыбына мына жолды қосамыз:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">Cache-Control: max-age=86400</code></pre>
+      <p>Бұл браузерге былай дейді: бұл бетті соңғы 86400 секунд ішінде ашқан болсаң, серверге қайта сұрау жіберудің қажеті жоқ. (86400 секунд - дәл бір тәулік. Түпнұсқа конспектте қателесіп «миллисекунд» деп жазылған, ал <code>max-age</code> әрқашан секундпен өлшенеді.) Бұл әдіс қысқа мерзімде өзгермейтін файлдарға, мысалы CSS-ке жиі қолданылады.</p>
+      <p>Бақылауды күшейту үшін жауап тақырыбына <code>ETag</code> та қосуға болады. Бұл құжаттың нақты нұсқасын білдіретін бірегей таңбалар тізбегі. Келесі сұраулар осы тегті өзімен бірге жібереді де, сервер оны ең соңғы құжаттың тегімен салыстырады. Екеуі өзгеше болғанда ғана құжат толық жіберіледі, әйтпесе «өзгеріс жоқ» деген қысқа жауап жеткілікті.</p>
+      <p>Одан басқа, <strong>сервер жағында</strong> да кэш ұстаған пайдалы. Сонда барлық серверге қолжетімді ортақ кэш болады (суретте ортада). Django-ның өзінің <a href="https://docs.djangoproject.com/en/4.0/topics/cache/" target="_blank" rel="noopener">кэш фреймворкі</a> бар, ол кэшті жобаға қосуға мүмкіндік береді. Оның бірнеше режимі бар:</p>
+      <ul>
+        <li><strong>Көрініс бойынша кэштеу</strong> (<span class="term-en">per-view caching</span>). Белгілі бір көрініс бір рет жүктелген соң, келесі көрсетілген уақыт ішінде функцияны қайта орындамай-ақ дәл сол бетті көрсете береді.</li>
+        <li><strong>Шаблон бөлігін кэштеу</strong> (<span class="term-en">template-fragment caching</span>). Шаблонның тек белгілі бөліктерін кэштейді. Мысалы, сирек өзгеретін навигация панелін әр жолы қайта құрудың қажеті жоқ.</li>
+        <li><strong>Төмен деңгейлі кэш API</strong> (<span class="term-en">low-level cache API</span>). Бұл ең икемді тәсіл: қалаған ақпаратыңызды кэшке сақтай аласыз.</li>
+      </ul>
+      <p>Django-да кэштеуді қалай орнату керегін мұнда егжей-тегжейлі қарастырмаймыз, қызықсаңыз <a href="https://docs.djangoproject.com/en/4.0/topics/cache/" target="_blank" rel="noopener">құжаттамаға</a> көз салыңыз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: кэштің қандай қауіпті жағы бар?</summary>
+        <div class="details-body"><p>Кэштегі ақпарат ескіріп қалуы мүмкін. Мысалы, жаңалық сайтында мақала түзетілген, ал кэштен әлі ескі нұсқа көрсетіліп тұр. Сондықтан кэштің «өмір сүру уақытын» (<code>max-age</code>) дұрыс таңдау керек: жиі өзгермейтін нәрсеге ұзақ, жиі өзгеретінге қысқа.</p></div>
+      </details>
+
+      <h2 id="security">Қауіпсіздік</h2>
+      <p>Енді сайтымыздың қауіпсіздігін қамтамасыз ету жайын қарастырамыз. Бұл кез келген бір ғана шара емес: қауіпсіздік курстағы барлық тақырыпқа дерлік тиіседі. Сондықтан біз курстың басынан бастап ретімен жүреміз.</p>
+
+      <h3 id="git-github">Git және GitHub</h3>
+      <p>Git пен GitHub-тың ең үлкен күшінің бірі - <strong>ашық бастапқы кодты бағдарламаны</strong> (<span class="term-en">open-source software</span>) бөлісу мен оған үлес қосуды оңай ету. Ашық кодты интернеттегі кез келген адам көре алады және оған үлес қоса алады. Бірақ бұның кері жағы бар: бір кезде паролі немесе API-кілті бар файлды коммит жасап жіберсеңіз, бұл құпия мәліметтер бүкіл әлемге ашық болып қалуы мүмкін.</p>
+      <div class="callout warn">
+        <span class="callout-title">Қате жасап қойсаңыз</span>
+        <p>Құпия кілтті коммитке қосып, GitHub-қа жіберіп қойсаңыз, оны жай ғана жою жеткіліксіз: Git тарихында ол қала береді. Дұрыс жол - сол кілтті <strong>дереу ауыстыру</strong> (қызмет көрсетушінің сайтында ескі кілтті өшіріп, жаңасын жасау). Одан кейін ғана тарихты тазалаңыз. Алдын алу үшін құпияларды ешқашан кодқа жазбаңыз (төмендегі «Орта айнымалылары» бөлімін қараңыз).</p>
+      </div>
+
+      <h2 id="html-security">HTML және алаяқтық</h2>
+      <p>HTML-дан көптеген осалдықтар шығады. Ең кең тарағаны - <strong>фишинг</strong> (<span class="term-en">phishing attack</span>). Бұл жағдайда қолданушы бір бетке барамын деп ойлайды, ал шын мәнінде басқа бетке түседі. Сайт жасаушы ретінде мұны толық болдырмай алмауымыз мүмкін, бірақ өзіміз интернетті пайдаланғанда оны әрдайым есте ұстауымыз керек. Мысалы, зиянкес мынадай HTML жазуы мүмкін:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Link&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;a href="https://cs50.harvard.edu/"&gt;https://www.google.com/&lt;/a&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Сілтеменің көрінетін мәтіні Google сияқты, ал шын <code>href</code> мекенжайы мүлде басқа. Мұны төмендегі безендірілмеген үлгіден көріңіз (қауіпсіздік үшін сілтеме ешқайда апармайды, тек шын мекенжайын көрсетеді):</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;p&gt;Банкке өту үшін мына сілтемені басыңыз:&lt;/p&gt;
+&lt;p&gt;&lt;a id="fake" href="https://cs50.harvard.edu/"&gt;https://www.google.com/&lt;/a&gt;&lt;/p&gt;
+&lt;p id="out" style="color:#b3261e;font-weight:bold"&gt;&lt;/p&gt;
+&lt;script&gt;
+  var a = document.getElementById("fake");
+  a.addEventListener("click", function (e) {
+    e.preventDefault();   // шын өтпейміз
+    document.getElementById("out").textContent =
+      "Көрінген мәтін: " + a.textContent + "  |  Шын мекенжай: " + a.href;
+  });
+&lt;/script&gt;</code></pre>
+      <p>Тағы бір нәрсе: HTML қолданушыға сұрау барысында жіберіледі, яғни сайттың орналасуы мен стилін бәрі көре алады. Мысалы, қарақшы кез келген банктің сайтына кіріп, оның HTML-ін толық көшіріп алып, өз сайтына қойып, дәл сондай көрінетін сайт жасай алады. Сонан соң кіру формасын өзгертіп, барлық логин мен пароль өзіне келетіндей қылады. (Түпнұсқа лекцияда лектор бұл әдісті әдейі көрсетіп, студенттерден сілтемені басар алдында мекенжайды тексеретін-тексермейтінін байқаған. Сіз де әдетке айналдырыңыз!)</p>
+      <div class="callout tip">
+        <span class="callout-title">Қалай қорғанамыз</span>
+        <p>Сілтемені басар алдында тышқанды үстіне апарып, браузердің төменгі жолағындағы шын мекенжайды қарау; сайт мекенжайының жазылуын (мысалы, <code>kaspi.kz</code> орнына <code>kaspl.kz</code>) тексеру; сезімтал деректерді енгізер алдында қара құлыпты (HTTPS) көру.</p>
+      </div>
+
+      <h2 id="https">HTTPS</h2>
+      <p>Біз бұрын айтқандай, интернеттегі әрекеттердің көбі HTTP хаттамасымен өтеді, бірақ барған сайын көп операция HTTPS-ке көшуде. HTTPS - HTTP-дің <strong>шифрланған</strong> нұсқасы. HTTP не HTTPS пайдаланғанда ақпарат бір компьютерден екіншісіне бірнеше аралық сервер арқылы жетеді. Сіздің хатыңыз қабылдаушыға барғанша бірнеше пошта бөлімшесінен өтетін қағаз хат сияқты.</p>
+      <p>Осы аралық берілістердің бәрінің қауіпсіз екеніне кепілдік беру көбіне мүмкін емес. Сондықтан тасымалданатын мәліметті <strong>шифрлау</strong> (<span class="term-en">encryption</span>) өте маңызды. Бұл хабардағы таңбаларды өзгертіп, оны тек жіберуші мен қабылдаушы түсінетіндей, ал басқа ешкім түсінбейтіндей ету.</p>
+
+      <h3 id="secret-key">Құпия кілтті криптография</h3>
+      <p>Бір тәсіл - <strong>құпия кілтті криптография</strong> (<span class="term-en">secret-key cryptography</span>). Мұнда жіберуші мен қабылдаушының екеуінде де тек өздері білетін ортақ құпия кілт болады. Жіберуші хабарды осы кілтпен шифрлап жібереді, қабылдаушы сол кілтпен оны ашады (дешифрлайды). Бұл әдіс өте сенімді, бірақ практикада үлкен қиындық туғызады: екеуінде де кілт болу үшін алдымен кілтті қауіпсіз түрде алмасу керек, яғни бетпе-бет кездесу керек. Біз күн сайын жүздеген сайтпен жұмыс істейміз, олардың бәрімен жеке кездесу мүмкін емес.</p>
+
+      <h3 id="public-key">Ашық кілтті криптография</h3>
+      <p>Интернеттің қазіргідей жұмыс істеуіне мүмкіндік берген керемет жаңалық - <strong>ашық кілтті криптография</strong> (<span class="term-en">public-key cryptography</span>). Мұнда екі кілт бар: біреуі <em>ашық</em>, оны кез келген адамға беруге болады, ал екіншісі <em>жеке</em>, оны құпия ұстау керек. (Кілт жұбын жасаудың бірнеше математикалық әдісі бар, олардың өзі бір курстың тақырыбы, сондықтан бұл жерде талқыламаймыз.) Кілттер жасалған соң, жіберуші қабылдаушының ашық кілтін тауып, хабарды сонымен шифрлайды. Қабылдаушы оны өзінің жеке кілтімен ашады. Қабылдаушының ашық кілті мен хабарды білетін қарақшы хабарды аша алмайды, өйткені ашу үшін жеке кілт керек.</p>
+      <p>Қарапайым ұқсатумен: ашық кілт - ашық тұрған пошта жәшігі. Кез келген адам оған хат сала алады, бірақ жәшікті тек кілті бар иесі ашады. HTTP орнына HTTPS пайдаланғанда, сұрауымыз дәл осылай ашық кілтті шифрлаумен қорғалатынын білеміз.</p>
+      <figure style="margin:1.2rem 0"><svg viewBox="0 0 640 170" width="640" style="max-width:100%;height:auto;display:block;margin:0 auto" role="img" aria-label="Ашық кілтпен шифрлап, жеке кілтпен дешифрлау"><defs><marker id="ah5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="var(--muted)"/></marker></defs><rect x="10" y="55" width="110" height="50" rx="8" fill="var(--surface)" stroke="var(--muted)" stroke-width="2"/><text x="65.0" y="84.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Жіберуші</text><rect x="520" y="55" width="110" height="50" rx="8" fill="var(--surface)" stroke="var(--muted)" stroke-width="2"/><text x="575.0" y="84.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Қабылдаушы</text><rect x="190" y="55" width="260" height="50" rx="8" fill="var(--bad-soft)" stroke="var(--bad)" stroke-width="2"/><text x="320.0" y="77.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-weight="700">Шифрланған хабар</text><text x="320.0" y="93.0" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="11" fill="var(--muted)">оқып болмайды</text><line x1="120" y1="80" x2="185" y2="80" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah5)"/><line x1="450" y1="80" x2="515" y2="80" stroke="var(--muted)" stroke-width="2" marker-end="url(#ah5)"/><text x="65" y="130" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="12" fill="var(--accent)">ашық кілтпен шифрлайды</text><text x="575" y="130" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="12" fill="var(--ok)">жеке кілтпен ашады</text><text x="320" y="30" fill="var(--text)" font-family="Inter,system-ui,sans-serif" font-size="13" text-anchor="middle" font-size="12" fill="var(--muted)">Желідегі кез келген аралық сервер тек шатасқан мәтінді көреді</text></svg></figure>
+
+      <h2 id="databases-security">Дерекқорлар</h2>
+      <p>Сұраулар мен жауаптардан бөлек, <strong>дерекқорымыздың</strong> да қауіпсіз болуын қадағалау керек. Бізге жиі сақтау қажет болатын нәрсе - пайдаланушылар туралы мәлімет: логиндер мен парольдер. Мынадай кестені елестетіңіз: бір бағанда <code>username</code>, екіншісінде <code>password</code>, парольдер ашық мәтінмен жазылған.</p>
+      <p>Бірақ парольдерді <strong>ешқашан ашық мәтінмен</strong> (<span class="term-en">plaintext</span>) сақтамаңыз. Бөгде адам дерекқорға қол жеткізсе, бәрі ашылып қалады. Орнына <strong>хэш-функцияны</strong> (<span class="term-en">hash function</span>) қолданамыз. Ол кез келген мәтінді алып, оған ұқсамайтын, кездейсоқ көрінетін жолға айналдырады. Кестеде парольдің өзі емес, оның <strong>хэші</strong> (<span class="term-en">hash</span>) тұрады. Мұны Python-да көруге болады. «Іске қосу» түймесін басыңыз:</p>
+<pre data-lang="python"><code class="language-python">import hashlib
+
+for password in ["qwerty", "qwerty1", "Qwerty"]:
+    h = hashlib.sha256(password.encode()).hexdigest()
+    print(password, "->", h)</code></pre>
+      <p>Байқадыңыз ба? Парольдер бір әріпке ғана өзгерсе де, хэштер мүлде басқа. Және хэштердің ұзындығы бірдей (64 символ), парольдің ұзындығына тәуелсіз. Енді ең маңызды нәрсе: хэш-функция <strong>бір бағытты</strong> (<span class="term-en">one-way</span>). Ол парольді хэшке айналдыра алады, бірақ хэштен парольді кері қайтара алмайды. Сүт қатығына айналады, бірақ қатықтан сүтті қайта алу мүмкін емес сияқты.</p>
+      <p>Бұдан не шығады? Пайдаланушы деректерін осылай сақтайтын компания <em>пайдаланушылардың парольдерін білмейді</em>. Пайдаланушы кіргісі келгенде, енгізген парольді қайтадан хэштеп, сақталған хэшпен салыстырады. Бұл жұмыстың бәрін Django біз үшін істеп қояды. Сонымен қатар, пайдаланушы парольді ұмытса, компания ескі парольді ешқашан айта алмайды, жаңасын жасатады. «Ескі паролін жібердім» деп жазған сайтты көрсеңіз, ол парольді ашық мәтінмен сақтап отыр деген сөз!</p>
+      <p>Осыны өзіңіз байқап көріңіз. Хэштеу, содан кейін «тұз» (<span class="term-en">salt</span>) қосу. Тұз - әр пайдаланушыға жеке кездейсоқ қосымша жол: бірдей парольдің хэштері де әртүрлі болады, және қарақшы алдын ала есептелген хэш кестелерін (<em>rainbow table</em>) пайдалана алмайды:</p>
+<pre data-lang="python"><code class="language-python">import hashlib
+
+def hash_password(password, salt=""):
+    return hashlib.sha256((salt + password).encode()).hexdigest()
+
+# Екі пайдаланушының паролі бірдей
+print("тұзсыз :", hash_password("qwerty") == hash_password("qwerty"))
+print(hash_password("qwerty"))
+
+# Әр пайдаланушыда өз тұзы бар
+a = hash_password("qwerty", "x7Gq")
+b = hash_password("qwerty", "m2Zp")
+print("тұзбен :", a == b)
+print(a)
+print(b)
+
+# Кіру: енгізген парольді қайта хэштеп, салыстырамыз
+def verify(password, salt, stored):
+    return hash_password(password, salt) == stored
+
+print(verify("qwerty", "x7Gq", a))
+print(verify("qwerty!", "x7Gq", a))</code></pre>
+      <div class="callout note">
+        <span class="callout-title">Нағыз жобада</span>
+        <p>Бұл мысал - идеяны түсіндіру үшін. Нағыз қосымшада SHA-256-ны өзіңіз қолданбаңыз: Django парольді арнайы баяу алгоритммен (PBKDF2 және т.б.), кездейсоқ тұзбен хэштейді. Баяу болуы әдейі: қарақшыға миллиондаған болжамды тез тексеру қиындайды. Яғни <code>User</code> моделін және Django-ның кіру жүйесін пайдаланыңыз, парольді өзіңіз сақтамаңыз.</p>
+      </div>
+      <details class="think">
+        <summary>Ойланып көріңіз: екі пайдаланушының хэштері бірдей болса, нені білеміз?</summary>
+        <div class="details-body"><p>Тұзсыз сақталған болса, екеуінің паролі бірдей екенін. Қарақшы бір хэшті «қолмен» бұзса, бірдей хэшті барлық жерде көреді. Тұз бұл мәселені шешеді: бірдей пароль әртүрлі хэш береді.</p></div>
+      </details>
+
+      <h3 id="information-leaks">Қандай ақпаратты жария етеміз?</h3>
+      <p>Кейде әзірлеуші ретінде өзіңіз шешуіңіз керек: қанша ақпаратты «ағызып» жіберуге дайынсыз? Мысалы, көп сайтта «парольді ұмыттым» беті болады: онда электрондық поштаны енгізесіз. Жіберген соң сіз екі түрлі хабар көрсетуіңіз мүмкін: «Хат жіберілді» немесе «Мұндай пошта жоқ».</p>
+      <p>Бірақ байқаңыз: әртүрлі поштаны енгізіп көру арқылы кез келген адам <strong>қай пошта сайтта тіркелгенін</strong> біле алады. Бұл мүлде маңызсыз болуы мүмкін (сайтты пайдаланудың еш қауібі жоқ жерде). Бірақ белгілі бір сайтқа мүше екеніңіздің өзі қауіп төндіретін болса (мысалы, зорлық-зомбылыққа ұшырағандарға арналған қолдау қауымдастығы), бұл өте жауапсыз қадам. Мұндайда әрқашан бірдей хабар көрсеткен дұрыс: «Егер бұл пошта тіркелген болса, хат жібердік».</p>
+      <p>Ақпарат тағы бір жолмен ағып кетуі мүмкін: жауаптың келу <strong>уақыты</strong>. Қате поштасы бар адамды қабылдамау, поштасы дұрыс, бірақ паролі қате адамды қабылдамаудан гөрі азырақ уақыт алатын шығар. Қарақшы осы айырмашылықты өлшеп, қай пошта тіркелгенін біле алады.</p>
+
+      <h3 id="sql-injection">SQL-инъекциясы</h3>
+      <p>Бұрын көргеніміздей, кодымызда тікелей жазылған SQL сұрауларын қолданған сайын <strong>SQL-инъекциясына</strong> (<span class="term-en">SQL injection attack</span>) мұқият болуымыз керек. Мұнда қолданушы енгізген мәтін сұраудың бөлігіне айналып, оның мағынасын өзгертеді. Мұны Python-дағы кішкентай дерекқормен көрсетейік (ол браузердің ішінде, жадта ғана жұмыс істейді, ешқандай нақты дерекқорға тиіспейді):</p>
+<pre data-lang="python"><code class="language-python">import sqlite3
+
+db = sqlite3.connect(":memory:")
+db.execute("CREATE TABLE users (username TEXT, password TEXT)")
+db.execute("INSERT INTO users VALUES ('aigerim', 'secret1')")
+db.execute("INSERT INTO users VALUES ('nurlan', 'secret2')")
+
+def login_unsafe(username, password):
+    # ҚАУІПТІ: қолданушы мәтінін сұраудың ішіне тікелей қоямыз
+    query = f"SELECT * FROM users WHERE username = '{username}' AND password = '{password}'"
+    print("Сұрау:", query)
+    return db.execute(query).fetchall()
+
+def login_safe(username, password):
+    # ҚАУІПСІЗ: параметрлер сұраудан бөлек беріледі
+    query = "SELECT * FROM users WHERE username = ? AND password = ?"
+    return db.execute(query, (username, password)).fetchall()
+
+print(login_unsafe("aigerim", "secret1"))
+print(login_unsafe("aigerim", "қате"))
+
+# Шабуылшы пароль орнына мынаны жазады:
+attack = "' OR '1'='1"
+print(login_unsafe("aigerim", attack))
+
+print(login_safe("aigerim", attack))</code></pre>
+      <p>Қараңыз: шабуылшы парольді білмесе де, <code>' OR '1'='1</code> деп жазып, шартты «әрқашан ақиқат» етіп жіберді. Сұрау бұрын «логин мен пароль сәйкес келсін» дегенді білдірсе, енді «немесе бір тең бір» дегенді білдіреді, бұл әрқашан ақиқат. Нәтижесінде жүйе ішіне кіргізіп жібереді. Ал екінші нұсқада (<code>?</code> белгісімен) қолданушы мәтіні ешқашан SQL ретінде түсіндірілмейді, жай ғана мән болып қалады. Django ORM-ы мұны өзі істейді. Сондықтан тікелей SQL жазғанда әрқашан параметрленген сұрауды қолданыңыз.</p>
+
+      <h3 id="apis">API-лер</h3>
+      <p>Біз JavaScript-ті API-лермен бірге бір беттік қосымшалар жасауға жиі қолданамыз. Өз API-ңызды жасасаңыз, оны қорғаудың бірнеше жолы бар:</p>
+      <ul>
+        <li><strong>API-кілттер</strong> (<span class="term-en">API keys</span>). Сіз берген кілті бар API-клиенттердің сұрауын ғана өңдейсіз.</li>
+        <li><strong>Сұрау жиілігін шектеу</strong> (<span class="term-en">rate limiting</span>). Бір қолданушы белгілі уақыт ішінде жасай алатын сұрау санын шектейсіз. Бұл <strong>қызмет көрсетуден бас тарту шабуылынан</strong> (<span class="term-en">Denial of Service, DoS attacks</span>) қорғайды: мұнда зиянкес API-ге сонша көп сұрау жібереді, сервер істен шығады. (Ұқсатқанда, бір адам дүкенге мың рет кіріп-шығып, басқа сатып алушыларға жол бермей тастағандай.)</li>
+        <li><strong>Маршрутты аутентификациялау</strong> (<span class="term-en">route authentication</span>). Көп жағдайда барлық мәліметті барлығына ашқымыз келмейді. Сондықтан белгілі бір қолданушылар ғана белгілі бір деректі көре алатындай етеміз.</li>
+      </ul>
+
+      <h3 id="environment-variables">Орта айнымалылары</h3>
+      <p>Парольді ашық мәтінмен сақтамайтынымыз сияқты, API-кілттерді де бастапқы кодқа жазбау керек (есіңізде болса, Git бөлімінде осы туралы айттық). Мұны болдырмаудың кең тараған жолы - <strong>орта айнымалылары</strong> (<span class="term-en">environment variables</span>). Бұл операциялық жүйеде не сервер ортасында сақталатын айнымалылар. Енді кодқа мәтінді өзін емес, орта айнымалысына сілтемені жазамыз:</p>
+<pre data-lang="python"><code class="language-python">import os
+
+# Терминалда: export MY_API_KEY="abc123"
+key = os.environ.get("MY_API_KEY", "орнатылмаған")
+print("Кілт:", key)</code></pre>
+      <p>Кілт кодта жоқ, ол тек сіздің компьютеріңізде (не серверде) тұр. Сондықтан кодты GitHub-қа қойсаңыз да, кілт сыртқа шықпайды. Django жобаларында да <code>SECRET_KEY</code> сияқты баптауларды дәл осылай ортадан оқуға болады.</p>
+
+      <h2 id="javascript-security">JavaScript</h2>
+      <p>Зиянкестер JavaScript арқылы да бірнеше шабуыл жасай алады. Бірі - <strong>сайтаралық скрипттеу</strong> (<span class="term-en">cross-site scripting, XSS</span>). Бұл жағдайда пайдаланушы өз JavaScript кодын жазып, оны сіздің сайтыңызда орындатады. Мысалы, бізде Django қосымшасы бар, жалғыз URL-мен:</p>
+<pre data-lang="python" data-norun><code class="language-python">urlpatterns = [
+    path("&lt;path:path&gt;", views.index, name="index")
+]</code></pre>
+      <p>және жалғыз көріністі (view):</p>
+<pre data-lang="python" data-norun><code class="language-python">def index(request, path):
+    return HttpResponse(f"Requested Path: {path}")</code></pre>
+      <p>Бұл сайт қолданушыға оның қандай URL-ге барғанын айтады: <code>/hello</code> ашсаңыз, «Requested Path: hello» шығады. Бірақ енді қолданушы URL-дің ішіне JavaScript жазып, оны бетке енгізе алады: мысалы, адрес жолына <code>&lt;script&gt;alert("Hi")&lt;/script&gt;</code> жазса, браузер ол кодты бет мазмұны деп қабылдап, орындайды. Бұл <code>alert</code> мысалы онша зиянды емес, бірақ DOM-ды өзгертетін не <code>fetch</code> арқылы сұрау жіберетін код қосу да одан қиын емес. Мысалы, зиянкес cookie-ді өз серверіне жібере алады.</p>
+      <p>Мұны қауіпсіз түрде өз көзіңізбен көріңіз. Төмендегі бетте «URL» орнына жай айнымалы бар, ал алерттің орнына зиянсыз мәтін өзгереді. Бірінші сол «ақылсыз» әдіс (<code>innerHTML</code>), екінші дұрыс әдіс (<code>textContent</code>):</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;p&gt;&lt;b&gt;Кіріс (қолданушы жазған мәтін):&lt;/b&gt;&lt;/p&gt;
+&lt;pre id="inp"&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;b&gt;Қауіпті бет (innerHTML):&lt;/b&gt;&lt;/p&gt;
+&lt;div id="unsafe" style="border:1px solid #b3261e;padding:6px"&gt;&lt;/div&gt;
+&lt;p&gt;&lt;b&gt;Қауіпсіз бет (textContent):&lt;/b&gt;&lt;/p&gt;
+&lt;div id="safe" style="border:1px solid #1f7a4d;padding:6px"&gt;&lt;/div&gt;
+&lt;script&gt;
+  // "Шабуылшы" жіберген мәтін: сурет жүктелмейді, сондықтан onerror іске қосылады
+  var path = '&lt;img src="x" onerror="document.getElementById(\'hacked\').textContent = \'Шабуылшының коды орындалды!\'"&gt;';
+  document.getElementById("inp").textContent = path;
+  document.getElementById("unsafe").innerHTML = "Requested Path: " + path;
+  document.getElementById("safe").textContent = "Requested Path: " + path;
+&lt;/script&gt;
+&lt;p id="hacked" style="color:#b3261e;font-weight:bold"&gt;&lt;/p&gt;</code></pre>
+      <p>Қызыл жақтаудағы бетте шабуылшының коды <em>орындалды</em> (астында қызыл хабар шықты), ал жасыл жақтаудағы бет мәтінді жай мәтін ретінде көрсетті. Қорғану ережесі: қолданушыдан келген мәтінді ешқашан HTML ретінде түсіндірмеңіз, оны <strong>экрандаңыз</strong> (escape): <code>&lt;</code> таңбасын <code>&amp;lt;</code> деп өзгертіңіз. Django шаблондары мұны әдепкіде өздігінен істейді, ал жоғарыдағы <code>HttpResponse(f"...")</code> оны істемейді. Осы жаттығуды <a href="#practice">жаттығулар бөлімінде</a> өзіңіз жасайсыз.</p>
+
+      <h3 id="csrf">Сайтаралық сұрауды жалған жасау (CSRF)</h3>
+      <p>Django-ның CSRF шабуылдарынан қорғанысын біз бұрын талқыладық, енді бұл қорғаныссыз не болатынын көрейік. Банктің <code>yourbank.com</code> деген, ақшаңызды шотыңыздан аударатын URL-і бар делік. Біреу осы аударымды жасайтын сілтемені оп-оңай жаза алады:</p>
+<pre data-lang="html" data-norun><code class="language-html">&lt;a href="http://yourbank.com/transfer?to=brian&amp;amt=2800"&gt;
+    Click Here!
+&lt;/a&gt;</code></pre>
+      <p>Бұл шабуыл сілтемеден де астыртынырақ болуы мүмкін. Сол URL-ді суреттің ішіне жасырсақ, браузер суретті жүктемек болғанда URL-ге өзі кіріп кетеді:</p>
+<pre data-lang="html" data-norun><code class="language-html">&lt;img src="http://yourbank.com/transfer?to=brian&amp;amt=2800"&gt;</code></pre>
+      <p>Сондықтан күйді өзгертетін (ақша аудару, жазбаны жою) кез келген әрекетті қосымшаңызда тек <strong>POST</strong> сұрауымен қабылдау керек. Бірақ банк POST талап етсе де, жасырын форма өрістері арқылы пайдаланушыны алдап, сұрауды жібертуге болады. Мына форма тіпті түймені басуды да күтпейді, өздігінен жіберіледі!</p>
+<pre data-lang="html" data-norun><code class="language-html">&lt;body onload="document.forms[0].submit()"&gt;
+    &lt;form action="https://yourbank.com/transfer"
+    method="post"&gt;
+        &lt;input type="hidden" name="to" value="brian"&gt;
+        &lt;input type="hidden" name="amt" value="2800"&gt;
+        &lt;input type="submit" value="Click Here!"&gt;
+    &lt;/form&gt;
+&lt;/body&gt;</code></pre>
+      <div class="callout warn">
+        <span class="callout-title">Бұл мысалдар неге бетте іске қосылмайды?</span>
+        <p>Бұл код шын формаларды басқа сайтқа жібереді, сондықтан біз оны әдейі «▶» түймесінсіз қалдырдық. Тек оқып, идеясын түсінсеңіз жеткілікті.</p>
+      </div>
+      <p>Бұл - <strong>сайтаралық сұрауды жалған жасау</strong> (<span class="term-en">cross-site request forgery, CSRF</span>) шабуылының мысалы. Біз мұндай шабуылдардан <strong>CSRF-токен</strong> арқылы қорғанамыз: бетті жүктегенде бірегей токен жасап, оны форманың ішіне салып қоямыз, ал кейін тек жарамды токені бар формаларды қабылдаймыз. Шабуылшының беті бұл токенді білмейді, сондықтан оның жалған формасы қабылданбайды. Django-да бұл формаға бір жол қосу арқылы істеледі:</p>
+<pre data-lang="html" data-norun><code class="language-html">&lt;form action="/transfer" method="post"&gt;
+    {% csrf_token %}
+    &lt;input type="text" name="to"&gt;
+    &lt;input type="number" name="amt"&gt;
+    &lt;input type="submit" value="Transfer"&gt;
+&lt;/form&gt;</code></pre>
+
+      <h2 id="whats-next">Әрі қарай не?</h2>
+      <p>Біз бұл курста Django және React сияқты көптеген веб-фреймворктерді талқыладық, бірақ байқап көруге тұрарлық басқалары да бар:</p>
+      <ul>
+        <li>Сервер жағы: <a href="https://expressjs.com/" target="_blank" rel="noopener">Express.js</a>, <a href="https://rubyonrails.org/" target="_blank" rel="noopener">Ruby on Rails</a>, <a href="https://flask.palletsprojects.com/" target="_blank" rel="noopener">Flask</a> және т.б.</li>
+        <li>Клиент жағы: <a href="https://angularjs.org/" target="_blank" rel="noopener">AngularJS</a>, <a href="https://reactjs.org/" target="_blank" rel="noopener">React</a>, <a href="https://vuejs.org/" target="_blank" rel="noopener">Vue.js</a>, <a href="https://reactnative.dev/" target="_blank" rel="noopener">React Native</a> және т.б.</li>
+      </ul>
+      <p>Болашақта сайтыңызды интернетке <strong>орналастырғыңыз</strong> (deploy) келеді. Ол үшін де бірнеше қызмет бар: <a href="https://aws.amazon.com/getting-started/hands-on/websites/" target="_blank" rel="noopener">Amazon Web Services</a>, <a href="https://github.com/" target="_blank" rel="noopener">GitHub</a> (GitHub Pages), <a href="https://www.heroku.com/" target="_blank" rel="noopener">Heroku</a>, <a href="https://app.netlify.com/" target="_blank" rel="noopener">Netlify</a>, <a href="https://cloud.google.com/" target="_blank" rel="noopener">Google Cloud</a>, <a href="https://azure.microsoft.com/" target="_blank" rel="noopener">Microsoft Azure</a> және т.б.</p>
+      <p>Біз бастан көп жол жүріп өттік, бірақ веб-бағдарламалау әлемінде үйренетін нәрсе әлі көп. Кейде бәрі өте көп сияқты көрінуі мүмкін. Дегенмен ең жақсы үйрену жолы - жобаға кіріп кетіп, қаншалықты алысқа жете алатыныңызды көру. Сіздің веб-дизайн ұғымдарының берік негізі бар екеніне және идеяны өз жұмыс істейтін сайтыңызға айналдыра алатыныңызға сенеміз.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Бүгін біз екі үлкен тақырыпты қарастырдық: сайтты үлкейту және қорғау. Негізгі ұғымдар:</p>
+      <ul>
+        <li><strong>сервер</strong>: өз ғимаратыңызда не бұлтта; <strong>тік</strong> (күштірек сервер) және <strong>көлденең</strong> (көбірек сервер) масштабтау;</li>
+        <li><strong>жүктеме бөлгіш</strong> және оның әдістері: кездейсоқ, кезекпен, ең аз қосылым; сессия мәселесі: жабысқақ, дерекқордағы, клиент жағындағы;</li>
+        <li><strong>автомасштабтау</strong>, <strong>жалғыз ақаулы нүкте</strong> және <strong>жүрек соғысы</strong>;</li>
+        <li>дерекқорды масштабтау: <strong>тік</strong> және <strong>көлденең бөлу</strong>; <strong>репликация</strong> (бір бастапқылы мен көп бастапқылы) және қақтығыстары;</li>
+        <li><strong>кэштеу</strong>: <code>Cache-Control</code>, <code>ETag</code>, Django-ның кэш фреймворкі;</li>
+        <li>қауіпсіздік: коммитке құпия салмау, <strong>фишинг</strong>, <strong>HTTPS</strong>, құпия және ашық кілтті шифрлау;</li>
+        <li>парольдерді <strong>хэштеу</strong> (және тұз), ақпарат ағуы, <strong>SQL-инъекция</strong> және параметрленген сұраулар;</li>
+        <li>API қорғанысы: кілттер, сұрау жиілігін шектеу, аутентификация; кілттерді <strong>орта айнымалыларында</strong> сақтау;</li>
+        <li><strong>XSS</strong> (қолданушы мәтінін экрандау) және <strong>CSRF</strong> (токен, POST).</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. Сайтқа келетін сұрау бірнеше есе көбейді. «Бұл серверді екі есе қуатты серверге ауыстырамыз» деген шешім қай масштабтауға жатады және оның басты шектеуі қандай?</p>
+          <label><input type="radio" value="a"> Көлденең масштабтау: сервер саны шексіз өсе алады</label>
+          <label><input type="radio" value="b"> Автомасштабтау: сервер өздігінен өзгереді</label>
+          <label><input type="radio" value="c"> Тік масштабтау: жалғыз сервер қаншалықты қуатты болса да, шегі бар</label>
+          <label><input type="radio" value="d"> Кэштеу: сұрау саны азаяды</label>
+          <p class="explain">Бір серверді күшейту - тік масштабтау. Оның шегі бар, сондықтан көбіне көлденең масштабтау қажет болады.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">2. Жүктеме бөлгіш үш серверге сұрауларды A, B, C, A, B, C... тәртібімен жібереді. Бұл қай әдіс?</p>
+          <label><input type="radio" value="a"> Кезекпен (round-robin)</label>
+          <label><input type="radio" value="b"> Кездейсоқ (random)</label>
+          <label><input type="radio" value="c"> Ең аз қосылым (fewest connections)</label>
+          <label><input type="radio" value="d"> Жабысқақ сессиялар (sticky sessions)</label>
+          <p class="explain">Round-robin серверлерді кезекпен ауыстырады. Ең аз қосылым әдісі әр серверде қанша сұрау барын санау үшін қосымша уақыт жұмсайды.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. Қолданушы сайтқа кірді, ал келесі сұрауы басқа серверге түскенде жүйе оны «танымай» қалды. Қай шешімнің кемшілігі - әр сұраумен cookie жіберу және жалған cookie жасау қаупі?</p>
+          <label><input type="radio" value="a"> Жабысқақ сессиялар</label>
+          <label><input type="radio" value="b"> Дерекқордағы сессиялар</label>
+          <label><input type="radio" value="c"> Жүрек соғысы</label>
+          <label><input type="radio" value="d"> Клиент жағындағы сессиялар</label>
+          <p class="explain">Мәліметті браузерде cookie ретінде сақтасақ, ол әр сұраумен бірге жүреді, ал қолданушы оны жалғандауы мүмкін. Жабысқақ сессияда басты қауіп - бір серверге қолданушылар тым көп жиналуы.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">4. Көп бастапқылы (multi-primary) репликацияда қай мәселе туындауы мүмкін, бірақ бір бастапқылыда ол болмайды?</p>
+          <label><input type="radio" value="a"> Дерекқордан оқу мүмкін болмайды</label>
+          <label><input type="radio" value="b"> Екі дерекқорда бір жолды бір мезгілде әртүрлі өзгерту (жаңарту қақтығысы)</label>
+          <label><input type="radio" value="c"> Деректің көшірмесі мүлде болмайды</label>
+          <label><input type="radio" value="d"> Жүктеме бөлгіш қажет болмай қалады</label>
+          <p class="explain">Көп бастапқыда жазу бірнеше дерекқорға мүмкін, сондықтан жаңарту, бірегейлік және жою қақтығыстары болады. Бір бастапқыда жазу тек біреуіне ғана жасалады.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">5. Қолданушы парольді ұмытып, «Парольді қалпына келтір» батырмасын басты. Қауіпсіз жүйе не істейді?</p>
+          <label><input type="radio" value="a"> Ескі парольді поштамен жібереді</label>
+          <label><input type="radio" value="b"> Парольді хэштен кері қайтарып, көрсетеді</label>
+          <label><input type="radio" value="c"> Жаңа пароль жасауға мүмкіндік береді, өйткені ескісін білмейді</label>
+          <label><input type="radio" value="d"> Парольді 86400 секундқа кэштейді</label>
+          <p class="explain">Хэш-функция бір бағытты, сондықтан жүйе нақты парольді білмейді және оны қайтара алмайды. Ескі парольді жіберетін сайт оны ашық мәтінмен сақтап отыр.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">6. <code>query = f"SELECT * FROM users WHERE name = '{name}'"</code> кодында <code>name</code> орнына <code>' OR '1'='1</code> жазылса, не болады?</p>
+          <label><input type="radio" value="a"> Шарт әрқашан ақиқат болады және барлық жолдар қайтарылады (SQL-инъекция)</label>
+          <label><input type="radio" value="b"> Python қате береді де, сұрау орындалмайды</label>
+          <label><input type="radio" value="c"> Дерекқор бұл кіріс үшін ешқандай жол қайтармайды</label>
+          <label><input type="radio" value="d"> Тек бір жол қайтарылады</label>
+          <p class="explain">Қолданушы мәтіні сұраудың бөлігіне айналып, мағынасын өзгертті. Шешім: параметрленген сұрау (<code>?</code>).</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. Django-сыз жазылған бетте <code>div.innerHTML = "Сәлем, " + name</code> бар, ал <code>name</code> URL-ден алынады. Қандай шабуыл мүмкін және қалай қорғанамыз?</p>
+          <label><input type="radio" value="a"> CSRF; формаға токен қосу арқылы</label>
+          <label><input type="radio" value="b"> DoS; сұрау жиілігін шектеу арқылы</label>
+          <label><input type="radio" value="c"> Фишинг; сілтемені тексеру арқылы</label>
+          <label><input type="radio" value="d"> XSS; мәтінді <code>textContent</code> арқылы қою не экрандау арқылы</label>
+          <p class="explain">Қолданушы мәтінін HTML ретінде қою - XSS-тің классикалық жолы. <code>textContent</code> мәтінді жай мәтін ретінде көрсетеді.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">8. Нағыз банк сайты <code>/transfer</code> үшін тек POST қабылдайды, бірақ CSRF-токені жоқ. Шабуылшының беті сізді қалай алдай алады?</p>
+          <label><input type="radio" value="a"> Мүмкін емес: POST сұрауын тек сол сайттың өзі жасай алады</label>
+          <label><input type="radio" value="b"> Жасырын өрістері бар форманы <code>onload</code> кезінде автоматты түрде жіберу арқылы</label>
+          <label><input type="radio" value="c"> Тек <code>&lt;img src=...&gt;</code> арқылы</label>
+          <label><input type="radio" value="d"> Тек HTTPS болмаса ғана</label>
+          <p class="explain">POST-тың өзі жеткіліксіз. Басқа сайттың беті форманы жасырып, <code>onload</code> кезінде жібере алады, ал браузер банктің cookie-ін қосып жібереді. Токен осыны тоқтатады.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="practice">Жаттығулар: қауіпсіздік коды</h2>
+      <div class="callout note">
+        <span class="callout-title">Сайттың өз жаттығулары, ресми тапсырма емес</span>
+        <p>Бұл аптаның ресми problem set-і жоқ: оның орнына қорытынды жоба келеді. Дегенмен лекцияны бекіту үшін осы сайтқа арнап екі шағын жаттығу қостық. Екеуі де таза Python, браузерде тексеріледі. Бұл - ресми CS50 тапсырмасы емес.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-passwd">Парольді хэштеу және тексеру</h3></div>
+        <p><code>passwd.py</code> файлында екі функция жазыңыз. <code>hash_password(password, salt)</code> тұзды парольдің алдына қосып (<code>salt + password</code>), SHA-256 хэшін 16-лық жол (<code>hexdigest()</code>) ретінде <em>қайтарсын</em>. <code>verify(password, salt, stored)</code> енгізілген парольді сол тұзбен хэштеп, сақталған хэшке тең болса <code>True</code>, әйтпесе <code>False</code> қайтарсын.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>hashlib.sha256(жол.encode()).hexdigest()</code> екенін еске түсіріңіз: хэш-функцияға жол емес, байттар керек, сондықтан алдымен <code>.encode()</code>. <code>verify</code> ішінде <code>hash_password</code>-ты қайта қолданыңыз.</p></div></details>
+        <div class="autograder" data-check="py-passwd" data-src="web/checks/week-8.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web8-passwd">
+            <li><input type="checkbox"> <span><code>hash_password</code> тұз бен парольді біріктіріп, SHA-256 hexdigest қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>verify</code> парольді салыстырмай, хэшті салыстырады.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-escape">escape_html: XSS-тен қорғану</h3></div>
+        <p><code>escape.py</code> файлында <code>escape_html(text)</code> функциясын жазыңыз. Ол жолдағы бес арнайы таңбаны HTML-мнемоникаларына ауыстырып, жаңа жолды <em>қайтарсын</em>: <code>&amp;</code> → <code>&amp;amp;</code>, <code>&lt;</code> → <code>&amp;lt;</code>, <code>&gt;</code> → <code>&amp;gt;</code>, <code>"</code> → <code>&amp;quot;</code>, <code>'</code> → <code>&amp;#x27;</code>.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Ауыстыру ретіне назар аударыңыз! <code>&amp;</code> таңбасын <em>бірінші</em> ауыстырмасаңыз, басқа ауыстырулардың шығарған <code>&amp;</code> белгілері қайтадан өзгертіліп кетеді (<code>&lt;</code> → <code>&amp;lt;</code> → <code>&amp;amp;lt;</code>).</p></div></details>
+        <div class="autograder" data-check="py-escape" data-src="web/checks/week-8.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web8-escape">
+            <li><input type="checkbox"> <span>Бес таңба да ауыстырылады, <code>&amp;</code> бірінші.</span></li>
+            <li><input type="checkbox"> <span>Функция жаңа жолды қайтарады (<code>print</code> емес).</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <h2 id="final-project">Қорытынды жоба</h2>
+      <p>Курстың соңғы кезеңі - <strong>қорытынды жоба</strong> (<span class="term-en">final project</span>). Лекциялар мен алдыңғы жобалардың бәрі осыған дайындық болды. Ресми сипаттама: <a href="https://cs50.harvard.edu/web/project/" target="_blank" rel="noopener">cs50.harvard.edu/web/project</a>. Мұнда толық емес, негізгі талаптарды қысқаша айтамыз. Дәл нақты талаптар мен тапсыру жолын ресми беттен міндетті түрде тексеріңіз, себебі олар өзгеруі мүмкін.</p>
+      <div class="callout note">
+        <span class="callout-title">Компьютерде орындалады</span>
+        <p>Қорытынды жоба Django, жергілікті дерекқор, GitHub және бейне жазбаны қажет етеді, сондықтан ол сайттағы автотексеруші жасай алатын нәрсе емес. Оны өз компьютеріңізде (не cs50.dev-те) жасап, ресми нұсқаулық бойынша тапсырасыз.</p>
+      </div>
+      <h3 id="project-requirements">Негізгі талаптар</h3>
+      <ul>
+        <li>Өз идеяңыздан шығатын <strong>веб-қосымша</strong>: ұқсас курстық жобалардан (поиск, вики, электрондық сауда, пошта, әлеуметтік желі) айтарлықтай <strong>ерекше</strong> болуы керек. Яғни жай ғана олардың көшірмесі болмауы тиіс.</li>
+        <li>Серверде кемінде бір <strong>Django</strong> қосымшасы (кемінде бір модельмен), клиентте <strong>JavaScript</strong> қолданылады.</li>
+        <li><strong>Мобильді бейімделгіш</strong> (<span class="term-en">mobile-responsive</span>): телефонда да ыңғайлы көрінуі керек.</li>
+        <li>Жоба қалтасында <code>README.md</code> файлы болуы керек. Онда жобаның не екенін, неге ол <strong>ерекше және күрделі</strong> (<span class="term-en">distinctiveness and complexity</span>) екенін, әр файлда не бар екенін және қосымшаны қалай іске қосу керегін жазасыз.</li>
+        <li>Жобаңызды көрсететін қысқа <strong>бейне</strong>. Ұзақтығы мен жариялау жолын ресми беттен қараңыз.</li>
+      </ul>
+      <h3 id="project-ideas">Идеялар (Қазақстан контексінде)</h3>
+      <p>Қайдан бастарыңызды білмесеңіз, өз өміріңізден бастаңыз: ең жақсы жоба - нақты мәселені шешетін жоба. Бірнеше идея (бәрін өзіңіз өзгертіп, күрделендіріңіз):</p>
+      <ul>
+        <li><strong>Тоғызқұмалақ</strong> онлайн ойыны: екі ойыншы, ойын күйі дерекқорда, JavaScript-пен тақта анимациясы.</li>
+        <li><strong>Қазақ тілі сөз үйрену карточкалары</strong>: аралық қайталау (spaced repetition) алгоритмімен, пайдаланушы прогресі модельде сақталады.</li>
+        <li><strong>Қазақстан тарихы таймлайны</strong>: оқиғаларды қосу, санаттау, картада көрсету.</li>
+        <li><strong>Қала көлігінің кестесі</strong> (автобус тоқтайтын жерлері мен уақыты): іздеу, таңдаулылар, мобильді интерфейс.</li>
+        <li><strong>Ұлттық тағам рецептері</strong>: дәмдеуіштер мен адам санына қарай мөлшерді автоматты қайта есептеу (JavaScript).</li>
+        <li><strong>Экоакция/еріктілер картасы</strong> (мысалы, сенбілік ұйымдастыру): іс-шара қосу, қатысуға жазылу.</li>
+        <li><strong>Домбыра/спорт жаттығу трекері</strong>: жаттығу журналы, статистика графигі.</li>
+        <li><strong>Мектеп кітапханасы каталогы</strong>: кітап беру, қайтару, мерзімі өту ескертуі.</li>
+      </ul>
+      <div class="callout tip">
+        <span class="callout-title">Қауіпсіздік - жобаңыздың бөлігі</span>
+        <p>Осы апта үйренгеніңізді жобаңызда қолданыңыз: <code>SECRET_KEY</code> мен басқа құпияларды орта айнымалыларында сақтаңыз, <code>{% csrf_token %}</code> ұмытпаңыз, қолданушы мәтінін экрандаңыз, ORM немесе параметрленген сұрау қолданыңыз, ал қажет жерде кэштеуді қарастырыңыз. Бұл README-дегі «күрделілік» бөліміне де қосымша дәлел болады.</p>
+      </div>
+      <h3 id="project-checklist">Тексеру тізімі</h3>
+      <ul class="checklist" data-id="web8-project">
+        <li><input type="checkbox"> <span>Жоба идеясы бұрынғы курстық жобалардан ерекше екеніне сенімдімін.</span></li>
+        <li><input type="checkbox"> <span>Django қосымшасы бар, кемінде бір модель қолданылады.</span></li>
+        <li><input type="checkbox"> <span>JavaScript клиент жағында жұмыс істейді.</span></li>
+        <li><input type="checkbox"> <span>Сайт телефонда да дұрыс көрінеді (мобильді бейімделгіш).</span></li>
+        <li><input type="checkbox"> <span>Құпия кілттер кодта емес, орта айнымалыларында; репозиторийге құпия түскен жоқ.</span></li>
+        <li><input type="checkbox"> <span><code>README.md</code> жазылды: жоба сипаттамасы, ерекшелігі мен күрделілігі, файлдар тізімі, іске қосу жолы.</span></li>
+        <li><input type="checkbox"> <span>Жобаны көрсететін бейне жазылды.</span></li>
+        <li><input type="checkbox"> <span>Жобаны ресми нұсқаулық бойынша тапсырдым.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <div class="callout tip">
+        <span class="callout-title">Құттықтаймыз!</span>
+        <p>Сіз CS50 Web курсының соңғы лекциясына жеттіңіз. HTML мен CSS-тен бастап, Git, Django, JavaScript, React, тестілеу мен CI/CD арқылы масштабтау мен қауіпсіздікке дейін тұтас жол жүріп өттіңіз. Енді өз идеяңызды жобаға айналдырыңыз. Соңында сертификатты алыңыз: <a href="../../certificate.html?course=web">CS50 Web сертификаты</a>.</p>
+      </div>
+
+      <nav class="pager">
+        <a href="week-7.html"><small>Алдыңғы</small>← 7-апта: Тестілеу, CI/CD</a>
+        <a class="next" href="../index.html"><small>Курс</small>CS50 Web: барлық лекциялар →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 Web (CS50's Web Programming with Python and JavaScript, Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

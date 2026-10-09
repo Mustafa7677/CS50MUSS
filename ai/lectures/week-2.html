@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 AI 2-апта: Белгісіздік - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 AI 2-апта: Белгісіздік - CS50 қазақша">
+  <meta property="og:description" content="CS50 AI 2-апта: белгісіздік, ықтималдық, Байес ережесі, Байес желілері, семплдеу, Марков модельдері және жасырын Марков модельдері.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/ai/lectures/week-2.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 AI 2-апта: белгісіздік, ықтималдық, Байес ережесі, Байес желілері, семплдеу, Марков модельдері және жасырын Марков модельдері.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#c42a68" data-n="2">
+        <div class="num">2-апта</div>
+        <h1>Белгісіздік</h1>
+        <p>Әлем туралы біз тек жартылай ғана білеміз. Ертеңгі ауа райын 100% дәлдікпен болжай алмаймыз, бірақ «болжай алмаймыз» дегеннен гөрі «ықтималдықты есептейміз» деген әлдеқайда пайдалы. Осы аптада AI-дың шектеулі ақпаратпен де ең жақсы шешім қабылдауын үйренеміз.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/ai/notes/2/" target="_blank" rel="noopener">▶ Түпнұсқа конспект пен материалдар (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Өткен аптада білімді логика арқылы көрсетіп, одан <em>сенімді</em> қорытынды шығардық. Ал өмірде көбіне сенімділік жоқ: бар болғаны «мүмкін», «ықтимал». Бүгін ықтималдық теориясының негізін, Байес ережесін, Байес желілерін, семплдеуді, содан кейін уақыт өте келе өзгеретін жүйелерді сипаттайтын Марков модельдерін үйренеміз. Соңында екі тапсырма бар: Google-дың PageRank алгоритмі және гендердің тұқым қуалауы. Екеуіне де браузерде жұмыс істейтін автотексеруші қосылған.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="uncertainty">Белгісіздік</h2>
+      <p>Өткен лекцияда AI білімді қалай сақтайтынын және сол білімнен жаңа білімді қалай шығаратынын талқыладық. Бірақ ол жерде бір ыңғайлы жорамал жасырынып жатқан еді: бізде ақпарат толық. Шындығында солай ма? Таңертең терезеден қарап, «бүгін жаңбыр жауады ма?» деп ойлайсыз. Қолыңызда бүгінгі ауа райы туралы деректер бар, бірақ ертеңгі ауа райын жүз пайыз дәл айту мүмкін емес. Яғни AI көп жағдайда әлемді тек <em>жартылай</em> біледі, ал білімнің жетпеген жеріне <strong>белгісіздік</strong> (<span class="term-en">uncertainty</span>) орналасады.</p>
+      <p>Дегенмен біз кездейсоқ болжаудан әлдеқайда жақсы жасай аламыз. Бүгінгі ауа райына қарап ертеңгісін болжасақ, қателесуіміз мүмкін, бірақ «жеткілікті жиі» дұрыс шығамыз. Бұл лекцияның мақсаты дәл осы: шектеулі ақпарат пен белгісіздік жағдайында ең оңтайлы шешім қабылдайтын AI-ды қалай жасауға болады?</p>
+
+      <h2 id="probability">Ықтималдық</h2>
+      <p>Белгісіздікті былай сипаттаймыз: бірнеше мүмкін оқиға бар, әрқайсысының болу мүмкіндігі, яғни <strong>ықтималдығы</strong> (<span class="term-en">probability</span>) бар. Дүкенге барып, лотерея билетін алып жатсаңыз да, ауа райына қарап шатырды алып шығып жатсаңыз да, ішінде осы ой жатыр.</p>
+
+      <h3 id="possible-worlds">Мүмкін әлемдер</h3>
+      <p>Әрбір мүмкін жағдайды бір <strong>әлем</strong> (<span class="term-en">possible world</span>) деп елестетейік және оны грек әрпі омега арқылы белгілейік: ω. Мысалы, ойын сүйегін лақтырсақ, алты мүмкін әлем шығады: сүйек 1 көрсеткен әлем, 2 көрсеткен әлем және тағы басқалары. Нақты бір әлемнің ықтималдығын P(ω) деп жазамыз.</p>
+
+      <h3 id="axioms">Ықтималдықтың аксиомалары</h3>
+      <p>Ықтималдық екі қарапайым ережеге бағынады:</p>
+      <ul>
+        <li>0 ≤ P(ω) ≤ 1: әр ықтималдық мәні 0 мен 1 аралығында жатады. Нөл - мүмкін емес оқиға (мысалы, кәдімгі сүйекті лақтырып 7 түсіру). Бірлік - міндетті түрде болатын оқиға (мысалы, сүйектен 10-нан кіші сан түсу). Мән неғұрлым үлкен болса, оқиға соғұрлым ықтимал.</li>
+        <li>Барлық мүмкін әлемнің ықтималдықтарын қосқанда 1 шығады.</li>
+      </ul>
+      <p>Екінші ереже өте табиғи: «бір нәрсе міндетті түрде болады» деген сөз. Сүйек лақтырылса, 1-ден 6-ға дейінгі сандардың біреуі түседі, ал олардың қосындысы 1-ге тең.</p>
+      <p>Сүйекте <em>R</em> санын түсіру ықтималдығын P(R) деп жазсақ, P(R) = 1/6 шығады: алты әлем бар, әрқайсысы бірдей мүмкін. Ал енді <strong>екі</strong> сүйек лақтырайық. Мүмкін әлем енді 36 (6 × 6), және олар да тең ықтималды. Мына кестеде әр ұяшықта екі сүйектің қосындысы көрсетілген. Жолдар - бірінші сүйек, бағандар - екінші сүйек:</p>
+      <table>
+        <thead><tr><th>1-сүйек \ 2-сүйек</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th></tr></thead>
+        <tbody>
+          <tr><th>1</th><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td></tr>
+          <tr><th>2</th><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr>
+          <tr><th>3</th><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td></tr>
+          <tr><th>4</th><td>5</td><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td></tr>
+          <tr><th>5</th><td>6</td><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td></tr>
+          <tr><th>6</th><td>7</td><td>8</td><td>9</td><td>10</td><td>11</td><td><strong>12</strong></td></tr>
+        </tbody>
+      </table>
+      <p>Енді сұрақты өзгертейік: екі сүйектің <em>қосындысын</em> болжасақ ше? Қосынды 2-ден 12-ге дейін, барлығы 11 мән қабылдайды. Бірақ олар енді бірдей жиі кездеспейді: 2-ні тек бір әлемде аламыз (1 және 1), ал 7-ні алты әлемде аламыз. Диаграммада әр қосындыға қанша әлем сәйкес келетіні көрсетілген:</p>
+      <figure style="margin:20px 0;text-align:center">
+        <svg viewBox="0 0 500 200" width="100%" style="max-width:500px" role="img" aria-label="Екі сүйектің қосындысы: 2 үшін 1 әлем, 3 үшін 2, 4 үшін 3, 5 үшін 4, 6 үшін 5, 7 үшін 6, 8 үшін 5, 9 үшін 4, 10 үшін 3, 11 үшін 2, 12 үшін 1 әлем" fill="none" stroke="currentColor" font-family="Inter, sans-serif" font-size="13">
+          <path d="M30 160 H 480" stroke-width="1.5"/>
+          <g fill="var(--accent)" stroke="none" opacity="0.85">
+            <rect x="40" y="140" width="30" height="20"/>
+            <rect x="80" y="120" width="30" height="40"/>
+            <rect x="120" y="100" width="30" height="60"/>
+            <rect x="160" y="80" width="30" height="80"/>
+            <rect x="200" y="60" width="30" height="100"/>
+            <rect x="240" y="40" width="30" height="120"/>
+            <rect x="280" y="60" width="30" height="100"/>
+            <rect x="320" y="80" width="30" height="80"/>
+            <rect x="360" y="100" width="30" height="60"/>
+            <rect x="400" y="120" width="30" height="40"/>
+            <rect x="440" y="140" width="30" height="20"/>
+          </g>
+          <g fill="currentColor" stroke="none" text-anchor="middle">
+            <text x="55" y="178">2</text><text x="95" y="178">3</text><text x="135" y="178">4</text><text x="175" y="178">5</text><text x="215" y="178">6</text><text x="255" y="178">7</text><text x="295" y="178">8</text><text x="335" y="178">9</text><text x="375" y="178">10</text><text x="415" y="178">11</text><text x="455" y="178">12</text>
+            <text x="55" y="134">1</text><text x="95" y="114">2</text><text x="135" y="94">3</text><text x="175" y="74">4</text><text x="215" y="54">5</text><text x="255" y="34">6</text><text x="295" y="54">5</text><text x="335" y="74">4</text><text x="375" y="94">3</text><text x="415" y="114">2</text><text x="455" y="134">1</text>
+            <text x="255" y="196" font-size="11">қосынды (бағанның үстіндегі сан - әлемдер саны, барлығы 36)</text>
+          </g>
+        </svg>
+        <figcaption><small>Екі сүйектің қосындысы: 7 ең жиі, 2 мен 12 ең сирек түседі.</small></figcaption>
+      </figure>
+      <p>Оқиғаның ықтималдығын табу үшін оның болатын әлемдер санын барлық мүмкін әлемдер санына бөлеміз. Қосынды 12 болатын жалғыз әлем бар (екі сүйек те 6), демек P(12) = 1/36. Ал P(7) қанша? Санап шығамыз: қосынды 7 болатын алты әлем бар, сондықтан P(7) = 6/36 = 1/6. Мұны кодпен де тексеріп көрейік. Төмендегі мысал сайттың өз мысалы (түпнұсқада жоқ): 36 әлемнің барлығын тізіп, санап шығады.</p>
+<pre data-lang="python"><code class="language-python">from itertools import product
+
+# Екі сүйектің барлық 36 әлемі
+worlds = list(product(range(1, 7), repeat=2))
+print(len(worlds), "әлем")
+
+# Оқиға: қосынды 12 немесе 7
+for target in (12, 7):
+    count = sum(1 for a, b in worlds if a + b == target)
+    print(f"P({target}) = {count}/{len(worlds)} = {count / len(worlds):.4f}")</code></pre>
+
+      <h3 id="unconditional">Шартсыз ықтималдық</h3>
+      <p><strong>Шартсыз ықтималдық</strong> (<span class="term-en">unconditional probability</span>) - ешқандай қосымша дәлелсіз айтылатын сенім дәрежесі. Осы уақытқа дейінгі барлық сұрағымыз шартсыз ықтималдыққа жатады: сүйектің нәтижесі алдыңғы оқиғаларға байланысты емес.</p>
+
+      <h2 id="conditional-probability">Шартты ықтималдық</h2>
+      <p>Ал енді нағыз қызық жер басталады. <strong>Шартты ықтималдық</strong> (<span class="term-en">conditional probability</span>) - бір дәлел белгілі болған кездегі оқиғаға деген сенім дәрежесі. AI жартылай ақпаратты дәл осылай пайдаланады: бірдеңе көрдік, сол көргеніміз болашақ туралы пікірімізді өзгертеді.</p>
+      <p>Белгіленуі: P(a | b). Оқылуы: «b болғаны белгілі болса, a-ның болу ықтималдығы», қысқаша «b берілгендегі a». Енді «кеше жаңбыр жауған болса, бүгін жаңбыр жауу ықтималдығы қанша?» P(бүгін жаңбыр | кеше жаңбыр), немесе «емтихан нәтижелері белгілі болса, науқастың ауруы болу ықтималдығы қанша?» P(ауру | талдау нәтижесі) деп сұрай аламыз.</p>
+      <p>Шартты ықтималдық мына формуламен есептеледі:</p>
+      <p style="text-align:center;font-size:1.1em"><code>P(a | b) = P(a ∧ b) / P(b)</code></p>
+      <p>Сөзбен айтқанда: «b ақиқат болғанда a ақиқат болу ықтималдығы» - «a мен b екеуі де ақиқат болу ықтималдығын b-ның ықтималдығына бөлгенге» тең. Мұны былай түсінген ыңғайлы: бізді a да, b да ақиқат болатын әлемдер қызықтырады (алымы), бірақ тек b ақиқат екенін білетін әлемдердің ішінде (бөлімі). b-ға бөлу дегеніміз мүмкін әлемдерді b ақиқат болатындарына ғана тарылту деген сөз. Формуланың алгебралық баламалары:</p>
+      <p style="text-align:center"><code>P(a ∧ b) = P(b) P(a | b)</code> &nbsp; және &nbsp; <code>P(a ∧ b) = P(a) P(b | a)</code></p>
+      <p>Мысал: P(қосынды 12 | бір сүйекте 6). Яғни екі сүйек лақтырдық, бірін көрдік, ол 6 екен; енді қосынды 12 болу ықтималдығы қанша? Алдымен әлемдерді бірінші сүйегі 6 болатындарына тарылтамыз. Кестедегі соңғы жолға қарайсыз: 6 әлем қалды. Енді сол әлемдердің ішінде қосынды 12 болатыны қаншасы? Біреуі ғана. Формула бойынша: P(12 ∧ бірінші сүйек 6) = 1/36, ал P(бірінші сүйек 6) = 1/6, олай болса (1/36) / (1/6) = 1/6.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: бірінші сүйек 1 болса, қосынды 12 болу ықтималдығы қандай?</summary>
+        <div class="details-body"><p>Нөл. Бірінші сүйек 1 болса, екіншісі ең көбі 6 болады, қосынды ең көбі 7. Формула бойынша: P(12 ∧ бірінші сүйек 1) = 0, ал нөлді кез келген нөлден өзгеше санға бөлсек, нөл шығады. Ал бірінші сүйек 6 болса, ықтималдық 1/36-дан 1/6-ға дейін өсті: ақпарат ықтималдықты өзгертті.</p></div>
+      </details>
+
+      <h2 id="random-variables">Кездейсоқ шамалар</h2>
+      <p><strong>Кездейсоқ шама</strong> (<span class="term-en">random variable</span>) - ықтималдық теориясындағы айнымалы, ол мәндердің белгілі жиынынан (домен) мән қабылдайды. Мысалы, сүйектің нәтижесін сипаттау үшін <em>Roll</em> деген шама алып, оның мәндерін {1, 2, 3, 4, 5, 6} деп беруге болады. Рейстің жағдайын сипаттау үшін <em>Flight</em> шамасы {уақытында, кешікті, жойылды} (on time, delayed, canceled) мәндерін алады.</p>
+      <p>Көбіне әр мәннің қаншалықты жиі болатыны қызықтырады. Оны <strong>ықтималдық үлестірімі</strong> (<span class="term-en">probability distribution</span>) арқылы жазамыз:</p>
+      <ul>
+        <li>P(Flight = on time) = 0.6</li>
+        <li>P(Flight = delayed) = 0.3</li>
+        <li>P(Flight = canceled) = 0.1</li>
+      </ul>
+      <p>Яғни рейстің уақытында ұшу мүмкіндігі 60%, кешігу мүмкіндігі 30%, жойылу мүмкіндігі 10%. Бұрынғыдай, барлық нәтиженің ықтималдықтарының қосындысы 1-ге тең.</p>
+      <p>Үлестірімді қысқарақ <strong>вектор</strong> түрінде де жазуға болады: <strong>P</strong>(Flight) = ⟨0.6, 0.3, 0.1⟩. Бұл жазба түсінікті болуы үшін мәндердің реті алдын ала келісілген болуы керек (біздің жағдайда: on time, delayed, canceled).</p>
+
+      <h3 id="independence">Тәуелсіздік</h3>
+      <p><strong>Тәуелсіздік</strong> (<span class="term-en">independence</span>) - бір оқиғаның болуы екінші оқиғаның ықтималдығына әсер етпейді деген білім. Екі сүйекті лақтырғанда әрқайсысының нәтижесі екіншісіне тәуелсіз: бірінші сүйекте 4 түссе, екінші сүйектің нәтижесі өзгермейді. Ал таңертеңгі бұлт пен түстен кейінгі жаңбыр <em>тәуелді</em> оқиғалар: таңертең бұлтты болса, түстен кейін жаңбыр жауу ықтималдығы жоғарылайды.</p>
+      <p>Тәуелсіздікті математикалық түрде анықтауға болады: a мен b тек сонда ғана тәуелсіз, егер:</p>
+      <p style="text-align:center;font-size:1.1em"><code>P(a ∧ b) = P(a) P(b)</code></p>
+
+      <h2 id="bayes-rule">Байес ережесі</h2>
+      <p><strong>Байес ережесі</strong> (<span class="term-en">Bayes' rule</span>) - шартты ықтималдықты есептеудің ең танымал құралдарының бірі. Сөзбен айтқанда: «a берілгендегі b-ның ықтималдығы» - «b берілгендегі a-ның ықтималдығын b-ның ықтималдығына көбейтіп, a-ның ықтималдығына бөлгенге» тең:</p>
+      <p style="text-align:center;font-size:1.1em"><code>P(b | a) = P(a | b) P(b) / P(a)</code></p>
+      <p>Мысал: таңертең бұлт болса, түстен кейін жаңбыр жауу ықтималдығын, яғни P(rain | clouds) табайық. Бізде мынадай ақпарат бар:</p>
+      <ul>
+        <li>Жаңбырлы түстердің 80%-ы бұлтты таңнан басталады: P(clouds | rain) = 0.8.</li>
+        <li>Күндердің 40%-ында таң бұлтты: P(clouds) = 0.4.</li>
+        <li>Күндердің 10%-ында түстен кейін жаңбыр жауады: P(rain) = 0.1.</li>
+      </ul>
+      <p>Байес ережесін қолданамыз: (0.1)(0.8) / (0.4) = 0.2. Демек, таңертең бұлтты болса, түстен кейін жаңбыр жауу ықтималдығы 20%.</p>
+      <p>Мұның пайдасы неде? Бізге көбіне біреуі белгілі: <em>көрінетін салдардың белгісіз себепке</em> тәуелділігі, яғни P(көрінетін салдар | белгісіз себеп). Мысалы, медициналық сынақтарда ауруы бар адамдарды тексеріп, талдау ауруды қаншалықты жиі байқайтынын біле аламыз: P(талдау нәтижесі | ауру). Ал дәрігерге керегі кері бағыт: талдау оң шықты, онда ауру болуы қаншалықты ықтимал, P(ауру | талдау нәтижесі)? Байес ережесі дәл осы екі бағытты байланыстырады. Ол диагностикада шын мәнінде бағалы ақпарат береді.</p>
+<pre data-lang="python"><code class="language-python"># Байес ережесі: таңертеңгі бұлттан түстен кейінгі жаңбырға (сайттың өз мысалы)
+p_clouds_given_rain = 0.8
+p_clouds = 0.4
+p_rain = 0.1
+
+p_rain_given_clouds = p_clouds_given_rain * p_rain / p_clouds
+print(p_rain_given_clouds)</code></pre>
+
+      <h2 id="joint-probability">Бірлескен ықтималдық</h2>
+      <p><strong>Бірлескен ықтималдық</strong> (<span class="term-en">joint probability</span>) - бірнеше оқиғаның бәрі бірге болу мүмкіндігі.</p>
+      <p>Таңертеңгі бұлт пен түстен кейінгі жаңбыр мысалын алайық. Әр шама бойынша бөлек үлестірімдер мынадай (C - бұлт, R - жаңбыр):</p>
+      <table>
+        <thead><tr><th>C = cloud</th><th>C = ¬cloud</th></tr></thead>
+        <tbody><tr><td>0.4</td><td>0.6</td></tr></tbody>
+      </table>
+      <table>
+        <thead><tr><th>R = rain</th><th>R = ¬rain</th></tr></thead>
+        <tbody><tr><td>0.1</td><td>0.9</td></tr></tbody>
+      </table>
+      <p>Осы екі кестеге қарап, таңертеңгі бұлт пен түстен кейінгі жаңбырдың арасында байланыс бар-жоғын айта алмаймыз. Ол үшін екі шаманың барлық мүмкін нәтижелерінің бірлескен ықтималдықтарын қарау керек. Оны кестемен көрсетейік:</p>
+      <table>
+        <thead><tr><th></th><th>R = rain</th><th>R = ¬rain</th></tr></thead>
+        <tbody>
+          <tr><th>C = cloud</th><td>0.08</td><td>0.32</td></tr>
+          <tr><th>C = ¬cloud</th><td>0.02</td><td>0.58</td></tr>
+        </tbody>
+      </table>
+      <p>Енді оқиғалардың қатар болуы туралы білеміз. Мысалы, таңертең бұлтты, түстен кейін жаңбыр жауатын күннің ықтималдығы 0.08. Бұлтсыз таң мен жаңбырсыз түстен кейін болу ықтималдығы 0.58.</p>
+      <p>Бірлескен ықтималдықтан шартты ықтималдықты шығаруға болады. Айталық, түстен кейін жаңбыр жауғанын білеміз; таңертең бұлт болу үлестірімі қандай? P(C | rain) = P(C, rain) / P(rain). (Ескертпе: ықтималдықта үтір мен ∧ белгісі бірдей мағынада қолданылады, яғни P(C, rain) = P(C ∧ rain).) Сөзбен: бұлт пен жаңбырдың бірлескен ықтималдығын жаңбырдың ықтималдығына бөлеміз.</p>
+      <p>Соңғы теңдеуде P(rain) бір тұрақты сан сияқты, P(C, rain) осы санға көбейтілген. Сондықтан P(C, rain) / P(rain) = α P(C, rain) деп жаза аламыз, яғни α⟨0.08, 0.02⟩. α-ны шығарып тастағанда бізде жаңбыр жауғанда таңертеңгі бұлттың бар-жоғының <em>қатынасы</em> қалады: 0.08 : 0.02. Бірақ 0.08 мен 0.02 қосындысы 1 емес, ал біз C шамасының үлестірімін іздеп жатқандықтан, қосынды 1 болуы керек. Сондықтан мәндерді <strong>нормалау</strong> (<span class="term-en">normalization</span>) керек: α0.08 + α0.02 = 1 болатындай α табамыз. Бұл жерде α = 10, және соңында P(C | rain) = ⟨0.8, 0.2⟩ шығады.</p>
+<pre data-lang="python"><code class="language-python"># Бірлескен кестеден шартты үлестірім алу (сайттың өз мысалы)
+joint = {("cloud", "rain"): 0.08, ("cloud", "no rain"): 0.32,
+         ("no cloud", "rain"): 0.02, ("no cloud", "no rain"): 0.58}
+
+# Тек rain бағанын аламыз: ⟨0.08, 0.02⟩
+column = {c: p for (c, r), p in joint.items() if r == "rain"}
+
+# Нормалау: қосындысы 1 болсын
+alpha = 1 / sum(column.values())
+print({c: round(alpha * p, 4) for c, p in column.items()})</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: таңертеңгі бұлт пен түстен кейінгі жаңбыр тәуелсіз бе?</summary>
+        <div class="details-body"><p>Тексерейік. Егер тәуелсіз болса, P(cloud ∧ rain) = P(cloud) P(rain) = 0.4 × 0.1 = 0.04 болар еді. Бірақ кестеде 0.08, яғни екі есе көп. Демек, олар тәуелді: таңертең бұлтты болса, жаңбыр ықтималдығы 10%-дан 20%-ға дейін көтеріледі. Бұл Байес есебінен алған жауабымызбен сәйкес келеді.</p></div>
+      </details>
+
+      <h2 id="probability-rules">Ықтималдық ережелері</h2>
+      <p>Бірнеше пайдалы ережені жинап қояйық. Олар ықтималдықпен есептегенде үнемі кездеседі.</p>
+      <ul>
+        <li><strong>Терістеу</strong> (<span class="term-en">negation</span>): P(¬a) = 1 - P(a). Себебі барлық мүмкін әлемнің ықтималдықтарының қосындысы 1, ал a мен ¬a бірге барлық әлемді қамтиды.</li>
+        <li><strong>Қосу-алып тастау</strong> (<span class="term-en">inclusion-exclusion</span>): P(a ∨ b) = P(a) + P(b) - P(a ∧ b). Мағынасы: a немесе b ақиқат болатын әлемдер - a ақиқат әлемдер мен b ақиқат әлемдердің қосындысы. Бірақ екеуі де ақиқат болатын әлемдер екі рет саналып кетті. Қайталануды жою үшін оларды бір рет алып тастаймыз.</li>
+      </ul>
+      <div class="callout note">
+        <span class="callout-title">Лекциядан тыс мысал</span>
+        <p>Айталық, мен күндердің 80%-ында балмұздақ, 70%-ында печенье жеймін. Балмұздақ немесе печенье жеу ықтималдығын P(ice cream ∨ cookies) есептегенде P(ice cream ∧ cookies)-ты алып тастамасақ, қате 0.7 + 0.8 = 1.5 шығады. Бұл ықтималдық 0 мен 1 аралығында болу керек деген аксиомаға қайшы. Екеуін де жеген күндерді екі рет санап жібердік, сондықтан P(ice cream ∧ cookies)-ты бір рет алып тастау керек.</p>
+      </div>
+      <ul>
+        <li><strong>Маргиналдау</strong> (<span class="term-en">marginalization</span>): P(a) = P(a, b) + P(a, ¬b). Идея мынада: b мен ¬b қатар болмайды (олар қиылыспайды) және қосындысы 1. Сондықтан a болғанда b не болады, не болмайды. a мен b бірге болу ықтималдығын, a мен ¬b бірге болу ықтималдығына қоссақ, нәтижесінде жай ғана a-ның ықтималдығы шығады.</li>
+      </ul>
+      <p>Кездейсоқ шамалар үшін маргиналдау былай жазылады:</p>
+      <p style="text-align:center;font-size:1.1em"><code>P(X = x<sub>i</sub>) = Σ<sub>j</sub> P(X = x<sub>i</sub>, Y = y<sub>j</sub>)</code></p>
+      <p>Сол жағы «X кездейсоқ шамасы x<sub>i</sub> мәнін қабылдайды» ықтималдығы. Оң жағы маргиналдау идеясы: P(X = x<sub>i</sub>) - x<sub>i</sub> мен Y-тің <em>әр</em> мәнінің бірлескен ықтималдықтарының қосындысы. Мысалы, жоғарыдағы C шамасы үшін: P(C = cloud) = P(C = cloud, R = rain) + P(C = cloud, R = ¬rain) = 0.08 + 0.32 = 0.4. Бірлескен кестенің жолын қоссақ, жолдың «шетіндегі» (marginal) ықтималдық шығады. Атауы осыдан.</p>
+      <ul>
+        <li><strong>Шартқа келтіру</strong> (<span class="term-en">conditioning</span>): P(a) = P(a | b) P(b) + P(a | ¬b) P(¬b). Бұл маргиналдауға ұқсас идея: a-ның ықтималдығы - «b берілгендегі a» ықтималдығының b-ның ықтималдығына көбейтіндісі мен «¬b берілгендегі a» ықтималдығының ¬b ықтималдығына көбейтіндісінің қосындысы.</li>
+      </ul>
+      <p>Кездейсоқ шамалар үшін:</p>
+      <p style="text-align:center;font-size:1.1em"><code>P(X = x<sub>i</sub>) = Σ<sub>j</sub> P(X = x<sub>i</sub> | Y = y<sub>j</sub>) P(Y = y<sub>j</sub>)</code></p>
+      <p>Бұл мағыналы, егер P(a | b) = P(a, b) / P(b) екенін еске алсақ. Осы өрнекті P(b)-ға көбейтсек, P(a, b) шығады, ары қарай маргиналдаудағыдай жалғастырамыз.</p>
+
+      <h2 id="bayesian-networks">Байес желілері</h2>
+      <p>Біз бірнеше кездейсоқ шаманы қарай бастадық, ал нақты есептерде олар ондаған, жүздеген болады. Олардың әрқайсысының бірлескен кестесін жазсақ, кесте жарылып кетеді. Қандай да бір құрылым керек, ол «кім кімге тәуелді» екенін көрсетсін. Мұндай құрылым - <strong>Байес желісі</strong> (<span class="term-en">Bayesian network</span>): кездейсоқ шамалар арасындағы тәуелділікті көрсететін деректер құрылымы. Оның қасиеттері:</p>
+      <ul>
+        <li>Ол бағытталған граф.</li>
+        <li>Графтың әр түйіні (node) бір кездейсоқ шаманы көрсетеді.</li>
+        <li>X-тен Y-ке баратын жебе X-тің Y-тің <em>ата-анасы</em> (parent) екенін білдіреді, яғни Y-тің үлестірімі X-тің мәніне байланысты.</li>
+        <li>Әр X түйінінің үлестірімі бар: P(X | Parents(X)).</li>
+      </ul>
+
+      <h3 id="bn-example">Мысал: кездесуге үлгеру</h3>
+      <p>Кездесуге уақытында жетуімізге әсер ететін шамалардан тұратын желіні қарайық. Төменнен жоғарыға емес, жоғарыдан төмен қарай сипаттаймыз:</p>
+      <figure style="margin:20px 0;text-align:center">
+        <svg viewBox="0 0 460 280" width="100%" style="max-width:460px" role="img" aria-label="Байес желісі: Rain түйінінен Maintenance және Train түйіндеріне жебелер, Maintenance түйінінен Train түйініне жебе, Train түйінінен Appointment түйініне жебе" fill="none" stroke="currentColor" stroke-width="2" font-family="JetBrains Mono, monospace" font-size="15">
+          <defs><marker id="arrbn" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor" stroke="none"/></marker></defs>
+          <rect x="50" y="25" width="120" height="40" rx="10" fill="var(--accent-soft)"/>
+          <rect x="290" y="25" width="120" height="40" rx="10" fill="var(--accent-soft)"/>
+          <rect x="170" y="120" width="120" height="40" rx="10" fill="var(--accent-soft)"/>
+          <rect x="170" y="210" width="120" height="40" rx="10" fill="var(--accent-soft)"/>
+          <path d="M170 45 H 286" marker-end="url(#arrbn)"/>
+          <path d="M115 65 L 190 117" marker-end="url(#arrbn)"/>
+          <path d="M345 65 L 270 117" marker-end="url(#arrbn)"/>
+          <path d="M230 160 V 206" marker-end="url(#arrbn)"/>
+          <g fill="currentColor" stroke="none" text-anchor="middle">
+            <text x="110" y="51">Rain</text>
+            <text x="350" y="51">Maintenance</text>
+            <text x="230" y="146">Train</text>
+            <text x="230" y="236">Appointment</text>
+          </g>
+        </svg>
+        <figcaption><small>Біздің Байес желісі: жаңбыр жолдың жөндеуіне де, пойызға да әсер етеді; жөндеу пойызға әсер етеді; пойыз кездесуге үлгеруімізге әсер етеді.</small></figcaption>
+      </figure>
+      <p><strong>Rain</strong> (жаңбыр) - желінің түбірлік түйіні. Оның үлестірімі басқа ештеңеге тәуелді емес. Rain {none, light, heavy} (жоқ, жеңіл, қатты) мәндерін қабылдайды:</p>
+      <table>
+        <thead><tr><th>none</th><th>light</th><th>heavy</th></tr></thead>
+        <tbody><tr><td>0.7</td><td>0.2</td><td>0.1</td></tr></tbody>
+      </table>
+      <p><strong>Maintenance</strong> - теміржолда жөндеу жұмыстары бар-жоғын білдіреді, мәндері {yes, no}. Rain - Maintenance-тің ата-анасы, демек Maintenance-тің үлестірімі жаңбырға байланысты (қатты жаңбырда жөндеу жұмысы аз жүргізіледі):</p>
+      <table>
+        <thead><tr><th>R</th><th>yes</th><th>no</th></tr></thead>
+        <tbody>
+          <tr><th>none</th><td>0.4</td><td>0.6</td></tr>
+          <tr><th>light</th><td>0.2</td><td>0.8</td></tr>
+          <tr><th>heavy</th><td>0.1</td><td>0.9</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Train</strong> - пойыздың уақытында келуі немесе кешігуі, мәндері {on time, delayed}. Назар аударыңыз: Train-ге Maintenance-тен де, Rain-нен де жебе келеді. Яғни екеуі де оның ата-анасы, және екеуінің мәні Train үлестіріміне әсер етеді:</p>
+      <table>
+        <thead><tr><th>R</th><th>M</th><th>on time</th><th>delayed</th></tr></thead>
+        <tbody>
+          <tr><th>none</th><td>yes</td><td>0.8</td><td>0.2</td></tr>
+          <tr><th>none</th><td>no</td><td>0.9</td><td>0.1</td></tr>
+          <tr><th>light</th><td>yes</td><td>0.6</td><td>0.4</td></tr>
+          <tr><th>light</th><td>no</td><td>0.7</td><td>0.3</td></tr>
+          <tr><th>heavy</th><td>yes</td><td>0.4</td><td>0.6</td></tr>
+          <tr><th>heavy</th><td>no</td><td>0.5</td><td>0.5</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Appointment</strong> - кездесуге барамыз ба, жоқ па, мәндері {attend, miss}. Мұның жалғыз ата-анасы - Train. Желінің осы ерекшелігін жақсы ұғыңыз: ата-аналар тек <em>тікелей</em> байланыстарды қамтиды. Жөндеу жұмысы пойыздың уақытында келуіне әсер етеді, ал пойыздың уақытында келуі кездесуге үлгеруімізге әсер етеді, бұл рас. Бірақ ақырында кездесуге үлгеруімізге тікелей әсер ететін нәрсе - пойыздың келгені, желі де дәл осыны көрсетеді. Мысалы, пойыз уақытында келсе, ол қатты жаңбыр мен жөндеу кезінде де келген болуы мүмкін, бірақ бұл енді біздің кездесуімізге әсер етпейді.</p>
+      <table>
+        <thead><tr><th>T</th><th>attend</th><th>miss</th></tr></thead>
+        <tbody>
+          <tr><th>on time</th><td>0.9</td><td>0.1</td></tr>
+          <tr><th>delayed</th><td>0.6</td><td>0.4</td></tr>
+        </tbody>
+      </table>
+      <details class="think">
+        <summary>Ойланып көріңіз: Appointment неге Rain-нен тікелей жебемен байланыспаған?</summary>
+        <div class="details-body"><p>Себебі Train белгілі болса, Rain Appointment-ке қосымша ештеңе қоспайды: жаңбыр кездесуге тек пойыз арқылы әсер етеді. Пойыздың уақытында не кешігіп келгені белгілі болғанда, оның себебі (жаңбыр, жөндеу) бізді кездесуге үлгеру тұрғысынан енді қызықтырмайды. Байес желісі осылай көптеген шамадан тұратын үлкен кестені бірнеше кішкентай кестеге бөліп, «тек тікелей ата-анаға қарау» деген қағидамен ықшамдайды.</p></div>
+      </details>
+      <p>Енді желінің көмегімен бірлескен ықтималдықты есептейік. Мысалы, жеңіл жаңбыр, жөндеу жоқ, пойыз кешікті және біз кездесуді жіберіп алдық деген оқиғаның ықтималдығы P(light, no, delayed, miss) қанша? Әр түйіннің үлестірімін оның ата-аналарына шартты етіп көбейтеміз:</p>
+      <p style="text-align:center;font-size:1.1em"><code>P(light) P(no | light) P(delayed | light, no) P(miss | delayed)</code></p>
+      <p>Әрбір көбейткішті жоғарыдағы кестелерден табамыз: 0.2 × 0.8 × 0.3 × 0.4 = 0.0192. Желі бүкіл бірлескен кестені біздің орнымызға «жинап» береді.</p>
+
+      <h3 id="inference">Қорытынды шығару</h3>
+      <p>Өткен лекцияда <strong>қорытынды шығаруды</strong> (<span class="term-en">inference</span>) логикалық салдар арқылы жасадық: бар білімнен жаңа білімді сөзсіз шығардық. Енді ықтималдықпен де қорытынды шығара аламыз. Бұл жаңа ақпаратты сенімді түрде білдірмейді, бірақ кейбір шамалардың үлестірімін анықтауға мүмкіндік береді. Мұнда мынадай ұғымдар бар:</p>
+      <ul>
+        <li><strong>Сұраныс айнымалысы</strong> (<span class="term-en">query</span>) <strong>X</strong>: үлестірімін білгіміз келетін шама.</li>
+        <li><strong>Дәлел айнымалылары</strong> (<span class="term-en">evidence variables</span>) <strong>E</strong>: бақыланған бір не бірнеше шама, олардың мәні e оқиғасында белгілі. Мысалы, жеңіл жаңбыр жауып тұрғанын көрдік, және бұл пойыздың кешігу ықтималдығын есептеуге көмектеседі.</li>
+        <li><strong>Жасырын айнымалылар</strong> (<span class="term-en">hidden variables</span>) <strong>Y</strong>: сұраныс та емес, бақыланбаған да шамалар. Мысалы, вокзалда тұрып жаңбырды көре аламыз, бірақ жолдың әрі қарай бір жерінде жөндеу барын біле алмаймыз. Сондықтан бұл жағдайда Maintenance жасырын айнымалы.</li>
+        <li><strong>Мақсат</strong>: <strong>P</strong>(X | e) есептеу. Мысалы, жеңіл жаңбыр жауып тұрғанын білгенде, Train шамасының (сұраныс) үлестірімін есептеу.</li>
+      </ul>
+      <p>Бір мысал қарайық. Жеңіл жаңбыр бар және жолда жөндеу жоқ екені белгілі. Appointment шамасының үлестірімі қандай, яғни <strong>P</strong>(Appointment | light, no)? Бірлескен ықтималдық бөлімінен білеміз: мұны пропорция ретінде жазуға болады, <strong>P</strong>(Appointment | light, no) = α P(Appointment, light, no). Бірақ Appointment-тің ата-анасы Train ғана, Rain мен Maintenance емес. Ал оның үлестірімін қалай есептейміз? Мұнда <strong>маргиналдау</strong> көмекке келеді: P(Appointment, light, no) мәні Train-нің екі мәні бойынша қосындыға тең:</p>
+      <p style="text-align:center;font-size:1.1em"><code>α [ P(Appointment, light, no, delayed) + P(Appointment, light, no, on time) ]</code></p>
+
+      <h3 id="enumeration">Санау арқылы қорытынды шығару</h3>
+      <p><strong>Санау арқылы қорытынды шығару</strong> (<span class="term-en">inference by enumeration</span>) - бақыланған e дәлелі және жасырын Y шамалары берілгенде X шамасының үлестірімін табу процесі:</p>
+      <p style="text-align:center;font-size:1.1em"><code>P(X | e) = α P(X, e) = α Σ<sub>y</sub> P(X, e, y)</code></p>
+      <p>Мұнда X - сұраныс шамасы, e - бақыланған дәлел, y - жасырын Y шамаларының барлық мәндері, ал α нәтижені нормалайды, сонда қосындысы 1 болатын ықтималдықтар шығады. Сөзбен айтқанда: X-тің e берілгендегі үлестірімі - X пен e-нің нормаланған үлестірімі. Оған жету үшін, Y-тің мәндері әр жолы басқаша болатындай етіп, X, e және y-тің бірлескен ықтималдықтарын қосамыз.</p>
+      <p>Қорытынды шығаруды біз өзіміз де жазып көре аламыз. Төмендегі код түпнұсқада жоқ, бұл сайттың өз мысалы: желінің барлық әлемін тізіп шығып, дәл жоғарыдағы формуланы қолданады. Ешқандай кітапханасыз, таза Python:</p>
+<pre data-lang="python"><code class="language-python">from itertools import product
+
+P_RAIN = {"none": 0.7, "light": 0.2, "heavy": 0.1}
+P_MAINT = {"none": {"yes": 0.4, "no": 0.6},
+           "light": {"yes": 0.2, "no": 0.8},
+           "heavy": {"yes": 0.1, "no": 0.9}}
+P_TRAIN = {("none", "yes"): {"on time": 0.8, "delayed": 0.2},
+           ("none", "no"): {"on time": 0.9, "delayed": 0.1},
+           ("light", "yes"): {"on time": 0.6, "delayed": 0.4},
+           ("light", "no"): {"on time": 0.7, "delayed": 0.3},
+           ("heavy", "yes"): {"on time": 0.4, "delayed": 0.6},
+           ("heavy", "no"): {"on time": 0.5, "delayed": 0.5}}
+P_APPT = {"on time": {"attend": 0.9, "miss": 0.1},
+          "delayed": {"attend": 0.6, "miss": 0.4}}
+
+
+def joint(r, m, t, a):
+    # Желі бойынша бірлескен ықтималдық
+    return P_RAIN[r] * P_MAINT[r][m] * P_TRAIN[(r, m)][t] * P_APPT[t][a]
+
+
+print(joint("none", "no", "on time", "attend"))
+
+VALUES = {"rain": list(P_RAIN), "maintenance": ["yes", "no"],
+          "train": ["on time", "delayed"], "appointment": ["attend", "miss"]}
+NAMES = list(VALUES)
+
+
+def query(var, evidence):
+    # Санау арқылы қорытынды: жасырын айнымалылар бойынша қосамыз, соңында нормалаймыз
+    dist = {}
+    for v in VALUES[var]:
+        total = 0
+        for combo in product(*VALUES.values()):
+            world = dict(zip(NAMES, combo))
+            if world[var] != v or any(world[k] != x for k, x in evidence.items()):
+                continue
+            total += joint(*combo)
+        dist[v] = total
+    alpha = 1 / sum(dist.values())
+    return {v: p * alpha for v, p in dist.items()}
+
+
+# Пойыз кешікті. Қалған шамалардың үлестірімі қандай?
+for var in NAMES:
+    print(var, {k: round(v, 4) for k, v in query(var, {"train": "delayed"}).items()})
+
+# Жеңіл жаңбыр, жөндеу жоқ. Кездесуге барамыз ба?
+print({k: round(v, 4) for k, v in query("appointment", {"rain": "light", "maintenance": "no"}).items()})</code></pre>
+      <p>Нәтижеге қараңыз: жоғарыдағы <code>α [ ... ]</code> есебінің жауабы (0.81 және 0.19) соңғы жолда шықты. Ал пойыз кешіккені белгілі болса, жаңбыр мен жөндеу туралы пікіріміз де өзгереді: «жаңбыр жоқ» ықтималдығы 0.7-ден 0.46-ға түсті, ал «қатты жаңбыр» 0.1-ден 0.24-ке дейін өсті. Себеп пен салдар арасындағы бағытты Байес ережесі осылай кері айналдырады.</p>
+
+      <h3 id="pomegranate">Python кітапханасы: pomegranate</h3>
+      <p>Ықтималдықпен қорытынды шығаруды жеңілдететін бірнеше Python кітапханасы бар. Біз <em>pomegranate</em> кітапханасын қарайық және жоғарыдағы деректердің кодта қалай көрінетінін көрейік.</p>
+      <div class="callout note">
+        <span class="callout-title">pomegranate браузерде жоқ</span>
+        <p>Төмендегі <code>pomegranate</code> кодтары Pyodide-та (браузердегі Python) жұмыс істемейді, сондықтан «Іске қосу» батырмасы жоқ. Оларды өз компьютеріңізде орындаңыз. Ал осы кодтың таза Python баламасы жоғарыда берілді және қалған мысалдарда да солай жасаймыз.</p>
+      </div>
+      <p>Алдымен түйіндерді жасаймыз және әрқайсысына ықтималдық үлестірімін береміз:</p>
+<pre data-lang="python" data-norun><code class="language-python">from pomegranate import *
+
+# Rain node has no parents
+rain = Node(DiscreteDistribution({
+    "none": 0.7,
+    "light": 0.2,
+    "heavy": 0.1
+}), name="rain")
+
+# Track maintenance node is conditional on rain
+maintenance = Node(ConditionalProbabilityTable([
+    ["none", "yes", 0.4],
+    ["none", "no", 0.6],
+    ["light", "yes", 0.2],
+    ["light", "no", 0.8],
+    ["heavy", "yes", 0.1],
+    ["heavy", "no", 0.9]
+], [rain.distribution]), name="maintenance")
+
+# Train node is conditional on rain and maintenance
+train = Node(ConditionalProbabilityTable([
+    ["none", "yes", "on time", 0.8],
+    ["none", "yes", "delayed", 0.2],
+    ["none", "no", "on time", 0.9],
+    ["none", "no", "delayed", 0.1],
+    ["light", "yes", "on time", 0.6],
+    ["light", "yes", "delayed", 0.4],
+    ["light", "no", "on time", 0.7],
+    ["light", "no", "delayed", 0.3],
+    ["heavy", "yes", "on time", 0.4],
+    ["heavy", "yes", "delayed", 0.6],
+    ["heavy", "no", "on time", 0.5],
+    ["heavy", "no", "delayed", 0.5],
+], [rain.distribution, maintenance.distribution]), name="train")
+
+# Appointment node is conditional on train
+appointment = Node(ConditionalProbabilityTable([
+    ["on time", "attend", 0.9],
+    ["on time", "miss", 0.1],
+    ["delayed", "attend", 0.6],
+    ["delayed", "miss", 0.4]
+], [train.distribution]), name="appointment")</code></pre>
+      <p>Екіншіден, модельді құрамыз: барлық түйінді қосып, қайсысы қайсысының ата-анасы екенін жиектер (edge) қосу арқылы сипаттаймыз (Байес желісі бағытталған граф, яғни жебелері бар түйіндерден тұратынын еске түсіріңіз):</p>
+<pre data-lang="python" data-norun><code class="language-python"># Create a Bayesian Network and add states
+model = BayesianNetwork()
+model.add_states(rain, maintenance, train, appointment)
+
+# Add edges connecting nodes
+model.add_edge(rain, maintenance)
+model.add_edge(rain, train)
+model.add_edge(maintenance, train)
+model.add_edge(train, appointment)
+
+# Finalize model
+model.bake()</code></pre>
+      <p>Енді белгілі бір оқиғаның қаншалықты ықтимал екенін сұрау үшін модельді қызықтыратын мәндермен іске қосамыз. Біздің мысалда сұрақ мынадай: жаңбыр жоқ, жөндеу жоқ, пойыз уақытында келді және біз кездесуге бардық деген оқиғаның ықтималдығы қанша?</p>
+<pre data-lang="python" data-norun><code class="language-python"># Calculate probability for a given observation
+probability = model.probability([["none", "no", "on time", "attend"]])
+
+print(probability)</code></pre>
+      <p>Бұл 0.7 × 0.6 × 0.9 × 0.9 = 0.3402 шығады (жоғарыдағы таза Python мысалының бірінші <code>print</code> жолы да дәл осыны берді). Екінші жолмен, бағдарламадан белгілі дәлел берілгенде <em>барлық</em> шаманың ықтималдық үлестірімдерін сұрауға болады. Келесі жағдайда пойыздың кешіккенін білеміз. Осыны ескеріп, Rain, Maintenance және Appointment шамаларының үлестірімдерін есептеп, басып шығарамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Calculate predictions based on the evidence that the train was delayed
+predictions = model.predict_proba({
+    "train": "delayed"
+})
+
+# Print predictions for each node
+for node, prediction in zip(model.states, predictions):
+    if isinstance(prediction, str):
+        print(f"{node.name}: {prediction}")
+    else:
+        print(f"{node.name}")
+        for value, probability in prediction.parameters[0].items():
+            print(f"    {value}: {probability:.4f}")</code></pre>
+      <p>Шығыс шамамен мынадай болады (мәндердің реті басқаша шығуы мүмкін; бұл мәндер жоғарыдағы таза Python мысалынан алынған):</p>
+<pre class="terminal"><code class="language-plaintext">rain
+    none: 0.4601
+    light: 0.3005
+    heavy: 0.2394
+maintenance
+    yes: 0.3662
+    no: 0.6338
+train: delayed
+appointment
+    attend: 0.6000
+    miss: 0.4000</code></pre>
+      <p>Жоғарыда <em>санау арқылы қорытынды шығару</em> қолданылды. Бірақ мұндай есептеу тиімсіз, әсіресе модельде көп шама болғанда: барлық комбинацияны санап шығу керек. Басқа жол бар: <strong>нақты қорытындыдан</strong> (<span class="term-en">exact inference</span>) бас тартып, <strong>жуық қорытындыны</strong> (<span class="term-en">approximate inference</span>) таңдаймыз. Сонда ықтималдықтардың дәлдігін біраз жоғалтамыз, бірақ бұл дәлсіздік көбіне елеусіз, ал есептеудің өлшемді (масштабталатын) әдісін аламыз.</p>
+
+      <h2 id="sampling">Семплдеу</h2>
+      <p><strong>Семплдеу</strong> (<span class="term-en">sampling</span>) - жуық қорытындының бір әдісі. Онда әр шама өзінің ықтималдық үлестіріміне сай мән ретінде «таңдалады». Алдымен лекциядан тыс мысал, содан кейін лекциядағы мысал.</p>
+      <div class="callout note">
+        <span class="callout-title">Лекциядан тыс мысал</span>
+        <p>Сүйектің үлестірімін семплдеу арқылы алу үшін сүйекті көп рет лақтырып, әр жолы түскен мәнді жазып аламыз. Айталық, 600 рет лақтырдық. 1 неше рет түскенін санаймыз: ол шамамен 100 болуы керек. Қалған мәндер 2-6 үшін де солай. Сосын әр санды лақтыру санына (600) бөлеміз. Нәтижесінде сүйек үлестірімінің жуық мәнін аламыз: әр мәннің ықтималдығы дәл 1/6 болып шығуы екіталай, бірақ оған жақын сан шығады.</p>
+      </div>
+      <p>Енді лекциядағы мысал. Rain шамасынан бастап семплдейік: <em>none</em> мәні 0.7 ықтималдықпен, <em>light</em> 0.2 ықтималдықпен, <em>heavy</em> 0.1 ықтималдықпен шығады. Айталық, <em>none</em> шықты. Maintenance-ке келгенде оны да семплдейміз, бірақ тек Rain = <em>none</em> болғандағы үлестірімнен, өйткені бұл мән бұрын таңдалып қойған. Осылай барлық түйін бойынша өтеміз. Енді бізде бір үлгі (sample) бар. Процесті көп рет қайталасақ, үлестірім пайда болады. P(Train = on time) қанша деп сұрасақ, Train-і <em>on time</em> болатын үлгілерді санап, жалпы үлгі санына бөлеміз. Осылай P(Train = on time) үшін жуық мәнге ие боламыз.</p>
+      <p>Шартты ықтималдықты да шеше аламыз, мысалы P(Rain = light | Train = on time). Онда Train мәні <em>on time</em> емес барлық үлгіні елемейміз де, бұрынғыдай жалғастырамыз: қалған үлгілердің ішінде Rain = <em>light</em> болғандарын санап, Train = <em>on time</em> болатын үлгілердің жалпы санына бөлеміз.</p>
+      <p>Кодта семплдеу функциясы <code>generate_sample</code> былай көрінуі мүмкін:</p>
+<pre data-lang="python" data-norun><code class="language-python">import pomegranate
+
+from collections import Counter
+
+from model import model
+
+def generate_sample():
+
+    # Mapping of random variable name to sample generated
+    sample = {}
+
+    # Mapping of distribution to sample generated
+    parents = {}
+
+    # Loop over all states, assuming topological order
+    for state in model.states:
+
+        # If we have a non-root node, sample conditional on parents
+        if isinstance(state.distribution, pomegranate.ConditionalProbabilityTable):
+            sample[state.name] = state.distribution.sample(parent_values=parents)
+
+        # Otherwise, just sample from the distribution alone
+        else:
+            sample[state.name] = state.distribution.sample()
+
+        # Keep track of the sampled value in the parents mapping
+        parents[state.distribution] = sample[state.name]
+
+    # Return generated sample
+    return sample</code></pre>
+      <h3 id="rejection-sampling">Қабылдамау семплдеуі</h3>
+      <p>Енді P(Appointment | Train = delayed), яғни пойыз кешіккендегі Appointment үлестірімін есептейік:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Rejection sampling
+# Compute distribution of Appointment given that train is delayed
+N = 10000
+data = []
+
+# Repeat sampling 10,000 times
+for i in range(N):
+
+    # Generate a sample based on the function that we defined earlier
+    sample = generate_sample()
+
+    # If, in this sample, the variable of Train has the value delayed, save the sample. Since we are interested interested in the probability distribution of Appointment given that the train is delayed, we discard the sampled where the train was on time.
+    if sample["train"] == "delayed":
+        data.append(sample["appointment"])
+
+# Count how many times each value of the variable appeared. We can later normalize by dividing the results by the total number of saved samples to get the approximate probabilities of the variable that add up to 1.
+print(Counter(data))</code></pre>
+      <p>Осы әдісті <strong>қабылдамау семплдеуі</strong> (<span class="term-en">rejection sampling</span>) деп атайды: дәлелге сәйкес келмейтін үлгіні қабылдамай, лақтырып тастаймыз. Төменде дәл осы алгоритмнің кітапханасыз нұсқасы бар (сайттың өз мысалы), оны браузерде жүргізіп көруге болады. <code>random.seed(0)</code> нәтижені қайталанатын етеді:</p>
+<pre data-lang="python"><code class="language-python">import random
+from collections import Counter
+
+P_RAIN = {"none": 0.7, "light": 0.2, "heavy": 0.1}
+P_MAINT = {"none": {"yes": 0.4, "no": 0.6},
+           "light": {"yes": 0.2, "no": 0.8},
+           "heavy": {"yes": 0.1, "no": 0.9}}
+P_TRAIN = {("none", "yes"): {"on time": 0.8, "delayed": 0.2},
+           ("none", "no"): {"on time": 0.9, "delayed": 0.1},
+           ("light", "yes"): {"on time": 0.6, "delayed": 0.4},
+           ("light", "no"): {"on time": 0.7, "delayed": 0.3},
+           ("heavy", "yes"): {"on time": 0.4, "delayed": 0.6},
+           ("heavy", "no"): {"on time": 0.5, "delayed": 0.5}}
+P_APPT = {"on time": {"attend": 0.9, "miss": 0.1},
+          "delayed": {"attend": 0.6, "miss": 0.4}}
+
+
+def pick(dist):
+    # Үлестірімге сай бір мәнді таңдау
+    return random.choices(list(dist), weights=list(dist.values()))[0]
+
+
+def generate_sample():
+    # Түйіндерді жоғарыдан төмен қарай семплдейміз: әр келесісі ата-анасына байланысты
+    rain = pick(P_RAIN)
+    maint = pick(P_MAINT[rain])
+    train = pick(P_TRAIN[(rain, maint)])
+    appt = pick(P_APPT[train])
+    return {"rain": rain, "maintenance": maint, "train": train, "appointment": appt}
+
+
+random.seed(0)
+N = 10000
+data = []
+for i in range(N):
+    sample = generate_sample()
+    # Пойыз кешікпеген үлгілерді қабылдамаймыз
+    if sample["train"] == "delayed":
+        data.append(sample["appointment"])
+
+counts = Counter(data)
+print(counts)
+print("Қалған үлгі:", len(data), "/", N)
+print({k: round(v / len(data), 3) for k, v in counts.items()})</code></pre>
+      <p>Байқадыңыз ба, 10 000 үлгінің екі мыңға жуығы ғана қалды: пойыз кешігетін күндер сирек, ал қалғанын лақтырып жібердік. Нәтиже дәл 0.6 / 0.4 емес, бірақ оған өте жақын. Дәлел сирек оқиға болған сайын, қабылдамау семплдеуі соғұрлым көп үлгіні босқа жібереді.</p>
+
+      <h3 id="likelihood-weighting">Ықтималдықпен өлшеу</h3>
+      <p>Жоғарыдағы мысалда дәлелге сай келмейтін үлгілерді тастап отырдық. Бұл тиімсіз. Оны айналып өтудің жолы - <strong>ықтималдықпен өлшеу</strong> (<span class="term-en">likelihood weighting</span>). Қадамдары:</p>
+      <ul>
+        <li>Алдымен дәлел шамаларының мәндерін бекітеміз.</li>
+        <li>Дәлел емес шамаларды Байес желісіндегі шартты ықтималдықтар бойынша семплдейміз.</li>
+        <li>Әр үлгіні оның <strong>ықтималдығымен</strong> (<span class="term-en">likelihood</span>), яғни барлық дәлелдің болу ықтималдығымен өлшейміз (салмақ береміз).</li>
+      </ul>
+      <p>Мысалы, пойыздың уақытында келгенін бақыладық делік. Бұрынғыдай семплдей бастаймыз: Rain мәнін үлестіріміне сай, одан кейін Maintenance-ті таңдаймыз. Бірақ Train-ге жеткенде оған әрдайым бақыланған мәнді, біздің жағдайда <em>on time</em> береміз. Сосын жалғастырып, Appointment-ті Train = <em>on time</em> болғандағы үлестірімінен семплдейміз. Үлгі дайын болғанда, оған салмақ береміз: бақыланған шаманың өзінің семплделген ата-аналарына шартты ықтималдығы. Яғни Rain-нен <em>light</em>, Maintenance-тен <em>yes</em> шықса, бұл үлгінің салмағы P(Train = on time | light, yes) болады.</p>
+      <p>Төменде осы идеяның сайттың өз мысалы: P(Rain | Train = delayed) қорытындысын салмақпен есептейміз. Жоғарыда санау арқылы алған дәл жауаппен салыстырыңыз (none ≈ 0.46, light ≈ 0.30, heavy ≈ 0.24):</p>
+<pre data-lang="python"><code class="language-python">import random
+from collections import defaultdict
+
+P_RAIN = {"none": 0.7, "light": 0.2, "heavy": 0.1}
+P_MAINT = {"none": {"yes": 0.4, "no": 0.6},
+           "light": {"yes": 0.2, "no": 0.8},
+           "heavy": {"yes": 0.1, "no": 0.9}}
+P_TRAIN = {("none", "yes"): {"on time": 0.8, "delayed": 0.2},
+           ("none", "no"): {"on time": 0.9, "delayed": 0.1},
+           ("light", "yes"): {"on time": 0.6, "delayed": 0.4},
+           ("light", "no"): {"on time": 0.7, "delayed": 0.3},
+           ("heavy", "yes"): {"on time": 0.4, "delayed": 0.6},
+           ("heavy", "no"): {"on time": 0.5, "delayed": 0.5}}
+
+
+def pick(dist):
+    return random.choices(list(dist), weights=list(dist.values()))[0]
+
+
+random.seed(1)
+weights = defaultdict(float)
+N = 10000
+for i in range(N):
+    rain = pick(P_RAIN)
+    maint = pick(P_MAINT[rain])
+    # Train дәлел: оны семплдемейміз, бекітілген мән береміз
+    weight = P_TRAIN[(rain, maint)]["delayed"]
+    weights[rain] += weight
+
+total = sum(weights.values())
+print({k: round(v / total, 3) for k, v in weights.items()})</code></pre>
+      <p>Бір де бір үлгі лақтырылған жоқ: N үлгінің бәрі пайдаға асты, тек әрқайсысы өз салмағымен есептелді.</p>
+
+      <h2 id="markov-models">Марков модельдері</h2>
+      <p>Осы уақытқа дейін біз белгілі бір бақыланған ақпарат берілгендегі ықтималдықтарды қарадық. Мұндай парадигмада <em>уақыт</em> өлшемі жоқ. Ал көптеген есеп уақытқа байланысты, мысалы болжау. Уақытты көрсету үшін жаңа X айнымалысын енгіземіз және оны қызықтыратын оқиғаға қарай өзгертеміз: X<sub>t</sub> - қазіргі оқиға, X<sub>t+1</sub> - келесі оқиға және т.б. Болашақ оқиғаларды болжау үшін <strong>Марков модельдерін</strong> (<span class="term-en">Markov models</span>) қолданамыз.</p>
+
+      <h3 id="markov-assumption">Марков жорамалы</h3>
+      <p><strong>Марков жорамалы</strong> (<span class="term-en">Markov assumption</span>) бойынша қазіргі күй алдыңғы күйлердің тек соңғы, тұрақты санына тәуелді. Бұл біз үшін маңызды. Ауа райын болжауды елестетіңіз. Теориялық тұрғыдан өткен жылдың бүкіл деректерін пайдаланып ертеңгі ауа райын болжауға болар еді. Бірақ бұл іс жүзінде мүмкін емес: біріншіден, есептеу қуаты көп керек, екіншіден, 365 күн бұрынғы ауа райына қарап ертеңгі ауа райының шартты ықтималдығы туралы ақпарат, сірә, мүлде жоқ. Марков жорамалымен алдыңғы күйлерді шектейміз (мысалы, ертеңгі ауа райын болжағанда соңғы неше күнді ескереміз), және осылай тапсырма орындалатын болады. Бұл қызықтыратын ықтималдықтардың сәл дөрекі жуық мәнін беруі мүмкін, бірақ көбіне қажетімізге жетеді. Тіпті бір ғана соңғы оқиғаға негізделген Марков моделін алуға болады: ертеңгі ауа райын бүгінгі ауа райына қарап болжау.</p>
+
+      <h3 id="markov-chain">Марков тізбегі</h3>
+      <p><strong>Марков тізбегі</strong> (<span class="term-en">Markov chain</span>) - кездейсоқ шамалар тізбегі, мұнда әр шаманың үлестірімі Марков жорамалына бағынады. Яғни тізбектегі әр оқиға алдыңғы оқиғаның ықтималдығына негізделіп жүреді.</p>
+      <figure style="margin:20px 0;text-align:center">
+        <svg viewBox="0 0 500 90" width="100%" style="max-width:500px" role="img" aria-label="Марков тізбегі: бес түйін X(t-2), X(t-1), X(t), X(t+1), X(t+2), әрқайсысынан келесісіне жебе" fill="none" stroke="currentColor" stroke-width="2" font-family="JetBrains Mono, monospace" font-size="15">
+          <defs><marker id="arrmc" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor" stroke="none"/></marker></defs>
+          <circle cx="50" cy="45" r="26" fill="var(--accent-soft)"/><circle cx="150" cy="45" r="26" fill="var(--accent-soft)"/><circle cx="250" cy="45" r="26" fill="var(--accent-soft)"/><circle cx="350" cy="45" r="26" fill="var(--accent-soft)"/><circle cx="450" cy="45" r="26" fill="var(--accent-soft)"/>
+          <path d="M76 45 H 120" marker-end="url(#arrmc)"/><path d="M176 45 H 220" marker-end="url(#arrmc)"/><path d="M276 45 H 320" marker-end="url(#arrmc)"/><path d="M376 45 H 420" marker-end="url(#arrmc)"/>
+          <g fill="currentColor" stroke="none" text-anchor="middle" font-size="13">
+            <text x="50" y="50">X<tspan dy="4" font-size="9">t-2</tspan></text>
+            <text x="150" y="50">X<tspan dy="4" font-size="9">t-1</tspan></text>
+            <text x="250" y="50">X<tspan dy="4" font-size="9">t</tspan></text>
+            <text x="350" y="50">X<tspan dy="4" font-size="9">t+1</tspan></text>
+            <text x="450" y="50">X<tspan dy="4" font-size="9">t+2</tspan></text>
+          </g>
+        </svg>
+        <figcaption><small>Марков тізбегі: әр күй тек алдыңғысына тәуелді.</small></figcaption>
+      </figure>
+      <p>Марков тізбегін құру үшін <strong>өту моделі</strong> (<span class="term-en">transition model</span>) керек. Ол ағымдағы оқиғаның мүмкін мәндеріне байланысты келесі оқиғаның ықтималдық үлестірімін береді. Біздің мысалда ауа райы екі күйде: sun (күн ашық) және rain (жаңбырлы). Өту моделі мынадай:</p>
+      <table>
+        <thead><tr><th>Бүгін \ Ертең</th><th>sun</th><th>rain</th></tr></thead>
+        <tbody>
+          <tr><th>sun</th><td>0.8</td><td>0.2</td></tr>
+          <tr><th>rain</th><td>0.3</td><td>0.7</td></tr>
+        </tbody>
+      </table>
+      <figure style="margin:20px 0;text-align:center">
+        <svg viewBox="0 0 420 190" width="100%" style="max-width:420px" role="img" aria-label="Өту моделі: sun күйінен sun күйіне 0.8, sun күйінен rain күйіне 0.2, rain күйінен sun күйіне 0.3, rain күйінен rain күйіне 0.7" fill="none" stroke="currentColor" stroke-width="2" font-family="JetBrains Mono, monospace" font-size="15">
+          <defs><marker id="arrtm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor" stroke="none"/></marker></defs>
+          <circle cx="100" cy="100" r="36" fill="var(--accent-soft)"/>
+          <circle cx="320" cy="100" r="36" fill="var(--accent-soft)"/>
+          <path d="M82 68 C 55 15, 145 15, 118 68" marker-end="url(#arrtm)"/>
+          <path d="M302 68 C 275 15, 365 15, 338 68" marker-end="url(#arrtm)"/>
+          <path d="M134 84 C 185 58, 235 58, 286 84" marker-end="url(#arrtm)"/>
+          <path d="M286 118 C 235 150, 185 150, 134 118" marker-end="url(#arrtm)"/>
+          <g fill="currentColor" stroke="none" text-anchor="middle">
+            <text x="100" y="105">sun</text><text x="320" y="105">rain</text>
+            <text x="100" y="22">0.8</text><text x="320" y="22">0.7</text>
+            <text x="210" y="64">0.2</text><text x="210" y="158">0.3</text>
+          </g>
+        </svg>
+        <figcaption><small>Өту моделі: жебедегі сан - бір күйден екінші күйге өту ықтималдығы.</small></figcaption>
+      </figure>
+      <p>Бұл мысалда бүгін ашық болса, ертең де ашық болу ықтималдығы 0.8. Бұл түсінікті: ашық күннің артынан ашық күн келу ықтимал. Ал бүгін жаңбыр жауса, ертең де жаңбыр жауу ықтималдығы 0.7, өйткені жаңбырлы күндер көбіне қатар жүреді. Осы өту моделімен Марков тізбегін <em>семплдеуге</em> болады. Бір күннен, ашық немесе жаңбырлы күннен бастаймыз да, келесі күнді бүгінгі ауа райына қарай ашық не жаңбырлы болу ықтималдығымен таңдаймыз. Сосын одан кейінгі күнді ертеңге шартты етіп таңдаймыз, және тағы сол сияқты. Нәтижесінде мына түрдегі Марков тізбегі шығады:</p>
+      <p style="text-align:center"><code>sun → sun → rain → rain → rain → sun → ...</code></p>
+      <p>Осындай тізбек болғанда, мынадай сұрақтарға жауап бере аламыз: «қатарынан төрт күн жаңбыр жауу ықтималдығы қандай?» Мысалы, бірінші күн жаңбырлы деп алсақ, келесі үшеуі де жаңбырлы болу ықтималдығы 0.7 × 0.7 × 0.7 = 0.343. Кодта Марков тізбегі былай жазылады:</p>
+<pre data-lang="python" data-norun><code class="language-python">from pomegranate import *
+
+# Define starting probabilities
+start = DiscreteDistribution({
+    "sun": 0.5,
+    "rain": 0.5
+})
+
+# Define transition model
+transitions = ConditionalProbabilityTable([
+    ["sun", "sun", 0.8],
+    ["sun", "rain", 0.2],
+    ["rain", "sun", 0.3],
+    ["rain", "rain", 0.7]
+], [start])
+
+# Create Markov chain
+model = MarkovChain([start, transitions])
+
+# Sample 50 states from chain
+print(model.sample(50))</code></pre>
+      <p>Бұл кодтың таза Python баламасы (сайттың өз мысалы) мынадай: тізбекті семплдеп, 20 күндік ауа райын шығарады. Іске қосқан сайын басқаша шығуы үшін <code>random.seed</code> жолын алып тастауға болады:</p>
+<pre data-lang="python"><code class="language-python">import random
+
+random.seed(1)
+transitions = {"sun": {"sun": 0.8, "rain": 0.2},
+               "rain": {"sun": 0.3, "rain": 0.7}}
+
+# Бастапқы күй: sun не rain, 50/50
+state = random.choice(["sun", "rain"])
+chain = [state]
+for _ in range(19):
+    probs = transitions[state]
+    state = random.choices(list(probs), weights=list(probs.values()))[0]
+    chain.append(state)
+
+print(chain)
+print("rain, rain, rain, rain ықтималдығы =", 0.5 * 0.7 ** 3)</code></pre>
+
+      <h2 id="hidden-markov-models">Жасырын Марков модельдері</h2>
+      <p><strong>Жасырын Марков моделі</strong> (<span class="term-en">hidden Markov model</span>) - жасырын күйлері бар жүйеге арналған Марков моделінің түрі; жасырын күйлер бақыланатын оқиғаларды тудырады. Яғни кейде AI-дың қолында әлемнің белгілі бір өлшемі бар, бірақ әлемнің нақты күйіне қолы жетпейді. Мұндай жағдайда әлемнің күйін <strong>жасырын күй</strong> (<span class="term-en">hidden state</span>), ал AI-дың қолындағы деректерді <strong>бақылаулар</strong> (<span class="term-en">observations</span>) деп атайды. Бірнеше мысал:</p>
+      <ul>
+        <li>Белгісіз жерді зерттеп жүрген робот үшін жасырын күй - оның орналасқан жері, ал бақылау - сенсорлары жазған деректер.</li>
+        <li>Сөйлеуді тану кезінде жасырын күй - айтылған сөздер, ал бақылау - дыбыс толқындары.</li>
+        <li>Веб-сайттағы пайдаланушының қызығушылығын өлшегенде жасырын күй - пайдаланушының шынайы қызығушылық дәрежесі, ал бақылау - сайт не қосымшаның аналитикасы.</li>
+      </ul>
+      <p>Біз талқылау үшін мына мысалды қолданамыз. AI-ға ауа райын (жасырын күйді) анықтау керек, бірақ оның қолында тек бөлмедегі камера бар, ол ғимаратқа неше адамның қолшатырмен келгенін жазады. Мұндағы <strong>сенсор моделі</strong> (<span class="term-en">sensor model</span>, оны <em>emission model</em> де деп атайды) мынадай ықтималдықтарды көрсетеді:</p>
+      <table>
+        <thead><tr><th>Ауа райы (жасырын күй)</th><th>umbrella</th><th>no umbrella</th></tr></thead>
+        <tbody>
+          <tr><th>sun</th><td>0.2</td><td>0.8</td></tr>
+          <tr><th>rain</th><td>0.9</td><td>0.1</td></tr>
+        </tbody>
+      </table>
+      <p>Бұл моделде күн ашық болса, адамдар көбіне қолшатырсыз келеді. Жаңбыр жауса, қолшатырмен келу ықтималдығы өте жоғары. Қолшатырдың бар-жоғын бақылап, сырттағы ауа райын біршама сеніммен болжай аламыз. Бұл дәл терезеден қарамай, бөлмеге кірген адамдардың киімінен «сыртта жаңбыр жауып тұр» деп шешкенмен бірдей.</p>
+
+      <h3 id="sensor-assumption">Сенсор Марков жорамалы</h3>
+      <p><strong>Сенсор Марков жорамалы</strong> (<span class="term-en">sensor Markov assumption</span>) - дәлел айнымалысы тек өзіне сәйкес күйге тәуелді деген жорамал. Біздің модельдерде адамдардың қолшатыр әкелуі тек ауа райына байланысты деп алынады. Бұл толық шындықты көрсетпеуі мүмкін: мысалы, мұқият, жаңбырдан қорқатын адамдар күн ашық болса да қолшатырды әрдайым алып жүруі мүмкін, ал әр адамның мінезін білсек, модельге көбірек деректер қосылар еді. Бірақ сенсор Марков жорамалы бұл деректерді елемейді: бақылауға тек жасырын күй әсер етеді деп санайды.</p>
+      <p>Жасырын Марков моделін екі қабатты Марков тізбегімен көрсетуге болады. Жоғарғы қабат, X айнымалысы, жасырын күйді білдіреді. Төменгі қабат, E айнымалысы, дәлелді, яғни біздің бақылауларымызды білдіреді:</p>
+      <figure style="margin:20px 0;text-align:center">
+        <svg viewBox="0 0 500 190" width="100%" style="max-width:500px" role="img" aria-label="Жасырын Марков моделі: жоғарғы қабатта жасырын күйлер X(t-1), X(t), X(t+1), X(t+2), олар бір-біріне жебемен жалғанған; әр X төменгі қабаттағы бақылау E-ге жебемен жалғанған" fill="none" stroke="currentColor" stroke-width="2" font-family="JetBrains Mono, monospace" font-size="15">
+          <defs><marker id="arrhm" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor" stroke="none"/></marker></defs>
+          <circle cx="60" cy="40" r="26" fill="var(--accent-soft)"/><circle cx="180" cy="40" r="26" fill="var(--accent-soft)"/><circle cx="300" cy="40" r="26" fill="var(--accent-soft)"/><circle cx="420" cy="40" r="26" fill="var(--accent-soft)"/>
+          <circle cx="60" cy="140" r="26"/><circle cx="180" cy="140" r="26"/><circle cx="300" cy="140" r="26"/><circle cx="420" cy="140" r="26"/>
+          <path d="M86 40 H 150" marker-end="url(#arrhm)"/><path d="M206 40 H 270" marker-end="url(#arrhm)"/><path d="M326 40 H 390" marker-end="url(#arrhm)"/>
+          <path d="M60 66 V 110" marker-end="url(#arrhm)"/><path d="M180 66 V 110" marker-end="url(#arrhm)"/><path d="M300 66 V 110" marker-end="url(#arrhm)"/><path d="M420 66 V 110" marker-end="url(#arrhm)"/>
+          <g fill="currentColor" stroke="none" text-anchor="middle" font-size="13">
+            <text x="60" y="45">X<tspan dy="4" font-size="9">t-1</tspan></text>
+            <text x="180" y="45">X<tspan dy="4" font-size="9">t</tspan></text>
+            <text x="300" y="45">X<tspan dy="4" font-size="9">t+1</tspan></text>
+            <text x="420" y="45">X<tspan dy="4" font-size="9">t+2</tspan></text>
+            <text x="60" y="145">E<tspan dy="4" font-size="9">t-1</tspan></text>
+            <text x="180" y="145">E<tspan dy="4" font-size="9">t</tspan></text>
+            <text x="300" y="145">E<tspan dy="4" font-size="9">t+1</tspan></text>
+            <text x="420" y="145">E<tspan dy="4" font-size="9">t+2</tspan></text>
+            <text x="250" y="184" font-size="11">жоғарыда - жасырын күй (ауа райы), төменде - бақылау (қолшатыр)</text>
+          </g>
+        </svg>
+        <figcaption><small>Жасырын Марков моделі: жасырын күйлер тізбегі және әр күйден шығатын бақылау.</small></figcaption>
+      </figure>
+      <p>Жасырын Марков модельдерінің негізінде бірнеше тапсырма орындауға болады:</p>
+      <ul>
+        <li><strong>Сүзу</strong> (<span class="term-en">filtering</span>): басынан қазірге дейінгі бақылаулар берілгенде, қазіргі күйдің ықтималдық үлестірімін есептеу. Мысалы, қолшатыр әкелген адамдар туралы басынан бүгінге дейінгі деректерге қарап, бүгін жаңбыр жауып тұр ма деген үлестірімді шығарамыз.</li>
+        <li><strong>Болжау</strong> (<span class="term-en">prediction</span>): басынан қазірге дейінгі бақылаулар берілгенде, болашақ күйдің ықтималдық үлестірімін есептеу.</li>
+        <li><strong>Тегістеу</strong> (<span class="term-en">smoothing</span>): басынан қазірге дейінгі бақылаулар берілгенде, өткен күйдің ықтималдық үлестірімін есептеу. Мысалы, бүгін адамдар қолшатырмен келді, олай болса кеше жаңбыр жауған болуы қаншалықты ықтимал?</li>
+        <li><strong>Ең ықтимал түсіндірме</strong> (<span class="term-en">most likely explanation</span>): басынан қазірге дейінгі бақылаулар берілгенде, оқиғалардың ең ықтимал тізбегін есептеу.</li>
+      </ul>
+      <p>Ең ықтимал түсіндірме тапсырмасы дауысты тану сияқты процестерде қолданылады: бірнеше дыбыс толқынына қарап, AI оларды тудырған ең ықтимал сөздер не буындар тізбегін шығарады. Төменде ең ықтимал түсіндірме тапсырмасы үшін қолданатын жасырын Марков моделінің Python кодымен жүзеге асырылуы:</p>
+<pre data-lang="python" data-norun><code class="language-python">from pomegranate import *
+
+# Observation model for each state
+sun = DiscreteDistribution({
+    "umbrella": 0.2,
+    "no umbrella": 0.8
+})
+
+rain = DiscreteDistribution({
+    "umbrella": 0.9,
+    "no umbrella": 0.1
+})
+
+states = [sun, rain]
+
+# Transition model
+transitions = numpy.array(
+    [[0.8, 0.2], # Tomorrow's predictions if today = sun
+     [0.3, 0.7]] # Tomorrow's predictions if today = rain
+)
+
+# Starting probabilities
+starts = numpy.array([0.5, 0.5])
+
+# Create the model
+model = HiddenMarkovModel.from_matrix(
+    transitions, states, starts,
+    state_names=["sun", "rain"]
+)
+model.bake()</code></pre>
+      <p>Назар аударыңыз: моделімізде сенсор моделі де, өту моделі де бар. Жасырын Марков моделі үшін екеуі де қажет. Келесі код үзіндісінде адамдардың ғимаратқа қолшатырмен келген-келмегені туралы бақылаулар тізбегі бар. Осы тізбек негізінде модельді іске қосамыз, ол ең ықтимал түсіндірмені, яғни осы бақылаулар үлгісін ең ықтимал тудыратын ауа райы тізбегін, есептеп басып шығарады:</p>
+<pre data-lang="python" data-norun><code class="language-python">from model import model
+
+# Observed data
+observations = [
+    "umbrella",
+    "umbrella",
+    "no umbrella",
+    "umbrella",
+    "umbrella",
+    "umbrella",
+    "umbrella",
+    "no umbrella",
+    "no umbrella"
+]
+
+# Predict underlying states
+predictions = model.predict(observations)
+for prediction in predictions:
+    print(model.states[prediction].name)</code></pre>
+      <p>Бұл жағдайда бағдарлама rain, rain, sun, rain, rain, rain, rain, sun, sun деп шығарады. Бұл - адамдардың қолшатыр әкелген не әкелмегені туралы бақылауларымызға сай ең ықтимал ауа райы үлгісі.</p>
+      <p>Мұны тағы бір рет, pomegranate-сіз тексеріп көрейік. Төмендегі сайттың өз мысалы екі нәрсені есептейді: <em>сүзу</em> (әр күні осы күнге дейінгі бақылаулар бойынша жаңбыр болу ықтималдығы) және <em>тегістеу</em> (барлық бақылауды ескеріп, әр күнгі жаңбыр ықтималдығы). Соңғы бағанда ең ықтимал ауа райы бар, ол жоғарыдағы жауаппен дәл сәйкес келеді:</p>
+<pre data-lang="python"><code class="language-python">states = ["sun", "rain"]
+start = {"sun": 0.5, "rain": 0.5}
+trans = {"sun": {"sun": 0.8, "rain": 0.2}, "rain": {"sun": 0.3, "rain": 0.7}}
+emit = {"sun": {"umbrella": 0.2, "no umbrella": 0.8},
+        "rain": {"umbrella": 0.9, "no umbrella": 0.1}}
+obs = ["umbrella", "umbrella", "no umbrella", "umbrella", "umbrella",
+       "umbrella", "umbrella", "no umbrella", "no umbrella"]
+
+
+def norm(d):
+    z = sum(d.values())
+    return {k: v / z for k, v in d.items()}
+
+
+# Алға қарай өту: сүзу (бақылауларды бірінен соң бірін ескереміз)
+fwd = [norm({s: start[s] * emit[s][obs[0]] for s in states})]
+for o in obs[1:]:
+    fwd.append(norm({s: sum(fwd[-1][q] * trans[q][s] for q in states) * emit[s][o]
+                     for s in states}))
+
+# Артқа қарай өту: болашақ бақылауларды ескеру
+bwd = [{s: 1 for s in states}]
+for o in reversed(obs[1:]):
+    prev = bwd[0]
+    bwd.insert(0, {q: sum(trans[q][s] * emit[s][o] * prev[s] for s in states)
+                   for q in states})
+
+print("бақылау       сүзу   тегістеу  ең ықтимал")
+for i, o in enumerate(obs):
+    smooth = norm({s: fwd[i][s] * bwd[i][s] for s in states})
+    print(f"{o:12} {fwd[i]['rain']:6.3f} {smooth['rain']:8.3f}  {max(smooth, key=smooth.get)}")</code></pre>
+      <div class="callout warn">
+        <span class="callout-title">Ескерту: «ең ықтимал» нені білдіреді?</span>
+        <p>Жоғарыдағы кестеде әр күн <em>жеке-жеке</em> қарастырылды: сол күннің ең ықтимал ауа райы алынды. Ал бүкіл тізбектің ең ықтимал <em>бірыңғай</em> сценарийі (мұны Витерби алгоритмі табады) сәл өзгеше болуы мүмкін: біздің деректерде ол үшінші күнді де rain деп береді. Лекциядағы <code>model.predict</code> нәтижесі әр күннің ықтималдығына негізделген, сондықтан біздің кестеміздегі жауаппен сәйкес келеді.</p>
+      </div>
+      <details class="think">
+        <summary>Ойланып көріңіз: үшінші күні қолшатыр жоқ болса да, неге сүзу тегістеуден төмен шықты?</summary>
+        <div class="details-body"><p>Сүзуде үшінші күнге дейінгі ғана бақылау бар: қолшатыр көп, бірақ үшінші күні жоқ, сондықтан жаңбыр ықтималдығы 0.18. Тегістеуде төртінші және одан кейінгі күндердің де қолшатырлы екені ескеріледі: жаңбырлы күндер қатар жүретіндіктен, үшінші күні де жаңбыр болған деп күдіктенеміз (0.37). Болашақтан келген ақпарат өткен күнді «түзетеді». Тегістеу дәл осы үшін қажет.</p></div>
+      </details>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Бұл лекцияда белгісіздікпен жұмыс істеудің негізін үйрендік. Негізгі ұғымдар:</p>
+      <ul>
+        <li><strong>Ықтималдық</strong>: мүмкін әлемдер, аксиомалар (0 мен 1 аралығы, қосынды 1), шартсыз және шартты ықтималдық P(a | b) = P(a ∧ b) / P(b).</li>
+        <li><strong>Кездейсоқ шамалар</strong>, ықтималдық үлестірімі, тәуелсіздік P(a ∧ b) = P(a) P(b).</li>
+        <li><strong>Байес ережесі</strong>: P(b | a) = P(a | b) P(b) / P(a). Көрінетін салдардан белгісіз себепке өтуге мүмкіндік береді.</li>
+        <li><strong>Бірлескен ықтималдық</strong> және нормалау (α).</li>
+        <li>Ережелер: терістеу, қосу-алып тастау, маргиналдау, шартқа келтіру.</li>
+        <li><strong>Байес желілері</strong>: бағытталған граф, әр түйін P(X | Parents(X)) үлестіріміне ие.</li>
+        <li><strong>Қорытынды шығару</strong>: сұраныс, дәлел, жасырын айнымалылар; санау арқылы нақты қорытынды (inference by enumeration).</li>
+        <li><strong>Жуық қорытынды</strong>: семплдеу, қабылдамау семплдеуі, ықтималдықпен өлшеу.</li>
+        <li><strong>Марков модельдері</strong>: Марков жорамалы, Марков тізбегі, өту моделі.</li>
+        <li><strong>Жасырын Марков модельдері</strong>: жасырын күй мен бақылау, сенсор моделі, сенсор Марков жорамалы; сүзу, болжау, тегістеу және ең ықтимал түсіндірме.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. Жаңбырлы түстердің 80%-ы бұлтты таңнан басталады, күндердің 40%-ында таң бұлтты, 10%-ында түстен кейін жаңбыр жауады. Таң бұлтты болса, түстен кейін жаңбыр жауу ықтималдығы қанша?</p>
+          <label><input type="radio" value="a"> 0.8</label>
+          <label><input type="radio" value="b"> 0.2</label>
+          <label><input type="radio" value="c"> 0.32</label>
+          <label><input type="radio" value="d"> 0.5</label>
+          <p class="explain">Байес ережесі: P(rain | clouds) = P(clouds | rain) P(rain) / P(clouds) = 0.8 × 0.1 / 0.4 = 0.2. 0.8 - кері бағыттағы ықтималдық, P(clouds | rain), оны P(rain | clouds) деп шатастыруға болмайды.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">2. Екі әділ сүйек лақтырылды. Қосындысы 7 болу ықтималдығы қандай?</p>
+          <label><input type="radio" value="a"> 1/36</label>
+          <label><input type="radio" value="b"> 1/12</label>
+          <label><input type="radio" value="c"> 1/6</label>
+          <label><input type="radio" value="d"> 1/2</label>
+          <p class="explain">36 тең ықтималды әлемнің ішінде қосындысы 7 болатыны алты: (1,6), (2,5), (3,4), (4,3), (5,2), (6,1). Демек 6/36 = 1/6.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. Мен күндердің 80%-ында балмұздақ, 70%-ында печенье жеймін, ал екеуін де 60%-ында жеймін. Балмұздақ немесе печенье жеу ықтималдығы қанша?</p>
+          <label><input type="radio" value="a"> 0.9</label>
+          <label><input type="radio" value="b"> 1.5</label>
+          <label><input type="radio" value="c"> 0.56</label>
+          <label><input type="radio" value="d"> 0.6</label>
+          <p class="explain">Қосу-алып тастау ережесі: P(a ∨ b) = P(a) + P(b) - P(a ∧ b) = 0.8 + 0.7 - 0.6 = 0.9. Алып тастамасақ, 1.5 шығар еді, ал ықтималдық 1-ден аспайды.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">4. Біздің Байес желісінде (Rain → Maintenance, Rain → Train, Maintenance → Train, Train → Appointment) жеңіл жаңбыр, жөндеу жоқ, пойыз кешікті, кездесуді жіберіп алдық деген оқиғаның бірлескен ықтималдығы қалай есептеледі?</p>
+          <label><input type="radio" value="a"> P(light) P(no) P(delayed) P(miss)</label>
+          <label><input type="radio" value="b"> P(light) P(no | light) P(delayed | no) P(miss | light)</label>
+          <label><input type="radio" value="c"> P(light, no) P(delayed, miss)</label>
+          <label><input type="radio" value="d"> P(light) P(no | light) P(delayed | light, no) P(miss | delayed)</label>
+          <p class="explain">Әр түйіннің ықтималдығы тек оның ата-аналарына шартты болады. Train-нің ата-аналары - Rain мен Maintenance, ал Appointment-тің жалғыз ата-анасы - Train. Нәтиже 0.2 × 0.8 × 0.3 × 0.4 = 0.0192.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">5. Бірлескен кестеде P(cloud, rain) = 0.08 және P(¬cloud, rain) = 0.02. Нормалаудан кейін P(C | rain) қандай?</p>
+          <label><input type="radio" value="a"> ⟨0.08, 0.02⟩</label>
+          <label><input type="radio" value="b"> ⟨0.5, 0.5⟩</label>
+          <label><input type="radio" value="c"> ⟨0.8, 0.2⟩</label>
+          <label><input type="radio" value="d"> ⟨0.4, 0.1⟩</label>
+          <p class="explain">⟨0.08, 0.02⟩ қосындысы 0.1, сондықтан α = 10. Нормаланған үлестірім ⟨0.8, 0.2⟩ болады. Нормалау қатынасты (4 : 1) сақтап, қосындыны 1-ге жеткізеді.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">6. Қабылдамау семплдеуімен салыстырғанда ықтималдықпен өлшеудің басты артықшылығы не?</p>
+          <label><input type="radio" value="a"> Нақты (дәл) жауап береді, жуық емес</label>
+          <label><input type="radio" value="b"> Дәлелге сай келмейтін үлгілерді тастамайды: дәлел мәнін бекітіп, үлгіні дәлелдің ықтималдығымен өлшейді</label>
+          <label><input type="radio" value="c"> Жасырын айнымалыларды семплдемейді</label>
+          <label><input type="radio" value="d"> Байес желісін қажет етпейді</label>
+          <p class="explain">Қабылдамау семплдеуінде көп үлгі босқа кетеді (әсіресе дәлел сирек болса). Ықтималдықпен өлшеуде дәлел айнымалысына әрдайым бақыланған мән беріледі, ал үлгінің салмағы - сол дәлелдің семплделген ата-аналары берілгендегі ықтималдығы. Ол да жуық әдіс.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. Ертеңгі ауа райын тек бүгінгі ауа райына қарап болжайтын модель қандай жорамалға сүйенеді?</p>
+          <label><input type="radio" value="a"> Марков жорамалы: қазіргі күй алдыңғы күйлердің тек соңғы тұрақты санына (мұнда біреуіне) тәуелді</label>
+          <label><input type="radio" value="b"> Күнделікті ауа райы өзара тәуелсіз</label>
+          <label><input type="radio" value="c"> Ауа райы жасырын, оны ешқашан бақылай алмаймыз</label>
+          <label><input type="radio" value="d"> Ертеңгі ауа райы өткен жылдың бүкіл деректеріне тәуелді</label>
+          <p class="explain">Бұл Марков жорамалы. Ол есепті орындалатын етеді, өйткені бүкіл тарихты есептемейміз. Мұнда оқиғалар тәуелсіз емес (ертеңгі күн бүгінгіге байланысты), ал ауа райы бақыланады.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">8. Ғимаратқа қолшатырмен келген адамдарды санайтын камера арқылы сырттағы ауа райын анықтағымыз келеді. Бұл жасырын Марков моделінде жасырын күй пен бақылау қайсысы?</p>
+          <label><input type="radio" value="a"> Жасырын күй - қолшатыр, бақылау - ауа райы</label>
+          <label><input type="radio" value="b"> Екеуі де ауа райы</label>
+          <label><input type="radio" value="c"> Жасырын күй - камера, бақылау - адам саны</label>
+          <label><input type="radio" value="d"> Жасырын күй - ауа райы, бақылау - қолшатырдың бар-жоғы</label>
+          <p class="explain">Біз ауа райын тікелей көрмейміз, ол жасырын күй. Бізде тек қолшатыр туралы бақылау бар. Сенсор моделі P(бақылау | жасырын күй), мысалы P(umbrella | rain) = 0.9.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Problem Set 2 (Тапсырмалар жинағы 2)</h2>
+      <p>Ресми тапсырма беті: <a href="https://cs50.harvard.edu/ai/projects/2/" target="_blank" rel="noopener">cs50.harvard.edu/ai/projects/2</a>. Екі жобаның екеуін де орындау керек: <strong>PageRank</strong> және <strong>Heredity</strong>. Python 3.12 нұсқасын қолданыңыз.</p>
+      <div class="callout note">
+        <span class="callout-title">Қайда орындалады</span>
+        <p>Толық жобалар (<code>main</code>, <code>crawl</code>, CSV файлдары) компьютеріңізде немесе cs50.dev-те орындалады: ресми zip-ті жүктеп алыңыз. Ал осы беттегі автотексеруші - сайттың өз құралы, ресми <code>check50</code> емес. Ол тек сіз жазатын функцияларды (және олардың кіріс деректерін) тікелей шақырып тексереді, сондықтан редакторға <code>main</code> мен <code>crawl</code>-сыз, тек талап етілген функцияларды қойыңыз. Семплдеу тесті кездейсоқ болғандықтан шағын қателікті кешіреді. Ресми <code>check50</code> командасын компьютерде міндетті түрде іске қосыңыз.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-pagerank">PageRank (веб-беттерді маңыздылығы бойынша саралау)</h3></div>
+        <p>Веб-беттерді маңыздылығы бойынша реттейтін AI жазыңыз.</p>
+<pre class="terminal"><code class="language-plaintext">$ python pagerank.py corpus0
+PageRank Results from Sampling (n = 10000)
+  1.html: 0.2223
+  2.html: 0.4303
+  3.html: 0.2145
+  4.html: 0.1329
+PageRank Results from Iteration
+  1.html: 0.2202
+  2.html: 0.4289
+  3.html: 0.2202
+  4.html: 0.1307</code></pre>
+        <h4>Алғышарт</h4>
+        <p>Google сияқты іздеу жүйелері нәтижелерді көрсеткенде, «маңыздырақ» және сапалы беттерді маңызы аз беттерден жоғары қояды. Бірақ іздеу жүйесі қай беттің маңыздырақ екенін қайдан біледі?</p>
+        <p>Бір эвристика: «маңызды» бет - оған көп басқа бет сілтеме жасайтын бет, себебі сапалы бетке сапасыз бетке қарағанда көбірек сайт сілтейтіні түсінікті. Сонда әр бетке оған кіретін сілтемелер санына қарай ранг беруге болар еді. Бірақ бұл анықтама мінсіз емес: біреу өз бетін маңызды көрсеткісі келсе, оған сілтейтін көптеген бет жасап, рангті жасанды түрде көтере алады.</p>
+        <p>Сондықтан Google-дың негізін қалаушылар (оның ішінде Larry Page, алгоритм соның есімімен аталған) <strong>PageRank</strong> алгоритмін жасады. Бұл алгоритмде сайт маңызды болады, егер оған басқа маңызды сайттар сілтесе, ал маңызы аз сайттардың сілтемелері кем салмақпен есептеледі. Анықтама сәл шеңбер сияқты көрінеді, бірақ рангтерді есептеудің бірнеше стратегиясы бар.</p>
+        <h4>Кездейсоқ серфер моделі</h4>
+        <p>PageRank-ті елестетудің бір жолы - <strong>кездейсоқ серфер моделі</strong>: интернетте сілтемелерді кездейсоқ басып жүретін ойдан шығарылған серфер. Беттер корпусында бет 2 бет 1 мен бет 3-ке сілтейді дейік. Серфер бет 2-де болса, келесіге бет 1 мен бет 3 арасынан кездейсоқ таңдайды (бір беттегі қайталанған сілтемелер бір сілтеме деп есептеледі, бетті өзіне сілтеу елеусіз қалдырылады). Бет 3-ті таңдаса, одан әрі бет 2 мен бет 4 арасынан таңдайды.</p>
+        <p>Беттің PageRank мәні - кез келген сәтте кездейсоқ серфердің сол бетте болу ықтималдығы. Бетке сілтеме көп болса, серфердің сонда түсу ықтималдығы жоғары. Үстіне, маңызды сайттан келетін сілтемені басу ықтималдығы жоғары, сондықтан модель сілтемелерді маңыздылығына қарай өлшейді.</p>
+        <p>Бұл модельді <strong>Марков тізбегі</strong> ретінде түсіндіруге болады: әр бет - күй, әр беттің сілтемелердің бірін кездейсоқ таңдайтын өту моделі бар. Әр уақыт қадамында күй ағымдағы күй сілтейтін беттердің біріне ауысады. Марков тізбегінен күйлерді кездейсоқ семплдеп, әр беттің PageRank-ін бағалауға болады: кездейсоқ беттен бастап, сілтемелерді кездейсоқ ілесе отырып, әр бетке неше рет түскенімізді санаймыз. Алдын ала таңдаған үлгі санын жинағаннан кейін әр бетте болған уақыт үлесі - сол беттің рангінің бағасы.</p>
+        <p>Бірақ бұл анықтама бір мәселе туғызады. Мынадай желіні қарайық: 5-бет пен 6-бет тек бір-біріне сілтейді және қалған беттермен байланысы жоқ. 5-беттен бастасақ, 6-ға барудан басқа таңдау жоқ, сосын қайтадан 5-ке, т.с.с. Нәтижесінде 5 және 6 беттері үшін 0.5, ал қалғанының бәрі үшін 0 баға аламыз, өйткені қалған беттерге ешқашан түспейміз.</p>
+        <p>Корпустың басқа бөлігіне де жете алу үшін модельге <strong>демпфирлеу коэффициентін</strong> (<span class="term-en">damping factor</span>) <code>d</code> енгіземіз (әдетте шамамен <code>0.85</code>). <code>d</code> ықтималдығымен серфер ағымдағы беттегі сілтемелердің бірін кездейсоқ таңдайды. Ал қалған <code>1 - d</code> ықтималдығымен ол корпустағы <em>барлық</em> беттің ішінен (өзі тұрған бетті қоса) біреуін кездейсоқ таңдайды.</p>
+        <h4>Итерациялық алгоритм</h4>
+        <p>PageRank-ті рекурсивті математикалық өрнекпен де анықтауға болады. <code>PR(p)</code> - берілген <code>p</code> бетінің PageRank мәні, яғни кездейсоқ серфердің сол бетке түсу ықтималдығы. Серфер бетке екі жолмен түсе алады:</p>
+        <ol>
+          <li><code>1 - d</code> ықтималдығымен серфер бетті кездейсоқ таңдап, <code>p</code> бетіне түсті.</li>
+          <li><code>d</code> ықтималдығымен серфер <code>i</code> бетінен <code>p</code> бетіне сілтемемен өтті.</li>
+        </ol>
+        <p>Бірінші жағдай оңай: <code>(1 - d) / N</code>, мұнда <code>N</code> - корпустағы беттердің жалпы саны (<code>1 - d</code> ықтималдығы <code>N</code> бетке тең бөлінеді). Екінші жағдайда <code>p</code> бетіне сілтейтін әр <code>i</code> бетін қарастырамыз. <code>NumLinks(i)</code> - <code>i</code> бетіндегі сілтемелер саны. Әр <code>i</code> бетінің өз <code>PR(i)</code> мәні бар, ал <code>i</code>-ден барлық сілтемеге тең ықтималдықпен өтетіндіктен, <code>PR(i)</code>-ді <code>NumLinks(i)</code>-ге бөліп, <code>i</code> бетінде болып, <code>p</code>-ге сілтемені басу ықтималдығын аламыз. Нәтижесінде:</p>
+        <p style="text-align:center;font-size:1.1em"><code>PR(p) = (1 - d) / N + d × Σ<sub>i</sub> PR(i) / NumLinks(i)</code></p>
+        <p>Мұнда <code>d</code> - демпфирлеу коэффициенті, <code>N</code> - корпустағы беттердің жалпы саны, <code>i</code> - <code>p</code> бетіне сілтейтін барлық беттер бойынша өтеді, <code>NumLinks(i)</code> - <code>i</code> бетіндегі сілтемелер саны.</p>
+        <p>Мәндерді қалай есептейміз? Итерациямен: әр беттің PageRank мәні <code>1 / N</code> деп бастаймыз. Сосын жоғарыдағы формуламен алдыңғы мәндерге сүйеніп әр беттің жаңа мәнін есептейміз. Осыны қайталай берсек, мәндер ақыры жинақталады (әр итерацияда шағын шектен көп өзгермейді).</p>
+        <p>Бұл жобада PageRank-ті екі тәсілмен есептейсіз: Марков тізбегінен семплдеу арқылы және формуланы итерациялап қолдану арқылы.</p>
+        <h4>Бастау</h4>
+        <p>Таратылатын кодты <a href="https://cdn.cs50.net/ai/2023/x/projects/2/pagerank.zip" target="_blank" rel="noopener">pagerank.zip</a> файлынан жүктеп, ашыңыз.</p>
+        <h4>Түсіну</h4>
+        <p><code>pagerank.py</code> файлын ашыңыз. Жоғарыда екі тұрақты бар: <code>DAMPING</code> - демпфирлеу коэффициенті (бастапқыда <code>0.85</code>), <code>SAMPLES</code> - семплдеу әдісіне арналған үлгі саны (бастапқыда 10 000). <code>main</code> функциясы командалық жол аргументін күтеді: PageRank есептейтін веб-беттер корпусы бар қалтаның аты. <code>crawl</code> функциясы сол қалтадағы барлық HTML файлды талдап, корпусты сипаттайтын сөздікті қайтарады: кілттері - беттер (мысалы, <code>"2.html"</code>), мәндері - сол бет сілтейтін беттердің жиыны (мысалы, <code>{"1.html", "3.html"}</code>).</p>
+        <p>Одан кейін <code>main</code> <code>sample_pagerank</code> функциясын шақырады: ол PageRank-ті семплдеу арқылы бағалауы керек. <code>iterate_pagerank</code> функциясы да PageRank-ті есептейді, бірақ итерациялық формуламен. Қайтарылатын формат бірдей, және екі функцияның нәтижесі ұқсас болады деп үміттенеміз.</p>
+        <h4>Талаптар</h4>
+        <p>Көптеген студент осы тапсырмада сөздіктерді қате құрғандықтан автотексерушіден құлады. Сондықтан талаптарды <strong>дәл</strong> орындаңыз. <code>transition_model</code>, <code>sample_pagerank</code> және <code>iterate_pagerank</code> функцияларын аяқтаңыз.</p>
+        <p><code>transition_model</code> корпус, ағымдағы бет және демпфирлеу коэффициенті берілгенде, кездейсоқ серфердің келесіде қай бетке баратыны бойынша ықтималдық үлестірімін сипаттайтын сөздікті қайтаруы керек.</p>
+        <ul>
+          <li>Функция үш аргумент алады: <code>corpus</code> (бет атынан сол бет сілтейтін беттер жиынына сөздік), <code>page</code> (серфер қазір тұрған бет, жол) және <code>damping_factor</code>.</li>
+          <li>Қайтарылатын сөздікте корпустағы әр бетке бір кілт болады, мәні - серфердің келесіде сол бетті таңдау ықтималдығы. Мәндердің қосындысы <code>1</code> болуы керек.
+            <ul>
+              <li><code>damping_factor</code> ықтималдығымен серфер <code>page</code> бетіндегі сілтемелердің бірін тең ықтималдықпен таңдайды.</li>
+              <li><code>1 - damping_factor</code> ықтималдығымен серфер корпустағы барлық беттің бірін тең ықтималдықпен таңдайды.</li>
+            </ul>
+          </li>
+          <li>Мысалы, <code>corpus</code> = <code>{"1.html": {"2.html", "3.html"}, "2.html": {"3.html"}, "3.html": {"2.html"}}</code>, <code>page</code> = <code>"1.html"</code>, <code>damping_factor</code> = <code>0.85</code> болса, нәтиже <code>{"1.html": 0.05, "2.html": 0.475, "3.html": 0.475}</code> болуы керек. Себебі <code>0.85</code> ықтималдығымен 1-беттен 2-ге не 3-ке барамыз (әрқайсысына алдымен <code>0.425</code>), бірақ әр бетке қосымша <code>0.05</code> қосылады, өйткені <code>0.15</code> ықтималдығымен үш беттің бірін кездейсоқ таңдаймыз.</li>
+          <li>Егер <code>page</code> бетінде сілтеме болмаса, <code>transition_model</code> барлық беттің арасынан тең ықтималдықпен таңдайтын үлестірімді қайтаруы керек. (Басқаша айтқанда, бетте сілтеме жоқ болса, оны корпустағы барлық бетке, өзіне де, сілтейді деп есептейміз.)</li>
+        </ul>
+        <p><code>sample_pagerank</code> веб-беттер корпусын, демпфирлеу коэффициентін және үлгі санын алып, әр бет үшін бағаланған PageRank-ті қайтаруы керек.</p>
+        <ul>
+          <li>Функция үш аргумент алады: <code>corpus</code>, <code>damping_factor</code> және <code>n</code> (PageRank мәндерін бағалау үшін жасалатын үлгі саны, бүтін сан).</li>
+          <li>Қайтарылатын сөздікте корпустағы әр бетке бір кілт, мәні - беттің бағаланған PageRank-і (сол бетке сәйкес келген үлгілердің үлесі). Мәндердің қосындысы <code>1</code> болуы керек.</li>
+          <li>Бірінші үлгі беттердің арасынан кездейсоқ таңдалуы керек.</li>
+          <li>Қалған әр үлгі алдыңғы үлгіден, алдыңғы үлгінің өту моделі бойынша жасалуы керек.
+            <ul>
+              <li>Алдыңғы үлгіні <code>transition_model</code> функциясына корпуспен және <code>damping_factor</code>-мен бірге беріп, келесі үлгінің ықтималдықтарын алуға болады.</li>
+              <li>Мысалы, өту ықтималдықтары <code>{"1.html": 0.05, "2.html": 0.475, "3.html": 0.475}</code> болса, келесі үлгінің 5%-ы <code>"1.html"</code>, 47.5%-ы <code>"2.html"</code>, 47.5%-ы <code>"3.html"</code> болуы керек.</li>
+            </ul>
+          </li>
+          <li><code>n</code> кемінде <code>1</code> деп есептеуге болады.</li>
+        </ul>
+        <p><code>iterate_pagerank</code> веб-беттер корпусын және демпфирлеу коэффициентін алып, жоғарыдағы итерация формуласымен PageRank есептеп, әр беттің PageRank-ін <code>0.001</code> дәлдікпен қайтаруы керек.</p>
+        <ul>
+          <li>Функция екі аргумент алады: <code>corpus</code> және <code>damping_factor</code>.</li>
+          <li>Қайтарылатын сөздікте корпустағы әр бетке бір кілт, мәні - беттің PageRank-і. Мәндердің қосындысы <code>1</code> болуы керек.</li>
+          <li>Функция әр бетке <code>1 / N</code> рангін беруден басталады, мұнда <code>N</code> - корпустағы беттердің саны.</li>
+          <li>Содан кейін PageRank формуласы бойынша барлық ағымдағы мәнге сүйеніп жаңа мәндерді қайта-қайта есептейді (беттің PageRank-і оған сілтейтін барлық беттің PageRank-іне сүйеніп есептеледі).
+            <ul>
+              <li>Мүлдем сілтемесі жоқ бет корпустағы әр бетке (өзіне де) бір сілтемесі бар деп түсіндірілуі керек.</li>
+            </ul>
+          </li>
+          <li>Процесс ағымдағы және жаңа мәндер арасында ешбір PageRank <code>0.001</code>-ден көп өзгермегенше қайталанады.</li>
+        </ul>
+        <p><code>pagerank.py</code> ішінде талап етілген үш функциядан басқа ештеңені өзгертпеңіз. Қосымша функциялар жазуға және Python стандартты кітапханасының басқа модульдерін импорттауға болады. <code>numpy</code> не <code>pandas</code> қолдануға да болады, бірақ басқа үшінші тарап модульдерін қолдануға болмайды.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Шешімде кездейсоқ таңдау үшін Python-ның <a href="https://docs.python.org/3/library/random.html" target="_blank" rel="noopener"><code>random</code></a> модулі пайдалы (мысалы, <code>random.choices</code> салмақтармен таңдайды). Сілтемесі жоқ бетті оңай ұмытып кетесіз: оның өту моделін де, итерациядағы үлесін де барлық бетке бөліңіз.</p></div></details>
+        <p><strong>Тексеру.</strong> Төмендегі автотексеруші функцияларыңызды шағын корпустарда іске қосады: 4 беттік корпус, байланыссыз екі жұп бет және сілтемесі жоқ бет бар корпус.</p>
+        <div class="autograder" data-check="py-pagerank" data-src="ai/checks/week-2.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="ai2-pagerank">
+            <li><input type="checkbox"> <span><code>transition_model</code> ресми мысалда <code>{"1.html": 0.05, "2.html": 0.475, "3.html": 0.475}</code> қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>sample_pagerank</code> және <code>iterate_pagerank</code> нәтижелерінің қосындысы 1 және корпус0 үшін екеуі ұқсас.</span></li>
+            <li><input type="checkbox"> <span><code>check50 ai50/projects/2024/x/pagerank</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span><code>style50 pagerank.py</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+        <p>Жібергенде: <code>submit50 ai50/projects/2024/x/pagerank</code></p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="pset-heredity">Heredity (тұқым қуалаушылық)</h3></div>
+        <p>Адамның белгілі бір генетикалық белгіге ие болу ықтималдығын бағалайтын AI жазыңыз.</p>
+<pre class="terminal"><code class="language-plaintext">$ python heredity.py data/family0.csv
+Harry:
+  Gene:
+    2: 0.0092
+    1: 0.4557
+    0: 0.5351
+  Trait:
+    True: 0.2665
+    False: 0.7335
+James:
+  Gene:
+    2: 0.1976
+    1: 0.5106
+    0: 0.2918
+  Trait:
+    True: 1.0000
+    False: 0.0000
+Lily:
+  Gene:
+    2: 0.0036
+    1: 0.0136
+    0: 0.9827
+  Trait:
+    True: 0.0000
+    False: 1.0000</code></pre>
+        <h4>Алғышарт</h4>
+        <p><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC1285178/" target="_blank" rel="noopener">GJB2 генінің</a> мутацияланған нұсқалары жаңа туған нәрестелерде есту қабілетінің бұзылуының негізгі себептерінің бірі. Әр адамда геннің екі нұсқасы болады, сондықтан есту қабілетін бұзатын GJB2 нұсқасының 0, 1 немесе 2 көшірмесі болуы мүмкін. Бірақ генетикалық тест жасатпаса, адамда мутацияланған GJB2-нің қанша көшірмесі бар екенін білу оңай емес. Бұл - «жасырын күй»: біз бақылай алатын әсері (есту қабілетінің бұзылуы) бар, бірақ тікелей білмейтін ақпарат. Өйткені мутацияланған GJB2-нің 1 не 2 көшірмесі бар кейбір адамдарда есту бұзылуы білінбейді, ал мутацияланған көшірмесі жоқ басқалардың есту қабілеті бұзылуы мүмкін.</p>
+        <p>Әр бала әр ата-анасынан GJB2 генінің бір көшірмесін алады. Ата-анада мутацияланған геннің екі көшірмесі болса, ол мутацияланған генді балаға береді. Ата-анада мутацияланған ген жоқ болса, балаға бермейді. Ата-анада бір көшірме болса, ген балаға <code>0.5</code> ықтималдығымен беріледі. Бірақ ген берілгеннен кейін оның қосымша мутацияға ұшырау ықтималдығы бар: есту қабілетін бұзатын нұсқадан бұзбайтын нұсқаға өзгеруі не керісінше.</p>
+        <p>Осы қатынастардың барлығын тиісті айнымалылардан тұратын Байес желісі арқылы модельдеуге болады. Төменгі желі екі ата-ана мен бір баладан тұратын отбасын сипаттайды:</p>
+        <figure style="margin:20px 0;text-align:center">
+          <svg viewBox="0 0 460 260" width="100%" style="max-width:460px" role="img" aria-label="Отбасының Байес желісі: Mother Gene және Father Gene түйіндерінен Child Gene түйініне жебелер; әр Gene түйінінен өз Trait түйініне жебе" fill="none" stroke="currentColor" stroke-width="2" font-family="JetBrains Mono, monospace" font-size="13">
+            <defs><marker id="arrhd" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor" stroke="none"/></marker></defs>
+            <rect x="30" y="20" width="130" height="36" rx="10" fill="var(--accent-soft)"/>
+            <rect x="300" y="20" width="130" height="36" rx="10" fill="var(--accent-soft)"/>
+            <rect x="165" y="110" width="130" height="36" rx="10" fill="var(--accent-soft)"/>
+            <rect x="30" y="110" width="110" height="36" rx="10"/>
+            <rect x="320" y="110" width="110" height="36" rx="10"/>
+            <rect x="165" y="205" width="130" height="36" rx="10"/>
+            <path d="M120 56 L 190 107" marker-end="url(#arrhd)"/>
+            <path d="M340 56 L 270 107" marker-end="url(#arrhd)"/>
+            <path d="M95 56 V 106" marker-end="url(#arrhd)"/>
+            <path d="M375 56 V 106" marker-end="url(#arrhd)"/>
+            <path d="M230 146 V 201" marker-end="url(#arrhd)"/>
+            <g fill="currentColor" stroke="none" text-anchor="middle">
+              <text x="95" y="43">Mother Gene</text><text x="365" y="43">Father Gene</text>
+              <text x="230" y="133">Child Gene</text>
+              <text x="85" y="133">Trait</text><text x="375" y="133">Trait</text>
+              <text x="230" y="228">Child Trait</text>
+            </g>
+          </svg>
+          <figcaption><small>Бір отбасының Байес желісі: гендер ата-анадан балаға беріледі, ал әр адамның гені оның белгісіне (trait) әсер етеді.</small></figcaption>
+        </figure>
+        <p>Отбасының әр мүшесінде <code>Gene</code> кездейсоқ шамасы бар: адамда белгілі геннің (мысалы, GJB2-нің есту қабілетін бұзатын нұсқасы) қанша көшірмесі бар екенін білдіретін мән: 0, 1 немесе 2. Сондай-ақ әр адамда <code>Trait</code> кездейсоқ шамасы бар: ол адам осы генге негізделген белгіні (мысалы, есту бұзылуын) көрсете ме, көрсетпе ме (<code>yes</code> не <code>no</code>). Әр адамның <code>Gene</code> шамасынан оның <code>Trait</code> шамасына жебе бар, ол адамның гендері белгінің болу ықтималдығына әсер ететінін білдіреді. Сонымен қатар ананың да, әкенің де <code>Gene</code> шамасынан баланың <code>Gene</code> шамасына жебе бар: баланың гендері ата-анасының гендеріне тәуелді.</p>
+        <p>Жобадағы тапсырмаңыз - осы модельмен популяция туралы қорытынды шығару. Адамдар, олардың ата-аналары және ген тудыратын бақыланатын белгінің (мысалы, есту қабілетінің жоғалуы) болуы туралы ақпарат берілгенде, AI әр адамның гендері үшін ықтималдық үлестірімін, сондай-ақ кез келген адамда сол белгінің білінуі үшін ықтималдық үлестірімін шығарады.</p>
+        <h4>Бастау</h4>
+        <p>Таратылатын кодты <a href="https://cdn.cs50.net/ai/2023/x/projects/2/heredity.zip" target="_blank" rel="noopener">heredity.zip</a> файлынан жүктеп, ашыңыз.</p>
+        <h4>Түсіну</h4>
+        <p><code>data</code> қалтасындағы бір деректер жинағын, <code>data/family0.csv</code> файлын ашып көріңіз. Бірінші жол CSV бағандарын анықтайды: <code>name</code>, <code>mother</code>, <code>father</code>, <code>trait</code>. Келесі жол Harry-дің анасы Lily, әкесі James екенін көрсетеді, ал <code>trait</code> ұяшығының бос болуы Harry-де белгі бар-жоғы белгісіз екенін білдіреді. James-тің деректер жинағында ата-анасы жоқ (<code>mother</code> мен <code>father</code> ұяшықтары бос), және ол белгіні көрсетеді (<code>trait</code> ұяшығында <code>1</code>). Lily-дің де ата-анасы жоқ, бірақ белгіні көрсетпейді (<code>0</code>).</p>
+        <p><code>heredity.py</code> файлын ашып, алдымен <code>PROBS</code> анықтамасын қараңыз. <code>PROBS</code> - әртүрлі оқиғалардың ықтималдықтарын білдіретін бірнеше тұрақты бар сөздік. Бұл оқиғалардың бәрі белгілі бір геннің («ген» деп атаймыз) адамда қанша көшірмесі бар екеніне және сол генге негізделген белгінің («белгі» деп атаймыз) білінуіне қатысты. Деректер GJB2 генінің есту бұзылуына әкелетін нұсқасы мен есту бұзылуы белгісінің ықтималдықтарына шамамен негізделген, бірақ мәндерді өзгертіп, AI-ды басқа гендер мен белгілер үшін де қолдануға болады.</p>
+        <p>Біріншіден, <code>PROBS["gene"]</code> геннің шартсыз ықтималдық үлестірімін көрсетеді (яғни адамның ата-анасы туралы ештеңе білмесек). Тарату кодындағы деректер бойынша популяцияда геннің 2 көшірмесі болу мүмкіндігі 1%, 1 көшірме 3%, 0 көшірме 96%.</p>
+        <p><code>PROBS["trait"]</code> адамның белгіні (мысалы, есту бұзылуын) көрсету шартты ықтималдығын білдіреді. Бұл шын мәнінде үш түрлі ықтималдық үлестірімі: <code>gene</code>-нің әр мәніне біреуі. Яғни <code>PROBS["trait"][2]</code> - адамда геннің екі нұсқасы болғандағы белгінің үлестірімі: бұл жағдайда белгіні көрсету мүмкіндігі 65%, көрсетпеу 35%. Ал геннің 0 көшірмесі болса, белгіні көрсету мүмкіндігі 1%, көрсетпеу 99%.</p>
+        <p>Соңында, <code>PROBS["mutation"]</code> - геннің қарастырылып отырған геннен оған жатпайтын түрге (және керісінше) мутацияланып өзгеру ықтималдығы. Мысалы, ананың геннің екі нұсқасы болса, ол біреуін балаға береді және оның енді мақсатты ген болмай қалуына 1% мүмкіндік бар. Керісінше, ананың гені мүлде жоқ болса, ол балаға ген бермейді, бірақ ол ген болып мутацияға ұшырауы 1% мүмкіндікпен болуы мүмкін. Сондықтан екі ата-анасында да қарастырылып отырған геннің көшірмесі болмаса да, баласында геннің 1 не 2 көшірмесі болуы мүмкін.</p>
+        <p>Ақырында есептейтін ықтималдықтарыңыз осы <code>PROBS</code> мәндеріне негізделеді.</p>
+        <p>Енді <code>main</code> функциясын қараңыз. Ол алдымен деректерді файлдан <code>people</code> сөздігіне жүктейді. <code>people</code> әр адамның атын сол адам туралы ақпарат бар басқа сөздікке сәйкестендіреді: оның аты, анасы (деректерде көрсетілсе), әкесі (көрсетілсе) және қарастырылып отырған белгіні көрсететіні-көрсетпейтіні (көрсетсе <code>True</code>, көрсетпесе <code>False</code>, белгісіз болса <code>None</code>).</p>
+        <p>Одан кейін <code>main</code> барлық ықтималдығы бастапқыда 0 болатын <code>probabilities</code> сөздігін анықтайды. Жоба ақырында дәл осыны есептейді: әр адам үшін геннің қанша көшірмесі бар екені бойынша ықтималдық үлестірімі, сондай-ақ белгінің болу-болмауы бойынша. Мысалы, <code>probabilities["Harry"]["gene"][1]</code> - Harry-де геннің 1 көшірмесі болу ықтималдығы, ал <code>probabilities["Lily"]["trait"][False]</code> - Lily-дің белгіні көрсетпеу ықтималдығы.</p>
+        <p>Ақырғы мақсат - ықтималдықтарды белгілі бір дәлел негізінде есептеу: белгілі адамдардың белгіні көрсететіні не көрсетпейтіні белгілі болғанда. Лекциядан еске түсіріңіз: дәлелді қанағаттандыратын барлық бірлескен ықтималдықтарды қосып, сосын оларды әрқайсысының қосындысы 1 болатындай нормалау арқылы шартты ықтималдық есептеуге болады. Тапсырмаңыз - дәл осыны істейтін үш функцияны жазу: бірлескен ықтималдықты есептейтін <code>joint_probability</code>, жаңадан есептелген бірлескен ықтималдықты бар үлестірімге қосатын <code>update</code> және ақырында барлық үлестірімнің қосындысы 1 болуын қамтамасыз ететін <code>normalize</code>.</p>
+        <h4>Талаптар</h4>
+        <p><code>joint_probability</code>, <code>update</code> және <code>normalize</code> функцияларын аяқтаңыз.</p>
+        <p><code>joint_probability</code> адамдар сөздігін, кімде геннің қанша көшірмесі бар және кім белгіні көрсетеді деген деректі кіріс ретінде алып, осы оқиғалардың бәрінің бірлескен ықтималдығын қайтаруы керек.</p>
+        <ul>
+          <li>Функция төрт мән алады: <code>people</code>, <code>one_gene</code>, <code>two_genes</code> және <code>have_trait</code>.
+            <ul>
+              <li><code>people</code> - «Түсіну» бөлімінде сипатталған адамдар сөздігі. Кілттері - аттар, мәндері - <code>mother</code> және <code>father</code> кілттері бар сөздіктер. <code>mother</code> мен <code>father</code> екеуі де бос (деректерде ата-ана туралы ақпарат жоқ) не екеуі де <code>people</code> сөздігіндегі басқа адамдарға сілтейді деп есептей аласыз.</li>
+              <li><code>one_gene</code> - геннің бір көшірмесі болу ықтималдығын есептегіміз келетін барлық адамның жиыны.</li>
+              <li><code>two_genes</code> - геннің екі көшірмесі болу ықтималдығын есептегіміз келетін барлық адамның жиыны.</li>
+              <li><code>have_trait</code> - белгіні көрсету ықтималдығын есептегіміз келетін барлық адамның жиыны.</li>
+              <li><code>one_gene</code> не <code>two_genes</code> жиынында жоқ кез келген адам үшін геннің нөл көшірмесі болу ықтималдығын, ал <code>have_trait</code> жиынында жоқ кез келген адам үшін белгіні көрсетпеу ықтималдығын есептейміз.</li>
+            </ul>
+          </li>
+          <li>Мысалы, отбасы Harry, James және Lily-ден тұрсын. Функцияны <code>one_gene = {"Harry"}</code>, <code>two_genes = {"James"}</code>, <code>trait = {"Harry", "James"}</code> деп шақырсақ, ол мына оқиғалардың бірлескен ықтималдығын есептеуі керек: Lily-де геннің нөл көшірмесі бар, Harry-де бір көшірме бар, James-те екі көшірме бар, Harry белгіні көрсетеді, James белгіні көрсетеді және Lily белгіні көрсетпейді.</li>
+          <li>Деректер жинағында ата-анасы жоқ адамдар үшін, олардың гені белгілі бір санда болу ықтималдығын табуда <code>PROBS["gene"]</code> үлестірімін қолданыңыз.</li>
+          <li>Ата-анасы деректерде бар адамдар үшін әр ата-ана өзінің екі генінің бірін балаға кездейсоқ береді және оның мутацияға ұшырау ықтималдығы <code>PROBS["mutation"]</code> (ген болудан қалу не ген болып қалу).</li>
+          <li>Адамның белгіні көрсету не көрсетпеу ықтималдығын есептеу үшін <code>PROBS["trait"]</code> үлестірімін қолданыңыз.</li>
+        </ul>
+        <p><code>update</code> функциясы жаңа бірлескен үлестірім ықтималдығын <code>probabilities</code> ішіндегі бар ықтималдық үлестірімдеріне қосады.</p>
+        <ul>
+          <li>Функция бес мән алады: <code>probabilities</code>, <code>one_gene</code>, <code>two_genes</code>, <code>have_trait</code> және <code>p</code>.
+            <ul>
+              <li><code>probabilities</code> - «Түсіну» бөлімінде сипатталған адамдар сөздігі. Әр адам <code>"gene"</code> үлестірімімен және <code>"trait"</code> үлестірімімен сәйкестендірілген.</li>
+              <li><code>one_gene</code> - ағымдағы бірлескен үлестірімде геннің бір көшірмесі бар адамдар жиыны.</li>
+              <li><code>two_genes</code> - ағымдағы бірлескен үлестірімде геннің екі көшірмесі бар адамдар жиыны.</li>
+              <li><code>have_trait</code> - ағымдағы бірлескен үлестірімде белгіні көрсететін адамдар жиыны.</li>
+              <li><code>p</code> - бірлескен үлестірімнің ықтималдығы.</li>
+            </ul>
+          </li>
+          <li><code>probabilities</code> ішіндегі әр <code>person</code> үшін функция <code>probabilities[person]["gene"]</code> және <code>probabilities[person]["trait"]</code> үлестірімдерін әр үлестірімдегі тиісті мәнге <code>p</code> қосу арқылы жаңартуы керек. Қалған мәндер өзгеріссіз қалады.</li>
+          <li>Мысалы, <code>"Harry"</code> бір мезгілде <code>two_genes</code> жиынында да, <code>have_trait</code> жиынында да болса, <code>p</code> мәні <code>probabilities["Harry"]["gene"][2]</code> мен <code>probabilities["Harry"]["trait"][True]</code> мәндеріне қосылады.</li>
+          <li>Функция ешқандай мән қайтармайды: тек <code>probabilities</code> сөздігін жаңартады.</li>
+        </ul>
+        <p><code>normalize</code> функциясы ықтималдықтар сөздігін әр ықтималдық үлестірімі нормаланатындай (қосындысы 1, салыстырмалы қатынасы бұрынғыдай) етіп жаңартады.</p>
+        <ul>
+          <li>Функция бір мән алады: <code>probabilities</code> («Түсіну» бөлімінде сипатталған адамдар сөздігі, әр адамға <code>"gene"</code> және <code>"trait"</code> үлестірімі сәйкес).</li>
+          <li><code>probabilities</code> ішіндегі әр адамның екі үлестірімі үшін де функция үлестірімді мәндерінің қосындысы 1 болатындай, ал салыстырмалы мәндері бұрынғыдай болатындай нормалауы керек.</li>
+          <li>Мысалы, <code>probabilities["Harry"]["trait"][True]</code> = <code>0.1</code>, <code>probabilities["Harry"]["trait"][False]</code> = <code>0.3</code> болса, функция бірінші мәнді <code>0.25</code>, екіншіні <code>0.75</code> етіп өзгертуі керек: сандардың қосындысы 1, ал екінші мән бұрынғыдай біріншіден үш есе үлкен.</li>
+          <li>Функция ешқандай мән қайтармайды: тек <code>probabilities</code> сөздігін жаңартады.</li>
+        </ul>
+        <p><code>heredity.py</code> ішінде талап етілген үш функциядан басқа ештеңені өзгертпеңіз. Қосымша функциялар жазуға және Python стандартты кітапханасының басқа модульдерін импорттауға болады. <code>numpy</code> не <code>pandas</code> қолдануға да болады, бірақ басқа үшінші тарап модульдерін қолдануға болмайды.</p>
+        <h4>Бірлескен ықтималдық мысалы</h4>
+        <p>Бірлескен ықтималдықты қалай есептеу керек екенін ойлауға көмектесу үшін төменде мысал бар. <code>people</code> мәні мынадай болсын:</p>
+<pre data-lang="python" data-norun><code class="language-python">{
+  'Harry': {'name': 'Harry', 'mother': 'Lily', 'father': 'James', 'trait': None},
+  'James': {'name': 'James', 'mother': None, 'father': None, 'trait': True},
+  'Lily': {'name': 'Lily', 'mother': None, 'father': None, 'trait': False}
+}</code></pre>
+        <p><code>joint_probability(people, {"Harry"}, {"James"}, {"James"})</code> есебін көрсетейік. Аргументтер бойынша <code>one_gene</code> - <code>{"Harry"}</code>, <code>two_genes</code> - <code>{"James"}</code>, <code>have_trait</code> - <code>{"James"}</code>. Демек, бұл мына оқиғалардың ықтималдығы: Lily-де геннің 0 көшірмесі бар және ол белгіні көрсетпейді, Harry-де 1 көшірме бар және белгіні көрсетпейді, James-те 2 көшірме бар және белгіні көрсетеді.</p>
+        <p>Lily-ден бастаймыз (адамдарды қарастыру реті маңызды емес, тек дұрыс мәндерді көбейтсек болды, себебі көбейту ауыстырымды). Lily-де геннің 0 көшірмесі болу ықтималдығы <code>0.96</code> (бұл <code>PROBS["gene"][0]</code>). Оның 0 көшірмесі болғанда белгіні көрсетпеу ықтималдығы <code>0.99</code> (бұл <code>PROBS["trait"][0][False]</code>). Олай болса, Lily-де 0 көшірме болып, белгі көрінбеу ықтималдығы <code>0.96 * 0.99 = 0.9504</code>.</p>
+        <p>Келесі James. James-те геннің 2 көшірмесі болу ықтималдығы <code>0.01</code> (бұл <code>PROBS["gene"][2]</code>). 2 көшірмесі болғанда белгіні көрсету ықтималдығы <code>0.65</code>. Демек, оның 2 көшірмесі болып, белгі көрінуі ықтималдығы <code>0.01 * 0.65 = 0.0065</code>.</p>
+        <p>Ақырында Harry. Harry-де геннің 1 көшірмесі болу ықтималдығы қанша? Бұл екі жолмен болуы мүмкін: не геннің көшірмесін анасынан алып, әкесінен алмайды, не әкесінен алып, анасынан алмайды. Анасы Lily-де геннің 0 көшірмесі бар, сондықтан Harry геннің көшірмесін анасынан тек мутация болса алады, яғни <code>0.01</code> ықтималдықпен (бұл <code>PROBS["mutation"]</code>), ал алмауының ықтималдығы <code>0.99</code>. Әкесі James-те геннің 2 көшірмесі бар, сондықтан Harry оны әкесінен <code>0.99</code> ықтималдықпен алады (бұл <code>1 - PROBS["mutation"]</code>), ал алмау ықтималдығы <code>0.01</code> (мутация). Екі жағдайды қосамыз: <code>0.99 * 0.99 + 0.01 * 0.01 = 0.9802</code> - Harry-де геннің 1 көшірмесі болу ықтималдығы.</p>
+        <p>Harry-де геннің 1 көшірмесі болса, оның белгіні көрсетпеу ықтималдығы <code>0.44</code> (бұл <code>PROBS["trait"][1][False]</code>). Олай болса, Harry-де 1 көшірме болып, белгі көрінбеу ықтималдығы <code>0.9802 * 0.44 = 0.431288</code>.</p>
+        <p>Ақырында бүкіл бірлескен ықтималдық - үш адамның осы мәндерін көбейту: <code>0.9504 * 0.0065 * 0.431288 = 0.0026643247488</code>.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Бірнеше оқиғаның бірлескен ықтималдығын табу үшін олардың ықтималдықтарын көбейтуге болатынын есте ұстаңыз. Бірақ кез келген бала үшін геннің белгілі санда болу ықтималдығы оның ата-аналарында қандай гендер бар екеніне <em>шартты</em> екенін ұмытпаңыз.</p></div></details>
+        <p><strong>Тексеру.</strong> Автотексеруші редакторға <code>PROBS</code> және үш функцияны жазуды күтеді, және ресми мысалды (<code>0.0026643247</code>), сондай-ақ екі ұрпақтан тұратын отбасыларды тексереді.</p>
+        <div class="autograder" data-check="py-heredity" data-src="ai/checks/week-2.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="ai2-heredity">
+            <li><input type="checkbox"> <span><code>joint_probability</code> ресми мысалда шамамен <code>0.0026643247</code> қайтарады.</span></li>
+            <li><input type="checkbox"> <span><code>update</code> <code>p</code> мәнін тек тиісті gene және trait мәндеріне қосады.</span></li>
+            <li><input type="checkbox"> <span><code>normalize</code> әр үлестірімнің қосындысын 1 етеді.</span></li>
+            <li><input type="checkbox"> <span><code>check50 ai50/projects/2024/x/heredity</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span><code>style50 heredity.py</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+        <p>Жібергенде: <code>submit50 ai50/projects/2024/x/heredity</code></p>
+      </div>
+
+      <nav class="pager">
+        <a href="week-1.html"><small>Алдыңғы</small>← 1-апта: Білім</a>
+        <a class="next" href="week-3.html"><small>Келесі</small>3-апта: Оңтайландыру →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 AI (CS50's Introduction to Artificial Intelligence with Python, Гарвард университеті, Brian Yu, David J. Malan) курсы 2-аптасының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

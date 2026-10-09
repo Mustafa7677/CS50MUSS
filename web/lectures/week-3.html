@@ -1,0 +1,928 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 Web 3-апта: Django - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 Web 3-апта: Django - CS50 қазақша">
+  <meta property="og:description" content="CS50 Web 3-апта: Django - HTTP, URL-дер, көріністер, шаблондар, формалар, CSRF және сессиялар. Алғашқы динамикалық веб-қосымшамызды жазамыз.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/web/lectures/week-3.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 Web 3-апта: Django - HTTP, URL-дер, көріністер, шаблондар, формалар, CSRF және сессиялар. Алғашқы динамикалық веб-қосымшамызды жазамыз.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#d4580c" data-n="3">
+        <div class="num">3-апта</div>
+        <h1>Django</h1>
+        <p>Осы кезге дейін біз тек қозғалмайтын беттер жасадық. Енді Python мен Django фреймворкінің көмегімен өзі өзгеретін, сұрауға қарай жауап беретін нағыз динамикалық веб-қосымша жазамыз: URL-дер, көріністер, шаблондар, формалар, CSRF және сессиялар.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/web/notes/3/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Өткен екі аптада HTML, CSS, Git және Python-ды үйрендік. Бүгін соның бәрін біріктіреміз: Python кодымыз HTML-ді «жазып» береді. Django кодын сайттың өзінде іске қосу мүмкін емес, өйткені ол сервер қажет етеді. Сондықтан Django мысалдарын <strong>өз компьютеріңізде</strong> қайталап көріңіз (<code>pip3 install Django</code>), ал бұл бетте HTTP сұрау-жауаптарын, шаблондардың нәтижесін және тазa Python бөліктерін көре аласыз. Апта соңында ресми <strong>Project 1: Wiki</strong> жобасы мен бірнеше ұсақ жаттығу бар.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="introduction">Кіріспе</h2>
+      <p>Қысқаша еске түсірейік. Біз HTML мен CSS арқылы қарапайым веб-беттер жасауды үйрендік. Git пен GitHub көмегімен код өзгерістерін қадағалап, басқалармен бірге жұмыс істеуді білдік. Python тілімен де таныстық. Бүгін осы үш нәрсенің ішінен Python-ды алып, оның <strong>Django</strong> деген фреймворкімен <strong>динамикалық</strong> қосымшалар жасаймыз.</p>
+
+      <h2 id="web-apps">Веб-қосымшалар</h2>
+      <p>Осы уақытқа дейін жазған барлық беттеріміз <strong>статикалық</strong> (<span class="term-en">static</span>) болды. Бұл дегеніміз, бетті қашан ашсақ та, ол дәл бұрынғыдай көрінеді. Ал күнделікті кіретін сайттарды ойлаңызшы. New York Times не Facebook-ке бүгін кірсеңіз бір нәрсе көресіз, ертең кірсеңіз мүлде басқа нәрсе көресіз. Бейнелеп айтсақ, статикалық сайт - қабырғаға ілінген плакат, ал динамикалық сайт - күнде жаңарып тұратын электронды табло.</p>
+      <p>Осындай үлкен сайттарда қызметкерлер әр өзгеріс болған сайын үлкен HTML файлын қолмен өңдеп отырады деп елестетуге бола ма? Әрине, жоқ. Міне, осы жерде <strong>динамикалық</strong> (<span class="term-en">dynamic</span>) веб-сайттар көмекке келеді. Динамикалық сайт дегеніміз - бағдарламалау тілін (мысалы, Python) пайдаланып, HTML мен CSS файлдарын сол сәтте <em>өзі жасап шығаратын</em> сайт. Бүгінгі лекцияда алғашқы динамикалық қосымшаларымызды жасауды үйренеміз.</p>
+
+      <h2 id="http">HTTP</h2>
+      <p>Алдымен бір мәселені түсінейік: браузер мен сайт бір-бірімен қалай сөйлеседі? Әңгіме дұрыс жүру үшін екі жақ та бірдей «тілде» сөйлесуі керек. Ондай ортақ тіл бар, оны <strong>HTTP</strong> дейді. Ол <em>HyperText Transfer Protocol</em> дегеннің қысқартылған түрі, қазақша айтсақ, гипермәтінді жіберу <strong>хаттамасы</strong> (<span class="term-en">protocol</span>). Хаттама дегенміз - екі жақ хабарламаны қандай форматта жіберуге келіскен ереже. Телефонмен сөйлескенде де алдымен «алло» деп амандасасыз ғой, бұл да соның сияқты.</p>
+      <p>Интернеттегі ақпарат әдетте екі жақтың арасында алмасады: <strong>клиент</strong> (<span class="term-en">client</span>), яғни сіз бен сіздің браузеріңіз, және <strong>сервер</strong> (<span class="term-en">server</span>), яғни сайтты сақтап тұрған компьютер. Асхананы елестетіңіз: клиент - тапсырыс беретін қонақ, сервер - ас үй.</p>
+            <svg viewBox="0 0 640 285" role="img" aria-label="HTTP: клиент серверге GET сұрауын жібереді, сервер 200 OK жауабын қайтарады" style="display:block;width:100%;max-width:640px;height:auto;margin:18px auto"><defs><marker id="ah1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="ah2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="15" y="20" width="130" height="54" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="38.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">Клиент</text><text x="80.0" y="55.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">(браузер)</text><rect x="495" y="20" width="130" height="54" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="560.0" y="38.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">Сервер</text><text x="560.0" y="55.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">(сайт)</text><line x1="80" y1="74" x2="80" y2="270" style="stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4"/><line x1="560" y1="74" x2="560" y2="270" style="stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 4"/><polyline points="82,110 556,110" style="stroke:var(--accent);stroke-width:1.8;fill:none" marker-end="url(#ah1)"/><text x="320" y="94" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font,sans-serif);font-size:13px;font-weight:600">Сұрау (request)</text><text x="320" y="130" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:600">GET / HTTP/1.1</text><text x="320" y="148" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:600">Host: www.example.com</text><polyline points="558,210 84,210" style="stroke:#2fbf71;stroke-width:1.8;fill:none" marker-end="url(#ah2)"/><text x="320" y="194" text-anchor="middle" dominant-baseline="central" style="fill:#2fbf71;font-family:var(--font,sans-serif);font-size:13px;font-weight:600">Жауап (response)</text><text x="320" y="230" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:600">HTTP/1.1 200 OK</text><text x="320" y="248" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:600">Content-Type: text/html</text></svg>
+      <p>Бұл хаттамада клиент серверге <strong>сұрау</strong> (<span class="term-en">request</span>) жібереді. Ол шамамен мынадай көрінеді:</p>
+<pre class="terminal"><code class="language-plaintext">GET / HTTP/1.1
+Host: www.example.com
+...</code></pre>
+      <p>Мұндағы <code>GET</code> - сұрау түрі (бұл курста біз үш түрімен танысамыз, қазір екеуін көреміз: <code>GET</code> және <code>POST</code>). <code>/</code> белгісі әдетте сайттың басты бетін сұрап тұрғанымызды білдіреді. Ал үш нүкте сұраудың ішінде басқа да ақпарат болуы мүмкін екенін көрсетеді.</p>
+      <p>Сұрауды алған соң сервер HTTP <strong>жауабын</strong> (<span class="term-en">response</span>) қайтарады. Ол шамамен былай болады:</p>
+<pre class="terminal"><code class="language-plaintext">HTTP/1.1 200 OK
+Content-Type: text/html
+...</code></pre>
+      <p>Жауаптың ішінде HTTP нұсқасы, <strong>күй коды</strong> (<span class="term-en">status code</span>; 200 дегеніміз «бәрі жақсы, OK»), мазмұнның сипаттамасы және тағы басқа қосымша ақпарат болады.</p>
+      <p>200 - күй кодтарының тек біреуі. Кейбірін сіз бұрын-ақ көрген шығарсыз:</p>
+      <table>
+        <thead><tr><th>Код</th><th>Мағынасы</th></tr></thead>
+        <tbody>
+          <tr><td><code>200 OK</code></td><td>Бәрі жақсы: сұрау орындалды</td></tr>
+          <tr><td><code>301 Moved Permanently</code></td><td>Бет басқа мекенжайға біржола көшті</td></tr>
+          <tr><td><code>403 Forbidden</code></td><td>Бұл бетке кіруге рұқсатыңыз жоқ</td></tr>
+          <tr><td><code>404 Not Found</code></td><td>Сұралған бет табылмады</td></tr>
+          <tr><td><code>500 Internal Server Error</code></td><td>Серверде бірдеңе бұзылды (көбіне код қатесі)</td></tr>
+        </tbody>
+      </table>
+      <details class="think">
+        <summary>Ойланып көріңіз: Django-да өз қатеңіз болса, браузер қандай код алады?</summary>
+        <div class="details-body"><p>Көрініс (view) функциясындағы Python қатесі серверді құлатпайды, бірақ браузер <code>500</code> алады. Ал мекенжай жазылмаған болса - <code>404</code>. Лекцияда екеуін де көреміз. Ұқсас жағдайға дайын болыңыз: 4xx кодтары әдетте клиенттің қатесі (қате мекенжай), 5xx кодтары сервердің қатесі.</p></div>
+      </details>
+
+      <h2 id="django">Django</h2>
+      <p><a href="https://www.djangoproject.com/" target="_blank" rel="noopener">Django</a> - Python негізіндегі веб-<strong>фреймворк</strong> (<span class="term-en">framework</span>). Ол арқылы HTML мен CSS-ті динамикалық түрде жасайтын Python коды жаза аламыз. Фреймворктің басты артықшылығы мынау: көп код бізге дайын тұр, оны қайтадан жазудың қажеті жоқ. Үй салғанда кірпішті өзіміз күйдірмейтініміз сияқты.</p>
+      <p>Бастау үшін Django-ны орнату керек. Ол үшін <code>pip</code> болуы тиіс (<a href="https://pip.pypa.io/en/stable/installing/" target="_blank" rel="noopener">орнату нұсқаулығы</a>). Pip болған соң терминалға мынаны жазамыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ pip3 install Django</code></pre>
+      <p>Django орнаған соң жаңа <strong>жоба</strong> (<span class="term-en">project</span>) жасау қадамдарынан өтеміз:</p>
+      <ol>
+        <li>Терминалда <code>django-admin startproject PROJECT_NAME</code> командасын жазамыз. Ол жобаның бастапқы файлдарын жасап береді.</li>
+        <li><code>cd PROJECT_NAME</code> деп жаңа жоба қалтасына кіреміз.</li>
+        <li>Қалтаны өзіңіз ұнататын редакторда ашамыз. Бірнеше файл дайын тұрғанын көресіз. Көбіне қазір тимейміз, бірақ үшеуі басынан бастап маңызды:
+          <ul>
+            <li><code>manage.py</code> - терминалдан команда орындау үшін қолданамыз. Оны өзгертпейміз, бірақ жиі шақырамыз.</li>
+            <li><code>settings.py</code> - жобаның маңызды баптаулары. Әдепкі мәндері бар, бірақ уақыты келгенде кейбірін өзгертеміз.</li>
+            <li><code>urls.py</code> - пайдаланушы белгілі бір URL-ге барғанда оны қайда бағыттау керегін көрсететін нұсқаулар.</li>
+          </ul>
+        </li>
+        <li>Жобаны <code>python manage.py runserver</code> командасымен іске қосамыз. Бұл <strong>әзірлеу сервері</strong> (<span class="term-en">development server</span>) ашады, терминалда көрсетілген URL арқылы кіре аласыз. Сервер сіздің компьютеріңізде ғана жұмыс істейді, яғни басқа адамдар сіздің сайтыңызды көре алмайды. Алдымен Django-ның әдепкі «қош келдіңіз» беті шығады.</li>
+        <li>Келесі қадам - <strong>қосымша</strong> (<span class="term-en">application</span>) жасау. Django жобасы бір не бірнеше қосымшаға бөлінеді. Біздің жобалардың көбіне бір қосымша жеткілікті, ал үлкен сайттар сайтты бірнеше қосымшаға бөле алады. Қосымша жасау үшін: <code>python manage.py startapp APP_NAME</code>. Ол қосымша қалталар мен файлдар жасайды, олардың ішінде жақында керек болатын <code>views.py</code> бар.</li>
+        <li>Жаңа қосымшаны жобаға <em>орнату</em> керек. <code>settings.py</code> ашып, <code>INSTALLED_APPS</code> тізіміне дейін төмен түсіп, қосымшамыздың атын сол тізімге қосамыз.</li>
+      </ol>
+<pre data-lang="python" data-norun><code class="language-python">INSTALLED_APPS = [
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
+    'hello',
+]</code></pre>
+      <p>Жоба құрылымын былай елестетуге болады:</p>
+<pre class="terminal"><code class="language-plaintext">$ django-admin startproject myproject
+$ cd myproject
+$ python manage.py startapp hello</code></pre>
+
+      <h2 id="routes">Маршруттар</h2>
+      <p>Енді қосымшамызды тірілтейік. Бірінші, <code>views.py</code> файлына барамыз. Онда бірнеше <strong>көрініс</strong> (<span class="term-en">view</span>) болады. Көріністі әзірге «пайдаланушы көргісі келетін бір бет» деп түсінсек болады. Алғашқы көрінісімізді жазу үшін <code>request</code> қабылдайтын функция жазамыз. Әзірге ол жай <code>HttpResponse</code> қайтарсын. <code>HttpResponse</code> - өте қарапайым жауап: күй коды 200 және браузерде көрсетілетін мәтін жолы. Ол үшін <code>from django.http import HttpResponse</code> импорттау керек. Файл былай болады:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+
+def index(request):
+    return HttpResponse("Hello, world!")</code></pre>
+      <p>Енді осы көрініс белгілі бір URL-ге байланысуы керек. Ол үшін <code>views.py</code> жатқан қалтада тағы бір <code>urls.py</code> файлын жасаймыз. Бүкіл жобаның <code>urls.py</code> файлы бар екені рас, бірақ әр қосымшаға өз файлын жасаған дұрыс: бір үлкен қоймаға бәрін тықпай, әр бөлімге өз сөресін береміз.</p>
+      <p>Жаңа <code>urls.py</code> ішінде пайдаланушы кіре алатын URL-дердің тізімін жасаймыз:</p>
+      <ol>
+        <li>Алдымен екі импорт жасаймыз: <code>from django.urls import path</code> (URL-дерді бағыттау мүмкіндігін береді) және <code>from . import views</code> (<code>views.py</code> ішіндегі функцияларды әкеледі).</li>
+        <li><code>urlpatterns</code> деген тізім жасаймыз.</li>
+        <li>Қалаған әр URL үшін тізімге <code>path</code> функциясын шақыратын элемент қосамыз. Оның екі не үш аргументі болады: URL жолын білдіретін жол, сол URL-ге кірілгенде шақырылатын <code>views.py</code> функциясы және қосымша, яғни жолдың аты: <code>name="something"</code> түрінде.</li>
+      </ol>
+      <p>Біздің қарапайым қосымша қазір былай көрінеді:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.index, name="index")
+]</code></pre>
+      <p>Қосымшаға арналған <code>urls.py</code> дайын. Енді бүкіл жобаға арналған <code>urls.py</code> файлын өзгертеміз. Онда <code>admin</code> деген жол бұрыннан бар, оған кейінгі лекцияларда оралады. Біз жаңа қосымша үшін тағы бір жол қосамыз. Бұл жолы екінші аргумент ретінде <code>views.py</code> функциясын емес, қосымшамыздың <code>urls.py</code> файлындағы <em>барлық</em> жолдарды қосып жіберетін нәрсені береміз. Ол үшін <code>include("APP_NAME.urls")</code> деп жазамыз. <code>include</code> функциясын да <code>django.urls</code> модулінен импорттау керек:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.contrib import admin
+from django.urls import path, include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('hello/', include("hello.urls"))
+]</code></pre>
+      <p>Осылайша, пайдаланушы біздің сайтқа кіріп, мекенжай жолағына <code>/hello</code> қосқанда, ол жаңа қосымшамыздың ішіндегі жолдарға бағытталады деп келістік.</p>
+      <p>Енді <code>python manage.py runserver</code> арқылы қосымшаны іске қосып, берілген URL-ге кірсем, мынадай <strong>404</strong> бетін көремін. Неге? Себебі біз тек <code>localhost:8000/hello</code> URL-ін анықтадық, ал соңына ештеңе қосылмаған <code>localhost:8000</code> үшін ештеңе жазған жоқпыз. Ал мекенжай жолағына <code>/hello</code> қоссам, «Hello, world!» жазуын көремін. Жетістікке жеттік! Енді не болып жатқанын қадам-қадаммен талдайық:</p>
+            <svg viewBox="0 0 560 420" role="img" aria-label="Django сұрауды жобаның urls.py, содан соң қосымшаның urls.py арқылы views.py функциясына жеткізеді" style="display:block;width:100%;max-width:560px;height:auto;margin:18px auto"><defs><marker id="ar1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="20" y="10" width="360" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="200.0" y="30.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">Браузер: localhost:8000/hello/</text><polyline points="200,50 200,98" style="stroke:var(--accent);stroke-width:1.8;fill:none" marker-end="url(#ar1)"/><rect x="20" y="100" width="360" height="52" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="200.0" y="117.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">myproject/urls.py</text><text x="200.0" y="134.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">path(&#x27;hello/&#x27;, include(&quot;hello.urls&quot;))</text><polyline points="200,152 200,188" style="stroke:var(--accent);stroke-width:1.8;fill:none" marker-end="url(#ar1)"/><rect x="20" y="190" width="360" height="52" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="200.0" y="207.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">hello/urls.py</text><text x="200.0" y="224.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">path(&quot;&quot;, views.index)</text><polyline points="200,242 200,278" style="stroke:var(--accent);stroke-width:1.8;fill:none" marker-end="url(#ar1)"/><rect x="20" y="280" width="360" height="52" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="200.0" y="297.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">hello/views.py</text><text x="200.0" y="314.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">index(request)</text><polyline points="200,332 200,368" style="stroke:var(--accent);stroke-width:1.8;fill:none" marker-end="url(#ar1)"/><rect x="20" y="370" width="360" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="200.0" y="390.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">HttpResponse(&quot;Hello, world!&quot;)</text><text x="396" y="78" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px;font-weight:600">«hello/» алынды</text><text x="396" y="168" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px;font-weight:600">қалғаны: «»</text><text x="396" y="258" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px;font-weight:600">жол табылды</text><text x="396" y="348" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px;font-weight:600">жауап қайтты</text></svg>
+      <ol>
+        <li><code>localhost:8000/hello/</code> мекенжайына кіргенде Django базалық URL-ден (<code>localhost:8000/</code>) кейін не тұрғанына қарайды. Ол жобаның <code>urls.py</code> файлына барып, <code>hello</code> жолына сәйкес келетін үлгіні іздейді.</li>
+        <li>Ол үлгіні табады, өйткені біз оны анықтап қойғанбыз. Сол жол кездескенде қосымшамыздың <code>urls.py</code> файлын <code>include</code> ету керектігін көреді.</li>
+        <li>Содан кейін Django URL-дің қайта бағыттауға қолданылып қойған бөлігін (бұл жағдайда <code>localhost:8000/hello/</code>, яғни бәрін) тастап, қалған бөлігіне сәйкес келетін үлгіні екінші <code>urls.py</code> ішінен іздейді.</li>
+        <li>Біздің жалғыз жолымыз (<code>""</code>) қалған бөлікке сәйкес келеді, сондықтан Django бізді сол жолға байланған <code>views.py</code> функциясына жібереді.</li>
+        <li>Соңында Django <code>views.py</code> ішіндегі функцияны орындап, нәтижесін (<code>HttpResponse("Hello, world!")</code>) браузерімізге қайтарады.</li>
+      </ol>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>path('hello/', ...)</code> деп жазсақ, неге ішкі <code>urls.py</code> ішінде <code>"hello/"</code> қайталамаймыз?</summary>
+        <div class="details-body"><p>Себебі Django жоба деңгейінде <code>hello/</code> бөлігін «жеп қойып», қалған бөлігін ғана қосымшаға береді. Қосымшаның ішіндегі <code>path("", ...)</code> дегеніміз «hello/-дан кейін ештеңе жоқ» дегенді білдіреді. Сондықтан қосымшаның <code>urls.py</code> файлы өз префиксін білмейді, оны кейін басқа жерге оңай көшіре аламыз.</p></div>
+      </details>
+      <p>Қаласақ, <code>views.py</code> ішіндегі <code>index</code> функциясын кез келген нәрсе қайтаратындай етіп өзгерте аламыз. Функцияның ішінде айнымалыларды сақтап, есептеулер жасап, содан кейін ғана нәтижені қайтаруға да болады.</p>
+
+      <h3 id="more-views">Бірнеше көрініс</h3>
+      <p>Енді қосымшамызға бір емес, бірнеше көрініс қосып көрейік. Брайанға да, Дэвидке де сәлем айтатын беттер жасаймыз. Алдыңғы қадамдарды қайталаймыз.</p>
+      <p><code>views.py</code> ішінде:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+
+def index(request):
+    return HttpResponse("Hello, world!")
+
+def brian(request):
+    return HttpResponse("Hello, Brian!")
+
+def david(request):
+    return HttpResponse("Hello, David!")</code></pre>
+      <p>Қосымшаның <code>urls.py</code> ішінде:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.index, name="index"),
+    path("brian", views.brian, name="brian"),
+    path("david", views.david, name="david")
+]</code></pre>
+      <p>Енді <code>localhost:8000/hello</code> бұрынғыдай «Hello, world!» көрсетеді, ал соңына <code>brian</code> не <code>david</code> қоссақ, басқа беттер ашылады: «Hello, Brian!» және «Hello, David!».</p>
+
+      <h3 id="parameters">URL-дегі параметрлер</h3>
+      <p>Көп сайттардың мекенжайы URL-ге жазылған нәрсеге байланысты өзгереді. Мысалы, <a href="https://twitter.com/cs50" target="_blank" rel="noopener">twitter.com/cs50</a> CS50-нің барлық жазбаларын көрсетеді, ал <a href="https://github.com/cs50" target="_blank" rel="noopener">github.com/cs50</a> CS50-нің GitHub бетіне апарады. Өз ашық репозиторийлеріңізді де <code>github.com/СІЗДІҢ_АТЫҢЫЗ</code> арқылы таба аласыз.</p>
+      <p>Ойланып қарасақ, GitHub пен Twitter-де әр пайдаланушыға арнап бөлек URL жолын қолмен жазбаған болар. Сондықтан біз де анағұрлым икемді жол жасауды үйренейік. Алдымен <code>views.py</code> ішіне жалпы <code>greet</code> функциясын қосамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">def greet(request, name):
+    return HttpResponse(f"Hello, {name}!")</code></pre>
+      <p>Бұл функция <code>request</code> ғана емес, пайдаланушының атын білдіретін қосымша аргумент та қабылдайды да, сол атқа байланысты жауап қайтарады. Енді <code>urls.py</code> ішінде икемді жол жасаймыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">path("&lt;str:name&gt;", views.greet, name="greet")</code></pre>
+      <p>Синтаксис жаңа көрінеді, бірақ мағынасы қарапайым: енді URL-де нақты сөз немесе ат іздемейміз, пайдаланушы жазатын <em>кез келген жолды</em> (<code>str</code>) қабылдаймыз да, оны <code>name</code> деген атпен көріністің аргументі ретінде береміз. Енді <code>/hello/harry</code> не <code>/hello/connor</code> деп көріңіз: сайт жұмыс істейді.</p>
+      <p>Мұны сәл әдемілеуге болады: <code>greet</code> функциясына Python-ның бас әріпке түрлендіретін <code>capitalize</code> функциясын қосамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">def greet(request, name):
+    return HttpResponse(f"Hello, {name.capitalize()}!")</code></pre>
+      <p>Енді «harry» деп жазсақ та, жауап «Hello, Harry!» болады. Бұл Python-да істей алатын кез келген нәрсені Django-да нәтижені қайтармай тұрып қолдана алатынымызды көрсетеді. Мысалы, дәл осы өрнекті мына жерде өзіңіз де сынап көре аласыз (бұл таза Python):</p>
+<pre data-lang="python"><code class="language-python">name = "harry"
+print(f"Hello, {name.capitalize()}!")</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: URL-дер тізімінде <code>path("brian", ...)</code> пен <code>path("&lt;str:name&gt;", ...)</code> қатар тұрса, <code>/hello/brian</code> қайсысына түседі?</summary>
+        <div class="details-body"><p>Django жолдарды <em>жоғарыдан төмен</em> тексереді де, бірінші сәйкес келгенін алады. <code>brian</code> жолы жоғары тұрса, ол жеңеді. Ал <code>&lt;str:name&gt;</code> бірінші тұрса, ол «brian» сөзін де «кез келген жол» ретінде ұстап алар еді. Сондықтан нақты жолдарды жалпыларынан бұрын жазады. Төмендегі жаттығуда осы мінезді өзіңіз кодтап көресіз.</p></div>
+      </details>
+
+      <h2 id="templates">Шаблондар</h2>
+      <p>Осы уақытқа дейінгі HTTP жауаптарымыздың бәрі жай мәтін еді. Бірақ оған кез келген HTML элементтерін де қоса аламыз! Мысалы, <code>index</code> функциясы жай мәтіннің орнына көк тақырып қайтарсын:</p>
+<pre data-lang="python" data-norun><code class="language-python">def index(request):
+    return HttpResponse("&lt;h1 style=\"color:blue\"&gt;Hello, world!&lt;/h1&gt;")</code></pre>
+      <p>Браузер мұны нағыз HTML ретінде түсініп, көк «Hello, world!» тақырыбын көрсетеді. Мынау сол жауаптың нәтижесі:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;h1 style="color:blue"&gt;Hello, world!&lt;/h1&gt;</code></pre>
+      <p>Бірақ бүкіл HTML бетін <code>views.py</code> ішінде жол ретінде жазу өте жалықтырарлық болар еді. Және бұл жаман дизайн: жобаның әр бөлігін мүмкіндігінше бөлек файлдарда ұстағанымыз жөн. Міне, сондықтан <a href="https://docs.djangoproject.com/en/4.0/topics/templates/" target="_blank" rel="noopener">Django шаблондарымен</a> (<span class="term-en">templates</span>) таныс боламыз: олар HTML мен CSS-ті бөлек файлдарда жазып, Django арқылы көрсетуге мүмкіндік береді. Шаблонды көрсетудің синтаксисі мынадай:</p>
+<pre data-lang="python" data-norun><code class="language-python">def index(request):
+    return render(request, "hello/index.html")</code></pre>
+      <p>Енді шаблонның өзін жасау керек. Қосымшамыздың ішінде <code>templates</code> деген қалта, оның ішінде <code>hello</code> (немесе қосымшаңыздың аты) деген қалта, ал соның ішінде <code>index.html</code> файлы тұруы керек:</p>
+<pre class="terminal"><code class="language-plaintext">hello/
+    templates/
+        hello/
+            index.html</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: неге <code>hello</code> деген қалта екі рет қайталанады?</summary>
+        <div class="details-body"><p>Django барлық қосымшалардың <code>templates</code> қалталарын бір жерге жинап қарайды. Екі қосымшада да <code>index.html</code> болса, Django қайсысын алу керегін шатастырып алуы мүмкін. Ішкі қалта қосымшаның атымен аталып, шаблондарды «аты бар» етеді: <code>hello/index.html</code> мен <code>newyear/index.html</code> бір-біріне кедергі келтірмейді.</p></div>
+      </details>
+      <p>Жаңа файлға қалаған HTML-дi жазамыз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Hello&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello, World!&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Енді қосымшамыздың басты бетіне кірсек, тақырып пен беттің атауы жаңарғанын көреміз.</p>
+      <p>Статикалық HTML беттерін жазумен қатар, <a href="https://docs.djangoproject.com/en/4.0/ref/templates/language/" target="_blank" rel="noopener">Django шаблон тілін</a> пайдаланып, HTML файлдарының мазмұнын кірген URL-ге қарай өзгерте аламыз. Жоғарыдағы <code>greet</code> функциясын өзгертіп көрейік:</p>
+<pre data-lang="python" data-norun><code class="language-python">def greet(request, name):
+    return render(request, "hello/greet.html", {
+        "name": name.capitalize()
+    })</code></pre>
+      <p>Назар аударыңыз: <code>render</code> функциясына үшінші аргумент берілді. Оны <strong>контекст</strong> (<span class="term-en">context</span>) дейді. Контекстке HTML файлдарының ішінде қолжетімді болуын қалайтын ақпаратты саламыз. Контекст Python <strong>сөздігі</strong> (<span class="term-en">dictionary</span>) түрінде беріледі. Енді <code>greet.html</code> файлын жасаймыз:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Hello&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello, {{ name }}!&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Жаңа синтаксисті байқадыңыз: қос бұйра жақша. Ол <code>context</code> аргументінде берген айнымалыларымызды HTML ішінде қолдануға мүмкіндік береді. Енді <code>/hello/harry</code> не <code>/hello/connor</code> бетіне кірсек, тақырыпта сәйкес ат шығады. Қос жақшаның шаблонды толтыруын мына үлгі арқылы елестетіңіз: Django <code>{{ name }}</code> орнына «Harry» мәнін қояды да, дайын HTML-ді браузерге жібереді:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Hello&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello, Harry!&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Біз HTML шаблондарын берген контекстімізге қарай өзгерте алатынымызды көрдік. Бірақ Django шаблон тілі бұдан да қуатты. Тағы бірнеше мүмкіндігін қарастырайық.</p>
+
+      <h3 id="conditionals">Шарттар</h3>
+      <p>Кейде сайттың мазмұны белгілі бір шартқа байланысты өзгергенін қалаймыз. Мысалы, <a href="https://www.isitchristmas.com" target="_blank" rel="noopener">isitchristmas.com</a> сайтына кірсеңіз, көбіне «NO» деген бет көресіз. Бірақ Рождество күні сайт «YES» деп жауап береді. Осыған ұқсас бірдеңе жасайық: бүгін Жаңа жыл ма, жоқ па, соны тексеретін қосымша. Қосымшаны қалай жасайтынымызды еске түсіріп, жаңа қосымша жасаймыз:</p>
+      <ol>
+        <li>Терминалда <code>python manage.py startapp newyear</code> орындаймыз.</li>
+        <li><code>settings.py</code> ішіндегі <code>INSTALLED_APPS</code> тізіміне «newyear» қосамыз.</li>
+        <li>Жобаның <code>urls.py</code> файлына <code>hello</code> қосымшасындағыдай жол қосамыз:</li>
+      </ol>
+<pre data-lang="python" data-norun><code class="language-python">path('newyear/', include("newyear.urls"))</code></pre>
+      <ol start="4">
+        <li>Жаңа қосымша қалтасында тағы бір <code>urls.py</code> жасап, оған <code>hello</code> ішіндегі <code>index</code> жолына ұқсас жол қосамыз:</li>
+      </ol>
+<pre data-lang="python" data-norun><code class="language-python">from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.index, name="index"),
+]</code></pre>
+      <ol start="5">
+        <li><code>views.py</code> ішінде <code>index</code> функциясын жасаймыз.</li>
+      </ol>
+      <p>Жаңа қосымшамыз дайын. Енді бүгін Жаңа жыл ма, соны қалай білеміз? Ол үшін Python-ның <a href="https://docs.python.org/3/library/datetime.html" target="_blank" rel="noopener">datetime</a> модулін импорттаймыз. Модуль қалай жұмыс істейтінін түсіну үшін <a href="https://docs.python.org/3/library/datetime.html" target="_blank" rel="noopener">құжаттаманы</a> қарап, Django-дан тыс Python интерпретаторында сынап көруге болады.</p>
+      <p><strong>Python интерпретаторы</strong> (<span class="term-en">Python interpreter</span>) - шағын Python кодтарын сынау құралы. Іске қосу үшін терминалға <code>python</code> деп жазамыз, содан кейін Python кодын тікелей терминалға теріп, бірден орындай аламыз. Аяқтағанда <code>exit()</code> деп шығамыз.</p>
+<pre class="terminal"><code class="language-plaintext">$ python
+&gt;&gt;&gt; import datetime
+&gt;&gt;&gt; now = datetime.datetime.now()
+&gt;&gt;&gt; now.day
+9
+&gt;&gt;&gt; now.month
+10
+&gt;&gt;&gt; exit()</code></pre>
+      <p>(Сандар сіздің бүгінгі күніңізге байланысты болады.) Осы біліммен бүгін дәл Жаңа жыл екенін ғана ақиқат (<code>True</code>) етіп бағалайтын логикалық өрнек жаза аламыз: <code>now.day == 1 and now.month == 1</code>. Мұны мына жерде жүргізіп көріңіз (бұл таза Python):</p>
+<pre data-lang="python"><code class="language-python">import datetime
+
+now = datetime.datetime.now()
+print(now.month == 1 and now.day == 1)</code></pre>
+      <p>Бүгін Жаңа жыл екенін тексеретін өрнегіміз бар, ендi <code>views.py</code> ішіндегі <code>index</code> функциясын жаңартамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">def index(request):
+    now = datetime.datetime.now()
+    return render(request, "newyear/index.html", {
+        "newyear": now.month == 1 and now.day == 1
+    })</code></pre>
+      <p>(Файлдың басында <code>import datetime</code> болуын ұмытпаңыз.) Енді <code>index.html</code> шаблонын жасаймыз. Тағы да <code>templates</code> қалтасын, оның ішінде <code>newyear</code> қалтасын, ал соның ішінде <code>index.html</code> файлын жасаймыз. Файлдың мазмұны шамамен мынадай:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Is it New Year's?&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        {% if newyear %}
+            &lt;h1&gt;YES&lt;/h1&gt;
+        {% else %}
+            &lt;h1&gt;NO&lt;/h1&gt;
+        {% endif %}
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Назар аударыңыз: HTML файлдарына логика қосқымыз келсе, логикалық операторды <code>{%</code> және <code>%}</code> белгілерімен қоршаймыз. Және Django шаблон тілі <code>if-else</code> блогы аяқталғанын көрсететін жабушы тегті (<code>{% endif %}</code>) міндетті түрде талап етеді. Енді бетті ашсақ, «NO» шығады.</p>
+      <p>Сахна артында не болып жатқанын жақсырақ түсіну үшін бетті «Inspect element» арқылы тексеріп көрейік. Браузерге жіберілген HTML-де тек <strong>NO</strong> тақырыбы бар екенін көреміз. Яғни Django біз жазған HTML шаблонын алып, одан жаңа HTML файлын жасап, соны браузерге жіберді. Шаблонның шартты тармағы браузерге ешқашан жетпейді. Мынау браузер алатын нақты нәтиже:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!-- Бүгін Жаңа жыл емес: браузер дәл осыны алады --&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Is it New Year's?&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;NO&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Енді «алдап көрейік»: шартты әрдайым ақиқат етіп қойсақ, керісінше тармақ шығады:</p>
+<pre data-lang="python" data-norun><code class="language-python">def index(request):
+    now = datetime.datetime.now()
+    return render(request, "newyear/index.html", {
+        "newyear": True
+    })</code></pre>
+      <p>Бұл жолы бет «YES» көрсетеді де, «Inspect element» ішінде енді тек <strong>YES</strong> тақырыбы тұрғанын көреміз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: браузерге <code>{% if %}</code> тегі жете ме?</summary>
+        <div class="details-body"><p>Жоқ. Шаблонды Django серверде өңдейді, сондықтан браузер дайын HTML ғана алады, оның ішінде <code>{% if %}</code> да, <code>{{ name }}</code> да болмайды. Бұл динамикалық сайттың мәні: сервер бетті сол сәтте құрастырып береді.</p></div>
+      </details>
+
+      <h3 id="styling">Стильдер</h3>
+      <p>CSS файлын қосқымыз келсе, оны <strong>статикалық</strong> (<span class="term-en">static</span>) файл деп атаймыз, өйткені ол өзгермейді. Алдымен қосымшаның ішінде <code>static</code> деген қалта, соның ішінде <code>newyear</code> қалтасы, ал оның ішінде <code>styles.css</code> файлын жасаймыз:</p>
+<pre class="terminal"><code class="language-plaintext">newyear/
+    static/
+        newyear/
+            styles.css
+    templates/
+        newyear/
+            index.html</code></pre>
+      <p>Бұл файлға бірінші лекциядағыдай кез келген стильді жаза аламыз:</p>
+<pre data-lang="css" data-preview><code class="language-css">h1 {
+    font-family: sans-serif;
+    font-size: 90px;
+    text-align: center;
+}</code></pre>
+      <p>Бұл стильді HTML файлымызға қосу үшін шаблонның басына <code>{% load static %}</code> жолын қоямыз. Ол Django-ға «<code>static</code> қалтасындағы файлдарға қол жеткізгім келеді» деп хабарлайды. Сосын стиль кестесіне сілтемені бұрынғыдай қолмен жазбай, Django-ға тән синтаксиспен береміз:</p>
+<pre data-lang="html"><code class="language-html">{% load static %}
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Is it New Year's?&lt;/title&gt;
+        &lt;link rel="stylesheet" href="{% static 'newyear/styles.css' %}"&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        {% if newyear %}
+            &lt;h1&gt;YES&lt;/h1&gt;
+        {% else %}
+            &lt;h1&gt;NO&lt;/h1&gt;
+        {% endif %}
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Серверді қайта іске қоссақ, стиль өзгерістері қолданылғанын көреміз: «NO» енді үлкен әрі ортада тұр.</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;style&gt;
+h1 { font-family: sans-serif; font-size: 90px; text-align: center; }
+&lt;/style&gt;
+&lt;h1&gt;NO&lt;/h1&gt;</code></pre>
+      <div class="callout note">
+        <span class="callout-title">Серверді қайта қосу</span>
+        <p>Жаңа статикалық файл қосқанда әзірлеу серверін тоқтатып (<code>Ctrl+C</code>), қайта іске қосу (<code>python manage.py runserver</code>) керек болуы мүмкін. Лекцияда да дәл солай жасалды.</p>
+      </div>
+
+      <h2 id="tasks">Тапсырмалар тізімі</h2>
+      <p>Үйренгенімізді шағын жобаға қолданайық: <strong>істер тізімін</strong> (TODO list) жасаймыз. Тағы да жаңа қосымшадан бастаймыз:</p>
+      <ol>
+        <li>Терминалда <code>python manage.py startapp tasks</code> орындаймыз.</li>
+        <li><code>settings.py</code> ішіндегі <code>INSTALLED_APPS</code> тізіміне «tasks» қосамыз.</li>
+        <li>Жобаның <code>urls.py</code> файлына <code>hello</code> қосымшасындағыдай жол қосамыз:</li>
+      </ol>
+<pre data-lang="python" data-norun><code class="language-python">path('tasks/', include("tasks.urls"))</code></pre>
+      <ol start="4">
+        <li>Қосымша қалтасында <code>urls.py</code> жасап, <code>hello</code> ішіндегі <code>index</code> жолына ұқсас жол қосамыз:</li>
+      </ol>
+<pre data-lang="python" data-norun><code class="language-python">from django.urls import path
+from . import views
+
+urlpatterns = [
+    path("", views.index, name="index"),
+]</code></pre>
+      <ol start="5">
+        <li><code>views.py</code> ішінде <code>index</code> функциясын жасаймыз.</li>
+      </ol>
+      <p>Алдымен тапсырмалар тізімін жасап, оны бетке шығарып көрейік. <code>views.py</code> файлының жоғарғы жағында Python тізімін жасап, тапсырмаларды сонда сақтаймыз. Сосын <code>index</code> функциясы шаблонды көрсетіп, жаңа тізімімізді контекст ретінде берсін:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.shortcuts import render
+
+tasks = ["foo", "bar", "baz"]
+
+# Create your views here.
+def index(request):
+    return render(request, "tasks/index.html", {
+        "tasks": tasks
+    })</code></pre>
+      <p>Енді HTML шаблонын жасаймыз:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Tasks&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;ul&gt;
+            {% for task in tasks %}
+                &lt;li&gt;{{ task }}&lt;/li&gt;
+            {% endfor %}
+        &lt;/ul&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Тапсырмаларымызды цикл арқылы аралап шығып отырмыз. Синтаксис алдыңғы шарттарға, сондай-ақ екінші лекциядағы Python циклына ұқсас, тек жабушы <code>{% endfor %}</code> тегі қосылады. Тапсырмалар бетіне кірсек, тізім шығады. Django әр тапсырма үшін бір <code>&lt;li&gt;</code> жасап, мынадай HTML жібереді:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;ul&gt;
+    &lt;li&gt;foo&lt;/li&gt;
+    &lt;li&gt;bar&lt;/li&gt;
+    &lt;li&gt;baz&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+
+      <h2 id="forms">Формалар</h2>
+      <p>Қазір барлық тапсырмаларды тізім ретінде көре аламыз. Енді жаңа тапсырма қосқымыз келеді. Ол үшін веб-бетті жаңарту үшін <strong>формаларды</strong> (<span class="term-en">forms</span>) қолданамыз. <code>views.py</code> ішіне форма бар бетті көрсететін тағы бір функция қосамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Add a new task:
+def add(request):
+    return render(request, "tasks/add.html")</code></pre>
+      <p><code>urls.py</code> файлына да жаңа жол қосуды ұмытпаймыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">path("add", views.add, name="add")</code></pre>
+      <p>Енді <code>add.html</code> файлын жасаймыз. Ол <code>index.html</code>-ге өте ұқсас, тек денесінде тізім емес, форма болады:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Tasks&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Add Task:&lt;/h1&gt;
+        &lt;form action=""&gt;
+            &lt;input type="text" name="task"&gt;
+            &lt;input type="submit"&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <h3 id="inheritance">Шаблон мұрагерлігі</h3>
+      <p>Бірақ жазғанымыз ең жақсы дизайн емес: HTML-дің негізгі бөлігін екі файлда қайталап тұрмыз. Django шаблон тілінде бұл жаман дизайнды жоятын құрал бар: <a href="https://tutorial.djangogirls.org/en/template_extending/" target="_blank" rel="noopener">шаблон мұрагерлігі</a> (<span class="term-en">template inheritance</span>). Ол беттің жалпы құрылымы бар <code>layout.html</code> файлын жасауға мүмкіндік береді:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Tasks&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        {% block body %}
+        {% endblock %}
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Тағы да <code>{%...%}</code> қолданып тұрмыз: бұл HTML емес, қандай да бір логиканы білдіреді. Мұнда Django-ға «бұл «блокты» басқа файлдағы мәтінмен толтыр» деп айтып тұрмыз. Енді қалған екі HTML файлымызды былай өзгертеміз.</p>
+      <p><code>index.html</code>:</p>
+<pre data-lang="html"><code class="language-html">{% extends "tasks/layout.html" %}
+
+{% block body %}
+    &lt;h1&gt;Tasks:&lt;/h1&gt;
+    &lt;ul&gt;
+        {% for task in tasks %}
+            &lt;li&gt;{{ task }}&lt;/li&gt;
+        {% endfor %}
+    &lt;/ul&gt;
+{% endblock %}</code></pre>
+      <p><code>add.html</code>:</p>
+<pre data-lang="html"><code class="language-html">{% extends "tasks/layout.html" %}
+
+{% block body %}
+    &lt;h1&gt;Add Task:&lt;/h1&gt;
+    &lt;form action=""&gt;
+        &lt;input type="text" name="task"&gt;
+        &lt;input type="submit"&gt;
+    &lt;/form&gt;
+{% endblock %}</code></pre>
+      <p>Көріп отырсыз, layout файлын <em>кеңейту</em> (<code>extends</code>) арқылы қайталанатын кодтың көбінен құтылдық. Басты бет бұрынғыдай, ал енді «add» беті де бар. Формаға көз салайық:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;h1&gt;Add Task:&lt;/h1&gt;
+&lt;form action=""&gt;
+    &lt;input type="text" name="task"&gt;
+    &lt;input type="submit"&gt;
+&lt;/form&gt;</code></pre>
+
+      <h3 id="links">Беттер арасындағы сілтемелер</h3>
+      <p>Жаңа тапсырма қосқымыз келген сайын URL-ге қолмен «/add» жазу ыңғайсыз. Сондықтан беттерді бір-бірімен сілтемелеген дұрыс. Бірақ сілтемені қолмен жазбай, <code>urls.py</code> ішінде әр жолға берген <code>name</code> айнымалысын қолдана аламыз:</p>
+<pre data-lang="html"><code class="language-html">&lt;a href="{% url 'add' %}"&gt;Add a New Task&lt;/a&gt;</code></pre>
+      <p>Мұндағы «add» - сол жолдың аты. <code>add.html</code> ішінде де осылай істей аламыз:</p>
+<pre data-lang="html"><code class="language-html">&lt;a href="{% url 'index' %}"&gt;View Tasks&lt;/a&gt;</code></pre>
+      <p>Бірақ мұнда мәселе туындауы мүмкін: әртүрлі қосымшаларда <code>index</code> деп аталатын бірнеше жол бар. Мұны әр қосымшаның <code>urls.py</code> файлына <code>app_name</code> айнымалысын қосып шешеміз. Файл мынадай болады:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.urls import path
+from . import views
+
+app_name = "tasks"
+urlpatterns = [
+    path("", views.index, name="index"),
+    path("add", views.add, name="add")
+]</code></pre>
+      <p>Енді сілтемелерде жай <code>index</code> мен <code>add</code> емес, <code>tasks:index</code> және <code>tasks:add</code> деп жазамыз:</p>
+<pre data-lang="html"><code class="language-html">&lt;a href="{% url 'tasks:index' %}"&gt;View Tasks&lt;/a&gt;
+
+&lt;a href="{% url 'tasks:add' %}"&gt;Add a New Task&lt;/a&gt;</code></pre>
+
+      <h3 id="post-csrf">POST және CSRF</h3>
+      <p>Енді форма пайдаланушы жібергенде шынымен бірдеңе істейтінін қамтамасыз етейік. Ол үшін <code>add.html</code> ішіндегі формаға <code>action</code> қосамыз:</p>
+<pre data-lang="html"><code class="language-html">&lt;form action="{% url 'tasks:add' %}" method="post"&gt;</code></pre>
+      <p>Бұл форма жіберілгенде бізді қайтадан <code>add</code> URL-іне бағыттайды деген сөз. Мұнда <em>get</em> емес, <em>post</em> әдісін қолданатынымызды көрсеттік. Форма веб-беттің күйін өзгерте алатын болса, әдетте <code>post</code> қолданылады. Ал <code>get</code> тек деректерді сұрау үшін.</p>
+      <p>Бірақ формаға тағы бір нәрсе қосу керек, себебі Django <strong>CSRF</strong> (<span class="term-en">Cross-Site Request Forgery</span>, «сайт аралық сұрауды қолдан жасау») шабуылынан қорғау үшін арнайы белгі талап етеді. Бұл шабуылда зиянды адам сіздің серверіңізге сіздің сайтыңыздан емес, басқа жерден сұрау жіберуге тырысады. Кейбір сайттар үшін бұл өте үлкен қауіп. Банк сайтында бір пайдаланушыдан екіншісіне ақша аударатын форма бар делік. Біреу банк сайтынан тыс жерден аударым жібере алса, бұл апат болар еді ғой!</p>
+      <p>Мұны шешу үшін Django шаблонды көрсетіп жауап жібергенде <strong>CSRF токенін</strong> (<span class="term-en">CSRF token</span>) де береді. Ол сайттағы әр жаңа сессияға бірегей. Сұрау жіберілгенде Django сұрауға тіркелген токен жуырда өзі берген токенмен сәйкес келетінін тексереді. Сондықтан басқа сайттағы зиянды адам сұрау жіберуге тырысса, жарамсыз CSRF токені үшін оны тоқтатады. Бұл тексеру <a href="https://docs.djangoproject.com/en/4.0/topics/http/middleware/" target="_blank" rel="noopener">Django ортаңғы қабатына</a> (<span class="term-en">middleware</span>) кірістірілген: ол Django қосымшасының сұрау-жауап өңдеуіне араласа алатын тетік. Бұл курста ортаңғы қабатқа тереңдемейміз, қызықсаңыз құжаттаманы оқыңыз.</p>
+            <svg viewBox="0 0 640 260" role="img" aria-label="CSRF токені: форма токенмен жіберілсе сұрау қабылданады, зиянды сайттан токенсіз келген сұрау 403 алады" style="display:block;width:100%;max-width:640px;height:auto;margin:18px auto"><defs><marker id="ac1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker><marker id="ac2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:#e5484d"/></marker><marker id="ac3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:#2fbf71"/></marker></defs><rect x="15" y="90" width="150" height="64" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="90.0" y="113.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">Django</text><text x="90.0" y="130.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">сервері</text><rect x="455" y="15" width="170" height="64" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="540.0" y="38.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">Біздің сайттағы</text><text x="540.0" y="55.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">форма</text><rect x="455" y="175" width="170" height="64" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="540.0" y="207.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px">Зиянды сайт</text><polyline points="167,110 452,60" style="stroke:var(--accent);stroke-width:1.8;fill:none" marker-end="url(#ac1)"/><text x="310" y="70" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font,sans-serif);font-size:12px;font-weight:600">1) бет + CSRF токені</text><polyline points="453,40 168,100" style="stroke:#2fbf71;stroke-width:1.8;fill:none" marker-end="url(#ac3)"/><text x="310" y="128" text-anchor="middle" dominant-baseline="central" style="fill:#2fbf71;font-family:var(--font,sans-serif);font-size:12px;font-weight:600">2) POST + токен: сәйкес, 302</text><polyline points="453,205 168,140" style="stroke:#e5484d;stroke-width:1.8;fill:none" stroke-dasharray="5 4" marker-end="url(#ac2)"/><text x="310" y="200" text-anchor="middle" dominant-baseline="central" style="fill:#e5484d;font-family:var(--font,sans-serif);font-size:12px;font-weight:600">POST токенсіз: 403 Forbidden</text></svg>
+      <p>Мұны кодқа қосу үшін <code>add.html</code> ішіндегі формаға бір жол қосамыз:</p>
+<pre data-lang="html"><code class="language-html">&lt;form action="{% url 'tasks:add' %}" method="post"&gt;
+    {% csrf_token %}
+    &lt;input type="text" name="task"&gt;
+    &lt;input type="submit"&gt;
+&lt;/form&gt;</code></pre>
+      <p>Бұл жол CSRF токені бар жасырын енгізу өрісін қосады, сондықтан бетті қайта жүктегенде ештеңе өзгермегендей көрінеді. Бірақ «Inspect element» арқылы қарасақ, жаңа енгізу өрісі қосылғанын байқаймыз:</p>
+<pre data-lang="html"><code class="language-html">&lt;input type="hidden" name="csrfmiddlewaretoken" value="..."&gt;</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>{% csrf_token %}</code> жоқ формамен POST жіберсек не болады?</summary>
+        <div class="details-body"><p>Django сұрауды қабылдамайды және <code>403 Forbidden</code> жауабын қайтарады (CSRF тексеруі өтпеді). Бұл қателік емес, қорғаныс жұмыс істеп тұрғанының белгісі.</p></div>
+      </details>
+
+      <h3 id="django-forms">Django формалары</h3>
+      <p>Біз HTML-ді қолмен жазып форма жасай алатынымызды көрдік, бірақ Django пайдаланушыдан ақпарат жинаудың одан да оңай жолын ұсынады: <a href="https://docs.djangoproject.com/en/4.0/ref/forms/api/" target="_blank" rel="noopener">Django формалары</a>. Ол үшін <code>views.py</code> басына <code>forms</code> модулін импорттаймыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django import forms</code></pre>
+      <p>Енді <code>views.py</code> ішінде <code>NewTaskForm</code> деген Python класын жасап, жаңа форма анықтаймыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">class NewTaskForm(forms.Form):
+    task = forms.CharField(label="New Task")</code></pre>
+      <p>Бұл класта не болып жатқанын талдайық:</p>
+      <ul>
+        <li><code>NewTaskForm</code> жақшасында <code>forms.Form</code> тұр. Себебі біздің жаңа форма <code>forms</code> модулінде бар <code>Form</code> деген класстан <a href="https://www.w3schools.com/python/python_inheritance.asp" target="_blank" rel="noopener">мұра алады</a> (<span class="term-en">inherits</span>). Мұрагерлікті біз Django шаблон тілінде көрдік. Бұл да сондай: жалпы сипаттамадан (<code>forms.Form</code>) өзімізге керегін (жаңа форма) нақтылаймыз. Мұрагерлік объектіге бағытталған бағдарламалаудың негізгі бөлігі, бірақ бұл курста оған тереңдемейміз, онлайн материал көп.</li>
+        <li>Класс ішінде пайдаланушыдан қандай ақпарат алғымыз келетінін көрсетеміз, бұл жағдайда тапсырма атауын.</li>
+        <li><code>forms.CharField</code> арқылы бұл мәтіндік енгізу екенін көрсетеміз. Django форма модулінде <a href="https://docs.djangoproject.com/en/4.0/ref/forms/fields/#built-in-field-classes" target="_blank" rel="noopener">басқа да көп өріс түрлері</a> бар.</li>
+        <li><code>CharField</code> ішінде бет жүктелгенде пайдаланушыға көрінетін <code>label</code> (белгі) беруге болады. Бұл форма өрісіне берілетін <a href="https://docs.djangoproject.com/en/4.0/ref/forms/fields/#core-field-arguments" target="_blank" rel="noopener">көптеген аргументтің</a> біреуі ғана.</li>
+      </ul>
+      <p><code>NewTaskForm</code> класын жасадық, енді оны <code>add</code> бетін көрсеткенде контекстке қосамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Add a new task:
+def add(request):
+    return render(request, "tasks/add.html", {
+        "form": NewTaskForm()
+    })</code></pre>
+      <p>Енді <code>add.html</code> ішіндегі енгізу өрісін жаңа форманың өзімен ауыстыра аламыз:</p>
+<pre data-lang="html"><code class="language-html">{% extends "tasks/layout.html" %}
+
+{% block body %}
+    &lt;h1&gt;Add Task:&lt;/h1&gt;
+    &lt;form action="{% url 'tasks:add' %}" method="post"&gt;
+        {% csrf_token %}
+        {{ form }}
+        &lt;input type="submit"&gt;
+    &lt;/form&gt;
+    &lt;a href="{% url 'tasks:index' %}"&gt;View Tasks&lt;/a&gt;
+{% endblock %}</code></pre>
+      <p><code>forms</code> модулін қолданудың HTML формасын қолмен жазудан бірнеше артықшылығы бар:</p>
+      <ul>
+        <li>Формаға жаңа өріс қосқымыз келсе, HTML жазбай-ақ <code>views.py</code> ішінде қоса саламыз.</li>
+        <li>Django автоматты түрде <strong>клиенттік тексеруді</strong> (<a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation" target="_blank" rel="noopener">client-side validation</a>) жасайды, яғни пайдаланушы компьютерінде орындалатын тексеру: форма толық емес болса, жіберуге рұқсат бермейді.</li>
+        <li>Django қарапайым <strong>серверлік тексеруді</strong> (<a href="https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation" target="_blank" rel="noopener">server-side validation</a>) де ұсынады: бұл форма деректері серверге жеткен соң жасалады.</li>
+        <li>Келесі лекцияда деректерді сақтау үшін <strong>модельдерді</strong> қолдана бастаймыз, ал Django модельге негізделген форманы өте оңай жасайды.</li>
+      </ul>
+
+      <h3 id="handle-post">POST сұрауын өңдеу</h3>
+      <p>Форма дайын, енді пайдаланушы жіберу батырмасын басқанда не болатынын жазайық. Пайдаланушы сілтемені басып не URL-ді жазып <code>add</code> бетіне кіргенде серверге <code>GET</code> сұрауын жібереді, оны <code>add</code> функциямыз бұрыннан өңдейді. Ал форманы жібергенде серверге <code>POST</code> сұрауы барады, оны қазір <code>add</code> өңдемейді. <code>POST</code> әдісін функцияға берілген <code>request</code> аргументіне негізделген шартпен өңдей аламыз. Төмендегі код ішіндегі комментарийлер әр жолдың мақсатын түсіндіреді:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Add a new task:
+def add(request):
+
+    # Check if method is POST
+    if request.method == "POST":
+
+        # Take in the data the user submitted and save it as form
+        form = NewTaskForm(request.POST)
+
+        # Check if form data is valid (server-side)
+        if form.is_valid():
+
+            # Isolate the task from the 'cleaned' version of form data
+            task = form.cleaned_data["task"]
+
+            # Add the new task to our list of tasks
+            tasks.append(task)
+
+            # Redirect user to list of tasks
+            return HttpResponseRedirect(reverse("tasks:index"))
+
+        else:
+
+            # If the form is invalid, re-render the page with existing information.
+            return render(request, "tasks/add.html", {
+                "form": form
+            })
+
+    return render(request, "tasks/add.html", {
+        "form": NewTaskForm()
+    })</code></pre>
+      <p>Ескерту: сәтті жібергеннен кейін пайдаланушыны <strong>қайта бағыттау</strong> (<span class="term-en">redirect</span>) үшін тағы екі импорт қажет:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.urls import reverse
+from django.http import HttpResponseRedirect</code></pre>
+      <p>Кодты баяу оқып шығайық. Егер сұрау <code>POST</code> болса, пайдаланушы жіберген деректерді <code>NewTaskForm(request.POST)</code> ішіне саламыз. Содан кейін <code>form.is_valid()</code> арқылы серверлік тексеру жасаймыз. Жарамды болса, «тазартылған» деректерден (<code>cleaned_data</code>) тапсырманы алып, тізімге қосамыз да, <code>reverse("tasks:index")</code> арқылы тізім бетіне қайта бағыттаймыз (<code>reverse</code> жол атынан нақты URL-ді тауып береді, <code>{% url %}</code> сияқты). Жарамсыз болса, бетті қайта көрсетеміз, бірақ бұл жолы бос форманың орнына пайдаланушы толтырған формамен, сонда ол қателерін көріп түзете алады. Ал <code>GET</code> болса, бос форма көрсетеміз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: неге сәтті жібергеннен кейін бетті қайта көрсетпей, <code>HttpResponseRedirect</code> қолданамыз?</summary>
+        <div class="details-body"><p>Қайта бағыттау браузерді тізім бетіне жаңа <code>GET</code> сұрауымен жібереді. Егер жай <code>render</code> жасасақ, пайдаланушы бетті жаңартқанда браузер ескі <code>POST</code> сұрауын қайта жіберіп, тапсырма екі рет қосылар еді. Ал тізімге жіберу пайдаланушыға жаңа тапсырма тізімде тұрғанын бірден көрсетеді.</p></div>
+      </details>
+
+      <h2 id="sessions">Сессиялар</h2>
+      <p>Осы жерге дейін біз тізімге тапсырма қосатын қосымша жасадық. Бірақ тапсырмаларды <strong>жаһандық айнымалыда</strong> сақтап тұрғанымыз мәселе болуы мүмкін: сайтқа кірген барлық адам дәл бірдей тізімді көреді. Асханадағы ортақ тақтаға жазып қойғандай: біреу жазса, бәрі көреді. Мұны шешу үшін <a href="https://docs.djangoproject.com/en/4.0/topics/http/sessions/" target="_blank" rel="noopener">сессиялар</a> (<span class="term-en">sessions</span>) деген құралды қолданамыз.</p>
+      <p><strong>Сессия</strong> - сайтқа әр жаңа кіру үшін серверде бірегей деректерді сақтау тәсілі. Әр пайдаланушының өз «сөмкесі» бар сияқты.</p>
+      <p>Қосымшамызда сессияларды қолдану үшін алдымен жаһандық <code>tasks</code> айнымалысын өшіреміз, сосын <code>index</code> функциясын өзгертеміз, ал <code>tasks</code> айнымалысы қолданылған басқа жердің бәрінде оны <code>request.session["tasks"]</code> деп ауыстырамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">def index(request):
+
+    # Check if there already exists a "tasks" key in our session
+
+    if "tasks" not in request.session:
+
+        # If not, create a new list
+        request.session["tasks"] = []
+
+    return render(request, "tasks/index.html", {
+        "tasks": request.session["tasks"]
+    })
+
+# Add a new task:
+def add(request):
+    if request.method == "POST":
+
+        # Take in the data the user submitted and save it as form
+        form = NewTaskForm(request.POST)
+
+        # Check if form data is valid (server-side)
+        if form.is_valid():
+
+            # Isolate the task from the 'cleaned' version of form data
+            task = form.cleaned_data["task"]
+
+            # Add the new task to our list of tasks
+            request.session["tasks"] += [task]
+
+            # Redirect user to list of tasks
+            return HttpResponseRedirect(reverse("tasks:index"))
+        else:
+
+            # If the form is invalid, re-render the page with existing information.
+            return render(request, "tasks/add.html", {
+                "form": form
+            })
+
+    return render(request, "tasks/add.html", {
+        "form": NewTaskForm()
+    })</code></pre>
+      <p>Ақырында, Django бұл деректі сақтай алуы үшін терминалда <code>python manage.py migrate</code> орындау керек. <strong>Миграция</strong> (<span class="term-en">migration</span>) деген не екенін келесі аптада толығырақ айтамыз, әзірге бұл команда сессияларды сақтауға мүмкіндік беретінін білсеңіз жеткілікті.</p>
+<pre class="terminal"><code class="language-plaintext">$ python manage.py migrate</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: екі түрлі браузерде тізім бірдей бола ма?</summary>
+        <div class="details-body"><p>Жоқ. Әр браузер өз сессиясын алады, сондықтан біреуіне қосқан тапсырма екіншісінде көрінбейді. Жаһандық <code>tasks</code> болса, екеуі де бірдей тізімді көрер еді.</p></div>
+      </details>
+      <p>Бүгінгі лекция осымен біткен. Келесі жолы Django арқылы деректерді сақтау, оқу және өңдеуді үйренеміз.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li><strong>Статикалық</strong> сайт әрдайым бірдей, <strong>динамикалық</strong> сайт кодпен HTML жасап береді.</li>
+        <li><strong>HTTP</strong>: клиент <em>сұрау</em> (<code>GET</code>, <code>POST</code>) жібереді, сервер күй коды бар <em>жауап</em> қайтарады (200, 301, 403, 404, 500).</li>
+        <li>Django жобасы: <code>startproject</code>, <code>startapp</code>, <code>INSTALLED_APPS</code>, <code>runserver</code>; негізгі файлдар <code>manage.py</code>, <code>settings.py</code>, <code>urls.py</code>, <code>views.py</code>.</li>
+        <li><strong>Маршруттар</strong>: <code>path(...)</code>, <code>include(...)</code>, <code>&lt;str:name&gt;</code> параметрлері; <strong>көрініс</strong> <code>request</code> алып, <code>HttpResponse</code> қайтарады.</li>
+        <li><strong>Шаблондар</strong>: <code>render</code>, контекст (сөздік), <code>{{ айнымалы }}</code>, <code>{% if %}</code>, <code>{% for %}</code>, <code>{% extends %}</code> мен <code>{% block %}</code>, <code>{% url %}</code>, <code>app_name</code>.</li>
+        <li><strong>Статикалық файлдар</strong>: <code>static</code> қалтасы және <code>{% load static %}</code>.</li>
+        <li><strong>Формалар</strong>: <code>method="post"</code>, <code>{% csrf_token %}</code> (CSRF шабуылынан қорғау), <code>forms.Form</code>, <code>is_valid()</code>, <code>cleaned_data</code>, <code>HttpResponseRedirect(reverse(...))</code>.</li>
+        <li><strong>Сессиялар</strong>: <code>request.session</code> әр пайдаланушыға жеке деректі серверде сақтайды (<code>migrate</code> қажет).</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. Мына сайттардың қайсысы «динамикалық» деп аталады?</p>
+          <label><input type="radio" value="a"> Әр кірген адамға дәл бірдей <code>index.html</code> файлын беретін сайт</label>
+          <label><input type="radio" value="b"> Тек CSS-пен безендірілген сайт</label>
+          <label><input type="radio" value="c"> Бағдарлама (мысалы, Python) HTML-ді сұрау келген сәтте жасап беретін сайт</label>
+          <label><input type="radio" value="d"> Көп суреті бар сайт</label>
+          <p class="explain">Динамикалық сайтта HTML алдын ала дайын тұрмайды, оны код сұрау кезінде жасайды. Сондықтан мазмұн күн сайын өзгере алады.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">2. Браузер сұрау жіберіп, <code>404</code> күй коды бар жауап алды. Бұл не дегенді білдіреді?</p>
+          <label><input type="radio" value="a"> Сервер сұралған бетті таппады, мысалы URL-ге сәйкес жол анықталмаған</label>
+          <label><input type="radio" value="b"> Серверде код қатесі шықты</label>
+          <label><input type="radio" value="c"> Бәрі жақсы, бет сәтті жүктелді</label>
+          <label><input type="radio" value="d"> Пайдаланушының бетке кіруге рұқсаты жоқ</label>
+          <p class="explain">404 - Not Found. Қате код қатесі 500, рұқсат жоқ - 403, сәтті жауап - 200.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. Жобаның <code>urls.py</code> ішінде <code>path('hello/', include("hello.urls"))</code>, ал қосымшаның <code>urls.py</code> ішінде <code>path("david", views.david, name="david")</code> бар. <code>localhost:8000/hello/david</code> URL-іне кіргенде не болады?</p>
+          <label><input type="radio" value="a"> 404, өйткені <code>hello/david</code> жобаның <code>urls.py</code> ішінде толық жазылмаған</label>
+          <label><input type="radio" value="b"> Django <code>views.index</code> функциясын шақырады</label>
+          <label><input type="radio" value="c"> Django <code>admin</code> бетін ашады</label>
+          <label><input type="radio" value="d"> Django <code>hello/</code> бөлігін жобада «жеп», қалған <code>david</code> бөлігін қосымшаның <code>urls.py</code> ішінен тауып, <code>views.david</code> шақырады</label>
+          <p class="explain">Django алдымен жоба деңгейіндегі префиксті сәйкестендіріп, қалған бөлікті <code>include</code> арқылы қосымшаның жолдарымен салыстырады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">4. <code>localhost:8000</code> (соңында ештеңесіз) адресіне кіргенде 404 шықты, ал <code>localhost:8000/hello</code> жұмыс істеді. Неге?</p>
+          <label><input type="radio" value="a"> <code>runserver</code> дұрыс қосылмаған</label>
+          <label><input type="radio" value="b"> Жоба деңгейінде тек <code>admin/</code> және <code>hello/</code> жолдары бар, бос жол үшін ештеңе анықталмаған</label>
+          <label><input type="radio" value="c"> Django басты бетті мүлде көрсете алмайды</label>
+          <label><input type="radio" value="d"> <code>views.index</code> функциясы қате жазылған</label>
+          <p class="explain">Django тек анықталған жолдарға жауап береді. Бос жол үшін жобаның <code>urlpatterns</code> тізімінде жол жоқ, сондықтан 404.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">5. Шаблонда <code>&lt;h1&gt;Hello, {{ name }}!&lt;/h1&gt;</code> бар. Көрініс <code>render(request, "hello/greet.html", {"name": "Harry"})</code> шақырды. Браузер нені алады?</p>
+          <label><input type="radio" value="a"> <code>&lt;h1&gt;Hello, {{ name }}!&lt;/h1&gt;</code>, ал ауыстыруды браузер жасайды</label>
+          <label><input type="radio" value="b"> Қате, өйткені контекст сөздік болмауы тиіс</label>
+          <label><input type="radio" value="c"> <code>&lt;h1&gt;Hello, Harry!&lt;/h1&gt;</code>: шаблонды Django серверде өңдеп, дайын HTML жібереді</label>
+          <label><input type="radio" value="d"> Тек <code>Harry</code> сөзі</label>
+          <p class="explain">Шаблон тілі серверде орындалады. Браузерге <code>{{ }}</code> да, <code>{% %}</code> да жетпейді, тек дайын HTML барады.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">6. Формадан <code>{% csrf_token %}</code> жолын алып тастап, POST жібердік. Не болады және неге?</p>
+          <label><input type="radio" value="a"> Django сұрауды қабылдамайды (403), себебі сұраудың сіздің сайтыңыздан келгенін растайтын токен жоқ</label>
+          <label><input type="radio" value="b"> Бәрі қалыпты жұмыс істейді, токен тек әдемілік үшін</label>
+          <label><input type="radio" value="c"> Форма <code>GET</code> болып жіберіледі</label>
+          <label><input type="radio" value="d"> Деректер сессияға жазылмайды, бірақ сұрау өтеді</label>
+          <p class="explain">CSRF токені зиянды сайттан келген жалған сұрауларды тоқтатады. Токенсіз POST ортаңғы қабатта бұғатталады.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. Пайдаланушы бос не жарамсыз форма жіберді, <code>form.is_valid()</code> нәтижесі <code>False</code>. Лекциядағы <code>add</code> функциясы не істейді?</p>
+          <label><input type="radio" value="a"> Тапсырманы бәрібір тізімге қосады</label>
+          <label><input type="radio" value="b"> Пайдаланушыны бірден тізім бетіне қайта бағыттайды</label>
+          <label><input type="radio" value="c"> <code>500</code> қатесін қайтарады</label>
+          <label><input type="radio" value="d"> <code>add.html</code> бетін пайдаланушы жіберген <code>form</code> объектісімен қайта көрсетеді, ол енгізгенін көріп түзетеді</label>
+          <p class="explain">Тек жарамды форма ғана тізімге жазылып, қайта бағыттауға әкеледі. Әйтпесе бет қайта көрсетіледі.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">8. Тапсырмалар жаһандық <code>tasks = [...]</code> тізімінде сақталған. Айгүл мен Данияр бір серверге кірді. Айгүл «сүт алу» тапсырмасын қосты. Данияр тізімді ашса, не көреді және мәселені не шешеді?</p>
+          <label><input type="radio" value="a"> Данияр бос тізім көреді; шешімі - <code>HttpResponse</code> қолдану</label>
+          <label><input type="radio" value="b"> Данияр да «сүт алу» тапсырмасын көреді, себебі тізім ортақ; шешімі - <code>request.session["tasks"]</code> арқылы әр пайдаланушыға жеке тізім беру</label>
+          <label><input type="radio" value="c"> Данияр қате алады; шешімі - <code>{% for %}</code> циклын өзгерту</label>
+          <label><input type="radio" value="d"> Данияр көрмейді; шешім қажет емес</label>
+          <p class="explain">Жаһандық айнымалы бүкіл серверге ортақ. Сессия әр кіру үшін жеке деректі сақтайды (алдымен <code>python manage.py migrate</code> керек).</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Project 1 (1-жоба): Wiki</h2>
+      <p>Ресми жоба беті: <a href="https://cs50.harvard.edu/web/projects/1/wiki/" target="_blank" rel="noopener">cs50.harvard.edu/web/projects/1/wiki</a>. CS50W-да лекциялар мен жобалар бір-біріне бір-бірден сәйкес келмейді. Бұл жобаны, кем дегенде, 3-лекцияны көрмей бастасаңыз, ерте бастағаныңыз.</p>
+      <div class="callout note">
+        <span class="callout-title">Бұл жоба компьютерде орындалады</span>
+        <p>Wiki - нағыз Django жобасы, сондықтан ол сайттың ішінде жұмыс істемейді. Оны өз компьютеріңізде орындайсыз: Python, Django (<code>pip3 install Django</code>) және Markdown кітапханасы (<code>pip3 install markdown2</code>) қажет. Төмендегі тізім өзіңізді тексеруге арналған.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="pset-wiki">Wiki (Уикипедияға ұқсас энциклопедия)</h3></div>
+        <p>Уикипедияға ұқсас онлайн энциклопедия жасаңыз.</p>
+
+        <h4>Алғышарт</h4>
+        <p><a href="https://www.wikipedia.org/" target="_blank" rel="noopener">Уикипедия</a> - түрлі тақырыптағы көптеген мақаладан тұратын ақысыз онлайн энциклопедия. Әр мақаланы сол мақаланың бетіне кіріп көруге болады. Мысалы, <code>https://en.wikipedia.org/wiki/HTML</code> HTML мақаласын көрсетеді. Назар аударыңыз: сұралған беттің аты (HTML) <code>/wiki/HTML</code> маршрутында көрсетілген. Бетінің мазмұны браузер көрсететін HTML екенін де ұмытпаңыз.</p>
+        <p>Іс жүзінде Уикипедияның әр бетін HTML-мен жазу жалықтырарлық болар еді. Сондықтан мақалаларды жеңілірек, адамға ыңғайлы белгілеу тілінде сақтаған пайдалы. Уикипедия <a href="https://en.wikipedia.org/wiki/Help:Wikitext" target="_blank" rel="noopener">Wikitext</a> тілін қолданады, ал біз бұл жобада мақалаларды <strong>Markdown</strong> тілінде сақтаймыз.</p>
+        <p>Markdown синтаксисінің қалай жұмыс істейтінін түсіну үшін <a href="https://help.github.com/en/github/writing-on-github/basic-writing-and-formatting-syntax" target="_blank" rel="noopener">GitHub-тың Markdown нұсқаулығын</a> оқып шығыңыз. Тақырыптар, қою мәтін, сілтемелер және тізімдер Markdown-да қалай жазылатынына ерекше назар аударыңыз.</p>
+        <p>Әр энциклопедия мақаласын бір Markdown файлымен көрсетсек, мақалаларды жазу мен өңдеу адамға ыңғайлырақ болады. Бірақ пайдаланушы мақаланы көргенде, біз Markdown-ды HTML-ге түрлендіріп көрсетуіміз керек.</p>
+
+        <h4>Бастау</h4>
+        <p>Дистрибутивті кодты <a href="https://cdn.cs50.net/web/2020/spring/projects/1/wiki.zip" target="_blank" rel="noopener">https://cdn.cs50.net/web/2020/spring/projects/1/wiki.zip</a> сілтемесінен жүктеп, архивті ашыңыз.</p>
+
+        <h4>Түсіну</h4>
+        <p>Дистрибутивте бір <code>encyclopedia</code> қосымшасы бар <code>wiki</code> деген Django жобасы бар.</p>
+        <ul>
+          <li>Алдымен қосымшаның URL конфигурациясы анықталған <code>encyclopedia/urls.py</code> файлын ашыңыз. Сізге <code>views.index</code> функциясымен байланысқан бір әдепкі маршрут дайын берілген.</li>
+          <li>Содан кейін <code>encyclopedia/util.py</code> қараңыз. Онда ештеңе өзгертудің қажеті жоқ, бірақ мақалалармен жұмыс істеуге пайдалы үш функция бар: <code>list_entries</code> қазіргі сақталған барлық мақалалардың аттарының тізімін қайтарады; <code>save_entry</code> жаңа мақаланы оның атауы мен Markdown мазмұны бойынша сақтайды; <code>get_entry</code> мақаланы атауы бойынша алып, бар болса оның Markdown мазмұнын, жоқ болса <code>None</code> қайтарады. Жазатын кез келген көрінісіңіз осы функцияларды қолдана алады.</li>
+          <li>Әр мақала <code>entries/</code> қалтасында Markdown файлы ретінде сақталады. Онда бірнеше үлгі мақала дайын тұр, қаласаңыз көбірек қоса аласыз!</li>
+          <li><code>encyclopedia/views.py</code> ішінде қазір бір ғана <code>index</code> көрінісі бар. Ол <code>encyclopedia/index.html</code> шаблонын көрсетіп, оған энциклопедиядағы барлық мақалалар тізімін береді (<code>util.list_entries</code> арқылы).</li>
+          <li>Шаблонды <code>encyclopedia/templates/encyclopedia/index.html</code> ішінен табасыз. Ол негізгі <code>layout.html</code> шаблонынан мұра алады да, беттің атауы мен денесін (мақалалар тізімі) көрсетеді. Ал <code>layout.html</code> беттің жалпы құрылымын анықтайды: әр бетте іздеу өрісі бар бүйір панелі (әзірге ештеңе істемейді), басты бетке сілтеме және жаңа бет жасау не кездейсоқ бетке өту сілтемелері (олар да әзірге жұмыс істемейді).</li>
+        </ul>
+
+        <h4>Талаптар</h4>
+        <p>Wiki энциклопедиясын аяқтаңыз. Мына талаптардың бәрін орындау керек:</p>
+        <ul>
+          <li><strong>Entry Page (мақала беті)</strong>: <code>/wiki/TITLE</code> адресіне кіргенде (<code>TITLE</code> - мақала атауы) сол мақаланың мазмұнын көрсететін бет шығуы тиіс.
+            <ul>
+              <li>Көрініс мақаланың мазмұнын тиісті <code>util</code> функциясы арқылы алуы керек.</li>
+              <li>Жоқ мақала сұралса, пайдаланушыға сұралған бет табылмағанын көрсететін қате беті шығуы тиіс.</li>
+              <li>Мақала бар болса, оның мазмұны бар бет көрсетіледі. Беттің атауында (title) мақала аты болуы керек.</li>
+            </ul>
+          </li>
+          <li><strong>Index Page (негізгі бет)</strong>: <code>index.html</code> файлын жаңартыңыз, сонда ол мақала аттарын жай тізіп қоймай, пайдаланушы кез келген атты басқанда сол мақала бетіне тікелей өте алатын болсын.</li>
+          <li><strong>Search (іздеу)</strong>: пайдаланушы бүйір панелдегі іздеу өрісіне сұрау жазып, мақаланы іздей алсын.
+            <ul>
+              <li>Сұрау мақала атына дәл сәйкес келсе, пайдаланушы сол мақаланың бетіне қайта бағытталуы керек.</li>
+              <li>Сұрау ешбір мақала атына дәл сәйкес келмесе, пайдаланушы сұрауды <em>ішкі жол</em> (substring) ретінде қамтитын барлық мақалалар тізімі бар іздеу нәтижелері бетіне барады. Мысалы, сұрау <code>ytho</code> болса, нәтижелерде <code>Python</code> шығуы тиіс.</li>
+              <li>Нәтижелер бетіндегі кез келген мақала атын басса, пайдаланушы сол мақала бетіне өтуі керек.</li>
+            </ul>
+          </li>
+          <li><strong>New Page (жаңа бет)</strong>: бүйір панелдегі «Create New Page» сілтемесі пайдаланушыны жаңа мақала жасайтын бетке апаруы керек.
+            <ul>
+              <li>Пайдаланушы бет атауын енгізіп, <a href="https://www.w3schools.com/tags/tag_textarea.asp" target="_blank" rel="noopener"><code>textarea</code></a> ішіне бет үшін Markdown мазмұнын енгізе алуы керек.</li>
+              <li>Пайдаланушы жаңа бетін сақтау үшін батырманы басады.</li>
+              <li>Бет сақталғанда, берілген атаумен мақала бұрыннан бар болса, пайдаланушыға қате туралы хабар көрсетілуі керек.</li>
+              <li>Әйтпесе мақала дискіге сақталып, пайдаланушы жаңа мақаланың бетіне өтуі керек.</li>
+            </ul>
+          </li>
+          <li><strong>Edit Page (бетті өңдеу)</strong>: әр мақала бетінде пайдаланушы мақаланың Markdown мазмұнын <code>textarea</code> ішінде өңдей алатын бетке өту сілтемесін басып көре алуы керек.
+            <ul>
+              <li><code>textarea</code> бетте бар Markdown мазмұнымен алдын ала толтырылуы керек (яғни бар мазмұн <code>textarea</code>-ның бастапқы <code>value</code> мәні болуы тиіс).</li>
+              <li>Пайдаланушы мақалаға енгізген өзгерістерді сақтау үшін батырманы басады.</li>
+              <li>Мақала сақталған соң, пайдаланушы сол мақаланың бетіне қайта бағытталуы керек.</li>
+            </ul>
+          </li>
+          <li><strong>Random Page (кездейсоқ бет)</strong>: бүйір панелдегі «Random Page» сілтемесі пайдаланушыны кездейсоқ энциклопедия мақаласына апаруы керек.</li>
+          <li><strong>Markdown to HTML Conversion (Markdown-ды HTML-ге түрлендіру)</strong>: әр мақала бетінде мақала файлындағы Markdown мазмұны пайдаланушыға көрсетілмей тұрып HTML-ге түрлендірілуі тиіс. Түрлендіру үшін <a href="https://github.com/trentm/python-markdown2" target="_blank" rel="noopener"><code>python-markdown2</code></a> пакетін қолдануға болады, оны <code>pip3 install markdown2</code> арқылы орнатасыз.
+            <ul>
+              <li>Өзін жақсы сезінетіндерге қосымша тапсырма: сыртқы кітапханасыз Markdown-ды HTML-ге түрлендіруді жасап көріңіз. Ол тақырыптарды, қою мәтінді, реттелмеген тізімдерді, сілтемелерді және абзацтарды қолдасын. <a href="https://docs.python.org/3/howto/regex.html" target="_blank" rel="noopener">Python-дағы тұрақты өрнектер</a> көмектесуі мүмкін.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <details><summary>Кеңес</summary><div class="details-body">
+          <p>Django шаблонында мәнді қойғанда Django оны әдепкіде HTML-escape жасайды, яғни кездейсоқ HTML шығып кетпейді. Егер HTML жолын шынымен HTML ретінде шығарғыңыз келсе, ауыстыратын айнымалы атының артына <code>|safe</code> деп жазып, <a href="https://docs.djangoproject.com/en/4.0/ref/templates/builtins/#safe" target="_blank" rel="noopener"><code>safe</code></a> сүзгісін қолданыңыз. Мысалы: <code>{{ content|safe }}</code>.</p>
+        </div></details>
+        <details><summary>CS50 Codespace қолдансаңыз</summary><div class="details-body">
+          <p>CS50 Codespace-те форма жібергенде «403 - CSRF Origin checking» қателігі шықса, жобаңыздың <code>settings.py</code> файлына мына жолды қосыңыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">CSRF_TRUSTED_ORIGINS = ['https://CODESPACE-URL-8000.preview.app.github.dev']</code></pre>
+          <p><code>CODESPACE-URL</code> орнына браузер адрес жолағында көрінетін Codespace-тің нақты URL-ін қойыңыз.</p>
+        </div></details>
+
+        <h4>Қалай тапсыру керек</h4>
+        <p>Тапсыру кезінде <code>web50/projects/2020/x/wiki</code> тармағының құрылымы алынған дистрибутив кодының құрылымымен бірдей болуы керек: файлдарыңыз өзіңіз жасаған басқа қалталардың ішіне салынбасын, тек осы жобаның коды болсын (үш қалта: <code>encyclopedia</code>, <code>entries</code>, <code>wiki</code> және <code>manage.py</code> файлы). Тапсыру үшін <code>submit50</code> орнатылған болса:</p>
+<pre class="terminal"><code class="language-plaintext">$ submit50 web50/projects/2020/x/wiki</code></pre>
+        <p>Әйтпесе Git арқылы жұмысыңызды <code>https://github.com/me50/USERNAME.git</code> репозиторийіндегі <code>web50/projects/2020/x/wiki</code> тармағына жіберіңіз (<code>USERNAME</code> - GitHub атыңыз). Сонымен қатар 5 минуттан аспайтын <strong>скринкаст</strong> жазып, YouTube-қа жүктеу керек: онда веб-қосымшаңыздың жеті талаптың бәрі орындалып жатқанын көрсетесіз (код түсіндірмей), бейне басында edX және GitHub аттарыңыз болсын, сипаттамада әр талап көрінген уақыт белгіленсін. Толық нұсқаулық пен форма ресми беттерде.</p>
+
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web1-wiki">
+            <li><input type="checkbox"> <span><strong>Entry Page</strong>: <code>/wiki/TITLE</code> мақаланы көрсетеді (атауында мақала аты бар), жоқ мақала үшін қате беті шығады.</span></li>
+            <li><input type="checkbox"> <span><strong>Index Page</strong>: мақала аттары сілтеме, басқанда мақала беті ашылады.</span></li>
+            <li><input type="checkbox"> <span><strong>Search</strong>: дәл сәйкестік мақалаға бағыттайды, әйтпесе ішкі жол бойынша нәтижелер беті шығады (<code>ytho</code> -> <code>Python</code>).</span></li>
+            <li><input type="checkbox"> <span><strong>New Page</strong>: атау мен Markdown <code>textarea</code> бар, бар атау үшін қате хабары шығады, әйтпесе мақала сақталып, оның беті ашылады.</span></li>
+            <li><input type="checkbox"> <span><strong>Edit Page</strong>: <code>textarea</code> бар мазмұнмен толтырылған, сақтағаннан кейін мақала бетіне қайта бағытталады.</span></li>
+            <li><input type="checkbox"> <span><strong>Random Page</strong>: кездейсоқ мақалаға апарады.</span></li>
+            <li><input type="checkbox"> <span><strong>Markdown to HTML</strong>: мақала мазмұны HTML-ге түрленіп көрсетіледі (<code>|safe</code> қолданылған).</span></li>
+            <li><input type="checkbox"> <span>Файл құрылымы дистрибутивтегідей; <code>submit50 web50/projects/2020/x/wiki</code> орындалды және скринкаст жасалды.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <h3 id="extra">Сайттың өз жаттығулары (ресми емес)</h3>
+      <p>Төмендегі екі жаттығуды ресми курс бермейді, оларды біз Wiki жобасына дайындық ретінде қостық. Олар таза Python-да жазылады, сондықтан браузерде тексеріледі. Бірінші жаттығуда Django-ның <code>path</code> жолдарының мінезін, екіншісінде Wiki іздеуінің логикасын өзіңіз кодтайсыз.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-resolve">Мини URL-маршрутизатор (resolve)</h3></div>
+        <p><code>resolve.py</code> файлында <code>resolve(path, urlpatterns)</code> функциясын жазыңыз. <code>urlpatterns</code> - <code>(маршрут, ат)</code> жұптарының тізімі, мысалы <code>[("", "index"), ("brian", "brian"), ("posts/&lt;int:id&gt;", "post"), ("&lt;str:name&gt;", "greet")]</code>. Функция жолдарды <em>жоғарыдан төмен</em> тексеріп, <strong>бірінші</strong> сәйкес келгенін <code>(ат, параметрлер_сөздігі)</code> түрінде қайтарсын. <code>&lt;str:x&gt;</code> бос емес кез келген бөлікті қабылдайды, <code>&lt;int:x&gt;</code> тек цифрларды қабылдайды және мәнін <code>int</code> қылады. Жолдың басы мен соңындағы <code>/</code> ескерілмейді. Ештеңе сәйкес келмесе, <code>None</code> қайтарсын.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Жолды да, маршрутты да <code>strip("/").split("/")</code> арқылы бөліктерге бөліңіз (бос жол үшін бос тізім алыңыз). Бөліктер саны тең болмаса, келесі маршрутқа өтіңіз. Әр бөлікті салыстырғанда <code>&lt;...&gt;</code> болса, түрін (<code>str</code>/<code>int</code>) тексеріп, параметрлер сөздігіне қосыңыз.</p></div></details>
+        <div class="autograder" data-check="py-resolve" data-src="web/checks/week-3.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web3-resolve">
+            <li><input type="checkbox"> <span>Маршруттар тізімдегі ретімен тексеріледі, бірінші сәйкес келгені қайтарылады.</span></li>
+            <li><input type="checkbox"> <span><code>&lt;int:id&gt;</code> мәні <code>int</code> болады, әріп болса сәйкес келмейді.</span></li>
+            <li><input type="checkbox"> <span>Сәйкестік болмаса, <code>None</code> қайтарылады.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pset-search">Wiki іздеуі (search)</h3></div>
+        <p><code>search.py</code> файлында <code>search(query, entries)</code> функциясын жазыңыз, ол Wiki-дің іздеу талабын орындайды. <code>entries</code> - мақала аттарының тізімі. Егер <code>query</code> бір мақала атына (регистрге қарамай) дәл тең болса, <code>("redirect", сол_мақала_аты)</code> қайтарыңыз. Әйтпесе <code>("results", тізім)</code> қайтарыңыз: тізімде <code>query</code>-ді (регистрге қарамай) ішкі жол ретінде қамтитын барлық аттар <code>entries</code> ретімен тұрады.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Салыстырудың екі жағын да <code>.lower()</code> етіңіз. Ішкі жолды <code>query in title</code> арқылы тексересіз, ал <code>startswith</code> жеткіліксіз: <code>ytho</code> сөзі <code>Python</code> ортасында тұр.</p></div></details>
+        <div class="autograder" data-check="py-search" data-src="web/checks/week-3.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web3-search">
+            <li><input type="checkbox"> <span>Дәл сәйкестік (регистрге қарамай) <code>redirect</code> береді, мақаланың түпнұсқа аты қайтарылады.</span></li>
+            <li><input type="checkbox"> <span>Әйтпесе ішкі жол бойынша нәтижелер тізімі қайтарылады.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-2.html"><small>Алдыңғы</small>← 2-апта: Python</a>
+        <a class="next" href="week-4.html"><small>Келесі</small>4-апта: SQL, модельдер →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50W (CS50's Web Programming with Python and JavaScript, Гарвард университеті, Brian Yu, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>
