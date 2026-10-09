@@ -1,0 +1,31 @@
+# CS50 курстарының түпнұсқа конспектілері мен тапсырмаларын жүктеп, sources/ қалтасына коммит жасайды (қолмен).
+name: CS50 түпнұсқа мәтінін жүктеу
+
+on:
+  workflow_dispatch:
+    inputs:
+      courses:
+        description: "Курстар (бос орынмен): python sql ai web"
+        default: "python sql ai web"
+
+permissions:
+  contents: write
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install beautifulsoup4 html2text
+      - run: python tools/fetch_cs50.py ${{ inputs.courses }}
+      - name: Коммит
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A sources
+          git diff --cached --quiet && { echo "Өзгеріс жоқ"; exit 0; }
+          git commit -m "Sources: original CS50 notes and problem sets (${{ inputs.courses }})"
+          for i in 1 2 3 4; do git push && exit 0; sleep $((i * 5)); git pull --rebase -q; done; exit 1
