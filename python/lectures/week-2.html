@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50P 2-апта: Циклдер - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50P 2-апта: Циклдер - CS50 қазақша">
+  <meta property="og:description" content="CS50P (Python) 2-апта: циклдер, while және for, range, енгізуді тексеру, break және continue, тізімдер, сөздіктер, кірістірілген циклдер және Марио.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/python/lectures/week-2.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50P (Python) 2-апта: циклдер, while және for, range, енгізуді тексеру, break және continue, тізімдер, сөздіктер, кірістірілген циклдер және Марио.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#3776ab" data-n="2">
+        <div class="num">2-апта</div>
+        <h1>Циклдер</h1>
+        <p>Бір әрекетті қайта-қайта орындауды үйренеміз: <code>while</code> мен <code>for</code> циклдері, қолданушы енгізгенін тексеру, тізімдер, сөздіктер және Марио ойынының кірпіштерін экранға салу.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/python/weeks/2/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="loops">Циклдер</h2>
+      <p>Өткен аптада бағдарламамыз шешім қабылдауды үйренді: «егер былай болса, анау істе». Бүгін оған жаңа қабілет қосамыз - бір нәрсені <em>қайта-қайта</em> істеу. Мұны <strong>цикл</strong> (<span class="term-en">loop</span>) дейміз. Негізі, цикл дегеніміз - бір әрекетті қайталай берудің тәсілі, бар болғаны сол.</p>
+      <p>Қарапайым мысалдан бастайық. Терминалға <code>code cat.py</code> деп жазып, жаңа файл ашамыз. Мысығымыз үш рет мияулауы керек дейік. Бүгінге дейін білетінімізбен, бұл былай жазылады:</p>
+<pre data-lang="python"><code class="language-python">print("meow")
+print("meow")
+print("meow")</code></pre>
+      <p><code>python cat.py</code> деп іске қоссақ, мысық шынымен де үш рет мияулайды. Бағдарлама дұрыс жұмыс істейді. Бірақ бағдарламашы ретінде өскен сайын, кодыңыздағы бір нәрсені қайта-қайта жазып отырған жерлерге күдікпен қарай бастайсыз. Ойлап көріңізші: мысық 500 рет мияулауы керек болса ше? Сол <code>print("meow")</code> жолын 500 рет көшіріп қою қисынды ма? Әрине, жоқ. Қателесу оңай, оқу қиын, ал «енді 499 рет» десе, бәрін қайта санау керек.</p>
+      <p>Міне, циклдер дәл осы үшін керек: олар бір код блогын қайта-қайта орындатуға мүмкіндік береді.</p>
+
+      <h2 id="while">while циклі</h2>
+      <p>Алғашқы циклымыз - <code>while</code>. Ол бағдарламалау тілдерінің бәрінде дерлік бар. Аты айтып тұрғандай, «әзірге... болғанша» дегенді білдіреді: шарт ақиқат болып тұрғанша, ішіндегі код блогын қайталай береді. Кодты былай өзгертейік:</p>
+<pre data-lang="python"><code class="language-python">i = 3
+while i != 0:
+    print("meow")</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: бұл бағдарлама неше рет мияулайды?</summary>
+        <div class="details-body"><p>Шексіз! Ол ешқашан тоқтамайды. <code>while</code> әр айналымның басында шартты қайта сұрайды: «<code>i</code> нөлге тең емес пе?» Ал <code>i</code> басынан аяғына дейін 3 болып қалады, өйткені біз оны ешқашан өзгертпейміз. Демек, жауап әрқашан «иә».</p></div>
+      </details>
+      <p>Иә, бұл кодта <code>print("meow")</code> қайта-қайта орындалады, бірақ ешқашан тоқтамайды. Мұны <strong>шексіз цикл</strong> (<span class="term-en">infinite loop</span>) дейді. <code>while</code> қалай жұмыс істейтінін еске түсірейік: ол әр жолы «цикл шарты әлі орындалып тұр ма?» деп сұрайды. Біздің жағдайда интерпретатор «<code>i</code> нөлге тең емес пе?» деп сұрайды да, әрқашан «иә» деген жауап алады.</p>
+      <div class="callout warn">
+        <span class="callout-title">Шексіз циклге тұтылып қалсаңыз</span>
+        <p>Үрейленбеңіз, бұл бәрінің басынан өтеді. Пернетақтада <kbd>Ctrl</kbd>+<kbd>C</kbd> басыңыз. Бұл бағдарламаны тоқтатып, циклден шығарады.</p>
+      </div>
+      <p>Ендеше, мәселені түзетейік. Әр айналымда <code>i</code>-ді бірге азайтайық:</p>
+<pre data-lang="python"><code class="language-python">i = 3
+while i != 0:
+    print("meow")
+    i = i - 1</code></pre>
+      <p>Енді код дұрыс істейді: әр айналымда <code>i</code> бірге кемиді, 3, 2, 1, ал 0-ге жеткенде шарт жалған болып, цикл тоқтайды. Осы «айналым» сөзінің бағдарламалауда арнайы атауы бар: <strong>итерация</strong> (<span class="term-en">iteration</span>). Итерация - цикл арқылы бір рет толық айналып шығу. Бағдарламалауда санауды әдетте нөлден бастаймыз, сондықтан бірінші итерацияны «0-итерация», екіншісін «1-итерация» деп атауға болады: 0, 1, 2, ...</p>
+      <p>Бұл кодты тағы жақсартуға болады. Кері санаудың орнына, адамдардың көбі санайтындай 1-ден бастап алға қарай санайық:</p>
+<pre data-lang="python"><code class="language-python">i = 1
+while i &lt;= 3:
+    print("meow")
+    i = i + 1</code></pre>
+      <p><code>i = i + 1</code> жолына назар аударыңыз. Математик мұны көрсе, шошып кетер еді: қалайша сан өзінен бір артық бола алады? Бірақ өткен аптадан білеміз: <code>=</code> «тең» емес, меншіктеу. Оңнан солға оқимыз: «<code>i</code>-дің қазіргі мәніне 1 қос та, нәтижесін қайтадан <code>i</code>-ге сал». Мұнда <code>i</code>-ді адамша, 1-ден бастадық (1, 2, 3), мысық үш рет мияулайды. Дегенмен бағдарламалауда санауды нөлден бастау жақсы әдет саналады.</p>
+      <p>Ендеше, нөлден бастайық:</p>
+<pre data-lang="python"><code class="language-python">i = 0
+while i &lt; 3:
+    print("meow")
+    i += 1</code></pre>
+      <p>Шартты <code>i &lt; 3</code> деп өзгерткенімізге назар аударыңыз. 0-ден бастап санағанда, цикл 0, 1, 2 үшін, яғни дәл үш рет айналады да, үш «meow» шығарады. Тағы бір жаңалық: <code>i += 1</code> - <code>i = i + 1</code>-дің қысқаша жазылуы. Мағынасы бірдей, тек саусағыңыз аз шаршайды.</p>
+      <p>Осы кодтың жұмысын блок-сызбамен көрсетейік:</p>
+      <svg viewBox="0 0 400 400" role="img" aria-label="Блок-сызба: i = 0, i &lt; 3 ақиқат болғанша meow шығарып, i-ді 1-ге арттырамыз" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto"><defs><marker id="fc-while-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="85" y="13" width="90" height="34" rx="17" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="130" y="30" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px">start</text><polyline points="130,47 130,78" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#fc-while-arr)"/><rect x="50" y="80" width="160" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="130" y="100" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px">i = 0</text><polyline points="130,120 130,158" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#fc-while-arr)"/><polygon points="130,160 202,190 130,220 58,190" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="130" y="190" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px">i &lt; 3</text><polyline points="130,220 130,268" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#fc-while-arr)"/><text x="138" y="240" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:600">True</text><rect x="50" y="270" width="160" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="130" y="290" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px">"meow"</text><polyline points="130,310 130,348" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#fc-while-arr)"/><rect x="50" y="350" width="160" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="130" y="370" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px">i += 1</text><polyline points="50,370 20,370 20,190 56,190" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#fc-while-arr)"/><polyline points="202,190 283,190" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#fc-while-arr)"/><text x="212" y="180" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:600">False</text><rect x="285" y="173" width="90" height="34" rx="17" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="330" y="190" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px">stop</text></svg>
+      <p>Сызбаға қарап, жолды саусағыңызбен жүріп шығыңыз: <code>i</code> 0-ден басталады, әр жолы шарт тексеріледі, «meow» шығады, <code>i</code> бірге артады да, қайтадан шартқа ораламыз. Байқадыңыз ба? <code>i</code> 3-ке <em>дейін</em> санайды, бірақ 3-тің өзіне жеткенде шарт жалған болады да, цикл 3 үшін орындалмайды.</p>
+
+      <h2 id="for">for циклі</h2>
+      <p>Енді циклдің басқа түрімен танысайық: <code>for</code>. Оны жақсы түсіну үшін алдымен Python-дағы жаңа типпен танысу керек: <strong>тізім</strong> (<span class="term-en">list</span>). Күнделікті өмірде де тізімдер толып жатыр: базарға алатын заттар тізімі, бүгін істейтін істер тізімі. Python-да тізім тік жақшамен жазылады, элементтері үтірмен бөлінеді.</p>
+      <p><code>for</code> циклі тізімдегі элементтерді бір-бірлеп аралап шығады. <code>cat.py</code>-ды былай өзгертейік:</p>
+<pre data-lang="python"><code class="language-python">for i in [0, 1, 2]:
+    print("meow")</code></pre>
+      <p>Алдыңғы <code>while</code> кодымен салыстырғанда, қаншалықты таза екенін көрдіңіз бе? Мұнда <code>i</code>-ді өзіміз арттырып әуре болмаймыз, оны Python істейді. Алдымен <code>i</code> 0 болады, мысық мияулайды; сосын <code>i</code>-ге 1 меншіктеледі, тағы мияулайды; ақырында <code>i</code> 2 болады, үшінші рет мияулайды да, тізім біткен соң цикл аяқталады.</p>
+
+      <h3 id="range">range функциясы</h3>
+      <p>Код біз қалағанды істейді, бірақ шеткі жағдайларды ойлап көрейік. Бір қарағанда бәрі тамаша. Ал мысық миллион рет мияулауы керек болса ше? <code>[0, 1, 2, ..., 999999]</code> деп миллион санды қолмен жазамыз ба? Жақсы код осындай шеткі жағдайларға да шыдайтын болуы керек. Сондықтан кодты былай жақсартамыз:</p>
+<pre data-lang="python"><code class="language-python">for i in range(3):
+    print("meow")</code></pre>
+      <p><code>range(3)</code> бізге үш мәнді автоматты түрде береді: <code>0</code>, <code>1</code> және <code>2</code>. Нәтиже бұрынғыдай, мысық үш рет мияулайды. Ал миллион керек болса, жай ғана <code>range(1000000)</code> деп жазасыз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: range(3) ішінде 3 саны бар ма?</summary>
+        <div class="details-body"><p>Жоқ. <code>range(3)</code> 0-ден басталып, 3-ке <em>дейін</em> барады, бірақ 3-тің өзін қоспайды: 0, 1, 2. Нәтижесінде дәл 3 мән шығады. Бұл жоғарыдағы <code>while i &lt; 3</code> циклімен бірдей логика.</p></div>
+      </details>
+
+      <h3 id="underscore">Астын сызу белгісі _</h3>
+      <p>Кодты тағы жақсартуға болады. Байқасаңыз, біз <code>i</code>-ді циклдің ішінде ешқашан қолданбаймыз. Python-ға <code>i</code> итерацияның нөмірін сақтайтын орын ретінде керек, бірақ біз оны басқа ешнәрсеге пайдаланбаймыз. Python-да мұндай, кодта ешқандай рөлі жоқ айнымалыны жай ғана астын сызу белгісімен, <code>_</code> деп белгілеуге болады:</p>
+<pre data-lang="python"><code class="language-python">for _ in range(3):
+    print("meow")</code></pre>
+      <p><code>i</code>-ді <code>_</code>-ға ауыстыру бағдарламаның жұмысына ешқандай әсер етпейді. Бірақ кодыңызды оқитын адамға «бұл айнымалы маған керек емес, тек санау үшін» деген белгі береді.</p>
+
+      <h3 id="string-multiplication">Жолды көбейту</h3>
+      <p>Ойыңызды кеңірек ашу үшін, Python-ның тағы бір мүмкіндігін көрсетейін. Мына кодты қараңыз:</p>
+<pre data-lang="python"><code class="language-python">print("meow" * 3)</code></pre>
+      <p>Иә, Python-да жолды санға көбейтуге болады! Мысық үш рет мияулайды, бірақ нәтиже бір жолда шығады: <code>meowmeowmeow</code>. Ойланып көріңізші: әр «meow»-дың соңында жаңа жолға қалай көшеміз?</p>
+      <p>Өткен аптадағы <code>\n</code> мен <code>end</code> параметрі есіңізде ме? Солар көмектеседі:</p>
+<pre data-lang="python"><code class="language-python">print("meow\n" * 3, end="")</code></pre>
+      <p>Енді үш «meow» әрқайсысы бөлек жолда шығады. <code>\n</code> әр «meow»-дың соңына жол ауыстыруды қосады, ал <code>end=""</code> интерпретаторға соңғысынан кейін <em>тағы бір</em> артық жол ауыстыруды қоспа дейді. Онсыз <code>print</code> өзінің әдепкі <code>\n</code>-ін қосып, соңында бос жол қалар еді.</p>
+
+      <h2 id="validating-input">Қолданушы енгізгенін тексеру</h2>
+      <p>Мысықтың неше рет мияулайтынын біз емес, қолданушы шешсін дейік. Бірақ мұнда бір қиындық бар: өткен апталардан білеміз, қолданушыға толық сенуге болмайды. Ол теріс сан, нөл, тіпті «мысық» деген сөз жазып жіберуі мүмкін. Циклдер енгізілген мәнді тексеруге де көмектеседі. Мұны <strong>енгізуді тексеру</strong> (<span class="term-en">input validation</span>) дейді.</p>
+      <p>Python-да бұл үшін кең тараған бір тәсіл бар: <code>while</code> циклі арқылы қолданушыдан дұрыс жауап алғанша сұрай беру. Мысалы, қолданушыдан 0-ден үлкен не тең сан сұрайық:</p>
+<pre data-lang="python"><code class="language-python">while True:
+    n = int(input("What's n? "))
+    if n &lt; 0:
+        continue
+    else:
+        break</code></pre>
+      <p>Мұнда екі жаңа кілт сөз пайда болды: <code>continue</code> және <code>break</code>. <code>continue</code> Python-ға «циклдің келесі итерациясына көш» дейді, яғни циклдің басына қайта оралады. Ал <code>break</code>, керісінше, «циклден дәл қазір шық» дейді, барлық итерация біткенін күтпей-ақ. Біздің кодта <code>n</code> 0-ден кіші болса, <code>continue</code> арқылы келесі итерацияға өтеміз де, қолданушыдан «What's n?» деп қайта сұраймыз. Ал <code>n</code> 0-ден үлкен не тең болса, <code>break</code> арқылы циклден шығамыз, бағдарламаның қалған бөлігі жалғаса береді.</p>
+      <p>Сәл ойланса, бұл жерде <code>continue</code> артық екен. Цикл бәрібір басына оралады ғой! Сондықтан кодты ықшамдаймыз, бұл жолы қолданушыдан 0-ден қатаң үлкен сан талап етеміз, сосын сонша рет мияулаймыз:</p>
+<pre data-lang="python"><code class="language-python">while True:
+    n = int(input("What's n? "))
+    if n &gt; 0:
+        break
+
+for _ in range(n):
+    print("meow")</code></pre>
+      <p>Бір қарағанда, бұл <code>while</code> мәңгі айналатын сияқты: <code>True</code> әрқашан <code>True</code> емес пе? Иә, бірақ <code>n</code> 0-ден үлкен болған сәтте <code>break</code> бізді циклден шығарады. Бұл - Python-да қолданушыдан дұрыс мән алудың ең жиі кездесетін үлгісі. Есіңізге сақтаңыз, тапсырмаларда талай рет керек болады.</p>
+<pre class="terminal"><code class="language-plaintext">$ python cat.py
+What's n? -1
+What's n? 0
+What's n? 3
+meow
+meow
+meow</code></pre>
+      <div class="callout term">
+        <span class="callout-title">continue мен break</span>
+        <p><code>continue</code> - «бұл айналымның қалғанын тастап, келесі айналымға көш». <code>break</code> - «циклді мүлде тоқтат». Екеуі де тек циклдің ішінде мағыналы.</p>
+      </div>
+
+      <h3 id="get-number">Функциялармен ретке келтіру</h3>
+      <p>Енді алдыңғы апталардағы білімімізді қосайық. Кодты функцияларға бөліп, әрқайсысына бір ғана жұмыс тапсырамыз:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    meow(get_number())
+
+
+def get_number():
+    while True:
+        n = int(input("What's n? "))
+        if n &gt; 0:
+            return n
+
+
+def meow(n):
+    for _ in range(n):
+        print("meow")
+
+
+main()</code></pre>
+      <p>Мұнда бірнеше нәрсе өзгерді. Біріншіден, код енді бірнеше функцияға бөлінген: <code>get_number</code> тек сан сұрайды, <code>meow</code> тек мияулайды, ал <code>main</code> оларды байланыстырады. Екіншіден, <code>break</code>-тің орнына <code>return</code> қолдандық. <code>return</code> циклден ғана емес, бүкіл функциядан шығып, <code>n</code>-нің мәнін <code>main</code>-ге қайтарады. Сондықтан бұл жерде <code>break</code> керек емес. <code>main</code> ішіндегі <code>meow(get_number())</code> жолын ішінен сыртқа қарай оқимыз: алдымен <code>get_number()</code> дұрыс сан алады, сосын сол сан <code>meow</code>-ға беріледі.</p>
+
+      <h2 id="lists">Тізімдер туралы толығырақ</h2>
+      <p>Мысықтардан сиқыр әлеміне көшейік. Гарри Поттер туралы кітаптардағы Хогвартс мектебі есіңізде шығар. Терминалға <code>code hogwarts.py</code> деп жазып, оқушылардың тізімін жасайық:</p>
+<pre data-lang="python"><code class="language-python">students = ["Hermione", "Harry", "Ron"]
+
+print(students[0])
+print(students[1])
+print(students[2])</code></pre>
+      <p>Мұнда <code>students</code> - оқушылардың аттары жазылған тізім. Тізімнің белгілі бір элементін алу үшін, атынан кейін тік жақшаға оның нөмірін жазамыз. Бұл нөмірді <strong>индекс</strong> (<span class="term-en">index</span>) дейді. Есіңізде болсын, санау нөлден басталады! Сондықтан <code>students[0]</code> - бірінші элемент, «Hermione». Қалған оқушылар да осылай шығарылады.</p>
+      <p>Бірақ біз мұны әлдеқашан білеміз: бір әрекетті әр элемент үшін қайталау керек болса, цикл қолданамыз. Кодты былай жақсартайық:</p>
+<pre data-lang="python"><code class="language-python">students = ["Hermione", "Harry", "Ron"]
+
+for student in students:
+    print(student)</code></pre>
+      <p>Оқыңызшы, бұл қазақшаға қаншалықты жақын: «<code>students</code> тізіміндегі әр <code>student</code> үшін, сол <code>student</code>-ті шығар». Цикл әр айналымда <code>student</code> айнымалысына тізімнің келесі элементін салады. Неге мұнда <code>_</code> қолданбадық деп сұрарсыз? Себебі бұл жолы айнымалы кодта шынымен қолданылады, біз оны <code>print</code>-ке береміз. Сондықтан оған мағыналы ат берген дұрыс.</p>
+      <p>Тізімдер туралы толығырақ: Python құжаттамасындағы <a href="https://docs.python.org/3/tutorial/datastructures.html#more-on-lists" target="_blank" rel="noopener">тізімдер</a>.</p>
+
+      <h2 id="len">Ұзындық: len</h2>
+      <p>Тізімнің неше элементтен тұратынын білу үшін <code>len</code> функциясы бар (<span class="term-en">length</span>, «ұзындық» сөзінен). Мысалы, <code>students</code> тізімінің ұзындығы 3.</p>
+      <p>Енді оқушының атымен қоса, оның тізімдегі орнын да шығарғымыз келді делік: 1, 2, 3. Ол үшін кодты былай өзгертеміз:</p>
+<pre data-lang="python"><code class="language-python">students = ["Hermione", "Harry", "Ron"]
+
+for i in range(len(students)):
+    print(i + 1, students[i])</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python hogwarts.py
+1 Hermione
+2 Harry
+3 Ron</code></pre>
+      <p>Мұнда не болып жатқанын қадамдап қарайық. <code>len(students)</code> 3 қайтарады, <code>range(3)</code> бізге 0, 1, 2 береді. Әр айналымда <code>students[i]</code> сол индекстегі оқушыны алады, ал <code>i + 1</code> орнын адамша, бірден бастап көрсетеді. <code>len</code>-нің артықшылығы: тізім қанша өссе де, оның ұзындығын бағдарлама өзі анықтайды. Ертең тізімге Невилл мен Луна қосылса, кодты өзгертудің қажеті жоқ.</p>
+      <p>Толығырақ: Python құжаттамасындағы <a href="https://docs.python.org/3/library/functions.html#len" target="_blank" rel="noopener"><code>len</code></a>.</p>
+
+      <h2 id="dicts">Сөздіктер</h2>
+      <p>Енді тағы бір өте пайдалы <strong>деректер құрылымымен</strong> (<span class="term-en">data structure</span>) танысайық: <strong>сөздік</strong> (<span class="term-en">dictionary</span>), Python-да <code>dict</code>. Сөздік <strong>кілттерді</strong> (<span class="term-en">keys</span>) <strong>мәндермен</strong> (<span class="term-en">values</span>) байланыстырады. Кәдімгі қазақша-ағылшынша сөздікті елестетіңіз: сөзді (кілтті) іздейсіз, оның аудармасын (мәнін) табасыз. Тізім - жай ғана бірнеше мәннің тізбегі болса, сөздік әр кілтке бір мәнді сәйкестендіреді.</p>
+      <p>Хогвартсқа оралайық. Оқушылар әртүрлі үйлерге (факультеттерге) бөлінеді:</p>
+      <table>
+        <thead><tr><th>Оқушы</th><th>Үйі</th></tr></thead>
+        <tbody>
+          <tr><td>Hermione</td><td>Gryffindor</td></tr>
+          <tr><td>Harry</td><td>Gryffindor</td></tr>
+          <tr><td>Ron</td><td>Gryffindor</td></tr>
+          <tr><td>Draco</td><td>Slytherin</td></tr>
+        </tbody>
+      </table>
+      <p>Мұны тек тізімдермен де жасауға болады:</p>
+<pre data-lang="python"><code class="language-python">students = ["Hermione", "Harry", "Ron", "Draco"]
+houses = ["Gryffindor", "Gryffindor", "Gryffindor", "Slytherin"]</code></pre>
+      <p>Бұл жерде біз өзімізге уәде береміз: екі тізімнің ретін әрқашан бірдей ұстаймыз. <code>students</code>-тің бірінші орнындағы адам <code>houses</code>-тің бірінші орнындағы үйге сәйкес келеді, т.с.с. Бірақ тізімдер өскен сайын бұл өте ыңғайсыз болады! Біреуін сұрыптап жіберсеңіз не бір элементті өшіріп, екіншісін ұмытсаңыз, бәрі шатасады.</p>
+      <p>Сөздікпен әлдеқайда жақсы:</p>
+<pre data-lang="python"><code class="language-python">students = {
+    "Hermione": "Gryffindor",
+    "Harry": "Gryffindor",
+    "Ron": "Gryffindor",
+    "Draco": "Slytherin",
+}
+print(students["Hermione"])
+print(students["Harry"])
+print(students["Ron"])
+print(students["Draco"])</code></pre>
+      <p>Сөздік фигуралы жақшамен, <code>{}</code>, жасалатынына назар аударыңыз. Әр жұп «кілт: мән» түрінде жазылады. Тізімде элементке сан (индекс) арқылы жүгінсек, сөздікте <em>сөз</em> арқылы жүгінеміз: <code>students["Hermione"]</code>. Іске қосып, нәтиже мынадай екеніне көз жеткізіңіз:</p>
+<pre class="terminal"><code class="language-plaintext">$ python hogwarts.py
+Gryffindor
+Gryffindor
+Gryffindor
+Slytherin</code></pre>
+      <p>Бірақ төрт рет <code>print</code> жазу бізге таныс мәселе. Цикл қолданайық:</p>
+<pre data-lang="python"><code class="language-python">students = {
+    "Hermione": "Gryffindor",
+    "Harry": "Gryffindor",
+    "Ron": "Gryffindor",
+    "Draco": "Slytherin",
+}
+for student in students:
+    print(student)</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: бұл код үйлердің атын шығара ма, әлде оқушылардың атын ба?</summary>
+        <div class="details-body"><p>Оқушылардың атын: Hermione, Harry, Ron, Draco. Сөздікті <code>for</code> арқылы аралағанда, цикл тек <em>кілттерді</em> аралайды. Үйлер (мәндер) шықпайды.</p></div>
+      </details>
+      <p>Сонымен, <code>for</code> циклі сөздіктің тек кілттерін аралайды, нәтижесінде оқушылардың аттары шығады. Ал кілттерді де, мәндерді де шығару керек болса ше? Кілтті білсек, мәнді табу оңай ғой:</p>
+<pre data-lang="python"><code class="language-python">students = {
+    "Hermione": "Gryffindor",
+    "Harry": "Gryffindor",
+    "Ron": "Gryffindor",
+    "Draco": "Slytherin",
+}
+for student in students:
+    print(student, students[student])</code></pre>
+      <p><code>students[student]</code> әр оқушының кілтіне барып, оның үйін, яғни мәнін табады. Іске қосып көрсеңіз, нәтиже сәл шашыраңқы екенін байқайсыз: ат пен үй бос орынмен ғана бөлінген. Мұны <code>print</code>-тің бізге таныс <code>sep</code> параметрімен ретке келтірейік:</p>
+<pre data-lang="python"><code class="language-python">students = {
+    "Hermione": "Gryffindor",
+    "Harry": "Gryffindor",
+    "Ron": "Gryffindor",
+    "Draco": "Slytherin",
+}
+for student in students:
+    print(student, students[student], sep=", ")</code></pre>
+      <p>Енді шығарылатын әр элементтің арасында <code>", "</code> (үтір және бос орын) тұрады. <code>python hogwarts.py</code> деп іске қоссаңыз, мынаны көресіз:</p>
+<pre class="terminal"><code class="language-plaintext">$ python hogwarts.py
+Hermione, Gryffindor
+Harry, Gryffindor
+Ron, Gryffindor
+Draco, Slytherin</code></pre>
+
+      <h3 id="list-of-dicts">Сөздіктер тізімі</h3>
+      <p>Ал оқушылар туралы мәлімет көбірек болса ше? Әр оқушыға бірнеше деректі қалай байланыстырамыз? Мысалы, үйінен бөлек, әр оқушының патронусы бар (қорғаушы сиқырлы жануар):</p>
+      <table>
+        <thead><tr><th>name</th><th>house</th><th>patronus</th></tr></thead>
+        <tbody>
+          <tr><td>Hermione</td><td>Gryffindor</td><td>Otter</td></tr>
+          <tr><td>Harry</td><td>Gryffindor</td><td>Stag</td></tr>
+          <tr><td>Ron</td><td>Gryffindor</td><td>Jack Russell terrier</td></tr>
+          <tr><td>Draco</td><td>Slytherin</td><td></td></tr>
+        </tbody>
+      </table>
+      <p>Кестеге қараңыз: әр жол - бір оқушы, әр баған - бір қасиет. Бұл бізді бір ойға жетелейді: әр оқушыны жеке сөздік етіп, сол сөздіктерді бір тізімге жинайық:</p>
+<pre data-lang="python"><code class="language-python">students = [
+    {"name": "Hermione", "house": "Gryffindor", "patronus": "Otter"},
+    {"name": "Harry", "house": "Gryffindor", "patronus": "Stag"},
+    {"name": "Ron", "house": "Gryffindor", "patronus": "Jack Russell terrier"},
+    {"name": "Draco", "house": "Slytherin", "patronus": None},
+]</code></pre>
+      <p>Бұл - сөздіктердің тізімі. <code>students</code> деген <code>list</code>-тің ішінде төрт <code>dict</code> бар, әр оқушыға біреуден. Тағы бір жаңалыққа назар аударыңыз: Драконың патронусы жоқ. Python-да «мұнда ешқандай мән жоқ» дегенді білдіретін арнайы белгі бар: <code>None</code>. Бос жол <code>""</code> емес, нөл емес, дәл «мән жоқ» деген мағынада.</p>
+      <p>Енді қолымызда оқушылар туралы көп қызық дерек бар. Оларды шығарайық:</p>
+<pre data-lang="python"><code class="language-python">students = [
+    {"name": "Hermione", "house": "Gryffindor", "patronus": "Otter"},
+    {"name": "Harry", "house": "Gryffindor", "patronus": "Stag"},
+    {"name": "Ron", "house": "Gryffindor", "patronus": "Jack Russell terrier"},
+    {"name": "Draco", "house": "Slytherin", "patronus": None},
+]
+
+for student in students:
+    print(student["name"], student["house"], student["patronus"], sep=", ")</code></pre>
+      <p><code>for</code> циклі <code>students</code> тізіміндегі әр сөздікті кезекпен аралайды. Әр айналымда <code>student</code> - бір оқушының сөздігі, сондықтан <code>student["name"]</code> оның атын, <code>student["house"]</code> үйін береді. Драконың жолында <code>None</code> деген сөз шығатынын көресіз.</p>
+<pre class="terminal"><code class="language-plaintext">$ python hogwarts.py
+Hermione, Gryffindor, Otter
+Harry, Gryffindor, Stag
+Ron, Gryffindor, Jack Russell terrier
+Draco, Slytherin, None</code></pre>
+      <p>Толығырақ: Python құжаттамасындағы <a href="https://docs.python.org/3/tutorial/datastructures.html#dictionaries" target="_blank" rel="noopener">сөздіктер</a>.</p>
+
+      <h2 id="mario">Марио</h2>
+      <p>Классикалық «Марио» ойыны есіңізде ме? Кейіпкер кірпіштерден секіріп өтеді. Ойындағы сол кірпіштерді мәтін түрінде, <code>#</code> таңбасымен салып көрейік. Алдымен үш кірпіштен тұратын тік баған:</p>
+<pre data-lang="python"><code class="language-python">print("#")
+print("#")
+print("#")</code></pre>
+      <p>Тағы да бір кодты көшіріп, қайта-қайта қойып отырмыз. Енді бұған не істеу керегін білесіз:</p>
+<pre data-lang="python"><code class="language-python">for _ in range(3):
+    print("#")</code></pre>
+      <p>Бұл бізге керекті нәтижені береді. Бірақ одан әрі ойланайық: кейін күрделірек есептер шығару үшін бұл кодты <strong>абстракция</strong> (<span class="term-en">abstraction</span>) арқылы жалпылай аламыз ба? Яғни бағанды салу жұмысын атауы бар бөлек функцияға орап, ішкі егжей-тегжейін жасырамыз:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    print_column(3)
+
+
+def print_column(height):
+    for _ in range(height):
+        print("#")
+
+
+main()</code></pre>
+      <p>Енді бағанымыз қалағанымызша биік бола алады. Биіктік кодтың ішіне <strong>қатаң кодталмаған</strong> (<span class="term-en">hard-coded</span>), ол параметр арқылы беріледі: <code>print_column(3)</code>, <code>print_column(10)</code>, не басқа кез келген сан.</p>
+      <p>Енді кірпіштерді көлденең, бір қатарға салып көрейік. Ойындағы сұрақ белгісі бар блоктар есіңізде ме? Солай етіп <code>?</code> таңбасын қолданайық:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    print_row(4)
+
+
+def print_row(width):
+    print("?" * width)
+
+
+main()</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python mario.py
+????</code></pre>
+      <p>Мұнда цикл тіпті керек болмады: жаңа үйренген жолды көбейту тәсілі бір жолмен солдан оңға қарай блоктар қатарын салады.</p>
+
+      <h3 id="nested-loops">Кірістірілген циклдер</h3>
+      <p>Ойынның жер асты деңгейлерін еске түсіріңізші: онда кірпіштер әрі қатар, әрі баған болып, тұтас шаршы құрайды. Ойланып көріңіз: кодта қатарларды да, бағандарды да қалай жасаймыз? Мына кодты қараңыз:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    print_square(3)
+
+
+def print_square(size):
+
+    # Шаршының әр қатары үшін
+    for i in range(size):
+
+        # Қатардағы әр кірпіш үшін
+        for j in range(size):
+
+            # Кірпішті шығарамыз
+            print("#", end="")
+
+        # Жаңа жолға көшеміз
+        print()
+
+
+main()</code></pre>
+      <p>Бұл жерде цикл циклдің ішінде отыр. Мұны <strong>кірістірілген циклдер</strong> (<span class="term-en">nested loops</span>) дейді. Сыртқы цикл шаршының әр <em>қатарын</em> аралайды. Ішкі цикл сол қатардағы әр <em>кірпішті</em> шығарады; <code>end=""</code> болғандықтан, кірпіштер бір жолда қатар тұрады. Ішкі цикл біткен соң, бос <code>print()</code> жаңа жолға көшіреді, сосын сыртқы цикл келесі қатарға өтеді. Сағаттың тілдері сияқты: минут тілі толық бір айналғанда, сағат тілі бір белгіге ғана жылжиды.</p>
+<pre class="terminal"><code class="language-plaintext">$ python mario.py
+###
+###
+###</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: соңындағы бос print()-ті алып тастасақ, не болады?</summary>
+        <div class="details-body"><p>Тоғыз кірпіштің бәрі бір жолға тізіліп кетеді: <code>#########</code>. Жаңа жолға ешкім көшірмейді, өйткені әр <code>print("#", end="")</code> соңына ештеңе қоспайды.</p></div>
+      </details>
+      <p>Кодты абстракция арқылы одан әрі жеңілдетуге болады. Бір қатарды салуды біз жоғарыда әлдеқашан үйрендік қой! Сол <code>print_row</code>-ды қайта пайдаланайық:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    print_square(3)
+
+
+def print_square(size):
+    for i in range(size):
+        print_row(size)
+
+
+def print_row(width):
+    print("#" * width)
+
+
+main()</code></pre>
+      <p>Нәтиже бірдей, бірақ код әлдеқайда оқылымды: «шаршы дегеніміз - <code>size</code> рет қайталанған қатар». Әр функция бір ғана, түсінікті жұмыс атқарады.</p>
+      <div class="callout tip">
+        <span class="callout-title">Кеңес: бір мәселе - бір функция</span>
+        <p>Үлкен есепті кішкене бөліктерге бөліп, әрқайсысына ат беріңіз: <code>print_row</code>, <code>print_column</code>, <code>print_square</code>. Сонда кодыңыз жиналатын кірпіштер сияқты болады: бір рет жазып, қайта-қайта қолданасыз.</p>
+      </div>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Python-дағы қабілеттеріңіздің өсіп келе жатқан тізіміне тағы бір күш қосылды. Бұл лекцияда біз мыналарды қарастырдық:</p>
+      <ul>
+        <li><strong>циклдер</strong> және <strong>итерация</strong>, <strong>шексіз цикл</strong> мен <kbd>Ctrl</kbd>+<kbd>C</kbd>;</li>
+        <li><code>while</code> циклі, <code>i += 1</code> және санауды нөлден бастау;</li>
+        <li><code>for</code> циклі, <code>range</code> және қолданылмайтын айнымалыға <code>_</code>;</li>
+        <li>жолды көбейту: <code>"meow" * 3</code>;</li>
+        <li><code>while True</code>, <code>break</code>, <code>continue</code> арқылы <strong>енгізуді тексеру</strong>;</li>
+        <li><strong>тізімдер</strong> (<code>list</code>), <strong>индекс</strong> және <code>len</code>;</li>
+        <li><strong>сөздіктер</strong> (<code>dict</code>): <strong>кілттер</strong> мен <strong>мәндер</strong>, сөздіктер тізімі және <code>None</code>;</li>
+        <li><strong>кірістірілген циклдер</strong> және кодты функцияларға бөлу арқылы <strong>абстракция</strong>.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. Бұл код неше рет «meow» шығарады?</p>
+<pre data-lang="python"><code class="language-python">i = 1
+while i &lt; 3:
+    print("meow")
+    i += 1</code></pre>
+          <label><input type="radio" value="a"> 3</label>
+          <label><input type="radio" value="b"> 2</label>
+          <label><input type="radio" value="c"> 1</label>
+          <label><input type="radio" value="d"> Шексіз</label>
+          <p class="explain"><code>i</code> 1-ден басталады: <code>i</code> = 1 және 2 үшін шарт ақиқат, ал 3 болғанда <code>3 &lt; 3</code> жалған. Демек, екі рет.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">2. Бұл кодтың қатесі неде?</p>
+<pre data-lang="python"><code class="language-python">i = 3
+while i != 0:
+    print("meow")</code></pre>
+          <label><input type="radio" value="a"> <code>while</code>-тан кейін жақша керек</label>
+          <label><input type="radio" value="b"> <code>!=</code> деген оператор жоқ</label>
+          <label><input type="radio" value="c"> Ештеңе шықпайды, себебі <code>i</code> 0 емес</label>
+          <label><input type="radio" value="d"> <code>i</code> өзгермейді, сондықтан цикл шексіз</label>
+          <p class="explain">Циклдің ішінде <code>i</code> ешқашан азаймайды, шарт әрқашан ақиқат. <code>i -= 1</code> қосу керек.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. <code>for i in range(4): print(i)</code> қандай сандарды шығарады?</p>
+          <label><input type="radio" value="a"> 0, 1, 2, 3</label>
+          <label><input type="radio" value="b"> 1, 2, 3, 4</label>
+          <label><input type="radio" value="c"> 0, 1, 2, 3, 4</label>
+          <label><input type="radio" value="d"> 4</label>
+          <p class="explain"><code>range(4)</code> 0-ден басталып, 4-ке дейін барады, бірақ 4-ті қоспайды.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">4. <code>print("ha" * 3)</code> не шығарады?</p>
+          <label><input type="radio" value="a"> Қате: жолды санға көбейтуге болмайды</label>
+          <label><input type="radio" value="b"> ha ha ha</label>
+          <label><input type="radio" value="c"> hahaha</label>
+          <label><input type="radio" value="d"> ha3</label>
+          <p class="explain">Жолды санға көбейткенде, ол сонша рет бос орынсыз қайталанып жалғанады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. <code>students = ["Hermione", "Harry", "Ron"]</code> болса, <code>students[1]</code> неге тең?</p>
+          <label><input type="radio" value="a"> "Hermione"</label>
+          <label><input type="radio" value="b"> "Harry"</label>
+          <label><input type="radio" value="c"> "Ron"</label>
+          <label><input type="radio" value="d"> Қате</label>
+          <p class="explain">Индекс нөлден басталады: 0 - Hermione, 1 - Harry, 2 - Ron.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">6. <code>d = {"Harry": "Gryffindor", "Draco": "Slytherin"}</code> болса, <code>for x in d: print(x)</code> не шығарады?</p>
+          <label><input type="radio" value="a"> Gryffindor, Slytherin</label>
+          <label><input type="radio" value="b"> Harry Gryffindor, Draco Slytherin</label>
+          <label><input type="radio" value="c"> 0, 1</label>
+          <label><input type="radio" value="d"> Harry, Draco</label>
+          <p class="explain">Сөздікті <code>for</code> арқылы аралағанда, цикл кілттерді аралайды. Мәнді алу үшін <code>d[x]</code> керек.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. Қолданушы алдымен <code>-1</code>, сосын <code>5</code> енгізсе, бағдарлама неше рет «What's n?» деп сұрайды?</p>
+<pre data-lang="python"><code class="language-python">while True:
+    n = int(input("What's n? "))
+    if n &gt; 0:
+        break</code></pre>
+          <label><input type="radio" value="a"> 2</label>
+          <label><input type="radio" value="b"> 1</label>
+          <label><input type="radio" value="c"> Шексіз</label>
+          <label><input type="radio" value="d"> 5</label>
+          <p class="explain">-1 үшін шарт жалған, цикл қайта сұрайды. 5 үшін <code>break</code> орындалып, циклден шығамыз. Барлығы 2 рет.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">8. Мына кірістірілген циклдер не шығарады?</p>
+<pre data-lang="python"><code class="language-python">for i in range(2):
+    for j in range(3):
+        print("#", end="")
+    print()</code></pre>
+          <label><input type="radio" value="a"> 3 жол, әрқайсысында 2 кірпіш</label>
+          <label><input type="radio" value="b"> Бір жолда 6 кірпіш</label>
+          <label><input type="radio" value="c"> 2 жол, әрқайсысында 3 кірпіш</label>
+          <label><input type="radio" value="d"> 6 жол, әрқайсысында 1 кірпіш</label>
+          <p class="explain">Сыртқы цикл 2 қатар жасайды, ішкі цикл әр қатарға 3 кірпіш салады, ал <code>print()</code> қатар соңында жаңа жолға көшіреді.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Тапсырмалар жинағы 2</h2>
+      <p><span class="term-en">(Problem Set 2)</span> Ресми тапсырма беті: <a href="https://cs50.harvard.edu/python/psets/2/" target="_blank" rel="noopener">cs50.harvard.edu/python/psets/2</a>. Әр тапсырманы осы беттегі <strong>автотексерушіде</strong> бірден тексере аласыз: шешіміңізді жазып, «Тексеру» басыңыз. Компьютерде не <a href="https://cs50.dev/" target="_blank" rel="noopener">cs50.dev</a>-те жұмыс істесеңіз, алдымен <code>update50</code> орындап, әр тапсырмаға бөлек папка ашыңыз (мысалы, <code>mkdir camel</code>, <code>cd camel</code>, <code>code camel.py</code>), ал соңында ресми <code>check50</code> командасымен тексеріңіз.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pset-camel">camelCase (Түйе регистрі)</h3></div>
+        <p>Кейбір тілдерде бірнеше сөзден тұратын айнымалы аттарын <strong>camel case</strong> («түйе регистрі», оны «аралас регистр» деп те атайды) стилінде жазу әдетке айналған: бірінші сөздің бірінші әрпі кіші, ал кейінгі әр сөздің бірінші әрпі бас әріп болады, түйенің өркештері сияқты. Мысалы, қолданушының аты үшін айнымалы <code>name</code> болса, қолданушының өз аты үшін <code>firstName</code>, ал қолданушы қалайтын аты (мысалы, лақап аты) үшін <code>preferredFirstName</code> болуы мүмкін.</p>
+        <p>Python, керісінше, <a href="https://peps.python.org/pep-0008/#function-and-variable-names" target="_blank" rel="noopener">snake case</a> («жылан регистрі») стилін ұсынады: сөздер астын сызу белгісімен (<code>_</code>) бөлінеді, барлық әріп кіші. Яғни сол айнымалылар Python-да <code>name</code>, <code>first_name</code> және <code>preferred_first_name</code> деп аталар еді.</p>
+        <p><code>camel.py</code> файлында қолданушыдан camel case стиліндегі айнымалы атын сұрап, оған сәйкес snake case атауын шығаратын бағдарлама жазыңыз. Қолданушы шынымен camel case стилінде енгізеді деп есептеңіз.</p>
+        <p><strong>Өзіңізді тексеріңіз:</strong> <code>preferredFirstName</code> енгізілсе, не шығады?</p>
+        <div class="answer-check" data-answer="preferred_first_name"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Жолдың (<code>str</code>) <a href="https://docs.python.org/3/library/stdtypes.html#string-methods" target="_blank" rel="noopener">көп әдісі</a> бар, мысалы, әріптің бас әріп екенін тексеретін әдіс. Сондай-ақ <code>list</code> сияқты, <code>str</code> те «итерацияланатын» (<span class="term-en">iterable</span>): оның әр таңбасын циклмен аралап шығуға болады. Мысалы, <code>s</code> жол болса, әр таңбасын бір-бірлеп былай шығарасыз:</p>
+<pre data-lang="python"><code class="language-python">for c in s:
+    print(c, end="")</code></pre></div></details>
+        <div class="autograder" data-check="py-camel" data-src="python/checks/week-2.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py2-camel">
+            <li><input type="checkbox"> <span><code>name</code> → <code>name</code></span></li>
+            <li><input type="checkbox"> <span><code>firstName</code> → <code>first_name</code></span></li>
+            <li><input type="checkbox"> <span><code>preferredFirstName</code> → <code>preferred_first_name</code></span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/camel</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-coke">Coke Machine (Кока-кола автоматы)</h3></div>
+        <p>Бір автомат Coca-Cola бөтелкесін 50 центке сатады және тек мына тиындарды қабылдайды: 25 цент, 10 цент және 5 цент.</p>
+        <p><code>coke.py</code> файлында қолданушыдан тиындарды бір-бірлеп салуды сұрайтын бағдарлама жазыңыз. Әр жолы қолданушыға әлі қанша төлеу керегін хабарлаңыз. Қолданушы кемінде 50 цент салған соң, оған қанша цент қайтарылатынын (қайырым) шығарыңыз. Қолданушы тек бүтін сандар енгізеді деп есептеңіз, ал қабылданатын номиналға жатпайтын кез келген санды елемеңіз.</p>
+        <p>Шығыс пішімі дәл мынадай болуы керек. Бағдарлама <code>Insert Coin: </code> деп сұрайды; <code>25</code> енгізсе, <code>Amount Due: 25</code> шығып, сұрау жалғасады. <code>30</code> енгізсе, автомат 30 центтік тиынды қабылдамайтындықтан, <code>Amount Due: 50</code> күйінде қалады. <code>25</code>, сосын тағы <code>25</code> енгізілсе, бағдарлама тоқтап, <code>Change Owed: 0</code> шығарады; ал <code>25</code>, <code>10</code>, <code>25</code> енгізілсе - <code>Change Owed: 10</code>.</p>
+<pre class="terminal"><code class="language-plaintext">$ python coke.py
+Amount Due: 50
+Insert Coin: 25
+Amount Due: 25
+Insert Coin: 10
+Amount Due: 15
+Insert Coin: 25
+Change Owed: 10</code></pre>
+        <div class="callout warn">
+          <span class="callout-title">Дәл осылай шығарыңыз</span>
+          <p>Сұрақтар мен жауаптарды жоғарыдағыдай дәл шығарыңыз. Бағдарлама артық мәтін шығарса, <code>check50</code>-ден өтпеуі мүмкін.</p>
+        </div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Әлі төленетін соманы айнымалыда сақтап, ол 0-ден үлкен болғанша <code>while</code> циклімен сұрай беріңіз. Тиынның рұқсат етілгенін <code>if coin in [25, 10, 5]:</code> сияқты тексеруге болады. Қолданушы артық салса, сома теріс болады, ал қайырым оның абсолют мәні.</p></div></details>
+        <div class="autograder" data-check="py-coke" data-src="python/checks/week-2.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py2-coke">
+            <li><input type="checkbox"> <span><code>25</code>, <code>25</code> → <code>Change Owed: 0</code></span></li>
+            <li><input type="checkbox"> <span><code>25</code>, <code>10</code>, <code>25</code> → <code>Change Owed: 10</code></span></li>
+            <li><input type="checkbox"> <span><code>30</code> қабылданбайды → <code>Amount Due: 50</code></span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/coke</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pset-twttr">Just setting up my twttr (Twttr-ді баптап жатырмын)</h3></div>
+        <blockquote><p>just setting up my twttr<br>- jack⚡️ (@jack), 2006 жылғы 21 наурыз</p></blockquote>
+        <p>Хабарлама не твит жазғанда уақыт пен орын үнемдеу үшін сөздерді қысқартып, мысалы, дауысты әріптерді түсіріп жазу жиі кездеседі. Twitter-дің өзі де алғашында <em>twttr</em> деп аталған. <code>twttr.py</code> файлында қолданушыдан мәтін (<code>str</code>) сұрап, сол мәтінді барлық дауысты әріптерсіз (A, E, I, O және U), бас әріппен де, кіші әріппен де жазылғанына қарамастан, шығаратын бағдарлама жазыңыз.</p>
+        <p>Мысалы: <code>Twitter</code> → <code>Twttr</code>, <code>CS50</code> → <code>CS50</code>.</p>
+        <p><strong>Өзіңізді тексеріңіз:</strong> <code>What's your name?</code> енгізілсе, не шығады?</p>
+        <div class="answer-check" data-answer="Wht's yr nm?"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>str</code> - итерацияланатын тип, оның әр таңбасын <code>for c in s:</code> арқылы аралай аласыз. Таңбаның дауысты екенін тексеру үшін оны кіші әріпке айналдырып, <code>in "aeiou"</code> деп сұраңыз. Жолдардың <a href="https://docs.python.org/3/library/stdtypes.html#string-methods" target="_blank" rel="noopener">әдістері</a> де көмектеседі.</p></div></details>
+        <div class="autograder" data-check="py-twttr" data-src="python/checks/week-2.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py2-twttr">
+            <li><input type="checkbox"> <span><code>Twitter</code> → <code>Twttr</code></span></li>
+            <li><input type="checkbox"> <span><code>What's your name?</code> → <code>Wht's yr nm?</code></span></li>
+            <li><input type="checkbox"> <span>Бас әріпті дауыстылар да алынады (<code>TWITTER</code> → <code>TWTTR</code>).</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/twttr</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pset-plates">Vanity Plates (Жекелендірілген нөмірлер)</h3></div>
+        <p>Гарвард университеті орналасқан Массачусетс штатында көлігіңізге кездейсоқ емес, өзіңіз таңдаған әріптер мен цифрлардан тұратын <a href="https://www.mass.gov/how-to/request-a-vanity-license-plate" target="_blank" rel="noopener">жекелендірілген нөмір</a> сұрауға болады. Бірақ талаптар бар:</p>
+        <ul>
+          <li>«Барлық жекелендірілген нөмірлер кемінде екі әріптен басталуы керек.»</li>
+          <li>«...нөмірде ең көбі 6 таңба (әріп немесе цифр), ең азы 2 таңба болуы керек.»</li>
+          <li>«Цифрларды нөмірдің ортасында қолдануға болмайды, олар соңында тұруы керек. Мысалы, AAA222 жарамды нөмір болар еді; ал AAA22A жарамсыз. Қолданылған бірінші цифр ‘0’ бола алмайды.»</li>
+          <li>«Нүкте, бос орын немесе тыныс белгілеріне рұқсат жоқ.»</li>
+        </ul>
+        <p><code>plates.py</code> файлында қолданушыдан нөмір сұрап, ол барлық талапқа сай келсе <code>Valid</code>, әйтпесе <code>Invalid</code> шығаратын бағдарлама жазыңыз. Енгізілген әріптердің бәрі бас әріп деп есептеңіз. Бағдарламаны төмендегі құрылыммен жазыңыз: <code>is_valid</code> функциясы <code>s</code> барлық талапқа сай болса <code>True</code>, болмаса <code>False</code> қайтарады. <code>s</code> әрқашан <code>str</code> деп есептеңіз. <code>is_valid</code> шақыратын қосымша функциялар жазуға болады (мысалы, әр талапқа бір функция).</p>
+<pre data-lang="python"><code class="language-python">def main():
+    plate = input("Plate: ")
+    if is_valid(plate):
+        print("Valid")
+    else:
+        print("Invalid")
+
+
+def is_valid(s):
+    ...
+
+
+main()</code></pre>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Жолдардың <a href="https://docs.python.org/3/library/stdtypes.html#string-methods" target="_blank" rel="noopener">әдістерін</a> қараңыз (мысалы, <code>isalpha</code>, <code>isdigit</code>, <code>isalnum</code>). <code>list</code> сияқты, <code>str</code> те таңбалардың «тізбегі» (<span class="term-en">sequence</span>), сондықтан оны <code>s[i:j]</code> арқылы қысқа жолдарға <a href="https://docs.python.org/3/library/stdtypes.html#common-sequence-operations" target="_blank" rel="noopener">кесуге</a> болады. Мысалы, <code>s</code> = <code>"CS50"</code> болса, <code>s[0:2]</code> = <code>"CS"</code>. Әр талапты бөлек тексеріп, біреуі бұзылса бірден <code>False</code> қайтарыңыз.</p></div></details>
+        <div class="autograder" data-check="py-plates" data-src="python/checks/week-2.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py2-plates">
+            <li><input type="checkbox"> <span><code>CS50</code> → <code>Valid</code></span></li>
+            <li><input type="checkbox"> <span><code>CS05</code> → <code>Invalid</code> (бірінші цифр 0)</span></li>
+            <li><input type="checkbox"> <span><code>CS50P</code> → <code>Invalid</code> (цифрдан кейін әріп)</span></li>
+            <li><input type="checkbox"> <span><code>PI3.14</code> → <code>Invalid</code> (тыныс белгісі)</span></li>
+            <li><input type="checkbox"> <span><code>H</code> → <code>Invalid</code>, <code>OUTATIME</code> → <code>Invalid</code> (ұзындық)</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/plates</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-nutrition">Nutrition Facts (Тағамдық құндылық)</h3></div>
+        <p>АҚШ-тың Азық-түлік және дәрі-дәрмек басқармасы (FDA) «АҚШ-та ең жиі тұтынылатын 20 шикі жемістің тағамдық құндылығын көрсететін» плакаттар ұсынады. Дүкендер оларды басып шығарып, тиісті өнімдердің қасына іліп қоя алады.</p>
+        <p><code>nutrition.py</code> файлында қолданушыдан жемістің атын сұрап (регистрге қарамай), сол жемістің бір порциясындағы калория санын <a href="https://cs50.harvard.edu/python/psets/2/nutrition/Nutrition-Information-for-Raw-Fruits---small-PDF-Poster.pdf" target="_blank" rel="noopener">FDA плакаты</a> бойынша шығаратын бағдарлама жазыңыз (плакаттың <a href="https://www.fda.gov/food/nutrition-food-labeling-and-critical-foods/raw-fruits-poster-text-version-accessible-version" target="_blank" rel="noopener">мәтіндік нұсқасы</a> да бар). Бас-кіші әріптен басқасында қолданушы жеміс атын плакаттағыдай дәл жазады деп есептеңіз (мысалы, <code>strawberry</code> емес, <code>strawberries</code>). Жеміс емес кез келген енгізуді елемеңіз, яғни ештеңе шығармаңыз.</p>
+<pre class="terminal"><code class="language-plaintext">$ python nutrition.py
+Item: Apple
+Calories: 130</code></pre>
+        <p>Тағы мысалдар: <code>Avocado</code> → <code>Calories: 50</code>, <code>Sweet Cherries</code> → <code>Calories: 100</code>, <code>Tomato</code> → ештеңе шықпайды. Басқа жемістерді де, әртүрлі регистрді де байқап көріңіз.</p>
+        <details><summary>Плакаттағы деректер (жалпы калория)</summary><div class="details-body">
+          <table>
+            <thead><tr><th>Жеміс</th><th>Калория</th><th>Жеміс</th><th>Калория</th></tr></thead>
+            <tbody>
+              <tr><td>Apple</td><td>130</td><td>Lime</td><td>20</td></tr>
+              <tr><td>Avocado</td><td>50</td><td>Nectarine</td><td>60</td></tr>
+              <tr><td>Banana</td><td>110</td><td>Orange</td><td>80</td></tr>
+              <tr><td>Cantaloupe</td><td>50</td><td>Peach</td><td>60</td></tr>
+              <tr><td>Grapefruit</td><td>60</td><td>Pear</td><td>100</td></tr>
+              <tr><td>Grapes</td><td>90</td><td>Pineapple</td><td>50</td></tr>
+              <tr><td>Honeydew Melon</td><td>50</td><td>Plums</td><td>70</td></tr>
+              <tr><td>Kiwifruit</td><td>90</td><td>Strawberries</td><td>50</td></tr>
+              <tr><td>Lemon</td><td>15</td><td>Sweet Cherries</td><td>100</td></tr>
+              <tr><td>Tangerine</td><td>50</td><td>Watermelon</td><td>80</td></tr>
+            </tbody>
+          </table>
+        </div></details>
+        <details><summary>Кеңес</summary><div class="details-body"><p>20 логикалық өрнегі бар шарттың орнына, әр жемісті оның калориясымен байланыстыратын <code>dict</code> қолданған әлдеқайда жақсы! <code>k</code> - жол, <code>d</code> - сөздік болса, <code>k</code>-ның <code>d</code>-да кілт екенін былай тексересіз:</p>
+<pre data-lang="python"><code class="language-python">if k in d:
+    ...</code></pre>
+          <p>Абай болыңыз: майдан келетін калорияны (<span class="term-en">calories from fat</span>) емес, жемістің жалпы калориясын шығарыңыз!</p></div></details>
+        <div class="autograder" data-check="py-nutrition" data-src="python/checks/week-2.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py2-nutrition">
+            <li><input type="checkbox"> <span><code>Apple</code> → <code>Calories: 130</code></span></li>
+            <li><input type="checkbox"> <span><code>Sweet Cherries</code> → <code>Calories: 100</code></span></li>
+            <li><input type="checkbox"> <span><code>Tomato</code> → ештеңе шықпайды</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/nutrition</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-1.html"><small>Алдыңғы</small>← 1-апта: Шарттар</a>
+        <a class="next" href="week-3.html"><small>Келесі</small>3-апта: Ерекше жағдайлар →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50P (CS50's Introduction to Programming with Python, Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

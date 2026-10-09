@@ -11,7 +11,7 @@ test("курстар беті және CS50P: лекция, тест, «Оқыд
   await page.click('.cx-card[href="python/"]');
   await expect(page).toHaveURL(/python\/(index\.html)?$/);
   await expect(page.locator(".week-card")).toHaveCount(10);
-  await expect(page.locator(".week-card:not(.soon)")).toHaveCount(1);
+  await expect(page.locator(".week-card:not(.soon)")).toHaveCount(10);
   await page.click('.week-card[data-id="week-0"]');
   await expect(page.locator("h1")).toHaveText("Функциялар, айнымалылар");
   await expect(page.locator(".lecture-head")).toHaveAttribute("data-n", "0");
@@ -77,4 +77,19 @@ test("CS50P автотексеруші: эталон шешімдер өтеді
   await ag.locator(".ag-code").fill("print(int(input()) * 3e8 ** 2)"); // float - қате
   await ag.locator(".ag-run").click();
   await expect(ag.locator(".ag-score")).toContainText("0 / 3");
+});
+
+test("сертификат: CS50x/CS50P ауыстырғыш, CS50P сертификаты өз прогресімен", async ({ page }) => {
+  const errs = collectErrors(page);
+  await blockFonts(page.context());
+  await page.goto("certificate.html?course=python");
+  await expect(page.locator(".cert-switch a.on")).toHaveText("CS50P");
+  await expect(page.locator(".cert-code")).toHaveText("CS50P");
+  await expect(page.locator(".certificate")).toHaveClass(/locked/);
+  await expect(page.locator(".cert-gate")).toContainText("0 / 10 лекция оқылды");
+  await expect(page.locator(".cert-print")).toBeDisabled();
+  await page.goto("certificate.html");
+  await expect(page.locator(".cert-switch a.on")).toHaveText("CS50x");
+  await expect(page.locator(".cert-gate")).toContainText("0 / 12");
+  expect(errs).toEqual([]);
 });

@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50P 6-апта: Файлдармен жұмыс - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50P 6-апта: Файлдармен жұмыс - CS50 қазақша">
+  <meta property="og:description" content="CS50P (Python) 6-апта: файлдық енгізу-шығару, open және with, файлға жазу мен оны оқу, CSV файлдары, csv кітапханасы (reader, DictReader, DictWriter), sorted пен lambda, екілік файлдар және PIL.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/python/lectures/week-6.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50P (Python) 6-апта: файлдық енгізу-шығару, open және with, файлға жазу мен оны оқу, CSV файлдары, csv кітапханасы (reader, DictReader, DictWriter), sorted пен lambda, екілік файлдар және PIL.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#3776ab" data-n="6">
+        <div class="num">6-апта</div>
+        <h1>Файлдармен жұмыс</h1>
+        <p>Осы уақытқа дейін бағдарлама жабылған сәтте бәрі ұмытылып қалатын. Бүгін бағдарламаларымызға файл оқып, файл жазуды үйретеміз: мәтіндік файлдар, CSV кестелері, тіпті суреттер.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/python/weeks/6/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="file-io">Файлдық енгізу-шығару</h2>
+      <p>Бір қызық нәрсені байқадыңыз ба? Осы уақытқа дейін біз жазған бағдарламалардың бәрі мәліметті тек <strong>жадта</strong> (<span class="term-en">memory</span>) сақтады. Қолданушы атын енгізді, біз оны айнымалыға салдық, экранға шығардық... Ал бағдарлама аяқталған сәтте бәрі жоғалып кетеді. Тақтаға бормен жазып, сабақ соңында өшіріп тастағандай. Келесі жолы бағдарламаны іске қоссаңыз, ол сізді мүлде танымайды.</p>
+      <p>Бүгінгі тақырып осы мәселені шешеді. <strong>Файлдық енгізу-шығару</strong> (<span class="term-en">file I/O</span>, input/output) - бағдарламаның файлды кіріс ретінде оқуы немесе шығыс ретінде файл жасауы. Яғни тақтаның орнына дәптерге жазу: дәптер сабақтан кейін де қалады.</p>
+      <p>Таныс нәрседен бастайық. Терминалға <code>code names.py</code> деп жазып, мына кодты жазамыз:</p>
+<pre data-lang="python"><code class="language-python">name = input("What's your name?")
+print(f"hello, {name}")</code></pre>
+      <p>Іске қоссақ, бәрі күткендей: атымызды сұрайды, сәлем береді. Ал енді бір емес, бірнеше атты енгізгіміз келсе ше? Есіңізде ме, бір айнымалыда бірнеше мәнді сақтауға мүмкіндік беретін деректер құрылымы бар еді - <strong>тізім</strong> (<span class="term-en">list</span>). Соны қолданайық:</p>
+<pre data-lang="python"><code class="language-python">names = []
+
+for _ in range(3):
+    name = input("What's your name?")
+    names.append(name)</code></pre>
+      <p>Енді бағдарлама атты үш рет сұрайды. Әр жауапты <code>append</code> әдісі <code>names</code> тізімінің соңына қосып отырады. Айтпақшы, <code>name</code> айнымалысы мұнда тек бір сәтке керек, сондықтан кодты қысқартуға болады: <code>input</code>-тің нәтижесін тікелей <code>append</code>-ке береміз.</p>
+<pre data-lang="python"><code class="language-python">names = []
+
+for _ in range(3):
+    names.append(input("What's your name?"))</code></pre>
+      <p>Нәтижесі алдыңғымен бірдей, тек бір жол аз. Енді жиналған аттарды әліпби ретімен сұрыптап, әрқайсысына сәлем берейік:</p>
+<pre data-lang="python"><code class="language-python">names = []
+
+for _ in range(3):
+    names.append(input("What's your name?"))
+
+for name in sorted(names):
+    print(f"hello, {name}")</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python names.py
+What's your name?Hermione
+What's your name?Harry
+What's your name?Ron
+hello, Harry
+hello, Hermione
+hello, Ron</code></pre>
+      <p>Тамаша, жұмыс істейді. Бірақ бағдарламаны қайта іске қоссақ, Гермиона да, Гарри де, Рон да ізім-қайым жоқ. Бар мәлімет бағдарламамен бірге өлді. Міне, файлдық енгізу-шығару дәл осы мәліметті кейін қайта пайдалану үшін сақтап қоюға мүмкіндік береді. <code>sorted</code> туралы толығырақ: <a href="https://docs.python.org/3/library/functions.html#sorted" target="_blank" rel="noopener">Python құжаттамасы</a>.</p>
+
+      <h2 id="open">open</h2>
+      <p>Python-да файлмен жұмыстың бәрі бір функциядан басталады: <code>open</code>. Ол Python-ға кірістірілген функция, файлды ашып, бағдарламаңызда пайдалануға береді: одан оқуға да, оған жазуға да болады.</p>
+      <p>Қалай істейтінін көрсету үшін сәл артқа шегініп, бір ғана атпен жұмыс істейік:</p>
+<pre data-lang="python"><code class="language-python">name = input("What's your name? ")
+
+file = open("names.txt", "w")
+file.write(name)
+file.close()</code></pre>
+      <p>Жол-жолымен оқиық. <code>open("names.txt", "w")</code> - «<code>names.txt</code> деген файлды <em>жазу үшін</em> аш» деген сөз. Екінші аргумент - файлды ашу <strong>режимі</strong> (<span class="term-en">mode</span>), ал <code>"w"</code> - write, яғни «жазу». Ашылған файлды <code>file</code> деген айнымалыға саламыз. Сосын <code>file.write(name)</code> атты файлға жазады, ал <code>file.close()</code> файлды <strong>жабады</strong> (<span class="term-en">close</span>). Кітапты оқып болған соң жауып, сөреге қойғандай.</p>
+      <p><code>python names.py</code> деп іске қосып, атымызды енгізейік. Файлға сақталды! Енді бағдарламаны тағы бір рет, басқа атпен іске қосайық.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: алдымен «Hermione», сосын «Harry» енгізсек, names.txt ішінде не болады?</summary>
+        <div class="details-body"><p>Тек <code>Harry</code>! <code>"w"</code> режимі файлды әр ашқан сайын <em>басынан бастап қайта жазады</em>: бұрынғы ішіндегісі толығымен өшіп кетеді. Дәптердің бетін жыртып тастап, жаңа бетке жазғандай.</p></div>
+      </details>
+      <p>Бізге керегі - әр жаңа атты бұрынғыларының <em>соңына қосу</em>. Алдымен ескі файлды терминалда <code>rm names.txt</code> деп өшірейік. Сосын кодта бір ғана әріпті өзгертеміз:</p>
+<pre data-lang="python"><code class="language-python">name = input("What's your name? ")
+
+file = open("names.txt", "a")
+file.write(name)
+file.close()</code></pre>
+      <p>Өзгеріс - <code>"w"</code> орнына <code>"a"</code>, яғни <strong>соңына қосу</strong> (<span class="term-en">append</span>). Бағдарламаны бірнеше рет іске қоссақ, аттар файлда жиналып жатады. Бірақ файлды ашып қарасақ, жаңа мәселе көреміз:</p>
+<pre class="terminal"><code class="language-plaintext">HermioneHarryRon</code></pre>
+      <p>Аттар бір-біріне жабысып қалды! Неге? Себебі <code>write</code> біз берген мәтінді дәл сол күйінде жазады, <code>print</code> сияқты соңына жаңа жол таңбасын өзі қоспайды. Оны өзіміз қосуымыз керек. Тағы да <code>rm names.txt</code> деп файлды өшіріп, кодты түзетейік:</p>
+<pre data-lang="python"><code class="language-python">name = input("What's your name? ")
+
+file = open("names.txt", "a")
+file.write(f"{name}\n")
+file.close()</code></pre>
+      <p>Енді әр аттың соңында <code>\n</code> бар, сондықтан әрқайсысы өз жолында тұрады:</p>
+<pre class="terminal"><code class="language-plaintext">Hermione
+Harry
+Ron</code></pre>
+      <p>Код жақсы жұмыс істейді. Бірақ оны әлі де жақсартуға болады. Шынымды айтсам, файлды жабуды ұмытып кету өте оңай. Ал жабылмаған файл - ашық қалған есік сияқты: кейде жазғаныңыз файлға толық түспей қалуы мүмкін. <code>open</code> туралы толығырақ: <a href="https://docs.python.org/3/library/functions.html#open" target="_blank" rel="noopener">Python құжаттамасы</a>.</p>
+      <div class="callout term">
+        <span class="callout-title">Файлды ашу режимдері</span>
+        <p><code>"r"</code> - оқу (read, әдепкі режим); <code>"w"</code> - жазу, файл бар болса, ішіндегісі өшіріледі; <code>"a"</code> - соңына қосу, бұрынғы мазмұн сақталады. <code>"w"</code> мен <code>"a"</code> файл жоқ болса, оны өздері жасайды.</p>
+      </div>
+
+      <h2 id="with">with</h2>
+      <p>«Файлды жабуды ұмытпа» дегенді әр жолы есте ұстаудың орнына, Python-ға мұны өзі істетуге болады. Ол үшін <code>with</code> кілт сөзі бар:</p>
+<pre data-lang="python"><code class="language-python">name = input("What's your name? ")
+
+with open("names.txt", "a") as file:
+    file.write(f"{name}\n")</code></pre>
+      <p>Мұны былай оқыңыз: «<code>names.txt</code>-ті соңына қосу режимінде аш, оны <code>file</code> деп ата, және <em>осы блок</em> бойы онымен жұмыс істе». <code>with</code>-тен кейінгі жолдың шегініспен жазылғанына назар аударыңыз. Шегіністі блок аяқталған сәтте Python файлды өзі жабады, <code>close</code> жазудың қажеті жоқ.</p>
+
+      <h3 id="reading">Файлды оқу</h3>
+      <p>Осы уақытқа дейін біз тек файлға жаздық. Ал одан оқығымыз келсе ше? Режимді <code>"r"</code>, яғни read етеміз:</p>
+<pre data-lang="python"><code class="language-python">with open("names.txt", "r") as file:
+    lines = file.readlines()
+
+for line in lines:
+    print("hello,", line)</code></pre>
+      <p><code>readlines</code> әдісінің ерекше қабілеті бар: файлдың барлық жолын оқып, оларды тізім етіп қайтарады. Біз сол тізімді <code>lines</code> деп сақтаймыз да, әр жолға сәлем береміз. Іске қосайық:</p>
+<pre class="terminal"><code class="language-plaintext">$ python names.py
+hello, Hermione
+
+hello, Harry
+
+hello, Ron
+</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: аттардың арасында артық бос жолдар қайдан шықты?</summary>
+        <div class="details-body"><p>Файлдағы әр жолдың соңында біз өзіміз жазған <code>\n</code> тұр, <code>readlines</code> оны да оқып алады. Оның үстіне <code>print</code> өзінің әдепкі <code>\n</code>-ін қосады. Нәтижесінде бір жаңа жолдың орнына екеуі шығады.</p></div>
+      </details>
+      <p>Шығыс әдемі емес. Мұны түзетудің бірнеше жолы бар, ең қарапайымы - әр жолдың оң жағындағы артық таңбаларды кесіп тастау:</p>
+<pre data-lang="python"><code class="language-python">with open("names.txt", "r") as file:
+    lines = file.readlines()
+
+for line in lines:
+    print("hello,", line.rstrip())</code></pre>
+      <p><code>rstrip</code> (right strip, «оң жақтан тазала») жолдың соңындағы бос орындар мен жаңа жол таңбасын алып тастайды. 0-аптадағы <code>strip</code>-тің тек оң жақпен жұмыс істейтін туысы. Енді шығыс дұрыс.</p>
+      <p>Бірақ кодты одан да қысқартуға болады. Файлдың өзін <code>for</code> циклімен тікелей аралап шығуға болады екен: әр қадамда цикл бізге келесі жолды береді. Бөлек <code>lines</code> тізімі қажет емес:</p>
+<pre data-lang="python"><code class="language-python">with open("names.txt", "r") as file:
+    for line in file:
+        print("hello,", line.rstrip())</code></pre>
+      <p>Шығыс дұрыс. Тек бір нәрсені жоғалтып алдық: аттар енді сұрыпталмаған, файлда қандай ретпен тұрса, сол ретпен шығады. Сұрыптау үшін алдымен барлық атты жинап алуымыз керек, сосын ғана ретке келтіреміз:</p>
+<pre data-lang="python"><code class="language-python">names = []
+
+with open("names.txt") as file:
+    for line in file:
+        names.append(line.rstrip())
+
+for name in sorted(names):
+    print(f"hello, {name}")</code></pre>
+      <p>Мұнда <code>names</code> - аттарды жинайтын бос тізім. Файлдың әр жолын тазалап, жадтағы осы тізімге қосамыз. Файл жабылғаннан кейін тізімді сұрыптап, әр атқа сәлем береміз. Енді аттар әліпби ретімен шығады. Тағы бір ұсақ-түйек: бұл жолы <code>open</code>-ға режимді мүлде бермедік. Себебі <code>"r"</code> - әдепкі мән, оны жазбасақ та Python файлды оқу үшін ашады.</p>
+      <p>Жарайды, аттарды сақтауды үйрендік. Ал оқушының атымен қатар, басқа мәліметті де сақтағымыз келсе ше? Мысалы, оның атын <em>және</em> қай факультетте (house) оқитынын?</p>
+
+      <h2 id="csv">CSV</h2>
+      <p>Бір жолда бірнеше мәнді сақтаудың ең кең тараған тәсілі - <strong>CSV</strong> (<span class="term-en">comma-separated values</span>), яғни «үтірмен бөлінген мәндер». Бұл - кәдімгі мәтіндік файл, бірақ әр жолы кестенің бір қатары, ал мәндер бір-бірінен үтірмен бөлінеді. Excel кестесінің ең қарапайым, мәтіндік нұсқасы деп елестетіңіз.</p>
+      <p>Терминалда <code>code students.csv</code> деп жазып, файлды мынадай етіп толтырайық:</p>
+<pre class="terminal"><code class="language-plaintext">Hermione,Gryffindor
+Harry,Gryffindor
+Ron,Gryffindor
+Draco,Slytherin</code></pre>
+      <p>Әр жол - бір оқушы туралы бір <strong>жазба</strong> (<span class="term-en">record</span>): алдымен аты, үтір, сосын факультеті.</p>
+
+      <h3 id="split">split арқылы бөлу</h3>
+      <p>Енді <code>code students.py</code> деп жаңа бағдарлама ашып, осы файлды оқиық:</p>
+<pre data-lang="python"><code class="language-python">with open("students.csv") as file:
+    for line in file:
+        row = line.rstrip().split(",")
+        print(f"{row[0]} is in {row[1]}")</code></pre>
+      <p>Әр жолмен екі нәрсе істейміз. Алдымен <code>rstrip</code> соңындағы жаңа жол таңбасын алып тастайды. Сосын <code>split(",")</code> жолды үтір тұрған жерден кесіп, бөліктерін тізім етіп қайтарады: <code>"Hermione,Gryffindor"</code> → <code>["Hermione", "Gryffindor"]</code>. Сонда <code>row[0]</code> - жолдың бірінші элементі (аты), <code>row[1]</code> - екіншісі (факультеті).</p>
+<pre class="terminal"><code class="language-plaintext">$ python students.py
+Hermione is in Gryffindor
+Harry is in Gryffindor
+Ron is in Gryffindor
+Draco is in Slytherin</code></pre>
+      <p>Код жұмыс істейді, бірақ <code>row[0]</code>, <code>row[1]</code> деген жазуды бірінші рет көрген адамға сәл жұмбақ көрінеді. Нөл деген не, бір деген не? Python мұны әдемірек жазуға мүмкіндік береді:</p>
+<pre data-lang="python"><code class="language-python">with open("students.csv") as file:
+    for line in file:
+        name, house = line.rstrip().split(",")
+        print(f"{name} is in {house}")</code></pre>
+      <p>Мұнда <code>split</code> екі мән қайтарады: үтірге дейінгісін және үтірден кейінгісін. Python оларды сол жақтағы екі айнымалыға бірден, ретімен таратып береді: біріншісі <code>name</code>-ге, екіншісі <code>house</code>-қа. Бір айнымалының орнына екеуіне бір жолда меншіктедік! Бұл тәсілді <strong>тарқату</strong> (<span class="term-en">unpacking</span>) дейді. Енді код өзін-өзі түсіндіріп тұр.</p>
+
+      <h3 id="sorting">Жазбаларды сұрыптау</h3>
+      <p>Енді тағы да сұрыпталған тізім шығарғымыз келеді делік. Аттармен істегендей, алдымен бәрін тізімге жинаймыз:</p>
+<pre data-lang="python"><code class="language-python">students = []
+
+with open("students.csv") as file:
+    for line in file:
+        name, house = line.rstrip().split(",")
+        students.append(f"{name} is in {house}")
+
+for student in sorted(students):
+    print(student)</code></pre>
+      <p><code>students</code> деген тізім жасап, оған әр оқушы туралы дайын сөйлемді қосамыз, сосын тізімді сұрыптап шығарамыз. Жұмыс істейді. Бірақ бір кемшілігі бар: біз тізімде жай мәтіндерді сақтап тұрмыз. «Hermione is in Gryffindor» деген сөйлемнен атты қайта бөліп алу оңай емес, ал кейін тек факультеттерді шығарғымыз келсе ше?</p>
+
+      <h3 id="dicts">Сөздіктер тізімі</h3>
+      <p>Есіңізде ме, Python-да <strong>сөздік</strong> (<span class="term-en">dictionary</span>) бар: онда әр <em>кілтке</em> бір <em>мән</em> сәйкес келеді. Әр оқушыны жеке сөздік етіп сақтасақ, аты мен факультеті бір-бірінен бөлек, атымен шақырылып тұрады:</p>
+<pre data-lang="python"><code class="language-python">students = []
+
+with open("students.csv") as file:
+    for line in file:
+        name, house = line.rstrip().split(",")
+        student = {}
+        student["name"] = name
+        student["house"] = house
+        students.append(student)
+
+for student in students:
+    print(f"{student['name']} is in {student['house']}")</code></pre>
+      <p>Әр жол үшін <code>student</code> деген бос сөздік жасаймыз, оған <code>"name"</code> және <code>"house"</code> кілттерімен мәндерді саламыз, сосын дайын сөздікті <code>students</code> тізіміне қосамыз. Сонымен, бізде енді <em>сөздіктердің тізімі</em> бар. f-жол ішінде <code>student['name']</code> деп жалқы тырнақша қолданғанымызға назар аударыңыз: f-жолдың өзі қос тырнақшамен басталғандықтан, ішіндегі қос тырнақша Python-ды шатастырар еді.</p>
+      <p>Бос сөздік жасап, оны жол-жолымен толтыру сәл ұзақ. Сөздікті бір жолда, бірден мәндерімен жазуға болады:</p>
+<pre data-lang="python"><code class="language-python">students = []
+
+with open("students.csv") as file:
+    for line in file:
+        name, house = line.rstrip().split(",")
+        student = {"name": name, "house": house}
+        students.append(student)
+
+for student in students:
+    print(f"{student['name']} is in {student['house']}")</code></pre>
+      <p>Нәтиже бұрынғыдай, тек... сұрыптау жоғалып кетті.</p>
+
+      <h3 id="key">Сұрыптау кілті</h3>
+      <p>Өкінішке қарай, бұрынғыдай жай ғана <code>sorted(students)</code> деп жаза алмаймыз. Неге? Себебі тізімнің әр элементі енді сөздік, ал Python екі сөздіктің қайсысы «бірінші» тұруы керегін білмейді. Атымен бе? Факультетімен бе? Біз оған айтуымыз керек: «бұл тізімді оқушының аты бойынша сұрыпта».</p>
+<pre data-lang="python"><code class="language-python">students = []
+
+with open("students.csv") as file:
+    for line in file:
+        name, house = line.rstrip().split(",")
+        students.append({"name": name, "house": house})
+
+
+def get_name(student):
+    return student["name"]
+
+
+for student in sorted(students, key=get_name):
+    print(f"{student['name']} is in {student['house']}")</code></pre>
+      <p><code>sorted</code>-тің <code>key</code> деген параметрі бар. Оған функция береміз, ал <code>sorted</code> сол функцияны әр элементке қолданып, нәтижесі бойынша сұрыптайды. Біздің <code>get_name</code> функциясы өте қарапайым: оқушының сөздігін алып, оның <code>"name"</code> мәнін қайтарады. Сонда <code>sorted</code> әр оқушыны атымен салыстырады. Іске қоссақ, тізім аттар бойынша сұрыпталып шығады.</p>
+      <p>Тағы бір нәзік жайт: <code>key=get_name</code> деп жазғанда <code>get_name</code>-нен кейін жақша қойған жоқпыз. Біз функцияны өзіміз <em>шақырмаймыз</em>, оны <code>sorted</code>-ке <em>береміз</em>, ал шақыруды <code>sorted</code> өзі қажет кезде жасайды. Иә, Python-да функцияны да басқа функцияға аргумент ретінде беруге болады!</p>
+
+      <h3 id="lambda">lambda</h3>
+      <p>Бірақ ойланып көріңізші: <code>get_name</code>-ді біз бір ғана жерде қолданамыз. Бір рет қолданылатын функцияға бөлек ат беріп, бөлек анықтап отырудың қажеті бар ма? Python мұндайда кодты ықшамдауға мүмкіндік береді:</p>
+<pre data-lang="python"><code class="language-python">students = []
+
+with open("students.csv") as file:
+    for line in file:
+        name, house = line.rstrip().split(",")
+        students.append({"name": name, "house": house})
+
+for student in sorted(students, key=lambda student: student["name"]):
+    print(f"{student['name']} is in {student['house']}")</code></pre>
+      <p>Мұндағы <code>lambda</code> - <strong>анонимді функция</strong> (<span class="term-en">anonymous function, lambda</span>), яғни атауы жоқ функция. Ол Python-ға былай дейді: «Міне, саған атсыз бір функция: маған <code>student</code> берілсе, оның <code>name</code>-ін ал да, <code>key</code>-ге қайтар». Қос нүктеге дейін - параметр, қос нүктеден кейін - қайтарылатын мән, <code>return</code> сөзі де керек емес. Нәтиже <code>get_name</code> нұсқасымен бірдей.</p>
+
+      <h3 id="fragile">Морт код</h3>
+      <p>Өкінішке қарай, біздің код әлі де морт, яғни оңай сынады. Мысалы, CSV файлды өзгертіп, факультеттің орнына әр оқушының қай жерде өскенін жазайық. Бағдарламамызға не болар екен? <code>students.csv</code>-ті былай өзгертейік:</p>
+<pre class="terminal"><code class="language-plaintext">Harry,"Number Four, Privet Drive"
+Ron,The Burrow
+Draco,Malfoy Manor</code></pre>
+      <p>Бағдарламаны іске қоссақ, қате шығады. Енді факультет емес, үй (home) туралы сөйлеп отырғандықтан, кодтағы атауларды да ауыстырайық:</p>
+<pre data-lang="python"><code class="language-python">students = []
+
+with open("students.csv") as file:
+    for line in file:
+        name, home = line.rstrip().split(",")
+        students.append({"name": name, "home": home})
+
+for student in sorted(students, key=lambda student: student["name"]):
+    print(f"{student['name']} is in {student['home']}")</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: атауларды ауыстырдық, бірақ бағдарлама бәрібір жұмыс істемейді. Неге?</summary>
+        <div class="details-body"><p>Гарридың мекенжайына қараңыз: <code>Number Four, Privet Drive</code>. Мекенжайдың өз ішінде үтір бар! <code>split(",")</code> оны да бөлгіш деп санап, жолды <em>үш</em> бөлікке бөледі: <code>Harry</code>, <code>"Number Four</code> және <code> Privet Drive"</code>. Ал біз оларды тек екі айнымалыға тарқатпақ болдық.</p></div>
+      </details>
+<pre class="terminal"><code class="language-plaintext">ValueError: too many values to unpack (expected 2)</code></pre>
+      <p>Python-ның <code>ValueError: too many values to unpack</code> қатесі осыны айтып тұр: «тарқататын мән тым көп». Біз бағдарламаны CSV файлды үтір арқылы жай бөлуге болады деп есептеп жазғанбыз. Ал CSV стандарты мұндай жағдайды мәнді қос тырнақшаға алу арқылы шешеді. Тырнақшаларды ескеретін кодты өзіміз жазуға уақыт жұмсауымызға болар еді. Бірақ, шын мәнінде, мұны біреу бізден бұрын жасап қойған: CSV файлдарды <strong>талдайтын</strong> (<span class="term-en">parse</span>), яғни дұрыс оқитын дайын құрал бар!</p>
+
+      <h3 id="csv-reader">csv кітапханасы</h3>
+      <p>Python-ның кірістірілген <code>csv</code> <strong>кітапханасында</strong> (<span class="term-en">library</span>) <code>reader</code> деген объект бар. Атынан көрініп тұрғандай, ол CSV файлды оқиды және «Number Four, Privet Drive» ішіндегі артық үтірге шатаспайды. <code>reader</code> <code>for</code> циклінде жұмыс істейді: әр қадамда CSV файлдың келесі жолын береді. Ол жолдың өзі тізім, оның әр элементі жолдағы бір мәнге сәйкес келеді: <code>row[0]</code> - бірінші мән, <code>row[1]</code> - екінші мән.</p>
+<pre data-lang="python"><code class="language-python">import csv
+
+students = []
+
+with open("students.csv") as file:
+    reader = csv.reader(file)
+    for row in reader:
+        students.append({"name": row[0], "home": row[1]})
+
+for student in sorted(students, key=lambda student: student["name"]):
+    print(f"{student['name']} is from {student['home']}")</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python students.py
+Draco is from Malfoy Manor
+Harry is from Number Four, Privet Drive
+Ron is from The Burrow</code></pre>
+      <p>Енді бағдарлама күткендей жұмыс істейді. Тырнақшаны да, ішіндегі үтірді де <code>csv.reader</code> өзі дұрыс өңдеді.</p>
+      <div class="callout tip">
+        <span class="callout-title">Дөңгелекті қайта ойлап таппаңыз</span>
+        <p>CSV-ді <code>split(",")</code>-пен бөлу алғашында оңай көрінеді, бірақ тырнақша, үтір, жаңа жол сияқты ерекше жағдайлар көп. Мұндай кең тараған пішімдерге әрқашан дайын кітапхананы қолданыңыз: оны мыңдаған адам тексерген.</p>
+      </div>
+
+      <h3 id="dictreader">DictReader</h3>
+      <p>Осы уақытқа дейін бағдарламаның өзі CSV файлдың қай бөлігі ат, қай бөлігі мекенжай екенін «шешіп» отырды: <code>row[0]</code> - ат, <code>row[1]</code> - үй. Ал ертең біреу бағандардың орнын ауыстырып жіберсе ше? Бағдарламамыз үнсіз, бірақ қате жұмыс істей бастайды.</p>
+      <p>Бұл ақпаратты CSV файлдың өзіне жазып қойған әлдеқайда дұрыс. Файлды былай өзгертейік:</p>
+<pre class="terminal"><code class="language-plaintext">name,home
+Harry,"Number Four, Privet Drive"
+Ron,The Burrow
+Draco,Malfoy Manor</code></pre>
+      <p>Бірінші жол енді деректер емес, <strong>тақырып жолы</strong> (<span class="term-en">header row</span>): ол файлды оқитын кез келген адамға не бағдарламаға «әр жолда алдымен <code>name</code>, сосын <code>home</code> келеді» деп ашық айтып тұр.</p>
+      <p>Енді <code>csv</code> кітапханасының <code>DictReader</code> деген бөлігін қолданып, файлды одан да икемді оқи аламыз:</p>
+<pre data-lang="python"><code class="language-python">import csv
+
+students = []
+
+with open("students.csv") as file:
+    reader = csv.DictReader(file)
+    for row in reader:
+        students.append({"name": row["name"], "home": row["home"]})
+
+for student in sorted(students, key=lambda student: student["name"]):
+    print(f"{student['name']} is in {student['home']}")</code></pre>
+      <p><code>reader</code>-ді <code>DictReader</code>-ге ауыстырдық. Ол әр жолды тізім емес, <em>сөздік</em> етіп береді, ал кілттері тақырып жолынан алынады. Енді біз <code>row[0]</code> деп орнын емес, <code>row["name"]</code> деп атын айтамыз. CSV файлды жасаған адам бірінші жолға дұрыс тақырыптарды жазса болды, бағандар қай ретпен тұрса да, бағдарлама керек мәліметті тауып алады. Мұны <strong>қорғаныстық бағдарламалау</strong> (<span class="term-en">defensive programming</span>) дейді: кодты болашақтағы өзгерістерге алдын ала дайындап жазу.</p>
+
+      <h3 id="dictwriter">CSV файлға жазу</h3>
+      <p>Біз осы уақытқа дейін CSV файлдарды тек оқыдық. Ал оларға жазғымыз келсе ше?</p>
+      <p>Алдымен сәл тазалық жасайық. Терминалда <code>rm students.csv</code> деп файлды өшіреміз. Бұл команда <code>students.csv</code> тұрған папкада тұрсаңыз ғана жұмыс істейді. Сосын <code>students.py</code>-ді былай өзгертеміз:</p>
+<pre data-lang="python"><code class="language-python">import csv
+
+name = input("What's your name? ")
+home = input("Where's your home? ")
+
+with open("students.csv", "a") as file:
+    writer = csv.DictWriter(file, fieldnames=["name", "home"])
+    writer.writerow({"name": name, "home": home})</code></pre>
+      <p>Мұнда <code>csv</code> кітапханасының <code>DictWriter</code> мүмкіндігін пайдаланамыз. Ол екі параметр қабылдайды: жазылатын <code>file</code> және жазылатын өрістердің атаулары, <code>fieldnames</code>. Ал <code>writerow</code> әдісі параметр ретінде сөздік қабылдайды. Сөзбе-сөз айтсақ, біз Python-ға «<code>name</code> және <code>home</code> деген екі өрісі бар бір жол жаз» деп тұрмыз. Үтір мен тырнақшаның бәрін <code>DictWriter</code> өзі ойлайды: мекенжайда үтір болса, оны тырнақшаға өзі алады.</p>
+<pre class="terminal"><code class="language-plaintext">$ python students.py
+What's your name? Harry
+Where's your home? Number Four, Privet Drive
+$ cat students.csv
+Harry,"Number Four, Privet Drive"</code></pre>
+      <p>Айтпақшы, оқуға да, жазуға да болатын файл түрлері өте көп: мәтін мен CSV - солардың бастамасы ғана. CSV туралы толығырақ: <a href="https://docs.python.org/3/library/csv.html" target="_blank" rel="noopener">Python құжаттамасы</a>.</p>
+
+      <h2 id="binary">Екілік файлдар және PIL</h2>
+      <p>Бүгін қарастыратын тағы бір файл түрі - <strong>екілік файл</strong> (<span class="term-en">binary file</span>). Екілік файл дегеніміз - жай ғана нөлдер мен бірлердің жиынтығы. Мәтіндік файлдан айырмашылығы, оны «оқып» шығуға болатын әріптер жоқ, бірақ ол кез келген нәрсені сақтай алады: музыканы да, суретті де.</p>
+      <p>Суреттермен жұмыс істеу үшін Python-да <code>PIL</code> деген танымал кітапхана бар (қазіргі атауы - Pillow). Онымен бір қызық нәрсе жасап көрейік: <strong>анимациялы GIF</strong> (<span class="term-en">animated GIF</span>). Бұл - ішінде бірнеше сурет бар, кезекпен қайта-қайта ойнатылатын сурет файлы. Әр сурет бір кадр, ал бәрі бірге қарапайым анимация немесе бейне әсерін береді. Балалық шақтағы дәптердің шетіне салынған, жылдам парақтағанда қозғалатын суреттерді есіңізге түсіріңіз.</p>
+      <p>Бізде мысықтың екі «костюмі» бар делік: <a href="https://cdn.cs50.net/python/2022/x/lectures/6/src6/costume1.gif" target="_blank" rel="noopener">costume1.gif</a> және <a href="https://cdn.cs50.net/python/2022/x/lectures/6/src6/costume2.gif" target="_blank" rel="noopener">costume2.gif</a> (Scratch-тағы таныс мысық). Екеуіне мұқият қарасаңыз, мысықтың аяқтарының орны сәл басқаша. Бастамас бұрын осы екі суретті курс сайтынан жүктеп алып, өз ортаңызға (IDE) сақтаңыз: оларсыз төмендегі кодты орындау мүмкін емес.</p>
+      <p>Терминалда <code>code costumes.py</code> деп жазып, мына кодты жазамыз:</p>
+<pre data-lang="python"><code class="language-python">import sys
+
+from PIL import Image
+
+images = []
+
+for arg in sys.argv[1:]:
+    image = Image.open(arg)
+    images.append(image)
+
+images[0].save(
+    "costumes.gif", save_all=True, append_images=[images[1]], duration=200, loop=0
+)
+</code></pre>
+      <div class="callout note">
+        <span class="callout-title">Браузерде іске қосылмайды</span>
+        <p>Бұл мысал Pillow кітапханасы мен компьютердегі сурет файлдарын қажет етеді, сондықтан оны осы беттен емес, өз компьютеріңізде немесе cs50.dev-те орындаңыз.</p>
+      </div>
+      <p>Кодты қадамдап қарайық. Алдымен <code>PIL</code>-ден <code>Image</code> мүмкіндігін импорттаймыз. Бірінші <code>for</code> циклі командалық жолда берілген суреттерді аралап, әрқайсысын <code>Image.open</code> арқылы ашып, <code>images</code> тізіміне қосады. <code>sys.argv[1:]</code> дегені - <code>argv</code> тізімін екінші элементінен бастап <strong>кесу</strong> (<span class="term-en">slicing</span>): бірінші элемент бағдарламаның өз аты (<code>costumes.py</code>), ол бізге керек емес.</p>
+      <p>Соңғы жолдар бірінші суретті <code>costumes.gif</code> деп сақтайды және оған екінші суретті жалғайды. Параметрлерге қараңыз: <code>save_all=True</code> - барлық кадрды сақта; <code>append_images=[images[1]]</code> - екінші суретті келесі кадр етіп қос; <code>duration=200</code> - әр кадр 200 миллисекунд көрсетілсін; <code>loop=0</code> - анимация шексіз қайталансын. Енді терминалда іске қосайық:</p>
+<pre class="terminal"><code class="language-plaintext">$ python costumes.py costume1.gif costume2.gif
+$ code costumes.gif</code></pre>
+      <p>Міне, мысық жүріп келеді! Екі қарапайым суреттен анимациялы GIF жасадық. Pillow туралы толығырақ: <a href="https://pillow.readthedocs.io/" target="_blank" rel="noopener">Pillow құжаттамасы</a>.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Біз бүгін файлдарды мәтін түрінде жазып, оқуды ғана емес, нөлдер мен бірлер арқылы, яғни екілік түрде оқып, жазуды да көрдік. Енді бағдарламаларыңыз бір нәрсені есте сақтай алады. Осы жаңа мүмкіндіктермен не жасайтыныңызды көруге асығып отырмыз!</p>
+      <ul>
+        <li><strong>файлдық енгізу-шығару</strong>: мәліметті бағдарлама аяқталғаннан кейін де сақтау;</li>
+        <li><code>open</code> және режимдер: <code>"r"</code> (оқу), <code>"w"</code> (қайта жазу), <code>"a"</code> (соңына қосу); <code>write</code>, <code>close</code>, жаңа жол үшін <code>\n</code>;</li>
+        <li><code>with</code>: файлды автоматты түрде жабу; <code>readlines</code>, <code>for line in file</code> және <code>rstrip</code>;</li>
+        <li><strong>CSV</strong>: <code>split(",")</code>, <strong>тарқату</strong> (<code>name, house = ...</code>), сөздіктер тізімі;</li>
+        <li><code>sorted(..., key=...)</code> және <strong>анонимді функция</strong> <code>lambda</code>;</li>
+        <li><code>csv</code> кітапханасы: <code>reader</code>, <code>DictReader</code>, <code>DictWriter</code>, <strong>тақырып жолы</strong>;</li>
+        <li><strong>екілік файлдар</strong> және <code>PIL</code> арқылы анимациялы GIF жасау.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. <code>names.txt</code> файлында бірнеше ат бар. <code>open("names.txt", "w")</code> деп ашып, бір ат жазсақ, не болады?</p>
+          <label><input type="radio" value="a"> Жаңа ат бұрынғы аттардың соңына қосылады</label>
+          <label><input type="radio" value="b"> Файлдағы бұрынғы аттар өшіп, тек жаңа ат қалады</label>
+          <label><input type="radio" value="c"> Қате шығады, себебі файл бұрыннан бар</label>
+          <label><input type="radio" value="d"> Файл өзгермейді</label>
+          <p class="explain"><code>"w"</code> режимі файлды басынан қайта жазады. Бұрынғы мазмұнды сақтап, соңына қосу үшін <code>"a"</code> керек.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">2. <code>file.write(name)</code> арқылы үш ат жазылды, бірақ файлда олар <code>HermioneHarryRon</code> болып жабысып тұр. Неге?</p>
+          <label><input type="radio" value="a"> Файл жабылмаған</label>
+          <label><input type="radio" value="b"> <code>"a"</code> режимі жолдарды біріктіреді</label>
+          <label><input type="radio" value="c"> <code>write</code> бос орындарды өшіреді</label>
+          <label><input type="radio" value="d"> <code>write</code> <code>print</code> сияқты соңына <code>\n</code> қоспайды</label>
+          <p class="explain"><code>write</code> мәтінді дәл сол күйінде жазады. Әр атты жаңа жолдан бастау үшін <code>f"{name}\n"</code> деп жазу керек.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. <code>with open("names.txt") as file:</code> жазуының <code>file = open(...)</code>-тен басты артықшылығы неде?</p>
+          <label><input type="radio" value="a"> Блок аяқталғанда файл автоматты түрде жабылады</label>
+          <label><input type="radio" value="b"> Файл тезірек оқылады</label>
+          <label><input type="radio" value="c"> Файл жоқ болса, қате шықпайды</label>
+          <label><input type="radio" value="d"> Файлды тек оқуға болады</label>
+          <p class="explain"><code>with</code> блогынан шыққан сәтте Python файлды өзі жабады, <code>close</code>-ты ұмытып кету мүмкін емес.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">4. <code>names.txt</code> файлының әр жолында бір ат бар. <code>for line in file: print("hello,", line)</code> неге аттардың арасында бос жол қалдырады?</p>
+          <label><input type="radio" value="a"> <code>print</code> екі рет орындалады</label>
+          <label><input type="radio" value="b"> Файлда әр аттан кейін бос жол бар</label>
+          <label><input type="radio" value="c"> Жолдың соңындағы <code>\n</code> мен <code>print</code>-тің өз <code>\n</code>-і қосылады</label>
+          <label><input type="radio" value="d"> Үтір бос жол қосады</label>
+          <p class="explain">Файлдан оқылған әр жол <code>\n</code>-мен аяқталады, оған <code>print</code>-тің әдепкі <code>\n</code>-і қосылады. <code>line.rstrip()</code> мұны түзетеді.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. Жолда <code>Harry,"Number Four, Privet Drive"</code> тұр. <code>name, home = line.rstrip().split(",")</code> не істейді?</p>
+          <label><input type="radio" value="a"> <code>name = "Harry"</code>, <code>home = "Number Four, Privet Drive"</code></label>
+          <label><input type="radio" value="b"> <code>ValueError: too many values to unpack</code> қатесін береді</label>
+          <label><input type="radio" value="c"> <code>home</code>-ға тек <code>"Number Four</code> түседі</label>
+          <label><input type="radio" value="d"> Тырнақшаларды өзі алып тастайды</label>
+          <p class="explain"><code>split</code> тырнақшаны білмейді, жолды үш бөлікке бөледі, ал айнымалы екеу ғана. Мұндай файлдарды <code>csv.reader</code> дұрыс оқиды.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">6. <code>sorted(students, key=lambda student: student["name"])</code> жолында <code>lambda</code> не істейді?</p>
+          <label><input type="radio" value="a"> Әр оқушының сөздігінен атын қайтаратын атсыз функция жасайды</label>
+          <label><input type="radio" value="b"> Тізімді кері ретпен сұрыптайды</label>
+          <label><input type="radio" value="c"> Сөздіктің барлық кілттерін қайтарады</label>
+          <label><input type="radio" value="d"> <code>name</code> деген айнымалы жасайды</label>
+          <p class="explain"><code>lambda</code> - анонимді функция. <code>sorted</code> оны әр элементке қолданып, нәтижесі (аты) бойынша сұрыптайды.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. CSV файлдың бірінші жолы <code>name,home</code>. <code>csv.DictReader</code> оқыған әр <code>row</code> қандай болады?</p>
+          <label><input type="radio" value="a"> <code>["Harry", "Number Four, Privet Drive"]</code> сияқты тізім</label>
+          <label><input type="radio" value="b"> <code>"Harry,Number Four, Privet Drive"</code> сияқты жол</label>
+          <label><input type="radio" value="c"> Бірінші жолдың өзі де <code>row</code> ретінде келеді</label>
+          <label><input type="radio" value="d"> <code>{"name": "Harry", "home": "Number Four, Privet Drive"}</code> сияқты сөздік</label>
+          <p class="explain"><code>DictReader</code> тақырып жолын кілт ретінде алады да, қалған әр жолды сөздік етіп береді. Сондықтан <code>row["name"]</code> деп жаза аламыз.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">8. <code>python costumes.py costume1.gif costume2.gif</code> іске қосылғанда <code>sys.argv[1:]</code> неге тең?</p>
+          <label><input type="radio" value="a"> <code>["costumes.py", "costume1.gif", "costume2.gif"]</code></label>
+          <label><input type="radio" value="b"> <code>["costume1.gif"]</code></label>
+          <label><input type="radio" value="c"> <code>["costume1.gif", "costume2.gif"]</code></label>
+          <label><input type="radio" value="d"> <code>"costume1.gif"</code></label>
+          <p class="explain"><code>[1:]</code> тізімді екінші элементтен бастап соңына дейін кеседі, яғни бағдарламаның өз атынсыз барлық аргументті береді.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="pset">Тапсырмалар жинағы 6</h2>
+      <p><span class="term-en">(Problem Set 6)</span> Ресми тапсырма беті: <a href="https://cs50.harvard.edu/python/psets/6/" target="_blank" rel="noopener">cs50.harvard.edu/python/psets/6</a>. Бұл аптаның бағдарламалары командалық жол аргументтерімен іске қосылады және файлдармен жұмыс істейді. Алғашқы үш тапсырманы осы беттегі <strong>автотексерушіде</strong> тексере аласыз: ол бағдарламаңызды <code>python lines.py hello.py</code> сияқты командалармен іске қосып, керек файлдарды өзі дайындайды. Компьютерде жұмыс істесеңіз, ресми <code>check50</code> командасын да қолданыңыз.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pset-lines">Lines of Code (Код жолдары)</h3></div>
+        <p>Бағдарламаның күрделілігін өлшеудің бір жолы - оның <a href="https://en.wikipedia.org/wiki/Source_lines_of_code" target="_blank" rel="noopener">код жолдарын</a> (lines of code, LOC) санау, бос жолдар мен түсініктемелерді есептемей. Мысалы, мына бағдарламада:</p>
+<pre data-lang="python"><code class="language-python"># Say hello
+
+name = input("What's your name? ")
+print(f"hello, {name}")</code></pre>
+        <p>төрт емес, екі-ақ жол код бар: бірінші жолы - түсініктеме, екіншісі - бос (тек бос орыннан тұрады). Бұл көп емес, демек бағдарлама күрделі болмауы ықтимал. Әрине, бір бағдарламада (не функцияда) екіншісінен көбірек жол болуы оның міндетті түрде күрделірек екенін білдірмейді. Мысалы, мына функция:</p>
+<pre data-lang="python"><code class="language-python">def is_even(n):
+    if n % 2 == 0:
+        return True
+    else:
+        return False</code></pre>
+        <p>мынадан екі есе күрделі емес:</p>
+<pre data-lang="python"><code class="language-python">def is_even(n):
+    return n % 2 == 0</code></pre>
+        <p>алғашқысында екі еседен де көп жол болса да. Тіпті оқуға жеңіл болса, алғашқысын қарапайымырақ деп айтуға болар! Сондықтан код жолдарының санына сын көзбен қарау керек.</p>
+        <p>Солай болса да, <code>lines.py</code> файлында бағдарлама жазыңыз: ол дәл бір <strong>командалық жол аргументін</strong> (<span class="term-en">command-line argument</span>) - Python файлының атын (не жолын) күтеді және сол файлдағы код жолдарының санын, түсініктемелер мен бос жолдарды есептемей, шығарады. Егер қолданушы дәл бір аргумент бермесе, немесе файл аты <code>.py</code>-мен аяқталмаса, немесе ондай файл жоқ болса, бағдарлама <code>sys.exit</code> арқылы аяқталуы керек.</p>
+        <p><code>#</code>-тан басталатын кез келген жолды (алдында бос орындар болуы мүмкін) түсініктеме деп есептеңіз. (<a href="https://peps.python.org/pep-0257/" target="_blank" rel="noopener">Docstring</a> түсініктеме болып саналмайды.) Тек бос орындардан тұратын жолды бос жол деп есептеңіз.</p>
+        <p>Қате жағдайларындағы хабарлар (ресми «How to Test» бөліміндегідей):</p>
+<pre class="terminal"><code class="language-plaintext">$ python lines.py
+Too few command-line arguments
+$ python lines.py hello.py goodbye.py
+Too many command-line arguments
+$ python lines.py invalid_extension.txt
+Not a Python file
+$ python lines.py non_existent_file.py
+File does not exist</code></pre>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>str</code>-дің <a href="https://docs.python.org/3/library/stdtypes.html#string-methods" target="_blank" rel="noopener">көп әдісі</a> бар, солардың ішінде <code>lstrip</code> пен <code>startswith</code>. <code>open</code> файл табылмаса, <a href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" target="_blank" rel="noopener"><code>FileNotFoundError</code></a> қатесін көтеруі мүмкін: оны <code>try</code>/<code>except</code> арқылы ұстаңыз. Бағдарламаңызды <a href="https://cdn.cs50.net/python/2022/x/lectures/6/src6/" target="_blank" rel="noopener">6-аптаның бастапқы кодында</a> және өз бағдарламаларыңызда сынап көріңіз.</p></div></details>
+        <div class="autograder" data-check="py-lines" data-src="python/checks/week-6.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py6-lines">
+            <li><input type="checkbox"> <span><code>python lines.py</code> → <code>Too few command-line arguments</code></span></li>
+            <li><input type="checkbox"> <span>Екі аргумент → <code>Too many command-line arguments</code>; <code>.txt</code> → <code>Not a Python file</code>; жоқ файл → <code>File does not exist</code></span></li>
+            <li><input type="checkbox"> <span>Түсініктеме мен бос жолы бар <code>hello.py</code> → <code>2</code>; docstring код ретінде саналады.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/lines</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-pizza">Pizza Py (Пицца мәзірі)</h3></div>
+        <p><a href="https://en.wikipedia.org/wiki/Harvard_Square" target="_blank" rel="noopener">Гарвард алаңындағы</a> ең танымал пиццерия - Pinocchio’s Pizza &amp; Subs, қысқаша Noch’s. Ол «қалың қамырлы» сицилиялық пиццасымен белгілі.</p>
+        <p>Студенттер әдетте пиццаны тілімдеп сатып алады, бірақ мәзірде тұтас пиццалар да бар. Міне, сицилиялық пиццалардың CSV файлы, <a href="https://cs50.harvard.edu/python/psets/6/pizza/sicilian.csv" target="_blank" rel="noopener">sicilian.csv</a>:</p>
+<pre class="terminal"><code class="language-plaintext">Sicilian Pizza,Small,Large
+Cheese,$25.50,$39.95
+1 item,$27.50,$41.95
+2 items,$29.50,$43.95
+3 items,$31.50,$45.95
+Special,$33.50,$47.95</code></pre>
+        <p>Кәдімгі пиццалар үшін <a href="https://cs50.harvard.edu/python/psets/6/pizza/regular.csv" target="_blank" rel="noopener">regular.csv</a> файлы да бар. Әрине, CSV файл тұтынушыға онша ыңғайлы емес. <a href="https://en.wikipedia.org/wiki/ASCII_art" target="_blank" rel="noopener">ASCII-арт</a> түрінде безендірілген кесте әлдеқайда әдемі:</p>
+<pre class="terminal"><code class="language-plaintext">+------------------+---------+---------+
+| Sicilian Pizza   | Small   | Large   |
++==================+=========+=========+
+| Cheese           | $25.50  | $39.95  |
++------------------+---------+---------+
+| 1 item           | $27.50  | $41.95  |
++------------------+---------+---------+
+| 2 items          | $29.50  | $43.95  |
++------------------+---------+---------+
+| 3 items          | $31.50  | $45.95  |
++------------------+---------+---------+
+| Special          | $33.50  | $47.95  |
++------------------+---------+---------+</code></pre>
+        <p><code>pizza.py</code> файлында бағдарлама жазыңыз: ол дәл бір командалық жол аргументін - Pinocchio’s пішіміндегі CSV файлдың атын (не жолын) күтеді және PyPI-дағы <a href="https://pypi.org/project/tabulate/" target="_blank" rel="noopener"><code>tabulate</code></a> пакеті арқылы ASCII-арт кестесін шығарады. Кестені кітапхананың <code>grid</code> пішімімен безендіріңіз. Егер қолданушы дәл бір аргумент бермесе, немесе файл аты <code>.csv</code>-мен аяқталмаса, немесе ондай файл жоқ болса, бағдарлама <code>sys.exit</code> арқылы аяқталуы керек.</p>
+        <p>Қате хабарлары: аргумент жоқ болса - <code>Too few command-line arguments</code>; тым көп болса - <code>Too many command-line arguments</code>; <code>sicilian.txt</code> сияқты файл - <code>Not a CSV file</code>; жоқ файл - <code>File does not exist</code>. Ал <code>python pizza.py regular.csv</code> мынаны шығаруы керек:</p>
+<pre class="terminal"><code class="language-plaintext">+-----------------+---------+---------+
+| Regular Pizza   | Small   | Large   |
++=================+=========+=========+
+| Cheese          | $13.50  | $18.95  |
++-----------------+---------+---------+
+| 1 topping       | $14.75  | $20.95  |
++-----------------+---------+---------+
+| 2 toppings      | $15.95  | $22.95  |
++-----------------+---------+---------+
+| 3 toppings      | $16.95  | $24.95  |
++-----------------+---------+---------+
+| Special         | $18.50  | $26.95  |
++-----------------+---------+---------+</code></pre>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>csv</code> модулінің <a href="https://docs.python.org/3/library/csv.html#csv.reader" target="_blank" rel="noopener"><code>reader</code></a> және <a href="https://docs.python.org/3/library/csv.html#csv.DictReader" target="_blank" rel="noopener"><code>DictReader</code></a> әдістерін еске алыңыз. <code>open</code> <code>FileNotFoundError</code> көтеруі мүмкін. <code>tabulate</code> пакетінде бір ғана функция бар; оны <code>pip install tabulate</code> арқылы орнатасыз. Тақырып жолын <code>headers</code> параметрі арқылы беріңіз (мысалы, <code>headers="firstrow"</code> немесе <code>DictReader</code>-мен <code>headers="keys"</code>).</p></div></details>
+        <div class="autograder" data-check="py-pizza" data-src="python/checks/week-6.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py6-pizza">
+            <li><input type="checkbox"> <span>Аргументсіз → <code>Too few command-line arguments</code>; екі аргумент → <code>Too many command-line arguments</code></span></li>
+            <li><input type="checkbox"> <span><code>sicilian.txt</code> → <code>Not a CSV file</code>; жоқ файл → <code>File does not exist</code></span></li>
+            <li><input type="checkbox"> <span><code>regular.csv</code> мен <code>sicilian.csv</code> → <code>grid</code> кестесі</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/pizza</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-scourgify">Scourgify (Тазарту дуасы)</h3></div>
+        <blockquote><p>«Әйтеуір, бәрі сыйды, - деді Тонкс сандықтың қақпағын тарс жауып. - Мынаны да сәл тазалап жіберуге болады». Ол таяқшасын Хедвигтің торына бағыттады: «<a href="https://harrypotter.fandom.com/wiki/Scouring_Charm" target="_blank" rel="noopener">Скурджифай</a>». Бірнеше қауырсын мен саңғырық ғайып болды.</p><p>- <em>Гарри Поттер және Феникс Ордені</em></p></blockquote>
+        <p>Деректерді де жиі «тазалау» керек болады, яғни мәндерді біркелкі, ыңғайлырақ пішімге келтіру. Мысалы, оқушылардың мына CSV файлын қарайық, <a href="https://cs50.harvard.edu/python/psets/6/scourgify/before.csv" target="_blank" rel="noopener">before.csv</a> (толық файлда 53 оқушы бар, мұнда басы ғана):</p>
+<pre class="terminal"><code class="language-plaintext">name,house
+"Abbott, Hannah",Hufflepuff
+"Bell, Katie",Gryffindor
+"Bones, Susan",Hufflepuff
+"Boot, Terry",Ravenclaw
+"Brown, Lavender",Gryffindor
+...
+"Wood, Oliver",Gryffindor
+"Zabini, Blaise",Slytherin</code></pre>
+        <p>Файлдың әр «жолында» үш мән бар (тегі, аты және факультеті), бірақ алғашқы екеуі бір «бағанға» (<code>name</code>) біріктірілген: қос тырнақшаға алынған, тегі мен аты үтір және бос орын арқылы бөлінген. Хогвартс әр оқушыға <a href="https://en.wikipedia.org/wiki/Mail_merge" target="_blank" rel="noopener">жаппай рассылка</a> арқылы үлгі хат жібергісі келсе, бұл ыңғайсыз: хатты «Dear Potter, Harry,» деп бастау оғаш болар еді, «Dear Harry,» деген дұрыс.</p>
+        <p><code>scourgify.py</code> файлында бағдарлама жазыңыз, ол:</p>
+        <ul>
+          <li>қолданушыдан екі командалық жол аргументін күтеді:
+            <ul>
+              <li>кіріс ретінде оқылатын, бар CSV файлдың атын; оның бағандары ретімен <code>name</code> және <code>house</code> деп есептеледі;</li>
+              <li>шығыс ретінде жазылатын жаңа CSV файлдың атын; оның бағандары ретімен <code>first</code>, <code>last</code> және <code>house</code> болуы керек;</li>
+            </ul>
+          </li>
+          <li>кірісті шығысқа түрлендіреді: әр <code>name</code>-ді аты (<code>first</code>) мен тегіне (<code>last</code>) бөледі. Әр оқушының аты да, тегі де бар деп есептеңіз.</li>
+        </ul>
+        <p>Егер қолданушы дәл екі аргумент бермесе, немесе біріншісін оқу мүмкін болмаса, бағдарлама <code>sys.exit</code> арқылы қате хабарымен аяқталуы керек:</p>
+<pre class="terminal"><code class="language-plaintext">$ python scourgify.py
+Too few command-line arguments
+$ python scourgify.py 1.csv 2.csv 3.csv
+Too many command-line arguments
+$ python scourgify.py invalid_file.csv output.csv
+Could not read invalid_file.csv</code></pre>
+        <p>Ал <code>python scourgify.py before.csv after.csv</code> бағандары ретімен <code>first</code>, <code>last</code>, <code>house</code> болатын жаңа <code>after.csv</code> файлын жасауы керек.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>csv</code> модулінде <a href="https://docs.python.org/3/library/csv.html#csv.DictReader" target="_blank" rel="noopener"><code>DictReader</code></a> мен <a href="https://docs.python.org/3/library/csv.html#csv.DictWriter" target="_blank" rel="noopener"><code>DictWriter</code></a> бар. <code>DictWriter</code>-ге <code>fieldnames</code>-ті файлға жазуды аргументсіз <a href="https://docs.python.org/3/library/csv.html#csv.DictWriter.writeheader" target="_blank" rel="noopener"><code>writeheader</code></a> әдісі арқылы тапсыра аласыз. <code>"Potter, Harry"</code>-ді бөлгенде үтірден кейінгі бос орынды ұмытпаңыз.</p></div></details>
+        <div class="autograder" data-check="py-scourgify" data-src="python/checks/week-6.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py6-scourgify">
+            <li><input type="checkbox"> <span>Аргументсіз → <code>Too few command-line arguments</code>; үш аргумент → <code>Too many command-line arguments</code></span></li>
+            <li><input type="checkbox"> <span>Жоқ файл → <code>Could not read invalid_file.csv</code></span></li>
+            <li><input type="checkbox"> <span><code>after.csv</code> бірінші жолы <code>first,last,house</code>, ал <code>"Potter, Harry",Gryffindor</code> → <code>Harry,Potter,Gryffindor</code></span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/scourgify</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pset-shirt">CS50 P-Shirt (CS50 футболкасы)</h3></div>
+        <p>Гарвардта CS50-ді бітірген студенттерге дәстүр бойынша өздерінің <a href="https://cs50.harvardshop.com/collections/print/products/i-took-cs50-unisex-t-shirt" target="_blank" rel="noopener">«I took CS50»</a> футболкасы беріледі. Оны интернеттен сатып алудың қажеті жоқ, бірақ виртуалды түрде киіп көргіңіз келе ме?</p>
+        <p><code>shirt.py</code> файлында дәл екі командалық жол аргументін күтетін бағдарлама жазыңыз:</p>
+        <ul>
+          <li><code>sys.argv[1]</code>-де - кіріс ретінде оқылатын (ашылатын) JPEG не PNG файлдың аты (не жолы);</li>
+          <li><code>sys.argv[2]</code>-де - шығыс ретінде жазылатын (сақталатын) JPEG не PNG файлдың аты (не жолы).</li>
+        </ul>
+        <p>Бағдарлама кіріс суретті <a href="https://cs50.harvard.edu/python/psets/6/shirt/shirt.png" target="_blank" rel="noopener">shirt.png</a> өлшеміне келтіріп (өлшемін өзгертіп, қиып), оның үстіне фоны мөлдір <code>shirt.png</code>-ді салып, нәтижені шығыс файл ретінде сақтауы керек.</p>
+        <p>Кірісті <a href="https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.open" target="_blank" rel="noopener"><code>Image.open</code></a> арқылы ашыңыз, өлшемін өзгертіп, қиюды <a href="https://pillow.readthedocs.io/en/stable/reference/ImageOps.html#PIL.ImageOps.fit" target="_blank" rel="noopener"><code>ImageOps.fit</code></a> арқылы жасаңыз (<code>method</code>, <code>bleed</code> және <code>centering</code> үшін әдепкі мәндерді қолданып), футболканы <a href="https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.paste" target="_blank" rel="noopener"><code>Image.paste</code></a> арқылы үстіне салыңыз, ал нәтижені <a href="https://pillow.readthedocs.io/en/stable/reference/Image.html#PIL.Image.Image.save" target="_blank" rel="noopener"><code>Image.save</code></a> арқылы сақтаңыз.</p>
+        <p>Мына жағдайларда бағдарлама <code>sys.exit</code> арқылы аяқталуы керек:</p>
+        <ul>
+          <li>қолданушы дәл екі аргумент бермесе;</li>
+          <li>кіріс пен шығыстың аттары <code>.jpg</code>, <code>.jpeg</code> не <code>.png</code>-мен аяқталмаса (бас-кіші әріпке қарамастан);</li>
+          <li>кірістің кеңейтімі шығыстың кеңейтімімен бірдей болмаса;</li>
+          <li>көрсетілген кіріс файл жоқ болса.</li>
+        </ul>
+        <p>Кіріс - <a href="https://cs50.harvard.edu/python/psets/6/shirt/#demos" target="_blank" rel="noopener">демодағыдай</a> дәл керек қалыпта түскен адамның суреті деп есептеңіз: өлшемі өзгертіліп, қиылғанда футболка оған дәл келеді. Өз суретіңізбен сынағыңыз келсе, оны VS Code файл шолғышына, <code>shirt.py</code> тұрған папкаға сүйреп әкеліңіз. Суреттерді тапсырудың қажеті жоқ.</p>
+        <p>Қате хабарлары (ресми «How to Test» бөлімінен):</p>
+<pre class="terminal"><code class="language-plaintext">$ python shirt.py
+Too few command-line arguments
+$ python shirt.py before1.jpg before2.jpg before3.jpg
+Too many command-line arguments
+$ python shirt.py before1.jpg invalid_format.bmp
+Invalid output
+$ python shirt.py before1.jpg after1.png
+Input and output have different extensions
+$ python shirt.py non_existent_image.jpg after1.jpg
+Input does not exist</code></pre>
+        <p>Ал <code>python shirt.py before1.jpg after1.jpg</code> Маппеттің CS50 футболкасын киген суретін (<a href="https://cs50.harvard.edu/python/psets/6/shirt/after1.jpg" target="_blank" rel="noopener">after1.jpg</a>) жасауы керек. Бастамас бұрын <code>wget</code> арқылы <code>shirt.png</code> мен <code>muppets.zip</code>-ті жүктеп, <code>unzip muppets.zip</code> деп маппеттердің суреттерін шығарып алыңыз.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Файлдың кеңейтімін <a href="https://docs.python.org/3/library/os.path.html#os.path.splitext" target="_blank" rel="noopener"><code>os.path.splitext</code></a> арқылы анықтауға болады. <code>open</code> <code>FileNotFoundError</code> көтеруі мүмкін. Pillow-ды <code>pip install Pillow</code> арқылы орнатасыз. Суретті <code>shirt = Image.open("shirt.png")</code> деп ашасыз, оның ені мен биіктігін кортеж ретінде <code>size = shirt.size</code> деп аласыз, ал бір суретті екіншісінің (мысалы, <code>photo</code>) үстіне <code>photo.paste(shirt, shirt)</code> деп саласыз: мұнда бірінші <code>shirt</code> - үстіне салынатын сурет, екіншісі - <code>photo</code>-ның қай пикселдері жаңартылатынын көрсететін «маска». Суретті VS Code-та <code>code shirt.png</code> деп ашуға болады.</p></div></details>
+        <div class="callout note">
+          <span class="callout-title">Бұл тапсырма компьютерде орындалады</span>
+          <p>Pillow кітапханасы мен сурет файлдары қажет болғандықтан, бұл тапсырманың автотексерушісі жоқ. Оны өз компьютеріңізде немесе cs50.dev-те жазып, <code>check50</code> арқылы тексеріңіз.</p>
+        </div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py6-shirt">
+            <li><input type="checkbox"> <span>Аргумент саны қате → <code>Too few command-line arguments</code> / <code>Too many command-line arguments</code></span></li>
+            <li><input type="checkbox"> <span><code>.bmp</code> → <code>Invalid output</code>; әр түрлі кеңейтімдер → <code>Input and output have different extensions</code>; жоқ файл → <code>Input does not exist</code></span></li>
+            <li><input type="checkbox"> <span><code>python shirt.py before1.jpg after1.jpg</code> футболка киген суретті жасайды.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/shirt</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-5.html"><small>Алдыңғы</small>← 5-апта: Модульдік тесттер</a>
+        <a class="next" href="week-7.html"><small>Келесі</small>7-апта: Тұрақты өрнектер →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50P (CS50's Introduction to Programming with Python, Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

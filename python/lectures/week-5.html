@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50P 5-апта: Модульдік тесттер - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50P 5-апта: Модульдік тесттер - CS50 қазақша">
+  <meta property="og:description" content="CS50P (Python) 5-апта: модульдік тесттер, assert, pytest, pytest.raises, жолдарды тестілеу және тесттерді қалталарға ұйымдастыру.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/python/lectures/week-5.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50P (Python) 5-апта: модульдік тесттер, assert, pytest, pytest.raises, жолдарды тестілеу және тесттерді қалталарға ұйымдастыру.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#3776ab" data-n="5">
+        <div class="num">5-апта</div>
+        <h1>Модульдік тесттер</h1>
+        <p>Кодты <code>print</code> арқылы көзбен тексерудің орнына, оны тексеретін кодты өзіміз жазамыз. <code>assert</code>, <code>pytest</code> және ерекше жағдайларды тексеруді үйренеміз.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/python/weeks/5/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Осы уақытқа дейін кодыңыздың дұрыс-бұрыстығын <code>print</code> арқылы немесе CS50-дің тексерушісі арқылы біліп келдіңіз. Енді үшінші жолды үйренеміз: <strong>кодты тексеретін кодты өзіміз жазамыз</strong>. Апта соңындағы тапсырмаларда сіз бағдарламаны ғана емес, оның <em>тесттерін</em> де жазасыз, ал браузердегі автотексеруші сіздің тесттеріңіздің өзін тексереді.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="unit-tests">Модульдік тесттер</h2>
+      <p>Шынын айтайық: осы кезге дейін өз кодыңызды қалай тексеріп келдіңіз? Көбіміз <code>print</code> жазып, экранға қарап, «дұрыс сияқты» дейміз. Ал кейде тексеруді CS50-дің өзіне тапсырып, <code>check50</code>-нің жасыл күлкілерін күтеміз. Бірақ нақты өндірісте, компанияларда бәрі басқаша: бағдарламашылар өз кодын тексеру үшін <strong>арнайы код</strong> жазады. Яғни бағдарлама бір бөлек, оны тексеретін бағдарлама тағы бір бөлек.</p>
+      <p>Мұны <strong>модульдік тест</strong> (<span class="term-en">unit test</span>) дейді. «Модуль» немесе «бірлік» деп бағдарламаның бір шағын бөлігін, көбіне бір функцияны айтамыз. Бүкіл ғимаратты бірден тексерудің орнына, әр кірпіштің мықтылығын бөлек тексеру сияқты.</p>
+      <p>Бастау үшін таныс калькуляторымызды алайық. Терминалға <code>code calculator.py</code> деп жазып, мынадай код жазамыз (өткен лекцияда жазған болуыңыз керек):</p>
+<pre data-lang="python"><code class="language-python">def main():
+    x = int(input("What's x? "))
+    print("x squared is", square(x))
+
+
+def square(n):
+    return n * n
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Бұл кодты өзіңіз-ақ тексере аласыз: іске қосып, <code>2</code> деп жазасыз, <code>4</code> шықты, жарайды. Бірақ ойланып көріңіз: неге бұған бөлек тест жазу керек? Себебі «2» деген бір ғана жағдай. Бағдарлама үлкейгенде қолмен тексеру қиындап, біреуін ұмытып кетеміз. Тестті бір рет жазып қойсақ, кодты өзгерткен сайын оны бір секундта қайта жүргізе аламыз.</p>
+      <p>Дәстүр бойынша тест файлының аты <code>test_</code> деп басталады. Жаңа файл ашайық: <code>code test_calculator.py</code>.</p>
+<pre data-lang="python"><code class="language-python">from calculator import square
+
+
+def main():
+    test_square()
+
+
+def test_square():
+    if square(2) != 4:
+        print("2 squared was not 4")
+    if square(3) != 9:
+        print("3 squared was not 9")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Бірінші жолға назар аударыңыз: <code>from calculator import square</code>. Біз <code>calculator.py</code> файлынан тек <code>square</code> функциясын өз тест файлымызға әкеліп отырмыз. Міне, <code>if __name__ == "__main__"</code> тексерісінің пайдасы осында: калькулятор <code>main</code>-і біз импорттағанда өздігінен іске қосылып кетпейді.</p>
+      <p>Енді терминалда <code>python test_calculator.py</code> деп жазайық. Не шықты? Ештеңе. Бос экран. Бұл жақсы ма? Мүмкін, бәрі дұрыс шығар. Ал мүмкін, біздің тестіміз қателікті ұстамай тұрған шығар: бағдарлама тек бізге белгілі екі жағдайды ғана тексерді, ал «шеткі жағдайлар» (<span class="term-en">corner cases</span>) есімізден шығып кеткен болуы мүмкін.</p>
+      <p>Тағы бір мәселе бар. Тексеретін жағдайымыз он болса, он <code>if</code> жазамыз ба? Тест кодымыз бағдарламаның өзінен ұзын болып кетеді. Қалай қысқартуға болады?</p>
+
+      <h2 id="assert">assert</h2>
+      <p>Python-да бұған арнайы команда бар: <code>assert</code>, яғни «бекіту». Ол интерпретаторға былай дейді: «Мынау ақиқат екеніне сенімдімін. Егер олай болмай шықса, дереу қате бер». Тестімізді қайта жазайық:</p>
+<pre data-lang="python"><code class="language-python">from calculator import square
+
+
+def main():
+    test_square()
+
+
+def test_square():
+    assert square(2) == 4
+    assert square(3) == 9
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Көрдіңіз бе, төрт жол екіге түсті. Біз «<code>square(2)</code> міндетті түрде <code>4</code>-ке тең» деп тікелей бекітіп отырмыз. Егер солай болса, ештеңе болмайды, бағдарлама үнсіз жалғаса береді. Егер болмаса, Python дабыл қағады.</p>
+      <p>Дабылды көру үшін калькуляторымызды әдейі бұзып көрейін. <code>*</code> белгісін <code>+</code> етіп өзгертемін:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    x = int(input("What's x? "))
+    print("x squared is", square(x))
+
+
+def square(n):
+    return n + n
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Байқадыңыз ба, қате өте қулықпен жасырылған. Өйткені <code>2 + 2</code> де 4, ал <code>2 * 2</code> де 4! Тек екі санымен тексерсеңіз, қатені ешқашан таппайсыз. Бірақ біздің тестіміз <code>3</code>-ті де қосқан. Енді <code>python test_calculator.py</code> деп іске қосамыз да, <code>AssertionError</code> аламыз. Бұл интерпретатордың «сіз бекіткен шарттардың бірі орындалмады» дегені.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: неге тест үшін 2 емес, 3 қажет болды?</summary>
+        <div class="details-body"><p>Себебі 2 үшін <code>n + n</code> мен <code>n * n</code> бірдей нәтиже береді (екеуі де 4). Қате тек басқа сан берген кезде ғана білінеді. Мұнан үлкен сабақ шығады: тесттегі мәндерді ойланып таңдау керек, бір «ыңғайлы» санға сүйенуге болмайды.</p></div>
+      </details>
+      <p>Ал енді тағы бір қиындық. <code>AssertionError</code> шықты, бірақ <em>қайсысы</em> құлады? Тілекке қарсы, ол қысқа хабар береді. Қолданушыға түсінікті хабар шығарғымыз келсе, ойға келетін жол мынау:</p>
+<pre data-lang="python"><code class="language-python">from calculator import square
+
+
+def main():
+    test_square()
+
+
+def test_square():
+    try:
+        assert square(2) == 4
+    except AssertionError:
+        print("2 squared is not 4")
+    try:
+        assert square(3) == 9
+    except AssertionError:
+        print("3 squared is not 9")
+    try:
+        assert square(-2) == 4
+    except AssertionError:
+        print("-2 squared is not 4")
+    try:
+        assert square(-3) == 9
+    except AssertionError:
+        print("-3 squared is not 9")
+    try:
+        assert square(0) == 0
+    except AssertionError:
+        print("0 squared is not 0")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Мұнда әр жағдайды <code>try</code> ішіне алып, қате шықса, түсінікті хабар жазамыз. Енді іске қосқанда бірнеше қате хабарын көреміз. Бірақ бәрін емес! Мысалы, <code>0</code> үшін <code>0 + 0</code> де <code>0 * 0</code> де нөл, сондықтан ол жағдай жасырын қалады. Бұл тағы бір дәлел: жағдайлардың көп болғаны жақсы, сонда ғана қателер қайдан да болса ұсталады.</p>
+      <p>Бірақ осы кодқа қараңызшы: бес жағдай үшін ширек жүз жол! Бұл дұрыс жол емес. Сұрақ қайта туады: тестті қалай жеңілдетуге болады, және қателерді әдемі етіп қалай көрсетуге болады?</p>
+      <p>Қосымша: <code>assert</code> туралы Python құжаттамасында <a href="https://docs.python.org/3/reference/simple_stmts.html#assert" target="_blank" rel="noopener">толығырақ</a> оқи аласыз.</p>
+
+      <h2 id="pytest">pytest</h2>
+      <p>Жауап: біреу бұл мәселені біз үшін шешіп қойған. <strong>pytest</strong> - Python бағдарламаларын тексеруге арналған үшінші тарап кітапханасы (<span class="term-en">third-party library</span>). Ол қателерді әдемі көрсетеді және тесттерді өзі тауып, іске қосады. Орнату үшін терминалда:</p>
+<pre class="terminal"><code class="language-plaintext">$ pip install pytest</code></pre>
+      <p>Мұнда <code>pip</code> - Python пакеттерін орнататын құрал. Ол кітапхананы интернеттен тауып жүктеп береді.</p>
+      <p>Ең алдымен тест кодымызды жеңілдетейік. <code>main</code> енді керек емес, <code>assert</code>-тердің барлығын бір функцияға салып қоямыз (<code>try</code> та керек емес):</p>
+<pre data-lang="python"><code class="language-python">from calculator import square
+
+
+def main():
+    test_square()
+
+
+def test_square():
+    assert square(2) == 4
+    assert square(3) == 9
+    assert square(-2) == 4
+    assert square(-3) == 9
+    assert square(0) == 0</code></pre>
+      <p>Қараңыз, біз тексергіміз келген бес шарттың бәрі таза жазылды. Енді <code>python</code> емес, <code>pytest</code> арқылы іске қосамыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ pytest test_calculator.py</code></pre>
+      <p>Бірден көп мәтін шығады. Жоғарыда қызыл <code>F</code> (fail, «құлады») әрпін көресіз: бірдеңе дұрыс емес. Одан төменде қызыл <code>E</code> жолдары қателіктің себебін көрсетеді, соның ішінде <code>square(3)</code> қайсыбір нәтиже қайтарғанын да. Мысалы, <code>3</code>-ті квадраттағанда <code>9</code> емес, <code>6</code> шыққанын көресіз. Міне, қызыл мәтін бізге дәл қайда іздеу керегін айтып тұр. Қатені түзетейік, <code>+</code> қайтадан <code>*</code> болсын:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    x = int(input("What's x? "))
+    print("x squared is", square(x))
+
+
+def square(n):
+    return n * n
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Қайта <code>pytest test_calculator.py</code> жүргіземіз. Енді қате жоқ, жасыл түс. Құттықтаймын!</p>
+      <p>Бірақ ыңғайсыз жағы бар: біздің тест бірінші құлаған <code>assert</code>-тен кейін тоқтап қалады. Қалған төрт жағдай тексерілмей қалады. Мұны қайта сезіну үшін калькуляторды тағы бұзайық (<code>*</code> орнына <code>+</code>):</p>
+<pre data-lang="python"><code class="language-python">def main():
+    x = int(input("What's x? "))
+    print("x squared is", square(x))
+
+
+def square(n):
+    return n + n
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Шешім қарапайым: тесттерді тақырыбы бойынша бөлек функцияларға бөлеміз. <code>pytest</code> әр функцияны бөлек іске қосады және біреуі құласа да, қалғандарын жалғастыра береді:</p>
+<pre data-lang="python"><code class="language-python">from calculator import square
+
+
+def test_positive():
+    assert square(2) == 4
+    assert square(3) == 9
+
+
+def test_negative():
+    assert square(-2) == 4
+    assert square(-3) == 9
+
+
+def test_zero():
+    assert square(0) == 0</code></pre>
+      <p>Сол бес тест, тек үш топқа бөлінген: оң сандар, теріс сандар және нөл. <code>pytest</code>-ті қайта жүргізсек, қателіктер әлдеқайда көп шығады және олар қай топта екенін көрсетеді. Қате туралы ақпарат неғұрлым көп болса, соғұрлым оны табу оңай. Ал енді калькуляторды қайтадан түзетеміз:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    x = int(input("What's x? "))
+    print("x squared is", square(x))
+
+
+def square(n):
+    return n * n
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p><code>pytest test_calculator.py</code> тағы да жасыл: қате жоқ.</p>
+
+      <h3 id="pytest-raises">Ерекше жағдайларды тексеру</h3>
+      <p>Тағы бір маңызды нәрсе. Кейде дұрыс бағдарлама <em>қате беруі тиіс</em>. Мысалы, <code>square("cat")</code> дегенде не болуы керек? «Мысықты» квадраттай алмаймыз ғой, сондықтан <code>TypeError</code> шығуы заңды. Бұл күтілген қате екенін тестте қалай жазамыз? <code>pytest</code>-тің өз құралы бар: <code>raises</code>. Оны қолдану үшін файлдың басына <code>import pytest</code> қосамыз:</p>
+<pre data-lang="python"><code class="language-python">import pytest
+
+from calculator import square
+
+
+def test_positive():
+    assert square(2) == 4
+    assert square(3) == 9
+
+
+def test_negative():
+    assert square(-2) == 4
+    assert square(-3) == 9
+
+
+def test_zero():
+    assert square(0) == 0
+
+
+def test_str():
+    with pytest.raises(TypeError):
+        square("cat")</code></pre>
+      <p>Бұл жолы <code>assert</code> емес, <code>pytest.raises</code> қолдандық. Оқылуы былай: «<code>with</code> блогының ішінде <code>TypeError</code> шығуы тиіс». Қате шықса, тест өтті. Ал қате шықпаса, тест құлайды. Яғни біз қатенің <em>болмауын</em> емес, <em>болуын</em> күтіп отырмыз. Ол үшін <code>pytest.raises</code>-ке қандай қате күтетінімізді (<code>TypeError</code>) көрсетеміз.</p>
+      <p>Тағы <code>pytest test_calculator.py</code> іске қосамыз: қате жоқ.</p>
+      <p>Қорытындылайық: қанша және қандай жағдайларды тексеру - өзіңіздің шешіміңіз. Бағдарламашы ретінде қандай мән бағдарламаны құлата алатынын ойлап, соның бәрін тестке қосу сіздің міндетіңіз.</p>
+      <p>Толығырақ оқу үшін: <a href="https://docs.pytest.org/en/7.1.x/getting-started.html" target="_blank" rel="noopener">pytest құжаттамасы</a>.</p>
+
+      <h2 id="testing-strings">Жолдарды тестілеу</h2>
+      <p>Енді «ескі уақытқа» оралайық. Нөлінші апталардағы <code>hello.py</code> бағдарламасын еске түсіріңіз:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    name = input("What's your name? ")
+    hello(name)
+
+
+def hello(to="world"):
+    print("hello,", to)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Мұндағы <code>hello</code> функциясын тексергіміз келеді. Мынадай <code>test_hello.py</code> жазып көрелік:</p>
+<pre data-lang="python"><code class="language-python">from hello import hello
+
+
+def test_hello():
+    assert hello("David") == "hello, David"
+    assert hello() == "hello, world"</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: бұл тест жұмыс істей ме?</summary>
+        <div class="details-body"><p>Жоқ! Неге? Төменде түсіндіреміз: <code>hello</code> мәнді қайтармайды, тек экранға жазады, ал <code>assert</code> тек қайтарылған мәнмен жұмыс істейді.</p></div>
+      </details>
+      <p>Сонымен, жауабы: жоқ! Неге? Себебі біздің <code>hello</code> функциясы ештеңе <em>қайтармайды</em>, ол тек экранға <em>жазады</em> (<code>print</code>). Ал <code>assert</code> функциядан қайтқан мәнді салыстырады. Экранға шыққан мәтінге оның қолы жетпейді. Нөлінші лекциядағы <code>print</code> мен <code>return</code> айырмашылығы міне, қайда керек болды: жазылған мәтінді тесттен ұстай алмаймыз, ал қайтарылған мәнді ұстай аламыз.</p>
+      <p>Сондықтан <code>hello</code>-ны өзгертеміз: ол жолды <code>return</code> етсін, ал <code>print</code>-ті <code>main</code> орындасын:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    name = input("What's your name? ")
+    print(hello(name))
+
+
+def hello(to="world"):
+    return f"hello, {to}"
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Енді <code>hello</code> жол қайтарады, сондықтан <code>pytest</code> оны тексере алады. <code>pytest test_hello.py</code> деп жазсақ, барлық тест өтеді!</p>
+      <p>Алдыңғы мысалдағыдай, тесттерді бөлек функцияларға бөлеміз, сонда біреуі құласа да, екіншісі жүре береді:</p>
+<pre data-lang="python"><code class="language-python">from hello import hello
+
+
+def test_default():
+    assert hello() == "hello, world"
+
+
+def test_argument():
+    assert hello("David") == "hello, David"</code></pre>
+      <p>Тест екі функцияға бөлінді: бірі әдепкі мәнді, екіншісі берілген атты тексереді. Біреуі қате берсе де, екіншісі бәрібір орындалады.</p>
+      <div class="callout tip">
+        <span class="callout-title">Тестілеуге ыңғайлы код жазу</span>
+        <p>Функция <code>print</code> жасаса, оны тексеру қиын. Функция мән <code>return</code> етсе, тексеру оңай. Сондықтан кодты былай құрастырыңыз: есептеу функциялары нәтижені қайтарсын, ал <code>print</code> тек <code>main</code>-де болсын. Бұл CS50P-дің осы апталық тапсырмаларындағы да басты талап: «Only <code>main</code> should call <code>print</code>».</p>
+      </div>
+
+      <h2 id="folders">Тесттерді қалталарға ұйымдастыру</h2>
+      <p>Нақты жобада тест файлдары көп болады. Оларды бір-бірден іске қоса бермей, бүкіл қалтаны бір командамен жүргізуге болады. Қалай дейсіз бе? Әуелі терминалда <code>test</code> деген қалта жасаймыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ mkdir test</code></pre>
+      <p>Содан кейін сол қалтаның ішінде тест файлын ашамыз. Жолдағы <code>test/</code> терминалға «файлды <code>test</code> қалтасында жаса» дегенді білдіреді:</p>
+<pre class="terminal"><code class="language-plaintext">$ code test/test_hello.py</code></pre>
+      <p>Файлға таныс тестімізді жазамыз:</p>
+<pre data-lang="python"><code class="language-python">from hello import hello
+
+
+def test_default():
+    assert hello() == "hello, world"
+
+
+def test_argument():
+    assert hello("David") == "hello, David"</code></pre>
+      <p>Бәрі бұрынғыдай. Бірақ <code>pytest</code> бір файлмен немесе бүкіл файлдар жиынымен қалтаны іске қосуына жол бермейді, егер қалтада арнайы <code>__init__</code> файлы болмаса. Оны жасайық:</p>
+<pre class="terminal"><code class="language-plaintext">$ code test/__init__.py</code></pre>
+      <p>Қайтадан <code>test/</code> қалтасын және <code>init</code> сөзінің екі жағындағы қос астыңғы сызықты (<code>__</code>) байқаңыз. Файлдың өзі бос қалса да болады. Оның болуының өзі <code>pytest</code>-ке «бұл қалтада орындалатын тесттер бар» деп хабарлайды. Енді бүкіл қалтаны бір командамен жүргізе аламыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ pytest test</code></pre>
+      <p>Қалтадағы барлық тест бірден орындалады. Жоба үлкейгенде, мұндай тәсіл өте ыңғайлы: мыңдаған тестті бір қимылмен жүргізуге болады.</p>
+      <p>Қосымша: <a href="https://docs.pytest.org/en/7.1.x/explanation/pythonpath.html?highlight=folder#pytest-import-mechanisms-and-sys-path-pythonpath" target="_blank" rel="noopener">pytest-тің импорт механизмдері</a> туралы құжаттама.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Кодты тексеру - бағдарламалау процесінің табиғи бөлігі. Модульдік тесттер кодыңыздың нақты бөліктерін тексеруге мүмкіндік береді. Тесттерді өзіңіз де жаза аласыз, ал <code>pytest</code> сияқты фреймворктер оларды сіз үшін іске қосып, нәтижесін әдемі көрсетеді. Бұл лекцияда сіз мыналарды үйрендіңіз:</p>
+      <ul>
+        <li><strong>модульдік тесттер</strong> (<code>test_</code> деп басталатын функциялар) және неге олар қажет;</li>
+        <li><code>assert</code> арқылы шарттарды бекіту және <code>AssertionError</code>;</li>
+        <li>шеткі жағдайларды ойлап, мәндерді ойланып таңдау;</li>
+        <li><code>pytest</code>: орнату, <code>pytest test_файл.py</code>, <code>F</code> мен <code>E</code> белгілері;</li>
+        <li>тесттерді бөлек функцияларға бөлу (бірі құласа, қалғандары жүреді);</li>
+        <li>күтілетін қатені <code>pytest.raises</code> арқылы тексеру;</li>
+        <li>тестілеуге ыңғайлы код: <code>print</code> емес, <code>return</code>;</li>
+        <li>тесттерді қалтаға жинап, <code>__init__.py</code> қосып, <code>pytest test</code> арқылы іске қосу.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. Тест файлының атын неге <code>test_calculator.py</code> деп қоямыз?</p>
+          <label><input type="radio" value="a"> Python басқа атпен файлды іске қоспайды</label>
+          <label><input type="radio" value="b"> Бұл - дәстүр: <code>pytest</code> <code>test_</code> деп басталатын файлдар мен функцияларды іздейді</label>
+          <label><input type="radio" value="c"> Файл аты бағдарлама атынан ұзын болуы тиіс</label>
+          <label><input type="radio" value="d"> Бұл тек <code>calculator.py</code> үшін ғана жұмыс істейді</label>
+          <p class="explain">Атау дәстүрі қатаң болмаса да, <code>pytest</code> тесттерді дәл осы <code>test_</code> префиксі арқылы тауып алады.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">2. <code>square(n)</code> функциясында қателесіп <code>n * n</code> орнына <code>n + n</code> жазылған. Қай тест қатені <em>таппайды</em>?</p>
+          <label><input type="radio" value="a"> <code>assert square(3) == 9</code></label>
+          <label><input type="radio" value="b"> <code>assert square(-3) == 9</code></label>
+          <label><input type="radio" value="c"> <code>assert square(10) == 100</code></label>
+          <label><input type="radio" value="d"> <code>assert square(2) == 4</code></label>
+          <p class="explain">2 + 2 және 2 * 2 екеуі де 4 болады, сондықтан бұл тест қатені байқамайды. Сондықтан бірнеше түрлі мәнмен тексеру керек.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. <code>assert square(3) == 9</code> орындалмаса, Python не істейді?</p>
+          <label><input type="radio" value="a"> <code>AssertionError</code> қатесін шығарады</label>
+          <label><input type="radio" value="b"> <code>False</code> деп шығарады да, жалғастыра береді</label>
+          <label><input type="radio" value="c"> <code>square</code> функциясын автоматты түзетеді</label>
+          <label><input type="radio" value="d"> Ештеңе істемейді</label>
+          <p class="explain"><code>assert</code> шарт ақиқат болмаса, <code>AssertionError</code> көтереді. Шарт ақиқат болса, үнсіз өтіп кетеді.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">4. Тесттерді <code>test_positive</code>, <code>test_negative</code>, <code>test_zero</code> деген бірнеше функцияға бөлудің басты артықшылығы қандай?</p>
+          <label><input type="radio" value="a"> Код жылдамырақ жұмыс істейді</label>
+          <label><input type="radio" value="b"> <code>assert</code> қажет болмай қалады</label>
+          <label><input type="radio" value="c"> Бір функция құласа да, <code>pytest</code> қалғандарын орындайды, сондықтан қателер туралы көбірек ақпарат аламыз</label>
+          <label><input type="radio" value="d"> <code>pytest</code> тек бірнеше функциямен жұмыс істейді</label>
+          <p class="explain">Бір функцияның ішінде бірінші құлаған <code>assert</code>-тен кейін қалғандары орындалмайды. Бөлек функциялар бөлек іске қосылады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. <code>square("cat")</code> шақырылғанда <code>TypeError</code> шығуын күтетін тест қалай жазылады?</p>
+          <label><input type="radio" value="a"> <code>assert square("cat") == TypeError</code></label>
+          <label><input type="radio" value="b"> <code>with pytest.raises(TypeError):</code> блогының ішінде <code>square("cat")</code></label>
+          <label><input type="radio" value="c"> <code>assert not square("cat")</code></label>
+          <label><input type="radio" value="d"> <code>try: square("cat")</code> және <code>except: pass</code> жеткілікті</label>
+          <p class="explain"><code>pytest.raises</code> блоктағы код көрсетілген қатені көтерсе, тест өтеді; көтермесе, құлайды.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">6. Мына <code>hello</code> функциясын <code>assert hello("David") == "hello, David"</code> арқылы тексеруге бола ма?</p>
+<pre data-lang="python"><code class="language-python">def hello(to="world"):
+    print("hello,", to)</code></pre>
+          <label><input type="radio" value="a"> Иә, <code>print</code> нәтижесі <code>assert</code>-ке түседі</label>
+          <label><input type="radio" value="b"> Иә, бірақ тек <code>pytest</code> арқылы</label>
+          <label><input type="radio" value="c"> Жоқ, себебі функцияның аты <code>test_</code> деп басталмайды</label>
+          <label><input type="radio" value="d"> Жоқ, себебі функция жолды қайтармайды, тек экранға жазады: оның қайтарған мәні <code>None</code></label>
+          <p class="explain">Тестілеу үшін функция <code>return</code> жасауы керек. Сондықтан <code>print</code> тек <code>main</code>-де қалады.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. <code>test</code> қалтасындағы барлық тестті <code>pytest test</code> арқылы іске қосу үшін қалтаға не қосу керек?</p>
+          <label><input type="radio" value="a"> Бос болса да, <code>__init__.py</code> файлын</label>
+          <label><input type="radio" value="b"> <code>main.py</code> файлын</label>
+          <label><input type="radio" value="c"> <code>pytest.txt</code> файлын</label>
+          <label><input type="radio" value="d"> Ештеңе қосудың қажеті жоқ</label>
+          <p class="explain"><code>__init__.py</code> болғанда, <code>pytest</code> бүкіл қалтада орындалатын тесттер бар екенін біледі.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">8. <code>pytest</code> шығысындағы қызыл <code>F</code> әрпі нені білдіреді?</p>
+          <label><input type="radio" value="a"> Тест файлы табылмады</label>
+          <label><input type="radio" value="b"> Тест өте жақсы өтті (fine)</label>
+          <label><input type="radio" value="c"> Тест құлады (fail): бірдеңе дұрыс емес</label>
+          <label><input type="radio" value="d"> Функция аяқталды (finished)</label>
+          <p class="explain"><code>F</code> - құлаған тест, ал қызыл <code>E</code> жолдары қатенің қайда екенін көрсететін кеңестер береді.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="pset">Тапсырмалар жинағы 5</h2>
+      <p><span class="term-en">(Problem Set 5)</span> Ресми тапсырма беті: <a href="https://cs50.harvard.edu/python/psets/5/" target="_blank" rel="noopener">cs50.harvard.edu/python/psets/5</a>. Бұл жолы ерекше: сіз өткен апталардағы төрт бағдарламаны <strong>қайта жазасыз</strong> (оларды тестілеуге ыңғайлы етіп), сосын олар үшін <strong>тест файлын</strong> жазасыз. Автотексеруші сіздің тестіңізді дұрыс бағдарламамен де, әдейі бұзылған бірнеше бағдарламамен де іске қосады: дұрысында барлығы өтуі, ал әр қате нұсқада кемінде бір тест құлауы керек. Дәл ресми <code>check50</code> сияқты.</p>
+      <div class="callout note">
+        <span class="callout-title">Браузерде pytest жоқ</span>
+        <p>Браузердегі автотексеруші нағыз <code>pytest</code>-ті іске қоса алмайды. Сондықтан онда тесттеріңізді кәдімгі <code>assert</code> арқылы жазыңыз; <code>import pytest</code> және <code>with pytest.raises(...)</code> да жұмыс істейді (шағын алмастырғыш бар), ал қалған pytest мүмкіндіктері жоқ. Компьютеріңізде нағыз <code>pytest</code> орнатып, ресми <code>check50</code> командасын міндетті түрде іске қосыңыз. Әр тапсырмада екі автотексеруші бар: біріншісі <strong>сіздің тестіңізді</strong>, екіншісі <strong>қайта жазылған бағдарламаның өзін</strong> тексереді.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pset-test-twttr">Testing my twttr (twttr-ді тестілеу)</h3></div>
+        <p><code>twttr.py</code> файлында 2-тапсырмалар жинағындағы «Setting up my twttr» бағдарламасын қайта жазыңыз. Енді код мына құрылымда болсын: <code>shorten</code> кіріс ретінде <code>str</code> алып, сол <code>str</code>-ді, бірақ барлық дауысты әріптерсіз (A, E, I, O, U; бас немесе кіші әріп болуына қарамастан) <strong>қайтарады</strong>.</p>
+<pre data-lang="python"><code class="language-python">def main():
+    ...
+
+
+def shorten(word):
+    ...
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+        <p>Сосын <code>test_twttr.py</code> файлында <code>shorten</code> бағдарламаңызды жан-жақты тексеретін <strong>бір немесе бірнеше</strong> функция жазыңыз. Әр функцияның аты <code>test_</code> деп басталсын, сонда оларды былай іске қосуға болады:</p>
+<pre class="terminal"><code class="language-plaintext">$ pytest test_twttr.py</code></pre>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>test_twttr.py</code> файлының басына <code>import twttr</code> немесе <code>from twttr import shorten</code> қосыңыз, сонда тесттерде <code>shorten</code>-ді шақыра аласыз. <code>shorten</code> ішінде <code>print</code> емес, <code>str</code> <code>return</code> етіңіз: <code>print</code>-ті тек <code>main</code> шақырады. Қандай жағдайларды ұмытпауыңыз керек? Бас әріпті дауыстылар, цифрлар, тыныс белгілері.</p></div></details>
+        <p><strong>Қалай тексеру керек.</strong> Алдымен <code>twttr.py</code>-дың дұрыс нұсқасымен <code>pytest test_twttr.py</code> жүргізіңіз: барлығы өтуі керек. Сосын <code>twttr.py</code>-ға әдейі қате енгізіңіз (мысалы, тек кіші әріпті дауыстыларды өшіретін болсын) және тесттеріңіз кемінде біреуінде құлайтынын тексеріңіз.</p>
+        <div class="autograder" data-check="py-test-twttr" data-src="python/checks/week-5.js"></div>
+        <div class="autograder" data-check="py-twttr" data-src="python/checks/week-5.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py5-twttr">
+            <li><input type="checkbox"> <span><code>twttr.py</code>-да <code>shorten</code> жолды <code>return</code> етеді, <code>print</code> тек <code>main</code>-де.</span></li>
+            <li><input type="checkbox"> <span>Тесттер бас және кіші дауыстыларды, цифрларды және тыныс белгілерін қамтиды.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/tests/twttr</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pset-test-bank">Back to the Bank (Банкке оралу)</h3></div>
+        <p><code>bank.py</code> файлында 1-тапсырмалар жинағындағы «Home Federal Savings Bank» бағдарламасын қайта жазыңыз. <code>value</code> кіріс ретінде <code>str</code> алады және <code>int</code> қайтарады: жол «hello» сөзімен басталса <code>0</code>, «h» әрпімен басталса (бірақ «hello» емес) <code>20</code>, әйтпесе <code>100</code>. Жолды регистрге тәуелсіз қарастырыңыз. <code>value</code>-ге берілетін жолдың басында бос орын болмайды деп есептеуге болады. <code>print</code>-ті тек <code>main</code> шақырады.</p>
+<pre data-lang="python"><code class="language-python">def main():
+    ...
+
+
+def value(greeting):
+    ...
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+        <p>Сосын <code>test_bank.py</code> файлында <code>value</code>-ны жан-жақты тексеретін <strong>үш немесе одан көп</strong> функция жазыңыз (аттары <code>test_</code> деп басталсын):</p>
+<pre class="terminal"><code class="language-plaintext">$ pytest test_bank.py</code></pre>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Файлдың басына <code>import bank</code> немесе <code>from bank import value</code> жазыңыз. <code>value</code> ішінде <code>int</code> <code>return</code> етіңіз, <code>print</code> емес. Үш функцияға бөлудің табиғи жолы: «hello» жағдайлары, «h» жағдайлары, қалғандары. Бас және кіші әріппен жазылған мысалдарды да қосыңыз.</p></div></details>
+        <p><strong>Қалай тексеру керек.</strong> Дұрыс <code>bank.py</code>-мен барлық тест өтуі тиіс. Содан кейін мәндерді әдейі өзгертіңіз (мысалы, «Hello»-ға 100, ал «What's up»-қа 0 берілсін): кемінде бір тест құлауы керек.</p>
+        <div class="autograder" data-check="py-test-bank" data-src="python/checks/week-5.js"></div>
+        <div class="autograder" data-check="py-bank" data-src="python/checks/week-5.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py5-bank">
+            <li><input type="checkbox"> <span><code>value</code> <code>int</code> қайтарады, регистрге тәуелсіз жұмыс істейді.</span></li>
+            <li><input type="checkbox"> <span><code>test_bank.py</code>-да кемінде үш <code>test_</code> функциясы бар.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/tests/bank</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-test-plates">Re-requesting a Vanity Plate (Нөмір белгісін қайта сұрау)</h3></div>
+        <p><code>plates.py</code> файлында 2-тапсырмалар жинағындағы «Vanity Plates» бағдарламасын қайта жазыңыз. <code>is_valid</code> бұрынғыдай <code>str</code> қабылдап, барлық талап орындалса <code>True</code>, әйтпесе <code>False</code> қайтарады. Бірақ енді <code>main</code> тек <code>__name__</code> мәні <code>"__main__"</code> болғанда ғана шақырылады:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    ...
+
+
+def is_valid(s):
+    ...
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+        <p>Сосын <code>test_plates.py</code> файлында <code>is_valid</code>-ты жан-жақты тексеретін <strong>төрт немесе одан көп</strong> функция жазыңыз (аттары <code>test_</code> деп басталсын):</p>
+<pre class="terminal"><code class="language-plaintext">$ pytest test_plates.py</code></pre>
+        <p>Еске салайық, нөмір белгісінің талаптары: кемінде екі әріптен басталады; ұзындығы 2-ден 6 таңбаға дейін; цифрлар тек соңында болады және бірінші цифр <code>0</code> болмайды; нүкте, бос орын, тыныс белгілері болмайды.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Файлдың басында <code>import plates</code> немесе <code>from plates import is_valid</code> болсын. <code>is_valid</code> ішінде <code>bool</code> <code>return</code> етіңіз, <code>print</code> емес. Төрт функцияға бөлуге болатын топтар: дұрыс нөмірлер, ұзындық, басындағы әріптер, цифрлардың орны мен нөл, тыныс белгілері.</p></div></details>
+        <p><strong>Қалай тексеру керек.</strong> Дұрыс <code>plates.py</code>-мен тесттер өтуі керек. Сосын шектеулердің бірін алып тастаңыз (мысалы, кез келген ұзындыққа «Valid» берсін): тесттер кемінде біреуінде құлауы тиіс.</p>
+        <div class="autograder" data-check="py-test-plates" data-src="python/checks/week-5.js"></div>
+        <div class="autograder" data-check="py-plates" data-src="python/checks/week-5.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py5-plates">
+            <li><input type="checkbox"> <span><code>is_valid</code> <code>bool</code> қайтарады, <code>main</code> тек <code>__name__ == "__main__"</code> кезінде шақырылады.</span></li>
+            <li><input type="checkbox"> <span>Тесттер әрбір талапты (ұзындық, алғашқы әріптер, цифрлар, <code>0</code>, тыныс белгілері) бөлек тексереді.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/tests/plates</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="pset-test-fuel">Refueling (Қайта жанармай құю)</h3></div>
+        <p><code>fuel.py</code> файлында 3-тапсырмалар жинағындағы «Fuel Gauge» бағдарламасын қайта жазыңыз:</p>
+        <ul>
+          <li><code>convert</code> <code>X/Y</code> пішіміндегі <code>str</code> қабылдайды (<code>X</code> - теріс емес бүтін, <code>Y</code> - оң бүтін) және бөлшекті 0-ден 100-ге дейінгі (қоса алғанда) ең жақын <code>int</code> пайыз етіп қайтарады. <code>X</code> және/немесе <code>Y</code> бүтін сан болмаса немесе <code>X</code> саны <code>Y</code>-тен үлкен болса, <code>convert</code> <code>ValueError</code> көтеруі керек. <code>Y</code> нөл болса, <code>ZeroDivisionError</code> көтеруі керек.</li>
+          <li><code>gauge</code> <code>int</code> қабылдайды және <code>str</code> қайтарады: сан <code>1</code>-ден аз не тең болса <code>"E"</code>, <code>99</code>-дан көп не тең болса <code>"F"</code>, қалған жағдайда <code>"Z%"</code> (мұнда <code>Z</code> - сол сан).</li>
+        </ul>
+<pre data-lang="python"><code class="language-python">def main():
+    ...
+
+
+def convert(fraction):
+    ...
+
+
+def gauge(percentage):
+    ...
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+        <p>Сосын <code>test_fuel.py</code> файлында <code>convert</code> пен <code>gauge</code> функцияларын жан-жақты тексеретін <strong>екі немесе одан көп</strong> функция жазыңыз (аттары <code>test_</code> деп басталсын):</p>
+<pre class="terminal"><code class="language-plaintext">$ pytest test_fuel.py</code></pre>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Файлдың басына <code>import fuel</code> немесе <code>from fuel import convert, gauge</code> жазыңыз. <code>convert</code> ішінде <code>int</code>, <code>gauge</code> ішінде <code>str</code> <code>return</code> етіңіз; <code>print</code> тек <code>main</code>-де. Ерекше жағдайды <code>raise ValueError</code> арқылы көтересіз, ал оны тестте <code>with pytest.raises(ValueError):</code> арқылы тексересіз (<a href="https://docs.pytest.org/en/latest/how-to/assert.html#assertions-about-expected-exceptions" target="_blank" rel="noopener">құжаттама</a>). Шеткі мәндерді ұмытпаңыз: 0, 1, 99, 100.</p></div></details>
+        <p><strong>Қалай тексеру керек.</strong> Дұрыс <code>fuel.py</code>-мен тесттер өтуі керек. Содан кейін <code>convert</code>-тің қайтарған мәнін өзгертіңіз (мысалы, <code>int</code> орнына <code>str</code> қайтарсын) және <code>gauge</code>-ті бұзыңыз (мысалы, <code>%</code> белгісін ұмытсын). Әр жағдайда тесттің кемінде біреуі құлауы тиіс.</p>
+        <div class="callout note">
+          <span class="callout-title">Браузерде ерекше жағдайларды тексеру</span>
+          <p>Браузерде нағыз <code>pytest</code> жоқ, бірақ <code>with pytest.raises(ValueError):</code> жұмыс істейді. Қаласаңыз, <code>try/except</code> арқылы да жаза аласыз: <code>try:</code> ішінде <code>convert("3/2")</code>-ді шақырып, <code>except ValueError: pass</code> деп, ал <code>else:</code> бөлігінде <code>assert False</code> деп жазыңыз. Қате шықпаса, тест құлайды. Автотексеруші екі тәсілді де қабылдайды.</p>
+        </div>
+        <div class="autograder" data-check="py-test-fuel" data-src="python/checks/week-5.js"></div>
+        <div class="autograder" data-check="py-fuel" data-src="python/checks/week-5.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py5-fuel">
+            <li><input type="checkbox"> <span><code>convert</code> <code>ValueError</code> және <code>ZeroDivisionError</code> көтереді, <code>gauge</code> <code>"E"</code>, <code>"F"</code> немесе <code>"Z%"</code> қайтарады.</span></li>
+            <li><input type="checkbox"> <span>Тесттер ерекше жағдайларды және шеткі мәндерді (0, 1, 99, 100) қамтиды.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/tests/fuel</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-4.html"><small>Алдыңғы</small>← 4-апта: Кітапханалар</a>
+        <a class="next" href="week-6.html"><small>Келесі</small>6-апта: Файлдармен жұмыс →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50P (CS50's Introduction to Programming with Python, Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

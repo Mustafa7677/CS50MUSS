@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50P 8-апта: Объектіге бағытталған бағдарламалау - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50P 8-апта: Объектіге бағытталған бағдарламалау - CS50 қазақша">
+  <meta property="og:description" content="CS50P (Python) 8-апта: кортеждер, тізімдер мен сөздіктер, кластар мен объектілер, __init__ және __str__, raise, қасиеттер мен декораторлар, класс әдістері, статикалық әдістер, мұрагерлік, ерекше жағдайлар иерархиясы және операторларды қайта жүктеу.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/python/lectures/week-8.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50P (Python) 8-апта: кортеждер, тізімдер мен сөздіктер, кластар мен объектілер, __init__ және __str__, raise, қасиеттер мен декораторлар, класс әдістері, статикалық әдістер, мұрагерлік, ерекше жағдайлар иерархиясы және операторларды қайта жүктеу.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#3776ab" data-n="8">
+        <div class="num">8-апта</div>
+        <h1>Объектіге бағытталған бағдарламалау</h1>
+        <p>Бағдарламалаудың жаңа тәсілімен танысамыз: өз деректер типімізді, яғни класты ойлап тауып, оған әдістер мен қасиеттер береміз. Сосын класс әдістерін, мұрагерлікті және операторларды қайта жүктеуді үйренеміз.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/python/weeks/8/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="oop">Объектіге бағытталған бағдарламалау</h2>
+      <p>Бағдарлама жазудың бір ғана жолы жоқ. Есепті шешудің әртүрлі көзқарастары, «мектептері» бар, оларды <strong>парадигмалар</strong> (<span class="term-en">paradigms</span>) деп атайды. Басқа тілдерді үйренген сайын, сіз оларды бірден тани бастайсыз. Осы уақытқа дейін біз <strong>процедуралық</strong> (<span class="term-en">procedural</span>) тәсілмен жұмыс істедік: бағдарлама жоғарыдан төменге қарай, қадам-қадаммен орындалады, ал кодты функцияларға бөлеміз. Бүгін бағдарламалаудағы көп мәселенің әдемі шешімі болып табылатын тағы бір парадигмамен танысамыз: <strong>объектіге бағытталған бағдарламалау</strong> (<span class="term-en">object-oriented programming, OOP</span>).</p>
+      <p>Қарапайымнан бастайық. Терминалға <code>code student.py</code> деп жазып, Хогвартс студенті туралы мәлімет сұрайтын бағдарлама жазамыз:</p>
+<pre data-lang="python"><code class="language-python">name = input("Name: ")
+house = input("House: ")
+print(f"{name} from {house}")</code></pre>
+      <p>Бұл - таза процедуралық код: атын сұрадық, үйін (Хогвартстағы факультетін) сұрадық, шығардық. Курстың алдыңғы бөліктерінде дәл осылай жазып келдік. Ал өткен апталардағы тәжірибемізге сүйеніп, кодтың кейбір бөліктерін функцияларға шығарып, <strong>абстракциялауға</strong> (<span class="term-en">abstract away</span>) болады:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    name = get_name()
+    house = get_house()
+    print(f"{name} from {house}")
+
+
+def get_name():
+    return input("Name: ")
+
+
+def get_house():
+    return input("House: ")
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Енді <code>main</code> атты қалай, үйді қалай алатынымен әуре болмайды, бұл жұмысты <code>get_name</code> мен <code>get_house</code> атқарады. Ал соңғы екі жол, бұрыннан таныс, интерпретаторға «файл тікелей іске қосылса, <code>main</code>-ді шақыр» дейді.</p>
+
+      <h3 id="tuples">Кортеждер</h3>
+      <p>Бірақ ойланып қараңызшы: аты мен үйі - бір студенттің екі сипаты ғой. Оларды неге екі бөлек функция арқылы аламыз? Бір функция екеуін бірге қайтарса, қисындырақ болар еді. Python-да бұған <strong>кортеж</strong> (<span class="term-en">tuple</span>) көмектеседі. Кортеж - мәндер тізбегі, тізімге ұқсас, бірақ бір үлкен айырмашылығы бар: оны өзгертуге болмайды. Мына кодта, мағынасы жағынан, біз екі мәнді бірге қайтарып тұрмыз:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    name, house = get_student()
+    print(f"{name} from {house}")
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return name, house
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p><code>get_student</code> соңындағы <code>return name, house</code> жолына қараңыз. Үтір арқылы жазылған екі мән Python үшін бір кортеж. Ал <code>main</code>-де оны <code>name, house = ...</code> деп бірден екі айнымалыға «тарқатып» алдық.</p>
+      <p>Тарқатпай, кортежді бүтіндей бір айнымалыға, мысалы, <code>student</code>-ке «буып-түйіп» сақтауға да болады:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    student = get_student()
+    print(f"{student[0]} from {student[1]}")
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return (name, house)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Бұл жолы <code>return (name, house)</code> деп жақшамен жаздық. Python үшін айырмашылық жоқ, бірақ кодты оқитын адамға «мен бір мәннің ішінде екі мән қайтарып тұрмын» деп анық көрсетеді. Ал кортеждің ішіндегі мәндерге тізімдегідей, индекс арқылы жетеміз: <code>student[0]</code> - аты, <code>student[1]</code> - үйі.</p>
+      <p>Кортеж <strong>өзгермейтін</strong> (<span class="term-en">immutable</span>) деп айттық. Бұл не береді? Бұл - <strong>қорғаныс бағдарламалауының</strong> (<span class="term-en">defensive programming</span>) бір тәсілі: мән өзгермейтін болса, оны біреу байқамай бұзып алмайды. Тексеріп көрейік. Айталық, Падма деген студент қай үйді жазса да, біз оны Рейвенкло деп түзеткіміз келеді:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    student = get_student()
+    if student[0] == "Padma":
+        student[1] = "Ravenclaw"
+    print(f"{student[0]} from {student[1]}")
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return name, house
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: «Padma» мен «Gryffindor» енгізсек, не болады?</summary>
+        <div class="details-body"><p>Бағдарлама құлайды! Кортежді өзгертуге болмайды, сондықтан <code>student[1] = "Ravenclaw"</code> жолында Python қате береді:</p>
+<pre class="terminal"><code class="language-plaintext">TypeError: 'tuple' object does not support item assignment</code></pre>
+        <p>Яғни «кортеж объектісі элементті қайта меншіктеуге рұқсат бермейді».</p></div>
+      </details>
+
+      <h3 id="lists">Тізімдер: өзгертуге болатын нұсқа</h3>
+      <p>Ал әріптестерімізге осындай икемділік бергіміз келсе ше? Онда кортеждің орнына тізімді (<code>list</code>) қайтарамыз. Бар болғаны жақшаның түрін ауыстырамыз: <code>[name, house]</code>:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    student = get_student()
+    if student[0] == "Padma":
+        student[1] = "Ravenclaw"
+    print(f"{student[0]} from {student[1]}")
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return [name, house]
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Енді бәрі жұмыс істейді: Падма Рейвенклоға түседі. Себебі тізім <strong>өзгермелі</strong> (<span class="term-en">mutable</span>): оның ішіндегі <code>name</code> мен <code>house</code> мәндерін бағдарламашы өзгерте алады. Кейде бұл дәл керек нәрсе. Бірақ есте сақтаңыз: икемділік үшін қауіпсіздіктің бір бөлігін құрбан етесіз. Мәндер өзгере алатын болса, сізбен бірге жұмыс істейтін бағдарламашылар кейін байқамай қате жіберуі мүмкін.</p>
+
+      <h3 id="dicts">Сөздіктер</h3>
+      <p>Тағы бір нұсқа - <strong>сөздік</strong> (<span class="term-en">dictionary</span>, <code>dict</code>). Есіңізде болса, сөздік «кілт - мән» жұптарын сақтайды. <code>student[0]</code> дегеннен гөрі <code>student["name"]</code> әлдеқайда түсінікті емес пе?</p>
+<pre data-lang="python"><code class="language-python">def main():
+    student = get_student()
+    print(f"{student['name']} from {student['house']}")
+
+
+def get_student():
+    student = {}
+    student["name"] = input("Name: ")
+    student["house"] = input("House: ")
+    return student
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Мұнда <code>get_student</code> екі «кілт - мән» жұбы бар сөздік қайтарады. Ұтысы - енді мәндерге нөмір арқылы емес, кілттің аты арқылы жетеміз. f-жолдың ішінде кілттерді жалқы тырнақшаға (<code>'name'</code>) алғанымызға назар аударыңыз: сыртқы тырнақша қос болғандықтан, ішінде басқа түрін қолдандық.</p>
+      <p>Кодты сәл жинақтауға болады. <code>student = {}</code> деп бос сөздік жасап, оны бірте-бірте толтырудың қажеті жоқ, артық айнымалыдан құтыламыз:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    student = get_student()
+    print(f"{student['name']} from {student['house']}")
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return {"name": name, "house": house}
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p><code>return</code> жолындағы фигуралы жақшалар сөздікті сол жерде жасап, бірден қайтарады. Ал Падманың ерекше жағдайын сөздік нұсқасына да қайтара аламыз, бұл жолы кілттің аты арқылы:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    student = get_student()
+    if student["name"] == "Padma":
+        student["house"] = "Ravenclaw"
+    print(f"{student['name']} from {student['house']}")
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return {"name": name, "house": house}
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Сөздік те өзгермелі, сондықтан бұл код жұмыс істейді. Сонымен, бір студентті сақтаудың үш жолын көрдік: кортеж, тізім, сөздік. Бірақ үшеуі де Python-ның дайын типтері. Ал «студент» деген өз типімізді жасай алсақ ше?</p>
+
+      <h2 id="classes">Кластар</h2>
+      <p>Міне, объектіге бағытталған бағдарламалаудың өзегіне келдік. <strong>Класс</strong> (<span class="term-en">class</span>) - өз деректер типімізді ойлап тауып, оған ат беру тәсілі. Оны <em>сызба</em> немесе <em>қалып</em> сияқты елестетіңіз: үй салар алдында сәулетші сызба жасайды, сол бір сызбамен ондаған үй салуға болады. Немесе бауырсақ кесетін қалыпты алайық: қалып біреу, ал ол арқылы кесілген бауырсақ көп. Класс - сол қалып.</p>
+      <p>Өз <code>Student</code> класымызды жасайық:</p>
+<pre data-lang="python"><code class="language-python">class Student:
+    ...
+
+
+def main():
+    student = get_student()
+    print(f"{student.name} from {student.house}")
+
+
+def get_student():
+    student = Student()
+    student.name = input("Name: ")
+    student.house = input("House: ")
+    return student
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Бірнеше нәрсеге назар аударайық. Біріншіден, келісім бойынша класс аты бас әріппен жазылады: <code>Student</code>. Екіншіден, <code>...</code> (көп нүкте) «бұл бөлікке кейін ораламыз» дегенді білдіреді, әзірге класс бос. Үшіншіден, <code>get_student</code> ішінде <code>student = Student()</code> деп <code>Student</code> класының жаңа студентін жасадық. Төртіншіден, оның ішіндегі мәндерге <strong>нүкте арқылы</strong> (<span class="term-en">dot notation</span>) жетеміз: <code>student.name</code>, <code>student.house</code>. Объектінің ішіндегі мұндай мәндерді <strong>атрибуттар</strong> (<span class="term-en">attributes</span>) дейді.</p>
+      <p>Класты, яғни сызбаны алып, сол арқылы нақты бірдеңе жасаған сайын, сіз <strong>объект</strong> (<span class="term-en">object</span>) немесе <strong>дана</strong> (<span class="term-en">instance</span>) жасайсыз. Біздің кодта <code>student</code> - объект. Сызба мен үйдің айырмашылығы сияқты: <code>Student</code> - сызба, ал <code>student</code> - сол сызбамен салынған нақты бір үй.</p>
+
+      <h3 id="init">__init__ және self</h3>
+      <p>Қазіргі класымыздың бір кемшілігі бар: студентте қандай атрибуттар болуы керек екені ешқайда жазылмаған. Біреу <code>student.name</code> орнына <code>student.nmae</code> деп қате жазса, Python үнсіз жаңа атрибут жасай салады. Класс ішінде атрибуттарды стандарттап, «әр студенттің аты мен үйі болады» деп алдын ала белгілеп қояйық:</p>
+<pre data-lang="python"><code class="language-python">class Student:
+    def __init__(self, name, house):
+        self.name = name
+        self.house = house
+
+
+def main():
+    student = get_student()
+    print(f"{student.name} from {student.house}")
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    student = Student(name, house)
+    return student
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Класс ішінде <code>__init__</code> деген функция пайда болды. Класқа тиесілі функцияларды <strong>әдістер</strong> (<span class="term-en">methods</span>) деп атайды, олар осы кластың объектілері қалай әрекет ететінін анықтайды. Ал <code>__init__</code> - ерекше әдіс: ол жаңа объект жасалған сәтте өздігінен шақырылып, оны «баптайды». Атауындағы екі жақты қос астын сызу (<code>__</code>) - Python-ның арнайы әдістерінің белгісі.</p>
+      <p><code>student = Student(name, house)</code> жолына қараңыз. Класс атын функция сияқты шақыру - <strong>конструктор</strong> (<span class="term-en">constructor</span>): Python жаңа бос объект жасайды да, <code>__init__</code>-ті шақырып, оған біздің <code>name</code> мен <code>house</code>-ты береді. Ал <code>__init__</code> ішінде оларды объектіге атрибут ретінде жазып қояды.</p>
+      <p>Сонда <code>self</code> деген не? Ол дәл қазір жасалып жатқан объектінің өзін білдіреді. <code>self.name = name</code> дегенді «<em>осы</em> студенттің аты - маған берілген <code>name</code>» деп оқыңыз. Python <code>self</code>-ті бірінші аргумент ретінде өзі береді, сондықтан шақырғанда біз оны жазбаймыз: <code>Student(name, house)</code>, екі-ақ аргумент.</p>
+      <p>Кодты тағы ықшамдауға болады. Объектіні айнымалыға сақтап, келесі жолда қайтарудың орнына, бірден қайтарамыз:</p>
+<pre data-lang="python"><code class="language-python">class Student:
+    def __init__(self, name, house):
+        self.name = name
+        self.house = house
+
+
+def main():
+    student = get_student()
+    print(f"{student.name} from {student.house}")
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return Student(name, house)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p><code>return Student(name, house)</code> алдыңғы нұсқадағы екі жолдың жұмысын бір жолда істейді. Толығырақ: Python құжаттамасындағы <a href="https://docs.python.org/3/tutorial/classes.html" target="_blank" rel="noopener">кластар</a> бөлімі.</p>
+
+      <h2 id="raise">raise</h2>
+      <p>Объектіге бағытталған бағдарламалау бір нәрсені ұсынады: кластың бар мүмкіндігін класс ішінде жинақтау, яғни <strong>инкапсуляция</strong> (<span class="term-en">encapsulation</span>). Студент туралы бәрін <code>Student</code> класы білсін. Ал бірдеңе дұрыс болмаса ше? Біреу кездейсоқ бірдеңе жазса? Атсыз студент жасамақ болса? Мұны да класс өзі тексергені жөн:</p>
+<pre data-lang="python"><code class="language-python">class Student:
+    def __init__(self, name, house):
+        if not name:
+            raise ValueError("Missing name")
+        if house not in ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]:
+            raise ValueError("Invalid house")
+        self.name = name
+        self.house = house
+
+
+def main():
+    student = get_student()
+    print(f"{student.name} from {student.house}")
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return Student(name, house)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Енді <code>__init__</code> алдымен аттың бос емес екенін, сосын үйдің Хогвартстың төрт үйінің бірі екенін тексереді. Бірдеңе дұрыс болмаса, не істейміз? Осы уақытқа дейін біз Python шығарған <strong>ерекше жағдайларды</strong> (<span class="term-en">exceptions</span>) <code>try</code> және <code>except</code> арқылы ұстап келдік. Ал енді рөлдер ауысты: ерекше жағдайды біз өзіміз <strong>көтереміз</strong> (<span class="term-en">raise</span>). <code>raise ValueError("Missing name")</code> дегені - «бұл мән жарамсыз» деп дабыл қағу, қасына нақты түсіндірме жазып. Бұл қолданушы тудырған ықтимал қате туралы бағдарламашыға ескерту береді, ал ол бағдарламашы қаласа, оны <code>try</code> арқылы ұстай алады.</p>
+      <p>Әдейі жарамсыз үй енгізіп көрейік:</p>
+<pre class="terminal"><code class="language-plaintext">$ python student.py
+Name: Harry
+House: Number Four, Privet Drive
+Traceback (most recent call last):
+  ...
+ValueError: Invalid house</code></pre>
+      <p>Класс өзін өзі қорғады: жарамсыз студент жасалмай қалды.</p>
+
+      <h3 id="str">__str__: объектіні шығару</h3>
+      <p><code>main</code>-де әлі де <code>f"{student.name} from {student.house}"</code> деп жазып жүрміз. Ал студентті қалай шығару керегін де класс өзі білсе, ыңғайлы емес пе? Python бұған арнайы әдіс ұсынады: <code>__str__</code>. Оны көрсету үшін студентке тағы бір атрибут, патронусты қосайық:</p>
+<pre data-lang="python"><code class="language-python">class Student:
+    def __init__(self, name, house, patronus):
+        if not name:
+            raise ValueError("Missing name")
+        if house not in ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]:
+            raise ValueError("Invalid house")
+        self.name = name
+        self.house = house
+        self.patronus = patronus
+
+    def __str__(self):
+        return f"{self.name} from {self.house}"
+
+
+def main():
+    student = get_student()
+    print(student)
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    patronus = input("Patronus: ")
+    return Student(name, house, patronus)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p><code>main</code> қаншалықты қысқарғанын байқадыңыз ба? Енді жай <code>print(student)</code> деп жазамыз. Объектіні шығару немесе жолға айналдыру керек болғанда, Python <code>def __str__(self)</code> әдісін өзі шақырады да, ол қайтарған жолды көрсетеді. Яғни бағдарламашы ретінде объектінің өзін, оның атрибуттарын, тіпті онымен байланысты кез келген нәрсені қалағаныңызша шығара аласыз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: __str__ әдісін алып тастасақ, print(student) не шығарады?</summary>
+        <div class="details-body"><p>Python объектіні қалай көрсетерін білмей, <code>&lt;__main__.Student object at 0x7f...&gt;</code> сияқты бір нәрсе шығарады: «бұл - <code>Student</code> объектісі, жадтың пәленбай мекенжайында тұр». Дұрыс, бірақ адамға пайдасы шамалы. <code>__str__</code> дәл осы үшін керек.</p></div>
+      </details>
+
+      <h3 id="own-methods">Өз әдістерімізді жазу</h3>
+      <p><code>__str__</code> - Python кластарымен бірге келетін дайын әдістердің бірі. Бірақ біз класқа өз әдістерімізді де қоса аламыз! Патронус шақыратын <code>charm</code> («сиқыр») әдісін жазайық:</p>
+<pre data-lang="python"><code class="language-python">class Student:
+    def __init__(self, name, house, patronus=None):
+        if not name:
+            raise ValueError("Missing name")
+        if house not in ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]:
+            raise ValueError("Invalid house")
+        if patronus and patronus not in ["Stag", "Otter", "Jack Russell terrier"]:
+            raise ValueError("Invalid patronus")
+        self.name = name
+        self.house = house
+        self.patronus = patronus
+
+    def __str__(self):
+        return f"{self.name} from {self.house}"
+
+    def charm(self):
+        match self.patronus:
+            case "Stag":
+                return "🐴"
+            case "Otter":
+                return "🦦"
+            case "Jack Russell terrier":
+                return "🐶"
+            case _:
+                return "🪄"
+
+
+def main():
+    student = get_student()
+    print("Expecto Patronum!")
+    print(student.charm())
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    patronus = input("Patronus: ") or None
+    return Student(name, house, patronus)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Мұнда біраз жаңалық бар. Біріншіден, <code>patronus=None</code>: патронус енді міндетті емес, әдепкі мәні - <code>None</code>, яғни «ештеңе жоқ». Сол себепті тексеру де <code>if patronus and ...</code> деп басталады: патронус берілген болса ғана оның тізімде бар-жоғын тексереміз. <code>get_student</code>-тегі <code>input("Patronus: ") or None</code> да осыған қызмет етеді: қолданушы ештеңе жазбай Enter басса, бос жолдың орнына <code>None</code> алынады.</p>
+      <p>Екіншіден, <code>charm</code> әдісі. Ол <code>match</code> арқылы патронусқа қарап, сәйкес эмодзиді қайтарады: бұғы (<code>Stag</code>) үшін 🐴, кәмшат (<code>Otter</code>) үшін 🦦, Джек-Рассел терьер үшін 🐶, ал басқа жағдайда (<code>case _</code>) жай сиқыр таяқшасы 🪄. Сөздіктерден айырмашылығы осы: класта тек деректер емес, сол деректермен жұмыс істейтін функциялар, яғни әдістер де болады. Сондай-ақ Python-ның эмодзилерді кодта тікелей қолдана алатынын байқаған боларсыз.</p>
+      <p>Әрі қарай жүрмес бұрын, патронусқа қатысты кодты алып тастайық. Бірақ <code>main</code>-ге бір бұзақы жол қосамыз:</p>
+<pre data-lang="python"><code class="language-python">class Student:
+    def __init__(self, name, house):
+        if not name:
+            raise ValueError("Invalid name")
+        if house not in ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]:
+            raise ValueError("Invalid house")
+        self.name = name
+        self.house = house
+
+    def __str__(self):
+        return f"{self.name} from {self.house}"
+
+
+def main():
+    student = get_student()
+    student.house = "Number Four, Privet Drive"
+    print(student)
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return Student(name, house)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Класта енді тек екі әдіс қалды: <code>__init__</code> және <code>__str__</code>. Ал <code>main</code>-дегі <code>student.house = "Number Four, Privet Drive"</code> жолына қараңыз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: «Harry» мен «Gryffindor» енгізсек, не шығады?</summary>
+        <div class="details-body"><p><code>Harry from Number Four, Privet Drive</code> шығады! Біз <code>__init__</code>-те үйді мұқият тексердік, бірақ ол тек объект <em>жасалған</em> сәтте ғана жұмыс істейді. Кейін атрибутты кез келген адам нүкте арқылы еркін өзгерте алады, ал тексеріс айналып өтіліп кетеді. Мұны қалай жабамыз? Келесі бөлім осы туралы.</p></div>
+      </details>
+
+      <h2 id="decorators">Декораторлар және қасиеттер</h2>
+      <p>Кодымызды «қатайту» үшін <strong>қасиеттерді</strong> (<span class="term-en">properties</span>) қолданамыз. Python-да қасиет функцияның үстіне жазылатын <strong>декоратор</strong> (<span class="term-en">decorator</span>) арқылы анықталады. Декоратор <code>@</code> белгісінен басталады және астындағы функцияға қосымша мағына береді:</p>
+<pre data-lang="python"><code class="language-python">class Student:
+    def __init__(self, name, house):
+        if not name:
+            raise ValueError("Invalid name")
+        self.name = name
+        self.house = house
+
+    def __str__(self):
+        return f"{self.name} from {self.house}"
+
+    # house үшін геттер
+    @property
+    def house(self):
+        return self._house
+
+    # house үшін сеттер
+    @house.setter
+    def house(self, house):
+        if house not in ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]:
+            raise ValueError("Invalid house")
+        self._house = house
+
+
+def main():
+    student = get_student()
+    print(student)
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return Student(name, house)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Асықпай талдайық. <code>house</code> деген функцияның үстіне <code>@property</code> деп жаздық. Бұл <code>house</code>-ты кластың <em>қасиеті</em> етеді. Қасиет болғаннан кейін біз кластың бір атрибуты, <code>_house</code>, қалай <em>оқылатынын</em> және қалай <em>жазылатынын</em> өзіміз анықтай аламыз.</p>
+      <p>Оқитын функция - <strong>геттер</strong> (<span class="term-en">getter</span>): ол жай ғана <code>_house</code>-тың мәнін қайтарады. Қолданушы <code>student.house</code> деп жазғанда, ол шын мәнінде осы геттер арқылы <code>_house</code>-ты алады. Ал жазатын функция - <strong>сеттер</strong> (<span class="term-en">setter</span>), ол <code>@house.setter</code> декораторымен белгіленген. Қасиетке мән меншіктелген сайын, мысалы, <code>student.house = "Gryffindor"</code> деп жазылғанда, Python осы сеттерді шақырады. Біздің сеттер мәнді тексереді: Хогвартс үйлерінің бірі болмаса, <code>ValueError</code> көтереді, әйтпесе мәнді <code>_house</code>-қа жазады.</p>
+      <p>Тамаша жері: <code>__init__</code> ішіндегі <code>self.house = house</code> жолы да енді тікелей атрибутқа емес, сеттер арқылы өтеді! Сондықтан үйді тексеруді <code>__init__</code>-тен алып тастадық, бұл жұмысты бір ғана жерде, сеттерде істейміз. Ал әлгі бұзақы <code>student.house = "Number Four, Privet Drive"</code> жолы енді <code>ValueError</code> береді.</p>
+      <div class="callout term">
+        <span class="callout-title">Неге house емес, _house?</span>
+        <p><code>house</code> - кластың қасиеті, яғни қолданушы атрибутқа мән жазуға тырысқанда іске қосылатын функциялар жұбы. Ал <code>_house</code> - мәннің өзі сақталатын атрибут. Сеттердің ішінде <code>self.house = house</code> деп жазсақ, сеттер өзін-өзі шексіз шақырар еді. Атаудың алдындағы астын сызу (<code>_</code>) басқа бағдарламашыларға: «бұған тікелей тиіспеңіз (және тимеген жөн!)» деген келісімді белгі. <code>_house</code> <em>тек</em> <code>house</code> сеттері арқылы жазылуы тиіс. Python оны күшпен тыйым салмайды, бұл - бағдарламашылар арасындағы сыйластық келісімі.</p>
+      </div>
+      <p>Үйден бөлек, студенттің атын да дәл осылай қорғай аламыз:</p>
+<pre data-lang="python"><code class="language-python">class Student:
+    def __init__(self, name, house):
+        self.name = name
+        self.house = house
+
+    def __str__(self):
+        return f"{self.name} from {self.house}"
+
+    # name үшін геттер
+    @property
+    def name(self):
+        return self._name
+
+    # name үшін сеттер
+    @name.setter
+    def name(self, name):
+        if not name:
+            raise ValueError("Invalid name")
+        self._name = name
+
+    @property
+    def house(self):
+        return self._house
+
+    @house.setter
+    def house(self, house):
+        if house not in ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]:
+            raise ValueError("Invalid house")
+        self._house = house
+
+
+def main():
+    student = get_student()
+    print(student)
+
+
+def get_student():
+    name = input("Name: ")
+    house = input("House: ")
+    return Student(name, house)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Алдыңғы кодтағыдай, атқа да геттер мен сеттер жаздық. Енді <code>__init__</code> мүлде таза: ешқандай тексеріс жоқ, бәрі сеттерлерде. Атты да, үйді де объект жасалғанда да, кейін де жарамсыз мәнге өзгерту мүмкін емес. Толығырақ: Python құжаттамасындағы <a href="https://docs.python.org/3/tutorial/classes.html" target="_blank" rel="noopener">әдістер</a> туралы бөлім.</p>
+
+      <h2 id="builtin-classes">Бұрынғы тақырыптармен байланыс</h2>
+      <p>Енді бір құпияны ашайын. Бұған дейін ашық айтпасақ та, сіз курстың басынан бері кластар мен объектілерді қолданып келдіңіз!</p>
+      <p><a href="https://docs.python.org/3/library/functions.html#int" target="_blank" rel="noopener"><code>int</code> құжаттамасына</a> үңілсеңіз, оның конструкторы бар класс екенін көресіз. Ол <code>int</code> типті объектілер жасауға арналған сызба. Жолдар да класс: <code>str.lower()</code> қолдансаңыз, <a href="https://docs.python.org/3/library/stdtypes.html#str" target="_blank" rel="noopener"><code>str</code></a> класымен бірге келген әдісті шақырдыңыз. <a href="https://docs.python.org/3/library/stdtypes.html#list" target="_blank" rel="noopener"><code>list</code></a> те класс, оның құжаттамасында <code>list.append()</code> сияқты әдістері тізілген. <a href="https://docs.python.org/3/library/stdtypes.html#dict" target="_blank" rel="noopener"><code>dict</code></a> те Python ішіндегі класс.</p>
+      <p>Өзіңіз көз жеткізу үшін терминалға <code>code type.py</code> деп жазып, мынаны іске қосыңыз:</p>
+<pre data-lang="python"><code class="language-python">print(type(50))</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python type.py
+&lt;class 'int'&gt;</code></pre>
+      <p><code>type</code> функциясы мәннің класын айтады: <code>50</code>-нің класы - <code>int</code>. Жолмен де солай:</p>
+<pre data-lang="python"><code class="language-python">print(type("hello, world"))</code></pre>
+      <p>Бұл <code>&lt;class 'str'&gt;</code> шығарады. Бос тізімді тексерейік:</p>
+<pre data-lang="python"><code class="language-python">print(type([]))</code></pre>
+      <p>Нәтиже - <code>&lt;class 'list'&gt;</code>. Тізімді төртбұрыш жақшамен емес, Python-ның дайын <code>list</code> класының атымен, конструктор арқылы да жасауға болады:</p>
+<pre data-lang="python"><code class="language-python">print(type(list()))</code></pre>
+      <p>Бұл да <code>&lt;class 'list'&gt;</code>. Сөздікпен де дәл солай:</p>
+<pre data-lang="python"><code class="language-python">print(type({}))</code></pre>
+      <p>Нәтиже - <code>&lt;class 'dict'&gt;</code>. Және Python-ның дайын <code>dict</code> класының атымен:</p>
+<pre data-lang="python"><code class="language-python">print(type(dict()))</code></pre>
+      <p>Бұл да <code>&lt;class 'dict'&gt;</code> береді. Сонымен, <code>Student()</code> деп өз объектімізді жасағанымыз сияқты, <code>list()</code> мен <code>dict()</code> да кластың конструкторын шақырады. Python-дағы барлық дерлік нәрсе - объект.</p>
+
+      <h2 id="class-methods">Класс әдістері</h2>
+      <p>Кейде функционалды кластың жеке даналарына емес, <em>класстың өзіне</em> қосқымыз келеді. Бұған <code>@classmethod</code> декораторы арналған, ол жасаған әдісті <strong>класс әдісі</strong> (<span class="term-en">class method</span>) дейді. Алдымен класс әдісін <em>қолданбаған</em> мысалды көрейік. Терминалға <code>code hat.py</code> деп жазып, Хогвартстың Сұрыптаушы қалпағын жасаймыз:</p>
+<pre data-lang="python"><code class="language-python">import random
+
+
+class Hat:
+    def __init__(self):
+        self.houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
+
+    def sort(self, name):
+        print(name, "is in", random.choice(self.houses))
+
+
+hat = Hat()
+hat.sort("Harry")</code></pre>
+      <p>Қалпаққа студенттің атын берсек, ол оны кездейсоқ бір үйге жібереді, мысалы, <code>Harry is in Hufflepuff</code>. <code>hat = Hat()</code> жолы қалпақтың данасын жасайды, ал <code>hat.sort("Harry")</code> атты дәл осы <code>hat</code> данасының <code>sort</code> әдісіне береді. Яғни сұрыптауды әрдайым <code>Hat</code> класының нақты бір <em>данасы</em> орындайды.</p>
+      <p>Бірақ ойланыңызшы: Сұрыптаушы қалпақ біреу ғана емес пе? Оның көшірмелерін жасаудың мәні жоқ. <code>sort</code>-ты ешқандай дана жасамай-ақ шақыра алсақ, жақсы болар еді:</p>
+<pre data-lang="python"><code class="language-python">import random
+
+
+class Hat:
+
+    houses = ["Gryffindor", "Hufflepuff", "Ravenclaw", "Slytherin"]
+
+    @classmethod
+    def sort(cls, name):
+        print(name, "is in", random.choice(cls.houses))
+
+
+Hat.sort("Harry")</code></pre>
+      <p>Не өзгерді? <code>__init__</code> әдісі жоғалды, себебі енді қалпақтың данасын ешқайда жасамаймыз. Үйлердің тізімі <code>houses</code> кластың ішіне, кез келген әдістің сыртына шықты, ол енді жеке данаға емес, бүкіл класқа тиесілі. Нақты дана болмағандықтан, <code>self</code>-тің де мағынасы жоқ, сондықтан <code>sort</code>-ты <code>@classmethod</code> деп белгілеп, <code>self</code>-тің орнына <code>cls</code> (класстың өзі) жаздық. Ең соңында <code>Hat.sort("Harry")</code> деп әдісті тікелей кластан шақырдық. <code>Hat</code> бас әріппен жазылғанына назар аударыңыз: бұл айнымалы емес, кластың аты.</p>
+      <p>Енді <code>student.py</code>-ға оралайық. Онда да класс әдісін қолданатын жер жіберіліп қалған екен:</p>
+<pre data-lang="python"><code class="language-python">class Student:
+    def __init__(self, name, house):
+        self.name = name
+        self.house = house
+
+    def __str__(self):
+        return f"{self.name} from {self.house}"
+
+    @classmethod
+    def get(cls):
+        name = input("Name: ")
+        house = input("House: ")
+        return cls(name, house)
+
+
+def main():
+    student = Student.get()
+    print(student)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p><code>get_student</code> функциясы жоқ болды, оның орнына класс ішінде <code>get</code> деген класс әдісі пайда болды. Ойланып көрсеңіз, бұл қисынды: студентті қолданушыдан қалай сұрау керегін де <code>Student</code> класы білгені дұрыс, бәрі бір жерде. <code>return cls(name, house)</code> - <code>Student(name, house)</code> деумен бірдей, тек класс атын қайталамай, <code>cls</code> арқылы жаздық. Ең бастысы, бұл әдісті студент жасамай тұрып-ақ шақыра аламыз: <code>Student.get()</code>. Ол студентті өзі жасап қайтарады.</p>
+
+      <h2 id="static-methods">Статикалық әдістер</h2>
+      <p>Сонымен, біз дана әдістері (<code>self</code> қабылдайтындар) мен класс әдістерінің (<code>cls</code> қабылдайтындар) айырмашылығын көрдік. Бұлардан басқа әдіс түрлері де бар. Солардың бірі - <code>@staticmethod</code> декораторы, яғни <strong>статикалық әдіс</strong> (<span class="term-en">static method</span>). Ол не <code>self</code>, не <code>cls</code> қабылдамайды, жай ғана класс ішіне орналастырылған функция. Бұл курста біз оған арнайы тоқталмаймыз, бірақ қызығушылығыңыз болса, статикалық әдістер мен класс әдістерінің айырмашылығын өз бетіңізше зерттеп көруге шақырамыз.</p>
+
+      <h2 id="inheritance">Мұрагерлік</h2>
+      <p>Енді, мүмкін, объектіге бағытталған бағдарламалаудың ең қуатты мүмкіндігіне келдік: <strong>мұрагерлік</strong> (<span class="term-en">inheritance</span>). Бір класс басқа класстан оның әдістерін, айнымалылары мен атрибуттарын «мұраға» ала алады. Бала ата-анасынан көз түсін, мінезін алатыны сияқты. Терминалға <code>code wizard.py</code> деп жазыңыз:</p>
+<pre data-lang="python"><code class="language-python">class Wizard:
+    def __init__(self, name):
+        if not name:
+            raise ValueError("Missing name")
+        self.name = name
+
+    ...
+
+
+class Student(Wizard):
+    def __init__(self, name, house):
+        super().__init__(name)
+        self.house = house
+
+    ...
+
+
+class Professor(Wizard):
+    def __init__(self, name, subject):
+        super().__init__(name)
+        self.subject = subject
+
+    ...
+
+
+wizard = Wizard("Albus")
+student = Student("Harry", "Gryffindor")
+professor = Professor("Severus", "Defense Against the Dark Arts")
+...</code></pre>
+      <p>Мұнда үш класс бар: <code>Wizard</code> (сиқыршы), <code>Student</code> (студент) және <code>Professor</code> (профессор). Студенттің де, профессордың да аты бар. Және екеуі де сиқыршы. Сондықтан атпен жұмыс істейтін ортақ кодты екі жерге көшірмей, бір рет <code>Wizard</code> класына жаздық, ал <code>Student</code> пен <code>Professor</code> оны мұраға алады. Мұны <code>class Student(Wizard):</code> деген жақша айтады: «<code>Student</code> - <code>Wizard</code>-тың бір түрі».</p>
+      <p>Бұл жағдайда <code>Student</code> - <strong>бала класс</strong> (<span class="term-en">child class, subclass</span>), ал <code>Wizard</code> - <strong>ата-ана класс</strong> немесе <strong>суперкласс</strong> (<span class="term-en">parent class, superclass</span>). Студенттің <code>__init__</code>-індегі <code>super().__init__(name)</code> жолы «ата-ана класымның <code>__init__</code>-ін шақыр» дегенді білдіреді. Сонда атты тексеріп, сақтау жұмысын <code>Wizard</code> атқарады, ал <code>Student</code> тек өзіне ғана тән нәрсені, үйді қосады. <code>Professor</code> да дәл солай, тек үйдің орнына пәнді (<code>subject</code>) сақтайды.</p>
+      <p>Кодтың соңғы жолдары Альбус деген сиқыршыны, Гарри деген студентті және Северус деген профессорды жасайды. Ал атты тексеретін <code>raise ValueError("Missing name")</code> үшеуі үшін де бір жерде жазылған: оны өзгертсек, өзгеріс бірден барлық класқа тарайды.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: Student("", "Gryffindor") деп жазсақ, не болады?</summary>
+        <div class="details-body"><p><code>ValueError: Missing name</code> көтеріледі. <code>Student</code>-тің өз <code>__init__</code>-інде атты тексеретін ешқандай код жоқ, бірақ ол <code>super().__init__(name)</code> арқылы <code>Wizard</code>-тың тексерісін шақырады. Мұрагерліктің пайдасы осы: тексеріс бір жерде жазылып, барлық бала кластарға қызмет етеді.</p></div>
+      </details>
+
+      <h2 id="exceptions-hierarchy">Мұрагерлік және ерекше жағдайлар</h2>
+      <p>Мұрагерлікті жаңа ғана таныстырдық, бірақ шын мәнінде сіз оны ерекше жағдайларды қолданған кезден бері пайдаланып келесіз. Ерекше жағдайлар иерархия, яғни шежіре сияқты құрылған: олардың балалары, ата-аналары, тіпті аталары бар. Міне, сол шежіренің бір бөлігі:</p>
+<pre class="terminal"><code class="language-plaintext">BaseException
+ +-- KeyboardInterrupt
+ +-- Exception
+      +-- ArithmeticError
+      |    +-- ZeroDivisionError
+      +-- AssertionError
+      +-- AttributeError
+      +-- EOFError
+      +-- ImportError
+      |    +-- ModuleNotFoundError
+      +-- LookupError
+      |    +-- KeyError
+      +-- NameError
+      +-- SyntaxError
+      |    +-- IndentationError
+      +-- ValueError
+ ...</code></pre>
+      <p>Мысалы, <code>ZeroDivisionError</code> (нөлге бөлу) - <code>ArithmeticError</code>-дың баласы, ал ол өз кезегінде <code>Exception</code>-ның баласы. Сондықтан <code>except ArithmeticError</code> деп жазсаңыз, нөлге бөлу қатесі де ұсталады: бала класс ата-анасының бір түрі ғой. Біз <code>raise</code> етіп жүрген <code>ValueError</code> да осы шежіренің бір тармағы. Толығырақ: Python құжаттамасындағы <a href="https://docs.python.org/3/library/exceptions.html" target="_blank" rel="noopener">ерекше жағдайлар</a>.</p>
+
+      <h2 id="operator-overloading">Операторларды қайта жүктеу</h2>
+      <p>Соңғы тақырып. <code>+</code> пен <code>-</code> сияқты кейбір операторларды <strong>қайта жүктеуге</strong> (<span class="term-en">operator overloading</span>) болады, яғни оларға қарапайым арифметикадан тыс жаңа мүмкіндіктер беруге болады. Шын мәнінде, сіз мұны бұрын да көрдіңіз: сандар үшін <code>+</code> қосады, ал жолдар үшін біріктіреді. Енді өз класымыз үшін <code>+</code>-тің мағынасын өзіміз анықтайық.</p>
+      <p>Гарри Поттер әлемінде ақша үш түрлі тиыннан тұрады: галлеон, сикль және кнат. Терминалға <code>code vault.py</code> деп жазып, Гринготтс банкіндегі сейфті (<code>Vault</code>) жасаймыз:</p>
+<pre data-lang="python"><code class="language-python">class Vault:
+    def __init__(self, galleons=0, sickles=0, knuts=0):
+        self.galleons = galleons
+        self.sickles = sickles
+        self.knuts = knuts
+
+    def __str__(self):
+        return f"{self.galleons} Galleons, {self.sickles} Sickles, {self.knuts} Knuts"
+
+    def __add__(self, other):
+        galleons = self.galleons + other.galleons
+        sickles = self.sickles + other.sickles
+        knuts = self.knuts + other.knuts
+        return Vault(galleons, sickles, knuts)
+
+
+potter = Vault(100, 50, 25)
+print(potter)
+
+weasley = Vault(25, 50, 100)
+print(weasley)
+
+total = potter + weasley
+print(total)</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python vault.py
+100 Galleons, 50 Sickles, 25 Knuts
+25 Galleons, 50 Sickles, 100 Knuts
+125 Galleons, 100 Sickles, 125 Knuts</code></pre>
+      <p><code>__str__</code> әдісі бізге таныс: ол сейфтегі ақшаны әдемі пішімделген жол етіп қайтарады. Ал жаңасы - <code>__add__</code>. Python екі <code>Vault</code> арасында <code>+</code> көргенде, дәл осы әдісті шақырады. Ондағы <code>self</code> - <code>+</code>-тің <em>сол</em> жағындағы объект (<code>potter</code>), ал <code>other</code> - <em>оң</em> жағындағысы (<code>weasley</code>). Әдіс тиындарды түр-түрімен қосып, жаңа <code>Vault</code> қайтарады. Нәтижесінде <code>potter + weasley</code> деп, сандарды қосқандай-ақ, екі сейфті қоса аламыз. Поттерлер мен Уизлилер ақшаларын біріктірсе, осылай болар еді.</p>
+      <div class="callout tip">
+        <span class="callout-title">Басқа операторлар да бар</span>
+        <p><code>+</code> үшін <code>__add__</code> болса, <code>-</code> үшін <code>__sub__</code>, <code>*</code> үшін <code>__mul__</code>, <code>==</code> үшін <code>__eq__</code> бар. Тізімі: Python құжаттамасындағы <a href="https://docs.python.org/3/reference/datamodel.html#special-method-names" target="_blank" rel="noopener">арнайы әдістер атаулары</a>. Тапсырмалар жинағындағы Seasons of Love есебінде <code>date</code> класының <code>__sub__</code>-ын қолданасыз.</p>
+      </div>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Объектіге бағытталған бағдарламалау арқылы сіз мүлде жаңа деңгейдегі мүмкіндіктерге ие болдыңыз:</p>
+      <ul>
+        <li>бағдарламалау <strong>парадигмалары</strong>: процедуралық тәсілден <strong>объектіге бағытталған бағдарламалауға</strong>;</li>
+        <li><strong>кортеждер</strong> (өзгермейтін), <strong>тізімдер</strong> мен <strong>сөздіктер</strong> (өзгермелі);</li>
+        <li><strong>кластар</strong> мен <strong>объектілер</strong> (даналар), <strong>атрибуттар</strong>, <code>__init__</code>, <code>self</code> және <code>__str__</code>;</li>
+        <li><code>raise</code> арқылы өз ерекше жағдайларымызды көтеру;</li>
+        <li><strong>декораторлар</strong>: <code>@property</code>, геттерлер мен сеттерлер;</li>
+        <li><strong>класс әдістері</strong> (<code>@classmethod</code>, <code>cls</code>);</li>
+        <li><strong>статикалық әдістер</strong> (<code>@staticmethod</code>);</li>
+        <li><strong>мұрагерлік</strong>, <code>super()</code> және ерекше жағдайлар иерархиясы;</li>
+        <li><strong>операторларды қайта жүктеу</strong> (<code>__add__</code>).</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. <code>student = ("Padma", "Gryffindor")</code> болса, <code>student[1] = "Ravenclaw"</code> не істейді?</p>
+          <label><input type="radio" value="a"> Үйді Ravenclaw етіп өзгертеді</label>
+          <label><input type="radio" value="b"> <code>TypeError</code> береді</label>
+          <label><input type="radio" value="c"> Атты Ravenclaw етіп өзгертеді</label>
+          <label><input type="radio" value="d"> Кортежге жаңа элемент қосады</label>
+          <p class="explain">Кортеж өзгермейтін (immutable), оның элементтеріне жаңа мән меншіктеуге болмайды. Өзгерту керек болса, тізім не сөздік қолданыңыз.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">2. Класс әдісінің ішіндегі <code>self</code> нені білдіреді?</p>
+          <label><input type="radio" value="a"> Класстың атын</label>
+          <label><input type="radio" value="b"> Ата-ана класты</label>
+          <label><input type="radio" value="c"> Барлық объектілердің тізімін</label>
+          <label><input type="radio" value="d"> Әдіс шақырылған нақты объектіні</label>
+          <p class="explain"><code>self</code> - дәл осы объектінің өзі. <code>self.name = name</code> «осы объектінің аты» дегенді білдіреді, Python оны бірінші аргумент ретінде өзі береді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. <code>print(student)</code> жазғанда Python объектіні қалай көрсетерін қай әдістен біледі?</p>
+          <label><input type="radio" value="a"> <code>__str__</code></label>
+          <label><input type="radio" value="b"> <code>__init__</code></label>
+          <label><input type="radio" value="c"> <code>__add__</code></label>
+          <label><input type="radio" value="d"> <code>print</code></label>
+          <p class="explain"><code>__str__</code> объектінің жолдық көрінісін қайтарады, <code>print</code> оны өзі шақырады.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">4. <code>house</code> қасиетінің сеттері бар класта <code>student.house = "Number Four, Privet Drive"</code> жазылса, не болады?</p>
+          <label><input type="radio" value="a"> <code>_house</code> үнсіз өзгереді</label>
+          <label><input type="radio" value="b"> Ештеңе болмайды</label>
+          <label><input type="radio" value="c"> Сеттер шақырылып, <code>ValueError</code> көтеріледі</label>
+          <label><input type="radio" value="d"> Геттер шақырылады</label>
+          <p class="explain">Қасиетке мән меншіктелгенде <code>@house.setter</code> әдісі іске қосылады, ол жарамсыз үйді тексеріп, <code>ValueError</code> көтереді.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. <code>@classmethod</code> әдісінің бірінші параметрі әдетте қалай аталады және нені білдіреді?</p>
+          <label><input type="radio" value="a"> <code>self</code> - объектінің өзі</label>
+          <label><input type="radio" value="b"> <code>cls</code> - класстың өзі</label>
+          <label><input type="radio" value="c"> <code>super</code> - ата-ана класс</label>
+          <label><input type="radio" value="d"> Бірінші параметр болмайды</label>
+          <p class="explain">Класс әдісі данаға емес, класқа тиесілі. Сондықтан ол <code>cls</code> қабылдайды және <code>Hat.sort("Harry")</code> немесе <code>Student.get()</code> деп дана жасамай шақырылады.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">6. <code>class Student(Wizard):</code> ішіндегі <code>super().__init__(name)</code> не істейді?</p>
+          <label><input type="radio" value="a"> Жаңа <code>Wizard</code> объектісін бөлек жасайды</label>
+          <label><input type="radio" value="b"> <code>Student</code>-тің <code>__init__</code>-ін қайта шақырады</label>
+          <label><input type="radio" value="c"> Атты өшіреді</label>
+          <label><input type="radio" value="d"> Ата-ана класс <code>Wizard</code>-тың <code>__init__</code>-ін шақырады</label>
+          <p class="explain"><code>super()</code> ата-ана класқа жетуге мүмкіндік береді. Атты тексеріп сақтау жұмысын <code>Wizard</code> атқарады.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. <code>Vault</code> класында <code>potter + weasley</code> жазғанда, <code>__add__(self, other)</code> ішінде <code>other</code> дегеніміз не?</p>
+          <label><input type="radio" value="a"> <code>weasley</code>, яғни <code>+</code>-тің оң жағы</label>
+          <label><input type="radio" value="b"> <code>potter</code>, яғни <code>+</code>-тің сол жағы</label>
+          <label><input type="radio" value="c"> Екеуінің қосындысы</label>
+          <label><input type="radio" value="d"> <code>Vault</code> класының өзі</label>
+          <p class="explain"><code>self</code> - <code>+</code>-тің сол жағындағы объект, <code>other</code> - оң жағындағы.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">8. <code>print(type(dict()))</code> не шығарады?</p>
+          <label><input type="radio" value="a"> <code>{}</code></label>
+          <label><input type="radio" value="b"> <code>dict</code></label>
+          <label><input type="radio" value="c"> <code>&lt;class 'dict'&gt;</code></label>
+          <label><input type="radio" value="d"> Қате береді</label>
+          <p class="explain"><code>dict()</code> - <code>dict</code> класының конструкторы, ол бос сөздік жасайды. <code>type</code> оның класын көрсетеді.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="pset">Тапсырмалар жинағы 8</h2>
+      <p><span class="term-en">(Problem Set 8)</span> Ресми тапсырма беті: <a href="https://cs50.harvard.edu/python/psets/8/" target="_blank" rel="noopener">cs50.harvard.edu/python/psets/8</a>. Барлық үш тапсырманы орындап, тапсырыңыз. Жұмысты <a href="https://cs50.dev/" target="_blank" rel="noopener">cs50.dev</a>-те бастамас бұрын терминалда <code>update50</code> орындаңыз. Cookie Jar тапсырмасын осы беттегі <strong>автотексерушіде</strong> бірден тексере аласыз, ал қалған екеуі сыртқы кітапханаларды қажет етеді, оларды компьютеріңізде не cs50.dev-те ресми <code>check50</code> командасымен тексеріңіз.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-seasons">Seasons of Love (Махаббат маусымдары)</h3></div>
+        <blockquote><p>Five hundred twenty-five thousand, six hundred minutes<br>Five hundred twenty-five thousand moments so dear<br>Five hundred twenty-five thousand, six hundred minutes<br>How do you measure, measure a year?</p><p>- «Seasons of Love», <em>Rent</em> мюзиклі</p></blockquote>
+        <p>Бір жылда 365 күн бар десек, онда 365 × 24 × 60 = 525,600 минут бар (тәулікте 24 сағат, сағатта 60 минут). Ал екі не одан көп жылда қанша минут бар? Бұл олардың нешеуі 366 күндік <a href="https://en.wikipedia.org/wiki/Leap_year" target="_blank" rel="noopener">кібісе жыл</a> екеніне байланысты (Григориан күнтізбесі бойынша), өйткені кібісе жылда 1 × 24 × 60 = 1,440 минут артық. Сіз туғаннан бері қанша минут өтті? Бұл да арадағы кібісе жылдарға байланысты! Мұның алгоритмі бар, бірақ дөңгелекті қайта ойлап таппай-ақ, кітапхананы қолданайық. Python-да <code>datetime</code> модулі бар, оның <code>date</code> деген класы көмектеседі: <a href="https://docs.python.org/3/library/datetime.html#date-objects" target="_blank" rel="noopener">docs.python.org/3/library/datetime.html#date-objects</a>.</p>
+        <p><code>seasons.py</code> файлында қолданушыдан туған күнін <code>YYYY-MM-DD</code> пішімінде сұрап, оның неше минут жасағанын, ең жақын бүтінге дөңгелектеп, <em>цифрмен емес, ағылшын сөздерімен</em> (дәл <em>Rent</em> әніндегідей) шығаратын бағдарлама жазыңыз. Сөздердің арасында <code>and</code> болмауы керек. Қолданушы өзі туған уақытты білмеуі мүмкін, сондықтан ол сол күні түнгі сағат 00:00:00-де туған деп есептеңіз. Қазіргі уақыт та түн ортасы деп есептеңіз: бағдарлама түсте іске қосылса да, сол күннің түн ортасы деп алыңыз. Бүгінгі күнді алу үшін <a href="https://docs.python.org/3/library/datetime.html#datetime.date.today" target="_blank" rel="noopener"><code>datetime.date.today</code></a> қолданыңыз.</p>
+        <p>Бағдарламаны төмендегідей құрылымдаңыз: <code>main</code> функциясынан бөлек, тағы бір не одан көп функция болсын:</p>
+<pre data-lang="python"><code class="language-python">from datetime import date
+
+
+def main():
+    ...
+
+
+...
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+        <p>Басқа кірістірілген кітапханаларды немесе кеңестерде аталғандарын импорттауға болады. Қолданушы күнді <code>YYYY-MM-DD</code> пішімінде енгізбесе, <code>sys.exit</code> арқылы шығыңыз. Бағдарлама ешқандай ерекше жағдай көтермеуі керек.</p>
+        <p>Сонымен қатар (<code>seasons.py</code>-тан бұрын не кейін) <code>test_seasons.py</code> файлында <code>seasons.py</code>-тағы <code>main</code>-нен басқа функцияларды мұқият тексеретін <strong>бір не одан көп</strong> функция жазыңыз. Олардың аты <code>test_</code>-тен басталсын, сонда тесттерді былай іске қосасыз:</p>
+<pre class="terminal"><code class="language-plaintext">pytest test_seasons.py</code></pre>
+        <p><strong>Мысал</strong> (демо 2000 жылғы 1 қаңтарда жазылған деп есептеңіз): бүгіннен бір жыл бұрынғы күнді енгізсеңіз, <code>Five hundred twenty-five thousand, six hundred minutes</code> шығуы керек (кібісе жыл болса, бір күн артық: <code>Five hundred twenty-seven thousand forty minutes</code>). Екі жыл бұрынғы күн үшін - <code>One million, fifty-one thousand, two hundred minutes</code> (кібісе жылда <code>One million, fifty-two thousand, six hundred forty minutes</code>). Жарамсыз пішімде енгізсеңіз, бағдарлама ерекше жағдайсыз, <code>sys.exit</code> арқылы шығуы керек.</p>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <p><code>date</code> класының көп әдісі мен «қолдау көрсетілетін операциялары» бар. Атап айтқанда, класс <code>__sub__</code>-ты жүзеге асырады, яғни лекциядағы <code>__add__</code> сияқты, <code>-</code> операторын қайта жүктейді: бір <code>date</code> объектісінен екіншісін алсаңыз, <a href="https://docs.python.org/3/library/datetime.html#timedelta-objects" target="_blank" rel="noopener"><code>timedelta</code></a> объектісі шығады, оның бірнеше (тек оқуға арналған) атрибуты бар. Күнді жолдан алу үшін <code>date.fromisoformat</code> қараңыз.</p>
+          <p>Сандарды сөзбен жазу үшін <a href="https://pypi.org/project/inflect/" target="_blank" rel="noopener"><code>inflect</code></a> модулін қолданыңыз (оның <code>number_to_words</code> әдісі мен <code>andword</code> параметріне назар аударыңыз). Орнату:</p>
+<pre class="terminal"><code class="language-plaintext">pip install inflect</code></pre>
+          <p>Тестте күнді есептейтін функцияға «бүгінгі күнді» аргумент ретінде беріп қойсаңыз, оны тексеру оңайырақ болады.</p>
+        </div></details>
+        <div class="callout note">
+          <span class="callout-title">Компьютерде тексеріледі</span>
+          <p>Бұл бағдарлама <code>inflect</code> кітапханасын және бүгінгі күнді қажет етеді, сондықтан браузердегі автотексеруші жоқ. Оны компьютеріңізде немесе <a href="https://cs50.dev/" target="_blank" rel="noopener">cs50.dev</a>-те <code>mkdir seasons</code>, <code>cd seasons</code>, <code>code seasons.py</code> және <code>code test_seasons.py</code> арқылы жазып, <code>pytest</code> пен <code>check50</code>-пен тексеріңіз.</p>
+        </div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py8-seasons">
+            <li><input type="checkbox"> <span>Бір жыл бұрынғы күн → <code>Five hundred twenty-five thousand, six hundred minutes</code> (кібісе жылда <code>Five hundred twenty-seven thousand forty minutes</code>)</span></li>
+            <li><input type="checkbox"> <span>Екі жыл бұрынғы күн → <code>One million, fifty-one thousand, two hundred minutes</code></span></li>
+            <li><input type="checkbox"> <span>Жарамсыз пішім (мысалы, <code>January 1, 1999</code>) → <code>sys.exit</code>, ерекше жағдайсыз</span></li>
+            <li><input type="checkbox"> <span><code>pytest test_seasons.py</code> өтеді, ал әдейі бұзылған <code>seasons.py</code>-та кемінде бір тест құлайды.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/seasons</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-jar">Cookie Jar (Печенье банкасы)</h3></div>
+        <p>Печенье сақтайтын <a href="https://en.wikipedia.org/wiki/Cookie_jar" target="_blank" rel="noopener">банка</a> жасағыңыз келеді делік. <code>jar.py</code> файлында келесі әдістері бар <code>Jar</code> класын жазыңыз:</p>
+        <ul>
+          <li><code>__init__</code> банканы берілген <code>capacity</code>-мен (банкаға сыятын печеньенің ең көп саны) баптайды. <code>capacity</code> теріс емес <code>int</code> болмаса, <code>__init__</code> <code>ValueError</code> көтеруі керек.</li>
+          <li><code>__str__</code> банкада қанша печенье болса, сонша <code>🍪</code> бар <code>str</code> қайтарады. Мысалы, банкада 3 печенье болса, <code>"🍪🍪🍪"</code> қайтарады.</li>
+          <li><code>deposit</code> банкаға <code>n</code> печенье қосады. Сонша печенье қосу банканың сыйымдылығынан асып кетсе, <code>deposit</code> <code>ValueError</code> көтеруі керек.</li>
+          <li><code>withdraw</code> банкадан <code>n</code> печенье алады. Ном-ном-ном. Банкада сонша печенье болмаса, <code>withdraw</code> <code>ValueError</code> көтеруі керек.</li>
+          <li><code>capacity</code> банканың сыйымдылығын қайтарады.</li>
+          <li><code>size</code> банкада нақты қанша печенье бар екенін қайтарады, басында <code>0</code>.</li>
+        </ul>
+        <p>Класты төмендегідей құрылымдаңыз. Бұл әдістердің параметрлерін өзгертуге болмайды, бірақ өз әдістеріңізді қосуға болады:</p>
+<pre data-lang="python"><code class="language-python">class Jar:
+    def __init__(self, capacity=12):
+        ...
+
+    def __str__(self):
+        ...
+
+    def deposit(self, n):
+        ...
+
+    def withdraw(self, n):
+        ...
+
+    @property
+    def capacity(self):
+        ...
+
+    @property
+    def size(self):
+        ...</code></pre>
+        <p>Сонымен қатар <code>test_jar.py</code> файлында <code>Jar</code>-ды жан-жақты тексеретін <strong>төрт не одан көп</strong> функция жазыңыз. Әрқайсысының аты <code>test_</code>-тен басталсын, сонда оларды <code>pytest test_jar.py</code> арқылы іске қосасыз.</p>
+        <p>Ескерту: дана әдістерін тексеру жай функцияларды тексеруден қиынырақ, себебі әдістер бір «күйді» (яғни дана айнымалыларын) бірге өзгертеді. Бір әдісті (мысалы, <code>withdraw</code>) тексеру үшін алдымен басқасын (мысалы, <code>deposit</code>) шақыру керек болуы мүмкін. Бірақ бірінші шақырылған әдістің өзі қате болса ше! Сондықтан бағдарламашылар кейде күйді <a href="https://en.wikipedia.org/wiki/Mock_object" target="_blank" rel="noopener">имитациялайды</a> (<span class="term-en">mock</span>), мысалы, Python-ның <a href="https://docs.python.org/3/library/unittest.mock.html" target="_blank" rel="noopener">mock кітапханасымен</a>. Бірақ қарапайымдылық үшін бұл жолы ештеңені имитацияламай-ақ, тесттерді әдеттегідей жазыңыз. <code>main</code> функциясын жазу міндетті емес.</p>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <p>Мәндерді <code>_capacity</code> және <code>_size</code> сияқты атрибуттарда сақтап, <code>capacity</code> мен <code>size</code> қасиеттері (геттерлер) соларды қайтарсын. Жолды көбейтуге болатынын ұмытпаңыз: <code>"🍪" * 3</code>. <code>isinstance(capacity, int)</code> мәннің бүтін сан екенін тексереді. Тест файлының бастамасы:</p>
+<pre data-lang="python"><code class="language-python">from jar import Jar
+
+
+def test_init():
+    ...
+
+
+def test_str():
+    jar = Jar()
+    assert str(jar) == ""
+    jar.deposit(1)
+    assert str(jar) == "🍪"
+    jar.deposit(11)
+    assert str(jar) == "🍪🍪🍪🍪🍪🍪🍪🍪🍪🍪🍪🍪"
+
+
+def test_deposit():
+    ...
+
+
+def test_withdraw():
+    ...</code></pre>
+          <p><code>ValueError</code> көтерілетінін тексеру үшін <code>pytest.raises</code> қолданыңыз.</p>
+        </div></details>
+        <div class="autograder" data-check="py-jar" data-src="python/checks/week-8.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py8-jar">
+            <li><input type="checkbox"> <span><code>Jar()</code> сыйымдылығы 12, <code>size</code> 0; <code>Jar(-1)</code> → <code>ValueError</code></span></li>
+            <li><input type="checkbox"> <span><code>deposit(3)</code> → <code>str(jar)</code> = <code>🍪🍪🍪</code>; сыйымдылықтан асса → <code>ValueError</code></span></li>
+            <li><input type="checkbox"> <span>Банкадағыдан көп <code>withdraw</code> → <code>ValueError</code></span></li>
+            <li><input type="checkbox"> <span><code>test_jar.py</code>-да кемінде төрт <code>test_</code> функциясы бар, <code>pytest test_jar.py</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/jar</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-shirtificate">CS50 Shirtificate (CS50 футболка-сертификаты)</h3></div>
+        <p>CS50 «шертификатын» (<span class="term-en">shirtificate</span>, shirt + certificate) жасағыңыз келеді делік: бұл <a href="https://cs50.harvard.edu/python/psets/8/shirtificate/shirtificate.png" target="_blank" rel="noopener">«I took CS50» футболкасының суреті</a> бар, қолданушының атымен безендірілген PDF.</p>
+        <p><code>shirtificate.py</code> файлында қолданушыдан атын сұрап, <a href="https://pypi.org/project/fpdf2/" target="_blank" rel="noopener">fpdf2</a> кітапханасы арқылы <code>shirtificate.pdf</code> деген файлға CS50 шертификатын шығаратын бағдарлама жазыңыз (<a href="https://cs50.harvard.edu/python/psets/8/shirtificate/jharvard.pdf" target="_blank" rel="noopener">Джон Гарвардқа арналған мына үлгідей</a>). Талаптар:</p>
+        <ul>
+          <li>PDF <a href="https://py-pdf.github.io/fpdf2/PageFormatAndOrientation.html" target="_blank" rel="noopener">бағыты</a> - тік (Portrait).</li>
+          <li>PDF <a href="https://py-pdf.github.io/fpdf2/PageFormatAndOrientation.html" target="_blank" rel="noopener">пішімі</a> - A4, яғни ені 210 мм, биіктігі 297 мм.</li>
+          <li>PDF-тің жоғарғы жағында көлденеңінен ортаға келтірілген «CS50 Shirtificate» <a href="https://py-pdf.github.io/fpdf2/Text.html" target="_blank" rel="noopener">мәтіні</a> болсын.</li>
+          <li>Футболка <a href="https://py-pdf.github.io/fpdf2/Images.html" target="_blank" rel="noopener">суреті</a> көлденеңінен ортада тұрсын.</li>
+          <li>Қолданушының аты футболканың үстінде, ақ түсті <a href="https://py-pdf.github.io/fpdf2/TextStyling.html" target="_blank" rel="noopener">мәтінмен</a> жазылсын.</li>
+        </ul>
+        <p>Қалған егжей-тегжейі өз еркіңізде. Жиектер, түстер, <a href="https://py-pdf.github.io/fpdf2/Shapes.html#lines" target="_blank" rel="noopener">сызықтар</a> қосуға да болады. Шертификатыңыз Джон Гарвардтікімен дәлме-дәл сәйкес келуі шарт емес, ал ұзын аттарды бірнеше жолға бөлудің қажеті жоқ.</p>
+        <p>Код жазбас бұрын fpdf2-нің <a href="https://py-pdf.github.io/fpdf2/Tutorial.html" target="_blank" rel="noopener">оқу құралын</a> оқып шығыңыз, сосын оның <a href="https://py-pdf.github.io/fpdf2/fpdf/" target="_blank" rel="noopener">API-ына</a> (бағдарламалық интерфейсіне) көз жүгіртіп, функциялары мен параметрлерін қараңыз. PDF-терді кодпен бірге тапсырудың қажеті жоқ. Бірақ қаласаңыз, өз атыңыз жазылған шертификатпен <a href="https://cs50.harvard.edu/python/communities" target="_blank" rel="noopener">CS50 қауымдастықтарында</a> бөлісе аласыз!</p>
+        <p>Жұмысты бастау үшін <code>mkdir shirtificate</code> және <code>cd shirtificate</code> орындап, суретті жүктеп алыңыз:</p>
+<pre class="terminal"><code class="language-plaintext">wget https://cs50.harvard.edu/python/2022/psets/8/shirtificate/shirtificate.png</code></pre>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li>fpdf2-де <code>FPDF</code> деген <code>class</code> бар, оның көп әдісі бар: <a href="https://py-pdf.github.io/fpdf2/fpdf/#fpdf.FPDF" target="_blank" rel="noopener">py-pdf.github.io/fpdf2/fpdf/#fpdf.FPDF</a>. Орнату: <code>pip install fpdf2</code>.</li>
+            <li>Әр бетке тақырып қосу үшін <code>FPDF</code>-ті кеңейтіп (лекциядағы мұрагерлік!), өз бала класыңыздың данасын жасауға болады: <a href="https://py-pdf.github.io/fpdf2/Tutorial.html#tuto-2-header-footer-page-break-and-image" target="_blank" rel="noopener">оқу құралының 2-бөлімі</a>. Немесе мәтінді өзіңіз қосыңыз.</li>
+            <li>PDF екі бетке асып кетпеуі үшін автоматты бет бөлуді <code>set_auto_page_break</code> арқылы өшіруге болады: <a href="https://py-pdf.github.io/fpdf2/Margins.html" target="_blank" rel="noopener">py-pdf.github.io/fpdf2/Margins.html</a>.</li>
+            <li><a href="https://py-pdf.github.io/fpdf2/Text.html#cell" target="_blank" rel="noopener">Ұяшықтың</a> (<code>cell</code>) биіктігі теріс болуы мүмкін, сонда ол жоғары жылжиды.</li>
+            <li>Шыққан <code>shirtificate.pdf</code>-ты VS Code-тың файлдар тізімінен басып ашуға болады.</li>
+          </ul>
+        </div></details>
+        <div class="callout note">
+          <span class="callout-title">Компьютерде тексеріледі</span>
+          <p>Бұл бағдарлама <code>fpdf2</code> кітапханасы мен сурет файлын қажет етеді және PDF файл жасайды, сондықтан браузердегі автотексеруші жоқ. Оны компьютеріңізде немесе <a href="https://cs50.dev/" target="_blank" rel="noopener">cs50.dev</a>-те іске қосып, шыққан PDF-ті ашып қараңыз.</p>
+        </div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py8-shirtificate">
+            <li><input type="checkbox"> <span><code>python shirtificate.py</code> атты сұрайды және <code>shirtificate.pdf</code> жасайды</span></li>
+            <li><input type="checkbox"> <span>A4, тік бағыт; жоғарыда ортаға келтірілген «CS50 Shirtificate»</span></li>
+            <li><input type="checkbox"> <span>Футболка суреті ортада, үстінде қолданушының аты ақ түспен жазылған</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/shirtificate</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-7.html"><small>Алдыңғы</small>← 7-апта: Тұрақты өрнектер</a>
+        <a class="next" href="week-9.html"><small>Келесі</small>9-апта: Тағы басқалар →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50P (CS50's Introduction to Programming with Python, Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

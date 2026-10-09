@@ -56,3 +56,28 @@ test("Flask зертханасы: мысалдар, форма, сессия, 4 
   expect(Object.keys(await page.evaluate(() => JSON.parse(localStorage.getItem("cs50kz:flask"))))).toHaveLength(4);
   expect(errs).toEqual([]);
 });
+
+test("автотексеруші жүргізушісі: sys.exit хабары, argv, файлдар мен модуль, seed, EOF @slow", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.goto("playground.html");
+  const r = await page.evaluate(async () => {
+    const py = await window.CS50KZ.getPyodide();
+    const run = py.globals.get("__cs50kz_run");
+    const call = (src, inp = [], argv = null, files = null, seed = null) =>
+      run(src, py.toPy(inp), argv && py.toPy(argv), files && py.toPy(files), 2000000, seed).toJs();
+    return {
+      exit: call('import sys\nsys.exit("Too few command-line arguments")'),
+      argv: call("import sys\nprint(len(sys.argv), sys.argv[1])", [], ["x.py", "a.txt"]),
+      // Әр тестте модульдің жаңа нұсқасы жүктеледі (кэште қалмайды)
+      mod1: call("from m import f\nprint(f())", [], null, { "m.py": "def f(): return 1" }),
+      mod2: call("from m import f\nprint(f())", [], null, { "m.py": "def f(): return 2" }),
+      seed: [call("import random\nprint(random.randint(1, 100))", [], null, null, 7), call("import random\nprint(random.randint(1, 100))", [], null, null, 7)],
+      eof: call("try:\n    while True: input()\nexcept EOFError:\n    print('done')", ["a", "b"]),
+    };
+  });
+  expect(r.exit[0]).toBe("Too few command-line arguments\n");
+  expect(r.argv[0]).toBe("2 a.txt\n");
+  expect([r.mod1[0], r.mod2[0]]).toEqual(["1\n", "2\n"]);
+  expect(r.seed[0][0]).toBe(r.seed[1][0]);
+  expect(r.eof[0]).toBe("done\n");
+});

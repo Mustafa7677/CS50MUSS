@@ -52,6 +52,22 @@ CATALOG = [
 ]
 
 
+def sync_week_cards(path, ready):
+    """Курс бетіндегі апта карточкалары: лекция файлы бар болса - сілтеме («Дайын ✓»), жоқ болса - «Жақында»."""
+    s = path.read_text(encoding="utf-8")
+
+    def card(m):
+        attrs, wid, body = m.group(2), m.group(3), m.group(4).rstrip()
+        attrs = re.sub(r'\s*href="[^"]*"', "", attrs).replace("week-card soon", "week-card")
+        if wid in ready:
+            attrs = attrs.replace(f'data-id="{wid}"', f'data-id="{wid}" href="lectures/{wid}.html"')
+            return f'<a{attrs}>{body}\n      <div class="status ready">Дайын ✓</div>\n    </a>'
+        attrs = attrs.replace('class="week-card', 'class="week-card soon', 1)
+        return f'<div{attrs}>{body}\n      <div class="status">Жақында</div>\n    </div>'
+    s = re.sub(r'<(a|div)( class="week-card[^"]*" data-id="([\w-]+)"[^>]*)>(.*?)<div class="status[^"]*">[^<]*</div>\s*</\1>', card, s, flags=re.S)
+    path.write_text(s, encoding="utf-8")
+
+
 def courses_block(prefix, skip=()):
     STATE = {"ready": "Толық дайын", "wip": "Аударылуда", "soon": "Жоспарда"}
     out = []
@@ -62,11 +78,14 @@ def courses_block(prefix, skip=()):
         href = f' href="{prefix}{c["href"]}"' if c["href"] else ""
         tags = "".join(f"<li>{t}</li>" for t in c["tags"])
         go = '<span class="cx-go">Бастау <span aria-hidden="true">→</span></span>' if c["href"] else '<span class="cx-go soon">Жақында</span>'
+        state = c["state"]
+        if c["id"] in COURSES and COURSES[c["id"]].get("ready") == len(COURSES[c["id"]]["order"]):
+            state = "ready"
         total = f' data-total="{c["total"]}"' if c.get("total") else ""
-        out.append(f"""        <{tag} class="cx-card {c["state"]}"{href} data-course="{c["id"]}"{total} style="--c:{c["c"]};--c2:{c["c2"]}">
+        out.append(f"""        <{tag} class="cx-card {state}"{href} data-course="{c["id"]}"{total} style="--c:{c["c"]};--c2:{c["c2"]}">
           <div class="cx-band">
             <span class="cx-code">{c["code"]}</span>
-            <span class="cx-state">{STATE[c["state"]]}</span>
+            <span class="cx-state">{STATE[state]}</span>
             <svg class="cx-glyph" viewBox="0 0 64 64" aria-hidden="true">{GLYPHS[c["id"]]}</svg>
           </div>
           <div class="cx-body">
@@ -392,7 +411,9 @@ def main():
             terms += glossary_terms(name, s, labeled)
             course_pages.append(meta["url"])
         if (ROOT / code / "index.html").exists():
+            sync_week_cards(ROOT / code / "index.html", {m["id"] for m in clist})
             process_page(ROOT / code / "index.html", "../", "courses")
+            c["ready"] = len(clist)
             course_pages.append(f"{code}/")
         (ROOT / code / "data").mkdir(exist_ok=True)
         (ROOT / code / "data" / "lectures.js").write_text(
