@@ -4,7 +4,7 @@ GitHub Actions-та іске қосылады (әзірлеу ортасынан
 Нәтиже: sources/<курс>/notes/<N>.md және sources/<курс>/psets/<N>/<тапсырма>.md - аудармаға арналған түпнұсқа мәтін.
 Лицензия: CS50 материалдары CC BY-NC-SA 4.0 (David J. Malan, Harvard University).
 """
-import re, sys, time, urllib.request, urllib.error
+import re, sys, time, urllib.request, urllib.error, urllib.parse
 from pathlib import Path
 from bs4 import BeautifulSoup
 import html2text
@@ -33,9 +33,12 @@ def to_md(html, base):
     main = soup.select_one("main") or soup.select_one("#content") or soup.body
     for bad in main.select("script, style, nav, .d-print-none, #search"):
         bad.decompose()
-    h = html2text.HTML2Text(baseurl=base)
+    # Салыстырмалы сілтемелер мен суреттерді толық мекенжайға айналдырамыз
+    for tag, attr in (("a", "href"), ("img", "src")):
+        for el in main.select(f"{tag}[{attr}]"):
+            el[attr] = urllib.parse.urljoin(base, el[attr])
+    h = html2text.HTML2Text()
     h.body_width = 0
-    h.protect_links = True
     return h.handle(str(main)).strip() + "\n"
 
 
@@ -51,17 +54,25 @@ def main():
             (out / "notes" / f"{n}.md").write_text(f"<!-- {url} -->\n" + to_md(html, url), encoding="utf-8")
             total += 1
             print(f"✓ {course} notes {n}")
-            purl, phtml = get(f"https://cs50.harvard.edu/{course}/psets/{n}/") if course != "ai" else get(f"https://cs50.harvard.edu/{course}/projects/{n}/")
+            # Тапсырмалар: CS50P/SQL - psets, AI/Web - projects
+            for kind in ("psets", "projects"):
+                purl, phtml = get(f"https://cs50.harvard.edu/{course}/{kind}/{n}/")
+                if phtml:
+                    break
             if not phtml:
                 continue
             pdir = out / "psets" / str(n)
             pdir.mkdir(parents=True, exist_ok=True)
             (pdir / "index.md").write_text(f"<!-- {purl} -->\n" + to_md(phtml, purl), encoding="utf-8")
             soup = BeautifulSoup(phtml, "html.parser")
-            kind = "projects" if course == "ai" else "psets"
-            links = sorted({a["href"].rstrip("/").split("/")[-1] for a in soup.select("main a[href]")
-                            if re.search(rf"/{course}/(\d{{4}}/)?(?:x/)?{kind}/{n}/[a-z0-9_-]+/?$", a["href"])})
-            for slug in links:
+            main_el = soup.select_one("main") or soup
+            links = set()
+            for a in main_el.select("a[href]"):
+                u = urllib.parse.urljoin(purl, a["href"])
+                m = re.match(rf"https://cs50\.harvard\.edu/{course}/(?:\d{{4}}/)?{kind}/{n}/([a-z0-9_-]+)/?$", u)
+                if m:
+                    links.add(m.group(1))
+            for slug in sorted(links):
                 u, h = get(f"https://cs50.harvard.edu/{course}/{kind}/{n}/{slug}/")
                 if h:
                     (pdir / f"{slug}.md").write_text(f"<!-- {u} -->\n" + to_md(h, u), encoding="utf-8")
