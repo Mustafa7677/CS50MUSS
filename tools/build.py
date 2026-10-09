@@ -25,6 +25,60 @@ COURSES = {
     "python": {"short": "CS50P", "color": "#3776ab", "order": [f"week-{i}" for i in range(10)]},
 }
 
+# Курстар витринасы (courses.html мен басты бетте): <!-- build:courses --> ... <!-- /build:courses -->
+GLYPHS = {
+    "x": '<path d="M14 18 6 32l8 14M50 18l8 14-8 14M38 12 26 52"/>',
+    "python": '<path d="M32 8c-9 0-12 4-12 9v6h12v3H15c-5 0-9 4-9 10s4 11 9 11h5v-7c0-5 4-9 9-9h11c4 0 7-3 7-7V17c0-5-5-9-15-9z"/><path d="M32 56c9 0 12-4 12-9v-6H32v-3h17c5 0 9-4 9-10s-4-11-9-11h-5v7c0 5-4 9-9 9H24c-4 0-7 3-7 7v7c0 5 5 9 15 9z"/><circle cx="26" cy="15" r="1.6"/><circle cx="38" cy="49" r="1.6"/>',
+    "sql": '<ellipse cx="32" cy="14" rx="20" ry="7"/><path d="M12 14v36c0 4 9 7 20 7s20-3 20-7V14M12 26c0 4 9 7 20 7s20-3 20-7M12 38c0 4 9 7 20 7s20-3 20-7"/>',
+    "ai": '<circle cx="12" cy="20" r="4"/><circle cx="12" cy="44" r="4"/><circle cx="32" cy="12" r="4"/><circle cx="32" cy="32" r="4"/><circle cx="32" cy="52" r="4"/><circle cx="52" cy="32" r="4"/><path d="M16 20l12-8M16 20l12 12M16 20l12 32M16 44l12-32M16 44l12-12M16 44l12 8M36 12l12 20M36 32h12M36 52l12-20"/>',
+    "web": '<circle cx="32" cy="32" r="24"/><path d="M8 32h48M32 8c-8 8-11 16-11 24s3 16 11 24M32 8c8 8 11 16 11 24s-3 16-11 24M12 20h40M12 44h40"/>',
+}
+CATALOG = [
+    {"id": "x", "code": "CS50x", "href": "index.html", "c": "#087a96", "c2": "#0a4c7a", "title": "Информатикаға кіріспе",
+     "desc": "Бағдарламалау әлеміне ең жақсы кіру есігі: алгоритмдерден веб пен жасанды интеллектке дейін.",
+     "tags": ["Scratch", "C", "Python", "SQL", "HTML/CSS/JS", "Flask"], "lec": 12, "tasks": "34 тапсырма", "state": "ready", "total": 12},
+    {"id": "python", "code": "CS50P", "href": "python/", "c": "#3776ab", "c2": "#1d3f66", "title": "Python бағдарламалау",
+     "desc": "Python-ды нөлден тереңге: функциялар, ерекше жағдайлар, кітапханалар, тесттер, тұрақты өрнектер, ООП.",
+     "tags": ["функциялар", "циклдер", "pytest", "regex", "ООП"], "lec": 10, "tasks": "41 тапсырма", "state": "wip", "total": 10},
+    {"id": "sql", "code": "CS50 SQL", "href": None, "c": "#7c3aed", "c2": "#3b1a78", "title": "Дерекқорлар",
+     "desc": "Деректерді сұрау, кестелерді жобалау, индекстер мен масштабтау: SQLite-тан PostgreSQL-ге дейін.",
+     "tags": ["SELECT", "JOIN", "жобалау", "индекстер"], "lec": 7, "tasks": "18 тапсырма", "state": "soon"},
+    {"id": "ai", "code": "CS50 AI", "href": None, "c": "#d0306f", "c2": "#6e1640", "title": "Жасанды интеллект",
+     "desc": "Іздеу, логика, ықтималдық, оңтайландыру, машиналық оқыту, нейрон желілер және тіл модельдері.",
+     "tags": ["іздеу", "ықтималдық", "ML", "нейрон желі"], "lec": 7, "tasks": "12 жоба", "state": "soon"},
+    {"id": "web", "code": "CS50 Web", "href": None, "c": "#e2620f", "c2": "#8a2f08", "title": "Веб-бағдарламалау",
+     "desc": "Толық веб-қосымшалар: HTML, CSS, Git, Django, SQL, JavaScript, React, тестілеу және қауіпсіздік.",
+     "tags": ["Django", "JavaScript", "React", "Git"], "lec": 9, "tasks": "5 жоба", "state": "soon"},
+]
+
+
+def courses_block(prefix, skip=()):
+    STATE = {"ready": "Толық дайын", "wip": "Аударылуда", "soon": "Жоспарда"}
+    out = []
+    for c in CATALOG:
+        if c["id"] in skip:
+            continue
+        tag = "a" if c["href"] else "div"
+        href = f' href="{prefix}{c["href"]}"' if c["href"] else ""
+        tags = "".join(f"<li>{t}</li>" for t in c["tags"])
+        go = '<span class="cx-go">Бастау <span aria-hidden="true">→</span></span>' if c["href"] else '<span class="cx-go soon">Жақында</span>'
+        total = f' data-total="{c["total"]}"' if c.get("total") else ""
+        out.append(f"""        <{tag} class="cx-card {c["state"]}"{href} data-course="{c["id"]}"{total} style="--c:{c["c"]};--c2:{c["c2"]}">
+          <div class="cx-band">
+            <span class="cx-code">{c["code"]}</span>
+            <span class="cx-state">{STATE[c["state"]]}</span>
+            <svg class="cx-glyph" viewBox="0 0 64 64" aria-hidden="true">{GLYPHS[c["id"]]}</svg>
+          </div>
+          <div class="cx-body">
+            <h3>{c["title"]}</h3>
+            <p>{c["desc"]}</p>
+            <ul class="cx-tags">{tags}</ul>
+            <div class="cx-bar" hidden><i></i></div>
+            <div class="cx-foot"><span>{c["lec"]} лекция · {c["tasks"]}</span>{go}</div>
+          </div>
+        </{tag}>""")
+    return "<!-- build:courses -->\n" + "\n".join(out) + "\n        <!-- /build:courses -->"
+
 
 def strip_tags(s):
     s = re.sub(r"<(script|style)\b.*?</\1>", " ", s, flags=re.S)
@@ -120,6 +174,9 @@ def process_page(path, prefix, active):
         s = re.sub(r"<!-- build:head -->.*?<!-- /build:head -->", block, s, flags=re.S)
     else:
         s = s.replace("</title>", "</title>\n  " + block, 1)
+    if "<!-- build:courses" in s:
+        skip = ("x",) if rel == "index.html" else ()
+        s = re.sub(r"<!-- build:courses -->.*?<!-- /build:courses -->", lambda _: courses_block(prefix, skip), s, flags=re.S)
     s = re.sub(r'<nav class="nav">.*?</nav>', nav_block(prefix, active), s, count=1, flags=re.S)
     s = re.sub(r'<footer class="footer">.*?</footer>', lambda _: footer_block(prefix), s, count=1, flags=re.S)
     hs = HEAD_STYLE.get(rel)

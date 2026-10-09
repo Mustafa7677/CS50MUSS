@@ -6,8 +6,9 @@ test("курстар беті және CS50P: лекция, тест, «Оқыд
   const errs = collectErrors(page);
   await blockFonts(page.context());
   await page.goto("courses.html");
-  await expect(page.locator(".course-card")).toHaveCount(5);
-  await page.click('.course-card[href="python/"]');
+  await expect(page.locator(".cx-card")).toHaveCount(5);
+  await expect(page.locator(".cx-card .cx-bar:visible")).toHaveCount(0);
+  await page.click('.cx-card[href="python/"]');
   await expect(page).toHaveURL(/python\/(index\.html)?$/);
   await expect(page.locator(".week-card")).toHaveCount(10);
   await expect(page.locator(".week-card:not(.soon)")).toHaveCount(1);
@@ -38,9 +39,15 @@ test("курстар беті және CS50P: лекция, тест, «Оқыд
   await expect(page.locator('.week-card[data-id="week-0"]')).toHaveClass(/is-read/);
   await expect(page.locator(".course-progress")).toContainText("1 оқылды");
   await expect(page.locator(".course-progress .btn")).toHaveAttribute("href", /python\/lectures\/week-0\.html$/);
-  // CS50x басты беті CS50P прогресін өзінікі деп санамайды
+  // Курс витринасы CS50P прогресін көрсетеді, CS50x-тікін емес
+  await page.goto("courses.html");
+  await expect(page.locator('.cx-card[data-course="python"] .cx-bar')).toBeVisible();
+  await expect(page.locator('.cx-card[data-course="python"] .cx-foot')).toContainText("1/10 лекция оқылды");
+  await expect(page.locator('.cx-card[data-course="x"] .cx-bar')).toBeHidden();
+  // CS50x басты беті CS50P прогресін өзінікі деп санамайды; басты бетте CS50x-тен басқа 4 курс
   await page.goto("index.html");
   await expect(page.locator(".dash-stats")).toContainText("0/12");
+  await expect(page.locator(".cx-home .cx-card")).toHaveCount(4);
   // Іздеу CS50P бөлімдерін табады
   await page.keyboard.press("Control+k");
   await page.keyboard.type("f-жол");
