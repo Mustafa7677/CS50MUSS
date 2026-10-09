@@ -39,7 +39,7 @@ for (const [label, viewport, colorScheme] of [["desktop-light", { width: 1280, h
         if (label === "desktop-light" && f !== "404.html") {
           const broken = [];
           for (const h of new Set(r.links)) {
-            const [file, hash] = h.split("#");
+            const [fileq, hash] = h.split("#"); const file = fileq.split("?")[0];
             const target = file ? path.normalize(path.join(path.dirname(path.join(ROOT, f)), file)) : path.join(ROOT, f);
             if (file && !fs.existsSync(target)) { broken.push("сілтеме " + h); continue; }
             if (hash && target.endsWith(".html") && !/^(add=|import=|login=|sql)/.test(hash) && !idsOf(target).has(hash)) broken.push("якорь " + h);

@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50P 3-апта: Ерекше жағдайлар - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50P 3-апта: Ерекше жағдайлар - CS50 қазақша">
+  <meta property="og:description" content="CS50P (Python) 3-апта: ерекше жағдайлар, синтаксистік және орындалу қателері, try, except, else, pass, қолданушыдан дұрыс енгізуді қайта сұрау және get_int функциясы.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/python/lectures/week-3.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50P (Python) 3-апта: ерекше жағдайлар, синтаксистік және орындалу қателері, try, except, else, pass, қолданушыдан дұрыс енгізуді қайта сұрау және get_int функциясы.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+            <div class="lecture-head" style="--lc:#3776ab" data-n="3">
+        <div class="num">3-апта</div>
+        <h1>Ерекше жағдайлар</h1>
+        <p>Бағдарлама әрқашан біз ойлағандай жүре бермейді: қолданушы сан орнына «cat» деп жазады, біреу нөлге бөледі. Бұл аптада осындай ерекше жағдайларды <code>try</code>, <code>except</code>, <code>else</code> және <code>pass</code> арқылы ұстап, бағдарламаны құлатпай, сыпайы түрде қайта сұрауды үйренеміз.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/python/weeks/3/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="exceptions">Ерекше жағдайлар</h2>
+      <p>Осы уақытқа дейін біз бағдарламаларымыз дұрыс жұмыс істейтін жағдайларды көбірек қарадық. Бірақ шынайы өмірде бәрі бірдей жайлы бола бермейді. Бүгін соның екінші жағына, яғни бағдарлама жұмыс істеп тұрғанда бірдеңе дұрыс болмай қалатын сәттерге назар аударамыз. Мұндай мәселелерді Python-да <strong>ерекше жағдайлар</strong> (<span class="term-en">exceptions</span>) деп атайды: кодымыздың ішінде, жоспардан тыс, бір нәрсе бұзылып кетеді.</p>
+      <p>Бастау үшін әдейі қате жасап көрейін. Терминалға <code>code hello.py</code> деп жазып, жаңа файл ашамын да, бізге баяғыдан таныс жолды жазамын. Тек бұл жолы соңғы тырнақшаны қасақана ұмытып кетемін:</p>
+<pre data-lang="python"><code class="language-python">print("hello, world)</code></pre>
+      <p>Тырнақша жабылмай қалғанын байқадыңыз ба? Енді <code>python hello.py</code> деп іске қосайық:</p>
+<pre class="terminal"><code class="language-plaintext">$ python hello.py
+  File "hello.py", line 1
+    print("hello, world)
+          ^
+SyntaxError: unterminated string literal (detected at line 1)</code></pre>
+      <p>Python бірден наразылық білдірді. Бұл - <strong>синтаксистік қате</strong> (<span class="term-en">syntax error</span>). Синтаксис дегеніміз - тілдің грамматикасы. Қазақ тілінде сөйлемнің соңына нүкте қоймасаңыз, оқырман бәрібір түсінер еді, ал Python олай кешірімді емес: тырнақша ашылды ма, міндетті түрде жабылуы керек. Синтаксистік қате шықса, әдетте бір ғана кеңес бар: кодыңызды қайта қарап, дұрыс тергеніңізге көз жеткізіңіз. Мұндай қатені Python бізге «ұстап» бере алмайды, оны өзіміз, қолмен түзетуіміз керек.</p>
+      <p>Қателер мен ерекше жағдайлар туралы толығырақ Python құжаттамасында бар: <a href="https://docs.python.org/3/tutorial/errors.html" target="_blank" rel="noopener">Errors and Exceptions</a>.</p>
+
+      <h2 id="runtime-errors">Орындалу кезіндегі қателер</h2>
+      <p>Синтаксистік қателерді біз жазу кезінде жібереміз, сондықтан оларды түзету оңай. Ал мүлде басқа түрі бар: <strong>орындалу кезіндегі қателер</strong> (<span class="term-en">runtime errors</span>). Код грамматикалық тұрғыдан мінсіз болуы мүмкін, бірақ бағдарлама жұмыс істеп жатқанда күтпеген бірдеңе болады да, бәрі құлайды. Мысалы, біз қолданушыдан сан күтеміз, ал ол әріп жазып жібереді.</p>
+      <p>Көрсетейін. Терминалда <code>code number.py</code> деп жаңа файл ашып, мынаны жазамын:</p>
+<pre data-lang="python"><code class="language-python">x = int(input("What's x? "))
+print(f"x is {x}")</code></pre>
+      <p>Тырнақшаның алдындағы <code>f</code> әрпін ұмытқан жоқсыз ғой? Ол арқылы Python-ға фигуралы жақшаның ішіндегіні <strong>интерполяциялау</strong> (<span class="term-en">interpolate</span>), яғни <code>{x}</code> деген жердің орнына <code>x</code>-тің мәнін қою керегін айтамыз.</p>
+      <p>Бағдарламаны іске қосып, <code>50</code> енгізсек, бәрі керемет: <code>x is 50</code>. Бірақ енді өзіңізді қолданушының орнына қойыңыз. Ол сан орнына жол немесе бір әріп жазып жіберуі әбден мүмкін. Тіпті ештеңе жазбай, жай ғана Enter басып қалуы да ықтимал. Біз, бағдарламашылар, <em>қорғаныс</em> ұстанымында болуымыз керек: қолданушы біз күткен нәрсені енгізгеніне көз жеткізуіміз қажет. Ендеше, әдейі «cat» деп жазып көрейік:</p>
+<pre class="terminal"><code class="language-plaintext">$ python number.py
+What's x? cat
+Traceback (most recent call last):
+  File "number.py", line 1, in &lt;module&gt;
+    x = int(input("What's x? "))
+ValueError: invalid literal for int() with base 10: 'cat'</code></pre>
+      <p>Міне, <code>ValueError</code>, яғни <strong>мән қатесі</strong> (<span class="term-en">value error</span>). Хабарды сөзбе-сөз оқысақ: «<code>int()</code> үшін ондық санау жүйесіндегі жарамсыз литерал: 'cat'». Қарапайым тілмен айтқанда, <code>int</code> функциясы «cat» деген мәтінді санға айналдыра алмайды. Шынында да, мысықты санға қалай айналдырасыз?</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: қолданушы ештеңе жазбай, бірден Enter басса не болады?</summary>
+        <div class="details-body"><p>Тағы да <code>ValueError</code> шығады, тек бұл жолы соңында бос жол тұрады: <code>invalid literal for int() with base 10: ''</code>. <code>input</code> бос жол қайтарады, ал бос жолды да санға айналдыру мүмкін емес.</p></div>
+      </details>
+      <p>Бағдарламаның қолданушы алдында осылай құлап, түсініксіз қызыл жазу шығаруы - жақсы емес. Мұны түзетудің тиімді жолы - <strong>қателерді өңдеу</strong> (<span class="term-en">error handling</span>): қолданушы біз күткендей әрекет етпесе, бағдарлама оған дайын болып, өзін дұрыс ұстауы керек. Мұны қалай істейтінімізді қазір көреміз. Толығырақ: <a href="https://docs.python.org/3/tutorial/errors.html" target="_blank" rel="noopener">Errors and Exceptions</a>.</p>
+
+      <h2 id="try">try және except</h2>
+      <p>Python-да бұл үшін екі кілт сөз бар: <code>try</code> («байқап көр») және <code>except</code> («егер ... болса, ұста»). Олардың мағынасы мынадай: «мына кодты орындап <em>көр</em>, ал егер белгілі бір ерекше жағдай туындаса, бағдарламаны құлатпай, оның орнына мынаны істе». Кодымызды өзгертейік:</p>
+<pre data-lang="python"><code class="language-python">try:
+    x = int(input("What's x?"))
+    print(f"x is {x}")
+except ValueError:
+    print("x is not an integer")</code></pre>
+      <p>Іске қосып, <code>50</code> енгізсек, бәрі бұрынғыдай: <code>x is 50</code>. Ал <code>cat</code> деп жазсақ, бағдарлама құламайды, оның орнына қолданушыға енгізгенінің неге қабылданбағанын түсіндіретін хабар шығады:</p>
+<pre class="terminal"><code class="language-plaintext">$ python number.py
+What's x?cat
+x is not an integer</code></pre>
+      <p>Айтпақшы, сұрақ мәтінінің соңында бос орын жоқ болғандықтан, жауап сұраққа жабысып тұрғанын байқадыңыз ба? Бұл ұсақ-түйек, оны лекцияның соңында түзетеміз. Одан да маңыздырақ нәрсе бар: <code>except ValueError</code> деп нақты қай ерекше жағдайды ұстайтынымызды атап жазғанымызға назар аударыңыз. Біз «кез келген қатені» емес, дәл осы, <code>int</code> лақтыруы мүмкін қатені күтіп отырмыз.</p>
+      <p>Дегенмен бұл код әлі де мінсіз емес. Байқасаңыз, <code>try</code>-дың ішінде <em>екі</em> жол тұр. Жақсы әдет бойынша <code>try</code>-дың ішіне тек қана қате беруі мүмкін, өзіміз алаңдайтын ең аз жолды ғана жазған жөн. <code>print</code> қатесі бізді алаңдатпайды ғой. Ендеше, оны сыртқа шығарайық:</p>
+<pre data-lang="python"><code class="language-python">try:
+    x = int(input("What's x?"))
+except ValueError:
+    print("x is not an integer")
+
+print(f"x is {x}")</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: енді «cat» енгізсек, не болады?</summary>
+        <div class="details-body"><p>Алдымен <code>x is not an integer</code> шығады, бірақ сосын бағдарлама бәрібір құлайды, бұл жолы жаңа қатемен: <code>NameError: name 'x' is not defined</code>. Неге екенін төменде түсіндіремін.</p></div>
+      </details>
+      <p>Мақсатымызға жеттік сияқты еді: <code>try</code>-да тек бір жол қалды. Бірақ енді жаңа қатеге тап болдық: <strong>атау қатесі</strong> (<span class="term-en">name error</span>), <code>NameError</code>, яғни «<code>x</code> анықталмаған». Қалайша? Біз <code>x = ...</code> деп анық жаздық қой!</p>
+      <p>Жауабын табу үшін <code>x = int(input("What's x?"))</code> жолының қалай орындалатынын еске түсірейік. Меншіктеуді <em>оңнан солға</em> қарай оқимыз: алдымен <code>input</code> орындалып, «cat» жолын қайтарады. Сосын <code>int</code> оны санға айналдырмақ болады да, сол сәтте <code>ValueError</code> лақтырады. Ал ең соңғы қадам, яғни нәтижені <code>x</code> қобдишасына салу, <em>ешқашан орындалмайды</em>, себебі оған жетпей-ақ бәрі үзілді. Бағдарлама бірден <code>except</code> блогына секіріп, хабар шығарады да, ары қарай жүре береді. Соңғы жолға жеткенде <code>x</code> атты қобдиша мүлде жасалмаған, сондықтан <code>print</code> оны таба алмайды.</p>
+      <div class="callout note">
+        <span class="callout-title">Басқа да ерекше жағдайлар</span>
+        <p><code>ValueError</code> мен <code>NameError</code>-дан басқа да ерекше жағдайлар көп. Мысалы, нөлге бөлсеңіз - <code>ZeroDivisionError</code>, сөздікте жоқ кілтті сұрасаңыз - <code>KeyError</code>, ал қолданушы control-d басып, енгізуді аяқтаса - <code>input</code> <code>EOFError</code> лақтырады. Бұлардың бәрі тапсырмалар жинағында кездеседі және бәрін дәл осылай <code>try</code>/<code>except</code> арқылы ұстауға болады. Толық тізімі: <a href="https://docs.python.org/3/library/exceptions.html" target="_blank" rel="noopener">Built-in Exceptions</a>.</p>
+      </div>
+
+      <h2 id="else">else</h2>
+      <p>Сонымен, бізге «егер қате болмаса ғана, мынаны істе» деп айтудың жолы керек. Шартты операторлардан таныс <code>else</code> сөзі <code>try</code>-мен де қолданылады екен. Кодымызды былай өзгертейік:</p>
+<pre data-lang="python"><code class="language-python">try:
+    x = int(input("What's x?"))
+except ValueError:
+    print("x is not an integer")
+else:
+    print(f"x is {x}")</code></pre>
+      <p>Логикасы өте қарапайым: <code>try</code>-дағы код ешқандай ерекше жағдайсыз орындалса, Python <code>else</code> блогын іске қосады. Ал қате болса, <code>except</code> орындалады да, <code>else</code> өткізіп жіберіледі. Екеуінің біреуі ғана, ешқашан екеуі бірге емес. <code>python number.py</code> деп іске қосып, <code>50</code> енгізсек, нәтиже шығады. Қайтадан іске қосып, <code>cat</code> енгізсек, бағдарлама қатені ұстап, ешқандай <code>NameError</code>-сыз әдемі аяқталады.</p>
+      <p>Бірақ ойланып қарасаңыз, біз қолданушыға сәл дөрекі қарап отырмыз. Ол бір рет қателессе, бағдарламамыз «сан емес» деп, есікті тарс жауып кете барады. Банкоматты елестетіңіз: PIN-кодты бір рет қате тердіңіз екен деп, ол картаңызды жұтып қоймайды ғой, «қайта енгізіңіз» дейді. Біз де солай істейік: қолданушы дұрыс жауап бергенше, цикл арқылы қайта-қайта сұрайық:</p>
+<pre data-lang="python"><code class="language-python">while True:
+    try:
+        x = int(input("What's x?"))
+    except ValueError:
+        print("x is not an integer")
+    else:
+        break
+
+print(f"x is {x}")</code></pre>
+      <p><code>while True</code> - бізге 2-аптадан таныс <strong>шексіз цикл</strong> (<span class="term-en">infinite loop</span>): шарты әрқашан ақиқат болғандықтан, ол мәңгі айнала береді. Одан шығудың жалғыз жолы - <code>break</code>. Ал біз <code>break</code>-ті әдейі <code>else</code>-тің ішіне қойдық, яғни циклден тек қолданушы дұрыс сан енгізгенде ғана шығамыз. Сол сәтте <code>x</code> міндетті түрде анықталған, сондықтан соңғы <code>print</code> қауіпсіз:</p>
+<pre class="terminal"><code class="language-plaintext">$ python number.py
+What's x?cat
+x is not an integer
+What's x?dog
+x is not an integer
+What's x?50
+x is 50</code></pre>
+      <p>Енді қате енгізген қолданушыдан бағдарлама жай ғана қайта сұрайды. Әлдеқайда сыпайы, солай емес пе?</p>
+
+      <h2 id="get-int">Бүтін сан алатын функция</h2>
+      <p>Қолданушыдан бүтін сан сұрау - бағдарламаларда үнемі кездесетін жұмыс. Әр жолы осы цикл мен <code>try</code>-ды көшіріп отырмай, оны бөлек функцияға шығарайық. 0-аптадан бері қолданып келе жатқан <code>main</code> үлгісі осында да көмектеседі:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    x = get_int()
+    print(f"x is {x}")
+
+
+def get_int():
+    while True:
+        try:
+            x = int(input("What's x?"))
+        except ValueError:
+            print("x is not an integer")
+        else:
+            break
+    return x
+
+
+main()</code></pre>
+      <p>Мұнда бірнеше жақсы қасиетті байқауға болады. Ең бастысы, біз бүтін сан алу қабілетін <strong>абстракциялап</strong> (<span class="term-en">abstraction</span>) шығардық: санды қалай сұрайтынымыз, қатені қалай ұстайтынымыз, қайта сұрау - мұның бәрі <code>get_int</code>-тің ішіне жасырылды. Енді бүкіл бағдарламаның мәні алғашқы үш жолға сыйып кетті: «бүтін сан ал да, оны шығар». <code>main</code>-ді оқыған адам <code>get_int</code>-тің ішінде не болып жатқанын білмесе де, бағдарламаның не істейтінін бірден түсінеді.</p>
+      <p>Дегенмен мұны да жақсартуға болады. Қараңызшы: циклден <code>break</code> арқылы шығамыз да, бірден <code>return x</code> жасаймыз. Екі қадам. Ал оны біреуіне айналдыруға бола ма?</p>
+<pre data-lang="python"><code class="language-python">def main():
+    x = get_int()
+    print(f"x is {x}")
+
+
+def get_int():
+    while True:
+        try:
+            x = int(input("What's x?"))
+        except ValueError:
+            print("x is not an integer")
+        else:
+            return x
+
+
+main()</code></pre>
+      <p>Болады! <code>return</code> тек мәнді қайтарып қана қоймайды, ол функциядан толығымен шығады, демек ішіндегі циклді де бірге үзеді. Сондықтан бұл жерде <code>break</code> керек емес: <code>return</code> екеуінің жұмысын бір өзі атқарады.</p>
+      <p>Кейбіреулер тіпті одан әрі барып, былай жазуға болады дер еді:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    x = get_int()
+    print(f"x is {x}")
+
+
+def get_int():
+    while True:
+        try:
+            return int(input("What's x?"))
+        except ValueError:
+            print("x is not an integer")
+
+
+main()</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: бұл нұсқа алдыңғысынан өзгеше жұмыс істей ме?</summary>
+        <div class="details-body"><p>Жоқ, дәл солай жұмыс істейді. <code>int</code> сәтті болса, <code>return</code> мәнді бірден қайтарып, функциядан шығады. Сәтсіз болса, <code>return</code>-ге жетпей-ақ <code>ValueError</code> лақтырылады, <code>except</code> хабар шығарады да, цикл жаңа айналымға кетеді. Айырмашылығы - жолдар саны азырақ, бар болғаны сол.</p></div>
+      </details>
+      <p>Бұл нұсқа алдыңғысымен бірдей нәтиже береді, тек қысқарақ. Қайсысы жақсы? 0-аптадағы әңгімені еске алайық: маңыздысы - оқылуы. Екі нұсқа да түсінікті, сондықтан өзіңізге қайсысы айқынырақ көрінсе, соны таңдаңыз.</p>
+
+      <h2 id="pass">pass</h2>
+      <p>Кейде қолданушыға «сан емес» деп әр жолы ескертудің қажеті жоқ, жай ғана сұрақты қайталасақ жеткілікті. Бірақ Python-да <code>except</code>-тің ішін бос қалдыруға болмайды: шегіністен кейін кемінде бір жол тұруы керек. Сол үшін арнайы <code>pass</code> кілт сөзі бар. Ол «ештеңе істеме» дегенді білдіреді, яғни грамматика үшін тұрған бос «толтырғыш»:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    x = get_int()
+    print(f"x is {x}")
+
+
+def get_int():
+    while True:
+        try:
+            return int(input("What's x?"))
+        except ValueError:
+            pass
+
+
+main()</code></pre>
+      <p>Код бұрынғыдай жұмыс істейді, тек қолданушыға қатесі туралы қайта-қайта айтпайды: «cat» деп жазса, бағдарлама үнсіз ғана сұрақты қайталайды. Қай тәсіл дұрыс? Бұл жағдайға байланысты. Кейде қолданушыға не дұрыс болмағанын анық түсіндірген маңызды, ал кейде сұрақты қайта қою жеткілікті. Таңдау - бағдарламашы ретінде сіздің шешіміңіз.</p>
+      <p>Ал енді соңғы бір жетілдіру. <code>get_int</code> функциясына тағы бір қарасаңыз, ішінде <code>"What's x?"</code> сұрағы <strong>қатаң жазылған</strong> (<span class="term-en">hard-coded</span>) тұр. Яғни бұл функция тек <code>x</code>-ті сұрай алады. Ертең бізге <code>y</code> керек болса ше? Әр жолы жаңа функция жазамыз ба? Әрине, жоқ. Сұрақ мәтінін функцияға сырттан, параметр арқылы берейік:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    x = get_int("What's x? ")
+    print(f"x is {x}")
+
+
+def get_int(prompt):
+    while True:
+        try:
+            return int(input(prompt))
+        except ValueError:
+            pass
+
+
+main()</code></pre>
+      <p>Енді <code>get_int</code> - нағыз әмбебап құрал: <code>get_int("What's y? ")</code> немесе <code>get_int("Жасыңыз: ")</code> деп кез келген сұрақпен шақыра аласыз. Сұрақтың соңына бос орын қосқанымызды да байқадыңыз ба? Әлгі жауаптың сұраққа жабысып тұратын кішкентай мәселесі де осымен шешілді:</p>
+<pre class="terminal"><code class="language-plaintext">$ python number.py
+What's x? cat
+What's x? dog
+What's x? 50
+x is 50</code></pre>
+      <p><code>pass</code> туралы толығырақ: Python құжаттамасындағы <a href="https://docs.python.org/3/tutorial/controlflow.html#pass-statements" target="_blank" rel="noopener"><code>pass</code></a>.</p>
+      <div class="callout tip">
+        <span class="callout-title">Кеңес: try-ға неғұрлым аз код</span>
+        <p><code>try</code> блогына тек қате беруі мүмкін жолдарды ғана жазыңыз және <code>except</code>-ке нақты қай ерекше жағдайды күтетініңізді көрсетіңіз (<code>except ValueError:</code>). Сонда басқа, күтпеген қате пайда болса, ол үнсіз жұтылып кетпейді, сіз оны бірден көресіз.</p>
+      </div>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Қателер - бағдарламалаудың ажырамас бөлігі, олардан толық құтылу мүмкін емес. Бірақ бүгін үйренгеніңіздің арқасында оларды алдын ала болжап, бағдарламаңызды құлатпай, дұрыс өңдей аласыз. Бұл лекцияда біз мыналармен таныстық:</p>
+      <ul>
+        <li><strong>ерекше жағдайлар</strong> (<span class="term-en">exceptions</span>) - бағдарлама жұмыс істеп тұрғанда туындайтын мәселелер;</li>
+        <li><strong>синтаксистік қателер</strong> (<code>SyntaxError</code>) - оларды өзіміз түзетеміз;</li>
+        <li><strong>орындалу кезіндегі қателер</strong>, соның ішінде <code>ValueError</code> және <code>NameError</code>;</li>
+        <li><code>try</code> және <code>except</code> - қате беруі мүмкін кодты «байқап көру» және ерекше жағдайды ұстау;</li>
+        <li><code>else</code> - қате болмаған жағдайда ғана орындалатын блок;</li>
+        <li><code>while True</code> мен <code>break</code> (немесе <code>return</code>) арқылы қолданушыдан қайта сұрау;</li>
+        <li>бүтін сан алуды <code>get_int(prompt)</code> функциясына абстракциялау;</li>
+        <li><code>pass</code> - «ештеңе істеме» дейтін кілт сөз.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. Қолданушы <code>x = int(input("What's x? "))</code> жолына <code>cat</code> деп жауап берсе, қай ерекше жағдай туындайды?</p>
+          <label><input type="radio" value="a"> <code>SyntaxError</code></label>
+          <label><input type="radio" value="b"> <code>ValueError</code></label>
+          <label><input type="radio" value="c"> <code>NameError</code></label>
+          <label><input type="radio" value="d"> <code>ZeroDivisionError</code></label>
+          <p class="explain"><code>int</code> «cat» мәтінін санға айналдыра алмайды, сондықтан <code>ValueError</code> лақтырады. Код грамматикалық тұрғыдан дұрыс, бұл орындалу кезіндегі қате.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">2. Мына бағдарламаға <code>cat</code> енгізілсе, не болады?</p>
+<pre data-lang="python"><code class="language-python">try:
+    x = int(input("What's x? "))
+except ValueError:
+    print("x is not an integer")
+
+print(f"x is {x}")</code></pre>
+          <label><input type="radio" value="a"> Тек <code>x is not an integer</code> шығады</label>
+          <label><input type="radio" value="b"> <code>x is cat</code> шығады</label>
+          <label><input type="radio" value="c"> Бағдарлама қайта сұрайды</label>
+          <label><input type="radio" value="d"> <code>x is not an integer</code> шығады, сосын <code>NameError</code></label>
+          <p class="explain"><code>int</code> қате бергендіктен, <code>x</code>-ке ешқашан мән меншіктелмейді. <code>except</code> хабарды шығарады, бірақ соңғы <code>print</code> анықталмаған <code>x</code>-ті таба алмай, <code>NameError</code> береді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. <code>try</code> / <code>except</code> / <code>else</code> құрылымында <code>else</code> блогы қашан орындалады?</p>
+          <label><input type="radio" value="a"> <code>try</code> ішінде ешқандай ерекше жағдай туындамаса</label>
+          <label><input type="radio" value="b"> Ерекше жағдай туындаса</label>
+          <label><input type="radio" value="c"> Әрқашан, <code>except</code>-тен кейін</label>
+          <label><input type="radio" value="d"> Ешқашан, ол тек <code>if</code>-пен жұмыс істейді</label>
+          <p class="explain"><code>else</code> тек <code>try</code> сәтті аяқталғанда орындалады. Қате болса, <code>except</code> орындалып, <code>else</code> өткізіп жіберіледі.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">4. Қолданушы кезекпен <code>cat</code>, <code>dog</code>, <code>50</code> енгізеді. <code>x is not an integer</code> неше рет шығады?</p>
+<pre data-lang="python"><code class="language-python">while True:
+    try:
+        x = int(input("What's x? "))
+    except ValueError:
+        print("x is not an integer")
+    else:
+        break
+
+print(f"x is {x}")</code></pre>
+          <label><input type="radio" value="a"> 0</label>
+          <label><input type="radio" value="b"> 1</label>
+          <label><input type="radio" value="c"> 2</label>
+          <label><input type="radio" value="d"> 3</label>
+          <p class="explain">«cat» пен «dog» - екі қате, әрқайсысынан кейін хабар шығады. «50» сәтті болып, <code>else</code> ішіндегі <code>break</code> циклді тоқтатады да, <code>x is 50</code> шығады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. <code>except ValueError:</code> астындағы <code>pass</code> не істейді?</p>
+          <label><input type="radio" value="a"> Бағдарламаны тоқтатады</label>
+          <label><input type="radio" value="b"> Ештеңе істемейді: қате үнсіз ұсталып, бағдарлама ары қарай жүреді</label>
+          <label><input type="radio" value="c"> Қатені қолданушыға көрсетеді</label>
+          <label><input type="radio" value="d"> Циклден шығады</label>
+          <p class="explain"><code>pass</code> - бос толтырғыш. Ерекше жағдай ұсталады, бірақ ешқандай хабар шықпайды; циклдің ішінде болса, сұрақ жай ғана қайталанады.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">6. <code>get_int</code> ішінде <code>while True:</code> циклінің ішіндегі <code>return int(input(prompt))</code> сәтті орындалса, не болады?</p>
+          <label><input type="radio" value="a"> Мән қайтарылады, бірақ цикл жалғаса береді</label>
+          <label><input type="radio" value="b"> Алдымен <code>break</code> керек, әйтпесе қате</label>
+          <label><input type="radio" value="c"> <code>except</code> блогы орындалады</label>
+          <label><input type="radio" value="d"> Мән қайтарылып, функциядан да, циклден де бірден шығады</label>
+          <p class="explain"><code>return</code> функцияны толығымен аяқтайды, сондықтан ішіндегі цикл де бірге үзіледі. <code>break</code> қажет емес.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. Файлдың бірінші жолы <code>print("hi")</code>, ал екінші жолы <code>print("hello, world)</code> (тырнақша жабылмаған). Іске қоссақ, не болады?</p>
+          <label><input type="radio" value="a"> Ештеңе шықпайды, бірден <code>SyntaxError</code></label>
+          <label><input type="radio" value="b"> <code>hi</code> шығады, сосын <code>SyntaxError</code></label>
+          <label><input type="radio" value="c"> <code>hi</code> және <code>hello, world</code> шығады</label>
+          <label><input type="radio" value="d"> <code>ValueError</code></label>
+          <p class="explain">Python кодты орындамас бұрын бүкіл файлдың грамматикасын тексереді. Синтаксистік қате болса, бірде-бір жол орындалмайды. Сол себепті оны <code>try</code> арқылы ұстай алмаймыз, өзіміз түзетеміз.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">8. Мына мәндердің қайсысын <code>int(...)</code>-ке берсек, <code>ValueError</code> шығады?</p>
+          <label><input type="radio" value="a"> <code>"50"</code></label>
+          <label><input type="radio" value="b"> <code>"-3"</code></label>
+          <label><input type="radio" value="c"> <code>"1.5"</code></label>
+          <label><input type="radio" value="d"> <code>" 50 "</code></label>
+          <p class="explain"><code>int</code> бүтін санды білдіретін жолды ғана қабылдайды: теріс таңба мен шеттегі бос орындар рұқсат, ал ондық нүкте жоқ. <code>"1.5"</code> - <code>ValueError</code>. Бұл Fuel Gauge тапсырмасында керек болады!</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Тапсырмалар жинағы 3</h2>
+      <p><span class="term-en">(Problem Set 3)</span> Ресми тапсырма беті: <a href="https://cs50.harvard.edu/python/psets/3/" target="_blank" rel="noopener">cs50.harvard.edu/python/psets/3</a>. Әр тапсырманы осы беттегі <strong>автотексерушіде</strong> бірден тексере аласыз: шешіміңізді жазып, «Тексеру» басыңыз. Компьютерде жұмыс істесеңіз, <a href="https://cs50.dev/" target="_blank" rel="noopener">cs50.dev</a>-те әр тапсырма үшін бөлек папка ашып (мысалы, <code>mkdir fuel</code>, <code>cd fuel</code>, <code>code fuel.py</code>), ресми <code>check50</code> командасын да қолданыңыз.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-fuel">Fuel Gauge (Жанармай көрсеткіші)</h3></div>
+        <p>Жанармай көрсеткіштері бакта қанша жанармай қалғанын көбіне бөлшекпен көрсетеді. Мысалы, 1/4 бактың 25%-ы, 1/2 - 50%-ы, ал 3/4 - 75%-ы толы екенін білдіреді.</p>
+        <p><code>fuel.py</code> файлында қолданушыдан <code>X/Y</code> пішіміндегі бөлшекті сұрайтын бағдарлама жазыңыз, мұндағы <code>X</code> - теріс емес бүтін сан, ал <code>Y</code> - оң бүтін сан. Сосын бакта қанша жанармай барын ең жақын бүтін санға дөңгелектелген пайызбен шығарыңыз (мысалы, <code>75%</code>). Бірақ 1% не одан аз қалса, бактың іс жүзінде бос екенін білдіру үшін оның орнына <code>E</code> шығарыңыз. Ал 99% не одан көп болса, толы екенін білдіріп, <code>F</code> шығарыңыз.</p>
+        <p>Егер <code>X</code> немесе <code>Y</code> бүтін сан болмаса, <code>X</code> <code>Y</code>-тен үлкен болса, немесе <code>Y</code> нөлге тең болса, қолданушыдан қайта сұраңыз. (<code>Y</code> міндетті түрде <code>4</code> болуы шарт емес.) <a href="https://docs.python.org/3/library/exceptions.html#ValueError" target="_blank" rel="noopener"><code>ValueError</code></a> немесе <a href="https://docs.python.org/3/library/exceptions.html#ZeroDivisionError" target="_blank" rel="noopener"><code>ZeroDivisionError</code></a> сияқты ерекше жағдайларды міндетті түрде ұстаңыз.</p>
+        <p><strong>Өзіңізді тексеріңіз:</strong> <code>1/3</code> енгізілсе, не шығады?</p>
+        <div class="answer-check" data-answer="33%|33"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Жолдардың <a href="https://docs.python.org/3/library/stdtypes.html#string-methods" target="_blank" rel="noopener">көп әдісі</a> бар, соның ішінде <code>split</code>: <code>"3/4".split("/")</code> → <code>["3", "4"]</code>. Екі ерекше жағдайды бөлек ұстауға болады:</p>
+<pre data-lang="python"><code class="language-python">try:
+    ...
+except ValueError:
+    ...
+except ZeroDivisionError:
+    ...</code></pre>
+        <p>Немесе екеуін бірге:</p>
+<pre data-lang="python"><code class="language-python">try:
+    ...
+except (ValueError, ZeroDivisionError):
+    ...</code></pre>
+        <p>Есіңізде болсын: <code>int("-3")</code> қате бермейді, сондықтан теріс сандарды өзіңіз тексеруіңіз керек. Ал <code>int("1.5")</code> мен <code>int("three")</code> <code>ValueError</code> береді.</p></div></details>
+        <div class="autograder" data-check="py-fuel" data-src="python/checks/week-3.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py3-fuel">
+            <li><input type="checkbox"> <span><code>3/4</code> → <code>75%</code>, <code>1/4</code> → <code>25%</code></span></li>
+            <li><input type="checkbox"> <span><code>4/4</code> → <code>F</code>, <code>0/4</code> → <code>E</code></span></li>
+            <li><input type="checkbox"> <span><code>4/0</code>, <code>three/four</code>, <code>1.5/3</code>, <code>-3/4</code>, <code>5/4</code> → қайта сұрайды</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/fuel</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-taqueria">Felipe’s Taqueria (Фелипенің такериясы)</h3></div>
+        <p>Гарвард алаңындағы (<span class="term-en">Harvard Square</span>) ең танымал тамақтанатын орындардың бірі - мексикалық <a href="https://www.felipesboston.com/" target="_blank" rel="noopener">Felipe’s Taqueria</a>. Оның мәзірі төмендегі <code>dict</code>-те берілген, әр кілттің мәні - доллармен бағасы:</p>
+<pre data-lang="python"><code class="language-python">{
+    "Baja Taco": 4.25,
+    "Burrito": 7.50,
+    "Bowl": 8.50,
+    "Nachos": 11.00,
+    "Quesadilla": 8.50,
+    "Super Burrito": 8.50,
+    "Super Quesadilla": 9.50,
+    "Taco": 3.00,
+    "Tortilla Salad": 8.00
+}</code></pre>
+        <p><code>taqueria.py</code> файлында қолданушыға тапсырыс беруге мүмкіндік беретін бағдарлама жазыңыз: ол қолданушы control-d баспайынша (бұл бағдарламаға енгізуді аяқтаудың кең тараған тәсілі) тағамдарды бір жолдан бір-бірлеп сұрай береді. Әр енгізілген тағамнан кейін осы уақытқа дейінгі барлық тағамның жалпы құнын доллар белгісімен (<code>$</code>) және екі ондық таңбаға дейін пішімдеп шығарыңыз, мысалы <code>Total: $6.00</code>. Қолданушы енгізгенін регистрді ескермей өңдеңіз. Мәзірде жоқ кез келген енгізуді елемеңіз. Мәзірдегі әр тағам атауы <a href="https://docs.python.org/3/library/stdtypes.html#str.title" target="_blank" rel="noopener">title</a> регистрінде (әр сөз бас әріппен) жазылған деп есептеңіз.</p>
+        <p><strong>Өзіңізді тексеріңіз:</strong> <code>Baja Taco</code>, сосын <code>Tortilla Salad</code> енгізілсе, соңғы жол қандай болады?</p>
+        <div class="answer-check" data-answer="Total: $12.25|$12.25|12.25"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Қолданушы control-d басқанын <a href="https://docs.python.org/3/library/exceptions.html#EOFError" target="_blank" rel="noopener"><code>EOFError</code></a> ұстау арқылы білуге болады:</p>
+<pre data-lang="python"><code class="language-python">try:
+    item = input()
+except EOFError:
+    ...</code></pre>
+        <p>control-d басқанда Enter басу керек емес, сондықтан курсор сіздің сұрағыңыз тұрған жолда қалып қоюы мүмкін. Курсорды жаңа жолға көшіру үшін <code>\n</code>-ді өзіңіз шығарыңыз (мысалы, бос <code>print()</code>). Сөздіктің <a href="https://docs.python.org/3/library/stdtypes.html#mapping-types-dict" target="_blank" rel="noopener">әдістері</a> бар, соның ішінде <code>get</code>; сондай-ақ <code>d[key]</code> және <code>if key in d:</code> жазуларын қолдана аласыз. <a href="https://docs.python.org/3/library/exceptions.html#KeyError" target="_blank" rel="noopener"><code>KeyError</code></a>-дан сақтаныңыз немесе оны ұстаңыз.</p></div></details>
+        <div class="autograder" data-check="py-taqueria" data-src="python/checks/week-3.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py3-taqueria">
+            <li><input type="checkbox"> <span><code>Taco</code>, <code>Taco</code> → <code>Total: $6.00</code>, сосын control-d-ға дейін сұрай береді</span></li>
+            <li><input type="checkbox"> <span><code>Baja Taco</code>, <code>Tortilla Salad</code> → <code>Total: $12.25</code></span></li>
+            <li><input type="checkbox"> <span><code>Burger</code> → елемей, қайта сұрайды; кіші/бас әріппен жазылған тағамдар да танылады</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/taqueria</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pset-grocery">Grocery List (Азық-түлік тізімі)</h3></div>
+        <p>Дүкенге барар алдында не сатып алу керегін тізіп жазатын әдетіңіз бар делік.</p>
+        <p><code>grocery.py</code> файлында қолданушы control-d баспайынша тауарларды бір жолдан бір-бірлеп сұрайтын бағдарлама жазыңыз. Сосын қолданушының сатып алу тізімін <strong>бас әріптермен</strong>, тауар атауы бойынша <strong>әліпби ретімен сұрыптап</strong> шығарыңыз, әр жолдың басына сол тауардың неше рет енгізілгенін жазыңыз. Атауларды көпше түрге қоюдың қажеті жоқ. Қолданушы енгізгенін регистрді ескермей өңдеңіз (<code>milk</code> пен <code>MILK</code> - бір тауар).</p>
+        <p>Мысалы, <code>tortilla</code>, <code>sweet potato</code> енгізіп, control-d басса, бағдарлама мынаны шығарады:</p>
+<pre class="terminal"><code class="language-plaintext">1 SWEET POTATO
+1 TORTILLA</code></pre>
+        <details><summary>Кеңес</summary><div class="details-body"><p>control-d-ны <code>EOFError</code> ұстау арқылы анықтаңыз (Taqueria-дағыдай). Тізімді <code>dict</code> ретінде сақтаған ыңғайлы: кілт - тауар, мән - саны. Сөздіктің <code>get</code> әдісі мен <code>if key in d:</code> жазуы <code>KeyError</code>-дан сақтайды. Сөздікті <a href="https://docs.python.org/3/library/functions.html#sorted" target="_blank" rel="noopener"><code>sorted</code></a>-ке берсеңіз, оның кілттері әліпби бойынша сұрыпталады.</p></div></details>
+        <div class="autograder" data-check="py-grocery" data-src="python/checks/week-3.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py3-grocery">
+            <li><input type="checkbox"> <span><code>mango</code>, <code>strawberry</code>, control-d → <code>1 MANGO</code>, <code>1 STRAWBERRY</code></span></li>
+            <li><input type="checkbox"> <span><code>milk</code>, <code>milk</code>, control-d → <code>2 MILK</code></span></li>
+            <li><input type="checkbox"> <span><code>tortilla</code>, <code>sweet potato</code>, control-d → <code>1 SWEET POTATO</code>, <code>1 TORTILLA</code></span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/grocery</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pset-outdated">Outdated (Ескі пішім)</h3></div>
+        <p>АҚШ-та күндер әдетте ай-күн-жыл ретімен (MM/DD/YYYY) жазылады. Мұны «ортадан басталатын» (<span class="term-en">middle-endian</span>) рет дейді және оны сәтсіз дизайн деуге әбден болады. Мұндай күндерді оңай сұрыптау мүмкін емес, себебі жыл басында емес, соңында тұр: кез келген бағдарламада (мысалы, кестеде) <code>2/2/1800</code>, <code>3/3/1900</code> және <code>1/1/2000</code>-ды хронологиялық ретпен сұрыптап көріңізші. Оның үстіне, бұл пішім екіұшты: Гарвард 1636 жылы 8 қыркүйекте құрылған, бірақ 9/8/1636-ны 1636 жылғы 9 тамыз деп те оқуға болады!</p>
+        <p>Бақытымызға орай, компьютерлер көбіне <a href="https://en.wikipedia.org/wiki/ISO_8601" target="_blank" rel="noopener">ISO 8601</a> халықаралық стандартын қолданады. Ол елге қарамастан күнді жыл-ай-күн (YYYY-MM-DD) ретімен жазуды талап етеді: жыл төрт цифрмен, ай екі цифрмен, күн екі цифрмен, қажет болса алдына нөл қосылады.</p>
+        <p><code>outdated.py</code> файлында қолданушыдан жаңа эрамыздағы күнді ай-күн-жыл ретімен сұрайтын бағдарлама жазыңыз. Күн <code>9/8/1636</code> немесе <code>September 8, 1636</code> пішімінде беріледі, екінші пішімдегі ай атауы төмендегі <code>list</code>-тің кез келгені болуы мүмкін:</p>
+<pre data-lang="python"><code class="language-python">[
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December"
+]</code></pre>
+        <p>Сосын сол күнді <code>YYYY-MM-DD</code> пішімінде шығарыңыз. Егер енгізілген мән екі пішімнің ешқайсысында жарамды күн болмаса, қолданушыдан қайта сұраңыз. Әр айда 31-ден аспайтын күн бар деп есептеңіз: айдың 28, 29, 30 не 31 күндік екенін тексерудің қажеті жоқ.</p>
+        <p><strong>Өзіңізді тексеріңіз:</strong> <code>October 9, 1701</code> енгізілсе, не шығады?</p>
+        <div class="answer-check" data-answer="1701-10-09"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Жолдың <code>split</code> әдісі мен тізімнің <a href="https://docs.python.org/3/tutorial/datastructures.html#more-on-lists" target="_blank" rel="noopener"><code>index</code></a> әдісін еске алыңыз: <code>months.index("September")</code> → <code>8</code> (санау нөлден басталады!). Бүтін санның алдына нөл қосу үшін f-жолды қолданыңыз: <code>print(f"{n:02}")</code> - <code>n</code> бір цифрлы болса, алдына бір <code>0</code> қосылады. Тексерушілер <code>23/6/1912</code> (23-ай жоқ), <code>December 80, 1980</code> (80-күн жоқ) және үтірсіз <code>September 8 1636</code> сияқты кірістерде қайта сұрауды күтеді.</p></div></details>
+        <div class="autograder" data-check="py-outdated" data-src="python/checks/week-3.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py3-outdated">
+            <li><input type="checkbox"> <span><code>9/8/1636</code> → <code>1636-09-08</code></span></li>
+            <li><input type="checkbox"> <span><code>September 8, 1636</code> → <code>1636-09-08</code></span></li>
+            <li><input type="checkbox"> <span><code>23/6/1912</code> және <code>December 80, 1980</code> → қайта сұрайды</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2022/python/outdated</code> өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-2.html"><small>Алдыңғы</small>← 2-апта: Циклдер</a>
+        <a class="next" href="week-4.html"><small>Келесі</small>4-апта: Кітапханалар →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50P (CS50's Introduction to Programming with Python, Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

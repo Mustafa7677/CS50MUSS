@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50P 9-апта: Тағы басқалар - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50P 9-апта: Тағы басқалар - CS50 қазақша">
+  <meta property="og:description" content="CS50P (Python) 9-апта: жиындар, жаһандық айнымалылар, тұрақтылар, тип нұсқамалары, docstring, argparse, тарқату, map, filter, өрнектер, генераторлар және курспен қоштасу.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/python/lectures/week-9.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50P (Python) 9-апта: жиындар, жаһандық айнымалылар, тұрақтылар, тип нұсқамалары, docstring, argparse, тарқату, map, filter, өрнектер, генераторлар және курспен қоштасу.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#3776ab" data-n="9">
+        <div class="num">9-апта</div>
+        <h1>Тағы басқалар</h1>
+        <p>CS50P-ның соңғы лекциясы. Осы уақытқа дейін айтылмай қалған пайдалы құралдарды бір жерге жинаймыз: жиындар, жаһандық айнымалылар, тұрақтылар, тип нұсқамалары, docstring, argparse, тарқату, *args пен **kwargs, map, filter, тізімдік өрнектер, enumerate және генераторлар. Соңында курспен қоштасамыз.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/python/weeks/9/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="et-cetera">Тағы басқалар</h2>
+      <p>Міне, соңғы лекцияға да жеттік! Артқа бір қараңызшы: функциялар мен айнымалылардан бастап, шарттар, циклдер, ерекшеліктер, кітапханалар, тесттер, файлдар, тұрақты өрнектер және объектіге бағытталған бағдарламалауға дейін жол жүріп өттік. Бұл - аз емес.</p>
+      <p>Бүгінгі тақырыптың аты - «Et Cetera». Латынша бұл «және қалғандары», біздіңше айтқанда «тағы басқалар» деген сөз. Python құжаттамасын ашып көрсеңіз, біз әлі тиіспеген «қалғандары» өте көп екенін байқайсыз. Бәрін бір сабаққа сыйғызу мүмкін емес, бірақ бүгін солардың ішіндегі ең пайдалыларын, күнделікті кодта жиі кездесетіндерін бір-бірлеп ашып көрсетеміз. Бұларды білсеңіз, кодыңыз қысқарақ, түсініктірек және «питонша» болады.</p>
+
+      <h2 id="set">set: жиын</h2>
+      <p>Математикадан есіңізде болар: <strong>жиын</strong> (<span class="term-en">set</span>) - ішінде бірдей мәндер қайталанбайтын мәндер жинағы. {1, 2, 3} - жиын, ал онда екі рет «2» болуы мүмкін емес. Python-да да осындай тип бар. Оның неге керек екенін көрсету үшін, алдымен онсыз жазып көрейік. Бізде Хогвартс оқушыларының тізімі бар, әр оқушы - атауы мен үйі (факультеті) жазылған сөздік:</p>
+<pre data-lang="python"><code class="language-python">students = [
+    {"name": "Hermione", "house": "Gryffindor"},
+    {"name": "Harry", "house": "Gryffindor"},
+    {"name": "Ron", "house": "Gryffindor"},
+    {"name": "Draco", "house": "Slytherin"},
+    {"name": "Padma", "house": "Ravenclaw"},
+]
+
+houses = []
+for student in students:
+    if student["house"] not in houses:
+        houses.append(student["house"])
+
+for house in sorted(houses):
+    print(house)</code></pre>
+      <p>Мақсатымыз - қандай үйлер бар екенін, әрқайсысын бір реттен шығару. Сондықтан бос <code>houses</code> тізімін жасап, әр оқушыны аралаймыз. Егер оқушының үйі тізімде <em>әлі жоқ</em> болса ғана, оны қосамыз. Gryffindor үш рет кездеседі, бірақ тізімге бір-ақ рет түседі. Соңында үйлерді әліпби бойынша шығарамыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ python houses.py
+Gryffindor
+Ravenclaw
+Slytherin</code></pre>
+      <p>Жұмыс істейді. Бірақ қайталанбауын біз өзіміз, <code>if ... not in ...</code> арқылы қадағалап отырмыз. Ал Python-да бұл жұмысты өзі істейтін дайын құрал бар екен:</p>
+<pre data-lang="python"><code class="language-python">students = [
+    {"name": "Hermione", "house": "Gryffindor"},
+    {"name": "Harry", "house": "Gryffindor"},
+    {"name": "Ron", "house": "Gryffindor"},
+    {"name": "Draco", "house": "Slytherin"},
+    {"name": "Padma", "house": "Ravenclaw"},
+]
+
+houses = set()
+for student in students:
+    houses.add(student["house"])
+
+for house in sorted(houses):
+    print(house)</code></pre>
+      <p>Байқадыңыз ба? <code>if</code> мүлде жоқ. <code>set()</code> бос жиын жасайды, ал оған <code>append</code> емес, <code>add</code> арқылы мән қосамыз. Gryffindor-ды үш рет қоссақ та, жиын оны бір-ақ рет сақтайды, қайталанатынын өзі елемей қояды. Нәтиже бұрынғыдай. Жиынды кіреберістегі қонақтар тізімі сияқты елестетіңіз: бір адамды екі рет жазу мағынасыз, ол бәрібір бір адам. Толығырақ: Python құжаттамасындағы <a href="https://docs.python.org/3/library/stdtypes.html#set" target="_blank" rel="noopener"><code>set</code></a>.</p>
+      <div class="callout note">
+        <span class="callout-title">Жиынның реті жоқ</span>
+        <p>Жиынның элементтері белгілі бір ретпен тұрмайды, сондықтан <code>houses[0]</code> деп жаза алмайсыз. Әдемі ретпен шығару керек болса, біз сияқты <code>sorted</code> қолданыңыз.</p>
+      </div>
+
+      <h2 id="global-variables">Жаһандық айнымалылар</h2>
+      <p>Басқа бағдарламалау тілдерінде <strong>жаһандық айнымалы</strong> (<span class="term-en">global variable</span>) деген ұғым бар: кез келген функциядан қол жеткізуге болатын, барлық функцияға ортақ айнымалы. Python-да да мұндай мүмкіндік бар. Банк шотын модельдеп көрейік:</p>
+<pre data-lang="python"><code class="language-python">balance = 0
+
+
+def main():
+    print("Balance:", balance)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Мұндағы <code>balance</code> ешбір функцияның ішінде емес, файлдың ең жоғарғы деңгейінде жасалды. Сондықтан ол жаһандық. <code>main</code> оны еш қиындықсыз оқиды, <code>Balance: 0</code> шығады. Бәрі жақсы сияқты, солай емес пе? Асықпаңыз. Енді шотқа ақша салып, шешіп көрейік:</p>
+<pre data-lang="python"><code class="language-python">balance = 0
+
+
+def main():
+    print("Balance:", balance)
+    deposit(100)
+    withdraw(50)
+    print("Balance:", balance)
+
+
+def deposit(n):
+    balance += n
+
+
+def withdraw(n):
+    balance -= n
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: бұл бағдарлама не шығарады?</summary>
+        <div class="details-body"><p>Біз <code>Balance: 0</code>, сосын <code>Balance: 50</code> күтеміз. Бірақ бірінші жолдан кейін бағдарлама қатемен құлайды! Себебін төменде түсіндіреміз.</p></div>
+      </details>
+<pre class="terminal"><code class="language-plaintext">$ python bank.py
+Balance: 0
+Traceback (most recent call last):
+  ...
+UnboundLocalError: cannot access local variable 'balance' where it is not associated with a value</code></pre>
+      <p><code>UnboundLocalError</code>! Неге бұлай болды? Себебі Python функцияның ішінде <code>balance += n</code>, яғни <code>balance</code>-қа <em>жаңа мән меншіктеу</em> әрекетін көрді де, «<code>balance</code> - осы функцияның өз, <strong>жергілікті айнымалысы</strong> (<span class="term-en">local variable</span>)» деп шешті. Ал ол жергілікті айнымалының әзірге ешқандай мәні жоқ, сондықтан оған 100 қосу мүмкін емес. Қысқасы: жаһандық айнымалыны функцияның ішінен <em>оқуға</em> болады, бірақ біз жазғандай <em>өзгертуге</em> болмайды.</p>
+      <p>Python-ға «жоқ, мен жаңа айнымалы жасап жатқан жоқпын, жоғарыдағы ортақ <code>balance</code>-ты айтып тұрмын» деп нақты айту керек. Ол үшін <code>global</code> кілт сөзі бар:</p>
+<pre data-lang="python"><code class="language-python">balance = 0
+
+
+def main():
+    print("Balance:", balance)
+    deposit(100)
+    withdraw(50)
+    print("Balance:", balance)
+
+
+def deposit(n):
+    global balance
+    balance += n
+
+
+def withdraw(n):
+    global balance
+    balance -= n
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python bank.py
+Balance: 0
+Balance: 50</code></pre>
+      <p>Енді <code>global balance</code> жолы әр функцияға: «<code>balance</code> - жергілікті емес, ең жоғарыда жасалған жаһандық айнымалы» дейді. Бағдарлама жұмыс істеді.</p>
+      <p>Бірақ тоқтай тұрайық. Өткен аптада объектіге бағытталған бағдарламалауды үйрендік қой. Сол күшімізді пайдаланып, жаһандық айнымалысыз, класс арқылы жазып көрейік:</p>
+<pre data-lang="python"><code class="language-python">class Account:
+    def __init__(self):
+        self._balance = 0
+
+    @property
+    def balance(self):
+        return self._balance
+
+    def deposit(self, n):
+        self._balance += n
+
+    def withdraw(self, n):
+        self._balance -= n
+
+
+def main():
+    account = Account()
+    print("Balance:", account.balance)
+    account.deposit(100)
+    account.withdraw(50)
+    print("Balance:", account.balance)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p><code>account = Account()</code> арқылы жаңа шот ашамыз. Енді баланс - жаһандық айнымалы емес, сол шоттың өз дана айнымалысы <code>self._balance</code>. Класстың барлық әдістері оған <code>self</code> арқылы қол жеткізеді, ешқандай <code>global</code> керек емес. Оның үстіне, <code>@property</code> арқылы балансты сырттан тек <em>оқуға</em> рұқсат бердік, ал өзгерту тек <code>deposit</code> пен <code>withdraw</code> арқылы жүреді. Нағыз банктегідей!</p>
+      <div class="callout tip">
+        <span class="callout-title">Жаһандық айнымалыларды үнемдеңіз</span>
+        <p>Жалпы алғанда, жаһандық айнымалыларды өте сирек қолданған жөн, мүмкін болса, мүлде қолданбаған дұрыс. Бағдарламаның кез келген жерінен өзгертуге болатын айнымалы - қате қайдан шыққанын іздегенде ең үлкен бас ауруы.</p>
+      </div>
+
+      <h2 id="constants">Тұрақтылар</h2>
+      <p>Кейбір тілдерде мәнін өзгертуге болмайтын айнымалылар жасауға болады. Оларды <strong>тұрақтылар</strong> (<span class="term-en">constants</span>) деп атайды. Тұрақтылар «қорғана бағдарламалауға» көмектеседі: маңызды мәнді біреу абайсызда (не өзіміз қателесіп) өзгертіп жіберу мүмкіндігі азаяды. Python-да бұл қалай көрінеді?</p>
+<pre data-lang="python"><code class="language-python">MEOWS = 3
+
+for _ in range(MEOWS):
+    print("meow")</code></pre>
+      <p>Мұндағы <code>MEOWS</code> - біздің тұрақтымыз. Тұрақтыларды әдетте БАС ӘРІППЕН атайды және кодтың ең жоғарғы жағына қояды. Бірақ бір құпияны ашайын: бұл тек <em>тұрақты сияқты көрінеді</em>. Шын мәнінде Python-да мәнді өзгертуге тыйым салатын ешқандай механизм жоқ! Төменде <code>MEOWS = 4</code> деп жазсаңыз, Python үнсіз келісе салады. Мұнда бәрі ар-ұятқа сеніп құрылған: атауы бас әріппен жазылған айнымалыны көрсеңіз, оны өзгертпеңіз. Бұл - бағдарламашылар арасындағы келісім.</p>
+      <p>Класс ішінде де «тұрақты» жасауға болады. Енді тырнақшамен жазып отырмын, себебі Python тұрақтыларды толық қолдамайтынын білеміз:</p>
+<pre data-lang="python"><code class="language-python">class Cat:
+    MEOWS = 3
+
+    def meow(self):
+        for _ in range(Cat.MEOWS):
+            print("meow")
+
+
+cat = Cat()
+cat.meow()</code></pre>
+      <p><code>MEOWS</code> класстың ішінде, бірақ ешбір әдістің ішінде емес, жеке тұр. Сондықтан класстың барлық әдістері оған <code>Cat.MEOWS</code> арқылы қол жеткізе алады.</p>
+
+      <h2 id="type-hints">Тип нұсқамалары</h2>
+      <p>Көп тілдерде (мысалы, C тілінде) айнымалыны жасағанда оның типін нақты жазу керек: «бұл - бүтін сан», «бұл - жол». Курстың басында көргеніміздей, Python мұны талап етпейді, типті өзі анықтайды. Ыңғайлы ғой! Бірақ ыңғайлылықтың өз бағасы бар: айнымалыларыңыз дұрыс типте екеніне көз жеткізу бәрібір жақсы әдет.</p>
+      <p>Бұған <code>mypy</code> деген бағдарлама көмектеседі. Ол кодыңызды <em>іске қоспай-ақ</em> оқып шығып, типтер дұрыс қолданылғанын тексереді. Оны терминалда орнатуға болады:</p>
+<pre class="terminal"><code class="language-plaintext">$ pip install mypy</code></pre>
+      <p>Енді мына кодқа қараңыз:</p>
+<pre data-lang="python"><code class="language-python">def meow(n):
+    for _ in range(n):
+        print("meow")
+
+
+number = input("Number: ")
+meow(number)</code></pre>
+      <p>Сіз қатені бірден байқаған шығарсыз: <code>input</code> әрқашан <code>str</code> қайтарады, ал <code>meow</code>-ға <code>int</code> керек сияқты. Бірақ Python мұны тек бағдарлама іске қосылып, <code>range</code>-ке жол берілгенде ғана біледі. Python-ға алдын ала «кеңес» берейік. Мұны <strong>тип нұсқамасы</strong> (<span class="term-en">type hint</span>) деп атайды: параметрдің атынан кейін қос нүкте қойып, күтілетін типті жазамыз:</p>
+<pre data-lang="python"><code class="language-python">def meow(n: int):
+    for _ in range(n):
+        print("meow")
+
+
+number = input("Number: ")
+meow(number)</code></pre>
+      <p>Бағдарламаны іске қоссақ, ол бәрібір қате береді. Неге? Себебі Python тип нұсқамаларын <em>орындау кезінде мүлде тексермейді</em>, олар тек кеңес қана. Ал оларды оқитын - <code>mypy</code>:</p>
+<pre class="terminal"><code class="language-plaintext">$ mypy meows.py
+meows.py:7: error: Argument 1 to "meow" has incompatible type "str"; expected "int"  [arg-type]
+Found 1 error in 1 file (checked 1 source file)</code></pre>
+      <p><code>mypy</code> бағдарламаны іске қоспай-ақ қатені тауып, қалай түзету керегіне бағыт берді: 7-жолда <code>meow</code>-ға <code>int</code> орнына <code>str</code> берілген. Тип нұсқамасын айнымалыларға да қосуға болады:</p>
+<pre data-lang="python"><code class="language-python">def meow(n: int):
+    for _ in range(n):
+        print("meow")
+
+
+number: int = input("Number: ")
+meow(number)</code></pre>
+      <p>Енді <code>number</code>-ның да <code>int</code> болуы керек екенін айттық. <code>mypy meows.py</code>-ды қайта іске қоссақ, ол бізге әлдеқайда нақты жауап береді: қате <code>meow</code>-ды шақырған жерде емес, одан бұрын, <code>input</code>-тің <code>str</code> нәтижесін <code>int</code> болуы тиіс айнымалыға салған жерде. Ендеше, түзетейік:</p>
+<pre data-lang="python"><code class="language-python">def meow(n: int):
+    for _ in range(n):
+        print("meow")
+
+
+number: int = int(input("Number: "))
+meow(number)</code></pre>
+      <p>Енді енгізуді <code>int</code>-ке келтірдік, сондықтан <code>mypy</code> ешқандай қате таппайды. Ал енді әдейі жаңа қате жасап көрейін. <code>meow</code> бізге жол қайтарады деп ойлап, нәтижесін айнымалыға сақтайық:</p>
+<pre data-lang="python"><code class="language-python">def meow(n: int):
+    for _ in range(n):
+        print("meow")
+
+
+number: int = int(input("Number: "))
+meows: str = meow(number)
+print(meows)</code></pre>
+      <p>Мұнда не дұрыс емес? <code>meow</code> ештеңе қайтармайды, оның тек <strong>жанама әсері</strong> (<span class="term-en">side effect</span>) бар: экранға «meow» жазады. Ал біз сол жоқ нәтижені <code>str</code> айнымалыға сақтамақпыз. <code>mypy</code> бұл жерде де қате туралы хабарлайды. Оны тіпті айқынырақ ету үшін функцияның <em>қайтаратын мәнінің</em> типін де жазуға болады, ол үшін жақшадан кейін <code>-&gt;</code> бағыттауышын қоямыз:</p>
+<pre data-lang="python"><code class="language-python">def meow(n: int) -&gt; None:
+    for _ in range(n):
+        print("meow")
+
+
+number: int = int(input("Number: "))
+meows: str = meow(number)
+print(meows)</code></pre>
+      <p><code>-&gt; None</code> жазбасы <code>mypy</code>-ға «бұл функция ешқандай мән қайтармайды» дейді. Енді <code>mypy</code> мәселені нақты көрсетеді:</p>
+<pre class="terminal"><code class="language-plaintext">$ mypy meows.py
+meows.py:7: error: "meow" does not return a value (it only ever returns None)  [func-returns-value]
+Found 1 error in 1 file (checked 1 source file)</code></pre>
+      <p>Шынымен жол керек болса, функцияны жол қайтаратындай етіп өзгертейік:</p>
+<pre data-lang="python"><code class="language-python">def meow(n: int) -&gt; str:
+    return "meow\n" * n
+
+
+number: int = int(input("Number: "))
+meows: str = meow(number)
+print(meows, end="")</code></pre>
+      <p>Қызық трюк: <code>"meow\n" * n</code> бір жолды <code>n</code> рет қайталап, бір үлкен жол жасайды, әр «meow» жаңа жолдан басталады. Енді <code>meows</code> айнымалысында <code>n</code> рет «meow» жазылған бір <code>str</code> сақталады. Ал <code>print</code>-тегі <code>end=""</code> соңғы <code>\n</code>-нен кейін артық бос жол шықпауы үшін. <code>mypy</code> бұл жолы ешқандай қате таппайды. Толығырақ: Python құжаттамасындағы <a href="https://docs.python.org/3/library/typing.html" target="_blank" rel="noopener">тип нұсқамалары</a> және <a href="https://mypy.readthedocs.io/" target="_blank" rel="noopener"><code>mypy</code> құжаттамасы</a>.</p>
+
+      <h2 id="docstrings">Docstring: құжаттама жолдары</h2>
+      <p>Функцияның не істейтінін түсіндірудің қалыптасқан, стандартты тәсілі бар. Ол - <strong>құжаттама жолы</strong> (<span class="term-en">docstring</span>). Функцияның атынан кейінгі бірінші жолға үш қос тырнақшамен жазылады:</p>
+<pre data-lang="python"><code class="language-python">def meow(n):
+    """Meow n times."""
+    return "meow\n" * n
+
+
+number = int(input("Number: "))
+meows = meow(number)
+print(meows, end="")</code></pre>
+      <p>Үш тырнақшаның арасындағы мәтін функцияның не істейтінін сипаттайды. Бұл <code>#</code> түсініктемесіне ұқсайды, бірақ айырмасы бар: docstring функцияның өзіне «жабысып» қалады, оны Python да, басқа құралдар да оқи алады. Docstring арқылы функцияның барлық ерекшеліктерін бірыңғай пішіммен құжаттауға болады:</p>
+<pre data-lang="python"><code class="language-python">def meow(n):
+    """
+    Meow n times.
+
+    :param n: Number of times to meow
+    :type n: int
+    :raise TypeError: If n is not an int
+    :return: A string of n meows, one per line
+    :rtype: str
+    """
+    return "meow\n" * n
+
+
+number = int(input("Number: "))
+meows = meow(number)
+print(meows, end="")</code></pre>
+      <p>Мұнда бірнеше өріс бар: <code>:param n:</code> - параметр не үшін керек, <code>:type n:</code> - оның типі, <code>:raise TypeError:</code> - функция қандай жағдайда қандай ерекшелік лақтырады, <code>:return:</code> мен <code>:rtype:</code> - не және қандай типте қайтарылады. Бұлай жазудың артықшылығы неде? <a href="https://www.sphinx-doc.org/en/master/index.html" target="_blank" rel="noopener">Sphinx</a> сияқты қалыптасқан құралдар docstring-терді автоматты түрде оқып, олардан веб-беттер мен PDF файлдар түріндегі әдемі құжаттама жасап береді. Оны басқалармен бөлісуге, жариялауға болады. Толығырақ: <a href="https://peps.python.org/pep-0257/" target="_blank" rel="noopener">PEP 257: docstring</a>.</p>
+
+      <h2 id="argparse">argparse</h2>
+      <p>Бағдарламамыз командалық жол аргументтерін қабылдасын делік. Мысалы, <code>python meows.py -n 3</code> десек, үш рет мияулайтын болсын. Өзіміз білетін <code>sys.argv</code> арқылы жазайық:</p>
+<pre data-lang="python"><code class="language-python">import sys
+
+if len(sys.argv) == 1:
+    print("meow")
+elif len(sys.argv) == 3 and sys.argv[1] == "-n":
+    n = int(sys.argv[2])
+    for _ in range(n):
+        print("meow")
+else:
+    print("usage: meows.py [-n NUMBER]")</code></pre>
+      <p><code>sys</code> модулін импорттаймыз, ол бізге <code>sys.argv</code> тізімін береді, онда бағдарлама іске қосылғанда берілген командалық жол аргументтері жатады. Бірнеше <code>if</code> арқылы қолданушы бағдарламаны дұрыс іске қосқанын тексереміз: аргумент мүлде жоқ болса, бір рет мияулаймыз; <code>-n</code> мен сан берілсе, сонша рет; әйтпесе қалай қолдану керегін айтамыз.</p>
+      <p>Ал енді бағдарламамыз әлдеқайда күрделеніп, ондаған опция қосылды деп елестетіңіз: <code>-n</code>, <code>-v</code>, <code>--help</code>, кез келген ретпен... Әр мүмкін комбинацияны <code>if</code> арқылы тексеру - нағыз азап. Бірнеше аргументтің өзінде-ақ бас қатып, қолымызды сілтеп кетуіміз мүмкін!</p>
+      <p>Бақытымызға орай, командалық жол аргументтерін <strong>талдаудың</strong> (<span class="term-en">parsing</span>) бүкіл ауыр жұмысын өз мойнына алатын <code>argparse</code> кітапханасы бар:</p>
+<pre data-lang="python"><code class="language-python">import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-n")
+args = parser.parse_args()
+
+for _ in range(int(args.n)):
+    print("meow")</code></pre>
+      <p><code>sys</code> орнына <code>argparse</code> импорттадық. <code>ArgumentParser</code> класынан <code>parser</code> деген объект жасаймыз. Оның <code>add_argument</code> әдісі арқылы <code>argparse</code>-ке қолданушыдан қандай аргументтер күтетінімізді айтамыз, мұнда - <code>-n</code>. Соңында <code>parse_args</code> әдісі қолданушы берген аргументтерді талдап, дұрыс берілгенін тексереді. Нәтижесінде <code>args.n</code> арқылы <code>-n</code>-нен кейін жазылған мәнді аламыз.</p>
+      <p>Одан да жақсы жасауға болады. Бағдарламаны дұрыс қолданбаған адамға қалай қолдану керегі туралы ақпарат берейік:</p>
+<pre data-lang="python"><code class="language-python">import argparse
+
+parser = argparse.ArgumentParser(description="Meow like a cat")
+parser.add_argument("-n", help="number of times to meow")
+args = parser.parse_args()
+
+for _ in range(int(args.n)):
+    print("meow")</code></pre>
+      <p>Бағдарламаның сипаттамасын (<code>description</code>) және <code>-n</code> аргументінің түсіндірмесін (<code>help</code>) қостық. Енді қолданушы <code>-h</code> немесе <code>--help</code> деп іске қосса, <code>argparse</code> бізге бір жол код жаздырмай-ақ, анықтаманы өзі құрастырып береді:</p>
+<pre class="terminal"><code class="language-plaintext">$ python meows.py -h
+usage: meows.py [-h] [-n N]
+
+Meow like a cat
+
+options:
+  -h, --help  show this help message and exit
+  -n N        number of times to meow</code></pre>
+      <p>Бағдарламаны тағы да жетілдірейік:</p>
+<pre data-lang="python"><code class="language-python">import argparse
+
+parser = argparse.ArgumentParser(description="Meow like a cat")
+parser.add_argument("-n", default=1, help="number of times to meow", type=int)
+args = parser.parse_args()
+
+for _ in range(args.n):
+    print("meow")</code></pre>
+      <p>Екі жаңалық бар. <code>default=1</code> - қолданушы <code>-n</code> бермесе, әдепкі мән 1 болады. <code>type=int</code> - <code>argparse</code> мәнді өзі <code>int</code>-ке айналдырады, сондықтан циклде <code>int(args.n)</code> деп жазудың қажеті жоқ. Ал қолданушы <code>-n cat</code> деп жазса ше? <code>argparse</code> оған өзі түсінікті қате хабарын шығарады. Толығырақ: <a href="https://docs.python.org/3/library/argparse.html" target="_blank" rel="noopener"><code>argparse</code></a>.</p>
+
+      <h2 id="unpacking">Тарқату</h2>
+      <p>Бір айнымалыдағы мәнді бірден екі айнымалыға бөліп алу керемет болар еді, солай емес пе? Python-да бұл мүмкін:</p>
+<pre data-lang="python"><code class="language-python">first, _ = input("What's your name? ").split(" ")
+print(f"hello, {first}")</code></pre>
+      <p>Бұл бағдарлама толық атты бір бос орыннан бөліп, қолданушының атын алуға тырысады (тәсілі әлі аңғал: аты-жөні үш сөзден тұрса, жұмыс істемейді). <code>split</code> екі элементтен тұратын тізім қайтарады, ал біз оны бірден екі айнымалыға «тарқатып» саламыз: біріншісі <code>first</code>-ке, екіншісі <code>_</code>-ке. Төменгі сызық <code>_</code> - «бұл мән маған керек емес» дегеннің жалпы қабылданған белгісі.</p>
+      <p>Бұл - <strong>тарқатудың</strong> (<span class="term-en">unpacking</span>) ең қарапайым түрі. Тарқатудың басқа, күштірек түрлерін түсінсеңіз, кодыңыз әлдеқайда әсем болады. Мысал үшін Гарри Поттер әлеміндегі сиқыршылардың ақшасын алайық: галлеон, сикль және кнат. 1 галлеон = 17 сикль, 1 сикль = 29 кнат (біздің теңге мен тиын сияқты, тек сәл шатасқан):</p>
+<pre data-lang="python"><code class="language-python">def total(galleons, sickles, knuts):
+    return (galleons * 17 + sickles) * 29 + knuts
+
+
+print(total(100, 50, 25), "Knuts")</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python unpack.py
+50775 Knuts</code></pre>
+      <p>Функция бүкіл соманы кнатқа айналдырып қайтарады. Ал тиындарымыз бір тізімде сақталса ше?</p>
+<pre data-lang="python"><code class="language-python">def total(galleons, sickles, knuts):
+    return (galleons * 17 + sickles) * 29 + knuts
+
+
+coins = [100, 50, 25]
+
+print(total(coins[0], coins[1], coins[2]), "Knuts")</code></pre>
+      <p><code>coins</code> тізімін жасап, әр мәнді индекс бойынша, <code>0</code>, <code>1</code>, <code>2</code> деп бір-бірлеп береміз. Жұмыс істейді, бірақ тым сөзуар. Тізімді функцияға бүтіндей бере салсақ қандай жақсы болар еді! Тарқату дәл соны істейді:</p>
+<pre data-lang="python"><code class="language-python">def total(galleons, sickles, knuts):
+    return (galleons * 17 + sickles) * 29 + knuts
+
+
+coins = [100, 50, 25]
+
+print(total(*coins), "Knuts")</code></pre>
+      <p>Тізімнің алдындағы жалғыз жұлдызша <code>*</code> оны «ашып», ішіндегі әр элементті функцияға жеке аргумент етіп береді. Яғни <code>total(*coins)</code> дәл <code>total(100, 50, 25)</code> сияқты. Қапшықтағы үш тиынды үстелге төгіп, үш бөлек тиын етіп бергенмен бірдей.</p>
+      <p>Енді ақша түрлерін атауымен, кез келген ретпен бергіміз келсін:</p>
+<pre data-lang="python"><code class="language-python">def total(galleons, sickles, knuts):
+    return (galleons * 17 + sickles) * 29 + knuts
+
+
+print(total(galleons=100, sickles=50, knuts=25), "Knuts")</code></pre>
+      <p>Нәтиже бұрынғыдай дұрыс. «Атау» мен «мән» деген сөздерді естігенде ойыңызға не келеді? Әрине, сөздіктер! Тиындарды сөздікте сақтайық:</p>
+<pre data-lang="python"><code class="language-python">def total(galleons, sickles, knuts):
+    return (galleons * 17 + sickles) * 29 + knuts
+
+
+coins = {"galleons": 100, "sickles": 50, "knuts": 25}
+
+print(total(coins["galleons"], coins["sickles"], coins["knuts"]), "Knuts")</code></pre>
+      <p>Сөздіктің мәндерін <code>"galleons"</code>, <code>"sickles"</code> сияқты кілттер арқылы аламыз. Тағы да сөзуар. <code>total</code> үш аргумент күтеді, сондықтан сөздікті жай ғана бере алмаймыз. Бірақ мұнда да тарқату көмектеседі:</p>
+<pre data-lang="python"><code class="language-python">def total(galleons, sickles, knuts):
+    return (galleons * 17 + sickles) * 29 + knuts
+
+
+coins = {"galleons": 100, "sickles": 50, "knuts": 25}
+
+print(total(**coins), "Knuts")</code></pre>
+      <p>Қос жұлдызша <code>**</code> сөздікті тарқатады, және ол кілттерді де, мәндерді де береді. Яғни <code>total(**coins)</code> дәл <code>total(galleons=100, sickles=50, knuts=25)</code> сияқты. Сондықтан сөздіктегі кілттер функция параметрлерінің атауларымен дәл сәйкес болуы керек.</p>
+      <div class="callout term">
+        <span class="callout-title">Бір жұлдызша мен екі жұлдызша</span>
+        <p><code>*</code> - тізімді (жалпы, тізбекті) реттік аргументтерге тарқатады. <code>**</code> - сөздікті <code>атау=мән</code> түріндегі аргументтерге тарқатады.</p>
+      </div>
+
+      <h2 id="args-kwargs">args пен kwargs</h2>
+      <p>Курстың басында <code>print</code> құжаттамасына қарағанымыз есіңізде ме? Онда оның прототипі былай жазылған:</p>
+<pre data-lang="python"><code class="language-python">print(*objects, sep=' ', end='\n', file=sys.stdout, flush=False)</code></pre>
+      <p>Сол кезде <code>*objects</code>-тің алдындағы жұлдызшаға мән бермеген едік. Енді оның сырын ашатын кез келді. Алдымен екі терминді бөліп алайық:</p>
+      <ul>
+        <li><strong>позициялық аргументтер</strong> (<span class="term-en">positional arguments</span>, қысқаша <code>args</code>) - орнына қарай берілетін аргументтер, мысалы <code>print("Hello", "World")</code>;</li>
+        <li><strong>кілттік аргументтер</strong> (<span class="term-en">keyword arguments</span>, қысқаша <code>kwargs</code>) - атымен берілетін аргументтер, мысалы <code>print(end="")</code>.</li>
+      </ul>
+      <p><code>print</code>-тің прототипінен көргеніміздей, функцияға «саны әзірге белгісіз позициялық аргументтер келеді» деп айтуға болады. Сол сияқты «саны белгісіз кілттік аргументтер келеді» деп те айтуға болады:</p>
+<pre data-lang="python"><code class="language-python">def f(*args, **kwargs):
+    print("Positional:", args)
+
+
+f(100, 50, 25)</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python f.py
+Positional: (100, 50, 25)</code></pre>
+      <p>Функцияның ішінде <code>args</code> барлық позициялық аргументтерді жинап алды. Енді атымен берілетін аргументтерді жіберейік:</p>
+<pre data-lang="python"><code class="language-python">def f(*args, **kwargs):
+    print("Named:", kwargs)
+
+
+f(galleons=100, sickles=50, knuts=25)</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python f.py
+Named: {'galleons': 100, 'sickles': 50, 'knuts': 25}</code></pre>
+      <p>Байқадыңыз ба? Атымен берілген мәндер <code>kwargs</code>-қа сөздік түрінде жиналды. Бұл - тарқатудың керісінше бағыты: шақырғанда <code>*</code> мен <code>**</code> жинақты «шашады», ал функцияның параметрлерінде бөлек аргументтерді бір жинаққа «жинайды». Атаулары туралы: <code>args</code> пен <code>kwargs</code> деп атау - жай дәстүр, ең маңыздысы - жұлдызшалар.</p>
+      <p>Ендеше, <code>print</code>-ке оралсақ, оның <code>*objects</code> параметрі кез келген санды позициялық аргумент қабылдай алады. Сондықтан <code>print</code>-ке бір, екі не он аргумент бере аламыз. Толығырақ: <a href="https://docs.python.org/3/library/functions.html#print" target="_blank" rel="noopener"><code>print</code></a>.</p>
+
+      <h2 id="map">map</h2>
+      <p>Бір сәтке артқа шегініп, үлкен суретке қарайық. Курсты біз <strong>процедуралық бағдарламалаудан</strong> (<span class="term-en">procedural programming</span>) бастадық: команданы бірінен соң бірін жаздық. Кейін Python - объектіге бағытталған тіл екенін ашып көрсеттік. Осы уақытқа дейін мән қайтармай, тек жанама әсері бар функцияларды да көп көрдік. Ал Python тағы бір стильді қолдайды: <strong>функционалдық бағдарламалау</strong> (<span class="term-en">functional programming</span>). Мұнда функциялардың өзі мән сияқты: оларды айнымалыға салуға, басқа функцияға аргумент етіп беруге болады. Мұны көрсету үшін <code>code yell.py</code> деп жаңа файл ашайық:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    yell("This is CS50")
+
+
+def yell(word):
+    print(word.upper())
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p><code>yell</code> («айқайла») берілген сөзді бас әріппен, яғни айқайлап шығарады: <code>THIS IS CS50</code>. Ал шексіз көп сөздің тізімін айқайлай алсақ ше? Кодты өзгертейік:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    yell(["This", "is", "CS50"])
+
+
+def yell(words):
+    uppercased = []
+    for word in words:
+        uppercased.append(word.upper())
+    print(*uppercased)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Әр сөзді аралап, бас әріпке айналдырып, <code>uppercased</code> тізіміне жинаймыз. Ал соңында сол тізімді <code>*</code> арқылы тарқатып, <code>print</code>-ке бөлек-бөлек аргумент етіп береміз, сондықтан сөздер бос орынмен шығады. Әлгі тарқату бірден пайдаға асты! Енді тізімнің тік жақшаларын алып тастап, сөздерді жай аргумент етіп берейік:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    yell("This", "is", "CS50")
+
+
+def yell(*words):
+    uppercased = []
+    for word in words:
+        uppercased.append(word.upper())
+    print(*uppercased)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p><code>*words</code> арқылы функция енді кез келген санды аргумент қабылдай алады, дәл <code>print</code> сияқты. Ал енді функционалдық бағдарламалаудың алғашқы құралы - <code>map</code>. Ол бір функцияны мәндер тізбегінің әрқайсысына «қолданып» шығады:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    yell("This", "is", "CS50")
+
+
+def yell(*words):
+    uppercased = map(str.upper, words)
+    print(*uppercased)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p><code>map</code> екі аргумент алады. Біріншісі - әр элементке қолданылатын функция. Екіншісі - сол функция қолданылатын тізбектің өзі. Сонымен <code>words</code>-тегі әр сөз <code>str.upper</code> функциясына беріледі, ал нәтижелері <code>uppercased</code>-ке қайтарылады. Мұқият қараңыз: <code>str.upper</code>-дің соңында жақша жоқ! Біз функцияны <em>шақырып</em> жатқан жоқпыз, оны <code>map</code>-қа <em>беріп</em> жатырмыз, ал шақыруды <code>map</code> өзі істейді. Функцияны мән ретінде беру деген осы. Толығырақ: <a href="https://docs.python.org/3/library/functions.html#map" target="_blank" rel="noopener"><code>map</code></a>.</p>
+
+      <h2 id="list-comprehensions">Тізімдік өрнектер</h2>
+      <p><strong>Тізімдік өрнек</strong> (<span class="term-en">list comprehension</span>) тізімді бір ғана әсем жолмен, «жүріп бара жатып» жасауға мүмкіндік береді. Мұны кодымызға енгізейік:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    yell("This", "is", "CS50")
+
+
+def yell(*words):
+    uppercased = [arg.upper() for arg in words]
+    print(*uppercased)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p><code>map</code>-тың орнына тік жақшаның ішіне Python өрнегін жаздық. Оны дауыстап оқысаңыз, қазақша сөйлемге ұқсайды: «<code>words</code>-тегі әр <code>arg</code> үшін <code>arg.upper()</code> ал». Нәтижесі - жаңа тізім.</p>
+      <p>Бұл идеяны одан әрі дамытайық. Басқа бағдарламаға көшеміз: <code>code gryffindors.py</code>.</p>
+<pre data-lang="python"><code class="language-python">students = [
+    {"name": "Hermione", "house": "Gryffindor"},
+    {"name": "Harry", "house": "Gryffindor"},
+    {"name": "Ron", "house": "Gryffindor"},
+    {"name": "Draco", "house": "Slytherin"},
+]
+
+gryffindors = []
+for student in students:
+    if student["house"] == "Gryffindor":
+        gryffindors.append(student["name"])
+
+for gryffindor in sorted(gryffindors):
+    print(gryffindor)</code></pre>
+      <p>Мұнда тізімді құрастыру кезінде шарт бар: <em>егер</em> оқушының үйі Gryffindor болса, оның атын тізімге қосамыз. Соңында барлық аттарды әліпби бойынша шығарамыз. Тізімдік өрнек мұны да әлдеқайда әсем жаза алады, өйткені оның ішіне шарт та сыяды:</p>
+<pre data-lang="python"><code class="language-python">students = [
+    {"name": "Hermione", "house": "Gryffindor"},
+    {"name": "Harry", "house": "Gryffindor"},
+    {"name": "Ron", "house": "Gryffindor"},
+    {"name": "Draco", "house": "Slytherin"},
+]
+
+gryffindors = [
+    student["name"] for student in students if student["house"] == "Gryffindor"
+]
+
+for gryffindor in sorted(gryffindors):
+    print(gryffindor)</code></pre>
+      <p>Бос тізім, цикл, <code>if</code>, <code>append</code> - бәрі бір ғана нұсқаулыққа сыйды! «<code>students</code>-тегі әр <code>student</code> үшін, <em>егер</em> үйі Gryffindor болса, <code>student["name"]</code> ал». Жақшалардың ішінде ұзын өрнекті бірнеше жолға бөліп жазуға болады, ол тек оқуға ыңғайлы болу үшін.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>[n * n for n in range(5) if n % 2 == 1]</code> нәтижесі қандай?</summary>
+        <div class="details-body"><p><code>[1, 9]</code>. <code>range(5)</code> - 0, 1, 2, 3, 4. Солардың тақтары (1 мен 3) ғана шарттан өтеді, сосын әрқайсысы квадратталады.</p></div>
+      </details>
+
+      <h2 id="filter">filter</h2>
+      <p>Python-ның <code>filter</code> функциясы тізбектен белгілі бір шарт ақиқат болатын элементтерді ғана, яғни оның ішкі жиынын қайтарады. Елеуіш сияқты: керегі қалады, қалғаны өтіп кетеді.</p>
+<pre data-lang="python"><code class="language-python">students = [
+    {"name": "Hermione", "house": "Gryffindor"},
+    {"name": "Harry", "house": "Gryffindor"},
+    {"name": "Ron", "house": "Gryffindor"},
+    {"name": "Draco", "house": "Slytherin"},
+]
+
+
+def is_gryffindor(s):
+    return s["house"] == "Gryffindor"
+
+
+gryffindors = filter(is_gryffindor, students)
+
+for gryffindor in sorted(gryffindors, key=lambda s: s["name"]):
+    print(gryffindor["name"])</code></pre>
+      <p><code>is_gryffindor</code> - біздің сүзгі функциямыз. Ол <code>s</code> оқушысын алып, үйі Gryffindor болса <code>True</code>, әйтпесе <code>False</code> қайтарады. <code>filter</code> да <code>map</code> сияқты екі аргумент алады: біріншісі - тізбектің әр элементіне қолданылатын функция (мұнда <code>is_gryffindor</code>), екіншісі - сүзгіден өткізілетін тізбек (мұнда <code>students</code>). <code>gryffindors</code>-та тек Gryffindor оқушылары қалады. Тек бұл жолы олар аттар емес, тұтас сөздіктер, сондықтан оларды сұрыптау үшін <code>sorted</code>-ке <code>key=lambda s: s["name"]</code> арқылы «аты бойынша сұрыпта» деп айтамыз.</p>
+      <p>Бір рет қана керек кішкентай функцияға жеке ат беріп, <code>def</code> жазу міндетті емес. <code>filter</code>-ге анонимді функция, яғни <code>lambda</code> беруге болады:</p>
+<pre data-lang="python"><code class="language-python">students = [
+    {"name": "Hermione", "house": "Gryffindor"},
+    {"name": "Harry", "house": "Gryffindor"},
+    {"name": "Ron", "house": "Gryffindor"},
+    {"name": "Draco", "house": "Slytherin"},
+]
+
+
+gryffindors = filter(lambda s: s["house"] == "Gryffindor", students)
+
+for gryffindor in sorted(gryffindors, key=lambda s: s["name"]):
+    print(gryffindor["name"])</code></pre>
+      <p>Оқушылар тізімі сол күйі, нәтиже де сол: Harry, Hermione, Ron. Тек <code>is_gryffindor</code> функциясы енді бір жолдық <code>lambda</code> болып, тура керек жерге жазылды. Толығырақ: <a href="https://docs.python.org/3/library/functions.html#filter" target="_blank" rel="noopener"><code>filter</code></a>.</p>
+
+      <h2 id="dictionary-comprehensions">Сөздіктік өрнектер</h2>
+      <p>Тізімдік өрнектің идеясын сөздіктерге де қолдануға болады. Алдымен әдеттегі тәсілмен жазайық:</p>
+<pre data-lang="python"><code class="language-python">students = ["Hermione", "Harry", "Ron"]
+
+gryffindors = []
+
+for student in students:
+    gryffindors.append({"name": student, "house": "Gryffindor"})
+
+print(gryffindors)</code></pre>
+      <p>Бұл код әзірге (әзірге!) ешқандай өрнек қолданбайды, бұрыннан білетін тәсілмен жазылған: әр оқушы үшін сөздік жасап, тізімге қосамыз. Енді осы сөздіктерді тізімдік өрнекпен жасайық:</p>
+<pre data-lang="python"><code class="language-python">students = ["Hermione", "Harry", "Ron"]
+
+gryffindors = [{"name": student, "house": "Gryffindor"} for student in students]
+
+print(gryffindors)</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python gryffindors.py
+[{'name': 'Hermione', 'house': 'Gryffindor'}, {'name': 'Harry', 'house': 'Gryffindor'}, {'name': 'Ron', 'house': 'Gryffindor'}]</code></pre>
+      <p>Бүкіл алдыңғы код бір жолға сыйды: <code>students</code>-тегі әр <code>student</code> үшін сөздіктің құрылымын көрсеттік. Ал одан да ықшамдай аламыз:</p>
+<pre data-lang="python"><code class="language-python">students = ["Hermione", "Harry", "Ron"]
+
+gryffindors = {student: "Gryffindor" for student in students}
+
+print(gryffindors)</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python gryffindors.py
+{'Hermione': 'Gryffindor', 'Harry': 'Gryffindor', 'Ron': 'Gryffindor'}</code></pre>
+      <p>Бұл жолы тік жақша емес, фигуралы жақша, ал ішінде <code>кілт: мән</code> жұбы. Бұл - нағыз <strong>сөздіктік өрнек</strong> (<span class="term-en">dictionary comprehension</span>): нәтижесі тізім емес, кілт пен мән жұптарынан құралған бір сөздік.</p>
+
+      <h2 id="enumerate">enumerate</h2>
+      <p>Оқушыларды нөмірлеп, рейтинг сияқты шығарғымыз келсін. Бұрынғы білімімізбен:</p>
+<pre data-lang="python"><code class="language-python">students = ["Hermione", "Harry", "Ron"]
+
+for i in range(len(students)):
+    print(i + 1, students[i])</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ python enumerate.py
+1 Hermione
+2 Harry
+3 Ron</code></pre>
+      <p>Жұмыс істейді, бірақ <code>range(len(students))</code> және <code>students[i]</code> - сәл шатасқан жазу. Python мұны оңайлатады: <code>enumerate</code> әр қадамда элементтің индексін де, мәнін де бірге береді:</p>
+<pre data-lang="python"><code class="language-python">students = ["Hermione", "Harry", "Ron"]
+
+for i, student in enumerate(students):
+    print(i + 1, student)</code></pre>
+      <p>Нәтиже дәл сондай. Мұнда да тарқату жасырынып тұр: <code>enumerate</code> әр қадамда <code>(0, "Hermione")</code> сияқты жұп береді, ал біз оны бірден <code>i</code> мен <code>student</code>-ке тарқатамыз. Индекс әлі де нөлден басталатындықтан, <code>i + 1</code> деп жазамыз. Толығырақ: <a href="https://docs.python.org/3/library/functions.html#enumerate" target="_blank" rel="noopener"><code>enumerate</code></a>.</p>
+
+      <h2 id="generators">Генераторлар мен итераторлар</h2>
+      <p>Python-да мәселе тым үлкейіп кеткенде компьютеріңіздің ресурсы таусылып қалмауын қамтамасыз ететін бір тәсіл бар. Оны түсіну үшін ұйқыдан бастайық. АҚШ-та ұйықтай алмай жатқан адам іштей «қой санайды» деген әдет бар: бір қой, екі қой, үш қой... (Біздің ауылда да бұл әдіс таныс шығар.) Ендеше, <code>code sleep.py</code>:</p>
+<pre data-lang="python"><code class="language-python">n = int(input("What's n? "))
+for i in range(n):
+    print("🐑" * i)</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: n = 3 енгізсек, неше жол шығады және бірінші жол қандай?</summary>
+        <div class="details-body"><p>Үш жол шығады, бірақ біріншісі <em>бос</em>! <code>range(3)</code> 0-ден басталады, ал <code>"🐑" * 0</code> - бос жол. Одан кейін бір қой, сосын екі қой.</p></div>
+      </details>
+      <p>Бағдарлама біз сұраған мөлшерде қой санайды. Әдетімізше, оны <code>main</code> функциясымен ретке келтірейік:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    n = int(input("What's n? "))
+    for i in range(n):
+        print("🐑" * i)
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Біз кодтың бөліктерін бөлек функцияларға шығарып, абстракциялауға дағдыландық. Бір жол қойды жасауды <code>sheep</code> функциясына берейік:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    n = int(input("What's n? "))
+    for i in range(n):
+        print(sheep(i))
+
+
+def sheep(n):
+    return "🐑" * n
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Мұнда санау циклі әлі де <code>main</code>-де. <code>sheep</code> функциясына көбірек жұмыс тапсырайық: ол бүкіл отарды жасап қайтарсын:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    n = int(input("What's n? "))
+    for s in sheep(n):
+        print(s)
+
+
+def sheep(n):
+    flock = []
+    for i in range(n):
+        flock.append("🐑" * i)
+    return flock
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p><code>sheep</code> <code>flock</code> (отар) тізімін құрастырып, тұтасымен қайтарады. Әртүрлі сандармен іске қосып көріңіз: <code>10</code>, <code>1000</code>, <code>10000</code>... Ал <code>1000000</code> деп жазсаңыз ше? Бағдарлама қатып қалуы, тіпті құлауы мүмкін. Себебі біз миллион жолдан тұратын алып тізімді, оның үстіне соңғы жолдары миллион қойдан тұратын тізімді, <em>бәрін бірден</em> жадта жасауға тырыстық. Ал экранға шығару бір-бірлеп болса да, біз оның басталуын бүкіл тізім дайын болғанша күтеміз. Компьютер мұндай есептеуді аяқтауға қиналады.</p>
+      <p>Бұл мәселені <code>yield</code> кілт сөзі шешеді. Ол нәтижені бүтіндей емес, кішкене бөліктерімен, бір-бірлеп қайтарады:</p>
+<pre data-lang="python"><code class="language-python">def main():
+    n = int(input("What's n? "))
+    for s in sheep(n):
+        print(s)
+
+
+def sheep(n):
+    for i in range(n):
+        yield "🐑" * i
+
+
+if __name__ == "__main__":
+    main()</code></pre>
+      <p>Айырмашылық кішкентай, бірақ маңызды. <code>return</code> функцияны толық аяқтап, бір мән қайтарады. Ал <code>yield</code> бір мәнді «береді» де, функцияны сол жерде <em>кідіртеді</em>. <code>for</code> циклі келесі мәнді сұрағанда, функция тоқтаған жерінен жалғасып, келесі қойларды береді. Құрамында <code>yield</code> бар функция <strong>генератор</strong> (<span class="term-en">generator</span>) деп аталады. Ал <code>for</code> циклі сияқты мәндерді бір-бірлеп алып отыратын объект - <strong>итератор</strong> (<span class="term-en">iterator</span>). Генератор жадта бір мезетте бір ғана жолды ұстайды, сондықтан миллион қой да енді компьютерді қинамайды.</p>
+      <div class="callout tip">
+        <span class="callout-title">Құдықтан су тарту сияқты</span>
+        <p>Тізім қайтару - бүкіл құдықтың суын бірден бір шелекке құйып беруге тырысқанмен бірдей. Генератор - керек кезде бір шелектен тартып беретін құдық. Ішетін су бірдей, бірақ шелек жарылмайды.</p>
+      </div>
+      <p>Толығырақ: Python құжаттамасындағы <a href="https://docs.python.org/3/howto/functional.html#generators" target="_blank" rel="noopener">генераторлар</a> және <a href="https://docs.python.org/3/howto/functional.html#iterators" target="_blank" rel="noopener">итераторлар</a>.</p>
+
+      <h2 id="congratulations">Құттықтаймыз!</h2>
+      <p>Курстан шығып бара жатқанда, сізде бағдарламалау есептерін шешуге арналған ой моделі мен толық құрал-сайман жиынтығы бар. Бәрін бір қатарға тізіп көрейік:</p>
+      <ul>
+        <li>бірінші, функциялар мен айнымалыларды үйрендіңіз;</li>
+        <li>екінші, шарттарды;</li>
+        <li>үшінші, циклдерді;</li>
+        <li>төртінші, ерекшеліктерді;</li>
+        <li>бесінші, кітапханаларды;</li>
+        <li>алтыншы, модульдік тесттерді;</li>
+        <li>жетінші, файлдармен енгізу-шығаруды;</li>
+        <li>сегізінші, тұрақты өрнектерді;</li>
+        <li>жақында, объектіге бағытталған бағдарламалауды;</li>
+        <li>ал бүгін - күнделікті жұмыста қолдануға болатын тағы көптеген құралдарды.</li>
+      </ul>
+      <p>Бірінші сабақта бір жолдық <code>print("hello, world")</code> жазғанымызды еске алыңызшы. Сол кезде <code>*objects</code> деген жұлдызша сізге жұмбақ болып көрінген шығар. Ал бүгін оның не екенін білесіз. Міне, сіз жүріп өткен жол осы.</p>
+
+      <h2 id="this-was-cs50">Бұл - CS50 еді!</h2>
+      <p>Қоштасар алдында соңғы бағдарламаны бірге жазайық. Терминалға <code>code say.py</code> деп жазамыз:</p>
+<pre data-lang="python"><code class="language-python">import cowsay
+import pyttsx3
+
+engine = pyttsx3.init()
+this = input("What's this? ")
+cowsay.cow(this)
+engine.say(this)
+engine.runAndWait()</code></pre>
+      <p>Бұл бағдарлама 4-аптадан таныс <code>cowsay</code> кітапханасын және мәтінді дауыстап оқитын <code>pyttsx3</code> кітапханасын қолданады. Ол бізден «What's this?» деп сұрайды. Біз «This was CS50» деп жазамыз. Экранда сиыр сол сөзді айтады, ал компьютер оны дауыстап оқиды. Курсты аяқтаудың бұдан көңілді жолы бар ма?</p>
+      <p>Біздің ең үлкен үмітіміз: осы курста үйренгеніңізді әлемдегі нақты мәселелерді шешуге жұмсап, жер шарын сәл де болса жақсырақ мекен етесіз. Ол үлкен жоба болуы міндетті емес. Әжеңізге арналған қарапайым есептегіш, мектебіңізге арналған кесте, ауылыңыздағы дүкенге арналған есеп бағдарламасы - бәрі де бір адамның өмірін жеңілдетеді. Ал қатеге тап болсаңыз, ұмытпаңыз: ең мықты бағдарламашылар да күн сайын қате жібереді, тек олар берілмейді.</p>
+      <p>Осы жолда бізбен бірге болғаныңызға рахмет. Сізге шын жүректен сәттілік тілейміз.</p>
+      <p><strong>Бұл - CS50 еді!</strong></p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Соңғы лекцияда Python-ның «тағы басқа» пайдалы құралдарымен таныстық:</p>
+      <ul>
+        <li><strong>жиын</strong> (<code>set</code>): қайталанбайтын мәндер жинағы, <code>add</code> арқылы толтырылады;</li>
+        <li><strong>жаһандық айнымалылар</strong> және <code>global</code> кілт сөзі, оларды класспен алмастыру;</li>
+        <li><strong>тұрақтылар</strong>: БАС ӘРІППЕН жазылатын, бірақ тек келісім бойынша өзгермейтін мәндер;</li>
+        <li><strong>тип нұсқамалары</strong> (<code>n: int</code>, <code>-&gt; None</code>) және оларды тексеретін <code>mypy</code>;</li>
+        <li><strong>docstring</strong>: функцияны құжаттаудың стандартты тәсілі, Sphinx;</li>
+        <li><code>argparse</code>: командалық жол аргументтерін талдау, <code>help</code>, <code>default</code>, <code>type</code>;</li>
+        <li><strong>тарқату</strong>: <code>*</code> тізімді, <code>**</code> сөздікті аргументтерге тарқатады;</li>
+        <li><code>*args</code> пен <code>**kwargs</code>: саны белгісіз позициялық және кілттік аргументтер;</li>
+        <li>функционалдық бағдарламалау: <code>map</code>, <code>filter</code>, <code>lambda</code>;</li>
+        <li><strong>тізімдік</strong> және <strong>сөздіктік өрнектер</strong>;</li>
+        <li><code>enumerate</code>: индекс пен мәнді бірге алу;</li>
+        <li><strong>генераторлар</strong> мен <strong>итераторлар</strong>: <code>yield</code> арқылы мәндерді бір-бірлеп беру.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. <code>print(len({1, 2, 2, 3, 3, 3}))</code> не шығарады?</p>
+          <label><input type="radio" value="a"> 6</label>
+          <label><input type="radio" value="b"> 1</label>
+          <label><input type="radio" value="c"> 3</label>
+          <label><input type="radio" value="d"> Қате</label>
+          <p class="explain">Жиында қайталанатын мәндер сақталмайды: <code>{1, 2, 3}</code>, яғни 3 элемент.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">2. <code>[n * 2 for n in range(4) if n % 2 == 0]</code> нәтижесі қандай?</p>
+          <label><input type="radio" value="a"> [0, 4]</label>
+          <label><input type="radio" value="b"> [0, 2, 4, 6]</label>
+          <label><input type="radio" value="c"> [2, 6]</label>
+          <label><input type="radio" value="d"> [0, 2]</label>
+          <p class="explain"><code>range(4)</code> - 0, 1, 2, 3. Жұптары (0 мен 2) ғана шарттан өтіп, екіге көбейтіледі: 0 мен 4.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. Мына код не шығарады?</p>
+<pre data-lang="python"><code class="language-python">def f(*args, **kwargs):
+    print(args, kwargs)
+
+
+f(1, 2, x=3)</code></pre>
+          <label><input type="radio" value="a"> [1, 2] [3]</label>
+          <label><input type="radio" value="b"> (1, 2, 3) {}</label>
+          <label><input type="radio" value="c"> Қате: аргументтер тым көп</label>
+          <label><input type="radio" value="d"> (1, 2) {'x': 3}</label>
+          <p class="explain">Позициялық аргументтер <code>args</code>-қа кортеж болып, ал атымен берілгендер <code>kwargs</code>-қа сөздік болып жиналады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">4. <code>def total(a, b, c): return a * 100 + b * 10 + c</code> болса, <code>total(*[1, 2, 3])</code> неге тең?</p>
+          <label><input type="radio" value="a"> Қате: тізім бір ғана аргумент</label>
+          <label><input type="radio" value="b"> 123</label>
+          <label><input type="radio" value="c"> 6</label>
+          <label><input type="radio" value="d"> 321</label>
+          <p class="explain"><code>*</code> тізімді тарқатады: <code>total(1, 2, 3)</code> = 100 + 20 + 3 = 123.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">5. Мына код не шығарады?</p>
+<pre data-lang="python"><code class="language-python">def count(n):
+    for i in range(n):
+        yield i
+
+
+x = count(3)
+print(next(x), next(x))</code></pre>
+          <label><input type="radio" value="a"> 0 1</label>
+          <label><input type="radio" value="b"> 0 0</label>
+          <label><input type="radio" value="c"> [0, 1, 2]</label>
+          <label><input type="radio" value="d"> 1 2</label>
+          <p class="explain">Генератор әр сұрағанда келесі мәнді береді де, тоқтаған жерінен жалғасады: алдымен 0, сосын 1.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">6. Функцияның ішінде <code>balance += n</code> жолы <code>UnboundLocalError</code> береді. <code>balance</code> файлдың басында жасалған болса, мұны қалай түзетуге болады?</p>
+          <label><input type="radio" value="a"> <code>balance</code>-ты бас әріппен жазу</label>
+          <label><input type="radio" value="b"> Функцияның басына <code>import balance</code> жазу</label>
+          <label><input type="radio" value="c"> Функцияның басына <code>global balance</code> жазу</label>
+          <label><input type="radio" value="d"> <code>balance: int</code> тип нұсқамасын қосу</label>
+          <p class="explain"><code>global</code> Python-ға бұл айнымалы жергілікті емес, жаһандық екенін айтады. Ал ең таза жол - класс қолдану.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. <code>{w: len(w) for w in ["hi", "cat"]}</code> нәтижесі қандай?</p>
+          <label><input type="radio" value="a"> [2, 3]</label>
+          <label><input type="radio" value="b"> {'hi', 'cat'}</label>
+          <label><input type="radio" value="c"> {2: 'hi', 3: 'cat'}</label>
+          <label><input type="radio" value="d"> {'hi': 2, 'cat': 3}</label>
+          <p class="explain">Сөздіктік өрнек: кілт - сөздің өзі, мән - оның ұзындығы.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">8. <code>def meow(n: int): ...</code> болса, <code>python meows.py</code> арқылы іске қосқанда <code>meow("3")</code> шақыруы туралы қай тұжырым дұрыс?</p>
+          <label><input type="radio" value="a"> Python бағдарламаны іске қоспай, тип қатесін көрсетеді</label>
+          <label><input type="radio" value="b"> Python тип нұсқамасын тексермейді, мұндай қатені <code>mypy</code> табады</label>
+          <label><input type="radio" value="c"> Python "3"-ті автоматты түрде <code>int</code>-ке айналдырады</label>
+          <label><input type="radio" value="d"> Тип нұсқамасы бар функцияны тек <code>mypy</code> арқылы іске қосуға болады</label>
+          <p class="explain">Тип нұсқамалары - тек кеңес. Python оларды орындау кезінде тексермейді, ал <code>mypy</code> кодты іске қоспай-ақ тексереді.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="practice">Жаттығу</h2>
+      <p>CS50P-ның 9-аптасында ресми тапсырмалар жинағы жоқ: курс қорытынды жобамен аяқталады. Бірақ бүгінгі құралдарды қолмен ұстап көру үшін біз екі шағын қосымша жаттығу дайындадық. Бұлар - <strong>осы сайттың қосымша жаттығулары</strong>, ресми CS50P тапсырмалары емес, сондықтан оларға <code>check50</code> жоқ. Шешіміңізді төмендегі автотексерушіде тексере аласыз.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="practice-scores">Passing Scores (Өткен ұпайлар)</h3></div>
+        <p>Мұғалім сыныптың ұпайларын бір жолға, бос орынмен бөліп жазады: <code>45 50 99 12</code>. Кім өтті? Өту шегі - 50 ұпай (50 өтеді).</p>
+        <p><code>scores.py</code> файлында екі функция жазыңыз:</p>
+        <ul>
+          <li><code>passing(scores)</code> - бүтін сандар тізімін қабылдап, 50 және одан жоғары ұпайлардың жаңа тізімін <strong>бастапқы ретімен</strong> қайтарады. Оны <strong>тізімдік өрнекпен</strong> (не <code>filter</code>-мен) жазып көріңіз.</li>
+          <li><code>main()</code> - қолданушыдан ұпайлар жолын сұрап, оны <code>int</code> тізіміне айналдырады (мұнда да тізімдік өрнек ыңғайлы), өткен ұпайларды <code>, </code> арқылы бір жолға шығарады, ал келесі жолға <code>Passed: k/n</code> жазады (k - өткендер саны, n - барлық ұпай саны). Ешкім өтпесе, бірінші жол бос болады.</li>
+        </ul>
+        <p>Мысалы, <code>45 50 99 12</code> енгізілсе, <code>50, 99</code> және <code>Passed: 2/4</code> шығады.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>[int(s) for s in line.split()]</code> жолды сандар тізіміне айналдырады. Тізімді <code>, </code> арқылы шығару үшін тарқатуды есіңізге алыңыз: <code>print(*passed, sep=", ")</code>.</p></div></details>
+        <div class="autograder" data-check="py-scores" data-src="python/checks/week-9.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py9-scores">
+            <li><input type="checkbox"> <span><code>45 50 99 12</code> → <code>50, 99</code> және <code>Passed: 2/4</code></span></li>
+            <li><input type="checkbox"> <span><code>passing([10, 50, 99])</code> → <code>[50, 99]</code></span></li>
+            <li><input type="checkbox"> <span><code>passing</code> тізімдік өрнекпен (не <code>filter</code>-мен) жазылған.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="practice-squares">Square Generator (Квадраттар генераторы)</h3></div>
+        <p>Қой санағандай, енді квадраттарды санайық. <code>squares.py</code> файлында <code>squares(n)</code> <strong>генераторын</strong> жазыңыз: ол <code>1</code>, <code>4</code>, <code>9</code>, ..., <code>n * n</code> мәндерін тізім етіп қайтармай, <code>yield</code> арқылы бір-бірлеп беруі керек. <code>main</code> функциясы дайын: ол <code>n</code>-ді сұрап, әр квадратты жеке жолға шығарады.</p>
+        <p>Генератор екенін тексеру үшін автотексеруші <code>squares(10**12)</code>-ден бірінші мәнді сұрайды. Тізім құрастыратын шешім мұнда жадқа сыймай қалады, ал генератор бірден <code>1</code> береді.</p>
+        <p><strong>Өзіңізді тексеріңіз:</strong> <code>n = 4</code> болса, соңғы шығатын сан қандай?</p>
+        <div class="answer-check" data-answer="16"><input type="text" placeholder="Сан" aria-label="Сан"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Лекциядағы <code>sheep</code> функциясының соңғы нұсқасына қараңыз. Тек <code>range</code> 0-ден емес, 1-ден басталып, <code>n</code>-ді қоса алуы керек.</p></div></details>
+        <div class="autograder" data-check="py-squares" data-src="python/checks/week-9.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="py9-squares">
+            <li><input type="checkbox"> <span><code>3</code> → <code>1</code>, <code>4</code>, <code>9</code> (әрқайсысы жеке жолда)</span></li>
+            <li><input type="checkbox"> <span><code>0</code> → ештеңе шықпайды</span></li>
+            <li><input type="checkbox"> <span><code>squares</code> тізім емес, <code>yield</code> қолданатын генератор.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <h2 id="final-project">Қорытынды жоба</h2>
+      <p><span class="term-en">(Final Project)</span> Міне, ең қызықты бөлім! CS50P қорытынды жобамен аяқталады: енді сіз тапсырманы біреудің берген шартымен емес, өз идеяңызбен жазасыз. Жоба сізге шынымен қызықты болсын, өйткені оны өзіңіз ойлап табасыз, өзіңіз жоспарлайсыз және өзіңіз жүзеге асырасыз. Ресми тапсырма беті: <a href="https://cs50.harvard.edu/python/project/" target="_blank" rel="noopener">cs50.harvard.edu/python/project</a>. Талаптарды міндетті түрде сол беттен оқып шығыңыз, ал төменде олардың негізгісін қазақша түсіндіреміз.</p>
+      <h3 id="project-requirements">Талаптар</h3>
+      <p>Жобаңыз Python-да жазылады және мына файлдардан тұрады:</p>
+      <ul>
+        <li><code>project.py</code> - негізгі бағдарлама. Онда <code>main</code> функциясы және <strong>кемінде тағы үш</strong> функция болуы керек. Ол функциялар класстың ішінде емес, файлдың ең жоғарғы деңгейінде (<code>main</code> сияқты) жазылуы тиіс.</li>
+        <li><code>test_project.py</code> - сол үш функцияға арналған <code>pytest</code> тесттері. Тест функцияларының аттары <code>test_</code>-мен басталады, мысалы <code>custom_function</code> үшін <code>test_custom_function</code>.</li>
+        <li><code>requirements.txt</code> - жобаңыз қолданатын <code>pip</code> арқылы орнатылатын кітапханалар тізімі, әрқайсысы жеке жолда.</li>
+        <li><code>README.md</code> - жобаңыздың сипаттамасы: не істейді, қандай файлдардан тұрады, қандай шешімдер қабылдадыңыз. Ең басында жоба бейнежазбасының URL-сілтемесі тұрады.</li>
+      </ul>
+      <p>Сонымен қатар жобаңызды көрсететін, ұзақтығы <strong>3 минуттан аспайтын</strong> бейнежазба түсіресіз. Барлық файлдар бір папкада болуы керек. Жоба <code>submit50 cs50/problems/2022/python/project</code> командасымен тапсырылады. Бейнежазбаның мазмұны, README ұзындығы сияқты қалған толық талаптарды ресми беттен қараңыз.</p>
+      <h3 id="project-ideas">Идеялар</h3>
+      <p>Не жазарыңызды білмей тұрсаңыз, мына идеялардан бастауға болады. Ең жақсы жоба - өзіңізге не жақыныңызға шынымен пайдалы болатын жоба:</p>
+      <ul>
+        <li><strong>Қазақ тілі сөздігі</strong>: сөзді енгізсеңіз, аудармасын не мағынасын табады, жаңа сөз қосуға мүмкіндік береді (сөздікті CSV файлда сақтауға болады).</li>
+        <li><strong>Теңге конвертері</strong>: теңгені долларға, еуроға, рубльге айналдырады, нәтижені әдемі пішімдеп шығарады.</li>
+        <li><strong>ҰБТ тест жаттықтырушысы</strong>: файлдан сұрақтарды оқып, кездейсоқ ретпен береді, ұпайды санап, соңында нәтижені көрсетеді.</li>
+        <li><strong>Латын әліпбиіне көшіргіш</strong>: кириллицадағы қазақ мәтінін латын әліпбиіне аударады (сөздікпен немесе тұрақты өрнектермен).</li>
+        <li><strong>Сабақ кестесі</strong>: аптаның күніне қарай сабақтарды, үй тапсырмаларын және мерзімдерді көрсететін командалық жол бағдарламасы (<code>argparse</code> пайдалы болады).</li>
+        <li><strong>Үй бюджеті</strong>: кіріс пен шығысты тіркеп, айлық есеп шығаратын бағдарлама.</li>
+      </ul>
+      <div class="callout tip">
+        <span class="callout-title">Кеңес: кішкентайдан бастаңыз</span>
+        <p>Алдымен ең қарапайым жұмыс істейтін нұсқасын жазыңыз, сосын бірте-бірте жетілдіріңіз. Функцияларды тестілеуге ыңғайлы етіп жазыңыз: олар <code>input</code> пен <code>print</code>-ке тәуелді болмай, мән қабылдап, мән қайтарсын. Сонда <code>test_project.py</code> жазу оңай болады.</p>
+      </div>
+      <details open><summary>Тексеру</summary><div class="details-body">
+        <ul class="checklist" data-id="py9-project">
+          <li><input type="checkbox"> <span>Жоба идеясын таңдадым.</span></li>
+          <li><input type="checkbox"> <span><code>project.py</code>-да <code>main</code> және тағы кемінде үш жоғарғы деңгейлі функция бар.</span></li>
+          <li><input type="checkbox"> <span><code>test_project.py</code>-да сол үш функцияның тесттері бар, <code>pytest test_project.py</code> өтеді.</span></li>
+          <li><input type="checkbox"> <span><code>requirements.txt</code> дайын.</span></li>
+          <li><input type="checkbox"> <span>3 минуттан аспайтын бейнежазба түсірдім.</span></li>
+          <li><input type="checkbox"> <span><code>README.md</code> жаздым, басында бейнежазбаның сілтемесі бар.</span></li>
+          <li><input type="checkbox"> <span><code>submit50 cs50/problems/2022/python/project</code> арқылы тапсырдым.</span></li>
+        </ul>
+        <p class="progress"></p>
+      </div></details>
+      <div class="callout note">
+        <span class="callout-title">Құттықтаймыз, мәреге жеттіңіз!</span>
+        <p>Қорытынды жобаны аяқтасаңыз, сіз CS50P-ны толық өттіңіз. Бұл - үлкен жетістік, өзіңізді мақтауға толық құқығыңыз бар! Осы сайттың CS50P <a href="../../certificate.html">сертификатын</a> алуды ұмытпаңыз. Ал жобаңызды достарыңызбен, отбасыңызбен бөлісіңіз: сіздің қолыңыздан шыққан бағдарлама - мақтанышқа лайық дүние.</p>
+      </div>
+
+      <nav class="pager">
+        <a href="week-8.html"><small>Алдыңғы</small>← 8-апта: Объектіге бағытталған бағдарламалау</a>
+        <a class="next" href="../index.html"><small>Курс</small>CS50P: барлық лекциялар →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50P (CS50's Introduction to Programming with Python, Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1019,9 +1019,11 @@ def get_float(p=""):
 cs50.get_string, cs50.get_int, cs50.get_float = get_string, get_int, get_float
 sys.modules["cs50"] = cs50
 
-def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
-    import os
+def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
+    import os, random
     q = list(inputs)
+    if seed is not None:
+        random.seed(seed)
     if files:
         for name, text in dict(files).items():
             d = os.path.dirname(name)
@@ -1029,6 +1031,8 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
                 os.makedirs(d, exist_ok=True)
             with open(name, "w") as f:
                 f.write(text)
+            if name.endswith(".py"):  # алдыңғы тесттің модулі кэште қалмасын
+                sys.modules.pop(name[:-3].replace("/", "."), None)
     old_argv = sys.argv
     sys.argv = list(argv) if argv else ["student.py"]
     def _inp(p=""):
@@ -1049,8 +1053,10 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     try:
         with contextlib.redirect_stdout(buf):
             exec(compile(src, "student.py", "exec"), {"__name__": "__main__"})
-    except SystemExit:
-        pass
+    except SystemExit as e:
+        # sys.exit("хабар") - Python мұны stderr-ге жазады; тесттер үшін шығысқа қосамыз
+        if e.code is not None and not isinstance(e.code, int):
+            buf.write(str(e.code) + "\\n")
     except BaseException as e:
         err = f"{type(e).__name__}: {e}"
     finally:
@@ -1093,8 +1099,26 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
   function initCertificate() {
     const cert = document.querySelector(".certificate");
     if (!cert) return;
-    loadScript("assets/data/lectures.js").then(() => {
-      const lectures = window.CS50KZ_LECTURES || [];
+    // Әр курстың өз сертификаты: certificate.html?course=python
+    const course = new URLSearchParams(location.search).get("course") === "python" ? "python" : "x";
+    const CERT = {
+      x: { src: "assets/data/lectures.js", list: () => window.CS50KZ_LECTURES || [], exam: true },
+      python: {
+        src: "python/data/lectures.js", total: 10, list: () => ((window.CS50KZ_COURSE_LECTURES || {}).python || []).map((l) => ({ ...l, id: "python:" + l.id })), exam: false,
+        code: "CS50P", intro: "Барлық 10 лекцияны оқып шыққан соң, атыңыз жазылған CS50P сертификатын басып шығарыңыз не PDF ретінде сақтаңыз.",
+        text: "«Python бағдарламалау» (CS50P) курсының қазақ тіліндегі нұсқасының барлық 10 лекциясын оқып шыққанын растайды: функциялар, шарттар, циклдер, ерекше жағдайлар, кітапханалар, модульдік тесттер, файлдармен жұмыс, тұрақты өрнектер және объектіге бағытталған бағдарламалау.",
+        note: "Бейресми сертификат. Түпнұсқа курс: CS50P, Гарвард университеті, David J. Malan (CC BY-NC-SA 4.0). Гарвард университеті берген ресми сертификат емес.",
+      },
+    }[course];
+    document.querySelectorAll(".cert-switch a").forEach((a) => { const on = a.dataset.c === course; a.classList.toggle("on", on); if (on) a.setAttribute("aria-current", "page"); });
+    if (course !== "x") {
+      cert.dataset.course = course;
+      const set = (sel, t) => { const e = document.querySelector(sel); if (e) e.textContent = t; };
+      set(".cert-code", CERT.code); set(".cert-intro", CERT.intro); set(".cert-text", CERT.text); set(".cert-note", CERT.note);
+      document.title = CERT.code + " сертификаты - CS50 қазақша";
+    }
+    loadScript(CERT.src).then(() => {
+      const lectures = CERT.list();
       const p = Progress.load();
       const left = lectures.filter((l) => !p.read[l.id]);
       const gate = document.querySelector(".cert-gate");
@@ -1111,22 +1135,24 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       };
       const ex = readJson("cs50kz:exam", {});
       const exOut = cert.querySelector(".cert-exam");
-      if (exOut && ex.best >= 70) {
+      if (exOut && CERT.exam && ex.best >= 70) {
         exOut.hidden = false;
         exOut.innerHTML = `Қорытынды емтихан нәтижесі: <b>${ex.best}%</b>${ex.best >= 90 ? " · <b>үздік</b>" : ""}`;
       }
       nameInput.addEventListener("input", sync);
       sync();
       const done = lectures.length - left.length;
-      const steps = lectures.map((l) => `<a href="${ROOT_URL + l.url}" class="cg-step ${p.read[l.id] ? "on" : ""}" title="${escapeHtml(l.num + ": " + l.title)}">${p.read[l.id] ? "✓" : escapeHtml(l.id === "ai" ? "AI" : l.id.replace("week-", ""))}</a>`).join("");
+      const steps = lectures.map((l) => `<a href="${ROOT_URL + l.url}" class="cg-step ${p.read[l.id] ? "on" : ""}" title="${escapeHtml(l.num + ": " + l.title)}">${p.read[l.id] ? "✓" : escapeHtml(l.id === "ai" ? "AI" : l.id.replace(/^(python:)?week-/, ""))}</a>`).join("");
       const exBest = readJson("cs50kz:exam", {}).best;
-      const exam = exBest >= 70 ? `<span class="cg-exam ok">🎓 Емтихан: ${exBest}%</span>` : `<a class="cg-exam" href="${ROOT_URL}exam.html">📝 Емтихан ${exBest != null ? `(${exBest}%) - қайта тапсыру` : "- тапсыру"} →</a>`;
-      if (left.length) {
+      const exam = !CERT.exam ? "" : exBest >= 70 ? `<span class="cg-exam ok">🎓 Емтихан: ${exBest}%</span>` : `<a class="cg-exam" href="${ROOT_URL}exam.html">📝 Емтихан ${exBest != null ? `(${exBest}%) - қайта тапсыру` : "- тапсыру"} →</a>`;
+      if (left.length || lectures.length < (CERT.total || 0)) {
         cert.classList.add("locked");
-        gate.innerHTML = `<div class="cg-head"><b>${done} / ${lectures.length} лекция оқылды</b>${exam}</div>
-          <div class="cg-bar"><span style="width:${(done / lectures.length) * 100}%"></span></div>
+        const all = Math.max(lectures.length, CERT.total || 0);
+        const more = lectures.length < all ? ` Қалған ${all - lectures.length} лекция аударылып жатыр.` : "";
+        gate.innerHTML = `<div class="cg-head"><b>${done} / ${all} лекция оқылды</b>${exam}</div>
+          <div class="cg-bar"><span style="width:${(done / all) * 100}%"></span></div>
           <div class="cg-steps">${steps}</div>
-          <p>Сертификат ашылу үшін әр лекцияның соңындағы «Оқыдым ✓» батырмасын басыңыз. Келесісі: <a href="${ROOT_URL + left[0].url}">${escapeHtml(left[0].num + ": " + left[0].title)} →</a></p>`;
+          <p>Сертификат ашылу үшін әр лекцияның соңындағы «Оқыдым ✓» батырмасын басыңыз.${left.length ? ` Келесісі: <a href="${ROOT_URL + left[0].url}">${escapeHtml(left[0].num + ": " + left[0].title)} →</a>` : ""}${more}</p>`;
       } else {
         gate.classList.add("open");
         gate.innerHTML = `<div class="cg-head"><b>Құттықтаймыз! 🎉 Барлық ${lectures.length} лекция оқылды</b>${exam}</div><div class="cg-bar"><span style="width:100%"></span></div><p>Атыңызды жазып, сертификатты басып шығарыңыз не PDF ретінде сақтаңыз.</p>`;

@@ -1051,14 +1051,17 @@
         const t = c.tests[i], li = items[i];
         await sleep(30);
         let out = "", err = null;
-        try { [out, err] = runOne(ed.value, py.toPy(t.in), t.argv ? py.toPy(t.argv) : null, c.files ? py.toPy(c.files) : null).toJs(); } catch (e) { err = String(e.message || e); }
-        const ok = t.contains
-          ? (out || "").toLowerCase().includes(t.contains.toLowerCase())
-          : !err && norm(out) === norm(t.out);
+        try { [out, err] = runOne(ed.value + (t.append || c.append ? "\n\n" + (t.append || c.append) : ""), py.toPy(t.in || []), t.argv ? py.toPy(t.argv) : null, (t.files || c.files) ? py.toPy(t.files || c.files) : null, 2000000, t.seed ?? null).toJs(); } catch (e) { err = String(e.message || e); }
+        // raises: бағдарлама қате беруі керек (мысалы, қате модульде студенттің тесті құлауы тиіс)
+        const ok = t.raises
+          ? !!err && err.startsWith(t.raises)
+          : t.contains
+            ? (out || "").toLowerCase().includes(t.contains.toLowerCase())
+            : !err && norm(out) === norm(t.out);
         if (ok) pass++;
         li.className = ok ? "ok" : "bad";
         li.innerHTML = `<span class="ag-ico">${ok ? "✓" : "✗"}</span>${esc(t.n)}` + (ok ? "" :
-          `<div class="ag-diff"><div><small>${t.argv ? "Команда" : "Кіріс"}</small><pre>${esc(t.argv ? "python " + t.argv.join(" ") : t.in.join("\n"))}</pre></div><div><small>Күтілген</small><pre>${esc(t.out)}</pre></div><div><small>Сіздің шығысыңыз</small><pre>${esc(err ? (out ? out + "\n" : "") + err : out || "(бос)")}</pre></div></div>`);
+          `<div class="ag-diff"><div><small>${t.argv ? "Команда" : "Кіріс"}</small><pre>${esc(t.argv ? "python " + t.argv.join(" ") + ((t.in || []).length ? "\n" + t.in.join("\n") : "") : (t.in || []).join("\n"))}</pre></div><div><small>Күтілген</small><pre>${esc(t.out)}</pre></div><div><small>Сіздің шығысыңыз</small><pre>${esc(err ? (out ? out + "\n" : "") + err : out || "(бос)")}</pre></div></div>`);
       }
       el.querySelector(".ag-score").textContent = `${pass} / ${c.tests.length} тест өтті`;
       if (pass === c.tests.length) {
