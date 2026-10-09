@@ -3,7 +3,10 @@
 (function () {
   // Сайттың түбір мекенжайы (main.js-тің орнынан анықталады: file:// пен GitHub Pages-те де жұмыс істейді)
   const ROOT_URL = new URL("../../", document.currentScript.src).href;
-  const PAGE = (location.pathname.match(/lectures\/([\w-]+)\.html$/) || [])[1] || null;
+  // Курс: CS50x - түбірде (lectures/), басқалары өз қалтасында (python/lectures/ т.б.).
+  // CS50x-тің прогресс кілттері бұрынғыдай (week-0), басқа курстарда курс атымен (python:week-0) - шатаспайды.
+  const COURSE = (location.pathname.match(/\/(python|sql|ai|web)\/(?:lectures\/[\w-]+\.html|index\.html)?$/) || [])[1] || "x";
+  const PAGE = (() => { const n = (location.pathname.match(/lectures\/([\w-]+)\.html$/) || [])[1]; return n ? (COURSE === "x" ? n : COURSE + ":" + n) : null; })();
 
   // Түнгі / күндізгі режим
   const root = document.documentElement;
@@ -97,6 +100,7 @@
     initLecturePage();
     initDashboard();
     initQuote();
+    initCourseHome();
     initAlashPortraits();
     document.querySelectorAll(".qt-slot").forEach(miniQuote);
     initPythonRunner();
@@ -105,7 +109,7 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
-    window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), summary: summaryData, ORDER, dayKey };
+    window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), summary: summaryData, ORDER, dayKey, COURSE, readJson };
     if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
     if (document.querySelector(".flask-lab")) loadScript("assets/js/flask.js");
     if (document.querySelector(".exam")) loadScript("assets/js/exam.js");
@@ -508,9 +512,9 @@
       top.classList.toggle("show", scrollY > 900);
       if (Date.now() - lastSaved > 2000) {
         lastSaved = Date.now();
-        const q = Progress.load();
-        q.last = { id: PAGE, title: document.querySelector("h1").textContent, num: head.querySelector(".num").textContent, y: Math.round(ratio * 100) };
-        Progress.save(q);
+        const last = { id: PAGE, title: document.querySelector("h1").textContent, num: head.querySelector(".num").textContent, y: Math.round(ratio * 100) };
+        if (COURSE === "x") { const q = Progress.load(); q.last = last; Progress.save(q); }
+        else try { localStorage.setItem("cs50kz:last:" + COURSE, JSON.stringify(last)); } catch (e) {} // басқа курс CS50x-тің «Жалғастыру»-ын бұзбайды
         if (!onScroll.logged && ratio > 0.1) { onScroll.logged = true; logDay(); }
       }
     };
@@ -810,6 +814,36 @@
       drawGoal(box);
       box.querySelector(`.goal-pick button[data-g="${b.dataset.g}"]`).focus();
     }));
+  }
+
+  // ---------- Курстың басты беті (python/index.html т.б.): карталарда прогресс ----------
+  function initCourseHome() {
+    const c = document.body.dataset.course;
+    if (!c) return;
+    const p = Progress.load();
+    const cards = [...document.querySelectorAll(".week-card[data-id]")];
+    let read = 0;
+    cards.forEach((card) => {
+      const id = c + ":" + card.dataset.id, st = card.querySelector(".status");
+      if (card.classList.contains("soon") || !st) return;
+      const q = p.quiz[id];
+      if (q && !card.querySelector(".card-meta")) {
+        const meta = document.createElement("div");
+        meta.className = "card-meta";
+        meta.innerHTML = `<span>📝 ${q.best}/${q.total}</span>`;
+        st.before(meta);
+      }
+      if (p.read[id]) { read++; card.classList.add("is-read"); st.textContent = "Оқылды ✓"; }
+    });
+    const ready = cards.filter((x) => !x.classList.contains("soon")).length;
+    const bar = document.querySelector(".course-progress");
+    if (bar) {
+      const pct = ready ? Math.round((read / ready) * 100) : 0;
+      const last = readJson("cs50kz:last:" + c, null);
+      bar.innerHTML = `<div class="cp2-ring" style="--pct:${pct}"><b>${read}<small>/${ready}</small></b></div>
+        <div><b>${read ? "Жарайсыз, жалғастырыңыз!" : "Курсты бастаңыз"}</b><span>${ready} лекция дайын · ${read} оқылды</span></div>
+        ${last && last.id && last.id.startsWith(c + ":") ? `<a class="btn gold" href="${ROOT_URL}${c}/lectures/${escapeHtml(last.id.split(":")[1])}.html">Жалғастыру: ${escapeHtml(last.num || "")} →</a>` : ""}`;
+    }
   }
 
   // ---------- Басты бет: жеке прогресс панелі ----------
