@@ -20,9 +20,16 @@ async function routePyodide(context) {
   });
 }
 
-// Сыртқы қаріптерді тоқтатамыз: тест жылдамырақ және желіге тәуелсіз
+// Сыртқы қаріптерді тоқтатамыз: тест жылдамырақ және желіге тәуелсіз.
+// highlight.js (cdnjs) - жергілікті npm бумасынан: тесттер CI-дегідей (код бояуымен) және желісіз жүрсін.
+const HLDIR = path.join(__dirname, "../node_modules/@highlightjs/cdn-assets/");
 async function blockFonts(context) {
   await context.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.fulfill({ status: 200, body: "", headers: { "content-type": "text/css" } }));
+  await context.route(/cdnjs\.cloudflare\.com\/ajax\/libs\/highlight\.js\/11\.9\.0\/(.*)$/, (r) => {
+    const f = path.join(HLDIR, r.request().url().match(/11\.9\.0\/([^?]*)/)[1]);
+    if (!fs.existsSync(f)) return r.continue();
+    return r.fulfill({ status: 200, body: fs.readFileSync(f), headers: { "content-type": f.endsWith(".css") ? "text/css" : "application/javascript", "access-control-allow-origin": "*" } });
+  });
 }
 
 // Supabase → жергілікті PostgREST-мок (support/rest_mock.py), CLOUD_MOCK орнатылғанда ғана
