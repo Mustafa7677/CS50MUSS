@@ -101,6 +101,7 @@
     initDashboard();
     initQuote();
     initCourseHome();
+    initCourseCards();
     initAlashPortraits();
     document.querySelectorAll(".qt-slot").forEach(miniQuote);
     initPythonRunner();
@@ -126,7 +127,7 @@
 
   // Код блоктарына «Көшіру» батырмасы
   function addCopyButtons() {
-    document.querySelectorAll("pre").forEach((pre) => {
+    document.querySelectorAll("pre:not(.py-win-code)").forEach((pre) => {
       const btn = document.createElement("button");
       btn.className = "copy-btn";
       btn.type = "button";
@@ -844,6 +845,24 @@
         <div><b>${read ? "Жарайсыз, жалғастырыңыз!" : "Курсты бастаңыз"}</b><span>${ready} лекция дайын · ${read} оқылды</span></div>
         ${last && last.id && last.id.startsWith(c + ":") ? `<a class="btn gold" href="${ROOT_URL}${c}/lectures/${escapeHtml(last.id.split(":")[1])}.html">Жалғастыру: ${escapeHtml(last.num || "")} →</a>` : ""}`;
     }
+  }
+
+  // ---------- Курс витринасы: әр курстағы өз прогресі ----------
+  function initCourseCards() {
+    const cards = document.querySelectorAll(".cx-card[data-total]");
+    if (!cards.length) return;
+    const p = Progress.load();
+    cards.forEach((card) => {
+      const c = card.dataset.course, total = +card.dataset.total || 0;
+      const read = Object.keys(p.read).filter((k) => p.read[k] && (c === "x" ? ORDER.includes(k) : k.startsWith(c + ":"))).length;
+      if (!read || !total) return;
+      const pct = Math.min(100, Math.round((read / total) * 100));
+      const bar = card.querySelector(".cx-bar"), go = card.querySelector(".cx-go");
+      if (bar) { bar.hidden = false; bar.style.setProperty("--p", pct + "%"); bar.title = `${read}/${total} лекция оқылды`; }
+      if (go) go.innerHTML = `${pct === 100 ? "Аяқталды ✓" : "Жалғастыру"} <span aria-hidden="true">→</span>`;
+      const meta = card.querySelector(".cx-foot > span:first-child");
+      if (meta) meta.textContent = `${read}/${total} лекция оқылды`;
+    });
   }
 
   // ---------- Басты бет: жеке прогресс панелі ----------
