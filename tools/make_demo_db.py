@@ -242,6 +242,6 @@ CREATE TABLE ratings (movie_id INTEGER NOT NULL, rating REAL NOT NULL, votes INT
 
 data = {"favorites": favorites(), "shows": shows(), "songs": songs(), "movies": movies()}
 (ROOT / "assets/data/db.js").write_text(
-    "// tools/make_demo_db.py арқылы жасалған. Қолмен өзгертпеңіз.\nwindow.CS50KZ_DB = " +
-    json.dumps(data, ensure_ascii=False) + ";\n", encoding="utf-8")
+    "// tools/make_demo_db.py арқылы жасалған. Қолмен өзгертпеңіз.\nwindow.CS50KZ_DB = Object.assign(window.CS50KZ_DB || {}, " +
+    json.dumps(data, ensure_ascii=False) + ");\n", encoding="utf-8")
 print({k: len(v) for k, v in data.items()})

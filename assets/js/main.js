@@ -106,12 +106,13 @@
     document.querySelectorAll(".qt-slot").forEach(miniQuote);
     initPythonRunner();
     initSqlRunner();
+    initWebPreview();
     initPlayground();
     initGlossary();
     initCertificate();
     initServiceWorker();
     window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), summary: summaryData, ORDER, dayKey, COURSE, readJson };
-    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
+    if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .js-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
     if (document.querySelector(".flask-lab")) loadScript("assets/js/flask.js");
     if (document.querySelector(".exam")) loadScript("assets/js/exam.js");
     if (document.querySelector(".profile")) loadScript("assets/js/profile.js");
@@ -930,7 +931,8 @@
   function initPythonRunner() {
     const blocks = [...document.querySelectorAll('pre[data-lang="python"]')].filter((pre) => {
       const code = pre.textContent;
-      return !/flask|openai|from cs50 import SQL|sys\.argv|import csv|open\(|import requests|qrcode|cowsay|pyttsx3|face_recognition|PIL|speech_recognition|^\s*\.\.\./m.test(code);
+      if (pre.hasAttribute("data-norun")) return false;
+      return !/numpy|tensorflow|sklearn|nltk|torch|pygame|cv2|django|import (pandas|matplotlib|transformers)|flask|openai|from cs50 import SQL|sys\.argv|import csv|open\(|import requests|qrcode|cowsay|pyttsx3|face_recognition|PIL|speech_recognition|^\s*\.\.\./m.test(code);
     });
     blocks.forEach((pre) => {
       const btn = document.createElement("button");
@@ -1099,17 +1101,26 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
   function initCertificate() {
     const cert = document.querySelector(".certificate");
     if (!cert) return;
-    // Әр курстың өз сертификаты: certificate.html?course=python
-    const course = new URLSearchParams(location.search).get("course") === "python" ? "python" : "x";
-    const CERT = {
-      x: { src: "assets/data/lectures.js", list: () => window.CS50KZ_LECTURES || [], exam: true },
-      python: {
-        src: "python/data/lectures.js", total: 10, list: () => ((window.CS50KZ_COURSE_LECTURES || {}).python || []).map((l) => ({ ...l, id: "python:" + l.id })), exam: false,
-        code: "CS50P", intro: "Барлық 10 лекцияны оқып шыққан соң, атыңыз жазылған CS50P сертификатын басып шығарыңыз не PDF ретінде сақтаңыз.",
-        text: "«Python бағдарламалау» (CS50P) курсының қазақ тіліндегі нұсқасының барлық 10 лекциясын оқып шыққанын растайды: функциялар, шарттар, циклдер, ерекше жағдайлар, кітапханалар, модульдік тесттер, файлдармен жұмыс, тұрақты өрнектер және объектіге бағытталған бағдарламалау.",
-        note: "Бейресми сертификат. Түпнұсқа курс: CS50P, Гарвард университеті, David J. Malan (CC BY-NC-SA 4.0). Гарвард университеті берген ресми сертификат емес.",
-      },
-    }[course];
+    // Әр курстың өз сертификаты: certificate.html?course=python|sql|ai|web
+    const q = new URLSearchParams(location.search).get("course");
+    const course = ["python", "sql", "ai", "web"].includes(q) ? q : "x";
+    const note = (c) => `Бейресми сертификат. Түпнұсқа курс: ${c}, Гарвард университеті, David J. Malan (CC BY-NC-SA 4.0). Гарвард университеті берген ресми сертификат емес.`;
+    const COURSE_CERT = {
+      python: { code: "CS50P", total: 10, what: "«Python бағдарламалау» (CS50P)", topics: "функциялар, шарттар, циклдер, ерекше жағдайлар, кітапханалар, модульдік тесттер, файлдармен жұмыс, тұрақты өрнектер және объектіге бағытталған бағдарламалау" },
+      sql: { code: "CS50 SQL", total: 7, what: "«Дерекқорлар» (CS50 SQL)", topics: "SQL сұраулары, кестелерді байланыстыру, дерекқорды жобалау, деректерді жазу, көріністер, индекстер және масштабтау" },
+      ai: { code: "CS50 AI", total: 7, what: "«Жасанды интеллект» (CS50 AI)", topics: "іздеу, білім, ықтималдық, оңтайландыру, машиналық оқыту, нейрон желілер және тіл" },
+      web: { code: "CS50 Web", total: 9, what: "«Веб-бағдарламалау» (CS50 Web)", topics: "HTML, CSS, Git, Python, Django, SQL, JavaScript, пайдаланушы интерфейстері, тестілеу, CI/CD, масштабтау және қауіпсіздік" },
+    };
+    const CC = COURSE_CERT[course];
+    const CERT = course === "x"
+      ? { src: "assets/data/lectures.js", list: () => window.CS50KZ_LECTURES || [], exam: true }
+      : {
+          src: `${course}/data/lectures.js`, total: CC.total, exam: false, code: CC.code,
+          list: () => ((window.CS50KZ_COURSE_LECTURES || {})[course] || []).map((l) => ({ ...l, id: course + ":" + l.id })),
+          intro: `Барлық ${CC.total} лекцияны оқып шыққан соң, атыңыз жазылған ${CC.code} сертификатын басып шығарыңыз не PDF ретінде сақтаңыз.`,
+          text: `${CC.what} курсының қазақ тіліндегі нұсқасының барлық ${CC.total} лекциясын оқып шыққанын растайды: ${CC.topics}.`,
+          note: note(CC.code),
+        };
     document.querySelectorAll(".cert-switch a").forEach((a) => { const on = a.dataset.c === course; a.classList.toggle("on", on); if (on) a.setAttribute("aria-current", "page"); });
     if (course !== "x") {
       cert.dataset.course = course;
@@ -1182,9 +1193,11 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
     return sqlReady;
   }
 
-  async function getDb(name, fresh = false) {
+  async function getDb(name, fresh = false, src = null) {
     const SQL = await getSql();
-    if (!window.CS50KZ_DB) await loadScript("assets/data/db.js");
+    if (src) await loadScript(src);
+    if (!window.CS50KZ_DB || !window.CS50KZ_DB.favorites) await loadScript("assets/data/db.js");
+    if (!window.CS50KZ_DB[name]) throw new Error("дерекқор табылмады: " + name);
     if (fresh || !dbs[name]) {
       if (dbs[name]) dbs[name].close();
       dbs[name] = new SQL.Database();
@@ -1209,9 +1222,12 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
   function initSqlRunner() {
     document.querySelectorAll('pre[data-lang="sql"]').forEach((pre) => {
       const code = pre.querySelector("code").innerText;
-      if (/CREATE TABLE|^\s*\.|\.\.\.|sqlite>/m.test(code)) return;
-      const name = /favorites/i.test(code) ? "favorites"
-        : /\b(shows|people|stars|ratings|genres)\b/i.test(code) ? "shows" : null;
+      if (pre.hasAttribute("data-norun")) return;
+      // data-db="атауы" (+ data-dbsrc="sql/data/db-week-1.js"): курстың өз демо дерекқоры; әр іске қосу жаңа дерекқорда
+      const own = pre.dataset.db || null;
+      if (!own && /CREATE TABLE|^\s*\.|\.\.\.|sqlite>/m.test(code)) return;
+      const name = own || (/favorites/i.test(code) ? "favorites"
+        : /\b(shows|people|stars|ratings|genres)\b/i.test(code) ? "shows" : null);
       if (!name) return;
       const btn = document.createElement("button");
       btn.className = "run-btn";
@@ -1227,13 +1243,62 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
         }
         out.innerHTML = '<p class="sql-msg">SQLite жүктелуде...</p>';
         try {
-          const db = await getDb(name);
+          const db = await getDb(name, !!own, pre.dataset.dbsrc || null);
           mark("sql");
           out.innerHTML = sqlResultHtml(db, db.exec(code)) +
-            `<p class="sql-db">Дерекқор: <code>${name}.db</code> (демо үлгі) · <a href="${ROOT_URL}playground.html#sql">Сынақ алаңында ашу →</a></p>`;
+            `<p class="sql-db">Дерекқор: <code>${name}.db</code> (демо үлгі)${own ? "" : ` · <a href="${ROOT_URL}playground.html#sql">Сынақ алаңында ашу →</a>`}</p>`;
         } catch (e) {
           out.innerHTML = `<p class="sql-msg err">Қате: ${escapeHtml(String(e.message || e))}</p>`;
         }
+      });
+    });
+  }
+
+  // ---------- HTML/CSS/JS мысалдарын лекцияда көрсету (CS50 Web): қорғалған iframe ----------
+  // <pre data-lang="html" data-preview> - беттің өзін көрсетеді; <pre data-lang="javascript" data-run> - console.log шығысын көрсетеді
+  function initWebPreview() {
+    const mk = (pre, label, build) => {
+      const btn = document.createElement("button");
+      btn.className = "run-btn";
+      btn.type = "button";
+      btn.textContent = label;
+      pre.appendChild(btn);
+      btn.addEventListener("click", () => build(pre.querySelector("code").innerText, btn));
+    };
+    document.querySelectorAll('pre[data-lang="html"][data-preview], pre[data-lang="css"][data-preview]').forEach((pre) => {
+      mk(pre, "▶ Көрсету", (code) => {
+        let box = pre.nextElementSibling;
+        if (!box || !box.classList.contains("web-preview")) { box = document.createElement("div"); box.className = "web-preview"; pre.after(box); }
+        const base = pre.dataset.lang === "css" ? `<div class="demo"><h1>Тақырып</h1><p>Абзац мәтіні, <a href="#">сілтеме</a> және <strong>қою</strong> сөз.</p><ul><li>Бірінші</li><li>Екінші</li></ul></div>` : "";
+        const doc = pre.dataset.lang === "css" ? `<!doctype html><meta charset="utf-8"><style>${code}</style>${base}` : code;
+        box.innerHTML = '<div class="wp-bar"><i></i><i></i><i></i><span>Нәтиже</span></div>';
+        const f = document.createElement("iframe");
+        f.setAttribute("sandbox", "allow-scripts");
+        f.title = "Мысалдың нәтижесі";
+        f.srcdoc = doc;
+        box.appendChild(f);
+        mark("web");
+      });
+    });
+    document.querySelectorAll('pre[data-lang="javascript"][data-run]').forEach((pre) => {
+      mk(pre, "▶ Іске қосу", (code) => {
+        let out = pre.nextElementSibling;
+        if (!out || !out.classList.contains("run-output")) { out = document.createElement("pre"); out.className = "run-output"; pre.after(out); }
+        out.textContent = "";
+        const f = document.createElement("iframe");
+        f.setAttribute("sandbox", "allow-scripts");
+        f.hidden = true;
+        const tag = "cs50kz-" + Math.random().toString(36).slice(2);
+        const onMsg = (e) => { if (e.source !== f.contentWindow || !e.data || e.data.tag !== tag) return; out.textContent += e.data.line + "\n"; };
+        window.addEventListener("message", onMsg);
+        setTimeout(() => { window.removeEventListener("message", onMsg); f.remove(); if (!out.textContent) out.textContent = "(шығыс жоқ)"; }, 2500);
+        f.srcdoc = `<script>const __s=(l)=>parent.postMessage({tag:${JSON.stringify(tag)},line:l},"*");
+const __f=(a)=>a.map(x=>typeof x==="string"?x:(()=>{try{return JSON.stringify(x)}catch(e){return String(x)}})()).join(" ");
+console.log=(...a)=>__s(__f(a));console.error=(...a)=>__s("Қате: "+__f(a));
+addEventListener("error",e=>__s("Қате: "+e.message));
+try{${code.replace(/<\/script/gi, "<\\/script")}}catch(e){__s("Қате: "+e.message)}<\/script>`;
+        document.body.appendChild(f);
+        mark("web");
       });
     });
   }

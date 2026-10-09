@@ -1075,9 +1075,85 @@
     load();
   }
 
+  // ================= JavaScript автотексерушісі (CS50 Web): қорғалған iframe =================
+  // Тест: {n, run: "сынақ өрнегі", out: күтілетін мән (JSON)} - run оқушы кодынан кейін iframe ішінде орындалады;
+  // {n, logs: ["..."]} - console.log шығысы; чектің html өрісі - оқушы кодынан алдын беттің <body> мазмұны (DOM тапсырмалары үшін).
+  async function jsGrader(el) {
+    await K.loadScript(el.dataset.src);
+    const key = el.dataset.check, c = window.CS50KZ_JSCHECKS[key];
+    el.innerHTML = `
+      <div class="ag-head"><b>✅ JavaScript автотексеруші</b><span>браузерде, қорғалған ортада</span></div>
+      <p class="ag-note">Шешіміңізді (<code>${esc(c.file)}</code>) осында қойып, «Тексеру» басыңыз.${c.note ? " " + esc(c.note) : ""}</p>
+      <textarea class="pg-editor ag-code" spellcheck="false" autocapitalize="off" aria-label="JavaScript коды"></textarea>
+      <div class="pg-actions"><button type="button" class="btn gold ag-run">▶ Тексеру</button><span class="ag-score"></span></div>
+      <ul class="ag-results">${c.tests.map((t) => `<li class="wait"><span class="ag-ico">○</span>${esc(t.n)}</li>`).join("")}</ul>`;
+    const ed = el.querySelector(".ag-code"), list = el.querySelector(".ag-results"), btn = el.querySelector(".ag-run");
+    ed.value = store.get("jg:" + key, null) ?? c.starter;
+    ed.addEventListener("input", () => store.set("jg:" + key, ed.value));
+    ed.addEventListener("keydown", (e) => {
+      if (e.key === "Tab" && !e.shiftKey) { e.preventDefault(); ed.setRangeText("  ", ed.selectionStart, ed.selectionEnd, "end"); store.set("jg:" + key, ed.value); }
+      if (e.key === "Enter" && (e.ctrlKey || e.metaKey)) { e.preventDefault(); run(); }
+    });
+    const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+    function run() {
+      btn.disabled = true;
+      el.querySelector(".ag-score").textContent = "Тексерілуде...";
+      const tag = "jg-" + Math.random().toString(36).slice(2);
+      const f = document.createElement("iframe");
+      f.setAttribute("sandbox", "allow-scripts"); f.hidden = true;
+      let done = false;
+      const finish = (res, fatal) => {
+        if (done) return; done = true;
+        clearTimeout(timer); f.remove(); btn.disabled = false;
+        let pass = 0;
+        c.tests.forEach((t, i) => {
+          const r = (res || [])[i] || { err: fatal || "нәтиже жоқ" };
+          const ok = !r.err && (t.logs ? same(r.logs, t.logs) : same(r.val, t.out));
+          if (ok) pass++;
+          const want = t.logs ? t.logs.join("\n") : JSON.stringify(t.out);
+          const got = r.err ? r.err : t.logs ? (r.logs || []).join("\n") : JSON.stringify(r.val);
+          list.children[i].className = ok ? "ok" : "bad";
+          list.children[i].innerHTML = `<span class="ag-ico">${ok ? "✓" : "✗"}</span>${esc(t.n)}` + (ok ? "" :
+            `<div class="ag-diff"><div><small>Тексеру</small><pre>${esc(t.run || "console.log")}</pre></div><div><small>Күтілген</small><pre>${esc(want)}</pre></div><div><small>Сіздің нәтижеңіз</small><pre>${esc(got === undefined ? "undefined" : got)}</pre></div></div>`);
+        });
+        el.querySelector(".ag-score").textContent = `${pass} / ${c.tests.length} тест өтті`;
+        if (pass === c.tests.length) { K.celebrate(); const g = store.get("cs50kz:graded", {}); g[key] = Date.now(); store.set("cs50kz:graded", g); K.check && K.check(); }
+      };
+      const tests = c.tests.map((t) => ({ run: t.run || null, logs: !!t.logs }));
+      // Негізгі жол: Web Worker (шексіз циклді terminate ете алады, бет қатпайды). DOM керек тапсырмаларға (c.html) iframe.
+      const harness = `
+const __fmt=(a)=>a.map(x=>typeof x==="string"?x:(()=>{try{return JSON.stringify(x)}catch(e){return String(x)}})()).join(" ");
+let __logs=[];console.log=(...a)=>__logs.push(__fmt(a));console.error=console.log;console.warn=console.log;
+const __code=${JSON.stringify(ed.value)},__html=${JSON.stringify(c.html || "")},__tests=${JSON.stringify(tests)};const __res=[];
+for(const t of __tests){__logs=[];if(typeof document!=="undefined")document.body.innerHTML=__html;let r={};
+ try{ const v=(0,eval)(t.run?__code+"\\n;(()=>("+t.run+"))()":__code); if(t.run) r.val=(v===undefined?null:JSON.parse(JSON.stringify(v))); r.logs=__logs.slice() }
+ catch(e){r.err=e.name+": "+e.message}
+ __res.push(r)}`;
+      var timer = setTimeout(() => finish2(null, "бағдарлама тым ұзақ орындалды (шексіз цикл?)"), 3500);
+      let stop = () => {};
+      const finish2 = (res, fatal) => { stop(); finish(res, fatal); };
+      if (!c.html && typeof Worker !== "undefined") {
+        const url = URL.createObjectURL(new Blob([harness + "\npostMessage({res:__res});"], { type: "text/javascript" }));
+        const w = new Worker(url);
+        stop = () => { w.terminate(); URL.revokeObjectURL(url); };
+        w.onmessage = (e) => finish2(e.data.res);
+        w.onerror = (e) => finish2(null, e.message || "қате");
+      } else {
+        const onMsg = (e) => { if (e.source === f.contentWindow && e.data && e.data.tag === tag) finish2(e.data.res, e.data.fatal); };
+        window.addEventListener("message", onMsg);
+        const safe = harness.replace(/<\/script/gi, "<\\/script");
+        f.srcdoc = `<!doctype html><meta charset="utf-8"><body>${c.html || ""}<script>${safe}
+parent.postMessage({tag:${JSON.stringify(tag)},res:__res},"*");<\/script>`;
+        document.body.appendChild(f);
+        stop = () => window.removeEventListener("message", onMsg);
+      }
+    }
+    btn.addEventListener("click", run);
+  }
+
   // ================= SQL автотексерушісі =================
   async function sqlGrader(el) {
-    await K.loadScript("assets/data/sqlchecks.js");
+    await K.loadScript(el.dataset.src || "assets/data/sqlchecks.js");
     const set = window.CS50KZ_SQLCHECKS[el.dataset.set];
     const KEY = "sqlg:" + el.dataset.set;
     const saved = store.get(KEY, {});
@@ -1523,6 +1599,7 @@
   document.querySelectorAll(".trace-quiz").forEach(traceQuiz);
   document.querySelectorAll(".autograder").forEach(autograder);
   document.querySelectorAll(".sql-grader").forEach(sqlGrader);
+  document.querySelectorAll(".js-grader").forEach(jsGrader);
   document.querySelectorAll(".detective").forEach((el) => {
     const tabs = document.querySelector(".dt-cases");
     const pick = (id) => {

@@ -1,0 +1,2 @@
+window.CS50KZ_COURSE_LECTURES = window.CS50KZ_COURSE_LECTURES || {};
+window.CS50KZ_COURSE_LECTURES["web"] = [];
