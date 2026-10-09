@@ -3,4 +3,4 @@
 
 Complete the below.
 
-  * [Traffic](https://cs50.harvard.edu/ai/projects/5/<traffic/>)
+  * [Traffic](https://cs50.harvard.edu/ai/projects/5/traffic/)

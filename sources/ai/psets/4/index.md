@@ -3,5 +3,5 @@
 
 Complete both of the below.
 
-  * [Shopping](https://cs50.harvard.edu/ai/projects/4/<shopping/>)
-  * [Nim](https://cs50.harvard.edu/ai/projects/4/<nim/>)
+  * [Shopping](https://cs50.harvard.edu/ai/projects/4/shopping/)
+  * [Nim](https://cs50.harvard.edu/ai/projects/4/nim/)

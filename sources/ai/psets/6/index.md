@@ -3,5 +3,5 @@
 
 Complete both of the below:
 
-  * [Parser](https://cs50.harvard.edu/ai/projects/6/<parser/>)
-  * [Attention](https://cs50.harvard.edu/ai/projects/6/<attention/>)
+  * [Parser](https://cs50.harvard.edu/ai/projects/6/parser/)
+  * [Attention](https://cs50.harvard.edu/ai/projects/6/attention/)
