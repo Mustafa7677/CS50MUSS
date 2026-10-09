@@ -99,3 +99,14 @@ test("бүгінгі мақсат: сақина, мақсатты таңдау, 
   await expect(page.locator(".bota-pop")).toContainText("Бүгінгі мақсат орындалды", { timeout: 5000 });
   expect(errs).toEqual([]);
 });
+
+test("серия жазғы/қысқы уақыт ауысқан күні үзілмейді (DST, Europe/Berlin)", async ({ browser }) => {
+  const c = await browser.newContext({ timezoneId: "Europe/Berlin" });
+  const page = await c.newPage();
+  await page.goto("index.html");
+  // 2026-10-25 - Еуропада сағат кері бұралатын күн (25 сағат)
+  await page.evaluate(() => localStorage.setItem("cs50kz:days", JSON.stringify({ "2026-10-24": 5, "2026-10-25": 5, "2026-10-26": 5 })));
+  await page.goto("profile.html");
+  await expect(page.locator(".cal-kpi")).toContainText("3 ең ұзақ серия");
+  await c.close();
+});

@@ -634,7 +634,7 @@
         <button type="button" class="btn secondary hs-find">Іздеу</button>
       </div>
       <p class="viz-result hs-msg"></p>
-      <div class="hs-table"></div>`;
+      <div class="hs-table" tabindex="0" role="region" aria-label="Хэш-кесте"></div>`;
     const hash = (w) => w.toUpperCase().charCodeAt(0) - 65;
     const render = (hb = -1, hi = -1, cls = "look") => {
       el.querySelector(".hs-table").innerHTML = table.map((chain, b) => `
