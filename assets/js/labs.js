@@ -1001,7 +1001,8 @@
 
   // ================= Автотексеруші (check50 браузерде) =================
   async function autograder(el) {
-    await K.loadScript("assets/data/checks.js");
+    // Курстың өз тесттері (мысалы, python/checks.js) жалпы тізімге қосылады
+    await K.loadScript(el.dataset.src || "assets/data/checks.js");
     const keys = el.dataset.check.split(",");
     let key = keys[0];
     const norm = (t) => t.replace(/\r/g, "").split("\n").map((l) => l.replace(/\s+$/, "")).join("\n").replace(/\n+$/, "");

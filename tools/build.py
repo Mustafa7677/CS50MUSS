@@ -20,6 +20,11 @@ ROOT = Path(__file__).resolve().parent.parent
 SITE_URL = "https://mustafa7677.github.io/CS50MUSS/"
 ORDER = [f"week-{i}" for i in range(8)] + ["ai"] + [f"week-{i}" for i in range(8, 11)]
 
+# Қосымша курстар: әрқайсысы өз қалтасында (<код>/index.html, <код>/lectures/week-N.html, <код>/data/lectures.js)
+COURSES = {
+    "python": {"short": "CS50P", "color": "#3776ab", "order": [f"week-{i}" for i in range(10)]},
+}
+
 
 def strip_tags(s):
     s = re.sub(r"<(script|style)\b.*?</\1>", " ", s, flags=re.S)
@@ -52,6 +57,7 @@ def nav_block(prefix, active):
         return f'<a href="{prefix}{href}"{cls}>{label}</a>'
     return f"""<nav class="nav">
         {item("index.html", "Лекциялар", "index")}
+        {item("courses.html", "Курстар", "courses", "hide-sm")}
         {item("practice.html", "Жаттығу", "practice")}
         {item("playground.html", "Сынақ алаңы", "playground", "hide-sm")}
         {item("glossary.html", "Сөздік", "glossary", "hide-sm")}
@@ -71,7 +77,7 @@ def footer_block(p):
         f'      <div class="ft-brand"><a class="ft-logo" href="{p}index.html"><img src="{p}assets/img/bota.svg" alt="" width="52" height="52">'
         '<span><b>CS50</b> қазақша</span></a>'
         '<p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>\n'
-        + "      " + col("Оқу", [("index.html#main", "Лекциялар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік"), ("exam.html", "Қорытынды емтихан")])
+        + "      " + col("Оқу", [("index.html#main", "Лекциялар"), ("courses.html", "Барлық курстар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік"), ("exam.html", "Қорытынды емтихан")])
         + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы")])
         + col("Жоба", [("about.html", "Курс туралы"), ("alash.html", "Алаш тұлғалары"), ("certificate.html", "Сертификат"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің профилім")])
         + '\n      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. '
@@ -105,6 +111,10 @@ def process_page(path, prefix, active):
     rel = path.relative_to(ROOT).as_posix()
     url = SITE_URL + ("" if rel == "index.html" else rel)
     og = f"assets/img/og/{path.stem}.jpg" if rel.startswith("lectures/") else "assets/img/og.jpg"
+    for code, c in COURSES.items():  # басқа курс лекцияларының баннер түсі мен нөмірі
+        m = re.match(rf"{code}/lectures/week-(\d+)\.html$", rel)
+        if m:
+            HEAD_STYLE.setdefault(rel, (c["color"], m.group(1)))
     block = head_block(prefix, title, desc, url, og if (ROOT / og).exists() else "assets/img/og.jpg")
     if "<!-- build:head -->" in s:
         s = re.sub(r"<!-- build:head -->.*?<!-- /build:head -->", block, s, flags=re.S)
@@ -131,14 +141,14 @@ def article_of(s):
     return s[m.start():s.index("</article>")]
 
 
-def lecture_meta(name, s):
+def lecture_meta(name, s, url=None):
     num = strip_tags(re.search(r'<div class="lecture-head"[^>]*>\s*<div class="num">(.*?)</div>', s, re.S).group(1))
     title = strip_tags(re.search(r"<h1>(.*?)</h1>", s, re.S).group(1))
     article = article_of(s)
     words = len(strip_tags(article).split())
     skip = {"intro", "summary", "quiz", "practice", "problem-set"}
     topics = [{"t": strip_tags(t), "id": i} for i, t in re.findall(r'<h2 id="([^"]+)">(.*?)</h2>', article, re.S) if i not in skip]
-    return {"id": name, "num": num, "title": title, "url": f"lectures/{name}.html", "topics": topics,
+    return {"id": name, "num": num, "title": title, "url": url or f"lectures/{name}.html", "topics": topics,
             "minutes": max(5, round(words / 160)),
             "quiz": article.count('class="question"'),
             "tasks": article.count('class="checklist"')}
@@ -309,6 +319,28 @@ def main():
         if sm:
             sheets.append((meta, sm.group(1)))
     build_cheatsheet(sheets)
+    # Қосымша курстар: лекциялар (../../), курс беті (../), іздеу мен сөздікке қосу
+    course_pages = []
+    for code, c in COURSES.items():
+        clist = []
+        for name in c["order"]:
+            p = ROOT / code / "lectures" / f"{name}.html"
+            if not p.exists():
+                continue
+            s = process_page(p, "../../", "courses")
+            meta = lecture_meta(name, s, f"{code}/lectures/{name}.html")
+            clist.append(meta)
+            labeled = dict(meta, num=f'{c["short"]} · {meta["num"]}')
+            index += sections(name, s, labeled)
+            terms += glossary_terms(name, s, labeled)
+            course_pages.append(meta["url"])
+        if (ROOT / code / "index.html").exists():
+            process_page(ROOT / code / "index.html", "../", "courses")
+            course_pages.append(f"{code}/")
+        (ROOT / code / "data").mkdir(exist_ok=True)
+        (ROOT / code / "data" / "lectures.js").write_text(
+            f"window.CS50KZ_COURSE_LECTURES = window.CS50KZ_COURSE_LECTURES || {{}};\nwindow.CS50KZ_COURSE_LECTURES[{json.dumps(code)}] = "
+            + json.dumps(clist, ensure_ascii=False, indent=1) + ";\n", encoding="utf-8")
     n = build_glossary(terms)
     for page, active in [("index.html", "index"), ("about.html", "about"),
                          ("glossary.html", "glossary"), ("certificate.html", ""),
@@ -316,7 +348,7 @@ def main():
                          ("flashcards.html", "practice"), ("viz.html", "practice"),
                          ("teacher.html", ""), ("404.html", ""), ("cheatsheet.html", "practice"),
                          ("debug.html", "practice"), ("map.html", "practice"),
-                         ("detective.html", "practice"), ("flask.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("alash.html", "about")]:
+                         ("detective.html", "practice"), ("flask.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("alash.html", "about"), ("courses.html", "courses")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
     (ROOT / "assets/data/lectures.js").write_text(
@@ -326,7 +358,7 @@ def main():
     (ROOT / "assets/data/quiz.js").write_text(
         "window.CS50KZ_QUIZ = " + json.dumps(quiz, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     pages = ["", "practice.html", "playground.html", "viz.html", "flashcards.html", "glossary.html",
-             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "exam.html", "profile.html", "alash.html"] + [l["url"] for l in lectures]
+             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "exam.html", "profile.html", "alash.html", "courses.html"] + [l["url"] for l in lectures] + course_pages
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"  <url><loc>{SITE_URL}{u}</loc></url>\n" for u in pages) + "</urlset>\n", encoding="utf-8")
