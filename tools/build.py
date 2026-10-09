@@ -23,6 +23,9 @@ ORDER = [f"week-{i}" for i in range(8)] + ["ai"] + [f"week-{i}" for i in range(8
 # Қосымша курстар: әрқайсысы өз қалтасында (<код>/index.html, <код>/lectures/week-N.html, <код>/data/lectures.js)
 COURSES = {
     "python": {"short": "CS50P", "color": "#3776ab", "order": [f"week-{i}" for i in range(10)]},
+    "sql": {"short": "CS50 SQL", "color": "#7c3aed", "order": [f"week-{i}" for i in range(7)]},
+    "ai": {"short": "CS50 AI", "color": "#c42a68", "order": [f"week-{i}" for i in range(7)]},
+    "web": {"short": "CS50 Web", "color": "#d4580c", "order": [f"week-{i}" for i in range(9)]},
 }
 
 # Курстар витринасы (courses.html мен басты бетте): <!-- build:courses --> ... <!-- /build:courses -->
@@ -40,15 +43,15 @@ CATALOG = [
     {"id": "python", "code": "CS50P", "href": "python/", "c": "#3776ab", "c2": "#1d3f66", "title": "Python бағдарламалау",
      "desc": "Python-ды нөлден тереңге: функциялар, ерекше жағдайлар, кітапханалар, тесттер, тұрақты өрнектер, ООП.",
      "tags": ["функциялар", "циклдер", "pytest", "regex", "ООП"], "lec": 10, "tasks": "41 тапсырма", "state": "wip", "total": 10},
-    {"id": "sql", "code": "CS50 SQL", "href": None, "c": "#7c3aed", "c2": "#3b1a78", "title": "Дерекқорлар",
+    {"id": "sql", "code": "CS50 SQL", "href": "sql/", "c": "#7c3aed", "c2": "#3b1a78", "title": "Дерекқорлар",
      "desc": "Деректерді сұрау, кестелерді жобалау, индекстер мен масштабтау: SQLite-тан PostgreSQL-ге дейін.",
-     "tags": ["SELECT", "JOIN", "жобалау", "индекстер"], "lec": 7, "tasks": "18 тапсырма", "state": "soon"},
-    {"id": "ai", "code": "CS50 AI", "href": None, "c": "#d0306f", "c2": "#6e1640", "title": "Жасанды интеллект",
+     "tags": ["SELECT", "JOIN", "жобалау", "индекстер"], "lec": 7, "tasks": "18 тапсырма", "state": "wip", "total": 7},
+    {"id": "ai", "code": "CS50 AI", "href": "ai/", "c": "#d0306f", "c2": "#6e1640", "title": "Жасанды интеллект",
      "desc": "Іздеу, логика, ықтималдық, оңтайландыру, машиналық оқыту, нейрон желілер және тіл модельдері.",
-     "tags": ["іздеу", "ықтималдық", "ML", "нейрон желі"], "lec": 7, "tasks": "12 жоба", "state": "soon"},
-    {"id": "web", "code": "CS50 Web", "href": None, "c": "#e2620f", "c2": "#8a2f08", "title": "Веб-бағдарламалау",
+     "tags": ["іздеу", "ықтималдық", "ML", "нейрон желі"], "lec": 7, "tasks": "12 жоба", "state": "wip", "total": 7},
+    {"id": "web", "code": "CS50 Web", "href": "web/", "c": "#e2620f", "c2": "#8a2f08", "title": "Веб-бағдарламалау",
      "desc": "Толық веб-қосымшалар: HTML, CSS, Git, Django, SQL, JavaScript, React, тестілеу және қауіпсіздік.",
-     "tags": ["Django", "JavaScript", "React", "Git"], "lec": 9, "tasks": "5 жоба", "state": "soon"},
+     "tags": ["Django", "JavaScript", "React", "Git"], "lec": 9, "tasks": "5 жоба", "state": "wip", "total": 9},
 ]
 
 

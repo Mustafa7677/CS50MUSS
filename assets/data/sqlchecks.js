@@ -1,5 +1,5 @@
 // SQL тапсырмаларына арналған автотексеруші. Деректер ойдан шығарылған (tools/make_demo_db.py → songs).
-window.CS50KZ_SQLCHECKS = {
+window.CS50KZ_SQLCHECKS = Object.assign(window.CS50KZ_SQLCHECKS || {}, {
   songs: {
     db: "songs",
     note: "Демо базадағы әншілер мен әндер ойдан шығарылған. Ресми тапсырмадағы әншілердің орнына мұнда Dala Sazy және Qyzyl Tan қолданылады, бірақ сұрау құрылымы бірдей.",
@@ -33,4 +33,4 @@ window.CS50KZ_SQLCHECKS = {
       { f: "13.sql", t: "Arman Saparov (1958 ж.т.) бірге ойнаған адамдар (өзінен басқа)", ref: "SELECT DISTINCT name FROM people WHERE id IN (SELECT person_id FROM stars WHERE movie_id IN (SELECT movie_id FROM stars WHERE person_id = (SELECT id FROM people WHERE name = 'Arman Saparov' AND birth = 1958))) AND id != (SELECT id FROM people WHERE name = 'Arman Saparov' AND birth = 1958);" },
     ],
   },
-};
+});
