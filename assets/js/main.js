@@ -1195,7 +1195,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
       if (editor.value && lang !== "web") store("pg:" + lang, editor.value);
       lang = l;
       pg.dataset.lang = l;
-      tabs.forEach((t) => t.classList.toggle("active", t.dataset.lang === l));
+      tabs.forEach((t) => { t.classList.toggle("active", t.dataset.lang === l); t.setAttribute("aria-pressed", String(t.dataset.lang === l)); });
       if (l === "web") { history.replaceState(null, "", "#web"); mark("web"); return; }
       editor.value = store("pg:" + l) || Object.values(EXAMPLES[l])[0];
       chips.innerHTML = Object.keys(EXAMPLES[l]).map((k) => `<button type="button">${escapeHtml(k)}</button>`).join("");
@@ -1653,7 +1653,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     let best = 0, run = 0, prev = null;
     Object.keys(days).sort().forEach((k) => {
       const t = new Date(k + "T12:00:00");
-      run = ok(k) ? (prev && (t - prev) / 86_400_000 === 1 && run ? run + 1 : 1) : 0;
+      run = ok(k) ? (prev && Math.round((t - prev) / 86_400_000) === 1 && run ? run + 1 : 1) : 0;
       best = Math.max(best, run); prev = t;
     });
     return { goal, today, streak, best: Math.max(best, streak) };

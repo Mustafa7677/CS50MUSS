@@ -176,7 +176,7 @@
         const n = +days[key(day)] || 0;
         if (n) { active++; total += n; }
         const label = `${day.getDate()} ${MONTHS[day.getMonth()]}: ${n ? n + " әрекет" : "белсенділік жоқ"}`;
-        cells += `<i class="l${level(n)}" title="${label}" aria-label="${label}"></i>`;
+        cells += `<i class="l${level(n)}" title="${label}"></i>`; // жалпы мағына .cal-g role="img" белгісінде
       }
     }
     // Қатарынан күндер: бүгін әлі ештеңе жасамаса, кешеден бастап санаймыз
@@ -186,7 +186,7 @@
     while (days[key(d)]) { streak++; d.setDate(d.getDate() - 1); }
     Object.keys(days).sort().forEach((k, i, arr) => {
       const prev = i && new Date(arr[i - 1] + "T12:00:00");
-      run = prev && (new Date(k + "T12:00:00") - prev) / 86_400_000 === 1 ? run + 1 : 1;
+      run = prev && Math.round((new Date(k + "T12:00:00") - prev) / 86_400_000) === 1 ? run + 1 : 1; // DST: 23/25 сағаттық күн
       if (days[k]) best = Math.max(best, run);
     });
     const tip = !active ? "Лекция оқыңыз, тест не тапсырма орындаңыз - күнтізбе толады 🌱"
