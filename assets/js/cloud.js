@@ -11,7 +11,8 @@
   const ST = "cs50kz:cloud", TC = "cs50kz:tclasses";
   const ABC = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
 
-  const get = (k, d) => { try { return JSON.parse(localStorage.getItem(k)) ?? d; } catch (e) { return d; } };
+  const sameKind = (v, d) => v != null && (d == null || (Array.isArray(d) ? Array.isArray(v) : typeof d === "object" ? typeof v === "object" && !Array.isArray(v) : typeof v === typeof d));
+  const get = (k, d) => { try { const v = JSON.parse(localStorage.getItem(k)); return sameKind(v, d) ? v : d; } catch (e) { return d; } };
   const put = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
   const state = () => get(ST, {});
   const setState = (patch) => { const s = Object.assign(state(), patch); put(ST, s); return s; };
@@ -184,7 +185,7 @@
     const t = s && s.on && s.cls && s.task;
     if (!t || !t.lecture) return "";
     let read = false;
-    try { read = !!(JSON.parse(localStorage.getItem("cs50kz:progress")) || {}).read?.[t.lecture]; } catch (e) {}
+    read = !!get("cs50kz:progress", {}).read?.[t.lecture];
     const l = LEC().find((x) => x.id === t.lecture);
     return `<div class="tk-banner ${read ? "done" : ""}">
       <span class="tk-ico">${read ? "✅" : "📌"}</span>
@@ -395,7 +396,7 @@
   // ---------- Мұғалімнің жанды кестесі ----------
   function teacherPanel(box) {
     let cur = null, timer = null, qrOpen = false;
-    const classes = () => get(TC, []);
+    const classes = () => get(TC, []).filter((x) => x && typeof x.code === "string" && typeof x.pw === "string"); // бүлінген жазбаларды өткіземіз
     const saveClass = (c) => { const l = classes().filter((x) => x.code !== c.code); l.unshift(c); put(TC, l.slice(0, 10)); };
     const ORDER = K.ORDER || [];
     const start = () => {

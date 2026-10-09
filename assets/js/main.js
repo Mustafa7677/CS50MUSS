@@ -21,8 +21,7 @@
     root.classList.toggle("reduce-motion", !!pr.rm);
   }
   function loadPrefs() {
-    let pr = {};
-    try { pr = JSON.parse(localStorage.getItem(PREF_KEY) || "{}"); } catch (e) {}
+    const pr = readJson(PREF_KEY, {});
     return { fs: pr.fs || 17, lh: pr.lh || 1.7, cw: pr.cw || 760, rm: !!pr.rm };
   }
   applyPrefs(loadPrefs());
@@ -254,8 +253,7 @@
       const key = "check:" + location.pathname + ":" + list.dataset.id;
       const boxes = [...list.querySelectorAll("input[type=checkbox]")];
       const progress = list.parentElement.querySelector(".progress");
-      let state = [];
-      try { state = JSON.parse(localStorage.getItem(key) || "[]"); } catch (e) {}
+      const state = readJson(key, []);
       boxes.forEach((b, i) => {
         b.checked = !!state[i];
         if (!b.closest("label") && !b.getAttribute("aria-label")) b.setAttribute("aria-label", (b.parentElement.textContent || "").trim().slice(0, 140));
@@ -297,15 +295,14 @@
   }
 
   function escapeHtml(s) {
-    return s.replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+    return String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   }
 
   // Оқушының прогресі браузерде сақталады (тіркелусіз)
   // Оқушының жеке ID-і: бір рет жасалады, басқа құрылғыға прогреспен бірге көшеді
   function profile() {
-    let pr = null;
-    try { pr = JSON.parse(localStorage.getItem("cs50kz:profile")); } catch (e) {}
-    if (!pr || !/^KZ-[0-9A-Z]{4}-[0-9A-Z]{4}$/.test(pr.id || "")) {
+    let pr = readJson("cs50kz:profile", {});
+    if ( !/^KZ-[0-9A-Z]{4}-[0-9A-Z]{4}$/.test(pr.id || "")) {
       const ABC = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
       const r = new Uint8Array(8);
       (window.crypto || {}).getRandomValues ? crypto.getRandomValues(r) : r.forEach((_, i) => (r[i] = Math.random() * 256));
@@ -319,9 +316,9 @@
   const Progress = {
     key: "cs50kz:progress",
     load() {
-      let p = {};
-      try { p = JSON.parse(localStorage.getItem(this.key) || "{}"); } catch (e) {}
-      return { read: p.read || {}, quiz: p.quiz || {}, last: p.last || null, name: p.name || "" };
+      const p = readJson(this.key, {});
+      const obj = (v) => (v && typeof v === "object" && !Array.isArray(v) ? v : {});
+      return { read: obj(p.read), quiz: obj(p.quiz), last: obj(p.last).id ? p.last : null, name: typeof p.name === "string" ? p.name : "" };
     },
     save(p) {
       try { localStorage.setItem(this.key, JSON.stringify(p)); } catch (e) {}
@@ -332,7 +329,7 @@
         for (let i = 0; i < localStorage.length; i++) {
           const k = localStorage.key(i);
           if (!k.startsWith("check:") || !k.includes("/" + id + ".html:")) continue;
-          const arr = JSON.parse(localStorage.getItem(k) || "[]");
+          const arr = readJson(k, []);
           if (arr.length && arr.every(Boolean)) done++;
         }
       } catch (e) {}
@@ -1272,8 +1269,11 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
   }
 
   // ---------- Жетістіктер ----------
+  // Жадтан оқу: бүлінген JSON, null не басқа түрдегі мән (мысалы, тізім орнына жол) әдепкі мәнге ауысады
   function readJson(key, def) {
-    try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch (e) { return def; }
+    let v;
+    try { v = JSON.parse(localStorage.getItem(key)); } catch (e) { return def; }
+    return v != null && (def == null || (Array.isArray(def) ? Array.isArray(v) : typeof def === "object" ? typeof v === "object" && !Array.isArray(v) : typeof v === typeof def)) ? v : def;
   }
   function mark(flag) {
     const used = readJson("cs50kz:used", {});
@@ -1297,7 +1297,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000):
     try {
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
-        if (k.startsWith("check:")) { const a = JSON.parse(localStorage.getItem(k) || "[]"); if (a.length && a.every(Boolean)) tasks++; }
+        if (k.startsWith("check:")) { const a = readJson(k, []); if (a.length && a.every(Boolean)) tasks++; }
       }
     } catch (e) {}
     const A = (id, ico, name, desc, cur, goal) => ({ id, ico, name, desc, cur: Math.min(cur, goal), goal, done: cur >= goal });

@@ -84,7 +84,7 @@
       const out = m.querySelector(".fb-result");
       if (!d.message) { out.className = "fb-result bad"; out.textContent = "Хабарламаны жазыңыз."; return; }
       e.target.disabled = true; e.target.textContent = "Жіберілуде…";
-      const cl = (() => { try { return JSON.parse(localStorage.getItem("cs50kz:cloud")) || {}; } catch (er) { return {}; } })();
+      const cl = (() => { try { const v = JSON.parse(localStorage.getItem("cs50kz:cloud")); return v && typeof v === "object" ? v : {}; } catch (er) { return {}; } })();
       try {
         const r = await fetch(API, {
           method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },

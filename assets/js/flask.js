@@ -5,7 +5,12 @@
   const K = window.CS50KZ;
   const esc = K.escapeHtml;
   const store = {
-    get(key, def) { try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch (e) { return def; } },
+    get(key, def) {
+      let v;
+      try { v = JSON.parse(localStorage.getItem(key)); } catch (e) { return def; }
+      // бүлінген не басқа түрдегі мән - әдепкі мән
+      return v != null && (def == null || (Array.isArray(def) ? Array.isArray(v) : typeof def === "object" ? typeof v === "object" && !Array.isArray(v) : typeof v === typeof def)) ? v : def;
+    },
     set(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) {} },
   };
   const ORIGIN = "http://127.0.0.1:5000";
