@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 SQL 5-апта: Оңтайландыру - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 SQL 5-апта: Оңтайландыру - CS50 қазақша">
+  <meta property="og:description" content="CS50 SQL 5-апта: индекс, B-ағаш, EXPLAIN QUERY PLAN, жабық және ішінара индекс, VACUUM, транзакциялар мен жарыс жағдайлары.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/sql/lectures/week-5.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 SQL 5-апта: индекс, B-ағаш, EXPLAIN QUERY PLAN, жабық және ішінара индекс, VACUUM, транзакциялар мен жарыс жағдайлары.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#7c3aed" data-n="5">
+        <div class="num">5-апта</div>
+        <h1>Оңтайландыру</h1>
+        <p>Сұрауды дұрыс жазу аз: оны жылдам жазу керек. Индекс, B-ағаш және <code>EXPLAIN QUERY PLAN</code> арқылы сұрауды жылдамдатып, транзакциялар мен құлыптардың көмегімен көп адам қатынайтын дерекқорды қауіпсіз ұстауды үйренеміз.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/sql/notes/5/" target="_blank" rel="noopener">▶ Түпнұсқа конспект (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Осы уақытқа дейін біз SQL-де сұрауды <em>дұрыс</em> жазуды үйрендік. Енді сұрауды <strong>жылдам</strong> жазуды үйренеміз. Дерекқорда миллиондаған жол болса, дәл сол сұрау бір сәтте де, бір минутта да орындалуы мүмкін, ал айырмасын жасайтын нәрсе - <strong>индекс</strong>. Сайттағы мысалдарда <code>EXPLAIN QUERY PLAN</code> арқылы SQLite-тың сұрауды қалай орындайтынын өз көзіңізбен көресіз: «▶ Іске қосу» батырмасын басыңыз.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+      <div class="callout note">
+        <span class="callout-title">Секундомер жоқ, жоспар бар</span>
+        <p>Лекцияда Картер <code>.timer on</code> командасын қосып, сұрау қанша уақыт алатынын өлшейді. Браузерде мұндай командасы жоқ, және біз 200 жолдық шағын демо дерекқормен жұмыс істейміз, онда уақыт айырмасы көрінбейді. Сондықтан уақыттың орнына <strong>жоспардың өзгеруін</strong> қараймыз: <code>SCAN</code> (бәрін қарап шығу) сөзі <code>SEARCH ... USING INDEX</code> (индекспен іздеу) болып өзгерсе, нақты дерекқорда сұрау жылдамдайды деген сөз. Нақты уақытты өлшегіңіз келсе, <code>sqlite3</code>-ті компьютеріңізге орнатып, <code>.timer on</code> деп жазыңыз. Ескерту: sql.js-тың нұсқасына қарай жоспар жолдары сәл өзгеше жазылуы мүмкін (мысалы, <code>SCAN TABLE movies</code> немесе <code>SCAN movies</code>), мағынасы бірдей.</p>
+      </div>
+
+      <h2 id="intro">Кіріспе</h2>
+      <p>Бүгін біз сұрауларды <strong>уақыт</strong> бойынша да, <strong>орын</strong> (дерекқор файлы алатын жад) бойынша да оңтайландыруды үйренеміз. Сонымен қатар, бір мезгілде бірнеше сұрауды қалай қатар орындауға болатынын көреміз. Мұны <strong>қатарлас орындау</strong> (<span class="term-en">concurrency</span>) дейді.</p>
+      <p>Мұның бәрін жаңа дерекқорда көреміз: Internet Movies Database, яғни көпшілік біліп жүрген <strong>IMDb</strong>. Біздің SQLite дерекқоры сіз <a href="https://www.imdb.com/" target="_blank" rel="noopener">imdb.com</a> сайтынан білетін фильмдердің үлкен онлайн базасынан құралған. Лекцияда көрсетілген статистикаға қарасақ, бұл дерекқор біз осы уақытқа дейін қолданған барлық дерекқорлардан әлдеқайда үлкен: миллиондаған жол бар. Дәл осындай үлкен деректе оңтайландырудың не екені шынымен сезіледі.</p>
+      <p>Кестелер арасындағы байланыс ER-диаграммада көрсетілген: адамдар (<code>people</code>), фильмдер (<code>movies</code>) және рейтингтер (<code>ratings</code>). Адам мен фильм арасында «көптен көпке» байланыс бар (бір актер көп фильмде ойнайды, бір фильмде көп актер ойнайды), сондықтан оларды <code>stars</code> деген біріктіруші кесте жалғайды.</p>
+      <svg viewBox="0 0 520 190" role="img" aria-label="IMDb дерекқорының ER-диаграммасы: people, stars, movies, ratings" style="display:block;width:100%;max-width:520px;height:auto;margin:18px auto"><defs><marker id="er-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs>
+        <rect x="10" y="55" width="120" height="80" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="70" y="75" text-anchor="middle" style="fill:var(--text);font-weight:700;font-size:14px">people</text>
+        <text x="70" y="97" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-family:var(--mono, monospace)">id</text>
+        <text x="70" y="114" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-family:var(--mono, monospace)">name, birth</text>
+        <rect x="200" y="55" width="120" height="80" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3"/>
+        <text x="260" y="75" text-anchor="middle" style="fill:var(--text);font-weight:700;font-size:14px">stars</text>
+        <text x="260" y="97" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-family:var(--mono, monospace)">person_id</text>
+        <text x="260" y="114" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-family:var(--mono, monospace)">movie_id</text>
+        <rect x="390" y="10" width="120" height="80" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="450" y="30" text-anchor="middle" style="fill:var(--text);font-weight:700;font-size:14px">movies</text>
+        <text x="450" y="52" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-family:var(--mono, monospace)">id</text>
+        <text x="450" y="69" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-family:var(--mono, monospace)">title, year</text>
+        <rect x="390" y="110" width="120" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="450" y="130" text-anchor="middle" style="fill:var(--text);font-weight:700;font-size:14px">ratings</text>
+        <text x="450" y="152" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-family:var(--mono, monospace)">movie_id</text>
+        <text x="450" y="169" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-family:var(--mono, monospace)">rating, votes</text>
+        <polyline points="200,95 132,95" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#er-arr)"/>
+        <polyline points="320,85 388,55" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#er-arr)"/>
+        <polyline points="450,92 450,108" style="stroke:var(--muted);stroke-width:1.6;fill:none"/>
+      </svg>
+      <p>Төмендегі мысалдарда сіз нақты IMDb емес, соның <strong>шағын демо үлгісін</strong> (200 фильм, 100 адам) іске қосасыз. Кестелердің аттары мен бағандары лекциядағыдай, ал деректер ойдан шығарылған (лекциядағы Tom Hanks және Cars сияқты бірнеше танымал атау ғана қосылған).</p>
+
+      <h2 id="index">Индекс</h2>
+      <p>Дерекқорды <code>sqlite3</code>-те ашып, <code>.schema</code> деп жазсақ, кестелердің құрылымы шығады. Байқаңыз: Person мен Movie арасындағы «көптен көпке» байланысты іске асыру үшін <code>stars</code> деген біріктіруші кесте бар, ол <code>people</code> мен <code>movies</code> кестелерінің ID бағандарына сілтейтін шетелдік кілттерден тұрады.</p>
+<pre data-lang="sql" data-norun><code class="language-sql">.schema</code></pre>
+      <p>Кестеге көз тастау үшін алғашқы бес жолды алайық:</p>
+<pre data-lang="sql" data-db="w5movies" data-dbsrc="sql/data/week-5.js"><code class="language-sql">SELECT * FROM "movies" LIMIT 5;</code></pre>
+      <p>Енді «Cars» фильмі туралы ақпаратты тауып көрейік:</p>
+<pre data-lang="sql" data-db="w5movies" data-dbsrc="sql/data/week-5.js"><code class="language-sql">SELECT * FROM "movies"
+WHERE "title" = 'Cars';</code></pre>
+      <p>Сұрау қанша уақыт алғанын білгіміз келсе, SQLite-тың <code>.timer on</code> деген командасы бар. Оны қосқаннан кейін сол сұрауды қайта жүргізсек, нәтижемен бірге үш түрлі уақыт көрсеткіші шығады. Бізге керегі - <strong>real</strong>, яғни секундомермен өлшегендей уақыт: сұрауды іске қосқаннан нәтиже алғанға дейінгі аралық. Лекцияда бұл сұрау шамамен секундтың оннан бірін алды.</p>
+<pre data-lang="sql" data-norun><code class="language-sql">.timer on</code></pre>
+      <p>Бұл уақытта сахна сыртында не болды? «Cars» іздегенде SQLite <code>movies</code> кестесін <strong>сканерледі</strong> (<span class="term-en">scan</span>): жоғарыдан төменге, жолды-жолдан қарап, атауы «Cars» болатындарын іздеді. Мұны сіз базарда бір затты іздеп, барлық сөрені бастан-аяқ аралап шығуға ұқсатуға болады. Заттың орны белгісіз болса, басқа амал жоқ.</p>
+      <p>Бірақ бұдан жақсырақ жол бар. Оқулықтың соңында әрдайым <strong>индекс</strong> (алфавиттік көрсеткіш) болады ғой: «Абай - 15, 47 беттер». Бүкіл кітапты парақтап шықпай, индекстен тауып, тура сол бетке барасыз. Дерекқор кестелерінде де дәл осындай нәрсе бар. Дерекқор терминологиясында <strong>индекс</strong> (<span class="term-en">index</span>) - кестеден жолдарды алуды жылдамдату үшін қолданылатын құрылым.</p>
+      <p>Міне, <code>movies</code> кестесінің <code>"title"</code> бағанына индекс құратын команда:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE INDEX "title_index" ON "movies" ("title");</code></pre>
+      <p>Индекс құрылған соң «Cars» сұрауын қайта жүргіздік. Лекцияда ол алғашқыдан шамамен сегіз есе жылдам орындалды! Бірақ осы жерде бір сұрақ туады: біз жай ғана «SQL индексті өзі пайдаланар» деп болжадық қой. Оны қалай <em>көзбен көруге</em> болады? Бұған SQLite-та <code>EXPLAIN QUERY PLAN</code> деген команда бар: оны кез келген сұраудың алдына жазсақ, сұрау орындалмайды, орнына SQLite оны <strong>қалай орындауды жоспарлап отырғанын</strong> айтады.</p>
+      <p>Төмендегі блокты іске қосыңыз. Онда үш қадам бар: индекссіз жоспар, индекс құру, индекспен жоспар. Нәтижеде үш кесте шығады (екеуі жоспар, ортасы бос, себебі <code>CREATE INDEX</code> жол қайтармайды) - жоспарларды салыстырыңыз:</p>
+<pre data-lang="sql" data-db="w5movies" data-dbsrc="sql/data/week-5.js"><code class="language-sql">EXPLAIN QUERY PLAN
+SELECT * FROM "movies"
+WHERE "title" = 'Cars';
+
+CREATE INDEX "title_index" ON "movies" ("title");
+
+EXPLAIN QUERY PLAN
+SELECT * FROM "movies"
+WHERE "title" = 'Cars';</code></pre>
+      <p>Байқадыңыз ба? Алғашқы жоспар <code>SCAN movies</code> дейді: кестені түгел қарап шығады. Екіншісі <code>SEARCH movies USING INDEX title_index (title=?)</code>: индекс бойынша <em>іздейді</em>. Міне, «SCAN» сөзі «SEARCH»-ке айналса, біз жеңдік.</p>
+      <p>Индексті алып тастау үшін:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">DROP INDEX "title_index";</code></pre>
+      <p>Индексті жойғаннан кейін <code>EXPLAIN QUERY PLAN</code>-ды қайта жүргізсек, жоспар тағы да бүкіл кестені сканерлеуге қайтады. Мұны өзіңіз көріңіз:</p>
+<pre data-lang="sql" data-db="w5movies" data-dbsrc="sql/data/week-5.js"><code class="language-sql">CREATE INDEX "title_index" ON "movies" ("title");
+DROP INDEX "title_index";
+
+EXPLAIN QUERY PLAN
+SELECT * FROM "movies"
+WHERE "title" = 'Cars';</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: 10 миллион жолы бар кестеде «Cars» атауын индекссіз іздегенде, SQLite ең нашар жағдайда қанша жолды қарайды?</summary>
+        <div class="details-body"><p>Ең нашар жағдайда барлық 10 миллион жолды. Атау кестеде реттелмеген, сондықтан SQLite «Cars» дәл қайда жатқанын білмейді, тіпті бірінші табылған жолдан кейін де басқа «Cars» болуы мүмкін (атаулар бірегей деп ешкім кепілдік берген жоқ), сондықтан әдетте соңына дейін барады. Индекспен болса, реттелген тізімде екілік іздеу сияқты бірнеше ондаған қадам жеткілікті. Жол саны 10 есе өссе, сканерлеу 10 есе баяулайды, ал индекспен іздеу тек бір-екі қадамға ғана ұзарады.</p></div>
+      </details>
+
+      <h3 id="index-questions">Сұрақтар</h3>
+      <p><strong>Дерекқорларда іздеуді жылдамдататын өз алгоритмдері жоқ па?</strong> Кейбір бағандар үшін бар. SQLite-та да, көптеген басқа дерекқор жүйелерінде де, бағанды бастапқы кілт (<span class="term-en">primary key</span>) деп жариялайтын болсақ, бастапқы кілт бойынша іздеуге арналған индекс <em>автоматты түрде</em> құрылады. Ал <code>"title"</code> сияқты қарапайым бағандарға ондай автоматты оңтайландыру болмайды.</p>
+      <p><strong>Болашақта керек болып қалар деп әр баған үшін бөлек индекс құрып қоя берсек ше?</strong> Қарасақ, жақсы идея сияқты, бірақ тегін емес: индекс жадты көп алады, және индекс бар кестеге кейін деректі қосу ұзағырақ уақыт алады. Бұл туралы келесі бөлімдерде толығырақ айтамыз.</p>
+
+      <h2 id="multi-table-index">Бірнеше кестедегі индекс</h2>
+      <p>Енді күрделірек сұрау жазайық: Том Хэнкс ойнаған барлық фильмдерді табу керек. Үш кесте қатысады, сондықтан ішкі сұраулармен жазамыз:</p>
+<pre data-lang="sql" data-db="w5movies" data-dbsrc="sql/data/week-5.js"><code class="language-sql">SELECT "title" FROM "movies"
+WHERE "id" IN (
+    SELECT "movie_id" FROM "stars"
+    WHERE "person_id" = (
+        SELECT "id" FROM "people"
+        WHERE "name" = 'Tom Hanks'
+    )
+);</code></pre>
+      <p>Қандай индекс бұл сұрауды жылдамдата алады? Мұны болжап отырмай, алдына <code>EXPLAIN QUERY PLAN</code> қойып қарайық. Жоспар сұрауға <strong>екі сканерлеу</strong> қажет екенін көрсетеді: <code>people</code> және <code>stars</code> кестелері түгел қаралады. Ал <code>movies</code> кестесі сканерленбейді, себебі біз оны <code>id</code> бойынша іздеп отырмыз, ал оған SQLite индексті автоматты түрде құрған (жоспарда <code>SEARCH movies USING INTEGER PRIMARY KEY</code>).</p>
+<pre data-lang="sql" data-db="w5movies" data-dbsrc="sql/data/week-5.js"><code class="language-sql">EXPLAIN QUERY PLAN
+SELECT "title" FROM "movies"
+WHERE "id" IN (
+    SELECT "movie_id" FROM "stars"
+    WHERE "person_id" = (
+        SELECT "id" FROM "people"
+        WHERE "name" = 'Tom Hanks'
+    )
+);</code></pre>
+      <p>Екі сканерлеуді жою үшін екі индекс құрайық: біреуі <code>stars</code>-тағы <code>person_id</code> үшін, екіншісі <code>people</code>-дағы <code>name</code> үшін.</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE INDEX "person_index" ON "stars" ("person_id");
+CREATE INDEX "name_index" ON "people" ("name");</code></pre>
+      <p>Енді жоспарды қайта қараймыз. Төмендегі блокта индекстерді құру мен жаңа жоспар қатар тұр, іске қосып көріңіз:</p>
+<pre data-lang="sql" data-db="w5movies" data-dbsrc="sql/data/week-5.js"><code class="language-sql">CREATE INDEX "person_index" ON "stars" ("person_id");
+CREATE INDEX "name_index" ON "people" ("name");
+
+EXPLAIN QUERY PLAN
+SELECT "title" FROM "movies"
+WHERE "id" IN (
+    SELECT "movie_id" FROM "stars"
+    WHERE "person_id" = (
+        SELECT "id" FROM "people"
+        WHERE "name" = 'Tom Hanks'
+    )
+);</code></pre>
+      <p>Екі жаңалық бар:</p>
+      <ul>
+        <li>барлық сканерлеулер енді индекс бойынша <strong>іздеуге</strong> (<code>SEARCH ... USING INDEX</code>) айналды, бұл керемет;</li>
+        <li><code>people</code> кестесіндегі іздеу <code>COVERING INDEX</code> деген нәрсені қолданады.</li>
+      </ul>
+      <p><strong>Жабық индекс</strong> (<span class="term-en">covering index</span>) деген не? Бұл - сұрауға қажетті <em>барлық</em> ақпарат индекстің өзінде бар дегенді білдіреді. Жай индекспен жұмыс екі қадамнан тұрады: 1) индекстен қажетті жазбаны табу, 2) сол сілтеме арқылы кестеге барып, қалған бағандарды алу. Жабық индексте екінші қадам керек емес: бәрін бірінші қадамда-ақ индекстен аламыз. Мұны кітап индексімен салыстырсақ: егер индекстің өзінде сіз іздеген сөздің анықтамасы жазылып тұрса, кітаптың ішіне барудың қажеті жоқ.</p>
+      <p><code>people</code> кестесінде бізге тек <code>id</code> керек, ал іздейтініміз <code>name</code>. <code>id</code> бастапқы кілт болғандықтан, ол индекстің ішінде әрқашан бар, сондықтан <code>name_index</code> өздігінен жабық индекс болды.</p>
+      <p>Ал <code>stars</code> кестесіндегі іздеуді де жабық индекске айналдыру үшін индекске <code>"movie_id"</code> бағанын қосу керек. Сонда іздеп отырған мән (<code>person_id</code>) <em>және</em> қайтарылатын мән (<code>movie_id</code>) екеуі де индекстің ішінде болады. Алдымен ескі индексті жоямыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">DROP INDEX "person_index";</code></pre>
+      <p>Содан кейін жаңасын құрамыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE INDEX "person_index" ON "stars" ("person_id", "movie_id");</code></pre>
+      <p>Ал мынаны іске қосыңыз: енді екі жабық индекс көрінуі тиіс, яғни іздеу әлдеқайда жылдам болуы керек:</p>
+<pre data-lang="sql" data-db="w5movies" data-dbsrc="sql/data/week-5.js"><code class="language-sql">CREATE INDEX "person_index" ON "stars" ("person_id");
+CREATE INDEX "name_index" ON "people" ("name");
+DROP INDEX "person_index";
+CREATE INDEX "person_index" ON "stars" ("person_id", "movie_id");
+
+EXPLAIN QUERY PLAN
+SELECT "title" FROM "movies" WHERE "id" IN (
+    SELECT "movie_id" FROM "stars" WHERE "person_id" = (
+        SELECT "id" FROM "people" WHERE "name" = 'Tom Hanks'
+    )
+);</code></pre>
+      <p>Жоспарда <code>stars</code> үшін <code>SEARCH stars USING COVERING INDEX person_index (person_id=?)</code> шықты, ал бұған дейін <code>COVERING</code> сөзі жоқ еді. Лекцияда <code>.timer on</code> қосып тұрып, осы сұрауды (Том Хэнкс ойнаған фильмдерді) қайта орындаған кезде, ол индекссіз нұсқадан бір ретке жылдам болды. Нәтижені бірге көрейік:</p>
+<pre data-lang="sql" data-db="w5movies" data-dbsrc="sql/data/week-5.js"><code class="language-sql">CREATE INDEX "person_index" ON "stars" ("person_id", "movie_id");
+CREATE INDEX "name_index" ON "people" ("name");
+
+SELECT "title" FROM "movies"
+WHERE "id" IN (
+    SELECT "movie_id" FROM "stars"
+    WHERE "person_id" = (
+        SELECT "id" FROM "people"
+        WHERE "name" = 'Tom Hanks'
+    )
+);</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>stars</code> кестесіне индексті <code>("movie_id", "person_id")</code> тәртібімен құрсақ, бұл сұрауға көмектесер ме еді?</summary>
+        <div class="details-body"><p>Көмектеспейді. Біз <code>person_id</code> бойынша <em>іздейміз</em>, ал B-ағаш (төменде көреміз) индекстің бірінші бағаны бойынша реттелген. Бірінші баған <code>movie_id</code> болса, SQLite әр фильмнің ішінен адамды іздеуге мәжбүр болады. Телефон анықтамалығын «аты бойынша» реттегенде, тек тегін біліп отырсаңыз, іздеу қиын болатынына ұқсас. Бағандардың реті маңызды: іздейтін баған алда, қосымша қайтарылатын баған соңында тұрады.</p></div>
+      </details>
+
+      <h2 id="space-tradeoff">Орынға байланысты айырбас</h2>
+      <p>Индекстер керемет көрінеді, бірақ тегін ештеңе жоқ. Индекс дерекқордың ішінде қосымша орын алады, яғни сұраудың жылдамдығын ұтып, жадты жоғалтамыз.</p>
+      <p>Индекс дерекқорда <strong>B-ағаш</strong> (<span class="term-en">B-tree</span>, «balanced tree», яғни теңдестірілген ағаш) деген құрылым түрінде сақталады. Алдымен жай ағаш деген не, соны еске түсірейік. Ағашта көп <strong>түйін</strong> (<span class="term-en">node</span>) бар, олар бір-бірімен көрсеткілер арқылы жалғанған. Ағаш басталатын түйінді <strong>тамыр</strong> (<span class="term-en">root</span>) дейді; лекциядағы суретте тамырдың үш <strong>ұрпақ түйіні</strong> (<span class="term-en">children</span>) бар. Ағаштың шетіндегі, ешқайда сілтемейтін түйіндерді <strong>жапырақ</strong> (<span class="term-en">leaf</span>) дейді.</p>
+      <p>Енді <code>movies</code> кестесінің <code>"title"</code> бағанына жасалған индекс қалай құралатынын қарайық. Фильм атаулары әліпби бойынша реттеліп тұрса, белгілі бір фильмді <strong>екілік іздеу</strong> (<span class="term-en">binary search</span>) арқылы табу әлдеқайда оңай болар еді: ортасына қарап, керек жағын таңдап, қайта жартылай бөле беру. Дәл осы жасалады: <code>"title"</code> бағанының <strong>көшірмесі</strong> жасалады, ол реттеледі, сосын әр атау түпнұсқа жолға (фильм ID-і арқылы) сілтейді. Төмендегі сызба осыны көрсетеді.</p>
+      <svg viewBox="0 0 520 250" role="img" aria-label="Индекс: реттелген атаулар көшірмесі түпнұсқа кестедегі жолдарға ID арқылы сілтейді" style="display:block;width:100%;max-width:520px;height:auto;margin:18px auto"><defs><marker id="ix-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>
+        <text x="90" y="18" text-anchor="middle" style="fill:var(--accent);font-weight:700;font-size:13px">индекс (реттелген)</text>
+        <text x="420" y="18" text-anchor="middle" style="fill:var(--accent);font-weight:700;font-size:13px">movies кестесі</text>
+        <g style="font-family:var(--mono, monospace);font-size:13px">
+          <rect x="20" y="30" width="140" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="90" y="52" text-anchor="middle" style="fill:var(--text)">Cars → 4</text>
+          <rect x="20" y="64" width="140" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="90" y="86" text-anchor="middle" style="fill:var(--text)">Coco → 1</text>
+          <rect x="20" y="98" width="140" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="90" y="120" text-anchor="middle" style="fill:var(--text)">Frozen → 3</text>
+          <rect x="20" y="132" width="140" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="90" y="154" text-anchor="middle" style="fill:var(--text)">Moana → 5</text>
+          <rect x="20" y="166" width="140" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="90" y="188" text-anchor="middle" style="fill:var(--text)">Soul → 2</text>
+          <rect x="300" y="30" width="240" height="34" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/><text x="310" y="52" style="fill:var(--text)">1 | Coco</text>
+          <rect x="300" y="64" width="240" height="34" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/><text x="310" y="86" style="fill:var(--text)">2 | Soul</text>
+          <rect x="300" y="98" width="240" height="34" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/><text x="310" y="120" style="fill:var(--text)">3 | Frozen</text>
+          <rect x="300" y="132" width="240" height="34" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/><text x="310" y="154" style="fill:var(--text)">4 | Cars</text>
+          <rect x="300" y="166" width="240" height="34" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/><text x="310" y="188" style="fill:var(--text)">5 | Moana</text>
+        </g>
+        <polyline points="162,47 298,149" style="stroke:var(--accent);stroke-width:1.5;fill:none" marker-end="url(#ix-arr)"/>
+        <polyline points="162,81 298,47" style="stroke:var(--accent);stroke-width:1.5;fill:none" marker-end="url(#ix-arr)"/>
+        <polyline points="162,115 298,115" style="stroke:var(--accent);stroke-width:1.5;fill:none" marker-end="url(#ix-arr)"/>
+        <polyline points="162,149 298,183" style="stroke:var(--accent);stroke-width:1.5;fill:none" marker-end="url(#ix-arr)"/>
+        <polyline points="162,183 298,81" style="stroke:var(--accent);stroke-width:1.5;fill:none" marker-end="url(#ix-arr)"/>
+        <text x="260" y="232" text-anchor="middle" style="fill:var(--muted);font-size:12px">Кесте реттелмеген, ал индекс әліпби бойынша реттелген және әр атау өз жолына сілтейді</text>
+      </svg>
+      <p>Бұл сызба индексті түсінуге ыңғайлы, бірақ шындығында индекс бір ұзын баған емес. Деректер көп болса (біздің IMDb сияқты), бір бағанды түгелімен жадқа сыйдыру мүмкін болмауы мүмкін. Сондықтан индекс көптеген <strong>түйіндерге</strong> бөлінген, әрқайсысында индекстің бір бөлігі ғана бар.</p>
+      <p>Бірақ индекстің бөліктері әртүрлі түйіндерде жатса, дұрыс бөлікке апаратын «бағыттаушы» түйіндер де керек болады. Мысалы, төмендегі сызбадағы жоғарғы түйін мынаны айтады: атау «Frozen»-нен бұрын келсе - сол жаққа, «Frozen» мен «Soul» арасында болса - ортаға, «Soul»-дан кейін болса - оң жаққа бар. Бұл дәл жол көрсеткіш тақтайшаға ұқсайды.</p>
+      <svg viewBox="0 0 520 250" role="img" aria-label="B-ағаш: тамыр түйіні Frozen және Soul шекаралары бойынша үш жапырақ түйінге бағыттайды" style="display:block;width:100%;max-width:520px;height:auto;margin:18px auto"><defs><marker id="bt-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>
+        <rect x="170" y="14" width="180" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/>
+        <line x1="260" y1="14" x2="260" y2="54" style="stroke:var(--accent);stroke-width:1.2"/>
+        <text x="215" y="39" text-anchor="middle" style="fill:var(--text);font-family:var(--mono, monospace);font-size:14px">Frozen</text>
+        <text x="305" y="39" text-anchor="middle" style="fill:var(--text);font-family:var(--mono, monospace);font-size:14px">Soul</text>
+        <text x="260" y="10" text-anchor="middle" style="fill:var(--muted);font-size:11px">тамыр (root)</text>
+        <polyline points="190,56 90,118" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#bt-arr)"/>
+        <polyline points="260,56 260,118" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#bt-arr)"/>
+        <polyline points="330,56 430,118" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#bt-arr)"/>
+        <text x="115" y="84" text-anchor="end" style="fill:var(--muted);font-size:11px">Frozen-нен бұрын</text>
+        <text x="268" y="90" style="fill:var(--muted);font-size:11px">Frozen ... Soul</text>
+        <text x="410" y="84" style="fill:var(--muted);font-size:11px">Soul-дан кейін</text>
+        <g style="font-family:var(--mono, monospace);font-size:13px">
+          <rect x="20" y="120" width="140" height="96" rx="6" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.6"/>
+          <text x="90" y="146" text-anchor="middle" style="fill:var(--text)">Cars</text><text x="90" y="168" text-anchor="middle" style="fill:var(--text)">Coco</text><text x="90" y="190" text-anchor="middle" style="fill:var(--text)">Dumbo</text>
+          <rect x="190" y="120" width="140" height="96" rx="6" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.6"/>
+          <text x="260" y="146" text-anchor="middle" style="fill:var(--text)">Frozen</text><text x="260" y="168" text-anchor="middle" style="fill:var(--text)">Moana</text><text x="260" y="190" text-anchor="middle" style="fill:var(--text)">Ratatouille</text>
+          <rect x="360" y="120" width="140" height="96" rx="6" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.6"/>
+          <text x="430" y="146" text-anchor="middle" style="fill:var(--text)">Soul</text><text x="430" y="168" text-anchor="middle" style="fill:var(--text)">Up</text><text x="430" y="190" text-anchor="middle" style="fill:var(--text)">WALL-E</text>
+        </g>
+        <text x="260" y="238" text-anchor="middle" style="fill:var(--muted);font-size:12px">жапырақ түйіндер: индекстің бөліктері (әр атаудың қасында түпнұсқа жолға сілтеме бар)</text>
+      </svg>
+      <p>Міне, осы - <strong>B-ағаш</strong>. SQLite-та индекстер дәл осылай сақталады. Мысалы, «Moana» іздесек: тамырда «Frozen мен Soul арасында» екенін көреміз, ортаңғы жапыраққа барамыз, ішінен тауып аламыз. Миллион атау болса да, бұл бірнеше қадамға ғана сияды, себебі әр қадам іздеу аймағын бірден бірнеше есе қысқартады.</p>
+
+      <h2 id="time-tradeoff">Уақытқа байланысты айырбас</h2>
+      <p>Орынмен қатар, <strong>уақыт</strong> бойынша да айырбас бар. Бағанға индекс жасалған болса, кестеге жаңа мән қосқан сайын оны индекске де қосу керек. Мән индексте қай жерге түсетінін анықтау үшін B-ағаш бойымен тамырдан жапыраққа дейін жүріп өту керек. Яғни іздеу жылдамдайды, ал деректі <em>қосу</em> баяулайды. Индекс көп болған сайын, әр <code>INSERT</code> сайын жаңартылатын ағаш та көп болады.</p>
+      <p>Дәл осы себептен «әр бағанға индекс құра салайық» деген ұсынысты орындамаймыз. Индексті тек шынымен жиі қолданылатын іздеулерге құрамыз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: жүйе әр секунд сайын мың рет жаңа жазба қосады, ал іздеу тәулігіне бір рет жасалады. Индекс керек пе?</summary>
+        <div class="details-body"><p>Көбіне керек емес. Мұндай жүйеде индекс тек баяулатады: әр мың жазба сайын B-ағаштар жаңартылады, ал оның пайдасын тәулігіне бір-ақ рет көреміз. Индекс іздеу көп, жазу аз кестелерде тиімді. Ереже қарапайым: оңтайландыру алдында дерекқорыңыз көбіне нені істейтінін біліңіз.</p></div>
+      </details>
+
+      <h2 id="partial-index">Ішінара индекс</h2>
+      <p>Орынды үнемдеудің бір жолы бар: <strong>ішінара индекс</strong> (<span class="term-en">partial index</span>). Бұл - кестенің барлық жолдарын емес, тек <em>бір бөлігін</em> қамтитын индекс. Толық индекс алатын орынның біразын үнемдейміз.</p>
+      <p>Бұл біз пайдаланушылар кестенің тек белгілі бір бөлігін сұрайтынын білетін жағдайда өте ыңғайлы. IMDb мысалында адамдар жаңа ғана шыққан фильмді 15 жыл бұрынғы фильмнен гөрі жиі іздейтіні рас қой. Сондықтан тек 2023 жылы шыққан фильмдердің атауларын сақтайтын ішінара индекс құрып көрейік:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE INDEX "recents" ON "movies" ("title")
+WHERE "year" = 2023;</code></pre>
+      <div class="callout note">
+        <span class="callout-title">Түзету</span>
+        <p>Ресми конспектте бағанның аты <code>"titles"</code> деп қате жазылып кеткен (жекеше түрі <code>"title"</code> болуы керек). Біз дұрыс жазылуын қолданамыз.</p>
+      </div>
+      <p>Жаңа индекстің қолданылатынын тексерейік. Алдымен жоспар индекссіз, сосын индекспен шығады. Содан кейін 2023 емес жылды іздеп көріңіз: ішінара индекс оған көмектеспейді, себебі индексте басқа жылдардың жолдары жоқ.</p>
+<pre data-lang="sql" data-db="w5movies" data-dbsrc="sql/data/week-5.js"><code class="language-sql">EXPLAIN QUERY PLAN
+SELECT "title" FROM "movies"
+WHERE "year" = 2023;
+
+CREATE INDEX "recents" ON "movies" ("title")
+WHERE "year" = 2023;
+
+EXPLAIN QUERY PLAN
+SELECT "title" FROM "movies"
+WHERE "year" = 2023;
+
+EXPLAIN QUERY PLAN
+SELECT "title" FROM "movies"
+WHERE "year" = 1994;</code></pre>
+      <p>Екінші жоспар <code>movies</code> кестесі ішінара индекс арқылы сканерленетінін көрсетеді (<code>SCAN movies USING COVERING INDEX recents</code>). Индексте тек 2023 жылғы жолдар болғандықтан, сканерлеу де қысқа. Ал соңғы жоспар (1994 жыл) бұрынғыдай <code>SCAN movies</code>: индекс бұл сұрауға жарамайды.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>recents</code> индексі <code>WHERE "year" = 2023 AND "title" = 'Soul'</code> сұрауына көмектеше ме?</summary>
+        <div class="details-body"><p>Иә, көмектеседі: сұрау жылды 2023 деп шектейді, яғни бізге керек жолдар міндетті түрде индексте. Ал одан кейін атау бойынша индексте екілік іздеу жасалады. Көмектеспейтіні - жылды көрсетпейтін немесе басқа жылды көрсететін сұрау.</p></div>
+      </details>
+
+      <h3 id="partial-questions">Сұрақтар</h3>
+      <p><strong>Индекстер схемада сақтала ма?</strong> Иә, SQLite-та сақталады. Тексеру үшін <code>.schema</code> деп жазсақ, құрылған индекстердің барлығы дерекқор схемасында тізімделіп тұрады.</p>
+
+      <h2 id="vacuum">Вакуум</h2>
+      <p>Дерекқордағы пайдаланылмай жатқан орынды тазалаудың жолы бар. SQLite деректі «вакуумдауға» (<span class="term-en">vacuum</span>) мүмкіндік береді. Бұл - бұрын «жойылған» деректі тазалау. «Жойылған» деп тырнақшаға алып отырмыз: шындығында ол жойылмайды, тек «бұл орын бос, келесі <code>INSERT</code> келіп жазып кете берсін» деп белгіленеді. Кітапханада кітапты сөреден алып тастағанда, сөрені бірден қысқартпай, бос орнын қалдыра салуға ұқсайды.</p>
+      <p>Дерекқор файлының өлшемін терминалда Unix командасымен білуге болады:</p>
+<pre class="terminal"><code class="language-plaintext">$ du -b movies.db</code></pre>
+      <p>Лекцияда бұл команда дерекқордың өлшемін шамамен 158 миллион байт, яғни 158 мегабайт деп көрсетті. Енді дерекқорға қосылып, бұрын құрған индекстердің бірін жоямыз:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">DROP INDEX "person_index";</code></pre>
+      <p>Unix командасын қайта жүргізсек, файл өлшемі <strong>кішірейген жоқ</strong>. Неге? Себебі индекс «жойылды», бірақ оның орны бос деп белгіленді ғана. Шынымен босатып, файлды кішірейту үшін дерекқорды вакуумдау керек. SQLite-та:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">VACUUM;</code></pre>
+      <p>Бұл бір-екі секунд алуы мүмкін. Содан кейін өлшемді қайта тексерсек, файл кішірейгенін көреміз. Барлық индекстерді жойып, тағы вакуумдасақ, дерекқор 158 МБ-тан едәуір аз болады (лекцияда шамамен 100 МБ).</p>
+      <p>Браузерде файлды өлшеу командасы жоқ, бірақ SQLite-тың өзі файлдың неше «бетке» (<span class="term-en">page</span>) бөлінгенін және соның қаншасы бос екенін айтып береді (<code>PRAGMA page_count</code> және <code>PRAGMA freelist_count</code>). Төмендегі блокты іске қосыңыз және кестелерде 1) бастапқы бет саны, 2) индекс құрған соң, 3) жойған соң бос беттер саны, 4) вакуумнан кейінгі бет саны қалай өзгеретінін қараңыз:</p>
+<pre data-lang="sql" data-db="w5movies" data-dbsrc="sql/data/week-5.js"><code class="language-sql">PRAGMA page_count;
+
+CREATE INDEX "person_index" ON "stars" ("person_id", "movie_id");
+CREATE INDEX "name_index" ON "people" ("name");
+PRAGMA page_count;
+
+DROP INDEX "person_index";
+DROP INDEX "name_index";
+PRAGMA page_count;
+PRAGMA freelist_count;
+
+VACUUM;
+PRAGMA page_count;
+PRAGMA freelist_count;</code></pre>
+      <p>Байқадыңыз ба? Индексті жойған соң <code>page_count</code> азаймады, бірақ <code>freelist_count</code> (бос беттер) өсті. Ал <code>VACUUM</code>-нан кейін бос беттер жоғалып, жалпы бет саны бастапқы шамаға қайта оралды.</p>
+
+      <h3 id="vacuum-questions">Сұрақтар</h3>
+      <p><strong>Вакуумды жылдамырақ жасауға бола ма?</strong> Әр вакуум әртүрлі уақыт алады. Бұл қанша орынды тазалау керегіне және босатылатын байттарды табудың қаншалықты оңай екеніне байланысты.</p>
+      <p><strong>«Жою» сұрауы жолдарды шынымен жоймай, тек белгілесе, оларды қайтарып алуға бола ма?</strong> Криминалистика маманы жойылды деп ойлайтын деректі де компьютерден табып алуы мүмкін. Ал SQLite-та <code>VACUUM</code> жасағаннан кейін жойылған жолдарды қайта табу мүмкін емес.</p>
+
+      <h2 id="concurrency">Қатарлас орындау</h2>
+      <p>Осы уақытқа дейін біз <em>жеке</em> сұрауларды оңтайландырып келдік. Енді бір сұрауды емес, бір мезгілде <strong>бірнеше</strong> сұрауды қалай өңдеуге болатынын қараймыз.</p>
+      <p><strong>Қатарлас орындау</strong> (<span class="term-en">concurrency</span>) дегеніміз - дерекқордың бірнеше сұрауды немесе әрекетті бір мезгілде өңдеуі. Көп адам кіретін веб-сайттың немесе қаржы қызметінің дерекқорын елестетіңіз. Бір сәтте жүздеген адам оған жазады және одан оқиды. Сондай жағдайларда қатарлас орындау аса маңызды.</p>
+      <p>Кейбір дерекқор әрекеттері бірнеше бөліктен тұрады. Банк дерекқорын алайық. Төмендегі <code>accounts</code> кестесінде шоттардағы қалдық сақталады:</p>
+<pre data-lang="sql" data-db="w5bank" data-dbsrc="sql/data/week-5.js"><code class="language-sql">SELECT * FROM "accounts";</code></pre>
+      <p>Бір әрекет - бір шоттан екіншісіне ақша аудару. Мысалы, Алиса Бобқа 10 доллар жібергісі келеді. Ол үшін екі нәрсе істеу керек: Бобтың шотына 10 қосу <em>және</em> Алисаның шотынан 10 алу. Біреу дерекқорды бірінші жаңартудан кейін, бірақ екіншісінен бұрын қараса, банктің қолындағы ақшаның жалпы сомасы туралы қате көрініс алады: 10 доллар «ауада ілініп» тұр.</p>
+
+      <h3 id="transactions">Транзакциялар</h3>
+      <p>Сырттан бақылаушыға транзакцияның барлық бөліктері бір мезгілде болып өткендей көрінуі керек. Дерекқор тілінде <strong>транзакция</strong> (<span class="term-en">transaction</span>) - бөлшектеуге болмайтын жеке жұмыс бірлігі.</p>
+      <p>Транзакциялардың қасиеттерін <strong>ACID</strong> аббревиатурасымен есте сақтауға болады:</p>
+      <ul>
+        <li><strong>атомарлық</strong> (<span class="term-en">atomicity</span>): кішірек бөліктерге бөлінбейді, не толық орындалады, не мүлде орындалмайды;</li>
+        <li><strong>үйлесімділік</strong> (<span class="term-en">consistency</span>): дерекқордың шектеулерін бұзбауы керек;</li>
+        <li><strong>оқшаулау</strong> (<span class="term-en">isolation</span>): дерекқорға бірнеше пайдаланушы қатынаса, олардың транзакциялары бір-біріне кедергі жасамауы керек;</li>
+        <li><strong>беріктік</strong> (<span class="term-en">durability</span>): дерекқорда қандай да бір ақау болса да, транзакциялар өзгерткен деректер сақталып қалуы керек.</li>
+      </ul>
+      <p>Енді <code>bank.db</code>-ны терминалда ашып, Алисадан Бобқа ақша аудару транзакциясын жазайық. Алдымен <code>accounts</code> кестесіндегі деректі қарадық (жоғарыдағы блок): Бобтың ID-і 2, Алисаныкі 1, сұрауымызға бұл керек болады. Алисадан Бобқа 10 доллар көшіру үшін мынадай транзакция жазамыз:</p>
+<pre data-lang="sql" data-db="w5bank" data-dbsrc="sql/data/week-5.js"><code class="language-sql">BEGIN TRANSACTION;
+UPDATE "accounts" SET "balance" = "balance" + 10 WHERE "id" = 2;
+UPDATE "accounts" SET "balance" = "balance" - 10 WHERE "id" = 1;
+COMMIT;
+
+SELECT * FROM "accounts";</code></pre>
+      <p>Назар аударыңыз: екі <code>UPDATE</code> транзакцияны бастайтын және оны бекітетін командалардың <em>арасында</em> тұр. Егер <code>UPDATE</code>-терді жазып, бірақ <code>COMMIT</code> жасамасақ, екеуі де орындалмаған болып қалады. Дәл осы транзакцияны <strong>атомарлы</strong> етеді: ортаңғы қадамдарды біреу көре алмайды. Мұны өзіңіз көріңіз: транзакция ішінде өзіңіз өзгеріс көресіз, ал <code>ROLLBACK</code> жасасақ, ол жоғалып кетеді (төмендегі блок осыны көрсетеді):</p>
+<pre data-lang="sql" data-db="w5bank" data-dbsrc="sql/data/week-5.js"><code class="language-sql">BEGIN TRANSACTION;
+UPDATE "accounts" SET "balance" = "balance" + 10 WHERE "id" = 2;
+SELECT * FROM "accounts";
+ROLLBACK;
+SELECT * FROM "accounts";</code></pre>
+      <p>Алғашқы <code>SELECT</code>-те Бобта 30 бар, ал <code>ROLLBACK</code>-тен кейін қайтадан 20.</p>
+      <p>Алиса Бобқа тағы 10 доллар жібермек болса, не болады? Бұл транзакция орындалмауы керек, себебі Алисаның қалдығы нөлде. (<code>accounts</code> кестесінің <code>"balance"</code> бағанында теріс емес мән болуын талап ететін <code>CHECK</code> шектеуі бар; оны <code>.schema</code> арқылы көруге болады.) Төмендегі блокта бірінші аударым сәтті өтеді, екіншісі шектеуге соғылып, қате береді:</p>
+<pre data-lang="sql" data-db="w5bank" data-dbsrc="sql/data/week-5.js"><code class="language-sql">UPDATE "accounts" SET "balance" = "balance" + 10 WHERE "id" = 2;
+UPDATE "accounts" SET "balance" = "balance" - 10 WHERE "id" = 1;
+
+UPDATE "accounts" SET "balance" = "balance" + 10 WHERE "id" = 2;
+UPDATE "accounts" SET "balance" = "balance" - 10 WHERE "id" = 1;</code></pre>
+      <p>Қатені көрдіңіз: <code>CHECK constraint failed</code>. Бірақ екінші аударымның бірінші жартысы (Бобқа +10) орындалып қойған болуы мүмкін, және бұл жағдай дәл біз қаламайтын нәрсе. Транзакцияны қайтару үшін <code>ROLLBACK</code> бар. Транзакцияны бастап, бірнеше команда жазғаннан кейін, олардың бірі сәтсіз болса, транзакцияны <code>ROLLBACK</code> арқылы аяқтаймыз, сонда барлық мән транзакцияға дейінгі күйіне қайтады. Мұндай жолмен транзакциялар <strong>үйлесімді</strong> болып қалады.</p>
+<pre data-lang="sql" data-norun><code class="language-sql">BEGIN TRANSACTION;
+UPDATE "accounts" SET "balance" = "balance" + 10 WHERE "id" = 2;
+UPDATE "accounts" SET "balance" = "balance" - 10 WHERE "id" = 1; -- Шектеу қатесін шығарады
+ROLLBACK;</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: екі <code>UPDATE</code>-ті транзакциясыз жазсақ, екіншісі қатемен құлағанда банк қандай күйде қалады?</summary>
+        <div class="details-body"><p>Бобтың шотына 10 доллар қосылып қойған, ал Алисадан алынбаған болады: банкте ақша жоқтан пайда болды. Транзакция мен <code>ROLLBACK</code> дәл осындай жартылай жағдайдың алдын алады: екі қадамның екеуі де орындалады немесе екеуі де жоққа шығарылады.</p></div>
+      </details>
+
+      <h3 id="race-conditions">Жарыс жағдайлары</h3>
+      <p>Транзакциялар <strong>жарыс жағдайларынан</strong> қорғайды. <strong>Жарыс жағдайы</strong> (<span class="term-en">race condition</span>) - бірнеше тарап бір мезгілде ортақ мәнге қатынасып, соның негізінде шешім қабылдағанда пайда болатын жағдай; бұл дерекқорда сәйкессіздікке әкелуі мүмкін. Шешілмеген жарыс жағдайларын хакерлер дерекқорды өз пайдасына өзгерту үшін пайдалана алады.</p>
+      <p>Лекцияда мұндай жарыс жағдайының мысалы қарастырылады: бірге әрекет ететін екі пайдаланушы дерекқордағы уақытша сәйкессіздікті пайдаланып, банкті тонай алады. Идеясын былай елестетуге болады: шотта 10 доллар бар делік. Екі құрдас бір мезгілде екі түрлі жерден «10 доллар жібер» деп сұрау жібереді. Екі сұрау да шоттағы қалдықты, яғни 10 долларды көреді, екеуі де «жететін ақша бар екен» деп шешеді, ал сонан соң әрқайсысы 10 доллар жібереді. Нәтижесінде бар болғаны 10 доллары бар шоттан 20 доллар шығып кетті. Мұның бәрі қалдықты <em>тексеру</em> мен оны <em>өзгертудің</em> арасындағы кішкентай үзілісте болады.</p>
+      <p>Алайда транзакциялар <strong>оқшауланған</strong> түрде өңделеді, сондықтан мұндай сәйкессіздіктің өзі пайда болмайды. Бір деректермен жұмыс істейтін транзакциялар біртіндеп, кезекпен өңделеді. Бұл қарсылас шабуылы пайдалана алатын сәйкессіздіктердің алдын алады.</p>
+      <p>Транзакцияларды біртіндеп орындату үшін SQLite және басқа дерекқор жүйелері дерекқорда <strong>құлыптарды</strong> (<span class="term-en">lock</span>) қолданады. Дерекқор бірнеше күйде болуы мүмкін:</p>
+      <svg viewBox="0 0 520 130" role="img" aria-label="Құлып күйлері: UNLOCKED, SHARED, EXCLUSIVE" style="display:block;width:100%;max-width:520px;height:auto;margin:18px auto"><defs><marker id="lk-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs>
+        <g style="font-family:var(--mono, monospace);font-size:13px">
+          <rect x="10" y="30" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80" y="60" text-anchor="middle" style="fill:var(--text)">UNLOCKED</text>
+          <rect x="190" y="30" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="260" y="60" text-anchor="middle" style="fill:var(--text)">SHARED</text>
+          <rect x="370" y="30" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="440" y="60" text-anchor="middle" style="fill:var(--text)">EXCLUSIVE</text>
+        </g>
+        <polyline points="152,55 188,55" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#lk-arr)"/>
+        <polyline points="332,55 368,55" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#lk-arr)"/>
+        <text x="80" y="102" text-anchor="middle" style="fill:var(--muted);font-size:11px">ешкім қатынаспайды</text>
+        <text x="260" y="102" text-anchor="middle" style="fill:var(--muted);font-size:11px">бірнешеуі оқи алады</text>
+        <text x="440" y="102" text-anchor="middle" style="fill:var(--muted);font-size:11px">тек біреуі жазады</text>
+      </svg>
+      <ul>
+        <li><strong>UNLOCKED</strong> (құлыпсыз): дерекқорға ешкім қатынаспағанда әдепкі күй;</li>
+        <li><strong>SHARED</strong> (ортақ): транзакция дерекқордан деректі оқып жатқанда ол ортақ құлып алады, және бұл басқа транзакцияларға да сол мезгілде оқуға мүмкіндік береді;</li>
+        <li><strong>EXCLUSIVE</strong> (айрықша): транзакция деректі жазуы немесе жаңартуы керек болса, ол дерекқорда айрықша құлып алады, ал бұл басқа транзакциялардың бір мезгілде орындалуына жол бермейді (тіпті оқуға да).</li>
+      </ul>
+
+      <h3 id="locking-questions">Сұрақтар</h3>
+      <p><strong>Транзакцияның айрықша құлып алуына қашан болатынын қалай шешеміз? Әртүрлі транзакцияларға басымдықты қалай береміз?</strong> Бұл үшін әртүрлі алгоритмдер қолдануға болады. Мысалы, әрдайым бірінші келген транзакцияны таңдау. Айрықша транзакция керек болса, сол кезде басқа ешқандай транзакция жүре алмайды; бұл кестенің үйлесімділігін сақтау үшін міндетті кемшілік.</p>
+      <p><strong>Құлыптау қаншалықты ұсақ? Біз дерекқорды, кестені немесе кестенің жолын құлыптаймыз ба?</strong> Бұл дерекқор жүйесіне байланысты. SQLite-та мұны айрықша транзакция іске қосу арқылы көруге болады:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">BEGIN EXCLUSIVE TRANSACTION;</code></pre>
+      <p>Осы транзакцияны аяқтамай, басқа терминалдан дерекқорға қосылып, кестеден оқып көрсек, дерекқор құлыптаулы деген қате шығады. Әрине, бұл құлыптаудың өте дөрекі тәсілі, себебі бүкіл дерекқор құлыпталады. SQLite осындай дөрекі болғандықтан, оның транзакцияларға басымдық беретін және айрықша құлыпты тек ең қысқа қажетті уақытқа ғана алуды қамтамасыз ететін модулі бар.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: екі терминалда бір <code>bank.db</code> ашылған. Біріншісі <code>BEGIN EXCLUSIVE TRANSACTION;</code> жазып, тоқтап тұр. Екіншісі <code>SELECT</code> жазса, не болады?</summary>
+        <div class="details-body"><p>Екіншісі «database is locked» (дерекқор құлыпталған) деген қате алады: айрықша құлып оқуға да жол бермейді. Біріншісі <code>COMMIT</code> не <code>ROLLBACK</code> жасап, құлыпты босатқанша кезек күту керек.</p></div>
+      </details>
+
+      <h2 id="fin">Қорытынды бөлім: оңтайландыру жайлы</h2>
+      <p>Осымен 5-лекция, яғни SQL-ді оңтайландыру, аяқталды. Қазір біз сұрауды тек дұрыс емес, жылдам да жаза аламыз, және бір мезгілде көп адам қатынайтын дерекқорды қауіпсіз ұстай аламыз.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li><strong>Индекс</strong> сұрауды жылдамдатады: <code>EXPLAIN QUERY PLAN</code> жоспарында <code>SCAN</code> (бәрін қарау) орнына <code>SEARCH ... USING INDEX</code> шығады. Индексті <code>CREATE INDEX</code>-пен құрып, <code>DROP INDEX</code>-пен жоямыз.</li>
+        <li>Бастапқы кілт бойынша индекс автоматты құрылады, ал қалған бағандар үшін оны өзіміз құрамыз.</li>
+        <li><strong>Жабық индекс</strong> (covering index) сұрауға қажет барлық деректі индекстің өзінде сақтайды, сондықтан кестеге бару керек емес. Көп бағанды индексте іздейтін баған алда тұрады.</li>
+        <li>Индекс <strong>B-ағаш</strong> түрінде сақталады: тамыр бағыттайды, жапырақтарда реттелген мәндер жатыр.</li>
+        <li>Айырбастар: индекс <strong>орын</strong> алады және деректі <strong>қосуды</strong> баяулатады. Сондықтан әр бағанға индекс құрмаймыз.</li>
+        <li><strong>Ішінара индекс</strong> кестенің тек бір бөлігін (мысалы, 2023 жылғы фильмдерді) қамтып, орынды үнемдейді.</li>
+        <li><code>DROP INDEX</code> файлды кішірейтпейді: бос орын тек белгіленеді. Нағыз тазалау үшін <code>VACUUM</code> керек.</li>
+        <li><strong>Транзакция</strong> (<code>BEGIN TRANSACTION</code>, <code>COMMIT</code>, <code>ROLLBACK</code>) бірнеше қадамды бөлінбейтін бірлікке біріктіреді. ACID: атомарлық, үйлесімділік, оқшаулау, беріктік.</li>
+        <li><strong>Жарыс жағдайларын</strong> оқшаулау арқылы болдырмаймыз; SQLite-та мұны <strong>құлыптар</strong> (UNLOCKED, SHARED, EXCLUSIVE) қамтамасыз етеді.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. <code>"email"</code> бағанында индекс жоқ. <code>EXPLAIN QUERY PLAN SELECT * FROM "users" WHERE "email" = 'a@b.kz';</code> қандай жоспар шығарады?</p>
+          <label><input type="radio" value="a"> <code>SEARCH users USING INDEX email</code></label>
+          <label><input type="radio" value="b"> <code>SCAN users</code>: кесте жолдарын түгел қарап шығады</label>
+          <label><input type="radio" value="c"> Қате: индекс жоқ болса, сұрау орындалмайды</label>
+          <label><input type="radio" value="d"> <code>SEARCH users USING INTEGER PRIMARY KEY</code></label>
+          <p class="explain">Бағанда индекс болмаса, SQLite-тың басқа амалы жоқ: кестені сканерлейді. Сұрау орындалады, тек баяу болуы мүмкін.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">2. <code>SELECT * FROM "movies" WHERE "id" = 100;</code> сұрауы үшін индексті өзіміз құрмасақ та, жоспарда <code>SEARCH ... USING INTEGER PRIMARY KEY</code> шығады. Неге?</p>
+          <label><input type="radio" value="a"> SQLite әр сұрау алдында индекс құрады</label>
+          <label><input type="radio" value="b"> <code>id</code> саны кіші болғандықтан</label>
+          <label><input type="radio" value="c"> <code>EXPLAIN QUERY PLAN</code> индексті өзі құрып жібереді</label>
+          <label><input type="radio" value="d"> Бастапқы кілт бағанына арналған индекс автоматты түрде бар</label>
+          <p class="explain">Бастапқы кілт бойынша іздеуге арналған индексті SQLite кесте құрылғанда өзі жасайды. Қарапайым бағандарға (мысалы, <code>title</code>) ондай индекс болмайды.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. <code>stars</code> кестесінде <code>("person_id", "movie_id")</code> индексі бар. Қай сұрау үшін ол <em>жабық индекс</em> болады?</p>
+          <label><input type="radio" value="a"> <code>SELECT "movie_id" FROM "stars" WHERE "person_id" = 5;</code></label>
+          <label><input type="radio" value="b"> <code>SELECT * FROM "stars" WHERE "movie_id" = 5;</code></label>
+          <label><input type="radio" value="c"> <code>SELECT "title" FROM "movies" WHERE "id" = 5;</code></label>
+          <label><input type="radio" value="d"> Ешқайсысы үшін емес</label>
+          <p class="explain">Бірінші сұрауда іздейтін (<code>person_id</code>) және қайтаратын (<code>movie_id</code>) мәндер екеуі де индекстің ішінде, сондықтан кестеге бару керек емес. Екінші сұраудың басты бағаны <code>movie_id</code> емес, үшіншісі басқа кестеге қатысты.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">4. Әріптесіңіз «кестенің әр бағанына индекс құрайық, сонда ешқашан баяу болмайды» дейді. Басты қарсы дәлел қандай?</p>
+          <label><input type="radio" value="a"> Индекстер сұрауды баяулатады</label>
+          <label><input type="radio" value="b"> Бір кестеге бірден артық индекс құруға болмайды</label>
+          <label><input type="radio" value="c"> Әр индекс қосымша орын алады және әр <code>INSERT</code> кезінде барлық индекс жаңартылады</label>
+          <label><input type="radio" value="d"> Индекс <code>SELECT</code>-те ғана жұмыс істейді, <code>WHERE</code>-де істемейді</label>
+          <p class="explain">Индекс іздеуді жылдамдатады, бірақ орын алады және деректі қосуды баяулатады: жаңа мән әр B-ағашқа орналасуы тиіс.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">5. <code>CREATE INDEX "recents" ON "movies" ("title") WHERE "year" = 2023;</code> индексі бар. Қай сұрау бұл индексті қолдана алады?</p>
+          <label><input type="radio" value="a"> <code>SELECT "title" FROM "movies" WHERE "year" = 1994;</code></label>
+          <label><input type="radio" value="b"> <code>SELECT "title" FROM "movies" WHERE "title" LIKE 'A%';</code></label>
+          <label><input type="radio" value="c"> <code>SELECT * FROM "movies";</code></label>
+          <label><input type="radio" value="d"> <code>SELECT "title" FROM "movies" WHERE "year" = 2023;</code></label>
+          <p class="explain">Ішінара индексте тек 2023 жылғы жолдар бар, сондықтан тек сол шартты қамтитын сұрау оны қолдана алады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">6. Үлкен индексті <code>DROP INDEX</code> арқылы жойдыңыз, бірақ <code>du -b movies.db</code> файл өлшемі кішірейгенін көрсетпейді. Не істеу керек?</p>
+          <label><input type="radio" value="a"> Дерекқорды қайта құру ғана көмектеседі</label>
+          <label><input type="radio" value="b"> <code>VACUUM;</code> орындау: бос белгіленген орын файлдан шынымен алынады</label>
+          <label><input type="radio" value="c"> Индексті қайта құру</label>
+          <label><input type="radio" value="d"> Ештеңе: файл өлшемі ешқашан кішірейе алмайды</label>
+          <p class="explain"><code>DROP INDEX</code> орынды тек «бос» деп белгілейді. <code>VACUUM</code> файлды қайта жинап, бос орынды қайтарады.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. Транзакция ішінде екі <code>UPDATE</code> бар; екіншісі <code>CHECK</code> шектеуін бұзады. Орындалған бірінші <code>UPDATE</code> мен <code>ROLLBACK</code>-тен кейін кестедегі деректер қандай болады?</p>
+          <label><input type="radio" value="a"> Транзакцияға дейінгі күйінде: екі өзгеріс те жоққа шығарылады</label>
+          <label><input type="radio" value="b"> Тек бірінші <code>UPDATE</code> қолданылған</label>
+          <label><input type="radio" value="c"> Тек екінші <code>UPDATE</code> қолданылған</label>
+          <label><input type="radio" value="d"> Кесте жойылады</label>
+          <p class="explain"><code>ROLLBACK</code> транзакция басталғаннан бергі барлық өзгерісті қайтарады. Бұл транзакцияны атомарлы және үйлесімді етеді.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">8. Бір терминалда <code>BEGIN EXCLUSIVE TRANSACTION;</code> орындалды және аяқталмады. Екінші терминал сол дерекқордан оқып көрсе, не болады?</p>
+          <label><input type="radio" value="a"> Ол ескі деректі қатесіз оқиды</label>
+          <label><input type="radio" value="b"> Оқуға болады, тек жазуға болмайды</label>
+          <label><input type="radio" value="c"> Дерекқор құлыпталған деген қате алады</label>
+          <label><input type="radio" value="d"> Бірінші транзакция өздігінен тоқтатылады</label>
+          <p class="explain">Айрықша (EXCLUSIVE) құлып басқа транзакцияларға оқуға да тыйым салады. SQLite-та бұл бүкіл дерекқорды құлыптайды.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Problem Set 5 (Тапсырмалар жинағы 5)</h2>
+      <p>Ресми бет: <a href="https://cs50.harvard.edu/sql/psets/5/" target="_blank" rel="noopener">cs50.harvard.edu/sql/psets/5</a>. Бұл аптада екі тапсырма бар: <strong>In a Snap</strong> және <strong>your.harvard</strong> (екіншісінің ресми беті бұл жинақта берілмеген, сондықтан оны түпнұсқа сайттан қараңыз). Ресми нұсқаулық бойынша: <a href="https://cs50.dev/" target="_blank" rel="noopener">cs50.dev</a>-ке GitHub аккаунтыңызбен кіріңіз, терминалда <code>update50</code> жүргізіңіз, сосын тапсырмаларды тапсырыңыз. Басқалардың көмегін алуға болады, бірақ жұмысыңызды басқа адам орындап бермеуі керек (академиялық адалдық ережесі).</p>
+      <div class="callout note">
+        <span class="callout-title">Қайда орындалады</span>
+        <p>Ресми тапсырма нағыз <code>snap.db</code> дерекқорымен cs50.dev-те орындалады, және ресми <code>check50</code> сұраудың нәтижесін ғана емес, индекс қолданылғанын да тексереді. Сайтта шағын демо дерекқор мен «нәтиже дұрыс па» тексерушісі бар: ол сіздің сұрауыңыздың логикасын тексеруге көмектеседі, бірақ ресми тексеруді алмастырмайды. Индекс қолданылғанын сіз <code>EXPLAIN QUERY PLAN</code> арқылы өзіңіз тексересіз.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-snap">In a Snap (Бір сәтте)</h3></div>
+        <h4 id="snap-problem">Шешілетін мәселе</h4>
+        <p>Баспа станогынан, пошта қызметінен және телеграфтан кейін хабарласу қосымшалары келді. Бүгін сіз қандай да бір хабарласу қосымшасын (Facebook Messenger, iMessage, Instagram, Signal, Snapchat және басқалар) қолданған боларсыз. Ертедегі әріптестері байланыс жылдамдығын апталармен, күндермен немесе сағаттармен өлшесе, қазіргі хабарласу қосымшалары миллисекундтармен өлшенетін жылдамдыққа тәуелді: кешіккен хабар - жіберіп алған байланыс.</p>
+        <p>Бұл тапсырмада сіз ойдан шығарылған қосымша үшін SQL сұрауларын жазасыз. Қосымша пайдаланушыларға суреттер жіберуге мүмкіндік береді, ал суреттер алушы көргеннен кейін 30 секундтан соң жойылады (бұл идеяны Snapchat танымал етті). Сіз жазатын сұраулар қосымшаның негізгі мүмкіндіктерін іске асырады. Қосымшада бірнеше мың пайдаланушы лезде хабарласуға сүйенетіндіктен, сұраулар тек <em>дұрыс</em> емес, <em>жылдам</em> да болуы өте маңызды. Сіз индекстерді пайдаланатын сұрауларды жазуды жаттығасыз, осының бәрі пайдаланушыларға бір сәтте байланыста болуға көмектесу үшін.</p>
+
+        <h4 id="snap-dist">Таратылатын код</h4>
+        <p>Бұл тапсырмаға <code>snap.db</code> дерекқоры және SQL сұрауларыңызды жазатын бірнеше <code>.sql</code> файлы керек. cs50.dev-ке кіріп, терминалда жалғыз <code>cd</code> жазыңыз, сосын мынаны орындаңыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ wget https://cdn.cs50.net/sql/2024/x/psets/5/snap.zip
+$ unzip snap.zip
+$ rm snap.zip
+$ cd snap
+$ ls</code></pre>
+        <p><code>rm</code> файлды жою үшін растауды сұрағанда «y» жазып, Enter басыңыз. <code>ls</code> нәтижесінде <code>snap.db</code> дерекқорын және бір топ <code>.sql</code> файлын көруіңіз керек. Көрмесеңіз, қадамдарды қайталаңыз.</p>
+
+        <h4 id="snap-schema">Схема</h4>
+        <p><code>snap.db</code> ішінде үш кесте бар, олар төмендегі ER-диаграммада сипатталған қатынастарды іске асырады: пайдаланушылар бір-бірімен достас (<code>User</code> мен <code>User</code> арасында көптен көпке байланыс), пайдаланушы хабар жібереді және хабарды көреді (бір пайдаланушыда көп хабар болады).</p>
+        <svg viewBox="0 0 520 150" role="img" aria-label="ER-диаграмма: users, friends, messages" style="display:block;width:100%;max-width:520px;height:auto;margin:18px auto"><defs><marker id="sn-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs>
+          <rect x="190" y="10" width="140" height="56" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="260" y="32" text-anchor="middle" style="fill:var(--text);font-weight:700;font-size:14px">users</text><text x="260" y="52" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-family:var(--mono, monospace)">id, username</text>
+          <rect x="10" y="84" width="140" height="56" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3"/><text x="80" y="106" text-anchor="middle" style="fill:var(--text);font-weight:700;font-size:14px">friends</text><text x="80" y="126" text-anchor="middle" style="fill:var(--muted);font-size:12px;font-family:var(--mono, monospace)">user_id, friend_id</text>
+          <rect x="370" y="84" width="140" height="56" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="440" y="106" text-anchor="middle" style="fill:var(--text);font-weight:700;font-size:14px">messages</text><text x="440" y="126" text-anchor="middle" style="fill:var(--muted);font-size:11px;font-family:var(--mono, monospace)">from_user_id, to_user_id</text>
+          <polyline points="130,82 210,68" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#sn-arr)"/>
+          <polyline points="390,82 310,68" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#sn-arr)"/>
+        </svg>
+        <details><summary><code>users</code> кестесі</summary><div class="details-body">
+          <ul><li><code>id</code> - пайдаланушының ID-і;</li><li><code>username</code> - пайдаланушының аты;</li><li><code>phone_number</code> - телефон нөмірі;</li><li><code>joined_date</code> - қосымшаға тіркелген күні;</li><li><code>last_login_date</code> - соңғы рет кірген күні.</li></ul>
+        </div></details>
+        <details><summary><code>friends</code> кестесі</summary><div class="details-body">
+          <ul><li><code>user_id</code> - берілген пайдаланушының ID-і;</li><li><code>friend_id</code> - берілген пайдаланушымен достас пайдаланушының ID-і;</li><li><code>friendship_date</code> - достық басталған күні.</li></ul>
+          <p>Әр жолда <code>user_id</code> бағанындағы пайдаланушы <code>friend_id</code> бағанындағы пайдаланушыны өз достарының қатарына санайды, бірақ керісінше болуы міндетті емес. Екі пайдаланушы бір-бірін дос санаса, екі жол қосылады:</p>
+          <div class="sql-table"><table><thead><tr><th>user_id</th><th>friend_id</th><th>friendship_date</th></tr></thead><tbody><tr><td>1</td><td>2</td><td>2024-01-01</td></tr><tr><td>2</td><td>1</td><td>2024-01-01</td></tr></tbody></table></div>
+        </div></details>
+        <details><summary><code>messages</code> кестесі</summary><div class="details-body">
+          <ul><li><code>id</code> - хабардың ID-і;</li><li><code>from_user_id</code> - хабарды жіберген пайдаланушының ID-і;</li><li><code>to_user_id</code> - хабар жіберілген пайдаланушының ID-і;</li><li><code>picture</code> - жіберілген суреттің файл аты;</li><li><code>sent_timestamp</code> - хабар жіберілген уақыт;</li><li><code>viewed_timestamp</code> - хабар көрілген уақыт;</li><li><code>expires_timestamp</code> - хабардың мерзімі бітетін уақыт.</li></ul>
+        </div></details>
+
+        <h4 id="snap-spec">Талаптар</h4>
+        <p>Әр <code>.sql</code> файлына төменде сипатталған мүмкіндікті іске асыратын SQL сұрауын жазыңыз. Жылдамдық шешуші болғандықтан, сұрауыңыз көрсетілген индексті <strong>қолдануы</strong> керек. Мұны тексерудің ең жақсы жолы - <code>EXPLAIN QUERY PLAN</code> нәтижесін қарау.</p>
+        <p><strong>1.sql</strong>. Қосымшаның белсенділік тобына белсенді пайдаланушыларды анықтау керек. 2024-01-01 күнінен бері жүйеге кірген барлық пайдаланушылардың username-дерін табыңыз. Сұрауыңыз мына түрде анықталған <code>search_users_by_last_login</code> индексін қолдансын:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE INDEX "search_users_by_last_login"
+ON "users"("last_login_date");</code></pre>
+        <p><strong>2.sql</strong>. Пайдаланушыларға мерзімі бітіп қалған хабарды қайта ашуға жол бермеу керек. ID-і 151 хабардың мерзімі қашан бітетінін табыңыз. Сұрауда хабардың ID-ін тікелей жазуға болады. Сұрауыңыз <code>messages</code> кестесінің бастапқы кілт бағанында автоматты түрде құрылған индексті қолдансын.</p>
+        <p><strong>3.sql</strong>. Қосымша пайдаланушының «үздік достарын» саралауы керек, бұл Snapchat-тың <a href="https://help.snapchat.com/hc/en-us/articles/7012335460372" target="_blank" rel="noopener">«Friend Emojis»</a> мүмкіндігіне ұқсайды. <code>creativewisdom377</code> ең жиі хабар жіберетін алғашқы 3 пайдаланушының ID-ін табыңыз. ID-лерді <code>creativewisdom377</code> оларға жіберген хабарлар санына қарай, көптен азға қарай реттеңіз. Сұрауыңыз мына <code>search_messages_by_from_user_id</code> индексін қолдансын:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE INDEX "search_messages_by_from_user_id"
+ON "messages"("from_user_id");</code></pre>
+        <p><strong>4.sql</strong>. Қосымша пайдаланушыларға олардың белсенділігінің қысқаша есебін жіберуі керек. Ең танымал пайдаланушының username-ін табыңыз: ол - оған ең көп хабар жіберілген пайдаланушы. Сұрауыңыз мына <code>search_messages_by_to_user_id</code> индексін қолдансын:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE INDEX "search_messages_by_to_user_id"
+ON "messages"("to_user_id");</code></pre>
+        <p><strong>5.sql</strong>. Кез келген екі пайдаланушының ортақ достарының тізімін тез көрсету керек. Екі username берілген: <code>lovelytrust487</code> және <code>exceptionalinspiration482</code>. Олардың ортақ достарының ID-ін табыңыз. Ортақ дос - екеуі де өз достары деп санайтын пайдаланушы. Сұрауыңыз <code>friends</code> кестесінің бастапқы кілт бағандарында автоматты түрде құрылған индексті қолдансын; бұл индекс <code>sqlite_autoindex_friends_1</code> деп аталады.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>SQL-де кейбір кілт сөздер арқылы екі топтың қиылысуын табуға болады. Еске түсіру үшін <a href="https://cs50.harvard.edu/sql/notes/1/#sets" target="_blank" rel="noopener">1-аптаның конспектісіндегі</a> «Sets» бөлімін (біздің сайтта 1-апта лекциясын) қараңыз.</p></div></details>
+
+        <h4 id="snap-advice">Кеңестер</h4>
+        <p><strong><code>EXPLAIN QUERY PLAN</code> сұрау қадамдарын көрсетеді.</strong> Нәтижесін көру үшін сұрауыңыздың алдына <code>EXPLAIN QUERY PLAN</code> қосыңыз. Мысал ретінде мына блокты іске қосыңыз (демо <code>snap.db</code>-де):</p>
+<pre data-lang="sql" data-db="w5snap" data-dbsrc="sql/data/week-5.js"><code class="language-sql">EXPLAIN QUERY PLAN
+SELECT "username"
+FROM "users"
+WHERE "id" = 151;</code></pre>
+        <p><strong><code>EXPLAIN QUERY PLAN</code> нәтижесін қалай оқимыз.</strong> Бұл команда SQLite-тың сұрауды орындау қадамдарын көрсетеді, ал нәтиже сұраудың индексті қолданғанын-қолданбағанын білдіреді:</p>
+        <ul>
+          <li><code>USING INDEX</code> қадамы сұрау сол қадамда индексті қолданып жатқанын білдіреді;</li>
+          <li><code>USING COVERING INDEX</code> - сол қадамда жабық индекс қолданылады. Жабық индекс сұрауға қажет барлық бағанды қамтиды, сондықтан дерекқор кестеге қосымша қарамай-ақ сұрауды орындай алады;</li>
+          <li><code>USING INTEGER PRIMARY KEY</code> - сұрау бастапқы кілт бағанының индексін қолданып жатыр. Бастапқы кілттің типі <code>INTEGER</code> болса, SQLite бұл индексті автоматты түрде береді. Сұраудың шарты кестенің бастапқы кілтіне қатысты болса, жолға тікелей жетудің тиімді жолы осы.</li>
+        </ul>
+        <p>Төменде индексті кемінде бір қадамда қолданатын сұрауларға арналған <code>EXPLAIN QUERY PLAN</code> нәтижелерінің бес мысалы келтірілген.</p>
+        <p><strong>1-мысал.</strong> Сұрау бір қадамда орындалады: <code>search_users_by_last_login</code> индексі бойынша іздеу.</p>
+<pre class="terminal"><code class="language-plaintext">QUERY PLAN
+`--SEARCH users USING INDEX search_users_by_last_login (last_login_date&gt;?)</code></pre>
+        <p><strong>2-мысал.</strong> Екі қадам: 1) <code>search_messages_by_to_user_id</code> индексінде іздеу; 2) ішкі сұрауды шешу үшін <code>sqlite_autoindex_users_1</code> индексінде іздеу.</p>
+<pre class="terminal"><code class="language-plaintext">QUERY PLAN
+|--SEARCH messages USING COVERING INDEX search_messages_by_to_user_id (to_user_id=?)
+`--SCALAR SUBQUERY 1
+   `--SEARCH users USING COVERING INDEX sqlite_autoindex_users_1 (username=?)</code></pre>
+        <p><strong>3-мысал.</strong> Бірнеше қадам, және көбінде индекс қолданылады: 1) <code>search_messages_by_from_user_id</code> индексінде іздеу; 2) <code>sqlite_autoindex_users_1</code> индексінде іздеу; 3) соңғы қадамдар топтау мен реттеу үшін уақытша B-ағаштарды қолданады.</p>
+<pre class="terminal"><code class="language-plaintext">QUERY PLAN
+|--SEARCH messages USING INDEX search_messages_by_from_user_id (from_user_id=?)
+|--SCALAR SUBQUERY 1
+|  `--SEARCH users USING COVERING INDEX sqlite_autoindex_users_1 (username=?)
+|--USE TEMP B-TREE FOR GROUP BY
+`--USE TEMP B-TREE FOR ORDER BY</code></pre>
+        <p><strong>4-мысал.</strong> 1) бастапқы кілт индексін автоматты түрде іздеу; 2) <code>search_messages_by_to_user_id</code> индексі бойынша жолдарды сканерлеу; 3) реттеу үшін уақытша B-ағаш.</p>
+<pre class="terminal"><code class="language-plaintext">QUERY PLAN
+|--SEARCH users USING INTEGER PRIMARY KEY (rowid=?)
+`--SCALAR SUBQUERY 1
+   |--SCAN messages USING COVERING INDEX search_messages_by_to_user_id
+   `--USE TEMP B-TREE FOR ORDER BY</code></pre>
+        <p><strong>5-мысал.</strong> Көп қадам, және көбінде индекс қолданылады. Әсіресе <code>sqlite_autoindex_friends_1</code> индексіне жиі қатынау көрінеді.</p>
+<pre class="terminal"><code class="language-plaintext">QUERY PLAN
+`--COMPOUND QUERY
+   |--LEFT-MOST SUBQUERY
+   |  |--SEARCH friends USING COVERING INDEX sqlite_autoindex_friends_1 (user_id=?)
+   |  `--SCALAR SUBQUERY 1
+   |     `--SEARCH users USING COVERING INDEX sqlite_autoindex_users_1 (username=?)
+   `--INTERSECT USING TEMP B-TREE
+      |--SEARCH friends USING COVERING INDEX sqlite_autoindex_friends_1 (user_id=?)
+      `--SCALAR SUBQUERY 3
+         `--SEARCH users USING COVERING INDEX sqlite_autoindex_users_1 (username=?)</code></pre>
+        <p>Енді өз бетіңізше көріңіз: демо дерекқорда телефон нөмірі бойынша іздеуге индекс жоқ. Жоспар қалай өзгеретінін қараңыз (бұл ресми тапсырманың жауабы емес):</p>
+<pre data-lang="sql" data-db="w5snap" data-dbsrc="sql/data/week-5.js"><code class="language-sql">EXPLAIN QUERY PLAN
+SELECT "username" FROM "users"
+WHERE "phone_number" = '+7 700 000 00 00';
+
+CREATE INDEX "search_users_by_phone" ON "users"("phone_number");
+
+EXPLAIN QUERY PLAN
+SELECT "username" FROM "users"
+WHERE "phone_number" = '+7 700 000 00 00';</code></pre>
+
+        <h4 id="snap-test">Қалай тексеру керек</h4>
+        <p>Бұл тапсырма үшін <code>check50</code> бар, бірақ кодыңызды өзіңіз де тексеруге кеңес беріледі. Дұрыстығын тексеру:</p>
+<pre class="terminal"><code class="language-plaintext">$ check50 cs50/problems/2024/sql/snap</code></pre>
+        <p>Жылдамдық үшін <code>check50</code> сіз жүктеген дерекқордан кішірек дерекқорды қолданады, сондықтан пайдаланушылар екі дерекқорда бір-біріне дәл сәйкес келмеуі мүмкін. Сұрауыңыз жүктелген дерекқорда дұрыс жұмыс істесе, <code>check50</code> дерекқорында да дұрыс істейді.</p>
+        <h4 id="snap-submit">Қалай тапсыру керек</h4>
+<pre class="terminal"><code class="language-plaintext">$ submit50 cs50/problems/2024/sql/snap</code></pre>
+
+        <h4 id="snap-grader">Сайттағы жаттығу</h4>
+        <div class="callout note">
+          <span class="callout-title">Сайттың өз жаттығуы, ресми тапсырма емес</span>
+          <p>Төмендегі тексеруші шағын демо <code>snap.db</code> (120 пайдаланушы, ойдан шығарылған деректер) үшін жазылған және тек <strong>нәтиженің дұрыстығын</strong> тексереді: сұрау үшін қолданылатын индекс бұл жерде тексерілмейді. Сондықтан бұл жерге тек <code>SELECT</code> жазыңыз (<code>EXPLAIN</code> жазбаңыз), ал индекстің қолданылуын жоғарыдағы <code>EXPLAIN QUERY PLAN</code> блоктарымен өзіңіз тексеріңіз. Алтыншы сұрау - қосымша жаттығу.</p>
+        </div>
+        <div class="sql-grader" data-set="sql5-snap" data-src="sql/data/week-5.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql5-snap">
+            <li><input type="checkbox"> <span><code>1.sql</code>-дан <code>5.sql</code>-ға дейін бес файлды жаздым, әрқайсысында бір сұрау бар.</span></li>
+            <li><input type="checkbox"> <span>Әр сұрауға <code>EXPLAIN QUERY PLAN</code> қойып, талап етілген индекс жоспарда көрінетінін тексердім.</span></li>
+            <li><input type="checkbox"> <span><code>3.sql</code>-да нәтиже жіберілген хабар санына қарай көптен азға реттелген.</span></li>
+            <li><input type="checkbox"> <span><code>5.sql</code> екі достар тізімінің қиылысуын табады.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/snap</code> өтеді, және <code>submit50 cs50/problems/2024/sql/snap</code> жасалды.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-4.html"><small>Алдыңғы</small>← 4-апта: Көріністер</a>
+        <a class="next" href="week-6.html"><small>Келесі</small>6-апта: Масштабтау →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 SQL (CS50's Introduction to Databases with SQL, Гарвард университеті, David J. Malan және Carter Zenke) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

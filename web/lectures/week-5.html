@@ -1,0 +1,1388 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 Web 5-апта: JavaScript - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 Web 5-апта: JavaScript - CS50 қазақша">
+  <meta property="og:description" content="CS50 Web 5-апта: JavaScript, оқиғалар, айнымалылар, DOM, querySelector, оқиға тыңдаушылар, интервалдар, local storage, API, fetch және JSON.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/web/lectures/week-5.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 Web 5-апта: JavaScript, оқиғалар, айнымалылар, DOM, querySelector, оқиға тыңдаушылар, интервалдар, local storage, API, fetch және JSON.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#d4580c" data-n="5">
+        <div class="num">5-апта</div>
+        <h1>JavaScript</h1>
+        <p>Енді бет браузердің өзінде тіріледі: JavaScript арқылы түймелерге жауап беретін, мәтінді өзгертетін, мәлімет сақтайтын және API-дан деректер алатын сайттар жасаймыз.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/web/notes/5/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+            <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Осы уақытқа дейін біз беттерді HTML мен CSS-пен жасадық, Git-пен жұмыс істедік, Python мен Django арқылы сервер жағында код жаздық. Бүгін <strong>браузердің өзінде</strong> жұмыс істейтін жаңа тіл келеді: JavaScript. Мұнда мысалдардың көбін бетте-ақ «▶» батырмасымен іске қосып көре аласыз: батырманы басыңыз, түймелерді басыңыз, кодты өзгертіп көріңіз.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="introduction">Кіріспе</h2>
+      <p>Қысқаша қайталап өтейік. Біз қарапайым веб-беттерді HTML мен CSS арқылы жасауды үйрендік. Git пен GitHub арқылы кодтағы өзгерістерді қадағалап, басқалармен бірге жұмыс істеуді білдік. Python тілімен танысып, Django арқылы веб-қосымшалар жаза бастадық және Django модельдері арқылы мәліметті сайтымызда сақтауды үйрендік.</p>
+      <p>Бүгін біз жаңа бағдарламалау тілін қосамыз: <strong>JavaScript</strong>. Python-ды білсеңіз, көп нәрсе таныс көрінеді, тек жазылуы сәл басқаша. Ал ең басты айырмашылық - код <em>қайда</em> жұмыс істейтінінде.</p>
+
+      <h2 id="javascript">JavaScript</h2>
+      <p>Бірнеше лекция бұрынғы суретке қайта оралайық. Көпшілік онлайн әрекеттерде <strong>клиент</strong> (<span class="term-en">client</span>), яғни сіздің браузеріңіз, серверге HTTP сұранысын (<span class="term-en">HTTP Request</span>) жібереді, ал сервер HTTP жауабын (<span class="term-en">HTTP Response</span>) қайтарады.</p>
+
+      <svg viewBox="0 0 640 230" role="img" aria-label="Клиент пен сервер диаграммасы: Python сервер жағында, JavaScript клиент жағында жұмыс істейді" style="width:100%;max-width:640px;height:auto;display:block;margin:1rem auto;font-family:inherit">
+        <rect x="20" y="40" width="190" height="150" rx="14" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="115" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">Клиент (браузер)</text>
+        <text x="115" y="105" text-anchor="middle" font-size="22" font-weight="700" fill="var(--accent)">JavaScript</text>
+        <text x="115" y="135" text-anchor="middle" font-size="13" fill="currentColor">осында жұмыс істейді</text>
+        <rect x="430" y="40" width="190" height="150" rx="14" fill="none" stroke="currentColor" stroke-width="2.5"/>
+        <text x="525" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">Сервер</text>
+        <text x="525" y="105" text-anchor="middle" font-size="22" font-weight="700" fill="currentColor">Python / Django</text>
+        <text x="525" y="135" text-anchor="middle" font-size="13" fill="currentColor">осы уақытқа дейінгі кодымыз</text>
+        <path d="M215 95 H425" stroke="currentColor" stroke-width="2" marker-end="url(#arr5)"/>
+        <path d="M425 145 H215" stroke="currentColor" stroke-width="2" marker-end="url(#arr5)"/>
+        <text x="320" y="85" text-anchor="middle" font-size="13" fill="currentColor">HTTP Request</text>
+        <text x="320" y="167" text-anchor="middle" font-size="13" fill="currentColor">HTTP Response</text>
+        <defs><marker id="arr5" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+      </svg>
+
+      <p>Осы уақытқа дейін Django-мен жазған барлық Python кодымыз <em>сервер</em> жағында жұмыс істеді. Ал JavaScript кодты <strong>клиент жағында</strong> орындауға мүмкіндік береді. Яғни код жұмыс істеп жатқанда серверге ешқандай сұраныс жібермей-ақ, бет өзгере алады. Сондықтан сайттарымыз әлдеқайда интерактивті болады: батырманы бастыңыз - бет бірден жауап береді, интернеттің кідірісін күтпейміз.</p>
+      <p>Бетімізге JavaScript қосу үшін HTML-дің ішіне бір жұп <code>&lt;script&gt;</code> тегін қоямыз. Бұл браузерге «осы екі тегтің арасындағы нәрсенің бәрі JavaScript коды, пайдаланушы сайтқа кірген кезде оны орындап жібер» деген белгі. Бірінші бағдарламамыз шамамен мынадай болады:</p>
+<pre data-lang="javascript"><code class="language-javascript">alert('Hello, world!');</code></pre>
+      <p><code>alert</code> функциясы пайдаланушыға хабарлама көрсетеді, ол хабарламаны жабуға болады. Мұның нақты HTML құжатының ішінде қалай тұратынын көрейік. Мынау - сәл JavaScript қосылған қарапайым бет:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Hello&lt;/title&gt;
+        &lt;script&gt;
+            alert('Hello, world!');
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello!&lt;/h1&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Бетті ашқанда браузер алдымен осы хабарламаны шығарады, сосын ғана бетті көрсетеді.</p>
+      <div class="callout note">
+        <span class="callout-title">Сайттағы мысалдар туралы</span>
+        <p>Сайттағы мысалдар қорғалған «құмсалғышта» (<span class="term-en">sandbox</span>) жұмыс істейді, ал мұнда <code>alert</code> тереземен шығатын хабарламалар рұқсат етілмеген. Сондықтан оларды іске қосатын жерде нәтижені бетке немесе консольге шығарамыз. Түпнұсқа <code>alert</code> кодын әрқашан көрсетіп отырамыз, ал «тірі» нұсқасы сәл өзгеше болады. Нағыз браузерде өз файлыңызда <code>alert</code> міндетті түрде жұмыс істейді.</p>
+      </div>
+      <p>Қане, осы мысалдың «тірі» бауыры: тек терезе орнына <code>console.log</code> қолданамыз. Бұл функция хабарламаны браузердің консоліне шығарады (консоль туралы кейінірек айтамыз). Төмендегі батырманы басыңыз:</p>
+<pre data-lang="javascript" data-run><code class="language-javascript">console.log('Hello, world!');</code></pre>
+
+      <h2 id="events">Оқиғалар</h2>
+      <p>JavaScript-ті веб-бағдарламалауға өте ыңғайлы ететін бір қасиеті - ол <strong>оқиғаға негізделген бағдарламалауды</strong> (<span class="term-en">Event-Driven Programming</span>) қолдайды. Бұл не? Бағдарламалау парадигмасы, оның орталығында <em>оқиғаларды анықтау</em> және оқиға болған кезде жасалатын <em>әрекеттер</em> тұр.</p>
+      <p>Оқиға (<span class="term-en">event</span>) деп дерлік кез келген нәрсені айтуға болады: түймені басу, меңзерді жылжыту, жауап теру, беттің жүктелуі. Пайдаланушының веб-бетпен жасайтын барлық әрекеті дерлік оқиға. Мектептегі қоңырауды елестетіңіз: оқушылар қоңырау соғылғанда ғана орындарынан тұрады. JavaScript-те де солай: біз <strong>оқиға тыңдаушыларын</strong> (<span class="term-en">event listeners</span>) қоямыз, олар белгілі бір оқиғаны күтіп тұрады да, ол болғанда ғана біз берген кодты орындайды.</p>
+
+      <svg viewBox="0 0 640 120" role="img" aria-label="Оқиға, тыңдаушы және әрекет тізбегі" style="width:100%;max-width:640px;height:auto;display:block;margin:1rem auto;font-family:inherit">
+        <rect x="10" y="30" width="170" height="60" rx="12" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="95" y="66" text-anchor="middle" font-size="15" fill="currentColor">Оқиға: түйме басылды</text>
+        <rect x="235" y="30" width="170" height="60" rx="12" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+        <text x="320" y="66" text-anchor="middle" font-size="15" font-weight="700" fill="var(--accent)">Тыңдаушы күтіп тұр</text>
+        <rect x="460" y="30" width="170" height="60" rx="12" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="545" y="66" text-anchor="middle" font-size="15" fill="currentColor">Функция орындалады</text>
+        <path d="M184 60 H231" stroke="currentColor" stroke-width="2" marker-end="url(#arr5b)"/>
+        <path d="M409 60 H456" stroke="currentColor" stroke-width="2" marker-end="url(#arr5b)"/>
+        <defs><marker id="arr5b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+      </svg>
+
+      <p>Жоғарыдағы JavaScript-ті <code>hello</code> деп аталатын <strong>функцияға</strong> (<span class="term-en">function</span>) айналдырудан бастайық:</p>
+<pre data-lang="javascript"><code class="language-javascript">function hello() {
+    alert('Hello, world!')
+}</code></pre>
+      <p>Енді осы функцияны түйме басылған сайын іске қосайық. Ол үшін бетімізде HTML түймесін жасаймыз да, оған <code>onclick</code> атрибутын береміз. Бұл атрибут браузерге «түйме басылғанда не істеу керек» деген нұсқау береді:</p>
+<pre data-lang="html"><code class="language-html">&lt;button onclick=&quot;hello()&quot;&gt;Click Here&lt;/button&gt;</code></pre>
+      <p>Міне осылай JavaScript кодының бір бөлігін белгілі бір оқиға болғанша <em>күте тұруға</em> болады. Функцияның өзі беттің жүктелуімен бірге жазылып қояды, бірақ орындалуы тек түйме басылғанда басталады. Төмендегі нұсқада <code>alert</code> орнына нәтижені бетке жазамыз. Қалай жазылатынын келесі бөлімдерде толық талдаймыз, әзірге түймені басып көріңіз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;button onclick=&quot;hello()&quot;&gt;Click Here&lt;/button&gt;
+&lt;p id=&quot;msg&quot;&gt;&lt;/p&gt;
+
+&lt;script&gt;
+    function hello() {
+        document.querySelector('#msg').innerHTML = 'Hello, world!';
+    }
+&lt;/script&gt;</code></pre>
+
+      <h2 id="variables">Айнымалылар</h2>
+      <p>JavaScript - Python, C немесе бұрын жұмыс істеген кез келген басқа тіл сияқты бағдарламалау тілі. Сондықтан онда да <strong>айнымалылар</strong> (<span class="term-en">variables</span>) сияқты таныс құралдар бар. JavaScript-те мән беру үшін үш кілт сөз бар:</p>
+      <ul>
+        <li><code>var</code>: айнымалыны жаһандық (глобал) түрде анықтайды;</li>
+      </ul>
+<pre data-lang="javascript"><code class="language-javascript">var age = 20;</code></pre>
+      <ul>
+        <li><code>let</code>: айнымалының көрінетін аймағын ағымдағы блокпен (мысалы, функция немесе цикл) шектейді;</li>
+      </ul>
+<pre data-lang="javascript"><code class="language-javascript">let counter = 1;</code></pre>
+      <ul>
+        <li><code>const</code>: өзгермейтін мәнді (тұрақтыны) анықтайды.</li>
+      </ul>
+<pre data-lang="javascript"><code class="language-javascript">const PI = 3.14;</code></pre>
+      <p>Айырмашылықты өз көзімізбен көрейік. Мына кодты іске қосып, нәтижесін болжап көріңіз: <code>if</code> блогының ішінде жарияланған айнымалыларға блоктан тыс қол жеткізе аламыз ба?</p>
+<pre data-lang="javascript" data-run><code class="language-javascript">var a = 1;
+let b = 1;
+if (true) {
+    var a = 2;     // var: блоктан тыс да көрінеді, сол a-ны өзгертеді
+    let b = 2;     // let: бұл - блок ішіндегі басқа b
+}
+console.log(a);
+console.log(b);
+
+const PI = 3.14;
+try {
+    PI = 3;
+} catch (e) {
+    console.log('const-ты өзгертуге болмайды:', e.name);
+}</code></pre>
+      <details class="think"><summary>Ойланып көріңіз: <code>a</code> мен <code>b</code> неге әртүрлі шықты?</summary><div class="details-body"><p>Алдымен болжап көріңіз. <code>var</code> блокты «елемейді»: ішіндегі <code>var a = 2</code> сыртқы <code>a</code>-ның өзін өзгертеді, сондықтан <code>2</code> шығады. Ал <code>let b = 2</code> тек <code>if</code> блогының ішінде өмір сүреді, сыртқы <code>b</code> бұрынғыдай <code>1</code> күйінде қалады. Қазіргі кодта көбіне <code>let</code> пен <code>const</code> қолданады, себебі олардың мінезін болжау оңай.</p></div></details>
+
+      <p>Айнымалыны қолданудың мысалы ретінде санауышты (<span class="term-en">counter</span>) сақтайтын бетті қарайық:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Count&lt;/title&gt;
+        &lt;script&gt;
+            let counter = 0;
+            function count() {
+                counter++;
+                alert(counter);
+            }
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello!&lt;/h1&gt;
+        &lt;button onclick=&quot;count()&quot;&gt;Count&lt;/button&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Түймені басқан сайын <code>counter</code> бір-бірден артады да, жаңа мән хабарламада көрсетіледі. Мұнда <code>counter</code> функцияның сыртында тұр, сондықтан әр шақырылғанда нөлден басталмайды, мәні есте қалады. Бірақ <code>alert</code> терезелері тез жалықтырады, сондықтан келесі бөлімде оны бетке жазуды үйренеміз.</p>
+
+      <h2 id="queryselector"><code>querySelector</code></h2>
+      <p><code>alert</code> арқылы хабарлама көрсетуден басқа, JavaScript <strong>беттегі элементтерді өзгертуге</strong> де мүмкіндік береді. Ол үшін алдымен <code>document.querySelector</code> деген функциямен танысуымыз керек. Ол DOM-нан (құжат объектілік моделі, <span class="term-en">Document Object Model</span>) элементтерді іздеп, тауып береді. Мысалы, тақырыпты алу үшін былай жазамыз:</p>
+<pre data-lang="javascript"><code class="language-javascript">let heading = document.querySelector('h1');</code></pre>
+      <p>Табылған элементті өзгерту үшін оның <code>innerHTML</code> қасиетін өзгертеміз:</p>
+<pre data-lang="javascript"><code class="language-javascript">heading.innerHTML = `Goodbye!`;</code></pre>
+      <p>Python-дағыдай JavaScript-те де <strong>шарттарды</strong> (<span class="term-en">conditions</span>) қолдана аламыз. Мысалы, тақырыпты әрдайым <code>Goodbye!</code> етіп қоймай, <code>Hello!</code> мен <code>Goodbye!</code> арасында ауыстырып тұрғымыз келді делік. Бет мынадай болады. Бір нәрсеге назар аударыңыз: JavaScript-те екі нәрсені салыстыру үшін <code>===</code> қолданамыз. Бұл - қатаң салыстыру, ол мәндердің <em>түрінің</em> де бірдей екенін тексереді. Мүмкін болған жерде әрдайым <code>===</code> қолданған дұрыс.</p>
+<pre data-lang="javascript" data-run><code class="language-javascript">console.log(5 == &quot;5&quot;);    // true: JavaScript &quot;5&quot; жолын санға айналдырып салыстырады
+console.log(5 === &quot;5&quot;);   // false: сан мен жол - әртүрлі түр
+console.log(5 === 5);     // true</code></pre>
+      <p>Енді тақырыпты ауыстыратын бетті өзіңіз басып көріңіз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Count&lt;/title&gt;
+        &lt;script&gt;
+            function hello() {
+                const header = document.querySelector('h1');
+                if (header.innerHTML === 'Hello!') {
+                    header.innerHTML = 'Goodbye!';
+                }
+                else {
+                    header.innerHTML = 'Hello!';
+                }
+            }
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Hello!&lt;/h1&gt;
+        &lt;button onclick=&quot;hello()&quot;&gt;Click Here&lt;/button&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+
+      <h2 id="dom-manipulation">DOM-ды өзгерту</h2>
+      <p>DOM-ды өзгертудің осы идеясымен санауыш бетімізді жақсартайық. Енді <code>alert</code> орнына санды тақырыптың өзіне жазамыз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Count&lt;/title&gt;
+        &lt;script&gt;
+            let counter = 0;
+            function count() {
+                counter++;
+                document.querySelector('h1').innerHTML = counter;
+            }
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;0&lt;/h1&gt;
+        &lt;button onclick=&quot;count()&quot;&gt;Count&lt;/button&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Бетті одан сайын қызықты етуге болады: санауыш он санына еселі болған сайын хабарлама көрсетейік. Хабарламада мәтінді бапталған күйде қалыптастыру керек. JavaScript-те мұны <strong>үлгі литералдар</strong> (<span class="term-en">template literals</span>) арқылы жасаймыз. Олар үшін бүкіл өрнекті кері тырнақшаға (<code>`</code>) аламыз, ал орынбасатын мәндерді <code>$</code> белгісі мен ирек жақшаның ішіне жазамыз. Python-дағы <code>f"..."</code> жолдарына өте ұқсас. <code>count</code> функциясын былай өзгертеміз:</p>
+<pre data-lang="javascript"><code class="language-javascript">function count() {
+    counter++;
+    document.querySelector('h1').innerHTML = counter;
+
+    if (counter % 10 === 0) {
+        alert(`Count is now ${counter}`)
+    }
+}</code></pre>
+      <p>Мұнда <code>%</code> - қалдық операторы: <code>counter % 10 === 0</code> санауыш 10-ға қалдықсыз бөлінгенде орындалады. Үлгі литералды және қалдықты <code>alert</code>-сіз-ақ өз көзіңізбен көріңіз:</p>
+<pre data-lang="javascript" data-run><code class="language-javascript">let counter = 0;
+for (let i = 0; i &lt; 25; i++) {
+    counter++;
+    if (counter % 10 === 0) {
+        console.log(`Count is now ${counter}`);
+    }
+}</code></pre>
+      <p>Енді осы беттің дизайнын жақсартудың бірнеше жолын қарастырайық. Алдымен: CSS-те «инлайн» стильден қашқанымыз сияқты, мүмкіндігінше <strong>инлайн JavaScript-тен</strong> да қашуымыз керек. Санауыш мысалында мұны былай жасаймыз: <code>button</code> тегінен <code>onclick</code> атрибутын алып тастаймыз да, орнына түйменің <code>onclick</code> қасиетін өзгертетін бір жол жазамыз.</p>
+<pre data-lang="javascript"><code class="language-javascript">document.querySelector('button').onclick = count;</code></pre>
+      <p>Назар аударыңыз: мұнда <code>count</code> функциясын жақша қойып <em>шақырып</em> тұрған жоқпыз, тек атын атадық. Бұл «функцияны <em>түйме басылғанда</em> ғана шақыр» дегенді білдіреді. Бұл Python сияқты JavaScript те <strong>функционалдық бағдарламалауды</strong> (<span class="term-en">functional programming</span>) қолдайтындықтан жұмыс істейді: функцияны да басқа мән сияқты қолдануға болады.</p>
+      <details class="think"><summary>Ойланып көріңіз: <code>onclick = count</code> мен <code>onclick = count()</code> қандай айырмашылық бар?</summary><div class="details-body"><p>Болжап көріңіз. <code>count</code> - функцияның өзі, оны «кейін, түйме басылғанда шақыр» деп беріп отырмыз. <code>count()</code> - функцияны <em>дәл қазір</em> шақыру, ал <code>onclick</code>-ке сол шақырудың нәтижесі (мұнда бос мән) беріледі. Нәтижесінде санауыш бет жүктелгенде бір-ақ рет артып, түйме басқанда ештеңе болмай қалады.</p></div></details>
+      <p>Бірақ тек осы өзгерістің өзі жеткіліксіз. Мұны браузердің консолінен (<span class="term-en">console</span>) көруге болады:</p>
+      <p>Біз <code>document.querySelector('button')</code> деп іздегенде, JavaScript ештеңе таппады. Себебі бет жүктелуге аз да болса уақыт кетеді, ал біздің код түйме әлі салынбай жатып жұмыс істеп кеткен. Төмендегі мысалда бұл қатені ойдағыдай қайталаймыз: бұл «бет» әлі бос, түйме жоқ, сондықтан іздеу <code>null</code> қайтарады:</p>
+<pre data-lang="javascript" data-run><code class="language-javascript">function count() {
+    console.log('басылды');
+}
+// Түйме әлі жоқ болғандағы жағдай:
+document.querySelector('button').onclick = count;</code></pre>
+      <p>Кәдімгі браузер консолінде бұл қате шамамен мынадай көрінеді:</p>
+<pre class="terminal"><code class="language-plaintext">Uncaught TypeError: Cannot set properties of null (setting 'onclick')</code></pre>
+      <p>Мұны шешу үшін кодтың <em>бет толық жүктелгеннен кейін</em> ғана орындалатынын көрсетеміз. Ол үшін <code>addEventListener</code> функциясын қолданамыз. Ол екі аргумент алады:</p>
+      <ol>
+        <li>тыңдайтын оқиға (мысалы, <code>'click'</code>);</li>
+        <li>оқиға анықталғанда орындалатын функция (мысалы, жоғарыдағы <code>hello</code>).</li>
+      </ol>
+      <p>Бүкіл мазмұн жүктелгеннен кейін ғана код орындалуы үшін мынаны жазамыз:</p>
+<pre data-lang="javascript"><code class="language-javascript">document.addEventListener('DOMContentLoaded', function() {
+    // Some code here
+});</code></pre>
+      <p>Жоғарыда біз <strong>анонимді функцияны</strong> (<span class="term-en">anonymous function</span>) қолдандық: бұл ешқашан атау берілмейтін функция. Оған атау керек емес, себебі оны тек осы жерде бір-ақ рет қолданамыз. Осының бәрін жинасақ, JavaScript кодымыз мынадай болады:</p>
+<pre data-lang="javascript"><code class="language-javascript">let counter = 0;
+
+function count() {
+    counter++;
+    document.querySelector('h1').innerHTML = counter;
+
+    if (counter % 10 === 0) {
+        alert(`Count is now ${counter}`)
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('button').onclick = count;
+});</code></pre>
+      <p>Мұның толық жұмыс істейтін нұсқасы мынау. <code>alert</code> орнына тақырыптың астындағы жолға хабарлама жазамыз, 10-ға дейін санап көріңіз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;h1&gt;0&lt;/h1&gt;
+&lt;button&gt;Count&lt;/button&gt;
+&lt;p id=&quot;note&quot;&gt;&lt;/p&gt;
+
+&lt;script&gt;
+    let counter = 0;
+
+    function count() {
+        counter++;
+        document.querySelector('h1').innerHTML = counter;
+
+        if (counter % 10 === 0) {
+            document.querySelector('#note').innerHTML = `Count is now ${counter}`;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('button').onclick = count;
+    });
+&lt;/script&gt;</code></pre>
+      <p>Дизайнды жақсартудың тағы бір жолы - JavaScript-ті <strong>бөлек файлға</strong> шығару. Мұны CSS-ті бөлек файлға шығарғанымыздағыдай жасаймыз:</p>
+      <ol>
+        <li>Барлық JavaScript кодыңызды <code>.js</code> деп аяқталатын бөлек файлға жазыңыз, мысалы <code>index.js</code>;</li>
+        <li><code>&lt;script&gt;</code> тегіне осы жаңа файлды көрсететін <code>src</code> атрибутын қосыңыз.</li>
+      </ol>
+      <p>Санауыш бетіміз үшін <code>counter.html</code> деген файл былай көрінеді:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Count&lt;/title&gt;
+        &lt;script src=&quot;counter.js&quot;&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;0&lt;/h1&gt;
+        &lt;button&gt;Count&lt;/button&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Ал <code>counter.js</code> файлы мынадай:</p>
+<pre data-lang="javascript"><code class="language-javascript">let counter = 0;
+
+function count() {
+    counter++;
+    document.querySelector('h1').innerHTML = counter;
+
+    if (counter % 10 === 0) {
+        alert(`Count is now ${counter}`)
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('button').onclick = count;
+});</code></pre>
+      <p>JavaScript-ті бөлек файлда ұстаудың бірнеше пайдасы бар:</p>
+      <ul>
+        <li><strong>Көріністің тазалығы:</strong> HTML және JavaScript файлдарымыз жеке-жеке оқылымды болады.</li>
+        <li><strong>HTML файлдары арасында ортақ қолдану:</strong> бір JavaScript файлын бірнеше HTML бетте қолдана аламыз.</li>
+        <li><strong>Бірлесіп жұмыс істеу:</strong> бір адам JavaScript-пен, екіншісі HTML-мен жұмыс істей алады.</li>
+        <li><strong>Импорттау:</strong> басқа адамдар жазып қойған JavaScript кітапханаларын қосуға болады. Мысалы, <a href="https://getbootstrap.com/docs/4.5/getting-started/introduction/#js" target="_blank" rel="noopener">Bootstrap</a>-тің сайтты интерактивті ететін өз JavaScript кітапханасы бар.</li>
+      </ul>
+
+      <p>Енді тағы бір интерактивті бет жасайық. Мұнда пайдаланушы атын теріп, жеке сәлемдесу алады.</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+    &lt;title&gt;Hello&lt;/title&gt;
+    &lt;script&gt;
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('form').onsubmit = function() {
+                const name = document.querySelector('#name').value;
+                alert(`Hello, ${name}`);
+            };
+        });
+    &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;form&gt;
+        &lt;input autofocus id=&quot;name&quot; placeholder=&quot;Name&quot; type=&quot;text&quot;&gt;
+        &lt;input type=&quot;submit&quot;&gt;
+    &lt;/form&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Төмендегі нұсқада хабарламаны терезеге емес бетке шығарамыз, ал форманың әдепкі жіберілуін <code>return false</code> арқылы тоқтатамыз (бұл туралы төменде, TODO тізімінде айтамыз). Атыңызды теріп көріңіз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;form&gt;
+    &lt;input autofocus id=&quot;name&quot; placeholder=&quot;Name&quot; type=&quot;text&quot;&gt;
+    &lt;input type=&quot;submit&quot;&gt;
+&lt;/form&gt;
+&lt;p id=&quot;greeting&quot;&gt;&lt;/p&gt;
+
+&lt;script&gt;
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('form').onsubmit = function() {
+            const name = document.querySelector('#name').value;
+            document.querySelector('#greeting').innerHTML = `Hello, ${name}`;
+            return false;
+        };
+    });
+&lt;/script&gt;</code></pre>
+      <p>Жоғарыдағы беттің кейбір тұстарына тоқталайық:</p>
+      <ul>
+        <li><code>name</code> өрісіндегі <code>autofocus</code> атрибуты бет жүктелісімен меңзер сол өрістің ішінде тұруы керек екенін білдіреді.</li>
+        <li><code>document.querySelector</code> ішіндегі <code>#name</code> - <code>id</code>-і <code>name</code> болатын элементті іздейді. Бұл функцияда CSS-тегі селекторлардың бәрін қолдана аламыз.</li>
+        <li>Енгізу өрісінің <code>value</code> атрибуты қазір ішінде не жазылып тұрғанын береді.</li>
+      </ul>
+
+      <p>JavaScript-пен тек HTML қосып қоймай, беттің <strong>стилін</strong> де өзгерте аламыз! Төмендегі бетте түймелер арқылы тақырыптың түсін ауыстырамыз. Түймелерді басып көріңіз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+&lt;head&gt;
+     &lt;title&gt;Colors&lt;/title&gt;
+     &lt;script&gt;
+         document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('button').forEach(function(button) {
+                button.onclick = function() {
+                    document.querySelector(&quot;#hello&quot;).style.color = button.dataset.color;
+                }
+            });
+         });
+     &lt;/script&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;h1 id=&quot;hello&quot;&gt;Hello&lt;/h1&gt;
+    &lt;button data-color=&quot;red&quot;&gt;Red&lt;/button&gt;
+    &lt;button data-color=&quot;blue&quot;&gt;Blue&lt;/button&gt;
+    &lt;button data-color=&quot;green&quot;&gt;Green&lt;/button&gt;
+&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Жоғарыдағы беттегі маңызды жайттар:</p>
+      <ul>
+        <li>Элементтің стилін <code>style.ҚАСИЕТ</code> арқылы өзгертеміз.</li>
+        <li>HTML элементіне мәлімет беру үшін <code>data-ЕРКІН_АТ</code> атрибутын қолданамыз. Кейін оған JavaScript-те элементтің <code>dataset</code> қасиеті арқылы қол жеткіземіз.</li>
+        <li><code>querySelectorAll</code> функциясы сұранысқа сәйкес келетін <em>барлық</em> элементтерден тұратын <strong>түйіндер тізімін</strong> (<span class="term-en">NodeList</span>) береді. Ол Python тізіміне немесе JavaScript <a href="https://www.w3schools.com/js/js_arrays.asp" target="_blank" rel="noopener">массивіне</a> (<span class="term-en">array</span>) ұқсас.</li>
+        <li>JavaScript-тегі <code>forEach</code> функциясы басқа функцияны аргумент ретінде алып, сол функцияны тізімдегі немесе массивтегі әр элементке қолданады.</li>
+      </ul>
+
+      <h3 id="js-console">JavaScript консолі</h3>
+      <p><strong>Консоль</strong> (<span class="term-en">console</span>) - шағын кодтарды сынау мен қатені іздеуге (<span class="term-en">debugging</span>) арналған өте пайдалы құрал. Онда JavaScript кодын жазып, бірден орындауға болады. Консольді табу үшін браузерде элементті тексеруді (<span class="term-en">Inspect</span>) ашып, <code>Console</code> қойындысын таңдаңыз (нақты жолы браузерге байланысты өзгеруі мүмкін). Қателерді іздеуде өте пайдалы тәсілдердің бірі - консольге мән шығару, ол үшін <code>console.log</code> функциясы бар. Мысалы, жоғарыдағы <code>colors.html</code> бетіне мына жолды қоссақ:</p>
+<pre data-lang="javascript"><code class="language-javascript">console.log(document.querySelectorAll('button'));</code></pre>
+      <p>консольде түймелер тізімі (<code>NodeList(3)</code>) көрінеді: ішінен әр <code>button</code> элементін жеке көруге болады. Мұны өзіңіз сынап көріңіз. Төмендегі кодта бетті бос күйінен үш түймемен толтырып, оларды санаймыз:</p>
+<pre data-lang="javascript" data-run><code class="language-javascript">document.body.innerHTML = '&lt;button&gt;Red&lt;/button&gt;&lt;button&gt;Blue&lt;/button&gt;&lt;button&gt;Green&lt;/button&gt;';
+
+const buttons = document.querySelectorAll('button');
+console.log(buttons.length);
+buttons.forEach(function(button) {
+    console.log(button.innerHTML);
+});</code></pre>
+
+      <h3 id="arrow-functions">Көрсеткілі функциялар</h3>
+      <p>Біз көрген дәстүрлі функция жазбасынан басқа, JavaScript-те қазір <strong>көрсеткілі функцияларды</strong> (<span class="term-en">arrow functions</span>) қолдануға болады. Мұнда кіріс мәні (кіріс болмаса бос жақшалар), содан кейін <code>=&gt;</code> белгісі, одан кейін орындалатын код тұрады. Мысалы, жоғарыдағы скриптті анонимді көрсеткілі функциялармен өзгертуге болады:</p>
+<pre data-lang="javascript"><code class="language-javascript">document.addEventListener('DOMContentLoaded', () =&gt; {
+    document.querySelectorAll('button').forEach(button =&gt; {
+        button.onclick = () =&gt; {
+            document.querySelector(&quot;#hello&quot;).style.color = button.dataset.color;
+        }
+    });
+});</code></pre>
+      <p>Көрсеткіні қолданып атауы бар функциялар да жасауға болады. Мысалы, <code>count</code> функциясын былай қайта жазуға болады:</p>
+<pre data-lang="javascript"><code class="language-javascript">count = () =&gt; {
+    counter++;
+    document.querySelector('h1').innerHTML = counter;
+
+    if (counter % 10 === 0) {
+        alert(`Count is now ${counter}`)
+    }
+}</code></pre>
+      <p>Екі жазба бір нәрсені жасайтынына көз жеткізіңіз:</p>
+<pre data-lang="javascript" data-run><code class="language-javascript">function squareOld(x) {
+    return x * x;
+}
+
+const squareNew = x =&gt; x * x;
+
+const greet = () =&gt; 'Сәлем!';
+
+console.log(squareOld(5), squareNew(5));
+console.log(greet());
+console.log([1, 2, 3].map(n =&gt; n * 10));</code></pre>
+      <p>Енді басқа оқиғаларды қалай қолдануға болатынын көрейік. Түстерді ауыстырғышты үш бөлек түйменің орнына ашылмалы мәзірмен жасайық. <code>select</code> элементіндегі өзгерісті <code>onchange</code> арқылы анықтаймыз. JavaScript-те <code>this</code> - қолданылған контекске қарай мәні өзгеретін кілт сөз. Оқиға өңдеушісінде (<span class="term-en">event handler</span>) <code>this</code> оқиғаны тудырған объектіні білдіреді.</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Colors&lt;/title&gt;
+        &lt;script&gt;
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelector('select').onchange = function() {
+                    document.querySelector('#hello').style.color = this.value;
+                }
+            });
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1 id=&quot;hello&quot;&gt;Hello&lt;/h1&gt;
+        &lt;select&gt;
+            &lt;option value=&quot;black&quot;&gt;Black&lt;/option&gt;
+            &lt;option value=&quot;red&quot;&gt;Red&lt;/option&gt;
+            &lt;option value=&quot;blue&quot;&gt;Blue&lt;/option&gt;
+            &lt;option value=&quot;green&quot;&gt;Green&lt;/option&gt;
+        &lt;/select&gt;
+
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>JavaScript-те анықтауға болатын басқа да көп <a href="https://www.w3schools.com/js/js_events.asp" target="_blank" rel="noopener">оқиғалар</a> бар. Ең жиі кездесетіндері:</p>
+      <ul>
+        <li><code>onclick</code>: басылғанда;</li>
+        <li><code>onmouseover</code>: меңзер үстіне келгенде;</li>
+        <li><code>onkeydown</code>: пернетақта пернесі басылғанда;</li>
+        <li><code>onkeyup</code>: перне босатылғанда;</li>
+        <li><code>onload</code>: жүктелгенде;</li>
+        <li><code>onblur</code>: өріс фокусын жоғалтқанда;</li>
+        <li>...</li>
+      </ul>
+      <p>Бірнеше оқиғаны бір жерде көру үшін мына бетті сынап көріңіз: тышқанды қорапқа апарыңыз, содан алып кетіңіз, ішіне бірдеңе теріңіз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;div id=&quot;box&quot; style=&quot;padding:12px;border:2px solid gray;width:260px&quot;&gt;
+    &lt;p id=&quot;log&quot;&gt;Оқиға әлі болған жоқ&lt;/p&gt;
+    &lt;input id=&quot;field&quot; placeholder=&quot;Мұнда теріңіз&quot;&gt;
+&lt;/div&gt;
+
+&lt;script&gt;
+    const log = document.querySelector('#log');
+    const box = document.querySelector('#box');
+    const field = document.querySelector('#field');
+
+    box.onmouseover = () =&gt; { log.innerHTML = 'onmouseover'; box.style.background = 'lightyellow'; };
+    box.onmouseout = () =&gt; { box.style.background = ''; };
+    field.onkeydown = () =&gt; { log.innerHTML = 'onkeydown'; };
+    field.onkeyup = () =&gt; { log.innerHTML = 'onkeyup: ' + field.value.length + ' таңба'; };
+    field.onblur = () =&gt; { log.innerHTML = 'onblur: өріс фокусты жоғалтты'; };
+&lt;/script&gt;</code></pre>
+
+      <h3 id="todo-list">TODO тізімі</h3>
+      <p>Осы лекцияда үйренгеннің бірнешеуін жинап, толығымен JavaScript-пен жасалған <strong>TODO тізімін</strong> (істер тізімі) жасайық. HTML мазмұнын жазудан бастаймыз. Төменде реттелмеген тізімге орын қалдырып, оған әзірге ештеңе қоспағанымызды көріңіз. Сонымен бірге JavaScript-ті жазатын <code>tasks.js</code> файлына сілтеме қостық.</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Tasks&lt;/title&gt;
+        &lt;script src=&quot;tasks.js&quot;&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;Tasks&lt;/h1&gt;
+        &lt;ul id=&quot;tasks&quot;&gt;&lt;/ul&gt;
+        &lt;form&gt;
+            &lt;input id=&quot;task&quot; placeholder = &quot;New Task&quot; type=&quot;text&quot;&gt;
+            &lt;input id=&quot;submit&quot; type=&quot;submit&quot;&gt;
+        &lt;/form&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Енді <code>tasks.js</code> файлында сақтайтын кодымыз. Төмендегі кодтағы кейбір тұстар:</p>
+      <ul>
+        <li>Бұл код дәрістегіден аздап өзгеше. Мұнда жіберу түймесі мен жаңа тапсырма енгізу өрісін басында бір-ақ рет іздеп, екеуін <code>submit</code> және <code>newTask</code> айнымалыларында сақтаймыз.</li>
+        <li>Түйменің <code>disabled</code> атрибутын <code>false</code>/<code>true</code> қылып, түймені қосып/өшіре аламыз.</li>
+        <li>JavaScript-те жол мен массив сияқты объектілердің ұзындығын <code>.length</code> арқылы табамыз.</li>
+        <li>Скрипттің соңында <code>return false</code> жолын қосамыз. Ол форманың әдепкі жіберілуін тоқтатады (әйтпесе бет қайта жүктеліп кетер немесе басқа бетке өтіп кетер еді).</li>
+        <li>JavaScript-те HTML элементтерін <code>createElement</code> функциясымен жасай аламыз. Содан кейін оларды <code>append</code> функциясы арқылы DOM-ға қосамыз.</li>
+      </ul>
+<pre data-lang="javascript"><code class="language-javascript">// Wait for page to load
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Select the submit button and input to be used later
+    const submit = document.querySelector('#submit');
+    const newTask = document.querySelector('#task');
+
+    // Disable submit button by default:
+    submit.disabled = true;
+
+    // Listen for input to be typed into the input field
+    newTask.onkeyup = () =&gt; {
+        if (newTask.value.length &gt; 0) {
+            submit.disabled = false;
+        }
+        else {
+            submit.disabled = true;
+        }
+    }
+
+    // Listen for submission of form
+    document.querySelector('form').onsubmit = () =&gt; {
+
+        // Find the task the user just submitted
+        const task = newTask.value;
+
+        // Create a list item for the new task and add the task to it
+        const li = document.createElement('li');
+        li.innerHTML = task;
+
+        // Add new element to our unordered list:
+        document.querySelector('#tasks').append(li);
+
+        // Clear out input field:
+        newTask.value = '';
+
+        // Disable the submit button again:
+        submit.disabled = true;
+
+        // Stop form from submitting
+        return false;
+    }
+});</code></pre>
+      <p>Екі файлды (HTML мен <code>tasks.js</code>) сайтта бір бетке біріктіріп қойдық. Тапсырма қосып көріңіз: өріс бос кезде түйме өшірулі тұрғанын байқайсыз, бірдеңе тере бастағанда ол қосылады:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;h1&gt;Tasks&lt;/h1&gt;
+&lt;ul id=&quot;tasks&quot;&gt;&lt;/ul&gt;
+&lt;form&gt;
+    &lt;input id=&quot;task&quot; placeholder = &quot;New Task&quot; type=&quot;text&quot;&gt;
+    &lt;input id=&quot;submit&quot; type=&quot;submit&quot;&gt;
+&lt;/form&gt;
+
+&lt;script&gt;
+// Wait for page to load
+document.addEventListener('DOMContentLoaded', function() {
+
+    // Select the submit button and input to be used later
+    const submit = document.querySelector('#submit');
+    const newTask = document.querySelector('#task');
+
+    // Disable submit button by default:
+    submit.disabled = true;
+
+    // Listen for input to be typed into the input field
+    newTask.onkeyup = () =&gt; {
+        if (newTask.value.length &gt; 0) {
+            submit.disabled = false;
+        }
+        else {
+            submit.disabled = true;
+        }
+    }
+
+    // Listen for submission of form
+    document.querySelector('form').onsubmit = () =&gt; {
+
+        // Find the task the user just submitted
+        const task = newTask.value;
+
+        // Create a list item for the new task and add the task to it
+        const li = document.createElement('li');
+        li.innerHTML = task;
+
+        // Add new element to our unordered list:
+        document.querySelector('#tasks').append(li);
+
+        // Clear out input field:
+        newTask.value = '';
+
+        // Disable the submit button again:
+        submit.disabled = true;
+
+        // Stop form from submitting
+        return false;
+    }
+});
+&lt;/script&gt;</code></pre>
+      <details class="think"><summary>Ойланып көріңіз: <code>return false</code> жолын алып тастасақ не болады?</summary><div class="details-body"><p>Болжап көріңіз. Форма жіберілгенде браузер әдепкіде бетті қайта жүктейді (немесе басқа мекенжайға өтеді). Сонда бізде енді ғана <code>ul</code> ішіне қосқан <code>li</code> жоғалып кетер еді: бет қайтадан бос болып жүктеледі. <code>return false</code> браузерге «өзің ештеңе жасама, форманы біз өзіміз өңдедік» дейді.</p></div></details>
+
+      <h2 id="intervals">Интервалдар</h2>
+      <p>Функцияларды оқиға болғанда ғана емес, белгілі бір <strong>уақыт өткенде</strong> де іске қосуға болады. Мысалы, санауыш бетіміздің скриптіне қайта оралып, <strong>интервал</strong> (<span class="term-en">interval</span>) қосайық: пайдаланушы ештеңе баспаса да, санауыш әр секунд сайын өсіп отырсын. Ол үшін <a href="https://www.w3schools.com/jsref/met_win_setinterval.asp" target="_blank" rel="noopener"><code>setInterval</code></a> функциясын қолданамыз. Ол аргумент ретінде орындалатын функцияны және функцияның екі орындалуының арасындағы уақытты (миллисекундпен) алады.</p>
+<pre data-lang="javascript"><code class="language-javascript">let counter = 0;
+
+function count() {
+    counter++;
+    document.querySelector('h1').innerHTML = counter;
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('button').onclick = count;
+
+    setInterval(count, 1000);
+});</code></pre>
+      <p>Мұны бетте қарап көріңіз. Түйме әлі бұрынғыдай жұмыс істейді, ал санауыш өздігінен де өсіп жатыр:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;h1&gt;0&lt;/h1&gt;
+&lt;button&gt;Count&lt;/button&gt;
+
+&lt;script&gt;
+    let counter = 0;
+
+    function count() {
+        counter++;
+        document.querySelector('h1').innerHTML = counter;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelector('button').onclick = count;
+
+        setInterval(count, 1000);
+    });
+&lt;/script&gt;</code></pre>
+      <p>Интервалды тоқтатуға да болады: <code>setInterval</code> қайтаратын нөмірді <code>clearInterval</code>-ға беру жеткілікті. Мысалы, үш реттен кейін тоқтайтын таймер (бір жарым секундқа созылады, әр 500 миллисекунд сайын):</p>
+<pre data-lang="javascript" data-run><code class="language-javascript">let ticks = 0;
+const id = setInterval(function() {
+    ticks++;
+    console.log('Тик №' + ticks);
+    if (ticks === 3) {
+        clearInterval(id);
+        console.log('Интервал тоқтатылды');
+    }
+}, 500);</code></pre>
+
+      <h2 id="local-storage">Local Storage</h2>
+      <p>Біздің осы кезге дейінгі барлық сайттарымыздағы бір нәрсені байқадыңыз ба? Бетті қайта жүктеген сайын бүкіл ақпарат жоғалады. Тақырыптың түсі қайтадан қара болады, санауыш нөлге түседі, тапсырмалардың бәрі өшіп қалады. Кейде бізге дәл осы керек, бірақ басқа жағдайларда пайдаланушы сайтқа қайта кіргенде пайдалана алатындай ақпаратты сақтағымыз келеді.</p>
+      <p>Мұны істеудің бір жолы - <strong>Local Storage</strong> (жергілікті сақтау орны, <span class="term-en">local storage</span>): ақпаратты пайдаланушы браузерінде сақтап, кейін оған қайта қол жеткізу. Ақпарат <strong>кілт-мән</strong> жұптары жиынтығы түрінде сақталады, Python сөздігіне өте ұқсас. Local storage-ті қолдану үшін екі негізгі функция керек:</p>
+      <ul>
+        <li><code>localStorage.getItem(key)</code>: берілген кілті бар жазбаны local storage-тен іздеп, сол кілтке сәйкес мәнді қайтарады;</li>
+        <li><code>localStorage.setItem(key, value)</code>: local storage-ке жазба қояды, кілтті жаңа мәнмен байланыстырады.</li>
+      </ul>
+      <p>Осы жаңа функциялардың көмегімен санауышты қалай жаңартатынымызды көрейік! Төмендегі кодта:</p>
+<pre data-lang="javascript"><code class="language-javascript">// Check if there is already a value in local storage
+if (!localStorage.getItem('counter')) {
+
+    // If not, set the counter to 0 in local storage
+    localStorage.setItem('counter', 0);
+}
+
+function count() {
+    // Retrieve counter value from local storage
+    let counter = localStorage.getItem('counter');
+
+    // update counter
+    counter++;
+    document.querySelector('h1').innerHTML = counter;
+
+    // Store counter in local storage
+    localStorage.setItem('counter', counter);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Set heading to the current value inside local storage
+    document.querySelector('h1').innerHTML = localStorage.getItem('counter');
+    document.querySelector('button').onclick = count;
+});</code></pre>
+      <p>Мұнда бір ұсақ нәрсе бар: кілті жоқ жазбаны сұрасақ, <code>getItem</code> <code>null</code> қайтарады, ал <code>null</code> шартта жалған болып саналады. Сондықтан <code>!localStorage.getItem('counter')</code> «мұндай жазба әлі жоқ па?» деген сұрақ болады. Сайттың құмсалғышында браузердің нағыз <code>localStorage</code> қоймасына рұқсат жоқ, сондықтан төмендегі нұсқаның басына қайта жүктеуді <em>имитациялайтын</em> шағын қойма қостық. Сақталған санауыш мен кәдімгі айнымалыны салыстырыңыз: «Бетті қайта жүктеу» түймесін басқанда кәдімгі айнымалы нөлге түседі, ал қоймадағы мән қалады:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;h1 id=&quot;stored&quot;&gt;0&lt;/h1&gt;
+&lt;p&gt;Жоғарғы сан - local storage-те, төменгі - кәдімгі айнымалыда.&lt;/p&gt;
+&lt;h2 id=&quot;plain&quot;&gt;0&lt;/h2&gt;
+&lt;button id=&quot;plus&quot;&gt;Count&lt;/button&gt;
+&lt;button id=&quot;reload&quot;&gt;Бетті қайта жүктеу&lt;/button&gt;
+
+&lt;script&gt;
+    // Құмсалғышта нағыз localStorage жоқ болуы мүмкін, сондықтан қойма: бар болса localStorage, болмаса өз объектіміз
+    const store = (() =&gt; {
+        try {
+            localStorage.setItem('probe', '1');
+            localStorage.removeItem('probe');
+            return localStorage;
+        } catch (e) {
+            const memory = {};
+            return {
+                getItem: key =&gt; (key in memory ? memory[key] : null),
+                setItem: (key, value) =&gt; { memory[key] = String(value); }
+            };
+        }
+    })();
+
+    // Check if there is already a value in local storage
+    if (!store.getItem('counter')) {
+        store.setItem('counter', 0);
+    }
+
+    let plain = 0;
+
+    function count() {
+        let counter = store.getItem('counter');
+        counter++;
+        document.querySelector('#stored').innerHTML = counter;
+        store.setItem('counter', counter);
+
+        plain++;
+        document.querySelector('#plain').innerHTML = plain;
+    }
+
+    function load() {
+        plain = 0;
+        document.querySelector('#plain').innerHTML = plain;
+        document.querySelector('#stored').innerHTML = store.getItem('counter');
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        load();
+        document.querySelector('#plus').onclick = count;
+        document.querySelector('#reload').onclick = load;
+    });
+&lt;/script&gt;</code></pre>
+      <div class="callout note">
+        <span class="callout-title">Нағыз браузерде</span>
+        <p>Өз компьютеріңізде жоғарыдағы <code>localStorage</code> кодын <code>counter.html</code> ішіне қойып, түймені бірнеше рет басыңыз, содан бетті қайта жүктеңіз (F5). Сан орнында тұрады. Бұл мәліметтер тек сіздің браузеріңізде сақталады, басқа адамдардың құрылғыларына жетпейді. <code>localStorage</code> мәндерді әрдайым <em>жол</em> түрінде сақтайды, сондықтан <code>counter++</code> жолды санға айналдырып барып қосады.</p>
+      </div>
+
+      <h2 id="apis">API-лер</h2>
+      <h3 id="js-objects">JavaScript объектілері</h3>
+      <p><strong>JavaScript объектісі</strong> (<span class="term-en">JavaScript Object</span>) Python сөздігіне өте ұқсас: ол да кілт-мән жұптарын сақтауға мүмкіндік береді. Мысалы, Гарри Поттерді бейнелейтін объект жасай аламыз:</p>
+<pre data-lang="javascript"><code class="language-javascript">let person = {
+    first: 'Harry',
+    last: 'Potter'
+};</code></pre>
+      <p>Объектінің бөліктеріне <strong>тік жақшалар</strong> (<code>person['first']</code>) немесе <strong>нүкте</strong> (<code>person.first</code>) арқылы қол жеткізіп, оларды өзгерте аламыз. Консольде мұны өзіңіз сынаңыз. Төменде дәл осы қимылдарды жасап көрелік:</p>
+<pre data-lang="javascript" data-run><code class="language-javascript">let person = {
+    first: 'Harry',
+    last: 'Potter'
+};
+
+console.log(person.first);        // нүкте арқылы
+console.log(person['last']);      // жақша арқылы
+
+person.first = 'Hermione';        // мәнді өзгерту
+person.age = 17;                  // жаңа кілт қосу
+
+console.log(person);</code></pre>
+      <p>JavaScript объектілерінің ең пайдалы жағы - мәліметті бір сайттан екіншісіне жіберу, әсіресе <strong>API</strong>-лармен жұмыс істегенде. API (<span class="term-en">Application Programming Interface</span>, қосымшаны бағдарламалау интерфейсі) - екі түрлі қосымшаның бір-бірімен құрылымдалған түрде сөйлесу тәсілі.</p>
+      <p>Мысалы, біздің қосымшамыз Google Maps-тен, Amazon-нан немесе ауа райы қызметінен ақпарат алғысы келуі мүмкін. Мұны сол қызметтің API-ына сұраныс жасау арқылы істейміз, ол бізге құрылымдалған мәліметті жібереді, көбіне <strong>JSON</strong> (<span class="term-en">JavaScript Object Notation</span>, JavaScript объект белгілеуі) пішімінде. Мысалы, ұшу рейсі JSON түрінде былай көрінуі мүмкін:</p>
+<pre data-lang="json"><code class="language-json">{
+    &quot;origin&quot;: &quot;New York&quot;,
+    &quot;destination&quot;: &quot;London&quot;,
+    &quot;duration&quot;: 415
+}</code></pre>
+      <p>JSON-дағы мәндер тек жолдар мен сандар болуы міндетті емес. Біз тізімдерді, тіпті басқа JavaScript объектілерін де сақтай аламыз:</p>
+<pre data-lang="json"><code class="language-json">{
+    &quot;origin&quot;: {
+        &quot;city&quot;: &quot;New York&quot;,
+        &quot;code&quot;: &quot;JFK&quot;
+    },
+    &quot;destination&quot;: {
+        &quot;city&quot;: &quot;London&quot;,
+        &quot;code&quot;: &quot;LHR&quot;
+    },
+    &quot;duration&quot;: 415
+}</code></pre>
+      <p>JSON - жай ғана <em>мәтін</em>. Оны JavaScript объектісіне айналдыру үшін <code>JSON.parse</code>, ал кері айналдыру үшін <code>JSON.stringify</code> қолданамыз. API-дан келген жауапты біз осылай «ашамыз» (кейін <code>response.json()</code> дәл осыны істейді):</p>
+<pre data-lang="javascript" data-run><code class="language-javascript">const text = '{&quot;origin&quot;: {&quot;city&quot;: &quot;New York&quot;, &quot;code&quot;: &quot;JFK&quot;}, &quot;destination&quot;: {&quot;city&quot;: &quot;London&quot;, &quot;code&quot;: &quot;LHR&quot;}, &quot;duration&quot;: 415}';
+
+const flight = JSON.parse(text);
+console.log(flight.origin.city);
+console.log(flight.destination.code);
+console.log(flight.duration / 60);
+
+console.log(JSON.stringify({ origin: 'Almaty', duration: 270 }));</code></pre>
+
+      <h3 id="currency-exchange">Валюта бағамы</h3>
+      <p>API-ларды қосымшаларымызда қалай қолдануға болатынын көрсету үшін, екі валюта арасындағы айырбас бағамын табатын қосымша жасайық. Жаттығу барысында Еуропалық орталық банктің бағам API-ын (<a href="https://exchangeratesapi.io" target="_blank" rel="noopener">European Central Bank's Exchange Rate API</a>) қолданатын боламыз. Сайтына кірсеңіз, API құжаттамасын көресіз: API-мен жұмысты әдетте дәл құжаттамадан бастаймыз. API-ды мына мекенжайға кіріп сынауға болады: <code>https://api.exchangeratesapi.io/latest?base=USD</code>. Бұл бетке кірсеңіз, АҚШ долларының басқа көптеген валюталарға қатысты бағамын JSON түрінде көресіз. URL-дағы GET параметрін <code>USD</code>-дан кез келген басқа валюта кодына ауыстырып, басқа бағамдар ала аласыз.</p>
+      <div class="callout warn">
+        <span class="callout-title">Желі керек мысалдар</span>
+        <p>Бұл лекциядағы <code>fetch</code> мысалдары сыртқы серверге сұраныс жібереді, сондықтан сайттың қорғалған ортасында оларды <em>іске қоспаймыз</em>. Нәтижені терминал блоктарымен көрсетеміз. Қосымша: <code>exchangeratesapi.io</code> қызметі кейінгі жылдары API-кілт (<span class="term-en">API key</span>) талап ете бастады, сондықтан өз компьютеріңізде жоғарыдағы мекенжай кілтсіз жұмыс істемеуі мүмкін. Бірақ идея өзгермейді, ал соңында желісіз-ақ жұмыс істейтін «жасанды сервермен» толық интерактив нұсқа беріп отырмыз.</p>
+      </div>
+      <p>Бұл API-ды қосымшада қалай қолдануға болатынын көру үшін, жаңа <code>currency.html</code> файлын жасап, оны JavaScript файлына байлаймыз, бірақ <code>body</code>-ді бос қалдырамыз:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Currency Exchange&lt;/title&gt;
+        &lt;script src=&quot;currency.js&quot;&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;&lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Енді біз <strong>AJAX</strong> (<span class="term-en">Asynchronous JavaScript And XML</span>, асинхронды JavaScript және XML) деген нәрсені қолданамыз. Ол беттің жүктелуі аяқталғаннан кейін де <em>сыртқы беттерден ақпарат алуға</em> мүмкіндік береді. Бұл үшін HTTP сұранысын жібере алатын <a href="https://javascript.info/fetch" target="_blank" rel="noopener"><code>fetch</code></a> функциясын қолданамыз. <code>fetch</code> <strong>уәде</strong> (<span class="term-en">promise</span>) қайтарады. Уәденің егжей-тегжейіне мұнда тоқталмаймыз, бірақ оны «бір кезде келетін мән, бірақ міндетті түрде дәл қазір емес» деп елестетуге болады. Сенімді досыңыз «ертең хабарлаймын» деп уәде бергендей: хабар келгенше сіз өз ісіңізбен айналысасыз. Уәдемен жұмыс істеу үшін оның <code>.then</code> қасиетіне жауап (<code>response</code>) келгенде не істеу керегін сипаттаймыз. Төмендегі үзінді жауапты консольге шығарады:</p>
+<pre data-lang="javascript" data-norun><code class="language-javascript">document.addEventListener('DOMContentLoaded', function() {
+    // Send a GET request to the URL
+    fetch('https://api.exchangeratesapi.io/latest?base=USD')
+    // Put response into json form
+    .then(response =&gt; response.json())
+    .then(data =&gt; {
+        // Log data to the console
+        console.log(data);
+    });
+});</code></pre>
+      <p>Консольде шамамен мынадай нәрсе көрінеді (бағамдар мысал үшін, шын мәндер күн сайын өзгереді):</p>
+<pre class="terminal"><code class="language-plaintext">{base: &quot;USD&quot;, date: &quot;2020-07-06&quot;, rates: {CAD: 1.3584, GBP: 0.7981, JPY: 107.38, EUR: 0.8873, ...}}</code></pre>
+      <p>Жоғарыдағы кодтағы маңызды нәрсе: <code>.then</code> аргументі <em>әрдайым функция</em>. <code>response</code> мен <code>data</code> деген айнымалыларды жасап жатқандай көрінгенімен, бұлар - екі анонимді функцияның параметрлері ғана. Сұранысты жібергеннен кейін код <em>күтіп тұрмайды</em>, жауап келгенде ғана бұл функциялар шақырылады. Мұны шағын модельде көріңіз:</p>
+<pre data-lang="javascript" data-run><code class="language-javascript">// fetch жауабының орнына: 500 мс кейін келетін уәде
+const promise = new Promise(resolve =&gt; {
+    setTimeout(() =&gt; resolve({ rates: { EUR: 0.887 } }), 500);
+});
+
+console.log('1. Сұраныс жіберілді');
+promise.then(data =&gt; {
+    console.log('3. Жауап келді, EUR =', data.rates.EUR);
+});
+console.log('2. Бұл жол жауапты күтпей-ақ шығады!');</code></pre>
+      <p>Мәліметті жай консольге шығарудың орнына, JavaScript-пен экранға хабарлама шығара аламыз. Мына кодты қараңыз:</p>
+<pre data-lang="javascript" data-norun><code class="language-javascript">document.addEventListener('DOMContentLoaded', function() {
+    // Send a GET request to the URL
+    fetch('https://api.exchangeratesapi.io/latest?base=USD')
+    // Put response into json form
+    .then(response =&gt; response.json())
+    .then(data =&gt; {
+
+        // Get rate from data
+        const rate = data.rates.EUR;
+
+        // Display message on the screen
+        document.querySelector('body').innerHTML = `1 USD is equal to ${rate.toFixed(3)} EUR.`;
+    });
+});</code></pre>
+      <p>Бет ашылған бойда мынадай мәтін шығады (<code>toFixed(3)</code> санды үтірден кейін 3 таңбаға дейін дөңгелектейді):</p>
+<pre class="terminal"><code class="language-plaintext">1 USD is equal to 0.887 EUR.</code></pre>
+      <p>Енді сайтты сәл интерактивті етейік: пайдаланушы қай валютаны көргісі келетінін өзі таңдасын. HTML-ді пайдаланушы валюта енгізе алатындай етіп өзгертумен бастаймыз:</p>
+<pre data-lang="html"><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Currency Exchange&lt;/title&gt;
+        &lt;script src=&quot;currency.js&quot;&gt;&lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form&gt;
+            &lt;input id=&quot;currency&quot; placeholder=&quot;Currency&quot; type=&quot;text&quot;&gt;
+            &lt;input type=&quot;submit&quot; value=&quot;Convert&quot;&gt;
+        &lt;/form&gt;
+        &lt;div id=&quot;result&quot;&gt;&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Енді JavaScript-ті өзгертеміз: ол форма жіберілгенде ғана жұмыс істейтін және пайдаланушы енгізген мәнді ескеретін болсын. Сондай-ақ қателерді тексеруді де қосамыз:</p>
+<pre data-lang="javascript" data-norun><code class="language-javascript">document.addEventListener('DOMContentLoaded', function() {
+    document.querySelector('form').onsubmit = function() {
+
+        // Send a GET request to the URL
+        fetch('https://api.exchangeratesapi.io/latest?base=USD')
+        // Put response into json form
+        .then(response =&gt; response.json())
+        .then(data =&gt; {
+            // Get currency from user input and convert to upper case
+            const currency = document.querySelector('#currency').value.toUpperCase();
+
+            // Get rate from data
+            const rate = data.rates[currency];
+
+            // Check if currency is valid:
+            if (rate !== undefined) {
+                // Display exchange on the screen
+                document.querySelector('#result').innerHTML = `1 USD is equal to ${rate.toFixed(3)} ${currency}.`;
+            }
+            else {
+                // Display error on the screen
+                document.querySelector('#result').innerHTML = 'Invalid Currency.';
+            }
+        })
+        // Catch any errors and log them to the console
+        .catch(error =&gt; {
+            console.log('Error:', error);
+        });
+        // Prevent default submission
+        return false;
+    }
+});</code></pre>
+      <p>Нәтиже: <code>EUR</code> деп жазсақ <code>1 USD is equal to 0.887 EUR.</code>, ал <code>abc</code> деп жазсақ <code>Invalid Currency.</code> шығады. Жоғарыда <code>data.rates[currency]</code> деп тік жақшамен қол жеткіздік, себебі валюта коды айнымалыда тұр (<code>data.rates.currency</code> деп жазсақ, JavaScript «currency» деген атты іздер еді). Ал <code>.catch</code> желі қатесі сияқты кез келген ақау болса, оны консольге шығарады, қосымша құлап қалмайды.</p>
+      <p>Енді желісіз-ақ өзіңіз сынап көру үшін. Бұл нұсқада нағыз <code>fetch</code> орнына жасанды (<span class="term-en">mock</span>) <code>fetch</code> тұр: ол сервердің жауабын 0,4 секундтан кейін береді, ал бағамдар - ойдан шығарылған мысал мәндер. Қалған код түпнұсқамен бірдей. <code>EUR</code>, <code>KZT</code>, <code>GBP</code>, <code>JPY</code>, <code>RUB</code> немесе қате код (<code>abc</code>) теріп көріңіз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Currency Exchange&lt;/title&gt;
+        &lt;script&gt;
+            // ТЕК ДЕМО ҮШІН: желі жоқ, сондықтан fetch-тің &quot;жасанды&quot; нұсқасы.
+            // Бағамдар ойдан шығарылған, нағыз API мұндай жауап береді.
+            window.fetch = function(url) {
+                const data = { base: 'USD', rates: { EUR: 0.887, GBP: 0.798, JPY: 107.38, KZT: 415.2, RUB: 71.5 } };
+                return new Promise(resolve =&gt; {
+                    setTimeout(() =&gt; resolve({ json: () =&gt; Promise.resolve(data) }), 400);
+                });
+            };
+        &lt;/script&gt;
+        &lt;script&gt;
+            // Төменгі бөлік - түпнұсқадағы currency.js
+            document.addEventListener('DOMContentLoaded', function() {
+                document.querySelector('form').onsubmit = function() {
+
+                    // Send a GET request to the URL
+                    fetch('https://api.exchangeratesapi.io/latest?base=USD')
+                    // Put response into json form
+                    .then(response =&gt; response.json())
+                    .then(data =&gt; {
+                        // Get currency from user input and convert to upper case
+                        const currency = document.querySelector('#currency').value.toUpperCase();
+
+                        // Get rate from data
+                        const rate = data.rates[currency];
+
+                        // Check if currency is valid:
+                        if (rate !== undefined) {
+                            // Display exchange on the screen
+                            document.querySelector('#result').innerHTML = `1 USD is equal to ${rate.toFixed(3)} ${currency}.`;
+                        }
+                        else {
+                            // Display error on the screen
+                            document.querySelector('#result').innerHTML = 'Invalid Currency.';
+                        }
+                    })
+                    // Catch any errors and log them to the console
+                    .catch(error =&gt; {
+                        console.log('Error:', error);
+                    });
+                    // Prevent default submission
+                    return false;
+                }
+            });
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;form&gt;
+            &lt;input id=&quot;currency&quot; placeholder=&quot;Currency&quot; type=&quot;text&quot;&gt;
+            &lt;input type=&quot;submit&quot; value=&quot;Convert&quot;&gt;
+        &lt;/form&gt;
+        &lt;div id=&quot;result&quot;&gt;&lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Бүгінгі лекция осымен бітті! Келесі жолы JavaScript арқылы одан да тартымды пайдаланушы интерфейстерін жасауға көшеміз.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Бүгін біз JavaScript-пен таныстық. Негізгі идея: код енді <em>браузерде</em> жұмыс істейді, сондықтан бет серверге қайта жүгірместен-ақ өзгере алады. Мына ұғымдарды үйрендік:</p>
+      <ul>
+        <li>JavaScript клиент жағында жұмыс істейді; кодты <code>&lt;script&gt;</code> тегінің ішіне не <code>src</code> арқылы бөлек <code>.js</code> файлына жазамыз;</li>
+        <li><strong>оқиғаға негізделген бағдарламалау</strong>: оқиға тыңдаушылары (<code>onclick</code>, <code>addEventListener</code>, <code>DOMContentLoaded</code>, <code>onsubmit</code>, <code>onchange</code>, <code>onkeyup</code>);</li>
+        <li>айнымалылар: <code>var</code>, <code>let</code>, <code>const</code>; қатаң салыстыру <code>===</code>;</li>
+        <li><code>document.querySelector</code> пен <code>querySelectorAll</code> арқылы DOM элементтерін табу, <code>innerHTML</code>, <code>value</code>, <code>style</code>, <code>dataset</code>, <code>createElement</code>, <code>append</code> арқылы оларды өзгерту;</li>
+        <li>үлгі литералдар (<code>`...${x}...`</code>), анонимді және көрсеткілі функциялар, <code>forEach</code>;</li>
+        <li>консоль және <code>console.log</code> арқылы қатені іздеу;</li>
+        <li>интервалдар: <code>setInterval</code> (және <code>clearInterval</code>);</li>
+        <li>local storage: <code>getItem</code>/<code>setItem</code> арқылы мәлімет бетті қайта жүктегеннен кейін де сақталады;</li>
+        <li>JavaScript объектілері және JSON, API-лар, <code>fetch</code>, уәде (<code>.then</code>, <code>.catch</code>) және AJAX арқылы бет жүктелгеннен кейін сыртқы мәлімет алу.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. <code>button.onclick = count;</code> мен <code>button.onclick = count();</code> жолдарының айырмашылығы неде?</p>
+          <label><input type="radio" value="a"> Айырмашылық жоқ, жақша міндетті емес</label>
+          <label><input type="radio" value="b"> Біріншісі функцияны «түйме басылғанда шақыр» деп береді, екіншісі функцияны бірден шақырып, нәтижесін береді</label>
+          <label><input type="radio" value="c"> Біріншісі қате береді, екіншісі дұрыс жұмыс істейді</label>
+          <label><input type="radio" value="d"> Екіншісі түйме басылған сайын емес, тек бір рет жұмыс істейді, ал біріншісі әр екі секунд сайын</label>
+          <p class="explain">Жақшасыз <code>count</code> функцияның өзі (мән ретінде), оны браузер кейін шақырады. Жақшамен <code>count()</code> функция дереу орындалады.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">2. Мына кодтың шығысы қандай? <code>console.log(5 === "5", 5 == "5");</code></p>
+          <label><input type="radio" value="a"> <code>true true</code></label>
+          <label><input type="radio" value="b"> <code>false false</code></label>
+          <label><input type="radio" value="c"> <code>true false</code></label>
+          <label><input type="radio" value="d"> <code>false true</code></label>
+          <p class="explain"><code>===</code> түрді де салыстырады: сан мен жол әртүрлі, сондықтан <code>false</code>. Ал <code>==</code> жолды санға айналдырып, <code>true</code> береді. Сондықтан <code>===</code> қолданған дұрыс.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. Скрипт <code>&lt;head&gt;</code>-те тұр және ішінде <code>document.querySelector('button').onclick = count;</code> бар, бірақ <code>DOMContentLoaded</code> жоқ. Консольде <code>TypeError</code> шықты. Неге?</p>
+          <label><input type="radio" value="a"> Код орындалғанда түйме әлі DOM-да жоқ, сондықтан <code>querySelector</code> <code>null</code> қайтарады</label>
+          <label><input type="radio" value="b"> <code>onclick</code> деген қасиет жоқ</label>
+          <label><input type="radio" value="c"> <code>count</code> функциясы анықталмаған</label>
+          <label><input type="radio" value="d"> <code>querySelector</code> тек тақырыптарды ғана табады</label>
+          <p class="explain">Браузер бетті жоғарыдан төмен оқиды. Скрипт түймеден бұрын орындалса, іздеу ештеңе таппайды. Шешім: кодты <code>DOMContentLoaded</code> оқиғасының ішіне салу.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">4. Жаңа браузерде <code>localStorage.getItem('score')</code> шақырылды, бұрын ештеңе сақталмаған. Нәтиже қандай?</p>
+          <label><input type="radio" value="a"> <code>0</code></label>
+          <label><input type="radio" value="b"> Бос жол <code>""</code></label>
+          <label><input type="radio" value="c"> <code>null</code></label>
+          <label><input type="radio" value="d"> Қате (exception) шығады</label>
+          <p class="explain">Кілт жоқ болса, <code>getItem</code> <code>null</code> қайтарады. Сол себепті <code>if (!localStorage.getItem('counter'))</code> тексеруі «әлі жоқ па?» дегенді білдіреді.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. <code>fetch(url).then(response =&gt; response.json())</code> жолында <code>response</code> деген не?</p>
+          <label><input type="radio" value="a"> Біз <code>let response</code> деп алдын ала жариялайтын айнымалы</label>
+          <label><input type="radio" value="b"> <code>.then</code>-ге берілген анонимді функцияның параметрі, жауап келгенде оған сол жауап беріледі</label>
+          <label><input type="radio" value="c"> <code>fetch</code> функциясының кілт сөзі</label>
+          <label><input type="radio" value="d"> Сервердің IP мекенжайы</label>
+          <p class="explain"><code>.then</code> аргументі әрдайым функция. Параметрдің атын өзіміз таңдаймыз, оған сұраныстың нәтижесі жауап келгенде беріледі.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">6. Мына код не істейді? <code>const PI = 3.14; PI = 3;</code></p>
+          <label><input type="radio" value="a"> <code>PI</code> мәні <code>3</code> болады</label>
+          <label><input type="radio" value="b"> Екінші жол елеусіз қалады, <code>PI</code> <code>3.14</code> күйінде қалады және ешқандай қате шықпайды</label>
+          <label><input type="radio" value="c"> <code>PI</code> массивке айналады</label>
+          <label><input type="radio" value="d"> <code>TypeError</code> қатесі шығады: <code>const</code> мәнін өзгертуге болмайды</label>
+          <p class="explain"><code>const</code> тұрақты анықтайды: оған қайта мән беруге тырысу қате береді. Өзгеретін мән үшін <code>let</code> қолданамыз.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. HTML-де <code>&lt;button data-color="red"&gt;</code> бар. Түйменің <code>button</code> айнымалысында тұрғанда, JavaScript-те <code>"red"</code> мәніне қалай қол жеткіземіз?</p>
+          <label><input type="radio" value="a"><code>button.dataset.color</code></label>
+          <label><input type="radio" value="b"><code>button.data-color</code></label>
+          <label><input type="radio" value="c"><code>button.style.color</code></label>
+          <label><input type="radio" value="d"><code>button.value</code></label>
+          <p class="explain"><code>data-ЕРКІН_АТ</code> атрибуттары элементтің <code>dataset</code> қасиетінде <code>dataset.ЕРКІН_АТ</code> түрінде көрінеді. <code>style.color</code> элементтің CSS түсін өзгертеді, ал <code>button.data-color</code> JavaScript-те қате өрнек (азайту амалы).</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">8. <code>setInterval(count, 1000);</code> жолы қандай нәтиже береді?</p>
+          <label><input type="radio" value="a"> <code>count</code> функциясы 1000 рет орындалады</label>
+          <label><input type="radio" value="b"> <code>count</code> функциясы бір рет, 1000 секундтан кейін орындалады</label>
+          <label><input type="radio" value="c"> <code>count</code> функциясы әр 1000 миллисекунд, яғни әр секунд сайын қайталанып орындалады</label>
+          <label><input type="radio" value="d"> <code>count</code> функциясы 1000 жолдан тұрады деп белгіленеді</label>
+          <p class="explain">Екінші аргумент - миллисекундпен өлшенген кідіріс. 1000 мс = 1 секунд. Қайталауды тоқтату үшін <code>clearInterval</code> қолданамыз.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="practice">Жаттығулар: JavaScript функциялары</h2>
+      <div class="callout note">
+        <span class="callout-title">Сайттың өз жаттығулары, ресми тапсырма емес</span>
+        <p>Төмендегі алты жаттығуды біз осы сайт үшін қостық: олар JavaScript-тің «DOM-сыз» бөлігін (функциялар, массивтер, объектілер, жолдар) жаттықтырады. Бұл CS50 ресми problem set-і емес. Кодыңызды <code>.js</code> файлына жазып, әр автотексерушіге жүктеңіз (немесе қойыңыз): тексеруші оны браузерде, ауыр жұмысты бөлек ағында (Web Worker) орындап, нәтижелерді күтілетін мәнмен салыстырады. Шексіз цикл жазып қойсаңыз да, ол қауіпсіз тоқтатылады.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-capitalize">capitalize (бас әріппен бастау)</h3></div>
+        <p><code>capitalize(word)</code> функциясын жазыңыз: жолдың бірінші әрпін бас әріпке, қалғандарын кіші әріпке айналдырып, <em>жаңа жолды қайтарсын</em>. Бос жол берілсе, бос жол қайтарсын. Мысалы, <code>capitalize("jAVAsCRIPT")</code> нәтижесі <code>"Javascript"</code>.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Жолдың бірінші символы <code>word[0]</code>, қалғаны <code>word.slice(1)</code>. Бас әріпке <code>.toUpperCase()</code>, кіші әріпке <code>.toLowerCase()</code> айналдырады. Бос жолда <code>word[0]</code> - <code>undefined</code>, оған <code>.toUpperCase()</code> шақырсаңыз қате болады, сондықтан алдымен <code>word.length</code> тексеріңіз.</p></div></details>
+        <div class="js-grader" data-check="js-capitalize" data-src="web/checks/week-5.js"></div>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-sum">sum және average (массив)</h3></div>
+        <p><code>sum(numbers)</code> массивтегі сандардың қосындысын қайтарсын (бос массив үшін <code>0</code>). <code>average(numbers)</code> орташа мәнді қайтарсын (бос массив үшін <code>0</code>).</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Қосындыны жинау үшін <code>let total = 0;</code> жариялап, <code>for (const n of numbers) { total += n; }</code> циклін қолданыңыз. <code>average</code> үшін <code>sum</code> функциясын қайта пайдаланыңыз, бірақ нөлге бөлмеу үшін бос массивті алдын ала тексеріңіз.</p></div></details>
+        <div class="js-grader" data-check="js-sum" data-src="web/checks/week-5.js"></div>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-wordcount">countWords (сөздерді санау)</h3></div>
+        <p><code>countWords(text)</code> жолдағы әр сөздің неше рет кездескенін санап, <strong>объект</strong> қайтарсын. Сөздер бос орынмен бөлінеді; бас және кіші әріп бірдей саналады (кілттер кіші әріппен жазылады). Мысалы, <code>countWords("to be or not to be")</code> нәтижесі <code>{to: 2, be: 2, or: 1, not: 1}</code>. Бос жол үшін бос объект <code>{}</code> қайтарыңыз.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Жолды <code>text.toLowerCase().split(" ")</code> арқылы массивке бөліңіз. Содан кейін әр сөз үшін <code>counts[word] = (counts[word] || 0) + 1</code> деп жазыңыз: кілт жоқ болса, <code>counts[word]</code> - <code>undefined</code>, ал <code>||</code> оны <code>0</code>-мен ауыстырады. Қатарынан тұрған артық бос орындар бос жол (<code>""</code>) шығарады: оларды өткізіп жіберіңіз.</p></div></details>
+        <div class="js-grader" data-check="js-wordcount" data-src="web/checks/week-5.js"></div>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-palindrome">isPalindrome (палиндром)</h3></div>
+        <p><code>isPalindrome(text)</code> жол солдан оңға да, оңнан солға да бірдей оқылса <code>true</code>, әйтпесе <code>false</code> қайтарсын. Регистр мен әріп/цифр емес таңбалар (бос орын, үтір, қос нүкте) ескерілмейді. Мысалы, <code>"A man, a plan, a canal: Panama"</code> палиндром.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Алдымен жолды тазалаңыз: <code>text.toLowerCase().replace(/[^a-z0-9]/g, "")</code> тек латын әріптері мен цифрларын қалдырады. Содан кейін жолды кері айналдырыңыз: <code>.split("").reverse().join("")</code>, және түпнұсқамен салыстырыңыз (<code>===</code>).</p></div></details>
+        <div class="js-grader" data-check="js-palindrome" data-src="web/checks/week-5.js"></div>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-people">oldest және byCity (объектілер массиві)</h3></div>
+        <p>Әр адам - объект: <code>{name: "Aigerim", age: 19, city: "Almaty"}</code>. <code>oldest(people)</code> ең үлкен адамның атын (<code>name</code>) қайтарсын (массив бос болса <code>null</code>). <code>byCity(people)</code> адамдарды қала бойынша топтап, <code>{Almaty: ["Aigerim", "Dana"], Astana: ["Bauyrzhan"]}</code> түріндегі объект қайтарсын (аттар массивтегі ретпен).</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>oldest</code> үшін ең үлкенді есте сақтайтын айнымалы алып, массивті бір рет айналып шығыңыз. <code>byCity</code> үшін қала бойынша объектіде массив ашыңыз: <code>if (!(p.city in groups)) groups[p.city] = [];</code>, сосын <code>groups[p.city].push(p.name)</code>.</p></div></details>
+        <div class="js-grader" data-check="js-people" data-src="web/checks/week-5.js"></div>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-countdown">countdown (console.log және цикл)</h3></div>
+        <p><code>countdown(n)</code> функциясын жазыңыз: ол <code>n</code>-нен <code>1</code>-ге дейін кері санайды (әр сан жеке <code>console.log</code> жолында), ең соңында <code>Start!</code> деп шығарады. Файлдың соңында <code>countdown(3)</code> шақырыңыз: тексеруші <code>console.log</code> шығысын (<code>3</code>, <code>2</code>, <code>1</code>, <code>Start!</code>) салыстырады.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>for (let i = n; i &gt; 0; i--) { console.log(i); }</code> циклі <code>n</code>-нен <code>1</code>-ге дейін санайды (<code>0</code> шықпайды). Циклден кейін <code>console.log("Start!")</code> жазыңыз.</p></div></details>
+        <div class="js-grader" data-check="js-countdown" data-src="web/checks/week-5.js"></div>
+      </div>
+
+      <h2 id="problem-set">Project 3: Mail (Пошта)</h2>
+      <p><span class="term-en">(Project 3)</span> CS50 Web-те апталар мен жобалар арасында бір-біріне бір-бір сәйкестік жоқ. Ресми беттер: <a href="https://cs50.harvard.edu/web/projects/3/" target="_blank" rel="noopener">cs50.harvard.edu/web/projects/3</a> және <a href="https://cs50.harvard.edu/web/projects/3/mail/" target="_blank" rel="noopener">Mail</a>. 3-жоба бойынша тапсыратын жалғыз жұмыс - <strong>Mail</strong>. Ресми нұсқаулық ескертеді: егер сіз кемінде 5-лекцияны көрмеген болсаңыз, бұл жобаны тым ерте бастап жатырсыз!</p>
+      <div class="callout note">
+        <span class="callout-title">Компьютерде орындалады</span>
+        <p>Бұл жоба толыққанды Django жобасы (серверде Python, деректер қоры, тіркеу/кіру), сондықтан оны сайттың ішінде орындау мүмкін емес. Оны өз компьютеріңізде (немесе cs50.dev-те) орындайсыз: Python, Django және код редакторы керек. Сайттағы автотексеруші бұл жоба үшін жоқ: ресми талаптарды төмендегі тексеру тізімі арқылы өзіңіз тексересіз.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="pset-mail">Mail (Пошта)</h3></div>
+        <p>Электрондық пошта клиентіне <strong>фронтенд</strong> (алдыңғы жағы) жасаңыз: ол хат алу және жіберу үшін API-ға сұраныстар жасайды.</p>
+
+        <h4>Бастау</h4>
+        <ol>
+          <li>Таратылатын кодты <a href="https://cdn.cs50.net/web/2020/spring/projects/3/mail.zip" target="_blank" rel="noopener">https://cdn.cs50.net/web/2020/spring/projects/3/mail.zip</a> мекенжайынан жүктеп алып, архивті ашыңыз.</li>
+          <li>Терминалда <code>mail</code> қалтасына <code>cd</code> арқылы кіріңіз.</li>
+          <li><code>mail</code> қосымшасының миграцияларын жасау үшін <code>python manage.py makemigrations mail</code> орындаңыз.</li>
+          <li>Миграцияларды қолдану үшін <code>python manage.py migrate</code> орындаңыз.</li>
+        </ol>
+<pre class="terminal"><code class="language-plaintext">$ cd mail
+$ python manage.py makemigrations mail
+$ python manage.py migrate
+$ python manage.py runserver</code></pre>
+
+        <h4>Түсіну</h4>
+        <p>Таратылатын кодта <code>project3</code> деген Django жобасы бар, оның ішінде жалғыз <code>mail</code> қосымшасы жатыр.</p>
+        <p>Алдымен миграцияларды жасап, қолданғаннан кейін, веб-серверді іске қосу үшін <code>python manage.py runserver</code> орындаңыз. Серверді браузерде ашып, «Register» сілтемесі арқылы жаңа аккаунтқа тіркеліңіз. Бұл жобада жіберетін және алатын хаттарыңыздың бәрі толығымен сіздің дерекқорыңызда сақталады (олар нағыз пошта серверлеріне жіберілмейді), сондықтан кез келген пошта мекенжайын (мысалы, <code>foo@example.com</code>) және парольді таңдай аласыз: нағыз мекенжай болуы міндетті емес.</p>
+        <p>Кіргеннен кейін сізді поштаның Inbox (Кіріс) бетіне апарады, бірақ бұл бет әзірге негізінен бос. «Sent» (Жіберілгендер) және «Archived» (Мұрағат) жәшіктеріне өтетін түймелерді басып көріңіз: олар да әзірге бос. «Compose» (Жазу) түймесін басыңыз: жаңа хат жазатын формаға өтесіз. Бірақ әр түйме басқанда жаңа маршрутқа өтпейміз және жаңа веб-сұраныс жасамаймыз: бұл қосымшаның бәрі <strong>бір беттен</strong> тұрады, интерфейсті JavaScript басқарады. Бұл қалай жұмыс істейтінін таратылатын кодтан қарастырайық.</p>
+        <p><code>mail/urls.py</code> файлын ашып, әдепкі маршрут <code>views.py</code>-дағы <code>index</code> функциясын жүктейтінін байқаңыз. <code>views.py</code>-ды ашып, <code>index</code> функциясына қараңыз: пайдаланушы жүйеге кірген болса, ол <code>mail/inbox.html</code> шаблонын көрсетеді. Шаблон <code>mail/templates/mail/inbox.html</code> файлында тұр. Беттің <code>body</code>-інде алдымен <code>h2</code> элементінде пайдаланушының электрондық мекенжайы көрсетілетінін көресіз. Одан кейін қосымша ішінде жылжуға арналған түймелер тізбегі бар. Төменірек беттің екі негізгі бөлімі бар, әрқайсысы <code>div</code> арқылы анықталған. Біріншісі (<code>id</code>-і <code>emails-view</code>) поштa жәшігінің мазмұнын қамтиды (әзірге бос). Екіншісі (<code>id</code>-і <code>compose-view</code>) пайдаланушы хат жазатын форманы қамтиды. Жоғарғы түймелер осы көріністерді таңдап көрсетіп, жасыруы керек: мысалы, compose түймесі <code>emails-view</code>-ді жасырып, <code>compose-view</code>-ді көрсетуі тиіс; inbox түймесі керісінше <code>compose-view</code>-ді жасырып, <code>emails-view</code>-ді көрсетуі керек.</p>
+        <p>Бұл қалай істеледі? <code>inbox.html</code> файлының төменгі жағында <code>mail/inbox.js</code> JavaScript файлы қосылғанын көріңіз. Оны <code>mail/static/mail/inbox.js</code> жолынан ашып қарайық. Беттің DOM мазмұны жүктелгенде, әр түймеге оқиға тыңдаушылары қосылатынын байқайсыз. Мысалы, <code>inbox</code> түймесі басылғанда, <code>load_mailbox</code> функциясы <code>'inbox'</code> аргументімен шақырылады; ал <code>compose</code> түймесі басылғанда <code>compose_email</code> функциясы шақырылады. Бұл функциялар не істейді? <code>compose_email</code> алдымен <code>emails-view</code>-ді жасырады (оның <code>style.display</code> қасиетін <code>none</code> етіп) және <code>compose-view</code>-ді көрсетеді (<code>style.display</code> қасиетін <code>block</code> етіп). Содан кейін хат жазу формасындағы барлық енгізу өрістерін (алушының мекенжайы, тақырып, хаттың мәтіні) бос жолға <code>''</code> теңестіріп, тазалайды. Яғни «Compose» түймесін басқан сайын сізге таза форма көрсетіледі: мұны формаға бірдеңе теріп, Inbox-қа ауысып, қайта Compose-ге оралып, тексере аласыз.</p>
+        <p>Ал <code>load_mailbox</code> функциясы алдымен <code>emails-view</code>-ді көрсетіп, <code>compose-view</code>-ді жасырады. Оның сонымен бірге аргументі бар: пайдаланушы көргісі келетін пошта жәшігінің аты. Бұл жобада үш жәшіктен тұратын клиент жасайсыз: <code>inbox</code> (кіріс), <code>sent</code> (жіберілген хаттардың бәрі) және <code>archive</code> (бір кездері кіріс жәшігінде болған, бірақ мұрағатталған хаттар). Демек, <code>load_mailbox</code> аргументі осы үш мәннің бірі болады, ал функция таңдалған жәшіктің атын (бірінші әрпін бас әріпке айналдырып) <code>emails-view</code>-дің <code>innerHTML</code>-ін өзгерту арқылы көрсетеді. Сондықтан браузерде жәшік атын таңдағанда, DOM-да сол жәшіктің (бас әріппен жазылған) атын көресіз.</p>
+        <p>Әрине, бұл қосымша әлі аяқталмаған. Барлық жәшіктер әзірге жәшіктің атын (Inbox, Sent, Archive) ғана көрсетеді, ал хаттарды көрсетпейді. Нақты бір хаттың мазмұнын көретін көрініс әлі жоқ. Хат жазу формасына мәтін енгізуге болады, бірақ хатты жіберетін түйме ештеңе істемейді. Міне, осы жерде сіздің рөліңіз басталады!</p>
+
+        <h4>API</h4>
+        <p>Хаттарды алу, жіберу және жаңартуды осы қосымшаның API-ы арқылы жасайсыз. Біз бүкіл API-ды сіз үшін жазып қойдық (және төменде құжаттадық), сондықтан оны JavaScript кодыңызда қолдана аласыз. (Шын мәнінде, бұл жоба үшін <strong>барлық</strong> Python кодын біз жаздық. Жобаны тек HTML мен JavaScript жазу арқылы аяқтай аласыз.)</p>
+        <p>Қосымша мына API маршруттарын қолдайды:</p>
+
+        <h4><code>GET /emails/&lt;str:mailbox&gt;</code></h4>
+        <p><code>/emails/&lt;mailbox&gt;</code> мекенжайына <code>GET</code> сұранысын жіберсеңіз (мұндағы <code>&lt;mailbox&gt;</code> - <code>inbox</code>, <code>sent</code> немесе <code>archive</code>), сол жәшіктегі барлық хаттар тізімі (JSON түрінде) кері хронологиялық ретпен (жаңасы бірінші) қайтарылады. Мысалы, <code>/emails/inbox</code> мекенжайына <code>GET</code> жіберсеңіз, екі хатты бейнелейтін мынадай JSON жауап алуыңыз мүмкін:</p>
+<pre data-lang="json"><code class="language-json">[
+    {
+        &quot;id&quot;: 100,
+        &quot;sender&quot;: &quot;foo@example.com&quot;,
+        &quot;recipients&quot;: [&quot;bar@example.com&quot;],
+        &quot;subject&quot;: &quot;Hello!&quot;,
+        &quot;body&quot;: &quot;Hello, world!&quot;,
+        &quot;timestamp&quot;: &quot;Jan 2 2020, 12:00 AM&quot;,
+        &quot;read&quot;: false,
+        &quot;archived&quot;: false
+    },
+    {
+        &quot;id&quot;: 95,
+        &quot;sender&quot;: &quot;baz@example.com&quot;,
+        &quot;recipients&quot;: [&quot;bar@example.com&quot;],
+        &quot;subject&quot;: &quot;Meeting Tomorrow&quot;,
+        &quot;body&quot;: &quot;What time are we meeting?&quot;,
+        &quot;timestamp&quot;: &quot;Jan 1 2020, 12:00 AM&quot;,
+        &quot;read&quot;: true,
+        &quot;archived&quot;: false
+    }
+]</code></pre>
+        <p>Әр хат өзінің <code>id</code>-ін (бірегей идентификатор), <code>sender</code> (жіберушінің мекенжайы), <code>recipients</code> (алушылар массиві), <code>subject</code> (тақырып), <code>body</code> (мәтін) және <code>timestamp</code> (уақыт) жолдарын, сондай-ақ хаттың оқылғанын (<code>read</code>) және мұрағатталғанын (<code>archived</code>) көрсететін екі логикалық мәнді анықтайтынын байқаңыз.</p>
+        <p>Мұндай мәндерге JavaScript-те қалай қол жеткіземіз? Есіңізде болса, JavaScript-те веб-сұраныс жасау үшін <code>fetch</code> қолданамыз. Сондықтан мына JavaScript коды:</p>
+<pre data-lang="javascript" data-norun><code class="language-javascript">fetch('/emails/inbox')
+.then(response =&gt; response.json())
+.then(emails =&gt; {
+    // Print emails
+    console.log(emails);
+
+    // ... do something else with emails ...
+});</code></pre>
+        <p><code>/emails/inbox</code> мекенжайына <code>GET</code> сұранысын жасайды, шыққан жауапты JSON-ға айналдырады, содан кейін хаттар массивін сізге <code>emails</code> айнымалысында береді. Бұл мәнді браузер консоліне <code>console.log</code> арқылы шығара аласыз (кіріс жәшігінде хат болмаса, бұл бос массив болады), немесе массивпен басқа бірдеңе істей аласыз.</p>
+        <p>Назар аударыңыз: жарамсыз жәшікті (<code>inbox</code>, <code>sent</code>, <code>archive</code> емес басқа нәрсені) сұрасаңыз, орнына <code>{"error": "Invalid mailbox."}</code> JSON жауабын аласыз.</p>
+
+        <h4><code>GET /emails/&lt;int:email_id&gt;</code></h4>
+        <p><code>/emails/email_id</code> мекенжайына <code>GET</code> сұранысын жіберсеңіз (мұндағы <code>email_id</code> - хаттың бүтін санды идентификаторы), хаттың JSON көрінісі қайтарылады:</p>
+<pre data-lang="json"><code class="language-json">{
+        &quot;id&quot;: 100,
+        &quot;sender&quot;: &quot;foo@example.com&quot;,
+        &quot;recipients&quot;: [&quot;bar@example.com&quot;],
+        &quot;subject&quot;: &quot;Hello!&quot;,
+        &quot;body&quot;: &quot;Hello, world!&quot;,
+        &quot;timestamp&quot;: &quot;Jan 2 2020, 12:00 AM&quot;,
+        &quot;read&quot;: false,
+        &quot;archived&quot;: false
+}</code></pre>
+        <p>Хат жоқ болса, немесе пайдаланушының оған қолжетімділігі болмаса, маршрут орнына <code>404 Not Found</code> қатесін және <code>{"error": "Email not found."}</code> JSON жауабын қайтарады.</p>
+        <p>Мысалы, 100-ші нөмірлі хатты алу үшін мынадай JavaScript жазуға болады:</p>
+<pre data-lang="javascript" data-norun><code class="language-javascript">fetch('/emails/100')
+.then(response =&gt; response.json())
+.then(email =&gt; {
+    // Print email
+    console.log(email);
+
+    // ... do something else with email ...
+});</code></pre>
+
+        <h4><code>POST /emails</code></h4>
+        <p>Әзірге хаттарды қалай алуды көрдік: не жәшіктегі барлық хаттарды, не жалғыз хатты. Хат жіберу үшін <code>/emails</code> маршрутына <code>POST</code> сұранысын жібересіз. Маршрут үш мәлімет талап етеді: <code>recipients</code> (хат жіберілетін барлық пайдаланушылардың үтірмен бөлінген жолы), <code>subject</code> жолы және <code>body</code> жолы. Мысалы, мынадай JavaScript жаза аласыз:</p>
+<pre data-lang="javascript" data-norun><code class="language-javascript">fetch('/emails', {
+  method: 'POST',
+  body: JSON.stringify({
+      recipients: 'baz@example.com',
+      subject: 'Meeting time',
+      body: 'How about we meet tomorrow at 3pm?'
+  })
+})
+.then(response =&gt; response.json())
+.then(result =&gt; {
+    // Print result
+    console.log(result);
+});</code></pre>
+        <p>Хат сәтті жіберілсе, маршрут 201 күй кодымен және <code>{"message": "Email sent successfully."}</code> JSON жауабымен жауап береді.</p>
+        <p>Назар аударыңыз: кемінде бір алушы болуы керек. Ол болмаса, маршрут орнына 400 күй кодымен және <code>{"error": "At least one recipient required."}</code> JSON жауабымен жауап береді. Барлық алушылар осы нақты веб-қосымшада тіркелген жарамды пайдаланушылар болуы тиіс: егер <code>baz@example.com</code> мекенжайына хат жіберуге тырыссаңыз, бірақ мұндай пайдаланушы жоқ болса, <code>{"error": "User with email baz@example.com does not exist."}</code> JSON жауабын аласыз.</p>
+
+        <h4><code>PUT /emails/&lt;int:email_id&gt;</code></h4>
+        <p>Қажет болатын соңғы мүмкіндік - хатты оқылған/оқылмаған немесе мұрағатталған/мұрағатталмаған деп белгілеу. Ол үшін (<code>GET</code> емес) <code>PUT</code> сұранысын <code>/emails/&lt;email_id&gt;</code> мекенжайына жібересіз, мұндағы <code>email_id</code> - өзгертпек болған хаттың идентификаторы. Мысалы, мынадай JavaScript коды:</p>
+<pre data-lang="javascript" data-norun><code class="language-javascript">fetch('/emails/100', {
+  method: 'PUT',
+  body: JSON.stringify({
+      archived: true
+  })
+})</code></pre>
+        <p>100-ші нөмірлі хатты мұрағатталған деп белгілейді. <code>PUT</code> сұранысының денесі <code>{archived: false}</code> болса, хатты мұрағаттан шығарады. Сол сияқты <code>{read: true}</code> немесе <code>{read: false}</code> болуы мүмкін: хатты сәйкесінше оқылған немесе оқылмаған деп белгілейді.</p>
+        <p>Осы төрт API маршрутын қолданып (жәшіктегі барлық хатты алу, жалғыз хатты алу, хат жіберу және бар хатты жаңарту), бұл жобаны аяқтауға қажеттінің бәріне ие боласыз!</p>
+
+        <h4>Талаптар</h4>
+        <p>JavaScript, HTML және CSS қолданып, бір беттік қосымшадағы пошта клиентін <code>inbox.js</code> файлының ішінде аяқтаңыз (басқа немесе қосымша файлдарда емес: бағалау кезінде тек <code>inbox.js</code> қарастырылады). Мына талаптарды орындауыңыз керек:</p>
+        <ul>
+          <li><strong>Send Mail (хат жіберу):</strong> пайдаланушы хат жазу формасын жіберген кезде, хатты шынымен жіберетін JavaScript коды қосыңыз.
+            <ul>
+              <li><code>/emails</code> мекенжайына <code>POST</code> сұранысын жасап, <code>recipients</code>, <code>subject</code> және <code>body</code> мәндерін беру керек шығар.</li>
+              <li>Хат жіберілгеннен кейін пайдаланушының <code>sent</code> жәшігін жүктеңіз.</li>
+            </ul>
+          </li>
+          <li><strong>Mailbox (жәшік):</strong> пайдаланушы Inbox, Sent немесе Archive жәшігіне кірген кезде, тиісті жәшікті жүктеңіз.
+            <ul>
+              <li>Белгілі бір жәшіктің хаттарын сұрау үшін <code>/emails/&lt;mailbox&gt;</code> мекенжайына <code>GET</code> сұранысы керек шығар.</li>
+              <li>Жәшікке кірген кезде, қосымша алдымен сол жәшіктегі ең соңғы хаттарды API-дан сұрауы керек.</li>
+              <li>Жәшікке кірген кезде, беттің жоғарғы жағында жәшіктің аты көрінуі керек (бұл бөлік сіз үшін жасалған).</li>
+              <li>Әр хат өз қорабында (мысалы, шекарасы бар <code>&lt;div&gt;</code> ретінде) көрсетілуі керек: онда хаттың кімнен екені, тақырыбы және уақыты көрсетіледі.</li>
+              <li>Хат оқылмаған болса, ол ақ фонмен көрінуі керек. Хат оқылған болса, сұр фонмен көрінуі керек.</li>
+            </ul>
+          </li>
+          <li><strong>View Email (хатты көру):</strong> пайдаланушы хатты басқанда, ол сол хаттың мазмұнын көретін көрінісіне өтуі керек.
+            <ul>
+              <li>Хатты сұрау үшін <code>/emails/&lt;email_id&gt;</code> мекенжайына <code>GET</code> сұранысы керек шығар.</li>
+              <li>Қосымша хаттың жіберушісін, алушыларын, тақырыбын, уақытын және мәтінін көрсетуі керек.</li>
+              <li>Хатты көрсету үшін <code>inbox.html</code> файлына қосымша <code>div</code> қосқыңыз келуі мүмкін (<code>emails-view</code> және <code>compose-view</code> қатарына). Навигация опциялары басылғанда, дұрыс көріністерді көрсетіп/жасыратындай етіп кодыңызды жаңартуды ұмытпаңыз.</li>
+              <li>DOM-ға өзіңіз қосқан HTML элементіне оқиға тыңдаушысын қалай қосуға болатыны туралы «Кеңестер» бөліміндегі нұсқауды қараңыз.</li>
+              <li>Хат басылғаннан кейін, оны оқылған деп белгілеңіз. Хаттың оқылған-оқылмағанын жаңарту үшін <code>/emails/&lt;email_id&gt;</code> мекенжайына <code>PUT</code> сұранысын жіберуге болатынын есіңізде ұстаңыз.</li>
+            </ul>
+          </li>
+          <li><strong>Archive and Unarchive (мұрағаттау және мұрағаттан шығару):</strong> пайдаланушыларға өздері алған хаттарды мұрағаттауға және мұрағаттан шығаруға мүмкіндік беріңіз.
+            <ul>
+              <li>Inbox-тағы хатты қарап отырғанда, пайдаланушыға оны мұрағаттайтын түйме көрсетілуі керек. Archive-тегі хатты қарап отырғанда, оны мұрағаттан шығаратын түйме көрсетілуі керек. Бұл талап Sent жәшігіндегі хаттарға қолданылмайды.</li>
+              <li>Хатты мұрағатталған/мұрағатталмаған деп белгілеу үшін <code>/emails/&lt;email_id&gt;</code> мекенжайына <code>PUT</code> сұранысын жіберуге болатынын есіңізде ұстаңыз.</li>
+              <li>Хат мұрағатталғаннан немесе мұрағаттан шығарылғаннан кейін, пайдаланушының кіріс жәшігін (inbox) жүктеңіз.</li>
+            </ul>
+          </li>
+          <li><strong>Reply (жауап беру):</strong> пайдаланушыларға хатқа жауап беруге мүмкіндік беріңіз.
+            <ul>
+              <li>Хатты қарап отырғанда, пайдаланушыға хатқа жауап беретін «Reply» түймесі көрсетілуі керек.</li>
+              <li>Пайдаланушы «Reply» түймесін басқанда, оны хат жазу формасына апару керек.</li>
+              <li>Форманы алдын ала толтырыңыз: <code>recipient</code> өрісі бастапқы хатты кім жібергені болсын.</li>
+              <li>Тақырып жолын алдын ала толтырыңыз. Егер бастапқы хаттың тақырыбы <code>foo</code> болса, жаңа тақырып <code>Re: foo</code> болуы керек. (Егер тақырып бұрыннан <code>Re: </code> деп басталса, оны қайта қосудың қажеті жоқ.)</li>
+              <li>Хаттың мәтінін мынадай жолмен алдын ала толтырыңыз: <code>"On Jan 1 2020, 12:00 AM foo@example.com wrote:"</code>, содан кейін бастапқы хаттың мәтіні.</li>
+            </ul>
+          </li>
+        </ul>
+
+        <h4>Кеңестер</h4>
+        <ul>
+          <li>HTML элементін жасап, оған оқиға өңдеушісін қосу үшін мынадай JavaScript жаза аласыз:</li>
+        </ul>
+<pre data-lang="javascript"><code class="language-javascript">const element = document.createElement('div');
+element.innerHTML = 'This is the content of the div.';
+element.addEventListener('click', function() {
+    console.log('This element has been clicked!')
+});
+document.querySelector('#container').append(element);</code></pre>
+        <p>Бұл код жаңа <code>div</code> элементін жасайды, оның <code>innerHTML</code>-ін орнатады, <code>div</code> басылғанда белгілі бір функцияны орындайтын оқиға өңдеушісін қосады, содан кейін оны <code>id</code>-і <code>container</code> болатын HTML элементіне қосады. (Бұл код <code>id</code>-і <code>container</code> болатын HTML элементі бар деп есептейді: <code>querySelector</code> аргументін өзіңіз элемент қосқыңыз келетін элементке ауыстыруыңыз керек шығар.) Төмендегі нұсқада осыны өзіңіз сынап көріңіз:</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;div id=&quot;container&quot;&gt;&lt;/div&gt;
+
+&lt;script&gt;
+    const element = document.createElement('div');
+    element.innerHTML = 'This is the content of the div. Мені басыңыз!';
+    element.style.border = '1px solid gray';
+    element.style.padding = '8px';
+    element.style.cursor = 'pointer';
+    element.addEventListener('click', function() {
+        element.innerHTML = 'This element has been clicked!';
+        element.style.background = 'lightgray';
+    });
+    document.querySelector('#container').append(element);
+&lt;/script&gt;</code></pre>
+        <ul>
+          <li>Стильді қажет болса, <code>mail/static/mail/styles.css</code> файлын өңдеп, қосымша үшін қажетті CSS-ті қосуға болады.</li>
+          <li>Егер сізде JavaScript массиві болса, оның әр элементі арқылы <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach" target="_blank" rel="noopener"><code>forEach</code></a> көмегімен өтуге болатынын ұмытпаңыз.</li>
+          <li>Әдетте <code>POST</code> және <code>PUT</code> сұраныстары үшін Django сайтаралық сұранысты жалғандау (CSRF) шабуылдарынан қорғану үшін CSRF токенін талап ететінін есіңізде ұстаңыз. Бұл жоба үшін біз API маршруттарын әдейі CSRF-тен босатып қойдық, сондықтан токен қажет емес. Бірақ нағыз жобада мұндай осалдықтардан әрдайым қорғанған дұрыс!</li>
+        </ul>
+
+        <h4>Қалай тапсыру керек</h4>
+        <p>Жобаны тапсырғанда, <code>web50/projects/2020/x/mail</code> тармағындағы файлдар құрылымы бастапқы таратылған кодтың құрылымымен бірдей болуы керек. Яғни файлдарыңыз өзіңіз жасаған ешқандай қалтаның ішіне салынбауы керек. Тармақта басқа жобалардың коды болмауы тиіс, тек осы жоба. Бұл талапты бұзсаңыз, жұмысыңыз қабылданбауы мүмкін. Мысалы, бағалаушылар <code>https://github.com/me50/USERNAME/tree/web50/projects/2020/x/mail</code> бетіне кірсе, екі қалтаны (<code>mail</code>, <code>project3</code>) және <code>manage.py</code> файлын көруі керек.</p>
+        <ol>
+          <li>Ресми беттегі шақыру сілтемесі арқылы GitHub аккаунтыңызбен кіріп, <strong>Authorize cs50</strong> түймесін басыңыз, содан кейін курс қызметкерлеріне жұмыстарыңызға қолжетімділік беретін құсбелгіні қойып, <strong>Join course</strong> басыңыз.</li>
+          <li>Git орнатыңыз және қаласаңыз, <code>submit50</code> орнатыңыз.</li>
+          <li><code>submit50</code> орнатылған болса, мынаны орындаңыз:</li>
+        </ol>
+<pre class="terminal"><code class="language-plaintext">$ submit50 web50/projects/2020/x/mail</code></pre>
+        <p>Әйтпесе Git арқылы жұмысыңызды <code>https://github.com/me50/USERNAME.git</code> репозиториясына, <code>web50/projects/2020/x/mail</code> деген тармаққа жіберіңіз (мұндағы <code>USERNAME</code> - GitHub пайдаланушы атыңыз).</p>
+        <ol start="4">
+          <li><strong>Скринкаст жазыңыз</strong> (5 минуттан аспайтын), онда веб-қосымшаңыздың функционалдығын көрсетіңіз. Бейнені YouTube-қа жүктеңіз (жасырын сілтемемен немесе ашық; жеке емес). Бейне талаптары: YouTube «short» болмауы; бейне слайдпен немесе мәтіндік қабатпен басталып, онда сіздің edX және GitHub пайдаланушы аттарыңыз <strong>екеуі де</strong> көрсетілуі; веб-қосымша тікелей жұмыс істеп тұрғанын көрсету (кодты түсіндіріп шықпаңыз); талаптардың бес (5) пунктінің бәрі орындалғанын көрсету; бейне сипаттамасында әр пункт бірінші рет көрсетілген уақыт белгісі болуы; бейне форманы тапсырғаннан бір айдан аз бұрын жүктелген болуы.</li>
+          <li>Ресми беттегі форманы толтырып жіберіңіз.</li>
+        </ol>
+        <p>Содан кейін прогрессіңізді <a href="https://cs50.me/cs50w" target="_blank" rel="noopener">cs50.me/cs50w</a> бетінде көре аласыз.</p>
+
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web5-mail">
+            <li><input type="checkbox"> <span>Таратылатын код жүктелді, миграциялар жасалып қолданылды, <code>python manage.py runserver</code> жұмыс істейді және аккаунт тіркелді.</span></li>
+            <li><input type="checkbox"> <span><strong>Send Mail:</strong> формадан <code>POST /emails</code> жіберіледі, хат жіберілгеннен кейін <code>sent</code> жәшігі жүктеледі.</span></li>
+            <li><input type="checkbox"> <span><strong>Mailbox:</strong> Inbox, Sent және Archive әрқайсысы <code>GET /emails/&lt;mailbox&gt;</code> арқылы ең соңғы хаттарды алады; әр хат жеке қорапта (жіберуші, тақырып, уақыт); оқылмағаны ақ, оқылғаны сұр фонда.</span></li>
+            <li><input type="checkbox"> <span><strong>View Email:</strong> хатты басқанда жіберуші, алушылар, тақырып, уақыт және мәтін көрінеді (қосымша <code>div</code>), хат <code>PUT</code> арқылы оқылған деп белгіленеді.</span></li>
+            <li><input type="checkbox"> <span><strong>Archive/Unarchive:</strong> Inbox-тағы хатта «мұрағаттау», Archive-тегі хатта «мұрағаттан шығару» түймесі бар (Sent-те жоқ); әрекеттен кейін inbox жүктеледі.</span></li>
+            <li><input type="checkbox"> <span><strong>Reply:</strong> «Reply» түймесі хат жазу формасын ашады; алушы, <code>Re: </code> тақырыбы (қайталанбайды) және <code>"On ... wrote:"</code> жолы мен бастапқы мәтін алдын ала толтырылған.</span></li>
+            <li><input type="checkbox"> <span>Барлық өзгеріс тек <code>inbox.js</code> (және қажет болса <code>inbox.html</code>, <code>styles.css</code>) ішінде; файлдар құрылымы таратылған кодпен бірдей, басқа жобалардың коды жоқ.</span></li>
+            <li><input type="checkbox"> <span>Скринкаст жазылды (5 минуттан аспайды), 5 талап көрсетілді, сипаттамада уақыт белгілері бар.</span></li>
+            <li><input type="checkbox"> <span><code>submit50 web50/projects/2020/x/mail</code> орындалды (немесе <code>web50/projects/2020/x/mail</code> тармағына push жасалды).</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+
+      <nav class="pager">
+        <a href="week-4.html"><small>Алдыңғы</small>← 4-апта: SQL, модельдер</a>
+        <a class="next" href="week-6.html"><small>Келесі</small>6-апта: Интерфейстер →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 Web (CS50's Web Programming with Python and JavaScript, Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

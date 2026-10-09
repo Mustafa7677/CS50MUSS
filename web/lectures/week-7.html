@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 Web 7-апта: Тестілеу, CI/CD - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 Web 7-апта: Тестілеу, CI/CD - CS50 қазақша">
+  <meta property="og:description" content="CS50 Web 7-апта: тестілеу, assert, unittest, Django тесттері, Selenium, CI/CD, GitHub Actions, YAML, Docker және Docker Compose.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/web/lectures/week-7.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 Web 7-апта: тестілеу, assert, unittest, Django тесттері, Selenium, CI/CD, GitHub Actions, YAML, Docker және Docker Compose.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#d4580c" data-n="7">
+        <div class="num">7-апта</div>
+        <h1>Тестілеу, CI/CD</h1>
+        <p>Кодымыздың дұрыс жұмыс істейтінін қалай білеміз? Тесттерді жазамыз, оларды өздігінен жүргізетін жүйе (CI/CD, GitHub Actions) құрамыз және Docker арқылы ортаны бірдей етеміз.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/web/notes/7/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+                  <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Алдыңғы апталарда сайт жасауды үйрендік: HTML, CSS, Git, Django, JavaScript, React. Бірақ жазған кодымыздың <em>дұрыс</em> жұмыс істейтінін қалай білеміз? Бүгін біз <strong>кодты тексеретін код</strong> жазамыз, тесттерді өздігінен іске қосатын жүйе құрамыз (CI/CD, GitHub Actions) және «менде жұмыс істейді, серверде істемейді» дейтін мәселені Docker арқылы жоямыз. Таза Python мысалдарын бетте-ақ «▶» батырмасымен іске қосып көре аласыз; ал Django, Selenium, GitHub Actions және Docker сіздің компьютеріңізде жұмыс істейді.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <h2 id="introduction">Кіріспе</h2>
+      <p>Қысқаша қайталап өтейік. Біз HTML мен CSS арқылы қарапайым веб-беттер жасауды үйрендік. Git пен GitHub арқылы кодтағы өзгерістерді қадағалап, басқалармен бірге жұмыс істеуді білдік. Python-мен танысып, Django арқылы веб-қосымшалар жаздық, Django модельдерінде мәліметті сақтадық. Сосын JavaScript-ті қосып, беттерді интерактивті еттік, анимация мен React арқылы интерфейсті одан сайын жақсарттық.</p>
+      <p>Бүгін біз сәл басқа сұраққа жауап іздейміз: <strong>үлкен жобамен жұмыс істегенде және оны жұртқа шығарғанда қандай әдістер көмектеседі?</strong> Шағын үй тапсырмасын «жүгіріп тұр ма, жоқ па» деп қолмен тексеруге болады. Ал он адам жұмыс істейтін, мыңдаған жолы бар жобада мұндай әдіс істемейді.</p>
+
+      <h2 id="testing">Тестілеу</h2>
+      <p>Бағдарламалық жасақтама жасау процесінің маңызды бөлігі - жазған кодымыздың біз күткендей жұмыс істейтініне көз жеткізу. Мұны <strong>тестілеу</strong> (<span class="term-en">testing</span>) дейді. Үйдің құрылысын елестетіңіз: кірпішті қалап, соңында «құлап қалмас па екен» деп күтпейміз ғой, әр кезеңде тексеріп отырамыз. Код та сондай.</p>
+      <p>Бүгін кодты тексеру жолдарын қарапайымынан бастап, барған сайын күрделілеуіне қарай қарастырамыз: алдымен Python-ның өзінде, сосын Django-да, сосын браузердегі интерфейсте.</p>
+
+      <h2 id="assert">Assert</h2>
+      <p>Python-да тест жүргізудің ең қарапайым жолдарының бірі - <code>assert</code> командасы. Оның соңынан бір өрнек жазамыз, ол <code>True</code> болуы тиіс. Егер өрнек <code>True</code> болса, ештеңе болмайды, бағдарлама үнсіз жалғаса береді. Ал <code>False</code> болса, ерекше жағдай (<span class="term-en">exception</span>) көтеріледі. Яғни <code>assert</code> интерпретаторға: «Мен мынаның ақиқат екеніне сенімдімін. Олай болмай шықса, дереу айқайла» дейді.</p>
+      <p>Python-ды алғаш үйренгенде жазған <code>square</code> функциямызға қолданып көрейік. Функция дұрыс жазылғанда <code>assert</code> ақиқат, сондықтан ештеңе болмайды (батырманы басыңыз, шығыс бос болады):</p>
+<pre data-lang="python"><code class="language-python">def square(x):
+    return x * x
+
+assert square(10) == 100
+
+&quot;&quot;&quot; Output:
+
+&quot;&quot;&quot;</code></pre>
+      <p>Ал енді әдейі қате жасап көрейін: көбейтуді қосуға ауыстырамын. Байқадыңыз ба, <code>10 + 10</code> да 20, ал 100-ге тең емес, сондықтан бұл жолы дабыл қағылады:</p>
+<pre data-lang="python"><code class="language-python">def square(x):
+    return x + x
+
+assert square(10) == 100
+
+&quot;&quot;&quot; Output:
+Traceback (most recent call last):
+  File &quot;assert.py&quot;, line 4, in &lt;module&gt;
+    assert square(10) == 100
+AssertionError
+&quot;&quot;&quot;</code></pre>
+      <p>Міне, <code>AssertionError</code>. Бұл интерпретатордың «сіз бекіткен шарт орындалмады» дегені. Бір жолмен-ақ біз функцияның дұрыс-бұрыстығын тексердік.</p>
+
+      <h3 id="test-driven-development">Test-Driven Development (Тест арқылы әзірлеу)</h3>
+      <p>Жобаңыз үлкейген сайын мына тәсілді қолданғаныңыз жөн: <strong>тест арқылы әзірлеу</strong> (<span class="term-en">test-driven development</span>). Мұнда әдіс қарапайым: <em>әр қатені түзеткен сайын сол қатені ұстайтын тест қосасыз</em>, ал тесттер жиыны кодты өзгерткен сайын қайта-қайта іске қосылады. Нәтижесінде жаңа мүмкіндік қосқанда ескі мүмкіндіктердің бұзылмағанына сенімді боласыз. Бұл бір рет жиналған қателер «ескі қателер кітапшасы» сияқты: сол қателерге екінші рет түспейміз.</p>
+
+      <svg viewBox="0 0 680 210" role="img" aria-label="Тест арқылы әзірлеу циклі: қате табылды, оны ұстайтын тест қосылды, код түзетілді, барлық тесттер қайта өтті, содан соң цикл қайталанады" style="width:100%;max-width:680px;height:auto;display:block;margin:1rem auto;font-family:inherit">
+        <defs><marker id="arr7a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+        <rect x="10" y="50" width="140" height="80" rx="12" fill="none" stroke="currentColor" stroke-width="2.2"/>
+        <text x="80" y="82" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">1. Қате</text>
+        <text x="80" y="104" text-anchor="middle" font-size="12" fill="currentColor">табылды</text>
+        <rect x="185" y="50" width="140" height="80" rx="12" fill="#d1493f" fill-opacity=".14" stroke="#d1493f" stroke-width="2.2"/>
+        <text x="255" y="82" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">2. Тест қосу</text>
+        <text x="255" y="104" text-anchor="middle" font-size="12" fill="currentColor">ол құлайды (қызыл)</text>
+        <rect x="360" y="50" width="140" height="80" rx="12" fill="none" stroke="currentColor" stroke-width="2.2"/>
+        <text x="430" y="82" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">3. Кодты түзету</text>
+        <text x="430" y="104" text-anchor="middle" font-size="12" fill="currentColor">қатені жою</text>
+        <rect x="535" y="50" width="135" height="80" rx="12" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-width="2.2"/>
+        <text x="602" y="82" text-anchor="middle" font-size="14" font-weight="700" fill="currentColor">4. Бәрі өтті</text>
+        <text x="602" y="104" text-anchor="middle" font-size="12" fill="currentColor">жасыл, жиын өсті</text>
+        <path d="M152 90 H182" stroke="currentColor" stroke-width="2" marker-end="url(#arr7a)"/>
+        <path d="M327 90 H357" stroke="currentColor" stroke-width="2" marker-end="url(#arr7a)"/>
+        <path d="M502 90 H532" stroke="currentColor" stroke-width="2" marker-end="url(#arr7a)"/>
+        <path d="M602 132 V178 H80 V134" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="6 5" marker-end="url(#arr7a)"/>
+        <text x="340" y="198" text-anchor="middle" font-size="12" fill="currentColor">жаңа қате немесе жаңа мүмкіндік болса, цикл қайталанады</text>
+      </svg>
+
+      <p>Енді сәл күрделірек функцияны алып, тесттер қатені табуға қалай көмектесетінін көрейік. <code>is_prime</code> деген функция жазамыз: ол сан жай болса ғана <code>True</code> қайтарады. Бұл функция <code>prime.py</code> файлында тұрсын:</p>
+<pre data-lang="python" data-norun><code class="language-python">import math
+
+def is_prime(n):
+
+    # We know numbers less than 2 are not prime
+    if n &lt; 2:
+        return False
+
+    # Checking factors up to sqrt(n)
+    for i in range(2, int(math.sqrt(n))):
+
+        # If i is a factor, return false
+        if n % i == 0:
+            return False
+
+    # If no factors were found, return true
+    return True</code></pre>
+      <p>Ал мынау - осы функцияны тексеру үшін жазған функциямыз. Ол <code>prime.py</code> файлынан <code>is_prime</code>-ды әкеліп, нәтижесі күткенге сәйкес келмесе, қате туралы хабар шығарады:</p>
+<pre data-lang="python" data-norun><code class="language-python">from prime import is_prime
+
+def test_prime(n, expected):
+    if is_prime(n) != expected:
+        print(f&quot;ERROR on is_prime({n}), expected {expected}&quot;)</code></pre>
+      <p>Енді Python интерпретаторына кіріп, бірнеше мәнді сынап көрейік:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">&gt;&gt;&gt; test_prime(5, True)
+&gt;&gt;&gt; test_prime(10, False)
+&gt;&gt;&gt; test_prime(25, False)
+ERROR on is_prime(25), expected False</code></pre>
+      <p>Көріп тұрғанымыздай, 5 жай, 10 жай емес деп дұрыс анықталды. Ал 25 қате түрде жай деп танылды, демек функциямызда бірдеңе дұрыс емес. Бірақ қатенің неде екенін іздеуден бұрын, тестілеуді автоматтандырудың жолын көрейік. Екі файлды бір жерге жинап, браузерде өзіңіз де іске қосып көре аласыз:</p>
+<pre data-lang="python"><code class="language-python">import math
+
+def is_prime(n):
+    if n &lt; 2:
+        return False
+    for i in range(2, int(math.sqrt(n))):
+        if n % i == 0:
+            return False
+    return True
+
+def test_prime(n, expected):
+    if is_prime(n) != expected:
+        print(f&quot;ERROR on is_prime({n}), expected {expected}&quot;)
+
+test_prime(5, True)
+test_prime(10, False)
+test_prime(25, False)</code></pre>
+      <p>Бір әдіс - <strong>қабық сценарийін</strong> (<span class="term-en">shell script</span>) жасау, яғни терминалда орындалатын скрипт. Мұндай файлдың кеңейтімі <code>.sh</code> болады, біздікі <code>tests0.sh</code> деп аталсын. Әр жолда үш нәрсе бар:</p>
+      <ol>
+        <li><code>python3</code>: қай Python нұсқасымен жүгіретінімізді көрсетеді;</li>
+        <li><code>-c</code>: «команданы орындау» белгісі;</li>
+        <li>жол түріндегі команданың өзі.</li>
+      </ol>
+<pre data-lang="bash"><code class="language-bash">python3 -c &quot;from tests0 import test_prime; test_prime(1, False)&quot;
+python3 -c &quot;from tests0 import test_prime; test_prime(2, True)&quot;
+python3 -c &quot;from tests0 import test_prime; test_prime(8, False)&quot;
+python3 -c &quot;from tests0 import test_prime; test_prime(11, True)&quot;
+python3 -c &quot;from tests0 import test_prime; test_prime(25, False)&quot;
+python3 -c &quot;from tests0 import test_prime; test_prime(28, False)&quot;</code></pre>
+      <p>Терминалда <code>./tests0.sh</code> деп жазсақ, мынадай нәтиже аламыз:</p>
+<pre class="terminal"><code class="language-plaintext">ERROR on is_prime(8), expected False
+ERROR on is_prime(25), expected False</code></pre>
+      <p>Сонымен тесттеріміз 8 мен 25-те құлап тұр. Бірақ қателердің себебін әлі білмейміз. Ол үшін алдымен тестілеудің ыңғайлырақ құралын көрейік.</p>
+
+      <h2 id="unit-testing">Модульдік тестілеу</h2>
+      <p>Жоғарыдағы әдіспен тесттерді автоматты түрде жүргізе алдық, бірақ әр тестті жеке жолмен жазу әлі де жалықтырады. Бақытымызға орай, Python-да <code>unittest</code> деген кітапхана бар, ол бұл процесті жеңілдетеді. <code>is_prime</code> функциямыз үшін тест бағдарламасы мынадай көрінеді:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Import the unittest library and our function
+import unittest
+from prime import is_prime
+
+# A class containing all of our tests
+class Tests(unittest.TestCase):
+
+    def test_1(self):
+        &quot;&quot;&quot;Check that 1 is not prime.&quot;&quot;&quot;
+        self.assertFalse(is_prime(1))
+
+    def test_2(self):
+        &quot;&quot;&quot;Check that 2 is prime.&quot;&quot;&quot;
+        self.assertTrue(is_prime(2))
+
+    def test_8(self):
+        &quot;&quot;&quot;Check that 8 is not prime.&quot;&quot;&quot;
+        self.assertFalse(is_prime(8))
+
+    def test_11(self):
+        &quot;&quot;&quot;Check that 11 is prime.&quot;&quot;&quot;
+        self.assertTrue(is_prime(11))
+
+    def test_25(self):
+        &quot;&quot;&quot;Check that 25 is not prime.&quot;&quot;&quot;
+        self.assertFalse(is_prime(25))
+
+    def test_28(self):
+        &quot;&quot;&quot;Check that 28 is not prime.&quot;&quot;&quot;
+        self.assertFalse(is_prime(28))
+
+
+# Run each of the testing functions
+if __name__ == &quot;__main__&quot;:
+    unittest.main()</code></pre>
+      <p>Әр функцияның бір заңдылыққа бағынатынын байқадыңыз ба:</p>
+      <ul>
+        <li>Функция аты <code>test_</code> деп басталады. Бұл міндетті: <code>unittest.main()</code> шақырылғанда тесттер дәл осы префикс арқылы автоматты түрде табылады.</li>
+        <li>Әр тест <code>self</code> аргументін алады. Бұл Python-дағы класс ішіндегі әдістер (<span class="term-en">methods</span>) үшін стандарт.</li>
+        <li>Әр функцияның бірінші жолында үш тырнақшамен жазылған <strong>құжаттама жолы</strong> (<span class="term-en">docstring</span>) тұр. Ол тек оқуға ыңғайлы болсын деп жазылмаған: тест құлағанда осы мәтін сипаттама ретінде көрсетіледі.</li>
+        <li>Келесі жолда <code>self.assertSOMETHING</code> түріндегі бекіту бар. Олардың көптеген түрі бар: <code>assertTrue</code>, <code>assertFalse</code>, <code>assertEqual</code>, <code>assertGreater</code> және т.б. Толық тізімін Python <a href="https://docs.python.org/3/library/unittest.html#unittest.TestCase.assertEqual" target="_blank" rel="noopener">құжаттамасынан</a> табасыз.</li>
+      </ul>
+      <p>Браузерде тесттерді іске қосып көрейік. Бір айырмашылық бар: бізде бөлек файлдар жоқ, сондықтан функция мен тесттерді бір жерге жинап, соңында <code>unittest.main()</code> орнына тесттерді қолмен іске қосатын екі жол жазамыз (компьютеріңізде әдеттегідей <code>unittest.main()</code> жазасыз):</p>
+<pre data-lang="python"><code class="language-python">import math
+import unittest
+
+def is_prime(n):
+    if n &lt; 2:
+        return False
+    for i in range(2, int(math.sqrt(n))):
+        if n % i == 0:
+            return False
+    return True
+
+class Tests(unittest.TestCase):
+
+    def test_1(self):
+        &quot;&quot;&quot;Check that 1 is not prime.&quot;&quot;&quot;
+        self.assertFalse(is_prime(1))
+
+    def test_2(self):
+        &quot;&quot;&quot;Check that 2 is prime.&quot;&quot;&quot;
+        self.assertTrue(is_prime(2))
+
+    def test_8(self):
+        &quot;&quot;&quot;Check that 8 is not prime.&quot;&quot;&quot;
+        self.assertFalse(is_prime(8))
+
+    def test_11(self):
+        &quot;&quot;&quot;Check that 11 is prime.&quot;&quot;&quot;
+        self.assertTrue(is_prime(11))
+
+    def test_25(self):
+        &quot;&quot;&quot;Check that 25 is not prime.&quot;&quot;&quot;
+        self.assertFalse(is_prime(25))
+
+    def test_28(self):
+        &quot;&quot;&quot;Check that 28 is not prime.&quot;&quot;&quot;
+        self.assertFalse(is_prime(28))
+
+# Браузерде unittest.main() орнына:
+suite = unittest.defaultTestLoader.loadTestsFromTestCase(Tests)
+unittest.TextTestRunner(verbosity=1).run(suite)</code></pre>
+      <p>Енді нәтижеге қарайық. Компьютерде <code>python tests1.py</code> дегенде былай шығады:</p>
+<pre class="terminal"><code class="language-plaintext">...F.F
+======================================================================
+FAIL: test_25 (__main__.Tests)
+Check that 25 is not prime.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File &quot;tests1.py&quot;, line 26, in test_25
+    self.assertFalse(is_prime(25))
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_8 (__main__.Tests)
+Check that 8 is not prime.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File &quot;tests1.py&quot;, line 18, in test_8
+    self.assertFalse(is_prime(8))
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+FAILED (failures=2)</code></pre>
+      <p>Көріп тұрсыз ба, <code>unittest</code> қанша пайдалы мәлімет береді! Бірінші жолда тесттердің іске қосылу ретімен нүктелер мен әріптер тізбегі тұр: нүкте - тест өтті, <code>F</code> - құлады (<span class="term-en">fail</span>). Тесттер әдістердің атына қарай әліпби ретімен жүреді (<code>test_1</code>, <code>test_11</code>, <code>test_2</code>, <code>test_25</code>, <code>test_28</code>, <code>test_8</code>), сондықтан төртінші мен алтыншы белгі - <code>test_25</code> пен <code>test_8</code>.</p>
+<pre data-lang="plaintext"><code class="language-plaintext">...F.F</code></pre>
+      <p>Одан әрі әр құлаған тест үшін алдымен оның аты көрсетіледі:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">FAIL: test_25 (__main__.Tests)</code></pre>
+      <p>Сосын біз жазған түсіндірме жол:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">Check that 25 is not prime.</code></pre>
+      <p>Сосын ерекше жағдайдың трейсбегі (<span class="term-en">traceback</span>):</p>
+<pre data-lang="plaintext"><code class="language-plaintext">Traceback (most recent call last):
+  File &quot;tests1.py&quot;, line 26, in test_25
+    self.assertFalse(is_prime(25))
+AssertionError: True is not false</code></pre>
+      <p>Ең соңында қанша тест іске қосылғаны, қанша уақыт кеткені және қаншауы құлағаны көрсетіледі:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">Ran 6 tests in 0.001s
+
+FAILED (failures=2)</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: қатенің себебі неде болуы мүмкін?</summary>
+        <div class="details-body"><p>Алдымен болжап көріңіз: 8 мен 25 құлады, ал 11 мен 28 өтті. Не ортақ? 28-ді 2 бірден ұстайды, 11 шынымен жай. Ал 8-дің квадрат түбірі шамамен 2,83, оның бүтін бөлігі 2, сондықтан цикл ешқандай санды тексермейді. 25-тің квадрат түбірі дәл 5, бірақ 5-тің өзі тексерілмейді. Екі жағдайда да мәселе квадрат түбірге дейінгі шекарада. Төменде осыны нақтылаймыз.</p></div>
+      </details>
+      <p>Енді функциядағы қатені түзетейік. Мәселе мынада: біз цикл ішінде тағы бір санды тексеруіміз керек екен. Мысалы, <code>n</code> 25 болса, квадрат түбірі 5. Бірақ 5-ті <code>range</code> функциясына шек ретінде берсек, цикл 4-те тоқтайды (<code>range</code> соңғы шекті қоспайды ғой). Сондықтан 25-тің 5-ке бөлінетінін ешқашан тексермейміз! Шешім қарапайым: <code>for</code> циклінің басын мынаған өзгертеміз:</p>
+<pre data-lang="python" data-norun><code class="language-python">for i in range(2, int(math.sqrt(n)) + 1):</code></pre>
+      <p>Тесттерімізді қайта жүргізсек, түзетудің жұмыс істегенін көреміз:</p>
+<pre data-lang="python"><code class="language-python">import math
+import unittest
+
+def is_prime(n):
+    if n &lt; 2:
+        return False
+    for i in range(2, int(math.sqrt(n)) + 1):
+        if n % i == 0:
+            return False
+    return True
+
+class Tests(unittest.TestCase):
+
+    def test_1(self):
+        &quot;&quot;&quot;Check that 1 is not prime.&quot;&quot;&quot;
+        self.assertFalse(is_prime(1))
+
+    def test_2(self):
+        &quot;&quot;&quot;Check that 2 is prime.&quot;&quot;&quot;
+        self.assertTrue(is_prime(2))
+
+    def test_8(self):
+        &quot;&quot;&quot;Check that 8 is not prime.&quot;&quot;&quot;
+        self.assertFalse(is_prime(8))
+
+    def test_11(self):
+        &quot;&quot;&quot;Check that 11 is prime.&quot;&quot;&quot;
+        self.assertTrue(is_prime(11))
+
+    def test_25(self):
+        &quot;&quot;&quot;Check that 25 is not prime.&quot;&quot;&quot;
+        self.assertFalse(is_prime(25))
+
+    def test_28(self):
+        &quot;&quot;&quot;Check that 28 is not prime.&quot;&quot;&quot;
+        self.assertFalse(is_prime(28))
+
+suite = unittest.defaultTestLoader.loadTestsFromTestCase(Tests)
+unittest.TextTestRunner(verbosity=1).run(suite)</code></pre>
+      <p>Компьютерде нәтиже былай болады:</p>
+<pre class="terminal"><code class="language-plaintext">......
+----------------------------------------------------------------------
+Ran 6 tests in 0.000s
+
+OK</code></pre>
+      <p>Алты нүкте мен <code>OK</code> - барлығы жасыл. Автоматты тесттердің нағыз күші енді көрінеді. Болашақта осы функцияны жылдамдатқыңыз келуі мүмкін: мысалы, барлық бүтін сандарды емес, тек кіші жай сандарды бөлгіш ретінде тексеру (3-ке бөлінбесе, 6-ға, 9-ға, 12-ге де бөлінбейді), немесе одан да күрделі ықтималдық тесттерін қолдану: <a href="https://en.wikipedia.org/wiki/Fermat_primality_test" target="_blank" rel="noopener">Ферма</a> мен <a href="https://en.wikipedia.org/wiki/Miller%E2%80%93Rabin_primality_test" target="_blank" rel="noopener">Миллер-Рабин</a> тесттері. Функцияны жақсартқан сайын тесттерді қайта жүргізіп, оның әлі де дұрыс екеніне көз жеткізе аласыз. Тесттер жоқ болса, «жылдамдатамын деп бұзып алдым ба?» деген күдік жеп қояр еді.</p>
+      <div class="callout tip">
+        <span class="callout-title">Қандай мәндерді тексеру керек?</span>
+        <p>Жоғарыдағы алты тесттің ішінде 0, теріс сандар және 49, 121 сияқты жай сандардың квадраттары жоқ. Жақсы тест жиыны шеткі жағдайларды (1, 2), жай және құрама сандарды, квадраттарды, нөл мен теріс сандарды қамтиды. Апта соңындағы жаттығуларда дәл осыны жаттықтырасыз.</p>
+      </div>
+
+      <h2 id="django-testing">Django тестілеуі</h2>
+      <p>Енді автоматты тестілеу идеясын Django қосымшаларына қолданайық. Мысал ретінде Django модельдерін үйренгенде жасаған <code>flights</code> жобасын алайық. Алдымен <code>Flight</code> моделіне ұшудың жарамдылығын тексеретін әдіс қосамыз. Ол екі шартты тексереді:</p>
+      <ol>
+        <li>Жөнелу пункті мен баратын пункт бір-бірінен өзгеше болуы керек;</li>
+        <li>Ұшу ұзақтығы 0 минуттан көп болуы керек.</li>
+      </ol>
+      <p>Біздің модель шамамен былай көрінеді (бір қате әдейі қалдырылған, оны әлі байқамай тұрмыз):</p>
+<pre data-lang="python" data-norun><code class="language-python">class Flight(models.Model):
+    origin = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name=&quot;departures&quot;)
+    destination = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name=&quot;arrivals&quot;)
+    duration = models.IntegerField()
+
+    def __str__(self):
+        return f&quot;{self.id}: {self.origin} to {self.destination}&quot;
+
+    def is_valid_flight(self):
+        return self.origin != self.destination or self.duration &gt; 0</code></pre>
+      <p>Қосымшамыздың жұмысын тексеру үшін жаңа қосымша жасағанда бізге автоматты түрде <code>tests.py</code> файлы беріледі. Оны ашсақ, Django-ның <a href="https://docs.djangoproject.com/en/4.0/topics/testing/overview/" target="_blank" rel="noopener">TestCase</a> кітапханасы өздігінен импортталғанын көреміз:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.test import TestCase</code></pre>
+      <p><code>TestCase</code> кітапханасының бір үлкен артықшылығы бар: тесттерді іске қосқанда <strong>тек тестілеуге арналған мүлдем жаңа дерекқор</strong> жасалады. Бұл өте ыңғайлы: нақты дерекқордағы жазбаларды байқаусызда өзгертіп немесе өшіріп алу қаупі жоқ, ал тест үшін ғана жасаған жалған жазбаларды кейін тазалаудың қажеті жоқ. Тест біткен соң бұл дерекқор өшіріледі. Мектептегі жаттығу дәптері сияқты: сынақ үшін жеке дәптер аласыз, таза журналды былғамайсыз.</p>
+      <p>Бастау үшін барлық модельдерімізді импорттаймыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">from .models import Flight, Airport, Passenger</code></pre>
+      <p>Сосын <code>TestCase</code> класынан мұрагер жаңа класс жасаймыз. Оның ішіне тестілеу басталғанда бірінші орындалатын <code>setUp</code> функциясын жазамыз. Ол жерде тест үшін қажет жазбаларды (аэропорттар мен рейстерді) жасаймыз. Класымыз былай басталады:</p>
+<pre data-lang="python" data-norun><code class="language-python">class FlightTestCase(TestCase):
+
+    def setUp(self):
+
+        # Create airports.
+        a1 = Airport.objects.create(code=&quot;AAA&quot;, city=&quot;City A&quot;)
+        a2 = Airport.objects.create(code=&quot;BBB&quot;, city=&quot;City B&quot;)
+
+        # Create flights.
+        Flight.objects.create(origin=a1, destination=a2, duration=100)
+        Flight.objects.create(origin=a1, destination=a1, duration=200)
+        Flight.objects.create(origin=a1, destination=a2, duration=-100)</code></pre>
+      <p>Тестілеу дерекқорында жазбалар пайда болды, енді осы класқа тест функцияларын қосайық. Алдымен <code>departures</code> және <code>arrivals</code> өрістерінің дұрыс жұмыс істейтінін тексерейік. Біз білеміз: <code>AAA</code> аэропортынан шығатын рейс 3 болуы керек, ал келетіні 1 болуы керек (екінші рейс <code>AAA</code>-дан <code>AAA</code>-ға ұшады):</p>
+<pre data-lang="python" data-norun><code class="language-python">def test_departures_count(self):
+    a = Airport.objects.get(code=&quot;AAA&quot;)
+    self.assertEqual(a.departures.count(), 3)
+
+def test_arrivals_count(self):
+    a = Airport.objects.get(code=&quot;AAA&quot;)
+    self.assertEqual(a.arrivals.count(), 1)</code></pre>
+      <p>Модельге қосқан <code>is_valid_flight</code> әдісін де тексере аламыз. Алдымен рейс жарамды болғанда функция шынымен <code>True</code> қайтаратынын бекітейік:</p>
+<pre data-lang="python" data-norun><code class="language-python">def test_valid_flight(self):
+    a1 = Airport.objects.get(code=&quot;AAA&quot;)
+    a2 = Airport.objects.get(code=&quot;BBB&quot;)
+    f = Flight.objects.get(origin=a1, destination=a2, duration=100)
+    self.assertTrue(f.is_valid_flight())</code></pre>
+      <p>Енді баратын жері немесе ұзақтығы жарамсыз рейстер үшін функция <code>False</code> қайтаратынына көз жеткізейік:</p>
+<pre data-lang="python" data-norun><code class="language-python">def test_invalid_flight_destination(self):
+    a1 = Airport.objects.get(code=&quot;AAA&quot;)
+    f = Flight.objects.get(origin=a1, destination=a1)
+    self.assertFalse(f.is_valid_flight())
+
+def test_invalid_flight_duration(self):
+    a1 = Airport.objects.get(code=&quot;AAA&quot;)
+    a2 = Airport.objects.get(code=&quot;BBB&quot;)
+    f = Flight.objects.get(origin=a1, destination=a2, duration=-100)
+    self.assertFalse(f.is_valid_flight())</code></pre>
+      <p>Тесттерді іске қосу үшін терминалға мынаны жазамыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ python manage.py test</code></pre>
+      <p>Шығыс <code>unittest</code> кітапханасының шығысына дерлік ұқсас, тек Django тестілеу дерекқорының жасалып, өшірілгенін де хабарлайды:</p>
+<pre class="terminal"><code class="language-plaintext">Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+..FF.
+======================================================================
+FAIL: test_invalid_flight_destination (flights.tests.FlightTestCase)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File &quot;/Users/cleggett/Documents/cs50/web_notes_files/7/django/airline/flights/tests.py&quot;, line 37, in test_invalid_flight_destination
+    self.assertFalse(f.is_valid_flight())
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_invalid_flight_duration (flights.tests.FlightTestCase)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File &quot;/Users/cleggett/Documents/cs50/web_notes_files/7/django/airline/flights/tests.py&quot;, line 43, in test_invalid_flight_duration
+    self.assertFalse(f.is_valid_flight())
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.018s
+
+FAILED (failures=2)
+Destroying test database for alias 'default'...</code></pre>
+      <p>Шығыстан көреміз: <code>is_valid_flight</code> кейде <code>False</code> қайтаруға тиіс жерде <code>True</code> қайтарған. Функцияға қайта көз жүгіртсек, қатені көреміз: біз <code>and</code> орнына <code>or</code> жазып жіберіппіз. Яғни рейс жарамды болу үшін екі талаптың бірі орындалса жеткілікті болып қалған. Қатені тестсіз тауып алу оңай болмас еді.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>or</code> болғанда қай рейс «жарамды» болып шығады?</summary>
+        <div class="details-body"><p>Үш рейсті алып көріңіз. <code>AAA</code> → <code>AAA</code>, 200 минут: жөнелу мен баратын жері бірдей (бірінші шарт жалған), бірақ ұзақтық оң (екінші шарт ақиқат). <code>or</code> үшін біреуі ақиқат болса жетеді, сондықтан <code>True</code>. Дәл осылай <code>AAA</code> → <code>BBB</code>, -100 минут те «жарамды» болып кетеді: аэропорттар әртүрлі. Сондықтан бұл екі тест құлады.</p></div>
+      </details>
+      <p>Төмендегі бетте осы қателікті Django-сыз, таза Python-да көре аласыз: <code>Flight</code> орнына қарапайым класс. Бұл шынайы Django тесті емес, тек <code>or</code> мен <code>and</code> айырмашылығын көрсететін ұқсату:</p>
+<pre data-lang="python"><code class="language-python">import unittest
+
+class Flight:
+    def __init__(self, origin, destination, duration):
+        self.origin, self.destination, self.duration = origin, destination, duration
+
+    def is_valid_flight(self):
+        return self.origin != self.destination or self.duration &gt; 0
+
+class FlightTestCase(unittest.TestCase):
+    def setUp(self):
+        self.good = Flight(&quot;AAA&quot;, &quot;BBB&quot;, 100)
+        self.same_airport = Flight(&quot;AAA&quot;, &quot;AAA&quot;, 200)
+        self.negative = Flight(&quot;AAA&quot;, &quot;BBB&quot;, -100)
+
+    def test_valid_flight(self):
+        self.assertTrue(self.good.is_valid_flight())
+
+    def test_invalid_flight_destination(self):
+        self.assertFalse(self.same_airport.is_valid_flight())
+
+    def test_invalid_flight_duration(self):
+        self.assertFalse(self.negative.is_valid_flight())
+
+suite = unittest.defaultTestLoader.loadTestsFromTestCase(FlightTestCase)
+unittest.TextTestRunner(verbosity=1).run(suite)</code></pre>
+      <p>Әдісті мынаған өзгертіп (<code>or</code> орнына <code>and</code>), қайта іске қосып көріңіз:</p>
+<pre data-lang="python" data-norun><code class="language-python">def is_valid_flight(self):
+    return self.origin != self.destination and self.duration &gt; 0</code></pre>
+      <p>Django жобасында тесттерді қайта жүргізгенде нәтиже әлдеқайда жақсы:</p>
+<pre class="terminal"><code class="language-plaintext">Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.....
+----------------------------------------------------------------------
+Ran 5 tests in 0.014s
+
+OK
+Destroying test database for alias 'default'...</code></pre>
+
+      <h3 id="client-testing">Клиентті тестілеу</h3>
+      <p>Веб-қосымша жасағанда тек жеке функциялардың жұмысын емес, <strong>беттердің өзі</strong> дұрыс жүктелетінін де тексергіміз келеді. Ол үшін Django-ның тест класына <code>Client</code> объектісін жасап, сол арқылы сұраныстар жібереміз. Бұл браузердің рөлін ойнайтын «жалған пайдаланушы» сияқты. Алдымен импортқа <code>Client</code> қосамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.test import Client, TestCase</code></pre>
+      <p>Мысалы, басты бетке сұраныс жіберіп, HTTP жауап коды 200 екенін және үш рейстің үшеуі де жауап контекстіне қосылғанын тексеретін тест жазайық:</p>
+<pre data-lang="python" data-norun><code class="language-python">def test_index(self):
+
+    # Set up client to make requests
+    c = Client()
+
+    # Send get request to index page and store response
+    response = c.get(&quot;/flights/&quot;)
+
+    # Make sure status code is 200
+    self.assertEqual(response.status_code, 200)
+
+    # Make sure three flights are returned in the context
+    self.assertEqual(response.context[&quot;flights&quot;].count(), 3)</code></pre>
+      <p>Дәл осылай жарамды рейс беті үшін дұрыс жауап коды келетінін, ал жоқ рейс беті үшін жарамсыз код (404) келетінін тексере аламыз. Жоқ рейстің <code>id</code>-ін табу үшін ең үлкен <code>id</code>-ді <code>Max</code> функциясымен аламыз да, оған 1 қосамыз. Ол үшін файлдың басына <code>from django.db.models import Max</code> қосу керек:</p>
+<pre data-lang="python" data-norun><code class="language-python">def test_valid_flight_page(self):
+    a1 = Airport.objects.get(code=&quot;AAA&quot;)
+    f = Flight.objects.get(origin=a1, destination=a1)
+
+    c = Client()
+    response = c.get(f&quot;/flights/{f.id}&quot;)
+    self.assertEqual(response.status_code, 200)
+
+def test_invalid_flight_page(self):
+    max_id = Flight.objects.all().aggregate(Max(&quot;id&quot;))[&quot;id__max&quot;]
+
+    c = Client()
+    response = c.get(f&quot;/flights/{max_id + 1}&quot;)
+    self.assertEqual(response.status_code, 404)</code></pre>
+      <p>Соңында жолаушылар мен жолаушы емес адамдар тізімдерінің дұрыс жасалатынын тексеретін тесттер қосайық:</p>
+<pre data-lang="python" data-norun><code class="language-python">def test_flight_page_passengers(self):
+    f = Flight.objects.get(pk=1)
+    p = Passenger.objects.create(first=&quot;Alice&quot;, last=&quot;Adams&quot;)
+    f.passengers.add(p)
+
+    c = Client()
+    response = c.get(f&quot;/flights/{f.id}&quot;)
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.context[&quot;passengers&quot;].count(), 1)
+
+def test_flight_page_non_passengers(self):
+    f = Flight.objects.get(pk=1)
+    p = Passenger.objects.create(first=&quot;Alice&quot;, last=&quot;Adams&quot;)
+
+    c = Client()
+    response = c.get(f&quot;/flights/{f.id}&quot;)
+    self.assertEqual(response.status_code, 200)
+    self.assertEqual(response.context[&quot;non_passengers&quot;].count(), 1)</code></pre>
+      <p>Енді барлық тесттерді бірге жүргізіп, бұл сәтте қате жоқ екеніне көз жеткізейік:</p>
+<pre class="terminal"><code class="language-plaintext">Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+..........
+----------------------------------------------------------------------
+Ran 10 tests in 0.048s
+
+OK
+Destroying test database for alias 'default'...</code></pre>
+      <div class="callout note">
+        <span class="callout-title">Django тесттері компьютеріңізде орындалады</span>
+        <p>Django, модельдер және <code>python manage.py test</code> браузерде жұмыс істемейді, сондықтан бұл бөлімдегі код мысалдарында «▶» батырмасы жоқ. Оларды өз <code>flights</code> жобаңызда (4-аптадағы жоба) іске қосып көріңіз. Ал <code>unittest</code>-тің өзі сайттағы мысалдарда да жұмыс істеп тұр.</p>
+      </div>
+
+      <h2 id="selenium">Selenium</h2>
+      <p>Осы уақытқа дейін Python мен Django арқылы жазған <em>сервер жағындағы</em> кодты тестіледік. Бірақ қосымшамыз өскен сайын <em>клиент жағындағы</em> кодты да тексергіміз келеді. Қайтадан бір кездегі <code>counter.html</code> бетін еске түсірейік және оған тесттер жазайық.</p>
+      <p>Алдымен санауышты кемітетін түймесі бар сәл басқаша нұсқаны жазайық. Мұны бетте тікелей сынап көре аласыз («▶ Көрсету» батырмасы):</p>
+<pre data-lang="html" data-preview><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;en&quot;&gt;
+    &lt;head&gt;
+        &lt;title&gt;Counter&lt;/title&gt;
+        &lt;script&gt;
+            
+            // Wait for page to load
+            document.addEventListener('DOMContentLoaded', () =&gt; {
+
+                // Initialize variable to 0
+                let counter = 0;
+
+                // If increase button clicked, increase counter and change inner html
+                document.querySelector('#increase').onclick = () =&gt; {
+                    counter ++;
+                    document.querySelector('h1').innerHTML = counter;
+                }
+
+                // If decrease button clicked, decrease counter and change inner html
+                document.querySelector('#decrease').onclick = () =&gt; {
+                    counter --;
+                    document.querySelector('h1').innerHTML = counter;
+                }
+            })
+        &lt;/script&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;h1&gt;0&lt;/h1&gt;
+        &lt;button id=&quot;increase&quot;&gt;+&lt;/button&gt;
+        &lt;button id=&quot;decrease&quot;&gt;-&lt;/button&gt;
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Бұл кодты тексергіміз келсе, браузерді ашып, екі түймені басып, не болатынын бақылай салуға болады. Бірақ бір беттік қосымшалар (single page application) үлкейген сайын мұндай қолмен тексеру өте жалықтырарлық болады. Сондықтан браузердегі тестілеуге көмектесетін бірнеше құрал жасалған. Соның бірі - <a href="https://www.selenium.dev/" target="_blank" rel="noopener">Selenium</a>.</p>
+      <p>Selenium арқылы Python-да тест файлын жазып, пайдаланушының браузерді ашып, бетке өтіп, онымен әрекеттесуін <em>модельдеуге</em> болады. Бұл кезде басты құралымыз - <strong>веб-драйвер</strong> (<span class="term-en">Web Driver</span>): ол компьютеріңізде нағыз браузерді ашып, оны кодтан басқарады. Сіз жай ғана оның қасында отырып қарайсыз, ал тышқанды «көрінбейтін қол» басып жатқандай болады.</p>
+      <p>Төмендегі кодта біз <code>selenium</code> мен <code>ChromeDriver</code> қолданамыз. Python үшін Selenium-ды <code>pip install selenium</code> командасымен, ал <code>ChromeDriver</code>-ді <code>pip install chromedriver-py</code> командасымен орнатуға болады.</p>
+<pre data-lang="python" data-norun><code class="language-python">import os
+import pathlib
+import unittest
+
+from selenium import webdriver
+
+# Finds the Uniform Resourse Identifier of a file
+def file_uri(filename):
+    return pathlib.Path(os.path.abspath(filename)).as_uri()
+
+# Sets up web driver using Google chrome
+driver = webdriver.Chrome()</code></pre>
+      <p>Мұнда ең қажетті бапталым ғана жазылды. Жоғарғы бірнеше жолда бір нәрсе назар аударуға тұрарлық: белгілі бір бетті ашу үшін бізге сол беттің <strong>бірыңғай ресурс идентификаторы</strong> (<span class="term-en">Uniform Resource Identifier, URI</span>) керек. Бұл сол ресурсты білдіретін бірегей жол. Жергілікті файл үшін ол <code>file:///...</code> түрінде болады.</p>
+      <p>Енді Python интерпретаторында бірнеше қызық нәрсе істеп көрейік:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Find the URI of our newly created file
+&gt;&gt;&gt; uri = file_uri(&quot;counter.html&quot;)
+
+# Use the URI to open the web page
+&gt;&gt;&gt; driver.get(uri)
+
+# Access the title of the current page
+&gt;&gt;&gt; driver.title
+'Counter'
+
+# Access the source code of the page
+&gt;&gt;&gt; driver.page_source
+'&lt;html lang=&quot;en&quot;&gt;&lt;head&gt;\n        &lt;title&gt;Counter&lt;/title&gt;\n        &lt;script&gt;\n            \n            // Wait for page to load\n            document.addEventListener(\'DOMContentLoaded\', () =&gt; {\n\n                // Initialize variable to 0\n                let counter = 0;\n\n                // If increase button clicked, increase counter and change inner html\n                document.querySelector(\'#increase\').onclick = () =&gt; {\n                    counter ++;\n                    document.querySelector(\'h1\').innerHTML = counter;\n                }\n\n                // If decrease button clicked, decrease counter and change inner html\n                document.querySelector(\'#decrease\').onclick = () =&gt; {\n                    counter --;\n                    document.querySelector(\'h1\').innerHTML = counter;\n                }\n            })\n        &lt;/script&gt;\n    &lt;/head&gt;\n    &lt;body&gt;\n        &lt;h1&gt;0&lt;/h1&gt;\n        &lt;button id=&quot;increase&quot;&gt;+&lt;/button&gt;\n        &lt;button id=&quot;decrease&quot;&gt;-&lt;/button&gt;\n    \n&lt;/body&gt;&lt;/html&gt;'
+
+# Find and store the increase and decrease buttons:
+&gt;&gt;&gt; increase = driver.find_element_by_id(&quot;increase&quot;)
+&gt;&gt;&gt; decrease = driver.find_element_by_id(&quot;decrease&quot;)
+
+# Simulate the user clicking on the two buttons
+&gt;&gt;&gt; increase.click()
+&gt;&gt;&gt; increase.click()
+&gt;&gt;&gt; decrease.click()
+
+# We can even include clicks within other Python constructs:
+&gt;&gt;&gt; for i in range(25):
+...     increase.click()</code></pre>
+      <p>Көрдіңіз бе, браузер өздігінен ашылып, түймелер өздігінен басылды. Тіпті басуды Python-ның басқа конструкцияларына, мысалы <code>for</code> циклінің ішіне салып, 25 рет басуға болады. Ал қолмен 25 рет басып шығу қандай жалықтыратынын елестетіңіз.</p>
+      <p>Енді осы модельдеуді бетіміздің автоматты тесттерін жасауға қолданайық:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Standard outline of testing class
+class WebpageTests(unittest.TestCase):
+
+    def test_title(self):
+        &quot;&quot;&quot;Make sure title is correct&quot;&quot;&quot;
+        driver.get(file_uri(&quot;counter.html&quot;))
+        self.assertEqual(driver.title, &quot;Counter&quot;)
+
+    def test_increase(self):
+        &quot;&quot;&quot;Make sure header updated to 1 after 1 click of increase button&quot;&quot;&quot;
+        driver.get(file_uri(&quot;counter.html&quot;))
+        increase = driver.find_element_by_id(&quot;increase&quot;)
+        increase.click()
+        self.assertEqual(driver.find_element_by_tag_name(&quot;h1&quot;).text, &quot;1&quot;)
+
+    def test_decrease(self):
+        &quot;&quot;&quot;Make sure header updated to -1 after 1 click of decrease button&quot;&quot;&quot;
+        driver.get(file_uri(&quot;counter.html&quot;))
+        decrease = driver.find_element_by_id(&quot;decrease&quot;)
+        decrease.click()
+        self.assertEqual(driver.find_element_by_tag_name(&quot;h1&quot;).text, &quot;-1&quot;)
+
+    def test_multiple_increase(self):
+        &quot;&quot;&quot;Make sure header updated to 3 after 3 clicks of increase button&quot;&quot;&quot;
+        driver.get(file_uri(&quot;counter.html&quot;))
+        increase = driver.find_element_by_id(&quot;increase&quot;)
+        for i in range(3):
+            increase.click()
+        self.assertEqual(driver.find_element_by_tag_name(&quot;h1&quot;).text, &quot;3&quot;)
+
+if __name__ == &quot;__main__&quot;:
+    unittest.main()</code></pre>
+      <p>Енді <code>python tests.py</code> деп жазсақ, модельдеу браузерде жүреді де, тесттердің нәтижесі консольге шығады. Түпнұсқа лекцияда кодта қате болып, тест құлаған кезде бұл қалай көрінетінін гиф-анимациямен көрсетеді: браузер ашылады, түймелер өздігінен басылады, ал соңында терминалда қызыл <code>FAIL</code> шығады.</p>
+      <div class="callout note">
+        <span class="callout-title">Selenium компьютеріңізде орындалады</span>
+        <p>Selenium нағыз браузерді іске қосады, сондықтан оны сайтта көрсете алмаймыз. Бірақ жоғарыдағы <code>counter.html</code> бетінің өзін батырмамен сынап көре аласыз. Selenium-ның жаңа нұсқаларында <code>find_element_by_id("increase")</code> орнына <code>driver.find_element(By.ID, "increase")</code> жазылады (<code>from selenium.webdriver.common.by import By</code>), ал логика сол күйінде қалады.</p>
+      </div>
+
+      <h2 id="cicd">CI/CD</h2>
+      <p>Тесттерді жаздық делік. Бірақ оларды кім іске қосады? Егер әр бағдарламашы «ұмытпай жүргіземін» деп уәде берсе, ерте ме, кеш пе біреу ұмытады. Бұл мәселені командалық жұмыс тәсілдері шешеді. <strong>CI/CD</strong> - <strong>үздіксіз интеграция және үздіксіз жеткізу</strong> (<span class="term-en">Continuous Integration and Continuous Delivery</span>) дегенді білдіретін, бағдарламалық жасақтама әзірлеудің ең жақсы тәжірибелер жиынтығы. Ол екі нәрсені реттейді: кодты адамдар тобы қалай жазады және сол код соңында қолданушыларға қалай жетеді.</p>
+      <p>Атынан көрініп тұрғандай, әдіс екі бөліктен тұрады:</p>
+      <ul>
+        <li><strong>Үздіксіз интеграция</strong> (<span class="term-en">Continuous Integration</span>):
+          <ul>
+            <li>негізгі тармаққа (<span class="term-en">main branch</span>) жиі біріктіру;</li>
+            <li>әр біріктіруде автоматты модульдік тесттер.</li>
+          </ul>
+        </li>
+        <li><strong>Үздіксіз жеткізу</strong> (<span class="term-en">Continuous Delivery</span>):
+          <ul>
+            <li>қысқа шығарылым кестесі, яғни қосымшаның жаңа нұсқалары жиі шығарылады.</li>
+          </ul>
+        </li>
+      </ul>
+
+      <svg viewBox="0 0 700 250" role="img" aria-label="CI/CD құбыры: бағдарламашы GitHub-қа push жасайды, жұмыс процесі кодты алады, тәуелділіктерді орнатады, тесттерді жүргізеді; тесттер өтсе жеткізу, құласа хабарлама мен түзету" style="width:100%;max-width:700px;height:auto;display:block;margin:1rem auto;font-family:inherit">
+        <defs><marker id="arr7b" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="currentColor"/></marker></defs>
+        <rect x="8" y="70" width="100" height="70" rx="12" fill="none" stroke="currentColor" stroke-width="2.2"/>
+        <text x="58" y="100" text-anchor="middle" font-size="13" font-weight="700" fill="currentColor">git push</text>
+        <text x="58" y="120" text-anchor="middle" font-size="11" fill="currentColor">бағдарламашы</text>
+        <rect x="140" y="20" width="400" height="130" rx="14" fill="var(--accent)" fill-opacity=".07" stroke="var(--accent)" stroke-width="2.2" stroke-dasharray="7 5"/>
+        <text x="340" y="42" text-anchor="middle" font-size="13" font-weight="700" fill="var(--accent)">GitHub Actions (CI)</text>
+        <rect x="156" y="66" width="104" height="62" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="208" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">checkout</text>
+        <text x="208" y="110" text-anchor="middle" font-size="11" fill="currentColor">кодты алу</text>
+        <rect x="288" y="66" width="104" height="62" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="340" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">install</text>
+        <text x="340" y="110" text-anchor="middle" font-size="11" fill="currentColor">pip install</text>
+        <rect x="420" y="66" width="104" height="62" rx="10" fill="none" stroke="currentColor" stroke-width="2"/>
+        <text x="472" y="92" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">test</text>
+        <text x="472" y="110" text-anchor="middle" font-size="11" fill="currentColor">manage.py test</text>
+        <rect x="570" y="40" width="122" height="52" rx="12" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-width="2.2"/>
+        <text x="631" y="63" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Өтті: жасыл</text>
+        <text x="631" y="80" text-anchor="middle" font-size="11" fill="currentColor">жеткізу (CD)</text>
+        <rect x="570" y="112" width="122" height="52" rx="12" fill="#d1493f" fill-opacity=".14" stroke="#d1493f" stroke-width="2.2"/>
+        <text x="631" y="135" text-anchor="middle" font-size="12" font-weight="700" fill="currentColor">Құлады: қызыл</text>
+        <text x="631" y="152" text-anchor="middle" font-size="11" fill="currentColor">лог, түзету</text>
+        <path d="M110 105 H138" stroke="currentColor" stroke-width="2" marker-end="url(#arr7b)"/>
+        <path d="M262 97 H286" stroke="currentColor" stroke-width="2" marker-end="url(#arr7b)"/>
+        <path d="M394 97 H418" stroke="currentColor" stroke-width="2" marker-end="url(#arr7b)"/>
+        <path d="M526 88 L568 68" stroke="currentColor" stroke-width="2" marker-end="url(#arr7b)"/>
+        <path d="M526 108 L568 130" stroke="currentColor" stroke-width="2" marker-end="url(#arr7b)"/>
+        <path d="M631 166 V215 H58 V142" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="6 5" marker-end="url(#arr7b)"/>
+        <text x="345" y="234" text-anchor="middle" font-size="12" fill="currentColor">қате түзетіліп, қайта push жасалады</text>
+      </svg>
+      <p>Бұл схема кейінірек GitHub Actions бөлімінде нақты конфигурацияға айналады. Ал әзірше, CI/CD командалар арасында неге осыншалық танымал болғанына қарайық:</p>
+      <ul>
+        <li>Әртүрлі адамдар әртүрлі мүмкіндіктермен жұмыс істегенде, оларды бір мезетте біріктіргенде үйлесімсіздік мәселелері көп туындайды. Үздіксіз интеграция шағын қайшылықтарды олар пайда болған сайын шешуге мүмкіндік береді.</li>
+        <li>Әр біріктіруде модульдік тесттер жүргізілетіндіктен, тест құлағанда мәселенің қай код бөлігінде екенін оқшаулау жеңіл.</li>
+        <li>Қосымшаның жаңа нұсқаларын жиі шығару іске қосылғаннан кейін туындаған мәселелерді оқшаулауға көмектеседі.</li>
+        <li>Шағын, біртіндеп енгізілетін өзгерістер қолданушыларға жаңа мүмкіндіктерге бірте-бірте үйренуге жағдай жасайды, оларды мүлдем басқа нұсқа қысып тастамайды.</li>
+        <li>Жаңа мүмкіндіктерді күттірмей шығару компанияларға бәсекелі нарықта алда жүруге көмектеседі.</li>
+      </ul>
+      <details class="think">
+        <summary>Ойланып көріңіз: екі апта бойы біріктірмей, жеке тармақта жұмыс істесеңіз не болады?</summary>
+        <div class="details-body"><p>Алдымен болжап көріңіз. Екі аптадан кейін сіздің кодыңыз бен басқалардың кодының арасында көптеген өзгеріс жиналады: Git <em>біріктіру қайшылықтарын</em> (<span class="term-en">merge conflicts</span>) көрсетеді де, сіз бір сәтте жүзден астам жолды қолмен түзетесіз. Ал күн сайын шағын біріктіру жасасаңыз, қайшылықтар да шағын, оларды бірден шешесіз. Үздіксіз интеграция дәл осыны талап етеді: жиі біріктір, әр жолы тест жүргіз.</p></div>
+      </details>
+
+      <h2 id="github-actions">GitHub Actions</h2>
+      <p>Үздіксіз интеграцияға көмектесетін танымал құралдардың бірі - <a href="https://github.com/features/actions" target="_blank" rel="noopener">GitHub Actions</a>. Ол бізге <strong>жұмыс процестерін</strong> (<span class="term-en">workflows</span>) жасауға мүмкіндік береді: біреу git репозиторийіне код жібергенде (push), белгілі әрекеттер өздігінен орындалады. Мысалы, әр push сайын код стиль нұсқаулығына сай екенін немесе модульдік тесттер жиынынан өтетінін тексертуге болады. Бұл сіздің орныңызға қарап отыратын, ешқашан ұмытпайтын және ешқашан шаршамайтын көмекші сияқты.</p>
+      <p>GitHub Action баптау үшін <strong>YAML</strong> деп аталатын конфигурация тілін қолданамыз. YAML деректерін «кілт: мән» жұптарына құрады (JSON объектісі не Python сөздігі сияқты). Қарапайым YAML файлының мысалы:</p>
+<pre data-lang="yaml"><code class="language-yaml">key1: value1
+key2: value2
+key3:
+    - item1
+    - item2
+    - item3</code></pre>
+      <p>Ол Python сөздігіне ұқсайды: <code>key3</code> кілтінің мәні - үш элементтен тұратын тізім. YAML-де шегініс (бос орындар) мағына береді: бір деңгей ішкі жазба сол кілттің ішінде екенін білдіреді.</p>
+      <p>Енді GitHub Actions-пен жұмыс істейтін YAML файлын (аты <code>name.yml</code> не <code>name.yaml</code> болады) қалай баптайтынымызды көрейік. Репозиторийде <code>.github</code> қалтасын, оның ішінде <code>workflows</code> қалтасын, ал оның ішінде <code>ci.yml</code> файлын жасаймыз. Файлға мынаны жазамыз:</p>
+<pre data-lang="yaml"><code class="language-yaml">name: Testing
+on: push
+
+jobs:
+  test_project:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run Django unit tests
+      run: |
+        pip3 install --user django
+        python3 manage.py test</code></pre>
+      <p>GitHub Actions-ты бірінші рет қолданып жатқандықтан, файлдың әр бөлігі не істейтінін қадам-қадаммен қарастырайық:</p>
+      <ul>
+        <li>Алдымен жұмыс процесіне <code>name</code> (аты) береміз, біздің жағдайда ол <code>Testing</code>.</li>
+        <li>Содан кейін <code>on</code> кілтімен жұмыс процесінің <em>қашан</em> іске қосылатынын көрсетеміз. Біз әр push сайын тесттер жүргізілсін дейміз.</li>
+        <li>Файлдың қалған бөлігі <code>jobs</code> кілтінің ішінде. Ол әр push-тан кейін қандай жұмыстар (<span class="term-en">jobs</span>) орындалатынын көрсетеді.
+          <ul>
+            <li>Біздің жағдайда жалғыз жұмыс - <code>test_project</code>. Әр жұмыста екі компонент болуы керек:
+              <ul>
+                <li><code>runs-on</code> кілті кодымыз қай виртуалды машинада (GitHub-тың виртуалды машиналарының бірінде) жүретінін көрсетеді;</li>
+                <li><code>steps</code> кілті осы жұмыс орындалғанда болатын қадамдарды (әрекеттерді) береді:
+                  <ul>
+                    <li><code>uses</code> кілтімен қандай GitHub action қолданатынымызды көрсетеміз. <code>actions/checkout@v2</code> - GitHub жазған дайын action, ол репозиторийдің кодын виртуалды машинаға жүктеп алады;</li>
+                    <li>мұндағы <code>name</code> кілті біз жасайтын әрекетті сипаттауға мүмкіндік береді;</li>
+                    <li><code>run</code> кілтінен кейін GitHub серверінде орындалатын командаларды жазамыз. Біздің жағдайда Django-ны орнатып, тест файлын жүргіземіз.</li>
+                  </ul>
+                </li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <p>Енді репозиторийімізді GitHub-та ашып, беттің жоғарғы жағындағы бірнеше қойындыға қарайық:</p>
+      <ul>
+        <li><strong>Code</strong>: біз ең жиі қолданатын қойынды, директориядағы файлдар мен қалталарды көруге мүмкіндік береді.</li>
+        <li><strong>Issues</strong>: мұнда <em>issue</em>-лерді ашып, жабуға болады. Бұл қате түзету не жаңа мүмкіндік қосу туралы өтініштер. Оны қосымшамыздың істер тізімі деп қарауға болады.</li>
+        <li><strong>Pull Requests</strong>: бір тармақтағы кодты басқасына біріктіргісі келетін адамдардың сұраулары. Бұл өте пайдалы құрал: код негізгі тармаққа қосылмай тұрып, адамдар <strong>код шолуын</strong> (<span class="term-en">code review</span>) жасап, түсініктеме мен ұсыныс қалдыра алады.</li>
+        <li><strong>Actions</strong> (GitHub Actions): үздіксіз интеграциямен жұмыс істегенде қолданатын қойындымыз. Әр push-тан кейін орындалған әрекеттердің журналдарын (логтарын) көрсетеді.</li>
+      </ul>
+      <p>Енді былай елестетейік: біз <code>airport</code> жобасындағы <code>models.py</code> ішіндегі <code>is_valid_flight</code> қатесін түзетуден <em>бұрын</em> өзгерістерімізді push жасап қойдық. GitHub Actions қойындысына барып, соңғы push-ты басып, құлаған action-ды ашып, логты қарай аламыз. Тесттердің қай-қайсысы құлағанын сол жерден көреміз, дәл өз терминалымыздағыдай.</p>
+      <p>Қатені түзетіп, қайта push жасасақ, нәтиже жақсарады: жұмыс процесі жасыл белгімен аяқталады. Түпнұсқа лекцияда бұл екі жағдай да гиф-анимациямен көрсетілген: алдымен қызыл крест, ал түзетуден кейін жасыл құсбелгі.</p>
+      <div class="callout note">
+        <span class="callout-title">GitHub Actions GitHub-та орындалады</span>
+        <p>Жұмыс процестерін GitHub серверлері іске қосады, сондықтан оны бұл беттің ішінде орындай алмаймыз. Үйде өз репозиторийіңізде <code>.github/workflows/ci.yml</code> жасап, push жасап көріңіз. Апта соңындағы жаттығуда осыған арналған тексеру тізімі бар.</p>
+      </div>
+
+      <h2 id="docker">Docker</h2>
+      <p>Бағдарламалық жасақтама әлемінде тағы бір мәселе жиі туындайды: сіздің компьютеріңіздің бапталымы қосымша іске қосылатын жердегі бапталымнан өзгеше болады. Сізде Python-ның басқа нұсқасы немесе қосымша пакеттер бар болуы мүмкін, сол себепті қосымша сізде жақсы жұмыс істейді де, серверде құлап қалады. «Менде жұмыс істейді!» дейтін әйгілі сөйлем осыдан шыққан. Мұндай мәселелердің алдын алу үшін жобада жұмыс істейтін әркімнің бірдей <em>ортада</em> жұмыс істеуіне кепілдік беретін жол керек.</p>
+      <p>Осының бір жолы - <strong>Docker</strong> деп аталатын құрал. Docker - <strong>контейнерлеу</strong> (<span class="term-en">containerization</span>) бағдарламасы, яғни компьютеріңіздің ішінде бірнеше әріптесіңіз бен сайт іске қосылатын сервер арасында стандарттауға болатын оқшауланған орта жасайды. Ыдыс-аяқ сияқты: ішіне не салсаңыз, қайда апарсаңыз да, сол күйінде қалады.</p>
+      <p>Docker <strong>виртуалды машинаға</strong> (<span class="term-en">virtual machine</span>) ұқсайды, бірақ олар әртүрлі технологиялар. Виртуалды машина (GitHub Actions-та қолданылатын немесе <a href="https://aws.amazon.com/" target="_blank" rel="noopener">AWS</a> серверін іске қосқанда пайда болатын) - өз операциялық жүйесі бар тұтас виртуалды компьютер, сондықтан ол тұрған жерде көп орын алады. Ал Docker бар компьютердің ішінде контейнер жасайды, сондықтан орынды аз алады.</p>
+
+      <svg viewBox="0 0 700 290" role="img" aria-label="Виртуалды машина мен Docker айырмашылығы: виртуалды машинада әр қосымшаның өз операциялық жүйесі бар, ал Docker контейнерлері хост операциялық жүйесін бірге қолданады" style="width:100%;max-width:700px;height:auto;display:block;margin:1rem auto;font-family:inherit">
+        <text x="170" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">Виртуалды машина</text>
+        <rect x="20" y="36" width="140" height="40" rx="6" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-width="1.8"/>
+        <text x="90" y="61" text-anchor="middle" font-size="12" fill="currentColor">Қосымша A + кітапханалар</text>
+        <rect x="180" y="36" width="140" height="40" rx="6" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-width="1.8"/>
+        <text x="250" y="61" text-anchor="middle" font-size="12" fill="currentColor">Қосымша B + кітапханалар</text>
+        <rect x="20" y="80" width="140" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <text x="90" y="105" text-anchor="middle" font-size="12" fill="currentColor">Қонақ ОЖ (Guest OS)</text>
+        <rect x="180" y="80" width="140" height="40" rx="6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <text x="250" y="105" text-anchor="middle" font-size="12" fill="currentColor">Қонақ ОЖ (Guest OS)</text>
+        <rect x="20" y="130" width="300" height="38" rx="6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <text x="170" y="154" text-anchor="middle" font-size="12" fill="currentColor">Гипервизор</text>
+        <rect x="20" y="176" width="300" height="38" rx="6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <text x="170" y="200" text-anchor="middle" font-size="12" fill="currentColor">Хост операциялық жүйесі</text>
+        <rect x="20" y="222" width="300" height="38" rx="6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <text x="170" y="246" text-anchor="middle" font-size="12" fill="currentColor">Компьютер (темір)</text>
+        <text x="170" y="280" text-anchor="middle" font-size="12" fill="currentColor">ауыр: әрқайсысында толық ОЖ</text>
+
+        <text x="530" y="22" text-anchor="middle" font-size="15" font-weight="700" fill="currentColor">Docker контейнерлері</text>
+        <rect x="380" y="36" width="140" height="40" rx="6" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-width="1.8"/>
+        <text x="450" y="61" text-anchor="middle" font-size="12" fill="currentColor">Қосымша A + кітапханалар</text>
+        <rect x="540" y="36" width="140" height="40" rx="6" fill="var(--accent)" fill-opacity=".16" stroke="var(--accent)" stroke-width="1.8"/>
+        <text x="610" y="61" text-anchor="middle" font-size="12" fill="currentColor">Қосымша B + кітапханалар</text>
+        <rect x="380" y="130" width="300" height="38" rx="6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <text x="530" y="154" text-anchor="middle" font-size="12" fill="currentColor">Docker (контейнер қозғалтқышы)</text>
+        <rect x="380" y="176" width="300" height="38" rx="6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <text x="530" y="200" text-anchor="middle" font-size="12" fill="currentColor">Хост операциялық жүйесі</text>
+        <rect x="380" y="222" width="300" height="38" rx="6" fill="none" stroke="currentColor" stroke-width="1.8"/>
+        <text x="530" y="246" text-anchor="middle" font-size="12" fill="currentColor">Компьютер (темір)</text>
+        <text x="530" y="280" text-anchor="middle" font-size="12" fill="currentColor">жеңіл: хост ОЖ ортақ</text>
+      </svg>
+
+      <p>Docker контейнерін компьютерде қалай баптайтынымызды көрейік. Алғашқы қадам - <code>Dockerfile</code> деп аталатын <strong>Docker файлын</strong> жасау. Оның ішінде <strong>Docker образын</strong> (<span class="term-en">Docker image</span>) қалай жасау керектігі жазылады: образ контейнерімізге қандай кітапханалар мен екілік файлдар кіретінін сипаттайды. Образ - тағам рецепті сияқты, ал контейнер - сол рецепт бойынша пісірілген нақты тағам. Біздің <code>Dockerfile</code> мынадай болуы мүмкін:</p>
+<pre data-lang="plaintext"><code class="language-plaintext">FROM python:3
+COPY .  /usr/src/app
+WORKDIR /usr/src/app
+RUN pip install -r requirements.txt
+CMD [&quot;python3&quot;, &quot;manage.py&quot;, &quot;runserver&quot;, &quot;0.0.0.0:8000&quot;]</code></pre>
+      <p>Жоғарыдағы файл нақты не істейтінін жолма-жол қарастырайық:</p>
+      <ul>
+        <li><code>FROM python:3</code>: бұл образды Python 3 орнатылған стандартты образдың негізінде жасайтынымызды білдіреді. Docker файлын жазғанда бұл өте жиі кездеседі, өйткені әр жаңа образда бір-ақ негізгі бапталымды қайта-қайта жазбай-ақ қоясыз.</li>
+        <li><code>COPY . /usr/src/app</code>: ағымдағы директориядағы (<code>.</code>) барлығын жаңа контейнердің <code>/usr/src/app</code> директориясына көшіреміз.</li>
+        <li><code>WORKDIR /usr/src/app</code>: контейнердің ішінде командаларды қай жерде іске қосатынымызды көрсетеді (терминалдағы <code>cd</code> сияқты).</li>
+        <li><code>RUN pip install -r requirements.txt</code>: барлық қажетті пакеттерді <code>requirements.txt</code> файлына жинаған болсаңыз, олардың бәрі контейнердің ішіне орнатылады.</li>
+        <li><code>CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000"]</code>: ең соңында контейнер іске қосылғанда орындалатын команданы береміз.</li>
+      </ul>
+      <p>Осы курста біз әзірге тек SQLite қолданып келдік, себебі ол Django-ның әдепкі дерекқор басқару жүйесі. Бірақ нақты қолданушылары бар жұмыс істеп тұрған қосымшаларда SQLite-ты дерлік қолданбайды, өйткені ол басқа жүйелер сияқты оңай масштабталмайды. Бақытымызға орай, дерекқорға бөлек сервер қажет болса, жай ғана тағы бір Docker контейнерін қосып, оларды <strong>Docker Compose</strong> деп аталатын мүмкіндікпен бірге іске қоса аламыз. Бұл екі серверді бөлек контейнерлерде жүргізіп, бірақ бір-бірімен сөйлесе алатындай етеді. Мұны көрсету үшін <code>docker-compose.yml</code> деген YAML файлын қолданамыз:</p>
+<pre data-lang="yaml"><code class="language-yaml">version: '3'
+
+services:
+    db:
+        image: postgres
+
+    web:
+        build: .
+        volumes:
+            - .:/usr/src/app
+        ports:
+            - &quot;8000:8000&quot;</code></pre>
+      <p>Жоғарыдағы файлда біз мыналарды істеп жатырмыз:</p>
+      <ul>
+        <li>Docker Compose-тың 3-нұсқасын қолданатынымызды көрсетеміз;</li>
+        <li>Екі <strong>қызметті</strong> (<span class="term-en">services</span>) сипаттаймыз:
+          <ul>
+            <li><code>db</code> Postgres жазып қойған дайын образ негізінде дерекқор контейнерін жасайды;</li>
+            <li><code>web</code> сервер контейнерін жасайды және Docker-ға былай дейді:
+              <ul>
+                <li>ағымдағы директориядағы Dockerfile-ды қолдан (<code>build: .</code>);</li>
+                <li>контейнердің ішіндегі көрсетілген жолды компьютердегі директориямен байланыстыр (<code>volumes</code>);</li>
+                <li>контейнердің 8000 портын компьютеріміздің 8000 портымен байланыстыр (<code>ports</code>).</li>
+              </ul>
+            </li>
+          </ul>
+        </li>
+      </ul>
+      <p>Енді қызметтерімізді <code>docker-compose up</code> командасымен іске қосуға дайынбыз. Бұл екі серверді де жаңа Docker контейнерлерінде жүргізеді.</p>
+      <p>Бір сәтте контейнердің ішінде команда орындағымыз келуі мүмкін: дерекқорға жазба қосу не тесттерді жүргізу үшін. Ол үшін алдымен <code>docker ps</code> командасымен жұмыс істеп тұрған барлық контейнерді көреміз. Сосын керекті контейнердің <code>CONTAINER ID</code> мәнін тауып, мынаны орындаймыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ docker ps
+$ docker exec -it CONTAINER_ID bash -l</code></pre>
+      <p>Бұл сізді контейнердің ішінде баптаған <code>/usr/src/app</code> директориясына апарады. Енді сол контейнердің ішінде кез келген команданы орындап, шыққанда <code>CTRL-D</code> басасыз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: Docker не үшін виртуалды машинадан жеңіл?</summary>
+        <div class="details-body"><p>Алдымен болжап көріңіз. Виртуалды машина әр қосымша үшін толық операциялық жүйені (қонақ ОЖ) жүргізеді, яғни көп жад пен орын қажет. Контейнерлер болса, компьютердің бар операциялық жүйесін бөлісіп қолданады, олардың ішінде тек қосымша мен оған қажет кітапханалар ғана бар. Сондықтан контейнер секундтар ішінде іске қосылады, ал виртуалды машинаны жүктеу минуттарға созылуы мүмкін.</p></div>
+      </details>
+      <div class="callout note">
+        <span class="callout-title">Docker компьютеріңізде орындалады</span>
+        <p>Docker оқшауланған орта жасау үшін операциялық жүйемен жұмыс істейді, сондықтан бұл беттің ішінде іске қосылмайды. Жоғарыдағы файлдарды өз жобаңызда сынап көру үшін Docker Desktop орнату керек.</p>
+      </div>
+      <p>Осымен бүгінгі лекция аяқталды! Келесі жолы жобаларымызды масштабтауға және оларды қауіпсіз етуге көшеміз.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li><code>assert</code> өрнек <code>False</code> болса <code>AssertionError</code> көтереді: ең қарапайым тест;</li>
+        <li>тест арқылы әзірлеу: әр қатені түзеткенде оны ұстайтын тест қосып, тесттерді әр өзгерістен кейін іске қосу;</li>
+        <li><code>unittest</code>: <code>TestCase</code> класы, <code>test_</code> деп басталатын әдістер, <code>assertTrue</code>, <code>assertFalse</code>, <code>assertEqual</code>, құжаттама жолдары, <code>...F.F</code> шығысы;</li>
+        <li><code>range(2, int(math.sqrt(n)) + 1)</code>: шеткі шекараға (off-by-one) мұқият болу;</li>
+        <li>Django: <code>TestCase</code>, <code>setUp</code>, тестілеуге арналған бөлек дерекқор, <code>python manage.py test</code>;</li>
+        <li><code>Client</code> арқылы беттердің жауап кодтарын (200, 404) және контекстті тексеру;</li>
+        <li>Selenium: веб-драйвер браузерді басқарып, пайдаланушының әрекетін модельдейді;</li>
+        <li>CI/CD: жиі біріктіру, әр біріктіруде автоматты тесттер, жиі шығарылым;</li>
+        <li>GitHub Actions: <code>.github/workflows/ci.yml</code> файлындағы YAML жұмыс процесі (<code>name</code>, <code>on</code>, <code>jobs</code>, <code>runs-on</code>, <code>steps</code>);</li>
+        <li>Docker: <code>Dockerfile</code> (<code>FROM</code>, <code>COPY</code>, <code>WORKDIR</code>, <code>RUN</code>, <code>CMD</code>), образ бен контейнер, виртуалды машинадан айырмашылығы;</li>
+        <li>Docker Compose: <code>docker-compose.yml</code> арқылы бірнеше контейнерді (<code>db</code> және <code>web</code>) бірге жүргізу.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. <code>assert is_prime(7)</code> жолы орындалғанда <code>is_prime(7)</code> нәтижесі <code>True</code> болды. Не болады?</p>
+          <label><input type="radio" value="a"> <code>AssertionError</code> шығады</label>
+          <label><input type="radio" value="b"> Экранға <code>True</code> жазылады</label>
+          <label><input type="radio" value="c"> Ештеңе болмайды, бағдарлама үнсіз жалғаса береді</label>
+          <label><input type="radio" value="d"> Бағдарлама тоқтайды</label>
+          <p class="explain"><code>assert</code> шарт ақиқат болса үнсіз өтеді, жалған болғанда ғана <code>AssertionError</code> көтереді.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">2. Лекциядағы <code>is_prime</code> функциясында <code>range(2, int(math.sqrt(n)))</code> деп жазылған (соңында <code>+ 1</code> жоқ). Қай тест осы қатені <em>ұстайды</em>?</p>
+          <label><input type="radio" value="a"> <code>assertTrue(is_prime(11))</code></label>
+          <label><input type="radio" value="b"> <code>assertFalse(is_prime(1))</code></label>
+          <label><input type="radio" value="c"> <code>assertTrue(is_prime(2))</code></label>
+          <label><input type="radio" value="d"> <code>assertFalse(is_prime(25))</code></label>
+          <p class="explain">25 үшін квадрат түбір 5, бірақ <code>range(2, 5)</code> 5-ті қоспайды, сондықтан 25 жай болып шығады. 11, 1 және 2 үшін қате білінбейді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. Selenium-дағы веб-драйвер (<code>webdriver.Chrome()</code>) не үшін қажет?</p>
+          <label><input type="radio" value="a"> Компьютерде нағыз браузерді ашып, оны кодтан басқару үшін (бетке өту, түймені басу)</label>
+          <label><input type="radio" value="b"> Python кодын JavaScript-ке аудару үшін</label>
+          <label><input type="radio" value="c"> Дерекқордың көшірмесін жасау үшін</label>
+          <label><input type="radio" value="d"> Тесттерді GitHub-қа жүктеу үшін</label>
+          <p class="explain">Веб-драйвер браузерді басқарады: бет ашады, <code>driver.title</code> оқиды, <code>click()</code> арқылы түймелерді басады. Сол арқылы клиент жағындағы кодты тексереміз.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">4. <code>unittest</code> шығысы <code>...F.F</code> болды. Бұл нені білдіреді?</p>
+          <label><input type="radio" value="a"> Алты тесттің алтауы да құлады</label>
+          <label><input type="radio" value="b"> Алты тесттің төртеуі өтті, екеуі құлады (4-ші және 6-шы орындағылар)</label>
+          <label><input type="radio" value="c"> Үш тест өтті, үшеуі өткізіп жіберілді</label>
+          <label><input type="radio" value="d"> Бағдарламада синтаксис қатесі бар</label>
+          <p class="explain">Нүкте - өткен тест, <code>F</code> - құлаған тест; белгілер тесттер іске қосылған ретімен жазылады. Мұнда алты белгінің төртеуі нүкте, 4-ші және 6-шы белгі - <code>F</code>.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">5. Django <code>TestCase</code> тесттерді жүргізгенде неге нақты дерекқорды бұзып алу қаупі жоқ?</p>
+          <label><input type="radio" value="a"> Тесттер тек оқу режимінде жұмыс істейді</label>
+          <label><input type="radio" value="b"> Django дерекқорды әр тесттен кейін қолмен қайтарып қояды</label>
+          <label><input type="radio" value="c"> Тесттер үшін уақытша жаңа дерекқор жасалып, тест біткен соң өшіріледі</label>
+          <label><input type="radio" value="d"> Тесттер бос дерекқорға қосылмайды</label>
+          <p class="explain">Django әр тест іске қосылғанда жеке тестілеу дерекқорын жасайды («Creating test database...») және соңында жояды («Destroying test database...»).</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">6. Модельде <code>return self.origin != self.destination or self.duration &gt; 0</code> жазылған. Қай рейс қате түрде «жарамды» (<code>True</code>) болып шығады?</p>
+          <label><input type="radio" value="a"> <code>AAA</code> → <code>AAA</code>, 200 минут</label>
+          <label><input type="radio" value="b"> <code>AAA</code> → <code>BBB</code>, 100 минут</label>
+          <label><input type="radio" value="c"> Қате ешбір рейсте білінбейді</label>
+          <label><input type="radio" value="d"> Тек ұзақтығы 0 рейс</label>
+          <p class="explain"><code>or</code> болғанда екі шарттың біреуі ақиқат болса жетеді: бірдей аэропорттар жалған, бірақ 200 &gt; 0 ақиқат, нәтиже <code>True</code>. Дұрыс нұсқа <code>and</code> қолданады. <code>AAA</code> → <code>BBB</code>, 100 дұрыстап <code>True</code> болады.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. <code>on: push</code> деп жазылған GitHub Actions жұмыс процесі қашан іске қосылады?</p>
+          <label><input type="radio" value="a"> Тек <code>main</code> тармағына біреу pull request ашқанда</label>
+          <label><input type="radio" value="b"> Әр күні түнде</label>
+          <label><input type="radio" value="c"> Тек қолмен батырма басқанда</label>
+          <label><input type="radio" value="d"> Біреу репозиторийге код жібергенде (push жасағанда)</label>
+          <p class="explain"><code>on</code> кілті жұмыс процесінің қашан іске қосылатынын көрсетеді; <code>push</code> болғанда әр push сайын тесттер автоматты түрде жүргізіледі.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">8. Docker контейнері виртуалды машинадан неге жеңіл?</p>
+          <label><input type="radio" value="a"> Контейнерде код мүлдем жоқ</label>
+          <label><input type="radio" value="b"> Контейнерлер компьютердің бар операциялық жүйесін бірге қолданады, әрқайсысына толық ОЖ керек емес</label>
+          <label><input type="radio" value="c"> Контейнер тек интернетте жұмыс істейді</label>
+          <label><input type="radio" value="d"> Контейнердің ішінде Python қолданылмайды</label>
+          <p class="explain">Виртуалды машина өз операциялық жүйесі бар тұтас виртуалды компьютер. Docker контейнері бар жүйенің ішінде оқшауланған орта жасайды, сондықтан орын аз алады.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Жаттығу</h2>
+      <div class="callout note">
+        <span class="callout-title">Бұл апта үшін ресми problem set жоқ</span>
+        <p>CS50 Web-те 7-аптаға жеке тапсырмалар жинағы берілмейді. Сондықтан төмендегі жаттығулар <strong>сайттың өз жаттығулары, ресми емес</strong>. Оларда сіз лекциядағы идеяны іс жүзінде жаттықтырасыз: <code>is_prime(n)</code> функциясына тесттер жазасыз. Автотексеруші сіздің тестіңізді дұрыс <code>prime.py</code>-мен де, әдейі бұзылған бірнеше нұсқамен де жүргізеді: дұрысында барлығы өтуі, ал әр қате нұсқада кемінде бір тест құлауы керек. Дәл нағыз тест жиынынан күтілетіні осы. Соңғы жаттығуды үйде орындайсыз.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pset-test-prime-assert">Testing is_prime with assert (assert арқылы тестілеу)</h3></div>
+        <p><code>prime.py</code> файлында мынадай функция бар (оны тексеруші өзі береді, сіз тек <em>тест файлын</em> жазасыз): <code>is_prime(n)</code> бүтін сан <code>n</code> алып, ол жай сан болса <code>True</code>, әйтпесе <code>False</code> қайтарады.</p>
+        <p><code>test_prime.py</code> файлын жазыңыз. Онда <code>from prime import is_prime</code> болсын, сосын <strong>кемінде үш</strong> функция жазыңыз. Әр функцияның аты <code>test_</code> деп басталсын және ішінде кәдімгі <code>assert</code> қолданыңыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">from prime import is_prime
+
+
+def test_small():
+    ...</code></pre>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Тесттерді топтарға бөліңіз: кіші сандар (1, 2, 3), құрама сандар (4, 8, 9, 25), жай сандар (5, 11, 97). Бір ғана «ыңғайлы» санға сүйенбеңіз: <code>is_prime(5)</code> көптеген қате нұсқадан да өтіп кетеді. Лекциядағы 8 мен 25 неге құлағанын еске түсіріңіз.</p></div></details>
+        <p><strong>Қалай тексеру керек.</strong> Компьютерде <code>pytest test_prime.py</code> немесе жай <code>python</code> арқылы да жүргізуге болады. Бұл жерде тексеруші тесттеріңізді дұрыс және төрт қате нұсқамен жүргізеді: 1 санын жай деп санайтын, 2-ні жай емес деп санайтын, диапазонның соңғы шекарасын қоспайтын (4, 8, 9, 25) және 2-ге бөлінуін тексермейтін нұсқа.</p>
+        <div class="autograder" data-check="py-test-prime-assert" data-src="web/checks/week-7.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web7-test-prime-assert">
+            <li><input type="checkbox"> <span><code>test_prime.py</code>-да кемінде үш <code>test_</code> функциясы бар, олар <code>assert</code> қолданады.</span></li>
+            <li><input type="checkbox"> <span>Тесттер 1 мен 2-ні, құрама сандардың квадраттарын (9, 25) және жұп сандарды қамтиды.</span></li>
+            <li><input type="checkbox"> <span>Дұрыс <code>prime.py</code>-мен барлық тест өтеді, әр қате нұсқада кемінде біреуі құлайды.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-test-prime-unittest">Testing is_prime with unittest (unittest арқылы тестілеу)</h3></div>
+        <p>Енді сол функцияны <code>unittest</code> арқылы тестілеңіз. <code>test_prime.py</code> файлында <code>unittest.TestCase</code>-тан мұрагер класс жазыңыз, онда <strong>кемінде бес</strong> тест әдісі болсын (аттары <code>test_</code> деп басталсын). Әр тестке лекциядағыдай құжаттама жолын жазыңыз, ал бекіту үшін <code>assertTrue</code>, <code>assertFalse</code> не <code>assertEqual</code> қолданыңыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">import unittest
+from prime import is_prime
+
+
+class Tests(unittest.TestCase):
+
+    def test_1(self):
+        &quot;&quot;&quot;1 жай емес.&quot;&quot;&quot;
+        self.assertFalse(is_prime(1))
+
+
+if __name__ == &quot;__main__&quot;:
+    unittest.main()</code></pre>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Бұл жолы қате нұсқалар қулық жасайды: біреуі тек 0 мен теріс сандарда қателеседі, біреуі тек үлкен құрама сандарда (49, 121, 143) қателеседі. 143 = 11 × 13: оның ең кіші бөлгіші 11. Сондықтан тек кіші сандарға сүйенген жиын жеткіліксіз. Бір әдістің ішінде бірнеше мәнді тексеру үшін <code>for</code> циклін қолдана аласыз; бірақ құлағанда қай мән екенін білу үшін <code>self.assertFalse(is_prime(n), n)</code> деп екінші аргумент беріңіз.</p></div></details>
+        <p><strong>Қалай тексеру керек.</strong> Тексеруші алты қате нұсқа жасайды (алдыңғы төртеу, жоғарыдағы кеңестегі екеуі). Тесттер жиыныңыз соның бәрін ұстауы керек. Жай <code>test_</code> функциялары бұл жолы есепке кірмейді, тек <code>TestCase</code> әдістері.</p>
+        <div class="callout tip">
+          <span class="callout-title">unittest.main() туралы</span>
+          <p>Файлдың соңында <code>if __name__ == "__main__": unittest.main()</code> жазсаңыз да, жазбасаңыз да автотексеруші тесттеріңізді өзі іске қосады. Компьютеріңізде <code>python test_prime.py</code> дегенде тесттер лекциядағыдай жүреді.</p>
+        </div>
+        <div class="autograder" data-check="py-test-prime-unittest" data-src="web/checks/week-7.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web7-test-prime-unittest">
+            <li><input type="checkbox"> <span>Класс <code>unittest.TestCase</code>-тан мұрагер, кемінде бес <code>test_</code> әдісі бар.</span></li>
+            <li><input type="checkbox"> <span>Тесттер 0 мен теріс сандарды, жай сандардың квадраттарын (49, 121) және екі үлкен жай санның көбейтіндісін (143) қамтиды.</span></li>
+            <li><input type="checkbox"> <span>Әр тестте құжаттама жолы бар.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-fix-prime">Fix the prime (Жай санды түзету)</h3></div>
+        <p>Тест арқылы әзірлеу циклін толық жүріп өтейік: <em>қате → тест → түзету → бәрі жасыл</em>. Төмендегі <code>prime.py</code> бағдарламасында лекциядағы қате бар. <code>main</code> пайдаланушыдан <code>n</code> сұрап, <code>7 is prime</code> немесе <code>25 is not prime</code> деп шығарады; <code>is_prime</code> болса мән қайтарады (<code>print</code> тек <code>main</code>-де).</p>
+<pre data-lang="python" data-norun><code class="language-python">import math
+
+
+def main():
+    n = int(input(&quot;n: &quot;))
+    if is_prime(n):
+        print(f&quot;{n} is prime&quot;)
+    else:
+        print(f&quot;{n} is not prime&quot;)
+
+
+def is_prime(n):
+    if n &lt; 2:
+        return False
+    for i in range(2, int(math.sqrt(n))):
+        if n % i == 0:
+            return False
+    return True
+
+
+if __name__ == &quot;__main__&quot;:
+    main()</code></pre>
+        <p>Алдымен жоғарыдағы екі жаттығудағыдай тесттерді жазып, қатені <em>құлату</em> арқылы көріңіз. Сосын қатені түзетіп, тесттердің жасылға айналғанын көріңіз. Түзетілген <code>prime.py</code>-ды төмендегі автотексерушіге қойыңыз.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Шекараға қараңыз: <code>range(2, int(math.sqrt(n)))</code> соңғы санды қоспайды. 25 үшін <code>int(math.sqrt(25))</code> = 5, ал <code>range(2, 5)</code> тек 2, 3, 4 береді. Нені өзгерту керек?</p></div></details>
+        <p><strong>Қалай тексеру керек.</strong> Бағдарлама 7 және 25 үшін дұрыс жолды шығаруы керек, ал <code>is_prime</code> жай сандарға (2, 3, 5, 7, 11, 13, 97) <code>True</code>, құрама сандарға (4, 8, 9, 25, 49, 121) және 0, 1, -7 сандарына <code>False</code> қайтаруы керек.</p>
+        <div class="autograder" data-check="py-prime" data-src="web/checks/week-7.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web7-fix-prime">
+            <li><input type="checkbox"> <span>Қатені тестпен <em>құлатып</em> көрдім (қызыл), сосын түзеттім (жасыл).</span></li>
+            <li><input type="checkbox"> <span><code>is_prime</code> мән қайтарады, <code>print</code> тек <code>main</code>-де.</span></li>
+            <li><input type="checkbox"> <span>Түзетілген қатені ұстайтын тест жиыннан (алдыңғы жаттығу) табылатынын түсіндіре аламын.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="pset-ci-at-home">Your own CI (Өз үздіксіз интеграцияңыз)</h3></div>
+        <p>Бұл жаттығуды компьютеріңізде орындайсыз. GitHub Actions, Docker және Django жергілікті жұмыс істейді, сондықтан автотексеруші жоқ, тек тексеру тізімі бар.</p>
+        <ol>
+          <li>GitHub-та жаңа репозиторий жасаңыз және оған <code>prime.py</code> мен <code>test_prime.py</code> файлдарын салыңыз (алдыңғы жаттығулардан).</li>
+          <li><code>.github/workflows/ci.yml</code> жасаңыз. Лекциядағы мысал Django үшін жазылған; сіздікі <code>unittest</code> жүргізсін:</li>
+        </ol>
+<pre data-lang="yaml"><code class="language-yaml">name: Testing
+on: push
+
+jobs:
+  test_project:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Run unit tests
+      run: |
+        python3 -m unittest test_prime</code></pre>
+        <ol start="3">
+          <li>Өзгерістерді push жасаңыз және репозиторийдің <strong>Actions</strong> қойындысында жұмыс процесінің жасыл болғанын көріңіз.</li>
+          <li>Енді <code>prime.py</code>-ға әдейі қате енгізіп (мысалы, <code>+ 1</code>-ді алып тастап), қайта push жасаңыз. Actions қойындысында қызыл крестті ашып, логтан құлаған тест атын табыңыз.</li>
+          <li>Қатені түзетіп, қайта push жасаңыз және жасыл нәтижені растаңыз.</li>
+        </ol>
+        <p>Қосымша: бұрынғы Django жобаңызға (<code>flights</code>) <code>FlightTestCase</code> тесттерін қосып, <code>python manage.py test</code> жүргізіңіз; сосын лекциядағы <code>Dockerfile</code> мен <code>docker-compose.yml</code> файлдарымен жобаны контейнерде іске қосып көріңіз.</p>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web7-ci-at-home">
+            <li><input type="checkbox"> <span><code>.github/workflows/ci.yml</code> бар, <code>on: push</code> және <code>runs-on: ubuntu-latest</code> жазылған.</span></li>
+            <li><input type="checkbox"> <span>Дұрыс кодпен Actions қойындысында жасыл белгі көрінеді.</span></li>
+            <li><input type="checkbox"> <span>Әдейі қате енгізгенде процесс қызыл болады, ал логта құлаған тест аты бар.</span></li>
+            <li><input type="checkbox"> <span>Қосымша: <code>python manage.py test</code> өтеді және <code>docker-compose up</code> жобаны іске қосады.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+
+      <nav class="pager">
+        <a href="week-6.html"><small>Алдыңғы</small>← 6-апта: Интерфейстер</a>
+        <a class="next" href="week-8.html"><small>Келесі</small>8-апта: Масштабтау, қауіпсіздік →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 Web (CS50's Web Programming with Python and JavaScript, Гарвард университеті, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

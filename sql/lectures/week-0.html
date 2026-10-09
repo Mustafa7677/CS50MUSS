@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 SQL 0-апта: Сұраулар - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 SQL 0-апта: Сұраулар - CS50 қазақша">
+  <meta property="og:description" content="CS50 SQL 0-апта: деректер базасы дегеніміз не, SQLite, SELECT, LIMIT, WHERE, NULL, LIKE, аралықтар, ORDER BY және жиынтық функциялар.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/sql/lectures/week-0.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 SQL 0-апта: деректер базасы дегеніміз не, SQLite, SELECT, LIMIT, WHERE, NULL, LIKE, аралықтар, ORDER BY және жиынтық функциялар.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#7c3aed" data-n="0">
+        <div class="num">0-апта</div>
+        <h1>Сұраулар</h1>
+        <p>Бүгін деректер базасымен танысамыз. Кесте дегеніміз не, SQLite-ты қалай ашады, ал <code>SELECT</code>, <code>WHERE</code>, <code>LIKE</code>, <code>ORDER BY</code> және жиынтық функциялар арқылы кестеге қалай сұрақ қоюға болады - бәрі осы аптада.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/sql/notes/0/" target="_blank" rel="noopener">▶ Түпнұсқа конспект (ағылшынша)</a>
+      </div>
+
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың құрылымы түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <div class="callout note">
+        <span class="callout-title">Бұл бетте не істеуге болады?</span>
+        <p>Лекциядағы <code>SELECT</code> мысалдарының астында «▶ Іске қосу» батырмасы бар: ол нағыз SQLite-ты браузеріңіздің ішінде іске қосады. Біз түпнұсқадағы Халықаралық Букер сыйлығының тізімі орнына ойдан шығарылған «Алтын қалам» сыйлығының ұзын тізімін (<code>longlist</code> кестесі) қолданамыз: онда қазақ әдебиетінің кітаптары. Кітаптар, авторлар, рейтингтер - бәрі ойдан шығарылған, тек SQL нақты. Мысалдардағы сұраудың құрылымы түпнұсқадағыдай, тек мәтіндік мәндер (мысалы, <code>'%love%'</code> орнына <code>'%махаббат%'</code>) қазақша деректерге бейімделген.</p>
+      </div>
+
+      <h2 id="introduction">Кіріспе</h2>
+      <p>Деректер базасы мен SQL - ақпаратпен жұмыс істеуге, оны сақтауға және басқаруға арналған құралдар. Құралдарымыз жаңа болғанымен, деректер базасы деген идея өте ескі. Қараңызшы, бірнеше мың жыл бұрынғы бір сызбада жолдар мен бағандар бар. Ол ғибадатхана жұмысшыларына төленетін жалақының тізімі сияқты. Оны кесте деп атауға болады, тіпті электрондық кестенің өзі десек те болады.</p>
+      <p>Осы көне тізімге қарап, үш қорытынды жасай аламыз:</p>
+      <ul>
+        <li><strong>кесте</strong> (<span class="term-en">table</span>) белгілі бір жиын туралы ақпаратты сақтайды (мұнда - жұмысшылардың жалақысы);</li>
+        <li>кестенің әр <strong>жолы</strong> (<span class="term-en">row</span>) сол жиынның бір элементін сақтайды (мұнда - бір жұмысшы);</li>
+        <li>әр <strong>баған</strong> (<span class="term-en">column</span>) сол элементтің бір қасиетін сақтайды (мұнда - белгілі бір айдың жалақысы).</li>
+      </ul>
+      <p>Енді қазіргі заманға көшейік. Сіз кітапханашысыз делік, ал алдыңызда кітаптардың атаулары мен авторлары былай-мынай шашыраңқы жазылып тұр. Оны ретке келтірудің бір жолы - әр кітаптың атының қасына авторын жазып шығу. Сонда әр кітап кестенің бір жолы болады, ал әр жолда екі баған бар: кітаптың аты және оның авторы.</p>
+      <svg viewBox="0 0 520 210" role="img" aria-label="Кесте: жолдар мен бағандар" style="display:block;width:100%;max-width:520px;height:auto;margin:18px auto"><rect x="20" y="40" width="480" height="40" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><line x1="260" y1="40" x2="260" y2="160" style="stroke:var(--accent);stroke-width:1.8"/><line x1="20" y1="120" x2="500" y2="120" style="stroke:var(--accent);stroke-width:1.2"/><rect x="20" y="40" width="480" height="120" rx="4" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><line x1="20" y1="80" x2="500" y2="80" style="stroke:var(--accent);stroke-width:1.2"/><text x="140" y="60" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:14px;font-weight:700">title</text><text x="380" y="60" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, monospace);font-size:14px;font-weight:700">author</text><text x="140" y="100" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px">Асыл</text><text x="380" y="100" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px">Ләззат Қасенова</text><text x="140" y="140" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px">Тұма</text><text x="380" y="140" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px">Дәулет Ахмет</text><text x="140" y="22" text-anchor="middle" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">баған (column)</text><text x="380" y="22" text-anchor="middle" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">баған (column)</text><text x="260" y="188" text-anchor="middle" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px">әр көлденең қатар - бір кітап, яғни бір жол (row)</text></svg>
+      <p>Бүгінде мұндай кестені қағазға немесе тас тақтайға емес, Google Sheets сияқты бағдарламаға жазатынымыз рас. Бірақ бұл курста біз электрондық кесте туралы емес, <em>деректер базасы</em> туралы сөйлейміз. Неге екен? Электрондық кестеден деректер базасына көшуге үш себеп бар:</p>
+      <ul>
+        <li><strong>Көлем</strong> (<span class="term-en">scale</span>): электрондық кестеде он мың жол болса, ол әлдеқашан баяулап қалады. Ал деректер базасы миллиондаған, тіпті миллиардтаған жолды сақтай алады.</li>
+        <li><strong>Жаңарту мүмкіндігі</strong> (<span class="term-en">update capacity</span>): деректер базасы бір секундта көптеген өзгерісті қабылдай алады. Елестетіңіз: мыңдаған адам бір мезетте билет сатып алып жатыр.</li>
+        <li><strong>Жылдамдық</strong> (<span class="term-en">speed</span>): деректер базасы ақпаратты табудың түрлі алгоритмдерін ұсынады, сондықтан іздеу тез жүреді. Ал электрондық кестеде тек <kbd>Ctrl+F</kbd> (Mac-та <kbd>Cmd+F</kbd>) бар: ол табылған нәтижелердің арасынан бірінен соң бірін аралатады, сонда біз өзіміз көз жүгіртіп отырамыз.</li>
+      </ul>
+
+      <h2 id="database">Деректер базасы дегеніміз не?</h2>
+      <p><strong>Деректер базасы</strong> (<span class="term-en">database</span>) - деректі төрт амал жасай алатындай етіп ұйымдастырудың тәсілі:</p>
+      <ul>
+        <li>жасау (<span class="term-en">create</span>),</li>
+        <li>оқу (<span class="term-en">read</span>),</li>
+        <li>жаңарту (<span class="term-en">update</span>),</li>
+        <li>жою (<span class="term-en">delete</span>).</li>
+      </ul>
+      <p>Қысқаша, ағылшынша <em>create, read, update, delete</em> деп айтылады. Қазақшаға шамалап «жаса, оқы, жаңарт, жой» дейміз. Өмірде қолданатын кез келген қолданбаны, мысалы жаңа тіркелгі жасап, ескісін өзгертіп, ақырында жоюды алсаңыз, барлығы осы төрт амалдың айналасында жүреді.</p>
+      <p>Ал деректер базасымен тікелей өзіміз сөйлеспейміз. Ол үшін делдал бар, оны <strong>деректер базасын басқару жүйесі</strong> (<span class="term-en">database management system, DBMS</span>) дейді. Ол деректер базасымен графикалық интерфейс арқылы да, мәтіндік тіл арқылы да әрекеттесуге мүмкіндік береді. Мысалдары: MySQL, Oracle, PostgreSQL, SQLite, Microsoft Access, MongoDB және т.б.</p>
+      <p>Қайсысын таңдау керек? Бұл бірнеше нәрсеге байланысты:</p>
+      <ul>
+        <li><strong>Бағасы</strong> (<span class="term-en">cost</span>): ақылы (жабық) бағдарлама ма, әлде тегін бағдарлама ма;</li>
+        <li><strong>Қолдау көлемі</strong> (<span class="term-en">amount of support</span>): MySQL, PostgreSQL және SQLite сияқты тегін ашық жүйелердің кемшілігі - оларды өзіңіз орнатып, өзіңіз баптайсыз;</li>
+        <li><strong>Салмағы</strong> (<span class="term-en">weight</span>): MySQL мен PostgreSQL сияқты мүмкіндігі мол жүйелер ауыр, олар жұмыс істеуі үшін көбірек есептеу қуатын қажет етеді. SQLite әлдеқайда жеңіл.</li>
+      </ul>
+      <p>Біз курсты SQLite-пен бастаймыз, кейін MySQL мен PostgreSQL-ге көшеміз.</p>
+
+      <h2 id="sql">SQL</h2>
+      <p><strong>SQL</strong> - <em>Structured Query Language</em>, яғни <strong>құрылымдық сұраныстар тілі</strong> (<span class="term-en">Structured Query Language</span>). Осы тілмен деректер базасындағы деректі жасап, оқып, жаңартып, жоя аламыз. Оның үш ерекшелігін атап өтейік:</p>
+      <ul>
+        <li>ол <em>құрылымдық</em>: бұл курста көре жатамыз, оның жазылу ережесі қатаң;</li>
+        <li>оның деректер базасымен сөйлесуге арналған бірнеше <em>кілт сөзі</em> бар;</li>
+        <li>ол <em>сұраныс тілі</em> (<span class="term-en">query language</span>): деректер базасындағы деректерге сұрақ қоюға болады.</li>
+      </ul>
+      <p>Бүгін бірнеше қарапайым SQL <strong>сұрауын</strong> (<span class="term-en">query</span>) жазуды үйренеміз.</p>
+
+      <h3 id="q-sql-subsets">Сұрақ: SQL-дің «ішкі жиындары» бар ма?</h3>
+      <p>SQL - Американдық ұлттық стандарттар институтының (ANSI) және Халықаралық стандарттау ұйымының (ISO) стандарты. Бірақ көп деректер базасын басқару жүйесі осы тілдің тек бір бөлігін, «ішкі жиынын» қолдайды. Мысалы, біз SQLite қолдайтын бөлікті қолданып отырмыз. Кодты MySQL сияқты басқа жүйеге көшірсек, синтаксисті азын-аулақ өзгертуге тура келуі мүмкін. Бұл тілдің екі шеттесі сияқты: қазақ тілі бір, бірақ Алматы мен Атыраудың сөйлеу мәнері аздап ерекшеленеді.</p>
+
+      <h2 id="sqlite">SQLite-пен танысу</h2>
+      <p>SQLite - тек осы курс үшін жасалған ойыншық емес. Ол телефондарда, компьютер бағдарламаларында, сайттарда - көп жерде нағыз жұмыс істеп жатқан деректер базасы жүйесі. Сіздің қалтаңыздағы телефонда да ондаған SQLite базасы жатқан болуы мүмкін.</p>
+      <p>Бүгінгі мысалымызға келейік. Түпнұсқада Халықаралық Букер сыйлығының ұзын тізіміне кірген кітаптардың деректер базасы алынған: жыл сайын 13 кітап, базада 5 жылдың тізімі. Біз де солай жасаймыз, тек өз сыйлығымызды ойлап табамыз. «Алтын қалам» сыйлығының ұзын тізімінде жыл сайын 13 кітап бар делік, ал деректер базамызда 2019 жылдан 2023 жылға дейінгі бес тізім сақталған. Яғни кестеде 5 × 13 = 65 жол.</p>
+      <p>Бастамас бұрын мына нәрселерді дайындаңыз (компьютерде жұмыс істесеңіз):</p>
+      <ul>
+        <li><a href="https://cs50.dev/" target="_blank" rel="noopener">Visual Studio Code for CS50</a> жүйесіне кіріңіз. Код жазатын және файл өңдейтін жеріміз осы болады.</li>
+        <li>SQLite ортасы Codespace-те дайын тұр. Терминалда оны ашыңыз.</li>
+      </ul>
+      <pre class="terminal"><code class="language-plaintext">$ sqlite3 longlist.db
+sqlite&gt;</code></pre>
+      <p>Ал сайттың өзінде осының бәрі қажет емес: төмендегі мысалдардың астындағы «▶ Іске қосу» батырмасы сіздің орныңызға сұрауды жүргізеді.</p>
+
+      <h2 id="terminal-tips">Терминалдағы кеңестер</h2>
+      <p>SQL кодын терминалда жазғанда пайдалы бірнеше ұсақ кеңес:</p>
+      <ul>
+        <li>терминалды тазарту үшін <kbd>Ctrl + L</kbd> басыңыз;</li>
+        <li>алдында орындалған нұсқауды қайта шығару үшін <kbd>↑</kbd> (жоғары көрсеткі) басыңыз;</li>
+        <li>сұрау тым ұзын болып, терминалда көшіп кетіп жатса, <kbd>Enter</kbd> басып, қалғанын келесі жолға жазыңыз;</li>
+        <li>деректер базасынан немесе SQLite ортасынан шығу үшін <code>.quit</code> деп жазыңыз.</li>
+      </ul>
+
+      <h2 id="select"><code>SELECT</code></h2>
+      <p>Біздің базада нақты қандай деректер бар? Мұны білу үшін алғашқы SQL кілт сөзімізді қолданамыз. Ол - <code>SELECT</code>. Ол кестеден кейбір (немесе барлық) жолды «таңдап алуға» мүмкіндік береді. SQLite ортасында мынаны жазыңыз:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT *
+FROM "longlist";</code></pre>
+      <p>Бұл <code>longlist</code> кестесінің барлық жолын таңдайды. Жұлдызша (<code>*</code>) «бәрін» дегенді білдіреді. Шыққан нәтижеде барлық жолдың барлық бағаны бар, яғни деректің көптігі соншалық, көзге қарағанда көп нәрсе түсініксіз. Оны жеңілдетейік: бір ғана бағанды, мысалы атауын (<code>title</code>) таңдап көрейік:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title"
+FROM "longlist";</code></pre>
+      <p>Енді тек атаулардың тізімі көрініп тұр. Ал атауларымен қатар авторларын да көргіміз келсе ше? Онда бағандарды үтір арқылы тізіп жазамыз:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "author"
+FROM longlist;</code></pre>
+      <p>Бұл жолы кесте атын тырнақшасыз жаздық. Жұмыс істейді, бірақ неге бірінші мысалдардағыдай жазбаймыз? Төмендегі сұрақтан біле аласыз.</p>
+
+      <h3 id="q-quotes">Сұрақ: кесте мен баған аттарын қос тырнақшаға алу міндетті ме?</h3>
+      <p>Міндетті емес, бірақ қос тырнақшаға алған жақсы тәжірибе. Кесте мен баған аттарын SQL-де <strong>идентификаторлар</strong> (<span class="term-en">identifiers</span>) дейді. SQL-де <em>жолдар</em> (мәтіндік мәндер) де бар, оларды біз бір тырнақшаға (<code>'...'</code>) аламыз. Осылай идентификаторды мәтіннен ажыратып тұрамыз. Мысалы, <code>"title"</code> - баған аты, ал <code>'title'</code> - дәл «title» деген сөз.</p>
+
+      <h3 id="q-source">Сұрақ: бұл деректер қайдан алынған?</h3>
+      <p>Түпнұсқа лекцияда базадағы деректер түрлі көзден жиналған: ұзын тізімдер (2018-2023 жылдар) Букер сыйлығының сайтынан, ал кітаптардың рейтингі мен өзге ақпарат Goodreads-тан алынған. Бізде ондай емес: біздің нұсқада кітаптар, авторлар, баспалар, рейтингтер мен дауыс саны - бәрі ойдан шығарылған, тек оқу мақсатына арналған.</p>
+
+      <h3 id="q-schema">Сұрақ: базада қандай кесте мен баған бар екенін қалай білеміз?</h3>
+      <p>Деректер базасының құрылымын, яғни кестелер мен бағандардың аттарын <strong>схема</strong> (<span class="term-en">schema</span>) сипаттайды. Курстың кейінгі кезеңінде схеманы қалай алып, қалай түсінуді үйренеміз. Әзірге біздің кестеміздегі бағандар мыналар: <code>id</code>, <code>title</code>, <code>author</code>, <code>translator</code>, <code>publisher</code>, <code>format</code>, <code>year</code>, <code>pages</code>, <code>rating</code>, <code>votes</code>.</p>
+
+      <h3 id="q-case">Сұрақ: SQLite бас-кіші әріпті ажыратады ма? Неге сұраудың бір бөлігі бас әріппен, бір бөлігі кіші әріппен жазылған?</h3>
+      <p>SQLite кілт сөздерді жазғанда бас-кіші әріпті ажыратпайды. Бірақ бізде стиль келісімі бар. Мына сұрауға қараңыз:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT *
+FROM "longlist";</code></pre>
+      <p>SQL <strong>кілт сөздері</strong> бас әріппен жазылады. Бұл ұзын сұрауларды оқуды айтарлықтай жеңілдетеді: кілт сөздер бірден көзге түседі. Кесте мен баған аттары кіші әріппен жазылады.</p>
+
+      <h2 id="limit"><code>LIMIT</code></h2>
+      <p>Базада миллион жол болса, бәрін экранға шығарудың керегі жоқ. Көбіне деректерге жай ғана «көз салып» қарағымыз келеді. Нәтижедегі жол санын шектеу үшін <code>LIMIT</code> кілт сөзі бар:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title"
+FROM "longlist"
+LIMIT 10;</code></pre>
+      <p>Бұл сұрау базадағы алғашқы 10 атауды береді. Атаулар нәтижеде базадағы ретімен тұрады, ешқандай сұрыптау жасалған жоқ.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>LIMIT 10</code> «ең жақсы 10 кітапты» береді деп айтуға бола ма?</summary>
+        <div class="details-body"><p>Жоқ. <code>LIMIT</code> тек санын шектейді, ал қайсысын алатынын өзі шешпейді: жай ғана базадағы алғашқы 10 жолды береді. Ең жақсы 10 кітапты алу үшін алдымен жолдарды рейтинг бойынша ретке келтіру керек. Оны бір сәттен кейін, <code>ORDER BY</code> бөлімінде көреміз.</p></div>
+      </details>
+
+      <h2 id="where"><code>WHERE</code></h2>
+      <p><code>WHERE</code> кілт сөзі жолдарды шарт бойынша таңдайды: ол шарт ақиқат болатын жолдарды ғана шығарады. Мысалы, 2023 жылы ұзын тізімге кірген кітаптардың атауы мен авторын көрейік:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "author"
+FROM "longlist"
+WHERE "year" = 2023;</code></pre>
+      <p><code>2023</code> тырнақшасыз жазылғанына назар аударыңыз: ол бүтін сан, жол да емес, идентификатор да емес.</p>
+      <p>Шарт жазуға арналған операторлар: <code>=</code> («тең»), <code>!=</code> («тең емес») және <code>&lt;&gt;</code> (ол да «тең емес»). Енді қатты мұқабалы (<code>hardcover</code>) емес кітаптарды таңдайық:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "format"
+FROM "longlist"
+WHERE "format" != 'hardcover';</code></pre>
+      <p>Мұнда <code>hardcover</code> бір тырнақшада тұр, себебі ол идентификатор емес, SQL жолы. Дәл осы нәтижені <code>!=</code> орнына <code>&lt;&gt;</code> жазып та алуға болады:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "format"
+FROM "longlist"
+WHERE "format" &lt;&gt; 'hardcover';</code></pre>
+      <p>Үшінші жолы - <code>NOT</code> кілт сөзі:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "format"
+FROM "longlist"
+WHERE NOT "format" = 'hardcover';</code></pre>
+      <p>Үш сұрау да бірдей нәтиже береді. Бір ойды SQL-де бірнеше тәсілмен айтуға болатынын байқаңыз. Қайсысы оқуға жеңіл болса, соны таңдаңыз.</p>
+      <p>Шарттарды біріктіру үшін <code>AND</code> («және») мен <code>OR</code> («немесе») бар. Күрделі шартта қайсысы бірінші есептелетінін жақша арқылы көрсетеміз. 2022 немесе 2023 жылдардың кітаптарының атауы мен авторын таңдайық:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "author"
+FROM "longlist"
+WHERE "year" = 2022 OR "year" = 2023;</code></pre>
+      <p>Ал 2022 немесе 2023 жылдардың кітаптарынан <strong>қатты мұқабалы емес</strong>терін таңдасақ:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "format"
+FROM "longlist"
+WHERE ("year" = 2022 OR "year" = 2023) AND "format" != 'hardcover';</code></pre>
+      <p>Мұндағы жақша <code>OR</code> бөлімі <code>AND</code>-ден бұрын есептелсін дегенді білдіреді. Математикадағыдай: <code>(2 + 3) × 4</code> пен <code>2 + 3 × 4</code> бірдей емес қой.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: жақшаны алып тастасақ, нәтиже өзгере ме?</summary>
+        <div class="details-body"><p>Иә, өзгереді! <code>AND</code> операторы <code>OR</code>-дан күштірек байланысады (көбейту мен қосу сияқты). Яғни жақшасыз <code>"year" = 2022 OR "year" = 2023 AND "format" != 'hardcover'</code> деп жазсақ, SQLite оны «2022 жылғы кез келген кітап НЕМЕСЕ (2023 жылғы қатты мұқабалы емес кітап)» деп түсінеді. Сонда 2022 жылғы қатты мұқабалы кітаптар да нәтижеге кіріп кетеді. Күмәніңіз болса, жақшасыз нұсқаны өзіңіз іске қосып көріңіз.</p></div>
+      </details>
+
+      <h2 id="null"><code>NULL</code></h2>
+      <p>Кестеде кейде деректің бір бөлігі жетіспей жатады. <strong><code>NULL</code></strong> - дәл осындай жағдайды белгілейтін мән: «бұл деректің мәні жоқ» немесе «кестеде жоқ» деген мағына береді. Нөл де емес, бос жол да емес, жай ғана «мәлімет жоқ».</p>
+      <p>Біздің базада әр кітаптың автормен қатар аудармашысы да болуы мүмкін. Бірақ аудармашы тек басқа тілден қазақшаға аударылған кітапта ғана болады. Қазақ тілінде жазылған кітаптар үшін <code>translator</code> мәні <code>NULL</code> болады.</p>
+      <p><code>NULL</code> мәнімен жұмыс істеу үшін екі шарт бар: <code>IS NULL</code> және <code>IS NOT NULL</code>. Аудармашысы жоқ кітаптарды таңдайық:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "translator"
+FROM "longlist"
+WHERE "translator" IS NULL;</code></pre>
+      <p>Енді керісінше: аудармашысы бар кітаптарды таңдайық:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "translator"
+FROM "longlist"
+WHERE "translator" IS NOT NULL;</code></pre>
+      <div class="callout warn">
+        <span class="callout-title">NULL-ды <code>=</code> арқылы салыстырмаңыз</span>
+        <p><code>WHERE "translator" = NULL</code> деп жазсаңыз, ештеңе таппайсыз: NULL ештеңеге тең емес, тіпті өзіне де. Әрдайым <code>IS NULL</code> немесе <code>IS NOT NULL</code> қолданыңыз.</p>
+      </div>
+
+      <h2 id="like"><code>LIKE</code></h2>
+      <p><code>LIKE</code> кілт сөзі мәтіннің берілген үлгіге шамамен сәйкес келуін тексереді. Мысалы, атауында белгілі бір сөз немесе тіркес бар кітаптарды іздеуге болады. <code>LIKE</code> екі арнайы белгімен бірге жұмыс істейді:</p>
+      <ul>
+        <li><code>%</code> - кез келген таңбалар тізбегіне (нөл таңбаны қоса) сәйкес келеді;</li>
+        <li><code>_</code> - дәл бір кез келген таңбаға сәйкес келеді.</li>
+      </ul>
+      <p>Атауында «махаббат» сөзі бар кітаптарды іздейік:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title"
+FROM "longlist"
+WHERE "title" LIKE '%махаббат%';</code></pre>
+      <p>(Түпнұсқада бұл жерде <code>'%love%'</code> тұр.) <code>%</code> нөл не одан көп таңбаға сәйкес келеді. Яғни сұрау «махаббат» сөзінің алдында да, артында да кез келген мөлшерде таңба тұра алатын атауларды табады, басқаша айтқанда «құрамында махаббат бар» атауларды.</p>
+      <div class="callout warn">
+        <span class="callout-title">Кириллицада LIKE регистрге сезімтал!</span>
+        <p>Нәтижеден «Махаббат аралы» кітабы көрінбейді, байқадыңыз ба? Себебі ол бас әріппен басталады. SQLite-тың <code>LIKE</code> оператары бас-кіші әріпті тек <em>латын</em> әріптері үшін ажыратпайды. Кириллица әріптері (<code>М</code> мен <code>м</code>) үшін ол оларды әртүрлі таңба деп санайды. Төменде өзіңіз көріңіз: латынша <code>'A' LIKE 'a'</code> шын (1), ал қазақша <code>'Қ' LIKE 'қ'</code> жалған (0).</p>
+      </div>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT 'A' LIKE 'a', 'Қ' LIKE 'қ', 'Қ' LIKE 'Қ';</code></pre>
+      <p>Енді атауы «Қыз» сөзінен басталатын кітаптарды таңдайық. Түпнұсқада «The» деп басталатындар алынған:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title"
+FROM "longlist"
+WHERE "title" LIKE 'Қыз%';</code></pre>
+      <p>Нәтижеге қараңыз: «Қыз бала көші», «Қыз тағдыры» сияқты кітаптармен қатар «Қызғалдақ тағдыры», «Қызыл жапырақ», «Қыздар мектебі» де кірді. Себебі <code>'Қыз%'</code> «Қыз» деген үш әріптен басталатын кез келген атауды табады. Ағылшынша «The» деген сұрау «Their» мен «They» дегендерді де алып келеді. Дәл <em>сөзі</em> «Қыз» болатын атауларды ғана алғымыз келсе, қатарына бос орын қосамыз:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title"
+FROM "longlist"
+WHERE "title" LIKE 'Қыз %';</code></pre>
+      <p>Енді <code>_</code> белгісінің жұмысы. Базада «Тұма» деген кітап бар делік, бірақ оның «Тұма» ма, «Тама» ма екені есімізде жоқ (түпнұсқада - «Pyre» не «Pire»). Ортасындағы әріпті <code>_</code> арқылы белгісіз қалдырамыз:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title"
+FROM "longlist"
+WHERE "title" LIKE 'Т_ма';</code></pre>
+      <p>Бұл сұрау «Тома» не «Тума» сияқты атауларды да табар еді, егер олар базада болса: <code>_</code> дәл бір кез келген таңбаға сәйкес келеді.</p>
+
+      <h3 id="q-multi-wildcard">Сұрақ: бір сұрауда бірнеше <code>%</code> не <code>_</code> қолдануға бола ма?</h3>
+      <p>Болады. Бірінші мысал: атауы «Қыз» сөзінен басталып, ортасында «махаббат» сөзі бар кітапты іздейік:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title"
+FROM "longlist"
+WHERE "title" LIKE 'Қыз%махаббат%';</code></pre>
+      <p>Біздің базада мұндай кітап жоқ, сондықтан сұрау ештеңе қайтармайды. Бұл да нәтиже: «жоқ» деген жауап.</p>
+      <p>Екінші мысал: атауы «А» әрпінен басталатын, барлығы төрт әріптен тұратын кітапты іздейік. Түпнұсқада «T» әрпінен басталатын төрт әріптісі іздеген:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title"
+FROM "longlist"
+WHERE "title" LIKE 'А___';</code></pre>
+      <p>Бір әріп, одан кейін үш астын сызу: барлығы төрт таңба.</p>
+
+      <h3 id="q-like-case">Сұрақ: SQL-де жолдарды салыстыру регистрге сезімтал ба?</h3>
+      <p>SQLite-та <code>LIKE</code> әдепкіде регистрді ажыратпайды (латын әріптері үшін, жоғарыда көргеніміздей), ал <code>=</code> арқылы салыстыру <em>ажыратады</em>. Төменде іске қосып көріңіз:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT 'Dala' = 'dala', 'Dala' LIKE 'dala';</code></pre>
+      <p>Басқа деректер базасы жүйелерінде бұл баптауға байланысты өзгеруі мүмкін, сондықтан оған сүйеніп кодты ауыстырмаңыз.</p>
+
+      <h2 id="ranges">Аралықтар</h2>
+      <p>Сандық мәндерді аралықпен салыстыру үшін <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code> және <code>&gt;=</code> операторларын қолдана аламыз. Мысалы, 2019 жылдан 2022 жылға дейін (екеуін қоса) ұзын тізімге кірген кітаптарды таңдайық:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "author"
+FROM "longlist"
+WHERE "year" &gt;= 2019 AND "year" &lt;= 2022;</code></pre>
+      <p>Осыны басқаша жазудың жолы бар: <code>BETWEEN</code> және <code>AND</code> кілт сөздері қоса алынған аралықты береді:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "author"
+FROM "longlist"
+WHERE "year" BETWEEN 2019 AND 2022;</code></pre>
+      <p>Нәтиже бірдей, бірақ екінші нұсқа қысқа әрі «2019-дан 2022-ге дейін» деген ойға жақын. Рейтингі 4.0-ден жоғары кітаптарды таңдайық:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "rating"
+FROM "longlist"
+WHERE "rating" &gt; 4.0;</code></pre>
+      <p>Енді таңдауды дауыс санымен тарылтайық: тек кемінде 10 000 дауыс жиналған кітаптар керек:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "rating", "votes"
+FROM "longlist"
+WHERE "rating" &gt; 4.0 AND "votes" &gt; 10000;</code></pre>
+      <p>Ал 300 беттен аз кітаптарды қалай аламыз?</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "pages"
+FROM "longlist"
+WHERE "pages" &lt; 300;</code></pre>
+
+      <h3 id="q-range-types"><code>&lt;</code> және <code>&gt;</code> операторлары үшін мәндер бүтін сан болуы керек пе?</h3>
+      <p>Жоқ. Мәндер бүтін де, ондық бөлшегі бар (<span class="term-en">floating-point</span>, жай тілмен «ондық») сан да бола алады. Базаны жасаған кезде бағандардың типін осылай орнатуға болады. Біздің базада <code>year</code> мен <code>pages</code> - бүтін сандар, ал <code>rating</code> - ондық сан.</p>
+
+      <h2 id="order-by"><code>ORDER BY</code></h2>
+      <p><code>ORDER BY</code> кілт сөзі қайтарылатын жолдарды көрсетілген ретпен тізуге мүмкіндік береді. Мына сұрау рейтингі ең төмен 10 кітапты таңдайды:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "rating"
+FROM "longlist"
+ORDER BY "rating" LIMIT 10;</code></pre>
+      <p>Неге ең төмен 10? Себебі <code>ORDER BY</code> әдепкіде өсу ретімен (кішіден үлкенге қарай) сұрыптайды, ал <code>LIMIT</code> сол тізімнің басынан 10 жол алады. Керісінше, рейтингі ең жоғары 10 кітапты алу үшін кему ретін көрсетеміз:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "rating"
+FROM "longlist"
+ORDER BY "rating" DESC LIMIT 10;</code></pre>
+      <p><code>DESC</code> кілт сөзі кему ретін (<span class="term-en">descending</span>) білдіреді. Өсу ретін анық көрсету үшін <code>ASC</code> жазуға болады.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: екі кітаптың рейтингі бірдей болса, қайсысы жоғары тұрады?</summary>
+        <div class="details-body"><p>Біз оны білмейміз: ол сұрауда көрсетілмеген, ал SQLite өз ретімен қояды. Біздің базада «Домбыра үні», «Асыл» және «Жарқын күндер» кітаптарының рейтингі бірдей (4.55). Мұндай «тең» жағдайға қосымша шарт қою үшін бағандарды үтірмен тізе береміз - келесі мысалда дәл осыны көреміз.</p></div>
+      </details>
+      <p>Рейтингі ең жоғары 10 кітапты таңдап, рейтингі тең болғанда дауыс саны көп кітапты жоғары қоялық:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title", "rating", "votes"
+FROM "longlist"
+ORDER BY "rating" DESC, "votes" DESC
+LIMIT 10;</code></pre>
+      <p>Назар аударыңыз: <code>ORDER BY</code> ішіндегі әр баған үшін өсу не кему ретін жеке көрсетеміз.</p>
+
+      <h3 id="q-sort-title">Кітаптарды атауы бойынша әліпби ретімен сұрыптауға бола ма?</h3>
+      <p>Болады:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT "title"
+FROM "longlist"
+ORDER BY "title";</code></pre>
+      <div class="callout note">
+        <span class="callout-title">Қазақ әріптері соңына түседі</span>
+        <p>Нәтиженің соңына қараңыз: «Ә», «Ө», «Ұ» әріптерінен басталатын атаулар тізімнің ең соңында тұр. Себебі SQLite әдепкіде мәтінді таңбаның Юникод кодына қарап салыстырады, ал «ә», «ө», «ү», «ұ», «қ» сияқты қазақ әріптерінің коды орыс әліпбиінің негізгі әріптерінен кейін келеді. Яғни бұл қазақ әліпбиінің ретімен бірдей емес. Нағыз әліпби реті керек болса, арнайы тіл баптауларын (collation) қолдану қажет, бұл тақырыпты кейін аз-кем көреміз.</p>
+      </div>
+
+      <h2 id="aggregates">Жиынтық функциялар</h2>
+      <p><code>COUNT</code>, <code>AVG</code>, <code>MIN</code>, <code>MAX</code> және <code>SUM</code> - <strong>жиынтық функциялар</strong> (<span class="term-en">aggregate functions</span>). Олар көп жолдағы деректермен сәйкес есептеу жүргізеді: санайды, орташасын алады, ең кішісін, ең үлкенін табады, қосады. Табиғаты бойынша әр жиынтық функция тек бір ғана мән қайтарады - жиынтық нәтиже.</p>
+      <p>Базадағы барлық кітаптың орташа рейтингін есептейік:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT AVG("rating")
+FROM "longlist";</code></pre>
+      <p>Шыққан сан ұзын болуы мүмкін. Оны екі ондық таңбаға дейін дөңгелектейік:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT ROUND(AVG("rating"), 2)
+FROM "longlist";</code></pre>
+      <p>Нәтиже шығатын бағанның атауы да оқуға ыңғайсыз («ROUND(AVG("rating"), 2)»). Оны <code>AS</code> кілт сөзімен өзгертеміз:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT ROUND(AVG("rating"), 2) AS "average rating"
+FROM "longlist";</code></pre>
+      <p>Базадағы ең жоғары рейтингті табайық:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT MAX("rating")
+FROM "longlist";</code></pre>
+      <p>Ең төмен рейтинг:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT MIN("rating")
+FROM "longlist";</code></pre>
+      <p>Базадағы барлық дауыс санының қосындысы:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT SUM("votes")
+FROM "longlist";</code></pre>
+      <p>Базада қанша кітап бар екенін санайық:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT COUNT(*)
+FROM "longlist";</code></pre>
+      <p>Жұлдызшаны қайта қолданып отырмыз: бұрын ол «барлық жол, барлық баған» дегенді білдірсе, мұнда біз «әрбір жолды санағымыз келеді» дейміз. Жауап 65 болады, 5 жыл × 13 кітап.</p>
+      <p>Аудармашылардың санын санайық:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT COUNT("translator")
+FROM "longlist";</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>COUNT("translator")</code> нәтижесі 65-тен аз шықты. Неге?</summary>
+        <div class="details-body"><p>Себебі <code>COUNT</code> функциясы <code>NULL</code> мәндерін санамайды. Аудармашысы жоқ кітаптарда <code>translator</code> - <code>NULL</code>, сондықтан олар есептелмейді. Демек, нәтиже кітаптардың санын емес, аудармашысы бар кітаптардың санын береді. Барлық жолды санау үшін <code>COUNT(*)</code> қолданыңыз.</p></div>
+      </details>
+      <p>Базада қанша баспа бар екенін санауға тырысайық:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT COUNT("publisher")
+FROM "longlist";</code></pre>
+      <p>Аудармашыларға ұқсас, бұл сұрау да <code>NULL</code> емес <code>publisher</code> мәндерін санайды. Бірақ мұнда тағы бір мәселе бар: бір баспаның аты бірнеше рет қайталануы мүмкін. Біз қайталанбайтын, бірегей баспаларды санағымыз келеді. Ол үшін тағы бір кілт сөз - <code>DISTINCT</code> бар. Ол тек бірегей мәндерді санауға мүмкіндік береді:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT COUNT(DISTINCT "publisher")
+FROM "longlist";</code></pre>
+
+      <h3 id="q-max-title"><code>MAX</code> функциясын <code>title</code> бағанымен қолдансақ, ең ұзын атауды аламыз ба?</h3>
+      <p>Жоқ. <code>MAX</code> мәтін бағанында әліпби бойынша «ең үлкен», яғни соңғы атауды береді. Сол сияқты <code>MIN</code> әліпби бойынша бірінші атауды қайтарады. Ұзындығымен еш байланысы жоқ. Дәлелдеп көріңіз:</p>
+<pre data-lang="sql" data-db="w0-kitap" data-dbsrc="sql/data/week-0.js"><code class="language-sql">SELECT MIN("title"), MAX("title")
+FROM "longlist";</code></pre>
+
+      <h2 id="fin">Қорытындылау</h2>
+      <p>Осымен 0-лекция, яғни SQL-де сұрау жазуды үйрену аяқталды. SQLite сұрау жолынан шығу үшін <code>.quit</code> деп жазамыз, сонда әдеттегі терминалға ораламыз. Келесі лекцияға дейін!</p>
+      <pre class="terminal"><code class="language-plaintext">sqlite&gt; .quit
+$</code></pre>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li><strong>Кесте</strong> - жолдар (элементтер) мен бағандардан (қасиеттер) тұрады; <strong>деректер базасы</strong> төрт амалды қолдайды: жасау, оқу, жаңарту, жою.</li>
+        <li><strong>SQL</strong> - деректер базасымен сөйлесетін тіл; <strong>SQLite</strong> - жеңіл, жиі қолданылатын жүйе.</li>
+        <li><code>SELECT ... FROM ...</code> - бағандарды таңдау; <code>*</code> - бәрі; идентификаторлар қос тырнақшада, жолдар бір тырнақшада.</li>
+        <li><code>LIMIT</code> - жол санын шектеу; <code>WHERE</code> - жолдарды шарт бойынша сүзу; <code>=</code>, <code>!=</code>, <code>&lt;&gt;</code>, <code>NOT</code>, <code>AND</code>, <code>OR</code> және жақшалар.</li>
+        <li><code>NULL</code> - «мән жоқ»; тек <code>IS NULL</code> және <code>IS NOT NULL</code> арқылы тексеріледі.</li>
+        <li><code>LIKE</code> - үлгі бойынша іздеу: <code>%</code> (кез келген саны) және <code>_</code> (дәл бір таңба); кириллицада регистрге сезімтал.</li>
+        <li>Аралықтар: <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code> және <code>BETWEEN ... AND ...</code> (шеттерін қоса).</li>
+        <li><code>ORDER BY</code> (<code>ASC</code> әдепкі, <code>DESC</code> кему) және бірнеше бағанмен сұрыптау.</li>
+        <li>Жиынтық функциялар: <code>COUNT</code>, <code>AVG</code>, <code>MIN</code>, <code>MAX</code>, <code>SUM</code>, <code>ROUND</code>, <code>AS</code> және <code>DISTINCT</code>; <code>COUNT("баған")</code> <code>NULL</code>-ды санамайды.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. Бұл сұрау не қайтарады?</p>
+<pre data-lang="sql"><code class="language-sql">SELECT "title"
+FROM "longlist"
+LIMIT 10;</code></pre>
+          <label><input type="radio" value="a"> Рейтингі ең жоғары 10 кітаптың атауы</label>
+          <label><input type="radio" value="b"> Кестедегі алғашқы 10 жолдың атауы (кестедегі ретімен)</label>
+          <label><input type="radio" value="c"> Кез келген 10 кітаптың атауы, әр жолы басқа</label>
+          <label><input type="radio" value="d"> Әліпби бойынша алғашқы 10 атау</label>
+          <p class="explain"><code>LIMIT</code> тек жол санын шектейді. Реттеу жазылмағандықтан, жолдар кестедегі ретімен шығады.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">2. Аудармашысы жоқ кітаптарды қай сұрау дұрыс табады?</p>
+          <label><input type="radio" value="a"> <code>WHERE "translator" = NULL</code></label>
+          <label><input type="radio" value="b"> <code>WHERE "translator" = ''</code></label>
+          <label><input type="radio" value="c"> <code>WHERE "translator" IS NULL</code></label>
+          <label><input type="radio" value="d"> <code>WHERE NOT "translator"</code></label>
+          <p class="explain">NULL ештеңеге, тіпті өзіне де тең емес, сондықтан <code>= NULL</code> ешқашан жолды таппайды. Тек <code>IS NULL</code> дұрыс.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. Жақшасыз жазылған мына шарт нені таңдайды?</p>
+<pre data-lang="sql"><code class="language-sql">WHERE "year" = 2022 OR "year" = 2023 AND "format" != 'hardcover'</code></pre>
+          <label><input type="radio" value="a"> 2022 жылғы барлық кітапты (қатты мұқабалысын да) және 2023 жылғы қатты мұқабалы емес кітаптарды</label>
+          <label><input type="radio" value="b"> Ештеңе өзгермейді, жақшамен бірдей</label>
+          <label><input type="radio" value="c"> SQLite қате береді</label>
+          <label><input type="radio" value="d"> 2022 және 2023 жылдардың қатты мұқабалы емес кітаптарын</label>
+          <p class="explain"><code>AND</code> оператор <code>OR</code>-дан бұрын есептеледі. Сондықтан бұл «2022 НЕМЕСЕ (2023 ЖӘНЕ қатты мұқабалы емес)». Екі жылға бірдей қолдану үшін жақша керек.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">4. <code>COUNT(*)</code> 65 береді, ал <code>COUNT("translator")</code> 65-тен аз береді. Себебі:</p>
+          <label><input type="radio" value="a"> <code>COUNT("translator")</code> тек бірегей мәндерді санайды</label>
+          <label><input type="radio" value="b"> аудармашылар тек соңғы жылдарда бар</label>
+          <label><input type="radio" value="c"> бағанның аты қос тырнақшада тұр</label>
+          <label><input type="radio" value="d"> <code>COUNT(баған)</code> <code>NULL</code> мәндерін санамайды</label>
+          <p class="explain">Аудармашысы жоқ кітаптарда <code>translator</code> - NULL. Бірегей мәндерді санау үшін <code>DISTINCT</code> керек еді.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. Қай атау <code>LIKE 'Қыз%'</code> үлгісіне сәйкес келеді, бірақ <code>LIKE 'Қыз %'</code> үлгісіне келмейді?</p>
+          <label><input type="radio" value="a"> Қыз бала көші</label>
+          <label><input type="radio" value="b"> Қызғалдақ тағдыры</label>
+          <label><input type="radio" value="c"> Қыз Назым</label>
+          <label><input type="radio" value="d"> Үшеуі де екі үлгіге сәйкес келеді</label>
+          <p class="explain">«Қызғалдақ» сөзінде «Қыз» әріптерінен кейін бос орын жоқ, сондықтан тек бос орынсыз үлгі оны табады.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">6. <code>WHERE "year" BETWEEN 2019 AND 2022</code> қай жылдарды қамтиды?</p>
+          <label><input type="radio" value="a"> Тек 2020 және 2021</label>
+          <label><input type="radio" value="b"> 2019, 2020 және 2021</label>
+          <label><input type="radio" value="c"> 2019, 2020, 2021 және 2022</label>
+          <label><input type="radio" value="d"> 2020, 2021 және 2022</label>
+          <p class="explain"><code>BETWEEN</code> шеттерін қоса алады, яғни <code>&gt;= 2019 AND &lt;= 2022</code> дегенмен бірдей.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. <code>ORDER BY "rating" DESC, "votes" DESC</code> ішіндегі <code>"votes" DESC</code> не істейді?</p>
+          <label><input type="radio" value="a"> Рейтингі тең кітаптардың ішінде дауысы көбі жоғары тұрады</label>
+          <label><input type="radio" value="b"> Алдымен дауыс бойынша, сосын рейтинг бойынша реттейді</label>
+          <label><input type="radio" value="c"> Дауысы жоқ кітаптарды алып тастайды</label>
+          <label><input type="radio" value="d"> Ештеңе істемейді</label>
+          <p class="explain">Екінші баған тек бірінші баған тең болғанда ғана қолданылады: бұл «тай-брейк».</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">8. <code>SELECT MAX("title") FROM "longlist";</code> нені қайтарады?</p>
+          <label><input type="radio" value="a"> Ең ұзын атауды</label>
+          <label><input type="radio" value="b"> Ең көп дауыс жинаған кітаптың атауын</label>
+          <label><input type="radio" value="c"> Қате: <code>MAX</code> тек сандарға арналған</label>
+          <label><input type="radio" value="d"> Реттеу бойынша «ең үлкен», яғни соңғы атауды</label>
+          <p class="explain"><code>MAX</code> мәтінде де жұмыс істейді: әліпби (дәлірек, кодтау) бойынша соңғысын табады, ұзындығына қарамайды.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Problem Set 0 (Тапсырмалар жинағы 0)</h2>
+      <p>Ресми тапсырма беті: <a href="https://cs50.harvard.edu/sql/psets/0/" target="_blank" rel="noopener">cs50.harvard.edu/sql/psets/0</a>. Тапсырмаларды <a href="https://cs50.dev/" target="_blank" rel="noopener">cs50.dev</a>-те орындайсыз. Онда <code>submit.cs50.io</code> арқылы курсқа тіркеліп, GitHub тіркелгіңізбен кіру керек, ал кодспейс ескірген болса, терминалда <code>update50</code> орындап, «Rebuild now» түймесін басыңыз.</p>
+      <p><strong>Тапсыру тәртібі:</strong></p>
+      <ol>
+        <li><strong>Cyberchase</strong> (міндетті);</li>
+        <li>екеуінің бірі: <strong>36 Views</strong> немесе <strong>Normals</strong> (екеуін де тапсырсаңыз, жоғары балл есептеледі);</li>
+        <li><strong>Players</strong> (міндетті).</li>
+      </ol>
+      <div class="callout note">
+        <span class="callout-title">Сайттағы автотексеруші туралы</span>
+        <p>Ресми дерекқорлар (<code>cyberchase.db</code>, <code>players.db</code>, <code>normals.db</code>, <code>views.db</code>) үлкен және сайтта жоқ, оларды ресми <code>.zip</code> файлынан жүктеп аласыз. Сайттағы әр тапсырманың астындағы автотексеруші - сайттың өз жаттығуы, ресми тапсырма емес: онда сол тапсырма логикасын қайталайтын кішкентай ойдан шығарылған дерекқор қолданылады. Ресми тапсырманың шешімін <code>check50</code> тексереді.</p>
+      </div>
+      <p>Кеңес: лекциядағы Картердің (Carter) SQL сұрауларын <a href="https://cs50.harvard.edu/sql/weeks/0/" target="_blank" rel="noopener">0-апта</a> бастапқы кодынан өзіңіз сынап көріңіз; осы аптаның мазмұны үшін жоғарыдағы конспектті қараңыз; SQL синтаксисі бойынша анықтамалық ретінде <a href="https://www.w3schools.com/sql/" target="_blank" rel="noopener">w3schools.com/sql</a> болады.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pset-cyberchase">Cyberchase (Киберқуу)</h3></div>
+        <p>Киберкеңістікке қош келдіңіз! <a href="https://pbskids.org/cyberchase/" target="_blank" rel="noopener"><em>Cyberchase</em></a> - 2002 жылдан бері АҚШ-тың Қоғамдық хабар тарату қызметі (PBS) көрсетіп келе жатқан балаларға арналған білім беру анимациялық телехикаясы. Бастапқы мақсаты - «балаларға математиканың барлық жерде екенін және оны кез келген адам жақсы көре алатынын көрсету». Сериал әлемі Джеки, Мэтт және Инезді айналады: олар «киберқұс» Диджитпен бірігіп, Хакердің Киберкеңістікті басып алып, Аналық платаны (Motherboard) жұқтыруына жол бермейді. Жол бойында төртеуі Хакердің әрекетін тоқтату үшін математика, ғылым және мәселе шешу дағдыларын үйренеді.</p>
+        <p>Құрамында <code>episodes</code> кестесі бар <code>cyberchase.db</code> деректер базасында <em>Cyberchase</em> эпизодтары туралы PBS-тің сұрақтарына жауап іздеңіз.</p>
+        <div class="callout note"><span class="callout-title">Дистрибутивті код</span><p>cs50.dev терминалында, <code>cd</code> орындап, үй қалтасына оралыңыз. Сосын мынаны орындаңыз:</p></div>
+<pre class="terminal"><code class="language-plaintext">$ wget https://cdn.cs50.net/sql/2024/x/psets/0/cyberchase.zip
+$ unzip cyberchase.zip
+$ rm cyberchase.zip
+$ cd cyberchase
+cyberchase/ $ ls</code></pre>
+        <p><code>rm</code> сұрағына «y» және Enter деп жауап беріңіз. <code>ls</code> орындағанда <code>cyberchase.db</code> мен бірнеше <code>.sql</code> файлы көрінуі керек. <code>sqlite3 cyberchase.db</code> деп деректер базасын ашасыз.</p>
+        <p><strong>Схема.</strong> <code>cyberchase.db</code>-де бір ғана кесте - <code>episodes</code> бар. Оның бағандары:</p>
+        <ul>
+          <li><code>id</code> - кестедегі әр жолды (эпизодты) бірегей анықтайды;</li>
+          <li><code>season</code> - эпизод шыққан маусымның нөмірі;</li>
+          <li><code>episode_in_season</code> - эпизодтың өз маусымындағы нөмірі;</li>
+          <li><code>title</code> - эпизодтың атауы;</li>
+          <li><code>topic</code> - эпизод үйретуге тырысқан идеялар;</li>
+          <li><code>air_date</code> - эпизод «эфирге шыққан» (жарияланған) күн, <code>YYYY-MM-DD</code> пішімінде;</li>
+          <li><code>production_code</code> - PBS эпизодты ішкі түрде белгілейтін бірегей код.</li>
+        </ul>
+        <p><strong>Талаптар.</strong> Төмендегі әр сұрақ үшін нәтижені шығаратын <em>бір</em> SQL сұрауын жазыңыз. Белгілі бір эпизодтардың <code>id</code> мәні туралы ештеңе <em>болжамаңыз</em>: сұрауларыңыз эпизодтың <code>id</code> мәні басқа болса да дұрыс жұмыс істеуі керек. Әр сұрау тек керекті деректі қайтарсын: егер сұрақ тек эпизод атауларын сұраса, эфир күнін қоса шығармаңыз.</p>
+        <ol>
+          <li><code>1.sql</code> файлында <em>Cyberchase</em>-тің алғашқы, 1-маусымындағы барлық эпизодтың атауларын шығаратын SQL сұрауын жазыңыз.</li>
+          <li><code>2.sql</code> файлында әр маусымның бірінші эпизодының маусым нөмірін және атауын шығарыңыз.</li>
+          <li><code>3.sql</code>: «Hackerized!» эпизодының production code мәнін табыңыз.</li>
+          <li><code>4.sql</code>: тақырыбы (topic) әлі көрсетілмеген эпизодтардың атауларын табатын сұрау жазыңыз.</li>
+          <li><code>5.sql</code>: 2004 жылдың 31 желтоқсанында шыққан мерекелік эпизодтың атауын табыңыз.</li>
+          <li><code>6.sql</code>: 6-маусымның (2008) эпизодтарынан ерте, 2007 жылы шыққандарының атауларын шығарыңыз.</li>
+          <li><code>7.sql</code>: бөлшектерді үйрететін барлық эпизодтың атауы мен тақырыбын шығаратын SQL сұрауын жазыңыз.</li>
+          <li><code>8.sql</code>: соңғы 6 жылда, яғни 2018-2023 жылдар аралығында (қоса) шыққан эпизодтардың санын есептейтін сұрау жазыңыз. Кеңес: күндермен де <code>BETWEEN</code> қолдануға болады, мысалы <code>BETWEEN '2000-01-01' AND '2000-12-31'</code>.</li>
+          <li><code>9.sql</code>: <em>Cyberchase</em>-тің алғашқы 6 жылында, яғни 2002-2007 жылдар аралығында (қоса) шыққан эпизодтардың санын есептейтін сұрау жазыңыз.</li>
+          <li><code>10.sql</code>: барлық эпизодтың id, атауы және production code мәнін шығарыңыз. Нәтижені <em>production code</em> бойынша, ең ертесінен кештісіне қарай реттеңіз.</li>
+          <li><code>11.sql</code>: 5-маусымның эпизодтарының атауларын кері әліпби ретімен шығарыңыз.</li>
+          <li><code>12.sql</code>: бірегей эпизод атауларының санын есептеңіз.</li>
+          <li><code>13.sql</code>: өзіңіз таңдаған сұраққа жауап беретін SQL сұрауын жазыңыз. Ол кемінде бір шартты қамтуы керек: <code>WHERE</code> арқылы, <code>AND</code> не <code>OR</code> қолданып.</li>
+        </ol>
+        <p><strong>Өзіңізді еркін сезінесіз бе?</strong> Қаласаңыз, төмендегі, кейбір кеңейтілген білімді қажет ететін, міндетті емес сұрауларды орындап көріңіз:</p>
+        <ol>
+          <li>АҚШ-та әдетте желтоқсанда болатын мерекелік маусымда шыққан эпизодтардың атауларын табатын сұрау жазыңыз. Нәтиже бір бағанды (әр эпизодтың атауы) құрсын. Мүмкін болса, <code>LIKE</code>-тан жақсырақ шешім табыңыз.</li>
+          <li>Әр жыл үшін PBS <em>Cyberchase</em> эпизодын шығарған жылдың ең алғашқы күнін табатын сұрау жазыңыз. Нәтиже екі бағаннан тұрсын: жыл және сол жылы эпизод шыққан ең ерте ай мен күн.</li>
+        </ol>
+        <p><strong>Қолдану.</strong> Сұрауларыңызды <code>.sql</code> файлдарына жазып, мына команда арқылы деректер базасында сынаңыз:</p>
+<pre class="terminal"><code class="language-plaintext">sqlite&gt; .read 1.sql</code></pre>
+        <p>Немесе терминалда (SQLite ішінде емес) нәтижені мәтін файлына жіберуге болады, бұл жол санын тексеруге ыңғайлы:</p>
+<pre class="terminal"><code class="language-plaintext">$ cat 1.sql | sqlite3 cyberchase.db &gt; output.txt</code></pre>
+        <p><strong>Қалай тексеру керек.</strong> Ресми <code>cyberchase.db</code> үшін мыналарды көруіңіз керек (тақырып жолы саналмайды):</p>
+        <ul>
+          <li><code>1.sql</code> - 1 баған, 26 жол; <code>2.sql</code> - 2 баған, 14 жол; <code>3.sql</code> - 1 баған, 1 жол;</li>
+          <li><code>4.sql</code> - 1 баған, 26 жол; <code>5.sql</code> - 1 баған, 1 жол; <code>6.sql</code> - 1 баған, 2 жол;</li>
+          <li><code>7.sql</code> - 2 баған, 6 жол; <code>8.sql</code> - 1 баған, 1 жол; <code>9.sql</code> - 1 баған, 1 жол;</li>
+          <li><code>10.sql</code> - 3 баған, 140 жол; <code>11.sql</code> - 1 баған, 10 жол; <code>12.sql</code> - 1 баған, 1 жол;</li>
+          <li><code>13.sql</code> - өз қалауыңыз бойынша.</li>
+        </ul>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Күндерді <code>YYYY-MM-DD</code> жолдары ретінде салыстырыңыз. Тақырыбы жоқ эпизодты табу үшін <code>IS NULL</code> керек екенін ұмытпаңыз. «Қанша?» деген сұрақтарда <code>COUNT</code> қолданыңыз.</p></div></details>
+        <div class="sql-grader" data-set="sql0-cyberchase" data-src="sql/data/week-0.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql0-cyberchase">
+            <li><input type="checkbox"> <span>1.sql - 12.sql файлдарының әрқайсысы жоғарыдағы жол және баған саныдай нәтиже береді.</span></li>
+            <li><input type="checkbox"> <span>13.sql <code>WHERE</code> және <code>AND</code>/<code>OR</code> қамтиды.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/cyberchase</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span>Тапсыру: <code>submit50 cs50/problems/2024/sql/cyberchase</code></span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+        <p>Деректер <a href="https://en.wikipedia.org/wiki/List_of_Cyberchase_episodes" target="_blank" rel="noopener">en.wikipedia.org/wiki/List_of_Cyberchase_episodes</a> бетінен алынған.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-views">36 Views (36 көрініс)</h3></div>
+        <p>1830-1832 жылдары жапон суретшісі Кацусика Хокусай Жапонияның Хонсю аралындағы жанартау - <a href="https://en.wikipedia.org/wiki/Thirty-six_Views_of_Mount_Fuji" target="_blank" rel="noopener">Фудзи тауының</a> 36 түрлі көрінісін бейнелейтін 36 ағаш қалып гравюрасын жасады. Серияның ең танымал туындылары - <em>Fine Wind, Clear Morning</em> («Желді таң, ашық ауа») және <em>The Great Wave off Kanagawa</em> («Канагавадағы үлкен толқын»). Бұл гравюралар соншалықты ықпалды болғаны сонша, сол заманның тағы бір жапон суретшісі Утагава Хиросигэ Фудзидің жаңа көріністерін бейнелейтін өзінің 36 гравюрасын жасады.</p>
+        <p><code>views.db</code>-де Хокусай мен Хиросигэнің жасаған 36-дан гравюрасының мәліметі бар, барлығы 72 гравюра. Мұндай гравюралар әдетте статистикасы үшін емес, эстетикасы үшін бағаланады, бірақ информатика енді көркем туындылар жайында <em>сандық</em> мәлімет те береді. Әр гравюраның атауы мен авторынан бөлек, компьютерлік көру саласында жиі қолданылатын статистикасы бар: <em>орташа түсі</em>, <em>жарықтығы</em>, <em>контрасты</em> және <em>энтропиясы</em>. Бірге берілген <code>.sql</code> файлдарына осы 72 гравюра және олардың құрамы туралы сұрақтарға жауап беретін сұраулар жазыңыз.</p>
+        <ul>
+          <li><em>Орташа түс</em> - кескіннің әр пикселіндегі қызыл, жасыл, көк арналарының мәндерін қосып, әр қосындыны пиксель санына бөлгенде шығатын түс;</li>
+          <li><em>Жарықтық</em> (brightness) - кескіннің жарық не қараңғы екені, 0-ден 1-ге дейінгі шкалада. Ақ кескін - 1, қара кескін - 0;</li>
+          <li><em>Контраст</em> - кескіннің әр жеріндегі жарықтық <em>айырмашылығы</em> қаншалық екені, 0-ден 1-ге дейін. Контраст жоғары болса, заттар даралана көрінеді; төмен болса, олар онша ерекшеленбейді;</li>
+          <li><a href="https://en.wikipedia.org/wiki/Entropy_(information_theory)" target="_blank" rel="noopener"><em>Энтропия</em></a> - кескіннің кездейсоқтығының өлшемі, көбіне көркем туындының күрделілігін сипаттау үшін қолданылады. Біздің шкалада 10 - өте жоғары, 0 - өте төмен.</li>
+        </ul>
+        <div class="callout note"><span class="callout-title">Дистрибутивті код</span><p>Алдыңғы тапсырмадағыдай жүктеңіз: <code>wget https://cdn.cs50.net/sql/2024/x/psets/0/views.zip</code>, <code>unzip views.zip</code>, <code>rm views.zip</code>, <code>cd views</code>. Сосын <code>sqlite3 views.db</code> арқылы ашыңыз.</p></div>
+        <p><strong>Схема.</strong> <code>views.db</code>-де бір кесте - <code>views</code>. Оның бағандары:</p>
+        <ul>
+          <li><code>id</code> - әр жолды (гравюраны) бірегей анықтайды;</li>
+          <li><code>print_number</code> - Хокусай не Хиросигэ сериясындағы гравюраның нөмірі;</li>
+          <li><code>english_title</code> - гравюраның ағылшынша атауы;</li>
+          <li><code>japanese_title</code> - гравюраның жапонша атауы;</li>
+          <li><code>artist</code> - гравюра авторының тегі;</li>
+          <li><code>average_color</code> - әр пикселдің түсін орташалағанда шығатын түстің <a href="https://www.pluralsight.com/blog/tutorials/understanding-hexadecimal-colors-simple" target="_blank" rel="noopener">он алтылық жазылуы</a>;</li>
+          <li><code>brightness</code> - кескіннің жалпы жарық не қараңғы екенін көрсететін сан;</li>
+          <li><code>contrast</code> - кескіндегі жарық және қараңғы аймақтар арасындағы айырмашылықты көрсететін сан;</li>
+          <li><code>entropy</code> - көркем туындының күрделілігін өлшейтін сан.</li>
+        </ul>
+        <p><strong>Талаптар.</strong> Алдыңғы тапсырмадағыдай: әр сұрақ үшін бір SQL сұрауы; <code>id</code> мәндері туралы ештеңе болжамаңыз; тек қажетті деректі қайтарыңыз.</p>
+        <ol>
+          <li><code>1.sql</code>: аудармашыға қызықты сұрау жазыңыз: әр гравюраның жапонша және ағылшынша атауын қатар шығарыңыз. Жапонша атау бірінші баған, ағылшынша екінші болсын.</li>
+          <li><code>2.sql</code>: Хокусайдың ағылшынша атауында «river» сөзі бар гравюраларының орташа түстерін шығарыңыз. (Қосымша сұрақ: олардың түсінде көгілдір реңк бар ма?)</li>
+          <li><code>3.sql</code>: Хокусайдың ағылшынша атауында «Fuji» сөзі бар қанша гравюрасы бар екенін санаңыз. Хокусайдың барлық гравюрасы Фудзи тауына арналғанымен, нешеуінің атауында «Fuji» бар?</li>
+          <li><code>4.sql</code>: Хиросигэнің ағылшынша атауы «Eastern Capital» («Шығыс астана») туралы айтатын қанша гравюрасы бар екенін санаңыз. Хиросигэнің гравюралары Жапонияның «Эдо кезеңінде» жасалған, ал Эдо - қазіргі Токио, яғни шығыс астана.</li>
+          <li><code>5.sql</code>: Хокусайдың гравюраларының ішіндегі ең жоғары контраст мәнін табыңыз. Бағанды «Maximum Contrast» деп атаңыз. (Қосымша сұрақ: Хокусайдың ең контрасты гравюрасында шынымен контраст көп пе?)</li>
+          <li><code>6.sql</code>: Хиросигэ гравюраларының орташа энтропиясын екі ондық таңбаға дейін дөңгелектеп табыңыз. Бағанды «Hiroshige Average Entropy» деп атаңыз.</li>
+          <li><code>7.sql</code>: Хиросигэнің ең жарық 5 гравюрасының ағылшынша атауларын, ең жарығынан бастап шығарыңыз. Нәтижені Уикипедиядағы тізіммен салыстырып, гравюралардың эстетикасына сәйкес келе ме, соны қараңыз.</li>
+          <li><code>8.sql</code>: Хокусайдың ең аз контрастты 5 гравюрасының ағылшынша атауларын, ең аз контрастысынан жоғарыға қарай шығарыңыз. Нәтижені Уикипедиядағы тізіммен салыстырыңыз.</li>
+          <li><code>9.sql</code>: ең жоғары жарықтығы бар гравюраның ағылшынша атауы мен авторын табыңыз.</li>
+          <li><code>10.sql</code>: гравюралар туралы өзіңіз таңдаған сұраққа жауап беретін SQL сұрауын жазыңыз. Ол: бағанды атау үшін <code>AS</code> қолдануы; кемінде бір шартты (<code>WHERE</code>) қамтуы; кемінде бір баған бойынша <code>ORDER BY</code> арқылы реттеуі керек.</li>
+        </ol>
+        <p><strong>Қалай тексеру керек.</strong> Ресми <code>views.db</code> үшін: <code>1.sql</code> - 2 баған, 72 жол; <code>2.sql</code> - 1 баған, 3 жол; <code>3.sql</code>, <code>4.sql</code>, <code>5.sql</code>, <code>6.sql</code> - 1 баған, 1 жол; <code>7.sql</code> және <code>8.sql</code> - 1 баған, 5 жол; <code>9.sql</code> - 2 баған, 1 жол; <code>10.sql</code> - өз қалауыңыз бойынша.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Атаудағы сөзді іздеу үшін лекциядағы <code>LIKE</code> мен <code>%</code> қолданыңыз. «Ең жоғары» және «ең жарық N» түріндегі сұрақтарда <code>MAX</code> не <code>ORDER BY ... DESC LIMIT N</code> керек: қайсысы қашан қажет екенін ойлаңыз.</p></div></details>
+        <div class="callout note"><span class="callout-title">Сайттағы автотексеруші</span><p>Мұнда ресми 72 гравюра емес, ойдан шығарылған «Алатаудың 72 көрінісі» деректер базасы қолданылады (ағылшынша/жапонша орнына орысша/қазақша атау). Тапсырма логикасы сол, бірақ сұрақтар демо базаға бейімделген.</p></div>
+        <div class="sql-grader" data-set="sql0-views" data-src="sql/data/week-0.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql0-views">
+            <li><input type="checkbox"> <span>1.sql - 9.sql ресми базада жоғарыдағы жол және баған санын береді.</span></li>
+            <li><input type="checkbox"> <span>10.sql: <code>AS</code>, <code>WHERE</code> және <code>ORDER BY</code> қолданылған.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/views</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span>Тапсыру: <code>submit50 cs50/problems/2024/sql/views</code></span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+        <p>Гравюралардың кескіндері мен атаулары <a href="https://en.wikipedia.org/wiki/Thirty-six_Views_of_Mount_Fuji" target="_blank" rel="noopener">Уикипедиядан</a> (Хокусай) және <a href="https://en.wikipedia.org/wiki/Thirty-six_Views_of_Mount_Fuji_(Hiroshige)" target="_blank" rel="noopener">Уикипедиядан</a> (Хиросигэ) алынған.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-normals">Normals (Қалыпты температуралар)</h3></div>
+        <p>Мұхит температурасының «қалыптыдан» төмен немесе жоғары екенін қалай білеміз? «Қалыпты» температура дегеніміз не? Ғалымдар «<a href="https://www.noaa.gov/explainers/understanding-climate-normals" target="_blank" rel="noopener">климаттық норма</a>» (Climate Normal) деген көрсеткіш ойлап тапқан. Климаттық норма Жердің <a href="https://en.wikipedia.org/wiki/Climate" target="_blank" rel="noopener">климатын</a>, яғни ұзақ мерзімді ауа райын 30 жылдық аралықта сипаттайды. Маңызды көрсеткіштердің бірі - мұхит температурасы.</p>
+        <p>Құрамында <code>normals</code> кестесі бар <code>normals.db</code> деректер базасында ең соңғы климаттық норма деректерін зерттеп, дүние жүзі бойынша мұхиттың қалыпты температурасы қандай болатынын түсініңіз.</p>
+        <div class="callout note"><span class="callout-title">Дистрибутивті код</span><p><code>wget https://cdn.cs50.net/sql/2024/x/psets/0/normals.zip</code>, <code>unzip normals.zip</code>, <code>rm normals.zip</code>, <code>cd normals</code>; сосын <code>sqlite3 normals.db</code>.</p></div>
+        <p><strong>Схема.</strong> Жер шары <a href="https://en.wikipedia.org/wiki/Geographic_coordinate_system" target="_blank" rel="noopener">координаталар</a> торына бөлінген: әр координат - <a href="https://en.wikipedia.org/wiki/Latitude" target="_blank" rel="noopener">ендік</a> пен <a href="https://en.wikipedia.org/wiki/Longitude" target="_blank" rel="noopener">бойлықтың</a> тіркесімі. Мұхит үстіндегі әр координатқа қалыпты мұхит беткі температурасы сәйкес келеді. <code>normals.db</code>-де координаттардың бір ғана кестесі - <code>normals</code> бар. Оның бағандары:</p>
+        <ul>
+          <li><code>id</code> - кестедегі әр жолды (координатты) бірегей анықтайды;</li>
+          <li><code>latitude</code> - координаттың ендігі (ондық пішімде);</li>
+          <li><code>longitude</code> - координаттың бойлығы (ондық пішімде);</li>
+          <li><code>0m</code> - координаттағы қалыпты мұхит беткі температурасы (0 метр тереңдікте), Цельсий бойынша;</li>
+          <li><code>5m</code> - 5 метр тереңдіктегі қалыпты температура;</li>
+          <li><code>10m</code> - 10 метр тереңдіктегі қалыпты температура;</li>
+        </ul>
+        <p>Бақылаулар кейбір координаттарда <code>5500m</code>, яғни 5500 метр тереңдікке дейін жалғасады! <code>normals</code> - «кең» кесте, сондықтан мазмұнын қарап алу үшін тек <code>latitude</code>, <code>longitude</code> және бірнеше тереңдік бағанын таңдаңыз. Баған аттары санмен басталатындықтан, оларды қос тырнақшаға алыңыз.</p>
+        <p><strong>Талаптар.</strong> Алдыңғыдай: әр сұрақ үшін бір SQL сұрауы; бақылаулардың <code>id</code> мәндері туралы ештеңе болжамаңыз; тек қажетті деректі қайтарыңыз.</p>
+        <ol>
+          <li><code>1.sql</code>: Массачусетс жағалауындағы Мэн шығанағындағы (Gulf of Maine) қалыпты мұхит беткі температурасын табыңыз. Ол үшін <strong>42.5° ендік және -69.5° бойлық</strong> деректерін қараңыз. (Беткі температура <code>0m</code> бағанында, «0 метр тереңдік».)</li>
+          <li><code>2.sql</code>: Мэн шығанағына жақын, дәл сол координаттағы ең терең датчиктің қалыпты температурасын табыңыз. Ең терең датчик 225 метр тереңдікті өлшейді, сондықтан деректі <code>225m</code> бағанынан табасыз.</li>
+          <li><code>3.sql</code>: өзіңіз таңдаған орынды алып, сол жердегі 0, 100 және 200 метр тереңдіктегі қалыпты температураны табыңыз. Координат табуға <a href="https://earth.google.com" target="_blank" rel="noopener">Google Earth</a> көмектесуі мүмкін.</li>
+          <li><code>4.sql</code>: ең төмен қалыпты мұхит беткі температурасын табыңыз.</li>
+          <li><code>5.sql</code>: ең жоғары қалыпты мұхит беткі температурасын табыңыз.</li>
+          <li><code>6.sql</code>: <a href="https://en.wikipedia.org/wiki/Arabian_Sea" target="_blank" rel="noopener">Араб теңізіндегі</a> 50 м тереңдіктегі барлық қалыпты мұхит температурасын, олардың ендігі мен бойлығымен бірге шығарыңыз. Ендік, бойлық және температура бағандарын қосыңыз. Қарапайымдылық үшін Араб теңізі мына төрт координатпен шектелген деп алыңыз: (20° ендік, 55° бойлық), (20° ендік, 75° бойлық), (0° ендік, 55° бойлық), (0° ендік, 75° бойлық).</li>
+          <li><code>7.sql</code>: <a href="https://en.wikipedia.org/wiki/Equator" target="_blank" rel="noopener">экватор</a> бойындағы мұхит беткі температурасының орташа мәнін екі ондық таңбаға дейін дөңгелектеп табыңыз. Бағанды «Average Equator Ocean Surface Temperature» деп атаңыз. Экватор бойындағы мұхит беткі температуралары -0.5° және 0.5° ендіктер арасындағы (шеттерін қоса) барлық бойлықта табылады.</li>
+          <li><code>8.sql</code>: мұхит беткі температурасы ең төмен 10 орынды табыңыз, суықтан жылыға қарай реттеп. Екі орынның температурасы бірдей болса, ендігі бойынша реттеңіз (кішіден үлкенге). Ендік, бойлық және беткі температура бағандарын қосыңыз.</li>
+          <li><code>9.sql</code>: беткі температурасы ең жоғары 10 орынды табыңыз, жылыдан суыққа қарай реттеп. Температура бірдей болса, ендігі бойынша реттеңіз (кішіден үлкенге). Ендік, бойлық және беткі температура бағандарын қосыңыз.</li>
+          <li>Жер шарында 180 бүтін градус ендік бар. <code>10.sql</code> файлында қанша ендік нүктесі бойынша кемінде бір дерек нүктесі бар екенін анықтайтын сұрау жазыңыз. (Неліктен барлық ендік бойынша деректер болмауы мүмкін?)</li>
+        </ol>
+        <p><strong>Қалай тексеру керек.</strong> Ресми <code>normals.db</code> үшін: <code>1.sql</code>, <code>2.sql</code>, <code>4.sql</code>, <code>5.sql</code>, <code>7.sql</code>, <code>10.sql</code> - 1 баған, 1 жол; <code>6.sql</code> - 3 баған, 383 жол; <code>8.sql</code>, <code>9.sql</code> - 3 баған, 10 жол; <code>3.sql</code> - өз қалауыңыз бойынша.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Бағаналары санмен басталатын болғандықтан, <code>"0m"</code> деп қос тырнақшаға алыңыз, әйтпесе SQLite оны идентификатор деп түсінбейді. Ал дерек жоқ нүктелерді (мәні <code>NULL</code>) алып тастауды ұмытпаңыз.</p></div></details>
+        <div class="callout note"><span class="callout-title">Сайттағы автотексеруші</span><p>Мұнда ресми <code>normals.db</code> емес, ойдан шығарылған кішкентай мұхит торы (600-ге жуық нүкте, 16 тереңдік бағаны) қолданылады, сондықтан жол саны ресми базадан өзгеше болады. Тапсырма сұрақтары демо базаға бейімделген (мысалы, 8 және 9-да ендік тең болса, бойлық бойынша да реттеу сұралады).</p></div>
+        <div class="sql-grader" data-set="sql0-normals" data-src="sql/data/week-0.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql0-normals">
+            <li><input type="checkbox"> <span>1.sql - 10.sql ресми базада жоғарыдағы жол және баған санын береді.</span></li>
+            <li><input type="checkbox"> <span>3.sql сіз таңдаған орын үшін 0, 100 және 200 м температураны береді.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/normals</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span>Тапсыру: <code>submit50 cs50/problems/2024/sql/normals</code></span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+        <p>Деректер АҚШ-тың Ұлттық мұхиттық және атмосфералық әкімшілігінің (NOAA) жалпыға қолжетімді <a href="https://www.ncei.noaa.gov/access/world-ocean-atlas-2023/bin/woa23.pl" target="_blank" rel="noopener">World Ocean Atlas 2023</a> дереккөзінен алынған.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-players">Players (Ойыншылар)</h3></div>
+        <p>Бейсбол - екі команда кезек-кезек соғып (допты ұрып) және алаңда ойнайтын (допты ұстап, лақтыратын) ойын, әр команда 9 ойыншыдан тұрады. Соғатын команданың ойыншысы допты ұрып, қарсыластың ойыншылары оны «аутқа» шығарып үлгермей бүкіл базаларға тиіп өтсе, ұпай («run») жазылады. Бейсбол АҚШ пен Канадада ең танымал, онда <a href="https://en.wikipedia.org/wiki/Major_League_Baseball" target="_blank" rel="noopener">MLB (Major League Baseball)</a> 1876 жылдан бері кәсіби ойыншылардың бірлестігі болып келеді.</p>
+        <p>Құрамында <code>players</code> кестесі бар <code>players.db</code> деректер базасында 1871 жылдан 2023 жылға дейін ойнаған MLB ойыншылары туралы сұрақтарға жауап беріңіз.</p>
+        <div class="callout note"><span class="callout-title">Дистрибутивті код</span><p><code>wget https://cdn.cs50.net/sql/2024/x/psets/0/players.zip</code>, <code>unzip players.zip</code>, <code>rm players.zip</code>, <code>cd players</code>; сосын <code>sqlite3 players.db</code>.</p></div>
+        <p><strong>Схема.</strong> <code>players.db</code>-де бір кесте - <code>players</code>. Оның бағандары:</p>
+        <ul>
+          <li><code>id</code> - әр жолды (ойыншыны) бірегей анықтайды;</li>
+          <li><code>first_name</code>, <code>last_name</code> - ойыншының аты мен тегі;</li>
+          <li><code>bats</code> - ойыншы соғатын жағы (<code>R</code> - оң, <code>L</code> - сол);</li>
+          <li><code>throws</code> - ойыншы лақтыратын қолы (<code>R</code> - оң, <code>L</code> - сол);</li>
+          <li><code>weight</code> - ойыншының салмағы (фунтпен); <code>height</code> - бойы (дюймде);</li>
+          <li><code>debut</code> - ойыншы MLB-де мансабын бастаған күн (<code>YYYY-MM-DD</code>); <code>final_game</code> - соңғы ойын күні (<code>YYYY-MM-DD</code>);</li>
+          <li><code>birth_year</code>, <code>birth_month</code> (бүтін сан), <code>birth_day</code> - туған жылы, айы, күні;</li>
+          <li><code>birth_city</code>, <code>birth_state</code>, <code>birth_country</code> - туған қаласы, штаты, елі.</li>
+        </ul>
+        <p><strong>Талаптар.</strong> Бұрынғыдай.</p>
+        <ol>
+          <li><code>1.sql</code>: Джеки Робинсонның туған жерін (қала, штат, ел) табыңыз.</li>
+          <li><code>2.sql</code>: Бэйб Рут қай жағынан соққанын (оң не сол) табыңыз.</li>
+          <li><code>3.sql</code>: <code>debut</code> бағанында мәні жоқ жолдардың id-ларын табыңыз.</li>
+          <li><code>4.sql</code>: Америка Құрама Штаттарында туылмаған ойыншылардың аты мен тегін табыңыз. Нәтижені алдымен аты, сосын тегі бойынша әліпби ретімен реттеңіз.</li>
+          <li><code>5.sql</code>: барлық оң қолмен соғатын ойыншылардың аты мен тегін қайтарыңыз. Аты, сосын тегі бойынша әліпби ретімен реттеңіз.</li>
+          <li><code>6.sql</code>: Питтсбургте (Пенсильвания штаты, PA) туылған ойыншылардың атын, тегін және дебют күнін қайтарыңыз. Алдымен дебют күні бойынша (жаңадан ескіге қарай), сосын аты, сосын тегі бойынша реттеңіз.</li>
+          <li><code>7.sql</code>: оң қолымен соғып, сол қолымен лақтыратын <em>не керісінше</em> ойыншылардың санын есептеңіз.</li>
+          <li><code>8.sql</code>: 2000 жылдың 1 қаңтарынан кейін (қоса) дебют жасаған ойыншылардың орташа бойы мен салмағын екі ондық таңбаға дейін дөңгелектеп табыңыз. Бағандарды сәйкесінше «Average Height» және «Average Weight» деп атаңыз.</li>
+          <li><code>9.sql</code>: MLB-дегі соңғы ойынын 2022 жылы өткізген ойыншыларды табыңыз. Аты, сосын тегі бойынша әліпби ретімен реттеңіз.</li>
+          <li><code>10.sql</code>: таңдаған сұрағыңызға жауап беретін SQL сұрауын жазыңыз. Ол: бағанды атау үшін <code>AS</code> қолдануы; кемінде бір шартты (<code>WHERE</code>) қамтуы; кемінде бір баған бойынша <code>ORDER BY</code> арқылы реттеуі керек.</li>
+        </ol>
+        <p><strong>Өзіңізді еркін сезінесіз бе?</strong> Міндетті емес сұрау: бойы орташадан <em>жоғары</em> барлық ойыншының аты мен тегін бір сұрауда шығарыңыз, ең ұзыннан ең қысқасына қарай, сосын аты және тегі бойынша реттеңіз.</p>
+        <p><strong>Қалай тексеру керек.</strong> Ресми <code>players.db</code> үшін: <code>1.sql</code> - 3 баған, 1 жол; <code>2.sql</code> - 1 баған, 1 жол; <code>3.sql</code> - 1 баған, 213 жол; <code>4.sql</code> - 2 баған, 2814 жол; <code>5.sql</code> - 2 баған, 12878 жол; <code>6.sql</code> - 3 баған, 134 жол; <code>7.sql</code> - 1 баған, 1 жол; <code>8.sql</code> - 2 баған, 1 жол; <code>9.sql</code> - 2 баған, 516 жол; <code>10.sql</code> - өз қалауыңыз бойынша.</p>
+        <p><code>check50</code> өнімділік үшін кішірек дерекқорды қолданады, сондықтан нәтижелер жүктеген базаңыздағыдан өзгеше болуы мүмкін. Сұрауыңыз өз базаңызда дұрыс жұмыс істесе, <code>check50</code> базасында да дұрыс істейді. Қате шықса, жолдар санын жоғарыдағымен салыстырыңыз; тым көп жол <code>check50</code>-тің уақыт шегінен асып кетуіне әкелуі мүмкін. Керек болса, <code>.sql</code> файлындағы сұрауларды уақытша комментарийге алыңыз.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Ойыншы атын іздегенде аты мен тегі екеуін де шартқа қосыңыз. «Не... не...» дегенді жақшамен қосылған <code>OR</code> арқылы жазыңыз. Орташадан жоғары бой үшін жеке сұрау қажет болуы мүмкін: оны кейінірек көргенде түсінесіз, ал әзірге міндетті емес.</p></div></details>
+        <div class="callout note"><span class="callout-title">Сайттағы автотексеруші</span><p>Мұнда ресми базаның орнына 150 ойдан шығарылған ойыншы бар кішкентай база қолданылады (аты-жөндері де ойдан шыққан: Jack Robertson, Berik Rutov т.б.). Сұрақтар сол тапсырманың логикасын қайталайды.</p></div>
+        <div class="sql-grader" data-set="sql0-players" data-src="sql/data/week-0.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql0-players">
+            <li><input type="checkbox"> <span>1.sql - 9.sql ресми базада жоғарыдағы жол және баған санын береді.</span></li>
+            <li><input type="checkbox"> <span>10.sql: <code>AS</code>, <code>WHERE</code> және <code>ORDER BY</code> қолданылған.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/players</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span>Тапсыру: <code>submit50 cs50/problems/2024/sql/players</code></span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+        <p>Деректер <a href="https://github.com/chadwickbureau/baseballdatabank/tree/master" target="_blank" rel="noopener">Chadwick Bureau baseballdatabank</a> жобасынан алынып, өзгертілген (CC BY-SA 3.0).</p>
+      </div>
+
+      <nav class="pager">
+        <a href="../index.html"><small>Алдыңғы</small>← CS50 SQL: барлық лекциялар</a>
+        <a class="next" href="week-1.html"><small>Келесі</small>1-апта: Байланыстар →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 SQL (CS50's Introduction to Databases with SQL, Гарвард университеті, David J. Malan, Carter Zenke) курсы 0-лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

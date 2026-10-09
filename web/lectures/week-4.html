@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 Web 4-апта: SQL, модельдер, миграциялар - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 Web 4-апта: SQL, модельдер, миграциялар - CS50 қазақша">
+  <meta property="og:description" content="CS50 Web 4-апта: SQL негіздері, JOIN, индекс, SQL инъекциясы, Django модельдері, миграциялар, shell, admin, көп-көпке қатынастары және аутентификация.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/web/lectures/week-4.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 Web 4-апта: SQL негіздері, JOIN, индекс, SQL инъекциясы, Django модельдері, миграциялар, shell, admin, көп-көпке қатынастары және аутентификация.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#d4580c" data-n="4">
+        <div class="num">4-апта</div>
+        <h1>SQL, модельдер, миграциялар</h1>
+        <p>Деректерді қалай тиімді сақтап, қалай тез тауып аламыз? Алдымен SQL тілінде дерекқормен тікелей сөйлесеміз, сосын Django модельдері арқылы сол жұмысты Python класстарына тапсырамыз.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/web/notes/4/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <div class="callout tip">
+        <span class="callout-title">Бұл апта не туралы</span>
+        <p>Бұрынғы аптада Django-да беттер жасадық, бірақ деректеріміз кодтың ішінде жатты: тізімдер мен сөздіктер. Нағыз сайттың деректері (қолданушылар, рейстер, тапсырыстар) <strong>дерекқорда</strong> сақталады. Бүгін SQL-дің негізін үйреніп, сосын Django-ның модель жүйесімен SQL жазбай-ақ дерекқормен жұмыс істеуді көреміз. Лекциядағы SQL мысалдарының көбін осы бетте-ақ «▶ Іске қосу» батырмасымен орындай аласыз.</p>
+      </div>
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді. Түпнұсқада ұшақ рейстері Нью-Йорк, Лондон секілді қалалармен берілген; біз оларды Қазақстан әуежайларына ауыстырдық.</p>
+
+      <h2 id="intro">Кіріспе</h2>
+      <p>Қысқаша еске түсірейік. Біз HTML мен CSS арқылы қарапайым беттер жасауды үйрендік, өзгерістерді қадағалау және бірге жұмыс істеу үшін Git пен GitHub-ты білдік, Python тілімен таныстық және Django арқылы алғашқы веб-қосымшаларымызды жасадық. Бүгін келесі үлкен қадам: деректерді <strong>тиімді сақтау және алу</strong>. Ол үшін SQL тілін және Django модельдерін қарастырамыз.</p>
+
+      <h2 id="sql">SQL</h2>
+      <p><strong>SQL</strong> (<span class="term-en">Structured Query Language</span>, құрылымдық сұраныстар тілі) - дерекқорларды жаңартуға және сұрауға арналған бағдарламалау тілі. Атауындағы «сұрау» (<span class="term-en">query</span>) сөзі маңызды: біз дерекқорға «маған мынандай деректерді көрсет» деп сұрақ қоямыз, ол жауап қайтарады.</p>
+
+      <h3 id="databases">Дерекқорлар</h3>
+      <p>SQL-ді қалай қолданатынымызды көрмес бұрын, деректеріміз қайда жататынын түсінейік. SQL-мен жұмыс істегенде біз <strong>реляциялық деректер базасымен</strong> (<span class="term-en">relational database</span>) істейміз. Онда барлық деректер бірнеше <strong>кестеде</strong> (<span class="term-en">table</span>) сақталады. Әр кестенің <strong>бағандары</strong> (<span class="term-en">column</span>) саны бекітілген, ал <strong>жолдары</strong> (<span class="term-en">row</span>) саны икемді: қанша қаласаңыз, сонша қоса беруге болады. Excel кестесін елестетіңіз: бағандар - тақырыптар, жолдар - жазбалар.</p>
+      <p>SQL-ді көрсету үшін авиакомпания сайтының мысалын аламыз: ол рейстер мен жолаушыларды есепке алады. Бірінші кестеде бірнеше рейс бар, әр рейстің <code>origin</code> (қайдан ұшады), <code>destination</code> (қайда барады) және <code>duration</code> (ұзақтығы, минутпен) деген бағандары бар. Түпнұсқада Нью-Йорк пен Лондон тұр, ал біз Астана мен Париж сияқты қалаларды қолданамыз.</p>
+      <p>Деректерді сақтайтын және SQL командаларымен оңай жұмыс істейтін бірнеше <strong>деректер базасын басқару жүйесі</strong> (<span class="term-en">relational database management system</span>) бар:</p>
+      <ul>
+        <li><strong>MySQL</strong></li>
+        <li><strong>PostgreSQL</strong></li>
+        <li><strong>SQLite</strong></li>
+        <li>және басқалары...</li>
+      </ul>
+      <p>Алғашқы екеуі, MySQL мен PostgreSQL, «ауыр» жүйелер: әдетте сайттың өзі жұмыс істейтін серверден бөлек, өз серверінде тұрады. Ал SQLite жеңіл: барлық деректерін бір ғана файлда сақтай алады. Біз бұл курста SQLite-ты қолданамыз, өйткені Django оны әдепкі бойынша пайдаланады. Бетіміздегі «Іске қосу» батырмалары да нағыз SQLite-ты браузеріңіздің ішінде жүргізеді.</p>
+
+      <h3 id="column-types">Баған типтері</h3>
+      <p>Python-да айнымалылардың түрлі типтері болатыны есіңізде шығар: <code>int</code>, <code>str</code>, <code>float</code>. SQLite-та да ақпараттың түрлі формаларына арналған типтер бар. Басқа жүйелерде атаулары өзгеше болуы мүмкін, бірақ бәрі өте ұқсас:</p>
+      <ul>
+        <li><code>TEXT</code>: мәтін жолдары үшін (мысалы, адамның аты);</li>
+        <li><code>NUMERIC</code>: жалпырақ сандық деректер (мысалы, күні немесе логикалық мән);</li>
+        <li><code>INTEGER</code>: ондық бөлшегі жоқ кез келген сан (мысалы, адамның жасы);</li>
+        <li><code>REAL</code>: кез келген нақты сан (мысалы, адамның салмағы);</li>
+        <li><code>BLOB</code> (<span class="term-en">Binary Large Object</span>): дерекқорда сақтағымыз келетін кез келген басқа екілік деректер (мысалы, сурет).</li>
+      </ul>
+
+      <h2 id="tables">Кестелер</h2>
+      <p>Енді SQL арқылы дерекқормен шынымен жұмыс істеуді бастайық, ал бастау үшін жаңа кесте жасаймыз. Кесте жасау командасы мынадай болады:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">CREATE TABLE flights(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    origin TEXT NOT NULL,
+    destination TEXT NOT NULL,
+    duration INTEGER NOT NULL
+);</code></pre>
+      <p>Мұнда біз <code>flights</code> деп атаған жаңа кесте жасап, оған төрт баған қостық. Әрқайсысын жеке қарайық:</p>
+      <ol>
+        <li><code>id</code>: кестедегі әр жолды бір мәнді түрде айыратын сан болғаны өте ыңғайлы. Мұнда біз <code>id</code> бүтін сан екенін, және ол біздің <strong>бастапқы кілтіміз</strong> (<span class="term-en">primary key</span>) екенін, яғни бірегей идентификатор екенін көрсеттік. Сонымен қатар <code>AUTOINCREMENT</code> деп жаздық: жол қосқан сайын id-ні өзіміз жазбаймыз, ол автоматты түрде 1, 2, 3 болып өсе береді. Мектеп журналындағы реттік нөмір сияқты.</li>
+        <li><code>origin</code>: мәтіндік өріс. <code>NOT NULL</code> деп жазу арқылы оның міндетті түрде мәні болуын талап еттік.</li>
+        <li><code>destination</code>: тағы мәтіндік өріс және ол да бос болмайды.</li>
+        <li><code>duration</code>: бұл да бос бола алмайды, бірақ бұл жолы мәтін емес, бүтін сан.</li>
+      </ol>
+      <p>Жаңа ғана <code>NOT NULL</code> мен <code>PRIMARY KEY</code> <strong>шектеулерін</strong> (<span class="term-en">constraint</span>) көрдік. Бірақ басқа шектеулер де бар:</p>
+      <ul>
+        <li><code>CHECK</code>: жол қосылмай немесе өзгертілмей тұрып, белгілі шарттардың орындалуын тексереді;</li>
+        <li><code>DEFAULT</code>: мән берілмесе, әдепкі мәнді қояды;</li>
+        <li><code>NOT NULL</code>: мәннің міндетті түрде берілуін талап етеді;</li>
+        <li><code>PRIMARY KEY</code>: бұл баған жолды іздеудің негізгі жолы екенін көрсетеді;</li>
+        <li><code>UNIQUE</code>: бұл бағандағы мән ешбір екі жолда қайталанбауын қамтамасыз етеді;</li>
+        <li>және басқалары...</li>
+      </ul>
+      <p>Кесте жасауды білдік, ендігі сұрақ: оған жолдарды қалай қосамыз? SQL-де ол үшін <code>INSERT</code> командасы бар:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">INSERT INTO flights
+    (origin, destination, duration)
+    VALUES ("Астана", "Лондон", 415);
+SELECT * FROM flights;</code></pre>
+      <div class="callout note">
+        <span class="callout-title">Түпнұсқадан бір ескерту</span>
+        <p>Түпнұсқада тек <code>INSERT</code> жазылған. Біз бұл демо дерекқорда кесте дайын тұрғандықтан, нәтижені көру үшін соңына <code>SELECT * FROM flights;</code> қостық. Батырманы басқан сайт дерекқор жаңадан жасалады, сондықтан өзгерістер сақталмайды: өздігінше тәжірибе жасай беріңіз.</p>
+      </div>
+      <p>Бұл командада алдымен қай кестеге қосатынымызды жаздық, сосын қандай бағандарды толтыратынымызды тізіп шықтық, содан кейін <code>VALUES</code> сөзінен соң сол жолдың мәндерін бердік. Мәндердің реті бағандар тізімінің ретімен бірдей болуы керек. <code>id</code>-ге мән бермедік, себебі ол өздігінен өседі.</p>
+
+      <h2 id="select">SELECT</h2>
+      <p>Кесте толған соң, біз ондағы деректерге қол жеткізгіміз келеді. Ол үшін SQL-дің <code>SELECT</code> сұрауы қолданылады. <code>flights</code> кестесіне жасалатын ең қарапайым сұрау мынадай:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM flights;</code></pre>
+      <p>Жұлдызша <code>*</code> «барлығын» білдіреді: бұл команда <code>flights</code> кестесіндегі барлық деректерді қайтарады. Ал көбіне бізге барлық бағандар керек емес, мысалы тек <code>origin</code> мен <code>destination</code> керек шығар. Онда жұлдызшаның орнына керекті бағандардың атын жазамыз:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT origin, destination FROM flights;</code></pre>
+      <p>Кестелер үлкейген сайын қайтарылатын жолдарды да тарылтқымыз келеді. Ол үшін <code>WHERE</code> сөзін және артынан шартты қосамыз. Мысалы, келесі команда тек <code>id</code>-і <code>3</code> болатын жолды таңдайды:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM flights WHERE id = 3;</code></pre>
+      <p>Тек <code>id</code> бойынша емес, кез келген баған бойынша сүзуге болады:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM flights WHERE origin = "Астана";</code></pre>
+
+      <h3 id="terminal-sql">Терминалда SQL-мен жұмыс</h3>
+      <p>Қарапайым командаларды білдік, енді оларды терминалда сынап көрейік. Өз компьютеріңізде SQLite-пен жұмыс істеу үшін алдымен оны жүктеп алу керек (түпнұсқада sqlite.org мен DB Browser аталады; DB Browser - SQL сұрауларын орындаудың ыңғайлырақ, графикалық жолы). Лекцияда ол қолданылмады.</p>
+      <p>Дерекқорымыздың файлын қолмен жасауға болады, не терминалда <code>touch flights.sql</code> деп жаза аламыз. Сосын <code>sqlite3 flights.sql</code> деп жазсақ, SQLite шақыруына (<span class="term-en">prompt</span>) түсеміз, онда SQL командаларын жүргізе аламыз. Төменде лектордың сеансы (комментарийлерді аудардық):</p>
+<pre class="terminal"><code class="language-plaintext"># SQLite шақыруына кіру
+(base) % sqlite3 flights.sql
+SQLite version 3.26.0 2018-12-01 12:34:55
+Enter ".help" for usage hints.
+
+# Жаңа кесте жасау
+sqlite> CREATE TABLE flights(
+   ...>     id INTEGER PRIMARY KEY AUTOINCREMENT,
+   ...>     origin TEXT NOT NULL,
+   ...>     destination TEXT NOT NULL,
+   ...>     duration INTEGER NOT NULL
+   ...> );
+
+# Қазіргі барлық кестені көрсету (әзірге тек flights)
+sqlite> .tables
+flights
+
+# flights ішіндегінің бәрін сұрау (қазір ол бос)
+sqlite> SELECT * FROM flights;
+
+# Бір рейс қосу
+sqlite> INSERT INTO flights
+   ...>     (origin, destination, duration)
+   ...>     VALUES ("New York", "London", 415);
+
+# Жаңа ақпаратты тексеру: енді көрінеді
+sqlite> SELECT * FROM flights;
+1|New York|London|415
+
+# Тағы бірнеше рейс қосу
+sqlite> INSERT INTO flights (origin, destination, duration) VALUES ("Shanghai", "Paris", 760);
+sqlite> INSERT INTO flights (origin, destination, duration) VALUES ("Istanbul", "Tokyo", 700);
+sqlite> INSERT INTO flights (origin, destination, duration) VALUES ("New York", "Paris", 435);
+sqlite> INSERT INTO flights (origin, destination, duration) VALUES ("Moscow", "Paris", 245);
+sqlite> INSERT INTO flights (origin, destination, duration) VALUES ("Lima", "New York", 455);
+
+# Жаңа ақпаратты сұрау
+sqlite> SELECT * FROM flights;
+1|New York|London|415
+2|Shanghai|Paris|760
+3|Istanbul|Tokyo|700
+4|New York|Paris|435
+5|Moscow|Paris|245
+6|Lima|New York|455
+
+# Шығысты оқуға ыңғайлы ету үшін баптауды өзгерту
+sqlite> .mode columns
+sqlite> .headers yes
+
+# Барлық ақпаратты қайта сұрау
+sqlite> SELECT * FROM flights;
+id          origin      destination  duration
+----------  ----------  -----------  ----------
+1           New York    London       415
+2           Shanghai    Paris        760
+3           Istanbul    Tokyo        700
+4           New York    Paris        435
+5           Moscow      Paris        245
+6           Lima        New York     455
+
+# Тек New York-тан ұшатын рейстерді іздеу
+sqlite> SELECT * FROM flights WHERE origin = "New York";
+id          origin      destination  duration
+----------  ----------  -----------  ----------
+1           New York    London       415
+4           New York    Paris        435</code></pre>
+      <p>Назар аударыңыз: <code>.tables</code>, <code>.mode</code>, <code>.headers</code> сияқты нүктемен басталатын командалар - SQL емес, SQLite бағдарламасының өз командалары. Сондықтан бұл блокты бетте іске қосу мүмкін емес. Ал біз сайттағы демо дерекқорда сол сұрауларды орындай беруге болады (рейстер сәл өзгеше, Қазақстан әуежайларымен).</p>
+      <p>Тек теңдікпен шектелудің қажеті жоқ. Бүтін не нақты сандар үшін «үлкен» және «кіші» салыстыруларын қолдана аламыз:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM flights WHERE duration > 500;</code></pre>
+      <p>Python-дағыдай логикалық операторларды да (<code>AND</code>, <code>OR</code>) қолдана аламыз:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM flights WHERE duration > 500 AND destination = "Париж";</code></pre>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM flights WHERE duration > 500 OR destination = "Париж";</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: AND мен OR нәтижесі неге осыншалық өзгеше?</summary>
+        <div class="details-body"><p>Бірінші сұрауда екі шарт та бірдей орындалуы керек: ұзақтығы 500-ден асады <em>және</em> Парижге ұшады. Екіншісінде кем дегенде біреуі жеткілікті. Сондықтан <code>OR</code> әрқашан <code>AND</code>-тен көп (немесе тең) жол қайтарады. Мектептегі жиынтар сияқты: <code>AND</code> - қиылысу, <code>OR</code> - бірігу.</p></div>
+      </details>
+      <p>Бірнеше нұсқаның бірін іздегіміз келсе, <code>IN</code> кілт сөзін қолданамыз:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM flights WHERE origin IN ("Астана", "Атырау");</code></pre>
+      <p>Сөздерді кеңірек іздеу үшін (түпнұсқада «тұрақты өрнектер» деп аталады, бірақ шын мәнінде қарапайым үлгі) <code>LIKE</code> бар. Төмендегі сұрау <code>origin</code> бағанында <code>а</code> әрпі бар барлық рейсті табады. Мұнда <code>%</code> - «кез келген таңбалар» дегенді білдіретін ұқсастық белгісі (<span class="term-en">wildcard</span>):</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM flights WHERE origin LIKE "%а%";</code></pre>
+      <div class="callout note">
+        <span class="callout-title">Назар аударыңыз</span>
+        <p>SQLite-тың <code>LIKE</code> операторы латын әріптерінде бас-кіші әріпті ажыратпайды, ал кириллицада ажыратады. Сондықтан <code>%а%</code> «Астана» сөзіндегі кіші <code>а</code>-ны табады, ал «Шымкент» табылмайды (онда <code>а</code> жоқ). Басқа регистрді де тапқыңыз келсе, <code>%а%</code> мен <code>%А%</code> екеуін де жазыңыз.</p>
+      </div>
+
+      <h3 id="functions">Функциялар</h3>
+      <p>Сұрау нәтижесіне қолдануға болатын бірнеше SQL функциясы бар. Олар сұрау қайтарған барлық деректің керегі жоқ, тек қорытынды статистика (орташа, сан, ең үлкен) жеткілікті болғанда ыңғайлы:</p>
+      <ul>
+        <li><code>AVG</code>: орташа мән (түпнұсқада «AVERAGE» деп жазылған, бірақ SQL-де функция <code>AVG</code> деп аталады);</li>
+        <li><code>COUNT</code>: жол саны;</li>
+        <li><code>MAX</code>: ең үлкен мән;</li>
+        <li><code>MIN</code>: ең кіші мән;</li>
+        <li><code>SUM</code>: қосынды;</li>
+        <li>және басқалары...</li>
+      </ul>
+      <p>Түпнұсқада бұлардың мысалы жоқ, сондықтан өзіміз бір сұрауға бәрін жинап көрсетейік:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT COUNT(*), AVG(duration), MAX(duration), MIN(duration), SUM(duration)
+FROM flights;</code></pre>
+
+      <h3 id="update">UPDATE</h3>
+      <p>Кестеге жол қосуды және іздеуді білдік, ал бұрыннан бар жолды <strong>өзгерту</strong> керек болса ше? Ол үшін <code>UPDATE</code> командасы бар. Дауыстап оқысаңыз, мағынасы өзі түсінікті: команда Астанадан Алматыға ұшатын рейстерді тауып, олардың ұзақтығын 95-ке қояды.</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">UPDATE flights
+    SET duration = 95
+    WHERE origin = "Астана"
+    AND destination = "Алматы";
+SELECT * FROM flights;</code></pre>
+      <p>(Түпнұсқада соңғы <code>SELECT</code> жоқ, өзгерісті көру үшін өзіміз қостық. Түпнұсқада Нью-Йорктен Лондонға дейінгі рейстің ұзақтығы 430 деп өзгертіледі.)</p>
+
+      <h3 id="delete">DELETE</h3>
+      <p>Кейде жолдарды дерекқордан жою да керек. Ол үшін <code>DELETE</code> командасы бар. Мына код Токиоға қонатын барлық рейсті жояды:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">DELETE FROM flights WHERE destination = "Токио";
+SELECT * FROM flights;</code></pre>
+      <div class="callout warn">
+        <span class="callout-title">Абай болыңыз</span>
+        <p><code>WHERE</code>-сіз жазылған <code>DELETE FROM flights;</code> кестедегі <em>барлық</em> жолды жояды, ал <code>WHERE</code>-сіз <code>UPDATE</code> барлық жолды өзгертеді. Нағыз дерекқорда мұндай қателік қымбатқа түседі, сондықтан алдымен сол шартты <code>SELECT</code> арқылы тексеріп алған жөн.</p>
+      </div>
+
+      <h3 id="other-clauses">Басқа сөйлемшелер</h3>
+      <p>Сұраудан қайтатын нәтижені басқаратын тағы бірнеше сөйлемше (<span class="term-en">clause</span>) бар:</p>
+      <ul>
+        <li><code>LIMIT</code>: сұрау қайтаратын нәтиже санын шектейді;</li>
+        <li><code>ORDER BY</code>: нәтижені көрсетілген баған бойынша реттейді;</li>
+        <li><code>GROUP BY</code>: нәтижені көрсетілген баған бойынша топтайды;</li>
+        <li><code>HAVING</code>: топтардың нәтижесіне қосымша шарт қосуға мүмкіндік береді.</li>
+      </ul>
+      <p>Бұлардың да мысалы лекцияда жоқ, сондықтан қысқа мысалдар келтірейік:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM flights ORDER BY duration DESC LIMIT 3;</code></pre>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT destination, COUNT(*) FROM flights
+GROUP BY destination
+HAVING COUNT(*) > 1;</code></pre>
+      <p>Екінші сұрау рейстерді баратын қаласы бойынша топтап, санын санайды, сосын тек екіден көп рейс баратын қалаларды қалдырады. Парижге үш рейс бар, сондықтан тек Париж шығады.</p>
+
+      <h2 id="joins">Кестелерді біріктіру</h2>
+      <p>Осы уақытқа дейін бір мезгілде тек бір кестемен жұмыс істедік. Ал іс жүзінде дерекқорлар бір-бірімен қандай да бір жолмен байланысқан көптеген кестеден тұрады. Ұшақ мысалына оралайық: қаланың жанына әуежай кодын да қосқымыз келеді делік. Кестеміз қазіргідей болса, әр жолға екі баған қосуға тура келеді (шығу және баратын қала кодтары). Үстіне ақпарат қайталанады: «Алматының коды ALA» деген сөзді әр жолда қайта-қайта жазамыз. Базардағы сатушы бәріне бағаны әр жолы қайта жазбай, бір рет бағалар тізімінде жазып қойғаны сияқты, біз де қайталауды азайтқымыз келеді.</p>
+      <p>Шешімдердің бірі: рейстерді есепке алатын бір кесте, ал әуежайларды есепке алатын екінші кесте жасау. Екінші кесте мынадай болады:</p>
+<pre data-lang="sql" data-db="ucak2" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM airports;</code></pre>
+      <p>Енді қала атының толық мәтінін рейс кестесінде сақтаудың орнына, әуежайдың <code>id</code>-ін ғана сақтасақ, орынды үнемдейміз. Сондықтан <code>flights</code> кестесін соған сай қайта жазамыз. <code>origin_id</code> мен <code>destination_id</code> мәндері <code>airports</code> кестесінің <code>id</code> бағанынан алынатындықтан, оларды <strong>сыртқы кілттер</strong> (<span class="term-en">foreign key</span>) деп атаймыз. Яғни бастапқы кілт - өз кестесінің жолын айыратын сан, ал сыртқы кілт - басқа кестенің жолына сілтеме:</p>
+<pre data-lang="sql" data-db="ucak2" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM flights;</code></pre>
+      <p>Авиакомпания жолаушылар туралы да деректерді сақтағысы келуі мүмкін, мысалы, әр жолаушы қай рейске отырады. Реляциялық дерекқордың күшін пайдаланып, тағы бір кесте қосайық: онда аты, тегі және жолаушы отыратын рейске сыртқы кілт болады. Бұл қарапайым нұсқа (<code>passengers</code>: <code>flight_id</code>, <code>first</code>, <code>last</code>):</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM passengers;</code></pre>
+      <p>Бірақ мұны да жақсартуға болады. Бір адам бірнеше рейсте ұша алады ғой: біздің кестеде Айдар Сейітов екі рейсте тұр, және оның аты-жөні екі рет қайталанды. Сондықтан адамдарды сақтайтын <code>people</code> кестесін (аты, тегі) және адамдарды рейстермен жұптайтын <code>passengers</code> кестесін жасаймыз:</p>
+<pre data-lang="sql" data-db="ucak2" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM people;</code></pre>
+<pre data-lang="sql" data-db="ucak2" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM passengers;</code></pre>
+      <p>Төмендегі сұлбада төрт кестенің қалай байланысқаны көрсетілген. Көрсеткі «осы баған сол кестенің <code>id</code>-іне сілтейді» дегенді білдіреді:</p>
+      <svg viewBox="0 0 640 300" role="img" aria-label="Кесте байланыстары: flights кестесі airports кестесіне екі сыртқы кілтпен, passengers кестесі people мен flights кестелерін байланыстырады" style="display:block;width:100%;max-width:640px;height:auto;margin:18px auto"><defs><marker id="er-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>
+        <g style="font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">
+        <rect x="10" y="20" width="170" height="104" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><rect x="10" y="20" width="170" height="26" rx="8" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="95" y="38" text-anchor="middle" style="fill:var(--text);font-weight:700">airports</text>
+        <text x="22" y="66" style="fill:var(--text)">id (PK)</text><text x="22" y="86" style="fill:var(--text)">code</text><text x="22" y="106" style="fill:var(--text)">city</text>
+        <rect x="235" y="20" width="190" height="124" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><rect x="235" y="20" width="190" height="26" rx="8" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="330" y="38" text-anchor="middle" style="fill:var(--text);font-weight:700">flights</text>
+        <text x="247" y="66" style="fill:var(--text)">id (PK)</text><text x="247" y="86" style="fill:var(--text)">origin_id (FK)</text><text x="247" y="106" style="fill:var(--text)">destination_id (FK)</text><text x="247" y="126" style="fill:var(--text)">duration</text>
+        <rect x="235" y="190" width="190" height="84" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><rect x="235" y="190" width="190" height="26" rx="8" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="330" y="208" text-anchor="middle" style="fill:var(--text);font-weight:700">passengers</text>
+        <text x="247" y="236" style="fill:var(--text)">person_id (FK)</text><text x="247" y="256" style="fill:var(--text)">flight_id (FK)</text>
+        <rect x="460" y="190" width="170" height="84" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><rect x="460" y="190" width="170" height="26" rx="8" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="545" y="208" text-anchor="middle" style="fill:var(--text);font-weight:700">people</text>
+        <text x="472" y="236" style="fill:var(--text)">id (PK)</text><text x="472" y="256" style="fill:var(--text)">first, last</text>
+        </g>
+        <polyline points="235,86 208,86 208,106 182,106" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#er-arr)"/>
+        <polyline points="235,106 218,106 218,66 182,66" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#er-arr)"/>
+        <polyline points="330,190 330,146" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#er-arr)"/>
+        <polyline points="425,236 458,236" style="stroke:var(--accent);stroke-width:1.6;fill:none" marker-end="url(#er-arr)"/>
+        <text x="95" y="150" text-anchor="middle" style="fill:var(--muted);font:600 11.5px var(--font, sans-serif)">origin_id және destination_id</text>
+        <text x="95" y="166" text-anchor="middle" style="fill:var(--muted);font:600 11.5px var(--font, sans-serif)">екеуі де airports.id-ге сілтейді</text>
+        <text x="338" y="170" style="fill:var(--muted);font:600 11.5px var(--font, sans-serif)">flight_id</text>
+        <text x="545" y="296" text-anchor="middle" style="fill:var(--muted);font:600 11.5px var(--font, sans-serif)">person_id → people.id</text>
+      </svg>
+      <p>Бұл жағдайда бір адам көп рейсте ұша алады, ал бір рейсте көп адам болады. Мұндай байланысты <strong>көп-көпке</strong> (<span class="term-en">many-to-many</span>) қатынасы дейді. Екі кестені (<code>flights</code> пен <code>people</code>) байланыстыратын <code>passengers</code> кестесі <strong>ассоциация кестесі</strong> (<span class="term-en">association table</span>) деп аталады. Ол өзінде адамның да, рейстің де ақпаратын сақтамайды: тек «мына адам мына рейсте» деген жұптарды сақтайды. Мектептегі мысал: оқушылар мен үйірмелер. Бір оқушы бірнеше үйірмеге барады, бір үйірмеде көп оқушы бар, ал үйірмеге жазылу журналы - ассоциация кестесі.</p>
+
+      <h3 id="join-query">JOIN сұрауы</h3>
+      <p>Деректеріміз енді тиімдірек сақталды, бірақ оларды сұрау қиындап кеткен сияқты: ақпарат бірнеше кестеге таралып кетті ғой. Бақытымызға, SQL-де бір сұрау үшін екі кестені қосатын <strong>JOIN</strong> сұрауы бар.</p>
+      <p>Мысалы, әр жолаушының бару жолындағы шығу қаласын, баратын қаласын және есімін табайық. Қарапайымдылық үшін <code>flight_id</code>, <code>first</code>, <code>last</code> бар «оңтайландырылмаған» <code>passengers</code> кестесін аламыз. Сұраудың алғашқы бөлігі таныс көрінеді:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">SELECT first, origin, destination
+FROM ...</code></pre>
+      <p>Бірақ мұнда мәселе туады: <code>first</code> <code>passengers</code> кестесінде, ал <code>origin</code> мен <code>destination</code> <code>flights</code> кестесінде тұр. Мұны екі кестені біріктіру арқылы шешеміз: <code>passengers</code> кестесіндегі <code>flight_id</code> мәні <code>flights</code> кестесіндегі <code>id</code>-ге сәйкес келеді дегенді <code>ON</code> сөзінен кейін айтамыз:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT first, origin, destination
+FROM flights JOIN passengers
+ON passengers.flight_id = flights.id;</code></pre>
+      <p>Нәтижеге қараңыз: әр жолаушының жанында оның рейсі тұр. Назар аударсаңыз, Шымкенттен Токиоға ұшатын 3-рейс тізімде жоқ, өйткені оған ешкім отырмаған. Біз қолданған - <strong>INNER JOIN</strong> (ішкі біріктіру): ол екі кестенің арасында сәйкестігі жоқ жолдарды елемейді. <code>LEFT JOIN</code>, <code>RIGHT JOIN</code>, <code>FULL OUTER JOIN</code> сияқты басқа түрлері де бар, лекцияда оларды егжей-тегжейлі талқыламайды. Дегенмен салыстыру үшін <code>LEFT JOIN</code>-ды көріп қояйық, ол сол жақтағы кестенің барлық жолын сақтайды:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT first, origin, destination
+FROM flights LEFT JOIN passengers
+ON passengers.flight_id = flights.id;</code></pre>
+      <p>Енді 3-рейс бар, тек <code>first</code> бағанында <code>NULL</code> (мән жоқ). Ал егер толық, «қалыпқа келтірілген» кестелерімізбен жұмыс істесек, қалалардың атын алу үшін <code>airports</code>-ты екі рет біріктіруге тура келеді (бір рет шығу, бір рет баратын қала үшін), ол үшін кестеге қосымша ат (<span class="term-en">alias</span>) береміз:</p>
+<pre data-lang="sql" data-db="ucak2" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT f.id, o.city AS origin, d.city AS destination, f.duration
+FROM flights f
+JOIN airports o ON o.id = f.origin_id
+JOIN airports d ON d.id = f.destination_id;</code></pre>
+
+      <h3 id="indexing">Индекстеу</h3>
+      <p>Үлкен кестелермен жұмыс істегенде сұрауларымызды тиімдірек ету үшін <strong>индекс</strong> (<span class="term-en">index</span>) жасауға болады. Бұл оқулықтың соңындағы пәндік көрсеткішке ұқсайды: керек сөзді іздегенде бүкіл кітапты парақтамай, көрсеткіштен бірден бетін табасыз. Мысалы, жолаушыларды көбіне тегі бойынша іздейтінімізді білсек, тегінен <code>id</code>-ге дейінгі индексті мына командамен жасаймыз:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">CREATE INDEX name_index ON passengers (last);</code></pre>
+      <p>Индекстің жұмыс істегенін көру үшін SQLite-тан сұрауды қалай орындайтынын сұрауға болады (бұл түпнұсқада жоқ, біздің қосымшамыз). Индекссіз <code>SCAN</code> (бүкіл кестені қарап шығу) шығады, ал индекспен <code>SEARCH ... USING INDEX</code> көрінеді:</p>
+<pre data-lang="sql" data-db="ucak" data-dbsrc="web/data/week-4.js"><code class="language-sql">CREATE INDEX name_index ON passengers (last);
+EXPLAIN QUERY PLAN
+SELECT * FROM passengers WHERE last = "Омаров";</code></pre>
+      <p>Біздің кестеде жеті ғана жол бар, сондықтан айырмашылық білінбейді. Бірақ миллиондаған жолда индекс сұрауды жүздеген есе жылдамдатуы мүмкін. Тек индекс орын алады және жаңа жол қосқанда оны да жаңартуға тура келеді, сондықтан оны барлық бағанға жаппай қоймаймыз.</p>
+
+      <h3 id="sql-vulnerabilities">SQL осалдықтары</h3>
+      <p>SQL-мен деректерді қалай жұмыс істететінімізді білдік. Енді онымен байланысты негізгі осалдықтарды атап өту маңызды. Алдымен <strong>SQL инъекциясы</strong> (<span class="term-en">SQL injection attack</span>).</p>
+      <p>SQL инъекциясы - зиянкес қолданушы сайттың қауіпсіздік шараларын айналып өту үшін енгізу өрісіне SQL кодын жазатын шабуыл. Мысалы, бізде қолданушы аттары мен құпиясөздері сақталған кесте және сайттың басты бетінде кіру формасы бар делік. Қолданушыны іздейтін сұрау былай болуы мүмкін:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">SELECT * FROM users
+WHERE username = username AND password = password;</code></pre>
+      <p>Гарри есімді қолданушы сайтқа кіріп, атына <code>harry</code>, құпиясөзіне <code>12345</code> жазса, сұрау былай болады:</p>
+<pre data-lang="sql" data-db="kirish" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM users
+WHERE username = "harry" AND password = "12345";</code></pre>
+      <p>Ал хакер аты ретінде <code>harry" --</code> деп жазып, құпиясөзді бос қалдырады. SQL-де <code>--</code> комментарийді білдіреді, яғни одан кейінгінің бәрі елеусіз қалады. Сонда сұрау былай болады:</p>
+<pre data-lang="sql" data-db="kirish" data-dbsrc="web/data/week-4.js"><code class="language-sql">SELECT * FROM users
+WHERE username = "harry"--" AND password = "12345";</code></pre>
+      <p>Сұрауды іске қосып көріңіз: құпиясөзді тексеру комментарийге айналып кеткендіктен, хакер Гарридің құпиясөзін білмей-ақ оның аккаунтына кіре алады! Қорғану үшін мыналарды қолданамыз:</p>
+      <ul>
+        <li><strong>Escape-таңбалар</strong> (<span class="term-en">escape characters</span>): SQL енгізілген мәтінді код емес, қарапайым мәтін деп қабылдасын;</li>
+        <li>SQL үстіндегі <strong>абстракция қабаты</strong>, оның өз escape-реттілігі бар, сондықтан SQL сұрауларын өзіміз жазбаймыз. Дәл осыны Django модельдері бізге береді, оған жақында жетеміз.</li>
+      </ul>
+      <p>Екінші негізгі осалдық - <strong>жарыс жағдайы</strong> (<span class="term-en">race condition</span>). Ол дерекқорға бір мезгілде бірнеше сұрау келгенде туады. Егер олар дұрыс өңделмесе, дерекқор жаңаратын нақты уақыт сәттерінде қателіктер шығады. Мысалы, банкте менің 150 доллар ақшам бар. Мен банк аккаунтыма телефоннан да, ноутбуктан да кіріп, екеуінен де 100 доллар алуға тырысамын. Банк бағдарламашылары жарыс жағдайын дұрыс өңдемесе, 150 доллары бар шоттан 200 доллар ала алып қалуым мүмкін. Мүмкін шешімнің бірі - дерекқорды <strong>құлыптау</strong> (<span class="term-en">locking</span>): бір транзакция біткенше басқа әрекетке жол бермеу. Банк мысалында, компьютерде «Ақша алу» бетіне өтсем, банк телефоннан ол бетке өтуге рұқсат етпеуі мүмкін.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: екі құрылғыдан 150-ден 100-ден алу не үшін қауіпті?</summary>
+        <div class="details-body"><p>Екі сұрау бір мезгілде «шотта қанша бар?» деп сұрайды да, екеуі де «150 бар, 100 алуға болады» деп жауап алады. Содан кейін екеуі де қалдықты 50 деп жазады. Нәтижесінде екі есе алынды, ал шоттан тек 100 шегерілді. Сұрау бірінен кейін бірі жүрсе, екіншісі 50 көріп, бас тартар еді. Құлып дәл осы ретті қамтамасыз етеді.</p></div>
+      </details>
+
+      <h2 id="django-models">Django модельдері</h2>
+      <p>Енді SQL-дің негізін білдік, Django-ға оралайық. <strong>Django модельдері</strong> (<span class="term-en">Django models</span>) - SQL-дің үстіндегі абстракция деңгейі. Олар дерекқормен тікелей SQL сұрауларын емес, Python <strong>класстары мен объектілерін</strong> қолданып жұмыс істеуге мүмкіндік береді. Яғни <code>INSERT INTO ...</code> деп жазудың орнына, «ұшақ рейсі» деген Python класын сипаттап, сол класстың объектісін жасап, <code>.save()</code> деп жазамыз, ал SQL-ді Django өзі жазады. Бұл бізді жаңа ғана айтылған SQL инъекциясынан да қорғайды.</p>
+      <p>Модельдерді қолдануды бастау үшін авиакомпанияға арналған Django жобасын және оның ішінде қолданба жасайық:</p>
+<pre class="terminal"><code class="language-plaintext">django-admin startproject airline
+cd airline
+python manage.py startapp flights</code></pre>
+      <p>Енді қолданбаны әдеттегідей қосу процесінен өтеміз:</p>
+      <ol>
+        <li><code>settings.py</code> ішіндегі <code>INSTALLED_APPS</code> тізіміне <code>flights</code> қосамыз;</li>
+        <li><code>urls.py</code> ішінде <code>flights</code> үшін жол қосамыз:
+<pre data-lang="python" data-norun><code class="language-python">path("flights/", include("flights.urls")),</code></pre></li>
+        <li><code>flights</code> қолданбасының ішінде <code>urls.py</code> файлын жасап, оны әдеттегі импорттармен және тізімдермен толтырамыз.</li>
+      </ol>
+      <p>Әдеттегідей нақты жолдар мен <code>views.py</code> жазуға асықпай, алдымен <code>models.py</code> файлында модельдер жасаймыз. Осы файлда қосымшамыз қандай деректерді сақтайтынын сипаттаймыз. Содан кейін Django әр модельдің ақпаратын сақтау үшін қажетті SQL синтаксисін өзі анықтайды. Бір рейстің моделі қандай болатынын қарайық:</p>
+<pre data-lang="python" data-norun><code class="language-python">class Flight(models.Model):
+    origin = models.CharField(max_length=64)
+    destination = models.CharField(max_length=64)
+    duration = models.IntegerField()</code></pre>
+      <p>Бұл анықтамада не болып жатқанын қарастырайық:</p>
+      <ul>
+        <li>Бірінші жолда Django-ның <code>Model</code> класын <strong>кеңейтетін</strong> (<span class="term-en">extends</span>, мұраланады) жаңа модель жасаймыз;</li>
+        <li>Төменде <code>origin</code>, <code>destination</code> және <code>duration</code> өрістерін қостық. Алғашқы екеуі <code>CharField</code>, яғни жолдарды сақтайды, ал үшіншісі <code>IntegerField</code>. Бұлар Django-ның көптеген <strong>кірістірілген өріс кластарының</strong> (<span class="term-en">built-in Field classes</span>) екеуі ғана;</li>
+        <li>Екі <code>CharField</code>-ке ең үлкен ұзындық 64 деп көрсеттік. Қандай параметрлер бар екенін құжаттамадан қарап білуге болады.</li>
+      </ul>
+      <p>Сіз SQL-де жазған <code>CREATE TABLE flights(...)</code> командасын еске түсіріңіз: Django дәл соның баламасын осы кластан өзі шығарады. <code>id</code> бағанын жазудың да қажеті жоқ, Django оны автоматты түрде қосады.</p>
+
+      <h2 id="migrations">Миграциялар</h2>
+      <p>Модельді жасадық, бірақ оның ақпаратын сақтайтын дерекқор әлі жоқ. Модельдерден дерекқор жасау үшін жобаның басты қалтасына барып мына команданы жазамыз:</p>
+<pre class="terminal"><code class="language-plaintext">python manage.py makemigrations</code></pre>
+      <p>Бұл команда <strong>миграцияларды</strong> (<span class="term-en">migrations</span>) жасайды, яғни біздің модельдерде сипатталғанды сақтай алатындай дерекқорды жасайтын немесе өзгертетін бірнеше Python файлын. Шығыс төмендегідей болады, ал <code>migrations</code> қалтасында жаңа файл пайда болғанын көресіз:</p>
+<pre class="terminal"><code class="language-plaintext">Migrations for 'flights':
+  flights/migrations/0001_initial.py
+    - Create model Flight</code></pre>
+      <p>Шығыс мәтінінің түпнұсқада суреті бар; оның мазмұны осы: Django «<code>flights</code> қолданбасы үшін <code>0001_initial.py</code> файлы жасалды, ол <code>Flight</code> моделін жасайды» деп хабарлайды. Келесі қадамда осы миграцияларды дерекқорға <strong>қолданамыз</strong>:</p>
+<pre class="terminal"><code class="language-plaintext">python manage.py migrate</code></pre>
+      <p>Енді әдепкі миграциялар (Django-ның өз қолданушылар, сессиялар кестелері) біздікімен бірге қолданылғанын көресіз, және жобамыз қалтасында <code>db.sqlite3</code> деген жаңа файл пайда болды. Міне, SQLite дерекқорымыздың өзі.</p>
+      <svg viewBox="0 0 640 120" role="img" aria-label="Миграция жолы: models.py, makemigrations, 0001_initial.py, migrate, db.sqlite3" style="display:block;width:100%;max-width:640px;height:auto;margin:18px auto"><defs><marker id="mg-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs>
+        <g style="font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px">
+        <rect x="6" y="30" width="110" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="61" y="57" text-anchor="middle" style="fill:var(--text)">models.py</text>
+        <rect x="258" y="30" width="130" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="323" y="57" text-anchor="middle" style="fill:var(--text)">0001_initial.py</text>
+        <rect x="524" y="30" width="110" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="579" y="57" text-anchor="middle" style="fill:var(--text)">db.sqlite3</text>
+        </g>
+        <polyline points="116,52 256,52" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#mg-arr)"/>
+        <polyline points="388,52 522,52" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#mg-arr)"/>
+        <text x="186" y="44" text-anchor="middle" style="fill:var(--muted);font:600 11.5px var(--font, sans-serif)">makemigrations</text>
+        <text x="455" y="44" text-anchor="middle" style="fill:var(--muted);font:600 11.5px var(--font, sans-serif)">migrate</text>
+        <text x="186" y="96" text-anchor="middle" style="fill:var(--muted);font:500 11px var(--font, sans-serif)">модельдер өзгерді</text>
+        <text x="323" y="96" text-anchor="middle" style="fill:var(--muted);font:500 11px var(--font, sans-serif)">өзгерістер жоспары</text>
+        <text x="579" y="96" text-anchor="middle" style="fill:var(--muted);font:500 11px var(--font, sans-serif)">нақты кестелер</text>
+      </svg>
+      <p>Бұл екі қадамды ажырату өте маңызды: <code>makemigrations</code> тек «қандай өзгеріс қажет» деген <em>жоспарды</em> Python файлы етіп жазады, ал <code>migrate</code> сол жоспарды дерекқорда <em>орындайды</em>.</p>
+
+      <h2 id="shell">Shell</h2>
+      <p>Дерекқорға ақпарат қосып, онымен жұмыс істеу үшін Django <strong>shell</strong>-іне (<span class="term-en">shell</span>) кіреміз. Онда біздің жобаның ішінде Python командаларын орындай аламыз:</p>
+<pre class="terminal"><code class="language-plaintext">python manage.py shell
+Python 3.7.2 (default, Dec 29 2018, 00:00:04)
+Type 'copyright', 'credits' or 'license' for more information
+IPython 6.5.0 -- An enhanced Interactive Python. Type '?' for help.</code></pre>
+      <p>Содан кейін осы жерде Python кодын жазамыз. Лектор жазған сеансты (комментарийлерді аударып, ағылшынша ақпаратқа тимей) көрейік:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Flight моделімізді импорттау
+In [1]: from flights.models import Flight
+
+# Жаңа рейс жасау
+In [2]: f = Flight(origin="New York", destination="London", duration=415)
+
+# Сол рейсті дерекқорға енгізу
+In [3]: f.save()
+
+# Дерекқордағы барлық рейсті сұрау
+In [4]: Flight.objects.all()
+Out[4]: &lt;QuerySet [&lt;Flight: Flight object (1)&gt;]&gt;</code></pre>
+      <p>Біз дерекқорға сұрау жібергенде тек бір рейс аламыз, оның аты - <code>Flight object (1)</code>. Мұның түсінікті атау емес екені анық, бірақ мұны түзетуге болады. <code>models.py</code> ішінде <code>__str__</code> функциясын жазамыз, ол <code>Flight</code> объектісін жолға қалай айналдыруды айтады:</p>
+<pre data-lang="python" data-norun><code class="language-python">class Flight(models.Model):
+    origin = models.CharField(max_length=64)
+    destination = models.CharField(max_length=64)
+    duration = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.id}: {self.origin} to {self.destination}"</code></pre>
+      <p>Енді shell-ге қайта оралсақ, шығыс біршама оқылатын болады:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Сұрау нәтижесін сақтайтын flights айнымалысын жасау
+In [7]: flights = Flight.objects.all()
+
+# Барлық рейсті көрсету
+In [8]: flights
+Out[8]: &lt;QuerySet [&lt;Flight: 1: New York to London&gt;]&gt;
+
+# Тек бірінші рейсті бөліп алу
+In [9]: flight = flights.first()
+
+# Рейс туралы ақпаратты шығару
+In [10]: flight
+Out[10]: &lt;Flight: 1: New York to London&gt;
+
+# Рейстің id-ін көрсету
+In [11]: flight.id
+Out[11]: 1
+
+# Рейстің origin-ін көрсету
+In [12]: flight.origin
+Out[12]: 'New York'
+
+# Рейстің destination-ін көрсету
+In [13]: flight.destination
+Out[13]: 'London'
+
+# Рейстің duration-ын көрсету
+In [14]: flight.duration
+Out[14]: 415</code></pre>
+      <div class="callout note">
+        <span class="callout-title">Python-нан SQL-ге</span>
+        <p>Бұл жерде <code>Flight.objects.all()</code> шын мәнінде <code>SELECT * FROM flights;</code> дегенмен бірдей. Ал <code>f.save()</code> - <code>INSERT</code>. Django-ның осы қосымша қабаты арқылы біз SQL жазбай-ақ, бірақ SQL-дің барлық күшін қолданып жатырмыз.</p>
+      </div>
+      <p>Бұл жақсы бастама. Бірақ біз сәл бұрын айтқандай, әр рейске қала атын қайта-қайта жазғымыз келмейді. Сондықтан рейс моделімен қандай да бір жолмен байланысты <strong>әуежай</strong> моделін жасайық:</p>
+<pre data-lang="python" data-norun><code class="language-python">class Airport(models.Model):
+    code = models.CharField(max_length=3)
+    city = models.CharField(max_length=64)
+
+    def __str__(self):
+        return f"{self.city} ({self.code})"
+
+class Flight(models.Model):
+    origin = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="departures")
+    destination = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="arrivals")
+    duration = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.id}: {self.origin} to {self.destination}"</code></pre>
+      <p>Жаңа <code>Airport</code> класындағы барлық нәрсені бұрын көрдік. Ал <code>Flight</code> класындағы <code>origin</code> және <code>destination</code> өрістерінің өзгерісі жаңа:</p>
+      <ul>
+        <li>Екі өрісті де <strong>сыртқы кілт</strong> (<code>ForeignKey</code>) деп көрсеттік, яғни олар басқа объектіге сілтейді;</li>
+        <li>Бірінші аргумент ретінде <code>Airport</code> жазу арқылы бұл өріс қандай объектіге сілтейтінін айтамыз;</li>
+        <li>Келесі аргумент <code>on_delete=models.CASCADE</code> әуежай жойылса не болуы керек екенін айтады. Біздің жағдайда әуежай жойылғанда оған байланысты барлық рейс те жойылады. <code>CASCADE</code>-тен басқа да бірнеше нұсқа бар;</li>
+        <li><code>related_name</code> береміз: бұл берілген әуежайды шығу немесе баратын орны ретінде алатын барлық рейсті іздеудің жолын ашады.</li>
+      </ul>
+      <p>Бұл атауды қолдану ыңғайлы: келесі қарапайым мысалда Астана әуежайы объектісінен <code>astana.departures.all()</code> деп, одан ұшатын барлық рейсті табуға болады.</p>
+      <p><code>models.py</code>-дағы әр өзгерістен кейін <strong>қайтадан миграция жасап, migrate жасауымыз керек</strong>. Назар аударыңыз, Нью-Йорктен Лондонға ұшатын бұрынғы рейсті жоюға тура келуі мүмкін, өйткені ол жаңа құрылымға сәйкес келмейді:</p>
+<pre class="terminal"><code class="language-plaintext"># Жаңа миграцияларды жасау
+python manage.py makemigrations
+
+# Migrate
+python manage.py migrate</code></pre>
+      <p>Енді жаңа модельдерімізді Django shell-де сынап көрейік:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Барлық модельдерді импорттау
+In [1]: from flights.models import *
+
+# Бірнеше жаңа әуежай жасау
+In [2]: jfk = Airport(code="JFK", city="New York")
+In [4]: lhr = Airport(code="LHR", city="London")
+In [6]: cdg = Airport(code="CDG", city="Paris")
+In [9]: nrt = Airport(code="NRT", city="Tokyo")
+
+# Әуежайларды дерекқорға сақтау
+In [3]: jfk.save()
+In [5]: lhr.save()
+In [8]: cdg.save()
+In [10]: nrt.save()
+
+# Рейс қосып, дерекқорға сақтау
+f = Flight(origin=jfk, destination=lhr, duration=414)
+f.save()
+
+# Рейс туралы ақпаратты шығару
+In [14]: f
+Out[14]: &lt;Flight: 1: New York (JFK) to London (LHR)&gt;
+In [15]: f.origin
+Out[15]: &lt;Airport: New York (JFK)&gt;
+
+# related name арқылы келу әуежайы бойынша іздеу:
+In [17]: lhr.arrivals.all()
+Out[17]: &lt;QuerySet [&lt;Flight: 1: New York (JFK) to London (LHR)&gt;]&gt;</code></pre>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>f.origin</code> неге жол емес, <code>Airport</code> объектісін қайтарады?</summary>
+        <div class="details-body"><p>Себебі дерекқорда <code>origin_id</code> бағанында тек сан (әуежайдың <code>id</code>-і) тұр, ал Django сол санға қарап, <code>Airport</code> кестесінен тиісті жолды өзі тауып береді. Яғни SQL-дегі JOIN-ды біз жазбаймыз, оны Django орындайды. Сондықтан <code>f.origin.city</code> деп тікелей қала атын да ала аламыз.</p></div>
+      </details>
+      <div class="callout note">
+        <span class="callout-title">Код ағылшынша қалды</span>
+        <p>Мұнда және әрі қарай shell сеанстарындағы «New York», «London» сияқты мәндер түпнұсқадағыдай қалдырылды, өйткені олар кодтың бір бөлігі. Өз компьютеріңізде ойын-ақ Астана, Алматы, Париж қойып көруге болады.</p>
+      </div>
+
+      <h3 id="starting-app">Қолданбаны іске қосу</h3>
+      <p>Енді модельдер арқылы дерекқормен жұмыс істейтін толыққанды қолданба жасай бастаймыз. Авиакомпаниямыздың басты бетін жасайық. <code>urls.py</code> ішінде:</p>
+<pre data-lang="python" data-norun><code class="language-python">urlpatterns = [
+    path('', views.index, name="index"),
+]</code></pre>
+      <p><code>views.py</code> ішінде:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.shortcuts import render
+from .models import Flight, Airport
+
+# Create your views here.
+
+def index(request):
+    return render(request, "flights/index.html", {
+        "flights": Flight.objects.all()
+    })</code></pre>
+      <p>Жаңа <code>layout.html</code> файлында:</p>
+<pre data-lang="html" data-norun><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+    &lt;head&gt;
+        &lt;title&gt;Flights&lt;/title&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        {% block body %}
+        {% endblock %}
+    &lt;/body&gt;
+&lt;/html&gt;</code></pre>
+      <p>Жаңа <code>index.html</code> файлында:</p>
+<pre data-lang="html" data-norun><code class="language-html">{% extends "flights/layout.html" %}
+
+{% block body %}
+    &lt;h1&gt;Flights:&lt;/h1&gt;
+    &lt;ul&gt;
+        {% for flight in flights %}
+            &lt;li&gt;Flight {{ flight.id }}: {{ flight.origin }} to {{ flight.destination }}&lt;/li&gt;
+        {% endfor %}
+    &lt;/ul&gt;
+{% endblock %}</code></pre>
+      <p>Мұнда біз әзірге жасалған барлық рейстің тізімі бар негізгі бетті жасадық. Бетті ашқанда онда бір ғана рейс көрінеді (түпнұсқада скриншот бар: «Flights:» тақырыбы мен «Flight 1: New York (JFK) to London (LHR)» бір жолы).</p>
+      <p>Енді Django shell-ге қайтып, қосымшамызға тағы рейстер қосайық:</p>
+<pre data-lang="python" data-norun><code class="language-python"># filter командасымен Нью-Йоркте орналасқан барлық әуежайды табу
+In [3]: Airport.objects.filter(city="New York")
+Out[3]: &lt;QuerySet [&lt;Airport: New York (JFK)&gt;]&gt;
+
+# get командасымен Нью-Йорктегі тек бір әуежайды алу
+In [5]: Airport.objects.get(city="New York")
+Out[5]: &lt;Airport: New York (JFK)&gt;
+
+# Кейбір әуежайларды айнымалыларға меншіктеу:
+In [6]: jfk = Airport.objects.get(city="New York")
+In [7]: cdg = Airport.objects.get(city="Paris")
+
+# Жаңа рейс жасап, сақтау:
+In [8]: f = Flight(origin=jfk, destination=cdg, duration=435)
+In [9]: f.save()</code></pre>
+      <p>Назар аударыңыз: <code>filter</code> әрқашан <em>QuerySet</em> (бірнеше нәтиже тізімі) қайтарады, ал <code>get</code> дәл бір объектіні алады. <code>get</code> ештеңе таппаса, не бірнешеуін тапса, қате береді. SQL-мен салыстырсақ, <code>filter(city="New York")</code> дегеніміз <code>WHERE city = "New York"</code> дегенмен бірдей. Енді сайтқа қайта кірсек, екі рейсті көреміз.</p>
+
+      <h2 id="admin">Django әкімшілік панелі</h2>
+      <p>Біз shell-де істегендей жаңа объектілер жасау бағдарламашыларға өте жиі қажет болғандықтан, Django-да кірістірілген <strong>әкімшілік интерфейсі</strong> (<span class="term-en">admin interface</span>) бар: ол осы жұмысты ыңғайлырақ етеді. Оны қолдану үшін алдымен әкімші қолданушыны жасаймыз:</p>
+<pre class="terminal"><code class="language-plaintext">(base) cleggett@Connors-MacBook-Pro airline % python manage.py createsuperuser
+Username: user_a
+Email address: a@a.com
+Password:
+Password (again):
+Superuser created successfully.</code></pre>
+      <p>Содан соң модельдерімізді admin қолданбасына қосуымыз керек. Ол үшін қолданбамыздың ішіндегі <code>admin.py</code> файлына барып, модельдерді импорттап, тіркейміз. Бұл Django-ға қай модельдерге әкімшілік панелінде қол жеткізгіміз келетінін айтады:</p>
+<pre data-lang="python" data-norun><code class="language-python">from django.contrib import admin
+from .models import Flight, Airport
+
+# Register your models here.
+admin.site.register(Flight)
+admin.site.register(Airport)</code></pre>
+      <p>Енді сайтымызда мекенжайға <code>/admin</code> қосып кірсек, кіру беті ашылады (түпнұсқада скриншот бар: «Django administration» тақырыбы, логин мен құпиясөз өрістері). Кіргеннен кейін дерекқордағы объектілерді жасай, өзгерте және жоя алатын бетке түсеміз: онда «Airports» және «Flights» атты екі тізім көрінеді.</p>
+      <p>Енді сайтқа тағы бірнеше бет қосайық. Рейсті басқанда оның толық мәліметі шығатындай етейік. Ол үшін URL жолына рейстің <code>id</code>-ін қосамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">path("&lt;int:flight_id&gt;", views.flight, name="flight")</code></pre>
+      <p>Содан кейін <code>views.py</code> ішінде рейс <code>id</code>-ін қабылдап, жаңа HTML бетін жасайтын <code>flight</code> функциясын жазамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">def flight(request, flight_id):
+    flight = Flight.objects.get(id=flight_id)
+    return render(request, "flights/flight.html", {
+        "flight": flight
+    })</code></pre>
+      <p>Енді басты бетке сілтемесі бар, рейс мәліметін көрсететін шаблон жазамыз:</p>
+<pre data-lang="html" data-norun><code class="language-html">{% extends "flights/layout.html" %}
+
+{% block body %}
+    &lt;h1&gt;Flight {{ flight.id }}&lt;/h1&gt;
+    &lt;ul&gt;
+        &lt;li&gt;Origin: {{ flight.origin }}&lt;/li&gt;
+        &lt;li&gt;Destination: {{ flight.destination }}&lt;/li&gt;
+        &lt;li&gt;Duration: {{ flight.duration }} minutes&lt;/li&gt;
+    &lt;/ul&gt;
+    &lt;a href="{% url 'index' %}"&gt;All Flights&lt;/a&gt;
+{% endblock %}</code></pre>
+      <p>Ақырында бір беттен екіншісіне өту мүмкіндігін қосуымыз керек, сондықтан бастапқы бетімізге сілтемелер қосамыз:</p>
+<pre data-lang="html" data-norun><code class="language-html">{% extends "flights/layout.html" %}
+
+{% block body %}
+    &lt;h1&gt;Flights:&lt;/h1&gt;
+    &lt;ul&gt;
+        {% for flight in flights %}
+            &lt;li&gt;&lt;a href="{% url 'flight' flight.id %}"&gt;Flight {{ flight.id }}&lt;/a&gt;: {{ flight.origin }} to {{ flight.destination }}&lt;/li&gt;
+        {% endfor %}
+    &lt;/ul&gt;
+{% endblock %}</code></pre>
+      <p>Енді басты бетімізде әр рейстің сілтемесі тұр. Мысалы, 5-рейсті басқанда, сол рейстің бетіне түсеміз: тақырыбы «Flight 5», астында шығу, баратын орны және ұзақтығы тізімі, ең төменде «All Flights» сілтемесі.</p>
+
+      <h2 id="many-to-many">Көп-көпке қатынастары</h2>
+      <p>Енді модельдерімізге жолаушыларды қосайық. Бастау үшін жолаушы моделін жасаймыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">class Passenger(models.Model):
+    first = models.CharField(max_length=64)
+    last = models.CharField(max_length=64)
+    flights = models.ManyToManyField(Flight, blank=True, related_name="passengers")
+
+    def __str__(self):
+        return f"{self.first} {self.last}"</code></pre>
+      <ul>
+        <li>Жоғарыда айтқандай, жолаушылардың рейстермен <strong>көп-көпке</strong> қатынасы бар, оны Django-да <code>ManyToManyField</code> арқылы сипаттаймыз;</li>
+        <li>Бұл өрістің бірінші аргументі - онымен байланысатын объектілер класы;</li>
+        <li><code>blank=True</code> аргументі жолаушының ешбір рейсі болмауы мүмкін екенін білдіреді;</li>
+        <li><code>related_name</code> қосамыз, ол жоғарыдағыдай қызмет атқарады: берілген рейстегі барлық жолаушыны табуға мүмкіндік береді.</li>
+      </ul>
+      <p>Бұл өзгерістерді енгізу үшін тағы да <code>makemigrations</code> пен <code>migrate</code> жасаймыз. Содан кейін <code>Passenger</code> моделін <code>admin.py</code>-да тіркеп, әкімшілік бетінде жолаушылар жасай аламыз. Назар аударыңыз: SQL-де біз ассоциация кестесін өзіміз жасадық, ал Django <code>ManyToManyField</code> көргенде оны өзі жасап береді.</p>
+      <p>Жолаушылар қосқан соң, рейс бетіміз рейстегі барлық жолаушыны көрсететіндей жаңартайық. Алдымен <code>views.py</code>-дағы <code>flight</code> көрінісін жолаушылар тізімін контекст ретінде беретін етіп өзгертеміз. Тізімге жоғарыда анықтаған <code>related_name</code> арқылы қол жеткіземіз:</p>
+<pre data-lang="python" data-norun><code class="language-python">def flight(request, flight_id):
+    flight = Flight.objects.get(id=flight_id)
+    passengers = flight.passengers.all()
+    return render(request, "flights/flight.html", {
+        "flight": flight,
+        "passengers": passengers
+    })</code></pre>
+      <p>Енді <code>flight.html</code> файлына жолаушылар тізімін қосамыз:</p>
+<pre data-lang="html" data-norun><code class="language-html">&lt;h2&gt;Passengers:&lt;/h2&gt;
+&lt;ul&gt;
+    {% for passenger in passengers %}
+        &lt;li&gt;{{ passenger }}&lt;/li&gt;
+    {% empty %}
+        &lt;li&gt;No Passengers.&lt;/li&gt;
+    {% endfor %}
+&lt;/ul&gt;</code></pre>
+      <p>Назар аударыңыз: <code>{% empty %}</code> блогы тізім бос болғанда ғана орындалады, яғни <code>for</code> циклінің «ешкім жоқ» жағдайы. Енді 5-рейске кірсек, ондағы жолаушылар тізімін көреміз (жолаушы жоқ болса, «No Passengers.»).</p>
+      <p>Сайтымызға келушілерге рейсті <strong>брондау</strong> мүмкіндігін де берейік. Ол үшін <code>urls.py</code> ішіне брондау жолын қосамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">path("&lt;int:flight_id&gt;/book", views.book, name="book")</code></pre>
+      <p>Енді жолаушыны рейске қосатын <code>book</code> функциясын <code>views.py</code>-ға жазамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">def book(request, flight_id):
+
+    # POST сұрауы болса, жаңа рейс қосамыз
+    if request.method == "POST":
+
+        # Рейске қол жеткізу
+        flight = Flight.objects.get(pk=flight_id)
+
+        # Жіберілген форма деректерінен жолаушының id-ін табу
+        passenger_id = int(request.POST["passenger"])
+
+        # id бойынша жолаушыны табу
+        passenger = Passenger.objects.get(pk=passenger_id)
+
+        # Жолаушыны рейске қосу
+        passenger.flights.add(flight)
+
+        # Қолданушыны рейс бетіне бағыттау
+        return HttpResponseRedirect(reverse("flight", args=(flight.id,)))</code></pre>
+      <p>Келесі қадам: рейс шаблонына әлі осы рейсте жоқ барлық жолаушыны беру. Ол үшін Django-ның сұраудан белгілі объектілерді <code>exclude</code> (шығарып тастау) мүмкіндігін қолданамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">def flight(request, flight_id):
+    flight = Flight.objects.get(id=flight_id)
+    passengers = flight.passengers.all()
+    non_passengers = Passenger.objects.exclude(flights=flight).all()
+    return render(request, "flights/flight.html", {
+        "flight": flight,
+        "passengers": passengers,
+        "non_passengers": non_passengers
+    })</code></pre>
+      <p>Енді рейс бетінің HTML-ына <code>select</code> енгізу өрісі бар форма қосамыз:</p>
+<pre data-lang="html" data-norun><code class="language-html">&lt;form action="{% url 'book' flight.id %}" method="post"&gt;
+    {% csrf_token %}
+    &lt;select name="passenger" id=""&gt;
+        {% for passenger in non_passengers %}
+            &lt;option value="{{ passenger.id }}"&gt;{{ passenger }}&lt;/option&gt;
+        {% endfor %}
+    &lt;/select&gt;
+    &lt;input type="submit"&gt;
+&lt;/form&gt;</code></pre>
+      <p>Рейс бетіне кіріп, жолаушыны қосқанда не болатынын қарайық: бетте жолаушылар таңдалатын ашылмалы тізім мен жіберу түймесі тұр; таңдап жібергенде жолаушы «Passengers» тізіміне өтеді де, ашылмалы тізімнен жоғалады (түпнұсқада екі скриншот).</p>
+      <p>Django admin-ның тағы бір артықшылығы - оны өзгертуге болады. Мысалы, рейстің барлық аспектісін әкімшілік интерфейсінде көргіміз келсе, <code>admin.py</code> ішінде жаңа класс жазып, оны <code>Flight</code> моделін тіркегенде аргумент ретінде береміз:</p>
+<pre data-lang="python" data-norun><code class="language-python">class FlightAdmin(admin.ModelAdmin):
+    list_display = ("id", "origin", "destination", "duration")
+
+# Register your models here.
+admin.site.register(Flight, FlightAdmin)</code></pre>
+      <p>Енді рейстердің әкімшілік бетіне кірсек, <code>id</code> да көрінеді, және әр өріс бөлек баған болып тұрады. Әкімшілікті тағы қалай бапқа келтіруге болатынын Django-ның admin құжаттамасынан қараңыз.</p>
+
+      <h2 id="users">Қолданушылар</h2>
+      <p>Бүгінгі лекцияда талқылайтын соңғы нәрсе - <strong>аутентификация</strong> (<span class="term-en">authentication</span>) идеясы, яғни қолданушыларға сайтқа кіріп-шығуға мүмкіндік беру. Бақытымызға, Django мұны өте оңай етеді; мысал арқылы қарастырайық. <code>users</code> деген жаңа қолданба жасаудан бастаймыз. Қолданбаны жасаудың барлық әдеттегі қадамдарынан өтеміз, бірақ жаңа <code>urls.py</code> ішіне бірнеше жол қосамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">urlpatterns = [
+    path('', views.index, name="index"),
+    path("login", views.login_view, name="login"),
+    path("logout", views.logout_view, name="logout")
+]</code></pre>
+      <p>Алдымен қолданушы кіре алатын форма жасайық. Әдеттегідей <code>layout.html</code> жасаймыз, сосын форма бар және хабарлама болса оны көрсететін <code>login.html</code> жасаймыз:</p>
+<pre data-lang="html" data-norun><code class="language-html">{% extends "users/layout.html" %}
+
+{% block body %}
+    {% if message %}
+        &lt;div&gt;{{ message }}&lt;/div&gt;
+    {% endif %}
+
+    &lt;form action="{% url 'login' %}" method="post"&gt;
+        {% csrf_token %}
+        &lt;input type="text", name="username", placeholder="Username"&gt;
+        &lt;input type="password", name="password", placeholder="Password"&gt;
+        &lt;input type="submit", value="Login"&gt;
+    &lt;/form&gt;
+{% endblock %}</code></pre>
+      <p>Енді <code>views.py</code> ішіне үш функция қосамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">def index(request):
+    # Ешкім кірмеген болса, кіру бетіне қайтару:
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("login"))
+    return render(request, "users/user.html")
+
+def login_view(request):
+    return render(request, "users/login.html")
+
+def logout_view(request):
+    # Pass - Python-ға ештеңе істемеуді айтудың қарапайым жолы.
+    pass</code></pre>
+      <p>Содан кейін әкімшілік сайтына барып, бірнеше қолданушы қосамыз. Одан соң <code>views.py</code>-ға оралып, <code>login_view</code> функциясын қолданушы аты мен құпиясөзі бар <code>POST</code> сұрауын өңдейтіндей етіп жаңартамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python"># Қажет болатын қосымша импорттар:
+from django.contrib.auth import authenticate, login, logout
+
+def login_view(request):
+    if request.method == "POST":
+        # Форма деректерінен username мен password алу
+        username = request.POST["username"]
+        password = request.POST["password"]
+
+        # username мен password дұрыс па екенін тексеру, дұрыс болса User объектісін қайтарады
+        user = authenticate(request, username=username, password=password)
+
+        # User объектісі қайтса, кіргізіп, басты бетке бағыттау:
+        if user:
+            login(request, user)
+            return HttpResponseRedirect(reverse("index"))
+        # Әйтпесе, жаңа контекстпен кіру бетін қайта көрсету
+        else:
+            return render(request, "users/login.html", {
+                "message": "Invalid Credentials"
+            })
+    return render(request, "users/login.html")</code></pre>
+      <p>Енді қолданушы аутентификацияланған кезде <code>index</code> функциясы көрсететін <code>user.html</code> файлын жасаймыз:</p>
+<pre data-lang="html" data-norun><code class="language-html">{% extends "users/layout.html" %}
+
+{% block body %}
+    &lt;h1&gt;Welcome, {{ request.user.first_name }}&lt;/h1&gt;
+    &lt;ul&gt;
+        &lt;li&gt;Username: {{ request.user.username }}&lt;/li&gt;
+        &lt;li&gt;Email: {{ request.user.email }}&lt;/li&gt;
+    &lt;/ul&gt;
+
+    &lt;a href="{% url 'logout' %}"&gt;Log Out&lt;/a&gt;
+{% endblock %}</code></pre>
+      <p>Ақырында қолданушы шыға алатындай етіп, <code>logout_view</code> функциясын Django-ның кірістірілген <code>logout</code> функциясын қолданатындай жаңартамыз:</p>
+<pre data-lang="python" data-norun><code class="language-python">def logout_view(request):
+    logout(request)
+    return render(request, "users/login.html", {
+                "message": "Logged Out"
+            })</code></pre>
+      <p>Бәрі біткен соң сайттың жұмысын көрсетеміз (түпнұсқада GIF-демо бар): қолданушы атын, құпиясөзін енгізеді, кіреді, «Welcome» бетін көреді, «Log Out» басқанда «Logged Out» хабарламасы бар кіру бетіне оралады. Қате құпиясөзде «Invalid Credentials» шығады.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>authenticate</code> неге құпиясөзді SQL-ге тікелей қоспайды?</summary>
+        <div class="details-body"><p>Ол қолданушыны ORM арқылы іздейді, және құпиясөз хэш түрінде салыстырылады. Қолданушы енгізген мәтін ешқашан SQL жолына тікелей жабыстырылмайды, сондықтан <code>harry" --</code> сияқты енгізу тек қарапайым мәтін болып қалады. Бұл Django абстракциясының беретін қауіпсіздігі.</p></div>
+      </details>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Бүгін біз деректерді сақтау мен басқарудың негізін үйрендік. Негізгілері:</p>
+      <ul>
+        <li><strong>SQL</strong> және реляциялық дерекқорлар: кестелер, бағандар, жолдар, SQLite және баған типтері (<code>TEXT</code>, <code>INTEGER</code>, <code>REAL</code>, <code>NUMERIC</code>, <code>BLOB</code>);</li>
+        <li><code>CREATE TABLE</code> мен шектеулер (<code>PRIMARY KEY</code>, <code>NOT NULL</code>, <code>UNIQUE</code>, <code>DEFAULT</code>, <code>CHECK</code>), <code>INSERT</code>;</li>
+        <li><code>SELECT</code>, <code>WHERE</code>, <code>AND</code>/<code>OR</code>, <code>IN</code>, <code>LIKE</code>, функциялар (<code>COUNT</code>, <code>AVG</code>, <code>MAX</code>, <code>MIN</code>, <code>SUM</code>), <code>UPDATE</code>, <code>DELETE</code>, <code>LIMIT</code>, <code>ORDER BY</code>, <code>GROUP BY</code>, <code>HAVING</code>;</li>
+        <li>бастапқы және сыртқы кілттер, көп-көпке қатынасы мен ассоциация кестесі, <code>JOIN</code> және индекс;</li>
+        <li>SQL инъекциясы мен жарыс жағдайы және олардан қорғану;</li>
+        <li>Django модельдері: <code>models.Model</code>, <code>CharField</code>, <code>IntegerField</code>, <code>ForeignKey</code> (<code>on_delete</code>, <code>related_name</code>), <code>ManyToManyField</code>;</li>
+        <li>миграциялар: <code>makemigrations</code> (жоспар) және <code>migrate</code> (орындау);</li>
+        <li>Django shell: <code>save()</code>, <code>objects.all()</code>, <code>filter</code>, <code>get</code>, <code>exclude</code>, <code>__str__</code>;</li>
+        <li>Django admin: <code>createsuperuser</code>, <code>admin.site.register</code>, <code>ModelAdmin</code> және <code>list_display</code>;</li>
+        <li>аутентификация: <code>authenticate</code>, <code>login</code>, <code>logout</code>, <code>request.user</code>.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. <code>flights</code> кестесінде <code>origin</code>, <code>destination</code>, <code>duration</code> бағандары бар. Қай сұрау ұзақтығы 500-ден асатын рейстердің <em>тек</em> шығу қалаларын қайтарады?</p>
+          <label><input type="radio" value="a"> <code>SELECT * FROM flights WHERE duration &gt; 500;</code></label>
+          <label><input type="radio" value="b"> <code>SELECT origin WHERE duration &gt; 500;</code></label>
+          <label><input type="radio" value="c"> <code>SELECT origin FROM flights WHERE duration &gt; 500;</code></label>
+          <label><input type="radio" value="d"> <code>SELECT duration FROM flights WHERE origin &gt; 500;</code></label>
+          <p class="explain">Қай бағанды алатынымызды <code>SELECT</code>-тен кейін, қай кестеден алатынымызды <code>FROM</code>-нан кейін, ал жолдарды сүзу шартын <code>WHERE</code>-нан кейін жазамыз. Жұлдызша барлық бағанды қайтарар еді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">2. Мына команда нені жояды?<br><code>DELETE FROM flights;</code></p>
+          <label><input type="radio" value="a"> <code>flights</code> кестесіндегі барлық жолды, ал кестенің өзі қалады</label>
+          <label><input type="radio" value="b"> Тек бірінші жолды</label>
+          <label><input type="radio" value="c"> Ештеңені, себебі <code>WHERE</code> жоқ</label>
+          <label><input type="radio" value="d"> Бүкіл дерекқор файлын</label>
+          <p class="explain"><code>WHERE</code> болмаса, команда кестедегі барлық жолға қолданылады. Сондықтан <code>DELETE</code> және <code>UPDATE</code> алдында шартты <code>SELECT</code> арқылы тексерген жөн.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. Бір адам көп рейсте ұша алады, бір рейсте көп адам болады. Мұндай байланыс қалай жүзеге асады?</p>
+          <label><input type="radio" value="a"> <code>flights</code> кестесіне <code>person_id</code> бағанын қосамыз</label>
+          <label><input type="radio" value="b"> <code>people</code> кестесіне барлық рейсті үтірмен бір жолға жазамыз</label>
+          <label><input type="radio" value="c"> Әр адамға жеке кесте жасаймыз</label>
+          <label><input type="radio" value="d"> Адам id-і мен рейс id-ін жұптайтын ассоциация кестесін (<code>passengers</code>) жасаймыз</label>
+          <p class="explain">Көп-көпке қатынасы бір ғана сыртқы кілтпен сипатталмайды: ортада жұптарды сақтайтын ассоциация кестесі керек. Django-да мұны <code>ManyToManyField</code> өзі жасайды.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">4. <code>flights JOIN passengers ON passengers.flight_id = flights.id</code> сұрауында ешқандай жолаушысы жоқ рейс нәтижеде қалай болады?</p>
+          <label><input type="radio" value="a"> <code>NULL</code> жолаушымен көрінеді</label>
+          <label><input type="radio" value="b"> Көрінбейді, өйткені бұл INNER JOIN және сәйкестігі жоқ жолдар алынып тасталады</label>
+          <label><input type="radio" value="c"> Қате шығады</label>
+          <label><input type="radio" value="d"> Оның <code>id</code>-і 0 болады</label>
+          <p class="explain">INNER JOIN екі жақта да сәйкестігі бар жолдарды ғана қалдырады. Сәйкестіксіз рейсті де көру үшін <code>LEFT JOIN</code> қолдану керек.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">5. Login формасына хакер <code>harry" --</code> деп жазды. Не себепті ол құпиясөзсіз кіре алады?</p>
+          <pre data-lang="sql" data-norun><code class="language-sql">SELECT * FROM users
+WHERE username = "harry"--" AND password = "12345";</code></pre>
+          <label><input type="radio" value="a"> <code>--</code> жолды жасырады да, дерекқор өшіп қалады</label>
+          <label><input type="radio" value="b"> SQL құпиясөзді мүлде тексермейді</label>
+          <label><input type="radio" value="c"> <code>--</code> SQL-де комментарий, сондықтан <code>AND password = ...</code> бөлігі орындалмай қалады</label>
+          <label><input type="radio" value="d"> <code>harry</code> әрқашан админ болады</label>
+          <p class="explain">Енгізілген мәтін код ретінде қабылданды. Қорғану: escape-таңбалар немесе Django модельдері сияқты абстракция қабаты.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">6. Django-да <code>models.py</code> өзгертілді. Дерекқор жаңаруы үшін қай ретпен команда беру керек?</p>
+          <label><input type="radio" value="a"> Алдымен <code>makemigrations</code>, сосын <code>migrate</code></label>
+          <label><input type="radio" value="b"> Алдымен <code>migrate</code>, сосын <code>makemigrations</code></label>
+          <label><input type="radio" value="c"> Тек <code>runserver</code> жеткілікті</label>
+          <label><input type="radio" value="d"> Тек <code>makemigrations</code> жеткілікті, ол дерекқорды да жаңартады</label>
+          <p class="explain"><code>makemigrations</code> өзгеріс жоспарын (миграция файлын) жасайды, ал <code>migrate</code> оны дерекқорда орындайды. Біріншісінсіз екіншісінің орындайтыны жоқ.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. <code>Flight</code> моделінде <code>origin = models.ForeignKey(Airport, on_delete=models.CASCADE, related_name="departures")</code> бар. <code>astana</code> - <code>Airport</code> объектісі. Астанадан ұшатын рейстерді қалай аламыз?</p>
+          <label><input type="radio" value="a"> <code>astana.origin.all()</code></label>
+          <label><input type="radio" value="b"> <code>Flight.departures(astana)</code></label>
+          <label><input type="radio" value="c"> <code>astana.flights.all()</code></label>
+          <label><input type="radio" value="d"> <code>astana.departures.all()</code></label>
+          <p class="explain"><code>related_name</code> кері бағытта іздеудің атын береді: әуежай объектісінен оны шығу орны ретінде алатын рейстерге <code>departures</code> арқылы жетеміз.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">8. Банк шотында 150 бар. Екі құрылғыдан бір мезгілде 100 алуға тырыстық, ал екеуі де сәтті болды. Бұл қандай осалдық және оған қарсы қандай шара бар?</p>
+          <label><input type="radio" value="a"> SQL инъекциясы; escape-таңбалар</label>
+          <label><input type="radio" value="b"> Жарыс жағдайы; дерекқорды (не әрекетті) құлыптау</label>
+          <label><input type="radio" value="c"> Индекс жетіспеуі; <code>CREATE INDEX</code></label>
+          <label><input type="radio" value="d"> Көп-көпке қатынасы; ассоциация кестесі</label>
+          <p class="explain">Екі сұрау бір мезгілде қалдықты оқып, екеуі де «жеткілікті» деп шешті. Бұл жарыс жағдайы. Бір транзакция біткенше екіншісін күттіру (құлып) оны болдырмайды.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="practice">SQL жаттығулары</h2>
+      <p>Бұл - сайттың өз жаттығулары, ресми тапсырма емес. Төмендегі сұрауларды лекциядағы «авиакомпания» дерекқорымен орындаңыз. Бұл жолы дерекқор «қалыпқа келтірілген» (<code>airports</code>, <code>flights</code>, <code>people</code>, <code>passengers</code> кестелері), сондықтан JOIN керек болады. Әр сұрауды жеке-жеке жазып тексеріңіз.</p>
+      <div class="sql-grader" data-set="sql4-ucak" data-src="web/data/week-4.js"></div>
+
+      <h2 id="problem-set">Project 2: Commerce (Екінші жоба)</h2>
+      <p>Ресми жоба беті: <a href="https://cs50.harvard.edu/web/projects/2/commerce/" target="_blank" rel="noopener">cs50.harvard.edu/web/projects/2/commerce</a>. Ескерту: CS50W-да лекциялар мен жобалар бір-біріне бір-бірден сәйкес келмейді. Егер сіз 4-лекцияны кем дегенде көрмей тұрып бұл жобаны бастасаңыз, әлі ерте деген сөз.</p>
+      <div class="callout note">
+        <span class="callout-title">Компьютерде орындалады</span>
+        <p>Commerce - нағыз Django жобасы: Python, Django, дерекқор және браузер қажет, сондықтан оны сайтта автотексере алмаймыз. Жобаны өз компьютеріңізде (немесе cs50.dev-те) жасайсыз. Төмендегі чек-парақ тек өзіңізді қадағалау үшін, ал ресми тексеруді CS50 жүйесі істейді.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="pset-commerce">Commerce (Электрондық коммерция)</h3></div>
+        <p>eBay-ға ұқсас электрондық коммерция аукцион сайтын жобалаңыз: қолданушылар аукцион лоттарын (<span class="term-en">listings</span>) жариялай алады, лоттарға бәс (<span class="term-en">bid</span>) сала алады, лоттарға пікір жаза алады және лоттарды «бақылау тізіміне» (<span class="term-en">watchlist</span>) қоса алады.</p>
+        <h4>Бастау</h4>
+        <ol>
+          <li>Таратылатын кодты <a href="https://cdn.cs50.net/web/2020/spring/projects/2/commerce.zip" target="_blank" rel="noopener">cdn.cs50.net/web/2020/spring/projects/2/commerce.zip</a> мекенжайынан жүктеп, архивін ашыңыз.</li>
+          <li>Терминалда <code>commerce</code> қалтасына <code>cd</code> жасаңыз.</li>
+          <li><code>python manage.py makemigrations auctions</code> командасымен <code>auctions</code> қолданбасына миграциялар жасаңыз.</li>
+          <li><code>python manage.py migrate</code> командасымен миграцияларды дерекқорға қолданыңыз.</li>
+        </ol>
+        <h4>Түсіну</h4>
+        <p>Таратылатын кодта <code>auctions</code> деген бір ғана қолданбасы бар <code>commerce</code> Django жобасы бар. Алдымен <code>auctions/urls.py</code> ашыңыз: онда қолданбаның URL конфигурациясы жазылған. Біз сізге бірнеше URL-ды дайындап қойдық: әдепкі <code>index</code> жолы, <code>/login</code>, <code>/logout</code> және <code>/register</code>.</p>
+        <p><code>auctions/views.py</code> ішінде осы жолдардың әрқайсысына сәйкес көріністерді қараңыз. <code>index</code> көрінісі әзірге бос дерлік <code>index.html</code> шаблонын қайтарады. <code>login_view</code> қолданушы бетке GET сұрауымен келгенде кіру формасын көрсетеді; форма POST сұрау әдісімен жіберілгенде қолданушы аутентификацияланады, жүйеге кіреді және басты бетке бағытталады. <code>logout_view</code> қолданушыны жүйеден шығарып, басты бетке бағыттайды. Соңында, <code>register</code> жолы тіркелу формасын көрсетеді және форма жіберілгенде жаңа қолданушы жасайды. Мұның бәрі таратылатын кодта дайын, сондықтан қосымшаны қазір-ақ іске қосып, бірнеше қолданушы жасай аласыз.</p>
+        <p><code>python manage.py runserver</code> командасымен Django веб-серверін іске қосып, сайтты браузерде ашыңыз. «Register» басып, аккаунт тіркеңіз. Енді «Signed in as» деп сіздің есіміңіз көрсетіліп, жоғарғы сілтемелер өзгергенін көресіз. HTML қалай өзгерді? Қолданбаның HTML макеті <code>auctions/templates/auctions/layout.html</code> ішінде. Шаблонның бірнеше бөлігі <code>user.is_authenticated</code> тексерісімен қоршалғанына назар аударыңыз: қолданушы кірген-кірмегеніне қарай әртүрлі мазмұн көрсетіледі. Қаласаңыз, бұл файлды өзгертіп, макетке бірдеңе қосуға немесе өзгертуге болады.</p>
+        <p>Ақырында, <code>auctions/models.py</code> файлын қараңыз. Веб-қосымшаңыздың кез келген моделін осында анықтайсыз; әр модель дерекқорда сақтағыңыз келетін деректің бір түрін білдіреді. Біз сізге қосымшаның әр қолданушысын білдіретін <code>User</code> моделін дайындап бердік. Ол <code>AbstractUser</code>-ден мұралатындықтан, онда қолданушы аты, email, құпиясөз және т.б. өрістер бар; бірақ қолданушы туралы қосымша ақпарат сақтағыңыз келсе, <code>User</code> класына жаңа өрістер қоса аласыз. Сондай-ақ аукцион лоттары, бәстер, пікірлер және аукцион санаттарының мәліметтерін сипаттау үшін осы файлға қосымша модельдер қосуыңыз керек. Есіңізде болсын: <code>auctions/models.py</code> ішінде бірдеңені өзгерткен сайын, өзгерісті дерекқорға көшіру үшін алдымен <code>python manage.py makemigrations</code>, сосын <code>python manage.py migrate</code> жазасыз.</p>
+        <h4>Талаптар</h4>
+        <p>Аукцион сайтын толық жүзеге асырыңыз. Мына талаптардың бәрін орындауыңыз керек:</p>
+        <ul>
+          <li><strong>Модельдер</strong> (<span class="term-en">Models</span>): қосымшада <code>User</code> моделінен басқа кемінде үш модель болуы керек: аукцион лоттарына, бәстерге және лоттарға жазылған пікірлерге арналған. Әр модельде қандай өрістер және қандай типтер болатынын өзіңіз шешесіз. Қаласаңыз, қосымша модельдер де қоса аласыз.</li>
+          <li><strong>Лот жасау</strong> (<span class="term-en">Create Listing</span>): қолданушылар жаңа лот жасайтын бетке кіре алуы керек. Олар лоттың атауын, мәтіндік сипаттамасын және бастапқы бәсті көрсете алуы тиіс. Сонымен қатар қолданушылар міндетті емес түрде лоттың суретінің URL-ын және/немесе санатты (мысалы, Fashion, Toys, Electronics, Home және т.б.) бере алуы керек.</li>
+          <li><strong>Ашық лоттар беті</strong> (<span class="term-en">Active Listings Page</span>): веб-қосымшаның әдепкі жолы қазір ашық барлық аукцион лотын көрсетуі керек. Әр ашық лот үшін бұл бет (кемінде) атауын, сипаттамасын, ағымдағы бағасын және суретін (бар болса) көрсетуі тиіс.</li>
+          <li><strong>Лот беті</strong> (<span class="term-en">Listing Page</span>): лотты басқанда қолданушы сол лотқа арналған бетке өтуі керек. Бетте қолданушы лот туралы барлық мәліметті, соның ішінде лоттың ағымдағы бағасын көре алуы керек.
+            <ul>
+              <li>Қолданушы жүйеге кірген болса, ол затты өзінің «Watchlist»-іне қоса алуы керек. Зат бақылау тізімінде бұрыннан бар болса, оны алып тастай алуы керек.</li>
+              <li>Қолданушы жүйеге кірген болса, ол затқа бәс сала алуы керек. Бәс кемінде бастапқы бәстей үлкен болуы және басқа салынған бәстердің (болса) бәрінен үлкен болуы тиіс. Бәс бұл шарттарға сәйкес келмесе, қолданушыға қате көрсетілуі керек.</li>
+              <li>Қолданушы жүйеге кірген және лотты өзі жасаған болса, ол осы беттен аукционды «жабу» мүмкіндігіне ие болуы керек: бұл ең жоғары бәс салушыны аукцион жеңімпазы етеді және лотты енді ашық емес етеді.</li>
+              <li>Қолданушы жүйеге кіріп, жабылған лот бетінде тұрса және сол аукционды жеңген болса, бетте солай деп жазылуы керек.</li>
+              <li>Жүйеге кірген қолданушылар лот бетіне пікір қоса алуы керек. Лот беті сол лотқа жазылған барлық пікірді көрсетуі керек.</li>
+            </ul></li>
+          <li><strong>Бақылау тізімі</strong> (<span class="term-en">Watchlist</span>): жүйеге кірген қолданушылар Watchlist бетіне кіре алуы керек; ол бетте қолданушы бақылау тізіміне қосқан барлық лот көрсетілуі тиіс. Осы лоттардың кез келгенін басқанда қолданушы сол лоттың бетіне өтуі керек.</li>
+          <li><strong>Санаттар</strong> (<span class="term-en">Categories</span>): қолданушылар лоттардың барлық санатының тізімі көрсетілетін бетке кіре алуы керек. Кез келген санаттың атын басқанда қолданушы сол санаттағы барлық ашық лот көрсетілетін бетке өтуі керек.</li>
+          <li><strong>Django әкімшілік интерфейсі</strong> (<span class="term-en">Django Admin Interface</span>): Django admin арқылы сайт әкімшісі сайттағы кез келген лотты, пікірді және бәсті көре, қоса, өзгерте және жоя алуы керек.</li>
+        </ul>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li>Django admin интерфейсіне кіре алатын супер-қолданушы жасау үшін <code>python manage.py createsuperuser</code> орындаңыз.</li>
+            <li>Модель өрістерінің мүмкін типтері үшін Django-ның «Model field reference» құжаттамасын қараңыз.</li>
+            <li>Қосымшаның әртүрлі бөліктері үшін Django формаларын (<span class="term-en">Django forms</span>) жасау керек болуы мүмкін.</li>
+            <li>Кез келген көрініс үстіне <code>@login_required</code> декораторын қойсаңыз, оған тек жүйеге кірген қолданушы кіре алады.</li>
+            <li>CSS-ті қалағаныңызша өзгерте беріңіз, сайтты өзіңіздікі етіңіз. Беттің басында көрсетілген скриншоттар тек мысал: қосымшаңыз олармен бірдей көрінуге міндетті емес (шығармашыл болыңыз!).</li>
+          </ul>
+        </div></details>
+        <details><summary>Тапсыру (қысқаша)</summary><div class="details-body">
+          <p>Тапсыру үшін жобаның файл құрылымы таратылған кодпен бірдей болуы керек (қосымша қалта ішінде емес): <code>auctions</code>, <code>commerce</code> қалталары және <code>manage.py</code>. GitHub-тағы <code>web50/projects/2020/x/commerce</code> тармағына жібересіз, не <code>submit50</code> орнатсаңыз, мына команданы орындайсыз:</p>
+<pre class="terminal"><code class="language-plaintext">submit50 web50/projects/2020/x/commerce</code></pre>
+          <p>Содан кейін 5 минуттан аспайтын скринкаст жазып, YouTube-қа (жариялы не «тізімде жоқ», бірақ жеке емес) жүктейсіз. Бейне басында edX және GitHub пайдаланушы аттарыңыз бар слайд болуы, қосымшаның жұмысын тірідей көрсетуі (кодты түсіндірмеңіз), спецификацияның жеті тармағын да көрсетуі, сипаттамасында әр тармақтың уақыт белгісі болуы керек. Соңында ресми форманы толтырасыз.</p>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="web4-commerce">
+            <li><input type="checkbox"> <span><code>User</code>-ден басқа кемінде үш модель бар: лоттар, бәстер, пікірлер; <code>makemigrations</code> және <code>migrate</code> жасалған.</span></li>
+            <li><input type="checkbox"> <span>Лот жасау беті: атауы, сипаттамасы, бастапқы бәс міндетті; сурет URL-ы мен санат міндетті емес.</span></li>
+            <li><input type="checkbox"> <span>Басты бет барлық ашық лотты көрсетеді (атауы, сипаттамасы, ағымдағы баға, сурет).</span></li>
+            <li><input type="checkbox"> <span>Лот беті: бақылау тізіміне қосу/алу, бәс салу (бастапқы бәстен кем емес және басқа бәстерден жоғары, әйтпесе қате), иесі аукционды жабады, жеңімпазға хабар көрсетіледі, пікір жазу және барлық пікірді көрсету.</span></li>
+            <li><input type="checkbox"> <span>Watchlist беті және Categories беті (санат бойынша ашық лоттар) жұмыс істейді.</span></li>
+            <li><input type="checkbox"> <span>Django admin-нан лоттарды, бәстер мен пікірлерді көру, қосу, өзгерту және жою мүмкін.</span></li>
+            <li><input type="checkbox"> <span>Жоба файл құрылымы таратылған кодпен бірдей; <code>submit50 web50/projects/2020/x/commerce</code> жіберілді, скринкаст жазылды.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+        <div class="callout note">
+          <span class="callout-title">Қосымша: сайттың өз SQL жаттығуы</span>
+          <p>Бұл - сайттың өз жаттығуы, ресми Commerce тапсырмасы емес. Commerce-тің модельдері дерекқорда қандай кестелерге айналатынын сезіну үшін, төмендегі демо дерекқорға (<code>users</code>, <code>categories</code>, <code>listings</code>, <code>bids</code>, <code>comments</code>, <code>watchlist</code>) SQL сұрауларын жазып көріңіз. Мысалы, ағымдағы баға - бұл жоба үшін де қажет есеп.</p>
+        </div>
+        <div class="sql-grader" data-set="sql4-auksion" data-src="web/data/week-4.js"></div>
+      </div>
+
+      <nav class="pager">
+        <a href="week-3.html"><small>Алдыңғы</small>← 3-апта: Django</a>
+        <a class="next" href="week-5.html"><small>Келесі</small>5-апта: JavaScript →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50W (CS50's Web Programming with Python and JavaScript, Гарвард университеті, Brian Yu, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

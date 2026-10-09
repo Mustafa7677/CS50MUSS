@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 SQL 1-апта: Байланыстар - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 SQL 1-апта: Байланыстар - CS50 қазақша">
+  <meta property="og:description" content="CS50 SQL 1-апта: реляциялық дерекқор, ER диаграммалары, бастапқы және сыртқы кілттер, ішкі сұраулар, IN, JOIN, жиындар (INTERSECT, UNION, EXCEPT), GROUP BY және HAVING.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/sql/lectures/week-1.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 SQL 1-апта: реляциялық дерекқор, ER диаграммалары, бастапқы және сыртқы кілттер, ішкі сұраулар, IN, JOIN, жиындар (INTERSECT, UNION, EXCEPT), GROUP BY және HAVING.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+
+      <div class="lecture-head" style="--lc:#7c3aed" data-n="1">
+        <div class="num">1-апта</div>
+        <h1>Байланыстар</h1>
+        <p>Өткен аптада бір кестемен жұмыс істедік. Бүгін дерекқордың нағыз күші басталады: кестелерді бір-бірімен байланыстырамыз. ER диаграммалары, бастапқы және сыртқы кілттер, ішкі сұраулар, <code>IN</code>, <code>JOIN</code>, жиындар және топтау - бәрі осы аптада.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/sql/notes/1/" target="_blank" rel="noopener">▶ Түпнұсқа конспект пен материалдар (ағылшынша)</a>
+      </div>
+
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+      <div class="callout note">
+        <span class="callout-title">Мысалдарды осы бетте іске қосыңыз</span>
+        <p>Лекциядағы SQL мысалдарының астында «▶ Іске қосу» батырмасы бар. Ол нағыз SQLite-та орындалады. Түпнұсқада Booker сыйлығының ұзын тізімі (<code>longlist.db</code>) мен теңіз арыстандары (<code>sea_lions.db</code>) қолданылады. Біз оның кішкентай оқу нұсқасын жасадық: кітап атаулары мен аты-жөндердің бір бөлігі түпнұсқадағыдай қалды (код өзгермеуі үшін), қалғаны мен бағалардың бәрі ойдан шығарылған. Әр басқан сайын дерекқор жаңадан жасалады, сондықтан еркін тәжірибе жасаңыз.</p>
+      </div>
+
+      <h2 id="intro">Кіріспе</h2>
+      <p>Дерекқорда бір емес, бірнеше кесте болуы мүмкін. Өткен аптада біз Халықаралық Booker сыйлығының ұзын тізіміне (<em>longlist</em>) ұсынылған кітаптар дерекқорын көрдік. Енді сол дерекқордың ішінде кітаптар, авторлар, баспагерлер сияқты көптеген бөлек кесте жатқанын көреміз.</p>
+      <p>Алдымен дерекқорды Codespace терминалында SQLite арқылы ашыңыз. Ішіндегі барлық кестені көру үшін мына SQLite командасы бар:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">.tables</code></pre>
+      <p>Бұл команда <code>longlist.db</code> ішіндегі кестелердің атын шығарады, барлығы 7 кесте. Олардың арасында белгілі бір <em>қатынастар</em> бар, сондықтан мұндай дерекқорды <strong>реляциялық деректер базасы</strong> (<span class="term-en">relational database</span>) деп атайды. Кестелер тізіміне қарап, олардың арасында қандай байланыс болуы мүмкін екенін өзіңіз елестетіп көріңізші:</p>
+      <ul>
+        <li>авторлар кітап жазады;</li>
+        <li>баспагерлер кітап шығарады;</li>
+        <li>аудармашылар кітапты аударады.</li>
+      </ul>
+      <p>Бірінші мысалды алайық. Мұнда <code>authors</code> және <code>books</code> кестелерінің екі бағаны бар: автордың аты мен кітаптың атауы.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th><code>authors.name</code></th><th><code>books.title</code></th></tr></thead>
+        <tbody><tr><td>Maria Stepanova</td><td>In Memory of Memory</td></tr><tr><td>Olga Tokarczuk</td><td>Flights</td></tr><tr><td>Fernanda Melchor</td><td>Hurricane Season</td></tr><tr><td>Fernanda Melchor</td><td>Paradais</td></tr></tbody>
+      </table></div>
+      <p>Тек осы екі бағанға қарап, кім қай кітапты жазғанын қалай білеміз? Тіпті әр кітап өз авторының қасында тұр деп жорыған күннің өзінде, <code>authors</code> кестесіне қарап отырып, сол автордың кітаптары туралы ештеңе біле алмаймыз. Кестелерді қалай ұйымдастыруға болады? Бірнеше жол бар.</p>
+      <ul>
+        <li><strong>«Ар-ождан» жүйесі</strong> (<span class="term-en">the honor system</span>): <code>authors</code> кестесінің бірінші жолы әрқашан <code>books</code> кестесінің бірінші жолына сәйкес келеді деп келісеміз. Мәселесі: адам қателесуі мүмкін. Кітап қосып, авторын қосуды ұмытып кетеміз немесе керісінше, сонда бүкіл тізім сырғып кетеді. Одан бөлек, автор бірнеше кітап жазуы, ал кітапты бірнеше автор бірге жазуы мүмкін қой. Бұл жүйе оны көтермейді.</li>
+        <li><strong>Бір кестеге қайта оралу</strong> (<span class="term-en">one-table approach</span>): барлығын бір үлкен кестеге жинаймыз. Бірақ автор бірнеше кітап жазса, оның аты қайта-қайта қайталанады. Мұны <strong>артық деректер</strong> (<span class="term-en">redundancy</span>) дейді.</li>
+      </ul>
+      <div class="table-wrap"><table>
+        <thead><tr><th>author</th><th>title</th></tr></thead>
+        <tbody><tr><td>Fernanda Melchor</td><td>Hurricane Season</td></tr><tr><td>Fernanda Melchor</td><td>Paradais</td></tr><tr><td>Айгерім Қасенова</td><td>Қара жол</td></tr><tr><td>Ерлан Бейсенов</td><td>Қара жол</td></tr><tr><td>Айгерім Қасенова</td><td>Бозторғай</td></tr></tbody>
+      </table></div>
+      <details class="think">
+        <summary>Ойланып көріңіз: бір кестеде автордың аты қайталана берсе, қандай қиындық туады?</summary>
+        <div class="details-body"><p>Автордың атын жазуда қателессек (мысалы, бір жерде «Қасенова», екінші жерде «Касенова»), дерекқор оларды екі түрлі адам деп санайды. Ал автор есімін өзгерту керек болса, оны бүкіл кесте бойынша іздеп, жүздеген жолда түзетуге тура келеді. Қосымша, көп орын жұмсалады. Сондықтан бір кесте тиімсіз.</p></div>
+      </details>
+      <p>Осыларды ой елегінен өткізген соң, екі бөлек кесте ең тиімді жол екенін көреміз. Енді кестелердің бір-бірімен байланысу тәсілдерін қарастырайық. Реляциялық дерекқорларда олар үш түрлі.</p>
+
+      <h3 id="relationship-types">Байланыс түрлері</h3>
+      <p>Әр автор тек бір кітап жазады, әр кітапты тек бір автор жазады делік. Бұл - <strong>бір-біреуге</strong> (<span class="term-en">one-to-one</span>) байланыс.</p>
+      <svg viewBox="0 0 380 172" role="img" aria-label="бір-біреуге: әр автор - бір кітап, әр кітап - бір автор" style="display:block;width:100%;max-width:380px;height:auto;margin:18px auto"><text x="70" y="16" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Авторлар</text><text x="310" y="16" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Кітаптар</text><line x1="130" y1="62.0" x2="250" y2="62.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="130" y1="106.0" x2="250" y2="106.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="130" y1="150.0" x2="250" y2="150.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="10" y="46.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="70" y="62.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Айгерім</text><rect x="10" y="90.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="70" y="106.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Ерлан</text><rect x="10" y="134.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="70" y="150.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Лейла</text><rect x="250" y="46.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="310" y="62.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Қара жол</text><rect x="250" y="90.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="310" y="106.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Көкжиек</text><rect x="250" y="134.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="310" y="150.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Айна</text></svg>
+      <p>Ал егер автор бірнеше кітап жаза алса, байланыс <strong>бір-көпке</strong> (<span class="term-en">one-to-many</span>) болады: бір автор, көп кітап.</p>
+      <svg viewBox="0 0 380 216" role="img" aria-label="бір-көпке: бір автор бірнеше кітап жаза алады" style="display:block;width:100%;max-width:380px;height:auto;margin:18px auto"><text x="70" y="16" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Авторлар</text><text x="310" y="16" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Кітаптар</text><line x1="130" y1="84.0" x2="250" y2="62.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="130" y1="84.0" x2="250" y2="106.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="130" y1="128.0" x2="250" y2="150.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="130" y1="172.0" x2="250" y2="194.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="10" y="68.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="70" y="84.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Айгерім</text><rect x="10" y="112.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="70" y="128.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Ерлан</text><rect x="10" y="156.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="70" y="172.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Лейла</text><rect x="250" y="46.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="310" y="62.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Қара жол</text><rect x="250" y="90.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="310" y="106.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Бозторғай</text><rect x="250" y="134.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="310" y="150.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Көкжиек</text><rect x="250" y="178.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="310" y="194.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Айна</text></svg>
+      <p>Ең күрделі жағдай: автор бірнеше кітап жазады, ал кітапты да бірнеше автор бірге жаза алады. Бұл - <strong>көп-көпке</strong> (<span class="term-en">many-to-many</span>) байланыс.</p>
+      <svg viewBox="0 0 380 216" role="img" aria-label="көп-көпке: бір автор көп кітап, бір кітап көп автор" style="display:block;width:100%;max-width:380px;height:auto;margin:18px auto"><text x="70" y="16" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Авторлар</text><text x="310" y="16" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Кітаптар</text><line x1="130" y1="84.0" x2="250" y2="62.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="130" y1="128.0" x2="250" y2="62.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="130" y1="84.0" x2="250" y2="106.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="130" y1="128.0" x2="250" y2="150.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="130" y1="172.0" x2="250" y2="150.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="130" y1="172.0" x2="250" y2="194.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="10" y="68.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="70" y="84.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Айгерім</text><rect x="10" y="112.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="70" y="128.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Ерлан</text><rect x="10" y="156.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="70" y="172.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Лейла</text><rect x="250" y="46.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="310" y="62.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Қара жол</text><rect x="250" y="90.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="310" y="106.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Бозторғай</text><rect x="250" y="134.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="310" y="150.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Көкжиек</text><rect x="250" y="178.0" width="120" height="32" rx="7" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="310" y="194.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px">Айна</text></svg>
+
+      <h2 id="er-diagrams">Entity Relationship диаграммалары</h2>
+      <p>Біз кестелер арасындағы бір-біреуге, бір-көпке және көп-көпке байланыстарды атадық. Мұндай байланыстарды көзбен көру үшін <strong>«мән - байланыс» диаграммасы</strong> (<span class="term-en">entity relationship diagram</span>, қысқаша <strong>ER диаграммасы</strong>) қолданылады. Міне, <code>longlist.db</code> кестелерінің ER диаграммасы:</p>
+      <svg viewBox="0 0 630 215" role="img" aria-label="longlist.db ER диаграммасы: Автор, Кітап, Баспагер, Аудармашы, Баға" style="display:block;width:100%;max-width:630px;height:auto;margin:18px auto"><line x1="130" y1="40" x2="250" y2="40" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="145.0" y1="40.0" x2="130.0" y2="32.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="145.0" y1="40.0" x2="130.0" y2="40.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="145.0" y1="40.0" x2="130.0" y2="48.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="149.0" y1="33.0" x2="149.0" y2="47.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="235.0" y1="40.0" x2="250.0" y2="48.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="235.0" y1="40.0" x2="250.0" y2="40.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="235.0" y1="40.0" x2="250.0" y2="32.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="231.0" y1="47.0" x2="231.0" y2="33.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="161.4" y="29.0" width="57.2" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="190.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">жазған</text><line x1="480" y1="40" x2="360" y2="40" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="472.0" y1="47.0" x2="472.0" y2="33.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="466.0" y1="47.0" x2="466.0" y2="33.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="375.0" y1="40.0" x2="360.0" y2="32.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="375.0" y1="40.0" x2="360.0" y2="40.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="375.0" y1="40.0" x2="360.0" y2="48.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="379.0" y1="33.0" x2="379.0" y2="47.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="384.2" y="29.0" width="71.6" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="420.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">шығарған</text><line x1="150" y1="170" x2="250" y2="50" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="159.6" y1="158.5" x2="143.9" y2="164.9" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="159.6" y1="158.5" x2="150.0" y2="170.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="159.6" y1="158.5" x2="156.1" y2="175.1" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="166.0" cy="150.8" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="240.4" y1="61.5" x2="256.1" y2="55.1" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="240.4" y1="61.5" x2="250.0" y2="50.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="240.4" y1="61.5" x2="243.9" y2="44.9" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="243.2" y1="69.1" x2="232.5" y2="60.1" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="149.2" y="119.0" width="71.6" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="185" y="130" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">аударған</text><line x1="305" y1="60" x2="305" y2="150" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="312.0" y1="68.0" x2="298.0" y2="68.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="312.0" y1="74.0" x2="298.0" y2="74.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="305.0" y1="135.0" x2="297.0" y2="150.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="305.0" y1="135.0" x2="305.0" y2="150.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="305.0" y1="135.0" x2="313.0" y2="150.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="305.0" cy="125.0" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="280.0" y="94.0" width="50.0" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="305.0" y="105.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">алған</text><rect x="20" y="20" width="110" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="75.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Автор</text><rect x="250" y="20" width="110" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="305.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Кітап</text><rect x="480" y="20" width="130" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="545.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Баспагер</text><rect x="20" y="150" width="130" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="85.0" y="170.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Аудармашы</text><rect x="250" y="150" width="110" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="305.0" y="170.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Баға</text></svg>
+      <p>Дерекқордағы әр кесте - бір <strong>мән</strong> (<span class="term-en">entity</span>). Мәндерді жалғайтын сызықтардағы <em>етістіктер</em> (жазған, шығарған, аударған, алған) олардың байланысын білдіреді. Мысалы, «Автор жазған Кітап».</p>
+      <p>Диаграммадағы сызықтардың ұштары <strong>қарғаның аяғы белгісімен</strong> (<span class="term-en">crow's foot notation</span>) сызылған. Үш белгіні білсеңіз болды:</p>
+      <ul>
+        <li>сызықтағы <strong>шеңбер</strong> нөлге ұқсайды: «нөл», яғни болмауы мүмкін;</li>
+        <li>сызыққа <strong>көлденең тік сызықша</strong> бірге ұқсайды: «бір», яғни кемінде бір байланысты жол бар;</li>
+        <li><strong>қарғаның аяғы</strong> (көп тармақты ұш): «көп», яғни мән басқа кестедегі көптеген жолмен байланысады.</li>
+      </ul>
+      <svg viewBox="0 0 520 210" role="img" aria-label="Байланыс сызықтарының белгілері: нөл, бір, көп" style="display:block;width:100%;max-width:520px;height:auto;margin:18px auto"><line x1="20" y1="28" x2="150" y2="28" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="142.0" y1="35.0" x2="142.0" y2="21.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="132.0" cy="28.0" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><text x="180" y="28" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px">0 немесе 1 (көп дегенде біреу, болмауы мүмкін)</text><line x1="20" y1="74" x2="150" y2="74" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="142.0" y1="81.0" x2="142.0" y2="67.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="136.0" y1="81.0" x2="136.0" y2="67.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><text x="180" y="74" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px">тура 1 (міндетті түрде біреу)</text><line x1="20" y1="120" x2="150" y2="120" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="135.0" y1="120.0" x2="150.0" y2="128.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="135.0" y1="120.0" x2="150.0" y2="120.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="135.0" y1="120.0" x2="150.0" y2="112.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="125.0" cy="120.0" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><text x="180" y="120" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px">0 немесе көп (болмауы да мүмкін)</text><line x1="20" y1="166" x2="150" y2="166" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="135.0" y1="166.0" x2="150.0" y2="174.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="135.0" y1="166.0" x2="150.0" y2="166.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="135.0" y1="166.0" x2="150.0" y2="158.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="131.0" y1="173.0" x2="131.0" y2="159.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><text x="180" y="166" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px">1 немесе көп (кемінде біреу)</text></svg>
+      <p>Оқу тәртібі мынадай: белгілерді солдан оңға қарай оқимыз. Бір мысалмен көрейік.</p>
+      <svg viewBox="0 0 430 236" role="img" aria-label="ER диаграммасындағы белгілерді оқу: автор мен кітап" style="display:block;width:100%;max-width:430px;height:auto;margin:18px auto"><rect x="10" y="18" width="90" height="36" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="55.0" y="36.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px;font-weight:600">Автор</text><rect x="330" y="18" width="90" height="36" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="375.0" y="36.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px;font-weight:600">Кітап</text><line x1="100" y1="36" x2="330" y2="36" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="322.0" y1="43.0" x2="322.0" y2="29.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="316.0" y1="43.0" x2="316.0" y2="29.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><text x="215" y="68" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px">Автор бір кітап жазады.</text><rect x="10" y="92" width="90" height="36" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="55.0" y="110.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px;font-weight:600">Автор</text><rect x="330" y="92" width="90" height="36" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="375.0" y="110.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px;font-weight:600">Кітап</text><line x1="100" y1="110" x2="330" y2="110" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="322.0" y1="117.0" x2="322.0" y2="103.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="316.0" y1="117.0" x2="316.0" y2="103.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="108.0" y1="103.0" x2="108.0" y2="117.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="114.0" y1="103.0" x2="114.0" y2="117.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><text x="215" y="142" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px">Ал кітапты да бір автор жазады.</text><rect x="10" y="166" width="90" height="36" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="55.0" y="184.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px;font-weight:600">Автор</text><rect x="330" y="166" width="90" height="36" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="375.0" y="184.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13.5px;font-weight:600">Кітап</text><line x1="100" y1="184" x2="330" y2="184" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="315.0" y1="184.0" x2="330.0" y2="192.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="315.0" y1="184.0" x2="330.0" y2="184.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="315.0" y1="184.0" x2="330.0" y2="176.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="311.0" y1="191.0" x2="311.0" y2="177.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="115.0" y1="184.0" x2="100.0" y2="176.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="115.0" y1="184.0" x2="100.0" y2="184.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="115.0" y1="184.0" x2="100.0" y2="192.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="119.0" y1="177.0" x2="119.0" y2="191.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><text x="215" y="216" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px">Автор кемінде бір кітап, кітап кемінде бір автор.</text></svg>
+      <p>Алдымен «автор бір кітап жазады» (немесе «әр автордың бір кітабы бар»). Содан кейін қосамыз: кітапты да бір автор жазады. Ал бұған қосымша қарғаның аяғын салсақ, автор <em>кемінде бір</em> кітап жазады, кітапты <em>кемінде бір</em> автор жазады, яғни автор бір не бірнеше кітаппен, кітап бір не бірнеше авторпен байланысады.</p>
+      <p>Енді дерекқорымыздың диаграммасына қайта оралайық. <code>Кітап</code> пен <code>Аудармашы</code> арасындағы сызықтарға қараңыз: кітаптың аудармашысы болуы <em>міндетті емес</em>, нөлден көпке дейін болуы мүмкін. Ал дерекқордағы әр аудармашы кемінде бір кітапты аударған, мүмкін көптеген кітапты.</p>
+
+      <h3 id="er-questions">Сұрақтар</h3>
+      <blockquote><p><strong>Сұрақ:</strong> Дерекқор бізге дайын берілсе, ондағы мәндер арасындағы байланыстарды қалай білеміз?</p></blockquote>
+      <p>Нақты байланыстарды дерекқорды жобалаушы шешеді. Мысалы, әр автор тек бір кітап жаза ала ма, әлде бірнеше ме - бұл жобалау кезінде қабылданатын шешім. ER диаграммасы - сол шешімдерді дерекқорды түсінгісі келетін адамға жеткізетін құрал деп қарауға болады.</p>
+      <blockquote><p><strong>Сұрақ:</strong> Мәндер арасында байланыс бар екенін білсек, оны дерекқорда қалай іске асырамыз?</p></blockquote>
+      <p>Ол үшін SQL-де <strong>кілттер</strong> бар. Дәл қазір соларды көреміз.</p>
+
+      <h2 id="keys">Кілттер</h2>
+      <h3 id="primary-keys">Бастапқы кілттер</h3>
+      <p>Кітаптың өзіндік ISBN нөмірі бар екенін білесіз. ISBN бойынша іздесеңіз, тек бір ғана кітап табылады. Дерекқор тілінде ISBN - <strong>бастапқы кілт</strong> (<span class="term-en">primary key</span>): кестедегі әр жолға тән бірегей идентификатор. Бұл мектептегі оқушы билеті нөмірі немесе ЖСН сияқты: аты-жөні бірдей екі адам болуы мүмкін, ал нөмірі ешқашан қайталанбайды.</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th>ISBN</th><th>title</th></tr></thead>
+        <tbody><tr><td>978-601-00-0001-1</td><td>In Memory of Memory</td></tr><tr><td>978-601-00-0002-8</td><td>Flights</td></tr></tbody>
+      </table></div>
+      <p>Осы идеядан шабыттанып, баспагерлерге, авторларға және аудармашыларға да бірегей ID беруге болады. Олардың әрқайсысы өз кестесінің бастапқы кілті болады.</p>
+
+      <h3 id="foreign-keys">Сыртқы кілттер</h3>
+      <p>Кілттер кестелерді байланыстыруға да көмектеседі. <strong>Сыртқы кілт</strong> (<span class="term-en">foreign key</span>) - басқа кестеден алынған бастапқы кілт. Ол басқа кестенің бастапқы кілтіне сілтеме жасап, екі кесте арасында көпір салады.</p>
+      <p>Мына мысалда <code>books</code> кестесінің бастапқы кілті <code>ratings</code> кестесінде бағанға айналды:</p>
+      <svg viewBox="0 0 540 130" role="img" aria-label="books және ratings кестелері: id бастапқы кілті мен book_id сыртқы кілті" style="display:block;width:100%;max-width:540px;height:auto;margin:18px auto"><line x1="210" y1="61.0" x2="330" y2="87.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="219.3" y1="55.9" x2="216.3" y2="69.5" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="225.2" y1="57.1" x2="222.2" y2="70.8" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="315.3" y1="83.8" x2="328.3" y2="94.8" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="315.3" y1="83.8" x2="330.0" y2="87.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="315.3" y1="83.8" x2="331.7" y2="79.2" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="305.6" cy="81.7" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="20" y="20" width="190" height="106" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><path d="M20 48 L20 28 Q20 20 28 20 L202 20 Q210 20 210 28 L210 48 Z" style="fill:var(--accent-soft, var(--surface-2));stroke:none"/><text x="115.0" y="34" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13.5px;font-weight:700">books</text><line x1="20" y1="48" x2="210" y2="48" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="32" y="61.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">id</text><text x="198" y="61.0" text-anchor="end" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">🔑 PK</text><line x1="20" y1="74" x2="210" y2="74" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="32" y="87.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">title</text><line x1="20" y1="100" x2="210" y2="100" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="32" y="113.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">publisher_id</text><text x="198" y="113.0" text-anchor="end" dominant-baseline="central" style="fill:var(--warn, #c2410c);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">↗ FK</text><rect x="330" y="20" width="190" height="106" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><path d="M330 48 L330 28 Q330 20 338 20 L512 20 Q520 20 520 28 L520 48 Z" style="fill:var(--accent-soft, var(--surface-2));stroke:none"/><text x="425.0" y="34" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13.5px;font-weight:700">ratings</text><line x1="330" y1="48" x2="520" y2="48" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="342" y="61.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">id</text><text x="508" y="61.0" text-anchor="end" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">🔑 PK</text><line x1="330" y1="74" x2="520" y2="74" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="342" y="87.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">book_id</text><text x="508" y="87.0" text-anchor="end" dominant-baseline="central" style="fill:var(--warn, #c2410c);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">↗ FK</text><line x1="330" y1="100" x2="520" y2="100" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="342" y="113.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">rating</text></svg>
+      <div class="table-wrap"><table>
+        <thead><tr><th><code>ratings.id</code></th><th><code>ratings.book_id</code></th><th><code>ratings.rating</code></th></tr></thead>
+        <tbody><tr><td>1</td><td>1</td><td>5</td></tr><tr><td>2</td><td>1</td><td>4</td></tr><tr><td>3</td><td>1</td><td>5</td></tr><tr><td>7</td><td>2</td><td>4</td></tr></tbody>
+      </table></div>
+      <p>Байқаңыз: <code>book_id</code> бағанында <code>1</code> саны бірнеше рет қайталанады. Бұл - бір-көпке байланыс: <code>books</code> кестесіндегі бір кітаптың атауы бар, ал оның <code>ratings</code> кестесінде бірнеше бағасы болуы мүмкін. Сыртқы кілт мәндері кестеде қайталана алады, ал бастапқы кілт мәндері әрқашан бірегей.</p>
+      <p>ISBN өте ұзын идентификатор. Әр таңба бір байт жад алады десек, сызықшаларымен қоса бір ISBN сақтау үшін 17 байт қажет, бұл көп. Бақытымызға орай, ISBN-ді бастапқы кілт қылудың міндеті жоқ. Әр кітапты бірегей санмен белгілейтін болсақ болды: 1, 2, 3 және т.с.с.</p>
+      <p>Бір-көпке байланысты көрдік. Енді көп-көпке байланыс қалай жасалатынын қарайық. Мұнда үшінші кесте керек:</p>
+      <svg viewBox="0 0 630 130" role="img" aria-label="authors, authored және books кестелері: байланыстырушы кесте" style="display:block;width:100%;max-width:630px;height:auto;margin:18px auto"><line x1="180" y1="61.0" x2="230" y2="61.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="188.0" y1="54.0" x2="188.0" y2="68.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="194.0" y1="54.0" x2="194.0" y2="68.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="215.0" y1="61.0" x2="230.0" y2="69.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="215.0" y1="61.0" x2="230.0" y2="61.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="215.0" y1="61.0" x2="230.0" y2="53.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="205.0" cy="61.0" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="450" y1="61.0" x2="400" y2="87.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="446.1" y1="70.9" x2="439.7" y2="58.5" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="440.8" y1="73.7" x2="434.3" y2="61.2" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="413.3" y1="80.1" x2="396.3" y2="79.9" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="413.3" y1="80.1" x2="400.0" y2="87.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="413.3" y1="80.1" x2="403.7" y2="94.1" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="422.2" cy="75.5" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="10" y="20" width="170" height="80" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><path d="M10 48 L10 28 Q10 20 18 20 L172 20 Q180 20 180 28 L180 48 Z" style="fill:var(--accent-soft, var(--surface-2));stroke:none"/><text x="95.0" y="34" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13.5px;font-weight:700">authors</text><line x1="10" y1="48" x2="180" y2="48" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="22" y="61.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">id</text><text x="168" y="61.0" text-anchor="end" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">🔑 PK</text><line x1="10" y1="74" x2="180" y2="74" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="22" y="87.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">name</text><rect x="230" y="20" width="170" height="80" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><path d="M230 48 L230 28 Q230 20 238 20 L392 20 Q400 20 400 28 L400 48 Z" style="fill:var(--accent-soft, var(--surface-2));stroke:none"/><text x="315.0" y="34" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13.5px;font-weight:700">authored</text><line x1="230" y1="48" x2="400" y2="48" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="242" y="61.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">author_id</text><text x="388" y="61.0" text-anchor="end" dominant-baseline="central" style="fill:var(--warn, #c2410c);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">↗ FK</text><line x1="230" y1="74" x2="400" y2="74" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="242" y="87.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">book_id</text><text x="388" y="87.0" text-anchor="end" dominant-baseline="central" style="fill:var(--warn, #c2410c);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">↗ FK</text><rect x="450" y="20" width="170" height="106" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><path d="M450 48 L450 28 Q450 20 458 20 L612 20 Q620 20 620 28 L620 48 Z" style="fill:var(--accent-soft, var(--surface-2));stroke:none"/><text x="535.0" y="34" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13.5px;font-weight:700">books</text><line x1="450" y1="48" x2="620" y2="48" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="462" y="61.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">id</text><text x="608" y="61.0" text-anchor="end" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">🔑 PK</text><line x1="450" y1="74" x2="620" y2="74" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="462" y="87.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">title</text><line x1="450" y1="100" x2="620" y2="100" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="462" y="113.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">publisher_id</text><text x="608" y="113.0" text-anchor="end" dominant-baseline="central" style="fill:var(--warn, #c2410c);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">↗ FK</text></svg>
+      <div class="table-wrap"><table>
+        <thead><tr><th><code>authored.author_id</code></th><th><code>authored.book_id</code></th></tr></thead>
+        <tbody><tr><td>3</td><td>3</td></tr><tr><td>3</td><td>4</td></tr><tr><td>4</td><td>5</td></tr><tr><td>5</td><td>5</td></tr></tbody>
+      </table></div>
+      <p>Енді <code>authored</code> деген кесте бар. Ол <code>books</code> кестесінің бастапқы кілтін (<code>book_id</code>) <code>authors</code> кестесінің бастапқы кілтімен (<code>author_id</code>) сәйкестендіреді. Мысалы, 4 және 5 авторлары екеуі де 5-кітапты бірге жазған.</p>
+      <div class="callout term">
+        <span class="callout-title">Байланыстырушы кесте</span>
+        <p>Мұндай кестені <strong>байланыстырушы кесте</strong> (<span class="term-en">junction table</span>, кейде <em>joint table</em> деп те айтады) дейді. Студенттер мен курстарды ойлаңыз: бір студент көп курс алады, бір курста көп студент оқиды. Біз олардың арасына «жазылу» кестесін қоямыз.</p>
+      </div>
+      <p>Осы студент-курс мысалын жеке дерекқорда да көре аласыз. Мұнда <code>enrollments</code> кестесі - байланыстырушы кесте:</p>
+      <svg viewBox="0 0 640 130" role="img" aria-label="students, enrollments және courses кестелері" style="display:block;width:100%;max-width:640px;height:auto;margin:18px auto"><line x1="160" y1="61.0" x2="215" y2="61.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="168.0" y1="54.0" x2="168.0" y2="68.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="174.0" y1="54.0" x2="174.0" y2="68.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="200.0" y1="61.0" x2="215.0" y2="69.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="200.0" y1="61.0" x2="215.0" y2="61.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="200.0" y1="61.0" x2="215.0" y2="53.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="190.0" cy="61.0" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="460" y1="61.0" x2="405" y2="87.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="455.8" y1="70.7" x2="449.8" y2="58.1" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="450.3" y1="73.3" x2="444.4" y2="60.7" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="418.6" y1="80.6" x2="401.6" y2="79.8" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="418.6" y1="80.6" x2="405.0" y2="87.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="418.6" y1="80.6" x2="408.4" y2="94.2" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="427.6" cy="76.3" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="10" y="20" width="150" height="80" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><path d="M10 48 L10 28 Q10 20 18 20 L152 20 Q160 20 160 28 L160 48 Z" style="fill:var(--accent-soft, var(--surface-2));stroke:none"/><text x="85.0" y="34" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13.5px;font-weight:700">students</text><line x1="10" y1="48" x2="160" y2="48" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="22" y="61.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">id</text><text x="148" y="61.0" text-anchor="end" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">🔑 PK</text><line x1="10" y1="74" x2="160" y2="74" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="22" y="87.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">name</text><rect x="215" y="20" width="190" height="106" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><path d="M215 48 L215 28 Q215 20 223 20 L397 20 Q405 20 405 28 L405 48 Z" style="fill:var(--accent-soft, var(--surface-2));stroke:none"/><text x="310.0" y="34" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13.5px;font-weight:700">enrollments</text><line x1="215" y1="48" x2="405" y2="48" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="227" y="61.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">student_id</text><text x="393" y="61.0" text-anchor="end" dominant-baseline="central" style="fill:var(--warn, #c2410c);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">↗ FK</text><line x1="215" y1="74" x2="405" y2="74" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="227" y="87.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">course_id</text><text x="393" y="87.0" text-anchor="end" dominant-baseline="central" style="fill:var(--warn, #c2410c);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">↗ FK</text><line x1="215" y1="100" x2="405" y2="100" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="227" y="113.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">grade</text><rect x="460" y="20" width="170" height="106" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><path d="M460 48 L460 28 Q460 20 468 20 L622 20 Q630 20 630 28 L630 48 Z" style="fill:var(--accent-soft, var(--surface-2));stroke:none"/><text x="545.0" y="34" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13.5px;font-weight:700">courses</text><line x1="460" y1="48" x2="630" y2="48" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="472" y="61.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">id</text><text x="618" y="61.0" text-anchor="end" dominant-baseline="central" style="fill:var(--accent);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:700">🔑 PK</text><line x1="460" y1="74" x2="630" y2="74" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="472" y="87.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">title</text><line x1="460" y1="100" x2="630" y2="100" style="stroke:var(--border, var(--muted));stroke-width:1"/><text x="472" y="113.0" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px">teacher</text></svg>
+<pre data-lang="sql" data-db="uni" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "title", "grade"
+FROM "courses"
+JOIN "enrollments" ON "enrollments"."course_id" = "courses"."id"
+WHERE "student_id" = 1;</code></pre>
+
+      <h3 id="keys-questions">Сұрақтар</h3>
+      <blockquote><p><strong>Сұрақ:</strong> Автордың ID-і мен кітаптың ID-і бірдей болуы мүмкін бе? Мысалы, <code>authored</code> кестесінде <code>author_id</code> да 1, <code>book_id</code> да 1 болса, шатасу болмай ма?</p></blockquote>
+      <p>Бұл - байланыстырушы кестелер. Мұндай кестеде қай баған қай кестенің кілтін сақтайтыны бізге белгілі: бірінші баған тек <code>authors</code> кілтін, екінші баған тек <code>books</code> кілтін қамтиды. Сондықтан мәндері сәйкес келсе де, ешқандай шатасу болмайды.</p>
+      <blockquote><p><strong>Сұрақ:</strong> Мұндай байланыстырушы кестелер көп болса, олар орынды көп алмай ма?</p></blockquote>
+      <p>Иә, мұнда айырбас бар. Мұндай кестелер орынды көбірек алады, бірақ олар көп-көпке байланыстарды, жоғарыда көрген артық деректерсіз іске асыруға мүмкіндік береді.</p>
+      <blockquote><p><strong>Сұрақ:</strong> Кітаптың не автордың ID-ін өзгертсек, ол басқа кестелерде де жаңарады ма?</p></blockquote>
+      <p>Жаңартылған ID де бірегей болуы керек. Сондықтан ID-лер әдетте «көрінбей» тұрады да, оларды сирек өзгертеді.</p>
+
+      <h2 id="subqueries">Ішкі сұраулар</h2>
+      <p><strong>Ішкі сұрау</strong> (<span class="term-en">subquery</span>, бұл <em>nested query</em>, яғни «ұялас сұрау» деп те аталады) - басқа сұраудың ішіндегі сұрау. Бір-көпке байланыстан бастаймыз. <code>books</code> кестесінде баспагерді көрсететін ID бар, ол <code>publishers</code> кестесінен алынған сыртқы кілт. Fitzcarraldo Editions шығарған кітаптарды табу үшін екі сұрау керек: біріншісі <code>publishers</code> кестесінен осы баспагердің <code>publisher_id</code>-ін табады, екіншісі сол ID бойынша кітаптарды тізеді. Бұл екі сұрауды ішкі сұрау арқылы біріктіруге болады:</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "title"
+FROM "books"
+WHERE "publisher_id" = (
+    SELECT "id"
+    FROM "publishers"
+    WHERE "publisher" = 'Fitzcarraldo Editions'
+);</code></pre>
+      <p>Назар аударыңыз:</p>
+      <ul>
+        <li>ішкі сұрау жақшада тұр. Ең терең жақшадағы сұрау бірінші орындалады, содан кейін сыртқылары;</li>
+        <li>ішкі сұрау шегіністелген. Бұл - оқуды жеңілдететін стиль келісімі.</li>
+      </ul>
+      <p>Енді In Memory of Memory кітабының барлық бағасын табайық:</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "rating"
+FROM "ratings"
+WHERE "book_id" = (
+    SELECT "id"
+    FROM "books"
+    WHERE "title" = 'In Memory of Memory'
+);</code></pre>
+      <p>Тек орташа бағаны алу үшін:</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT AVG("rating")
+FROM "ratings"
+WHERE "book_id" = (
+    SELECT "id"
+    FROM "books"
+    WHERE "title" = 'In Memory of Memory'
+);</code></pre>
+      <p>Келесі мысал көп-көпке байланысқа арналған. Flights кітабын кім жазғанын табу үшін үш кестеге: <code>books</code>, <code>authors</code> және <code>authored</code> кестелеріне соғу керек.</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "name"
+FROM "authors"
+WHERE "id" = (
+    SELECT "author_id"
+    FROM "authored"
+    WHERE "book_id" = (
+        SELECT "id"
+        FROM "books"
+        WHERE "title" = 'Flights'
+    )
+);</code></pre>
+      <p>Бірінші орындалатын сұрау - ең терең ұялағаны: Flights кітабының ID-ін табады. Содан кейін осы кітапты жазған автордың ID-і табылады. Ең соңында соның негізінде автордың аты алынады. Бұл тізбек ішкіден сыртқа қарай жүреді.</p>
+
+      <h2 id="in"><code>IN</code></h2>
+      <p>Бұл кілт сөз мәннің берілген тізімде <em>бар-жоғын</em> тексереді. Авторлар мен кітаптар арасындағы байланыс көп-көпке, яғни автор бірден көп кітап жазған болуы мүмкін. Дерекқордағы Fernanda Melchor жазған барлық кітап атауын табу үшін <code>IN</code> қолданамыз:</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "title"
+FROM "books"
+WHERE "id" IN (
+    SELECT "book_id"
+    FROM "authored"
+    WHERE "author_id" = (
+        SELECT "id"
+        FROM "authors"
+        WHERE "name" = 'Fernanda Melchor'
+    )
+);</code></pre>
+      <p>Ең ішкі сұраудың <code>IN</code> емес, <code>=</code> қолданғанын байқаңыз. Себебі Fernanda Melchor есімді тек бір автор болады деп күтеміз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: Қара жол кітабын жазған авторларды Flights үлгісімен (<code>=</code> арқылы) іздесек, не болады?</summary>
+        <div class="details-body"><p>Қара жолды екі автор жазған. Ішкі сұрау екі <code>author_id</code> қайтарады, ал <code>=</code> тек бір мәнмен салыстырады, сондықтан SQLite бірінші табылған жолды ғана алады да, екінші автор «жоғалып» кетеді, қате де шықпайды. Бұл өте қауіпті, себебі қате жауап дұрыс көрінеді. Бірнеше мән күтілсе, әрдайым <code>IN</code> қолданыңыз. Мұны өзіңіз сынап көріңіз:</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "name"
+FROM "authors"
+WHERE "id" = (
+    SELECT "author_id"
+    FROM "authored"
+    WHERE "book_id" = (
+        SELECT "id"
+        FROM "books"
+        WHERE "title" = 'Қара жол'
+    )
+);</code></pre></div>
+      </details>
+
+      <h3 id="in-questions">Сұрақтар</h3>
+      <blockquote><p><strong>Сұрақ:</strong> Ішкі сұрау ештеңе таппаса не болады?</p></blockquote>
+      <p>Ішкі сұрау ештеңе қайтармаса, сыртқы сұрау да ештеңе қайтармайды. Сыртқы сұрау ішкі сұрау нәтижесіне тәуелді.</p>
+      <blockquote><p><strong>Сұрақ:</strong> Ішкі сұрауды міндетті түрде төрт бос орынмен шегіндіру керек пе?</p></blockquote>
+      <p>Жоқ. Шегіністің ұзындығы да, жолдардың ұзындығы да әртүрлі болуы мүмкін. Сұрауды бөліп, ішкі сұрауларды шегіндірудің мақсаты - оқуға оңай ету.</p>
+      <blockquote><p><strong>Сұрақ:</strong> Көп-біреуге (many-to-one) байланысты қалай іске асырамыз?</p></blockquote>
+      <p>Кітапты бірнеше автор бірге жазған жағдайды елестетіңіз. Онда <code>authored</code> кестесінде бір кітап ID-інің бірнеше жолы болады, әр жолда автор ID-і әртүрлі. Сыртқы кілт мәндері кестеде қайталана алады, ал бастапқы кілт мәндері әрқашан бірегей болатынын ұмытпаңыз.</p>
+
+      <h2 id="join"><code>JOIN</code></h2>
+      <p>Бұл кілт сөз екі не одан көп кестені <em>біріктіруге</em> мүмкіндік береді. Қалай жұмыс істейтінін түсіну үшін теңіз арыстандары мен олардың жыл сайынғы көші-қон дерекқорын қарастырайық. Дерекқордың көрінісі:</p>
+      <div class="table-wrap"><table>
+        <thead><tr><th colspan="2"><code>sea_lions</code></th><th colspan="3"><code>migrations</code></th></tr><tr><th>id</th><th>name</th><th>id</th><th>distance</th><th>days</th></tr></thead>
+        <tbody><tr><td>10</td><td>Тайпақ</td><td>10</td><td>2450</td><td>110</td></tr><tr><td>11</td><td>Көкжал</td><td>11</td><td>1090</td><td>48</td></tr><tr><td>12</td><td>Мөлдір</td><td>12</td><td>3010</td><td>152</td></tr><tr><td>13</td><td>Бұлт</td><td colspan="3"><em>(көші-қон жазбасы жоқ)</em></td></tr></tbody>
+      </table></div>
+      <p>Тайпақ арыстан қанша қашықтыққа жүзгенін немесе басқа арыстандар туралы осындай сұрақтарға жауап алу үшін ішкі сұрау қолдана аламыз. Бірақ балама жол бар: <code>sea_lions</code> және <code>migrations</code> кестелерін <em>біріктіріп</em>, әр арыстанның көші-қон мәліметін сол жолдың жалғасы етіп қоямыз.</p>
+      <p>Кестелерді екеуінде де бар ортақ баған бойынша, яғни арыстанның ID-і бойынша біріктіреміз. Сонда сәйкес жолдар бір-бірінің қасына дұрыс тұрады.</p>
+      <p>Тәжірибе жасамас бұрын <code>longlist.db</code>-ден <code>.quit</code> командасымен шығып, <code>sea_lions.db</code> дерекқорын ашыңыз. Сайттағы мысалдарда мұның қажеті жоқ, дерекқорды әр батырма өзі жүктейді.</p>
+<pre data-lang="sql" data-norun><code class="language-sql">.quit</code></pre>
+      <p>Кестелерді біріктіру:</p>
+<pre data-lang="sql" data-db="sea_lions" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT *
+FROM "sea_lions"
+JOIN "migrations" ON "migrations"."id" = "sea_lions"."id";</code></pre>
+      <p>Назар аударыңыз:</p>
+      <ul>
+        <li><code>ON</code> кілт сөзі біріктірілетін кестелердің қай мәндері сәйкес келетінін көрсетеді. Сәйкес мәндерсіз кестелерді біріктіру мүмкін емес;</li>
+        <li>бір кестеде бар ID екінші кестеде жоқ болса, бұл жол біріктірілген кестеде көрінбейді. Бұл түрін <strong>ішкі біріктіру</strong> (<span class="term-en">INNER JOIN</span>) дейді. Нәтижеде Бұлт пен Сұңқар арыстандарының түсіп қалғанын, сондай-ақ ID-і 99 көші-қон жазбасының да көрінбейтінін байқаңыз.</li>
+      </ul>
+      <p>Сәйкес келмейтін ID-лердің кейбірін сақтап қалуға мүмкіндік беретін басқа біріктіру түрлері де бар: <code>LEFT JOIN</code>, <code>RIGHT JOIN</code> және <code>FULL JOIN</code>. Олардың әрқайсысы <strong>сыртқы біріктірудің</strong> (<span class="term-en">OUTER JOIN</span>) бір түрі.</p>
+      <svg viewBox="0 0 610 118" role="img" aria-label="JOIN түрлері: INNER, LEFT, RIGHT, FULL (Венн диаграммасы)" style="display:block;width:100%;max-width:610px;height:auto;margin:18px auto"><defs><clipPath id="jc6a"><circle cx="52" cy="52" r="34"/></clipPath><clipPath id="jc6b"><circle cx="94" cy="52" r="34"/></clipPath></defs><g clip-path="url(#jc6a)"><circle cx="94" cy="52" r="34" style="fill:var(--accent);fill-opacity:.5"/></g><circle cx="52" cy="52" r="34" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><circle cx="94" cy="52" r="34" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><text x="73" y="106" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:700">INNER JOIN</text><defs><clipPath id="jc7a"><circle cx="202" cy="52" r="34"/></clipPath><clipPath id="jc7b"><circle cx="244" cy="52" r="34"/></clipPath></defs><circle cx="202" cy="52" r="34" style="fill:var(--accent);fill-opacity:.5"/><g clip-path="url(#jc7a)"><circle cx="244" cy="52" r="34" style="fill:var(--accent);fill-opacity:.5"/></g><circle cx="202" cy="52" r="34" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><circle cx="244" cy="52" r="34" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><text x="223" y="106" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:700">LEFT JOIN</text><defs><clipPath id="jc8a"><circle cx="352" cy="52" r="34"/></clipPath><clipPath id="jc8b"><circle cx="394" cy="52" r="34"/></clipPath></defs><circle cx="394" cy="52" r="34" style="fill:var(--accent);fill-opacity:.5"/><g clip-path="url(#jc8a)"><circle cx="394" cy="52" r="34" style="fill:var(--accent);fill-opacity:.5"/></g><circle cx="352" cy="52" r="34" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><circle cx="394" cy="52" r="34" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><text x="373" y="106" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:700">RIGHT JOIN</text><defs><clipPath id="jc9a"><circle cx="502" cy="52" r="34"/></clipPath><clipPath id="jc9b"><circle cx="544" cy="52" r="34"/></clipPath></defs><circle cx="502" cy="52" r="34" style="fill:var(--accent);fill-opacity:.5"/><circle cx="544" cy="52" r="34" style="fill:var(--accent);fill-opacity:.5"/><circle cx="502" cy="52" r="34" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><circle cx="544" cy="52" r="34" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><text x="523" y="106" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:700">FULL JOIN</text><text x="30" y="12" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px">sea_lions</text></svg>
+      <p><code>LEFT JOIN</code> сол жақтағы (яғни бірінші) кестенің деректерін басымдыққа алады:</p>
+<pre data-lang="sql" data-db="sea_lions" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT *
+FROM "sea_lions"
+LEFT JOIN "migrations" ON "migrations"."id" = "sea_lions"."id";</code></pre>
+      <p>Бұл сұрау сол жақтағы <code>sea_lions</code> кестесінің барлық деректерін сақтап қалады. Оң жақ кестеде белгілі бір ID үшін дерек болмаса, біріктірілген кестенің кейбір жолдары жартылай бос болады. Нәтижеде Бұлт пен Сұңқар арыстандарының жолдарында көші-қон бағандары бос (<code>NULL</code>) тұрғанын көресіз.</p>
+      <p>Дәл осылай <code>RIGHT JOIN</code> оң жақ (екінші) кестенің барлық жолын сақтайды, ал <code>FULL JOIN</code> екі кестенің бәрін түгел көрсетеді. Көріп отырғаныңыздай, <code>OUTER JOIN</code> біріктірілген кестеде бос немесе <code>NULL</code> мәндер қалдыруы мүмкін.</p>
+      <div class="callout warn">
+        <span class="callout-title">SQLite нұсқасы</span>
+        <p><code>RIGHT JOIN</code> мен <code>FULL JOIN</code> SQLite-тың жаңа нұсқаларында (3.39-дан бастап) ғана жұмыс істейді. Сайттағы мысал іске қосылмаса, ескі нұсқа болуы мүмкін; терминалдағы SQLite-та істейді.</p>
+      </div>
+      <p>Екі кестеде де біріктіретін бағанның аты бірдей болса (бізде екеуінде де <code>id</code>), <code>ON</code> бөлігін мүлде жазбауға болады:</p>
+<pre data-lang="sql" data-db="sea_lions" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT *
+FROM "sea_lions"
+NATURAL JOIN "migrations";</code></pre>
+      <p>Бұл жолы нәтижеде <code>id</code> бағаны қайталанбағанын байқаңыз. Сондай-ақ бұл біріктіру <code>INNER JOIN</code> сияқты жұмыс істейді.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>INNER JOIN</code> нәтижесінде Бұлт арыстаны неге жоқ?</summary>
+        <div class="details-body"><p>Бұлттың ID-і 13, ал <code>migrations</code> кестесінде 13 жоқ. Ішкі біріктіру тек екі жақта да сәйкес мәні бар жолдарды қалдырады. Бұлтты көргіңіз келсе, <code>LEFT JOIN</code> қолданыңыз, сонда оның көші-қон бағандары <code>NULL</code> болады.</p></div>
+      </details>
+
+      <h3 id="join-questions">Сұрақтар</h3>
+      <blockquote><p><strong>Сұрақ:</strong> Теңіз арыстандары дерекқорында ID-лер қалай жасалады? Олар <code>sea_lions</code> кестесінен келе ме, әлде <code>migrations</code> кестесінен бе?</p></blockquote>
+      <p>Арыстан ID-лерін көші-қонды бақылаған зерттеушілер берген болуы мүмкін. Яғни ID-лер ешбір кестеде жасалмаған, олар деректің өз көзінде тағайындалған.</p>
+      <blockquote><p><strong>Сұрақ:</strong> Үш кестені біріктірсек, қайсысы сол, қайсысы оң кесте екенін қалай білеміз?</p></blockquote>
+      <p>Әр <code>JOIN</code> үшін кілт сөздің алдындағы кесте - сол жақтағы. <code>JOIN</code> кілт сөзімен қосылып жатқан кесте - оң жақтағы.</p>
+      <blockquote><p><strong>Сұрақ:</strong> Кестелерді біріктіргенде нәтиже кесте ретінде сақтала ма? Қайта біріктірмей кейін пайдалана аламыз ба?</p></blockquote>
+      <p>Біз қолданып отырған <code>JOIN</code> жолымен нәтиже уақытша кесте немесе нәтиже жиыны болады. Оны тек сол сұрау ішінде пайдалана аламыз.</p>
+      <blockquote><p><strong>Сұрақ:</strong> <code>JOIN</code>-нің түрі көп. Әдепкі түрі бар ма?</p></blockquote>
+      <p>Ең қарапайымы - жай <code>JOIN</code> - шын мәнінде <code>INNER JOIN</code>, және ол SQL-дегі әдепкі түр.</p>
+
+      <h2 id="sets">Жиындар</h2>
+      <p>Жиындарға кіріспес бұрын арыстандар дерекқорынан шығып, <code>longlist.db</code> дерекқорына ауысамыз.</p>
+      <p>Сұрау орындалғанда көретін нәтижені <strong>нәтиже жиыны</strong> (<span class="term-en">result set</span>) деп атайды. Бұл - SQL-дегі жиынның бір түрі.</p>
+      <p>Тағы бір мысал. Біздің кітаптар дерекқорында авторлар мен аудармашылар бар. Адам автор да, аудармашы да бола алады. Екі жиынның қиылысуы болса, адамның екеуі де болуы мүмкін. Мұндай адамдарды табу үшін <code>INTERSECT</code> операторы бар.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"><svg viewBox="0 0 300 172" role="img" aria-label="INTERSECT: екеуінде де бар" style="display:block;width:100%;max-width:300px;height:auto;margin:18px auto"><defs><clipPath id="vcl1a"><circle cx="110" cy="78" r="62"/></clipPath><clipPath id="vcl1b"><circle cx="190" cy="78" r="62"/></clipPath></defs><circle cx="110" cy="78" r="62" style="fill:none"/><g clip-path="url(#vcl1a)"><circle cx="190" cy="78" r="62" style="fill:var(--accent);fill-opacity:.55"/></g><circle cx="110" cy="78" r="62" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><circle cx="190" cy="78" r="62" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><text x="82" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Авторлар</text><text x="218" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Аудармашылар</text><text x="150" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">INTERSECT: екеуінде де бар</text></svg></div>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "name" FROM "translators"
+INTERSECT
+SELECT "name" FROM "authors";</code></pre>
+      <p>Адам автор немесе аудармашы, не екеуі де болса, ол екі жиынның <strong>бірігуіне</strong> кіреді. Басқаша айтқанда, бұл жиын автор мен аудармашы жиындарын біріктіру арқылы құрылады.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"><svg viewBox="0 0 300 172" role="img" aria-label="UNION: біріктіру" style="display:block;width:100%;max-width:300px;height:auto;margin:18px auto"><defs><clipPath id="vcl2a"><circle cx="110" cy="78" r="62"/></clipPath><clipPath id="vcl2b"><circle cx="190" cy="78" r="62"/></clipPath></defs><circle cx="110" cy="78" r="62" style="fill:var(--accent);fill-opacity:.38"/><circle cx="190" cy="78" r="62" style="fill:var(--accent);fill-opacity:.38"/><circle cx="110" cy="78" r="62" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><circle cx="190" cy="78" r="62" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><text x="82" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Авторлар</text><text x="218" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Аудармашылар</text><text x="150" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">UNION: біріктіру</text></svg></div>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "name" FROM "translators"
+UNION
+SELECT "name" FROM "authors";</code></pre>
+      <p>Нәтижеде әр автор мен әр аудармашы бар, бірақ әрқайсысы <em>бір ғана рет</em> кездеседі.</p>
+      <p>Алдыңғы сұрауды сәл өзгертсек, нәтижедегі адамның кәсібін (автор ма, аудармашы ма) көрсете аламыз:</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT 'author' AS "profession", "name"
+FROM "authors"
+UNION
+SELECT 'translator' AS "profession", "name"
+FROM "translators";</code></pre>
+      <p>Тек автор болып, аудармашы болмағандардың жиыны былай табылады. Бұл үшін <code>EXCEPT</code> кілт сөзі бар: аудармашылар жиынын авторлар жиынынан <em>алып тастаймыз</em>.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"><svg viewBox="0 0 300 172" role="img" aria-label="EXCEPT: тек авторлар" style="display:block;width:100%;max-width:300px;height:auto;margin:18px auto"><defs><clipPath id="vcl3a"><circle cx="110" cy="78" r="62"/></clipPath><clipPath id="vcl3b"><circle cx="190" cy="78" r="62"/></clipPath></defs><circle cx="110" cy="78" r="62" style="fill:var(--accent);fill-opacity:.55"/><g clip-path="url(#vcl3a)"><circle cx="190" cy="78" r="62" style="fill:var(--surface)"/></g><circle cx="110" cy="78" r="62" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><circle cx="190" cy="78" r="62" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><text x="82" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Авторлар</text><text x="218" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Аудармашылар</text><text x="150" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">EXCEPT: тек авторлар</text></svg></div>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "name" FROM "authors"
+EXCEPT
+SELECT "name" FROM "translators";</code></pre>
+      <p>Қиылыстағы автор-аудармашылардың бірде-бірі бұл нәтижеде жоқ екенін тексеріп көруге болады.</p>
+      <p>Дәл осылай тек аудармашылардың жиынын да <code>EXCEPT</code> арқылы табуға болады (таблицаларды орнымен ауыстырыңыз).</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"><svg viewBox="0 0 300 172" role="img" aria-label="EXCEPT (кері): тек аудармашылар" style="display:block;width:100%;max-width:300px;height:auto;margin:18px auto"><defs><clipPath id="vcl4a"><circle cx="110" cy="78" r="62"/></clipPath><clipPath id="vcl4b"><circle cx="190" cy="78" r="62"/></clipPath></defs><circle cx="190" cy="78" r="62" style="fill:var(--accent);fill-opacity:.55"/><g clip-path="url(#vcl4b)"><circle cx="110" cy="78" r="62" style="fill:var(--surface)"/></g><circle cx="110" cy="78" r="62" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><circle cx="190" cy="78" r="62" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><text x="82" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Авторлар</text><text x="218" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Аудармашылар</text><text x="150" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">EXCEPT (кері): тек аудармашылар</text></svg></div>
+      <details class="think">
+        <summary>Ойланып көріңіз: автор немесе аудармашы, бірақ екеуі де емес адамдарды қалай табамыз?</summary>
+        <div class="details-body"><p>Бұл - екі жиынның «симметриялық айырмасы». Оны бірнеше жолмен құруға болады. Мысалы, бірігуден қиылысуды алып тастаймыз, ал SQL-де бұл екі ішкі сұраумен жазылады: <code>(A UNION B) EXCEPT (A INTERSECT B)</code>. Немесе екі <code>EXCEPT</code> нәтижесін <code>UNION</code> арқылы қосамыз: <code>(A EXCEPT B) UNION (B EXCEPT A)</code>.</p></div>
+      </details>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center"><svg viewBox="0 0 300 172" role="img" aria-label="Екеуінің біреуі ғана (екеуі емес)" style="display:block;width:100%;max-width:300px;height:auto;margin:18px auto"><defs><clipPath id="vcl5a"><circle cx="110" cy="78" r="62"/></clipPath><clipPath id="vcl5b"><circle cx="190" cy="78" r="62"/></clipPath></defs><circle cx="110" cy="78" r="62" style="fill:var(--accent);fill-opacity:.38"/><circle cx="190" cy="78" r="62" style="fill:var(--accent);fill-opacity:.38"/><g clip-path="url(#vcl5a)"><circle cx="190" cy="78" r="62" style="fill:var(--surface)"/></g><circle cx="110" cy="78" r="62" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><circle cx="190" cy="78" r="62" style="fill:none;stroke:var(--accent);stroke-width:1.8"/><text x="82" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Авторлар</text><text x="218" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Аудармашылар</text><text x="150" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Екеуінің біреуі ғана (екеуі емес)</text></svg></div>
+      <p>Бұл операторлар көптеген сұраққа жауап беруге жарайды. Мысалы, Sophie Hughes пен Margaret Jull Costa бірге аударған кітаптарды табайық:</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "book_id" FROM "translated"
+WHERE "translator_id" = (
+    SELECT "id" from "translators"
+    WHERE "name" = 'Sophie Hughes'
+)
+INTERSECT
+SELECT "book_id" FROM "translated"
+WHERE "translator_id" = (
+    SELECT "id" from "translators"
+    WHERE "name" = 'Margaret Jull Costa'
+);</code></pre>
+      <p>Мұндағы ішкі сұрау әр аудармашының кітап ID-лерін табады. Содан кейін <code>INTERSECT</code> кілт сөзі нәтиже жиындарын қиып, олар бірлесіп аударған кітаптарды береді.</p>
+
+      <h3 id="sets-questions">Сұрақтар</h3>
+      <blockquote><p><strong>Сұрақ:</strong> <code>INTERSECT</code>, <code>UNION</code> және т.б. операторларды үш-төрт жиынға қолдануға бола ма?</p></blockquote>
+      <p>Әрине. Үш жиынды қию үшін <code>INTERSECT</code> операторын екі рет қолданамыз. Маңызды ескерту: <code>INTERSECT</code>, <code>UNION</code> сияқты операторлармен біріктірілетін жиындарда баған саны мен түрлері бірдей болуы керек.</p>
+
+      <h2 id="groups">Топтар</h2>
+      <p><code>ratings</code> кестесін қарастырайық. Әр кітаптың орташа бағасын табу керек. Ол үшін алдымен бағаларды кітап бойынша <em>топтап</em>, содан кейін әр топтың (әр кітаптың) бағасының орташасын аламыз.</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "book_id", AVG("rating") AS "average rating"
+FROM "ratings"
+GROUP BY "book_id";</code></pre>
+      <p>Бұл сұрауда <code>GROUP BY</code> кілт сөзі әр кітапқа топ жасады да, топтың бағаларын бір орташа бағаға «жинады». Мектептегі журналды ойлаңыз: оқушылардың бағасын пәні бойынша топтап, әр пәннің орташасын шығарғандай.</p>
+      <p>Енді тек жақсы бағаланған кітаптарды, яғни орташа бағасы 4-тен жоғарыларын көргіміз келеді:</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "book_id", ROUND(AVG("rating"), 2) AS "average rating"
+FROM "ratings"
+GROUP BY "book_id"
+HAVING "average rating" &gt; 4.0;</code></pre>
+      <p>Мұнда топтарға шарт қою үшін <code>WHERE</code> емес, <code>HAVING</code> қолданылғанын байқаңыз. <code>WHERE</code> тек жеке жолдарға шарт қоя алады, ал <code>HAVING</code> - топтарға.</p>
+      <div class="callout tip">
+        <span class="callout-title">WHERE және HAVING</span>
+        <p>Қарапайым ереже: <code>WHERE</code> топтау <em>алдында</em> жеке жолдарды сүзеді, <code>HAVING</code> топтау <em>кейін</em>, дайын топтарды сүзеді. Сондықтан <code>AVG(...)</code> сияқты жиынтық мәнге шартты тек <code>HAVING</code>-ке жазасыз.</p>
+      </div>
+
+      <h3 id="groups-questions">Сұрақтар</h3>
+      <blockquote><p><strong>Сұрақ:</strong> Әр кітапқа берілген бағалардың санын көруге бола ма?</p></blockquote>
+      <p>Иә, ол үшін сұрауды сәл өзгертіп, <code>COUNT</code> қолданамыз:</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "book_id", COUNT("rating")
+FROM "ratings"
+GROUP BY "book_id";</code></pre>
+      <blockquote><p><strong>Сұрақ:</strong> Мұнда алынған деректерді сұрыптауға бола ма?</p></blockquote>
+      <p>Болады. Мысалы, жақсы бағаланған кітаптардың орташа бағасын кему ретімен шығарайық:</p>
+<pre data-lang="sql" data-db="longlist" data-dbsrc="sql/data/week-1.js"><code class="language-sql">SELECT "book_id", ROUND(AVG("rating"), 2) AS "average rating"
+FROM "ratings"
+GROUP BY "book_id"
+HAVING "average rating" &gt; 4.0
+ORDER BY "average rating" DESC;</code></pre>
+
+      <h2 id="fin">Қорытынды сөз</h2>
+      <p>Осымен байланыстар туралы 1-лекция аяқталады. Келесі аптада дерекқорды өзіңіз қалай жобалайтыныңызды үйренеміз.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li>Реляциялық дерекқорда бірнеше кесте бар және олар бір-біреуге, бір-көпке не көп-көпке байланыста болады.</li>
+        <li>ER диаграммасы мәндер мен олардың байланыстарын «қарғаның аяғы» белгілерімен көрсетеді: шеңбер - нөл, тік сызық - бір, аяқ - көп.</li>
+        <li>Бастапқы кілт жолды бірегей анықтайды; сыртқы кілт басқа кестенің бастапқы кілтіне сілтейді. Көп-көпке байланыс үшін байланыстырушы кесте керек.</li>
+        <li>Ішкі сұрау - сұраудың ішіндегі сұрау; бірнеше мән күтілсе <code>=</code> емес, <code>IN</code> қолданамыз.</li>
+        <li><code>JOIN</code> кестелерді біріктіреді: әдепкі <code>INNER JOIN</code> тек сәйкес жолдарды қалдырады, <code>LEFT</code>/<code>RIGHT</code>/<code>FULL JOIN</code> сәйкес келмегендерді де сақтайды (бос орында <code>NULL</code>).</li>
+        <li><code>INTERSECT</code>, <code>UNION</code>, <code>EXCEPT</code> нәтиже жиындарын қияды, біріктіреді, айырады.</li>
+        <li><code>GROUP BY</code> жолдарды топтайды, <code>HAVING</code> топтарды сүзеді, <code>COUNT</code> пен <code>AVG</code> топ ішінде есептейді.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. Студенттер мен курстар арасында көп-көпке байланыс бар (студент көп курс алады, курста көп студент оқиды). Оны дерекқорда қалай іске асырамыз?</p>
+          <label><input type="radio" value="a"> <code>students</code> кестесіне курстардың барлық атауын бір ұяшыққа жазамыз</label>
+          <label><input type="radio" value="b"> <code>courses</code> кестесіне сыртқы кілт қосамыз, одан басқа ештеңе керек емес</label>
+          <label><input type="radio" value="c"> Екі сыртқы кілті бар үшінші (байланыстырушы) кесте жасаймыз</label>
+          <label><input type="radio" value="d"> Екі кестені бір кестеге біріктіреміз де, студент аты қайталана берсін</label>
+          <p class="explain">Көп-көпке байланыс байланыстырушы кестемен іске асады: оның бір бағаны <code>students</code> кілтіне, екіншісі <code>courses</code> кілтіне сілтейді. Қалған нұсқалар артық деректер мен қателерге апарады.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">2. <code>ratings</code> кестесінде <code>book_id</code> бағанында бірдей мәндер бірнеше рет қайталанады. Бұл дұрыс па?</p>
+          <label><input type="radio" value="a"> Иә, ол сыртқы кілт, сыртқы кілт мәндері қайталана алады</label>
+          <label><input type="radio" value="b"> Жоқ, кез келген кілт мәні бірегей болуы керек</label>
+          <label><input type="radio" value="c"> Иә, бірақ тек бастапқы кілт болса ғана</label>
+          <label><input type="radio" value="d"> Жоқ, бұл кестенің бүлінгенін білдіреді</label>
+          <p class="explain">Бір кітаптың бірнеше бағасы бар (бір-көпке байланыс). <code>book_id</code> - сыртқы кілт, оның мәндері қайталана алады. Бірегей болу талабы тек бастапқы кілтке қойылады.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. Мына сұрау не қайтарады?</p>
+<pre data-lang="sql"><code class="language-sql">SELECT "title"
+FROM "books"
+WHERE "publisher_id" = (
+    SELECT "id"
+    FROM "publishers"
+    WHERE "publisher" = 'Жоқ баспа'
+);</code></pre>
+          <label><input type="radio" value="a"> Барлық кітаптың атауын</label>
+          <label><input type="radio" value="b"> Қате хабарламасын</label>
+          <label><input type="radio" value="c"> Бір жол, оның мәні <code>NULL</code></label>
+          <label><input type="radio" value="d"> Бос нәтижені (жол жоқ)</label>
+          <p class="explain">Ішкі сұрау ештеңе таппайды, сондықтан сыртқы шарт ешбір жолға сәйкес келмейді және нәтиже бос болады. Қате болмайды.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">4. Автор көп кітап жазған болуы мүмкін. Қай сұрау дұрыс жұмыс істейді?</p>
+          <label><input type="radio" value="a"> <code>WHERE "id" = (SELECT "book_id" FROM "authored" WHERE "author_id" = 3)</code></label>
+          <label><input type="radio" value="b"> <code>WHERE "id" IN (SELECT "book_id" FROM "authored" WHERE "author_id" = 3)</code></label>
+          <label><input type="radio" value="c"> <code>WHERE "id" HAVING (SELECT "book_id" FROM "authored" WHERE "author_id" = 3)</code></label>
+          <label><input type="radio" value="d"> Екеуі де бірдей дұрыс</label>
+          <p class="explain">Ішкі сұрау бірнеше жол қайтара алатындықтан, <code>IN</code> керек. <code>=</code> тек бір мәнмен салыстырады және қалғанын өткізіп жібереді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">5. <code>sea_lions</code> кестесінде 6 арыстан, <code>migrations</code> кестесінде 5 жазба бар, олардың 4-і арыстандарға сәйкес келеді. <code>sea_lions LEFT JOIN migrations</code> неше жол қайтарады?</p>
+          <label><input type="radio" value="a"> 6 жол: сәйкес келмеген 2 арыстанның көші-қон бағандары <code>NULL</code></label>
+          <label><input type="radio" value="b"> 4 жол: тек сәйкес келгендері</label>
+          <label><input type="radio" value="c"> 5 жол</label>
+          <label><input type="radio" value="d"> 7 жол</label>
+          <p class="explain"><code>LEFT JOIN</code> сол жақтағы кестенің барлық жолын сақтайды: 6 арыстанның 6-сы да шығады, 4-іне көші-қон деректері қосылады, 2-іне <code>NULL</code> қалады. Бір жазба (ID 99) оң жақта қалып қояды, нәтижеге кірмейді.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">6. Авторлар жиыны: Аян, Бану, Ғалым. Аудармашылар жиыны: Ғалым, Дана. Мына сұрау не қайтарады?</p>
+<pre data-lang="sql"><code class="language-sql">SELECT "name" FROM "authors"
+EXCEPT
+SELECT "name" FROM "translators";</code></pre>
+          <label><input type="radio" value="a"> Ғалым</label>
+          <label><input type="radio" value="b"> Аян, Бану, Ғалым, Дана</label>
+          <label><input type="radio" value="c"> Дана</label>
+          <label><input type="radio" value="d"> Аян, Бану</label>
+          <p class="explain"><code>EXCEPT</code> бірінші жиыннан екінші жиынды алып тастайды: авторлардан Ғалымды (ол аудармашы да) шығарсақ, Аян мен Бану қалады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">7. Студент орташа бағасы 4-тен жоғары кітаптарды іздеді де, қате тапты. Қатесі неде?</p>
+<pre data-lang="sql"><code class="language-sql">SELECT "book_id"
+FROM "ratings"
+WHERE AVG("rating") &gt; 4
+GROUP BY "book_id";</code></pre>
+          <label><input type="radio" value="a"> <code>GROUP BY</code> жолы <code>WHERE</code>-ден бұрын тұруы керек</label>
+          <label><input type="radio" value="b"> Топқа шарт <code>WHERE</code> емес, <code>HAVING</code> арқылы жазылады</label>
+          <label><input type="radio" value="c"> <code>AVG</code> орнына <code>COUNT</code> қолдану керек</label>
+          <label><input type="radio" value="d"> Қате жоқ, сұрау жұмыс істейді</label>
+          <p class="explain"><code>WHERE</code> топтау алдында жеке жолдарды сүзеді, сондықтан онда <code>AVG(...)</code> қолдануға болмайды. Дұрысы: <code>GROUP BY "book_id" HAVING AVG("rating") &gt; 4</code>.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">8. Мына сұрау қанша жол қайтарады, егер <code>ratings</code> кестесінде 12 түрлі кітапқа 53 баға берілген болса?</p>
+<pre data-lang="sql"><code class="language-sql">SELECT "book_id", COUNT("rating")
+FROM "ratings"
+GROUP BY "book_id";</code></pre>
+          <label><input type="radio" value="a"> 51 жол</label>
+          <label><input type="radio" value="b"> 1 жол</label>
+          <label><input type="radio" value="c"> 12 жол: әр кітапқа бір жол</label>
+          <label><input type="radio" value="d"> 63 жол</label>
+          <p class="explain"><code>GROUP BY</code> жолдарды кітап бойынша топтайды, әр топ бір жолға айналады. Топтың ішіндегі бағалар санын <code>COUNT</code> есептейді.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Problem Set 1 (Тапсырмалар жинағы 1)</h2>
+      <p>Ресми тапсырма беті: <a href="https://cs50.harvard.edu/sql/psets/1/" target="_blank" rel="noopener">cs50.harvard.edu/sql/psets/1</a>. Ресми тапсырмалар үлкен нақты дерекқорларды (<code>packages.db</code>, <code>dese.db</code>, <code>moneyball.db</code>) қолданады, оларды <a href="https://cs50.dev/" target="_blank" rel="noopener">cs50.dev</a>-те жүктеп аласыз. Сайтта ол файлдар жоқ, сондықтан әр тапсырманың астында сол тапсырманың схемасына ұқсас, <strong>ойдан шығарылған</strong> шағын дерекқорға арналған автотексеруші орналастырдық. Бұл - сайттың өз жаттығуы, ресми тапсырма емес. Ресми шешімдерді cs50.dev-те <code>check50</code> арқылы тексересіз.</p>
+      <p>Орындау тәртібі: cs50.dev-ке GitHub аккаунтыңызбен кіріңіз; codespace терминалында <code>update50</code> іске қосып, сұралғанда <strong>Rebuild now</strong> басыңыз; сосын Packages, DESE, Moneyball тапсырмаларын осы ретпен тапсырыңыз. Жолдарды бірлесіп жазуға болмайды, көмек сұрауға болады, бірақ біреу жұмысты сіздің орныңызға істеп бермеуі керек (академиялық адалдық ережесі).</p>
+      <div class="callout tip">
+        <span class="callout-title">Кеңестер</span>
+        <p>Лекциядағы барлық SQL сұрауын осы беттен іске қосып көріңіз. Жоғарыдағы конспектті анықтамалық ретінде қолданыңыз. SQL синтаксисін <a href="https://www.w3schools.com/sql/" target="_blank" rel="noopener">w3schools.com/sql</a> бетінен қарауға болады.</p>
+      </div>
+      <div class="callout note">
+        <span class="callout-title">Қайда орындалады</span>
+        <p>Ресми тапсырмалар компьютерде не cs50.dev-те <code>sqlite3</code> арқылы орындалады. Сұрауларды <code>.read 1.sql</code> командасымен тексересіз, ал <code>cat 1.sql | sqlite3 moneyball.db &gt; output.txt</code> жолы нәтижені файлға жазады (жол санын тексеруге ыңғайлы). Осы беттегі автотексерушілер браузерде жұмыс істейді.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-packages">Packages, Please (Пакеттер, өтінемін)</h3></div>
+        <p>Сіз Бостон қаласының <strong>пошта қызметкерісіз</strong> (mail clerk) және қала бойынша хат-хабардың жеткізілуін қадағалайсыз. Жіберілген пакеттердің көбі ақыры жетеді. Бірақ анда-санда сізге жұмбақ түседі: жоғалған пакет! Жоғалған пакет туралы хабарлаған әр клиент үшін мыналарды анықтауыңыз керек:</p>
+        <ul>
+          <li>жоғалған пакеттің қазіргі мекенжайы (орналасқан жері);</li>
+          <li>мекенжай түрі (тұрғын үй, кәсіпорын және т.б.);</li>
+          <li>пакеттің мазмұны.</li>
+        </ul>
+        <p>Бәрін клиенттердің өз сөзінен ғана білесіз. Жұмбақтарды шешу үшін пошта қызметінің <code>packages.db</code> дерекқорын қолданасыз: онда пакеттердің қала бойынша жүрісі туралы деректер бар. Тек осы дерекқордағы ақпаратқа сүйеніп, әр клиенттің жоғалған пакетін табуыңыз керек.</p>
+        <h4>Дерекқор схемасы</h4>
+        <p><code>packages.db</code> Бостондағы жуырдағы жеткізулерді бейнелейді. Онда мына мәндер бар:</p>
+        <ul>
+          <li><strong>Жүргізушілер</strong> (drivers): пакеттерді жеткізетін адамдар;</li>
+          <li><strong>Пакеттер</strong> (packages) өздері;</li>
+          <li><strong>Мекенжайлар</strong> (addresses), мысалы, 1234 Main Street;</li>
+          <li><strong>Сканерлеулер</strong> (scans): жүргізуші пакетті алғанын не тапсырғанын растайтын жазбалар.</li>
+        </ul>
+        <svg viewBox="0 0 650 235" role="img" aria-label="Packages ER диаграммасы" style="display:block;width:100%;max-width:650px;height:auto;margin:18px auto"><line x1="60" y1="160" x2="255" y2="50" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="73.1" y1="152.6" x2="56.1" y2="153.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="73.1" y1="152.6" x2="60.0" y2="160.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="73.1" y1="152.6" x2="63.9" y2="167.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="81.8" cy="147.7" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="251.5" y1="60.0" x2="244.6" y2="47.8" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="246.2" y1="63.0" x2="239.4" y2="50.8" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="111.4" y="89.0" width="57.2" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="140" y="100" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">қайдан</text><line x1="100" y1="160" x2="280" y2="50" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="112.8" y1="152.2" x2="95.8" y2="153.2" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="112.8" y1="152.2" x2="100.0" y2="160.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="112.8" y1="152.2" x2="104.2" y2="166.8" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="121.3" cy="147.0" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="276.8" y1="60.1" x2="269.5" y2="48.2" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="271.7" y1="63.3" x2="264.4" y2="51.3" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="190.0" y="74.0" width="50.0" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="215" y="85" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">қайда</text><line x1="250" y1="180" x2="140" y2="180" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="235.0" y1="180.0" x2="250.0" y2="188.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="235.0" y1="180.0" x2="250.0" y2="180.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="235.0" y1="180.0" x2="250.0" y2="172.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="231.0" y1="187.0" x2="231.0" y2="173.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="148.0" y1="173.0" x2="148.0" y2="187.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="154.0" y1="173.0" x2="154.0" y2="187.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="159.2" y="193.0" width="71.6" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="195" y="204" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">пакеттің</text><line x1="315" y1="160" x2="315" y2="50" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="315.0" y1="145.0" x2="307.0" y2="160.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="315.0" y1="145.0" x2="315.0" y2="160.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="315.0" y1="145.0" x2="323.0" y2="160.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="315.0" cy="135.0" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="322.0" y1="58.0" x2="308.0" y2="58.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="322.0" y1="64.0" x2="308.0" y2="64.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="272.0" y="94.0" width="86.0" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="315" y="105" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">мекенжайда</text><line x1="490" y1="180" x2="380" y2="180" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="482.0" y1="187.0" x2="482.0" y2="173.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="476.0" y1="187.0" x2="476.0" y2="173.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="395.0" y1="180.0" x2="380.0" y2="172.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="395.0" y1="180.0" x2="380.0" y2="180.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="395.0" y1="180.0" x2="380.0" y2="188.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="405.0" cy="180.0" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="402.8" y="193.0" width="64.4" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="435" y="204" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">жасайды</text><rect x="250" y="10" width="130" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="315.0" y="30.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Мекенжай</text><rect x="20" y="160" width="120" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="180.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Пакет</text><rect x="250" y="160" width="130" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="315.0" y="180.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Сканерлеу</text><rect x="490" y="160" width="130" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="555.0" y="180.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Жүргізуші</text></svg>
+        <details><summary><code>addresses</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - мекенжайдың ID-і;</li>
+          <li><code>address</code> - көше мекенжайының өзі (мысалы, 7660 Sharon Street);</li>
+          <li><code>type</code> - мекенжай түрі (тұрғын үй, кәсіпорын және т.б.).</li>
+        </ul></div></details>
+        <details><summary><code>drivers</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - жүргізушінің ID-і;</li>
+          <li><code>name</code> - жүргізушінің аты.</li>
+        </ul></div></details>
+        <details><summary><code>packages</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - пакеттің ID-і;</li>
+          <li><code>contents</code> - пакеттің мазмұны;</li>
+          <li><code>from_address_id</code> - пакет жіберілген мекенжайдың ID-і;</li>
+          <li><code>to_address_id</code> - пакет жіберілетін мекенжайдың ID-і. <strong>Ол пакеттің ақыры түскен жері болмауы мүмкін!</strong></li>
+        </ul></div></details>
+        <details><summary><code>scans</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - сканерлеудің ID-і;</li>
+          <li><code>driver_id</code> - сканерлеуді жасаған жүргізушінің ID-і;</li>
+          <li><code>package_id</code> - сканерленген пакеттің ID-і;</li>
+          <li><code>address_id</code> - пакет сканерленген мекенжайдың ID-і;</li>
+          <li><code>action</code> - пакет алынды ма («Pick») әлде тапсырылды ма («Drop»);</li>
+          <li><code>timestamp</code> - пакет сканерленген күн мен уақыт.</li>
+        </ul></div></details>
+        <h4>Не істеу керек</h4>
+        <p>Бұл тапсырмада жауаптың өзі қанша маңызды болса, оған жету <em>жолы</em> да сонша маңызды. <code>log.sql</code> файлында дерекқорға жіберген <strong>барлық</strong> SQL сұрауларыңыздың журналын жүргізіңіз. Әр сұрау үстіне түсіндірме жазыңыз. SQL-де түсіндірме - <code>--</code> белгісінен басталатын жол:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">-- This is a SQL comment</code></pre>
+        <p>Түсіндірмеде сұрауды неге іске қосқаныңызды және одан не білгіңіз келетінін жазыңыз. Жұмбақты шешу барысындағы ойларыңызды да жаза аласыз: бұл файл сіз пакетті қалай тапқаныңыздың дәлелі болуы керек.</p>
+        <p>Пакеттің орнын тапқан соң, <code>answers.txt</code> файлындағы жолдарды толтырыңыз: пакеттің орналасқан жері мен мазмұнын жазыңыз. Файлдағы бар мәтінді өзгертпеңіз және қосымша жол қоспаңыз!</p>
+        <details><summary>Толтырылған <code>answers.txt</code> үлгісі</summary><div class="details-body">
+<pre class="terminal"><code class="language-plaintext">At what type of address did the Lost Letter end up?: Residential
+At what address did the Lost Letter end up?: 123 Sesame Street
+
+At what type of address did the Devious Delivery end up?: Business
+What were the contents of the Devious Delivery?: Magnifying glass
+
+What are the contents of the Forgotten Gift?: Picture book
+Who has the Forgotten Gift?: Sherlock</code></pre></div></details>
+        <p>Ақырында <code>log.sql</code> мен <code>answers.txt</code> файлдарының екеуін де тапсырасыз.</p>
+        <h4>Жоғалған хат (The Lost Letter)</h4>
+        <p>Бірінші хабарлама Аннекеден келді. Ол сіздің үстеліңізге келіп, былай дейді:</p>
+        <blockquote><p>Қызметкер, менің атым Аннеке. Мен 900 Somerville Avenue мекенжайында тұрамын. Жуырда мен ерекше хат жібердім. Ол менің досым Варшаға арналған. Ол өмірінің жаңа тарауын 2 Finnegan Street мекенжайында, қаланың жоғарғы жағында бастап жатыр. (Сол мекенжайды бірінші рет дұрыс жазу оңай болмаған, мен сізге айтайын.) Хат - құттықтау хаты: Варшаның көшуіне арналған менің жылы-жұмсақ «қағаз құшағым». Хат оған жетті ме екен, соны тексеріп беріңізші?</p></blockquote>
+        <p><code>log.sql</code> файлындағы <code>-- *** The Lost Letter ***</code> жолының астына Аннеке хатын табуға қолданған SQL сұрауларын жазыңыз. Тапқан соң, оны <code>answers.txt</code> ішіндегі сұрақтарға сай сипаттаңыз.</p>
+        <h4>Қулық сәлемдеме (The Devious Delivery)</h4>
+        <p>Екінші хабарлама қаладан тыс жерден келген жұмбақ бейтаныс кісіден түседі. Ол үстеліңізге келіп, былай дейді:</p>
+        <blockquote><p>Қайырлы күн, пошта жеткізушісі. Есіңізде болар, жақында Fiftyville қаласынан келіп, сіздің сенімді қолыңызға белгілі бір қорапты тапсырып, оны байыппен жеткізуді сұрағанмын. Менің серіктесім оны көптен бері күтіп жүр. Ал қорап қанат бітіріп ұшып кеткендей. Ха! Осы жұмбақты ашуға көмектесе аласыз ба? «Қайдан» мекенжайы жоқ, өкінішке қарай. Біреудің ваннадағы сәтіне сәл көбірек «кряк» қосатын сәлемдеме, ұқтыңыз ғой...</p></blockquote>
+        <p><code>log.sql</code> файлындағы <code>-- *** The Devious Delivery ***</code> жолының астына пакетті табуға қолданған SQL сұрауларын жазып, нәтижені <code>answers.txt</code> ішіндегі сұрақтарға сай сипаттаңыз.</p>
+        <h4>Ұмытылған сыйлық (The Forgotten Gift)</h4>
+        <p>Үшінші хабарлама пошта бөлімшесінің жанындағы көшеде тұратын ата-әжеден түседі. Олар үстеліңізге келіп, былай дейді:</p>
+        <blockquote><p>Кешіріңіз, қызметкер. Мен 728 Maple Place мекенжайындағы тамаша немерме жұмбақ сыйлық жібергенмін. Бұл шамамен екі апта бұрын болды. Жеткізу күнінен енді жеті күн өтіп кетті, ал ол әлі де бос қолмен, жүрегі үмітке толы күтіп отыр деп естідім. Менің пакетім қайда кеткенін ойлап уайымдап жүрмін. Ішінде не барын мүлде есіме түсіре алмаймын, бірақ ішінде оған деген махаббатым мол екенін білемін. Оны тауып, оның күнін қуанышқа бөлеуге бола ма? Мен оны 109 Tileston Street мекенжайындағы үйімнен жібергенмін.</p></blockquote>
+        <p><code>log.sql</code> файлындағы <code>-- *** The Forgotten Gift ***</code> жолының астына сыйлықты табуға қолданған SQL сұрауларын жазып, нәтижені <code>answers.txt</code> ішіндегі сұрақтарға сай сипаттаңыз.</p>
+        <h4>Жүктеу</h4>
+        <p>cs50.dev терминалында <code>cd</code> орындап, одан кейін ресми архивті жүктеңіз:</p>
+<pre class="terminal"><code class="language-plaintext">$ wget https://cdn.cs50.net/sql/2024/x/psets/1/packages.zip
+$ unzip packages.zip
+$ rm packages.zip
+$ cd packages
+packages/ $ ls</code></pre>
+        <p><code>ls</code> нәтижесінде <code>packages.db</code>, <code>log.sql</code> және <code>answers.txt</code> файлдарын көруіңіз керек. <code>sqlite3 packages.db</code> дерекқорды ашады.</p>
+        <div class="callout note">
+          <span class="callout-title">Сайттағы жаттығу</span>
+          <p>Төмендегі автотексеруші - <strong>ойдан шығарылған</strong> пошта дерекқорына (<code>pochta.db</code>, Алматы көшелері) арналған жеке жаттығу. Ресми тапсырма емес: онда сіз жауапты тікелей табатын сұрауларды жазасыз.</p>
+        </div>
+        <div class="sql-grader" data-set="sql1-packages" data-src="sql/data/week-1.js"></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Алдымен мекенжайлардың ID-лерін <code>addresses</code> кестесінен табыңыз (немесе ішкі сұрау қолданыңыз). Пакеттің жолын <code>scans</code> кестесін уақыт бойынша реттеп қараңыз. Мекенжайлар ұқсас болуы мүмкін, сондықтан атауды дәл салыстырыңыз. Соңғы «Drop» сканерлеуі пакеттің қайда жеткенін көрсетеді; ал «Drop»-сыз қалған «Pick» - пакет әлі жүргізушінің қолында деген сөз.</p></div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql1-packages">
+            <li><input type="checkbox"> <span><code>log.sql</code> файлында үш жұмбақтың әрқайсысы өз тақырыбымен бөлінген, әр сұрау үстінде түсіндірме түсініктеме бар.</span></li>
+            <li><input type="checkbox"> <span><code>answers.txt</code> толтырылды, бастапқы жолдар өзгертілмеді, қосымша жол жоқ.</span></li>
+            <li><input type="checkbox"> <span>Жүргізуші мен мекенжай ID-лері сұраулар ішінде қолмен жазылмаған, мүмкіндігінше ішкі сұрау не <code>JOIN</code> қолданылған.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/packages</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span><code>submit50 cs50/problems/2024/sql/packages</code> орындалды.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-dese">DESE (Бастауыш және орта білім департаменті)</h3></div>
+        <p>Сіз жаңа жұмысқа, Массачусетс штатының Бастауыш және орта білім департаментіне (<strong>DESE</strong>, Department of Elementary and Secondary Education) дерек талдаушысы болып орналастыңыз. DESE штаттың мемлекеттік білім беру жүйесін қадағалайды. DESE-нің міндеттерінің бірі - әр балаға сапалы білім беру: тәжірибелі мұғалімдер, ресурстардың молдығы және штат талаптарын орындап бітіру. Бұл мақсатта сіздің SQL білімдеріңіздің де үлесі бар!</p>
+        <p><code>dese.db</code> дерекқорында Массачусетстегі білім жағдайы туралы сұрақтарға жауап беріңіз.</p>
+        <h4>Дерекқор схемасы</h4>
+        <p>Массачусетсте мемлекеттік білім беру <strong>округтерге</strong> (districts) жүктелген: округ - әдетте бір қалаға байланысты мектеп басқармасының түрі. Округтер өз кезегінде көптеген жеке мектепті қамтиды. DESE жинайтын деректерді мына ER диаграммасы көрсетеді:</p>
+        <svg viewBox="0 0 660 320" role="img" aria-label="DESE ER диаграммасы" style="display:block;width:100%;max-width:660px;height:auto;margin:18px auto"><line x1="250" y1="50" x2="140" y2="160" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="249.3" y1="60.6" x2="239.4" y2="50.7" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="245.1" y1="64.8" x2="235.2" y2="54.9" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="150.6" y1="149.4" x2="134.3" y2="154.3" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="150.6" y1="149.4" x2="140.0" y2="160.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="150.6" y1="149.4" x2="145.7" y2="165.7" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="157.7" cy="142.3" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="142.8" y="101.0" width="64.4" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="175" y="112" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">қамтиды</text><line x1="380" y1="40" x2="470" y2="40" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="388.0" y1="33.0" x2="388.0" y2="47.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="394.0" y1="33.0" x2="394.0" y2="47.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="455.0" y1="40.0" x2="470.0" y2="48.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="455.0" y1="40.0" x2="470.0" y2="40.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="455.0" y1="40.0" x2="470.0" y2="32.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="445.0" cy="40.0" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="389.2" y="29.0" width="71.6" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="425.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">жұмсайды</text><line x1="380" y1="55" x2="470" y2="165" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="390.5" y1="56.8" x2="379.6" y2="65.6" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="394.3" y1="61.4" x2="383.4" y2="70.3" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="460.5" y1="153.4" x2="463.8" y2="170.1" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="460.5" y1="153.4" x2="470.0" y2="165.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="460.5" y1="153.4" x2="476.2" y2="159.9" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="454.2" cy="145.7" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="415.0" y="109.0" width="50.0" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="440" y="120" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">алады</text><line x1="80" y1="190" x2="80" y2="260" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="87.0" y1="198.0" x2="73.0" y2="198.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="87.0" y1="204.0" x2="73.0" y2="204.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="73.0" y1="252.0" x2="87.0" y2="252.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><circle cx="80.0" cy="242.0" r="5" style="fill:var(--bg, var(--surface));stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="37.0" y="214.0" width="86.0" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="80" y="225" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">хабарлайды</text><rect x="250" y="20" width="130" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="315.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Округ</text><rect x="20" y="150" width="120" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="170.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Мектеп</text><rect x="470" y="20" width="120" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="530.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Шығын</text><rect x="470" y="150" width="170" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="555.0" y="170.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Қызметкерлерді бағалау</text><rect x="20" y="260" width="160" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100.0" y="280.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Бітіру көрсеткіші</text></svg>
+        <details><summary><code>districts</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - округтің ID-і;</li>
+          <li><code>name</code> - округтің атауы;</li>
+          <li><code>type</code> - округ түрі: мемлекеттік округтер («Public School District») және жарғылық округтер («Charter District»);</li>
+          <li><code>city</code> - округ орналасқан қала;</li>
+          <li><code>state</code> - округ орналасқан штат;</li>
+          <li><code>zip</code> - округтің пошта индексі.</li>
+        </ul></div></details>
+        <details><summary><code>schools</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - мектептің ID-і;</li>
+          <li><code>district_id</code> - мектеп қарайтын округтің ID-і;</li>
+          <li><code>name</code> - мектептің атауы;</li>
+          <li><code>type</code> - мектеп түрі: мемлекеттік («Public School») және жарғылық («Charter School»). Айырмасын білудің қажеті жоқ, қызықсаңыз Wikipedia-дан оқи аласыз;</li>
+          <li><code>city</code>, <code>state</code>, <code>zip</code> - мектеп орналасқан қала, штат және индекс.</li>
+        </ul></div></details>
+        <details><summary><code>graduation_rates</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - бітіру көрсеткішінің ID-і;</li>
+          <li><code>school_id</code> - көрсеткіш қатысты мектептің ID-і;</li>
+          <li><code>graduated</code> - уақытында бітірген оқушылардың пайызы (0-100);</li>
+          <li><code>dropped</code> - бітіргенге дейін мектепті тастағандардың пайызы (0-100);</li>
+          <li><code>excluded</code> - «шығарылғандардың» (яғни оқудан шеттетілгендердің) пайызы (0-100).</li>
+        </ul></div></details>
+        <details><summary><code>expenditures</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - шығынның ID-і;</li>
+          <li><code>district_id</code> - шығын қатысты округтің ID-і;</li>
+          <li><code>pupils</code> - округтегі оқушылар саны;</li>
+          <li><code>per_pupil_expenditure</code> - әр оқушыға жұмсалған ақша (доллар).</li>
+        </ul></div></details>
+        <details><summary><code>staff_evaluations</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - бағалау есебінің ID-і;</li>
+          <li><code>district_id</code> - бағалау қатысты округтің ID-і;</li>
+          <li><code>evaluated</code> - ресми түрде бағаланған қызметкерлердің пайызы;</li>
+          <li><code>exemplary</code> - «үлгілі» деп бағаланғандардың пайызы;</li>
+          <li><code>proficient</code> - «құзыретті»;</li>
+          <li><code>needs_improvement</code> - «жетілдіруді қажет етеді»;</li>
+          <li><code>unsatisfactory</code> - «қанағаттанарлықсыз» деп бағаланғандардың пайызы (бәрі 0-100).</li>
+        </ul></div></details>
+        <p>Осы байланыстардың кейбірін бір кестемен де іске асыруға болатынын байқаған шығарсыз - дұрыс байқадыңыз! Бірақ бұл жолы DESE әріптестеріңіз жасағанмен жұмыс істейсіз.</p>
+        <h4>Талаптар</h4>
+        <p>Төмендегі сұрақтардың әрқайсысы үшін нәтижені шығаратын <strong>бір ғана SQL сұрауын</strong> жазыңыз. Жолдардың <code>id</code>-лері туралы ешнәрсе <strong>болжамаңыз</strong>: сұрауыңыз <code>id</code>-лер басқа болса да дұрыс жұмыс істеуі керек. Сұрау тек керек деректі ғана қайтарсын.</p>
+        <ol class="spec">
+          <li><code>1.sql</code>: әріптесіңіз Массачусетстегі барлық мемлекеттік мектептердің картасын дайындап жатыр. Барлық мемлекеттік мектептің атауы мен қаласын табыңыз. <em>Ескерту:</em> <code>schools</code> кестесіндегі барлық мектеп дәстүрлі мемлекеттік мектеп емес; Массачусетс жарғылық мектептерді де таниды, DESE оларды бөлек санайды.</li>
+          <li><code>2.sql</code>: командаңыз ескі деректерді мұрағаттап жатыр. Енді жұмыс істемейтін округтердің атауларын табыңыз. Мұндай округтердің атауы «(non-op)» деп аяқталады.</li>
+          <li><code>3.sql</code>: Массачусетс заң шығарушы органы округтердің өткен жылы оқушы басына орта есеппен қанша жұмсағанын білгісі келеді. Оқушы басына орташа шығынды табыңыз. Бағанды «Average District Per-Pupil Expenditure» деп атаңыз. <code>per_pupil_expenditure</code> бағанында әр округтің жұмсаған орташа сомасы бар, сіз осы орташалардың орташасын табасыз, барлық округті көлеміне қарамай тең санап.</li>
+          <li><code>4.sql</code>: кейбір қалаларда мемлекеттік мектеп көбірек. Мемлекеттік мектептері ең көп 10 қаланы табыңыз. Қала атауы мен мектеп санын мектеп саны кему ретімен шығарыңыз. Саны тең болса, әліпби бойынша.</li>
+          <li><code>5.sql</code>: DESE қай қалаларға қосымша мемлекеттік мектеп керек екенін анықтағысы келеді. Мемлекеттік мектеп саны 3 не одан аз қалаларды табыңыз. Қала атауы мен мектеп санын мектеп саны кему ретімен шығарыңыз. Тең болса, әліпби бойынша.</li>
+          <li><code>6.sql</code>: DESE бітіру көрсеткіші 100% болған мектептерді анықтағысы келеді. Бітіру көрсеткіші 100% болған мектептердің (мемлекеттік не жарғылық) атауларын табыңыз.</li>
+          <li><code>7.sql</code>: DESE Cambridge мектеп округі бойынша есеп дайындап жатыр. Cambridge округіндегі мектептердің (мемлекеттік не жарғылық) атауларын табыңыз. Cambridge қаласында бірнеше мектеп округі бар, бірақ DESE-ні аты дәл «Cambridge» болатын округ қызықтырады.</li>
+          <li><code>8.sql</code>: бір ата-ана баласын оқушылары көп округке бергісі келеді. Барлық мектеп округтерінің атауы мен олардағы оқушылар санын көрсетіңіз.</li>
+          <li><code>9.sql</code>: басқа ата-ана баласын оқушылары аз округке бергісі келеді. Оқушы саны ең аз мектеп округінің (немесе округтерінің) атауын табыңыз. Тек атауын шығарыңыз.</li>
+          <li><code>10.sql</code>: Массачусетсте мектеп округтерінің шығындары жергілікті салықтарға, яғни тұрғын үй сияқты мүліктің құнына жартылай тәуелді. Оқушы басына шығыны ең жоғары 10 мемлекеттік мектеп округін табыңыз. Округ атауы мен әр округтің оқушы басына шығынын қайтарыңыз.</li>
+          <li><code>11.sql</code>: мектеп шығындары мен бітіру көрсеткіші арасында байланыс бар ма? Мектептердің атауын, олардың оқушы басына шығынын және бітіру көрсеткішін көрсетіңіз. Мектептерді оқушы басына шығын бойынша үлкеннен кішіге қарай сұрыптаңыз. Шығын тең болса, мектеп атауы бойынша. Мектеп өз округі бүкіл округ бойынша жұмсағанмен бірдей сома жұмсайды деп есептеңіз.</li>
+          <li><code>12.sql</code>: ата-ана сізден Массачусетстегі ең жақсы мемлекеттік мектеп округтерін табуға кеңес сұрайды. Оқушы басына шығыны орташадан жоғары <em>және</em> «үлгілі» бағаланған мұғалімдер пайызы орташадан жоғары мемлекеттік округтерді табыңыз. Округтің атауын, оқушы басына шығынын және «үлгілі» мұғалімдер пайызын қайтарыңыз. Нәтижені алдымен «үлгілі» мұғалімдер пайызы (жоғарыдан төменге), сосын оқушы басына шығын (жоғарыдан төменге) бойынша сұрыптаңыз.</li>
+          <li><code>13.sql</code>: деректер туралы өзіңізді қызықтыратын сұраққа жауап беретін сұрау жазыңыз. Ол кемінде бір <code>JOIN</code> не ішкі сұрау қамтуы керек.</li>
+        </ol>
+        <details><summary>12.sql үшін кеңес</summary><div class="details-body"><p>Ішкі сұраулар сұраудың кез келген бөлігіне, оның ішінде шарттарға да қойыла алатынын біле жүрген пайдалы. Мысалы, мына жазу дұрыс SQL:</p>
+<pre data-lang="sql" data-norun><code class="language-sql">SELECT "column" FROM "table"
+WHERE "column" &gt; (
+    SELECT AVG("column")
+    FROM "table"
+);</code></pre></div></details>
+        <h4>Жүктеу және тестілеу</h4>
+<pre class="terminal"><code class="language-plaintext">$ wget https://cdn.cs50.net/sql/2024/x/psets/1/dese.zip
+$ unzip dese.zip
+$ rm dese.zip
+$ cd dese
+dese/ $ sqlite3 dese.db</code></pre>
+        <p>Сұрауды тексеру үшін <code>.read 1.sql</code> командасын қолданыңыз. Ресми дерекқорда күтілетін нәтижелер: <code>1.sql</code> - 2 баған, 1 761 жол; <code>2.sql</code> - 1 баған, 121 жол; <code>3.sql</code> - 1 баған, 1 жол; <code>4.sql</code> - 2 баған, 10 жол; <code>5.sql</code> - 2 баған, 201 жол; <code>6.sql</code> - 1 баған, 9 жол; <code>7.sql</code> - 1 баған, 17 жол; <code>8.sql</code> - 2 баған, 396 жол; <code>9.sql</code> - 1 баған, 1 жол; <code>10.sql</code> - 2 баған, 10 жол; <code>11.sql</code> - 3 баған, 391 жол; <code>12.sql</code> - 3 баған, 65 жол. <code>13.sql</code> - өз қалауыңызша. (Жол санына баған атаулары жолы кірмейді.)</p>
+        <div class="callout note">
+          <span class="callout-title">Сайттағы жаттығу</span>
+          <p>Төмендегі автотексеруші - қазақстандық қалалар мен мектеп округтері туралы <strong>ойдан шығарылған</strong> дерекқорға (<code>mektep.db</code>) арналған жеке жаттығу, ресми DESE тапсырмасы емес. Схема ресмиге өте жақын, тек типтері «Мемлекеттік» / «Жеке меншік», ал жабылған округтердің аты «(жабық)» деп аяқталады.</p>
+        </div>
+        <div class="sql-grader" data-set="sql1-dese" data-src="sql/data/week-1.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql1-dese">
+            <li><input type="checkbox"> <span>13 файлдың әрқайсысында бір ғана SQL сұрауы бар.</span></li>
+            <li><input type="checkbox"> <span>Сұраулар жол <code>id</code>-леріне сүйенбейді (қолмен жазылған ID жоқ).</span></li>
+            <li><input type="checkbox"> <span>Ресми дерекқорда жол/баған саны жоғарыдағы тізімге сәйкес келеді.</span></li>
+            <li><input type="checkbox"> <span><code>13.sql</code> өз сұрағыңызға жауап береді және <code>JOIN</code> не ішкі сұрау қамтиды.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/dese</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span><code>submit50 cs50/problems/2024/sql/dese</code> орындалды.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pset-moneyball">Moneyball (Мэниболл)</h3></div>
+        <blockquote><p>Бәрі де бір санға жеткізуде. Статистиканы біз оқитындай қолданып, ешкім көре алмайтын құндылықты ойыншылардан табамыз. - Питер Брэнд, «Moneyball» фильмінен</p></blockquote>
+        <p>Жыл - 2001. Сізді <strong>Oakland Athletics</strong> бейсбол командасының азайып бара жатқан ойыншылар бюджетін барынша тиімді пайдалануға көмектесуге жалдады. Жыл сайын «A's» сияқты командалар жаңа ойыншыларды жалдайды. Өкінішке қарай, сізде жұлдыз ойыншылар да, ақша да аз. Дегенмен азғана SQL мен сәл бақытпен күткеннен тыс команда құра алмайсыз ба?</p>
+        <p>Ойыншылар, олардың нәтижелері мен жалақылары туралы деректері бар <code>moneyball.db</code> дерекқорының көмегімен Oakland Athletics-ке басқалар байқамай жүрген құндылықты табуға көмектесіңіз.</p>
+        <h4>Дерекқор схемасы</h4>
+        <p><code>moneyball.db</code> Major League Baseball-дың 2001 жылға дейінгі барлық ойыншыларын, командаларын, жалақылары мен нәтижелерін қамтиды. Онда мына мәндер бар:</p>
+        <ul>
+          <li><strong>Ойыншы</strong> (player): Major League Baseball-да қанша уақыт болса да ойнаған кез келген адам;</li>
+          <li><strong>Команда</strong> (team): Major League Baseball-дың бұрынғы мен қазіргі барлық командасы;</li>
+          <li><strong>Нәтиже</strong> (performance): ойыншының берілген жылы өз командасы үшін жасаған соққы түрлері;</li>
+          <li><strong>Жалақы</strong> (salary): команданың ойыншысына берілген жылы төлеген сомасы.</li>
+        </ul>
+        <svg viewBox="0 0 640 215" role="img" aria-label="Moneyball ER диаграммасы" style="display:block;width:100%;max-width:640px;height:auto;margin:18px auto"><line x1="140" y1="40" x2="260" y2="40" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="148.0" y1="33.0" x2="148.0" y2="47.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="154.0" y1="33.0" x2="154.0" y2="47.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="245.0" y1="40.0" x2="260.0" y2="48.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="245.0" y1="40.0" x2="260.0" y2="40.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="245.0" y1="40.0" x2="260.0" y2="32.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="241.0" y1="47.0" x2="241.0" y2="33.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="175.0" y="29.0" width="50.0" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="200.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">алады</text><line x1="140" y1="50" x2="260" y2="165" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="150.6" y1="50.5" x2="140.9" y2="60.6" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="155.0" y1="54.6" x2="145.3" y2="64.7" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="249.2" y1="154.6" x2="254.5" y2="170.8" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="249.2" y1="154.6" x2="260.0" y2="165.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="249.2" y1="154.6" x2="265.5" y2="159.2" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="241.4" y1="156.9" x2="251.1" y2="146.8" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="137.8" y="114.0" width="64.4" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="170" y="125" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">жасайды</text><line x1="500" y1="40" x2="380" y2="40" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="492.0" y1="47.0" x2="492.0" y2="33.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="486.0" y1="47.0" x2="486.0" y2="33.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="395.0" y1="40.0" x2="380.0" y2="32.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="395.0" y1="40.0" x2="380.0" y2="40.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="395.0" y1="40.0" x2="380.0" y2="48.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="399.0" y1="33.0" x2="399.0" y2="47.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="407.8" y="29.0" width="64.4" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="440.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">төлейді</text><line x1="410" y1="170" x2="540" y2="60" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="421.5" y1="160.3" x2="404.8" y2="163.9" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="421.5" y1="160.3" x2="410.0" y2="170.0" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="421.5" y1="160.3" x2="415.2" y2="176.1" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="420.0" y1="152.4" x2="429.0" y2="163.1" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="538.4" y1="70.5" x2="529.4" y2="59.8" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><line x1="533.8" y1="74.4" x2="524.8" y2="63.7" style="stroke:var(--muted);stroke-width:1.6;fill:none"/><rect x="483.6" y="129.0" width="42.8" height="22" rx="5" style="fill:var(--surface);stroke:var(--border, var(--muted));stroke-width:1"/><text x="505" y="140" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:500">үшін</text><rect x="20" y="20" width="120" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Ойыншы</text><rect x="260" y="20" width="120" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="320.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Жалақы</text><rect x="500" y="20" width="120" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="560.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Команда</text><rect x="260" y="150" width="150" height="40" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="335.0" y="170.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14.5px;font-weight:600">Көрсеткіш</text></svg>
+        <details><summary><code>players</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - ойыншының ID-і;</li>
+          <li><code>first_name</code>, <code>last_name</code> - аты мен тегі;</li>
+          <li><code>bats</code> - ойыншы соғатын жақ («R» оң, «L» сол); <code>throws</code> - лақтыратын қолы («R» не «L»);</li>
+          <li><code>weight</code> - салмағы (фунт); <code>height</code> - бойы (дюйм);</li>
+          <li><code>debut</code> - MLB-дағы мансабын бастаған күн (<code>YYYY-MM-DD</code>); <code>final_game</code> - соңғы ойын күні;</li>
+          <li><code>birth_year</code>, <code>birth_month</code>, <code>birth_day</code> - туған жылы, айы (бүтін сан), күні;</li>
+          <li><code>birth_city</code>, <code>birth_state</code>, <code>birth_country</code> - туған қаласы, штаты, елі.</li>
+        </ul></div></details>
+        <details><summary><code>teams</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - команданың ID-і;</li>
+          <li><code>year</code> - команда құрылған жыл;</li>
+          <li><code>name</code> - команда атауы;</li>
+          <li><code>park</code> - команда ойнайтын (не ойнаған) стадион атауы.</li>
+        </ul></div></details>
+        <details><summary><code>performances</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - нәтиженің ID-і; <code>player_id</code> - нәтиже жасаған ойыншының ID-і; <code>team_id</code> - ол ойыншы нәтиже жасаған команданың ID-і; <code>year</code> - нәтиже жылы;</li>
+          <li><code>G</code> - ойыншының сол жылы, сол команда үшін ойнаған ойындар саны;</li>
+          <li><code>AB</code> - «at bats» саны (соғуға шыққан реттер);</li>
+          <li><code>H</code> - соққылар (hits) саны;</li>
+          <li><code>2B</code> - екі база соққылары (doubles); <code>3B</code> - үш база соққылары (triples);</li>
+          <li><code>HR</code> - үй жүгірулері (home runs);</li>
+          <li><code>RBI</code> - «runs batted in» (ұпай жинауға себепші болғандар);</li>
+          <li><code>SB</code> - ұрланған базалар саны (барлығы сол жылы, сол команда үшін).</li>
+        </ul></div></details>
+        <details><summary><code>salaries</code> кестесі</summary><div class="details-body"><ul>
+          <li><code>id</code> - жалақының ID-і; <code>player_id</code> - жалақы алған ойыншының ID-і; <code>team_id</code> - жалақы төлеген команданың ID-і; <code>year</code> - жалақы төленген жыл;</li>
+          <li><code>salary</code> - жалақының өзі, АҚШ долларымен (инфляцияға түзетілмеген).</li>
+        </ul></div></details>
+        <h4>Талаптар</h4>
+        <ol class="spec">
+          <li><code>1.sql</code>: ойыншылардың орташа жалақысы уақыт өте қалай өзгергенін түсіну үшін, жыл бойынша ойыншының орташа жалақысын табыңыз. Жыл бойынша кему ретімен сұрыптаңыз. Жалақыны екі таңбаға дейін дөңгелектеп, бағанды «average salary» деп атаңыз. Нәтиже екі бағанды кесте: жыл және орташа жалақы.</li>
+          <li><code>2.sql</code>: бас менеджер (ойыншы келісімшарттарын шешетін адам) қазіргі ойыншыны <a href="https://en.wikipedia.org/wiki/Cal_Ripken_Jr." target="_blank" rel="noopener">Cal Ripken Jr.</a> үшін айырбастау керек пе деп сұрайды: ол мансабының соңына жақындаған жұлдыз ойыншы. Cal Ripken Jr.-дың жалақы тарихын табыңыз. Жыл бойынша кему ретімен; екі баған: жыл және жалақы.</li>
+          <li><code>3.sql</code>: командаға керемет үй жүгіру ойыншысы керек. Ұзақ жылдар «Silver Slugger» және «Gold Glove» сыйлықтарының иегері Ken Griffey Jr. жақсы үміткер болуы мүмкін. Ken Griffey Jr.-дың үй жүгіру (HR) тарихын табыңыз. Жыл бойынша кему ретімен; екі баған: жыл және үй жүгірулер. <em>Ескерту:</em> «Ken Griffey» атты екі ойыншы болуы мүмкін; сіз іздегені 1969 жылы туған.</li>
+          <li><code>4.sql</code>: команда қай ойыншыларды жалдау керектігі туралы ұсыныс қажет. Азайған бюджет жағдайында бас менеджер 2001 жылы ең аз жалақы алған ойыншыларды білгісі келеді. 2001 жылы ең аз жалақы алған 50 ойыншыны табыңыз. Жалақы бойынша төменнен жоғарыға; жалақы тең болса - аты бойынша, сосын тегі бойынша әліпби ретімен; аты-жөні де бірдей болса - ойыншы ID бойынша. Үш баған: аты, тегі, жалақысы.</li>
+          <li><code>5.sql</code>: кеңседе баяу күн. Satchel Paige қазір ойнамаса да, оның қай командаларда ойнағанын табыңыз. Бір баған: командалардың атауы.</li>
+          <li><code>6.sql</code>: биыл «A's» үшін ең үлкен бәсекелес қай командалар? 2001 жылы ойыншыларының жалпы соққы саны бойынша жоғарғы 5 команданы қайтарыңыз. Бағанды «total hits» деп атаңыз. Жалпы соққы бойынша үлкеннен кішіге; екі баған: команда аты және жалпы соққылар.</li>
+          <li><code>7.sql</code>: қай ойыншыны жалдаудан <em>аулақ болу</em> керек екені туралы ұсыныс қажет. Major League Baseball тарихындағы ең жоғары жалақы алған ойыншының атын табыңыз. Екі баған: аты және тегі.</li>
+          <li><code>8.sql</code>: өткен маусымдағы ең үздік үй жүгіру ойыншысын алу үшін «A's» қанша төлеуі керек? 2001 жылы ең көп үй жүгіру жасаған ойыншының 2001 жылғы жалақысын табыңыз. Бір баған: жалақы.</li>
+          <li><code>9.sql</code>: басқа командалар қанша төлейді? 2001 жылы орташа жалақысы бойынша ең аз төлейтін 5 команданы табыңыз. Орташа жалақыны екі таңбаға дейін дөңгелектеп, «average salary» деп атаңыз. Орташа жалақы бойынша кішіден үлкенге; екі баған: команда аты және орташа жалақы.</li>
+          <li><code>10.sql</code>: бас менеджер әр ойыншының аты-жөнін, ойнаған жылдар бойынша жалақысы мен үй жүгіру санын көрсететін есеп сұрады. Нақтырақ айтқанда, кестеде болуы керек: барлық ойыншының аты, тегі, жалақылары, үй жүгірулері, және жалақы төленген <em>әрі</em> үй жүгірулер жасалған жыл. Бес баған. Нәтижені алдымен ойыншы ID бойынша (кішіден үлкенге), бір ойыншының жолдарын жыл бойынша кему ретімен сұрыптаңыз. Бұрыс жағдай: ойыншының бір жылда бірнеше жалақысы не нәтижесі болса, оларды алдымен үй жүгіру саны (кему), сосын жалақы (кему) бойынша реттеңіз. Бір жолда жалақы жылы мен нәтиже жылы сәйкес болуын қадағалаңыз.</li>
+          <li><code>11.sql</code>: сізге соққы жасай алатын ойыншы керек. Кім ең бағаланбағаны болуы мүмкін? 2001 жылы <em>әр соққыға</em> ең арзан 10 ойыншыны табыңыз. Үш баған: аты, тегі және «dollars per hit». «dollars per hit» - ойыншының 2001 жылғы жалақысын сол жылғы соққылар санына бөлу. Нөл соққы бойынша бөлсе <code>NULL</code> шығады, сондықтан 0 соққылы ойыншыларды сүзіңіз. «dollars per hit» бойынша кішіден үлкенге; тең болса - аты, сосын тегі бойынша. <code>10.sql</code> сияқты жалақы жылы мен нәтиже жылы сәйкес болсын. Оңайлату үшін 2001 жылы ойыншыда тек бір жалақы мен бір нәтиже болады деп есептеңіз.</li>
+          <li><code>12.sql</code>: соққылар жақсы, бірақ RBI де жақсы! 2001 жылы әр соққыға ең арзан 10 ойыншының ішінде <strong>және</strong> әр RBI-ге ең арзан 10 ойыншының ішінде болатындарды табыңыз. Екі баған: аты және тегі. Ойыншының RBI үшін жалақысын сол жылғы RBI санына бөлу арқылы есептейсіз. Нәтижені ойыншы ID бойынша (не тегі бойынша - бұл жағдайда бірдей) реттеңіз. <code>10.sql</code> мен <code>11.sql</code> сабақтарын ұмытпаңыз!</li>
+        </ol>
+        <div class="callout tip">
+          <span class="callout-title">10.sql туралы ойланыңыз</span>
+          <p>Түпнұсқада мынадай мысал берілген: кейбір ойыншы (мысалы, Todd Zeile) бір жылы екі түрлі жалақы және екі түрлі HR саны көрсетіп тұрады. Дерекқор схемасына қарап, неге бұлай болуы мүмкін екенін ойлаңыз. (Жауабы: ойыншы жыл ішінде командасын ауыстырса, ол екі команда үшін бөлек нәтиже мен бөлек жалақы алады.)</p>
+        </div>
+        <h4>Жүктеу және тестілеу</h4>
+<pre class="terminal"><code class="language-plaintext">$ wget https://cdn.cs50.net/sql/2024/x/psets/1/moneyball.zip
+$ unzip moneyball.zip
+$ rm moneyball.zip
+$ cd moneyball
+moneyball/ $ sqlite3 moneyball.db</code></pre>
+        <p>Ресми дерекқорда күтілетін нәтижелер: <code>1.sql</code> - 2 баған, 17 жол; <code>2.sql</code> - 2 баған, 17 жол; <code>3.sql</code> - 2 баған, 13 жол; <code>4.sql</code> - 3 баған, 50 жол; <code>5.sql</code> - 1 баған, 3 жол; <code>6.sql</code> - 2 баған, 5 жол; <code>7.sql</code> - 2 баған, 1 жол; <code>8.sql</code> - 1 баған, 1 жол; <code>9.sql</code> - 2 баған, 5 жол; <code>10.sql</code> - 5 баған, 14 915 жол; <code>11.sql</code> - 3 баған, 10 жол; <code>12.sql</code> - 2 баған, 6 жол. Жол санына тақырып жолы кірмейді. <code>check50</code> өнімділік үшін кішірек дерекқор қолданады, сондықтан нәтижелер сәйкес келмеуі мүмкін; бірақ сұрауыңыз жүктелген дерекқорда дұрыс болса, <code>check50</code>-те де дұрыс болады. <code>10.sql</code> жол саны басқаша болса, <code>check50</code> уақыт шегінен асып қате беруі мүмкін; сондай жағдайда оның жолдарын уақытша түсіндірмеге айналдырыңыз.</p>
+        <div class="callout note">
+          <span class="callout-title">Сайттағы жаттығу</span>
+          <p>Төмендегі автотексеруші - «Қазақстан Премьер-лигасы» үлгісіндегі <strong>ойдан шығарылған</strong> футбол дерекқорына (<code>kpl.db</code>) арналған жеке жаттығу, ресми Moneyball емес. Бейсболдағы соққы (hit) орнына «қақпаға соққы» (SOT), үй жүгіру (HR) орнына гол (GL), RBI орнына голдық пас (AST) бар. Нәтиже мәні ресмиден өзгеше, бірақ ойлау логикасы бірдей.</p>
+        </div>
+        <div class="sql-grader" data-set="sql1-moneyball" data-src="sql/data/week-1.js"></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Көп жағдайда <code>JOIN</code> керек: ойыншыларды жалақылармен және нәтижелермен жалғаңыз, ал нәтижені жылы бойынша сәйкестендіруді ұмытпаңыз. «Ең үздік 10» дегенде <code>ORDER BY ... LIMIT 10</code> қолданыңыз. <code>12.sql</code> үшін екі «ең арзан 10» тізімін ішкі сұрау ретінде жазып, <code>IN</code> не <code>INTERSECT</code> қолдануға болады.</p></div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="sql1-moneyball">
+            <li><input type="checkbox"> <span>12 файлдың әрқайсысында бір ғана SQL сұрауы бар.</span></li>
+            <li><input type="checkbox"> <span><code>1.sql</code> және <code>9.sql</code> орташа жалақыны екі таңбаға дөңгелектеп, «average salary» бағанымен береді.</span></li>
+            <li><input type="checkbox"> <span><code>10.sql</code> жалақы мен нәтиже жылдарын сәйкестендіреді және ретті дұрыс сұрыптайды.</span></li>
+            <li><input type="checkbox"> <span><code>11.sql</code> мен <code>12.sql</code> 0-ге бөлуді болдырмайды.</span></li>
+            <li><input type="checkbox"> <span>Ресми дерекқорда жол/баған саны жоғарыдағы тізімге сәйкес келеді.</span></li>
+            <li><input type="checkbox"> <span><code>check50 cs50/problems/2024/sql/moneyball</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span><code>submit50 cs50/problems/2024/sql/moneyball</code> орындалды.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-0.html"><small>Алдыңғы</small>← 0-апта: Сұраулар</a>
+        <a class="next" href="week-2.html"><small>Келесі</small>2-апта: Жобалау →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 SQL (CS50's Introduction to Databases with SQL, Гарвард университеті, Carter Zenke) курсы лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

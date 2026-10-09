@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CS50 AI 1-апта: Білім - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="CS50 AI 1-апта: Білім - CS50 қазақша">
+  <meta property="og:description" content="CS50 AI 1-апта: білім және логика. Ұсыныстар логикасы, логикалық байланыстар, модельдер, логикалық шығару, резолюция және бірінші ретті логика; Knights пен Minesweeper тапсырмалары.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/ai/lectures/week-1.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <!-- /build:head -->
+  <meta name="description" content="CS50 AI 1-апта: білім және логика. Ұсыныстар логикасы, логикалық байланыстар, модельдер, логикалық шығару, резолюция және бірінші ретті логика; Knights пен Minesweeper тапсырмалары.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+  <style>
+    .truth { display: table; width: auto; margin: 16px auto; font-variant-numeric: tabular-nums; }
+    .truth th, .truth td { text-align: center; padding: 6px 14px; }
+    .truth td.t { color: var(--ok); font-weight: 600; }
+    .truth td.f { color: var(--bad); }
+    .truth td.e { color: var(--muted); }
+    figure.rule { display: table; margin: 14px auto; text-align: center; font-size: 1.05em; }
+    figure.rule .prem div { padding: 1px 12px; }
+    figure.rule .concl { border-top: 2px solid currentColor; padding: 4px 12px 0; margin-top: 4px; }
+    figure.rule figcaption, figure.fig figcaption { font-size: .85em; color: var(--muted); margin-top: 6px; }
+    figure.fig { margin: 16px auto; text-align: center; }
+    .mgrid { width: 100%; height: auto; color: var(--text); }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <a href="../../index.html">Лекциялар</a>
+        <a href="../../courses.html" class="active hide-sm">Курстар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#c42a68" data-n="1">
+        <div class="num">1-апта</div>
+        <h1>Білім</h1>
+        <p>Өткен аптада агентке іздеуді үйреттік. Бүгін агент нені білетінін, білгенінен жаңа қорытындыны қалай шығаратынын көреміз: ұсыныстар логикасы, логикалық байланыстар, модельдер, логикалық шығару, резолюция және бірінші ретті логика.</p>
+        <a class="source-link" href="https://cs50.harvard.edu/ai/notes/1/" target="_blank" rel="noopener">▶ Түпнұсқа бейнежазба мен материалдар (ағылшынша)</a>
+      </div>
+
+      <p class="lec-voice">Бұл бет сөзбе-сөз аударма емес. Лектор аудиторияда қалай түсіндірсе, біз де солай баяндаймыз: мағынасы мен кодтың бәрі түпнұсқадағыдай, тек әңгіме ана тілімізде жүреді.</p>
+
+            <h2 id="knowledge">Білім</h2>
+      <p>Өткен аптада біз агентке <em>іздеуді</em> үйреттік: алдыңда жол бар, күй бар, әрекет бар, қайсысын таңдасаң мақсатқа жетесің - соны тап. Бүгін сәл тереңірек сұрақ қоямыз: агент нені <em>біледі</em>, және білгенінен жаңа нәрсені қалай <em>қорытып шығарады</em>? Адам баласы дәл осылай ойлайды ғой. Бізде бір ақпарат бар, екінші ақпарат бар, ал үшінші жауап сол екеуінің арасында жасырынып жатыр. Жасанды интеллект те осыны істей алса ше?</p>
+      <p>Мұндай агенттерді <strong>білімге негізделген агенттер</strong> (<span class="term-en">knowledge-based agents</span>) деп атайды. Олар білімнің ішкі көрінісімен жұмыс істеп, соның негізінде ой жүргізеді. «Білімнің көрінісі» және «ой жүргізу» дегеніміз не, мысалмен көрейік.</p>
+      <p>Гарри Поттерден мысал алайық. Бізде үш сөйлем бар:</p>
+      <ol>
+        <li>Егер жаңбыр жаумаса, Гарри бүгін Хагридке барды.</li>
+        <li>Гарри бүгін Хагридке немесе Дамблдорға барды, бірақ екеуіне бірдей бармады.</li>
+        <li>Гарри бүгін Дамблдорға барды.</li>
+      </ol>
+      <details class="think"><summary>Ойланып көріңіз: жаңбыр жауды ма?</summary><div class="details-body"><p>Үш сөйлемнің бірінде де жаңбыр туралы тікелей айтылмаған. Бірақ үшінші сөйлемнен Гарридің Дамблдорға барғанын білеміз, екіншіден Хагридке бармағанын шығарамыз, ал біріншіден жаңбыр жауғанын қорытамыз. Логика жасырын жауапты шығарып береді.</p></div></details>
+      <p>Осы үш сөйлемнің ешқайсысында «бүгін жаңбыр жауды ма?» деген сұрақтың жауабы тікелей жазылмаған. Бірақ біз жауап бере аламыз. Қалай? Үшінші сөйлемнен Гарридің Дамблдорға барғанын білеміз. Екінші сөйлем бойынша ол не Хагридке, не Дамблдорға барған, екеуіне бірдей емес. Демек:</p>
+      <ol start="4">
+        <li>Гарри Хагридке бармады.</li>
+      </ol>
+      <p>Енді бірінші сөйлемге қараймыз: жаңбыр жаумаса, Гарри Хагридке барар еді. Ал біз 4-сөйлемнен оның бармағанын білеміз. Сонда жаңбыр жаумаған жағдай болуы мүмкін емес, яғни:</p>
+      <ol start="5">
+        <li>Бүгін жаңбыр жауды.</li>
+      </ol>
+      <p>Міне, қорытынды. Біз бұған <strong>логика</strong> арқылы келдік, ал бүгінгі лекцияның бар мәні - жасанды интеллект логиканы қалай қолданып, бар ақпараттан жаңа қорытынды шығара алатынын көру.</p>
+      <p>Алдымен бір сөзбен келісіп алайық. <strong>Сөйлем</strong> (<span class="term-en">sentence</span>) - білімді көрсету тілінде жазылған, әлем туралы бір тұжырым. Жасанды интеллект білімді сақтайтын да, одан жаңа ақпарат шығаратын да осы сөйлемдер арқылы.</p>
+
+      <h2 id="propositional-logic">Ұсыныстар логикасы</h2>
+      <p>Біз бастайтын логика түрі - <strong>ұсыныстар логикасы</strong> (<span class="term-en">propositional logic</span>). Ол <em>ұсыныстарға</em> (<span class="term-en">proposition</span>) негізделген. Ұсыныс дегеніміз - әлем туралы айтылған, не ақиқат, не жалған болатын тұжырым. Жоғарыдағы бес сөйлемнің бәрі ұсыныс.</p>
+
+      <h3 id="symbols">Ұсыныстық символдар</h3>
+      <p>Ұсыныстың әрқайсысын ұзақ жазып жатпай, қысқа белгі береміз. Көбіне бұл <code>P</code>, <code>Q</code>, <code>R</code> сияқты әріптер. Оларды <strong>ұсыныстық символдар</strong> (<span class="term-en">propositional symbols</span>) дейміз. Мысалы, <code>P</code> - «жаңбыр жауып тұр» дегенді білдірсін.</p>
+
+      <h3 id="connectives">Логикалық байланыстар</h3>
+      <p>Бір символның өзі көп нәрсе айта алмайды. Күрделірек ой жүргізу үшін символдарды бір-біріне <strong>логикалық байланыстар</strong> (<span class="term-en">logical connectives</span>) арқылы жалғаймыз. Біз бес байланысты қарастырамыз. Олардың мағынасын нақты көрсету үшін <strong>ақиқат кестесін</strong> (<span class="term-en">truth table</span>) қолданамыз: онда символдардың барлық мүмкін мәндері тізіліп, байланыс әр жағдайда не береді - соның бәрі көрсетіледі.</p>
+
+      <h4 id="not">Терістеу: ¬</h4>
+      <p><strong>Терістеу</strong> (<span class="term-en">Not</span>, <code>¬</code>) ұсыныстың мәнін кері аударады. Егер <code>P</code> - «жаңбыр жауып тұр» болса, онда <code>¬P</code> - «жаңбыр жауып тұрған жоқ». Міне, бірінші ақиқат кестеміз:</p>
+      <table class="truth"><thead><tr><th>P</th><th>¬P</th></tr></thead><tbody>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td></tr>
+</tbody></table>
+
+      <h4 id="and">Конъюнкция: ∧</h4>
+      <p><strong>Конъюнкция</strong> (<span class="term-en">And</span>, <code>∧</code>) екі ұсынысты «және» дегенмен жалғайды. <code>P ∧ Q</code> тек <code>P</code> да, <code>Q</code> да ақиқат болғанда ғана ақиқат. Біреуі жалған болса, бүкіл өрнек жалған.</p>
+      <table class="truth"><thead><tr><th>P</th><th>Q</th><th>P ∧ Q</th></tr></thead><tbody>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="f">жалған</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="t">ақиқат</td></tr>
+</tbody></table>
+
+      <h4 id="or">Дизъюнкция: ∨</h4>
+      <p><strong>Дизъюнкция</strong> (<span class="term-en">Or</span>, <code>∨</code>) аргументтерінің кем дегенде біреуі ақиқат болса, ақиқат. Яғни <code>P ∨ Q</code> ақиқат болуы үшін <code>P</code> немесе <code>Q</code> кем дегенде біреуі ақиқат болуы керек.</p>
+      <table class="truth"><thead><tr><th>P</th><th>Q</th><th>P ∨ Q</th></tr></thead><tbody>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="t">ақиқат</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="t">ақиқат</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="t">ақиқат</td></tr>
+</tbody></table>
+      <p>Мұнда бір нәзік жайт бар: «немесе» екі түрлі болады. <strong>Қосатын «немесе»</strong> (<span class="term-en">inclusive Or</span>) <code>P</code>, <code>Q</code> немесе екеуі де ақиқат болса, ақиқат. <strong>Ерекшелейтін «немесе»</strong> (<span class="term-en">exclusive Or</span>) тек біреуі ақиқат болуын талап етеді, екеуі бірдей болса, жалған. Біздің <code>∨</code> әрдайым <em>қосатын</em> «немесе».</p>
+      <div class="callout note"><span class="callout-title">Лекцияда айтылмаған екі ескертпе</span><p>Қосатын «немесе»: «тәтті алу үшін бөлмеңді жинауың немесе шөп орауың керек». Екеуін де істесең, тәттіні бәрібір аласың. Ерекшелейтін «немесе»: «тәтті ретінде не печенье, не балмұздақ алуға болады». Екеуін бірдей алуға болмайды.</p><p>Ерекшелейтін «немесе» кейде XOR деп қысқартылады, оның белгісі - <code>⊕</code>.</p></div>
+
+      <h4 id="implication">Импликация: →</h4>
+      <p><strong>Импликация</strong> (<span class="term-en">Implication</span>, <code>→</code>) «егер <code>P</code> болса, онда <code>Q</code>» деген құрылымды білдіреді. Мысалы, <code>P</code> - «жаңбыр жауып тұр», <code>Q</code> - «мен үйдемін» болса, <code>P → Q</code> «егер жаңбыр жауып тұрса, мен үйдемін» дегенді айтады. <code>P</code> мұнда <strong>алғышарт</strong> (<span class="term-en">antecedent</span>), ал <code>Q</code> - <strong>салдар</strong> (<span class="term-en">consequent</span>).</p>
+      <p>Енді әр жағдайды қарастырайық. Алғышарт ақиқат болса, импликацияның тағдыры салдарға байланысты. Жаңбыр жауып тұр да, мен үйдемін: «егер жаңбыр жауса, мен үйдемін» дегенім дұрыс болып шықты. Жаңбыр жауып тұр, бірақ мен көшедемін: сөзім жалған шықты, импликация жалған.</p>
+      <p>Ал алғышарт жалған болса ше? Мұнда сәл таңғалатын жері бар: импликация <em>әрдайым ақиқат</em>, салдар қандай болса да. Неге? Жаңбыр жаумай тұр делік. «Егер жаңбыр жауса, мен үйдемін» деген сөзім бұл жағдайда ештеңе айтпайды: мен үйде де отыруым мүмкін (үйшіл адамбын), көшеде де жүруім мүмкін (далада жүргенді жақсы көремін). Менің сөзімді жоққа шығаратын ештеңе болған жоқ. Мұндайда импликацияны <strong>тривиальды түрде ақиқат</strong> (<span class="term-en">trivially true</span>) дейді. Алғышарт жалған болса, импликациядан ештеңе үйрене алмаймыз.</p>
+      <table class="truth"><thead><tr><th>P</th><th>Q</th><th>P → Q</th></tr></thead><tbody>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="t">ақиқат</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="t">ақиқат</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="t">ақиқат</td></tr>
+</tbody></table>
+      <details class="think"><summary>Ойланып көріңіз: жаңбыр жаумаса, «жаңбыр жауса, мен үйдемін» дегенім неге жалған емес?</summary><div class="details-body"><p>Жалған сөйлем деп оны жоққа шығаратын жағдайды айтамыз: жаңбыр жауады, бірақ мен үйде емеспін. Жаңбыр жаумаса, мұндай жағдай болған жоқ, сөзім жоққа шықпайды. Сондықтан алғышарт жалған болғанда импликация әрдайым ақиқат.</p></div></details>
+
+      <h4 id="biconditional">Эквиваленттілік: ↔</h4>
+      <p><strong>Эквиваленттілік</strong> (<span class="term-en">Biconditional</span>, <code>↔</code>) - екі бағытты импликация. Оны «тек сонда ғана» деп оқуға болады. <code>P ↔ Q</code> дегеніміз <code>P → Q</code> мен <code>Q → P</code> екеуі бірге деген сөз. Мысалы, «жаңбыр жауып тұр ↔ мен үйдемін» деген: «жаңбыр жауса, мен үйдемін» және «үйде болсам, жаңбыр жауып тұр». Мұнда біз көбірек біле аламыз: <code>P</code> жалған болса, <code>Q</code> да жалған. Жаңбыр жаумаса, мен де үйде емеспін.</p>
+      <table class="truth"><thead><tr><th>P</th><th>Q</th><th>P ↔ Q</th></tr></thead><tbody>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="t">ақиқат</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="f">жалған</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="t">ақиқат</td></tr>
+</tbody></table>
+
+      <h3 id="model">Модель</h3>
+      <p>Енді «әлем» дегенді логика тілімен айтайық. <strong>Модель</strong> (<span class="term-en">model</span>) - әр ұсынысқа ақиқат не жалған мәнін беру. Ұсыныстар - әлем туралы тұжырымдар, ал біздің әлем туралы білімімиз дәл осы мәндерде жатыр: модель - әлем қандай екенін көрсететін мәндер жиыны.</p>
+      <p>Мысалы, <code>P</code> - «жаңбыр жауып тұр», <code>Q</code> - «бүгін сейсенбі» болсын. Бір модель мынау: <code>{P = True, Q = False}</code>. Бұл «жаңбыр жауып тұр, бірақ бүгін сейсенбі емес» дегені. Басқа модельдер де бар, мысалы <code>{P = True, Q = True}</code>: жаңбыр да жауып тұр, сейсенбі де. Модельдер саны қанша? Әр ұсынысқа екі мән берілетіндіктен, <code>n</code> ұсыныс болса, 2<sup>n</sup> модель бар. Бізде екі ұсыныс, демек 2² = 4 модель.</p>
+
+      <h3 id="knowledge-base">Білім қоры</h3>
+      <p><strong>Білім қоры</strong> (<span class="term-en">knowledge base, KB</span>) - білімге негізделген агент білетін сөйлемдер жиыны. Бұл біз жасанды интеллектке ұсыныстар логикасының сөйлемдері түрінде беретін, әлем туралы жаңа қорытындылар шығаруға қолданылатын білім.</p>
+
+      <h3 id="entailment">Логикалық ілесу</h3>
+      <p>Енді негізгі ұғымға келдік. <strong>Логикалық ілесу</strong> (<span class="term-en">entailment</span>, <code>⊨</code>): егер <code>α ⊨ β</code> болса («<code>α</code>-дан <code>β</code> ілеседі» деп оқимыз), онда <code>α</code> ақиқат болатын әр әлемде <code>β</code> да ақиқат.</p>
+      <p>Мысалы, <code>α</code> - «бүгін қаңтардағы сейсенбі», <code>β</code> - «бүгін қаңтар» болсын. Егер бүгін қаңтардағы сейсенбі болса, онда бүгін қаңтар екені дау тудырмайды: <code>α ⊨ β</code>.</p>
+      <div class="callout warn"><span class="callout-title">Ілесу мен импликация бір нәрсе емес</span><p>Импликация (<code>→</code>) - екі ұсынысты жалғайтын логикалық байланыс. Ал ілесу (<code>⊨</code>) - сөйлемдер арасындағы қатынас: α-дағы барлық ақпарат ақиқат болса, β-дағы барлық ақпарат та ақиқат.</p></div>
+
+      <h2 id="inference">Логикалық шығару</h2>
+      <p><strong>Логикалық шығару</strong> (<span class="term-en">inference</span>) - бар сөйлемдерден жаңа сөйлемдер алу процесі. Гарри Поттер мысалында 4 және 5-сөйлемдерді біз 1, 2, 3-тен шығардық. Жаңа білімді бар білімнен шығарудың бірнеше тәсілі бар. Алдымен ең «тікелей» тәсілді көрейік.</p>
+
+      <h3 id="model-checking">Модельдерді тексеру</h3>
+      <p><strong>Модельдерді тексеру</strong> (<span class="term-en">model checking</span>) алгоритмі <code>KB ⊨ α</code> екенін, яғни «білім қорымыздан <code>α</code> ақиқат деп қорытуға бола ма?» деген сұрақты былай шешеді:</p>
+      <ul>
+        <li>барлық мүмкін модельдерді санап шығады;</li>
+        <li>егер KB ақиқат болатын <em>әр</em> модельде <code>α</code> да ақиқат болса, онда <code>KB ⊨ α</code>.</li>
+      </ul>
+      <p>Мысал келтірейік. Ұсыныстар былай болсын: <code>P</code> - «бүгін сейсенбі», <code>Q</code> - «жаңбыр жауып тұр», <code>R</code> - «Гарри жүгіруге шығады». Білім қоры:</p>
+      <ul>
+        <li><code>(P ∧ ¬Q) → R</code>: сейсенбі болып, жаңбыр жаумаса, Гарри жүгіруге шығады;</li>
+        <li><code>P</code>: бүгін сейсенбі;</li>
+        <li><code>¬Q</code>: жаңбыр жауып тұрған жоқ.</li>
+      </ul>
+      <p>Сұрақ (query): <code>R</code>. Яғни <code>KB ⊨ R</code> ма, Гарри жүгіруге шыға ма? Үш ұсыныс болғандықтан 2³ = 8 модель бар. Бәрін кестеге жазамыз, KB бағанын әзірше бос қалдырамыз:</p>
+      <table class="truth"><thead><tr><th>P</th><th>Q</th><th>R</th><th>KB</th></tr></thead><tbody>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="f">жалған</td><td class="e">?</td></tr>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="t">ақиқат</td><td class="e">?</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="f">жалған</td><td class="e">?</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="e">?</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td><td class="e">?</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="t">ақиқат</td><td class="e">?</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="f">жалған</td><td class="e">?</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="e">?</td></tr>
+</tbody></table>
+      <p>Енді әр модельді бір-бірден тексереміз: KB осы жағдайда ақиқат па? KB-де <code>P</code> ақиқат деп тұр. Демек <code>P</code> жалған болатын модельдердің бәрінде KB жалған:</p>
+      <table class="truth"><thead><tr><th>P</th><th>Q</th><th>R</th><th>KB</th></tr></thead><tbody>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="t">ақиқат</td><td class="f">жалған</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="f">жалған</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td><td class="e">?</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="t">ақиқат</td><td class="e">?</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="f">жалған</td><td class="e">?</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="e">?</td></tr>
+</tbody></table>
+      <p>Сол сияқты KB-де <code>Q</code> жалған деп тұр, ендеше <code>Q</code> ақиқат болатын модельдерде де KB жалған:</p>
+      <table class="truth"><thead><tr><th>P</th><th>Q</th><th>R</th><th>KB</th></tr></thead><tbody>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="t">ақиқат</td><td class="f">жалған</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="f">жалған</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td><td class="e">?</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="t">ақиқат</td><td class="e">?</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="f">жалған</td></tr>
+</tbody></table>
+      <p>Екі модель қалды. Екеуінде де <code>P</code> ақиқат, <code>Q</code> жалған, айырмасы тек <code>R</code>-де. KB-дегі <code>(P ∧ ¬Q) → R</code> сөйлемі <code>P</code> ақиқат, <code>Q</code> жалған кезде <code>R</code> ақиқат болуын талап етеді. Сондықтан <code>R</code> жалған болатын модельде KB жалған, ал <code>R</code> ақиқат болатында - ақиқат:</p>
+      <table class="truth"><thead><tr><th>P</th><th>Q</th><th>R</th><th>KB</th></tr></thead><tbody>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="t">ақиқат</td><td class="f">жалған</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="f">жалған</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="t">ақиқат</td><td class="t">ақиқат</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="f">жалған</td></tr>
+</tbody></table>
+      <p>Кестеге қараңыз: KB ақиқат болатын модель бір ғана, және сонда <code>R</code> да ақиқат. Ілесудің анықтамасы бойынша KB ақиқат болатын барлық модельде <code>R</code> ақиқат, яғни <code>KB ⊨ R</code>. Гарри жүгіруге шығады.</p>
+
+      <h3 id="logic-in-code">Логиканы кодпен жазу</h3>
+      <p>Енді мұның бәрін кодқа көшірейік. Курстың ресми материалдарында <code>logic.py</code> деген кітапхана бар: онда <code>Symbol</code>, <code>Not</code>, <code>And</code>, <code>Or</code>, <code>Implication</code>, <code>Biconditional</code> класстары мен <code>model_check</code> функциясы жазылған. Ұсыныстық логиканың әр байланысы - өз класы, бәрі <code>Sentence</code> деген ортақ класстан тарайды. Төменде сол кітапхананың <em>жеңілдетілген</em> нұсқасы: ол функционалдық жағынан ресми кітапхананың жұмысын қайталайды, тек артық бөліктері алынып тасталған. Оны іске қосыңыз, сонда келесі блоктарда <code>from logic import *</code> осы бетте де жұмыс істейді.</p>
+      <pre data-lang="python"><code class="language-python"># logic.py (жеңілдетілген нұсқа)
+class Sentence():
+    def evaluate(self, model):
+        raise Exception("nothing to evaluate")
+
+    def symbols(self):
+        return set()
+
+
+class Symbol(Sentence):
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return self.name
+
+    def evaluate(self, model):
+        try:
+            return bool(model[self.name])
+        except KeyError:
+            raise Exception(f"variable {self.name} not in model")
+
+    def symbols(self):
+        return {self.name}
+
+
+class Not(Sentence):
+    def __init__(self, operand):
+        self.operand = operand
+
+    def __repr__(self):
+        return f"Not({self.operand})"
+
+    def evaluate(self, model):
+        return not self.operand.evaluate(model)
+
+    def symbols(self):
+        return self.operand.symbols()
+
+
+class And(Sentence):
+    def __init__(self, *conjuncts):
+        self.conjuncts = list(conjuncts)
+
+    def __repr__(self):
+        return "And(" + ", ".join(str(c) for c in self.conjuncts) + ")"
+
+    def add(self, conjunct):
+        self.conjuncts.append(conjunct)
+
+    def evaluate(self, model):
+        return all(c.evaluate(model) for c in self.conjuncts)
+
+    def symbols(self):
+        return set().union(*[c.symbols() for c in self.conjuncts])
+
+
+class Or(Sentence):
+    def __init__(self, *disjuncts):
+        self.disjuncts = list(disjuncts)
+
+    def __repr__(self):
+        return "Or(" + ", ".join(str(d) for d in self.disjuncts) + ")"
+
+    def evaluate(self, model):
+        return any(d.evaluate(model) for d in self.disjuncts)
+
+    def symbols(self):
+        return set().union(*[d.symbols() for d in self.disjuncts])
+
+
+class Implication(Sentence):
+    def __init__(self, antecedent, consequent):
+        self.antecedent = antecedent
+        self.consequent = consequent
+
+    def __repr__(self):
+        return f"Implication({self.antecedent}, {self.consequent})"
+
+    def evaluate(self, model):
+        return (not self.antecedent.evaluate(model)) or self.consequent.evaluate(model)
+
+    def symbols(self):
+        return self.antecedent.symbols() | self.consequent.symbols()
+
+
+class Biconditional(Sentence):
+    def __init__(self, left, right):
+        self.left = left
+        self.right = right
+
+    def __repr__(self):
+        return f"Biconditional({self.left}, {self.right})"
+
+    def evaluate(self, model):
+        return self.left.evaluate(model) == self.right.evaluate(model)
+
+    def symbols(self):
+        return self.left.symbols() | self.right.symbols()
+
+
+def model_check(knowledge, query):
+    """KB ⊨ query болса, True қайтарады."""
+
+    def check_all(knowledge, query, symbols, model):
+        # Әр символға мән берілген болса:
+        if not symbols:
+            # KB осы модельде ақиқат болса, query де ақиқат болуы керек
+            if knowledge.evaluate(model):
+                return query.evaluate(model)
+            return True
+        else:
+            # Әлі қолданылмаған символдардың бірін аламыз
+            remaining = symbols.copy()
+            p = remaining.pop()
+
+            # Символ True болатын модель
+            model_true = model.copy()
+            model_true[p] = True
+
+            # Символ False болатын модель
+            model_false = model.copy()
+            model_false[p] = False
+
+            # Екі модельде де ілесу орындалуы керек
+            return (check_all(knowledge, query, remaining, model_true) and
+                    check_all(knowledge, query, remaining, model_false))
+
+    # KB мен query-дегі барлық символдар
+    symbols = set.union(knowledge.symbols(), query.symbols())
+
+    # Барлық модельдерді тексереміз
+    return check_all(knowledge, query, symbols, dict())
+
+
+# Тек осы бетте қажет: келесі блоктарда `from logic import *` жұмыс істесін
+import sys
+sys.modules["logic"] = sys.modules["__main__"]
+print("logic дайын: Symbol, Not, And, Or, Implication, Biconditional, model_check")</code></pre>
+      <div class="callout tip"><span class="callout-title">Блоктарды жоғарыдан төмен қарай іске қосыңыз</span><p>Осы бөлімдегі келесі <code>▶ Іске қосу</code> блоктары алдыңғыларға сүйенеді (мысалы, <code>logic</code> және <code>knowledge</code> өзгерген күйінде қалады). Бетті қайта ашсаңыз, жоғарғы <code>logic</code> блогын қайтадан іске қосыңыз.</p></div>
+      <p>Ұсыныс - символ, ал оның мәнін <em>модель</em> береді. Модель - жай ғана сөздік: символ аты → <code>True</code>/<code>False</code>. Сөйлемнің <code>evaluate</code> әдісі осы модельде сөйлем ақиқат па, жоқ па, соны айтады:</p>
+      <pre data-lang="python"><code class="language-python">from logic import *
+
+P = Symbol("P")  # Жаңбыр жауып тұр
+Q = Symbol("Q")  # Мен үйдемін
+
+model = {"P": True, "Q": False}  # жаңбыр жауып тұр, бірақ мен үйде емеспін
+
+print(Implication(P, Q).evaluate(model))
+print(Or(Not(P), Q).evaluate(model))
+print(Biconditional(P, Q).evaluate(model))</code></pre>
+      <p>Көрдіңіз бе, импликация, <code>¬P ∨ Q</code> және эквиваленттілік дәл ақиқат кестеміздегідей жауап береді. Енді Гарри Поттердің білім қорын жазайық. Әр ұсынысқа бір символ береміз:</p>
+      <pre data-lang="python"><code class="language-python">from logic import *
+
+# Әр ұсынысты бір Symbol-мен белгілейміз, әрқайсысының өз аты бар
+rain = Symbol("rain")  # Жаңбыр жауды
+hagrid = Symbol("hagrid")  # Гарри Хагридке барды
+dumbledore = Symbol("dumbledore")  # Гарри Дамблдорға барды
+
+# Сөйлемдерді білім қорына саламыз
+knowledge = And(  # And-тен бастаймыз, себебі әрқайсысы біз ақиқат деп білетін білім
+
+    Implication(Not(rain), hagrid),  # ¬(жаңбыр жауды) → (Гарри Хагридке барды)
+
+    Or(hagrid, dumbledore),  # (Гарри Хагридке барды) ∨ (Гарри Дамблдорға барды)
+
+    Not(And(hagrid, dumbledore)),  # ¬(Хагридке де, Дамблдорға да барды): екеуіне бірдей бармаған
+
+    dumbledore  # Гарри Дамблдорға барды. Бұл жолда тек бір символ тұр: біз мұны факт деп аламыз
+    )</code></pre>
+      <p>Мұнда кодтың құрылымына назар аударыңыз. Сыртқы <code>And</code> бар, себебі ішіндегі әр нәрсе - біз ақиқат деп білетін білім. Оның ішінде ұзын сөйлемдер (<code>Implication(Not(rain), hagrid)</code>) және бір ғана символдан тұратын сөйлем (<code>dumbledore</code>) тұр: соңғысы «Гарри Дамблдорға барды» деген фактіні білдіреді.</p>
+      <p>Модельдерді тексеру алгоритміне төрт нәрсе керек: <strong>білім қоры</strong>, <strong>сұрақ</strong> (білім қорынан ілесе ме, соны білгіміз келетін ұсыныс), <strong>символдар</strong> тізімі (біздің жағдайда <code>rain</code>, <code>hagrid</code>, <code>dumbledore</code>) және <strong>модель</strong> (символдарға ақиқат/жалған мәнін беру). Ресми кітапхананың <code>model_check</code> функциясы символдарды өзі жинайды. Сұрайық: жаңбыр жауды ма? Хагридке бара ма?</p>
+      <pre data-lang="python"><code class="language-python">print(model_check(knowledge, rain))
+print(model_check(knowledge, hagrid))</code></pre>
+      <p><code>True</code> және <code>False</code>. Жаңбыр жауғаны логикалық түрде ілеседі, ал Гарридің Хагридке барғаны ілеспейді. Ақиқатында да, Хагридке бармағанын біз бұрын өзіміз шығарған едік.</p>
+      <p>Модельдерді тексерудің ішін ашып қарайық. Алгоритм былай жазылған:</p>
+      <pre data-lang="python" data-norun><code class="language-python">def check_all(knowledge, query, symbols, model):
+
+    # Егер модельде әр символға мән берілген болса
+    if not symbols:
+
+        # Білім қоры модельде ақиқат болса, query де ақиқат болуы керек
+        if knowledge.evaluate(model):
+            return query.evaluate(model)
+        return True
+    else:
+
+        # Әлі қолданылмаған символдардың бірін таңдаймыз
+        remaining = symbols.copy()
+        p = remaining.pop()
+
+        # Символ ақиқат болатын модель жасаймыз
+        model_true = model.copy()
+        model_true[p] = True
+
+        # Символ жалған болатын модель жасаймыз
+        model_false = model.copy()
+        model_false[p] = False
+
+        # Ілесу екі модельде де орындалуы керек
+        return(check_all(knowledge, query, remaining, model_true) and check_all(knowledge, query, remaining, model_false))</code></pre>
+      <p>Бұл функция <em>рекурсивті</em>. Ол бір символ таңдайды да, екі модель жасайды: біреуінде символ ақиқат, екіншісінде жалған. Содан кейін өзін екі модельмен қайта шақырады, ал олар бір символмен ғана ерекшеленеді. Символдар тізімі бос болғанша осылай жалғасады, яғни әр символға мән берілген барлық модель жасалып біткенше. Тізім бос болғанда (бұл <code>if not symbols</code> жолы) әр функция данасы өзінің бір моделін ұстап тұрады: сол модельде KB ақиқат па? Ақиқат болса, сұрақ та ақиқат па, соны тексереміз.</p>
+      <p>Назар аударыңыз: бізді тек KB ақиқат болатын модельдер қызықтырады. KB жалған болса, ол модель біз білетін нәрселермен үйлеспейді, демек, біз үшін маңызсыз; сондықтан функция сол жағдайда <code>True</code> қайтарады (ілесуге қарсы мысал емес).</p>
+      <div class="callout note"><span class="callout-title">Лекциядан тыс мысал</span><p><code>P</code> - Гарри ізші (seeker) ойнайды, <code>Q</code> - Оливер қақпашы, <code>R</code> - Гриффиндор жеңеді. KB: <code>P</code>, <code>Q</code>, <code>(P ∧ Q) → R</code>. Гарри ізші емес, ұрушы ойнаған модельді елестетіңіз (<code>¬P</code>). Онда Гриффиндор жеңді ме, жоқ па - бізге бәрібір: білім қорында Гарридің ізші екені айтылып тұр. Бізді тек <code>P</code> мен <code>Q</code> ақиқат модельдер қызықтырады.</p></div>
+
+      <h2 id="knowledge-engineering">Білім инженериясы</h2>
+      <p><strong>Білім инженериясы</strong> (<span class="term-en">knowledge engineering</span>) - шынайы мәселені жасанды интеллект түсінетін ұсыныстар мен логикаға айналдыру өнері. Жаттығу үшін Clue ойынын алайық.</p>
+
+      <h3 id="clue">Clue ойыны</h3>
+      <p>Ойында кісі өлтіру болған: кім өлтірді (<em>адам</em>), немен (<em>қару</em>), қайда (<em>орын</em>). Адамдар, қарулар мен орындар карталармен көрсетілген. Әр санаттан бір карта кездейсоқ таңдалып, конвертке салынады. Ойыншылар карталарды ашып, қорытынды жасай отырып, конвертте не жатқанын табуы керек. Біз мұны алдыңғы модельдерді тексеру алгоритмімен шешеміз. Біздің модельде кісі өлтіруге қатысы бар нәрсе <code>True</code>, қатысы жоқ нәрсе <code>False</code> болады.</p>
+      <p>Үш адам: Мастард, Плам, Скарлет; үш қару: пышақ (knife), револьвер, сомын кілті (wrench); үш орын: бал залы (ballroom), асхана (kitchen), кітапхана (library).</p>
+      <p>Білім қорын ойын ережесінен бастаймыз. Бір адам кінәлі, бір қару қолданылған, бір орында болған. Бұл былай жазылады:</p>
+      <ul class="plain">
+        <li><code>(Mustard ∨ Plum ∨ Scarlet)</code></li>
+        <li><code>(knife ∨ revolver ∨ wrench)</code></li>
+        <li><code>(ballroom ∨ kitchen ∨ library)</code></li>
+      </ul>
+      <p>Ойын басында әр ойыншы бір адамды, бір қаруды, бір орынды көреді, демек олардың кісі өлтіруге қатысы жоқ екенін біледі. Бұл ақпаратты ойыншылар бір-бірімен бөліспейді. Айталық, бізге Мастард, асхана және револьвер карталары келді. Онда білім қорына қосамыз:</p>
+      <ul class="plain">
+        <li><code>¬(Mustard)</code></li>
+        <li><code>¬(kitchen)</code></li>
+        <li><code>¬(revolver)</code></li>
+      </ul>
+      <p>Ойын барысында біреу болжам жасайды: белгілі бір адам, қару, орын. Айталық, болжам: Скарлет кітапханада кілтпен өлтірді. Болжам қате болса, мынау шығады және оны білім қорына қосамыз:</p>
+      <ul class="plain">
+        <li><code>(¬Scarlet ∨ ¬library ∨ ¬wrench)</code></li>
+      </ul>
+      <p>Ал енді бізге біреу Плам картасын көрсетті. Онда қосамыз: <code>¬(Plum)</code>. Қазір-ақ қорытынды жасай аламыз: кінәлі Мастард, Плам, Скарлеттің бірі, ал алғашқы екеуін біз жоққа шығардық. Кінәлі - Скарлет.</p>
+      <p>Тағы бір ақпарат қосайық, мысалы, бал залы емес. Білім қорына <code>¬(ballroom)</code> қосамыз. Енді бұрынғы деректерді біріктіріп, Скарлет пышақпен кітапханада өлтірді деп тұжырымдай аламыз. Кітапхана екенін қайдан білдік? Орын бал залы, асхана немесе кітапхана болуы керек, ал алғашқы екеуі жоққа шығарылды. Қару ше? Скарлет, кітапхана, кілт деген болжам қате болды, яғни үшеуінің кем дегенде бірі жалған. Скарлет пен кітапхана ақиқат екенін білеміз, ендеше жалған болатыны - кілт. Қарулардың бірі ақиқат болуы керек, ол кілт те емес, револьвер де емес, демек пышақ.</p>
+      <p>Python-да мұның бәрі былай көрінеді. Алдымен символдарды жасаймыз (лекцияда бұл жол көрсетілмеген, бірақ керек):</p>
+      <pre data-lang="python"><code class="language-python">from logic import *
+
+# Үш адам, үш қару, үш орын: әрқайсысы бір Symbol
+mustard = Symbol("ColMustard")
+plum = Symbol("ProfPlum")
+scarlet = Symbol("MsScarlet")
+characters = [mustard, plum, scarlet]
+
+ballroom = Symbol("ballroom")
+kitchen = Symbol("kitchen")
+library = Symbol("library")
+rooms = [ballroom, kitchen, library]
+
+knife = Symbol("knife")
+revolver = Symbol("revolver")
+wrench = Symbol("wrench")
+weapons = [knife, revolver, wrench]
+
+symbols = characters + rooms + weapons</code></pre>
+      <p>Сосын білім қорының өзі:</p>
+      <pre data-lang="python"><code class="language-python"># Анықтамаларды білім қорына қосамыз
+knowledge = And(
+
+    # Ойын шартынан бастаймыз: әр санатта бір элемент ақиқат болуы керек
+    Or(mustard, plum, scarlet),
+    Or(ballroom, kitchen, library),
+    Or(knife, revolver, wrench),
+
+    # Алғашқы үш картадан алған ақпаратымызды қосамыз
+    Not(mustard),
+    Not(kitchen),
+    Not(revolver),
+
+    # Біреудің болжамын қосамыз: Скарлет кітапханада кілтпен өлтірді
+    Or(Not(scarlet), Not(library), Not(wrench)),
+
+    # Бізге көрсетілген карталарды қосамыз
+    Not(plum),
+    Not(ballroom)
+)</code></pre>
+      <p>Модельдерді тексеру алгоритмін әр символға қолданып, қайсысы білім қорынан ілесетінін сұрап көрейік:</p>
+      <pre data-lang="python"><code class="language-python">for symbol in symbols:
+    if model_check(knowledge, symbol):
+        print(symbol)</code></pre>
+      <p>Шығыс: <code>MsScarlet</code>, <code>library</code>, <code>knife</code>. Дәл біз ойша шығарған жауап.</p>
+
+      <h3 id="houses">Хогвартс үйлері</h3>
+      <p>Басқа жұмбақ көрейік. Төрт адам: Гилдерой, Помона, Минерва, Хорэс, төрт үйге бөлінеді: Гриффиндор, Пуффендуй, Рейвенкло, Слизерин. Әр үйде дәл бір адам бар. Мұны ұсыныстар логикасымен жазу өте ауыр. Біріншіден, әр мүмкін тағайындаудың өз ұсынысы болуы керек: <code>MinervaGryffindor</code>, <code>MinervaHufflepuff</code>, <code>MinervaRavenclaw</code>, <code>MinervaSlytherin</code>, <code>PomonaGryffindor</code> және т.с.с. Екіншіден, әр адам қандай да бір үйде екенін айту үшін әр адамға <code>Or</code> қажет:</p>
+      <p><code>(MinervaGryffindor ∨ MinervaHufflepuff ∨ MinervaRavenclaw ∨ MinervaSlytherin)</code>, осылай әр адамға қайталаймыз.</p>
+      <p>Одан әрі, адам бір үйге түссе, басқа үйлерге түспейтінін жазу керек:</p>
+      <p><code>(MinervaGryffindor → ¬MinervaHufflepuff) ∧ (MinervaGryffindor → ¬MinervaRavenclaw) ∧ (MinervaGryffindor → ¬MinervaSlytherin) ∧ (MinervaHufflepuff → ¬MinervaGryffindor) ...</code></p>
+      <p>және осылай барлық үй мен барлық адам үшін. Бұл өте тиімсіз. Шешімін бірінші ретті логика туралы бөлімде көреміз. Дегенмен жеткілікті белгі берілсе, мұндай жұмбақты екі логикамен де шешуге болады.</p>
+
+      <h3 id="mastermind">Mastermind ойыны</h3>
+      <p>Тағы бір жұмбақ түрі ұсыныстар логикасымен шешіледі: Mastermind. Бірінші ойыншы түстерді белгілі бір ретпен қояды, екінші ойыншы тәртіпті табуы керек. Әр жүрісте екінші ойыншы болжам жасайды, ал бірінші ойыншы қанша түсті дұрыс орынға қойғанын санмен айтады. Төрт түспен ойнап көрейік.</p>
+      <p>Екінші ойыншы төрт түстің бір тәртібін ұсынды. Бірінші ойыншы: «екі». Яғни екі түс дұрыс орында, қалған екеуі қате орында. Осыған қарап екінші ойыншы екі түстің орнын ауыстырады. Бірінші ойыншы: «нөл». Ендеше орны ауыстырылған түстер алғашында <em>дұрыс</em> орында тұрған екен, ал қозғалмаған екі түс <em>қате</em> орында болған. Екінші ойыншы енді оларды ауыстырады. Бірінші ойыншы: «төрт», ойын бітті.</p>
+      <p>Мұны ұсыныстар логикасымен жазу үшін (түс саны)² атомдық ұсыныс керек. Төрт түс болса, 16 ұсыныс: <code>red0</code>, <code>red1</code>, <code>red2</code>, <code>red3</code>, <code>blue0</code> және т.б. Мұнда түс пен орын бірге кодталған. Келесі қадам - ойын ережесін білім қорына қосу: әр орында тек бір түс бар, түстер қайталанбайды. Соңғы қадам - барлық белгілерді қосу: бірінші болжамда екі орын дұрыс, екеуі қате; екінші болжамда ешқайсысы дұрыс емес. Осыдан кейін модельдерді тексеру алгоритмі жұмбақтың шешімін береді.</p>
+
+      <h2 id="inference-rules">Шығару ережелері</h2>
+      <p>Модельдерді тексеру тиімсіз: жауап беруден бұрын барлық модельді қарап шығуы керек (еске салайық: сұрақ <code>R</code> ақиқат болады, егер KB ақиқат болатын барлық модельде <code>R</code> да ақиқат болса). Ал мұнда символдар көп болса, модельдер саны жарылып өседі. <strong>Шығару ережелері</strong> (<span class="term-en">inference rules</span>) бар білімнен жаңа білімді барлық модельді санамай-ақ алуға мүмкіндік береді.</p>
+      <p>Шығару ережелері көбіне көлденең сызықпен жазылады: жоғарғы бөлігі - <strong>алғышарт</strong> (<span class="term-en">premise</span>), яғни бізде бар білім, төменгі бөлігі - <strong>қорытынды</strong> (<span class="term-en">conclusion</span>), яғни сол білімнен алуға болатын жаңа білім.</p>
+      <figure class="rule"><div class="prem"><div>Егер жаңбыр жауса, Гарри үйде</div><div>Жаңбыр жауып тұр</div></div><div class="concl">Гарри үйде</div><figcaption>Мысал</figcaption></figure>
+      <p>Бұл мысалда алғышарт: «Егер жаңбыр жауса, Гарри үйде», «Жаңбыр жауып тұр». Кез келген адам: «Гарри үйде» деп қорытады.</p>
+
+      <h3 id="modus-ponens">Modus ponens</h3>
+      <p>Біз қолданған ереже - <strong>Modus ponens</strong>: импликацияны және оның алғышартын ақиқат деп білсек, онда салдар да ақиқат.</p>
+      <figure class="rule"><div class="prem"><div>α → β</div><div>α</div></div><div class="concl">β</div><figcaption>Modus ponens</figcaption></figure>
+
+      <h3 id="and-elimination">«Және»-ді жою</h3>
+      <p><strong>«Және»-ді жою</strong> (<span class="term-en">And elimination</span>): <code>And</code> ұсынысы ақиқат болса, оның ішіндегі кез келген бір ұсыныс та ақиқат. Мысалы, Гарридің Рон мен Гермионамен дос екенін білсек, оның Гермионамен дос екенін де қорытамыз.</p>
+      <figure class="rule"><div class="prem"><div>α ∧ β</div></div><div class="concl">α</div><figcaption>«Және»-ді жою</figcaption></figure>
+
+      <h3 id="double-negation">Қос терістеуді жою</h3>
+      <p>Екі рет терістелген ұсыныс ақиқат. Мысалы: «Гарри емтиханнан өтпеді деген рас емес». Оны былай талдаймыз: «рас емес, (Гарри емтиханнан өтпеді)», яғни <code>¬(Гарри емтиханнан өтпеді)</code>, ал бұл <code>¬(¬(Гарри емтиханнан өтті))</code>. Екі терістеу бірін-бірі жояды да, «Гарри емтиханнан өтті» ақиқат болып қалады.</p>
+      <figure class="rule"><div class="prem"><div>¬(¬α)</div></div><div class="concl">α</div><figcaption>Қос терістеуді жою</figcaption></figure>
+
+      <h3 id="implication-elimination">Импликацияны жою</h3>
+      <p>Импликация терістелген алғышарт пен салдардың <code>Or</code>-на тең. «Егер жаңбыр жауса, Гарри үйде» дегені «(жаңбыр жаумайды) немесе (Гарри үйде)» дегенмен бірдей.</p>
+      <figure class="rule"><div class="prem"><div>α → β</div></div><div class="concl">¬α ∨ β</div><figcaption>Импликацияны жою</figcaption></figure>
+      <p>Бұл сәл түсініксіз көрінуі мүмкін. Ақиқат кестесіне қарайық:</p>
+      <table class="truth"><thead><tr><th>P</th><th>Q</th><th>P → Q</th><th>¬P ∨ Q</th></tr></thead><tbody>
+<tr><td class="f">жалған</td><td class="f">жалған</td><td class="t">ақиқат</td><td class="t">ақиқат</td></tr>
+<tr><td class="f">жалған</td><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="t">ақиқат</td></tr>
+<tr><td class="t">ақиқат</td><td class="f">жалған</td><td class="f">жалған</td><td class="f">жалған</td></tr>
+<tr><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="t">ақиқат</td><td class="t">ақиқат</td></tr>
+</tbody></table>
+      <p><code>P → Q</code> мен <code>¬P ∨ Q</code> бағандарындағы мәндер бірдей. Демек олар логикалық тұрғыдан эквивалентті. Мұны басқаша түсіндіруге болады: импликация екі жағдайда ақиқат. Біріншісі: алғышарт жалған болса, импликация тривиальды ақиқат; бұл <code>¬P ∨ Q</code> ішіндегі <code>¬P</code> бөлігі: <code>P</code> жалған болса, өрнек әрдайым ақиқат. Екіншісі: алғышарт ақиқат болса, импликация тек салдар ақиқат болғанда ақиқат; <code>P</code> мен <code>Q</code> екеуі ақиқат болса, <code>¬P ∨ Q</code> ақиқат, ал <code>P</code> ақиқат, <code>Q</code> жалған болса, ол жалған. Мұны кодпен тексеріп көріңіз:</p>
+      <pre data-lang="python"><code class="language-python">import itertools
+
+print("P      Q      P→Q    ¬P ∨ Q")
+for P, Q in itertools.product([False, True], repeat=2):
+    implication = (not P) or Q  # P → Q мәні
+    print(f"{P!s:6} {Q!s:6} {implication!s:6} {(not P) or Q}")</code></pre>
+
+      <h3 id="biconditional-elimination">Эквиваленттілікті жою</h3>
+      <p>Эквиваленттілік импликация мен оның кері импликациясының <code>And</code>-ына тең. «Жаңбыр жауады, тек сонда ғана Гарри үйде» дегені («Жаңбыр жауса, Гарри үйде» ЖӘНЕ «Гарри үйде болса, жаңбыр жауады») дегенмен бірдей.</p>
+      <figure class="rule"><div class="prem"><div>α ↔ β</div></div><div class="concl">(α → β) ∧ (β → α)</div><figcaption>Эквиваленттілікті жою</figcaption></figure>
+
+      <h3 id="de-morgan">Де Морган заңы</h3>
+      <p>Де Морган заңы <code>And</code>-ты <code>Or</code>-ға айналдыруға мүмкіндік береді (және кері). «Гарри мен Рон екеуі де емтиханнан өтті деген рас емес» дегеннен «Гарри өтпеді НЕМЕСЕ Рон өтпеді» деп қорытуға болады. Бастапқы <code>And</code> ақиқат болуы үшін <code>Or</code>-дағы ұсыныстардың кем дегенде біреуі ақиқат болуы керек.</p>
+      <figure class="rule"><div class="prem"><div>¬(α ∧ β)</div></div><div class="concl">¬α ∨ ¬β</div><figcaption>Де Морган заңы (1)</figcaption></figure>
+      <p>Керісінше де жұмыс істейді. «Гарри немесе Рон емтиханнан өтті деген рас емес» дегенді «Гарри өтпеді ЖӘНЕ Рон өтпеді» деп қайта айтуға болады.</p>
+      <figure class="rule"><div class="prem"><div>¬(α ∨ β)</div></div><div class="concl">¬α ∧ ¬β</div><figcaption>Де Морган заңы (2)</figcaption></figure>
+
+      <h3 id="distributive">Үлестіру заңы</h3>
+      <p><code>And</code> немесе <code>Or</code> арқылы топталған екі элементі бар ұсынысты үлестіріп, <code>And</code> мен <code>Or</code>-дан тұратын ұсақ бөліктерге бөлуге болады. Мектептегі жақшаны ашу сияқты:</p>
+      <figure class="rule"><div class="prem"><div>α ∧ (β ∨ γ)</div></div><div class="concl">(α ∧ β) ∨ (α ∧ γ)</div><figcaption>Үлестіру заңы (1)</figcaption></figure>
+      <figure class="rule"><div class="prem"><div>α ∨ (β ∧ γ)</div></div><div class="concl">(α ∨ β) ∧ (α ∨ γ)</div><figcaption>Үлестіру заңы (2)</figcaption></figure>
+
+      <h3 id="knowledge-search">Білім және іздеу есептері</h3>
+      <p>Логикалық шығаруды іздеу есебі ретінде де қарастыруға болады. Өткен аптадағы ұғымдар осында да бар:</p>
+      <ul>
+        <li><strong>бастапқы күй</strong>: бастапқы білім қоры;</li>
+        <li><strong>әрекеттер</strong>: шығару ережелері;</li>
+        <li><strong>ауысу моделі</strong>: шығарудан кейінгі жаңа білім қоры;</li>
+        <li><strong>мақсатты тексеру</strong>: дәлелдегіміз келген сөйлем білім қорында бар ма;</li>
+        <li><strong>жол құны</strong>: дәлелдеудің қадам саны.</li>
+      </ul>
+      <p>Іздеу алгоритмдерінің қаншалықты әмбебап екенін көрдіңіз бе? Біз оларды лабиринттен шығу үшін қолдандық, ал енді бар білімнен жаңа ақпарат шығару үшін қолданамыз.</p>
+
+      <h2 id="resolution">Резолюция</h2>
+      <p><strong>Резолюция</strong> (<span class="term-en">resolution</span>) - қуатты шығару ережесі. Ол былай дейді: <code>Or</code> ұсынысындағы екі атомдық ұсыныстың біреуі жалған болса, екіншісі ақиқат. Мысалы, «Рон Үлкен залда НЕМЕСЕ Гермиона кітапханада» және «Рон Үлкен залда емес» дегендерден «Гермиона кітапханада» деп қорытамыз. Ресми түрде:</p>
+      <figure class="rule"><div class="prem"><div>P ∨ Q</div><div>¬P</div></div><div class="concl">Q</div><figcaption>Резолюция</figcaption></figure>
+      <p>Резолюция <strong>қарама-қарсы литералдарға</strong> (<span class="term-en">complementary literals</span>) сүйенеді. Бұл - бір атомдық ұсыныстың бірі терістелген, екіншісі терістелмеген екі көрінісі, мысалы <code>P</code> және <code>¬P</code>.</p>
+      <p>Ереже жалпыланады. «Рон Үлкен залда НЕМЕСЕ Гермиона кітапханада» дегенмен қатар «Рон Үлкен залда емес НЕМЕСЕ Гарри ұйықтап жатыр» деген де белгілі болсын. Резолюция бойынша «Гермиона кітапханада НЕМЕСЕ Гарри ұйықтап жатыр» деп шығарамыз. Формуламен:</p>
+      <figure class="rule"><div class="prem"><div>P ∨ Q</div><div>¬P ∨ R</div></div><div class="concl">Q ∨ R</div><figcaption>Резолюция (жалпыланған)</figcaption></figure>
+      <p>Қарама-қарсы литералдар бізге резолюция арқылы жаңа сөйлемдер шығаруға мүмкіндік береді. Шығару алгоритмдері жаңа білім алу үшін осындай литералдарды іздейді.</p>
+
+      <h3 id="cnf">Конъюнктивті қалыпты форма</h3>
+      <p><strong>Дизъюнкт</strong> (<span class="term-en">clause</span>) - <strong>литералдардың дизъюнкциясы</strong>. <strong>Литерал</strong> (<span class="term-en">literal</span>) - ұсыныстық символ не оның терістеуі: <code>P</code>, <code>¬P</code>. <strong>Дизъюнкция</strong> (<span class="term-en">disjunction</span>) - <code>Or</code> арқылы жалғанған ұсыныстар (<code>P ∨ Q ∨ R</code>), ал <strong>конъюнкция</strong> (<span class="term-en">conjunction</span>) - <code>And</code> арқылы жалғанған ұсыныстар (<code>P ∧ Q ∧ R</code>). Дизъюнкттер арқылы кез келген логикалық өрнекті <strong>конъюнктивті қалыпты формаға</strong> (<span class="term-en">Conjunctive Normal Form, CNF</span>) келтіруге болады. Бұл - дизъюнкттердің конъюнкциясы, мысалы <code>(A ∨ B ∨ C) ∧ (D ∨ ¬E) ∧ (F ∨ G)</code>.</p>
+      <p>Ұсыныстарды CNF-ке келтіру қадамдары:</p>
+      <ul>
+        <li>эквиваленттілікті жою: <code>(α ↔ β)</code> орнына <code>(α → β) ∧ (β → α)</code>;</li>
+        <li>импликацияны жою: <code>(α → β)</code> орнына <code>¬α ∨ β</code>;</li>
+        <li>Де Морган заңдарымен терістеуді литералдарға дейін ішке жылжыту: <code>¬(α ∧ β)</code> орнына <code>¬α ∨ ¬β</code>.</li>
+      </ul>
+      <p>Мысал: <code>(P ∨ Q) → R</code> өрнегін CNF-ке келтірейік:</p>
+      <ul class="plain">
+        <li><code>(P ∨ Q) → R</code></li>
+        <li><code>¬(P ∨ Q) ∨ R</code> - импликацияны жою</li>
+        <li><code>(¬P ∧ ¬Q) ∨ R</code> - Де Морган заңы</li>
+        <li><code>(¬P ∨ R) ∧ (¬Q ∨ R)</code> - үлестіру заңы</li>
+      </ul>
+      <details class="think"><summary>Ойланып көріңіз: <code>P → Q</code> өрнегін CNF-ке келтірсек не шығады?</summary><div class="details-body"><p>Импликацияны жоямыз: <code>¬P ∨ Q</code>. Бұл - бір ғана дизъюнкттен тұратын конъюнкция, яғни CNF-тің өзі. Демек, бұл жолы Де Морган мен үлестіру заңдары керек болмайды.</p></div></details>
+      <p>Осы жерден бастап CNF-ке резолюция алгоритмін қолдана аламыз. Резолюциядан шыққан дизъюнктте бір литерал екі рет кездесуі мүмкін. Онда <strong>факторизация</strong> (<span class="term-en">factoring</span>) қолданылады: қайталанған литерал алынып тасталады. Мысалы, <code>(P ∨ Q ∨ S) ∧ (¬P ∨ R ∨ S)</code> резолюция арқылы <code>(Q ∨ S ∨ R ∨ S)</code> береді, қайталанған <code>S</code>-ті алып тастасақ, <code>(Q ∨ R ∨ S)</code> болады.</p>
+      <p><code>P</code> мен <code>¬P</code> секілді литерал мен оның терістеуін резолюциялағанда <strong>бос дизъюнкт</strong> (<span class="term-en">empty clause</span>) <code>()</code> шығады. Бос дизъюнкт әрдайым жалған, бұл қисынды: <code>P</code> мен <code>¬P</code> бір мезгілде ақиқат бола алмайды. Резолюция алгоритмі дәл осы фактіні пайдаланады.</p>
+
+      <h3 id="proof-by-contradiction">Қайшылық арқылы дәлелдеу</h3>
+      <p><code>KB ⊨ α</code> екенін білу үшін:</p>
+      <ul>
+        <li>тексереміз: <code>(KB ∧ ¬α)</code> қайшылық па?</li>
+        <li>иә болса, <code>KB ⊨ α</code>;</li>
+        <li>жоқ болса, ілесу жоқ.</li>
+      </ul>
+      <p>Қайшылық арқылы дәлелдеу информатикада жиі қолданылатын құрал. Егер білім қоры ақиқат болса және ол <code>¬α</code>-мен қайшылыққа келсе, онда <code>¬α</code> жалған, ендеше <code>α</code> ақиқат. Алгоритм нақтырақ былай жұмыс істейді: <code>KB ⊨ α</code> екенін анықтау үшін</p>
+      <ul>
+        <li><code>(KB ∧ ¬α)</code>-ны CNF-ке келтіреміз;</li>
+        <li>резолюциямен жаңа дизъюнкт шығаруға болатынын тексере береміз;</li>
+        <li>бос дизъюнкт (жалғанның баламасы) шықса - құттықтаймыз! Қайшылыққа келдік, демек <code>KB ⊨ α</code>;</li>
+        <li>қайшылық шықпай, жаңа дизъюнкт шығару мүмкін болмай қалса, ілесу жоқ.</li>
+      </ul>
+      <p>Алгоритмнің жұмысын мысалмен көрейік. <code>(A ∨ B) ∧ (¬B ∨ C) ∧ (¬C)</code> білім қорынан <code>A</code> ілесе ме?</p>
+      <ol>
+        <li>Қайшылық арқылы дәлелдеу үшін <code>A</code> жалған деп ұйғарамыз. Сонда <code>(A ∨ B) ∧ (¬B ∨ C) ∧ (¬C) ∧ (¬A)</code> аламыз.</li>
+        <li>Жаңа ақпарат шығара бастаймыз. <code>C</code> жалған (<code>¬C</code>), ал <code>(¬B ∨ C)</code> ақиқат болуы үшін <code>B</code> да жалған болуы керек. Білім қорына <code>(¬B)</code> қосамыз.</li>
+        <li>Енді <code>(¬B)</code> бар, ал <code>(A ∨ B)</code> ақиқат болуы үшін <code>A</code> ақиқат болуы керек. Қосамыз: <code>(A)</code>.</li>
+        <li>Білім қорында қарама-қарсы екі литерал бар: <code>(A)</code> және <code>(¬A)</code>. Оларды резолюциялап, бос дизъюнкт <code>()</code> аламыз. Ол анықтамасы бойынша жалған, яғни қайшылыққа келдік. Демек <code>A</code> білім қорынан ілеседі.</li>
+      </ol>
+
+      <h2 id="first-order-logic">Бірінші ретті логика</h2>
+      <p><strong>Бірінші ретті логика</strong> (<span class="term-en">first-order logic</span>) - күрделі ойларды ұсыныстар логикасына қарағанда әлдеқайда ықшам жазуға мүмкіндік беретін логика түрі. Ол екі түрлі символды қолданады: <strong>тұрақты символдар</strong> (<span class="term-en">constant symbols</span>) объектілерді білдіреді, ал <strong>предикат символдары</strong> (<span class="term-en">predicate symbols</span>) - аргумент алып, ақиқат не жалған қайтаратын қатынастар немесе функциялар.</p>
+      <p>Хогвартстағы үйлерге оралайық. Тұрақты символдар - адамдар мен үйлер: Minerva, Pomona, Gryffindor, Hufflepuff және т.б. Предикат символдары - тұрақты символдардың қасиеттері. Мысалы, Минерваның адам екенін <code>Person(Minerva)</code> деп, Гриффиндордың үй екенін <code>House(Gryffindor)</code> деп жазамыз. Барлық логикалық байланыс алдыңғыдай жұмыс істейді: <code>¬House(Minerva)</code> «Минерва үй емес» дегенді білдіреді. Предикат екі не одан көп аргумент алып, олардың арасындағы қатынасты да жаза алады. Мысалы, <code>BelongsTo</code> адам мен үйдің арасындағы тиесілікті көрсетеді, ал «Минерва Гриффиндорға тиесілі» дегенді <code>BelongsTo(Minerva, Gryffindor)</code> деп жазамыз. Бірінші ретті логикада әр адамға бір символ, әр үйге бір символ жетеді. Ұсыныстар логикасында әр «адам - үй» жұбына бөлек символ қажет еді, сондықтан бұл әлдеқайда ықшам.</p>
+
+      <h3 id="universal">Жалпылық кванторы</h3>
+      <p><strong>Кванторлау</strong> (<span class="term-en">quantification</span>) - нақты тұрақты символсыз сөйлем жазуға мүмкіндік беретін құрал. <strong>Жалпылық кванторы</strong> (<span class="term-en">universal quantification</span>) <code>∀</code> белгісімен «барлығы үшін» дегенді білдіреді. Мысалы, мына сөйлем:</p>
+      <p><code>∀x. BelongsTo(x, Gryffindor) → ¬BelongsTo(x, Hufflepuff)</code></p>
+      <p>«кез келген <code>x</code> үшін, егер <code>x</code> Гриффиндорға тиесілі болса, ол Пуффендуйға тиесілі емес» дегенді айтады.</p>
+
+      <h3 id="existential">Болмыс кванторы</h3>
+      <p><strong>Болмыс кванторы</strong> (<span class="term-en">existential quantification</span>) жалпылық кванторына параллель ұғым. Жалпылық кванторы барлық <code>x</code> үшін ақиқат сөйлем жасаса, болмыс кванторы кем дегенде бір <code>x</code> үшін ақиқат сөйлем жасайды. Ол <code>∃</code> белгісімен жазылады. Мысалы:</p>
+      <p><code>∃x. House(x) ∧ BelongsTo(Minerva, x)</code></p>
+      <p>«кем дегенде бір <code>x</code> бар, ол үй және Минерва оған тиесілі» дегенді білдіреді, яғни Минерва қандай да бір үйге тиесілі.</p>
+      <p>Екі квантор бір сөйлемде де қатар жүре алады:</p>
+      <p><code>∀x. Person(x) → (∃y. House(y) ∧ BelongsTo(x, y))</code></p>
+      <p>Бұл «егер <code>x</code> адам болса, онда кем дегенде бір үй <code>y</code> бар және <code>x</code> соған тиесілі» дегенді айтады, басқаша айтқанда, әр адам қандай да бір үйге тиесілі.</p>
+      <p>Логиканың басқа түрлері де бар, бірақ бәрінің ортақ мақсаты - ақпаратты көрсету. Біздің жасанды интеллектіміз білімді дәл осындай жүйелермен ұсынады.</p>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li><strong>білімге негізделген агенттер</strong> білімді сөйлемдер түрінде сақтап, соған ой жүргізіп, жаңа қорытынды шығарады;</li>
+        <li><strong>ұсыныстар логикасы</strong>: ұсыныстық символдар және <code>¬</code>, <code>∧</code>, <code>∨</code>, <code>→</code>, <code>↔</code> байланыстары; олардың мағынасы ақиқат кестелерінде;</li>
+        <li><strong>модель</strong> - әр символға мән беру; <code>n</code> символ үшін 2<sup>n</sup> модель; <strong>білім қоры</strong> - агент білетін сөйлемдер;</li>
+        <li><strong>логикалық ілесу</strong> <code>KB ⊨ α</code>: KB ақиқат болатын әр модельде <code>α</code> да ақиқат; бұл импликациядан бөлек ұғым;</li>
+        <li><strong>модельдерді тексеру</strong> барлық модельді санайды (рекурсивті <code>check_all</code>), сондықтан тиімсіз;</li>
+        <li><strong>білім инженериясы</strong>: Clue, Хогвартс үйлері, Mastermind жұмбақтарын логикаға аудару;</li>
+        <li><strong>шығару ережелері</strong>: Modus ponens, «және»-ді жою, қос терістеуді жою, импликацияны жою, эквиваленттілікті жою, Де Морган, үлестіру; шығаруды іздеу есебі ретінде қарастыруға болады;</li>
+        <li><strong>резолюция</strong>: қарама-қарсы литералдар, CNF-ке келтіру, факторизация, бос дизъюнкт және қайшылық арқылы дәлелдеу;</li>
+        <li><strong>бірінші ретті логика</strong>: тұрақты және предикат символдары, <code>∀</code> және <code>∃</code> кванторлары.</li>
+      </ul>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. «Егер жаңбыр жауса, мен үйдемін» (<code>P → Q</code>) деп айттыңыз. Жаңбыр жауған жоқ, ал сіз көшедесіз. Бұл сөйлем қандай?</p>
+          <label><input type="radio" value="a"> Жалған, себебі сіз үйде емессіз</label>
+          <label><input type="radio" value="b"> Анықталмаған, ақиқат кестесінде мұндай жол жоқ</label>
+          <label><input type="radio" value="c"> Ақиқат, алғышарт жалған болғандықтан</label>
+          <label><input type="radio" value="d"> Ақиқат, себебі <code>Q</code> ақиқат</label>
+          <p class="explain">Алғышарт <code>P</code> жалған болса, импликация (салдар қандай болса да) тривиальды түрде ақиқат. Сөзіңізді жоққа шығаратын ештеңе болған жоқ.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">2. Білім қорында 4 ұсыныстық символ бар. Модельдерді тексеру алгоритмі нешe модельді қарауы керек?</p>
+          <label><input type="radio" value="a"> 16</label>
+          <label><input type="radio" value="b"> 8</label>
+          <label><input type="radio" value="c"> 4</label>
+          <label><input type="radio" value="d"> 24</label>
+          <p class="explain">Әр символға екі мән берілетіндіктен, <code>n</code> символ үшін 2<sup>n</sup> модель бар: 2⁴ = 16.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. Резолюция арқылы <code>KB ⊨ α</code> екенін дәлелдеу үшін не істейміз?</p>
+          <label><input type="radio" value="a"> <code>KB ∨ α</code> ақиқат екенін тексереміз</label>
+          <label><input type="radio" value="b"> Барлық модельді санап шығамыз</label>
+          <label><input type="radio" value="c"> <code>α</code> ақиқат екенін ұйғарып, қайшылық іздейміз</label>
+          <label><input type="radio" value="d"> <code>(KB ∧ ¬α)</code> өрнегін CNF-ке келтіріп, бос дизъюнкт шығатынын іздейміз</label>
+          <p class="explain">Қайшылық арқылы дәлелдеу: <code>KB ∧ ¬α</code> қайшылыққа (бос дизъюнктке) әкелсе, <code>¬α</code> жалған, демек <code>KB ⊨ α</code>.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">4. Екі ұсыныс <code>P</code>, <code>Q</code>. KB = <code>P ∧ (P → Q)</code>. KB неше модельде ақиқат және нені қамтиды?</p>
+          <label><input type="radio" value="a"> Үш модельде, <code>Q</code> ілеспейді</label>
+          <label><input type="radio" value="b"> Бір модельде (<code>P</code> және <code>Q</code> ақиқат), <code>KB ⊨ Q</code></label>
+          <label><input type="radio" value="c"> Бір модельде, бірақ <code>Q</code> ілеспейді</label>
+          <label><input type="radio" value="d"> Екі модельде, <code>KB ⊨ Q</code></label>
+          <p class="explain"><code>P</code> ақиқат болуы керек, ал <code>P → Q</code> ақиқат болуы үшін <code>Q</code> да ақиқат. KB тек {P = True, Q = True} моделінде ақиқат, онда <code>Q</code> ақиқат, демек <code>KB ⊨ Q</code>.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">5. Мына екі өрнектің қайсысы <code>P → Q</code> өрнегіне логикалық тең?</p>
+          <label><input type="radio" value="a"> <code>¬P ∨ Q</code></label>
+          <label><input type="radio" value="b"> <code>P ∨ ¬Q</code></label>
+          <label><input type="radio" value="c"> <code>¬P ∧ Q</code></label>
+          <label><input type="radio" value="d"> <code>Q → P</code></label>
+          <p class="explain">Импликацияны жою ережесі: <code>P → Q</code> ≡ <code>¬P ∨ Q</code>. Ақиқат кестесі де сол мәндерді береді.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">6. Де Морган заңы бойынша <code>¬(P ∨ Q)</code> неге тең?</p>
+          <label><input type="radio" value="a"> <code>¬P ∨ ¬Q</code></label>
+          <label><input type="radio" value="b"> <code>P ∧ Q</code></label>
+          <label><input type="radio" value="c"> <code>¬P ∧ ¬Q</code></label>
+          <label><input type="radio" value="d"> <code>¬P → Q</code></label>
+          <p class="explain">«Гарри немесе Рон өтті деген рас емес» дегені «Гарри өтпеді және Рон өтпеді» дегенмен бірдей: <code>¬P ∧ ¬Q</code>.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. Білім қорында <code>(A ∨ B)</code> және <code>(¬B ∨ C)</code> бар. Резолюциядан қандай дизъюнкт шығады?</p>
+          <label><input type="radio" value="a"> <code>B</code></label>
+          <label><input type="radio" value="b"> <code>A ∧ C</code></label>
+          <label><input type="radio" value="c"> <code>¬A ∨ ¬C</code></label>
+          <label><input type="radio" value="d"> <code>A ∨ C</code></label>
+          <p class="explain"><code>B</code> пен <code>¬B</code> қарама-қарсы литералдар. Оларды алып тастап, қалғандарын біріктіреміз: <code>A ∨ C</code>.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">8. <code>∀x. Person(x) → (∃y. House(y) ∧ BelongsTo(x, y))</code> сөйлемі нені білдіреді?</p>
+          <label><input type="radio" value="a"> Бір ғана адам бар және ол үйге тиесілі</label>
+          <label><input type="radio" value="b"> Әр адам қандай да бір үйге тиесілі</label>
+          <label><input type="radio" value="c"> Әр үйде бір адам бар</label>
+          <label><input type="radio" value="d"> Кез келген нәрсе үй болып табылады</label>
+          <p class="explain">Кез келген <code>x</code> үшін, егер <code>x</code> адам болса, онда <code>x</code> тиесілі болатын үй <code>y</code> бар. Яғни әр адам қандай да бір үйге тиесілі.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="problem-set">Problem Set 1 (Тапсырмалар жинағы 1)</h2>
+      <p>Ресми тапсырма беті: <a href="https://cs50.harvard.edu/ai/projects/1/" target="_blank" rel="noopener">cs50.harvard.edu/ai/projects/1</a>. Екі тапсырманы да орындау керек: <strong>Knights</strong> және <strong>Minesweeper</strong>. Python 3.12-ден жоғары нұсқа қажет емес. Әр тапсырманы осы беттегі автотексерушіде бірден тексере аласыз, ал ресми <code>check50</code>/<code>submit50</code> командаларын компьютерде немесе <a href="https://cs50.dev/" target="_blank" rel="noopener">cs50.dev</a>-те орындайсыз.</p>
+      <p>Ережені еске салайық: стандартты кітапханадан басқа модульдерді <strong>импорттауға болмайды</strong> (тапсырмада тікелей рұқсат етілгендерден басқасын). Әйтпесе <code>check50</code> жұмыс істемейді, <code>submit50</code> баға қоя алмайды. Мақсат - тұжырымдарды төмен деңгейде өзіңіз түсіну.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-knights">Knights (Рыцарьлар)</h3></div>
+        <p>Логикалық жұмбақтарды шешетін бағдарлама жазыңыз.</p>
+        <h4>Алғышарт</h4>
+        <p>1978 жылы логик Реймонд Смуллиан «Бұл кітаптың аты қандай?» деген логикалық жұмбақтар кітабын шығарды. Кітаптағы жұмбақтардың бір түрін Смуллиан <em>Knights and Knaves</em> (рыцарьлар мен өтірікшілер) деп атады.</p>
+        <p>Мұндай жұмбақта мынандай ақпарат беріледі: әр кейіпкер не рыцарь (knight), не өтірікші (knave). Рыцарь әрдайым шындықты айтады: ол бір сөйлем айтса, сол сөйлем ақиқат. Ал өтірікші әрдайым өтірік айтады: ол бір сөйлем айтса, сол сөйлем жалған. Жұмбақтың мақсаты - әр кейіпкер айтқан сөйлемдерге қарап, әрқайсысының рыцарь немесе өтірікші екенін анықтау.</p>
+        <p>Мысал: A деген бір ғана кейіпкер бар. A: «Мен рыцарьмын да, өтірікшімін де». Логикамен ойлайық: A рыцарь болса, оның сөзі ақиқат болуы керек. Бірақ бұл сөз ақиқат бола алмайды, себебі A бір мезгілде рыцарь да, өтірікші де бола алмайды (әр кейіпкер не рыцарь, не өтірікші, екеуі бірдей емес). Демек, A - өтірікші.</p>
+        <p>Бұл жұмбақ жеңіл еді. Кейіпкерлер мен сөйлемдер көбейген сайын жұмбақтар қиындай түседі! Сіздің міндетіңіз - жұмбақтарды ұсыныстар логикасымен қалай көрсетуге болатынын табу, сонда модельдерді тексеру алгоритмін қолданатын жасанды интеллект оларды шеше алады.</p>
+        <h4>Бастау</h4>
+        <p>Ресми дистрибутивті код: <a href="https://cdn.cs50.net/ai/2023/x/projects/1/knights.zip" target="_blank" rel="noopener">knights.zip</a>. Оны жүктеп, ашыңыз. Сайттағы автотексеруші үшін жеңілдетілген <code>logic.py</code> дайын тұр, оны өзгертудің қажеті жоқ.</p>
+        <h4>Түсіну</h4>
+        <p><code>logic.py</code> файлына қараңыз, ол сізге лекциядан таныс. Бәрін түсіну міндетті емес, бірақ файлда түрлі логикалық байланыстар үшін бірнеше класс анықталғанын байқаңыз. Бұл класстарды бір-бірінің ішіне салуға болады, сондықтан <code>And(Not(A), Or(B, C))</code> сияқты өрнек «<code>A</code> символы ақиқат емес, ал <code>B</code> символы немесе <code>C</code> символы ақиқат» дегенді білдіреді (мұндағы «немесе» қосатын <code>Or</code>).</p>
+        <pre data-lang="python" data-norun><code class="language-python">And(Not(A), Or(B, C))</code></pre>
+        <p><code>logic.py</code> ішінде <code>model_check</code> функциясы да бар. Ол білім қорын және сұрақты алады. Білім қоры - бір ғана логикалық сөйлем: бірнеше сөйлем белгілі болса, оларды <code>And</code> ішінде біріктіруге болады. <code>model_check</code> барлық мүмкін модельдерді рекурсивті қарастырады: білім қоры сұрақты қамтыса <code>True</code>, әйтпесе <code>False</code> қайтарады.</p>
+        <p>Енді <code>puzzle.py</code> файлына қараңыз. Жоғарғы жағында алты ұсыныстық символ анықталған. Мысалы, <code>AKnight</code> - «A рыцарь» ұсынысы, ал <code>AKnave</code> - «A өтірікші». B және C кейіпкерлеріне де осындай символдар бар. Одан кейін төрт білім қоры тұр: <code>knowledge0</code>, <code>knowledge1</code>, <code>knowledge2</code>, <code>knowledge3</code>. Олар сәйкесінше 0, 1, 2, 3-жұмбақтарды шешуге қажет білімді қамтуы керек. Әзірге олардың бәрі бос, сіз толтырасыз. <code>main</code> функциясы барлық жұмбақты аралап, берілген білімге қарап, әр кейіпкердің рыцарь немесе өтірікші екенін модельдерді тексерумен есептейді және алгоритм жасай алған қорытындыларды шығарады.</p>
+        <pre data-lang="python" data-norun><code class="language-python">from logic import *
+
+AKnight = Symbol("A is a Knight")
+AKnave = Symbol("A is a Knave")
+
+BKnight = Symbol("B is a Knight")
+BKnave = Symbol("B is a Knave")
+
+CKnight = Symbol("C is a Knight")
+CKnave = Symbol("C is a Knave")
+
+# Puzzle 0
+# A says "I am both a knight and a knave."
+knowledge0 = And(
+    # TODO
+)</code></pre>
+        <h4>Талаптар</h4>
+        <p><code>knowledge0</code>, <code>knowledge1</code>, <code>knowledge2</code> және <code>knowledge3</code> білім қорларына білім қосып, мына жұмбақтарды шешіңіз:</p>
+        <ul>
+          <li><strong>0-жұмбақ</strong> - алғышарттағы жұмбақ, бір кейіпкер A бар. <ul><li>A: «Мен рыцарьмын да, өтірікшімін де.»</li></ul></li>
+          <li><strong>1-жұмбақ</strong> - екі кейіпкер: A және B. <ul><li>A: «Біз екеуміз де өтірікшіміз.»</li><li>B ештеңе айтпайды.</li></ul></li>
+          <li><strong>2-жұмбақ</strong> - екі кейіпкер: A және B. <ul><li>A: «Біз бір түрдеміз.»</li><li>B: «Біз әртүрлі түрдеміз.»</li></ul></li>
+          <li><strong>3-жұмбақ</strong> - үш кейіпкер: A, B және C. <ul><li>A «Мен рыцарьмын.» не «Мен өтірікшімін.» дейді, бірақ қайсысын айтқаны белгісіз.</li><li>B: «A "Мен өтірікшімін" деді.»</li><li>B одан кейін: «C - өтірікші.»</li><li>C: «A - рыцарь.»</li></ul></li>
+        </ul>
+        <p>Әр жұмбақта әр кейіпкер не рыцарь, не өтірікші. Рыцарь айтқан әр сөйлем ақиқат, өтірікші айтқан әр сөйлем жалған. Әр жұмбақтың білім қорын толтырған соң <code>python puzzle.py</code> іске қосып, шешімді көре аласыз.</p>
+        <p><strong>Өзіңізді тексеріңіз:</strong> 0-жұмбақта A кім (<code>knight</code> не <code>knave</code>)?</p>
+        <div class="answer-check" data-answer="knave"><input type="text" placeholder="knight не knave" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li>Әр білім қорына ақпараттың екі түрін жазуға тура келеді: (1) жұмбақтың құрылымы туралы (Knights and Knaves жұмбағының анықтамасында берілгені), (2) кейіпкерлердің шын мәнінде не айтқаны туралы.</li>
+            <li>Кейіпкер сөйлем айтса, бұл нені білдіретінін ойланыңыз. Қандай жағдайда сол сөйлем ақиқат, қандай жағдайда жалған? Мұны логикалық сөйлем ретінде қалай жазасыз?</li>
+            <li>Әр жұмбаққа дұрыс нәтиже беретін білім қоры көп. Жұмбақтағы ақпаратты ең тікелей аударатынын және ең қысқа жазылатынын таңдаңыз; шешімді өзіңіз ойша шығарып жазбаңыз. Мысалы, 0-жұмбақта <code>knowledge0 = AKnave</code> дұрыс нәтиже береді (A-ның өтірікші екенін біз өзіміз шығардық), бірақ бұл тапсырманың рухына қайшы: ойлауды жасанды интеллект істеуі керек.</li>
+            <li><code>logic.py</code>-ды өзгертудің қажеті жоқ (өзгертпеңіз).</li>
+          </ul>
+        </div></details>
+        <div class="callout note"><span class="callout-title">Тестілеу туралы</span><p>Басқа тапсырмалардан айырмашылығы, Knights тапсырмасында <strong>100%</strong> алу керек (курстағы әдеттегі 70% өту шарты бұл жерде жұмыс істемейді). Сайттағы автотексеруші ресми шығысты салыстырады, бірақ нәтижені өзіңіз де тексеріңіз. Бағдарламаны ресми дистрибутивте <code>python puzzle.py</code> арқылы және <code>check50</code>-пен компьютерде орындаңыз.</p></div>
+        <div class="autograder" data-check="py-knights" data-src="ai/checks/week-1.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="ai1-knights">
+            <li><input type="checkbox"> <span>0-жұмбақ: A - Knave</span></li>
+            <li><input type="checkbox"> <span>1-жұмбақ: A - Knave, B - Knight</span></li>
+            <li><input type="checkbox"> <span>2-жұмбақ: A - Knave, B - Knight</span></li>
+            <li><input type="checkbox"> <span>3-жұмбақ: A - Knight, B - Knave, C - Knight</span></li>
+            <li><input type="checkbox"> <span>Білім қорлары жұмбақты тікелей аударады және <code>logic.py</code> өзгертілмеген.</span></li>
+            <li><input type="checkbox"> <span><code>check50 ai50/projects/2024/x/knights</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span><code>style50 puzzle.py</code> қатесіз.</span></li>
+            <li><input type="checkbox"> <span><code>submit50 ai50/projects/2024/x/knights</code> жіберілді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pset-minesweeper">Minesweeper (Сапёр)</h3></div>
+        <p>Minesweeper ойынын ойнайтын жасанды интеллект жазыңыз.</p>
+        <h4>Алғышарт</h4>
+        <h5>Minesweeper</h5>
+        <p>Minesweeper - ұяшықтар торынан тұратын жұмбақ ойын. Кейбір ұяшықтарда жасырын «миналар» бар. Мина бар ұяшықты басу минаның жарылуына әкеліп, ойыншы жеңіледі. «Қауіпсіз» ұяшықты (мина жоқ) басса, ол көрші ұяшықтардың нешеуінде мина бар екенін көрсететін сан ашады. Көрші ұяшық - берілген ұяшықтың сол жағында, оң жағында, үстінде, астында немесе диагональ бойынша бір қадам жерде тұрған ұяшық.</p>
+        <p>Мысалы, 3x3 Minesweeper ойынында үш <code>1</code> мәні әр ұяшықтың көршілерінің бірінде мина барын білдіреді. Төрт <code>0</code> мәні сол ұяшықтардың маңында мина жоқ дегенді білдіреді. Осы ақпаратқа қарап ойыншы төменгі оң жақ ұяшықта мина болуы керек және жоғарғы сол жақ ұяшықта мина жоқ деп қорытады: өйткені басқа ұяшықтардағы сандар тек сонда ғана дұрыс болады.</p>
+        <p>Ойынның мақсаты - әр минаны белгілеу (flag). Көп нұсқада, соның ішінде осы жобада, ойыншы ұяшықты тінтуірдің оң батырмасымен басып (не екі саусақпен басып) минаны белгілей алады.</p>
+        <h5>Ұсыныстар логикасы</h5>
+        <p>Бұл жобадағы мақсатыңыз - Minesweeper ойнай алатын жасанды интеллект құру. Білімге негізделген агенттер білім қорын қарап, соған сүйеніп қорытынды шығарып шешім қабылдайтынын еске түсіріңіз.</p>
+        <p>Жасанды интеллекттің ойын туралы біліміне бір тәсіл: әр ұяшықты ұсыныстық айнымалы етіп алу. Ұяшықта мина болса, айнымалы ақиқат, болмаса жалған.</p>
+        <p>Жасанды интеллектте қандай ақпарат бар? Қауіпсіз ұяшық басылған сайын ол ұяшықтың санын көреді. Төмендегі тақтаны қарайық: ортаңғы ұяшық ашылған, ал басқа ұяшықтар әңгімеге ыңғайлы болу үшін әріптермен белгіленген.</p>
+        <figure class="fig"><svg viewBox="0 0 136 136" role="img" aria-label="Ортаңғы ұяшық ашылған (1), көршілері A-дан H-ға дейін әріппен белгіленген" class="mgrid" style="max-width:136px"><rect x="2" y="2" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="24.0" y="30.0" text-anchor="middle" font-size="18" font-family="var(--mono)" fill="currentColor">A</text><rect x="46" y="2" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="68.0" y="30.0" text-anchor="middle" font-size="18" font-family="var(--mono)" fill="currentColor">B</text><rect x="90" y="2" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="112.0" y="30.0" text-anchor="middle" font-size="18" font-family="var(--mono)" fill="currentColor">C</text><rect x="2" y="46" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="24.0" y="74.0" text-anchor="middle" font-size="18" font-family="var(--mono)" fill="currentColor">D</text><rect x="46" y="46" width="44" height="44" fill="var(--accent-soft)" stroke="currentColor" stroke-width="1.5"/><text x="68.0" y="74.0" text-anchor="middle" font-size="18" font-family="var(--mono)" fill="currentColor">1</text><rect x="90" y="46" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="112.0" y="74.0" text-anchor="middle" font-size="18" font-family="var(--mono)" fill="currentColor">E</text><rect x="2" y="90" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="24.0" y="118.0" text-anchor="middle" font-size="18" font-family="var(--mono)" fill="currentColor">F</text><rect x="46" y="90" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="68.0" y="118.0" text-anchor="middle" font-size="18" font-family="var(--mono)" fill="currentColor">G</text><rect x="90" y="90" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.5"/><text x="112.0" y="118.0" text-anchor="middle" font-size="18" font-family="var(--mono)" fill="currentColor">H</text></svg><figcaption>Ортаңғы ұяшық ашылған (1), көршілері A-дан H-ға дейін әріппен белгіленген</figcaption></figure>
+        <p>Қазір не білеміз? Сегіз көршінің бірінде мина бар екені анық. Сондықтан мынадай логикалық өрнек жаза аламыз:</p>
+        <pre data-lang="plaintext"><code class="language-plaintext">Or(A, B, C, D, E, F, G, H)</code></pre>
+        <p>Бірақ біз бұдан көбірек білеміз. Жоғарыдағы сөйлем сегіз айнымалының <em>кем дегенде</em> біреуі ақиқат деп тұр. Ал біз күштірек тұжырым жасай аламыз: сегіз айнымалының <strong><em>дәл</em></strong> біреуі ақиқат. Мұны ұсыныстар логикасында былай жазамыз:</p>
+        <pre data-lang="python" data-norun><code class="language-python">Or(
+    And(A, Not(B), Not(C), Not(D), Not(E), Not(F), Not(G), Not(H)),
+    And(Not(A), B, Not(C), Not(D), Not(E), Not(F), Not(G), Not(H)),
+    And(Not(A), Not(B), C, Not(D), Not(E), Not(F), Not(G), Not(H)),
+    And(Not(A), Not(B), Not(C), D, Not(E), Not(F), Not(G), Not(H)),
+    And(Not(A), Not(B), Not(C), Not(D), E, Not(F), Not(G), Not(H)),
+    And(Not(A), Not(B), Not(C), Not(D), Not(E), F, Not(G), Not(H)),
+    And(Not(A), Not(B), Not(C), Not(D), Not(E), Not(F), G, Not(H)),
+    And(Not(A), Not(B), Not(C), Not(D), Not(E), Not(F), Not(G), H)
+)</code></pre>
+        <p>Өте күрделі өрнек! Және бұл тек ұяшықта <code>1</code> тұрғанын жазу үшін. Ұяшықта <code>2</code>, <code>3</code> не басқа сан болса, өрнек одан да ұзын болады.</p>
+        <p>Мұндай есепте модельдерді тексеру тез шешілмейтін болып шығады. Microsoft бастаушы деңгейінде қолданатын 8x8 торда 64 айнымалы, демек 2<sup>64</sup> мүмкін модель болады. Компьютер оны ақылға сыйымды уақытта есептей алмайды. Бізге білімді көрсетудің жақсырақ тәсілі керек.</p>
+        <h5>Білімді көрсету</h5>
+        <p>Енді жасанды интеллекттің әр сөйлемін былай жазамыз:</p>
+        <pre data-lang="plaintext"><code class="language-plaintext">{A, B, C, D, E, F, G, H} = 1</code></pre>
+        <p>Бұл көрсетілімдегі әр логикалық сөйлемнің екі бөлігі бар: сөйлемге қатысты тордағы ұяшықтар жиыны <code>cells</code> және осы ұяшықтардың нешеуі мина екенін көрсететін сан <code>count</code>. Жоғарыдағы сөйлем: A, B, C, D, E, F, G, H ұяшықтарының дәл біреуі мина.</p>
+        <p>Бұл неге пайдалы? Біріншіден, ол кейбір шығару түрлеріне өте ыңғайлы. Мына ойынды қарайық: төменгі сол жақ санға сүйеніп, <code>{D, E, G} = 0</code> сөйлемін жасай аламыз, яғни D, E, G ұяшықтарының нөлі мина. Бұдан бәрінің қауіпсіз екенін қорытамыз. Жалпы, <code>count</code> мәні <code>0</code> болатын кез келген сөйлемде барлық <code>cells</code> қауіпсіз.</p>
+        <p>Сол сияқты, басқа ойында жасанды интеллект <code>{E, F, H} = 3</code> сөйлемін жасайды. Бұдан E, F, H үшеуі де мина деп қорытамыз. Жалпы, <code>cells</code> саны <code>count</code>-қа тең болса, сол сөйлемнің барлық <code>cells</code> миналар.</p>
+        <p>Жалпы, біз сөйлемдерді әлі мина немесе қауіпсіз екені белгісіз ұяшықтар туралы жазғымыз келеді. Ұяшықтың күйі анықталған сайын сөйлемдерді жеңілдетіп, жаңа қорытынды шығара аламыз.</p>
+        <p>Мысалы, жасанды интеллект <code>{A, B, C} = 2</code> сөйлемін білсін. Қазір ештеңе қорытпаймыз. Бірақ C қауіпсіз екені белгілі болса, C-ны сөйлемнен алып тастап, <code>{A, B} = 2</code> аламыз (бұдан жаңа қорытынды шығады). Ал C мина екені белгілі болса, C-ны алып тастап, <code>count</code>-ты азайтамыз (себебі C сол санға үлес қосқан мина): <code>{A, B} = 1</code>. Бұл қисынды: A, B, C-ның екеуі мина, C мина болса, A мен B-ның дәл біреуі мина.</p>
+        <p>Одан да айлалы қорытынды түрі бар: <strong>ішкі жиын арқылы шығару</strong>. Жоғарғы ортаңғы ұяшықтан <code>{A, B, C} = 1</code>, төменгі ортаңғы ұяшықтан <code>{A, B, C, D, E} = 2</code> сөйлемдерін аламыз делік. Онда жаңа білім шығады: <code>{D, E} = 1</code>. Шынында да, A, B, C, D, E-нің екеуі мина, ал A, B, C-ның біреуі ғана мина болса, D мен E-нің дәл біреуі екінші мина болуы керек.</p>
+        <p>Жалпы, <code>set1 = count1</code> және <code>set2 = count2</code> сөйлемдері бар және <code>set1</code> жиыны <code>set2</code>-нің ішкі жиыны болса, жаңа сөйлем құра аламыз: <code>set2 - set1 = count2 - count1</code>. Жоғарыдағы мысалға қарап, неге бұлай екенін түсінгеніңізге көз жеткізіңіз.</p>
+        <p>Осы тәсілмен Minesweeper тақтасы туралы білім жинап, қауіпсіз ұяшықтарды таңдай алатын агент жаза аламыз.</p>
+        <h4>Бастау</h4>
+        <p>Ресми дистрибутивті код: <a href="https://cdn.cs50.net/ai/2023/x/projects/1/minesweeper.zip" target="_blank" rel="noopener">minesweeper.zip</a>. Оны жүктеп ашыңыз да, жоба қалтасында <code>pip3 install -r requirements.txt</code> арқылы қажетті Python пакетін (<code>pygame</code>) орнатыңыз.</p>
+        <div class="callout note"><span class="callout-title">Компьютерде орындалады</span><p>Графикалық ойын (<code>runner.py</code>, <code>pygame</code>) браузерде жұмыс істемейді: оны компьютеріңізде не cs50.dev-те орындайсыз. Төмендегі автотексеруші <code>pygame</code>-сіз, тек <code>minesweeper.py</code> файлын шағын тақталарда ойнатып тексереді (<code>make_random_move</code> үшін тек шарттар тексеріледі).</p></div>
+        <h4>Түсіну</h4>
+        <p>Жобада екі негізгі файл бар: <code>runner.py</code> және <code>minesweeper.py</code>. <code>minesweeper.py</code> ойынның өзінің және жасанды интеллекттің логикасын қамтиды. <code>runner.py</code> дайын жазылған, ол ойынның графикалық интерфейсін іске қосады. <code>minesweeper.py</code>-дағы барлық функцияны аяқтаған соң, <code>python runner.py</code> арқылы Minesweeper ойнай аласыз (не жасанды интеллектке ойнатасыз).</p>
+        <p><code>minesweeper.py</code>-да үш класс бар. <code>Minesweeper</code> ойын процесін басқарады, ол толық дайын. Әр ұяшық <code>(i, j)</code> жұбы: <code>i</code> - жол нөмірі (<code>0</code>-ден <code>height - 1</code>-ге дейін), <code>j</code> - баған нөмірі (<code>0</code>-ден <code>width - 1</code>-ге дейін). <code>Sentence</code> жоғарыда сипатталған логикалық сөйлемді көрсетеді: оның <code>cells</code> жиыны және <code>count</code> саны бар. Класта нақты мина немесе қауіпсіз ұяшықтарды анықтайтын <code>known_mines</code>, <code>known_safes</code> функциялары және жаңа ақпарат келгенде сөйлемді жаңартатын <code>mark_mine</code>, <code>mark_safe</code> функциялары бар. <code>MinesweeperAI</code> қандай жүріс жасау керегін білімге сүйеніп шығаратын жасанды интеллектті іске асырады.</p>
+        <p><code>MinesweeperAI</code> бірнеше мәнді бақылайды: <code>self.moves_made</code> - басылған барлық ұяшықтар жиыны (қайта таңдамау үшін); <code>self.mines</code> - мина екені белгілі ұяшықтар; <code>self.safes</code> - қауіпсіз екені белгілі ұяшықтар; <code>self.knowledge</code> - жасанды интеллект ақиқат деп білетін <code>Sentence</code> тізімі.</p>
+        <p><code>mark_mine</code> функциясы ұяшықты <code>self.mines</code> жиынына қосады, сонда жасанды интеллект оның мина екенін біледі. Сонымен қатар ол <code>knowledge</code> ішіндегі әр сөйлемге бұл ұяшықтың мина екенін хабарлайды, сөйлем қажет болса өзін жаңартады. <code>mark_safe</code> дәл солай, бірақ қауіпсіз ұяшықтар үшін істейді.</p>
+        <p>Қалған <code>add_knowledge</code>, <code>make_safe_move</code> және <code>make_random_move</code> функцияларын өзіңіз жазасыз.</p>
+        <h4>Талаптар</h4>
+        <p><code>minesweeper.py</code>-дағы <code>Sentence</code> және <code>MinesweeperAI</code> кластарын аяқтаңыз.</p>
+        <p><code>Sentence</code> класында <code>known_mines</code>, <code>known_safes</code>, <code>mark_mine</code> және <code>mark_safe</code> функцияларын жазыңыз.</p>
+        <ul>
+          <li><code>known_mines</code> функциясы <code>self.cells</code> ішіндегі мина екені белгілі барлық ұяшықтар жиынын қайтаруы керек.</li>
+          <li><code>known_safes</code> функциясы <code>self.cells</code> ішіндегі қауіпсіз екені белгілі барлық ұяшықтар жиынын қайтаруы керек.</li>
+          <li><code>mark_mine</code> функциясы алдымен <code>cell</code> сөйлемде бар-жоғын тексеруі керек.
+            <ul>
+              <li><code>cell</code> сөйлемде болса, функция сөйлемді жаңартуы керек: <code>cell</code> енді сөйлемде жоқ, бірақ <code>cell</code> мина екені белгілі болғандағы логикалық дұрыс сөйлем қалуы керек.</li>
+              <li><code>cell</code> сөйлемде болмаса, ештеңе істеудің қажеті жоқ.</li>
+            </ul>
+          </li>
+          <li><code>mark_safe</code> функциясы алдымен <code>cell</code> сөйлемде бар-жоғын тексеруі керек.
+            <ul>
+              <li><code>cell</code> сөйлемде болса, функция сөйлемді жаңартуы керек: <code>cell</code> енді сөйлемде жоқ, бірақ <code>cell</code> қауіпсіз екені белгілі болғандағы логикалық дұрыс сөйлем қалуы керек.</li>
+              <li><code>cell</code> сөйлемде болмаса, ештеңе істеудің қажеті жоқ.</li>
+            </ul>
+          </li>
+        </ul>
+        <p><code>MinesweeperAI</code> класында <code>add_knowledge</code>, <code>make_safe_move</code> және <code>make_random_move</code> функцияларын жазыңыз.</p>
+        <ul>
+          <li><code>add_knowledge</code> функциясы <code>cell</code> (<code>(i, j)</code> кортежі) мен оған сәйкес <code>count</code> қабылдауы керек, және <code>cell</code> қауіпсіз екені, оның көршілерінің <code>count</code> данасы мина екені белгілі болғанда жасанды интеллект шығара алатын барлық жаңа ақпаратпен <code>self.mines</code>, <code>self.safes</code>, <code>self.moves_made</code> және <code>self.knowledge</code> жаңартуы керек.
+            <ul>
+              <li>Функция <code>cell</code>-ді жасалған жүрістердің бірі ретінде белгілеуі керек.</li>
+              <li>Функция <code>cell</code>-ді қауіпсіз деп белгілеп, оны қамтитын барлық сөйлемді жаңартуы керек.</li>
+              <li>Функция жасанды интеллектің білім қорына <code>cell</code> мен <code>count</code> мәніне негізделген жаңа сөйлем қосып, <code>cell</code>-дің <code>count</code> көршісі мина екенін көрсетуі керек. Сөйлемге тек күйі әлі анықталмаған ұяшықтарды қосуды ұмытпаңыз.</li>
+              <li><code>self.knowledge</code> ішіндегі кез келген сөйлемге сүйеніп жаңа ұяшықтарды қауіпсіз не мина деп белгілеуге болса, функция солай істеуі керек.</li>
+              <li><code>self.knowledge</code> ішіндегі кез келген сөйлемге сүйеніп (Алғышарттағы ішкі жиын әдісімен) жаңа сөйлемдер шығаруға болса, оларды да білім қорына қосу керек.</li>
+              <li>Жасанды интеллект білімін өзгерткен сайын бұрын мүмкін емес жаңа қорытындылар шығуы мүмкін екенін ескеріңіз. Мүмкін болса, сол жаңа шығарымдардың бәрі білім қорына қосылуы керек.</li>
+            </ul>
+          </li>
+          <li><code>make_safe_move</code> қауіпсіз екені белгілі <code>(i, j)</code> жүрісін қайтаруы керек.
+            <ul>
+              <li>Қайтарылатын жүріс қауіпсіз екені белгілі болуы керек және бұрын жасалған жүріс болмауы керек.</li>
+              <li>Қауіпсіз жүріс кепілдік беріле алмаса, функция <code>None</code> қайтаруы керек.</li>
+              <li>Функция <code>self.moves_made</code>, <code>self.mines</code>, <code>self.safes</code> немесе <code>self.knowledge</code> мәндерін өзгертпеуі керек.</li>
+            </ul>
+          </li>
+          <li><code>make_random_move</code> кездейсоқ <code>(i, j)</code> жүрісін қайтаруы керек.
+            <ul>
+              <li>Қауіпсіз жүріс мүмкін болмаса бұл функция шақырылады: жасанды интеллект қайда жүруді білмесе, кездейсоқ таңдайды.</li>
+              <li>Жүріс бұрын жасалған жүріс болмауы керек.</li>
+              <li>Жүріс мина екені белгілі ұяшық болмауы керек.</li>
+              <li>Мұндай жүріс мүмкін болмаса, функция <code>None</code> қайтаруы керек.</li>
+            </ul>
+          </li>
+        </ul>
+        <h4>Кеңестер</h4>
+        <details><summary>Кеңес</summary><div class="details-body">
+          <ul>
+            <li>Білім қалай көрсетілетінін және жасанды интеллект қалай қорытынды шығаратынын түсіну үшін Алғышарт бөлімін мұқият оқыңыз.</li>
+            <li>Объектіге бағытталған бағдарламалау қиын болса, <a href="https://docs.python.org/3/tutorial/classes.html" target="_blank" rel="noopener">Python құжаттамасындағы кластар</a> бөлімі көмектеседі. Жиындармен жұмыс үшін <a href="https://docs.python.org/3/library/stdtypes.html#set" target="_blank" rel="noopener">set құжаттамасын</a> қараңыз.</li>
+            <li><code>Sentence</code> ішінде <code>known_mines</code> және <code>known_safes</code> жазғанда ойланыңыз: сөйлемнің ұяшықтары қауіпсіз екені қандай жағдайда анық? Мина екені қандай жағдайда анық?</li>
+            <li><code>add_knowledge</code> - ең көп жұмыс істейтін, жобадағы ең ұзын функция болады. Оның әрекетін қадам-қадаммен жазыңыз.</li>
+            <li>Кластарға жаңа әдістер қосуға болады, бірақ бар функциялардың анықтамасы мен аргументтерін өзгертуге болмайды.</li>
+            <li>Жасанды интеллектті іске қосқанда («AI Move» басқанда) ол әрдайым жеңе бермейді. Кейде ақпарат жетпегендіктен ол болжауға мәжбүр болады, бұл қалыпты. <code>runner.py</code> жасанды интеллект жүрісін қауіпсіз деп санайтынын немесе кездейсоқ жасап жатқанын шығарады.</li>
+            <li>Жиын бойынша итерация жасап жатқанда оны өзгертпеңіз, әйтпесе қате шығады.</li>
+          </ul>
+        </div></details>
+        <div class="callout note"><span class="callout-title">Автотексеруші туралы</span><p>Төмендегі терезеде ресми <code>minesweeper.py</code> қаңқасы дайын тұр: <code>NotImplementedError</code> орындарын өз кодыңызбен ауыстырыңыз. Ресми <code>check50</code> тесттері бұдан кеңірек, сондықтан компьютерде де орындаңыз.</p></div>
+        <div class="autograder" data-check="py-minesweeper" data-src="ai/checks/week-1.js"></div>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="ai1-minesweeper">
+            <li><input type="checkbox"> <span><code>known_mines</code>, <code>known_safes</code>, <code>mark_mine</code>, <code>mark_safe</code> дұрыс жұмыс істейді.</span></li>
+            <li><input type="checkbox"> <span><code>add_knowledge</code>: жүріс белгіленеді, ұяшық қауіпсіз болады, жаңа сөйлем қосылады.</span></li>
+            <li><input type="checkbox"> <span>Қауіпсіз/мина шығарымдары және ішкі жиын арқылы шығару жұмыс істейді.</span></li>
+            <li><input type="checkbox"> <span><code>make_safe_move</code> күйді өзгертпейді, <code>make_random_move</code> жасалған жүріс пен минаны таңдамайды.</span></li>
+            <li><input type="checkbox"> <span><code>check50 ai50/projects/2024/x/minesweeper</code> өтеді.</span></li>
+            <li><input type="checkbox"> <span><code>style50 minesweeper.py</code> қатесіз.</span></li>
+            <li><input type="checkbox"> <span><code>submit50 ai50/projects/2024/x/minesweeper</code> жіберілді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-0.html"><small>Алдыңғы</small>← 0-апта: Іздеу</a>
+        <a class="next" href="week-2.html"><small>Келесі</small>2-апта: Белгісіздік →</a>
+      </nav>
+
+      <p class="translator-note">Бұл бет CS50 AI (CS50's Introduction to Artificial Intelligence with Python, Гарвард университеті, Brian Yu, David J. Malan) лекциясының қазақша аудармасы және бейімделген нұсқасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+
+</article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің профилім</a></li></ul></div>
+      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p><p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>
