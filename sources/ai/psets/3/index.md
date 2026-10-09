@@ -3,4 +3,4 @@
 
 Complete the below.
 
-  * [Crossword](https://cs50.harvard.edu/ai/projects/3/<crossword/>)
+  * [Crossword](https://cs50.harvard.edu/ai/projects/3/crossword/)
