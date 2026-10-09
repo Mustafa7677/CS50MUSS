@@ -5,7 +5,12 @@
   const K = window.CS50KZ;
   const esc = K.escapeHtml;
   const store = {
-    get(key, def) { try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch (e) { return def; } },
+    get(key, def) {
+      let v;
+      try { v = JSON.parse(localStorage.getItem(key)); } catch (e) { return def; }
+      // бүлінген не басқа түрдегі мән - әдепкі мән
+      return v != null && (def == null || (Array.isArray(def) ? Array.isArray(v) : typeof def === "object" ? typeof v === "object" && !Array.isArray(v) : typeof v === typeof def)) ? v : def;
+    },
     set(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) {} },
     del(key) { try { localStorage.removeItem(key); } catch (e) {} },
   };
@@ -21,10 +26,14 @@
     const lecs = window.CS50KZ_LECTURES || [];
     const lecOf = (q) => lecs.find((l) => q.u.startsWith(l.url)) || { id: "?", num: q.l, title: q.l, url: q.u.split("#")[0] };
     let run = store.get(RUN, null), tick = null;
+    // Нәтижелер: бүлінген болса да пішіні дұрыс (best - сан не null, tries - тізім)
+    const results = () => { const r = store.get(RES, {}); return { best: typeof r.best === "number" ? r.best : null, tries: Array.isArray(r.tries) ? r.tries : [] }; };
+    // Сақталған емтихан күйі бүлінген болса (сұрақтар тізімі жоқ) - басынан бастаймыз
+    if (run && !(Array.isArray(run.qs) && run.qs.length && Array.isArray(run.ans) && Array.isArray(run.flag))) { run = null; try { localStorage.removeItem(RUN); } catch (e) {} }
 
     function intro() {
       clearInterval(tick);
-      const res = store.get(RES, { best: null, tries: [] });
+      const res = results();
       const n = lecs.length * PER_LECTURE;
       el.innerHTML = `
         <div class="ex-intro">
@@ -131,7 +140,7 @@
       const secs = Math.min(MINUTES * 60, Math.round((Date.now() - run.t0) / 1000));
       const right = qs.filter((q, i) => ans[i] === q.a).length;
       const pct = Math.round((right / qs.length) * 100);
-      const res = store.get(RES, { best: null, tries: [] });
+      const res = results();
       const d = new Date();
       res.tries.push({ p: pct, d: `${d.getDate()}.${String(d.getMonth() + 1).padStart(2, "0")}.${d.getFullYear()}`, s: secs });
       res.tries = res.tries.slice(-20);

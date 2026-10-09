@@ -9,7 +9,8 @@
 
   // ---------- localStorage көмекшілері ----------
   const raw = (k) => { try { return localStorage.getItem(k); } catch (e) { return null; } };
-  const get = (k, d) => { try { return JSON.parse(raw(k)) ?? d; } catch (e) { return d; } };
+  const sameKind = (v, d) => v != null && (d == null || (Array.isArray(d) ? Array.isArray(v) : typeof d === "object" ? typeof v === "object" && !Array.isArray(v) : typeof v === typeof d));
+  const get = (k, d) => { try { const v = JSON.parse(raw(k)); return sameKind(v, d) ? v : d; } catch (e) { return d; } };
   const put = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} };
   const keys = () => { const out = []; try { for (let i = 0; i < localStorage.length; i++) out.push(localStorage.key(i)); } catch (e) {} return out; };
 

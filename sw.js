@@ -1,6 +1,6 @@
 // CS50 қазақша — офлайн режим.
 // Беттер желіден алынады, ал желі жоқ кезде кэштегі соңғы нұсқа көрсетіледі.
-const CACHE = "cs50kz-v48";
+const CACHE = "cs50kz-v49";
 const CORE = [
   "./", "index.html", "about.html", "glossary.html", "certificate.html", "playground.html", "practice.html", "flashcards.html", "viz.html", "teacher.html", "debug.html", "detective.html", "flask.html", "exam.html", "assets/js/exam.js", "profile.html", "assets/js/profile.js", "assets/js/cloud.js", "assets/js/feedback.js", "assets/js/flask.js", "assets/data/mystery.js", "assets/data/mystery2.js", "assets/data/quotes.js", "assets/data/portraits.js", "alash.html", "map.html", "cheatsheet.html", "assets/data/bugs.js", "assets/data/trace.js", "assets/data/checks.js", "assets/data/sqlchecks.js", "assets/img/bota.svg", "assets/img/bota-happy.svg", "assets/img/bota-think.svg", "assets/img/bota-wow.svg", "assets/vendor/qrcode/qrcode.js",
   "assets/css/style.css", "assets/js/main.js", "assets/js/labs.js",
@@ -41,6 +41,8 @@ self.addEventListener("fetch", (e) => {
         }
         return res;
       })
-      .catch(() => caches.match(req, { ignoreSearch: true }).then((r) => r || caches.match("index.html")))
+      // Желі жоқ: кэштегі нұсқа. Басты бетке тек бет навигациясы қайтады - скрипт/сурет/CSS орнына HTML
+      // берсек, браузер оны JS деп оқып «Unexpected token '<'» қатесін шығарады (мысалы, CDN-нен highlight.js)
+      .catch(() => caches.match(req, { ignoreSearch: true }).then((r) => r || (req.mode === "navigate" ? caches.match("index.html") : Response.error())))
   );
 });

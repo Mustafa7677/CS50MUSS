@@ -6,7 +6,12 @@
   const esc = K.escapeHtml;
   const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
   const store = {
-    get(key, def) { try { return JSON.parse(localStorage.getItem(key)) ?? def; } catch (e) { return def; } },
+    get(key, def) {
+      let v;
+      try { v = JSON.parse(localStorage.getItem(key)); } catch (e) { return def; }
+      // бүлінген не басқа түрдегі мән - әдепкі мән
+      return v != null && (def == null || (Array.isArray(def) ? Array.isArray(v) : typeof def === "object" ? typeof v === "object" && !Array.isArray(v) : typeof v === typeof def)) ? v : def;
+    },
     set(key, v) { try { localStorage.setItem(key, JSON.stringify(v)); } catch (e) {} },
   };
   const today = () => { const d = new Date(); return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`; };
