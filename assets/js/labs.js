@@ -283,11 +283,15 @@
   // ================= Флэш-карточкалар (Лейтнер жүйесі) =================
   async function flashcards(el) {
     await K.loadScript("assets/data/glossary.js");
-    const cards = window.CS50KZ_GLOSSARY || [];
+    const ALLCARDS = window.CS50KZ_GLOSSARY || [];
+    const courseOf = (c) => (/^(python|sql|ai|web)\//.exec(c.url) || [])[1] || "x";
+    const NAMES = { all: "Барлығы", x: "CS50x", python: "CS50P", sql: "SQL", ai: "AI", web: "Web" };
+    let cards = ALLCARDS;
     const KEY = "cs50kz:cards";
     let boxes = store.get(KEY, {});
     let dir = "kz", deck = [], cur = 0, flipped = false;
     el.innerHTML = `
+      <div class="seg fc-course" role="group" aria-label="Курс">${Object.keys(NAMES).map((c, k) => `<button type="button" data-c="${c}" class="${k ? "" : "on"}">${NAMES[c]}</button>`).join("")}</div>
       <div class="fc-top">
         <div class="seg fc-dir"><button type="button" data-d="kz" class="on">Қазақша → English</button><button type="button" data-d="en">English → Қазақша</button></div>
         <span class="fc-progress"></span>
@@ -347,6 +351,16 @@
       el.querySelectorAll(".fc-dir button").forEach((b) => b.classList.toggle("on", b === e.target));
       show();
     });
+    el.querySelector(".fc-course").addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-c]");
+      if (!b) return;
+      const c = b.dataset.c;
+      const sel = c === "all" ? ALLCARDS : ALLCARDS.filter((x) => courseOf(x) === c);
+      if (!sel.length) return;
+      cards = sel;
+      el.querySelectorAll(".fc-course button").forEach((x) => x.classList.toggle("on", x === b));
+      newDeck();
+    });
     document.addEventListener("keydown", (e) => {
       if (/INPUT|TEXTAREA/.test(document.activeElement.tagName)) return;
       if (e.key === " ") { e.preventDefault(); flip(); }
@@ -379,7 +393,10 @@
   // ================= Күннің сұрағы + стрик =================
   async function daily(el) {
     await K.loadScript("assets/data/quiz.js");
-    const pool = window.CS50KZ_QUIZ || [];
+    // Күннің сұрағы: оқушы соңғы қараған курстан (әдепкі CS50x)
+    const lc = (K.readJson("cs50kz:lastcourse", "x") || "x");
+    const all = window.CS50KZ_QUIZ || [];
+    const pool = all.filter((q) => (q.c || "x") === lc).length ? all.filter((q) => (q.c || "x") === lc) : all.filter((q) => !q.c);
     if (!pool.length) return;
     const q = pool[(dayNumber() * 37) % pool.length];
     const st = store.get("cs50kz:daily", { day: null, ok: null, streak: 0, best: 0, last: null });
@@ -416,18 +433,29 @@
   // ================= Аралас тест =================
   async function mixedQuiz(el) {
     await K.loadScript("assets/data/quiz.js");
-    await K.loadScript("assets/data/lectures.js");
-    const pool = window.CS50KZ_QUIZ || [];
-    const lecs = window.CS50KZ_LECTURES || [];
-    let qs = [], i = 0, score = 0, from = "all";
+    const ALL = window.CS50KZ_QUIZ || [];
+    const NAMES = { x: "CS50x", python: "CS50P", sql: "CS50 SQL", ai: "CS50 AI", web: "CS50 Web" };
+    let course = K.readJson("cs50kz:lastcourse", "x") || "x";
+    if (!ALL.some((q) => (q.c || "x") === course)) course = "x";
+    let pool = [], qs = [], i = 0, score = 0, from = "all";
     el.innerHTML = `
       <div class="mq-top">
-        <label>Тақырып <select class="mq-from"><option value="all">Бүкіл курс (${pool.length} сұрақ)</option>${lecs.map((l) => `<option value="${esc(l.num + ": " + l.title)}">${esc(l.num + ": " + l.title)}</option>`).join("")}</select></label>
+        <div class="seg mq-courses" role="group" aria-label="Курс">${Object.keys(NAMES).map((c) => `<button type="button" data-c="${c}" class="${c === course ? "on" : ""}">${NAMES[c]}</button>`).join("")}</div>
+        <label>Тақырып <select class="mq-from"></select></label>
         <span class="mq-best"></span>
       </div>
       <div class="mq-bar"><span></span></div>
       <div class="mq-box"></div>
       <div class="mq-next-wrap"><button type="button" class="btn gold mq-next" hidden>Келесі →</button></div>`;
+    const setCourse = (c) => {
+      course = c; from = "all";
+      pool = ALL.filter((q) => (q.c || "x") === c);
+      const labels = [...new Set(pool.map((q) => q.l))];
+      el.querySelector(".mq-from").innerHTML = `<option value="all">Бүкіл курс (${pool.length} сұрақ)</option>` + labels.map((l) => `<option value="${esc(l)}">${esc(l)}</option>`).join("");
+      el.querySelectorAll(".mq-courses button").forEach((b) => b.classList.toggle("on", b.dataset.c === c));
+    };
+    setCourse(course);
+    el.querySelector(".mq-courses").addEventListener("click", (e) => { const b = e.target.closest("button[data-c]"); if (b) { setCourse(b.dataset.c); start(); } });
     const box = el.querySelector(".mq-box"), next = el.querySelector(".mq-next");
     const best = store.get("cs50kz:mixed-best", 0);
     el.querySelector(".mq-best").textContent = best ? `Үздік нәтиже: ${best}/10` : "";

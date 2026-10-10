@@ -127,12 +127,31 @@ def head_block(prefix, title, desc, url, image="assets/img/og.jpg"):
   <!-- /build:head -->"""
 
 
-def nav_block(prefix, active):
+def course_of(rel):
+    """Бет қай курсқа тиесілі: 'x' (CS50x), курс коды, не None (жалпы бет)."""
+    for code in COURSES:
+        if rel.startswith(code + "/"):
+            return code
+    if rel == "index.html" or rel.startswith("lectures/"):
+        return "x"
+    return None
+
+
+PILL = {"x": ("CS50x", "#087a96"), "python": ("CS50P", "#3776ab"), "sql": ("SQL", "#7c3aed"), "ai": ("AI", "#c42a68"), "web": ("Web", "#c2410c")}
+
+
+def nav_block(prefix, active, course=None):
+    home = prefix + ("index.html#main" if course in (None, "x") else f"{course}/index.html")
+
     def item(href, label, key, extra=""):
         cls = ' class="active' + (" " + extra if extra else "") + '"' if key == active else (f' class="{extra}"' if extra else "")
         return f'<a href="{prefix}{href}"{cls}>{label}</a>'
+    label, color = PILL.get(course, ("Курстар", "#087a96"))
+    pill = (f'<button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="{course or ""}" style="--c:{color}">'
+            f'<span class="cp-dot" aria-hidden="true"></span><span class="cp-label">{label}</span><span class="cp-chev" aria-hidden="true">▾</span></button>')
     return f"""<nav class="nav">
-        {item("index.html", "Лекциялар", "index")}
+        {pill}
+        <a href="{home}"{' class="active"' if active == "index" else ''}>Лекциялар</a>
         {item("courses.html", "Курстар", "courses", "hide-sm")}
         {item("practice.html", "Жаттығу", "practice")}
         {item("playground.html", "Сынақ алаңы", "playground", "hide-sm")}
@@ -199,7 +218,7 @@ def process_page(path, prefix, active):
     if "<!-- build:courses" in s:
         skip = ("x",) if rel == "index.html" else ()
         s = re.sub(r"<!-- build:courses -->.*?<!-- /build:courses -->", lambda _: courses_block(prefix, skip), s, flags=re.S)
-    s = re.sub(r'<nav class="nav">.*?</nav>', nav_block(prefix, active), s, count=1, flags=re.S)
+    s = re.sub(r'<nav class="nav">.*?</nav>', lambda _: nav_block(prefix, active, course_of(rel)), s, count=1, flags=re.S)
     s = re.sub(r'<footer class="footer">.*?</footer>', lambda _: footer_block(prefix), s, count=1, flags=re.S)
     hs = HEAD_STYLE.get(rel)
     if hs:
@@ -406,16 +425,17 @@ def main():
             p = ROOT / code / "lectures" / f"{name}.html"
             if not p.exists():
                 continue
-            s = process_page(p, "../../", "courses")
+            s = process_page(p, "../../", "index")
             meta = lecture_meta(name, s, f"{code}/lectures/{name}.html")
             clist.append(meta)
             labeled = dict(meta, num=f'{c["short"]} · {meta["num"]}')
             index += sections(name, s, labeled)
             terms += glossary_terms(name, s, labeled)
+            quiz += [dict(q, c=code) for q in quiz_questions(name, s, meta)]
             course_pages.append(meta["url"])
         if (ROOT / code / "index.html").exists():
             sync_week_cards(ROOT / code / "index.html", {m["id"] for m in clist})
-            process_page(ROOT / code / "index.html", "../", "courses")
+            process_page(ROOT / code / "index.html", "../", "index")
             c["ready"] = len(clist)
             course_pages.append(f"{code}/")
         (ROOT / code / "data").mkdir(exist_ok=True)

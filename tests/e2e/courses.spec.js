@@ -154,3 +154,63 @@ test("барлық 5 курстың басты беттері мен серти�
   }
   expect(errs).toEqual([]);
 });
+
+test("құрылым: курс таңдағыш, іздеу/сөздік/карточка/тест курс бойынша", async ({ page }) => {
+  test.setTimeout(120_000);
+  const errs = collectErrors(page);
+  await blockFonts(page.context());
+  // Курс таңдағыш: ағымдағы курс белгіленеді, барлық 5 курс бар
+  await page.goto("sql/lectures/week-0.html");
+  await expect(page.locator(".course-pill .cp-label")).toHaveText("SQL");
+  await page.click(".course-pill");
+  await expect(page.locator(".course-menu .cm-row")).toHaveCount(5);
+  await expect(page.locator(".course-menu .cm-row.on")).toContainText("CS50 SQL");
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".course-menu")).toBeHidden();
+  // Іздеу курс бойынша сүзіледі
+  await page.keyboard.press("Control+k");
+  await expect(page.locator(".search-modal input")).toBeFocused();
+  await page.click('.search-scope button[data-s="ai"]');
+  await page.keyboard.type("іздеу");
+  await expect(page.locator(".search-results li a").first()).toBeVisible();
+  const hrefs = await page.locator(".search-results li a").evaluateAll((a) => a.map((x) => x.getAttribute("href")));
+  expect(hrefs.length).toBeGreaterThan(0);
+  expect(hrefs.every((h) => /ai\/lectures\//.test(h))).toBe(true);
+  // Сөздік: курс сүзгісі
+  await page.goto("glossary.html");
+  const all = await page.locator(".g-row:not([hidden])").count();
+  await page.click('.g-courses button[data-c="sql"]');
+  const sqlN = await page.locator(".g-row:not([hidden])").count();
+  expect(sqlN).toBeGreaterThan(0);
+  expect(sqlN).toBeLessThan(all);
+  // Аралас тест: SQL курсы 56 сұрақ
+  await page.goto("practice.html");
+  await page.click('.mq-courses button[data-c="sql"]');
+  await expect(page.locator(".mq-from option").first()).toContainText("56 сұрақ");
+  await expect(page.locator(".mq-box .mq-opts button").first()).toBeVisible();
+  // Флэш-карточкалар: Web карточкалары
+  await page.goto("flashcards.html");
+  await page.click('.fc-course button[data-c="web"]');
+  await expect(page.locator(".fc-progress")).toContainText("Меңгерілді");
+  expect(errs).toEqual([]);
+});
+
+test("«Менің курстарым»: басты бет пен профильде курстар бойынша прогресс", async ({ page }) => {
+  const errs = collectErrors(page);
+  await blockFonts(page.context());
+  await page.goto("index.html");
+  await expect(page.locator(".my-courses")).toBeHidden(); // әлі ешнәрсе оқылмаған
+  await page.evaluate(() => localStorage.setItem("cs50kz:progress", JSON.stringify({ read: { "python:week-0": 1, "python:week-1": 1, "sql:week-0": 1, "week-0": 1 }, quiz: {}, last: null, name: "" })));
+  await page.reload();
+  await expect(page.locator(".my-courses .mc-card")).toHaveCount(3);
+  const py = page.locator('.mc-card:has(h3:text-is("CS50P"))');
+  await expect(py).toContainText("2/10 лекция");
+  await expect(py.locator(".mc-btn")).toHaveAttribute("href", /python\/lectures\/week-2\.html$/);
+  await page.goto("profile.html");
+  await expect(page.locator(".pf-mycourses, .my-courses .mc-card").first()).toBeVisible();
+  await expect(page.locator(".pf-stats")).toContainText("4/45");
+  // Курс таңдағыштағы прогресс
+  await page.click(".course-pill");
+  await expect(page.locator('.course-menu .cm-row:has-text("CS50P") .cm-n')).toHaveText("2/10");
+  expect(errs).toEqual([]);
+});
