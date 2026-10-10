@@ -284,7 +284,7 @@
   async function flashcards(el) {
     await K.loadScript("assets/data/glossary.js");
     const ALLCARDS = window.CS50KZ_GLOSSARY || [];
-    const courseOf = (c) => (/^(python|sql|ai|web)\//.exec(c.url) || [])[1] || "x";
+    const inCourse = (card, c) => (card.cs || ["x"]).includes(c);
     const NAMES = { all: "Барлығы", x: "CS50x", python: "CS50P", sql: "SQL", ai: "AI", web: "Web" };
     let cards = ALLCARDS;
     const KEY = "cs50kz:cards";
@@ -355,7 +355,7 @@
       const b = e.target.closest("button[data-c]");
       if (!b) return;
       const c = b.dataset.c;
-      const sel = c === "all" ? ALLCARDS : ALLCARDS.filter((x) => courseOf(x) === c);
+      const sel = c === "all" ? ALLCARDS : ALLCARDS.filter((x) => inCourse(x, c));
       if (!sel.length) return;
       cards = sel;
       el.querySelectorAll(".fc-course button").forEach((x) => x.classList.toggle("on", x === b));

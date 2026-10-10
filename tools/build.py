@@ -152,7 +152,6 @@ def nav_block(prefix, active, course=None):
     return f"""<nav class="nav">
         {pill}
         <a href="{home}"{' class="active"' if active == "index" else ''}>Лекциялар</a>
-        {item("courses.html", "Курстар", "courses", "hide-sm")}
         {item("practice.html", "Жаттығу", "practice")}
         {item("playground.html", "Сынақ алаңы", "playground", "hide-sm")}
         {item("glossary.html", "Сөздік", "glossary", "hide-sm")}
@@ -266,7 +265,7 @@ def sections(name, s, meta):
     return out
 
 
-def glossary_terms(name, s, meta):
+def glossary_terms(name, s, meta, course="x"):
     article = article_of(s)
     terms = []
     last_id = "intro"
@@ -275,7 +274,7 @@ def glossary_terms(name, s, meta):
             last_id = m.group(1)
             continue
         kz, en = html.unescape(m.group(2)).strip(), html.unescape(m.group(3)).strip()
-        terms.append({"kz": kz, "en": en, "url": f"{meta['url']}#{last_id}", "src": meta["num"]})
+        terms.append({"kz": kz, "en": en, "url": f"{meta['url']}#{last_id}", "src": meta["num"], "c": course})
     return terms
 
 
@@ -296,28 +295,29 @@ def quiz_questions(name, s, meta):
     return out
 
 
-def build_cheatsheet(entries):
+def build_cheatsheet(entries):  # entries: (meta, ul, course)
     """Әр лекцияның «Қорытынды» бөлімінен бір беттік шпаргалка."""
     tpl = (ROOT / "about.html").read_text(encoding="utf-8")
     top = tpl[:tpl.index('<div class="layout')]
     top = re.sub(r"<!-- build:head -->.*?<!-- /build:head -->", "", top, flags=re.S)
     top = re.sub(r"<title>.*?</title>", "<title>Шпаргалка - CS50 қазақша</title>", top)
-    top = top.replace('<meta name="author"', '<meta name="description" content="CS50 қазақша: барлық 12 лекцияның қысқаша конспектісі бір бетте, басып шығаруға ыңғайлы.">\n  <meta name="author"', 1)
+    top = top.replace('<meta name="author"', '<meta name="description" content="CS50 қазақша: бес курстың қысқаша конспектісі бір бетте, басып шығаруға ыңғайлы.">\n  <meta name="author"', 1)
     foot = tpl[tpl.index("  <footer"):]
     cards = "\n".join(
-        f'''      <section class="cs-card" id="{m["id"]}">
-        <h2><span>{html.escape(m["num"])}</span> {html.escape(m["title"])}</h2>
+        f'''      <section class="cs-card" id="{(c + "-" if c != "x" else "") + m["id"]}" data-c="{c}">
+        <h2><span>{html.escape((COURSES[c]["short"] + " · " if c != "x" else "") + m["num"])}</span> {html.escape(m["title"])}</h2>
         {ul}
         <a class="cs-more" href="{m["url"]}">Толық лекция →</a>
-      </section>''' for m, ul in entries)
+      </section>''' for m, ul, c in entries)
     page = top + f"""<div class="layout single wide">
     <article class="content cheatsheet">
       <div class="lecture-head">
         <div class="num">Шпаргалка</div>
-        <h1>Бүкіл курс бір бетте</h1>
-        <p>Әр лекцияның ең маңызды ұғымдары мен синтаксисі. Емтиханға не тапсырмаға дайындалғанда қолданыңыз. Басып шығаруға ыңғайлы.</p>
+        <h1>Барлық курс бір бетте</h1>
+        <p>Бес курстың әр лекциясының ең маңызды ұғымдары мен синтаксисі. Емтиханға не тапсырмаға дайындалғанда қолданыңыз. Курсты таңдап, тек сол курсты басып шығаруға болады.</p>
         <button type="button" class="btn gold cs-print" onclick="print()">🖨 Басып шығару / PDF</button>
       </div>
+      <div class="seg cs-courses" role="group" aria-label="Курс"><button type="button" data-c="x" class="on">CS50x</button><button type="button" data-c="python">CS50P</button><button type="button" data-c="sql">SQL</button><button type="button" data-c="ai">AI</button><button type="button" data-c="web">Web</button><button type="button" data-c="all">Барлығы</button></div>
       <div class="cs-grid">
 {cards}
       </div>
@@ -362,10 +362,16 @@ def build_glossary(terms):
     for t in terms:
         key = t["en"].lower()
         if key not in seen:
-            seen[key] = t
+            seen[key] = dict(t, cs=[t["c"]], more=[])
+        else:  # бір термин бірнеше курста: бірінші жері негізгі, қалғандары - қосымша сілтеме
+            e = seen[key]
+            if t["c"] not in e["cs"]:
+                e["cs"].append(t["c"])
+                e["more"].append({"u": t["url"], "s": t["src"]})
     items = sorted(seen.values(), key=lambda t: kz_key(t["kz"]))
+    out = [{k: v for k, v in t.items() if k not in ("c", "more") or (k == "more" and v)} for t in items]
     (ROOT / "assets/data/glossary.js").write_text(
-        "window.CS50KZ_GLOSSARY = " + json.dumps(items, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
+        "window.CS50KZ_GLOSSARY = " + json.dumps(out, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     letters = []
     rows = []
     for t in items:
@@ -374,10 +380,11 @@ def build_glossary(terms):
             letters.append(letter)
             rows.append(f'      <h2 class="g-letter" id="l-{len(letters)}">{html.escape(letter)}</h2>')
         rows.append(
-            f'      <div class="g-row" data-q="{html.escape((t["kz"] + " " + t["en"]).lower())}">'
+            f'      <div class="g-row" data-c="{" ".join(t["cs"])}" data-q="{html.escape((t["kz"] + " " + t["en"]).lower())}">'
             f'<span class="g-kz">{html.escape(t["kz"])}</span>'
             f'<span class="g-en">{html.escape(t["en"])}</span>'
-            f'<a class="g-src" href="{t["url"]}">{html.escape(t["src"])} →</a></div>')
+            f'<a class="g-src" href="{t["url"]}">{html.escape(t["src"])} →</a>'
+            + "".join(f'<a class="g-src g-more" href="{m["u"]}">{html.escape(m["s"])} →</a>' for m in t["more"][:3]) + '</div>')
     tpl = (ROOT / "about.html").read_text(encoding="utf-8")
     top = tpl[:tpl.index('<div class="layout')]
     top = re.sub(r"<title>.*?</title>", "<title>Терминдер сөздігі - CS50 қазақша</title>", top)
@@ -388,7 +395,7 @@ def build_glossary(terms):
       <div class="lecture-head">
         <div class="num">Сөздік</div>
         <h1>Терминдер сөздігі</h1>
-        <p>Лекциялардағы {len(items)} информатика термині: қазақшасы, ағылшыншасы және алғаш түсіндірілген жері.</p>
+        <p>CS50 бес курсындағы {len(items)} термин: қазақшасы, ағылшыншасы және алғаш түсіндірілген жері. Курс бойынша сүзуге болады.</p>
       </div>
       <div class="g-search"><input type="search" placeholder="Терминді іздеңіз: массив, pointer, хэш..." autocomplete="off" aria-label="Терминді іздеу"><span class="g-count"></span></div>
       <nav class="g-letters">{"".join(f'<a href="#l-{i + 1}">{html.escape(l)}</a>' for i, l in enumerate(letters))}</nav>
@@ -413,10 +420,9 @@ def main():
         index += sections(name, s, meta)
         terms += glossary_terms(name, s, meta)
         quiz += quiz_questions(name, s, meta)
-        sm = re.search(r'<h2 id="summary">.*?</h2>\s*(<ul>.*?</ul>|<table>.*?</table>)', s, re.S)
+        sm = re.search(r'<h2 id="summary">.*?</h2>\s*(?:<p>(?:(?!</p>).)*</p>\s*)?(<ul>.*?</ul>|<table>.*?</table>)', s, re.S)
         if sm:
-            sheets.append((meta, sm.group(1)))
-    build_cheatsheet(sheets)
+            sheets.append((meta, sm.group(1), "x"))
     # Қосымша курстар: лекциялар (../../), курс беті (../), іздеу мен сөздікке қосу
     course_pages = []
     for code, c in COURSES.items():
@@ -430,8 +436,11 @@ def main():
             clist.append(meta)
             labeled = dict(meta, num=f'{c["short"]} · {meta["num"]}')
             index += sections(name, s, labeled)
-            terms += glossary_terms(name, s, labeled)
+            terms += glossary_terms(name, s, labeled, code)
             quiz += [dict(q, c=code) for q in quiz_questions(name, s, meta)]
+            sm = re.search(r'<h2 id="summary">.*?</h2>\s*(?:<p>(?:(?!</p>).)*</p>\s*)?(<ul>.*?</ul>|<table>.*?</table>)', s, re.S)
+            if sm:
+                sheets.append((meta, sm.group(1), code))
             course_pages.append(meta["url"])
         if (ROOT / code / "index.html").exists():
             sync_week_cards(ROOT / code / "index.html", {m["id"] for m in clist})
@@ -442,6 +451,7 @@ def main():
         (ROOT / code / "data" / "lectures.js").write_text(
             f"window.CS50KZ_COURSE_LECTURES = window.CS50KZ_COURSE_LECTURES || {{}};\nwindow.CS50KZ_COURSE_LECTURES[{json.dumps(code)}] = "
             + json.dumps(clist, ensure_ascii=False, indent=1) + ";\n", encoding="utf-8")
+    build_cheatsheet(sheets)
     n = build_glossary(terms)
     for page, active in [("index.html", "index"), ("about.html", "about"),
                          ("glossary.html", "glossary"), ("certificate.html", ""),
@@ -452,6 +462,15 @@ def main():
                          ("detective.html", "practice"), ("flask.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("alash.html", "about"), ("courses.html", "courses")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
+    # Беттердегі есептелетін сандар: <!--n:terms-->…<!--/n--> және <!--n:quiz-->…<!--/n-->
+    stats = {"terms": str(n), "quiz": str(len(quiz))}
+    for page in ["practice.html", "flashcards.html", "about.html"]:
+        fp = ROOT / page
+        if fp.exists():
+            t = fp.read_text(encoding="utf-8")
+            t2 = re.sub(r"<!--n:(\w+)-->.*?<!--/n-->", lambda m: f"<!--n:{m.group(1)}-->{stats.get(m.group(1), '')}<!--/n-->", t)
+            if t2 != t:
+                fp.write_text(t2, encoding="utf-8")
     (ROOT / "assets/data/lectures.js").write_text(
         "window.CS50KZ_LECTURES = " + json.dumps(lectures, ensure_ascii=False, indent=1) + ";\n", encoding="utf-8")
     (ROOT / "assets/data/search-index.js").write_text(

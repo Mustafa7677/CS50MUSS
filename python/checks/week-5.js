@@ -292,7 +292,7 @@ window.CS50KZ_CHECKS = Object.assign(window.CS50KZ_CHECKS || {}, {
   "append": "_tests = [(_n, _f) for _n, _f in list(globals().items()) if _n.startswith(\"test_\") and callable(_f)]\n_failed = []\nfor _n, _f in _tests:\n    try:\n        _f()\n    except Exception as _e:\n        _failed.append(f\"{_n} ({type(_e).__name__})\")\nif _failed:\n    raise AssertionError(\"құлаған тесттер: \" + \", \".join(_failed))\nif len(_tests) < 2:\n    print(f\"test_ функциялары тым аз: {len(_tests)} (кемінде 2 керек)\")\nelse:\n    print(\"ok\")",
   "note": "Мұнда fuel.py емес, тест файлыңызды (test_fuel.py) қойыңыз. Тексеруші оны дұрыс fuel.py-мен, сосын әдейі қате жазылған бірнеше fuel.py-мен іске қосады: дұрысында барлық тестіңіз өтуі, ал әр қате нұсқада кемінде біреуі құлауы керек. test_ деп басталатын функцияларыңыздың бәрі шақырылады, тек кәдімгі assert қолданыңыз. Браузерде нағыз pytest жоқ: import pytest жұмыс істейді, бірақ одан тек «with pytest.raises(...)» бар. Қате түрін try/except арқылы да тексеруге болады: try ішінде convert-ті шақырып, except ValueError: pass, ал else бөлігінде assert False деп жазыңыз."
  },
- "py-twttr": {
+ "py-twttr-fn": {
   "title": "twttr.py (shorten)",
   "file": "twttr.py",
   "starter": "def main():\n    # TODO: қолданушыдан мәтін сұрап, shorten нәтижесін шығарыңыз\n    ...\n\n\ndef shorten(word):\n    # TODO: дауыстыларды алып тастап, жаңа жолды return етіңіз\n    ...\n\n\nif __name__ == \"__main__\":\n    main()\n",
@@ -344,7 +344,7 @@ window.CS50KZ_CHECKS = Object.assign(window.CS50KZ_CHECKS || {}, {
   ],
   "note": "Мұнда twttr.py бағдарламасының өзін қойыңыз. Алдымен main бір кіріспен іске қосылады, сосын тексеруші shorten функция(лар)ын тікелей шақырып, қайтарылған мәнді (print емес!) тексереді."
  },
- "py-bank": {
+ "py-bank-fn": {
   "title": "bank.py (value)",
   "file": "bank.py",
   "starter": "def main():\n    # TODO: сәлемдесуді сұрап, $ белгісімен соманы шығарыңыз\n    ...\n\n\ndef value(greeting):\n    # TODO: 0, 20 немесе 100 санын (int) return етіңіз\n    ...\n\n\nif __name__ == \"__main__\":\n    main()\n",
@@ -400,7 +400,7 @@ window.CS50KZ_CHECKS = Object.assign(window.CS50KZ_CHECKS || {}, {
   ],
   "note": "Мұнда bank.py бағдарламасының өзін қойыңыз. Алдымен main бір кіріспен іске қосылады, сосын тексеруші value функция(лар)ын тікелей шақырып, қайтарылған мәнді (print емес!) тексереді."
  },
- "py-plates": {
+ "py-plates-fn": {
   "title": "plates.py (is_valid)",
   "file": "plates.py",
   "starter": "def main():\n    plate = input(\"Plate: \")\n    if is_valid(plate):\n        print(\"Valid\")\n    else:\n        print(\"Invalid\")\n\n\ndef is_valid(s):\n    # TODO: барлық талап орындалса True, әйтпесе False қайтарыңыз\n    ...\n\n\nif __name__ == \"__main__\":\n    main()\n",
@@ -467,7 +467,7 @@ window.CS50KZ_CHECKS = Object.assign(window.CS50KZ_CHECKS || {}, {
   ],
   "note": "Мұнда plates.py бағдарламасының өзін қойыңыз. Алдымен main бір кіріспен іске қосылады, сосын тексеруші is_valid функция(лар)ын тікелей шақырып, қайтарылған мәнді (print емес!) тексереді."
  },
- "py-fuel": {
+ "py-fuel-fn": {
   "title": "fuel.py (convert, gauge)",
   "file": "fuel.py",
   "starter": "def main():\n    # TODO: бөлшекті дұрыс енгізілгенше сұраңыз, сосын gauge нәтижесін шығарыңыз\n    ...\n\n\ndef convert(fraction):\n    # TODO: X/Y-ті 0..100 аралығындағы int пайызға айналдырыңыз\n    # (қате болса ValueError, Y = 0 болса ZeroDivisionError)\n    ...\n\n\ndef gauge(percentage):\n    # TODO: \"E\", \"F\" немесе \"Z%\" қайтарыңыз\n    ...\n\n\nif __name__ == \"__main__\":\n    main()\n",

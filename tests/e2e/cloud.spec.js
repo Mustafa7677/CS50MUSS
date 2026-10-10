@@ -228,3 +228,39 @@ test("мұғалім тапсырма береді: оқушы баннерді 
   await expect(T.locator(".tk-now")).toHaveCount(0);
   for (const p of [T, S]) expect(p.errs).toEqual([]);
 });
+
+test("мұғалім кестесі курс бойынша: CS50P/SQL көрінісі, басқа курс тапсырмасы және оқушы баннері", async ({ browser }) => {
+  test.setTimeout(120_000);
+  const mk = async (opts) => { const c = await browser.newContext(opts); await blockFonts(c); await routeSupabase(c, MOCK); const p = await c.newPage(); p.errs = collectErrors(p); return p; };
+  const T = await mk({ viewport: { width: 1280, height: 900 } });
+  await T.goto("teacher.html");
+  await T.fill(".cl-new [name=title]", "Python тобы"); await T.fill(".cl-new [name=pw]", "mugalim1"); await T.click(".cl-new button");
+  const code = (await T.locator(".cl-bigcode b").innerText()).trim();
+
+  const A = await mk({ viewport: { width: 390, height: 844 } });
+  await A.goto("index.html");
+  await A.evaluate(() => localStorage.setItem("cs50kz:progress", JSON.stringify({ read: { "week-0": 1, "python:week-0": 1, "python:week-1": 1, "python:week-2": 1, "sql:week-0": 1 }, quiz: { "python:week-0": { best: 6, total: 8 } }, name: "Дана" })));
+  await A.goto("profile.html");
+  await A.click(".cl-enable");
+  await expect(A.locator(".cl-status.ok")).toBeVisible();
+  await A.fill(".cl-code", code.toLowerCase()); await A.click(".cl-join");
+  await expect(A.locator(".cl-class")).toContainText("Python тобы");
+
+  await T.click(".cl-refresh");
+  await expect(T.locator(".t-cloud tbody")).toContainText("1/12"); // CS50x көрінісі
+  await T.click('.cl-courses button[data-c="python"]');
+  await expect(T.locator(".t-cloud tbody")).toContainText("3/10");
+  await T.click('.cl-courses button[data-c="sql"]');
+  await expect(T.locator(".t-cloud tbody")).toContainText("1/7");
+  // Басқа курс тапсырмасы: python:week-3 (схема regex-і қабылдайды)
+  await T.selectOption('.tk-form [name="lecture"]', "python:week-3");
+  await T.click(".tk-form button.gold");
+  await expect(T.locator(".tk-now")).toContainText("CS50P");
+  // Оқушы баннері курс лекциясын атымен көрсетеді, сілтемесі дұрыс
+  await A.goto("index.html");
+  await A.evaluate(() => document.dispatchEvent(new CustomEvent("cs50kz:cloud-login")));
+  await expect(A.locator(".tk-banner").first()).toContainText("CS50P", { timeout: 20_000 });
+  await expect(A.locator(".tk-banner a.btn").first()).toHaveAttribute("href", /python\/lectures\/week-3\.html$/);
+  expect(T.errs).toEqual([]);
+  expect(A.errs).toEqual([]);
+});
