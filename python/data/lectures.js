@@ -266,7 +266,7 @@ window.CS50KZ_COURSE_LECTURES["python"] = [
     "id": "pset"
    }
   ],
-  "minutes": 20,
+  "minutes": 21,
   "quiz": 8,
   "tasks": 4
  },
