@@ -214,3 +214,20 @@ test("«Менің курстарым»: басты бет пен профиль
   await expect(page.locator('.course-menu .cm-row:has-text("CS50P") .cm-n')).toHaveText("2/10");
   expect(errs).toEqual([]);
 });
+
+test("шпаргалка: курс бойынша сүзіледі, сөздікте курс бойынша терминдер", async ({ page }) => {
+  const errs = collectErrors(page);
+  await blockFonts(page.context());
+  await page.goto("cheatsheet.html");
+  await expect(page.locator(".cs-card:not([hidden])")).toHaveCount(12);
+  await page.click('.cs-courses button[data-c="web"]');
+  await expect(page.locator(".cs-card:not([hidden])")).toHaveCount(9);
+  await page.click('.cs-courses button[data-c="all"]');
+  await expect(page.locator(".cs-card:not([hidden])")).toHaveCount(45);
+  await page.goto("cheatsheet.html#sql-week-1");
+  await expect(page.locator(".cs-card:not([hidden])")).toHaveCount(7);
+  await page.goto("glossary.html");
+  await page.fill(".g-search input", "жүктеме");
+  await expect(page.locator(".g-row:not([hidden])").first()).toBeVisible();
+  expect(errs).toEqual([]);
+});

@@ -164,9 +164,13 @@
   document.addEventListener("cs50kz:cloud-login", () => cycle({ pull: true, force: true }));
 
   // ---------- Мұғалім тапсырмасы ----------
-  const LEC = () => window.CS50KZ_LECTURES || [];
-  K.loadScript("assets/data/lectures.js").then(() => document.dispatchEvent(new CustomEvent("cs50kz:lectures"))).catch(() => {});
-  const lecName = (id) => { const l = LEC().find((x) => x.id === id); return l ? `${l.num}: ${l.title}` : id; };
+  // Барлық курстың лекциялары: CS50x (id: week-3) және басқа курстар (id: sql:week-3)
+  const OTHER = ["python", "sql", "ai", "web"];
+  const LEC = () => (window.CS50KZ_LECTURES || []).concat(OTHER.flatMap((c) => (((window.CS50KZ_COURSE_LECTURES || {})[c]) || []).map((l) => ({ ...l, id: c + ":" + l.id }))));
+  const loadLec = () => Promise.all(["assets/data/lectures.js"].concat(OTHER.map((c) => c + "/data/lectures.js")).map((u) => K.loadScript(u).catch(() => {}))).then(() => document.dispatchEvent(new CustomEvent("cs50kz:lectures")));
+  loadLec();
+  const COURSE_SHORT = { python: "CS50P", sql: "SQL", ai: "AI", web: "Web" };
+  const lecName = (id) => { const l = LEC().find((x) => x.id === id); return l ? (id.includes(":") ? `${COURSE_SHORT[id.split(":")[0]]} · ` : "") + `${l.num}: ${l.title}` : id; };
   const MONTHS = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
   const kzDate = (d, year) => `${d.getDate()} ${MONTHS[d.getMonth()]}${year ? " " + d.getFullYear() : ""}`;
   function dueText(due) {
@@ -192,7 +196,7 @@
       <div><small>${esc(s.clsTitle || "Сынып")} · мұғалім тапсырмасы</small>
         <b>${esc(lecName(t.lecture))}</b>
         <span class="tk-meta">${read ? "Орындалды - жарайсыз!" : esc(dueText(t.due) || "Мерзімі көрсетілмеген")}${t.note ? " · " + esc(t.note) : ""}</span></div>
-      ${read ? "" : `<a class="btn gold" href="${K.ROOT_URL}${l ? l.url : "lectures/" + t.lecture + ".html"}">Оқу →</a>`}
+      ${read ? "" : `<a class="btn gold" href="${K.ROOT_URL}${l ? l.url : (t.lecture.includes(":") ? t.lecture.split(":")[0] + "/lectures/" + t.lecture.split(":")[1] : "lectures/" + t.lecture) + ".html"}">Оқу →</a>`}
     </div>`;
   }
   // Мұғалімнің сыныпқа хабарламасы
@@ -398,7 +402,17 @@
     let cur = null, timer = null, qrOpen = false;
     const classes = () => get(TC, []).filter((x) => x && typeof x.code === "string" && typeof x.pw === "string"); // бүлінген жазбаларды өткіземіз
     const saveClass = (c) => { const l = classes().filter((x) => x.code !== c.code); l.unshift(c); put(TC, l.slice(0, 10)); };
-    const ORDER = K.ORDER || [];
+    // Курс көрінісі: кесте таңдалған курстың лекциялары бойынша (summary.r/q немесе summary.c[курс].r/q)
+    const CM = [{ id: "x", name: "CS50x" }, { id: "python", name: "CS50P", n: 10 }, { id: "sql", name: "SQL", n: 7 }, { id: "ai", name: "AI", n: 7 }, { id: "web", name: "Web", n: 9 }];
+    const idsOf = (c) => (c === "x" ? (K.ORDER || []) : Array.from({ length: CM.find((m) => m.id === c).n }, (_, i) => c + ":week-" + i));
+    let vcourse = "x", ORDER = idsOf("x");
+    const labOf = (id) => (id === "ai" ? "AI" : id.replace(/^.*week-/, ""));
+    const rawSum = (st) => ((st.raw || st).summary) || {};
+    const rawR = (st, c) => String(c === "x" ? rawSum(st).r || "" : (((rawSum(st).c || {})[c]) || {}).r || "");
+    const rawQ = (st, c) => String(c === "x" ? rawSum(st).q || "" : (((rawSum(st).c || {})[c]) || {}).q || "");
+    const adapt = (v) => ({ ...v, students: (v.students || []).map((st) => ({ ...st, raw: st.raw || st, summary: { ...rawSum(st), r: rawR(st, vcourse).padEnd(ORDER.length, "0").slice(0, ORDER.length), q: rawQ(st, vcourse) } })) });
+    const lecCourse = (lec) => (String(lec).includes(":") ? String(lec).split(":")[0] : "x");
+    const doneBy = (st, lec) => { const c = lecCourse(lec), i = idsOf(c).indexOf(lec); return i >= 0 && rawR(st, c)[i] === "1"; };
     const start = () => {
       clearInterval(timer);
       qrOpen = false;
@@ -446,9 +460,9 @@
     function analytics(list) {
       const n = list.length;
       if (!n) return "";
-      const LAB = ORDER.map((id) => (id === "ai" ? "AI" : id.replace("week-", "")));
+      const LAB = ORDER.map(labOf);
       const nm = (l) => (l === "AI" ? "AI" : l + "-апта");
-      const reads = list.map((st) => (st.summary && st.summary.r ? st.summary.r.padEnd(12, "0") : "0".repeat(12)));
+      const reads = list.map((st) => (st.summary && st.summary.r ? st.summary.r.padEnd(ORDER.length, "0") : "0".repeat(ORDER.length)));
       const perLec = ORDER.map((_, i) => reads.filter((r) => r[i] === "1").length);
       const avgRead = reads.reduce((a, r) => a + (r.match(/1/g) || []).length, 0) / n;
       let qa = 0, qb = 0;
@@ -461,7 +475,7 @@
       for (let i = 1; i < perLec.length; i++) if (perLec[i - 1] - perLec[i] > drop.d) drop = { d: perLec[i - 1] - perLec[i], i };
       const tiles = [
         ["Оқушы", n, ""],
-        ["Орташа оқылған", avgRead.toFixed(1), "/ 12 лекция"],
+        ["Орташа оқылған", avgRead.toFixed(1), `/ ${ORDER.length} лекция`],
         ["Тест нәтижесі", qb ? Math.round((qa / qb) * 100) + "%" : "-", "орташа"],
         ["Емтиханнан өтті", examPass, `/ ${examTaken.length} тапсырған`],
         ["Белсенді", active, "соңғы 24 сағат"],
@@ -524,7 +538,7 @@
     }
     // Оқушының жеке картасы: әр лекция бойынша оқу мен тест
     function studentCard(st) {
-      const d = st.summary || {}, r = (d.r || "").padEnd(12, "0"), q = (d.q || "").split(",");
+      const d = st.summary || {}, r = (d.r || "").padEnd(ORDER.length, "0"), q = (d.q || "").split(",");
       const read = (r.match(/1/g) || []).length;
       const qs = q.filter(Boolean).map((x) => x.split("/").map(Number));
       const qa = qs.reduce((n, x) => n + x[0], 0), qb = qs.reduce((n, x) => n + x[1], 0);
@@ -532,7 +546,7 @@
       const lines = ORDER.map((id, i) => {
         const [x, y] = (q[i] || "").split("/").map(Number);
         const pct = y ? Math.round((x / y) * 100) : null;
-        return `<li class="${r[i] === "1" ? "on" : ""}"><span class="sc-lec">${LAB[id] || id.replace("week-", "") + "-апта"}</span>
+        return `<li class="${r[i] === "1" ? "on" : ""}"><span class="sc-lec">${LAB[id] || labOf(id) + "-апта"}</span>
           <span class="sc-read">${r[i] === "1" ? `✓<span class="sc-w"> оқыды</span>` : "-"}</span>
           <span class="sc-quiz">${pct == null ? `<small>тест жоқ</small>` : `<i><em style="width:${pct}%" class="${pct < 50 ? "low" : ""}"></em></i><small>${x}/${y}</small>`}</span></li>`;
       }).join("");
@@ -542,7 +556,7 @@
         <div class="sc-head"><div><h3>${esc(st.name || "Аты жоқ")}</h3><small class="t-id">${esc(st.id)} · соңғы белсенділік: ${ago(st.updated_at)}</small></div><button type="button" class="btn secondary sc-close" aria-label="Жабу">✕</button></div>
         ${flags(st).length ? `<p class="sc-flags">${flags(st).map(([i, t]) => `<span class="cl-flag">${i} ${t}</span>`).join("")}</p>` : ""}
         <div class="sc-tiles">
-          <div><small>Лекция</small><b>${read}/12</b></div>
+          <div><small>Лекция</small><b>${read}/${ORDER.length}</b></div>
           <div><small>Тест</small><b>${qb ? Math.round((qa / qb) * 100) + "%" : "-"}</b></div>
           <div><small>Тапсырма</small><b>${+d.t || 0}</b></div>
           <div><small>Емтихан</small><b>${d.e != null ? +d.e + "%" : "-"}</b></div>
@@ -562,11 +576,11 @@
     // Сыныпқа тапсырма: форма + орындалу прогресі
     function taskBox(v) {
       const t = v.task || null;
-      const idx = t ? ORDER.indexOf(t.lecture) : -1;
-      const done = idx < 0 ? [] : v.students.filter((st) => ((st.summary && st.summary.r) || "")[idx] === "1");
-      const todo = idx < 0 ? [] : v.students.filter((st) => !done.includes(st));
+      const done = t ? v.students.filter((st) => doneBy(st, t.lecture)) : [];
+      const todo = t ? v.students.filter((st) => !done.includes(st)) : [];
       const n = v.students.length;
-      const opts = LEC().map((l) => `<option value="${l.id}" ${t && t.lecture === l.id ? "selected" : ""}>${esc(l.num + ": " + l.title)}</option>`).join("");
+      const optOf = (l) => `<option value="${l.id}" ${t && t.lecture === l.id ? "selected" : ""}>${esc(l.num + ": " + l.title)}</option>`;
+      const opts = CM.map((m) => { const ls = LEC().filter((l) => lecCourse(l.id) === m.id); return ls.length ? `<optgroup label="${m.name}">${ls.map(optOf).join("")}</optgroup>` : ""; }).join("");
       return `<section class="tk-box">
         <h4>📌 Сыныпқа тапсырма</h4>
         ${t ? `<div class="tk-now">
@@ -598,7 +612,7 @@
       const n = v.students.length, L = (i) => lecName(ORDER[i]);
       const qOf = (d) => (d.q || "").split(",");
       const stat = (st) => {
-        const d = st.summary || {}, r = (d.r || "").padEnd(12, "0");
+        const d = st.summary || {}, r = (d.r || "").padEnd(ORDER.length, "0");
         const qs = qOf(d).filter((x) => /^\d+\/\d+$/.test(x)).map((x) => x.split("/").map(Number));
         const b = qs.reduce((m, x) => m + x[1], 0);
         return { d, read: (r.match(/1/g) || []).length, r, q: b ? Math.round((qs.reduce((m, x) => m + x[0], 0) / b) * 100) : null };
@@ -614,7 +628,7 @@
         return { name: L(i), read: S.filter((x) => x.r[i] === "1").length, q: b ? Math.round((a / b) * 100) : null };
       });
       const t = v.task && v.task.lecture ? v.task : null;
-      const tDone = t ? S.filter((x) => x.r[ORDER.indexOf(t.lecture)] === "1").length : 0;
+      const tDone = t ? S.filter((x) => doneBy(x.st, t.lecture)).length : 0;
       const now = new Date(), date = kzDate(now, true);
       const hhmm = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
       const bar = (c, max) => `<span class="bar"><i style="width:${max ? (c / max) * 100 : 0}%"></i></span>`;
@@ -641,7 +655,7 @@ footer { margin-top: 24px; color: #8a92a3; font-size: 11px; display: flex; justi
 <header><div><small>CS50 қазақша · сынып есебі</small><h1>${esc(v.title)}</h1></div><div style="text-align:right"><div class="code">${esc(v.code)}</div><small>${esc(date)}</small></div></header>
 <div class="kpi">
   <div><small>Оқушы</small><b>${n}</b></div>
-  <div><small>Орташа оқылған</small><b>${n ? avg(S.map((x) => x.read)).toFixed(1) : "-"}</b> <small>/ 12 лекция</small></div>
+  <div><small>Орташа оқылған</small><b>${n ? avg(S.map((x) => x.read)).toFixed(1) : "-"}</b> <small>/ ${ORDER.length} лекция</small></div>
   <div><small>Тест нәтижесі</small><b>${qAvg != null ? Math.round(qAvg) + "%" : "-"}</b></div>
   <div><small>Емтиханнан өтті</small><b>${exam.filter((x) => x.d.e >= 70).length}</b> <small>/ ${exam.length} тапсырған</small></div>
   <div><small>Апта ішінде белсенді</small><b>${act7}</b></div>
@@ -653,7 +667,7 @@ ${lec.map((l) => `<tr><td>${esc(l.name)}</td><td>${bar(l.read, n)}${l.read} / ${
 </tbody></table>
 <h2>Оқушылар</h2>
 <table><thead><tr><th>№</th><th>Аты-жөні</th><th>Лекция</th><th class="n">Тест</th><th class="n">Тапсырма</th><th class="n">Емтихан</th><th>Соңғы кіру</th><th>Ескерту</th></tr></thead><tbody>
-${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}</td><td>${bar(x.read, 12)}${x.read}/12</td><td class="n ${x.q != null && x.q < 50 ? "low" : ""}">${x.q != null ? x.q + "%" : "-"}</td><td class="n">${+x.d.t || 0}</td><td class="n ${x.d.e >= 70 ? "ok" : ""}">${x.d.e != null ? +x.d.e + "%" : "-"}</td><td>${esc(kzDate(new Date(x.st.updated_at)))}</td><td>${flags(x.st).map((f) => esc(f[1])).join(", ")}</td></tr>`).join("") || `<tr><td colspan="8">Әзірге оқушы жоқ.</td></tr>`}
+${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}</td><td>${bar(x.read, ORDER.length)}${x.read}/${ORDER.length}</td><td class="n ${x.q != null && x.q < 50 ? "low" : ""}">${x.q != null ? x.q + "%" : "-"}</td><td class="n">${+x.d.t || 0}</td><td class="n ${x.d.e >= 70 ? "ok" : ""}">${x.d.e != null ? +x.d.e + "%" : "-"}</td><td>${esc(kzDate(new Date(x.st.updated_at)))}</td><td>${flags(x.st).map((f) => esc(f[1])).join(", ")}</td></tr>`).join("") || `<tr><td colspan="8">Әзірге оқушы жоқ.</td></tr>`}
 </tbody></table>
 <footer><span>mustafa7677.github.io/CS50MUSS</span><span>Жасалды: ${esc(date)}, ${hhmm}</span></footer>
 </body></html>`;
@@ -663,15 +677,16 @@ ${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}
       if (!w) K.toast("Браузер жаңа терезені бұғаттады - рұқсат беріп, қайталаңыз");
     }
 
-    function show(v) {
+    function show(v0) {
+      const v = adapt(v0);
       const list = onlyFlagged ? v.students.filter((st) => flags(st).length) : v.students;
       const rows = list.map((st) => {
-        const d = st.summary || {}, r = (d.r || "").padEnd(12, "0");
+        const d = st.summary || {}, r = (d.r || "").padEnd(ORDER.length, "0");
         const qs = (d.q || "").split(",").filter(Boolean).map((x) => x.split("/").map(Number));
         const qpct = qs.length ? Math.round((qs.reduce((n, x) => n + x[0], 0) / Math.max(1, qs.reduce((n, x) => n + x[1], 0))) * 100) + "%" : "-";
         const fresh = Date.now() - new Date(st.updated_at).getTime() < 10 * 60_000;
         return `<tr><td><button type="button" class="cl-st" data-id="${esc(st.id)}"><b>${esc(st.name || "Аты жоқ")}</b><small class="t-id">${esc(st.id)}</small></button>${flags(st).map(([ico, t]) => `<span class="cl-flag" title="${t}">${ico} ${t}</span>`).join("")}</td>
-          <td><div class="t-cells">${r.split("").map((c, i) => `<i class="${c === "1" ? "on" : ""}" title="${ORDER[i] || ""}"></i>`).join("")}</div><small>${(r.match(/1/g) || []).length}/12</small></td>
+          <td><div class="t-cells">${r.split("").map((c, i) => `<i class="${c === "1" ? "on" : ""}" title="${ORDER[i] || ""}"></i>`).join("")}</div><small>${(r.match(/1/g) || []).length}/${ORDER.length}</small></td>
           <td>${qpct}</td><td>${+d.t || 0}</td><td>${d.e != null ? `<b class="${d.e >= 70 ? "t-pass" : ""}">${+d.e}%</b>` : "-"}</td><td>🏅 ${+d.a || 0}</td>
           <td><span class="cl-dot ${fresh ? "on" : ""}"></span>${ago(st.updated_at)}</td>
           <td><button type="button" class="t-del cl-rm" data-id="${esc(st.id)}" aria-label="Сыныптан шығару">✕</button></td></tr>`;
@@ -679,6 +694,7 @@ ${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}
       const flagged = v.students.filter((st) => flags(st).length).length;
       box.innerHTML = `
         <div class="cl-head"><h3>🏫 ${esc(v.title)}</h3><span class="cl-live">● Жанды · әр 30 секунд сайын жаңарады</span></div>
+        <div class="seg cl-courses" role="group" aria-label="Курс көрінісі">${CM.map((m) => `<button type="button" data-c="${m.id}" class="${m.id === vcourse ? "on" : ""}">${m.name}</button>`).join("")}</div>
         ${analytics(v.students)}
         ${taskBox(v)}
         <div class="cl-join-box">
@@ -694,7 +710,7 @@ ${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}
         <div class="t-actions"><button type="button" class="btn secondary cl-refresh">↻ Жаңарту</button><button type="button" class="btn secondary cl-print">🖨 Есеп</button><button type="button" class="btn secondary cl-csv">CSV</button><button type="button" class="btn secondary cl-back">← Сыныптар</button>${flagged ? `<button type="button" class="btn ${onlyFlagged ? "gold" : "secondary"} cl-flagged">⚠ Көмек керек: ${flagged}</button>` : ""}<span class="t-count">${v.students.length} оқушы</span></div>
         <div class="t-table"><table><thead><tr><th>Оқушы</th><th>Лекциялар</th><th>Тест</th><th>Тапсырма</th><th>Емтихан</th><th>Жетістік</th><th>Белсенділік</th><th></th></tr></thead>
         <tbody>${rows || `<tr><td colspan="8" class="t-empty">Әзірге ешкім қосылмаған. Оқушылар профиль бетінде <b>${esc(v.code)}</b> кодын енгізуі керек.</td></tr>`}</tbody></table></div>`;
-      box._last = v;
+      box._last = v0;
       drawQr().catch(() => { const q = box.querySelector(".cl-join-qrbox"); if (q) q.innerHTML = "<p>QR жүктелмеді - сілтемені көшіріп жіберіңіз.</p>"; });
     }
     document.addEventListener("cs50kz:lectures", () => { if (box._last && !box.contains(document.activeElement)) show(box._last); });
@@ -755,8 +771,14 @@ ${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}
           await refresh();
           return;
         }
+        if (t.classList.contains("cl-courses")) return;
+        if (t.dataset.c && t.closest(".cl-courses") && box._last) {
+          vcourse = t.dataset.c; ORDER = idsOf(vcourse);
+          show(box._last);
+          return;
+        }
         if (t.classList.contains("cl-st") && box._last) {
-          const st = box._last.students.find((x) => x.id === t.dataset.id);
+          const st = adapt(box._last).students.find((x) => x.id === t.dataset.id);
           if (st) studentCard(st);
           return;
         }
@@ -768,10 +790,10 @@ ${S.map((x, i) => `<tr><td>${i + 1}</td><td>${esc(x.st.name || "Аты жоқ")}
           if (!confirm("Оқушыны сыныптан шығару керек пе? Оның прогресі өшпейді.")) return;
           await rpc("cs50kz_class_remove", { p_code: cur.code, p_teacher_secret: cur.pw, p_id: t.dataset.id }); await refresh();
         } else if (t.classList.contains("cl-print") && box._last) {
-          report(box._last);
+          report(adapt(box._last));
         } else if (t.classList.contains("cl-csv") && box._last) {
           const head = ["Аты", "ID", ...ORDER, "Тест", "Тапсырма", "Емтихан", "Жетістік", "Соңғы белсенділік"];
-          const lines = [head.join(",")].concat(box._last.students.map((st) => { const d = st.summary || {}; return [JSON.stringify(st.name || ""), st.id, ...(d.r || "").padEnd(12, "0").split(""), JSON.stringify(d.q || ""), +d.t || 0, d.e ?? "", +d.a || 0, st.updated_at].join(","); }));
+          const lines = [head.join(",")].concat(adapt(box._last).students.map((st) => { const d = st.summary || {}; return [JSON.stringify(st.name || ""), st.id, ...(d.r || "").padEnd(ORDER.length, "0").split(""), JSON.stringify(d.q || ""), +d.t || 0, d.e ?? "", +d.a || 0, st.updated_at].join(","); }));
           const a = document.createElement("a");
           a.href = URL.createObjectURL(new Blob(["﻿" + lines.join("\n")], { type: "text/csv" }));
           a.download = `cs50kz-${box._last.code}.csv`; a.click();

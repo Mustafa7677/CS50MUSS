@@ -200,7 +200,7 @@ begin
   end if;
   if coalesce(p_lecture, '') = '' then
     t := null;
-  elsif p_lecture !~ '^(week-([0-9]|10)|ai)$' then
+  elsif p_lecture !~ '^(week-([0-9]|10)|ai|(python|sql|ai|web):week-[0-9])$' then
     raise exception 'bad lecture' using errcode = '22023';
   else
     t := jsonb_build_object('lecture', p_lecture, 'due', p_due, 'note', left(coalesce(trim(p_note), ''), 200), 'set', now());
@@ -237,6 +237,8 @@ declare
   r public.cs50kz_students;
   lec text;
   pos int;
+  course text;
+  cidx int;
   res jsonb;
 begin
   perform public.cs50kz_check_secret(p_secret, 8);
@@ -248,8 +250,13 @@ begin
   if r.class_code is null then return null; end if;
   select task->>'lecture' into lec from public.cs50kz_classes where code = r.class_code;
   pos := array_position(array['week-0','week-1','week-2','week-3','week-4','week-5','week-6','week-7','ai','week-8','week-9','week-10'], lec);
+  -- Басқа курстың тапсырмасы: «sql:week-3» -> summary.c.sql.r жолындағы 4-орын
+  if lec ~ '^(python|sql|ai|web):week-[0-9]$' then
+    course := split_part(lec, ':', 1);
+    cidx := split_part(lec, 'week-', 2)::int + 1;
+  end if;
   with s as (
-    select id, updated_at, summary->>'r' as rs,
+    select id, updated_at, summary->>'r' as rs, summary->'c'->coalesce(course, 'x')->>'r' as rc,
            length(regexp_replace(coalesce(summary->>'r', ''), '[^1]', '', 'g')) as rd,
            case when summary->>'t' ~ '^[0-9]{1,5}$' then (summary->>'t')::int else 0 end as tk
       from public.cs50kz_students where class_code = r.class_code
@@ -261,7 +268,9 @@ begin
     'avg_read', round(avg(sc.rd), 1),
     'max_read', max(sc.rd),
     'active7', count(*) filter (where sc.updated_at > now() - interval '7 days'),
-    'task_done', case when pos is null then null else count(*) filter (where substr(coalesce(sc.rs, ''), pos, 1) = '1') end)
+    'task_done', case when course is not null then count(*) filter (where substr(coalesce(sc.rc, ''), cidx, 1) = '1')
+                      when pos is null then null
+                      else count(*) filter (where substr(coalesce(sc.rs, ''), pos, 1) = '1') end)
     into res from sc, me;
   return res;
 end $$;

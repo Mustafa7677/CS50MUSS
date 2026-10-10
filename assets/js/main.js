@@ -103,6 +103,7 @@
     initCourseHome();
     initCourseCards();
     initCourseMenu();
+    initCheatsheet();
     myCourses(document.querySelector(".my-courses"));
     if (PAGE || document.body.dataset.course) { try { localStorage.setItem("cs50kz:lastcourse", JSON.stringify(COURSE)); } catch (e) {} }
     initAlashPortraits();
@@ -895,7 +896,7 @@
       }).join("");
       menu.innerHTML = `<div class="cm-head">Курстар</div>${rows}
         <a class="cm-all" href="${ROOT_URL}courses.html">Барлық курстар және оқу жолы →</a>
-        <div class="cm-site"><a href="${ROOT_URL}practice.html">Жаттығу</a><a href="${ROOT_URL}playground.html">Сынақ алаңы</a><a href="${ROOT_URL}glossary.html">Сөздік</a><a href="${ROOT_URL}map.html">Курс картасы</a><a href="${ROOT_URL}cheatsheet.html">Шпаргалка</a><a href="${ROOT_URL}profile.html">Профиль</a></div>`;
+        <div class="cm-site"><a href="${ROOT_URL}practice.html">Жаттығу</a><a href="${ROOT_URL}playground.html">Сынақ алаңы</a><a href="${ROOT_URL}glossary.html">Сөздік</a><a href="${ROOT_URL}map.html">CS50x картасы</a><a href="${ROOT_URL}cheatsheet.html">Шпаргалка</a><a href="${ROOT_URL}profile.html">Профиль</a></div>`;
       document.body.appendChild(menu);
     };
     pill.addEventListener("click", (e) => {
@@ -1184,10 +1185,9 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
     const count = document.querySelector(".g-count");
     let course = "all";
     // Әр жолдың курсы: сілтемесінен (python/, sql/, ai/, web/ не CS50x)
-    const courseOfRow = (r) => (/(?:^|\/)(python|sql|ai|web)\/lectures\//.exec(r.querySelector("a")?.getAttribute("href") || "") || [])[1] || "x";
-    rows.forEach((r) => { r.dataset.c = courseOfRow(r); });
+    const inCourse = (r, c) => (r.dataset.c || "x").split(" ").includes(c);
     const names = { all: "Барлығы", x: "CS50x", python: "CS50P", sql: "SQL", ai: "AI", web: "Web" };
-    const present = new Set(rows.map((r) => r.dataset.c));
+    const present = new Set(rows.flatMap((r) => (r.dataset.c || "x").split(" ")));
     const chips = document.createElement("div");
     chips.className = "seg g-courses";
     chips.setAttribute("role", "group");
@@ -1197,7 +1197,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
     const run = () => {
       const q = box.value.trim().toLowerCase();
       let n = 0;
-      rows.forEach((r) => { const ok = (!q || r.dataset.q.includes(q)) && (course === "all" || r.dataset.c === course); r.hidden = !ok; if (ok) n++; });
+      rows.forEach((r) => { const ok = (!q || r.dataset.q.includes(q)) && (course === "all" || inCourse(r, course)); r.hidden = !ok; if (ok) n++; });
       letters.forEach((h) => {
         let el = h.nextElementSibling, any = false;
         while (el && el.classList.contains("g-row")) { if (!el.hidden) any = true; el = el.nextElementSibling; }
@@ -1214,6 +1214,21 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
     });
     box.addEventListener("input", run);
     run();
+  }
+
+  // ---------- Шпаргалка: курс бойынша сүзу ----------
+  function initCheatsheet() {
+    const bar = document.querySelector(".cs-courses");
+    if (!bar) return;
+    const cards = [...document.querySelectorAll(".cs-card[data-c]")];
+    const show = (c) => {
+      cards.forEach((x) => { x.hidden = c !== "all" && x.dataset.c !== c; });
+      bar.querySelectorAll("button").forEach((b) => b.classList.toggle("on", b.dataset.c === c));
+    };
+    bar.addEventListener("click", (e) => { const b = e.target.closest("button[data-c]"); if (b) show(b.dataset.c); });
+    const fromHash = () => (location.hash.match(/^#(python|sql|ai|web)-/) || [])[1];
+    show(fromHash() || "x");
+    window.addEventListener("hashchange", () => { const c = fromHash(); if (c) show(c); });
   }
 
   // ---------- Сертификат ----------
@@ -1707,6 +1722,14 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
   function summaryData(name) {
     const p = Progress.load();
     const daily = readJson("cs50kz:daily", {});
+    // Басқа курстар: {sql: {r: "1100000", q: "5/8,,..."}}: тек қатысқан курстар (мұғалім кестесі курсты таңдап көреді)
+    const cs = {};
+    COURSE_META.filter((c) => c.id !== "x").forEach((c) => {
+      const ids = Array.from({ length: c.total }, (_, i) => c.id + ":week-" + i);
+      if (ids.some((id) => p.read[id] || p.quiz[id])) {
+        cs[c.id] = { r: ids.map((id) => (p.read[id] ? 1 : 0)).join(""), q: ids.map((id) => (p.quiz[id] ? `${p.quiz[id].best}/${p.quiz[id].total}` : "")).join(",") };
+      }
+    });
     return {
       v: 1, n: name ?? p.name ?? "", i: profile().id,
       r: ORDER.map((id) => (p.read[id] ? 1 : 0)).join(""),
@@ -1716,6 +1739,7 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
       a: achievementList().filter((a) => a.done).length,
       e: readJson("cs50kz:exam", {}).best ?? null,
       d: new Date().toISOString().slice(0, 10),
+      ...(Object.keys(cs).length ? { c: cs } : {}),
     };
   }
   function progressCode(name) {
