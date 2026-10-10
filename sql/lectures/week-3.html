@@ -86,7 +86,7 @@
         </tbody>
       </table></div>
       <p>Әр жолда бір туындының аты, <code>accession_number</code> (мұражай ішінде қолданатын бірегей идентификатор) және оның түскен күні бар. Кестеде <strong>бастапқы кілт</strong> (<span class="term-en">primary key</span>) қызметін <code>id</code> атқарады.</p>
-      <p>Мұражайдың дерекқор әкімшісі осы суреттердің әрқайсысын кестеге <code>INSERT</code> сұрауымен қосқан деп елестете аламыз. Қалай жұмыс істейтінін көру үшін алдымен <code>mfa.db</code> деген дерекқор жасап алайық. Содан кейін дайын берілген <code>schema.sql</code> файлын оқыттырамыз, ол бізге <code>collections</code> кестесін жасап береді. (Бұл жерде сайтта бәрі автоматты: «▶ Іске қосу» басқанда сондай дайын, әлі бос кесте дайын тұрады.)</p>
+      <p>Мұражайдың дерекқор әкімшісі осы суреттердің әрқайсысын кестеге <code>INSERT</code> сұрауымен қосқан деп елестете аламыз. Қалай жұмыс істейтінін көру үшін алдымен <code>mfa.db</code> деген дерекқор жасап алайық. Содан кейін дайын берілген <code>schema.sql</code> файлын оқытамыз, ол бізге <code>collections</code> кестесін жасап береді. (Сайтта бұл автоматты түрде жасалады: «▶ Іске қосу» батырмасын басқанда әлі бос, дайын кесте тұрады.)</p>
       <p>Кестенің шынымен жасалғанын тексеру үшін оған <code>SELECT</code> жасап көрейік:</p>
 <pre data-lang="sql" data-db="mfa_empty" data-dbsrc="sql/data/week-3.js"><code class="language-sql">SELECT * FROM "collections";</code></pre>
       <p>Нәтиже бос шығады. Дұрыс та, кестеде әлі бірде-бір жол жоқ.</p>
@@ -151,7 +151,7 @@ SELECT 'auto', "id", "t" FROM "auto" WHERE "t" = 'd';</code></pre>
       <p>Назар аударыңыз: <code>accession_number</code> <strong>бірегей</strong> (<code>UNIQUE</code>) деп көрсетілген. Яғни мұражайда екі бірдей нөмір болмауы керек. Егер әдейі бір нөмірді қайталап қосып көрсек, мынадай қате шығады: <code>Runtime error: UNIQUE constraint failed: collections.accession_number (19)</code>. Қайталап көрейік:</p>
 <pre data-lang="sql" data-db="mfa_museum" data-dbsrc="sql/data/week-3.js"><code class="language-sql">INSERT INTO "collections" ("title", "accession_number", "acquired")
 VALUES ('Copy of the flowers', '56.257', '2000-01-01');</code></pre>
-      <p>Бұл қате: қосқалы тұрған жол схемадағы <strong>шектеуді</strong> (<span class="term-en">constraint</span>), нақтырақ айтқанда <code>UNIQUE</code> шектеуін бұзып тұр дегенді білдіреді.</p>
+      <p>Бұл қате қосқалы тұрған жолдың схемадағы <strong>шектеуді</strong> (<span class="term-en">constraint</span>), нақтырақ айтқанда <code>UNIQUE</code> шектеуін бұзып тұрғанын білдіреді.</p>
       <p>Тура сол сияқты <code>title</code> бағанына <code>NULL</code> қоюға тырыссақ, <code>NOT NULL</code> шектеуі бұзылады:</p>
 <pre data-lang="sql" data-db="mfa_empty" data-dbsrc="sql/data/week-3.js"><code class="language-sql">INSERT INTO "collections" ("title", "accession_number", "acquired")
 VALUES(NULL, NULL, '1900-01-10');</code></pre>
@@ -190,7 +190,7 @@ SELECT * FROM "collections";</code></pre>
       </div>
       <p>Бірінші аргумент <code>--csv</code> SQLite-қа «бұл CSV файлы» деп айтады, сонда ол файлды дұрыс талдайды. Екінші аргумент <code>--skip 1</code> бірінші жолды (тақырып жолын) өткізіп жіберуді, яғни оны кестеге қоспауды білдіреді.</p>
       <p>Енді <code>collections</code> кестесінен барлығын таңдап, <code>mfa.csv</code>-дегі әр сурет шынымен импортталғанын көреміз.</p>
-      <p>Бірақ осы CSV-дегі әр жолда бастапқы кілт мәндері (1, 2, 3, ...) болды. Іс жүзінде CSV файлдарында мұндай <code>id</code> болмайтыны жиірек. Сонда SQLite-қа оларды өздігінен қойдыруды қалай істейміз?</p>
+      <p>Бірақ осы CSV-дегі әр жолда бастапқы кілт мәндері (1, 2, 3, ...) болды. Іс жүзінде CSV файлдарында мұндай <code>id</code> болмайтыны жиірек. Сонда SQLite оларды өзі қойып отыруы үшін не істейміз?</p>
       <p>Байқап көрейік. Codespace-те <code>mfa.csv</code> файлын ашып, тақырып жолынан <code>id</code> бағанын және әр жолдағы <code>id</code> мәндерін өшіреміз. Нәтижесінде <code>mfa.csv</code> былай болуы керек:</p>
 <pre data-lang="plaintext"><code class="language-plaintext">title,accession_number,acquired
 Profusion of flowers,56.257,1956-04-12
@@ -224,7 +224,7 @@ SELECT name FROM sqlite_master WHERE type = 'table';</code></pre>
       <p><em>Кестеге жол қосқанда бағандарды белгілі бір орынға қоюға бола ма?</em></p>
       <p>Мәндердің ретін <code>INSERT INTO</code> ішінде өзгертуге болады (тек бағандар тізімімен үйлесіп тұрса болғаны). Бірақ баған атауларының өзінің ретін, әдетте, өзгерте алмаймыз: ол кесте жасалғандағы ретпен жүреді.</p>
       <p><em>Бірнеше жолды қосқанда біреуі кестенің шектеуін бұзса, не болады?</em></p>
-      <p>Ең жағымсыз жауап: <strong>ешқайсысы қосылмайды</strong>. Көп жол қосқанда бірі шектеуді бұзса да, команда қатемен аяқталады және жолдардың бірде-бірі кестеге түспейді. Бүкіл топтама не түгел қосылады, не түгел қайтарылады. Мысалы, 1 мен 2-жолдың дұрыс, бірақ 3-жолдың <code>accession_number</code>-і қайталанса, бастапқы екі жол да қосылмай қалады.</p>
+      <p>Қысқа жауап: <strong>ешқайсысы қосылмайды</strong>. Көп жол қосқанда бірі шектеуді бұзса да, команда қатемен аяқталады және жолдардың бірде-бірі кестеге түспейді. Бүкіл топтама не түгел қосылады, не түгел қайтарылады. Мысалы, 1 мен 2-жолдың дұрыс, бірақ 3-жолдың <code>accession_number</code>-і қайталанса, бастапқы екі жол да қосылмай қалады.</p>
       <details class="think">
         <summary>Ойланып көріңіз: мұндай «не бәрі, не ешқайсысы» ережесі неге пайдалы?</summary>
         <div class="details-body"><p>Елестетіңіз: 100 жол қосып жатырсыз да, 57-жолда қате шықты. Егер алғашқы 56 жол кестеде қалып қойса, не қосылғанын, не қосылмағанын білмей дал боласыз, қайта жіберсеңіз қайталанулар шығады. «Не түгел, не ешқайсысы» ережесі кестені әрқашан таза, түсінікті күйде қалдырады: қатені түзеп, команданы тұтас қайта жүргізсеңіз болады.</p></div>
@@ -269,7 +269,7 @@ SELECT * FROM "collections";</code></pre>
 
       <h3 id="foreign-keys-delete">Сыртқы кілттер және өшіру</h3>
       <p>Кейде деректі өшіру дерекқордың бүтіндігіне нұқсан келтіруі мүмкін. Классикалық мысал: <strong>сыртқы кілттер</strong> (<span class="term-en">foreign key</span>). Сыртқы кілт бағаны басқа кестенің бастапқы кілтіне сілтеме жасайды. Егер сол бастапқы кілтті өшірсек, сыртқы кілт бағанының сілтейтін ештеңесі қалмайды. Қағаз мысалы: сыныпта оқушы тізімінен баланы сызып тастап, бірақ журналда оның бағалары қала берсе, сол бағалардың иесі жоқ болып шығады.</p>
-      <p>MFA дерекқорының жаңартылған схемасын қарайық. Онда енді тек туындылар емес, <strong>суретшілер</strong> де бар. <code>Artist</code> мен <code>Collection</code> сущностьтері арасында <strong>көп-көпке</strong> байланыс бар: бір суретті бірнеше суретші салуы мүмкін, ал бір суретші көптеген туынды жасай алады.</p>
+      <p>MFA дерекқорының жаңартылған схемасын қарайық. Онда енді тек туындылар емес, <strong>суретшілер</strong> де бар. <code>Artist</code> пен <code>Collection</code> мәндері (<span class="term-en">entity</span>) арасында <strong>көп-көпке</strong> байланыс бар: бір суретті бірнеше суретші салуы мүмкін, ал бір суретші көптеген туынды жасай алады.</p>
       <svg viewBox="0 0 640 210" role="img" aria-label="ER-диаграмма: artists, created және collections кестелері. created кестесі artists пен collections кестелеріне сыртқы кілттермен сілтейді" style="display:block;width:100%;max-width:640px;height:auto;margin:18px auto">
         <defs><marker id="er-arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs>
         <rect x="10" y="40" width="170" height="110" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
@@ -332,7 +332,7 @@ WHERE "name" = 'Unidentified artist';
 SELECT * FROM "artists";</code></pre>
       <details class="think">
         <summary>Ойланып көріңіз: екі өшіруді ауыстырып жазсақ не болады?</summary>
-        <div class="details-body"><p>Егер алдымен <code>artists</code>-тан өшірсек, <code>created</code> әлі сол суретшіге сілтеп тұрады, сондықтан <code>FOREIGN KEY constraint failed</code> шығады. Тәртіп маңызды: алдымен «сілтеме жасаушыны» (<code>created</code>), содан кейін «сілтеме жасалатынды» (<code>artists</code>) өшіреміз. Бұл үйден шықпас бұрын кілтті ұмыппай, есікті жабу реті сияқты.</p></div>
+        <div class="details-body"><p>Егер алдымен <code>artists</code>-тан өшірсек, <code>created</code> әлі сол суретшіге сілтеп тұрады, сондықтан <code>FOREIGN KEY constraint failed</code> шығады. Тәртіп маңызды: алдымен «сілтеме жасаушыны» (<code>created</code>), содан кейін «сілтеме жасалатынды» (<code>artists</code>) өшіреміз. Журнал мен оқушы тізімі мысалындағыдай: алдымен бағаларды, содан кейін оқушыны алып тастаймыз.</p></div>
       </details>
 
       <h3 id="on-delete">ON DELETE әрекеттері</h3>
@@ -401,7 +401,7 @@ ORDER BY "collections"."title";</code></pre>
       </details>
 
       <h2 id="triggers">Триггерлер</h2>
-      <p><strong>Триггер</strong> (<span class="term-en">trigger</span>) - басқа SQL операторына (<code>INSERT</code>, <code>UPDATE</code> немесе <code>DELETE</code>) жауап ретінде <strong>өздігінен</strong> орындалатын SQL операторы. Қарапайым салыстыру: мейрам қарсаңында есіктің жарығы адам жақындағанда өзі жанады, ешкім қосып жатқан жоқ. Триггер де дәл сондай: белгілі бір оқиға болғанда ол өзі іске қосылады.</p>
+      <p><strong>Триггер</strong> (<span class="term-en">trigger</span>) - басқа SQL операторына (<code>INSERT</code>, <code>UPDATE</code> немесе <code>DELETE</code>) жауап ретінде <strong>өздігінен</strong> орындалатын SQL операторы. Қарапайым салыстыру: кіреберістегі жарық адам жақындағанда өзі жанады, ешкім қосып жатқан жоқ. Триггер де дәл сондай: белгілі бір оқиға болғанда ол өзі іске қосылады.</p>
       <p>Триггерлер байланысты кестелердегі деректердің үйлесімділігін сақтауға және қайталанатын жұмысты автоматтандыруға пайдалы.</p>
 
       <h3 id="sell-trigger">«Sell» (сату) триггерін жасау</h3>
@@ -467,7 +467,7 @@ SELECT * FROM "transactions";</code></pre>
       <p>Қорыта айтқанда: <code>DELETE</code> триггерінде <code>OLD</code> қолданамыз, себебі жаңа жол жоқ, бар жол ғана жоғалады. <code>INSERT</code> триггерінде <code>NEW</code>, себебі ескі жол жоқ, жаңа жол ғана пайда болады. (<code>UPDATE</code> триггерінде екеуі де қолжетімді: өзгергенге дейінгі жол <code>OLD</code>, кейінгісі <code>NEW</code>. Бұл «Don't Panic!» тапсырмасында кездеседі.)</p>
       <details class="think">
         <summary>Ойланып көріңіз: неге «sell» триггері <code>BEFORE DELETE</code>, ал «buy» <code>AFTER INSERT</code>?</summary>
-        <div class="details-body"><p>Сату кезінде жол өшіріледі, ал өшкен жолдың атын кейін оқи алмаймыз. Сондықтан атын өшірілуден <em>бұрын</em> алып қалу керек (<code>BEFORE</code>). Сатып алуда керісінше: жол алдымен нақты кестеге түсіп, бәрі сәтті болғаннан соң ғана журналға жазған дұрыс (<code>AFTER</code>).</p></div>
+        <div class="details-body"><p>Сату кезінде жол өшіріледі, сондықтан оның атын жол әлі кестеде тұрғанда, өшірілуден <em>бұрын</em> журналға алып қою ыңғайлы (<code>BEFORE</code>). Сатып алуда керісінше: жол алдымен нақты кестеге түсіп, бәрі сәтті болғаннан соң ғана журналға жазған дұрыс (<code>AFTER</code>).</p></div>
       </details>
 
       <h3 id="triggers-questions">Сұрақтар</h3>
@@ -519,7 +519,7 @@ WHERE "deleted" != 1;</code></pre>
         <li><code>DELETE FROM кесте WHERE ...</code> жолдарды өшіреді; <code>WHERE</code> болмаса, барлығы өшеді.</li>
         <li>Сыртқы кілт сілтеп тұрған жолды өшіру <code>FOREIGN KEY constraint failed</code> қатесін береді. <code>ON DELETE</code> әрекеттері: <code>RESTRICT</code>, <code>NO ACTION</code>, <code>SET NULL</code>, <code>SET DEFAULT</code>, <code>CASCADE</code>.</li>
         <li><code>UPDATE кесте SET баған = мән WHERE ...</code> бар деректі өзгертеді; мәнді ішкі сұраумен алуға болады.</li>
-        <li>Триггер (<code>CREATE TRIGGER ... BEFORE/AFTER INSERT/UPDATE/DELETE ON ... BEGIN ... END</code>) басқа оператордан кейін өздігінен орындалады; <code>OLD</code> бар жолға, <code>NEW</code> жаңа жолға сілтейді.</li>
+        <li>Триггер (<code>CREATE TRIGGER ... BEFORE/AFTER INSERT/UPDATE/DELETE ON ... BEGIN ... END</code>) басқа оператордың әсерінен өздігінен орындалады; <code>OLD</code> бар жолға, <code>NEW</code> жаңа жолға сілтейді.</li>
         <li>Жұмсақ жою деректі шынымен өшірмей, <code>deleted</code> бағанымен белгілейді. Бірақ деректі шын өшіруді талап ететін заңдарды ұмытпаңыз.</li>
       </ul>
 
@@ -612,15 +612,15 @@ END;</code></pre>
       </div>
 
       <div class="task">
-        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-dont-panic">Don't Panic! (Именбеңіз!)</h3></div>
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pset-dont-panic">Don't Panic! (Үрейленбеңіз!)</h3></div>
         <p>Сіз білікті «пентестерсіз» (<span class="term-en">pentester</span>). Компаниялар көбіне өз деректер жүйелеріндегі осал жерлерді табу және хабарлау үшін сізді <strong>тергеу сынақтарын</strong> (<span class="term-en">penetration test</span>) жүргізуге жалдайды. Жуырда шағын кәсіпорын сізден өз сайтын қуаттандыратын SQLite дерекқорында осындай сынақ жүргізуді сұрады.</p>
         <p>Бұл құпия операцияның сәтті болуы үшін сіз мыналарды орындауыңыз керек:</p>
         <ul>
           <li><strong>Өзгерту</strong>: сайттың әкімшілік аккаунтының құпиясөзін өзгерту.</li>
           <li><strong>Өшіру</strong>: дерекқор жазып қойған жоғарыдағы құпиясөз өзгерісінің барлық журналын өшіру.</li>
-          <li><strong>Қосу</strong>: компанияны жолдан тайдыру үшін жалған деректер қосу.</li>
+          <li><strong>Қосу</strong>: ізіңізді жасыру үшін жалған деректер қосу.</li>
         </ul>
-        <p>Енді бақытты мүмкіндік туды: сіз компания үйіне кіріп, бағдарламашы өз үстелінен кетіп бара жатқанда жеттіңіз. Инженердің дерекқорға қосылымы әлі ашық тұр. Ол қайтып келгенше сізде шамамен 5 минут бар. Дайынсыз ба?</p>
+        <p>Сәті түсті: сіз компания ғимаратына кіргенде, бағдарламашы өз үстелінен енді ғана тұрып кеткен екен. Инженердің дерекқорға қосылымы әлі ашық тұр. Ол қайтып келгенше сізде шамамен 5 минут бар. Дайынсыз ба?</p>
 
         <h4>Дистрибутив коды</h4>
         <p>cs50.dev-ке кіріп, терминалда <code>cd</code> деп жазыңыз (промпт <code>$</code> болуы керек). Сосын:</p>
@@ -718,7 +718,7 @@ meteorites/ $ ls</code></pre>
         </ol>
 
         <h4>Кеңестер (Advice)</h4>
-        <p>Мұндай үлкен деректі тазалауды неден бастарыңды білмей, абдырап қалу мүмкін. Мәселені кішкентай бөліктерге бөлейік.</p>
+        <p>Мұндай үлкен деректі тазалауды неден бастарыңызды білмей, абдырап қалуыңыз мүмкін. Мәселені кішкентай бөліктерге бөлейік.</p>
         <details><summary>1-қадам. <code>meteorites.csv</code>-ді уақытша кестеге импорттау</summary><div class="details-body">
           <p>Алдымен <code>meteorites.csv</code> ішіндегі барлық деректі <code>meteorites_temp</code> деп аталатын уақытша кестеге түсіріңіз. Уақытша кесте - ыңғайлы «орын ұстаушы»: деректі соңғы <code>meteorites</code> кестесіне лайық күйге келгенше осында тазалай аласыз.</p>
           <p>CSV-ді SQLite дерекқорына импорттамас бұрын, деректі қабылдайтын кестенің схемасын алдын ала анықтаған жөн. Сондықтан <code>import.sql</code>-да мынаны жазып көріңіз:</p>
@@ -744,7 +744,7 @@ SELECT "column0", "column1" FROM "table1";</code></pre>
         <h4>Қолдану (Usage)</h4>
         <p>Осы деректі тазалау кезінде көмектесуі мүмкін бірнеше терминал командасы:</p>
 <pre class="terminal"><code class="language-plaintext">cat import.sql | sqlite3 meteorites.db</code></pre>
-        <p>Бұл команда екі бөліктен тұрады: <code>cat import.sql</code> файлдағы мәтінді шығарады (өздігінен жүргізіп көріңіз), ал <code>sqlite3 meteorites.db</code> файлды <code>sqlite3</code> қозғалтқышымен ашады. Екеуі құбыр (<code>|</code>) арқылы біріккенде, <code>import.sql</code> деректері <code>meteorites.db</code>-де орындалатын операторлар жиыны болып саналады. Егер <code>meteorites.db</code> әлі жоқ болса, ол жасалып, <code>import.sql</code> операторлары соған қолданылады.</p>
+        <p>Бұл команда екі бөліктен тұрады: <code>cat import.sql</code> файлдағы мәтінді шығарады (өздігінен жүргізіп көріңіз), ал <code>sqlite3 meteorites.db</code> файлды <code>sqlite3</code> қозғалтқышымен ашады. Екеуі құбыр (<code>|</code>) арқылы біріккенде, <code>import.sql</code> ішіндегі операторлар <code>meteorites.db</code> дерекқорына қолданылады. Егер <code>meteorites.db</code> әлі жоқ болса, ол жасалып, <code>import.sql</code> операторлары соған қолданылады.</p>
         <p><code>import.sql</code> мінсіз болмай, дерекқорды қайта жасағыңыз келсе, ағымдағы нұсқаны өшіріңіз (сұралса, «y» басып Enter):</p>
 <pre class="terminal"><code class="language-plaintext">rm meteorites.db
 cat import.sql | sqlite3 meteorites.db</code></pre>

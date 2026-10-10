@@ -266,7 +266,7 @@ window.CS50KZ_COURSE_LECTURES["ai"] = [
     "id": "backpropagation"
    },
    {
-    "t": "Шамадан тыс үйрену",
+    "t": "Артық үйрену",
     "id": "overfitting"
    },
    {
