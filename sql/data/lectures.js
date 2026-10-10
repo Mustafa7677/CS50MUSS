@@ -349,7 +349,7 @@ window.CS50KZ_COURSE_LECTURES["sql"] = [
     "id": "scaling"
    },
    {
-    "t": "Қатынас бақылауы",
+    "t": "Қол жеткізуді басқару",
     "id": "access-controls"
    },
    {
