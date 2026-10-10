@@ -132,7 +132,7 @@ JOIN "books" ON "books"."id" = "authored"."book_id";</code></pre>
 SELECT "name", "title" FROM "authors"
 JOIN "authored" ON "authors"."id" = "authored"."author_id"
 JOIN "books" ON "books"."id" = "authored"."book_id";</code></pre>
-      <p>Біз жасаған көріністің аты - <code>longlist</code>. Енді оны SQL-де кәдімгі кесте сияқты қолдана аламыз. Ішіндегінің бәрін көрелік. (Бұл және келесі мысалдарда көрініс дерекқорда дайын тұрады, өйткені әр басқанда дерекқор жаңартылады.)</p>
+      <p>Біз жасаған көріністің аты - <code>longlist</code>. Енді оны SQL-де кәдімгі кесте сияқты қолдана аламыз. Ішіндегінің бәрін көрелік. (Бұл және келесі мысалдарда көрініс дерекқорда дайын тұрады, өйткені әр басқанда дерекқор жаңадан жасалады.)</p>
 <pre data-lang="sql" data-db="w4_longlist_views" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT * FROM "longlist";</code></pre>
       <p>Ал Фернанда Мелчордың кітаптарын табатын сұрау енді қаншалықты қысқарғанын қараңыз. Міне, нағыз <strong>жеңілдету</strong>:</p>
 <pre data-lang="sql" data-db="w4_longlist_views" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT "title" FROM "longlist" WHERE "name" = 'Fernanda Melchor';</code></pre>
@@ -160,7 +160,7 @@ GROUP BY "book_id";</code></pre>
 FROM "ratings"
 JOIN "books" ON "ratings"."book_id" = "books"."id"
 GROUP BY "book_id";</code></pre>
-      <p>Мұнда <code>ratings</code> және <code>books</code> кестелерін кітап ID бағаны бойынша <code>JOIN</code> арқылы біріктірдік. Сұраудағы <em>әрекеттер ретіне</em> назар аударыңыз: алдымен екі кесте біріктіріледі, содан кейін ғана, сұраудың соңында <code>GROUP BY</code> топтастыру жасалады.</p>
+      <p>Мұнда <code>ratings</code> және <code>books</code> кестелерін кітап ID бағаны бойынша <code>JOIN</code> арқылы біріктірдік. Сұраудағы <em>әрекеттердің ретіне</em> назар аударыңыз: алдымен екі кесте біріктіріледі, содан кейін ғана, сұраудың соңында <code>GROUP BY</code> топтастыру жасалады.</p>
       <p>Осы <strong>агрегатталған</strong> (<span class="term-en">aggregated</span>) деректі көріністе сақтап қоюға болады:</p>
 <pre data-lang="sql" data-db="w4_longlist" data-dbsrc="sql/data/week-4.js"><code class="language-sql">CREATE VIEW "average_book_ratings" AS
 SELECT "book_id" AS "id", "title", "year", ROUND(AVG("rating"), 2) AS "rating"
@@ -237,7 +237,7 @@ WHERE "year" = 2022;</code></pre>
 
       <h3 id="partitioning-questions">Сұрақтар</h3>
       <p><em>Көріністерді жаңартуға (өзгертуге) бола ма?</em></p>
-      <p>Жоқ, себебі көріністің кестедегідей өз деректері жоқ. Көрініс әр сұрау сайын деректі негізгі кестелерден алады. Демек, негізгі кесте өзгерсе, көріністі келесі сұраған кезде жаңартылған дерек көрінеді!</p>
+      <p>Жоқ, себебі көріністің кестедегідей өз деректері жоқ. Көрініс әр сұрау сайын деректі негізгі кестелерден алады. Демек, негізгі кесте өзгерсе, көріністі келесі рет сұрағанда жаңартылған дерек көрінеді!</p>
 
       <h2 id="securing">Қорғау</h2>
       <p>Көріністер белгілі бір деректерге қол жеткізуді шектеу арқылы дерекқор <strong>қауіпсіздігін</strong> арттыра алады.</p>
@@ -252,18 +252,18 @@ FROM "rides";</code></pre>
 <pre data-lang="sql" data-db="w4_rideshare_v" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT * FROM "analysis";</code></pre>
       <div class="callout warn">
         <span class="callout-title">Назар аударыңыз</span>
-        <p>Анонимделген көрініс жасай аламыз, бірақ SQLite-та <strong>қолжетімділікті басқару</strong> (access control) жоқ. Яғни талдаушы бізбен күресе отырып жасырған атаулардың бәрін негізгі <code>rides</code> кестесін тікелей сұрап көре алады. Мұны төмендегі мысалдан көріңіз.</p>
+        <p>Анонимделген көрініс жасай аламыз, бірақ SQLite-та <strong>қолжетімділікті басқару</strong> (access control) жоқ. Яғни біз әрең жасырған жолаушылардың аттарын талдаушы негізгі <code>rides</code> кестесін тікелей сұрап көре алады. Мұны төмендегі мысалдан көріңіз.</p>
       </div>
 <pre data-lang="sql" data-db="w4_rideshare_v" data-dbsrc="sql/data/week-4.js"><code class="language-sql">-- Біздің өз мысалымыз: көрініс жасырды, бірақ кестенің өзі ашық тұр
 SELECT * FROM "rides";</code></pre>
       <details class="think">
         <summary>Ойланып көріңіз: онда SQLite-та көрініс қорғау үшін не береді?</summary>
-        <div class="details-body"><p>Көрініс пен қолжетімділік бақылауы бірге жұмыс істегенде ғана нағыз қорғаныс болады: көріністі ашасыз, негізгі кестені жабасыз. Мұны үлкен дерекқор жүйелері (мысалы, MySQL, PostgreSQL) істей алады, оны келесі апталарда көреміз. SQLite-та көрініс - тек ыңғайлы әрі ниетті «сыпайы» қорғау, қатаң құлып емес.</p></div>
+        <div class="details-body"><p>Көрініс пен қолжетімділікті басқару бірге жұмыс істегенде ғана нағыз қорғаныс болады: көріністі ашасыз, негізгі кестені жабасыз. Мұны үлкен дерекқор жүйелері (мысалы, MySQL, PostgreSQL) істей алады, оны келесі апталарда көреміз. SQLite-та көрініс - тек ыңғайлы әрі «сыпайы» қорғаныс, қатаң құлып емес.</p></div>
       </details>
 
       <h2 id="soft-deletions">Жұмсақ жою</h2>
       <p>Алдыңғы апталарда көргеніміздей, <strong>жұмсақ жою</strong> (<span class="term-en">soft deletion</span>) дегеніміз - жолды кестеден физикалық түрде өшірудің орнына, оны «өшірілген» деп белгілеу.</p>
-      <p>Мысалы, өнер туындысы «Farmers working at dawn» (Таң ата жұмыс істеп жатқан диқандар) <code>collections</code> кестесінде өшірілген деп белгіленеді: <code>deleted</code> бағанындағы мән 0-ден 1-ге ауысады. Жол кестеде қала береді, тек «өшірілді» деген белгісі бар.</p>
+      <p>Мысалы, өнер туындысы «Farmers working at dawn» (Таң шағында жұмыс істеп жатқан диқандар) <code>collections</code> кестесінде өшірілген деп белгіленеді: <code>deleted</code> бағанындағы мән 0-ден 1-ге ауысады. Жол кестеде қала береді, тек «өшірілді» деген белгісі бар.</p>
       <p>Енді тек өшірілмеген туындыларды көрсететін көрініс жасаймыз деп елестетіңіз. Тәжірибе үшін терминалда <code>mfa.db</code> дерекқорын ашайық (Бейнелеу өнері мұражайы). Бұл дерекқордағы <code>collections</code> кестесінде әзірге <code>deleted</code> бағаны жоқ, сондықтан оны қосуымыз керек. Әдепкі мәні 0 болады, яғни жол өшірілмеген.</p>
 <pre data-lang="sql" data-db="w4_mfa" data-dbsrc="sql/data/week-4.js"><code class="language-sql">ALTER TABLE "collections"
 ADD COLUMN "deleted" INTEGER DEFAULT 0;</code></pre>
@@ -281,7 +281,7 @@ WHERE "deleted" = 0;</code></pre>
       <p>Негізгі <code>collections</code> кестесінен жолды жұмсақ жойсақ, келесі сұрауда ол <code>current_collections</code> көрінісінен автоматты түрде жоғалады.</p>
 
       <h3 id="instead-of">INSTEAD OF триггерлері</h3>
-      <p>Біз бұрыннан білеміз: көрінісіне дерек <em>қосуға</em> да, одан дерек <em>өшіруге</em> де болмайды. Бірақ бір айла бар: негізгі кестеге қосатын не өшіретін <strong>триггер</strong> (<span class="term-en">trigger</span>) жасауға болады. Бұған <code>INSTEAD OF</code> триггері мүмкіндік береді, яғни «осы әрекеттің орнына мынаны істе».</p>
+      <p>Біз бұрыннан білеміз: көрініске дерек <em>қосуға</em> да, одан дерек <em>өшіруге</em> де болмайды. Бірақ бір айла бар: негізгі кестеге қосатын не өшіретін <strong>триггер</strong> (<span class="term-en">trigger</span>) жасауға болады. Бұған <code>INSTEAD OF</code> триггері мүмкіндік береді, яғни «осы әрекеттің орнына мынаны істе».</p>
 <pre data-lang="sql" data-db="w4_mfa_soft" data-dbsrc="sql/data/week-4.js"><code class="language-sql">CREATE TRIGGER "delete"
 INSTEAD OF DELETE ON "current_collections"
 FOR EACH ROW
@@ -295,7 +295,7 @@ END;</code></pre>
 WHERE "title" = 'Imaginative landscape';</code></pre>
       <p>Нәтижені көріністі сұрап тексереміз. (Мұнда «Imaginative landscape» өшіру алдын ала орындалған дерекқор алынды.)</p>
 <pre data-lang="sql" data-db="w4_mfa_after" data-dbsrc="sql/data/week-4.js"><code class="language-sql">SELECT * FROM "current_collections";</code></pre>
-      <p>Дәл осылай көріністі <em>толтыратын</em> триггер де жасай аламыз: көріністі қосқанымызда деректер негізгі кестеге түседі. Мұнда екі жағдайды ескеру керек. Біріншісі: көрінісіне қосқымыз келген жол негізгі кестеде бұрыннан бар, бірақ жұмсақ жойылған. Бұл жағдайды мына триггер өңдейді:</p>
+      <p>Дәл осылай көрініске дерек <em>қосқанда</em> оны негізгі кестеге түсіретін триггер де жасай аламыз. Мұнда екі жағдайды ескеру керек. Біріншісі: көрініске қосқымыз келген жол негізгі кестеде бұрыннан бар, бірақ жұмсақ жойылған. Бұл жағдайды мына триггер өңдейді:</p>
 <pre data-lang="sql" data-db="w4_mfa_soft" data-dbsrc="sql/data/week-4.js"><code class="language-sql">CREATE TRIGGER "insert_when_exists"
 INSTEAD OF INSERT ON "current_collections"
 FOR EACH ROW
@@ -422,7 +422,7 @@ SELECT COUNT(*) FROM "2022";</code></pre>
       </div>
 
       <h2 id="problem-set">Problem Set 4 (Тапсырмалар жинағы 4)</h2>
-      <p>Ресми тапсырма беті: <a href="https://cs50.harvard.edu/sql/psets/4/" target="_blank" rel="noopener">cs50.harvard.edu/sql/psets/4</a>. Үш тапсырма бар: <strong>Census Taker</strong>, <strong>The Private Eye</strong> және <strong>Bed and Breakfast</strong>. Үшеуінде де көріністер жасайсыз. Бір ескерту: ресми ережеге сәйкес бір-бірінен көшіруге болмайды, ал көмек сұрағанда басқаның орнына жұмыс істеп бермеуі тиіс (академиялық адалдық).</p>
+      <p>Ресми тапсырма беті: <a href="https://cs50.harvard.edu/sql/psets/4/" target="_blank" rel="noopener">cs50.harvard.edu/sql/psets/4</a>. Үш тапсырма бар: <strong>Census Taker</strong>, <strong>The Private Eye</strong> және <strong>Bed and Breakfast</strong>. Үшеуінде де көріністер жасайсыз. Бір ескерту: ресми ережеге сәйкес бір-бірінен көшіруге болмайды, ал көмек беруші сіздің орныңызға жұмысты орындап бермеуі тиіс (академиялық адалдық).</p>
       <div class="callout note">
         <span class="callout-title">Қайда орындалады</span>
         <p>Ресми тапсырма <code>cs50.dev</code> ортасында орындалады: онда <code>sqlite3</code>, <code>.read</code> командасы, <code>check50</code> және <code>submit50</code> бар. Ресми дерекқорлар (<code>bnb.db</code>, <code>census.db</code>, <code>private.db</code>) үлкен, сондықтан сайтта олар жоқ. Орнына әр тапсырманың астында <strong>сайттың өз жаттығуы</strong> тұр (ресми тапсырма емес): сол логикаға ұқсас, бірақ Қазақстан деректерімен жасалған шағын демо дерекқорда <em>нағыз SQLite</em> орындайды. Ол жерде көріністі жасаудың орнына, оның ішіндегі <code>SELECT</code> сұрауын жазасыз, сайт нәтижесін эталонмен салыстырады. Нағыз <code>CREATE VIEW</code> жазып, ресми <code>check50</code>-ті компьютеріңізде міндетті түрде орындаңыз.</p>
@@ -553,7 +553,7 @@ bnb/ $ ls</code></pre>
         </ul>
         <p><strong>Талаптар.</strong> Сәйкес <code>.sql</code> файлдарының әрқайсысына <code>bnb.db</code> деректерінен төмендегі көріністерді жасайтын SQL операторын жазыңыз. Әр көрініс өз алдына тұруы керек (басқа көріністі қолданбайды).</p>
         <ul>
-          <li><strong><code>no_descriptions.sql</code>, <code>no_descriptions</code> көрінісі.</strong> Қарасаңыз, <code>SELECT * FROM "listings" LIMIT 5;</code> нәтижесі «тұрпайы» көрінеді: <code>description</code> бағанында жол үзілістері көп, терминалда әрқайсысы бөлек жолға шығады. Көрініс <code>listings</code> кестесінің <code>description</code>-нан басқа <em>барлық</em> бағанын қамтуы тиіс.</li>
+          <li><strong><code>no_descriptions.sql</code>, <code>no_descriptions</code> көрінісі.</strong> Қарасаңыз, <code>SELECT * FROM "listings" LIMIT 5;</code> нәтижесі ұсқынсыз көрінеді: <code>description</code> бағанында жол үзілістері көп, терминалда әрқайсысы бөлек жолға шығады. Көрініс <code>listings</code> кестесінің <code>description</code>-нан басқа <em>барлық</em> бағанын қамтуы тиіс.</li>
           <li><strong><code>one_bedrooms.sql</code>, <code>one_bedrooms</code> көрінісі.</strong> Дәл бір ұйықтайтын бөлмесі бар барлық тізімдер. Бағандары: <code>id</code> (<code>listings</code>-тегі тізім ID-і), <code>property_type</code>, <code>host_name</code>, <code>accommodates</code> (бәрі <code>listings</code>-тен).</li>
           <li><strong><code>available.sql</code>, <code>available</code> көрінісі.</strong> Барлық тізімдердегі барлық бос күндер. Бағандары: <code>id</code> (<code>listings</code>-тегі тізім ID-і), <code>property_type</code>, <code>host_name</code> (<code>listings</code>-тен), <code>date</code> (<code>availabilities</code>-тен, бос күн).</li>
           <li><strong><code>frequently_reviewed.sql</code>, <code>frequently_reviewed</code> көрінісі.</strong> Ең жиі пікір алған 100 тізім, көптен азға қарай реттелген. Бағандары: <code>id</code>, <code>property_type</code>, <code>host_name</code>, <code>reviews</code> (тізімнің алған пікір саны). Екі тізімнің пікір саны тең болса, алдымен <code>property_type</code> (алфавит бойынша), сосын <code>host_name</code> (алфавит бойынша) реттеңіз.</li>
