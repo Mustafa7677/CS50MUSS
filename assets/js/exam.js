@@ -22,7 +22,7 @@
   async function exam(el) {
     await K.loadScript("assets/data/quiz.js");
     await K.loadScript("assets/data/lectures.js");
-    const pool = window.CS50KZ_QUIZ || [];
+    const pool = (window.CS50KZ_QUIZ || []).filter((q) => !q.c); // қорытынды емтихан тек CS50x
     const lecs = window.CS50KZ_LECTURES || [];
     const lecOf = (q) => lecs.find((l) => q.u.startsWith(l.url)) || { id: "?", num: q.l, title: q.l, url: q.u.split("#")[0] };
     let run = store.get(RUN, null), tick = null;

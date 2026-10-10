@@ -102,6 +102,9 @@
     initQuote();
     initCourseHome();
     initCourseCards();
+    initCourseMenu();
+    myCourses(document.querySelector(".my-courses"));
+    if (PAGE || document.body.dataset.course) { try { localStorage.setItem("cs50kz:lastcourse", JSON.stringify(COURSE)); } catch (e) {} }
     initAlashPortraits();
     document.querySelectorAll(".qt-slot").forEach(miniQuote);
     initPythonRunner();
@@ -111,7 +114,7 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
-    window.CS50KZ = { botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), summary: summaryData, ORDER, dayKey, COURSE, readJson };
+    window.CS50KZ = { myCourses, botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), summary: summaryData, ORDER, dayKey, COURSE, readJson };
     if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .js-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
     if (document.querySelector(".flask-lab")) loadScript("assets/js/flask.js");
     if (document.querySelector(".exam")) loadScript("assets/js/exam.js");
@@ -387,6 +390,7 @@
       modal.innerHTML = `
         <div class="search-box" role="dialog" aria-modal="true" aria-label="Іздеу">
           <div class="search-input"><span>⌕</span><input type="search" placeholder="Лекциялардан іздеу: рекурсия, malloc, SQL JOIN..." autocomplete="off"><kbd>Esc</kbd></div>
+          <div class="search-scope" role="group" aria-label="Курс бойынша сүзу">${[["all", "Барлығы"], ["x", "CS50x"], ["python", "CS50P"], ["sql", "SQL"], ["ai", "AI"], ["web", "Web"]].map(([c, n]) => `<button type="button" data-s="${c}" class="${c === "all" ? "on" : ""}">${n}</button>`).join("")}</div>
           <ul class="search-results"></ul>
           <div class="search-foot"><span><kbd>↑</kbd><kbd>↓</kbd> таңдау</span><span><kbd>Enter</kbd> ашу</span></div>
         </div>`;
@@ -395,6 +399,13 @@
       list = modal.querySelector(".search-results");
       modal.addEventListener("click", (e) => { if (e.target === modal) close(); });
       input.addEventListener("input", run);
+      modal.querySelector(".search-scope").addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-s]");
+        if (!b) return;
+        scope = b.dataset.s;
+        modal.querySelectorAll(".search-scope button").forEach((x) => x.classList.toggle("on", x === b));
+        run(); input.focus();
+      });
       input.addEventListener("keydown", (e) => {
         if (e.key === "ArrowDown" || e.key === "ArrowUp") {
           e.preventDefault();
@@ -421,6 +432,8 @@
       document.body.classList.remove("no-scroll");
     };
 
+    const courseOfHit = (s) => (/^(python|sql|ai|web)\//.exec(s.u) || [])[1] || "x";
+    let scope = "all";
     function run() {
       const q = input.value.trim().toLowerCase();
       if (q.length < 2) { items = []; list.innerHTML = '<li class="search-hint">Іздеу үшін кемінде 2 әріп жазыңыз</li>'; return; }
@@ -428,6 +441,7 @@
         const words = q.split(/\s+/);
         const scored = [];
         for (const s of window.CS50KZ_INDEX || []) {
+          if (scope !== "all" && courseOfHit(s) !== scope) continue;
           const h = s.h.toLowerCase(), t = s.t.toLowerCase();
           if (!words.every((w) => h.includes(w) || t.includes(w))) continue;
           let score = 0;
@@ -848,6 +862,91 @@
     }
   }
 
+  // ---------- Курс таңдағыш (жоғарғы жолақ) және телефондағы мәзір ----------
+  const COURSE_META = [
+    { id: "x", name: "CS50x", title: "Информатикаға кіріспе", color: "#087a96", total: 12, href: "index.html" },
+    { id: "python", name: "CS50P", title: "Python бағдарламалау", color: "#3776ab", total: 10, href: "python/index.html" },
+    { id: "sql", name: "CS50 SQL", title: "Дерекқорлар", color: "#7c3aed", total: 7, href: "sql/index.html" },
+    { id: "ai", name: "CS50 AI", title: "Жасанды интеллект", color: "#c42a68", total: 7, href: "ai/index.html" },
+    { id: "web", name: "CS50 Web", title: "Веб-бағдарламалау", color: "#c2410c", total: 9, href: "web/index.html" },
+  ];
+  function courseReadCount(p, id) {
+    return Object.keys(p.read || {}).filter((k) => p.read[k] && (id === "x" ? ORDER.includes(k) : k.startsWith(id + ":"))).length;
+  }
+  function initCourseMenu() {
+    const pill = document.querySelector(".course-pill");
+    if (!pill) return;
+    let menu = null;
+    const close = () => { if (menu) menu.hidden = true; pill.setAttribute("aria-expanded", "false"); };
+    const build = () => {
+      const p = Progress.load();
+      const cur = pill.dataset.course;
+      menu = document.createElement("div");
+      menu.className = "course-menu";
+      menu.id = "course-menu";
+      menu.setAttribute("role", "dialog");
+      menu.setAttribute("aria-label", "Курстар");
+      const rows = COURSE_META.map((c) => {
+        const read = courseReadCount(p, c.id), pct = Math.round((read / c.total) * 100);
+        return `<a class="cm-row${c.id === cur ? " on" : ""}" href="${ROOT_URL + c.href}" style="--c:${c.color}"${c.id === cur ? ' aria-current="page"' : ""}>
+          <span class="cm-dot" aria-hidden="true"></span>
+          <span class="cm-txt"><b>${c.name}</b><small>${escapeHtml(c.title)}</small></span>
+          <span class="cm-prog"><i style="width:${pct}%"></i></span><span class="cm-n">${read}/${c.total}</span></a>`;
+      }).join("");
+      menu.innerHTML = `<div class="cm-head">Курстар</div>${rows}
+        <a class="cm-all" href="${ROOT_URL}courses.html">Барлық курстар және оқу жолы →</a>
+        <div class="cm-site"><a href="${ROOT_URL}practice.html">Жаттығу</a><a href="${ROOT_URL}playground.html">Сынақ алаңы</a><a href="${ROOT_URL}glossary.html">Сөздік</a><a href="${ROOT_URL}map.html">Курс картасы</a><a href="${ROOT_URL}cheatsheet.html">Шпаргалка</a><a href="${ROOT_URL}profile.html">Профиль</a></div>`;
+      document.body.appendChild(menu);
+    };
+    pill.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const opening = !menu || menu.hidden;
+      if (!menu) build();
+      if (opening) {
+        const r = pill.getBoundingClientRect();
+        menu.style.top = Math.round(r.bottom + 8) + "px";
+        menu.hidden = false;
+        pill.setAttribute("aria-expanded", "true");
+        menu.querySelector(".cm-row")?.focus();
+      } else close();
+    });
+    document.addEventListener("click", (e) => { if (menu && !menu.hidden && !menu.contains(e.target)) close(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && menu && !menu.hidden) { close(); pill.focus(); } });
+    window.addEventListener("resize", () => { if (menu && !menu.hidden) close(); });
+  }
+
+  // ---------- «Менің курстарым»: барлық курс бойынша прогресс және жалғастыру ----------
+  function myCourses(box, opts = {}) {
+    if (!box) return;
+    const p = Progress.load();
+    const rows = COURSE_META.map((c) => {
+      const read = courseReadCount(p, c.id);
+      const ids = c.id === "x" ? ORDER : Array.from({ length: c.total }, (_, i) => c.id + ":week-" + i);
+      const nextId = ids.find((id) => !p.read[id]);
+      const lastRaw = c.id === "x" ? p.last : readJson("cs50kz:last:" + c.id, null);
+      const lastId = lastRaw && lastRaw.id && !p.read[lastRaw.id] && ids.includes(lastRaw.id) ? lastRaw.id : null;
+      const goId = lastId || nextId;
+      const href = goId ? (c.id === "x" ? `lectures/${goId}.html` : `${c.id}/lectures/${goId.split(":")[1]}.html`) : null;
+      const label = goId ? (goId.split(":").pop() === "ai" ? "AI" : goId.split(":").pop().replace("week-", "") + "-апта") : "";
+      return { c, read, pct: Math.round((read / c.total) * 100), href, label, started: read > 0 || !!lastRaw, done: read === c.total };
+    });
+    const active = rows.filter((r) => r.started);
+    if (!active.length && !opts.always) { box.hidden = true; return; }
+    box.hidden = false;
+    const show = active.length ? active : rows.slice(0, 2);
+    box.innerHTML = `<div class="mc-head"><h2>${opts.title || "Менің курстарым"}</h2><a href="${ROOT_URL}courses.html">Барлық курстар →</a></div>
+      <div class="mc-grid">${show.map((r) => `
+        <article class="mc-card${r.done ? " done" : ""}" style="--c:${r.c.color}">
+          <div class="mc-ring" style="--pct:${r.pct}"><b>${r.pct}%</b></div>
+          <div class="mc-body">
+            <h3>${r.c.name}</h3>
+            <p>${escapeHtml(r.c.title)} · ${r.read}/${r.c.total} лекция</p>
+            ${r.done ? `<a class="mc-btn" href="${ROOT_URL}certificate.html${r.c.id === "x" ? "" : "?course=" + r.c.id}">Сертификатты алу 🎓</a>`
+              : r.href ? `<a class="mc-btn" href="${ROOT_URL + r.href}">${r.read ? "Жалғастыру" : "Бастау"}: ${r.label} →</a>` : ""}
+          </div>
+        </article>`).join("")}</div>`;
+  }
+
   // ---------- Курс витринасы: әр курстағы өз прогресі ----------
   function initCourseCards() {
     const cards = document.querySelectorAll(".cx-card[data-total]");
@@ -1083,10 +1182,22 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
     const rows = [...document.querySelectorAll(".g-row")];
     const letters = [...document.querySelectorAll(".g-letter")];
     const count = document.querySelector(".g-count");
+    let course = "all";
+    // Әр жолдың курсы: сілтемесінен (python/, sql/, ai/, web/ не CS50x)
+    const courseOfRow = (r) => (/(?:^|\/)(python|sql|ai|web)\/lectures\//.exec(r.querySelector("a")?.getAttribute("href") || "") || [])[1] || "x";
+    rows.forEach((r) => { r.dataset.c = courseOfRow(r); });
+    const names = { all: "Барлығы", x: "CS50x", python: "CS50P", sql: "SQL", ai: "AI", web: "Web" };
+    const present = new Set(rows.map((r) => r.dataset.c));
+    const chips = document.createElement("div");
+    chips.className = "seg g-courses";
+    chips.setAttribute("role", "group");
+    chips.setAttribute("aria-label", "Курс");
+    chips.innerHTML = Object.keys(names).filter((c) => c === "all" || present.has(c)).map((c) => `<button type="button" data-c="${c}" class="${c === "all" ? "on" : ""}">${names[c]}</button>`).join("");
+    document.querySelector(".g-search").after(chips);
     const run = () => {
       const q = box.value.trim().toLowerCase();
       let n = 0;
-      rows.forEach((r) => { const ok = !q || r.dataset.q.includes(q); r.hidden = !ok; if (ok) n++; });
+      rows.forEach((r) => { const ok = (!q || r.dataset.q.includes(q)) && (course === "all" || r.dataset.c === course); r.hidden = !ok; if (ok) n++; });
       letters.forEach((h) => {
         let el = h.nextElementSibling, any = false;
         while (el && el.classList.contains("g-row")) { if (!el.hidden) any = true; el = el.nextElementSibling; }
@@ -1094,6 +1205,13 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
       });
       count.textContent = `${n} термин`;
     };
+    chips.addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-c]");
+      if (!b) return;
+      course = b.dataset.c;
+      chips.querySelectorAll("button").forEach((x) => x.classList.toggle("on", x === b));
+      run();
+    });
     box.addEventListener("input", run);
     run();
   }
@@ -1430,7 +1548,9 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
 
   function achievementList() {
     const p = Progress.load();
-    const read = Object.keys(p.read).length;
+    const read = Object.keys(p.read).filter((k) => ORDER.includes(k)).length; // CS50x лекциялары
+    const readAll = Object.keys(p.read).filter((k) => p.read[k]).length;
+    const readC = (id) => Object.keys(p.read).filter((k) => p.read[k] && k.startsWith(id + ":")).length;
     const perfect = Object.values(p.quiz).filter((q) => q.best === q.total).length;
     const daily = readJson("cs50kz:daily", {});
     const streak = Math.max(daily.best || 0, daily.streak || 0);
@@ -1447,8 +1567,8 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
     } catch (e) {}
     const A = (id, ico, name, desc, cur, goal) => ({ id, ico, name, desc, cur: Math.min(cur, goal), goal, done: cur >= goal });
     return [
-      A("first-read", "📖", "Алғашқы қадам", "Бір лекцияны оқып шығу", read, 1),
-      A("half", "🌗", "Жарты жол", "6 лекцияны оқу", read, 6),
+      A("first-read", "📖", "Алғашқы қадам", "Бір лекцияны оқып шығу", readAll, 1),
+      A("half", "🌗", "Жарты жол", "6 лекцияны оқу", readAll, 6),
       A("graduate", "🎓", "Курс бітті", "Барлық 12 лекцияны оқу", read, 12),
       A("perfect", "💯", "Мінсіз тест", "Бір лекция тестінен 100%", perfect, 1),
       A("scholar", "🧠", "Білгір", "5 лекция тестінен 100%", perfect, 5),
@@ -1475,6 +1595,11 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
       A("search", "🔍", "Іздеуші", "Сайт бойынша іздеуді қолдану", used.search ? 1 : 0, 1),
       A("owl", "🌙", "Түнгі үкі", "Түнгі режимді қосу", used.dark ? 1 : 0, 1),
       A("goal7", "🎯", "Мақсатшыл", "Күнделікті мақсатты 7 күн қатарынан орындау", goalStats().best, 7),
+      A("course-python", "🐍", "CS50P түлегі", "CS50P курсының барлық 10 лекциясын оқу", readC("python"), 10),
+      A("course-sql", "🗃", "CS50 SQL түлегі", "CS50 SQL курсының барлық 7 лекциясын оқу", readC("sql"), 7),
+      A("course-ai", "🤖", "CS50 AI түлегі", "CS50 AI курсының барлық 7 лекциясын оқу", readC("ai"), 7),
+      A("course-web", "🕸", "CS50 Web түлегі", "CS50 Web курсының барлық 9 лекциясын оқу", readC("web"), 9),
+      A("polyglot", "🌍", "Көпқырлы", "Кемінде 3 түрлі курстан лекция оқу", COURSE_META.filter((c) => (c.id === "x" ? read : readC(c.id)) > 0).length, 3),
     ];
   }
 

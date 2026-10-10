@@ -208,8 +208,10 @@
     const render = () => {
       const s = summary(), p = get("cs50kz:progress", {});
       el.querySelector(".pf-id").textContent = K.profile().id;
+      const readAll = Object.keys(p.read || {}).filter((k) => p.read[k]).length;
+      K.myCourses && K.myCourses(el.querySelector(".my-courses"), { always: true, title: "Курстар бойынша прогресс" });
       el.querySelector(".pf-stats").innerHTML = [
-        ["📖", `${s.read}/12`, "лекция"], ["✅", s.tasks, "тапсырма"], ["📝", s.quiz != null ? s.quiz + "%" : "-", "тест"],
+        ["📖", `${Math.min(readAll, 45)}/45`, "лекция (барлық курс)"], ["✅", s.tasks, "тапсырма"], ["📝", s.quiz != null ? s.quiz + "%" : "-", "тест"],
         ["🎓", s.exam != null ? s.exam + "%" : "-", "емтихан"], ["🏅", s.ach ?? "-", "жетістік"],
       ].map(([i, v, t]) => `<div><span>${i}</span><b>${esc(String(v))}</b><small>${t}</small></div>`).join("");
       const nm = el.querySelector(".pf-name");
@@ -226,6 +228,7 @@
           <p class="pf-note">ID - сіздің оқушы нөміріңіз. Ол мұғалімге жіберілетін кодта да тұрады, сондықтан мұғалім сізді басқа телефоннан жіберсеңіз де таниды.</p>
         </div>
       </div>
+      <section class="my-courses pf-box" aria-label="Менің курстарым" hidden></section>
       <div class="pf-stats"></div>
       <section class="pf-box pf-cal" aria-label="Белсенділік күнтізбесі"></section>
       <section class="pf-box pf-cloud" aria-live="polite"><p class="pf-small">Бұлт жүктелуде…</p></section>
