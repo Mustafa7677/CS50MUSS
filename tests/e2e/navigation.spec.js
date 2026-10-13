@@ -57,7 +57,7 @@ test("басты бет: күн сөзі шығады, «Келесі» ауыс
   await expect(page.locator(".qt-card")).toHaveClass(/is-paused/);
   await expect(q).toHaveText(third);
   // Тұлғалар жолағы: Абайды бассақ — Абайдың сөзі, тағы бассақ — оның келесі сөзі
-  await expect(page.locator(".qt-faces button")).toHaveCount(11); // сөзі бар тұлғалар
+  await expect(page.locator(".qt-faces button")).toHaveCount(12); // сөзі бар тұлғалар
   await page.click('.qt-faces button[data-a="Абай Құнанбайұлы"]');
   await expect(page.locator(".qt-card figcaption b")).toHaveText("Абай Құнанбайұлы");
   await expect(page.locator('.qt-faces button[data-a="Абай Құнанбайұлы"]')).toHaveAttribute("aria-pressed", "true");
