@@ -16,8 +16,9 @@ const PAGES = [
 // Pyodide CDN-і → tests/node_modules/pyodide (желісіз, тұрақты). Бумада жоқ файл болса — желіге жібереміз.
 const PYDIR = path.join(__dirname, "../node_modules/pyodide/");
 async function routePyodide(context) {
-  await context.route(/cdn\.jsdelivr\.net\/npm\/pyodide@0\.26\.4\/full\/([^?]*)/, async (route) => {
-    const f = route.request().url().match(/full\/([^?]*)/)[1];
+  // Ресми CDN жолы (pyodide/v0.26.4/full/) және npm жолы (npm/pyodide@0.26.4/): екеуі де жергілікті npm бумасынан беріледі
+  await context.route(/cdn\.jsdelivr\.net\/(?:npm\/pyodide@0\.26\.4\/(?:full\/)?|pyodide\/v0\.26\.4\/full\/)([^?]*)/, async (route) => {
+    const f = route.request().url().match(/(?:full\/|pyodide@0\.26\.4\/)([^?\/]*)(?:\?.*)?$/)[1];
     const file = path.join(PYDIR, f);
     if (!fs.existsSync(file)) return route.continue();
     const type = f.endsWith(".wasm") ? "application/wasm" : /\.m?js$/.test(f) ? "application/javascript" : f.endsWith(".json") ? "application/json" : "application/octet-stream";
