@@ -1596,11 +1596,20 @@ parent.postMessage({tag:${JSON.stringify(tag)},res:__res},"*");<\/script>`;
 
   // ================= Курс картасы =================
   async function courseMap(el) {
-    await K.loadScript("assets/data/lectures.js");
-    const lecs = window.CS50KZ_LECTURES || [];
+    const C = (() => { const c = new URLSearchParams(location.search).get("course"); return ["python", "sql", "ai", "web"].includes(c) ? c : null; })();
+    document.querySelectorAll(".map-switch a").forEach((a) => { const on = (a.dataset.c === "x" && !C) || a.dataset.c === C; a.classList.toggle("on", on); if (on) a.setAttribute("aria-current", "page"); });
+    await K.loadScript(C ? C + "/data/lectures.js" : "assets/data/lectures.js");
+    const NAMES = { python: ["CS50P", "Python-ды нөлден тереңге дейін"], sql: ["CS50 SQL", "Бір кестеден масштабталатын дерекқорға дейін"], ai: ["CS50 AI", "Іздеуден тіл модельдеріне дейін"], web: ["CS50 Web", "HTML-ден тестілеу мен қауіпсіздікке дейін"] };
+    if (C) {
+      const h = document.querySelector(".map-title-h"); if (h) h.textContent = NAMES[C][1];
+      document.title = NAMES[C][0] + " курс картасы - CS50 қазақша";
+    }
+    const lecs = (C ? (window.CS50KZ_COURSE_LECTURES || {})[C] || [] : window.CS50KZ_LECTURES || []).map((l) => (C ? { ...l, id: C + ":" + l.id } : l));
     const p = store.get("cs50kz:progress", {}) || {};
     const read = p.read || {}, quiz = p.quiz || {};
     const LANG = { "week-0": "Scratch", "week-1": "C", "week-2": "C", "week-3": "C", "week-4": "C", "week-5": "C", "week-6": "Python", "week-7": "SQL", ai: "AI", "week-8": "HTML · CSS · JS", "week-9": "Flask", "week-10": "🎓" };
+    const WEBLANG = ["HTML · CSS", "Git", "Python", "Django", "SQL", "JavaScript", "React", "CI/CD", "Қауіпсіздік"];
+    const langOf = (l, k) => (C ? (C === "web" ? WEBLANG[k] : { python: "Python", sql: "SQL", ai: "Python · AI" }[C]) : LANG[l.id]) || "";
     const next = lecs.find((l) => !read[l.id]);
     el.innerHTML = `<div class="map-legend"><span class="lg read">Оқылды</span><span class="lg next">Келесі</span><span class="lg todo">Алда</span></div>` +
       lecs.map((l, k) => {
@@ -1609,7 +1618,7 @@ parent.postMessage({tag:${JSON.stringify(tag)},res:__res},"*");<\/script>`;
         return `<div class="map-stop ${st} ${k % 2 ? "right" : "left"}">
           <div class="map-dot">${read[l.id] ? "✓" : k}</div>
           <div class="map-card">
-            <div class="map-top"><span class="map-num">${esc(l.num)}</span><span class="map-lang">${esc(LANG[l.id] || "")}</span></div>
+            <div class="map-top"><span class="map-num">${esc(l.num)}</span><span class="map-lang">${esc(langOf(l, k))}</span></div>
             <a class="map-title" href="${K.ROOT_URL + l.url}">${esc(l.title)}</a>
             <div class="map-topics">${l.topics.slice(0, 8).map((t) => `<a href="${K.ROOT_URL + l.url}#${t.id}">${esc(t.t)}</a>`).join("")}</div>
             <div class="map-foot"><span>⏱ ${l.minutes} мин</span>${q ? `<span>📝 ${q.best}/${q.total}</span>` : ""}${st === "next" ? `<a class="btn gold" href="${K.ROOT_URL + l.url}">Бастау →</a>` : ""}</div>
