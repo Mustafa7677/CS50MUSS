@@ -11,16 +11,16 @@ async function selectText(page, selector) {
   }, selector);
 }
 
-test("мәтінді белгілеп қатені хабарлау: бұлт жоқ болса GitHub issue ұсынылады", async ({ page, context }) => {
+test("мәтінді белгілегенде «Қатені хабарлау» батырмасы шықпайды; футер арқылы бұлт жоқ болса GitHub issue ұсынылады", async ({ page, context }) => {
   await blockFonts(context);
   await context.route(/supabase\.co/, (r) => r.abort());
   const errs = collectErrors(page);
   await page.goto("lectures/week-1.html");
   await page.waitForFunction(() => window.CS50KZ_FEEDBACK);
   await selectText(page, "#intro ~ p");
-  await expect(page.locator(".fb-fab")).toBeVisible();
-  await page.click(".fb-fab");
-  await expect(page.locator(".fb-quote")).not.toBeEmpty();
+  await page.waitForTimeout(300);
+  await expect(page.locator(".fb-fab")).toHaveCount(0); // белгілегенде ештеңе шықпайды
+  await page.locator(".fb-open").first().click();
   await expect(page.locator(".fb-where")).toContainText("lectures/week-1.html");
   await page.click(".fb-send");
   await expect(page.locator(".fb-result.bad")).toContainText("Хабарламаны жазыңыз");
