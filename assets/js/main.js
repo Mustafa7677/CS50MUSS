@@ -1266,7 +1266,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
     const CERT = course === "x"
       ? { src: "assets/data/lectures.js", list: () => window.CS50KZ_LECTURES || [], exam: true }
       : {
-          src: `${course}/data/lectures.js`, total: CC.total, exam: false, code: CC.code,
+          src: `${course}/data/lectures.js`, total: CC.total, exam: true, code: CC.code,
           list: () => ((window.CS50KZ_COURSE_LECTURES || {})[course] || []).map((l) => ({ ...l, id: course + ":" + l.id })),
           intro: `Барлық ${CC.total} лекцияны оқып шыққан соң, атыңыз жазылған ${CC.code} сертификатын басып шығарыңыз не PDF ретінде сақтаңыз.`,
           text: `${CC.what} курсының қазақ тіліндегі нұсқасының барлық ${CC.total} лекциясын оқып шыққанын растайды: ${CC.topics}.`,
@@ -1295,7 +1295,8 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
         nameOut.textContent = nameInput.value.trim() || "Сіздің атыңыз";
         const q = Progress.load(); q.name = nameInput.value.trim(); Progress.save(q);
       };
-      const ex = readJson("cs50kz:exam", {});
+      const examKey = course === "x" ? "cs50kz:exam" : "cs50kz:exam:" + course;
+      const ex = readJson(examKey, {});
       const exOut = cert.querySelector(".cert-exam");
       if (exOut && CERT.exam && ex.best >= 70) {
         exOut.hidden = false;
@@ -1305,8 +1306,8 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
       sync();
       const done = lectures.length - left.length;
       const steps = lectures.map((l) => `<a href="${ROOT_URL + l.url}" class="cg-step ${p.read[l.id] ? "on" : ""}" title="${escapeHtml(l.num + ": " + l.title)}">${p.read[l.id] ? "✓" : escapeHtml(l.id === "ai" ? "AI" : l.id.replace(/^(python:)?week-/, ""))}</a>`).join("");
-      const exBest = readJson("cs50kz:exam", {}).best;
-      const exam = !CERT.exam ? "" : exBest >= 70 ? `<span class="cg-exam ok">🎓 Емтихан: ${exBest}%</span>` : `<a class="cg-exam" href="${ROOT_URL}exam.html">📝 Емтихан ${exBest != null ? `(${exBest}%) - қайта тапсыру` : "- тапсыру"} →</a>`;
+      const exBest = readJson(examKey, {}).best;
+      const exam = !CERT.exam ? "" : exBest >= 70 ? `<span class="cg-exam ok">🎓 Емтихан: ${exBest}%</span>` : `<a class="cg-exam" href="${ROOT_URL}exam.html${course === "x" ? "" : "?course=" + course}">📝 Емтихан ${exBest != null ? `(${exBest}%) - қайта тапсыру` : "- тапсыру"} →</a>`;
       if (left.length || lectures.length < (CERT.total || 0)) {
         cert.classList.add("locked");
         const all = Math.max(lectures.length, CERT.total || 0);
