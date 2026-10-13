@@ -35,7 +35,7 @@ window.CS50KZ_COURSE_LECTURES["web"] = [
     "id": "sass"
    }
   ],
-  "minutes": 38,
+  "minutes": 43,
   "quiz": 8,
   "tasks": 1
  },
