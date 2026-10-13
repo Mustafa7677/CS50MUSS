@@ -1614,6 +1614,8 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
       A("course-sql", "🗃", "CS50 SQL түлегі", "CS50 SQL курсының барлық 7 лекциясын оқу", readC("sql"), 7),
       A("course-ai", "🤖", "CS50 AI түлегі", "CS50 AI курсының барлық 7 лекциясын оқу", readC("ai"), 7),
       A("course-web", "🕸", "CS50 Web түлегі", "CS50 Web курсының барлық 9 лекциясын оқу", readC("web"), 9),
+      A("builder", "🛠", "Жасаушы", "«Жобалар шеберханасында» бір жобаны аяқтау", Math.min(1, Object.keys((readJson("cs50kz:projects", {}).finished || {})).filter((k) => k !== "all").length), 1),
+      A("capstone", "🏗", "Капстоун шебері", "«Жобалар шеберханасының» барлық 4 жобасын аяқтау", Object.keys((readJson("cs50kz:projects", {}).finished || {})).filter((k) => k !== "all").length, 4),
       A("polyglot", "🌍", "Көпқырлы", "Кемінде 3 түрлі курстан лекция оқу", COURSE_META.filter((c) => (c.id === "x" ? read : readC(c.id)) > 0).length, 3),
     ];
   }
