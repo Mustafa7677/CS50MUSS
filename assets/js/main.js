@@ -1221,6 +1221,8 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
         let el = h.nextElementSibling, any = false;
         while (el && el.classList.contains("g-row")) { if (!el.hidden) any = true; el = el.nextElementSibling; }
         h.hidden = !any;
+        const a = document.querySelector(`.g-letters a[href="#${h.id}"]`);
+        if (a) { if (any) a.removeAttribute("aria-disabled"); else a.setAttribute("aria-disabled", "true"); }
       });
       count.textContent = `${n} термин`;
     };

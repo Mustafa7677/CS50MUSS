@@ -1,4 +1,4 @@
-// CS50 қазақша - кері байланыс: мәтінді белгілеп «Қатені хабарлау» не футердегі «Пікір қалдыру».
+// CS50 қазақша - кері байланыс: футердегі «Пікір қалдыру» арқылы (мәтінді белгілегенде батырма шықпайды).
 // Хабар Supabase-ке (cs50kz_feedback_send) жіберіледі; болмаса - GitHub issue сілтемесі ұсынылады.
 
 (function () {
@@ -19,34 +19,6 @@
     }
     return document.querySelector("h1")?.textContent.trim().slice(0, 200) || "";
   }
-
-  // ---------- Белгілеу батырмасы ----------
-  const fab = document.createElement("button");
-  fab.type = "button";
-  fab.className = "fb-fab";
-  fab.hidden = true;
-  fab.textContent = "✏️ Қатені хабарлау";
-  document.body.appendChild(fab);
-  let picked = null;
-  const hideFab = () => { fab.hidden = true; };
-  function place() {
-    const sel = document.getSelection();
-    const text = sel && sel.toString().trim();
-    const host = sel && sel.rangeCount && sel.getRangeAt(0).commonAncestorContainer;
-    const el = host && (host.nodeType === 1 ? host : host.parentElement);
-    if (!text || text.length < 3 || !el || !el.closest(".content") || el.closest("input, textarea, .fb-modal, pre.run-output, .exam")) return hideFab();
-    const r = sel.getRangeAt(0).getBoundingClientRect();
-    if (r.bottom < 0 || r.top > innerHeight) return hideFab();
-    picked = { quote: text.slice(0, 600), section: sectionOf(sel.anchorNode) };
-    fab.hidden = false;
-    const top = r.top > 60 ? r.top - 44 : Math.min(innerHeight - 44, r.bottom + 8);
-    fab.style.top = top + "px";
-    fab.style.left = Math.min(innerWidth - 190, Math.max(8, r.left + r.width / 2 - 90)) + "px";
-  }
-  document.addEventListener("selectionchange", place);
-  addEventListener("scroll", () => fab.hidden || requestAnimationFrame(place), { passive: true });
-  fab.addEventListener("mousedown", (e) => e.preventDefault()); // белгілеу жоғалмасын
-  fab.addEventListener("click", () => { hideFab(); open(picked || {}); });
 
   // ---------- Терезе ----------
   function githubUrl(d) {
