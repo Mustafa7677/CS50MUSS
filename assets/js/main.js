@@ -1110,8 +1110,18 @@
   async function getPyodide() {
     if (!pyodideReady) {
       const loading = (async () => {
-        await loadScript("https://cdn.jsdelivr.net/npm/pyodide@0.26.4/full/pyodide.js");
-        const py = await window.loadPyodide();
+        // Pyodide-ті бірнеше көзден кезекпен жүктейміз: біреуі қолжетімсіз болса (желі, аймақ), келесісіне көшеміз.
+        // 1) ресми CDN (барлық пакеттермен, мысалы sqlite3); 2-3) npm бумасы (негізгі Python ғана).
+        const SOURCES = ["https://cdn.jsdelivr.net/pyodide/v0.26.4/full/", "https://cdn.jsdelivr.net/npm/pyodide@0.26.4/", "https://unpkg.com/pyodide@0.26.4/"];
+        let py = null, lastErr = null;
+        for (const base of SOURCES) {
+          try {
+            await loadScript(base + "pyodide.js");
+            py = await window.loadPyodide({ indexURL: base });
+            break;
+          } catch (e) { lastErr = e; delete window.loadPyodide; }
+        }
+        if (!py) throw lastErr || new Error("Pyodide жүктелмеді");
         // input() мен cs50 кітапханасын браузерге бейімдеу; __cs50kz_run - автотексеруші қабығы
         py.runPython(`
 import builtins
