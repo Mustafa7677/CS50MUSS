@@ -124,6 +124,10 @@ def head_block(prefix, title, desc, url, image="assets/img/og.jpg"):
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{SITE_URL}{image}">
+  <link rel="canonical" href="{url}">
+  <meta name="copyright" content="© Sagid Mustafa. CC BY-NC-SA 4.0. Ресми емес аударма; түпнұсқа: Гарвард CS50.">
+  <link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
+  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"LearningResource","name":{json.dumps(title, ensure_ascii=False)},"url":"{url}","inLanguage":"kk","author":{{"@type":"Person","name":"Sagid Mustafa"}},"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","isBasedOn":"https://cs50.harvard.edu/","isAccessibleForFree":true,"copyrightHolder":{{"@type":"Person","name":"Sagid Mustafa"}}}}</script>
   <!-- /build:head -->"""
 
 

@@ -8,6 +8,23 @@
   const COURSE = (location.pathname.match(/\/(python|sql|ai|web)\/(?:lectures\/[\w-]+\.html|index\.html)?$/) || [])[1] || "x";
   const PAGE = (() => { const n = (location.pathname.match(/lectures\/([\w-]+)\.html$/) || [])[1]; return n ? (COURSE === "x" ? n : COURSE + ":" + n) : null; })();
 
+  // Көшірмеден қорғау: сайт ресми мекенжайдан тыс жерде ашылса, түпнұсқаға сілтеме беретін ескерту көрсетеді.
+  // (Тек GitHub Pages-тегі түпнұсқа, жергілікті сервер және file:// үшін көрсетілмейді. Өз доменіңізді қоссаңыз - тізімге қосыңыз.)
+  (function () {
+    const OFFICIAL = ["mustafa7677.github.io", "localhost", "127.0.0.1", "[::1]", ""];
+    if (OFFICIAL.indexOf(location.hostname) !== -1 || location.protocol === "file:") return;
+    const show = () => {
+      if (document.getElementById("clone-notice")) return;
+      const d = document.createElement("div");
+      d.id = "clone-notice"; d.setAttribute("role", "alert");
+      d.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#7a1010;color:#fff;padding:12px 16px;font:600 15px/1.45 system-ui,sans-serif;text-align:center;box-shadow:0 -6px 24px rgba(0,0,0,.35)";
+      d.innerHTML = 'Назар аударыңыз: бұл - «CS50 қазақша» сайтының <b>көшірмесі</b> болуы мүмкін. Түпнұсқа: <a href="https://mustafa7677.github.io/CS50MUSS/" style="color:#ffd75e">mustafa7677.github.io/CS50MUSS</a>. Автор: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0 (авторды көрсету, коммерциясыз).';
+      document.body.appendChild(d);
+    };
+    if (document.body) show(); else document.addEventListener("DOMContentLoaded", show);
+    new MutationObserver(show).observe(document.documentElement, { childList: true, subtree: true });
+  })();
+
   // Түнгі / күндізгі режим
   const root = document.documentElement;
   try {
