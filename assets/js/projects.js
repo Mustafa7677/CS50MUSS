@@ -175,7 +175,7 @@
               await K.loadScript("projects/model.js");
               code = code.replace(/__MODEL__/g, JSON.stringify(window.CS50KZ_PJ.model));
             }
-            frame(code, "allow-scripts", true);
+            frame(code, "allow-scripts allow-forms", true);
             live.textContent = "Бет жүктелді";
             K.mark && K.mark("web");
           } else {
@@ -195,7 +195,7 @@
             try { await py.runPythonAsync(ta.value, { globals: g }); } catch (e) { err = String(e.message || e).split("\n").filter((l) => !/File "\/lib|_pyodide|pyodide\./.test(l)).join("\n"); }
             g.destroy && g.destroy();
             if (err) text((buf ? buf + "\n" : "") + err, true);
-            else if (mode === "py-html") frame(buf, "", false);
+            else if (mode === "py-html") frame(buf, "allow-scripts", false);
             else text(buf || "(шығыс жоқ)");
             live.textContent = err ? "Қате бар" : "Дайын";
             K.mark && K.mark("python");
