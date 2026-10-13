@@ -15,15 +15,25 @@
     del(key) { try { localStorage.removeItem(key); } catch (e) {} },
   };
   const PER_LECTURE = 2, MINUTES = 30, PASS = 70;
-  const RUN = "cs50kz:exam-run", RES = "cs50kz:exam";
+  const COURSE = (() => { const c = new URLSearchParams(location.search).get("course"); return ["python", "sql", "ai", "web"].includes(c) ? c : null; })();
+  const SUF = COURSE ? ":" + COURSE : "";
+  const RUN = "cs50kz:exam-run" + SUF, RES = "cs50kz:exam" + SUF;
+  const CODE = { python: "CS50P", sql: "CS50 SQL", ai: "CS50 AI", web: "CS50 Web" }[COURSE] || "CS50x";
   function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
   const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 
   async function exam(el) {
+    document.querySelectorAll(".ex-switch a").forEach((a) => { const on = (a.dataset.c === "x" && !COURSE) || a.dataset.c === COURSE; a.classList.toggle("on", on); if (on) a.setAttribute("aria-current", "page"); });
+    if (COURSE) {
+      const t = document.querySelector(".ex-title"), l = document.querySelector(".ex-lead");
+      if (t) t.textContent = CODE + ": қорытынды емтихан 📝";
+      if (l) l.textContent = "Курстың барлық лекциясын бір емтиханда тексеріңіз. Уақыт шектеулі, жауаптар соңында ғана ашылады. Нәтижеңіз осы курстың сертификатына жазылады.";
+      document.title = CODE + " қорытынды емтихан - CS50 қазақша";
+    }
     await K.loadScript("assets/data/quiz.js");
-    await K.loadScript("assets/data/lectures.js");
-    const pool = (window.CS50KZ_QUIZ || []).filter((q) => !q.c); // қорытынды емтихан тек CS50x
-    const lecs = window.CS50KZ_LECTURES || [];
+    await K.loadScript(COURSE ? COURSE + "/data/lectures.js" : "assets/data/lectures.js");
+    const pool = (window.CS50KZ_QUIZ || []).filter((q) => (COURSE ? q.c === COURSE : !q.c)); // әр курстың өз емтиханы
+    const lecs = COURSE ? (window.CS50KZ_COURSE_LECTURES || {})[COURSE] || [] : window.CS50KZ_LECTURES || [];
     const lecOf = (q) => lecs.find((l) => q.u.startsWith(l.url)) || { id: "?", num: q.l, title: q.l, url: q.u.split("#")[0] };
     let run = store.get(RUN, null), tick = null;
     // Нәтижелер: бүлінген болса да пішіні дұрыс (best - сан не null, tries - тізім)
@@ -173,7 +183,7 @@
             <p>${timeout ? "Уақыт бітті. " : ""}${pass ? "Нәтижеңіз сертификатқа жазылды." : `Өту үшін кемінде ${PASS}% керек. Төмендегі әлсіз тақырыптарды қайталап, қайта көріңіз.`}</p>
             <div class="ex-stats"><span>⏱ ${mmss(secs)}</span><span>🏅 Үздігі: ${best}%</span></div>
             <div class="ex-actions">
-              ${pass ? `<a class="btn gold" href="${K.ROOT_URL}certificate.html">Сертификатты ашу 🎓</a>` : ""}
+              ${pass ? `<a class="btn gold" href="${K.ROOT_URL}certificate.html${COURSE ? "?course=" + COURSE : ""}">Сертификатты ашу 🎓</a>` : ""}
               <button type="button" class="btn ${pass ? "secondary" : "gold"} ex-again">Қайта тапсыру</button>
             </div>
           </div>
