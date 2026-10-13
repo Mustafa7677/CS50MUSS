@@ -467,9 +467,12 @@ def main():
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
     # Беттердегі есептелетін сандар: <!--n:terms-->…<!--/n--> және <!--n:quiz-->…<!--/n-->
-    stats = {"terms": str(n), "quiz": str(len(quiz))}
+    n_tasks = sum(len(re.findall(r'class="(?:autograder|js-grader|sql-grader)\b', f.read_text(encoding="utf-8")))
+                  for f in list((ROOT / "lectures").glob("*.html")) + [g for c in COURSES for g in (ROOT / c / "lectures").glob("week-*.html")])
+    stats = {"terms": str(n), "quiz": str(len(quiz)), "courses": str(len(COURSES) + 1), "lect": str(0), "tasks": str(n_tasks)}
     # Бүкіл сайт бойынша сандар: басты беттегі пилюля және мета-сипаттамалар
     n_lect = len(list((ROOT / "lectures").glob("*.html"))) + sum(len(list((ROOT / c / "lectures").glob("week-*.html"))) for c in COURSES)
+    stats["lect"] = str(n_lect)
     site = f"{len(COURSES) + 1} курс · {n_lect} лекция · {len(quiz)} тест сұрағы · {n} термин"
     desc = (f"Гарвардтың CS50 курстары қазақ тілінде: CS50x, Python, SQL, AI және Web. {n_lect} лекция, {len(quiz)} тест сұрағы, "
             "браузерде орындалатын тапсырмалар. Тегін. Ресми емес аударма, лицензиясы CC BY-NC-SA 4.0.")
@@ -480,7 +483,7 @@ def main():
         it2 = re.sub(r'(<meta (?:property="og:description"|name="description"|name="twitter:description") content=")[^"]*(")', lambda m: m.group(1) + desc + m.group(2), it2)
         if it2 != it:
             ip.write_text(it2, encoding="utf-8")
-    for page in ["practice.html", "flashcards.html", "about.html"]:
+    for page in ["practice.html", "flashcards.html", "about.html", "index.html"]:
         fp = ROOT / page
         if fp.exists():
             t = fp.read_text(encoding="utf-8")
