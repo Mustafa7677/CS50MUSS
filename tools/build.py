@@ -125,7 +125,7 @@ def head_block(prefix, title, desc, url, image="assets/img/og.jpg"):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{SITE_URL}{image}">
   <link rel="canonical" href="{url}">
-  <meta name="copyright" content="© Sagid Mustafa. CC BY-NC-SA 4.0. Ресми емес аударма; түпнұсқа: Гарвард CS50.">
+  <meta name="copyright" content="© Sagid Mustafa. CC BY-NC-SA 4.0. Авторлық қазақша аударма; түпнұсқа: Гарвард CS50.">
   <link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
   <script type="application/ld+json">{{"@context":"https://schema.org","@type":"LearningResource","name":{json.dumps(title, ensure_ascii=False)},"url":"{url}","inLanguage":"kk","author":{{"@type":"Person","name":"Sagid Mustafa"}},"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","isBasedOn":"https://cs50.harvard.edu/","isAccessibleForFree":true,"copyrightHolder":{{"@type":"Person","name":"Sagid Mustafa"}}}}</script>
   <!-- /build:head -->"""
@@ -179,7 +179,7 @@ def footer_block(p):
         + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы"), ("projects.html", "Жобалар шеберханасы")])
         + col("Жоба", [("about.html", "Курс туралы"), ("alash.html", "Алаш тұлғалары"), ("certificate.html", "Сертификат"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің профилім")])
         + '\n      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. '
-        'Қазақшаға аударған: <strong>Sagid Mustafa</strong>. Ресми емес жоба: Гарвард не CS50 командасы растамаған.</p>'
+        'Қазақшаға аударған: <strong>Sagid Mustafa</strong>. Авторлық жоба: бұл Гарвард университетінің сайты емес.</p>'
         '<p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · '
         '<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · '
         '<a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>\n'
@@ -475,7 +475,7 @@ def main():
     stats["lect"] = str(n_lect)
     site = f"{len(COURSES) + 1} курс · {n_lect} лекция · {len(quiz)} тест сұрағы · {n} термин"
     desc = (f"Гарвардтың CS50 курстары қазақ тілінде: CS50x, Python, SQL, AI және Web. {n_lect} лекция, {len(quiz)} тест сұрағы, "
-            "браузерде орындалатын тапсырмалар. Тегін. Ресми емес аударма, лицензиясы CC BY-NC-SA 4.0.")
+            "браузерде орындалатын тапсырмалар. Тегін. Авторлық қазақша аударма (Sagid Mustafa), лицензиясы CC BY-NC-SA 4.0.")
     ip = ROOT / "index.html"
     if ip.exists():
         it = ip.read_text(encoding="utf-8")
