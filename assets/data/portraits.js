@@ -1,5 +1,12 @@
 // tools/fetch_portraits.py жасаған (Wikimedia Commons, еркін лицензиялар); "manual" - қолмен қосылған, скрипт өзгертпейді.
 window.CS50KZ_PORTRAITS = {
+ "Мұхтар Шаханов": {
+  "img": "assets/img/alash/shakhanov.jpg",
+  "license": "сайт авторы ұсынған",
+  "artist": "фотопортрет",
+  "src": "",
+  "manual": true
+ },
  "Әлихан Бөкейхан": {
   "img": "assets/img/alash/bokeikhan.jpg",
   "license": "Public domain",
