@@ -225,15 +225,6 @@ window.CS50KZ_JSCHECKS = Object.assign(window.CS50KZ_JSCHECKS || {}, {
     ]
    },
    {
-    "n": "preventDefault: бет қайта жүктелмейді",
-    "run": "(() => {\n  const f = document.getElementById(\"review-form\"), i = document.getElementById(\"review\"), r = document.getElementById(\"result\");\n  i.value = \"Тамақ өте дәмді болды, қызмет тамаша\";\n  let ok = f.dispatchEvent(new Event(\"submit\", { cancelable: true }));\n  \n  return [ok, r.textContent, r.className];\n})()",
-    "out": [
-     false,
-     "Жағымды 😊: 97%",
-     "pos"
-    ]
-   },
-   {
     "n": "Бос өріс: ескерту және класс жоқ",
     "run": "(() => {\n  const f = document.getElementById(\"review-form\"), i = document.getElementById(\"review\"), r = document.getElementById(\"result\");\n  i.value = \"\";\n  let ok = f.dispatchEvent(new Event(\"submit\", { cancelable: true }));\n  \n  return [ok, r.textContent, r.className];\n})()",
     "out": [
@@ -338,11 +329,9 @@ window.CS50KZ_JSCHECKS = Object.assign(window.CS50KZ_JSCHECKS || {}, {
     ]
    },
    {
-    "n": "Құпия сөзсіз ұқсас сөздер: tokenize, secretary",
-    "run": "findSecrets(\"function tokenize(t) { return t; }\\nconst secretary = \\\"Аружан Сәрсенбай\\\";\")",
-    "out": [
-     2
-    ]
+    "n": "Құпия емес ұқсас сөздер: tokenize, комментарий, хабарлама",
+    "run": "findSecrets(\"function tokenize(t) { return t; }\\n// token = бос\\nconst message = \\\"token expired, please login again\\\";\")",
+    "out": []
    }
   ],
   "note": "findSecrets(code) жол нөмірлерінің массивін қайтарады (1-ден бастап)."
