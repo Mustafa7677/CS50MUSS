@@ -175,7 +175,7 @@ def footer_block(p):
         + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы"), ("projects.html", "Жобалар шеберханасы")])
         + col("Жоба", [("about.html", "Курс туралы"), ("alash.html", "Алаш тұлғалары"), ("certificate.html", "Сертификат"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің профилім")])
         + '\n      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. '
-        'Қазақшаға аударған: <strong>Sagid Mustafa</strong>.</p>'
+        'Қазақшаға аударған: <strong>Sagid Mustafa</strong>. Ресми емес жоба: Гарвард не CS50 командасы растамаған.</p>'
         '<p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · '
         '<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · '
         '<a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>\n'
@@ -464,6 +464,18 @@ def main():
             process_page(ROOT / page, "", active)
     # Беттердегі есептелетін сандар: <!--n:terms-->…<!--/n--> және <!--n:quiz-->…<!--/n-->
     stats = {"terms": str(n), "quiz": str(len(quiz))}
+    # Бүкіл сайт бойынша сандар: басты беттегі пилюля және мета-сипаттамалар
+    n_lect = len(list((ROOT / "lectures").glob("*.html"))) + sum(len(list((ROOT / c / "lectures").glob("week-*.html"))) for c in COURSES)
+    site = f"{len(COURSES) + 1} курс · {n_lect} лекция · {len(quiz)} тест сұрағы · {n} термин"
+    desc = (f"Гарвардтың CS50 курстары қазақ тілінде: CS50x, Python, SQL, AI және Web. {n_lect} лекция, {len(quiz)} тест сұрағы, "
+            "браузерде орындалатын тапсырмалар. Тегін. Ресми емес аударма, лицензиясы CC BY-NC-SA 4.0.")
+    ip = ROOT / "index.html"
+    if ip.exists():
+        it = ip.read_text(encoding="utf-8")
+        it2 = re.sub(r"<!--site-->.*?<!--/site-->", f"<!--site-->{site}<!--/site-->", it)
+        it2 = re.sub(r'(<meta (?:property="og:description"|name="description"|name="twitter:description") content=")[^"]*(")', lambda m: m.group(1) + desc + m.group(2), it2)
+        if it2 != it:
+            ip.write_text(it2, encoding="utf-8")
     for page in ["practice.html", "flashcards.html", "about.html"]:
         fp = ROOT / page
         if fp.exists():
