@@ -359,10 +359,10 @@ title = "Үй"
       </div>
 
       <h2 id="problem-set">Жаттығу</h2>
-      <p>Бұл апта үшін жеке тапсырмалар жинағы жоқ: алғашқы жоба (<strong>Project 0: Search</strong>) нөлінші аптаның материалына жатады. Бірақ Git тек оқумен үйренілмейді, қолмен жасау керек. Төменде бес-алты командадан тұратын шағын сеанс бар, сосын төрт жаттығу.</p>
+      <p>Бұл апта үшін жеке тапсырмалар жинағы жоқ: алғашқы жоба (<strong>Project 0: Search</strong>) нөлінші аптаның материалына жатады. Бірақ Git тек оқумен үйренілмейді, қолмен жасау керек. Төменде бес-алты командадан тұратын шағын сеанс бар, сосын алты жаттығу: төртеуі компьютерде, екеуі осы бетте.</p>
       <div class="callout note">
         <span class="callout-title">Git сайтта жоқ</span>
-        <p>Бұл сайтта нағыз Git жұмыс істемейді, сондықтан интерактивті терминал жасамадық. Орнына төмендегі терминал блоктарында командалардың нақты шығысын көрсетеміз. Командалар компьютеріңіздегі терминалда орындалады: <a href="https://git-scm.com/downloads" target="_blank" rel="noopener">Git орнатыңыз</a> да, қатарынан қайталап көріңіз. Бұл жаттығулардың автотексерушісі жоқ, өзіңізді checklist арқылы тексересіз.</p>
+        <p>Бұл сайтта нағыз Git жұмыс істемейді, сондықтан интерактивті терминал жасамадық. Орнына төмендегі терминал блоктарында командалардың нақты шығысын көрсетеміз. Командалар компьютеріңіздегі терминалда орындалады: <a href="https://git-scm.com/downloads" target="_blank" rel="noopener">Git орнатыңыз</a> да, қатарынан қайталап көріңіз. Алғашқы төрт жаттығудың автотексерушісі жоқ, өзіңізді checklist арқылы тексересіз. Ал одан кейінгі екі жаттығуда Git-тің ішкі ойынын JavaScript-пен өзіңіз жазасыз, оларды сайттың өзі тексереді.</p>
       </div>
 
       <h3 id="git-session">Алты команданың бір сеансы</h3>
@@ -488,6 +488,46 @@ Automatic merge failed; fix conflicts and then commit the result.</code></pre>
           </ul>
           <p class="progress"></p>
         </div></details>
+      </div>
+
+      <h3 id="mini-git">Git-тің ішін өзіміз жазамыз</h3>
+      <p>Git командаларын жаттап алу бір басқа, ал Git не істеп жатқанын <em>түсіну</em> бір басқа. Шын мәнінде Git-тің бар сиқыры екі нәрседе: коммиттер бір-біріне «ата-анасы» арқылы байланысқан граф, ал тармақ дегеніміз сол графтағы бір коммитті көрсететін жай ғана жапсырма. Төмендегі екі жаттығуда осыны өз қолыңызбен жасап көресіз: нағыз Git сайтта жоқ болса да, оның миын кішкентай JavaScript функциясы ретінде жазуға болады.</p>
+      <div class="callout note">
+        <span class="callout-title">Сайттың өз жаттығулары, ресми тапсырма емес</span>
+        <p>Бұл екі жаттығуды біз осы сайт үшін қостық, олар CS50 Web-тің ресми problem set-і емес. Кодыңызды <code>.js</code> файлына жазып (немесе тікелей қойып), автотексерушіге беріңіз: ол кодты браузерде, бөлек ағында (Web Worker) орындайды. Әр тесттің атында қандай жағдай тексерілетіні жазылған, сондықтан құлаған тест қай жерде қателескеніңізді айтып тұрады.</p>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-gitsim">gitSim (коммит графы, тармақ және merge)</h3></div>
+        <p><code>gitSim(commands)</code> функциясын жазыңыз: ол <code>git</code> командаларының тізімін алып, соңғы күйді қайтарсын. Бастапқы күйде бір коммит <code>c1</code> және соған қарап тұрған <code>main</code> тармағы бар. Командалар: <code>"commit"</code> (жаңа коммит, аты <code>c2</code>, <code>c3</code>, ...), <code>"branch NAME"</code>, <code>"checkout NAME"</code>, <code>"checkout -b NAME"</code> және <code>"merge NAME"</code>. Нәтиже: <code>{head, branches, parents}</code>, мұнда <code>branches</code> - тармақ аты мен коммит, ал <code>parents</code> - әр коммиттің ата-аналар тізімі (<code>c1</code> үшін бос).</p>
+        <p>Ең қызығы - <code>merge</code>. Егер біріктірілетін коммит ағымдағы тарихта бұрыннан бар болса, ештеңе өзгермейді. Егер ағымдағы коммит біріктірілетін тармақтың тарихында жатса, Git жаңа коммит жасамай, тармақты жай ғана алға жылжытады (<strong>fast-forward</strong>). Тек екі тармақ шынымен айырылғанда ғана екі ата-анасы бар жаңа <em>merge коммиті</em> жасалады: ата-аналары <code>[ағымдағы, біріктірілетін]</code> ретімен. Мысалы:</p>
+<pre data-lang="javascript"><code class="language-javascript">const r = gitSim(["checkout -b feature", "commit", "checkout main", "commit", "merge feature"]);
+// r.head     -&gt; "main"
+// r.branches -&gt; { main: "c4", feature: "c2" }
+// r.parents  -&gt; { c1: [], c2: ["c1"], c3: ["c1"], c4: ["c3", "c2"] }</code></pre>
+        <details class="think">
+          <summary>Ойланып көріңіз: <code>["checkout -b feature", "commit", "commit", "checkout main", "merge feature"]</code> соңында неше коммит болады?</summary>
+          <div class="details-body"><p>Үш: <code>c1</code>, <code>c2</code>, <code>c3</code>. <code>main</code> тармағы <code>c1</code>-де тұр, ал <code>c1</code> - <code>feature</code> тарихының бір бөлігі, яғни тармақтар айырылмаған. Сондықтан Git merge коммитін жасамайды, <code>main</code> жапсырмасын <code>c3</code>-ке жылжытады. Бұл - fast-forward.</p></div>
+        </details>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Алдымен көмекші функция жазыңыз: <code>isAncestor(a, b)</code> - «<code>a</code> коммиті <code>b</code>-дан ата-аналар бойымен кері жүргенде кездесе ме?» (өзі де есептеледі). Ол үшін <code>b</code>-дан бастап <code>parents</code> арқылы тізбекті аралаңыз (merge коммитінде ата-ана екеу, екеуін де қараңыз). Сонда <code>merge</code> үш жолға бөлінеді: <code>isAncestor(other, cur)</code> болса - ештеңе істемеңіз; <code>isAncestor(cur, other)</code> болса - fast-forward; әйтпесе жаңа коммит. Жаңа коммит аты үшін барлық коммит санауышын (<code>count</code>) ұстаңыз, ол merge коммитіне де қолданылады.</p></div></details>
+        <div class="js-grader" data-check="js-gitsim" data-src="web/checks/week-1.js"></div>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="ex-merge3">merge3 (үш жақты біріктіру және қайшылық)</h3></div>
+        <p>Git <strong>біріктіру қайшылығының</strong> қашан болатынын қалай біледі? Ол екі нұсқаны бір-біріне емес, <em>ортақ арғы атасымен</em> (<code>base</code>) салыстырады. <code>merge3(base, ours, theirs, branch)</code> функциясын жазыңыз: үшеуі де бірдей ұзындықтағы жолдар массивтері. Әр жолды бөлек қараңыз: екі жақта бірдей болса - сол жолды алыңыз; тек бір жақ <code>base</code>-тен өзгерсе - өзгерген жақтікін алыңыз (Git мұны өзі, сізден сұрамай шешеді); екі жақ та әртүрлі өзгерсе - қайшылық, нәтижеге мына бес жол қосылады:</p>
+<pre class="terminal"><code class="language-plaintext">&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD
+(ours жолы)
+=======
+(theirs жолы)
+&gt;&gt;&gt;&gt;&gt;&gt;&gt; branch</code></pre>
+        <p>Бұл дәл сол белгілер, оларды алдыңғы бөлімде өз файлыңыздан көрдіңіз. Кіріс массивтерін өзгертпеңіз, жаңа массив қайтарыңыз.</p>
+        <details class="think">
+          <summary>Ойланып көріңіз: екі адам бір жолды БІРДЕЙ етіп өзгертсе, қайшылық па?</summary>
+          <div class="details-body"><p>Жоқ. Қайшылық - екі жақтың <em>әртүрлі</em> нәрсе қалағаны. Егер екеуі де <code>"Жаңа"</code> деп жазса, таңдайтын ештеңе жоқ, Git сол жолды үнсіз қабылдайды. Сол сияқты, өзгерісті тек бір адам жасаса да қайшылық болмайды: екіншісі базаны қозғамаған, сондықтан жаңа нұсқа сөзсіз жеңеді.</p></div>
+        </details>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Массивті индекспен айналыңыз: <code>for (let i = 0; i &lt; base.length; i++)</code>. Тексеру реті маңызды: алдымен <code>ours[i] === theirs[i]</code>, сосын <code>ours[i] === base[i]</code> (демек өзгерген - theirs), сосын <code>theirs[i] === base[i]</code> (өзгерген - ours), ал қалғаны - қайшылық. Қайшылыққа бес жолды <code>result.push(...)</code> арқылы қосыңыз.</p></div></details>
+        <div class="js-grader" data-check="js-merge3" data-src="web/checks/week-1.js"></div>
       </div>
 
       <nav class="pager">

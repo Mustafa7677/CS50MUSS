@@ -66,7 +66,7 @@ window.CS50KZ_COURSE_LECTURES["web"] = [
     "id": "branching"
    }
   ],
-  "minutes": 23,
+  "minutes": 27,
   "quiz": 8,
   "tasks": 4
  },
