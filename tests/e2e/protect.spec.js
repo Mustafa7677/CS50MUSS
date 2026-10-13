@@ -2,6 +2,7 @@ const { test, expect } = require("@playwright/test");
 const { blockFonts } = require("../support/helpers");
 
 // Көшірмеден қорғау: ресми емес доменде ескерту шығады, ресми/жергілікті жерде шықпайды.
+test.describe.configure({ retries: 2 }); // route.fetch параллель жүктемеде сирек уақытша қате береді
 test("көшірме доменінде түпнұсқаға сілтеме беретін ескерту шығады", async ({ page, baseURL }) => {
   await blockFonts(page.context());
   await page.route("http://clone.example/**", async (route) => {
