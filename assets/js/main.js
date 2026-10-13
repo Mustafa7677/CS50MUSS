@@ -946,7 +946,8 @@
       const goId = lastId || nextId;
       const href = goId ? (c.id === "x" ? `lectures/${goId}.html` : `${c.id}/lectures/${goId.split(":")[1]}.html`) : null;
       const label = goId ? (goId.split(":").pop() === "ai" ? "AI" : goId.split(":").pop().replace("week-", "") + "-апта") : "";
-      return { c, read, pct: Math.round((read / c.total) * 100), href, label, started: read > 0 || !!lastRaw, done: read === c.total };
+      const ex = readJson(c.id === "x" ? "cs50kz:exam" : "cs50kz:exam:" + c.id, {}).best;
+      return { c, read, pct: Math.round((read / c.total) * 100), href, label, started: read > 0 || !!lastRaw, done: read === c.total, ex: typeof ex === "number" ? ex : null };
     });
     const active = rows.filter((r) => r.started);
     if (!active.length && !opts.always) { box.hidden = true; return; }
@@ -961,6 +962,7 @@
             <p>${escapeHtml(r.c.title)} · ${r.read}/${r.c.total} лекция</p>
             ${r.done ? `<a class="mc-btn" href="${ROOT_URL}certificate.html${r.c.id === "x" ? "" : "?course=" + r.c.id}">Сертификатты алу 🎓</a>`
               : r.href ? `<a class="mc-btn" href="${ROOT_URL + r.href}">${r.read ? "Жалғастыру" : "Бастау"}: ${r.label} →</a>` : ""}
+            ${r.ex != null || r.done ? `<a class="mc-exam" href="${ROOT_URL}exam.html${r.c.id === "x" ? "" : "?course=" + r.c.id}">${r.ex != null ? `📝 Емтихан: ${r.ex}%${r.ex >= 70 ? " ✓" : ""}` : "📝 Қорытынды емтихан"}</a>` : ""}
           </div>
         </article>`).join("")}</div>`;
   }
