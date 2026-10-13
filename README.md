@@ -117,4 +117,4 @@ npx playwright test --grep-invert @slow   # жылдам (~25 с)
 
 ## Лицензия
 
-[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). Бұл сайт Гарвард университетінің ресми сайты емес.
+[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/), толығырақ [LICENSE.md](LICENSE.md). Көшіргенде авторларды көрсету, коммерцияға қолданбау және сол лицензиямен жариялау міндетті. Бұл сайт Гарвард университетінің ресми сайты емес: Гарвард не CS50 командасы оны растаған жоқ.
