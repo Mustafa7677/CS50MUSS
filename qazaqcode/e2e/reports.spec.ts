@@ -149,6 +149,7 @@ test("сынып есебі: мұғалім XLSX/PDF, күн аралығы сү
 });
 
 test("құқық: оқушы, мұғалім, басқа мектеп, SUPER ADMIN, кіргізбеген", async ({ browser, request }) => {
+  test.setTimeout(180_000); // 5 бөлек кіру: dev-серверде алғашқы компиляция баяу
   expect((await request.get("/api/reports/school?format=pdf")).status()).toBe(401);
   const st = await session(browser, S1, /\/student/);
   for (const u of ["/api/reports/school?format=xlsx", `/api/reports/class/${demoClass}?format=xlsx`]) {
