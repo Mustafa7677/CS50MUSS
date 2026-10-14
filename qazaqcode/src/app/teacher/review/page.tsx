@@ -43,7 +43,7 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
       {rows.length === 0 ? (
         <EmptyState title="Тексеретін жұмыс жоқ" text="Оқушылар код не мәтін түріндегі тапсырманы жібергенде, жұмыс осында пайда болады. Тесттер автоматты бағаланады." action={<Link href="/teacher" className="btn-secondary">Сыныптарыма</Link>} />
       ) : (
-        <div className="table-wrap">
+        <div className="table-wrap relative">
           <table className="w-full min-w-[44rem]">
             <caption className="sr-only">Тексеруді күтетін жұмыстар</caption>
             <thead className="border-b border-line"><tr><th className="th">Оқушы</th><th className="th">Тапсырма</th><th className="th">Сынып</th><th className="th">Жіберілген</th><th className="th">Күйі</th><th className="th"><span className="sr-only">Ашу</span></th></tr></thead>
