@@ -4,6 +4,7 @@ import { withUser } from "@/lib/db";
 import { fmtDate, fmtNum, fmtPct, KIND_LABEL, LICENSE_STATE_LABEL, PLAN_LABEL } from "@/lib/format";
 import { EmptyState, PageHeader, ProgressBar, Section, StatCard, StatusBadge } from "@/components/ui";
 import { ActivityChart, type ActivityPoint } from "@/components/school/ActivityChart";
+import { ReportButtons } from "@/components/analytics/ReportButtons";
 import { loadClasses, loadLicense, pct } from "./queries";
 
 export const metadata = { title: "Мектеп панелі" };
@@ -90,6 +91,10 @@ export default async function SchoolDashboard() {
             : <p className="mt-6 text-sm text-ink-muted">Соңғы 30 күнде жіберілген жұмыс жоқ. Оқушылар тапсырма жібергенде график осында көрінеді.</p>}
         </section>
       </div>
+
+      <Section title="Есеп жүктеу" actions={<Link href="/school/students" className="text-sm">Оқушылар</Link>}>
+        <ReportButtons action="/api/reports/school" id="sch" />
+      </Section>
 
       <Section title="Сыныптар" actions={<Link href="/school/classes" className="text-sm">Барлығы</Link>}>
         {classes.length === 0 ? <EmptyState title="Сыныптар әлі жоқ" text="Мұғалімдер сынып ашқанда осында көрінеді." /> : (
