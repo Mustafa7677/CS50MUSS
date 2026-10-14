@@ -19,11 +19,13 @@ export async function publicBrand(slug: string | null | undefined): Promise<Bran
   return r[0] ?? DEFAULT_BRAND;
 }
 
-import { HEX, inkFor } from "./brand-color";
+import { HEX, inkFor, linkColors } from "./brand-color";
 export { inkFor };
 
 export function brandStyle(b: Brand): string {
   const p = HEX.test(b.primary_color) ? b.primary_color : DEFAULT_BRAND.primary_color;
   const a = HEX.test(b.secondary_color) ? b.secondary_color : DEFAULT_BRAND.secondary_color;
-  return `:root{--brand:${p};--brand-ink:${inkFor(p)};--brand-soft:color-mix(in srgb, ${p} 12%, white);--accent:${a}}.dark{--brand-soft:color-mix(in srgb, ${p} 25%, #0f172a)}`;
+  // --brand-link: түс мәтін ретінде (сілтеме, тақырып) ашық және қараңғы фонда AA контрастпен оқылуы үшін түзетіледі
+  const l = linkColors(p);
+  return `:root{--brand:${p};--brand-ink:${inkFor(p)};--brand-soft:color-mix(in srgb, ${p} 12%, white);--accent:${a};--brand-link:${l.light}}.dark{--brand-soft:color-mix(in srgb, ${p} 25%, #0f172a);--brand-link:${l.dark}}`;
 }
