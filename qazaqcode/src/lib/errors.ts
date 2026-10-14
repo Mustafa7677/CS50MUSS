@@ -67,3 +67,15 @@ export function errorMessage(e: unknown): string {
 export const messageForCode = (code: string | undefined): string | null => (code && /^[a-z_]+$/.test(code) && MESSAGES[code] ? MESSAGES[code] : null);
 
 export type ActionResult<T = unknown> = { ok: true; data?: T; message?: string } | { ok: false; error: string; field?: string };
+
+// ?err= параметрі арқылы келген мәтін (void action-дарды бетке бағыттау). Кез келген мәтінді көрсету - контент жалғандығы (phishing
+// сілтемесі: ?err=«аккаунтыңыз бұғатталды, ... хабарласыңыз»). Тек біздің белгілі хабарламалар көрсетіледі.
+const EXTRA_ERR = [
+  "Енгізілген деректер дұрыс емес: атауларды (1-160 символ) тексеріңіз.",
+  "Алдымен курсты кемінде бір сыныпқа бекітіңіз.",
+  "Сабақ блогы дұрыс емес (https сілтемесі немесе тіл түрін тексеріңіз).",
+  "Мазмұн тым үлкен: модуль, сабақ, блок саны не мәтін көлемі шектен асты.",
+  "Идентификатор дұрыс емес.",
+];
+const KNOWN_ERR = new Set<string>([...Object.values(MESSAGES), ...EXTRA_ERR, "Күтпеген қате болды. Кейінірек қайталап көріңіз."]);
+export const safeErrText = (t: string | undefined): string | null => (t ? (KNOWN_ERR.has(t) ? t : /^[a-z_]+$/.test(t) && MESSAGES[t] ? MESSAGES[t] : "Қате болды.") : null);

@@ -1,4 +1,5 @@
 import { Banner } from "@/components/ui";
+import { safeErrText } from "@/lib/errors";
 
 const OK: Record<string, string> = {
   created: "Сынып ашылды. Төмендегі кодты оқушыларға беріңіз.",
@@ -14,7 +15,7 @@ const OK: Record<string, string> = {
 export function Notices({ ok, err }: { ok?: string; err?: string }) {
   return (
     <>
-      {err && <Banner tone="bad">{err.slice(0, 300)}</Banner>}
+      {err && <Banner tone="bad">{safeErrText(err.slice(0, 300))}</Banner>}
       {ok && OK[ok] && <Banner tone="info">{OK[ok]}</Banner>}
     </>
   );
