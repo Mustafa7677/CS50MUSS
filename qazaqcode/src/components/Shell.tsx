@@ -2,16 +2,14 @@ import Link from "next/link";
 import { logoutAction } from "@/app/actions";
 import { ThemeToggle } from "./ThemeToggle";
 import { brandFor, brandStyle } from "@/lib/brand";
-import { LICENSE_STATE_LABEL, ROLE_LABEL } from "@/lib/format";
+import { ROLE_LABEL } from "@/lib/format";
 import type { Ctx, Membership } from "@/lib/context";
-import { Banner } from "./ui";
 
 export type NavItem = { href: string; label: string; icon?: string };
 
 /** Барлық рөл панельдерінің ортақ қабығы: sidebar + жоғарғы жолақ + брендинг + лицензия ескертуі. */
 export async function Shell({ ctx, active, nav, children, area }: { ctx: Ctx; active: Membership | null; nav: NavItem[]; children: React.ReactNode; area: string }) {
   const brand = await brandFor(ctx.userId, active?.org_id);
-  const state = active?.license_state;
   const roleName = area === "admin" ? "Платформа әкімшісі" : ROLE_LABEL[active?.role ?? "student"];
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[16rem_1fr]">
@@ -51,13 +49,7 @@ export async function Shell({ ctx, active, nav, children, area }: { ctx: Ctx; ac
           </div>
         </header>
         <main id="main" className="mx-auto max-w-6xl px-4 py-6 lg:px-8">
-          {active?.is_demo && <Banner tone="info"><strong>Демонстрациялық режим:</strong> бұл ұйымдағы барлық адам мен нәтиже - ойдан құрастырылған сынақ деректері. Нақты клиент деректері емес.</Banner>}
-          {state && state !== "active" && active?.role !== "student" && (
-            <Banner tone="bad">
-              Лицензия күйі: <strong>{LICENSE_STATE_LABEL[state] ?? state}</strong>. Жаңа сынып, тапсырма және қосылу шектелген; бар деректерді оқуға және экспорттауға болады.
-              Лицензияны ұзарту үшін {brand.contact_email ? <a href={`mailto:${brand.contact_email}`}>{brand.contact_email}</a> : "платформа әкімшісіне"} хабарласыңыз.
-            </Banner>
-          )}
+          {/* демо және лицензия банерлері - әр рөлдің layout.tsx-інде (DemoBanner, LicenceBanner) */}
           {children}
         </main>
       </div>

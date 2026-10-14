@@ -42,7 +42,7 @@ export async function setLicenseAction(_: ActionResult | null, f: FormData): Pro
     }).parse({ org: str(f, "org"), plan: str(f, "plan"), valid_until: str(f, "valid_until"), status: str(f, "status"), max_students: num(f, "max_students"), max_teachers: num(f, "max_teachers") });
     await withUser(await uid(), (q) => q("select public.set_license($1,$2::license_plan,$3,$4,$5::date,$6,$7)",
       [p.org, p.plan, p.max_students, p.max_teachers, p.valid_until, p.status, str(f, "notes") || null]));
-    revalidatePath("/admin");
+    revalidatePath("/admin"); revalidatePath(`/admin/orgs/${p.org}`);
     return { ok: true, message: "Лицензия жаңартылды." };
   } catch (e) {
     if (e instanceof z.ZodError) return { ok: false, error: "Лицензия деректері дұрыс емес (лимиттер - бүтін сан, күн толтырылған)." };
@@ -53,7 +53,14 @@ export async function setLicenseAction(_: ActionResult | null, f: FormData): Pro
 export async function setOrgStatusAction(f: FormData): Promise<void> {
   const org = z.string().uuid().parse(str(f, "org")); const status = z.enum(["active", "suspended"]).parse(str(f, "status"));
   await withUser(await uid(), (q) => q("select public.set_org_status($1,$2)", [org, status]));
-  revalidatePath("/admin");
+  revalidatePath("/admin"); revalidatePath(`/admin/orgs/${org}`);
+}
+
+/** Лицензия мерзімін ұзарту (қолданыстағы мерзімнен не бүгіннен, қайсысы кеш): +N ай. */
+export async function extendLicenseAction(f: FormData): Promise<void> {
+  const org = z.string().uuid().parse(str(f, "org")); const months = z.coerce.number().int().min(1).max(60).parse(str(f, "months"));
+  await withUser(await uid(), (q) => q("select public.extend_license($1,$2)", [org, months]));
+  revalidatePath("/admin"); revalidatePath(`/admin/orgs/${org}`);
 }
 
 export async function inviteSchoolAdminAction(_: ActionResult | null, f: FormData): Promise<ActionResult<{ link: string }>> {
