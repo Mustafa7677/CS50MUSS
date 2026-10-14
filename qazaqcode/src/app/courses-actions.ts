@@ -96,14 +96,14 @@ export async function setCourseStatusAction(f: FormData): Promise<void> {
     id = UUID.parse(str(f, "course_id"));
     to = str(f, "to") === "list" ? "list" : "course";
   } catch { redirect("/"); }
-  const back = to === "list" ? courseBase(area) : `${courseBase(area)}/${id}`;
+  const back = to === "list" ? courseBase(area) : `${courseBase(area)}/${id}?tab=settings`;
   let status: string;
   try {
     status = STATUS.parse(str(f, "status"));
     await withUser(ctx.userId, (q) => q("select public.set_course_status($1,$2::public.course_status)", [id, status]));
     touch(area, id);
   } catch (e) { bounce(back, e); }
-  redirect(`${back}?ok=${OK_FOR[status]}`);
+  redirect(`${back}${back.includes("?") ? "&" : "?"}ok=${OK_FOR[status]}`);
 }
 
 export async function duplicateCourseAction(f: FormData): Promise<void> {

@@ -40,7 +40,8 @@ test("мұғалім курс жасайды, құрылымды құрады, �
   courseUrl = new URL(page.url()).pathname;
 
   // 2 модуль, 1-ші модульде 2 сабақ
-  await page.getByTestId("add-module").click();
+  // create_course бірінші модульді ("1-модуль") өзі жасайды
+  await expect(page.getByLabel("1-модульдің атауы")).toHaveValue("1-модуль");
   await page.getByLabel("1-модульдің атауы").fill("Кіріспе");
   await page.getByTestId("add-lesson").first().click();
   await page.getByLabel("1-сабақтың атауы").fill("Алғашқы сабақ");
@@ -76,7 +77,12 @@ test("мұғалім курс жасайды, құрылымды құрады, �
   await page.getByRole("button", { name: "Екінші сабақ: жоғары жылжыту" }).click();
   await expect(page.getByTestId("lesson").first().getByLabel("1-сабақтың атауы")).toHaveValue("Екінші сабақ");
   // drag-and-drop: 2-модульді 1-ші орынға
-  await page.getByTestId("drag-module").nth(1).dragTo(page.getByTestId("module").first().locator("input").first());
+  // (ұзын бетте нысана көрінбейтіндіктен DnD оқиғаларын тікелей жібереміз)
+  const dt = await page.evaluateHandle(() => new DataTransfer());
+  await page.getByTestId("drag-module").nth(1).dispatchEvent("dragstart", { dataTransfer: dt });
+  await page.getByLabel("1-модульдің атауы").dispatchEvent("dragover", { dataTransfer: dt });
+  await page.getByLabel("1-модульдің атауы").dispatchEvent("drop", { dataTransfer: dt });
+  await page.getByTestId("drag-module").nth(1).dispatchEvent("dragend", { dataTransfer: dt });
   await expect(page.getByLabel("1-модульдің атауы")).toHaveValue("Қорытынды");
   // кері: батырмамен
   await page.getByRole("button", { name: "Қорытынды: төмен жылжыту" }).click();
@@ -151,12 +157,12 @@ test("баптаулар, жариялау, алдын ала қарау, про
   await page.waitForURL(/\/teacher\/courses\/[0-9a-f-]{36}/);
   await expect(page.getByText("Көшірме жоба ретінде жасалды")).toBeVisible();
   await page.goto("/teacher/courses");
-  const orig = page.getByTestId("course-row").filter({ hasText: `${name} (ред.)` }).filter({ hasNotText: "көшірме" });
+  const orig = page.getByTestId("course-row").filter({ hasText: `${name} (ред.)` }).filter({ hasNotText: "(көшірме)" });
   await orig.getByRole("button", { name: "Архивтеу" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Архивтеу" }).click();
   await expect(page.getByText("Курс мұрағатқа жіберілді")).toBeVisible();
-  await expect(page.getByTestId("course-row").filter({ hasText: "(ред.)" }).filter({ hasNotText: "көшірме" })).toContainText("Мұрағат");
-  await page.getByTestId("course-row").filter({ hasText: "(ред.)" }).filter({ hasNotText: "көшірме" }).getByRole("button", { name: "Қайта жариялау" }).click();
+  await expect(page.getByTestId("course-row").filter({ hasText: "(ред.)" }).filter({ hasNotText: "(көшірме)" })).toContainText("Мұрағат");
+  await page.getByTestId("course-row").filter({ hasText: "(ред.)" }).filter({ hasNotText: "(көшірме)" }).getByRole("button", { name: "Қайта жариялау" }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Жариялау" }).click();
   await expect(page.getByText("Курс жарияланды")).toBeVisible();
 });
