@@ -1,3 +1,4 @@
+import { auditExport } from "@/lib/audit";
 import { getContext } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { STATUS_LABEL } from "@/lib/format";
@@ -25,6 +26,7 @@ export async function GET() {
          left join lateral (select g2.score, g2.max_score from public.grades g2 where g2.assignment_id = a.id and g2.student_id = cs.student_id
                              order by g2.score desc limit 1) g on true
         where a.org_id = $1 order by c.name, p.full_name, a.title`, [m.org_id]));
+    await auditExport(ctx.userId, "school_csv", { orgId: m.org_id });
     const fmt = (d: Date | null) => (d ? new Date(d).toISOString().slice(0, 10) : "");
     return csvResponse("mektep-esebi.csv", ["Сынып", "Оқушы", "Тапсырма", "Күйі", "Балл", "Максималды балл", "Күні"],
       rows.map((r) => {

@@ -8,6 +8,7 @@ import { withUser } from "@/lib/db";
 import { ORG_COOKIE, getContext, homeFor } from "@/lib/context";
 import { AppError, errorCode, errorMessage, type ActionResult } from "@/lib/errors";
 import { rateLimit } from "@/lib/rate-limit";
+import { env } from "@/lib/env";
 
 const email = z.string().trim().toLowerCase().email().max(160);
 const password = z.string().min(8, "weak_password").max(128);
@@ -22,6 +23,8 @@ export async function loginAction(_: ActionResult | null, f: FormData): Promise<
   try {
     const p = z.object({ email, password: z.string().min(1).max(128) }).parse({ email: str(f, "email"), password: str(f, "password") });
     await rateLimit("login", 10, 10 * 60_000, p.email);
+    await rateLimit("login-ip", 40, 10 * 60_000); // бір IP-ден әр түрлі e-mail-дерге (password spraying)
+    await rateLimit("login-email", 30, 10 * 60_000, p.email, false); // IP-ге қарамай бір аккаунтқа (таратылған шабуыл)
     const r = await driver().signIn(p.email, p.password);
     await createSession(r.userId, r.accessToken);
     next = safeNext(f.get("next"));
@@ -123,7 +126,7 @@ export async function joinClassAction(_: ActionResult | null, f: FormData): Prom
 export async function switchOrgAction(f: FormData): Promise<void> {
   const ctx = await getContext();
   const id = str(f, "org_id");
-  if (ctx?.memberships.some((m) => m.org_id === id)) (await cookies()).set(ORG_COOKIE, id, { httpOnly: true, sameSite: "lax", path: "/" });
+  if (ctx?.memberships.some((m) => m.org_id === id)) (await cookies()).set(ORG_COOKIE, id, { httpOnly: true, sameSite: "lax", secure: env().COOKIE_SECURE === "true", path: "/" });
   redirect("/app");
 }
 

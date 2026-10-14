@@ -1,3 +1,4 @@
+import { auditExport } from "@/lib/audit";
 import { getContext } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { isUuid } from "../../../_data";
@@ -32,6 +33,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
   });
   if (out.status === 404) return new Response("Табылмады", { status: 404 });
   if (out.status === 403) return new Response("Рұқсат жоқ", { status: 403 });
+  try { await auditExport(ctx.userId, "class_csv", { classId: id }); } catch { return new Response("Қате болды", { status: 500 }); }
   const head = ["Оқушы", "Тапсырма", "Әрекет", "Балл", "Максималды балл", "Күйі", "Жіберілген күні"];
   const lines = [head.map(cell).join(",")];
   for (const r of out.rows) lines.push([r.full_name, r.title, r.attempt_no, r.score ?? "", r.max_score ?? "", STATUS[r.status] ?? r.status, iso(r.submitted_at)].map(cell).join(","));

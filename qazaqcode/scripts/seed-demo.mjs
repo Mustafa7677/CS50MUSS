@@ -113,7 +113,7 @@ async function workOn(a, teacher, cls, { kind, rate, gradeRate, k, answers, code
       sid = (await as(s.id, (x) => x("select public.save_draft($1,$2,'{}'::jsonb,$3) as id", [a, code(s.i), secs(s.i, k) * 2])))[0].id;
     }
     await as(s.id, (x) => x("select public.submit_assignment($1)", [sid]));
-    if (kind !== "quiz" && h(s.i, k + 5) < gradeRate) {
+    if (kind !== "quiz" && h(s.i * 3 + 1, k + 2) < gradeRate) {
       await as(teacher, (x) => x("select public.grade_submission($1,$2,$3)", [sid, scores(s.i), feedback]));
     }
   }
@@ -147,7 +147,8 @@ defs.push({ t: 0, title: "Факториал функциясы", p: { title: "�
   w: { kind: "python", rate: 0.5, gradeRate: 0.5, k: 2, feedback: "Жақсы шешім. Бос жолдарды үйреніңіз.", scores: (i) => 80 + (i % 20),
     code: () => "def factorial(n):\n    r = 1\n    for k in range(2, n + 1):\n        r *= k\n    return r\n" } });
 defs.push({ t: 1, title: "SELECT сұрауы", p: { title: "SELECT сұрауы", description: "Кестеден жасы 15-тен үлкен оқушыларды таңдаңыз.", kind: "sql", max_score: 100, deadline: D.soon }, cls: 1,
-  w: { kind: "sql", rate: 0.0, k: 3, scores: () => 0, code: () => "" } }); // ешкім тапсырмаған: "басталмаған" күйі
+  w: { kind: "sql", rate: 0.3, gradeRate: 0.5, k: 3, feedback: "Сұрау дұрыс, бағандарды атап жазған жақсы.", scores: (i) => 70 + (i % 25),
+    code: () => "SELECT * FROM оқушылар WHERE жасы > 15;" } });
 defs.push({ t: 0, title: "Циклдер: тест", p: { title: "Циклдер: тест", description: "for және while циклдері бойынша 4 сұрақ.", kind: "quiz", max_score: 100, max_attempts: 2, questions: q2, deadline: D.d3 }, cls: 0,
   w: { kind: "quiz", rate: 0.7, k: 4, answers: q2ans }, overdue: 2 });
 defs.push({ t: 0, title: "Тізімдер мен сөздіктер", p: { title: "Тізімдер мен сөздіктер", description: "Тізімнен ең үлкен санды табатын функция жазыңыз; сөздікте сөздердің санын есептеңіз.", kind: "python", max_score: 100,
@@ -220,7 +221,7 @@ for (const c of COURSES) {
   await as(who, (x) => x("select public.set_course_targets($1,$2::uuid[])", [id, c.cls.map((k) => classes[k])]));
   await as(who, (x) => x("select public.set_course_status($1,'published')", [id]));
   // кейбір оқушылар сабақты аяқтаған (прогресс)
-  const les = await q("select id from lessons where course_id=$1 order by position, created_at", [id]);
+  const les = await q("select l.id from lessons l join course_modules m on m.id = l.module_id where l.course_id=$1 order by m.position, l.position", [id]);
   for (const s of students.filter((z) => c.cls.includes(z.cls) && z.i % 4 !== 3)) {
     const n = Math.floor(h(s.i, 11) * (les.length + 1));
     for (const l of les.slice(0, n)) await as(s.id, (x) => x("select public.complete_lesson($1)", [l.id]));

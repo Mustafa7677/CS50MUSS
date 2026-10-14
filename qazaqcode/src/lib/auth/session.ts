@@ -3,6 +3,7 @@ import { SignJWT, jwtVerify } from "jose";
 import { env } from "../env";
 
 export const SESSION_COOKIE = "qc_session";
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_AGE = 60 * 60 * 24 * 7;
 
 function secret(): Uint8Array {
@@ -29,8 +30,9 @@ export async function currentUserId(): Promise<string | null> {
   const t = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!t) return null;
   try {
-    const { payload } = await jwtVerify(t, secret(), { algorithms: ["HS256"] });
-    return typeof payload.sub === "string" ? payload.sub : null;
+    // Supabase токенінде aud="authenticated"; local токенде aud жоқ. exp міндетті (мерзімсіз токен қабылданбайды).
+    const { payload } = await jwtVerify(t, secret(), { algorithms: ["HS256"], requiredClaims: ["sub", "exp"], ...(env().AUTH_DRIVER === "supabase" ? { audience: "authenticated" } : {}) });
+    return typeof payload.sub === "string" && UUID_RE.test(payload.sub) ? payload.sub : null;
   } catch {
     return null;
   }

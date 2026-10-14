@@ -28,7 +28,7 @@ export const localDriver: AuthDriver = {
 
 /**
  * SUPABASE Auth (өндіріс): GoTrue REST. Құпиясөздер мен e-mail растауы Supabase-те.
- * ЕСКЕРТУ: бұл драйвер әзірге нақты Supabase жобасына қарсы сыналмаған (тек моктелген fetch-пен). Пилот алдында тексеріңіз.
+ * ЕСКЕРТУ: бұл драйвер нақты Supabase жобасына қарсы СЫНАЛМАҒАН (тек моктелген fetch-пен: tests/unit/supabase-driver.test.mjs). Пилот алдында docs/DEPLOY.md «Supabase Auth тексеру» қадамдарын орындаңыз.
  */
 export const supabaseDriver: AuthDriver = {
   async signUp(email, password, fullName) {
@@ -37,6 +37,7 @@ export const supabaseDriver: AuthDriver = {
       method: "POST",
       headers: { apikey: e.SUPABASE_ANON_KEY!, "content-type": "application/json" },
       body: JSON.stringify({ email, password, data: { full_name: fullName } }),
+      signal: AbortSignal.timeout(10_000),
     });
     const body: any = await res.json().catch(() => ({}));
     if (!res.ok) {
@@ -55,6 +56,7 @@ export const supabaseDriver: AuthDriver = {
       method: "POST",
       headers: { apikey: e.SUPABASE_ANON_KEY!, "content-type": "application/json" },
       body: JSON.stringify({ email, password }),
+      signal: AbortSignal.timeout(10_000),
     });
     const body: any = await res.json().catch(() => ({}));
     if (!res.ok || !body?.access_token) throw new AppError("invalid_credentials");
