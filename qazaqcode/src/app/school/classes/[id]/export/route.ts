@@ -1,3 +1,4 @@
+import { auditExport } from "@/lib/audit";
 import { getContext } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { csvResponse } from "../../../csv";
@@ -20,6 +21,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
       return { name: c[0].name, rows };
     });
     if (!out) return new Response("Табылмады", { status: 404 });
+    await auditExport(ctx.userId, "class_csv", { classId: id });
     return csvResponse(`synyp-${id.slice(0, 8)}.csv`,
       ["Оқушы", "Берілген тапсырма", "Жіберген", "Бағаланған", "Орташа %", "Әрекеттер", "Соңғы белсенділік"],
       out.rows.map((r: any) => [r.full_name, r.assigned, r.submitted, r.graded, r.avg_pct ?? "", r.attempts, r.last_activity ?? ""]));

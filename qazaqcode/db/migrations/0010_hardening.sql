@@ -91,10 +91,14 @@ begin
     if new.status is distinct from old.status then
       perform public.audit_log(new.org_id, 'classroom.status', 'classroom', new.id::text, jsonb_build_object('status', new.status));
     end if;
-  elsif tg_table_name = 'classroom_students' and tg_op = 'UPDATE' and new.status is distinct from old.status then
-    perform public.audit_log(new.org_id, 'classroom.student_' || new.status, 'classroom', new.classroom_id::text, jsonb_build_object('student_id', new.student_id));
-  elsif tg_table_name = 'invitations' and tg_op = 'UPDATE' and old.revoked_at is null and new.revoked_at is not null then
-    perform public.audit_log(new.org_id, 'invitation.revoke', 'invitation', new.id::text, '{}');
+  elsif tg_table_name = 'classroom_students' and tg_op = 'UPDATE' then
+    if new.status is distinct from old.status then
+      perform public.audit_log(new.org_id, 'classroom.student_' || new.status, 'classroom', new.classroom_id::text, jsonb_build_object('student_id', new.student_id));
+    end if;
+  elsif tg_table_name = 'invitations' and tg_op = 'UPDATE' then
+    if old.revoked_at is null and new.revoked_at is not null then
+      perform public.audit_log(new.org_id, 'invitation.revoke', 'invitation', new.id::text, '{}');
+    end if;
   end if;
   return new;
 end $$;

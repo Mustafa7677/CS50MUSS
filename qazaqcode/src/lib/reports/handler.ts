@@ -1,6 +1,7 @@
 import { getContext, type Ctx } from "@/lib/context";
 import { errorCode } from "@/lib/errors";
 import { rateLimit } from "@/lib/rate-limit";
+import { auditExport } from "@/lib/audit";
 import { loadClassReport, loadSchoolReport } from "./data";
 import { parseRange } from "./range";
 import { buildPdf } from "./pdf";
@@ -52,11 +53,13 @@ export async function handleReport(req: Request, kind: "school" | "class", class
 
     if (kind === "school") {
       const report = await loadSchoolReport(ctx.userId, admin!, r.range);
+      await auditExport(ctx.userId, "school_report", { orgId: admin!.org_id });
       return await render(report, format, "");
     }
     const res = await loadClassReport(ctx, classId!, r.range);
     if (res.status === "not_found") return text(404, "Табылмады.");
     if (res.status === "forbidden") return text(403, "Рұқсат жоқ.");
+    await auditExport(ctx.userId, "class_report", { classId: classId! });
     return await render(res.report, format, classId!.slice(0, 8));
   } catch (e) {
     const code = errorCode(e);
