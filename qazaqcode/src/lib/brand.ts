@@ -19,14 +19,9 @@ export async function publicBrand(slug: string | null | undefined): Promise<Bran
   return r[0] ?? DEFAULT_BRAND;
 }
 
-const HEX = /^#[0-9a-fA-F]{6}$/;
-/** Түстен оқылатын мәтін түсін таңдау (WCAG контрасты) */
-export function inkFor(hex: string): string {
-  if (!HEX.test(hex)) return "#ffffff";
-  const [r, g, b] = [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16) / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
-  const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-  return L > 0.4 ? "#0f172a" : "#ffffff";
-}
+import { HEX, inkFor } from "./brand-color";
+export { inkFor };
+
 export function brandStyle(b: Brand): string {
   const p = HEX.test(b.primary_color) ? b.primary_color : DEFAULT_BRAND.primary_color;
   const a = HEX.test(b.secondary_color) ? b.secondary_color : DEFAULT_BRAND.secondary_color;

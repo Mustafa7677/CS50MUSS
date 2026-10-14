@@ -6,7 +6,7 @@ import { driver } from "@/lib/auth/drivers";
 import { createSession, currentUserId, destroySession } from "@/lib/auth/session";
 import { withUser } from "@/lib/db";
 import { ORG_COOKIE, getContext, homeFor } from "@/lib/context";
-import { AppError, errorMessage, type ActionResult } from "@/lib/errors";
+import { AppError, errorCode, errorMessage, type ActionResult } from "@/lib/errors";
 import { rateLimit } from "@/lib/rate-limit";
 
 const email = z.string().trim().toLowerCase().email().max(160);
@@ -52,9 +52,13 @@ export async function registerWithInviteAction(_: ActionResult | null, f: FormDa
     if (pv[0].email && pv[0].email !== p.email) throw new AppError("invite_email_mismatch");
     const u = await driver().signUp(p.email, p.password, p.name);
     await createSession(u.userId, u.accessToken);
-    await withUser(u.userId, (q) => q("select public.accept_invitation($1)", [token]));
-    const ctx = await getContext();
-    dest = ctx ? homeFor(ctx) : "/app";
+    try {
+      await withUser(u.userId, (q) => q("select public.accept_invitation($1)", [token]));
+    } catch (e) {
+      // Аккаунт жасалып, сессия ашылды: қатені (мысалы, лимит) шақыру бетінде көрсетеміз
+      dest = `/invite/${encodeURIComponent(token)}?e=${errorCode(e)}`;
+    }
+    if (dest === "/app") { const ctx = await getContext(); dest = ctx ? homeFor(ctx) : "/app"; }
   } catch (e) {
     if (e instanceof z.ZodError) return { ok: false, error: errorMessage(new AppError("validation")) + " Құпиясөз кемінде 8 символ." };
     return fail(e);
@@ -73,9 +77,13 @@ export async function registerWithCodeAction(_: ActionResult | null, f: FormData
     if (!pv.length) throw new AppError("invalid_code");
     const u = await driver().signUp(p.email, p.password, p.name);
     await createSession(u.userId, u.accessToken);
-    await withUser(u.userId, (q) => q("select public.join_classroom($1)", [code]));
-    const ctx = await getContext();
-    dest = ctx ? homeFor(ctx) : "/student";
+    try {
+      await withUser(u.userId, (q) => q("select public.join_classroom($1)", [code]));
+      const ctx = await getContext();
+      dest = ctx ? homeFor(ctx) : "/student";
+    } catch (e) {
+      dest = `/join?code=${encodeURIComponent(code)}&e=${errorCode(e)}`;
+    }
   } catch (e) {
     if (e instanceof z.ZodError) return { ok: false, error: errorMessage(new AppError("validation")) + " Құпиясөз кемінде 8 символ." };
     return fail(e);

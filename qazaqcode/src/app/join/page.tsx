@@ -4,11 +4,13 @@ import { joinClassAction, registerWithCodeAction } from "../actions";
 import { getContext } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { publicBrand, brandStyle } from "@/lib/brand";
+import { messageForCode } from "@/lib/errors";
 
 export const metadata = { title: "Сыныпқа қосылу" };
 
-export default async function JoinPage({ searchParams }: { searchParams: Promise<{ code?: string }> }) {
+export default async function JoinPage({ searchParams }: { searchParams: Promise<{ code?: string; e?: string }> }) {
   const sp = await searchParams;
+  const errMsg = messageForCode(sp.e);
   const code = (sp.code ?? "").trim().toUpperCase();
   const ctx = await getContext();
   const pv = code ? await withUser(null, (q) => q<{ classroom_name: string; subject: string; org_name: string; org_slug: string; teacher_name: string | null }>("select * from public.classroom_preview($1)", [code])) : [];
@@ -40,6 +42,7 @@ export default async function JoinPage({ searchParams }: { searchParams: Promise
               <p><strong>{cls.classroom_name}</strong> · {cls.subject}</p>
               {cls.teacher_name && <p className="text-ink-muted">Мұғалім: {cls.teacher_name}</p>}
             </div>
+            {errMsg && <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{errMsg}</p>}
             {ctx ? (
               <ActionForm action={joinClassAction} submitLabel="Сыныпқа қосылу" className="mt-5" successToast={false}>
                 <input type="hidden" name="code" value={code} />
