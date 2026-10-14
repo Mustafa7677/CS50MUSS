@@ -31,7 +31,8 @@ export function mix(a: string, b: string, t: number): string {
 /** Түстен оқылатын мәтін түсін таңдау (WCAG контрасты) */
 export function inkFor(hex: string): string {
   if (!HEX.test(hex)) return "#ffffff";
-  return luminance(hex) > 0.4 ? DARK_INK : "#ffffff";
+  // ақ не қою мәтін: контрасты жоғарысы (өтпелі аймақта да оқылатын)
+  return contrast(hex, DARK_INK) > contrast(hex, "#ffffff") ? DARK_INK : "#ffffff";
 }
 
 /** Негізгі түс пен оның үстіндегі батырма мәтіні арасындағы контраст */

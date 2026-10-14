@@ -67,7 +67,7 @@ test.afterAll(async () => {
 test("белсенді лицензия: мектеп әкімшісі беті, сандар, банер жоқ", async ({ browser }) => {
   const { ctx, page } = await sess(browser, E("admin"), /\/school/);
   await expect(page.getByTestId("licence-banner")).toHaveCount(0);
-  await page.getByRole("link", { name: "Лицензия" }).first().click();
+  await page.getByRole("link", { name: "Лицензия", exact: true }).first().click();
   await expect(page.getByRole("heading", { name: "Лицензия", level: 1 })).toBeVisible();
   await expect(page.getByTestId("licence-plan")).toHaveText("STARTER");
   await expect(page.getByTestId("usage-students-used")).toHaveText("5");
