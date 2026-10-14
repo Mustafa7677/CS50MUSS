@@ -51,7 +51,7 @@ export default async function AssignmentsPage({ searchParams }: { searchParams: 
       {rows.length === 0 ? (
         <EmptyState title={status || kind ? "Бұл сүзгі бойынша тапсырма жоқ" : "Әзірге тапсырма жоқ"} text="Тапсырма жасап, оны сыныптарға беріңіз." action={<Link href="/teacher/assignments/new" className="btn-primary">Жаңа тапсырма</Link>} />
       ) : (
-        <div className="table-wrap">
+        <div className="table-wrap relative">
           <table className="w-full min-w-[52rem]">
             <caption className="sr-only">Менің тапсырмаларым</caption>
             <thead className="border-b border-line"><tr><th className="th">Тапсырма</th><th className="th">Түрі</th><th className="th">Күйі</th><th className="th">Сыныптар</th><th className="th">Мерзімі</th><th className="th">Жұмыс</th><th className="th"><span className="sr-only">Әрекеттер</span></th></tr></thead>

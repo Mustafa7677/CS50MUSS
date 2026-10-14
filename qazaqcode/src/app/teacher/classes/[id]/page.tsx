@@ -45,7 +45,7 @@ export default async function ClassPage({ params, searchParams }: { params: Prom
       <nav aria-label="Сынып бөлімдері" className="mb-6 flex gap-1 overflow-x-auto border-b border-line">
         {TABS.map((t) => (
           <Link key={t.id} href={`/teacher/classes/${cls.id}?tab=${t.id}`} aria-current={tab === t.id ? "page" : undefined} scroll={false}
-            className={`-mb-px whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-semibold no-underline ${tab === t.id ? "border-brand text-brand" : "border-transparent text-ink-muted hover:text-ink"}`}>
+            className={`-mb-px whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-semibold no-underline ${tab === t.id ? "border-brand text-ink" : "border-transparent text-ink-muted hover:text-ink"}`}>
             {t.label}
           </Link>
         ))}
@@ -64,7 +64,7 @@ async function Students({ classId, userId }: { classId: string; userId: string }
   const rows = await withUser(userId, (q) => q<StudentRow>("select * from public.class_students_overview($1)", [classId]));
   if (!rows.length) return <EmptyState title="Сыныпта оқушы жоқ" text="Оқушыларға «Қосылу» бөліміндегі кодты не сілтемені беріңіз." action={<Link href={`/teacher/classes/${classId}?tab=join`} className="btn-primary">Қосылу кодын көру</Link>} />;
   return (
-    <div className="table-wrap">
+    <div className="table-wrap relative">
       <table className="w-full min-w-[56rem]">
         <caption className="sr-only">Сынып оқушылары мен көрсеткіштері</caption>
         <thead className="border-b border-line">
@@ -142,7 +142,7 @@ async function Assignments({ classId, userId }: { classId: string; userId: strin
   const rows = await withUser(userId, (q) => q<AsgRow>("select * from public.class_assignments_overview($1)", [classId]));
   if (!rows.length) return <EmptyState title="Тапсырма берілмеген" text="Тапсырма жасап, осы сыныпқа беріңіз." action={<Link href={`/teacher/assignments/new?class=${classId}`} className="btn-primary">Тапсырма беру</Link>} />;
   return (
-    <div className="table-wrap">
+    <div className="table-wrap relative">
       <table className="w-full min-w-[44rem]">
         <caption className="sr-only">Сыныпқа берілген тапсырмалар</caption>
         <thead className="border-b border-line"><tr><th className="th">Тапсырма</th><th className="th">Түрі</th><th className="th">Күйі</th><th className="th">Мерзімі</th><th className="th">Жіберген</th><th className="th">Бағаланған</th><th className="th">Орташа %</th></tr></thead>
