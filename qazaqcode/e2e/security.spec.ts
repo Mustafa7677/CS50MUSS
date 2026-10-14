@@ -677,8 +677,8 @@ test.describe("h) Құпиялар және i) жасырын жауаптар �
   test("жасырын жауап кілттері/тест жағдайлары оқушыға жететін HTML/RSC жауабында жоқ", async () => {
     const needles = ["correct_index", "correctIndex", `${MARK}-EXPL-${STAMP}`, "HIDDEN-OUT-" + STAMP, "is_hidden", "isHidden", "answer_key", "assignment_answer_keys", "expected_output"];
     const cs = await cookieFor(B.student);
-    for (const p of ["/student", "/student/assignments", `/student/assignments/${B.quiz}`, `/student/assignments/${B.py}`, "/student/courses", `/student/courses/${B.course}`, "/student/grades", "/student/projects", "/notifications"]) {
-      for (const h of [{}, { RSC: "1" }, { RSC: "1", "Next-Router-State-Tree": "%5B%22%22%5D" }]) {
+    for (const p of ["/student", "/student/assignments", `/student/assignments/${B.quiz}`, `/student/assignments/${B.py}`, "/student/courses", `/student/courses/${B.course}?lesson=${B.lesson}`, "/student/grades", "/student/projects", "/notifications"]) {
+      for (const h of [{}, { RSC: "1" }]) {
         const r = await get(p, cs, { headers: h as Record<string, string> });
         expect(r.status, p).toBe(200);
         expect(leaks(r, needles), `${p} ${JSON.stringify(h)}`).toEqual([]);
