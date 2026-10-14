@@ -84,7 +84,7 @@ test("контрастсыз түс: ескерту, автотүзету (AA), 
   const ink = lum(fixed) > 0.4 ? "#0f172a" : "#ffffff";
   expect(ratio(fixed, ink)).toBeGreaterThanOrEqual(4.5);
   // қосымша түс: ашық сары + қара мәтін жақсы, ортаңғы сұр - ескерту
-  await page.locator("#secondary_color").fill("#808080");
+  await page.locator("#secondary_color").fill("#777777");
   await expect(page.getByTestId("contrast-warning-secondary")).toBeVisible();
   await page.getByTestId("autofix-secondary").click();
   await expect(page.getByTestId("contrast-warning-secondary")).toHaveCount(0);

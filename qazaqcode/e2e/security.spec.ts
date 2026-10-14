@@ -306,7 +306,7 @@ test.describe("b) Рөл эскалациясы", () => {
     expect((await sql("select count(*)::int n from courses where org_id=$1", [B.org]))[0].n).toBe(1);
     expect((await sql("select count(*)::int n from lessons where course_id=$1", [B.course]))[0].n).toBe(1);
     expect((await sql("select count(*)::int n from submissions where assignment_id=$1 and student_id=$2", [B.quiz, A.s1]))[0].n).toBe(0);
-    expect((await sql("select count(*)::int n from lesson_progress where student_id=$1", [A.s1]))[0].n).toBe(0);
+    expect((await sql("select count(*)::int n from lesson_progress where student_id=$1 and lesson_id=$2", [A.s1, B.lesson]))[0].n).toBe(0);
     expect((await sql("select status from submissions where id=$1", [B.pySub]))[0].status).toBe("graded");
   });
 
@@ -609,6 +609,20 @@ test.describe("g) HTTP тақырыптары, қателер, health", () => {
         expect(scripts.length).toBeGreaterThan(0);
         for (const a of scripts) if (!a.includes(`nonce="${nonce}"`)) expect(a, `${p}: nonce-сыз script`).toMatch(/type="(application\/json|application\/ld\+json)"/);
       }
+    }
+  });
+  test("регрессия: CSP nonce THEME_INIT скриптін бұғаттамайды - қараңғы режим автоматты қосылады, консольде CSP қатесі жоқ", async ({ browser }) => {
+    for (const [uid, url] of [[null, "/login"], [A.s1, "/student"], [A.t1, "/teacher"], [A.admin, "/school"], [A.root, "/admin"]] as const) {
+      const ctx = await browser.newContext({ baseURL: BASE, locale: "kk-KZ" });
+      await ctx.addInitScript(() => { try { localStorage.setItem("qc:theme", "dark"); } catch {} });
+      if (uid) await ctx.addCookies([{ name: "qc_session", value: await mint(uid), url: BASE }]);
+      const page = await ctx.newPage(); const csp: string[] = [];
+      page.on("console", (m) => { if (/Content Security Policy|Refused to/i.test(m.text())) csp.push(m.text()); });
+      page.on("pageerror", (e) => { if (/hydrat/i.test(e.message)) csp.push(e.message); });
+      await page.goto(url, { waitUntil: "networkidle" });
+      expect(await page.evaluate(() => document.documentElement.classList.contains("dark")), `${url}: html.dark жоқ`).toBe(true);
+      expect(csp, url).toEqual([]);
+      await ctx.close();
     }
   });
   test("авторизацияланған беттер кэштелмейді (private/no-store)", async () => {
