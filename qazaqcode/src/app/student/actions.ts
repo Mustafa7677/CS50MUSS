@@ -53,3 +53,20 @@ export async function submitAssignmentAction(submissionId: string, assignmentId:
     return { ok: false, error: errorMessage(e) };
   }
 }
+
+/** Сабақты аяқтады деп белгілеу (қайталауға қауіпсіз: on conflict do nothing). */
+export async function completeLessonAction(_: ActionResult | null, f: FormData): Promise<ActionResult> {
+  try {
+    const u = await uid();
+    const p = z.object({ lessonId: z.string().uuid(), courseId: z.string().uuid() }).parse({ lessonId: f.get("lessonId"), courseId: f.get("courseId") });
+    await rateLimit("complete_lesson", 120, 5 * 60_000, u);
+    await withUser(u, (q) => q("select public.complete_lesson($1)", [p.lessonId]));
+    revalidatePath(`/student/courses/${p.courseId}`);
+    revalidatePath("/student/courses");
+    revalidatePath("/student");
+    return { ok: true, message: "Сабақ аяқталды деп белгіленді." };
+  } catch (e) {
+    if (e instanceof z.ZodError) return { ok: false, error: errorMessage(new AppError("validation")) };
+    return { ok: false, error: errorMessage(e) };
+  }
+}

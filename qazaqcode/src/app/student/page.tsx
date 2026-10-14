@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { ActionForm } from "@/components/ActionForm";
-import { EmptyState, PageHeader, Section, StatCard, StatusBadge } from "@/components/ui";
+import { EmptyState, PageHeader, ProgressBar, Section, StatCard, StatusBadge } from "@/components/ui";
 import { joinClassAction } from "@/app/actions";
 import { requireStudent } from "@/lib/context";
 import { withUser } from "@/lib/db";
@@ -13,9 +13,11 @@ export const dynamic = "force-dynamic";
 type ClassRow = { id: string; name: string; subject: string; teacher_name: string | null };
 type GradeRow = { id: string; title: string; score: string; max_score: string; feedback: string | null; graded_at: string; assignment_id: string };
 
+type CourseRow = { course_id: string; title: string; total: string; completed: string };
+
 export default async function StudentHome() {
   const ctx = await requireStudent();
-  const [rows, classes, grades] = await Promise.all([
+  const [rows, classes, grades, courses, unreadRows] = await Promise.all([
     myAssignments(ctx.userId),
     withUser(ctx.userId, (q) => q<ClassRow>(
       `select c.id, c.name, c.subject, p.full_name as teacher_name
@@ -26,7 +28,10 @@ export default async function StudentHome() {
       `select g.id, a.title, g.score, g.max_score, g.feedback, g.graded_at, a.id as assignment_id
          from public.grades g join public.assignments a on a.id = g.assignment_id
         where g.student_id = auth.uid() order by g.graded_at desc limit 5`)),
+    withUser(ctx.userId, (q) => q<CourseRow>("select * from public.my_courses() limit 3")),
+    withUser(ctx.userId, (q) => q<{ n: string }>("select count(*) as n from public.notifications where user_id = auth.uid() and read_at is null")),
   ]);
+  const unread = Number(unreadRows[0]?.n ?? 0);
   const now = Date.now();
   const done = rows.filter((r) => ["submitted", "under_review", "graded"].includes(r.status)).length;
   const waiting = rows.filter((r) => ["not_started", "in_progress"].includes(r.status)).length;
@@ -45,6 +50,28 @@ export default async function StudentHome() {
         <StatCard label="Мерзімі өткен" value={overdue} tone={overdue ? "bad" : undefined} />
         <StatCard label="Орташа нәтиже" value={fmtPct(avg)} hint={avg == null ? "әлі баға жоқ" : "ең үздік баллдар бойынша"} />
       </div>
+
+      {unread > 0 && (
+        <p className="mt-4 rounded-xl border border-line bg-brand-soft px-4 py-3 text-sm" data-testid="unread-notice">
+          Оқылмаған хабарландыру: <strong>{unread}</strong>. <Link href="/notifications">Ашу</Link>
+        </p>
+      )}
+
+      <Section title="Курстарым" actions={courses.length ? <Link href="/student/courses" className="text-sm">Барлығы</Link> : undefined}>
+        {courses.length === 0 ? (
+          <EmptyState title="Әзірге курс жоқ" text="Мұғалім курс жариялағанда ол осында көрінеді." />
+        ) : (
+          <ul className="grid gap-3 md:grid-cols-3" data-testid="home-courses">
+            {courses.map((c) => (
+              <li key={c.course_id} className="card p-4">
+                <Link href={`/student/courses/${c.course_id}`} className="block break-words font-semibold">{c.title}</Link>
+                <div className="mt-3"><ProgressBar value={Number(c.completed)} max={Number(c.total)} label={`${c.title}: прогресс`} /></div>
+                <p className="mt-1 text-xs text-ink-muted">{Number(c.completed)} / {Number(c.total)} сабақ</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Section>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_20rem]">
         <div>

@@ -5,7 +5,7 @@ export default async function TeacherLayout({ children }: { children: React.Reac
   const ctx = await requireStaff();
   return (
     <Shell ctx={ctx} active={ctx.active} area="teacher" nav={[
-      { href: "/teacher", label: "Сыныптарым", icon: "🏷" }, { href: "/teacher/assignments", label: "Тапсырмалар", icon: "📝" },
+      { href: "/teacher", label: "Сыныптарым", icon: "🏷" }, { href: "/teacher/assignments", label: "Тапсырмалар", icon: "📝" }, { href: "/teacher/courses", label: "Курстар", icon: "📚" },
       { href: "/teacher/review", label: "Тексеру кезегі", icon: "✅" },
     ]}>{children}</Shell>
   );
