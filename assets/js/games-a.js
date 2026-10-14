@@ -257,7 +257,8 @@
     ["Жұп және тақ сандарды санау", ["even = 0 және odd = 0 деп екі санауыш қой", "Тізімнің әр санын ретімен аралап шық", "Егер x % 2 == 0 болса, even-ді 1-ге арттыр", "Әйтпесе odd-ты 1-ге арттыр", "Барлық сан біткенше қайтала", "even және odd мәндерін шығар"]],
   ];
 
-  window.CS50GamesA = { RUN, BUGS, QUIZ, ALGO }; // тексеру/тест үшін деректер
+  window.CS50GamesA = { RUN, BUGS, QUIZ, ALGO };
+  // hl (синтаксис бояу) games-b.js үшін төменде тіркеледі // тексеру/тест үшін деректер
 
   /* ---------- ортақ көмекшілер ---------- */
   function alive(stage) { return stage.isConnected; }
@@ -283,21 +284,21 @@
     };
     document.addEventListener("keydown", keyH);
 
-    stage.innerHTML = `<div class="ga-intro"><p>Кейіпкер жолмен жүгіреді. Алдында жолдар шығады, әрқайсысында Python кодының үзіндісі бар. Тапсырмаға сәйкес <b>дұрыс кодтың жолына</b> өт.</p>
-      <ul class="ga-list"><li>←  → пернелері, жолды басу немесе «Солға/Оңға» батырмалары: жол таңдау</li><li>Enter, ↓ немесе «Бекіту» батырмасы: ерте бекіту</li><li>3 жан. Әр дұрыс жауаптан кейін жылдамдық артады</li></ul>
-      ${step ? '<p class="ga-note">Қозғалысты азайту режимі қосулы: анимациясыз, уақыт шектеусіз қадамдық ойын. Жолды таңдап, «Бекіту» батырмасын бас.</p>' : ""}
-      <button class="btn ga-go" type="button">▶ Бастау</button></div>`;
-    $(".ga-go", stage).onclick = () => { buildUI(); next(); };
-    $(".ga-go", stage).focus();
+    const goBtn = ctx.intro({
+      lead: "Кейіпкер жолмен жүгіреді. Тапсырмаға сәйкес <b>дұрыс кодтың жолына</b> өт.",
+      rules: [["⬅️➡️", "← → пернелері немесе жолды бас: жол таңдау"], ["✔", "Enter, ↓ немесе «Бекіту»: ерте бекіту"], ["❤️", "3 жан. Әр дұрыс жауаптан кейін жылдамдық артады"]],
+      extra: step ? '<p class="ga-note">Қозғалысты азайту режимі қосулы: анимациясыз, уақыт шектеусіз қадамдық ойын. Жолды таңдап, «Бекіту» батырмасын бас.</p>' : "",
+    });
+    goBtn.onclick = () => { ctx.sfx("tick"); buildUI(); next(); };
 
-    let hud, qEl, ctxEl, track, fb, ctlGo;
+    let hud, qEl, ctxEl, track, fb, ctlGo, road;
     function buildUI() {
-      stage.innerHTML = `<div class="g-hud"><span class="ga-lives" aria-label="Жан"></span><span>Ұпай: <b class="ga-score">0</b></span><span>Жылдамдық: <b class="ga-spd">×1.0</b></span><span class="g-time ga-qn"></span></div>
+      stage.innerHTML = `<div class="g-hud"><span class="ga-lives" aria-label="Жан"></span><span>Ұпай: <b class="ga-score">0</b></span><span>Жылдамдық: <b class="ga-spd">×1.0</b></span><span class="gx-combo" hidden></span><span class="g-time ga-qn"></span></div>
         <p class="g-q ga-prompt"></p><pre class="g-code ga-ctx" hidden></pre>
-        <div class="ga-track" role="group" aria-label="Жолдар"></div>
+        <div class="gx-road" style="--lane:1;--n:3"><div class="ga-track" role="group" aria-label="Жолдар"></div><span class="gx-runner" aria-hidden="true"><i>🏃</i></span></div>
         <div class="ga-ctl"><button class="btn ghost ga-l" type="button" aria-label="Солға жылжу">◀ Солға</button><button class="btn ga-ok" type="button">✔ Бекіту</button><button class="btn ghost ga-r" type="button" aria-label="Оңға жылжу">Оңға ▶</button></div>
         <div class="g-fb" role="status" aria-live="polite"></div>`;
-      hud = stage; qEl = $(".ga-prompt", stage); ctxEl = $(".ga-ctx", stage); track = $(".ga-track", stage); fb = $(".g-fb", stage);
+      road = $(".gx-road", stage); hud = stage; qEl = $(".ga-prompt", stage); ctxEl = $(".ga-ctx", stage); track = $(".ga-track", stage); fb = $(".g-fb", stage);
       $(".ga-l", stage).onclick = () => !busy && move(-1);
       $(".ga-r", stage).onclick = () => !busy && move(1);
       $(".ga-ok", stage).onclick = () => !busy && commit();
@@ -307,6 +308,7 @@
       $(".ga-score", stage).textContent = score;
       $(".ga-spd", stage).textContent = "×" + (9000 / dur).toFixed(1);
       $(".ga-qn", stage).textContent = `Сұрақ ${Math.min(qi + 1, qs.length)}/${qs.length}`;
+      const cb = $(".gx-combo", stage); cb.hidden = streak < 2; cb.textContent = `🔥 Комбо ×${streak}`;
     }
     function next() {
       if (stopped || !alive(stage)) return;
@@ -323,8 +325,8 @@
         ? `Мына нәтиже шығаратын кодтың жолына өт:${cur[1].split("\n").length > 1 ? `<pre class="g-code ga-target">${E(cur[1])}</pre>` : ` <code class="ga-target-i">${E(cur[1])}</code>`}`
         : `Тапсырма: <b>${E(cur[1])}</b>. Қатесіз кодтың жолына өт.`;
       if (cur[2]) { ctxEl.hidden = false; ctxEl.textContent = cur[2]; } else { ctxEl.hidden = true; }
-      track.style.setProperty("--n", nl);
-      track.innerHTML = arr.map((a, i) => `<button type="button" class="ga-lane" data-i="${i}" aria-label="${i + 1}-жол"><span class="ga-card"><code>${E(a.c)}</code></span><span class="ga-hero" aria-hidden="true">🏃</span></button>`).join("");
+      track.style.setProperty("--n", nl); road.style.setProperty("--n", nl);
+      track.innerHTML = arr.map((a, i) => `<button type="button" class="ga-lane" data-i="${i}" aria-label="${i + 1}-жол"><span class="ga-card"><code>${E(a.c)}</code></span></button>`).join("");
       lanes = [...track.children];
       lanes.forEach((b, i) => { b._ok = arr[i].ok; b._code = arr[i].c; b.onclick = () => !busy && select(i); });
       select(lane, true);
@@ -348,6 +350,8 @@
     }
     function select(i, quiet) {
       lane = Math.max(0, Math.min(nl - 1, i));
+      if (road) road.style.setProperty("--lane", lane);
+      if (!quiet) ctx.sfx("tick");
       lanes.forEach((b, k) => { b.classList.toggle("on", k === lane); b.setAttribute("aria-pressed", k === lane ? "true" : "false"); });
       if (!quiet) fb.textContent = "";
     }
@@ -365,11 +369,13 @@
         const gain = 10 + Math.min(10, (streak - 1) * 2);
         score += gain;
         fb.innerHTML = `✅ Дұрыс! +${gain} ұпай${streak > 1 ? ` · серия ${streak}` : ""}. Жылдамдық артты.`;
+        ctx.sfx("ok");
         delay = step ? 1200 : 700;
       } else {
         lives--; streak = 0;
         const good = lanes.find((b) => b._ok)._code;
         fb.innerHTML = `❌ Қате. Дұрыс код: <code>${E(good.replace(/\n/g, " ⏎ "))}</code>. Қалған жан: ${lives}`;
+        ctx.sfx("bad");
         delay = 2000;
       }
       hudUpdate();
@@ -378,13 +384,52 @@
     function end() {
       stopped = true; document.removeEventListener("keydown", keyH);
       const won = lives > 0;
-      ctx.finish({ score, xp: Math.min(100, Math.round(score / 4)), title: won ? "Финишке жеттің! 🏁" : "Жандар таусылды", lines: [`Дұрыс жауап: ${okN} / ${Math.min(qi, qs.length)}`, `Қалған жан: ${Math.max(0, lives)}`, "Қателескен сұрақтарды қайталап көр, жылдамдық әр дұрыс жауаппен артады."] });
+      ctx.finish({ score, max: 350, xp: Math.min(100, Math.round(score / 4)), title: won ? "Финишке жеттің! 🏁" : "Жандар таусылды", lines: [`Дұрыс жауап: ${okN} / ${Math.min(qi, qs.length)}`, `Қалған жан: ${Math.max(0, lives)}`, "Қателескен сұрақтарды қайталап көр, жылдамдық әр дұрыс жауаппен артады."] });
     }
   }
 
   /* =========================================================
      2) BUG HUNTER
      ========================================================= */
+  /* ---- Жаңа көрініс (games-ui2.css): жеңіл синтаксис бояу және раунд нүктелері ---- */
+  const KW = {
+    C: "int char float double void long short unsigned signed const static struct typedef enum return if else for while do switch case break continue sizeof NULL include define bool true false",
+    Python: "def class return if elif else for while in not and or is import from as pass break continue lambda with try except finally raise None True False print del global yield",
+    JavaScript: "function const let var return if else for while do switch case break continue new this class extends import export from async await try catch finally throw typeof null undefined true false of in",
+  };
+  const KWSET = {};
+  Object.keys(KW).forEach((k) => (KWSET[k] = new Set(KW[k].split(" "))));
+  const TOKEN = /(\/\/.*|#(?:include|define)\b.*|#.*$)|("(?:\\.|[^"\\])*"?|'(?:\\.|[^'\\])*'?|`(?:\\.|[^`\\])*`?)|(\b\d[\d.]*\b)|([A-Za-z_]\w*)|([\s\S])/g;
+  function hl(line, lang) {
+    const kws = KWSET[lang] || KWSET.C;
+    const esc = (t) => t.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    let out = "", m, last = 0;
+    TOKEN.lastIndex = 0;
+    while ((m = TOKEN.exec(line))) {
+      if (m[1] != null) {
+        // "#" Python-да түсініктеме, C-да препроцессор
+        const isPy = lang === "Python", c = m[1];
+        const cls = c.startsWith("//") || (isPy && c[0] === "#") ? "t-c" : c[0] === "#" ? "t-pp" : "t-c";
+        out += `<span class="${cls}">${esc(c)}</span>`;
+      } else if (m[2] != null) out += `<span class="t-s">${esc(m[2])}</span>`;
+      else if (m[3] != null) out += `<span class="t-n">${esc(m[3])}</span>`;
+      else if (m[4] != null) {
+        const w = m[4], nx = line.slice(TOKEN.lastIndex).match(/^\s*\(/);
+        out += kws.has(w) ? `<span class="t-k">${esc(w)}</span>` : nx ? `<span class="t-f">${esc(w)}</span>` : esc(w);
+      } else out += esc(m[5]);
+      last = TOKEN.lastIndex;
+    }
+    return out;
+  }
+  window.CS50GamesA.hl = hl;
+  const LANG_FILE = { C: ["main.c", "C"], Python: ["app.py", "Py"], JavaScript: ["script.js", "JS"] };
+  /** Раунд нүктелері: states[i] = "ok" | "bad" | "" ; cur - ағымдағы */
+  function dotsHtml(n, cur, states, label) {
+    let h = `<span class="gy-dots" role="img" aria-label="${label}">`;
+    for (let i = 0; i < n; i++) h += `<i class="${states[i] || ""}${i === cur ? " cur" : ""}"></i>`;
+    return h + "</span>";
+  }
+
   function bughunt(stage, ctx) {
     const E = ctx.esc;
     const ROUNDS = 12, TIME = FAST ? 6 : 40;
@@ -392,9 +437,12 @@
     BUGS.forEach((b) => (byLang[b.l] = byLang[b.l] || []).push(b));
     const rounds = ctx.shuffle(Object.keys(byLang).flatMap((l) => ctx.sample(byLang[l], ROUNDS / 3)));
     let ri = -1, score = 0, hit = 0, useTimer = false, left = 0, tm = 0, busy = false;
-    stage.innerHTML = `<div class="ga-intro"><p>Әр раундта C, Python немесе JavaScript кодында <b>бір қате</b> бар. Қате жолды бас, содан кейін қатенің сипаттамасы мен түзетуін көресің. Барлығы ${ROUNDS} раунд.</p>
+    const results = [];
+    stage.innerHTML = `<div class="gy gy-bh"><div class="ga-intro gy-intro"><div class="gy-intro-ico" aria-hidden="true">🐛</div>
+      <p>Әр раундта C, Python немесе JavaScript кодында <b>бір қате</b> бар. Қате жолды бас, содан кейін қатенің сипаттамасы мен түзетуін көресің. Барлығы ${ROUNDS} раунд.</p>
+      <div class="gy-chips" aria-hidden="true"><span class="gy-lang gy-lang-c">C</span><span class="gy-lang gy-lang-py">Py</span><span class="gy-lang gy-lang-js">JS</span></div>
       <label class="ga-check"><input type="checkbox" class="ga-timer"> Таймермен ойнау (әр раундқа ${TIME} секунд, жылдам жауап қосымша ұпай береді)</label>
-      <button class="btn ga-go" type="button">▶ Бастау</button></div>`;
+      <button class="btn ga-go gy-go" type="button">▶ Бастау</button></div></div>`;
     $(".ga-go", stage).onclick = () => { useTimer = $(".ga-timer", stage).checked; next(); };
     $(".ga-go", stage).focus();
 
@@ -405,10 +453,13 @@
       if (ri >= rounds.length) return end();
       const r = rounds[ri];
       busy = false;
-      stage.innerHTML = `<div class="g-hud"><span>Раунд <b>${ri + 1}</b>/${rounds.length}</span><span class="ga-lang">${E(r.l)}</span><span>Ұпай: <b>${score}</b></span>${useTimer ? `<span class="g-time ga-clock" aria-hidden="true">⏱ ${TIME}</span>` : ""}</div>
-        <p class="g-q"><b>${E(r.t)}</b>. Қате бар жолды тап (жолды бас):</p>
-        <ol class="ga-lines" aria-label="Код жолдары">${r.c.map((l, i) => l.trim() === "" ? '<li class="ga-blank" aria-hidden="true"></li>' : `<li><button type="button" class="ga-line" data-i="${i}" aria-label="${i + 1}-жол: ${E(l.trim())}"><span class="ga-ln" aria-hidden="true">${i + 1}</span><code>${E(l)}</code></button></li>`).join("")}</ol>
-        <div class="ga-explain" hidden></div><div class="g-fb" role="status" aria-live="polite"></div>`;
+      const lf = LANG_FILE[r.l] || ["code", r.l];
+      stage.innerHTML = `<div class="gy gy-bh"><div class="g-hud gy-hud"><span class="gy-round">Раунд <b>${ri + 1}</b>/${rounds.length}</span>${dotsHtml(rounds.length, ri, results, `Раунд ${ri + 1} / ${rounds.length}`)}<span class="gy-score">Ұпай: <b>${score}</b></span>${useTimer ? `<span class="g-time ga-clock" aria-hidden="true">⏱ ${TIME}</span>` : ""}</div>
+        ${useTimer ? `<div class="gy-timebar" aria-hidden="true"><i></i></div>` : ""}
+        <p class="g-q gy-q"><b>${E(r.t)}</b>. Қате бар жолды тап (жолды бас):</p>
+        <div class="gy-editor"><div class="gy-etitle"><span class="gy-lights" aria-hidden="true"><i></i><i></i><i></i></span><span class="gy-file">${lf[0]}</span><span class="ga-lang gy-lang gy-lang-${lf[1].toLowerCase()}">${E(r.l)}</span></div>
+        <ol class="ga-lines" aria-label="Код жолдары">${r.c.map((l, i) => l.trim() === "" ? '<li class="ga-blank" aria-hidden="true"></li>' : `<li><button type="button" class="ga-line" data-i="${i}" aria-label="${i + 1}-жол: ${E(l.trim())}"><span class="ga-ln" aria-hidden="true">${i + 1}</span><code>${hl(l, r.l)}</code></button></li>`).join("")}</ol></div>
+        <div class="ga-explain" hidden></div><div class="g-fb" role="status" aria-live="polite"></div></div>`;
       const btns = [...stage.querySelectorAll(".ga-line")];
       btns.forEach((b) => (b.onclick = () => answer(+b.dataset.i, r)));
       if (useTimer) {
@@ -416,7 +467,8 @@
         tm = setInterval(() => {
           if (!alive(stage)) return clearInterval(tm);
           left = Math.max(0, TIME - (Date.now() - t0) / 1000);
-          const c = $(".ga-clock", stage); if (c) c.textContent = "⏱ " + Math.ceil(left);
+          const c = $(".ga-clock", stage); if (c) { c.textContent = "⏱ " + Math.ceil(left); c.classList.toggle("low", left <= 8); }
+          const tb = $(".gy-timebar i", stage); if (tb) tb.style.width = (left / TIME * 100) + "%";
           if (left <= 0) answer(-1, r);
         }, 200);
       }
@@ -424,16 +476,19 @@
     function answer(i, r) {
       if (busy) return; busy = true; clearInterval(tm);
       const good = i === r.b;
+      results[ri] = good ? "ok" : "bad";
+      const ed = $(".gy-editor", stage); if (ed) ed.classList.add(good ? "flash-ok" : "flash-bad");
+      if (ctx.sfx) { try { ctx.sfx(good ? "ok" : "bad"); } catch (e) {} }
       let gain = 0;
       if (good) { hit++; gain = 10 + (useTimer ? Math.round((left / TIME) * 5) : 0); score += gain; }
       stage.querySelectorAll(".ga-line").forEach((b) => {
         b.disabled = true;
         const k = +b.dataset.i;
-        if (k === r.b) { b.classList.add("ok"); b.insertAdjacentHTML("beforeend", '<span class="ga-mark"> ✓ қате осы жерде</span>'); }
-        else if (k === i) { b.classList.add("bad"); b.insertAdjacentHTML("beforeend", '<span class="ga-mark"> ✗ дұрыс емес</span>'); }
+        if (k === r.b) { b.classList.add("ok"); b.insertAdjacentHTML("beforeend", '<span class="ga-mark ok">✓ қате осы жерде</span>'); }
+        else if (k === i) { b.classList.add("bad"); b.insertAdjacentHTML("beforeend", '<span class="ga-mark bad">✗ дұрыс емес</span>'); }
       });
       const ex = $(".ga-explain", stage); ex.hidden = false;
-      ex.innerHTML = `<p><b>Қатенің сипаттамасы:</b> ${E(r.w)}</p><p><b>Түзету:</b></p>${r.f === "" ? "<p>Бұл жолды алып тастау керек.</p>" : `<pre class="g-code">${E(r.f)}</pre>`}<button class="btn ga-next" type="button">${ri + 1 >= rounds.length ? "Нәтижені көру" : "Келесі раунд →"}</button>`;
+      ex.innerHTML = `<p class="gy-why"><b>Қатенің сипаттамасы:</b> ${E(r.w)}</p><p class="gy-fixh"><b>Түзету:</b></p>${r.f === "" ? "<p>Бұл жолды алып тастау керек.</p>" : `<pre class="g-code gy-fix"><code>${r.f.split("\n").map((x) => hl(x, r.l)).join("\n")}</code></pre>`}<button class="btn ga-next" type="button">${ri + 1 >= rounds.length ? "Нәтижені көру" : "Келесі раунд →"}</button>`;
       $(".g-fb", stage).textContent = good ? `✅ Дұрыс! +${gain} ұпай` : i < 0 ? `⌛ Уақыт бітті. Қате ${r.b + 1}-жолда еді.` : `❌ Қате. Дұрыс жауап: ${r.b + 1}-жол.`;
       const nb = $(".ga-next", stage); nb.onclick = next; nb.focus();
     }
@@ -454,14 +509,15 @@
       if (locked || !/^[1-4]$/.test(e.key) || e.ctrlKey || e.metaKey || e.altKey) return;
       e.preventDefault(); pick(+e.key - 1);
     };
-    stage.innerHTML = `<div class="ga-intro"><p><b>${TOTAL} секунд</b> ішінде мүмкіндігінше көп сұраққа жауап бер. Әр дұрыс жауап +10 ұпай, қатарынан 3 және одан көп дұрыс жауап серия бонусын береді. Қате жауап сериясын үзеді (жан жоқ). Жауап беру: 1-4 пернелері немесе батырмалар.</p>
-      <button class="btn ga-go" type="button">▶ Бастау</button></div>`;
-    $(".ga-go", stage).onclick = start;
-    $(".ga-go", stage).focus();
+    ctx.intro({
+      lead: `<b>${TOTAL} секунд</b> ішінде мүмкіндігінше көп сұраққа жауап бер.`,
+      rules: [["⏱", `${TOTAL} секунд: уақыт бітсе, ойын аяқталады`], ["🔥", "Әр дұрыс жауап +10 ұпай; қатарынан 3+ дұрыс жауап серия бонусын береді"], ["⌨️", "Қате жауап сериясын үзеді. Жауап: 1-4 пернелері немесе батырмалар"]],
+    }).onclick = start;
 
     function start() {
+      ctx.sfx("tick");
       document.addEventListener("keydown", keyH);
-      stage.innerHTML = `<div class="g-hud"><span>Ұпай: <b class="ga-score">0</b></span><span>Серия: <b class="ga-streak">0</b></span><span class="ga-topic"></span><span class="g-time ga-clock" role="timer" aria-live="off">⏱ ${TOTAL}</span></div>
+      stage.innerHTML = `<div class="g-hud gx-bhud"><span>Ұпай: <b class="ga-score">0</b></span><span>Серия: <b class="ga-streak">0</b></span><span class="ga-topic"></span><span class="gx-combo" hidden></span><span class="g-time ga-clock gx-ring" role="timer" aria-live="off" style="--p:100">⏱ ${TOTAL}</span></div>
         <div class="g-bar" aria-hidden="true"><i class="ga-tbar"></i></div>
         <div class="ga-qbox"></div><div class="g-fb" role="status" aria-live="polite"></div>
         <p class="ga-hint">1-4 пернелері жауап береді</p>`;
@@ -475,6 +531,7 @@
       if (!alive(stage)) return clearInterval(tm);
       const l = left(), s = Math.ceil(l);
       $(".ga-tbar", stage).style.width = (l / TOTAL * 100) + "%";
+      $(".ga-clock", stage).style.setProperty("--p", (l / TOTAL * 100).toFixed(1));
       if (s !== lastShown) { lastShown = s; $(".ga-clock", stage).textContent = "⏱ " + s; if (s === 10 || s === 5) $(".g-fb", stage).textContent = `Қалды ${s} секунд!`; }
       $(".ga-clock", stage).classList.toggle("low", l <= 10);
       if (l <= 0) finish();
@@ -488,7 +545,7 @@
       opts = order.map((k) => ({ t: cur[3][k], ok: k === cur[4] }));
       $(".ga-topic", stage).textContent = cur[0];
       $(".ga-qbox", stage).innerHTML = `<p class="g-q">${E(cur[1])}</p>${cur[2] ? `<pre class="g-code">${E(cur[2])}</pre>` : ""}
-        <div class="g-opts">${opts.map((o, i) => `<button type="button" class="g-opt" data-i="${i}"><b>${i + 1}.</b> ${E(o.t)}</button>`).join("")}</div>`;
+        <div class="g-opts">${opts.map((o, i) => `<button type="button" class="g-opt" data-i="${i}" data-k="${"ABCD"[i]}"><b>${i + 1}.</b> ${E(o.t)}</button>`).join("")}</div>`;
       $(".ga-qbox", stage).querySelectorAll(".g-opt").forEach((b) => (b.onclick = () => pick(+b.dataset.i)));
       locked = false;
     }
@@ -503,14 +560,16 @@
         const bonus = streak >= 3 ? Math.min(10, (streak - 2) * 2) : 0;
         score += 10 + bonus;
         fb.textContent = `✅ +${10 + bonus}${bonus ? ` (серия бонусы +${bonus})` : ""}`;
-        d = 350;
-      } else { streak = 0; fb.textContent = "❌ Қате. Дұрыс жауап жасыл түспен көрсетілген."; d = 900; }
+        ctx.sfx("ok"); d = 350;
+      } else { streak = 0; fb.textContent = "❌ Қате. Дұрыс жауап жасыл түспен көрсетілген."; ctx.sfx("bad"); d = 900; }
       $(".ga-score", stage).textContent = score; $(".ga-streak", stage).textContent = streak;
+      const cb = $(".gx-combo", stage); cb.hidden = streak < 3; cb.textContent = `🔥 Комбо ×${streak}`;
+      const qb = $(".ga-qbox", stage); qb.classList.remove("flash-ok", "flash-bad"); void qb.offsetWidth; qb.classList.add(o.ok ? "flash-ok" : "flash-bad");
       wait(d, nextQ);
     }
     function finish() {
       if (ended) return; ended = true; clearInterval(tm); document.removeEventListener("keydown", keyH);
-      ctx.finish({ score, title: "Уақыт бітті! ⏱", lines: [`Жауап берілген сұрақ: ${ans}, дұрыс: ${good}`, `Ең ұзақ серия: ${best}`, ans ? `Дәлдік: ${Math.round((good / ans) * 100)}%` : "Жауап берілмеді"] });
+      ctx.finish({ score, max: 300, title: "Уақыт бітті! ⏱", lines: [`Жауап берілген сұрақ: ${ans}, дұрыс: ${good}`, `Ең ұзақ серия: ${best}`, ans ? `Дәлдік: ${Math.round((good / ans) * 100)}%` : "Жауап берілмеді"] });
     }
   }
 
@@ -520,9 +579,10 @@
   function algo(stage, ctx) {
     const E = ctx.esc, ROUNDS = 5;
     const picks = ctx.sample(ALGO, ROUNDS);
+    const results = [];
     let ri = -1, total = 0, solved = 0, order = [], steps = [], tries = 0, t0 = 0, done = false, dragId = null, marks = null;
-    stage.innerHTML = `<div class="ga-intro"><p>Алгоритм қадамдары араласып берілген. Оларды <b>дұрыс ретке</b> келтір: «↑ / ↓» батырмалары, сүйреу (тышқанмен) немесе пернетақта: қадамға фокус қойып, <kbd>Shift</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd>. ${ROUNDS} раунд, әр раундта 2 тексеру мүмкіндігі бар. Қанша дұрыс және қаншалықты жылдам екені ұпайға әсер етеді.</p>
-      <button class="btn ga-go" type="button">▶ Бастау</button></div>`;
+    stage.innerHTML = `<div class="gy gy-algo"><div class="ga-intro gy-intro"><div class="gy-intro-ico" aria-hidden="true">🧠</div><p>Алгоритм қадамдары араласып берілген. Оларды <b>дұрыс ретке</b> келтір: «↑ / ↓» батырмалары, сүйреу (тышқанмен) немесе пернетақта: қадамға фокус қойып, <kbd>Shift</kbd> + <kbd>↑</kbd>/<kbd>↓</kbd>. ${ROUNDS} раунд, әр раундта 2 тексеру мүмкіндігі бар. Қанша дұрыс және қаншалықты жылдам екені ұпайға әсер етеді.</p>
+      <button class="btn ga-go gy-go" type="button">▶ Бастау</button></div></div>`;
     $(".ga-go", stage).onclick = next;
     $(".ga-go", stage).focus();
 
@@ -534,25 +594,32 @@
       steps = a[1].map((t, i) => ({ id: i, t }));
       do { order = ctx.shuffle(steps.map((s) => s.id)); } while (order.every((v, i) => v === i));
       tries = 0; done = false; marks = null; t0 = Date.now();
-      stage.innerHTML = `<div class="g-hud"><span>Раунд <b>${ri + 1}</b>/${ROUNDS}</span><span>Ұпай: <b>${total}</b></span></div>
-        <p class="g-q"><b>${E(a[0])}</b>: қадамдарды дұрыс ретке келтір (жоғарыдан төменге).</p>
+      stage.innerHTML = `<div class="gy gy-algo"><div class="g-hud gy-hud"><span class="gy-round">Раунд <b>${ri + 1}</b>/${ROUNDS}</span>${dotsHtml(ROUNDS, ri, results, `Раунд ${ri + 1} / ${ROUNDS}`)}<span class="gy-score">Ұпай: <b>${total}</b></span><span class="gy-tries" aria-hidden="true" title="Тексеру мүмкіндіктері"><i></i><i></i></span></div>
+        <div class="gy-prog" role="progressbar" aria-label="Орындалу" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i></i><b>тексеру күтілуде</b></div>
+        <p class="g-q gy-q"><b>${E(a[0])}</b>: қадамдарды дұрыс ретке келтір (жоғарыдан төменге).</p>
         <ol class="ga-steps" aria-label="Алгоритм қадамдары"></ol>
         <div class="ga-ctl"><button class="btn ga-check-btn" type="button">✔ Тексеру</button></div>
-        <div class="g-fb" role="status" aria-live="polite"></div>`;
+        <div class="g-fb" role="status" aria-live="polite"></div></div>`;
       $(".ga-check-btn", stage).onclick = check;
       draw();
     }
     function draw(focus) {
       const ol = $(".ga-steps", stage);
+      const old = {};
+      if (!reduced()) ol.querySelectorAll(".ga-step").forEach((el) => { old[el.dataset.id] = el.getBoundingClientRect().top; });
       ol.innerHTML = order.map((id, pos) => {
         const m = marks ? (marks[pos] ? "ok" : "bad") : "";
         return `<li class="ga-step ${m}" draggable="${done ? "false" : "true"}" data-id="${id}" data-pos="${pos}" tabindex="0" aria-label="${pos + 1}-орын: ${E(steps[id].t)}${m ? (m === "ok" ? ". Дұрыс орын" : ". Қате орын") : ""}">
-          <span class="ga-num" aria-hidden="true">${pos + 1}</span><span class="ga-txt">${E(steps[id].t)}</span>
+          <span class="gy-grip" aria-hidden="true"></span><span class="ga-num" aria-hidden="true">${pos + 1}</span><span class="ga-txt">${E(steps[id].t)}</span>
           <span class="ga-state" aria-hidden="true">${m === "ok" ? "✓" : m === "bad" ? "✗" : ""}</span>
           <span class="ga-btns"><button type="button" class="ga-up" aria-label="Жоғары жылжыту: ${E(steps[id].t)}"${done || pos === 0 ? " disabled" : ""}>↑</button><button type="button" class="ga-dn" aria-label="Төмен жылжыту: ${E(steps[id].t)}"${done || pos === order.length - 1 ? " disabled" : ""}>↓</button></span></li>`;
       }).join("");
       ol.querySelectorAll(".ga-step").forEach((li) => {
         const pos = +li.dataset.pos, id = +li.dataset.id;
+        if (old[id] != null) {
+          const dy = old[id] - li.getBoundingClientRect().top;
+          if (dy) { li.style.transition = "none"; li.style.transform = `translateY(${dy}px)`; li.classList.add("moving"); requestAnimationFrame(() => requestAnimationFrame(() => { li.style.transition = ""; li.style.transform = ""; setTimeout(() => li.classList.remove("moving"), 320); })); }
+        }
         $(".ga-up", li).onclick = () => mv(pos, pos - 1, id, "up");
         $(".ga-dn", li).onclick = () => mv(pos, pos + 1, id, "dn");
         li.onkeydown = (e) => {
@@ -574,6 +641,9 @@
           mv(from, pos, order[from], "li");
         };
       });
+      const okN = marks ? marks.filter(Boolean).length : 0; // тек тексеруден кейін (құпия ақпарат бермейді)
+      const pg = $(".gy-prog", stage);
+      if (pg) { pg.setAttribute("aria-valuenow", Math.round(okN / order.length * 100)); $("i", pg).style.width = (okN / order.length * 100) + "%"; $("b", pg).textContent = marks ? `${okN} / ${order.length} дұрыс` : "тексеру күтілуде"; }
       if (focus) {
         const li = ol.querySelector(`[data-id="${focus.id}"]`);
         if (li) { let t = focus.kind === "up" ? $(".ga-up", li) : focus.kind === "dn" ? $(".ga-dn", li) : li; if (t && t.disabled) t = focus.kind === "up" ? $(".ga-dn", li) : $(".ga-up", li); (t || li).focus(); }
@@ -590,6 +660,7 @@
       if (done) return;
       tries++;
       marks = order.map((id, pos) => id === pos);
+      const pips = stage.querySelectorAll(".gy-tries i"); if (pips[tries - 1]) pips[tries - 1].className = "used";
       const okC = marks.filter(Boolean).length, n = order.length, sec = (Date.now() - t0) / 1000;
       const all = okC === n;
       const fb = $(".g-fb", stage);
@@ -604,7 +675,10 @@
         draw();
         $(".ga-check-btn", stage).outerHTML = `<button class="btn ga-nx" type="button">${ri + 1 >= ROUNDS ? "Нәтижені көру" : "Келесі раунд →"}</button>`;
         const nb = $(".ga-nx", stage); nb.onclick = next; nb.focus();
-        $(".g-hud", stage).querySelector("span:nth-child(2) b").textContent = total;
+        $(".gy-score b", stage).textContent = total;
+        results[ri] = all ? "ok" : "bad";
+        const dd = stage.querySelectorAll(".gy-dots i")[ri]; if (dd) dd.className = "cur " + results[ri];
+        if (ctx.sfx) { try { ctx.sfx(all ? "win" : "bad"); } catch (e) {} }
       } else {
         fb.textContent = `${okC}/${n} орын дұрыс. Қате орындар ✗ белгісімен көрсетілген. Түзетіп, қайта тексер (соңғы мүмкіндік).`;
         draw();

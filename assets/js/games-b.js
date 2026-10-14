@@ -185,10 +185,15 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
         const tableNames = db.exec("SELECT name FROM sqlite_master WHERE type='table'")[0].values.map((r) => r[0]);
         const sqlId = nid("sql");
         const hintBox = h("ol", { class: "gb-hints", "aria-label": "Кеңестер" });
-        const hintBtn = h("button", { class: "btn secondary gb-hint-btn", type: "button" }, "💡 Кеңес (0/3)");
+        const hintBtn = h("button", { class: "btn secondary gb-hint-btn gy-lamp", type: "button" }, "💡 Кеңес (0/3)");
         const out = h("div", { class: "gb-out" });
+        const gutter = h("div", { class: "gy-gutter", "aria-hidden": "true" });
         const ta = h("textarea", { id: sqlId, class: "gb-sql", rows: 5, maxlength: SQL_MAXLEN, spellcheck: "false", autocomplete: "off", autocapitalize: "off", placeholder: "SELECT ... FROM ..." });
         const runBtn = h("button", { class: "btn gb-run", type: "button" }, "▶ Іске қосу");
+        const door = h("div", { class: "gy-door", "aria-hidden": "true" }, h("span", { class: "gy-door-l" }), h("span", { class: "gy-door-r" }), h("span", { class: "gy-door-lock", text: "🔒" }));
+        const cmp = h("div", { class: "gy-cmp", hidden: true });
+        const lines = () => { const n = Math.max(5, ta.value.split("\n").length); gutter.textContent = Array.from({ length: n }, (_, i) => i + 1).join("\n"); gutter.scrollTop = ta.scrollTop; };
+        ta.addEventListener("input", lines); ta.addEventListener("scroll", () => { gutter.scrollTop = ta.scrollTop; }); lines();
         const nextBtn = h("button", { class: "btn gb-next", type: "button", hidden: true }, idx === ROOMS.length - 1 ? "Шығу ▸" : "Келесі бөлме ▸");
         status("");
 
@@ -201,7 +206,7 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
 
         function run() {
           if (done || nextBtn.hidden === false) return;
-          clear(out);
+          clear(out); cmp.hidden = true;
           const v = vetSql(ta.value);
           if (!v.ok) { status("⛔ " + v.msg, "bad"); return; }
           let got;
@@ -215,7 +220,13 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
           }
           if (got.columns.length) out.appendChild(dataTable(got.columns, got.values, 30));
           const why = compareResults(got, want, room.ordered);
-          if (why) { status("🔒 Құлып жабық. " + why, "bad"); return; }
+          const chip = (lbl, a, b) => h("span", { class: "gy-chip " + (a === b ? "ok" : "bad") }, lbl + ": ", h("b", { text: String(a) }), a === b ? " ✓" : " / күтілетін " + b);
+          clear(cmp).appendChild(chip("Бағандар", got.columns.length, want.columns.length));
+          cmp.appendChild(chip("Жолдар", got.values.length, want.values.length));
+          cmp.appendChild(h("span", { class: "gy-chip " + (why ? "bad" : "ok") }, why ? "мәндер сәйкес емес" : "мәндер сәйкес ✓"));
+          cmp.hidden = false;
+          if (why) { ctx.sfx && ctx.sfx("bad"); roomEl.classList.remove("shake"); void roomEl.offsetWidth; roomEl.classList.add("shake"); status("🔒 Құлып жабық. " + why, "bad"); return; }
+          ctx.sfx && ctx.sfx("win"); door.classList.add("open"); door.lastChild.textContent = "🔓";
           solved++; if (!hints) clean++;
           locks[idx] = true; renderHud();
           status("🔓 Құлып ашылды! " + (hints ? "" : "Кеңессіз шештің: бонус +5."), "ok");
@@ -235,24 +246,29 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
         };
         nextBtn.onclick = () => { idx++; if (idx >= ROOMS.length) return end(); openRoom(); };
 
-        stage.replaceChildren(hud, h("div", { class: "gb-room" },
-          h("h3", { class: "gb-title", text: room.title }), h("p", { class: "gb-topic" }, "Тақырып: ", h("b", { text: room.topic })),
-          h("p", { class: "gb-story", text: room.story }),
-          h("p", { class: "g-q gb-task" }, h("b", { text: "Тапсырма: " }), room.task),
+        const roomEl = h("div", { class: "gb-room gy-room" },
+          h("div", { class: "gy-roomhead" }, door,
+            h("div", { class: "gy-roomtxt" },
+              h("h3", { class: "gb-title", text: room.title }), h("p", { class: "gb-topic" }, "Тақырып: ", h("b", { class: "gy-topic", text: room.topic })))),
+          h("p", { class: "gb-story gy-story", text: room.story }),
+          h("p", { class: "g-q gb-task gy-task" }, h("b", { text: "Тапсырма: " }), room.task),
           h("div", { class: "gb-cols" },
             h("div", { class: "gb-col" }, h("h4", { text: "Дерекқор схемасы" }), schema),
             h("div", { class: "gb-col" },
-              h("label", { for: sqlId, class: "gb-label" }, "SQL сұранысың ", h("small", { text: "(Ctrl+Enter - іске қосу)" })), ta,
-              h("div", { class: "gb-btns" }, runBtn, hintBtn, nextBtn), fb, hintBox, out))));
+              h("label", { for: sqlId, class: "gb-label" }, "SQL сұранысың ", h("small", { class: "gy-kbd", text: "(Ctrl+Enter - іске қосу)" })),
+              h("div", { class: "gy-sqled" }, h("div", { class: "gy-etitle" }, h("span", { class: "gy-lights", "aria-hidden": "true" }, h("i"), h("i"), h("i")), h("span", { class: "gy-file", text: "query.sql" }), h("span", { class: "gy-kbdchip", "aria-hidden": "true", text: "Ctrl ⏎" })), h("div", { class: "gy-edbody" }, gutter, ta)),
+              h("div", { class: "gb-btns" }, runBtn, hintBtn, nextBtn), fb, cmp, hintBox, out)));
+        stage.replaceChildren(h("div", { class: "gy gy-sql" }, hud, roomEl));
         ta.focus();
       }
 
       const hud = h("div", { class: "g-hud" });
       function renderHud() {
-        clear(hud);
-        hud.appendChild(h("span", { text: `Бөлме ${Math.min(idx + 1, ROOMS.length)}/${ROOMS.length}` }));
-        hud.appendChild(h("span", { class: "gb-locks", role: "img", "aria-label": `Ашылған құлып: ${solved} / ${ROOMS.length}`, text: ROOMS.map((_, i) => (locks[i] ? "🔓" : "🔒")).join(" ") }));
-        hud.appendChild(h("span", { text: `Кеңес: ${totalHints}` }));
+        clear(hud); hud.classList.add("gy-hud");
+        hud.appendChild(h("span", { class: "gy-round", text: `Бөлме ${Math.min(idx + 1, ROOMS.length)}/${ROOMS.length}` }));
+        hud.appendChild(h("span", { class: "gb-locks gy-map", role: "img", "aria-label": `Ашылған құлып: ${solved} / ${ROOMS.length}` },
+          ROOMS.map((_, i) => h("i", { class: "gy-node" + (locks[i] ? " open" : "") + (i === idx && !locks[i] ? " cur" : ""), "aria-hidden": "true", text: locks[i] ? "🔓" : "🔒" }))));
+        hud.appendChild(h("span", { class: "gy-score", text: `Кеңес: ${totalHints}` }));
       }
 
       function end() {
@@ -322,6 +338,20 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
     { l: 3, code: "int a = 1;\nint *b = malloc(sizeof(int));", q: "a және *b қайда сақталады?", o: ["a - стекте, *b - үймеде (heap)", "екеуі де стекте", "екеуі де үймеде", "a - үймеде, *b - стекте"], mem: { stack: [I("a", 1), P("b", "h1")], heap: [I("h1", "?")] }, e: "Локал айнымалылар (a, көрсеткіш b) стекте. malloc көрсететін блок үймеде, оны free жасағанға дейін өмір сүреді." },
   ];
 
+  function codeBlock(code) {
+    const hl = window.CS50GamesA && window.CS50GamesA.hl;
+    const pre = h("pre", { class: "g-code gy-code", tabindex: "0", "aria-label": "C коды" });
+    const wrap = h("code");
+    code.split("\n").forEach((ln, i) => {
+      const row = h("span", { class: "gy-cl" }, h("i", { "aria-hidden": "true", text: String(i + 1) }));
+      const txt = h("span", { class: "gy-ct" });
+      if (hl) txt.innerHTML = hl(ln, "C") || "&nbsp;"; else txt.textContent = ln || " ";
+      row.appendChild(txt); wrap.appendChild(row);
+    });
+    pre.appendChild(wrap);
+    return h("div", { class: "gy-editor gy-snip" }, h("div", { class: "gy-etitle" }, h("span", { class: "gy-lights", "aria-hidden": "true" }, h("i"), h("i"), h("i")), h("span", { class: "gy-file", text: "main.c" }), h("span", { class: "gy-lang gy-lang-c", "aria-hidden": "true", text: "C" })), pre);
+  }
+
   function buildMem(mem) {
     // адрестерді бөлу
     const addr = {};
@@ -329,12 +359,16 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
     const sizeOf = (c) => (c.ptr !== undefined || /\*/.test(c.t) ? 8 : c.t === "char" ? 1 : 4);
     regions.forEach(([k, , base]) => { let a = base; (mem[k] || []).forEach((c) => { c.a = a; addr[c.n] = a; a += sizeOf(c); }); });
     const hex = (n) => "0x" + n.toString(16);
-    const box = h("div", { class: "gb-mem", role: "group", "aria-label": "Жад торы" });
+    const box = h("div", { class: "gb-mem gy-mem", role: "group", "aria-label": "Жад торы" });
+    const RCLS = { stack: "gy-stack", heap: "gy-heap", ro: "gy-ro" };
+    const arrows = [];
+    let ci = 0;
     regions.forEach(([k, title]) => {
       const cells = mem[k] || [];
       if (!cells.length && k !== "stack") return;
-      box.appendChild(h("div", { class: "gb-region", text: title }));
-      if (!cells.length) box.appendChild(h("div", { class: "gb-empty", text: "(локал айнымалы жоқ)" }));
+      const reg = h("section", { class: "gy-reg " + RCLS[k] }, h("div", { class: "gb-region", text: title }));
+      const grid = h("div", { class: "gy-cells" });
+      if (!cells.length) grid.appendChild(h("div", { class: "gb-empty", text: "(локал айнымалы жоқ)" }));
       cells.forEach((c) => {
         const isP = c.ptr !== undefined;
         let val = c.v;
@@ -343,15 +377,52 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
           if (c.ptr === null) { val = "NULL"; note = "ешқайда көрсетпейді"; }
           else { val = hex(addr[c.ptr] !== undefined ? addr[c.ptr] : 0); note = "→ " + c.ptr; }
         }
-        const cls = "gb-cell" + (isP ? " ptr" : "") + (c.freed ? " freed" : "") + (c.leak ? " leak" : "") + (c.bad ? " bad" : "") + (c.dead ? " dead" : "");
+        const cls = "gb-cell" + (isP ? " ptr" : "") + (c.freed ? " freed" : "") + (c.leak ? " leak" : "") + (c.bad ? " bad" : "") + (c.dead ? " dead" : "") + (c.t === "char" ? " chr" : "");
         const flag = c.freed ? "босатылған" : c.leak ? "ағып кеткен" : c.bad ? "қате" : c.dead ? "жарамсыз" : "";
-        box.appendChild(h("div", { class: cls },
-          h("div", { class: "gb-addr", text: hex(c.a) }),
+        const cell = h("div", { class: cls, "data-n": c.n, style: `--i:${ci++}` },
+          h("div", { class: "gb-addr gy-addr", text: hex(c.a) }),
           h("div", { class: "gb-name" }, h("code", { text: c.n }), h("span", { text: " " + c.t })),
           h("div", { class: "gb-val", text: val }),
-          (note || flag) ? h("div", { class: "gb-note", text: [note, flag].filter(Boolean).join(" · ") }) : null));
+          (note || flag) ? h("div", { class: "gb-note", text: [note, flag].filter(Boolean).join(" · ") }) : null);
+        grid.appendChild(cell);
+        if (isP && c.ptr !== null && addr[c.ptr] !== undefined) arrows.push([c.n, c.ptr]);
       });
+      reg.appendChild(grid);
+      box.appendChild(reg);
     });
+    // көрсеткіш → нысана сызықтары (SVG), орналасу өзгергенде қайта сызылады
+    if (arrows.length) {
+      const NS = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(NS, "svg");
+      svg.setAttribute("class", "gy-arrows"); svg.setAttribute("aria-hidden", "true");
+      svg.innerHTML = '<defs><marker id="gy-ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#5eead4"/></marker></defs>';
+      box.appendChild(svg);
+      const find = (n) => [...box.querySelectorAll(".gb-cell")].find((e) => e.dataset.n === n);
+      const draw = () => {
+        if (!box.isConnected) return;
+        svg.querySelectorAll("path.ln").forEach((x) => x.remove());
+        const br = box.getBoundingClientRect();
+        svg.setAttribute("viewBox", `0 0 ${br.width} ${br.height}`);
+        arrows.forEach(([from, to]) => {
+          const A = find(from), B = find(to); if (!A || !B) return;
+          const a = A.getBoundingClientRect(), b = B.getBoundingClientRect();
+          const ax = a.left - br.left, ay = a.top - br.top, bx = b.left - br.left, by = b.top - br.top;
+          let d;
+          if (Math.abs(ay - by) < a.height / 2) { // бір қатар: үстінен доға
+            const x1 = ax + a.width / 2, x2 = bx + b.width / 2, y = Math.min(ay, by);
+            d = `M${x1} ${y} C${x1} ${y - 26} ${x2} ${y - 26} ${x2} ${y - 2}`;
+          } else if (by > ay) { const x1 = ax + a.width / 2, y1 = ay + a.height, x2 = bx + b.width / 2, y2 = by; const m = (y1 + y2) / 2; d = `M${x1} ${y1} C${x1} ${m} ${x2} ${m} ${x2} ${y2 - 2}`; }
+          else { const x1 = ax + a.width / 2, y1 = ay, x2 = bx + b.width / 2, y2 = by + b.height; const m = (y1 + y2) / 2; d = `M${x1} ${y1} C${x1} ${m} ${x2} ${m} ${x2} ${y2 + 2}`; }
+          const p = document.createElementNS(NS, "path");
+          p.setAttribute("class", "ln"); p.setAttribute("d", d); p.setAttribute("marker-end", "url(#gy-ah)");
+          svg.appendChild(p);
+        });
+      };
+      box.gyDraw = draw;
+      requestAnimationFrame(() => requestAnimationFrame(draw));
+      if (window.ResizeObserver) { const ro = new ResizeObserver(() => draw()); ro.observe(box); }
+      else window.addEventListener("resize", draw);
+    }
     return box;
   }
 
@@ -361,14 +432,17 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
     start(stage, ctx) {
       const pick = [].concat(sample(MEM.filter((t) => t.l === 1), 4), sample(MEM.filter((t) => t.l === 2), 4), sample(MEM.filter((t) => t.l === 3), 4));
       let i = 0, ok = 0, answered = false;
-      const hud = h("div", { class: "g-hud" });
+      const hud = h("div", { class: "g-hud gy-hud" });
       const body = h("div", { class: "gb-mbody" });
+      const res = [];
 
       function show() {
         const t = pick[i];
         answered = false;
         clear(hud);
-        hud.append(h("span", { text: `Сұрақ ${i + 1}/${pick.length}` }), h("span", { text: `Деңгей ${t.l}` }), h("span", { text: `Дұрыс: ${ok}` }));
+        hud.append(h("span", { class: "gy-round", text: `Сұрақ ${i + 1}/${pick.length}` }),
+          h("span", { class: "gy-dots", role: "img", "aria-label": `Сұрақ ${i + 1} / ${pick.length}` }, pick.map((_, k) => h("i", { class: (res[k] || "") + (k === i ? " cur" : "") }))),
+          h("span", { class: "gy-lvl gy-lv" + t.l, text: `Деңгей ${t.l}` }), h("span", { class: "gy-score", text: `Дұрыс: ${ok}` }));
         const fb = h("div", { class: "g-fb", role: "status", "aria-live": "polite" });
         const after = h("div", { class: "gb-after" });
         const qid = nid("q");
@@ -377,6 +451,8 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
           if (answered) return;
           answered = true;
           if (good) ok++;
+          res[i] = good ? "ok" : "bad";
+          ctx.sfx && ctx.sfx(good ? "ok" : "bad");
           fb.className = "g-fb " + (good ? "gb-ok" : "gb-no");
           fb.textContent = good ? "✓ Дұрыс!" : "✗ Қате. Дұрыс жауап: " + (t.f ? t.f[0] : t.o[0]);
           after.append(buildMem(t.mem), h("p", { class: "gb-expl" }, h("b", { text: "Түсіндірме: " }), t.e));
@@ -413,7 +489,7 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
           } }, h("label", { for: inId, text: "Жауабың (сан):" }), inp, go);
         }
         clear(body).append(
-          h("pre", { class: "g-code", tabindex: "0", "aria-label": "C коды" }, h("code", { text: t.code })),
+          codeBlock(t.code),
           h("p", { class: "g-q", id: qid, text: t.q }), input, fb, after);
         if (!t.o) body.querySelector("input").focus();
       }
@@ -422,7 +498,7 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
         const score = ok * 10 + (ok === pick.length ? 10 : 0);
         ctx.finish({ score, xp: Math.round(score / 2), title: ok === pick.length ? "Жад шебері! 🧠" : "Раунд аяқталды", lines: [`Дұрыс жауап: ${ok} / ${pick.length}`] });
       }
-      stage.append(hud, body);
+      stage.append(h("div", { class: "gy gy-memory" }, hud, body));
       show();
     },
   });
@@ -536,8 +612,9 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
       function renderPalette() {
         clear(palette);
         Object.keys(WTYPES).forEach((k) => {
-          const b = h("div", { class: "gb-pal", role: "button", tabindex: "0", draggable: "true", "aria-label": WTYPES[k].label + " қосу" },
-            h("span", { class: "gb-pal-ico", "aria-hidden": "true", text: WTYPES[k].ico }), h("span", { text: WTYPES[k].label }));
+          const b = h("div", { class: "gb-pal gy-pal", role: "button", tabindex: "0", draggable: "true", "aria-label": WTYPES[k].label + " қосу" },
+            h("span", { class: "gb-pal-ico", "aria-hidden": "true", text: WTYPES[k].ico }), h("span", { class: "gy-pal-lbl", text: WTYPES[k].label }));
+          b.dataset.type = k;
           b.onclick = () => add(k);
           b.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); add(k); } });
           b.addEventListener("dragstart", (e) => { dragKind = k; try { e.dataTransfer.setData("text/plain", "gb:" + k); e.dataTransfer.effectAllowed = "copy"; } catch (x) {} });
@@ -567,14 +644,17 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
         const n = selNode();
         const out = h("output", { class: "gb-out-v", text: n[key] + unit });
         const r = h("input", { type: "range", min, max, step: 1, value: n[key] });
-        r.addEventListener("input", () => { n[key] = Number(r.value); out.textContent = r.value + unit; refreshPreview(); });
+        const fill = () => r.style.setProperty("--p", ((Number(r.value) - min) / (max - min) * 100) + "%");
+        fill();
+        r.addEventListener("input", () => { n[key] = Number(r.value); out.textContent = r.value + unit; fill(); refreshPreview(); });
         const f = field(label, r); f.appendChild(out); return f;
       }
       function renderProps() {
         clear(props);
         const n = selNode();
-        props.appendChild(h("h4", { text: "Қасиеттері" }));
-        if (!n) { props.appendChild(h("p", { class: "gb-muted", text: "Өзгерту үшін элементті таңда." })); return; }
+        props.appendChild(h("h4", { class: "gy-ph", text: "Қасиеттері" }));
+        if (!n) { props.appendChild(h("p", { class: "gb-muted gy-pempty" }, h("span", { "aria-hidden": "true", text: "👆" }), " Өзгерту үшін элементті таңда немесе палитрадан жаңасын қос.")); return; }
+        props.appendChild(h("div", { class: "gy-sel-chip" }, h("span", { class: "gy-sel-ico", "aria-hidden": "true", text: WTYPES[n.type].ico }), h("b", { text: WTYPES[n.type].label })));
         const upd = () => { renderOutline(); refreshPreview(); };
         if (n.type === "card") { const t = h("input", { type: "text", maxlength: 60, value: n.title }); t.addEventListener("input", () => { n.title = t.value; upd(); }); props.appendChild(field("Карточка атауы", t)); }
         const txt = (n.type === "list" || n.type === "card" || n.type === "p") ? h("textarea", { rows: n.type === "list" ? 4 : 3, maxlength: 400 }) : h("input", { type: "text", maxlength: 80 });
@@ -588,7 +668,9 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
           if (allowEmpty) { const x = h("button", { class: "gb-mini", type: "button", "aria-label": label + " өшіру", onclick: () => { n[key] = ""; refreshPreview(); } }, "∅"); f.appendChild(x); }
           return f;
         };
+        props.appendChild(h("div", { class: "gy-grp", text: "Түстер" }));
         props.append(col("Мәтін түсі", "color"), col("Фон түсі", "bg", true));
+        props.appendChild(h("div", { class: "gy-grp", text: "Өлшем және пішін" }));
         props.appendChild(range("Шрифт өлшемі", "fontSize", 10, 64, "px"));
         const al = h("select", null, [["left", "Сол жақ"], ["center", "Ортасы"], ["right", "Оң жақ"]].map(([v, t]) => h("option", { value: v, selected: n.align === v, text: t })));
         al.addEventListener("change", () => { n.align = al.value; refreshPreview(); });
@@ -597,6 +679,8 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
         if (n.type !== "h1" && n.type !== "p") props.appendChild(range("Ені (0 = авто)", "w", 0, 600, "px"));
       }
 
+      const bar = h("div", { class: "gy-wbprog", role: "progressbar", "aria-label": "Мақсат орындалуы", "aria-valuemin": "0", "aria-valuemax": "100", "aria-valuenow": "0" }, h("i"), h("b"));
+      function reqBar(a, n) { const pc = n ? Math.round(a / n * 100) : 0; bar.setAttribute("aria-valuenow", pc); bar.firstChild.style.width = pc + "%"; bar.lastChild.textContent = `${a} / ${n} талап`; }
       function renderTabs() {
         clear(tabs);
         modes.forEach((m, i) => {
@@ -610,15 +694,19 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
         clear(goal); clear(reqList); clear(checkFb); checkFb.className = "g-fb";
         if (mode === "free") { goal.append(h("p", { class: "g-q", text: "Еркін режим: ойыңдағы бетті құрастыр. Тексеру жоқ, бірақ HTML кодын көшіріп не жүктеп ала аласың." })); return; }
         const t = WTASKS[+mode.slice(1)];
-        goal.append(h("p", { class: "g-q" }, h("b", { text: "Мақсат: " }), t.goal));
+        goal.append(h("p", { class: "g-q gy-goalq" }, h("b", { text: "Мақсат: " }), t.goal));
         t.reqs.forEach(([txt]) => reqList.appendChild(h("li", { class: "gb-req", text: "○ " + txt })));
+        reqBar(0, t.reqs.length);
       }
       function check() {
         if (mode === "free") return;
         const t = WTASKS[+mode.slice(1)];
         clear(reqList);
         let all = true;
-        t.reqs.forEach(([txt, fn]) => { const ok = !!fn(cur()); if (!ok) all = false; reqList.appendChild(h("li", { class: "gb-req " + (ok ? "ok" : "no"), text: (ok ? "✓ " : "✗ ") + txt })); });
+        let nOk = 0;
+        t.reqs.forEach(([txt, fn]) => { const ok = !!fn(cur()); if (!ok) all = false; else nOk++; reqList.appendChild(h("li", { class: "gb-req " + (ok ? "ok" : "no"), text: (ok ? "✓ " : "✗ ") + txt })); });
+        reqBar(nOk, t.reqs.length);
+        ctx.sfx && ctx.sfx(all ? "win" : "bad");
         if (all) { solvedSet.add(mode); checkFb.className = "g-fb gb-ok"; checkFb.textContent = "🎉 Мақсат орындалды!"; renderTabs(); }
         else { checkFb.className = "g-fb gb-no"; checkFb.textContent = "Әлі толық емес: ✗ белгіленген талаптарды орында."; }
       }
@@ -657,24 +745,34 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
       } }, "Аяқтау және ұпай алу");
 
       renderPalette();
-      stage.append(
-        tabs, goal,
-        h("div", { class: "gb-layout" },
-          h("div", { class: "gb-left" },
-            h("h4", { text: "Палитра" }), palette,
-            h("h4", { text: "Бет элементтері" }), outline,
-            h("div", { class: "gb-field" }, h("label", { for: bgInput.id, text: "Бет фоны" }), bgInput),
-            props),
-          h("div", { class: "gb-right" },
-            h("h4", { text: "Алдын ала көру" }), frame,
+      const panelTabs = h("div", { class: "gy-ptabs", role: "group", "aria-label": "Панельдер" });
+      const wb = h("div", { class: "gy gy-wb", "data-panel": "pal" });
+      [["pal", "🧩 Палитра"], ["out", "📑 Элементтер"], ["prop", "🎛 Қасиеттер"]].forEach(([k, lbl]) => {
+        const b = h("button", { type: "button", class: "gy-ptab", "aria-pressed": k === "pal" ? "true" : "false", onclick: () => { wb.dataset.panel = k; panelTabs.querySelectorAll(".gy-ptab").forEach((x) => x.setAttribute("aria-pressed", x === b ? "true" : "false")); } }, lbl);
+        panelTabs.appendChild(b);
+      });
+      wb.append(
+        tabs, goal, bar,
+        h("div", { class: "gb-layout gy-layout" },
+          h("div", { class: "gb-left gy-col gy-col-l" },
+            h("div", { class: "gy-panel", "data-p": "pal" }, h("h4", { text: "Палитра" }), palette),
+            h("div", { class: "gy-panel", "data-p": "out" }, h("h4", { text: "Бет элементтері" }), outline,
+              h("div", { class: "gb-field gy-bgf" }, h("label", { for: bgInput.id, text: "Бет фоны" }), bgInput))),
+          h("div", { class: "gb-right gy-col gy-col-m" },
+            h("div", { class: "gy-browser" },
+              h("div", { class: "gy-etitle" }, h("span", { class: "gy-lights", "aria-hidden": "true" }, h("i"), h("i"), h("i")), h("span", { class: "gy-url" }, h("span", { "aria-hidden": "true", text: "🔒" }), " https://менің-бетім.kz/index.html")),
+              frame),
             h("div", { class: "gb-btns" },
               h("button", { class: "btn", type: "button", onclick: check }, "✔ Тексеру"),
               h("button", { class: "btn secondary gb-copy", type: "button", onclick: copyHtml }, "📋 HTML көшіру"),
               h("button", { class: "btn secondary gb-dl", type: "button", onclick: download }, "⬇ Жүктеу"),
               finishBtn),
             reqList, checkFb,
-            h("details", { class: "gb-code" }, h("summary", { text: "HTML кодын көрсету" }), src))),
+            h("details", { class: "gb-code" }, h("summary", { text: "HTML кодын көрсету" }), src)),
+          h("div", { class: "gy-col gy-col-r" }, h("div", { class: "gy-panel", "data-p": "prop" }, props))),
         live);
+      stage.append(wb);
+      wb.insertBefore(panelTabs, wb.querySelector(".gy-layout"));
       renderAll();
     },
   });
@@ -719,9 +817,18 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
     id: "binary", title: "Binary Challenge", icon: "🔢", color: "#16a34a",
     blurb: "60 секунд: екілік, ондық, он алтылық және биттік амалдар. Серия жина!",
     start(stage, ctx) {
+      ctx.intro({
+        lead: "<b>60 секунд</b>: екілік, ондық және он алтылық сандар, биттік амалдар.",
+        rules: [["💡", "Биттер сұрағында лампаларды басып санды жина"], ["⌨️", "Басқа сұрақтарда жауапты жазып, Enter бас"], ["🔥", "Қатарынан дұрыс жауап = серия бонусы, деңгей өседі"]],
+      }).onclick = () => { ctx.sfx("tick"); play(stage, ctx); };
+    },
+  });
+  function play(stage, ctx) {
+    {
       const DUR = 60000;
       let correct = 0, total = 0, score = 0, streak = 0, bestStreak = 0, over = false, q = null, bits = [];
       const t0 = Date.now();
+      stage.textContent = "";
       const hud = h("div", { class: "g-hud" });
       const sc = h("span", { text: "Ұпай: 0" }), st = h("span", { text: "Серия: 0" }), lv = h("span", { text: "Деңгей 1" }), tm = h("span", { class: "g-time", text: "60 с" });
       hud.append(sc, st, lv, tm);
@@ -739,11 +846,12 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
         clear(area);
         if (q.mode === "bits") {
           const row = h("div", { class: "gb-bits", role: "group", "aria-label": "Биттер" });
+          row.style.setProperty("--w", q.width); row.style.setProperty("--wm", Math.min(4, q.width));
           const sum = h("div", { class: "gb-sum", "aria-live": "off", text: "Қазіргі мән: 0" });
           bits.forEach((_, i) => {
             const wgt = 1 << (q.width - 1 - i);
-            const b = h("button", { class: "gb-bit", type: "button", "aria-pressed": "false", "aria-label": `${wgt} биті` }, h("small", { text: String(wgt) }), h("b", { text: "0" }));
-            b.onclick = () => { bits[i] ^= 1; b.setAttribute("aria-pressed", bits[i] ? "true" : "false"); b.querySelector("b").textContent = bits[i]; sum.textContent = "Қазіргі мән: " + val(); };
+            const b = h("button", { class: "gb-bit", type: "button", "aria-pressed": "false", "aria-label": `${wgt} биті` }, h("span", { class: "gb-lamp", "aria-hidden": "true" }), h("small", { text: String(wgt) }), h("b", { text: "0" }));
+            b.onclick = () => { ctx.sfx("tick"); bits[i] ^= 1; b.setAttribute("aria-pressed", bits[i] ? "true" : "false"); b.querySelector("b").textContent = bits[i]; sum.textContent = "Қазіргі мән: " + val(); };
             row.appendChild(b);
           });
           area.append(row, sum);
@@ -767,10 +875,10 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
         if (q.check(given)) {
           const gain = 10 * lvl + Math.min(streak, 10) * 2;
           correct++; streak++; score += gain; bestStreak = Math.max(bestStreak, streak);
-          fb.className = "g-fb gb-ok"; fb.textContent = `✓ Дұрыс! +${gain}` + (streak >= 3 ? ` (серия ×${streak})` : "");
+          fb.className = "g-fb gb-ok"; fb.textContent = `✓ Дұрыс! +${gain}` + (streak >= 3 ? ` (серия ×${streak})` : ""); ctx.sfx("ok");
         } else {
           streak = 0;
-          fb.className = "g-fb gb-no"; fb.textContent = `✗ Дұрыс жауап: ${q.ans}`;
+          fb.className = "g-fb gb-no"; fb.textContent = `✗ Дұрыс жауап: ${q.ans}`; ctx.sfx("bad");
         }
         sc.textContent = "Ұпай: " + score; st.textContent = "Серия: " + streak; lv.textContent = "Деңгей " + level();
         next();
@@ -784,15 +892,15 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
         tm.textContent = Math.ceil(left / 1000) + " с";
         if (left <= 0) {
           clearInterval(timer); over = true;
-          ctx.finish({ score, xp: Math.min(100, Math.round(score / 3)), title: "Уақыт бітті! ⏱", lines: [`Дұрыс жауап: ${correct} / ${total}`, `Ең ұзақ серия: ${bestStreak}`, `Жеткен деңгей: ${level()}`] });
+          ctx.finish({ score, max: 350, xp: Math.min(100, Math.round(score / 3)), title: "Уақыт бітті! ⏱", lines: [`Дұрыс жауап: ${correct} / ${total}`, `Ең ұзақ серия: ${bestStreak}`, `Жеткен деңгей: ${level()}`] });
         }
       }, 200);
 
       form.append(qEl, area);
       stage.append(hud, bar, form, fb);
       next();
-    },
-  });
+    }
+  }
 
   window.CS50GamesB = {
     counts: { sqlRooms: ROOMS.length, memoryTasks: MEM.length, webTasks: WTASKS.length },
