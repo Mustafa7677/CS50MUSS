@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Banner } from "./ui";
 import type { Ctx } from "@/lib/context";
 import { withUser } from "@/lib/db";
+import { brandFor } from "@/lib/brand";
 import { fmtDate } from "@/lib/format";
 
 export const NEAR_DAYS = 30;
@@ -27,10 +28,13 @@ export async function LicenceBanner({ ctx }: { ctx: Ctx }) {
   const n = await notice(ctx);
   if (!n) return null;
   const admin = ctx.active.role === "school_admin";
+  const shown = n.state !== "active" || (n.days_left != null && n.days_left <= NEAR_DAYS);
+  const b = shown && !admin ? await brandFor(ctx.userId, ctx.active.org_id).catch(() => null) : null;
+  const contact = b && (b.contact_email || b.contact_phone) ? <> Байланыс: {[b.contact_email, b.contact_phone].filter(Boolean).join(", ")}.</> : null;
   const student = ctx.active.role === "student";
   const more = admin
     ? <> <Link href="/school/licence" className="font-semibold underline">Лицензия беті</Link>: ұзарту үшін платформа әкімшісіне хабарласыңыз.</>
-    : student ? null : <> Лицензияны ұзарту үшін мектеп әкімшісіне хабарласыңыз.</>;
+    : <> {student ? "Сұрақ болса" : "Лицензияны ұзарту үшін"} мектеп әкімшісіне хабарласыңыз.{contact}</>;
 
   if (n.state === "expired" || n.state === "suspended" || n.state === "org_suspended" || n.state === "none") {
     const label = n.state === "expired" ? "мерзімі өткен" : n.state === "none" ? "жоқ" : n.state === "suspended" ? "тоқтатылған" : "ұйым тоқтатылған";
