@@ -29,3 +29,13 @@ export const pctOf = (score: unknown, max: unknown) => (Number(max) > 0 ? (Numbe
 export const KINDS = ["python", "sql", "javascript", "html_css", "quiz", "file", "project"] as const;
 export type Kind = (typeof KINDS)[number];
 export const CODE_KINDS: readonly string[] = ["python", "sql", "javascript", "html_css", "project", "file"];
+
+import type { ClassOption } from "@/components/teacher/AssignmentForm";
+/** Тапсырма берілетін сыныптар: мұғалімнің өз белсенді сыныптары (әкімші үшін ұйымның барлығы) + қазіргі мақсаттар */
+export async function loadClassOptions(ctx: Ctx & { active: { org_id: string; role: string } }, extra: string[] = []): Promise<ClassOption[]> {
+  const admin = ctx.active.role === "school_admin";
+  return withUser(ctx.userId, (q) => q<ClassOption>(
+    `select id, name, subject, academic_year from public.classrooms
+     where org_id = $1 and ((status = 'active' and (teacher_id = $2 or $3::boolean)) or id = any($4::uuid[])) order by name`,
+    [ctx.active.org_id, ctx.userId, admin, extra]));
+}
