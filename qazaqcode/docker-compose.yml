@@ -1,12 +1,109 @@
-# Жергілікті/пилоттық өзін-өзі хостинг үлгісі (сыналмаған). Өндірісте AUTH_DRIVER=supabase (self-hosted GoTrue/Supabase) қажет.
+# QazaqCode Platform: өзін-өзі хостинг үлгісі. СЫНАЛМАҒАН: бұл ортада Docker демоны жоқ (docs/SECURITY-AUDIT.md).
+# `docker compose config` синтаксисін өз машинаңызда тексеріңіз. Секреттер тек ортадан/.env файлынан (ғитке салынбайды).
+#
+# Профильдер:
+#   (әдепкі)   app                     - қосымша. DB мен Auth сыртта (Supabase немесе өз GoTrue+Postgres): ӨНДІРІС жолы.
+#   localdb    app + db                - ПИЛОТ/СТЕЙДЖИНГ: жергілікті Postgres + dev auth shim (AUTH_DRIVER=local). ӨНДІРІС ЕМЕС.
+#   tools      migrate, backup, restore - бір реттік қызметтер (`docker compose --profile tools run --rm migrate`)
+#   sandbox    runner                  - код орындау (D агенті; docs/SANDBOX.md)
+#
+# Желілер: `edge` - сыртқы (app ↔ reverse proxy, Supabase-ке шығыс); `data` - internal (интернетке шығу жоқ): db осында ғана.
+# Порттар: app тек 127.0.0.1:3000-те тыңдайды; HTTPS-ті reverse proxy (Caddy/nginx) береді - docs/DEPLOY.md.
+name: qazaqcode
+
+x-app-env: &app-env
+  NODE_ENV: production
+  DATABASE_URL: ${DATABASE_URL:?DATABASE_URL керек}
+  AUTH_DRIVER: ${AUTH_DRIVER:-supabase}
+  AUTH_JWT_SECRET: ${AUTH_JWT_SECRET:-}
+  SUPABASE_URL: ${SUPABASE_URL:-}
+  SUPABASE_ANON_KEY: ${SUPABASE_ANON_KEY:-}
+  SUPABASE_JWT_SECRET: ${SUPABASE_JWT_SECRET:-}
+  APP_URL: ${APP_URL:?APP_URL (https://...) керек}
+  COOKIE_SECURE: ${COOKIE_SECURE:-true}
+  TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-1}
+
 services:
   app:
-    build: .
-    ports: ["3000:3000"]
-    env_file: .env
-    depends_on: [db]
+    build: { context: ., target: run }
+    image: qazaqcode/app:local
+    restart: unless-stopped
+    ports: ["127.0.0.1:3000:3000"]        # тек жергілікті интерфейс: сыртқа reverse proxy арқылы
+    environment: *app-env
+    networks: [edge, data]
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    pids_limit: 256
+    mem_limit: 768m
+    tmpfs: ["/tmp"]
+    healthcheck:                           # Dockerfile-дағы HEALTHCHECK-пен бірдей (override мүмкіндігі үшін)
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/api/health',{signal:AbortSignal.timeout(4000)}).then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      start_period: 20s
+      retries: 3
+    logging: { driver: json-file, options: { max-size: "10m", max-file: "5" } }
+
+  # --- Жергілікті Postgres (ПИЛОТ). Auth shim өндіріс auth-ы емес! ---
   db:
-    image: postgres:16
-    environment: { POSTGRES_PASSWORD: change-me, POSTGRES_DB: qazaqcode }
+    profiles: [localdb]
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: qazaqcode
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD керек}
     volumes: ["pgdata:/var/lib/postgresql/data"]
-volumes: { pgdata: {} }
+    networks: [data]                       # internal желі: порт жарияланбайды
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d qazaqcode"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    logging: { driver: json-file, options: { max-size: "10m", max-file: "5" } }
+
+  # --- Бір реттік қызметтер ---
+  migrate:
+    profiles: [tools]
+    build: { context: ., target: tools }
+    image: qazaqcode/tools:local
+    environment: { DATABASE_URL: "${MIGRATE_DATABASE_URL:-${DATABASE_URL}}" }   # миграцияға иесі рөлі (қосымша рөлі емес)
+    command: ["db/migrate.sh"]             # локальды pilot-та: ["db/migrate.sh", "--dev-shim"] - тек localdb!
+    networks: [edge, data]
+  backup:
+    profiles: [tools]
+    build: { context: ., target: tools }
+    image: qazaqcode/tools:local
+    environment:
+      DATABASE_URL: "${MIGRATE_DATABASE_URL:-${DATABASE_URL}}"
+      BACKUP_PASSPHRASE_FILE: /run/secrets/qc_backup_pass
+      BACKUP_SCHEMAS: ${BACKUP_SCHEMAS:-public}
+      BACKUP_KEEP_DAYS: ${BACKUP_KEEP_DAYS:-14}
+    secrets: [qc_backup_pass]
+    volumes: ["./backups:/app/backups"]
+    command: ["scripts/backup.sh", "/app/backups"]
+    networks: [edge, data]
+  restore:
+    profiles: [tools]
+    build: { context: ., target: tools }
+    image: qazaqcode/tools:local
+    environment:
+      DATABASE_URL: "${RESTORE_DATABASE_URL:?RESTORE_DATABASE_URL (БОС нысана) керек}"
+      BACKUP_PASSPHRASE_FILE: /run/secrets/qc_backup_pass
+    secrets: [qc_backup_pass]
+    volumes: ["./backups:/app/backups:ro"]
+    entrypoint: ["bash", "scripts/restore.sh"]    # аргументтер: файл --yes
+    networks: [edge, data]
+
+  # runner (sandbox, профиль `sandbox`) қызметін D агенті осы жерге қосады.
+
+networks:
+  edge: {}
+  data: { internal: true }
+
+secrets:
+  qc_backup_pass:
+    file: ${BACKUP_PASSPHRASE_FILE:-./secrets/backup_passphrase}
+
+volumes:
+  pgdata: {}

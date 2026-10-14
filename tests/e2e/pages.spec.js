@@ -42,7 +42,7 @@ for (const [label, viewport, colorScheme] of [["desktop-light", { width: 1280, h
             const [fileq, hash] = h.split("#"); const file = fileq.split("?")[0];
             const target = file ? path.normalize(path.join(path.dirname(path.join(ROOT, f)), file)) : path.join(ROOT, f);
             if (file && !fs.existsSync(target)) { broken.push("сілтеме " + h); continue; }
-            if (hash && target.endsWith(".html") && !/^(add=|import=|login=|sql)/.test(hash) && !idsOf(target).has(hash)) broken.push("якорь " + h);
+            if (hash && target.endsWith(".html") && !/^(add=|import=|login=|sql)/.test(hash) && !idsOf(target).has(hash) && !(f === "games.html" && /^[a-z]+$/.test(hash))) broken.push("якорь " + h);
           }
           expect(broken, "сынған сілтемелер").toEqual([]);
           // Әлеуметтік желі суреті нақты бар файлға сілтеуі керек

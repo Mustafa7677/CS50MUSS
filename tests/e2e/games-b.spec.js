@@ -71,7 +71,7 @@ test("SQL Escape Room: дұрыс сұраныс ашады, қате түсін
   await expect(page.locator(".game-result")).toBeVisible();
   const g = (await gamesLog(page)).sqlescape;
   expect(g.plays).toBe(1);
-  expect(g.best).toBe(65); // 6 бөлме * 10 + 5 кеңессіз бөлме * 5
+  expect(g.best).toBe(85); // 6 бөлме * 10 + 5 кеңессіз бөлме * 5
   expect(errs).toEqual([]);
 });
 
@@ -170,8 +170,7 @@ test("Binary Challenge: жауаптар тексеріледі, уақыт бі
     await expect(page.locator(".g-hud")).toContainText(`Серия: ${right}`);
   }
   // қате жауап → серия үзіледі
-  await page.fill(".gb-answer", "zzz").catch(() => {});
-  await page.keyboard.press("Enter");
+  if (await page.locator(".gb-answer").count()) { await page.fill(".gb-answer", "zzz"); await page.keyboard.press("Enter"); await expect(page.locator(".g-hud")).toContainText("Серия: 0"); }
   await page.clock.fastForward(61000);
   await expect(page.locator(".game-result")).toBeVisible();
   const g = (await gamesLog(page)).binary;
