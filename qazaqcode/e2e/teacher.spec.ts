@@ -65,6 +65,9 @@ test("жаңа сынып ашады, кодын көреді, кодты жаң
   // қосылуды жабу/ашу
   await page.getByRole("button", { name: "Қосылуды жабу" }).click();
   await expect(page.getByText("Қосылу жабық").first()).toBeVisible();
+  // алдыңғы әрекет толық аяқталып (бет қайта салынып) батырма ауысқанша күтеміз: әйтпесе екі сұраныс жарысып қалады
+  await expect(page.getByRole("button", { name: "Қосылуды жабу" })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Қосылуды ашу" })).toBeVisible();
   await page.getByRole("button", { name: "Қосылуды ашу" }).click();
   await expect(page.getByRole("button", { name: "Қосылуды жабу" })).toBeVisible();
   // оқушы жоқ: бос күй

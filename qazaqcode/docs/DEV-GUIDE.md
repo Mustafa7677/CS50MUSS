@@ -67,3 +67,10 @@ E2E_BASE_URL=http://127.0.0.1:3199 npx playwright test e2e/<сіздің>.spec.t
 
 `quiz` - сервер автоматты бағалайды (жауап кілті браузерге жіберілмейді). `python|sql|javascript|html_css|project|file` - оқушы код/мәтін жазып жібереді (`code`), мұғалім қолмен бағалайды.
 Серверде кодты автоматты іске қосу ӘЗІРГЕ ЖОҚ (қауіпсіз sandbox - 3-кезең, docs/SANDBOX.md): "Іске қосу"/"Автотексеру" сияқты жұмыс істемейтін батырмалар көрсетпеңіз.
+
+## Белгілі тұзақтар (тәжірибеден)
+
+- **`loading.tsx` қоспаңыз** рөл сегменттерінде (`teacher/`, `student/`): өндірістік build-те Next 15.5 server action `redirect()` жауабын кейде өткізіп жібереді (формалар "қатып" қалады), және `notFound()` 404 орнына 200 қайтарады. Тұрақты тексерумен дәлелденген (8/8 қате -> 8/8 дұрыс).
+- E2E және `next start` үшін: `ALLOW_LOCAL_AUTH_IN_PRODUCTION=yes` (local auth драйвері), `RATE_LIMIT_DISABLED=yes` (көп кіру әрекеті). Тек тест ортасында. `output: "standalone"` тек Docker build-те (`NEXT_OUTPUT=standalone`), әйтпесе `next start` дұрыс жұмыс істемейді.
+- TypeScript 5.7 (6.x Next 15-пен үйлеспейді).
+- Playwright E2E бір дерекқорда: `db/create-db.sh qc_e2e && node scripts/seed-demo.mjs`, содан `npx playwright test` (30 тест: school, student, teacher, scenario).

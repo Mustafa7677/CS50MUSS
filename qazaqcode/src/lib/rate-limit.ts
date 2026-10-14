@@ -1,20 +1,22 @@
 import { headers } from "next/headers";
 import { AppError } from "./errors";
+import { consume, sweep, type Bucket } from "./rate-limit-core";
 
 // Жадтағы (процесс ішіндегі) шектеуіш: бір дана үшін жеткілікті. Көп дана/балансировщик болса - Redis не WAF қажет (docs/DEPLOY.md).
-const buckets = new Map<string, { n: number; reset: number }>();
+const buckets = new Map<string, Bucket>();
 
 export async function clientIp(): Promise<string> {
   const h = await headers();
   return (h.get("x-forwarded-for")?.split(",")[0] ?? h.get("x-real-ip") ?? "local").trim();
 }
 
+/** Тек тест ортасында өшіріледі (өндірісте RATE_LIMIT_DISABLED ескерілмейді, егер local-auth рұқсаты жоқ болса). */
+const disabled = () =>
+  process.env.RATE_LIMIT_DISABLED === "yes" && (process.env.NODE_ENV !== "production" || process.env.ALLOW_LOCAL_AUTH_IN_PRODUCTION === "yes");
+
 export async function rateLimit(action: string, limit: number, windowMs: number, extraKey = ""): Promise<void> {
-  const key = `${action}:${await clientIp()}:${extraKey}`;
+  if (disabled()) return;
   const now = Date.now();
-  const b = buckets.get(key);
-  if (!b || b.reset < now) { buckets.set(key, { n: 1, reset: now + windowMs }); }
-  else if (++b.n > limit) throw new AppError("rate_limited");
-  if (buckets.size > 5000) for (const [k, v] of buckets) if (v.reset < now) buckets.delete(k);
+  if (!consume(buckets, `${action}:${await clientIp()}:${extraKey}`, limit, windowMs, now)) throw new AppError("rate_limited");
+  sweep(buckets, now);
 }
-export const __resetRateLimits = () => buckets.clear();

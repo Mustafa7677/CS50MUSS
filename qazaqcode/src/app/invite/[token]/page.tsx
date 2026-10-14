@@ -4,11 +4,13 @@ import { acceptInviteAction, registerWithInviteAction, logoutAction } from "../.
 import { getContext } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { ROLE_LABEL } from "@/lib/format";
+import { messageForCode } from "@/lib/errors";
 
 export const metadata = { title: "Шақыру" };
 
-export default async function InvitePage({ params }: { params: Promise<{ token: string }> }) {
+export default async function InvitePage({ params, searchParams }: { params: Promise<{ token: string }>; searchParams: Promise<{ e?: string }> }) {
   const { token } = await params;
+  const errMsg = messageForCode((await searchParams).e);
   const pv = await withUser(null, (q) => q<{ org_name: string; role: string; email: string | null; expired: boolean }>("select * from public.invitation_preview($1)", [token]));
   const inv = pv[0];
   const ctx = await getContext();
@@ -26,6 +28,7 @@ export default async function InvitePage({ params }: { params: Promise<{ token: 
             <p className="text-sm font-semibold uppercase tracking-widest text-brand">{inv.org_name}</p>
             <h1 className="mt-1 text-2xl font-bold">Шақыру: {ROLE_LABEL[inv.role] ?? inv.role}</h1>
             <p className="mt-2 text-sm text-ink-muted">Сізді «{inv.org_name}» ұйымына {ROLE_LABEL[inv.role]?.toLowerCase()} ретінде шақырды.</p>
+            {errMsg && <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{errMsg}</p>}
             {ctx ? (
               <div className="mt-6">
                 <p className="text-sm">Сіз <strong>{ctx.fullName}</strong> ретінде кірдіңіз.</p>

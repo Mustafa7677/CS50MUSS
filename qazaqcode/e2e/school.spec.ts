@@ -113,9 +113,8 @@ test.describe.serial("мектеп әкімшісі", () => {
     await t.page.locator("#name").fill("Лимит Тест");
     await t.page.locator("#password").fill(PASS);
     await t.page.getByRole("button", { name: "Тіркелу және қабылдау" }).click();
-    // аккаунт жасалады, бірақ ұйымға мүше болмайды: шақыруды қабылдау лимитпен қайтарылады
-    await t.page.getByRole("button", { name: "Шақыруды қабылдау" }).click();
-    await expect(t.page.getByText("мұғалім лимиті толған")).toBeVisible();
+    // аккаунт жасалады, бірақ ұйымға мүше болмайды: лимит қатесі шақыру бетінде бірден көрінеді
+    await expect(t.page.getByRole("alert").filter({ hasText: "мұғалім лимиті толған" })).toBeVisible();
     expect(await sql("select 1 from organization_members m join auth.users u on u.id = m.user_id where m.org_id = $1 and u.email = $2", [org, limitEmail])).toHaveLength(0);
     await t.ctx.close();
     // бас тарту

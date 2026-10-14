@@ -17,6 +17,6 @@ export default defineConfig({
     url: `http://127.0.0.1:${port}/login`,
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
-    env: { ...(process.env as Record<string, string>), PORT: String(port) },
+    env: { ...(process.env as Record<string, string>), PORT: String(port), ALLOW_LOCAL_AUTH_IN_PRODUCTION: "yes", RATE_LIMIT_DISABLED: "yes" },
   },
 });

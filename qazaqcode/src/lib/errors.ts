@@ -58,4 +58,6 @@ export function errorMessage(e: unknown): string {
   return MESSAGES[code] ?? "Қате болды.";
 }
 
+export const messageForCode = (code: string | undefined): string | null => (code && /^[a-z_]+$/.test(code) && MESSAGES[code] ? MESSAGES[code] : null);
+
 export type ActionResult<T = unknown> = { ok: true; data?: T; message?: string } | { ok: false; error: string; field?: string };

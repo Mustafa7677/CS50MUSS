@@ -9,7 +9,8 @@ const securityHeaders = [
 const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   poweredByHeader: false,
-  output: "standalone",
+  // Docker образы үшін ғана (NEXT_OUTPUT=standalone); `next start` standalone-мен дұрыс жұмыс істемейді
+  output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
   async headers() { return [{ source: "/(.*)", headers: securityHeaders }]; },
 };
 export default nextConfig;
