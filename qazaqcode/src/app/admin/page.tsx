@@ -1,14 +1,15 @@
-import { ActionForm } from "@/components/ActionForm";
+import Link from "next/link";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { LinkActionForm } from "@/components/admin/LinkAction";
 import { EmptyState, PageHeader, ProgressBar, Section, StatCard, StatusBadge } from "@/components/ui";
 import { requirePlatformAdmin } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { LICENSE_STATE_LABEL, PLAN_LABEL, fmtDate } from "@/lib/format";
-import { createOrganizationAction, inviteSchoolAdminAction, setLicenseAction, setOrgStatusAction } from "./actions";
+import { createOrganizationAction, extendLicenseAction, inviteSchoolAdminAction, setOrgStatusAction } from "./actions";
 
 export const metadata = { title: "Ұйымдар" };
 type Usage = {
+  days_left?: number | null;
   org_id: string; name: string; slug: string; status: string; license_state: string; plan: string | null; valid_until: string | null;
   students: string; max_students: number | null; teachers: string; max_teachers: number | null; classes: string; assignments: string; submissions_30d: string;
 };
@@ -22,6 +23,7 @@ export default async function AdminPage() {
     usage: await q<Usage>("select * from public.platform_usage()"),
     lic: await q<Lic>("select org_id, plan, max_students, max_teachers, valid_until::text, status, notes from licenses"),
   }));
+  const daysLeft = (d: string | null) => (d ? Math.round((new Date(d.slice(0, 10) + "T00:00:00Z").getTime() - Date.UTC(new Date().getFullYear(), new Date().getMonth(), new Date().getDate())) / 864e5) : null);
   const L = new Map(lic.map((l) => [l.org_id, l]));
   const sum = (k: keyof Usage) => usage.reduce((a, u) => a + Number(u[k] ?? 0), 0);
   const active = usage.filter((u) => u.license_state === "active").length;
@@ -54,6 +56,7 @@ export default async function AdminPage() {
           <div className="space-y-4">
             {usage.map((u) => {
               const l = L.get(u.org_id);
+              (u as Usage & { days_left?: number | null }).days_left = daysLeft(l?.valid_until ?? u.valid_until);
               const ms = Number(u.students), mt = Number(u.teachers);
               return (
                 <article key={u.org_id} className="card p-5" data-testid={`org-${u.slug}`}>
@@ -78,18 +81,14 @@ export default async function AdminPage() {
                     <div><dt className="text-ink-muted">Жұмыс (30 күн)</dt><dd className="font-semibold">{u.submissions_30d}</dd></div>
                   </dl>
                   <div className="mt-4 grid gap-4 lg:grid-cols-2">
-                    <details className="rounded-lg border border-line p-3">
-                      <summary className="cursor-pointer text-sm font-semibold">Лицензияны өзгерту</summary>
-                      <ActionForm action={setLicenseAction} submitLabel="Лицензияны сақтау" className="mt-3 grid gap-3 sm:grid-cols-2">
-                        <input type="hidden" name="org" value={u.org_id} />
-                        <div><label className="label" htmlFor={`p-${u.slug}`}>Пакет</label><select id={`p-${u.slug}`} name="plan" defaultValue={l?.plan ?? "starter"} className="input"><option value="starter">STARTER</option><option value="pro">PRO</option><option value="enterprise">ENTERPRISE</option></select></div>
-                        <div><label className="label" htmlFor={`s-${u.slug}`}>Күйі</label><select id={`s-${u.slug}`} name="status" defaultValue={l?.status ?? "active"} className="input"><option value="active">Белсенді</option><option value="suspended">Тоқтатылған</option></select></div>
-                        <div><label className="label" htmlFor={`ms-${u.slug}`}>Оқушы лимиті</label><input id={`ms-${u.slug}`} name="max_students" type="number" min={0} required defaultValue={l?.max_students ?? 100} className="input" /></div>
-                        <div><label className="label" htmlFor={`mt-${u.slug}`}>Мұғалім лимиті</label><input id={`mt-${u.slug}`} name="max_teachers" type="number" min={0} required defaultValue={l?.max_teachers ?? 5} className="input" /></div>
-                        <div><label className="label" htmlFor={`d-${u.slug}`}>Мерзімі (дейін)</label><input id={`d-${u.slug}`} name="valid_until" type="date" required defaultValue={l?.valid_until ?? todayPlus(365)} className="input" /></div>
-                        <div><label className="label" htmlFor={`n-${u.slug}`}>Ескертпе (келісімшарт №)</label><input id={`n-${u.slug}`} name="notes" defaultValue={l?.notes ?? ""} maxLength={300} className="input" /></div>
-                      </ActionForm>
-                    </details>
+                    <div className="rounded-lg border border-line p-3">
+                      <p className="text-sm font-semibold">Лицензия</p>
+                      <p className="mt-1 text-xs text-ink-muted">{l ? `${PLAN_LABEL[l.plan]} · ${l.max_students} оқушы · ${l.max_teachers} мұғалім` : "Лицензия жоқ"}{u.days_left != null ? ` · ${u.days_left < 0 ? `${-u.days_left} күн бұрын аяқталған` : `${u.days_left} күн қалды`}` : ""}</p>
+                      <div className="mt-3 flex flex-wrap gap-2">
+                        <Link href={`/admin/orgs/${u.org_id}`} className="btn-secondary" data-testid={`manage-${u.slug}`}>Лицензияны басқару</Link>
+                        {l && <ConfirmButton action={extendLicenseAction} fields={{ org: u.org_id, months: "12" }} label="+1 жыл" title="Лицензияны 1 жылға ұзарту?" message="Мерзім қолданыстағы мерзімнен (өтіп кетсе - бүгіннен) 1 жылға ұзарады." confirmLabel="Ұзарту" danger={false} className="btn-primary" />}
+                      </div>
+                    </div>
                     <details className="rounded-lg border border-line p-3">
                       <summary className="cursor-pointer text-sm font-semibold">Мектеп әкімшісін шақыру</summary>
                       <LinkActionForm action={inviteSchoolAdminAction} submitLabel="Шақыру сілтемесін жасау" className="mt-3">
