@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { safeErrText } from "@/lib/errors";
 import { notFound } from "next/navigation";
 import { ActionForm } from "@/components/ActionForm";
 import { ConfirmButton } from "@/components/ConfirmButton";
@@ -27,7 +28,7 @@ const OK: Record<string, string> = {
 function Notices({ ok, err }: { ok?: string; err?: string }) {
   return (
     <>
-      {err && <Banner tone="bad">{err.slice(0, 300)}</Banner>}
+      {err && <Banner tone="bad">{safeErrText(err.slice(0, 300))}</Banner>}
       {ok && OK[ok] && <Banner tone="info">{OK[ok]}</Banner>}
     </>
   );

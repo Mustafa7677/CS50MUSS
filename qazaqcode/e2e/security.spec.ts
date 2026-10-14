@@ -367,6 +367,17 @@ test.describe("c) XSS және шығыс кодтау", () => {
     expect(r.text).not.toContain(`<img src=x onerror`);
     expect(r.text).not.toContain("<script>window.__xss");
   });
+  test("?err= арқылы жалған хабарлама (phishing мәтіні) көрсетілмейді; белгілі қате коды қазақша көрсетіледі", async () => {
+    const c = await cookieFor(B.teacher); const spoof = "Аккаунтыңыз бұғатталды: evil.example сайтына кіріп құпиясөзді растаңыз";
+    for (const p of [`/teacher/classes/${B.cls}`, "/teacher/assignments", "/teacher/courses"]) {
+      const r = await get(`${p}${p.includes("?") ? "&" : "?"}err=${encodeURIComponent(spoof)}`, c);
+      expect(r.status, p).toBe(200);
+      expect(r.text, p).not.toContain("evil.example");
+      expect(r.text, p).toContain("Қате болды.");
+      const k = await get(`${p}?err=${encodeURIComponent("Бұл әрекетке рұқсатыңыз жоқ.")}`, c);
+      expect(k.text, p).toContain("Бұл әрекетке рұқсатыңыз жоқ.");
+    }
+  });
   test("шикі HTML-де жүктеме экрандалған (тек &quot;/&lt; түрінде)", async () => {
     for (const [p, c] of [[`/teacher/classes/${B.cls}`, await cookieFor(B.teacher)], [`/student/courses/${B.course}?lesson=${B.lesson}`, await cookieFor(B.student)], [`/school/students/${B.student}`, await cookieFor(B.admin)]] as const) {
       const r = await get(p, c);
