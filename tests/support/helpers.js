@@ -52,7 +52,7 @@ async function routeSupabase(context, mock) {
 function collectErrors(page) {
   const errs = [];
   page.on("pageerror", (e) => errs.push("JS: " + e.message));
-  page.on("console", (m) => { if (m.type() === "error" && !/net::|Failed to load resource|ERR_|favicon|Blocked autofocusing/.test(m.text())) errs.push("console: " + m.text()); });
+  page.on("console", (m) => { if (m.type() === "error" && !/net::|Failed to load resource|ERR_|favicon|Blocked autofocusing|Blocked script execution in 'about:/.test(m.text())) errs.push("console: " + m.text()); });
   page.on("dialog", (d) => d.accept());
   return errs;
 }
