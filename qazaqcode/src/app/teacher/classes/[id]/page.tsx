@@ -4,6 +4,7 @@ import { ConfirmButton } from "@/components/ConfirmButton";
 import { EmptyState, PageHeader, ProgressBar, StatCard, StatusBadge } from "@/components/ui";
 import { CopyButton } from "@/components/teacher/CopyButton";
 import { GradeChart } from "@/components/teacher/GradeChart";
+import { ClassAnalytics } from "@/components/analytics/ClassAnalytics";
 import { Notices } from "@/components/teacher/Notices";
 import { requireStaff } from "@/lib/context";
 import { withUser } from "@/lib/db";
@@ -73,7 +74,7 @@ async function Students({ classId, userId }: { classId: string; userId: string }
         <tbody className="divide-y divide-line">
           {rows.map((r) => (
             <tr key={r.student_id} data-testid="student-row">
-              <td className="td font-medium">{r.full_name}</td>
+              <td className="td font-medium"><Link href={`/teacher/classes/${classId}/students/${r.student_id}`}>{r.full_name}</Link></td>
               <td className="td">{toNum(r.assigned)}</td>
               <td className="td">{toNum(r.submitted)}</td>
               <td className="td">{toNum(r.graded)}</td>
@@ -204,6 +205,7 @@ async function Analytics({ classId, userId }: { classId: string; userId: string 
           </ul>
         )}
       </section>
+      <ClassAnalytics classId={classId} userId={userId} studentBase={`/teacher/classes/${classId}/students`} />
     </div>
   );
 }
