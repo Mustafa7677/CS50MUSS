@@ -1,0 +1,47 @@
+name: QazaqCode
+
+on:
+  push:
+    paths: ["qazaqcode/**", ".github/workflows/qazaqcode.yml"]
+  pull_request:
+    paths: ["qazaqcode/**", ".github/workflows/qazaqcode.yml"]
+
+jobs:
+  platform:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: qazaqcode
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_PASSWORD: postgres }
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd pg_isready --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      PGPASSWORD: postgres
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/qc_test
+      TEST_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/qc_test
+      AUTH_DRIVER: local
+      AUTH_JWT_SECRET: ci-secret-ci-secret-ci-secret-1234567
+      APP_URL: http://127.0.0.1:3100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm, cache-dependency-path: qazaqcode/package-lock.json }
+      - run: npm ci
+      - name: Лицензиялық шекара (CS50 контенті жоқ)
+        run: node scripts/check-licence.mjs
+      - name: Дерекқор
+        run: |
+          psql -h localhost -U postgres -c "create database qc_test"
+          bash db/migrate.sh --dev-shim
+      - name: Қауіпсіздік тесттері (RLS, оқшаулау, лицензия)
+        run: npm run db:test
+      - run: npm run typecheck
+      - run: npm run build
+      - name: Демо дерек және E2E
+        run: |
+          npx playwright install --with-deps chromium
+          npx playwright test
