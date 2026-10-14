@@ -19,7 +19,8 @@ test.beforeAll(async () => {
   await q("delete from public.assignments where title like 'E2E Курс%'");
   const [u1] = await q("select id from auth.users where email = $1", [S9A]);
   await q("delete from public.notifications where user_id = $1", [u1.id]);
-  const [cls] = await q("select c.id, c.org_id, c.teacher_id from public.classrooms c where c.name = '9А' limit 1");
+  // CI-да бір дерекқорда DB тесттерінің де '9А' сыныптары бар: демо оқушының нақты сыныбын аламыз
+  const [cls] = await q("select c.id, c.org_id, c.teacher_id from public.classrooms c join public.classroom_students cs on cs.classroom_id = c.id and cs.status = 'active' where cs.student_id = $1 limit 1", [u1.id]);
   const [a] = await q<{ id: string }>(
     `insert into public.assignments (org_id, created_by, title, description, kind, max_score, status)
      values ($1, $2, 'E2E Курс жобасы', 'тест', 'project', 100, 'draft') returning id`, [cls.org_id, cls.teacher_id]);
