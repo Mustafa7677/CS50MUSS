@@ -1,4 +1,5 @@
 import { Shell } from "@/components/Shell";
+import { NotificationBell } from "@/components/NotificationBell";
 import { requireStaff } from "@/lib/context";
 
 export default async function TeacherLayout({ children }: { children: React.ReactNode }) {
@@ -7,6 +8,9 @@ export default async function TeacherLayout({ children }: { children: React.Reac
     <Shell ctx={ctx} active={ctx.active} area="teacher" nav={[
       { href: "/teacher", label: "Сыныптарым", icon: "🏷" }, { href: "/teacher/assignments", label: "Тапсырмалар", icon: "📝" }, { href: "/teacher/courses", label: "Курстар", icon: "📚" },
       { href: "/teacher/review", label: "Тексеру кезегі", icon: "✅" },
-    ]}>{children}</Shell>
+    ]}>
+      <div className="mb-4 flex justify-end"><NotificationBell userId={ctx.userId} /></div>
+      {children}
+    </Shell>
   );
 }
