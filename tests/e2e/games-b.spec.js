@@ -151,6 +151,7 @@ test("Web Builder: тапсырмалар, қауіпсіз алдын ала к
 test("Binary Challenge: жауаптар тексеріледі, уақыт біткенде нәтиже сақталады", async ({ page, context }) => {
   await page.clock.install();
   const errs = await open(page, context, "binary");
+  await page.click(".ga-go");
   let right = 0;
   const kinds = new Set();
   for (let i = 0; i < 14; i++) {
@@ -200,6 +201,7 @@ for (const [id, dark] of [["sqlescape", false], ["memory", true], ["webbuilder",
     const page = await ctx.newPage();
     const errs = await open(page, ctx, id);
     await page.waitForTimeout(600);
+    if (id === "binary") { await noHScroll(page); await page.click(".ga-go"); }
     if (id === "memory") { await page.locator(".g-opt, .gb-input").first().click(); await page.waitForTimeout(100); }
     if (id === "webbuilder") { await page.click('.gb-pal[aria-label="Карточка қосу"]'); await page.click('.gb-pal[aria-label="Тізім қосу"]'); }
     if (id === "sqlescape") { await page.fill(".gb-sql", "SELECT * FROM books"); await page.click(".gb-run"); }

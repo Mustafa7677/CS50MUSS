@@ -1,0 +1,394 @@
+/* CS50 қазақша: ойындар, аркада дизайны (хаб, shell, бастау/нәтиже экрандары, Code Runner, Code Battle, Binary Challenge).
+   style.css-тен кейін жүктеледі. Жаңа кластар префиксі: .gx- */
+
+/* ---------- беттің ортақ баптаулары ---------- */
+.gx-page .layout.single .content { max-width: 1180px; }
+/* h1 көмекші технологияларға қалады, көзге hero көрсетіледі */
+.gx-page .lecture-head { position: absolute; width: 1px; height: 1px; margin: 0; padding: 0; border: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.gx-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ============================================================
+   ХАБ
+   ============================================================ */
+.gx-hero {
+  position: relative; overflow: hidden; isolation: isolate; color: #fff;
+  display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: 22px 28px; align-items: center;
+  padding: clamp(22px, 4vw, 40px); border-radius: 24px; margin-bottom: 18px;
+  background:
+    radial-gradient(520px 260px at 12% 0%, rgba(255, 210, 74, .30), transparent 65%),
+    radial-gradient(460px 300px at 100% 100%, rgba(0, 224, 255, .28), transparent 65%),
+    linear-gradient(130deg, #2a1470 0%, #0e3a85 52%, #0b8fb0 100%);
+  box-shadow: 0 18px 44px rgba(20, 20, 80, .28);
+}
+.gx-hero::after { content: ""; position: absolute; inset: 0; z-index: -1; opacity: .5; background-image: radial-gradient(rgba(255,255,255,.16) 1.2px, transparent 1.4px); background-size: 22px 22px; }
+.gx-glyphs { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+.gx-glyphs span {
+  position: absolute; left: calc(var(--i) * 8.7% + 2%); top: calc(8% + (var(--i) * 37) * 1%); font: 800 clamp(16px, 2.4vw, 26px) var(--mono);
+  color: rgba(255,255,255,.2); animation: gx-float calc(6s + var(--i) * .7s) ease-in-out infinite alternate; animation-delay: calc(var(--i) * -.9s);
+}
+.gx-glyphs span:nth-child(3n) { top: auto; bottom: calc(6% + var(--i) * 3%); color: rgba(255, 215, 94, .3); }
+.gx-glyphs span:nth-child(4n) { color: rgba(110, 231, 255, .3); }
+@keyframes gx-float { from { transform: translateY(0) rotate(-6deg); } to { transform: translateY(-22px) rotate(7deg); } }
+.gx-eyebrow { margin: 0 0 8px; font: 700 .8rem var(--font); letter-spacing: .14em; text-transform: uppercase; color: #ffe08a; }
+.gx-hero-title { margin: 0 0 10px; font: 800 clamp(1.7rem, 4.2vw, 2.9rem)/1.08 var(--display); color: #fff; border: 0; padding: 0; }
+.gx-hero-title span { display: block; background: linear-gradient(90deg, #ffd24a, #ff8a5c 55%, #ff5fa2); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.gx-hero-sub { margin: 0; max-width: 46ch; color: rgba(255,255,255,.9); font-size: 1.02rem; line-height: 1.55; }
+
+.gx-panel {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 12px 16px; align-items: center; padding: 16px 18px; border-radius: 18px;
+  background: rgba(8, 12, 40, .55); border: 1px solid rgba(255,255,255,.22); backdrop-filter: blur(8px);
+}
+.gx-lvl {
+  --lvl-size: 76px; position: relative; width: var(--lvl-size); height: var(--lvl-size); border-radius: 50%; flex: none; display: grid; place-items: center; isolation: isolate;
+  background: conic-gradient(from 200deg, #ffd24a var(--p, 0%), rgba(255,255,255,.18) 0); box-shadow: 0 0 22px rgba(255, 210, 74, .35);
+}
+.gx-lvl::before { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: linear-gradient(160deg, #20206a, #0a1238); z-index: -1; }
+.gx-lvl span { font: 800 calc(var(--lvl-size) * .38) var(--display); color: #fff; }
+.gx-lvl-s { --lvl-size: 60px; }
+.gx-panel-main { min-width: 0; }
+.gx-panel-row { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; font-size: .95rem; }
+.gx-panel-row b { font-size: 1.05rem; }
+.gx-panel-row span { color: rgba(255,255,255,.85); font-variant-numeric: tabular-nums; }
+.gx-xpbar { height: 10px; margin: 8px 0 6px; border-radius: 99px; background: rgba(255,255,255,.18); overflow: hidden; }
+.gx-xpbar i { display: block; height: 100%; width: 0; border-radius: 99px; background: linear-gradient(90deg, #ffd24a, #ff8a5c); box-shadow: 0 0 12px rgba(255, 190, 70, .7); transition: width 1.1s cubic-bezier(.2, .8, .2, 1); }
+.gx-panel-next { margin: 0; font-size: .85rem; color: rgba(255,255,255,.82); }
+.gx-mini { grid-column: 1 / -1; display: flex; gap: 10px; list-style: none; margin: 0; padding: 0; }
+.gx-mini li { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 8px 6px; border-radius: 12px; background: rgba(255,255,255,.1); }
+.gx-mini b { font: 800 1.25rem var(--display); }
+.gx-mini span { font-size: .78rem; color: rgba(255,255,255,.82); }
+.gx-cab { grid-column: 1 / -1; justify-self: end; color: #ffe08a; font-weight: 700; font-size: .92rem; text-decoration: none; min-height: 32px; display: inline-flex; align-items: center; }
+.gx-cab:hover { text-decoration: underline; color: #fff; }
+
+/* күннің ойыны */
+.gx-daily {
+  --gc: #2563eb; position: relative; display: flex; align-items: center; gap: 16px; margin-bottom: 18px; padding: 14px 18px; border-radius: 18px; color: #fff; text-decoration: none; overflow: hidden;
+  background: linear-gradient(110deg, color-mix(in srgb, var(--gc) 55%, #0a0e24), color-mix(in srgb, var(--gc) 20%, #080b1c));
+  border: 1px solid color-mix(in srgb, var(--gc) 55%, #fff 10%); transition: transform .2s, box-shadow .2s;
+}
+.gx-daily::before { content: ""; position: absolute; inset: 0; background: linear-gradient(100deg, transparent 30%, rgba(255,255,255,.14) 50%, transparent 70%); transform: translateX(-120%); animation: gx-shine 4.5s ease-in-out infinite; }
+.gx-daily:hover, .gx-daily:focus-visible { transform: translateY(-3px); box-shadow: 0 14px 34px color-mix(in srgb, var(--gc) 45%, transparent); text-decoration: none; }
+.gx-daily-ico { flex: none; width: 56px; height: 56px; border-radius: 50%; display: grid; place-items: center; font-size: 28px; background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.5), rgba(255,255,255,.12) 60%); box-shadow: 0 0 22px color-mix(in srgb, var(--gc) 70%, #fff 10%); }
+.gx-daily-txt { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.gx-daily-txt b { font: 800 1.12rem var(--display); }
+.gx-daily-txt span:last-child { color: rgba(255,255,255,.86); font-size: .9rem; }
+.gx-daily-eyebrow { font-size: .75rem !important; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #ffe08a !important; }
+.gx-daily-go { flex: none; padding: 10px 18px; border-radius: 999px; background: #fff; color: #14213d; font-weight: 800; }
+@keyframes gx-shine { 0%, 55% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
+
+/* сүзгі чиптері */
+.gx-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 16px; }
+.gx-chip {
+  min-height: 44px; padding: 0 18px; border-radius: 999px; border: 2px solid var(--border); background: var(--surface); color: var(--text);
+  font: 700 .92rem var(--font); cursor: pointer; transition: transform .15s, background .15s, border-color .15s;
+}
+.gx-chip:hover { border-color: var(--accent); transform: translateY(-2px); }
+.gx-chip[aria-pressed="true"] { background: linear-gradient(135deg, #2a1470, #0b8fb0); border-color: transparent; color: #fff; }
+.gx-chip:focus-visible, .game-card:focus-visible, .gx-daily:focus-visible, .gx-cab:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.gx-empty { padding: 28px; text-align: center; color: var(--muted); border: 2px dashed var(--border); border-radius: 16px; }
+
+/* карточкалар */
+.games-grid.gx-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 640px) { .games-grid.gx-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1000px) { .games-grid.gx-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (min-width: 1500px) { .gx-page .layout.single .content { max-width: 1400px; } .games-grid.gx-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.game-card.gx-card {
+  position: relative; display: flex; flex-direction: column; gap: 8px; padding: 18px 18px 16px; min-height: 250px; overflow: hidden; isolation: isolate;
+  border: 1px solid color-mix(in srgb, var(--gc) 55%, #fff 12%); border-top: 1px solid color-mix(in srgb, var(--gc) 55%, #fff 12%); border-radius: 20px; color: #fff; text-decoration: none;
+  background:
+    radial-gradient(260px 160px at 100% 0%, color-mix(in srgb, var(--gc) 55%, transparent), transparent 70%),
+    linear-gradient(155deg, color-mix(in srgb, var(--gc) 58%, #0a0e24) 0%, color-mix(in srgb, var(--gc) 20%, #070a18) 100%);
+  box-shadow: 0 6px 18px rgba(8, 10, 30, .22);
+  transition: transform .22s cubic-bezier(.2, .8, .2, 1), box-shadow .22s, border-color .22s;
+}
+.game-card.gx-card::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(105deg, transparent 35%, rgba(255,255,255,.2) 50%, transparent 65%); transform: translateX(-130%); transition: transform .7s; }
+.game-card.gx-card:hover, .game-card.gx-card:focus-visible { transform: translateY(-7px) scale(1.012); box-shadow: 0 20px 40px color-mix(in srgb, var(--gc) 50%, transparent), 0 0 0 2px color-mix(in srgb, var(--gc) 70%, #fff 20%); text-decoration: none; }
+.game-card.gx-card:hover::after, .game-card.gx-card:focus-visible::after { transform: translateX(130%); }
+.gx-card-bg { position: absolute; right: -14px; bottom: -22px; font-size: 120px; line-height: 1; opacity: .12; transform: rotate(-12deg); z-index: -1; pointer-events: none; filter: grayscale(.2); }
+.gx-card-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.gc-ico.gx-ico {
+  width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; font-size: 32px; line-height: 1; flex: none;
+  background: radial-gradient(circle at 35% 28%, rgba(255,255,255,.55), rgba(255,255,255,.14) 62%); border: 1px solid rgba(255,255,255,.35);
+  box-shadow: 0 0 0 5px rgba(255,255,255,.06), 0 0 26px color-mix(in srgb, var(--gc) 80%, #fff 10%); transition: transform .3s;
+}
+.game-card.gx-card:hover .gx-ico { transform: rotate(-8deg) scale(1.1); }
+.gx-rec { padding: 5px 12px; border-radius: 999px; background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.25); font-weight: 800; font-size: .85rem; color: #ffe08a; white-space: nowrap; }
+.gx-rec.gx-new { color: #0a0e24; background: linear-gradient(90deg, #ffd24a, #ff9f5c); border-color: transparent; }
+.game-card.gx-card .gc-title { margin-top: 4px; font: 800 1.2rem/1.2 var(--display); color: #fff; }
+.game-card.gx-card .gc-blurb { flex: 1; color: rgba(255,255,255,.88); font-size: .93rem; line-height: 1.5; }
+.gx-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.gx-tag { padding: 3px 10px; border-radius: 999px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.2); font-size: .78rem; font-weight: 700; color: #fff; }
+.game-card.gx-card .gc-meta { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: .82rem; color: rgba(255,255,255,.82); }
+.gx-diff { letter-spacing: 2px; font-size: .95rem; }
+.gx-diff i { font-style: normal; color: rgba(255,255,255,.28); }
+.gx-diff i.on { color: #ffd24a; text-shadow: 0 0 8px rgba(255, 210, 74, .6); }
+.gx-play-btn { margin-top: 4px; display: flex; align-items: center; justify-content: center; min-height: 46px; border-radius: 14px; background: #fff; color: #10173a; font: 800 1rem var(--font); transition: background .2s, transform .2s; }
+.game-card.gx-card:hover .gx-play-btn, .game-card.gx-card:focus-visible .gx-play-btn { background: #ffd24a; transform: scale(1.03); }
+.games-note { color: var(--muted); }
+
+/* ============================================================
+   SHELL: аркада стейджі
+   ============================================================ */
+.game-shell.gx-shell {
+  /* ішкі ойындар (бар және жаңа) қараңғы стейджде оқылуы үшін айнымалылар */
+  --text: #eef2ff; --muted: #b4bfdd; --surface: rgba(255,255,255,.07); --surface-2: rgba(255,255,255,.11);
+  --line: rgba(255,255,255,.2); --border: rgba(255,255,255,.2);
+  --code-bg: #050813; --code-text: #e6edf5; --code-fg: #e6edf5;
+  --accent: color-mix(in srgb, var(--gc) 45%, #fff); --on-accent: #08101f; --link: #9fe3ff;
+  --ok: #5fd39a; --bad: #ff8a80; --ok-soft: rgba(95,211,154,.16); --bad-soft: rgba(255,138,128,.16);
+  position: relative; color: var(--text); background-color: #0b1030; border: 1px solid color-mix(in srgb, var(--gc) 45%, #fff 5%); border-radius: 22px; overflow: hidden;
+  box-shadow: 0 24px 56px rgba(6, 8, 30, .38), 0 0 0 1px rgba(0,0,0,.2);
+}
+.gx-hud {
+  display: flex; align-items: center; gap: 10px 14px; padding: 10px 14px; border-bottom: 1px solid rgba(255,255,255,.12);
+  background: linear-gradient(90deg, color-mix(in srgb, var(--gc) 42%, #0a0e28), #0b1030 70%);
+}
+.gx-hud .game-back, .gx-mute {
+  min-height: 44px; display: inline-flex; align-items: center; padding: 0 14px; border-radius: 12px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2);
+  color: #fff; font: 700 .92rem var(--font); text-decoration: none; cursor: pointer; transition: background .15s, transform .15s;
+}
+.gx-hud .game-back:hover, .gx-mute:hover { background: rgba(255,255,255,.2); text-decoration: none; transform: translateY(-1px); }
+.gx-mute { font-size: 1.15rem; padding: 0; width: 44px; justify-content: center; }
+.gx-hud h2 { margin: 0; flex: 1; min-width: 0; font: 800 1.08rem var(--display); color: #fff; border: 0; padding: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.gx-hud .game-best { padding: 6px 12px; border-radius: 999px; background: rgba(0,0,0,.3); border: 1px solid rgba(255,255,255,.18); font-size: .85rem; color: #ffe08a; white-space: nowrap; }
+.gx-hud .game-best b { color: #fff; }
+.game-stage.gx-stage {
+  position: relative; min-height: clamp(460px, 74vh, 800px); padding: clamp(14px, 3vw, 28px); color: var(--text); outline: none;
+  background-color: #0b1030;
+  background-image:
+    radial-gradient(700px 360px at 85% -10%, color-mix(in srgb, var(--gc) 32%, transparent), transparent 70%),
+    radial-gradient(rgba(255,255,255,.07) 1.3px, transparent 1.6px),
+    linear-gradient(165deg, #0d1336 0%, #150f3d 55%, #0a1a36 100%);
+  background-size: auto, 24px 24px, auto;
+}
+.gx-stage :focus-visible { outline: 3px solid #fff; outline-offset: 2px; box-shadow: 0 0 0 5px color-mix(in srgb, var(--gc) 80%, #000); }
+.gx-stage a { color: var(--link); }
+.gx-stage .g-hud { gap: 8px 10px; margin-bottom: 14px; font-weight: 700; }
+.gx-stage .g-hud > span { padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.16); font-variant-numeric: tabular-nums; }
+.gx-stage .g-hud .g-time { margin-left: auto; }
+.gx-stage .g-bar { height: 10px; background: rgba(255,255,255,.12); }
+.gx-stage .g-bar > i { background: linear-gradient(90deg, var(--accent), #ffd24a); box-shadow: 0 0 14px color-mix(in srgb, var(--gc) 70%, #fff 20%); }
+.gx-stage .g-q { font-size: 1.12rem; font-weight: 700; line-height: 1.5; color: #fff; }
+.gx-stage .g-code { background: var(--code-bg); border: 1px solid rgba(255,255,255,.14); color: var(--code-text); border-radius: 12px; }
+.gx-stage .g-fb { min-height: 2.6em; padding: 8px 14px; margin-top: 12px; border-radius: 12px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.12); color: #fff; }
+.gx-stage .g-fb:empty { background: none; border-color: transparent; }
+.gx-stage .gb-fb.ok, .gx-stage .gb-ok { color: #6fe3ae; }
+.gx-stage .gb-fb.bad, .gx-stage .gb-no { color: #ff9a92; }
+.gx-stage .ga-clock.low { color: #ff9a92; }
+.gx-stage .g-opt { background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.22); color: #fff; }
+.gx-stage .g-opt:hover:not([disabled]), .gx-stage .g-opt:focus-visible { border-color: var(--accent); background: rgba(255,255,255,.13); }
+.gx-stage .g-opt.ok { border-color: #5fd39a; background: rgba(95,211,154,.2); }
+.gx-stage .g-opt.bad { border-color: #ff8a80; background: rgba(255,138,128,.2); }
+.gx-stage .btn:not(.ghost):not(.secondary) { background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--gc) 70%, #fff)); color: #08101f; font-weight: 800; }
+.gx-stage .btn { min-height: 44px; border-radius: 12px; }
+.gx-stage .btn.ghost { background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.4); color: #fff; }
+
+/* бастау экраны */
+.gx-intro { max-width: 580px; margin: 0 auto; padding: clamp(6px, 3vh, 26px) 0; display: flex; flex-direction: column; align-items: center; text-align: center; }
+.gx-intro > p { max-width: 52ch; }
+.gx-intro-ico {
+  width: 112px; height: 112px; border-radius: 50%; display: grid; place-items: center; font-size: 58px; margin-bottom: 14px;
+  background: radial-gradient(circle at 35% 28%, rgba(255,255,255,.55), rgba(255,255,255,.12) 62%); border: 1px solid rgba(255,255,255,.4);
+  box-shadow: 0 0 0 9px rgba(255,255,255,.05), 0 0 52px color-mix(in srgb, var(--gc) 85%, #fff 10%); animation: gx-bob 3.2s ease-in-out infinite;
+}
+@keyframes gx-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-9px); } }
+.gx-intro-title { margin: 0 0 8px; font: 800 clamp(1.5rem, 4.5vw, 2.1rem) var(--display); color: #fff; }
+.gx-lead { margin: 0 0 14px; font-size: 1.05rem; color: #e1e8ff; }
+.gx-rules { list-style: none; margin: 0 0 22px; padding: 0; display: grid; gap: 8px; width: 100%; text-align: left; }
+.gx-rules li, .gx-intro .ga-list li { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 14px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16); color: #f1f4ff; line-height: 1.4; }
+.gx-rule-ico { flex: none; min-width: 38px; height: 38px; padding: 0 4px; display: grid; place-items: center; border-radius: 12px; background: color-mix(in srgb, var(--gc) 50%, #0a0e24); font-size: 1.1rem; }
+.gx-intro .ga-list { list-style: none; padding: 0; display: grid; gap: 8px; width: 100%; text-align: left; }
+.gx-intro .ga-note { width: 100%; text-align: left; margin-bottom: 14px; background: rgba(255,255,255,.07); border-color: rgba(255,255,255,.3); color: #fff; }
+.gx-go.btn, .gx-intro .ga-go { min-height: 60px; padding: 0 44px; border-radius: 18px; font: 800 1.2rem var(--display); letter-spacing: .02em; animation: gx-pulse 2s ease-in-out infinite; }
+@keyframes gx-pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--gc) 60%, transparent), 0 8px 22px rgba(0,0,0,.35); } 50% { box-shadow: 0 0 0 12px transparent, 0 8px 22px rgba(0,0,0,.35); } }
+.gx-go:hover, .gx-intro .ga-go:hover { transform: translateY(-2px) scale(1.03); }
+.gx-keyhint { margin: 10px 0 0; font-size: .8rem; color: var(--muted); }
+
+/* ============================================================
+   НӘТИЖЕ ЭКРАНЫ
+   ============================================================ */
+.game-result.gx-result { position: relative; max-width: 560px; margin: 0 auto; padding: clamp(6px, 2vh, 20px) 0; text-align: center; }
+.gx-result::before { content: ""; position: absolute; left: 50%; top: -30px; width: 420px; height: 420px; transform: translateX(-50%); z-index: 0; pointer-events: none; background: radial-gradient(circle, color-mix(in srgb, var(--gc) 45%, transparent), transparent 65%); }
+.gx-result > * { position: relative; z-index: 1; }
+.gx-trophy { font-size: 84px; line-height: 1; filter: drop-shadow(0 8px 22px rgba(255, 200, 60, .55)); animation: gx-trophy .9s cubic-bezier(.2, 1.4, .4, 1) both; }
+@keyframes gx-trophy { from { transform: scale(.2) rotate(-25deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.gx-result .gr-big { margin: 8px 0 10px; font: 800 clamp(1.4rem, 4.5vw, 1.9rem) var(--display); color: #fff; }
+.gx-stars { display: flex; justify-content: center; gap: 10px; margin: 6px 0 12px; }
+.gx-star { width: 56px; height: 56px; display: grid; place-items: center; }
+.gx-star svg { width: 100%; height: 100%; fill: rgba(255,255,255,.12); stroke: rgba(255,255,255,.3); stroke-width: 1; stroke-linejoin: round; }
+.gx-star.on svg { fill: #ffd24a; stroke: #fff2b8; filter: drop-shadow(0 0 12px rgba(255, 210, 74, .8)); animation: gx-star .6s cubic-bezier(.2, 1.6, .4, 1) both; animation-delay: var(--d); }
+.gx-star:nth-child(2) { margin-top: -8px; }
+@keyframes gx-star { from { transform: scale(0) rotate(-90deg); opacity: 0; } to { transform: none; opacity: 1; } }
+.gx-result .gr-score { margin: 4px 0; font-size: 1.15rem; color: #dbe3ff; }
+.gx-result .gr-score b { font: 800 clamp(2.6rem, 10vw, 3.6rem)/1 var(--display); color: #fff; display: inline-block; min-width: 1ch; vertical-align: middle; font-variant-numeric: tabular-nums; text-shadow: 0 0 24px color-mix(in srgb, var(--gc) 80%, #fff); }
+.gx-banner { margin: 8px 0; }
+.gx-result .gr-new { display: inline-block; padding: 8px 20px; border-radius: 999px; font-weight: 800; color: #1a1300; background: linear-gradient(90deg, #ffd24a, #ffb347, #ffd24a); background-size: 200% 100%; animation: gx-sheen 2.2s linear infinite; box-shadow: 0 0 26px rgba(255, 200, 60, .6); }
+@keyframes gx-sheen { to { background-position: -200% 0; } }
+.gx-result .gr-xp { margin: 8px 0 12px; font: 800 1.25rem var(--display); color: #7ef0c4; }
+.gx-xpcard { display: flex; align-items: center; gap: 14px; padding: 12px 16px; margin: 0 0 14px; border-radius: 16px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.18); text-align: left; }
+.gx-xpcard-main { flex: 1; min-width: 0; }
+.gx-xpcard .gx-panel-row span { color: var(--muted); }
+.gx-xpcard .gx-panel-next { color: var(--muted); }
+.gx-up { font-style: normal; margin-left: 6px; padding: 2px 10px; border-radius: 99px; background: linear-gradient(90deg, #ff5fa2, #ff9f5c); color: #fff; font-size: .8rem; }
+.gx-result .gr-line { margin: 4px 0; color: #cbd5f2; }
+.gx-result .gr-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+.gx-big.btn { min-height: 56px; justify-content: center; border-radius: 16px; font-size: 1.05rem; font-weight: 800; }
+.gx-big.btn.ghost { color: #fff; }
+
+/* ============================================================
+   ОРТАҚ: комбо, дыбыс
+   ============================================================ */
+.gx-stage .gx-combo { background: linear-gradient(90deg, #ff7a18, #ff3d6e); border-color: transparent !important; color: #fff; font-weight: 800; animation: gx-pop .35s cubic-bezier(.2, 1.6, .4, 1); }
+@keyframes gx-pop { from { transform: scale(.5); } to { transform: scale(1); } }
+
+/* ============================================================
+   CODE RUNNER: жол
+   ============================================================ */
+.gx-road {
+  position: relative; margin: 0 0 14px; padding-top: 6px; border-radius: 18px; overflow: hidden; isolation: isolate;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--gc) 38%, #090c26) 0%, #0a0d2a 38%, #10143a 100%);
+  border: 1px solid rgba(255,255,255,.16);
+}
+.gx-road::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 70px; z-index: 3; pointer-events: none; background: linear-gradient(180deg, rgba(8,10,40,.9), transparent); }
+.gx-road .ga-track { gap: 0; margin: 0; transform: perspective(760px) rotateX(14deg); transform-origin: 50% 100%; }
+.gx-road .ga-lane {
+  height: clamp(280px, 46vh, 340px); border: 0; border-radius: 0; box-shadow: none; position: relative;
+  background: linear-gradient(180deg, transparent, rgba(255,255,255,.04) 60%, rgba(255,255,255,.1)); transition: background .2s;
+}
+.gx-road .ga-lane::before { content: ""; position: absolute; top: 0; bottom: 0; right: -2px; width: 4px; z-index: 1; background: linear-gradient(180deg, rgba(255,255,255,.45) 0 24px, transparent 24px); background-size: 4px 56px; animation: gx-road .55s linear infinite; }
+.gx-road .ga-lane:last-child::before { display: none; }
+.gx-road .ga-lane.ok::before, .gx-road .ga-lane.bad::before { animation-play-state: paused; }
+@keyframes gx-road { to { background-position: 0 56px; } }
+.gx-road .ga-lane.on { background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--gc) 26%, transparent) 70%, color-mix(in srgb, var(--gc) 50%, transparent)); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--gc) 70%, #fff 20%); }
+.gx-road .ga-lane:hover:not(.on) { background: linear-gradient(180deg, transparent, rgba(255,255,255,.12)); }
+.gx-road .ga-lane.ok { background: linear-gradient(180deg, rgba(95,211,154,.08), rgba(95,211,154,.4)); box-shadow: inset 0 0 0 3px #5fd39a, 0 0 28px rgba(95,211,154,.55); z-index: 2; }
+.gx-road .ga-lane.bad { background: linear-gradient(180deg, rgba(255,138,128,.08), rgba(255,138,128,.4)); box-shadow: inset 0 0 0 3px #ff8a80, 0 0 28px rgba(255,138,128,.5); z-index: 2; animation: gx-shake .35s; }
+@keyframes gx-shake { 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+.gx-road .ga-card {
+  left: 5px; right: 5px; top: 6px; padding: 8px 9px; border-radius: 10px; font-size: .82rem; color: #eaf8ff;
+  background: linear-gradient(160deg, #101a3c, #0a1026); border: 1px solid color-mix(in srgb, var(--gc) 65%, #fff 15%);
+  box-shadow: 0 0 16px color-mix(in srgb, var(--gc) 55%, transparent), inset 0 0 14px rgba(255,255,255,.04);
+}
+.gx-road .ga-lane.on .ga-card { box-shadow: 0 0 22px color-mix(in srgb, var(--gc) 85%, #fff 10%), inset 0 0 14px rgba(255,255,255,.06); }
+.gx-road .ga-lane.ok .ga-card { border-color: #5fd39a; }
+.gx-road .ga-lane.bad .ga-card { border-color: #ff8a80; }
+.gx-runner {
+  position: absolute; bottom: 10px; left: calc(100% * (var(--lane) + .5) / var(--n)); width: 56px; height: 56px; margin-left: -28px; z-index: 4; pointer-events: none;
+  display: grid; place-items: center; font-size: 42px; transition: left .24s cubic-bezier(.3, 1.5, .5, 1);
+}
+.gx-runner i { font-style: normal; display: block; transform: scaleX(-1); animation: gx-run .32s ease-in-out infinite alternate; filter: drop-shadow(0 0 10px color-mix(in srgb, var(--gc) 80%, #fff)); }
+.gx-runner::after { content: ""; position: absolute; bottom: -2px; left: 10px; right: 10px; height: 8px; border-radius: 50%; background: rgba(0,0,0,.45); filter: blur(2px); z-index: -1; }
+@keyframes gx-run { from { transform: scaleX(-1) translateY(0) rotate(-4deg); } to { transform: scaleX(-1) translateY(-7px) rotate(4deg); } }
+.gx-stage .ga-prompt { margin: 0 0 10px; padding: 10px 14px; border-radius: 14px; background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.14); }
+.gx-stage .ga-target-i { background: #050813; color: #7ef0c4; border: 1px solid rgba(126,240,196,.4); }
+.gx-stage .ga-ctl { gap: 10px; }
+.gx-stage .ga-ctl .btn { flex: 1 1 110px; justify-content: center; max-width: 220px; }
+.ga-lives { font-size: 1.1rem; letter-spacing: 2px; }
+
+/* ============================================================
+   CODE BATTLE: таймер сақинасы, 4 түсті нұсқа
+   ============================================================ */
+.gx-ring {
+  --ringc: #5fd39a; position: relative; isolation: isolate; width: 78px; height: 78px; padding: 0 !important; border-radius: 50% !important; display: grid; place-items: center;
+  font: 800 1.05rem var(--display); border: 0 !important; background: conic-gradient(var(--ringc) calc(var(--p) * 1%), rgba(255,255,255,.14) 0) !important; box-shadow: 0 0 18px color-mix(in srgb, var(--ringc) 55%, transparent);
+}
+.gx-ring::before { content: ""; position: absolute; inset: 7px; border-radius: 50%; background: #0b1030; z-index: -1; }
+.gx-ring.low { --ringc: #ff6b6b; color: #ffb4ae !important; animation: gx-tickpulse 1s ease-in-out infinite; }
+@keyframes gx-tickpulse { 50% { transform: scale(1.08); } }
+.gx-bhud { align-items: center; }
+.gx-bhud .g-time { margin-left: auto; }
+.gx-stage .ga-topic { background: color-mix(in srgb, var(--gc) 60%, #0a0e24) !important; font-size: .85rem; }
+.gx-stage .ga-hint { color: var(--muted); }
+.ga-qbox { padding: 16px; border-radius: 18px; background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.14); transition: box-shadow .25s; }
+.ga-qbox.flash-ok { animation: gx-fok .6s; }
+.ga-qbox.flash-bad { animation: gx-fbad .6s; }
+@keyframes gx-fok { 0% { box-shadow: 0 0 0 0 rgba(95,211,154,.9), inset 0 0 40px rgba(95,211,154,.45); } 100% { box-shadow: 0 0 0 18px transparent, inset 0 0 0 transparent; } }
+@keyframes gx-fbad { 0% { box-shadow: 0 0 0 0 rgba(255,138,128,.9), inset 0 0 40px rgba(255,138,128,.45); transform: translateX(-5px); } 40% { transform: translateX(5px); } 100% { box-shadow: 0 0 0 18px transparent, inset 0 0 0 transparent; transform: none; } }
+.ga-qbox .g-opts { grid-template-columns: 1fr; gap: 10px; }
+@media (min-width: 700px) { .ga-qbox .g-opts { grid-template-columns: 1fr 1fr; } }
+.ga-qbox .g-opt {
+  --oc: #3b82f6; position: relative; display: flex; align-items: center; gap: 12px; min-height: 64px; padding: 10px 14px 10px 10px; font-weight: 600; font-size: 1rem; line-height: 1.35; color: #fff;
+  border: 2px solid color-mix(in srgb, var(--oc) 70%, #fff 10%); border-radius: 16px; background: linear-gradient(135deg, color-mix(in srgb, var(--oc) 34%, #0a0e26), color-mix(in srgb, var(--oc) 14%, #080b1e));
+  transition: transform .15s, box-shadow .15s, opacity .2s;
+}
+.ga-qbox .g-opt:nth-child(2) { --oc: #f97316; }
+.ga-qbox .g-opt:nth-child(3) { --oc: #22c55e; }
+.ga-qbox .g-opt:nth-child(4) { --oc: #ec4899; }
+.ga-qbox .g-opt::before { content: attr(data-k); flex: none; width: 40px; height: 40px; border-radius: 12px; display: grid; place-items: center; font: 800 1.1rem var(--display); color: #08101f; background: var(--oc); box-shadow: 0 0 14px color-mix(in srgb, var(--oc) 70%, transparent); }
+.ga-qbox .g-opt b { order: 3; margin-left: auto; padding-left: 8px; font-size: .78rem; opacity: .6; font-family: var(--mono); }
+.ga-qbox .g-opt:hover:not([disabled]), .ga-qbox .g-opt:focus-visible { transform: translateY(-3px); box-shadow: 0 8px 22px color-mix(in srgb, var(--oc) 45%, transparent); border-color: #fff; }
+.ga-qbox .g-opt:active:not([disabled]) { transform: scale(.98); }
+.ga-qbox .g-opt code, .ga-qbox .g-opt { overflow-wrap: anywhere; }
+.ga-qbox .g-opt[disabled] { cursor: default; opacity: .55; }
+.ga-qbox .g-opt.ok { opacity: 1; border-color: #5fd39a; background: linear-gradient(135deg, rgba(95,211,154,.45), rgba(95,211,154,.18)); box-shadow: 0 0 24px rgba(95,211,154,.6); }
+.ga-qbox .g-opt.bad { opacity: 1; border-color: #ff8a80; background: linear-gradient(135deg, rgba(255,138,128,.42), rgba(255,138,128,.16)); box-shadow: 0 0 24px rgba(255,138,128,.5); animation: gx-shake .35s; }
+
+/* ============================================================
+   BINARY CHALLENGE: жарық шамдар
+   ============================================================ */
+.gx-stage .gb-bq { margin: 0 0 16px; padding: 18px 16px; border-radius: 18px; text-align: center; font-size: clamp(1.2rem, 4.8vw, 1.8rem); color: #7ef0c4; background: #050813; border: 1px solid rgba(126,240,196,.35); box-shadow: inset 0 0 28px rgba(126,240,196,.1), 0 0 22px rgba(126,240,196,.12); text-shadow: 0 0 14px rgba(126,240,196,.5); }
+.gx-stage .gb-barea > label { display: block; margin-bottom: 6px; font-weight: 700; }
+.gx-stage .gb-input { max-width: none; flex: 1 1 180px; min-height: 52px; padding: 0 16px; border-radius: 14px; border: 2px solid rgba(255,255,255,.28); background: #050813; color: #fff; font-size: 1.3rem; text-align: center; }
+.gx-stage .gb-input:focus-visible { border-color: var(--accent); }
+.gx-stage .gb-row2 { gap: 10px; }
+.gx-stage .gb-send { min-width: 130px; min-height: 52px; justify-content: center; font-size: 1.05rem; }
+.gx-stage .gb-bits { display: grid; grid-template-columns: repeat(var(--w, 4), minmax(0, 1fr)); gap: 8px; max-width: 640px; margin: 4px auto 12px; }
+.gx-stage .gb-bit {
+  position: relative; min-height: 112px; padding: 10px 2px 8px; gap: 2px; justify-content: flex-end; align-items: center; border-radius: 16px; color: #fff;
+  border: 2px solid rgba(255,255,255,.22); background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.02)); transition: transform .15s, box-shadow .2s, background .2s, border-color .2s;
+}
+.gx-stage .gb-bit:hover { transform: translateY(-3px); border-color: rgba(255,255,255,.5); }
+.gx-stage .gb-bit:active { transform: scale(.96); }
+.gb-lamp { width: 34px; height: 34px; border-radius: 50%; margin-bottom: 4px; background: radial-gradient(circle at 35% 30%, #4b5373, #1b2040 70%); border: 2px solid rgba(255,255,255,.25); transition: background .2s, box-shadow .2s, border-color .2s; }
+.gx-stage .gb-bit small { color: #c4cdee; font-size: .78rem; font-family: var(--mono); }
+.gx-stage .gb-bit b { font-size: 1.5rem; color: #fff; }
+.gx-stage .gb-bit[aria-pressed="true"] { background: linear-gradient(180deg, rgba(126,240,196,.28), rgba(126,240,196,.08)); border-color: #7ef0c4; box-shadow: 0 0 22px rgba(126,240,196,.45); color: #fff; }
+.gx-stage .gb-bit[aria-pressed="true"] small { color: #fff; }
+.gx-stage .gb-bit[aria-pressed="true"] .gb-lamp { background: radial-gradient(circle at 35% 30%, #fff, #7ef0c4 40%, #1fb584 100%); border-color: #fff; box-shadow: 0 0 22px 4px rgba(126,240,196,.9); }
+.gx-stage .gb-sum { text-align: center; margin: 6px 0 12px; font: 700 1.1rem var(--mono); color: #7ef0c4; }
+.gx-stage .gb-barea .gb-send { display: flex; margin: 0 auto; }
+@media (max-width: 560px) { .gx-stage .gb-bits { grid-template-columns: repeat(var(--wm, 4), minmax(0, 1fr)); } .gx-stage .gb-bit { min-height: 100px; } }
+
+/* ============================================================
+   ШАҒЫН ЭКРАН
+   ============================================================ */
+@media (max-width: 760px) {
+  .gx-hero { grid-template-columns: minmax(0, 1fr); }
+  .gx-daily { flex-wrap: wrap; }
+  .gx-daily-go { flex: 1 1 100%; text-align: center; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+}
+@media (max-width: 520px) {
+  .gx-hud { flex-wrap: wrap; padding: 8px 10px; }
+  .gx-hud h2 { flex: 1 1 100%; order: 3; font-size: 1rem; }
+  .gx-hud .game-best { margin-left: auto; }
+  .game-stage.gx-stage { min-height: 70vh; }
+  .gx-result .gr-actions { grid-template-columns: 1fr; }
+  .gx-star { width: 48px; height: 48px; }
+  .gx-road .ga-lane { height: 270px; }
+  .gx-road .ga-card { font-size: .78rem; }
+  .gx-go.btn, .gx-intro .ga-go { width: 100%; padding: 0 20px; }
+}
+
+/* ============================================================
+   ҚОЗҒАЛЫСТЫ АЗАЙТУ
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  .gx-glyphs span, .gx-daily::before, .gx-intro-ico, .gx-go, .gx-intro .ga-go, .gx-trophy, .gx-star.on svg, .gx-result .gr-new,
+  .gx-road .ga-lane::before, .gx-runner i, .gx-ring.low, .gx-stage .gx-combo, .ga-qbox.flash-ok, .ga-qbox.flash-bad, .ga-qbox .g-opt.bad, .gx-road .ga-lane.bad { animation: none !important; }
+  .game-card.gx-card, .game-card.gx-card *, .gx-chip, .gx-xpbar i, .gx-runner, .gx-daily, .gx-stage .gb-bit, .ga-qbox .g-opt { transition: none !important; }
+  .game-card.gx-card::after { display: none; }
+  .game-card.gx-card:hover, .game-card.gx-card:focus-visible { transform: none; }
+}
+
+/* сайттың .content h2 безендіруін hero/HUD тақырыбынан алып тастау */
+.gx-hero-title, .gx-hud h2 { background-image: none; }
+.gx-hero-title::before, .gx-hero-title::after, .gx-hud h2::before, .gx-hud h2::after { content: none !important; display: none; }
+.content .gx-hero-title { margin-top: 0; padding-left: 0; display: block; }
+.content .gx-hero-title span { display: block; }
+
+@media (max-width: 520px) {
+  .gx-stage .g-hud > span { padding: 4px 10px; font-size: .85rem; }
+  .gx-stage .g-hud .g-time { margin-left: 0; }
+  .gx-stage .ga-ctl { flex-wrap: nowrap; }
+  .gx-stage .ga-ctl .btn { flex: 1 1 0; min-width: 0; padding: 9px 6px; font-size: .88rem; }
+}
+.gx-trophy { margin-bottom: 14px; }

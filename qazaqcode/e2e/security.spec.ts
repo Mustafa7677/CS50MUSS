@@ -12,8 +12,9 @@ import ExcelJS from "exceljs";
 //   E2E_DIST=.next-f npx playwright test e2e/security.spec.ts
 // 3206: RATE_LIMIT_DISABLED=yes (негізгі), 3216: rate limit ҚОСУЛЫ + COOKIE_SECURE=true (brute force, cookie атрибуттары).
 // Сессия токені AUTH_JWT_SECRET-пен қол қойылады (серверге қатысты ортақ құпия), server action-дар манифесттен шақырылады.
-const BASE = process.env.E2E_BASE_URL || "http://127.0.0.1:3206";
-const RL = process.env.E2E_RL_BASE_URL || "http://127.0.0.1:3216";
+const BASE = process.env.E2E_BASE_URL || `http://127.0.0.1:${process.env.PORT || 3100}`;
+const RL = process.env.E2E_RL_BASE_URL || "";
+const HAS_RL = !!process.env.E2E_RL_BASE_URL; // rate limit ҚОСУЛЫ екінші сервер (CI-да бөлек қадам)
 const DIST = process.env.E2E_DIST || process.env.NEXT_DIST_DIR || ".next";
 const SECRET = process.env.AUTH_JWT_SECRET || "dev-secret-dev-secret-dev-secret-1234";
 const SAME = new TextEncoder().encode(SECRET);
@@ -367,16 +368,20 @@ test.describe("c) XSS және шығыс кодтау", () => {
     expect(r.text).not.toContain(`<img src=x onerror`);
     expect(r.text).not.toContain("<script>window.__xss");
   });
-  test("?err= арқылы жалған хабарлама (phishing мәтіні) көрсетілмейді; белгілі қате коды қазақша көрсетіледі", async () => {
-    const c = await cookieFor(B.teacher); const spoof = "Аккаунтыңыз бұғатталды: evil.example сайтына кіріп құпиясөзді растаңыз";
+  test("?err= арқылы жалған хабарлама (phishing мәтіні) көрінбейді; белгілі қате коды қазақша көрсетіледі", async ({ browser }) => {
+    const ctx = await browser.newContext({ baseURL: BASE, locale: "kk-KZ" });
+    await ctx.addCookies([{ name: "qc_session", value: await mint(B.teacher), url: BASE }]);
+    const page = await ctx.newPage(); const spoof = "Аккаунтыңыз бұғатталды: phish-spoof.test сайтына кіріп құпиясөзді растаңыз";
     for (const p of [`/teacher/classes/${B.cls}`, "/teacher/assignments", "/teacher/courses"]) {
-      const r = await get(`${p}${p.includes("?") ? "&" : "?"}err=${encodeURIComponent(spoof)}`, c);
-      expect(r.status, p).toBe(200);
-      expect(r.text, p).not.toContain("evil.example");
-      expect(r.text, p).toContain("Қате болды.");
-      const k = await get(`${p}?err=${encodeURIComponent("Бұл әрекетке рұқсатыңыз жоқ.")}`, c);
-      expect(k.text, p).toContain("Бұл әрекетке рұқсатыңыз жоқ.");
+      await page.goto(`${p}?err=${encodeURIComponent(spoof)}`, { waitUntil: "networkidle" });
+      // көрінетін мәтін (RSC жүктемесіндегі script ішіндегі URL емес)
+      const shown = await page.evaluate(() => { const o: string[] = []; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); let n: Node | null; while ((n = w.nextNode())) { const el = n.parentElement; if (el && !["SCRIPT", "STYLE", "NOSCRIPT"].includes(el.tagName) && /phish-spoof\.test/.test(n.textContent ?? "")) o.push(el.outerHTML.slice(0, 120)); } return o; });
+      expect(shown, p).toEqual([]);
+      await expect(page.getByText("Қате болды.").first(), p).toBeVisible();
+      await page.goto(`${p}?err=${encodeURIComponent("Бұл әрекетке рұқсатыңыз жоқ.")}`, { waitUntil: "networkidle" });
+      await expect(page.getByText("Бұл әрекетке рұқсатыңыз жоқ.").first(), p).toBeVisible();
     }
+    await ctx.close();
   });
   test("шикі HTML-де жүктеме экрандалған (тек &quot;/&lt; түрінде)", async () => {
     for (const [p, c] of [[`/teacher/classes/${B.cls}`, await cookieFor(B.teacher)], [`/student/courses/${B.course}?lesson=${B.lesson}`, await cookieFor(B.student)], [`/school/students/${B.student}`, await cookieFor(B.admin)]] as const) {
@@ -504,7 +509,7 @@ test.describe("d) Сессия, токен, Origin/CSRF", () => {
     // бірақ proxy X-Forwarded-Host-ты қайта жазуы тиіс (docs/DEPLOY.md, SECURITY-AUDIT.md: «қабылданған»).
   });
   test("cookie атрибуттары: HttpOnly, SameSite=Lax, Path=/, өндірісте Secure", async () => {
-    for (const [base, secure] of [[BASE, false], [RL, true]] as const) {
+    for (const [base, secure] of (HAS_RL ? [[BASE, false], [RL, true]] : [[BASE, false]]) as readonly (readonly [string, boolean])[]) {
       const r = await act("app/actions.ts#loginAction", [null, form({ email: "student5@demo.qazaqcode.kz", password: PASS })], "", { base, headers: { "X-Forwarded-For": `10.${STAMP % 250}.${Math.floor(Math.random() * 250)}.1` } });
       const sc = (r.headers as any).getSetCookie?.() as string[] ?? [];
       const ses = sc.find((x) => x.startsWith("qc_session="))!;
@@ -533,6 +538,7 @@ test.describe("d) Сессия, токен, Origin/CSRF", () => {
 });
 
 test.describe("e) Аутентификация: brute force және энтропия (rate limit қосулы сервер)", () => {
+  test.skip(!HAS_RL, "E2E_RL_BASE_URL берілмеген: rate limit қосулы екінші сервер керек");
   const ip = () => `10.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}.${Math.floor(Math.random() * 250)}`;
   test.describe.configure({ timeout: 240_000 }); // bcrypt (cost 10) әр кіру әрекетін баяулатады
   const login = (email: string, pw: string, xff?: string) => act("app/actions.ts#loginAction", [null, form({ email, password: pw })], "", { base: RL, headers: { "X-Forwarded-For": xff ?? ip() } });

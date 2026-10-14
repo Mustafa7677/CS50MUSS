@@ -49,3 +49,8 @@ jobs:
           node scripts/seed-demo.mjs
           npx playwright install --with-deps chromium
           npx playwright test
+      - name: Brute force / rate limit тесттері (rate limit ҚОСУЛЫ екінші сервер)
+        run: |
+          env -u RATE_LIMIT_DISABLED PORT=3216 COOKIE_SECURE=true npx next start -p 3216 > /tmp/rl-server.log 2>&1 &
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:3216/api/health >/dev/null && break; sleep 2; done
+          E2E_RL_BASE_URL=http://127.0.0.1:3216 npx playwright test e2e/security.spec.ts
