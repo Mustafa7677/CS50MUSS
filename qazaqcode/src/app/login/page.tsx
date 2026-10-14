@@ -1,0 +1,35 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { ActionForm } from "@/components/ActionForm";
+import { loginAction } from "../actions";
+import { getContext, homeFor } from "@/lib/context";
+import { publicBrand, brandStyle } from "@/lib/brand";
+
+export const metadata = { title: "Кіру" };
+
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; org?: string }> }) {
+  const sp = await searchParams;
+  const ctx = await getContext();
+  if (ctx) redirect(homeFor(ctx));
+  const brand = await publicBrand(sp.org);
+  return (
+    <main id="main" className="grid min-h-screen place-items-center px-4 py-10">
+      <style dangerouslySetInnerHTML={{ __html: brandStyle(brand) }} />
+      <div className="card w-full max-w-md p-7">
+        <p className="text-sm font-semibold uppercase tracking-widest text-brand">{brand.name}</p>
+        <h1 className="mt-1 text-2xl font-bold">Жүйеге кіру</h1>
+        {brand.welcome_text && <p className="mt-2 text-sm text-ink-muted">{brand.welcome_text}</p>}
+        <ActionForm action={loginAction} submitLabel="Кіру" className="mt-6" successToast={false}>
+          <input type="hidden" name="next" value={sp.next ?? ""} />
+          <label className="label" htmlFor="email">E-mail</label>
+          <input id="email" name="email" type="email" autoComplete="username" required className="input" />
+          <label className="label mt-4" htmlFor="password">Құпиясөз</label>
+          <input id="password" name="password" type="password" autoComplete="current-password" required className="input" />
+        </ActionForm>
+        <p className="mt-5 text-sm text-ink-muted">
+          Оқушы ма? <Link href="/join">Сынып коды арқылы қосылыңыз</Link>. Мұғалім не әкімші ме? Тіркелу үшін мектептен алған шақыру сілтемесін ашыңыз.
+        </p>
+      </div>
+    </main>
+  );
+}
