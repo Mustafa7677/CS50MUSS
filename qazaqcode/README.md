@@ -67,3 +67,5 @@ scripts/         seed-demo, create-super-admin, check-licence
 e2e/             Playwright
 docs/            ARCHITECTURE, DEPLOY, SECURITY, SANDBOX, DEV-GUIDE
 ```
+
+- **Көмекші** (`/student/ai`): жасанды интеллект емес, ережелі кеңесші (алдын ала жазылған кеңестер базасы); сыртқы API жоқ, әңгіме сақталмайды, дайын шешім бермейді. Қараңыз: `docs/AI-TUTOR.md`.

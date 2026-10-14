@@ -87,6 +87,7 @@ export default async function AssignmentPage({ params }: { params: Promise<{ id:
               <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed">{a.description || "Сипаттама берілмеген."}</p>
             </div>
             <Hints hints={hints} />
+            <Link href={`/student/ai?assignment=${a.id}`} className="btn-secondary w-full sm:w-auto" data-testid="ask-helper">🤖 Көмекшіден сұрау</Link>
             {tests.length > 0 && (
               <div>
                 <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">Мысалдар</h2>

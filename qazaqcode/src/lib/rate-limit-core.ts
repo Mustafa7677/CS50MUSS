@@ -11,3 +11,9 @@ export function consume(buckets: Map<string, Bucket>, key: string, limit: number
 export function sweep(buckets: Map<string, Bucket>, now = Date.now(), max = 5000): void {
   if (buckets.size > max) for (const [k, v] of buckets) if (v.reset < now) buckets.delete(k);
 }
+
+export function pickIp(xff: string | null, realIp: string | null, hops: number): string {
+  const parts = (xff ?? "").split(",").map((x) => x.trim()).filter(Boolean);
+  if (hops > 0 && parts.length) return parts[Math.max(0, parts.length - hops)].slice(0, 64);
+  return (realIp ?? "local").trim().slice(0, 64);
+}
