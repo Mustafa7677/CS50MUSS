@@ -69,7 +69,7 @@ export async function loadSchoolReport(userId: string, org: { org_id: string; or
       },
       {
         name: "Тапсырмалар", title: "Тапсырмалар", emptyNote: "Жарияланған тапсырма жоқ.",
-        columns: [{ header: "Тапсырма", type: "text", width: 34 }, { header: "Түрі", type: "text", width: 14 }, { header: "Күйі", type: "text", width: 14 }, { header: "Автор", type: "text", width: 24 },
+        columns: [{ header: "Тапсырма", type: "text", width: 34 }, { header: "Түрі", type: "text", width: 14 }, { header: "Күйі", type: "text", width: 17 }, { header: "Автор", type: "text", width: 24 },
           { header: "Мерзімі", type: "text", width: 18 }, { header: "Сынып саны", type: "int", width: 11 }, { header: "Жіберген оқушы", type: "int", width: 14 }, { header: "Бағаланған оқушы", type: "int", width: 15 }, { header: "Орташа %", type: "pct", width: 12 }],
         rows: d.assignments.map((a: any) => [a.title, label(KIND_LABEL, a.kind), label(STATUS_LABEL, a.status), a.author ?? "", a.deadline ?? "", a.classes, a.submitters, a.graded, pctCell(a.avg_pct)]),
       },
@@ -152,7 +152,7 @@ export async function loadClassReport(
         },
         {
           name: "Тапсырмалар", title: "Тапсырмалар", emptyNote: "Сыныпқа жарияланған тапсырма берілмеген.",
-          columns: [{ header: "Тапсырма", type: "text", width: 34 }, { header: "Түрі", type: "text", width: 14 }, { header: "Күйі", type: "text", width: 14 }, { header: "Мерзімі", type: "text", width: 18 },
+          columns: [{ header: "Тапсырма", type: "text", width: 34 }, { header: "Түрі", type: "text", width: 14 }, { header: "Күйі", type: "text", width: 17 }, { header: "Мерзімі", type: "text", width: 18 },
             { header: "Оқушы", type: "int", width: 9 }, { header: "Жіберген", type: "int", width: 10 }, { header: "Бағаланған", type: "int", width: 12 }, { header: "Орташа %", type: "pct", width: 12 }],
           rows: assignments.map((a: any) => [a.title, label(KIND_LABEL, a.kind), label(STATUS_LABEL, a.status), a.deadline ?? "", a.assigned, a.submitted, a.graded, pctCell(a.avg_pct)]),
         },

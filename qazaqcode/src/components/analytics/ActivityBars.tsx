@@ -5,7 +5,7 @@ const short = (d: string) => `${d.slice(8, 10)}.${d.slice(5, 7)}`;
 
 /**
  * Белсенділік диаграммасы: таза CSS бағандар (сыртқы кітапхана жоқ), түстер тек токендер.
- * Көрмейтін оқырмандар үшін <table class="sr-only">.
+ * Көрмейтін оқырмандар үшін <div class="sr-only"> ішінде кесте.
  */
 export function ActivityBars({ data, title = "Белсенділік" }: { data: DayPoint[]; title?: string }) {
   const max = Math.max(1, ...data.map((d) => Math.max(d.submissions, d.active_students)));
@@ -31,11 +31,11 @@ export function ActivityBars({ data, title = "Белсенділік" }: { data:
         <span><span aria-hidden className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-ink-muted align-middle opacity-60" />Белсенді оқушы</span>
         <span>Ең биік мән: {max}</span>
       </figcaption>
-      <table className="sr-only">
+      <div className="sr-only"><table>
         <caption>{title}: күн сайынғы деректер</caption>
         <thead><tr><th scope="col">Күні</th><th scope="col">Жіберілген жұмыс</th><th scope="col">Белсенді оқушы</th></tr></thead>
         <tbody>{data.map((d) => <tr key={d.day}><th scope="row">{fmtDate(d.day)}</th><td>{d.submissions}</td><td>{d.active_students}</td></tr>)}</tbody>
-      </table>
+      </table></div>
     </figure>
   );
 }

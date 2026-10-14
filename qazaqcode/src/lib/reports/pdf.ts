@@ -39,15 +39,17 @@ export async function buildPdf(report: Report): Promise<Buffer> {
 
   for (const sh of report.sheets) {
     const total = sh.columns.reduce((a, c) => a + c.width, 0);
-    const widths = sh.columns.map((c) => (c.width / total) * W);
+    // тар кестелер (2-3 баған) бетке толық созылмайды
+    const tableW = W * Math.min(1, total / 100);
+    const widths = sh.columns.map((c) => (c.width / total) * tableW);
     const heightOf = (cells: string[], bold: boolean) => {
       doc.font(bold ? FONT_BOLD : FONT).fontSize(SIZE);
       return Math.max(...cells.map((s, i) => doc.heightOfString(s || " ", { width: widths[i] - PAD * 2 }))) + PAD * 2;
     };
     const drawRow = (cells: string[], y: number, h: number, kind: "head" | "even" | "odd") => {
       let x = MARGIN;
-      if (kind === "head") doc.rect(MARGIN, y, W, h).fill(BRAND);
-      else if (kind === "even") doc.rect(MARGIN, y, W, h).fill("#f1f5f9");
+      if (kind === "head") doc.rect(MARGIN, y, tableW, h).fill(BRAND);
+      else if (kind === "even") doc.rect(MARGIN, y, tableW, h).fill("#f1f5f9");
       doc.font(kind === "head" ? FONT_BOLD : FONT).fontSize(SIZE).fillColor(kind === "head" ? "#ffffff" : "#0f172a");
       cells.forEach((s, i) => {
         const numeric = sh.columns[i].type !== "text" && kind !== "head";
@@ -58,7 +60,7 @@ export async function buildPdf(report: Report): Promise<Buffer> {
     const head = sh.columns.map((c) => c.header);
     const headH = heightOf(head, true);
 
-    if (doc.y + headH + 40 > bottom()) doc.addPage();
+    if (doc.y + headH + 90 > bottom()) doc.addPage();
     doc.font(FONT_BOLD).fontSize(12).fillColor("#0f172a").text(sh.title, MARGIN, doc.y, { width: W });
     doc.moveDown(0.3);
     let y = doc.y;
