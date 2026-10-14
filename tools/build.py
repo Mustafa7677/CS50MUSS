@@ -157,12 +157,13 @@ def nav_block(prefix, active, course=None):
         {pill}
         <a href="{home}"{' class="active"' if active == "index" else ''}>Лекциялар</a>
         {item("practice.html", "Жаттығу", "practice")}
+        {item("games.html", "Ойындар", "games")}
         {item("playground.html", "Сынақ алаңы", "playground", "hide-sm")}
         {item("glossary.html", "Сөздік", "glossary", "hide-sm")}
         <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
         <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
         <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
-        <a class="profile-open{' active' if active == 'profile' else ''}" href="{prefix}profile.html" aria-label="Менің профилім" title="Менің профилім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+        <a class="profile-open{' active' if active == 'profile' else ''}" href="{prefix}profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
       </nav>"""
 
 
@@ -176,8 +177,8 @@ def footer_block(p):
         '<span><b>CS50</b> қазақша</span></a>'
         '<p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>\n'
         + "      " + col("Оқу", [("index.html#main", "Лекциялар"), ("courses.html", "Барлық курстар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік"), ("exam.html", "Қорытынды емтихан")])
-        + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы"), ("projects.html", "Жобалар шеберханасы")])
-        + col("Жоба", [("about.html", "Курс туралы"), ("alash.html", "Алаш тұлғалары"), ("certificate.html", "Сертификат"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің профилім")])
+        + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("games.html", "Ойындар 🎮"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы"), ("projects.html", "Жобалар шеберханасы")])
+        + col("Жоба", [("about.html", "Курс туралы"), ("alash.html", "Алаш тұлғалары"), ("certificate.html", "Сертификат"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің кабинетім")])
         + '\n      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. '
         'Қазақшаға аударған: <strong>Sagid Mustafa</strong>. Авторлық жоба: бұл Гарвард университетінің сайты емес.</p>'
         '<p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · '
@@ -197,7 +198,7 @@ HEAD_STYLE = {
     "practice.html": ("#2fa36b", ""), "playground.html": ("#2b7bd6", ""), "flask.html": ("#8b5cf6", ""), "projects.html": ("#0e7490", ""),
     "exam.html": ("#c99500", ""), "detective.html": ("#b5651d", ""), "viz.html": ("#e0457b", ""),
     "flashcards.html": ("#f08a24", ""), "debug.html": ("#e04545", ""), "glossary.html": ("#2b7bd6", ""),
-    "cheatsheet.html": ("#2fa36b", ""), "map.html": ("#8b5cf6", ""), "teacher.html": ("#f08a24", ""), "profile.html": ("#0f9fb5", ""), "alash.html": ("#c99500", ""),
+    "cheatsheet.html": ("#2fa36b", ""), "map.html": ("#8b5cf6", ""), "teacher.html": ("#f08a24", ""), "profile.html": ("#0f9fb5", ""), "games.html": ("#7c3aed", ""), "alash.html": ("#c99500", ""),
 }
 
 
@@ -463,7 +464,7 @@ def main():
                          ("flashcards.html", "practice"), ("viz.html", "practice"),
                          ("teacher.html", ""), ("404.html", ""), ("cheatsheet.html", "practice"),
                          ("debug.html", "practice"), ("map.html", "practice"),
-                         ("detective.html", "practice"), ("flask.html", "practice"), ("projects.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("alash.html", "about"), ("courses.html", "courses")]:
+                         ("detective.html", "practice"), ("flask.html", "practice"), ("projects.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("games.html", "games"), ("alash.html", "about"), ("courses.html", "courses")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
     # Беттердегі есептелетін сандар: <!--n:terms-->…<!--/n--> және <!--n:quiz-->…<!--/n-->
@@ -497,7 +498,7 @@ def main():
     (ROOT / "assets/data/quiz.js").write_text(
         "window.CS50KZ_QUIZ = " + json.dumps(quiz, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     pages = ["", "practice.html", "playground.html", "viz.html", "flashcards.html", "glossary.html",
-             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "projects.html", "exam.html", "profile.html", "alash.html", "courses.html"] + [l["url"] for l in lectures] + course_pages
+             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "projects.html", "exam.html", "profile.html", "games.html", "alash.html", "courses.html"] + [l["url"] for l in lectures] + course_pages
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"  <url><loc>{SITE_URL}{u}</loc></url>\n" for u in pages) + "</urlset>\n", encoding="utf-8")
