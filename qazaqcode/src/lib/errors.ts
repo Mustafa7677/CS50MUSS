@@ -33,6 +33,9 @@ const MESSAGES: Record<string, string> = {
   invalid_role: "Рөл дұрыс емес.",
   cannot_remove_self: "Өзіңізді өшіре алмайсыз.",
   invalid_range: "Аралық дұрыс емес.",
+  course_empty: "Курсқа кемінде бір сабақ қосыңыз.",
+  invalid_block: "Сабақ блогы дұрыс емес (https сілтемесі немесе тіл түрі тексеріңіз).",
+  too_large: "Мазмұн тым үлкен: блок немесе сабақ саны шектен асты.",
   validation: "Енгізілген деректер дұрыс емес.",
 };
 
