@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ThemeToggle } from "@/components/ThemeToggle";
+import { RequestForm } from "@/components/leads/RequestForm";
 
 // Жария бет (маркетинг). Ойдан шығарылған клиент, пікір, статистика ЖОҚ: тек өнімнің нақты мүмкіндіктері.
 // Байланыс e-mail тек орта айнымалысынан (CONTACT_EMAIL) алынады; жоқ болса батырма көрсетілмейді.
@@ -9,7 +10,7 @@ export const metadata = { title: "Мектептер мен колледждер
 const CONTACT = (process.env.CONTACT_EMAIL || "").trim();
 const mailto = CONTACT ? `mailto:${CONTACT}?subject=${encodeURIComponent("QazaqCode: демо және пилот сұрауы")}` : null;
 
-const NAV = [["Мүмкіндіктер", "#features"], ["Қалай жұмыс істейді", "#how"], ["Жоспарлар", "#plans"], ["Қауіпсіздік", "#security"], ["Сұрақ-жауап", "#faq"]];
+const NAV = [["Мүмкіндіктер", "#features"], ["Қалай жұмыс істейді", "#how"], ["Жоспарлар", "#plans"], ["Қауіпсіздік", "#security"], ["Сұрақ-жауап", "#faq"], ["Пилот сұрау", "#request"]];
 
 const ROLES = [
   { icon: "👩‍🏫", t: "Мұғалімге", d: "Сынып ашыңыз, тапсырма беріңіз, тестті жүйе өзі тексереді. Қалғанын бір кезекте қарап, бағалаңыз.", pts: ["Тест: бірден автоматты баға", "Код жұмысы: бір тізімде тексеру кезегі", "Курс конструкторы: бағдарламашысыз"] },
@@ -79,6 +80,7 @@ export default async function Schools() {
               </p>
               <div className="mt-8 flex flex-wrap gap-3">
                 {mailto ? <a href={mailto} className="btn-primary px-6 py-3 text-base">Демо мен пилот сұрау</a> : <Link href="/login" className="btn-primary px-6 py-3 text-base">Жүйеге кіру</Link>}
+                <a href="#request" className="btn-secondary px-6 py-3 text-base">Пилот сұрау формасы</a>
                 <Link href="/join" className="btn-secondary px-6 py-3 text-base">Сынып кодымен қосылу</Link>
               </div>
               <p className="mt-4 text-sm text-ink-muted">Мектеп, колледж және IT академияларға арналған · қазақша интерфейс · қараңғы режим · телефонда да жұмыс істейді</p>
@@ -192,6 +194,13 @@ export default async function Schools() {
               <details key={q} className="card group p-4"><summary className="cursor-pointer list-none font-semibold marker:hidden">{q}</summary><p className="mt-2 text-sm text-ink-muted">{a}</p></details>
             ))}
           </div>
+        </section>
+
+        <section id="request" className="mx-auto max-w-3xl scroll-mt-20 px-4 py-12 sm:px-6" aria-labelledby="req-h">
+          <h2 id="req-h" className="text-2xl font-bold sm:text-3xl">Пилотқа сұрау</h2>
+          <p className="mt-2 text-ink-muted">Ұйымыңыз туралы қысқаша жазыңыз: біз демо мен 6-8 апталық пилот туралы хабарласамыз. Міндеттеме жоқ.</p>
+          <div className="mt-6"><RequestForm /></div>
+          <p className="mt-3 text-xs text-ink-muted">Құпиялылық: тек осы форманың өрістері сақталады. Деректер пилот туралы байланысу үшін ғана, 365 күннен кейін өшіріледі, үшінші тарапқа берілмейді.</p>
         </section>
 
         <section className="px-4 pb-16 sm:px-6">

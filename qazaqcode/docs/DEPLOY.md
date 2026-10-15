@@ -56,7 +56,7 @@ GitHub Pages бұл өнімге жарамайды (сервер мен дер�
    ```sql
    select relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind in ('r','p') and not c.relrowsecurity;
    select p.proname from pg_proc p join pg_namespace n on n.oid=p.pronamespace where n.nspname='public' and has_function_privilege('anon', p.oid, 'execute')
-     and p.proname not in ('org_branding','invitation_preview','classroom_preview');
+     and p.proname not in ('org_branding','invitation_preview','classroom_preview','submit_lead');
    select c.relname from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='public' and c.relkind='r'
      and (has_table_privilege('anon', c.oid, 'select,insert,update,delete') or has_table_privilege('authenticated', c.oid, 'insert,delete,truncate'));
    ```
@@ -159,6 +159,7 @@ HSTS, CSP, X-Frame-Options т.б. тақырыптарды қосымшаның 
 - Қате мониторингі (Sentry) интеграцияланбаған; қосқыңыз келсе DSN-ді env арқылы, PII (оқушы аты, e-mail) жібермейтін `beforeSend` сүзгісімен.
 - Қауіпсіздік алерттері: `audit_logs` (Мектеп/платформа әкімшісі `/admin/audit`) - `export.*`, `classroom.join_code_regenerated`, `invitation.*`, `licenses.*`, `organization_members.*`. Журнал append-only (UPDATE/DELETE тыйым), бірақ иесі рөлі триггерді өшіре алады: иесі рөлін жеке сақтаңыз.
 - Postgres: `pg_stat_activity` қосылыс саны (pool max 10/дана), баяу сұраулар (`log_min_duration_statement`), диск, репликация/PITR.
+- Пилот сұраулары: миграция `0012_leads.sql` (кесте `leads`, `submit_lead` anon-ға ашық, қалғаны SUPER ADMIN). Сақтау мерзімі 365 күн: cron-да күн сайын `DATABASE_URL=<иесі> node scripts/leads-purge.mjs [күн]`. Тізім мен CSV: `/admin/leads`.
 
 ## Резервтік көшірме және қалпына келтіру
 
