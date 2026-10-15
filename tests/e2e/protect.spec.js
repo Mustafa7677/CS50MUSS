@@ -18,12 +18,16 @@ test("көшірме доменінде түпнұсқаға сілтеме бе
   // өшіріп көрсек те, қайта шығады
   await page.evaluate(() => document.getElementById("clone-notice").remove());
   await expect(n).toBeVisible();
+  await page.unrouteAll({ behavior: "ignoreErrors" }); // ұшып жатқан route.fetch сұраныстары тест аяқталғанда қате бермесін
 });
 
 test("ресми/жергілікті мекенжайда ескерту шықпайды; canonical, лицензия және автор метасы бар", async ({ page }) => {
   await page.goto("index.html");
   await expect(page.locator("#clone-notice")).toHaveCount(0);
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", /^https:\/\/mustafa7677\.github\.io\/CS50MUSS\//);
+  // басты бет - аралас (M): лицензиялар беті; лекция беті - Harvard аудармасы (A): CC BY-NC-SA 4.0
+  await expect(page.locator('link[rel="license"]')).toHaveAttribute("href", /copyright\.html$/);
+  await page.goto("lectures/week-1.html");
   await expect(page.locator('link[rel="license"]')).toHaveAttribute("href", /creativecommons\.org\/licenses\/by-nc-sa\/4\.0/);
   await expect(page.locator('meta[name="author"]')).toHaveAttribute("content", "Sagid Mustafa");
 });

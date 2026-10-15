@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# Harvard CS50 материалдары (олар осы файлда сақталмайды) CC BY-NC-SA 4.0 бойынша; үшінші тарап компоненттері өз лицензияларымен.
 """CS50 қазақша - сайтты құрастыру скрипті.
 
 Іске қосу (репозиторийдің түбірінен):  python3 tools/build.py
@@ -108,7 +110,55 @@ def strip_tags(s):
     return re.sub(r"\s+", " ", html.unescape(s)).strip()
 
 
-def head_block(prefix, title, desc, url, image="assets/img/og.jpg"):
+CC_URL = "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+HARVARD_URL = "https://cs50.harvard.edu/"
+
+# Беттің лицензиялық түрі (licensing/components.json және copyright.html-мен келісілген):
+#   A - Harvard CS50 материалының аудармасы/бейімдеуі (мәтін: CC BY-NC-SA 4.0; бағдарлама коды мен дизайн: All Rights Reserved)
+#   B - Sagid Mustafa-ның дербес әзірлемесі (All Rights Reserved)
+#   M - аралас бет (интерфейс - B, Harvard бейімдеулері мен тексерілетін материал - A/R)
+B_PAGES = {"detective.html", "projects.html", "flask.html", "alash.html", "viz.html", "playground.html", "games.html", "profile.html",
+           "teacher.html", "certificate.html", "404.html", "copyright.html"}
+
+
+def license_kind(rel):
+    if rel.startswith("lectures/") or re.match(r"(python|sql|ai|web)/lectures/", rel) or rel == "cheatsheet.html":
+        return "A"
+    return "B" if rel in B_PAGES else "M"
+
+
+def license_meta(kind, prefix):
+    if kind == "A":
+        copy = ("Harvard CS50 материалының қазақша аудармасы/бейімдеуі: CC BY-NC-SA 4.0 (түпнұсқа: Harvard CS50, cs50.harvard.edu; аудармашы: Sagid Mustafa). "
+                "Бағдарламалық компоненттер мен дизайн: © 2026 Sagid Mustafa, All Rights Reserved.")
+        lic = CC_URL
+    elif kind == "B":
+        copy, lic = "© 2026 Sagid Mustafa. All Rights Reserved.", f"{prefix}copyright.html"
+    else:
+        copy = ("© 2026 Sagid Mustafa (бағдарлама, дизайн, авторлық материалдар): All Rights Reserved. "
+                "Harvard CS50 материалдарының қазақша бейімдеулері: CC BY-NC-SA 4.0. Қараңыз: Авторлық құқық және лицензиялар.")
+        lic = f"{prefix}copyright.html"
+    return copy, lic
+
+
+def license_ld(kind, title, url):
+    base = {"@context": "https://schema.org", "@type": "LearningResource", "name": title, "url": url, "inLanguage": "kk",
+            "author": {"@type": "Person", "name": "Sagid Mustafa"}, "isAccessibleForFree": True}
+    if kind == "A":
+        base.update({"license": CC_URL, "isBasedOn": HARVARD_URL, "translator": {"@type": "Person", "name": "Sagid Mustafa"},
+                     "copyrightNotice": "Түпнұсқа: Harvard CS50 (David J. Malan және CS50 командасы), CC BY-NC-SA 4.0. Қазақша аударма: Sagid Mustafa. "
+                                        "Бағдарламалық компоненттер мен дизайн: © 2026 Sagid Mustafa, All Rights Reserved."})
+    elif kind == "B":
+        base.update({"license": SITE_URL + "copyright.html", "copyrightHolder": {"@type": "Person", "name": "Sagid Mustafa"}, "copyrightYear": 2026,
+                     "copyrightNotice": "© 2026 Sagid Mustafa. All Rights Reserved."})
+    else:
+        base.update({"license": SITE_URL + "copyright.html", "isBasedOn": HARVARD_URL, "copyrightHolder": {"@type": "Person", "name": "Sagid Mustafa"},
+                     "copyrightYear": 2026, "copyrightNotice": "© 2026 Sagid Mustafa (бағдарлама, дизайн, авторлық материалдар). Harvard CS50 бейімдеулері: CC BY-NC-SA 4.0."})
+    return json.dumps(base, ensure_ascii=False, separators=(",", ":"))
+
+
+def head_block(prefix, title, desc, url, image="assets/img/og.jpg", kind="M"):
+    copy, lic = license_meta(kind, prefix)
     return f"""<!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
   <link rel="icon" href="{prefix}assets/img/icon.svg" type="image/svg+xml">
@@ -125,9 +175,9 @@ def head_block(prefix, title, desc, url, image="assets/img/og.jpg"):
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="{SITE_URL}{image}">
   <link rel="canonical" href="{url}">
-  <meta name="copyright" content="© Sagid Mustafa. CC BY-NC-SA 4.0. Авторлық қазақша аударма; түпнұсқа: Гарвард CS50.">
-  <link rel="license" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">
-  <script type="application/ld+json">{{"@context":"https://schema.org","@type":"LearningResource","name":{json.dumps(title, ensure_ascii=False)},"url":"{url}","inLanguage":"kk","author":{{"@type":"Person","name":"Sagid Mustafa"}},"license":"https://creativecommons.org/licenses/by-nc-sa/4.0/","isBasedOn":"https://cs50.harvard.edu/","isAccessibleForFree":true,"copyrightHolder":{{"@type":"Person","name":"Sagid Mustafa"}}}}</script>
+  <meta name="copyright" content="{html.escape(copy)}">
+  <link rel="license" href="{lic}">
+  <script type="application/ld+json">{license_ld(kind, title, url)}</script>
   <!-- /build:head -->"""
 
 
@@ -175,13 +225,23 @@ def footer_block(p):
         '<footer class="footer">\n    <div class="footer-inner">\n'
         f'      <div class="ft-brand"><a class="ft-logo" href="{p}index.html"><img src="{p}assets/img/bota.svg" alt="" width="52" height="52">'
         '<span><b>CS50</b> қазақша</span></a>'
-        '<p>Гарвардтың әйгілі информатика курсы ана тілімізде: толық аударма, интерактивті тапсырмалар мен автотексеру. Тегін және офлайн.</p></div>\n'
+        '<p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>\n'
         + "      " + col("Оқу", [("index.html#main", "Лекциялар"), ("courses.html", "Барлық курстар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік"), ("exam.html", "Қорытынды емтихан")])
         + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("games.html", "Ойындар 🎮"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы"), ("projects.html", "Жобалар шеберханасы")])
         + col("Жоба", [("about.html", "Курс туралы"), ("alash.html", "Алаш тұлғалары"), ("certificate.html", "Сертификат"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің кабинетім")])
-        + '\n      <div class="ft-bottom"><p>Түпнұсқа: <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a>, Гарвард университеті, David J. Malan. '
-        'Қазақшаға аударған: <strong>Sagid Mustafa</strong>. Авторлық жоба: бұл Гарвард университетінің сайты емес.</p>'
-        '<p>Лицензия: <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.kk" target="_blank" rel="noopener">CC BY-NC-SA 4.0</a> · '
+        + '\n      <div class="ft-legal">'
+        '<p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p>'
+        '<p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p>'
+        '<p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. '
+        'Қазақша аудармалардың авторы: Sagid Mustafa.</p>'
+        '<p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p>'
+        '<p class="ft-src">Түпнұсқа (Harvard CS50): '
+        '<a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · '
+        '<a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · '
+        '<a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · '
+        '<a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · '
+        '<a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p>'
+        f'<p class="ft-links"><a href="{p}copyright.html">Авторлық құқық және лицензиялар</a> · '
         '<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · '
         '<a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>\n'
         '    </div>\n  </footer>')
@@ -198,7 +258,7 @@ HEAD_STYLE = {
     "practice.html": ("#2fa36b", ""), "playground.html": ("#2b7bd6", ""), "flask.html": ("#8b5cf6", ""), "projects.html": ("#0e7490", ""),
     "exam.html": ("#c99500", ""), "detective.html": ("#b5651d", ""), "viz.html": ("#e0457b", ""),
     "flashcards.html": ("#f08a24", ""), "debug.html": ("#e04545", ""), "glossary.html": ("#2b7bd6", ""),
-    "cheatsheet.html": ("#2fa36b", ""), "map.html": ("#8b5cf6", ""), "teacher.html": ("#f08a24", ""), "profile.html": ("#0f9fb5", ""), "games.html": ("#7c3aed", ""), "alash.html": ("#c99500", ""),
+    "cheatsheet.html": ("#2fa36b", ""), "map.html": ("#8b5cf6", ""), "teacher.html": ("#f08a24", ""), "profile.html": ("#0f9fb5", ""), "games.html": ("#7c3aed", ""), "copyright.html": ("#475569", ""), "alash.html": ("#c99500", ""),
 }
 
 
@@ -214,7 +274,8 @@ def process_page(path, prefix, active):
         m = re.match(rf"{code}/lectures/week-(\d+)\.html$", rel)
         if m:
             HEAD_STYLE.setdefault(rel, (c["color"], m.group(1)))
-    block = head_block(prefix, title, desc, url, og if (ROOT / og).exists() else "assets/img/og.jpg")
+    kind = license_kind(rel)
+    block = head_block(prefix, title, desc, url, og if (ROOT / og).exists() else "assets/img/og.jpg", kind)
     if "<!-- build:head -->" in s:
         s = re.sub(r"<!-- build:head -->.*?<!-- /build:head -->", block, s, flags=re.S)
     else:
@@ -228,6 +289,7 @@ def process_page(path, prefix, active):
     if hs:
         attrs = f' style="--lc:{hs[0]}"' + (f' data-n="{hs[1]}"' if hs[1] else "")
         s = re.sub(r'<div class="lecture-head"[^>]*>', f'<div class="lecture-head"{attrs}>', s, count=1)
+    s = re.sub(r'<body(?![^>]*data-license)', f'<body data-license="{kind}"', s, count=1)
     if 'class="skip-link"' not in s:
         s = s.replace("<body>", '<body>\n  <a class="skip-link" href="#main">Мазмұнға өту</a>', 1)
     if 'id="main"' not in s:
@@ -464,7 +526,7 @@ def main():
                          ("flashcards.html", "practice"), ("viz.html", "practice"),
                          ("teacher.html", ""), ("404.html", ""), ("cheatsheet.html", "practice"),
                          ("debug.html", "practice"), ("map.html", "practice"),
-                         ("detective.html", "practice"), ("flask.html", "practice"), ("projects.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("games.html", "games"), ("alash.html", "about"), ("courses.html", "courses")]:
+                         ("detective.html", "practice"), ("flask.html", "practice"), ("projects.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("games.html", "games"), ("copyright.html", "about"), ("alash.html", "about"), ("courses.html", "courses")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
     # Беттердегі есептелетін сандар: <!--n:terms-->…<!--/n--> және <!--n:quiz-->…<!--/n-->
@@ -476,7 +538,7 @@ def main():
     stats["lect"] = str(n_lect)
     site = f"{len(COURSES) + 1} курс · {n_lect} лекция · {len(quiz)} тест сұрағы · {n} термин"
     desc = (f"Гарвардтың CS50 курстары қазақ тілінде: CS50x, Python, SQL, AI және Web. {n_lect} лекция, {len(quiz)} тест сұрағы, "
-            "браузерде орындалатын тапсырмалар. Тегін. Авторлық қазақша аударма (Sagid Mustafa), лицензиясы CC BY-NC-SA 4.0.")
+            "браузерде орындалатын тапсырмалар. Тегін. Harvard CS50 аудармалары (Sagid Mustafa) CC BY-NC-SA 4.0; дербес құралдар авторлық құқықпен қорғалған.")
     ip = ROOT / "index.html"
     if ip.exists():
         it = ip.read_text(encoding="utf-8")
@@ -498,7 +560,7 @@ def main():
     (ROOT / "assets/data/quiz.js").write_text(
         "window.CS50KZ_QUIZ = " + json.dumps(quiz, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     pages = ["", "practice.html", "playground.html", "viz.html", "flashcards.html", "glossary.html",
-             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "projects.html", "exam.html", "profile.html", "games.html", "alash.html", "courses.html"] + [l["url"] for l in lectures] + course_pages
+             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "projects.html", "exam.html", "profile.html", "games.html", "copyright.html", "alash.html", "courses.html"] + [l["url"] for l in lectures] + course_pages
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"  <url><loc>{SITE_URL}{u}</loc></url>\n" for u in pages) + "</urlset>\n", encoding="utf-8")

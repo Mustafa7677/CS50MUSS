@@ -1,3 +1,5 @@
+# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# Harvard CS50 материалдары (олар осы файлда сақталмайды) CC BY-NC-SA 4.0 бойынша; үшінші тарап компоненттері өз лицензияларымен.
 """CS50 курстарының ресми конспектілері (notes) мен тапсырмаларын (problem sets) жүктейді.
 
 GitHub Actions-та іске қосылады (әзірлеу ортасынан cs50.harvard.edu бұғатталған).

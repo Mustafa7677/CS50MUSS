@@ -105,7 +105,7 @@ window.CS50KZ_LECTURES = [
     "id": "limits"
    }
   ],
-  "minutes": 59,
+  "minutes": 60,
   "quiz": 7,
   "tasks": 5
  },
@@ -246,7 +246,7 @@ window.CS50KZ_LECTURES = [
     "id": "files"
    }
   ],
-  "minutes": 47,
+  "minutes": 48,
   "quiz": 7,
   "tasks": 4
  },
@@ -494,7 +494,7 @@ window.CS50KZ_LECTURES = [
     "id": "hallucinations"
    }
   ],
-  "minutes": 22,
+  "minutes": 23,
   "quiz": 7,
   "tasks": 1
  },
@@ -537,7 +537,7 @@ window.CS50KZ_LECTURES = [
     "id": "javascript"
    }
   ],
-  "minutes": 34,
+  "minutes": 35,
   "quiz": 8,
   "tasks": 2
  },
@@ -619,7 +619,7 @@ window.CS50KZ_LECTURES = [
     "id": "tools"
    }
   ],
-  "minutes": 12,
+  "minutes": 13,
   "quiz": 15,
   "tasks": 1
  }

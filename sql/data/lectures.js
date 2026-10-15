@@ -106,7 +106,7 @@ window.CS50KZ_COURSE_LECTURES["sql"] = [
     "id": "fin"
    }
   ],
-  "minutes": 44,
+  "minutes": 45,
   "quiz": 8,
   "tasks": 3
  },
@@ -208,7 +208,7 @@ window.CS50KZ_COURSE_LECTURES["sql"] = [
     "id": "fin"
    }
   ],
-  "minutes": 36,
+  "minutes": 37,
   "quiz": 8,
   "tasks": 2
  },
@@ -298,7 +298,7 @@ window.CS50KZ_COURSE_LECTURES["sql"] = [
     "id": "fin"
    }
   ],
-  "minutes": 35,
+  "minutes": 36,
   "quiz": 8,
   "tasks": 1
  },
@@ -365,7 +365,7 @@ window.CS50KZ_COURSE_LECTURES["sql"] = [
     "id": "congrats"
    }
   ],
-  "minutes": 40,
+  "minutes": 41,
   "quiz": 8,
   "tasks": 2
  }

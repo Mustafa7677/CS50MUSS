@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# Harvard CS50 материалдары (олар осы файлда сақталмайды) CC BY-NC-SA 4.0 бойынша; үшінші тарап компоненттері өз лицензияларымен.
 """7-аптаға арналған демо дерекқорлар (браузердегі SQLite үшін).
 
   python3 tools/make_demo_db.py   →   assets/data/db.js

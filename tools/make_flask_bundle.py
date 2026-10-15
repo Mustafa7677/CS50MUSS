@@ -1,3 +1,5 @@
+# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# Harvard CS50 материалдары (олар осы файлда сақталмайды) CC BY-NC-SA 4.0 бойынша; үшінші тарап компоненттері өз лицензияларымен.
 """Flask зертханасы үшін таза Python пакеттерін бір zip-ке жинайды.
 
 Pyodide браузерде осы архивті site-packages ішіне ашады, сондықтан Flask

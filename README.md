@@ -112,9 +112,24 @@ npx playwright test --grep-invert @slow   # жылдам (~25 с)
 
 ## Авторлар
 
-- Түпнұсқа курс: David J. Malan және CS50 командасы, Гарвард университеті
+- Түпнұсқа курстар: David J. Malan және CS50 командасы (CS50 SQL: Carter Zenke; CS50 AI, CS50 Web: Brian Yu), Harvard University
 - Қазақ тіліне аударған: **Sagid Mustafa**
+- Дербес бағдарламалық жасақтама, дизайн және авторлық оқу материалдары: **Sagid Mustafa**
 
 ## Лицензия
 
-[CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/), толығырақ [LICENSE.md](LICENSE.md). Көшіргенде авторларды көрсету, коммерцияға қолданбау және сол лицензиямен жариялау міндетті. Бұл - Sagid Mustafa-ның авторлық қазақша аудармасы; Гарвард университетінің сайты емес.
+CS50MUSS - Harvard University-ден **тәуелсіз** жоба. Бір лицензия бүкіл жобаға қолданылмайды:
+
+| Санат | Лицензия |
+|---|---|
+| **Harvard CS50** материалдары және олардың қазақша аудармалары мен туынды бейімдеулері (45 лекция беті, `sources/`) | [CC BY-NC-SA 4.0](LICENSE-HARVARD.md) |
+| **Sagid Mustafa-ның дербес әзірлемелері** (бағдарламалық код, дизайн, SQL детектив, Жобалар шеберханасы, Flask зертханасы, ойындар, кабинеттер, QazaqCode және т.б.) | [© 2026 Sagid Mustafa. All Rights Reserved](LICENSE-PROPRIETARY.md) |
+| **Үшінші тарап** (sql.js, qrcode-generator, Flask пакеті, Pyodide, қаріптер, портреттер) | [өз лицензиялары](THIRD-PARTY-LICENSES.md) |
+| Шығу тегі расталмаған (жаттығулар мен тесттердің мазмұны, глоссарий, кейбір портреттер/дәйексөздер) | лицензия тағайындалмаған, тексеруде |
+
+- Жалпы схема: [LICENSE.md](LICENSE.md). Файл бойынша тізілім: [COPYRIGHT.md](COPYRIGHT.md). Лекциялар аудиті: [licensing/LECTURE-AUDIT.md](licensing/LECTURE-AUDIT.md).
+- Сайттағы бет: [Авторлық құқық және лицензиялар](copyright.html).
+- Реестр: `licensing/components.json`; тізілім жаңарту және тексеру: `python3 tools/licence_audit.py` (`--check` - CI үшін).
+- Бұрын CC BY-NC-SA 4.0 бойынша жарияланған нұсқаларға берілген құқықтар кері қайтарылмайды.
+- Заңгер тексеруін қажет ететін мәселелер: [licensing/LEGAL-REVIEW.md](licensing/LEGAL-REVIEW.md).
+- Бұл құжаттар заңды кеңес емес.
