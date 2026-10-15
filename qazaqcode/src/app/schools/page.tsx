@@ -218,7 +218,7 @@ export default async function Schools() {
       <footer className="border-t border-line bg-surface">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-6 text-sm text-ink-muted sm:px-6">
           <p>© QazaqCode Platform. Барлық құқықтар қорғалған.</p>
-          <p><Link href="/login">Кіру</Link> · <Link href="/join">Сынып кодымен қосылу</Link>{CONTACT ? <> · <a href={`mailto:${CONTACT}`}>{CONTACT}</a></> : null}</p>
+          <p><Link href="/login">Кіру</Link> · <Link href="/join">Сынып кодымен қосылу</Link> · <Link href="/investors">Инвесторларға</Link>{CONTACT ? <> · <a href={`mailto:${CONTACT}`}>{CONTACT}</a></> : null}</p>
         </div>
       </footer>
     </div>

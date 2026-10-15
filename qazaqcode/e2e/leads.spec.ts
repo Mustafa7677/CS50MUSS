@@ -37,6 +37,8 @@ async function fill(page: Page, o: { org?: string; contact?: string; email?: str
   if (o.consent !== false) await page.locator("#lead-consent").check();
 }
 const noBrowserValidation = (page: Page) => page.locator("#request form").evaluate((f: HTMLFormElement) => { f.noValidate = true; f.querySelectorAll("[required]").forEach((e) => e.removeAttribute("required")); });
+const alertOf = (page: Page) => page.locator("#request form [role=alert]");
+const statusOf = (page: Page) => page.locator("#request form [role=status]");
 const submit = (page: Page) => page.getByRole("button", { name: "Пилотқа сұрау жіберу" }).click();
 
 test.beforeAll(() => { db = new pg.Pool({ connectionString: DB, max: 3 }); });
@@ -68,21 +70,22 @@ test.describe.serial("пилот сұрау формасы", () => {
     await noBrowserValidation(page);
     await fill(page, { email: "дұрыс-емес" });
     await submit(page);
-    await expect(page.getByRole("alert")).toContainText("E-mail");
+    await expect(alertOf(page)).toContainText("E-mail");
+    await expect(page.locator("#lead-org")).toHaveValue(`${MARK} Мектеп`);   // қате кезінде енгізілген деректер жоғалмайды
     await page.locator("#lead-email").fill(em("bad"));
     await page.locator("#lead-students").fill("0");
     await submit(page);
-    await expect(page.getByRole("alert")).toContainText("Оқушы саны");
+    await expect(alertOf(page)).toContainText("Оқушы саны");
     await page.locator("#lead-students").fill("100");
     await page.locator("#lead-consent").uncheck();
     await submit(page);
-    await expect(page.getByRole("alert")).toContainText("келісім");
+    await expect(alertOf(page)).toContainText("келісім");
     await page.locator("#lead-consent").check();
     await page.locator("#lead-message").fill("а".repeat(1001));
     await page.locator("#lead-message").evaluate((e) => e.removeAttribute("maxlength"));
     await page.locator("#lead-message").fill("а".repeat(1001));
     await submit(page);
-    await expect(page.getByRole("alert")).toContainText("1000");
+    await expect(alertOf(page)).toContainText("1000");
     expect((await rows(em("bad"))).length).toBe(0);
     await ctx.close();
   });
@@ -92,7 +95,7 @@ test.describe.serial("пилот сұрау формасы", () => {
     await page.goto("/schools");
     await submit(page);
     expect(await page.locator("#lead-org").evaluate((e: HTMLInputElement) => e.validity.valueMissing)).toBe(true);
-    await expect(page.getByRole("status")).toHaveCount(0);
+    await expect(statusOf(page)).toHaveCount(0);
     await ctx.close();
   });
 
@@ -101,7 +104,7 @@ test.describe.serial("пилот сұрау формасы", () => {
     await page.goto("/schools");
     await fill(page, { email: em("a").toUpperCase(), phone: "+7 701 123 45 67", students: "450", message: "Бізге пилот қажет", role: "deputy", type: "college" });
     await submit(page);
-    await expect(page.getByRole("status").filter({ hasText: "қабылданды" })).toBeVisible();
+    await expect(statusOf(page).filter({ hasText: "қабылданды" })).toBeVisible();
     const r = await rows(em("a"));
     expect(r.length).toBe(1);
     expect(r[0]).toMatchObject({ org_name: `${MARK} Мектеп`, role: "deputy", org_type: "college", students_estimate: 450, status: "new", consent: true, phone: "+7 701 123 45 67" });
@@ -114,7 +117,7 @@ test.describe.serial("пилот сұрау формасы", () => {
     await page.goto("/schools");
     await fill(page, { org: `${MARK} Басқа ұйым`, email: em("a") });
     await submit(page);
-    await expect(page.getByRole("status").filter({ hasText: "қабылданды" })).toBeVisible();
+    await expect(statusOf(page).filter({ hasText: "қабылданды" })).toBeVisible();
     expect((await rows(em("a"))).length).toBe(1);
     expect((await sql("select count(*)::int n from public.leads where org_name = $1", [`${MARK} Басқа ұйым`]))[0].n).toBe(0);
     await ctx.close();
@@ -126,7 +129,7 @@ test.describe.serial("пилот сұрау формасы", () => {
     await fill(page, { email: em("bot") });
     await page.locator("#lead-website").evaluate((e: HTMLInputElement) => { e.value = "https://spam.example"; });
     await submit(page);
-    await expect(page.getByRole("status")).toBeVisible();
+    await expect(statusOf(page)).toBeVisible();
     expect((await rows(em("bot"))).length).toBe(0);
     await ctx.close();
   });
@@ -138,12 +141,12 @@ test.describe.serial("пилот сұрау формасы", () => {
     for (let i = 0; i < 4; i++) {
       await fill(page, { email: em(`rl${i}`), org: `${MARK} RL${i}` });
       await submit(page);
-      await expect(page.getByRole("status").filter({ hasText: "қабылданды" })).toBeVisible();
+      await expect(statusOf(page).filter({ hasText: "қабылданды" })).toBeVisible();
       await page.waitForTimeout(100);
     }
     await fill(page, { email: em("rl4"), org: `${MARK} RL4` });
     await submit(page);
-    await expect(page.getByRole("alert")).toContainText("Тым жиі");
+    await expect(alertOf(page)).toContainText("Тым жиі");
     expect((await rows(em("rl4"))).length).toBe(0);
     await ctx.close();
   });
