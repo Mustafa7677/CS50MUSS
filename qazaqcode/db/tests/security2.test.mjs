@@ -6,7 +6,7 @@ import { pool, admin, as, asAnon, fails, newUser, reset, future } from "./helper
 
 after(() => pool.end());
 
-const ANON_ALLOWED = ["classroom_preview", "invitation_preview", "org_branding"];
+const ANON_ALLOWED = ["classroom_preview", "invitation_preview", "org_branding", "submit_lead"];
 const INTERNAL = ["notify", "audit_log", "new_join_code", "handle_new_user", "audit_trigger", "audit_event_trigger", "audit_logs_guard", "require_user", "plan_limits"];
 
 describe("каталог: RLS, грант, функциялар", () => {
@@ -61,7 +61,7 @@ describe("каталог: RLS, грант, функциялар", () => {
     }
   });
 
-  it("PUBLIC-ке (және anon-ға артығымен) EXECUTE жоқ: anon тек 3 алдын ала қарау функциясын орындайды", async () => {
+  it("PUBLIC-ке (және anon-ға артығымен) EXECUTE жоқ: anon тек 3 алдын ала қарау функциясы мен submit_lead (жария пилот сұрауы) орындайды", async () => {
     const pub = await admin(`select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
       where n.nspname = 'public' and not exists (select 1 from pg_depend d where d.objid = p.oid and d.deptype = 'e')
         and has_function_privilege('public', p.oid, 'execute')`);
