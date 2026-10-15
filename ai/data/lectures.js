@@ -19,7 +19,7 @@ window.CS50KZ_COURSE_LECTURES["ai"] = [
     "id": "adversarial-search"
    }
   ],
-  "minutes": 41,
+  "minutes": 42,
   "quiz": 8,
   "tasks": 2
  },

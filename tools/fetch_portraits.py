@@ -1,3 +1,5 @@
+# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# Harvard CS50 материалдары (олар осы файлда сақталмайды) CC BY-NC-SA 4.0 бойынша; үшінші тарап компоненттері өз лицензияларымен.
 """Алаш тұлғаларының портреттерін Wikimedia Commons-тан жүктейді (GitHub Actions-та іске қосылады).
 
 Тек еркін лицензиялы суреттер алынады (Public domain, CC0, CC BY, CC BY-SA). Әр сурет үшін

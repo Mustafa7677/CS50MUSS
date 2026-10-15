@@ -59,7 +59,7 @@ window.CS50KZ_COURSE_LECTURES["python"] = [
     "id": "return"
    }
   ],
-  "minutes": 24,
+  "minutes": 25,
   "quiz": 7,
   "tasks": 5
  },

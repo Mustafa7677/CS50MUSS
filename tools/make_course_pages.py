@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# Harvard CS50 материалдары (олар осы файлда сақталмайды) CC BY-NC-SA 4.0 бойынша; үшінші тарап компоненттері өз лицензияларымен.
 """Бір реттік генератор: sql/, ai/, web/ курс беттерінің index.html файлдарын python/index.html үлгісінен жасайды.
 Қайта іске қосуға болады (файлдарды қайта жазады). Содан кейін python3 tools/build.py іске қосыңыз."""
 import re
@@ -160,7 +162,7 @@ for code, c in COURSE.items():
       <div class="weeks course-weeks">
 {cards}
       </div>
-      <p class="translator-note">{c['short']} (Гарвард университеті, David J. Malan) курсының қазақша аудармасы. Аударған: Sagid Mustafa. Лицензия: CC BY-NC-SA 4.0.</p>
+      <p class="translator-note">{c['short']} (Гарвард университеті, David J. Malan) курсының қазақша аудармасы. Аударған: Sagid Mustafa. Аударма мен бейімдеу: CC BY-NC-SA 4.0 (түпнұсқа: Harvard CS50). Сайт кодының дизайны мен бағдарламасы - © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
     </article>'''
     s = re.sub(r'<article class="content course-home" id="main">.*?</article>', lambda _: article, s, count=1, flags=re.S)
     (ROOT / code).mkdir(exist_ok=True)
