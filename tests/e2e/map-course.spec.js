@@ -1,9 +1,12 @@
 const { test, expect } = require("@playwright/test");
-const { blockFonts, collectErrors } = require("../support/helpers");
+const { blockFonts, collectErrors, ownLectures } = require("../support/helpers");
+const fs = require("fs");
+const path = require("path");
 
 // Курс картасы: әр курстың өз картасы, лекциялар сол курстан, прогресс сол курстың кілттерімен.
-for (const [c, n, code] of [["python", 10, "CS50P"], ["sql", 7, "CS50 SQL"], ["ai", 7, "CS50 AI"], ["web", 9, "CS50 Web"]]) {
+for (const [c, n, code] of [["python", 10, "CS50P"], ["sql", 7, "CS50 SQL"], ["ai", 7, "CS50 AI"], ["web", 9, "CS50 Web"], ["cpp", ownLectures("cpp").length, "C++"], ["java", ownLectures("java").length, "Java"]]) {
   test(`курс картасы: ${code}`, async ({ page, context }) => {
+    test.skip(n < 2 || (n < 8 && !fs.existsSync(path.join(__dirname, "../..", c, "lectures", "week-0.html"))), "week-0 лекциясы әлі жоқ");
     await blockFonts(context);
     const errs = collectErrors(page);
     await page.addInitScript((c) => {

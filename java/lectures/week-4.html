@@ -1,0 +1,1154 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Java 4-апта: Мұрагерлік, интерфейстер және полиморфизм - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="Java 4-апта: Мұрагерлік, интерфейстер және полиморфизм - CS50 қазақша">
+  <meta property="og:description" content="Java 4-апта: extends, super, override, abstract класс, interface (default/static), полиморфизм, instanceof pattern, enum, sealed класстар, is-a және has-a.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/java/lectures/week-4.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/java/lectures/week-4.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Java 4-апта: Мұрагерлік, интерфейстер және полиморфизм - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/java/lectures/week-4.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="Java 4-апта: extends, super, override, abstract класс, interface (default/static), полиморфизм, instanceof pattern, enum, sealed класстар, is-a және has-a.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body data-license="B">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="java" style="--c:#d97706"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Java</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../java/index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#d97706" data-n="4">
+        <div class="num">4-апта</div>
+        <h1>Мұрагерлік, интерфейстер және полиморфизм</h1>
+        <p>Үшінші аптада бір класс жазуды үйрендік. Енді класстар бір-бірімен туыстық қатынасқа түседі: бірі екіншісінің қасиетін алады, бірнеше түрлі нысан бір ортақ «шартты» орындайды, ал бағдарлама олардың қайсысы екенін білмей-ақ дұрыс жұмыс істейді. Бүгін <code>extends</code>, <code>super</code>, абстракт класс, интерфейс және полиморфизмнің сыры ашылады.</p>
+      </div>
+
+<h2 id="why">Неге мұрагерлік керек?</h2>
+<p>Домбыра, қобыз және сыбызғы жайлы бағдарлама жазып жатқанымызды елестетіңіз. Үшеуінің де атауы бар, үшеуі де дыбыс шығарады, үшеуін де көрмеге қоюға болады. Егер әр аспапқа бөлек класс жазып, <code>ataui</code> өрісін, <code>tanystyr()</code> әдісін үш рет көшіре берсек, не болады? Бір жерде қате тапсақ, оны үш жерден түзетуге тура келеді, ал төртінші аспап қосылғанда тағы бір көшірме пайда болады. Бағдарламашылар бұны «көшіріп қою ауруы» деп атайды, одан құтылудың ең қарапайым жолы - ортақ нәрсені бір жерге жинау.</p>
+<p>Қазақ тілінде де осындай ойлау бар: «Түбі бір - түркі», «Әкеден бала туады, қасиет қалады». Нысандық бағдарламалауда да солай: ортақ қасиеттерді <strong>ата-класқа</strong> (<span class="term-en">superclass</span>, <span class="term-en">parent class</span>) жинаймыз, ал нақты түрлер оны <strong>мұра етіп алады</strong> (<span class="term-en">inheritance</span>) және өзіне тән нәрсені ғана қосады. Мұра етіп алатын класты <strong>бала-класс</strong> (<span class="term-en">subclass</span>, <span class="term-en">child class</span>) дейді.</p>
+<p>Мұрагерліктің екі пайдасы бар:</p>
+<ul>
+  <li><strong>Қайталауды азайтады.</strong> Ортақ код бір жерде тұрады және бір жерде түзетіледі.</li>
+  <li><strong>Түрлерді біріктіреді.</strong> Домбыра да, қобыз да «аспап» болғандықтан, оларды бір тізімге салып, бірдей өңдеуге болады. Бұл екінші пайда - полиморфизм - бүгінгі лекцияның жүрегі.</li>
+</ul>
+<p>Лекцияның соңына қарай мына сұрақтарға өзіңіз жауап бере аласыз: <code>super</code> не үшін керек? Абстракт класс пен интерфейстің айырмашылығы неде? <code>Aspap a = new Dombyra();</code> деген жолдың мағынасы қандай және <code>a.dybys()</code> қай класстың кодын орындайды?</p>
+<div class="callout note">
+<span class="callout-title">Атаулар туралы</span>
+<p>Кодтағы класс пен әдіс аттары латынша транслитпен (<code>Dombyra</code>, <code>dybys</code>, <code>ojna</code>) жазылған, ал экранға шығатын мәтін қазақша. Нақты жұмыс жобаларында атауларды ағылшынша беру қабылданған, бірақ оқу барысында қазақша мағына тез ұғылсын деп осылай жазамыз. Ережені есте ұстаңыз: класс аты бас әріптен (<code>Dombyra</code>), әдіс пен айнымалы кіші әріптен (<code>ojna</code>) басталады.</p>
+</div>
+
+<h2 id="extends">extends және super</h2>
+<p>Мұрагерлікті Java-да <code>extends</code> («кеңейтеді») кілт сөзімен жазады. Төмендегі кодта <code>Aspap</code> - жалпы ата-класс, ал <code>Dombyra</code> оны кеңейтеді. Кодты оқып, қандай нәрсе шығатынын алдын ала болжап көріңіз:</p>
+<pre data-lang="java"><code class="language-java">class Aspap {
+    String ataui;
+    String tur;
+
+    Aspap(String ataui, String tur) {
+        this.ataui = ataui;
+        this.tur = tur;
+        System.out.println("Aspap конструкторы: " + ataui);
+    }
+
+    void tanystyr() {
+        System.out.println(ataui + " - " + tur + " аспап");
+    }
+}
+
+class Dombyra extends Aspap {
+    int isekSany = 2;
+
+    Dombyra() {
+        super("Домбыра", "ішекті");
+        System.out.println("Dombyra конструкторы: ішек саны = " + isekSany);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Dombyra d = new Dombyra();
+        d.tanystyr();
+    }
+}</code></pre>
+<p>Енді нәтижесін қараймыз:</p>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Aspap конструкторы: Домбыра
+Dombyra конструкторы: ішек саны = 2
+Домбыра - ішекті аспап</code></pre>
+<p>Мұнда үш маңызды жайт бар.</p>
+<strong>Бірінші.</strong> <code>Dombyra</code> класында <code>tanystyr()</code> әдісі жазылмаған, бірақ <code>d.tanystyr()</code> жұмыс істеді. Себебі <code>Dombyra</code> әдісті <code>Aspap</code>-тан мұра етіп алды. <code>ataui</code> пен <code>tur</code> өрістері де сондай: оларды <code>Dombyra</code> нысаны өзінің ішінде алып жүреді.
+<strong>Екінші.</strong> <code>super(...)</code> жолы ата-класстың конструкторын шақырады. Нысан жасалғанда ол «қабат-қабат» құрылады: алдымен ата-класс бөлігі дайындалады, содан кейін бала-класс бөлігі. Сондықтан нәтижеде «Aspap конструкторы» жолы «Dombyra конструкторы» жолынан <em>бұрын</em> шықты. Үйді салғанда алдымен іргетас қаланатыны сияқты, ата-класстың бөлігі бала-класстың бөлігінен бұрын дайын болуы керек.
+<strong>Үшінші.</strong> <code>super(...)</code> бала-класс конструкторының <em>ең бірінші жолы</em> болуы шарт. Егер оны жазбасақ, Java өзі <code>super();</code> (аргументсіз) деп қояды. Ал ата-класта аргументсіз конструктор болмаса (біздегідей <code>Aspap(String, String)</code> ғана бар), онда <code>super(...)</code> жазбау компиляция қатесіне әкеледі. Бұл туралы «Жиі қателер» бөлімінде тағы айтамыз.
+<div class="callout tip">
+<span class="callout-title">Java-да бір ғана ата-класс</span>
+<p>Java-да класс <code>extends</code> арқылы тек <strong>бір</strong> класты кеңейте алады. Екі ата-класстан бірдей мұра алуға болмайды (бұл «алмаз проблемасын» болдырмау үшін жасалған). Ал бірнеше интерфейсті жүзеге асыруға болады, оны төменде көреміз.</p>
+</div>
+<p>Java-да кез келген класс, егер <code>extends</code> жазылмаса, үнсіз ғана <code>Object</code> класын кеңейтеді. Яғни бүкіл Java әлемі - бір үлкен «шежіре», оның түбірінде <code>Object</code> тұр. <code>toString()</code>, <code>equals()</code> және <code>hashCode()</code> сияқты әдістер барлық нысанда болатыны содан: олар <code>Object</code>-тан келеді. Бұған кейінірек оралып, өз <code>toString()</code> әдісімізді жазамыз.</p>
+<h2 id="override">Әдісті қайта анықтау</h2>
+<p>Бала-класс ата-класстан мұра болып келген әдіске көңілі толмауы мүмкін. Домбыра мен қобыз «дыбыс шығарады», бірақ екеуінің дыбысы әртүрлі. Бала-класс мұра болып келген әдістің өз нұсқасын жаза алады, оны <strong>қайта анықтау</strong> (<span class="term-en">method overriding</span>) деп атайды.</p>
+<pre data-lang="java"><code class="language-java">class Aspap {
+    String ataui;
+
+    Aspap(String ataui) {
+        this.ataui = ataui;
+    }
+
+    void dybys() {
+        System.out.println(ataui + ": қандай да бір дыбыс");
+    }
+}
+
+class Dombyra extends Aspap {
+    Dombyra() {
+        super("Домбыра");
+    }
+
+    @Override
+    void dybys() {
+        System.out.println(ataui + ": тық-тық, күй шертіледі");
+    }
+}
+
+class Qobyz extends Aspap {
+    Qobyz() {
+        super("Қобыз");
+    }
+
+    @Override
+    void dybys() {
+        super.dybys();
+        System.out.println(ataui + ": ішек садақпен тартылады");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new Aspap("Белгісіз").dybys();
+        new Dombyra().dybys();
+        new Qobyz().dybys();
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main 
+Белгісіз: қандай да бір дыбыс
+Домбыра: тық-тық, күй шертіледі
+Қобыз: қандай да бір дыбыс
+Қобыз: ішек садақпен тартылады</code></pre>
+<p>Нәтижеге мұқият қараңыз:</p>
+<ul>
+  <li><code>Aspap("Белгісіз")</code> өз нұсқасын орындады: «қандай да бір дыбыс».</li>
+  <li><code>Dombyra</code> әдісті толық ауыстырып жіберді, <code>Aspap</code>-тың нұсқасы мүлде шақырылмады.</li>
+  <li><code>Qobyz</code> әдісінің ішінде <code>super.dybys()</code> деп ата-класстың нұсқасын да шақырды да, оған өз жолын қосты. Сондықтан қобыздың екі жол шығарғанын көреміз.</li>
+</ul>
+<p><code>super.әдіс()</code> жазбасы «ата-класстың нұсқасын шақыр» дегенді білдіреді. Бұл үлгі өте жиі кездеседі: ата-класстың жұмысын қайталамай, оған «үстеме» қосу керек болғанда қолданамыз.</p>
+<p>Қайта анықтаудың үш шарты бар: әдістің <strong>аты</strong>, <strong>параметрлер тізімі</strong> және <strong>қайтару типі</strong> ата-класстағыдай болуы керек, ал қол жеткізу деңгейі ата-класстағыдан <em>тарылмауы</em> керек (мысалы, <code>public</code> әдісті <code>private</code> қылып қайта анықтауға болмайды).</p>
+<p>Жоғарыдағы кодта әр қайта анықталған әдістің алдында <code>@Override</code> деген белгі тұр. Бұл <strong>аннотация</strong> (<span class="term-en">annotation</span>): компиляторға берілген ескерту. Мағынасы: «мен бұл әдісті ата-класстағы әдістің орнына жазып жатырмын, егер ондай әдіс жоқ болса, қате бер». Аты бір әріпке қателессе де, компилятор бірден ұстайды. <code>@Override</code>-ты ешқашан тастамаңыз: ол кейін көп сағат қателік іздеуден құтқарады. Мұны жаттығуларда өз көзіңізбен көресіз.</p>
+<div class="callout warn">
+<span class="callout-title">Overload пен override - екі бөлек нәрсе</span>
+<p>Бірдей аты бар, бірақ <em>параметрлері әртүрлі</em> әдіс жазу - бұл <strong>overload</strong> (<span class="term-en">overloading</span>, қайта жүктеу): жаңа әдіс пайда болады, ал ата-класстағы бұрынғысы сол күйінде қалады. Ал параметрлері бірдей әдісті бала-класста қайта жазу - <strong>override</strong>: ата-класстың әдісі ауысады. Екеуін шатастыру - бастаушылардың ең жиі жасайтын қателерінің бірі.</p>
+</div>
+
+<h2 id="access">protected және Object класы</h2>
+<p>Бала-класс ата-класстың бәрін көре ме? Жоқ. Қол жеткізу деңгейі (<span class="term-en">access modifier</span>) мұны шешеді:</p>
+<ul>
+  <li><code>private</code> - тек сол класстың ішінде көрінеді. Бала-класс <em>тікелей</em> көре алмайды, бірақ ата-класстың <code>public</code> немесе <code>protected</code> әдістері арқылы қолдана алады.</li>
+  <li><code>protected</code> - сол класс, бала-кластар және сол пакеттегі басқа кластар көреді.</li>
+  <li><code>public</code> - барлығына ашық.</li>
+  <li>ештеңе жазылмаса (пакеттік деңгей) - тек сол пакеттің ішінде.</li>
+</ul>
+<pre data-lang="java"><code class="language-java">class Aspap {
+    protected String ataui;
+    private int bagasy;
+
+    Aspap(String ataui, int bagasy) {
+        this.ataui = ataui;
+        this.bagasy = bagasy;
+    }
+
+    int getBagasy() {
+        return bagasy;
+    }
+}
+
+class Dombyra extends Aspap {
+    Dombyra(int bagasy) {
+        super("Домбыра", bagasy);
+    }
+
+    void aqparat() {
+        System.out.println(ataui);           // protected: көреміз
+        // System.out.println(bagasy);       // private: қате болар еді
+        System.out.println(getBagasy() + " теңге");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new Dombyra(45000).aqparat();
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main w4/ex3
+Домбыра
+45000 теңге</code></pre>
+<p><code>bagasy</code> өрісін <code>private</code> етіп, оған <code>getBagasy()</code> арқылы қол жеткіздік. Бұл инкапсуляцияны сақтайды: ата-класс өзінің ішкі құрылымын жасырып, тек қажетті есікті ашады. Тәжірибелі бағдарламашылар өрістерді әдетте <code>private</code> қылады, ал <code>protected</code>-ті сирек қолданады.</p>
+<p>Енді <code>Object</code> классына оралайық. Ол барлық класстың түбірі болғандықтан, әр нысанда үш маңызды әдіс бар. Оларды көбіне өз класымызға лайықтап қайта анықтаймыз:</p>
+<ul>
+  <li><code>toString()</code> - нысанды мәтінге айналдырады. <code>System.out.println(нысан)</code> жазғанда Java осыны шақырады. Қайта анықтамасаңыз, <code>Qala@1b6d3586</code> сияқты түсініксіз мәтін шығады.</li>
+  <li><code>equals(Object o)</code> - екі нысан «мазмұны жағынан тең бе» деген сұраққа жауап береді. Ал <code>==</code> операторы нысандардың <em>сілтемесін</em> салыстырады, яғни олар жадтағы бір нысан ба деп сұрайды.</li>
+  <li><code>hashCode()</code> - нысанды санға айналдырады; <code>HashMap</code> және <code>HashSet</code> үшін қажет (келесі аптада көреміз). Қағида: <code>equals</code> бойынша тең нысандардың <code>hashCode()</code> мәні де тең болуы керек.</li>
+</ul>
+<pre data-lang="java"><code class="language-java">import java.util.Objects;
+
+class Qala {
+    private final String atau;
+    private final int halyq;   // мың адам
+
+    Qala(String atau, int halyq) {
+        this.atau = atau;
+        this.halyq = halyq;
+    }
+
+    @Override
+    public String toString() {
+        return atau + " (" + halyq + " мың)";
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Qala q)) return false;
+        return atau.equals(q.atau);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(atau);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Qala a = new Qala("Қарағанды", 500);
+        Qala b = new Qala("Қарағанды", 501);
+        Object c = new Object();
+        System.out.println(a);                       // toString() автоматты шақырылады
+        System.out.println(a == b);                  // сілтеме салыстырады
+        System.out.println(a.equals(b));             // біздің equals
+        System.out.println(a.hashCode() == b.hashCode());
+        System.out.println(c.toString().startsWith("java.lang.Object@"));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main 
+Қарағанды (500 мың)
+false
+true
+true
+true</code></pre>
+<p><code>a == b</code> жалған болды, себебі <code>a</code> мен <code>b</code> - жадтағы екі бөлек нысан. Ал <code>a.equals(b)</code> ақиқат: біз өз <code>equals</code> әдісімізде қалалар аты бірдей болса, оларды тең деп шештік (халық саны 500 және 501 болса да). Сондай-ақ <code>equals</code> әдісінде <code>instanceof Qala q</code> үлгісін қолдандық: оның мәнін «instanceof» бөлімінде түсіндіреміз.</p>
+<h2 id="abstract">Абстракт класс</h2>
+<p>Кейде ата-класстың нақты нысанын жасаудың мәні жоқ. «Жай аспап» дегеніміз не? Нақты дыбыс шығаратын домбыра, қобыз бар, ал «жалпы аспап» - тек ұғым. Дәл осындай жағдайда <strong>абстракт класс</strong> (<span class="term-en">abstract class</span>) қолданылады.</p>
+<p>Абстракт класс <code>abstract</code> сөзімен белгіленеді және оның нысанын <code>new</code> арқылы жасауға болмайды. Оның ішінде денесі жоқ <strong>абстракт әдіс</strong> болады: ол «бала-кластар осыны міндетті түрде жазсын» деген талап қана.</p>
+<pre data-lang="java"><code class="language-java">abstract class Aspap {
+    protected final String ataui;
+
+    Aspap(String ataui) {
+        this.ataui = ataui;
+    }
+
+    // абстракт әдіс: денесі жоқ, әр ұрпақ өзі жазады
+    abstract String dybys();
+
+    // жай әдіс: ортақ логика
+    void ojna() {
+        System.out.println(ataui + " ойналуда -&gt; " + dybys());
+    }
+}
+
+class Dombyra extends Aspap {
+    Dombyra() { super("Домбыра"); }
+    @Override String dybys() { return "тық-тық-тық"; }
+}
+
+class Sybyzgy extends Aspap {
+    Sybyzgy() { super("Сыбызғы"); }
+    @Override String dybys() { return "ыңылдаған жұмсақ үн"; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Aspap a = new Dombyra();
+        a.ojna();
+        new Sybyzgy().ojna();
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main w4/ex4
+Домбыра ойналуда -&gt; тық-тық-тық
+Сыбызғы ойналуда -&gt; ыңылдаған жұмсақ үн</code></pre>
+<p>Мұнда ең тамаша нәрсе - <code>ojna()</code> әдісі. Ол <code>Aspap</code> ішінде бір рет жазылған, бірақ <code>dybys()</code> шақырғанда әр нақты аспаптың өз нұсқасы орындалады. Бұл үлгі <strong>шаблон әдіс</strong> (<span class="term-en">template method</span>) деп аталады: жалпы жоспар ата-класта, ал нақты қадамдар ұрпақтарда.</p>
+<p>Абстракт класстың нысанын жасамақ болсақ, не болады? Жасап көрейік:</p>
+<pre data-lang="java"><code class="language-java">abstract class Aspap {
+    abstract String dybys();
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Aspap a = new Aspap();
+        System.out.println(a.dybys());
+    }
+}</code></pre>
+<p>Компилятор кодты іске қосуға мүлде жібермейді:</p>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java
+Main.java:7: error: Aspap is abstract; cannot be instantiated
+        Aspap a = new Aspap();
+                  ^
+1 error</code></pre>
+<p>Бұл қате - пайдалы. Компилятор бізді «жалпы аспаптың дыбысы қандай?» деген мағынасыз сұраудан алдын ала сақтайды. Бала-класс ата-класстың <em>барлық</em> абстракт әдісін жазуға міндетті, әйтпесе ол да абстракт болып қалады.</p>
+<div class="callout tip">
+<span class="callout-title">Абстракт класс қашан керек?</span>
+<p>Бала-кластардың ортақ күйі (өрістері) мен ортақ кодын бір жерде ұстағыңыз келсе, <em>және</em> кейбір әдісті нақты түрлер өзі жазуы керек болса, абстракт класс қолданыңыз. Мысалы, <code>Aspap</code>: оның <code>ataui</code> өрісі бар, <code>ojna()</code> ортақ, ал <code>dybys()</code> әркімде өзінше.</p>
+</div>
+
+<h2 id="interface">Интерфейс</h2>
+<p>Интерфейс (<span class="term-en">interface</span>) - бұл «шарт», «келісімшарт». Ол «мына әдістерді орындай алатын болсаң, сен менің түрімсің» деп айтады. Интерфейс <em>не істеу керегін</em> сипаттайды, ал <em>қалай істеуді</em> класстардың өзіне қалдырады. Аналогия: теміржол вокзалындағы «жолаушы» ұғымын алыңыз. Кім екені маңызды емес, билеті барлығы жеткілікті. Билеті бар кез келген адам перронға кіре алады.</p>
+<p>Интерфейсті класс <code>implements</code> («жүзеге асырады») кілт сөзімен қабылдайды. Интерфейстің әдістері әдетте <code>public</code> және абстракт болады. Java 8-ден бері интерфейсте тағы екі түрлі әдіс жазуға болады:</p>
+<ul>
+  <li><code>default</code> әдіс - денесі бар. Класс өзі қайта жазбаса, осы нұсқа жұмыс істейді.</li>
+  <li><code>static</code> әдіс - интерфейстің өзіне тиесілі, нысансыз <code>Интерфейс.әдіс()</code> деп шақырылады.</li>
+</ul>
+<pre data-lang="java"><code class="language-java">interface Baptalatyn {
+    int MIN_TEMP = 1;                 // интерфейстегі өріс - автоматты түрде static final
+
+    void baptau();                    // абстракт әдіс
+
+    default void baptauHabary() {     // default әдіс: денесі бар
+        System.out.println("Баптау басталды...");
+        baptau();
+        System.out.println("Баптау аяқталды.");
+    }
+
+    static boolean dausDuryspa(int herts) {   // static әдіс: интерфейстің өзіне тиесілі
+        return herts &gt;= 400 &amp;&amp; herts &lt;= 480;
+    }
+}
+
+interface Jazyluga {
+    void jazu(String atau);
+}
+
+class Dombyra implements Baptalatyn, Jazyluga {
+    @Override
+    public void baptau() {
+        System.out.println("Домбыраның екі ішегі квартамен күйленді");
+    }
+
+    @Override
+    public void jazu(String atau) {
+        System.out.println("«" + atau + "» күйі нотаға жазылды");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Dombyra d = new Dombyra();
+        d.baptauHabary();
+        d.jazu("Адай");
+        System.out.println(Baptalatyn.dausDuryspa(440));
+        System.out.println(Baptalatyn.dausDuryspa(300));
+        Baptalatyn b = d;                 // интерфейс - тип ретінде
+        b.baptauHabary();
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main w4/ex5
+Баптау басталды...
+Домбыраның екі ішегі квартамен күйленді
+Баптау аяқталды.
+«Адай» күйі нотаға жазылды
+true
+false
+Баптау басталды...
+Домбыраның екі ішегі квартамен күйленді
+Баптау аяқталды.</code></pre>
+<p><code>Dombyra</code> класы екі интерфейсті бірден жүзеге асырды: <code>implements Baptalatyn, Jazyluga</code>. Ата-класты тек біреу таңдай аламыз, ал интерфейсті қалағанша қосуға болады. <code>baptauHabary()</code> default әдісі <code>baptau()</code> әдісін шақырады, ал <code>baptau()</code>-дың денесін әр класс өзі береді.</p>
+<p>Назар аударыңыз: <code>Baptalatyn b = d;</code> деген жолда айнымалының типі - интерфейс. Яғни интерфейс <em>тип</em> ретінде де жұмыс істейді: <code>Baptalatyn</code> типті айнымалыға оны жүзеге асыратын кез келген нысанды салуға болады. Бұл полиморфизмге жол ашады.</p>
+<p>Абстракт класс пен интерфейстің айырмашылығын кестеге салайық:</p>
+<table>
+<thead><tr><th>Белгі</th><th>Абстракт класс</th><th>Интерфейс</th></tr></thead>
+<tbody>
+<tr><td>Кілт сөз</td><td><code>abstract class</code> / <code>extends</code></td><td><code>interface</code> / <code>implements</code></td></tr>
+<tr><td>Нешеуін алуға болады</td><td>Тек біреуін</td><td>Қалағанша</td></tr>
+<tr><td>Өрістер (күй)</td><td>Кез келген, өзгеретін өріс те бар</td><td>Тек тұрақтылар (<code>static final</code>)</td></tr>
+<tr><td>Конструктор</td><td>Бар</td><td>Жоқ</td></tr>
+<tr><td>Қашан таңдаймыз</td><td>«Түрі» (is-a) және ортақ күй бар</td><td>«Қабілет» немесе рөл (мысалы, баптала алады)</td></tr>
+</tbody>
+</table>
+<p>Ұсынылатын әдіс: түрлерді сипаттау үшін класс/абстракт класс, қабілеттерді сипаттау үшін интерфейс қолданыңыз. «Баптала алады», «жазыла алады», «салыстырыла алады» - бәрі қабілеттер, сондықтан интерфейс болады.</p>
+<h2 id="polymorphism">Полиморфизм</h2>
+<p>Енді бәрін біріктіретін ұғымға келдік. <strong>Полиморфизм</strong> (<span class="term-en">polymorphism</span>) грек тілінен «көп пішінділік» деген мағына береді. Қарапайым тілмен: ата-класстың айнымалысы кез келген бала-класстың нысанын ұстай алады, ал әдісті шақырғанда нақты нысанның нұсқасы орындалады.</p>
+<p>Аналогия: «Қонақтарды қарсы алыңдар!» деген бір ғана бұйрық берсеңіз, әр үй өз дәстүрімен қарсы алады: біреу шай құяды, біреу бесбармақ әзірлейді, біреу күй тартады. Бұйрық бір, орындалу әртүрлі.</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+abstract class Aspap {
+    final String ataui;
+    Aspap(String ataui) { this.ataui = ataui; }
+    abstract String dybys();
+}
+
+class Dombyra extends Aspap {
+    Dombyra() { super("Домбыра"); }
+    @Override String dybys() { return "тық-тық"; }
+}
+
+class Qobyz extends Aspap {
+    Qobyz() { super("Қобыз"); }
+    @Override String dybys() { return "ыңыл-ыңыл"; }
+}
+
+class Sybyzgy extends Aspap {
+    Sybyzgy() { super("Сыбызғы"); }
+    @Override String dybys() { return "сыбыз-сыбыз"; }
+}
+
+public class Main {
+    static void tyndau(Aspap a) {
+        System.out.println(a.ataui + " -&gt; " + a.dybys());
+    }
+
+    public static void main(String[] args) {
+        List&lt;Aspap&gt; orkestr = new ArrayList&lt;&gt;();
+        orkestr.add(new Dombyra());
+        orkestr.add(new Qobyz());
+        orkestr.add(new Sybyzgy());
+
+        for (Aspap a : orkestr) {
+            tyndau(a);          // әр нысан өз dybys() әдісін орындайды
+        }
+        System.out.println("Аспап саны: " + orkestr.size());
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main 
+Домбыра -&gt; тық-тық
+Қобыз -&gt; ыңыл-ыңыл
+Сыбызғы -&gt; сыбыз-сыбыз
+Аспап саны: 3</code></pre>
+<p>Мұндағы сиқырлы жол: <code>Aspap</code> типті параметр қабылдайтын <code>tyndau(Aspap a)</code> әдісі. Ол домбыра екенін де, қобыз екенін де білмейді, бірақ <code>a.dybys()</code> әрқашан дұрыс нұсқаны табады. Қазір сіз <code>Aspap</code>-тан бесінші, оныншы аспапты мұра етіп қоссаңыз, <code>tyndau</code> әдісінің бір әрпін де өзгертпейсіз. Бағдарлама жаңа түрді «өзі қабылдайды». Міне, осы - полиморфизмнің күші, оны «ашық-жабық принципі» деп те атайды: кеңейтуге ашық, өзгертуге жабық.</p>
+<p>Мұнда екі кезең бар, оларды ажырата білу керек:</p>
+<ol>
+  <li><strong>Компиляция уақытында</strong> Java айнымалының <em>жарияланған типін</em> (<code>Aspap</code>) қарайды және тек сол типте бар әдістерді шақыруға рұқсат береді.</li>
+  <li><strong>Орындау уақытында</strong> JVM нысанның <em>нақты типін</em> (<code>Dombyra</code>) қарайды және сол класстың нұсқасын орындайды. Мұны <strong>динамикалық байланыс</strong> (<span class="term-en">dynamic dispatch</span>) дейді.</li>
+</ol>
+<p>Сондықтан <code>Aspap a = new Dombyra();</code> деген жолда <code>a.perne</code> сияқты тек <code>Dombyra</code>-да бар нәрсеге қол жеткізу мүмкін емес, өйткені компилятор <code>a</code>-ны жай <code>Aspap</code> деп біледі. Оған қол жеткізу үшін типті тексеру және түрлендіру қажет, бұл келесі бөлімнің тақырыбы.</p>
+<details class="think">
+<summary>Ойланып көріңіз: өріс те полиморфты ма?</summary>
+<div class="details-body"><p>Жоқ. Полиморфизм тек <em>әдістерге</em> қатысты. Өрістер <strong>айнымалының жарияланған типі</strong> бойынша таңдалады. Ата-класта да, бала-класта да бірдей аты бар өріс болса, <code>Ата p = new Бала(); p.t</code> ата-класстың өрісін береді, ал <code>p.get()</code> бала-класстың әдісін шақырады. Мұны тестте тексеріп көресіз. Сондықтан бала-класта ата-класстың өрісін «жасыру» жаман әдет: оны жасамаңыз.</p></div>
+</details>
+
+<h2 id="instanceof">instanceof және үлгіні сәйкестендіру</h2>
+<p>Бізде <code>List&lt;Aspap&gt;</code> бар делік. Оның ішіндегі аспаптың нақты түрін білу керек болса не істейміз? <code>instanceof</code> операторы нысанның белгілі типке жататынын тексереді. Java 16-дан бастап ол <strong>үлгіні сәйкестендіру</strong> (<span class="term-en">pattern matching for instanceof</span>) мүмкіндігімен келеді: тексеріп қана қоймай, нәтижені бірден жаңа айнымалыға салады.</p>
+<pre data-lang="java"><code class="language-java">import java.util.List;
+
+abstract class Aspap {
+    final String ataui;
+    Aspap(String ataui) { this.ataui = ataui; }
+}
+
+class Dombyra extends Aspap {
+    final int perne;
+    Dombyra(int perne) { super("Домбыра"); this.perne = perne; }
+}
+
+class Qobyz extends Aspap {
+    Qobyz() { super("Қобыз"); }
+    String sadaq() { return "жылқы қылынан жасалған садақ"; }
+}
+
+class Sybyzgy extends Aspap {
+    Sybyzgy() { super("Сыбызғы"); }
+}
+
+public class Main {
+    static void sipattau(Aspap a) {
+        if (a instanceof Dombyra d) {
+            System.out.println(d.ataui + ": " + d.perne + " перне");
+        } else if (a instanceof Qobyz q) {
+            System.out.println(q.ataui + ": " + q.sadaq());
+        } else {
+            System.out.println(a.ataui + ": басқа аспап");
+        }
+    }
+
+    public static void main(String[] args) {
+        List&lt;Aspap&gt; tizim = List.of(new Dombyra(18), new Qobyz(), new Sybyzgy());
+        for (Aspap a : tizim) {
+            sipattau(a);
+        }
+        Object o = "Алматы";
+        if (o instanceof String s &amp;&amp; s.length() &gt; 3) {
+            System.out.println(s.toUpperCase() + " (" + s.length() + " әріп)");
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Домбыра: 18 перне
+Қобыз: жылқы қылынан жасалған садақ
+Сыбызғы: басқа аспап
+АЛМАТЫ (6 әріп)</code></pre>
+<p><code>a instanceof Dombyra d</code> жазбасын былай оқимыз: «<code>a</code> шын мәнінде <code>Dombyra</code> ма? Иә болса, оны <code>d</code> деп ата да, <code>if</code> ішінде қолдан». Бұрынғы Java-да (Java 15 және одан ертеде) мұны екі қадаммен істейтін едік: алдымен <code>instanceof</code>, сосын қолмен <code>(Dombyra) a</code> түрлендіру. Енді түрлендіру автоматты, ал <code>d</code> айнымалысы тек дұрыс жағдайда қолжетімді.</p>
+<p>Соңғы мысалда <code>o instanceof String s &amp;&amp; s.length() &gt; 3</code> жазылды: <code>&amp;&amp;</code> оң жағындағы <code>s</code> тек сол сәтте, <code>o</code> жол болғанда ғана есептеледі. Осыған ұқсас жағдайды тесттің 7-сұрағында да көресіз.</p>
+<div class="callout warn">
+<span class="callout-title">instanceof-ты көп қолданбаңыз</span>
+<p>Егер кодыңызда <code>instanceof</code>-тар тізбегі ұзарып бара жатса, бұл жақсы белгі емес. Көбіне осыдан құтылудың жолы - әр түр өзінің мінез-құлқын өз ішінде атқаруы (яғни әдісті ата-класқа шығарып, полиморфизмді қолдану). <code>instanceof</code> нақты түр ерекше өңдеуді қажет еткен жағдайда ғана қолайлы, мысалы, <code>equals</code> ішінде не <code>sealed</code> иерархияларда.</p>
+</div>
+
+<h2 id="hasa">«is-a» және «has-a»</h2>
+<p>Мұрагерлікті шамадан тыс қолданып жіберу - жаңа бағдарламашылардың классикалық қателігі. «Бұл класс бұл кластың кеңейтілген нұсқасы ма?» деген сұрақты өзіңізге қойыңыз. Қарапайым тест бар:</p>
+<ul>
+  <li><strong>is-a</strong> («...болып табылады»): «Домбыра - аспап» - рас. Демек <code>Dombyra extends Aspap</code> дұрыс.</li>
+  <li><strong>has-a</strong> («...бар»): «Киіз үйдің шаңырағы бар» - рас, бірақ «Киіз үй - шаңырақ» деген дұрыс емес. Демек <code>KiizUy</code> класында <code>Shanyrak</code> типті өріс болады, мұрагерлік емес.</li>
+</ul>
+<svg viewBox="0 0 600 230" role="img" aria-label="Екі қатынас: Dombyra - Aspap-тың түрі (is-a, extends), ал KiizUy-дің Shanyrak пен Kerege бөліктері бар (has-a, өріс)" style="display:block;width:100%;max-width:600px;height:auto;margin:18px auto"><defs><marker id="h4b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="h4bh" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M1,1 L11,6 L1,11 z" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/></marker></defs><text x="130" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700;">is-a: мұрагерлік</text><rect x="50" y="30" width="160" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="130.0" y="45.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Aspap</text><rect x="50" y="140" width="160" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="130.0" y="155.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Dombyra</text><polyline points="130,140 130,72" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h4bh)"/><text x="130" y="205" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">«Домбыра - аспап»</text><text x="450" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700;">has-a: құрама (composition)</text><rect x="340" y="30" width="160" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="420.0" y="45.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">KiizUy</text><rect x="280" y="140" width="110" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="335.0" y="155.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Shanyrak</text><rect x="420" y="140" width="110" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="475.0" y="155.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Kerege[]</text><polygon points="400,72 410,84 400,96 390,84" style="fill:var(--accent);stroke:var(--accent)"/><polyline points="400,96 400,118 335,118 335,138" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h4b)"/><polyline points="400,96 400,118 475,118 475,138" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h4b)"/><text x="410" y="205" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">«Киіз үйдің шаңырағы да, керегесі де бар»</text></svg>
+<p>Диаграммада сол жақта мұрагерлік (бос үшбұрышты көрсеткі <code>Aspap</code>-қа қарай), оң жақта құрама (<span class="term-en">composition</span>) көрсетілген: <code>KiizUy</code> өзінің ішінде <code>Shanyrak</code> пен <code>Kerege[]</code> нысандарын ұстайды. Мұны мәтінмен айтқанда: «Домбыра - аспаптың бір түрі», ал «Киіз үйдің құрамында шаңырақ пен кереге бар».</p>
+<pre data-lang="java"><code class="language-java">class Shanyrak {
+    final int uyq;
+    Shanyrak(int uyq) { this.uyq = uyq; }
+}
+
+class Kerege {
+    final int kanat;
+    Kerege(int kanat) { this.kanat = kanat; }
+}
+
+// Киіз үй - шаңырақ ПЕН керегеден тұрады (has-a), олардың "түрі" емес
+class KiizUy {
+    private final Shanyrak shanyrak;
+    private final Kerege[] kereger;
+
+    KiizUy(int kanatSany, int uyqSany) {
+        this.shanyrak = new Shanyrak(uyqSany);
+        this.kereger = new Kerege[kanatSany];
+        for (int i = 0; i &lt; kanatSany; i++) {
+            kereger[i] = new Kerege(i + 1);
+        }
+    }
+
+    void sipattau() {
+        System.out.println("Киіз үй: " + kereger.length + " қанат, шаңырақта " + shanyrak.uyq + " уық");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new KiizUy(6, 60).sipattau();
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main 
+Киіз үй: 6 қанат, шаңырақта 60 уық</code></pre>
+<p>Құрама мұрагерліктен гөрі <em>икемді</em>. Мысалы, егер <code>Avtobus extends Dvigatel</code> деп жазсақ, автобус «қозғалтқыштың бір түрі» болып шығады, бұл мағынасыз. Дұрысы - <code>Avtobus</code> ішінде <code>Dvigatel dvigatel</code> өрісі болу. Сонда қозғалтқышты ауыстыру да оңай, бұл автобустың «кім» екенін бұзбайды. Тәжірибелі бағдарламашылардың мақалы бар: «<em>Мұрагерліктен гөрі құраманы жөн көр</em>» (<span class="term-en">favor composition over inheritance</span>).</p>
+<p>Енді жоғарыда сөз болған түрлердің бәрін бір картаға жинайық. Төмендегі диаграммада <code>Aspap</code> абстракт класы, оның үш ұрпағы және екеуі жүзеге асыратын <code>Baptalatyn</code> интерфейсі көрсетілген:</p>
+<svg viewBox="0 0 560 350" role="img" aria-label="Класс диаграммасы: абстракт Aspap класынан Dombyra, Qobyz және Sybyzgy мұрагерленеді; Dombyra мен Qobyz Baptalatyn интерфейсін жүзеге асырады" style="display:block;width:100%;max-width:560px;height:auto;margin:18px auto"><defs><marker id="h4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="h4h" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M1,1 L11,6 L1,11 z" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/></marker></defs><rect x="165" y="10" width="200" height="84" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="265.0" y="25.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Aspap «abstract»</text><line x1="165" y1="36" x2="365" y2="36" style="stroke:var(--border);stroke-width:1"/><text x="173" y="52" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">ataui</text><text x="173" y="68" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">abstract dybys()</text><text x="173" y="84" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">ojna()</text><rect x="10" y="150" width="150" height="56" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="85.0" y="165.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Sybyzgy</text><line x1="10" y1="176" x2="160" y2="176" style="stroke:var(--border);stroke-width:1"/><text x="18" y="192" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">dybys()</text><polyline points="85,150 85,125 265,125 265,96" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h4h)"/><rect x="190" y="150" width="150" height="56" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="265.0" y="165.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Dombyra</text><line x1="190" y1="176" x2="340" y2="176" style="stroke:var(--border);stroke-width:1"/><text x="198" y="192" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">dybys()</text><polyline points="265,150 265,125 265,125 265,96" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h4h)"/><rect x="370" y="150" width="150" height="56" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="445.0" y="165.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Qobyz</text><line x1="370" y1="176" x2="520" y2="176" style="stroke:var(--border);stroke-width:1"/><text x="378" y="192" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">dybys()</text><polyline points="445,150 445,125 265,125 265,96" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h4h)"/><rect x="265" y="262" width="180" height="70" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3"/><text x="355.0" y="277.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">«interface» Baptalatyn</text><line x1="265" y1="288" x2="445" y2="288" style="stroke:var(--border);stroke-width:1"/><text x="273" y="304" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">baptau()</text><text x="273" y="320" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">default baptauHabary()</text><polyline points="300,206 300,260" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#h4h)"/><polyline points="410,206 410,260" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#h4h)"/><text x="10" y="262" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">тұтас сызық = extends (is-a)</text><text x="10" y="282" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">үзік сызық = implements</text><text x="10" y="302" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">Sybyzgy баптау интерфейсін</text><text x="10" y="320" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">жүзеге асырмайды</text></svg>
+<p>Мәтіндік балама: жоғарыда <code>Aspap</code> (абстракт, <code>ataui</code>, <code>dybys()</code>, <code>ojna()</code>), одан төменде <code>Sybyzgy</code>, <code>Dombyra</code>, <code>Qobyz</code> кластары <code>extends</code> арқылы байланысқан. Одан да төмен <code>Baptalatyn</code> интерфейсі (<code>baptau()</code>, <code>baptauHabary()</code>), оны тек <code>Dombyra</code> мен <code>Qobyz</code> жүзеге асырады, үзік сызықпен көрсетілген.</p>
+<h2 id="enum">Enum: тұрақты мәндер жиыны</h2>
+<p>Кейде айнымалы бірнеше нақты мәннің бірін ғана қабылдай алады: апта күні, жыл мезгілі, бағдарлама күйі. Оны <code>int</code> (1, 2, 3) немесе <code>String</code> арқылы белгілесек, қателесу оңай: бағдарламашы <code>5</code> деп жазады, бірақ ол не екенін ешкім білмейді. Мұндай жағдайда <strong>enum</strong> (<span class="term-en">enumeration</span>, санау типі) қолданылады.</p>
+<p>Java-дағы <code>enum</code> - тек атау тізімі емес, ол шын мәнінде ерекше класс. Оның өрісі, конструкторы және әдісі болады. Ал мәндер - сол класстың алдын ала жасалып қойған бірегей нысандары.</p>
+<pre data-lang="java"><code class="language-java">enum Juz {
+    ULY("Ұлы жүз", "Оңтүстік және Оңтүстік-Шығыс"),
+    ORTA("Орта жүз", "Орталық, Солтүстік және Шығыс"),
+    KISHI("Кіші жүз", "Батыс");
+
+    private final String atau;
+    private final String aimaq;
+
+    Juz(String atau, String aimaq) {
+        this.atau = atau;
+        this.aimaq = aimaq;
+    }
+
+    String qysqa() {
+        return atau + " (" + aimaq + ")";
+    }
+}
+
+enum Mezgil { KOKTEM, JAZ, KUZ, QYS }
+
+public class Main {
+    static String kiim(Mezgil m) {
+        return switch (m) {
+            case KOKTEM -&gt; "жеңіл күртеше";
+            case JAZ -&gt; "көйлек пен тақия";
+            case KUZ -&gt; "плащ";
+            case QYS -&gt; "тон мен бөрік";
+        };
+    }
+
+    public static void main(String[] args) {
+        for (Juz j : Juz.values()) {
+            System.out.println(j.ordinal() + ". " + j + " -&gt; " + j.qysqa());
+        }
+        Juz j = Juz.valueOf("ORTA");
+        System.out.println(j == Juz.ORTA);
+        for (Mezgil m : Mezgil.values()) {
+            System.out.println(m + ": " + kiim(m));
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main 
+0. ULY -&gt; Ұлы жүз (Оңтүстік және Оңтүстік-Шығыс)
+1. ORTA -&gt; Орта жүз (Орталық, Солтүстік және Шығыс)
+2. KISHI -&gt; Кіші жүз (Батыс)
+true
+KOKTEM: жеңіл күртеше
+JAZ: көйлек пен тақия
+KUZ: плащ
+QYS: тон мен бөрік</code></pre>
+<p>Назар аударатын тұстар:</p>
+<ul>
+  <li><code>Juz.values()</code> - барлық мәннің массиві; <code>ordinal()</code> - мәннің реттік нөмірі (0-ден басталады).</li>
+  <li><code>Juz.valueOf("ORTA")</code> - мәтіннен enum мәнін алады; жоқ атау берсеңіз, <code>IllegalArgumentException</code> шығады.</li>
+  <li>Enum мәндерін <code>==</code> арқылы салыстырамыз, себебі әр мән бір ғана нысан.</li>
+  <li><code>switch</code> өрнегі (<code>-&gt;</code> жазбасы, Java 14-тен) enum-мен тамаша жұмыс істейді. Барлық мәнді қамтымасақ, компилятор ескертіп, <code>switch</code> өрнегінде <code>default</code> талап етеді. Біз төрт мезгілдің төртеуін де жаздық, сондықтан <code>default</code> керек болмады.</li>
+</ul>
+<p>Enum-ды қолданғанда кодыңыз өздігінен құжатқа айналады: <code>Mezgil.QYS</code> деп жазылса, оқушы мағынасын бірден түсінеді, ал <code>4</code> деп жазылса, жоқ.</p>
+<h2 id="sealed">Sealed класстарға қысқа шолу</h2>
+<p>Мұрагерліктің бір кемшілігі: кез келген адам сіздің класыңыздан мұра алып кете алады. Кейде иерархияның тұйық болғанын қалаймыз: «Бұл фигураның түрі үшеу ғана, одан өзге болмайды». Java 17-де мұны <strong>sealed</strong> («мөрленген») класстар мен интерфейстер шешеді. <code>permits</code> сөзімен рұқсат етілген ұрпақтар тізіледі.</p>
+<p>Мысалға бірге <code>record</code> те қолданып көрейік. <code>record</code> (Java 16) - деректерді сақтайтын қысқа класс: компилятор конструктор, <code>toString()</code>, <code>equals()</code>, <code>hashCode()</code> және оқу әдістерін (<code>radius()</code> сияқты) автоматты жасап береді.</p>
+<pre data-lang="java"><code class="language-java">sealed interface Tulga permits Shanyrak, Tortburysh, Ushburysh {}
+
+record Shanyrak(double radius) implements Tulga {}
+record Tortburysh(double a, double b) implements Tulga {}
+record Ushburysh(double negiz, double biiktik) implements Tulga {}
+
+public class Main {
+    static double audan(Tulga t) {
+        if (t instanceof Shanyrak s) {
+            return Math.PI * s.radius() * s.radius();
+        } else if (t instanceof Tortburysh q) {
+            return q.a() * q.b();
+        } else if (t instanceof Ushburysh u) {
+            return 0.5 * u.negiz() * u.biiktik();
+        }
+        throw new IllegalStateException("мүмкін емес");
+    }
+
+    public static void main(String[] args) {
+        Tulga[] tulgalar = { new Shanyrak(1.5), new Tortburysh(4, 3), new Ushburysh(6, 5) };
+        for (Tulga t : tulgalar) {
+            System.out.printf("%s -&gt; %.2f%n", t, audan(t));
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main 
+Shanyrak[radius=1.5] -&gt; 7.07
+Tortburysh[a=4.0, b=3.0] -&gt; 12.00
+Ushburysh[negiz=6.0, biiktik=5.0] -&gt; 15.00</code></pre>
+<p>Мұнда <code>Tulga</code> интерфейсін тек үш record жүзеге асыра алады: <code>Shanyrak</code>, <code>Tortburysh</code>, <code>Ushburysh</code>. Төртінші, мысалы <code>Romb</code>, қосуға тырыссаңыз, компилятор қате береді. Сондықтан <code>audan</code> әдісінде барлық түрді қамтыдық деп сенімді бола аламыз. Бұл <code>sealed</code>-тің басты пайдасы: компилятор иерархияны біледі.</p>
+<div class="callout note">
+<span class="callout-title">Java 17 мен 21</span>
+<p>Java 21-де <code>switch</code> пен <code>sealed</code> біріге алады: <code>switch (t) { case Shanyrak s -&gt; ... }</code> және компилятор барлық түрді қамтуды өзі тексереді. Бірақ бұл мүмкіндік Java 17-де әлі <em>превью</em> күйінде, сондықтан курста тек <code>instanceof</code> пен <code>if</code> қолдандық. Негізгі идея бірдей: тұйық иерархия.</p>
+</div>
+
+<h2 id="run">Өз компьютеріңде іске қос</h2>
+<p>Лекциядағы кодтарды өз компьютеріңде сынап көрген абзал. Болашақ маманның ең жақсы әдеті: кодты оқып қана қоймай, өз қолыңмен теріп, өзгертіп, не болатынын көру.</p>
+<ol>
+  <li>JDK 17 немесе одан жаңасы орнатылғанын тексеріңіз: терминалда <code>java -version</code> және <code>javac -version</code>.</li>
+  <li>Бос қалта ашыңыз (мысалы, <code>week4</code>), ішінде <code>Main.java</code> файлын жасаңыз және кодты көшіріп салыңыз. Файл аты <em>public</em> класс атымен бірдей болуы керек: <code>public class Main</code> үшін <code>Main.java</code>.</li>
+  <li>Компиляциялап, іске қосыңыз:</li>
+</ol>
+<pre class="terminal"><code class="language-bash">javac Main.java
+java Main</code></pre>
+<p>Windows терминалында қазақ әріптері «?» болып көрінсе, алдымен <code>chcp 65001</code> командасын енгізіңіз немесе <code>java -Dstdout.encoding=UTF-8 Main</code> деп іске қосыңыз. Бұл код емес, терминалдың кодтау баптауы.</p>
+<p>Бір файлда бірнеше класс болады, олардың тек біреуі ғана <code>public</code> болуы мүмкін. Жоғарыдағы мысалдарда <code>Main</code>-нан басқа класстар <code>public</code>-сіз жазылған: бұл оқу үшін ыңғайлы. Ірі жобада әр класс өз файлына жазылады.</p>
+<h2 id="mistakes">Жиі қателер</h2>
+
+<div class="callout warn">
+<span class="callout-title">1. super(...) тастау немесе ата-класта аргументсіз конструктор болмауы</span>
+<p><code>Aspap(String ataui, String tur)</code> бар, ал <code>Dombyra</code> конструкторында <code>super("Домбыра", "ішекті")</code> жазылмаса, компилятор <code>constructor Aspap in class Aspap cannot be applied to given types</code> деген қате береді. Шешімі: <code>super(...)</code> жолын бірінші жолға жазыңыз.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">2. @Override-ты ұмыту және аты/параметрін қате жазу</span>
+<p><code>dybys(int k)</code> деп жазсаңыз, бұл override емес, overload. Бағдарлама іске қосылады, бірақ ата-класстың нұсқасы орындалады. <code>@Override</code> қойсаңыз, компилятор қателікті бірден көрсетеді.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">3. Интерфейс әдісін public етпеу</span>
+<p>Интерфейстің әдістері әрқашан <code>public</code>. Оны жүзеге асырған кезде <code>public</code> жазбасаңыз, <code>attempting to assign weaker access privileges; was public</code> қатесі шығады (тесттегі 4-сұрақты қараңыз).</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">4. Абстракт класты new арқылы жасау</span>
+<p><code>new Aspap()</code> жазсаңыз, <code>Aspap is abstract; cannot be instantiated</code>. Нақты ұрпақты жасаңыз (<code>new Dombyra()</code>), ал ата-класты тек айнымалы типі ретінде қолданыңыз.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">5. Мұрагерлікті is-a сынақсыз қолдану</span>
+<p>«Автобус - қозғалтқыш» емес, «автобустың қозғалтқышы бар». Егер «A - B-ның бір түрі» деген сөйлем мағынасыз шықса, мұрагерлік емес, құраманы (өріс) қолданыңыз.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">6. Нысандарды == арқылы салыстыру</span>
+<p>Жолдар мен нысандардың мазмұнын <code>equals</code> арқылы салыстырыңыз. <code>==</code> тек екі айнымалы жадтағы бір нысанға сілтеме жасайтынын тексереді.</p>
+</div>
+
+<h2 id="summary">Қорытынды</h2>
+<p>Бүгін біз нысандық бағдарламалаудың төрт тірегінің екеуін (мұрагерлік пен полиморфизм) терең қарастырдық. Оқығанымызды жинақтайық:</p>
+<ul>
+  <li><code>extends</code> - бала-класс ата-класстың өріс пен әдісін мұра етеді; <code>super(...)</code> ата-класстың конструкторын шақырады және ең бірінші жол болуы керек;</li>
+  <li><code>@Override</code> - мұра болып келген әдісті қайта анықтау; <code>super.әдіс()</code> ата-класстың нұсқасын шақырады;</li>
+  <li><code>abstract</code> класс нысан бола алмайды, оның абстракт әдісін ұрпақтар жазады;</li>
+  <li><code>interface</code> - «қабілет» шарты; класс бірнеше интерфейсті <code>implements</code> ете алады; <code>default</code> пен <code>static</code> әдістер Java 8-ден бар;</li>
+  <li>полиморфизм - ата-класс/интерфейс типті айнымалы әртүрлі нысанды ұстайды, әдіс нақты нысанның нұсқасымен орындалады (динамикалық байланыс);</li>
+  <li><code>instanceof</code> үлгісі (<code>a instanceof Dombyra d</code>) типті тексеріп, түрлендіруді бірге жасайды;</li>
+  <li>is-a болса мұрагерлік, has-a болса құрама; «мұрагерліктен гөрі құраманы жөн көр»;</li>
+  <li><code>enum</code> - тұрақты мәндер жиыны, өрісі мен әдісі бар ерекше класс;</li>
+  <li><code>sealed</code> мен <code>record</code> - тұйық иерархия мен қысқа деректер класы (Java 17).</li>
+</ul>
+<p>Өзіңізді тексеру тізімі:</p>
+<ul class="checklist" data-id="w4-self">
+  <li><input type="checkbox"> <span>Мен <code>extends</code> пен <code>super(...)</code> қалай жұмыс істейтінін түсіндіре аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен override мен overload айырмашылығын білемін және <code>@Override</code> қоямын.</span></li>
+  <li><input type="checkbox"> <span>Мен абстракт класс пен интерфейсті қашан таңдау керегін айта аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен <code>Aspap a = new Dombyra();</code> жолындағы статикалық және нақты типті ажыратамын.</span></li>
+  <li><input type="checkbox"> <span>Мен <code>instanceof</code> үлгісін қолданып, тізімдегі нысанның түрін тексере аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен is-a мен has-a сынағын өз мысалымда қолдана аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен өз <code>enum</code> және <code>record</code> жаза аламын.</span></li>
+</ul>
+<p class="progress"></p>
+<p>Келесі аптада бір нысанды емес, көптеген нысанды қалай сақтап, іздеп, сұрыптайтынымызды көреміз: Collections және generics.</p>
+<h2 id="quiz">Өзіңізді тексеріңіз</h2>
+
+<div class="quiz">
+<div class="question" data-answer="c">
+  <p class="q-text">1. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">class Ata {
+    String ait() { return "A"; }
+}
+
+class Bala extends Ata {
+    @Override
+    String ait() { return super.ait() + "B"; }
+}
+
+class Nemere extends Bala {
+    @Override
+    String ait() { return super.ait() + "C"; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Ata x = new Nemere();
+        System.out.println(x.ait());
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>A</code></label>
+  <label><input type="radio" value="b"> <code>AB</code></label>
+  <label><input type="radio" value="c"> <code>ABC</code></label>
+  <label><input type="radio" value="d"> <code>CBA</code></label>
+  <p class="explain"><code>Nemere.ait()</code> алдымен <code>super.ait()</code> шақырады (ол <code>Bala.ait()</code>), ол өз кезегінде <code>Ata.ait()</code>-ты шақырады ("A"). Содан соң "B" қосылады, одан кейін "C". Нәтиже: <code>ABC</code>. Жарияланған тип <code>Ata</code> болса да, нақты нысан <code>Nemere</code> болғандықтан, <code>Nemere</code>-нің нұсқасы орындалады.</p>
+</div>
+<div class="question" data-answer="b">
+  <p class="q-text">2. Қай жол компиляция қатесін береді (<code>Aspap</code> - абстракт класс, <code>Dombyra extends Aspap</code>, ол барлық абстракт әдісті жазған)?</p>
+  <label><input type="radio" value="a"> <code>Aspap a = new Dombyra();</code></label>
+  <label><input type="radio" value="b"> <code>Aspap a = new Aspap();</code></label>
+  <label><input type="radio" value="c"> <code>Dombyra d = new Dombyra();</code></label>
+  <label><input type="radio" value="d"> <code>Object o = new Dombyra();</code></label>
+  <p class="explain">Абстракт класстың нысанын <code>new</code> арқылы жасауға болмайды. Бірақ ол айнымалының типі бола алады (1-нұсқа), ал барлық класс <code>Object</code> ұрпағы (4-нұсқа).</p>
+</div>
+<div class="question" data-answer="a">
+  <p class="q-text">3. Мына жұптың қайсысында <strong>has-a</strong> қатынасы дұрыс (құрама, мұрагерлік емес)?</p>
+  <label><input type="radio" value="a"> <code>KiizUy</code> және <code>Shanyrak</code></label>
+  <label><input type="radio" value="b"> <code>Dombyra</code> және <code>Aspap</code></label>
+  <label><input type="radio" value="c"> <code>Qobyz</code> және <code>Aspap</code></label>
+  <label><input type="radio" value="d"> <code>Taksi</code> және <code>Kolik</code></label>
+  <p class="explain">Киіз үйдің шаңырағы бар (has-a), демек <code>KiizUy</code> ішінде <code>Shanyrak</code> өрісі болады. Қалған жұптарда «біріншісі - екіншісінің бір түрі» (is-a), яғни мұрагерлік дұрыс.</p>
+</div>
+<div class="question" data-answer="b">
+  <p class="q-text">4. Мына код компиляцияда не береді?</p>
+<pre data-lang="java"><code class="language-java">interface Ojnaityn {
+    void ojna();
+}
+
+class Dombyra implements Ojnaityn {
+    void ojna() {
+        System.out.println("тық-тық");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        new Dombyra().ojna();
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> Ештеңе, бәрі дұрыс, <code>тық-тық</code> шығады</label>
+  <label><input type="radio" value="b"> Қате: интерфейс әдісін жүзеге асырғанда <code>public</code> қою керек (қол жеткізу деңгейі әлсіреген)</label>
+  <label><input type="radio" value="c"> Қате: <code>Dombyra</code> абстракт болуы керек</label>
+  <label><input type="radio" value="d"> Қате: <code>implements</code> орнына <code>extends</code> жазылуы керек</label>
+  <p class="explain">Интерфейстің әдістері автоматты <code>public</code>. Класта оны <code>public</code>-сіз жазсақ, қол жеткізуді тарылтқан боламыз, ал мұнда жол жоқ: <code>attempting to assign weaker access privileges; was public</code>. Дұрыс жазылуы: <code>public void ojna()</code>.</p>
+</div>
+<div class="question" data-answer="c">
+  <p class="q-text">5. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">class Ata {
+    String t = "ата";
+    String get() { return t; }
+}
+
+class Bala extends Ata {
+    String t = "бала";
+    @Override
+    String get() { return t; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Ata p = new Bala();
+        System.out.println(p.t + " " + p.get());
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>бала бала</code></label>
+  <label><input type="radio" value="b"> <code>ата ата</code></label>
+  <label><input type="radio" value="c"> <code>ата бала</code></label>
+  <label><input type="radio" value="d"> <code>бала ата</code></label>
+  <p class="explain">Әдістер динамикалық байланысады: <code>p.get()</code> нақты нысанның (<code>Bala</code>) нұсқасын шақырады және оның <code>t</code> өрісін ("бала") қайтарады. Ал <code>p.t</code> өрісі айнымалының жарияланған типі (<code>Ата</code>) бойынша алынады, яғни "ата". Нәтиже: <code>ата бала</code>.</p>
+</div>
+<div class="question" data-answer="d">
+  <p class="q-text">6. <code>enum Juz { ULY, ORTA, KISHI }</code> берілген. <code>Juz.KISHI.ordinal()</code> неге тең?</p>
+  <label><input type="radio" value="a"> 0</label>
+  <label><input type="radio" value="b"> 1</label>
+  <label><input type="radio" value="c"> 3</label>
+  <label><input type="radio" value="d"> 2</label>
+  <p class="explain"><code>ordinal()</code> 0-ден басталады: ULY - 0, ORTA - 1, KISHI - 2.</p>
+</div>
+<div class="question" data-answer="a">
+  <p class="q-text">7. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    public static void main(String[] args) {
+        Object o = 42;
+        if (o instanceof Integer n &amp;&amp; n &gt; 40) {
+            System.out.println("үлкен: " + (n + 1));
+        }
+        if (!(o instanceof String s)) {
+            System.out.println("жол емес");
+        }
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>үлкен: 43</code> және <code>жол емес</code> (екі жол)</label>
+  <label><input type="radio" value="b"> Тек <code>үлкен: 43</code></label>
+  <label><input type="radio" value="c"> Тек <code>жол емес</code></label>
+  <label><input type="radio" value="d"> Компиляция қатесі</label>
+  <p class="explain"><code>o</code> - <code>Integer</code> 42, 40-тан үлкен, сондықтан <code>n + 1 = 43</code> шығады. Екінші <code>if</code> ішінде <code>o instanceof String</code> жалған, оның терісі ақиқат, сондықтан "жол емес" де шығады. Үлгі айнымалысы <code>s</code> бұл жерде қолданылмайды, бұл дұрыс.</p>
+</div>
+<div class="question" data-answer="d">
+  <p class="q-text">8. <code>sealed interface Tulga permits Shanyrak, Tortburysh</code> жарияланған. Мына сөйлемнің қайсысы дұрыс?</p>
+  <label><input type="radio" value="a"> Кез келген класс <code>Tulga</code>-ны жүзеге асыра алады</label>
+  <label><input type="radio" value="b"> <code>permits</code> тізімі тек көмекші түсініктеме, оны компилятор тексермейді</label>
+  <label><input type="radio" value="c"> <code>sealed</code> тек <code>enum</code> үшін жұмыс істейді</label>
+  <label><input type="radio" value="d"> <code>Tulga</code>-ны тек тізімде аталған типтер жүзеге асыра алады, басқасы қате береді</label>
+  <p class="explain"><code>sealed</code> иерархияны тұйықтайды: тек <code>permits</code> тізімінде аталған кластар ғана мұра ала алады. Бұл Java 17-де финалды мүмкіндік.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
+
+<h2 id="tasks">Жаттығулар</h2>
+<p>Жаттығулар қиындық бойынша үш деңгейде: оңай, орташа және қиын. Әр тапсырманың «Кеңес» және «Шешімі» бөлімдері бар, бірақ алдымен өзіңіз жазып көріңіз. Дайын шешімдер компилятормен тексерілген.</p>
+<div class="task">
+  <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pj4-1">Конструкторлар тәртібі</h3></div>
+<p>Мына үш класс берілген. <code>new C();</code> жолы орындалғанда әріптер қандай ретпен шығады? Жауабыңызды әріптерді бос орынмен бөліп жазыңыз (мысалы, <code>X Y Z</code>).</p>
+<pre data-lang="java"><code class="language-java">class A { A() { System.out.println("A"); } }
+class B extends A { B() { System.out.println("B"); } }
+class C extends B { C() { System.out.println("C"); } }</code></pre>
+<div class="answer-check" data-answer="A B C|ABC|A,B,C|A, B, C"><input type="text" placeholder="Тәртібі" aria-label="Тәртібі"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Бала-класс конструкторының бірінші жолы үнсіз <code>super();</code> болады. Ең ұзақ тізбектің ең басына қарай жүріп көріңіз: <code>C</code> шақырады <code>B</code>-ны, <code>B</code> шақырады <code>A</code>-ны, ал <code>A</code> бірінші болып өз денесін орындайды.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Конструкторлар «жоғарыдан төмен», яғни ата-класстан бастап орындалады. Тексеру:</p>
+<pre data-lang="java"><code class="language-java">class A { A() { System.out.println("A"); } }
+class B extends A { B() { System.out.println("B"); } }
+class C extends B { C() { System.out.println("C"); } }
+
+public class Main {
+    public static void main(String[] args) {
+        new C();
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+A
+B
+C</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pj4-2">default әдіс пен override</h3></div>
+<p>Мына бағдарлама бір жолға не шығарады? Жауабыңызды дәл шыққандай, бос орынсыз жазыңыз.</p>
+<pre data-lang="java"><code class="language-java">interface Salem {
+    default String aita() { return "Сәлем"; }
+}
+class Adam implements Salem {}
+class Qazaq implements Salem {
+    @Override
+    public String aita() { return "Сәлеметсіз бе"; }
+}
+// main ішінде:
+Salem s = new Qazaq();
+System.out.println(s.aita() + "/" + new Adam().aita());</code></pre>
+<div class="answer-check" data-answer="Сәлеметсіз бе/Сәлем"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>s</code> айнымалысының типі интерфейс, бірақ нысан - <code>Qazaq</code>. Қайсысының әдісі орындалады? Ал <code>Adam</code> өз <code>aita</code> әдісін жазды ма?</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>Qazaq</code> default әдісті қайта анықтаған, сондықтан <code>s.aita()</code> оның нұсқасын береді. <code>Adam</code> ештеңе жазбаған, демек интерфейстің default нұсқасы жұмыс істейді.</p>
+<pre data-lang="java"><code class="language-java">interface Salem {
+    default String aita() { return "Сәлем"; }
+}
+
+class Adam implements Salem {}
+
+class Qazaq implements Salem {
+    @Override
+    public String aita() { return "Сәлеметсіз бе"; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Salem s = new Qazaq();
+        System.out.println(s.aita() + "/" + new Adam().aita());
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Сәлеметсіз бе/Сәлем</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pj4-3">Көлік иерархиясы</h3></div>
+<p><code>Kolik</code> абстракт класын жазыңыз: жеке өрісі <code>nomer</code> (мемлекеттік нөмір), абстракт әдісі <code>int jolaqy(int km)</code>, ал жай әдісі <code>shot(int km)</code> нөмірді, қашықтықты және жол ақысын шығарады. Екі ұрпағын жазыңыз: <code>Avtobus</code> (әр километрге 90 теңге) және <code>Taksi</code> (500 теңге отыру ақысы және әр километрге 150 теңге). <code>main</code>-де екеуін де <code>Kolik[]</code> массивіне салып, 10 км үшін есепті шығарыңыз.</p>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>Kolik</code> ішінде <code>nomer</code> өрісі <code>private final</code> болсын, ал оны ұрпақтар <code>super(nomer)</code> арқылы береді. <code>shot</code> әдісінде тек <code>jolaqy(km)</code> шақырыңыз, оның қалай есептелетінін білудің қажеті жоқ: бұл полиморфизм.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><pre data-lang="java"><code class="language-java">abstract class Kolik {
+    private final String nomer;
+
+    Kolik(String nomer) { this.nomer = nomer; }
+
+    String getNomer() { return nomer; }
+
+    // жол ақысы (теңге) - әр көлік өзінше есептейді
+    abstract int jolaqy(int km);
+
+    void shot(int km) {
+        System.out.println(nomer + ": " + km + " км -&gt; " + jolaqy(km) + " теңге");
+    }
+}
+
+class Avtobus extends Kolik {
+    Avtobus(String nomer) { super(nomer); }
+
+    @Override
+    int jolaqy(int km) { return 90 * km; }
+}
+
+class Taksi extends Kolik {
+    Taksi(String nomer) { super(nomer); }
+
+    @Override
+    int jolaqy(int km) { return 500 + 150 * km; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Kolik[] kolikter = { new Avtobus("A 123 KZ"), new Taksi("B 777 AB") };
+        for (Kolik k : kolikter) {
+            k.shot(10);
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+A 123 KZ: 10 км -&gt; 900 теңге
+B 777 AB: 10 км -&gt; 2000 теңге</code></pre></div></details>
+<details open><summary>Өзіңізді тексеріңіз</summary><div class="details-body">
+<ul class="checklist" data-id="pj4-3">
+  <li><input type="checkbox"> <span><code>Kolik</code> абстракт және нысаны <code>new</code> арқылы жасалмайды.</span></li>
+  <li><input type="checkbox"> <span><code>Avtobus</code> пен <code>Taksi</code> <code>jolaqy</code>-ды <code>@Override</code> арқылы жазған.</span></li>
+  <li><input type="checkbox"> <span><code>main</code>-де <code>Kolik[]</code> массиві бар, <code>shot</code> әр элемент үшін шақырылады.</span></li>
+  <li><input type="checkbox"> <span>Нәтиже: автобус 900 теңге, такси 2000 теңге.</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pj4-4">override па, overload па?</h3></div>
+<p>Мына бағдарламада <code>a.dybys()</code> не шығарады? Бір сөзбен жазыңыз.</p>
+<pre data-lang="java"><code class="language-java">class Aspap {
+    String dybys() { return "жалпы"; }
+}
+class Dombyra extends Aspap {
+    String dybys(int k) { return "тық".repeat(k); }
+}
+// main ішінде:
+Aspap a = new Dombyra();
+System.out.println(a.dybys());</code></pre>
+<div class="answer-check" data-answer="жалпы"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>Dombyra.dybys(int)</code> параметрі бар әдіс, ал <code>a.dybys()</code> параметрсіз шақырылады. Бұл әдіс ата-класстағы <code>dybys()</code> әдісін ауыстыра ма, әлде жаңа әдіс пе? <code>@Override</code> қойып көрсеңіз, компилятор не дер еді?</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>dybys(int)</code> мен <code>dybys()</code> - әртүрлі әдістер (overload), сондықтан override болған жоқ. <code>a.dybys()</code> <code>Aspap</code>-тың нұсқасын шақырады. <code>@Override</code> қойсақ, компилятор <code>method does not override or implement a method from a supertype</code> деп қате берер еді. Екінші нұсқаны шақыру үшін типті түрлендіру керек:</p>
+<pre data-lang="java"><code class="language-java">class Aspap {
+    String dybys() { return "жалпы"; }
+}
+
+class Dombyra extends Aspap {
+    String dybys(int k) { return "тық".repeat(k); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Aspap a = new Dombyra();
+        System.out.println(a.dybys());
+        System.out.println(((Dombyra) a).dybys(2));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+жалпы
+тықтық</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pj4-5">Фигуралар жиынтығы</h3></div>
+<p>Мына фигуралар тізімінің жалпы ауданын (2 ондық таңбаға дейін дөңгелектеп) табыңыз. <code>Tulga</code> интерфейсін, <code>Shanyrak</code>, <code>Tortburysh</code>, <code>Ushburysh</code> record-тарын лекциядағыдай жазып, <code>audan</code> әдісін қолданыңыз. Тізім: <code>Shanyrak(2)</code>, <code>Tortburysh(5, 2)</code>, <code>Ushburysh(10, 3)</code>. Жауап - санның өзі (нүктемен).</p>
+<div class="answer-check" data-answer="37.57"><input type="text" placeholder="Жалпы аудан" aria-label="Жалпы аудан"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Шаңырақ (дөңгелек) ауданы: π·r². Төртбұрыш: a·b. Үшбұрыш: 0,5·негіз·биіктік. Үш санды қосыңыз: ≈12,57 + 10 + 15. Нәтижені <code>printf("%.2f%n", jiny)</code> арқылы шығарыңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><pre data-lang="java"><code class="language-java">import java.util.List;
+
+sealed interface Tulga permits Shanyrak, Tortburysh, Ushburysh {}
+record Shanyrak(double radius) implements Tulga {}
+record Tortburysh(double a, double b) implements Tulga {}
+record Ushburysh(double negiz, double biiktik) implements Tulga {}
+
+public class Main {
+    static double audan(Tulga t) {
+        if (t instanceof Shanyrak s) return Math.PI * s.radius() * s.radius();
+        if (t instanceof Tortburysh q) return q.a() * q.b();
+        if (t instanceof Ushburysh u) return 0.5 * u.negiz() * u.biiktik();
+        throw new IllegalStateException();
+    }
+
+    public static void main(String[] args) {
+        List&lt;Tulga&gt; tizim = List.of(new Shanyrak(2), new Tortburysh(5, 2), new Ushburysh(10, 3));
+        double jiny = 0;
+        for (Tulga t : tizim) jiny += audan(t);
+        System.out.printf("%.2f%n", jiny);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+37.57</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pj4-6">Мектеп кітапханасы</h3></div>
+<p>Кітапхана қорын модельдеңіз. <code>Qaitarylatyn</code> интерфейсі: <code>int berilgenKun()</code> және default әдіс <code>keshikkenAiyppul(int otkenKun)</code> (әр артық күнге 20 теңге; артық күн жоқ болса 0). Абстракт <code>Material</code> класы (<code>atau</code> өрісі, <code>toString</code> әдісі). Екі ұрпақ: <code>Kitap</code> (автор өрісі бар, 14 күнге беріледі) және <code>Gazet</code> (3 күнге беріледі). <code>main</code>-де екі материал үшін 10 күннен кейінгі айыппұлды шығарыңыз.</p>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>Material</code> өзі <code>Qaitarylatyn</code> интерфейсін жүзеге асырсын, бірақ <code>berilgenKun()</code> әдісін жазбасын (абстракт болып қалады). Оны <code>Kitap</code> пен <code>Gazet</code> жазады. <code>toString</code>-де <code>getClass().getSimpleName()</code> класс атын береді, ал <code>Kitap</code> өз <code>toString</code> ішінде <code>super.toString()</code> шақырып, авторды қосады.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><pre data-lang="java"><code class="language-java">interface Qaitarylatyn {
+    int berilgenKun();
+
+    default int keshikkenAiyppul(int otkenKun) {
+        int artyq = otkenKun - berilgenKun();
+        return artyq &gt; 0 ? artyq * 20 : 0;     // әр артық күн - 20 теңге
+    }
+}
+
+abstract class Material implements Qaitarylatyn {
+    protected final String atau;
+    Material(String atau) { this.atau = atau; }
+
+    @Override
+    public String toString() { return getClass().getSimpleName() + " «" + atau + "»"; }
+}
+
+class Kitap extends Material {
+    private final String avtor;
+    Kitap(String atau, String avtor) { super(atau); this.avtor = avtor; }
+
+    @Override public int berilgenKun() { return 14; }
+    @Override public String toString() { return super.toString() + ", " + avtor; }
+}
+
+class Gazet extends Material {
+    Gazet(String atau) { super(atau); }
+    @Override public int berilgenKun() { return 3; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Material[] tizim = {
+            new Kitap("Абай жолы", "М. Әуезов"),
+            new Gazet("Егемен Қазақстан")
+        };
+        for (Material m : tizim) {
+            System.out.println(m + " | мерзімі: " + m.berilgenKun() + " күн | 10 күннен кейін айыппұл: " + m.keshikkenAiyppul(10) + " теңге");
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Kitap «Абай жолы», М. Әуезов | мерзімі: 14 күн | 10 күннен кейін айыппұл: 0 теңге
+Gazet «Егемен Қазақстан» | мерзімі: 3 күн | 10 күннен кейін айыппұл: 140 теңге</code></pre></div></details>
+<details open><summary>Өзіңізді тексеріңіз</summary><div class="details-body">
+<ul class="checklist" data-id="pj4-6">
+  <li><input type="checkbox"> <span><code>Qaitarylatyn</code> интерфейсінде default әдіс бар.</span></li>
+  <li><input type="checkbox"> <span><code>Material</code> абстракт, <code>berilgenKun()</code> әдісін ұрпақтар жазады.</span></li>
+  <li><input type="checkbox"> <span><code>Kitap</code> үшін айыппұл 0 теңге, <code>Gazet</code> үшін 140 теңге шықты (10 - 3 = 7 күн × 20).</span></li>
+  <li><input type="checkbox"> <span><code>Kitap.toString()</code> ішінде <code>super.toString()</code> қолданылған.</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+
+
+      <nav class="pager">
+  <a href="week-3.html"><small>Алдыңғы</small>← 3-апта: Класстар және нысандар</a>
+  <a class="next" href="week-5.html"><small>Келесі</small>5-апта: Collections және generics →</a>
+</nav>
+
+      <p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

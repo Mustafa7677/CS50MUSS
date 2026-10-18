@@ -1,0 +1,1291 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C++ 5-апта: Мұрагерлік және полиморфизм - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="C++ 5-апта: Мұрагерлік және полиморфизм - CS50 қазақша">
+  <meta property="og:description" content="C++ 5-апта: base/derived, protected, virtual, override, final, абстрактілі класс, vtable, slicing, полиморфизм, virtual деструктор, Rule of Three/Five.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-5.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-5.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"C++ 5-апта: Мұрагерлік және полиморфизм - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-5.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="C++ 5-апта: base/derived, protected, virtual, override, final, абстрактілі класс, vtable, slicing, полиморфизм, virtual деструктор, Rule of Three/Five.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body data-license="B">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="cpp" style="--c:#4f46e5"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">C++</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../cpp/index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#4f46e5" data-n="5">
+        <div class="num">5-апта</div>
+        <h1>Мұрагерлік және полиморфизм</h1>
+        <p>Бір класс екіншісінің қасиетін алып, оны өзгерте алады: «көлік» дегеннен «жеңіл көлік» пен «автобус» шығады. Бұл аптада мұрагерлікті, virtual функцияларды және бір көрсеткіш арқылы әртүрлі нысанмен жұмыс істеуді (полиморфизм) үйренеміз.</p>
+      </div>
+
+      <h2 id="inheritance">Мұрагерлік: «болып табылады» қатынасы</h2>
+      <p>Өткен аптада композицияны көрдік: кітапханада кітаптар <em>бар</em>. Енді басқа түрлі қатынасты қарастырайық: жүк көлігі - бұл көлік, автобус - бұл көлік. Бұл «<em>болып табылады</em>» (is-a) қатынасы. Қазақ тілінде мұны «тектен тарау» дейміз: бала әке-шешенің қасиетін алады. Бағдарламалауда мұны <strong>мұрагерлік</strong> (<span class="term-en">inheritance</span>) деп атайды.</p>
+      <p>Мұрагерлік не үшін керек? Көліктің барлығында атау мен дөңгелек саны бар. Автобус пен жеңіл көліктің әрқайсысында бұл өрістерді қайта жазбау үшін, жалпы бөлікті бір рет <strong>базалық класта</strong> (<span class="term-en">base class</span>) жазамыз, ал ерекшеліктерін <strong>туынды класта</strong> (<span class="term-en">derived class</span>) жазамыз. Туынды класс базалық кластың бәрін «мұра етіп» алады және өз мүшелерін қосады.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Vehicle {
+public:
+    Vehicle(std::string name, int wheels) : name_(name), wheels_(wheels) {
+        std::cout &lt;&lt; "  Vehicle(" &lt;&lt; name_ &lt;&lt; ")\n";
+    }
+    ~Vehicle() { std::cout &lt;&lt; "  ~Vehicle(" &lt;&lt; name_ &lt;&lt; ")\n"; }
+
+    void info() const {
+        std::cout &lt;&lt; name_ &lt;&lt; ": дөңгелек саны " &lt;&lt; wheels_ &lt;&lt; "\n";
+    }
+
+protected:
+    std::string name_;
+
+private:
+    int wheels_;
+};
+
+class Bus : public Vehicle {
+public:
+    Bus(std::string name, int seats) : Vehicle(name, 6), seats_(seats) {
+        std::cout &lt;&lt; "  Bus(" &lt;&lt; name_ &lt;&lt; ")\n";
+    }
+    ~Bus() { std::cout &lt;&lt; "  ~Bus(" &lt;&lt; name_ &lt;&lt; ")\n"; }
+
+    void seatsInfo() const {
+        std::cout &lt;&lt; name_ &lt;&lt; ": " &lt;&lt; seats_ &lt;&lt; " орын\n";
+    }
+
+private:
+    int seats_;
+};
+
+int main() {
+    Bus b("Алматы-12", 45);
+    b.info();         // Vehicle-дан мұраланған
+    b.seatsInfo();    // Bus-тың өзінікі
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a01_inherit
+  Vehicle(Алматы-12)
+  Bus(Алматы-12)
+Алматы-12: дөңгелек саны 6
+Алматы-12: 45 орын
+  ~Bus(Алматы-12)
+  ~Vehicle(Алматы-12)</code></pre>
+      <p>Негізгі жазу: <code>class Bus : public Vehicle</code>. Қос нүктеден кейінгі <code>public</code> - мұрагерлік түрі (біз әрқашан дәл осыны қолданамыз). <code>Bus</code> нысанында <code>info()</code> әдісін шақыра аламыз, оны өзі жазбағанымен. Диаграммада мұрагерлік қуыс үшбұрышты көрсеткімен сызылады және ол <em>базалық кластқа</em> қарай бағытталады:</p>
+      <svg viewBox="0 0 660 270" role="img" aria-label="Мұрагерлік диаграммасы: Animal базалық класынан Camel, Eagle және Sheep туынды кластары шығады. Animal: name_, sound(), legs(). Camel: humps_. Eagle: legs() қайта анықталған. Sheep: sound()" style="display:block;width:100%;max-width:660px;height:auto;margin:18px auto">
+        <rect x="220" y="10" width="220" height="90" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/>
+        <line x1="220" y1="38" x2="440" y2="38" style="stroke:var(--accent);stroke-width:1.4"/>
+        <text x="330" y="29" text-anchor="middle" style="fill:var(--text);font:700 14px var(--mono, monospace)">Animal (абстрактілі)</text>
+        <text x="232" y="60" style="fill:var(--text);font:12.5px var(--mono, monospace)">- name_: string</text>
+        <text x="232" y="80" style="fill:var(--text);font:12.5px var(--mono, monospace)">+ sound() = 0, legs()</text>
+        <rect x="10" y="170" width="190" height="80" rx="8" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <line x1="10" y1="196" x2="200" y2="196" style="stroke:var(--border);stroke-width:1.4"/>
+        <text x="105" y="188" text-anchor="middle" style="fill:var(--text);font:700 14px var(--mono, monospace)">Camel</text>
+        <text x="22" y="218" style="fill:var(--text);font:12.5px var(--mono, monospace)">- humps_: int</text>
+        <text x="22" y="238" style="fill:var(--text);font:12.5px var(--mono, monospace)">+ sound() override</text>
+        <rect x="235" y="170" width="190" height="80" rx="8" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <line x1="235" y1="196" x2="425" y2="196" style="stroke:var(--border);stroke-width:1.4"/>
+        <text x="330" y="188" text-anchor="middle" style="fill:var(--text);font:700 14px var(--mono, monospace)">Eagle</text>
+        <text x="247" y="218" style="fill:var(--text);font:12.5px var(--mono, monospace)">+ sound() override</text>
+        <text x="247" y="238" style="fill:var(--text);font:12.5px var(--mono, monospace)">+ legs() override</text>
+        <rect x="460" y="170" width="190" height="80" rx="8" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <line x1="460" y1="196" x2="650" y2="196" style="stroke:var(--border);stroke-width:1.4"/>
+        <text x="555" y="188" text-anchor="middle" style="fill:var(--text);font:700 14px var(--mono, monospace)">Sheep</text>
+        <text x="472" y="218" style="fill:var(--text);font:12.5px var(--mono, monospace)">+ sound() override</text>
+        <polyline points="105,170 105,135 330,135" style="stroke:var(--accent);stroke-width:1.8;fill:none"/>
+        <polyline points="555,170 555,135 330,135" style="stroke:var(--accent);stroke-width:1.8;fill:none"/>
+        <line x1="330" y1="170" x2="330" y2="118" style="stroke:var(--accent);stroke-width:1.8"/>
+        <polygon points="330,100 318,118 342,118" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+      </svg>
+      <p>Суретте үш жануар бір <code>Animal</code> класына қарай «жоғары» бағытталған: әрқайсысы - <em>жануар</em>. Бұл иерархияны төменде нақты бағдарламамен («ферма» мысалы) толтырамыз.</p>
+
+      <div class="callout tip">
+        <span class="callout-title">Өз компьютеріңде іске қос</span>
+        <p>Әр мысалды <code>main.cpp</code> файлына жазып, терминалда құрастыр да іске қос:</p>
+<pre data-lang="bash"><code class="language-bash">g++ -std=c++17 -Wall -Wextra -fsanitize=address,undefined main.cpp -o main &amp;&amp; ./main</code></pre>
+        <p>Бұл апта үшін <code>-Wall -Wextra</code> ерекше маңызды: компилятор ұмытылған <code>override</code>, дұрыс емес инициализация реті сияқты қателерді ескерту ретінде көрсетеді. <code>-fsanitize=address</code> жадпен байланысты қателерді (қос босату, босатылған жадты оқу) орындау кезінде ұстайды.</p>
+      </div>
+
+      <h2 id="protected">protected және мұрагерліктегі қолжетімділік</h2>
+      <p>4-аптада <code>public</code> пен <code>private</code> көрдік. Мұрагерлікте тағы бір деңгей керек болады. Егер базалық кластың өрісін <code>private</code> қылсақ, туынды класс оны көре алмайды (ол «ата-ананың жеке күнделігі» сияқты). Ал <code>public</code> қылсақ, бүкіл әлем көреді. Ортасы - <code>protected</code>: тек класстың өзі мен оның мұрагерлері көре алады, сырттан кірген <code>main</code> көре алмайды.</p>
+      <table>
+        <thead><tr><th>Кім қолдана алады?</th><th><code>public</code></th><th><code>protected</code></th><th><code>private</code></th></tr></thead>
+        <tbody>
+          <tr><td>Класстың өз әдісі</td><td>иә</td><td>иә</td><td>иә</td></tr>
+          <tr><td>Туынды класс әдісі</td><td>иә</td><td>иә</td><td>жоқ</td></tr>
+          <tr><td>Сырттан (<code>main</code>, басқа функция)</td><td>иә</td><td>жоқ</td><td>жоқ</td></tr>
+        </tbody>
+      </table>
+      <p>Мысалы, жылқы өз атын айта алады (<code>protected</code> өрісті қолданады), бірақ <code>main</code> оған тікелей қол сұқса, компилятор тоқтатады:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Animal {
+public:
+    Animal(std::string n) : name_(n) {}
+
+protected:
+    std::string name_;
+};
+
+class Horse : public Animal {
+public:
+    Horse(std::string n) : Animal(n) {}
+    void say() const { std::cout &lt;&lt; name_ &lt;&lt; " кісінеді\n"; }   // protected - рұқсат
+};
+
+int main() {
+    Horse h("Тұлпар");
+    h.say();
+    std::cout &lt;&lt; h.name_ &lt;&lt; "\n";   // сырттан - қате
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra a02_protected_err.cpp -o a02_protected_err
+a02_protected_err.cpp: In function 'int main()':
+a02_protected_err.cpp:21:20: error: 'std::string Animal::name_' is protected within this context
+   21 |     std::cout &lt;&lt; h.name_ &lt;&lt; "\n";   // сырттан - қате
+      |                    ^~~~~
+a02_protected_err.cpp:9:17: note: declared protected here
+    9 |     std::string name_;
+      |                 ^~~~~</code></pre>
+      <div class="callout tip">
+        <span class="callout-title">protected-ті үнемді қолданыңыз</span>
+        <p>Өрісті <code>protected</code> қылу - инкапсуляцияны босаңсыту, себебі кез келген мұрагер оны өзгерте алады. Тәжірибелі бағдарламашылар өрісті <code>private</code> қалдырып, мұрагерлерге арнап <code>protected</code> <em>әдіс</em> береді. Оқу мысалдарында қарапайымдылық үшін <code>protected</code> өріс жазылады, бірақ нағыз жобада бұл ереже жақсырақ.</p>
+      </div>
+
+      <h2 id="ctor-order">Конструктор мен деструктор реті</h2>
+      <p>Туынды нысан жасалғанда алдымен оның <em>базалық бөлігі</em> жасалуы керек, себебі туынды бөлік базалыққа сүйенеді. Үйдің іргетасынан бастап салатыны сияқты. Сондықтан конструкторлар жоғарыдан төмен шақырылады, ал деструкторлар кері ретпен: төбеден бастап бұзылады. 1-мысалдың нәтижесінде осыны көрдік: <code>Vehicle</code> → <code>Bus</code>, содан кейін <code>~Bus</code> → <code>~Vehicle</code>.</p>
+      <p>Базалық конструкторға аргумент беру үшін туынды конструкторда инициализация тізімін қолданамыз: <code>Bus(...) : Vehicle(name, 6), seats_(seats)</code>. Егер оны жазбасақ, базалық классты әдепкі конструктормен жасауға тырысады, ал ондай конструктор жоқ болса, қате шығады.</p>
+      <p>Тізбек ұзарса да, ереже өзгермейді. Үш деңгейлі мысал:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+struct A { A() { std::cout &lt;&lt; "A "; } ~A() { std::cout &lt;&lt; "~A "; } };
+struct B : A { B() { std::cout &lt;&lt; "B "; } ~B() { std::cout &lt;&lt; "~B "; } };
+struct C : B { C() { std::cout &lt;&lt; "C "; } ~C() { std::cout &lt;&lt; "~C "; } };
+
+int main() {
+    C c;
+    std::cout &lt;&lt; "| ";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./t01_vehicle_order
+A B C | ~C ~B ~A </code></pre>
+      <p>Конструкторлар <code>A B C</code> ретімен, деструкторлар <code>~C ~B ~A</code> ретімен жұмыс істеді. Егер туынды класстың өрісі де болса, ол базалық бөліктен кейін, бірақ туынды конструктордың денесінен бұрын жасалады:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+struct Tail { Tail() { std::cout &lt;&lt; "Tail "; } };
+
+struct Animal {
+    Animal() { std::cout &lt;&lt; "Animal "; }
+};
+
+struct Fox : Animal {
+    Tail tail_;
+    Fox() { std::cout &lt;&lt; "Fox "; }
+};
+
+int main() {
+    Fox f;
+    std::cout &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./q04_order
+Animal Tail Fox </code></pre>
+      <p>Алдымен базалық бөлік (<code>Animal</code>), содан кейін <code>Fox</code>-тың өрісі (<code>Tail</code>), ең соңында <code>Fox</code>-тың өз денесі.</p>
+
+      <h2 id="virtual">virtual және override</h2>
+      <p>Енді мұрагерліктің ең қызықты бөлігіне келдік. Кез келген <code>Circle</code> - бұл <code>Shape</code>, сондықтан <code>Shape</code>-ке көрсеткіш <code>Circle</code>-ды ұстай алады. Бір сұрақ: ол көрсеткіш арқылы <code>area()</code> шақырсақ, қай нұсқа орындалады - <code>Shape</code>-тікі ме, әлде <code>Circle</code>-дікі ме? Көрейік:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Shape {
+public:
+    double area() const { return 0; }
+};
+
+class Circle : public Shape {
+public:
+    Circle(double r) : r_(r) {}
+    double area() const { return 3.14159 * r_ * r_; }
+
+private:
+    double r_;
+};
+
+int main() {
+    Circle c(2);
+    Shape* p = &amp;c;
+    std::cout &lt;&lt; "Circle арқылы: " &lt;&lt; c.area() &lt;&lt; "\n";
+    std::cout &lt;&lt; "Shape* арқылы: " &lt;&lt; p-&gt;area() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a03_nonvirtual
+Circle арқылы: 12.5664
+Shape* арқылы: 0</code></pre>
+      <p>Күтпеген нәтиже: көрсеткіш арқылы <code>0</code> шықты, шеңбердің ауданы емес. Әдепкіде C++ қай нұсқаны шақыруды <em>көрсеткіштің типіне</em> қарап, компиляция кезінде шешеді. <code>p</code> типі - <code>Shape*</code>, сондықтан <code>Shape::area</code> шақырылды. Мұны <strong>статикалық байланыстыру</strong> (<span class="term-en">static binding</span>) дейді.</p>
+      <p>Біз нысанның <em>нақты</em> типіне қарап шешім қабылдаған қалаймыз. Ол үшін базалық класта функцияны <code>virtual</code> деп белгілейміз:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Shape {
+public:
+    virtual double area() const { return 0; }
+    virtual ~Shape() = default;
+};
+
+class Circle : public Shape {
+public:
+    Circle(double r) : r_(r) {}
+    double area() const override { return 3.14159 * r_ * r_; }
+
+private:
+    double r_;
+};
+
+int main() {
+    Circle c(2);
+    Shape* p = &amp;c;
+    std::cout &lt;&lt; "Circle арқылы: " &lt;&lt; c.area() &lt;&lt; "\n";
+    std::cout &lt;&lt; "Shape* арқылы: " &lt;&lt; p-&gt;area() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a04_virtual
+Circle арқылы: 12.5664
+Shape* арқылы: 12.5664</code></pre>
+      <p>Енді <code>Shape*</code> арқылы да <code>Circle</code> нұсқасы шақырылды. Бұл <strong>динамикалық байланыстыру</strong> (<span class="term-en">dynamic binding</span>) немесе <strong>полиморфизм</strong> (<span class="term-en">polymorphism</span>, грекше «көп пішінділік»): бір ғана <code>p->area()</code> жазуы нысанға қарай әртүрлі код орындайды.</p>
+      <p>Туынды класта <code>override</code> кілт сөзін жазғанымызға назар аударыңыз. Ол міндетті емес, бірақ өте пайдалы: «мен базалық кластың виртуалды функциясын қайта анықтап жатырмын» деп компиляторға айтады, ал сәйкес функция жоқ болса, компилятор қате береді. Қателесу өте оңай. Мысалы, <code>const</code> ұмыту:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Animal {
+public:
+    virtual void speak() const { std::cout &lt;&lt; "...\n"; }
+    virtual ~Animal() = default;
+};
+
+class Dog : public Animal {
+public:
+    void speak() override { std::cout &lt;&lt; "Hau!\n"; }   // const ұмытылды
+};
+
+int main() {
+    Dog d;
+    d.speak();
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra a05_override_err.cpp -o a05_override_err
+a05_override_err.cpp:11:10: error: 'void Dog::speak()' marked 'override', but does not override
+   11 |     void speak() override { std::cout &lt;&lt; "Hau!\n"; }   // const ұмытылды
+      |          ^~~~~
+a05_override_err.cpp:5:18: warning: 'virtual void Animal::speak() const' was hidden [-Woverloaded-virtual=]
+    5 |     virtual void speak() const { std::cout &lt;&lt; "...\n"; }
+      |                  ^~~~~
+a05_override_err.cpp:11:10: note:   by 'void Dog::speak()'
+   11 |     void speak() override { std::cout &lt;&lt; "Hau!\n"; }   // const ұмытылды
+      |          ^~~~~</code></pre>
+      <p>Егер <code>override</code> жазылмаса, не болар еді? Қате шықпайды, бірақ бағдарлама дұрыс істемейді:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Animal {
+public:
+    virtual void speak() const { std::cout &lt;&lt; "...\n"; }
+    virtual ~Animal() = default;
+};
+
+class Dog : public Animal {
+public:
+    void speak() { std::cout &lt;&lt; "Hau!\n"; }   // const жоқ: бұл override емес, жаңа функция!
+};
+
+int main() {
+    Dog d;
+    Animal* a = &amp;d;
+    a-&gt;speak();   // Dog емес, Animal нұсқасы
+    d.speak();
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a06_noverride_silent
+...
+Hau!</code></pre>
+      <p>Мұнда <code>Dog::speak()</code> (<code>const</code>-сыз) базалық функцияның қайта анықтамасы емес, <em>жаңа</em> функция болды. Сондықтан <code>Animal*</code> арқылы «Hau!» емес, «...» шықты. Компилятор тек <code>-Woverloaded-virtual</code> ескертуін берді, оған көңіл бөлмесең, бағдарлама үнсіз қате істейді. Ереже: <strong>әр қайта анықталған виртуалды функцияға <code>override</code> жазыңыз</strong>.</p>
+
+      <h3 id="final">final</h3>
+      <p><code>final</code> кілт сөзі «бұдан әрі өзгертуге болмайды» деген мағына береді. Оны екі жерде қолданамыз: виртуалды функцияға (мұрагерлер оны қайта анықтай алмайды) және бүкіл класқа (одан мұрагерлену мүмкін емес). Мысалы, студенттік билеттің тарифін ешкім қайта анықтамасын десек:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Ticket {
+public:
+    virtual ~Ticket() = default;
+    virtual int price() const { return 5000; }
+    virtual const char* kind() const { return "жалпы"; }
+};
+
+class StudentTicket final : public Ticket {   // final: мұрагер болмайды
+public:
+    int price() const override { return 2500; }
+    const char* kind() const final { return "студент"; }
+};
+
+int main() {
+    StudentTicket t;
+    const Ticket&amp; r = t;
+    std::cout &lt;&lt; r.kind() &lt;&lt; " билеті: " &lt;&lt; r.price() &lt;&lt; " тг\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a12_final
+студент билеті: 2500 тг</code></pre>
+      <p>Ал финал кластан мұрагерлесек, компилятор тоқтатады:</p>
+<pre data-lang="cpp"><code class="language-cpp">class A final {};
+class B : public A {};
+
+int main() {}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra a13_final_err.cpp -o a13_final_err
+a13_final_err.cpp:2:7: error: cannot derive from 'final' base 'A' in derived type 'B'
+    2 | class B : public A {};
+      |       ^</code></pre>
+
+      <h2 id="abstract">Абстрактілі класс және таза virtual</h2>
+      <p>«Фигура» деген нысанды елестетіп көріңіз. Фигураның ауданы неше? Айту мүмкін емес: ол шеңбер ме, төртбұрыш па? Жалпы «фигураның» ауданын есептейтін формула жоқ. Осындай жағдайда функцияны <strong>таза виртуалды</strong> (<span class="term-en">pure virtual</span>) етіп жариялаймыз: денесі жоқ, соңында <code>= 0</code> тұрады. Кем дегенде бір таза виртуалды функциясы бар класс <strong>абстрактілі класс</strong> (<span class="term-en">abstract class</span>) деп аталады. Одан нысан жасауға болмайды:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Shape {
+public:
+    virtual double area() const = 0;
+};
+
+int main() {
+    Shape s;
+    std::cout &lt;&lt; s.area() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra a08_abstract_err.cpp -o a08_abstract_err
+a08_abstract_err.cpp: In function 'int main()':
+a08_abstract_err.cpp:9:11: error: cannot declare variable 's' to be of abstract type 'Shape'
+    9 |     Shape s;
+      |           ^
+a08_abstract_err.cpp:3:7: note:   because the following virtual functions are pure within 'Shape':
+    3 | class Shape {
+      |       ^~~~~
+a08_abstract_err.cpp:5:20: note:     'virtual double Shape::area() const'
+    5 |     virtual double area() const = 0;
+      |                    ^~~~</code></pre>
+      <p>Абстрактілі класс - «келісімшарт» сияқты: ол «барлық мұрагер мына әрекеттерді орындай алуы керек» дейді, ал қалай орындалатыны мұрагерге байланысты. Енді нағыз мысал: дәстүрлі музыкалық аспаптар. Әр аспап атын айтып, ойналуын көрсетуі керек, ал таныстыру жолы ортақ:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;memory&gt;
+
+class Instrument {
+public:
+    virtual ~Instrument() = default;
+    virtual std::string name() const = 0;       // таза virtual
+    virtual void play() const = 0;
+    void introduce() const {                    // жалпы әдіс
+        std::cout &lt;&lt; name() &lt;&lt; " -&gt; ";
+        play();
+    }
+};
+
+class Dombyra : public Instrument {
+public:
+    std::string name() const override { return "Домбыра"; }
+    void play() const override { std::cout &lt;&lt; "күй тартылды (2 ішек)\n"; }
+};
+
+class Kobyz : public Instrument {
+public:
+    std::string name() const override { return "Қобыз"; }
+    void play() const override { std::cout &lt;&lt; "бақсы күйі естілді\n"; }
+};
+
+int main() {
+    std::vector&lt;std::unique_ptr&lt;Instrument&gt;&gt; orchestra;
+    orchestra.push_back(std::make_unique&lt;Dombyra&gt;());
+    orchestra.push_back(std::make_unique&lt;Kobyz&gt;());
+    for (const auto&amp; i : orchestra) {
+        i-&gt;introduce();
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a07_abstract
+Домбыра -&gt; күй тартылды (2 ішек)
+Қобыз -&gt; бақсы күйі естілді</code></pre>
+      <p>Мұнда не бар:</p>
+      <ul>
+        <li><code>Instrument</code> - абстрактілі. <code>name()</code> мен <code>play()</code> таза виртуалды, ал <code>introduce()</code> - жалпы әдіс, ол соларды шақырады.</li>
+        <li><code>Dombyra</code> мен <code>Kobyz</code> екі функцияны да <code>override</code> етті. Біреуін ұмытса, олар да абстрактілі болып қалар еді.</li>
+        <li>Оркестр - <code>Instrument</code>-ке көрсеткіштер тізімі. Ішінде әртүрлі аспап бар, бірақ біз бәрімен бірдей жұмыс істейміз.</li>
+      </ul>
+      <div class="callout note">
+        <span class="callout-title">std::unique_ptr деген не?</span>
+        <p><code>std::unique_ptr&lt;T&gt;</code> - «ақылды көрсеткіш» (<span class="term-en">smart pointer</span>). Ол өзі меңгерген нысанды жойылғанда автоматты түрде <code>delete</code> жасайды, сондықтан біз қолмен жадты босатуды ұмытпаймыз. <code>std::make_unique&lt;Dombyra&gt;()</code> нысанды жасап, оған <code>unique_ptr</code> береді. Ақылды көрсеткіштерді 7-аптадағы RAII бөлімінде тереңірек қараймыз. Қазірше оны «өзі жинап алатын көрсеткіш» ретінде қабылдаңыз.</p>
+      </div>
+
+      <h2 id="vtable">vtable: бұл қалай жұмыс істейді?</h2>
+      <p>Компилятор қай функцияны шақыру керегін орындау кезінде қалай біледі? Көптеген компиляторлар бір және сол әдісті қолданады (стандартта талап етілмейді, бірақ іс жүзінде солай). Әр виртуалды функциясы бар класс үшін <strong>виртуалды функциялар кестесі</strong> (<span class="term-en">vtable</span>) жасалады: онда әр виртуалды функцияның нақты нұсқасының мекенжайы тұрады. Ал әр нысанның ішінде жасырын көрсеткіш (<strong>vptr</strong>) болады, ол өз класының кестесіне нұсқайды.</p>
+      <svg viewBox="0 0 660 300" role="img" aria-label="vtable диаграммасы: екі нысан Dombyra және Kobyz өз жасырын vptr көрсеткіштері арқылы әр классқа тиесілі кестеге нұсқайды; кестеде name() және play() функцияларының нақты нұсқаларына мекенжай бар" style="display:block;width:100%;max-width:660px;height:auto;margin:18px auto">
+        <defs><marker id="m5a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>
+        <rect x="10" y="20" width="170" height="80" rx="8" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="95" y="42" text-anchor="middle" style="fill:var(--text);font:700 13px var(--mono, monospace)">нысан: Dombyra</text>
+        <rect x="24" y="54" width="142" height="32" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/>
+        <text x="95" y="75" text-anchor="middle" style="fill:var(--accent);font:13px var(--mono, monospace)">vptr</text>
+        <rect x="10" y="190" width="170" height="80" rx="8" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="95" y="212" text-anchor="middle" style="fill:var(--text);font:700 13px var(--mono, monospace)">нысан: Kobyz</text>
+        <rect x="24" y="224" width="142" height="32" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/>
+        <text x="95" y="245" text-anchor="middle" style="fill:var(--accent);font:13px var(--mono, monospace)">vptr</text>
+        <rect x="250" y="10" width="190" height="100" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="345" y="32" text-anchor="middle" style="fill:var(--text);font:700 13px var(--mono, monospace)">vtable(Dombyra)</text>
+        <text x="262" y="60" style="fill:var(--text);font:12.5px var(--mono, monospace)">name → Dombyra::name</text>
+        <text x="262" y="82" style="fill:var(--text);font:12.5px var(--mono, monospace)">play → Dombyra::play</text>
+        <rect x="250" y="180" width="190" height="100" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="345" y="202" text-anchor="middle" style="fill:var(--text);font:700 13px var(--mono, monospace)">vtable(Kobyz)</text>
+        <text x="262" y="230" style="fill:var(--text);font:12.5px var(--mono, monospace)">name → Kobyz::name</text>
+        <text x="262" y="252" style="fill:var(--text);font:12.5px var(--mono, monospace)">play → Kobyz::play</text>
+        <rect x="490" y="10" width="160" height="40" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.6"/>
+        <text x="570" y="35" text-anchor="middle" style="fill:var(--text);font:12.5px var(--mono, monospace)">Dombyra::play() код</text>
+        <rect x="490" y="70" width="160" height="40" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.6"/>
+        <text x="570" y="95" text-anchor="middle" style="fill:var(--text);font:12.5px var(--mono, monospace)">Dombyra::name() код</text>
+        <rect x="490" y="180" width="160" height="40" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.6"/>
+        <text x="570" y="205" text-anchor="middle" style="fill:var(--text);font:12.5px var(--mono, monospace)">Kobyz::play() код</text>
+        <rect x="490" y="240" width="160" height="40" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.6"/>
+        <text x="570" y="265" text-anchor="middle" style="fill:var(--text);font:12.5px var(--mono, monospace)">Kobyz::name() код</text>
+        <line x1="166" y1="70" x2="248" y2="60" style="stroke:var(--accent);stroke-width:1.8" marker-end="url(#m5a)"/>
+        <line x1="166" y1="240" x2="248" y2="230" style="stroke:var(--accent);stroke-width:1.8" marker-end="url(#m5a)"/>
+        <line x1="440" y1="60" x2="488" y2="30" style="stroke:var(--muted);stroke-width:1.5" marker-end="url(#m5a)"/>
+        <line x1="440" y1="82" x2="488" y2="88" style="stroke:var(--muted);stroke-width:1.5" marker-end="url(#m5a)"/>
+        <line x1="440" y1="230" x2="488" y2="200" style="stroke:var(--muted);stroke-width:1.5" marker-end="url(#m5a)"/>
+        <line x1="440" y1="252" x2="488" y2="258" style="stroke:var(--muted);stroke-width:1.5" marker-end="url(#m5a)"/>
+      </svg>
+      <p>Схема бойынша: <code>i-&gt;play()</code> шақырылғанда бағдарлама нысанның <code>vptr</code>-ін оқиды, кестеге барады, <code>play</code> жолындағы мекенжайды алып, сол кодқа секіреді. Нысан <code>Dombyra</code> болса, <code>Dombyra::play</code>, <code>Kobyz</code> болса, <code>Kobyz::play</code>. Біз <code>Instrument*</code> типінің артында қандай нысан тұрғанын білмейміз, бірақ нысанның өзі біледі.</p>
+      <p>Бұдан екі практикалық қорытынды шығады:</p>
+      <ul>
+        <li>виртуалды функция сәл қымбатырақ (бір қосымша көрсеткіш оқу), бірақ көп жағдайда бұл елеусіз;</li>
+        <li>виртуалды функциясы бар нысан бір көрсеткішке (8 байтқа) ауырлайды. Конструктор мен деструктор сәтінде кесте де орнатылады, сондықтан конструктор ішінде виртуалды шақыру туынды нұсқаны емес, ағымдағы класстың нұсқасын шақырады.</li>
+      </ul>
+
+      <h3 id="types">Статикалық және динамикалық тип</h3>
+      <p>Бір көрсеткіштің екі типі болады. <strong>Статикалық тип</strong> - код жазғанда көрсетілген тип: <code>Shape* p</code> үшін ол <code>Shape*</code>. <strong>Динамикалық тип</strong> - көрсеткіштің қазір нұсқап тұрған нысанның нақты типі: ол <code>Circle</code> болуы мүмкін. Бағдарлама жұмыс істеп тұрғанда динамикалық тип өзгеруі мүмкін, ал статикалық тип ешқашан өзгермейді. Виртуалды емес функция статикалық типке қарап, ал виртуалды функция динамикалық типке қарап таңдалады. Осы екі сөзді есте сақтасаңыз, мұрагерлікке қатысты ойлау әлдеқайда жеңілдейді.</p>
+
+      <h2 id="poly">Көрсеткіш не сілтеме арқылы полиморфизм</h2>
+      <p>Полиморфизмнің негізгі пайдасы - бір кодпен әртүрлі нысанды өңдеу. Ферма мысалын қарайық: түйе, бүркіт, қой. Барлығы - жануар, бәрінің дауысы мен аяқ саны бар, бірақ олар әртүрлі:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+class Animal {
+public:
+    Animal(std::string name) : name_(name) {}
+    virtual ~Animal() = default;
+    virtual std::string sound() const = 0;
+    virtual int legs() const { return 4; }
+    const std::string&amp; name() const { return name_; }
+
+private:
+    std::string name_;
+};
+
+class Camel : public Animal {
+public:
+    Camel(std::string n, int humps) : Animal(n), humps_(humps) {}
+    std::string sound() const override { return "мөңіреу"; }
+    int humps() const { return humps_; }
+
+private:
+    int humps_;
+};
+
+class Eagle : public Animal {
+public:
+    Eagle(std::string n) : Animal(n) {}
+    std::string sound() const override { return "шырқау"; }
+    int legs() const override { return 2; }
+};
+
+class Sheep : public Animal {
+public:
+    Sheep(std::string n) : Animal(n) {}
+    std::string sound() const override { return "мәәә"; }
+};
+
+int main() {
+    std::vector&lt;std::unique_ptr&lt;Animal&gt;&gt; farm;
+    farm.push_back(std::make_unique&lt;Camel&gt;("Нар", 2));
+    farm.push_back(std::make_unique&lt;Eagle&gt;("Бүркіт"));
+    farm.push_back(std::make_unique&lt;Sheep&gt;("Қошқар"));
+
+    int legs = 0;
+    for (const auto&amp; a : farm) {
+        std::cout &lt;&lt; a-&gt;name() &lt;&lt; ": " &lt;&lt; a-&gt;sound() &lt;&lt; ", аяқ: " &lt;&lt; a-&gt;legs() &lt;&lt; "\n";
+        legs += a-&gt;legs();
+    }
+    std::cout &lt;&lt; "Барлығы аяқ: " &lt;&lt; legs &lt;&lt; "\n";
+
+    for (const auto&amp; a : farm) {
+        if (auto* c = dynamic_cast&lt;Camel*&gt;(a.get())) {
+            std::cout &lt;&lt; c-&gt;name() &lt;&lt; " түйенің өркеші: " &lt;&lt; c-&gt;humps() &lt;&lt; "\n";
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a14_zoo
+Нар: мөңіреу, аяқ: 4
+Бүркіт: шырқау, аяқ: 2
+Қошқар: мәәә, аяқ: 4
+Барлығы аяқ: 10
+Нар түйенің өркеші: 2</code></pre>
+      <p>Мұнда бір цикл үш түрлі класпен жұмыс істейді, ал оның ішінде түр жайлы бірде-бір <code>if</code> жоқ. Ертең <code>Horse</code> қоссақ, цикл өзгермейді. Бұл ашықтық принципі деп аталады: жаңа мінез-құлық қосу үшін жұмыс істеп тұрған кодты өзгертпейміз.</p>
+      <p>Соңында <code>dynamic_cast</code> көрдіңіз: ол базалық көрсеткішті туынды көрсеткішке қауіпсіз түрлендіреді. Түрлендіру сәтсіз болса, <code>nullptr</code> қайтарады. Ол арқылы жануар шын мәнінде түйе екенін тексеріп, түйеге тән <code>humps()</code> әдісін шақырдық. Ол жиі қолданылса, дизайн дұрыс емес деген белгі: виртуалды функция жеткілікті болуы керек.</p>
+      <p>Полиморфизм жұмыс істеуі үшін үш шарт қатар орындалуы керек:</p>
+      <ol>
+        <li>функция базалық класта <code>virtual</code> деп жарияланған;</li>
+        <li>нысанға <em>көрсеткіш не сілтеме</em> арқылы қол жеткізіледі;</li>
+        <li>туынды класс функцияны сол қолтаңбамен қайта анықтайды (<code>override</code> бұған кепілдік береді).</li>
+      </ol>
+      <p>Екінші шарт неге маңызды екенін келесі бөлімде көреміз.</p>
+
+      <h2 id="slicing">Slicing: нысанды кесіп алу қатесі</h2>
+      <p>Нысанды базалық типке <em>мәнмен</em> берсек, не болады? Туынды бөлік жай ғана «кесіліп» тасталады, тек базалық бөлік көшіріледі. Бұл құбылыс <strong>slicing</strong> (<span class="term-en">object slicing</span>, «кесіп алу») деп аталады.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Employee {
+public:
+    Employee(std::string n) : name_(n) {}
+    virtual ~Employee() = default;
+    virtual std::string role() const { return "қызметкер"; }
+    std::string name() const { return name_; }
+
+private:
+    std::string name_;
+};
+
+class Manager : public Employee {
+public:
+    Manager(std::string n) : Employee(n) {}
+    std::string role() const override { return "менеджер"; }
+};
+
+void byValue(Employee e) {
+    std::cout &lt;&lt; "мәнмен: " &lt;&lt; e.name() &lt;&lt; " - " &lt;&lt; e.role() &lt;&lt; "\n";
+}
+
+void byRef(const Employee&amp; e) {
+    std::cout &lt;&lt; "сілтемемен: " &lt;&lt; e.name() &lt;&lt; " - " &lt;&lt; e.role() &lt;&lt; "\n";
+}
+
+int main() {
+    Manager m("Ғалым");
+    byValue(m);
+    byRef(m);
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a09_slicing
+мәнмен: Ғалым - қызметкер
+сілтемемен: Ғалым - менеджер</code></pre>
+      <p><code>byValue</code> функциясына менеджерді мәнмен бердік. Функция ішінде <code>Employee</code> типті жаңа көшірме пайда болды, оған менеджер бөлігі көшірілмеді, сондықтан <code>role()</code> «қызметкер» деді, функция виртуалды болса да. <code>byRef</code> болса, нысанның өзіне сілтеме алды, сондықтан «менеджер» шықты. Тағы бір қысқа мысал:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+struct Base {
+    virtual const char* who() const { return "Base"; }
+};
+struct Derived : Base {
+    const char* who() const override { return "Derived"; }
+};
+
+void show(Base b) { std::cout &lt;&lt; b.who() &lt;&lt; "\n"; }
+
+int main() {
+    Derived d;
+    show(d);
+    Base&amp; r = d;
+    std::cout &lt;&lt; r.who() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./q03_slice
+Base
+Derived</code></pre>
+      <p>Екі жолда бір нысан, бірақ екі түрлі нәтиже. Қорытынды ереже: <strong>полиморфты нысандарды функцияға әрқашан <code>const T&amp;</code> не көрсеткіш арқылы беріңіз, мәнмен ешқашан бермеңіз</strong>. Контейнерге де нысанның өзін емес, көрсеткішті саламыз (<code>std::vector&lt;std::unique_ptr&lt;Animal&gt;&gt;</code>), әйтпесе slicing қайталанады.</p>
+
+      <h2 id="virtual-dtor">Виртуалды деструктор</h2>
+      <p>Біз жоғарыда әр базалық класта <code>virtual ~Shape() = default;</code> жазып келдік. Бұл кездейсоқ емес. Базалық көрсеткіш арқылы туынды нысанды <code>delete</code> жасасақ, не болады? Деструктор виртуалды болмаса, қауіпті жағдай туады:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Base {
+public:
+    ~Base() { std::cout &lt;&lt; "~Base\n"; }
+};
+
+class Derived : public Base {
+public:
+    Derived() : data_(new int[100]) {}
+    ~Derived() {
+        delete[] data_;
+        std::cout &lt;&lt; "~Derived\n";
+    }
+
+private:
+    int* data_;
+};
+
+int main() {
+    Base* p = new Derived();
+    delete p;       // ~Derived шақырылмайды!
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a10_vdtor_bad
+=================================================================
+==20942==ERROR: AddressSanitizer: new-delete-type-mismatch on 0x502000000010 in thread T0:
+  object passed to delete has wrong type:
+  size of the allocated type:   8 bytes;
+  size of the deallocated type: 1 bytes.
+    #0 0x7fa3e00ff5e8 in operator delete(void*, unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164
+    #1 0x5577ff59f30f in main (/tmp/claude-0/bin_w5_a10_vdtor_bad+0x130f)
+    #2 0x7fa3df02a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+...</code></pre>
+      <p>Мұнда <code>Base*</code> арқылы <code>delete</code> жасадық, бірақ деструктор виртуалды емес, сондықтан тек <code>~Base</code> шақырылуы мүмкін еді. Туынды бөлік дұрыс жойылмайды, ал бұл нақты бағдарламада жад ағып кетуіне (<span class="term-en">memory leak</span>) әкеледі. AddressSanitizer мұны орындау кезінде бірден ұстады: жойылатын нысанның типі (1 байт) бөлінген типпен (8 байт) сәйкес емес. Нәтиже қысқартылған, толық шығыс ұзағырақ.</p>
+      <p>Түзету үшін базада деструкторды <code>virtual</code> қыламыз:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Base {
+public:
+    virtual ~Base() { std::cout &lt;&lt; "~Base\n"; }
+};
+
+class Derived : public Base {
+public:
+    Derived() : data_(new int[100]) {}
+    ~Derived() override {
+        delete[] data_;
+        std::cout &lt;&lt; "~Derived\n";
+    }
+
+private:
+    int* data_;
+};
+
+int main() {
+    Base* p = new Derived();
+    delete p;
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a11_vdtor_good
+~Derived
+~Base</code></pre>
+      <p>Енді алдымен <code>~Derived</code> (ол жадты босатады), содан кейін <code>~Base</code> шақырылды. <strong>Ереже</strong>: егер класта кем дегенде бір виртуалды функция бар болса (немесе одан мұрагерлену жоспарланса), деструкторын да <code>virtual</code> етіңіз. Көбіне жаза салуға болады: <code>virtual ~Base() = default;</code>.</p>
+
+      <h2 id="rule-of-three">Rule of Three және Rule of Five кіріспесі</h2>
+      <p>Деструкторға байланысты бір маңызды ереже бар. Егер класыңыз өзі <em>ресурс</em> (мысалы, <code>new</code> арқылы алынған жад) иеленсе, оның деструкторын жазасыз. Бірақ компилятор нысанды көшіргенде (<code>Name b = a;</code>) әдепкіде көрсеткішті «байт-байтымен» көшіреді. Нәтижесінде екі нысан <em>бір жадқа</em> нұсқайды, ал екеуі де жойылғанда сол жад екі рет босатылады. Көрейік:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;cstring&gt;
+#include &lt;iostream&gt;
+
+class Name {
+public:
+    Name(const char* s) : data_(new char[std::strlen(s) + 1]) {
+        std::strcpy(data_, s);
+    }
+    ~Name() { delete[] data_; }
+    const char* c_str() const { return data_; }
+
+private:
+    char* data_;
+};
+
+int main() {
+    Name a("Айгерім");
+    {
+        Name b = a;     // әдепкі көшіру: көрсеткіш көшіріледі, мәтін емес!
+        std::cout &lt;&lt; b.c_str() &lt;&lt; "\n";
+    }                   // b жойылды -&gt; a.data_ да босатылды
+    std::cout &lt;&lt; a.c_str() &lt;&lt; "\n";   // қолданылған жад!
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a16_rule3_bad
+=================================================================
+==21088==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x7f0e3127d96f bp 0x7ffd6fab8ec0 sp 0x7ffd6fab8668
+READ of size 2 at 0x502000000010 thread T0
+    #0 0x7f0e3127d96e in strlen ../../../../src/libsanitizer/sanitizer_common/sanitizer_common_interceptors.inc:391
+    #1 0x7f0e30f5712d in std::basic_ostream&lt;char, std::char_traits&lt;char&gt; &gt;&amp; std::operator&lt;&lt; &lt;std::char_traits&lt;char&gt; &gt;(std::basic_ostream&lt;char, std::char_traits&lt;char&gt; &gt;&amp;, char const*) (/lib/x86_64-linux-gnu/libstdc++.so.6+0x15712d)
+...</code></pre>
+      <p>AddressSanitizer «heap-use-after-free» деп хабарлады: <code>b</code> жойылған кезде жад босатылды, ал <code>a</code> әлі сол босатылған жадқа қарап тұр. Мұның себебі - көшіру кезінде мәтінді емес, <em>көрсеткіштің өзін</em> көшіру. Шешім - <strong>Rule of Three</strong> («үш ереже»): егер төмендегі үшеудің кем дегенде біреуін жазсаңыз, үшеуін де жазыңыз:</p>
+      <ol>
+        <li><strong>деструктор</strong> <code>~Name()</code>;</li>
+        <li><strong>көшіру конструкторы</strong> <code>Name(const Name&amp;)</code>: жаңа нысанды басқасының көшірмесі ретінде жасау;</li>
+        <li><strong>көшіру меншіктеуі</strong> <code>operator=(const Name&amp;)</code>: бар нысанға басқа нысанның мәнін беру.</li>
+      </ol>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;cstring&gt;
+#include &lt;iostream&gt;
+
+class Name {
+public:
+    Name(const char* s) : len_(std::strlen(s)), data_(new char[len_ + 1]) {
+        std::memcpy(data_, s, len_ + 1);
+        std::cout &lt;&lt; "жасалды: " &lt;&lt; data_ &lt;&lt; "\n";
+    }
+    ~Name() {
+        std::cout &lt;&lt; "жойылды: " &lt;&lt; data_ &lt;&lt; "\n";
+        delete[] data_;
+    }
+
+    // Rule of Three: көшіру конструкторы мен көшіру меншіктеуі
+    Name(const Name&amp; other) : len_(other.len_), data_(new char[other.len_ + 1]) {
+        std::memcpy(data_, other.data_, len_ + 1);
+        std::cout &lt;&lt; "көшірілді: " &lt;&lt; data_ &lt;&lt; "\n";
+    }
+    Name&amp; operator=(const Name&amp; other) {
+        if (this != &amp;other) {
+            char* fresh = new char[other.len_ + 1];
+            std::memcpy(fresh, other.data_, other.len_ + 1);
+            delete[] data_;
+            data_ = fresh;
+            len_ = other.len_;
+        }
+        return *this;
+    }
+
+    const char* c_str() const { return data_; }
+
+private:
+    std::size_t len_;
+    char* data_;
+};
+
+int main() {
+    Name a("Айгерім");
+    Name b = a;          // көшіру конструкторы
+    Name c("Ерасыл");
+    c = a;               // көшіру меншіктеуі
+    std::cout &lt;&lt; b.c_str() &lt;&lt; " " &lt;&lt; c.c_str() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a15_rule3
+жасалды: Айгерім
+көшірілді: Айгерім
+жасалды: Ерасыл
+Айгерім Айгерім
+жойылды: Айгерім
+жойылды: Айгерім
+жойылды: Айгерім</code></pre>
+      <p>Енді әр нысанның өз жад бөлігі бар. Үш рет «жойылды» шықты, үш нысан үшін, ештеңе екі рет босатылған жоқ. Көшіру меншіктеуінде екі нәзік жер бар: <code>this != &amp;other</code> тексеруі (өзін өзіне меншіктеуден қорғайды) және алдымен жаңа жадты дайындап, содан кейін ғана ескісін босату.</p>
+      <p>Көшіру конструкторы мен көшіру меншіктеуінің айырмасы жиі шатастырылады. Нысан <em>әлі жоқ</em> болып, басқасынан жасалса, көшіру конструкторы шақырылады (<code>Name b = a;</code>, <code>Name b(a);</code>, нысанды мәнмен функцияға беру). Нысан <em>бар</em> болып, оған жаңа мән берілсе, меншіктеу операторы жұмыс істейді (<code>c = a;</code>). Бір жолда «=» белгісі тұрғанына қарамастан, <code>Name b = a;</code> меншіктеу емес, конструктор. Мысалдағы нәтижеде «көшірілді» жазуы тек бір рет (b үшін) шықты, ал <code>c = a</code> үнсіз орындалды, себебі меншіктеу операторында ештеңе шығармадық.</p>
+      <p>C++11-ден бері көшіру конструкторы мен деструкторды жазбай-ақ, компилятор өзі жасаған нұсқаларды қолдануды <code>= default</code>, ал тыйым салуды <code>= delete</code> арқылы анық жазуға болады. Мысалы, <code>Name(const Name&amp;) = delete;</code> нысанды көшіруге мүлде тыйым салады: көшіруге тиіс емес нәрсені (файл дескрипторы, желі байланысы) қорғаудың ең оңай жолы.</p>
+      <p>C++11-ден бері көшіруден бөлек <strong>жылжыту</strong> (<span class="term-en">move</span>) ұғымы бар. Егер нысан уақытша болса (мысалы, функция қайтарған), оның ресурсын көшірудің қажеті жоқ, оны жай ғана «тартып алуға» болады. Осыдан <strong>Rule of Five</strong> шығады: үшеуіне қосымша <strong>жылжыту конструкторы</strong> мен <strong>жылжыту меншіктеуі</strong>.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;utility&gt;
+#include &lt;string&gt;
+
+class Buffer {
+public:
+    explicit Buffer(std::size_t n) : n_(n), data_(new int[n]()) {
+        std::cout &lt;&lt; "жасалды (" &lt;&lt; n_ &lt;&lt; ")\n";
+    }
+    ~Buffer() { delete[] data_; }
+
+    Buffer(const Buffer&amp; o) : n_(o.n_), data_(new int[o.n_]) {
+        for (std::size_t i = 0; i &lt; n_; ++i) data_[i] = o.data_[i];
+        std::cout &lt;&lt; "көшірілді\n";
+    }
+    Buffer&amp; operator=(const Buffer&amp; o) {
+        if (this != &amp;o) {
+            Buffer tmp(o);
+            std::swap(n_, tmp.n_);
+            std::swap(data_, tmp.data_);
+        }
+        return *this;
+    }
+    Buffer(Buffer&amp;&amp; o) noexcept : n_(o.n_), data_(o.data_) {
+        o.n_ = 0;
+        o.data_ = nullptr;
+        std::cout &lt;&lt; "көшірілмей, жылжытылды\n";
+    }
+    Buffer&amp; operator=(Buffer&amp;&amp; o) noexcept {
+        if (this != &amp;o) {
+            delete[] data_;
+            n_ = o.n_;
+            data_ = o.data_;
+            o.n_ = 0;
+            o.data_ = nullptr;
+        }
+        return *this;
+    }
+    std::size_t size() const { return n_; }
+
+private:
+    std::size_t n_;
+    int* data_;
+};
+
+Buffer make() { return Buffer(1000); }
+
+int main() {
+    Buffer a(10);
+    Buffer b = a;                 // көшіру
+    Buffer c = std::move(a);      // жылжыту
+    std::cout &lt;&lt; "a: " &lt;&lt; a.size() &lt;&lt; ", b: " &lt;&lt; b.size() &lt;&lt; ", c: " &lt;&lt; c.size() &lt;&lt; "\n";
+    Buffer d = make();
+    std::cout &lt;&lt; "d: " &lt;&lt; d.size() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a17_rule5
+жасалды (10)
+көшірілді
+көшірілмей, жылжытылды
+a: 0, b: 10, c: 10
+жасалды (1000)
+d: 1000</code></pre>
+      <p>Нәтижеден көреміз: <code>Buffer b = a</code> көшірді, ал <code>std::move(a)</code> жадты <code>c</code>-ға жылжытты (<code>a</code> бос қалды: өлшемі 0). <code>make()</code> қайтарған нысан кейбір жағдайда (компилятор оңтайландыруы - <em>copy elision</em>) көшірусіз де тікелей <code>d</code> ішінде жасалады.</p>
+      <div class="callout tip">
+        <span class="callout-title">Rule of Zero: ең жақсы ереже</span>
+        <p>Ең жақсы жағдай - бесеуін де жазбау. Егер сіз жадты қолмен басқармай, <code>std::string</code>, <code>std::vector</code>, <code>std::unique_ptr</code> сияқты дайын кластарды өрістер ретінде қолдансаңыз, компилятор жасаған әдепкі көшіру, жылжыту және деструктор өздері дұрыс жұмыс істейді. Мұны <strong>Rule of Zero</strong> («нөл ереже») дейді. Бұл апта үшін Rule of Three/Five кіріспе ғана; шын жобада алдымен дайын контейнерлерге жүгініңіз.</p>
+      </div>
+
+      <h2 id="design">Мұрагерлік пе, композиция ма?</h2>
+      <p>Мұрагерлікті үйренген бастаушылар оны барлық жерде қолданғысы келеді. Бұл үйреншікті қателік. Мұрагерлік - өте тығыз байланыс: базалық класты өзгертсеңіз, барлық мұрагер әсер етеді. Сондықтан дұрыс таңдау үшін екі сұрақ қойыңыз:</p>
+      <ol>
+        <li><strong>«Туынды нысанды базалық нысанның орнына барлық жерде қоя аламын ба?»</strong> Бұл Барбара Лисковтың алмастыру қағидасы. Егер функция <code>Bird</code> күтсе, оған <code>Penguin</code> берсеңіз, ол «ұшу» әрекетін орындай ала ма? Пингвин ұша алмаса, <code>Penguin</code> класын <code>Bird</code>-тен «ұша алатын құс» мағынасында мұрагерлеуге болмайды. Шаршы мен тіктөртбұрыш мысалы да осыған ұқсас: тіктөртбұрыштың енін жеке өзгертуге болады, шаршының болмайды.</li>
+        <li><strong>«Бұл «болып табылады» ма, әлде «бар» ма?»</strong> Автобус - көлік (мұрагерлік). Автобуста қозғалтқыш бар (композиция). Қозғалтқыштан мұрагерлену дұрыс емес, себебі автобус қозғалтқыш емес.</li>
+      </ol>
+      <p>Қосымша ереже: мұрагерлікті <em>интерфейс</em> (келісімшарт) үшін қолданыңыз, ал <em>кодты қайта қолдану</em> үшін композицияны таңдаңыз. <strong>Интерфейс</strong> деп C++-та көбіне тек таза виртуалды функциялардан тұратын абстрактілі класты айтады (біздің <code>Instrument</code> сияқты). Мұндай класс «не істеуге болады» дегенді ғана сипаттайды, ал «қалай істеледі» мұрагерге қалдырылады. Нәтижесінде бағдарламаның бөліктері бір-біріне тікелей тәуелді емес, олар тек келісімшартты біледі. Бұл - үлкен жобаны оңай өзгертуге мүмкіндік беретін ең пайдалы идеялардың бірі.</p>
+
+      <p>Интерфейс идеясын нақты мысалмен көрейік. Кітаптың сипаттамасы бар (<code>Describable</code>) және бағасы бар (<code>Priced</code>). Музей қоры сипатталады, бірақ сатылмайды. Екі интерфейс бөлек, ал <code>Book</code> екеуін де орындайды:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+class Describable {                       // интерфейс: тек таза виртуалды функциялар
+public:
+    virtual ~Describable() = default;
+    virtual std::string describe() const = 0;
+};
+
+class Priced {
+public:
+    virtual ~Priced() = default;
+    virtual int price() const = 0;
+};
+
+class Book : public Describable, public Priced {
+public:
+    Book(std::string t, int p) : title_(t), price_(p) {}
+    std::string describe() const override { return "Кітап «" + title_ + "»"; }
+    int price() const override { return price_; }
+
+private:
+    std::string title_;
+    int price_;
+};
+
+class Museum : public Describable {
+public:
+    std::string describe() const override { return "Музей қоры (сатылмайды)"; }
+};
+
+void printAll(const std::vector&lt;const Describable*&gt;&amp; items) {
+    for (const Describable* d : items) {
+        std::cout &lt;&lt; " - " &lt;&lt; d-&gt;describe() &lt;&lt; "\n";
+    }
+}
+
+int main() {
+    Book b1("Қара сөздер", 2500);
+    Book b2("Көшпенділер", 4200);
+    Museum m;
+    printAll({&amp;b1, &amp;b2, &amp;m});
+
+    const Priced* p = &amp;b2;               // сол нысанға басқа интерфейс арқылы қарау
+    std::cout &lt;&lt; "Баға: " &lt;&lt; p-&gt;price() &lt;&lt; " тг\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a18_interface
+ - Кітап «Қара сөздер»
+ - Кітап «Көшпенділер»
+ - Музей қоры (сатылмайды)
+Баға: 4200 тг</code></pre>
+      <p>Мұнда <code>printAll</code> функциясы кітап пен музей қорының айырмасын білмейді, ол тек <code>Describable</code> келісімшартын біледі. Ертең сипатталатын жаңа зат (мысалы, мұражай билеті) пайда болса, <code>printAll</code> өзгермейді. Сол <code>b2</code> нысанына екінші интерфейс (<code>Priced</code>) арқылы да қарадық. Мұндай бірнеше интерфейстен мұрагерлену C++-та қауіпсіз, өйткені интерфейстерде өріс жоқ және шатасатын ештеңе жоқ. Екі интерфейс-емес кластан бірден мұрагерлену күрделі, ол жағдайды әдетте композициямен ауыстыру жақсы.</p>
+
+      <h3 id="hiding">Қайта анықтау мен жасыру</h3>
+      <p>Тапсырма 2-дегі <code>g()</code> мысалына оралайық. Виртуалды <em>емес</em> функцияны туындыда қайта жазсақ, ол базалық нұсқаны <strong>қайта анықтамайды</strong>, тек <strong>жасырады</strong> (<span class="term-en">name hiding</span>). Туынды нысанмен тікелей жұмыс істегенде жаңа нұсқа көрінеді, ал базалық көрсеткіш арқылы ескі нұсқа шақырылады. Нәтижесі: бір нысан, екі түрлі жауап. Мұндай жағдай бағдарламаны түсініксіз етеді, сондықтан ереже қарапайым: <strong>базалық класта виртуалды емес функцияны туындыда қайта жазбаңыз</strong>. Егер мінез-құлық өзгеруі керек болса, оны <code>virtual</code> жасаңыз.</p>
+      <p>Тағы бір нәзік жағдай: туынды класс базалық функцияның аты бірдей, бірақ параметрлері басқа нұсқасын жазса, базалық барлық нұсқалар жасырылады. Бұл жөнінде компилятор <code>-Woverloaded-virtual</code> ескертуін берді (a05 және a06 мысалдарында көрдік). Ескертулерге мән беріңіз: олар көбіне ойластырылмаған қатені көрсетеді.</p>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ol>
+        <li><strong>Деструкторды виртуалды етпеу.</strong> Базалық көрсеткіш арқылы <code>delete</code> істесеңіз, туынды бөлік жойылмайды. Базада <code>virtual ~Base() = default;</code>.</li>
+        <li><strong>override жазбау.</strong> <code>const</code> не параметр типі сәйкес келмесе, функция қайта анықталмай, жаңасы жасалады. Компилятор ұстау үшін әрқашан <code>override</code> жазыңыз.</li>
+        <li><strong>Нысанды мәнмен беру (slicing).</strong> <code>void f(Base b)</code> орнына <code>void f(const Base&amp; b)</code>.</li>
+        <li><strong>Абстрактілі классты жасауға тырысу.</strong> Таза виртуалды функциясы бар кластан нысан алынбайды; туындыда барлық таза виртуалды функцияны қайта анықтау керек.</li>
+        <li><strong>Конструктор ішінде виртуалды шақыру.</strong> Конструктор кезінде нысанның түрі әлі ағымдағы класс, сондықтан туынды нұсқа орындалмайды.</li>
+        <li><strong><code>public</code>-ті ұмыту.</strong> <code>class B : A</code> жазсаңыз, <code>class</code> үшін әдепкі мұрагерлік <code>private</code>, ал <code>struct</code> үшін <code>public</code>. Әрқашан <code>: public A</code> деп жазыңыз.</li>
+        <li><strong>Мұрагерлікті артық қолдану.</strong> «Болып табылады» қатынасы жоқ жерде композицияны таңдаңыз. «Автобус - көлік», бірақ «кітапхана - кітап» емес.</li>
+        <li><strong>Көшіруді ұмыту.</strong> Жадты иеленетін класта Rule of Three/Five орындалмаса, ерте-кеш «қос босату» қатесі шығады.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li><strong>Мұрагерлік</strong> (<code>class D : public B</code>) «болып табылады» қатынасын білдіреді; туынды класс базалық мүшелерді алады.</li>
+        <li><code>protected</code> мүше тек класта және мұрагерлерде көрінеді; бірақ өрісті мүмкіндігінше <code>private</code> қалдырыңыз.</li>
+        <li>Конструкторлар жоғарыдан төмен (база → туынды), деструкторлар төменнен жоғары.</li>
+        <li><code>virtual</code> функция динамикалық байланыстыруды қосады, <code>override</code> қателерді компиляция кезінде ұстайды, <code>final</code> одан әрі өзгертуді тыйады.</li>
+        <li>Таза виртуалды функция (<code>= 0</code>) классты абстрактілі етеді; одан тек мұрагерлер арқылы нысан жасалады.</li>
+        <li>vtable идеясы: әр нысанда vptr бар, ол кластың функциялар кестесіне нұсқайды.</li>
+        <li>Полиморфизм көрсеткіш не сілтеме арқылы жұмыс істейді; мәнмен берсек, <strong>slicing</strong> болады.</li>
+        <li>Полиморфты базада деструктор <code>virtual</code> болуы керек.</li>
+        <li>Ресурс иеленетін класта <strong>Rule of Three/Five</strong>; мүмкін болса, <strong>Rule of Zero</strong>.</li>
+      </ul>
+      <h3 id="self-check">Өзіңді тексеру тізімі</h3>
+      <ul class="checklist" data-id="cpp5-self">
+        <li><input type="checkbox"> <span>«Болып табылады» мен «бар» қатынасының айырмасын мысалмен түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Базалық және туынды конструктор/деструктор ретін болжай аламын.</span></li>
+        <li><input type="checkbox"> <span><code>virtual</code> болмаса не болатынын, <code>override</code> не беретінін түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Абстрактілі класс жазып, одан бірнеше мұрагер жасай аламын.</span></li>
+        <li><input type="checkbox"> <span>Slicing қатесін танып, түзете аламын.</span></li>
+        <li><input type="checkbox"> <span>Виртуалды деструктор неге керегін айта аламын.</span></li>
+        <li><input type="checkbox"> <span>Rule of Three-дегі үш мүшені атай аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. Мына бағдарлама не шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">struct Base {
+    virtual const char* who() const { return "Base"; }
+};
+struct Derived : Base {
+    const char* who() const override { return "Derived"; }
+};
+
+void show(Base b) { std::cout &lt;&lt; b.who() &lt;&lt; "\n"; }
+
+// main-де:
+Derived d;
+show(d);
+Base&amp; r = d;
+std::cout &lt;&lt; r.who() &lt;&lt; "\n";</code></pre>
+          <label><input type="radio" value="a"> <code>Derived</code>, содан кейін <code>Derived</code></label>
+          <label><input type="radio" value="b"> <code>Base</code>, содан кейін <code>Derived</code></label>
+          <label><input type="radio" value="c"> <code>Base</code>, содан кейін <code>Base</code></label>
+          <label><input type="radio" value="d"> Құрастыру қатесі</label>
+          <p class="explain"><code>show</code> нысанды мәнмен алады, сондықтан <code>Derived</code> бөлігі кесіліп (slicing), тек <code>Base</code> қалады. Сілтеме арқылы нысанның өзі сақталады, сондықтан <code>Derived</code> шығады. Компилятормен тексердік.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">2. Қай жағдайда виртуалды деструктор міндетті?</p>
+          <label><input type="radio" value="a"> Класта өріс көп болса</label>
+          <label><input type="radio" value="b"> Класта <code>static</code> әдіс болса</label>
+          <label><input type="radio" value="c"> Туынды нысанды базалық көрсеткіш арқылы <code>delete</code> жасағанда</label>
+          <label><input type="radio" value="d"> Класс <code>const</code> болғанда</label>
+          <p class="explain">Деструктор виртуалды болмаса, базалық көрсеткіш арқылы <code>delete</code> тек базалық деструкторды шақыруы мүмкін, ал бұл анықталмаған әрекет және жад ағуы.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. Таза виртуалды функциясы бар класс туралы қай пікір дұрыс?</p>
+          <label><input type="radio" value="a"> Одан тікелей нысан жасауға болмайды</label>
+          <label><input type="radio" value="b"> Оның барлық функциясы <code>static</code> болуы керек</label>
+          <label><input type="radio" value="c"> Одан мұрагерлене алмайсыз</label>
+          <label><input type="radio" value="d"> Ол <code>final</code> кластың синонимі</label>
+          <p class="explain">Абстрактілі класс тек базалық түрде қолданылады. Мұрагер таза виртуалды функцияларды қайта анықтағанда ғана нысан жасауға болады.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">4. Туынды класта <code>void speak() override</code> жазылған, ал базада <code>virtual void speak() const</code>. Не болады?</p>
+          <label><input type="radio" value="a"> Бәрі дұрыс жұмыс істейді</label>
+          <label><input type="radio" value="b"> Тек ескерту шығады, бағдарлама іске қосылады</label>
+          <label><input type="radio" value="c"> Орындау кезінде қате шығады</label>
+          <label><input type="radio" value="d"> Құрастыру қатесі: <code>marked 'override', but does not override</code></label>
+          <p class="explain">Қолтаңба сәйкес емес (<code>const</code> жоқ), сондықтан функция базаны қайта анықтамайды. <code>override</code> дәл осындай қателерді құрастыру кезінде ұстау үшін бар.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. Мына нысан жасалғанда экранға не шығады?</p>
+<pre data-lang="cpp"><code class="language-cpp">struct Tail   { Tail()   { std::cout &lt;&lt; "Tail ";   } };
+struct Animal { Animal() { std::cout &lt;&lt; "Animal "; } };
+struct Fox : Animal {
+    Tail tail_;
+    Fox() { std::cout &lt;&lt; "Fox "; }
+};
+// main-де: Fox f;</code></pre>
+          <label><input type="radio" value="a"> <code>Fox Animal Tail</code></label>
+          <label><input type="radio" value="b"> <code>Animal Tail Fox</code></label>
+          <label><input type="radio" value="c"> <code>Tail Animal Fox</code></label>
+          <label><input type="radio" value="d"> <code>Animal Fox Tail</code></label>
+          <p class="explain">Алдымен базалық бөлік (<code>Animal</code>), содан кейін туынды класстың өрістері (<code>Tail</code>), ең соңында туынды конструктордың денесі (<code>Fox</code>).</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">6. Rule of Three бойынша қай үштік бірге жазылуы керек?</p>
+          <label><input type="radio" value="a"> Конструктор, деструктор, <code>operator&lt;&lt;</code></label>
+          <label><input type="radio" value="b"> Конструктор, <code>virtual</code>, <code>override</code></label>
+          <label><input type="radio" value="c"> Деструктор, көшіру конструкторы, көшіру меншіктеуі</label>
+          <label><input type="radio" value="d"> Геттер, сеттер, конструктор</label>
+          <p class="explain">Ресурс иеленетін класта осы үшеуі бірге анықталады. Жылжыту конструкторы мен жылжыту меншіктеуі қосылса, Rule of Five болады.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. <code>protected</code> өріске кім қол жеткізе алады?</p>
+          <label><input type="radio" value="a"> Класстың өзі және оның туынды кластары</label>
+          <label><input type="radio" value="b"> Тек класстың өзі</label>
+          <label><input type="radio" value="c"> Барлығы, <code>main</code> да</label>
+          <label><input type="radio" value="d"> Тек <code>friend</code> емес функциялар</label>
+          <p class="explain"><code>protected</code> - <code>private</code> пен <code>public</code> арасындағы деңгей: мұрагерлер көреді, сырттағы код көрмейді.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">8. Мына код компиляцияланады ма?</p>
+<pre data-lang="cpp"><code class="language-cpp">class A final {};
+class B : public A {};</code></pre>
+          <label><input type="radio" value="a"> Иә, <code>final</code> тек ескерту береді</label>
+          <label><input type="radio" value="b"> Иә, <code>public</code> болғандықтан</label>
+          <label><input type="radio" value="c"> Тек <code>-O2</code> болмаса</label>
+          <label><input type="radio" value="d"> Жоқ: финал кластан мұрагерлену мүмкін емес</label>
+          <p class="explain">Компилятор <code>cannot derive from 'final' base 'A'</code> деген қате береді. Мұны нақты тексердік.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="exercises">Жаттығулар</h2>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="task-5-1">Деструкторлар реті</h3></div>
+        <p>Мына бағдарлама <code>A B C | ~C ~B ~A</code> шығарады (лекциядағы <code>t01_vehicle_order</code>). Құрылымы: <code>struct B : A</code>, <code>struct C : B</code>, <code>main</code>-де <code>C c;</code>. Шыққан нәтижедегі <strong>бірінші</strong> «~» белгісімен басталатын жазуды ашып жаз (мысалы, <code>~X</code> түрінде).</p>
+        <div class="answer-check" data-answer="~C"><input type="text" placeholder="~X" aria-label="Бірінші деструктор"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Конструкторлар базадан туындыға қарай жұмыс істейді. Деструкторлар қалай?</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>~C</code>. Деструкторлар конструкторларға кері ретпен шақырылады: ең соңғы жасалған <code>C</code> бірінші жойылады. Нақты нәтиже лекцияда көрсетілген.</p></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="task-5-2">Қай g()?</h3></div>
+        <p>Мына кодта <code>f()</code> виртуалды, ал <code>g()</code> виртуалды емес. <code>Base* p = &amp;d;</code> болғанда, <code>p-&gt;g()</code> қай жолды шығарады: <code>Base-g</code> әлде <code>Derived-g</code>?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+struct Base {
+    virtual void f() const { std::cout &lt;&lt; "Base "; }
+    void g() const { std::cout &lt;&lt; "Base-g "; }
+};
+struct Derived : Base {
+    void f() const override { std::cout &lt;&lt; "Derived "; }
+    void g() const { std::cout &lt;&lt; "Derived-g "; }
+};
+
+int main() {
+    Derived d;
+    Base* p = &amp;d;
+    p-&gt;f();
+    p-&gt;g();
+    d.g();
+    std::cout &lt;&lt; "\n";
+}</code></pre>
+        <div class="answer-check" data-answer="Base-g"><input type="text" placeholder="Base-g немесе Derived-g" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Функция виртуалды болмаса, шақырылатын нұсқа көрсеткіштің <em>типіне</em> қарап таңдалады.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>Base-g</code>. Нәтиже:</p>
+<pre class="terminal"><code class="language-plaintext">$ ./t02_override
+Derived Base-g Derived-g </code></pre></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="task-5-3">Ұмытылған сөз</h3></div>
+        <p>Мына класс <code>override</code> қатесін береді. Базада: <code>virtual void speak() const</code>. Туындыда: <code>void speak() override</code>. Қатені түзету үшін <code>override</code>-тан алдын қай кілт сөзді қосу керек? (бір сөз)</p>
+        <div class="answer-check" data-answer="const"><input type="text" placeholder="Кілт сөз" aria-label="Кілт сөз"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Сәйкес келмейтін нәрсе: қолтаңба. Базадағы функцияның жақшасынан кейін не тұр?</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>const</code>: <code>void speak() const override</code>. Компиляторға берілген қате: <code>marked 'override', but does not override</code>.</p></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="task-5-4">Төлем әдістері</h3></div>
+        <p>Абстрактілі <code>Payment</code> класын жаз: таза виртуалды <code>fee(double amount)</code> (комиссия) және <code>name()</code>, виртуалды деструктор. Үш мұрагер жаз: <code>CardPayment</code> (1%), <code>CashPayment</code> (0%), <code>QrPayment</code> (0.5%). <code>main</code>-де <code>std::vector&lt;std::unique_ptr&lt;Payment&gt;&gt;</code> құрып, 20000 тг-ге комиссияны шығар.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Әр мұрагерде екі функцияны да <code>override</code> ет. Қолма-қол төлемде параметр керек емес, сондықтан <code>double</code> атаусыз қалдыруға болады (ескерту шықпайды).</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+class Payment {
+public:
+    virtual ~Payment() = default;
+    virtual double fee(double amount) const = 0;     // комиссия
+    virtual std::string name() const = 0;
+};
+
+class CardPayment : public Payment {
+public:
+    double fee(double amount) const override { return amount * 0.01; }
+    std::string name() const override { return "Карта"; }
+};
+
+class CashPayment : public Payment {
+public:
+    double fee(double) const override { return 0; }
+    std::string name() const override { return "Қолма-қол"; }
+};
+
+class QrPayment : public Payment {
+public:
+    double fee(double amount) const override { return amount * 0.005; }
+    std::string name() const override { return "QR"; }
+};
+
+int main() {
+    std::vector&lt;std::unique_ptr&lt;Payment&gt;&gt; methods;
+    methods.push_back(std::make_unique&lt;CardPayment&gt;());
+    methods.push_back(std::make_unique&lt;CashPayment&gt;());
+    methods.push_back(std::make_unique&lt;QrPayment&gt;());
+
+    double amount = 20000;
+    for (const auto&amp; m : methods) {
+        std::cout &lt;&lt; m-&gt;name() &lt;&lt; ": комиссия " &lt;&lt; m-&gt;fee(amount) &lt;&lt; " тг\n";
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./t04_payment
+Карта: комиссия 200 тг
+Қолма-қол: комиссия 0 тг
+QR: комиссия 100 тг</code></pre>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="cpp5-payment">
+            <li><input type="checkbox"> <span><code>Payment</code>-тен нысан жасауға болмайды (абстрактілі).</span></li>
+            <li><input type="checkbox"> <span>Барлық мұрагерде <code>override</code> жазылған.</span></li>
+            <li><input type="checkbox"> <span>Базада <code>virtual ~Payment() = default;</code> бар.</span></li>
+            <li><input type="checkbox"> <span>Комиссиялар 200, 0, 100 тг шығады.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="task-5-5">Фигуралар иерархиясы</h3></div>
+        <p><code>Shape</code> (абстрактілі: <code>area()</code>, <code>name()</code>), <code>Rect</code>, <code>Circle</code> кластарын жаз, <code>Square</code>-ды <code>Rect</code>-тен <code>final</code> мұрагер ет (<code>Square(5)</code> шаршысы). Бәрін бір векторда ұста, әрқайсысының ауданын және жалпы ауданды шығар. Мұрагерліктің дұрыс-бұрыстығы туралы ойлан: шаршы шынымен тіктөртбұрыш па?</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>Square</code> конструкторы <code>Rect(s, s)</code> шақырады. <code>name()</code> ғана қайта анықталады, <code>area()</code> мұраланады. Нысандарды <code>std::make_unique</code> арқылы жаса.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;vector&gt;
+
+class Shape {
+public:
+    virtual ~Shape() = default;
+    virtual double area() const = 0;
+    virtual const char* name() const = 0;
+};
+
+class Rect : public Shape {
+public:
+    Rect(double w, double h) : w_(w), h_(h) {}
+    double area() const override { return w_ * h_; }
+    const char* name() const override { return "тік төртбұрыш"; }
+
+private:
+    double w_, h_;
+};
+
+class Circle : public Shape {
+public:
+    Circle(double r) : r_(r) {}
+    double area() const override { return 3.14159 * r_ * r_; }
+    const char* name() const override { return "шеңбер"; }
+
+private:
+    double r_;
+};
+
+class Square final : public Rect {
+public:
+    Square(double s) : Rect(s, s) {}
+    const char* name() const override { return "шаршы"; }
+};
+
+int main() {
+    std::vector&lt;std::unique_ptr&lt;Shape&gt;&gt; shapes;
+    shapes.push_back(std::make_unique&lt;Rect&gt;(3, 4));
+    shapes.push_back(std::make_unique&lt;Circle&gt;(1));
+    shapes.push_back(std::make_unique&lt;Square&gt;(5));
+
+    double total = 0;
+    for (const auto&amp; s : shapes) {
+        std::cout &lt;&lt; s-&gt;name() &lt;&lt; ": " &lt;&lt; s-&gt;area() &lt;&lt; "\n";
+        total += s-&gt;area();
+    }
+    std::cout &lt;&lt; "Жалпы ауданы: " &lt;&lt; total &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./t05_shapes
+тік төртбұрыш: 12
+шеңбер: 3.14159
+шаршы: 25
+Жалпы ауданы: 40.1416</code></pre>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="cpp5-shapes">
+            <li><input type="checkbox"> <span>12, 3.14159, 25 және жалпы 40.1416 шығады.</span></li>
+            <li><input type="checkbox"> <span><code>class X : public Square</code> жазып көр: компилятор қате береді.</span></li>
+            <li><input type="checkbox"> <span><code>-fsanitize=address,undefined</code> қатесіз өтеді (жад ағуы жоқ).</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="task-5-6">Қай қате?</h3></div>
+        <p>Лекциядағы <code>a16_rule3_bad</code> бағдарламасын AddressSanitizer-мен орындағанда қандай қате түрі шықты? (бір атау, дефис арқылы: <code>heap-...</code>)</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;cstring&gt;
+#include &lt;iostream&gt;
+
+class Name {
+public:
+    Name(const char* s) : data_(new char[std::strlen(s) + 1]) {
+        std::strcpy(data_, s);
+    }
+    ~Name() { delete[] data_; }
+    const char* c_str() const { return data_; }
+
+private:
+    char* data_;
+};
+
+int main() {
+    Name a("Айгерім");
+    {
+        Name b = a;     // әдепкі көшіру: көрсеткіш көшіріледі, мәтін емес!
+        std::cout &lt;&lt; b.c_str() &lt;&lt; "\n";
+    }                   // b жойылды -&gt; a.data_ да босатылды
+    std::cout &lt;&lt; a.c_str() &lt;&lt; "\n";   // қолданылған жад!
+}</code></pre>
+        <div class="answer-check" data-answer="heap-use-after-free|use-after-free"><input type="text" placeholder="heap-..." aria-label="Қате түрі"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Ішкі жақша аяқталғанда <code>b</code> жойылады. Ол жадты босатады. Содан кейін <code>a</code> сол жадты оқиды. Босатылған жадты қолдану қалай аталады?</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>heap-use-after-free</code>. Әдепкі көшіру конструкторы көрсеткішті көшірді, мәтінді емес, сондықтан <code>a</code> мен <code>b</code> бір жадқа нұсқады. Түзету: көшіру конструкторы мен меншіктеуін жазу (<code>a15_rule3</code>) не <code>std::string</code> қолдану (Rule of Zero).</p></div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-4.html"><small>Алдыңғы</small>← 4-апта: Класстар және нысандар</a>
+        <a class="next" href="week-6.html"><small>Келесі</small>6-апта: STL: контейнерлер, итераторлар, алгоритмдер →</a>
+      </nav>
+
+      <p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

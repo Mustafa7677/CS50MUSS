@@ -18,15 +18,16 @@
   /* ---------- ойындардың қосымша сипаттамасы: санат, белгі, қиындық, ұпай максимумы ---------- */
   const META = {
     runner: { cats: ["python"], tags: ["Python", "Синтаксис"], diff: 2, max: 350 },
-    bughunt: { cats: ["python", "c", "web"], tags: ["C", "Python", "JS"], diff: 2, max: 150 },
-    battle: { cats: ["python", "c", "web"], tags: ["Python", "C", "JS"], diff: 3, max: 300 },
+    bughunt: { cats: ["python", "c", "cpp", "java", "web"], tags: ["C", "C++", "Java", "Python", "JS"], diff: 2, max: 150 },
+    battle: { cats: ["python", "c", "cpp", "java", "web"], tags: ["Python", "C", "C++", "Java", "JS"], diff: 3, max: 300 },
     algo: { cats: ["algo"], tags: ["Алгоритм"], diff: 3, max: 500 },
     sqlescape: { cats: ["sql"], tags: ["SQL"], diff: 3, max: 90 },
-    memory: { cats: ["c"], tags: ["C", "Жад"], diff: 3, max: 60 },
+    memory: { cats: ["c", "cpp"], tags: ["C", "C++", "Жад"], diff: 3, max: 60 },
+    oracle: { cats: ["cpp", "java"], tags: ["C++", "Java", "Нәтиже"], diff: 2, max: 800 },
     webbuilder: { cats: ["web"], tags: ["HTML", "CSS"], diff: 1, max: 100 },
     binary: { cats: ["algo"], tags: ["Екілік", "Биттер"], diff: 2, max: 350 },
   };
-  const CATS = [["all", "Бәрі"], ["python", "Python"], ["c", "C"], ["sql", "SQL"], ["web", "Веб"], ["algo", "Алгоритм"]];
+  const CATS = [["all", "Бәрі"], ["python", "Python"], ["c", "C"], ["cpp", "C++"], ["java", "Java"], ["sql", "SQL"], ["web", "Веб"], ["algo", "Алгоритм"]];
   const meta = (d) => META[d.id] || { cats: ["algo"], tags: ["Ойын"], diff: 2, max: 0 };
   const GLYPHS = ["{ }", "01", "</>", ";", "( )", "#", "[ ]", "=>", "&&", "10", "0x", "++"];
 
@@ -132,7 +133,7 @@
         <div class="gx-hero-body">
           <p class="gx-eyebrow">🎮 Аркада</p>
           <h2 class="gx-hero-title">Ойна. Үйрен. <span>Деңгейіңді өсір.</span></h2>
-          <p class="gx-hero-sub">Python, C, SQL, веб және алгоритмдер: қысқа раундтар, рекордтар мен XP. Интернетсіз, тіркелусіз.</p>
+          <p class="gx-hero-sub">Python, C, C++, Java, SQL, веб және алгоритмдер: қысқа раундтар, рекордтар мен XP. Интернетсіз, тіркелусіз.</p>
         </div>
         <div class="gx-panel" role="status">
           <div class="gx-lvl" style="--p:${li.pct}%" aria-hidden="true"><span>${li.level}</span></div>

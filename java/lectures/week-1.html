@@ -1,0 +1,1065 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Java 1-апта: Шарттар, циклдер және әдістер - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#d97706">
+  <!-- /build:head -->
+  <meta name="description" content="Java 17: if/else, switch (классикалық және өрнек), логикалық операторлар, while/do-while/for/for-each, әдістер, scope, overloading, рекурсия, varargs.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="java" style="--c:#d97706"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Java</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../java/index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+<div class="lecture-head" data-n="1">
+<div class="num">1-апта</div>
+<h1>Шарттар, циклдер және әдістер</h1>
+<p>Бағдарламаға шешім қабылдауды, қайталауды және әдістерге бөлуді үйретеміз: <code>if</code>, <code>switch</code>, <code>while</code>, <code>for</code>, өз әдістеріміз, overloading, рекурсия және varargs.</p>
+</div>
+
+
+<div class="callout tip"><span class="callout-title">Өткен аптаның қысқаша мазмұны</span>
+<p>0-аптада біз Java бағдарламасының жолын (<code>.java</code> → <code>javac</code> → <code>.class</code> → JVM), айнымалыларды, типтерді және операторларды қарастырдық. Осы уақытқа дейінгі бағдарламаларымыз жоғарыдан төмен қарай бір сызықпен жүретін. Бүгін оларға «ақыл» береміз: бағдарлама <em>шешім қабылдайды</em>, <em>қайталайды</em> және үлкен жұмысты <em>әдістерге</em> бөледі.</p></div>
+
+<h2 id="if">Шарттар: if, else if, else</h2>
+<p>Күнделікті өмірде біз үнемі шартпен сөйлейміз: «егер жаңбыр жауса, шатыр аламын, әйтпесе алмаймын». Java-да да солай. <code>if</code> жақшаның ішіндегі өрнектің <code>boolean</code> мәніне қарайды: <code>true</code> болса, бұйра жақшадағы блок орындалады.</p>
+<p>Нақты мысал: мұражай билетінің бағасы жасқа байланысты. 7 жасқа дейін - тегін, 18-ге дейін - 500 тг, 63-ке дейін - 1500 тг, одан үлкендерге - 700 тг (бұл бағалар шартты). Шарттар жоғарыдан төмен қарай тексеріледі, <strong>бірінші ақиқат шарт ғана</strong> орындалады, қалғаны өткізіліп жіберіледі.</p>
+<pre data-lang="java"><code class="language-java">import java.util.Scanner;
+
+public class Bilet {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Жасыңыз: ");
+        int jas = sc.nextInt();
+
+        int baga;
+        if (jas &lt; 7) {
+            baga = 0;
+        } else if (jas &lt; 18) {
+            baga = 500;
+        } else if (jas &lt; 63) {
+            baga = 1500;
+        } else {
+            baga = 700;
+        }
+        System.out.println("Билет бағасы: " + baga + " тг");
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Bilet.java
+$ java Bilet
+Жасыңыз: 15
+Билет бағасы: 500 тг</code></pre>
+<p>Бұл жерде <code>jas = 15</code> болғанда бірінші шарт (<code>15 &lt; 7</code>) жалған, екіншісі (<code>15 &lt; 18</code>) ақиқат, сондықтан <code>baga = 500</code>, ал қалған шарттарға бағдарлама қарамайды. Сондықтан екінші шартта «<code>jas &gt;= 7 &amp;&amp; jas &lt; 18</code>» деп жазудың қажеті жоқ: <code>jas &lt; 7</code> жалған екені алдын ала белгілі.</p>
+<p>Шарттың құрылымын сызбамен көрейік. Ромб - сұрақ, төртбұрыш - әрекет.</p>
+<figure style="margin:22px 0;text-align:center"><svg viewBox="0 0 640 270" role="img" aria-label="if-else-if сызбасы: jas &lt; 7 болса baga = 0; әйтпесе jas &lt; 18 болса baga = 500; әйтпесе jas &lt; 63 болса baga = 1500; әйтпесе baga = 700; барлығы соңында билет бағасын шығарумен аяқталады" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto"><defs><marker id="ar157_1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><polygon points="100,20.0 180.0,50 100,80.0 20.0,50" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100" y="50" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;font-weight:400">jas &lt; 7</text><polyline points="180,50 250,50" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_1)"/><text x="214" y="38" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">иә</text><rect x="252" y="32" width="120" height="36" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="312.0" y="50.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">baga = 0</text><polyline points="100,80 100,115" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_1)"/><text x="112" y="98" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">жоқ</text><polygon points="100,115.0 180.0,145 100,175.0 20.0,145" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100" y="145" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;font-weight:400">jas &lt; 18</text><polyline points="180,145 250,145" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_1)"/><text x="214" y="133" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">иә</text><rect x="252" y="127" width="120" height="36" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="312.0" y="145.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">baga = 500</text><polyline points="100,175 100,205" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_1)"/><text x="112" y="190" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">жоқ</text><polygon points="100,205.0 180.0,235 100,265.0 20.0,235" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100" y="235" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;font-weight:400">jas &lt; 63</text><polyline points="180,235 250,235" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_1)"/><text x="214" y="223" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">иә</text><rect x="252" y="217" width="120" height="36" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="312.0" y="235.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">baga = 1500</text><polyline points="100,265 100,268" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_1)"/><rect x="440" y="100" width="180" height="36" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="530.0" y="111.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">baga = 700</text><text x="530.0" y="128.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">(әйтпесе)</text><polyline points="100,265 100,268" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_1)"/><polyline points="372,50 410,50 410,118 438,118" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_1)"/><polyline points="372,145 410,145 410,118" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_1)"/><polyline points="372,235 410,235 410,118" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_1)"/></svg><figcaption style="font-size:14.5px;color:var(--muted);margin-top:8px">4-сурет. Шарттар жоғарыдан төмен тексеріледі; бірінші «иә» жолы таңдалады.</figcaption></figure>
+<p>Мәтіндік сипаттама: сызбада үш сұрақ бір-бірінің астында тұр. Әр «иә» оңға - сәйкес мәнді меншіктеуге апарады, әр «жоқ» төмен - келесі сұраққа. Үш сұрақтың үшеуі де жалған болса, <code>else</code> тармағы (700) орындалады. Бәрінің соңында бағдарлама бір жерге - билет бағасын шығаруға - қосылады.</p>
+<div class="callout warn"><span class="callout-title">Бұйра жақшаны тастамаңыз</span>
+<p>Блокта тек бір нұсқау болса, жақшаны жазбауға болады: <code>if (x &gt; 0) y = 1;</code>. Бірақ бұл қателікке жол ашады: кейін екінші жол қосқанда ол <code>if</code>-ке <em>жатпайды</em>, тек шегінісі соған ұқсайды. Әрқашан жақша қойыңыз.</p></div>
+
+<h2 id="logic">Логикалық операторлар және қысқа тізбек</h2>
+<p>Күрделі шарт үшін <code>&amp;&amp;</code> (және), <code>||</code> (немесе), <code>!</code> (емес) операторларын қолданамыз. Класс мысалы - кәбісе жыл. Жыл кәбісе болады, егер ол 4-ке бөлінсе, бірақ 100-ге бөлінбесе, <em>немесе</em> 400-ге бөлінсе.</p>
+<pre data-lang="java"><code class="language-java">public class KabisaJyl {
+    static boolean kabisa(int jyl) {
+        return (jyl % 4 == 0 &amp;&amp; jyl % 100 != 0) || jyl % 400 == 0;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("1900: " + kabisa(1900));
+        System.out.println("2000: " + kabisa(2000));
+        System.out.println("2024: " + kabisa(2024));
+        System.out.println("2025: " + kabisa(2025));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac KabisaJyl.java
+$ java KabisaJyl
+1900: false
+2000: true
+2024: true
+2025: false</code></pre>
+<p>(Мұнда алдын ала бір <code>static boolean kabisa(int jyl)</code> әдісін қолдандық, оны осы аптаның соңында толық түсіндіреміз.) Енді <strong>қысқа тізбек</strong> (<span class="term-en">short-circuit evaluation</span>) идеясы: <code>A &amp;&amp; B</code> өрнегінде <code>A</code> жалған болса, <code>B</code> тіпті <em>есептелмейді</em>, себебі нәтиже бәрібір жалған. Сол сияқты <code>A || B</code>-де <code>A</code> ақиқат болса, <code>B</code> тексерілмейді. Бұл құрал өте пайдалы: ол қатеден қорғайды.</p>
+<pre data-lang="java"><code class="language-java">public class QysqaTizbek {
+    public static void main(String[] args) {
+        int adam = 0;
+        int top = 50;
+
+        // Қауіпсіз: алдымен adam != 0 тексереміз
+        if (adam != 0 &amp;&amp; top / adam &gt; 10) {
+            System.out.println("Үлкен");
+        } else {
+            System.out.println("Бөлуге болмайды немесе кіші");
+        }
+
+        // Қауіпті: ретті ауыстырсақ, нөлге бөлу қатесі шығады
+        if (top / adam &gt; 10 &amp;&amp; adam != 0) {
+            System.out.println("Үлкен");
+        }
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac QysqaTizbek.java
+$ java QysqaTizbek
+Бөлуге болмайды немесе кіші
+Exception in thread "main" java.lang.ArithmeticException: / by zero
+	at QysqaTizbek.main(QysqaTizbek.java:14)</code></pre>
+<p>Бірінші <code>if</code> қауіпсіз өтті: <code>adam != 0</code> жалған болғандықтан, <code>top / adam</code> орындалмады. Екіншісінде шарттардың орнын ауыстырдық, ендеше нөлге бөлу алдымен орындалып, бағдарлама құлады. Қорытынды: <em>қорғау шартын әрқашан алдымен жазыңыз</em>.</p>
+<div class="callout warn"><span class="callout-title">Мәтінді == арқылы салыстырмаңыз</span>
+<p>Мәтіндерді салыстыру үшін <code>a.equals(b)</code> қолданыңыз, ал <code>a == b</code> емес. <code>==</code> мәтіннің мазмұнын емес, оның жадтағы <em>орнын</em> (сілтемесін) салыстырады; нәтижесі күтпегендей болуы мүмкін. Себебін 2-аптада жад диаграммасымен көреміз, қазір ережені жаттап алыңыз: <code>String</code> үшін әрқашан <code>equals</code>.</p></div>
+
+<h3 id="ternary">Үштік оператор: ?:</h3>
+<p>Қарапайым таңдау үшін Java-да қысқа жазу бар: <strong>үштік оператор</strong> (<span class="term-en">ternary operator</span>) <code>шарт ? мән1 : мән2</code>. Шарт ақиқат болса, <code>мән1</code> алынады, әйтпесе <code>мән2</code>. Бұл <code>if-else</code>-тің өрнек түріндегі қысқа нұсқасы: нәтижені бірден айнымалыға салуға болады.</p>
+<pre data-lang="java"><code class="language-java">public class Ushtik {
+    public static void main(String[] args) {
+        int jas = 20;
+        String toby = jas &gt;= 18 ? "ересек" : "бала";
+        System.out.println(toby);
+
+        int a = 14, b = 9;
+        int ulken = a &gt; b ? a : b;
+        System.out.println("Үлкені: " + ulken);
+
+        String kun = 1 == 1 ? "бір" : "бірнеше";
+        System.out.println(kun);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Ushtik.java
+$ java Ushtik
+ересек
+Үлкені: 14
+бір</code></pre>
+<p>Қысқа және түсінікті болғанда ғана қолданыңыз. Үштік операторларды бір-бірінің ішіне салсаңыз, код оқылмай қалады; ондай жағдайда әдеттегі <code>if-else</code> жақсы. Ереже: егер өрнекті дауыстап бір демде оқи алмасаңыз, оны <code>if</code>-ке айналдырыңыз.</p>
+
+<h2 id="switch">switch: көп таңдау</h2>
+<p>Бір айнымалының көп мәніне қарай әрекет таңдау керек болса, <code>if / else if</code> тізбегі ұзарып кетеді. Сондай кезде <code>switch</code> ыңғайлы. Классикалық түрінде әр <code>case</code> соңында <code>break</code> болуы тиіс.</p>
+<pre data-lang="java"><code class="language-java">public class AptaKuni {
+    public static void main(String[] args) {
+        int kun = 3;
+        switch (kun) {
+            case 1:
+                System.out.println("Дүйсенбі");
+                break;
+            case 2:
+                System.out.println("Сейсенбі");
+                break;
+            case 3:
+                System.out.println("Сәрсенбі");
+                break;
+            default:
+                System.out.println("Басқа күн");
+        }
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac AptaKuni.java
+$ java AptaKuni
+Сәрсенбі</code></pre>
+<p>Егер <code>break</code>-ті ұмытсақ, не болады? Java сәйкес келген <code>case</code>-тен бастап <strong>төмен қарай барлығын</strong> орындай береді, бұл <em>құлау</em> (<span class="term-en">fall-through</span>) деп аталады. Көбіне бұл - қате:</p>
+<pre data-lang="java"><code class="language-java">public class Qulau {
+    public static void main(String[] args) {
+        int kun = 3;
+        switch (kun) {
+            case 1:
+                System.out.println("Дүйсенбі");
+            case 2:
+                System.out.println("Сейсенбі");
+            case 3:
+                System.out.println("Сәрсенбі");
+            case 4:
+                System.out.println("Бейсенбі");
+                break;
+            case 5:
+                System.out.println("Жұма");
+        }
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Qulau.java
+$ java Qulau
+Сәрсенбі
+Бейсенбі</code></pre>
+<p>Бір күн орнына екі күн шықты, себебі 3-ші <code>case</code>-те <code>break</code> жоқ. Кейде құлау әдейі қолданылады (бірнеше мәнге бір әрекет), бірақ Java 14-тен бері оның әлдеқайда қауіпсіз әрі қысқа жолы бар: <strong>switch өрнегі</strong> (<span class="term-en">switch expression</span>). Ол көрсеткімен <code>-&gt;</code> жазылады, құлау болмайды және нәтиже қайтара алады.</p>
+<pre data-lang="java"><code class="language-java">public class Maysym {
+    public static void main(String[] args) {
+        for (int ay = 1; ay &lt;= 12; ay += 3) {
+            String maysym = switch (ay) {
+                case 12, 1, 2 -&gt; "қыс";
+                case 3, 4, 5 -&gt; "көктем";
+                case 6, 7, 8 -&gt; "жаз";
+                case 9, 10, 11 -&gt; "күз";
+                default -&gt; "белгісіз";
+            };
+            System.out.println(ay + "-ай: " + maysym);
+        }
+
+        int ay = 2;
+        int kunSany = switch (ay) {
+            case 4, 6, 9, 11 -&gt; 30;
+            case 2 -&gt; {
+                boolean kabisa = false;
+                yield kabisa ? 29 : 28;     // блоктан мән қайтару: yield
+            }
+            default -&gt; 31;
+        };
+        System.out.println("Ақпанда " + kunSany + " күн");
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Maysym.java
+$ java Maysym
+1-ай: қыс
+4-ай: көктем
+7-ай: жаз
+10-ай: күз
+Ақпанда 28 күн</code></pre>
+<p>Ескеріңіз: бұл жерде алдымен біз <code>for</code> циклін қолдандық (оны төменде түсіндіреміз), ал <code>case 12, 1, 2</code> - бірнеше мәнді үтірмен тізу. Көрсеткіден кейін не бір өрнек, не <code>{ ... }</code> блок келеді; блоктан мәнді <code>yield</code> қайтарады. Switch өрнегі <em>барлық мүмкін мәнді жабуы</em> керек, сондықтан <code>default</code> жиі қажет. <code>switch</code> <code>int</code>, <code>char</code>, <code>String</code> және <code>enum</code> мәндерімен жұмыс істейді; <code>double</code> және <code>boolean</code> үшін жұмыс істемейді.</p>
+
+<h2 id="loops">Циклдер: while, do-while, for</h2>
+<p>Қайталауды <strong>цикл</strong> (<span class="term-en">loop</span>) дейді. Бес жүз қайталауды қолмен жазбаймыз: цикл оны өзі жасайды. Java-да үш негізгі цикл бар.</p>
+<h3 id="while">while</h3>
+<p><code>while</code> әр айналым алдында шартты тексереді: ақиқат болса, денесін орындайды, сосын қайта тексереді. Шарт басынан жалған болса, дене <em>бір рет те</em> орындалмайды. Мысал: жинақ 100 000 тг, жыл сайын 10% артады; қанша жылда 200 000-ға жетеді?</p>
+<pre data-lang="java"><code class="language-java">public class Jinaq {
+    public static void main(String[] args) {
+        double summa = 100000;
+        int jyl = 0;
+
+        while (summa &lt; 200000) {
+            summa = summa * 1.10;
+            jyl++;
+            System.out.printf("%d-жыл: %.0f тг%n", jyl, summa);
+        }
+        System.out.println("Жету үшін " + jyl + " жыл керек");
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Jinaq.java
+$ java Jinaq
+1-жыл: 110000 тг
+2-жыл: 121000 тг
+3-жыл: 133100 тг
+4-жыл: 146410 тг
+5-жыл: 161051 тг
+6-жыл: 177156 тг
+7-жыл: 194872 тг
+8-жыл: 214359 тг
+Жету үшін 8 жыл керек</code></pre>
+<h3 id="dowhile">do-while</h3>
+<p><code>do-while</code> шартты <em>соңында</em> тексереді, сондықтан дене кемінде бір рет орындалады. Бұл қолданушының енгізуін тексеруге тамаша: алдымен сұрайсыз, сосын дұрыс емес болса, қайталайсыз.</p>
+<pre data-lang="java"><code class="language-java">import java.util.Scanner;
+
+public class DurysSan {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        int san;
+        do {
+            System.out.print("1-10 аралығындағы сан: ");
+            san = sc.nextInt();
+        } while (san &lt; 1 || san &gt; 10);
+        System.out.println("Қабылданды: " + san);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac DurysSan.java
+$ java DurysSan
+1-10 аралығындағы сан: 15
+1-10 аралығындағы сан: -3
+1-10 аралығындағы сан: 7
+Қабылданды: 7</code></pre>
+<p><code>15</code> мен <code>-3</code> шартқа сай емес еді, бағдарлама қайта сұрады; <code>7</code> қабылданды.</p>
+<h3 id="for">for</h3>
+<p>Қайталау саны алдын ала белгілі болса, <code>for</code> ыңғайлы. Оның жақшасында үш бөлік бар, нүктелі үтірмен бөлінген: <strong>бастау</strong> (<code>int i = 0</code>), <strong>шарт</strong> (<code>i &lt; 5</code>) және <strong>қадам</strong> (<code>i++</code>).</p>
+<figure style="margin:22px 0;text-align:center"><svg viewBox="0 0 560 230" role="img" aria-label="for циклінің блок-сызбасы: i = 0; i &lt; 3 ақиқат болса денесі орындалып, i++ жасалады және шарт қайта тексеріледі; жалған болса цикл аяқталады" style="display:block;width:100%;max-width:560px;height:auto;margin:0 auto"><defs><marker id="ar157_2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="20" y="10" width="150" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="95.0" y="20.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">int i = 0</text><text x="95.0" y="37.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">бастау (бір рет)</text><polyline points="95,44 95,72" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_2)"/><polygon points="95,72.0 170.0,100 95,128.0 20.0,100" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="95" y="100" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;font-weight:400">i &lt; 3</text><polyline points="95,128 95,160" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_2)"/><text x="108" y="144" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">иә</text><rect x="20" y="162" width="150" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="95.0" y="172.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">дене</text><text x="95.0" y="189.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">println(i)</text><polyline points="170,179 240,179 240,100 172,100" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_2)"/><rect x="244" y="162" width="110" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="299.0" y="172.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">i++</text><text x="299.0" y="189.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">қадам</text><polyline points="170,100 300,100" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_2)"/><text x="235" y="88" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">жоқ</text><rect x="302" y="84" width="100" height="34" rx="17" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="352.0" y="101.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:13px">аяқталды</text></svg><figcaption style="font-size:14.5px;color:var(--muted);margin-top:8px">5-сурет. for циклі: бастау бір рет, содан кейін «шарт - дене - қадам» үштігі қайталанады.</figcaption></figure>
+<p>Мәтінмен: бастау орындалады, шарт тексеріледі; ақиқат болса - дене, содан кейін қадам, және қайтадан шарт; жалған болса - цикл біткен. (Қадамның екінші сызбадағы дәл орны - дененің соңынан кейін, шартқа қайту алдында.)</p>
+<pre data-lang="java"><code class="language-java">public class Kesteler {
+    public static void main(String[] args) {
+        // 7-нің көбейту кестесі
+        for (int i = 1; i &lt;= 5; i++) {
+            System.out.println("7 x " + i + " = " + (7 * i));
+        }
+
+        // 1-ден 100-ге дейінгі қосынды
+        int qosindy = 0;
+        for (int i = 1; i &lt;= 100; i++) {
+            qosindy += i;
+        }
+        System.out.println("1+2+...+100 = " + qosindy);
+
+        // кері санау, қадамы 2
+        for (int i = 10; i &gt; 0; i -= 2) {
+            System.out.print(i + " ");
+        }
+        System.out.println();
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Kesteler.java
+$ java Kesteler
+7 x 1 = 7
+7 x 2 = 14
+7 x 3 = 21
+7 x 4 = 28
+7 x 5 = 35
+1+2+...+100 = 5050
+10 8 6 4 2</code></pre>
+<div class="callout note"><span class="callout-title">i айнымалысының өмірі</span>
+<p><code>for (int i = ...)</code> ішінде жарияланған <code>i</code> тек сол цикл ішінде ғана көрінеді. Циклден кейін оны қолдансаңыз, компилятор «символ табылмады» дейді. Мұны <strong>көрінетін аймақ</strong> (<span class="term-en">scope</span>) деп төменде толық қарастырамыз.</p></div>
+<h3 id="nested">Ішкі циклдер</h3>
+<p>Цикл ішіне басқа цикл жазуға болады. Сыртқы цикл бір айналғанда, ішкісі <em>толық</em> айналып шығады. Кесте мен жолдар-бағандар осылай жасалады. Мысал: қазақ оюларындағы сияқты ретті «мүйіз» үшбұрышы.</p>
+<pre data-lang="java"><code class="language-java">public class Ushburysh {
+    public static void main(String[] args) {
+        int biikt = 5;
+        for (int qator = 1; qator &lt;= biikt; qator++) {
+            for (int bos = 0; bos &lt; biikt - qator; bos++) {
+                System.out.print(" ");
+            }
+            for (int juldyz = 0; juldyz &lt; 2 * qator - 1; juldyz++) {
+                System.out.print("*");
+            }
+            System.out.println();
+        }
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Ushburysh.java
+$ java Ushburysh
+    *
+   ***
+  *****
+ *******
+*********</code></pre>
+<h3 id="foreach">Кеңейтілген for (for-each)</h3>
+<p>Тізімнің әр элементін бір-бірлеп өту керек болса, индекс қажет емес. <strong>Кеңейтілген for</strong> (<span class="term-en">enhanced for, for-each</span>) мұны қысқа жазады: <code>for (тип элемент : жиын)</code>. Массивтерді 2-аптада толық қарастырамыз, қазір тек қарапайым түрін көреміз: <code>{ ... }</code> ішінде мәндерді тізіп, массив жасауға болады.</p>
+<pre data-lang="java"><code class="language-java">public class Aspaptar {
+    public static void main(String[] args) {
+        String[] aspaptar = {"домбыра", "қобыз", "сыбызғы", "шертер", "жетіген"};
+        for (String a : aspaptar) {
+            System.out.println("Қазақ аспабы: " + a);
+        }
+
+        double[] bagalar = {1250.0, 890.5, 2300.0, 450.0};
+        double jalpy = 0;
+        for (double b : bagalar) {
+            jalpy += b;
+        }
+        System.out.println("Жалпы баға: " + jalpy + " тг");
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Aspaptar.java
+$ java Aspaptar
+Қазақ аспабы: домбыра
+Қазақ аспабы: қобыз
+Қазақ аспабы: сыбызғы
+Қазақ аспабы: шертер
+Қазақ аспабы: жетіген
+Жалпы баға: 4890.5 тг</code></pre>
+<p>Бұл оқылатын форма: «аспаптар ішіндегі әр <code>a</code> үшін ...». Бірақ ол элементті <em>өзгерте</em> алмайды және индексті бермейді; индекс керек болса, қарапайым <code>for</code> қолданамыз.</p>
+<h3 id="breakcontinue">break және continue</h3>
+<p><code>break</code> циклді бірден аяқтайды. <code>continue</code> ағымдағы айналымның қалғанын өткізіп, келесі айналымға өтеді.</p>
+<pre data-lang="java"><code class="language-java">public class Toqtatu {
+    public static void main(String[] args) {
+        for (int i = 1; i &lt;= 30; i++) {
+            if (i % 3 != 0) {
+                continue;           // 3-ке бөлінбесе, өткізіп жібереміз
+            }
+            if (i &gt; 20) {
+                break;              // 20-дан асқанда толық тоқтаймыз
+            }
+            System.out.print(i + " ");
+        }
+        System.out.println();
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Toqtatu.java
+$ java Toqtatu
+3 6 9 12 15 18</code></pre>
+<p>Тек 3-ке еселі сандар (3, 6, ..., 18) шықты; 21-ге жеткенде <code>break</code> циклді аяқтады. Ішкі циклдегі <code>break</code> тек <em>ішкі</em> циклді тоқтатады, сыртқыны емес - мұны есте сақтаңыз.</p>
+
+<h3 id="trace">Цикл ізін кестемен қарау</h3>
+<p>Цикл күрделі болып көрінгенде, бағдарламашылардың ескі әдісі бар: <strong>із кестесі</strong> (<span class="term-en">trace table</span>). Қағазға әр айнымалы үшін баған сызып, әр айналымда мәндерін жазып отырасыз. Мысалы, жоғарыдағы жинақ мысалының басы былай көрінеді:</p>
+<table>
+<thead><tr><th>айналым</th><th><code>summa</code> (алдында)</th><th><code>summa &lt; 200000</code>?</th><th><code>summa</code> (кейін)</th><th><code>jyl</code></th></tr></thead>
+<tbody>
+<tr><td>1</td><td>100000</td><td>иә</td><td>110000</td><td>1</td></tr>
+<tr><td>2</td><td>110000</td><td>иә</td><td>121000</td><td>2</td></tr>
+<tr><td>3</td><td>121000</td><td>иә</td><td>133100</td><td>3</td></tr>
+<tr><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+</tbody></table>
+<p>Бұл кестені толтыру қателерді іздеуде жақсы көмек: бағдарлама шынымен не істеп жатқанын көресіз, ал сіз күткенді емес. Кейін <code>System.out.println</code> арқылы сол айнымалыларды шығарып қарау да осы идеяның бір түрі - оны «<em>принт арқылы жөндеу</em>» дейді.</p>
+
+<h2 id="methods">Әдістер</h2>
+<p><strong>Әдіс</strong> (<span class="term-en">method</span>) - аты бар кодтың бөлігі. Бір рет жазып, көп рет шақырамыз. Әдіс - бағдарламаның «кірпіші»: үлкен мәселені кішкентай бөліктерге бөлеміз. Әдістің құрылымы:</p>
+<pre data-lang="java"><code class="language-java">static   double   kdsQosu   (double baga, double paiz)   {  ...  return нәтиже;  }
+// ^ модификатор  ^ қайтару   ^ ат      ^ параметрлер            ^ дене
+</code></pre>
+<ul>
+<li><strong>Қайтару типі</strong> (<span class="term-en">return type</span>) - әдіс нені қайтарады. Ештеңе қайтармаса, <code>void</code>.</li>
+<li><strong>Параметрлер</strong> (<span class="term-en">parameters</span>) - әдіске беретін кіріс мәндері, тип пен атпен жазылады.</li>
+<li><code>return</code> мәнді қайтарып, әдістен шығады.</li>
+<li><code>static</code> - қазір «нысан жасамай шақыруға болады» деп түсінесіз; оның толық мағынасы 3-аптада.</li>
+</ul>
+<pre data-lang="java"><code class="language-java">public class KdsEsep {
+    // ҚҚС 12% қосылған баға
+    static double kdsQosu(double baga) {
+        return baga * 1.12;
+    }
+
+    static void salemdeu(String at) {
+        System.out.println("Сәлем, " + at + "!");
+    }
+
+    static int ulkeni(int a, int b) {
+        if (a &gt; b) {
+            return a;
+        }
+        return b;
+    }
+
+    public static void main(String[] args) {
+        salemdeu("Нұрлан");
+        double jana = kdsQosu(10000);
+        System.out.println("ҚҚС-пен: " + jana);
+        System.out.println("Үлкені: " + ulkeni(14, 9));
+        System.out.println(ulkeni(ulkeni(3, 8), 5));   // әдіс ішінде әдіс
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac KdsEsep.java
+$ java KdsEsep
+Сәлем, Нұрлан!
+ҚҚС-пен: 11200.000000000002
+Үлкені: 14
+8</code></pre>
+<p>Бағдарлама әрқашан <code>main</code>-нен басталады. <code>main</code> басқа әдісті шақырғанда, басқару сол әдіске өтеді, ол біткенде <code>return</code> арқылы шақырған жерге қайтады. Тізбек түрінде: <code>main</code> → <code>kdsQosu(10000)</code> → <code>11200.000000000002</code> қайтады → <code>jana</code>-ға түседі. (Соңғы ұсақ «құйрық» <code>double</code> санының екілік дәлсіздігінен шығады; ақша есептегенде мұны ескеру керек, оған 2-аптада тоқталамыз.)</p>
+<p>Әдіс не үшін керек? 1) қайталанбау (бір кодты көп рет жазбаймыз), 2) атау беру (<code>kdsQosu</code> деген ат кодтың мәнін айтады), 3) бөлек тексеру. Жақсы әдіс бір ғана іс істейді.</p>
+<div class="callout note"><span class="callout-title">Параметрлер мәнімен беріледі</span>
+<p>Java-да примитив типті параметр әдіске <strong>көшірме</strong> болып барады. Әдіс ішінде <code>baga</code>-ны өзгертсеңіз, сыртқы айнымалы өзгермейді. Объектілер мен массивтер үшін жағдай басқаша (сілтеме көшіріледі); оны 2- және 3-апталарда көреміз.</p></div>
+
+<h3 id="scope">Көрінетін аймақ (scope)</h3>
+<p>Айнымалы өзі жарияланған <code>{ }</code> блогында ғана өмір сүреді. Блоктан шыққан соң ол жоқ. Әдістің параметрлері мен ішкі айнымалылары тек сол әдісте көрінеді; екі әдісте бірдей аттас айнымалылар бір-біріне кедергі болмайды.</p>
+<pre data-lang="java"><code class="language-java">public class Kerinis {
+    static void esepte() {
+        int ishki = 5;
+    }
+
+    public static void main(String[] args) {
+        for (int i = 0; i &lt; 3; i++) {
+            int kvadrat = i * i;
+        }
+        System.out.println(kvadrat);   // блоктан шықтық
+        System.out.println(ishki);     // басқа әдістің айнымалысы
+        System.out.println(i);         // цикл айнымалысы
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Kerinis.java
+Kerinis.java:10: error: cannot find symbol
+        System.out.println(kvadrat);   // блоктан шықтық
+                           ^
+  symbol:   variable kvadrat
+  location: class Kerinis
+Kerinis.java:11: error: cannot find symbol
+        System.out.println(ishki);     // басқа әдістің айнымалысы
+                           ^
+  symbol:   variable ishki
+  location: class Kerinis
+Kerinis.java:12: error: cannot find symbol
+        System.out.println(i);         // цикл айнымалысы
+                           ^
+  symbol:   variable i
+  location: class Kerinis
+3 errors</code></pre>
+<p>Үш жолдың үшеуі де «<em>cannot find symbol</em>» қатесін берді. Қорытынды ереже: айнымалыны <em>қажетті жерге ең жақын</em> және ең тар аймақта жариялаңыз.</p>
+
+<h2 id="overload">Әдісті қайта жүктеу (overloading)</h2>
+<p>Java-да бір аттас бірнеше әдіс жазуға болады, егер олардың <strong>параметр тізімі</strong> (саны не типтері) әртүрлі болса. Мұны <strong>overloading</strong> (<span class="term-en">method overloading</span>) дейді. Қайсысын шақыру керегін компилятор аргументтерге қарап таңдайды. Қайтару типі ғана әртүрлі болса, оның өзі жеткіліксіз.</p>
+<pre data-lang="java"><code class="language-java">public class Audan {
+    // шаршы
+    static double audan(double qabyrga) {
+        return qabyrga * qabyrga;
+    }
+
+    // тіктөртбұрыш
+    static double audan(double eni, double uzyndygy) {
+        return eni * uzyndygy;
+    }
+
+    // үшбұрыш: табан, биіктік және белгі
+    static double audan(double taban, double biiktik, boolean ushburysh) {
+        return 0.5 * taban * biiktik;
+    }
+
+    static String bagaMatin(int tenge) {
+        return tenge + " тг";
+    }
+
+    static String bagaMatin(double tenge) {
+        return String.format("%.1f тг", tenge);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(audan(4));
+        System.out.println(audan(3, 5));
+        System.out.println(audan(6, 4, true));
+        System.out.println(bagaMatin(1500));      // int нұсқасы
+        System.out.println(bagaMatin(1499.9));    // double нұсқасы
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Audan.java
+$ java Audan
+16.0
+15.0
+12.0
+1500 тг
+1499.9 тг</code></pre>
+<p>Назар аударыңыз: <code>System.out.println</code> өзі де осылай жұмыс істейді. Оның <code>int</code>, <code>double</code>, <code>String</code>, <code>boolean</code> және басқа аргументтерге арналған ондаған нұсқасы бар, сондықтан әртүрлі типті шығара аламыз.</p>
+
+<h2 id="recursion">Рекурсия</h2>
+<p><strong>Рекурсия</strong> (<span class="term-en">recursion</span>) - әдістің өзін-өзі шақыруы. Қазақ ертегісіндегі «ертегінің ішіндегі ертегі» немесе ішінен кішірек матрешка шығатын ойыншық сияқты: үлкен мәселені дәл сондай, бірақ кішірек мәселеге келтіреміз. Рекурсияның екі міндетті бөлігі бар:</p>
+<ul>
+<li><strong>базалық жағдай</strong> (<span class="term-en">base case</span>) - тоқтайтын жер, жауабы тікелей белгілі;</li>
+<li><strong>рекурсивті қадам</strong> - мәселені кішірейтіп, өзін шақыру.</li>
+</ul>
+<p>Мысал - факториал: <code>n! = n * (n-1)!</code>, ал <code>0! = 1</code>.</p>
+<pre data-lang="java"><code class="language-java">public class Faktorial {
+    static long faktorial(int n) {
+        if (n &lt;= 1) {                  // базалық жағдай
+            return 1;
+        }
+        return n * faktorial(n - 1);  // рекурсивті қадам
+    }
+
+    static int sanQosindy(int n) {     // цифрлар қосындысы
+        if (n &lt; 10) {
+            return n;
+        }
+        return n % 10 + sanQosindy(n / 10);
+    }
+
+    public static void main(String[] args) {
+        System.out.println("5! = " + faktorial(5));
+        System.out.println("10! = " + faktorial(10));
+        System.out.println("20! = " + faktorial(20));
+        System.out.println("Цифрлар қосындысы 2024: " + sanQosindy(2024));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Faktorial.java
+$ java Faktorial
+5! = 120
+10! = 3628800
+20! = 2432902008176640000
+Цифрлар қосындысы 2024: 8</code></pre>
+<p>Бұл қалай жұмыс істейді? <code>faktorial(4)</code> шақырылғанда, Java оны орындап бітіре алмайды: ол <code>faktorial(3)</code>-тің жауабын күтеді. Ол өз кезегінде <code>faktorial(2)</code>-ні күтеді, және т.с.с. Әр шақыру өзінің <strong>кадрын</strong> (<span class="term-en">stack frame</span>) жасап, <strong>шақыру стегіне</strong> (<span class="term-en">call stack</span>) қояды - тарелкалар тізбегі сияқты, жоғарғысы ғана жұмыс істейді.</p>
+<figure style="margin:22px 0;text-align:center"><svg viewBox="0 0 640 240" role="img" aria-label="faktorial(4) шақыру стегі: төменнен жоғары faktorial(4) күтеді, faktorial(3) күтеді, faktorial(2) күтеді, faktorial(1) базалық жағдай 1 қайтарады; одан кейін 2, 6, 24 мәндері кері қайтады" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto"><defs><marker id="ar157_3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="120" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:700">Стек (шақыру)</text><text x="500" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:700">Қайтару мәндері</text><rect x="30" y="190" width="180" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="120.0" y="200.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">faktorial(4)</text><text x="120.0" y="217.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">n = 4, 4 * ? күтеді</text><rect x="30" y="146" width="180" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="120.0" y="156.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">faktorial(3)</text><text x="120.0" y="173.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">n = 3, 3 * ? күтеді</text><rect x="30" y="102" width="180" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="120.0" y="112.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">faktorial(2)</text><text x="120.0" y="129.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">n = 2, 2 * ? күтеді</text><rect x="30" y="58" width="180" height="34" rx="8" style="fill:var(--surface);stroke:var(--ok,#2a9d5c);stroke-width:1.8"/><text x="120.0" y="68.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">faktorial(1)</text><text x="120.0" y="85.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">n = 1, базалық жағдай</text><polyline points="212,75 400,75" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar157_3)"/><text x="305" y="63" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;font-weight:400">return 1</text><rect x="402" y="58" width="200" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="502.0" y="75.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">1</text><rect x="402" y="102" width="200" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="502.0" y="119.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">2 * 1 = 2</text><rect x="402" y="146" width="200" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="502.0" y="163.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">3 * 2 = 6</text><rect x="402" y="190" width="200" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="502.0" y="207.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">4 * 6 = 24</text><polyline points="502,58 502,40" style="stroke:transparent;stroke-width:1.6;fill:none" marker-end="url(#ar157_3)"/></svg><figcaption style="font-size:14.5px;color:var(--muted);margin-top:8px">6-сурет. Рекурсия: шақырулар стекке жиналады, базалық жағдайдан кейін нәтиже төмен қарай жиналып қайтады.</figcaption></figure>
+<p>Сызбаның мәтіндік мәні: оңнан солға емес, төменнен жоғары қарай шақырулар қойылады (<code>faktorial(4)</code> → <code>(3)</code> → <code>(2)</code> → <code>(1)</code>); <code>faktorial(1)</code> базалық жағдай, ол <code>1</code> қайтарады. Сосын стек кері ашылады: 2 · 1 = 2, 3 · 2 = 6, 4 · 6 = 24.</p>
+<p>Базалық жағдайды ұмытсақ, не болады? Әдіс өзін шексіз шақырады, стек толады да, <code>StackOverflowError</code> шығады:</p>
+<pre data-lang="java"><code class="language-java">public class Shek {
+    static int tereng(int n) {
+        return tereng(n + 1) + 1;     // базалық жағдай жоқ!
+    }
+
+    public static void main(String[] args) {
+        System.out.println(tereng(0));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Shek.java
+$ java Shek 2&gt;&amp;1 | head -4
+Exception in thread "main" java.lang.StackOverflowError
+	at Shek.tereng(Shek.java:3)
+	at Shek.tereng(Shek.java:3)
+	at Shek.tereng(Shek.java:3)</code></pre>
+<p>(Шынында шығыс мыңдаған жол; біз <code>head -4</code> арқылы алғашқы төртеуін ғана көрсеттік.) Рекурсия әдемі, бірақ қарапайым цикл жиі тезірек және қауіпсіз. Рекурсияны мәселе табиғи түрде өзіне ұқсас кіші бөліктерден тұрғанда (ағаш, қалта ішіндегі қалта, бөлшектеу) қолданыңыз. Мысал - Фибоначчи тізбегі:</p>
+<pre data-lang="java"><code class="language-java">public class Fibonachchi {
+    static int fib(int n) {
+        if (n &lt; 2) {
+            return n;                       // fib(0)=0, fib(1)=1
+        }
+        return fib(n - 1) + fib(n - 2);
+    }
+
+    public static void main(String[] args) {
+        for (int i = 0; i &lt;= 10; i++) {
+            System.out.print(fib(i) + " ");
+        }
+        System.out.println();
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Fibonachchi.java
+$ java Fibonachchi
+0 1 1 2 3 5 8 13 21 34 55</code></pre>
+<p>Бұл мысал түсінікті, бірақ <em>баяу</em>: <code>fib(40)</code> шамамен жүз миллион шақыру жасайды, себебі бір мәнді қайта-қайта есептейді. Мұндай жағдайда цикл (немесе есте сақтау, <span class="term-en">memoization</span>) қолданылады.</p>
+
+<h2 id="varargs">Айнымалы санды аргументтер (varargs)</h2>
+<p>Кейде әдіске қанша аргумент берілетіні алдын ала белгісіз. Өзіңіздің <code>qosyndy(1, 2)</code>, <code>qosyndy(1, 2, 3, 4)</code> түрлерін жеке жазбай, <strong>varargs</strong> (<span class="term-en">variable arguments</span>) қолданамыз: типтен кейін үш нүкте <code>...</code>. Әдіс ішінде ол массив болып көрінеді.</p>
+<pre data-lang="java"><code class="language-java">public class Qosyndy {
+    static int qosyndy(int... sandar) {
+        int jalpy = 0;
+        for (int s : sandar) {
+            jalpy += s;
+        }
+        return jalpy;
+    }
+
+    static double orta(String belgi, double... bagalar) {
+        if (bagalar.length == 0) {
+            return 0;
+        }
+        double jalpy = 0;
+        for (double b : bagalar) {
+            jalpy += b;
+        }
+        System.out.println(belgi + ": " + bagalar.length + " мән");
+        return jalpy / bagalar.length;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(qosyndy());
+        System.out.println(qosyndy(5));
+        System.out.println(qosyndy(1, 2, 3, 4));
+        System.out.println(orta("Кітап бағасы", 2500, 3100.5, 1800));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Qosyndy.java
+$ java Qosyndy
+0
+5
+10
+Кітап бағасы: 3 мән
+2466.8333333333335</code></pre>
+<p>Ережелер: varargs параметр әдістің тізімінде <em>соңғы</em> болуы тиіс және біреу ғана болады. Нөл аргумент беруге де болады (бос массив). <code>System.out.printf</code> өзі де varargs қолданады: пішімнен кейін қанша мән берсеңіз де қабылдайды.</p>
+<h2 id="together">Бәрін біріктіру: кітап дүкенінің чегі</h2>
+<p>Тақырыптарды жеке-жеке білу жеткіліксіз, оларды біріктіре білу керек. Шағын кітап дүкенінің чегін жасайық: әр кітаптың аты, бағасы және саны бар; 5 данадан көп алсаңыз - 10% жеңілдік; әдістер мен цикл бәрін реттейді. Мұнда мынау істеледі: жеңілдік пайызы <code>switch</code> өрнегімен, жол сомасы бөлек әдіспен, барлығы <code>for</code> циклімен жиналады.</p>
+<pre data-lang="java"><code class="language-java">public class KitapDukeni {
+    // сатып алынған дана санына қарай жеңілдік (пайыз)
+    static int jenildik(int sany) {
+        return switch (sany) {
+            case 1, 2, 3, 4 -&gt; 0;
+            case 5, 6, 7, 8, 9 -&gt; 10;
+            default -&gt; 15;
+        };
+    }
+
+    static double joldyngSomasy(double baga, int sany) {
+        double zhalpy = baga * sany;
+        return zhalpy - zhalpy * jenildik(sany) / 100;
+    }
+
+    public static void main(String[] args) {
+        String[] atau = {"Абай жолы", "Қазақ ертегілері", "Алгоритмдер"};
+        double[] baga = {3200, 1500, 8900};
+        int[] sany = {2, 6, 1};
+
+        double barlygy = 0;
+        for (int i = 0; i &lt; atau.length; i++) {
+            double soma = joldyngSomasy(baga[i], sany[i]);
+            System.out.printf("%-18s %2d дана  жеңілдік %2d%%  %9.2f тг%n",
+                    atau[i], sany[i], jenildik(sany[i]), soma);
+            barlygy += soma;
+        }
+        System.out.printf("Барлығы: %.2f тг%n", barlygy);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac KitapDukeni.java
+$ java KitapDukeni
+Абай жолы           2 дана  жеңілдік  0%    6400.00 тг
+Қазақ ертегілері    6 дана  жеңілдік 10%    8100.00 тг
+Алгоритмдер         1 дана  жеңілдік  0%    8900.00 тг
+Барлығы: 23400.00 тг</code></pre>
+<p>Бағдарлама бөлінген: <code>jenildik</code> - тек пайызды, <code>joldyngSomasy</code> - тек бір жолдың бағасын, <code>main</code> - тек жинақтауды біледі. Егер жеңілдік ережесі өзгерсе (мысалы, 20%), біз тек бір әдісті түзетеміз. Бұл - «кодты бөлшектеу» дегеннің нақты мағынасы. Массивтер (<code>String[]</code>, <code>double[]</code>, <code>int[]</code>) мұнда тек «көп мәнді бір жерде сақтау» үшін қолданылды, олармен жан-жақты жұмысты келесі аптада үйренеміз. Тағы бір көрнекі нәрсе - <code>printf</code> пішімдері: <code>%-18s</code> мәтінді 18 орынға солға тураланады, <code>%9.2f</code> - 9 орынға екі таңбалы бөлшек, <code>%%</code> - пайыз белгісінің өзі.</p>
+
+<h3 id="tryit">Өз компьютеріңде іске қос</h3>
+<p>Әр мысалды бөлек файлға көшіріп (<code>Bilet.java</code>, <code>Jinaq.java</code> ...), класс атына сай файл атын қойып, іске қосыңыз:</p>
+<pre data-lang="bash"><code class="language-bash">javac Bilet.java &amp;&amp; java Bilet
+javac Faktorial.java &amp;&amp; java Faktorial</code></pre>
+<p>Кодты бір-екі жерде өзгертіп көріңіз: шартты бұзыңыз, <code>break</code>-ті алып тастаңыз, базалық жағдайды өшіріңіз. Қатені өз көзіңізбен көру - ең жақсы мұғалім.</p>
+
+<h2 id="flow">Басқару ағыны: қай құралды қашан таңдау керек</h2>
+<p>Осы аптада үйренгеніміздің бәрі бір ғана ұғымға жиналады: <strong>басқару ағыны</strong> (<span class="term-en">control flow</span>) - бағдарламаның қай жолдарды, қандай ретпен орындайтыны. Кез келген бағдарлама төрт құрылыс блогынан тұрады. Біріншісі - <em>тізбектілік</em>: жолдар жоғарыдан төмен қарай бірінен соң бірі орындалады. Екіншісі - <em>тармақталу</em>: шартқа қарай жолды таңдау (<code>if</code>, <code>switch</code>, <code>?:</code>). Үшіншісі - <em>қайталау</em>: бір бөлікті бірнеше рет орындау (<code>while</code>, <code>do-while</code>, <code>for</code>). Төртіншісі - <em>әдіс шақыру</em>: басқаруды уақытша басқа жерге беріп, кері қайтару.</p>
+<table>
+<thead><tr><th>Міндет</th><th>Қолайлы құрал</th></tr></thead>
+<tbody>
+<tr><td>Екі не үш жолдың бірін таңдау</td><td><code>if / else if / else</code></td></tr>
+<tr><td>Бір айнымалының дәл мәніне қарай таңдау</td><td><code>switch</code> (жаңа <code>-&gt;</code> түрі)</td></tr>
+<tr><td>Бір мәнді шартқа қарай тез таңдау</td><td><code>шарт ? a : b</code></td></tr>
+<tr><td>Қайталау саны алдын ала белгілі</td><td><code>for</code></td></tr>
+<tr><td>Шарт орындалғанша қайталау, саны белгісіз</td><td><code>while</code></td></tr>
+<tr><td>Кемінде бір рет орындау қажет (енгізуді тексеру)</td><td><code>do-while</code></td></tr>
+<tr><td>Жиынның әр элементін аралау</td><td>кеңейтілген <code>for</code></td></tr>
+<tr><td>Қайталанатын жұмысты атау беру</td><td>әдіс</td></tr>
+<tr><td>Мәселе өзіне ұқсас кіші мәселеге бөлінеді</td><td>рекурсия</td></tr>
+</tbody></table>
+<p>Бағдарлама жазбас бұрын қағазға ойша не істейтінімізді жазу пайдалы: қандай деректер кіреді, не шығады, қай жерде таңдау бар, қай жерде қайталау. Мұны <strong>псевдокод</strong> (<span class="term-en">pseudocode</span>) дейді. Алдымен адамның тілімен жазасыз, сосын әр жолды Java-ға аударасыз. Мысалы, банкомат есебі: «әр номинал үшін: қанша купюра сыйса, соны алу; қалған соманы жаңарту». Көріп отырғаныңыздай, бұл бірден <code>for</code> + бүтін бөлу + қалдық екенін айтып тұр.</p>
+<h3 id="debug">Қатені қалай іздейміз?</h3>
+<p>Шарттар мен циклдер қосылған кезде логикалық қателер жиі шығады. Үш қарапайым тәсіл: 1) <strong>із кестесі</strong> қағазда; 2) <code>System.out.println</code> арқылы аралық мәндерді шығару («<em>мына жерде <code>i = ...</code></em>»); 3) тексеру мәндері - шеткі жағдайларды сынау (<code>0</code>, <code>1</code>, ең үлкен мән, теріс сан). Қателердің басым бөлігі дәл шеткі жағдайларда жасырынады: циклдің бірінші және соңғы айналымында, шарттың шекарасында (<code>&gt;</code> па, <code>&gt;=</code> ма?).</p>
+<p>Бірнеше әдеттегі «қызыл жалауша»: шартта <code>&lt;=</code> пен <code>&lt;</code> араласуы, айнымалының басында бастапқы мәні жоқ болуы, бір әдісте тым көп іс істелуі, және ең бастысы - жазған кодты бір рет те іске қоспай «дұрыс болар» деп сену. Кішкентай бөлікті жазыңыз, бірден іске қосыңыз, жұмыс істесе ғана жалғастырыңыз.</p>
+
+<h2 id="mistakes">Жиі қателер</h2>
+<ol>
+<li><strong><code>if (x = 5)</code>.</strong> Салыстыруға <code>==</code> керек. Java мұны компиляцияда ұстайды, бірақ <code>boolean</code> айнымалымен <code>if (ashyq = true)</code> ұстамайды!</li>
+<li><strong><code>break</code> ұмыту</strong> классикалық <code>switch</code>-те: құлау. Жаңа <code>-&gt;</code> түрін қолданыңыз.</li>
+<li><strong>Шексіз цикл.</strong> <code>while (i &lt; 10)</code> ішінде <code>i</code>-ді арттыруды ұмытсаңыз, бағдарлама тоқтамайды (терминалда <code>Ctrl+C</code>).</li>
+<li><strong>Бір-біріне қатесі</strong> (<span class="term-en">off-by-one</span>): <code>i &lt;= n</code> мен <code>i &lt; n</code> арасындағы айырмашылық бір қайталау.</li>
+<li><strong><code>for</code> жақшасынан кейінгі <code>;</code>.</strong> <code>for (...);</code> денесін бос етіп қояды, ал келесі блок цикл емес болып қалады.</li>
+<li><strong>Қайтаруды ұмыту.</strong> <code>int</code> әдісі барлық жолда <code>return</code> қайтаруы керек, әйтпесе «<em>missing return statement</em>».</li>
+<li><strong>Рекурсияда базалық жағдайдың болмауы</strong> немесе мәселенің кішіремеуі: <code>StackOverflowError</code>.</li>
+<li><strong>Бүтін бөлу.</strong> <code>(a + b) / 2</code> бүтін болады; бөлшек керек болса, <code>2.0</code> жазыңыз.</li>
+<li><strong>Айнымалының аймағы.</strong> Цикл ішінде жарияланған айнымалы сыртта жоқ.</li>
+</ol>
+
+<h2 id="summary">Қорытынды</h2>
+<ul>
+<li><code>if / else if / else</code> жоғарыдан төмен тексеріп, бірінші ақиқат тармақты орындайды;</li>
+<li><code>&amp;&amp;</code>, <code>||</code> қысқа тізбекпен жұмыс істейді: қорғау шартын алдымен жазыңыз;</li>
+<li><code>switch</code>-тің классикалық түрінде <code>break</code> керек, ал жаңа <code>-&gt;</code> түрі қауіпсіз және мән қайтара алады (<code>yield</code>);</li>
+<li><code>while</code> (алдымен тексереді), <code>do-while</code> (кемінде бір рет), <code>for</code> (санды қайталау), <code>for-each</code> (жиынды аралау);</li>
+<li><code>break</code> циклді аяқтайды, <code>continue</code> ағымдағы айналымды өткізеді;</li>
+<li>әдіс: қайтару типі, ат, параметрлер, дене, <code>return</code>; айнымалы тек өз блогында көрінеді;</li>
+<li>overloading: бір ат, әртүрлі параметрлер; рекурсия: базалық жағдай + кішірейген қадам; varargs: <code>тип... ат</code>.</li>
+</ul>
+<p>Келесі аптада деректердің көп мәнін бір жерде сақтауды (<strong>массивтер</strong>, <code>ArrayList</code>), мәтінмен тереңірек жұмысты және жадтың құрылымын үйренеміз.</p>
+<h3 id="selfcheck">Өзіңізді тексеру тізімі</h3>
+<ul class="checklist" data-id="java1-self">
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>if / else if / else</code> тізбегін жаза аламын және оның қалай тексерілетінін түсіндіре аламын</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Классикалық <code>switch</code> пен <code>switch</code> өрнегінің айырмашылығын білемін</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>while</code>, <code>do-while</code> және <code>for</code> циклдерінің қайсысын қашан таңдайтынымды білемін</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Параметрі мен қайтару мәні бар әдіс жаза аламын</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Overloading мен varargs-ты мысалмен түсіндіре аламын</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Рекурсияда базалық жағдайдың рөлін түсінемін және стек кадрларын сызып көрсете аламын</span></li>
+</ul>
+<p class="progress"></p>
+<h2 id="quiz">Өзіңізді тексеріңіз</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. Мына код не шығарады?</p>
+<pre data-lang="java"><code class="language-java">public class Q1 {
+    public static void main(String[] args) {
+        int n = 2;
+        switch (n) {
+            case 1: System.out.print("a");
+            case 2: System.out.print("b");
+            case 3: System.out.print("c"); break;
+            case 4: System.out.print("d");
+        }
+        System.out.println();
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>b</code></label>
+<label><input type="radio" value="b"> <code>bc</code></label>
+<label><input type="radio" value="c"> <code>abc</code></label>
+<label><input type="radio" value="d"> <code>bcd</code></label>
+<p class="explain"><code>n = 2</code> болғанда <code>case 2</code>-ден бастап орындалады; онда <code>break</code> жоқ, сондықтан <code>case 3</code> де орындалып, сол жерде <code>break</code> тоқтатады: <code>bc</code>. Нақты нәтиже: bc.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. Мына <code>switch</code> өрнегі не береді?</p>
+<pre data-lang="java"><code class="language-java">public class Q2 {
+    public static void main(String[] args) {
+        int x = 7;
+        String r = switch (x % 3) {
+            case 0 -&gt; "нөл";
+            case 1 -&gt; "бір";
+            default -&gt; "басқа";
+        };
+        System.out.println(r);
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>нөл</code></label>
+<label><input type="radio" value="b"> <code>бір</code></label>
+<label><input type="radio" value="c"> <code>басқа</code></label>
+<label><input type="radio" value="d"> Компиляция қатесі</label>
+<p class="explain"><code>7 % 3 = 1</code>, сондықтан <code>case 1</code> таңдалады. Көрсеткілі түрде құлау жоқ. Нақты нәтиже: бір.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. Цикл неше рет қайталанады және не шығарады?</p>
+<pre data-lang="java"><code class="language-java">public class Q3 {
+    public static void main(String[] args) {
+        for (int i = 0; i &lt; 10; i += 3) {
+            System.out.print(i + " ");
+        }
+        System.out.println();
+    }
+}</code></pre>
+<label><input type="radio" value="a"> 3 рет: <code>0 3 6</code></label>
+<label><input type="radio" value="b"> 4 рет: <code>0 3 6 9</code></label>
+<label><input type="radio" value="c"> 3 рет: <code>3 6 9</code></label>
+<label><input type="radio" value="d"> 10 рет</label>
+<p class="explain"><code>i</code> мәндері: 0, 3, 6, 9; келесісі 12 &lt; 10 емес, цикл тоқтайды. Нақты нәтиже: 0 3 6 9.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. Төмендегі әдіс жұбының қайсысы заңды <strong>overloading</strong>?</p>
+<label><input type="radio" value="a"> <code>int f(int a)</code> және <code>double f(int a)</code></label>
+<label><input type="radio" value="b"> <code>int f(int a)</code> және <code>int f(int a, int b)</code></label>
+<label><input type="radio" value="c"> <code>void f(int a)</code> және <code>void f(int b)</code></label>
+<label><input type="radio" value="d"> <code>int f(int a)</code> және <code>int g(int a)</code></label>
+<p class="explain">Overloading-те аттары бірдей, <em>параметр тізімі</em> (саны не типтері) әртүрлі болуы тиіс. Тек қайтару типі немесе параметр аты әртүрлі болса, бұл - қайталанған жариялау қатесі. Соңғы нұсқада аттар әртүрлі, ол overloading емес.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. Мына әдіс компиляцияда қандай қате береді?</p>
+<pre data-lang="java"><code class="language-java">static int belgi(int x) {
+    if (x &gt; 0) {
+        return 1;
+    } else if (x &lt; 0) {
+        return -1;
+    }
+}</code></pre>
+<label><input type="radio" value="a"> Ешқандай қате жоқ</label>
+<label><input type="radio" value="b"> <em>missing return statement</em></label>
+<label><input type="radio" value="c"> <em>incompatible types</em></label>
+<label><input type="radio" value="d"> <em>cannot find symbol</em></label>
+<p class="explain"><code>x == 0</code> болғанда әдіс ештеңе қайтармайды; компилятор барлық жолдың <code>return</code>-мен аяқталатынын талап етеді. Шешімі: соңғы <code>else</code> не әдіс соңында <code>return 0;</code>.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. <code>f(4)</code> нәтижесі қандай?</p>
+<pre data-lang="java"><code class="language-java">public class Q6 {
+    static int f(int n) {
+        if (n == 0) {
+            return 0;
+        }
+        return n + f(n - 1);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(f(4));
+    }
+}</code></pre>
+<label><input type="radio" value="a"> 4</label>
+<label><input type="radio" value="b"> 10</label>
+<label><input type="radio" value="c"> 24</label>
+<label><input type="radio" value="d"> <code>StackOverflowError</code></label>
+<p class="explain"><code>f(4) = 4 + 3 + 2 + 1 + 0 = 10</code>. Базалық жағдай бар (<code>n == 0</code>), әр қадам <code>n</code>-ді кішірейтеді. Нақты нәтиже: 10.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. Ішкі циклдегі <code>break</code> қалай әсер етеді? Нәтижесі қандай?</p>
+<pre data-lang="java"><code class="language-java">public class Q7 {
+    public static void main(String[] args) {
+        for (int i = 1; i &lt;= 3; i++) {
+            for (int j = 1; j &lt;= 3; j++) {
+                if (j == 2) {
+                    break;
+                }
+                System.out.print(i * 10 + j + " ");
+            }
+        }
+        System.out.println();
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>11 21 31</code></label>
+<label><input type="radio" value="b"> <code>11</code></label>
+<label><input type="radio" value="c"> <code>11 13 21 23 31 33</code></label>
+<label><input type="radio" value="d"> Ештеңе шықпайды</label>
+<p class="explain"><code>break</code> тек <em>ішкі</em> циклді тоқтатады: әр <code>i</code> үшін тек <code>j = 1</code> басылады (<code>j = 2</code>-де шығады). Сыртқы цикл жалғасады. Нақты нәтиже: 11 21 31.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. <code>do-while</code> циклі туралы қай тұжырым дұрыс? Мына кодта <code>x</code> неше рет шығады?</p>
+<pre data-lang="java"><code class="language-java">public class Q8 {
+    public static void main(String[] args) {
+        int i = 10;
+        do {
+            System.out.print("x");
+            i++;
+        } while (i &lt; 5);
+        System.out.println();
+    }
+}</code></pre>
+<label><input type="radio" value="a"> 0 рет, шарт басынан жалған</label>
+<label><input type="radio" value="b"> 1 рет, өйткені шарт соңында тексеріледі</label>
+<label><input type="radio" value="c"> 5 рет</label>
+<label><input type="radio" value="d"> Шексіз рет</label>
+<p class="explain"><code>do-while</code> дененің бір рет орындалуына кепілдік береді. Бір <code>x</code> басылып, <code>i = 11</code>, шарт жалған - цикл аяқталады. Нақты нәтиже: x.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
+<h2 id="exercises">Жаттығулар</h2>
+<p>Алты жаттығу: әр деңгейден екіден. Бірнеше жауапты ойша есептеп, содан кейін өз компьютеріңде шынымен тексеріңіз.</p>
+<div class="task">
+<div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-continue">Цикл ізі</h3></div>
+<p>Мына бағдарлама не шығарады?</p><pre data-lang="java"><code class="language-java">public class Jat1 {
+    public static void main(String[] args) {
+        int s = 0;
+        for (int i = 1; i &lt;= 5; i++) {
+            if (i % 2 == 0) {
+                continue;
+            }
+            s += i;
+        }
+        System.out.println(s);
+    }
+}</code></pre><p>Жауап - бір сан.</p>
+<div class="answer-check" data-answer="9"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Кестеге жазыңыз: <code>i = 1, 2, 3, 4, 5</code>. Қайсысында <code>continue</code> орындалады?</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>continue</code> жұп <code>i</code> (2 және 4) кезінде орындалады. Қосылатындар: 1 + 3 + 5 = 9.</p><pre class="terminal"><code class="language-plaintext">$ java Jat1
+9</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-baga">Оқушы журналы: баға</h3></div>
+<p><code>Baga.java</code> жазыңыз: қолданушы орташа баллды (<code>double</code>) енгізеді, ал <code>static String baga(double ball)</code> әдісі мәтіндік баға қайтарады: 4,5 және жоғары - «өте жақсы (5)», 3,5-тен - «жақсы (4)», 2,5-тен - «қанағаттанарлық (3)», одан төмен - «қанағаттанарлықсыз (2)».</p>
+<details><summary>Кеңес</summary><div class="details-body"><p>Шарттарды жоғарыдан төмен жазыңыз: <code>if (ball &gt;= 4.5) ... else if (ball &gt;= 3.5) ...</code>. Әдіс әр тармақта <code>return</code> істейді.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Шешім:</p><pre data-lang="java"><code class="language-java">import java.util.Locale;
+import java.util.Scanner;
+
+public class Baga {
+    static String baga(double ball) {
+        if (ball &gt;= 4.5) {
+            return "өте жақсы (5)";
+        } else if (ball &gt;= 3.5) {
+            return "жақсы (4)";
+        } else if (ball &gt;= 2.5) {
+            return "қанағаттанарлық (3)";
+        } else {
+            return "қанағаттанарлықсыз (2)";
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        sc.useLocale(Locale.US);
+        System.out.print("Орташа балл: ");
+        double ball = sc.nextDouble();
+        System.out.println("Баға: " + baga(ball));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java Baga
+Орташа балл: 4.2
+Баға: жақсы (4)</code></pre></div></details>
+<details open><summary>Өзін тексеру</summary><div class="details-body">
+<ul class="checklist" data-id="java1-t2">
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>4.5</code> → өте жақсы (5)</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>3.5</code> → жақсы (4)</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>2.49</code> → қанағаттанарлықсыз (2)</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Әдіс <code>main</code>-нен бөлек жазылған</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-rec">Рекурсивті әдіс</h3></div>
+<p>Мына бағдарлама не шығарады?</p><pre data-lang="java"><code class="language-java">public class Jat3 {
+    static int f(int n) {
+        if (n &lt;= 1) {
+            return 1;
+        }
+        return f(n - 1) + f(n - 2);
+    }
+
+    public static void main(String[] args) {
+        System.out.println(f(7));
+    }
+}</code></pre>
+<div class="answer-check" data-answer="21"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Кішіден бастаңыз: <code>f(0) = f(1) = 1</code>, содан <code>f(2) = f(1) + f(0)</code>, <code>f(3)</code>, ... <code>f(7)</code>-ге дейін кесте құрыңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Тізбек: f(0)=1, f(1)=1, f(2)=2, f(3)=3, f(4)=5, f(5)=8, f(6)=13, f(7)=21. Тексерілген нәтиже:</p><pre class="terminal"><code class="language-plaintext">$ java Jat3
+21</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-pyr">Шаңырақ пирамидасы</h3></div>
+<p>Биіктігі <code>n</code> болатын жұлдызшалы пирамида басыңыз: бірінші қатарда 1 жұлдызша, екіншіде 3, үшіншіде 5, ... Пирамида ортаға тураланған болсын. <code>n = 6</code> үшін барлығы неше жұлдызша басылады? (Жауап - бір сан.)</p>
+<div class="answer-check" data-answer="36"><input type="text" placeholder="Жұлдызша саны" aria-label="Жұлдызша саны"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Ішкі цикл екеу: біреуі бос орын (<code>n - qator</code> рет), екіншісі жұлдызша (<code>2 * qator - 1</code> рет). Жалпы санды санауышпен тексеріңіз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Қатарлар: 1, 3, 5, 7, 9, 11, қосындысы 36 (бұл - алғашқы 6 тақ санның қосындысы, яғни <code>6²</code>).</p><pre data-lang="java"><code class="language-java">public class Pyramida {
+    public static void main(String[] args) {
+        int n = 6;
+        int jalpy = 0;
+        for (int qator = 1; qator &lt;= n; qator++) {
+            for (int b = 0; b &lt; n - qator; b++) {
+                System.out.print(" ");
+            }
+            for (int j = 0; j &lt; 2 * qator - 1; j++) {
+                System.out.print("*");
+                jalpy++;
+            }
+            System.out.println();
+        }
+        System.out.println("Жұлдызша саны: " + jalpy);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java Pyramida
+     *
+    ***
+   *****
+  *******
+ *********
+***********
+Жұлдызша саны: 36</code></pre></div></details>
+<details open><summary>Өзін тексеру</summary><div class="details-body">
+<ul class="checklist" data-id="java1-t4">
+<li><input type="checkbox" aria-label="Орындалды"> <span>Қатар саны <code>n</code>-ге тең</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Әр қатар ортаға тураланған</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>n = 6</code> үшін 36 жұлдызша</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge hard">Қиын</span><h3 id="ex-collatz">Коллатц қадамдары</h3></div>
+<p>Натурал <code>n</code> санынан бастайық. Егер сан жұп болса, оны 2-ге бөлеміз, тақ болса, 3-ке көбейтіп 1 қосамыз. Осы әрекетті сан 1 болғанша қайталаймыз. Мысалы, 6 → 3 → 10 → 5 → 16 → 8 → 4 → 2 → 1 (8 қадам). <code>n = 27</code> үшін неше қадам керек?</p>
+<div class="answer-check" data-answer="111"><input type="text" placeholder="Қадам саны" aria-label="Қадам саны"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Қадам санау үшін <code>int sanau</code> керек. Цикл: <code>while (n != 1)</code>. Үлкен аралық сандар үшін <code>long</code> қолданған дұрыс.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Әдіс:</p><pre data-lang="java"><code class="language-java">public class Kollatc {
+    static int qadam(long n) {
+        int sanau = 0;
+        while (n != 1) {
+            if (n % 2 == 0) {
+                n = n / 2;
+            } else {
+                n = 3 * n + 1;
+            }
+            sanau++;
+        }
+        return sanau;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(qadam(6));
+        System.out.println(qadam(27));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java Kollatc
+8
+111</code></pre><p>27 үшін 111 қадам (аралық ең үлкен мәні 9232).</p></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge hard">Қиын</span><h3 id="ex-atm">Банкомат: ең аз купюра</h3></div>
+<p>Банкомат тенгені 20000, 10000, 5000, 2000, 1000, 500, 200 номиналды купюралармен береді. <code>static int kupyura(int summa, int... nominaldar)</code> әдісін жазыңыз: ол берілген соманы ең аз купюрамен береді (үлкен номиналдан бастап). <code>48500</code> тг үшін неше купюра керек?</p>
+<div class="answer-check" data-answer="6"><input type="text" placeholder="Купюра саны" aria-label="Купюра саны"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Үлкен номиналдан бастап: <code>sany += summa / nominal;</code> сосын <code>summa = summa % nominal;</code>. Nominal тізімі үлкеннен кішіге реттелген деп есептеңіз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Қолмен: 20000 × 2 = 40000, қалды 8500; 5000 × 1, қалды 3500; 2000 × 1, қалды 1500; 1000 × 1, қалды 500; 500 × 1. Барлығы 2 + 1 + 1 + 1 + 1 = 6. Код:</p><pre data-lang="java"><code class="language-java">public class Bankomat {
+    static int kupyura(int summa, int... nominaldar) {
+        int sany = 0;
+        for (int nominal : nominaldar) {
+            sany += summa / nominal;
+            summa = summa % nominal;
+        }
+        return sany;
+    }
+
+    public static void main(String[] args) {
+        int summa = 48500;
+        int n = kupyura(summa, 20000, 10000, 5000, 2000, 1000, 500, 200);
+        System.out.println(summa + " тг: " + n + " купюра");
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java Bankomat
+48500 тг: 6 купюра</code></pre></div></details>
+<details open><summary>Өзін тексеру</summary><div class="details-body">
+<ul class="checklist" data-id="java1-t6">
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>48500</code> → 6</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>200</code> → 1</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>1000</code> → 1</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>35000</code> → 3 (20000 + 10000 + 5000)</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+
+<nav class="pager">
+<a href="week-0.html"><small>Алдыңғы</small>← 0-апта: Java-ға кіріспе</a>
+<a class="next" href="week-2.html"><small>Келесі</small>2-апта: Массивтер, String және ArrayList →</a>
+</nav>
+
+<p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

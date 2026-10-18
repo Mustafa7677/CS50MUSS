@@ -1,7 +1,7 @@
 /* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. Harvard CS50 материалдары мен үшінші тарап компоненттері өз лицензияларымен қалады. */
 // CS50 қазақша — офлайн режим.
 // Беттер желіден алынады, ал желі жоқ кезде кэштегі соңғы нұсқа көрсетіледі.
-const CACHE = "cs50kz-v58";
+const CACHE = "cs50kz-v59";
 const CORE = [
   "./", "index.html", "about.html", "glossary.html", "certificate.html", "playground.html", "practice.html", "flashcards.html", "viz.html", "teacher.html", "debug.html", "detective.html", "flask.html", "projects.html", "assets/js/projects.js", "projects/model.js", "projects/checks/p1.js", "projects/checks/p2.js", "projects/checks/p3.js", "projects/checks/p4.js", "exam.html", "assets/js/exam.js", "profile.html", "assets/js/profile.js", "assets/js/cabinet.js", "games.html", "copyright.html", "assets/js/games-core.js", "assets/js/games-a.js", "assets/js/games-b.js", "assets/css/games-ui.css", "assets/css/games-ui2.css", "assets/js/cloud.js", "assets/js/feedback.js", "assets/js/flask.js", "assets/data/mystery.js", "assets/data/mystery2.js", "assets/data/quotes.js", "assets/data/portraits.js", "alash.html", "courses.html", "python/index.html", "sql/index.html", "ai/index.html", "web/index.html", "sql/data/lectures.js", "ai/data/lectures.js", "web/data/lectures.js", "sql/lectures/week-0.html", "ai/lectures/week-0.html", "web/lectures/week-0.html", "python/lectures/week-0.html", "python/lectures/week-1.html", "python/lectures/week-2.html", "python/lectures/week-3.html", "python/lectures/week-4.html", "python/lectures/week-5.html", "python/lectures/week-6.html", "python/lectures/week-7.html", "python/lectures/week-8.html", "python/lectures/week-9.html", "python/checks/week-0.js", "python/checks/week-1.js", "python/checks/week-2.js", "python/checks/week-3.js", "python/checks/week-4.js", "python/checks/week-5.js", "python/checks/week-6.js", "python/checks/week-7.js", "python/checks/week-8.js", "python/checks/week-9.js", "python/data/lectures.js", "map.html", "cheatsheet.html", "assets/data/bugs.js", "assets/data/trace.js", "assets/data/checks.js", "assets/data/sqlchecks.js", "assets/img/bota.svg", "assets/img/bota-happy.svg", "assets/img/bota-think.svg", "assets/img/bota-wow.svg", "assets/vendor/qrcode/qrcode.js",
   "assets/css/style.css", "assets/js/main.js", "assets/js/labs.js",
@@ -12,6 +12,8 @@ const CORE = [
   "lectures/week-4.html", "lectures/week-5.html", "lectures/week-6.html", "lectures/week-7.html",
   "lectures/ai.html", "lectures/week-8.html", "lectures/week-9.html", "lectures/week-10.html",
 ];
+// Дербес курстар (cpp, java): тізімді tools/build.py тек бар файлдармен толтырады (жоқ файл addAll-ды құлатпасын)
+CORE.push(.../*own-courses:begin*/["cpp/index.html", "cpp/data/lectures.js", "cpp/lectures/week-0.html", "cpp/lectures/week-1.html", "cpp/lectures/week-4.html", "cpp/lectures/week-5.html", "cpp/lectures/week-6.html", "java/index.html", "java/data/lectures.js", "java/lectures/week-0.html", "java/lectures/week-1.html", "java/lectures/week-4.html", "java/lectures/week-5.html"]/*own-courses:end*/);
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));

@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Java 5-апта: Collections және generics - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="Java 5-апта: Collections және generics - CS50 қазақша">
+  <meta property="og:description" content="Java 5-апта: List, Set, Map, ArrayList, LinkedList, HashSet, TreeSet, HashMap, TreeMap, Iterator, generics, wildcard, Comparable, Comparator, Queue, PriorityQueue және Big-O кестесі.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/java/lectures/week-5.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/java/lectures/week-5.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Java 5-апта: Collections және generics - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/java/lectures/week-5.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="Java 5-апта: List, Set, Map, ArrayList, LinkedList, HashSet, TreeSet, HashMap, TreeMap, Iterator, generics, wildcard, Comparable, Comparator, Queue, PriorityQueue және Big-O кестесі.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body data-license="B">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="java" style="--c:#d97706"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Java</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../java/index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#d97706" data-n="5">
+        <div class="num">5-апта</div>
+        <h1>Collections және generics</h1>
+        <p>Бір ғана айнымалы көп деректі сақтай алмайды. Бұл аптада Java-ның дайын жинақтарымен танысамыз: тізім, жиын, сөздік және кезек. HashMap-тың іші қалай жұмыс істейтінін көреміз, generics арқылы кодты қауіпсіз етеміз, ал Big-O кестесі арқылы қай жинақты қашан таңдау керегін үйренеміз.</p>
+      </div>
+
+<h2 id="why">Бір ғана айнымалы жеткіліксіз</h2>
+<p>Қазірге дейін біз бір сан, бір жол, бір нысан сақтайтын айнымалылармен жұмыс істедік. Массив (<code>int[]</code>) бірнеше мәнді сақтай алады, бірақ оның өлшемі өмір бойы өзгермейді. Ал нақты өмірде деректер саны күнде өзгеріп отырады: сыныпқа жаңа оқушы келеді, дүкен қоймасына тауар қосылады, ойынға жаңа ойыншы кіреді. Мұндай жағдайға Java-ның <strong>Collections Framework</strong> (<span class="term-en">collections framework</span>, жинақтар жүйесі) дайын: нысандар тобын сақтаудың, іздеудің және сұрыптаудың дайын, жақсы жазылған құралдары.</p>
+<p>Аналогия: үй жиһазын қарастырыңыз. Шкаф - бұл «тізім»: заттар реті бойынша, әрқайсысының нөмірі бар. Қапшық - «жиын»: ішінде дәл қайталанатын зат болмайды. Мектептегі телефон кітапшасы - «сөздік»: аты бойынша нөмірін табасыз. Банктегі талон кезегі - «кезек»: бірінші келген бірінші қызмет алады. Java-да осы төрт ұғымның әрқайсысына интерфейс және бірнеше іске асыру бар.</p>
+<p>Бір қарағанда терминдер көп сияқты, бірақ ұстаным қарапайым: интерфейс не істей алатынын (<code>List</code>, <code>Set</code>, <code>Map</code>, <code>Queue</code>), ал класс қалай істейтінін (<code>ArrayList</code>, <code>HashSet</code>, <code>TreeMap</code>...) көрсетеді. Төмендегі карта осы жүйені көрсетеді:</p>
+<svg viewBox="0 0 620 250" role="img" aria-label="Collections иерархиясы: Collection интерфейсінен List, Set, Queue тарайды; Map бөлек. Әрқайсының астында ArrayList, LinkedList, HashSet, TreeSet, ArrayDeque, PriorityQueue, HashMap, TreeMap сияқты іске асырулар" style="display:block;width:100%;max-width:620px;height:auto;margin:18px auto"><defs><marker id="h5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="h5h" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M1,1 L11,6 L1,11 z" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/></marker></defs><rect x="120" y="10" width="150" height="34" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="195.0" y="25.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Collection&lt;E&gt;</text><rect x="15" y="85" width="110" height="34" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="70.0" y="100.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">List</text><polyline points="70,85 70,65 195,65 195,46" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h5h)"/><rect x="140" y="85" width="110" height="34" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="195.0" y="100.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Set</text><polyline points="195,85 195,65 195,65 195,46" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h5h)"/><rect x="265" y="85" width="110" height="34" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="320.0" y="100.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Queue</text><polyline points="320,85 320,65 195,65 195,46" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h5h)"/><rect x="10" y="160" width="120" height="72" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3"/><text x="70.0" y="175.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">ArrayList</text><line x1="10" y1="186" x2="130" y2="186" style="stroke:var(--border);stroke-width:1"/><text x="18" y="202" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">LinkedList</text><rect x="135" y="160" width="120" height="72" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3"/><text x="195.0" y="175.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">HashSet</text><line x1="135" y1="186" x2="255" y2="186" style="stroke:var(--border);stroke-width:1"/><text x="143" y="202" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">LinkedHashSet</text><text x="143" y="218" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">TreeSet</text><rect x="260" y="160" width="120" height="72" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3"/><text x="320.0" y="175.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">ArrayDeque</text><line x1="260" y1="186" x2="380" y2="186" style="stroke:var(--border);stroke-width:1"/><text x="268" y="202" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">PriorityQueue</text><text x="268" y="218" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">LinkedList</text><polyline points="70,160 70,121" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#h5h)"/><polyline points="195,160 195,121" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#h5h)"/><polyline points="320,160 320,121" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#h5h)"/><rect x="450" y="10" width="140" height="34" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="520.0" y="25.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Map&lt;K,V&gt;</text><rect x="450" y="160" width="140" height="72" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3"/><text x="520.0" y="175.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">HashMap</text><line x1="450" y1="186" x2="590" y2="186" style="stroke:var(--border);stroke-width:1"/><text x="458" y="202" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">LinkedHashMap</text><text x="458" y="218" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">TreeMap</text><polyline points="520,160 520,46" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#h5h)"/><text x="520" y="100" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;">Collection-нан</text><text x="520" y="116" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;">мұрагерленбейді</text></svg>
+<p>Мәтіндік балама: жоғарғы жағында <code>Collection</code> интерфейсі, одан <code>List</code>, <code>Set</code> және <code>Queue</code> тармақталады. <code>List</code> үшін <code>ArrayList</code> және <code>LinkedList</code>, <code>Set</code> үшін <code>HashSet</code>, <code>LinkedHashSet</code>, <code>TreeSet</code>, <code>Queue</code> үшін <code>ArrayDeque</code>, <code>PriorityQueue</code>, <code>LinkedList</code> қолданылады. <code>Map</code> интерфейсі <code>Collection</code>-нан мұрагерленбейді, бөлек тұрады, оның іске асырулары: <code>HashMap</code>, <code>LinkedHashMap</code>, <code>TreeMap</code>.</p>
+<p>Бұл апта үш үлкен бөліктен тұрады: алдымен жинақтарды қолдануды үйренеміз (<code>List</code>, <code>Set</code>, <code>Map</code>, <code>Queue</code>), содан кейін <strong>generics</strong> арқылы олардың қалай қауіпсіз жұмыс істейтінін көреміз, ал соңында қай жинақ қашан жылдам екенін <strong>Big-O</strong> кестесімен салыстырамыз.</p>
+<div class="callout note">
+<span class="callout-title">Импорт</span>
+<p>Жинақ кластары <code>java.util</code> пакетінде тұр. Файлдың басына <code>import java.util.List;</code> сияқты жолдар жазу керек, не <code>import java.util.*;</code> деп бәрін бірден алуға болады. Бұл лекциядағы мысалдар нақты импортпен жазылған, бұл оқуға ыңғайлы.</p>
+</div>
+
+<h2 id="list">List: ArrayList және LinkedList</h2>
+<p><code>List</code> (<span class="term-en">list</span>, тізім) - <strong>реттелген</strong> жинақ: әр элементтің индексі бар (0-ден басталады), қайталанатын элементтерге рұқсат. Ең жиі қолданылатын жүзеге асыруы - <code>ArrayList</code>: ол ішінде массив ұстайды және толса, өзі үлкенірек массив жасап, көшіріп алады.</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List&lt;String&gt; qalalar = new ArrayList&lt;&gt;();
+        qalalar.add("Алматы");
+        qalalar.add("Астана");
+        qalalar.add("Шымкент");
+        qalalar.add(1, "Қарағанды");           // индекс бойынша кірістіру
+
+        System.out.println(qalalar);
+        System.out.println("Өлшемі: " + qalalar.size());
+        System.out.println("0-элемент: " + qalalar.get(0));
+
+        qalalar.set(0, "Алматы (Верный)");
+        qalalar.remove("Шымкент");              // мән бойынша жою
+        qalalar.remove(0);                      // индекс бойынша жою
+
+        System.out.println(qalalar);
+        System.out.println("Астана бар ма? " + qalalar.contains("Астана"));
+        System.out.println("Астананың индексі: " + qalalar.indexOf("Астана"));
+
+        for (String q : qalalar) {
+            System.out.println("- " + q);
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+[Алматы, Қарағанды, Астана, Шымкент]
+Өлшемі: 4
+0-элемент: Алматы
+[Қарағанды, Астана]
+Астана бар ма? true
+Астананың индексі: 1
+- Қарағанды
+- Астана</code></pre>
+<p>Мұнда бірнеше үлгі бар:</p>
+<ul>
+  <li><code>List&lt;String&gt;</code> жазбасындағы <code>&lt;String&gt;</code> - бұл тізімге тек жол салуға болады деген мағына (<em>generics</em>, мұны төменде көреміз).</li>
+  <li>Айнымалының типін интерфейс (<code>List</code>) етіп, нысанды іске асыру (<code>new ArrayList&lt;&gt;()</code>) етіп жазамыз. Сонда кейін <code>ArrayList</code> орнына басқа тізімді қойсақ, қалған код өзгермейді. Бұл төртінші аптадағы полиморфизм.</li>
+  <li><code>remove("Шымкент")</code> мәнді іздеп жояды, ал <code>remove(0)</code> индекс бойынша жояды. Екеуі де бір сөзбен жазылғанымен, нәтижесі әртүрлі. Төмендегі «Жиі қателер» бөлімінде <code>List&lt;Integer&gt;</code> үшін бұл қауіпті тұзақ екенін көреміз.</li>
+  <li><code>&lt;&gt;</code> («алмаз операторы») компиляторға оң жақтағы типті сол жақтан шығарып алуды айтады.</li>
+</ul>
+<p><code>LinkedList</code> басқа жолмен жұмыс істейді: ол массив емес, бір-бірімен сілтемемен байланысқан түйіндер тізбегі. Әр түйін алдыңғысы мен келесісін біледі. Аналогия: <code>ArrayList</code> - кинотеатрдағы нөмірленген қатар орындар (6-орынға бірден барасыз), ал <code>LinkedList</code> - бір-бірінің қолынан ұстаған балалар тізбегі (6-баланы табу үшін бірінші баладан санау керек).</p>
+<pre data-lang="java"><code class="language-java">import java.util.LinkedList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        // тип - List, іске асыру - LinkedList: API бірдей
+        List&lt;String&gt; kezek = new LinkedList&lt;&gt;();
+        kezek.add("Айгерім");
+        kezek.add("Бауыржан");
+        kezek.add("Дана");
+        System.out.println(kezek + " " + kezek.get(1));
+
+        // LinkedList-ке тән әдістер үшін нақты тип керек
+        LinkedList&lt;String&gt; ll = new LinkedList&lt;&gt;(kezek);
+        ll.addFirst("Асылбек");
+        ll.addLast("Ернар");
+        System.out.println(ll);
+        System.out.println(ll.removeFirst() + " және " + ll.removeLast() + " шығарылды");
+        System.out.println(ll);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+[Айгерім, Бауыржан, Дана] Бауыржан
+[Асылбек, Айгерім, Бауыржан, Дана, Ернар]
+Асылбек және Ернар шығарылды
+[Айгерім, Бауыржан, Дана]</code></pre>
+<p>Іс жүзінде <code>LinkedList</code> өте сирек қажет болады, өйткені <code>ArrayList</code> көп жағдайда жылдамырақ (ол жадта жиналып тұрады, процессор оны жақсы көреді). Тізімнің басына/соңына жиі қосу-жою керек болса, <code>ArrayDeque</code> ең жақсы таңдау. Жалпы ереже: күмән болса, <code>ArrayList</code> қолданыңыз.</p>
+<h2 id="set">Set: қайталанбайтын жинақ</h2>
+<p><code>Set</code> (<span class="term-en">set</span>, жиын) - қайталанатын элементті қабылдамайтын жинақ. Сурет салып қарасақ: бұл математикадағы жиын, мысалы, «сыныптағы қолданылған әріптер». Бір әріп бір рет қана болады. Жиында индекс жоқ, <code>get(i)</code> әдісі де жоқ: тек «бар ма?» (<code>contains</code>) деп сұраймыз.</p>
+<p>Үш негізгі жүзеге асыру бар, олардың айырмашылығы тек <em>элементтердің реті</em>:</p>
+<ul>
+  <li><code>HashSet</code> - ең жылдам, бірақ ретіне кепілдік жоқ.</li>
+  <li><code>LinkedHashSet</code> - қосылу ретін сақтайды.</li>
+  <li><code>TreeSet</code> - әрқашан сұрыпталған күйде (өсу ретімен) ұстайды.</li>
+</ul>
+<pre data-lang="java"><code class="language-java">import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.TreeSet;
+
+public class Main {
+    public static void main(String[] args) {
+        String[] sozder = {"қалам", "дәптер", "қалам", "кітап", "дәптер", "сызғыш"};
+
+        Set&lt;String&gt; hash = new HashSet&lt;&gt;();
+        Set&lt;String&gt; linked = new LinkedHashSet&lt;&gt;();
+        Set&lt;String&gt; tree = new TreeSet&lt;&gt;();
+        for (String s : sozder) {
+            hash.add(s);
+            linked.add(s);
+            tree.add(s);
+        }
+        System.out.println("Бастапқы: " + sozder.length + " сөз");
+        System.out.println("HashSet:       " + hash.size() + " " + hash);
+        System.out.println("LinkedHashSet: " + linked.size() + " " + linked);
+        System.out.println("TreeSet:       " + tree.size() + " " + tree);
+
+        System.out.println(tree.add("қалам"));     // қайталанса false
+        System.out.println(tree.contains("кітап"));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Бастапқы: 6 сөз
+HashSet:       4 [сызғыш, кітап, дәптер, қалам]
+LinkedHashSet: 4 [қалам, дәптер, кітап, сызғыш]
+TreeSet:       4 [дәптер, кітап, сызғыш, қалам]
+false
+true</code></pre>
+<p>6 сөз қосылды, бірақ жиында тек 4 бірегей элемент қалды: «қалам» мен «дәптер» қайталанып, екінші қосуға жиын үнсіз ғана «жоқ» деді (<code>add</code> <code>false</code> қайтарды). <code>HashSet</code>-тің реті түсініксіз болып көрінді: бұл кездейсоқтық емес, оны ішкі кесте анықтайды, бірақ тәртіпке сенуге болмайды, Java нұсқасы ауысса, өзгеруі мүмкін. Реттілік керек болса, <code>LinkedHashSet</code> не <code>TreeSet</code> қолданыңыз.</p>
+<div class="callout warn">
+<span class="callout-title">Сұрыптау қазақ әліпбиі бойынша емес</span>
+<p><code>TreeSet</code>, <code>TreeMap</code> және <code>Collections.sort</code> жолдарды <strong>Unicode коды</strong> бойынша салыстырады: бас әріптер кіші әріптерден бұрын келеді, ал <code>ә</code>, <code>ө</code>, <code>ү</code>, <code>қ</code> сияқты қазақ әріптері кейбір орыс әріптерінен кейін тұрады. Сондықтан <code>өзен</code> сөзі <code>қала</code> сөзінен кейін шығады, ал <code>Алматы</code> <code>алма</code> сөзінен бұрын тұрады. Шынайы қазақ әліпбиі бойынша сұрыптау керек болса, <code>java.text.Collator</code> кластын қарастырыңыз. Біздің мысалдарда нәтижелерді осы ескертумен оқыңыз.</p>
+</div>
+
+<h2 id="map">Map: кілт және мән</h2>
+<p><code>Map</code> (<span class="term-en">map</span>, сөздік, карта) мәндерді <strong>кілт</strong> бойынша сақтайды: «кілт → мән» жұптары. Бұл ең пайдалы құрылым: оқушы аты → бағасы, қала → халық саны, сөз → қайталану саны. Кілттер бірегей болады, ал мәндер қайталана алады.</p>
+<p>Мәтіндегі сөздердің қанша рет кездескенін санайтын классикалық мысалды алайық (өте жиі кездесетін үлгі):</p>
+<pre data-lang="java"><code class="language-java">import java.util.HashMap;
+import java.util.Map;
+import java.util.TreeMap;
+
+public class Main {
+    public static void main(String[] args) {
+        String maqal = "жеті рет өлшеп бір рет кес жеті рет";
+        Map&lt;String, Integer&gt; sanaq = new HashMap&lt;&gt;();
+        for (String s : maqal.split(" ")) {
+            sanaq.put(s, sanaq.getOrDefault(s, 0) + 1);
+        }
+        System.out.println("жеті: " + sanaq.get("жеті"));
+        System.out.println("жоқ сөз: " + sanaq.get("қала"));
+        System.out.println("кілт саны: " + sanaq.size());
+
+        // TreeMap: кілттер әліпби ретімен
+        Map&lt;String, Integer&gt; tree = new TreeMap&lt;&gt;(sanaq);
+        for (Map.Entry&lt;String, Integer&gt; e : tree.entrySet()) {
+            System.out.println(e.getKey() + " -&gt; " + e.getValue());
+        }
+
+        // merge: қысқа жазу
+        Map&lt;String, Integer&gt; m2 = new TreeMap&lt;&gt;();
+        for (String s : maqal.split(" ")) {
+            m2.merge(s, 1, Integer::sum);
+        }
+        System.out.println(m2);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+жеті: 2
+жоқ сөз: null
+кілт саны: 5
+бір -&gt; 1
+жеті -&gt; 2
+кес -&gt; 1
+рет -&gt; 3
+өлшеп -&gt; 1
+{бір=1, жеті=2, кес=1, рет=3, өлшеп=1}</code></pre>
+<p>Қадамдап оқимыз:</p>
+<ul>
+  <li><code>sanaq.put(s, sanaq.getOrDefault(s, 0) + 1)</code>: «осы сөздің қазіргі санын ал (жоқ болса 0), 1 қос да қайта жаз».</li>
+  <li><code>sanaq.get("қала")</code> жоқ кілтті сұрағанда <code>null</code> қайтарады. <code>int</code> айнымалыға салмаңыз, әйтпесе <code>NullPointerException</code> шығады.</li>
+  <li><code>TreeMap</code> кілттерді сұрыптап ұстайды; біз оны бар <code>HashMap</code>-тан көшіріп жасадық. «өлшеп» соңында тұр: Unicode реті.</li>
+  <li><code>merge(кілт, 1, Integer::sum)</code> - сол есептеуді қысқа жазудың заманауи жолы: «кілт жоқ болса 1 қой, бар болса, бұрынғы мәнмен 1-ді қос».</li>
+  <li><code>Map.Entry</code> - бір «кілт-мән» жұбы; <code>entrySet()</code> арқылы екеуін бірге аралаймыз.</li>
+</ul>
+<p><code>Map</code>-тың да үш негізгі нұсқасы бар (<code>HashMap</code>, <code>LinkedHashMap</code>, <code>TreeMap</code>), олардың айырмашылығы <code>Set</code>-тегідей: жылдамдық пен тәртіп.</p>
+<h2 id="hashmap">HashMap іштей қалай жұмыс істейді</h2>
+<p><code>HashMap</code>-тың керемет жылдамдығы қайдан келеді? Телефон кітапшасынан «Сәлімді» іздеп отырсақ, әр беттен өтіп шығу керек. Ал егер кітапшаның әр әріпке бөлек қапшығы болса, «С» қапшығын ашып, оның ішінен ғана іздер едік. Бұл <strong>хеш-кесте</strong> (<span class="term-en">hash table</span>) идеясы.</p>
+<p>Іште <code>HashMap</code> «қораптар» (<span class="term-en">buckets</span>) массивін ұстайды (бастапқыда 16 қорап). Кілт қосқанда:</p>
+<ol>
+  <li>Кілттің <code>hashCode()</code> әдісі шақырылып, бүтін сан (<span class="term-en">hash</span>) алынады.</li>
+  <li>Осы саннан қорап нөмірі есептеледі: <code>h &amp; (n - 1)</code> (мұнда <code>n</code> - қорап саны).</li>
+  <li>Түйін сол қорапқа қойылады. Егер қорапта басқа кілт тұрса (<strong>соқтығыс</strong>, <span class="term-en">collision</span>), түйіндер тізбекке жалғанады.</li>
+  <li>Іздегенде де сол жол: хешті есептейді, қорапты табады, ішіндегі бірнеше түйінді <code>equals</code> арқылы салыстырады.</li>
+</ol>
+<p>Нақты сандармен көрейік. Мына код біздің қала аттарының қорап нөмірін есептейді (Java <code>HashMap</code> ішінде дәл осылай жасайды):</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    // HashMap-тің ішіндегі қорап нөмірін есептеу тәсілі (кесте өлшемі n = 16)
+    static int qorap(String kilt, int n) {
+        int h = kilt.hashCode();
+        h = h ^ (h &gt;&gt;&gt; 16);          // HashMap биттерді "араластырады"
+        return h &amp; (n - 1);
+    }
+
+    public static void main(String[] args) {
+        String[] kilter = {"Алматы", "Астана", "Шымкент", "Атырау", "Aa", "BB"};
+        for (String k : kilter) {
+            System.out.printf("%-8s hashCode=%11d  қорап(16)=%2d%n", k, k.hashCode(), qorap(k, 16));
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Алматы   hashCode=  743077736  қорап(16)= 2
+Астана   hashCode=  748797426  қорап(16)= 3
+Шымкент  hashCode= 1844177689  қорап(16)= 2
+Атырау   hashCode=  750004058  қорап(16)=14
+Aa       hashCode=       2112  қорап(16)= 0
+BB       hashCode=       2112  қорап(16)= 0</code></pre>
+<p>Диаграммада осы нәтиже бейнеленген:</p>
+<svg viewBox="0 0 560 370" role="img" aria-label="HashMap құрылымы: 16 қорапты массив. 0-қорапта Aa және BB, 2-қорапта Алматы және Шымкент (соқтығыс, тізбек), 3-қорапта Астана, 14-қорапта Атырау; қалған қораптар бос" style="display:block;width:100%;max-width:560px;height:auto;margin:18px auto"><defs><marker id="hm5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="hm5h" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M1,1 L11,6 L1,11 z" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/></marker></defs><text x="50" y="12" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:700;">table[ ]</text><text x="300" y="12" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">әр қорап - тізбек (кілт=мән түйіндері)</text><rect x="20" y="24" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="50.0" y="33.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">0</text><polyline points="80,33.5 98,33.5" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#hm5)"/><rect x="100" y="24" width="100" height="19" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="150.0" y="33.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px;">Aa</text><polyline points="200,33.5 228,33.5" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#hm5)"/><rect x="230" y="24" width="100" height="19" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="280.0" y="33.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px;">BB</text><rect x="20" y="45" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="50.0" y="54.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">1</text><rect x="20" y="66" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="50.0" y="75.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">2</text><polyline points="80,75.5 98,75.5" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#hm5)"/><rect x="100" y="66" width="100" height="19" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="150.0" y="75.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px;">Алматы</text><polyline points="200,75.5 228,75.5" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#hm5)"/><rect x="230" y="66" width="100" height="19" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="280.0" y="75.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px;">Шымкент</text><rect x="20" y="87" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="50.0" y="96.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">3</text><polyline points="80,96.5 98,96.5" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#hm5)"/><rect x="100" y="87" width="100" height="19" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="150.0" y="96.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px;">Астана</text><rect x="20" y="108" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="50.0" y="117.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">4</text><rect x="20" y="129" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="50.0" y="138.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">5</text><rect x="20" y="150" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="50.0" y="159.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">6</text><rect x="20" y="171" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="50.0" y="180.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">7</text><rect x="20" y="192" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="50.0" y="201.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">8</text><rect x="20" y="213" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="50.0" y="222.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">9</text><rect x="20" y="234" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="50.0" y="243.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">10</text><rect x="20" y="255" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="50.0" y="264.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">11</text><rect x="20" y="276" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="50.0" y="285.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">12</text><rect x="20" y="297" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="50.0" y="306.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">13</text><rect x="20" y="318" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="50.0" y="327.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">14</text><polyline points="80,327.5 98,327.5" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#hm5)"/><rect x="100" y="318" width="100" height="19" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="150.0" y="327.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px;">Атырау</text><rect x="20" y="339" width="60" height="19" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.2"/><text x="50.0" y="348.5" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">15</text><text x="330" y="300" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;">қорап нөмірі = (h ^ (h &gt;&gt;&gt; 16)) &amp; (n - 1)</text><text x="330" y="322" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;">h = key.hashCode(),  n = 16</text><text x="330" y="346" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">Алматы мен Шымкент бір қорапқа түсті: соқтығыс</text></svg>
+<p>Мәтіндік балама: 16 қорапты кесте. 0-қорапта <code>Aa</code> және <code>BB</code> тізбегі, 2-қорапта <code>Алматы</code> және <code>Шымкент</code>, 3-қорапта <code>Астана</code>, 14-қорапта <code>Атырау</code>; қалған қораптар бос.</p>
+<p>Назар аударыңыз: «Алматы» мен «Шымкент» бір қорапқа (2) түсті, бұл соқтығыс. Бірақ ештеңе бұзылған жоқ: екеуі де тізбекте тұр, іздеу сәтті болады. <code>Aa</code> және <code>BB</code> жолдарының <code>hashCode()</code> мәні дәл бірдей (2112) болатыны бұрыннан белгілі «қызық»: бірдей хеш не бірдей кілт дегенді білдірмейді. Сондықтан <code>equals</code> әрқашан соңғы төреші.</p>
+<p>Бұдан екі маңызды қорытынды шығады:</p>
+<ul>
+  <li>Соқтығыс аз болса, іздеу дерлік бірден болады: <strong>O(1)</strong>. Тізбек ұзарса, баяулайды. Java өте ұзын тізбекті теңестірілген ағашқа айналдырады, ал қораптар тым толса, кестені екі есе үлкейтіп, бәрін қайта таратады.</li>
+  <li>Өз класыңызды <code>HashMap</code>/<code>HashSet</code> кілті етіп қолдансаңыз, <code>equals</code> пен <code>hashCode</code>-ты <strong>бірге</strong> жазуыңыз керек (4-аптадағы <code>Object</code> әдістері). Мұны келесі мысалда көреміз:</li>
+</ul>
+<pre data-lang="java"><code class="language-java">import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+class Nokat {
+    final int x, y;
+    Nokat(int x, int y) { this.x = x; this.y = y; }
+}
+
+class NokatH {
+    final int x, y;
+    NokatH(int x, int y) { this.x = x; this.y = y; }
+    @Override public boolean equals(Object o) {
+        return o instanceof NokatH p &amp;&amp; p.x == x &amp;&amp; p.y == y;
+    }
+    @Override public int hashCode() { return 31 * x + y; }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        Map&lt;Nokat, String&gt; a = new HashMap&lt;&gt;();
+        a.put(new Nokat(1, 2), "Алматы");
+        System.out.println("equals/hashCode жоқ: " + a.get(new Nokat(1, 2)));
+
+        Map&lt;NokatH, String&gt; b = new HashMap&lt;&gt;();
+        b.put(new NokatH(1, 2), "Алматы");
+        System.out.println("equals/hashCode бар: " + b.get(new NokatH(1, 2)));
+
+        Set&lt;String&gt; s = new HashSet&lt;&gt;();
+        s.add("Aa");
+        s.add("BB");        // hashCode бірдей, бірақ мәндері басқа
+        System.out.println(s.size() + " " + s.contains("Aa") + " " + s.contains("BB"));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+equals/hashCode жоқ: null
+equals/hashCode бар: Алматы
+2 true true</code></pre>
+<p><code>Nokat</code> класында екі әдіс те жоқ: сондықтан екінші <code>new Nokat(1, 2)</code> басқа нысан, хеші де басқа, және <code>HashMap</code> оны таппай <code>null</code> қайтарды. Ал <code>NokatH</code>-та <code>equals</code> пен <code>hashCode</code> дұрыс жазылғандықтан кілт табылды. Соңғы жолда <code>Aa</code> мен <code>BB</code> бір қорапта тұрса да, жиын екеуін де бөлек сақтады (өлшемі 2).</p>
+<div class="callout tip">
+<span class="callout-title">Кілт ретінде өзгермейтін нысан қолданыңыз</span>
+<p>Кілттің <code>hashCode()</code> нәтижесі кілтті қосқаннан кейін өзгермеуі керек. Сондықтан кілт ретінде <code>String</code>, <code>Integer</code>, <code>record</code> сияқты өзгермейтін (<span class="term-en">immutable</span>) нысандарды алыңыз. <code>record</code> <code>equals</code> пен <code>hashCode</code>-ты автоматты жасап береді, сондықтан ол өте жақсы кілт.</p>
+</div>
+
+<h2 id="iterator">Итератор</h2>
+<p>Жинақты аралаудың біз білетін жолы - <code>for (T x : жинақ)</code>. Бұл жол ішінде <strong>итераторды</strong> (<span class="term-en">iterator</span>) қолданады. Итератор - жинақтың «меңзері» (бетбелгі сияқты): <code>hasNext()</code> әрі қарай элемент бар ма деп сұрайды, <code>next()</code> келесісін береді, ал <code>remove()</code> соңғы берген элементті жинақтан алып тастайды.</p>
+<p>Неге оны қолмен қолданамыз? Себебі аралап жүргенде жинақтан элемент жоюдың <em>қауіпсіз</em> жолы бір ғана: итератордың өзінің <code>remove()</code> әдісі.</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; baldar = new ArrayList&lt;&gt;(List.of(45, 62, 38, 90, 55, 71));
+
+        // Iterator арқылы қауіпсіз жою
+        Iterator&lt;Integer&gt; it = baldar.iterator();
+        while (it.hasNext()) {
+            int b = it.next();
+            if (b &lt; 50) {
+                it.remove();
+            }
+        }
+        System.out.println("50-ден жоғары: " + baldar);
+
+        // for-each ішінде жоюға тырысу
+        try {
+            for (Integer b : baldar) {
+                if (b == 62) {
+                    baldar.remove(b);
+                }
+            }
+        } catch (java.util.ConcurrentModificationException e) {
+            System.out.println("ConcurrentModificationException ұсталды");
+        }
+
+        // removeIf - ең қысқа жол
+        baldar.removeIf(b -&gt; b &gt; 80);
+        System.out.println(baldar);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+50-ден жоғары: [62, 90, 55, 71]
+ConcurrentModificationException ұсталды
+[55, 71]</code></pre>
+<ul>
+  <li>Бірінші цикл итератор арқылы 50-ден төмен баллдарды жойды. Бәрі дұрыс.</li>
+  <li>Екіншісінде <code>for-each</code> ішінде <code>baldar.remove(b)</code> шақырып едік, Java <code>ConcurrentModificationException</code> лақтырды. Бұл «аралап жүргенде жинақты басқа жолмен өзгерттіңіз» деген қорғаныс. Қателіктің атауын есте сақтаңыз: ол көп ағынды бағдарламамен байланысты емес, қарапайым цикл ішінде де шығады.</li>
+  <li>Үшінші жол - ең заманауи: <code>removeIf(шарт)</code> бір жолмен шартқа сәйкес барлығын жояды. (<code>b -&gt; b &gt; 80</code> - <em>lambda өрнегі</em>, оны келесі лекцияда толық үйренеміз.)</li>
+</ul>
+<div class="callout warn">
+<span class="callout-title">Жасырын тұзақ</span>
+<p>Тізімнің <em>соңғысынан бір бұрынғы</em> элементін <code>for-each</code> ішінде жойсаңыз, қате шықпай қалуы мүмкін (бұл итератордың ішкі есептеуінен). Бұл тағы да үнсіз қате: цикл соңғы элементті өткізіп жібереді. Сондықтан ереже өзгермейді: аралап жүргенде жойғыңыз келсе, итераторды не <code>removeIf</code>-ті қолданыңыз.</p>
+</div>
+
+<h2 id="generics">Generics: қауіпсіз «жалпы» типтер</h2>
+<p><code>List&lt;String&gt;</code> жазбасындағы <code>&lt;String&gt;</code> не береді? Ол болмаған кезде (Java 5-тен бұрын) тізім <code>Object</code> нысандарын сақтайтын, оған жол да, сан да салуға болатын, ал алып жатқанда қолмен түрлендіру керек болатын. Қателік тек <em>орындау кезінде</em> білінетін. <strong>Generics</strong> (<span class="term-en">generics</span>, жалпыланған типтер) қателікті <em>компиляция кезіне</em> көшіреді: компилятор <code>List&lt;String&gt;</code> ішіне санды салуға рұқсат етпейді.</p>
+<p>Аналогия: «шай ыдысы» мен «қант ыдысы» - сыртқы пішіні бірдей, бірақ жазуы басқа. Ыдысқа «қант» деп жазылса, оған тұз салып қоймайсыз. <code>&lt;T&gt;</code> дегеніміз - «ыдыстағы заттың түрі әзірге белгісіз, оны қолданғанда айтамыз» деген толтырғыш, <span class="term-en">type parameter</span> деп аталады.</p>
+<p>Өз generic класымызды жазайық:</p>
+<pre data-lang="java"><code class="language-java">import java.util.List;
+
+class Quty&lt;T&gt; {
+    private T mazmun;
+
+    Quty(T mazmun) { this.mazmun = mazmun; }
+
+    T al() { return mazmun; }
+    void sal(T jana) { this.mazmun = jana; }
+}
+
+class Jup&lt;K, V&gt; {
+    final K kilt;
+    final V man;
+    Jup(K kilt, V man) { this.kilt = kilt; this.man = man; }
+    @Override public String toString() { return "(" + kilt + ", " + man + ")"; }
+}
+
+public class Main {
+    // шектелген generic әдіс: T салыстырыла алатын болуы керек
+    static &lt;T extends Comparable&lt;T&gt;&gt; T maks(List&lt;T&gt; tizim) {
+        T eng = tizim.get(0);
+        for (T x : tizim) {
+            if (x.compareTo(eng) &gt; 0) {
+                eng = x;
+            }
+        }
+        return eng;
+    }
+
+    public static void main(String[] args) {
+        Quty&lt;String&gt; a = new Quty&lt;&gt;("домбыра");
+        Quty&lt;Integer&gt; b = new Quty&lt;&gt;(2024);
+        String s = a.al();           // түрлендіру керек емес
+        int n = b.al() + 1;
+        System.out.println(s + " " + n);
+
+        // a.sal(5);   // компиляция қатесі: String күтілді
+
+        System.out.println(maks(List.of(3, 17, 9)));
+        System.out.println(maks(List.of("Алматы", "Қостанай", "Атырау")));
+        System.out.println(new Jup&lt;&gt;("Алматы", 2_000_000));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+домбыра 2025
+17
+Қостанай
+(Алматы, 2000000)</code></pre>
+<p>Не болып жатыр:</p>
+<ul>
+  <li><code>class Quty&lt;T&gt;</code> - <code>T</code> типті құрастыратын класс. <code>Quty&lt;String&gt;</code> дегенде <code>T</code> орнына <code>String</code> қойылады. <code>String s = a.al();</code> жолында түрлендіру қажет емес, компилятор типті біледі.</li>
+  <li><code>Jup&lt;K, V&gt;</code> - екі типті параметрі бар класс (кілт және мән), <code>Map&lt;K,V&gt;</code>-ке ұқсас.</li>
+  <li><code>a.sal(5)</code> деген жол (комментарийде) компиляцияда қате берер еді, себебі <code>Quty&lt;String&gt;</code>-ке сан салуға болмайды.</li>
+  <li><code>&lt;T extends Comparable&lt;T&gt;&gt; T maks(List&lt;T&gt; tizim)</code> - <strong>generic әдіс</strong>. <code>extends Comparable&lt;T&gt;</code> деген шектеу «<code>T</code> салыстырыла алатын болуы керек» дегенді білдіреді. Сондықтан бұл әдіс <code>Integer</code> үшін де, <code>String</code> үшін де жұмыс істейді, бірақ <code>compareTo</code> жоқ кластарға берсек, компилятор қате береді. Жолдар үшін ең үлкені Unicode ретімен «Қостанай» болды.</li>
+</ul>
+<p>Generics-тің екі шектеуі бар, олар бастаушыларды таң қалдырады:</p>
+<ul>
+  <li><code>List&lt;int&gt;</code> деп жазуға болмайды: тип параметрі тек сілтеме типі бола алады. Дұрысы: <code>List&lt;Integer&gt;</code>. Java <code>int</code> ↔ <code>Integer</code> арасында автоматты түрлендіреді (<span class="term-en">autoboxing</span>).</li>
+  <li><code>List&lt;Integer&gt;</code> типі <code>List&lt;Number&gt;</code> типіне <em>жатпайды</em>, ол ұрпақ болса да. Сондықтан жалпы ереже керек, ол келесі бөлімде.</li>
+</ul>
+<h2 id="wildcard">Wildcard: ? белгісі</h2>
+<p>Бізге кез келген сан тізімінің қосындысын алатын әдіс керек делік. <code>List&lt;Number&gt;</code> параметрін алатын әдіс <code>List&lt;Integer&gt;</code>-ті қабылдамайды. Аналогия: қой қорасы «жалпы жануарлар қорасы» емес, оған жылқыны кіргізіп жіберуге болмайды. Компилятор да дәл солай: <code>List&lt;Integer&gt;</code> мен <code>List&lt;Number&gt;</code> бір-бірінің орнына жүрмейді. Мұны <span class="term-en">wildcard</span> (<code>?</code>) шешеді.</p>
+<ul>
+  <li><code>List&lt;? extends Number&gt;</code> - «Number-дің кез келген ұрпағының тізімі». Одан <strong>оқуға</strong> болады (кез келген элемент - <code>Number</code>), бірақ <strong>қосуға</strong> болмайды, себебі нақты тип белгісіз (тізім <code>List&lt;Double&gt;</code> болуы мүмкін, ал біз оған <code>Integer</code> қоссақ, бұзылады).</li>
+  <li><code>List&lt;? super Integer&gt;</code> - «Integer-дің кез келген ата-типінің тізімі» (<code>Integer</code>, <code>Number</code>, <code>Object</code>). Оған <code>Integer</code> <strong>қосуға</strong> болады, бірақ одан оқығанда тек <code>Object</code> аламыз.</li>
+</ul>
+<p>Бұл «оқу үшін extends, жазу үшін super» ережесі деп аталады (<span class="term-en">PECS</span>: producer extends, consumer super).</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    // ? extends Number: Number-дің кез келген ұрпағының тізімін ОҚИМЫЗ
+    static double jiny(List&lt;? extends Number&gt; san) {
+        double s = 0;
+        for (Number n : san) {
+            s += n.doubleValue();
+        }
+        return s;
+    }
+
+    // ? super Integer: Integer қоса алатын тізімге ЖАЗАМЫЗ
+    static void toltyr(List&lt;? super Integer&gt; tizim) {
+        for (int i = 1; i &lt;= 3; i++) {
+            tizim.add(i * 10);
+        }
+    }
+
+    public static void main(String[] args) {
+        List&lt;Integer&gt; a = List.of(1, 2, 3);
+        List&lt;Double&gt; b = List.of(1.5, 2.5);
+        System.out.println(jiny(a) + " " + jiny(b));
+
+        List&lt;Number&gt; sandar = new ArrayList&lt;&gt;();
+        List&lt;Object&gt; nysandar = new ArrayList&lt;&gt;();
+        toltyr(sandar);
+        toltyr(nysandar);
+        System.out.println(sandar + " " + nysandar);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+6.0 4.0
+[10, 20, 30] [10, 20, 30]</code></pre>
+<p><code>jiny</code> әдісі <code>List&lt;Integer&gt;</code> пен <code>List&lt;Double&gt;</code>-ді де қабылдады: екеуіне де <code>? extends Number</code> сәйкес. Ал <code>toltyr</code> әдісі <code>Integer</code> қосу үшін <code>List&lt;Number&gt;</code> пен <code>List&lt;Object&gt;</code> тізімдерін де қабылдады. Wildcard-ты қазір терең меңгерудің қажеті жоқ: оның идеясын білсеңіз жеткілікті, ал көбіне <code>List&lt;? extends T&gt;</code> жазбасын тек кітапхана әдістерінің қолтаңбасынан оқисыз.</p>
+<h2 id="compare">Comparable және Comparator</h2>
+<p>Сандар мен жолдарды Java өзі салыстыра алады. Ал сіздің <code>Oqushy</code> класыңыздың нысандарын қалай сұрыптаймыз: баға бойынша ма, ат бойынша ма? Java-да екі құрал бар:</p>
+<ul>
+  <li><strong>Comparable</strong> (<span class="term-en">Comparable</span>): класстың «табиғи реттілігі». Класс өзі <code>compareTo</code> әдісін жазады. Бір ғана реттілік болады.</li>
+  <li><strong>Comparator</strong> (<span class="term-en">Comparator</span>): сырттан берілетін қосымша реттілік. Қалағанша жасауға болады.</li>
+</ul>
+<p><code>compareTo(o)</code> мәні теріс (бұл нысан бұрын келеді), нөл (тең) немесе оң (бұл нысан кейін келеді) болып келеді.</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+class Oqushy implements Comparable&lt;Oqushy&gt; {
+    final String aty;
+    final int bal;
+
+    Oqushy(String aty, int bal) {
+        this.aty = aty;
+        this.bal = bal;
+    }
+
+    // табиғи реттілік: балы жоғарылар алда
+    @Override
+    public int compareTo(Oqushy o) {
+        return Integer.compare(o.bal, this.bal);
+    }
+
+    @Override
+    public String toString() {
+        return aty + ":" + bal;
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        List&lt;Oqushy&gt; sinip = new ArrayList&lt;&gt;(List.of(
+            new Oqushy("Дана", 85), new Oqushy("Ерлан", 92),
+            new Oqushy("Айдана", 85), new Oqushy("Нұрлан", 70)));
+
+        sinip.sort(null);                               // Comparable қолданылады
+        System.out.println("Бал бойынша: " + sinip);
+
+        sinip.sort(Comparator.comparing(o -&gt; o.aty));   // ат бойынша
+        System.out.println("Ат бойынша:  " + sinip);
+
+        sinip.sort(Comparator.comparingInt((Oqushy o) -&gt; o.bal)
+                              .reversed()
+                              .thenComparing(o -&gt; o.aty));
+        System.out.println("Бал↓, ат↑:   " + sinip);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Бал бойынша: [Ерлан:92, Дана:85, Айдана:85, Нұрлан:70]
+Ат бойынша:  [Айдана:85, Дана:85, Ерлан:92, Нұрлан:70]
+Бал↓, ат↑:   [Ерлан:92, Айдана:85, Дана:85, Нұрлан:70]</code></pre>
+<p>Назар аударатын жайттар:</p>
+<ul>
+  <li><code>compareTo</code> ішінде <code>Integer.compare(o.bal, this.bal)</code> жаздық, яғни аргументтерді <em>кері</em> бердік: сонда үлкен балл алда тұрады (кему реті).</li>
+  <li><code>sinip.sort(null)</code> - «табиғи реттілікті қолдан» дегенді білдіреді.</li>
+  <li><code>Comparator.comparing(o -&gt; o.aty)</code> атының бойынша салыстырады; <code>.reversed()</code> кері бұрады; <code>.thenComparing(...)</code> теңдік болғанда келесі шартқа өтеді.</li>
+  <li>Дана мен Айдана екеуінің де балы 85. Бірінші сұрыптауда олардың реті бастапқы тізімдегідей қалды: Java тізім сұрыптауы <strong>тұрақты</strong> (<span class="term-en">stable</span>), яғни тең элементтердің өзара тәртібін бұзбайды.</li>
+</ul>
+<p>Мұндағы lambda жазбасына (<code>o -&gt; o.aty</code>) қазір тереңдеп кірмейміз. Оқылуы: «<code>o</code> берілсе, <code>o.aty</code> қайтар». Келесі лекцияда толық түсіндіріледі.</p>
+<h2 id="utils">Collections утилиталары</h2>
+<p><code>Collections</code> (соңында <code>s</code>!) - жинақтармен жұмыс істейтін дайын статик әдістер жиынтығы. Ең пайдалылары:</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+
+public class Main {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; san = new ArrayList&lt;&gt;(List.of(40, 15, 90, 15, 62));
+
+        Collections.sort(san);
+        System.out.println("sort:      " + san);
+        Collections.reverse(san);
+        System.out.println("reverse:   " + san);
+        Collections.shuffle(san, new Random(7));    // seed бекітілген: нәтиже әр жолы бірдей
+        System.out.println("shuffle:   " + san);
+        System.out.println("max / min: " + Collections.max(san) + " / " + Collections.min(san));
+        System.out.println("frequency(15): " + Collections.frequency(san, 15));
+
+        List&lt;Integer&gt; oqu = Collections.unmodifiableList(san);
+        try {
+            oqu.add(1);
+        } catch (UnsupportedOperationException e) {
+            System.out.println("unmodifiableList өзгертілмейді");
+        }
+
+        List&lt;String&gt; qaz = List.of("а", "ә");
+        try {
+            qaz.add("б");
+        } catch (UnsupportedOperationException e) {
+            System.out.println("List.of өзгертілмейді");
+        }
+        System.out.println(Collections.binarySearch(List.of(10, 20, 30, 40), 30));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+sort:      [15, 15, 40, 62, 90]
+reverse:   [90, 62, 40, 15, 15]
+shuffle:   [15, 15, 90, 40, 62]
+max / min: 90 / 15
+frequency(15): 2
+unmodifiableList өзгертілмейді
+List.of өзгертілмейді
+2</code></pre>
+<ul>
+  <li><code>sort</code>, <code>reverse</code>, <code>shuffle</code> - тізімнің өзін өзгертеді. <code>shuffle</code>-ға <code>Random(7)</code> бердік (7 - «seed»), сондықтан нәтиже әр жолы бірдей: тест жазғанда бұл өте ыңғайлы.</li>
+  <li><code>max</code>, <code>min</code>, <code>frequency</code> - есептеу.</li>
+  <li><code>Collections.unmodifiableList(...)</code> пен <code>List.of(...)</code> - <strong>өзгертілмейтін</strong> тізім қайтарады. Оларға <code>add</code> шақырсаңыз, <code>UnsupportedOperationException</code> шығады. Жақсы бағдарламалауда бір жерден жасалған тізімді басқаға «тек оқу» үшін беру әдеті бар.</li>
+  <li><code>binarySearch</code> - сұрыпталған тізімнен жылдам іздеу (жауап - индекс, біздегі 30 екінші индексте). Тізім сұрыпталмаған болса, нәтиже дұрыс болмайды.</li>
+</ul>
+<p>Сондай-ақ <code>Arrays</code> классы да бар: <code>Arrays.sort(massiv)</code>, <code>Arrays.asList(...)</code>, <code>Arrays.toString(massiv)</code>. Массивті жинаққа не кері аударуда бұл өте пайдалы.</p>
+<h2 id="queue">Queue, Deque және PriorityQueue</h2>
+<p>Кейде реттің мәні элементтердің қосылу ретімен анықталады. <code>Queue</code> (<span class="term-en">queue</span>, кезек) - <strong>FIFO</strong> (<span class="term-en">first in, first out</span>): бірінші келген бірінші шығады. Банктегі талон кезегі дәл осындай.</p>
+<p><code>Deque</code> (<span class="term-en">double-ended queue</span>, екі жақты кезек, «дек» деп оқылады) екі шетінен де қосып-алуға мүмкіндік береді; сол себепті оны <strong>стек</strong> (<span class="term-en">stack</span>, LIFO: соңғы келген бірінші шығады) ретінде де қолданамыз. Браузердегі «Артқа» батырмасы - стек: ең соңғы ашылған бет бірінші жабылады.</p>
+<p><code>PriorityQueue</code> (<span class="term-en">priority queue</span>, басымдықты кезек) бұдан да ақылды: элементтер қосылу ретімен емес, <em>басымдық</em> бойынша шығады. Жедел жәрдемдегі науқастарды елестетіңіз: ауыр жағдайдағы науқас бірінші, ол кеш келсе де.</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.PriorityQueue;
+import java.util.Queue;
+
+public class Main {
+    record Tapsyrma(String atau, int mangyzdylyq) {}
+
+    public static void main(String[] args) {
+        // Queue: FIFO - банктегі кезек
+        Queue&lt;String&gt; kezek = new ArrayDeque&lt;&gt;();
+        kezek.offer("Айгүл");
+        kezek.offer("Бекзат");
+        kezek.offer("Сая");
+        System.out.println("Алдыңғы: " + kezek.peek());
+        System.out.println("Қызмет көрсетілді: " + kezek.poll());
+        System.out.println("Кезекте қалды: " + kezek);
+
+        // Deque екі жақтан да жұмыс істейді; стек ретінде қолдануға болады
+        Deque&lt;String&gt; qapt = new ArrayDeque&lt;&gt;();
+        qapt.push("1-бет");
+        qapt.push("2-бет");
+        qapt.push("3-бет");
+        System.out.println("Артқа: " + qapt.pop() + ", " + qapt.pop());
+
+        // PriorityQueue: ең кіші (немесе компаратор бойынша ең маңызды) бірінші шығады
+        PriorityQueue&lt;Tapsyrma&gt; pq = new PriorityQueue&lt;&gt;(
+            (x, y) -&gt; Integer.compare(y.mangyzdylyq(), x.mangyzdylyq()));
+        pq.add(new Tapsyrma("Үй жинау", 2));
+        pq.add(new Tapsyrma("Емтиханға дайындық", 9));
+        pq.add(new Tapsyrma("Футбол", 4));
+        while (!pq.isEmpty()) {
+            Tapsyrma t = pq.poll();
+            System.out.println(t.mangyzdylyq() + " - " + t.atau());
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Алдыңғы: Айгүл
+Қызмет көрсетілді: Айгүл
+Кезекте қалды: [Бекзат, Сая]
+Артқа: 3-бет, 2-бет
+9 - Емтиханға дайындық
+4 - Футбол
+2 - Үй жинау</code></pre>
+<p>Не көрдік:</p>
+<ul>
+  <li><code>offer</code> қосады, <code>peek</code> алдыңғысын жоймай көрсетеді, <code>poll</code> алдыңғысын шығарып алады (кезек бос болса, <code>null</code> қайтарады).</li>
+  <li><code>push</code>/<code>pop</code> - деқтің стек ретіндегі әдістері.</li>
+  <li><code>PriorityQueue</code> компараторға сәйкес ең маңыздыны (9) бірінші берді, содан кейін 4, 2. Мұнда <code>record</code> қолданылғанына назар аударыңыз: қысқа деректер класы.</li>
+</ul>
+<div class="callout warn">
+<span class="callout-title">PriorityQueue-ды басып шығарса, сұрыпталған болмайды</span>
+<p><code>PriorityQueue</code> ішінде «үйме» (<span class="term-en">heap</span>) құрылымын ұстайды: ең басты элемент бірінші тұрады, ал қалғаны толық сұрыпталмаған. Тек <code>poll()</code> арқылы алғанда ғана реті дұрыс шығады. <code>System.out.println(pq)</code> реттелген тізімді көрсетеді деп күтпеңіз.</p>
+</div>
+
+<h2 id="bigo">Операциялар күрделілігі (Big-O)</h2>
+<p>Қай жинақты таңдау керек? Жауап: ол <em>қандай операция жиі</em> болатынына байланысты. Операцияның қаншалықты жылдам екенін көрсету үшін <strong>Big-O белгілеуі</strong> (<span class="term-en">Big-O notation</span>) қолданылады. Ол «деректер <code>n</code> есе көбейсе, жұмыс уақыты қалай өседі?» деген сұраққа жауап береді.</p>
+<ul>
+  <li><strong>O(1)</strong> - тұрақты: деректер қанша болса да, бір қадам. Мысалы, массивтен индекспен элемент алу. Ұқсастығы: кітапхананың дәл нөмірі белгілі сөресінен кітап алу.</li>
+  <li><strong>O(log n)</strong> - логарифмдік: әр қадам мәселенің жартысын шешеді. 1 000 000 элементте бар болғаны шамамен 20 қадам. Ұқсастығы: сөздіктен сөз іздеу, ортасынан ашып, жартысын тастап отырасыз.</li>
+  <li><strong>O(n)</strong> - сызықтық: әр элементті қарап шығу. 1 000 000 элемент - 1 000 000 қадам. Ұқсастығы: бүкіл кітапхананы бір-бірлеп қарап шығу.</li>
+</ul>
+<p>Негізгі жинақтардың орташа күрделілігі:</p>
+<table>
+<thead><tr><th>Операция</th><th>ArrayList</th><th>LinkedList</th><th>HashSet / HashMap</th><th>TreeSet / TreeMap</th><th>ArrayDeque</th><th>PriorityQueue</th></tr></thead>
+<tbody>
+<tr><td>Индекс бойынша алу <code>get(i)</code></td><td>O(1)</td><td>O(n)</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>Соңына қосу</td><td>O(1)*</td><td>O(1)</td><td>-</td><td>-</td><td>O(1)</td><td>O(log n)</td></tr>
+<tr><td>Басына қосу</td><td>O(n)</td><td>O(1)</td><td>-</td><td>-</td><td>O(1)</td><td>-</td></tr>
+<tr><td>Ортасына қосу/жою</td><td>O(n)</td><td>O(n)**</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>
+<tr><td>Мән бар ма? <code>contains</code></td><td>O(n)</td><td>O(n)</td><td>O(1)</td><td>O(log n)</td><td>O(n)</td><td>O(n)</td></tr>
+<tr><td>Қосу <code>add/put</code></td><td>-</td><td>-</td><td>O(1)</td><td>O(log n)</td><td>-</td><td>O(log n)</td></tr>
+<tr><td>Кілт бойынша алу <code>get(key)</code></td><td>-</td><td>-</td><td>O(1)</td><td>O(log n)</td><td>-</td><td>-</td></tr>
+<tr><td>Ең кішісін/басты элементті көру <code>peek</code></td><td>-</td><td>-</td><td>-</td><td>O(log n)***</td><td>O(1)</td><td>O(1)</td></tr>
+<tr><td>Реті сақталады ма?</td><td>иә (қосылу)</td><td>иә (қосылу)</td><td>жоқ</td><td>иә (сұрыпталған)</td><td>иә</td><td>жартылай (үйме)</td></tr>
+</tbody>
+</table>
+<ul>
+  <li><code>*</code> Массив толғанда үлкейтіледі, сондықтан кейде бір қосу O(n) болады, бірақ орташа есеппен O(1) (<span class="term-en">amortized</span>).</li>
+  <li><code>**</code> Орнын тапқаннан кейін жою O(1), бірақ орнына жету O(n).</li>
+  <li><code>***</code> Ең кішісі/үлкені үшін <code>first()</code> / <code>last()</code>.</li>
+</ul>
+<p>Кестеден шығатын практикалық ережелер:</p>
+<ul>
+  <li>Көп «бар ма?» сұрау керек болса, <code>List.contains</code> емес, <code>HashSet</code> қолданыңыз: 1 000 000 элементте O(n) мен O(1) арасындағы айырма миллион есе болуы мүмкін.</li>
+  <li>Индекспен көп оқитын болсаңыз, <code>ArrayList</code> ең жақсы.</li>
+  <li>Кілт бойынша іздеу керек болса, <code>HashMap</code>; сұрыпталған күйде керек болса, <code>TreeMap</code>.</li>
+  <li>Тізімді сұрыптау O(n log n).</li>
+</ul>
+<p>Көп бағдарламада <code>n</code> кішкентай, сондықтан айырма сезілмейді. Бірақ деректер өскенде дұрыс таңдау бағдарламаны секундта не сағатта аяқтауы мүмкін.</p>
+<h2 id="run">Өз компьютеріңде іске қос</h2>
+<p>Бұл лекцияның кодтарын сынау үшін бір <code>Main.java</code> файлы жеткілікті. Әр жолы жаңа мысал үшін бөлек қалта жасаңыз. Мысал үшін:</p>
+<pre class="terminal"><code class="language-bash">mkdir week5 &amp;&amp; cd week5
+# Main.java файлын жасап, кодты салыңыз
+javac Main.java
+java Main</code></pre>
+<p>Бір файлда бірнеше <code>import</code> керек болса, оларды файлдың ең басына, класстан бұрын жазыңыз. VS Code-та Java кеңейтімі жетіспейтін <code>import</code> жолын өзі ұсынады. Қосымша эксперимент: <code>HashSet</code>-ке 20-30 сөз қосып, олардың қандай ретпен шығатынын бақылаңыз, содан кейін <code>LinkedHashSet</code> пен <code>TreeSet</code> қолданып салыстырыңыз.</p>
+<h2 id="mistakes">Жиі қателер</h2>
+
+<div class="callout warn">
+<span class="callout-title">1. List&lt;Integer&gt; ішінде remove(int) пен remove(Object) шатасуы</span>
+<p><code>list.remove(1)</code> - индекс 1-дегі элементті жояды. Мәні 1 болатын элементті жою үшін <code>list.remove(Integer.valueOf(1))</code> жазыңыз. Бұл 1-жаттығуда кездеседі.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">2. Аралап жүргенде жинақты өзгерту</span>
+<p><code>for-each</code> ішінде <code>list.remove(x)</code> не <code>list.add(x)</code> - <code>ConcurrentModificationException</code>. Итераторды не <code>removeIf</code>-ті қолданыңыз.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">3. equals/hashCode жазбау</span>
+<p>Өз класыңызды <code>HashMap</code> кілті етіп, <code>equals</code> пен <code>hashCode</code>-сыз қолдансаңыз, <code>get</code> әрқашан <code>null</code> қайтарады, өйткені екі «бірдей» нысан жад бойынша әртүрлі.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">4. null-ға түрлендіру</span>
+<p><code>int x = map.get("жоқ кілт");</code> - <code>NullPointerException</code>: <code>get</code> <code>null</code> қайтарады, ал <code>null</code> <code>int</code> бола алмайды. <code>getOrDefault</code> не <code>containsKey</code> қолданыңыз.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">5. HashSet/HashMap ретіне сену</span>
+<p>Хеш-жинақтардың ретіне кепілдік жоқ. Ретті керек етсеңіз, <code>LinkedHash...</code> не <code>Tree...</code> таңдаңыз.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">6. List.of ішіне элемент қосу</span>
+<p><code>List.of</code>, <code>Set.of</code>, <code>Map.of</code> өзгертілмейтін жинақ қайтарады, <code>add</code> шақырсаңыз, <code>UnsupportedOperationException</code>. Өзгертетін көшірме керек болса: <code>new ArrayList&lt;&gt;(List.of(...))</code>.</p>
+</div>
+
+<h2 id="summary">Қорытынды</h2>
+<p>Бүгін біз Java-ның дерек құрылымдарымен таныстық:</p>
+<ul>
+  <li><code>List</code> - реттелген, қайталануға рұқсат; <code>ArrayList</code> (әдетте таңдау) және <code>LinkedList</code>;</li>
+  <li><code>Set</code> - қайталанбайды; <code>HashSet</code> (жылдам), <code>LinkedHashSet</code> (қосылу реті), <code>TreeSet</code> (сұрыпталған);</li>
+  <li><code>Map</code> - кілт → мән; <code>HashMap</code>, <code>LinkedHashMap</code>, <code>TreeMap</code>; <code>getOrDefault</code>, <code>merge</code>, <code>computeIfAbsent</code>;</li>
+  <li><code>HashMap</code> кілт хешінен қорап нөмірін есептейді; өз кілт класына <code>equals</code> пен <code>hashCode</code> қажет;</li>
+  <li><code>Iterator</code> - жинақты аралап, қауіпсіз жоюға мүмкіндік береді; <code>removeIf</code> қысқа жол;</li>
+  <li>generics - <code>&lt;T&gt;</code> арқылы типті қауіпсіз ету; <code>&lt;T extends Comparable&lt;T&gt;&gt;</code> шектеуі; wildcard: <code>? extends</code> оқуға, <code>? super</code> жазуға;</li>
+  <li><code>Comparable</code> - табиғи реттілік, <code>Comparator</code> - сырттан берілетін реттілік;</li>
+  <li><code>Collections</code> утилиталары: <code>sort</code>, <code>reverse</code>, <code>shuffle</code>, <code>max</code>, <code>min</code>, <code>frequency</code>, <code>unmodifiableList</code>;</li>
+  <li><code>Queue</code> (FIFO), <code>Deque</code> (екі жақты, стек), <code>PriorityQueue</code> (басымдық);</li>
+  <li>Big-O: O(1), O(log n), O(n) - жинақты операцияға қарай таңдаймыз.</li>
+</ul>
+<ul class="checklist" data-id="w5-self">
+  <li><input type="checkbox"> <span>Мен <code>List</code>, <code>Set</code>, <code>Map</code> арасындағы айырмашылықты түсіндіре аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен өз тапсырмама қажетті жинақты (мысалы, сөз санау үшін <code>Map</code>) таңдай аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен <code>HashMap</code>-тың қорап жүйесін өз сөзіммен айта аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен өз кілт класыма <code>equals</code> және <code>hashCode</code> жаза аламын (не <code>record</code> қолдана аламын).</span></li>
+  <li><input type="checkbox"> <span>Мен generic класс пен generic әдіс жаза аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен <code>Comparable</code> мен <code>Comparator</code>-дың айырмашылығын білемін және екеуін қолдана аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен кестеден <code>ArrayList.contains</code> мен <code>HashSet.contains</code>-тің қайсысы жылдам екенін айта аламын.</span></li>
+</ul>
+<p class="progress"></p>
+<p>Келесі аптада бағдарлама қателесетін сәттерді (ерекше жағдайлар), файлмен жұмысты, lambda өрнектері мен <code>Stream</code> арқылы деректерді өңдеудің қысқа жолын үйренеміз.</p>
+<h2 id="quiz">Өзіңізді тексеріңіз</h2>
+
+<div class="quiz">
+<div class="question" data-answer="c">
+  <p class="q-text">1. Мына әрекеттердің қайсысы <code>ArrayList</code>-те O(1) (тұрақты уақыт) болады?</p>
+  <label><input type="radio" value="a"> Тізімнің басына элемент қосу</label>
+  <label><input type="radio" value="b"> Тізімнен мән бойынша <code>contains</code> іздеу</label>
+  <label><input type="radio" value="c"> Индекс бойынша <code>get(i)</code> алу</label>
+  <label><input type="radio" value="d"> Тізімнің ортасындағы элементті жою</label>
+  <p class="explain"><code>ArrayList</code> ішінде массив бар, сондықтан индекс бойынша алу бірден орындалады: O(1). Басына қосу мен ортасынан жою элементтерді жылжытуды қажет етеді (O(n)), ал <code>contains</code> бәрін қарап шығады (O(n)).</p>
+</div>
+<div class="question" data-answer="b">
+  <p class="q-text">2. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+
+public class Main {
+    public static void main(String[] args) {
+        Set&lt;Integer&gt; s = new TreeSet&lt;&gt;(List.of(5, 3, 1));
+        s.add(5);
+        s.add(3);
+        s.add(4);
+        System.out.println(s + " " + s.size());
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>[5, 3, 1, 5, 3, 4] 6</code></label>
+  <label><input type="radio" value="b"> <code>[1, 3, 4, 5] 4</code></label>
+  <label><input type="radio" value="c"> <code>[5, 3, 1, 4] 4</code></label>
+  <label><input type="radio" value="d"> <code>[1, 3, 4, 5] 6</code></label>
+  <p class="explain"><code>Set</code> қайталанатын 5 пен 3-ті қабылдамайды, ал <code>TreeSet</code> элементтерді өсу ретімен сұрыптап ұстайды. Бірегей мәндер: 1, 3, 4, 5, яғни өлшемі 4.</p>
+</div>
+<div class="question" data-answer="d">
+  <p class="q-text">3. Мына жолда не қате? <code>List&lt;int&gt; san = new ArrayList&lt;&gt;();</code></p>
+  <label><input type="radio" value="a"> <code>ArrayList</code> импортталмаған</label>
+  <label><input type="radio" value="b"> <code>new ArrayList&lt;&gt;()</code> дұрыс жазылмаған</label>
+  <label><input type="radio" value="c"> Ештеңе, жол дұрыс</label>
+  <label><input type="radio" value="d"> Generic тип параметрі тек сілтеме типі бола алады; <code>int</code> орнына <code>Integer</code> жазу керек</label>
+  <p class="explain"><code>List&lt;int&gt;</code> компиляция қатесін береді: <code>unexpected type; required: reference, found: int</code>. Дұрысы <code>List&lt;Integer&gt;</code>; <code>int</code> ↔ <code>Integer</code> түрлендіруді Java автоматты жасайды (autoboxing).</p>
+</div>
+<div class="question" data-answer="a">
+  <p class="q-text">4. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">import java.util.HashMap;
+import java.util.Map;
+
+public class Main {
+    public static void main(String[] args) {
+        Map&lt;String, Integer&gt; m = new HashMap&lt;&gt;();
+        m.put("а", 1);
+        Integer ber = m.put("а", 2);
+        System.out.println(ber + " " + m.size() + " " + m.get("а"));
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>1 1 2</code></label>
+  <label><input type="radio" value="b"> <code>null 1 2</code></label>
+  <label><input type="radio" value="c"> <code>2 2 2</code></label>
+  <label><input type="radio" value="d"> <code>1 2 2</code></label>
+  <p class="explain"><code>put</code> кілт бұрыннан болған болса, ескі мәнді қайтарады (<code>1</code>) және оны жаңасымен (<code>2</code>) ауыстырады. Кілт бірегей, сондықтан <code>size()</code> әлі 1. Соңғы <code>get</code> жаңа мәнді береді: 2.</p>
+</div>
+<div class="question" data-answer="c">
+  <p class="q-text">5. Мына кодта қай жол компиляция қатесін береді?</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List&lt;? extends Number&gt; l = new ArrayList&lt;Integer&gt;();
+        Number n = l.get(0);
+        l.add(5);
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>List&lt;? extends Number&gt; l = new ArrayList&lt;Integer&gt;();</code></label>
+  <label><input type="radio" value="b"> <code>Number n = l.get(0);</code></label>
+  <label><input type="radio" value="c"> <code>l.add(5);</code></label>
+  <label><input type="radio" value="d"> Үшеуі де дұрыс</label>
+  <p class="explain"><code>? extends Number</code> тізімінен оқуға болады (элемент <code>Number</code>-дің ұрпағы), бірақ оған қосуға болмайды: компилятор тізімнің нақты типін (<code>Integer</code> па, <code>Double</code> па) білмейді. Тек <code>null</code> қосуға болады.</p>
+</div>
+<div class="question" data-answer="d">
+  <p class="q-text">6. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List&lt;String&gt; s = new ArrayList&lt;&gt;(List.of("ай", "күн", "жер", "су"));
+        s.sort(Comparator.comparingInt(String::length));
+        System.out.println(s);
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>[ай, күн, жер, су]</code></label>
+  <label><input type="radio" value="b"> <code>[су, ай, жер, күн]</code></label>
+  <label><input type="radio" value="c"> <code>[күн, жер, ай, су]</code></label>
+  <label><input type="radio" value="d"> <code>[ай, су, күн, жер]</code></label>
+  <p class="explain">Жолдар ұзындығы бойынша сұрыпталады: екі әріптілер (<code>ай</code>, <code>су</code>), сосын үш әріптілер (<code>күн</code>, <code>жер</code>). Сұрыптау тұрақты, сондықтан ұзындығы бірдей элементтер бастапқы ретін сақтайды: <code>ай</code> <code>су</code>-дан бұрын, <code>күн</code> <code>жер</code>-ден бұрын.</p>
+</div>
+<div class="question" data-answer="b">
+  <p class="q-text">7. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">import java.util.PriorityQueue;
+
+public class Main {
+    public static void main(String[] args) {
+        PriorityQueue&lt;Integer&gt; pq = new PriorityQueue&lt;&gt;();
+        pq.add(5);
+        pq.add(1);
+        pq.add(4);
+        System.out.println(pq.peek() + " " + pq.size());
+        System.out.println(pq.poll() + " " + pq.poll() + " " + pq.poll());
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>5 3</code> және <code>5 4 1</code></label>
+  <label><input type="radio" value="b"> <code>1 3</code> және <code>1 4 5</code></label>
+  <label><input type="radio" value="c"> <code>1 3</code> және <code>5 4 1</code></label>
+  <label><input type="radio" value="d"> <code>1 2</code> және <code>1 4 5</code></label>
+  <p class="explain"><code>PriorityQueue</code> табиғи реттілікте ең кішісін бірінші ұстайды: <code>peek()</code> = 1, өлшемі 3. <code>poll()</code> үш рет шақырылғанда мәндер өсу ретімен шығады: 1, 4, 5.</p>
+</div>
+<div class="question" data-answer="a">
+  <p class="q-text">8. <code>equals</code> және <code>hashCode</code> туралы қай сөйлем дұрыс?</p>
+  <label><input type="radio" value="a"> <code>equals</code> бойынша тең екі нысанның <code>hashCode()</code> мәні де тең болуы керек</label>
+  <label><input type="radio" value="b"> <code>hashCode</code> бірдей болса, нысандар міндетті түрде тең</label>
+  <label><input type="radio" value="c"> <code>HashMap</code> кілті үшін <code>hashCode</code> жеткілікті, <code>equals</code> керек емес</label>
+  <label><input type="radio" value="d"> Өз кілт класына екеуі де қажет емес, Java өзі жасайды</label>
+  <p class="explain">Келісім: <code>a.equals(b)</code> ақиқат болса, <code>a.hashCode() == b.hashCode()</code> болуы шарт. Керісінше міндетті емес (<code>Aa</code> және <code>BB</code> хештері бірдей, бірақ жолдар әртүрлі). <code>HashMap</code> алдымен хешпен қорапты табады, содан кейін <code>equals</code> арқылы нақтылайды, сондықтан екеуі де керек. Тек <code>record</code> екеуін де автоматты жасайды.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
+
+<h2 id="tasks">Жаттығулар</h2>
+<p>Жаттығуларды алдымен қағазда не ойша орындап көріңіз, содан кейін өз компьютеріңізде тексеріңіз. Дайын шешімдердің бәрі компилятормен тексерілген.</p>
+<div class="task">
+  <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pj5-1">remove: индекс пе, мән бе?</h3></div>
+<p>Мына код орындалғанда соңғы шығатын тізім қандай болады? Жауабыңызды дәл шыққандай жазыңыз (мысалы, <code>[1, 2, 3]</code>).</p>
+<pre data-lang="java"><code class="language-java">List&lt;Integer&gt; a = new ArrayList&lt;&gt;(List.of(10, 20, 30, 1, 2));
+a.remove(1);
+a.remove(Integer.valueOf(1));
+System.out.println(a);</code></pre>
+<div class="answer-check" data-answer="[10, 30, 2]|10, 30, 2|[10,30,2]|10 30 2"><input type="text" placeholder="Тізім" aria-label="Тізім"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>remove(1)</code> мұнда <code>int</code> аргументі, яғни ИНДЕКС. <code>Integer.valueOf(1)</code> болса, <code>Object</code> нұсқасы: ол МӘНДІ іздеп жояды. Екеуін кезекпен орындаңыз: бірінші қадамнан кейін тізім қандай болады?</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Бастапқы тізім: <code>[10, 20, 30, 1, 2]</code>. <code>remove(1)</code> индекс 1-дегі <code>20</code>-ны жояды: <code>[10, 30, 1, 2]</code>. <code>remove(Integer.valueOf(1))</code> мәні <code>1</code> болатынды жояды: <code>[10, 30, 2]</code>.</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; a = new ArrayList&lt;&gt;(List.of(10, 20, 30, 1, 2));
+        a.remove(1);                       // int -&gt; ИНДЕКС: 20 жойылады
+        a.remove(Integer.valueOf(1));      // Integer -&gt; МӘН: 1 жойылады
+        System.out.println(a);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+[10, 30, 2]</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pj5-2">TreeSet: бірінші элемент</h3></div>
+<p>Мына бағдарлама шығаратын бірінші жолды жазыңыз (екі мән бос орынмен бөлінген: өлшемі және бірінші элемент).</p>
+<pre data-lang="java"><code class="language-java">TreeSet&lt;String&gt; set = new TreeSet&lt;&gt;();
+set.add("кіші");
+set.add("Алматы");
+set.add("алма");
+set.add("Астана");
+set.add("алма");
+System.out.println(set.size() + " " + set.first());</code></pre>
+<div class="answer-check" data-answer="4 Алматы"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Қайталанатын <code>"алма"</code> жиынға екінші рет кірмейді. <code>TreeSet</code> жолдарды Unicode ретімен сұрыптайды: бас әріптер (<code>А</code>) кіші әріптерден (<code>а</code>) бұрын тұрады. Сонда қайсысы бірінші?</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Бірегей элементтер: «Алматы», «Астана», «алма», «кіші», барлығы 4. Бас әріпті жолдар кіші әріптілерден бұрын келеді, ал «Алматы» мен «Астана» арасында <code>л</code> < <code>с</code>, сондықтан «Алматы» бірінші.</p>
+<pre data-lang="java"><code class="language-java">import java.util.Set;
+import java.util.TreeSet;
+
+public class Main {
+    public static void main(String[] args) {
+        TreeSet&lt;String&gt; set = new TreeSet&lt;&gt;();
+        set.add("кіші");
+        set.add("Алматы");
+        set.add("алма");
+        set.add("Астана");
+        set.add("алма");
+        System.out.println(set.size() + " " + set.first());
+        System.out.println(set);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+4 Алматы
+[Алматы, Астана, алма, кіші]</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pj5-3">Мақалдағы сөздер санағы</h3></div>
+<p>Мына мақалдағы әр сөздің қанша рет кездесетінін есептеп, <code>TreeMap</code> арқылы шығаратын бағдарлама жазыңыз: «Білекті бірді жығады, білімді мыңды жығады». Сөздерді кіші әріпке түсіріңіз және үтірді алып тастаңыз.</p>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>String.toLowerCase()</code>, <code>replace(",", "")</code> және <code>split(" ")</code> әдістерін қолданыңыз. Санауды <code>map.merge(сөз, 1, Integer::sum)</code> деп жазсаңыз, цикл бір жол болады.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><pre data-lang="java"><code class="language-java">import java.util.Map;
+import java.util.TreeMap;
+
+public class Main {
+    public static void main(String[] args) {
+        String matin = "Білекті бірді жығады, білімді мыңды жығады";
+        Map&lt;String, Integer&gt; sanaq = new TreeMap&lt;&gt;();
+        for (String soz : matin.toLowerCase().replace(",", "").split(" ")) {
+            sanaq.merge(soz, 1, Integer::sum);
+        }
+        for (Map.Entry&lt;String, Integer&gt; e : sanaq.entrySet()) {
+            System.out.println(e.getKey() + ": " + e.getValue());
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+білекті: 1
+білімді: 1
+бірді: 1
+жығады: 2
+мыңды: 1</code></pre>
+<p>Кілттер Unicode ретімен шықты (<code>білекті</code> < <code>білімді</code> < <code>бірді</code>): <code>л</code> әрпі <code>р</code>-дан бұрын тұр.</p></div></details>
+<details open><summary>Өзіңізді тексеріңіз</summary><div class="details-body">
+<ul class="checklist" data-id="pj5-3">
+  <li><input type="checkbox"> <span>«жығады» сөзі 2 рет саналған, қалғандары 1 рет.</span></li>
+  <li><input type="checkbox"> <span>Нәтижеде үтір жоқ, барлық сөз кіші әріппен жазылған.</span></li>
+  <li><input type="checkbox"> <span><code>TreeMap</code> қолданылған, кілттер сұрыпталған күйде шығады.</span></li>
+  <li><input type="checkbox"> <span>Бағдарлама компиляцияланады және қатесіз жұмыс істейді.</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pj5-4">Салыстырғыш тізбегі</h3></div>
+<p>Төмендегі тізім ұзындығы бойынша өсу ретімен, ал ұзындығы бірдей болса, табиғи (Unicode) ретімен сұрыпталады. Тізімнің <strong>соңғы</strong> элементі қандай?</p>
+<pre data-lang="java"><code class="language-java">List&lt;String&gt; sozder = new ArrayList&lt;&gt;(List.of("қала", "ауыл", "өзен", "көл", "дала"));
+sozder.sort(Comparator.comparingInt(String::length)
+                      .thenComparing(Comparator.naturalOrder()));</code></pre>
+<div class="answer-check" data-answer="өзен"><input type="text" placeholder="Соңғы сөз" aria-label="Соңғы сөз"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Ұзындығы: қала 4, ауыл 4, өзен 4, көл 3, дала 4. Ең қысқа - «көл». Қалған төртеуін Unicode ретімен тізіңіз. Кеңес: <code>а</code> < <code>д</code> < <code>қ</code> < <code>ө</code> (Unicode кодтары).</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Сұрыпталған тізім: <code>[көл, ауыл, дала, қала, өзен]</code>. Ең соңғысы «өзен», себебі <code>ө</code> әрпінің коды <code>қ</code>-дан үлкен.</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        List&lt;String&gt; sozder = new ArrayList&lt;&gt;(List.of("қала", "ауыл", "өзен", "көл", "дала"));
+        sozder.sort(Comparator.comparingInt(String::length).thenComparing(Comparator.naturalOrder()));
+        System.out.println(sozder);
+        System.out.println(sozder.get(sozder.size() - 1));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+[көл, ауыл, дала, қала, өзен]
+өзен</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pj5-5">Үздік k оқушы</h3></div>
+<p>Generic әдіс <code>static &lt;T extends Comparable&lt;T&gt;&gt; List&lt;T&gt; top(List&lt;T&gt; tizim, int k)</code> жазыңыз: ол тізімнен ең үлкен <code>k</code> элементті (кему ретімен) қайтарсын. Әдісті <strong>PriorityQueue</strong> арқылы жазыңыз: кезек өлшемі <code>k</code>-дан асқанда ең кішісін шығарып отырыңыз. Балдар тізімі: <code>List.of(45, 90, 72, 88, 91, 60, 85)</code>, <code>k = 3</code>. Қандай тізім шығады?</p>
+<div class="answer-check" data-answer="[91, 90, 88]|91, 90, 88|[91,90,88]|91 90 88"><input type="text" placeholder="Тізім" aria-label="Тізім"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Әдепкі <code>PriorityQueue</code> ең кішісін бірінші ұстайды. Әр элементті қосқаннан кейін <code>size() &gt; k</code> болса, <code>poll()</code> ең кішісін алып тастайды. Соңында кезекте <code>k</code> ең үлкен қалады. Оларды <code>new ArrayList&lt;&gt;(pq)</code> арқылы тізімге көшіріп, <code>Collections.sort(тізім, Collections.reverseOrder())</code> арқылы кему ретімен орналастырыңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.PriorityQueue;
+
+public class Main {
+    // k ең үлкен элементті (кему ретімен) қайтарады
+    static &lt;T extends Comparable&lt;T&gt;&gt; List&lt;T&gt; top(List&lt;T&gt; tizim, int k) {
+        PriorityQueue&lt;T&gt; pq = new PriorityQueue&lt;&gt;();     // кіші мән алда
+        for (T x : tizim) {
+            pq.add(x);
+            if (pq.size() &gt; k) {
+                pq.poll();                               // ең кішісін шығарамыз
+            }
+        }
+        List&lt;T&gt; natije = new ArrayList&lt;&gt;(pq);
+        Collections.sort(natije, Collections.reverseOrder());
+        return natije;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(top(List.of(45, 90, 72, 88, 91, 60, 85), 3));
+        System.out.println(top(List.of("ә", "а", "б"), 2));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+[91, 90, 88]
+[ә, б]</code></pre>
+<p>Бұл тәсіл тізімнің бәрін сұрыптаудан жылдамырақ: кезек өлшемі <code>k</code>-мен шектеулі, әр қосу O(log k).</p></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pj5-6">Сыныптар бойынша топтау</h3></div>
+<p>Оқушылар <code>"7А:Айдос"</code> пішімінде берілген (сынып:аты). Тізім: <code>"7А:Айдос"</code>, <code>"7Ә:Мадина"</code>, <code>"7А:Дана"</code>, <code>"7Б:Ернар"</code>, <code>"7Ә:Аружан"</code>, <code>"7А:Сая"</code>. <code>Map&lt;String, List&lt;String&gt;&gt;</code> (кілт - сынып, мән - оқушылар тізімі) жасап, оны шығарыңыз, содан кейін әр сынып үшін оқушы санын шығарыңыз. Кілттерді сұрыптау үшін <code>TreeMap</code> қолданыңыз.</p>
+<details><summary>Кеңес</summary><div class="details-body"><p>Тізімі жоқ кілт үшін жаңа тізім жасау үшін <code>computeIfAbsent(кілт, k -&gt; new ArrayList&lt;&gt;())</code> дұрыс таңдау: ол тізімді қайтарады, оған бірден <code>.add(...)</code> жасауға болады. Жолды бөлу: <code>j.split(":")</code>.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+public class Main {
+    public static void main(String[] args) {
+        String[] jazbalar = {"7А:Айдос", "7Ә:Мадина", "7А:Дана", "7Б:Ернар", "7Ә:Аружан", "7А:Сая"};
+        Map&lt;String, List&lt;String&gt;&gt; sinipter = new TreeMap&lt;&gt;();
+        for (String j : jazbalar) {
+            String[] bolik = j.split(":");
+            sinipter.computeIfAbsent(bolik[0], k -&gt; new ArrayList&lt;&gt;()).add(bolik[1]);
+        }
+        System.out.println(sinipter);
+        for (Map.Entry&lt;String, List&lt;String&gt;&gt; e : sinipter.entrySet()) {
+            System.out.println(e.getKey() + " сыныбы: " + e.getValue().size() + " оқушы");
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+{7А=[Айдос, Дана, Сая], 7Б=[Ернар], 7Ә=[Мадина, Аружан]}
+7А сыныбы: 3 оқушы
+7Б сыныбы: 1 оқушы
+7Ә сыныбы: 2 оқушы</code></pre></div></details>
+<details open><summary>Өзіңізді тексеріңіз</summary><div class="details-body">
+<ul class="checklist" data-id="pj5-6">
+  <li><input type="checkbox"> <span><code>7А</code> сыныбында 3 оқушы, <code>7Б</code>-да 1, <code>7Ә</code>-де 2 оқушы шығады.</span></li>
+  <li><input type="checkbox"> <span><code>Map&lt;String, List&lt;String&gt;&gt;</code> және <code>computeIfAbsent</code> қолданылған.</span></li>
+  <li><input type="checkbox"> <span>Кілттер сұрыпталып шығады (<code>TreeMap</code>).</span></li>
+  <li><input type="checkbox"> <span>Жолды <code>split(":")</code> арқылы бөлдіңіз.</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+
+
+      <nav class="pager">
+  <a href="week-4.html"><small>Алдыңғы</small>← 4-апта: Мұрагерлік, интерфейстер және полиморфизм</a>
+  <a class="next" href="week-6.html"><small>Келесі</small>6-апта: Ерекше жағдайлар, файлдар, lambda және Stream →</a>
+</nav>
+
+      <p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

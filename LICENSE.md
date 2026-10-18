@@ -9,7 +9,7 @@ CS50MUSS - Harvard University-ден **тәуелсіз** жоба. Harvard ун
 | Санат | Не кіреді | Лицензия |
 |---|---|---|
 | **A. Harvard CS50** | Harvard CS50 лекциялары, тапсырмалары (problem sets), мысалдары және олардың **қазақша аудармалары мен туынды бейімдеулері** | **CC BY-NC-SA 4.0** - [LICENSE-HARVARD.md](LICENSE-HARVARD.md) |
-| **B. Sagid Mustafa** | Дербес әзірленген бағдарламалық код, дизайн, құралдар, ойындар, кабинеттер, тест жүйесі, SQL детектив, Жобалар шеберханасы, Flask зертханасы және т.б. | **© 2026 Sagid Mustafa. All Rights Reserved** - [LICENSE-PROPRIETARY.md](LICENSE-PROPRIETARY.md) |
+| **B. Sagid Mustafa** | Дербес әзірленген бағдарламалық код, дизайн, C++ және Java авторлық курстары, құралдар, ойындар, кабинеттер, тест жүйесі, SQL детектив, Жобалар шеберханасы, Flask зертханасы және т.б. | **© 2026 Sagid Mustafa. All Rights Reserved** - [LICENSE-PROPRIETARY.md](LICENSE-PROPRIETARY.md) |
 | **C. Үшінші тарап** | Кітапханалар, қаріптер, суреттер, басқа лицензиялы код | Өздерінің лицензиясы - [THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md) |
 
 Тексеруді қажет ететін материалдарға (R санаты) жаңа лицензия **тағайындалмаған**: [COPYRIGHT.md](COPYRIGHT.md) және [licensing/LECTURE-AUDIT.md](licensing/LECTURE-AUDIT.md).

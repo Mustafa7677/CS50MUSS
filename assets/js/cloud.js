@@ -166,11 +166,11 @@
 
   // ---------- Мұғалім тапсырмасы ----------
   // Барлық курстың лекциялары: CS50x (id: week-3) және басқа курстар (id: sql:week-3)
-  const OTHER = ["python", "sql", "ai", "web"];
+  const OTHER = ["python", "sql", "ai", "web", "cpp", "java"];
   const LEC = () => (window.CS50KZ_LECTURES || []).concat(OTHER.flatMap((c) => (((window.CS50KZ_COURSE_LECTURES || {})[c]) || []).map((l) => ({ ...l, id: c + ":" + l.id }))));
   const loadLec = () => Promise.all(["assets/data/lectures.js"].concat(OTHER.map((c) => c + "/data/lectures.js")).map((u) => K.loadScript(u).catch(() => {}))).then(() => document.dispatchEvent(new CustomEvent("cs50kz:lectures")));
   loadLec();
-  const COURSE_SHORT = { python: "CS50P", sql: "SQL", ai: "AI", web: "Web" };
+  const COURSE_SHORT = { python: "CS50P", sql: "SQL", ai: "AI", web: "Web", cpp: "C++", java: "Java" };
   const lecName = (id) => { const l = LEC().find((x) => x.id === id); return l ? (id.includes(":") ? `${COURSE_SHORT[id.split(":")[0]]} · ` : "") + `${l.num}: ${l.title}` : id; };
   const MONTHS = ["қаңтар", "ақпан", "наурыз", "сәуір", "мамыр", "маусым", "шілде", "тамыз", "қыркүйек", "қазан", "қараша", "желтоқсан"];
   const kzDate = (d, year) => `${d.getDate()} ${MONTHS[d.getMonth()]}${year ? " " + d.getFullYear() : ""}`;
@@ -404,7 +404,7 @@
     const classes = () => get(TC, []).filter((x) => x && typeof x.code === "string" && typeof x.pw === "string"); // бүлінген жазбаларды өткіземіз
     const saveClass = (c) => { const l = classes().filter((x) => x.code !== c.code); l.unshift(c); put(TC, l.slice(0, 10)); };
     // Курс көрінісі: кесте таңдалған курстың лекциялары бойынша (summary.r/q немесе summary.c[курс].r/q)
-    const CM = [{ id: "x", name: "CS50x" }, { id: "python", name: "CS50P", n: 10 }, { id: "sql", name: "SQL", n: 7 }, { id: "ai", name: "AI", n: 7 }, { id: "web", name: "Web", n: 9 }];
+    const CM = [{ id: "x", name: "CS50x" }, { id: "python", name: "CS50P", n: 10 }, { id: "sql", name: "SQL", n: 7 }, { id: "ai", name: "AI", n: 7 }, { id: "web", name: "Web", n: 9 }, { id: "cpp", name: "C++", n: 8 }, { id: "java", name: "Java", n: 8 }];
     const idsOf = (c) => (c === "x" ? (K.ORDER || []) : Array.from({ length: CM.find((m) => m.id === c).n }, (_, i) => c + ":week-" + i));
     let vcourse = "x", ORDER = idsOf("x");
     const labOf = (id) => (id === "ai" ? "AI" : id.replace(/^.*week-/, ""));

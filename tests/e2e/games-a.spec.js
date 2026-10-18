@@ -99,11 +99,87 @@ test("Code Battle: 1-4 пернелері, таймер, нәтиже", async ({
   expect(errs).toEqual([]);
 });
 
-test("Code Battle: қайталанбайтын сұрақтар (80+)", async ({ page, context }) => {
+test("Code Battle: қайталанбайтын сұрақтар (80+), C++ және Java сұрақтары қосылған", async ({ page, context }) => {
   await open(page, context, "battle");
   const d = await page.evaluate(() => window.CS50GamesA.QUIZ.map((q) => q[1] + "|" + q[2]));
   expect(d.length).toBeGreaterThanOrEqual(80);
   expect(new Set(d).size).toBe(d.length);
+  const r = await page.evaluate(() => {
+    const Q = window.CS50GamesA.QUIZ;
+    return {
+      n: Q.length, cpp: Q.filter((q) => q[0] === "C++").length, java: Q.filter((q) => q[0] === "Java").length,
+      cppRun: Q.filter((q) => q[0] === "C++" && q[5] === "cpp").length, javaRun: Q.filter((q) => q[0] === "Java" && q[5] === "java").length,
+      badOpts: Q.filter((q) => q[3].length !== 4 || new Set(q[3]).size !== 4 || !(q[4] >= 0 && q[4] < 4) || !q[1]).length,
+    };
+  });
+  expect(r.n).toBeGreaterThanOrEqual(143);
+  expect(r.cpp).toBe(22);
+  expect(r.java).toBe(22);
+  expect(r.cppRun).toBeGreaterThanOrEqual(8);
+  expect(r.javaRun).toBeGreaterThanOrEqual(8);
+  expect(r.badOpts).toBe(0);
+});
+
+test("Bug Hunter: C++ және Java үзінділері (14 + 14), деректер дұрыс, тіл таңбасы мен бояу", async ({ page, context }) => {
+  await open(page, context, "bughunt");
+  const r = await page.evaluate(() => {
+    const B = window.CS50GamesA.BUGS, hl = window.CS50GamesA.hl;
+    const bad = [];
+    B.forEach((b) => {
+      if (!(b.b >= 0 && b.b < b.c.length) || !b.c[b.b].trim() || typeof b.f !== "string" || !b.w || !b.t) bad.push(b.l + ": " + b.t);
+    });
+    const titles = B.map((b) => b.l + "|" + b.t);
+    return {
+      cpp: B.filter((b) => b.l === "C++").length, java: B.filter((b) => b.l === "Java").length,
+      cppSyn: B.filter((b) => b.l === "C++" && b.s).length, javaSyn: B.filter((b) => b.l === "Java" && b.s).length,
+      bad, dup: titles.length - new Set(titles).size,
+      kwCpp: hl("delete[] a; nullptr", "C++").includes('t-k">delete'), kwJava: hl("public static void main", "Java").includes('t-k">static'),
+    };
+  });
+  expect(r.cpp).toBe(14);
+  expect(r.java).toBe(14);
+  expect(r.cppSyn).toBeGreaterThanOrEqual(2);
+  expect(r.javaSyn).toBeGreaterThanOrEqual(2);
+  expect(r.bad).toEqual([]);
+  expect(r.dup).toBe(0);
+  expect(r.kwCpp).toBe(true);
+  expect(r.kwJava).toBe(true);
+});
+
+test("Bug Hunter: раундтарда 5 тіл араласады, C++/Java файл атауы мен таңбасы көрінеді", async ({ page, context }) => {
+  page.setViewportSize({ width: 390, height: 800 });
+  const errs = await open(page, context, "bughunt");
+  await page.click(".ga-go");
+  const seen = new Set();
+  for (let r = 1; r <= 12; r++) {
+    await expect(page.locator(".g-hud")).toContainText(`${r}/12`);
+    seen.add((await page.locator(".gy-etitle .gy-lang").innerText()).trim());
+    await noHScroll(page);
+    await page.locator(".ga-line").first().click();
+    await page.click(".ga-next");
+  }
+  expect([...seen].sort()).toEqual(["C", "C++", "Java", "JavaScript", "Python"]);
+  await expect(page.locator(".game-result")).toBeVisible();
+  expect(errs).toEqual([]);
+});
+
+test("Bug Hunter: C++/Java раундында файл атауы дұрыс (main.cpp / Main.java), қате жол белгіленеді", async ({ page, context }) => {
+  const errs = await open(page, context, "bughunt");
+  await page.click(".ga-go");
+  const files = new Set();
+  for (let r = 1; r <= 12; r++) {
+    const lang = (await page.locator(".gy-etitle .gy-lang").innerText()).trim();
+    const file = (await page.locator(".gy-etitle .gy-file").innerText()).trim();
+    if (lang === "C++") expect(file).toBe("main.cpp");
+    if (lang === "Java") expect(file).toBe("Main.java");
+    files.add(file);
+    await page.locator(".ga-line").first().click();
+    await expect(page.locator(".ga-line.ok")).toHaveCount(1);
+    await expect(page.locator(".ga-explain")).toContainText("Түзету");
+    await page.click(".ga-next");
+  }
+  expect(files.size).toBe(5);
+  expect(errs).toEqual([]);
 });
 
 test("Algorithm Race: ↑↓, 5 раунд, қате орындар белгіленеді", async ({ page, context }) => {

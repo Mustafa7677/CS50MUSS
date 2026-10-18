@@ -7,7 +7,7 @@ const PAGES = [
   ...fs.readdirSync(ROOT).filter((f) => f.endsWith(".html")),
   ...fs.readdirSync(path.join(ROOT, "lectures")).filter((f) => f.endsWith(".html")).map((f) => "lectures/" + f),
   // Қосымша курстар: <код>/index.html және <код>/lectures/*.html
-  ...["python", "sql", "ai", "web"].filter((c) => fs.existsSync(path.join(ROOT, c))).flatMap((c) => [
+  ...["python", "sql", "ai", "web", "cpp", "java"].filter((c) => fs.existsSync(path.join(ROOT, c))).flatMap((c) => [
     c + "/index.html",
     ...(fs.existsSync(path.join(ROOT, c, "lectures")) ? fs.readdirSync(path.join(ROOT, c, "lectures")) : []).filter((f) => f.endsWith(".html")).map((f) => `${c}/lectures/${f}`),
   ]),
@@ -57,4 +57,8 @@ function collectErrors(page) {
   return errs;
 }
 
-module.exports = { ROOT, PAGES, routePyodide, blockFonts, routeSupabase, collectErrors };
+// Дербес авторлық курстар (cpp, java): бар лекция файлдарының саны (лекцияларды басқа агенттер біртіндеп жазады)
+const OWN = ["cpp", "java"];
+const ownLectures = (c) => (fs.existsSync(path.join(ROOT, c, "lectures")) ? fs.readdirSync(path.join(ROOT, c, "lectures")).filter((f) => /^week-\d+\.html$/.test(f)) : []);
+
+module.exports = { OWN, ownLectures, ROOT, PAGES, routePyodide, blockFonts, routeSupabase, collectErrors };

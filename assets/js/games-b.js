@@ -6,6 +6,7 @@
   const G = window.CS50Games;
   if (!G) return;
   const { shuffle, sample } = G;
+  const FAST = /[?&]fast\b/.test(location.search); // тест үшін: таймерлер қысқарады
 
   /** Шағын DOM көмекшісі: h("div", {class, text, onclick, aria-*}, ...балалар). Мәтін әрқашан textContent. */
   function h(tag, a, ...kids) {
@@ -337,26 +338,45 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
     { l: 3, code: 'int a[] = {2, 4, 6, 8};\nint *p = &a[3];\nint *q = &a[1];\nprintf("%ld", p - q);', q: "Экранға не шығады?", f: ["2"], mem: { stack: [].concat(A("a", [2, 4, 6, 8]), [P("p", "a[3]"), P("q", "a[1]")]) }, e: "Көрсеткіштерді азайтқанда байт емес ЭЛЕМЕНТ саны шығады: индекстер айырмасы 3 - 1 = 2." },
     { l: 3, code: 'char s[] = "ab";\nchar *p = s;\nwhile (*p) p++;\nprintf("%ld", p - s);', q: "Экранға не шығады?", f: ["2"], mem: { stack: [C("s[0]", "a"), C("s[1]", "b"), C("s[2]", S0), P("p", "s[2]", "char *")] }, e: "Цикл \\0-ге жеткенде тоқтайды (\\0 жалған). p s[2]-де тұр, айырмасы 2: бұл жолдың ұзындығы (strlen)." },
     { l: 3, code: "int a = 1;\nint *b = malloc(sizeof(int));", q: "a және *b қайда сақталады?", o: ["a - стекте, *b - үймеде (heap)", "екеуі де стекте", "екеуі де үймеде", "a - үймеде, *b - стекте"], mem: { stack: [I("a", 1), P("b", "h1")], heap: [I("h1", "?")] }, e: "Локал айнымалылар (a, көрсеткіш b) стекте. malloc көрсететін блок үймеде, оны free жасағанға дейін өмір сүреді." },
+
+    // ---- C++ тапсырмалары (g++ -std=c++17, AddressSanitizer арқылы тексерілген) ----
+    { l: 1, lang: "C++", code: "int x = 5;\nint& r = x;\nr = 9;", q: "Соңында x-тің мәні қандай?", o: ["9 (r - x-тің басқа аты)", "5", "r жаңа жад алады, x = 5 қалады", "Компиляция қатесі"], mem: { stack: [I("x", 9), P("r", "x", "int &")] }, e: "Сілтеме (int&) жаңа айнымалы емес, бар айнымалының екінші аты. r = 9 дегені x = 9 дегенмен бірдей." },
+    { l: 1, lang: "C++", code: "int* p = new int(7);\n*p += 1;\ndelete p;", q: "Жад ағып кете ме?", o: ["Жоқ: әр new-ге бір delete жұп", "Иә: p стекте тұр", "Иә: 8 мәні өшпейді", "Анықтау мүмкін емес"], mem: { stack: [P("p", "h1")], heap: [I("h1", 8, { freed: true })] }, e: "new int(7) үймеден блок алды, delete p оны қайтарды. Енді p босатылған жадты көрсетеді, сондықтан оны қолданбау керек (жақсы әдет: delete-тен кейін p = nullptr жазу)." },
+    { l: 1, lang: "C++", code: "int a = 1, b = 2;\nint& r = a;\nr = b;", q: "Соңында a мен b қандай?", o: ["a = 2, b = 2 (сілтеме басқа нысанға бұрылмайды, мән көшіріледі)", "a = 1, b = 2", "r енді b-ны көрсетеді, a = 1", "Компиляция қатесі"], mem: { stack: [I("a", 2), I("b", 2), P("r", "a", "int &")] }, e: "Сілтемені тек бір рет байлайды (r a-ның аты). «r = b» оны b-ға бұрмайды, a-ға b-ның мәнін (2) жазады. Көрсеткіш (p = &b) болса бұрылар еді." },
+    { l: 1, lang: "C++", code: 'int x = 4;\nint* p = &x;\n*p = *p * 3;\ncout << x;', q: "Экранға не шығады?", f: ["12"], mem: { stack: [I("x", 12), P("p", "x")] }, e: "*p - x-тің өзі: *p * 3 = 12, нәтиже қайта x-ке жазылады." },
+
+    { l: 2, lang: "C++", code: "int* a = new int[3]{1, 2, 3};\ndelete a;", q: "Бұл кодтағы қате қандай?", o: ["new[] массивін delete[] арқылы босату керек, жай delete анықталмаған әрекет", "Қате жоқ: delete кез келген блокты босатады", "new int[3] жазуға болмайды", "delete екі рет шақырылуы керек"], mem: { stack: [P("a", "a[0]")], heap: A("a", [1, 2, 3], "int", [{ bad: true }, { bad: true }, { bad: true }]) }, e: "new[] блогы өлшемі туралы қосымша ақпаратпен алынады. delete[] осыны ескеріп босатады, ал жай delete блокты бүлдіреді. Ереже: new - delete, new[] - delete[]." },
+    { l: 2, lang: "C++", code: "auto p = make_unique<int>(5);\nauto q = move(p);", q: "Осыдан кейін p туралы не айтуға болады?", o: ["p nullptr болады: иелік q-ға өтті", "p мен q екеуі де 5-ті иеленеді", "p әлі де жарамды", "Жад ағып кетті"], mem: { stack: [P("p", null, "unique_ptr<int>"), P("q", "h1", "unique_ptr<int>")], heap: [I("h1", 5)] }, e: "unique_ptr-дың жалғыз иесі болады. move иелікті q-ға береді де, p бос (nullptr) қалады. q scope-тан шыққанда жад автоматты босалады, delete жазудың керегі жоқ." },
+    { l: 2, lang: "C++", code: "vector<int> v = {1, 2, 3};\nint* p = &v[0];\nv.push_back(4);\ncout << *p;", q: "Соңғы жолда не болуы мүмкін?", o: ["Dangling pointer: push_back жадты қайта бөлсе, p ескі (босатылған) жадты көрсетеді", "Әрқашан 1 шығады", "Әрқашан 4 шығады", "Компиляция қатесі"], mem: { stack: [P("p", "old[0]")], heap: [].concat(A("old", [1, 2, 3], "int", [{ freed: true }, { freed: true }, { freed: true }]), A("v", [1, 2, 3, 4])) }, e: "vector сыйымдылығы толғанда элементтерді жаңа, үлкенірек блокқа көшіріп, ескісін босатады. p-да ескі адрес қалады. Кейін оқу - анықталмаған әрекет (use-after-free)." },
+    { l: 2, lang: "C++", code: "vector<int> v;\nfor (int i = 0; i < 5; i++) v.push_back(i * i);\ncout << v[3] + v.size();", q: "Экранға не шығады?", f: ["14"], mem: { stack: [P("v.data", "v[0]", "int *")], heap: A("v", [0, 1, 4, 9, 16]) }, e: "v = {0, 1, 4, 9, 16}. v[3] = 9, v.size() = 5, қосындысы 14." },
+
+    { l: 3, lang: "C++", code: "void f(bool bad) {\n    int* p = new int(1);\n    if (bad) return;\n    delete p;\n}\n// f(true) шақырылды", q: "f(true) орындалғанда не болады?", o: ["Жад ағып кетеді: return delete-ке жеткізбейді (unique_ptr мұны болдырмас еді)", "Жад автоматты босалады", "Бағдарлама құлайды", "Компиляция қатесі"], mem: { stack: [], heap: [I("h1", 1, { leak: true })] }, e: "return delete p; жолынан бұрын орындалады, p жойылады, ал үймедегі int қалады. Қолмен new/delete орнына unique_ptr қолданса, кез келген шығу жолында жад босалады (RAII)." },
+    { l: 3, lang: "C++", code: "struct Box {\n    int* d;\n    Box() : d(new int(3)) {}\n    ~Box() { delete d; }\n};\n\nBox a;\nBox b = a;", q: "Екі объект жойылғанда не болады?", o: ["Double delete: a.d мен b.d бір блокты көрсетеді, екі деструктор оны екі рет босатады", "Дұрыс жұмыс істейді", "b өз жаңа int-ін жасайды", "Жад ағып кетеді, бірақ құламайды"], mem: { stack: [P("a.d", "h1"), P("b.d", "h1")], heap: [I("h1", 3, { bad: true })] }, e: "Әдепкі көшіру көрсеткіштің мәнін (адресті) көшіреді, жаңа блок жасалмайды. Үш ереже (Rule of Three): көрсеткіші бар класқа көшіру конструкторын жазу, немесе unique_ptr қолдану керек." },
+    { l: 3, lang: "C++", code: "int a[] = {5, 10, 15};\nint* p = a;\n*(p + 2) += *p;\ncout << a[2];", q: "Экранға не шығады?", f: ["20"], mem: { stack: [].concat(A("a", [5, 10, 20]), [P("p", "a[0]")]) }, e: "p + 2 - a[2]. «+= *p» оған a[0] = 5 қосады: 15 + 5 = 20." },
+    { l: 3, lang: "C++", code: "int* p = new int(2);\ndelete p;\np = nullptr;\ndelete p;", q: "Соңғы delete p қауіпті ме?", o: ["Қауіпсіз: nullptr-ды delete ету ештеңе істемейді", "Double delete: құлайды", "Компиляция қатесі", "Жад екі есе босайды"], mem: { stack: [P("p", null)], heap: [I("h1", "?", { freed: true })] }, e: "delete nullptr-ға заңды және әсер етпейді. Сондықтан delete-тен кейін p = nullptr жазу double delete-ті болдырмайтын жақсы әдет." },
   ];
 
-  function codeBlock(code) {
+  /** Код терезесі: lang - "C" (әдепкі), "C++" немесе "Java". */
+  const FILE = { "C": ["main.c", "c", "C коды"], "C++": ["main.cpp", "cpp", "C++ коды"], "Java": ["Main.java", "java", "Java коды"] };
+  function codeBlock(code, lang) {
     const hl = window.CS50GamesA && window.CS50GamesA.hl;
-    const pre = h("pre", { class: "g-code gy-code", tabindex: "0", "aria-label": "C коды" });
+    const lg = lang || "C", fl = FILE[lg] || FILE.C;
+    const pre = h("pre", { class: "g-code gy-code", tabindex: "0", "aria-label": fl[2] });
     const wrap = h("code");
     code.split("\n").forEach((ln, i) => {
       const row = h("span", { class: "gy-cl" }, h("i", { "aria-hidden": "true", text: String(i + 1) }));
       const txt = h("span", { class: "gy-ct" });
-      if (hl) txt.innerHTML = hl(ln, "C") || "&nbsp;"; else txt.textContent = ln || " ";
+      if (hl) txt.innerHTML = hl(ln, lg) || "&nbsp;"; else txt.textContent = ln || " ";
       row.appendChild(txt); wrap.appendChild(row);
     });
     pre.appendChild(wrap);
-    return h("div", { class: "gy-editor gy-snip" }, h("div", { class: "gy-etitle" }, h("span", { class: "gy-lights", "aria-hidden": "true" }, h("i"), h("i"), h("i")), h("span", { class: "gy-file", text: "main.c" }), h("span", { class: "gy-lang gy-lang-c", "aria-hidden": "true", text: "C" })), pre);
+    return h("div", { class: "gy-editor gy-snip" }, h("div", { class: "gy-etitle" }, h("span", { class: "gy-lights", "aria-hidden": "true" }, h("i"), h("i"), h("i")), h("span", { class: "gy-file", text: fl[0] }), h("span", { class: "gy-lang gy-lang-" + fl[1], "aria-hidden": "true", text: lg })), pre);
   }
 
   function buildMem(mem) {
     // адрестерді бөлу
     const addr = {};
-    const regions = [["stack", "Стек (локал айнымалылар)", 0x1000], ["heap", "Үйме (malloc)", 0x5000], ["ro", "Тек оқу жады (жол литералдары)", 0x9000]];
+    const regions = [["stack", "Стек (локал айнымалылар)", 0x1000], ["heap", "Үйме (malloc / new)", 0x5000], ["ro", "Тек оқу жады (жол литералдары)", 0x9000]];
     const sizeOf = (c) => (c.ptr !== undefined || /\*/.test(c.t) ? 8 : c.t === "char" ? 1 : 4);
     regions.forEach(([k, , base]) => { let a = base; (mem[k] || []).forEach((c) => { c.a = a; addr[c.n] = a; a += sizeOf(c); }); });
     const hex = (n) => "0x" + n.toString(16);
@@ -429,7 +449,7 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
 
   G.register({
     id: "memory", title: "Memory Master", icon: "💻", color: "#b45309",
-    blurb: "C тілінде көрсеткіштер мен жадты көрнекі жад торы арқылы үйрен.",
+    blurb: "C және C++ тілдерінде көрсеткіштер, new/delete және жадты көрнекі жад торы арқылы үйрен.",
     start(stage, ctx) {
       const pick = [].concat(sample(MEM.filter((t) => t.l === 1), 4), sample(MEM.filter((t) => t.l === 2), 4), sample(MEM.filter((t) => t.l === 3), 4));
       let i = 0, ok = 0, answered = false;
@@ -490,7 +510,7 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
           } }, h("label", { for: inId, text: "Жауабың (сан):" }), inp, go);
         }
         clear(body).append(
-          codeBlock(t.code),
+          codeBlock(t.code, t.lang),
           h("p", { class: "g-q", id: qid, text: t.q }), input, fb, after);
         if (!t.o) body.querySelector("input").focus();
       }
@@ -903,8 +923,145 @@ INSERT INTO exam VALUES (1,'Асхат',72),(2,'Балнұр',88),(3,'Дәуре
     }
   }
 
+  /* ============================================================
+     5) OUTPUT ORACLE: C++ / Java үзіндісінің нәтижесін болжау.
+     {l: тіл, c: жолдар, o: дұрыс нәтиже, d: 3 қате нұсқа, e: түсіндірме}
+     Барлық нәтиже g++ -std=c++17 және javac/java арқылы шынымен іске қосылып тексерілген.
+     Стандартты кітапханалар қосылған деп есептеледі (C++: iostream, vector, string, map, memory; Java: java.util.*).
+     ============================================================ */
+  const ORACLE = [
+    // ---------- C++ ----------
+    { l: "C++", c: ["int a = 17, b = 5;","int bol = a / b;","cout << bol << \" \" << a % b;"], o: "3 2", d: ["3.4 2","3 3","4 2"], e: "int / int бүтін бөледі: 17 / 5 = 3 (бөлшек кесіледі), ал % қалдықты береді: 2." },
+    { l: "C++", c: ["vector<int> v = {4, 7};","v.push_back(9);","v.pop_back();","v.push_back(1);","cout << v.size() << \" \" << v.back();"], o: "3 1", d: ["3 9","2 1","4 1"], e: "{4, 7} → {4, 7, 9} → pop_back → {4, 7} → {4, 7, 1}. Өлшемі 3, соңғы элемент 1." },
+    { l: "C++", c: ["int x = 10;","int& r = x;","r = r + 5;","x = x * 2;","cout << r;"], o: "30", d: ["15","10","25"], e: "r — x-тің басқа аты. r = 15 болғанда x = 15, сосын x = 30. r де 30-ды көрсетеді." },
+    { l: "C++", c: ["int a[] = {3, 6, 9, 12};","int* p = a + 1;","p++;","cout << *p << \" \" << p[1];"], o: "9 12", d: ["6 9","9 9","12 12"], e: "p алдымен a[1]-ге, p++ соң a[2]-ге бағытталады. *p = 9, p[1] = a[3] = 12." },
+    { l: "C++", c: ["int s = 0;","for (int i = 1; i <= 10; i++) {","    if (i % 2 == 0) continue;","    if (i > 7) break;","    s += i;","}","cout << s;"], o: "16", d: ["25","30","12"], e: "Тек тақ сандар қосылады: 1 + 3 + 5 + 7 = 16. i = 9 болғанда break цикл аяқтайды." },
+    { l: "C++", c: ["int i = 3;","int a = i++ * 2;","int b = ++i * 2;","cout << a << \" \" << b << \" \" << i;"], o: "6 10 5", d: ["8 10 5","6 8 4","6 10 4"], e: "i++ ескі мәнді (3) береді де, сосын i = 4 болады: a = 6. ++i алдымен i = 5 етеді: b = 10." },
+    { l: "C++", c: ["double d = 7 / 2;","double e = 7 / 2.0;","cout << d << \" \" << e;"], o: "3 3.5", d: ["3.5 3.5","3.5 3","3 3"], e: "7 / 2 — бүтін бөлу = 3, ол double-ға 3 болып түседі (cout «3» басады). 7 / 2.0 = 3.5." },
+    { l: "C++", c: ["void f(int a, int& b) {","    a += 10; b += 10;","}","int x = 1, y = 1;","f(x, y);","cout << x << \" \" << y;"], o: "1 11", d: ["11 11","1 1","11 1"], e: "a — көшірме, сондықтан x өзгермейді. b — сілтеме, ол y-тің өзін өзгертеді: y = 11." },
+    { l: "C++", c: ["int k = 2;","switch (k) {","  case 1: cout << \"A\";","  case 2: cout << \"B\";","  case 3: cout << \"C\"; break;","  default: cout << \"D\";","}"], o: "BC", d: ["B","C","BCD"], e: "k = 2 болғанда case 2 орындалады, break жоқ болғандықтан case 3-ке «құлайды», онда break бар. Нәтиже BC." },
+    { l: "C++", c: ["struct T {","    string n;","    T(string s) : n(s) { cout << '+' << n; }","    ~T() { cout << '-' << n; }","};","{","    T a(\"A\"), b(\"B\");","}"], o: "+A+B-B-A", d: ["+A+B-A-B","+A-A+B-B","+A+B"], e: "Объектілер жасалу ретімен құрылады (+A, +B), ал блок аяқталғанда кері ретпен жойылады: алдымен b (-B), сосын a (-A)." },
+    { l: "C++", c: ["auto p = make_unique<int>(5);","auto q = move(p);","cout << (p == nullptr) << \" \" << *q;"], o: "1 5", d: ["0 5","1 0","Компиляция қатесі"], e: "move иелікті q-ға береді, p nullptr болып қалады: (p == nullptr) = 1. q 5-ті иеленеді." },
+    { l: "C++", c: ["int n = 5;","string s = n;","cout << s;"], o: "Компиляция қатесі", d: ["5","0","Бос жол басылады"], e: "int-ті std::string-ке тікелей меншіктеуге болмайды. Санды жолға айналдыру үшін to_string(n) керек." },
+    { l: "C++", c: ["const int k = 3;","k++;","cout << k;"], o: "Компиляция қатесі", d: ["4","3","0"], e: "const айнымалының мәнін өзгертуге болмайды: k++ компиляция кезінде қате береді." },
+    { l: "C++", c: ["vector<int> v = {1, 2, 3};","cout << v[1] << endl;","cout << v.at(5) << endl;","cout << v[2];"], o: "2 басылады, сосын out_of_range қатесімен тоқтайды", d: ["2 0 3","2 3","Компиляция қатесі"], e: "at() шекті тексереді және шектен шықса std::out_of_range лақтырады. Ұсталмаса, бағдарлама тоқтайды; алғашқы «2» басылып қалады." },
+    { l: "C++", c: ["map<string, int> m;","m[\"a\"] = 1; m[\"b\"] = 2;","m[\"a\"] += 5;","cout << m.size() << \" \" << m[\"a\"] << \" \" << m[\"z\"];"], o: "2 6 0", d: ["3 6 0","2 1 0","2 6 қате"], e: "m[\"a\"] += 5 → 6. size() сол кезде 2. Сосын m[\"z\"] жаңа кілтті 0 мәнімен қосады (бірақ size бұрын басылған)." },
+    { l: "C++", c: ["vector<int> v = {1, 2, 3};","for (auto x : v) x *= 10;","for (auto& y : v) y += 1;","cout << v[0] << v[1] << v[2];"], o: "234", d: ["102030","111213","123"], e: "auto x — көшірме, түпнұсқа өзгермейді. auto& y — сілтеме: әр элемент 1-ге артады: 2 3 4." },
+    { l: "C++", c: ["int a[5] = {1, 2};","cout << a[1] << a[4];","cout << sizeof(a);"], o: "2020", d: ["1020","124","2420"], e: "Көрсетілмеген элементтер 0 болады: a[1] = 2 (a[0] = 1, a[1] = 2), a[4] = 0. sizeof(a) = 5 * 4 = 20. Қатар басылады: 2, 0, 20 → «2020»." },
+    { l: "C++", c: ["char c = 'a';","c += 2;","cout << c << (int)c << char(c - 32);"], o: "c99C", d: ["c99c","a97A","c3C"], e: "'a' (97) + 2 = 99 = 'c'. (int)c = 99. c - 32 = 67 = 'C' (кіші әріп пен бас әріптің айырмасы 32)." },
+    { l: "C++", c: ["int k = 3;","auto add = [k](int x) { return x + k; };","k = 100;","cout << add(4);"], o: "7", d: ["104","4","Компиляция қатесі"], e: "[k] мәнді лямбда құрылған сәтте КӨШІРЕДІ (3). Кейін k өзгерсе де, add(4) = 4 + 3 = 7." },
+    { l: "C++", c: ["string s = \"kazakhstan\";","cout << s.find(\"kh\") << \" \" << s.find('z') << \" \";","s.erase(0, 4);","cout << s;"], o: "4 2 khstan", d: ["4 2 kazakhstan","3 2 khstan","4 3 hstan"], e: "find индексті қайтарады: \"kh\" 4-те, 'z' 2-де. erase(0, 4) алғашқы 4 символды («kaza») жояды: khstan." },
+    // ---------- Java ----------
+    { l: "Java", c: ["int a = 17, b = 5;","int bol = a / b;","System.out.println(bol + \" \" + a % b);"], o: "3 2", d: ["3.4 2","3 3","4 2"], e: "int / int бүтін бөледі: 17 / 5 = 3, ал % қалдықты береді: 2." },
+    { l: "Java", c: ["List<Integer> l = new ArrayList<>(List.of(4, 7));","l.add(9);","l.remove(Integer.valueOf(7));","l.add(0, 1);","System.out.println(l);"], o: "[1, 4, 9]", d: ["[4, 9, 1]","[1, 4, 7, 9]","[1, 7, 9]"], e: "[4, 7] → [4, 7, 9] → мәні 7 жойылады: [4, 9] → 0-орынға 1 қосылады: [1, 4, 9]." },
+    { l: "Java", c: ["String s = \"domra\";","s.toUpperCase();","s = s + \"!\";","System.out.println(s);"], o: "domra!", d: ["DOMRA!","DOMRA","domra"], e: "String өзгермейді: toUpperCase() жаңа жол қайтарады, оны ешқайда сақтамадық. Сондықтан s = \"domra\" + \"!\"." },
+    { l: "Java", c: ["String a = \"kz\";","String b = new String(\"kz\");","System.out.println((a == b) + \" \" + a.equals(b));"], o: "false true", d: ["true true","true false","false false"], e: "== сілтемені салыстырады: new String жаңа объект, сондықтан false. equals мазмұнды салыстырады: true." },
+    { l: "Java", c: ["Integer x = 127, y = 127;","Integer p = 1000, q = 1000;","System.out.println((x == y) + \" \" + (p == q) + \" \" + p.equals(q));"], o: "true false true", d: ["true true true","false false true","true false false"], e: "Java -128..127 аралығындағы Integer объектілерін қайта қолданады (x == y — true). 1000 үшін екі бөлек объект: p == q — false, бірақ equals — true." },
+    { l: "Java", c: ["int i = 3;","i = i++ + ++i;","System.out.println(i);"], o: "8", d: ["7","9","6"], e: "i++ ескі мәнді (3) береді де, i = 4 болады. ++i i = 5 етіп, 5 береді. 3 + 5 = 8, ол i-ға жазылады." },
+    { l: "Java", c: ["double d = 7 / 2;","double e = 7 / 2.0;","System.out.println(d + \" \" + e);"], o: "3.0 3.5", d: ["3.5 3.5","3.0 3.0","3 3.5"], e: "7 / 2 — бүтін бөлу = 3, double-ға түскенде 3.0. 7 / 2.0 = 3.5." },
+    { l: "Java", c: ["static void f(int a, int[] b) {","    a += 10; b[0] += 10;","}","int x = 1;","int[] y = {1};","f(x, y);","System.out.println(x + \" \" + y[0]);"], o: "1 11", d: ["11 11","1 1","11 1"], e: "int көшірме болып беріледі, x өзгермейді. Массив сілтемесі берілгендіктен, f ішінде y[0] өзгереді: 11." },
+    { l: "Java", c: ["int k = 2;","switch (k) {","  case 1: System.out.print(\"A\");","  case 2: System.out.print(\"B\");","  case 3: System.out.print(\"C\"); break;","  default: System.out.print(\"D\");","}"], o: "BC", d: ["B","C","BCD"], e: "k = 2 болғанда case 2 орындалады, break жоқ болғандықтан case 3-ке өтеді, онда break бар. Нәтиже BC." },
+    { l: "Java", c: ["class Pet {","    static int count;","    String name;","    Pet(String n) { name = n; count++; }","}","new Pet(\"Aq\");","Pet p = new Pet(\"Sary\");","System.out.println(Pet.count + p.name);"], o: "2Sary", d: ["1Sary","2Aq","Sary2"], e: "static count барлық объектіге ортақ: екі объект жасалды, count = 2. Сосын 2 + \"Sary\" жолға айналып, «2Sary» шығады." },
+    { l: "Java", c: ["Map<String, Integer> m = new HashMap<>();","m.put(\"a\", 1); m.put(\"b\", 2);","m.put(\"a\", m.get(\"a\") + 5);","System.out.println(m.size() + \" \" + m.get(\"a\") + \" \" + m.get(\"z\"));"], o: "2 6 null", d: ["3 6 0","2 1 null","2 6 0"], e: "put бар кілттің мәнін ауыстырады: a = 6, size = 2. Жоқ кілтке get null қайтарады (C++ map-тен өзгеше, 0 емес)." },
+    { l: "Java", c: ["char c = 'a';","c += 2;","System.out.println(c + 1);","System.out.println((char) (c + 1));"], o: "100\nd", d: ["c1\nd","100\n100","b\nd"], e: "c = 'c' (99). c + 1 — int арифметикасы: 100. (char) (c + 1) қайтадан таңбаға айналады: 'd'." },
+    { l: "Java", c: ["String s = \"kazakhstan\";","int i = s.indexOf(\"kh\");","System.out.println(i + \" \" + s.substring(4, 6) + \" \" + s.charAt(s.length() - 1));"], o: "4 kh n", d: ["3 kh n","4 kha n","4 kh t"], e: "\"kh\" 4-индексте басталады. substring(4, 6) — 4 және 5-индекстер: «kh». Соңғы таңба — 'n'." },
+    { l: "Java", c: ["double d = 3.5;","int x = d;","System.out.println(x);"], o: "Компиляция қатесі", d: ["3","4","3.5"], e: "double-ды int-ке автоматты түрлендіруге болмайды (деректер жоғалады). javac «possible lossy conversion» дейді; (int) d деп жазу керек." },
+    { l: "Java", c: ["for (int i = 0; i < 3; i++) {","    System.out.print(i);","}","System.out.println(i);"], o: "Компиляция қатесі", d: ["0123","012","0120"], e: "i айнымалысы тек for ішінде көрінеді (ауқым, scope). Одан кейінгі println(i) «cannot find symbol» қатесін береді." },
+    { l: "Java", c: ["int[] a = new int[3];","a[0] = 1;","System.out.println(\"A\");","a[3] = 4;","System.out.println(\"B\");"], o: "A басылады, сосын ArrayIndexOutOfBoundsException", d: ["A және B басылады","Компиляция қатесі","Тек B басылады"], e: "Индекстер 0..2, a[3] шектен шығады: Java ерекше жағдай лақтырып, бағдарламаны тоқтатады. «B» басылмайды." },
+    { l: "Java", c: ["String s = null;","System.out.println(\"1\");","System.out.println(s.length());","System.out.println(\"2\");"], o: "1 басылады, сосын NullPointerException", d: ["1 және 0 басылады","1 және 2 басылады","Компиляция қатесі"], e: "s ешқандай объектіге сілтемейді (null). null-ға length() шақыру NullPointerException тудырады, «2» басылмайды." },
+    { l: "Java", c: ["StringBuilder sb = new StringBuilder();","for (int i = 3; i > 0; i--) sb.append(i).append(',');","sb.setLength(sb.length() - 1);","System.out.println(sb);"], o: "3,2,1", d: ["3,2,1,","1,2,3","321"], e: "Цикл «3,2,1,» жинайды. setLength(length - 1) соңғы үтірді қияды: 3,2,1." },
+    { l: "Java", c: ["int[][] g = new int[2][3];","g[1][2] = 5;","System.out.println(g.length + \" \" + g[0].length + \" \" + g[1][2]);"], o: "2 3 5", d: ["3 2 5","2 3 0","2 2 5"], e: "new int[2][3]: 2 қатар, әр қатарда 3 бағана. g.length — қатар саны (2), g[0].length — бағана саны (3)." },
+    { l: "Java", c: ["int big = Integer.MAX_VALUE;","big++;","System.out.println(big);"], o: "-2147483648", d: ["2147483648","2147483647","Компиляция қатесі"], e: "int ауқымы -2147483648..2147483647. Максимумға 1 қосу «айналып» ең кіші мәнге түседі (overflow), қате шықпайды." },
+  ];
+
+  G.register({
+    id: "oracle", title: "Output Oracle", icon: "🔮", color: "#7c3aed",
+    blurb: "C++ және Java үзіндісін оқы да, бағдарлама не басып шығаратынын болжа. Жылдам жауап = көп ұпай.",
+    start(stage, ctx) {
+      const ROUNDS = 12, LIVES = 3, TIME = FAST ? 5 : 20;
+      const rounds = shuffle([].concat(sample(ORACLE.filter((x) => x.l === "C++"), ROUNDS / 2), sample(ORACLE.filter((x) => x.l === "Java"), ROUNDS / 2)));
+      let ri = 0, lives = LIVES, score = 0, hit = 0, locked = true, tm = 0, t0 = 0, left = TIME, opts = [];
+      const res = [], by = { "C++": [0, 0], Java: [0, 0] };
+      const keyH = (e) => {
+        if (!stage.isConnected) { document.removeEventListener("keydown", keyH); clearInterval(tm); return; }
+        if (locked || !/^[1-4]$/.test(e.key) || e.ctrlKey || e.metaKey || e.altKey) return;
+        e.preventDefault(); answer(+e.key - 1);
+      };
+      ctx.intro({
+        lead: `${ROUNDS} үзінді: бағдарлама экранға <b>нені басып шығарады</b>? Төрт нұсқаның бірін таңда.`,
+        rules: [["🧩", "Әр раундта C++ немесе Java коды (3-8 жол). Кейде жауап «компиляция қатесі» болады"], ["⏱", `Әр раундқа ${TIME} секунд: жылдам жауап көбірек ұпай береді (40-тан 100-ге дейін)`], ["❤️", `${LIVES} жан: қате жауап не уақыт бітуі бір жанды алады`], ["⌨️", "1-4 пернелері немесе батырмалар"]],
+      }).onclick = () => { ctx.sfx("tick"); document.addEventListener("keydown", keyH); round(); };
+
+      const hearts = () => `<span class="gy-hearts" role="img" aria-label="Жан: ${lives} / ${LIVES}">${Array.from({ length: LIVES }, (_, i) => `<i class="${i < lives ? "on" : ""}" aria-hidden="true">♥</i>`).join("")}</span>`;
+
+      function round() {
+        clearInterval(tm);
+        const t = rounds[ri];
+        locked = false; left = TIME;
+        stage.textContent = "";
+        const wrap = h("div", { class: "gy gy-or" });
+        const hud = h("div", { class: "g-hud gy-hud" });
+        hud.innerHTML = `<span class="gy-round">Раунд <b>${ri + 1}</b>/${rounds.length}</span><span class="gy-dots" role="img" aria-label="Раунд ${ri + 1} / ${rounds.length}">${rounds.map((_, k) => `<i class="${res[k] || ""}${k === ri ? " cur" : ""}"></i>`).join("")}</span>${hearts()}<span class="gy-score">Ұпай: <b>${score}</b></span><span class="g-time ga-clock" aria-hidden="true">⏱ ${TIME}</span>`;
+        const bar = h("div", { class: "gy-timebar", "aria-hidden": "true" }, h("i"));
+        const qid = nid("oq");
+        const q = h("p", { class: "g-q", id: qid, text: "Бұл бағдарлама не басып шығарады?" });
+        order(t);
+        const box = h("div", { class: "g-opts gy-or-opts", role: "group", "aria-labelledby": qid }, opts.map((o, i) => {
+          const b = h("button", { class: "g-opt gy-or-opt", type: "button", "data-i": i }, h("b", { class: "gy-or-n", "aria-hidden": "true", text: (i + 1) + "." }), h("span", { class: "gy-or-txt", text: o.t }));
+          b.onclick = () => answer(i);
+          return b;
+        }));
+        const fb = h("div", { class: "g-fb", role: "status", "aria-live": "polite" });
+        const after = h("div", { class: "gb-after" });
+        wrap.append(hud, bar, codeBlock(t.c.join("\n"), t.l), q, box, h("p", { class: "ga-hint gy-or-hint", text: "1-4 пернелері жауап береді" }), fb, after);
+        stage.appendChild(wrap);
+        t0 = Date.now();
+        tm = setInterval(() => {
+          if (!stage.isConnected) return clearInterval(tm);
+          left = Math.max(0, TIME - (Date.now() - t0) / 1000);
+          const c = stage.querySelector(".ga-clock"); if (c) { c.textContent = "⏱ " + Math.ceil(left); c.classList.toggle("low", left <= 5); }
+          const tb = stage.querySelector(".gy-timebar i"); if (tb) tb.style.width = (left / TIME * 100) + "%";
+          if (left <= 0) answer(-1);
+        }, 200);
+      }
+      function order(t) {
+        opts = shuffle([{ t: t.o, ok: true }].concat(t.d.map((x) => ({ t: x, ok: false }))));
+      }
+      function answer(i) {
+        if (locked) return; locked = true; clearInterval(tm);
+        const t = rounds[ri], good = i >= 0 && opts[i].ok;
+        const btns = [...stage.querySelectorAll(".gy-or-opt")];
+        btns.forEach((b, k) => { b.disabled = true; if (opts[k].ok) b.classList.add("ok"); else if (k === i) b.classList.add("bad"); });
+        by[t.l][1]++;
+        let gain = 0;
+        if (good) { gain = 40 + Math.round(60 * left / TIME); score += gain; hit++; by[t.l][0]++; } else lives--;
+        res[ri] = good ? "ok" : "bad";
+        ctx.sfx(good ? "ok" : "bad");
+        const fb = stage.querySelector(".g-fb");
+        fb.className = "g-fb " + (good ? "gb-ok" : "gb-no");
+        fb.textContent = good ? `✓ Дұрыс! +${gain} ұпай` : i < 0 ? "⌛ Уақыт бітті. Дұрыс жауап жасыл түспен көрсетілген." : "✗ Қате. Дұрыс жауап жасыл түспен көрсетілген.";
+        const hh = stage.querySelector(".gy-hearts"); if (hh) hh.outerHTML = hearts();
+        const sc = stage.querySelector(".gy-score b"); if (sc) sc.textContent = score;
+        const dot = stage.querySelectorAll(".gy-dots i")[ri]; if (dot) dot.classList.add(res[ri]);
+        const last = lives <= 0 || ri + 1 >= rounds.length;
+        const after = stage.querySelector(".gb-after");
+        after.append(h("p", { class: "gb-expl" }, h("b", { text: "Түсіндірме: " }), t.e));
+        const nb = h("button", { class: "btn gb-next", type: "button" }, last ? "Нәтижені көру" : "Келесі ▸");
+        nb.onclick = () => { if (last) fin(); else { ri++; round(); } };
+        after.appendChild(nb);
+        nb.focus();
+      }
+      function fin() {
+        document.removeEventListener("keydown", keyH);
+        const alive = lives > 0, played = res.length;
+        ctx.finish({ score, max: 800, title: !alive ? "Жандар таусылды 💔" : hit >= 11 ? "Нағыз оракул! 🔮" : hit >= 7 ? "Жақсы нәтиже!" : "Қайталап көр!", lines: [`Дұрыс жауап: ${hit} / ${played}`, `C++: ${by["C++"][0]} / ${by["C++"][1]}, Java: ${by.Java[0]} / ${by.Java[1]}`, `Қалған жан: ${lives} / ${LIVES}`] });
+      }
+    },
+  });
+
   window.CS50GamesB = {
-    counts: { sqlRooms: ROOMS.length, memoryTasks: MEM.length, webTasks: WTASKS.length },
+    counts: { sqlRooms: ROOMS.length, memoryTasks: MEM.length, webTasks: WTASKS.length, oracleSnippets: ORACLE.length },
+    oracle: ORACLE,
     memory: MEM,
     binary: { gen: genBinary, current: () => binCurrent },
     sql: { rooms: ROOMS, vet: vetSql, explain: explainSqlError },

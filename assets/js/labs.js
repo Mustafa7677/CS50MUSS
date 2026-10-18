@@ -286,7 +286,7 @@
     await K.loadScript("assets/data/glossary.js");
     const ALLCARDS = window.CS50KZ_GLOSSARY || [];
     const inCourse = (card, c) => (card.cs || ["x"]).includes(c);
-    const NAMES = { all: "Барлығы", x: "CS50x", python: "CS50P", sql: "SQL", ai: "AI", web: "Web" };
+    const NAMES = { all: "Барлығы", x: "CS50x", python: "CS50P", sql: "SQL", ai: "AI", web: "Web", cpp: "C++", java: "Java" };
     let cards = ALLCARDS;
     const KEY = "cs50kz:cards";
     let boxes = store.get(KEY, {});
@@ -435,7 +435,7 @@
   async function mixedQuiz(el) {
     await K.loadScript("assets/data/quiz.js");
     const ALL = window.CS50KZ_QUIZ || [];
-    const NAMES = { x: "CS50x", python: "CS50P", sql: "CS50 SQL", ai: "CS50 AI", web: "CS50 Web" };
+    const NAMES = { x: "CS50x", python: "CS50P", sql: "CS50 SQL", ai: "CS50 AI", web: "CS50 Web", cpp: "C++", java: "Java" };
     let course = K.readJson("cs50kz:lastcourse", "x") || "x";
     if (!ALL.some((q) => (q.c || "x") === course)) course = "x";
     let pool = [], qs = [], i = 0, score = 0, from = "all";
@@ -462,6 +462,7 @@
     el.querySelector(".mq-best").textContent = best ? `Үздік нәтиже: ${best}/10` : "";
     const start = () => {
       const src = from === "all" ? pool : pool.filter((q) => q.l === from);
+      if (!src.length) { box.innerHTML = '<p class="sql-msg">Бұл курстың тест сұрақтары жақында қосылады.</p>'; next.hidden = true; return; }
       qs = shuffle(src.slice()).slice(0, 10);
       i = 0; score = 0; ask();
     };
@@ -1597,10 +1598,10 @@ parent.postMessage({tag:${JSON.stringify(tag)},res:__res},"*");<\/script>`;
 
   // ================= Курс картасы =================
   async function courseMap(el) {
-    const C = (() => { const c = new URLSearchParams(location.search).get("course"); return ["python", "sql", "ai", "web"].includes(c) ? c : null; })();
+    const C = (() => { const c = new URLSearchParams(location.search).get("course"); return ["python", "sql", "ai", "web", "cpp", "java"].includes(c) ? c : null; })();
     document.querySelectorAll(".map-switch a").forEach((a) => { const on = (a.dataset.c === "x" && !C) || a.dataset.c === C; a.classList.toggle("on", on); if (on) a.setAttribute("aria-current", "page"); });
     await K.loadScript(C ? C + "/data/lectures.js" : "assets/data/lectures.js");
-    const NAMES = { python: ["CS50P", "Python-ды нөлден тереңге дейін"], sql: ["CS50 SQL", "Бір кестеден масштабталатын дерекқорға дейін"], ai: ["CS50 AI", "Іздеуден тіл модельдеріне дейін"], web: ["CS50 Web", "HTML-ден тестілеу мен қауіпсіздікке дейін"] };
+    const NAMES = { python: ["CS50P", "Python-ды нөлден тереңге дейін"], sql: ["CS50 SQL", "Бір кестеден масштабталатын дерекқорға дейін"], ai: ["CS50 AI", "Іздеуден тіл модельдеріне дейін"], web: ["CS50 Web", "HTML-ден тестілеу мен қауіпсіздікке дейін"], cpp: ["C++", "Жад пен көрсеткіштерден STL мен шаблондарға дейін"], java: ["Java", "Нысандардан Stream API мен көп ағынға дейін"] };
     if (C) {
       const h = document.querySelector(".map-title-h"); if (h) h.textContent = NAMES[C][1];
       document.title = NAMES[C][0] + " курс картасы - CS50 қазақша";
@@ -1610,7 +1611,7 @@ parent.postMessage({tag:${JSON.stringify(tag)},res:__res},"*");<\/script>`;
     const read = p.read || {}, quiz = p.quiz || {};
     const LANG = { "week-0": "Scratch", "week-1": "C", "week-2": "C", "week-3": "C", "week-4": "C", "week-5": "C", "week-6": "Python", "week-7": "SQL", ai: "AI", "week-8": "HTML · CSS · JS", "week-9": "Flask", "week-10": "🎓" };
     const WEBLANG = ["HTML · CSS", "Git", "Python", "Django", "SQL", "JavaScript", "React", "CI/CD", "Қауіпсіздік"];
-    const langOf = (l, k) => (C ? (C === "web" ? WEBLANG[k] : { python: "Python", sql: "SQL", ai: "Python · AI" }[C]) : LANG[l.id]) || "";
+    const langOf = (l, k) => (C ? (C === "web" ? WEBLANG[k] : { python: "Python", sql: "SQL", ai: "Python · AI", cpp: "C++", java: "Java" }[C]) : LANG[l.id]) || "";
     const next = lecs.find((l) => !read[l.id]);
     el.innerHTML = `<div class="map-legend"><span class="lg read">Оқылды</span><span class="lg next">Келесі</span><span class="lg todo">Алда</span></div>` +
       lecs.map((l, k) => {
