@@ -73,6 +73,7 @@
       const n = Math.max(mine.length, theirs.length);
       return Array.from({ length: n }, (_, i) => !!(mine[i] || theirs[i]));
     }
+    if (/^cs50kz:exam:[a-z]+$/.test(k) && isObj(mine) && isObj(theirs)) k = "cs50kz:exam"; // курстың өз емтиханы: ең жақсысы сақталады
     switch (k) {
       case "cs50kz:progress": {
         const quiz = Object.assign({}, theirs.quiz || {});
@@ -88,6 +89,11 @@
       case "cs50kz:daily": {
         const base = (theirs.best || 0) > (mine.best || 0) ? theirs : mine;
         return Object.assign({}, base, { best: maxNum(mine.best, theirs.best), streak: maxNum(mine.streak, theirs.streak) });
+      }
+      case "cs50kz:certs": { // курс бойынша ең ерте берілген күн сақталады
+        const out = Object.assign({}, theirs);
+        Object.entries(mine).forEach(([c, v]) => { if (!isObj(out[c]) || (isObj(v) && String(v.d || "9") < String(out[c].d || "9"))) out[c] = v; });
+        return out;
       }
       case "cs50kz:exam": {
         const seen = new Set(), tries = [];
@@ -203,6 +209,24 @@
       <div class="cal-foot"><p>${tip}</p><span class="cal-leg">аз <i class="l0"></i><i class="l1"></i><i class="l2"></i><i class="l3"></i><i class="l4"></i> көп</span></div>`;
   }
 
+  // ---------- «Менің сертификаттарым»: әр курстың екі деңгейі ----------
+  const CERT_COURSES = [["x", "CS50x"], ["python", "CS50P"], ["sql", "CS50 SQL"], ["ai", "CS50 AI"], ["web", "CS50 Web"], ["cpp", "C++"], ["java", "Java"]];
+  function certsHtml() {
+    if (!K.certStatus) return "";
+    const rows = CERT_COURSES.map(([id, name]) => {
+      const st = K.certStatus(id), c = st.crit;
+      const base = K.ROOT_URL + "certificate.html" + (id === "x" ? "" : "?course=" + id);
+      const vhref = base + (id === "x" ? "?" : "&") + "tier=verified";
+      const okN = Object.values(c).filter((x) => x.ok).length;
+      return `<li class="pfc-row" data-course="${id}">
+        <b class="pfc-name">${esc(name)}</b>
+        <a class="pfc-tier ${st.learning ? "got" : ""}" data-tier="learn" href="${base}"><span>Оқу сертификаты</span><small>${st.learning ? "алынды ✓" : `${c.lectures.cur}/${c.lectures.goal} лекция`}</small></a>
+        <a class="pfc-tier gold ${st.verified ? "got" : ""}" data-tier="verified" href="${vhref}"><span>Расталған білім сертификаты</span><small>${st.verified ? "алынды ✓" : `${okN}/4 шарт орындалды`}</small></a>
+      </li>`;
+    }).join("");
+    return `<h3>🎓 Менің сертификаттарым</h3><p class="pf-small">Әр курстың екі деңгейі бар: оқу (лекциялар оқылды) және расталған (емтихан, тапсырмалар, тест нәтижесімен). Нәтижелер осы құрылғыда сақталады.</p><ul class="pfc-list">${rows}</ul>`;
+  }
+
   // ---------- Бет ----------
   async function page(el) {
     const prof = K.profile();
@@ -212,11 +236,12 @@
       const readAll = Object.keys(p.read || {}).filter((k) => p.read[k]).length;
       K.myCourses && K.myCourses(el.querySelector(".my-courses"), { always: true, title: "Курстар бойынша прогресс" });
       el.querySelector(".pf-stats").innerHTML = [
-        ["📖", `${Math.min(readAll, 61)}/61`, "лекция (барлық курс)"], ["✅", s.tasks, "тапсырма"], ["📝", s.quiz != null ? s.quiz + "%" : "-", "тест"],
+        ["📖", `${Math.min(readAll, K.totalLectures ? K.totalLectures() : readAll)}/${K.totalLectures ? K.totalLectures() : readAll}`, "лекция (барлық курс)"], ["✅", s.tasks, "тапсырма"], ["📝", s.quiz != null ? s.quiz + "%" : "-", "тест"],
         ["🎓", s.exam != null ? s.exam + "%" : "-", "емтихан"], ["🏅", s.ach ?? "-", "жетістік"],
       ].map(([i, v, t]) => `<div><span>${i}</span><b>${esc(String(v))}</b><small>${t}</small></div>`).join("");
       const nm = el.querySelector(".pf-name");
       if (document.activeElement !== nm) nm.value = p.name || "";
+      el.querySelector(".pf-certs").innerHTML = certsHtml();
       el.querySelector(".pf-cal").innerHTML = calendar(get("cs50kz:days", {}));
       const cw = el.querySelector(".cal-wrap"); cw.scrollLeft = cw.scrollWidth; // тар экранда соңғы апталар көрінсін
     };
@@ -231,6 +256,7 @@
       </div>
       <section class="my-courses pf-box" aria-label="Менің курстарым" hidden></section>
       <div class="pf-stats"></div>
+      <section class="pf-box pf-certs" id="certs" aria-label="Менің сертификаттарым"></section>
       <section class="pf-box pf-cal" aria-label="Белсенділік күнтізбесі"></section>
       <section class="pf-box pf-cloud" aria-live="polite"><p class="pf-small">Бұлт жүктелуде…</p></section>
 
@@ -260,7 +286,7 @@
         </section>
       </div>
 
-      <section class="pf-box pf-teacher">
+      <section class="pf-box pf-teacher" id="teacher">
         <h3>👩‍🏫 Мұғалімге</h3>
         <p>Мұғалімге қысқа есеп-код жіберіңіз: ол оны <a href="${K.ROOT_URL}teacher.html">мұғалім бетіне</a> қосады. Код ID-ді қамтиды, сондықтан әр жаңа жіберілім сыныптағы сол оқушының жолын жаңартады.</p>
         <button type="button" class="btn secondary share-progress">📤 Мұғалімге жіберу</button>

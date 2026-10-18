@@ -11,11 +11,16 @@
   3. assets/data/lectures.js - лекциялар тізімі (прогресс панелі үшін).
   4. assets/data/search-index.js - бүкіл сайт бойынша іздеу индексі.
   5. glossary.html - лекциялардағы терминдерден қазақша–ағылшынша сөздік.
+  6. Сандардың ЖАЛҒЫЗ дерекқөзі: site_stats (compute_stats). Беттерде <!--n:КІЛТ-->мән<!--/n--> белгілері, мета-сипаттамалар
+     (DESC_TEMPLATES), README.md және курстар витринасы осыдан толтырылады.
 Скрипт идемпотентті: қайта-қайта іске қоса беруге болады.
+
+  python3 tools/build.py --stats   # site_stats-ты JSON ретінде басады (файл жазбайды; тесттер қолданады)
 """
 import html
 import json
 import re
+import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -51,25 +56,25 @@ GLYPHS = {
 CATALOG = [
     {"id": "x", "code": "CS50x", "href": "index.html", "c": "#087a96", "c2": "#0a4c7a", "title": "Информатикаға кіріспе",
      "desc": "Бағдарламалау әлеміне ең жақсы кіру есігі: алгоритмдерден веб пен жасанды интеллектке дейін.",
-     "tags": ["Scratch", "C", "Python", "SQL", "HTML/CSS/JS", "Flask"], "lec": 12, "tasks": "34 тапсырма", "state": "ready", "total": 12},
+     "tags": ["Scratch", "C", "Python", "SQL", "HTML/CSS/JS", "Flask"], "state": "ready"},
     {"id": "python", "code": "CS50P", "href": "python/", "c": "#3776ab", "c2": "#1d3f66", "title": "Python бағдарламалау",
      "desc": "Python-ды нөлден тереңге: функциялар, ерекше жағдайлар, кітапханалар, тесттер, тұрақты өрнектер, ООП.",
-     "tags": ["функциялар", "циклдер", "pytest", "regex", "ООП"], "lec": 10, "tasks": "41 тапсырма", "state": "wip", "total": 10},
+     "tags": ["функциялар", "циклдер", "pytest", "regex", "ООП"], "state": "wip"},
     {"id": "sql", "code": "CS50 SQL", "href": "sql/", "c": "#7c3aed", "c2": "#3b1a78", "title": "Дерекқорлар",
      "desc": "Деректерді сұрау, кестелерді жобалау, индекстер мен масштабтау: SQLite-тан PostgreSQL-ге дейін.",
-     "tags": ["SELECT", "JOIN", "жобалау", "индекстер"], "lec": 7, "tasks": "18 тапсырма", "state": "wip", "total": 7},
+     "tags": ["SELECT", "JOIN", "жобалау", "индекстер"], "state": "wip"},
     {"id": "ai", "code": "CS50 AI", "href": "ai/", "c": "#d0306f", "c2": "#6e1640", "title": "Жасанды интеллект",
      "desc": "Іздеу, логика, ықтималдық, оңтайландыру, машиналық оқыту, нейрон желілер және тіл модельдері.",
-     "tags": ["іздеу", "ықтималдық", "ML", "нейрон желі"], "lec": 7, "tasks": "12 жоба", "state": "wip", "total": 7},
+     "tags": ["іздеу", "ықтималдық", "ML", "нейрон желі"], "state": "wip"},
     {"id": "web", "code": "CS50 Web", "href": "web/", "c": "#c2410c", "c2": "#7a2a06", "title": "Веб-бағдарламалау",
      "desc": "Толық веб-қосымшалар: HTML, CSS, Git, Django, SQL, JavaScript, React, тестілеу және қауіпсіздік.",
-     "tags": ["Django", "JavaScript", "React", "Git"], "lec": 9, "tasks": "5 жоба", "state": "wip", "total": 9},
+     "tags": ["Django", "JavaScript", "React", "Git"], "state": "wip"},
     {"id": "cpp", "code": "C++", "href": "cpp/", "c": "#4f46e5", "c2": "#2e2a8a", "title": "C++ бағдарламалау", "own": True,
      "desc": "C++ нөлден: жад пен көрсеткіштер, ООП, STL, шаблондар және өз жобаң.",
-     "tags": ["көрсеткіштер", "ООП", "STL", "шаблондар"], "lec": 8, "tasks": "1 жоба", "state": "wip", "total": 8},
+     "tags": ["көрсеткіштер", "ООП", "STL", "шаблондар"], "state": "wip"},
     {"id": "java", "code": "Java", "href": "java/", "c": "#d97706", "c2": "#8a4a04", "title": "Java бағдарламалау", "own": True,
      "desc": "Java нөлден: нысандар, интерфейстер, Collections, Stream API, көп ағын және өз жобаң.",
-     "tags": ["ООП", "Collections", "Stream", "көп ағын"], "lec": 8, "tasks": "1 жоба", "state": "wip", "total": 8},
+     "tags": ["ООП", "Collections", "Stream", "көп ағын"], "state": "wip"},
 ]
 
 
@@ -108,7 +113,8 @@ def courses_block(prefix, skip=()):
         state = c["state"]
         if c["id"] in ALL_COURSES and ALL_COURSES[c["id"]].get("ready") == len(ALL_COURSES[c["id"]]["order"]):
             state = "ready"
-        total = f' data-total="{c["total"]}"' if c.get("total") else ""
+        n_lec = STATS["by_course"][c["id"]]["lect"]
+        total = f' data-total="{n_lec}"' if n_lec else ""
         out.append(f"""        <{tag} class="cx-card {state}{" own" if c.get("own") else ""}"{href} data-course="{c["id"]}"{total} style="--c:{c["c"]};--c2:{c["c2"]}">
           <div class="cx-band">
             <span class="cx-code">{c["code"]}</span>
@@ -120,10 +126,49 @@ def courses_block(prefix, skip=()):
             <p>{c["desc"]}</p>
             <ul class="cx-tags">{tags}</ul>
             <div class="cx-bar" hidden><i></i></div>
-            <div class="cx-foot"><span>{c["lec"]} лекция · {c["tasks"]}</span>{go}</div>
+            <div class="cx-foot"><span>{n_lec} лекция · {course_tasks_label(c["id"])}</span>{go}</div>
           </div>
         </{tag}>""")
     return "<!-- build:courses -->\n" + "\n".join(out) + "\n        <!-- /build:courses -->"
+
+
+# «Бір негізгі маршрут»: CS50x → 0-лекция → бірінші тапсырма → нәтиже → келесі лекция. Статикалық нұсқа (JS-сыз да жұмыс істейді);
+# main.js initBeginnerPath() оны оқушының прогресіне қарай жаңартады (data-route, data-step, aria-current="step").
+def route_block(prefix, code, local=False):
+    folder = "lectures/" if code == "x" else f"{code}/lectures/"
+    order = ORDER if code == "x" else ALL_COURSES[code]["order"]
+    names = [n for n in order if (ROOT / folder / f"{n}.html").exists()]
+    if not names:
+        return ""
+    first, second = names[0], (names[1] if len(names) > 1 else None)
+    ids = re.findall(r'<h2 id="([^"]+)"', (ROOT / folder / f"{first}.html").read_text(encoding="utf-8"))
+    task_id = next((i for i in ("practice", "exercises", "problem-set") if i in ids), None)
+    quiz_id = "quiz" if "quiz" in ids else None
+    short = "CS50x" if code == "x" else ALL_COURSES[code]["short"]
+    base = "lectures/" if local else prefix + folder  # курс бетінің ішінде қысқа сілтеме
+    lec = lambda n: f"{base}{n}.html"
+    num = lambda n: n.replace("week-", "") + "-апта"
+    course_href = "#weeks" if local else (f"{prefix}index.html#main" if code == "x" else f"{prefix}{code}/index.html#weeks")
+    steps = [
+        (course_href, short, "Курсты таңда"),
+        (lec(first), f"{num(first)} лекциясы", "Оқы, 15-20 минут"),
+        (lec(first) + (f"#{task_id}" if task_id else ""), "Бірінші тапсырма", "Өзің орында"),
+        (lec(first) + (f"#{quiz_id}" if quiz_id else ""), "Нәтиже", "Тест және тексеру"),
+        (lec(second) if second else lec(first), "Келесі лекция", num(second) if second else "Жалғастыр"),
+    ]
+    items = "\n".join(
+        f'      <li class="route-step" data-step="{i}"><a href="{h}"><span class="route-dot" aria-hidden="true">{i}</span>'
+        f'<span class="route-txt"><b>{t}</b><small>{d}</small></span></a></li>'
+        for i, (h, t, d) in enumerate(steps, 1))
+    return f"""<!-- build:route -->
+    <section class="route" data-route="{code}" aria-labelledby="route-title-{code}">
+      <div class="route-head"><h2 id="route-title-{code}">Бір негізгі маршрут</h2><p>{short}: бес қадам, артық ештеңе жоқ. Қалғанын кейін қарайсың.</p></div>
+      <ol class="route-line">
+{items}
+      </ol>
+      <div class="route-cta"><a class="btn gold route-go" href="{lec(first)}">Бастау: {num(first)} <span aria-hidden="true">→</span></a><p class="route-note" aria-live="polite">Жаңа келдіңіз бе? {num(first)}дан бастаңыз: ол ең қысқа жол.</p></div>
+    </section>
+    <!-- /build:route -->"""
 
 
 def strip_tags(s):
@@ -313,6 +358,9 @@ def process_page(path, prefix, active):
     if "<!-- build:courses" in s:
         skip = ("x",) if rel == "index.html" else ()
         s = re.sub(r"<!-- build:courses -->.*?<!-- /build:courses -->", lambda _: courses_block(prefix, skip), s, flags=re.S)
+    if "<!-- build:route -->" in s:
+        rc = "x" if rel in ("index.html", "courses.html") else rel.split("/")[0]
+        s = re.sub(r"<!-- build:route -->.*?<!-- /build:route -->", lambda _: route_block("" if rc != "x" else prefix, rc, rc != "x"), s, flags=re.S)
     s = re.sub(r'<nav class="nav">.*?</nav>', lambda _: nav_block(prefix, active, course_of(rel)), s, count=1, flags=re.S)
     s = re.sub(r'<footer class="footer">.*?</footer>', lambda _: footer_block(prefix), s, count=1, flags=re.S)
     hs = HEAD_STYLE.get(rel)
@@ -345,7 +393,8 @@ def lecture_meta(name, s, url=None):
     return {"id": name, "num": num, "title": title, "url": url or f"lectures/{name}.html", "topics": topics,
             "minutes": max(5, round(words / 160)),
             "quiz": article.count('class="question"'),
-            "tasks": article.count('class="checklist"')}
+            "tasks": article.count('class="checklist"'),
+            "task": next((i for i in ("practice", "exercises", "problem-set") if re.search(rf'<h2 id="{i}"', article)), "")}
 
 
 def sections(name, s, meta):
@@ -398,7 +447,7 @@ def build_cheatsheet(entries):  # entries: (meta, ul, course)
     top = tpl[:tpl.index('<div class="layout')]
     top = re.sub(r"<!-- build:head -->.*?<!-- /build:head -->", "", top, flags=re.S)
     top = re.sub(r"<title>.*?</title>", "<title>Шпаргалка - CS50 қазақша</title>", top)
-    top = top.replace('<meta name="author"', '<meta name="description" content="CS50 қазақша: жеті курстың қысқаша конспектісі бір бетте, басып шығаруға ыңғайлы.">\n  <meta name="author"', 1)
+    top = top.replace('<meta name="author"', '<meta name="description" content="CS50 қазақша: ' + FLAT["courses_word"] + ' курстың қысқаша конспектісі бір бетте, басып шығаруға ыңғайлы.">\n  <meta name="author"', 1)
     foot = tpl[tpl.index("  <footer"):]
     cards = "\n".join(
         f'''      <section class="cs-card" id="{(c + "-" if c != "x" else "") + m["id"]}" data-c="{c}">
@@ -411,7 +460,7 @@ def build_cheatsheet(entries):  # entries: (meta, ul, course)
       <div class="lecture-head">
         <div class="num">Шпаргалка</div>
         <h1>Барлық курс бір бетте</h1>
-        <p>Жеті курстың әр лекциясының ең маңызды ұғымдары мен синтаксисі. Емтиханға не тапсырмаға дайындалғанда қолданыңыз. Курсты таңдап, тек сол курсты басып шығаруға болады.</p>
+        <p>{FLAT['Courses_word']} курстың әр лекциясының ең маңызды ұғымдары мен синтаксисі. Емтиханға не тапсырмаға дайындалғанда қолданыңыз. Курсты таңдап, тек сол курсты басып шығаруға болады.</p>
         <button type="button" class="btn gold cs-print" onclick="print()">🖨 Басып шығару / PDF</button>
       </div>
       <div class="seg cs-courses" role="group" aria-label="Курс"><button type="button" data-c="x" class="on">CS50x</button><button type="button" data-c="python">CS50P</button><button type="button" data-c="sql">SQL</button><button type="button" data-c="ai">AI</button><button type="button" data-c="web">Web</button><button type="button" data-c="cpp">C++</button><button type="button" data-c="java">Java</button><button type="button" data-c="all">Барлығы</button></div>
@@ -492,7 +541,7 @@ def build_glossary(terms):
       <div class="lecture-head">
         <div class="num">Сөздік</div>
         <h1>Терминдер сөздігі</h1>
-        <p>Жеті курстағы {len(items)} термин: қазақшасы, ағылшыншасы және алғаш түсіндірілген жері. Курс бойынша сүзуге болады.</p>
+        <p>{FLAT['Courses_word']} курстағы <!--n:terms-->{len(items)}<!--/n--> термин: қазақшасы, ағылшыншасы және алғаш түсіндірілген жері. Курс бойынша сүзуге болады.</p>
       </div>
       <div class="g-search"><input type="search" placeholder="Терминді іздеңіз: массив, pointer, хэш..." autocomplete="off" aria-label="Терминді іздеу"><span class="g-count"></span></div>
       <nav class="g-letters">{"".join(f'<a href="#l-{i + 1}">{html.escape(l)}</a>' for i, l in enumerate(letters))}</nav>
@@ -505,7 +554,136 @@ def build_glossary(terms):
     return len(items)
 
 
+# ---------------------------------------------------------------------------------------------------------------------
+# site_stats: сайттағы БАРЛЫҚ сандардың жалғыз дерекқөзі. Файлдарды тек оқиды (ештеңе жазбайды), сондықтан `--stats` қауіпсіз.
+#   courses      - курс саны (CS50x + ALL_COURSES)
+#   lect         - барлық лекция беті; lect_harvard (Harvard аудармасы, COURSES) және lect_own (авторлық, OWN_COURSES) бөлек
+#   quiz, terms  - лекциялардағы тест сұрақтары / бірегей терминдер (сөздік дедупликациясымен бірдей)
+#   tasks        - автотексеруші (autograder / js-grader / sql-grader) саны
+#   games        - assets/js/games-*.js ішіндегі G.register(...) саны (games-core META-мен салыстырылады)
+#   bugs         - assets/data/bugs.js «қатені тап» жаттығулары
+#   exam_q/min   - exam.js (PER_LECTURE * CS50x лекция саны, MINUTES)
+#   by_course    - әр курс бойынша lect/quiz/terms/tasks/projects
+# Жетістік санын әдейі ЕСЕПТЕМЕЙМІЗ: ол main.js achievementList() ішінде өзгеріп тұрады, мәтінде «жетістіктер» деп жазылады.
+# ---------------------------------------------------------------------------------------------------------------------
+NUM_WORDS = {1: "бір", 2: "екі", 3: "үш", 4: "төрт", 5: "бес", 6: "алты", 7: "жеті", 8: "сегіз", 9: "тоғыз", 10: "он"}
+
+
+def compute_stats():
+    quiz, terms, by = [], [], {}
+    sources = [("x", ROOT / "lectures", ORDER, None)] + [(code, ROOT / code / "lectures", c["order"], code) for code, c in ALL_COURSES.items()]
+    for code, folder, order, prefix in sources:
+        n_lect = n_tasks = 0
+        q_code, t_code = [], []
+        for name in order:
+            p = folder / f"{name}.html"
+            if not p.exists():
+                continue
+            s = p.read_text(encoding="utf-8")
+            meta = lecture_meta(name, s, f"{prefix}/lectures/{name}.html" if prefix else None)
+            n_lect += 1
+            n_tasks += len(re.findall(r'class="(?:autograder|js-grader|sql-grader)\b', s))
+            q_code += quiz_questions(name, s, meta)
+            t_code += glossary_terms(name, s, dict(meta, num=meta["num"]), code)
+        quiz += q_code
+        terms += t_code
+        proj = 0
+        idx = ROOT / code / "index.html" if prefix else None
+        if idx and idx.exists():
+            proj = len(re.findall(r'\bid="project"', idx.read_text(encoding="utf-8")))
+        by[code] = {"lect": n_lect, "quiz": len(q_code), "terms": len({t["en"].lower() for t in t_code}), "tasks": n_tasks, "projects": proj}
+    n_terms = len({t["en"].lower() for t in terms})  # build_glossary дедупликациясы: ағылшынша атау бойынша
+    games = set()
+    for f in sorted((ROOT / "assets/js").glob("games-*.js")):
+        games |= set(re.findall(r'\bG\.register\(\{\s*id:\s*"(\w+)"', f.read_text(encoding="utf-8")))
+    core = (ROOT / "assets/js/games-core.js").read_text(encoding="utf-8")
+    meta_ids = set(re.findall(r"^\s{4}(\w+): \{ cats:", core, re.M))
+    if meta_ids and meta_ids != games:
+        print(f"ЕСКЕРТУ: ойындар тізімі мен games-core META сәйкес емес: {sorted(games ^ meta_ids)}", file=sys.stderr)
+    bugs = len(re.findall(r"^\s*bug: \d+", (ROOT / "assets/data/bugs.js").read_text(encoding="utf-8"), re.M))
+    ex = (ROOT / "assets/js/exam.js").read_text(encoding="utf-8")
+    per = int(re.search(r"PER_LECTURE = (\d+)", ex).group(1))
+    minutes = int(re.search(r"MINUTES = (\d+)", ex).group(1))
+    n_harvard = sum(by[c]["lect"] for c in ["x", *COURSES])
+    n_own = sum(by[c]["lect"] for c in OWN_COURSES)
+    return {"courses": len(ALL_COURSES) + 1, "lect": n_harvard + n_own, "lect_harvard": n_harvard, "lect_own": n_own,
+            "quiz": len(quiz), "terms": n_terms, "tasks": sum(v["tasks"] for v in by.values()), "games": len(games), "bugs": bugs,
+            "exam_q": per * by["x"]["lect"], "exam_min": minutes, "by_course": by}
+
+
+def flat_stats(st):
+    """Белгілер (<!--n:КІЛТ-->) мен мета-үлгілер үшін жазық сөздік."""
+    f = {k: str(v) for k, v in st.items() if k != "by_course"}
+    for code, d in st["by_course"].items():
+        for k, v in d.items():
+            f[f"{k}_{code}"] = str(v)
+    w = NUM_WORDS.get(st["courses"], str(st["courses"]))
+    f["courses_word"], f["Courses_word"] = w, w[:1].upper() + w[1:]
+    f["site"] = f'{st["courses"]} курс · {st["lect"]} лекция · {st["quiz"]} тест сұрағы · {st["terms"]} термин'
+    return f
+
+
+STATS = {}   # main() толтырады: compute_stats()
+FLAT = {}
+
+
+def fill_numbers(text):
+    """<!--n:КІЛТ-->…<!--/n--> ішін және <b data-count="N"><!--n:КІЛТ--> атрибутын site_stats бойынша жаңарту."""
+    def rep(m):
+        if m.group(1) not in FLAT:
+            raise SystemExit(f"Белгісіз сан белгісі: <!--n:{m.group(1)}-->")
+        return f"<!--n:{m.group(1)}-->{FLAT[m.group(1)]}<!--/n-->"
+    text = re.sub(r"<!--n:(\w+)-->.*?<!--/n-->", rep, text)
+    return re.sub(r'(data-count=")\d+("[^>]*><!--n:(\w+)-->)', lambda m: m.group(1) + FLAT[m.group(3)] + m.group(2), text)
+
+
+# Мета-сипаттамаларда HTML-түсініктеме жұмыс істемейді, сондықтан үлгі осында; {кілт} - flat_stats кілті.
+SITE_DESC = ("{courses} курс, {lect} лекция, {quiz} тест сұрағы: Гарвардтың CS50 курстары қазақ тілінде (CS50x, Python, SQL, AI, Web) және авторлық C++ мен Java курстары. "
+             "Браузерде орындалатын тапсырмалар. Тегін. Harvard CS50 аудармалары (Sagid Mustafa) CC BY-NC-SA 4.0; дербес құралдар мен C++/Java курстары авторлық құқықпен қорғалған.")
+DESC_TEMPLATES = {
+    "index.html": SITE_DESC,
+    "exam.html": "CS50 қазақша курсының қорытынды емтиханы: {exam_q} сұрақ, {exam_min} минут, барлық {lect_x} лекция. Нәтиже апталар бойынша талданып, сертификатқа жазылады.",
+    "map.html": "CS50 қазақша курсының картасы: {lect_x} лекция, тақырыптар және сіздің прогресіңіз.",
+    "cpp/index.html": "C++ бағдарламалау: авторлық қазақша курс. Жад пен көрсеткіштер, ООП, STL, шаблондар және өз жобаң. {lect_cpp} лекция, тесттер, жаттығулар.",
+    "java/index.html": "Java бағдарламалау: авторлық қазақша курс. Нысандар, интерфейстер, Collections, Stream API, көп ағын және өз жобаң. {lect_java} лекция, тесттер, жаттығулар.",
+}
+INDEX_LD = "Гарвард университетінің CS50x курсы қазақ тілінде: {lect_x} лекция, тесттер, тапсырмалар, интерактив визуализациялар."
+
+
+def apply_descriptions(rel, s):
+    tpl = DESC_TEMPLATES.get(rel)
+    if not tpl:
+        return s
+    desc = html.escape(tpl.format(**FLAT), quote=True)
+    s = re.sub(r'(<meta (?:property="og:description"|name="description"|name="twitter:description") content=")[^"]*(")',
+               lambda m: m.group(1) + desc + m.group(2), s)
+    if rel == "index.html":
+        s = re.sub(r'("description": ")Гарвард университетінің CS50x курсы[^"]*(")', lambda m: m.group(1) + INDEX_LD.format(**FLAT) + m.group(2), s)
+    return s
+
+
+def course_tasks_label(code):
+    d = STATS["by_course"][code]
+    if d["tasks"]:
+        return f'{d["tasks"]} тапсырма'
+    return f'{d["projects"]} жоба' if d["projects"] else ""
+
+
 def main():
+    global STATS, FLAT
+    STATS = compute_stats()
+    FLAT = flat_stats(STATS)
+    if "--stats" in sys.argv:
+        print(json.dumps({"site_stats": STATS, "flat": FLAT}, ensure_ascii=False, indent=1))
+        return
+    # Мета-сипаттамалар process_page-ден БҰРЫН жаңарады (ол сипаттаманы файлдан оқиды)
+    for rel in DESC_TEMPLATES:
+        fp = ROOT / rel
+        if fp.exists():
+            t = fp.read_text(encoding="utf-8")
+            t2 = apply_descriptions(rel, t)
+            if t2 != t:
+                fp.write_text(t2, encoding="utf-8")
     lectures, index, terms, quiz, sheets = [], [], [], [], []
     for name in ORDER:
         p = ROOT / "lectures" / f"{name}.html"
@@ -568,28 +746,15 @@ def main():
                          ("detective.html", "practice"), ("flask.html", "practice"), ("projects.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("games.html", "games"), ("copyright.html", "about"), ("alash.html", "about"), ("courses.html", "courses")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
-    # Беттердегі есептелетін сандар: <!--n:terms-->…<!--/n--> және <!--n:quiz-->…<!--/n-->
-    n_tasks = sum(len(re.findall(r'class="(?:autograder|js-grader|sql-grader)\b', f.read_text(encoding="utf-8")))
-                  for f in list((ROOT / "lectures").glob("*.html")) + [g for c in ALL_COURSES for g in (ROOT / c / "lectures").glob("week-*.html")])
-    stats = {"terms": str(n), "quiz": str(len(quiz)), "courses": str(len(ALL_COURSES) + 1), "lect": str(0), "tasks": str(n_tasks)}
-    # Бүкіл сайт бойынша сандар: басты беттегі пилюля және мета-сипаттамалар
-    n_lect = len(list((ROOT / "lectures").glob("*.html"))) + sum(len(list((ROOT / c / "lectures").glob("week-*.html"))) for c in ALL_COURSES)
-    stats["lect"] = str(n_lect)
-    site = f"{len(ALL_COURSES) + 1} курс · {n_lect} лекция · {len(quiz)} тест сұрағы · {n} термин"
-    desc = (f"{len(ALL_COURSES) + 1} курс, {n_lect} лекция, {len(quiz)} тест сұрағы: Гарвардтың CS50 курстары қазақ тілінде (CS50x, Python, SQL, AI, Web) және авторлық C++ мен Java курстары. "
-            "Браузерде орындалатын тапсырмалар. Тегін. Harvard CS50 аудармалары (Sagid Mustafa) CC BY-NC-SA 4.0; дербес құралдар мен C++/Java курстары авторлық құқықпен қорғалған.")
-    ip = ROOT / "index.html"
-    if ip.exists():
-        it = ip.read_text(encoding="utf-8")
-        it2 = re.sub(r"<!--site-->.*?<!--/site-->", f"<!--site-->{site}<!--/site-->", it)
-        it2 = re.sub(r'(<meta (?:property="og:description"|name="description"|name="twitter:description") content=")[^"]*(")', lambda m: m.group(1) + desc + m.group(2), it2)
-        if it2 != it:
-            ip.write_text(it2, encoding="utf-8")
-    for page in ["practice.html", "flashcards.html", "about.html", "index.html", "courses.html"]:
-        fp = ROOT / page
+    # Сандар: бір дерекқөз (STATS). Циклдағы нақты есеппен сәйкестігін тексереміз (айырмашылық - build қатесі).
+    assert (len(quiz), n, len(lectures) + sum(len(list((ROOT / c / "lectures").glob("week-*.html"))) for c in ALL_COURSES)) == \
+        (STATS["quiz"], STATS["terms"], STATS["lect"]), "compute_stats() цикл нәтижесімен сәйкес емес"
+    # Барлық бет пен README: <!--n:КІЛТ-->…<!--/n-->
+    targets = [p for p in ROOT.glob("*.html")] + [ROOT / c / "index.html" for c in ALL_COURSES] + [ROOT / "README.md"]
+    for fp in targets:
         if fp.exists():
             t = fp.read_text(encoding="utf-8")
-            t2 = re.sub(r"<!--n:(\w+)-->.*?<!--/n-->", lambda m: f"<!--n:{m.group(1)}-->{stats.get(m.group(1), '')}<!--/n-->", t)
+            t2 = fill_numbers(t)
             if t2 != t:
                 fp.write_text(t2, encoding="utf-8")
     (ROOT / "assets/data/lectures.js").write_text(
@@ -618,7 +783,7 @@ def main():
         if sw2 != sw:
             swp.write_text(sw2, encoding="utf-8")
     (ROOT / "robots.txt").write_text(f"User-agent: *\nAllow: /\nSitemap: {SITE_URL}sitemap.xml\n", encoding="utf-8")
-    print(f"{len(lectures)} лекция, {len(index)} бөлім, {n} термин, {len(quiz)} сұрақ")
+    print(f"CS50x {len(lectures)} + барлығы {STATS['lect']} лекция, {len(index)} бөлім, {n} термин, {len(quiz)} сұрақ")
 
 
 if __name__ == "__main__":

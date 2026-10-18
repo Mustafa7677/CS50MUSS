@@ -37,7 +37,8 @@ window.CS50KZ_COURSE_LECTURES["web"] = [
   ],
   "minutes": 43,
   "quiz": 8,
-  "tasks": 1
+  "tasks": 1,
+  "task": "practice"
  },
  {
   "id": "week-1",
@@ -68,7 +69,8 @@ window.CS50KZ_COURSE_LECTURES["web"] = [
   ],
   "minutes": 28,
   "quiz": 8,
-  "tasks": 4
+  "tasks": 4,
+  "task": "problem-set"
  },
  {
   "id": "week-2",
@@ -123,7 +125,8 @@ window.CS50KZ_COURSE_LECTURES["web"] = [
   ],
   "minutes": 26,
   "quiz": 8,
-  "tasks": 4
+  "tasks": 4,
+  "task": "problem-set"
  },
  {
   "id": "week-3",
@@ -170,7 +173,8 @@ window.CS50KZ_COURSE_LECTURES["web"] = [
   ],
   "minutes": 41,
   "quiz": 8,
-  "tasks": 3
+  "tasks": 3,
+  "task": "problem-set"
  },
  {
   "id": "week-4",
@@ -221,7 +225,8 @@ window.CS50KZ_COURSE_LECTURES["web"] = [
   ],
   "minutes": 46,
   "quiz": 8,
-  "tasks": 1
+  "tasks": 1,
+  "task": "practice"
  },
  {
   "id": "week-5",
@@ -268,7 +273,8 @@ window.CS50KZ_COURSE_LECTURES["web"] = [
   ],
   "minutes": 52,
   "quiz": 8,
-  "tasks": 1
+  "tasks": 1,
+  "task": "practice"
  },
  {
   "id": "week-6",
@@ -303,7 +309,8 @@ window.CS50KZ_COURSE_LECTURES["web"] = [
   ],
   "minutes": 48,
   "quiz": 8,
-  "tasks": 1
+  "tasks": 1,
+  "task": "practice"
  },
  {
   "id": "week-7",
@@ -350,7 +357,8 @@ window.CS50KZ_COURSE_LECTURES["web"] = [
   ],
   "minutes": 41,
   "quiz": 8,
-  "tasks": 4
+  "tasks": 4,
+  "task": "problem-set"
  },
  {
   "id": "week-8",
@@ -417,6 +425,7 @@ window.CS50KZ_COURSE_LECTURES["web"] = [
   ],
   "minutes": 36,
   "quiz": 8,
-  "tasks": 3
+  "tasks": 3,
+  "task": "practice"
  }
 ];
