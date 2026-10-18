@@ -381,5 +381,60 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
   "minutes": 38,
   "quiz": 8,
   "tasks": 3
+ },
+ {
+  "id": "week-7",
+  "num": "7-апта",
+  "title": "Көп ағын, құралдар және қорытынды жоба",
+  "url": "java/lectures/week-7.html",
+  "topics": [
+   {
+    "t": "Бір мезгілде бірнеше жұмыс",
+    "id": "why"
+   },
+   {
+    "t": "Thread және Runnable",
+    "id": "thread"
+   },
+   {
+    "t": "Race condition: ортақ айнымалының қауіпі",
+    "id": "race"
+   },
+   {
+    "t": "synchronized және атомдық айнымалылар",
+    "id": "sync"
+   },
+   {
+    "t": "ExecutorService: ағындарды басқару",
+    "id": "executor"
+   },
+   {
+    "t": "Жоба құралдары: Maven және Gradle",
+    "id": "build"
+   },
+   {
+    "t": "Тест жазу: JUnit идеясы",
+    "id": "junit"
+   },
+   {
+    "t": "Қорытынды жоба: «Оқушы журналы»",
+    "id": "project"
+   },
+   {
+    "t": "Өз компьютеріңде іске қос",
+    "id": "run"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Жаттығулар",
+    "id": "tasks"
+   }
+  ],
+  "minutes": 44,
+  "quiz": 8,
+  "tasks": 4
  }
 ];

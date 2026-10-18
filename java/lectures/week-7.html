@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Java 7-апта: Көп ағын, құралдар және қорытынды жоба - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#d97706">
+  <!-- /build:head -->
+  <meta name="description" content="Java 7-апта: Thread, Runnable, synchronized, race condition, ExecutorService, Maven және Gradle, JUnit тесті және қорытынды жоба Оқушы журналы: талаптар, қабылдау критерийлері, рубрика.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="java" style="--c:#d97706"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Java</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../java/index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" data-n="7">
+        <div class="num">7-апта</div>
+        <h1>Көп ағын, құралдар және қорытынды жоба</h1>
+        <p>Соңғы аптада Java бағдарламасы бірнеше жұмысты бір мезгілде орындай алатынын көреміз: ағындар, олардың қауіпті тұстары (race condition) және қауіпсіз құралдары. Содан кейін нақты жоба құрылымын (Maven, Gradle) және тест жазу идеясын (JUnit) үйреніп, бүкіл курсты біріктіретін қорытынды жобаны - консольдік «Оқушы журналын» жасауға кірісеміз.</p>
+      </div>
+
+<h2 id="why">Бір мезгілде бірнеше жұмыс</h2>
+<p>Үйде қонақ күтіп жатқан әжені елестетіңіз. Ол шәйнекті қайнатуға қойып, сол арада қамырды илейді, одан кейін табаққа нан жайып қояды. Егер әже шәйнек қайнағанша ештеңе істемей, түк қимылдамай күтсе, қонақтар аш қалар еді. Ол бірнеше жұмысты <em>араластырып</em> жүргізеді. Бағдарламада да солай: бір жұмыс аяқталғанша күтіп тұрудың орнына, бірнеше жұмысты қатар жүргізуге болады.</p>
+<p>Java-да мұны <strong>ағындар</strong> (<span class="term-en">threads</span>) арқылы істейміз. Ағын - бағдарламаның ішіндегі жеке орындалатын «жол». Қазіргі процессорларда бірнеше ядро бар, сондықтан бірнеше ағын шын мәнінде бір мезгілде жұмыс істей алады. Мұның пайдасы:</p>
+<ul>
+  <li><strong>Жылдамдық:</strong> үлкен есепті бөліктерге бөліп, әр ядроға бір бөліктен беруге болады.</li>
+  <li><strong>Жауап беру:</strong> бір ағын файл жүктеп жатқанда, басқасы қолданушының батырмасына жауап береді.</li>
+</ul>
+<p>Бірақ ағындардың бағасы бар. Олар бір ортақ жадпен жұмыс істейді, ал бұл тек «қауіпті» жол: екі ағын бір айнымалыны бір мезгілде өзгертсе, нәтиже күтпеген болады. Бұл апта осы тұзақ пен одан қорғану құралдарын көрсетеді.</p>
+<div class="callout warn">
+<span class="callout-title">Көп ағынды бағдарламаның нәтижесі кейде әр жолы басқаша</span>
+<p>Ағындардың орындалу ретін операциялық жүйе шешеді, ал ол әр жолы әртүрлі болуы мүмкін. Сондықтан көп ағынды мысалдардың кейбіреуі <strong>детерминді</strong> (нәтижесі әрдайым бірдей: біз оларды <code>join()</code> не <code>Future</code> арқылы дұрыс күттік), ал кейбірі <strong>әдейі детермінді емес</strong> (race condition көрсететін мысал). Әр мысалдың қайсысы екені мәтінде анық айтылады. Детермінді емес мысалдың нәтижесі сіздің компьютеріңізде басқа сан болады: бұл қалыпты жағдай.</p>
+</div>
+
+<h2 id="thread">Thread және Runnable</h2>
+<p>Ағын жасаудың негізгі жолы: орындалатын жұмысты <code>Runnable</code> интерфейсі ретінде (бір ғана <code>void run()</code> әдісі бар, ол функционалды интерфейс, сондықтан lambda жазуға болады) жазып, <code>Thread</code> нысанына беру және <code>start()</code> шақыру.</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        Runnable is = () -&gt; System.out.println("Жұмыс істеп тұрған ағын: " + Thread.currentThread().getName());
+
+        is.run();                                   // кәдімгі шақыру: main ағынында
+
+        Thread t1 = new Thread(is, "ағын-1");
+        t1.start();                                 // жаңа ағын ашады
+        t1.join();                                  // main t1 біткенше күтеді
+
+        Thread t2 = new Thread(is, "ағын-2");
+        t2.start();
+        t2.join();
+
+        System.out.println("Бәрі аяқталды");
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Жұмыс істеп тұрған ағын: main
+Жұмыс істеп тұрған ағын: ағын-1
+Жұмыс істеп тұрған ағын: ағын-2
+Бәрі аяқталды</code></pre>
+<p>Бұл мысал <strong>детерминді</strong>, себебі әр <code>start()</code> кейін біз <code>join()</code> арқылы ағынның аяқталуын күттік. Қадамдап оқимыз:</p>
+<ul>
+  <li><code>is.run()</code> - кәдімгі әдіс шақыру: жұмыс <em>main</em> ағынында орындалды (атауы <code>main</code>). Жаңа ағын ашылған жоқ!</li>
+  <li><code>new Thread(is, "ағын-1")</code> ағынды дайындайды (әлі жұмыс істемейді), <code>start()</code> оны іске қосады. Енді <code>run()</code> жаңа ағында орындалады.</li>
+  <li><code>t1.join()</code> - «ағын-1 біткенше мен күтемін». Онсыз <code>main</code> әрі қарай жүріп, соңғы жолды ертерек шығаруы мүмкін еді.</li>
+</ul>
+<p>Негізгі қателік: ағынды іске қосу үшін <code>start()</code> шақыру керек, <code>run()</code> емес. <code>run()</code> - тек кәдімгі әдіс, жаңа ағын ашпайды.</p>
+<p>Ағынды жасаудың екінші, ескірек жолы - <code>Thread</code> класын кеңейту (<code>class MyThread extends Thread { public void run() {...} }</code>). Әдетте <code>Runnable</code> жақсырақ: жұмыс пен оны орындайтын механизм бөлек болады, ал бір мезгілде басқа класты да мұрагерлей аласыз.</p>
+<svg viewBox="0 0 620 230" role="img" aria-label="Ағындар уақыт сызығы: main екі ағынды start() арқылы іске қосады, екеуі бір мезгілде жұмыс істейді, main join() арқылы екеуінің де аяқталуын күтеді" style="display:block;width:100%;max-width:620px;height:auto;margin:18px auto"><defs><marker id="h7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="h7h" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M1,1 L11,6 L1,11 z" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/></marker></defs><text x="10" y="54" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;">main</text><text x="10" y="114" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;">ағын-1</text><text x="10" y="174" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;">ағын-2</text><rect x="100" y="40" width="120" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="160" y="54" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">start(), start()</text><rect x="220" y="40" width="210" height="28" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.4;stroke-dasharray:5 3"/><text x="325" y="54" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;">join(): күтіп тұр</text><rect x="430" y="40" width="130" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="495" y="54" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px;">қорытынды</text><rect x="150" y="100" width="190" height="28" rx="4" style="fill:var(--accent-soft, var(--surface));stroke:var(--accent);stroke-width:1.8"/><text x="245" y="114" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px;">жұмыс (1-жарты)</text><rect x="150" y="160" width="280" height="28" rx="4" style="fill:var(--accent-soft, var(--surface));stroke:var(--accent);stroke-width:1.8"/><text x="290" y="174" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:11.5px;">жұмыс (2-жарты)</text><polyline points="150,70 150,98" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h7)"/><polyline points="160,70 160,158" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#h7)"/><polyline points="340,128 340,142 430,142 430,70" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 3" marker-end="url(#h7)"/><polyline points="430,160 430,72" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h7)"/><text x="10" y="215" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">уақыт →</text><text x="110" y="215" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;">ағын-1 мен ағын-2 бір мезгілде жүреді; main екеуі біткенше күтеді</text></svg>
+<p>Мәтіндік балама: уақыт сызығында <code>main</code> екі ағынды <code>start()</code> арқылы іске қосады, одан кейін <code>join()</code> шақырып күтеді. <code>ағын-1</code> және <code>ағын-2</code> бір мезгілде жұмыс істейді; екеуі де біткен соң <code>main</code> қорытындыны шығарады.</p>
+<p>Енді шынайы пайдасын көрейік: бір есепті екі ағынға бөлеміз. 1-ден 1 000 000-ға дейінгі сандарды қосамыз: бір ағын алғашқы жартысын, екіншісі қалғанын.</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    static long qosyndy(int bastau, int sony) {
+        long s = 0;
+        for (int i = bastau; i &lt;= sony; i++) {
+            s += i;
+        }
+        return s;
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        int n = 1_000_000;
+        long[] bolik = new long[2];
+
+        Thread a = new Thread(() -&gt; bolik[0] = qosyndy(1, n / 2));
+        Thread b = new Thread(() -&gt; bolik[1] = qosyndy(n / 2 + 1, n));
+
+        a.start();
+        b.start();
+        a.join();
+        b.join();
+
+        System.out.println("1-жарты: " + bolik[0]);
+        System.out.println("2-жарты: " + bolik[1]);
+        System.out.println("Қосынды: " + (bolik[0] + bolik[1]));
+        System.out.println("Формула: " + (long) n * (n + 1) / 2);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+1-жарты: 125000250000
+2-жарты: 375000250000
+Қосынды: 500000500000
+Формула: 500000500000</code></pre>
+<p>Бұл да <strong>детерминді</strong>: екі ағынның әрқайсысы өз <code>bolik[i]</code> ұясына жазады (бір-бірінің ұясына тимейді), ал <code>main</code> <code>join()</code>-нен кейін ғана оқиды. Нәтиже Гаусс формуласымен (<code>n(n+1)/2</code>) сәйкес келді. Негізгі идея: <strong>ортақ деректі бөлісудің орнына, ағындар бөлек бөліктермен жұмыс істесін</strong>, сонда мәселе болмайды.</p>
+<p>Ағындардың күйлері де бар: <code>NEW</code> (жасалды), <code>RUNNABLE</code> (жұмыс істеп жатыр), <code>WAITING</code>/<code>TIMED_WAITING</code> (күтіп тұр, мысалы <code>sleep</code> кезінде), <code>TERMINATED</code> (аяқталды). Мына мысалда үзу (<span class="term-en">interrupt</span>) де көрсетілген:</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        Thread t = new Thread(() -&gt; {
+            try {
+                for (int i = 1; i &lt;= 3; i++) {
+                    System.out.println("Жұмыс " + i);
+                    Thread.sleep(100);
+                }
+            } catch (InterruptedException e) {
+                System.out.println("Үзілді");
+            }
+        });
+        t.start();
+        t.join();
+        System.out.println("Күй: " + t.getState() + ", тірі ме: " + t.isAlive());
+
+        Thread uzu = new Thread(() -&gt; {
+            try {
+                Thread.sleep(10_000);
+                System.out.println("Бұл жол шықпайды");
+            } catch (InterruptedException e) {
+                System.out.println("Ұйқыдан оянды (interrupt)");
+            }
+        });
+        uzu.start();
+        uzu.interrupt();
+        uzu.join();
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Жұмыс 1
+Жұмыс 2
+Жұмыс 3
+Күй: TERMINATED, тірі ме: false
+Ұйқыдан оянды (interrupt)</code></pre>
+<p><code>Thread.sleep(100)</code> ағынды 100 миллисекундқа «ұйықтатады». Ағын ұйықтап жатқанда <code>interrupt()</code> шақырсаңыз, ол <code>InterruptedException</code> лақтырып оянады, сондықтан <code>sleep</code> пен <code>join</code> әрқашан <code>try</code>/<code>catch</code> не <code>throws InterruptedException</code> талап етеді (өткен аптадағы checked қате). Бұл - ағынға «жұмысты тоқтат» дейтін жалпы тәсіл.</p>
+<h2 id="race">Race condition: ортақ айнымалының қауіпі</h2>
+<p>Енді бүгінгі ең маңызды ескертуге келдік. Екі ағын ортақ айнымалыны өзгертсе не болады?</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    static int sanagysh = 0;                       // ортақ айнымалы
+
+    static void arttyr() {
+        for (int i = 0; i &lt; 100_000; i++) {
+            sanagysh++;                            // oqu -&gt; +1 -&gt; jazu: 3 қадам!
+        }
+    }
+
+    static int synama() throws InterruptedException {
+        sanagysh = 0;
+        Thread a = new Thread(Main::arttyr);
+        Thread b = new Thread(Main::arttyr);
+        a.start();
+        b.start();
+        a.join();
+        b.join();
+        return sanagysh;
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        System.out.println("Күтілген нәтиже: 200000");
+        for (int i = 1; i &lt;= 5; i++) {
+            System.out.println(i + "-сынама: " + synama());
+        }
+    }
+}</code></pre>
+<p>Мұнда әр ағын <code>sanagysh++</code> операциясын 100 000 рет жасайды. Екі ағын - демек, жауап <strong>200 000</strong> болуы керек. Шын мәнінде не болатынын көрейік. <strong>Мына мысал әдейі детермінді емес: нәтиже әр жолы басқаша болады.</strong> Төмендегі нәтиже - біздің компьютердегі бір іске қосу:</p>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Күтілген нәтиже: 200000
+1-сынама: 184310
+2-сынама: 191158
+3-сынама: 200000
+4-сынама: 200000
+5-сынама: 200000</code></pre>
+<p>Кейбір сынамада дұрыс 200000 шықты, ал кейбіреуінде одан аз сан. Сіздің компьютеріңізде басқа сандар болады, бәлкім барлығы дұрыс шығып қалар (бұл қауіпті: қате жоқ болғаннан емес, жай «бүгін» көрінбегендіктен). Бұл құбылыс <strong>race condition</strong> (<span class="term-en">race condition</span>, «жарыс жағдайы») деп аталады: нәтиже ағындардың орындалу ретіне байланысты болады.</p>
+<p>Неге? <code>sanagysh++</code> бір қадам сияқты көрінгенімен, процессор үшін үш қадам: (1) айнымалының мәнін <em>оқу</em>, (2) оған 1 <em>қосу</em>, (3) нәтижені <em>жазу</em>. Екі ағын осы қадамдарды араластырып жіберсе, мына жағдай болады:</p>
+<svg viewBox="0 0 620 330" role="img" aria-label="Race condition: екі ағын да санауышты 5 деп оқиды, екеуі де 6 жазады; нәтижесінде екі арттыру орнына бір арттыру қалады" style="display:block;width:100%;max-width:620px;height:auto;margin:18px auto"><defs><marker id="h7r" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="h7rh" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M1,1 L11,6 L1,11 z" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/></marker></defs><text x="110" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700;">ағын A</text><text x="310" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:700;">sanagysh</text><text x="510" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700;">ағын B</text><rect x="10" y="30" width="200" height="32" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="110.0" y="46.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">1. оқиды: 5</text><rect x="260" y="30" width="100" height="32" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.6"/><text x="310.0" y="46.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;">5</text><rect x="410" y="74" width="200" height="32" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="510.0" y="90.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">2. оқиды: 5</text><rect x="260" y="74" width="100" height="32" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.6"/><text x="310.0" y="90.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;">5</text><rect x="10" y="118" width="200" height="32" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="110.0" y="134.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">3. есептейді: 5+1 = 6</text><rect x="260" y="118" width="100" height="32" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.6"/><text x="310.0" y="134.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;">5</text><rect x="410" y="162" width="200" height="32" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="510.0" y="178.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">4. есептейді: 5+1 = 6</text><rect x="260" y="162" width="100" height="32" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.6"/><text x="310.0" y="178.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;">5</text><rect x="10" y="206" width="200" height="32" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="110.0" y="222.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">5. жазады: 6</text><rect x="260" y="206" width="100" height="32" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.6"/><text x="310.0" y="222.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;">6</text><rect x="410" y="250" width="200" height="32" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="510.0" y="266.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">6. жазады: 6</text><rect x="260" y="250" width="100" height="32" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.6"/><text x="310.0" y="266.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;">6</text><text x="310" y="300" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:700;">күтілген: 7, шыққан: 6 - бір арттыру жоғалды</text><text x="310" y="320" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px;">(бұл - оқу мен жазудың араласуының бір ғана ықтимал реті)</text></svg>
+<p>Мәтіндік балама: <code>sanagysh</code> 5-ке тең. A ағыны 5-ті оқиды, B ағыны да 5-ті оқиды. Екеуі де 5+1=6 есептейді. A 6 жазады, B да 6 жазады. Екі арттыру жасалды, бірақ сан бір-ақ рет өсті (7 орнына 6): бір арттыру «жоғалды».</p>
+<p>Аналогия: екі кассир бір дәптерге бір мезгілде жазып отыр. Екеуі де дәптерде «5» деген санды көріп, әрқайсысы «6» деп өшіріп жаза салады. Нәтижесінде екі сатылым бір ғана рет есепке алынды. Бұл қате ең жиі кездесетін және табуға ең қиын қателердің бірі, себебі ол әр жолы шықпайды.</p>
+<h2 id="sync">synchronized және атомдық айнымалылар</h2>
+<p>Мәселені шешу идеясы: бір мезгілде тек бір ағын ғана «қауіпті» код бөлігін орындасын. Банктегі бір терезеге бір клиент кіргендей. Java-да мұны <strong>монитор құлыпы</strong> (<span class="term-en">lock</span>) жасайды, ал оны <code>synchronized</code> кілт сөзі басқарады.</p>
+<pre data-lang="java"><code class="language-java">import java.util.concurrent.atomic.AtomicInteger;
+
+public class Main {
+    static int a = 0;                              // synchronized арқылы қорғалған
+    static final Object qulyp = new Object();
+    static final AtomicInteger b = new AtomicInteger();   // атомдық санауыш
+
+    static synchronized void artyrA() {            // әдісті бір мезгілде тек бір ағын орындайды
+        a++;
+    }
+
+    static void artyrB() {
+        b.incrementAndGet();
+    }
+
+    static int c = 0;
+    static void artyrC() {
+        synchronized (qulyp) {                     // тек қажетті блокты құлыптау
+            c++;
+        }
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+        Runnable is = () -&gt; {
+            for (int i = 0; i &lt; 100_000; i++) {
+                artyrA();
+                artyrB();
+                artyrC();
+            }
+        };
+        Thread t1 = new Thread(is);
+        Thread t2 = new Thread(is);
+        t1.start(); t2.start();
+        t1.join(); t2.join();
+        System.out.println("synchronized әдіс: " + a);
+        System.out.println("AtomicInteger:     " + b.get());
+        System.out.println("synchronized блок: " + c);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+synchronized әдіс: 200000
+AtomicInteger:     200000
+synchronized блок: 200000</code></pre>
+<p>Бұл мысал <strong>детерминді</strong>: үш тәсіл де әрдайым 200 000 береді. Үш тәсілдің айырмашылығы:</p>
+<ul>
+  <li><code>static synchronized void artyrA()</code> - әдіс деңгейіндегі құлып. Бір мезгілде бір ағын ғана бұл әдісті орындай алады (құлып класқа тиесілі).</li>
+  <li><code>synchronized (qulyp) { c++; }</code> - блок деңгейіндегі құлып: тек қауіпті жолды ғана қорғаймыз, ал тиісті құлып нысанын өзіміз таңдаймыз. Бұл дәлірек және көбіне жылдамырақ.</li>
+  <li><code>AtomicInteger</code> - <strong>атомдық</strong> (бөлінбейтін) операциялары бар класс. <code>incrementAndGet()</code> оқу-қосу-жазуды бір бөлінбейтін қадам ретінде орындайды, құлыпсыз-ақ қауіпсіз. Сан санау сияқты қарапайым жағдайларда ең жақсы таңдау.</li>
+</ul>
+<p><code>synchronized</code> пайдалы, бірақ абайлау керек: екі ағын бір-бірінің құлпын күтіп мәңгі тұрып қалса, <strong>deadlock</strong> (<span class="term-en">deadlock</span>, өзара құлыптану) болады. Мысалы, A ағыны 1-құлыпты алып, 2-құлыпты күтеді, ал B ағыны 2-құлыпты алып, 1-құлыпты күтеді. Екеуі де қозғалмайды. Қарапайым ереже: бірнеше құлып қажет болса, оларды әрдайым бірдей ретпен алыңыз.</p>
+<div class="callout tip">
+<span class="callout-title">Ортақ күйден аулақ жүріңіз</span>
+<p>Көп ағынды кодты ең жақсы жазу жолы - ортақ өзгермелі күйді мүлде қолданбау. Өзгермейтін (<span class="term-en">immutable</span>) нысандар (<code>String</code>, <code>record</code>) бірнеше ағынға қауіпсіз. Жоғарыдағы жарты-жартылай қосу мысалындағыдай әр ағынға өз бөлігін бергенде де мәселе жоқ.</p>
+</div>
+
+<h2 id="executor">ExecutorService: ағындарды басқару</h2>
+<p>Әр тапсырма үшін қолмен <code>new Thread(...)</code> жасау ыңғайсыз: ағынды жасау қымбат, ал 10 000 тапсырма үшін 10 000 ағын ашу бағдарламаны құлатады. Орнына <strong>ағындар пулы</strong> (<span class="term-en">thread pool</span>) қолданамыз: бірнеше дайын ағын тапсырма кезегінен жұмыс алып орындайды. Мұны <code>ExecutorService</code> интерфейсі басқарады. Аналогия: шеберханада 4 шебер бар, тапсырыстар кезекке тұрады, бос шебер келесі тапсырысты алады.</p>
+<p>Тапсырма екі түрлі: нәтиже қайтармайтын <code>Runnable</code> және нәтиже қайтаратын <code>Callable&lt;T&gt;</code>. Нәтижені <code>Future&lt;T&gt;</code> («болашақтағы нәтиже» квитанциясы) арқылы аламыз: <code>future.get()</code> нәтиже дайын болғанша күтеді.</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException, ExecutionException {
+        ExecutorService pul = Executors.newFixedThreadPool(4);
+
+        // әр тапсырма: сыныптың бір бөлігінің балдарын қосады
+        List&lt;Future&lt;Integer&gt;&gt; keler = new ArrayList&lt;&gt;();
+        int[][] sinipter = { {90, 85, 70}, {60, 75}, {100, 95, 88, 92}, {50} };
+        for (int[] bal : sinipter) {
+            Callable&lt;Integer&gt; tapsyrma = () -&gt; {
+                int s = 0;
+                for (int x : bal) s += x;
+                return s;
+            };
+            keler.add(pul.submit(tapsyrma));
+        }
+
+        int jiny = 0;
+        for (int i = 0; i &lt; keler.size(); i++) {
+            int bolik = keler.get(i).get();          // нәтиже дайын болғанша күтеді
+            System.out.println((i + 1) + "-тапсырма: " + bolik);
+            jiny += bolik;
+        }
+        System.out.println("Жалпы қосынды: " + jiny);
+
+        pul.shutdown();                              // жаңа тапсырма қабылдамайды
+        System.out.println("Пул жабылды: " + pul.awaitTermination(5, TimeUnit.SECONDS));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+1-тапсырма: 245
+2-тапсырма: 135
+3-тапсырма: 375
+4-тапсырма: 50
+Жалпы қосынды: 805
+Пул жабылды: true</code></pre>
+<p>Бұл да <strong>детерминді</strong>: тапсырмалар қайсысы бұрын біткеніне қарамастан, біз нәтижелерді <code>get()</code> арқылы <em>өз тәртібімізбен</em> (1, 2, 3, 4) аламыз. Ағындардың нақты орындалу ретін есептемей-ақ, нәтиже дұрыс шығады: бұл <code>Future</code>-дың басты артықшылығы.</p>
+<p>Негізгі қадамдар:</p>
+<ol>
+  <li><code>Executors.newFixedThreadPool(4)</code> - 4 ағынды пул жасайды.</li>
+  <li><code>pul.submit(...)</code> - тапсырма жібереді, <code>Future</code> қайтарады.</li>
+  <li><code>future.get()</code> - нәтижені алады (қате болса, <code>ExecutionException</code>).</li>
+  <li><code>pul.shutdown()</code> - «жаңа тапсырма қабылдамаймын, барлығы біткен соң жабылам». Мұны ұмытпаңыз, әйтпесе бағдарлама аяқталмай қалуы мүмкін (пулдың ағындары тірі).</li>
+  <li><code>awaitTermination(...)</code> - жабылуын күтеді; өлшемі бар уақыт шектеуі қойылады.</li>
+</ol>
+<p>Тағы бір мысал: бірнеше тапсырма бір ортақ картаға жазады. Бұл жолы қауіпсіз құрылым - <code>ConcurrentHashMap</code> қолданамыз, әдеттегі <code>HashMap</code> емес (ол көп ағында қауіпсіз емес). Мақал сөздерін төрт тапсырмамен санаймыз:</p>
+<pre data-lang="java"><code class="language-java">import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        List&lt;String&gt; mataldar = List.of(
+            "жақсы сөз жарым ырыс",
+            "бірлік бар жерде тірлік бар",
+            "жақсы сөз жылы ұя",
+            "бірлік жоқ жерде тірлік жоқ");
+
+        Map&lt;String, Integer&gt; sanaq = new ConcurrentHashMap&lt;&gt;();
+        ExecutorService pul = Executors.newFixedThreadPool(3);
+        for (String m : mataldar) {
+            pul.submit(() -&gt; {
+                for (String soz : m.split(" ")) {
+                    sanaq.merge(soz, 1, Integer::sum);      // қауіпсіз біріктіру
+                }
+            });
+        }
+        pul.shutdown();
+        pul.awaitTermination(5, TimeUnit.SECONDS);
+
+        System.out.println(new TreeMap&lt;&gt;(sanaq));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+{бар=2, бірлік=2, жарым=1, жақсы=2, жерде=2, жоқ=2, жылы=1, сөз=2, тірлік=2, ырыс=1, ұя=1}</code></pre>
+<p>Бұл да <strong>детерминді</strong>: тапсырмалардың орындалу реті әр жолы басқаша болуы мүмкін, бірақ қорытынды сан (әр сөздің жалпы саны) тәртіпке тәуелді емес (қосу ауыстырымды әрекет), ал <code>merge</code> әрекеті <code>ConcurrentHashMap</code>-та атомдық. Нәтижені бірден <code>TreeMap</code>-ке көшіріп, кілттерді сұрыптап шығардық: сонда басып шығару реті де тұрақты (ол Unicode ретімен).</p>
+<p>Ереже: пул жасап, соңында <code>shutdown()</code> жасаңыз; қолмен <code>Thread</code> жасаудан гөрі <code>ExecutorService</code> қолданыңыз; нәтиже қажет болса, <code>Callable</code> + <code>Future</code> таңдаңыз; ортақ жинақ керек болса, <code>java.util.concurrent</code> пакетіндегі қауіпсіз нұсқаларды (<code>ConcurrentHashMap</code>, <code>AtomicInteger</code>) қолданыңыз.</p>
+<h2 id="build">Жоба құралдары: Maven және Gradle</h2>
+<p>Біз қазірге дейін бір <code>Main.java</code> файлын <code>javac</code> арқылы компиляциялап келдік. Шынайы жоба бірнеше жүз файлдан, сыртқы кітапханалардан (мысалы, JUnit) және тесттерден тұрады. Оларды қолмен <code>javac</code> арқылы жинау мүмкін емес. Сондықтан <strong>құрастыру құралдары</strong> (<span class="term-en">build tools</span>) қолданылады: <strong>Maven</strong> және <strong>Gradle</strong>. Олар:</p>
+<ul>
+  <li>жобаның <strong>стандартты құрылымын</strong> анықтайды (барлығы қайда тұратыны белгілі);</li>
+  <li><strong>тәуелділіктерді</strong> (<span class="term-en">dependencies</span>) өзі жүктейді: «менің жобаға JUnit 5.10.2 керек» дейміз, ал құрал оны интернеттегі орталық қоймадан (Maven Central) алады;</li>
+  <li><strong>бір командамен</strong> компиляциялайды, тестілейді, <code>.jar</code> файлына жинайды.</li>
+</ul>
+<p>Аналогия: үй салу. Қолмен кірпіш қалау - <code>javac</code>. Ал Maven/Gradle - құрылыс жоспары мен бригадир: «жоспарды (pom.xml) оқы, қажет материалды (кітапхана) әкел, үйді жина, тексер».</p>
+<p>Maven жобасының стандартты құрылымы:</p>
+<pre class="terminal"><code class="language-plaintext">oqushy-zhurnal/
+├── pom.xml                  # Maven: жоба сипаттамасы
+├── build.gradle             # Gradle баламасы (екеуінің біреуі жеткілікті)
+├── settings.gradle
+└── src/
+    ├── main/java/kz/zhurnal/
+    │   ├── Main.java            # мәзір және енгізу
+    │   ├── Pan.java             # enum: пәндер
+    │   ├── Baga.java            # record: бір баға
+    │   ├── Oqushy.java          # оқушы және оның бағалары
+    │   ├── Zhurnal.java         # барлық оқушылар (Map)
+    │   ├── ZhurnalSaqtau.java   # файлға сақтау / жүктеу
+    │   └── ZhurnalQateligi.java # өз ерекше жағдайымыз
+    └── test/java/kz/zhurnal/
+        └── ZhurnalTest.java     # JUnit тесттері</code></pre>
+<p>Мұнда <code>src/main/java</code> - негізгі код, <code>src/test/java</code> - тесттер. Бұл құрылымды Maven мен Gradle екеуі де түсінеді. <code>kz/zhurnal</code> қалталары Java <strong>пакетімен</strong> (<code>package kz.zhurnal;</code>) сәйкес келеді.</p>
+<p>Maven жобасын сипаттайтын файл - <code>pom.xml</code> («Project Object Model»). Біздің қорытынды жобаның нақты <code>pom.xml</code>:</p>
+<pre data-lang="xml"><code class="language-xml">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"&gt;
+  &lt;modelVersion&gt;4.0.0&lt;/modelVersion&gt;
+
+  &lt;groupId&gt;kz.zhurnal&lt;/groupId&gt;
+  &lt;artifactId&gt;oqushy-zhurnal&lt;/artifactId&gt;
+  &lt;version&gt;1.0&lt;/version&gt;
+  &lt;packaging&gt;jar&lt;/packaging&gt;
+
+  &lt;properties&gt;
+    &lt;maven.compiler.release&gt;17&lt;/maven.compiler.release&gt;
+    &lt;project.build.sourceEncoding&gt;UTF-8&lt;/project.build.sourceEncoding&gt;
+  &lt;/properties&gt;
+
+  &lt;dependencies&gt;
+    &lt;dependency&gt;
+      &lt;groupId&gt;org.junit.jupiter&lt;/groupId&gt;
+      &lt;artifactId&gt;junit-jupiter&lt;/artifactId&gt;
+      &lt;version&gt;5.10.2&lt;/version&gt;
+      &lt;scope&gt;test&lt;/scope&gt;
+    &lt;/dependency&gt;
+  &lt;/dependencies&gt;
+
+  &lt;build&gt;
+    &lt;plugins&gt;
+      &lt;plugin&gt;
+        &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+        &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;
+        &lt;version&gt;3.2.5&lt;/version&gt;
+      &lt;/plugin&gt;
+    &lt;/plugins&gt;
+  &lt;/build&gt;
+&lt;/project&gt;</code></pre>
+<p>Оқылуы:</p>
+<ul>
+  <li><code>groupId</code> + <code>artifactId</code> + <code>version</code> - жобаның «паспорты» (бірегей атауы).</li>
+  <li><code>maven.compiler.release</code> - Java нұсқасы (17), ал <code>sourceEncoding</code> - UTF-8: қазақ әріптері үшін міндетті.</li>
+  <li><code>&lt;dependency&gt;</code> - тәуелділік: <code>junit-jupiter</code> кітапханасы. <code>&lt;scope&gt;test&lt;/scope&gt;</code> дегеніміз - ол тек тесттерге керек, соңғы бағдарламаға кірмейді.</li>
+  <li><code>maven-surefire-plugin</code> - тесттерді іске қосатын плагин.</li>
+</ul>
+<p>Негізгі Maven командалары (жоба қалтасында, <code>pom.xml</code> тұрған жерде орындалады):</p>
+<pre class="terminal"><code class="language-bash">mvn compile      # src/main кодын компиляциялайды
+mvn test         # компиляциялап, тесттерді іске қосады
+mvn package      # тесттен кейін target/ ішінде .jar жасайды
+mvn clean        # target/ қалтасын өшіреді</code></pre>
+<p>Gradle - сол жұмысты істейтін басқа құрал. Ол XML орнына қысқа Groovy (не Kotlin) скриптін қолданады. Біздің жобаның Gradle нұсқасы:</p>
+<pre data-lang="groovy"><code class="language-groovy">plugins {
+    id 'java'
+    id 'application'
+}
+
+group = 'kz.zhurnal'
+version = '1.0'
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+application {
+    mainClass = 'kz.zhurnal.Main'
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}</code></pre>
+<p>Жобаның түбірінде тағы бір шағын <code>settings.gradle</code> файлы тұрады, оның ішінде бір ғана жол бар: <code>rootProject.name = 'oqushy-zhurnal'</code>. Ең керекті командалар: <code>gradle build</code> (жинау және тесттеу), <code>gradle test</code>, <code>gradle run</code> (<code>application</code> плагині арқылы бағдарламаны іске қосу). Maven мен Gradle екеуі де бірдей мақсатқа жетеді: қайсысын таңдау - жоба тобының келісіміне байланысты. Бұл курстағы жоба үшін екеуінің бірі жеткілікті. Біз екі файлды да құрастырып, нақты <code>mvn test</code> пен <code>gradle test</code> командаларымен тексердік, екеуі де сәтті аяқталды.</p>
+<div class="callout note">
+<span class="callout-title">Алғашқы жүктеу баяу болуы мүмкін</span>
+<p>Maven/Gradle алғаш іске қосылғанда қажетті кітапханаларды интернеттен жүктейді (бір рет қана; олар <code>~/.m2</code> не <code>~/.gradle</code> қалтасында сақталады). Сондықтан бірінші <code>mvn test</code> бірнеше минутқа созылып, көп жол шығаруы мүмкін. Интернет болмаса, жүктеу сәтсіз аяқталады. Бұл қалыпты жағдай.</p>
+</div>
+
+<h2 id="junit">Тест жазу: JUnit идеясы</h2>
+<p>Бағдарлама жазып, оны қолмен іске қосып, «дұрыс сияқты» деп қарау - бастаушының жолы. Жоба өскен сайын бұл жетпейді: бір жерді түзетсеңіз, басқа жер бұзылуы мүмкін, ал оны қолмен тексеруге уақыт жетпейді. Шешімі - <strong>автоматты тесттер</strong>: кішкентай бағдарламалар, олар сіздің кодты шақырып, нәтижесін күткенмен салыстырады. Тест жасыл болса (өтті), код дұрыс; қызыл болса (құлады), бір нәрсе бұзылған.</p>
+<p>Java-ның стандартты тест кітапханасы - <strong>JUnit</strong> (бұл курста 5-нұсқа). Негізгі ұғымдар:</p>
+<ul>
+  <li><code>@Test</code> - бұл әдіс тест екенін білдіреді.</li>
+  <li><code>assertEquals(күтілген, нақты)</code> - екі мән тең болуы керек. Нақты сандар (<code>double</code>) үшін үшінші параметр - қателік шегі (<code>0.0001</code>).</li>
+  <li><code>assertTrue</code>, <code>assertFalse</code>, <code>assertThrows(Қате.class, () -&gt; ...)</code> - шарт не қате күту.</li>
+  <li><code>@BeforeEach</code> - әр тесттен бұрын орындалатын дайындық (таза нысан жасау).</li>
+  <li><code>@Disabled</code> - тестті уақытша өшіреді.</li>
+</ul>
+<p>Біздің қорытынды жоба үшін жазылған тесттерден үзінді (толық файл жобада бар):</p>
+<details><summary>ZhurnalTest.java толық коды</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.OptionalDouble;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+class ZhurnalTest {
+    private Zhurnal zhurnal;
+
+    @BeforeEach
+    void daiyndau() {
+        zhurnal = new Zhurnal();
+        zhurnal.oqushyQosu("Дана Нұрбекқызы", "7А");
+        zhurnal.oqushyQosu("Ерлан Сәрсенұлы", "7Б");
+    }
+
+    @Test
+    void ortaBagaDurysEsepteledi() {
+        zhurnal.bagaQoy("Дана Нұрбекқызы", Pan.MATEMATIKA, 5);
+        zhurnal.bagaQoy("Дана Нұрбекқызы", Pan.TARIH, 4);
+        OptionalDouble orta = zhurnal.tap("Дана Нұрбекқызы").get().ortaBaga();
+        assertEquals(4.5, orta.getAsDouble(), 0.0001);
+    }
+
+    @Test
+    void bagaJoqBolsaOrtaBos() {
+        assertFalse(zhurnal.tap("Ерлан Сәрсенұлы").get().ortaBaga().isPresent());
+    }
+
+    @Test
+    void qaytalanganOqushyQateBeredi() {
+        assertThrows(ZhurnalQateligi.class, () -&gt; zhurnal.oqushyQosu("Дана Нұрбекқызы", "7А"));
+    }
+
+    @Test
+    void duryspaBagaQabyldanbaidy() {
+        assertThrows(ZhurnalQateligi.class,
+                () -&gt; zhurnal.bagaQoy("Дана Нұрбекқызы", Pan.INFORMATIKA, 6));
+    }
+
+    @Test
+    void uzdikterTizimi() {
+        zhurnal.bagaQoy("Дана Нұрбекқызы", Pan.MATEMATIKA, 5);
+        zhurnal.bagaQoy("Ерлан Сәрсенұлы", Pan.MATEMATIKA, 3);
+        assertEquals(1, zhurnal.uzdikter(4.5).size());
+        assertTrue(zhurnal.uzdikter(4.5).get(0).getAty().startsWith("Дана"));
+    }
+
+    @Test
+    @Disabled("TODO: oqushyJoyu жазылғаннан кейін қосыңыз")
+    void oqushyJoyu() {
+        zhurnal.oqushyJoyu("Ерлан Сәрсенұлы");
+        assertFalse(zhurnal.tap("Ерлан Сәрсенұлы").isPresent());
+    }
+
+    @Test
+    @Disabled("TODO: sinipOrtasy жазылғаннан кейін қосыңыз")
+    void sinipOrtasy() {
+        zhurnal.bagaQoy("Дана Нұрбекқызы", Pan.MATEMATIKA, 5);
+        zhurnal.bagaQoy("Дана Нұрбекқызы", Pan.TARIH, 3);
+        assertEquals(4.0, zhurnal.sinipOrtasy("7А").getAsDouble(), 0.0001);
+        assertFalse(zhurnal.sinipOrtasy("7Б").isPresent());
+    }
+
+    @Test
+    @Disabled("TODO: ZhurnalSaqtau.zhukteu жазылғаннан кейін қосыңыз")
+    void saqtauZhukteu() throws Exception {
+        zhurnal.bagaQoy("Дана Нұрбекқызы", Pan.MATEMATIKA, 5);
+        java.nio.file.Path f = java.nio.file.Files.createTempFile("zhurnal", ".txt");
+        ZhurnalSaqtau.saqtau(zhurnal, f);
+        Zhurnal jana = ZhurnalSaqtau.zhukteu(f);
+        assertEquals(2, jana.barlygy().size());
+        assertEquals(5.0, jana.tap("Дана Нұрбекқызы").get().ortaBaga().getAsDouble(), 0.0001);
+        java.nio.file.Files.delete(f);
+    }
+}</code></pre></div></details>
+<p>Әр тест бір ғана нәрсені тексереді: «орташа баға дұрыс есептеле ме», «қайталанған оқушы қате бере ме», «6-баға қабылданбай ма». Тесттің атауы не тексеретінін айту керек. Тесттің құрылымы үш қадамнан тұрады: <strong>дайындау</strong> (оқушы қосу), <strong>әрекет</strong> (баға қою), <strong>тексеру</strong> (<code>assert...</code>). Іске қосып көрейік:</p>
+<pre class="terminal"><code class="language-plaintext">$ mvn test
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running kz.zhurnal.ZhurnalTest
+[WARNING] Tests run: 8, Failures: 0, Errors: 0, Skipped: 3, Time elapsed: 0.238 s -- in kz.zhurnal.ZhurnalTest
+[INFO] BUILD SUCCESS</code></pre>
+<p>8 тесттің 5-еуі өтті, 3-еуі <code>@Disabled</code> болғандықтан өткізілді (олар әлі жазылмаған «TODO» функцияларға арналған). Енді бір өшірілген тестті қосып, TODO әдісті жазбастан іске қосып көрсек, бұл қызыл тест болады:</p>
+<pre class="terminal"><code class="language-plaintext">$ mvn test
+[INFO] Running kz.zhurnal.ZhurnalTest
+[ERROR] Tests run: 8, Failures: 0, Errors: 1, Skipped: 2, Time elapsed: 0.220 s &lt;&lt;&lt; FAILURE! -- in kz.zhurnal.ZhurnalTest
+java.lang.UnsupportedOperationException: TODO
+[ERROR]   ZhurnalTest.oqushyJoyu:57 ? UnsupportedOperation TODO
+[ERROR] Tests run: 8, Failures: 0, Errors: 1, Skipped: 2
+[INFO] BUILD FAILURE</code></pre>
+<p>Бұл <strong>TDD</strong> (<span class="term-en">test-driven development</span>, тесттен басталатын әзірлеу) идеясының басы: алдымен тест жазасыз (ол құлайды, «қызыл»), содан кейін оны өткізетін кодты жазасыз («жасыл»). Қорытынды жобада дәл осылай жұмыс істейсіз: өшірілген тесттерді бірінен кейін бірін қосып, жасыл болғанша кодты жазасыз.</p>
+<h2 id="project">Қорытынды жоба: «Оқушы журналы»</h2>
+<p>Бұл курстағы барлық білімді бір жобаға жинаймыз. Сіз сынып журналын модельдейтін консольдік қолданба жазасыз: оқушыларды қосады, пәндер бойынша баға қояды, орташасын есептейді, үздіктерді табады және деректерді файлға сақтайды. Бұл жоба <strong>нақты нәрсені шынымен істей алатын</strong> бағдарлама: қазақстандық мектептің бес балдық жүйесіне (1-ден 5-ке дейін) негізделген.</p>
+<p>Жоба курстың әр апта тақырыбын қамтиды:</p>
+<ul>
+  <li><strong>Класстар, нысандар</strong> (3-апта): <code>Oqushy</code>, <code>Zhurnal</code>;</li>
+  <li><strong>Мұрагерлік, интерфейс, enum, record</strong> (4-апта): <code>Pan</code> (enum), <code>Baga</code> (record);</li>
+  <li><strong>Collections</strong> (5-апта): <code>Map&lt;String, Oqushy&gt;</code>, <code>List&lt;Baga&gt;</code>;</li>
+  <li><strong>Қателер, файлдар, Stream</strong> (6-апта): өз қате класы, <code>Files</code>, орташа бағаны Stream арқылы есептеу;</li>
+  <li><strong>Құралдар, тесттер</strong> (7-апта): Maven, JUnit.</li>
+</ul>
+<h3 id="project-req">Талап-тізім</h3>
+<strong>Міндетті функциялар (A):</strong>
+<ol>
+  <li><strong>Оқушы қосу:</strong> аты-жөні және сыныбы бойынша. Аты бос болмауы керек. Бірдей аты бар оқушы екінші рет қосылмайды (қате хабарламасымен).</li>
+  <li><strong>Баға қою:</strong> оқушы, пән (<code>Pan</code> enum: математика, қазақ тілі, информатика, Қазақстан тарихы) және баға (тек 1-ден 5-ке дейін, әйтпесе қате).</li>
+  <li><strong>Оқушының бағаларын көру:</strong> әр баға пәнінің атауымен және орташа баға (екі ондық таңбамен). Баға жоқ болса, «Баға әлі жоқ».</li>
+  <li><strong>Үздіктер:</strong> орташа бағасы 4,5-тен кем емес оқушылар тізімі.</li>
+  <li><strong>Барлық оқушылар</strong> тізімі.</li>
+  <li><strong>Файлға сақтау</strong> және <strong>файлдан жүктеу</strong>: мәтін файл (<code>аты;сынып;ПӘН:баға,ПӘН:баға</code>).</li>
+  <li><strong>Оқушыны жою</strong> (жоқ болса, қате хабарламасы).</li>
+  <li><strong>Сынып бойынша орташа баға</strong> (Stream арқылы), мысалы «7А сыныбының орташасы».</li>
+</ol>
+<strong>Техникалық талаптар (B):</strong>
+<ul>
+  <li>Кемінде <strong>5 класс/тип</strong>: <code>Oqushy</code>, <code>Zhurnal</code>, <code>Baga</code> (record), <code>Pan</code> (enum) және өз ерекше жағдай классы (<code>ZhurnalQateligi</code>).</li>
+  <li>Өрістер <code>private</code>, деректерге қолжетімділік әдістер арқылы (инкапсуляция).</li>
+  <li><code>Map</code> және <code>List</code> қолданылады; тізімді сырттан өзгертуден қорғау (<code>unmodifiableList</code>).</li>
+  <li>Орташа баға мен сүзгілеу Stream арқылы; «табылмады» жағдайы <code>Optional</code> арқылы.</li>
+  <li>Қолданушы қате енгізсе (сан орнына әріп, жоқ пән, жоқ оқушы), бағдарлама <strong>құламайды</strong>: түсінікті хабарлама шығарып, мәзірге оралады.</li>
+  <li>Файлмен жұмыс <code>Files</code>/<code>Path</code> арқылы, UTF-8; ресурстар <code>try-with-resources</code> ішінде.</li>
+  <li>Кемінде <strong>8 JUnit тесті</strong> (оның ішінде кемінде 2 қате жағдайға: <code>assertThrows</code>).</li>
+  <li>Жоба Maven (не Gradle) арқылы жиналады және <code>mvn test</code> қатесіз өтеді.</li>
+</ul>
+<strong>Қосымша (бонус, C):</strong> оқушыларды орташа балл бойынша сұрыптап шығару (<code>Comparator</code>), <code>Repository</code> интерфейсі арқылы файл мен жадты бөлу, әр пән бойынша жеке орташа, ең үздік оқушы туралы есептік файл жасау, оқушы бағаларын бірнеше ағынмен қосу (мысалы, <code>ExecutorService</code>) не күнделікті бақылау кестесі.
+<h3 id="project-skeleton">Бастапқы қаңқа (starter code)</h3>
+<p>Төменде <strong>компиляцияланатын және тесттері өтетін</strong> бастапқы код. Ол қарапайым бөліктерді іске асырған, ал қиынырақтарын (<code>TODO</code>) сізге қалдырған. Барлық файл <code>kz.zhurnal</code> пакетінде. Алдымен құрылымды (жоғарыдағы ағаш) жасап, әр файлды көшіріп алыңыз.</p>
+<details><summary>Pan.java: пәндер (enum)</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
+
+public enum Pan {
+    MATEMATIKA("Математика"),
+    QAZAQ_TILI("Қазақ тілі"),
+    INFORMATIKA("Информатика"),
+    TARIH("Қазақстан тарихы");
+
+    private final String atau;
+
+    Pan(String atau) {
+        this.atau = atau;
+    }
+
+    public String getAtau() {
+        return atau;
+    }
+}</code></pre></div></details>
+<details><summary>ZhurnalQateligi.java: өз қатеміз</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
+
+/** Журналдың бизнес-ережелері бұзылғанда лақтырылады (қайталанған оқушы, дұрыс емес баға...). */
+public class ZhurnalQateligi extends RuntimeException {
+    public ZhurnalQateligi(String habar) {
+        super(habar);
+    }
+}</code></pre></div></details>
+<details><summary>Baga.java: бір баға (record)</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
+
+/** Бір пәннен қойылған бір баға (5 балдық жүйе: 1-ден 5-ке дейін). */
+public record Baga(Pan pan, int baga) {
+    public Baga {
+        if (baga &lt; 1 || baga &gt; 5) {
+            throw new ZhurnalQateligi("Баға 1..5 аралығында болуы керек: " + baga);
+        }
+    }
+}</code></pre></div></details>
+<details><summary>Oqushy.java: оқушы және оның бағалары</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.OptionalDouble;
+
+public class Oqushy {
+    private final String aty;
+    private final String sinip;
+    private final List&lt;Baga&gt; bagalar = new ArrayList&lt;&gt;();
+
+    public Oqushy(String aty, String sinip) {
+        if (aty == null || aty.isBlank()) {
+            throw new ZhurnalQateligi("Оқушы аты бос болмауы керек");
+        }
+        this.aty = aty.trim();
+        this.sinip = sinip.trim();
+    }
+
+    public String getAty() { return aty; }
+
+    public String getSinip() { return sinip; }
+
+    public List&lt;Baga&gt; getBagalar() {
+        return Collections.unmodifiableList(bagalar);
+    }
+
+    public void bagaQosu(Baga b) {
+        bagalar.add(b);
+    }
+
+    /** Барлық бағаның орташасы; баға жоқ болса - бос нәтиже. */
+    public OptionalDouble ortaBaga() {
+        return bagalar.stream().mapToInt(Baga::baga).average();
+    }
+
+    @Override
+    public String toString() {
+        return aty + " (" + sinip + ")";
+    }
+}</code></pre></div></details>
+<details><summary>Zhurnal.java: журнал (2 TODO әдісі бар)</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+public class Zhurnal {
+    private final Map&lt;String, Oqushy&gt; oqushylar = new LinkedHashMap&lt;&gt;();
+
+    public Collection&lt;Oqushy&gt; barlygy() {
+        return oqushylar.values();
+    }
+
+    public Oqushy oqushyQosu(String aty, String sinip) {
+        Oqushy o = new Oqushy(aty, sinip);
+        if (oqushylar.containsKey(o.getAty())) {
+            throw new ZhurnalQateligi("Мұндай оқушы бар: " + o.getAty());
+        }
+        oqushylar.put(o.getAty(), o);
+        return o;
+    }
+
+    public Optional&lt;Oqushy&gt; tap(String aty) {
+        return Optional.ofNullable(oqushylar.get(aty.trim()));
+    }
+
+    public void bagaQoy(String aty, Pan pan, int baga) {
+        Oqushy o = tap(aty).orElseThrow(() -&gt; new ZhurnalQateligi("Оқушы табылмады: " + aty));
+        o.bagaQosu(new Baga(pan, baga));
+    }
+
+    /** Орташа бағасы шектен кем емес оқушылар (баға жоқтар кірмейді). */
+    public List&lt;Oqushy&gt; uzdikter(double shek) {
+        List&lt;Oqushy&gt; natije = new ArrayList&lt;&gt;();
+        for (Oqushy o : oqushylar.values()) {
+            if (o.ortaBaga().orElse(0) &gt;= shek) {
+                natije.add(o);
+            }
+        }
+        return natije;
+    }
+
+    // ---- TODO: төмендегі әдістерді өзіңіз жазыңыз ----
+
+    /** TODO: оқушыны журналдан жояды; жоқ болса ZhurnalQateligi лақтырады. */
+    public void oqushyJoyu(String aty) {
+        throw new UnsupportedOperationException("TODO");
+    }
+
+    /** TODO: бір сыныптың орташа бағасы (Stream арқылы). Баға жоқ болса - бос нәтиже. */
+    public java.util.OptionalDouble sinipOrtasy(String sinip) {
+        throw new UnsupportedOperationException("TODO");
+    }
+}</code></pre></div></details>
+<details><summary>ZhurnalSaqtau.java: файлға сақтау (zhukteu - TODO)</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+
+/** Журналды мәтін файлға сақтайды. Жол пішімі: аты;сынып;ПӘН:баға,ПӘН:баға */
+public class ZhurnalSaqtau {
+
+    public static void saqtau(Zhurnal zhurnal, Path jol) throws IOException {
+        List&lt;String&gt; joldar = new ArrayList&lt;&gt;();
+        for (Oqushy o : zhurnal.barlygy()) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(o.getAty()).append(';').append(o.getSinip()).append(';');
+            for (int i = 0; i &lt; o.getBagalar().size(); i++) {
+                Baga b = o.getBagalar().get(i);
+                if (i &gt; 0) sb.append(',');
+                sb.append(b.pan().name()).append(':').append(b.baga());
+            }
+            joldar.add(sb.toString());
+        }
+        Files.write(jol, joldar);
+    }
+
+    /** TODO: файлды оқып, жаңа Zhurnal қайтарады (saqtau-дың кері әрекеті). */
+    public static Zhurnal zhukteu(Path jol) throws IOException {
+        throw new UnsupportedOperationException("TODO");
+    }
+}</code></pre></div></details>
+<details><summary>Main.java: мәзір</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
+
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.Scanner;
+
+public class Main {
+    private static final Scanner IN = new Scanner(System.in);
+
+    /** Сұрақ қояды және жауапты оқиды. Енгізу құбырмен берілсе, оны экранға да шығарады. */
+    private static String oqy(String suraq) {
+        System.out.print(suraq);
+        if (!IN.hasNextLine()) {
+            return "0";
+        }
+        String jol = IN.nextLine().trim();
+        if (System.console() == null) {
+            System.out.println(jol);
+        }
+        return jol;
+    }
+
+    private static void menu() {
+        System.out.println();
+        System.out.println("=== Оқушы журналы ===");
+        System.out.println("1. Оқушы қосу");
+        System.out.println("2. Баға қою");
+        System.out.println("3. Оқушының бағалары мен орташасы");
+        System.out.println("4. Үздіктер (орташа &gt;= 4.5)");
+        System.out.println("5. Барлық оқушылар");
+        System.out.println("6. Файлға сақтау");
+        System.out.println("0. Шығу");
+    }
+
+    public static void main(String[] args) {
+        Zhurnal zhurnal = new Zhurnal();
+        Path fayl = Path.of("zhurnal.txt");
+
+        while (true) {
+            menu();
+            String tandau = oqy("Таңдау: ");
+            try {
+                switch (tandau) {
+                    case "1" -&gt; {
+                        String aty = oqy("Аты-жөні: ");
+                        String sinip = oqy("Сынып: ");
+                        zhurnal.oqushyQosu(aty, sinip);
+                        System.out.println("Қосылды.");
+                    }
+                    case "2" -&gt; {
+                        String aty = oqy("Оқушы: ");
+                        Pan pan = Pan.valueOf(oqy("Пән (MATEMATIKA, QAZAQ_TILI, INFORMATIKA, TARIH): ").toUpperCase());
+                        int baga = Integer.parseInt(oqy("Баға (1-5): "));
+                        zhurnal.bagaQoy(aty, pan, baga);
+                        System.out.println("Баға қойылды.");
+                    }
+                    case "3" -&gt; {
+                        String aty = oqy("Оқушы: ");
+                        Oqushy o = zhurnal.tap(aty).orElseThrow(() -&gt; new ZhurnalQateligi("Оқушы табылмады: " + aty));
+                        for (Baga b : o.getBagalar()) {
+                            System.out.println("  " + b.pan().getAtau() + ": " + b.baga());
+                        }
+                        System.out.println(o.ortaBaga().isPresent()
+                                ? String.format("  Орташа: %.2f", o.ortaBaga().getAsDouble())
+                                : "  Баға әлі жоқ");
+                    }
+                    case "4" -&gt; zhurnal.uzdikter(4.5).forEach(o -&gt; System.out.println("  " + o));
+                    case "5" -&gt; zhurnal.barlygy().forEach(o -&gt; System.out.println("  " + o));
+                    case "6" -&gt; {
+                        ZhurnalSaqtau.saqtau(zhurnal, fayl);
+                        System.out.println("Сақталды: " + fayl);
+                    }
+                    case "0" -&gt; {
+                        System.out.println("Сау болыңыз!");
+                        return;
+                    }
+                    default -&gt; System.out.println("Белгісіз таңдау: " + tandau);
+                }
+            } catch (ZhurnalQateligi e) {
+                System.out.println("Қате: " + e.getMessage());
+            } catch (IllegalArgumentException e) {
+                System.out.println("Енгізу қатесі: " + e.getMessage());
+            } catch (IOException e) {
+                System.out.println("Файл қатесі: " + e.getMessage());
+            }
+        }
+    }
+}</code></pre></div></details>
+<p>Іске қосу (жоба қалтасында, JDK 17+):</p>
+<pre class="terminal"><code class="language-bash">javac -d out $(find src/main -name "*.java")
+java -cp out kz.zhurnal.Main</code></pre>
+<p>Windows-тағы PowerShell-де <code>$(find ...)</code> жұмыс істемейді: онда Maven-ді қолданыңыз (<code>mvn compile</code>) не <code>javac -d out src\main\java\kz\zhurnal\*.java</code> деп жазыңыз.</p>
+<p>Қаңқаның нақты жұмысы (қолданушы жауаптары экранға көрсетілген; қайталанатын мәзір <code>(мәзір)</code> деп қысқартылған):</p>
+<pre class="terminal"><code class="language-plaintext">$ javac -d out $(find src/main -name "*.java")
+$ java -cp out kz.zhurnal.Main
+=== Оқушы журналы ===
+1. Оқушы қосу
+2. Баға қою
+3. Оқушының бағалары мен орташасы
+4. Үздіктер (орташа &gt;= 4.5)
+5. Барлық оқушылар
+6. Файлға сақтау
+0. Шығу
+Таңдау: 1
+Аты-жөні: Дана Нұрбекқызы
+Сынып: 7А
+Қосылды.
+(мәзір)
+Таңдау: 1
+Аты-жөні: Ерлан Сәрсенұлы
+Сынып: 7Б
+Қосылды.
+(мәзір)
+Таңдау: 2
+Оқушы: Дана Нұрбекқызы
+Пән (MATEMATIKA, QAZAQ_TILI, INFORMATIKA, TARIH): MATEMATIKA
+Баға (1-5): 5
+Баға қойылды.
+(мәзір)
+Таңдау: 2
+Оқушы: Дана Нұрбекқызы
+Пән (MATEMATIKA, QAZAQ_TILI, INFORMATIKA, TARIH): TARIH
+Баға (1-5): 4
+Баға қойылды.
+(мәзір)
+Таңдау: 2
+Оқушы: Ерлан Сәрсенұлы
+Пән (MATEMATIKA, QAZAQ_TILI, INFORMATIKA, TARIH): INFORMATIKA
+Баға (1-5): 6
+Қате: Баға 1..5 аралығында болуы керек: 6
+(мәзір)
+Таңдау: 3
+Оқушы: Дана Нұрбекқызы
+  Математика: 5
+  Қазақстан тарихы: 4
+  Орташа: 4.50
+(мәзір)
+Таңдау: 4
+  Дана Нұрбекқызы (7А)
+(мәзір)
+Таңдау: 6
+Сақталды: zhurnal.txt
+(мәзір)
+Таңдау: 0
+Сау болыңыз!</code></pre>
+<p>Назар аударыңыз: 6-баға қабылданбады, бағдарлама құламады, «Қате: ...» хабарын шығарып, мәзірге оралды. Дәл осылай жұмыс істеуі керек. Файлға сақтағаннан кейін <code>zhurnal.txt</code> ішінде мынадай жолдар болады:</p>
+<pre class="terminal"><code class="language-plaintext">Дана Нұрбекқызы;7А;MATEMATIKA:5,TARIH:4
+Ерлан Сәрсенұлы;7Б;</code></pre>
+<p>Қаңқа Maven арқылы тексерілді: <code>mvn test</code> қатесіз өтеді (8 тесттің 5-еуі өтеді, 3-еуі <code>@Disabled</code>).</p>
+<h3 id="project-accept">Қабылдау критерийлері (checklist)</h3>
+<p>Жобаны тапсырар алдында мына тізімді өзіңіз тексеріңіз. Әр тармақ орындалса, белгілеңіз:</p>
+<ul class="checklist" data-id="w7-accept">
+  <li><input type="checkbox"> <span><code>mvn test</code> (не <code>gradle test</code>) қатесіз өтеді, өшірілген тест қалмаған.</span></li>
+  <li><input type="checkbox"> <span>Оқушы қосылады; аты бос не қайталанған болса, түсінікті қате хабарламасы шығады.</span></li>
+  <li><input type="checkbox"> <span>Баға тек 1..5 аралығында қабылданады, басқа жағдайда қате хабарламасы шығады және бағдарлама құламайды.</span></li>
+  <li><input type="checkbox"> <span>Жоқ оқушыға баға қойылса не жойылса, түсінікті хабарлама шығады.</span></li>
+  <li><input type="checkbox"> <span>Оқушының бағалары пән атауымен шығады; орташа баға екі ондық таңбамен.</span></li>
+  <li><input type="checkbox"> <span>Баға жоқ оқушы үшін «Баға әлі жоқ» шығады, <code>NullPointerException</code> не нөлге бөлу жоқ.</span></li>
+  <li><input type="checkbox"> <span>Үздіктер (орташа ≥ 4,5) дұрыс табылады.</span></li>
+  <li><input type="checkbox"> <span>Сынып бойынша орташа баға Stream арқылы есептеледі.</span></li>
+  <li><input type="checkbox"> <span>Журнал файлға сақталады және қайта іске қосқанда файлдан жүктеледі (деректер жоғалмайды), қазақ әріптері бұзылмайды.</span></li>
+  <li><input type="checkbox"> <span>Қолданушы сан орнына әріп жазса, бағдарлама құламайды.</span></li>
+  <li><input type="checkbox"> <span>Кемінде 8 JUnit тесті бар, олардың кемінде 2-еуі қате жағдайды (<code>assertThrows</code>) тексереді.</span></li>
+  <li><input type="checkbox"> <span><code>catch</code> блоктары бос емес; ресурстар <code>try-with-resources</code> ішінде.</span></li>
+  <li><input type="checkbox"> <span>Өрістер <code>private</code>; кодтағы атаулар түсінікті және бір стильде.</span></li>
+  <li><input type="checkbox"> <span>Жоба қалтасында қысқа <code>README.md</code> бар: қалай іске қосу және не істейді.</span></li>
+</ul>
+<p class="progress"></p>
+
+<h3 id="project-rubric">Бағалау рубрикасы (100 ұпай)</h3>
+<div style="overflow-x:auto"><table style="min-width:700px">
+<thead><tr><th>Критерий</th><th>Толық</th><th>Жартылай</th><th>Төмен</th><th>Ұпай</th></tr></thead>
+<tbody>
+<tr><td><strong>1. Функционалдығы</strong> (A тізімі, 8 функция)</td><td>8-і де жұмыс істейді</td><td>5-7 функция</td><td>4-тен аз</td><td>30</td></tr>
+<tr><td><strong>2. ООП дизайны</strong> (класстар, инкапсуляция, enum/record, мұрагерлік не интерфейс)</td><td>Жауапкершілік бөлінген, <code>private</code> өрістер, ойластырылған құрылым</td><td>Класстар бар, бірақ біреуі «бәрін істейді»</td><td>Бәрі <code>Main</code> ішінде</td><td>20</td></tr>
+<tr><td><strong>3. Collections, generics, Stream, Optional</strong></td><td>Дұрыс жинақ таңдалған, Stream мен Optional орынды</td><td>Жинақ бар, Stream/Optional аз</td><td>Тек массив не қолмен циклдар</td><td>10</td></tr>
+<tr><td><strong>4. Қателерді өңдеу және файл</strong></td><td>Өз қате класы, бағдарлама құламайды, UTF-8, try-with-resources</td><td>Қате өңделеді, бірақ кейбір жағдай ұсталмаған</td><td>Бағдарлама қате енгізуде құлайды</td><td>15</td></tr>
+<tr><td><strong>5. Тесттер (JUnit)</strong></td><td>≥ 8 тест, қате жағдайлар бар, бәрі өтеді</td><td>4-7 тест</td><td>Тест жоқ не құлайды</td><td>15</td></tr>
+<tr><td><strong>6. Код сапасы</strong> (атаулар, пішімдеу, түсініктеме, README)</td><td>Таза, оқылатын, README бар</td><td>Негізінен таза, кейбір кемшілік</td><td>Түсініксіз атаулар, көшірме код</td><td>10</td></tr>
+<tr><td colspan="4"><strong>Бонус (C)</strong> әр қосымша функция үшін (ең көбі)</td><td>+10</td></tr>
+</tbody>
+</table></div>
+<p>Бағалау шкаласы: 90-100 - өте жақсы, 75-89 - жақсы, 60-74 - қанағаттанарлық, 60-тан төмен - қайта қарау керек. Бағалайтын адам кодты өзі жинап (<code>mvn test</code>) іске қосып көреді, сондықтан «менде жұмыс істейді» дегеннен гөрі, тіпті бөгде компьютерде де жиналатынына көз жеткізіңіз.</p>
+<h3 id="project-tips">Кеңестер</h3>
+<ol>
+  <li><strong>Кішкентай қадаммен жүріңіз.</strong> Бір мезгілде бәрін жазбаңыз. Қаңқаны іске қосып көріп, алдымен <code>oqushyJoyu</code>, сосын <code>sinipOrtasy</code>, соңында <code>zhukteu</code> әдістерін жазыңыз.</li>
+  <li><strong>Тесттен бастаңыз.</strong> <code>@Disabled</code> тестті қосыңыз, ол қызыл болады; код жазып, жасылға айналдырыңыз. Әр жолы <code>mvn test</code> іске қосыңыз.</li>
+  <li><strong>Git қолданыңыз.</strong> Әр жұмыс істейтін қадамнан кейін <code>git commit</code> жасаңыз: бұзып алсаңыз, бұрынғы жұмыс күйіне оралуға болады.</li>
+  <li><strong>Енгізуді тексеріңіз.</strong> Қолданушыға сенбеңіз: бос жол, әріп, дұрыс емес пән, үлкен сан әр жолы болады. Оларды <code>Main</code>-де <code>catch</code> арқылы ұстаңыз, ал бизнес-ережелерді (баға 1..5) модель класында тексеріңіз.</li>
+  <li><strong>Бір класс - бір жауапкершілік.</strong> <code>Main</code> тек енгізу-шығаруды істесін, есептеу <code>Zhurnal</code>-да болсын, файл <code>ZhurnalSaqtau</code>-да.</li>
+  <li><strong>Файл пішімін алдын ала шешіңіз.</strong> Қаңқадағы <code>аты;сынып;ПӘН:баға,ПӘН:баға</code> пішімін сақтаңыз немесе өзгертсеңіз, <code>zhukteu</code> пен <code>saqtau</code> бір-біріне сәйкес болсын. «Сақтадым - жүктедім - бірдей шықты» тесті жазыңыз.</li>
+  <li><strong>Файл атын абсолютті жолмен тексеріңіз.</strong> <code>Path.of("zhurnal.txt")</code> іске қосылған қалтаға қатысты екенін ұмытпаңыз.</li>
+  <li><strong>Қателерден қорықпаңыз.</strong> Stack trace-тің бірінші <code>at kz.zhurnal...</code> жолына қараңыз: ол қай файл мен қай жолда қате екенін айтады.</li>
+</ol>
+<h2 id="run">Өз компьютеріңде іске қос</h2>
+<p>Бұл апта үшін екі бағыт бар:</p>
+<strong>1) Жеке файлдар</strong> (ағын мысалдары): бір <code>Main.java</code> файлын жасап, <code>javac Main.java &amp;&amp; java Main</code> жазыңыз. Race condition мысалын бірнеше рет іске қосып, нәтижелерді салыстырыңыз.
+<strong>2) Maven жобасы</strong> (қорытынды жоба):
+<pre class="terminal"><code class="language-bash">mvn -v                 # Maven орнатылғанын тексеру
+mvn test               # тесттерді іске қосу
+mvn -q compile         # тек компиляция (-q: аз жазады)</code></pre>
+<p>Maven орнатылмаған болса, <code>mvn -v</code> команда табылмады деп жауап береді. Онда Maven-ді <code>maven.apache.org</code> сайтынан жүктеп орнатыңыз не VS Code пен IntelliJ IDEA ішіндегі Java жоба құралдарын қолданыңыз (олар Maven жобаларын өздері ашады). Gradle қолданғыңыз келсе, <code>gradle test</code> пен <code>gradle run</code>.</p>
+<h2 id="mistakes">Жиі қателер</h2>
+
+<div class="callout warn">
+<span class="callout-title">1. start() орнына run()</span>
+<p><code>t.run()</code> жаңа ағын ашпайды, жұмыс шақырған ағында (көбіне <code>main</code>) орындалады. Ағынды іске қосу үшін әрқашан <code>t.start()</code>.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">2. join() ұмыту</span>
+<p><code>join()</code> қоймасаңыз, <code>main</code> ағыны жұмыс аяқталмай жатып нәтижені оқып, нөл не жартылай нәтиже көруі мүмкін. Ағындарды күтіңіз (<code>join</code>, <code>Future.get</code>, <code>awaitTermination</code>).</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">3. Ортақ айнымалыны қорғамау</span>
+<p><code>count++</code>, <code>list.add(...)</code>, <code>HashMap.put(...)</code> бірнеше ағыннан қорғаусыз шақырылса, нәтиже әр жолы басқаша болады. <code>synchronized</code>, <code>AtomicInteger</code>, <code>ConcurrentHashMap</code> қолданыңыз.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">4. shutdown() ұмыту</span>
+<p><code>ExecutorService</code>-ті <code>shutdown()</code> қылмасаңыз, пулдың ағындары тірі қалып, бағдарлама аяқталмайды.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">5. Әртүрлі құлып нысандарын қолдану</span>
+<p>Екі ағын <code>synchronized (new Object())</code> деп әрқайсысы өз құлпын алса, олар бір-бірін күтпейді, ешқандай қорғаныс жоқ. Құлып нысаны ортақ болуы керек.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">6. Тестсіз «жұмыс істейді» деп сену</span>
+<p>Қолмен бір рет іске қосып, «дұрыс» деу жеткіліксіз. Шеткі жағдайларды (бос тізім, жоқ оқушы, 6-баға) тестпен тексеріңіз.</p>
+</div>
+
+<h2 id="summary">Қорытынды</h2>
+<p>Бүгін біз:</p>
+<ul>
+  <li>ағын - бағдарламаның ішіндегі жеке орындалатын жол екенін, ал <code>start()</code> ағын ашып, <code>run()</code> ашпайтынын көрдік; <code>join()</code> ағынның аяқталуын күтеді;</li>
+  <li>race condition не екенін, неге <code>count++</code> қауіпті екенін және нәтиже әр жолы басқаша болатынын көрдік;</li>
+  <li><code>synchronized</code> (әдіс және блок), <code>AtomicInteger</code> арқылы қорғанудың жолдарын үйрендік, deadlock туралы естідік;</li>
+  <li><code>ExecutorService</code>, <code>Callable</code>, <code>Future</code> арқылы ағындарды басқарып, <code>shutdown()</code> жасауды біліп алдық;</li>
+  <li>Maven мен Gradle - жобаны құрастыру, тәуелділіктерді жүктеу құралдары екенін; <code>pom.xml</code> мен <code>build.gradle</code> оқуды;</li>
+  <li>JUnit арқылы автоматты тест жазу идеясын (<code>@Test</code>, <code>assertEquals</code>, <code>assertThrows</code>, <code>@BeforeEach</code>) және TDD «қызыл - жасыл» циклін меңгердік;</li>
+  <li>қорытынды жоба «Оқушы журналы»: талаптар, қаңқа, қабылдау критерийлері, рубрика және кеңестер.</li>
+</ul>
+<ul class="checklist" data-id="w7-self">
+  <li><input type="checkbox"> <span>Мен <code>start()</code> пен <code>run()</code> айырмашылығын және <code>join()</code> не істейтінін айта аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен race condition қалай пайда болатынын диаграммамен түсіндіре аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен <code>synchronized</code> не <code>AtomicInteger</code> қолданып, қауіпсіз санауыш жаза аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен <code>ExecutorService</code> + <code>Future</code> арқылы нәтиже қайтаратын тапсырма жібере аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен Maven жобасының құрылымы мен <code>pom.xml</code> мазмұнын түсіндіре аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен JUnit тесті жаза аламын (<code>@Test</code>, <code>assertEquals</code>, <code>assertThrows</code>).</span></li>
+  <li><input type="checkbox"> <span>Мен қорытынды жобаның талаптары мен рубрикасын түсіндім және жұмысты бастай аламын.</span></li>
+</ul>
+<p class="progress"></p>
+<p>Сіз Java-ның негізінен бастап көп ағынға, құралдарға және тестке дейін өтіп шықтыңыз. Қорытынды жоба - жүрек: оны өз қолыңызбен аяқтаған соң сіз шын мәнінде бағдарламалаушысыз. Сәттілік!</p>
+<h2 id="quiz">Өзіңізді тексеріңіз</h2>
+
+<div class="quiz">
+<div class="question" data-answer="b">
+  <p class="q-text">1. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        Thread t = new Thread(() -&gt; System.out.println(Thread.currentThread().getName()), "A");
+        t.run();
+        t.start();
+        t.join();
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>A</code> және <code>A</code></label>
+  <label><input type="radio" value="b"> <code>main</code> және <code>A</code></label>
+  <label><input type="radio" value="c"> <code>A</code> және <code>main</code></label>
+  <label><input type="radio" value="d"> <code>main</code> және <code>main</code></label>
+  <p class="explain"><code>t.run()</code> жаңа ағын ашпайды, кәдімгі әдіс сияқты <code>main</code> ағынында орындалады, сондықтан <code>main</code> шығады. <code>t.start()</code> жаңа ағынды іске қосады, оның аты <code>A</code>. <code>join()</code> оның біткенін күтеді, сондықтан екінші жол <code>A</code>.</p>
+</div>
+<div class="question" data-answer="d">
+  <p class="q-text">2. Race condition деген не?</p>
+  <label><input type="radio" value="a"> Екі ағынның бір-бірін күтіп мәңгі тұрып қалуы</label>
+  <label><input type="radio" value="b"> Ағынның қатемен тоқтауы</label>
+  <label><input type="radio" value="c"> Ағындардың өте жылдам жұмыс істеуі</label>
+  <label><input type="radio" value="d"> Нәтиже ағындардың орындалу ретіне байланысты болып, ортақ деректі қорғаусыз өзгертуден шығатын қате</label>
+  <p class="explain">Race condition - ортақ айнымалыны бірнеше ағын қорғаусыз өзгерткенде нәтиженің ағындардың араласу ретіне байланысты болуы. Бірінші нұсқа - deadlock.</p>
+</div>
+<div class="question" data-answer="c">
+  <p class="q-text">3. <code>synchronized (qulyp) { ... }</code> не кепілдік береді?</p>
+  <label><input type="radio" value="a"> Блок өте жылдам орындалады</label>
+  <label><input type="radio" value="b"> Блоктағы код ешқашан қате бермейді</label>
+  <label><input type="radio" value="c"> Бір мезгілде тек бір ағын осы құлып нысанымен қорғалған блокқа кіре алады</label>
+  <label><input type="radio" value="d"> Блок жаңа ағында орындалады</label>
+  <p class="explain"><code>synchronized</code> өзара шеттету (<em>mutual exclusion</em>) береді: бір құлыппен қорғалған код бөлігін бір мезгілде бір ағын ғана орындайды. Қалғандары күтеді. Ол жылдамдық не қателерден қорғау кепілдігін бермейді.</p>
+</div>
+<div class="question" data-answer="a">
+  <p class="q-text">4. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        ExecutorService pul = Executors.newSingleThreadExecutor();
+        Future&lt;Integer&gt; f = pul.submit(() -&gt; 6 * 7);
+        System.out.println(f.get());
+        pul.shutdown();
+        System.out.println(pul.isShutdown());
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>42</code> және <code>true</code></label>
+  <label><input type="radio" value="b"> <code>42</code> және <code>false</code></label>
+  <label><input type="radio" value="c"> <code>13</code> және <code>true</code></label>
+  <label><input type="radio" value="d"> Бағдарлама тоқтамайды, ештеңе шықпайды</label>
+  <p class="explain"><code>submit(() -&gt; 6 * 7)</code> нәтиже қайтаратын <code>Callable</code> жібереді; <code>f.get()</code> нәтиже (42) дайын болғанша күтеді. <code>shutdown()</code> шақырылғаннан кейін <code>isShutdown()</code> - <code>true</code>.</p>
+</div>
+<div class="question" data-answer="b">
+  <p class="q-text">5. <code>t.join()</code> шақыру нені білдіреді?</p>
+  <label><input type="radio" value="a"> <code>t</code> ағынын іске қосады</label>
+  <label><input type="radio" value="b"> Шақырған ағын <code>t</code> ағыны аяқталғанша күтеді</label>
+  <label><input type="radio" value="c"> <code>t</code> ағынын мәжбүрлеп тоқтатады</label>
+  <label><input type="radio" value="d"> <code>t</code> ағынына басымдық береді</label>
+  <p class="explain"><code>join()</code> - шақырған ағынды <code>t</code> біткенше «тоқтатып» қояды. Іске қосу - <code>start()</code>, ал тоқтатуды <code>interrupt()</code> ұсынады (мәжбүрлеп тоқтату жоқ).</p>
+</div>
+<div class="question" data-answer="c">
+  <p class="q-text">6. Maven жобасында JUnit тесттері әдетте қай қалтада тұрады?</p>
+  <label><input type="radio" value="a"> <code>src/main/java</code></label>
+  <label><input type="radio" value="b"> <code>target/test</code></label>
+  <label><input type="radio" value="c"> <code>src/test/java</code></label>
+  <label><input type="radio" value="d"> <code>tests</code> (жобаның түбірінде)</label>
+  <p class="explain">Стандартты Maven құрылымы: негізгі код - <code>src/main/java</code>, тесттер - <code>src/test/java</code>. <code>target</code> - жиналған нәтиже қалтасы, оған қолмен код жазбайды.</p>
+</div>
+<div class="question" data-answer="a">
+  <p class="q-text">7. JUnit 5-те әр тесттің алдында орындалатын дайындық әдісін қай аннотация белгілейді?</p>
+  <label><input type="radio" value="a"> <code>@BeforeEach</code></label>
+  <label><input type="radio" value="b"> <code>@AfterAll</code></label>
+  <label><input type="radio" value="c"> <code>@Test(before = true)</code></label>
+  <label><input type="radio" value="d"> <code>@Setup</code></label>
+  <p class="explain"><code>@BeforeEach</code> әдісі әр <code>@Test</code> алдында орындалады (мысалы, таза <code>Zhurnal</code> нысанын жасау үшін). <code>@AfterAll</code> барлық тесттен кейін бір рет орындалады, ал <code>@Setup</code> JUnit-те жоқ.</p>
+</div>
+<div class="question" data-answer="d">
+  <p class="q-text">8. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">import java.util.concurrent.atomic.AtomicInteger;
+
+public class Main {
+    public static void main(String[] args) {
+        AtomicInteger a = new AtomicInteger(5);
+        int x = a.incrementAndGet();
+        int y = a.getAndIncrement();
+        System.out.println(x + " " + y + " " + a.get());
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>5 5 6</code></label>
+  <label><input type="radio" value="b"> <code>6 7 7</code></label>
+  <label><input type="radio" value="c"> <code>6 6 6</code></label>
+  <label><input type="radio" value="d"> <code>6 6 7</code></label>
+  <p class="explain"><code>incrementAndGet()</code> алдымен 1 қосып, жаңа мәнді (6) қайтарады. <code>getAndIncrement()</code> алдымен ескі мәнді (6) қайтарып, содан кейін 1 қосады (мән 7 болады). Соңында <code>a.get()</code> = 7.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
+
+<h2 id="tasks">Жаттығулар</h2>
+<p>Алдымен өзіңіз ойлап көріңіз. Шешімдердің кодтары <code>javac</code>/<code>java</code> арқылы іске қосылып тексерілген.</p>
+<div class="task">
+  <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pj7-1">start немесе run?</h3></div>
+<p>Мына бағдарлама экранға бір жол шығарады. Ол қандай ағынның аты?</p>
+<pre data-lang="java"><code class="language-java">Thread t = new Thread(() -> System.out.println(Thread.currentThread().getName()), "Ж-1");
+t.run();</code></pre>
+<div class="answer-check" data-answer="main"><input type="text" placeholder="Ағын аты" aria-label="Ағын аты"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>start()</code> жаңа ағын ашады, ал <code>run()</code>? Жолдың соңында қандай әдіс шақырылғанына қараңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>t.run()</code> жай ғана әдіс шақыру: жаңа ағын ашылмайды, сондықтан <code>Thread.currentThread().getName()</code> шақырған ағынның (<code>main</code>) атын береді.</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        Thread t = new Thread(() -&gt; System.out.println(Thread.currentThread().getName()), "Ж-1");
+        t.run();
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+main</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pj7-2">Maven командасы</h3></div>
+<p>Maven жобасын компиляциялап, барлық тесттерді іске қосатын командаңызды жазыңыз (екі сөз).</p>
+<div class="answer-check" data-answer="mvn test"><input type="text" placeholder="Команда" aria-label="Команда"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Бұл - Maven-нің «life cycle» фазаларының бірі. Ағылшынша «тест» сөзі.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>mvn test</code> - жобаны компиляциялайды және <code>src/test/java</code> ішіндегі тесттерді іске қосады (бұл жобада нақты тексерілді). <code>mvn package</code> да тесттерді іске қосады, бірақ оған қоса <code>.jar</code> жасайды.</p></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pj7-3">Қауіпсіз санауыш</h3></div>
+<p>Төрт ағын, әрқайсысы ортақ санауышты 50 000 рет арттырады. Нәтиже әрқашан 200000 шығатындай бағдарлама жазыңыз (<code>AtomicInteger</code> не <code>synchronized</code>). Ағындарды <code>join()</code> арқылы күтіңіз.</p>
+<details><summary>Кеңес</summary><div class="details-body"><p>Төрт ағынды массивте сақтап, цикл арқылы <code>start()</code> жасаңыз, ал екінші циклде <code>join()</code> жасаңыз. Санауышты <code>AtomicInteger</code> етіп, ағын ішінде <code>incrementAndGet()</code> шақырыңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><pre data-lang="java"><code class="language-java">import java.util.concurrent.atomic.AtomicInteger;
+
+public class Main {
+    static final AtomicInteger sanagysh = new AtomicInteger();
+
+    public static void main(String[] args) throws InterruptedException {
+        Thread[] agyndar = new Thread[4];
+        for (int i = 0; i &lt; agyndar.length; i++) {
+            agyndar[i] = new Thread(() -&gt; {
+                for (int k = 0; k &lt; 50_000; k++) {
+                    sanagysh.incrementAndGet();
+                }
+            });
+            agyndar[i].start();
+        }
+        for (Thread t : agyndar) {
+            t.join();
+        }
+        System.out.println(sanagysh.get());
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+200000</code></pre></div></details>
+<details open><summary>Өзіңізді тексеріңіз</summary><div class="details-body">
+<ul class="checklist" data-id="pj7-3">
+  <li><input type="checkbox"> <span>Төрт ағын жасалып, <code>start()</code> шақырылған.</span></li>
+  <li><input type="checkbox"> <span>Барлық ағынға <code>join()</code> жасалған (нәтижені оқымас бұрын).</span></li>
+  <li><input type="checkbox"> <span>Санауыш <code>AtomicInteger</code> не <code>synchronized</code> арқылы қорғалған.</span></li>
+  <li><input type="checkbox"> <span>Бірнеше рет іске қосқанда да әрқашан 200000 шығады.</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pj7-4">Callable және invokeAll</h3></div>
+<p>Үш <code>Callable&lt;Integer&gt;</code> тапсырмасын <code>ExecutorService</code>-ке жіберіңіз: <code>5!</code> (факториал), <code>2^10</code> және <code>1+2+...+100</code>. Олардың нәтижелерінің қосындысы неге тең?</p>
+<div class="answer-check" data-answer="6194"><input type="text" placeholder="Қосынды" aria-label="Қосынды"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>5! = 120</code>, <code>2^10 = 1024</code>, <code>1+...+100 = 5050</code>. Қосыңыз. Кодпен тексеру үшін <code>pul.invokeAll(List.of(...))</code> барлық <code>Future</code>-ді қайтарады, олардан <code>get()</code> алыңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>120 + 1024 + 5050 = 6194.</p>
+<pre data-lang="java"><code class="language-java">import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+public class Main {
+    public static void main(String[] args) throws Exception {
+        ExecutorService pul = Executors.newFixedThreadPool(3);
+
+        Callable&lt;Integer&gt; faktorial = () -&gt; {
+            int p = 1;
+            for (int i = 2; i &lt;= 5; i++) p *= i;
+            return p;                                  // 5! = 120
+        };
+        Callable&lt;Integer&gt; eki = () -&gt; 1 &lt;&lt; 10;         // 2^10 = 1024
+        Callable&lt;Integer&gt; qosu = () -&gt; {
+            int s = 0;
+            for (int i = 1; i &lt;= 100; i++) s += i;
+            return s;                                  // 5050
+        };
+
+        List&lt;Future&lt;Integer&gt;&gt; natijeler = pul.invokeAll(List.of(faktorial, eki, qosu));
+        int jiny = 0;
+        for (Future&lt;Integer&gt; f : natijeler) {
+            jiny += f.get();
+        }
+        System.out.println(jiny);
+        pul.shutdown();
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+6194</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pj7-5">Параллель санау</h3></div>
+<p>Мына төрт жолда «ай» сөзі барлығы неше рет кездеседі? Жолдар: <code>"ай мен күн"</code>, <code>"ай туды"</code>, <code>"күн мен ай бірге"</code>, <code>"ай-ай"</code>. Жолдар сөздерге бос орын мен сызықша бойынша бөлінеді (<code>split("[ -]")</code>). Әр жолды бөлек тапсырма ретінде екі ағынды пулға жіберіп, ортақ <code>AtomicInteger</code>-ге санаңыз.</p>
+<div class="answer-check" data-answer="5"><input type="text" placeholder="Саны" aria-label="Саны"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Қолмен санаңыз: 1-жол 1, 2-жол 1, 3-жол 1, 4-жол <code>ай-ай</code> екі сөзге бөлінеді (<code>ай</code>, <code>ай</code>), демек 2. <code>AtomicInteger.incrementAndGet()</code> қолданыңыз, соңында <code>shutdown()</code> және <code>awaitTermination(...)</code>.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>1 + 1 + 1 + 2 = 5. Ағындардың реті әр жолы басқаша болуы мүмкін, бірақ қосынды әрдайым бірдей.</p>
+<pre data-lang="java"><code class="language-java">import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+public class Main {
+    public static void main(String[] args) throws InterruptedException {
+        List&lt;String&gt; joldar = List.of(
+            "ай мен күн", "ай туды", "күн мен ай бірге", "ай-ай");
+        AtomicInteger sany = new AtomicInteger();
+
+        ExecutorService pul = Executors.newFixedThreadPool(2);
+        for (String j : joldar) {
+            pul.submit(() -&gt; {
+                for (String soz : j.split("[ -]")) {
+                    if (soz.equals("ай")) {
+                        sany.incrementAndGet();
+                    }
+                }
+            });
+        }
+        pul.shutdown();
+        pul.awaitTermination(5, TimeUnit.SECONDS);
+        System.out.println(sany.get());
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+5</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pj7-6">Қорытынды жоба: TODO әдістерін жазу</h3></div>
+<p>Жоба қаңқасындағы үш <code>TODO</code> әдісін жазыңыз: <code>Zhurnal.oqushyJoyu</code>, <code>Zhurnal.sinipOrtasy</code>, <code>ZhurnalSaqtau.zhukteu</code>. Сосын <code>ZhurnalTest</code> ішіндегі үш <code>@Disabled</code> белгісін алып тастап, <code>mvn test</code> іске қосыңыз.</p>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>oqushyJoyu</code>: <code>Map.remove</code> жойылған мәнді (жоқ болса <code>null</code>) қайтарады, соған қарай қате лақтырыңыз. <code>sinipOrtasy</code>: Stream: <code>filter</code> сыныпқа, <code>flatMap</code> бағаларға, <code>mapToInt</code>, <code>average()</code>. <code>zhukteu</code>: <code>Files.readAllLines</code>, әр жолды <code>split(";", -1)</code> (соңғы бос бөлікті сақтау үшін), содан кейін <code>ПӘН:баға</code> жұптарын <code>split(",")</code> және <code>split(":")</code> арқылы бөліңіз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Төмендегі шешім жобаға қойылып, 8 тестің бәрі (<code>@Disabled</code> алынған) <code>mvn test</code> арқылы өтті:</p>
+<pre data-lang="java"><code class="language-java">// Zhurnal.java ішіне:
+public void oqushyJoyu(String aty) {
+    if (oqushylar.remove(aty.trim()) == null) {
+        throw new ZhurnalQateligi("Оқушы табылмады: " + aty);
+    }
+}
+
+public java.util.OptionalDouble sinipOrtasy(String sinip) {
+    return oqushylar.values().stream()
+            .filter(o -&gt; o.getSinip().equals(sinip))
+            .flatMap(o -&gt; o.getBagalar().stream())
+            .mapToInt(Baga::baga)
+            .average();
+}
+
+// ZhurnalSaqtau.java ішіне:
+public static Zhurnal zhukteu(Path jol) throws IOException {
+    Zhurnal zhurnal = new Zhurnal();
+    for (String joly : Files.readAllLines(jol)) {
+        String[] bolik = joly.split(";", -1);
+        Oqushy o = zhurnal.oqushyQosu(bolik[0], bolik[1]);
+        if (!bolik[2].isEmpty()) {
+            for (String jup : bolik[2].split(",")) {
+                String[] pb = jup.split(":");
+                o.bagaQosu(new Baga(Pan.valueOf(pb[0]), Integer.parseInt(pb[1])));
+            }
+        }
+    }
+    return zhurnal;
+}</code></pre>
+<p>Есіңізде болсын: <code>split(";", -1)</code> - екінші аргумент <code>-1</code> соңындағы бос бөліктерді тастамайды (баға жоқ оқушының жолы <code>аты;сынып;</code> түрінде аяқталады).</p></div></details>
+<details open><summary>Өзіңізді тексеріңіз</summary><div class="details-body">
+<ul class="checklist" data-id="pj7-6">
+  <li><input type="checkbox"> <span>Үш <code>TODO</code> әдісі жазылды, <code>UnsupportedOperationException</code> қалмады.</span></li>
+  <li><input type="checkbox"> <span>Үш <code>@Disabled</code> белгісі алынды.</span></li>
+  <li><input type="checkbox"> <span><code>mvn test</code> нәтижесі: <code>Tests run: 8, Failures: 0, Errors: 0, Skipped: 0</code>.</span></li>
+  <li><input type="checkbox"> <span>Файлға сақтап, қайта жүктегенде оқушылар мен бағалар сақталады.</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+
+
+      <nav class="pager">
+  <a href="week-6.html"><small>Алдыңғы</small>← 6-апта: Ерекше жағдайлар, файлдар, lambda және Stream</a>
+  <a class="next" href="../index.html"><small>Келесі</small>Курс бетіне →</a>
+</nav>
+
+      <p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

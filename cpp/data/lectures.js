@@ -118,7 +118,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 37,
+  "minutes": 38,
   "quiz": 8,
   "tasks": 3
  },
@@ -177,7 +177,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 38,
+  "minutes": 39,
   "quiz": 8,
   "tasks": 3
  },
@@ -240,7 +240,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 36,
+  "minutes": 38,
   "quiz": 8,
   "tasks": 3
  },
