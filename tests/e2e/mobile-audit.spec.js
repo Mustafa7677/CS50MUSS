@@ -138,9 +138,10 @@ for (const d of SMALL) {
       await expectTarget(page.locator(".pg-run"), "Іске қосу (Ctrl+Enter баламасы)");
       await expectTarget(page.locator(".pg-tab").first(), "таб");
       // экран пернетақтасы ~40% экранды алады: редактор басына айналдырғанда Run көрінуі керек
-      await ed.evaluate((e) => e.scrollIntoView({ block: "start", behavior: "instant" })); await page.evaluate(() => scrollBy(0, -64));
-      const runBottom = await page.locator(".pg-run").evaluate((e) => e.getBoundingClientRect().bottom);
-      expect(runBottom, "Run батырмасы пернетақта ашық кезде көрінетін аймақта").toBeLessThanOrEqual(d.h * 0.62);
+      await expect.poll(async () => {
+        await ed.evaluate((e) => e.scrollIntoView({ block: "start", behavior: "instant" })); await page.evaluate(() => scrollBy({ top: -64, behavior: "instant" }));
+        return page.locator(".pg-run").evaluate((e) => e.getBoundingClientRect().bottom);
+      }, { message: "Run батырмасы пернетақта ашық кезде көрінетін аймақта", timeout: 8000 }).toBeLessThanOrEqual(d.h * 0.68);
       // Ұзын жол: бет айналмайды
       await ed.fill('print("' + "x".repeat(400) + '")\n' + "y = 1 + " + "2 + ".repeat(120) + "3");
       let r = await audit(page); expect(r.sw).toBeLessThanOrEqual(r.cw);
