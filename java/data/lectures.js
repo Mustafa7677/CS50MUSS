@@ -174,6 +174,69 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
   "tasks": 4
  },
  {
+  "id": "week-3",
+  "num": "3-апта",
+  "title": "Класстар және нысандар",
+  "url": "java/lectures/week-3.html",
+  "topics": [
+   {
+    "t": "Неге класс керек?",
+    "id": "why-class"
+   },
+   {
+    "t": "Алғашқы класс",
+    "id": "first-class"
+   },
+   {
+    "t": "Конструкторлар және this",
+    "id": "constructors"
+   },
+   {
+    "t": "Инкапсуляция: private, getter, setter",
+    "id": "encapsulation"
+   },
+   {
+    "t": "static: нысанға емес, класқа тиесілі",
+    "id": "static"
+   },
+   {
+    "t": "toString, equals, hashCode",
+    "id": "object-methods"
+   },
+   {
+    "t": "record: деректер класын қысқа жазу",
+    "id": "record"
+   },
+   {
+    "t": "Пакеттер",
+    "id": "packages"
+   },
+   {
+    "t": "Нысан жадта: стек, үйме және сілтемелер",
+    "id": "references"
+   },
+   {
+    "t": "Жинақтаушы (garbage collection)",
+    "id": "gc"
+   },
+   {
+    "t": "Нысандар тізімі",
+    "id": "objects-in-list"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Жаттығулар",
+    "id": "exercises"
+   }
+  ],
+  "minutes": 35,
+  "quiz": 8,
+  "tasks": 5
+ },
+ {
   "id": "week-4",
   "num": "4-апта",
   "title": "Мұрагерлік, интерфейстер және полиморфизм",

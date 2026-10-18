@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Java 3-апта: Класстар және нысандар - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="Java 3-апта: Класстар және нысандар - CS50 қазақша">
+  <meta property="og:description" content="Java 17: класс, өріс, конструктор, this, инкапсуляция, static, toString, equals, hashCode, record, пакеттер, стек/үйме диаграммасы және қоқыс жинаушы.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/java/lectures/week-3.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/java/lectures/week-3.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Java 3-апта: Класстар және нысандар - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/java/lectures/week-3.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="Java 17: класс, өріс, конструктор, this, инкапсуляция, static, toString, equals, hashCode, record, пакеттер, стек/үйме диаграммасы және қоқыс жинаушы.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body data-license="B">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="java" style="--c:#d97706"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Java</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../java/index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+<div class="lecture-head" style="--lc:#d97706" data-n="3">
+<div class="num">3-апта</div>
+<h1>Класстар және нысандар</h1>
+<p>Өз типтерімізді жасаймыз: класс пен нысан, конструкторлар, <code>this</code>, инкапсуляция, <code>static</code>, <code>toString</code>/<code>equals</code>/<code>hashCode</code>, <code>record</code>, пакеттер, нысанның жадтағы орны және қоқыс жинаушы.</p>
+</div>
+
+
+<div class="callout tip"><span class="callout-title">Бүгін бетбұрыс апта</span>
+<p>Осы уақытқа дейін біз <code>int</code>, <code>String</code>, массив сияқты дайын типтермен жұмыс істедік. Бүгін өз типімізді жасаймыз. Бұл - Java-ның жүрегі: <strong>нысандық бағдарламалау</strong> (<span class="term-en">object-oriented programming, OOP</span>). Өткен аптадағы «атау мен баға екі бөлек массивте» мәселесін шешеміз: бір нысан екеуін бірге ұстайды.</p></div>
+
+<h2 id="why-class">Неге класс керек?</h2>
+<p>Кітап дүкенін елестетіңіз. Әр кітаптың аты, авторы, бағасы, беті бар. Өткен аптадағыдай оны бөлек массивтерде сақтасақ: <code>String[] atau</code>, <code>String[] avtor</code>, <code>double[] baga</code> - онда «үшінші кітап» деген ұғым жоқ, тек үш массивтегі үшінші ұяшық бар. Біреуін сұрыпталсақ, қалғандары сәйкес келмей қалады. Әдістерге үш массивті бере беру де ыңғайсыз.</p>
+<p>Шешімі - <strong>класс</strong> (<span class="term-en">class</span>) жазу. Класс - нысанның сызбасы, үлгісі: онда қандай деректер (<strong>өрістер</strong>, <span class="term-en">fields</span>) бар және нысан не істей алады (<strong>әдістер</strong>, <span class="term-en">methods</span>). Ал <strong>нысан</strong> (<span class="term-en">object</span>, кейде <em>instance</em>) - сол сызба бойынша жасалған нақты дана. Аналогия: киім тігу үлгісі (қалып) бір, ал одан тігілген көйлектер көп; әр көйлектің өз өлшемі, түсі бар. Не болмаса шаңырақтың жобасы бір, ал үйлер көп.</p>
+<figure style="margin:22px 0;text-align:center"><svg viewBox="0 0 640 250" role="img" aria-label="Класс диаграммасы: Kitap класында atau, avtor, baga өрістері және bagaTomendet әдісі бар; одан екі нысан жасалған: k1 (Абай жолы, 3200) және k2 (Көшпенділер, 4100)" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto"><defs><marker id="ar668_1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="20" y="20" width="220" height="150" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><rect x="20" y="20" width="220" height="30" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="130.0" y="35.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:15px">Kitap</text><text x="34" y="70" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">- atau : String</text><text x="34" y="90" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">- avtor : String</text><text x="34" y="110" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">- baga : double</text><text x="34" y="140" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">+ bagaTomendet(p) : void</text><text x="34" y="158" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">+ toString() : String</text><rect x="380" y="10" width="240" height="86" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="396" y="26" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:700">k1 : Kitap</text><text x="396" y="48" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">atau = "Абай жолы"</text><text x="396" y="66" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">avtor = "Мұхтар Әуезов"</text><text x="396" y="84" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">baga = 3200.0</text><rect x="380" y="130" width="240" height="86" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="396" y="146" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:700">k2 : Kitap</text><text x="396" y="168" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">atau = "Көшпенділер"</text><text x="396" y="186" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">avtor = "Ілияс Есенберлин"</text><text x="396" y="204" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">baga = 4100.0</text><polyline points="240,70 378,50" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 4" marker-end="url(#ar668_1)"/><polyline points="240,120 378,160" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 4" marker-end="url(#ar668_1)"/><text x="300" y="238" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">класс - сызба; нысандар - сол сызбадан жасалған даналар</text></svg><figcaption style="font-size:14.5px;color:var(--muted);margin-top:8px">11-сурет. Бір класс - көп нысан. Әр нысанның өз өріс мәндері бар.</figcaption></figure>
+<p>Мәтінмен: сол жақта <code>Kitap</code> класының карточкасы: үш өріс (<code>atau</code>, <code>avtor</code>, <code>baga</code>) және екі әдіс. Оң жақта сол класстан жасалған екі нысан бар: <code>k1</code> («Абай жолы», 3200) және <code>k2</code> («Көшпенділер», 4100). Үзік көрсеткілер «осы сызбадан жасалған» дегенді білдіреді.</p>
+
+<h2 id="first-class">Алғашқы класс</h2>
+<p>Класс жазу өте қарапайым. <code>class</code> кілт сөзі, оның ішінде өрістер (айнымалылар) және әдістер. Нысанды <code>new</code> операторымен жасаймыз, ал оның өрісіне не әдісіне нүкте арқылы жетеміз: <code>k1.atau</code>. Бір файлда бірнеше класс бола алады, бірақ тек біреуі <code>public</code> және оның аты файл атына тең болуы тиіс.</p>
+<pre data-lang="java"><code class="language-java">class Kitap {
+    String atau;
+    String avtor;
+    double baga;
+
+    void bagaTomendet(double payyz) {
+        baga = baga - baga * payyz / 100;
+    }
+
+    void kersetu() {
+        System.out.println(atau + " (" + avtor + ") - " + baga + " тг");
+    }
+}
+
+public class KitapDukeni {
+    public static void main(String[] args) {
+        Kitap k1 = new Kitap();
+        k1.atau = "Абай жолы";
+        k1.avtor = "Мұхтар Әуезов";
+        k1.baga = 3200;
+
+        Kitap k2 = new Kitap();
+        k2.atau = "Көшпенділер";
+        k2.avtor = "Ілияс Есенберлин";
+        k2.baga = 4100;
+
+        k1.kersetu();
+        k2.kersetu();
+
+        k2.bagaTomendet(10);        // 10% жеңілдік
+        k2.kersetu();
+        System.out.println(k1.baga + k2.baga);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac KitapDukeni.java
+$ java KitapDukeni
+Абай жолы (Мұхтар Әуезов) - 3200.0 тг
+Көшпенділер (Ілияс Есенберлин) - 4100.0 тг
+Көшпенділер (Ілияс Есенберлин) - 3690.0 тг
+6890.0</code></pre>
+<p>Назар аударыңыз: <code>k2.bagaTomendet(10)</code> тек <code>k2</code>-нің бағасын өзгертті; <code>k1</code> тұрған күйінде. Әр нысанның өз көшірмесі бар. Әдіс ішінде жазылған <code>baga</code> - «осы нысанның бағасы». Мұндай әдіс <strong>нысан әдісі</strong> (<span class="term-en">instance method</span>) деп аталады, оған <code>static</code> жазылмайды.</p>
+<p>Бұл код жұмыс істейді, бірақ екі кемшілігі бар: нысан жасаған соң өрістерді бір-бірлеп толтыру керек (біреуін ұмытып кетуіміз мүмкін), және кез келген адам <code>k1.baga = -500</code> деп жаза алады. Екеуін де келесі бөлімдерде түзетеміз.</p>
+
+<h2 id="constructors">Конструкторлар және this</h2>
+<p><strong>Конструктор</strong> (<span class="term-en">constructor</span>) - нысан жасалғанда <code>new</code> шақыратын арнайы әдіс. Оның аты класс атымен бірдей, қайтару типі жоқ (<code>void</code> да жазылмайды). Мақсаты - нысанды алғашқы мәндермен дұрыс дайындау.</p>
+<p>Параметр аты өріс атымен бірдей болса, не болады? Параметр өрісті «көлеңкелейді». Сондықтан <strong>this</strong> кілт сөзі бар: ол «осы нысан» дегенді білдіреді. <code>this.atau = atau</code> - «осы нысанның <code>atau</code> өрісіне параметр <code>atau</code>-ды сал».</p>
+<pre data-lang="java"><code class="language-java">class Kitap {
+    String atau;
+    String avtor;
+    double baga;
+    int bet;
+
+    // толық конструктор
+    Kitap(String atau, String avtor, double baga, int bet) {
+        this.atau = atau;
+        this.avtor = avtor;
+        this.baga = baga;
+        this.bet = bet;
+    }
+
+    // қысқа конструктор: беті белгісіз, бағасы әдепкі
+    Kitap(String atau, String avtor) {
+        this(atau, avtor, 2000, 0);   // басқа конструкторды шақыру
+    }
+
+    void kersetu() {
+        System.out.println(atau + " | " + avtor + " | " + baga + " тг | " + bet + " бет");
+    }
+}
+
+public class Konstruktorlar {
+    public static void main(String[] args) {
+        Kitap a = new Kitap("Абай жолы", "Мұхтар Әуезов", 3200, 640);
+        Kitap b = new Kitap("Қан мен тер", "Әбдіжәміл Нұрпейісов");
+        a.kersetu();
+        b.kersetu();
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Konstruktorlar.java
+$ java Konstruktorlar
+Абай жолы | Мұхтар Әуезов | 3200.0 тг | 640 бет
+Қан мен тер | Әбдіжәміл Нұрпейісов | 2000.0 тг | 0 бет</code></pre>
+<p>Бұл жерде <strong>конструкторды қайта жүктеу</strong> (overloading) қолданылды: екі конструктор бар, біреуі төрт параметрлі, екіншісі екі параметрлі. Екіншісі <code>this(...)</code> арқылы біріншісін шақырады (бұл <em>конструктор тізбегі</em>, <span class="term-en">constructor chaining</span>; ол конструктордың бірінші жолы болуы тиіс). Сонда негізгі дайындау жұмысы бір жерде ғана тұрады.</p>
+<div class="callout note"><span class="callout-title">Әдепкі конструктор</span>
+<p>Егер класста бірде-бір конструктор жазбасаңыз, Java параметрсіз, ештеңе істемейтін <code>Kitap()</code> конструкторын өзі қосады (алдыңғы бөлімде біз соны қолдандық). Бірақ бір конструктор жазсаңыз, әдепкі жоғалады: <code>new Kitap()</code> енді қате береді, өйткені параметрсіз конструктор жоқ.</p></div>
+
+<h2 id="encapsulation">Инкапсуляция: private, getter, setter</h2>
+<p>Өрістерді ашық қалдырсақ, кез келген код оларды бүлдіре алады: бағаны теріс, бетті нөл қылады. Қорғану үшін <strong>инкапсуляция</strong> (<span class="term-en">encapsulation</span>) қолданамыз: өрістерді <code>private</code> (тек осы класс көреді) етіп, оларға қол жеткізуді <code>public</code> әдістер арқылы береміз. Оқитын әдіс - <strong>getter</strong>, жазатын - <strong>setter</strong>. Setter ішінде деректі тексеруге болады: ол тексеру нысанның әрқашан дұрыс күйде болуына кепіл.</p>
+<p>Аналогия: банкомат. Шотыңыздағы ақшаға бірден қол сұқпайсыз: интерфейс (экран, түймелер) арқылы «қанша алам» деп сұрайсыз, ал банк ережелерді тексереді. Мысал - әмиян (шартты теңгемен):</p>
+<pre data-lang="java"><code class="language-java">class Hamyan {
+    private final String iesi;
+    private long qaldyq;           // теңгемен
+
+    Hamyan(String iesi, long bastapqy) {
+        this.iesi = iesi;
+        this.qaldyq = Math.max(0, bastapqy);
+    }
+
+    String getIesi() {
+        return iesi;
+    }
+
+    long getQaldyq() {
+        return qaldyq;
+    }
+
+    boolean salu(long soma) {
+        if (soma &lt;= 0) {
+            return false;
+        }
+        qaldyq += soma;
+        return true;
+    }
+
+    boolean aluy(long soma) {
+        if (soma &lt;= 0 || soma &gt; qaldyq) {
+            return false;          // қарыз болуға болмайды
+        }
+        qaldyq -= soma;
+        return true;
+    }
+}
+
+public class HamyanSynaq {
+    public static void main(String[] args) {
+        Hamyan h = new Hamyan("Нұрлан", 10000);
+        System.out.println(h.getIesi() + ": " + h.getQaldyq());
+        System.out.println(h.salu(5000));
+        System.out.println(h.aluy(20000));    // жетпейді
+        System.out.println(h.aluy(3500));
+        System.out.println("Қалдық: " + h.getQaldyq());
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac HamyanSynaq.java
+$ java HamyanSynaq
+Нұрлан: 10000
+true
+false
+true
+Қалдық: 11500</code></pre>
+<p>Назар аударыңыз: <code>iesi</code> өрісі <code>final</code> - ол бір рет қана, конструкторда меншіктеледі және кейін өзгермейді; сондықтан оған setter жоқ. <code>qaldyq</code>-ке setter да жоқ: оны тек <code>salu</code> және <code>aluy</code> өзгерте алады, және әрқайсысы ережені тексереді. Сыртқы код <code>h.qaldyq = 1000000</code> деп жаза алмайды. Көрейік:</p>
+<pre data-lang="java"><code class="language-java">class Hamyan {
+    private long qaldyq = 100;
+}
+
+public class Buzu {
+    public static void main(String[] args) {
+        Hamyan h = new Hamyan();
+        h.qaldyq = 1000000;
+        System.out.println(h.qaldyq);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Buzu.java
+Buzu.java:8: error: qaldyq has private access in Hamyan
+        h.qaldyq = 1000000;
+         ^
+Buzu.java:9: error: qaldyq has private access in Hamyan
+        System.out.println(h.qaldyq);
+                            ^
+2 errors</code></pre>
+<p>Компилятор «<em>qaldyq has private access in Hamyan</em>» деп тоқтатты. Бұл - инкапсуляцияның күші: ереже бұзылуы мүмкін болмайды, бағдарлама іске қосылмай тұрып-ақ. Қолжетімділік деңгейлері: </p>
+<table>
+<thead><tr><th>Модификатор</th><th>Қайдан көрінеді?</th></tr></thead>
+<tbody>
+<tr><td><code>private</code></td><td>тек осы класстың ішінен</td></tr>
+<tr><td>(жазылмайды), <em>package-private</em></td><td>осы пакеттің кластарынан</td></tr>
+<tr><td><code>protected</code></td><td>осы пакеттен және мұрагер кластардан (4-апта)</td></tr>
+<tr><td><code>public</code></td><td>барлық жерден</td></tr>
+</tbody></table>
+<p>Бастапқы ереже: өрісті әрқашан <code>private</code> жасаңыз, ал әдістерді қажетіне қарай <code>public</code> етіңіз. Getter мен setter жазуды IDE автоматты жасап береді (IntelliJ-де <em>Generate</em>, VS Code-та <em>Source Action</em>), бірақ setter-ді тек шынымен қажет болса қосыңыз: көп нысан өзгермейтін болғаны жақсы.</p>
+
+<h2 id="static">static: нысанға емес, класқа тиесілі</h2>
+<p>Әдетте өріс пен әдіс нысанға тиесілі. Бірақ кейде бір мән <em>барлық нысанға ортақ</em> болу керек: мысалы, нысандардың жалпы саны, не <code>ҚҚС = 12%</code> тұрақтысы. Ол үшін <code>static</code> қолданамыз: <strong>static өріс</strong> (<span class="term-en">static field</span>) бір ғана, класқа тиесілі, нысандарды қанша жасасақ та, көшірмесі біреу. Оған класс аты арқылы жетеміз: <code>Kitap.sany</code>. <strong>static әдіс</strong> нысансыз-ақ шақырылады: <code>Math.sqrt(16)</code>, <code>Integer.parseInt("5")</code>. Біздің <code>main</code> де static: бағдарлама басталғанда әлі ешбір нысан жоқ.</p>
+<pre data-lang="java"><code class="language-java">class Oqushy {
+    static int sany = 0;                       // барлық оқушыға ортақ
+    static final String MEKTEP = "№12 мектеп"; // тұрақты
+
+    private final int nomer;
+    private final String ataui;
+
+    Oqushy(String ataui) {
+        sany++;
+        this.nomer = sany;
+        this.ataui = ataui;
+    }
+
+    String tanystyru() {
+        return nomer + ". " + ataui + " (" + MEKTEP + ")";
+    }
+
+    static String statistika() {
+        return "Барлығы: " + sany + " оқушы";
+    }
+}
+
+public class StaticMysal {
+    public static void main(String[] args) {
+        System.out.println(Oqushy.statistika());
+        Oqushy a = new Oqushy("Аружан");
+        Oqushy b = new Oqushy("Бекзат");
+        Oqushy c = new Oqushy("Дана");
+        System.out.println(a.tanystyru());
+        System.out.println(c.tanystyru());
+        System.out.println(Oqushy.statistika());
+        System.out.println(Math.sqrt(144) + " " + Math.max(3, 8) + " " + Math.abs(-4.5));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac StaticMysal.java
+$ java StaticMysal
+Барлығы: 0 оқушы
+1. Аружан (№12 мектеп)
+3. Дана (№12 мектеп)
+Барлығы: 3 оқушы
+12.0 8 4.5</code></pre>
+<p>Бұл жерде <code>sany</code> бір ғана, оны әр жаңа нысан арттырады, ал <code>nomer</code> әр оқушының өзінде жеке. <code>static</code> әдіс ішінде <code>this</code> жоқ, себебі ол нысансыз жұмыс істейді, сондықтан ол нысан өрістеріне (<code>nomer</code>) тікелей жете алмайды. Керісінше, нысан әдісі static өрістерге еркін қол жеткізеді.</p>
+<div class="callout warn"><span class="callout-title">static-ті шектен тыс қолданбаңыз</span>
+<p>Бастаушылар көп жағдайда компилятор қатесінен құтылу үшін бәріне <code>static</code> жазып жібереді. Бұл нысандық бағдарламалаудың мәнін жоққа шығарады. Ереже: егер әдіс нысанның күйін пайдаланса, ол нысан әдісі болуы тиіс; егер күйсіз көмекші есеп болса (математика, түрлендіру), <code>static</code> жарайды.</p></div>
+
+<h2 id="object-methods">toString, equals, hashCode</h2>
+<p>Java-да барлық класс жасырын түрде <code>Object</code> класының мұрагері; осыдан үш пайдалы әдісті «мұраға» алады, бірақ олардың әдепкі іске асыруы көп жағдайда жарамайды. Оларды <strong>қайта анықтау</strong> (<span class="term-en">override</span>) керек. Алдымен, <code>toString()</code>-ті қарайық. Нысанды <code>println</code>-ге берсек, Java <code>toString()</code>-ті шақырады.</p>
+<pre data-lang="java"><code class="language-java">class Aspap {
+    String ataui;
+    int baga;
+
+    Aspap(String ataui, int baga) {
+        this.ataui = ataui;
+        this.baga = baga;
+    }
+}
+
+public class TostringZhoq {
+    public static void main(String[] args) {
+        Aspap a = new Aspap("Домбыра", 45000);
+        System.out.println(a);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac TostringZhoq.java
+$ java TostringZhoq
+Aspap@15db9742</code></pre>
+<p>Шыққан <code>Aspap@...</code> - класс аты және нысанның «хэш-коды» (оның мәні әр іске қосуда өзгеруі мүмкін). Бұл пайдасыз. Өз <code>toString</code> жазсақ:</p>
+<pre data-lang="java"><code class="language-java">class Aspap {
+    private final String ataui;
+    private final int baga;
+
+    Aspap(String ataui, int baga) {
+        this.ataui = ataui;
+        this.baga = baga;
+    }
+
+    @Override
+    public String toString() {
+        return "Aspap{" + ataui + ", " + baga + " тг}";
+    }
+}
+
+public class TostringBar {
+    public static void main(String[] args) {
+        Aspap a = new Aspap("Домбыра", 45000);
+        System.out.println(a);
+        System.out.println("Таңдалған: " + a);     // + мәтінмен де toString шақырады
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac TostringBar.java
+$ java TostringBar
+Aspap{Домбыра, 45000 тг}
+Таңдалған: Aspap{Домбыра, 45000 тг}</code></pre>
+<p><code>@Override</code> - «мен мұрагерленген әдісті әдейі қайта жазып жатырмын» деген белгі; аты қате болса, компилятор ескертеді. Енді <code>equals</code>. Әдепкі <code>equals</code> да <code>==</code> сияқты сілтемені салыстырады, яғни бір нысан ба? Бірақ біз «екі аспаптың аты мен бағасы бірдей болса, олар тең» деп санағымыз келеді. Бұл үшін <code>equals</code> пен <code>hashCode</code>-ті қайта анықтау керек және <strong>екеуін де бірге</strong>. Қағида: егер <code>a.equals(b)</code> ақиқат болса, олардың <code>hashCode()</code>-тары да бірдей болуы тиіс. <code>HashSet</code> және <code>HashMap</code> сияқты жинақтар алдымен хэш-кодқа қарайды, сондықтан біреуін ғана жазсаңыз, олар қате жұмыс істейді. Көрейік.</p>
+<pre data-lang="java"><code class="language-java">import java.util.HashSet;
+import java.util.Objects;
+
+class Jaman {                        // equals бар, hashCode жоқ
+    String ataui;
+    Jaman(String a) { ataui = a; }
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Jaman j &amp;&amp; Objects.equals(ataui, j.ataui);
+    }
+}
+
+class Jaksy {                        // екеуі де бар
+    String ataui;
+    Jaksy(String a) { ataui = a; }
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Jaksy j &amp;&amp; Objects.equals(ataui, j.ataui);
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(ataui);
+    }
+}
+
+public class EqualsMysal {
+    public static void main(String[] args) {
+        Jaman j1 = new Jaman("Домбыра"), j2 = new Jaman("Домбыра");
+        System.out.println(j1.equals(j2) + " " + (j1 == j2));
+
+        HashSet&lt;Jaman&gt; a = new HashSet&lt;&gt;();
+        a.add(j1);
+        System.out.println("hashCode жоқ: " + a.contains(j2));
+
+        Jaksy k1 = new Jaksy("Домбыра"), k2 = new Jaksy("Домбыра");
+        HashSet&lt;Jaksy&gt; b = new HashSet&lt;&gt;();
+        b.add(k1);
+        System.out.println("hashCode бар: " + b.contains(k2));
+        System.out.println(k1.hashCode() == k2.hashCode());
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac EqualsMysal.java
+$ java EqualsMysal
+true false
+hashCode жоқ: false
+hashCode бар: true
+true</code></pre>
+<p>Екі <code>Jaman</code> нысаны <code>equals</code> бойынша тең, бірақ <code>hashCode</code> әртүрлі болғандықтан, <code>HashSet</code> оны табуға тырыспайды да: <code>contains</code> жалған қайтарды. <code>Jaksy</code> класында екеуі бірлесе жұмыс істейді. Мұндағы <code>o instanceof Jaksy j</code> - Java 16-дан бастап қолжетімді <strong>үлгі бойынша тексеру</strong> (<span class="term-en">pattern matching for instanceof</span>): тип сәйкес болса, бірден <code>j</code> айнымалысын береді. <code>Objects.equals</code> пен <code>Objects.hash</code> - <code>null</code>-ға төзімді көмекшілер.</p>
+
+<h2 id="record">record: деректер класын қысқа жазу</h2>
+<p>Жоғарыдағы <code>Aspap</code> класы: екі <code>private final</code> өріс, конструктор, екі getter, <code>toString</code>, <code>equals</code>, <code>hashCode</code> - жиырма шақты жол. Тек деректерді ұстайтын класстар үшін Java 16-да <strong>record</strong> (жазба) енгізілді: бір жолмен бәрі шығады.</p>
+<pre data-lang="java"><code class="language-java">record Qala(String ataui, int halyq) {
+    // компактты конструктор: деректі тексеру
+    Qala {
+        if (halyq &lt; 0) {
+            throw new IllegalArgumentException("Халық теріс болмайды: " + halyq);
+        }
+    }
+
+    // қосымша әдіс
+    boolean millionnyq() {
+        return halyq &gt;= 1_000_000;
+    }
+}
+
+public class RecordMysal {
+    public static void main(String[] args) {
+        Qala a = new Qala("Астана", 1350000);
+        Qala b = new Qala("Астана", 1350000);
+
+        System.out.println(a);                    // toString дайын
+        System.out.println(a.ataui() + " " + a.halyq());   // getter: өріс аты (), get жоқ
+        System.out.println(a.equals(b) + " " + (a == b));
+        System.out.println(a.hashCode() == b.hashCode());
+        System.out.println(a.millionnyq());
+
+        Qala c = new Qala("Қала", -5);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac RecordMysal.java
+$ java RecordMysal
+Qala[ataui=Астана, halyq=1350000]
+Астана 1350000
+true false
+true
+true
+Exception in thread "main" java.lang.IllegalArgumentException: Халық теріс болмайды: -5
+	at Qala.&lt;init&gt;(RecordMysal.java:5)
+	at RecordMysal.main(RecordMysal.java:26)</code></pre>
+<p><code>record</code> автоматты түрде жасайды: <code>private final</code> өрістерді, конструкторды, getter-лерді (олардың аты өріс атымен бірдей, <code>get</code> жазылмайды: <code>a.ataui()</code>), сондай-ақ <code>toString</code>, <code>equals</code> және <code>hashCode</code> (олар барлық өріс бойынша есептеледі). Record - <strong>өзгермейтін</strong> (<span class="term-en">immutable</span>): өрісті өзгертетін setter жоқ. Қосымша әдістер қосуға болады, ал <em>компактты конструктор</em> (<code>Qala { ... }</code>) параметрлерді тексеруге ыңғайлы. Соңғы жолда теріс халық берсек, <code>IllegalArgumentException</code> лақтырылды: бұл - біз тексерісті өзіміз енгізген қателіктің «ерекше жағдайы».</p>
+<p>Қашан <code>record</code>, қашан әдеттегі класс? Егер нысан негізінен деректер тасушы болса (қала, нүкте, транзакция), өзгермесе - <code>record</code>. Егер нысанның күйі өзгеріп, күрделі мінез-құлқы болса (әмиян, оқушы журналы), әдеттегі класс.</p>
+
+<h2 id="packages">Пакеттер</h2>
+<p>Жоба өскен сайын кластар көбейеді, оларды ұйымдастыру керек. <strong>Пакет</strong> (<span class="term-en">package</span>) - кластарды топтайтын аты бар «қалта». Тура файл жүйесіндегі қалталар сияқты: <code>kz.dukan.Kitap</code> класы <code>kz/dukan/Kitap.java</code> файлында тұрады. Пакеттің міндеті - 1) кластарды реттеу, 2) аттар қақтығысын болдырмау (екі түрлі <code>Kitap</code> бола алады), 3) қолжетімділікті басқару.</p>
+<ul>
+<li>Файлдың бірінші жолы: <code>package kz.dukan;</code>.</li>
+<li>Басқа пакеттегі класты қолдану: <code>import kz.dukan.Kitap;</code> (не барлығын <code>import kz.dukan.*;</code>).</li>
+<li><code>java.lang</code> (<code>String</code>, <code>Math</code>, <code>System</code>) автоматты импортталады.</li>
+<li>Басқа пакеттен көрінуі үшін класс пен оның қажетті мүшелері <code>public</code> болуы тиіс.</li>
+</ul>
+<p>Пакет аттары әдетте кіші әріппен жазылады, ал домен атауын кері жазу келісімі бар (<code>kz.edu.marun</code>). Екі файлдан тұратын шағын жоба көрейік:</p>
+<p><code>kz/dukan/Kitap.java</code>:</p><pre data-lang="java"><code class="language-java">package kz.dukan;
+
+public class Kitap {
+    private final String atau;
+    private final double baga;
+
+    public Kitap(String atau, double baga) {
+        this.atau = atau;
+        this.baga = baga;
+    }
+
+    public String getAtau() {
+        return atau;
+    }
+
+    public double getBaga() {
+        return baga;
+    }
+
+    @Override
+    public String toString() {
+        return atau + " - " + baga + " тг";
+    }
+}</code></pre><p><code>Main.java</code>:</p><pre data-lang="java"><code class="language-java">import kz.dukan.Kitap;
+
+public class Main {
+    public static void main(String[] args) {
+        Kitap k = new Kitap("Абай жолы", 3200);
+        System.out.println(k);
+        System.out.println(k.getAtau().length());
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac kz/dukan/Kitap.java Main.java
+$ java Main
+Абай жолы - 3200.0 тг
+9</code></pre>
+<p>Компиляция кезінде <code>javac kz/dukan/Kitap.java Main.java</code> екі файлды бірге алды. Егер біз класс не конструкторды <code>public</code> қылмасақ, басқа пакеттен көрінбейді:</p>
+<p><code>kz/dukan/Kitap.java</code>:</p><pre data-lang="java"><code class="language-java">package kz.dukan;
+
+public class Kitap {
+    Kitap(String atau) { }      // public емес: package-private
+}</code></pre><p><code>Main.java</code>:</p><pre data-lang="java"><code class="language-java">import kz.dukan.Kitap;
+
+public class Main {
+    public static void main(String[] args) {
+        Kitap k = new Kitap("Абай жолы");
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac kz/dukan/Kitap.java Main.java
+Main.java:5: error: Kitap(String) is not public in Kitap; cannot be accessed from outside package
+        Kitap k = new Kitap("Абай жолы");
+                  ^
+1 error</code></pre>
+<p>Қате хабары нақты: конструктор <code>public</code> емес, сондықтан басқа пакеттен қолжетімді емес. Ескерту: <code>package</code> жолы файлдың бірінші нұсқауы болуы керек, ал файл дұрыс қалтада тұруы тиіс (<code>kz/dukan/</code>). Егер пакет аты мен қалта сәйкес келмесе, <code>javac</code> немесе <code>java</code> класты таппайды. IDE-лер мұны өзі реттейді.</p>
+
+<h2 id="references">Нысан жадта: стек, үйме және сілтемелер</h2>
+<p>2-аптада массив мен <code>String</code> үймеде тұрады деп білдік. Барлық нысан дәл солай жұмыс істейді. <code>Kitap k = new Kitap(...)</code> жолында екі әрекет бар: оң жақта <code>new</code> үймеде нысанға орын бөліп, конструкторды орындайды; сол жақта <code>k</code> айнымалысы стекте <em>сілтемені</em> (мекенжайды) сақтайды. Сондықтан бір нысанға бірнеше сілтеме болуы мүмкін.</p>
+<pre data-lang="java"><code class="language-java">class Qala {
+    private String ataui;
+    private int halyq;
+
+    Qala(String ataui, int halyq) {
+        this.ataui = ataui;
+        this.halyq = halyq;
+    }
+
+    int getHalyq() { return halyq; }
+    void setHalyq(int halyq) { this.halyq = halyq; }
+    String getAtaui() { return ataui; }
+}
+
+public class Siltemeler {
+    static void ostiru(Qala q) {
+        q.setHalyq(q.getHalyq() + 50000);     // нысанның ішін өзгертеді
+    }
+
+    static void almastyru(Qala q) {
+        q = new Qala("Жаңа", 1);              // тек жергілікті сілтеме өзгереді
+    }
+
+    public static void main(String[] args) {
+        Qala a = new Qala("Қарағанды", 500000);
+        Qala b = a;                           // екінші сілтеме, бір нысан
+        Qala c = new Qala("Қарағанды", 500000);
+
+        b.setHalyq(510000);
+        System.out.println(a.getHalyq() + " " + c.getHalyq());
+        System.out.println((a == b) + " " + (a == c));
+
+        ostiru(a);
+        System.out.println(a.getHalyq());
+        almastyru(a);
+        System.out.println(a.getAtaui() + " " + a.getHalyq());
+
+        Qala jok = null;
+        System.out.println(jok == null);
+        System.out.println(jok.getHalyq());   // NullPointerException
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Siltemeler.java
+$ java Siltemeler
+510000 500000
+true false
+560000
+Қарағанды 560000
+true
+Exception in thread "main" java.lang.NullPointerException: Cannot invoke "Qala.getHalyq()" because "&lt;local4&gt;" is null
+	at Siltemeler.main(Siltemeler.java:40)</code></pre><figure style="margin:22px 0;text-align:center"><svg viewBox="0 0 640 270" role="img" aria-label="Жад диаграммасы: стекте a, b, c сілтемелері; a және b үймедегі бір Qala нысанына (Қарағанды, 510000) көрсетеді, c басқа нысанға (Қарағанды, 500000); jok сілтемесі null" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto"><defs><marker id="ar668_2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="100" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:700">Стек</text><text x="470" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:700">Үйме (heap)</text><rect x="30" y="28" width="140" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100.0" y="38.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">a</text><text x="100.0" y="55.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">сілтеме</text><rect x="30" y="70" width="140" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100.0" y="80.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">b</text><text x="100.0" y="97.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">сілтеме</text><rect x="30" y="112" width="140" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100.0" y="122.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">c</text><text x="100.0" y="139.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">сілтеме</text><rect x="30" y="170" width="140" height="34" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8"/><text x="100.0" y="180.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">jok</text><text x="100.0" y="197.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">null</text><rect x="320" y="40" width="270" height="66" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="335" y="58" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:700">Qala нысаны №1</text><text x="335" y="78" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">ataui = "Қарағанды"</text><text x="335" y="96" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">halyq = 510000</text><rect x="320" y="138" width="270" height="66" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="335" y="156" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:700">Qala нысаны №2</text><text x="335" y="176" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">ataui = "Қарағанды"</text><text x="335" y="194" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12px;font-weight:400">halyq = 500000</text><polyline points="170,45 320,62" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar668_2)"/><polyline points="170,87 240,87 300,80 320,76" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar668_2)"/><polyline points="170,129 320,168" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar668_2)"/><text x="250" y="235" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">a == b: true     a == c: false     jok.getHalyq(): NullPointerException</text></svg><figcaption style="font-size:14.5px;color:var(--muted);margin-top:8px">12-сурет. Үш сілтеме, екі нысан. a мен b бір нысанды көрсетеді; c - дәл сондай мазмұнды, бірақ басқа нысан; jok ешнәрсені көрсетпейді.</figcaption></figure>
+<p>Диаграмманы мәтінмен оқыңыз: стекте төрт айнымалы тұр. <code>a</code> мен <code>b</code> үймедегі бірінші <code>Qala</code> нысанына көрсетеді, сондықтан <code>b.setHalyq(510000)</code> арқылы өзгерткенде, <code>a</code> да 510000 көреді. <code>c</code> - екінші нысан, оның мазмұны бастапқыда бірдей, бірақ ол бөлек, тәуелсіз. <code>jok</code> - <code>null</code>, ешбір нысанға көрсетпейді.</p>
+<p>Нәтижелерді түсіндірейік. <code>ostiru(a)</code> нысанның ішін өзгертті, және бұл шақырушыда көрінді (510000 + 50000 = 560000). Ал <code>almastyru(a)</code> параметрге жаңа нысан берді, бірақ параметр <em>сілтеменің көшірмесі</em> болғандықтан, шақырушының <code>a</code> сілтемесі өзгермеді: ол бұрынғыша «Қарағанды». Бұл Java-ның «мәнмен беру» ережесінің дәл түсіндірмесі: нысанның ішін өзгертуге болады, ал сілтеменің өзін әдіс ішінде ауыстырсаңыз, оның сырттағы көшірмесіне әсер етпейді. Соңында <code>null</code> арқылы әдіс шақырғанда <code>NullPointerException</code> болды. Ең жиі кездесетін Java қатесі осы: <code>null</code> «ештеңе жоқ» дегенді білдіреді, одан ештеңе сұрай алмайсыз.</p>
+
+<h2 id="gc">Жинақтаушы (garbage collection)</h2>
+<p>Нысандар үймеде жасалады. Бірақ оларды кім өшіреді? Java-да <code>delete</code> не <code>free</code> жоқ. Оның орнына <strong>қоқыс жинаушы</strong> (<span class="term-en">garbage collector, GC</span>) JVM ішінде автоматты жұмыс істейді: ол <em>қолжетімсіз</em> нысандарды тауып, олар алып тұрған жадты босатады. Нысан қолжетімсіз болады, егер оған бірде-бір сілтеме қалмаса (стектегі айнымалылардан, не басқа қолжетімді нысандардан тізбектеліп жету мүмкін болмаса).</p>
+<figure style="margin:22px 0;text-align:center"><svg viewBox="0 0 640 230" role="img" aria-label="Қоқыс жинаушы: стектегі a сілтемесі бірінші нысанға, b сілтемесі екінші нысанға көрсетеді; үшінші нысанға ешкім сілтемейді, ол қолжетімсіз және жинаушымен өшіріледі" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto"><defs><marker id="ar668_3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="100" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:700">Стек</text><text x="470" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:700">Үйме</text><rect x="30" y="34" width="140" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100.0" y="51.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">a</text><rect x="30" y="80" width="140" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100.0" y="97.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">b</text><rect x="330" y="30" width="160" height="42" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="410.0" y="44.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">Нысан 1</text><text x="410.0" y="61.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">қолжетімді</text><rect x="330" y="84" width="160" height="42" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="410.0" y="98.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">Нысан 2</text><text x="410.0" y="115.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">қолжетімді</text><rect x="330" y="150" width="160" height="42" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8"/><text x="410.0" y="164.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">Нысан 3</text><text x="410.0" y="181.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">қолжетімсіз</text><polyline points="170,51 330,51" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar668_3)"/><polyline points="170,97 330,105" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar668_3)"/><text x="560" y="171" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12px;font-weight:400">GC босатады</text><polyline points="492,171 520,171" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 4" marker-end="url(#ar668_3)"/><text x="250" y="214" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">Нысан 3-ке бұрын a көрсеткен; a = b болғанда сілтеме үзілді</text></svg><figcaption style="font-size:14.5px;color:var(--muted);margin-top:8px">13-сурет. GC идеясы: сілтеме қалмаған нысан қоқысқа айналады.</figcaption></figure>
+<p>Мәтінмен: үймеде үш нысан бар. Стектегі <code>a</code> бірінші нысанға, <code>b</code> екіншіге көрсетеді. Үшінші нысанға ешбір сілтеме жоқ (мысалы, бұрын <code>a</code> оны көрсеткен, бірақ кейін <code>a</code> басқа нысанға көшті). Сондықтан ол қоқыс болып саналады да, GC оны босатады.</p>
+<pre data-lang="java"><code class="language-java">class Uaqytsha {
+    final int[] buf = new int[1000];
+}
+
+public class Qoqys {
+    public static void main(String[] args) {
+        Uaqytsha a = new Uaqytsha();
+        a = new Uaqytsha();            // ескі нысанға сілтеме қалмады
+
+        long sany = 0;
+        for (int i = 0; i &lt; 5_000_000; i++) {
+            Uaqytsha t = new Uaqytsha();   // әр айналымда ~4 КБ, бірақ ешкім сақтамайды
+            sany += t.buf.length;
+        }
+        System.out.println("Бағдарлама жад таусылмай аяқталды: " + sany);
+
+        a = null;                       // соңғы нысан да қолжетімсіз
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Qoqys.java
+$ java Qoqys
+Бағдарлама жад таусылмай аяқталды: 5000000000</code></pre>
+<p>Бұл бағдарлама бес миллион нысан жасады, әрқайсысы шамамен 4 килобайт: барлығы ~20 гигабайт. Егер олар жиналып қалса, жад таусылар еді. Бірақ әр итерация соңында <code>t</code> келесі нысанға ауысады, ескісі қоқысқа айналады, және GC оларды үнемі тазалап отырады. Біз ешқандай <code>free</code> жазбадық.</p>
+<div class="callout note"><span class="callout-title">GC туралы нақтылау</span>
+<p>GC қашан жұмыс істейтінін біз басқармаймыз. <code>System.gc()</code> тек «жинағаның жөн болар еді» деген ұсыныс, кепіл емес. Сондықтан нысан жойылған кезде код орындалады деп сенуге болмайды. Жад үшін алаңдау азаяды, бірақ жад ағып кетуі әлі де мүмкін: егер нысанды тізімде ұстап, ешқашан өшірмесек, ол қолжетімді қалады да, GC оны өшірмейді. Файлдар, желі байланыстары сияқты жадтан тыс ресурстарды GC емес, біз өзіміз жабамыз (оны кейін көреміз).</p></div>
+
+<h2 id="objects-in-list">Нысандар тізімі</h2>
+<p>Енді өткен аптадағы мәселеге оралайық. Нысандарымызды <code>ArrayList</code>-ке саламыз және онымен жұмыс істейміз. Сұрыптау үшін Java-ның <code>Comparator</code> құралын қолданамыз: <code>Comparator.comparingDouble(Kitap::getBaga)</code> - «кітаптарды <code>getBaga</code> нәтижесі бойынша салыстыр» (<code>Kitap::getBaga</code> - әдіске сілтеме, лямбданың қысқа жазылуы).</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.Comparator;
+
+class Kitap {
+    private final String atau;
+    private final double baga;
+    private int sany;
+
+    Kitap(String atau, double baga, int sany) {
+        this.atau = atau;
+        this.baga = baga;
+        this.sany = sany;
+    }
+
+    String getAtau() { return atau; }
+    double getBaga() { return baga; }
+    int getSany() { return sany; }
+
+    boolean sat(int k) {
+        if (k &lt;= 0 || k &gt; sany) {
+            return false;
+        }
+        sany -= k;
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("%-18s %7.1f тг  (%d дана)", atau, baga, sany);
+    }
+}
+
+public class Katalog {
+    public static void main(String[] args) {
+        ArrayList&lt;Kitap&gt; kitaptar = new ArrayList&lt;&gt;();
+        kitaptar.add(new Kitap("Абай жолы", 3200, 5));
+        kitaptar.add(new Kitap("Көшпенділер", 4100, 2));
+        kitaptar.add(new Kitap("Қазақ ертегілері", 1500, 10));
+        kitaptar.add(new Kitap("Алгоритмдер", 8900, 1));
+
+        kitaptar.sort(Comparator.comparingDouble(Kitap::getBaga));
+        System.out.println("Бағасы бойынша:");
+        for (Kitap k : kitaptar) {
+            System.out.println("  " + k);
+        }
+
+        System.out.println(kitaptar.get(3).sat(1));   // соңғы кітап сатылды
+        System.out.println(kitaptar.get(3).sat(1));   // енді жоқ
+
+        double qor = 0;
+        for (Kitap k : kitaptar) {
+            qor += k.getBaga() * k.getSany();
+        }
+        System.out.printf("Қоймадағы құн: %.1f тг%n", qor);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Katalog.java
+$ java Katalog
+Бағасы бойынша:
+  Қазақ ертегілері    1500.0 тг  (10 дана)
+  Абай жолы           3200.0 тг  (5 дана)
+  Көшпенділер         4100.0 тг  (2 дана)
+  Алгоритмдер         8900.0 тг  (1 дана)
+true
+false
+Қоймадағы құн: 39200.0 тг</code></pre>
+<p>Міне, нысандық тәсілдің пайдасы: атау, баға, сан бір нысанда тұр, сұрыптағанда олар бірге жүреді, «қалдық» тексеру логикасы (<code>sat</code> әдісі) кітаптың өзінде орналасқан. Алдыңғы аптада массивтермен жасаған кодпен салыстырыңыз: әлдеқайда оқылатын әрі қауіпсіз.</p>
+<h3 id="tryit">Өз компьютеріңде іске қос</h3>
+<ol>
+<li>Бір файлда бірнеше класс болса, тек біреуі <code>public</code> және файл аты сол класс атымен бірдей (<code>Katalog.java</code>).</li>
+<li>Пакеті бар жоба: қалталар құрылымын жасаңыз (<code>kz/dukan/</code>), содан кейін түбір қалтадан <code>javac kz/dukan/*.java Main.java</code> және <code>java Main</code>.</li>
+<li>Класс жазып болған соң, оған <code>toString</code> қосуды әдетке айналдырыңыз: шығарғанда да, жөндегенде де өте ыңғайлы.</li>
+</ol>
+
+<h2 id="mistakes">Жиі қателер</h2>
+<ol>
+<li><strong>Нысанды <code>new</code>-сіз қолдану.</strong> <code>Kitap k; k.atau = "x";</code> - <code>k</code> әлі ешнәрсеге көрсетпейді (компилятор «not initialized» дейді). Класс өрісі болса, <code>null</code> болып қалады да, <code>NullPointerException</code> шығады.</li>
+<li><strong>Конструктордың алдына <code>void</code> жазу.</strong> <code>void Kitap(...)</code> - конструктор емес, жай әдіс!</li>
+<li><strong><code>this</code>-ті ұмыту.</strong> Конструктордың <code>atau = atau;</code> жолы параметрді өзіне меншіктейді де, өріс өзгермей қалады.</li>
+<li><strong>Өрістерді <code>public</code> қалдыру.</strong> Деректі қорғау үшін <code>private</code> жасаңыз.</li>
+<li><strong>static өріс пен нысан өрісін шатастыру.</strong> <code>static</code> ортақ, көшірмесі біреу.</li>
+<li><strong><code>==</code> арқылы нысанды салыстыру.</strong> <code>==</code> сілтемені салыстырады; мазмұн үшін <code>equals</code> керек.</li>
+<li><strong><code>equals</code> жазып, <code>hashCode</code>-ті ұмыту.</strong> <code>HashSet</code> пен <code>HashMap</code> қате жұмыс істейді.</li>
+<li><strong><code>equals(Object)</code> орнына <code>equals(Kitap)</code> жазу.</strong> Бұл қайта анықтау емес, қайта жүктеу; сондықтан <code>@Override</code> жазыңыз: компилятор ұстайды.</li>
+<li><strong><code>null</code> сілтемеге әдіс шақыру.</strong> <code>NullPointerException</code>: шақырар алдында тексеріңіз.</li>
+<li><strong>Record өрісін өзгертуге тырысу.</strong> Record өзгермейді; өзгерту үшін жаңа record жасаңыз.</li>
+</ol>
+
+<h2 id="summary">Қорытынды</h2>
+<ul>
+<li><strong>Класс</strong> - сызба (өрістер + әдістер), <strong>нысан</strong> - <code>new</code> арқылы жасалған дана;</li>
+<li><strong>Конструктор</strong> нысанды дайындайды; <code>this</code> - «осы нысан»; <code>this(...)</code> басқа конструкторды шақырады;</li>
+<li><strong>Инкапсуляция</strong>: өріс <code>private</code>, қол жеткізу getter/setter арқылы, ережені әдіс тексереді;</li>
+<li><code>static</code> мүшелер класқа тиесілі: ортақ санауыш, тұрақты, күйсіз көмекші әдіс;</li>
+<li><code>toString</code>, <code>equals</code>, <code>hashCode</code> - <code>Object</code>-тен келеді, көбіне қайта анықтау керек; <code>equals</code> пен <code>hashCode</code> әрқашан жұп;</li>
+<li><strong>record</strong> - өзгермейтін деректер класының қысқа жазылуы;</li>
+<li><strong>Пакет</strong> кластарды топтайды, <code>import</code> оларды көрсетеді, <code>public</code> пакеттен тыс жету үшін;</li>
+<li>Нысан үймеде, айнымалыда сілтеме ғана; бірнеше сілтеме бір нысанды көрсете алады; <code>null</code> - нысансыз сілтеме;</li>
+<li><strong>GC</strong> қолжетімсіз нысандарды автоматты тазалайды.</li>
+</ul>
+<p>Келесі аптада кластар арасындағы қатынастарды үйренеміз: бір класс екіншісінің қасиеттерін мұра етіп алады, ортақ келісім-шарт интерфейс арқылы беріледі, ал бір сілтеме әртүрлі нысанды көрсете алады (полиморфизм).</p>
+<h3 id="selfcheck">Өзіңізді тексеру тізімі</h3>
+<ul class="checklist" data-id="java3-self">
+<li><input type="checkbox" aria-label="Орындалды"> <span>Өрістері, конструкторы және әдістері бар класс жаза аламын</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>this</code> не үшін керек екенін және конструктор тізбегін түсіндіре аламын</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Өрісті <code>private</code> етіп, тексеретін setter жаза аламын</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>static</code> пен нысан мүшелерінің айырмашылығын білемін</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>toString</code>, <code>equals</code>, <code>hashCode</code> жаза аламын және оларды бірге жазу керегін түсінемін</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Стек/үйме диаграммасын сызып, сілтеме мен нысан айырмасын түсіндіре аламын</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>record</code> қашан ыңғайлы екенін білемін</span></li>
+</ul>
+<p class="progress"></p>
+<h2 id="quiz">Өзіңізді тексеріңіз</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. Қай тұжырым <strong>класс</strong> пен <strong>нысан</strong> қатынасын дұрыс сипаттайды?</p>
+<label><input type="radio" value="a"> Класс - нақты дана, нысан - оның сызбасы</label>
+<label><input type="radio" value="b"> Класс - сызба (үлгі), нысан - сол сызбадан жасалған нақты дана</label>
+<label><input type="radio" value="c"> Класс пен нысан - бір ұғым</label>
+<label><input type="radio" value="d"> Нысан тек <code>static</code> өрістерден тұрады</label>
+<p class="explain">Класс өрістер мен әдістерді сипаттайды, ал <code>new</code> оператормен жасалған нысанның өз өріс мәндері болады. Бір класстан қанша болса да нысан жасауға болады.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. Мына код не шығарады?</p>
+<pre data-lang="java"><code class="language-java">class Sanau {
+    static int jalpy = 0;
+    int ozim = 0;
+
+    Sanau() {
+        jalpy++;
+        ozim++;
+    }
+}
+
+public class Q2 {
+    public static void main(String[] args) {
+        Sanau a = new Sanau();
+        Sanau b = new Sanau();
+        Sanau c = new Sanau();
+        System.out.println(Sanau.jalpy + " " + c.ozim);
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>3 3</code></label>
+<label><input type="radio" value="b"> <code>1 1</code></label>
+<label><input type="radio" value="c"> <code>3 1</code></label>
+<label><input type="radio" value="d"> <code>1 3</code></label>
+<p class="explain"><code>jalpy</code> - <code>static</code>, барлық нысанға ортақ, үш конструктор оны 3-ке жеткізді. <code>ozim</code> - нысан өрісі, әр нысанның өзінде жеке, сондықтан <code>c.ozim = 1</code>. Нақты нәтиже: 3 1.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. Мына код не шығарады?</p>
+<pre data-lang="java"><code class="language-java">class Nokta {
+    private int x, y;
+    Nokta(int x, int y) { this.x = x; this.y = y; }
+
+    @Override
+    public String toString() {
+        return "(" + x + "; " + y + ")";
+    }
+}
+
+public class Q3 {
+    public static void main(String[] args) {
+        Nokta p = new Nokta(3, 4);
+        System.out.println("P = " + p);
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>P = Nokta@...</code> (хэш-код)</label>
+<label><input type="radio" value="b"> <code>P = (3; 4)</code></label>
+<label><input type="radio" value="c"> <code>P = 3 4</code></label>
+<label><input type="radio" value="d"> Компиляция қатесі</label>
+<p class="explain">Мәтінге нысанды жалғағанда Java <code>toString()</code>-ті шақырады. Біз оны қайта анықтағандықтан, нәтиже: P = (3; 4).</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. Төмендегі кодта қате қайсы? <br><code>class A { private int x = 1; }</code><br><code>class B { void f() { A a = new A(); System.out.println(a.x); } }</code></p>
+<label><input type="radio" value="a"> Қате жоқ</label>
+<label><input type="radio" value="b"> <code>x</code> өрісі <code>private</code>, оған <code>B</code> класынан тікелей жетуге болмайды - компиляция қатесі</label>
+<label><input type="radio" value="c"> <code>A</code> классында конструктор жоқ</label>
+<label><input type="radio" value="d"> <code>println</code> нысанды шығара алмайды</label>
+<p class="explain"><code>private</code> мүше тек өз класының ішінде көрінеді. Компилятор «<em>x has private access in A</em>» хабарын береді. Шешімі - getter қосу: <code>a.getX()</code>.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. Мына код не шығарады?</p>
+<pre data-lang="java"><code class="language-java">class Qala {
+    private int halyq;
+    Qala(int halyq) { this.halyq = halyq; }
+    int getHalyq() { return halyq; }
+    void setHalyq(int h) { halyq = h; }
+}
+
+public class Q5 {
+    public static void main(String[] args) {
+        Qala a = new Qala(100);
+        Qala b = a;
+        b.setHalyq(250);
+        System.out.println(a.getHalyq());
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>100</code></label>
+<label><input type="radio" value="b"> <code>250</code></label>
+<label><input type="radio" value="c"> <code>350</code></label>
+<label><input type="radio" value="d"> <code>0</code></label>
+<p class="explain"><code>Qala b = a</code> нысанды көшірмейді, тек сілтемені көшіреді. <code>a</code> мен <code>b</code> бір нысанды көрсетеді, сондықтан <code>b</code> арқылы жасалған өзгеріс <code>a</code>-дан да көрінеді. Нақты нәтиже: 250.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. Мына <code>record</code> үшін нәтиже қандай?</p>
+<pre data-lang="java"><code class="language-java">record Nokta(int x, int y) { }
+
+public class Q6 {
+    public static void main(String[] args) {
+        Nokta p = new Nokta(1, 2);
+        Nokta q = new Nokta(1, 2);
+        System.out.println(p.equals(q) + " " + (p == q));
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>true true</code></label>
+<label><input type="radio" value="b"> <code>false false</code></label>
+<label><input type="radio" value="c"> <code>true false</code></label>
+<label><input type="radio" value="d"> <code>false true</code></label>
+<p class="explain">Record <code>equals</code>-ті барлық өріс бойынша автоматты жасайды: екі нысан мазмұны бойынша тең (<code>true</code>). Бірақ <code>==</code> сілтемені салыстырады, ал олар әртүрлі нысандар (<code>false</code>). Нақты нәтиже: true false.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. Неге <code>static</code> әдіс ішінде <code>this</code> қолдануға болмайды?</p>
+<label><input type="radio" value="a"> Өйткені <code>this</code> тек конструкторда жұмыс істейді</label>
+<label><input type="radio" value="b"> Өйткені <code>static</code> әдіс нысансыз, класқа тиесілі шақырылады, ендеше «осы нысан» деген ұғым жоқ</label>
+<label><input type="radio" value="c"> Өйткені <code>this</code> кілт сөз емес</label>
+<label><input type="radio" value="d"> Өйткені <code>static</code> әдіс өрістерді өзгерте алмайды</label>
+<p class="explain"><code>static</code> әдіс нысансыз-ақ шақырылады (<code>Math.sqrt(4)</code>), сондықтан ол нысанның өрістеріне де, <code>this</code>-ке де тікелей жете алмайды. Ол тек static өрістермен жұмыс істей алады.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. Қай жағдайда нысан <strong>қоқыс жинаушы</strong> үшін босатуға үміткер болады?</p>
+<label><input type="radio" value="a"> Нысанның <code>toString</code> әдісі шақырылған соң</label>
+<label><input type="radio" value="b"> Оған көрсететін бірде-бір (қолжетімді) сілтеме қалмағанда</label>
+<label><input type="radio" value="c"> Бағдарламада <code>delete</code> жазылғанда</label>
+<label><input type="radio" value="d"> Нысанның барлық өрісі <code>private</code> болғанда</label>
+<p class="explain">Java-да нысандарды қолмен өшірмейміз. Егер нысанға стектегі айнымалылардан немесе басқа қолжетімді нысандардан жету мүмкін болмаса (сілтемелер <code>null</code> болды не басқа нысанға ауысты), ол қолжетімсіз және GC оны босата алады.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
+<h2 id="exercises">Жаттығулар</h2>
+<p>Алты жаттығу: екі оңай, екі орташа, екі қиын. Шешімдерін өз компьютеріңде жазып, тексеріңіз.</p>
+<div class="task">
+<div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-static">Санауыш</h3></div>
+<p>Мына бағдарлама не шығарады? Жауабыңызды «a b» түрінде (екі сан, бос орынмен бөлініп) жазыңыз.</p><pre data-lang="java"><code class="language-java">class Oqushy {
+    static int sany = 0;
+    int nomer;
+
+    Oqushy() {
+        sany++;
+        nomer = sany;
+    }
+}
+
+public class Jat1 {
+    public static void main(String[] args) {
+        Oqushy a = new Oqushy();
+        Oqushy b = new Oqushy();
+        Oqushy c = new Oqushy();
+        System.out.println(c.nomer + " " + Oqushy.sany);
+    }
+}</code></pre>
+<div class="answer-check" data-answer="3 3|3,3"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>sany</code> - <code>static</code>, <code>nomer</code> - әр нысанның өз өрісі. Үшінші нысан жасалғанда <code>sany</code> нешеге жетеді?</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Үшінші нысанда <code>sany = 3</code>, ол <code>nomer</code>-ге де 3 болып көшеді. Сондықтан <code>c.nomer = 3</code> және <code>Oqushy.sany = 3</code>.</p><pre class="terminal"><code class="language-plaintext">$ java Jat1
+3 3</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-class">Оқушы класы</h3></div>
+<p><code>Oqushy</code> классын жазыңыз: <code>private final</code> өрістері - аты-жөні (<code>String</code>), жасы (<code>int</code>), сыныбы (<code>String</code>); конструктор; <code>toString</code>. <code>main</code>-де үш оқушыдан массив жасап, оларды шығарыңыз.</p>
+<details><summary>Кеңес</summary><div class="details-body"><p>Конструкторда <code>this.ataui = ataui;</code> түрінде жазыңыз. <code>toString</code>-ке <code>@Override</code> және <code>public</code> қосуды ұмытпаңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Мысал шешім:</p><pre data-lang="java"><code class="language-java">class Oqushy {
+    private final String ataui;
+    private final int jas;
+    private final String synyp;
+
+    Oqushy(String ataui, int jas, String synyp) {
+        this.ataui = ataui;
+        this.jas = jas;
+        this.synyp = synyp;
+    }
+
+    @Override
+    public String toString() {
+        return ataui + ", " + jas + " жас, " + synyp + " сынып";
+    }
+}
+
+public class OqushyJurnaly {
+    public static void main(String[] args) {
+        Oqushy[] topt = {
+            new Oqushy("Аружан Бекова", 15, "9А"),
+            new Oqushy("Бекзат Сәрсенов", 16, "10Б"),
+            new Oqushy("Дана Қасымова", 15, "9А")
+        };
+        for (Oqushy o : topt) {
+            System.out.println(o);
+        }
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java OqushyJurnaly
+Аружан Бекова, 15 жас, 9А сынып
+Бекзат Сәрсенов, 16 жас, 10Б сынып
+Дана Қасымова, 15 жас, 9А сынып</code></pre></div></details>
+<details open><summary>Өзін тексеру</summary><div class="details-body">
+<ul class="checklist" data-id="java3-t2">
+<li><input type="checkbox" aria-label="Орындалды"> <span>Өрістер <code>private final</code></span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Конструктор өрістерді <code>this</code> арқылы толтырады</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>toString</code> дұрыс мәтін қайтарады</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>main</code> 3 жолды шығарады</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-alias">Қала халқы: сілтеме</h3></div>
+<p>Мына бағдарлама не шығарады?</p><pre data-lang="java"><code class="language-java">class Qala {
+    private String ataui;
+    private int halyq;
+    Qala(String ataui, int halyq) { this.ataui = ataui; this.halyq = halyq; }
+    int getHalyq() { return halyq; }
+    void setHalyq(int h) { halyq = h; }
+}
+
+public class Jat3 {
+    public static void main(String[] args) {
+        Qala q1 = new Qala("Астана", 1350000);
+        Qala q2 = q1;
+        q2.setHalyq(q2.getHalyq() + 50000);
+        System.out.println(q1.getHalyq());
+    }
+}</code></pre>
+<div class="answer-check" data-answer="1400000"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>Qala q2 = q1;</code> жолы көшіре ме, әлде екінші сілтеме жасай ма? Үймеде неше <code>Qala</code> нысаны бар?</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Үймеде бір ғана нысан бар, <code>q1</code> мен <code>q2</code> екеуі де соны көрсетеді. <code>q2</code> арқылы халық 1350000 + 50000 = 1400000 болды, <code>q1</code> да сол нысанды көреді.</p><pre class="terminal"><code class="language-plaintext">$ java Jat3
+1400000</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-equals">Аспап: equals</h3></div>
+<p><code>Aspap</code> классын жазыңыз: <code>ataui</code> (String) және <code>baga</code> (int) <code>private final</code> өрістері, баға теріс болса <code>IllegalArgumentException</code> лақтыратын конструктор, getter-лер, <code>equals</code> және <code>hashCode</code>. Сосын екі бірдей (<code>"Қобыз"</code>, 78000) нысан жасап, <code>a.equals(b) + " " + (a == b)</code> шығарыңыз. Нәтиже қандай? (Жауап: екі сөз, бос орынмен.)</p>
+<div class="answer-check" data-answer="true false"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>equals</code>-те <code>o instanceof Aspap a</code> тексеріп, екі өрісті де салыстырыңыз. <code>hashCode</code> үшін <code>Objects.hash(ataui, baga)</code>.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Мазмұны бірдей, бірақ екеуі <code>new</code> арқылы бөлек жасалды: <code>equals</code> - <code>true</code>, <code>==</code> - <code>false</code>.</p><pre data-lang="java"><code class="language-java">import java.util.Objects;
+
+class Aspap {
+    private final String ataui;
+    private final int baga;
+
+    Aspap(String ataui, int baga) {
+        if (baga &lt; 0) {
+            throw new IllegalArgumentException("Баға теріс болмайды");
+        }
+        this.ataui = ataui;
+        this.baga = baga;
+    }
+
+    String getAtaui() { return ataui; }
+    int getBaga() { return baga; }
+
+    @Override
+    public boolean equals(Object o) {
+        return o instanceof Aspap a &amp;&amp; baga == a.baga &amp;&amp; Objects.equals(ataui, a.ataui);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ataui, baga);
+    }
+}
+
+public class Jat4 {
+    public static void main(String[] args) {
+        Aspap a = new Aspap("Қобыз", 78000);
+        Aspap b = new Aspap("Қобыз", 78000);
+        System.out.println(a.equals(b) + " " + (a == b));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java Jat4
+true false</code></pre></div></details>
+<details open><summary>Өзін тексеру</summary><div class="details-body">
+<ul class="checklist" data-id="java3-t4">
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>equals</code> екі өрісті де салыстырады</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>hashCode</code> дәл сол өрістерді пайдаланады</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Теріс баға <code>IllegalArgumentException</code> береді</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge hard">Қиын</span><h3 id="ex-hamyan">Әмиян амалдары</h3></div>
+<p>Әмиянның басында 10 000 тг. Төмендегі әрекеттер ретімен орындалады: 1) 5 000 салу; 2) 20 000 алу; 3) 3 500 алу; 4) 1 200 салу. Әмиян қарыз берілмейді (қалдықтан артық алуға болмайды, теріс не нөл сома қабылданбайды). Соңында қалдық қанша? Содан кейін <code>Hamyan</code> классын жазып тексеріңіз.</p>
+<div class="answer-check" data-answer="12700"><input type="text" placeholder="Қалдық" aria-label="Қалдық"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Қадамдап жүріңіз: 10000 → 15000 → (20000 алу бас тартылды, 15000 қалады) → 11500 → ?</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>10 000 + 5 000 = 15 000. 20 000 алу мүмкін емес (15 000-нан артық): қалдық өзгермейді. 15 000 − 3 500 = 11 500. 11 500 + 1 200 = 12 700.</p><pre data-lang="java"><code class="language-java">class Hamyan {
+    private long qaldyq;
+
+    Hamyan(long bastapqy) {
+        this.qaldyq = bastapqy;
+    }
+
+    boolean salu(long soma) {
+        if (soma &lt;= 0) return false;
+        qaldyq += soma;
+        return true;
+    }
+
+    boolean aluy(long soma) {
+        if (soma &lt;= 0 || soma &gt; qaldyq) return false;
+        qaldyq -= soma;
+        return true;
+    }
+
+    long getQaldyq() { return qaldyq; }
+}
+
+public class HamyanOpe {
+    public static void main(String[] args) {
+        Hamyan h = new Hamyan(10000);
+        h.salu(5000);
+        h.aluy(20000);
+        h.aluy(3500);
+        h.salu(1200);
+        System.out.println(h.getQaldyq());
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java HamyanOpe
+12700</code></pre></div></details>
+<details open><summary>Өзін тексеру</summary><div class="details-body">
+<ul class="checklist" data-id="java3-t5">
+<li><input type="checkbox" aria-label="Орындалды"> <span>Бас тартылған операция қалдықты өзгертпейді</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Метод <code>boolean</code> қайтарады</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Өріс <code>private</code></span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge hard">Қиын</span><h3 id="ex-record">Қалалар реті</h3></div>
+<p><code>record Qala(String ataui, int halyq)</code> жазыңыз. Тізімге бес қала қосыңыз: Ақтөбе (590000), Алматы (2200000), Шымкент (1200000), Астана (1350000), Қарағанды (500000). Тізімді халық саны бойынша <strong>кему</strong> ретімен сұрыптап, <strong>3-орындағы</strong> қала атын жазыңыз. (Бір сөз.)</p>
+<div class="answer-check" data-answer="Шымкент"><input type="text" placeholder="Қала" aria-label="Қала"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>list.sort(Comparator.comparingInt(Qala::halyq).reversed())</code>. Record-тың getter аты - <code>halyq()</code>, <code>getHalyq()</code> емес. 3-орын индексі 2.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Кему ретімен: Алматы (2200000), Астана (1350000), Шымкент (1200000), Ақтөбе, Қарағанды. Үшінші - Шымкент.</p><pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.Comparator;
+
+record Qala(String ataui, int halyq) { }
+
+public class QalalarReti {
+    public static void main(String[] args) {
+        ArrayList&lt;Qala&gt; qalalar = new ArrayList&lt;&gt;();
+        qalalar.add(new Qala("Ақтөбе", 590000));
+        qalalar.add(new Qala("Алматы", 2200000));
+        qalalar.add(new Qala("Шымкент", 1200000));
+        qalalar.add(new Qala("Астана", 1350000));
+        qalalar.add(new Qala("Қарағанды", 500000));
+
+        qalalar.sort(Comparator.comparingInt(Qala::halyq).reversed());
+        for (Qala q : qalalar) {
+            System.out.println(q);
+        }
+        System.out.println(qalalar.get(2).ataui());
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java QalalarReti
+Qala[ataui=Алматы, halyq=2200000]
+Qala[ataui=Астана, halyq=1350000]
+Qala[ataui=Шымкент, halyq=1200000]
+Qala[ataui=Ақтөбе, halyq=590000]
+Qala[ataui=Қарағанды, halyq=500000]
+Шымкент</code></pre></div></details>
+<details open><summary>Өзін тексеру</summary><div class="details-body">
+<ul class="checklist" data-id="java3-t6">
+<li><input type="checkbox" aria-label="Орындалды"> <span>Record жарияланған</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Сұрыптау кему ретімен</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>3-орын индексі 2</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+
+<nav class="pager">
+<a href="week-2.html"><small>Алдыңғы</small>← 2-апта: Массивтер, String және ArrayList</a>
+<a class="next" href="week-4.html"><small>Келесі</small>4-апта: Мұрагерлік, интерфейстер және полиморфизм →</a>
+</nav>
+
+<p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>
