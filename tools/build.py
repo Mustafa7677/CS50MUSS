@@ -365,7 +365,7 @@ def sections(name, s, meta):
 def glossary_terms(name, s, meta, course="x"):
     article = article_of(s)
     terms = []
-    last_id = "intro"
+    last_id = "intro" if re.search(r'\bid="intro"', article) else "main"  # бастапқы бөлімде id="intro" жоқ болса, мақаланың өзіне сілтейміз
     for m in re.finditer(r'<h[23] id="([^"]+)"|<strong>([^<]{2,60})</strong> \(<span class="term-en">([^<]{2,60})</span>\)', article):
         if m.group(1):
             last_id = m.group(1)
