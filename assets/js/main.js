@@ -510,6 +510,14 @@
     }
 
     openers.forEach((b) => b.addEventListener("click", open));
+    // Код редакторларындағы Tab (шегініс) пернетақта тұзағы болмасын (WCAG 2.1.2): Esc басқан соң Tab фокусты шығарады
+    document.addEventListener("keydown", (e) => {
+      const t = e.target;
+      if (!t || t.tagName !== "TEXTAREA" || !t.classList.contains("pg-editor") && !t.classList.contains("ag-code")) return;
+      if (e.key === "Escape") t.dataset.tabfree = "1";
+      else if (e.key === "Tab" && t.dataset.tabfree) e.stopImmediatePropagation();
+      else if (e.key !== "Shift") delete t.dataset.tabfree;
+    }, true);
     document.addEventListener("keydown", (e) => {
       const typing = /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName);
       if ((e.key === "k" || e.key === "K" || e.key === "қ") && (e.ctrlKey || e.metaKey)) { e.preventDefault(); open(); }
