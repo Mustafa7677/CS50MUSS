@@ -544,7 +544,7 @@
     root.setAttribute("aria-label", title + ": қадамдап көрсету");
     root.innerHTML =
       '<div class="ov-head"><div class="ov-title">' + esc(title) + '</div><div class="ov-variants" role="group" aria-label="Нұсқа таңдау"></div></div>' +
-      '<div class="ov-body"><ol class="ov-code" aria-label="Код"></ol><div class="ov-stagewrap"><div class="ov-stage" role="img"></div></div></div>' +
+      '<div class="ov-body"><ol class="ov-code" aria-label="Код" tabindex="0"></ol><div class="ov-stagewrap"><div class="ov-stage" role="img" tabindex="0"></div></div></div>' +
       '<div class="ov-live" aria-live="polite" aria-atomic="true"><p class="ov-desc"></p><p class="ov-result" hidden></p></div>' +
       '<div class="ov-ctrl"><button type="button" class="ov-btn ov-reset"><span aria-hidden="true">⏮ </span>Бастапқы</button>' +
       '<button type="button" class="ov-btn ov-prev"><span aria-hidden="true">◀ </span>Артқа</button>' +
