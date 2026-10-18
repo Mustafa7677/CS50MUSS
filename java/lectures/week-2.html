@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Java 2-апта: Массивтер, String және ArrayList - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#d97706">
+  <!-- /build:head -->
+  <meta name="description" content="Java 17: массивтер, 2D, Arrays класы, String өзгермейтіндігі, StringBuilder, ArrayList, wrapper типтер, autoboxing, іздеу және сұрыптау алгоритмдері, жад диаграммасы.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="java" style="--c:#d97706"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Java</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../java/index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+<div class="lecture-head" data-n="2">
+<div class="num">2-апта</div>
+<h1>Массивтер, String және ArrayList</h1>
+<p>Көп мәнді бір жерде сақтауды үйренеміз: массивтер, <code>ArrayList</code>, <code>String</code> мен <code>StringBuilder</code>, wrapper типтер, қарапайым іздеу және сұрыптау алгоритмдері, сондай-ақ стек пен үйме жадының диаграммасы.</p>
+</div>
+
+
+<div class="callout tip"><span class="callout-title">Бүгін не үйренеміз</span>
+<p>Бұрын бір айнымалыда бір ғана мән сақтадық. Нақты өмірде мәндер көп болады: сыныптағы 25 оқушының бағасы, қаладағы 100 мың тұрғын, кітап дүкеніндегі мыңдаған кітап. Бүгін <strong>массивтерді</strong>, <code>String</code>-тің ішкі құпиясын (<em>өзгермейтіндік</em>), динамикалық <code>ArrayList</code> тізімін және жадтың екі аймағын (<em>стек</em> пен <em>үйме</em>) түсінеміз.</p></div>
+
+<h2 id="arrays">Массивтер</h2>
+<p><strong>Массив</strong> (<span class="term-en">array</span>) - бірдей типті мәндердің бекітілген ұзындықты тізбегі. Үйдегі көп бөлмелі тұрғын үйді елестетіңіз: бәрі бір көшеде, нөмірленген. Мәндер (<em>элементтер</em>) жад ішінде қатар тұрады, әрқайсысына <strong>индекс</strong> (<span class="term-en">index</span>) арқылы жетеміз. Индекс <strong>нөлден</strong> басталады.</p>
+<p>Массив жариялаудың екі жолы бар: мәндерді бірден тізу немесе <code>new</code> арқылы бос орын бөлу. <code>new int[5]</code> бес <code>int</code> орнын бөледі де, барлығын <strong>әдепкі мәнмен</strong> толтырады: сандар үшін <code>0</code>, <code>boolean</code> үшін <code>false</code>, сілтеме типтер (<code>String</code> ...) үшін <code>null</code>.</p>
+<pre data-lang="java"><code class="language-java">import java.util.Arrays;
+
+public class Massiv {
+    public static void main(String[] args) {
+        int[] bagalar = {5, 4, 3, 5, 4};          // мәндерді тізу
+        int[] bos = new int[5];                   // 5 орын, бәрі 0
+        String[] qalalar = new String[3];         // бәрі null
+
+        System.out.println(bagalar[0]);           // бірінші элемент
+        System.out.println(bagalar[bagalar.length - 1]); // соңғысы
+        System.out.println(bagalar.length);       // ұзындығы: жақшасыз!
+        System.out.println(Arrays.toString(bos));
+        System.out.println(Arrays.toString(qalalar));
+
+        bos[2] = 42;                              // элементті өзгерту
+        qalalar[0] = "Алматы";
+        System.out.println(Arrays.toString(bos));
+        System.out.println(Arrays.toString(qalalar));
+
+        int jalpy = 0;
+        for (int i = 0; i &lt; bagalar.length; i++) {
+            jalpy += bagalar[i];
+        }
+        System.out.println("Орташа: " + (double) jalpy / bagalar.length);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Massiv.java
+$ java Massiv
+5
+4
+5
+[0, 0, 0, 0, 0]
+[null, null, null]
+[0, 0, 42, 0, 0]
+[Алматы, null, null]
+Орташа: 4.2</code></pre>
+<p>Назар аударатын нәрселер: массивтің ұзындығы <code>length</code> - <em>өріс</em>, оған жақша қойылмайды (<code>String</code>-те керісінше, <code>length()</code> - әдіс). Ұзындық <strong>бекітілген</strong>: массив жасалған соң өсіре немесе кішірейте алмаймыз. Массивті экранға шығару үшін <code>Arrays.toString(...)</code> керек, әйтпесе <code>System.out.println(массив)</code> жадтағы мекенжайға ұқсас түсініксіз жазу (<code>[I@1b6d3586</code>) береді.</p>
+<figure style="margin:22px 0;text-align:center"><svg viewBox="0 0 600 140" role="img" aria-label="bagalar массиві: бес ұяшық 5, 4, 3, 5, 4 мәндерімен, астында 0-ден 4-ке дейінгі индекстер; соңғы индекс length минус 1 тең 4" style="display:block;width:100%;max-width:600px;height:auto;margin:0 auto"><defs><marker id="ar988_1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="60" y="30" width="90" height="46" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="105.0" y="53.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:18px">5</text><text x="105" y="96" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;font-weight:400">[0]</text><rect x="160" y="30" width="90" height="46" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="205.0" y="53.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:18px">4</text><text x="205" y="96" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;font-weight:400">[1]</text><rect x="260" y="30" width="90" height="46" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="305.0" y="53.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:18px">3</text><text x="305" y="96" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;font-weight:400">[2]</text><rect x="360" y="30" width="90" height="46" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="405.0" y="53.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:18px">5</text><text x="405" y="96" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;font-weight:400">[3]</text><rect x="460" y="30" width="90" height="46" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="505.0" y="53.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:18px">4</text><text x="505" y="96" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono,'JetBrains Mono',monospace);font-size:12.5px;font-weight:400">[4]</text><text x="10" y="53" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:11px;font-weight:400">bagalar</text><text x="300" y="124" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">length = 5, соңғы индекс = length - 1 = 4</text></svg><figcaption style="font-size:14.5px;color:var(--muted);margin-top:8px">7-сурет. Массив: қатар тұрған ұяшықтар, индекс нөлден басталады.</figcaption></figure>
+<details class="think"><summary>Ойланып көріңіз: <code>int[] a = new int[0];</code> заңды ма?</summary><div class="details-body"><p>Иә. Ұзындығы нөл массив - жарамды, бос массив. Оның бірде-бір элементі жоқ, сондықтан <code>a[0]</code> бірден <code>ArrayIndexOutOfBoundsException</code> береді. Ал <code>new int[-1]</code> орындау кезінде <code>NegativeArraySizeException</code> лақтырады. Бос массив «нәтиже жоқ» дегенді білдіру үшін жиі қолданылады, ал <code>null</code> - «массив мүлде жоқ» деген басқа ұғым.</p></div></details>
+<p>Мәтіндік сипаттама: бес ұяшық бір қатарда тұр, мәндері 5, 4, 3, 5, 4. Әр ұяшықтың астында индексі жазылған: 0, 1, 2, 3, 4. Бес элементті массивтің ең соңғы индексі 4.</p>
+<h3 id="oob">Шегінен шығу</h3>
+<p>Ең жиі қате: бар индекстен тыс жерге қол созу. Компилятор мұны <em>көрмейді</em> (индекс орындау кезінде ғана белгілі), сондықтан бұл - орындау қатесі:</p>
+<pre data-lang="java"><code class="language-java">public class Shegi {
+    public static void main(String[] args) {
+        int[] bagalar = {5, 4, 3};
+        System.out.println(bagalar[2]);
+        System.out.println(bagalar[3]);     // индекс 3 жоқ!
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Shegi.java
+$ java Shegi
+3
+Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 3 out of bounds for length 3
+	at Shegi.main(Shegi.java:5)</code></pre>
+<p>Хабар нақты: <em>Index 3 out of bounds for length 3</em> - «ұзындығы 3 массивте 3-индекс жоқ». Бұл - <code>for</code> шартын жазғанда <code>i &lt;= bagalar.length</code> деп қателесудің нәтижесі: дұрысы <code>i &lt; bagalar.length</code>.</p>
+
+<h2 id="memory">Жад: примитив пен сілтеме</h2>
+<p>Енді өте маңызды ұғым. Java жадты екі негізгі аймаққа бөледі. <strong>Стек</strong> (<span class="term-en">stack</span>) - әдістердің айнымалылары тұратын жылдам, шағын жад. <strong>Үйме</strong> (<span class="term-en">heap</span>) - нысандар (массивтер, <code>String</code>, <code>ArrayList</code> ...) тұратын үлкен жад. Примитив айнымалының <em>мәні</em> стекте тікелей тұрады. Ал сілтеме типті айнымалыда (массив, <code>String</code>) стекте тек <strong>сілтеме</strong> (<span class="term-en">reference</span>) - үймедегі нысанның «мекенжайы» тұрады, ал нысанның өзі үймеде.</p>
+<p>Аналогия: примитив - қалтадағы ақша; сілтеме - үйдің мекенжайы жазылған қағаз. Қағазды көшірсеңіз, үй көшірілмейді, екі қағаз бір үйді көрсетеді.</p>
+<pre data-lang="java"><code class="language-java">import java.util.Arrays;
+
+public class Silteme {
+    public static void main(String[] args) {
+        int x = 10;
+        int y = x;          // мән көшіріледі
+        y = 99;
+        System.out.println("x = " + x + ", y = " + y);
+
+        int[] a = {1, 2, 3};
+        int[] b = a;        // сілтеме көшіріледі: бір массив!
+        b[0] = 100;
+        System.out.println("a = " + Arrays.toString(a));
+        System.out.println("b = " + Arrays.toString(b));
+
+        int[] c = a.clone();    // нақты көшірме: жаңа массив
+        c[1] = -5;
+        System.out.println("a = " + Arrays.toString(a));
+        System.out.println("c = " + Arrays.toString(c));
+        System.out.println(a == b);           // сілтемелер бірдей ме?
+        System.out.println(a == c);
+        System.out.println(Arrays.equals(a, c));    // мазмұны бірдей ме?
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Silteme.java
+$ java Silteme
+x = 10, y = 99
+a = [100, 2, 3]
+b = [100, 2, 3]
+a = [100, 2, 3]
+c = [100, -5, 3]
+true
+false
+false</code></pre><figure style="margin:22px 0;text-align:center"><svg viewBox="0 0 640 280" role="img" aria-label="Жад диаграммасы: стекте int x = 10, int y = 99 мәндері тұр; a және b сілтемелері үймедегі бір массивке (100, 2, 3) көрсетеді; c сілтемесі басқа массивке (100, -5, 3) көрсетеді" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto"><defs><marker id="ar988_2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="110" y="16" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:700">Стек</text><text x="470" y="16" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:700">Үйме (heap)</text><rect x="30" y="30" width="160" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="110.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">x</text><text x="110.0" y="57.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">10</text><rect x="30" y="70" width="160" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="110.0" y="80.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">y</text><text x="110.0" y="97.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">99</text><rect x="30" y="120" width="160" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="110.0" y="130.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">a</text><text x="110.0" y="147.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">сілтеме</text><rect x="30" y="160" width="160" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="110.0" y="170.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">b</text><text x="110.0" y="187.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">сілтеме</text><rect x="30" y="200" width="160" height="34" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="110.0" y="210.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">c</text><text x="110.0" y="227.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">сілтеме</text><rect x="330" y="110" width="260" height="46" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><rect x="336" y="116" width="80" height="34" rx="3" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="376.0" y="133.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:15px">100</text><rect x="422" y="116" width="80" height="34" rx="3" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="462.0" y="133.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:15px">2</text><rect x="508" y="116" width="80" height="34" rx="3" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="548.0" y="133.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:15px">3</text><text x="460" y="170" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">массив 1</text><rect x="330" y="200" width="260" height="46" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><rect x="336" y="206" width="80" height="34" rx="3" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="376.0" y="223.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:15px">100</text><rect x="422" y="206" width="80" height="34" rx="3" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="462.0" y="223.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:15px">-5</text><rect x="508" y="206" width="80" height="34" rx="3" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="548.0" y="223.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:15px">3</text><text x="460" y="260" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">массив 2 (clone)</text><polyline points="190,137 330,128" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar988_2)"/><polyline points="190,177 260,177 300,140 330,135" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar988_2)"/><polyline points="190,217 330,222" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar988_2)"/></svg><figcaption style="font-size:14.5px;color:var(--muted);margin-top:8px">8-сурет. Стек пен үйме: примитив мәні стекте, массив үймеде; a мен b бір массивті көрсетеді.</figcaption></figure>
+<p>Мәтін түрінде: стекте <code>x</code> (10) және <code>y</code> (99) мәндері тұр; олар тәуелсіз. <code>a</code> мен <code>b</code> стектегі екі сілтеме, екеуі де үймедегі <em>бір</em> массивті көрсетеді, сондықтан <code>b[0] = 100</code> деу <code>a[0]</code>-ді де өзгертеді. <code>c</code> - <code>clone()</code> арқылы жасалған екінші, бөлек массивке сілтеме. Бұл жерде <code>a == b</code> - <code>true</code> (сілтемелері бірдей), <code>a == c</code> - <code>false</code> (әртүрлі нысандар), ал <code>Arrays.equals</code> мазмұнды салыстырып, <code>c[1] = -5</code>-тен кейін <code>false</code> береді.</p>
+<div class="callout warn"><span class="callout-title">Массивті әдіске бергенде</span>
+<p>Массив әдіске берілгенде сілтеме көшіріледі, нысан емес. Сондықтан әдіс массивтің ішін <em>өзгерте алады</em> және бұл өзгеріс шақырған жерде көрінеді. Бұл Java-ның «мәнмен беру» ережесімен үйлеседі: сілтеменің өзі мән болып көшеді.</p></div>
+
+<p>Мұны нақты көрейік: примитив әдіске көшірме болып барады, ал массив - сілтеме болып.</p>
+<pre data-lang="java"><code class="language-java">import java.util.Arrays;
+
+public class ArgumentBerilu {
+    static void primitivti(int san) {
+        san = san * 2;                  // тек жергілікті көшірме өзгереді
+    }
+
+    static void massivti(int[] a) {
+        for (int i = 0; i &lt; a.length; i++) {
+            a[i] = a[i] * 2;            // шақырушының массиві өзгереді
+        }
+    }
+
+    public static void main(String[] args) {
+        int x = 10;
+        primitivti(x);
+        System.out.println("x = " + x);
+
+        int[] bagalar = {1, 2, 3};
+        massivti(bagalar);
+        System.out.println(Arrays.toString(bagalar));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac ArgumentBerilu.java
+$ java ArgumentBerilu
+x = 10
+[2, 4, 6]</code></pre>
+<p>Бұл өте маңызды ереже: <code>primitivti(x)</code> шақырылғанда <code>x</code>-тің мәні көшірілді, сондықтан <code>x</code> бұрынғыша 10. Ал <code>massivti(bagalar)</code> шақырылғанда <em>мекенжай</em> көшірілді; әдіс сол мекенжай бойынша үймедегі бір массивті өзгертті. Егер әдіс шақырушының деректерін өзгертпейтініне сенімді болғыңыз келсе, оған <code>clone()</code> не <code>Arrays.copyOf</code> көшірмесін беріңіз. Және керісінше: әдіс массивті өзгертетінін әдіс атынан немесе комментарийден білуге болатындай етіп жазыңыз.</p>
+
+<details class="think"><summary>Ойланып көріңіз: <code>massivti(null)</code> шақырсақ не болады?</summary><div class="details-body"><p>Әдіс ішінде <code>a.length</code> жазылған бірінші жолда бағдарлама <code>NullPointerException</code> лақтырады: <code>null</code> - «ешқандай нысанға сілтемейтін сілтеме», оның <code>length</code>-і жоқ. Сенімсіз кірістерді әдіс басында <code>if (a == null) ...</code> деп тексеру жақсы әдет.</p></div></details>
+
+<h2 id="arrays2d">Екі өлшемді массивтер</h2>
+<p><strong>Екі өлшемді массив</strong> (<span class="term-en">2D array</span>) - кесте: жолдар мен бағандар. Нақтырақ айтсақ, Java-да ол «массивтер массиві»: сыртқы массивтің әр элементі - ішкі жол-массивке сілтеме. Оқушы журналын елестетіңіз: жол - оқушы, баған - пән.</p>
+<pre data-lang="java"><code class="language-java">import java.util.Arrays;
+
+public class Jurnal {
+    public static void main(String[] args) {
+        String[] oqushy = {"Аружан", "Бекзат", "Дана"};
+        // жолдар - оқушылар, бағандар - математика, физика, информатика
+        int[][] bagalar = {
+            {5, 4, 5},
+            {3, 4, 4},
+            {5, 5, 5}
+        };
+
+        System.out.println("Жол саны: " + bagalar.length);
+        System.out.println("Баған саны: " + bagalar[0].length);
+        System.out.println("Бекзаттың физикадан бағасы: " + bagalar[1][1]);
+
+        for (int i = 0; i &lt; bagalar.length; i++) {
+            int jalpy = 0;
+            for (int j = 0; j &lt; bagalar[i].length; j++) {
+                jalpy += bagalar[i][j];
+            }
+            System.out.printf("%s: орташа %.2f%n", oqushy[i], (double) jalpy / bagalar[i].length);
+        }
+
+        System.out.println(Arrays.deepToString(bagalar));
+
+        int[][] ushburysh = new int[4][];     // ішкі жолдар әртүрлі ұзындықта
+        for (int i = 0; i &lt; ushburysh.length; i++) {
+            ushburysh[i] = new int[i + 1];
+            ushburysh[i][0] = 1;
+        }
+        System.out.println(Arrays.deepToString(ushburysh));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Jurnal.java
+$ java Jurnal
+Жол саны: 3
+Баған саны: 3
+Бекзаттың физикадан бағасы: 4
+Аружан: орташа 4.67
+Бекзат: орташа 3.67
+Дана: орташа 5.00
+[[5, 4, 5], [3, 4, 4], [5, 5, 5]]
+[[1], [1, 0], [1, 0, 0], [1, 0, 0, 0]]</code></pre>
+<p>Негізгі қағида: <code>bagalar[i][j]</code> - «<code>i</code>-жол, <code>j</code>-баған». <code>bagalar.length</code> - жол саны, <code>bagalar[i].length</code> - <code>i</code>-жолдың ұзындығы. Көп өлшемді массивті аралау үшін әдетте ішкі цикл қолданылады. Соңғы мысалда жолдары әртүрлі ұзындықтағы «ирек» (<span class="term-en">jagged</span>) массив жасалды.</p>
+
+<h2 id="arrays-class">Arrays класы</h2>
+<p>Массивтермен жиі істелетін іс-әрекеттерді өзіміз жазбай-ақ, <code>java.util.Arrays</code> класы дайын әдістер береді: <code>sort</code> (сұрыптау), <code>fill</code> (толтыру), <code>copyOf</code> (көшірме жасау), <code>equals</code> (мазмұнды салыстыру), <code>binarySearch</code> (екілік іздеу), <code>toString</code> (шығару).</p>
+<pre data-lang="java"><code class="language-java">import java.util.Arrays;
+
+public class ArraysMysal {
+    public static void main(String[] args) {
+        int[] halyq = {1200, 900, 450, 2100, 700};     // мың адаммен
+
+        int[] kopiya = Arrays.copyOf(halyq, halyq.length);
+        Arrays.sort(kopiya);
+        System.out.println("Бастапқы: " + Arrays.toString(halyq));
+        System.out.println("Сұрыпталған: " + Arrays.toString(kopiya));
+
+        int orn = Arrays.binarySearch(kopiya, 900);    // тек сұрыпталған массивте
+        System.out.println("900 индексі: " + orn);
+
+        int[] ulkeyu = Arrays.copyOf(halyq, 7);        // ұзынырақ көшірме, артығы 0
+        System.out.println(Arrays.toString(ulkeyu));
+
+        int[] tolt = new int[4];
+        Arrays.fill(tolt, 7);
+        System.out.println(Arrays.toString(tolt));
+
+        System.out.println(Arrays.equals(halyq, kopiya));
+        String[] aspap = {"қобыз", "домбыра", "сыбызғы", "жетіген"};
+        Arrays.sort(aspap);                            // әліпби бойынша
+        System.out.println(Arrays.toString(aspap));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac ArraysMysal.java
+$ java ArraysMysal
+Бастапқы: [1200, 900, 450, 2100, 700]
+Сұрыпталған: [450, 700, 900, 1200, 2100]
+900 индексі: 2
+[1200, 900, 450, 2100, 700, 0, 0]
+[7, 7, 7, 7]
+false
+[домбыра, жетіген, сыбызғы, қобыз]</code></pre>
+<p><code>Arrays.sort</code> бастапқы массивті <em>өзгертеді</em>. Түпнұсқаны сақтау керек болса, алдымен <code>copyOf</code> жасаңыз. <code>binarySearch</code> тек <strong>сұрыпталған</strong> массивте дұрыс жұмыс істейді; сұрыпталмаған массивте нәтиже болжанбайды. Мәтіндер сұрыпталғанда Unicode кодтары бойынша салыстырылады, сондықтан қазақ әріптері (ә, ө, ү, қ ...) әліпбидегі орнына емес, кодына қарай орналасады.</p>
+
+<h2 id="strings">String: өзгермейтін мәтін</h2>
+<p><code>String</code> нысандары <strong>өзгермейді</strong> (<span class="term-en">immutable</span>): олар жасалғаннан кейін мазмұнын ешкім өзгерте алмайды. <code>toUpperCase()</code>, <code>replace()</code> сияқты «өзгертетін» әдістер шын мәнінде жаңа <code>String</code> қайтарады, ал ескісін қалдырады.</p>
+<pre data-lang="java"><code class="language-java">public class Ozgermeidi {
+    public static void main(String[] args) {
+        String s = "домбыра";
+        s.toUpperCase();                    // нәтижені ешкім алмады!
+        System.out.println(s);
+
+        String t = s.toUpperCase();         // жаңа нысан алынды
+        System.out.println(s + " -&gt; " + t);
+
+        s = s + "шы";                       // s енді басқа нысанға сілтейді
+        System.out.println(s);
+
+        String zh = "қазақ".replace('қ', 'Қ');
+        System.out.println(zh);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Ozgermeidi.java
+$ java Ozgermeidi
+домбыра
+домбыра -&gt; ДОМБЫРА
+домбырашы
+ҚазаҚ</code></pre>
+<p>Бірінші жол нәтиже шығармады: <code>s.toUpperCase()</code> жаңа мәтін жасады, бірақ біз оны ешқайда сақтамадық. Бұл жиі кездесетін қате. Өзгермейтіндіктің артықшылығы: мәтін қауіпсіз, оны бірнеше жерде бөлісуге болады, кездейсоқ өзгертілмейді. Кемшілігі: мәтінді көп рет жалғау тиімсіз - әр жалғауда жаңа нысан жасалады.</p>
+<h3 id="equals">equals және ==</h3>
+<p>Өткен аптада <code>==</code> мәтінге жарамайды деп ескерттік. Енді себебін түсінеміз: <code>==</code> сілтемелерді салыстырады, яғни «екеуі де жадтағы бір нысан ба?». Java бірдей мәтін литералдарын (қос тырнақшадағы) бір <em>пулда</em> (<span class="term-en">string pool</span>) сақтайды, сондықтан литералдар кездейсоқ <code>==</code>-ге сәйкес келеді. Ал <code>new String(...)</code> міндетті түрде жаңа нысан жасайды.</p>
+<pre data-lang="java"><code class="language-java">public class Salystyru {
+    public static void main(String[] args) {
+        String a = "Астана";
+        String b = "Астана";                  // пулдан сол нысан
+        String c = new String("Астана");      // жаңа нысан
+        String d = "Аста" + "на";             // компилятор біріктіреді
+        String e = "Аста";
+        String f = e + "на";                  // орындау кезінде жасалады
+
+        System.out.println(a == b);
+        System.out.println(a == c);
+        System.out.println(a == d);
+        System.out.println(a == f);
+        System.out.println(a.equals(c));
+        System.out.println(a.equals(f));
+        System.out.println("астана".equalsIgnoreCase(a));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Salystyru.java
+$ java Salystyru
+true
+false
+true
+false
+true
+true
+true</code></pre><figure style="margin:22px 0;text-align:center"><svg viewBox="0 0 600 230" role="img" aria-label="Стек пен үйме: a және b бірдей мәтін нысанына көрсетеді, c басқа нысанға көрсетеді; екі нысанда да Астана жазылған" style="display:block;width:100%;max-width:600px;height:auto;margin:0 auto"><defs><marker id="ar988_3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="90" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:700">Стек</text><text x="430" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:700">Үйме</text><rect x="20" y="30" width="140" height="32" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="90.0" y="46.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">a</text><rect x="20" y="72" width="140" height="32" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="90.0" y="88.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">b</text><rect x="20" y="114" width="140" height="32" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="90.0" y="130.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:13px">c</text><rect x="280" y="30" width="200" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="380.0" y="43.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:13px">"Астана"</text><text x="380.0" y="60.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">String пулы</text><rect x="280" y="114" width="200" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="380.0" y="127.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font,sans-serif);font-size:13px">"Астана"</text><text x="380.0" y="144.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:11.5px">new String</text><polyline points="160,46 280,48" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar988_3)"/><polyline points="160,88 220,88 240,60 280,56" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar988_3)"/><polyline points="160,130 280,134" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#ar988_3)"/><text x="300" y="200" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12.5px;font-weight:400">a == b: true (бір нысан)   a == c: false (әртүрлі нысан)</text></svg><figcaption style="font-size:14.5px;color:var(--muted);margin-top:8px">9-сурет. Мазмұны бірдей екі String бір нысан болмауы мүмкін: == сілтемені, equals мазмұнды салыстырады.</figcaption></figure>
+<p>Ереже: мәтінді <strong>әрқашан <code>equals</code></strong> (не <code>equalsIgnoreCase</code>) арқылы салыстырыңыз. <code>a == f</code> нәтижесі <code>false</code> болды, себебі <code>f</code> орындау кезінде жаңадан құрастырылды. Бұл жерде <code>a == d</code> да <code>true</code> болды, себебі <code>"Аста" + "на"</code> - екі литерал, оларды компилятор жолды іске қоспай-ақ біріктіріп, пулдағы дайын нысанға айналдырады. Сондықтан <code>==</code> мәтінмен «кейде жұмыс істейді, кейде жоқ» - ең қауіпті қате түрі.</p>
+<h3 id="string-methods">Пайдалы әдістер</h3>
+<pre data-lang="java"><code class="language-java">import java.util.Arrays;
+
+public class MatinAdister {
+    public static void main(String[] args) {
+        String joly = "  Алматы, Астана,Шымкент ,Қарағанды  ";
+        String taza = joly.trim();                       // шеттегі бос орындарды алады
+        System.out.println("[" + taza + "]");
+
+        String[] bolikter = taza.split("\\s*,\\s*");     // үтір бойынша бөлу
+        System.out.println(Arrays.toString(bolikter));
+        System.out.println(bolikter.length);
+
+        System.out.println(String.join(" | ", bolikter)); // қайта біріктіру
+        System.out.println("Алматы".compareTo("Астана")); // әліпби бойынша
+        System.out.println("Қарағанды".startsWith("Қар"));
+        System.out.println("Қарағанды".replace("а", "@"));
+        System.out.println("Астана".lastIndexOf('а'));
+        System.out.println("".isEmpty() + " " + "   ".isBlank());
+        System.out.println(String.format("%05d | %8.3f | %s", 42, 3.14159, "ok"));
+        System.out.println("ab".repeat(3));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac MatinAdister.java
+$ java MatinAdister
+[Алматы, Астана,Шымкент ,Қарағанды]
+[Алматы, Астана, Шымкент, Қарағанды]
+4
+Алматы | Астана | Шымкент | Қарағанды
+-6
+true
+Қ@р@ғ@нды
+5
+true true
+00042 |    3.142 | ok
+ababab</code></pre>
+<p><code>split</code> аргументі - <strong>тұрақты өрнек</strong> (<span class="term-en">regular expression</span>): мұнда <code>\\s*,\\s*</code> «үтір және оның айналасындағы бос орындар» дегенді білдіреді (Java жолында кері көлбеу сызық екі рет жазылады). Қарапайым жағдайда <code>split(",")</code> да жеткілікті. <code>compareTo</code> теріс сан қайтарса, бірінші мәтін әліпбиде алдында тұр, оң болса кейін, 0 болса - тең.</p>
+
+<h3 id="parse">Жолды бөліп, санға айналдыру</h3>
+<p>Нақты бағдарламаларда деректер көбіне мәтін түрінде келеді: файлдың жолы, интернеттен алынған жауап, қолданушының енгізгені. Әдеттегі үлгі: <code>split</code> арқылы бөлеміз, содан кейін қажетті бөліктерді <code>Integer.parseInt</code> не <code>Double.parseDouble</code> арқылы санға айналдырамыз. Мысал: «қала,халық» форматындағы жолдар.</p>
+<pre data-lang="java"><code class="language-java">public class Zholdy {
+    public static void main(String[] args) {
+        String[] joldar = {
+            "Алматы,2200000",
+            "Астана,1350000",
+            "Шымкент,1200000",
+            "Ақтөбе,590000"
+        };
+        long jalpy = 0;
+        String ulken = "";
+        int ulkenHalyq = 0;
+        for (String jol : joldar) {
+            String[] bolik = jol.split(",");
+            String qala = bolik[0];
+            int halyq = Integer.parseInt(bolik[1].trim());
+            jalpy += halyq;
+            if (halyq &gt; ulkenHalyq) {
+                ulkenHalyq = halyq;
+                ulken = qala;
+            }
+        }
+        System.out.println("Қосынды: " + jalpy);
+        System.out.println("Ең ірі: " + ulken + " (" + ulkenHalyq + ")");
+        System.out.println("Орташа: " + jalpy / joldar.length);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Zholdy.java
+$ java Zholdy
+Қосынды: 5340000
+Ең ірі: Алматы (2200000)
+Орташа: 1335000</code></pre>
+<p>Бұл тәсіл «<em>деректі талдау</em>» (<span class="term-en">parsing</span>) деп аталады және ол - нақты жұмыстағы күнделікті іс. Егер <code>bolik[1]</code> сан емес мәтін болса, <code>parseInt</code> <code>NumberFormatException</code> лақтырады. Мұндай қатені қалай ұстап, бағдарламаны құлатпауды кейін, ерекше жағдайларды өңдеуді үйренгенде көреміз. Мысалдағы халық сандары шартты.</p>
+<div class="callout note"><span class="callout-title">Unicode және қазақ әріптері</span>
+<p>Java <code>char</code> пен <code>String</code> Unicode кодтауында сақталады, сондықтан <code>Қ</code>, <code>Ә</code>, <code>Ү</code> сияқты әріптер бір <code>char</code> болып саналады (<code>"Қазақ".length()</code> = 5). Тек сирек кездесетін эмодзи сияқты таңбалар екі <code>char</code> алады. Қазақ әріптері Unicode-та әліпби ретімен тұрмағандықтан, <code>compareTo</code> және <code>Arrays.sort</code> қазақ сөздерін сөздіктегі ретпен емес, код реті бойынша реттейді. Нағыз тілдік сұрыптау үшін <code>java.text.Collator</code> бар, оған қазір тоқтамаймыз.</p></div>
+
+<h3 id="chars">Мәтінді таңбалар бойынша өңдеу</h3>
+<p>Мәтіннің әр әрпіне жеке қол жеткізу үшін <code>charAt(i)</code> немесе <code>toCharArray()</code> қолданамыз. <code>Character</code> класында әріпті тексеретін дайын әдістер бар: <code>isDigit</code>, <code>isLetter</code>, <code>isUpperCase</code>. Мысал: сөйлемдегі қазақ дауысты әріптерін санайық.</p>
+<pre data-lang="java"><code class="language-java">public class Dauysty {
+    static final String DAUYSTYLAR = "аәеёиіоөұүыуэюя";
+
+    static int sana(String matin) {
+        int sany = 0;
+        for (char c : matin.toLowerCase().toCharArray()) {
+            if (DAUYSTYLAR.indexOf(c) &gt;= 0) {
+                sany++;
+            }
+        }
+        return sany;
+    }
+
+    public static void main(String[] args) {
+        String soz = "Қазақстан Республикасы";
+        System.out.println(soz + ": " + sana(soz) + " дауысты");
+
+        int cifr = 0, aripter = 0;
+        for (char c : "Almaty-2024!".toCharArray()) {
+            if (Character.isDigit(c)) cifr++;
+            if (Character.isLetter(c)) aripter++;
+        }
+        System.out.println("әріп: " + aripter + ", цифр: " + cifr);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Dauysty.java
+$ java Dauysty
+Қазақстан Республикасы: 8 дауысты
+әріп: 6, цифр: 4</code></pre>
+<p>Бұл мысалда <code>for-each</code> арқылы <code>char[]</code> массивін аралап, әр әріпті дауыстылар тізімінен іздедік (<code>indexOf</code> табылмаса <code>-1</code> қайтарады). Алдын ала <code>toLowerCase()</code> жасап, бас және кіші әріпті бір-ақ тексеріске келтірдік. Нәтиже түсінікті болу үшін оны өзіңіз қолмен санап тексеріңіз: сөзді буынға бөліп, әр дауыстыны белгілеңіз.</p>
+<h3 id="stringbuilder">StringBuilder</h3>
+<p>Циклде мәтін жалғасақ, әр <code>+=</code> жаңа <code>String</code> жасайды. Мың рет жалғау мың уақытша нысан деген сөз. Мұндай жағдайда <strong>StringBuilder</strong> қолданамыз: ол <em>өзгеретін</em> мәтін, жадта бір буфер ұстап, оған жалғай береді.</p>
+<pre data-lang="java"><code class="language-java">public class Jinaushy {
+    public static void main(String[] args) {
+        // нашар тәсіл: әр жалғауда жаңа String
+        String nashar = "";
+        for (int i = 1; i &lt;= 5; i++) {
+            nashar += i + ",";
+        }
+        System.out.println(nashar);
+
+        // жақсы тәсіл
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i &lt;= 5; i++) {
+            sb.append(i);
+            if (i &lt; 5) {
+                sb.append(", ");
+            }
+        }
+        System.out.println(sb.toString());
+
+        sb.insert(0, "Сандар: ");
+        sb.reverse();
+        System.out.println(sb);
+        sb.setLength(0);                  // тазалау
+        sb.append("қазақстан").setCharAt(0, 'Қ');
+        System.out.println(sb + " " + sb.length());
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Jinaushy.java
+$ java Jinaushy
+1,2,3,4,5,
+1, 2, 3, 4, 5
+5 ,4 ,3 ,2 ,1 :раднаС
+Қазақстан 9</code></pre>
+<p>Негізгі әдістері: <code>append</code>, <code>insert</code>, <code>reverse</code>, <code>delete</code>, <code>setCharAt</code>, <code>toString</code>. Ереже: бірнеше мәтінді бір өрнекте жалғасақ, <code>+</code> жарайды; цикл ішінде көп жалғасақ, <code>StringBuilder</code>.</p>
+<h3 id="textblock">Мәтін блогы (text block)</h3>
+<p>Java 15-тен бастап көп жолды мәтінді үш қос тырнақшамен <code>"""</code> жазуға болады. Кірістерді компилятор өзі дұрыс кесіп алады, қашу таңбаларының қажеті аз.</p>
+<pre data-lang="java"><code class="language-java">public class MatinBlogy {
+    public static void main(String[] args) {
+        String aspap = "домбыра";
+        int tar = 2;
+        String katalog = """
+                Қазақ ұлттық аспаптары каталогы
+                -------------------------------
+                Аспап:  %s
+                Ішек саны: %d
+                "Күй" - аспапта орындалатын шығарма
+                """.formatted(aspap, tar);
+        System.out.print(katalog);
+
+        String json = """
+                {
+                  "қала": "Астана",
+                  "халық": 1350000
+                }""";
+        System.out.println(json);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac MatinBlogy.java
+$ java MatinBlogy
+Қазақ ұлттық аспаптары каталогы
+-------------------------------
+Аспап:  домбыра
+Ішек саны: 2
+"Күй" - аспапта орындалатын шығарма
+{
+  "қала": "Астана",
+  "халық": 1350000
+}</code></pre>
+<p>Мәтін блогының соңындағы жабатын <code>"""</code> орны шегіністі анықтайды: оның сол жағындағы бос орындар мәтінге кірмейді. Ішінде қос тырнақшаны еркін жаза аламыз (бір ғана <code>"""</code> тіркесінен басқа). Көп жолды SQL, JSON, HTML жазуға өте ыңғайлы.</p>
+
+<h2 id="arraylist">ArrayList</h2>
+<p>Массивтің ұзындығы бекітілген. Ал кітап дүкеніне күн сайын кітап қосылып, сатылып жатса ше? Мұнда <strong>ArrayList</strong> көмектеседі: ол массивті ішінде ұстайды, бірақ толғанда өзі үлкен массив жасап, мәндерді көшіреді. Нәтижесінде біз өлшемді ойламай қосып, өшіре аламыз. <code>ArrayList</code> - <code>java.util</code> пакетінде, сондықтан <code>import java.util.ArrayList;</code> керек.</p>
+<p>Тізімнің типін бұрыштық жақшамен көрсетеміз: <code>ArrayList&lt;String&gt;</code> - «мәтіндер тізімі». Мұны <strong>дженерик</strong> (<span class="term-en">generics</span>) дейді: ол компиляторға тізімге тек <code>String</code> қосуға болатынын айтады. Алғашқы кезде «<code>&lt;&gt;</code> ішіне тип жазамыз» деп қабылдаңыз.</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+
+public class KitapTizimi {
+    public static void main(String[] args) {
+        ArrayList&lt;String&gt; kitaptar = new ArrayList&lt;&gt;();
+
+        kitaptar.add("Абай жолы");
+        kitaptar.add("Көшпенділер");
+        kitaptar.add("Қан мен тер");
+        kitaptar.add(1, "Ақбілек");              // 1-орынға кірістіру
+
+        System.out.println(kitaptar);
+        System.out.println("Саны: " + kitaptar.size());
+        System.out.println("0-кітап: " + kitaptar.get(0));
+
+        kitaptar.set(0, "Абай жолы (1-том)");    // ауыстыру
+        kitaptar.remove("Көшпенділер");           // мән бойынша өшіру
+        kitaptar.remove(0);                       // индекс бойынша өшіру
+
+        System.out.println(kitaptar);
+        System.out.println(kitaptar.contains("Қан мен тер"));
+        System.out.println(kitaptar.indexOf("Қан мен тер"));
+        System.out.println(kitaptar.isEmpty());
+
+        for (String k : kitaptar) {
+            System.out.println("- " + k);
+        }
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac KitapTizimi.java
+$ java KitapTizimi
+[Абай жолы, Ақбілек, Көшпенділер, Қан мен тер]
+Саны: 4
+0-кітап: Абай жолы
+[Ақбілек, Қан мен тер]
+true
+1
+false
+- Ақбілек
+- Қан мен тер</code></pre>
+<p>Массивпен салыстырғанда: өлшемі <code>size()</code> (жақшамен), элементке жету <code>get(i)</code> (жақшамен, <code>[i]</code> емес), өзгерту <code>set(i, мән)</code>. <code>ArrayList</code> тек <strong>сілтеме типтерді</strong> сақтайды: <code>ArrayList&lt;int&gt;</code> жазуға болмайды. Сандар үшін ол <em>wrapper</em> типтерді қолданады - келесі бөлімде.</p>
+
+<h3 id="collections">Collections көмекшісі және ArrayList vs массив</h3>
+<p>Массивтер үшін <code>Arrays</code> класы болса, тізімдер үшін <code>Collections</code> класы бар: <code>sort</code>, <code>reverse</code>, <code>max</code>, <code>min</code>, <code>shuffle</code>.</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.Collections;
+
+public class Aspaptar2 {
+    public static void main(String[] args) {
+        ArrayList&lt;Integer&gt; bagalar = new ArrayList&lt;&gt;();
+        bagalar.add(45000);
+        bagalar.add(12000);
+        bagalar.add(78000);
+        bagalar.add(23000);
+
+        Collections.sort(bagalar);
+        System.out.println("Өсу ретімен: " + bagalar);
+        Collections.reverse(bagalar);
+        System.out.println("Кему ретімен: " + bagalar);
+        System.out.println("Ең арзан: " + Collections.min(bagalar) + " тг");
+        System.out.println("Ең қымбат: " + Collections.max(bagalar) + " тг");
+
+        int jalpy = 0;
+        for (int b : bagalar) {
+            jalpy += b;               // unboxing
+        }
+        System.out.println("Қосынды: " + jalpy);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Aspaptar2.java
+$ java Aspaptar2
+Өсу ретімен: [12000, 23000, 45000, 78000]
+Кему ретімен: [78000, 45000, 23000, 12000]
+Ең арзан: 12000 тг
+Ең қымбат: 78000 тг
+Қосынды: 158000</code></pre>
+<table>
+<thead><tr><th></th><th>Массив</th><th><code>ArrayList</code></th></tr></thead>
+<tbody>
+<tr><td>Өлшемі</td><td>бекітілген</td><td>өзгереді</td></tr>
+<tr><td>Элементтер</td><td>примитив пен нысан</td><td>тек нысан (wrapper)</td></tr>
+<tr><td>Ұзындық</td><td><code>a.length</code></td><td><code>list.size()</code></td></tr>
+<tr><td>Қол жеткізу</td><td><code>a[i]</code></td><td><code>list.get(i)</code></td></tr>
+<tr><td>Жылдамдық</td><td>ең жылдам, аз жад</td><td>сәл баяу, көп қолайлы</td></tr>
+<tr><td>Қашан таңдаймыз?</td><td>өлшемі белгілі, жылдамдық маңызды</td><td>өлшемі өзгереді</td></tr>
+</tbody></table>
+<p>Қоғамдық ереже: өлшемі нақты және өзгермесе, массив; әйтпесе <code>ArrayList</code>. Көп жағдайда тізімнің ыңғайлылығы жылдамдықтағы шағын айырмадан маңызды.</p>
+
+<h2 id="wrappers">Wrapper типтер және autoboxing</h2>
+<p>Әр примитив типтің «нысан түріндегі» қосалқысы бар: <code>int</code> → <code>Integer</code>, <code>double</code> → <code>Double</code>, <code>boolean</code> → <code>Boolean</code>, <code>char</code> → <code>Character</code>, <code>long</code> → <code>Long</code>. Оларды <strong>wrapper типтер</strong> (<span class="term-en">wrapper classes</span>) дейді: примитивті нысанның «қабына» орайды. Тізімдерде (<code>ArrayList&lt;Integer&gt;</code>) тек соларды қолдана аламыз.</p>
+<p>Java примитив мен wrapper арасындағы түрлендіруді автоматты жасайды: <code>int</code> → <code>Integer</code> (<strong>autoboxing</strong>), кері бағыт <code>Integer</code> → <code>int</code> (<strong>unboxing</strong>). Қолданушы бұл жұмысты көрмейді, бірақ бір қауіпті жерлері бар.</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+
+public class Qabyqtau {
+    public static void main(String[] args) {
+        ArrayList&lt;Integer&gt; sandar = new ArrayList&lt;&gt;();
+        sandar.add(10);                 // autoboxing: int -&gt; Integer
+        sandar.add(20);
+        sandar.add(30);
+        int birinshi = sandar.get(0);   // unboxing: Integer -&gt; int
+        System.out.println(birinshi + sandar.get(1));
+
+        // remove: индекс пе, мән бе?
+        sandar.remove(1);                       // индекс = 1
+        System.out.println(sandar);
+        sandar.remove(Integer.valueOf(10));     // мән = 10
+        System.out.println(sandar);
+
+        // Integer кэші: == қауіпті
+        Integer p = 127, q = 127;
+        Integer m = 1000, n = 1000;
+        System.out.println((p == q) + " " + (m == n) + " " + m.equals(n));
+
+        // мәтін &lt;-&gt; сан
+        int jas = Integer.parseInt("42");
+        double bagam = Double.parseDouble("470.5");
+        System.out.println(jas + 1 + " " + bagam);
+        System.out.println(Integer.toString(255) + " " + Integer.toBinaryString(255) + " " + Integer.MAX_VALUE);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Qabyqtau.java
+$ java Qabyqtau
+30
+[10, 30]
+[30]
+true false true
+43 470.5
+255 11111111 2147483647</code></pre>
+<p>Екі «тұзақ» көрдік. Біріншісі: <code>ArrayList&lt;Integer&gt;</code>-те <code>remove(1)</code> <strong>индекс</strong> бойынша өшіреді, ал мәнді өшіру үшін <code>remove(Integer.valueOf(10))</code> жазу керек. Екіншісі: <code>Integer</code> нысандарын <code>==</code> арқылы салыстыру. Java -128-ден 127-ге дейінгі <code>Integer</code> нысандарын қайта қолданады (кэш), сондықтан <code>127 == 127</code> ақиқат, ал <code>1000 == 1000</code> - жалған, өйткені екеуі әртүрлі нысан. Ережеміз қайта: сілтеме типтерді <code>equals</code> арқылы салыстырамыз.</p>
+<div class="callout warn"><span class="callout-title">null және unboxing</span>
+<p>Wrapper - нысан, ол <code>null</code> бола алады, ал <code>int</code> болмайды. <code>Integer x = null; int y = x;</code> жазсаңыз, бағдарлама <code>NullPointerException</code> лақтырады, себебі Java <code>null</code>-дан санды алмақшы. Тізімнен мән алғанда да мұны есте ұстаңыз.</p></div>
+<p>Wrapper-лердің пайдалы статик әдістері: <code>Integer.parseInt("42")</code> (мәтіннен сан), <code>Double.parseDouble(...)</code>, <code>Character.isDigit(c)</code>, <code>Character.isLetter(c)</code>, <code>Integer.compare(a, b)</code>. Мәтінді санға айналдыра алмаса (<code>"abc"</code>), <code>NumberFormatException</code> шығады.</p>
+
+<h2 id="algorithms">Қарапайым іздеу және сұрыптау алгоритмдері</h2>
+<p><strong>Алгоритм</strong> (<span class="term-en">algorithm</span>) - мәселені шешудің нақты қадамдық тәсілі. Массивпен жұмыс істегенде екі міндет үнемі кездеседі: бір мәнді <em>іздеу</em> және мәндерді <em>реттеу</em>. Дайын <code>Arrays.sort</code> бар, бірақ алгоритмді өзіңіз жазу ойлау қабілетін өсіреді.</p>
+<h3 id="linear">Сызықтық іздеу</h3>
+<p>Ең қарапайым тәсіл: бірінші элементтен бастап бір-бірлеп қараймыз. Табылса - индексін қайтарамыз, табылмаса - <code>-1</code>. Сұрыпталмаған деректе жалғыз жол. Ең нашар жағдайда барлық <code>n</code> элементті қарауға тура келеді.</p>
+<h3 id="binary">Екілік іздеу</h3>
+<p>Егер массив <strong>сұрыпталған</strong> болса, әлдеқайда ақылды тәсіл бар. Телефон кітапшасын елестетіңіз: «Сейітов» іздеген кезде бірінші бетті емес, ортасын ашасыз. Сөз ортадан кейін тұр ма, бұрын ба - соған қарай жарты бөлікті ғана қарайсыз. Әр қадам іздеу аймағын екі есе қысқартады: мың элемент үшін ең көбі 10, миллион үшін - шамамен 20 қадам.</p>
+<pre data-lang="java"><code class="language-java">public class Izdeu {
+    // табылмаса -1
+    static int syzyqty(int[] a, int mani) {
+        for (int i = 0; i &lt; a.length; i++) {
+            if (a[i] == mani) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    // a сұрыпталған болуы керек
+    static int ekilik(int[] a, int mani) {
+        int tomen = 0;
+        int zhogary = a.length - 1;
+        int qadam = 0;
+        while (tomen &lt;= zhogary) {
+            qadam++;
+            int orta = (tomen + zhogary) / 2;
+            if (a[orta] == mani) {
+                System.out.println("  қадам саны: " + qadam);
+                return orta;
+            } else if (a[orta] &lt; mani) {
+                tomen = orta + 1;
+            } else {
+                zhogary = orta - 1;
+            }
+        }
+        System.out.println("  қадам саны: " + qadam);
+        return -1;
+    }
+
+    public static void main(String[] args) {
+        int[] bagalar = {3, 8, 12, 17, 21, 25, 30, 34, 41, 47, 52, 58, 63, 70, 76};
+        System.out.println("Сызықтық, 52: " + syzyqty(bagalar, 52));
+        System.out.println("Екілік, 52:");
+        System.out.println("  индекс: " + ekilik(bagalar, 52));
+        System.out.println("Екілік, 5:");
+        System.out.println("  индекс: " + ekilik(bagalar, 5));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Izdeu.java
+$ java Izdeu
+Сызықтық, 52: 10
+Екілік, 52:
+  қадам саны: 4
+  индекс: 10
+Екілік, 5:
+  қадам саны: 4
+  индекс: -1</code></pre>
+<p>Екілік іздеуде <code>(tomen + zhogary) / 2</code> ортаны табады. Егер орта элемент ізделген мәннен кіші болса, іздеу аймағының <code>tomen</code> шекарасын оңға жылжытамыз; үлкен болса, <code>zhogary</code> шекарасын солға. Мәннің жоқтығын «шекаралар айқасты» дегенде білеміз (<code>tomen &gt; zhogary</code>). 15 элементтен тұратын тізімде 52-ні 4 қадамда таптық, ал 5-ті таппай, 4 қадамнан кейін тоқтадық: <code>log₂(15)</code> шамамен 4.</p>
+<h3 id="sorting">Сұрыптау</h3>
+<p><strong>Көпіршікті сұрыптау</strong> (<span class="term-en">bubble sort</span>) көрші екі элементті салыстырып, дұрыс емес ретте тұрса, орнын ауыстырады. Әр өту «ең үлкен» элементті соңына «қалқытады», суда көпіршік жоғары шыққандай. <strong>Таңдау арқылы сұрыптау</strong> (<span class="term-en">selection sort</span>) әр қадамда қалған бөліктің ең кішісін тауып, оны дұрыс орнына қояды.</p>
+<figure style="margin:22px 0;text-align:center"><svg viewBox="0 0 640 250" role="img" aria-label="Көпіршікті сұрыптаудың бір өтуі: [5, 1, 4, 2] массиві; 5 пен 1 орын ауыстырады, 5 пен 4 ауыстырады, 5 пен 2 ауыстырады; нәтиже [1, 4, 2, 5]" style="display:block;width:100%;max-width:640px;height:auto;margin:0 auto"><defs><marker id="ar988_4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="30" y="20" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12px;font-weight:400">басы</text><rect x="250" y="4" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/><text x="285.0" y="21.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">5</text><rect x="335" y="4" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/><text x="370.0" y="21.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">1</text><rect x="420" y="4" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/><text x="455.0" y="21.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">4</text><rect x="505" y="4" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/><text x="540.0" y="21.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">2</text><text x="30" y="76" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12px;font-weight:400">5 &gt; 1: ауыстыру</text><rect x="250" y="60" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="285.0" y="77.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">1</text><rect x="335" y="60" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="370.0" y="77.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">5</text><rect x="420" y="60" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/><text x="455.0" y="77.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">4</text><rect x="505" y="60" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/><text x="540.0" y="77.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">2</text><text x="30" y="132" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12px;font-weight:400">5 &gt; 4: ауыстыру</text><rect x="250" y="116" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/><text x="285.0" y="133.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">1</text><rect x="335" y="116" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="370.0" y="133.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">4</text><rect x="420" y="116" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="455.0" y="133.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">5</text><rect x="505" y="116" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/><text x="540.0" y="133.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">2</text><text x="30" y="188" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font,sans-serif);font-size:12px;font-weight:400">5 &gt; 2: ауыстыру</text><rect x="250" y="172" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/><text x="285.0" y="189.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">1</text><rect x="335" y="172" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/><text x="370.0" y="189.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">4</text><rect x="420" y="172" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="455.0" y="189.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">2</text><rect x="505" y="172" width="70" height="34" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="540.0" y="189.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono,'JetBrains Mono',monospace);font-size:16px">5</text></svg><figcaption style="font-size:14.5px;color:var(--muted);margin-top:8px">10-сурет. Бір өту: ең үлкен элемент (5) ең оңға «қалқып» шықты. Бөлектелген екі ұяшық әр қадамда салыстырылған.</figcaption></figure>
+<p>Мәтінмен: төрт жол төрт күйді көрсетеді: бастапқы [5, 1, 4, 2]; 5 пен 1-ді ауыстырсақ [1, 5, 4, 2]; 5 пен 4-ті ауыстырсақ [1, 4, 5, 2]; 5 пен 2-ні ауыстырсақ [1, 4, 2, 5]. Бір өтуден кейін 5 өз орнында. Қалған элементтер үшін өтуді қайталаймыз.</p>
+<pre data-lang="java"><code class="language-java">import java.util.Arrays;
+
+public class Suryptau {
+    static void kopirshik(int[] a) {
+        int ayirbas = 0;
+        for (int ote = 0; ote &lt; a.length - 1; ote++) {
+            boolean ozgerdi = false;
+            for (int i = 0; i &lt; a.length - 1 - ote; i++) {
+                if (a[i] &gt; a[i + 1]) {
+                    int t = a[i];
+                    a[i] = a[i + 1];
+                    a[i + 1] = t;
+                    ayirbas++;
+                    ozgerdi = true;
+                }
+            }
+            if (!ozgerdi) {
+                break;          // ауыстыру болмаса, дайын
+            }
+        }
+        System.out.println("  ауыстыру саны: " + ayirbas);
+    }
+
+    static void tandau(int[] a) {
+        for (int i = 0; i &lt; a.length - 1; i++) {
+            int kishi = i;
+            for (int j = i + 1; j &lt; a.length; j++) {
+                if (a[j] &lt; a[kishi]) {
+                    kishi = j;
+                }
+            }
+            int t = a[i];
+            a[i] = a[kishi];
+            a[kishi] = t;
+        }
+    }
+
+    public static void main(String[] args) {
+        int[] a = {5, 1, 4, 2};
+        System.out.println("Көпіршікті:");
+        kopirshik(a);
+        System.out.println("  " + Arrays.toString(a));
+
+        int[] b = {64, 25, 12, 22, 11, 90, 3};
+        tandau(b);
+        System.out.println("Таңдау арқылы: " + Arrays.toString(b));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac Suryptau.java
+$ java Suryptau
+Көпіршікті:
+  ауыстыру саны: 4
+  [1, 2, 4, 5]
+Таңдау арқылы: [3, 11, 12, 22, 25, 64, 90]</code></pre>
+<p>Екі алгоритм де қарапайым, бірақ екі ішкі цикл болғандықтан баяу: <code>n</code> элемент үшін шамамен <code>n²</code> салыстыру. Мың элемент ~миллион қадам, миллион элемент ~миллиард миллион. Дайын <code>Arrays.sort</code> әлдеқайда жылдам алгоритм қолданады (шамамен <code>n · log n</code>). Жұмыста әрқашан дайын сұрыптауды қолданыңыз; өз алгоритмдерің - ойлау үшін.</p>
+<div class="callout note"><span class="callout-title">Нысандарды сұрыптау</span>
+<p>Сандар мен мәтіндер табиғи ретте сұрыпталады. Қызықты жағдай - нысандардың тізімін (мысалы, кітаптарды бағасы бойынша) сұрыптау. Оның жолы бар, бірақ ол үшін класс пен интерфейс ұғымдары қажет; біз оған 3- және 4-апталарда келеміз.</p></div>
+<h3 id="bigo">Алгоритм қаншалықты жылдам? (интуиция)</h3>
+<p>Екі іздеу мен екі сұрыптауды салыстыруда біз «қадам санын» санадық. Бағдарламашылар мұны <strong>күрделілік</strong> (<span class="term-en">complexity</span>) арқылы өлшейді: деректер <code>n</code> есе көп болса, жұмыс неше есе көбейеді? Қазір дәл формула қажет емес, мына кестеден масштабын түсінсеңіз жеткілікті.</p>
+<table>
+<thead><tr><th>Алгоритм</th><th>Қадам саны (шамамен)</th><th>n = 1000</th><th>n = 1 000 000</th></tr></thead>
+<tbody>
+<tr><td>Екілік іздеу</td><td>log₂ n</td><td>10</td><td>20</td></tr>
+<tr><td>Сызықтық іздеу</td><td>n</td><td>1 000</td><td>1 000 000</td></tr>
+<tr><td><code>Arrays.sort</code></td><td>n · log₂ n</td><td>~10 000</td><td>~20 000 000</td></tr>
+<tr><td>Көпіршікті/таңдау сұрыптау</td><td>n²</td><td>1 000 000</td><td>1 000 000 000 000</td></tr>
+</tbody></table>
+<p>Миллион элементті көпіршікті сұрыптау триллион қадам, яғни сағаттар не күндер; <code>Arrays.sort</code> секундтың бөлігінде орындайды. Бұл айырма сандардың «сиқыры» емес, алгоритм таңдауының нәтижесі. Бір рет сұрыптап алып, көп іздеу керек болса, екілік іздеу өтеді; бір-ақ рет іздесеңіз, сұрыптау қымбат, сондықтан сызықтық іздеу оңтайлы. Таңдау мәселенің нақты жағдайына байланысты.</p>
+
+<h2 id="project">Бәрін біріктіру: аспаптар каталогы</h2>
+<p>Өткендерді біріктіретін шағын жоба жасайық: қазақ ұлттық аспаптарының каталогы. Аттары мен бағалары (шартты) бар; ең арзан аспапты табу, бағасы бойынша сұрыптау және атауы бойынша іздеу керек. Деректер массивтерде тұр, ал ортақ индекс оларды байланыстырады.</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.Arrays;
+
+public class AspapKatalogy {
+    public static void main(String[] args) {
+        String[] atau = {"Домбыра", "Қобыз", "Сыбызғы", "Шертер", "Жетіген", "Асатаяқ"};
+        int[] baga = {45000, 78000, 12000, 52000, 90000, 8000};
+
+        // ең арзан аспап
+        int arzan = 0;
+        for (int i = 1; i &lt; baga.length; i++) {
+            if (baga[i] &lt; baga[arzan]) {
+                arzan = i;
+            }
+        }
+        System.out.println("Ең арзан: " + atau[arzan] + " - " + baga[arzan] + " тг");
+
+        // бағасы бойынша кему ретімен: индекстердің ретін есептейміз
+        Integer[] ret = new Integer[atau.length];
+        for (int i = 0; i &lt; ret.length; i++) ret[i] = i;
+        Arrays.sort(ret, (p, q) -&gt; baga[q] - baga[p]);
+        System.out.println("Қымбаттан арзанға:");
+        for (int k : ret) {
+            System.out.printf("  %-8s %6d тг%n", atau[k], baga[k]);
+        }
+
+        // атауы бойынша іздеу
+        String izdeu = "Шертер";
+        ArrayList&lt;String&gt; tizim = new ArrayList&lt;&gt;(Arrays.asList(atau));
+        int orn = tizim.indexOf(izdeu);
+        System.out.println(izdeu + (orn &gt;= 0 ? " " + orn + "-орында, баға " + baga[orn] : " жоқ"));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ javac AspapKatalogy.java
+$ java AspapKatalogy
+Ең арзан: Асатаяқ - 8000 тг
+Қымбаттан арзанға:
+  Жетіген   90000 тг
+  Қобыз     78000 тг
+  Шертер    52000 тг
+  Домбыра   45000 тг
+  Сыбызғы   12000 тг
+  Асатаяқ    8000 тг
+Шертер 3-орында, баға 52000</code></pre>
+<p>Мұнда үш жаңа нәрсе бар. <code>Integer[] ret</code> - индекстер массиві: деректерді өзін қозғамай, тек <em>ретін</em> сақтадық. <code>(p, q) -&gt; baga[q] - baga[p]</code> - қысқа <strong>лямбда өрнегі</strong>: «екі индексті бағасы бойынша салыстыр» деген нұсқау (лямбдаларға кейін ораламыз, қазір оны «салыстыру ережесі» деп оқыңыз). <code>Arrays.asList</code> массивті тізімге айналдырады. Назар аударыңыз: бұл шешім жұмыс істейді, бірақ атау мен бағаны екі бөлек массивте ұстау ыңғайсыз: біреуін ұмытып өзгертсеңіз, олар сәйкес келмей қалады. Келесі аптада бұл мәселені <strong>класс</strong> арқылы шешеміз: бір <code>Aspap</code> нысаны атауы мен бағасын бірге ұстайтын болады.</p>
+
+<h3 id="tryit">Өз компьютеріңде іске қос</h3>
+<ol>
+<li>Әр мысалды <code>.java</code> файлына сақтап, <code>javac Файл.java &amp;&amp; java Файл</code> жасаңыз.</li>
+<li><code>import</code> жолдарын (<code>java.util.Arrays</code>, <code>java.util.ArrayList</code>) ұмытпаңыз; әйтпесе «<em>cannot find symbol</em>» шығады.</li>
+<li>Сұрыптау мысалындағы массивті өз деректеріңізбен ауыстырып, нәтижені <code>Arrays.sort</code> нәтижесімен салыстырыңыз.</li>
+</ol>
+
+<h2 id="mistakes">Жиі қателер</h2>
+<ol>
+<li><strong><code>i &lt;= arr.length</code></strong> - соңғы айналымда <code>ArrayIndexOutOfBoundsException</code>.</li>
+<li><strong><code>arr.length()</code></strong> немесе <code>s.length</code>: массивте жақшасыз (<code>length</code>), <code>String</code>-те жақшамен (<code>length()</code>), <code>ArrayList</code>-те <code>size()</code>.</li>
+<li><strong>Массивті <code>=</code> арқылы көшіру.</strong> <code>b = a</code> көшірме емес, екінші сілтеме. Нақты көшірме үшін <code>clone()</code> не <code>Arrays.copyOf</code>.</li>
+<li><strong>Мәтінді <code>==</code> арқылы салыстыру.</strong> Әрқашан <code>equals</code>.</li>
+<li><strong><code>s.toUpperCase();</code> нәтижесін сақтамау.</strong> <code>String</code> өзгермейді.</li>
+<li><strong><code>ArrayList&lt;int&gt;</code> жазу.</strong> Дұрысы <code>ArrayList&lt;Integer&gt;</code>.</li>
+<li><strong><code>list.remove(int)</code> пен <code>remove(Object)</code> шатасуы.</strong></li>
+<li><strong>Integer-ді <code>==</code> арқылы салыстыру</strong> (кэштен тыс мәндерде <code>false</code>).</li>
+<li><strong><code>binarySearch</code> сұрыпталмаған массивте.</strong> Алдымен сұрыптаңыз.</li>
+<li><strong><code>null</code> массив не <code>null</code> мәтінге әдіс шақыру</strong> - <code>NullPointerException</code>. <code>new String[3]</code> ішіндегі әр орын басында <code>null</code>.</li>
+</ol>
+
+<h2 id="summary">Қорытынды</h2>
+<ul>
+<li>Массив - бекітілген ұзындықты бір типті жиын; индекс 0-ден басталады, <code>length</code> - өріс; шегінен шықсақ <code>ArrayIndexOutOfBoundsException</code>;</li>
+<li>Примитив мәні стекте, массивтер мен <code>String</code> нысандары үймеде; айнымалыда сілтеме ғана тұрады, сондықтан <code>b = a</code> нысанды көшірмейді;</li>
+<li>2D массив - «массивтер массиві»; <code>Arrays</code> класы <code>sort</code>, <code>copyOf</code>, <code>fill</code>, <code>equals</code>, <code>binarySearch</code>, <code>toString</code> береді;</li>
+<li><code>String</code> өзгермейді; салыстыруға <code>equals</code>; көп жалғауға <code>StringBuilder</code>; көп жолды мәтінге text block;</li>
+<li><code>ArrayList&lt;T&gt;</code> - өсетін тізім: <code>add</code>, <code>get</code>, <code>set</code>, <code>remove</code>, <code>size</code>, <code>contains</code>;</li>
+<li>Wrapper типтер (<code>Integer</code>, <code>Double</code> ...) мен autoboxing: ыңғайлы, бірақ <code>==</code> және <code>null</code> тұзақтары бар;</li>
+<li>Алгоритмдер: сызықтық іздеу, екілік іздеу (сұрыпталған массивте), көпіршікті және таңдау сұрыптау.</li>
+</ul>
+<p>Келесі аптада ең маңызды сатыға шығамыз: өз типімізді - <strong>класты</strong> жасаймыз. Сонда «кітап» туралы деректер бөлек массивтерде емес, бір нысанда тұратын болады.</p>
+<h3 id="selfcheck">Өзіңізді тексеру тізімі</h3>
+<ul class="checklist" data-id="java2-self">
+<li><input type="checkbox" aria-label="Орындалды"> <span>Массив жариялап, толтырып, цикл арқылы аралай аламын</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>ArrayIndexOutOfBoundsException</code> қашан шығатынын түсіндіре аламын</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Стек пен үйме айырмасын және <code>b = a</code> нені көшіретінін сыза аламын</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>String</code> неге өзгермейтінін және <code>equals</code> мен <code>==</code> айырмасын білемін</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>ArrayList</code> пен массивтің айырмашылығын айта аламын</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Екілік іздеу мен көпіршікті сұрыптауды өз сөзіммен түсіндіре аламын</span></li>
+</ul>
+<p class="progress"></p>
+<h2 id="quiz">Өзіңізді тексеріңіз</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. Мына код не шығарады?</p>
+<pre data-lang="java"><code class="language-java">import java.util.Arrays;
+
+public class Q1 {
+    public static void main(String[] args) {
+        int[] a = new int[3];
+        a[1] = 7;
+        System.out.println(Arrays.toString(a));
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>[7]</code></label>
+<label><input type="radio" value="b"> <code>[0, 7, 0]</code></label>
+<label><input type="radio" value="c"> <code>[null, 7, null]</code></label>
+<label><input type="radio" value="d"> Орындау қатесі</label>
+<p class="explain"><code>new int[3]</code> барлық ұяшықты <code>0</code>-мен толтырады, сосын <code>a[1]</code> 7 болды. Нақты нәтиже: [0, 7, 0].</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. Бұл бағдарлама туралы қай тұжырым дұрыс?</p>
+<pre data-lang="java"><code class="language-java">public class Q2 {
+    public static void main(String[] args) {
+        int[] a = new int[5];
+        a[5] = 1;
+        System.out.println("Дайын");
+    }
+}</code></pre>
+<label><input type="radio" value="a"> Компиляция қатесі береді</label>
+<label><input type="radio" value="b"> Орындалады, «Дайын» шығады</label>
+<label><input type="radio" value="c"> Орындау кезінде <code>ArrayIndexOutOfBoundsException</code> лақтырады</label>
+<label><input type="radio" value="d"> 5-орынды автоматты қосады</label>
+<p class="explain">Жарамды индекстер - 0-ден 4-ке дейін. Компилятор индекс мәнін тексермейді, қате орындау кезінде шығады. Нақты хабар: <em>Exception in thread "main" java.lang.ArrayIndexOutOfBoundsException: Index 5 out of bounds for length 5</em>.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">3. Мына код не шығарады?</p>
+<pre data-lang="java"><code class="language-java">public class Q3 {
+    public static void main(String[] args) {
+        String s = "abc";
+        s.toUpperCase();
+        s.concat("d");
+        System.out.println(s);
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>ABC</code></label>
+<label><input type="radio" value="b"> <code>abcd</code></label>
+<label><input type="radio" value="c"> <code>abc</code></label>
+<label><input type="radio" value="d"> <code>ABCd</code></label>
+<p class="explain"><code>String</code> өзгермейді: әдістер жаңа мәтін қайтарады, ал біз оны ешқайда сақтамадық. Нақты нәтиже: abc.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. Мына код не шығарады?</p>
+<pre data-lang="java"><code class="language-java">public class Q4 {
+    public static void main(String[] args) {
+        int[] a = {1, 2, 3};
+        int[] b = a;
+        b[0] = 9;
+        System.out.println(a[0] + " " + (a == b));
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>1 true</code></label>
+<label><input type="radio" value="b"> <code>9 true</code></label>
+<label><input type="radio" value="c"> <code>9 false</code></label>
+<label><input type="radio" value="d"> <code>1 false</code></label>
+<p class="explain"><code>b = a</code> сілтемені көшіреді: екеуі бір массивке көрсетеді. <code>b[0]</code> өзгерсе, <code>a[0]</code> да өзгереді, <code>a == b</code> ақиқат. Нақты нәтиже: 9 true.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. Мына код не шығарады?</p>
+<pre data-lang="java"><code class="language-java">public class Q5 {
+    public static void main(String[] args) {
+        Integer a = 100, b = 100;
+        Integer c = 1000, d = 1000;
+        System.out.println((a == b) + " " + (c == d));
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>true true</code></label>
+<label><input type="radio" value="b"> <code>true false</code></label>
+<label><input type="radio" value="c"> <code>false false</code></label>
+<label><input type="radio" value="d"> <code>false true</code></label>
+<p class="explain">Java -128...127 аралығындағы <code>Integer</code> нысандарын кэштейді, сондықтан <code>100 == 100</code> ақиқат. 1000 үшін екі бөлек нысан жасалады, <code>==</code> жалған. Нақты нәтиже: true false. Мұндай салыстыруға <code>equals</code> қолданыңыз.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. <code>t.remove(1)</code> жолынан кейін тізім қандай?</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.List;
+
+public class Q6 {
+    public static void main(String[] args) {
+        List&lt;Integer&gt; t = new ArrayList&lt;&gt;(List.of(10, 20, 30));
+        t.remove(1);
+        System.out.println(t);
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>[20, 30]</code></label>
+<label><input type="radio" value="b"> <code>[10, 20, 30]</code></label>
+<label><input type="radio" value="c"> <code>[10, 30]</code></label>
+<label><input type="radio" value="d"> <code>[10, 20]</code></label>
+<p class="explain"><code>remove(int)</code> <strong>индекс</strong> бойынша өшіреді: 1-индексте 20 тұр. Мәнді өшіру үшін <code>remove(Integer.valueOf(20))</code> керек. Нақты нәтиже: [10, 30].</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. <code>ArrayList</code> неге <code>ArrayList&lt;int&gt;</code> түрінде жариялана алмайды?</p>
+<label><input type="radio" value="a"> Өйткені <code>int</code> тым үлкен</label>
+<label><input type="radio" value="b"> Дженерик тек сілтеме типтермен жұмыс істейді; орнына <code>Integer</code> қолданамыз</label>
+<label><input type="radio" value="c"> Өйткені <code>ArrayList</code> тек мәтін сақтайды</label>
+<label><input type="radio" value="d"> Өйткені <code>int</code> аты кілт сөз емес</label>
+<p class="explain">Дженерик тип параметрі нысан болуы керек. Сандар үшін wrapper типтер бар: <code>Integer</code>, <code>Double</code>, ... Java примитив ↔ wrapper аралығын autoboxing арқылы өзі аударады.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. Көпіршікті сұрыптаудың <strong>бір өтуінен</strong> кейін массив қандай болады?</p>
+<pre data-lang="java"><code class="language-java">import java.util.Arrays;
+
+public class Q8 {
+    public static void main(String[] args) {
+        int[] a = {5, 1, 4, 2};
+        for (int i = 0; i &lt; a.length - 1; i++) {
+            if (a[i] &gt; a[i + 1]) {
+                int t = a[i];
+                a[i] = a[i + 1];
+                a[i + 1] = t;
+            }
+        }
+        System.out.println(Arrays.toString(a));
+    }
+}</code></pre>
+<label><input type="radio" value="a"> <code>[1, 2, 4, 5]</code></label>
+<label><input type="radio" value="b"> <code>[1, 4, 2, 5]</code></label>
+<label><input type="radio" value="c"> <code>[1, 5, 4, 2]</code></label>
+<label><input type="radio" value="d"> <code>[5, 1, 4, 2]</code></label>
+<p class="explain">Бір өту ең үлкен санды (5) соңына жеткізеді, бірақ қалғандарын толық реттемейді. Толық реттеуге тағы өтулер керек. Нақты нәтиже: [1, 4, 2, 5].</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
+<h2 id="exercises">Жаттығулар</h2>
+<p>Алты жаттығу: екі оңай, екі орташа, екі қиын. Әр тапсырманы алдымен ойша шешіп көріп, содан кейін өз компьютеріңде тексеріңіз.</p>
+<div class="task">
+<div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-sum">Жұп индекстегі қосынды</h3></div>
+<p>Мына код не шығарады?</p><pre data-lang="java"><code class="language-java">public class Jat1 {
+    public static void main(String[] args) {
+        int[] a = {4, 8, 15, 16, 23, 42};
+        int s = 0;
+        for (int i = 0; i &lt; a.length; i += 2) {
+            s += a[i];
+        }
+        System.out.println(s);
+    }
+}</code></pre>
+<div class="answer-check" data-answer="42"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Цикл <code>i = 0, 2, 4</code> мәндерімен жүреді. Осы индекстердегі элементтерді жазып алыңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Индекстер 0, 2, 4 → элементтер 4, 15, 23. Қосынды: 4 + 15 + 23 = 42.</p><pre class="terminal"><code class="language-plaintext">$ java Jat1
+42</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge easy">Оңай</span><h3 id="ex-jurnal">Оқушы журналы: статистика</h3></div>
+<p>Бір оқушының жеті бағасы бар массив жасаңыз. <code>Jurnal2.java</code> бағдарламасы ең жоғары бағаны, ең төмен бағаны және орташа мәнді (екі таңбалы бөлшекпен) шығарсын.</p>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>max</code> пен <code>min</code> бастапқы мәні ретінде <code>bagalar[0]</code> алыңыз, содан цикл арқылы салыстырыңыз. Орташада бөлшек болуы үшін <code>(double)</code> casting қолданыңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Мысал шешім:</p><pre data-lang="java"><code class="language-java">import java.util.Arrays;
+
+public class Jurnal2 {
+    public static void main(String[] args) {
+        int[] bagalar = {5, 4, 3, 5, 4, 2, 5};
+        int max = bagalar[0];
+        int min = bagalar[0];
+        int jalpy = 0;
+        for (int b : bagalar) {
+            if (b &gt; max) max = b;
+            if (b &lt; min) min = b;
+            jalpy += b;
+        }
+        System.out.println(Arrays.toString(bagalar));
+        System.out.println("Ең жоғары: " + max + ", ең төмен: " + min);
+        System.out.printf("Орташа: %.2f%n", (double) jalpy / bagalar.length);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java Jurnal2
+[5, 4, 3, 5, 4, 2, 5]
+Ең жоғары: 5, ең төмен: 2
+Орташа: 4.00</code></pre></div></details>
+<details open><summary>Өзін тексеру</summary><div class="details-body">
+<ul class="checklist" data-id="java2-t2">
+<li><input type="checkbox" aria-label="Орындалды"> <span>Массивте 7 баға бар</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Ең жоғары және ең төмен баға дұрыс табылады</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Орташа екі таңбалы бөлшекпен шығады</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Бөлшек үшін <code>(double)</code> қолданылған</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-reverse">Мәтінді төңкеру</h3></div>
+<p><code>new StringBuilder("Almaty").reverse()</code> нәтижесін жазыңыз. Регистрге назар аударыңыз.</p>
+<div class="answer-check" data-answer="ytamlA"><input type="text" placeholder="Нәтиже" aria-label="Нәтиже"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>reverse()</code> әріптердің ретін толық кері бұрады, әріп регистрін өзгертпейді.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>"Almaty" → таңбалар: A, l, m, a, t, y; кері: y, t, a, m, l, A → <code>ytamlA</code>.</p><pre data-lang="java"><code class="language-java">public class Teris {
+    public static void main(String[] args) {
+        StringBuilder sb = new StringBuilder("Almaty");
+        sb.reverse();
+        System.out.println(sb);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java Teris
+ytamlA</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge medium">Орташа</span><h3 id="ex-unique">Қайталанбайтын қалалар</h3></div>
+<p>Тізімде қалалар бар: <code>Алматы, Астана, Алматы, Шымкент, Астана, Қарағанды</code>. Қайталанғандарын алып тастағанда, неше қала қалады? Содан кейін осыны жасайтын бағдарлама жазыңыз.</p>
+<div class="answer-check" data-answer="4"><input type="text" placeholder="Қала саны" aria-label="Қала саны"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Жаңа <code>ArrayList</code> жасап, әр қаланы тек сол тізімде <code>!contains</code> болғанда ғана қосыңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Бірегей қалалар: Алматы, Астана, Шымкент, Қарағанды, барлығы 4.</p><pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+
+public class Birtalqa {
+    public static void main(String[] args) {
+        String[] kirgen = {"Алматы", "Астана", "Алматы", "Шымкент", "Астана", "Қарағанды"};
+        ArrayList&lt;String&gt; birTalqa = new ArrayList&lt;&gt;();
+        for (String qala : kirgen) {
+            if (!birTalqa.contains(qala)) {
+                birTalqa.add(qala);
+            }
+        }
+        System.out.println(birTalqa);
+        System.out.println(birTalqa.size());
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java Birtalqa
+[Алматы, Астана, Шымкент, Қарағанды]
+4</code></pre></div></details>
+<details open><summary>Өзін тексеру</summary><div class="details-body">
+<ul class="checklist" data-id="java2-t4">
+<li><input type="checkbox" aria-label="Орындалды"> <span>Нәтижелік тізімде қайталану жоқ</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span><code>contains</code> қолданылған</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Тізімнің ұзындығы <code>size()</code> арқылы шығады</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge hard">Қиын</span><h3 id="ex-diag">Матрицаның диагональдары</h3></div>
+<p>4×4 массивті мына ережемен толтырыңыз: <code>a[i][j] = i * 4 + j + 1</code> (сонда жолдар 1 2 3 4 / 5 6 7 8 / 9 10 11 12 / 13 14 15 16). Негізгі диагональ (<code>a[i][i]</code>) мен бүйір диагональ (<code>a[i][3-i]</code>) қосындыларының <strong>қосындысы</strong> қанша?</p>
+<div class="answer-check" data-answer="68"><input type="text" placeholder="Қосынды" aria-label="Қосынды"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Негізгі: 1 + 6 + 11 + 16. Бүйір: 4 + 7 + 10 + 13. Екеуін бөлек есептеп, соңында қосыңыз; 4×4 матрицада диагональдардың ортақ ұяшығы жоқ.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Негізгі: 1 + 6 + 11 + 16 = 34. Бүйір: 4 + 7 + 10 + 13 = 34. Барлығы 68.</p><pre data-lang="java"><code class="language-java">public class Diagonal {
+    public static void main(String[] args) {
+        int n = 4;
+        int[][] a = new int[n][n];
+        for (int i = 0; i &lt; n; i++) {
+            for (int j = 0; j &lt; n; j++) {
+                a[i][j] = i * n + j + 1;
+            }
+        }
+        int negizgi = 0, bujir = 0;
+        for (int i = 0; i &lt; n; i++) {
+            negizgi += a[i][i];
+            bujir += a[i][n - 1 - i];
+        }
+        System.out.println(negizgi + " " + bujir + " " + (negizgi + bujir));
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java Diagonal
+34 34 68</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge hard">Қиын</span><h3 id="ex-bsearch">Екілік іздеу қадамдары</h3></div>
+<p>Массив: <code>1, 2, 3, ..., 15</code> (15 элемент, индекстер 0-14). Осы массивте екілік іздеумен <code>11</code> санын іздейміз; ортаны <code>(tomen + zhogary) / 2</code> деп аламыз. <code>11</code> неше қадамда табылады? (Әр айналым - бір қадам.)</p>
+<div class="answer-check" data-answer="4"><input type="text" placeholder="Қадам саны" aria-label="Қадам саны"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Кестені жүргізіңіз: <code>tomen</code>, <code>zhogary</code>, <code>orta</code>, <code>a[orta]</code>. Бастапқыда 0 және 14.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>1) 0..14, orta = 7, a[7] = 8 &lt; 11 → tomen = 8. 2) 8..14, orta = 11, a[11] = 12 &gt; 11 → zhogary = 10. 3) 8..10, orta = 9, a[9] = 10 &lt; 11 → tomen = 10. 4) 10..10, orta = 10, a[10] = 11, табылды. Төрт қадам.</p><pre data-lang="java"><code class="language-java">public class Qadam {
+    public static void main(String[] args) {
+        int[] a = new int[15];
+        for (int i = 0; i &lt; a.length; i++) {
+            a[i] = i + 1;            // 1..15
+        }
+        int mani = 11;
+        int tomen = 0, zhogary = a.length - 1, qadam = 0, orn = -1;
+        while (tomen &lt;= zhogary) {
+            qadam++;
+            int orta = (tomen + zhogary) / 2;
+            if (a[orta] == mani) {
+                orn = orta;
+                break;
+            } else if (a[orta] &lt; mani) {
+                tomen = orta + 1;
+            } else {
+                zhogary = orta - 1;
+            }
+        }
+        System.out.println("индекс " + orn + ", қадам " + qadam);
+    }
+}</code></pre><pre class="terminal"><code class="language-plaintext">$ java Qadam
+индекс 10, қадам 4</code></pre></div></details>
+<details open><summary>Өзін тексеру</summary><div class="details-body">
+<ul class="checklist" data-id="java2-t6">
+<li><input type="checkbox" aria-label="Орындалды"> <span>Кесте дұрыс жүргізілген</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Программа 4 қадам шығарады</span></li>
+<li><input type="checkbox" aria-label="Орындалды"> <span>Массив сұрыпталған екені ескерілген</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+
+<nav class="pager">
+<a href="week-1.html"><small>Алдыңғы</small>← 1-апта: Шарттар, циклдер және әдістер</a>
+<a class="next" href="week-3.html"><small>Келесі</small>3-апта: Класстар және нысандар →</a>
+</nav>
+
+<p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

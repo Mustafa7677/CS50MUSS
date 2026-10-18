@@ -1,0 +1,989 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C++ 3-апта: Жад, көрсеткіштер және сілтемелер - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-3.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa, All Rights Reserved. Авторлық оқу материалы.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"C++ 3-апта: Жад, көрсеткіштер және сілтемелер - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-3.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"copyrightNotice":"© 2026 Sagid Mustafa, All Rights Reserved. Авторлық оқу материалы."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="C++ 3-апта: жад мекенжайы, көрсеткіштер, сілтемелер, stack және heap, new/delete, жад ағуы, RAII, unique_ptr/shared_ptr және AddressSanitizer.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body data-license="A">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="cpp" style="--c:#4f46e5"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">C++</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../cpp/index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#4f46e5" data-n="3">
+        <div class="num">3-апта</div>
+        <h1>Жад, көрсеткіштер және сілтемелер</h1>
+        <p>Бұл апта C++-тың ең ерекше және ең қызықты бөлігі: компьютер жадына тікелей қол жеткізу. Мекенжай, көрсеткіш, сілтеме, стек пен үйме, динамикалық жад, жад ағуы және оларды қауіпсіз басқарудың заманауи жолы - смарт көрсеткіштер. Шаңырақ пен үй мекенжайы аналогиясымен қадамдап түсінеміз.</p>
+      </div>
+
+      <h2 id="memory">Жад және мекенжай</h2>
+      <p>Өткен аптада айнымалы жадта «қобдиша» екенін айттық. Енді сол қобдишаны жақынырақ көрейік. Жад - бір-бірінің қасында тұрған миллиардтаған кішкентай ұяшықтардан (байттардан) тұратын өте ұзын көше. Әр ұяшықтың өз нөмірі бар: бұл <strong>мекенжай</strong> (<span class="term-en">address</span>). <code>int age = 17;</code> деп жазғанда компьютер көшеден 4 байттық бос орын (үй) тауып, оған «age» деген ат қояды және ішіне 17 санын салады. Үйдің екі қасиеті бар: ішіндегі <em>мән</em> және көшедегі <em>мекенжайы</em>.</p>
+      <p>Шаңырақ астындағы үйді елестетіңіз. Қазақ үшін шаңырақ - киіз үйдің төбесіндегі дөңгелек, отбасы мен әулеттің белгісі. Әр шаңырақтың астындағы үйдің өз мекенжайы болады. Көрші ауыл «Асан үйіне» барғысы келсе, оған екі жол бар: үйдің ішіне кіріп, не бар екенін көру немесе үйдің мекенжайын (Абай көшесі, 12) қағазға жазып, біреуге беру. Қағаз бен үй екі бөлек зат: қағазда үй жоқ, тек үйге апаратын жол бар. Міне, <strong>көрсеткіш</strong> (<span class="term-en">pointer</span>) - дәл сол қағаз.</p>
+      <p>Айнымалының мекенжайын <code>&amp;</code> (амперсанд) операторымен аламыз:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int age = 17;
+    int* heapValue = new int(99);
+
+    std::cout &lt;&lt; "age мәні:        " &lt;&lt; age &lt;&lt; "\n";
+    std::cout &lt;&lt; "age мекенжайы:   " &lt;&lt; &amp;age &lt;&lt; "\n";
+    std::cout &lt;&lt; "heap мекенжайы:  " &lt;&lt; heapValue &lt;&lt; "\n";
+    std::cout &lt;&lt; "sizeof(int*) = " &lt;&lt; sizeof(int*) &lt;&lt; " байт\n";
+
+    delete heapValue;
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+age мәні:        17
+age мекенжайы:   0x7fb9efb00020
+heap мекенжайы:  0x502000000010
+sizeof(int*) = 8 байт</code></pre>
+      <p>Мекенжайлар он алтылық (<code>0x...</code>) жүйесінде жазылады. Сіздің компьютеріңізде олар басқаша шығады, бағдарламаны келесі рет іске қосқанда да өзгереді: оған алаңдамаңыз, бұл қалыпты. Екі мекенжайдың түрі де бөлек: <code>age</code> стекте (<code>0x7f...</code>-пен басталады), ал <code>new</code> арқылы алынған орын үймеде (мұнда <code>0x5020...</code>) жатыр. Бұл екі аймақ туралы кейінірек айтамыз. <code>sizeof(int*)</code> - 8 байт: мекенжайдың өзі де жадта орын алады, 64-биттік жүйеде ол 8 байт.</p>
+      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 196" role="img" aria-label="Диаграмма: age айнымалысы 17 мәнін сақтайды және мекенжайы бар; p көрсеткіші сол мекенжайды сақтап, age-ге нұсқайды" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="8" y="14" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Көрсеткіш - мекенжай жазылған қағаз</text><rect x="10" y="40" width="150" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="85.0" y="67.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">int age = 17</text><text x="85.0" y="85.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">мән үйдің ішінде</text><text x="85" y="126" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">мекенжай: 0x7ffc10</text><rect x="240" y="40" width="150" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="315.0" y="67.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">int* p = &amp;age</text><text x="315.0" y="85.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">p-да мекенжай</text><text x="315" y="126" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">p-ның өз орны бар</text><polyline points="240,75 162,75" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m7)"/><text x="201" y="62" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">p -&gt; age</text><text x="8" y="156" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">*p  = «p көрсеткен үйге кіріп, ішіндегіні ал»</text><text x="8" y="178" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">&amp;age = «age үйінің мекенжайын ал»</text></svg><figcaption class="viz-note">Көрсеткіш - мәннің өзі емес, мәннің мекенжайы. Шаңырақ астындағы үйді мекенжай арқылы табатынымыз сияқты.</figcaption></figure>
+
+      <h2 id="pointers">Көрсеткіш: * және &amp;</h2>
+      <p>Көрсеткіш - мекенжайды сақтайтын айнымалы. Оны жариялау: <code>тип* аты</code>. Мысалы, <code>int* p</code> - «int-ке көрсететін көрсеткіш p». Үш ұғымды қатар үйренейік:</p>
+      <ul>
+        <li><code>&amp;x</code> - «x-тің мекенжайын ал» (қағазға мекенжай жаз).</li>
+        <li><code>int* p = &amp;x;</code> - p-ға x-тің мекенжайын сал (қағаз дайын).</li>
+        <li><code>*p</code> - «p көрсеткен үйге кіріп, ішіндегіні ал немесе өзгерт» (<span class="term-en">dereference</span>, мекенжай бойынша мәнге жету).</li>
+      </ul>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int age = 17;
+    int* p = &amp;age;          // p - age-тің мекенжайын сақтайды
+
+    std::cout &lt;&lt; "age = " &lt;&lt; age &lt;&lt; ", *p = " &lt;&lt; *p &lt;&lt; "\n";
+    std::cout &lt;&lt; "p == &amp;age: " &lt;&lt; (p == &amp;age) &lt;&lt; "\n";
+
+    *p = 18;                // p көрсеткен үйдің ішін өзгерттік
+    std::cout &lt;&lt; "age = " &lt;&lt; age &lt;&lt; "\n";
+
+    int other = 5;
+    p = &amp;other;             // енді p басқа үйді көрсетеді
+    *p += 10;
+    std::cout &lt;&lt; "other = " &lt;&lt; other &lt;&lt; ", age = " &lt;&lt; age &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+age = 17, *p = 17
+p == &amp;age: 1
+age = 18
+other = 15, age = 18</code></pre>
+      <p>Қадамдап қарайық. <code>p = &amp;age</code> болғаннан кейін <code>*p</code> мен <code>age</code> - бір үй. Сондықтан <code>*p = 18</code> жазғанда <code>age</code> өзгерді. Одан кейін <code>p = &amp;other</code> - қағазға жаңа мекенжай жаздық, енді <code>p</code> басқа үйді көрсетеді; <code>*p += 10</code> енді <code>other</code>-ды өзгертті (5 → 15), ал <code>age</code> 18-де қалды.</p>
+      <div class="callout warn">
+        <span class="callout-title">* белгісінің екі мағынасы</span>
+        <p>Бір таңбаның екі міндеті бар: <strong>жариялау кезінде</strong> <code>int* p</code> - «p көрсеткіш». <strong>Өрнекте</strong> <code>*p</code> - «p көрсеткен мәнге жет». Бұл ең көп шатастыратын жер. Есте сақтау үшін: типтен кейінгі <code>*</code> - көрсеткіш <em>типі</em>, айнымалының алдындағы <code>*</code> - мәнге <em>қол жеткізу</em>.</p>
+      </div>
+      <p>Көрсеткіштің типі маңызды: <code>int*</code> көрсеткіші «осы мекенжайда int жатыр» деп біледі, сондықтан <code>*p</code> 4 байтты оқиды. <code>double*</code> 8 байтты оқиды. Тип болмаса, мекенжай бойынша тұрған байттарды қалай түсіндіру керегін білмес едік.</p>
+
+      <h2 id="references">Сілтеме (reference)</h2>
+      <p><strong>Сілтеме</strong> (<span class="term-en">reference</span>) - бар айнымалының екінші аты. Ол жаңа үй емес, сол үйдің екінші есімі. Жариялануы: <code>тип&amp; аты = айнымалы;</code>.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int guests = 40;
+    int&amp; alias = guests;    // сілтеме: guests-тің екінші аты
+
+    alias = 55;
+    std::cout &lt;&lt; "guests = " &lt;&lt; guests &lt;&lt; "\n";
+    guests++;
+    std::cout &lt;&lt; "alias  = " &lt;&lt; alias &lt;&lt; "\n";
+    std::cout &lt;&lt; "мекенжайлар бірдей: " &lt;&lt; (&amp;alias == &amp;guests) &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+guests = 55
+alias  = 56
+мекенжайлар бірдей: 1</code></pre>
+      <p><code>alias</code> пен <code>guests</code> - бір айнымалының екі аты: біреуін өзгертсек, екіншісі де өзгереді. Мекенжайлары да бірдей. Сілтеменің көрсеткіштен үш айырмашылығы бар:</p>
+      <ul>
+        <li>Сілтемені жариялағанда міндетті түрде бастапқы мән беру керек (<code>int&amp; r;</code> қате).</li>
+        <li>Сілтеме <em>ешқашан</em> басқа айнымалыға ауыстырылмайды: ол өмір бойы бір айнымалының аты.</li>
+        <li>Сілтеме бос (<code>nullptr</code>) бола алмайды, ал көрсеткіш бола алады.</li>
+      </ul>
+      <p>Сілтеменің басты қолданысы - функция параметрлері. 1-аптада функцияға аргумент көшірмемен берілетінін көрдік, сондықтан <code>swap</code> жұмыс істемеді. Енді оны түзетеміз. Екі тәсіл бар: сілтеме және көрсеткіш:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+void swapRef(int&amp; a, int&amp; b) {
+    int t = a;
+    a = b;
+    b = t;
+}
+
+void swapPtr(int* a, int* b) {
+    int t = *a;
+    *a = *b;
+    *b = t;
+}
+
+int main() {
+    int x = 5, y = 8;
+    swapRef(x, y);
+    std::cout &lt;&lt; x &lt;&lt; " " &lt;&lt; y &lt;&lt; "\n";
+    swapPtr(&amp;x, &amp;y);
+    std::cout &lt;&lt; x &lt;&lt; " " &lt;&lt; y &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+8 5
+5 8</code></pre>
+      <p>Бірінші <code>swapRef(x, y)</code> шақырудан кейін <code>8 5</code> болды: сілтеме арқылы функция түпнұсқаны өзгерте алды. Шақыру өте таза: көрсеткіштегідей <code>&amp;</code> жазудың қажеті жоқ. Екінші, <code>swapPtr(&amp;x, &amp;y)</code>, көрсеткіштермен істейді: мекенжайларды береміз, ішінде <code>*a</code>, <code>*b</code> арқылы мәндерді өзгертеміз; нәтижесінде қайтадан <code>5 8</code>. Қазіргі C++ кодында көбіне сілтеме қолданылады, ал көрсеткіш «бос болуы мүмкін» немесе «динамикалық жад» жағдайларына қалдырылады.</p>
+
+      <h2 id="const-ref">const сілтеме</h2>
+      <p>Ауыр деректерді (ұзын <code>vector</code>, ұзын <code>string</code>) функцияға мәнмен берсек, әр шақыруда бүкіл деректің көшірмесі жасалады: ол баяу, әрі жадты жейді. Көшірмесіз беру үшін сілтеме қолданамыз, ал функция деректі кездейсоқ бүлдірмеуі үшін <code>const</code> қосамыз:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int total(const std::vector&lt;int&gt;&amp; v) {      // көшірме жоқ, өзгертуге болмайды
+    int s = 0;
+    for (int x : v) s += x;
+    return s;
+}
+
+void shout(const std::string&amp; text) {
+    std::cout &lt;&lt; text &lt;&lt; "!\n";
+}
+
+int main() {
+    std::vector&lt;int&gt; sales = {120, 90, 150, 100};
+    shout("Жиыны: " + std::to_string(total(sales)));
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Жиыны: 460!</code></pre>
+      <p><code>const std::vector&lt;int&gt;&amp; v</code> - «векторды көшірмей, тек оқу үшін ал». Егер функция ішінде <code>v.push_back(1)</code> жазсақ, компилятор қате береді. Бұл ереже 2-аптадағы <code>findIndex</code> функциясында да болды. Кесте:</p>
+      <table>
+        <thead><tr><th>Параметр жазылуы</th><th>Көшіреді ме?</th><th>Түпнұсқаны өзгерте ме?</th><th>Қашан</th></tr></thead>
+        <tbody>
+          <tr><td><code>int x</code></td><td>иә</td><td>жоқ</td><td>шағын типтер (<code>int</code>, <code>double</code>)</td></tr>
+          <tr><td><code>int&amp; x</code></td><td>жоқ</td><td>иә</td><td>функция түпнұсқаны өзгертуі керек болса</td></tr>
+          <tr><td><code>const T&amp; x</code></td><td>жоқ</td><td>жоқ</td><td>үлкен типтерді оқу үшін беру</td></tr>
+          <tr><td><code>T* x</code></td><td>жоқ (мекенжайды көшіреді)</td><td>иә</td><td>бос мәні мүмкін немесе динамикалық нысан</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="arithmetic">Көрсеткіш арифметикасы және массив</h2>
+      <p>Көрсеткішке сан қосуға болады, бірақ бұл «мекенжайға байт қосу» емес. <code>p + 1</code> «келесі элемент» дегенді білдіреді: <code>int*</code> болса, компилятор өзі 4 байтқа жылжытады. Бұл массивпен тығыз байланысты: <strong>массивтің атауы - оның бірінші элементіне көрсететін көрсеткіш</strong> (<span class="term-en">array-to-pointer decay</span>).</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int a[5] = {12, 7, 30, 4, 9};
+    int* p = a;                 // массив атауы бірінші элементке көрсетеді
+
+    std::cout &lt;&lt; *p &lt;&lt; " " &lt;&lt; *(p + 1) &lt;&lt; " " &lt;&lt; *(p + 4) &lt;&lt; "\n";
+    p++;                        // келесі int-ке (4 байт алға)
+    std::cout &lt;&lt; *p &lt;&lt; "\n";
+    p += 2;
+    std::cout &lt;&lt; "p - a = " &lt;&lt; (p - a) &lt;&lt; "\n";
+    std::cout &lt;&lt; "a[3] == *(a + 3): " &lt;&lt; (a[3] == *(a + 3)) &lt;&lt; "\n";
+
+    for (int* q = a; q != a + 5; q++) std::cout &lt;&lt; *q &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+12 7 9
+7
+p - a = 3
+a[3] == *(a + 3): 1
+12 7 30 4 9 </code></pre>
+      <p>Бұдан көретініміз: <code>*(p + 1)</code> - <code>p[1]</code>-ге тең жазу. Шын мәнінде <code>a[3]</code> компилятор үшін <code>*(a + 3)</code> дегенді білдіреді. Көрсеткіштерді азайтсақ, олардың арасындағы <em>элемент санын</em> аламыз: <code>p - a == 3</code>. Соңғы цикл көрсеткішпен массивті аралап шығады (<code>a + 5</code> - соңғы элементтің «артындағы» орын). Сондықтан 2-аптадағы <code>begin()</code>/<code>end()</code> итераторлары көрсеткішке ұқсайды: олар да дәл осы идеяға негізделген.</p>
+      <p>Ескерту: көрсеткішті массивтің шегінен тыс жылжыту (<code>p + 10</code>, егер массив 5 элементті болса) анықталмаған мінез. Бұл өткен апта көрген индекс қатесінің дәл өзі, тек басқа жазумен.</p>
+
+      <h3 id="decay">Массив функцияға берілгенде</h3>
+      <p>Бір маңызды салдар: массивті функцияға бергенде ол көрсеткішке айналады, ал көрсеткіш өлшемді білмейді. 2-аптада <code>sizeof(temp) / sizeof(temp[0])</code> тәсілі «тек массив жарияланған жерде жұмыс істейді» деп айтқан едік; міне, себебі:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int sumArray(int* a, int n) {
+    std::cout &lt;&lt; "функция ішінде sizeof(a) = " &lt;&lt; sizeof(a) &lt;&lt; "\n";
+    int s = 0;
+    for (int i = 0; i &lt; n; i++) s += a[i];
+    return s;
+}
+
+int main() {
+    int sales[6] = {120, 90, 150, 100, 80, 60};
+    std::cout &lt;&lt; "main ішінде sizeof(sales) = " &lt;&lt; sizeof(sales) &lt;&lt; "\n";
+    int total = sumArray(sales, 6);
+    std::cout &lt;&lt; "қосынды: " &lt;&lt; total &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+main ішінде sizeof(sales) = 24
+функция ішінде sizeof(a) = 8
+қосынды: 600</code></pre>
+      <p><code>main</code> ішінде <code>sizeof(sales)</code> - 24 (6 × 4 байт). Ал функцияның ішінде <code>a</code> - жай <code>int*</code>, оның көлемі 8 байт, яғни мекенжайдың көлемі. Функция массив қанша элементті екенін білмейді, сондықтан өлшемді (<code>n</code>) бөлек параметр етіп береміз. Бұл - C стиліндегі массивтердің ең үлкен әлсіздігі. <code>std::vector</code> және <code>std::array</code> мұндай мәселені жояды: олар өлшемін өздері біледі. Осы себепті қазіргі кодта функцияға <code>const std::vector&lt;int&gt;&amp;</code> береміз.</p>
+      <div class="callout note">
+        <span class="callout-title">Қашан көрсеткіш, қашан сілтеме?</span>
+        <p>Қарапайым ереже: <strong>әдепкі бойынша сілтеме</strong> қолданыңыз (<code>T&amp;</code> немесе <code>const T&amp;</code>). Көрсеткішті мына жағдайларда таңдаңыз: нысан болмауы мүмкін (<code>nullptr</code>), көрсеткішті басқа нысанға ауыстыру керек, немесе динамикалық жадпен жұмыс істеп жатырсыз. Сондай-ақ жад иелігі туралы шешім қабылдағанда смарт көрсеткіш таңдаңыз. Ал ескі C кодымен жұмыс істеген кезде көрсеткіштер көп кездеседі, сондықтан олардың оқылуын білу керек.</p>
+      </div>
+      <h2 id="nullptr">nullptr</h2>
+      <p>Көрсеткіш «ешқайда көрсетпейді» болуы мүмкін. Бұл жағдайды <code>nullptr</code> деген арнайы мән білдіреді. Көрсеткішті ешқашан бастапқы мәнсіз қалдырмаңыз: не нақты мекенжай беріңіз, не <code>nullptr</code>:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int* p = nullptr;
+    if (p == nullptr) {
+        std::cout &lt;&lt; "p ешқайда көрсетпейді\n";
+    }
+    if (!p) std::cout &lt;&lt; "бұл да сол мағына\n";
+
+    int x = 4;
+    p = &amp;x;
+    if (p != nullptr) std::cout &lt;&lt; "енді *p = " &lt;&lt; *p &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+p ешқайда көрсетпейді
+бұл да сол мағына
+енді *p = 4</code></pre>
+      <p>Көрсеткішті қолданбас бұрын <code>p != nullptr</code> тексеру - жақсы әдет. <code>nullptr</code> көрсеткішіне <code>*</code> жазу (дереференс) - ең жиі кездесетін құлау себебі:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int* p = nullptr;
+    std::cout &lt;&lt; "алдында\n";
+    std::cout &lt;&lt; *p &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+алдында
+main.cpp:6:24: runtime error: load of null pointer of type 'int'
+AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==12447==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x56237f3603f5 bp 0x7ffd29b6b2e0 sp 0x7ffd29b6b2d0 T0)
+==12447==The signal is caused by a READ memory access.
+...</code></pre>
+      <p>Санитайзер «load of null pointer», ал AddressSanitizer «SEGV on unknown address 0x000000000000» деп тіке айтты. Санитайзерсіз осы бағдарлама «Segmentation fault» хабарымен тоқтайды. «Segfault» дегеніміз - бағдарлама өзіне рұқсат етілмеген жадқа қол жеткізді дегенді білдіреді. (Ескі C кодында <code>NULL</code> немесе <code>0</code> қолданылады, қазіргі C++ үшін <code>nullptr</code> дұрыс.)</p>
+
+      <h3 id="const-ptr">Көрсеткіш және const</h3>
+      <p><code>const</code> көрсеткішпен үйлескенде екі түрлі мағына береді. Оларды ажыратудың қарапайым жолы: <code>const</code> сөзі қай нәрсенің <em>оң жағында</em> тұрса, дәл сол тұрақты болады.</p>
+      <ul>
+        <li><code>const int* p</code> - «мән тұрақты»: <code>p</code> арқылы мәнді өзгерту мүмкін емес, бірақ <code>p</code>-ны басқа мекенжайға бұруға болады. Бұл - «тек оқуға арналған терезе».</li>
+        <li><code>int* const q</code> - «көрсеткіш тұрақты»: мәнді өзгертуге болады, бірақ <code>q</code> басқа жерге көрсете алмайды.</li>
+      </ul>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int a = 1, b = 2;
+
+    const int* p = &amp;a;     // мән тек оқылады
+    p = &amp;b;                // көрсеткішті ауыстыруға болады
+    std::cout &lt;&lt; *p &lt;&lt; "\n";
+
+    int* const q = &amp;a;     // көрсеткіш тұрақты
+    *q = 7;                // мәнді өзгертуге болады
+    std::cout &lt;&lt; a &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+2
+7</code></pre>
+      <p>Әр нұсқа өз шегінен шыққанда компилятор бірден тоқтатады:</p>
+      <pre data-lang="cpp"><code class="language-cpp">int main() {
+    int a = 1, b = 2;
+    const int* p = &amp;a;
+    *p = 5;                // қате: p арқылы өзгертуге болмайды
+    int* const q = &amp;a;
+    q = &amp;b;                // қате: q басқа жерге көрсете алмайды
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra main.cpp -o main
+main.cpp: In function ‘int main()’:
+main.cpp:4:8: error: assignment of read-only location ‘* p’
+    4 |     *p = 5;                // қате: p арқылы өзгертуге болмайды
+      |     ~~~^~~
+main.cpp:6:7: error: assignment of read-only variable ‘q’
+    6 |     q = &amp;b;                // қате: q басқа жерге көрсете алмайды
+...</code></pre>
+      <p>«assignment of read-only location» - тұрақты мәнге жазбақ болдыңыз. Бұл қате емес, құрал: <code>const</code> сізді өз кодыңыздан қорғайды. Сілтемелер әрқашан «тұрақты көрсеткіш» сияқты (басқа айнымалыға ауыспайды), сондықтан <code>const T&amp;</code> тек «мәні тұрақты» нұсқасын қажет етеді.</p>
+      <h2 id="stack-heap">Stack және heap</h2>
+      <p>Бағдарламаның жады екі негізгі аймаққа бөлінеді:</p>
+      <ul>
+        <li><strong>Стек</strong> (<span class="term-en">stack</span>). Жергілікті айнымалылар осында тұрады. Функция шақырылғанда оның айнымалылары үшін кадр жасалады, функция аяқталғанда кадр өзі жойылады. Өте жылдам, автоматты, бірақ өлшемі шектеулі (әдетте бірнеше мегабайт) және деректердің өмір сүру уақыты функциямен байланысты.</li>
+        <li><strong>Үйме</strong> (<span class="term-en">heap</span>). Бұл үлкен, икемді аймақ. Онда орынды біз өзіміз <code>new</code> арқылы сұраймыз және <code>delete</code> арқылы қайтарамыз. Деректер функция біткенде де өмір сүре береді, бірақ жауапкершілік бізде.</li>
+      </ul>
+      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 226" role="img" aria-label="Диаграмма: сол жақта стек (main және f функциялары кадрлары), оң жақта үйме; main ішіндегі p көрсеткіші үймедегі массивке нұсқайды" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="100" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:700">STACK (стек)</text><text x="305" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:700">HEAP (үйме)</text><rect x="10" y="30" width="180" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100.0" y="52.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">main: n = 3</text><rect x="10" y="80" width="180" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100.0" y="102.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">main: p = 0x55a0...</text><rect x="10" y="130" width="180" height="44" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8"/><text x="100.0" y="152.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">f(): x = 10</text><text x="100" y="194" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">автоматты, тез, шектеулі</text><text x="100" y="212" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">функция біткенде жойылады</text><rect x="220" y="30" width="170" height="44" rx="8" style="fill:var(--surface);stroke:var(--ok);stroke-width:1.8"/><text x="305.0" y="52.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">int[3]: 5 | 8 | 13</text><rect x="220" y="90" width="170" height="44" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8;stroke-dasharray:5 4"/><text x="305.0" y="112.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">бос орын</text><text x="305" y="194" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">new - сұрау, delete - қайтару</text><text x="305" y="212" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">қолмен басқарылады</text><polyline points="190,102 218,56" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m8)"/></svg><figcaption class="viz-note">Стек автоматты басқарылады, үйме қолмен. Көрсеткіш p стекте тұрады, ал оның нұсқайтын деректері үймеде жатыр.</figcaption></figure>
+      <p>Аналогия: стек - өз үйіңіздегі үстел: жұмыс біткенде бәрі өзі жиналады. Үйме - көпшілік қоймасы: қажетті орын аласыз, бірақ уақытында қайтармасаңыз, ол бос емес болып қала береді.</p>
+      <p>Көрсеткіш (<code>p</code>) өзі стекте тұрады, ал ол көрсететін деректер үймеде жатады. Бұл сызбада <code>p</code> жойылса да, үймедегі деректер өзі жойылмайды: оны <code>delete</code> арқылы біз қайтаруымыз керек. Дәл осы нәзік жерде жад қателері туады.</p>
+
+      <h2 id="new-delete">new және delete</h2>
+      <p><code>new</code> үймеден орын алады және оның мекенжайын (көрсеткіш) қайтарады. <code>delete</code> орынды қайтарады.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int* guests = new int;      // үймеден бір int сұрадық
+    *guests = 120;
+    std::cout &lt;&lt; "қонақтар: " &lt;&lt; *guests &lt;&lt; "\n";
+    delete guests;              // қайтарамыз
+
+    int* price = new int(2500); // бастапқы мәнмен
+    std::cout &lt;&lt; "баға: " &lt;&lt; *price &lt;&lt; "\n";
+    delete price;
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+қонақтар: 120
+баға: 2500</code></pre>
+      <p>Әр <code>new</code>-ге дәл бір <code>delete</code> сәйкес келуі керек. <code>new int(2500)</code> орынды алып, оған бірден 2500 жазады. <code>delete</code>-тен кейін көрсеткіш әлі де ескі мекенжайды сақтап тұр, бірақ ол мекенжай енді сіздікі емес. Мұны төменде қауіпті қателер бөлімінде көреміз.</p>
+      <h3 id="dyn-array">Динамикалық массив</h3>
+      <p>Өткен аптада <code>std::array</code> өлшемі компиляция кезінде белгілі болуы керек екенін білдік. <code>new int[n]</code> өлшемді орындалу кезінде таңдауға мүмкіндік береді: <code>n</code> пернетақтадан оқылуы мүмкін. Жою үшін <strong>квадрат жақшалы</strong> нұсқа қолданылады: <code>delete[]</code>.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int n;
+    std::cout &lt;&lt; "Қанша сан? ";
+    std::cin &gt;&gt; n;
+
+    int* data = new int[n];
+    for (int i = 0; i &lt; n; i++) std::cin &gt;&gt; data[i];
+
+    long long sumSquares = 0;
+    for (int i = 0; i &lt; n; i++) sumSquares += static_cast&lt;long long&gt;(data[i]) * data[i];
+    std::cout &lt;&lt; "квадраттар қосындысы: " &lt;&lt; sumSquares &lt;&lt; "\n";
+
+    delete[] data;
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Қанша сан? 4
+1 2 3 4
+квадраттар қосындысы: 30</code></pre>
+      <p>1² + 2² + 3² + 4² = 30. Назар аударыңыз: <code>new[]</code> үшін <code>delete[]</code>, ал жай <code>new</code> үшін жай <code>delete</code> жазамыз; оларды араластыру - анықталмаған мінез. Тәжірибеде динамикалық массивтің орнына <code>std::vector</code> қолданыңыз: ол дәл осы жұмысты (жадты алу, көшіру, қайтару) өзі автоматты атқарады. Құрал қалай жұмыс істейтінін түсіну үшін ғана қолмен жазуды үйрендік.</p>
+
+      <h2 id="memory-bugs">Жад қателері және AddressSanitizer</h2>
+      <p>Қолмен жад басқару қателер туғызады. Төрт ең жиі қате бар. Төртеуін де біз әдейі жасап, <code>-fsanitize=address</code> оны қалай ұстайтынын көреміз. Санитайзер - сіздің ең жақсы көмекшіңіз: дәл осы құрал үшін біз бүкіл курс бойы <code>g++ -std=c++17 -Wall -Wextra -fsanitize=address,undefined</code> жалауларын қолдандық.</p>
+      <h3 id="leak">1. Жад ағуы (memory leak)</h3>
+      <p><code>new</code> жасадыңыз, бірақ <code>delete</code> ұмыттыңыз. Бағдарлама аяқталғанша жад бос болмайды. Ұзақ жұмыс істейтін бағдарламада (сервер, ойын) ол жадты біртіндеп жеп қояды.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int* numbers = new int[10];
+    double* rate = new double(480.0);
+    numbers[0] = 1;
+    std::cout &lt;&lt; "rate = " &lt;&lt; *rate &lt;&lt; ", numbers[0] = " &lt;&lt; numbers[0] &lt;&lt; "\n";
+    return 0;     // delete жоқ!
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+rate = 480, numbers[0] = 1
+
+=================================================================
+==12496==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 40 byte(s) in 1 object(s) allocated from:
+    #0 0x7fd03b4fe6c8 in operator new[](unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:98
+    #1 0x55c817a8a31f in main main.cpp:4
+    #2 0x7fd03a42a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #3 0x7fd03a42a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #4 0x55c817a8a244 in _start (./main+0x2244)
+
+Direct leak of 8 byte(s) in 1 object(s) allocated from:
+    #0 0x7fd03b4fe548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95
+...</code></pre>
+      <p>LeakSanitizer (AddressSanitizer құрамында) есеп берді: «Direct leak of 40 byte(s)» - ол 10 <code>int</code> (10 × 4 = 40 байт), ал <code>main.cpp:4</code> - <code>new</code> шақырылған жол. Екінші ағып кеткен орын - 8 байт (<code>double</code>), <code>main.cpp:5</code>. Қорытынды жол: барлығы 48 байт, 2 бөлікте. Көріп отырғаныңыздай, санитайзер қай жолда ұмытылғанын дәл көрсетеді.</p>
+      <h3 id="uaf">2. Босатылған жадты қолдану (use after free)</h3>
+      <p>Орынды <code>delete</code> арқылы қайтардыңыз, бірақ көрсеткіш сол мекенжайды сақтап тұр, және сіз оны қолданып жібердіңіз. Бұл - <strong>салбырап қалған көрсеткіш</strong> (<span class="term-en">dangling pointer</span>): жоқ үйге апаратын ескі қағаз.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int* p = new int(42);
+    delete p;
+    std::cout &lt;&lt; *p &lt;&lt; "\n";     // жад қайтарылған: қауіпті!
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+=================================================================
+==12512==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x559d752ae499 bp 0x7ffe0f5aaef0 sp 0x7ffe0f5aaee0
+READ of size 4 at 0x502000000010 thread T0
+    #0 0x559d752ae498 in main main.cpp:6
+    #1 0x7f99d2e2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #2 0x7f99d2e2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #3 0x559d752ae204 in _start (./main+0x2204)
+
+0x502000000010 is located 0 bytes inside of 4-byte region [0x502000000010,0x502000000014)
+freed by thread T0 here:
+    #0 0x7f99d3eff5e8 in operator delete(void*, unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164
+    #1 0x559d752ae35d in main main.cpp:5
+...</code></pre>
+      <p>AddressSanitizer: «heap-use-after-free». Ол үш нәрсені айтады: қай жолда оқылды (<code>main.cpp:6</code>), қай жолда жад босатылды (<code>main.cpp:5</code>) және қай жолда бөлінген (<code>main.cpp:4</code>). Санитайзерсіз мұндай бағдарлама кейде «дұрыс» жұмыс істей береді, кейін кездейсоқ мәнмен немесе қауіпсіздік осалдығымен бүлінеді. Осы себепті бұл қате қауіпті.</p>
+      <p>Қорғану тәсілі: <code>delete</code>-тен кейін көрсеткішке <code>nullptr</code> жазу: <code>delete p; p = nullptr;</code>. Сонда қате қолдану бірден ұсталады және екінші <code>delete</code> зиянсыз болады. Одан да жақсы тәсіл - тіпті көрсеткішті қолмен жоймау (смарт көрсеткіштер, төменде).</p>
+      <p>Салбырап қалудың тағы бір түрі - функциядан жергілікті айнымалының мекенжайын қайтару:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int* makeNumber() {
+    int local = 42;
+    return &amp;local;      // функция біткенде local жоғалады
+}
+
+int main() {
+    int* p = makeNumber();
+    std::cout &lt;&lt; "оқимыз...\n";
+    std::cout &lt;&lt; *p &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra main.cpp -o main
+main.cpp: In function ‘int* makeNumber()’:
+main.cpp:5:12: warning: address of local variable ‘local’ returned [-Wreturn-local-addr]
+    5 |     return &amp;local;      // функция біткенде local жоғалады
+      |            ^~~~~~
+main.cpp:4:9: note: declared here
+    4 |     int local = 42;
+      |         ^~~~~
+...</code></pre>
+      <p><code>local</code> стекте тұрады, функция біткенде оның кадры жойылады; қайтарылған мекенжай жарамсыз. Компилятор мұны өзі байқап ескертті: «address of local variable returned». Мұндай ескертуді әрдайым қате ретінде қарастырыңыз.</p>
+      <h3 id="overflow">3. Шекарадан шығу (buffer overflow)</h3>
+      <p>Өткен аптадағы индекс қатесі үймеде де болады. Бұл жолы цикл бір артық айналады (<code>i &lt;= 3</code>, өлшемі 3):</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int* a = new int[3];
+    for (int i = 0; i &lt;= 3; i++) {      // i &lt;= 3: бір артық!
+        a[i] = i * 10;
+    }
+    std::cout &lt;&lt; a[0] &lt;&lt; "\n";
+    delete[] a;
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+=================================================================
+==12531==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x50200000001c at pc 0x55ac75fad41b bp 0x7ffc884c0f00 sp 0x7ffc884c0ef0
+WRITE of size 4 at 0x50200000001c thread T0
+    #0 0x55ac75fad41a in main main.cpp:6
+    #1 0x7f15e882a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #2 0x7f15e882a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #3 0x55ac75fad264 in _start (./main+0x2264)
+
+0x50200000001c is located 0 bytes after 12-byte region [0x502000000010,0x50200000001c)
+...</code></pre>
+      <p>«heap-buffer-overflow ... WRITE of size 4 ... located 0 bytes after 12-byte region». Яғни біз 12 байттық (3 int) массивтің <em>дәл артынан</em> жаздық. Бұл жад бөтен адамға тиесілі болуы мүмкін: нәтиже деректі бүлдіру немесе қауіпсіздік қатесі. Оңай ереже: <code>new int[n]</code> үшін жарамды индекс 0-ден <code>n - 1</code>-ге дейін.</p>
+      <h3 id="vec-invalid">4. Вектор көшкенде көрсеткіштің ескіруі</h3>
+      <p>2-аптада вектор орын таусылғанда жаңа жадқа көшетінін айттық. Егер сол векторға элементке көрсететін сілтеме немесе көрсеткіш алып қойсақ, ол көшкеннен кейін ескі, жойылған жадқа апарады:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v = {1, 2, 3};
+    int&amp; first = v[0];
+    for (int i = 0; i &lt; 100; i++) v.push_back(i);   // вектор көшеді
+    std::cout &lt;&lt; first &lt;&lt; "\n";                     // ескі мекенжай!
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+=================================================================
+==12538==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5623b3fa6914 bp 0x7ffebc7d7960 sp 0x7ffebc7d7950
+READ of size 4 at 0x502000000010 thread T0
+    #0 0x5623b3fa6913 in main main.cpp:8
+    #1 0x7fc4df02a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #2 0x7fc4df02a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #3 0x5623b3fa63c4 in _start (./main+0x83c4)
+
+0x502000000010 is located 0 bytes inside of 12-byte region [0x502000000010,0x50200000001c)
+freed by thread T0 here:
+    #0 0x7fc4e00ff5e8 in operator delete(void*, unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164
+    #1 0x5623b3faa09e in std::__new_allocator&lt;int&gt;::deallocate(int*, unsigned long) /usr/include/c++/13/bits/new_allocator.h:172
+    #2 0x5623b3fa8d88 in std::allocator_traits&lt;std::allocator&lt;int&gt; &gt;::deallocate(std::allocator&lt;int&gt;&amp;, int*, unsigned long) /usr/include/c++/13/bits/alloc_traits.h:517
+    #3 0x5623b3fa8d88 in std::_Vector_base&lt;int, std::allocator&lt;int&gt; &gt;::_M_deallocate(int*, unsigned long) /usr/include/c++/13/bits/stl_vector.h:390
+    #4 0x5623b3fa898f in void std::vector&lt;int, std::allocator&lt;int&gt; &gt;::_M_realloc_insert&lt;int const&amp;&gt;(__gnu_cxx::__normal_iterator&lt;int*, std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt;, int const&amp;) /usr/include/c++/13/bits/vector.tcc:519
+    #5 0x5623b3fa752b in std::vector&lt;int, std::allocator&lt;int&gt; &gt;::push_back(int const&amp;) /usr/include/c++/13/bits/stl_vector.h:1292
+...</code></pre>
+      <p>AddressSanitizer: «heap-use-after-free» және «freed by ... _M_realloc_insert ... push_back». Яғни <code>push_back</code> векторды көшіріп, ескі блокты босатты, ал <code>first</code> ескі блокқа көрсетіп қалды. Ереже: векторға элемент қосқаннан кейін ертерек алынған сілтеме, көрсеткіш және итераторларға сенбеңіз.</p>
+      <div class="callout tip">
+        <span class="callout-title">AddressSanitizer есебін қалай оқимыз</span>
+        <p>1) Алғашқы жолдағы қате түрін оқыңыз (<code>heap-use-after-free</code>, <code>heap-buffer-overflow</code>, <code>SEGV</code>...). 2) <code>#0 ... main.cpp:N</code> - қате болған жол. 3) «freed by» және «allocated by» бөліктері жадтың тарихын көрсетеді. 4) Төменгі «Shadow bytes» бөлігін әзірге елемесеңіз де болады. 5) <code>-g</code> жалауын қосыңыз, сонда жол нөмірлері шығады.</p>
+      </div>
+
+      <h2 id="raii">RAII: ресурсты автоматты басқару</h2>
+      <p>Жад қателерінің түбі бір: <code>new</code> мен <code>delete</code>-ті қолмен жұптау. Адам ұмытады. Ал компьютер ұмытпайды. C++-тың ең күшті идеясы осыған негізделген: <strong>RAII</strong> (<span class="term-en">Resource Acquisition Is Initialization</span>, «ресурс алу - инициализация»). Қысқаша мағынасы: ресурсты (жад, файл, ілмек) <em>нысанның ішінде</em> ұстаймыз, нысан өмір басында ресурсты алады, ал нысан жойылғанда <strong>деструктор</strong> оны автоматты қайтарады. Нысан стекте тұрса, ол блоктан шыққанда өзі жойылады, ал сонымен бірге ресурс та босайды.</p>
+      <p>Мұнда <code>struct</code> ішінде екі арнайы функция бар: <strong>конструктор</strong> (нысан жасалғанда орындалады) және <strong>деструктор</strong> (<code>~</code> белгісімен, нысан жойылғанда орындалады). Класстарды 4-аптада толық үйренеміз, ал қазір тек олардың не істейтінін бақылайық:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Shanyrak {
+    std::string name;
+    Shanyrak(std::string n) : name(n) { std::cout &lt;&lt; "ашылды: " &lt;&lt; name &lt;&lt; "\n"; }
+    ~Shanyrak() { std::cout &lt;&lt; "жабылды: " &lt;&lt; name &lt;&lt; "\n"; }
+};
+
+int main() {
+    std::cout &lt;&lt; "main басталды\n";
+    {
+        Shanyrak a("үй A");
+        Shanyrak b("үй B");
+        std::cout &lt;&lt; "блок ішінде\n";
+    }
+    std::cout &lt;&lt; "main аяқталуда\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+main басталды
+ашылды: үй A
+ашылды: үй B
+блок ішінде
+жабылды: үй B
+жабылды: үй A
+main аяқталуда</code></pre>
+      <p>Назар аударыңыз: блоктан шыққанда нысандар <em>кері ретпен</em> жабылды: B бірінші, A екінші. Біз ешқайда «жап» деп жазбадық: <code>}</code> белгісінің өзі жаппады, компилятор деструкторды шақырып отыр. Егер біз бұл ішке <code>return</code> жазып, ерте шықсақ, немесе ерекше жағдай (exception) туса да, деструктор шақырылар еді. Қолмен <code>delete</code> жазғанда мұндай кепілдік жоқ.</p>
+
+      <h2 id="smart-pointers">Смарт көрсеткіштер</h2>
+      <p>Стандартты кітапхана RAII-ді жадқа қолданатын дайын құралдар береді: <strong>смарт көрсеткіштер</strong> (<span class="term-en">smart pointers</span>, <code>#include &lt;memory&gt;</code>). Олар көрсеткіш сияқты жазылады (<code>*</code>, <code>-&gt;</code>), бірақ нысанды өздері жояды.</p>
+      <h3 id="unique-ptr">std::unique_ptr</h3>
+      <p>Нысанға <em>жалғыз</em> ие. Иесі жойылғанда нысан да жойылады. Көшіруге болмайды, тек иелікті беруге (<code>std::move</code>) болады. Жасаудың ұсынылатын жолы - <code>std::make_unique</code>.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+struct Guest {
+    std::string name;
+    Guest(std::string n) : name(n) { std::cout &lt;&lt; "келді: " &lt;&lt; name &lt;&lt; "\n"; }
+    ~Guest() { std::cout &lt;&lt; "кетті: " &lt;&lt; name &lt;&lt; "\n"; }
+};
+
+int main() {
+    std::unique_ptr&lt;Guest&gt; a = std::make_unique&lt;Guest&gt;("Айгерім");
+    std::cout &lt;&lt; "сәлем, " &lt;&lt; a-&gt;name &lt;&lt; "\n";
+
+    std::unique_ptr&lt;Guest&gt; b = std::move(a);      // иелік берілді
+    std::cout &lt;&lt; "a бос ма? " &lt;&lt; (a == nullptr) &lt;&lt; "\n";
+    std::cout &lt;&lt; "b иесі: " &lt;&lt; b-&gt;name &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+келді: Айгерім
+сәлем, Айгерім
+a бос ма? 1
+b иесі: Айгерім
+кетті: Айгерім</code></pre>
+      <p>Қонақты <code>a</code> арқылы жасадық, содан кейін иелікті <code>b</code>-ға бердік: <code>a</code> бос болды (<code>nullptr</code>), нысан енді <code>b</code>-ға тиесілі. Бағдарламаның соңында <code>b</code> жойылғанда, «кетті: Айгерім» автоматты шықты. Біз ешқандай <code>delete</code> жазбадық. Көшіруге тырыссақ, компилятор тоқтатады:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;memory&gt;
+
+int main() {
+    std::unique_ptr&lt;int&gt; a = std::make_unique&lt;int&gt;(5);
+    std::unique_ptr&lt;int&gt; b = a;
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra main.cpp -o main
+main.cpp: In function ‘int main()’:
+main.cpp:5:30: error: use of deleted function ‘std::unique_ptr&lt;_Tp, _Dp&gt;::unique_ptr(const std::unique_ptr&lt;_Tp, _Dp&gt;&amp;) [with _Tp = int; _Dp = std::default_delete&lt;int&gt;]’
+    5 |     std::unique_ptr&lt;int&gt; b = a;
+      |                              ^
+In file included from /usr/include/c++/13/memory:78,
+...</code></pre>
+      <p>«use of deleted function ... unique_ptr(const unique_ptr&amp;)»: көшіру құрылымдық түрде өшірілген, себебі екі ие бір нысанды екі рет жоймауы керек. Бұл ереже қатені бағдарлама іске қосылмай тұрып ұстайды.</p>
+      <h3 id="shared-ptr">std::shared_ptr</h3>
+      <p>Нысанды <em>бірнеше</em> ие бөліседі. Ішінде санауыш бар: көшіргенде артады, ие жойылғанда кемиді, нөлге жеткенде нысан жойылады.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+int main() {
+    auto song = std::make_shared&lt;std::string&gt;("Адай");
+    std::cout &lt;&lt; "иелер: " &lt;&lt; song.use_count() &lt;&lt; "\n";
+    {
+        std::shared_ptr&lt;std::string&gt; copy = song;
+        std::cout &lt;&lt; "иелер: " &lt;&lt; song.use_count() &lt;&lt; " (" &lt;&lt; *copy &lt;&lt; ")\n";
+    }
+    std::cout &lt;&lt; "иелер: " &lt;&lt; song.use_count() &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+иелер: 1
+иелер: 2 (Адай)
+иелер: 1</code></pre>
+      <p>Алғашында бір ие. Ішкі блокта көшірме жасалды, санауыш 2 болды. Блоктан шыққанда көшірме жойылып, санауыш қайтадан 1. Ең соңғы ие кеткенде нысан да кетеді.</p>
+      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 236" role="img" aria-label="Диаграмма: unique_ptr нысанға жалғыз иелік етеді; екі shared_ptr бір нысанды бөліседі, санауыш 2" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="10" y="20" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="37.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">unique_ptr a</text><text x="80.0" y="55.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">жалғыз иесі</text><rect x="230" y="20" width="160" height="50" rx="8" style="fill:var(--surface);stroke:var(--ok);stroke-width:1.8"/><text x="310.0" y="37.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">Шаңырақ нысаны</text><text x="310.0" y="55.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">үймеде</text><polyline points="150,45 228,45" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m9)"/><text x="189" y="32" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">иелік</text><rect x="10" y="110" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="127.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">shared_ptr b1</text><text x="80.0" y="145.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">санауыш = 2</text><rect x="10" y="170" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="187.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">shared_ptr b2</text><text x="80.0" y="205.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">санауыш = 2</text><rect x="230" y="125" width="160" height="70" rx="8" style="fill:var(--surface);stroke:var(--ok);stroke-width:1.8"/><text x="310.0" y="152.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">Нысан</text><text x="310.0" y="170.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">соңғы иесі кеткенде жойылады</text><polyline points="150,135 228,150" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m9)"/><polyline points="150,195 228,172" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m9)"/></svg><figcaption class="viz-note">unique_ptr бір ғана иені білдіреді, shared_ptr иелердің санын санайды. Екеуі де нысанды өзі жояды.</figcaption></figure>
+      <p>Қайсысын таңдау керек? Әдепкі ереже: нысанның иесі бір ғана болса, <code>unique_ptr</code>; ал нақты бөлісу қажет болса ғана <code>shared_ptr</code>. Көп жағдайда мүлде көрсеткіш керек емес: жай жергілікті айнымалы немесе <code>std::vector</code> жеткілікті. Қазіргі C++ кодында жалаң <code>new</code>/<code>delete</code> дерлік кездеспейді.</p>
+      <p>Тағы бір сөз: құрылымға көрсеткіш арқылы қол жеткізгенде <code>-&gt;</code> операторы қолданылады. <code>p-&gt;strings</code> - <code>(*p).strings</code> дегеннің қысқа жазылуы. Мысал ретінде домбыра құрылымын алайық:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Dombyra {
+    std::string owner;
+    int strings;
+};
+
+void tune(Dombyra* d) {
+    d-&gt;strings = 2;                       // (*d).strings сияқты
+    std::cout &lt;&lt; d-&gt;owner &lt;&lt; " домбырасын келтірді\n";
+}
+
+int main() {
+    Dombyra d{"Ержан", 3};
+    Dombyra* p = &amp;d;
+    std::cout &lt;&lt; p-&gt;owner &lt;&lt; ": " &lt;&lt; p-&gt;strings &lt;&lt; " ішек\n";
+    tune(p);
+    std::cout &lt;&lt; d.owner &lt;&lt; ": " &lt;&lt; d.strings &lt;&lt; " ішек\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Ержан: 3 ішек
+Ержан домбырасын келтірді
+Ержан: 2 ішек</code></pre>
+      <p><code>tune</code> функциясы <code>Dombyra*</code> алды және оның өрістерін өзгертті: <code>main</code>-дегі <code>d</code> өзгерді (3 ішектен 2 ішекке). Нүкте (<code>d.strings</code>) нысанның өзіне, көрсеткішке <code>-&gt;</code> жазылады.</p>
+
+      <h3 id="factory">Көрсеткішті функциядан қайтару</h3>
+      <p>Смарт көрсеткіш үймедегі нысанды функциядан қауіпсіз шығарып береді. Бұл өткен бөлімдегі «жергілікті айнымалының мекенжайын қайтару» қатесінің дұрыс балама нұсқасы: нысан стекте емес, үймеде тұр, ал иелік <code>return</code> арқылы шақырушыға беріледі.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;string&gt;
+
+struct Dombyra {
+    std::string owner;
+    Dombyra(std::string o) : owner(o) { std::cout &lt;&lt; "домбыра жасалды: " &lt;&lt; owner &lt;&lt; "\n"; }
+    ~Dombyra() { std::cout &lt;&lt; "домбыра жойылды: " &lt;&lt; owner &lt;&lt; "\n"; }
+};
+
+std::unique_ptr&lt;Dombyra&gt; makeDombyra(const std::string&amp; owner) {
+    return std::make_unique&lt;Dombyra&gt;(owner);   // үймедегі нысан функциядан шығады
+}
+
+int main() {
+    std::cout &lt;&lt; "main басталды\n";
+    {
+        auto d = makeDombyra("Нұрлан");
+        std::cout &lt;&lt; "иесі: " &lt;&lt; d-&gt;owner &lt;&lt; "\n";
+    }
+    std::cout &lt;&lt; "main аяқталды\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+main басталды
+домбыра жасалды: Нұрлан
+иесі: Нұрлан
+домбыра жойылды: Нұрлан
+main аяқталды</code></pre>
+      <p><code>makeDombyra</code> функциясы нысанды үймеде жасап, <code>unique_ptr</code> арқылы <code>main</code>-ге береді. Ішкі блок аяқталғанда <code>d</code> жойылады, деструктор нысанды өзі қайтарады: «домбыра жойылды». Қолмен <code>delete</code> жоқ, ағу жоқ, ескірген мекенжай да жоқ. Мұндай функцияны <strong>зауыт</strong> (<span class="term-en">factory</span>) дейді. Бұл идеяны 4-аптада класстармен және нысандармен жұмыс істегенде көп қолданамыз.</p>
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul>
+        <li><strong><code>delete</code> ұмыту.</strong> Жад ағуы. Шешім: смарт көрсеткіш немесе контейнер.</li>
+        <li><strong><code>delete</code> екі рет шақыру (double free).</strong> Бағдарлама құлайды. <code>delete</code>-тен кейін <code>p = nullptr</code>.</li>
+        <li><strong><code>new[]</code> үшін <code>delete</code> жазу.</strong> Дұрысы <code>delete[]</code>.</li>
+        <li><strong>Босатылған жадты оқу/жазу.</strong> Салбырап қалған көрсеткіш.</li>
+        <li><strong>Жергілікті айнымалының мекенжайын қайтару.</strong> Функция біткенде ол жойылады.</li>
+        <li><strong>Бастапқы мәнсіз көрсеткіш.</strong> <code>int* p;</code> кездейсоқ мекенжайды көрсетеді. Әрдайым <code>= nullptr</code>.</li>
+        <li><strong><code>nullptr</code>-ды дереференс жасау.</strong> Segfault. Алдымен тексеріңіз.</li>
+        <li><strong>Векторға <code>push_back</code> жасаған соң ескі сілтемені қолдану.</strong> Вектор көшеді.</li>
+        <li><strong><code>*</code> және <code>&amp;</code> мағыналарын шатастыру.</strong> Жариялауда тип бөлігі, өрнекте амал.</li>
+      </ul>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li>Жад - мекенжайы бар ұяшықтар; <code>&amp;x</code> мекенжай береді; көрсеткіш мекенжайды сақтайды; <code>*p</code> мәнге жеткізеді.</li>
+        <li>Сілтеме - айнымалының екінші аты; <code>const T&amp;</code> көшірмесіз тек оқуға беру үшін.</li>
+        <li><code>p + 1</code> келесі элементке жылжиды; массив атауы бірінші элементке көрсетеді.</li>
+        <li><code>nullptr</code> - «ешқайда көрсетпейді»; дереференс жасамас бұрын тексеру.</li>
+        <li>Стек автоматты және жылдам; үйме қолмен басқарылады: <code>new</code>/<code>delete</code>, <code>new[]</code>/<code>delete[]</code>.</li>
+        <li>Негізгі қателер: жад ағуы, use-after-free, шекарадан шығу, ескірген көрсеткіш. AddressSanitizer оларды ұстайды.</li>
+        <li>RAII: ресурс нысанның ішінде, деструктор оны өзі қайтарады. <code>unique_ptr</code> - жалғыз ие, <code>shared_ptr</code> - бөлісетін иелер.</li>
+      </ul>
+      <p>Келесі аптада өз типтерімізді жасаймыз: класстар және нысандар.</p>
+      <p>Өзіңізді тексеріп көріңіз:</p>
+      <ul class="checklist" data-id="cpp3-self">
+        <li><input type="checkbox"> <span><code>&amp;</code> және <code>*</code> операторларының айырмасын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Сілтеме мен көрсеткіштің үш айырмашылығын айта аламын.</span></li>
+        <li><input type="checkbox"> <span>Стек пен үйменің айырмасын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Жад ағуы мен салбыраған көрсеткіштің не екенін білемін.</span></li>
+        <li><input type="checkbox"> <span><code>-fsanitize=address</code> арқылы бағдарламаны тексере аламын.</span></li>
+        <li><input type="checkbox"> <span><code>unique_ptr</code> пен <code>shared_ptr</code> қашан қолданылатынын білемін.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. Бағдарлама не шығарады? <code>int x = 7; int* p = &amp;x; *p = 9; std::cout &lt;&lt; x;</code></p>
+<label><input type="radio" value="a"> <code>7</code></label>
+<label><input type="radio" value="b"> <code>9</code></label>
+<label><input type="radio" value="c"> Мекенжай</label>
+<label><input type="radio" value="d"> Компиляция қатесі</label>
+<p class="explain"><code>p</code> - <code>x</code>-тің мекенжайы. <code>*p = 9</code> сол үйдің ішіндегіні өзгертеді, демек <code>x</code> 9 болады.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. <code>&amp;x</code> өрнегі нені білдіреді?</p>
+<label><input type="radio" value="a"> <code>x</code>-тің мәнін</label>
+<label><input type="radio" value="b"> <code>x</code>-тің көшірмесін</label>
+<label><input type="radio" value="c"> <code>x</code>-тің жадтағы мекенжайын</label>
+<label><input type="radio" value="d"> <code>x</code>-ке көрсететін сілтемені, әрдайым</label>
+<p class="explain">Өрнектегі унарлы <code>&amp;</code> - «мекенжайын ал». Жариялауда (<code>int&amp; r = x;</code>) <code>&amp;</code> басқа мағына береді: сілтеме типі.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. Сілтеме мен көрсеткіштің қайсы айырмашылығы дұрыс?</p>
+<label><input type="radio" value="a"> Сілтеме жарияланғанда міндетті түрде мән алады және кейін басқа айнымалыға ауыспайды</label>
+<label><input type="radio" value="b"> Сілтеме <code>nullptr</code> бола алады, көрсеткіш бола алмайды</label>
+<label><input type="radio" value="c"> Көрсеткіш жадта орын алмайды</label>
+<label><input type="radio" value="d"> Сілтемені әрдайым <code>delete</code> арқылы жою керек</label>
+<p class="explain">Сілтеме - бір айнымалының мәңгілік екінші аты: бос болмайды, ауыспайды. Көрсеткіш бос болуы және басқа мекенжайға ауысуы мүмкін.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. <code>int* a = new int[5];</code> жадын қалай дұрыс босатамыз?</p>
+<label><input type="radio" value="a"> <code>delete a;</code></label>
+<label><input type="radio" value="b"> <code>free(a);</code></label>
+<label><input type="radio" value="c"> <code>a = nullptr;</code></label>
+<label><input type="radio" value="d"> <code>delete[] a;</code></label>
+<p class="explain"><code>new[]</code> арқылы алынған массив <code>delete[]</code> арқылы қайтарылады. Тек <code>a = nullptr</code> жазу жадты қайтармайды, ол ағуға әкеледі.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. Төмендегі функцияның қатесі қайсы? <code>int* f() { int x = 5; return &amp;x; }</code></p>
+<label><input type="radio" value="a"> Қате жоқ</label>
+<label><input type="radio" value="b"> Жергілікті айнымалының мекенжайы қайтарылады, ал <code>x</code> функция біткенде жойылады (dangling pointer)</label>
+<label><input type="radio" value="c"> <code>int*</code> қайтару типін қолдануға болмайды</label>
+<label><input type="radio" value="d"> <code>x</code> үймеде тұр, сондықтан ағу болады</label>
+<p class="explain"><code>x</code> стекте тұр және <code>f</code> аяқталғанда жойылады. Қайтарылған мекенжай жарамсыз. Компилятор бұл жерде «address of local variable returned» деп ескертеді.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. <code>std::unique_ptr&lt;int&gt; a = std::make_unique&lt;int&gt;(5); std::unique_ptr&lt;int&gt; b = a;</code> нәтижесі қандай?</p>
+<label><input type="radio" value="a"> <code>a</code> мен <code>b</code> екеуі де нысанға ие болады</label>
+<label><input type="radio" value="b"> <code>a</code> бос болады, <code>b</code> ие болады</label>
+<label><input type="radio" value="c"> Компиляция қатесі: <code>unique_ptr</code> көшірілмейді</label>
+<label><input type="radio" value="d"> Орындалу кезінде құлайды</label>
+<p class="explain"><code>unique_ptr</code> көшіру конструкторы өшірілген. Иелікті беру үшін <code>std::move(a)</code> жазу керек.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. RAII идеясы қандай?</p>
+<label><input type="radio" value="a"> Ресурсты нысанның ішінде ұстап, нысан жойылғанда оны автоматты қайтару</label>
+<label><input type="radio" value="b"> Барлық көрсеткішті <code>nullptr</code>-ға тең ету</label>
+<label><input type="radio" value="c"> Жадты қолмен ғана басқару</label>
+<label><input type="radio" value="d"> Бағдарламаны жылдамдататын компилятор жалауы</label>
+<p class="explain">RAII: ресурсты алу нысанды жасаумен, қайтару деструктормен байланысты. Сондықтан ұмыту мүмкін емес.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. Қайсысын <code>-fsanitize=address</code> тауып бере алады?</p>
+<label><input type="radio" value="a"> Тек синтаксистік қателерді</label>
+<label><input type="radio" value="b"> Логикалық қателерді (дұрыс емес формула)</label>
+<label><input type="radio" value="c"> Тек баяу жұмыс істейтін кодты</label>
+<label><input type="radio" value="d"> Жад ағуын, use-after-free және массивтен шығуды</label>
+<p class="explain">AddressSanitizer жад қателерін бағдарлама жұмыс істеп тұрғанда ұстайды: ағу, босатылған жадты қолдану, шекарадан шығу. Логикалық қатені (дұрыс емес есеп) ол көрмейді.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
+
+      <details class="think">
+        <summary>Қосымша ойлану сұрақтары (жауабы жоқ, өзіңіз іздеңіз)</summary>
+        <div class="details-body">
+          <ul>
+            <li><code>int* p = new int(5); int* q = p; delete p; delete q;</code> кодында не болады? Неге?</li>
+            <li>Неге <code>unique_ptr</code> массивті функцияға көшіре алмайды, бірақ сілтеме арқылы бере алады?</li>
+            <li>Егер <code>shared_ptr</code> екі нысаны бір-біріне көрсетсе (циклдік байланыс), санауыш нөлге жете ме?</li>
+            <li>Стекте жергілікті массив жасап, оның өлшемін өте үлкен қылсақ (мысалы, <code>int a[10000000]</code>) не болады деп ойлайсыз?</li>
+          </ul>
+        </div>
+      </details>
+
+      <h2 id="exercises">Жаттығулар</h2>
+      <p>Жауабы бар тапсырмаларды осы жерде тексеріңіз, ал бағдарлама жазатындарды өз компьютеріңізде <code>-fsanitize=address,undefined</code> жалауларымен іске қосыңыз.</p>
+<div class="task">
+<div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="c3-t1">Көрсеткіш арқылы өзгерту</h3></div>
+<p>Бағдарлама не шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int a = 10;
+    int* p = &amp;a;
+    *p += 5;
+    std::cout &lt;&lt; a &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="15"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>*p += 5</code> - <code>a</code>-ның мәні осы жерде өзгереді.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>p</code> - <code>a</code>-ның мекенжайы. <code>*p += 5</code> дегені <code>a += 5</code>: 10 + 5 = 15.</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+15</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="c3-t2">Сілтеме</h3></div>
+<p>Бағдарлама не шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int x = 3;
+    int&amp; r = x;
+    r *= 4;
+    std::cout &lt;&lt; x &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="12"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>r</code> - <code>x</code>-тің басқа аты. <code>r</code>-ді өзгерту - <code>x</code>-ті өзгерту.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>r *= 4</code> - <code>x *= 4</code>: 3 · 4 = 12.</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+12</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge medium">Орташа</span><h3 id="c3-t3">Көрсеткіш арифметикасы</h3></div>
+<p>Бағдарлама не шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int a[] = {5, 10, 15, 20};
+    int* p = a;
+    p += 2;
+    std::cout &lt;&lt; *p + *(p - 1) &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="25"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Алдымен <code>p</code> қай элементке көрсетеді? <code>p += 2</code> болғанда <code>p</code> = <code>&amp;a[2]</code>. <code>*(p - 1)</code> - бір алдыңғы элемент.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>p</code> = <code>&amp;a[2]</code>, <code>*p = 15</code>, <code>*(p - 1) = a[1] = 10</code>. Қосындысы 25.</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+25</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge medium">Орташа</span><h3 id="c3-t4">Көрсеткішпен алмастыру (арифметикалық айла)</h3></div>
+<p>Бағдарлама не шығарады? Екі санды бос орынмен жазыңыз.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+void f(int* a, int* b) {
+    *a = *a + *b;
+    *b = *a - *b;
+    *a = *a - *b;
+}
+
+int main() {
+    int x = 5, y = 8;
+    f(&amp;x, &amp;y);
+    std::cout &lt;&lt; x &lt;&lt; " " &lt;&lt; y &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="8 5"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Қадамдап жазыңыз: <code>a = 5, b = 8</code>. 1) <code>*a = 5 + 8 = 13</code>. 2) <code>*b = 13 - 8 = 5</code>. 3) <code>*a = 13 - 5 = 8</code>.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Бұл үшінші айнымалысыз алмастыру: нәтиже <code>8 5</code>. Көрсеткіш арқылы функция <code>main</code>-дегі <code>x</code> пен <code>y</code>-ті шынымен өзгертті. (Екі көрсеткіш бір айнымалыға сілтесе, бұл әдіс жұмыс істемейді. Оны өзіңіз ойлап көріңіз.)</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+8 5</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge hard">Қиын</span><h3 id="c3-t5">Динамикалық массив</h3></div>
+<p>Қолданушыдан <code>n</code> санын, содан кейін <code>n</code> бүтін санды оқып, оларды <code>new int[n]</code> массивіне сақтап, квадраттарының қосындысын шығаратын бағдарлама жазыңыз. Соңында жадты босатыңыз. Енгізу: <code>4</code> және <code>1 2 3 4</code>. Нәтиже қандай?</p>
+<div class="answer-check" data-answer="30"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>int* data = new int[n];</code> - оқу циклі - есептеу циклі - <code>delete[] data;</code>. Қосындыны <code>long long</code>-та жинаңыз: үлкен сандарда <code>int</code> толып кетуі мүмкін.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int n;
+    std::cout &lt;&lt; "Қанша сан? ";
+    std::cin &gt;&gt; n;
+
+    int* data = new int[n];
+    for (int i = 0; i &lt; n; i++) std::cin &gt;&gt; data[i];
+
+    long long sumSquares = 0;
+    for (int i = 0; i &lt; n; i++) sumSquares += static_cast&lt;long long&gt;(data[i]) * data[i];
+    std::cout &lt;&lt; "квадраттар қосындысы: " &lt;&lt; sumSquares &lt;&lt; "\n";
+
+    delete[] data;
+    return 0;
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+Қанша сан? 4
+1 2 3 4
+квадраттар қосындысы: 30</code></pre>
+<p>1 + 4 + 9 + 16 = 30.</p></div></details>
+<details open><summary>Өзін тексеру тізімі</summary><div class="details-body"><ul class="checklist" data-id="c3-t5">
+<li><input type="checkbox"> <span><code>-fsanitize=address,undefined</code> ескертусіз, қатесіз жұмыс істейді.</span></li>
+<li><input type="checkbox"> <span><code>delete[]</code> жазылған, санитайзер жад ағуын көрсетпейді.</span></li>
+<li><input type="checkbox"> <span><code>n = 1</code> және <code>n = 0</code> үшін де бағдарлама дұрыс жұмыс істейді.</span></li>
+</ul><p class="progress"></p></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge hard">Қиын</span><h3 id="c3-t6">Қанша байт ағып кетті?</h3></div>
+<p>Төмендегі бағдарламаны <code>-fsanitize=address</code> арқылы іске қосқанда LeakSanitizer қорытынды жолда қанша байт ағып кеткенін көрсетеді. Санды жазыңыз. Соңынан бағдарламаны ағусыз қылу үшін түзетіңіз.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int* a = new int[10];
+    double* b = new double(1.5);
+    a[0] = 1;
+    std::cout &lt;&lt; a[0] &lt;&lt; " " &lt;&lt; *b &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="48"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>10 int - қанша байт? <code>sizeof(int) = 4</code>. <code>double</code> - 8 байт. Екеуі де <code>delete</code> жасалмаған.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>10 · 4 + 8 = 48 байт, 2 бөлікте. Түзету: <code>delete[] a;</code> және <code>delete b;</code> жазу. Одан да жақсысы: <code>std::vector&lt;int&gt; a(10);</code> және <code>auto b = std::make_unique&lt;double&gt;(1.5);</code>. Іске қосқанда санитайзердің қорытындысы:</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+1 1.5
+
+=================================================================
+==12681==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 40 byte(s) in 1 object(s) allocated from:
+    #0 0x7f3f73afe6c8 in operator new[](unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:98
+    #1 0x5594f98562ff in main main.cpp:4
+    #2 0x7f3f72a2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #3 0x7f3f72a2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #4 0x5594f9856224 in _start (./main+0x2224)
+
+Direct leak of 8 byte(s) in 1 object(s) allocated from:
+    #0 0x7f3f73afe548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95
+    #1 0x5594f985630d in main main.cpp:5
+    #2 0x7f3f72a2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #3 0x7f3f72a2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #4 0x5594f9856224 in _start (./main+0x2224)
+
+SUMMARY: AddressSanitizer: 48 byte(s) leaked in 2 allocation(s).</code></pre></div></details>
+<details open><summary>Өзін тексеру тізімі</summary><div class="details-body"><ul class="checklist" data-id="c3-t6">
+<li><input type="checkbox"> <span>Қорытынды жолдағы санды дұрыс оқыдым (48).</span></li>
+<li><input type="checkbox"> <span>Түзетілген нұсқа (<code>delete</code> немесе смарт көрсеткіш) санитайзерде ешқандай есеп бермейді.</span></li>
+<li><input type="checkbox"> <span>Неге <code>delete[]</code> мен <code>delete</code> әртүрлі екенін түсіндіре аламын.</span></li>
+</ul><p class="progress"></p></div></details>
+</div>
+
+
+      <nav class="pager">
+        <a href="week-2.html"><small>Алдыңғы</small>← 2-апта: Массивтер, жолдар және vector</a>
+        <a class="next" href="week-4.html"><small>Келесі</small>4-апта: Класстар және нысандар →</a>
+      </nav>
+
+      <p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+
+</body>
+</html>

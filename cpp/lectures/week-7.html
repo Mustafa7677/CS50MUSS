@@ -1,0 +1,1552 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C++ 7-апта: Шаблондар, ерекше жағдайлар, файлдар және қорытынды жоба - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#4f46e5">
+  <!-- /build:head -->
+  <meta name="description" content="C++ 7-апта: шаблондар, exceptions, RAII, fstream, namespace, көп файлды жоба, Makefile және қорытынды жоба «Кітапхана басқару жүйесі».">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="cpp" style="--c:#4f46e5"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">C++</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" data-n="7">
+        <div class="num">7-апта</div>
+        <h1>Шаблондар, ерекше жағдайлар, файлдар және қорытынды жоба</h1>
+        <p>Соңғы аптада үлкен бағдарламаға қажет құралдарды жинаймыз: кез келген типпен жұмыс істейтін шаблондар, қателерді өңдеу, файлмен жұмыс, көп файлға бөлу. Содан кейін бәрін біріктіріп, қорытынды жоба - «Кітапхана басқару жүйесі» - жазамыз.</p>
+      </div>
+
+      <h2 id="intro">Соңғы апта: үлкен бағдарламаға қажет құралдар</h2>
+      <p>Алдыңғы апталарда біз тілдің негізін қалап, класстар, мұрагерлік және STL-мен танысып шықтық. Бірақ нағыз бағдарлама тек есептеумен шектелмейді: ол әртүрлі деректер типімен жұмыс істеуі керек, қателер болса, құламай тұруы керек, деректерді файлға сақтауы керек және жүздеген жолдан тұратын кодты ыңғайлы файлдарға бөле алуы керек. Дәл осыларды бүгін үйренеміз:</p>
+      <ol>
+        <li><strong>шаблондар</strong>: бір кодты кез келген типке қолдану;</li>
+        <li><strong>ерекше жағдайлар</strong>: қатені тәртіппен өңдеу;</li>
+        <li><strong>RAII</strong>: ресурсты қауіпсіз басқару;</li>
+        <li><strong>файлдар</strong>: деректерді сақтау және оқу;</li>
+        <li><strong>namespace</strong>: атаулардың шатасуын болдырмау;</li>
+        <li><strong>көп файлды жоба</strong>: header, source, Makefile;</li>
+        <li><strong>қорытынды жоба</strong>: бәрін біріктіріп, «Кітапхана басқару жүйесін» жазу.</li>
+      </ol>
+      <div class="callout tip">
+        <span class="callout-title">Өз компьютеріңде іске қос</span>
+        <p>Бір файлды мысалдар үшін бұрынғы команда:</p>
+<pre data-lang="bash"><code class="language-bash">g++ -std=c++17 -Wall -Wextra -fsanitize=address,undefined main.cpp -o main &amp;&amp; ./main</code></pre>
+        <p>Көп файлды жобаларда <code>make</code> командасын қолданамыз (төменде түсіндіріледі). Терминалда <code>g++ --version</code> және <code>make --version</code> жұмыс істейтініне көз жеткізіңіз.</p>
+      </div>
+
+      <h2 id="templates">Шаблондар</h2>
+      <p>Екі санның үлкенін табатын функцияны <code>int</code> үшін жазсақ, <code>double</code> үшін тағы бір рет көшіруге тура келеді, <code>string</code> үшін тағы бір рет. Логика бірдей, тек тип басқа. Мұндай қайталануды болдырмау үшін <strong>шаблон</strong> (<span class="term-en">template</span>) бар: ол «тип орнына тұратын айнымалысы бар» функция не класс.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+template &lt;typename T&gt;
+T maxOf(T a, T b) {
+    return (a &lt; b) ? b : a;
+}
+
+template &lt;typename T&gt;
+void swapValues(T&amp; a, T&amp; b) {
+    T tmp = a;
+    a = b;
+    b = tmp;
+}
+
+int main() {
+    std::cout &lt;&lt; maxOf(3, 7) &lt;&lt; "\n";                       // T = int
+    std::cout &lt;&lt; maxOf(2.5, 1.5) &lt;&lt; "\n";                   // T = double
+    std::cout &lt;&lt; maxOf(std::string("Алматы"), std::string("Астана")) &lt;&lt; "\n";   // T = string
+    std::cout &lt;&lt; maxOf&lt;double&gt;(3, 7.5) &lt;&lt; "\n";             // T-ны өзіміз көрсеттік
+
+    std::string a = "бірінші", b = "екінші";
+    swapValues(a, b);
+    std::cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a01_func_template
+7
+2.5
+Астана
+7.5
+екінші бірінші</code></pre>
+      <p>Негізгі жазу: <code>template &lt;typename T&gt;</code>. Мұндағы <code>T</code> - тип параметрі («қандай да бір тип»). Компилятор шақыруды көргенде, <code>T</code> орнына нақты типті қойып, кодтың сәйкес нұсқасын өзі жасайды. Мұны <strong>инстанцирлеу</strong> (<span class="term-en">template instantiation</span>) дейді. Типті компилятор аргументтерден анықтайды (<code>maxOf(3, 7)</code> → <code>T = int</code>), не біз өзіміз <code>maxOf&lt;double&gt;(3, 7.5)</code> деп көрсетеміз.</p>
+      <p>Шаблон «ақылды» көшіру-қою сияқты, сондықтан оның қолданатын операциялары нақты типте болуы керек. <code>maxOf</code> ішінде <code>a &lt; b</code> бар, демек, тип <code>&lt;</code> операторын білуі керек. Тағы бір ереже: екі параметр де бірдей <code>T</code>, сондықтан <code>int</code> мен <code>double</code> араластырсақ, компилятор шатасады:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+template &lt;typename T&gt;
+T maxOf(T a, T b) {
+    return (a &lt; b) ? b : a;
+}
+
+struct Point { int x, y; };
+
+int main() {
+    std::cout &lt;&lt; maxOf(3, 4.5) &lt;&lt; "\n";
+    Point p{1, 2}, q{3, 4};
+    maxOf(p, q);
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra a02_template_err.cpp -o a02_template_err
+a02_template_err.cpp: In function 'int main()':
+a02_template_err.cpp:11:23: error: no matching function for call to 'maxOf(int, double)'
+   11 |     std::cout &lt;&lt; maxOf(3, 4.5) &lt;&lt; "\n";
+      |                  ~~~~~^~~~~~~~
+a02_template_err.cpp:4:3: note: candidate: 'template&lt;class T&gt; T maxOf(T, T)'
+    4 | T maxOf(T a, T b) {
+      |   ^~~~~
+a02_template_err.cpp:4:3: note:   template argument deduction/substitution failed:
+a02_template_err.cpp:11:23: note:   deduced conflicting types for parameter 'T' ('int' and 'double')
+   11 |     std::cout &lt;&lt; maxOf(3, 4.5) &lt;&lt; "\n";
+      |                  ~~~~~^~~~~~~~
+a02_template_err.cpp: In instantiation of 'T maxOf(T, T) [with T = Point]':
+a02_template_err.cpp:13:10:   required from here
+a02_template_err.cpp:5:15: error: no match for 'operator&lt;' (operand types are 'Point' and 'Point')
+    5 |     return (a &lt; b) ? b : a;
+      |            ~~~^~~~</code></pre>
+      <p>Екі қате де түсінікті: бірінші жолда <code>deduced conflicting types for parameter 'T' ('int' and 'double')</code> (T қайсысы: <code>int</code> па, <code>double</code> па?), екіншісінде <code>Point</code> типінде <code>operator&lt;</code> жоқ. Бірінші қатені <code>maxOf&lt;double&gt;(3, 4.5)</code> түзетеді, екіншісін <code>Point</code> үшін <code>operator&lt;</code> жазу.</p>
+
+      <h3 id="class-templates">Класс шаблондары</h3>
+      <p>Шаблон тек функция емес, класс та бола алады. STL-дегі <code>vector&lt;int&gt;</code>, <code>map&lt;K, V&gt;</code> дәл осылай жазылған. Өз стегімізді жазып көрейік, ол кез келген типті сақтай алады:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+class Stack {
+public:
+    void push(const T&amp; x) { items_.push_back(x); }
+    T pop() {
+        if (items_.empty()) throw std::out_of_range("стек бос");
+        T top = items_.back();
+        items_.pop_back();
+        return top;
+    }
+    bool empty() const { return items_.empty(); }
+    std::size_t size() const { return items_.size(); }
+
+private:
+    std::vector&lt;T&gt; items_;
+};
+
+template &lt;typename A, typename B&gt;
+struct Pair {
+    A first;
+    B second;
+};
+
+int main() {
+    Stack&lt;int&gt; s;
+    s.push(10);
+    s.push(20);
+    s.push(30);
+    std::cout &lt;&lt; s.pop() &lt;&lt; " " &lt;&lt; s.pop() &lt;&lt; " (қалды: " &lt;&lt; s.size() &lt;&lt; ")\n";
+
+    Stack&lt;std::string&gt; names;
+    names.push("Қобыланды");
+    names.push("Алпамыс");
+    std::cout &lt;&lt; names.pop() &lt;&lt; "\n";
+
+    Pair&lt;std::string, double&gt; p{"шай", 350.5};
+    std::cout &lt;&lt; p.first &lt;&lt; " = " &lt;&lt; p.second &lt;&lt; " тг\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a03_class_template
+30 20 (қалды: 1)
+Алпамыс
+шай = 350.5 тг</code></pre>
+      <p>Бір шаблоннан <code>Stack&lt;int&gt;</code> және <code>Stack&lt;std::string&gt;</code> екі бөлек класс пайда болды. Бос стектен <code>pop()</code> жасағанда біз ерекше жағдай лақтырамыз (келесі бөлімде түсіндіреміз). <code>Pair&lt;A, B&gt;</code> мысалында екі тип параметр бар.</p>
+      <p>Тип қана емес, <em>тұрақты мәнді</em> де шаблон параметрі етуге болады. Мысалы, өлшемі компиляция кезінде белгілі жиым:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+template &lt;typename T, int N&gt;
+class FixedArray {
+public:
+    constexpr int size() const { return N; }
+    T&amp; operator[](int i) { return data_[i]; }
+    T sum() const {
+        T s = T();
+        for (int i = 0; i &lt; N; ++i) s += data_[i];
+        return s;
+    }
+
+private:
+    T data_[N] = {};
+};
+
+int main() {
+    FixedArray&lt;int, 5&gt; a;
+    for (int i = 0; i &lt; a.size(); ++i) a[i] = (i + 1) * 10;
+    std::cout &lt;&lt; "өлшемі " &lt;&lt; a.size() &lt;&lt; ", қосындысы " &lt;&lt; a.sum() &lt;&lt; "\n";
+
+    FixedArray&lt;double, 3&gt; d;
+    d[0] = 0.5; d[1] = 1.5; d[2] = 2.0;
+    std::cout &lt;&lt; "double қосындысы " &lt;&lt; d.sum() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a04_nontype
+өлшемі 5, қосындысы 150
+double қосындысы 4</code></pre>
+      <p>Шаблонның бір ерекшелігі: оның бүкіл коды әдетте <em>header</em> файлында тұрады, себебі компилятор шаблонды инстанцирлеу кезінде оның толық денесін көруі керек. Шаблонның қателері көбіне ұзын, бірақ олардың алғашқы жолын оқыңыз: ол көбіне мәселенің мәнін айтады.</p>
+
+      <h2 id="exceptions">Ерекше жағдайлар: try, catch, throw</h2>
+      <p>Қате жағдайды қалай хабарлаймыз? Функция қайтарған мәнмен (<code>-1</code>, <code>false</code>)? Бұл жұмыс істейді, бірақ қайтарым кодын тексеруді ұмытуға болады, ал тексермесек, бағдарлама үнсіз қате нәтижемен жалғасады. C++ басқа жолды ұсынады: <strong>ерекше жағдай</strong> (<span class="term-en">exception</span>). Үш кілт сөз:</p>
+      <ul>
+        <li><code>throw</code> - ерекше жағдайды «лақтырады» (қате болғанын жариялайды);</li>
+        <li><code>try</code> - қате болуы мүмкін кодты қамтиды;</li>
+        <li><code>catch</code> - лақтырылған қатені ұстап, өңдейді.</li>
+      </ul>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+
+double divide(double a, double b) {
+    if (b == 0) throw std::invalid_argument("нөлге бөлуге болмайды");
+    return a / b;
+}
+
+int main() {
+    try {
+        std::cout &lt;&lt; divide(10, 4) &lt;&lt; "\n";
+        std::cout &lt;&lt; divide(5, 0) &lt;&lt; "\n";       // осы жерде лақтырылады
+        std::cout &lt;&lt; "бұл жол орындалмайды\n";
+    } catch (const std::invalid_argument&amp; e) {
+        std::cout &lt;&lt; "Қате: " &lt;&lt; e.what() &lt;&lt; "\n";
+    }
+    std::cout &lt;&lt; "бағдарлама жалғасты\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a05_exceptions
+2.5
+Қате: нөлге бөлуге болмайды
+бағдарлама жалғасты</code></pre>
+      <p>Мұнда <code>divide(5, 0)</code> ерекше жағдай лақтырды. Бағдарлама сол сәтте <code>try</code> блогының қалған бөлігін өткізіп жібереді (сондықтан «бұл жол орындалмайды» шықпады), нақты <code>catch</code>-ке секіреді, ал содан кейін қалыпты жалғасады. Ерекше жағдай көп функцияны артқа қарай «жоғары көтеріледі», ұстайтын <code>catch</code> табылғанша.</p>
+      <p>Ұсталмаса не болады? Бағдарлама <code>std::terminate</code> шақырып, аяқталады:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+
+int main() {
+    std::cout &lt;&lt; "басы\n";
+    throw std::runtime_error("ешкім ұстамады");
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a07_uncaught
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  ешкім ұстамады</code></pre>
+      <p>Ол сөзбе-сөз «ешкім ұстамады» деп аварияға ұшырады. Бұл дұрыс: қатені үнсіз елемегеннен, дереу тоқтап, нені айтқанын көрсеткен жақсы.</p>
+
+      <h3 id="std-exception">std::exception иерархиясы</h3>
+      <p>Стандартты кітапхананың ерекше жағдайлары мұрагерлік иерархиясына құрылған (өткен апта!). Ең жоғарыда <code>std::exception</code> тұр, оның <code>what()</code> әдісі қатенің сипаттамасын қайтарады.</p>
+      <svg viewBox="0 0 660 300" role="img" aria-label="std::exception иерархиясы: std::exception түбірінен logic_error, runtime_error, bad_alloc және bad_cast тармақталады. logic_error ішінде invalid_argument, out_of_range, length_error. runtime_error ішінде range_error, overflow_error және біздің InsufficientFunds класы" style="display:block;width:100%;max-width:660px;height:auto;margin:18px auto">
+        <rect x="255" y="10" width="150" height="36" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/>
+        <text x="330" y="33" text-anchor="middle" style="fill:var(--text);font:700 13px var(--mono, monospace)">std::exception</text>
+        <polyline points="330,46 330,66" style="stroke:var(--accent);stroke-width:1.6;fill:none"/>
+        <polyline points="95,66 565,66" style="stroke:var(--accent);stroke-width:1.6;fill:none"/>
+        <polyline points="95,66 95,86" style="stroke:var(--accent);stroke-width:1.6;fill:none"/>
+        <polyline points="255,66 255,86" style="stroke:var(--accent);stroke-width:1.6;fill:none"/>
+        <polyline points="425,66 425,86" style="stroke:var(--accent);stroke-width:1.6;fill:none"/>
+        <polyline points="565,66 565,86" style="stroke:var(--accent);stroke-width:1.6;fill:none"/>
+        <rect x="20" y="86" width="150" height="36" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="95" y="109" text-anchor="middle" style="fill:var(--text);font:700 13px var(--mono, monospace)">logic_error</text>
+        <rect x="180" y="86" width="150" height="36" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="255" y="109" text-anchor="middle" style="fill:var(--text);font:700 13px var(--mono, monospace)">runtime_error</text>
+        <rect x="360" y="86" width="130" height="36" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="425" y="109" text-anchor="middle" style="fill:var(--text);font:13px var(--mono, monospace)">bad_alloc</text>
+        <rect x="510" y="86" width="130" height="36" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="575" y="109" text-anchor="middle" style="fill:var(--text);font:13px var(--mono, monospace)">bad_cast</text>
+        <text x="95" y="150" text-anchor="middle" style="fill:var(--text);font:12.5px var(--mono, monospace)">invalid_argument</text>
+        <text x="95" y="172" text-anchor="middle" style="fill:var(--text);font:12.5px var(--mono, monospace)">out_of_range</text>
+        <text x="95" y="194" text-anchor="middle" style="fill:var(--text);font:12.5px var(--mono, monospace)">length_error</text>
+        <text x="255" y="150" text-anchor="middle" style="fill:var(--text);font:12.5px var(--mono, monospace)">range_error</text>
+        <text x="255" y="172" text-anchor="middle" style="fill:var(--text);font:12.5px var(--mono, monospace)">overflow_error</text>
+        <text x="255" y="196" text-anchor="middle" style="fill:var(--text);font:12.5px var(--mono, monospace)">...</text>
+        <text x="255" y="220" text-anchor="middle" style="fill:var(--accent);font:700 12.5px var(--mono, monospace)">InsufficientFunds (біздікі)</text>
+        <line x1="95" y1="122" x2="95" y2="138" style="stroke:var(--border);stroke-width:1.4"/>
+        <line x1="255" y1="122" x2="255" y2="138" style="stroke:var(--border);stroke-width:1.4"/>
+        <text x="330" y="250" text-anchor="middle" style="fill:var(--muted);font:13px var(--font, sans-serif)">logic_error - бағдарламашының қатесі; runtime_error - орындау кезіндегі сыртқы жағдай;</text>
+        <text x="330" y="270" text-anchor="middle" style="fill:var(--muted);font:13px var(--font, sans-serif)">bad_alloc - жад жетпеді; бәрін <tspan style="font-family:var(--mono, monospace)">catch (const std::exception&amp;)</tspan> ұстайды</text>
+      </svg>
+      <p>Иерархияның пайдасы: <code>catch (const std::exception&amp;)</code> барлық стандартты қатені ұстайды, ал нақтырақ <code>catch</code> нақты түрін ұстайды. Өз қатемізді де осы иерархияға қосуға болады: <code>std::runtime_error</code>-дан мұрагерлендіреміз. Банк мысалына қайта оралайық:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+class InsufficientFunds : public std::runtime_error {
+public:
+    InsufficientFunds(double need, double have)
+        : std::runtime_error("қаражат жеткіліксіз: керек " + std::to_string(static_cast&lt;int&gt;(need)) +
+                             ", бар " + std::to_string(static_cast&lt;int&gt;(have))) {}
+};
+
+void withdraw(double balance, double amount) {
+    if (amount &lt;= 0) throw std::invalid_argument("сома оң болуы керек");
+    if (amount &gt; balance) throw InsufficientFunds(amount, balance);
+    std::cout &lt;&lt; "алынды: " &lt;&lt; amount &lt;&lt; "\n";
+}
+
+int main() {
+    double amounts[] = {5000, -1, 90000};
+    for (double a : amounts) {
+        try {
+            withdraw(20000, a);
+        } catch (const InsufficientFunds&amp; e) {
+            std::cout &lt;&lt; "InsufficientFunds: " &lt;&lt; e.what() &lt;&lt; "\n";
+        } catch (const std::invalid_argument&amp; e) {
+            std::cout &lt;&lt; "invalid_argument: " &lt;&lt; e.what() &lt;&lt; "\n";
+        }
+    }
+
+    try {
+        std::vector&lt;int&gt; v(3);
+        v.at(10) = 1;
+    } catch (const std::exception&amp; e) {          // барлық стандартты қателер үшін ортақ база
+        std::cout &lt;&lt; "std::exception ұстады\n";
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a06_hierarchy
+алынды: 5000
+invalid_argument: сома оң болуы керек
+InsufficientFunds: қаражат жеткіліксіз: керек 90000, бар 20000
+std::exception ұстады</code></pre>
+      <p>Мұнда:</p>
+      <ul>
+        <li><code>InsufficientFunds</code> - өз қате класымыз, <code>std::runtime_error</code>-дан тұқым қуалайды және хабарламаны базалық конструкторға береді.</li>
+        <li>Нақтырақ <code>catch</code>-тер бұрын жазылған. Ереже: <strong>нақты түрлер бірінші, жалпы түрлер соңында</strong>.</li>
+        <li><code>catch</code>-те қатені әрқашан <code>const</code> сілтеме арқылы ұстаңыз (<code>const std::exception&amp;</code>). Мәнмен ұстасаңыз, өткен аптадағы slicing қайталанады!</li>
+      </ul>
+      <p>Нақты түрді жалпы түрден кейін жазсақ, оған ешқашан жеткізбейді. Компилятор мұны байқайды:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+
+int main() {
+    try {
+        throw std::invalid_argument("x");
+    } catch (const std::exception&amp;) {
+        std::cout &lt;&lt; "A\n";
+    } catch (const std::invalid_argument&amp;) {
+        std::cout &lt;&lt; "B\n";
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./t03_catch_order
+A</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra t03_catch_order.cpp -o t03_catch_order
+t03_catch_order.cpp: In function 'int main()':
+t03_catch_order.cpp:9:7: warning: exception of type 'std::invalid_argument' will be caught by earlier handler [-Wexceptions]
+    9 |     } catch (const std::invalid_argument&amp;) {
+      |       ^~~~~
+t03_catch_order.cpp:7:7: note: for type 'std::exception'
+    7 |     } catch (const std::exception&amp;) {
+      |       ^~~~~</code></pre>
+      <p>Бұл - тапсырмалардың бірінде кездесетін тұзақ. Басқа ескертулер: бірден барлығын ұстайтын <code>catch (...)</code> бар, бірақ қатені білмей ұстау қауіпті, сондықтан оны сирек, тек соңғы қорғаныс ретінде қолданамыз. Жалпы ереже: ерекше жағдайды <em>шынымен ерекше</em> жағдайлар үшін (файл жоқ, дұрыс емес енгізу, ресурс таусылды) қолданыңыз, қарапайым ағымды басқару үшін емес.</p>
+
+      <h2 id="raii">RAII және ерекше жағдайлар</h2>
+      <p>Ерекше жағдай функцияны кез келген жерінен үзе алады. Сонда функцияның соңындағы <code>delete</code> орындалмай қалуы мүмкін. Алдымен бағдарлама ерекше жағдай лақтырылғанда локалды нысандардың деструкторлары қалай жұмыс істейтінін көрейік. Бұл процесс <strong>стекті тарқату</strong> (<span class="term-en">stack unwinding</span>) деп аталады:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+
+struct Guard {
+    std::string name;
+    Guard(std::string n) : name(n) { std::cout &lt;&lt; "+" &lt;&lt; name &lt;&lt; " "; }
+    ~Guard() { std::cout &lt;&lt; "-" &lt;&lt; name &lt;&lt; " "; }
+};
+
+void inner() {
+    Guard a("a");
+    Guard b("b");
+    throw std::runtime_error("қате");
+    Guard c("c");              // бұған жетпейді
+}
+
+int main() {
+    try {
+        inner();
+    } catch (const std::exception&amp;) {
+        std::cout &lt;&lt; "| ұсталды ";
+    }
+    std::cout &lt;&lt; "| соңы\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a08_unwind
++a +b -b -a | ұсталды | соңы</code></pre>
+      <p><code>inner()</code> ішінде <code>a</code> мен <code>b</code> жасалып, <code>throw</code> болғанда стек артқа қарай тарқатылды: <code>b</code>, содан кейін <code>a</code> жойылды (деструкторлар жұмыс істеді), сосын <code>catch</code> орындалды. <code>c</code> жасалуға жеткен жоқ. Осы үшін деструкторлар ерекше жағдай кезінде де кепілді жұмыс істейді. Енді қолмен жадты басқарғанда не болатынын көрейік:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+
+void process(bool fail) {
+    int* data = new int[1000];       // қолмен бөлінген жад
+    if (fail) throw std::runtime_error("ортасында қате");
+    delete[] data;                   // fail болса, мұнда жетпейді!
+}
+
+int main() {
+    try {
+        process(true);
+    } catch (const std::exception&amp; e) {
+        std::cout &lt;&lt; "ұсталды: " &lt;&lt; e.what() &lt;&lt; std::endl;
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a09_leak
+ұсталды: ортасында қате
+
+=================================================================
+==17449==ERROR: LeakSanitizer: detected memory leaks
+
+Direct leak of 4000 byte(s) in 1 object(s) allocated from:
+    #0 0x7f3c1e0fe6c8 in operator new[](unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:98
+    #1 0x558cd10b03c6 in process(bool) (/tmp/claude-0/bin_w7_a09_leak+0x23c6)
+...</code></pre>
+      <p>Бағдарлама «ұсталды» деп дұрыс жалғасқанымен, <code>delete[] data</code> орындалмады, ал AddressSanitizer-дің LeakSanitizer бөлігі жад ағып кеткенін (4000 байт) хабарлады. Шешім - ресурсты нысанға «тапсыру». Бұл идея C++-тың ең маңызды принциптерінің бірі: <strong>RAII</strong> (<span class="term-en">Resource Acquisition Is Initialization</span>, «ресурсты алу - инициализация»). Мәні:</p>
+      <ul>
+        <li>ресурсты (жад, файл, құлып) <em>конструкторда</em> аламыз;</li>
+        <li>оны <em>деструкторда</em> қайтарамыз;</li>
+        <li>нысан автоматты нысан болса, ерекше жағдай болса да, деструктор шақырылады.</li>
+      </ul>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;memory&gt;
+#include &lt;stdexcept&gt;
+#include &lt;vector&gt;
+
+void process(bool fail) {
+    std::vector&lt;int&gt; data(1000);                     // RAII: өзі босатады
+    auto p = std::make_unique&lt;int[]&gt;(1000);          // RAII: ақылды көрсеткіш
+    if (fail) throw std::runtime_error("ортасында қате");
+    data[0] = p[0] = 1;
+}
+
+class Timer {
+public:
+    Timer(const char* label) : label_(label) { std::cout &lt;&lt; "[" &lt;&lt; label_ &lt;&lt; " басталды]\n"; }
+    ~Timer() { std::cout &lt;&lt; "[" &lt;&lt; label_ &lt;&lt; " аяқталды]\n"; }
+
+private:
+    const char* label_;
+};
+
+int main() {
+    try {
+        Timer t("өңдеу");
+        process(true);
+    } catch (const std::exception&amp; e) {
+        std::cout &lt;&lt; "ұсталды: " &lt;&lt; e.what() &lt;&lt; "\n";
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a10_raii
+[өңдеу басталды]
+[өңдеу аяқталды]
+ұсталды: ортасында қате</code></pre>
+      <p>Мұнда <code>std::vector</code> мен <code>std::unique_ptr</code> RAII-ды біз үшін орындайды, сондықтан <code>process</code> ішінде ерекше жағдай болса да, жад ағып кетпейді. Өз <code>Timer</code> класымыз да дәл осылай әрекет етті: «өңдеу аяқталды» жазуы қате болса да шықты. Сондықтан қазіргі C++-та <code>new</code>/<code>delete</code> қолмен жазу дерлік қажет емес: <code>vector</code>, <code>string</code>, <code>unique_ptr</code>, <code>fstream</code> (файл өзі жабылады) бәрін өздері жинайды.</p>
+
+      <h2 id="files">Файлдармен жұмыс: fstream</h2>
+      <p>Бағдарлама жабылғанда айнымалылар жоғалады. Деректерді сақтау үшін файлға жазамыз. Бұл үшін <code>&lt;fstream&gt;</code> ішінде үш класс бар: <code>std::ofstream</code> (файлға жазу), <code>std::ifstream</code> (файлдан оқу), <code>std::fstream</code> (екеуін). Олар <code>cout</code> мен <code>cin</code> сияқты: <code>&lt;&lt;</code> және <code>&gt;&gt;</code> операторлары, <code>std::getline</code> бірдей жұмыс істейді. Файл нысаны RAII-ды қолданады: ол жойылғанда файл өзі жабылады.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;cstdio&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::ofstream out("kitaptar_tmp.txt");
+    if (!out) {
+        std::cout &lt;&lt; "Файл ашылмады\n";
+        return 1;
+    }
+    out &lt;&lt; "Абай жолы;Мұхтар Әуезов;1942\n";
+    out &lt;&lt; "Қан мен тер;Әбдіжәміл Нұрпейісов;1970\n";
+    out &lt;&lt; "Көшпенділер;Ілияс Есенберлин;1976\n";
+    out.close();
+
+    std::ifstream in("kitaptar_tmp.txt");
+    std::string line;
+    int n = 0;
+    while (std::getline(in, line)) {
+        ++n;
+        std::cout &lt;&lt; n &lt;&lt; ": " &lt;&lt; line &lt;&lt; "\n";
+    }
+    std::cout &lt;&lt; "Барлығы " &lt;&lt; n &lt;&lt; " жол\n";
+
+    std::ofstream app("kitaptar_tmp.txt", std::ios::app);     // соңына қосу
+    app &lt;&lt; "Ақбілек;Ілияс Жансүгіров;1927\n";
+    app.close();
+    std::remove("kitaptar_tmp.txt");
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a11_fstream_write
+1: Абай жолы;Мұхтар Әуезов;1942
+2: Қан мен тер;Әбдіжәміл Нұрпейісов;1970
+3: Көшпенділер;Ілияс Есенберлин;1976
+Барлығы 3 жол</code></pre>
+      <p>Назар аударыңыз:</p>
+      <ul>
+        <li><code>if (!out)</code> файлдың ашылғанын тексереді. Ашылмаса (рұқсат жоқ, жол қате), бағдарлама қатесіз жалғаса береді, ал жазу ештеңе істемейді, сондықтан тексеру міндетті.</li>
+        <li><code>std::getline(in, line)</code> бір жолды оқиды және оқу сәтті болғанда ақиқат болады, сондықтан <code>while (std::getline(...))</code> циклі файл біткенше жүреді.</li>
+        <li><code>std::ios::app</code> режимі файлдың соңына қосады. Әдепкіде <code>ofstream</code> файлды <em>өшіріп</em>, қайта жазады!</li>
+      </ul>
+      <p>Деректерді құрылымды түрде сақтаудың жиі қолданылатын жолы - жолға бір жазба, бөлгіш таңбамен (мысалы, <code>;</code>). Оқығанда жолды <code>std::istringstream</code> арқылы бөлеміз:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;cstdio&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Book {
+    std::string title;
+    std::string author;
+    int year;
+};
+
+std::vector&lt;Book&gt; loadBooks(const std::string&amp; path) {
+    std::ifstream in(path);
+    if (!in) throw std::runtime_error("файл ашылмады: " + path);
+    std::vector&lt;Book&gt; books;
+    std::string line;
+    while (std::getline(in, line)) {
+        if (line.empty()) continue;
+        std::istringstream ss(line);
+        Book b;
+        std::string year;
+        std::getline(ss, b.title, ';');
+        std::getline(ss, b.author, ';');
+        std::getline(ss, year, ';');
+        b.year = std::stoi(year);
+        books.push_back(b);
+    }
+    return books;
+}
+
+int main() {
+    {
+        std::ofstream out("books_tmp.txt");
+        out &lt;&lt; "Абай жолы;Мұхтар Әуезов;1942\n\nҚан мен тер;Әбдіжәміл Нұрпейісов;1970\n";
+    }
+    try {
+        for (const Book&amp; b : loadBooks("books_tmp.txt")) {
+            std::cout &lt;&lt; b.year &lt;&lt; " | " &lt;&lt; b.title &lt;&lt; " | " &lt;&lt; b.author &lt;&lt; "\n";
+        }
+        loadBooks("joq_file.txt");
+    } catch (const std::exception&amp; e) {
+        std::cout &lt;&lt; "Қате: " &lt;&lt; e.what() &lt;&lt; "\n";
+    }
+    std::remove("books_tmp.txt");
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a12_parse
+1942 | Абай жолы | Мұхтар Әуезов
+1970 | Қан мен тер | Әбдіжәміл Нұрпейісов
+Қате: файл ашылмады: joq_file.txt</code></pre>
+      <p>Бұл мысалда: бос жолды өткізіп жібердік, <code>std::getline(ss, x, ';')</code> бөлгішке дейін оқыды, <code>std::stoi</code> мәтінді санға айналдырды, ал жоқ файлды ашуға тырысқанда өз ерекше жағдайымызды лақтырдық. Файлдың жоқ екенін көрсететін қарапайым тәжірибе:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::ifstream f("joq_file.txt");
+    std::cout &lt;&lt; f.is_open() &lt;&lt; " " &lt;&lt; (f ? "ok" : "fail") &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./q05_nofile
+0 fail</code></pre>
+      <p>Ашылмаған <code>ifstream</code> ерекше жағдай <em>лақтырмайды</em>, тек «сәтсіз» күйге ауысады (<code>is_open()</code> = <code>false</code>). Сондықтан оны өзіміз тексеріп, қажет болса, <code>throw</code> жасаймыз. Бұл - жоғарыдағы <code>loadBooks</code> функциясындағы шешім.</p>
+
+      <h2 id="namespace">Namespace: атаулар кеңістігі</h2>
+      <p>Жоба өскен сайын атаулар қайталана бастайды: кітапханада <code>Book</code> бар, кітап дүкенінде де <code>Book</code> бар. Олар бірдей аталса, не болады? Мұндай соқтығысты <strong>атау кеңістігі</strong> (<span class="term-en">namespace</span>) шешеді: ол атауларды «аудандарға» бөледі, сондықтан <code>library::Book</code> мен <code>shop::Book</code> бір-біріне кедергі жасамайды. Біз <code>std::</code> префиксін қолданып келе жатқанымыз да осы: <code>std</code> - стандартты кітапхананың namespace-і.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+namespace library {
+    struct Book { std::string title; };
+    void print(const Book&amp; b) { std::cout &lt;&lt; "Кітапхана кітабы: " &lt;&lt; b.title &lt;&lt; "\n"; }
+}
+
+namespace shop {
+    struct Book { std::string title; int price; };
+    void print(const Book&amp; b) { std::cout &lt;&lt; "Дүкен тауары: " &lt;&lt; b.title &lt;&lt; ", " &lt;&lt; b.price &lt;&lt; " тг\n"; }
+
+    namespace discount {
+        int apply(int price) { return price * 90 / 100; }
+    }
+}
+
+namespace {                                    // атаусыз: тек осы файлда көрінеді
+    int secret() { return 42; }
+}
+
+int main() {
+    library::Book a{"Абай жолы"};
+    shop::Book b{"Абай жолы", 4000};
+    library::print(a);
+    shop::print(b);
+    std::cout &lt;&lt; "Жеңілдікпен: " &lt;&lt; shop::discount::apply(b.price) &lt;&lt; " тг\n";
+
+    using shop::print;                         // тек бір атауды әкелу
+    print(b);
+    std::cout &lt;&lt; secret() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a13_namespace
+Кітапхана кітабы: Абай жолы
+Дүкен тауары: Абай жолы, 4000 тг
+Жеңілдікпен: 3600 тг
+Дүкен тауары: Абай жолы, 4000 тг
+42</code></pre>
+      <p>Қарастырыңыз:</p>
+      <ul>
+        <li><code>namespace library { ... }</code> ішіндегі барлық атау <code>library::</code> префиксімен қолжетімді.</li>
+        <li>Кеңістіктерді ішіне-ішіне салуға болады (<code>shop::discount::apply</code>).</li>
+        <li><code>using shop::print;</code> тек бір атауды әкеледі. Бұл <code>using namespace shop;</code> деген бүкіл кеңістікті әкелуден әлдеқайда қауіпсіз.</li>
+        <li>Атауы жоқ <code>namespace { ... }</code> ішіндегі нәрселер тек сол файлда көрінеді (ішкі байланыс).</li>
+      </ul>
+      <p>Екі кеңістіктің де аты бірдей функциясын бірдей <code>using namespace</code>-пен әкелсек, қайсысын шақыру керегі белгісіз болады:</p>
+<pre data-lang="cpp"><code class="language-cpp">namespace a { int f() { return 1; } }
+namespace b { int f() { return 2; } }
+
+using namespace a;
+using namespace b;
+
+int main() {
+    return f();
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra a14_ambiguous_err.cpp -o a14_ambiguous_err
+a14_ambiguous_err.cpp: In function 'int main()':
+a14_ambiguous_err.cpp:8:13: error: call of overloaded 'f()' is ambiguous
+    8 |     return f();
+      |            ~^~
+a14_ambiguous_err.cpp:1:19: note: candidate: 'int a::f()'
+    1 | namespace a { int f() { return 1; } }
+      |                   ^
+a14_ambiguous_err.cpp:2:19: note: candidate: 'int b::f()'
+    2 | namespace b { int f() { return 2; } }
+      |                   ^</code></pre>
+      <div class="callout warn">
+        <span class="callout-title">Header файлында using namespace жазбаңыз</span>
+        <p>Header-де жазылған <code>using namespace std;</code> бұл header-ді қосатын <em>әр файлға</em> тарайды және соқтығысу қаупін көбейтеді. Header-де әрқашан толық атауды (<code>std::string</code>) жазыңыз. <code>.cpp</code> файлдарында да мүмкіндігінше жеке атауларды әкеліңіз.</p>
+      </div>
+
+      <h2 id="multifile">Көп файлды жоба: header, source, Makefile</h2>
+      <p>Бағдарлама мың жолға жеткенде бір файлда жұмыс істеу мүмкін емес. C++ жобасы әдетте мына түрде бөлінеді:</p>
+      <ul>
+        <li><strong>header</strong> (<code>.h</code>/<code>.hpp</code>): <em>жариялаулар</em> - класс анықтамалары, функция қолтаңбалары. Бұл «мазмұн» немесе «шарттар парағы»;</li>
+        <li><strong>source</strong> (<code>.cpp</code>): <em>анықтаулар</em> - функциялардың нақты денесі;</li>
+        <li><code>main.cpp</code>: бағдарламаның кіру нүктесі.</li>
+      </ul>
+      <p>Шағын мысал: геометриялық есептеулер. Header-де не бар, сол кітапты «қолданушы» (main) біледі:</p>
+<pre data-lang="cpp"><code class="language-cpp">#ifndef GEOMETRY_H
+#define GEOMETRY_H
+
+namespace geo {
+
+constexpr double PI = 3.14159265;
+
+double circleArea(double r);            // жариялау (declaration)
+double rectArea(double w, double h);
+
+}  // namespace geo
+
+#endif  // GEOMETRY_H</code></pre>
+<pre data-lang="cpp"><code class="language-cpp">#include "geometry.h"
+
+namespace geo {
+
+double circleArea(double r) {           // анықтау (definition)
+    return PI * r * r;
+}
+
+double rectArea(double w, double h) {
+    return w * h;
+}
+
+}  // namespace geo</code></pre>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include "geometry.h"
+
+int main() {
+    std::cout &lt;&lt; "Шаңырақ радиусы 3 м: " &lt;&lt; geo::circleArea(3) &lt;&lt; " м2\n";
+    std::cout &lt;&lt; "Киіз үй еденінің 4x5: " &lt;&lt; geo::rectArea(4, 5) &lt;&lt; " м2\n";
+}</code></pre>
+      <p><code>#include "geometry.h"</code> тырнақшамен жазылады (өз файлымыз), ал <code>&lt;iostream&gt;</code> бұрыштық жақшамен (жүйелік header). Қауіпті жағдай - бір header бірнеше рет қосылуы. Мысалы, <code>a.h</code> мен <code>b.h</code> екеуі де <code>point.h</code>-ді қосады, ал <code>main.cpp</code> екеуін де қосады:</p>
+<pre data-lang="cpp"><code class="language-cpp">struct Point {
+    int x;
+    int y;
+};</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -c main.cpp
+In file included from b.h:1,
+                 from main.cpp:2:
+point.h:1:8: error: redefinition of 'struct Point'
+    1 | struct Point {
+      |        ^~~~~
+In file included from a.h:1,
+                 from main.cpp:1:
+point.h:1:8: note: previous definition of 'struct Point'
+    1 | struct Point {
+      |        ^~~~~</code></pre>
+      <p>Компилятор <code>Point</code> екі рет анықталды деп наразы болды. Шешім - <strong>include guard</strong> (қосудан қорғаныс). Әр header файлын мына үш жолмен орайды:</p>
+<pre data-lang="cpp"><code class="language-cpp">#ifndef POINT_H      // POINT_H әлі анықталмаса...
+#define POINT_H      // ...оны анықта және төмендегіні қос
+
+struct Point {
+    int x;
+    int y;
+};
+
+#endif  // POINT_H   // екінші рет қосылса, барлығы өткізіледі</code></pre>
+      <p>Бірінші рет қосылғанда <code>POINT_H</code> анықталып, мазмұн қосылады. Екінші рет қосылғанда макрос бар болғандықтан, барлығы өткізіліп кетеді. Жоғарыдағы <code>geometry.h</code>-та дәл осы бар. Қысқа балама - файлдың басына <code>#pragma once</code> жазу: ол барлық негізгі компиляторларда жұмыс істейді, бірақ стандартқа кірмейді. Екеуінің бірін қолданыңыз.</p>
+
+      <h3 id="build">Құрастыру қалай жүреді?</h3>
+      <p>Көп файлды жобада <code>g++ main.cpp geometry.cpp -o app</code> деп бәрін бірден құрастыруға болады, бірақ іс жүзінде екі қадам бөлек жасалады:</p>
+      <svg viewBox="0 0 660 270" role="img" aria-label="Құрастыру сызбасы: main.cpp және geometry.cpp файлдары компиляторда бөлек main.o және geometry.o объектілік файлдарына айналады; geometry.h екі cpp файлына да қосылады; линкер екі объектілік файлды біріктіріп, app орындалатын файлын жасайды" style="display:block;width:100%;max-width:660px;height:auto;margin:18px auto">
+        <defs><marker id="m7a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>
+        <rect x="10" y="30" width="120" height="40" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="70" y="55" text-anchor="middle" style="fill:var(--text);font:13px var(--mono, monospace)">main.cpp</text>
+        <rect x="10" y="170" width="120" height="40" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="70" y="195" text-anchor="middle" style="fill:var(--text);font:13px var(--mono, monospace)">geometry.cpp</text>
+        <rect x="10" y="100" width="120" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3"/>
+        <text x="70" y="125" text-anchor="middle" style="fill:var(--accent);font:13px var(--mono, monospace)">geometry.h</text>
+        <rect x="230" y="30" width="120" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="290" y="55" text-anchor="middle" style="fill:var(--text);font:13px var(--mono, monospace)">main.o</text>
+        <rect x="230" y="170" width="120" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="290" y="195" text-anchor="middle" style="fill:var(--text);font:13px var(--mono, monospace)">geometry.o</text>
+        <rect x="480" y="100" width="170" height="40" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:2.2"/>
+        <text x="565" y="125" text-anchor="middle" style="fill:var(--text);font:700 13px var(--mono, monospace)">app (орындалатын)</text>
+        <line x1="130" y1="50" x2="228" y2="50" style="stroke:var(--accent);stroke-width:1.8" marker-end="url(#m7a)"/>
+        <line x1="130" y1="190" x2="228" y2="190" style="stroke:var(--accent);stroke-width:1.8" marker-end="url(#m7a)"/>
+        <line x1="100" y1="100" x2="100" y2="72" style="stroke:var(--muted);stroke-width:1.4;stroke-dasharray:4 3" marker-end="url(#m7a)"/>
+        <line x1="100" y1="140" x2="100" y2="168" style="stroke:var(--muted);stroke-width:1.4;stroke-dasharray:4 3" marker-end="url(#m7a)"/>
+        <line x1="350" y1="55" x2="478" y2="112" style="stroke:var(--accent);stroke-width:1.8" marker-end="url(#m7a)"/>
+        <line x1="350" y1="190" x2="478" y2="130" style="stroke:var(--accent);stroke-width:1.8" marker-end="url(#m7a)"/>
+        <text x="180" y="42" text-anchor="middle" style="fill:var(--muted);font:12px var(--font, sans-serif)">g++ -c</text>
+        <text x="180" y="182" text-anchor="middle" style="fill:var(--muted);font:12px var(--font, sans-serif)">g++ -c</text>
+        <text x="445" y="76" text-anchor="middle" style="fill:var(--muted);font:12px var(--font, sans-serif)">линкер</text>
+        <text x="445" y="170" text-anchor="middle" style="fill:var(--muted);font:12px var(--font, sans-serif)">линкер</text>
+        <text x="330" y="245" text-anchor="middle" style="fill:var(--muted);font:12.5px var(--font, sans-serif)">1) әр .cpp бөлек компиляцияланады (header қосылады); 2) линкер бәрін біріктіреді</text>
+      </svg>
+      <p>1) <strong>Компиляция</strong> (<code>g++ -c</code>) әр <code>.cpp</code> файлын бөлек <strong>объектілік файлға</strong> (<code>.o</code>) айналдырады. Бұл кезде <code>#include</code> header-лердің мәтінін ішке қосады. 2) <strong>Линкер</strong> (<span class="term-en">linker</span>) барлық <code>.o</code> файлды бір орындалатын файлға біріктіреді және функцияны шақыру мен оның анықтамасын байланыстырады. Егер жариялау бар, ал анықтау жоқ болса, линкер қате береді (компилятор емес!):</p>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 main.cpp -o app_bad
+/usr/bin/ld: /tmp/ccEetdNq.o: in function `main':
+main.cpp:(.text+0x36): undefined reference to `geo::circleArea(double)'
+/usr/bin/ld: main.cpp:(.text+0x96): undefined reference to `geo::rectArea(double, double)'
+collect2: error: ld returned 1 exit status</code></pre>
+      <p>Мұнда <code>main.cpp</code> <code>geo::circleArea</code> функциясын header-ден «біледі», бірақ <code>geometry.cpp</code> құрастыруға қосылмағандықтан, оның денесі табылмады: <code>undefined reference</code>. Бұл - көп файлды жобадағы ең жиі қателердің бірі.</p>
+
+      <h3 id="makefile">Makefile</h3>
+      <p>Әр жолы үш-бес командасын қолмен тергеннен, <strong>make</strong> құралын қолданған жақсы. Ол <code>Makefile</code> файлындағы <em>ережелерді</em> оқиды: «мақсат: тәуелділіктер» және оның астында (міндетті түрде <em>табуляциямен</em> басталатын) команда. Make файлдардың өзгеру уақытына қарап, тек өзгергенін ғана қайта құрастырады:</p>
+<pre data-lang="makefile"><code class="language-makefile">CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra -g
+OBJS = main.o geometry.o
+
+app: $(OBJS)
+	$(CXX) $(CXXFLAGS) -o app $(OBJS)
+
+%.o: %.cpp geometry.h
+	$(CXX) $(CXXFLAGS) -c $&lt; -o $@
+
+clean:
+	rm -f $(OBJS) app
+
+.PHONY: clean</code></pre>
+      <p>Ережелер: <code>app</code> мақсаты <code>main.o</code> мен <code>geometry.o</code> файлдарына тәуелді. <code>%.o: %.cpp geometry.h</code> - кез келген <code>.o</code> файлы өзінің <code>.cpp</code> мен header-інен жасалады (<code>$&lt;</code> - бірінші тәуелділік, <code>$@</code> - мақсат). <code>clean</code> құрастыру нәтижелерін өшіреді. <code>.PHONY</code> «clean файл емес, команда аты» дегенді білдіреді. Іске қосайық:</p>
+<pre class="terminal"><code class="language-plaintext">$ make &amp;&amp; ./app
+g++ -std=c++17 -Wall -Wextra -g -c main.cpp -o main.o
+g++ -std=c++17 -Wall -Wextra -g -c geometry.cpp -o geometry.o
+g++ -std=c++17 -Wall -Wextra -g -o app main.o geometry.o
+Шаңырақ радиусы 3 м: 28.2743 м2
+Киіз үй еденінің 4x5: 20 м2</code></pre>
+      <p>Екі <code>.cpp</code> бөлек компиляцияланды, содан кейін линкер қосты. Енді header-ді өзгерттік (<code>touch geometry.h</code>) делік: make оған тәуелді барлық файлды қайта құрастырады:</p>
+<pre class="terminal"><code class="language-plaintext">$ touch geometry.h &amp;&amp; make
+g++ -std=c++17 -Wall -Wextra -g -c main.cpp -o main.o
+g++ -std=c++17 -Wall -Wextra -g -c geometry.cpp -o geometry.o
+g++ -std=c++17 -Wall -Wextra -g -o app main.o geometry.o</code></pre>
+      <p>Егер ештеңе өзгермесе, <code>make</code> «'app' is up to date» деп, ештеңе істемейді. Үлкен жобада бұл уақытты айтарлықтай үнемдейді. Makefile-да <strong>табуляция</strong> (Tab) міндетті, бос орындар жұмыс істемейді: бұл ескі, бірақ қатал ереже. Қолмен жазу ыңғайсыз болса, CMake сияқты құралдар бар, бірақ бастаушы үшін қарапайым Makefile жеткілікті.</p>
+
+      <h2 id="project">Қорытынды жоба: «Кітапхана басқару жүйесі»</h2>
+      <p>Енді бүкіл курсты бір жобаға біріктіреміз. Әйгерім апай аудандық кітапхананың меңгерушісі. Оның қағаз журналы толып кетті: қай кітап кімде, қашан қайтарылады, кітап бар ма? Біз оған консольдік (CLI) бағдарлама жазамыз: ол кітаптарды, оқырмандарды және беру-қайтаруды басқарып, деректерді файлға сақтайды. Бұл жоба 7 аптаның барлық тақырыбын қамтиды: класстар, мұрагерлік, STL, ерекше жағдайлар, файлдар, көп файлды құрылым.</p>
+
+      <h3 id="project-arch">Жобаның архитектурасы</h3>
+      <p>Бағдарламаны бөліктерге бөлудің ұсынылатын сызбасы:</p>
+      <svg viewBox="0 0 660 330" role="img" aria-label="Жоба архитектурасы: main.cpp мәзірі Library класын шақырады. Library ішінде Book нысандарының тізімі және Member нысандары бар. Member абстрактілі класынан Student және Teacher мұрагерленеді. Storage файлға сақтау мен жүктеуді жасайды. Қателер LibraryError класынан тарайды" style="display:block;width:100%;max-width:660px;height:auto;margin:18px auto">
+        <defs><marker id="m7b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>
+        <rect x="250" y="8" width="160" height="40" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="330" y="33" text-anchor="middle" style="fill:var(--text);font:13px var(--mono, monospace)">main.cpp (мәзір)</text>
+        <rect x="235" y="100" width="190" height="64" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:2.2"/>
+        <text x="330" y="124" text-anchor="middle" style="fill:var(--text);font:700 13px var(--mono, monospace)">Library</text>
+        <text x="330" y="146" text-anchor="middle" style="fill:var(--muted);font:12px var(--mono, monospace)">кітап, оқырман, беру</text>
+        <rect x="20" y="100" width="150" height="64" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="95" y="124" text-anchor="middle" style="fill:var(--text);font:700 13px var(--mono, monospace)">Book</text>
+        <text x="95" y="146" text-anchor="middle" style="fill:var(--muted);font:12px var(--mono, monospace)">id, атауы, автор</text>
+        <rect x="490" y="100" width="150" height="64" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="565" y="124" text-anchor="middle" style="fill:var(--text);font:700 13px var(--mono, monospace)">Member (abstract)</text>
+        <text x="565" y="146" text-anchor="middle" style="fill:var(--muted);font:12px var(--mono, monospace)">maxBooks() = 0</text>
+        <rect x="450" y="230" width="100" height="40" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="500" y="255" text-anchor="middle" style="fill:var(--text);font:13px var(--mono, monospace)">Student</text>
+        <rect x="570" y="230" width="85" height="40" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="612" y="255" text-anchor="middle" style="fill:var(--text);font:13px var(--mono, monospace)">Teacher</text>
+        <rect x="235" y="230" width="190" height="40" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="330" y="255" text-anchor="middle" style="fill:var(--text);font:13px var(--mono, monospace)">Storage (файл)</text>
+        <rect x="20" y="230" width="170" height="40" rx="6" style="fill:var(--surface);stroke:var(--border);stroke-width:1.8"/>
+        <text x="105" y="255" text-anchor="middle" style="fill:var(--text);font:13px var(--mono, monospace)">LibraryError (қате)</text>
+        <line x1="330" y1="48" x2="330" y2="98" style="stroke:var(--accent);stroke-width:1.8" marker-end="url(#m7b)"/>
+        <line x1="235" y1="132" x2="172" y2="132" style="stroke:var(--accent);stroke-width:1.8" marker-end="url(#m7b)"/>
+        <line x1="425" y1="132" x2="488" y2="132" style="stroke:var(--accent);stroke-width:1.8" marker-end="url(#m7b)"/>
+        <line x1="330" y1="164" x2="330" y2="228" style="stroke:var(--accent);stroke-width:1.8" marker-end="url(#m7b)"/>
+        <line x1="500" y1="230" x2="540" y2="166" style="stroke:var(--muted);stroke-width:1.6" marker-end="url(#m7b)"/>
+        <line x1="612" y1="230" x2="590" y2="166" style="stroke:var(--muted);stroke-width:1.6" marker-end="url(#m7b)"/>
+        <line x1="235" y1="155" x2="150" y2="228" style="stroke:var(--muted);stroke-width:1.4;stroke-dasharray:4 3" marker-end="url(#m7b)"/>
+        <text x="330" y="305" text-anchor="middle" style="fill:var(--muted);font:12.5px var(--font, sans-serif)">үздіксіз көрсеткі - пайдаланады / ішінде бар; үзік - қате лақтырады; Student/Teacher → Member: мұрагерлік</text>
+      </svg>
+      <p>Бұл - ұсыныс, міндет емес. Негізгі қағида: әр класстың бір ғана жауапкершілігі болсын. <code>Book</code> тек кітап туралы біледі, <code>Library</code> ережелерді басқарады, <code>Storage</code> файлмен жұмыс істейді, ал <code>main.cpp</code> тек қолданушымен сөйлеседі.</p>
+
+      <h3 id="project-req">Талап-тізім</h3>
+      <p><strong>Функционалдық талаптар</strong> (бағдарлама не істей алуы керек):</p>
+      <ol>
+        <li><strong>F1. Кітаптар.</strong> Кітапта id (бағдарлама өзі береді), атауы, авторы, шыққан жылы және күйі (бос/берілген) болады. Кітап қосу және жою мүмкін.</li>
+        <li><strong>F2. Оқырмандар.</strong> Оқырманның id, аты бар. Оқырман түрі екеу: <code>Student</code> (бір мезгілде ең көбі 3 кітап) және <code>Teacher</code> (ең көбі 5 кітап). Лимит <code>virtual int maxBooks() const</code> арқылы анықталады.</li>
+        <li><strong>F3. Іздеу.</strong> Кітапты атауының не автордың бөлігі бойынша, <em>регистрді ескермей</em> табу (мысалы, «абай» → «Абай жолы» және «Абай Құнанбайұлы» кітаптары).</li>
+        <li><strong>F4. Беру.</strong> Кітапты оқырманға беру. Кітап бос емес не оқырман лимитіне жеткен болса, ерекше жағдай лақтырылады.</li>
+        <li><strong>F5. Қайтару.</strong> Кітапты қайтару; оқырманның кітап тізімінен алынады, кітап қайтадан «бос» болады.</li>
+        <li><strong>F6. Тізімдер мен сұрыптау.</strong> Барлық кітап, бос кітаптар, берілген кітаптар (кімде екенін көрсетіп). Атауы, авторы не жылы бойынша сұрыптау (<code>std::sort</code> + lambda).</li>
+        <li><strong>F7. Статистика.</strong> Барлық кітап саны, берілгені, бос саны; кітап саны ең көп автор (<code>std::map</code>).</li>
+        <li><strong>F8. Сақтау және жүктеу.</strong> Деректер мәтін файлдарына сақталады (мысалы, <code>data/books.txt</code>, <code>data/members.txt</code>, <code>data/loans.txt</code>) және бағдарлама басталғанда автоматты жүктеледі. Файл жоқ болса, бағдарлама құламайды.</li>
+        <li><strong>F9. Консольдік мәзір.</strong> Нөмір бойынша таңдау. Қате енгізуде (әріп, шектен тыс нөмір) бағдарлама құламай, қайта сұрайды.</li>
+        <li><strong>F10. Көп файлды құрылым.</strong> Кемінде 5 файл (header + source), <code>make</code>, <code>make run</code>, <code>make clean</code> жұмыс істейді.</li>
+      </ol>
+      <p><strong>Техникалық талаптар</strong> (қалай жазылуы керек):</p>
+      <ul>
+        <li>Кемінде 4 класс; инкапсуляция сақталған (өрістер <code>private</code>); қажет жерде <code>const</code> әдістер.</li>
+        <li>Кемінде бір мұрагерлік иерархиясы және виртуалды функциялар (<code>Member</code> → <code>Student</code>/<code>Teacher</code>), виртуалды деструктор.</li>
+        <li>Кемінде бір шаблон (мысалы, жалпы <code>Repository&lt;T&gt;</code> не <code>findBy</code> көмекші функциясы).</li>
+        <li>STL: <code>vector</code>, <code>map</code> (не <code>unordered_map</code>), <code>&lt;algorithm&gt;</code>, lambda.</li>
+        <li>Қателер ерекше жағдайлар арқылы (<code>std::runtime_error</code>-дан тараған өз класыңыз), ұсталуы <code>main</code>-де.</li>
+        <li>Қолмен <code>new</code>/<code>delete</code> жоқ: <code>vector</code>, <code>std::unique_ptr</code>, <code>fstream</code> (RAII).</li>
+        <li>Өз кодыңыз үшін namespace (мысалы, <code>library</code>).</li>
+        <li><code>-std=c++17 -Wall -Wextra</code> ескертусіз өтеді; <code>-fsanitize=address,undefined</code> қателерді көрсетпейді.</li>
+      </ul>
+
+      <h3 id="project-start">Бастапқы қаңқа</h3>
+      <p>Төмендегі қаңқа компиляцияланады және жұмыс істейді: кітап қосу мен тізім қазірдің өзінде бар, ал іздеу, беру, қайтару, сақтау әзірге <code>TODO</code> ретінде ерекше жағдай лақтырады. Бұл қаңқаны өз архитектураңызға сай өзгертуге болады (оқырмандар мен <code>Storage</code> класын өзіңіз қосасыз).</p>
+      <details><summary>Makefile</summary><div class="details-body">
+<pre data-lang="makefile"><code class="language-makefile">CXX = g++
+CXXFLAGS = -std=c++17 -Wall -Wextra -g
+OBJS = main.o book.o library.o
+
+library: $(OBJS)
+	$(CXX) $(CXXFLAGS) -o library $(OBJS)
+
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) -c $&lt; -o $@
+
+main.o: main.cpp library.h book.h
+library.o: library.cpp library.h book.h
+book.o: book.cpp book.h
+
+run: library
+	./library
+
+clean:
+	rm -f $(OBJS) library
+
+.PHONY: run clean</code></pre>
+      </div></details>
+      <details><summary>book.h</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#ifndef BOOK_H
+#define BOOK_H
+
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Book {
+public:
+    Book(int id, std::string title, std::string author, int year);
+
+    int id() const { return id_; }
+    const std::string&amp; title() const { return title_; }
+    const std::string&amp; author() const { return author_; }
+    int year() const { return year_; }
+    bool available() const { return available_; }
+
+    void setAvailable(bool value) { available_ = value; }
+
+private:
+    int id_;
+    std::string title_;
+    std::string author_;
+    int year_;
+    bool available_ = true;
+};
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Book&amp; b);
+
+#endif  // BOOK_H</code></pre>
+      </div></details>
+      <details><summary>book.cpp</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#include "book.h"
+
+Book::Book(int id, std::string title, std::string author, int year)
+    : id_(id), title_(std::move(title)), author_(std::move(author)), year_(year) {}
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Book&amp; b) {
+    out &lt;&lt; "#" &lt;&lt; b.id() &lt;&lt; " «" &lt;&lt; b.title() &lt;&lt; "», " &lt;&lt; b.author() &lt;&lt; ", " &lt;&lt; b.year()
+        &lt;&lt; (b.available() ? " [бос]" : " [берілген]");
+    return out;
+}</code></pre>
+      </div></details>
+      <details><summary>library.h</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#ifndef LIBRARY_H
+#define LIBRARY_H
+
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+#include "book.h"
+
+class Library {
+public:
+    explicit Library(std::string name) : name_(std::move(name)) {}
+
+    int addBook(const std::string&amp; title, const std::string&amp; author, int year);
+    void printAll() const;
+
+    // TODO 1: атау не автор бойынша іздеу (регистрді ескермей)
+    std::vector&lt;const Book*&gt; search(const std::string&amp; text) const;
+
+    // TODO 2: кітапты беру және қайтару (қате жағдайда exception лақтыр)
+    void borrow(int id);
+    void giveBack(int id);
+
+    // TODO 3: файлға сақтау және файлдан жүктеу
+    void save(const std::string&amp; path) const;
+    void load(const std::string&amp; path);
+
+    const std::string&amp; name() const { return name_; }
+    std::size_t size() const { return books_.size(); }
+
+private:
+    std::string name_;
+    std::vector&lt;Book&gt; books_;
+    int nextId_ = 1;
+};
+
+#endif  // LIBRARY_H</code></pre>
+      </div></details>
+      <details><summary>library.cpp</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#include "library.h"
+
+#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+
+int Library::addBook(const std::string&amp; title, const std::string&amp; author, int year) {
+    books_.emplace_back(nextId_, title, author, year);
+    return nextId_++;
+}
+
+void Library::printAll() const {
+    if (books_.empty()) {
+        std::cout &lt;&lt; "Кітапхана бос.\n";
+        return;
+    }
+    std::cout &lt;&lt; name_ &lt;&lt; " (" &lt;&lt; books_.size() &lt;&lt; " кітап):\n";
+    for (const Book&amp; b : books_) {
+        std::cout &lt;&lt; "  " &lt;&lt; b &lt;&lt; "\n";
+    }
+}
+
+std::vector&lt;const Book*&gt; Library::search(const std::string&amp; text) const {
+    (void)text;
+    throw std::logic_error("search: әлі жазылмаған (TODO 1)");
+}
+
+void Library::borrow(int id) {
+    (void)id;
+    throw std::logic_error("borrow: әлі жазылмаған (TODO 2)");
+}
+
+void Library::giveBack(int id) {
+    (void)id;
+    throw std::logic_error("giveBack: әлі жазылмаған (TODO 2)");
+}
+
+void Library::save(const std::string&amp; path) const {
+    (void)path;
+    throw std::logic_error("save: әлі жазылмаған (TODO 3)");
+}
+
+void Library::load(const std::string&amp; path) {
+    (void)path;
+    throw std::logic_error("load: әлі жазылмаған (TODO 3)");
+}</code></pre>
+      </div></details>
+      <details><summary>main.cpp</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+
+#include "library.h"
+
+namespace {
+
+int readInt(const std::string&amp; prompt) {
+    std::cout &lt;&lt; prompt;
+    std::string line;
+    std::getline(std::cin, line);
+    try {
+        return std::stoi(line);
+    } catch (const std::exception&amp;) {
+        return -1;                       // қате енгізу
+    }
+}
+
+std::string readLine(const std::string&amp; prompt) {
+    std::cout &lt;&lt; prompt;
+    std::string line;
+    std::getline(std::cin, line);
+    return line;
+}
+
+void printMenu() {
+    std::cout &lt;&lt; "\n=== Кітапхана ===\n"
+              &lt;&lt; "1. Барлық кітап\n"
+              &lt;&lt; "2. Кітап қосу\n"
+              &lt;&lt; "3. Іздеу\n"
+              &lt;&lt; "4. Кітап беру\n"
+              &lt;&lt; "5. Кітап қайтару\n"
+              &lt;&lt; "6. Файлға сақтау\n"
+              &lt;&lt; "7. Файлдан жүктеу\n"
+              &lt;&lt; "0. Шығу\n";
+}
+
+}  // namespace
+
+int main() {
+    Library lib("Абай атындағы кітапхана");
+    lib.addBook("Абай жолы", "Мұхтар Әуезов", 1942);       // бастапқы дерек
+
+    bool running = true;
+    while (running) {
+        printMenu();
+        int choice = readInt("Таңдау: ");
+        try {
+            switch (choice) {
+                case 1:
+                    lib.printAll();
+                    break;
+                case 2: {
+                    std::string title = readLine("Атауы: ");
+                    std::string author = readLine("Авторы: ");
+                    int year = readInt("Жылы: ");
+                    int id = lib.addBook(title, author, year);
+                    std::cout &lt;&lt; "Қосылды, №" &lt;&lt; id &lt;&lt; "\n";
+                    break;
+                }
+                case 3:
+                    lib.search(readLine("Не іздейміз: "));
+                    break;
+                case 4:
+                    lib.borrow(readInt("Кітап №: "));
+                    break;
+                case 5:
+                    lib.giveBack(readInt("Кітап №: "));
+                    break;
+                case 6:
+                    lib.save("data/books.txt");
+                    break;
+                case 7:
+                    lib.load("data/books.txt");
+                    break;
+                case 0:
+                    running = false;
+                    break;
+                default:
+                    std::cout &lt;&lt; "Белгісіз таңдау, қайта көріңіз.\n";
+            }
+        } catch (const std::exception&amp; e) {
+            std::cout &lt;&lt; "Қате: " &lt;&lt; e.what() &lt;&lt; "\n";
+        }
+    }
+    std::cout &lt;&lt; "Сау болыңыз!\n";
+}</code></pre>
+      </div></details>
+      <p>Қаңқаны <code>library/</code> қалтасына салып (ішінде бос <code>data/</code> қалтасы бар), <code>make</code> жазыңыз. Төменде кітап қосып, тізімді көрсеткен, іздеуді тексерген нақты сессия. Енгізу: <code>2</code> (қосу), атауы, авторы, жылы, <code>1</code> (тізім), <code>3</code> (іздеу), <code>абай</code>, <code>0</code>:</p>
+<pre class="terminal"><code class="language-plaintext">$ make &amp;&amp; printf '2\nҚара сөздер\nАбай Құнанбайұлы\n1904\n1\n3\nабай\n0\n' | ./library
+g++ -std=c++17 -Wall -Wextra -g -c main.cpp -o main.o
+g++ -std=c++17 -Wall -Wextra -g -c book.cpp -o book.o
+g++ -std=c++17 -Wall -Wextra -g -c library.cpp -o library.o
+g++ -std=c++17 -Wall -Wextra -g -o library main.o book.o library.o
+
+=== Кітапхана ===
+1. Барлық кітап
+2. Кітап қосу
+3. Іздеу
+4. Кітап беру
+5. Кітап қайтару
+6. Файлға сақтау
+7. Файлдан жүктеу
+0. Шығу
+Таңдау: Атауы: Авторы: Жылы: Қосылды, №2
+
+=== Кітапхана ===
+1. Барлық кітап
+2. Кітап қосу
+3. Іздеу
+4. Кітап беру
+5. Кітап қайтару
+6. Файлға сақтау
+7. Файлдан жүктеу
+0. Шығу
+Таңдау: Абай атындағы кітапхана (2 кітап):
+  #1 «Абай жолы», Мұхтар Әуезов, 1942 [бос]
+  #2 «Қара сөздер», Абай Құнанбайұлы, 1904 [бос]
+
+=== Кітапхана ===
+1. Барлық кітап
+2. Кітап қосу
+3. Іздеу
+4. Кітап беру
+5. Кітап қайтару
+6. Файлға сақтау
+7. Файлдан жүктеу
+0. Шығу
+Таңдау: Не іздейміз: Қате: search: әлі жазылмаған (TODO 1)
+
+=== Кітапхана ===
+1. Барлық кітап
+2. Кітап қосу
+3. Іздеу
+4. Кітап беру
+5. Кітап қайтару
+6. Файлға сақтау
+7. Файлдан жүктеу
+0. Шығу
+Таңдау: Сау болыңыз!</code></pre>
+      <p>Терминалда сіз енгізген жолдар экранда да көрінеді; бұл жерде енгізу құбыр (pipe) арқылы берілген, сондықтан сұрақтар «жабысып» көрінеді. «Іздеу» бөлімі әзірге «TODO 1» қатесін береді: ол біздің ерекше жағдай жүйеміз жұмыс істейтінін көрсетеді (бағдарлама құламады).</p>
+
+      <h3 id="project-accept">Қабылдау критерийлері</h3>
+      <p>Жобаны тапсырар алдында әр тармақты өзің тексер. Барлығы орындалмайынша «дайын» деп санамаңыз:</p>
+      <ul class="checklist" data-id="cpp7-project">
+        <li><input type="checkbox"> <span><code>make</code> ескертусіз (warning) құрастырады; <code>make clean</code> объектілік файлдарды өшіреді.</span></li>
+        <li><input type="checkbox"> <span><code>-fsanitize=address,undefined</code> арқылы бір толық сессияны орындағанда ешқандай қате не жад ағуы шықпайды.</span></li>
+        <li><input type="checkbox"> <span>Кітап қосу, жою, барлық тізімді көрсету жұмыс істейді; id-лер қайталанбайды.</span></li>
+        <li><input type="checkbox"> <span>Іздеу регистрді ескермейді және атау мен автор бойынша табады; табылмаса, түсінікті хабар шығады.</span></li>
+        <li><input type="checkbox"> <span>Кітапты беру: бос кітап беріледі; берілген кітапты қайта беруге болмайды; оқырман лимитіне жеткенде бас тартады (Student - 3, Teacher - 5).</span></li>
+        <li><input type="checkbox"> <span>Қайтару кітапты бос қылады; кітап оқырманда болмаса, қате хабарланады.</span></li>
+        <li><input type="checkbox"> <span>Сұрыптау үш өлшем бойынша жұмыс істейді (атауы, авторы, жылы).</span></li>
+        <li><input type="checkbox"> <span>Статистика дұрыс: жалпы, берілген, бос; кітабы ең көп автор.</span></li>
+        <li><input type="checkbox"> <span>Бағдарламаны жауып, қайта ашқанда деректер жоғалмайды (файлдан жүктеледі).</span></li>
+        <li><input type="checkbox"> <span>Файл жоқ не бүлінген болса, бағдарлама құламайды, түсінікті хабар шығады.</span></li>
+        <li><input type="checkbox"> <span>Мәзірге әріп не 99 енгізілсе, бағдарлама қайта сұрайды.</span></li>
+        <li><input type="checkbox"> <span>Кемінде бір абстрактілі/виртуалды класс, бір шаблон, бір өз exception класы бар.</span></li>
+        <li><input type="checkbox"> <span>Қолмен <code>new</code>/<code>delete</code> жоқ; барлық header-де include guard бар.</span></li>
+        <li><input type="checkbox"> <span><code>README.md</code> файлында құрастыру/іске қосу командалары және мүмкіндіктер тізімі жазылған.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h3 id="project-rubric">Бағалау рубрикасы (100 балл)</h3>
+      <table>
+        <thead><tr><th style="min-width:130px">Өлшем</th><th style="min-width:130px">Балл</th><th style="min-width:130px">Толық балл үшін</th><th style="min-width:130px">Жартылай балл</th></tr></thead>
+        <tbody>
+          <tr><td>Функционалдық толықтық (F1-F9)</td><td>30</td><td>Барлық 9 мүмкіндік дұрыс жұмыс істейді, шеткі жағдайлар (бос тізім, жоқ id) өңделген</td><td>6-8 мүмкіндік жұмыс істейді; шеткі жағдайларда қателер бар</td></tr>
+          <tr><td>OOP дизайны</td><td>20</td><td>Инкапсуляция, <code>const</code>, мұрагерлік + виртуалды функция, виртуалды деструктор, бір класс - бір жауапкершілік</td><td>Класстар бар, бірақ өрістер ашық не мұрагерлік жасанды</td></tr>
+          <tr><td>STL, шаблон, lambda</td><td>10</td><td>Контейнерлер мен алгоритмдер орынды қолданылған, кемінде бір шаблон бар</td><td>Контейнерлер бар, бірақ қолмен циклдар көп</td></tr>
+          <tr><td>Ерекше жағдайлар және RAII</td><td>10</td><td>Өз exception иерархиясы, дұрыс ұсталады, қолмен <code>new</code>/<code>delete</code> жоқ</td><td>Қайтарым кодтары қолданылған не exception әрқашан <code>catch (...)</code>-пен ұсталады</td></tr>
+          <tr><td>Файлдар және тұрақтылық</td><td>10</td><td>Сақтау/жүктеу дұрыс, жоқ/бүлінген файл өңделген</td><td>Сақталады, бірақ бүлінген файлда құлайды</td></tr>
+          <tr><td>Жоба құрылымы және Makefile</td><td>8</td><td>Header/source бөлінген, include guard, <code>make</code>, <code>run</code>, <code>clean</code></td><td>Файлдар бөлінген, бірақ Makefile жоқ не толық емес</td></tr>
+          <tr><td>Сапа: ескертулер, ASan</td><td>7</td><td>Ескертусіз; ASan/UBSan таза</td><td>Бірнеше ескерту қалған</td></tr>
+          <tr><td>Құжаттама және стиль</td><td>5</td><td>README, түсінікті атаулар, қысқа түсіндірме комментарийлер, бірыңғай стиль</td><td>README жоқ не атаулар түсініксіз</td></tr>
+        </tbody>
+      </table>
+      <p>Қосымша (қаласаңыз): мерзімі өткен кітаптар үшін айыппұл, оқырманды іздеу, <code>unordered_map</code> бойынша жылдам id-іздеу, CSV орнына қарапайым JSON-ға ұқсас формат. Бұлар балға әсер етпейді, бірақ қызық және тәжірибе береді.</p>
+
+      <h3 id="project-tips">Кеңестер</h3>
+      <ol>
+        <li><strong>Кішкентай қадамдармен жүр.</strong> Алдымен қаңқаны іске қос. Содан кейін бір TODO-ны орындап, іске қосып, тексеріп, сонан соң келесіге ауыс. Бірден бәрін жазып, соңында іске қосу - қателерді тапқысыз ету.</li>
+        <li><strong>Ұсынылатын жоспар.</strong> 1-қадам: <code>Book</code> + <code>Library</code> (қосу, тізім). 2-қадам: іздеу. 3-қадам: <code>Member</code> иерархиясы. 4-қадам: беру/қайтару және exception. 5-қадам: сақтау/жүктеу. 6-қадам: статистика, сұрыптау, жөндеу, README.</li>
+        <li><strong>Әр қадамнан кейін ASan-мен тексер.</strong> Жад қателерін ерте таптым деген - уақыт үнемі. Makefile-да <code>make asan</code> сияқты бөлек мақсат қосуға болады.</li>
+        <li><strong>Деректер форматы қарапайым болсын.</strong> Бір жол - бір жазба, бөлгіш <code>;</code> (атауда <code>;</code> болмайтынын ескер). Оқығанда өрістер санын тексер; дұрыс емес жолды өткізіп жібер не ерекше жағдай лақтыр.</li>
+        <li><strong>Қолданушыдан енгізуді әрқашан <code>std::getline</code> арқылы оқы</strong> да, санға <code>std::stoi</code> + <code>try/catch</code> арқылы айналдыр. <code>cin &gt;&gt; n</code> қате енгізгенде ағынды бұзады.</li>
+        <li><strong>Тестілеу.</strong> Бір қолмен жазылған тест-сценарий файлын жаса (енгізуді құбыр арқылы бер: <code>./library &lt; test1.txt</code>) және нәтижені көзбен салыстыр.</li>
+        <li><strong>Git қолдан.</strong> Әр жұмыс істейтін қадамнан кейін коммит жаса. Бір нәрсе бұзылса, бұрынғы жұмыс істеген нұсқаға оралу оңай.</li>
+        <li><strong>Оқылымдылық.</strong> Функция бір экранға сыйсын, атаулар түсінікті болсын (<code>borrowBook</code>, <code>x1</code> емес), комментарий «неге» деген сұраққа жауап берсін.</li>
+        <li><strong>Қатты тұрып қалсаң,</strong> мәселені кішірейт: бұзылатын ең кішкентай мысалды бөлек файлда жаса. Көбіне мәселені жазғанда-ақ шешімін табасың.</li>
+      </ol>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ol>
+        <li><strong>Шаблонды .cpp-ға шығару.</strong> Шаблонның денесі header-де болуы керек, әйтпесе линкер <code>undefined reference</code> береді.</li>
+        <li><strong>Жалпы <code>catch</code>-ті бірінші жазу.</strong> <code>catch (const std::exception&amp;)</code> алда тұрса, нақтырақтары ешқашан жұмыс істемейді.</li>
+        <li><strong>Қатені мәнмен ұстау.</strong> <code>catch (std::exception e)</code> slicing жасайды; <code>const std::exception&amp;</code> жазыңыз.</li>
+        <li><strong>Файлдың ашылғанын тексермеу.</strong> <code>if (!in)</code> жоқ болса, бағдарлама үнсіз жалғасады, тек бос деректермен.</li>
+        <li><strong><code>ofstream</code> файлды өшіреді.</strong> Қосу керек болса, <code>std::ios::app</code>.</li>
+        <li><strong>Header-де анықтау.</strong> Функция денесін (шаблон емес) header-ге жазсаңыз және ол бірнеше <code>.cpp</code>-ға қосылса, линкер «multiple definition» қатесін береді.</li>
+        <li><strong>Include guard-ты ұмыту</strong> не екі header-де бірдей guard атын қолдану.</li>
+        <li><strong>Makefile-да бос орынның орнына табуляция</strong> қоймау (<code>missing separator</code>).</li>
+        <li><strong>Header-де <code>using namespace std;</code>.</strong> Оны қосқан әр файлға тарайды.</li>
+        <li><strong>Деструктор ішінде exception лақтыру.</strong> Деструктор ерекше жағдай лақтырмауы керек, әйтпесе стек тарқатылғанда бағдарлама тоқтайды.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li><strong>Шаблон</strong> (<code>template &lt;typename T&gt;</code>) бір кодты кез келген типке қолдануға мүмкіндік береді; компилятор әр тип үшін нұсқасын жасайды; шаблон коды header-де тұрады.</li>
+        <li><strong>Ерекше жағдай</strong>: <code>throw</code> лақтырады, <code>try/catch</code> ұстайды; нақты түрлер бірінші, <code>const&amp;</code> арқылы ұсталады. Өз қателеріңізді <code>std::runtime_error</code>-дан тарату ыңғайлы. Ұсталмаса, <code>std::terminate</code>.</li>
+        <li><strong>RAII</strong>: ресурс конструкторда алынып, деструкторда қайтарылады; ерекше жағдай болса да, стек тарқатылғанда деструкторлар жұмыс істейді. <code>vector</code>, <code>string</code>, <code>unique_ptr</code>, <code>fstream</code> - дайын RAII.</li>
+        <li><strong>fstream</strong>: <code>ofstream</code> (жазу), <code>ifstream</code> (оқу); әрқашан ашылғанын тексеріңіз; <code>getline</code> арқылы жолдап оқыңыз.</li>
+        <li><strong>namespace</strong> атау соқтығысын болдырмайды; header-де <code>using namespace</code> жазбаңыз.</li>
+        <li><strong>Көп файлды жоба</strong>: header (жариялау) + source (анықтау), include guard, компиляция + линкер, Makefile.</li>
+        <li><strong>Қорытынды жоба</strong>: класстар, мұрагерлік, STL, exception, файл және Makefile бірге жұмыс істейтін толық бағдарлама.</li>
+      </ul>
+      <p>Курсты аяқтағаныңызбен құттықтаймыз! Енді сіз C++-та өз бетіңізше жобалар жасай аласыз. Келесі қадамдар: стандартты кітапханаға тереңірек үңілу (<code>&lt;chrono&gt;</code>, <code>&lt;optional&gt;</code>, <code>&lt;variant&gt;</code>), CMake, бірлік тесттер (Catch2/GoogleTest) және өз қызығушылығыңыз бойынша жоба: ойын, деректер өңдеу, жүйелік құрал.</p>
+      <h3 id="self-check">Өзіңді тексеру тізімі</h3>
+      <ul class="checklist" data-id="cpp7-self">
+        <li><input type="checkbox"> <span>Функция мен класс шаблонын жаза аламын, шаблон қатесінің алғашқы жолын оқи аламын.</span></li>
+        <li><input type="checkbox"> <span><code>try/catch/throw</code> ағынын болжай аламын, өз exception класын жаза аламын.</span></li>
+        <li><input type="checkbox"> <span>RAII деген не екенін және неге <code>new</code>/<code>delete</code> қауіпті екенін түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мәтін файлға жазып, қайта оқып, жолды бөліп өңдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Header мен source айырмасын, include guard мақсатын білемін.</span></li>
+        <li><input type="checkbox"> <span>Қарапайым Makefile жаза аламын және <code>undefined reference</code> қатесін түсінемін.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. Мына код не береді?</p>
+<pre data-lang="cpp"><code class="language-cpp">template &lt;typename T&gt;
+T maxOf(T a, T b) { return a &lt; b ? b : a; }
+
+std::cout &lt;&lt; maxOf(3, 4.5);</code></pre>
+          <label><input type="radio" value="a"> <code>4.5</code></label>
+          <label><input type="radio" value="b"> <code>4</code></label>
+          <label><input type="radio" value="c"> Құрастыру қатесі: <code>T</code> бір мезгілде <code>int</code> және <code>double</code> бола алмайды</label>
+          <label><input type="radio" value="d"> <code>3</code></label>
+          <p class="explain">Екі аргументтің типі әртүрлі (<code>int</code> және <code>double</code>), ал шаблонда екеуі де <code>T</code>. Компилятор <code>deduced conflicting types</code> қатесін береді. Түзету: <code>maxOf&lt;double&gt;(3, 4.5)</code>.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">2. Ерекше жағдай лақтырылды, бірақ ешбір <code>catch</code> оны ұстамады. Не болады?</p>
+          <label><input type="radio" value="a"> Ол үнсіз елене алынады</label>
+          <label><input type="radio" value="b"> Бағдарлама <code>std::terminate</code> шақырып, аварияға ұшырайды</label>
+          <label><input type="radio" value="c"> Автоматты түрде <code>0</code> қайтарылады</label>
+          <label><input type="radio" value="d"> Қате келесі функцияға берілмейді</label>
+          <p class="explain">Ұсталмаған ерекше жағдай <code>main</code>-нен де шығып кетсе, <code>std::terminate</code> шақырылады. Нәтижесі: «terminate called after throwing an instance of ...».</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. RAII принципі нені білдіреді?</p>
+          <label><input type="radio" value="a"> Жадты тек қолмен босату</label>
+          <label><input type="radio" value="b"> Барлық қатені <code>catch (...)</code> арқылы ұстау</label>
+          <label><input type="radio" value="c"> Класты бірнеше файлға бөлу</label>
+          <label><input type="radio" value="d"> Ресурсты конструкторда алып, деструкторда қайтару, сонда ол автоматты босатылады</label>
+          <p class="explain">RAII ресурс өмірін нысан өміріне байлайды. Ерекше жағдай болса да, деструкторлар шақырылады, сондықтан ресурс ағып кетпейді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">4. Бағдарлама не шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">struct Guard {
+    std::string name;
+    Guard(std::string n) : name(n) { std::cout &lt;&lt; "+" &lt;&lt; name &lt;&lt; " "; }
+    ~Guard() { std::cout &lt;&lt; "-" &lt;&lt; name &lt;&lt; " "; }
+};
+
+void inner() {
+    Guard a("a");
+    Guard b("b");
+    throw std::runtime_error("қате");
+    Guard c("c");
+}
+// main-де: try { inner(); } catch (const std::exception&amp;) { std::cout &lt;&lt; "| ұсталды "; }
+//          std::cout &lt;&lt; "| соңы\n";</code></pre>
+          <label><input type="radio" value="a"> <code>+a +b -b -a | ұсталды | соңы</code></label>
+          <label><input type="radio" value="b"> <code>+a +b +c -c -b -a | ұсталды | соңы</code></label>
+          <label><input type="radio" value="c"> <code>+a +b | ұсталды | соңы</code></label>
+          <label><input type="radio" value="d"> <code>+a +b -a -b | ұсталды | соңы</code></label>
+          <p class="explain"><code>c</code> жасалмайды, себебі <code>throw</code> одан бұрын. Стек тарқатылғанда локалды нысандар жасалуға кері ретпен жойылады: алдымен <code>b</code>, содан кейін <code>a</code>, сосын <code>catch</code> жұмыс істейді.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">5. Жоқ файлды <code>std::ifstream f("joq_file.txt");</code> деп аштық. Әдепкі баптауда не болады?</p>
+          <label><input type="radio" value="a"> Бағдарлама дереу құлайды</label>
+          <label><input type="radio" value="b"> Автоматты түрде файл жасалады</label>
+          <label><input type="radio" value="c"> Ерекше жағдай лақтырылмайды, ағын «сәтсіз» күйге ауысады (<code>is_open()</code> = <code>false</code>)</label>
+          <label><input type="radio" value="d"> <code>std::out_of_range</code> лақтырылады</label>
+          <p class="explain">Fstream әдепкіде exception лақтырмайды, сондықтан ашылғанын өзіміз тексереміз (<code>if (!f)</code>). Орындаған нәтиже: <code>0 fail</code>.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">6. Екі namespace-те де <code>f()</code> бар, екеуі де <code>using namespace</code> арқылы әкелінген. <code>f()</code> шақырылса, не болады?</p>
+          <label><input type="radio" value="a"> Соңғы әкелінген нұсқа шақырылады</label>
+          <label><input type="radio" value="b"> Құрастыру қатесі: шақыру екіұшты (ambiguous)</label>
+          <label><input type="radio" value="c"> Бірінші әкелінген нұсқа шақырылады</label>
+          <label><input type="radio" value="d"> Екеуі де шақырылады</label>
+          <p class="explain">Компилятор қайсысын таңдау керегін білмейді: <code>call of overloaded 'f()' is ambiguous</code>. Шешім: толық атау <code>a::f()</code>.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. Include guard (<code>#ifndef</code>/<code>#define</code>/<code>#endif</code>) не үшін керек?</p>
+          <label><input type="radio" value="a"> Header-дің жылдамырақ оқылуы үшін</label>
+          <label><input type="radio" value="b"> Функцияларды жасыру үшін</label>
+          <label><input type="radio" value="c"> Қателерді ұстау үшін</label>
+          <label><input type="radio" value="d"> Бір header бір файлға бірнеше рет қосылса да, мазмұны бір рет қана қосылуы үшін</label>
+          <p class="explain">Guard болмаса, <code>struct Point</code> екі рет анықталып, <code>redefinition of 'struct Point'</code> қатесі шығады (біз бұны нақты көрдік).</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">8. <code>g++ main.cpp -o app</code> командасын орындадық, бірақ <code>geometry.cpp</code> қосылмады. Қате қай кезеңде шығады?</p>
+          <label><input type="radio" value="a"> Препроцессорда: header табылмайды</label>
+          <label><input type="radio" value="b"> Линкерде: <code>undefined reference to ...</code></label>
+          <label><input type="radio" value="c"> Орындау кезінде, бағдарлама іске қосылғанда</label>
+          <label><input type="radio" value="d"> Компилятор ескерту береді де, бәрі жұмыс істейді</label>
+          <p class="explain">Header функцияны жариялайды, сондықтан компиляция өтеді. Бірақ денесі жоқ, сондықтан линкер <code>undefined reference to 'geo::circleArea(double)'</code> қатесін береді.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="exercises">Жаттығулар</h2>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="task-7-1">Басып шығару ретін болжа</h3></div>
+        <p>Мына бағдарлама экранға қандай сандарды (бос орынмен бөліп, жол ретімен) шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+
+void f() { throw std::runtime_error("x"); }
+
+int main() {
+    try {
+        std::cout &lt;&lt; "1\n";
+        f();
+        std::cout &lt;&lt; "2\n";
+    } catch (...) {
+        std::cout &lt;&lt; "3\n";
+    }
+    std::cout &lt;&lt; "4\n";
+}</code></pre>
+        <div class="answer-check" data-answer="1 3 4|134|1,3,4|1, 3, 4"><input type="text" placeholder="Сандар" aria-label="Шығатын сандар"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>f()</code> шақырылғаннан кейін <code>try</code> блогының қалған бөлігі орындала ма? <code>catch</code>-тен кейін не болады?</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>1 3 4</code> (үш жол). <code>1</code> шығады, <code>f()</code> лақтырады, «2» өткізіледі, <code>catch (...)</code> «3» шығарады, содан кейін бағдарлама жалғасып «4» шығады. Нақты нәтиже:</p>
+<pre class="terminal"><code class="language-plaintext">$ ./t01_flow
+1
+3
+4</code></pre></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="task-7-2">Файл header-і</h3></div>
+        <p>Файлға жазу үшін <code>std::ofstream</code> қолданылады. Қай header файлын қосу керек? (мысалы, <code>iostream</code> түрінде, бұрыштық жақшасыз)</p>
+        <div class="answer-check" data-answer="fstream|&lt;fstream&gt;"><input type="text" placeholder="header атауы" aria-label="Header атауы"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Оқу (<code>ifstream</code>), жазу (<code>ofstream</code>) және екеуі де (<code>fstream</code>) класы бір header-де. Оның атауы класс атауына ұқсас.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>fstream</code>, яғни <code>#include &lt;fstream&gt;</code>.</p></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="task-7-3">Қай catch жұмыс істейді?</h3></div>
+        <p>Мына бағдарлама экранға <code>A</code> әлде <code>B</code> шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+
+int main() {
+    try {
+        throw std::invalid_argument("x");
+    } catch (const std::exception&amp;) {
+        std::cout &lt;&lt; "A\n";
+    } catch (const std::invalid_argument&amp;) {
+        std::cout &lt;&lt; "B\n";
+    }
+}</code></pre>
+        <div class="answer-check" data-answer="A"><input type="text" placeholder="A немесе B" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>invalid_argument</code> класы <code>std::exception</code>-нан мұрагерленген. <code>catch</code> блоктары жоғарыдан төмен қарай тексеріледі.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>A</code>. <code>invalid_argument</code> - <code>exception</code>-ның туындысы, сондықтан бірінші <code>catch</code> оны ұстайды. Екіншісіне ешқашан жетпейді. Компилятор мұны ескертеді (<code>-Wexceptions</code>). Дұрыс тәртіп: алдымен нақты түр, содан кейін жалпы.</p></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="task-7-4">Шаблондар</h3></div>
+        <p>(1) Кез келген салыстырмалы типке жұмыс істейтін <code>clampTo(x, lo, hi)</code> функция шаблонын жаз: <code>x</code> аралықтан тыс болса, ең жақын шекті қайтарады. (2) <code>Box&lt;T&gt;</code> класс шаблонын жаз: <code>add</code>, <code>largest()</code> (ең үлкен элемент), <code>size()</code>. <code>int</code> және <code>std::string</code> үшін тексер.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Екеуі де <code>operator&lt;</code>-ке сүйенеді. <code>Box</code> ішінде <code>std::vector&lt;T&gt;</code> қолдан. Бос қорапта <code>largest()</code> не істейтінін ойлан (нұсқа: ерекше жағдай лақтыруға болады).</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+template &lt;typename T&gt;
+T clampTo(T x, T lo, T hi) {
+    if (x &lt; lo) return lo;
+    if (x &gt; hi) return hi;
+    return x;
+}
+
+template &lt;typename T&gt;
+class Box {
+public:
+    void add(const T&amp; x) { items_.push_back(x); }
+    T largest() const {
+        T best = items_.front();
+        for (const T&amp; x : items_) if (best &lt; x) best = x;
+        return best;
+    }
+    std::size_t size() const { return items_.size(); }
+
+private:
+    std::vector&lt;T&gt; items_;
+};
+
+int main() {
+    std::cout &lt;&lt; clampTo(15, 0, 10) &lt;&lt; " " &lt;&lt; clampTo(-3, 0, 10) &lt;&lt; " " &lt;&lt; clampTo(7, 0, 10) &lt;&lt; "\n";
+    std::cout &lt;&lt; clampTo(0.75, 0.0, 0.5) &lt;&lt; "\n";
+
+    Box&lt;int&gt; ints;
+    ints.add(4); ints.add(19); ints.add(7);
+    Box&lt;std::string&gt; names;
+    names.add("Алма"); names.add("Нұр"); names.add("Бота");
+    std::cout &lt;&lt; ints.largest() &lt;&lt; " " &lt;&lt; names.largest() &lt;&lt; " (" &lt;&lt; names.size() &lt;&lt; " элемент)\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./t04_utils
+10 0 7
+0.5
+19 Нұр (3 элемент)</code></pre>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="cpp7-templates">
+            <li><input type="checkbox"> <span><code>clampTo(15, 0, 10)</code> = 10, <code>clampTo(-3, 0, 10)</code> = 0.</span></li>
+            <li><input type="checkbox"> <span><code>Box&lt;int&gt;</code> және <code>Box&lt;std::string&gt;</code> екеуі де жұмыс істейді.</span></li>
+            <li><input type="checkbox"> <span>Шаблондар header-де емес болса да (бір файлда), бәрі құрастырылады, ескертусіз.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="task-7-5">Кітаптарды файлға сақтау</h3></div>
+        <p><code>Book</code> құрылымы (атауы, авторы, жылы) үшін <code>saveBooks(path, books)</code> және <code>loadBooks(path)</code> функцияларын жаз. Файлда бір жол - бір кітап, бөлгіш <code>;</code>. Файл ашылмаса, <code>std::runtime_error</code> лақтыр. <code>main</code>-де екі кітапты сақта, қайта оқы, шығар; содан кейін жоқ жолдағы файлды оқып көріп, қатені ұста.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Жазуда <code>std::ofstream</code>, оқуда <code>std::ifstream</code> және <code>std::getline(ss, field, ';')</code>. Жылды <code>std::stoi</code> арқылы санға айналдыр. Әр функцияда алдымен <code>if (!stream)</code> тексер.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;cstdio&gt;
+#include &lt;fstream&gt;
+#include &lt;iostream&gt;
+#include &lt;sstream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Book {
+    std::string title;
+    std::string author;
+    int year;
+};
+
+void saveBooks(const std::string&amp; path, const std::vector&lt;Book&gt;&amp; books) {
+    std::ofstream out(path);
+    if (!out) throw std::runtime_error("жазуға ашылмады: " + path);
+    for (const Book&amp; b : books) {
+        out &lt;&lt; b.title &lt;&lt; ';' &lt;&lt; b.author &lt;&lt; ';' &lt;&lt; b.year &lt;&lt; '\n';
+    }
+}
+
+std::vector&lt;Book&gt; loadBooks(const std::string&amp; path) {
+    std::ifstream in(path);
+    if (!in) throw std::runtime_error("оқуға ашылмады: " + path);
+    std::vector&lt;Book&gt; books;
+    std::string line;
+    while (std::getline(in, line)) {
+        std::istringstream ss(line);
+        Book b;
+        std::string year;
+        if (std::getline(ss, b.title, ';') &amp;&amp; std::getline(ss, b.author, ';') &amp;&amp; std::getline(ss, year)) {
+            b.year = std::stoi(year);
+            books.push_back(b);
+        }
+    }
+    return books;
+}
+
+int main() {
+    std::vector&lt;Book&gt; shelf{{"Қара сөздер", "Абай Құнанбайұлы", 1904}, {"Ақбілек", "Ілияс Жансүгіров", 1927}};
+    try {
+        saveBooks("shelf_tmp.txt", shelf);
+        std::vector&lt;Book&gt; back = loadBooks("shelf_tmp.txt");
+        std::cout &lt;&lt; "Оқылды: " &lt;&lt; back.size() &lt;&lt; " кітап\n";
+        for (const Book&amp; b : back) std::cout &lt;&lt; " - " &lt;&lt; b.title &lt;&lt; " (" &lt;&lt; b.year &lt;&lt; ")\n";
+        loadBooks("/жоқ/жол/файл.txt");
+    } catch (const std::exception&amp; e) {
+        std::cout &lt;&lt; "Қате: " &lt;&lt; e.what() &lt;&lt; "\n";
+    }
+    std::remove("shelf_tmp.txt");
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./t05_saveload
+Оқылды: 2 кітап
+ - Қара сөздер (1904)
+ - Ақбілек (1927)
+Қате: оқуға ашылмады: /жоқ/жол/файл.txt</code></pre>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="cpp7-saveload">
+            <li><input type="checkbox"> <span>Сақталған кітаптар дәл сол күйінде қайта оқылады.</span></li>
+            <li><input type="checkbox"> <span>Жоқ файл бағдарламаны құлатпай, түсінікті хабар береді.</span></li>
+            <li><input type="checkbox"> <span>Файл нысандары RAII-мен жабылады (қолмен <code>close()</code> міндетті емес).</span></li>
+            <li><input type="checkbox"> <span><code>-fsanitize=address,undefined</code> таза.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="task-7-6">Стек тарқатылуы</h3></div>
+        <p>Мына бағдарламада <code>catch</code> жазуы шығардан <em>бұрын</em> неше деструктор жұмыс істейді? (сан)</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;string&gt;
+
+struct G {
+    std::string n;
+    G(std::string s) : n(s) { std::cout &lt;&lt; "+" &lt;&lt; n &lt;&lt; " "; }
+    ~G() { std::cout &lt;&lt; "-" &lt;&lt; n &lt;&lt; " "; }
+};
+
+void f() {
+    G a("a");
+    G b("b");
+    throw std::runtime_error("x");
+    G c("c");
+}
+
+int main() {
+    try {
+        f();
+    } catch (const std::exception&amp;) {
+        std::cout &lt;&lt; "catch ";
+    }
+    std::cout &lt;&lt; "end\n";
+}</code></pre>
+        <div class="answer-check" data-answer="2"><input type="text" placeholder="Сан" aria-label="Деструкторлар саны"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Қай нысандар <code>throw</code> орындалған сәтте тірі? <code>c</code> жасалды ма?</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>2</code>. <code>throw</code> сәтінде тек <code>a</code> мен <code>b</code> тірі, <code>c</code> әлі жасалмаған. Екеуі де жасалуға кері ретпен жойылады. Нәтиже:</p>
+<pre class="terminal"><code class="language-plaintext">$ ./t06_unwind
++a +b -b -a catch end</code></pre></div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-6.html"><small>Алдыңғы</small>← 6-апта: STL: контейнерлер, итераторлар, алгоритмдер</a>
+        <a class="next" href="../index.html"><small>Келесі</small>Курс бетіне оралу →</a>
+      </nav>
+
+      <p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

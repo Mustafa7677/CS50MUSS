@@ -119,6 +119,7 @@
     initDashboard();
     initQuote();
     initCourseHome();
+    initWideTables();
     initCourseCards();
     initCourseMenu();
     initCheatsheet();
@@ -850,6 +851,14 @@
       drawGoal(box);
       box.querySelector(`.goal-pick button[data-g="${b.dataset.g}"]`).focus();
     }));
+  }
+
+  // Көлденең айналатын кестелер пернетақтамен де айналсын (қолжетімділік: scrollable-region-focusable)
+  function initWideTables() {
+    const mark = () => document.querySelectorAll(".content table").forEach((t) => { if (t.scrollWidth > t.clientWidth + 1 && !t.hasAttribute("tabindex")) t.tabIndex = 0; });
+    mark();
+    addEventListener("load", mark);
+    addEventListener("resize", mark);
   }
 
   // ---------- Курстың басты беті (python/index.html т.б.): карталарда прогресс ----------

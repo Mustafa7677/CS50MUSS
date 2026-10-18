@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Java 6-апта: Ерекше жағдайлар, файлдар, lambda және Stream - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="Java 6-апта: Ерекше жағдайлар, файлдар, lambda және Stream - CS50 қазақша">
+  <meta property="og:description" content="Java 6-апта: checked және unchecked exceptions, try/catch/finally, try-with-resources, өз exception класы, Files және Path, lambda өрнектері, Function, Predicate, Consumer, Stream API және Optional.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/java/lectures/week-6.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/java/lectures/week-6.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Java 6-апта: Ерекше жағдайлар, файлдар, lambda және Stream - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/java/lectures/week-6.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="Java 6-апта: checked және unchecked exceptions, try/catch/finally, try-with-resources, өз exception класы, Files және Path, lambda өрнектері, Function, Predicate, Consumer, Stream API және Optional.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body data-license="B">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="java" style="--c:#d97706"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Java</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../java/index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#d97706" data-n="6">
+        <div class="num">6-апта</div>
+        <h1>Ерекше жағдайлар, файлдар, lambda және Stream</h1>
+        <p>Нағыз бағдарлама тек жақсы күнде жұмыс істемейді: файл табылмайды, қолданушы сан орнына әріп жазады, желі үзіледі. Бұл аптада қателермен сыпайы жұмыс істеуді (<code>try</code>/<code>catch</code>), файлға жазуды және оқуды, сондай-ақ lambda мен <code>Stream</code> арқылы деректерді бірнеше жолмен өңдеуді үйренеміз.</p>
+      </div>
+
+<h2 id="why">Бағдарлама қателескенде не болады?</h2>
+<p>Қалаға автобуспен бара жатқаныңызды елестетіңіз. Жолда доңғалақ жарылса, үш жағдай болуы мүмкін: жүргізуші жөндеп, жолды жалғастырады; не қосалқы доңғалақ салады; не жағдай өте ауыр болса, жолаушыларға хабарлап, рейсті тоқтатады. Бағдарламада да солай. Қателіктің бәрін алдын ала болжап болмайды: файл жоқ болып шығады, қолданушы жасына «жиырма» деп жазады, нөлге бөлу болады. Мәселе - қате болмау емес, қате болғанда бағдарламаның <em>қалай әрекет ететіні</em>.</p>
+<p>Java-да мұндай жағдайлар <strong>ерекше жағдай</strong> (<span class="term-en">exception</span>) деп аталады. Ерекше жағдай - бұл нысан: онда қатенің түрі, хабарламасы және оның қай жерде болғаны жазылған. Бағдарлама қателескенде Java осындай нысанды «лақтырады» (<span class="term-en">throw</span>). Біреу оны «ұстамаса» (<span class="term-en">catch</span>), бағдарлама тоқтап қалады.</p>
+<p>Бұл аптаның екінші жартысы мүлде басқа тақырыпқа арналған, бірақ бір ойға біріккен: бағдарламаны қысқа, анық және сенімді жазу. Мұнда <strong>lambda</strong> өрнектері мен <strong>Stream API</strong> - деректерді «қалай істеу» емес, «не істеу» деп сипаттаудың заманауи тәсілі. Мысалы, «85-тен жоғары балл алғандардың аттарын шығар» дегенді цикл мен шарттарсыз бір құбырмен айтуға болады.</p>
+<p>Жоспар былай:</p>
+<ol>
+  <li>Қате қалай көрінеді және <code>try</code>/<code>catch</code>/<code>finally</code> не істейді.</li>
+  <li>Checked және unchecked қателер, өз ерекше жағдайымызды жасау.</li>
+  <li><code>try-with-resources</code> және файлмен жұмыс (<code>Files</code>, <code>Path</code>).</li>
+  <li>Lambda, функционалды интерфейстер.</li>
+  <li><code>Stream</code> және <code>Optional</code>.</li>
+</ol>
+<h2 id="trace">Қате қалай көрінеді</h2>
+<p>Алдымен бағдарлама қатені ұстамаса, не болатынын көрейік. Әдейі нөлге бөлеміз:</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    static int bol(int a, int b) {
+        return a / b;
+    }
+
+    public static void main(String[] args) {
+        System.out.println("Бастау");
+        System.out.println(bol(10, 2));
+        System.out.println(bol(10, 0));
+        System.out.println("Бұл жол орындалмайды");
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Бастау
+5
+Exception in thread "main" java.lang.ArithmeticException: / by zero
+	at Main.bol(Main.java:3)
+	at Main.main(Main.java:9)</code></pre>
+<p>Мұнда үш нәрсе бар. Біріншіден, <code>Бастау</code> мен <code>5</code> дұрыс шықты, яғни қатеге дейінгі код жұмыс істеді. Екіншіден, <code>bol(10, 0)</code> жолынан кейін бағдарлама <strong>тоқтап қалды</strong>: «Бұл жол орындалмайды» жолы шықпады. Үшіншіден, Java <strong>stack trace</strong> (<span class="term-en">stack trace</span>, шақырулар ізі) шығарды. Оны төменнен жоғары емес, <em>жоғарыдан төмен</em> оқимыз:</p>
+<ul>
+  <li><code>java.lang.ArithmeticException: / by zero</code> - қатенің түрі (<code>ArithmeticException</code>) және хабарлама (<code>/ by zero</code>, нөлге бөлу).</li>
+  <li><code>at Main.bol(Main.java:3)</code> - қате <code>Main</code> класының <code>bol</code> әдісінде, <code>Main.java</code> файлының 3-жолында болды.</li>
+  <li><code>at Main.main(Main.java:9)</code> - сол <code>bol</code> әдісі <code>main</code>-нің 9-жолынан шақырылған.</li>
+</ul>
+<p>Stack trace - бағдарламашының ең жақсы досы: ол қатенің нақты қай жолда екенін және оған қандай жолмен келгенімізді айтады. Қателік шықса, қорықпаңыз: үстіңгі жолдағы түрі мен хабарламасын оқып, бірінші <code>at Main...</code> жолына қараңыз.</p>
+<div class="callout tip">
+<span class="callout-title">Қатені оқуды үйреніңіз</span>
+<p>Жаңа бастаған адамдар қызыл жазуды көргенде оқымай-ақ шошып кетеді. Ал жақсы бағдарламашылар алдымен үш нәрсені оқиды: қатенің <em>атын</em>, <em>хабарламасын</em> және өз кодыңыздың <em>жол нөмірін</em>. Көп қателік тек осымен-ақ шешіледі.</p>
+</div>
+
+<h2 id="try">try, catch және finally</h2>
+<p>Қатені ұстап, бағдарламаны жалғастыру үшін <code>try</code> («байқап көр»), <code>catch</code> («ұста») және <code>finally</code> («әрқашан орында») блоктарын қолданамыз:</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    static void oqy(String matin) {
+        try {
+            int n = Integer.parseInt(matin);
+            System.out.println("Сан: " + n + ", екі еселенгені: " + n * 2);
+        } catch (NumberFormatException e) {
+            System.out.println("Бұл сан емес: \"" + matin + "\"");
+        } finally {
+            System.out.println("-- " + matin + " тексерілді");
+        }
+    }
+
+    public static void main(String[] args) {
+        oqy("25");
+        oqy("жиырма");
+
+        try {
+            String s = null;
+            System.out.println(s.length());
+        } catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
+            System.out.println("Ұсталды: " + e.getClass().getSimpleName());
+        }
+
+        try {
+            int[] bal = {5, 4, 3};
+            System.out.println(bal[3]);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            System.out.println("Массив қатесі: " + e.getMessage());
+        } catch (RuntimeException e) {
+            System.out.println("Басқа қате");
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Сан: 25, екі еселенгені: 50
+-- 25 тексерілді
+Бұл сан емес: "жиырма"
+-- жиырма тексерілді
+Ұсталды: NullPointerException
+Массив қатесі: Index 3 out of bounds for length 3</code></pre>
+<p>Қадамдап түсінейік:</p>
+<ul>
+  <li><code>try { ... }</code> ішіне қате беруі мүмкін код жазамыз. Қате болмаса, <code>catch</code> өткізіп жіберіледі.</li>
+  <li><code>catch (NumberFormatException e)</code> - тек осы түрдегі (және оның ұрпақтарындағы) қатені ұстайды. <code>e</code> - ерекше жағдай нысаны: <code>e.getMessage()</code> хабарламаны, <code>e.getClass().getSimpleName()</code> түрін береді.</li>
+  <li><code>finally</code> блогы <strong>қате болса да, болмаса да</strong> орындалады. Мысалы, нәтижеде <code>25</code> үшін де, <code>жиырма</code> үшін де «тексерілді» жолы шықты. Ресурсты (файлды, желі байланысын) жабу сияқты «әрқашан істелетін» жұмыстар үшін қолайлы.</li>
+  <li>Бірнеше <code>catch</code> жазуға болады: Java оларды <em>жоғарыдан төмен</em> тексереді де, біріншісіне сәйкес келгенін орындайды. Сондықтан нақты түрлер жоғарыда, жалпы түрлер (мысалы, <code>Exception</code>) төменде тұруы керек. Керісінше жазсаңыз, компилятор «бұл қате бұрын ұсталған» деп ескертеді (тесттегі 4-сұрақты қараңыз).</li>
+  <li><code>catch (A | B e)</code> - бір әрекет жасайтын бірнеше түрді біріктіру.</li>
+</ul>
+<p>Соңғы екі блоктағы <code>null.length()</code> пен массив шегінен шығу - Java-дағы ең танымал екі қате: <code>NullPointerException</code> («бос» нысанға қол жеткізу) және <code>ArrayIndexOutOfBoundsException</code> (индекс шектен тыс).</p>
+<div class="callout warn">
+<span class="callout-title">Бос catch жазбаңыз</span>
+<p><code>catch (Exception e) { }</code> - қатені үнсіз жұтып қояды. Бағдарлама жұмыс істеп тұрғандай көрінеді, бірақ дұрыс емес нәтиже береді, ал себебін таппайсыз. Ең болмағанда хабарламаны шығарыңыз не қатені әрі қарай лақтырыңыз. Және жалпы <code>Exception</code> не <code>Throwable</code> ұстамаңыз: тек нақты күткен түрді ұстаңыз.</p>
+</div>
+
+<h2 id="checked">Checked және unchecked қателер</h2>
+<p>Java ерекше жағдайларды екіге бөледі, бұл ең маңызды ұғымдардың бірі.</p>
+<ul>
+  <li><strong>Checked</strong> (<span class="term-en">checked exception</span>, «тексерілетін») - компилятор өңдеуді <em>талап етеді</em>. Әдетте бұл бағдарламадан тыс себептен болатын қателер: файл жоқ, желі үзілді. Мысалы, <code>IOException</code>. Оны не <code>try</code>/<code>catch</code> ұстау керек, не әдіс қолтаңбасында <code>throws</code> арқылы «мен мұны өңдемеймін, шақырушы өңдесін» деп жариялау керек.</li>
+  <li><strong>Unchecked</strong> (<span class="term-en">unchecked exception</span>, «тексерілмейтін») - <code>RuntimeException</code> ұрпақтары. Мысалы, <code>NullPointerException</code>, <code>ArithmeticException</code>, <code>IllegalArgumentException</code>. Бұл - көбіне бағдарламашының өз қатесі, сондықтан компилятор өңдеуді талап етпейді. Қатені өңдеудің орнына кодты түзету керек.</li>
+  <li><strong>Error</strong> - <code>OutOfMemoryError</code> сияқты ауыр қателер, оларды ұстау мағынасыз.</li>
+</ul>
+<p>Бәрі бір <code>Throwable</code> ағашына жинақталған:</p>
+<svg viewBox="0 0 640 335" role="img" aria-label="Ерекше жағдайлар иерархиясы: Throwable-дан Error және Exception шығады; Exception-нан IOException (checked) және RuntimeException (unchecked) тарайды" style="display:block;width:100%;max-width:640px;height:auto;margin:18px auto"><defs><marker id="h6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="h6h" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M1,1 L11,6 L1,11 z" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/></marker></defs><rect x="245" y="10" width="150" height="34" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="320.0" y="25.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Throwable</text><rect x="140" y="85" width="150" height="34" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="215.0" y="100.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Exception</text><rect x="470" y="85" width="140" height="34" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3"/><text x="540.0" y="100.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">Error</text><polyline points="215,85 215,65 320,65 320,46" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h6h)"/><polyline points="540,85 540,65 320,65" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h6h)"/><rect x="20" y="160" width="170" height="34" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="105.0" y="175.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">IOException</text><rect x="250" y="160" width="170" height="34" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3"/><text x="335.0" y="175.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">RuntimeException</text><polyline points="105,160 105,140 215,140 215,121" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h6h)"/><polyline points="335,160 335,140 215,140" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h6h)"/><rect x="10" y="230" width="190" height="52" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="105.0" y="245.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">FileNotFoundException</text><line x1="10" y1="256" x2="200" y2="256" style="stroke:var(--border);stroke-width:1"/><text x="18" y="272" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">NoSuchFileException</text><rect x="235" y="230" width="215" height="86" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3"/><text x="342.5" y="245.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">NullPointerException</text><line x1="235" y1="256" x2="450" y2="256" style="stroke:var(--border);stroke-width:1"/><text x="243" y="272" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">ArithmeticException</text><text x="243" y="288" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">IllegalArgumentException</text><text x="243" y="304" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">  NumberFormatException</text><rect x="470" y="160" width="150" height="52" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8;stroke-dasharray:5 3"/><text x="545.0" y="175.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:700">OutOfMemoryError</text><line x1="470" y1="186" x2="620" y2="186" style="stroke:var(--border);stroke-width:1"/><text x="478" y="202" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11.5px">StackOverflowError</text><polyline points="105,230 105,196" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h6h)"/><polyline points="335,230 335,196" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h6h)"/><polyline points="545,160 545,121" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h6h)"/><text x="462" y="250" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">тұтас жиек = checked</text><text x="462" y="268" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">(throws не catch керек)</text><text x="462" y="292" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">үзік жиек = unchecked</text><text x="462" y="310" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">(өңдеу міндетті емес)</text></svg>
+<p>Мәтіндік балама: жоғарыда <code>Throwable</code>, одан <code>Exception</code> (checked) және <code>Error</code> (unchecked) тарайды. <code>Exception</code>-нан <code>IOException</code> (оның ұрпақтары <code>FileNotFoundException</code>, <code>NoSuchFileException</code>) және <code>RuntimeException</code> (оның ұрпақтары <code>NullPointerException</code>, <code>ArithmeticException</code>, <code>IllegalArgumentException</code> және оның ұрпағы <code>NumberFormatException</code>) шығады. <code>Error</code> астында <code>OutOfMemoryError</code> және <code>StackOverflowError</code> бар.</p>
+<p>Мысалмен көрейік. Файл оқу checked қатеге әкеледі, ал дұрыс емес аргумент unchecked қате болады:</p>
+<pre data-lang="java"><code class="language-java">import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
+import java.nio.file.Path;
+import java.util.List;
+
+public class Main {
+    // checked exception: әдіс қолтаңбасында "throws" жазуы МІНДЕТТІ
+    static List&lt;String&gt; oqy(String jol) throws IOException {
+        return Files.readAllLines(Path.of(jol));
+    }
+
+    static void tekser(int bal) {
+        if (bal &lt; 0 || bal &gt; 100) {
+            // unchecked exception: throws жазу міндетті емес
+            throw new IllegalArgumentException("Бал 0..100 аралығында болуы керек: " + bal);
+        }
+        System.out.println("Бал қабылданды: " + bal);
+    }
+
+    public static void main(String[] args) {
+        try {
+            List&lt;String&gt; joldar = oqy("жоқ-файл.txt");
+            System.out.println(joldar.size());
+        } catch (NoSuchFileException e) {
+            System.out.println("Файл табылмады: " + e.getMessage());
+        } catch (IOException e) {
+            System.out.println("Басқа I/O қатесі");
+        }
+
+        tekser(85);
+        try {
+            tekser(120);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Қате: " + e.getMessage());
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Файл табылмады: жоқ-файл.txt
+Бал қабылданды: 85
+Қате: Бал 0..100 аралығында болуы керек: 120</code></pre>
+<ul>
+  <li><code>oqy</code> әдісінің қолтаңбасындағы <code>throws IOException</code> - «мен қате лақтыруым мүмкін» деген ескерту. Шақыратын <code>main</code> оны ұстауға міндетті. Ұстамаса, компиляция қатесі шығады: <code>unreported exception IOException; must be caught or declared to be thrown</code>.</li>
+  <li><code>catch (NoSuchFileException e)</code> - нақтырақ түр. Ол <code>IOException</code>-нің ұрпағы, сондықтан алдымен жазылды; жалпы <code>IOException</code> одан кейін тұр.</li>
+  <li><code>tekser</code> ішінде <code>throw new IllegalArgumentException(...)</code> қолмен лақтыру. Мұнда <code>throws</code> жазу міндетті емес, себебі қате unchecked.</li>
+</ul>
+<p>Есіңізде болсын: <code>throw</code> пен <code>throws</code> - екі бөлек сөз. <code>throw</code> - <em>әрекет</em>: нақты қате нысанын лақтыру (<code>throw new IllegalArgumentException("...")</code>). <code>throws</code> - <em>жариялау</em>: әдіс қолтаңбасына жазылып, «бұл әдіс мынадай қате лақтыруы мүмкін» деп шақырушыға ескертеді. Біріншісі әдіс ішінде, екіншісі әдіс атының жанында тұрады.</p>
+<p>Ереже: <strong>checked</strong> қатені әдіс шақырушының қолынан келетін жағдайда (файл таңдау, қайталап көру) қолданыңыз, ал бағдарламашының қатесі (дұрыс емес аргумент) үшін <strong>unchecked</strong> лақтырыңыз.</p>
+<h2 id="custom">Өз ерекше жағдайымызды жазу</h2>
+<p>Кейде Java-ның дайын қателері жеткіліксіз: «бал 0..100 аралығынан шықты» деген жағдайға арнайы атау беру керек. Ол үшін <code>Exception</code> (checked) не <code>RuntimeException</code> (unchecked) класын кеңейтеміз. Тақырыпты төртінші аптадағы мұрагерліктен білесіз:</p>
+<pre data-lang="java"><code class="language-java">// өз checked exception классы
+class BalQateligi extends Exception {
+    private final int bal;
+
+    BalQateligi(String habar, int bal) {
+        super(habar);
+        this.bal = bal;
+    }
+
+    int getBal() { return bal; }
+}
+
+// өз unchecked exception классы
+class OqushyTabylmady extends RuntimeException {
+    OqushyTabylmady(String aty) {
+        super("Оқушы табылмады: " + aty);
+    }
+}
+
+public class Main {
+    static void bal(String aty, int bal) throws BalQateligi {
+        if (bal &lt; 0 || bal &gt; 100) {
+            throw new BalQateligi(aty + " үшін бал дұрыс емес", bal);
+        }
+        System.out.println(aty + ": " + bal);
+    }
+
+    static void izde(String aty) {
+        if (!aty.equals("Дана")) {
+            throw new OqushyTabylmady(aty);
+        }
+        System.out.println("Табылды: " + aty);
+    }
+
+    public static void main(String[] args) {
+        try {
+            bal("Дана", 95);
+            bal("Ерлан", 150);
+            bal("Сая", 80);              // орындалмайды
+        } catch (BalQateligi e) {
+            System.out.println(e.getMessage() + " (" + e.getBal() + ")");
+        }
+
+        izde("Дана");
+        try {
+            izde("Асхат");
+        } catch (OqushyTabylmady e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Дана: 95
+Ерлан үшін бал дұрыс емес (150)
+Табылды: Дана
+Оқушы табылмады: Асхат</code></pre>
+<ul>
+  <li><code>class BalQateligi extends Exception</code> - checked қате. <code>super(habar)</code> хабарламаны ата-класқа береді, сондықтан <code>getMessage()</code> жұмыс істейді. Қосымша <code>bal</code> өрісі арқылы қатеге деректі де тіркедік.</li>
+  <li><code>bal</code> әдісі <code>throws BalQateligi</code> деп жарияланған, сондықтан шақырушы міндетті түрде <code>catch</code> жазады.</li>
+  <li><code>Ерлан үшін бал дұрыс емес (150)</code> жолынан кейін <code>Сая</code> үшін шақыру орындалмады: <code>try</code> блогы лақтыру сәтінде <em>бірден үзіліп</em>, <code>catch</code>-ке өтеді.</li>
+  <li><code>OqushyTabylmady extends RuntimeException</code> - unchecked нұсқа: <code>throws</code> қажет емес, бірақ біз бәрібір <code>catch</code> арқылы ұстай аламыз.</li>
+</ul>
+<p>Тағы бір пайдалы нәрсе: қатені басқа қатеге <em>орап</em> лақтыруға болады (<span class="term-en">exception chaining</span>). Конструкторда <code>super(habar, sebep)</code> жазсақ, түпкі себеп сақталады. Мұны 3-жаттығуда жасайсыз.</p>
+<h2 id="resources">try-with-resources</h2>
+<p>Файл, желі байланысы, дерекқор қосылымы сияқты нәрселерді <strong>ресурс</strong> дейді. Ресурсты ашқан соң міндетті түрде жабу керек: әйтпесе жад пен жүйе ресурстары таусылады. Ескі тәсілде бұл <code>finally</code> ішінде жасалатын еді, код ұзын әрі қате жіберуге бейім болатын. Java 7-ден бері <strong>try-with-resources</strong> бар: <code>try (...)</code> жақшасына ашылатын ресурсты жазамыз, ал блоктан шыққанда (қатемен болса да) Java оны өзі жабады. Ресурс <code>AutoCloseable</code> интерфейсін жүзеге асыруы керек.</p>
+<pre data-lang="java"><code class="language-java">class Resurs implements AutoCloseable {
+    private final String aty;
+
+    Resurs(String aty) {
+        this.aty = aty;
+        System.out.println(aty + " ашылды");
+    }
+
+    void paydalan() {
+        System.out.println(aty + " қолданылуда");
+    }
+
+    @Override
+    public void close() {
+        System.out.println(aty + " жабылды");
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        try (Resurs a = new Resurs("Файл-1"); Resurs b = new Resurs("Файл-2")) {
+            a.paydalan();
+            b.paydalan();
+            throw new IllegalStateException("ортасында қате!");
+        } catch (IllegalStateException e) {
+            System.out.println("Ұсталды: " + e.getMessage());
+        } finally {
+            System.out.println("finally орындалды");
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Файл-1 ашылды
+Файл-2 ашылды
+Файл-1 қолданылуда
+Файл-2 қолданылуда
+Файл-2 жабылды
+Файл-1 жабылды
+Ұсталды: ортасында қате!
+finally орындалды</code></pre>
+<p>Нәтижеде екі маңызды нәрсе бар:</p>
+<ul>
+  <li>Қате лақтырылса да, екі ресурс та <strong>жабылды</strong>, ал жабу ретті болды: <em>кері ретпен</em> (соңғы ашылған - бірінші жабылады). Мұны үй есігіне ұқсатуға болады: кіргенде екі есікті ашасыз, шыққанда соңғысын бірінші жабасыз.</li>
+  <li><code>catch</code> пен <code>finally</code> ресурстар жабылғаннан <em>кейін</em> орындалды.</li>
+</ul>
+<p>Жаңа бағдарламаларда ресурсты тек <code>try-with-resources</code> арқылы ашу керек. Бұл тәсілдің тағы бір артықшылығы бар: ресурсты жабу кезінде де қате шықса, Java бастапқы қатені жоғалтпайды, жабу қатесін оған «қосымша» (<span class="term-en">suppressed</span>) етіп тіркейді. Қолмен жазылған <code>finally</code> бұл жағдайда бастапқы қатені жасырып жіберуі мүмкін еді. Сондықтан файлмен, желімен, дерекқормен жұмыс істегенде ережені қатаң ұстаныңыз: <code>try-with-resources</code> қолданбасаңыз, ресурстың жабылатынына сенімді бола алмайсыз.</p>
+<h2 id="files">Файлмен жұмыс: Path және Files</h2>
+<p>Бағдарламаның деректері тек жадта ғана болса, оны өшірген соң бәрі жоғалады. Ұзақ сақтау үшін файлға жазамыз. Java-да жаңа, ыңғайлы жолды <code>java.nio.file</code> пакеті береді:</p>
+<ul>
+  <li><code>Path</code> - файлдың не қалтаның жолы. <code>Path.of("zhurnal.txt")</code>.</li>
+  <li><code>Files</code> - файлмен жұмыс істейтін статик әдістер: <code>exists</code>, <code>size</code>, <code>readAllLines</code>, <code>readString</code>, <code>write</code>, <code>writeString</code>, <code>lines</code>, <code>delete</code>...</li>
+</ul>
+<pre data-lang="java"><code class="language-java">import java.io.BufferedReader;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        Path jol = Path.of("zhurnal.txt");
+
+        // жазу: файл жоқ болса жасалады, бар болса үстінен жазылады
+        Files.write(jol, List.of("Дана;92", "Ерлан;78", "Сая;85"), StandardCharsets.UTF_8);
+        System.out.println("Файл бар ма? " + Files.exists(jol) + ", өлшемі: " + Files.size(jol) + " байт");
+
+        // қосып жазу
+        Files.writeString(jol, "Асхат;64\n", StandardOpenOption.APPEND);
+
+        // барлық жолды оқу
+        List&lt;String&gt; joldar = Files.readAllLines(jol);
+        System.out.println("Жол саны: " + joldar.size());
+        for (String j : joldar) {
+            String[] b = j.split(";");
+            System.out.println(b[0] + " -&gt; " + b[1]);
+        }
+
+        // үлкен файлды жолмен оқу: try-with-resources автоматты жабады
+        try (BufferedReader br = Files.newBufferedReader(jol)) {
+            String birinshi = br.readLine();
+            System.out.println("Бірінші жол: " + birinshi);
+        }
+
+        System.out.println("Файлдың аты: " + jol.getFileName());
+        Files.deleteIfExists(jol);
+        System.out.println("Жойылғаннан кейін бар ма? " + Files.exists(jol));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Файл бар ма? true, өлшемі: 36 байт
+Жол саны: 4
+Дана -&gt; 92
+Ерлан -&gt; 78
+Сая -&gt; 85
+Асхат -&gt; 64
+Бірінші жол: Дана;92
+Файлдың аты: zhurnal.txt
+Жойылғаннан кейін бар ма? false</code></pre>
+<p>Мұнда:</p>
+<ul>
+  <li><code>Files.write(jol, List.of(...), UTF_8)</code> жолдар тізімін файлға жазады (файл бар болса, <em>үстінен жазады</em>). <code>UTF_8</code> кодтауын көрсеткенімізге назар аударыңыз: қазақ әріптері үшін бұл маңызды. Өлшемі 36 байт, себебі қазақ әріптері UTF-8-де екі байт алады.</li>
+  <li><code>Files.writeString(..., StandardOpenOption.APPEND)</code> соңына қосып жазады.</li>
+  <li><code>Files.readAllLines(jol)</code> бүкіл файлды жолдар тізімі етіп оқиды. Кішкентай файлдар үшін ең жеңіл жол. Үлкен файлды жадқа толық сыйғызбай, жолдап оқу үшін <code>BufferedReader</code> не <code>Files.lines</code> қолданамыз; ол ресурс болғандықтан <code>try-with-resources</code> ішінде ашылады.</li>
+  <li><code>main</code> әдісіне <code>throws IOException</code> жазылды. Бұл «қателерді өңдемей, шақырушыға (JVM-ге) қалдырамын» дегенді білдіреді. Шағын сынақ бағдарламасында болады, ал нақты қолданбада <code>catch</code> арқылы өңдеген жөн.</li>
+  <li>Соңында файлды <code>deleteIfExists</code> арқылы тазаладық, сондықтан мысал қайта-қайта қатесіз іске қосылады.</li>
+</ul>
+<div class="callout note">
+<span class="callout-title">Файл қайда жасалады?</span>
+<p>Қысқа жол (<code>"zhurnal.txt"</code>) <em>іске қосылған қалтаға</em> қатысты. Яғни терминалда <code>java Main</code> жазған қалтада жасалады. VS Code-та іске қосқанда кейде жұмыс қалтасы басқа болады, сондықтан файл күтпеген жерде пайда болса, таңғалмаңыз. Файлдың нақты орнын білу үшін <code>jol.toAbsolutePath()</code> шығарып қараңыз.</p>
+</div>
+
+<h2 id="lambda">Lambda өрнектері</h2>
+<p>Алдыңғы апталарда жолдарды <code>Comparator</code> арқылы сұрыптағанда «lambda» сөзі бірнеше рет кездесті. Енді оны түсіндірейік. <strong>Lambda</strong> (<span class="term-en">lambda expression</span>) - бұл аты жоқ қысқа әдіс, оны айнымалыға салуға не басқа әдіске беруге болады.</p>
+<p>Неге керек? Көп жағдайда біз әдіске «деректі» емес, «әрекетті» беруіміз керек: «осы шартпен сұрыпта», «әр элементті шығар». Ертеде бұл үшін анонимді класс жазылатын, ал ол өте ұзын болатын. Lambda бұл жазуды бір жолға қысқартады:</p>
+<pre data-lang="java"><code class="language-java">import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        // 1. Анонимді класс (eski жол) пен lambda - бірдей
+        Runnable eski = new Runnable() {
+            @Override
+            public void run() {
+                System.out.println("Сәлем, анонимді класс!");
+            }
+        };
+        Runnable jana = () -&gt; System.out.println("Сәлем, lambda!");
+        eski.run();
+        jana.run();
+
+        // 2. Параметрлі lambda
+        Comparator&lt;String&gt; uzyndyqqa = (a, b) -&gt; Integer.compare(a.length(), b.length());
+        List&lt;String&gt; attar = new ArrayList&lt;&gt;(List.of("Айгерім", "Ер", "Бауыржан", "Дана"));
+        attar.sort(uzyndyqqa);
+        System.out.println(attar);
+
+        // 3. Блокты lambda
+        Comparator&lt;String&gt; ayaqtalu = (a, b) -&gt; {
+            char x = a.charAt(a.length() - 1);
+            char y = b.charAt(b.length() - 1);
+            return Character.compare(x, y);
+        };
+        attar.sort(ayaqtalu);
+        System.out.println(attar);
+
+        // 4. Әдіс сілтемесі (method reference)
+        attar.forEach(System.out::println);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Сәлем, анонимді класс!
+Сәлем, lambda!
+[Ер, Дана, Айгерім, Бауыржан]
+[Дана, Айгерім, Бауыржан, Ер]
+Дана
+Айгерім
+Бауыржан
+Ер</code></pre>
+<p>Lambda жазылуы: <code>(параметрлер) -&gt; дене</code>. Нұсқалары:</p>
+<ul>
+  <li><code>() -&gt; expr</code> - параметрсіз;</li>
+  <li><code>x -&gt; expr</code> - бір параметр (жақшасыз жазуға болады);</li>
+  <li><code>(a, b) -&gt; expr</code> - екі параметр;</li>
+  <li><code>(a, b) -&gt; { ...; return ...; }</code> - блокты дене: бірнеше жол және <code>return</code>.</li>
+</ul>
+<p>Параметрлердің типін көрсетудің қажеті жоқ: компилятор оны контексттен шығарады. Lambda қай <strong>функционалды интерфейске</strong> сәйкес келетінін де контекст анықтайды: <code>Runnable</code>, <code>Comparator&lt;String&gt;</code> және т.б.</p>
+<p>Соңғы жолдағы <code>System.out::println</code> - <strong>әдіс сілтемесі</strong> (<span class="term-en">method reference</span>). Ол <code>x -&gt; System.out.println(x)</code> жазбасының қысқа түрі. Негізгі түрлері: <code>Класс::статикӘдіс</code>, <code>нысан::әдіс</code>, <code>Класс::әдіс</code> (<code>String::length</code>) және <code>Класс::new</code>.</p>
+<div class="callout tip">
+<span class="callout-title">Lambda ішінде сыртқы айнымалыны өзгертуге болмайды</span>
+<p>Lambda сыртқы әдістегі айнымалыны қолдана алады, бірақ ол айнымалы <em>тиімді өзгермейтін</em> (<span class="term-en">effectively final</span>) болуы керек: оған бір рет қана мән берілген болуы шарт. Мысалы, lambda ішінде сыртқы <code>int sany</code> айнымалысын арттыра алмайсыз. Бұл жағдайда <code>Stream</code>-нің <code>count()</code>, <code>sum()</code> сияқты әдістерін қолданыңыз.</p>
+</div>
+
+<h2 id="functional">Функционалды интерфейстер</h2>
+<p>Lambda қай типке сәйкес келеді? Тек <strong>функционалды интерфейске</strong> (<span class="term-en">functional interface</span>): яғни тек <em>бір</em> абстракт әдісі бар интерфейске. <code>Runnable</code> (<code>void run()</code>), <code>Comparator&lt;T&gt;</code> (<code>int compare(T, T)</code>) - сондай. Өз интерфейсіңізді <code>@FunctionalInterface</code> деп белгілесеңіз, компилятор бір ғана абстракт әдісті қамтамасыз етеді.</p>
+<p><code>java.util.function</code> пакетінде ең көп қажет болатын дайын интерфейстер жинағы бар. Негізгі бесеуін жаттап алған жөн:</p>
+<table>
+<thead><tr><th>Интерфейс</th><th>Қолтаңба</th><th>Мағынасы</th><th>Мысал</th></tr></thead>
+<tbody>
+<tr><td><code>Function&lt;T,R&gt;</code></td><td><code>R apply(T)</code></td><td>бір мәнді басқасына айналдыру</td><td><code>s -> s.length()</code></td></tr>
+<tr><td><code>Predicate&lt;T&gt;</code></td><td><code>boolean test(T)</code></td><td>шарт: иә/жоқ</td><td><code>b -> b >= 85</code></td></tr>
+<tr><td><code>Consumer&lt;T&gt;</code></td><td><code>void accept(T)</code></td><td>мәнді «жұту» (нәтиже жоқ)</td><td><code>s -> println(s)</code></td></tr>
+<tr><td><code>Supplier&lt;T&gt;</code></td><td><code>T get()</code></td><td>мән «беру» (параметр жоқ)</td><td><code>() -> "12:30"</code></td></tr>
+<tr><td><code>BiFunction&lt;T,U,R&gt;</code></td><td><code>R apply(T,U)</code></td><td>екі аргументтен нәтиже</td><td><code>(a, b) -> a + b</code></td></tr>
+</tbody>
+</table>
+<pre data-lang="java"><code class="language-java">import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
+
+public class Main {
+    public static void main(String[] args) {
+        Function&lt;String, Integer&gt; uzyndyq = s -&gt; s.length();          // T -&gt; R
+        Predicate&lt;Integer&gt; jaqsy = bal -&gt; bal &gt;= 85;                  // T -&gt; boolean
+        Consumer&lt;String&gt; shygar = s -&gt; System.out.println("&gt; " + s);  // T -&gt; void
+        Supplier&lt;String&gt; sagat = () -&gt; "12:30";                        // () -&gt; T
+        BiFunction&lt;Integer, Integer, Integer&gt; qosu = (a, b) -&gt; a + b;  // (T, U) -&gt; R
+        UnaryOperator&lt;String&gt; bas = s -&gt; s.toUpperCase();              // T -&gt; T
+
+        System.out.println(uzyndyq.apply("Қарағанды"));
+        System.out.println(jaqsy.test(90) + " " + jaqsy.test(70));
+        shygar.accept("Сәлем");
+        System.out.println(sagat.get());
+        System.out.println(qosu.apply(20, 22));
+        System.out.println(bas.apply("астана"));
+
+        // біріктіру
+        Predicate&lt;Integer&gt; nashar = jaqsy.negate();
+        Predicate&lt;Integer&gt; ortasha = jaqsy.negate().and(b -&gt; b &gt;= 50);
+        System.out.println(nashar.test(40) + " " + ortasha.test(40) + " " + ortasha.test(60));
+
+        Function&lt;String, String&gt; eki = bas.andThen(s -&gt; s + "!");
+        System.out.println(eki.apply("әлем"));
+        Function&lt;Integer, Integer&gt; eselen = x -&gt; x * 2;
+        Function&lt;Integer, Integer&gt; bir = x -&gt; x + 1;
+        System.out.println(eselen.andThen(bir).apply(5) + " " + eselen.compose(bir).apply(5));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+9
+true false
+&gt; Сәлем
+12:30
+42
+АСТАНА
+true false true
+ӘЛЕМ!
+11 12</code></pre>
+<p>Бұл мысалда:</p>
+<ul>
+  <li><code>Function&lt;String, Integer&gt;</code> - жолды санға айналдырады (<code>Қарағанды</code> - 9 әріп).</li>
+  <li><code>Predicate</code> пен <code>negate()</code>, <code>and(...)</code> - шарттарды біріктіру. <code>ortasha</code> - «85-тен кем және 50-ден кем емес».</li>
+  <li><code>andThen</code> - бірінші функцияны орындап, нәтижесін екіншіге береді: <code>5*2+1 = 11</code>. <code>compose</code> - керісінше, алдымен ішкісін орындайды: <code>(5+1)*2 = 12</code>.</li>
+  <li><code>UnaryOperator&lt;T&gt;</code> - кіріс пен шығыс типі бірдей <code>Function&lt;T,T&gt;</code>.</li>
+</ul>
+<p>Бұл интерфейстерді өзіңіз ойлап табудың қажеті жоқ: <code>Stream</code> әдістері дәл осы типтерді күтеді.</p>
+<h2 id="stream">Stream API</h2>
+<p>Енді бәрін біріктіретін тақырыпқа келдік. <strong>Stream</strong> (<span class="term-en">stream</span>, ағын) - деректер жинағын өңдеудің «құбыр» тәсілі. Аналогия: кәсіпорындағы конвейер. Шикізат (деректер) басынан кіреді, әр станция бір әрекет жасайды (сүзеді, өзгертеді, сұрыптайды), соңында дайын өнім шығады.</p>
+<p>Stream-нің үш бөлігі бар:</p>
+<ol>
+  <li><strong>Бастау</strong>: <code>list.stream()</code>, <code>Stream.of(...)</code>, <code>Files.lines(...)</code>.</li>
+  <li><strong>Аралық операциялар</strong> (<span class="term-en">intermediate</span>): <code>filter</code>, <code>map</code>, <code>sorted</code>, <code>distinct</code>, <code>limit</code>. Олар жаңа stream қайтарады және <em>бірден орындалмайды</em>: соңғы операция шақырылғанша «жалқау» күтеді.</li>
+  <li><strong>Қорытынды операция</strong> (<span class="term-en">terminal</span>): <code>toList()</code>, <code>collect(...)</code>, <code>count()</code>, <code>sum()</code>, <code>reduce(...)</code>, <code>forEach(...)</code>. Ол құбырды іске қосады.</li>
+</ol>
+<p>Stream бастапқы жинақты <em>өзгертпейді</em>, әрқашан жаңа нәтиже жасайды. Құбырдың қалай жұмыс істейтіні:</p>
+<svg viewBox="0 0 620 285" role="img" aria-label="Stream құбыры: алты оқушыдан filter(бал &gt;= 85) төртеуін қалдырады, map(аты) аттарын алады, toList() тізімге жинайды" style="display:block;width:100%;max-width:620px;height:auto;margin:18px auto"><defs><marker id="h6s" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker><marker id="h6sh" viewBox="0 0 12 12" refX="11" refY="6" markerWidth="9" markerHeight="9" orient="auto"><path d="M1,1 L11,6 L1,11 z" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.4"/></marker></defs><text x="10" y="16" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;">oqushylar.stream()</text><rect x="10" y="26" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="56.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Дана 92</text><rect x="110" y="26" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="156.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Ерлан 78</text><rect x="210" y="26" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="256.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Сая 85</text><rect x="310" y="26" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="356.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Асхат 64</text><rect x="410" y="26" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="456.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Мадина 97</text><rect x="510" y="26" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="556.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Нұрлан 85</text><polyline points="300,56 300,78" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h6s)"/><text x="10" y="88" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;">.filter(o -&gt; o.bal() &gt;= 85)</text><rect x="10" y="98" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="56.0" y="112.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Дана 92</text><rect x="110" y="98" width="92" height="28" rx="4" style="fill:none;stroke:var(--border);stroke-width:1.2;stroke-dasharray:4 3"/><rect x="210" y="98" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="256.0" y="112.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Сая 85</text><rect x="310" y="98" width="92" height="28" rx="4" style="fill:none;stroke:var(--border);stroke-width:1.2;stroke-dasharray:4 3"/><rect x="410" y="98" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="456.0" y="112.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Мадина 97</text><rect x="510" y="98" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="556.0" y="112.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Нұрлан 85</text><polyline points="300,128 300,150" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h6s)"/><text x="10" y="160" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;">.map(Oqushy::aty)</text><rect x="10" y="170" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="56.0" y="184.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Дана</text><rect x="110" y="170" width="92" height="28" rx="4" style="fill:none;stroke:var(--border);stroke-width:1.2;stroke-dasharray:4 3"/><rect x="210" y="170" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="256.0" y="184.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Сая</text><rect x="310" y="170" width="92" height="28" rx="4" style="fill:none;stroke:var(--border);stroke-width:1.2;stroke-dasharray:4 3"/><rect x="410" y="170" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="456.0" y="184.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Мадина</text><rect x="510" y="170" width="92" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="556.0" y="184.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">Нұрлан</text><polyline points="300,200 300,222" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#h6s)"/><text x="10" y="236" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;">.toList()</text><rect x="10" y="244" width="430" height="28" rx="4" style="fill:var(--surface);stroke:var(--accent);stroke-width:2.2"/><text x="225.0" y="258.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:12px;">[Дана, Сая, Мадина, Нұрлан]</text><text x="450" y="258" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;">нәтиже: жаңа тізім</text></svg>
+<p>Мәтіндік балама: алты оқушыдан <code>filter(бал ≥ 85)</code> Дана 92, Сая 85, Мадина 97, Нұрлан 85 төртеуін қалдырады (Ерлан 78 мен Асхат 64 түседі); <code>map(Oqushy::aty)</code> оларды аттарға айналдырады; <code>toList()</code> соңында <code>[Дана, Сая, Мадина, Нұрлан]</code> тізімін береді.</p>
+<p>Енді нақты кодта көрейік (оқушылар <code>record</code> ретінде берілген):</p>
+<pre data-lang="java"><code class="language-java">import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+
+public class Main {
+    record Oqushy(String aty, String sinip, int bal) {}
+
+    public static void main(String[] args) {
+        List&lt;Oqushy&gt; tizim = List.of(
+            new Oqushy("Дана", "7А", 92), new Oqushy("Ерлан", "7Б", 78),
+            new Oqushy("Сая", "7А", 85), new Oqushy("Асхат", "7Б", 64),
+            new Oqushy("Мадина", "7А", 97), new Oqushy("Нұрлан", "7Б", 85));
+
+        // filter + map + collect
+        List&lt;String&gt; jaqsylar = tizim.stream()
+            .filter(o -&gt; o.bal() &gt;= 85)
+            .map(Oqushy::aty)
+            .toList();
+        System.out.println("85+: " + jaqsylar);
+
+        // sorted
+        System.out.println(tizim.stream()
+            .sorted((a, b) -&gt; Integer.compare(b.bal(), a.bal()))
+            .limit(3)
+            .map(o -&gt; o.aty() + "(" + o.bal() + ")")
+            .collect(Collectors.joining(", ")));
+
+        // reduce / қорытынды операциялар
+        int jiny = tizim.stream().mapToInt(Oqushy::bal).sum();
+        double orta = tizim.stream().mapToInt(Oqushy::bal).average().orElse(0);
+        int maks = tizim.stream().map(Oqushy::bal).reduce(0, Integer::max);
+        long sany = tizim.stream().filter(o -&gt; o.sinip().equals("7А")).count();
+        System.out.println("Қосынды=" + jiny + ", орташа=" + orta + ", макс=" + maks + ", 7А=" + sany);
+
+        // groupingBy
+        Map&lt;String, Double&gt; sinipOrta = tizim.stream().collect(
+            Collectors.groupingBy(Oqushy::sinip, TreeMap::new, Collectors.averagingInt(Oqushy::bal)));
+        sinipOrta.forEach((k, v) -&gt; System.out.printf("%s: %.1f%n", k, v));
+
+        System.out.println(tizim.stream().map(Oqushy::bal).distinct().sorted().toList());
+        System.out.println(tizim.stream().anyMatch(o -&gt; o.bal() == 100) + " " + tizim.stream().allMatch(o -&gt; o.bal() &gt; 60));
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+85+: [Дана, Сая, Мадина, Нұрлан]
+Мадина(97), Дана(92), Сая(85)
+Қосынды=501, орташа=83.5, макс=97, 7А=3
+7А: 91.3
+7Б: 75.7
+[64, 78, 85, 92, 97]
+false true</code></pre>
+<p>Әр блокқа назар аударайық:</p>
+<ul>
+  <li><code>filter(...).map(...).toList()</code> - ең жиі кездесетін үлгі, диаграммадағы құбырдың өзі. <code>toList()</code> Java 16-дан бар (бұрын <code>collect(Collectors.toList())</code> жазылатын).</li>
+  <li><code>sorted(...)</code> + <code>limit(3)</code> - үздік үшеуді алады. Дана мен Сая сияқты тең балдарда сұрыптау тұрақты. <code>Collectors.joining(", ")</code> - элементтерді бір жолға біріктіреді.</li>
+  <li><code>mapToInt(...).sum()</code> және <code>average()</code> - сандық stream-дер (<code>IntStream</code>). <code>average()</code> <code>OptionalDouble</code> қайтарады, сондықтан <code>orElse(0)</code> қостық. <code>reduce(0, Integer::max)</code> - «жинақтап» бір мәнге келтіру: бастапқы мән 0, әр қадамда үлкенін ұстайды.</li>
+  <li><code>Collectors.groupingBy(...)</code> - SQL-дегі <code>GROUP BY</code> тәрізді: сыныпқа қарай топтап, әр топтың орташа балын (<code>averagingInt</code>) есептейді. <code>TreeMap::new</code> нәтижені сұрыпталған картаға салады.</li>
+  <li><code>distinct()</code> - қайталанбайтын, <code>anyMatch</code> / <code>allMatch</code> - «қандай да бір» / «барлығы» шарт.</li>
+</ul>
+<div class="callout warn">
+<span class="callout-title">Stream-ді бір рет қана қолдануға болады</span>
+<p>Қорытынды операция шақырылған соң stream «жабылады». Сол нысанды қайта қолдансаңыз, <code>IllegalStateException: stream has already been operated upon or closed</code> шығады. Қайта керек болса, жинақтан жаңа <code>stream()</code> алыңыз.</p>
+</div>
+<p>Stream-ді қашан қолданбау керек? Қарапайым жағдайда оңай <code>for</code> циклі айқынырақ болса, цикл жазыңыз. Stream екі-үш қадамдық өңдеуде жақсы көрінеді; он қадамдық құбыр оқуға қиын. Мақсат - код оқылатын болуы.</p>
+<h2 id="optional">Optional: «мән болмауы мүмкін»</h2>
+<p>Бағдарламалаудағы ең танымал қателердің бірі - <code>null</code>. «Мән жоқ» дегенді <code>null</code> деп белгілесек, оны тексеруді ұмытқан сәтте <code>NullPointerException</code> шығады. Java 8-ден бері бұл мәселенің көркем шешімі бар: <code>Optional&lt;T&gt;</code> (<span class="term-en">Optional</span>, «міндетті емес мән»). Ол «қорап»: не ішінде мән бар, не бос. Қорап типі әдіс қайтаратын мәннің жоқ болуы мүмкін екенін алдын ала ескертеді.</p>
+<pre data-lang="java"><code class="language-java">import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
+public class Main {
+    static Optional&lt;Integer&gt; tap(Map&lt;String, Integer&gt; bal, String aty) {
+        return Optional.ofNullable(bal.get(aty));
+    }
+
+    public static void main(String[] args) {
+        Map&lt;String, Integer&gt; bal = Map.of("Дана", 92, "Ерлан", 78);
+
+        Optional&lt;Integer&gt; d = tap(bal, "Дана");
+        Optional&lt;Integer&gt; j = tap(bal, "Жанар");
+
+        System.out.println(d.isPresent() + " " + j.isPresent());
+        System.out.println(d.get());
+        System.out.println(j.orElse(-1));
+        System.out.println(j.map(b -&gt; b + 5).orElse(0));
+        System.out.println(d.map(b -&gt; "Бал: " + b).orElse("Жоқ"));
+        d.ifPresent(b -&gt; System.out.println("Табылды: " + b));
+        j.ifPresentOrElse(b -&gt; System.out.println("Табылды"), () -&gt; System.out.println("Жанар жоқ"));
+
+        Optional&lt;String&gt; birinshi = List.of("қала", "ауыл", "дала").stream()
+            .filter(s -&gt; s.startsWith("д")).findFirst();
+        System.out.println(birinshi.orElse("-"));
+
+        try {
+            j.orElseThrow(() -&gt; new IllegalStateException("бал табылмады"));
+        } catch (IllegalStateException e) {
+            System.out.println("Қате: " + e.getMessage());
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+true false
+92
+-1
+0
+Бал: 92
+Табылды: 92
+Жанар жоқ
+дала
+Қате: бал табылмады</code></pre>
+<ul>
+  <li><code>Optional.ofNullable(x)</code> - <code>x</code> <code>null</code> болса, бос қорап, болмаса мәні бар қорап жасайды.</li>
+  <li><code>isPresent()</code> - мән бар ма. <code>get()</code> бос қорапта қате береді, сондықтан одан аулақ болыңыз.</li>
+  <li><code>orElse(-1)</code> - мән жоқ болса, әдепкі мәнді береді. <code>orElseThrow(...)</code> - жоқ болса, қате лақтырады.</li>
+  <li><code>map(...)</code> қораптың ішіндегі мәнді түрлендіреді (бос болса, бос қала береді): тізбектеп жазуға болады.</li>
+  <li><code>ifPresent</code> және <code>ifPresentOrElse</code> - мән бар болса не болмаса жасалатын әрекет.</li>
+  <li>Stream-нің <code>findFirst()</code>, <code>max()</code>, <code>min()</code> әдістері де <code>Optional</code> қайтарады.</li>
+</ul>
+<p>Ереже: әдіс «нәтиже болмауы мүмкін» деп қайтарса, <code>Optional</code> қайтарыңыз. Өріс не параметр ретінде <code>Optional</code> қолданбаңыз, ол тек қайтару мәні үшін ойластырылған.</p>
+<h2 id="mini">Мини-жоба: файлдан оқып, Stream-мен өңдеу</h2>
+<p>Енді оқығанымыздың бәрін біріктіретін шағын мысал: CSV форматты (үтірмен бөлінген) файл жазамыз, оны оқимыз, әр оқушының орташа балын есептейміз және ең үздігін табамыз. Бұл - келесі аптадағы қорытынды жобаның кішкентай алдын ала көрінісі.</p>
+<pre data-lang="java"><code class="language-java">import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+
+public class Main {
+    public static void main(String[] args) throws IOException {
+        Path f = Path.of("ballar.csv");
+        Files.write(f, List.of(
+            "Дана,математика,92", "Дана,физика,88",
+            "Ерлан,математика,70", "Ерлан,физика,74",
+            "Сая,математика,85", "Сая,физика,96"));
+
+        // файл -&gt; Stream -&gt; Map&lt;оқушы, орташа бал&gt;
+        Map&lt;String, Double&gt; orta;
+        try (var joldar = Files.lines(f)) {
+            orta = joldar
+                .map(j -&gt; j.split(","))
+                .collect(Collectors.groupingBy(
+                    b -&gt; b[0], TreeMap::new, Collectors.averagingInt(b -&gt; Integer.parseInt(b[2]))));
+        }
+        orta.forEach((aty, b) -&gt; System.out.printf("%-6s %.1f%n", aty, b));
+
+        String uzdik = orta.entrySet().stream()
+            .max(Map.Entry.comparingByValue())
+            .map(Map.Entry::getKey)
+            .orElse("-");
+        System.out.println("Үздік: " + uzdik);
+        Files.delete(f);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Дана   90.0
+Ерлан  72.0
+Сая    90.5
+Үздік: Сая</code></pre>
+<p>Бұл кодта біз <code>try-with-resources</code> ішінде <code>Files.lines(f)</code> ағынын аштық (өйткені файл ресурс), сосын <code>groupingBy</code> арқылы әр оқушының балдарын топтап, орташасын есептедік. <code>Map.Entry.comparingByValue()</code> - <code>Map</code> жазбаларын мәні бойынша салыстыратын дайын <code>Comparator</code>, ал <code>max(...)</code> <code>Optional</code> қайтарады, сондықтан <code>map(...).orElse("-")</code> жазылды. Көріп отырғаныңыздай, бүкіл жолдарды оқып, топтап, орташасын табу бар болғаны бірнеше жол.</p>
+<h2 id="run">Өз компьютеріңде іске қос</h2>
+<p>Мысалдарды өз компьютеріңде іске қосыңыз. Файлмен жұмыс істейтін мысалдар іске қосылған қалтада уақытша файл жасап, соңында жояды, сондықтан бөлек қалта ашу ыңғайлы:</p>
+<pre class="terminal"><code class="language-bash">mkdir week6 &amp;&amp; cd week6
+# Main.java файлын жасаңыз
+javac Main.java
+java Main</code></pre>
+<p>Қазақша мәтін бар файлдарды <code>UTF-8</code> кодтауында сақтаңыз (VS Code-та әдепкі солай). Егер <code>Files.readAllLines</code> <code>MalformedInputException</code> қатесін берсе, файл басқа кодтауда сақталған болуы мүмкін.</p>
+<p>Қате жібергіңіз келсе, әдейі жасап көріңіз: файл атын бұзып, <code>NoSuchFileException</code> шығарыңыз; <code>Integer.parseInt("abc")</code> жазып, stack trace-ті оқыңыз; stream-ді екі рет қолданып, қате хабарламасын көріңіз. Қатені әдейі жасап көру - оны жақсы түсінудің ең жылдам жолы.</p>
+<h2 id="mistakes">Жиі қателер</h2>
+
+<div class="callout warn">
+<span class="callout-title">1. Бос catch (қатені жұтып қою)</span>
+<p><code>catch (Exception e) {}</code> қатені жасырады. Ең кемі хабарлама шығарыңыз, ал жалпы <code>Exception</code> орнына нақты түрді ұстаңыз.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">2. catch ретін қателесу</span>
+<p><code>catch (Exception e)</code> блогын <code>catch (IOException e)</code>-тен <em>бұрын</em> жазсаңыз, компилятор «exception IOException has already been caught» қатесін береді. Нақты түр жоғарыда, жалпысы төменде тұруы керек.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">3. Ресурсты жаппау</span>
+<p><code>FileReader</code> не <code>Scanner</code> ашып, жаппай қалдыру. Ресурсты әрқашан <code>try-with-resources</code> ішінде ашыңыз.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">4. finally ішінде return жазу</span>
+<p><code>finally</code> ішіндегі <code>return</code> <code>try</code>/<code>catch</code> ішіндегі <code>return</code> мен қатені де бүркемелеп жібереді. <code>finally</code> ішінде тек тазалау жұмысын жасаңыз.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">5. Optional.get() шақыру</span>
+<p>Алдымен <code>isPresent()</code> тексермей, <code>Optional.get()</code> жазсаңыз, бос қорапта <code>NoSuchElementException</code> шығады. <code>orElse</code>, <code>orElseThrow</code> не <code>ifPresent</code> қолданыңыз.</p>
+</div>
+
+<div class="callout warn">
+<span class="callout-title">6. Stream-ді қайта қолдану не lambda ішінде сыртқы айнымалыны өзгерту</span>
+<p>Stream бір рет қана қолданылады. Lambda ішіндегі сыртқы айнымалы тиімді түрде <code>final</code> болуы керек, әйтпесе <code>local variables referenced from a lambda expression must be final or effectively final</code> қатесі шығады.</p>
+</div>
+
+<h2 id="summary">Қорытынды</h2>
+<p>Бүгін біз:</p>
+<ul>
+  <li>ерекше жағдайлар нысан екенін және stack trace-тің қатені табуға көмектесетінін көрдік;</li>
+  <li><code>try</code>/<code>catch</code>/<code>finally</code> блоктарын, көп <code>catch</code> және <code>|</code> белгісін үйрендік;</li>
+  <li>checked (<code>IOException</code>: өңдеу міндетті) мен unchecked (<code>RuntimeException</code>: міндетті емес) қателердің айырмашылығын ажыраттық;</li>
+  <li>өз ерекше жағдай кластарымызды жасадық (<code>extends Exception</code> не <code>RuntimeException</code>);</li>
+  <li><code>try-with-resources</code> ресурсты қатемен болса да жабатынын көрдік;</li>
+  <li><code>Path</code> пен <code>Files</code> арқылы мәтін файлды оқып, жазуды үйрендік;</li>
+  <li>lambda өрнектерін, әдіс сілтемелерін және <code>Function</code>, <code>Predicate</code>, <code>Consumer</code>, <code>Supplier</code> интерфейстерін меңгердік;</li>
+  <li>Stream API арқылы <code>filter</code>, <code>map</code>, <code>sorted</code>, <code>collect</code>, <code>reduce</code> құбырларын жаздық;</li>
+  <li><code>Optional</code> арқылы «мән жоқ» жағдайын <code>null</code>-сыз өңдедік.</li>
+</ul>
+<ul class="checklist" data-id="w6-self">
+  <li><input type="checkbox"> <span>Мен stack trace-ті оқып, қате қай жолда екенін таба аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен checked және unchecked қателердің айырмашылығын түсіндіре аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен <code>try</code>/<code>catch</code>/<code>finally</code> және <code>try-with-resources</code> жаза аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен өз ерекше жағдай класымды жасап, лақтыра және ұстай аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен <code>Files</code> арқылы мәтін файл жазып, оқи аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен <code>Function</code>, <code>Predicate</code>, <code>Consumer</code> үшін lambda жаза аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен <code>filter</code>, <code>map</code>, <code>sorted</code>, <code>collect</code> арқылы Stream құбырын құра аламын.</span></li>
+  <li><input type="checkbox"> <span>Мен <code>Optional</code> қолданып, <code>null</code>-ға қарағанда қауіпсіз код жаза аламын.</span></li>
+</ul>
+<p class="progress"></p>
+<p>Келесі апта - соңғы: бір мезгілде бірнеше жұмысты орындайтын көп ағынды бағдарламалар, жоба құралдары (Maven, Gradle), тест жазу идеясы және толыққанды қорытынды жоба «Оқушы журналы».</p>
+<h2 id="quiz">Өзіңізді тексеріңіз</h2>
+
+<div class="quiz">
+<div class="question" data-answer="d">
+  <p class="q-text">1. Мына ерекше жағдайлардың қайсысы <strong>checked</strong> (компилятор өңдеуді талап етеді)?</p>
+  <label><input type="radio" value="a"> <code>NullPointerException</code></label>
+  <label><input type="radio" value="b"> <code>ArithmeticException</code></label>
+  <label><input type="radio" value="c"> <code>IllegalArgumentException</code></label>
+  <label><input type="radio" value="d"> <code>IOException</code></label>
+  <p class="explain"><code>IOException</code> - <code>Exception</code> ұрпағы, бірақ <code>RuntimeException</code> емес, сондықтан checked: <code>try</code>/<code>catch</code> не <code>throws</code> керек. Қалғандары <code>RuntimeException</code> ұрпақтары, яғни unchecked.</p>
+</div>
+<div class="question" data-answer="c">
+  <p class="q-text">2. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    static int f() {
+        try {
+            System.out.print("1 ");
+            return 10;
+        } finally {
+            System.out.print("2 ");
+        }
+    }
+
+    public static void main(String[] args) {
+        System.out.println(f());
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>10</code></label>
+  <label><input type="radio" value="b"> <code>2 10</code></label>
+  <label><input type="radio" value="c"> <code>1 2 10</code></label>
+  <label><input type="radio" value="d"> <code>1 10 2</code></label>
+  <p class="explain"><code>return 10</code> орындалғанға дейін <code>finally</code> блогы орындалады. Сондықтан алдымен <code>1 </code>, сосын <code>2 </code> шығады, ал <code>10</code> мәні <code>main</code> ішіндегі <code>println</code> арқылы соңында шығады.</p>
+</div>
+<div class="question" data-answer="a">
+  <p class="q-text">3. Мына код компиляцияда не береді?</p>
+<pre data-lang="java"><code class="language-java">import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class Main {
+    public static void main(String[] args) {
+        String t = Files.readString(Path.of("a.txt"));
+        System.out.println(t);
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> Қате: <code>unreported exception IOException; must be caught or declared to be thrown</code></label>
+  <label><input type="radio" value="b"> Ештеңе, бағдарлама дұрыс</label>
+  <label><input type="radio" value="c"> Қате: <code>Files</code> кластары табылмады</label>
+  <label><input type="radio" value="d"> Тек ескерту, бірақ іске қосылады</label>
+  <p class="explain"><code>Files.readString</code> <code>IOException</code> (checked) лақтыра алады. <code>main</code> оны не <code>catch</code> арқылы ұстамаған, не <code>throws</code> арқылы жарияламаған, сондықтан компилятор кодты қабылдамайды.</p>
+</div>
+<div class="question" data-answer="b">
+  <p class="q-text">4. Мына жерде не қате?</p>
+<pre data-lang="java"><code class="language-java">import java.io.IOException;
+
+public class Main {
+    static void oqy() throws IOException {
+        throw new IOException("қате");
+    }
+
+    public static void main(String[] args) {
+        try {
+            oqy();
+        } catch (Exception e) {
+            System.out.println("1");
+        } catch (IOException e) {
+            System.out.println("2");
+        }
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>oqy</code> әдісін <code>main</code> шақыра алмайды</label>
+  <label><input type="radio" value="b"> Екінші <code>catch</code> (<code>IOException</code>) қол жетпейтін: оны алдыңғы <code>catch (Exception e)</code> бұрыннан ұстайды</label>
+  <label><input type="radio" value="c"> <code>throws IOException</code> жазбасы артық</label>
+  <label><input type="radio" value="d"> Ештеңе қате емес, <code>1</code> шығады</label>
+  <p class="explain"><code>Exception</code> - <code>IOException</code>-нің ата-класы, сондықтан бірінші <code>catch</code> барлығын ұстайды. Екінші блок ешқашан орындалмайды, сондықтан компилятор <code>exception IOException has already been caught</code> деген қате береді. Реті кері болуы керек: алдымен нақты түр.</p>
+</div>
+<div class="question" data-answer="c">
+  <p class="q-text">5. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">import java.util.stream.Stream;
+
+public class Main {
+    public static void main(String[] args) {
+        long n = Stream.of("қала", "ауыл", "көл", "дала", "су")
+            .filter(s -&gt; s.contains("а"))
+            .count();
+        System.out.println(n);
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>5</code></label>
+  <label><input type="radio" value="b"> <code>2</code></label>
+  <label><input type="radio" value="c"> <code>3</code></label>
+  <label><input type="radio" value="d"> <code>4</code></label>
+  <p class="explain">Тізімдегі «а» әрпі бар сөздер: қала, ауыл, дала. «көл» мен «су»-да <code>а</code> жоқ. <code>count()</code> 3 қайтарады.</p>
+</div>
+<div class="question" data-answer="d">
+  <p class="q-text">6. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">import java.util.Optional;
+
+public class Main {
+    public static void main(String[] args) {
+        int r = Optional.of(5)
+            .map(x -&gt; x * 2)
+            .filter(x -&gt; x &gt; 20)
+            .orElse(-1);
+        System.out.println(r);
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>10</code></label>
+  <label><input type="radio" value="b"> <code>20</code></label>
+  <label><input type="radio" value="c"> <code>5</code></label>
+  <label><input type="radio" value="d"> <code>-1</code></label>
+  <p class="explain"><code>Optional.of(5)</code> - <code>map</code> 10 жасайды, бірақ <code>filter(x -&gt; x &gt; 20)</code> оны өткізбейді, қорап бос болып қалады. <code>orElse(-1)</code> әдепкі мәнді береді: -1.</p>
+</div>
+<div class="question" data-answer="b">
+  <p class="q-text">7. Қай функционалды интерфейс бір мән қабылдайды, бірақ <strong>ештеңе қайтармайды</strong>?</p>
+  <label><input type="radio" value="a"> <code>Predicate&lt;T&gt;</code></label>
+  <label><input type="radio" value="b"> <code>Consumer&lt;T&gt;</code></label>
+  <label><input type="radio" value="c"> <code>Function&lt;T,R&gt;</code></label>
+  <label><input type="radio" value="d"> <code>Supplier&lt;T&gt;</code></label>
+  <p class="explain"><code>Consumer&lt;T&gt;</code> әдісі <code>void accept(T)</code>: мәнді «жұтады» (<code>forEach</code> ішінде). <code>Predicate</code> - <code>boolean</code>, <code>Function</code> - нәтиже түрін, <code>Supplier</code> - параметрсіз мән береді.</p>
+</div>
+<div class="question" data-answer="a">
+  <p class="q-text">8. Мына бағдарлама не шығарады?</p>
+<pre data-lang="java"><code class="language-java">class R implements AutoCloseable {
+    final String n;
+    R(String n) { this.n = n; System.out.print("O" + n + " "); }
+    public void close() { System.out.print("C" + n + " "); }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        try (R a = new R("1"); R b = new R("2")) {
+            System.out.print("тело ");
+        }
+        System.out.println();
+    }
+}</code></pre>
+  <label><input type="radio" value="a"> <code>O1 O2 тело C2 C1</code></label>
+  <label><input type="radio" value="b"> <code>O1 O2 тело C1 C2</code></label>
+  <label><input type="radio" value="c"> <code>O1 тело C1 O2 C2</code></label>
+  <label><input type="radio" value="d"> <code>тело O1 O2 C2 C1</code></label>
+  <p class="explain">Ресурстар жарияланған ретімен ашылады (<code>O1</code>, <code>O2</code>), блок орындалады, ал жабу <em>кері ретпен</em> болады: <code>C2</code>, содан кейін <code>C1</code>.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
+
+<h2 id="tasks">Жаттығулар</h2>
+<p>Алдымен өзіңіз ойлап көріңіз, сосын компьютеріңізде тексеріңіз. Шешімдердің бәрі <code>javac</code> пен <code>java</code> арқылы іске қосылып тексерілген.</p>
+<div class="task">
+  <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pj6-1">try, catch және finally ретін болжау</h3></div>
+<p>Мына әдіс шақырылғанда, әріптер қандай ретпен шығады? Әріптерді бос орынмен бөліп жазыңыз.</p>
+<pre data-lang="java"><code class="language-java">static void f() {
+    try {
+        System.out.println("A");
+        int nol = 0;
+        int x = 5 / nol;
+        System.out.println("B");
+    } catch (ArithmeticException e) {
+        System.out.println("C");
+    } finally {
+        System.out.println("D");
+    }
+    System.out.println("E");
+}</code></pre>
+<div class="answer-check" data-answer="A C D E|ACDE|A,C,D,E|A, C, D, E"><input type="text" placeholder="Тәртібі" aria-label="Тәртібі"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>A</code> шықты. <code>5 / nol</code> қайда лақтырады? Лақтырған соң <code>try</code> ішіндегі қалған жолдар (<code>B</code>) орындала ма? Әрі қарай <code>catch</code>, сосын <code>finally</code>, ал <code>finally</code>-дан кейін бағдарлама жалғасады.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>A</code> шығады; нөлге бөлу <code>ArithmeticException</code> лақтырады, <code>B</code> жолы өткізіліп жіберіледі; <code>catch</code> <code>C</code> шығарады; <code>finally</code> әрқашан <code>D</code> шығарады; қате ұсталғандықтан әдіс жалғасып, <code>E</code> шығады.</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    static void f() {
+        try {
+            System.out.println("A");
+            int nol = 0;
+            int x = 5 / nol;
+            System.out.println("B");
+        } catch (ArithmeticException e) {
+            System.out.println("C");
+        } finally {
+            System.out.println("D");
+        }
+        System.out.println("E");
+    }
+
+    public static void main(String[] args) {
+        f();
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+A
+C
+D
+E</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge easy">Оңай</span><h3 id="pj6-2">NumberFormatException хабарламасы</h3></div>
+<p>Мына код орындалғанда экранға не шығады? Жауапты дәл шыққандай (тырнақшаларымен) жазыңыз.</p>
+<pre data-lang="java"><code class="language-java">try {
+    int n = Integer.parseInt("12a");
+    System.out.println(n);
+} catch (NumberFormatException e) {
+    System.out.println(e.getMessage());
+}</code></pre>
+<div class="answer-check" data-answer="For input string: &quot;12a&quot;|For input string: 12a"><input type="text" placeholder="Хабарлама" aria-label="Хабарлама"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>catch</code> блогында тек <code>e.getMessage()</code> шығады, ал <code>n</code> шықпайды. Java бұл қатенің хабарламасын «For input string: » деп бастап, ішіне қате жолды тырнақшамен қояды.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>parseInt</code> «12a» мәтінін санға айналдыра алмай, <code>NumberFormatException</code> лақтырады, оның хабарламасы - <code>For input string: "12a"</code>.</p>
+<pre data-lang="java"><code class="language-java">public class Main {
+    public static void main(String[] args) {
+        try {
+            int n = Integer.parseInt("12a");
+            System.out.println(n);
+        } catch (NumberFormatException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+For input string: "12a"</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pj6-3">Балды оқитын әдіс және өз қатесі</h3></div>
+<p><code>BalQateligi</code> атты checked ерекше жағдай класын жазыңыз (конструкторы хабарлама мен себепті қабылдасын). <code>static int oqyBal(String matin) throws BalQateligi</code> әдісін жазыңыз: ол мәтінді <code>trim()</code> арқылы тазалап, бүтін санға айналдырсын; сан болмаса (<code>NumberFormatException</code>), оны <code>BalQateligi</code> ішіне <em>орап</em> лақтырсын; сан 0..100 аралығынан тыс болса, <code>BalQateligi</code> лақтырсын. <code>main</code>-де <code>"90"</code>, <code>"abc"</code>, <code>"120"</code>, <code>" 75 "</code> мәндерін сынап, дұрыс балдардың санын және қосындысын шығарыңыз.</p>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>NumberFormatException</code> ұстағанда <code>throw new BalQateligi("...", e)</code> жазыңыз, мұнда <code>e</code> - себеп. Конструкторда <code>super(habar, sebep)</code> қолданыңыз. Циклде әр мәнді <code>try</code> ішінде өңдеп, <code>catch (BalQateligi e)</code> арқылы <code>e.getMessage()</code> шығарыңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><pre data-lang="java"><code class="language-java">class BalQateligi extends Exception {
+    BalQateligi(String habar, Throwable sebep) {
+        super(habar, sebep);
+    }
+
+    BalQateligi(String habar) {
+        super(habar);
+    }
+}
+
+public class Main {
+    static int oqyBal(String matin) throws BalQateligi {
+        int bal;
+        try {
+            bal = Integer.parseInt(matin.trim());
+        } catch (NumberFormatException e) {
+            throw new BalQateligi("«" + matin + "» сан емес", e);
+        }
+        if (bal &lt; 0 || bal &gt; 100) {
+            throw new BalQateligi("бал 0..100 аралығында болуы керек: " + bal);
+        }
+        return bal;
+    }
+
+    public static void main(String[] args) {
+        String[] kirister = {"90", "abc", "120", " 75 "};
+        int jiny = 0;
+        int sany = 0;
+        for (String k : kirister) {
+            try {
+                int b = oqyBal(k);
+                jiny += b;
+                sany++;
+                System.out.println("OK: " + b);
+            } catch (BalQateligi e) {
+                System.out.println("Қате: " + e.getMessage());
+            }
+        }
+        System.out.println("Дұрыс балдар: " + sany + ", қосындысы: " + jiny);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+OK: 90
+Қате: «abc» сан емес
+Қате: бал 0..100 аралығында болуы керек: 120
+OK: 75
+Дұрыс балдар: 2, қосындысы: 165</code></pre></div></details>
+<details open><summary>Өзіңізді тексеріңіз</summary><div class="details-body">
+<ul class="checklist" data-id="pj6-3">
+  <li><input type="checkbox"> <span><code>BalQateligi</code> <code>Exception</code> класын кеңейтеді, <code>super(habar, sebep)</code> қолданылады.</span></li>
+  <li><input type="checkbox"> <span><code>oqyBal</code> қолтаңбасында <code>throws BalQateligi</code> бар.</span></li>
+  <li><input type="checkbox"> <span><code>"abc"</code> және <code>"120"</code> қате хабарламасымен ұсталады, <code>" 75 "</code> дұрыс оқылады (<code>trim</code>).</span></li>
+  <li><input type="checkbox"> <span>Қорытынды: 2 дұрыс бал, қосындысы 165.</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge medium">Орташа</span><h3 id="pj6-4">Stream есебі</h3></div>
+<p>Мына код орындалғанда, нәтиже қандай сан болады?</p>
+<pre data-lang="java"><code class="language-java">int s = List.of(1, 2, 3, 4, 5, 6).stream()
+    .filter(x -> x % 2 == 0)
+    .map(x -> x * x)
+    .mapToInt(Integer::intValue)
+    .sum();
+System.out.println(s);</code></pre>
+<div class="answer-check" data-answer="56"><input type="text" placeholder="Қосынды" aria-label="Қосынды"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Алдымен жұп сандарды қалдырыңыз: 2, 4, 6. Содан кейін әрқайсысының квадратын алыңыз. Соңында қосыңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>filter</code> жұп сандарды қалдырады: 2, 4, 6. <code>map</code> квадраттайды: 4, 16, 36. <code>sum()</code> 4 + 16 + 36 = 56.</p>
+<pre data-lang="java"><code class="language-java">import java.util.List;
+
+public class Main {
+    public static void main(String[] args) {
+        int s = List.of(1, 2, 3, 4, 5, 6).stream()
+            .filter(x -&gt; x % 2 == 0)
+            .map(x -&gt; x * x)
+            .mapToInt(Integer::intValue)
+            .sum();
+        System.out.println(s);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+56</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pj6-5">groupingBy нәтижесі</h3></div>
+<p>Мына тізімдегі сөздерді ұзындығы бойынша топтап, әр топтағы сөз санын <code>TreeMap</code> арқылы шығарсақ, нәтиже қандай болады? Тізім: <code>"қала", "дала", "ауыл", "көл", "су", "жер", "өзен"</code>. Код:</p>
+<pre data-lang="java"><code class="language-java">Map&lt;Integer, Long&gt; m = sozder.stream().collect(
+    Collectors.groupingBy(String::length, TreeMap::new, Collectors.counting()));
+System.out.println(m);</code></pre>
+Жауапты дәл шыққандай жазыңыз (<code>{...}</code> ішінде).
+<div class="answer-check" data-answer="{2=1, 3=2, 4=4}|{2=1,3=2,4=4}"><input type="text" placeholder="Карта" aria-label="Карта"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Ұзындықтарын санаңыз: қала - 4, дала - 4, ауыл - 4, көл - 3, су - 2, жер - 3, өзен - 4. <code>TreeMap</code> кілттерді өсу ретімен шығарады, ал <code>Map.toString()</code> форматы: <code>{кілт=мән, кілт=мән}</code>.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Ұзындығы 2: <code>су</code> (1 сөз). Ұзындығы 3: <code>көл</code>, <code>жер</code> (2 сөз). Ұзындығы 4: <code>қала</code>, <code>дала</code>, <code>ауыл</code>, <code>өзен</code> (4 сөз).</p>
+<pre data-lang="java"><code class="language-java">import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+
+public class Main {
+    public static void main(String[] args) {
+        List&lt;String&gt; sozder = List.of("қала", "дала", "ауыл", "көл", "су", "жер", "өзен");
+        Map&lt;Integer, Long&gt; m = sozder.stream().collect(
+            Collectors.groupingBy(String::length, TreeMap::new, Collectors.counting()));
+        System.out.println(m);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+{2=1, 3=2, 4=4}</code></pre></div></details>
+</div>
+
+<div class="task">
+  <div class="task-head"><span class="badge hard">Қиын</span><h3 id="pj6-6">Файлдан оқу және Stream</h3></div>
+<p><code>ballar.txt</code> файлына 6 жол жазыңыз: <code>Аты;Пән;Бал</code> форматында (мысалы, <code>Дана;математика;92</code>). Файлды қайта оқып, жолдарды <code>record Jazba(String aty, String pan, int bal)</code> нысандарына айналдырыңыз. Математикадан 80-ден кем емес балл алғандардың ішінен ең жоғары екеуін балы кему ретімен табыңыз, жазбалар санын шығарыңыз. Соңында файлды жойыңыз. Деректер: <code>Дана;математика;92</code>, <code>Ерлан;физика;78</code>, <code>Сая;математика;85</code>, <code>Асхат;математика;64</code>, <code>Мадина;физика;97</code>, <code>Нұрлан;математика;88</code>.</p>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>Files.write(f, List.of(...))</code> жазады, <code>Files.readAllLines(f).stream()</code> оқиды. <code>map(j -&gt; j.split(";"))</code>, содан соң <code>map(b -&gt; new Jazba(b[0], b[1], Integer.parseInt(b[2])))</code>. Сүзгі: <code>filter(j -&gt; j.pan().equals("математика") &amp;&amp; j.bal() &gt;= 80)</code>. Сұрыптау: <code>sorted((a, b) -&gt; Integer.compare(b.bal(), a.bal()))</code>, <code>limit(2)</code>.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><pre data-lang="java"><code class="language-java">import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class Main {
+    record Jazba(String aty, String pan, int bal) {}
+
+    public static void main(String[] args) throws IOException {
+        Path f = Path.of("ballar.txt");
+        Files.write(f, List.of(
+            "Дана;математика;92", "Ерлан;физика;78", "Сая;математика;85",
+            "Асхат;математика;64", "Мадина;физика;97", "Нұрлан;математика;88"));
+
+        List&lt;Jazba&gt; barlygy = Files.readAllLines(f).stream()
+            .map(j -&gt; j.split(";"))
+            .map(b -&gt; new Jazba(b[0], b[1], Integer.parseInt(b[2])))
+            .toList();
+
+        String top2 = barlygy.stream()
+            .filter(j -&gt; j.pan().equals("математика") &amp;&amp; j.bal() &gt;= 80)
+            .sorted((a, b) -&gt; Integer.compare(b.bal(), a.bal()))
+            .limit(2)
+            .map(j -&gt; j.aty() + " " + j.bal())
+            .collect(Collectors.joining(", "));
+        System.out.println("Математика, үздік 2: " + top2);
+        System.out.println("Барлық жазба: " + barlygy.size());
+        Files.delete(f);
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
+Математика, үздік 2: Дана 92, Нұрлан 88
+Барлық жазба: 6</code></pre></div></details>
+<details open><summary>Өзіңізді тексеріңіз</summary><div class="details-body">
+<ul class="checklist" data-id="pj6-6">
+  <li><input type="checkbox"> <span>Файл жазылады, оқылады және соңында <code>Files.delete</code> арқылы жойылады.</span></li>
+  <li><input type="checkbox"> <span>Нәтиже: <code>Дана 92, Нұрлан 88</code> (Сая 85 үшінші, Мадина физикадан).</span></li>
+  <li><input type="checkbox"> <span><code>record Jazba</code> және <code>Files.readAllLines</code> қолданылған.</span></li>
+  <li><input type="checkbox"> <span>Жазбалар саны 6 шықты.</span></li>
+</ul>
+<p class="progress"></p>
+</div></details>
+</div>
+
+
+      <nav class="pager">
+  <a href="week-5.html"><small>Алдыңғы</small>← 5-апта: Collections және generics</a>
+  <a class="next" href="week-7.html"><small>Келесі</small>7-апта: Көп ағын, құралдар және қорытынды жоба →</a>
+</nav>
+
+      <p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

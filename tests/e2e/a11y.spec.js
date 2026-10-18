@@ -7,7 +7,7 @@ const AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 
 for (const scheme of ["light", "dark"]) {
   test(`a11y: барлық беттер (${scheme})`, async ({ browser }) => {
-    test.setTimeout(240_000);
+    test.setTimeout(600_000);
     const c = await browser.newContext({ colorScheme: scheme, reducedMotion: "reduce" });
     await blockFonts(c);
     const p = await c.newPage();

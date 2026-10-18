@@ -119,6 +119,61 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
   "tasks": 4
  },
  {
+  "id": "week-2",
+  "num": "2-апта",
+  "title": "Массивтер, String және ArrayList",
+  "url": "java/lectures/week-2.html",
+  "topics": [
+   {
+    "t": "Массивтер",
+    "id": "arrays"
+   },
+   {
+    "t": "Жад: примитив пен сілтеме",
+    "id": "memory"
+   },
+   {
+    "t": "Екі өлшемді массивтер",
+    "id": "arrays2d"
+   },
+   {
+    "t": "Arrays класы",
+    "id": "arrays-class"
+   },
+   {
+    "t": "String: өзгермейтін мәтін",
+    "id": "strings"
+   },
+   {
+    "t": "ArrayList",
+    "id": "arraylist"
+   },
+   {
+    "t": "Wrapper типтер және autoboxing",
+    "id": "wrappers"
+   },
+   {
+    "t": "Қарапайым іздеу және сұрыптау алгоритмдері",
+    "id": "algorithms"
+   },
+   {
+    "t": "Бәрін біріктіру: аспаптар каталогы",
+    "id": "project"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Жаттығулар",
+    "id": "exercises"
+   }
+  ],
+  "minutes": 41,
+  "quiz": 8,
+  "tasks": 4
+ },
+ {
   "id": "week-4",
   "num": "4-апта",
   "title": "Мұрагерлік, интерфейстер және полиморфизм",
@@ -253,6 +308,77 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
    }
   ],
   "minutes": 40,
+  "quiz": 8,
+  "tasks": 3
+ },
+ {
+  "id": "week-6",
+  "num": "6-апта",
+  "title": "Ерекше жағдайлар, файлдар, lambda және Stream",
+  "url": "java/lectures/week-6.html",
+  "topics": [
+   {
+    "t": "Бағдарлама қателескенде не болады?",
+    "id": "why"
+   },
+   {
+    "t": "Қате қалай көрінеді",
+    "id": "trace"
+   },
+   {
+    "t": "try, catch және finally",
+    "id": "try"
+   },
+   {
+    "t": "Checked және unchecked қателер",
+    "id": "checked"
+   },
+   {
+    "t": "Өз ерекше жағдайымызды жазу",
+    "id": "custom"
+   },
+   {
+    "t": "try-with-resources",
+    "id": "resources"
+   },
+   {
+    "t": "Файлмен жұмыс: Path және Files",
+    "id": "files"
+   },
+   {
+    "t": "Lambda өрнектері",
+    "id": "lambda"
+   },
+   {
+    "t": "Функционалды интерфейстер",
+    "id": "functional"
+   },
+   {
+    "t": "Stream API",
+    "id": "stream"
+   },
+   {
+    "t": "Optional: «мән болмауы мүмкін»",
+    "id": "optional"
+   },
+   {
+    "t": "Мини-жоба: файлдан оқып, Stream-мен өңдеу",
+    "id": "mini"
+   },
+   {
+    "t": "Өз компьютеріңде іске қос",
+    "id": "run"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Жаттығулар",
+    "id": "tasks"
+   }
+  ],
+  "minutes": 38,
   "quiz": 8,
   "tasks": 3
  }

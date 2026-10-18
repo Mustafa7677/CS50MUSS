@@ -123,6 +123,128 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
   "tasks": 3
  },
  {
+  "id": "week-2",
+  "num": "2-апта",
+  "title": "Массивтер, жолдар және vector",
+  "url": "cpp/lectures/week-2.html",
+  "topics": [
+   {
+    "t": "Неге контейнер керек?",
+    "id": "why-containers"
+   },
+   {
+    "t": "C-массив",
+    "id": "c-array"
+   },
+   {
+    "t": "std::array",
+    "id": "std-array"
+   },
+   {
+    "t": "std::vector",
+    "id": "vector"
+   },
+   {
+    "t": "Диапазонды for",
+    "id": "range-for"
+   },
+   {
+    "t": "std::string",
+    "id": "string"
+   },
+   {
+    "t": "Екі өлшемді контейнерлер",
+    "id": "2d"
+   },
+   {
+    "t": "Сұрыптау",
+    "id": "sorting"
+   },
+   {
+    "t": "Іздеу",
+    "id": "searching"
+   },
+   {
+    "t": "Енгізу: getline және ағын мәселелері",
+    "id": "input-streams"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Жаттығулар",
+    "id": "exercises"
+   }
+  ],
+  "minutes": 38,
+  "quiz": 8,
+  "tasks": 3
+ },
+ {
+  "id": "week-3",
+  "num": "3-апта",
+  "title": "Жад, көрсеткіштер және сілтемелер",
+  "url": "cpp/lectures/week-3.html",
+  "topics": [
+   {
+    "t": "Жад және мекенжай",
+    "id": "memory"
+   },
+   {
+    "t": "Көрсеткіш: * және &",
+    "id": "pointers"
+   },
+   {
+    "t": "Сілтеме (reference)",
+    "id": "references"
+   },
+   {
+    "t": "const сілтеме",
+    "id": "const-ref"
+   },
+   {
+    "t": "Көрсеткіш арифметикасы және массив",
+    "id": "arithmetic"
+   },
+   {
+    "t": "nullptr",
+    "id": "nullptr"
+   },
+   {
+    "t": "Stack және heap",
+    "id": "stack-heap"
+   },
+   {
+    "t": "new және delete",
+    "id": "new-delete"
+   },
+   {
+    "t": "Жад қателері және AddressSanitizer",
+    "id": "memory-bugs"
+   },
+   {
+    "t": "RAII: ресурсты автоматты басқару",
+    "id": "raii"
+   },
+   {
+    "t": "Смарт көрсеткіштер",
+    "id": "smart-pointers"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Жаттығулар",
+    "id": "exercises"
+   }
+  ],
+  "minutes": 36,
+  "quiz": 8,
+  "tasks": 3
+ },
+ {
   "id": "week-4",
   "num": "4-апта",
   "title": "Класстар және нысандар",
@@ -173,6 +295,10 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "bank"
    },
    {
+    "t": "Класты қалай жобалайды?",
+    "id": "design"
+   },
+   {
     "t": "Жиі қателер",
     "id": "mistakes"
    },
@@ -181,7 +307,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 39,
+  "minutes": 41,
   "quiz": 8,
   "tasks": 3
  },
@@ -230,6 +356,10 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
    {
     "t": "Rule of Three және Rule of Five кіріспесі",
     "id": "rule-of-three"
+   },
+   {
+    "t": "Дизайн мысалы: билет жүйесі",
+    "id": "design-example"
    },
    {
     "t": "Мұрагерлік пе, композиция ма?",
@@ -295,6 +425,14 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "example"
    },
    {
+    "t": "Контейнер адаптерлері: stack, queue, priority_queue",
+    "id": "adapters"
+   },
+   {
+    "t": "Құжаттаманы қалай оқу керек?",
+    "id": "docs"
+   },
+   {
     "t": "Жиі қателер",
     "id": "mistakes"
    },
@@ -303,8 +441,55 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 37,
+  "minutes": 41,
   "quiz": 8,
   "tasks": 3
+ },
+ {
+  "id": "week-7",
+  "num": "7-апта",
+  "title": "Шаблондар, ерекше жағдайлар, файлдар және қорытынды жоба",
+  "url": "cpp/lectures/week-7.html",
+  "topics": [
+   {
+    "t": "Шаблондар",
+    "id": "templates"
+   },
+   {
+    "t": "Ерекше жағдайлар: try, catch, throw",
+    "id": "exceptions"
+   },
+   {
+    "t": "RAII және ерекше жағдайлар",
+    "id": "raii"
+   },
+   {
+    "t": "Файлдармен жұмыс: fstream",
+    "id": "files"
+   },
+   {
+    "t": "Namespace: атаулар кеңістігі",
+    "id": "namespace"
+   },
+   {
+    "t": "Көп файлды жоба: header, source, Makefile",
+    "id": "multifile"
+   },
+   {
+    "t": "Қорытынды жоба: «Кітапхана басқару жүйесі»",
+    "id": "project"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Жаттығулар",
+    "id": "exercises"
+   }
+  ],
+  "minutes": 47,
+  "quiz": 8,
+  "tasks": 4
  }
 ];
