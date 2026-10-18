@@ -98,6 +98,7 @@ test("витрина: басты бет пен courses.html-де C++ және Ja
   await expect(page.locator(".cx-home .cx-card")).toHaveCount(6);
   await expect(page.locator('.cx-card[data-course="cpp"]')).toHaveAttribute("href", "cpp/");
   await expect(page.locator('.cx-card[data-course="java"] .cx-tags li')).toHaveText(["ООП", "Collections", "Stream", "көп ағын"]);
+  await page.locator("details.route-later > summary").click(); // «Кейін қарайсың» блогы әдепкіде жабық
   await expect(page.locator('.cx-card[data-course="cpp"] .cx-glyph')).toBeVisible();
   await expect(page.locator("[data-site-stats]")).toContainText("7 курс");
   await page.goto("courses.html");

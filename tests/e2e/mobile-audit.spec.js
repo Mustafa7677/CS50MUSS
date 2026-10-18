@@ -132,13 +132,13 @@ for (const d of SMALL) {
     test("playground: Python/SQL/Web табтары, фокус, Run батырмасы, шығыс", async ({ page, context }) => {
       await routePyodide(context);
       await page.goto("playground.html"); await page.waitForTimeout(500);
-      const ed = page.locator("textarea.pg-editor");
+      const ed = page.locator("textarea.pg-editor").first();
       await ed.tap();
       expect(await ed.evaluate((e) => parseFloat(getComputedStyle(e).fontSize)), "iOS фокуста масштабтамас үшін ≥16px").toBeGreaterThanOrEqual(16);
       await expectTarget(page.locator(".pg-run"), "Іске қосу (Ctrl+Enter баламасы)");
       await expectTarget(page.locator(".pg-tab").first(), "таб");
       // экран пернетақтасы ~40% экранды алады: редактор басына айналдырғанда Run көрінуі керек
-      await ed.evaluate((e) => e.scrollIntoView({ block: "start" })); await page.evaluate(() => scrollBy(0, -64));
+      await ed.evaluate((e) => e.scrollIntoView({ block: "start", behavior: "instant" })); await page.evaluate(() => scrollBy(0, -64));
       const runBottom = await page.locator(".pg-run").evaluate((e) => e.getBoundingClientRect().bottom);
       expect(runBottom, "Run батырмасы пернетақта ашық кезде көрінетін аймақта").toBeLessThanOrEqual(d.h * 0.62);
       // Ұзын жол: бет айналмайды
