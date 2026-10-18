@@ -879,7 +879,7 @@
 
   // Көлденең айналатын кестелер пернетақтамен де айналсын (қолжетімділік: scrollable-region-focusable)
   function initWideTables() {
-    const mark = () => document.querySelectorAll(".content table").forEach((t) => { if (t.scrollWidth > t.clientWidth + 1 && !t.hasAttribute("tabindex")) t.tabIndex = 0; });
+    const mark = () => document.querySelectorAll(".content table, .content div[style*='overflow-x']").forEach((t) => { if (t.scrollWidth > t.clientWidth + 1 && !t.hasAttribute("tabindex")) t.tabIndex = 0; });
     mark();
     addEventListener("load", mark);
     addEventListener("resize", mark);
