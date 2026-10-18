@@ -232,7 +232,7 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 35,
+  "minutes": 38,
   "quiz": 8,
   "tasks": 5
  },
