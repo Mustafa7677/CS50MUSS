@@ -12,7 +12,7 @@
 |---|---|
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
-| B · Sagid Mustafa-ның дербес әзірлемесі | 364 |
+| B · Sagid Mustafa-ның дербес әзірлемесі | 367 |
 | C · Үшінші тарап | 19 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 55 |
 
@@ -34,6 +34,7 @@
 | `python/checks/*.js`<br>`ai/checks/*.js`<br>`web/checks/*.js`<br>`assets/data/checks.js`<br>`assets/data/sqlchecks.js`<br>`sql/data/week-*.js`<br>`web/data/week-*.js`<br>`assets/data/db.js`<br>`tests/support/solutions.json` | **R-checks** Автоматические проверки и демо-базы к упражнениям лекций (тесты в стиле check50) (37 файл) | Sagid Mustafa (код проверок, вымышленные данные); условия задач соответствуют problem sets Harvard | Лицензия не назначена: требует проверки. Ранее опубликованные версии остаются на условиях CC BY-NC-SA 4.0 | тексеру керек |
 | `debug.html`<br>`assets/data/bugs.js`<br>`assets/data/trace.js` | **R-bugs-trace** Тренажёры 'Қатені тап' и 'Не шығарады?' (данные упражнений) (3 файл) | Sagid Mustafa; фрагменты кода используют стиль и библиотеку cs50.h из курса Harvard | Лицензия не назначена: требует проверки. Ранее опубликованные версии остаются на условиях CC BY-NC-SA 4.0 | тексеру керек |
 | `index.html`<br>`courses.html`<br>`map.html`<br>`practice.html`<br>`python/index.html`<br>`sql/index.html`<br>`ai/index.html`<br>`web/index.html`<br>`tools/make_course_pages.py`<br>`about.html` | **R-course-pages** Страницы курсов и навигации: главная, курсы, карта курса, практика, мои курсы (10 файл) | Sagid Mustafa (интерфейс и тексты); описания курсов основаны на сведениях о курсах Harvard | Лицензия не назначена: требует проверки. Ранее опубликованные версии остаются на условиях CC BY-NC-SA 4.0 | тексеру керек |
+| `assets/js/own-viz.js`<br>`assets/css/own-viz.css` | **B-own-viz** C++ және Java лекцияларының интерактивті визуализаторлары (own-viz) (2 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `detective.html`<br>`assets/data/mystery.js`<br>`assets/data/mystery2.js`<br>`tools/make_mystery.py`<br>`tools/make_mystery2.py`<br>`tools/make_demo_db.py` | **B-sql-detective** SQL детектив: «Алтын домбыра» и «Байқоңыр құпиясы» (6 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `projects.html`<br>`assets/js/projects.js`<br>`projects/**` | **B-projects** Жобалар шеберханасы: Python веб-қосымша, сайт генераторы, мәтін жіктегіші (AI), AI-интеграция (7 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `alash.html`<br>`tools/fetch_portraits.py` | **B-alash** Алаш тұлғалары: образовательные тексты, исторические примеры, задания (2 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
@@ -43,7 +44,7 @@
 | `games.html`<br>`assets/js/games-*.js`<br>`assets/css/games-ui*.css`<br>`assets/js/cabinet.js` | **B-games** Образовательные игры, система XP, кабинет (7 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/js/main.js`<br>`assets/js/exam.js`<br>`exam.html`<br>`assets/js/profile.js`<br>`profile.html`<br>`assets/js/cloud.js`<br>`teacher.html`<br>`assets/js/feedback.js`<br>`supabase/**`<br>`certificate.html`<br>`sw.js`<br>`manifest.webmanifest` | **B-platform** Платформа: движок сайта, прогресс, достижения, редактор, тест-система, профиль, кабинеты ученика и преподавателя, синхронизация (13 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/css/style.css`<br>`assets/img/bota*.svg`<br>`assets/img/icon*`<br>`assets/img/og.jpg`<br>`assets/img/og/**`<br>`tools/make_og.mjs` | **B-design** Дизайн, стили, фирменная графика (маскот Бота, иконки, превью) (24 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
-| `tools/build.py`<br>`tools/fetch_cs50.py`<br>`tools/__pycache__/**`<br>`tests/**`<br>`.github/**`<br>`licensing/**`<br>`robots.txt`<br>`sitemap.xml`<br>`.nojekyll`<br>`.gitignore`<br>`**/.gitkeep`<br>`tools/licence_audit.py` | **B-tools-tests** Скрипты сборки, тесты, CI (50 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `tools/build.py`<br>`tools/fetch_cs50.py`<br>`tools/__pycache__/**`<br>`tests/**`<br>`.github/**`<br>`licensing/**`<br>`robots.txt`<br>`sitemap.xml`<br>`.nojekyll`<br>`.gitignore`<br>`**/.gitkeep`<br>`tools/licence_audit.py` | **B-tools-tests** Скрипты сборки, тесты, CI (51 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `qazaqcode/**` | **B-qazaqcode** QazaqCode Platform (отдельный коммерческий продукт) (219 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `README.md`<br>`LICENSE.md`<br>`LICENSE-HARVARD.md`<br>`LICENSE-PROPRIETARY.md`<br>`COPYRIGHT.md`<br>`THIRD-PARTY-LICENSES.md`<br>`TAKEDOWN.md`<br>`copyright.html`<br>`404.html`<br>`test-results/**` | **B-docs** Документы проекта: README, лицензии, правила обращения (9 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/vendor/sqljs/**` | **C-sqljs** sql.js (SQLite в WebAssembly) (4 файл) | sql.js authors; SQLite - общественное достояние | MIT | расталған |
@@ -68,6 +69,7 @@
 - **R-checks**: Код проверок написан самостоятельно, но привязан к формулировкам и названиям задач Harvard (check50-подобные тесты). Требуется проверить, какие проверки независимы.
 - **R-bugs-trace**: Упражнения привязаны к неделям курса и используют API cs50.h. Лицензия самой библиотеки cs50.h и степень зависимости от материалов Harvard не установлены.
 - **R-course-pages**: Смешанные страницы: интерфейс/вёрстка - B-ui, описания и названия курсов Harvard - A. Требуется постраничная проверка текстов.
+- **B-own-viz**: Дербес авторлық код; Harvard CS50 визуализацияларынан көшірілмеген
 - **B-sql-detective**: Заявлено правообладателем как самостоятельное произведение. В файлах нет заимствованных материалов Harvard (проверено поиском).
 - **B-projects**: Заявлено правообладателем. В файлах нет заимствованных материалов Harvard.
 - **B-alash**: Собственный текст страницы и код. Цитаты и портреты - отдельные записи C-portraits и R-quotes.

@@ -610,6 +610,7 @@ def main():
         for code in OWN_COURSES:
             own_files += [f"{code}/index.html", f"{code}/data/lectures.js"] + sorted(
                 f.relative_to(ROOT).as_posix() for f in (ROOT / code / "lectures").glob("week-*.html"))
+        own_files += ["assets/js/own-viz.js", "assets/css/own-viz.css"]  # дербес курстардың интерактивті визуализаторлары
         own_files = [f for f in own_files if (ROOT / f).exists()]
         sw = swp.read_text(encoding="utf-8")
         sw2 = re.sub(r"/\*own-courses:begin\*/.*?/\*own-courses:end\*/",

@@ -579,6 +579,12 @@
     };
     render();
     if (pager) pager.before(done);
+    if (pager && pager.querySelector("a.next")) {
+      const nu = document.createElement("div");
+      nu.className = "next-up-h";
+      nu.textContent = "Келесі не?";
+      pager.before(nu);
+    }
     const mini = document.createElement("figure");
     mini.className = "qt-mini";
     done.after(mini);
