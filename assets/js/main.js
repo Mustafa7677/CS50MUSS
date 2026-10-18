@@ -121,6 +121,7 @@
     initCourseHome();
     initWideTables();
     initCourseCards();
+    initBeginnerPath();
     initCourseMenu();
     initCheatsheet();
     myCourses(document.querySelector(".my-courses"));
@@ -134,7 +135,7 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
-    window.CS50KZ = { myCourses, botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), summary: summaryData, ORDER, dayKey, COURSE, readJson };
+    window.CS50KZ = { myCourses, botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), totalLectures: () => COURSE_META.reduce((n, c) => n + c.total, 0), COURSE_META, summary: summaryData, certStatus, certId, certVerifyCode, verifiedCourses, CERT_TASKS, ORDER, dayKey, COURSE, readJson };
     if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .js-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
     if (document.querySelector(".flask-lab")) loadScript("assets/js/flask.js");
     if (document.querySelector(".exam")) loadScript("assets/js/exam.js");
@@ -352,19 +353,28 @@
     save(p) {
       try { localStorage.setItem(this.key, JSON.stringify(p)); } catch (e) {}
     },
-    tasksDone(id) {
-      let done = 0;
-      try {
-        for (let i = 0; i < localStorage.length; i++) {
-          const k = localStorage.key(i);
-          if (!k.startsWith("check:") || !k.includes("/" + id + ".html:")) continue;
-          const arr = readJson(k, []);
-          if (arr.length && arr.every(Boolean)) done++;
-        }
-      } catch (e) {}
-      return done;
-    },
+    // Орындалған тапсырма (чек-тізім) саны: id = "week-3" (CS50x) не "python:week-3" (басқа курстар)
+    tasksDone(id) { return taskMap()[id] || 0; },
   };
+
+  // Барлық «check:<бет>:<тапсырма>» кілттерін бір рет оқып, лекция бойынша толық орындалған тапсырмаларды санайды.
+  // Кілттегі бет жолы курсты көрсетеді: .../python/lectures/week-3.html (курс) не .../lectures/week-3.html (CS50x).
+  function taskMap() {
+    const m = {};
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (!k || !k.startsWith("check:")) continue;
+        const h = k.match(/\/(python|sql|ai|web|cpp|java)\/lectures\/(week-\d+)\.html:/);
+        const x = h ? null : k.match(/\/lectures\/(week-\d+|ai)\.html:/);
+        const id = h ? h[1] + ":" + h[2] : x ? x[1] : null;
+        if (!id) continue;
+        const arr = readJson(k, []);
+        if (Array.isArray(arr) && arr.length && arr.every(Boolean)) m[id] = (m[id] || 0) + 1;
+      }
+    } catch (e) {}
+    return m;
+  }
 
   function celebrate() {
     if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
@@ -1007,6 +1017,92 @@
     });
   }
 
+  // ---------- «Бір негізгі маршрут»: CS50x/курс → лекция → тапсырма → нәтиже → келесі лекция ----------
+  // Статикалық нұсқа build.py-да (route_block); мұнда оқушының прогресі бойынша ағымдағы қадам белгіленеді.
+  // Ағымдағы лекция - курстағы бірінші оқылмаған лекция. Қадамдар: 1 курс, 2 лекция ашылды, 3 тапсырма, 4 тест, 5 келесі лекция.
+  function routeState(c, list, p) {
+    const key = (l) => (c === "x" ? l.id : c + ":" + l.id);
+    const readN = list.filter((l) => p.read[key(l)]).length;
+    const lastRaw = c === "x" ? p.last : readJson("cs50kz:last:" + c, null);
+    const lastId = lastRaw && lastRaw.id;
+    const L = list.find((l) => !p.read[key(l)]) || null;
+    const next = L ? list[list.indexOf(L) + 1] || null : null;
+    const state = { readN, L, next, started: false, done: [false, false, false, false, false], current: 1 };
+    if (!L) { state.done = [true, true, true, true, true]; state.current = 0; state.started = true; return state; }
+    const tasks = Progress.tasksDone(key(L)), quiz = p.quiz[key(L)];
+    const act = lastId === key(L) || tasks > 0 || !!quiz;
+    state.started = readN > 0 || act || (!!lastId && (c === "x" ? ORDER.includes(lastId) : lastId.startsWith(c + ":")));
+    const d1 = state.started, d2 = d1 && act;
+    const d3 = d2 && (tasks > 0 || !L.tasks), d4 = d3 && (!!quiz || !L.quiz);
+    state.done = [d1, d2, d3, d4, false];
+    state.current = [d1, d2, d3, d4].indexOf(false) + 1 || 5;
+    return state;
+  }
+
+  function renderRoute(box, c, list) {
+    const p = Progress.load();
+    const st = routeState(c, list, p), { L, next } = st;
+    const steps = [...box.querySelectorAll(".route-step")];
+    const certHref = ROOT_URL + "certificate.html" + (c === "x" ? "" : "?course=" + c);
+    const setStep = (i, href, title, small) => {
+      const li = steps[i - 1];
+      if (!li) return;
+      const a = li.querySelector("a");
+      if (href) a.setAttribute("href", href);
+      if (title != null) a.querySelector("b").textContent = title;
+      if (small != null) a.querySelector("small").textContent = small;
+    };
+    const url = (l, hash) => ROOT_URL + l.url + (hash ? "#" + hash : "");
+    if (L) {
+      setStep(2, url(L), L.num + " лекциясы", L.title);
+      setStep(3, url(L, L.task || ""), null, L.tasks ? "Өзің орында" : "Бұл лекцияда тапсырма жоқ");
+      setStep(4, url(L, L.quiz ? "quiz" : ""), null, null);
+      setStep(5, next ? url(next) : certHref, next ? "Келесі лекция" : "Сертификат", next ? next.num + ": " + next.title : "Курс аяқталады");
+    }
+    steps.forEach((li, i) => {
+      const done = st.done[i], cur = st.current === i + 1;
+      li.classList.toggle("is-done", done);
+      li.classList.toggle("is-current", cur);
+      if (cur) li.setAttribute("aria-current", "step"); else li.removeAttribute("aria-current");
+      const old = li.querySelector(".route-sr");
+      if (old) old.remove();
+      const mark = document.createElement("span");
+      mark.className = "route-sr";
+      mark.textContent = done ? " (орындалды)" : cur ? " (қазір осы қадам)" : "";
+      li.querySelector(".route-txt b").after(mark);
+      const dot = li.querySelector(".route-dot");
+      dot.textContent = done ? "✓" : String(i + 1);
+    });
+    const go = box.querySelector(".route-go"), note = box.querySelector(".route-note");
+    box.dataset.state = !L ? "complete" : st.started ? "progress" : "fresh";
+    box.dataset.current = String(st.current);
+    if (!L) {
+      go.setAttribute("href", certHref);
+      go.innerHTML = 'Сертификатты алу <span aria-hidden="true">→</span>';
+      note.textContent = "Курс толық оқылды. Қорытынды емтиханнан өтіп, сертификат алыңыз.";
+      return;
+    }
+    const target = [url(L), url(L), url(L, L.task || ""), url(L, L.quiz ? "quiz" : ""), next ? url(next) : certHref][st.current - 1];
+    go.setAttribute("href", target);
+    const lab = st.current === 5 && next ? next.num : L.num;
+    go.innerHTML = `${st.started ? "Жалғастыру" : "Бастау"}: ${escapeHtml(lab)} <span aria-hidden="true">→</span>`;
+    if (st.started) {
+      const names = ["Курсты таңдау", "Лекцияны оқу", "Бірінші тапсырма", "Тест пен тексеру нәтижесі", "Келесі лекцияға өту"];
+      note.textContent = `${st.current}-қадам: ${names[st.current - 1]}. ${st.readN}/${list.length} лекция оқылды.` +
+        (st.current === 5 ? ` «${L.num}» дайын: лекция соңында «Оқыдым» деп белгілеңіз.` : "");
+    }
+  }
+
+  function initBeginnerPath() {
+    document.querySelectorAll(".route[data-route]").forEach((box) => {
+      const c = box.dataset.route;
+      loadScript(c === "x" ? "assets/data/lectures.js" : c + "/data/lectures.js").then(() => {
+        const list = c === "x" ? window.CS50KZ_LECTURES : (window.CS50KZ_COURSE_LECTURES || {})[c];
+        if (list && list.length) renderRoute(box, c, list);
+      }).catch(() => {});
+    });
+  }
+
   // ---------- Басты бет: жеке прогресс панелі ----------
   function initDashboard() {
     const panel = document.querySelector(".dashboard");
@@ -1291,7 +1387,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
     // Әр курстың өз сертификаты: certificate.html?course=python|sql|ai|web|cpp|java
     const q = new URLSearchParams(location.search).get("course");
     const course = ["python", "sql", "ai", "web", "cpp", "java"].includes(q) ? q : "x";
-    const note = (c) => `Бейресми сертификат. Түпнұсқа курс: ${c}, Гарвард университеті, David J. Malan (CC BY-NC-SA 4.0). Гарвард университеті берген ресми сертификат емес.`;
+    const note = (c) => `Оқу сертификаты. Түпнұсқа курс: ${c}, Гарвард университеті, David J. Malan (CC BY-NC-SA 4.0). Гарвард университеті берген ресми сертификат емес.`;
     const COURSE_CERT = {
       python: { code: "CS50P", total: 10, what: "«Python бағдарламалау» (CS50P)", topics: "функциялар, шарттар, циклдер, ерекше жағдайлар, кітапханалар, модульдік тесттер, файлдармен жұмыс, тұрақты өрнектер және объектіге бағытталған бағдарламалау" },
       sql: { code: "CS50 SQL", total: 7, what: "«Дерекқорлар» (CS50 SQL)", topics: "SQL сұраулары, кестелерді байланыстыру, дерекқорды жобалау, деректерді жазу, көріністер, индекстер және масштабтау" },
@@ -1364,7 +1460,100 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
         document.querySelector(".cert-print").disabled = false;
       }
       document.querySelector(".cert-print").addEventListener("click", () => print());
+      initVerifiedCert({ course, CC, cert, nameInput, learningOk: !(left.length || lectures.length < (CERT.total || 0)), months, note });
     });
+  }
+
+  // «Расталған білім сертификаты»: шарт-карточка (4 критерий) + алтын мөрлі сертификат
+  function initVerifiedCert({ course, CC, cert, nameInput, learningOk, months, note }) {
+    const $ = (sel) => document.querySelector(sel);
+    const vc = $(".vcert"), crit = $(".cert-criteria"), reason = $(".cert-reason"), honest = $(".cert-honest"), btn = $(".cert-print"), gate = $(".cert-gate");
+    if (!vc) return;
+    const meta = COURSE_META.find((m) => m.id === course);
+    const st = certStatus(course);
+    const c = st.crit;
+    const code = course === "x" ? "CS50x" : CC.code;
+    const what = course === "x" ? "«Информатикаға кіріспе» (CS50x)" : CC.what;
+    const examHref = `${ROOT_URL}exam.html${course === "x" ? "" : "?course=" + course}`;
+    const lecHref = `${ROOT_URL}${meta.href}`;
+    const rows = [
+      { k: "lectures", t: "Лекциялар", num: `лекциялар: ${c.lectures.cur}/${c.lectures.goal}, керек: ${c.lectures.goal}`, frac: c.lectures.cur / (c.lectures.goal || 1), hint: `<a href="${lecHref}">Лекцияларға өту →</a>`, short: "лекциялар" },
+      { k: "exam", t: "Қорытынды емтихан", num: `емтихан: ${c.exam.cur == null ? "тапсырылмаған" : c.exam.cur + "%"}, керек: ${c.exam.goal}%`, frac: (c.exam.cur || 0) / c.exam.goal, hint: `<a href="${examHref}">${c.exam.cur == null ? "Емтихан тапсыру" : "Қайта тапсыру"} →</a>`, short: "емтихан" },
+      { k: "tasks", t: "Практикалық тапсырмалар", num: `тапсырма: ${c.tasks.cur}/${c.tasks.total}, керек: ${c.tasks.goal} (${Math.round(CERT_RULE.tasks * 100)}%)`, frac: c.tasks.cur / (c.tasks.goal || 1), hint: "Лекция соңындағы тапсырмалардың тексеру тізімін толық белгілеңіз.", short: "тапсырмалар" },
+      { k: "quiz", t: "Лекция тесттері", num: `тест: орта ${c.quiz.cur}%, керек: ${c.quiz.goal}% (${c.quiz.taken}/${c.quiz.total} тест тапсырылған)`, frac: c.quiz.cur / c.quiz.goal, hint: "Әр лекцияның соңындағы тестті тапсырыңыз: тапсырылмаған тест 0% болып есептеледі.", short: "тест" },
+    ];
+    const missing = rows.filter((r) => !c[r.k].ok);
+    const okN = rows.length - missing.length;
+    crit.innerHTML = `<div class="cc-head"><h2>Расталған сертификат шарттары</h2><span class="cc-count ${st.verified ? "ok" : ""}">${okN} / 4 орындалды</span></div>
+      <ul class="cc-list">${rows.map((r) => `<li class="cc-row ${c[r.k].ok ? "ok" : "todo"}" data-k="${r.k}">
+        <div class="cc-top"><span class="cc-mark" aria-hidden="true">${c[r.k].ok ? "✓" : "○"}</span><b>${r.t}</b><span class="cc-state">${c[r.k].ok ? "орындалды ✓" : "қалды"}</span></div>
+        <div class="cc-num">${escapeHtml(r.num)}</div>
+        <div class="cc-bar" role="progressbar" aria-label="${r.t}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${Math.min(100, Math.round(r.frac * 100))}"><i style="width:${Math.min(100, Math.round(r.frac * 100))}%"></i></div>
+        ${c[r.k].ok ? "" : `<p class="cc-hint">${r.hint}</p>`}</li>`).join("")}</ul>`;
+
+    // Тек шарттар орындалғанда ғана жеке сертификат толтырылады (және берілген күн сақталады)
+    let issued = null;
+    if (st.verified) {
+      const certs = readJson("cs50kz:certs", {});
+      if (!certs[course] || !/^\d{4}-\d{2}-\d{2}$/.test(certs[course].d || "")) {
+        certs[course] = { d: dayKey() };
+        try { localStorage.setItem("cs50kz:certs", JSON.stringify(certs)); } catch (e) {}
+      }
+      issued = certs[course].d;
+      const id = certId(profile().id, course, issued);
+      const q = (c.quiz.cur), t = c.tasks.pct, e = c.exam.cur;
+      const set = (sel, v) => { const el = vc.querySelector(sel); if (el) el.textContent = v; };
+      const dd = new Date(issued + "T12:00:00");
+      set(".vc-code", code);
+      set(".vc-text", `${what} курсының барлық ${c.lectures.goal} лекциясын оқып, қорытынды емтиханнан, практикалық тапсырмалардан және лекция тесттерінен белгіленген межеден өткенін растайды.`);
+      set(".vc-m-exam", e + "%"); set(".vc-m-tasks", `${t}% (${c.tasks.cur}/${c.tasks.total})`); set(".vc-m-quiz", q + "%");
+      set(".vc-date", `${dd.getFullYear()} ж. ${dd.getDate()} ${months[dd.getMonth()]}`);
+      set(".vc-id", id.slice(0, 5) + "-" + id.slice(5));
+      vc.dataset.certId = id;
+      const vcode = certVerifyCode(id, e, t, q);
+      set(".vc-vcode", vcode.slice(0, 3) + "-" + vcode.slice(3));
+      vc.dataset.verifyCode = vcode;
+      set(".vc-note", CC && CC.own ? "Авторлық курс: Sagid Mustafa." : `Түпнұсқа курс: ${code}, Harvard University, David J. Malan (CC BY-NC-SA 4.0). Harvard University берген ресми сертификат емес.`);
+      if (CC && CC.own) { const r = vc.querySelector(".vc-sign-role"); if (r) r.textContent = "Курс авторы"; }
+    }
+    vc.dataset.course = course;
+    vc.classList.toggle("is-locked", !st.verified);
+    const syncName = () => { const n = vc.querySelector(".vc-name"); if (n) n.textContent = nameInput.value.trim() || "Сіздің атыңыз"; };
+    nameInput.addEventListener("input", syncName); syncName();
+
+    // Оқу сертификаты бетінде расталған түрге сілтеме
+    const hrefFor = (tier) => `certificate.html?${[course !== "x" ? "course=" + course : "", tier === "verified" ? "tier=verified" : ""].filter(Boolean).join("&")}`.replace(/\?$/, "");
+    gate.insertAdjacentHTML("beforeend", `<p class="cg-verify">🏅 <a href="${hrefFor("verified")}" data-tier-link="verified">Расталған білім сертификаты</a>: ${okN} / 4 шарт орындалды${st.verified ? " ✓" : ""}</p>`);
+
+    const learnOnly = [cert, gate, $(".cert-intro")], verOnly = [crit, honest];
+    const apply = (tier) => {
+      const v = tier === "verified";
+      learnOnly.forEach((el) => el && (el.hidden = v));
+      verOnly.forEach((el) => el && (el.hidden = !v));
+      vc.hidden = !(v && st.verified); // шарт орындалмаса сертификат жасалмайды
+      document.querySelectorAll(".cert-tier").forEach((a) => { const on = a.dataset.tier === (v ? "verified" : "learn"); a.classList.toggle("on", on); on ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"); a.href = ROOT_URL + hrefFor(a.dataset.tier); });
+      document.querySelectorAll(".cert-switch a").forEach((a) => { const cc = a.dataset.c; a.href = ROOT_URL + "certificate.html?" + [cc !== "x" ? "course=" + cc : "", v ? "tier=verified" : ""].filter(Boolean).join("&"); a.href = a.href.replace(/\?$/, ""); });
+      const can = v ? st.verified : learningOk;
+      btn.disabled = !can;
+      btn.textContent = v ? "Басып шығару / PDF (расталған)" : "Басып шығару / PDF";
+      reason.hidden = !(v && !st.verified);
+      if (v && !st.verified) reason.textContent = `Расталған сертификат әзірге жүктелмейді: орындалмаған шарттар - ${missing.map((r) => r.short).join(", ")}. Жоғарыдағы карточкадан әрқайсысына қанша қалғанын көре аласыз.`;
+      document.title = (v ? "Расталған сертификат - " : "") + (course === "x" ? "Сертификат - CS50 қазақша" : code + " сертификаты - CS50 қазақша");
+    };
+    document.querySelector(".cert-tiers").addEventListener("click", (ev) => {
+      const a = ev.target.closest(".cert-tier");
+      if (!a) return;
+      ev.preventDefault();
+      apply(a.dataset.tier);
+      try { history.replaceState(null, "", hrefFor(a.dataset.tier)); } catch (e) {}
+    });
+    gate.addEventListener("click", (ev) => {
+      const a = ev.target.closest("[data-tier-link]");
+      if (!a) return;
+      ev.preventDefault(); apply("verified");
+      try { history.replaceState(null, "", hrefFor("verified")); } catch (e) {}
+    });
+    apply(new URLSearchParams(location.search).get("tier") === "verified" ? "verified" : "learn");
   }
 
   // ---------- Офлайн режим ----------
@@ -1621,6 +1810,52 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
     checkAchievements();
   }
 
+  // ---------- «Расталған білім сертификаты»: курс бойынша өлшенетін шарттар ----------
+  // Әр лекциядағы тапсырма (чек-тізім) саны (assets/data/lectures.js, <курс>/data/lectures.js-тағы "tasks"; тест тексереді)
+  const CERT_TASKS = {
+    x: [1, 5, 4, 4, 4, 2, 5, 3, 1, 2, 2, 1], // ORDER реті бойынша
+    python: [5, 5, 5, 4, 6, 4, 4, 5, 3, 3], sql: [4, 3, 3, 2, 3, 1, 2], ai: [2, 2, 2, 1, 2, 3, 4],
+    web: [1, 4, 4, 3, 1, 1, 1, 4, 3], cpp: [3, 3, 3, 3, 3, 3, 3, 4], java: [3, 4, 4, 5, 3, 3, 3, 4],
+  };
+  const CERT_RULE = { exam: 70, tasks: 0.6, quiz: 60 };
+  const courseIds = (c) => (c === "x" ? ORDER : Array.from({ length: (COURSE_META.find((m) => m.id === c) || {}).total || 0 }, (_, i) => c + ":week-" + i));
+  // Бір курстың күйі: 4 критерий (лекциялар, емтихан, тапсырмалар, лекция тесттері)
+  function certStatus(course, p = Progress.load(), tm = taskMap()) {
+    const meta = COURSE_META.find((m) => m.id === course);
+    const ids = courseIds(course), per = CERT_TASKS[course] || [];
+    const read = ids.filter((id) => p.read[id]).length;
+    const ex = readJson(course === "x" ? "cs50kz:exam" : "cs50kz:exam:" + course, {}).best;
+    const exam = typeof ex === "number" && Number.isFinite(ex) ? ex : null;
+    const totalT = per.reduce((n, x) => n + x, 0);
+    const doneT = ids.reduce((n, id, i) => n + Math.min(tm[id] || 0, per[i] || 0), 0);
+    const needT = Math.ceil(totalT * CERT_RULE.tasks - 1e-9);
+    let sum = 0, taken = 0;
+    ids.forEach((id) => { const q = p.quiz[id]; if (q && +q.total > 0) { sum += Math.min(1, Math.max(0, +q.best / +q.total)); taken++; } });
+    const quizAvg = ids.length ? (sum / ids.length) * 100 : 0;
+    const crit = {
+      lectures: { cur: read, goal: ids.length, ok: ids.length > 0 && read >= ids.length },
+      exam: { cur: exam, goal: CERT_RULE.exam, ok: exam != null && exam >= CERT_RULE.exam },
+      tasks: { cur: doneT, goal: needT, total: totalT, pct: totalT ? Math.floor((doneT / totalT) * 100) : 0, ok: totalT > 0 && doneT >= needT },
+      quiz: { cur: Math.floor(quizAvg + 1e-9), goal: CERT_RULE.quiz, taken, total: ids.length, ok: ids.length > 0 && quizAvg >= CERT_RULE.quiz - 1e-9 },
+    };
+    return { course, meta, crit, learning: crit.lectures.ok, verified: Object.values(crit).every((x) => x.ok) };
+  }
+  const verifiedCourses = () => { const p = Progress.load(), tm = taskMap(); return COURSE_META.filter((c) => certStatus(c.id, p, tm).verified).map((c) => c.id); };
+  // Детерминді қысқа хэш (cyrb53) -> 31 таңбалы әліпби (ұқсас таңбасыз)
+  function shortHash(str, len) {
+    let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+    for (let i = 0; i < str.length; i++) { const c = str.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); }
+    h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+    h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+    let n = 4294967296 * (2097151 & h2) + (h1 >>> 0);
+    const ABC = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+    let out = "";
+    for (let i = 0; i < len; i++) { out += ABC[n % ABC.length]; n = Math.floor(n / ABC.length); }
+    return out;
+  }
+  const certId = (studentId, course, date) => shortHash(`${studentId}|${course}|${date}`, 10);
+  const certVerifyCode = (id, e, t, q) => shortHash(`${id}|${e}|${t}|${q}`, 6);
+
   function achievementList() {
     const p = Progress.load();
     const read = Object.keys(p.read).filter((k) => ORDER.includes(k)).length; // CS50x лекциялары
@@ -1678,6 +1913,7 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
       A("course-java", "☕", "Java түлегі", "Java курсының барлық 8 лекциясын оқу", readC("java"), 8),
       A("builder", "🛠", "Жасаушы", "«Жобалар шеберханасында» бір жобаны аяқтау", Math.min(1, Object.keys((readJson("cs50kz:projects", {}).finished || {})).filter((k) => k !== "all").length), 1),
       A("capstone", "🏗", "Капстоун шебері", "«Жобалар шеберханасының» барлық 4 жобасын аяқтау", Object.keys((readJson("cs50kz:projects", {}).finished || {})).filter((k) => k !== "all").length, 4),
+      A("verified", "🏅", "Расталған түлек", "Бірінші «Расталған білім сертификатын» алу (емтихан, тапсырмалар, тест)", verifiedCourses().length, 1),
       A("polyglot", "🌍", "Көпқырлы", "Кемінде 3 түрлі курстан лекция оқу", COURSE_META.filter((c) => (c.id === "x" ? read : readC(c.id)) > 0).length, 3),
     ];
   }
@@ -1804,6 +2040,8 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
       e: readJson("cs50kz:exam", {}).best ?? null,
       d: new Date().toISOString().slice(0, 10),
       ...(Object.keys(cs).length ? { c: cs } : {}),
+      // w: «Расталған білім сертификаты» алынған курстар (v - код нұсқасы, сондықтан басқа әріп)
+      ...(verifiedCourses().length ? { w: verifiedCourses() } : {}),
     };
   }
   function progressCode(name) {
@@ -1825,6 +2063,7 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
         t: num(d.t), s: num(d.s), a: num(d.a),
         e: d.e == null || !Number.isFinite(+d.e) ? null : Math.min(100, num(d.e)),
         d: String(d.d || "").slice(0, 10),
+        w: Array.isArray(d.w) ? COURSE_META.map((c) => c.id).filter((id) => d.w.includes(id)) : [],
       };
     } catch (e) { return null; }
   }
@@ -1900,7 +2139,7 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
         const qpct = qs.length ? Math.round((qs.reduce((n, x) => n + x[0], 0) / qs.reduce((n, x) => n + x[1], 0)) * 100) + "%" : "-";
         return `<tr><td><b>${escapeHtml(d.n)}</b>${d.i ? `<small class="t-id">${d.i}</small>` : ""}</td>
           <td><div class="t-cells">${d.r.split("").map((c, i) => `<i class="${c === "1" ? "on" : ""}" title="${ORDER[i]}"></i>`).join("")}</div><small>${read}/12</small></td>
-          <td>${qpct}</td><td>${d.t}</td><td>🔥 ${d.s}</td><td>🏅 ${d.a}</td><td>${d.e != null ? `<b class="${d.e >= 70 ? "t-pass" : ""}">${d.e}%</b>` : "-"}</td><td><small>${escapeHtml(d.d)}</small> <button type="button" class="t-del" data-n="${escapeHtml(d.n)}" data-i="${d.i || ""}" aria-label="Өшіру">✕</button></td></tr>`;
+          <td>${qpct}</td><td>${d.t}</td><td>🔥 ${d.s}</td><td>🏅 ${d.a}</td><td>${d.e != null ? `<b class="${d.e >= 70 ? "t-pass" : ""}">${d.e}%</b>` : "-"}${(d.w || []).length ? `<small class="t-verified" title="Расталған білім сертификаты">🏅 Расталған: ${d.w.map((id) => escapeHtml((COURSE_META.find((c) => c.id === id) || {}).name || id)).join(", ")}</small>` : ""}</td><td><small>${escapeHtml(d.d)}</small> <button type="button" class="t-del" data-n="${escapeHtml(d.n)}" data-i="${d.i || ""}" aria-label="Өшіру">✕</button></td></tr>`;
       }).join("");
     };
     box.querySelector(".t-add").addEventListener("click", () => { add(box.querySelector(".t-input").value); box.querySelector(".t-input").value = ""; });
@@ -1911,8 +2150,8 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
       }
     });
     box.querySelector(".t-csv").addEventListener("click", () => {
-      const head = ["Аты", "ID", ...ORDER, "Тест", "Тапсырма", "Стрик", "Жетістік", "Емтихан", "Күні"];
-      const lines = [head.join(",")].concat(cls.map((d) => [JSON.stringify(d.n), d.i || "", ...d.r.split(""), JSON.stringify(d.q), d.t, d.s, d.a, d.e ?? "", d.d].join(",")));
+      const head = ["Аты", "ID", ...ORDER, "Тест", "Тапсырма", "Стрик", "Жетістік", "Емтихан", "Расталған", "Күні"];
+      const lines = [head.join(",")].concat(cls.map((d) => [JSON.stringify(d.n), d.i || "", ...d.r.split(""), JSON.stringify(d.q), d.t, d.s, d.a, d.e ?? "", (d.w || []).join(" "), d.d].join(",")));
       const a = document.createElement("a");
       a.href = URL.createObjectURL(new Blob(["﻿" + lines.join("\n")], { type: "text/csv" }));
       a.download = "cs50kz-synyp.csv";

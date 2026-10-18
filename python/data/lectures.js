@@ -61,7 +61,8 @@ window.CS50KZ_COURSE_LECTURES["python"] = [
   ],
   "minutes": 25,
   "quiz": 7,
-  "tasks": 5
+  "tasks": 5,
+  "task": "problem-set"
  },
  {
   "id": "week-1",
@@ -108,7 +109,8 @@ window.CS50KZ_COURSE_LECTURES["python"] = [
   ],
   "minutes": 27,
   "quiz": 8,
-  "tasks": 5
+  "tasks": 5,
+  "task": "problem-set"
  },
  {
   "id": "week-2",
@@ -151,7 +153,8 @@ window.CS50KZ_COURSE_LECTURES["python"] = [
   ],
   "minutes": 27,
   "quiz": 8,
-  "tasks": 5
+  "tasks": 5,
+  "task": "problem-set"
  },
  {
   "id": "week-3",
@@ -186,7 +189,8 @@ window.CS50KZ_COURSE_LECTURES["python"] = [
   ],
   "minutes": 21,
   "quiz": 8,
-  "tasks": 4
+  "tasks": 4,
+  "task": "problem-set"
  },
  {
   "id": "week-4",
@@ -233,7 +237,8 @@ window.CS50KZ_COURSE_LECTURES["python"] = [
   ],
   "minutes": 30,
   "quiz": 8,
-  "tasks": 6
+  "tasks": 6,
+  "task": ""
  },
  {
   "id": "week-5",
@@ -268,7 +273,8 @@ window.CS50KZ_COURSE_LECTURES["python"] = [
   ],
   "minutes": 21,
   "quiz": 8,
-  "tasks": 4
+  "tasks": 4,
+  "task": ""
  },
  {
   "id": "week-6",
@@ -303,7 +309,8 @@ window.CS50KZ_COURSE_LECTURES["python"] = [
   ],
   "minutes": 31,
   "quiz": 8,
-  "tasks": 4
+  "tasks": 4,
+  "task": ""
  },
  {
   "id": "week-7",
@@ -334,7 +341,8 @@ window.CS50KZ_COURSE_LECTURES["python"] = [
   ],
   "minutes": 34,
   "quiz": 8,
-  "tasks": 5
+  "tasks": 5,
+  "task": ""
  },
  {
   "id": "week-8",
@@ -389,7 +397,8 @@ window.CS50KZ_COURSE_LECTURES["python"] = [
   ],
   "minutes": 35,
   "quiz": 8,
-  "tasks": 3
+  "tasks": 3,
+  "task": ""
  },
  {
   "id": "week-9",
@@ -472,6 +481,7 @@ window.CS50KZ_COURSE_LECTURES["python"] = [
   ],
   "minutes": 36,
   "quiz": 8,
-  "tasks": 3
+  "tasks": 3,
+  "task": "practice"
  }
 ];
