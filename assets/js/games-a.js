@@ -122,11 +122,43 @@
     { l: "C", t: "Инициализацияланбаған айнымалы", c: ['#include <stdio.h>', 'int main(void) {', '    int sum;', '    for (int i = 1; i <= 3; i++) sum += i;', '    printf("%d\\n", sum);', '    return 0;', '}'], b: 2, w: "sum-ға бастапқы мән берілмеген, онда кездейсоқ «қоқыс» мән жатыр. Қосындыны 0-ден бастау керек.", f: "    int sum = 0;" },
     { l: "C", t: "malloc көлемі қате", c: ['#include <stdlib.h>', 'int main(void) {', '    int *a = malloc(10);', '    for (int i = 0; i < 10; i++) a[i] = i;', '    free(a);', '    return 0;', '}'], b: 2, w: "malloc(10) тек 10 байт береді, ал 10 int үшін 40 байт (10 * sizeof(int)) керек. Жазу бөлінген жадтан асып кетеді.", f: "    int *a = malloc(10 * sizeof(int));" },
     { l: "C", t: "Қос free", c: ['#include <stdlib.h>', 'int main(void) {', '    int *p = malloc(sizeof(int));', '    free(p);', '    free(p);', '    return 0;', '}'], b: 4, w: "Бір жадты екі рет босату (double free) бағдарламаны құлатады. Қайталанған free(p) жолын алып тастау керек.", f: "" },
+
+    // ---------- C++ ----------
+    { l: "C++", t: "Нүктелі үтір ұмытылды", c: ["#include <iostream>","using namespace std;","int main() {","    int age = 17","    cout << age << \"\\n\";","    return 0;","}"], b: 3, w: "Синтаксистік қате: «int age = 17» жолының соңында «;» жоқ. g++ «expected ',' or ';' before 'cout'» деп хабарлайды, бағдарлама компиляцияланбайды.", f: "    int age = 17;", s: true },
+    { l: "C++", t: "struct соңындағы нүктелі үтір", c: ["#include <iostream>","using namespace std;","struct Nuqta {","    int x, y;","}","int main() {","    Nuqta p{3, 4};","    cout << p.x + p.y << \"\\n\";","}"], b: 4, w: "Синтаксистік қате: struct (және class) анықтамасының жабылатын «}» жақшасынан кейін «;» міндетті. Онсыз компилятор келесі жолдағы «int main» бөлігін struct-тың жалғасы деп оқиды.", f: "};", s: true },
+    { l: "C++", t: "Шарттағы меншіктеу", c: ["#include <iostream>","using namespace std;","int main() {","    int price = 500;","    if (price = 1000) cout << \"қымбат\\n\";","    else cout << \"арзан\\n\";","    cout << price << \"\\n\";","}"], b: 4, w: "Логикалық қате: «price = 1000» мән меншіктейді (price өзгереді де, 0-ден өзге мән шарт ретінде ақиқат болады). Бағдарлама «қымбат» басады және price-ты 1000 етіп жібереді. Салыстыру үшін «==» керек.", f: "    if (price == 1000) cout << \"қымбат\\n\";" },
+    { l: "C++", t: "vector индексінің шекарасы", c: ["#include <iostream>","#include <vector>","using namespace std;","int main() {","    vector<int> sandar = {4, 8, 15};","    int s = 0;","    for (size_t i = 0; i <= sandar.size(); i++) s += sandar[i];","    cout << s << \"\\n\";","}"], b: 6, w: "Шекара қатесі: 3 элементтің индекстері 0, 1, 2. «i <= size()» соңғы қадамда sandar[3] оқиды. operator[] шекті тексермейді, сондықтан қате үнсіз өтіп, нәтиже кездейсоқ болады (анықталмаған әрекет). Шарт «i < size()» болуы керек.", f: "    for (size_t i = 0; i < sandar.size(); i++) s += sandar[i];" },
+    { l: "C++", t: "Бүтін бөлу", c: ["#include <iostream>","using namespace std;","int main() {","    int a = 7, b = 8;","    double orta = (a + b) / 2;","    cout << orta << \"\\n\";","}"], b: 4, w: "Логикалық қате: (a + b) және 2 екеуі де int, сондықтан бөлу бүтін сандармен орындалып, 15 / 2 = 7 болады, нәтиже double-ға 7 болып түседі (7.5 емес). Бөлгіштердің бірін 2.0 ету керек.", f: "    double orta = (a + b) / 2.0;" },
+    { l: "C++", t: "Тоқтамайтын цикл", c: ["#include <iostream>","using namespace std;","int main() {","    int n = 20;","    while (n != 0) {","        cout << n << \" \";","        n -= 3;","    }","}"], b: 4, w: "Шексіз цикл: n = 20, 17, 14, ... 2, -1, -4 ... болып азаяды, ешқашан дәл 0 болмайды. «!= 0» шарты әрдайым ақиқат. Шартты «n > 0» етіп жазу керек.", f: "    while (n > 0) {" },
+    { l: "C++", t: "new[] және delete", c: ["#include <iostream>","using namespace std;","int main() {","    int* a = new int[5]{1, 2, 3, 4, 5};","    cout << a[4] << \"\\n\";","    delete a;","    return 0;","}"], b: 5, w: "Жадты босату қатесі: new[] арқылы алынған массивті delete[] арқылы босату керек. Жай delete қолдану анықталмаған әрекет (alloc-dealloc-mismatch): жад менеджері бүлінуі мүмкін.", f: "    delete[] a;" },
+    { l: "C++", t: "Жад ағып кетуі", c: ["#include <iostream>","using namespace std;","int* jasa(int v) {","    return new int(v);","}","int main() {","    int* p = jasa(5);","    cout << *p << \"\\n\";","    p = jasa(7);","    cout << *p << \"\\n\";","    delete p;","}"], b: 8, w: "Жад ағып кетеді (memory leak): p-ға жаңа адрес берілген сәтте бірінші блоктың (5) жалғыз адресі жоғалады, оны енді delete ету мүмкін емес. Жаңа мән беру алдында ескі блокты босату керек.", f: "    delete p;\n    p = jasa(7);" },
+    { l: "C++", t: "Босатылған жадты оқу", c: ["#include <iostream>","using namespace std;","int main() {","    int* p = new int(42);","    delete p;","    cout << \"Мән: \" << *p << \"\\n\";","    return 0;","}"], b: 5, w: "Dangling pointer: delete p орындалғаннан кейін p босатылған жадты көрсетіп тұр, оны оқу анықталмаған әрекет (use-after-free). Кейде 42 шығады, кейде қоқыс немесе құлау. Мәнді босатудан бұрын оқу керек.", f: "" },
+    { l: "C++", t: "nullptr арқылы өту", c: ["#include <iostream>","using namespace std;","struct Tugin { int mani; Tugin* kelesi; };","int main() {","    Tugin a{1, nullptr};","    Tugin* p = &a;","    cout << p->mani << \"\\n\";","    p = p->kelesi;","    cout << p->mani << \"\\n\";","}"], b: 8, w: "Нөлдік көрсеткішті оқу: a.kelesi == nullptr, сондықтан p = p->kelesi соң p ештеңеге көрсетпейді, p->mani бағдарламаны құлатады (segmentation fault). Алдымен p-ның nullptr емесін тексеру керек.", f: "    if (p) cout << p->mani << \"\\n\";" },
+    { l: "C++", t: "Инициализацияланбаған айнымалы", c: ["#include <iostream>","using namespace std;","int main() {","    int sum;","    for (int i = 1; i <= 4; i++) sum += i;","    cout << sum << \"\\n\";","}"], b: 3, w: "Логикалық қате: sum-ға бастапқы мән берілмеген, онда алдыңғы бағдарламадан қалған кездейсоқ «қоқыс» жатыр. Қосындыны әрдайым 0-ден бастау керек. Компилятор -Wall кезінде «may be used uninitialized» деп ескертеді.", f: "    int sum = 0;" },
+    { l: "C++", t: "Жолдарды + арқылы қосу", c: ["#include <iostream>","#include <string>","using namespace std;","int main() {","    string at = \"Aru\";","    string sozder = \"Сәлем, \" + \"Aru\" + \"!\";","    cout << sozder << \" \" << at << \"\\n\";","}"], b: 5, w: "Синтаксис/түр қатесі: екі жол литералын (const char[]) «+» арқылы қосуға болмайды, «+» тек std::string-ке қолданылады. Біреуін std::string-ке айналдыру керек.", f: "    string sozder = string(\"Сәлем, \") + at + \"!\";", s: true },
+    { l: "C++", t: "Көшірмені өзгерту", c: ["#include <iostream>","#include <vector>","using namespace std;","int main() {","    vector<int> baga = {100, 200, 300};","    for (auto b : baga) b += 50;","    for (int b : baga) cout << b << \" \";","}"], b: 5, w: "Логикалық қате: «auto b» әр элементтің КӨШІРМЕСІН алады, көшірмені өзгерту векторға әсер етпейді. Нәтиже 100 200 300 күйінде қалады. Түпнұсқаны өзгерту үшін сілтеме керек: auto&.", f: "    for (auto& b : baga) b += 50;" },
+    { l: "C++", t: "swap көшірмемен жұмыс істейді", c: ["#include <iostream>","using namespace std;","void ayyr(int a, int b) {","    int t = a; a = b; b = t;","}","int main() {","    int x = 1, y = 2;","    ayyr(x, y);","    cout << x << \" \" << y << \"\\n\";","}"], b: 2, w: "Логикалық қате: параметрлер мән бойынша беріледі, ayyr ішінде a мен b — x пен y-тің көшірмелері. Орын ауыстыру нәтижесі main-ге жетпейді: 1 2 болып қалады. Параметрлерді сілтеме (int&) ету керек.", f: "void ayyr(int& a, int& b) {" },
+
+    // ---------- Java ----------
+    { l: "Java", t: "Нүктелі үтір ұмытылды", c: ["public class Main {","    public static void main(String[] args) {","        String city = \"Астана\"","        System.out.println(city);","    }","}"], b: 2, w: "Синтаксистік қате: «String city = ...» жолының соңында «;» жоқ. javac «';' expected» деп хабарлайды, бағдарлама компиляцияланбайды.", f: "        String city = \"Астана\";", s: true },
+    { l: "Java", t: "return жоқ", c: ["public class Main {","    static int kvadrat(int n) {","        int r = n * n;","    }","    public static void main(String[] args) {","        System.out.println(kvadrat(6));","    }","}"], b: 3, w: "Компиляция қатесі: kvadrat әдісі int қайтаруға уәде берген, бірақ return жоқ. javac «missing return statement» дейді. Нәтижені қайтару керек.", f: "        return r;\n    }", s: true },
+    { l: "Java", t: "Шарттағы меншіктеу", c: ["public class Main {","    public static void main(String[] args) {","        int x = 3;","        if (x = 5) {","            System.out.println(\"бес\");","        }","    }","}"], b: 3, w: "Түр қатесі: Java-да if шарты тек boolean болуы керек, ал «x = 5» int береді. javac «incompatible types: int cannot be converted to boolean» дейді (C++-тен айырмасы). Салыстыру үшін «==» керек.", f: "        if (x == 5) {", s: true },
+    { l: "Java", t: "Жолдарды == арқылы салыстыру", c: ["public class Main {","    public static void main(String[] args) {","        String a = new String(\"қазақ\");","        String b = \"қазақ\";","        if (a == b) System.out.println(\"тең\");","        else System.out.println(\"тең емес\");","    }","}"], b: 4, w: "Логикалық қате: объектілер үшін == мәнді емес, сілтемені (жадтағы орынды) салыстырады. new String(...) жаңа объект жасайды, сондықтан a == b жалған, 'тең емес' шығады. Мазмұнды салыстыру үшін equals() керек.", f: "        if (a.equals(b)) System.out.println(\"тең\");" },
+    { l: "Java", t: "Map-тен null алу", c: ["import java.util.*;","public class Main {","    public static void main(String[] args) {","        Map<String, Integer> baga = new HashMap<>();","        baga.put(\"алма\", 300);","        int s = baga.get(\"өрік\");","        System.out.println(s);","    }","}"], b: 5, w: "NullPointerException: кілт «өрік» картада жоқ, get() null қайтарады, ал null-ды int-ке автоматты ашу (unboxing) NPE тудырады. getOrDefault арқылы әдепкі мән беру керек.", f: "        int s = baga.getOrDefault(\"өрік\", 0);" },
+    { l: "Java", t: "Массив шекарасы", c: ["public class Main {","    public static void main(String[] args) {","        int[] a = {5, 10, 15};","        int s = 0;","        for (int i = 0; i <= a.length; i++) s += a[i];","        System.out.println(s);","    }","}"], b: 4, w: "ArrayIndexOutOfBoundsException: 3 элементтің индекстері 0..2, ал «i <= a.length» i = 3 болғанда a[3] оқиды. Java C++-тен өзгеше шекті тексеріп, бағдарламаны ерекше жағдаймен тоқтатады. Шарт «i < a.length» болуы керек.", f: "        for (int i = 0; i < a.length; i++) s += a[i];" },
+    { l: "Java", t: "Айналу кезінде жою", c: ["import java.util.*;","public class Main {","    public static void main(String[] args) {","        List<Integer> baga = new ArrayList<>(List.of(5, 2, 4, 2, 5));","        for (Integer b : baga) {","            if (b < 3) baga.remove(b);","        }","        System.out.println(baga);","    }","}"], b: 5, w: "ConcurrentModificationException: for-each циклі тізімді аралап жүргенде тізімнің өзін өзгертуге (remove) болмайды. Мұндайда removeIf немесе Iterator.remove() қолданылады (бұл түзету бүкіл for циклін ауыстырады).", f: "        baga.removeIf(b -> b < 3);" },
+    { l: "Java", t: "Бүтін бөлу", c: ["public class Main {","    public static void main(String[] args) {","        int m1 = 4, m2 = 5;","        double orta = (m1 + m2) / 2;","        System.out.println(orta);","    }","}"], b: 3, w: "Логикалық қате: (m1 + m2) / 2 екеуі де int, сондықтан бөлу бүтін: 9 / 2 = 4, ол тек соңынан double-ға 4.0 болып түседі (4.5 емес). Бөлгіш 2.0 болуы керек.", f: "        double orta = (m1 + m2) / 2.0;" },
+    { l: "Java", t: "i = i++", c: ["public class Main {","    public static void main(String[] args) {","        int i = 0;","        while (i < 3) {","            System.out.println(\"Қадам \" + i);","            i = i++;","        }","    }","}"], b: 5, w: "Шексіз цикл: «i = i++» алдымен ескі i мәнін (0) есте сақтайды, i-ны 1 етеді, сосын ескі мәнді (0) i-ға қайта жазады. i ешқашан өспейді. Жай «i++;» жазу керек.", f: "            i++;" },
+    { l: "Java", t: "Integer-ді == арқылы салыстыру", c: ["public class Main {","    public static void main(String[] args) {","        Integer a = 1000, b = 1000;","        if (a == b) System.out.println(\"тең\");","        else System.out.println(\"тең емес\");","    }","}"], b: 3, w: "Логикалық қате: Integer — объект. == сілтемені салыстырады, ал Java тек -128..127 аралығындағы мәндерді қайта қолданады, 1000 үшін екі бөлек объект жасалады. Нәтиже 'тең емес'. equals() қолдану керек.", f: "        if (a.equals(b)) System.out.println(\"тең\");" },
+    { l: "Java", t: "Жол өзгермейді", c: ["public class Main {","    public static void main(String[] args) {","        String ism = \"aruzhan\";","        ism.toUpperCase();","        System.out.println(ism);","    }","}"], b: 3, w: "Логикалық қате: String өзгермейтін (immutable) объект. toUpperCase() жаңа жол қайтарады, ал ism өзгермейді; нәтиже жоғалып кетеді. Нәтижені айнымалыға сақтау керек.", f: "        ism = ism.toUpperCase();" },
+    { l: "Java", t: "switch-те break жоқ", c: ["public class Main {","    public static void main(String[] args) {","        int kun = 1;","        switch (kun) {","            case 1: System.out.println(\"Дүйсенбі\");","            case 2: System.out.println(\"Сейсенбі\"); break;","            default: System.out.println(\"?\");","        }","    }","}"], b: 4, w: "Логикалық қате: case 1 соңында break жоқ, сондықтан орындалу келесі case 2-ге «құлап» түседі: екі жол да шығады. Әр case соңында break керек.", f: "            case 1: System.out.println(\"Дүйсенбі\"); break;" },
+    { l: "Java", t: "Инициализацияланбаған айнымалы", c: ["public class Main {","    public static void main(String[] args) {","        int jinaq;","        for (int i = 1; i <= 4; i++) jinaq += i;","        System.out.println(jinaq);","    }","}"], b: 2, w: "Компиляция қатесі: Java жергілікті айнымалыға әдепкі мән бермейді. javac «variable jinaq might not have been initialized» дейді (C++-те бұл тек ескерту). Алдымен 0 беру керек.", f: "        int jinaq = 0;", s: true },
+    { l: "Java", t: "remove(int) пен remove(Object)", c: ["import java.util.*;","public class Main {","    public static void main(String[] args) {","        List<Integer> sandar = new ArrayList<>(List.of(10, 20, 30, 1));","        sandar.remove(1);","        System.out.println(sandar);","    }","}"], b: 4, w: "Логикалық қате: List<Integer> үшін remove(1) санды емес, 1-ИНДЕКСТЕГІ элементті (20) жояды: [10, 30, 1]. Мәні 1 элементті жою үшін remove(Integer.valueOf(1)) керек.", f: "        sandar.remove(Integer.valueOf(1));" },
   ];
 
   /* =========================================================
      3) CODE BATTLE: [тақырып, сұрақ, код, [4 нұсқа], дұрыс индекс, run?]
-     run: "py" | "js" | "c" - код орындалып, нәтижесі дұрыс жауапқа тең екені тексеріледі.
+     run: "py" | "js" | "c" | "cpp" | "java" - код орындалып, нәтижесі дұрыс жауапқа тең екені тексеріледі.
      ========================================================= */
   const QUIZ = [
     // Python
@@ -235,6 +267,52 @@
     ["Терминология", "Ашық бастапқы код (open source) дегеніміз не?", "", ["Коды барлығына ашық, оқуға болатын бағдарлама", "Тек тегін ойын", "Интернетсіз бағдарлама", "Қорғалған бағдарлама"], 0],
     ["Терминология", "Шифрлау (encryption) не үшін қолданылады?", "", ["Деректерді рұқсатсыз оқудан қорғау үшін", "Файлды жылдамдату үшін", "Суретті үлкейту үшін", "Кодты қысқарту үшін"], 0],
     ["Терминология", "Айнымалы (variable) деген не?", "", ["Мәнді сақтайтын аты бар жад орны", "Қайталанатын цикл", "Функцияның аты", "Түсініктеме"], 0],
+    // C++
+    ["C++", "C++ консольге мәтін шығаратын стандартты ағын қайсы?", "", ["std::cout","std::cin","std::endl","std::string"], 0],
+    ["C++", "Көрсеткіштің ештеңеге бағытталмағанын көрсететін заманауи (C++11) мән қайсы?", "", ["nullptr","null","None","void"], 0],
+    ["C++", "new int(5) арқылы жасалған жадты қалай босатады?", "", ["delete p;","delete[] p;","free(p);","p = nullptr;"], 0],
+    ["C++", "new int[10] арқылы алынған массивті қалай дұрыс босатады?", "", ["delete[] a;","delete a;","a = nullptr;","free(a);"], 0],
+    ["C++", "Сілтеме (int& r = x) мен көрсеткіштің (int* p = &x) басты айырмасы қандай?", "", ["Сілтеме міндетті түрде бастапқы мәнмен жасалады, кейін басқа нысанға бұрылмайды және nullptr бола алмайды","Сілтеме жадта орын алмайды, көрсеткіш алады","Көрсеткішті бұруға болмайды, сілтемені бұруға болады","Екеуінің арасында айырма жоқ"], 0],
+    ["C++", "std::vector<int> v-ға соңынан жаңа сан қосатын әдіс қайсы?", "", ["v.push_back(x)","v.append(x)","v.add(x)","v.insert_end(x)"], 0],
+    ["C++", "RAII деген не?", "", ["Ресурсты объект құрылғанда алып, жойылғанда (деструкторда) автоматты қайтару принципі","Жадты қолмен тазалау әдісі","Жылдам сұрыптау алгоритмі","Көп ағынды бағдарлама стилі"], 0],
+    ["C++", "std::unique_ptr-дың негізгі қасиеті қандай?", "", ["Нысанның жалғыз иесі бар, көшірілмейді, иесі жойылғанда delete автоматты шақырылады","Нысанды ешқашан жоймайды","Көптеген иелері болуы мүмкін","Тек массивтермен жұмыс істейді"], 0],
+    ["C++", "«int* const p = &x;» жазуы нені білдіреді?", "", ["Көрсеткіштің өзі тұрақты (басқа адреске бұруға болмайды), бірақ *p арқылы мәнді өзгертуге болады","Көрсеткіш көрсететін мән тұрақты, көрсеткішті бұруға болады","Екеуі де тұрақты емес","Бұл жазу қате"], 0],
+    ["C++", "Үлкен std::string-ті функцияға көшірмей, тек оқу үшін беру қалай жазылады?", "", ["void f(const std::string& s)","void f(std::string s)","void f(std::string* s)","void f(const std::string s)"], 0],
+    ["C++", "Конструктор дегеніміз не?", "", ["Объект жасалғанда автоматты шақырылатын, аты класпен бірдей әдіс","Объектті жоятын әдіс","Класты көшіретін оператор","Тек статик өрістерді өзгертетін функция"], 0],
+    ["C++", "#include <vector> жолы не істейді?", "", ["std::vector қолдануға қажет тақырып файлын қосады","vector айнымалысын жасайды","Бағдарламаны вектор түріне компиляциялайды","Жадты тазалайды"], 0],
+    ["C++", "Нәтижесі қандай?", "int a = 7, b = 2;\ncout << a / b;", ["3","3.5","4","2"], 0, "cpp"],
+    ["C++", "Нәтижесі қандай?", "cout << 7 % 3 << \" \" << -7 / 2;", ["1 -3","1 -4","2 -3","1 -3.5"], 0, "cpp"],
+    ["C++", "Нәтижесі қандай?", "vector<int> v = {1, 2, 3};\nv.push_back(4);\ncout << v.size() << \" \" << v[3];", ["4 4","3 4","4 3","4 0"], 0, "cpp"],
+    ["C++", "Нәтижесі қандай?", "int x = 5;\nint& r = x;\nr += 3;\ncout << x;", ["8","5","3","Компиляция қатесі"], 0, "cpp"],
+    ["C++", "Нәтижесі қандай?", "string s = \"Almaty\";\ncout << s.substr(1, 3);", ["lma","Alm","lmat","Alma"], 0, "cpp"],
+    ["C++", "Нәтижесі қандай?", "int a[] = {2, 4, 6, 8};\ncout << sizeof(a) / sizeof(a[0]);", ["4","16","8","2"], 0, "cpp"],
+    ["C++", "Нәтижесі қандай?", "int x = 10;\nint* p = &x;\n*p *= 2;\ncout << x;", ["20","10","x-тің адресі","2"], 0, "cpp"],
+    ["C++", "Нәтижесі қандай?", "for (int i = 0; i < 3; i++) cout << i * i << \" \";", ["0 1 4 ","1 4 9 ","0 1 2 ","0 2 4 "], 0, "cpp"],
+    ["C++", "Нәтижесі қандай?", "cout << (5 > 3 && 2 > 4) << (5 > 3 || 2 > 4);", ["01","10","11","00"], 0, "cpp"],
+    ["C++", "Нәтижесі қандай?", "auto x = 3 / 2.0;\ncout << x;", ["1.5","1","2","Компиляция қатесі"], 0, "cpp"],
+    // Java
+    ["Java", "Java бағдарламасы қай әдістен басталады?", "", ["public static void main(String[] args)","void start()","public void run()","static int main()"], 0],
+    ["Java", "javac компиляторы .java файлынан нені жасайды?", "", ["JVM орындайтын байт-код (.class)","Машиналық код (.exe)","HTML бет","Мәтіндік журнал"], 0],
+    ["Java", "JVM (Java Virtual Machine) не істейді?", "", ["Байт-кодты нақты компьютерде орындайды, сондықтан код платформаға тәуелсіз","Кодты қатесіз етіп түзетеді","Интернет қосылымын басқарады","Тек жадты тазартады"], 0],
+    ["Java", "Екі String объектісінің мазмұнын салыстыру үшін не қолданылады?", "", ["a.equals(b)","a == b","a.same(b)","a = b"], 0],
+    ["Java", "Айнымалыға final жазылса не болады?", "", ["Оған екінші рет мән меншіктеуге болмайды","Ол жадтан өшіріледі","Ол тек static болады","Ол null болады"], 0],
+    ["Java", "Массив пен ArrayList-тің басты айырмасы қандай?", "", ["Массивтің өлшемі құрылғанда бекиді, ArrayList өлшемі өзгереді","ArrayList-те индекс жоқ","Массивте тек String болады","Айырмасы жоқ"], 0],
+    ["Java", "Java-дағы барлық сыныптардың ортақ ата-бабасы қайсы?", "", ["Object","Main","Class","Base"], 0],
+    ["Java", "static әдісті қалай шақырады?", "", ["Сынып аты арқылы, объект жасамай: Sinip.adis()","Тек new арқылы жасалған объектпен","Тек main ішінде","Оны шақыруға болмайды"], 0],
+    ["Java", "Қай жиын (Set) қайталанатын элементтерді қабылдамайды?", "", ["HashSet","ArrayList","LinkedList","int[]"], 0],
+    ["Java", "NullPointerException қашан шығады?", "", ["null сілтеме арқылы әдісті шақырғанда немесе өрісіне қолжеткізгенде","Массив шегінен шыққанда","Санды нөлге бөлгенде","Файл табылмағанда"], 0],
+    ["Java", "try-catch блогы не үшін қажет?", "", ["Ерекше жағдайды (exception) ұстап, бағдарламаны құлатпай өңдеу үшін","Циклді жылдамдату үшін","Айнымалыны жариялау үшін","Класты жасыру үшін"], 0],
+    ["Java", "Интерфейс (interface) дегеніміз не?", "", ["Сынып орындауға тиіс әдістер келісімі, сынып оны implements арқылы іске асырады","Графикалық терезе","Айнымалылар жинағы","Жадты басқару құралы"], 0],
+    ["Java", "Нәтижесі қандай?", "int a = 7, b = 2;\nSystem.out.println(a / b);", ["3","3.5","4","2"], 0, "java"],
+    ["Java", "Нәтижесі қандай?", "System.out.println(7 % 3 + \" \" + (-7 / 2));", ["1 -3","1 -4","2 -3","1 -3.5"], 0, "java"],
+    ["Java", "Нәтижесі қандай?", "String a = \"kz\";\nString b = new String(\"kz\");\nSystem.out.println((a == b) + \" \" + a.equals(b));", ["false true","true true","true false","false false"], 0, "java"],
+    ["Java", "Нәтижесі қандай?", "List<Integer> l = new ArrayList<>(List.of(5, 6, 7));\nl.remove(1);\nSystem.out.println(l);", ["[5, 7]","[5, 6, 7]","[6, 7]","[5, 6]"], 0, "java"],
+    ["Java", "Нәтижесі қандай?", "String s = \"Astana\";\nSystem.out.println(s.charAt(2) + s.length());", ["122","t6","Astana6","8"], 0, "java"],
+    ["Java", "Нәтижесі қандай?", "int[] a = {3, 1, 2};\nArrays.sort(a);\nSystem.out.println(Arrays.toString(a));", ["[1, 2, 3]","[3, 1, 2]","[3, 2, 1]","[1, 3, 2]"], 0, "java"],
+    ["Java", "Нәтижесі қандай?", "StringBuilder sb = new StringBuilder(\"abc\");\nsb.reverse();\nSystem.out.println(sb);", ["cba","abc","bca","Компиляция қатесі"], 0, "java"],
+    ["Java", "Нәтижесі қандай?", "int x = 5;\nx += x++ + ++x;\nSystem.out.println(x);", ["17","15","16","12"], 0, "java"],
+    ["Java", "Нәтижесі қандай?", "System.out.println(1 + 2 + \"3\" + 4 + 5);", ["3345","12345","15","3 3 4 5"], 0, "java"],
+    ["Java", "Нәтижесі қандай?", "double d = 10 / 4;\nSystem.out.println(d);", ["2.0","2.5","2","3.0"], 0, "java"],
   ];
 
   /* =========================================================
@@ -396,6 +474,8 @@
   const KW = {
     C: "int char float double void long short unsigned signed const static struct typedef enum return if else for while do switch case break continue sizeof NULL include define bool true false",
     Python: "def class return if elif else for while in not and or is import from as pass break continue lambda with try except finally raise None True False print del global yield",
+    "C++": "int char float double void long short unsigned signed const static struct class public private protected typedef enum return if else for while do switch case break continue sizeof nullptr NULL include define bool true false new delete using namespace auto template typename virtual override try catch throw this operator constexpr std",
+    Java: "public private protected static final void int long short byte char float double boolean class interface extends implements new return if else for while do switch case break continue this super null true false import package try catch finally throw throws instanceof var abstract enum default",
     JavaScript: "function const let var return if else for while do switch case break continue new this class extends import export from async await try catch finally throw typeof null undefined true false of in",
   };
   const KWSET = {};
@@ -423,7 +503,7 @@
     return out;
   }
   window.CS50GamesA.hl = hl;
-  const LANG_FILE = { C: ["main.c", "C"], Python: ["app.py", "Py"], JavaScript: ["script.js", "JS"] };
+  const LANG_FILE = { C: ["main.c", "C"], "C++": ["main.cpp", "cpp"], Java: ["Main.java", "java"], Python: ["app.py", "Py"], JavaScript: ["script.js", "JS"] };
   /** Раунд нүктелері: states[i] = "ok" | "bad" | "" ; cur - ағымдағы */
   function dotsHtml(n, cur, states, label) {
     let h = `<span class="gy-dots" role="img" aria-label="${label}">`;
@@ -436,12 +516,14 @@
     const ROUNDS = 12, TIME = FAST ? 6 : 40;
     const byLang = {};
     BUGS.forEach((b) => (byLang[b.l] = byLang[b.l] || []).push(b));
-    const rounds = ctx.shuffle(Object.keys(byLang).flatMap((l) => ctx.sample(byLang[l], ROUNDS / 3)));
+    /* 5 тіл араласады: әр тілден 2 раунд, қалған 2 раундты кездейсоқ тілдер алады */
+    const langs = Object.keys(byLang), per = Math.floor(ROUNDS / langs.length), extra = new Set(ctx.sample(langs, ROUNDS % langs.length));
+    const rounds = ctx.shuffle(langs.flatMap((l) => ctx.sample(byLang[l], per + (extra.has(l) ? 1 : 0))));
     let ri = -1, score = 0, hit = 0, useTimer = false, left = 0, tm = 0, busy = false;
     const results = [];
     stage.innerHTML = `<div class="gy gy-bh"><div class="ga-intro gy-intro"><div class="gy-intro-ico" aria-hidden="true">🐛</div>
-      <p>Әр раундта C, Python немесе JavaScript кодында <b>бір қате</b> бар. Қате жолды бас, содан кейін қатенің сипаттамасы мен түзетуін көресің. Барлығы ${ROUNDS} раунд.</p>
-      <div class="gy-chips" aria-hidden="true"><span class="gy-lang gy-lang-c">C</span><span class="gy-lang gy-lang-py">Py</span><span class="gy-lang gy-lang-js">JS</span></div>
+      <p>Әр раундта C, C++, Java, Python немесе JavaScript кодында <b>бір қате</b> бар. Қате жолды бас, содан кейін қатенің сипаттамасы мен түзетуін көресің. Барлығы ${ROUNDS} раунд.</p>
+      <div class="gy-chips" aria-hidden="true"><span class="gy-lang gy-lang-c">C</span><span class="gy-lang gy-lang-cpp">C++</span><span class="gy-lang gy-lang-java">Java</span><span class="gy-lang gy-lang-py">Py</span><span class="gy-lang gy-lang-js">JS</span></div>
       <label class="ga-check"><input type="checkbox" class="ga-timer"> Таймермен ойнау (әр раундқа ${TIME} секунд, жылдам жауап қосымша ұпай береді)</label>
       <button class="btn ga-go gy-go" type="button">▶ Бастау</button></div></div>`;
     $(".ga-go", stage).onclick = () => { useTimer = $(".ga-timer", stage).checked; next(); };
@@ -494,7 +576,7 @@
       const nb = $(".ga-next", stage); nb.onclick = next; nb.focus();
     }
     function end() {
-      ctx.finish({ score, title: hit >= 10 ? "Керемет қате іздеуші! 🐛" : hit >= 6 ? "Жақсы нәтиже!" : "Қайталап көр!", lines: [`Қатені дұрыс тапқан раунд: ${hit} / ${rounds.length}`, "Қателерді жиі жіберетін орындар: ; ұмыту, «=» мен «==», индекс шегі, шексіз цикл, free ұмыту."] });
+      ctx.finish({ score, title: hit >= 10 ? "Керемет қате іздеуші! 🐛" : hit >= 6 ? "Жақсы нәтиже!" : "Қайталап көр!", lines: [`Қатені дұрыс тапқан раунд: ${hit} / ${rounds.length}`, "Қателерді жиі жіберетін орындар: ; ұмыту, «=» мен «==», индекс шегі, шексіз цикл, free/delete ұмыту, Java-да null мен equals."] });
     }
   }
 
@@ -691,7 +773,7 @@
   }
 
   G.register({ id: "runner", title: "Code Runner", icon: "🎮", color: "#2563eb", blurb: "Жүгір және дұрыс Python кодының жолына өт. Әр жауаптан кейін жылдамырақ.", start: runner });
-  G.register({ id: "bughunt", title: "Bug Hunter", icon: "🐛", color: "#d9480f", blurb: "C, Python, JavaScript кодындағы қате жолды тап, түзетуін оқы.", start: bughunt });
+  G.register({ id: "bughunt", title: "Bug Hunter", icon: "🐛", color: "#d9480f", blurb: "C, C++, Java, Python, JavaScript кодындағы қате жолды тап, түзетуін оқы.", start: bughunt });
   G.register({ id: "battle", title: "Code Battle", icon: "⚔️", color: "#c2255c", blurb: "60 секунд: мүмкіндігінше көп сұраққа жауап бер, серия бонусын жина.", start: battle });
   G.register({ id: "algo", title: "Algorithm Race", icon: "🧠", color: "#0f766e", blurb: "Араласқан алгоритм қадамдарын дұрыс ретке келтір.", start: algo });
 })();

@@ -14,15 +14,33 @@ const noHScroll = async (page) => {
   expect(w.s).toBeLessThanOrEqual(w.c);
 };
 
-test("games.html: ойындар хабында 4 жаңа ойын бар", async ({ page, context }) => {
+test("games.html: ойындар хабында 5 ойын бар (games-b), барлығы 9 карточка", async ({ page, context }) => {
   await blockFonts(context);
   const errs = collectErrors(page);
   await page.goto("games.html");
-  for (const id of ["sqlescape", "memory", "webbuilder", "binary"]) await expect(page.locator(`.game-card[href="#${id}"]`)).toBeVisible();
+  for (const id of ["sqlescape", "memory", "webbuilder", "binary", "oracle"]) await expect(page.locator(`.game-card[href="#${id}"]`)).toBeVisible();
+  await expect(page.locator(".gx-grid .game-card")).toHaveCount(9);
   const c = await page.evaluate(() => window.CS50GamesB.counts);
   expect(c.sqlRooms).toBe(6);
-  expect(c.memoryTasks).toBeGreaterThanOrEqual(30);
+  expect(c.memoryTasks).toBeGreaterThanOrEqual(42);
   expect(c.webTasks).toBe(5);
+  expect(c.oracleSnippets).toBe(40);
+  expect(errs).toEqual([]);
+});
+
+test("games.html: «C++» және «Java» сүзгі чиптері дұрыс ойындарды көрсетеді", async ({ page, context }) => {
+  await blockFonts(context);
+  const errs = collectErrors(page);
+  await page.goto("games.html");
+  const visible = async () => page.$$eval(".gx-grid .game-card:not([hidden])", (a) => a.map((x) => x.getAttribute("href").slice(1)).sort());
+  await page.click('.gx-chip[data-cat="cpp"]');
+  await expect(page.locator('.gx-chip[data-cat="cpp"]')).toHaveAttribute("aria-pressed", "true");
+  expect(await visible()).toEqual(["battle", "bughunt", "memory", "oracle"]);
+  await page.click('.gx-chip[data-cat="java"]');
+  expect(await visible()).toEqual(["battle", "bughunt", "oracle"]);
+  await expect(page.locator('.game-card[href="#oracle"] .gx-tag')).toContainText(["C++", "Java"]);
+  await page.click('.gx-chip[data-cat="all"]');
+  expect((await visible()).length).toBe(9);
   expect(errs).toEqual([]);
 });
 
@@ -98,10 +116,158 @@ test("Memory Master: барлық тапсырма деректері дұрыс
     const m = window.CS50GamesB.memory;
     return { n: m.length, lv: [1, 2, 3].map((l) => m.filter((t) => t.l === l).length), badOpts: m.filter((t) => !(t.f || (t.o && t.o.length >= 3))).length, noMem: m.filter((t) => !t.mem || !t.e).length };
   });
-  expect(r.n).toBeGreaterThanOrEqual(30);
+  expect(r.n).toBeGreaterThanOrEqual(42);
   r.lv.forEach((c) => expect(c).toBeGreaterThanOrEqual(10));
   expect(r.badOpts).toBe(0);
   expect(r.noMem).toBe(0);
+});
+
+test("Memory Master: 12 жаңа C++ тапсырма (3 деңгей), main.cpp терезесі, жад торында сілтеме/unique_ptr", async ({ page, context }) => {
+  await blockFonts(context);
+  await page.goto("games.html");
+  const r = await page.evaluate(() => {
+    const m = window.CS50GamesB.memory.filter((t) => t.lang === "C++");
+    return { n: m.length, lv: [1, 2, 3].map((l) => m.filter((t) => t.l === l).length), fill: m.filter((t) => t.f).length, uniq: new Set(m.map((t) => t.code)).size, text: m.map((t) => t.code).join("\n") };
+  });
+  expect(r.n).toBe(12);
+  expect(r.lv).toEqual([4, 4, 4]);
+  expect(r.fill).toBeGreaterThanOrEqual(3);
+  expect(r.uniq).toBe(12);
+  for (const kw of ["new", "delete", "int&", "make_unique", "vector"]) expect(r.text).toContain(kw);
+});
+
+test("Memory Master: C++ тапсырма ойнағанда main.cpp және C++ таңбасы, жад торы көрінеді", async ({ page, context }) => {
+  await blockFonts(context);
+  const errs = collectErrors(page);
+  let seen = false;
+  for (let k = 0; k < 10 && !seen; k++) { // тапсырмалар кездейсоқ таңдалады: C++ тапсырма кездескенше қайта ашамыз
+    await page.goto("games.html#memory");
+    await expect(page.locator(".gy-memory")).toBeVisible();
+    for (let i = 0; i < 12; i++) {
+      const lang = (await page.locator(".gy-etitle .gy-lang").first().innerText()).trim();
+      if (lang === "C++") {
+        seen = true;
+        await expect(page.locator(".gy-etitle .gy-file").first()).toHaveText("main.cpp");
+        const opts = page.locator(".g-opt");
+        if (await opts.count()) await opts.first().click(); else { await page.fill(".gb-input", "1"); await page.keyboard.press("Enter"); }
+        await expect(page.locator(".gb-mem .gb-cell").first()).toBeVisible();
+        break;
+      }
+      const opts = page.locator(".g-opt");
+      if (await opts.count()) await opts.first().click(); else { await page.fill(".gb-input", "1"); await page.keyboard.press("Enter"); }
+      await page.click(".gb-next");
+    }
+  }
+  expect(seen).toBe(true);
+  expect(errs).toEqual([]);
+});
+
+test("Output Oracle: 40 үзінді (20 C++ + 20 Java), 3-8 жол, нұсқалар қайталанбайды", async ({ page, context }) => {
+  await blockFonts(context);
+  await page.goto("games.html");
+  const r = await page.evaluate(() => {
+    const O = window.CS50GamesB.oracle;
+    return {
+      n: O.length, cpp: O.filter((x) => x.l === "C++").length, java: O.filter((x) => x.l === "Java").length,
+      lines: O.filter((x) => x.c.length < 3 || x.c.length > 8).length,
+      opts: O.filter((x) => new Set([x.o].concat(x.d)).size !== 4 || x.d.length !== 3 || !x.e).length,
+      dup: O.length - new Set(O.map((x) => x.l + x.c.join("\n"))).size,
+      compile: O.filter((x) => x.o === "Компиляция қатесі").length,
+    };
+  });
+  expect(r).toMatchObject({ n: 40, cpp: 20, java: 20, lines: 0, opts: 0, dup: 0 });
+  expect(r.compile).toBeGreaterThanOrEqual(4);
+});
+
+test("Output Oracle: 12 раунд, дұрыс жауаппен ойнау, ұпай жылдамдыққа қарай, нәтиже сақталады (390px)", async ({ page, context }) => {
+  await page.setViewportSize({ width: 390, height: 800 });
+  const errs = await open(page, context, "oracle");
+  await expect(page.locator(".gx-intro")).toBeVisible();
+  await noHScroll(page);
+  await page.click(".ga-go");
+  const langs = new Set();
+  for (let r = 1; r <= 12; r++) {
+    await expect(page.locator(".g-hud")).toContainText(`${r}/12`);
+    await expect(page.locator(".gy-hearts")).toHaveAttribute("aria-label", "Жан: 3 / 3");
+    langs.add((await page.locator(".gy-etitle .gy-lang").innerText()).trim());
+    await noHScroll(page);
+    const correct = await page.evaluate(() => {
+      const code = [...document.querySelectorAll(".gy-ct")].map((e) => e.textContent.replace(/\u00a0/g, "")).join("\n");
+      const o = window.CS50GamesB.oracle.find((x) => x.c.join("\n") === code);
+      return o.o;
+    });
+    const idx = await page.$$eval(".gy-or-txt", (a, c) => a.findIndex((e) => e.textContent === c), correct);
+    if (r % 2) await page.keyboard.press(String(idx + 1)); else await page.locator(".gy-or-opt").nth(idx).click();
+    await expect(page.locator(".gy-or-opt.ok")).toHaveCount(1);
+    await expect(page.locator(".gy-or-opt.bad")).toHaveCount(0);
+    await expect(page.locator(".gb-expl")).toBeVisible();
+    await page.click(".gb-next");
+  }
+  expect([...langs].sort()).toEqual(["C++", "Java"]);
+  await expect(page.locator(".game-result")).toBeVisible();
+  const g = (await gamesLog(page)).oracle;
+  expect(g.plays).toBe(1);
+  expect(g.best).toBeGreaterThanOrEqual(12 * 40);
+  expect(g.best).toBeLessThanOrEqual(12 * 100);
+  await noHScroll(page);
+  expect(errs).toEqual([]);
+});
+
+test("Output Oracle: 3 қате жауап = ойын аяқталады, жандар азаяды, уақыт бітуі жан алады", async ({ page, context }) => {
+  const errs = await open(page, context, "oracle");
+  await page.click(".ga-go");
+  const wrong = async () => {
+    const idx = await page.evaluate(() => {
+      const code = [...document.querySelectorAll(".gy-ct")].map((e) => e.textContent.replace(/\u00a0/g, "")).join("\n");
+      const o = window.CS50GamesB.oracle.find((x) => x.c.join("\n") === code);
+      return [...document.querySelectorAll(".gy-or-txt")].findIndex((e) => e.textContent !== o.o);
+    });
+    await page.locator(".gy-or-opt").nth(idx).click();
+  };
+  await wrong();
+  await expect(page.locator(".gy-or-opt.bad")).toHaveCount(1);
+  await expect(page.locator(".gy-or-opt.ok")).toHaveCount(1);
+  await expect(page.locator(".gy-hearts")).toHaveAttribute("aria-label", "Жан: 2 / 3");
+  await page.click(".gb-next");
+  await wrong();
+  await expect(page.locator(".gy-hearts")).toHaveAttribute("aria-label", "Жан: 1 / 3");
+  await page.click(".gb-next");
+  await wrong();
+  await expect(page.locator(".gy-hearts")).toHaveAttribute("aria-label", "Жан: 0 / 3");
+  await expect(page.locator(".gb-next")).toContainText("Нәтижені");
+  await page.click(".gb-next");
+  await expect(page.locator(".game-result")).toContainText("Жандар таусылды");
+  expect((await gamesLog(page)).oracle.plays).toBe(1);
+  expect(errs).toEqual([]);
+});
+
+test("Output Oracle: таймер біткенде жауап берілмесе жан кетеді (?fast)", async ({ page, context }) => {
+  await blockFonts(context);
+  const errs = collectErrors(page);
+  await page.goto("games.html?fast#oracle");
+  await expect(page.locator(".game-shell")).toBeVisible();
+  await page.click(".ga-go");
+  await expect(page.locator(".g-fb")).toContainText("Уақыт бітті", { timeout: 10000 });
+  await expect(page.locator(".gy-hearts")).toHaveAttribute("aria-label", "Жан: 2 / 3");
+  await expect(page.locator(".gy-or-opt.ok")).toHaveCount(1);
+  expect(errs).toEqual([]);
+});
+
+test("Output Oracle: reduced-motion және қараңғы режим, a11y атаулары", async ({ page, context }) => {
+  await page.emulateMedia({ reducedMotion: "reduce", colorScheme: "dark" });
+  await page.setViewportSize({ width: 390, height: 844 });
+  const errs = await open(page, context, "oracle");
+  await page.click(".ga-go");
+  await expect(page.locator(".gy-or-opts")).toHaveAttribute("role", "group");
+  await expect(page.locator(".gy-or-opt")).toHaveCount(4);
+  const unnamed = await page.$$eval("button", (a) => a.filter((b) => !(b.textContent || "").trim() && !b.getAttribute("aria-label")).length);
+  expect(unnamed).toBe(0);
+  const anim = await page.locator(".gy-or").evaluate((e) => getComputedStyle(e.querySelector(".gy-hearts i")).transitionDuration);
+  expect(anim).toBe("0s");
+  const bg = await page.locator(".gy-or").evaluate((e) => getComputedStyle(e).backgroundColor);
+  expect(bg).not.toBe("rgb(255, 255, 255)");
+  await noHScroll(page);
+  expect(errs).toEqual([]);
 });
 
 test("Web Builder: тапсырмалар, қауіпсіз алдын ала көру, көшіру/жүктеу", async ({ page, context }) => {
@@ -195,13 +361,13 @@ test("Binary генераторы: жауап кілті дұрыс (500 сұр�
   expect(bad).toEqual([]);
 });
 
-for (const [id, dark] of [["sqlescape", false], ["memory", true], ["webbuilder", false], ["binary", true]]) {
+for (const [id, dark] of [["sqlescape", false], ["memory", true], ["webbuilder", false], ["binary", true], ["oracle", false]]) {
   test(`390px: ${id} көлденең айналусыз (${dark ? "қараңғы" : "ашық"})`, async ({ browser }) => {
     const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: dark ? "dark" : "light" });
     const page = await ctx.newPage();
     const errs = await open(page, ctx, id);
     await page.waitForTimeout(600);
-    if (id === "binary") { await noHScroll(page); await page.click(".ga-go"); }
+    if (id === "binary" || id === "oracle") { await noHScroll(page); await page.click(".ga-go"); }
     if (id === "memory") { await page.locator(".g-opt, .gb-input").first().click(); await page.waitForTimeout(100); }
     if (id === "webbuilder") { await page.click('.gb-pal[aria-label="Карточка қосу"]'); await page.click('.gb-pal[aria-label="Тізім қосу"]'); }
     if (id === "sqlescape") { await page.fill(".gb-sql", "SELECT * FROM books"); await page.click(".gb-run"); }

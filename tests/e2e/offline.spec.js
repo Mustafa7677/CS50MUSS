@@ -22,7 +22,7 @@ test("офлайн: беттер кэштен қатесіз ашылады, б�
     await expect.poll(() => p.evaluate(async () => (await caches.keys()).length && (await (await caches.open((await caches.keys())[0])).keys()).length), { timeout: 30_000 }).toBeGreaterThan(40);
     srv.kill();
     await new Promise((r) => setTimeout(r, 500));
-    for (const u of ["index.html", "lectures/week-3.html", "lectures/week-6.html", "alash.html", "practice.html", "profile.html", "glossary.html"]) {
+    for (const u of ["index.html", "lectures/week-3.html", "lectures/week-6.html", "alash.html", "practice.html", "profile.html", "glossary.html", "cpp/index.html", "java/index.html"]) {
       await p.goto(B + u);
       await expect(p.locator("h1").first()).toBeVisible();
     }

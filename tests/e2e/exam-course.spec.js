@@ -1,10 +1,11 @@
 const { test, expect } = require("@playwright/test");
-const { blockFonts, collectErrors } = require("../support/helpers");
+const { blockFonts, collectErrors, ownLectures } = require("../support/helpers");
 
 // Әр курстың өз қорытынды емтиханы: сұрақтар сол курстан, нәтиже өз кілтінде, сертификатта көрінеді.
 test.describe.configure({ retries: 2 }); // толық жүктемеде сирек кездесетін уақыт жарысынан сақтайды
-for (const [c, code, lecs] of [["python", "CS50P", 10], ["sql", "CS50 SQL", 7], ["ai", "CS50 AI", 7], ["web", "CS50 Web", 9]]) {
+for (const [c, code, lecs] of [["python", "CS50P", 10], ["sql", "CS50 SQL", 7], ["ai", "CS50 AI", 7], ["web", "CS50 Web", 9], ["cpp", "C++", ownLectures("cpp").length], ["java", "Java", ownLectures("java").length]]) {
   test(`емтихан: ${code}`, async ({ page, context }) => {
+    test.skip(lecs === 0, "курстың лекциялары әлі жазылмаған");
     test.setTimeout(90_000);
     await blockFonts(context);
     const errs = collectErrors(page);

@@ -31,6 +31,38 @@ test("45 лекция: CC BY-NC-SA 4.0 (Harvard аудармасы), түпнұ�
   }
 });
 
+// C++ және Java: дербес авторлық курстар (B), Harvard аудармасы емес; 45-ке кірмейді
+const OWN_PAGES = ["cpp", "java"].flatMap((c) => [`${c}/index.html`, ...(fs.existsSync(path.join(ROOT, c, "lectures")) ? fs.readdirSync(path.join(ROOT, c, "lectures")).filter((f) => f.endsWith(".html")).map((f) => `${c}/lectures/${f}`) : [])]);
+test("C++ және Java курстары (B): All Rights Reserved, CC BY-NC-SA жоқ, isBasedOn Harvard жоқ", () => {
+  expect(OWN_PAGES.length).toBeGreaterThanOrEqual(2);
+  expect(LECTURES.some((f) => /^(cpp|java)\//.test(f))).toBe(false); // Harvard 45 лекцияға кірмейді
+  for (const f of OWN_PAGES) {
+    const s = read(f);
+    expect(s, f).toContain('data-license="B"');
+    expect(metaCopy(s), f).toMatch(/All Rights Reserved/);
+    expect(metaCopy(s), f).not.toMatch(/CC BY-NC-SA|Harvard/);
+    expect(licHref(s), f).toMatch(/copyright\.html$/);
+    expect(s, f).not.toContain("creativecommons.org/licenses/by-nc-sa");
+    expect(s, f).not.toContain('"isBasedOn"');
+    expect(s, f).not.toContain('class="source-link"');
+    expect(s, f).toContain("© 2026 Sagid Mustafa.");
+    expect(s, f).toMatch(/class="translator-note"[^>]*>[^]*Sagid Mustafa-ның авторлық оқу материалы[^]*copyright\.html/);
+    expect(s, f).not.toMatch(/Аударған: Sagid Mustafa/);
+    const ld = JSON.parse(s.match(/<script type="application\/ld\+json">(\{.*?\})<\/script>/)[1]);
+    expect(ld.license, f).toMatch(/copyright\.html$/);
+  }
+  // Реестр: B-course-cpp және B-course-java
+  const reg = JSON.parse(read("licensing/components.json")).components;
+  for (const c of ["cpp", "java"]) {
+    const e = reg.find((x) => x.id === `B-course-${c}`);
+    expect(e, c).toBeTruthy();
+    expect(e.cat).toBe("B");
+    expect(e.paths).toEqual([`${c}/**`]);
+    expect(e.holder).toBe("Sagid Mustafa");
+    expect(e.license).toBe("ARR");
+  }
+});
+
 test("дербес беттер (B): All Rights Reserved, Harvard лицензиясы тағайындалмаған", () => {
   for (const f of B_PAGES) {
     const s = read(f);
@@ -53,7 +85,7 @@ test("аралас беттер (M): екі лицензия да ашық кө�
 });
 
 test("әр HTML бетінде талап етілген footer мәтіні және лицензиялар бетіне сілтеме бар", () => {
-  const pages = [...LECTURES, ...B_PAGES, ...M_PAGES, "python/index.html", "sql/index.html", "ai/index.html", "web/index.html", "404.html"];
+  const pages = [...LECTURES, ...B_PAGES, ...M_PAGES, "python/index.html", "sql/index.html", "ai/index.html", "web/index.html", "cpp/index.html", "java/index.html", "404.html"];
   for (const f of pages) {
     const s = read(f);
     expect(s, f).toContain("© 2026 Sagid Mustafa.");

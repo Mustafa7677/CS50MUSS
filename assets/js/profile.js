@@ -212,7 +212,7 @@
       const readAll = Object.keys(p.read || {}).filter((k) => p.read[k]).length;
       K.myCourses && K.myCourses(el.querySelector(".my-courses"), { always: true, title: "Курстар бойынша прогресс" });
       el.querySelector(".pf-stats").innerHTML = [
-        ["📖", `${Math.min(readAll, 45)}/45`, "лекция (барлық курс)"], ["✅", s.tasks, "тапсырма"], ["📝", s.quiz != null ? s.quiz + "%" : "-", "тест"],
+        ["📖", `${Math.min(readAll, 61)}/61`, "лекция (барлық курс)"], ["✅", s.tasks, "тапсырма"], ["📝", s.quiz != null ? s.quiz + "%" : "-", "тест"],
         ["🎓", s.exam != null ? s.exam + "%" : "-", "емтихан"], ["🏅", s.ach ?? "-", "жетістік"],
       ].map(([i, v, t]) => `<div><span>${i}</span><b>${esc(String(v))}</b><small>${t}</small></div>`).join("");
       const nm = el.querySelector(".pf-name");

@@ -16,10 +16,10 @@
     del(key) { try { localStorage.removeItem(key); } catch (e) {} },
   };
   const PER_LECTURE = 2, MINUTES = 30, PASS = 70;
-  const COURSE = (() => { const c = new URLSearchParams(location.search).get("course"); return ["python", "sql", "ai", "web"].includes(c) ? c : null; })();
+  const COURSE = (() => { const c = new URLSearchParams(location.search).get("course"); return ["python", "sql", "ai", "web", "cpp", "java"].includes(c) ? c : null; })();
   const SUF = COURSE ? ":" + COURSE : "";
   const RUN = "cs50kz:exam-run" + SUF, RES = "cs50kz:exam" + SUF;
-  const CODE = { python: "CS50P", sql: "CS50 SQL", ai: "CS50 AI", web: "CS50 Web" }[COURSE] || "CS50x";
+  const CODE = { python: "CS50P", sql: "CS50 SQL", ai: "CS50 AI", web: "CS50 Web", cpp: "C++", java: "Java" }[COURSE] || "CS50x";
   function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
   const mmss = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, "0")}`;
 

@@ -1,0 +1,1156 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C++ 6-апта: STL: контейнерлер, итераторлар, алгоритмдер - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#4f46e5">
+  <!-- /build:head -->
+  <meta name="description" content="C++ 6-апта: vector, list, deque, map, unordered_map, set, pair, tuple, structured binding, итераторлар, алгоритмдер, lambda, std::function және Big-O.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="cpp" style="--c:#4f46e5"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">C++</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" data-n="6">
+        <div class="num">6-апта</div>
+        <h1>STL: контейнерлер, итераторлар, алгоритмдер</h1>
+        <p>C++ стандартты кітапханасы дайын «қоймалар» (контейнерлер) мен «құралдар» (алгоритмдер) береді. Тізім, сөздік, жиын, сұрыптау, іздеу өзіңіз жазбай-ақ бар. Бұл аптада оларды қашан және қалай таңдау керегін үйренеміз.</p>
+      </div>
+
+      <h2 id="intro">STL деген не және неге ол керек?</h2>
+      <p>Бағдарламашылардың көбі бірдей мәселелерге тап болады: деректер тізімін сақтау, сөз бойынша іздеу, сұрыптау, қайталанбайтын элементтерді таңдау. Әр жолы мұны нөлден жазу уақыт алады және қате қосады. Сондықтан C++ тілінің <strong>стандартты кітапханасы</strong> (<span class="term-en">Standard Template Library</span>, қысқаша <strong>STL</strong>) осындай жұмыстардың бәрін дайын береді. Ол үш бөліктен тұрады:</p>
+      <ul>
+        <li><strong>контейнерлер</strong> (<span class="term-en">containers</span>): деректерді сақтайтын «қоймалар» (<code>vector</code>, <code>list</code>, <code>map</code>, <code>set</code>...);</li>
+        <li><strong>итераторлар</strong> (<span class="term-en">iterators</span>): контейнердің ішінде жүретін «көрсеткіш тәрізді» нысандар;</li>
+        <li><strong>алгоритмдер</strong> (<span class="term-en">algorithms</span>): сұрыптау, іздеу, санау сияқты дайын әрекеттер (<code>sort</code>, <code>find</code>, <code>count_if</code>...).</li>
+      </ul>
+      <p>Бұл үшеуі бір-бірімен итераторлар арқылы байланысады. Бір алгоритм (мысалы, <code>sort</code>) әртүрлі контейнермен жұмыс істей алады, себебі ол контейнердің ішкі құрылымын емес, тек итераторларды біледі. Мұны асхана аналогиясымен түсіндіруге болады: контейнер - ыдыс, итератор - қасық, алгоритм - рецепт. Рецепт қасықпен жұмыс істейді, ал қасық қай ыдыста болса да бірдей.</p>
+      <div class="callout tip">
+        <span class="callout-title">Өз компьютеріңде іске қос</span>
+        <p>Әр мысалды <code>main.cpp</code> файлына жазып, мынадай команда орында:</p>
+<pre data-lang="bash"><code class="language-bash">g++ -std=c++17 -Wall -Wextra -fsanitize=address,undefined main.cpp -o main &amp;&amp; ./main</code></pre>
+        <p>Бұл лекцияда C++17 мүмкіндіктері бар (мысалы, <code>auto [a, b]</code> құрылымдық байланыстыру), сондықтан <code>-std=c++17</code> жазуды ұмытпаңыз.</p>
+      </div>
+
+      <h2 id="vector">vector: ең жиі қолданылатын контейнер</h2>
+      <p><strong>Вектор</strong> (<span class="term-en">std::vector</span>) - өлшемі өзгеретін жиым. Элементтері жадта бір-бірінің қасында жатады, сондықтан индекс бойынша қол жеткізу өте жылдам. Басқа контейнерді таңдауға нақты себеп болмаса, әрқашан <code>vector</code>-дан бастаңыз. Бұл - тәжірибелі C++ бағдарламашылардың әдеті.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;std::string&gt; cities;           // бос вектор
+    cities.push_back("Алматы");
+    cities.push_back("Астана");
+    cities.push_back("Шымкент");
+    cities.push_back("Ақтау");
+
+    std::cout &lt;&lt; "Қала саны: " &lt;&lt; cities.size() &lt;&lt; "\n";
+    std::cout &lt;&lt; "Біріншісі: " &lt;&lt; cities.front() &lt;&lt; ", соңғысы: " &lt;&lt; cities.back() &lt;&lt; "\n";
+    std::cout &lt;&lt; "[2] = " &lt;&lt; cities[2] &lt;&lt; "\n";
+
+    cities.insert(cities.begin() + 1, "Қарағанды");   // индекс 1-ге қыстыру
+    cities.pop_back();                                // соңғысын алып тастау
+
+    for (const std::string&amp; c : cities) {
+        std::cout &lt;&lt; c &lt;&lt; "; ";
+    }
+    std::cout &lt;&lt; "\n";
+
+    std::vector&lt;int&gt; v(5, 7);      // бес дана 7
+    std::vector&lt;int&gt; w{1, 2, 3};   // тізімнен
+    std::cout &lt;&lt; v.size() &lt;&lt; " " &lt;&lt; w.size() &lt;&lt; " " &lt;&lt; w[1] &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a01_vector
+Қала саны: 4
+Біріншісі: Алматы, соңғысы: Ақтау
+[2] = Шымкент
+Алматы; Қарағанды; Астана; Шымкент; 
+5 3 2</code></pre>
+      <p>Негізгі әрекеттер: <code>push_back</code> соңына қосады, <code>pop_back</code> соңғысын алып тастайды, <code>size()</code> элементтер санын, <code>front()</code>/<code>back()</code> бірінші және соңғы элементті береді, <code>insert</code> кез келген орынға қыстырады. Вектор жасаудың бірнеше жолы бар: бос (<code>std::vector&lt;int&gt; v;</code>), бір мәннен бірнеше дана (<code>v(5, 7)</code> - бес дана 7) және бастапқы тізіммен (<code>w{1, 2, 3}</code>).</p>
+      <svg viewBox="0 0 640 290" role="img" aria-label="Диаграмма: std::vector элементтері жадта қатар жатқан үздіксіз блок, ал std::list элементтері жадтың әртүрлі жерінде орналасқан түйіндер, әр түйін келесісіне және алдыңғысына көрсеткішпен байланысқан" style="display:block;width:100%;max-width:640px;height:auto;margin:18px auto">
+        <defs><marker id="m6a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>
+        <text x="10" y="22" style="fill:var(--text);font:700 14px var(--mono, monospace)">vector&lt;int&gt;: үздіксіз блок</text>
+        <rect x="10" y="34" width="70" height="44" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <rect x="80" y="34" width="70" height="44" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <rect x="150" y="34" width="70" height="44" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <rect x="220" y="34" width="70" height="44" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <rect x="290" y="34" width="70" height="44" style="fill:var(--surface);stroke:var(--border);stroke-width:1.4;stroke-dasharray:4 3"/>
+        <rect x="360" y="34" width="70" height="44" style="fill:var(--surface);stroke:var(--border);stroke-width:1.4;stroke-dasharray:4 3"/>
+        <text x="45" y="62" text-anchor="middle" style="fill:var(--text);font:14px var(--mono, monospace)">10</text>
+        <text x="115" y="62" text-anchor="middle" style="fill:var(--text);font:14px var(--mono, monospace)">20</text>
+        <text x="185" y="62" text-anchor="middle" style="fill:var(--text);font:14px var(--mono, monospace)">30</text>
+        <text x="255" y="62" text-anchor="middle" style="fill:var(--text);font:14px var(--mono, monospace)">40</text>
+        <text x="45" y="96" text-anchor="middle" style="fill:var(--muted);font:12px var(--mono, monospace)">[0]</text>
+        <text x="115" y="96" text-anchor="middle" style="fill:var(--muted);font:12px var(--mono, monospace)">[1]</text>
+        <text x="185" y="96" text-anchor="middle" style="fill:var(--muted);font:12px var(--mono, monospace)">[2]</text>
+        <text x="255" y="96" text-anchor="middle" style="fill:var(--muted);font:12px var(--mono, monospace)">[3]</text>
+        <text x="445" y="52" style="fill:var(--muted);font:12px var(--mono, monospace)">size = 4</text>
+        <text x="445" y="70" style="fill:var(--muted);font:12px var(--mono, monospace)">capacity = 6 (бос орын)</text>
+        <text x="10" y="150" style="fill:var(--text);font:700 14px var(--mono, monospace)">list&lt;int&gt;: байланысқан түйіндер</text>
+        <rect x="10" y="168" width="110" height="44" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <rect x="250" y="200" width="110" height="44" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <rect x="480" y="168" width="110" height="44" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <text x="65" y="195" text-anchor="middle" style="fill:var(--text);font:14px var(--mono, monospace)">10</text>
+        <text x="305" y="227" text-anchor="middle" style="fill:var(--text);font:14px var(--mono, monospace)">20</text>
+        <text x="535" y="195" text-anchor="middle" style="fill:var(--text);font:14px var(--mono, monospace)">30</text>
+        <line x1="120" y1="185" x2="250" y2="212" style="stroke:var(--accent);stroke-width:1.8" marker-end="url(#m6a)"/>
+        <line x1="360" y1="212" x2="480" y2="185" style="stroke:var(--accent);stroke-width:1.8" marker-end="url(#m6a)"/>
+        <line x1="480" y1="198" x2="360" y2="232" style="stroke:var(--muted);stroke-width:1.4;stroke-dasharray:4 3" marker-end="url(#m6a)"/>
+        <line x1="250" y1="232" x2="120" y2="200" style="stroke:var(--muted);stroke-width:1.4;stroke-dasharray:4 3" marker-end="url(#m6a)"/>
+        <text x="320" y="272" text-anchor="middle" style="fill:var(--muted);font:12px var(--font, sans-serif)">түйіндер жадта шашыраңқы, әрқайсысы көршісінің мекенжайын біледі</text>
+      </svg>
+      <p>Суретте айырмашылық көрінеді. Вектордың элементтері қатар тұрғандықтан, бес жүзінші элементті табу үшін бастапқы мекенжайға бес жүз элементтің өлшемін қосу жеткілікті, бұл O(1). Тізімде мұндай жол жоқ, соңына жету үшін бәрін тізбектеп өту керек. Ал қыстыру керісінше: векторда ортаға қыстыру үшін кейінгі элементтердің бәрін жылжыту қажет, тізімде тек екі көрсеткішті өзгертеміз.</p>
+
+      <h3 id="vector-safe">Шектен шығу: [] және at()</h3>
+      <p>Вектордың <code>v[i]</code> жазуы шекті тексермейді. Егер индекс дұрыс болмаса, анықталмаған әрекет (қате жадты оқу) болады. Қауіпсіз нұсқа - <code>v.at(i)</code>. Ол шектен тыс болса, <code>std::out_of_range</code> ерекше жағдайын лақтырады, ал оны ұстап алуға болады. Ерекше жағдайларды 7-аптада толық қараймыз, қазір тек көрейік:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;stdexcept&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v{10, 20, 30};
+    try {
+        std::cout &lt;&lt; v.at(1) &lt;&lt; "\n";
+        std::cout &lt;&lt; v.at(5) &lt;&lt; "\n";     // шектен тыс
+    } catch (const std::out_of_range&amp; e) {
+        std::cout &lt;&lt; "Қате ұсталды: " &lt;&lt; e.what() &lt;&lt; "\n";
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a02_at
+20
+Қате ұсталды: vector::_M_range_check: __n (which is 5) &gt;= this-&gt;size() (which is 3)</code></pre>
+      <p>Қате хабары компилятор мен кітапханаға байланысты болуы мүмкін, ол жерде индекс (5) мен өлшем (3) көрсетілген. <code>[]</code> жылдамырақ, <code>at()</code> қауіпсізірек. Қорытынды ереже: индекстің дұрыстығына 100% сенімді болсаңыз, <code>[]</code>, әйтпесе <code>at()</code>.</p>
+
+      <h3 id="capacity">size пен capacity</h3>
+      <p>Вектор өсу үшін жадты қосымша бөліп қояды. <code>size()</code> - ішінде қанша элемент бар, <code>capacity()</code> - қайта бөлусіз қанша сыяды. Орын таусылғанда, вектор үлкенірек жаңа блок бөліп, ескі элементтерді көшіріп, ескісін босатады. Мұны байқау үшін өсуді бақылайық:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v;
+    std::size_t last = 0;
+    for (int i = 0; i &lt; 20; ++i) {
+        v.push_back(i);
+        if (v.capacity() != last) {
+            last = v.capacity();
+            std::cout &lt;&lt; "size = " &lt;&lt; v.size() &lt;&lt; " -&gt; capacity = " &lt;&lt; last &lt;&lt; "\n";
+        }
+    }
+    std::vector&lt;int&gt; w;
+    w.reserve(100);          // бірден орын сұрау: қайта бөлу болмайды
+    std::cout &lt;&lt; "reserve(100): size = " &lt;&lt; w.size() &lt;&lt; ", capacity = " &lt;&lt; w.capacity() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a14_capacity
+size = 1 -&gt; capacity = 1
+size = 2 -&gt; capacity = 2
+size = 3 -&gt; capacity = 4
+size = 5 -&gt; capacity = 8
+size = 9 -&gt; capacity = 16
+size = 17 -&gt; capacity = 32
+reserve(100): size = 0, capacity = 100</code></pre>
+      <p>Көріп отырғанымыздай, сыйымдылық әр жолы екі есе өсті (1, 2, 4, 8, 16, 32). Нақты өсу коэффициенті стандартта бекітілмеген, бұл g++ нәтижесі. Осы тәсілдің арқасында <code>push_back</code> <strong>амортизацияланған</strong> O(1): көбіне жылдам, сирек қана бір рет қымбат. Егер шамамен қанша элемент болатынын білсеңіз, алдын ала <code>reserve(100)</code> деп жад сұрап қойсаңыз, қайта бөлу мүлде болмайды.</p>
+
+      <h2 id="list-deque">list және deque</h2>
+      <p><strong>Тізім</strong> (<span class="term-en">std::list</span>) - екі жақты байланысқан түйіндер тізбегі. Ол элементтерге индекс бойынша қол жеткізуге мүмкіндік бермейді (<code>l[3]</code> жоқ), бірақ белгілі орынға қыстыру мен жою өте жылдам, элементтер басқа орынға көшірілмейді, ал итераторлар жарамды күйінде қалады. <strong>Дек</strong> (<span class="term-en">std::deque</span>, <em>double-ended queue</em>) - екі жағынан да тез қосуға болатын жиым тәрізді контейнер, ол индекс бойынша қол жеткізуді де қолдайды.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;deque&gt;
+#include &lt;iostream&gt;
+#include &lt;list&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::list&lt;std::string&gt; queue;                 // екі жақты байланысқан тізім
+    queue.push_back("Нұрсұлтан");
+    queue.push_back("Айдана");
+    queue.push_front("Сағын");                    // басына қосу - O(1)
+    auto it = queue.begin();
+    ++it;                                         // екінші элемент
+    queue.insert(it, "Дәурен");                   // ортасына қыстыру - O(1) (орын белгілі болса)
+    for (const auto&amp; s : queue) std::cout &lt;&lt; s &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+
+    std::deque&lt;int&gt; d;                            // екі жақтан да тез қосылады
+    d.push_back(2);
+    d.push_back(3);
+    d.push_front(1);
+    d.push_front(0);
+    std::cout &lt;&lt; "deque: ";
+    for (int x : d) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "| d[2] = " &lt;&lt; d[2] &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a03_list_deque
+Сағын Дәурен Нұрсұлтан Айдана 
+deque: 0 1 2 3 | d[2] = 2</code></pre>
+      <p>Практикалық кеңес: нағыз жобаларда <code>list</code> өте сирек керек болады, себебі вектор көбіне оны жылдамдықта басып озады (жадта қатар жатқандықтан процессордың кэші жақсы жұмыс істейді). Екі жақтан қосатын кезек керек болса, <code>deque</code> таңдаңыз. Ал вектордың алдына қосу тұрақты қажет болса, <code>deque</code> немесе басқа құрылым ойластырыңыз.</p>
+
+      <h2 id="associative">map, unordered_map және set</h2>
+      <p>Вектор индекс (0, 1, 2...) бойынша жұмыс істейді. Кейде индекс орнына <em>кілт</em> керек: «самса» деп сұрап, бағасын алу. Мұндай контейнерлерді <strong>ассоциативті</strong> (<span class="term-en">associative containers</span>) дейді.</p>
+      <p><code>std::map&lt;K, V&gt;</code> - «кілт → мән» жұптарының жиынтығы. Кілттер әрқашан <em>сұрыпталған</em> күйде сақталады (ішкі құрылымы тепе-тең екілік ағаш), іздеу мен қосу O(log n). Шай үйінің мәзірін алайық:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::map&lt;std::string, int&gt; menu;      // тағам -&gt; баға (тг)
+    menu["самса"] = 700;
+    menu["көк шай"] = 350;
+    menu["бешбармақ"] = 3500;
+    menu["баурсақ"] = 500;
+    menu["самса"] = 750;                  // бар кілтті жаңарту
+
+    std::cout &lt;&lt; "Мәзір (әліпби ретімен):\n";
+    for (const auto&amp; [name, price] : menu) {
+        std::cout &lt;&lt; "  " &lt;&lt; name &lt;&lt; " - " &lt;&lt; price &lt;&lt; " тг\n";
+    }
+
+    auto it = menu.find("қымыз");
+    if (it == menu.end()) std::cout &lt;&lt; "қымыз жоқ\n";
+    std::cout &lt;&lt; "самса бар ма? " &lt;&lt; menu.count("самса") &lt;&lt; "\n";
+
+    std::cout &lt;&lt; "Өлшем: " &lt;&lt; menu.size() &lt;&lt; "\n";
+    int zero = menu["шарап"];             // жоқ кілт: автоматты түрде 0-мен қосылады!
+    std::cout &lt;&lt; "шарап = " &lt;&lt; zero &lt;&lt; ", өлшем: " &lt;&lt; menu.size() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a04_map
+Мәзір (әліпби ретімен):
+  баурсақ - 500 тг
+  бешбармақ - 3500 тг
+  көк шай - 350 тг
+  самса - 750 тг
+қымыз жоқ
+самса бар ма? 1
+Өлшем: 4
+шарап = 0, өлшем: 5</code></pre>
+      <p>Мұнда бірнеше маңызды нәрсе бар:</p>
+      <ul>
+        <li><code>menu["самса"] = 750;</code> бар кілтті жаңартты, ал жоқ кілтті жаңа жұп ретінде қосады.</li>
+        <li>Цикл кілттер бойынша әліпби реті (нақтырақ, байттар реті) бойынша жүрді. Әр элемент - <code>pair&lt;const string, int&gt;</code>; <code>[name, price]</code> жазуы оны екі аттың бойына жайып береді.</li>
+        <li><code>find</code> элементті табады немесе <code>end()</code> қайтарады; <code>count</code> кілттің бар-жоғын (0 не 1) айтады.</li>
+        <li><strong>Тұзақ</strong>: <code>menu["шарап"]</code> оқу үшін ғана жазылса да, кілт жоқ болғандықтан, оны <code>0</code> мәнімен <em>қосып жібереді</em>. Өлшем 4-тен 5-ке өсті. Тек тексеру керек болса, <code>find</code> не <code>count</code> қолданыңыз.</li>
+      </ul>
+      <p><code>std::unordered_map</code> - дәл осындай, бірақ ішінде <em>хэш-кесте</em> жатыр. Кілттер сұрыпталмайды, бірақ іздеу орташа есеппен O(1). Егер реттің қажеті жоқ болса, көбіне осы тез:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;unordered_map&gt;
+#include &lt;unordered_set&gt;
+
+int main() {
+    std::unordered_map&lt;std::string, std::string&gt; capitals;
+    capitals["Қазақстан"] = "Астана";
+    capitals["Қырғызстан"] = "Бішкек";
+    capitals["Өзбекстан"] = "Ташкент";
+    capitals["Түркия"] = "Анкара";
+
+    for (const char* k : {"Қазақстан", "Түркия", "Жапония"}) {
+        auto it = capitals.find(k);
+        if (it != capitals.end()) std::cout &lt;&lt; k &lt;&lt; " -&gt; " &lt;&lt; it-&gt;second &lt;&lt; "\n";
+        else std::cout &lt;&lt; k &lt;&lt; " -&gt; табылмады\n";
+    }
+
+    std::unordered_set&lt;int&gt; seen;
+    int total = 0;
+    for (int x : {4, 8, 4, 15, 8, 16, 23, 42, 15}) {
+        if (seen.insert(x).second) total += x;   // insert жаңа болса ғана true
+    }
+    std::cout &lt;&lt; "Бірегей сандар: " &lt;&lt; seen.size() &lt;&lt; ", қосындысы: " &lt;&lt; total &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a05_unordered
+Қазақстан -&gt; Астана
+Түркия -&gt; Анкара
+Жапония -&gt; табылмады
+Бірегей сандар: 6, қосындысы: 108</code></pre>
+      <p>Екінші бөлікте <code>std::unordered_set</code> қолданылды. <code>insert</code> жұп қайтарады: екінші мәні <code>true</code> болса, элемент жаңа қосылды. Осы тәсілмен қайталанатын сандарды сүзіп, бірегейлерін қостық: 4+8+15+16+23+42 = 108.</p>
+      <p><code>std::set</code> - тек кілттен тұратын (мән жоқ), қайталанбайтын, сұрыпталған жиын. Бұл математикадағы «жиын» ұғымына сәйкес:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;set&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::set&lt;std::string&gt; attended;
+    for (const char* s : {"Дана", "Ерлан", "Айгүл", "Дана", "Ерлан", "Бақыт"}) {
+        attended.insert(s);
+    }
+    std::cout &lt;&lt; "Сабаққа келгендер (" &lt;&lt; attended.size() &lt;&lt; "): ";
+    for (const auto&amp; s : attended) std::cout &lt;&lt; s &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+
+    std::cout &lt;&lt; "Айгүл келді ме? " &lt;&lt; (attended.count("Айгүл") ? "иә" : "жоқ") &lt;&lt; "\n";
+    attended.erase("Ерлан");
+    std::cout &lt;&lt; "Ерлан алынды, қалды: " &lt;&lt; attended.size() &lt;&lt; "\n";
+
+    std::set&lt;int&gt; grades{5, 3, 4, 5, 3, 5};
+    std::cout &lt;&lt; "Бірегей бағалар: ";
+    for (int g : grades) std::cout &lt;&lt; g &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a06_set
+Сабаққа келгендер (4): Айгүл Бақыт Дана Ерлан 
+Айгүл келді ме? иә
+Ерлан алынды, қалды: 3
+Бірегей бағалар: 3 4 5 </code></pre>
+      <p>«Дана» мен «Ерлан» екі рет енгізілсе де, жиында бір реттен ғана қалды, бәрі әліпби ретімен тұр. Реттің қажеті болмаса, <code>unordered_set</code> қолданыңыз.</p>
+
+      <h2 id="pair-tuple">pair, tuple және құрылымдық байланыстыру</h2>
+      <p>Кейде екі-үш мәнді бір жерге жинау керек, бірақ ол үшін бөлек класс жазғың келмейді. <code>std::pair&lt;A, B&gt;</code> екі мәнді, <code>std::tuple&lt;...&gt;</code> кез келген санды біріктіреді. Функциядан бірнеше мән қайтару үшін өте ыңғайлы. <code>pair</code>-дің мүшелері <code>first</code> және <code>second</code>, ал tuple үшін <code>std::get&lt;0&gt;(t)</code>.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;tuple&gt;
+#include &lt;utility&gt;
+#include &lt;vector&gt;
+
+std::pair&lt;int, int&gt; minMax(const std::vector&lt;int&gt;&amp; v) {
+    int lo = v[0], hi = v[0];
+    for (int x : v) {
+        if (x &lt; lo) lo = x;
+        if (x &gt; hi) hi = x;
+    }
+    return {lo, hi};
+}
+
+std::tuple&lt;std::string, int, double&gt; student() {
+    return {"Мөлдір", 17, 4.75};
+}
+
+int main() {
+    std::pair&lt;std::string, int&gt; p{"Алматы", 2};
+    std::cout &lt;&lt; p.first &lt;&lt; ": " &lt;&lt; p.second &lt;&lt; "\n";
+
+    auto [lo, hi] = minMax({12, -3, 40, 7});
+    std::cout &lt;&lt; "min = " &lt;&lt; lo &lt;&lt; ", max = " &lt;&lt; hi &lt;&lt; "\n";
+
+    auto [name, age, gpa] = student();
+    std::cout &lt;&lt; name &lt;&lt; ", " &lt;&lt; age &lt;&lt; " жас, орташа балл " &lt;&lt; gpa &lt;&lt; "\n";
+
+    std::tuple&lt;int, char&gt; t{1, 'a'};
+    std::cout &lt;&lt; std::get&lt;0&gt;(t) &lt;&lt; std::get&lt;1&gt;(t) &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a07_pair_tuple
+Алматы: 2
+min = -3, max = 40
+Мөлдір, 17 жас, орташа балл 4.75
+1a</code></pre>
+      <p>C++17-дегі <strong>құрылымдық байланыстыру</strong> (<span class="term-en">structured binding</span>) <code>auto [lo, hi] = ...;</code> нәтижені бірден бірнеше айнымалыға ашып береді. Бұл <code>.first/.second</code> жазудан әлдеқайда оқылымды. Біз оны <code>map</code> бойынша циклде де қолдандық: <code>for (const auto&amp; [name, price] : menu)</code>.</p>
+
+      <h2 id="iterators">Итераторлар</h2>
+      <p>Контейнердің ішінде қалай жүреміз? Вектор үшін индекс жеткілікті, бірақ <code>list</code> немесе <code>map</code> үшін индекс жоқ. Барлық контейнерде жұмыс істейтін бірыңғай құрал - <strong>итератор</strong> (<span class="term-en">iterator</span>). Ол «қазіргі орынды көрсететін нысан»: көрсеткіш сияқты оны <code>*it</code> арқылы оқып, <code>++it</code> арқылы келесіге жылжытамыз.</p>
+      <svg viewBox="0 0 640 170" role="img" aria-label="Диаграмма: вектордың бес элементі және екі итератор. begin() бірінші элементті көрсетеді, end() соңғы элементтен кейінгі орынды көрсетеді; жартылай ашық аралық [begin, end)" style="display:block;width:100%;max-width:640px;height:auto;margin:18px auto">
+        <defs><marker id="m6b" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>
+        <rect x="50" y="60" width="90" height="44" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <rect x="140" y="60" width="90" height="44" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <rect x="230" y="60" width="90" height="44" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <rect x="320" y="60" width="90" height="44" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <rect x="410" y="60" width="90" height="44" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <rect x="500" y="60" width="90" height="44" style="fill:none;stroke:var(--border);stroke-width:1.4;stroke-dasharray:4 3"/>
+        <text x="95" y="87" text-anchor="middle" style="fill:var(--text);font:15px var(--mono, monospace)">10</text>
+        <text x="185" y="87" text-anchor="middle" style="fill:var(--text);font:15px var(--mono, monospace)">20</text>
+        <text x="275" y="87" text-anchor="middle" style="fill:var(--text);font:15px var(--mono, monospace)">30</text>
+        <text x="365" y="87" text-anchor="middle" style="fill:var(--text);font:15px var(--mono, monospace)">40</text>
+        <text x="455" y="87" text-anchor="middle" style="fill:var(--text);font:15px var(--mono, monospace)">50</text>
+        <text x="545" y="87" text-anchor="middle" style="fill:var(--muted);font:13px var(--mono, monospace)">(элемент жоқ)</text>
+        <line x1="95" y1="20" x2="95" y2="56" style="stroke:var(--accent);stroke-width:2" marker-end="url(#m6b)"/>
+        <text x="95" y="14" text-anchor="middle" style="fill:var(--accent);font:700 13px var(--mono, monospace)">begin()</text>
+        <line x1="545" y1="20" x2="545" y2="56" style="stroke:var(--accent);stroke-width:2" marker-end="url(#m6b)"/>
+        <text x="545" y="14" text-anchor="middle" style="fill:var(--accent);font:700 13px var(--mono, monospace)">end()</text>
+        <text x="320" y="140" text-anchor="middle" style="fill:var(--muted);font:13px var(--font, sans-serif)">аралық [begin, end): begin кіреді, end кірмейді - ол «соңынан кейінгі» орын</text>
+      </svg>
+      <p>Маңызды: <code>end()</code> соңғы элементті емес, <em>соңынан кейінгі</em> орынды көрсетеді. Сондықтан цикл шарты <code>it != v.end()</code>, ал бос контейнерде <code>begin() == end()</code>. Енді итераторлармен нақты жұмыс:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v{10, 20, 30, 40, 50};
+
+    for (auto it = v.begin(); it != v.end(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; "\n";
+
+    for (auto it = v.rbegin(); it != v.rend(); ++it) {   // кері бағытта
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; "\n";
+
+    auto it = v.begin() + 2;     // кездейсоқ қолжетімді итератор: сандарды қосуға болады
+    *it = 99;
+    std::cout &lt;&lt; "ортасы: " &lt;&lt; *it &lt;&lt; ", қашықтық: " &lt;&lt; (v.end() - it) &lt;&lt; "\n";
+
+    // тізімді өзгерту: erase келесі жарамды итераторды қайтарады
+    for (auto i = v.begin(); i != v.end();) {
+        if (*i % 20 == 0) i = v.erase(i);
+        else ++i;
+    }
+    for (int x : v) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a08_iterators
+10 20 30 40 50 
+50 40 30 20 10 
+ортасы: 99, қашықтық: 3
+10 99 50 </code></pre>
+      <p>Мұнда не көрдік:</p>
+      <ul>
+        <li><code>auto</code> итератордың ұзын типін компиляторға жаздырады (<code>std::vector&lt;int&gt;::iterator</code> деп жазудың қажеті жоқ).</li>
+        <li><code>rbegin()/rend()</code> кері бағытта жүреді.</li>
+        <li>Вектор итераторына сан қосып, секіруге болады (<code>v.begin() + 2</code>); мұндай итераторды <em>кездейсоқ қолжетімді</em> (random access) дейді. <code>list</code> итераторы тек <code>++</code> және <code>--</code> біледі.</li>
+        <li>Жою кезінде <code>v.erase(i)</code> келесі жарамды итераторды қайтарады, сондықтан оны <code>i</code>-ге қайта меншіктейміз. Осылай болмаса, қате болады.</li>
+      </ul>
+
+      <p>Диапазонға негізделген <code>for</code> (<span class="term-en">range-based for</span>) итераторларды өзі жасырын қолданады. <code>for (const auto&amp; x : v)</code> жазуы <code>for (auto it = v.begin(); it != v.end(); ++it)</code> дегенмен тең, тек оқуға жеңіл. Қашан итераторды тікелей жазу керек? Айналып өту кезінде элементті жою не орнын білу керек болғанда, не бірнеше контейнерді қатар жүргенде. Қалған жағдайда range-for жеткілікті. Типті <code>auto</code> етіп жазғанда сілтемені (<code>&amp;</code>) және <code>const</code>-ты ұмытпаңыз: тек <code>auto</code> көшірме жасайды, ал <code>auto&amp;</code> элементті өзгертуге мүмкіндік береді.</p>
+
+      <h3 id="invalidation">Итератордың жарамсыз болуы</h3>
+      <p>Контейнерді өзгерту кейде бұрын алынған итераторлар мен көрсеткіштерді <strong>жарамсыз</strong> етеді (<span class="term-en">iterator invalidation</span>). Мысалы, вектор кеңейгенде барлық элемент жаңа жадқа көшеді, ал ескі итератор босатылған жадқа қарап қалады. Мұны AddressSanitizer ұстады:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v{1, 2, 3};
+    int* first = &amp;v[0];
+    auto it = v.begin();
+    v.push_back(4);          // vector кеңейді -&gt; жад көшірілді: итератор мен көрсеткіш жарамсыз
+    std::cout &lt;&lt; *first &lt;&lt; " " &lt;&lt; *it &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a13_invalid
+=================================================================
+==10634==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x55687e3418a4 bp 0x7fffdf6765e0 sp 0x7fffdf6765d0
+READ of size 4 at 0x502000000010 thread T0
+    #0 0x55687e3418a3 in main (/tmp/claude-0/bin_w6_a13_invalid+0x88a3)
+    #1 0x7f80c5c2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #2 0x7f80c5c2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #3 0x55687e3413a4 in _start (/tmp/claude-0/bin_w6_a13_invalid+0x83a4)
+...</code></pre>
+      <p>Ереже: векторды өзгертетін операциялардан (<code>push_back</code>, <code>insert</code>, <code>erase</code>) кейін бұрынғы итераторлар мен көрсеткіштерге сенбеңіз. Керек болса, жаңадан <code>begin()</code> алыңыз немесе индексті қолданыңыз. Тізімде (<code>list</code>) және ассоциативті контейнерлерде итераторлар тұрақтырақ: тек жойылған элементтікі ғана жарамсыз болады.</p>
+
+      <h2 id="algorithms">&lt;algorithm&gt; алгоритмдері</h2>
+      <p>Кітапханада жүздеген дайын алгоритм бар, бәрі <code>#include &lt;algorithm&gt;</code> (кейбірі <code>&lt;numeric&gt;</code>) ішінде. Оларды қолмен жазатын болсаңыз, көбіне қате жібересіз, ал стандартты нұсқалар тексерілген әрі оңтайландырылған. Бәрі итераторлар жұбымен жұмыс істейді: <code>(first, last)</code>.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; g{72, 95, 58, 88, 95, 41, 66};
+
+    std::sort(g.begin(), g.end());
+    std::cout &lt;&lt; "Сұрыпталған: ";
+    for (int x : g) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+
+    auto it = std::find(g.begin(), g.end(), 88);
+    if (it != g.end()) std::cout &lt;&lt; "88 индексі: " &lt;&lt; (it - g.begin()) &lt;&lt; "\n";
+
+    std::cout &lt;&lt; "95 саны: " &lt;&lt; std::count(g.begin(), g.end(), 95) &lt;&lt; "\n";
+    std::cout &lt;&lt; "60-тан жоғары: " &lt;&lt; std::count_if(g.begin(), g.end(), [](int x) { return x &gt; 60; }) &lt;&lt; "\n";
+
+    int sum = std::accumulate(g.begin(), g.end(), 0);
+    std::cout &lt;&lt; "Қосынды: " &lt;&lt; sum &lt;&lt; ", орташа: " &lt;&lt; static_cast&lt;double&gt;(sum) / g.size() &lt;&lt; "\n";
+
+    std::vector&lt;int&gt; percent(g.size());
+    std::transform(g.begin(), g.end(), percent.begin(), [](int x) { return x / 10; });
+    std::cout &lt;&lt; "Ондықтар: ";
+    for (int x : percent) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+
+    std::cout &lt;&lt; "Ең үлкені: " &lt;&lt; *std::max_element(g.begin(), g.end())
+              &lt;&lt; ", ең кішісі: " &lt;&lt; *std::min_element(g.begin(), g.end()) &lt;&lt; "\n";
+    std::cout &lt;&lt; "binary_search(66): " &lt;&lt; std::binary_search(g.begin(), g.end(), 66) &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a09_algorithms
+Сұрыпталған: 41 58 66 72 88 95 95 
+88 индексі: 4
+95 саны: 2
+60-тан жоғары: 5
+Қосынды: 515, орташа: 73.5714
+Ондықтар: 4 5 6 7 8 9 9 
+Ең үлкені: 95, ең кішісі: 41
+binary_search(66): 1</code></pre>
+      <p>Негізгі алгоритмдер:</p>
+      <ul>
+        <li><code>std::sort(first, last)</code> - өсу ретімен сұрыптайды. Орташа O(n log n).</li>
+        <li><code>std::find(first, last, x)</code> - бірінші <code>x</code>-тің итераторын не <code>last</code> қайтарады. O(n).</li>
+        <li><code>std::count</code> / <code>std::count_if</code> - мәнге не шартқа сәйкес элементтер санын береді.</li>
+        <li><code>std::accumulate(first, last, init)</code> - қосындыны есептейді (<code>&lt;numeric&gt;</code>-тан). Бастапқы мән <code>0</code> болса бүтін сан, <code>0.0</code> болса бөлшек нәтиже шығады.</li>
+        <li><code>std::transform</code> - әр элементке функция қолданып, нәтижені басқа жерге жазады.</li>
+        <li><code>std::min_element</code> / <code>std::max_element</code> - ең кіші/ең үлкен элементтің итераторын береді (мәнін алу үшін <code>*</code> қолданыңыз).</li>
+        <li><code>std::binary_search</code> - <em>сұрыпталған</em> диапазонда O(log n)-де бар-жоғын тексереді.</li>
+      </ul>
+      <p>Бір маңызды ескерту: <code>std::sort</code> тек <em>кездейсоқ қолжетімді</em> итераторлармен (вектор, дек, жиым) жұмыс істейді. Тізімді (<code>list</code>) сұрыптау үшін оның өз әдісі бар:</p>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra q02_sortlist_err.cpp -o q02_sortlist_err
+In file included from /usr/include/c++/13/algorithm:61,
+                 from q02_sortlist_err.cpp:1:
+/usr/include/c++/13/bits/stl_algo.h: In instantiation of 'void std::__sort(_RandomAccessIterator, _RandomAccessIterator, _Compare) [with _RandomAccessIterator = _List_iterator&lt;int&gt;; _Compare = __gnu_cxx::__ops::_Iter_less_iter]':
+/usr/include/c++/13/bits/stl_algo.h:4861:18:   required from 'void std::sort(_RAIter, _RAIter) [with _RAIter = _List_iterator&lt;int&gt;]'
+q02_sortlist_err.cpp:6:14:   required from here
+/usr/include/c++/13/bits/stl_algo.h:1948:50: error: no match for 'operator-' (operand types are 'std::_List_iterator&lt;int&gt;' and 'std::_List_iterator&lt;int&gt;')
+ 1948 |                                 std::__lg(__last - __first) * 2,
+      |                                           ~~~~~~~^~~~~~~~~
+...</code></pre>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;list&gt;
+
+int main() {
+    std::list&lt;int&gt; l{3, 1, 2};
+    l.sort();
+    for (int x : l) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./q03_listsort
+1 2 3 </code></pre>
+      <p>Компилятор ұзын хабар берді, бірақ мәні қысқа: <code>no match for 'operator-'</code>, яғни <code>list</code> итераторларын азайтуға болмайды, сондықтан <code>std::sort</code> оларға қолданылмайды. (Шығыс тек бастапқы бөлігімен көрсетілген, оның ұзындығы ерекше.) Шешім - <code>l.sort()</code>.</p>
+      <h3 id="erase-remove">erase-remove идиомасы</h3>
+      <p>Вектордан барлық берілген мәнді жою үшін <code>std::remove</code> пен <code>erase</code> бірге қолданылады. Қызығы: <code>remove</code> элементтерді шын мәнінде жоймайды, тек керектілерді алдына жылжытып, «жаңа соңды» береді, ал <code>erase</code> қалған құйрықты кесіп тастайды:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v{1, 2, 3, 2, 4, 2};
+    v.erase(std::remove(v.begin(), v.end(), 2), v.end());
+    for (int x : v) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./q05_erase
+1 3 4 </code></pre>
+
+      <h2 id="lambda">Lambda өрнектері</h2>
+      <p>Алгоритмдерге көбіне өз шартымызды беру керек: «60-тан жоғары», «аты бойынша салыстыр». Ол үшін жеке функция жазу артық болуы мүмкін. <strong>Lambda өрнегі</strong> (<span class="term-en">lambda expression</span>) - аты жоқ шағын функцияны дәл керек жерде жазудың жолы. Жалпы түрі:</p>
+<pre data-lang="cpp"><code class="language-cpp">[ұстау](параметрлер) { дене }</code></pre>
+      <p>Алдыңғы мысалда <code>[](int x) { return x &gt; 60; }</code> дегенді көрдік. Төртбұрышты жақша ішіндегі бөлік - <strong>ұстау тізімі</strong> (<span class="term-en">capture list</span>): lambda өзін қоршаған кодтан қандай айнымалыны алады.</p>
+      <ul>
+        <li><code>[]</code> - ештеңе алмайды;</li>
+        <li><code>[limit]</code> - <code>limit</code>-тің <em>көшірмесін</em> алады (мәнмен);</li>
+        <li><code>[&amp;bonus]</code> - <code>bonus</code>-қа <em>сілтеме</em> алады, өзгертуге болады;</li>
+        <li><code>[=]</code> / <code>[&amp;]</code> - барлығын мәнмен / сілтемемен.</li>
+      </ul>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Student {
+    std::string name;
+    int score;
+};
+
+int main() {
+    std::vector&lt;Student&gt; s{{"Айдар", 78}, {"Сәуле", 92}, {"Ернар", 85}, {"Гүлім", 92}};
+
+    // score бойынша кему ретімен, тең болса аты бойынша
+    std::sort(s.begin(), s.end(), [](const Student&amp; a, const Student&amp; b) {
+        if (a.score != b.score) return a.score &gt; b.score;
+        return a.name &lt; b.name;
+    });
+    for (const auto&amp; x : s) std::cout &lt;&lt; x.name &lt;&lt; " " &lt;&lt; x.score &lt;&lt; "\n";
+
+    int limit = 80;
+    auto passed = [limit](const Student&amp; x) { return x.score &gt;= limit; };   // мәнмен ұстау
+    std::cout &lt;&lt; "Өткендер: " &lt;&lt; std::count_if(s.begin(), s.end(), passed) &lt;&lt; "\n";
+
+    int bonus = 0;
+    std::for_each(s.begin(), s.end(), [&amp;bonus](const Student&amp; x) {          // сілтемемен ұстау
+        if (x.score &gt; 90) ++bonus;
+    });
+    std::cout &lt;&lt; "90-нан жоғары: " &lt;&lt; bonus &lt;&lt; "\n";
+
+    auto square = [](int x) { return x * x; };
+    std::cout &lt;&lt; "7*7 = " &lt;&lt; square(7) &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a10_lambda
+Гүлім 92
+Сәуле 92
+Ернар 85
+Айдар 78
+Өткендер: 3
+90-нан жоғары: 2
+7*7 = 49</code></pre>
+      <p>Мұнда <code>sort</code>-ке өз салыстыру ережемізді бердік: балл кему ретімен, тең болса, аты бойынша. Бірдей 92 балл алған «Гүлім» мен «Сәуле» әліпби ретімен тұр. <code>passed</code> lambdasы <code>limit</code>-ті мәнмен алды, ал <code>bonus</code> санауышын <code>[&amp;bonus]</code> арқылы өзгертті.</p>
+      <p>Мәнмен ұстаудың тұзағы: lambda құрылған сәтте көшірме алады және кейін түпнұсқа өзгерсе, ол өзгерісті көрмейді. Сонымен қатар мәнмен алынған көшірмені lambda ішінде өзгерту үшін <code>mutable</code> қажет, бірақ өзгеріс тек lambda көшірмесінде қалады:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int x = 1;
+    auto f = [x]() mutable { x += 10; return x; };
+    std::cout &lt;&lt; f() &lt;&lt; " " &lt;&lt; f() &lt;&lt; " " &lt;&lt; x &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./q01_lambda
+11 21 1</code></pre>
+      <p>Lambda екі рет шақырылды, ішкі көшірме 1 → 11 → 21 болды, бірақ сыртқы <code>x</code> өзгермей, <code>1</code> қалды.</p>
+
+      <h2 id="function">std::function: функцияны мәнге айналдыру</h2>
+      <p>Кейде функцияны айнымалыда сақтап, параметр ретінде беру керек: «мына әрекетті кейін орында». Жай функцияны, lambda-ны және функтор (<code>operator()</code> бар класс) нысанын бірыңғай түрде ұстайтын тип - <code>std::function&lt;қайтарым(параметрлер)&gt;</code> (<code>&lt;functional&gt;</code> ішінде). Калькулятор жасап көрейік:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;functional&gt;
+#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;string&gt;
+
+int add(int a, int b) { return a + b; }
+
+struct Multiplier {
+    int operator()(int a, int b) const { return a * b; }
+};
+
+int main() {
+    std::map&lt;std::string, std::function&lt;int(int, int)&gt;&gt; ops;
+    ops["қосу"] = add;                                          // жай функция
+    ops["көбейту"] = Multiplier{};                              // функтор
+    ops["айыру"] = [](int a, int b) { return a - b; };          // lambda
+
+    for (const auto&amp; [name, f] : ops) {
+        std::cout &lt;&lt; name &lt;&lt; "(12, 5) = " &lt;&lt; f(12, 5) &lt;&lt; "\n";
+    }
+
+    std::function&lt;void(const std::string&amp;)&gt; greet = [](const std::string&amp; s) {
+        std::cout &lt;&lt; "Сәлем, " &lt;&lt; s &lt;&lt; "!\n";
+    };
+    greet("Қобыланды");
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a11_function
+айыру(12, 5) = 7
+көбейту(12, 5) = 60
+қосу(12, 5) = 17
+Сәлем, Қобыланды!</code></pre>
+      <p>Үш түрлі «шақырылатын нәрсе» (жай функция, функтор, lambda) бір <code>map</code>-та жатыр. Қолдану: <code>f(12, 5)</code>. Бұл - мәзірлер, батырма өңдеушілері, пәрмен кестелері үшін өте ыңғайлы. Бағасы: <code>std::function</code> қосымша аздап жылдамдықты жұмсайды, сондықтан өте қарқынды цикл ішінде оны қолдану керек емес. Кіріспе деңгейінде есте қалатыны: <em>функция да мән бола алады</em>.</p>
+
+      <h2 id="bigo">Күрделілік: Big-O</h2>
+      <p>Контейнерді қалай таңдаймыз? Бір ғана сұрақ қояды: деректер көбейгенде әрекет қанша баяулайды? Мұны өлшеу үшін <strong>Big-O белгісі</strong> (<span class="term-en">Big-O notation</span>) қолданылады. <code>O(n)</code> дегеніміз: элементтер саны <code>n</code> екі есе өссе, жұмыс шамамен екі есе көбейеді. Нақты секундтарды емес, <em>өсу заңдылығын</em> бағалаймыз. Миллион сан мен тізімді айналдырғанда айырманы көрейік:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    const int N = 1000000;
+    std::vector&lt;int&gt; v(N);
+    for (int i = 0; i &lt; N; ++i) v[i] = i * 2;      // сұрыпталған
+
+    int target = 1999998;                          // соңғыға жақын
+
+    // сызықтық іздеу: O(n)
+    long linearSteps = 0;
+    for (int i = 0; i &lt; N; ++i) {
+        ++linearSteps;
+        if (v[i] == target) break;
+    }
+
+    // екілік іздеу: O(log n)
+    long binarySteps = 0;
+    int lo = 0, hi = N - 1;
+    while (lo &lt;= hi) {
+        ++binarySteps;
+        int mid = lo + (hi - lo) / 2;
+        if (v[mid] == target) break;
+        if (v[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    std::cout &lt;&lt; "n = " &lt;&lt; N &lt;&lt; "\n";
+    std::cout &lt;&lt; "сызықтық іздеу қадамы: " &lt;&lt; linearSteps &lt;&lt; "\n";
+    std::cout &lt;&lt; "екілік іздеу қадамы:   " &lt;&lt; binarySteps &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a12_steps
+n = 1000000
+сызықтық іздеу қадамы: 1000000
+екілік іздеу қадамы:   20</code></pre>
+      <p>Миллион элементтің ішінен сызықтық іздеу миллион қадам жасады (O(n)), ал екілік іздеу (сұрыпталған деректе) жиырма қадамға тоқтады (O(log n)). Бұл - 50 000 есе айырма! Екілік іздеу әр қадамда іздеу аймағын екіге бөледі: 1 000 000 → 500 000 → ... → 1, және ол log₂(1 000 000) ≈ 20 қадам.</p>
+      <svg viewBox="0 0 560 270" role="img" aria-label="Өсу қисықтарының графигі: n үлкейген сайын O(1) тұрақты, O(log n) баяу өседі, O(n) түзу сызықпен өседі, O(n log n) одан жылдамырақ, ал O(n²) ең тез өседі" style="display:block;width:100%;max-width:560px;height:auto;margin:18px auto">
+        <line x1="50" y1="220" x2="460" y2="220" style="stroke:var(--border);stroke-width:1.6"/>
+        <line x1="50" y1="20" x2="50" y2="220" style="stroke:var(--border);stroke-width:1.6"/>
+        <text x="455" y="240" text-anchor="end" style="fill:var(--muted);font:12px var(--font, sans-serif)">n (деректер саны) →</text>
+        <text x="12" y="30" style="fill:var(--muted);font:12px var(--font, sans-serif)">қадам</text>
+        <polyline points="50,214 60,214 70,214 80,214 90,214 100,214 110,214 120,214 130,214 140,214 150,214 160,214 170,214 180,214 190,214 200,214 210,214 220,214 230,214 240,214 250,214 260,214 270,214 280,214 290,214 300,214 310,214 320,214 330,214 340,214 350,214 360,214 370,214 380,214 390,214 400,214 410,214 420,214 430,214 440,214 450,214" style="fill:none;stroke:var(--muted);stroke-width:2.4;stroke-dasharray:6 3"/>
+        <polyline points="50,220 60,217 70,215 80,214 90,212 100,211 110,209 120,208 130,207 140,206 150,206 160,205 170,204 180,203 190,203 200,202 210,201 220,201 230,200 240,200 250,199 260,199 270,198 280,198 290,198 300,197 310,197 320,196 330,196 340,196 350,195 360,195 370,195 380,194 390,194 400,194 410,193 420,193 430,193 440,193 450,192" style="fill:none;stroke:var(--ok);stroke-width:2.4;"/>
+        <polyline points="50,220 60,218 70,217 80,216 90,214 100,212 110,211 120,210 130,208 140,206 150,205 160,204 170,202 180,200 190,199 200,198 210,196 220,194 230,193 240,192 250,190 260,188 270,187 280,186 290,184 300,182 310,181 320,180 330,178 340,176 350,175 360,174 370,172 380,170 390,169 400,168 410,166 420,164 430,163 440,162 450,160" style="fill:none;stroke:var(--accent);stroke-width:2.4;"/>
+        <polyline points="50,220 60,220 70,219 80,217 90,215 100,213 110,211 120,208 130,205 140,202 150,199 160,196 170,192 180,189 190,185 200,181 210,177 220,173 230,169 240,165 250,161 260,156 270,152 280,147 290,143 300,138 310,133 320,128 330,123 340,118 350,113 360,108 370,103 380,98 390,93 400,88 410,82 420,77 430,72 440,66 450,61" style="fill:none;stroke:var(--warn);stroke-width:2.4;"/>
+        <polyline points="50,220 60,220 70,220 80,219 90,218 100,217 110,216 120,214 130,212 140,210 150,208 160,205 170,202 180,199 190,196 200,192 210,188 220,184 230,180 240,175 250,170 260,165 270,160 280,154 290,148 300,142 310,136 320,129 330,122 340,115 350,108 360,100 370,92 380,84 390,76 400,67 410,58 420,49 430,40 440,30 450,20" style="fill:none;stroke:var(--note);stroke-width:2.4;"/>
+        <text x="466" y="24" style="fill:var(--note);font:700 12.5px var(--mono, monospace)">O(n²)</text>
+        <text x="466" y="65" style="fill:var(--warn);font:700 12.5px var(--mono, monospace)">O(n log n)</text>
+        <text x="466" y="164" style="fill:var(--accent);font:700 12.5px var(--mono, monospace)">O(n)</text>
+        <text x="466" y="196" style="fill:var(--ok);font:700 12.5px var(--mono, monospace)">O(log n)</text>
+        <text x="466" y="218" style="fill:var(--muted);font:700 12.5px var(--mono, monospace)">O(1)</text>
+      </svg>
+      <p>Графикте n өскен сайын әртүрлі қисықтың қалай алшақтайтыны көрінеді (масштаб шартты, мақсаты - тек өсу формасын салыстыру). O(1) мен O(log n) іс жүзінде жазық, ал O(n²) тез көтеріліп кетеді. Бастапқы кішкентай n кезінде бұл айырма сезілмейді, бірақ деректер көбейгенде шешуші болады.</p>
+      <table>
+        <thead><tr><th>Операция</th><th><code>vector</code></th><th><code>list</code></th><th><code>deque</code></th><th><code>map</code> / <code>set</code></th><th><code>unordered_map</code> / <code>unordered_set</code></th></tr></thead>
+        <tbody>
+          <tr><td>индекс <code>[i]</code></td><td>O(1)</td><td>қолдамайды</td><td>O(1)</td><td>қолдамайды</td><td>қолдамайды</td></tr>
+          <tr><td>соңына қосу</td><td>O(1) амортизацияланған</td><td>O(1)</td><td>O(1) амортизацияланған</td><td>-</td><td>-</td></tr>
+          <tr><td>басына қосу</td><td>O(n)</td><td>O(1)</td><td>O(1) амортизацияланған</td><td>-</td><td>-</td></tr>
+          <tr><td>ортасына қыстыру</td><td>O(n)</td><td>O(1) (орын белгілі болса)</td><td>O(n)</td><td>O(log n)</td><td>орташа O(1)</td></tr>
+          <tr><td>кілт/мән бойынша іздеу</td><td>O(n)</td><td>O(n)</td><td>O(n)</td><td>O(log n)</td><td>орташа O(1), ең нашар O(n)</td></tr>
+          <tr><td>элементтер реті</td><td>қосу реті</td><td>қосу реті</td><td>қосу реті</td><td>сұрыпталған</td><td>реттелмеген</td></tr>
+        </tbody>
+      </table>
+      <p>Бұл кестеден шығатын практикалық қорытындылар:</p>
+      <ul>
+        <li>Белгісіз жағдайда <code>vector</code> таңдаңыз.</li>
+        <li>Кілт бойынша іздеу керек, реттің қажеті жоқ: <code>unordered_map</code>.</li>
+        <li>Сұрыпталған кілттер не диапазонмен жұмыс керек: <code>map</code> / <code>set</code>.</li>
+        <li>Екі жағынан кезек: <code>deque</code>.</li>
+        <li>Ортада қыстыру/жою көп және итераторлар жарамды қалуы керек: <code>list</code>.</li>
+        <li>Дерек <em>сұрыпталған</em> болса, векторда да екілік іздеу (<code>binary_search</code>, O(log n)) қолдануға болады.</li>
+      </ul>
+
+      <h3 id="scenarios">Таңдау сценарийлері</h3>
+      <p>Кестені жаттап алудың қажеті жоқ, оның орнына «мен не істеймін?» деген сұрақты қойыңыз. Бірнеше нақты жағдай:</p>
+      <ul>
+        <li><strong>Спортшылардың нәтижелері.</strong> Әр жарыстан кейін нәтиже қосылады, соңында сұрыпталады. Элементтер көп, қыстыру тек соңына. Таңдау: <code>vector</code> + <code>sort</code>.</li>
+        <li><strong>Телефон анықтамалығы.</strong> Аты бойынша нөмірді тез табу керек, ал аттардың реті маңызды емес. Таңдау: <code>unordered_map&lt;string, string&gt;</code>. Егер аттар әліпби бойынша шығарылуы керек болса, <code>map</code>.</li>
+        <li><strong>Сабаққа қатысқандар.</strong> Бір оқушы екі рет белгіленуі мүмкін, бірегейлері ғана керек. Таңдау: <code>set</code> не <code>unordered_set</code>.</li>
+        <li><strong>Шай үйінің кезегі.</strong> Қонақтар соңынан келіп, басынан кетеді. Таңдау: <code>queue</code> (не <code>deque</code>).</li>
+        <li><strong>Мәтіндегі сөз саны.</strong> Сөз → сан. Таңдау: <code>map&lt;string, int&gt;</code> не <code>unordered_map</code> (жоғарыдағы 4-жаттығу).</li>
+        <li><strong>Ойын тарихы (undo).</strong> Соңғы әрекетті бірінші болып қайтарамыз. Таңдау: <code>stack</code>.</li>
+      </ul>
+      <p>Қолданылатын контейнерге сенімсіз болсаңыз, ең қарапайымынан (<code>vector</code>) бастап, нақты баяулық байқалғанда ғана ауыстырыңыз. Мамандар «мерзімінен бұрын оңтайландыру - барлық қатенің түп-тамыры» деп айтады: алдымен дұрыс және түсінікті жазыңыз, содан кейін өлшеп, қажет жерін жылдамдатыңыз.</p>
+
+      <h2 id="example">Бәрін біріктіру: оқушылар рейтингі</h2>
+      <p>Контейнерлер, алгоритмдер, lambda мен құрылымдық байланыстыруды бір мысалға жинайық. Әр оқушының бағалары <code>map</code>-та (кілт - аты, мән - бағалар векторы). Орташа балл есептеп, рейтингті кему ретімен шығарамыз:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;numeric&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::map&lt;std::string, std::vector&lt;int&gt;&gt; grades;
+    grades["Айдар"] = {4, 5, 5, 3};
+    grades["Сәуле"] = {5, 5, 5, 4};
+    grades["Ернар"] = {3, 4, 3};
+    grades["Гүлім"] = {5, 4, 4, 5, 5};
+
+    std::vector&lt;std::pair&lt;std::string, double&gt;&gt; avg;
+    for (const auto&amp; [name, g] : grades) {
+        double a = std::accumulate(g.begin(), g.end(), 0.0) / g.size();
+        avg.push_back({name, a});
+    }
+    std::sort(avg.begin(), avg.end(), [](const auto&amp; x, const auto&amp; y) {
+        return x.second &gt; y.second;
+    });
+
+    std::cout &lt;&lt; "Рейтинг:\n";
+    int place = 1;
+    for (const auto&amp; [name, a] : avg) {
+        std::cout &lt;&lt; place++ &lt;&lt; ". " &lt;&lt; name &lt;&lt; " - " &lt;&lt; a &lt;&lt; "\n";
+    }
+
+    auto good = std::count_if(avg.begin(), avg.end(), [](const auto&amp; p) { return p.second &gt;= 4.5; });
+    std::cout &lt;&lt; "Орташа 4.5 және одан жоғары: " &lt;&lt; good &lt;&lt; " оқушы\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a15_grades
+Рейтинг:
+1. Сәуле - 4.75
+2. Гүлім - 4.6
+3. Айдар - 4.25
+4. Ернар - 3.33333
+Орташа 4.5 және одан жоғары: 2 оқушы</code></pre>
+      <p>Мұндағы тізбек: <code>map</code> → <code>accumulate</code> (орташа) → жаңа <code>vector&lt;pair&gt;</code> → <code>sort</code> + lambda → <code>count_if</code>. Әр қадам бір сөйлеммен түсіндіріледі, ал циклдерді қолмен жазғанда мұндай бағдарлама бірнеше есе ұзын әрі қателікке бейім болар еді. Бұл - STL-дің басты пайдасы: көп жағдайда <em>«қалай істеу керек?»</em> деген сұраққа емес, <em>«не істеу керек?»</em> деген сұраққа жауап жазасыз.</p>
+
+      <h2 id="adapters">Контейнер адаптерлері: stack, queue, priority_queue</h2>
+      <p>Кейде контейнердің барлық мүмкіндігі керек емес, тек нақты қасиет қажет. Мысалы, асханада табақтар үстіне-үстіне қойылады, ал алғанда ең үстіндегісін аламыз. Мұны <strong>стек</strong> (<span class="term-en">stack</span>) дейді: <em>соңғы кірген бірінші шығады</em> (LIFO). Касса алдындағы кезек керісінше: <em>бірінші кірген бірінші шығады</em> (FIFO), оны <strong>кезек</strong> (<span class="term-en">queue</span>) дейді. Үшіншісі - <strong>басымдық кезегі</strong> (<span class="term-en">priority_queue</span>), онда қосылу ретіне қарамай, ең үлкен (басымдығы жоғары) элемент бірінші шығады. Бұл үшеуі өз алдына контейнер емес, басқа контейнердің (әдепкіде <code>deque</code> не <code>vector</code>) үстіндегі шектелген «қабық», сондықтан оларды <strong>адаптер</strong> дейді.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;queue&gt;
+#include &lt;stack&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main() {
+    // stack: соңғы кірген бірінші шығады (LIFO) - Шай үйіндегі табақтар қатары
+    std::stack&lt;std::string&gt; plates;
+    plates.push("бірінші табақ");
+    plates.push("екінші табақ");
+    plates.push("үшінші табақ");
+    std::cout &lt;&lt; "үстіңгісі: " &lt;&lt; plates.top() &lt;&lt; "\n";
+    plates.pop();
+    std::cout &lt;&lt; "алғаннан кейін: " &lt;&lt; plates.top() &lt;&lt; ", қалды: " &lt;&lt; plates.size() &lt;&lt; "\n";
+
+    // queue: бірінші кірген бірінші шығады (FIFO) - касса кезегі
+    std::queue&lt;std::string&gt; line;
+    line.push("Ержан");
+    line.push("Зере");
+    line.push("Мирас");
+    std::cout &lt;&lt; "кезекте: " &lt;&lt; line.front() &lt;&lt; " ... " &lt;&lt; line.back() &lt;&lt; "\n";
+    line.pop();
+    std::cout &lt;&lt; "келесі: " &lt;&lt; line.front() &lt;&lt; "\n";
+
+    // priority_queue: ең үлкен элемент әрқашан бірінші
+    std::priority_queue&lt;int&gt; pq;
+    for (int x : {30, 5, 80, 12}) pq.push(x);
+    std::cout &lt;&lt; "басымдық кезегі: ";
+    while (!pq.empty()) {
+        std::cout &lt;&lt; pq.top() &lt;&lt; " ";
+        pq.pop();
+    }
+    std::cout &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a16_adapters
+үстіңгісі: үшінші табақ
+алғаннан кейін: екінші табақ, қалды: 2
+кезекте: Ержан ... Мирас
+келесі: Зере
+басымдық кезегі: 80 30 12 5 </code></pre>
+      <p>Стек пен кезекте итератор жоқ: оларға тек шеттен қол жеткізуге болады (<code>top</code>, <code>front</code>, <code>back</code>), ортасына қарай алмайсыз. Бұл шектеу қасақана жасалған: ол кодты оқитын адамға «мұнда тек осылай жұмыс істейді» деген кепілдік береді. Стек, мысалы, жақшалардың дұрыс жабылғанын тексеруде, браузердегі «артқа» батырмасында, функция шақыруларында қолданылады. Кезек кезекпен өңделетін тапсырмаларда, ал <code>priority_queue</code> «ең маңыздысын бірінші өңде» принципіндегі жүйелерде (мысалы, емхананың шұғыл науқастары) пайдалы.</p>
+
+      <h2 id="docs">Құжаттаманы қалай оқу керек?</h2>
+      <p>STL-де жүздеген функция бар, оларды жаттап алу мүмкін емес, қажеті де жоқ. Тәжірибелі бағдарламашылар құжаттаманы жиі ашады. Ең танымал анықтамалық сайт - <strong>cppreference.com</strong>. Онда әр контейнер мен алгоритм үшін қолтаңба, күрделілік, мысал және C++ нұсқасы көрсетіледі. Бірнеше сұрақ қоюды әдетке айналдырыңыз: ол функция нені қайтарады? Итераторларды жарамсыз ете ме? Күрделілігі қандай? Қай C++ стандартынан бастап бар? Бұл төрт жауап көп қатенің алдын алады. Құжаттаманы оқу дағдысы кез келген тілде өсіп келе жатқан бағдарламашыны ерекшелейді.</p>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ol>
+        <li><strong>Вектордан шығып кету.</strong> <code>v[v.size()]</code> соңғы емес, соңынан кейінгі орын. Соңғы элемент - <code>v[v.size() - 1]</code> не <code>v.back()</code>. Бос векторда <code>back()</code> шақырмаңыз.</li>
+        <li><strong>map-ты <code>[]</code> арқылы оқу.</strong> Жоқ кілтті қосып жібереді. Бар-жоғын тексеру үшін <code>find</code> не <code>count</code>.</li>
+        <li><strong>Итераторды жарамсыз ету.</strong> Цикл ішінде векторға <code>push_back</code>/<code>erase</code> жасап, ескі итераторды қолдану. <code>erase</code>-тің қайтарымын пайдаланыңыз.</li>
+        <li><strong><code>end()</code>-ті оқу.</strong> <code>*v.end()</code> - қате; <code>find</code> нәтижесін әрқашан <code>!= end()</code> деп тексеріп алыңыз.</li>
+        <li><strong><code>sort</code>-ты <code>list</code>-ке қолдану.</strong> Оның орнына <code>l.sort()</code>.</li>
+        <li><strong>accumulate-тың бастапқы мәнінің типі.</strong> <code>accumulate(.., 0)</code> бөлшек сандарды бүтінге кесіп жібереді; <code>0.0</code> жазыңыз.</li>
+        <li><strong>Артық көшіру.</strong> <code>for (auto x : big)</code> әр элементті көшіреді; <code>for (const auto&amp; x : big)</code> дұрыс.</li>
+        <li><strong>Lambda-ның ұстауын шатастыру.</strong> <code>[x]</code> көшірме алады, кейін түпнұсқа өзгерсе, lambda көрмейді. Керек болса, <code>[&amp;x]</code>.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li>STL = контейнерлер + итераторлар + алгоритмдер; алгоритмдер итераторлар арқылы кез келген контейнермен жұмыс істейді.</li>
+        <li><code>vector</code> - әдепкі таңдау; <code>list</code> - ортаға қыстыру үшін; <code>deque</code> - екі жақты кезек үшін.</li>
+        <li><code>map</code> / <code>set</code> сұрыпталған (O(log n)); <code>unordered_map</code> / <code>unordered_set</code> реттелмеген, бірақ орташа O(1).</li>
+        <li><code>pair</code>, <code>tuple</code> және <code>auto [a, b]</code> құрылымдық байланыстыру бірнеше мәнді ыңғайлы алады.</li>
+        <li>Итератор - контейнердегі орынды көрсетеді; <code>[begin, end)</code> жартылай ашық аралық; өзгертуден кейін жарамсыз болуы мүмкін.</li>
+        <li>Негізгі алгоритмдер: <code>sort</code>, <code>find</code>, <code>count_if</code>, <code>transform</code>, <code>accumulate</code>, <code>min_element</code>/<code>max_element</code>, <code>binary_search</code>.</li>
+        <li><strong>Lambda</strong> <code>[ұстау](параметр) { дене }</code> - дәл керек жерде жазылатын шағын функция; <code>std::function</code> оны мән ретінде сақтайды.</li>
+        <li><code>stack</code>, <code>queue</code>, <code>priority_queue</code> - шектелген қолжетімді адаптерлер (LIFO, FIFO, ең үлкені бірінші).</li>
+        <li>Big-O деректер көбейгенде әрекеттің қалай өсетінін көрсетеді: O(1) &lt; O(log n) &lt; O(n) &lt; O(n log n) &lt; O(n²).</li>
+      </ul>
+      <h3 id="self-check">Өзіңді тексеру тізімі</h3>
+      <ul class="checklist" data-id="cpp6-self">
+        <li><input type="checkbox"> <span>Қай жағдайда <code>vector</code>, <code>list</code>, <code>map</code>, <code>unordered_map</code> таңдауды түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span><code>size()</code> мен <code>capacity()</code> айырмасын білемін.</span></li>
+        <li><input type="checkbox"> <span><code>map[key]</code> оқу кезінде кілт қосатынын білемін.</span></li>
+        <li><input type="checkbox"> <span>Итератормен контейнерді айналып өте аламын, <code>end()</code> нені көрсететінін білемін.</span></li>
+        <li><input type="checkbox"> <span><code>sort</code> мен lambda арқылы өз ретіммен сұрыптай аламын.</span></li>
+        <li><input type="checkbox"> <span>Lambda ұстау тізімінің (<code>[x]</code> / <code>[&amp;x]</code>) айырмасын айта аламын.</span></li>
+        <li><input type="checkbox"> <span>O(1), O(log n), O(n), O(n²) мағынасын мысалмен түсіндіре аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="c">
+          <p class="q-text">1. Нәтиже қандай?</p>
+<pre data-lang="cpp"><code class="language-cpp">int x = 1;
+auto f = [x]() mutable { x += 10; return x; };
+std::cout &lt;&lt; f() &lt;&lt; " " &lt;&lt; f() &lt;&lt; " " &lt;&lt; x;</code></pre>
+          <label><input type="radio" value="a"> <code>11 11 1</code></label>
+          <label><input type="radio" value="b"> <code>11 21 21</code></label>
+          <label><input type="radio" value="c"> <code>11 21 1</code></label>
+          <label><input type="radio" value="d"> Құрастыру қатесі</label>
+          <p class="explain">Lambda <code>x</code>-тің көшірмесін алды және ол шақырулар арасында сақталады (1 → 11 → 21). Сыртқы <code>x</code> өзгермейді. Компилятормен тексердік: <code>11 21 1</code>.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">2. Өлшем неше болады?</p>
+<pre data-lang="cpp"><code class="language-cpp">std::map&lt;std::string, int&gt; m;
+m["x"];
+m["y"] = 5;
+m.count("z");
+std::cout &lt;&lt; m.size();</code></pre>
+          <label><input type="radio" value="a"> <code>1</code></label>
+          <label><input type="radio" value="b"> <code>2</code></label>
+          <label><input type="radio" value="c"> <code>3</code></label>
+          <label><input type="radio" value="d"> <code>0</code></label>
+          <p class="explain"><code>m["x"]</code> жоқ кілтті 0-мен қосады, <code>m["y"] = 5</code> тағы біреуін қосады. <code>count</code> ештеңе қоспайды. Барлығы 2.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">3. <code>std::list&lt;int&gt; l; std::sort(l.begin(), l.end());</code> неге құрастырылмайды?</p>
+          <label><input type="radio" value="a"> <code>list</code> бос болғандықтан</label>
+          <label><input type="radio" value="b"> <code>sort</code> тек <code>int</code> типімен жұмыс істейді</label>
+          <label><input type="radio" value="c"> <code>#include &lt;list&gt;</code> жетіспейді</label>
+          <label><input type="radio" value="d"> <code>list</code> итераторлары кездейсоқ қолжетімді емес; <code>l.sort()</code> керек</label>
+          <p class="explain"><code>std::sort</code> итераторларды азайтып, секіре алуы керек (random access). Тізімнің итераторы тек алға-артқа жүреді, сондықтан тізімнің өз <code>sort</code> әдісі бар.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">4. Вектор итераторы <code>it = v.begin()</code> алынды, содан кейін <code>v.push_back(...)</code> шақырылды. Не туралы айтуға болады?</p>
+          <label><input type="radio" value="a"> <code>it</code> жарамсыз болуы мүмкін, оны қолдану қауіпті</label>
+          <label><input type="radio" value="b"> <code>it</code> әрқашан жарамды қалады</label>
+          <label><input type="radio" value="c"> <code>it</code> автоматты түрде <code>end()</code> болады</label>
+          <label><input type="radio" value="d"> Бағдарлама дереу тоқтайды</label>
+          <p class="explain">Қосқанда вектор жадты қайта бөлуі мүмкін; сонда барлық итератор, көрсеткіш және сілтеме жарамсыз болады. Нақты тексеруде AddressSanitizer <code>heap-use-after-free</code> көрсетті.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">5. Нәтижесі қандай?</p>
+<pre data-lang="cpp"><code class="language-cpp">std::vector&lt;int&gt; v{1, 2, 3, 2, 4, 2};
+v.erase(std::remove(v.begin(), v.end(), 2), v.end());
+for (int x : v) std::cout &lt;&lt; x &lt;&lt; " ";</code></pre>
+          <label><input type="radio" value="a"> <code>1 2 3 2 4 2</code></label>
+          <label><input type="radio" value="b"> <code>2 2 2</code></label>
+          <label><input type="radio" value="c"> <code>1 3 4</code></label>
+          <label><input type="radio" value="d"> <code>1 3 2 4</code></label>
+          <p class="explain"><code>remove</code> керекті элементтерді алға жылжытады, <code>erase</code> қалған құйрықты өшіреді. Барлық 2 алынып, <code>1 3 4</code> қалады.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">6. Қай контейнерде кілт бойынша іздеу орташа есеппен O(1)?</p>
+          <label><input type="radio" value="a"> <code>std::map</code></label>
+          <label><input type="radio" value="b"> <code>std::unordered_map</code></label>
+          <label><input type="radio" value="c"> <code>std::list</code></label>
+          <label><input type="radio" value="d"> <code>std::set</code></label>
+          <p class="explain"><code>unordered_map</code> хэш-кестеге негізделген, іздеу орташа O(1). <code>map</code> мен <code>set</code> - O(log n), <code>list</code> - O(n).</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">7. Нәтижені болжа:</p>
+<pre data-lang="cpp"><code class="language-cpp">std::vector&lt;int&gt; v;
+v.reserve(50);
+v.push_back(1);
+v.push_back(2);
+std::cout &lt;&lt; v.size() &lt;&lt; " " &lt;&lt; (v.capacity() &gt;= 50);</code></pre>
+          <label><input type="radio" value="a"> <code>50 1</code></label>
+          <label><input type="radio" value="b"> <code>0 0</code></label>
+          <label><input type="radio" value="c"> <code>2 0</code></label>
+          <label><input type="radio" value="d"> <code>2 1</code></label>
+          <p class="explain"><code>reserve</code> тек сыйымдылықты арттырады, өлшемді емес. Екі элемент қосылғандықтан <code>size()</code> = 2, ал <code>capacity()</code> ≥ 50, сондықтан өрнек 1 (<code>true</code>) береді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">8. Мына цикл не шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">std::map&lt;std::string, int&gt; m{{"b", 2}, {"a", 1}, {"c", 3}};
+for (const auto&amp; [k, v] : m) std::cout &lt;&lt; k &lt;&lt; v &lt;&lt; " ";</code></pre>
+          <label><input type="radio" value="a"> <code>a1 b2 c3</code></label>
+          <label><input type="radio" value="b"> <code>b2 a1 c3</code></label>
+          <label><input type="radio" value="c"> <code>1a 2b 3c</code></label>
+          <label><input type="radio" value="d"> Құрастыру қатесі</label>
+          <p class="explain"><code>map</code> кілттерді сұрыптап сақтайды, сондықтан реті a, b, c. Құрылымдық байланыстыру кілт пен мәнді <code>k</code>, <code>v</code> аттарына ашады.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="exercises">Жаттығулар</h2>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="task-6-1">Вектордың өлшемі</h3></div>
+        <p>Соңында <code>v.size()</code> неше болады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v{1, 2, 3};
+    v.push_back(4);
+    v.push_back(5);
+    v.pop_back();
+    v.insert(v.begin(), 0);
+    v.erase(v.begin() + 2);
+    std::cout &lt;&lt; v.size() &lt;&lt; "\n";
+    for (int x : v) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+}</code></pre>
+        <div class="answer-check" data-answer="4"><input type="text" placeholder="Сан" aria-label="Өлшем"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Қадамдап жаз: <code>{1,2,3}</code> → <code>push_back(4)</code>, <code>push_back(5)</code> → <code>pop_back()</code> → <code>insert</code> басына → <code>erase</code> (<code>begin()+2</code> индексіндегі элемент).</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>4</code>. Қадамдар: {1,2,3} → {1,2,3,4,5} → {1,2,3,4} → {0,1,2,3,4} → индекс 2 (мән 2) жойылады → {0,1,3,4}. Нақты нәтиже:</p>
+<pre class="terminal"><code class="language-plaintext">$ ./t01_vecsize
+4
+0 1 3 4 </code></pre></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="task-6-2">Map тұзағы</h3></div>
+        <p>Бағдарлама соңында қандай сан шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::map&lt;std::string, int&gt; m;
+    m["a"] = 1;
+    if (m["b"] == 0) {
+        m["c"] = 3;
+    }
+    std::cout &lt;&lt; m.size() &lt;&lt; "\n";
+}</code></pre>
+        <div class="answer-check" data-answer="3"><input type="text" placeholder="Сан" aria-label="Өлшем"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>m["b"]</code> жазуы оқуға арналған, бірақ кілт жоқ болса не істейді?</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>3</code>. <code>m["b"]</code> кілтті 0 мәнімен қосты (енді екі кілт), шарт ақиқат болғандықтан <code>m["c"] = 3</code> үшіншісін қосты.</p></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="task-6-3">Күрделілік</h3></div>
+        <p><code>std::map</code>-та кілт бойынша бір элементті табудың күрделілігі қандай? Big-O түрінде жаз (мысалы, <code>O(n)</code>).</p>
+        <div class="answer-check" data-answer="O(log n)|O(logn)|log n|logn"><input type="text" placeholder="O(...)" aria-label="Күрделілік"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>map</code> ішінде тепе-тең екілік ағаш бар, ал ағаштың биіктігі элементтер санының логарифмі.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>O(log n)</code>. <code>unordered_map</code> орташа O(1) береді, бірақ оның кілттері сұрыпталмаған.</p></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="task-6-4">Сөз жиілігі</h3></div>
+        <p>Мына мәтіндегі сөздердің қайталану санын есепте: <code>"ақ жол ақ шай жол ақ дастархан шай"</code>. Нәтижені жиілігі кему ретімен, жиілік тең болса әліпби ретімен шығар. <code>std::map</code>, <code>std::istringstream</code>, <code>std::sort</code> және lambda қолдан.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p><code>std::istringstream in(text); while (in &gt;&gt; word) ++freq[word];</code> сөздерді бөліп санайды. Одан кейін <code>vector&lt;pair&lt;string,int&gt;&gt;</code> құрып, lambda арқылы сұрыпта.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;map&gt;
+#include &lt;sstream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::string text = "ақ жол ақ шай жол ақ дастархан шай";
+    std::map&lt;std::string, int&gt; freq;
+    std::istringstream in(text);
+    std::string word;
+    while (in &gt;&gt; word) {
+        ++freq[word];
+    }
+
+    std::vector&lt;std::pair&lt;std::string, int&gt;&gt; v(freq.begin(), freq.end());
+    std::sort(v.begin(), v.end(), [](const auto&amp; a, const auto&amp; b) {
+        if (a.second != b.second) return a.second &gt; b.second;
+        return a.first &lt; b.first;
+    });
+    for (const auto&amp; [w, c] : v) {
+        std::cout &lt;&lt; w &lt;&lt; ": " &lt;&lt; c &lt;&lt; "\n";
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./t04_wordfreq
+ақ: 3
+жол: 2
+шай: 2
+дастархан: 1</code></pre>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="cpp6-wordfreq">
+            <li><input type="checkbox"> <span><code>ақ: 3</code> бірінші, содан кейін <code>жол: 2</code>, <code>шай: 2</code>, <code>дастархан: 1</code>.</span></li>
+            <li><input type="checkbox"> <span>Мәтінді өзгерткенде нәтиже дұрыс өзгереді.</span></li>
+            <li><input type="checkbox"> <span><code>-Wall -Wextra</code> ескертусіз өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="task-6-5">Рейстер кестесі</h3></div>
+        <p>Рейс құрылымын жаз: код, қайда, жөнелу уақыты (минутпен), орын саны. Төрт рейс құр. Алгоритмдер мен lambda арқылы: (1) рейстерді жөнелу уақыты бойынша сұрыпта және <code>08:30</code> түрінде шығар; (2) «Астана» бағытындағы рейстер санын <code>count_if</code> арқылы тап; (3) барлық орын санын <code>accumulate</code> арқылы тап; (4) <code>transform</code> арқылы рейс кодтарының векторын жаса.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Уақытты форматтау үшін көмекші функция жаз: сағат = минут / 60, минут = минут % 60. <code>accumulate</code>-тің төртінші аргументі - lambda: <code>[](int s, const Flight&amp; f) { return s + f.seats; }</code>.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+struct Flight {
+    std::string code;
+    std::string to;
+    int depart;     // минут, түн ортасынан бастап
+    int seats;
+};
+
+std::string hhmm(int m) {
+    std::string h = std::to_string(m / 60), mm = std::to_string(m % 60);
+    return (h.size() &lt; 2 ? "0" : "") + h + ":" + (mm.size() &lt; 2 ? "0" : "") + mm;
+}
+
+int main() {
+    std::vector&lt;Flight&gt; f{
+        {"KC-101", "Астана", 8 * 60 + 30, 120},
+        {"KC-205", "Шымкент", 6 * 60 + 15, 90},
+        {"KC-310", "Астана", 19 * 60 + 5, 150},
+        {"KC-412", "Ақтау", 12 * 60, 60},
+    };
+
+    std::sort(f.begin(), f.end(), [](const Flight&amp; a, const Flight&amp; b) { return a.depart &lt; b.depart; });
+    for (const auto&amp; x : f) std::cout &lt;&lt; hhmm(x.depart) &lt;&lt; " " &lt;&lt; x.code &lt;&lt; " -&gt; " &lt;&lt; x.to &lt;&lt; "\n";
+
+    auto toAstana = std::count_if(f.begin(), f.end(), [](const Flight&amp; x) { return x.to == "Астана"; });
+    std::cout &lt;&lt; "Астанаға рейс: " &lt;&lt; toAstana &lt;&lt; "\n";
+
+    int seats = std::accumulate(f.begin(), f.end(), 0, [](int s, const Flight&amp; x) { return s + x.seats; });
+    std::cout &lt;&lt; "Барлық орын: " &lt;&lt; seats &lt;&lt; "\n";
+
+    std::vector&lt;std::string&gt; codes(f.size());
+    std::transform(f.begin(), f.end(), codes.begin(), [](const Flight&amp; x) { return x.code; });
+    for (const auto&amp; c : codes) std::cout &lt;&lt; c &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./t05_flights
+06:15 KC-205 -&gt; Шымкент
+08:30 KC-101 -&gt; Астана
+12:00 KC-412 -&gt; Ақтау
+19:05 KC-310 -&gt; Астана
+Астанаға рейс: 2
+Барлық орын: 420
+KC-205 KC-101 KC-412 KC-310 </code></pre>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="cpp6-flights">
+            <li><input type="checkbox"> <span>Рейстер 06:15, 08:30, 12:00, 19:05 ретімен шығады.</span></li>
+            <li><input type="checkbox"> <span>Астанаға рейс саны 2, барлық орын 420.</span></li>
+            <li><input type="checkbox"> <span>Қолмен цикл жоқ, тек алгоритмдер қолданылған.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="task-6-6">Нәтижені болжа</h3></div>
+        <p>Бағдарлама қандай екі санды шығарады? Жауапты бос орынмен бөліп жаз (мысалы, <code>7 12</code>).</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;algorithm&gt;
+#include &lt;iostream&gt;
+#include &lt;numeric&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v{5, 12, 7, 20, 3, 15};
+    int k = 10;
+    auto big = [k](int x) { return x &gt; k; };
+    k = 100;                                     // lambda ұстаған көшірмеге әсер етпейді
+    int n = std::count_if(v.begin(), v.end(), big);
+    std::sort(v.begin(), v.end(), std::greater&lt;int&gt;());
+    int s = std::accumulate(v.begin(), v.begin() + 3, 0);
+    std::cout &lt;&lt; n &lt;&lt; " " &lt;&lt; s &lt;&lt; "\n";
+}</code></pre>
+        <div class="answer-check" data-answer="3 47|3  47"><input type="text" placeholder="n s" aria-label="Екі сан"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Lambda <code>k</code>-ны құрылған сәтте көшіріп алды, сондықтан кейінгі <code>k = 100</code> оған әсер етпейді. Сұрыпталғаннан кейін алғашқы үш элементтің қосындысын ал.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>3 47</code>. <code>big</code> үшін <code>k = 10</code>: 10-нан үлкендер - 12, 20, 15, яғни 3. Кему ретімен сұрыптаудан кейін {20, 15, 12, 7, 5, 3}, алғашқы үшеуінің қосындысы 20+15+12 = 47. Нақты нәтиже:</p>
+<pre class="terminal"><code class="language-plaintext">$ ./t06_predict
+3 47</code></pre></div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-5.html"><small>Алдыңғы</small>← 5-апта: Мұрагерлік және полиморфизм</a>
+        <a class="next" href="week-7.html"><small>Келесі</small>7-апта: Шаблондар, ерекше жағдайлар, файлдар және қорытынды жоба →</a>
+      </nav>
+
+      <p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

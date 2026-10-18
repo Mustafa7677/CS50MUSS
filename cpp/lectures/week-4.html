@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C++ 4-апта: Класстар және нысандар - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="C++ 4-апта: Класстар және нысандар - CS50 қазақша">
+  <meta property="og:description" content="C++ 4-апта: struct пен class, access, конструктор, деструктор, инкапсуляция, const әдістер, this, static мүшелер, оператор &lt;&lt; жүктеу, композиция және класс диаграммасы.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-4.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-4.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"C++ 4-апта: Класстар және нысандар - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-4.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="C++ 4-апта: struct пен class, access, конструктор, деструктор, инкапсуляция, const әдістер, this, static мүшелер, оператор << жүктеу, композиция және класс диаграммасы.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body data-license="B">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="cpp" style="--c:#4f46e5"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">C++</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../cpp/index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#4f46e5" data-n="4">
+        <div class="num">4-апта</div>
+        <h1>Класстар және нысандар</h1>
+        <p>Осы уақытқа дейін деректер бір жерде, функциялар басқа жерде жүрді. Бұл аптада оларды бір «қорапқа» жинаймыз: банк шоты өз қалдығын өзі қорғайды, кітап өз мәліметін өзі шығарады. Бұл - нысанға бағытталған бағдарламалаудың (OOP) бастауы.</p>
+      </div>
+
+      <h2 id="why">Неге класс керек?</h2>
+      <p>Алдыңғы апталарда біз айнымалылар мен функцияларды бөлек-бөлек жазып келдік. Банк шотын елестетіңіз: оның иесінің аты, қалдығы бар, ал оған ақша салатын, ақша алатын функциялар бөлек тұр. Бағдарлама кішкентай болса, бұл жарайды. Бірақ жүз шот, он мың тапсырыс болғанда не болады? Біреу қалдықты кездейсоқ теріс санға өзгертіп жіберсе, оны кім тоқтатады? Деректер мен оларды өңдейтін функциялар бір-бірінен алыс жатса, қате іздеу қиынға соғады.</p>
+      <p>Шешім: деректер мен функцияларды бір «қорапқа» салу. Мұндай қорапты <strong>класс</strong> (<span class="term-en">class</span>) дейді, ал сол қораптың негізінде жасалған нақты затты <strong>нысан</strong> (<span class="term-en">object</span>) деп атаймыз. Аналогия: класс - бұл үйдің сызбасы (чертеж), ал нысан - сол сызба бойынша салынған нақты үй. Сызба біреу, ал үй қанша керек болса, сонша салуға болады. Әр үйдің өз мекенжайы, өз терезесі бар, бірақ олардың бәрі бір сызбаға сай.</p>
+      <p>Бұл апта бойы бір ойды басшылыққа аламыз: <strong>нысан өзінің деректерін өзі қорғайды және өзі басқарады</strong>. Банк шоты қалдығын сырттан кез келген адам өзгертуге жібермейді, тек «салу» және «алу» әдістері арқылы ғана өзгертеді. Бұл идеяны <strong>инкапсуляция</strong> (<span class="term-en">encapsulation</span>) деп атайды, оған бөлек тоқталамыз.</p>
+
+      <div class="callout tip">
+        <span class="callout-title">Өз компьютеріңде іске қос</span>
+        <p>Бұл лекциядағы барлық мысалды өзің теріп көр, көшіру жеткіліксіз: саусақ код жазуды есте сақтайды. Файлды <code>main.cpp</code> деп сақтап, терминалда мынаны орында:</p>
+<pre data-lang="bash"><code class="language-bash">g++ -std=c++17 -Wall -Wextra -fsanitize=address,undefined main.cpp -o main
+./main</code></pre>
+        <p><code>-Wall -Wextra</code> компилятордан көбірек ескерту сұрайды, ал <code>-fsanitize=address,undefined</code> жад пен анықталмаған әрекеттегі қателерді орындау кезінде ұстайды. Біз осы лекцияның бүкіл кодын дәл осылай тексердік.</p>
+      </div>
+      <p>Мысалдарда <code>using namespace std;</code> жазбаймыз, барлық стандартты атауды <code>std::</code> префиксімен жазамыз (<code>std::string</code>, <code>std::cout</code>). Бұл ұзағырақ, бірақ қай атау қайдан келгені көрініп тұрады, ал үлкен жобада атаулардың шатасуына жол бермейді.</p>
+
+      <h2 id="struct-class">struct пен class, қолжетімділік</h2>
+      <p>C++-та нысан жасаудың екі жолы бар: <code>struct</code> және <code>class</code>. Алдымен <strong>құрылым</strong> (<span class="term-en">struct</span>) арқылы қарапайым мысал көрейік. Бір кітап туралы мәліметті бір жерге жинаймыз:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+struct Book {
+    std::string title;
+    std::string author;
+    int pages;
+};
+
+int main() {
+    Book b;
+    b.title = "Қобыланды батыр";
+    b.author = "халық эпосы";
+    b.pages = 120;
+
+    Book c = {"Абай жолы", "Мұхтар Әуезов", 640};
+
+    std::cout &lt;&lt; b.title &lt;&lt; " (" &lt;&lt; b.author &lt;&lt; "), " &lt;&lt; b.pages &lt;&lt; " бет\n";
+    std::cout &lt;&lt; c.title &lt;&lt; " (" &lt;&lt; c.author &lt;&lt; "), " &lt;&lt; c.pages &lt;&lt; " бет\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a01_struct
+Қобыланды батыр (халық эпосы), 120 бет
+Абай жолы (Мұхтар Әуезов), 640 бет</code></pre>
+      <p>Мұнда <code>Book</code> - біздің өз типіміз. Оның ішінде үш <strong>өріс</strong> (<span class="term-en">member variable</span>, <em>мүше айнымалы</em>) бар: <code>title</code>, <code>author</code>, <code>pages</code>. Өріске нүкте арқылы қол жеткіземіз: <code>b.title</code>. Екінші кітапты (<code>c</code>) жақшамен бірден толтырдық. Бұл ыңғайлы, бірақ бір кемшілігі бар: кез келген жерден кез келген адам <code>b.pages = -5;</code> деп жаза алады, ал кітаптың беті теріс бола ма?</p>
+      <p>Енді <strong>қолжетімділік</strong> (<span class="term-en">access specifier</span>) ұғымын енгізейік. Үш кілт сөз бар:</p>
+      <ul>
+        <li><code>public</code> (ашық): класстың сыртынан да кез келген адам қолдана алады;</li>
+        <li><code>private</code> (жабық): тек класстың өз әдістері ғана қолдана алады;</li>
+        <li><code>protected</code> (қорғалған): жабық сияқты, бірақ мұрагерлерге де рұқсат. Оны келесі аптада қараймыз.</li>
+      </ul>
+      <p><code>struct</code> пен <code>class</code> арасындағы <em>бірден-бір</em> маңызды айырмашылық - әдепкі қолжетімділік: <code>struct</code>-та бәрі әдепкіде <code>public</code>, ал <code>class</code>-та бәрі әдепкіде <code>private</code>. Басқа ешқандай үлкен айырмасы жоқ. Дәстүр бойынша қарапайым деректер жиынына (екі-үш өріс, ешқандай ереже жоқ) <code>struct</code> қолданылады, ал өз ережесі бар, деректерін қорғайтын нысандарға <code>class</code> жазылады.</p>
+      <p>Классты қорғау қалай жұмыс істейтінін көрейік. Банк шотының қалдығын жабық етіп, сыртынан өзгертіп көрейік:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Account {
+    double balance;
+};
+
+int main() {
+    Account acc;
+    acc.balance = 1000000;
+    std::cout &lt;&lt; acc.balance &lt;&lt; "\n";
+}</code></pre>
+      <p>Компилятор жауабы:</p>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra a02_private_err.cpp -o a02_private_err
+a02_private_err.cpp: In function 'int main()':
+a02_private_err.cpp:9:9: error: 'double Account::balance' is private within this context
+    9 |     acc.balance = 1000000;
+      |         ^~~~~~~
+a02_private_err.cpp:4:12: note: declared private here
+    4 |     double balance;
+      |            ^~~~~~~
+a02_private_err.cpp:10:22: error: 'double Account::balance' is private within this context
+   10 |     std::cout &lt;&lt; acc.balance &lt;&lt; "\n";
+      |                      ^~~~~~~
+a02_private_err.cpp:4:12: note: declared private here
+    4 |     double balance;
+      |            ^~~~~~~</code></pre>
+      <p>Компилятор қатені жол және баған дәлдігімен көрсетті: <code>'double Account::balance' is private within this context</code>, яғни «<code>balance</code> жабық, бұл жерден көруге болмайды». Бұл қате емес, <em>қорғаныс</em>: бағдарлама жұмыс істеп кеткенше, қатені құрастыру кезінде ұстадық. Қалдықты өзгерту үшін класс өз <code>public</code> әдісін ұсынуы керек.</p>
+      <div class="callout note">
+        <span class="callout-title">Өріс атының соңындағы төменгі сызық</span>
+        <p>Мысалдарда жабық өрістерді <code>title_</code>, <code>balance_</code> деп жазамыз: соңына <code>_</code> қосу - кең тараған әдет. Сонда <code>title()</code> әдісі мен <code>title_</code> өрісі шатаспайды, ал конструктор параметрінің аты <code>title</code> бола алады. Бұл тіл ережесі емес, тек келісім.</p>
+      </div>
+
+      <h2 id="constructor">Конструктор және инициализация тізімі</h2>
+      <p>Нысан дүниеге келген кезде оның өрістері дұрыс мәнмен толуы керек. Мұны жасайтын арнайы әдіс бар: <strong>конструктор</strong> (<span class="term-en">constructor</span>). Оның аты класстың атымен бірдей, қайтарым типі жоқ (<code>void</code> та жазбаймыз). Нысан жасалған сәтте компилятор оны өзі шақырады.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Book {
+public:
+    Book(std::string title, std::string author, int pages)
+        : title_(title), author_(author), pages_(pages) {
+        std::cout &lt;&lt; "Кітап жасалды: " &lt;&lt; title_ &lt;&lt; "\n";
+    }
+
+    std::string title() const { return title_; }
+    std::string author() const { return author_; }
+    int pages() const { return pages_; }
+
+private:
+    std::string title_;
+    std::string author_;
+    int pages_;
+};
+
+int main() {
+    Book b("Көшпенділер", "Ілияс Есенберлин", 560);
+    std::cout &lt;&lt; b.title() &lt;&lt; " - " &lt;&lt; b.author() &lt;&lt; ", " &lt;&lt; b.pages() &lt;&lt; " бет\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a03_book_ctor
+Кітап жасалды: Көшпенділер
+Көшпенділер - Ілияс Есенберлин, 560 бет</code></pre>
+      <p>Конструктордың тақырыбына назар аударыңыз:</p>
+<pre data-lang="cpp"><code class="language-cpp">Book(std::string title, std::string author, int pages)
+    : title_(title), author_(author), pages_(pages) { ... }</code></pre>
+      <p>Қос нүктеден кейінгі бөлікті <strong>инициализация тізімі</strong> (<span class="term-en">member initializer list</span>) дейді. Ол өрістерге мәнді конструктордың денесі басталмай тұрып береді. Неге денесінде <code>title_ = title;</code> деп жазбаймыз? Себебі бұл екі әрекет бірдей емес: тізім өрісті бірден дұрыс мәнмен <em>жасайды</em>, ал денесіндегі меншіктеу алдымен өрісті бос жасап, содан кейін мәнді <em>қайта жазады</em>. <code>std::string</code> үшін бұл артық жұмыс, ал кейбір өрістер (<code>const</code> пен сілтеме түріндегілер) үшін тізім - жалғыз мүмкін жол.</p>
+      <p>Бір класста бірнеше конструктор болуы мүмкін, бұл <strong>жүктеу</strong> (<span class="term-en">overloading</span>) деп аталады. Аргументсіз шақырылатын конструкторды <strong>әдепкі конструктор</strong> (<span class="term-en">default constructor</span>) дейді:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Student {
+public:
+    Student() : name_("белгісіз"), grade_(0) {}
+    Student(std::string name) : name_(name), grade_(0) {}
+    Student(std::string name, int grade) : name_(name), grade_(grade) {}
+
+    void print() const { std::cout &lt;&lt; name_ &lt;&lt; ", бағасы: " &lt;&lt; grade_ &lt;&lt; "\n"; }
+
+private:
+    std::string name_;
+    int grade_;
+};
+
+int main() {
+    Student a;
+    Student b("Нұрлан");
+    Student c("Дана", 5);
+    a.print();
+    b.print();
+    c.print();
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a13_default_ctor
+белгісіз, бағасы: 0
+Нұрлан, бағасы: 0
+Дана, бағасы: 5</code></pre>
+      <p>Жиі кездесетін тұзақ: егер сіз өз конструкторыңызды жазсаңыз, компилятор әдепкі конструкторды өзі жасауды <em>тоқтатады</em>. Төмендегі <code>Tea</code> класында тек бір аргументті конструктор бар, ал <code>main</code>-де <code>Tea t;</code> деп жазып көрейік:</p>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra t03_tea_err.cpp -o t03_tea_err
+t03_tea_err.cpp: In function 'int main()':
+t03_tea_err.cpp:14:9: error: no matching function for call to 'Tea::Tea()'
+   14 |     Tea t;
+      |         ^
+t03_tea_err.cpp:6:5: note: candidate: 'Tea::Tea(std::string)'
+    6 |     Tea(std::string name) : name_(name) {}
+      |     ^~~
+t03_tea_err.cpp:6:5: note:   candidate expects 1 argument, 0 provided
+t03_tea_err.cpp:4:7: note: candidate: 'Tea::Tea(const Tea&amp;)'
+    4 | class Tea {
+      |       ^~~
+t03_tea_err.cpp:4:7: note:   candidate expects 1 argument, 0 provided
+t03_tea_err.cpp:4:7: note: candidate: 'Tea::Tea(Tea&amp;&amp;)'
+t03_tea_err.cpp:4:7: note:   candidate expects 1 argument, 0 provided</code></pre>
+      <p>Компилятор «аргументсіз <code>Tea::Tea()</code> табылмады, бар үміткерлер бір аргумент күтеді» дейді. Түзету жолы екеу: не <code>Tea t("қара шай");</code> деп жазу, не <code>Tea() : name_("белгісіз") {}</code> деген әдепкі конструктор қосу.</p>
+
+      <h3 id="init-order">Инициализация реті</h3>
+      <p>Тағы бір нәзік жер: өрістер инициализация тізімінде жазылған ретпен емес, <strong>класта жарияланған ретпен</strong> жасалады. Компилятор мұны байқап, ескерту береді:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Point {
+public:
+    Point(int x, int y) : y_(y), x_(x) {}
+    void show() const { std::cout &lt;&lt; x_ &lt;&lt; ", " &lt;&lt; y_ &lt;&lt; "\n"; }
+
+private:
+    int x_;
+    int y_;
+};
+
+int main() {
+    Point p(3, 4);
+    p.show();
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra a04_reorder_warn.cpp -o a04_reorder_warn
+a04_reorder_warn.cpp: In constructor 'Point::Point(int, int)':
+a04_reorder_warn.cpp:10:9: warning: 'Point::y_' will be initialized after [-Wreorder]
+   10 |     int y_;
+      |         ^~
+a04_reorder_warn.cpp:9:9: warning:   'int Point::x_' [-Wreorder]
+    9 |     int x_;
+      |         ^~
+a04_reorder_warn.cpp:5:5: warning:   when initialized here [-Wreorder]
+    5 |     Point(int x, int y) : y_(y), x_(x) {}
+      |     ^~~~~</code></pre>
+      <p>Мұнда <code>y_</code> тізімде бірінші тұр, бірақ класта <code>x_</code> бұрын жарияланған, сондықтан шын мәнінде <code>x_</code> бірінші жасалады. Қарапайым бүтін сандарда бұл зиян келтірмейді, ал бір өріс екіншісінің мәніне сүйенсе, нағыз қате болады. Ереже: тізімді өрістердің жариялану тәртібімен жазыңыз, сонда ескерту де шықпайды.</p>
+      <p>Қарапайым типтердің (<code>int</code>, <code>double</code>) өрісін конструкторда мәнсіз қалдырсаңыз, онда кездейсоқ «қоқыс» мән тұрады. Оны болдырмау үшін өрістің өзінде әдепкі мән беруге болады:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Counter {
+public:
+    void inc() { n_++; }
+    int value() const { return n_; }
+
+private:
+    int n_ = 0;   // әдепкі мән: ұмытуға жол жоқ
+};
+
+int main() {
+    Counter c;
+    c.inc();
+    c.inc();
+    std::cout &lt;&lt; c.value() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a14_member_init
+2</code></pre>
+      <p>Мұндағы <code>int n_ = 0;</code> жазуы кез келген конструктор өрістің мәнін көрсетпесе, 0 болатынын кепілдейді.</p>
+
+      <h3 id="brace-init">Нысан жасаудың жолдары</h3>
+      <p>Нысанды бірнеше жазумен жасауға болады, олардың бәрі бір конструкторды шақырады. Дөңгелек жақша ескі әдіс, ал фигуралы жақша (<span class="term-en">brace initialization</span>) C++11-ден бері бар. Фигуралы жақшаның артықшылығы: ол деректі «тарылтып» жібермейді, мысалы <code>int x{3.7};</code> компиляторда қате (не ескерту) береді, ал <code>int x(3.7);</code> үнсіз ғана 3 етіп кесіп тастайды. Класстар үшін екі нұсқа да бірдей жұмыс істейді:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Guest {
+public:
+    Guest(std::string name, int age) : name_(name), age_(age) {}
+    void greet() const {
+        std::cout &lt;&lt; "Қош келдіңіз, " &lt;&lt; name_ &lt;&lt; " (" &lt;&lt; age_ &lt;&lt; ")!\n";
+    }
+
+private:
+    std::string name_;
+    int age_;
+};
+
+int main() {
+    Guest a("Сәуле", 31);      // дөңгелек жақша
+    Guest b{"Мұрат", 45};      // фигуралы жақша (C++11)
+    Guest c = Guest("Гүлнәр", 27);
+    a.greet();
+    b.greet();
+    c.greet();
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a16_brace
+Қош келдіңіз, Сәуле (31)!
+Қош келдіңіз, Мұрат (45)!
+Қош келдіңіз, Гүлнәр (27)!</code></pre>
+      <p>Қайсысын таңдау - стиль мәселесі. Негізгі ереже: бір жобада бір стильді ұстаныңыз.</p>
+
+      <h2 id="destructor">Деструктор</h2>
+      <p>Нысан жасалады, жұмыс істейді, сосын жойылады. Жойылар алдында ол артынан жинау жұмыстарын жасай алады: файлды жабу, жадты босату, желі байланысын үзу. Мұны <strong>деструктор</strong> (<span class="term-en">destructor</span>) атқарады. Оның аты - класс аты, алдына <code>~</code> белгісі қойылады, параметрі де, қайтарым типі де жоқ. Деструкторды компилятор нысан <em>көрінетін аймақтан</em> (scope) шыққанда автоматты шақырады.</p>
+      <p>Шай үйіндегі кесемен салыстырайық: қонақ келгенде кесе дайындалады (конструктор), қонақ кеткенде кесе жуылады (деструктор). Нысандар жойылғанда ретті бақылап көрейік:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Cup {
+public:
+    Cup(std::string who) : who_(who) {
+        std::cout &lt;&lt; "  кесе дайын: " &lt;&lt; who_ &lt;&lt; "\n";
+    }
+    ~Cup() {
+        std::cout &lt;&lt; "  кесе жуылды: " &lt;&lt; who_ &lt;&lt; "\n";
+    }
+
+private:
+    std::string who_;
+};
+
+int main() {
+    std::cout &lt;&lt; "Шай үйі ашылды\n";
+    Cup a("Айгүл");
+    {
+        std::cout &lt;&lt; "Жаңа қонақ келді\n";
+        Cup b("Ерлан");
+        Cup c("Дана");
+        std::cout &lt;&lt; "Қонақтар шай ішіп жатыр\n";
+    }
+    std::cout &lt;&lt; "Шай үйі жабылды\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a05_dtor
+Шай үйі ашылды
+  кесе дайын: Айгүл
+Жаңа қонақ келді
+  кесе дайын: Ерлан
+  кесе дайын: Дана
+Қонақтар шай ішіп жатыр
+  кесе жуылды: Дана
+  кесе жуылды: Ерлан
+Шай үйі жабылды
+  кесе жуылды: Айгүл</code></pre>
+      <p>Нәтижеден екі маңызды қағида көрінеді:</p>
+      <ol>
+        <li>Ішкі <code>{ ... }</code> жақшасы аяқталғанда <code>b</code> мен <code>c</code> жойылды, <code>main</code> аяқталмай жатып.</li>
+        <li>Жойылу реті жасалу ретіне <em>кері</em>: бірінші <code>Дана</code> (соңғы жасалған), содан кейін <code>Ерлан</code>. Бұл әдеттегі дүниедегі сияқты: соңғы киген аяқ киімді бірінші шешесіз.</li>
+      </ol>
+      <p>Деструктор C++-тың ең күшті идеяларының біріне - <strong>RAII</strong> (<span class="term-en">Resource Acquisition Is Initialization</span>, «ресурс алу - инициализация») - негіз болады. Оны 7-аптада кеңірек қараймыз; қысқасы: ресурсты конструкторда аламыз, деструкторда қайтарамыз, сонда ұмыту мүмкін емес.</p>
+
+      <h2 id="encapsulation">Инкапсуляция: Банк шоты</h2>
+      <p>Енді басты идеяға келдік. <strong>Инкапсуляция</strong> (<span class="term-en">encapsulation</span>) - деректерді жасырып (<code>private</code>), оларға тек ойластырылған ашық әдістер (<code>public</code>) арқылы жол ашу. Сыртқы әлем «қалдық неше?» деп сұрай алады, бірақ «қалдықты мынаған теңе» деп бұйыра алмайды. Банкоматтан ақша алғанда сіз қоймаға кірмейсіз, терезедегі кассир қабылдайды.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Account {
+public:
+    Account(std::string owner, double balance) : owner_(owner), balance_(balance) {}
+
+    bool deposit(double amount) {
+        if (amount &lt;= 0) return false;
+        balance_ += amount;
+        return true;
+    }
+
+    bool withdraw(double amount) {
+        if (amount &lt;= 0 || amount &gt; balance_) return false;
+        balance_ -= amount;
+        return true;
+    }
+
+    double balance() const { return balance_; }
+    std::string owner() const { return owner_; }
+
+private:
+    std::string owner_;
+    double balance_;
+};
+
+int main() {
+    Account acc("Айдос", 50000);
+    std::cout &lt;&lt; acc.owner() &lt;&lt; ": " &lt;&lt; acc.balance() &lt;&lt; " тг\n";
+
+    acc.deposit(15000);
+    std::cout &lt;&lt; "Салғаннан кейін: " &lt;&lt; acc.balance() &lt;&lt; " тг\n";
+
+    if (!acc.withdraw(100000)) {
+        std::cout &lt;&lt; "Қаражат жеткіліксіз!\n";
+    }
+    if (!acc.deposit(-500)) {
+        std::cout &lt;&lt; "Теріс сома салуға болмайды!\n";
+    }
+    acc.withdraw(20000);
+    std::cout &lt;&lt; "Соңғы қалдық: " &lt;&lt; acc.balance() &lt;&lt; " тг\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a06_account
+Айдос: 50000 тг
+Салғаннан кейін: 65000 тг
+Қаражат жеткіліксіз!
+Теріс сома салуға болмайды!
+Соңғы қалдық: 45000 тг</code></pre>
+      <p>Нәтижеге қараңыз. <code>withdraw(100000)</code> қалдықтан көп болғандықтан қабылданбады, <code>deposit(-500)</code> теріс болғандықтан қабылданбады. Қалдық ешқашан теріс болмайды, бұл <strong>инвариант</strong> (<span class="term-en">invariant</span>), яғни нысанның бүкіл өмірі бойы орындалуға тиіс ереже. Қалдық <code>private</code> болғандықтан, оны бұзуға тек бір ғана жол бар - класстың өз әдістері арқылы, ал ол әдістер ережені тексереді.</p>
+      <p>Тағы бір мысал: температура. Абсолюттік нөлден төмен температура болмайды, сондықтан орнату әдісі мұны тексереді:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Temperature {
+public:
+    bool setCelsius(double c) {
+        if (c &lt; -273.15) return false;
+        c_ = c;
+        return true;
+    }
+    double celsius() const { return c_; }
+    double kelvin() const { return c_ + 273.15; }
+
+private:
+    double c_ = 0;
+};
+
+int main() {
+    Temperature t;
+    t.setCelsius(-12.5);
+    std::cout &lt;&lt; "Астанада қаңтарда: " &lt;&lt; t.celsius() &lt;&lt; " C = " &lt;&lt; t.kelvin() &lt;&lt; " K\n";
+    if (!t.setCelsius(-300)) {
+        std::cout &lt;&lt; "-300 C мүмкін емес, мән өзгерген жоқ: " &lt;&lt; t.celsius() &lt;&lt; "\n";
+    }
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a15_enc
+Астанада қаңтарда: -12.5 C = 260.65 K
+-300 C мүмкін емес, мән өзгерген жоқ: -12.5</code></pre>
+      <p>Бұл жерде бір деректі (Цельсий) сақтап, екінші түрін (Кельвин) есептеп береміз. Ертең ішкі сақтауды Кельвинге ауыстырсақ та, сыртқы код өзгермейді, себебі ол тек <code>celsius()</code> мен <code>kelvin()</code> әдістерін біледі. Инкапсуляция сыртқы қолданушыларға тиіспей, ішкі құрылымды өзгертуге мүмкіндік береді. Бұл - үлкен жобалар үшін өте маңызды артықшылық.</p>
+
+      <h3 id="getters">Геттер мен сеттер: қашан керек?</h3>
+      <p>Өрісті оқитын әдісті <strong>геттер</strong> (<span class="term-en">getter</span>), өзгертетінін <strong>сеттер</strong> (<span class="term-en">setter</span>) дейді. Жаңа бастаушылар көбіне әр өріске геттер мен сеттер жазады да, «инкапсуляцияны орындадым» деп ойлайды. Бұл жартылай ғана дұрыс. Егер сеттер ешқандай тексерусіз өрістің мәнін жай ғана өзгертсе, өрісті <code>public</code> етіп қою мен арасында айтарлықтай айырма жоқ. Нағыз инкапсуляция мынаны сұрайды: <em>«Нысан қандай әрекеттер жасай алады?»</em>, «қандай деректер бар?» емес.</p>
+      <p>Сондықтан банк шотына <code>setBalance(double)</code> жазбаймыз, оның орнына мағыналы <code>deposit</code>, <code>withdraw</code>, <code>transferTo</code> береміз. Сыртқы код «қалдықты 0 ет» деп бұйырмайды, «осы сомада ақша ал» деп сұрайды, ал шот ережеге сай орындайды немесе бас тартады. Кітапта да солай: кітаптың атын қайта-қайта өзгерту қажет емес, сондықтан геттер жеткілікті, сеттер мүлде жоқ. Қағида: <em>геттерді қажет болғанда, сеттерді одан да сирек қосыңыз</em>.</p>
+
+      <h2 id="const">const әдістер және const сілтеме</h2>
+      <p>Кейбір әдіс нысанды өзгертпейді, тек оқиды: <code>balance()</code>, <code>title()</code>. Мұны компиляторға да, оқырманға да айту үшін әдістің жақшасынан кейін <code>const</code> жазамыз: <strong>const әдіс</strong> (<span class="term-en">const member function</span>). Бұл «уәде»: әдіс ішінде бірде-бір өрісті өзгертпеймін. Компилятор уәдені тексереді.</p>
+      <p>Неге бұл маңызды? Себебі функцияларға нысанды көбіне <code>const</code> сілтеме арқылы береміз (көшірмені болдырмау үшін), ал <code>const</code> нысанның тек <code>const</code> әдістерін ғана шақыруға болады. Бір ұмытсақ не болады:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Account {
+public:
+    Account(double b) : balance_(b) {}
+    void deposit(double a) { balance_ += a; }
+    double balance() { return balance_; }
+
+private:
+    double balance_;
+};
+
+void show(const Account&amp; acc) {
+    std::cout &lt;&lt; acc.balance() &lt;&lt; "\n";
+}
+
+int main() {
+    Account a(1000);
+    show(a);
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra a07_const_err.cpp -o a07_const_err
+a07_const_err.cpp: In function 'void show(const Account&amp;)':
+a07_const_err.cpp:14:29: error: passing 'const Account' as 'this' argument discards qualifiers [-fpermissive]
+   14 |     std::cout &lt;&lt; acc.balance() &lt;&lt; "\n";
+      |                  ~~~~~~~~~~~^~
+a07_const_err.cpp:7:12: note:   in call to 'double Account::balance()'
+    7 |     double balance() { return balance_; }
+      |            ^~~~~~~</code></pre>
+      <p>Қате хабарындағы «<code>discards qualifiers</code>» (сапа белгілерін тастап кетеді) дегені - «<code>const</code> нысанмен <code>const</code> емес әдісті шақыруға болмайды» деген сөз. Шешімі қарапайым: <code>double balance() const { ... }</code>. Тәжірибелі бағдарламашылар ереже ұстанады: <em>нысанды өзгертпейтін әдістің бәрін міндетті түрде <code>const</code> етіп жазу</em>.</p>
+      <p>Тағы бір ескерту: <code>const std::string&amp; title() const</code> түріндегі жазуда екі <code>const</code> бар және олар әртүрлі мағынада. Біріншісі қайтарылатын мәннің өзгертілмейтінін, екіншісі әдістің нысанды өзгертпейтінін білдіреді (a10 мысалында көрдік).</p>
+
+      <h2 id="this">this көрсеткіші және нысан жадта</h2>
+      <p>Бір класстан он нысан жасалса, <code>deposit</code> әдісінің коды он рет көшіріле ме? Жоқ. Әдістің коды <em>бір ғана рет</em> сақталады, ал әр нысан тек өз өрістерін ғана ұстайды. Сонда <code>acc1.deposit(100)</code> мен <code>acc2.deposit(100)</code> қалай айырады, қайсысының қалдығын арттыру керек? Жауабы: әр әдіске жасырын параметр беріледі - ол <code>this</code>, яғни «қазір әдіс шақырылып жатқан нысанға көрсеткіш».</p>
+      <svg viewBox="0 0 640 330" role="img" aria-label="Диаграмма: екі Account нысаны өз өрістерін жеке сақтайды, ал deposit әдісінің коды жадта бір ғана рет тұрады; әдіс this көрсеткіші арқылы қай нысанмен жұмыс істейтінін біледі" style="display:block;width:100%;max-width:640px;height:auto;margin:18px auto">
+        <defs><marker id="m4a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--accent)"/></marker></defs>
+        <rect x="20" y="20" width="230" height="110" rx="10" style="fill:var(--surface);stroke:var(--border);stroke-width:1.6"/>
+        <text x="135" y="44" text-anchor="middle" style="fill:var(--accent);font:700 14px var(--mono, monospace)">acc1 (Айдос)</text>
+        <text x="40" y="74" style="fill:var(--text);font:13px var(--mono, monospace)">owner_ = "Айдос"</text>
+        <text x="40" y="100" style="fill:var(--text);font:13px var(--mono, monospace)">balance_ = 50000</text>
+        <rect x="390" y="20" width="230" height="110" rx="10" style="fill:var(--surface);stroke:var(--border);stroke-width:1.6"/>
+        <text x="505" y="44" text-anchor="middle" style="fill:var(--accent);font:700 14px var(--mono, monospace)">acc2 (Дана)</text>
+        <text x="410" y="74" style="fill:var(--text);font:13px var(--mono, monospace)">owner_ = "Дана"</text>
+        <text x="410" y="100" style="fill:var(--text);font:13px var(--mono, monospace)">balance_ = 8000</text>
+        <rect x="170" y="220" width="300" height="90" rx="10" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/>
+        <text x="320" y="248" text-anchor="middle" style="fill:var(--accent);font:700 14px var(--mono, monospace)">Account::deposit(amount)</text>
+        <text x="320" y="274" text-anchor="middle" style="fill:var(--text);font:13px var(--mono, monospace)">this-&gt;balance_ += amount;</text>
+        <text x="320" y="296" text-anchor="middle" style="fill:var(--muted);font:12px var(--mono, monospace)">код жадта бір ғана рет</text>
+        <polyline points="135,130 135,175 260,215" style="stroke:var(--accent);stroke-width:1.8;fill:none" marker-end="url(#m4a)"/>
+        <polyline points="505,130 505,175 380,215" style="stroke:var(--accent);stroke-width:1.8;fill:none" marker-end="url(#m4a)"/>
+        <text x="60" y="180" style="fill:var(--muted);font:12px var(--mono, monospace)">this = &amp;acc1</text>
+        <text x="440" y="180" style="fill:var(--muted);font:12px var(--mono, monospace)">this = &amp;acc2</text>
+      </svg>
+      <p>Суретте екі нысанның өз өрістері бар, ал әдіс бір дана. Әдіс шақырылғанда сол нысанның мекенжайы <code>this</code> ретінде беріледі. Біз өріс атын жай жазғанда (<code>balance_</code>) компилятор оны өзі <code>this-&gt;balance_</code> деп түсінеді. Қолмен <code>this-&gt;</code> жазу қажет болатын екі жағдай бар:</p>
+      <ul>
+        <li>параметр аты өріс атымен бірдей болғанда (<code>this-&gt;table_ = table;</code>);</li>
+        <li>әдіс өз нысанының өзін қайтарғанда: <code>return *this;</code>.</li>
+      </ul>
+      <p>Екінші жағдай <strong>тізбектеп шақыру</strong> (<span class="term-en">method chaining</span>) үшін қажет. Шай үйінің тапсырысын тізбектеп толтырайық:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Order {
+public:
+    Order(std::string table) : table_(table) {}
+
+    Order&amp; add(std::string item, int price) {
+        total_ += price;
+        std::cout &lt;&lt; "  + " &lt;&lt; item &lt;&lt; " (" &lt;&lt; price &lt;&lt; " тг)\n";
+        return *this;
+    }
+
+    void setTable(std::string table) {
+        this-&gt;table_ = table;
+    }
+
+    void print() const {
+        std::cout &lt;&lt; "Үстел " &lt;&lt; table_ &lt;&lt; ", жалпы: " &lt;&lt; total_ &lt;&lt; " тг\n";
+    }
+
+private:
+    std::string table_;
+    int total_ = 0;
+};
+
+int main() {
+    Order o("5");
+    o.add("қара шай", 400).add("баурсақ", 600).add("қазы", 2500);
+    o.print();
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a08_this
+  + қара шай (400 тг)
+  + баурсақ (600 тг)
+  + қазы (2500 тг)
+Үстел 5, жалпы: 3500 тг</code></pre>
+      <p>Мұнда <code>add</code> әдісі <code>Order&amp;</code> (нысанға <em>сілтеме</em>) қайтарады, сондықтан <code>o.add(...).add(...)</code> дәл сол бір нысанмен жұмыс істей береді. Егер қайтарым типін <code>Order</code> деп (сілтемесіз) жазсақ, әр қадамда нысанның <em>көшірмесі</em> қайтарылады да, келесі <code>add</code> көшірмеге қолданылады, ал түпнұсқа өзгермей қалады. Мұны тесттен көресіз.</p>
+
+      <h2 id="static">static мүшелер</h2>
+      <p>Кейде деректі нысанға емес, <em>бүкіл класқа</em> ортақ ету керек. Мысалы, Алматы - Астана рейсіне берілген билеттердің жалпы санын бақылау: әр билет өз нөмірін біледі, ал санауыш бір ғана. Мұндай мүше <code>static</code> деп жарияланады. Ол барлық нысанға ортақ, жадта бір ғана дана болып тұрады және нысансыз да бар.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Ticket {
+public:
+    Ticket(std::string route) : route_(route), number_(++counter_) {}
+
+    static int issued() { return counter_; }
+    int number() const { return number_; }
+    std::string route() const { return route_; }
+
+private:
+    std::string route_;
+    int number_;
+    inline static int counter_ = 0;
+};
+
+int main() {
+    std::cout &lt;&lt; "Басында: " &lt;&lt; Ticket::issued() &lt;&lt; "\n";
+    Ticket t1("Алматы - Астана");
+    Ticket t2("Астана - Алматы");
+    Ticket t3("Алматы - Шымкент");
+    std::cout &lt;&lt; "Билет №" &lt;&lt; t1.number() &lt;&lt; ": " &lt;&lt; t1.route() &lt;&lt; "\n";
+    std::cout &lt;&lt; "Билет №" &lt;&lt; t3.number() &lt;&lt; ": " &lt;&lt; t3.route() &lt;&lt; "\n";
+    std::cout &lt;&lt; "Барлығы берілді: " &lt;&lt; Ticket::issued() &lt;&lt; "\n";
+    (void)t2;
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a09_static
+Басында: 0
+Билет №1: Алматы - Астана
+Билет №3: Алматы - Шымкент
+Барлығы берілді: 3</code></pre>
+      <p>Мұнда екі <code>static</code> мүше бар: <code>counter_</code> (ортақ санауыш) және <code>issued()</code> (<strong>static әдіс</strong>, ол <code>this</code>-сіз жұмыс істейді, сондықтан тек static мүшелерді ғана көреді). Оны нысансыз, <code>Класс::әдіс()</code> түрінде шақырамыз: <code>Ticket::issued()</code>. Конструкторда <code>++counter_</code> әр жаңа билетке келесі нөмір береді.</p>
+      <p>C++17-де static өрісті класстың ішінде <code>inline static int counter_ = 0;</code> деп бірден мәнімен жариялауға болады. Ескі C++ стандарттарында оны класстан тыс бөлек жариялау керек еді: <code>int Ticket::counter_ = 0;</code>. Екі жазуды да кездестіресіз.</p>
+
+      <h2 id="operator">Оператор &lt;&lt; жүктеу</h2>
+      <p>Біз <code>std::cout &lt;&lt; 5</code> деп жаза аламыз, бірақ <code>std::cout &lt;&lt; book</code> деп жазсақ, компилятор кітапты қалай шығару керегін білмейді. Біз оған үйрете аламыз: бұл <strong>операторды жүктеу</strong> (<span class="term-en">operator overloading</span>). <code>&lt;&lt;</code> операторы үшін ол жеке функция түрінде жазылады:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Book {
+public:
+    Book(std::string title, std::string author, int year)
+        : title_(title), author_(author), year_(year) {}
+
+    const std::string&amp; title() const { return title_; }
+    const std::string&amp; author() const { return author_; }
+    int year() const { return year_; }
+
+private:
+    std::string title_;
+    std::string author_;
+    int year_;
+};
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Book&amp; b) {
+    out &lt;&lt; "«" &lt;&lt; b.title() &lt;&lt; "», " &lt;&lt; b.author() &lt;&lt; ", " &lt;&lt; b.year();
+    return out;
+}
+
+int main() {
+    Book b("Қан мен тер", "Әбдіжәміл Нұрпейісов", 1970);
+    Book c("Ақбілек", "Ілияс Жансүгіров", 1927);
+    std::cout &lt;&lt; b &lt;&lt; "\n" &lt;&lt; c &lt;&lt; "\n";
+    std::cout &lt;&lt; "Екі кітап: " &lt;&lt; b &lt;&lt; " | " &lt;&lt; c &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a10_ostream
+«Қан мен тер», Әбдіжәміл Нұрпейісов, 1970
+«Ақбілек», Ілияс Жансүгіров, 1927
+Екі кітап: «Қан мен тер», Әбдіжәміл Нұрпейісов, 1970 | «Ақбілек», Ілияс Жансүгіров, 1927</code></pre>
+      <p>Қолтаңбаны бөлшектеп көрейік: <code>std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Book&amp; b)</code>.</p>
+      <ul>
+        <li>Бірінші параметр - шығыс ағыны (<code>std::cout</code> соның нысаны). Оны сілтеме арқылы аламыз, себебі ағынды көшіруге болмайды.</li>
+        <li>Екінші параметр - шығарылатын нысан. <code>const&amp;</code> арқылы көшірмесіз және өзгертпей аламыз.</li>
+        <li>Қайтарым типі - сол <code>std::ostream&amp;</code>. Осының арқасында <code>std::cout &lt;&lt; b &lt;&lt; "\n" &lt;&lt; c</code> деп тізбектеп жаза аламыз: әр <code>&lt;&lt;</code> ағынды келесіге береді.</li>
+      </ul>
+      <p>Функция класстан тыс тұрғандықтан жабық өрістерді көре алмайды, сондықтан біз ашық <code>title()</code>, <code>author()</code> әдістерін қолдандық. Басқа жол - функцияны класс ішінде <code>friend</code> («дос») деп жариялау, сонда ол жабық мүшелерге қол жеткізеді. Бірақ мүмкін болса, ашық әдістер арқылы жұмыс істеген таза.</p>
+
+      <h2 id="composition">Композиция және класс диаграммасы</h2>
+      <p>Нағыз бағдарламада класстар бір-бірінен тұрады. Кітапханада кітаптар бар, кітаптың авторы бар. Бір класстың өрісі екінші класстың нысаны болса, бұл <strong>композиция</strong> (<span class="term-en">composition</span>) деп аталады, ал қатынас «<em>бар</em>» (has-a) деп оқылады: «Кітапта автор бар», «Кітапханада кітаптар бар». Мұрагерліктегі «<em>болып табылады</em>» (is-a) қатынасынан бұл өзгеше, оны келесі аптада көреміз.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;vector&gt;
+
+class Author {
+public:
+    Author(std::string name, int born) : name_(name), born_(born) {}
+    std::string name() const { return name_; }
+    int born() const { return born_; }
+
+private:
+    std::string name_;
+    int born_;
+};
+
+class Book {
+public:
+    Book(std::string title, Author author) : title_(title), author_(author) {}
+    void print() const {
+        std::cout &lt;&lt; title_ &lt;&lt; " - " &lt;&lt; author_.name() &lt;&lt; " (" &lt;&lt; author_.born() &lt;&lt; ")\n";
+    }
+
+private:
+    std::string title_;
+    Author author_;   // композиция: Book-тың ішінде Author бар
+};
+
+class Library {
+public:
+    Library(std::string name) : name_(name) {}
+    void add(const Book&amp; b) { books_.push_back(b); }
+    void print() const {
+        std::cout &lt;&lt; name_ &lt;&lt; " (" &lt;&lt; books_.size() &lt;&lt; " кітап):\n";
+        for (const Book&amp; b : books_) {
+            std::cout &lt;&lt; "  ";
+            b.print();
+        }
+    }
+
+private:
+    std::string name_;
+    std::vector&lt;Book&gt; books_;
+};
+
+int main() {
+    Library lib("Абай атындағы кітапхана");
+    lib.add(Book("Абай жолы", Author("Мұхтар Әуезов", 1897)));
+    lib.add(Book("Қара сөздер", Author("Абай Құнанбайұлы", 1845)));
+    lib.print();
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a11_composition
+Абай атындағы кітапхана (2 кітап):
+  Абай жолы - Мұхтар Әуезов (1897)
+  Қара сөздер - Абай Құнанбайұлы (1845)</code></pre>
+      <p>Кітап пен автор арасындағы байланысты көрнекі етіп сызу үшін <strong>класс диаграммасы</strong> (<span class="term-en">class diagram</span>) қолданылады. Әр класс үш қабаттан тұрады: аты, өрістер, әдістер. Ромб (◆) «тұтас - бөлік» байланысын, яғни композицияны көрсетеді: ромб тұрған жақ - иесі.</p>
+      <svg viewBox="0 0 660 270" role="img" aria-label="Класс диаграммасы: Library класы ішінде Book нысандарының тізімі бар, Book класында Author нысаны бар. Library: name_, books_, add(), print(). Book: title_, author_, print(). Author: name_, born_, name(), born()" style="display:block;width:100%;max-width:660px;height:auto;margin:18px auto">
+        <rect x="10" y="40" width="190" height="170" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <line x1="10" y1="72" x2="200" y2="72" style="stroke:var(--accent);stroke-width:1.4"/>
+        <line x1="10" y1="132" x2="200" y2="132" style="stroke:var(--accent);stroke-width:1.4"/>
+        <text x="105" y="62" text-anchor="middle" style="fill:var(--text);font:700 15px var(--mono, monospace)">Library</text>
+        <text x="22" y="95" style="fill:var(--text);font:12.5px var(--mono, monospace)">- name_: string</text>
+        <text x="22" y="117" style="fill:var(--text);font:12.5px var(--mono, monospace)">- books_: vector&lt;Book&gt;</text>
+        <text x="22" y="156" style="fill:var(--text);font:12.5px var(--mono, monospace)">+ add(b: Book)</text>
+        <text x="22" y="178" style="fill:var(--text);font:12.5px var(--mono, monospace)">+ print() const</text>
+        <rect x="240" y="40" width="190" height="170" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <line x1="240" y1="72" x2="430" y2="72" style="stroke:var(--accent);stroke-width:1.4"/>
+        <line x1="240" y1="132" x2="430" y2="132" style="stroke:var(--accent);stroke-width:1.4"/>
+        <text x="335" y="62" text-anchor="middle" style="fill:var(--text);font:700 15px var(--mono, monospace)">Book</text>
+        <text x="252" y="95" style="fill:var(--text);font:12.5px var(--mono, monospace)">- title_: string</text>
+        <text x="252" y="117" style="fill:var(--text);font:12.5px var(--mono, monospace)">- author_: Author</text>
+        <text x="252" y="156" style="fill:var(--text);font:12.5px var(--mono, monospace)">+ print() const</text>
+        <rect x="470" y="40" width="180" height="170" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/>
+        <line x1="470" y1="72" x2="650" y2="72" style="stroke:var(--accent);stroke-width:1.4"/>
+        <line x1="470" y1="132" x2="650" y2="132" style="stroke:var(--accent);stroke-width:1.4"/>
+        <text x="560" y="62" text-anchor="middle" style="fill:var(--text);font:700 15px var(--mono, monospace)">Author</text>
+        <text x="482" y="95" style="fill:var(--text);font:12.5px var(--mono, monospace)">- name_: string</text>
+        <text x="482" y="117" style="fill:var(--text);font:12.5px var(--mono, monospace)">- born_: int</text>
+        <text x="482" y="156" style="fill:var(--text);font:12.5px var(--mono, monospace)">+ name() const</text>
+        <text x="482" y="178" style="fill:var(--text);font:12.5px var(--mono, monospace)">+ born() const</text>
+        <polygon points="200,125 214,115 228,125 214,135" style="fill:var(--accent);stroke:var(--accent)"/>
+        <line x1="228" y1="125" x2="240" y2="125" style="stroke:var(--accent);stroke-width:1.8"/>
+        <polygon points="430,125 444,115 458,125 444,135" style="fill:var(--accent);stroke:var(--accent)"/>
+        <line x1="458" y1="125" x2="470" y2="125" style="stroke:var(--accent);stroke-width:1.8"/>
+        <text x="215" y="108" text-anchor="middle" style="fill:var(--muted);font:12px var(--mono, monospace)">0..*</text>
+        <text x="445" y="108" text-anchor="middle" style="fill:var(--muted);font:12px var(--mono, monospace)">1</text>
+        <text x="330" y="250" text-anchor="middle" style="fill:var(--muted);font:12.5px var(--font, sans-serif)">«-» жабық (private), «+» ашық (public) мүшені білдіреді</text>
+      </svg>
+      <p>Диаграммадан мынаны оқимыз: кітапханада нөл немесе одан көп кітап (<code>0..*</code>) бар, әр кітапта нақты бір автор (<code>1</code>) бар. Бағдарламаны жазбай тұрып-ақ, осындай сызба жобаны түсінуге көп көмектеседі. Қағазға қарындашпен сызудың өзі жеткілікті.</p>
+      <p>Композицияда ішкі нысан иесімен бірге жасалып, бірге жойылады. <code>Book</code> жойылса, ішіндегі <code>Author</code> көшірмесі де жойылады. Сондықтан деструкторларды қолмен жазу қажет болмайды: компилятор өзі дұрыс ретпен шақырады. Қысқа тәжірибе жасап көрейік. Үйдің құрамында қабырға мен төбе бар, конструкторда әдейі кері ретпен жаздық:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Part {
+public:
+    Part(std::string name) : name_(name) { std::cout &lt;&lt; name_ &lt;&lt; " жасалды\n"; }
+    ~Part() { std::cout &lt;&lt; name_ &lt;&lt; " жойылды\n"; }
+
+private:
+    std::string name_;
+};
+
+class House {
+public:
+    House() : roof_("төбе"), wall_("қабырға") { std::cout &lt;&lt; "Үй дайын\n"; }
+    ~House() { std::cout &lt;&lt; "Үй құлады\n"; }
+
+private:
+    Part wall_;
+    Part roof_;
+};
+
+int main() {
+    House h;
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./t07_house
+қабырға жасалды
+төбе жасалды
+Үй дайын
+Үй құлады
+төбе жойылды
+қабырға жойылды</code></pre>
+      <p>Назар аударыңыз: инициализация тізімінде <code>roof_</code> бірінші жазылса да, <code>wall_</code> бірінші жасалды (класта ол бұрын жарияланған). Жойылу кері ретпен жүреді: алдымен үйдің өз деструкторы, содан кейін соңғы жасалған бөлік. Бұл - жоғарыда айтқан инициализация реті ережесінің нақты көрінісі. Осы мысал 6-жаттығуда да кездеседі.</p>
+
+      <h2 id="bank">Толық мысал: Банк шоттары</h2>
+      <p>Енді барлығын біріктірейік. Банк шоты: иесі, қалдығы, автоматты нөмірі (<code>static</code> санауыштан), салу, алу, бір шоттан екіншісіне аудару (<code>Account&amp;</code> арқылы), және <code>&lt;&lt;</code> оператор:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Account {
+public:
+    Account(std::string owner, double balance = 0)
+        : owner_(owner), balance_(balance), id_(++count_) {}
+
+    bool deposit(double amount) {
+        if (amount &lt;= 0) return false;
+        balance_ += amount;
+        return true;
+    }
+
+    bool withdraw(double amount) {
+        if (amount &lt;= 0 || amount &gt; balance_) return false;
+        balance_ -= amount;
+        return true;
+    }
+
+    bool transferTo(Account&amp; other, double amount) {
+        if (!withdraw(amount)) return false;
+        other.deposit(amount);
+        return true;
+    }
+
+    double balance() const { return balance_; }
+    const std::string&amp; owner() const { return owner_; }
+    int id() const { return id_; }
+    static int count() { return count_; }
+
+private:
+    std::string owner_;
+    double balance_;
+    int id_;
+    inline static int count_ = 0;
+};
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Account&amp; a) {
+    return out &lt;&lt; "Шот №" &lt;&lt; a.id() &lt;&lt; " [" &lt;&lt; a.owner() &lt;&lt; "]: " &lt;&lt; a.balance() &lt;&lt; " тг";
+}
+
+int main() {
+    Account aigerim("Әйгерім", 120000);
+    Account bauyrzhan("Бауыржан");
+
+    std::cout &lt;&lt; aigerim &lt;&lt; "\n" &lt;&lt; bauyrzhan &lt;&lt; "\n";
+
+    if (aigerim.transferTo(bauyrzhan, 45000)) {
+        std::cout &lt;&lt; "Аударым сәтті өтті\n";
+    }
+    if (!bauyrzhan.transferTo(aigerim, 100000)) {
+        std::cout &lt;&lt; "Аударым қабылданбады: қаражат жеткіліксіз\n";
+    }
+
+    std::cout &lt;&lt; aigerim &lt;&lt; "\n" &lt;&lt; bauyrzhan &lt;&lt; "\n";
+    std::cout &lt;&lt; "Барлық шот саны: " &lt;&lt; Account::count() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./a12_bank
+Шот №1 [Әйгерім]: 120000 тг
+Шот №2 [Бауыржан]: 0 тг
+Аударым сәтті өтті
+Аударым қабылданбады: қаражат жеткіліксіз
+Шот №1 [Әйгерім]: 75000 тг
+Шот №2 [Бауыржан]: 45000 тг
+Барлық шот саны: 2</code></pre>
+      <p>Мұнда не болып жатыр:</p>
+      <ul>
+        <li>конструкторда <code>balance = 0</code> - <strong>әдепкі аргумент</strong>, сондықтан <code>Account("Бауыржан")</code> деп жазсақ та жарайды;</li>
+        <li><code>id_(++count_)</code> әр жаңа шотқа келесі нөмірді береді;</li>
+        <li><code>transferTo(Account&amp; other, ...)</code> екінші шотты <em>сілтеме</em> арқылы алады, сондықтан шын шот өзгереді (көшірме емес);</li>
+        <li>аудару алдымен <code>withdraw</code> арқылы ережені тексереді: қаражат жетпесе, <code>other</code> мүлде өзгермейді.</li>
+      </ul>
+      <p>Бағдарламаның ешбір жерінде <code>balance_</code>-ты тікелей өзгертетін код жоқ, ол тек класс ішінде. Сондықтан аудару кезінде ақша «жоғалып» немесе «пайда болып» кетуі мүмкін емес. Бұл инкапсуляцияның нақты пайдасы.</p>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ol>
+        <li><strong>Классты <code>;</code>-сіз жабу.</strong> <code>class A { ... };</code> соңындағы нүктелі үтір міндетті. Ұмытсаңыз, компилятор келесі жолдан қате көрсетеді, соның салдарынан таңқалып қаласыз.</li>
+        <li><strong>Өрісті <code>private</code> етпей, әдісті <code>public</code> қалдыру.</strong> Класта <code>public:</code> жазбасаңыз, бәрі жабық болып, <code>main</code>-нен конструкторды да шақыра алмайсыз.</li>
+        <li><strong>Нысанды жақшамен жасау тұзағы.</strong> <code>Student a();</code> нысан жасамайды, ол «<code>Student</code> қайтаратын <code>a</code> функциясы» деген жариялау. Әдепкі конструктор үшін жай <code>Student a;</code> жазыңыз.</li>
+        <li><strong>const әдісті ұмыту.</strong> Жоғарыда көрдік: <code>const</code> нысанмен жұмыс істемей қалады.</li>
+        <li><strong>Инициализация тізімінің реті.</strong> Тізім емес, класта жарияланған рет басым. <code>-Wall</code> ескертуін оқыңыз.</li>
+        <li><strong>Артық көшіру.</strong> Функцияға <code>Book b</code> түрінде қабылдасаңыз, әр шақыруда көшірме жасалады. Үлкен нысанды <code>const Book&amp; b</code> түрінде беріңіз.</li>
+        <li><strong>Static өрісті шақыру кезінде <code>this</code> іздеу.</strong> Static әдіс ішінде қарапайым өрісті қолдана алмайсыз, себебі қай нысан екені белгісіз.</li>
+        <li><strong>Өрісте мәнсіз қалдыру.</strong> <code>int n_;</code> кездейсоқ мән алады. Әрқашан <code>int n_ = 0;</code> немесе тізімде инициализациялаңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Бұл аптада біз деректер мен оларды өңдейтін функцияларды бір бүтінге біріктірдік:</p>
+      <ul>
+        <li><code>struct</code> пен <code>class</code> тек әдепкі қолжетімділікпен ерекшеленеді: <code>struct</code> - <code>public</code>, <code>class</code> - <code>private</code>;</li>
+        <li><strong>конструктор</strong> нысанды дұрыс күйде жасайды, <strong>инициализация тізімі</strong> өрістерді класта жарияланған ретпен толтырады;</li>
+        <li><strong>деструктор</strong> нысан аймақтан шыққанда, жасалуға кері ретпен шақырылады;</li>
+        <li><strong>инкапсуляция</strong>: деректі <code>private</code> жасап, ережені <code>public</code> әдісте тексереміз;</li>
+        <li><code>const</code> әдіс нысанды өзгертпейтініне уәде береді; <code>const&amp;</code> параметр көшірмені болдырмайды;</li>
+        <li><code>this</code> - әдіс шақырылған нысанға көрсеткіш; <code>return *this</code> тізбектеп шақыруға мүмкіндік береді (қайтарым типі <code>T&amp;</code> болуы шарт);</li>
+        <li><code>static</code> мүше барлық нысанға ортақ; static әдіс <code>this</code>-сіз жұмыс істейді;</li>
+        <li><code>operator&lt;&lt;</code> нысанды <code>std::cout</code> арқылы шығаруға мүмкіндік береді және <code>std::ostream&amp;</code> қайтарады;</li>
+        <li><strong>композиция</strong> («бар» қатынасы): бір класс екіншісінің нысанын өрісте ұстайды; класс диаграммасы мұны ромбпен көрсетеді.</li>
+      </ul>
+      <h3 id="self-check">Өзіңді тексеру тізімі</h3>
+      <ul class="checklist" data-id="cpp4-self">
+        <li><input type="checkbox"> <span>Класс пен нысанның айырмашылығын «сызба мен үй» арқылы түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Конструкторды инициализация тізімімен жаза аламын және жариялау реті мен тізім ретінің айырмасын білемін.</span></li>
+        <li><input type="checkbox"> <span>Деструктор қашан және қандай ретпен шақырылатынын болжай аламын.</span></li>
+        <li><input type="checkbox"> <span>Өрістерді <code>private</code> етіп, ережені <code>public</code> әдісте тексере аламын.</span></li>
+        <li><input type="checkbox"> <span>Қай әдіс <code>const</code> болуы керегін айта аламын.</span></li>
+        <li><input type="checkbox"> <span><code>operator&lt;&lt;</code> жаза аламын және оның қайтарым типінің себебін білемін.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+      <div class="quiz">
+        <div class="question" data-answer="b">
+          <p class="q-text">1. Мына код нені береді?</p>
+<pre data-lang="cpp"><code class="language-cpp">class C { int x = 7; };
+
+int main() {
+    C c;
+    std::cout &lt;&lt; c.x;
+}</code></pre>
+          <label><input type="radio" value="a"> <code>7</code> шығады</label>
+          <label><input type="radio" value="b"> Құрастыру қатесі: <code>x</code> жабық (private)</label>
+          <label><input type="radio" value="c"> <code>0</code> шығады</label>
+          <label><input type="radio" value="d"> Орындау кезінде қате</label>
+          <p class="explain"><code>class</code>-та әдепкі қолжетімділік <code>private</code>. <code>main</code> класстың мүшесі емес, сондықтан <code>c.x</code>-ке қол жеткізе алмайды. Егер <code>struct C</code> болса, <code>7</code> шығар еді.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">2. Мына бағдарлама экранға не шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">struct Loud { Loud(const char* s) { std::cout &lt;&lt; s; } };
+
+class P {
+public:
+    P() : a_("A"), b_("B") {}
+private:
+    Loud b_;
+    Loud a_;
+};
+// main-де: P p;</code></pre>
+          <label><input type="radio" value="a"> <code>AB</code></label>
+          <label><input type="radio" value="b"> Ештеңе шықпайды</label>
+          <label><input type="radio" value="c"> <code>BA</code></label>
+          <label><input type="radio" value="d"> Құрастыру қатесі</label>
+          <p class="explain">Өрістер тізімдегі ретпен емес, класта жарияланған ретпен жасалады: <code>b_</code> бірінші, содан кейін <code>a_</code>. Нәтиже <code>BA</code>. Компилятор тек <code>-Wreorder</code> ескертуін береді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">3. <code>show(const Account&amp; acc)</code> функциясы ішінде <code>acc.balance()</code> шақырылады. Қатесіз жұмыс істеуі үшін не қажет?</p>
+          <label><input type="radio" value="a"> <code>balance()</code> әдісі <code>const</code> болуы керек</label>
+          <label><input type="radio" value="b"> <code>balance()</code> әдісі <code>static</code> болуы керек</label>
+          <label><input type="radio" value="c"> Параметрдегі <code>&amp;</code> белгісін алып тастау жеткілікті</label>
+          <label><input type="radio" value="d"> Бұл мүмкін емес</label>
+          <p class="explain"><code>const</code> нысанмен тек <code>const</code> әдістерді шақыруға болады. Дұрыс жол - әдіске <code>const</code> қосу, өйткені ол нысанды өзгертпейді. Тек <code>&amp;</code> алып тастау көмектеспейді: <code>const Account acc</code> көшірмесі де <code>const</code> болып қала береді.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">4. Нәтиже қандай?</p>
+<pre data-lang="cpp"><code class="language-cpp">class A {
+public:
+    A() { ++k; }
+    static int k;
+};
+int A::k = 10;
+
+int main() {
+    A x, y, z;
+    std::cout &lt;&lt; A::k &lt;&lt; " " &lt;&lt; x.k;
+}</code></pre>
+          <label><input type="radio" value="a"> <code>10 10</code></label>
+          <label><input type="radio" value="b"> <code>11 11</code></label>
+          <label><input type="radio" value="c"> <code>13 11</code></label>
+          <label><input type="radio" value="d"> <code>13 13</code></label>
+          <p class="explain"><code>k</code> - static, барлық нысанға ортақ бір ғана айнымалы. Үш нысан жасалғанда ол үш рет артады: 10 + 3 = 13. <code>x.k</code> пен <code>A::k</code> - бір нәрсе.</p>
+        </div>
+        <div class="question" data-answer="b">
+          <p class="q-text">5. Деструктор қашан шақырылады?</p>
+          <label><input type="radio" value="a"> Біз оны қолмен шақырғанда ғана</label>
+          <label><input type="radio" value="b"> Нысан көрінетін аймақтан шыққанда, автоматты түрде</label>
+          <label><input type="radio" value="c"> Нысан жасалған кезде, конструктордан бұрын</label>
+          <label><input type="radio" value="d"> Бағдарлама басталғанда</label>
+          <p class="explain">Қарапайым (автоматты) нысан үшін деструкторды компилятор нысанның аймағы аяқталғанда өзі шақырады, жасалуға кері ретпен.</p>
+        </div>
+        <div class="question" data-answer="c">
+          <p class="q-text">6. <code>std::cout &lt;&lt; b &lt;&lt; "\n" &lt;&lt; c;</code> деп тізбектеп жазу үшін <code>operator&lt;&lt;</code> қандай типті қайтаруы керек?</p>
+          <label><input type="radio" value="a"> <code>void</code></label>
+          <label><input type="radio" value="b"> <code>std::string</code></label>
+          <label><input type="radio" value="c"> <code>std::ostream&amp;</code></label>
+          <label><input type="radio" value="d"> <code>bool</code></label>
+          <p class="explain">Әр <code>&lt;&lt;</code> келесі <code>&lt;&lt;</code>-ге ағынды беруі керек, ол үшін ағынға сілтеме қайтарылады. <code>void</code> қайтарса, тізбектеу жұмыс істемейді.</p>
+        </div>
+        <div class="question" data-answer="a">
+          <p class="q-text">7. Мына класта <code>inc</code> нысанды <em>көшірме</em> етіп қайтарады. Нәтиже қандай?</p>
+<pre data-lang="cpp"><code class="language-cpp">class Counter {
+public:
+    Counter inc() { n_++; return *this; }   // сілтемесіз!
+    int value() const { return n_; }
+private:
+    int n_ = 0;
+};
+// main-де:
+Counter c;
+c.inc().inc().inc();
+std::cout &lt;&lt; c.value();</code></pre>
+          <label><input type="radio" value="a"> <code>1</code></label>
+          <label><input type="radio" value="b"> <code>3</code></label>
+          <label><input type="radio" value="c"> <code>0</code></label>
+          <label><input type="radio" value="d"> Құрастыру қатесі</label>
+          <p class="explain">Бірінші <code>inc()</code> түпнұсқа <code>c</code>-ны 1-ге арттырады да, көшірме қайтарады. Келесі екі <code>inc()</code> сол көшірмеге қолданылады. Түпнұсқа <code>c.value()</code> = 1. <code>Counter&amp;</code> қайтарсақ, нәтиже 3 болар еді. Екеуін де орындап тексердік.</p>
+        </div>
+        <div class="question" data-answer="d">
+          <p class="q-text">8. <code>Library</code> класының ішінде <code>std::vector&lt;Book&gt; books_;</code> өрісі бар. Бұл қандай қатынас?</p>
+          <label><input type="radio" value="a"> Мұрагерлік (is-a): Library - бұл Book</label>
+          <label><input type="radio" value="b"> Статикалық байланыс</label>
+          <label><input type="radio" value="c"> Қолжетімділік жоқ байланыс</label>
+          <label><input type="radio" value="d"> Композиция (has-a): кітапханада кітаптар бар</label>
+          <p class="explain">Кітапхана кітап емес, оның құрамында кітаптар бар. Бұл «бар» қатынасы, яғни композиция. Мұрагерлікті «болып табылады» қатынасында қолданамыз.</p>
+        </div>
+        <button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+        <p class="result" aria-live="polite"></p>
+      </div>
+
+      <h2 id="exercises">Жаттығулар</h2>
+      <p>Әр тапсырмада «Кеңес» пен «Шешімі» бар. Алдымен өзің жазып көр, содан кейін ғана шешімге қара. Жауапты енгізу өрісімен тексеруге болатын тапсырмалар бөлек белгіленген.</p>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="task-4-1">Қойлар саны</h3></div>
+        <p>Мына бағдарлама соңында экранға қандай сан шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+class Sheep {
+public:
+    Sheep() { ++n_; }
+    ~Sheep() { --n_; }
+    static int count() { return n_; }
+
+private:
+    inline static int n_ = 0;
+};
+
+int main() {
+    Sheep a;
+    Sheep b;
+    {
+        Sheep c;
+        Sheep d;
+    }
+    Sheep e;
+    std::cout &lt;&lt; Sheep::count() &lt;&lt; "\n";
+    (void)a; (void)b; (void)e;
+}</code></pre>
+        <div class="answer-check" data-answer="3"><input type="text" placeholder="Сан" aria-label="Шығатын сан"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Конструктор санауышты арттырады, деструктор кемітеді. Ішкі <code>{ }</code> жақшасы аяқталғанда не болады? Соңғы <code>count()</code> шақырылған сәтте қанша нысан тірі?</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>3</code>. <code>a</code>, <code>b</code>, <code>c</code>, <code>d</code> жасалғанда санауыш 4 болады, ішкі жақша аяқталғанда <code>c</code> мен <code>d</code> жойылып, 2 қалады, содан кейін <code>e</code> қосылып 3 болады. Іске қосып тексердік:</p>
+<pre class="terminal"><code class="language-plaintext">$ ./t01_sheep
+3</code></pre></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="task-4-2">Әдепкі қолжетімділік</h3></div>
+        <p><code>class Wallet { int money; };</code> жазылғанда, <code>money</code> өрісінің қолжетімділігі қандай? Бір сөзбен жауап бер (ағылшынша кілт сөз).</p>
+        <div class="answer-check" data-answer="private"><input type="text" placeholder="Кілт сөз" aria-label="Кілт сөз"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Лекциядағы <code>struct</code> пен <code>class</code> арасындағы бірден-бір айырмашылықты еске түсір.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>private</code>. <code>class</code> ішінде қолжетімділік көрсетілмесе, мүше жабық болады (<code>struct</code>-та ашық болар еді). Осыны <code>a02_private_err</code> мысалында компилятор да растады.</p></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="task-4-3">Қатені тап</h3></div>
+        <p>Төмендегі кодта компилятор қате береді. Қай жолда? (Нөмірлер тек түсіндіру үшін жазылған, кодта жоқ.)</p>
+<pre data-lang="cpp"><code class="language-cpp"> 1  #include &lt;iostream&gt;
+ 2  #include &lt;string&gt;
+ 3
+ 4  class Tea {
+ 5  public:
+ 6      Tea(std::string name) : name_(name) {}
+ 7      std::string name() const { return name_; }
+ 8
+ 9  private:
+10      std::string name_;
+11  };
+12
+13  int main() {
+14      Tea t;
+15      std::cout &lt;&lt; t.name() &lt;&lt; "\n";
+16  }</code></pre>
+        <div class="answer-check" data-answer="14"><input type="text" placeholder="Жол нөмірі" aria-label="Жол нөмірі"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Класта қандай конструктор бар? <code>Tea t;</code> оған қанша аргумент береді?</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>14</code>. Класта тек бір аргументті конструктор бар, аргументсіз жазылған <code>Tea t;</code> оған сәйкес келмейді. Түзету: <code>Tea t("қара шай");</code>. Нақты компилятор қатесі лекцияның конструктор бөлімінде көрсетілген (<code>t03_tea_err.cpp:14:9</code>).</p></div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="task-4-4">Шай үйі класы</h3></div>
+        <p><code>TeaHouse</code> класын жаз: аты (<code>name_</code>), жалпы құн мен тағам санын сақтайды. Конструктор тек атты алады. <code>addDish(dish, price)</code> тағамды қосып, оның жолын шығарады. <code>total()</code>, <code>dishes()</code>, <code>name()</code> - <code>const</code> әдістер. <code>static</code> санауыш қанша шай үйі жасалғанын санайды. <code>operator&lt;&lt;</code> «Аты: N тағам, барлығы M тг» түрінде шығарады.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Лекциядағы <code>Account</code> пен <code>Ticket</code> мысалдарын біріктір. <code>total_</code> мен <code>dishes_</code> өрістеріне әдепкі мән <code>= 0</code> бер, санауышты <code>inline static</code> ет.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class TeaHouse {
+public:
+    TeaHouse(std::string name) : name_(name) { ++houses_; }
+
+    void addDish(const std::string&amp; dish, int price) {
+        total_ += price;
+        ++dishes_;
+        std::cout &lt;&lt; "  " &lt;&lt; dish &lt;&lt; ": " &lt;&lt; price &lt;&lt; " тг\n";
+    }
+
+    int total() const { return total_; }
+    int dishes() const { return dishes_; }
+    const std::string&amp; name() const { return name_; }
+    static int houses() { return houses_; }
+
+private:
+    std::string name_;
+    int total_ = 0;
+    int dishes_ = 0;
+    inline static int houses_ = 0;
+};
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const TeaHouse&amp; h) {
+    return out &lt;&lt; h.name() &lt;&lt; ": " &lt;&lt; h.dishes() &lt;&lt; " тағам, барлығы " &lt;&lt; h.total() &lt;&lt; " тг";
+}
+
+int main() {
+    TeaHouse a("Дастархан");
+    std::cout &lt;&lt; a.name() &lt;&lt; " шай үйінің чегі:\n";
+    a.addDish("көк шай", 350);
+    a.addDish("самса", 700);
+    a.addDish("баурсақ", 500);
+    std::cout &lt;&lt; a &lt;&lt; "\n";
+    TeaHouse b("Ақ жол");
+    std::cout &lt;&lt; "Шай үйлері: " &lt;&lt; TeaHouse::houses() &lt;&lt; "\n";
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./t05_teahouse
+Дастархан шай үйінің чегі:
+  көк шай: 350 тг
+  самса: 700 тг
+  баурсақ: 500 тг
+Дастархан: 3 тағам, барлығы 1550 тг
+Шай үйлері: 2</code></pre>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="cpp4-teahouse">
+            <li><input type="checkbox"> <span>Барлық өрістер <code>private</code>.</span></li>
+            <li><input type="checkbox"> <span>Оқитын әдістер <code>const</code>.</span></li>
+            <li><input type="checkbox"> <span>Екі шай үйі жасалғанда <code>TeaHouse::houses()</code> 2 береді.</span></li>
+            <li><input type="checkbox"> <span><code>g++ -std=c++17 -Wall -Wextra</code> ескертусіз өтеді.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="task-4-5">Алматы - Астана рейсі</h3></div>
+        <p><code>Flight</code> класын жаз: рейс нөмірі, қайдан, қайда, орын саны. <code>book(n)</code> әдісі <code>n</code> орын бос болса, оларды брондап <code>true</code> қайтарады, әйтпесе (және <code>n &lt;= 0</code> болса) <code>false</code>, ал бос орын саны өзгермейді. <code>available()</code> бос орынды қайтарады. <code>operator&lt;&lt;</code> мына түрде шығарады: <code>KC-101 Алматы -&gt; Астана (бос орын: 5/5)</code>. Барлық рейстерді санайтын <code>static</code> санауыш қос. <code>main</code>-де 5 орынды рейске 3, содан кейін 4 орын брондап көр.</p>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Екі сан сақта: жалпы орын (<code>seats_</code>) және бос орын (<code>free_</code>). Инвариант: <code>0 &lt;= free_ &lt;= seats_</code>. <code>book</code> ішінде алдымен шартты тексер, содан кейін ғана <code>free_</code>-ті азайт. Инициализация тізімін өрістердің жариялану тәртібімен жаз.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body">
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Flight {
+public:
+    Flight(std::string number, std::string from, std::string to, int seats)
+        : number_(number), from_(from), to_(to), seats_(seats), free_(seats) {
+        ++flights_;
+    }
+
+    bool book(int n) {
+        if (n &lt;= 0 || n &gt; free_) return false;
+        free_ -= n;
+        return true;
+    }
+
+    int available() const { return free_; }
+    const std::string&amp; number() const { return number_; }
+    const std::string&amp; from() const { return from_; }
+    const std::string&amp; to() const { return to_; }
+    int seats() const { return seats_; }
+    static int flights() { return flights_; }
+
+private:
+    std::string number_;
+    std::string from_;
+    std::string to_;
+    int seats_;
+    int free_;
+    inline static int flights_ = 0;
+};
+
+std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Flight&amp; f) {
+    return out &lt;&lt; f.number() &lt;&lt; " " &lt;&lt; f.from() &lt;&lt; " -&gt; " &lt;&lt; f.to()
+               &lt;&lt; " (бос орын: " &lt;&lt; f.available() &lt;&lt; "/" &lt;&lt; f.seats() &lt;&lt; ")";
+}
+
+int main() {
+    Flight f("KC-101", "Алматы", "Астана", 5);
+    std::cout &lt;&lt; f &lt;&lt; "\n";
+    std::cout &lt;&lt; "3 орын: " &lt;&lt; (f.book(3) ? "брондалды" : "бос орын жоқ") &lt;&lt; "\n";
+    std::cout &lt;&lt; "4 орын: " &lt;&lt; (f.book(4) ? "брондалды" : "бос орын жоқ") &lt;&lt; "\n";
+    std::cout &lt;&lt; f &lt;&lt; "\n";
+    Flight g("KC-102", "Астана", "Алматы", 120);
+    std::cout &lt;&lt; "Рейс саны: " &lt;&lt; Flight::flights() &lt;&lt; "\n";
+    (void)g;
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./t06_flight
+KC-101 Алматы -&gt; Астана (бос орын: 5/5)
+3 орын: брондалды
+4 орын: бос орын жоқ
+KC-101 Алматы -&gt; Астана (бос орын: 2/5)
+Рейс саны: 2</code></pre>
+        </div></details>
+        <details open><summary>Тексеру</summary><div class="details-body">
+          <ul class="checklist" data-id="cpp4-flight">
+            <li><input type="checkbox"> <span>5 орынды рейске 3 орын брондалады, содан кейін 4 орын сұрау қабылданбайды.</span></li>
+            <li><input type="checkbox"> <span>Қабылданбаған сұрау бос орын санын өзгертпейді (2/5 қалады).</span></li>
+            <li><input type="checkbox"> <span><code>book(0)</code> және <code>book(-2)</code> <code>false</code> қайтарады.</span></li>
+            <li><input type="checkbox"> <span>Өрістер <code>private</code>, ескертусіз құрастырылады.</span></li>
+          </ul>
+          <p class="progress"></p>
+        </div></details>
+      </div>
+
+      <div class="task">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="task-4-6">Үй салу ретін болжа</h3></div>
+        <p>Мына бағдарлама орындалғанда <strong>соңғы</strong> жолда қандай бөлік жойылады? Бір сөзбен жауап бер (қазақша: <code>қабырға</code> немесе <code>төбе</code>).</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+class Part {
+public:
+    Part(std::string name) : name_(name) { std::cout &lt;&lt; name_ &lt;&lt; " жасалды\n"; }
+    ~Part() { std::cout &lt;&lt; name_ &lt;&lt; " жойылды\n"; }
+
+private:
+    std::string name_;
+};
+
+class House {
+public:
+    House() : roof_("төбе"), wall_("қабырға") { std::cout &lt;&lt; "Үй дайын\n"; }
+    ~House() { std::cout &lt;&lt; "Үй құлады\n"; }
+
+private:
+    Part wall_;
+    Part roof_;
+};
+
+int main() {
+    House h;
+}</code></pre>
+        <div class="answer-check" data-answer="қабырға"><input type="text" placeholder="Бір сөз" aria-label="Соңғы жойылатын бөлік"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+        <details><summary>Кеңес</summary><div class="details-body"><p>Өрістердің жасалу реті - класта жарияланған рет (инициализация тізімі емес). Жойылу реті сол ретке кері. Алдымен деструктордың өз денесі орындалатынын ұмытпа.</p></div></details>
+        <details><summary>Шешімі</summary><div class="details-body"><p>Жауап: <code>қабырға</code>. Класта <code>wall_</code> бұрын жарияланған, сондықтан ол бірінші жасалады, ең соңында жойылады. Нақты нәтиже (<a href="#composition">композиция бөлімінде</a>): ... <code>Үй құлады</code>, <code>төбе жойылды</code>, <code>қабырға жойылды</code>.</p></div></details>
+      </div>
+
+      <nav class="pager">
+        <a href="week-3.html"><small>Алдыңғы</small>← 3-апта: Жад, көрсеткіштер және сілтемелер</a>
+        <a class="next" href="week-5.html"><small>Келесі</small>5-апта: Мұрагерлік және полиморфизм →</a>
+      </nav>
+
+      <p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

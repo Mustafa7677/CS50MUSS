@@ -2,11 +2,13 @@ const { test, expect } = require("@playwright/test");
 const { blockFonts, collectErrors } = require("../support/helpers");
 
 // Сөздік: курс сүзгісін басқанда басқа курстың терминдері шынымен жасырылады, бос әріптер де жасырылады.
-for (const c of ["x", "python", "sql", "ai", "web"]) {
+for (const c of ["x", "python", "sql", "ai", "web", "cpp", "java"]) {
   test(`сөздік: сүзгі ${c}`, async ({ page, context }) => {
     await blockFonts(context);
     const errs = collectErrors(page);
     await page.goto("glossary.html");
+    // дербес курстың терминдері лекциялар жазылғанда ғана пайда болады
+    if (!(await page.locator(`.g-courses button[data-c="${c}"]`).count())) test.skip(["cpp", "java"].includes(c), "терминдер әлі жоқ");
     const total = await page.locator(".g-row:visible").count();
     await page.click(`.g-courses button[data-c="${c}"]`);
     const vis = await page.locator(".g-row:visible").count();

@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C++ 0-апта: C++-ке кіріспе - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#0a4c7a">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="C++ 0-апта: C++-ке кіріспе - CS50 қазақша">
+  <meta property="og:description" content="C++ 0-апта: бағдарламаның жолы (препроцессор, компилятор, линкер), main, cout/cin, типтер, арифметика, бүтін бөлу мен толып кету, const, auto, қателер түрлері және g++ қолдану.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-0.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-0.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"C++ 0-апта: C++-ке кіріспе - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-0.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="C++ 0-апта: бағдарламаның жолы (препроцессор, компилятор, линкер), main, cout/cin, типтер, арифметика, бүтін бөлу мен толып кету, const, auto, қателер түрлері және g++ қолдану.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body data-license="B">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="cpp" style="--c:#4f46e5"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">C++</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../cpp/index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#4f46e5" data-n="0">
+        <div class="num">0-апта</div>
+        <h1>C++-ке кіріспе</h1>
+        <p>Бұл аптада C++ тілімен алғаш танысамыз: мәтіндік файлдан орындалатын бағдарлама қалай туатынын көреміз, экранға сөз шығарып, пернетақтадан сан оқимыз, типтермен, арифметикамен және компьютер санының «шекарасымен» таныламыз. Ең бастысы - қателерді қорықпай оқуды үйренеміз.</p>
+      </div>
+
+      <h2 id="why">Неге C++?</h2>
+      <p>Телефондағы ойын, браузердің қозғалтқышы, банктің жылдам төлем жүйесі, роботтың бақылау бағдарламасы: осының көбі C++ тілінде жазылған. Себебі қарапайым: C++ бағдарламалары <em>өте жылдам</em> жұмыс істейді және компьютердің жадын тікелей басқаруға мүмкіндік береді. Python сияқты тілде «қобдишаға салып қой» деп айтсаңыз жеткілікті, ал C++-та қобдиша қандай үлкен, қайда тұр, қашан босайды - осының бәрін сіз білесіз. Бұл қиындау, бірақ сол себепті компьютердің қалай жұмыс істейтінін шын мәнінде түсінесіз.</p>
+      <p>Бұл курс 8 аптаға созылады. Бүгінгі 0-аптада негізді қалаймыз: бағдарламаның жолын, алғашқы кодты, типтерді және қателерді. Келесі апталарда шарттар мен циклдер, массивтер, жад пен көрсеткіштер, кейін класстар келеді. Үй салу сияқты: алдымен іргетас.</p>
+      <div class="callout tip">
+        <span class="callout-title">Қалай оқимыз</span>
+        <p>Әр лекцияда мысалдарды <strong>өз компьютеріңізде</strong> жазып, іске қосыңыз. Көзбен оқу мен қолмен жазудың арасы жер мен көктей. Терминалдағы нәтижелерді біз шынымен іске қосып алдық, ал сіздікі де дәл солай шығуы керек. Егер шықпаса, ол қате емес, ол оқу мүмкіндігі.</p>
+      </div>
+
+      <h2 id="toolchain">Бағдарламаның жолы</h2>
+      <p>Python-да файлды жазып, бірден <code>python файл.py</code> деп іске қосатынбыз. C++-та жағдай басқаша. Компьютердің процессоры біздің жазған <code>cout &lt;&lt; "Сәлем"</code> жолын түсінбейді: ол тек нөлдер мен бірлерден тұратын <strong>машина кодын</strong> (<span class="term-en">machine code</span>) ұғады. Сондықтан мәтінді машина кодына аударатын бағдарлама керек. Ол бағдарлама - <strong>компилятор</strong> (<span class="term-en">compiler</span>). Біз <code>g++</code> деген компиляторды қолданамыз.</p>
+      <p>Шын мәнінде <code>g++</code> бір емес, үш жұмысты бірінен соң бірін орындайды:</p>
+      <figure class="diagram" style="margin:0"><svg viewBox="0 0 430 372" role="img" aria-label="Сызба: main.cpp файлы препроцессорға, содан компиляторға, содан линкерге беріледі; линкер стандартты кітапхананы қосып, ./main орындалатын файлын жасайды" style="display:block;width:100%;max-width:430px;height:auto;margin:18px auto 6px"><defs><marker id="m1" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="80" y="8" width="180" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="170.0" y="22.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">main.cpp</text><text x="170.0" y="40.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">сіз жазған мәтін</text><polyline points="170,52 170,76" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m1)"/><rect x="10" y="78" width="320" height="52" rx="10" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="170.0" y="96.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:400">1. Препроцессор</text><text x="170.0" y="114.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">#include пен #define орындалады</text><polyline points="170,130 170,156" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m1)"/><text x="180" y="143" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:600">таза C++ мәтіні</text><rect x="10" y="158" width="320" height="52" rx="10" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="170.0" y="176.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:400">2. Компилятор</text><text x="170.0" y="194.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">синтаксисті тексеріп, машина коды жасайды</text><polyline points="170,210 170,236" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m1)"/><text x="180" y="223" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:600">main.o (объектті файл)</text><rect x="10" y="238" width="320" height="52" rx="10" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="170.0" y="256.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:14px;font-weight:400">3. Линкер</text><text x="170.0" y="274.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">бөліктер мен кітапханаларды жалғайды</text><rect x="340" y="238" width="80" height="52" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8;stroke-dasharray:5 4"/><text x="380.0" y="264.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:11px;font-weight:400">libstdc++</text><polyline points="340,264 332,264" style="stroke:var(--muted);stroke-width:1.6;fill:none;stroke-dasharray:5 4" marker-end="url(#m1)"/><polyline points="170,290 170,316" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m1)"/><rect x="80" y="318" width="180" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="170.0" y="332.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">./main</text><text x="170.0" y="350.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">орындалатын файл</text></svg><figcaption class="viz-note">Бір g++ командасы үш қадамды бірге орындайды: препроцессор, компилятор, линкер. Қате қай қадамда шықса, хабарламаның түрі де соған сай болады.</figcaption></figure>
+      <ol>
+        <li><strong>Препроцессор</strong> (<span class="term-en">preprocessor</span>). Мәтінді компиляторға дейін дайындайды. Ең танымал жұмысы: <code>#include</code> деген жолды көргенде, көрсетілген файлдың бүкіл мазмұнын сол орынға көшіріп қояды. Барлық <code>#</code> белгісімен басталатын жолдар - препроцессорға арналған нұсқау.</li>
+        <li><strong>Компилятор</strong>. Таза C++ мәтінін оқып, грамматикасын тексереді және әр файлдан объектті файл (<code>main.o</code>) жасайды. Бұл файлда машина коды бар, бірақ ол әлі толық емес: <code>cout</code> дегеннің ішінде не бар екенін компилятор бұл сәтте білмейді, тек «ондай нәрсе бар» деп есіне жазып қояды.</li>
+        <li><strong>Линкер</strong> (<span class="term-en">linker</span>). Объектті файлдарды бір-біріне және стандартты кітапханаға жалғайды. Мысалы, <code>cout</code>-тың нақты кодын кітапханадан тауып, бағдарламаға қосады. Нәтижесінде орындалатын файл шығады.</li>
+      </ol>
+      <p>Бұл бөлу тек теория емес. Қателердің түрі де осыған байланысты: препроцессор мен компилятордан шыққан қате - <em>компиляция қатесі</em>, линкерден шыққан - <em>жалғау (link) қатесі</em>, ал бағдарлама іске қосылған соң шыққаны - <em>орындалу қатесі</em>. Төменде үшеуін де өз көзіңізбен көресіз.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: неге Python-да осындай бөлек қадам жоқ сияқты көрінеді?</summary>
+        <div class="details-body"><p>Python бағдарламасын интерпретатор жолма-жол оқып, сол сәтте орындайды. Ал C++ бағдарламасы алдын ала толық аударылады. Аудару жұмысы бір рет жасалып қойғандықтан, іске қосылғанда ештеңе баяулатпайды. Бұл алдын ала аударылған кітап пен сіз сөйлеп тұрғанда аудармашы тілмаштың арасындағы айырмаға ұқсайды.</p></div>
+      </details>
+
+      <h2 id="first">Алғашқы бағдарлама</h2>
+      <p>Бір файл жасайық: <code>main.cpp</code>. Қазақша қарсы алатын ең кішкентай бағдарлама:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    std::cout &lt;&lt; "Сәлем, әлем!" &lt;&lt; std::endl;
+    return 0;
+}</code></pre>
+      <p>Енді оны жолма-жол талдайық, өйткені әр сөздің өз мағынасы бар.</p>
+      <ul>
+        <li><code>#include &lt;iostream&gt;</code>. «<em>iostream</em> файлын осы жерге қос» дегенді білдіреді. <code>iostream</code> - <em>input/output stream</em>, яғни енгізу-шығару ағыны. Онсыз <code>cout</code> дегенді компилятор білмейді.</li>
+        <li><code>int main() { ... }</code>. Бағдарлама осы функциядан басталады. <code>main</code> деген атау міндетті. Алдындағы <code>int</code> - функция аяқталғанда операциялық жүйеге бүтін сан қайтаратынын білдіреді.</li>
+        <li><code>std::cout</code>. <code>cout</code> - экранға шығарушы ағын, ал <code>std::</code> - «стандартты кітапханадағы» дегенді білдіретін есімдер кеңістігі (<span class="term-en">namespace</span>). Бұл жазу «стандартты кітапханадағы cout» деген мағына береді.</li>
+        <li><code>&lt;&lt;</code>. Деректерді ағынға «жіберетін» оператор. Нұсқасы сол жаққа қарай ағады: мәтін ағынға құйылады. Оны тізбектеп жазуға болады.</li>
+        <li><code>std::endl</code>. Жаңа жолға өту. Оның жеңіл баламасы - <code>"\n"</code>.</li>
+        <li><code>return 0;</code>. «Бәрі жақсы аяқталды» деген белгі. <code>main</code> ішінде оны жазбасаңыз да, компилятор өзі қосып қояды.</li>
+        <li>Әр нұсқаудың соңындағы <code>;</code> міндетті. Қазақ тіліндегі нүкте сияқты: ойдың аяқталғанын білдіреді.</li>
+      </ul>
+      <p>Құрастырып, іске қосайық. Терминалда файл тұрған қалтаға барып:</p>
+<pre data-lang="bash"><code class="language-bash">g++ -std=c++17 main.cpp -o main
+./main</code></pre>
+      <p><code>-std=c++17</code> - тілдің 2017 жылғы стандартын қолдан деген сөз. <code>-o main</code> - нәтиже файлының атын <code>main</code> деп қой дегені. Нәтиже:</p>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Сәлем, әлем!</code></pre>
+      <p>Тілдің кириллицаны (қазақ әріптерін) қиналмай шығарғанын көрдіңіз. Ол үшін файл <strong>UTF-8</strong> кодтауында сақталуы керек. VS Code пен көптеген редакторлар оны әдепкі бойынша солай сақтайды.</p>
+      <div class="callout note">
+        <span class="callout-title">«\n» және std::endl</span>
+        <p>Екеуі де жаңа жолға өткізеді. <code>std::endl</code> қосымша шығару буферін де «босатады», сондықтан жиі шақырылса, сәл баяу. Бастаушы бағдарламаларда айырмашылық байқалмайды, бірақ әдетке айналдыру үшін көбіне <code>"\n"</code> жазамыз. Бағдарлама құлап қалғанда да соңғы жолдың экранға шығуы маңызды болатын жағдайда ғана <code>std::endl</code> керек.</p>
+      </div>
+
+      <h2 id="setup">Өз компьютеріңде іске қос</h2>
+      <p>Браузерде C++ орындалмайды, сондықтан компилятор керек. Орнату жолы жүйеге қарай өзгереді.</p>
+      <ul>
+        <li><strong>Linux</strong> (Ubuntu/Debian): <code>sudo apt install g++</code>. Fedora жүйесінде: <code>sudo dnf install gcc-c++</code>.</li>
+        <li><strong>macOS</strong>: терминалда <code>xcode-select --install</code> деп жазыңыз. Ол <code>clang</code> компиляторын орнатады, <code>g++</code> командасы да соған сілтейді. Командалардың қолданылуы бірдей.</li>
+        <li><strong>Windows</strong>: ең ыңғайлысы - WSL (Windows Subsystem for Linux) орнатып, ішінде Ubuntu пайдалану. Балама: MSYS2 орнатып, <code>pacman -S mingw-w64-ucrt-x86_64-gcc</code> командасымен MinGW-w64 алу. Осы курстың соңғы тақырыптарындағы <code>-fsanitize=address</code> тәсілі MinGW-да жұмыс істемеуі мүмкін, ал WSL-де істейді.</li>
+      </ul>
+      <p>Редактор ретінде <strong>VS Code</strong> жеткілікті. Сайттан жүктеп, «C/C++» кеңейтімін қосыңыз. Орнатқаннан кейін компиляторды тексеріңіз:</p>
+<pre data-lang="bash"><code class="language-bash">g++ --version</code></pre>
+      <p>Версия нөмірі шықса, дайынсыз. Енді ең маңызды ұсыныс: компиляторды <strong>қатал жұмыс істеуге</strong> мәжбүрлейтін жалауларды әрдайым қосыңыз:</p>
+<pre data-lang="bash"><code class="language-bash">g++ -std=c++17 -Wall -Wextra main.cpp -o main</code></pre>
+      <ul>
+        <li><code>-Wall</code> - «барлық маңызды ескертулерді көрсет» (<span class="term-en">warnings</span>).</li>
+        <li><code>-Wextra</code> - тағы да қосымша ескертулер.</li>
+        <li>Курстың соңына қарай қосатынымыз: <code>-fsanitize=address,undefined</code>. Ол бағдарлама жұмыс істеп тұрғанда жад пен арифметикадағы жасырын қателерді ұстайды. Біз осы лекциядағы барлық мысалды дәл осы жалаулармен іске қостық.</li>
+      </ul>
+      <p>Ескерту (warning) - қате емес, бағдарлама жұмыс істей береді. Бірақ ескерту көбіне «мұнда бір нәрсе күмәнді» деген дабыл. Тәжірибелі бағдарламашылар ескертусіз код жазуға тырысады. Бір ұсыныс: бағдарлама дұрыс жұмыс істесе де, ескерту шықса, оның себебін түсінбей тұрып өткізіп жібермеңіз.</p>
+
+      <h2 id="input">Енгізу: std::cin</h2>
+      <p>Бағдарлама тек сөйлеп қана қоймай, тыңдай да алуы керек. <code>std::cin</code> - пернетақтадан оқитын ағын, ал оператор бұл жолы <code>&gt;&gt;</code>, яғни көрсеткі кері бағытта: деректер ағыннан айнымалыға құйылады. Наурыз мейрамына жиналатын қонақтарды санайтын бағдарлама:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int guests;
+    std::cout &lt;&lt; "Наурыз мейрамына қанша қонақ келеді? ";
+    std::cin &gt;&gt; guests;
+
+    int plates = guests * 3;
+    std::cout &lt;&lt; "Қонақ саны: " &lt;&lt; guests &lt;&lt; "\n";
+    std::cout &lt;&lt; "Қажетті тарелка: " &lt;&lt; plates &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <p>Мұнда <code>int guests;</code> - бүтін сан сақтайтын «қобдиша» (айнымалы). Оның атын біз қойдық. <code>cin &gt;&gt; guests</code> пернетақтадан жазылған санды сол қобдишаға салады. Іске қосайық (пернетақтадан енгізілген бөлігі - <code>12</code>):</p>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Наурыз мейрамына қанша қонақ келеді? 12
+Қонақ саны: 12
+Қажетті тарелка: 36</code></pre>
+      <p>Тарелка саны қонақ санынан 3 есе көп: <code>12 * 3 = 36</code>. Мұндағы <code>*</code> - көбейту белгісі, ол туралы кейінірек толығырақ айтамыз.</p>
+      <div class="callout warn">
+        <span class="callout-title">Жиі қате: cout және cin бағыты</span>
+        <p><code>cout &lt;&lt;</code> (шығару) - екі кіші белгі, ал <code>cin &gt;&gt;</code> (енгізу) - екі үлкен белгі. Есте сақтау үшін: көрсеткі деректердің қайда барып жатқанын көрсетеді. <code>cout</code>-қа қарай жібереміз (<code>&lt;&lt;</code>), <code>cin</code>-нен айнымалыға аламыз (<code>&gt;&gt;</code>).</p>
+      </div>
+      <p>Егер қолданушы сан орнына «қырық» деп жазса не болады? Мұны 2-аптада, енгізу ағыны мәселелерін талдағанда егжей-тегжейлі қараймыз. Әзірге тек санды дұрыс енгізеді деп ойлаймыз.</p>
+
+      <h2 id="types">Айнымалылар мен типтер</h2>
+      <p>C++ - <strong>статикалық типтелген</strong> (<span class="term-en">statically typed</span>) тіл. Бұл дегеніміз: әр айнымалының типін жазғанда айтуымыз керек, және ол кейін өзгермейді. Python-да <code>x = 5</code> деп жазып, кейін <code>x = "сәлем"</code> деуге болады. C++-та <code>int x = 5;</code> болса, <code>x</code> мәңгі бүтін сан қалады. Бұл қатаңдық қателерді бағдарлама іске қосылмай тұрып-ақ ұстап береді.</p>
+      <p>Алты негізгі тип:</p>
+      <table>
+        <thead><tr><th>Тип</th><th>Не сақтайды</th><th>Мысал</th></tr></thead>
+        <tbody>
+          <tr><td><code>int</code></td><td>бүтін сан (шамамен ±2 миллиард)</td><td><code>int age = 17;</code></td></tr>
+          <tr><td><code>long long</code></td><td>өте үлкен бүтін сан</td><td><code>long long population = 20000000LL;</code></td></tr>
+          <tr><td><code>double</code></td><td>бөлшек сан</td><td><code>double price = 1250.5;</code></td></tr>
+          <tr><td><code>char</code></td><td>бір таңба (қос емес, бір тырнақшамен)</td><td><code>char grade = 'A';</code></td></tr>
+          <tr><td><code>bool</code></td><td><code>true</code> немесе <code>false</code></td><td><code>bool isNauryz = true;</code></td></tr>
+          <tr><td><code>std::string</code></td><td>мәтін (қос тырнақша)</td><td><code>std::string city = "Астана";</code></td></tr>
+        </tbody>
+      </table>
+      <p>Бір бағдарламада бәрін шығарып, сонымен қатар әр типтің жадтағы көлемін (<code>sizeof</code>, байтпен) өлшейік:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    int age = 17;
+    long long population = 20000000LL;
+    double price = 1250.5;
+    char grade = 'A';
+    bool isNauryz = true;
+    std::string city = "Астана";
+
+    std::cout &lt;&lt; std::boolalpha;
+    std::cout &lt;&lt; "age        = " &lt;&lt; age &lt;&lt; "\n";
+    std::cout &lt;&lt; "population = " &lt;&lt; population &lt;&lt; "\n";
+    std::cout &lt;&lt; "price      = " &lt;&lt; price &lt;&lt; "\n";
+    std::cout &lt;&lt; "grade      = " &lt;&lt; grade &lt;&lt; "\n";
+    std::cout &lt;&lt; "isNauryz   = " &lt;&lt; isNauryz &lt;&lt; "\n";
+    std::cout &lt;&lt; "city       = " &lt;&lt; city &lt;&lt; "\n";
+
+    std::cout &lt;&lt; "sizeof(int) = " &lt;&lt; sizeof(int) &lt;&lt; "\n";
+    std::cout &lt;&lt; "sizeof(long long) = " &lt;&lt; sizeof(long long) &lt;&lt; "\n";
+    std::cout &lt;&lt; "sizeof(double) = " &lt;&lt; sizeof(double) &lt;&lt; "\n";
+    std::cout &lt;&lt; "sizeof(char) = " &lt;&lt; sizeof(char) &lt;&lt; "\n";
+    std::cout &lt;&lt; "sizeof(bool) = " &lt;&lt; sizeof(bool) &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+age        = 17
+population = 20000000
+price      = 1250.5
+grade      = A
+isNauryz   = true
+city       = Астана
+sizeof(int) = 4
+sizeof(long long) = 8
+sizeof(double) = 8
+sizeof(char) = 1
+sizeof(bool) = 1</code></pre>
+      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 268" role="img" aria-label="Диаграмма: char және bool 1 байт, int 4 байт, long long және double 8 байт орын алады" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="10" y="14" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:13px;font-weight:600">Көлемі (байт), 64-биттік Linux жүйесінде</text><text x="10" y="51" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">char</text><rect x="110" y="34" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="154" y="51" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">1 байт</text><text x="10" y="97" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">bool</text><rect x="110" y="80" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="154" y="97" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">1 байт</text><text x="10" y="143" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">int</text><rect x="110" y="126" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="144" y="126" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="178" y="126" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="212" y="126" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="256" y="143" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">4 байт</text><text x="10" y="189" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">long long</text><rect x="110" y="172" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="144" y="172" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="178" y="172" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="212" y="172" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="246" y="172" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="280" y="172" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="314" y="172" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="348" y="172" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="246" y="189" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">8 байт</text><text x="10" y="235" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">double</text><rect x="110" y="218" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="144" y="218" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="178" y="218" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="212" y="218" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="246" y="218" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="280" y="218" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="314" y="218" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><rect x="348" y="218" width="34" height="34" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="246" y="235" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">8 байт</text></svg><figcaption class="viz-note">Әр тип жадтан белгілі бір байт санын алады. Байт көп болса, сақтай алатын сан диапазоны да кең.</figcaption></figure>
+      <p>Назар аударыңыз: <code>std::boolalpha</code> жазбасақ, <code>bool</code> мәні <code>1</code> немесе <code>0</code> болып шығар еді. Ал көлемдер (4, 8, 8, 1, 1) бұл компьютерде шықты. Басқа жүйеде ерекшелік болуы мүмкін, бірақ қазіргі 64-биттік компьютерлерде көбіне осылай.</p>
+      <p>Айнымалыны жариялағанда мәнін бірден беріңіз. <code>int x;</code> деп жазып, мән бермесеңіз, ішінде <em>жад қалдығы</em> (кездейсоқ мән) тұрады. Мұндай айнымалыны оқу - қауіпті қате.</p>
+      <h3 id="memory-model">Айнымалы жадта қалай тұрады?</h3>
+      <p>Айнымалы - жадтағы атау берілген орын. <code>int age = 17;</code> жолы үш нәрсе істейді: 4 байт орын сақтайды, оған <code>age</code> деген ат қояды және оған 17 санын жазады. Кейін <code>age</code> деп жазғанда компилятор сол орынды табады. Жадты қатар тұрған ұяшықтардан тұратын үлкен тор деп елестетіңіз; әр ұяшықтың өз нөмірі (мекенжайы) бар. Мекенжай туралы 3-аптада егжей-тегжейлі айтамыз, ал әзірге есте сақтайық: <em>тип</em> айнымалының қанша орын алатынын және ондағы байттарды қалай түсіну керегін анықтайды.</p>
+      <h3 id="names">Айнымалыға ат қою</h3>
+      <p>Ат әріп немесе <code>_</code> белгісінен басталады, ішінде сан болуы мүмкін, бос орын болмайды, ал <code>int</code>, <code>return</code> сияқты кілт сөздерді ат ретінде қолдануға болмайды. Бас әріп пен кіші әріп өзгеше: <code>Age</code> мен <code>age</code> - екі бөлек айнымалы. Ат мағыналы болсын: <code>guestCount</code> деген <code>x</code> дегеннен әлдеқайда түсінікті. Тіпті сіз өзіңіз бір аптадан кейін өз кодыңызды оқығанда алғыс айтасыз.</p>
+      <h3 id="strings">Мәтін: std::string</h3>
+      <p>Мәтін үшін <code>#include &lt;string&gt;</code> қосып, <code>std::string</code> қолданамыз. Жолдарды <code>+</code> арқылы жалғауға болады:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string name;
+    std::cout &lt;&lt; "Атыңыз: ";
+    std::cin &gt;&gt; name;
+
+    std::string greeting = "Қош келдіңіз, " + name + "!";
+    std::cout &lt;&lt; greeting &lt;&lt; "\n";
+    std::cout &lt;&lt; "Жолдың ұзындығы (байт): " &lt;&lt; greeting.size() &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Атыңыз: Айгерім
+Қош келдіңіз, Айгерім!
+Жолдың ұзындығы (байт): 40</code></pre>
+      <p>Мұндағы маңызды ерекшелік: «Қош келдіңіз, Айгерім!» жолының ұзындығы <code>40</code> шықты, бірақ көзбен санасаңыз, 23 таңба ғана. Себебі кирилл әріптері UTF-8-де <em>екі байт</em> орын алады, ал <code>size()</code> таңбаны емес <strong>байтты</strong> санайды. Латын әріптері мен цифрлар бір байттан. Бұл туралы 2-аптада тағы айтамыз. Әзірге есте сақтаңыз: <code>std::string</code> - байттар тізбегі.</p>
+      <p>Тағы бір ескерту: <code>cin &gt;&gt; name</code> жолды бірінші бос орынға дейін ғана оқиды. «Айгерім Сәрсенбек» деп жазсаңыз, <code>name</code>-ге тек «Айгерім» түседі. Бүкіл жолды оқу жолын 2-аптада (<code>getline</code>) үйренеміз.</p>
+
+      <h2 id="arithmetic">Арифметика</h2>
+      <p>Төрт амал таныс: <code>+ - * /</code>. Бесінші оператор - <code>%</code> (қалдық, <span class="term-en">modulo</span>): <code>17 % 5</code> нәтижесі <code>2</code>, себебі 17 = 3·5 + 2. Мұны сағат пен күнтізбеде жиі қолданамыз: сағат 23 болса, 5 сағаттан кейін <code>(23 + 5) % 24 = 4</code>.</p>
+      <p>Қарапайым дүние көрінгенмен, <code>/</code> операторының бір күтпеген мінезі бар. Теңге айырбасымен бастайық, ол қалыпты жұмыс істейді:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+
+int main() {
+    const double rate = 480.0;  // шартты бағам: 1 доллар = 480 теңге
+    double tenge;
+    std::cout &lt;&lt; "Теңге сомасы: ";
+    std::cin &gt;&gt; tenge;
+
+    double dollars = tenge / rate;
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(2);
+    std::cout &lt;&lt; tenge &lt;&lt; " тг = " &lt;&lt; dollars &lt;&lt; " $\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Теңге сомасы: 150000
+150000.00 тг = 312.50 $</code></pre>
+      <p>Мұнда <code>const double rate = 480.0;</code> - бағам. Бағамның нақты мәні уақытқа қарай өзгеріп тұрады, бұл тек үлгі сан. <code>std::fixed</code> пен <code>std::setprecision(2)</code> нәтижені нүктеден кейін 2 таңбамен шығарады (<code>#include &lt;iomanip&gt;</code> керек). Бөлгіш пен бөлінгіш екеуі де <code>double</code> болғандықтан, бөлу дәл орындалды.</p>
+      <h3 id="ops">Қысқа жазылу және басымдық</h3>
+      <p>Айнымалының мәнін өзгерту өте жиі қажет болады, сондықтан C++-та қысқа жазылу бар: <code>x += 5</code> дегені <code>x = x + 5</code> дегенмен бірдей. Дәл солай <code>-=</code>, <code>*=</code>, <code>/=</code>, <code>%=</code>. Бір қосу үшін <code>x++</code>, бір алу үшін <code>x--</code> жазамыз. Бұлар циклдерде үнемі кездеседі.</p>
+      <p>Математикадағыдай, көбейту мен бөлу қосу мен алудан бұрын орындалады, ал жақша басымдықты өзгертеді. Кіші бағдарламада бәрін бірге көрейік. Сонымен қатар <code>char</code> шынында бүтін сан екенін де көреміз: әр таңбаның өз коды бар (<code>'A'</code> - 65). Сондықтан таңбаға сан қосуға болады:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int score = 10;
+    score += 5;
+    score -= 3;
+    score *= 2;
+    score++;
+    std::cout &lt;&lt; "score = " &lt;&lt; score &lt;&lt; "\n";
+
+    int a = 2 + 3 * 4;
+    int b = (2 + 3) * 4;
+    std::cout &lt;&lt; "a = " &lt;&lt; a &lt;&lt; ", b = " &lt;&lt; b &lt;&lt; "\n";
+
+    char letter = 'A';
+    letter = letter + 2;
+    std::cout &lt;&lt; "letter = " &lt;&lt; letter &lt;&lt; ", код = " &lt;&lt; static_cast&lt;int&gt;(letter) &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+score = 25
+a = 14, b = 20
+letter = C, код = 67</code></pre>
+      <p>Қадамдап есептейік: <code>10 + 5 = 15</code>, <code>15 - 3 = 12</code>, <code>12 * 2 = 24</code>, <code>24 + 1 = 25</code>. Әрі <code>2 + 3 * 4 = 14</code>, ал <code>(2 + 3) * 4 = 20</code>. Таңбаға 2 қосқанда <code>'A'</code> (65) <code>'C'</code> (67) болды. Бұл идея шифрлау бағдарламаларында да қолданылады.</p>
+      <h3 id="intdiv">Бүтін бөлу</h3>
+      <p>Енді екі операнд та <code>int</code> болсын. Мысалы, 25 қонақты 6 адамдық үстелге отырғызамыз:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int guests = 25;
+    int perTable = 6;
+
+    std::cout &lt;&lt; "25 / 6   = " &lt;&lt; guests / perTable &lt;&lt; "\n";
+    std::cout &lt;&lt; "25 % 6   = " &lt;&lt; guests % perTable &lt;&lt; "\n";
+    std::cout &lt;&lt; "25.0 / 6 = " &lt;&lt; 25.0 / perTable &lt;&lt; "\n";
+
+    double exact = static_cast&lt;double&gt;(guests) / perTable;
+    std::cout &lt;&lt; "static_cast: " &lt;&lt; exact &lt;&lt; "\n";
+
+    int tables = (guests + perTable - 1) / perTable;
+    std::cout &lt;&lt; "Керек үстел: " &lt;&lt; tables &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+25 / 6   = 4
+25 % 6   = 1
+25.0 / 6 = 4.16667
+static_cast: 4.16667
+Керек үстел: 5</code></pre>
+      <p>Қорытынды: <strong>екі бүтін санды бөлсеңіз, нәтиже де бүтін болады, бөлшек бөлігі қиылып тасталады</strong> (<span class="term-en">integer division</span>). <code>25 / 6</code> жуық мәні 4,17, бірақ C++ <code>4</code> береді. Ал егер бір операнд <code>double</code> болса (<code>25.0 / 6</code>), бүкіл есептеу бөлшек түрінде жүреді. Бүтін айнымалыны бөлшек ретінде бөлгіңіз келсе, оны <code>static_cast&lt;double&gt;(guests)</code> арқылы түрлендіріңіз.</p>
+      <p>Соңғы жолда пайдалы амал бар: жоғары қарай дөңгелектеу. 25 қонақ үшін 4 үстел жетпейді, 5 керек. Формула: <code>(guests + perTable - 1) / perTable</code>. Неге жұмыс істейді? Қалдық болса, қосылған <code>perTable - 1</code> нәтижені дәл келесі бүтінге итереді, ал қалдық болмаса, ештеңе өзгертпейді.</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: <code>double r = 5 / 2;</code> деген жолда <code>r</code> неге тең?</summary>
+        <div class="details-body"><p><code>2</code> емес, <code>2.5</code> да емес: нәтиже <code>2</code>. Алдымен оң жағы есептеледі: <code>5 / 2</code> екі бүтін сан болғандықтан, бүтін бөлу жасалады және <code>2</code> шығады. Тек содан кейін бұл <code>2</code> санды <code>double</code>-ға айналдырып <code>r</code>-ге салады: <code>r = 2.0</code>. Тип есептеудің қайда орындалатынын анықтайды, қайда сақталатынын емес.</p></div>
+      </details>
+
+      <h2 id="overflow">Толып кету</h2>
+      <p>Компьютердің жадында санға берілген орын шектеулі. <code>int</code> 4 байт, яғни 32 бит алады, сондықтан онда шамамен екі миллиардқа дейінгі сан сыяды. Осы шектен асып кетсе не болады? Сағат циферблатын елестетіңіз: 12-ден кейін 1 келеді. <code>int</code>-те де шамамен осындай «айналу» болады.</p>
+      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 172" role="img" aria-label="Сызба: int мәндерінің сызығы; ең үлкен мәнге 1 қосқанда мән айналып, ең кіші мәнге оралады" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="200" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:600">ең үлкен санға +1 қоссақ,</text><text x="200" y="32" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:600">ол айналып ең кішіге түседі</text><polyline points="380,90 380,52 20,52 20,90" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m3)"/><rect x="20" y="92" width="360" height="34" rx="6" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="200" y="109" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">0</text><text x="20" y="144" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">-2 147 483 648</text><text x="380" y="144" text-anchor="end" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">2 147 483 647</text><text x="20" y="162" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">ең кіші int</text><text x="380" y="162" text-anchor="end" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">ең үлкен int</text></svg><figcaption class="viz-note">Сағат циферблаты сияқты: 12-ден кейін 1 келеді. (Таңбалы int үшін бұл тілде формалды түрде анықталмаған мінез, бірақ дәл осылай елестету түсінуге көмектеседі.)</figcaption></figure>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;climits&gt;
+
+int main() {
+    int big = INT_MAX;
+    std::cout &lt;&lt; "INT_MAX = " &lt;&lt; big &lt;&lt; "\n";
+
+    int next = big + 1;
+    std::cout &lt;&lt; "big + 1 = " &lt;&lt; next &lt;&lt; "\n";
+
+    unsigned char c = 255;
+    c = c + 1;
+    std::cout &lt;&lt; "unsigned char 255 + 1 = " &lt;&lt; static_cast&lt;int&gt;(c) &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+INT_MAX = 2147483647
+main.cpp:8:9: runtime error: signed integer overflow: 2147483647 + 1 cannot be represented in type 'int'
+big + 1 = -2147483648
+unsigned char 255 + 1 = 0</code></pre>
+      <p>Бірінші қызық: <code>INT_MAX + 1</code> нәтижесі <code>-2147483648</code> болды. Екіншіден, бағдарлама <em>құлаған жоқ</em>, оның орнына санитайзер (<code>-fsanitize=undefined</code>) «runtime error: signed integer overflow» деп ескертті. Негізінде таңбалы <code>int</code> толып кетуі C++ тілінде <strong>анықталмаған мінез</strong> (<span class="term-en">undefined behavior</span>): стандарт нәтиженің қандай болатынын кепілдендірмейді. Біздің компьютерде «айналып кетті», бірақ басқа компиляторда, басқа параметрмен ол мүлде өзгеше жұмыс істеуі мүмкін. Таңбасыз типтер (мысалы <code>unsigned char</code>) үшін айналу ережесі бекітілген: 255 + 1 нәтижесі 0.</p>
+      <p>Нақты өмірден мысал: факториал. 12! = 479 001 600, ол <code>int</code>-ке сыяды. 13!-ты <code>int</code>-пен есептеп көрейік:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int f = 1;
+    for (int n = 1; n &lt;= 13; n++) {
+        f = f * n;
+        if (n == 12 || n == 13) {
+            std::cout &lt;&lt; n &lt;&lt; "! = " &lt;&lt; f &lt;&lt; "\n";
+        }
+    }
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+12! = 479001600
+main.cpp:6:11: runtime error: signed integer overflow: 479001600 * 13 cannot be represented in type 'int'
+13! = 1932053504</code></pre>
+      <p>13! шын мәні 6 227 020 800 болуы керек еді, ал бағдарлама <code>1932053504</code> деп жалған жауап берді. Ең жаманы: егер санитайзер қосылмаса, бағдарлама ешқандай дабылсыз, үнсіз қате жауап береді. Шешім - үлкен тип:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    long long f = 1;
+    for (int n = 1; n &lt;= 20; n++) {
+        f = f * n;
+        if (n == 12 || n == 13 || n == 20) {
+            std::cout &lt;&lt; n &lt;&lt; "! = " &lt;&lt; f &lt;&lt; "\n";
+        }
+    }
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+12! = 479001600
+13! = 6227020800
+20! = 2432902008176640000</code></pre>
+      <p><code>long long</code> 8 байт алады, 20!-ке дейін жетеді (шамамен 9,2·10<sup>18</sup> дейін). Ереже: сан үлкен болуы мүмкін болса (халық саны, ақша, факториал, үлкен жиынтық), алдын ала <code>long long</code> алыңыз.</p>
+
+      <h2 id="const-auto">const, auto және комментарийлер</h2>
+      <p><strong>Комментарий</strong> (<span class="term-en">comment</span>) - компилятор еленбейтін, тек адамға арналған жазба. Бір жолдық: <code>// мәтін</code>. Көп жолдық: <code>/* ... */</code>. Жақсы комментарий <em>не</em> істеп жатқанын емес, <em>неге</em> солай істелгенін түсіндіреді.</p>
+      <p><code>const</code> - «тұрақты». Бір рет мән беріп, кейін өзгерту мүмкін емес айнымалы. Бұл тек компиляторға көмек емес, кодты оқитын адамға да: «бұл сан өзгермейді» дегенді айқын айтады. Сиқырлы сандарды (кодтың ортасында түсініксіз <code>3500</code>) атымен тұрақтыға айналдыру - жақсы әдет.</p>
+      <p><code>auto</code> - «типті компилятор өзі анықта». Оң жақтағы мәннен тип шығады:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+// Наурыз тойының бюджеті (теңгемен)
+int main() {
+    const int guests = 40;             // const: мәнін өзгертуге болмайды
+    const long long perGuest = 3500;
+    /* auto: тип мәннен анықталады */
+    auto total = guests * perGuest;    // long long
+    auto half = total / 2.0;           // double
+    auto city = std::string("Шымкент");
+
+    std::cout &lt;&lt; city &lt;&lt; ": бюджет " &lt;&lt; total &lt;&lt; " тг\n";
+    std::cout &lt;&lt; "Жартысы: " &lt;&lt; half &lt;&lt; " тг\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Шымкент: бюджет 140000 тг
+Жартысы: 70000 тг</code></pre>
+      <p>Мұнда <code>guests * perGuest</code> - <code>int</code> мен <code>long long</code> көбейтіндісі, сондықтан <code>total</code> типі <code>long long</code>. Ал <code>total / 2.0</code> нәтижесі <code>double</code>. <code>auto</code> типті жазудан құтқарады, бірақ оқуды қиындатпауға тырысыңыз: типі айқын емес жерде нақты тип жазған жөн. Егер <code>guests = 41;</code> деп өзгертуге тырыссақ, компилятор бірден тоқтатады: <code>const</code> айнымалыға мән меншіктеуге болмайды.</p>
+      <p>Температура мысалы: <code>auto</code> және араласқан арифметика:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    double celsius;
+    std::cout &lt;&lt; "Астанадағы температура (°C): ";
+    std::cin &gt;&gt; celsius;
+    auto fahrenheit = celsius * 9 / 5 + 32;
+    std::cout &lt;&lt; celsius &lt;&lt; " °C = " &lt;&lt; fahrenheit &lt;&lt; " °F\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Астанадағы температура (°C): -12.5
+-12.5 °C = 9.5 °F</code></pre>
+      <p>Мұнда <code>celsius * 9 / 5</code> есептелгенде <code>celsius</code> - <code>double</code>, сондықтан бөлу бөлшек түрінде жүреді. Егер <code>celsius</code> <code>int</code> болса, <code>9 / 5</code> қатарлас бөліп, <code>1</code> береді де, нәтиже қате болар еді.</p>
+
+      <h2 id="errors">Қателердің үш түрі</h2>
+      <p>Қате жасау - бағдарламалаудың қалыпты бөлігі. Шеберлер қате жасамайды дегенге сенбеңіз: олар жылдам табады. Қателерді түрлерге бөлсек, қайдан іздеу керегі айқын болады.</p>
+      <h3 id="compile-errors">1. Компиляция қатесі</h3>
+      <p>Компилятор кодты түсінбегенде шығады. Бағдарлама мүлде жасалмайды. Ең әйгілі мысал - нүктелі үтірді ұмыту:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int guests = 12
+    std::cout &lt;&lt; guests &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra main.cpp -o main
+main.cpp: In function ‘int main()’:
+main.cpp:5:5: error: expected ‘,’ or ‘;’ before ‘std’
+    5 |     std::cout &lt;&lt; guests &lt;&lt; "\n";
+      |     ^~~
+main.cpp:4:9: warning: unused variable ‘guests’ [-Wunused-variable]
+    4 |     int guests = 12
+      |         ^~~~~~</code></pre>
+      <p>Хабарламаны оқу өнерін үйреніңіз. Формат: <code>файл:жол:баған: error: сипаттама</code>. Мұнда компилятор <code>5</code>-жолды көрсетіп тұр, бірақ шын қате <em>алдыңғы</em> жолда (4-жол) <code>;</code> жоқ. Компилятор көбіне қатені келесі жолда ғана байқайды, сондықтан «қате көрсетілген жолдың өзінде де, алдыңғы жолда да» іздеңіз. Қатенің ең жоғарғысын түзетіп, қайта құрастырыңыз: төменгі қателер көбіне соның салдары.</p>
+      <p>Тағы бір жиі кездесетін қате - <code>std::</code> жазуды ұмыту:</p>
+      <pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra main.cpp -o main
+main.cpp: In function ‘int main()’:
+main.cpp:5:5: error: ‘cout’ was not declared in this scope; did you mean ‘std::cout’?
+    5 |     cout &lt;&lt; guests &lt;&lt; "\n";
+      |     ^~~~
+      |     std::cout
+In file included from main.cpp:1:
+/usr/include/c++/13/iostream:63:18: note: ‘std::cout’ declared here
+   63 |   extern ostream cout;          ///&lt; Linked to standard output
+      |                  ^~~~</code></pre>
+      <p>Компилятор өзі кеңес береді: «<em>did you mean 'std::cout'?</em>» - «std::cout дегенің бе?». Қатенің мәтінін оқыңыз, көбіне жауап сол жерде.</p>
+      <h3 id="warnings">Ескертулер</h3>
+      <p>Төмендегі бағдарлама дұрыс жұмыс істейді, бірақ <code>-Wall -Wextra</code> оның екі жерін күмәнді деп санайды:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int unusedCount = 5;
+    std::vector&lt;int&gt; v = {1, 2, 3};
+    for (int i = 0; i &lt; v.size(); i++) {
+        std::cout &lt;&lt; v[i] &lt;&lt; "\n";
+    }
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra main.cpp -o main
+main.cpp: In function ‘int main()’:
+main.cpp:7:23: warning: comparison of integer expressions of different signedness: ‘int’ and ‘std::vector&lt;int&gt;::size_type’ {aka ‘long unsigned int’} [-Wsign-compare]
+    7 |     for (int i = 0; i &lt; v.size(); i++) {
+      |                     ~~^~~~~~~~~~
+main.cpp:5:9: warning: unused variable ‘unusedCount’ [-Wunused-variable]
+    5 |     int unusedCount = 5;
+      |         ^~~~~~~~~~~</code></pre>
+      <p>Бірінші ескерту: <code>i</code> таңбалы (<code>int</code>), ал <code>v.size()</code> таңбасыз; оларды салыстыру қате нәтиже беруі мүмкін. Екіншісі: <code>unusedCount</code> жарияланып, ешқайда қолданылмаған. Ескертулерді түзетіңіз: біріншісін <code>size_t i</code> немесе <code>int(v.size())</code> арқылы, екіншісін жолды жою арқылы.</p>
+      <h3 id="link-errors">2. Жалғау (link) қатесі</h3>
+      <p>Компилятор кодты түсінді, бірақ линкер функцияның нақты денесін таппады:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int ayagy(int x);   // тек жариялау: денесі жоқ
+
+int main() {
+    std::cout &lt;&lt; ayagy(5) &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ g++ -std=c++17 -Wall -Wextra main.cpp -o main
+/usr/bin/ld: /tmp/ccXXXXXX.o: in function `main':
+main.cpp:(.text+0xe): undefined reference to `ayagy(int)'
+collect2: error: ld returned 1 exit status</code></pre>
+      <p><code>undefined reference to 'ayagy(int)'</code> - «ayagy(int) функциясының анықтамасы табылмады». Біз функцияны <em>жарияладық</em> (прототип), бірақ <em>жазып</em> бермедік. Жалғау қатесінде жол нөмірі жоқ немесе көмескі, сондықтан хабарламада «ld returned 1 exit status» (линкер қате жасады) деген сөзді көрсеңіз, функция атауларын тексеріңіз.</p>
+      <h3 id="runtime-errors">3. Орындалу қатесі</h3>
+      <p>Бағдарлама құрастырылды, жұмыс істей бастады, бірақ бір сәтте бір нәрсе бұзылды. Мысалы, нөлге бөлу:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int guests = 25;
+    int tables;
+    std::cout &lt;&lt; "Үстел саны: ";
+    std::cin &gt;&gt; tables;
+    std::cout &lt;&lt; "Бір үстелге: " &lt;&lt; guests / tables &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Үстел саны: 0
+main.cpp:8:54: runtime error: division by zero
+AddressSanitizer:DEADLYSIGNAL
+...</code></pre>
+      <p>Санитайзер «division by zero» деп көрсетті. Санитайзерсіз бұл бағдарлама «Floating point exception» деген жүйелік хабармен құлайды. Орындалу қателері ең қиын, себебі компилятор оларды алдын ала көрмейді: кіріс деректерге байланысты. Сондықтан бағдарламаны әртүрлі деректермен, әсіресе <em>шеткі</em> мәндермен (0, теріс сан, ең үлкен сан) тексеру керек.</p>
+      <p>Төртінші түрі де бар: бағдарлама қателесіз жұмыс істейді, бірақ <em>жауабы қате</em> - логикалық қате (мысалы, бүтін бөлу салдарынан). Оны компилятор да, санитайзер де таппайды. Оны тек сіздің ойлауыңыз мен тестіңіз ұстайды.</p>
+      <div class="callout tip">
+        <span class="callout-title">Қатемен жұмыс істеу реті</span>
+        <p>1) Хабарламаны <em>соңына дейін</em> оқыңыз. 2) Ең бірінші қатені түзетіңіз. 3) Қайта құрастырыңыз. 4) Түсінбесеңіз, қатенің мәтінін оқыңыз және жолды қарап шығыңыз. Қатені жасырмаңыз: әр қате - түсінуге бір қадам.</p>
+      </div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul>
+        <li><strong><code>;</code> ұмыту.</strong> Хабарлама көбіне келесі жолды көрсетеді.</li>
+        <li><strong><code>std::</code> жазбау.</strong> <code>cout</code> емес, <code>std::cout</code>.</li>
+        <li><strong><code>&lt;&lt;</code> мен <code>&gt;&gt;</code> шатастыру.</strong> Шығару - <code>&lt;&lt;</code>, енгізу - <code>&gt;&gt;</code>.</li>
+        <li><strong><code>=</code> мен <code>==</code> араластыру.</strong> Біреуі меншіктеу, екіншісі салыстыру. Бұл туралы келесі аптада көреміз.</li>
+        <li><strong>Бүтін бөлу.</strong> <code>int / int</code> бөлшегін тастайды. Бөлшек керек болса, бір жағын <code>double</code> етіңіз.</li>
+        <li><strong>Бастапқы мәнсіз айнымалы.</strong> <code>int x;</code> ішінде кездейсоқ нәрсе жатыр.</li>
+        <li><strong>Тырнақшаны шатастыру.</strong> <code>'A'</code> бір таңба (<code>char</code>), <code>"A"</code> мәтін (жол).</li>
+        <li><strong>Ескертуді елемеу.</strong> <code>-Wall -Wextra</code> әрқашан қосулы тұрсын.</li>
+        <li><strong>Толып кетуді ескермеу.</strong> Сан үлкен болуы мүмкін болса, <code>long long</code>.</li>
+      </ul>
+
+      <h2 id="summary">Қорытынды</h2>
+      <p>Бүгін C++ әлеміне алғашқы қадамды жасадық. Не үйрендік:</p>
+      <ul>
+        <li>Бағдарлама мәтіннен <strong>препроцессор, компилятор, линкер</strong> арқылы өтіп, орындалатын файлға айналады: <code>g++ -std=c++17 -Wall -Wextra main.cpp -o main</code>.</li>
+        <li>Бағдарлама <code>main</code> функциясынан басталады; <code>#include</code> файлдарды қосады; <code>std::cout &lt;&lt;</code> шығарады, <code>std::cin &gt;&gt;</code> оқиды.</li>
+        <li>Негізгі типтер: <code>int</code>, <code>long long</code>, <code>double</code>, <code>char</code>, <code>bool</code>, <code>std::string</code>. Әр типтің көлемі шектеулі.</li>
+        <li><code>int / int</code> бүтін бөлу жасайды; <code>%</code> қалдық береді; бөлшек керек болса, <code>double</code> немесе <code>static_cast</code>.</li>
+        <li>Таңбалы <code>int</code> толып кетуі - анықталмаған мінез; үлкен сандар үшін <code>long long</code>.</li>
+        <li><code>const</code> өзгермейтін мән үшін, <code>auto</code> типті компилятор шығарады, комментарий кодты түсіндіреді.</li>
+        <li>Қате түрлері: компиляция, жалғау (link), орындалу, және логикалық қате. Хабарламаны оқи біліңіз.</li>
+      </ul>
+      <p>Келесі аптада бағдарламаға <em>шешім қабылдауды</em> және <em>қайталауды</em> үйретеміз: шарттар, циклдер және функциялар.</p>
+      <p>Өзіңізді тексеріп көріңіз:</p>
+      <ul class="checklist" data-id="cpp0-self">
+        <li><input type="checkbox"> <span>g++ орнатылды, <code>g++ --version</code> нәтиже береді.</span></li>
+        <li><input type="checkbox"> <span><code>main.cpp</code> жазып, құрастырып, іске қостым.</span></li>
+        <li><input type="checkbox"> <span>Препроцессор, компилятор, линкердің айырмашылығын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span><code>int / int</code> неге бүтін шығатынын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Компиляция, link және орындалу қателерін ажырата аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. Мына бағдарлама нені шығарады? <code>int a = 7; int b = 2; std::cout &lt;&lt; a / b;</code></p>
+<label><input type="radio" value="a"> <code>3.5</code></label>
+<label><input type="radio" value="b"> <code>4</code></label>
+<label><input type="radio" value="c"> <code>3</code></label>
+<label><input type="radio" value="d"> <code>3.0</code></label>
+<p class="explain">Екі операнд та <code>int</code>, сондықтан бүтін бөлу жасалады, бөлшек бөлігі тасталады: нәтиже <code>3</code>. Қалдық <code>7 % 2 = 1</code> болар еді.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. <code>g++</code> орындайтын үш қадамның дұрыс реті қайсы?</p>
+<label><input type="radio" value="a"> Компилятор, препроцессор, линкер</label>
+<label><input type="radio" value="b"> Препроцессор, компилятор, линкер</label>
+<label><input type="radio" value="c"> Линкер, компилятор, препроцессор</label>
+<label><input type="radio" value="d"> Препроцессор, линкер, компилятор</label>
+<p class="explain">Алдымен препроцессор (<code>#include</code> және т.б.), сосын компилятор (машина коды), ең соңында линкер (бөліктерді жалғау).</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">3. Төмендегі қате қай түрге жатады? Хабарлама: <code>undefined reference to 'ayagy(int)'</code></p>
+<label><input type="radio" value="a"> Орындалу қатесі</label>
+<label><input type="radio" value="b"> Препроцессор қатесі</label>
+<label><input type="radio" value="c"> Синтаксистік (компиляция) қатесі</label>
+<label><input type="radio" value="d"> Жалғау (link) қатесі</label>
+<p class="explain">«undefined reference» - линкер функцияның анықтамасын таппағанда шығатын жалғау қатесі. Прототип бар, дене жоқ.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">4. <code>std::cout &lt;&lt; (17 % 5);</code> нені шығарады?</p>
+<label><input type="radio" value="a"> <code>2</code></label>
+<label><input type="radio" value="b"> <code>3</code></label>
+<label><input type="radio" value="c"> <code>3.4</code></label>
+<label><input type="radio" value="d"> <code>5</code></label>
+<p class="explain"><code>%</code> қалдықты береді: 17 = 3 · 5 + 2, сондықтан <code>2</code>.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">5. Қай жолда қате бар? <code>const int guests = 40;</code> кейін <code>guests = 41;</code> деп жазылған.</p>
+<label><input type="radio" value="a"> Қате жоқ, <code>const</code> тек комментарий</label>
+<label><input type="radio" value="b"> Қате орындалу кезінде ғана шығады</label>
+<label><input type="radio" value="c"> Қате жоқ, мән 41 болады</label>
+<label><input type="radio" value="d"> Компиляция қатесі: <code>const</code> айнымалыға жаңа мән беруге болмайды</label>
+<p class="explain"><code>const</code> мәнді өзгертуге тыйым салады. Бұл қате компиляция кезінде-ақ ұсталады, бағдарлама іске қосылмайды да.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. Мына жолда <code>x</code> типі қандай? <code>auto x = 3500 * 40LL;</code> (<code>40LL</code> - <code>long long</code> литералы)</p>
+<label><input type="radio" value="a"> <code>int</code></label>
+<label><input type="radio" value="b"> <code>long long</code></label>
+<label><input type="radio" value="c"> <code>double</code></label>
+<label><input type="radio" value="d"> <code>bool</code></label>
+<p class="explain"><code>int</code> мен <code>long long</code> көбейтілгенде нәтиже кеңірек типке, яғни <code>long long</code>-ға келтіріледі. <code>auto</code> соны қабылдайды.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">7. <code>-Wall -Wextra</code> жалаулары не үшін керек?</p>
+<label><input type="radio" value="a"> Бағдарламаны жылдамдатады</label>
+<label><input type="radio" value="b"> Бағдарламаның көлемін кішірейтеді</label>
+<label><input type="radio" value="c"> Қателерді автоматты түзетеді</label>
+<label><input type="radio" value="d"> Күмәнді жерлер туралы қосымша ескертулер шығарады</label>
+<p class="explain">Бұл жалаулар компиляторды сынаушы қылады: қолданылмаған айнымалы, таңбасы әртүрлі салыстыру сияқты күмәнді жерлерді көрсетеді. Бағдарламаны өзгертпейді және түзетпейді.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">8. <code>std::string s = "Қош";</code> болса, <code>s.size()</code> неге 3-тен үлкен шығады?</p>
+<label><input type="radio" value="a"> Кирилл әріптері UTF-8-де екі байттан, ал <code>size()</code> байтты санайды</label>
+<label><input type="radio" value="b"> <code>size()</code> әрқашан бір артық санайды</label>
+<label><input type="radio" value="c"> Жолдың соңында қосымша бос орын бар</label>
+<label><input type="radio" value="d"> Кирилл әріптері жолға сыймайды</label>
+<p class="explain">«Қ», «о» және «ш» - үшеуі де кирилл әріптері, UTF-8-де әрқайсысы екі байттан алады, сондықтан «Қош» үшін <code>size()</code> 6 береді. Бұл тіл ерекшелігі, қате емес.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
+
+      <h2 id="exercises">Жаттығулар</h2>
+      <p>Жеңіл, орташа және қиын деңгейдегі тапсырмалар. Жауабы бар тапсырмаларды осы жерде тексеріңіз, ал бағдарлама жазатындарды өз компьютеріңізде іске қосып, өзіңізді тексеру тізімімен салыстырыңыз.</p>
+<div class="task">
+<div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="c0-t1">Бөлу және көбейту</h3></div>
+<p>Бағдарлама не шығарады? Жауабын дәл жазыңыз.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int a = 17;
+    int b = 5;
+    std::cout &lt;&lt; a / b * 2.0 &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="6"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Амалдар солдан оңға орындалады: алдымен <code>a / b</code> (екеуі де <code>int</code>), содан кейін нәтиже <code>2.0</code>-ге көбейтіледі.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>17 / 5</code> бүтін бөлу, нәтиже <code>3</code>. Сосын <code>3 * 2.0 = 6.0</code>, ал <code>cout</code> оны <code>6</code> деп шығарады. Бұл бағдарламаны іске қосып тексердік:</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+6</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="c0-t2">Бөлшектен бүтінге</h3></div>
+<p>Бағдарлама не шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    double d = 9.99;
+    int k = d;
+    std::cout &lt;&lt; k &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="9"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Бөлшек сан <code>int</code>-ке салынғанда бөлшек бөлігі дөңгелектелмей, <em>қиылады</em>.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>9.99</code> санын <code>int</code>-ке салғанда бөлшек бөлігі жоғалады: <code>9</code>.</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+9</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge medium">Орташа</span><h3 id="c0-t3">Қанша үстел керек?</h3></div>
+<p>Наурыз тойына 47 қонақ келеді. Бір үстелге 6 адам отырады. Үстелдер жоғары қарай дөңгелектеніп есептеледі. Төмендегі бағдарлама қанша үстел шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int guests = 47;
+    int perTable = 6;
+    int tables = (guests + perTable - 1) / perTable;
+    std::cout &lt;&lt; tables &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="8"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Формуланы қолмен есептеңіз: <code>(47 + 6 - 1) / 6</code>. Алдымен жақшаның ішін, сосын бүтін бөлуді орындаңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>(47 + 5) / 6 = 52 / 6 = 8</code> (бүтін бөлу, қалдық тасталады). Шынымен, 7 үстелге 42 адам сыяды, қалған 5 адам үшін сегізінші үстел керек.</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+8</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge medium">Орташа</span><h3 id="c0-t4">Айналып кету</h3></div>
+<p><code>unsigned char</code> типі 0-ден 255-ке дейінгі сан сақтайды. Төмендегі бағдарлама не шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    unsigned char c = 250;
+    c = c + 10;
+    std::cout &lt;&lt; static_cast&lt;int&gt;(c) &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="4"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>250 + 10 = 260. 255-тен асқан соң сан 0-ден қайта басталады: 256 орнына 0 келеді.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>260 санынан 256 алып тастасақ, <code>4</code> қалады (260 mod 256 = 4). Таңбасыз типтердің толуы стандартпен бекітілген, сондықтан нәтиже кепілдік:</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+4</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge hard">Қиын</span><h3 id="c0-t5">Үш күннің орташа температурасы</h3></div>
+<p>Қолданушыдан үш температураны (<code>double</code>) оқып, орташа мәнін нүктеден кейін екі таңбамен шығаратын бағдарлама жазыңыз. Енгізу: <code>-5 3 10</code>. Бағдарламаңыз қандай санды шығарады?</p>
+<div class="answer-check" data-answer="2.67"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Үш санды <code>cin &gt;&gt; a &gt;&gt; b &gt;&gt; c</code> арқылы оқуға болады. Нәтижені <code>std::fixed</code> және <code>std::setprecision(2)</code> арқылы форматтаңыз. <code>(a + b + c) / 3</code>: жақшаны ұмытпаңыз.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+
+int main() {
+    double a, b, c;
+    std::cout &lt;&lt; "Үш күннің температурасы: ";
+    std::cin &gt;&gt; a &gt;&gt; b &gt;&gt; c;
+    double avg = (a + b + c) / 3;
+    std::cout &lt;&lt; std::fixed &lt;&lt; std::setprecision(2);
+    std::cout &lt;&lt; "Орташа: " &lt;&lt; avg &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+Үш күннің температурасы: -5 3 10
+Орташа: 2.67</code></pre>
+<p>(-5 + 3 + 10) / 3 = 8 / 3 = 2,666..., ол екі таңбаға дейін дөңгелектеніп <code>2.67</code> болады.</p></div></details>
+<details open><summary>Өзін тексеру тізімі</summary><div class="details-body"><ul class="checklist" data-id="c0-t5">
+<li><input type="checkbox"> <span><code>g++ -std=c++17 -Wall -Wextra</code> ескертусіз құрастырылады.</span></li>
+<li><input type="checkbox"> <span><code>-5 3 10</code> үшін <code>2.67</code> шығады.</span></li>
+<li><input type="checkbox"> <span>Басқа сандармен де тексердім (мысалы, <code>0 0 0</code> және <code>30 30 30</code>).</span></li>
+</ul><p class="progress"></p></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge hard">Қиын</span><h3 id="c0-t6">Қатені тап және түзет</h3></div>
+<p>Төмендегі бағдарлама құрастырылмайды. Қателерді тауып түзетіңіз. Түзетілген бағдарлама қандай санды шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int guests = 12;
+    double price = 3500.5
+    std::cout &lt;&lt; "Бюджет: " &lt;&lt; guests * prise &lt;&lt; "\n";
+    return 0
+}</code></pre>
+<div class="answer-check" data-answer="42006"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Бір қате - нүктелі үтір жоқ жолдарда (екі жол). Екіншісі - айнымалы атауында: <code>prise</code> емес, <code>price</code>. Түзеткен соң <code>12 * 3500.5</code> есептеліп шығады.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Түзетілген нұсқа:</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int guests = 12;
+    double price = 3500.5;
+    std::cout &lt;&lt; "Бюджет: " &lt;&lt; guests * price &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+Бюджет: 42006</code></pre>
+<p>12 · 3500,5 = 42006. Бұл бағдарламада компилятор алдымен екі қатені ғана көрсетеді. <code>prise</code> қатесін нүктелі үтірлерді қосқан соң ғана көресіз: қателерді бірінен соң бірін түзете беріңіз.</p></div></details>
+<details open><summary>Өзін тексеру тізімі</summary><div class="details-body"><ul class="checklist" data-id="c0-t6">
+<li><input type="checkbox"> <span>Үш қатені де таптым (екі <code>;</code> және <code>prise</code>/<code>price</code>).</span></li>
+<li><input type="checkbox"> <span>Түзетілген код ескертусіз құрастырылады.</span></li>
+<li><input type="checkbox"> <span>Хабарламалардағы жол нөмірін бағдарламамен салыстыра алдым.</span></li>
+</ul><p class="progress"></p></div></details>
+</div>
+
+
+      <nav class="pager">
+        <a href="../index.html"><small>Курс беті</small>← C++ курсының басты беті</a>
+        <a class="next" href="week-1.html"><small>Келесі</small>1-апта: Шарттар, циклдер және функциялар →</a>
+      </nav>
+
+      <p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+
+</body>
+</html>
