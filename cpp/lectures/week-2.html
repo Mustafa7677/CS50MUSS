@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>C++ 2-апта: Массивтер, жолдар және vector - CS50 қазақша</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-2.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa, All Rights Reserved. Авторлық оқу материалы.">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"C++ 2-апта: Массивтер, жолдар және vector - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-2.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"copyrightNotice":"© 2026 Sagid Mustafa, All Rights Reserved. Авторлық оқу материалы."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="C++ 2-апта: C-массив, std::array, std::vector, std::string, 2D контейнер, сұрыптау, іздеу, getline және енгізу ағыны мәселелері.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  <script src="../../assets/js/main.js"></script>
+</head>
+<body data-license="A">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="cpp" style="--c:#4f46e5"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">C++</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../cpp/index.html" class="active">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+
+
+  <div class="layout">
+    <aside class="toc">
+      <h4>Мазмұны</h4>
+      <ol></ol>
+    </aside>
+
+    <article class="content" id="main">
+      <div class="lecture-head" style="--lc:#4f46e5" data-n="2">
+        <div class="num">2-апта</div>
+        <h1>Массивтер, жолдар және vector</h1>
+        <p>Бір айнымалыға бір мән сыяды, ал нақты өмірде деректер көп: қонақтар тізімі, апталық температура, дүкеннің сатылымы. Бұл аптада көп мәнді сақтайтын контейнерлерді (C-массив, std::array, std::vector), мәтінмен жұмыс (std::string), сұрыптау мен іздеуді және енгізу ағынының қулығын үйренеміз.</p>
+      </div>
+
+      <h2 id="why-containers">Неге контейнер керек?</h2>
+      <p>Наурыз мейрамына 200 қонақ келеді делік. Олардың аттарын сақтау үшін 200 айнымалы жариялауға бола ма? <code>guest1</code>, <code>guest2</code>, ... <code>guest200</code>. Әрине, жоқ. Бізге бір атпен аталатын, бірақ ішінде көп мән жататын құрылым керек. Оны <strong>контейнер</strong> (<span class="term-en">container</span>) дейміз. Контейнердің ішіндегі мәндер <strong>элемент</strong> деп аталады, ал әр элементті оның нөмірі, <strong>индексі</strong> (<span class="term-en">index</span>) арқылы табамыз.</p>
+      <p>Маңызды ереже, оны әрдайым есте сақтаңыз: <strong>индекс 0-ден басталады</strong>. Бірінші элементтің индексі 0, екіншісінікі 1, және т.б. Бес элементті массивте соңғысының индексі 4. Бастапқыда ерекше көрінеді, бірақ тез үйренесіз: индекс «басынан неше қадам алыс» деген мағына береді. Бірінші элемент басынан 0 қадам алыс тұр.</p>
+      <p>Бүгін C++-тың үш негізгі контейнерімен танысамыз:</p>
+      <table>
+        <thead><tr><th>Контейнер</th><th>Өлшемі</th><th>Қашан қолданамыз</th></tr></thead>
+        <tbody>
+          <tr><td>C-массив <code>int a[5]</code></td><td>тіркелген, компиляция кезінде</td><td>ескі код, өте қарапайым жағдай</td></tr>
+          <tr><td><code>std::array&lt;int, 5&gt;</code></td><td>тіркелген</td><td>өлшемі алдын ала белгілі болғанда</td></tr>
+          <tr><td><code>std::vector&lt;int&gt;</code></td><td>өзгереді (өсе алады)</td><td><strong>әдепкі таңдау</strong> көп жағдайда</td></tr>
+        </tbody>
+      </table>
+      <p>Қысқа ереже: күмән болса, <code>std::vector</code> қолданыңыз.</p>
+
+      <h2 id="c-array">C-массив</h2>
+      <p>C-массив - тілдің ең ескі контейнері (ол C тілінен келген). Оның жазылуы: <code>тип аты[өлшем] = {мәндер};</code>. Мысал: бір аптаның таңғы температурасы (градус).</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int temp[7] = {-4, -1, 2, 5, 3, 0, -2};   // апталық температура
+    int n = sizeof(temp) / sizeof(temp[0]);
+
+    int sum = 0;
+    int hottest = temp[0];
+    for (int i = 0; i &lt; n; i++) {
+        sum += temp[i];
+        if (temp[i] &gt; hottest) hottest = temp[i];
+    }
+    std::cout &lt;&lt; "күн саны: " &lt;&lt; n &lt;&lt; "\n";
+    std::cout &lt;&lt; "қосынды: " &lt;&lt; sum &lt;&lt; "\n";
+    std::cout &lt;&lt; "орташа: " &lt;&lt; static_cast&lt;double&gt;(sum) / n &lt;&lt; "\n";
+    std::cout &lt;&lt; "ең жылы: " &lt;&lt; hottest &lt;&lt; "\n";
+    std::cout &lt;&lt; "temp[3] = " &lt;&lt; temp[3] &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+күн саны: 7
+қосынды: 3
+орташа: 0.428571
+ең жылы: 5
+temp[3] = 5</code></pre>
+      <p>Бір жол өте пайдалы: <code>sizeof(temp) / sizeof(temp[0])</code> - бүкіл массивтің байттағы көлемін бір элементтің көлеміне бөліп, элемент санын табады. Алайда бұл тек массив шыққан жерде жұмыс істейді; функцияға берілгенде массив өлшемін жоғалтады (оны 3-аптада көрсеткіштермен түсіндіреміз). Осы себепті бүгін C-массив қолдануды ұсынбаймыз.</p>
+      <figure class="diagram" style="margin:0"><svg viewBox="0 0 390 126" role="img" aria-label="Диаграмма: бес int ұяшығы қатар орналасқан, индекстері 0-ден 4-ке дейін; 5-индекс массивтен тыс, ол жад басқа біреуге тиесілі болуы мүмкін" style="display:block;width:100%;max-width:390px;height:auto;margin:18px auto 6px"><defs><marker id="m4" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="8" y="14" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">int a[5] = {12, 7, 30, 4, 9};  (1 ұяшық = 4 байт)</text><rect x="10" y="34" width="62" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="41.0" y="56.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">12</text><text x="41" y="94" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">a[0]</text><text x="41" y="112" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px;font-weight:400">+0 байт</text><rect x="72" y="34" width="62" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="103.0" y="56.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">7</text><text x="103" y="94" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">a[1]</text><text x="103" y="112" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px;font-weight:400">+4 байт</text><rect x="134" y="34" width="62" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="165.0" y="56.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">30</text><text x="165" y="94" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">a[2]</text><text x="165" y="112" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px;font-weight:400">+8 байт</text><rect x="196" y="34" width="62" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="227.0" y="56.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">4</text><text x="227" y="94" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">a[3]</text><text x="227" y="112" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px;font-weight:400">+12 байт</text><rect x="258" y="34" width="62" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="289.0" y="56.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">9</text><text x="289" y="94" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">a[4]</text><text x="289" y="112" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11px;font-weight:400">+16 байт</text><rect x="320" y="34" width="62" height="44" rx="8" style="fill:var(--surface);stroke:var(--warn);stroke-width:1.8;stroke-dasharray:5 4"/><text x="351.0" y="56.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">???</text><text x="351" y="94" text-anchor="middle" dominant-baseline="central" style="fill:var(--warn);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">a[5]</text><text x="351" y="112" text-anchor="middle" dominant-baseline="central" style="fill:var(--warn);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">бөтен!</text></svg><figcaption class="viz-note">Массив - жадтағы қатар тұрған ұяшықтар. Дұрыс индекс 0-ден n-1-ге дейін. a[5] массивтен тыс, ол жадтың бөтен бөлігі.</figcaption></figure>
+      <p>Мұндағы басты қауіп: <strong>C-массив шекараны тексермейді</strong>. 5 элементті массивтің 5-индексін сұрасаңыз, C++ «жоқ» демейді, жадтың бөтен бөлігіне қарайды. Мұны көрейік:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int a[5] = {12, 7, 30, 4, 9};
+    int i = 5;
+    std::cout &lt;&lt; a[i] &lt;&lt; "\n";   // 5-индекс жоқ!
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+main.cpp:6:21: runtime error: index 5 out of bounds for type 'int [5]'
+main.cpp:6:26: runtime error: load of address 0x7f4473200034 with insufficient space for an object of type 'int'
+0x7f4473200034: note: pointer points here
+  09 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00  00 00 00 00 00 00 00 00
+              ^ 
+=================================================================
+==11829==ERROR: AddressSanitizer: stack-buffer-overflow on address 0x7f4473200034 at pc 0x556620dc36af bp 0x7fff28749b20 sp 0x7fff28749b10
+READ of size 4 at 0x7f4473200034 thread T0
+    #0 0x556620dc36ae in main main.cpp:6
+...</code></pre>
+      <p>Санитайзер қатені дәл ұстады: «index 5 out of bounds for type 'int [5]'», әрі AddressSanitizer «stack-buffer-overflow» деп бағдарламаны тоқтатты. Санитайзерсіз бағдарлама қателеспей, кездейсоқ мән шығарар еді немесе кейінірек, мүлде басқа жерде құлар еді. Мұндай қателерді табу өте қиын, сондықтан санитайзермен жұмыс істеу әдетке айналсын. Қауіпсіздік үшін қолданылатын қысқа ереже: <em>әрдайым индекс 0-ден өлшем - 1-ге дейін болуы керек</em>.</p>
+      <div class="callout warn">
+        <span class="callout-title">Анықталмаған мінез</span>
+        <p>Шекарадан шығу C++ тілінде «анықталмаған мінез» (<span class="term-en">undefined behavior</span>). Бұл «қате хабарламасы шығады» дегенді білдірмейді: бағдарлама жұмыс істеп кетуі де, құлауы да, басқа деректі бұзуы да мүмкін. Қауіпті жері дәл осы болжанбайтындық.</p>
+      </div>
+
+      <h2 id="std-array">std::array</h2>
+      <p><code>std::array</code> - C-массивтің қауіпсіз әрі ыңғайлы «қабығы». Өлшемі әлі де тіркелген, бірақ ол өзінің өлшемін біледі (<code>.size()</code>), <code>.at()</code> арқылы шекараны тексереді және функцияларға ыңғайлы беріледі. <code>#include &lt;array&gt;</code> керек.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;array&gt;
+
+int main() {
+    std::array&lt;int, 4&gt; prices = {200, 1500, 800, 350};
+
+    std::cout &lt;&lt; "өлшемі: " &lt;&lt; prices.size() &lt;&lt; "\n";
+    std::cout &lt;&lt; "бірінші: " &lt;&lt; prices.front() &lt;&lt; ", соңғы: " &lt;&lt; prices.back() &lt;&lt; "\n";
+    std::cout &lt;&lt; "prices.at(2) = " &lt;&lt; prices.at(2) &lt;&lt; "\n";
+
+    int total = 0;
+    for (int p : prices) total += p;
+    std::cout &lt;&lt; "барлығы: " &lt;&lt; total &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+өлшемі: 4
+бірінші: 200, соңғы: 350
+prices.at(2) = 800
+барлығы: 2850</code></pre>
+      <p><code>&lt;int, 4&gt;</code> - екі параметр: элемент типі және өлшемі. Өлшем компиляция кезінде белгілі болуы керек: оны пернетақтадан оқуға болмайды. Ал өлшемі белгісіз болса, бізге <code>vector</code> керек.</p>
+
+      <h2 id="vector">std::vector</h2>
+      <p><code>std::vector</code> - <strong>өсетін массив</strong>. Қонақтар тізімін түзіп, жаңа қонақ келген сайын соңына қосамыз (<code>push_back</code>). Python-дағы <code>list</code>-ке өте ұқсас. <code>#include &lt;vector&gt;</code> керек, ал ішіндегі тип бұрыштық жақшада жазылады.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::vector&lt;std::string&gt; guests;
+    guests.push_back("Айгерім");
+    guests.push_back("Нұрлан");
+    guests.push_back("Дәулет");
+
+    std::cout &lt;&lt; "қонақ саны: " &lt;&lt; guests.size() &lt;&lt; "\n";
+    std::cout &lt;&lt; "екінші қонақ: " &lt;&lt; guests[1] &lt;&lt; "\n";
+
+    guests.pop_back();
+    guests.push_back("Мадина");
+    for (std::size_t i = 0; i &lt; guests.size(); i++) {
+        std::cout &lt;&lt; i + 1 &lt;&lt; ". " &lt;&lt; guests[i] &lt;&lt; "\n";
+    }
+    std::cout &lt;&lt; "бос ма? " &lt;&lt; std::boolalpha &lt;&lt; guests.empty() &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+қонақ саны: 3
+екінші қонақ: Нұрлан
+1. Айгерім
+2. Нұрлан
+3. Мадина
+бос ма? false</code></pre>
+      <p>Қолданылған негізгі әдістер:</p>
+      <ul>
+        <li><code>push_back(x)</code> - соңына <code>x</code> қосады.</li>
+        <li><code>pop_back()</code> - соңғы элементті өшіреді.</li>
+        <li><code>size()</code> - элемент саны (типі <code>std::size_t</code>, таңбасыз).</li>
+        <li><code>empty()</code> - бос па?</li>
+        <li><code>front()</code>, <code>back()</code> - бірінші және соңғы элемент.</li>
+        <li><code>v[i]</code> және <code>v.at(i)</code> - <code>i</code>-ші элементке қол жеткізу.</li>
+      </ul>
+      <p>Вектор жасаудың бірнеше жолы бар:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; a = {5, 8, 13};
+    std::vector&lt;int&gt; zeros(4);          // төрт нөл
+    std::vector&lt;int&gt; sevens(3, 7);      // үш жеті
+
+    for (int x : a) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+    for (int x : zeros) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+    for (int x : sevens) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+5 8 13 
+0 0 0 0 
+7 7 7 </code></pre>
+      <p><code>vector&lt;int&gt; zeros(4)</code> - төрт элементті, барлығы нөл. <code>vector&lt;int&gt; sevens(3, 7)</code> - үш элемент, әрқайсысы 7. Бұл жолда жақша <em>санды</em>, ал бұйра жақша <em>мәндер тізімін</em> білдіреді: <code>vector&lt;int&gt; v{3, 7}</code> - екі элемент (3 және 7), ал <code>vector&lt;int&gt; v(3, 7)</code> - үш жеті. Көп адам осы жерде шатасады.</p>
+      <h3 id="at">[] және at(): шекараны тексеру</h3>
+      <p><code>v[i]</code> C-массив сияқты шекараны тексермейді (жылдам, бірақ қауіпті). <code>v.at(i)</code> тексереді: шекарадан шықса, <strong>ерекше жағдай</strong> (<span class="term-en">exception</span>) лақтырады. Біз оны <code>try</code>/<code>catch</code> блогымен ұстап көрейік:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;stdexcept&gt;
+
+int main() {
+    std::vector&lt;int&gt; v = {10, 20, 30};
+    try {
+        std::cout &lt;&lt; v.at(1) &lt;&lt; "\n";
+        std::cout &lt;&lt; v.at(10) &lt;&lt; "\n";
+    } catch (const std::out_of_range&amp; e) {
+        std::cout &lt;&lt; "қате ұсталды: " &lt;&lt; e.what() &lt;&lt; "\n";
+    }
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+20
+қате ұсталды: vector::_M_range_check: __n (which is 10) &gt;= this-&gt;size() (which is 3)</code></pre>
+      <p><code>try</code> ішіндегі код орындалады; қате болса, бағдарлама бірден <code>catch</code> блогына секіреді. <code>e.what()</code> қатенің сипаттамасын береді: «<em>__n (which is 10) &gt;= this-&gt;size() (which is 3)</em>» - яғни сіз 10-ны сұрадыңыз, ал өлшемі тек 3. Егер <code>catch</code> болмаса, бағдарлама <code>terminate</code> шақырып, тоқтайды. Үйренуші үшін ереже: бастапқыда <code>at()</code> қолданыңыз, бағдарламаңыз дұрыс жұмыс істейтініне көз жеткізген соң ғана жылдам <code>[]</code>-ге ауыса аласыз.</p>
+      <h3 id="capacity">Вектор ішінде не болады?</h3>
+      <p>Вектор жадтағы үздіксіз блокты басқарады. Орын таусылғанда ол жаңа, үлкенірек блок алып, элементтерді көшіреді. Көрнекі: <code>size</code> - қазір қанша элемент бар, <code>capacity</code> - қанша элементке орын бар.</p>
+      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 210" role="img" aria-label="Диаграмма: vector-ге элемент қосқан сайын size артады; орын жетпесе, capacity екі еседей үлкейіп, жаңа жадқа көшіріледі" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m5" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="8" y="14" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">vector: size (толтырылған) және capacity (сиымдылық)</text><text x="8" y="46" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">size=1, cap=1</text><rect x="118" y="30" width="34" height="32" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5"/><text x="8" y="90" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">size=2, cap=2</text><rect x="118" y="74" width="34" height="32" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5"/><rect x="152" y="74" width="34" height="32" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5"/><text x="8" y="134" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">size=3, cap=4</text><rect x="118" y="118" width="34" height="32" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5"/><rect x="152" y="118" width="34" height="32" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5"/><rect x="186" y="118" width="34" height="32" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5"/><rect x="220" y="118" width="34" height="32" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 3"/><text x="8" y="178" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">size=5, cap=8</text><rect x="118" y="162" width="34" height="32" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5"/><rect x="152" y="162" width="34" height="32" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5"/><rect x="186" y="162" width="34" height="32" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5"/><rect x="220" y="162" width="34" height="32" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5"/><rect x="254" y="162" width="34" height="32" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5"/><rect x="288" y="162" width="34" height="32" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 3"/><rect x="322" y="162" width="34" height="32" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 3"/><rect x="356" y="162" width="34" height="32" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.5;stroke-dasharray:4 3"/></svg><figcaption class="viz-note">push_back кезінде орын таусылса, vector үлкенірек жад блогын алып, ескі элементтерді көшіреді. Сондықтан бұрынғы сілтемелер мен көрсеткіштер ескіруі мүмкін.</figcaption></figure>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v;
+    std::size_t lastCap = v.capacity();
+    std::cout &lt;&lt; "size=0 capacity=" &lt;&lt; lastCap &lt;&lt; "\n";
+    for (int i = 1; i &lt;= 9; i++) {
+        v.push_back(i);
+        if (v.capacity() != lastCap) {
+            lastCap = v.capacity();
+            std::cout &lt;&lt; "size=" &lt;&lt; v.size() &lt;&lt; " capacity=" &lt;&lt; lastCap &lt;&lt; "\n";
+        }
+    }
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+size=0 capacity=0
+size=1 capacity=1
+size=2 capacity=2
+size=3 capacity=4
+size=5 capacity=8
+size=9 capacity=16</code></pre>
+      <p>Біздің компиляторда сиымдылық 1, 2, 4, 8, 16 болып екі еседен өсті (басқа компиляторда басқаша болуы мүмкін). Осы себепті <code>push_back</code> орташа алғанда жылдам: көшіру сирек болады. Бір маңызды салдар: вектор көшкен кезде ескі мекенжайлар жарамсыз болады. Бұл тақырыпқа 3-аптада көрсеткіштермен оралғанда егжей-тегжейлі тоқталамыз.</p>
+
+      <h3 id="temps">Көрейік: температура тізімін оқу</h3>
+      <p>Вектордың басты пайдасы: элемент санын алдын ала білмесек те, оларды жинай аламыз. Қолданушыдан алдымен күн санын, сосын әр күннің температурасын сұрап, нөлден төмен күндерді санайық:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    int n;
+    std::cout &lt;&lt; "Қанша күн? ";
+    std::cin &gt;&gt; n;
+
+    std::vector&lt;int&gt; temps;
+    for (int i = 0; i &lt; n; i++) {
+        int t;
+        std::cin &gt;&gt; t;
+        temps.push_back(t);
+    }
+
+    int below = 0;
+    for (int t : temps) {
+        if (t &lt; 0) below++;
+    }
+    std::cout &lt;&lt; "нөлден төмен күндер: " &lt;&lt; below &lt;&lt; " / " &lt;&lt; temps.size() &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Қанша күн? 5
+-4 -1 3 7 0
+нөлден төмен күндер: 2 / 5</code></pre>
+      <p>Бес санның екеуі (-4 және -1) нөлден төмен. Бұл бағдарламада <code>int t;</code> айнымалысы цикл ішінде жарияланып, әр айналымда жаңадан жасалады, ал <code>temps.push_back(t)</code> оның көшірмесін векторға қояды. Вектор өсе бергендіктен, массивтің өлшемін алдын ала болжаудың қажеті жоқ. Бұл - C-массивке қарағанда векторды таңдаудың негізгі себебі.</p>
+      <h3 id="insert-erase">Ортасына қою және өшіру</h3>
+      <p><code>push_back</code> тек соңына қосады. Вектордың кез келген жеріне элемент қою үшін <code>insert</code>, өшіру үшін <code>erase</code> бар; олар орынды көрсетуге <em>итератор</em> алады (<code>v.begin() + i</code> - «бастан бастап i-ші орын»).</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+void show(const std::vector&lt;int&gt;&amp; v) {
+    for (int x : v) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+}
+
+int main() {
+    std::vector&lt;int&gt; v = {10, 20, 30, 40};
+    v.insert(v.begin() + 1, 99);      // 1-индекске қою
+    show(v);
+    v.erase(v.begin());               // бірінші элементті өшіру
+    show(v);
+    v.erase(v.begin() + 1, v.begin() + 3);   // [1, 3) аралығын өшіру
+    show(v);
+    v.clear();
+    std::cout &lt;&lt; "өлшемі: " &lt;&lt; v.size() &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+10 99 20 30 40 
+99 20 30 40 
+99 40 
+өлшемі: 0</code></pre>
+      <p>Бастапқы тізім: 10 20 30 40. <code>insert(v.begin() + 1, 99)</code> 99-ды екінші орынға қойды, қалғандары оңға жылжыды. <code>erase(v.begin())</code> бірінші элементті алып тастады. Үшінші жолда аралық өшірілді: <code>[begin + 1, begin + 3)</code> - 1-ші және 2-ші индекстер (20 мен 30), ал соңғы шекара кірмейді. Қалды: 99 және 40. <code>clear()</code> бәрін өшіреді.</p>
+      <p>Назар аударыңыз: ортаға қою мен өшіру баяу, себебі кейінгі барлық элементтерді жылжыту керек. Тізім ұзын болса және мұндай әрекет жиі болса, басқа контейнерді (<code>std::list</code>, <code>std::deque</code>) қарастыру керек, бірақ көп жағдайда <code>vector</code> бәрібір жеткілікті жылдам.</p>
+      <h2 id="range-for">Диапазонды for</h2>
+      <p>Элементтердің бәрін аралау үшін индексті санамай-ақ, <strong>диапазонды for</strong> (<span class="term-en">range-based for</span>) жазуға болады: <code>for (тип x : контейнер)</code>. Ол «контейнердің әр элементін алып, ол <code>x</code> болсын» дегенді білдіреді. Алғашында осы нұсқаны таңдаңыз: бір-бір қате (off-by-one) мүмкіндігі жоқ.</p>
+      <p>Бір нәзік жері бар: <code>x</code> элементтің <em>көшірмесі</em> ма, әлде <em>өзі</em> ме? Мұны мысалда көрейік:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; tenge = {1000, 2500, 400};
+
+    for (int x : tenge) x = x * 2;                  // көшірме: өзгермейді
+    for (int x : tenge) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+
+    for (int&amp; x : tenge) x = x * 2;                 // сілтеме: өзгереді
+    for (const int&amp; x : tenge) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+1000 2500 400 
+2000 5000 800 </code></pre>
+      <p>Бірінші циклде <code>int x</code> - көшірме, сондықтан <code>x * 2</code> оны ғана өзгертті, вектор өзгеріссіз қалды: <code>1000 2500 400</code>. Екінші циклде <code>int&amp; x</code> - <strong>сілтеме</strong> (<span class="term-en">reference</span>), яғни элементтің өзінің басқа аты, сондықтан өзгеріс векторға түседі. Үшінші, <code>const int&amp;</code> - тек оқуға арналған сілтеме, көшірме жасамайды. Ереже: өзгертпейтін болсаңыз, <code>const auto&amp;</code>; өзгертсеңіз, <code>auto&amp;</code>; шағын типтерді (<code>int</code>) көшіре беруге болады. Сілтемені 3-аптада толық түсіндіреміз.</p>
+
+      <h2 id="string">std::string</h2>
+      <p><code>std::string</code> - шын мәнінде таңбалар векторына өте ұқсас, бірақ мәтінмен жұмысқа арналған көптеген әдісі бар. Көбі <code>vector</code>-дегі сияқты: <code>size()</code>, <code>front()</code>, <code>back()</code>, <code>[]</code>, <code>push_back()</code>.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string city = "Almaty";
+    std::cout &lt;&lt; city.size() &lt;&lt; " " &lt;&lt; city.front() &lt;&lt; " " &lt;&lt; city.back() &lt;&lt; "\n";
+    std::cout &lt;&lt; city.substr(0, 3) &lt;&lt; "\n";           // 0-ден бастап 3 таңба
+    std::cout &lt;&lt; city.find("ma") &lt;&lt; "\n";             // 2
+    std::cout &lt;&lt; city.find("xyz") &lt;&lt; "\n";            // табылмаса, үлкен сан
+    std::cout &lt;&lt; (city.find("xyz") == std::string::npos) &lt;&lt; "\n";
+
+    city += " 2026";
+    city[0] = 'a';
+    std::cout &lt;&lt; city &lt;&lt; "\n";
+    city.erase(6);                                    // 6-индекстен бастап өшір
+    city.insert(0, "Ala-");
+    std::cout &lt;&lt; city &lt;&lt; "\n";
+    std::cout &lt;&lt; (std::string("ab") &lt; std::string("ac")) &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+6 A y
+Alm
+2
+18446744073709551615
+1
+almaty 2026
+Ala-almaty
+1</code></pre>
+      <p>Әдістерге түсініктеме:</p>
+      <ul>
+        <li><code>substr(бастау, ұзындық)</code> - ішкі жол.</li>
+        <li><code>find(мәтін)</code> - тапқан орнының индексін береді; таппаса <code>std::string::npos</code> (ең үлкен санның мәні) қайтарады. Сондықтан нәтижені <code>== std::string::npos</code> деп тексереміз.</li>
+        <li><code>+=</code> - жолды соңына жалғау; <code>erase(i)</code> - <code>i</code>-ден бастап соңына дейін өшіру; <code>insert(i, мәтін)</code> - ішке қою.</li>
+        <li>Жолдарды <code>==</code>, <code>&lt;</code> арқылы салыстыруға болады: сөздік (алфавит) ретімен.</li>
+      </ul>
+      <p>Таңбаларды бір-бірлеп өңдеуге болады. Төмендегі бағдарлама әріптерді үлкейтіп, әріп пен сан санын есептейді (<code>&lt;cctype&gt;</code> функциялары):</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;cctype&gt;
+
+int main() {
+    std::string s = "nauryz 2026";
+    int letters = 0, digits = 0;
+    for (char&amp; c : s) {
+        if (std::isalpha(static_cast&lt;unsigned char&gt;(c))) {
+            letters++;
+            c = std::toupper(static_cast&lt;unsigned char&gt;(c));
+        } else if (std::isdigit(static_cast&lt;unsigned char&gt;(c))) {
+            digits++;
+        }
+    }
+    std::cout &lt;&lt; s &lt;&lt; "\n";
+    std::cout &lt;&lt; "әріп: " &lt;&lt; letters &lt;&lt; ", сан: " &lt;&lt; digits &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+NAURYZ 2026
+әріп: 6, сан: 4</code></pre>
+      <h3 id="freq">Көрейік: әріптердің жиілігі</h3>
+      <p>Таңба да бүтін сан екенін (<code>'a'</code> = 97) еске алайық. Бұл жиілік массивін жасауға мүмкіндік береді: <code>c - 'a'</code> әріпті 0-ден 25-ке дейінгі индекске айналдырады (<code>'a' - 'a' = 0</code>, <code>'b' - 'a' = 1</code> және т.б.). Әр әріпке бір ұяшық, оған <code>++</code> жазамыз:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string text = "nauryz meyramy";
+    int count[26] = {0};
+    for (char c : text) {
+        if (c &gt;= 'a' &amp;&amp; c &lt;= 'z') count[c - 'a']++;
+    }
+    for (int i = 0; i &lt; 26; i++) {
+        if (count[i] &gt; 1) {
+            std::cout &lt;&lt; static_cast&lt;char&gt;('a' + i) &lt;&lt; ": " &lt;&lt; count[i] &lt;&lt; "\n";
+        }
+    }
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+a: 2
+m: 2
+r: 2
+y: 3</code></pre>
+      <p>Бағдарлама «nauryz meyramy» жолындағы бірнеше рет кездесетін әріптерді шығарды: <code>a</code> мен <code>m</code> және <code>r</code> екі реттен, <code>y</code> үш рет. Бұл - массивті «сөздік» ретінде қолданудың қарапайым үлгісі: индекс - кілт, ұяшықтағы сан - мән. Соңғы <code>static_cast&lt;char&gt;('a' + i)</code> индексті қайтадан әріпке түрлендіреді. Мұнда тек латын әріптері қолданылғанын ескеріңіз: кирилл әріптері үшін бұл тәсіл жұмыс істемейді (олар екі байт).</p>
+      <h3 id="utf8">UTF-8 және қазақ әріптері</h3>
+      <p>Мәтінге қатысты бір маңызды ескерту. Біздің жазатын қазақ әріптеріміз UTF-8 кодтауында екі байтқа дейін алады. <code>std::string</code> таңбаны емес, <strong>байтты</strong> санайды:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string a = "Almaty";
+    std::string b = "Алматы";
+    std::cout &lt;&lt; a &lt;&lt; ": " &lt;&lt; a.size() &lt;&lt; " байт\n";
+    std::cout &lt;&lt; b &lt;&lt; ": " &lt;&lt; b.size() &lt;&lt; " байт\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Almaty: 6 байт
+Алматы: 12 байт</code></pre>
+      <p>«Алматы» көзге 6 әріп, бірақ жолда 12 байт. Демек, қазақ мәтінінің <code>size()</code> мәні, <code>s[i]</code> және <code>substr</code> байт бойынша жұмыс істейді: «Алматы»-ның <code>s[0]</code> элементі бірінші әріптің <em>жарты</em> бөлігі. Осы себепті мәтінді таңбалап өңдейтін жаттығуларда латын әріптерін қолданамыз. Қазақ мәтінін әріптеп өңдеу үшін арнайы кітапхана (ICU) немесе <code>std::u32string</code> керек. Бұл курстан тыс, бірақ мәселенің барын білу маңызды.</p>
+
+      <h2 id="2d">Екі өлшемді контейнерлер</h2>
+      <p>Кестелер мен торлар үшін екі индекс керек: жол және бағана. Қазақ ою-өрнегінің бір бөлігін 3 жол және 4 бағанадан тұратын кесте ретінде сипаттайық. 1 - боялған ұяшық, 0 - бос:</p>
+      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 200" role="img" aria-label="Кесте: 3 жол мен 4 бағанадан тұратын екі өлшемді контейнер, pattern[жол][бағана] арқылы қол жеткізіледі" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m6" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="8" y="14" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">vector&lt;vector&lt;int&gt;&gt; ою (3 жол, 4 бағана)</text><text x="76" y="38" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">[0]</text><text x="128" y="38" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">[1]</text><text x="180" y="38" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">[2]</text><text x="232" y="38" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">[3]</text><text x="24" y="68" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">[0]</text><rect x="50" y="48" width="52" height="40" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6"/><text x="76" y="68" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:400">1</text><rect x="102" y="48" width="52" height="40" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="128" y="68" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:400">0</text><rect x="154" y="48" width="52" height="40" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="180" y="68" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:400">0</text><rect x="206" y="48" width="52" height="40" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6"/><text x="232" y="68" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:400">1</text><text x="24" y="114" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">[1]</text><rect x="50" y="94" width="52" height="40" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="76" y="114" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:400">0</text><rect x="102" y="94" width="52" height="40" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6"/><text x="128" y="114" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:400">1</text><rect x="154" y="94" width="52" height="40" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6"/><text x="180" y="114" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:400">1</text><rect x="206" y="94" width="52" height="40" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="232" y="114" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:400">0</text><text x="24" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">[2]</text><rect x="50" y="140" width="52" height="40" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6"/><text x="76" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:400">1</text><rect x="102" y="140" width="52" height="40" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="128" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:400">0</text><rect x="154" y="140" width="52" height="40" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.6"/><text x="180" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:400">0</text><rect x="206" y="140" width="52" height="40" style="fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.6"/><text x="232" y="160" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:14px;font-weight:400">1</text><text x="272" y="90" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">pattern[1][2] = 1</text><text x="272" y="112" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">алдымен жол,</text><text x="272" y="130" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">сосын бағана</text></svg><figcaption class="viz-note">Екі өлшемді контейнер - «векторлардың векторы». Бірінші индекс жолды, екіншісі бағананы таңдайды.</figcaption></figure>
+      <p>Мұндай кестені «векторлардың векторымен» жасаймыз: <code>std::vector&lt;std::vector&lt;int&gt;&gt;</code>. Әр жол - өз алдына вектор.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    // 3 жол, 4 бағана: ою-өрнектің бір бөлігі
+    std::vector&lt;std::vector&lt;int&gt;&gt; pattern = {
+        {1, 0, 0, 1},
+        {0, 1, 1, 0},
+        {1, 0, 0, 1},
+    };
+
+    for (const auto&amp; row : pattern) {
+        for (int cell : row) {
+            std::cout &lt;&lt; (cell ? '#' : '.');
+        }
+        std::cout &lt;&lt; "\n";
+    }
+    std::cout &lt;&lt; "pattern[1][2] = " &lt;&lt; pattern[1][2] &lt;&lt; "\n";
+    std::cout &lt;&lt; "жол: " &lt;&lt; pattern.size() &lt;&lt; ", бағана: " &lt;&lt; pattern[0].size() &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+#..#
+.##.
+#..#
+pattern[1][2] = 1
+жол: 3, бағана: 4</code></pre>
+      <p>Мұнда сыртқы цикл жолдарды (<code>row</code>) аралайды, ішкі цикл жолдың ұяшықтарын. <code>(cell ? '#' : '.')</code> - тернарлы оператор: 1 болса <code>#</code>, әйтпесе <code>.</code>. <code>pattern[1][2]</code> - алдымен жол (1), сосын бағана (2). Өлшемдерді табу: <code>pattern.size()</code> - жол саны, <code>pattern[0].size()</code> - бағана саны.</p>
+      <p>Екі өлшемді C-массив де бар, оның өлшемі алдын ала белгілі болуы керек. Үш дүкеннің төрт аптадағы сатылымы:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int sales[3][4] = {      // 3 дүкен, 4 апта (мың тг)
+        {120, 90, 150, 100},
+        {80, 110, 95, 130},
+        {60, 70, 85, 90},
+    };
+    for (int shop = 0; shop &lt; 3; shop++) {
+        int total = 0;
+        for (int week = 0; week &lt; 4; week++) total += sales[shop][week];
+        std::cout &lt;&lt; "дүкен " &lt;&lt; shop + 1 &lt;&lt; ": " &lt;&lt; total &lt;&lt; "\n";
+    }
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+дүкен 1: 460
+дүкен 2: 415
+дүкен 3: 305</code></pre>
+      <p><code>sales[shop][week]</code>: алдымен жол, сосын бағана. Қосындыны есептеу үшін ішкі цикл әр дүкеннің апталарын аралап шығады. Бірінші дүкен: 120 + 90 + 150 + 100 = 460.</p>
+
+      <h3 id="jagged">Әр жолы әртүрлі ұзындықты кесте</h3>
+      <p>«Векторлардың векторының» бір артықшылығы: ішкі векторлардың ұзындығы бірдей болуы міндетті емес. Наурыз тойындағы үстелдерді қарастырайық: әр үстелде әртүрлі адам саны отырады. Мұндай кесте <strong>тістелген</strong> (<span class="term-en">jagged</span>) деп аталады, оны C-массивпен жасау қиын, ал вектормен оңай:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+
+int main() {
+    // әр үстелде әртүрлі қонақ саны отыр
+    std::vector&lt;std::vector&lt;std::string&gt;&gt; tables(3);
+    tables[0] = {"Айгерім", "Нұрлан"};
+    tables[1] = {"Дәулет", "Мадина", "Ержан", "Әлия"};
+    tables[2].push_back("Бекзат");
+
+    for (std::size_t i = 0; i &lt; tables.size(); i++) {
+        std::cout &lt;&lt; "үстел " &lt;&lt; i + 1 &lt;&lt; " (" &lt;&lt; tables[i].size() &lt;&lt; " адам):";
+        for (const auto&amp; name : tables[i]) std::cout &lt;&lt; " " &lt;&lt; name;
+        std::cout &lt;&lt; "\n";
+    }
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+үстел 1 (2 адам): Айгерім Нұрлан
+үстел 2 (4 адам): Дәулет Мадина Ержан Әлия
+үстел 3 (1 адам): Бекзат</code></pre>
+      <p><code>tables(3)</code> - үш бос ішкі вектор жасайды. Әрқайсысына өз ұзындығымен мән береміз: үшіншісіне <code>push_back</code> арқылы бір ғана адам қостық. Цикл ішінде <code>tables[i].size()</code> әр үстелдің нақты өлшемін береді: жол ұзындықтарын қолмен есте сақтаудың қажеті жоқ. Ішкі циклде <code>const auto&amp; name</code> жазылғанына назар аударыңыз: жолдарды көшірмей, тек оқимыз. Бұл - өткен бөлімдегі <code>const auto&amp;</code> ережесінің қолданылуы.</p>
+      <h2 id="sorting">Сұрыптау</h2>
+      <p><strong>Сұрыптау</strong> (<span class="term-en">sorting</span>) - элементтерді белгілі ретпен (әдетте өсу ретімен) орналастыру. Алгоритмдердің ең қарапайымын қолмен жазып көрейік: бұл ойлау үшін пайдалы жаттығу.</p>
+      <h3 id="selection">Selection sort (таңдау арқылы)</h3>
+      <p>Идея: тізімнен ең кішісін тауып, оны бірінші орынға қоямыз; қалғанынан ең кішісін тауып, екінші орынға қоямыз; және т.б. Қолда карта бар адам оларды осылай ретке келтіреді.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;utility&gt;
+
+int main() {
+    std::vector&lt;int&gt; a = {29, 10, 14, 37, 13};
+    for (std::size_t i = 0; i + 1 &lt; a.size(); i++) {
+        std::size_t minIdx = i;
+        for (std::size_t j = i + 1; j &lt; a.size(); j++) {
+            if (a[j] &lt; a[minIdx]) minIdx = j;
+        }
+        std::swap(a[i], a[minIdx]);
+        std::cout &lt;&lt; "қадам " &lt;&lt; i + 1 &lt;&lt; ": ";
+        for (int x : a) std::cout &lt;&lt; x &lt;&lt; " ";
+        std::cout &lt;&lt; "\n";
+    }
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+қадам 1: 10 29 14 37 13 
+қадам 2: 10 13 14 37 29 
+қадам 3: 10 13 14 37 29 
+қадам 4: 10 13 14 29 37 </code></pre>
+      <p>Бастапқы тізім: 29, 10, 14, 37, 13. Бірінші қадамда ең кіші 10 табылып, 29-бен орын алмасты. Екінші қадамда қалғандағы (29, 14, 37, 13) ең кішісі 13 табылып, екінші орындағы 29-бен ауысты. Үшінші қадамда 14 өз орнында тұр, ауыстыру қажет болмады. Төртінші қадамда 29 мен 37 ауысты. Әр қадамнан кейін сол жақ бөлік сұрыпталып бітеді. Элементтер саны <code>n</code> болса, шамамен <code>n * n</code> салыстыру керек.</p>
+      <h3 id="bubble">Bubble sort (көпіршік арқылы)</h3>
+      <p>Идея: көршілес екі элементті салыстырамыз; егер олар қате тәртіппен тұрса, орнын ауыстырамыз. Тізімнің соңына дейін өткенде ең үлкен элемент су бетіне шыққан көпіршік сияқты соңына жетеді.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;utility&gt;
+
+int main() {
+    std::vector&lt;int&gt; a = {5, 1, 4, 2, 8};
+    for (std::size_t pass = 0; pass + 1 &lt; a.size(); pass++) {
+        bool swapped = false;
+        for (std::size_t j = 0; j + 1 &lt; a.size() - pass; j++) {
+            if (a[j] &gt; a[j + 1]) {
+                std::swap(a[j], a[j + 1]);
+                swapped = true;
+            }
+        }
+        std::cout &lt;&lt; "өту " &lt;&lt; pass + 1 &lt;&lt; ": ";
+        for (int x : a) std::cout &lt;&lt; x &lt;&lt; " ";
+        std::cout &lt;&lt; "\n";
+        if (!swapped) break;
+    }
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+өту 1: 1 4 2 5 8 
+өту 2: 1 2 4 5 8 
+өту 3: 1 2 4 5 8 </code></pre>
+      <p>Бірінші өтуде 5 саны оңға қарай жылжып, өзінен үлкен 8-ге жеткенше барлық кішілермен орын ауыстырды. Екінші өтуден кейін массив сұрыпталды, ал үшінші өтуде ауыстыру болмады (<code>swapped == false</code>), сондықтан цикл тоқтады. Бұл - жеңіл оңтайландыру: сұрыпталған тізімде артық жұмыс істемейміз.</p>
+      <h3 id="std-sort">std::sort</h3>
+      <p>Тәжірибеде өз алгоритміңізді жазбайсыз: стандартты кітапхана дайын, жылдам <code>std::sort</code> береді. <code>#include &lt;algorithm&gt;</code> керек. Ол <code>begin()</code> мен <code>end()</code> аралығын сұрыптайды:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;algorithm&gt;
+#include &lt;functional&gt;
+
+int main() {
+    std::vector&lt;int&gt; a = {29, 10, 14, 37, 13};
+    std::sort(a.begin(), a.end());
+    for (int x : a) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+
+    std::sort(a.begin(), a.end(), std::greater&lt;int&gt;());
+    for (int x : a) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+
+    std::vector&lt;std::string&gt; cities = {"Shymkent", "Astana", "Almaty", "Aktau"};
+    std::sort(cities.begin(), cities.end());
+    for (const auto&amp; c : cities) std::cout &lt;&lt; c &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+10 13 14 29 37 
+37 29 14 13 10 
+Aktau Almaty Astana Shymkent </code></pre>
+      <p>Үшінші аргумент - салыстыру ережесі: <code>std::greater&lt;int&gt;()</code> кему ретін береді. Жолдар алфавит ретімен сұрыпталады. <code>std::sort</code> шамамен <code>n * log n</code> қадамда жұмыс істейді, ол біздің <code>n * n</code> алгоритмдерден әлдеқайда жылдам: миллион элемент үшін айырмашылық - секунд пен сағат арасындағыдай. Әдеттегідей ереже: дайын құралды қолданыңыз, ал қолмен жазғаныңыз - алгоритмді түсіну үшін.</p>
+
+      <h3 id="algorithms">Басқа пайдалы алгоритмдер</h3>
+      <p><code>&lt;algorithm&gt;</code> және <code>&lt;numeric&gt;</code> кітапханаларында көптеген дайын құралдар бар. Олардың бәрі <code>begin()</code>/<code>end()</code> жұбын қабылдайды, сондықтан векторда да, массивте де жұмыс істейді. Бес жиі қолданылатыны:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;numeric&gt;
+
+int main() {
+    std::vector&lt;int&gt; v = {42, 7, 19, 88, 3, 19};
+
+    int total = std::accumulate(v.begin(), v.end(), 0);
+    std::cout &lt;&lt; "қосынды: " &lt;&lt; total &lt;&lt; "\n";
+
+    auto mx = std::max_element(v.begin(), v.end());
+    auto mn = std::min_element(v.begin(), v.end());
+    std::cout &lt;&lt; "ең үлкен: " &lt;&lt; *mx &lt;&lt; " (индекс " &lt;&lt; mx - v.begin() &lt;&lt; ")\n";
+    std::cout &lt;&lt; "ең кіші: " &lt;&lt; *mn &lt;&lt; "\n";
+    std::cout &lt;&lt; "19 саны: " &lt;&lt; std::count(v.begin(), v.end(), 19) &lt;&lt; " рет\n";
+
+    auto it = std::find(v.begin(), v.end(), 88);
+    std::cout &lt;&lt; "88 табылды ма? " &lt;&lt; (it != v.end()) &lt;&lt; "\n";
+
+    std::reverse(v.begin(), v.end());
+    for (int x : v) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+қосынды: 178
+ең үлкен: 88 (индекс 3)
+ең кіші: 3
+19 саны: 2 рет
+88 табылды ма? 1
+19 3 88 19 7 42 </code></pre>
+      <p><code>accumulate</code> қосындыны, <code>max_element</code> мен <code>min_element</code> ең үлкен және ең кіші элементтің <em>орнын</em> (итератор) береді; оның мәніне жету үшін алдына <code>*</code> қоямыз, ал индексті <code>mx - v.begin()</code> айырмасынан аламыз. <code>count</code> мәннің неше рет кездескенін санайды, <code>find</code> іздейді және табылмаса <code>end()</code> қайтарады, <code>reverse</code> тізімді аударады. Итераторды (<span class="term-en">iterator</span>) әзірге «элементке нұсқайтын көрсеткіш» деп түсінсеңіз жеткілікті, толық мағынасын 3-аптада көрсеткішті үйренгенде түсінесіз. Қалай болғанда да, ереже қарапайым: <strong>цикл жазбастан бұрын, дайын алгоритм бар ма екенін тексеріңіз</strong>.</p>
+      <h2 id="searching">Іздеу</h2>
+      <h3 id="linear">Сызықтық іздеу</h3>
+      <p>Ең қарапайым әдіс: тізімді басынан соңына дейін қарап шығамыз. Табылса, индексін қайтарамыз, таппасақ, <code>-1</code>:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int findIndex(const std::vector&lt;int&gt;&amp; v, int target) {
+    for (std::size_t i = 0; i &lt; v.size(); i++) {
+        if (v[i] == target) return static_cast&lt;int&gt;(i);
+    }
+    return -1;
+}
+
+int main() {
+    std::vector&lt;int&gt; numbers = {42, 7, 19, 88, 3};
+    std::cout &lt;&lt; "19 -&gt; " &lt;&lt; findIndex(numbers, 19) &lt;&lt; "\n";
+    std::cout &lt;&lt; "50 -&gt; " &lt;&lt; findIndex(numbers, 50) &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+19 -&gt; 2
+50 -&gt; -1</code></pre>
+      <p>Назар аударыңыз: функция векторды <code>const std::vector&lt;int&gt;&amp;</code> арқылы алды. Бұл «көшірмесіз, тек оқу үшін» дегенді білдіреді (3-аптада толық түсіндіреміз). Сызықтық іздеу <code>n</code> элементте ең көбі <code>n</code> қадам жасайды.</p>
+      <h3 id="binary">Екілік іздеу</h3>
+      <p>Тізім <strong>сұрыпталған</strong> болса, әлдеқайда ақылды әдіс бар. Сөздіктен сөз іздегенді еске алыңыз: ортасын ашасыз, іздеген сөзіңіз бұрын ма, кейін бе екенін білесіз де, қалған жартысына ауысасыз. Әр қадамда іздеу аймағы екі есе кішірейеді. Бұл - <strong>екілік іздеу</strong> (<span class="term-en">binary search</span>).</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int binarySearch(const std::vector&lt;int&gt;&amp; v, int target, int&amp; steps) {
+    int lo = 0, hi = static_cast&lt;int&gt;(v.size()) - 1;
+    steps = 0;
+    while (lo &lt;= hi) {
+        steps++;
+        int mid = lo + (hi - lo) / 2;
+        if (v[mid] == target) return mid;
+        if (v[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return -1;
+}
+
+int main() {
+    std::vector&lt;int&gt; sorted;
+    for (int i = 1; i &lt;= 100; i++) sorted.push_back(i * 3);   // 3, 6, ..., 300
+    int steps;
+    int idx = binarySearch(sorted, 213, steps);
+    std::cout &lt;&lt; "табылды: индекс " &lt;&lt; idx &lt;&lt; ", қадам саны: " &lt;&lt; steps &lt;&lt; "\n";
+    idx = binarySearch(sorted, 100, steps);
+    std::cout &lt;&lt; "100: индекс " &lt;&lt; idx &lt;&lt; ", қадам саны: " &lt;&lt; steps &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+табылды: индекс 70, қадам саны: 5
+100: индекс -1, қадам саны: 7</code></pre>
+      <p>100 элементтің ішінен 213-ті бар болғаны 5 қадамда таптық, ал жоқ сан (100) 7 қадамнан кейін жоқ деп шықты. Сызықтық іздеу 70 элемент қарар еді. Екілік іздеу <code>n</code> элементте шамамен <code>log2(n)</code> қадам жасайды: миллион элементте 20 қадам ғана. Бірақ есте сақтаңыз: екілік іздеу <em>тек сұрыпталған</em> деректе жұмыс істейді.</p>
+      <p>Кодтағы <code>lo + (hi - lo) / 2</code> - <code>(lo + hi) / 2</code>-нің қауіпсіз түрі: үлкен сандарда <code>lo + hi</code> толып кетуі мүмкін (өткен аптадағы тақырып). Ал <code>int&amp; steps</code> - қадам санын сыртқа қайтарудың тәсілі (сілтеме).</p>
+      <details class="think">
+        <summary>Ойланып көріңіз: екілік іздеу сұрыпталмаған тізімде не істейді?</summary>
+        <div class="details-body"><p>Нәтиже болжанбайды: алгоритм орталықтағы мәнге қарап, «іздеген сан сол жақта» деп шешеді, бірақ тізім ретсіз болғандықтан сан іс жүзінде оң жақта тұруы мүмкін. Бағдарлама бар санды «жоқ» деп айтуы мүмкін. Сондықтан алдымен <code>std::sort</code>, сосын іздеу.</p></div>
+      </details>
+
+      <h3 id="speed">Алгоритм қаншалықты жылдам?</h3>
+      <p>Алгоритмдерді салыстырғанда секундтарды емес, <em>қадам санын</em> қарайды, өйткені компьютер жылдамдығы әр қаралғанда өзгеріп тұрады. Тізімнің өлшемі <code>n</code> өскенде қадам саны қалай өсетінін көрейік:</p>
+      <table>
+        <thead><tr><th>Алгоритм</th><th>n = 10</th><th>n = 1000</th><th>n = 1 000 000</th></tr></thead>
+        <tbody>
+          <tr><td>Екілік іздеу (log<sub>2</sub> n)</td><td>~4</td><td>~10</td><td>~20</td></tr>
+          <tr><td>Сызықтық іздеу (n)</td><td>10</td><td>1000</td><td>1 000 000</td></tr>
+          <tr><td><code>std::sort</code> (n · log n)</td><td>~33</td><td>~10 000</td><td>~20 000 000</td></tr>
+          <tr><td>Selection / bubble (n · n)</td><td>100</td><td>1 000 000</td><td>1 000 000 000 000</td></tr>
+        </tbody>
+      </table>
+      <p>Бір миллион элементті сұрыптағанда <code>n * n</code> алгоритмі шамамен миллион миллион қадам жасайды: ол сағаттап жұмыс істейді. Ал <code>std::sort</code> шамамен жиырма миллион қадам жасайды, яғни секундтың бір бөлігі. Міне, сондықтан күрделі алгоритмдердің қажеті бар. Бұл ойлау тәсілі, яғни «тізім ұлғайғанда уақыт қалай өседі?», бағдарламалаудағы ең маңызды дағдылардың бірі. Мұны ресми түрде O-белгілеу (<span class="term-en">Big O notation</span>) дейді: сызықтық іздеу O(n), екілік іздеу O(log n), қарапайым сұрыптау O(n²), <code>std::sort</code> O(n log n).</p>
+      <h2 id="input-streams">Енгізу: getline және ағын мәселелері</h2>
+      <p>Өткен аптада <code>cin &gt;&gt; name</code> жолды бірінші бос орынға дейін ғана оқитынын айттық. Бүкіл жолды (бос орындарымен) оқу үшін <code>std::getline(std::cin, жол)</code> бар:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string fullName;
+    std::cout &lt;&lt; "Толық атыңыз: ";
+    std::getline(std::cin, fullName);
+    std::cout &lt;&lt; "Сәлем, " &lt;&lt; fullName &lt;&lt; "!\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Толық атыңыз: Айгерім Сәрсенбек
+Сәлем, Айгерім Сәрсенбек!</code></pre>
+      <p>Енді қауіпті жағдай: <code>cin &gt;&gt;</code> мен <code>getline</code> араласса не болады? Алдымен жасты, сосын атын сұрайық:</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    int age;
+    std::string name;
+    std::cout &lt;&lt; "Жасыңыз: ";
+    std::cin &gt;&gt; age;
+    std::cout &lt;&lt; "Атыңыз: ";
+    std::getline(std::cin, name);
+    std::cout &lt;&lt; "[" &lt;&lt; name &lt;&lt; "] " &lt;&lt; age &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Жасыңыз: 17
+Атыңыз: [] 17</code></pre>
+      <p>Ат бос шықты! Неге? Қолданушы <code>17</code> жазып Enter басты. <code>cin &gt;&gt; age</code> тек <code>17</code> санын алды, ал Enter басқанда түскен <strong>жаңа жол таңбасы</strong> (<code>\n</code>) ағында қалды. Кейін <code>getline</code> келіп, жолдың басында-ақ осы <code>\n</code>-ды көрді де, «бос жол» деп есептеп, бірден тоқтады. Шешім: <code>getline</code> алдында қалған жаңа жолды <code>cin.ignore</code> арқылы тастау.</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+#include &lt;limits&gt;
+
+int main() {
+    int age;
+    std::string name;
+    std::cout &lt;&lt; "Жасыңыз: ";
+    std::cin &gt;&gt; age;
+    std::cin.ignore(std::numeric_limits&lt;std::streamsize&gt;::max(), '\n');
+    std::cout &lt;&lt; "Атыңыз: ";
+    std::getline(std::cin, name);
+    std::cout &lt;&lt; "[" &lt;&lt; name &lt;&lt; "] " &lt;&lt; age &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Жасыңыз: 17
+Атыңыз: Нұрлан
+[Нұрлан] 17</code></pre>
+      <p><code>std::numeric_limits&lt;std::streamsize&gt;::max()</code> - «қанша таңбаға дейін болса да», ал <code>'\n'</code> - «жаңа жолға дейін» деген мағына. Нәтижесінде жол тазаланады.</p>
+      <h3 id="cin-fail">Қате енгізу</h3>
+      <p>Қолданушы сан орнына мәтін жазса, <code>cin</code> «істен шығады» (fail күйіне өтеді):</p>
+      <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int n = -1;
+    std::cout &lt;&lt; "Сан енгізіңіз: ";
+    std::cin &gt;&gt; n;
+    if (std::cin.fail()) {
+        std::cout &lt;&lt; "бұл сан емес, n = " &lt;&lt; n &lt;&lt; "\n";
+    } else {
+        std::cout &lt;&lt; "сан: " &lt;&lt; n &lt;&lt; "\n";
+    }
+    return 0;
+}</code></pre>
+      <pre class="terminal"><code class="language-plaintext">$ ./main
+Сан енгізіңіз: қырық
+бұл сан емес, n = 0</code></pre>
+      <p>Бұл жағдайда <code>n</code> нөлге тең болды (C++11-ден бастап сәтсіз оқу нөл қояды), ал <code>std::cin.fail()</code> дұрыс емес енгізуді анықтайды. Одан әрі оқу үшін ағынды <code>cin.clear()</code> арқылы қалпына келтіріп, қалған таңбаларды <code>cin.ignore(...)</code> арқылы тазалау керек. Бұл күрделі мәселе, ол кейінгі апталарда қайта айтылады. Әзірге түсінетініміз: <em>пернетақтадан оқу - сенімсіз қадам, оны әрдайым тексеру керек</em>.</p>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul>
+        <li><strong>Индекс шекарадан шығу.</strong> <code>a[5]</code> бес элементті массивте жоқ. Дұрыс диапазон: 0-ден <code>size() - 1</code>-ге дейін.</li>
+        <li><strong><code>&lt;=</code> орнына <code>&lt;</code> қою керек.</strong> <code>for (i = 0; i &lt;= v.size(); i++)</code> - шекарадан шығады. Диапазонды <code>for</code> қолданыңыз.</li>
+        <li><strong>Бос векторға <code>v[0]</code>.</strong> Бос векторда бірде-бір элемент жоқ. Алдымен <code>empty()</code> тексеріңіз.</li>
+        <li><strong><code>int</code> мен <code>size()</code> салыстыру.</strong> Ескерту береді: <code>size()</code> таңбасыз. <code>std::size_t</code> қолданыңыз.</li>
+        <li><strong>Диапазонды <code>for</code>-да көшірмені өзгерту.</strong> Элементті өзгерткіңіз келсе, <code>auto&amp;</code>.</li>
+        <li><strong>Сұрыпталмаған деректе екілік іздеу.</strong> Нәтиже қате.</li>
+        <li><strong><code>cin &gt;&gt;</code> артынан <code>getline</code>.</strong> Жаңа жол ағында қалады, <code>cin.ignore</code> керек.</li>
+        <li><strong>Қазақ әріптерін байт ретінде санау.</strong> <code>size()</code> байтты береді.</li>
+        <li><strong><code>find</code> нәтижесін тексермеу.</strong> Табылмаса, <code>npos</code> қайтады.</li>
+      </ul>
+
+      <h2 id="summary">Қорытынды</h2>
+      <ul>
+        <li>Контейнер көп мәнді бір атпен сақтайды; индекс 0-ден басталады.</li>
+        <li>C-массив шекараны тексермейді; <code>std::array</code> - тіркелген өлшемді қауіпсіз нұсқа; <code>std::vector</code> - өсетін әдепкі таңдау.</li>
+        <li><code>vector</code>: <code>push_back</code>, <code>pop_back</code>, <code>size</code>, <code>at</code> (шекараны тексереді), <code>capacity</code> екі еселеп өседі.</li>
+        <li>Диапазонды <code>for</code>: <code>auto</code> көшіреді, <code>auto&amp;</code> өзгертеді, <code>const auto&amp;</code> тек оқиды.</li>
+        <li><code>std::string</code>: <code>substr</code>, <code>find</code>, <code>erase</code>, <code>insert</code>; кирилл әріптері UTF-8-де екі байт.</li>
+        <li>Екі өлшемді контейнер: <code>vector&lt;vector&lt;int&gt;&gt;</code>, индекс <code>[жол][бағана]</code>.</li>
+        <li>Selection және bubble sort - түсіну үшін; тәжірибеде <code>std::sort</code>. Сызықтық іздеу кез келген тізімде, екілік іздеу тек сұрыпталғанда.</li>
+        <li><code>getline</code> бүкіл жолды оқиды; <code>cin &gt;&gt;</code> артынан <code>cin.ignore</code> қажет.</li>
+      </ul>
+      <p>Келесі аптада жадтың өзіне терең үңілеміз: мекенжай, көрсеткіш, сілтеме, stack және heap.</p>
+      <p>Өзіңізді тексеріп көріңіз:</p>
+      <ul class="checklist" data-id="cpp2-self">
+        <li><input type="checkbox"> <span>Массив пен вектордың айырмашылығын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span><code>[]</code> мен <code>at()</code> айырмасын білемін.</span></li>
+        <li><input type="checkbox"> <span>Диапазонды <code>for</code> көшірме мен сілтемені қалай жасайтынын білемін.</span></li>
+        <li><input type="checkbox"> <span>Selection sort пен bubble sort қадамдарын қолмен орындай аламын.</span></li>
+        <li><input type="checkbox"> <span><code>cin &gt;&gt;</code> мен <code>getline</code> араласқанда не болатынын түсіндіре аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Өзіңізді тексеріңіз</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. Бағдарлама не шығарады? <code>int a[4] = {3, 6, 9, 12}; std::cout &lt;&lt; a[a[0] / 3];</code></p>
+<label><input type="radio" value="a"> <code>3</code></label>
+<label><input type="radio" value="b"> <code>9</code></label>
+<label><input type="radio" value="c"> <code>6</code></label>
+<label><input type="radio" value="d"> <code>1</code></label>
+<p class="explain"><code>a[0] / 3 = 3 / 3 = 1</code>, демек <code>a[1] = 6</code>.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. <code>std::vector&lt;int&gt; v(3, 7); v.push_back(1);</code> кодынан кейін <code>v.size()</code> неге тең?</p>
+<label><input type="radio" value="a"> 3</label>
+<label><input type="radio" value="b"> 4</label>
+<label><input type="radio" value="c"> 7</label>
+<label><input type="radio" value="d"> 8</label>
+<p class="explain"><code>v(3, 7)</code> - үш элемент (7, 7, 7), <code>push_back</code> төртіншіні қосады: өлшемі 4.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">3. Қайсысы шекарадан шыққанда ерекше жағдай (exception) лақтырады?</p>
+<label><input type="radio" value="a"> <code>v[10]</code></label>
+<label><input type="radio" value="b"> <code>v.front()</code></label>
+<label><input type="radio" value="c"> <code>v.size()</code></label>
+<label><input type="radio" value="d"> <code>v.at(10)</code></label>
+<p class="explain"><code>at()</code> шекараны тексеріп, <code>std::out_of_range</code> лақтырады. <code>[]</code> тексермейді: анықталмаған мінез.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">4. Төмендегі кодтан кейін <code>v</code> мәндері қандай? <code>std::vector&lt;int&gt; v = {1, 2, 3}; for (int x : v) x = x * 10;</code></p>
+<label><input type="radio" value="a"> <code>1 2 3</code>, өйткені <code>x</code> - көшірме</label>
+<label><input type="radio" value="b"> <code>10 20 30</code></label>
+<label><input type="radio" value="c"> <code>10 2 3</code></label>
+<label><input type="radio" value="d"> Компиляция қатесі</label>
+<p class="explain"><code>int x</code> - көшірме. Көшірмені өзгерту векторға әсер етпейді. Өзгерту үшін <code>int&amp; x</code> керек.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">5. Selection sort қалай жұмыс істейді?</p>
+<label><input type="radio" value="a"> Көрші элементтерді салыстырып, қате тұрғандарын ауыстырады</label>
+<label><input type="radio" value="b"> Тізімді екіге бөліп, әрқайсысын жеке сұрыптайды</label>
+<label><input type="radio" value="c"> Қалған бөліктен ең кіші элементті тауып, оны келесі орынға қояды</label>
+<label><input type="radio" value="d"> Кездейсоқ ауыстырып, сұрыпталғанша қайталайды</label>
+<p class="explain">Selection sort: әр қадамда сұрыпталмаған бөліктің ең кішісін таңдап, бастапқы орынға қояды. Бірінші нұсқа - bubble sort сипаттамасы.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. Екілік іздеуді қолдану үшін негізгі шарт қайсы?</p>
+<label><input type="radio" value="a"> Тізімде тек оң сандар болуы</label>
+<label><input type="radio" value="b"> Тізім сұрыпталған болуы</label>
+<label><input type="radio" value="c"> Тізімнің өлшемі екінің дәрежесі болуы</label>
+<label><input type="radio" value="d"> Тізімде қайталанатын мән болмауы</label>
+<p class="explain">Екілік іздеу ортасындағы мәнге қарап жартысын тастайды, бұл тек тізім сұрыпталғанда ғана дұрыс.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">7. <code>int age; std::string name; std::cin &gt;&gt; age; std::getline(std::cin, name);</code> кодында <code>name</code> неге бос шығуы мүмкін?</p>
+<label><input type="radio" value="a"> <code>getline</code> тек латын әріптерін оқиды</label>
+<label><input type="radio" value="b"> <code>age</code> оқылмай қалады</label>
+<label><input type="radio" value="c"> <code>name</code> типі дұрыс емес</label>
+<label><input type="radio" value="d"> <code>cin &gt;&gt; age</code> Enter-дің жаңа жол таңбасын ағында қалдырады, <code>getline</code> оны бос жол деп алады</label>
+<p class="explain">Санды оқығаннан кейін <code>\n</code> ағында қалады. <code>getline</code> оны бірден көріп, бос жолмен тоқтайды. Шешім: <code>cin.ignore(...)</code>.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">8. <code>std::string s = "Қазақ";</code> болса, <code>s.size()</code> неге тең (UTF-8)?</p>
+<label><input type="radio" value="a"> 10</label>
+<label><input type="radio" value="b"> 5</label>
+<label><input type="radio" value="c"> 6</label>
+<label><input type="radio" value="d"> 20</label>
+<p class="explain">«Қазақ» - 5 кирилл әрпі, әрқайсысы 2 байт, барлығы 10 байт. <code>size()</code> байтты санайды.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
+
+      <details class="think">
+        <summary>Қосымша ойлану сұрақтары (жауабы жоқ, өзіңіз іздеңіз)</summary>
+        <div class="details-body">
+          <ul>
+            <li>Егер bubble sort-тың ішкі циклін <code>j + 1 &lt; a.size()</code> емес, <code>j &lt; a.size()</code> деп жазсақ, қандай қате болады?</li>
+            <li>Екілік іздеуде <code>mid = (lo + hi) / 2</code> орнына <code>lo + (hi - lo) / 2</code> жазудың себебі қандай?</li>
+            <li>Бос векторда <code>v.back()</code> шақырса не болады? <code>at()</code> көмектесе ме?</li>
+            <li>Қазақ әріптері бар жолды әріп-әріппен қауіпсіз қалай аралауға болады деп ойлайсыз?</li>
+          </ul>
+        </div>
+      </details>
+
+      <h2 id="exercises">Жаттығулар</h2>
+      <p>Жауабы бар тапсырмаларды осы жерде тексеріңіз, ал бағдарлама жазатындарды өз компьютеріңізде іске қосып, тексеру тізімімен салыстырыңыз.</p>
+<div class="task">
+<div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="c2-t1">Массив индексі</h3></div>
+<p>Бағдарлама не шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+
+int main() {
+    int a[5] = {10, 20, 30, 40, 50};
+    std::cout &lt;&lt; a[1] + a[3] &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="60"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Индекс 0-ден басталады: <code>a[1]</code> - екінші, <code>a[3]</code> - төртінші элемент.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>a[1] = 20</code>, <code>a[3] = 40</code>, қосындысы 60.</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+60</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="c2-t2">Вектор өлшемі</h3></div>
+<p>Бағдарлама не шығарады?</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v;
+    v.push_back(4);
+    v.push_back(9);
+    v.push_back(2);
+    v.pop_back();
+    std::cout &lt;&lt; v.size() + v.back() &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="11"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Үш элемент қосылды, біреуі өшірілді. Кейін қалған соңғы элементті тап.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Қосқаннан кейін {4, 9, 2}, <code>pop_back</code> 2-ні өшірді: {4, 9}. <code>size() = 2</code>, <code>back() = 9</code>, қосындысы 11.</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+11</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge medium">Орташа</span><h3 id="c2-t3">Жолды өзгерту</h3></div>
+<p>Бағдарлама не шығарады? (Жауабы жолдан және санның өзінен тұрады, арасында бос орын жоқ.)</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string s = "nauryz";
+    s[0] = 'N';
+    s.erase(4);
+    std::cout &lt;&lt; s &lt;&lt; s.size() &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="Naur4"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Алдымен <code>s</code> = «Nauryz». <code>erase(4)</code> 4-индекстен бастап соңына дейін жояды: N(0) a(1) u(2) r(3) y(4) z(5).</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p><code>s[0] = 'N'</code> → «Nauryz». <code>erase(4)</code> «yz»-ді өшіреді → «Naur». Ұзындығы 4. Шығады: <code>Naur4</code>.</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+Naur4</code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge medium">Орташа</span><h3 id="c2-t4">Bubble sort-тың бір өтуі</h3></div>
+<p>Бағдарлама көпіршіктің <em>бір ғана өтуін</em> жасайды. Қандай массив шығады? Сандарды бос орынмен ажыратып жазыңыз.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;utility&gt;
+
+int main() {
+    std::vector&lt;int&gt; a = {5, 1, 4, 2, 8};
+    for (std::size_t j = 0; j + 1 &lt; a.size(); j++) {
+        if (a[j] &gt; a[j + 1]) std::swap(a[j], a[j + 1]);
+    }
+    for (int x : a) std::cout &lt;&lt; x &lt;&lt; " ";
+    std::cout &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="1 4 2 5 8"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Көршілерді жұптап салыстырыңыз: (5,1), (5,4), (5,2), (5,8). Үлкені оңға жылжиды.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Бастапқы: 5 1 4 2 8. (5,1) ауысады → 1 5 4 2 8. (5,4) → 1 4 5 2 8. (5,2) → 1 4 2 5 8. (5,8) ауыспайды.</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+1 4 2 5 8 </code></pre></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge hard">Қиын</span><h3 id="c2-t5">Екілік іздеу қадамдары</h3></div>
+<p>1-ден 100-ге дейінгі сандар тізімінен <code>99</code> санын екілік іздеумен іздейміз (<code>mid = (lo + hi) / 2</code>, индекстер 0-ден 99-ға дейін). Бағдарлама қанша қадам санайды? Өз бағдарламаңызды жазып тексеріңіз.</p>
+<pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; v;
+    for (int i = 1; i &lt;= 100; i++) v.push_back(i);
+    int target = 99;
+    int lo = 0, hi = static_cast&lt;int&gt;(v.size()) - 1, steps = 0;
+    while (lo &lt;= hi) {
+        steps++;
+        int mid = (lo + hi) / 2;
+        if (v[mid] == target) break;
+        if (v[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    std::cout &lt;&lt; steps &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<div class="answer-check" data-answer="6"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p>Қолмен орындап көріңіз: <code>lo=0, hi=99</code>. <code>mid=49</code> → мәні 50 &lt; 99 → <code>lo=50</code>. Келесі <code>mid=74</code>... Әр қадамда ауқым шамамен екі есе кішірейеді.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><p>Қадамдар (индекс → мән): 49→50, 74→75, 87→88, 93→94, 96→97, 98→99 (табылды). Барлығы 6 қадам.</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+6</code></pre></div></details>
+<details open><summary>Өзін тексеру тізімі</summary><div class="details-body"><ul class="checklist" data-id="c2-t5">
+<li><input type="checkbox"> <span><code>-Wall -Wextra</code> ескертусіз құрастырылады.</span></li>
+<li><input type="checkbox"> <span>99 үшін 6 қадам шығады.</span></li>
+<li><input type="checkbox"> <span>37 үшін 3 қадам (қолмен тексердім).</span></li>
+<li><input type="checkbox"> <span>Жоқ сан үшін (мысалы, 101) бағдарлама тоқтайды, шексіз циклге түспейді.</span></li>
+</ul><p class="progress"></p></div></details>
+</div>
+<div class="task">
+<div class="task-head"><span class="badge hard">Қиын</span><h3 id="c2-t6">Әріп санау</h3></div>
+<p>Қолданушыдан бүкіл жолды <code>getline</code> арқылы оқып, ондағы <code>a</code> әрпінің санын шығаратын бағдарлама жазыңыз. Енгізу: <code>astana almaty aktau</code>. Нәтиже қандай?</p>
+<div class="answer-check" data-answer="astana almaty aktau 7"><input type="text" placeholder="Жауап" aria-label="Жауап"><button class="btn secondary" type="button">Тексеру</button><span class="result"></span></div>
+<details><summary>Кеңес</summary><div class="details-body"><p><code>std::getline(std::cin, line);</code> және <code>for (char c : line) if (c == 'a') count++;</code>. Таңба салыстырғанда бір тырнақша қолданылады.</p></div></details>
+<details><summary>Шешімі</summary><div class="details-body"><pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::string line;
+    std::getline(std::cin, line);
+    int count = 0;
+    for (char c : line) {
+        if (c == 'a') count++;
+    }
+    std::cout &lt;&lt; count &lt;&lt; "\n";
+    return 0;
+}</code></pre>
+<p>«astana» - 3, «almaty» - 2, «aktau» - 2. Барлығы 7. Іске қосқанда:</p>
+<pre class="terminal"><code class="language-plaintext">$ ./main
+astana almaty aktau
+7</code></pre></div></details>
+<details open><summary>Өзін тексеру тізімі</summary><div class="details-body"><ul class="checklist" data-id="c2-t6">
+<li><input type="checkbox"> <span>Бос орындары бар жол дұрыс оқылады (<code>cin &gt;&gt;</code> емес, <code>getline</code>).</span></li>
+<li><input type="checkbox"> <span><code>a</code> әріпі жоқ жолда 0 шығады.</span></li>
+<li><input type="checkbox"> <span>Бас әріп <code>A</code> есептелмейді (сұрауға орай), мұны түсіндіре аламын.</span></li>
+</ul><p class="progress"></p></div></details>
+</div>
+
+
+      <nav class="pager">
+        <a href="week-1.html"><small>Алдыңғы</small>← 1-апта: Шарттар, циклдер және функциялар</a>
+        <a class="next" href="week-3.html"><small>Келесі</small>3-апта: Жад, көрсеткіштер және сілтемелер →</a>
+      </nav>
+
+      <p class="translator-note">Бұл лекция - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 лекциясының аудармасы емес, онан мәтін алынбаған. Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+    </article>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+
+</body>
+</html>

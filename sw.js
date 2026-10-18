@@ -13,7 +13,7 @@ const CORE = [
   "lectures/ai.html", "lectures/week-8.html", "lectures/week-9.html", "lectures/week-10.html",
 ];
 // Дербес курстар (cpp, java): тізімді tools/build.py тек бар файлдармен толтырады (жоқ файл addAll-ды құлатпасын)
-CORE.push(.../*own-courses:begin*/["cpp/index.html", "cpp/data/lectures.js", "cpp/lectures/week-0.html", "cpp/lectures/week-1.html", "cpp/lectures/week-4.html", "cpp/lectures/week-5.html", "cpp/lectures/week-6.html", "java/index.html", "java/data/lectures.js", "java/lectures/week-0.html", "java/lectures/week-1.html", "java/lectures/week-4.html", "java/lectures/week-5.html"]/*own-courses:end*/);
+CORE.push(.../*own-courses:begin*/["cpp/index.html", "cpp/data/lectures.js", "cpp/lectures/week-0.html", "cpp/lectures/week-1.html", "cpp/lectures/week-2.html", "cpp/lectures/week-3.html", "cpp/lectures/week-4.html", "cpp/lectures/week-5.html", "cpp/lectures/week-6.html", "cpp/lectures/week-7.html", "java/index.html", "java/data/lectures.js", "java/lectures/week-0.html", "java/lectures/week-1.html", "java/lectures/week-2.html", "java/lectures/week-4.html", "java/lectures/week-5.html", "java/lectures/week-6.html"]/*own-courses:end*/);
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
