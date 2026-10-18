@@ -12,7 +12,7 @@
 |---|---|
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
-| B · Sagid Mustafa-ның дербес әзірлемесі | 357 |
+| B · Sagid Mustafa-ның дербес әзірлемесі | 364 |
 | C · Үшінші тарап | 19 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 55 |
 
@@ -20,8 +20,8 @@
 
 | Файл / жол | Компонент | Құқық иесі | Лицензия | Статус |
 |---|---|---|---|---|
-| `cpp/**` | **B-course-cpp** C++ бағдарламалау: дербес авторлық курс (cpp/ лекциялары, курс беті) (7 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
-| `java/**` | **B-course-java** Java бағдарламалау: дербес авторлық курс (java/ лекциялары, курс беті) (6 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `cpp/**` | **B-course-cpp** C++ бағдарламалау: дербес авторлық курс (cpp/ лекциялары, курс беті) (10 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `java/**` | **B-course-java** Java бағдарламалау: дербес авторлық курс (java/ лекциялары, курс беті) (10 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `sources/**` | **A1-sources** Оригинальные тексты Harvard CS50 (конспекты и problem sets), сохранённые для перевода (141 файл) | David J. Malan, Carter Zenke, Brian Yu, Harvard University / CS50 (по заголовкам sources/*/README.md) | CC BY-NC-SA 4.0 | расталған |
 | `lectures/*.html` | **A2-lectures-x** CS50x: 12 лекций (перевод и адаптация) (12 файл) | Оригинал: David J. Malan, Harvard / CS50. Перевод и адаптация: Sagid Mustafa | CC BY-NC-SA 4.0 | расталған |
 | `python/lectures/*.html` | **A2-lectures-python** CS50P (Python): 10 лекций (10 файл) | Оригинал: David J. Malan, Harvard / CS50. Перевод и адаптация: Sagid Mustafa | CC BY-NC-SA 4.0 | расталған |

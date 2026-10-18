@@ -5,11 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>C++ 3-апта: Жад, көрсеткіштер және сілтемелер - CS50 қазақша</title>
   <!-- build:head -->
-  <meta name="theme-color" content="#4f46e5">
+  <meta name="theme-color" content="#0a4c7a">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:title" content="C++ 3-апта: Жад, көрсеткіштер және сілтемелер - CS50 қазақша">
+  <meta property="og:description" content="C++ 3-апта: жад мекенжайы, көрсеткіштер, сілтемелер, stack және heap, new/delete, жад ағуы, RAII, unique_ptr/shared_ptr және AddressSanitizer.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-3.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-3.html">
-  <meta name="copyright" content="© 2026 Sagid Mustafa, All Rights Reserved. Авторлық оқу материалы.">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"C++ 3-апта: Жад, көрсеткіштер және сілтемелер - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-3.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"copyrightNotice":"© 2026 Sagid Mustafa, All Rights Reserved. Авторлық оқу материалы."}</script>
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"C++ 3-апта: Жад, көрсеткіштер және сілтемелер - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/cpp/lectures/week-3.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
   <meta name="description" content="C++ 3-апта: жад мекенжайы, көрсеткіштер, сілтемелер, stack және heap, new/delete, жад ағуы, RAII, unique_ptr/shared_ptr және AddressSanitizer.">
   <meta name="author" content="Sagid Mustafa">
@@ -20,7 +33,7 @@
   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
   <script src="../../assets/js/main.js"></script>
 </head>
-<body data-license="A">
+<body data-license="B">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
   <header class="topbar">
     <div class="topbar-inner">
@@ -74,11 +87,11 @@ int main() {
 }</code></pre>
       <pre class="terminal"><code class="language-plaintext">$ ./main
 age мәні:        17
-age мекенжайы:   0x7fa949500020
+age мекенжайы:   0x7f3cf4b00020
 heap мекенжайы:  0x502000000010
 sizeof(int*) = 8 байт</code></pre>
       <p>Мекенжайлар он алтылық (<code>0x...</code>) жүйесінде жазылады. Сіздің компьютеріңізде олар басқаша шығады, бағдарламаны келесі рет іске қосқанда да өзгереді: оған алаңдамаңыз, бұл қалыпты. Екі мекенжайдың түрі де бөлек: <code>age</code> стекте (<code>0x7f...</code>-пен басталады), ал <code>new</code> арқылы алынған орын үймеде (мұнда <code>0x5020...</code>) жатыр. Бұл екі аймақ туралы кейінірек айтамыз. <code>sizeof(int*)</code> - 8 байт: мекенжайдың өзі де жадта орын алады, 64-биттік жүйеде ол 8 байт.</p>
-      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 196" role="img" aria-label="Диаграмма: age айнымалысы 17 мәнін сақтайды және мекенжайы бар; p көрсеткіші сол мекенжайды сақтап, age-ге нұсқайды" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m7" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="8" y="14" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Көрсеткіш - мекенжай жазылған қағаз</text><rect x="10" y="40" width="150" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="85.0" y="67.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">int age = 17</text><text x="85.0" y="85.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">мән үйдің ішінде</text><text x="85" y="126" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">мекенжай: 0x7ffc10</text><rect x="240" y="40" width="150" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="315.0" y="67.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">int* p = &amp;age</text><text x="315.0" y="85.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">p-да мекенжай</text><text x="315" y="126" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">p-ның өз орны бар</text><polyline points="240,75 162,75" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m7)"/><text x="201" y="62" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">p -&gt; age</text><text x="8" y="156" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">*p  = «p көрсеткен үйге кіріп, ішіндегіні ал»</text><text x="8" y="178" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">&amp;age = «age үйінің мекенжайын ал»</text></svg><figcaption class="viz-note">Көрсеткіш - мәннің өзі емес, мәннің мекенжайы. Шаңырақ астындағы үйді мекенжай арқылы табатынымыз сияқты.</figcaption></figure>
+      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 196" role="img" aria-label="Диаграмма: age айнымалысы 17 мәнін сақтайды және мекенжайы бар; p көрсеткіші сол мекенжайды сақтап, age-ге нұсқайды" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="8" y="14" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Көрсеткіш - мекенжай жазылған қағаз</text><rect x="10" y="40" width="150" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="85.0" y="67.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">int age = 17</text><text x="85.0" y="85.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">мән үйдің ішінде</text><text x="85" y="126" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">мекенжай: 0x7ffc10</text><rect x="240" y="40" width="150" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="315.0" y="67.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">int* p = &amp;age</text><text x="315.0" y="85.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">p-да мекенжай</text><text x="315" y="126" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">p-ның өз орны бар</text><polyline points="240,75 162,75" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m10)"/><text x="201" y="62" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">p -&gt; age</text><text x="8" y="156" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">*p  = «p көрсеткен үйге кіріп, ішіндегіні ал»</text><text x="8" y="178" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">&amp;age = «age үйінің мекенжайын ал»</text></svg><figcaption class="viz-note">Көрсеткіш - мәннің өзі емес, мәннің мекенжайы. Шаңырақ астындағы үйді мекенжай арқылы табатынымыз сияқты.</figcaption></figure>
 
       <h2 id="pointers">Көрсеткіш: * және &amp;</h2>
       <p>Көрсеткіш - мекенжайды сақтайтын айнымалы. Оны жариялау: <code>тип* аты</code>. Мысалы, <code>int* p</code> - «int-ке көрсететін көрсеткіш p». Үш ұғымды қатар үйренейік:</p>
@@ -293,8 +306,8 @@ int main() {
 main.cpp:6:24: runtime error: load of null pointer of type 'int'
 AddressSanitizer:DEADLYSIGNAL
 =================================================================
-==15338==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x55d21d1343f5 bp 0x7ffdda685730 sp 0x7ffdda685720 T0)
-==15338==The signal is caused by a READ memory access.
+==19561==ERROR: AddressSanitizer: SEGV on unknown address 0x000000000000 (pc 0x562806fd83f5 bp 0x7ffd8d283600 sp 0x7ffd8d2835f0 T0)
+==19561==The signal is caused by a READ memory access.
 ...</code></pre>
       <p>Санитайзер «load of null pointer», ал AddressSanitizer «SEGV on unknown address 0x000000000000» деп тіке айтты. Санитайзерсіз осы бағдарлама «Segmentation fault» хабарымен тоқтайды. «Segfault» дегеніміз - бағдарлама өзіне рұқсат етілмеген жадқа қол жеткізді дегенді білдіреді. (Ескі C кодында <code>NULL</code> немесе <code>0</code> қолданылады, қазіргі C++ үшін <code>nullptr</code> дұрыс.)</p>
 
@@ -345,7 +358,7 @@ main.cpp:6:7: error: assignment of read-only variable ‘q’
         <li><strong>Стек</strong> (<span class="term-en">stack</span>). Жергілікті айнымалылар осында тұрады. Функция шақырылғанда оның айнымалылары үшін кадр жасалады, функция аяқталғанда кадр өзі жойылады. Өте жылдам, автоматты, бірақ өлшемі шектеулі (әдетте бірнеше мегабайт) және деректердің өмір сүру уақыты функциямен байланысты.</li>
         <li><strong>Үйме</strong> (<span class="term-en">heap</span>). Бұл үлкен, икемді аймақ. Онда орынды біз өзіміз <code>new</code> арқылы сұраймыз және <code>delete</code> арқылы қайтарамыз. Деректер функция біткенде де өмір сүре береді, бірақ жауапкершілік бізде.</li>
       </ul>
-      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 226" role="img" aria-label="Диаграмма: сол жақта стек (main және f функциялары кадрлары), оң жақта үйме; main ішіндегі p көрсеткіші үймедегі массивке нұсқайды" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m8" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="100" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:700">STACK (стек)</text><text x="305" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:700">HEAP (үйме)</text><rect x="10" y="30" width="180" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100.0" y="52.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">main: n = 3</text><rect x="10" y="80" width="180" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100.0" y="102.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">main: p = 0x55a0...</text><rect x="10" y="130" width="180" height="44" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8"/><text x="100.0" y="152.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">f(): x = 10</text><text x="100" y="194" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">автоматты, тез, шектеулі</text><text x="100" y="212" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">функция біткенде жойылады</text><rect x="220" y="30" width="170" height="44" rx="8" style="fill:var(--surface);stroke:var(--ok);stroke-width:1.8"/><text x="305.0" y="52.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">int[3]: 5 | 8 | 13</text><rect x="220" y="90" width="170" height="44" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8;stroke-dasharray:5 4"/><text x="305.0" y="112.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">бос орын</text><text x="305" y="194" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">new - сұрау, delete - қайтару</text><text x="305" y="212" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">қолмен басқарылады</text><polyline points="190,102 218,56" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m8)"/></svg><figcaption class="viz-note">Стек автоматты басқарылады, үйме қолмен. Көрсеткіш p стекте тұрады, ал оның нұсқайтын деректері үймеде жатыр.</figcaption></figure>
+      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 226" role="img" aria-label="Диаграмма: сол жақта стек (main және f функциялары кадрлары), оң жақта үйме; main ішіндегі p көрсеткіші үймедегі массивке нұсқайды" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m11" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="100" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:700">STACK (стек)</text><text x="305" y="14" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:700">HEAP (үйме)</text><rect x="10" y="30" width="180" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100.0" y="52.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">main: n = 3</text><rect x="10" y="80" width="180" height="44" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="100.0" y="102.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">main: p = 0x55a0...</text><rect x="10" y="130" width="180" height="44" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8"/><text x="100.0" y="152.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">f(): x = 10</text><text x="100" y="194" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">автоматты, тез, шектеулі</text><text x="100" y="212" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">функция біткенде жойылады</text><rect x="220" y="30" width="170" height="44" rx="8" style="fill:var(--surface);stroke:var(--ok);stroke-width:1.8"/><text x="305.0" y="52.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">int[3]: 5 | 8 | 13</text><rect x="220" y="90" width="170" height="44" rx="8" style="fill:var(--surface);stroke:var(--muted);stroke-width:1.8;stroke-dasharray:5 4"/><text x="305.0" y="112.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">бос орын</text><text x="305" y="194" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">new - сұрау, delete - қайтару</text><text x="305" y="212" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">қолмен басқарылады</text><polyline points="190,102 218,56" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m11)"/></svg><figcaption class="viz-note">Стек автоматты басқарылады, үйме қолмен. Көрсеткіш p стекте тұрады, ал оның нұсқайтын деректері үймеде жатыр.</figcaption></figure>
       <p>Аналогия: стек - өз үйіңіздегі үстел: жұмыс біткенде бәрі өзі жиналады. Үйме - көпшілік қоймасы: қажетті орын аласыз, бірақ уақытында қайтармасаңыз, ол бос емес болып қала береді.</p>
       <p>Көрсеткіш (<code>p</code>) өзі стекте тұрады, ал ол көрсететін деректер үймеде жатады. Бұл сызбада <code>p</code> жойылса да, үймедегі деректер өзі жойылмайды: оны <code>delete</code> арқылы біз қайтаруымыз керек. Дәл осы нәзік жерде жад қателері туады.</p>
 
@@ -410,17 +423,17 @@ int main() {
 rate = 480, numbers[0] = 1
 
 =================================================================
-==15455==ERROR: LeakSanitizer: detected memory leaks
+==19600==ERROR: LeakSanitizer: detected memory leaks
 
 Direct leak of 40 byte(s) in 1 object(s) allocated from:
-    #0 0x7fe5a4afe6c8 in operator new[](unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:98
-    #1 0x561cd437231f in main main.cpp:4
-    #2 0x7fe5a3a2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
-    #3 0x7fe5a3a2a28a in __libc_start_main_impl ../csu/libc-start.c:360
-    #4 0x561cd4372244 in _start (./main+0x2244)
+    #0 0x7f071ccfe6c8 in operator new[](unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:98
+    #1 0x55f34e9ff31f in main main.cpp:4
+    #2 0x7f071bc2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #3 0x7f071bc2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #4 0x55f34e9ff244 in _start (./main+0x2244)
 
 Direct leak of 8 byte(s) in 1 object(s) allocated from:
-    #0 0x7fe5a4afe548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95
+    #0 0x7f071ccfe548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95
 ...</code></pre>
       <p>LeakSanitizer (AddressSanitizer құрамында) есеп берді: «Direct leak of 40 byte(s)» - ол 10 <code>int</code> (10 × 4 = 40 байт), ал <code>main.cpp:4</code> - <code>new</code> шақырылған жол. Екінші ағып кеткен орын - 8 байт (<code>double</code>), <code>main.cpp:5</code>. Қорытынды жол: барлығы 48 байт, 2 бөлікте. Көріп отырғаныңыздай, санитайзер қай жолда ұмытылғанын дәл көрсетеді.</p>
       <h3 id="uaf">2. Босатылған жадты қолдану (use after free)</h3>
@@ -435,17 +448,17 @@ int main() {
 }</code></pre>
       <pre class="terminal"><code class="language-plaintext">$ ./main
 =================================================================
-==15468==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x558d069a5499 bp 0x7ffd339bde20 sp 0x7ffd339bde10
+==19607==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x55d895f72499 bp 0x7ffe42efb790 sp 0x7ffe42efb780
 READ of size 4 at 0x502000000010 thread T0
-    #0 0x558d069a5498 in main main.cpp:6
-    #1 0x7f5067a2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
-    #2 0x7f5067a2a28a in __libc_start_main_impl ../csu/libc-start.c:360
-    #3 0x558d069a5204 in _start (./main+0x2204)
+    #0 0x55d895f72498 in main main.cpp:6
+    #1 0x7fd3f562a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #2 0x7fd3f562a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #3 0x55d895f72204 in _start (./main+0x2204)
 
 0x502000000010 is located 0 bytes inside of 4-byte region [0x502000000010,0x502000000014)
 freed by thread T0 here:
-    #0 0x7f5068aff5e8 in operator delete(void*, unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164
-    #1 0x558d069a535d in main main.cpp:5
+    #0 0x7fd3f66ff5e8 in operator delete(void*, unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164
+    #1 0x55d895f7235d in main main.cpp:5
 ...</code></pre>
       <p>AddressSanitizer: «heap-use-after-free». Ол үш нәрсені айтады: қай жолда оқылды (<code>main.cpp:6</code>), қай жолда жад босатылды (<code>main.cpp:5</code>) және қай жолда бөлінген (<code>main.cpp:4</code>). Санитайзерсіз мұндай бағдарлама кейде «дұрыс» жұмыс істей береді, кейін кездейсоқ мәнмен немесе қауіпсіздік осалдығымен бүлінеді. Осы себепті бұл қате қауіпті.</p>
       <p>Қорғану тәсілі: <code>delete</code>-тен кейін көрсеткішке <code>nullptr</code> жазу: <code>delete p; p = nullptr;</code>. Сонда қате қолдану бірден ұсталады және екінші <code>delete</code> зиянсыз болады. Одан да жақсы тәсіл - тіпті көрсеткішті қолмен жоймау (смарт көрсеткіштер, төменде).</p>
@@ -488,12 +501,12 @@ int main() {
 }</code></pre>
       <pre class="terminal"><code class="language-plaintext">$ ./main
 =================================================================
-==15490==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x50200000001c at pc 0x55cecab7a41b bp 0x7ffc01d25d40 sp 0x7ffc01d25d30
+==19628==ERROR: AddressSanitizer: heap-buffer-overflow on address 0x50200000001c at pc 0x55fd5f95341b bp 0x7fff025388a0 sp 0x7fff02538890
 WRITE of size 4 at 0x50200000001c thread T0
-    #0 0x55cecab7a41a in main main.cpp:6
-    #1 0x7f2ae9c2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
-    #2 0x7f2ae9c2a28a in __libc_start_main_impl ../csu/libc-start.c:360
-    #3 0x55cecab7a264 in _start (./main+0x2264)
+    #0 0x55fd5f95341a in main main.cpp:6
+    #1 0x7f549f02a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #2 0x7f549f02a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #3 0x55fd5f953264 in _start (./main+0x2264)
 
 0x50200000001c is located 0 bytes after 12-byte region [0x502000000010,0x50200000001c)
 ...</code></pre>
@@ -512,21 +525,21 @@ int main() {
 }</code></pre>
       <pre class="terminal"><code class="language-plaintext">$ ./main
 =================================================================
-==15514==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5584574a6914 bp 0x7ffe56d9f650 sp 0x7ffe56d9f640
+==19634==ERROR: AddressSanitizer: heap-use-after-free on address 0x502000000010 at pc 0x5608904e1914 bp 0x7fffd0098890 sp 0x7fffd0098880
 READ of size 4 at 0x502000000010 thread T0
-    #0 0x5584574a6913 in main main.cpp:8
-    #1 0x7fd5baa2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
-    #2 0x7fd5baa2a28a in __libc_start_main_impl ../csu/libc-start.c:360
-    #3 0x5584574a63c4 in _start (./main+0x83c4)
+    #0 0x5608904e1913 in main main.cpp:8
+    #1 0x7fa56ae2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #2 0x7fa56ae2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #3 0x5608904e13c4 in _start (./main+0x83c4)
 
 0x502000000010 is located 0 bytes inside of 12-byte region [0x502000000010,0x50200000001c)
 freed by thread T0 here:
-    #0 0x7fd5bbaff5e8 in operator delete(void*, unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164
-    #1 0x5584574aa09e in std::__new_allocator&lt;int&gt;::deallocate(int*, unsigned long) /usr/include/c++/13/bits/new_allocator.h:172
-    #2 0x5584574a8d88 in std::allocator_traits&lt;std::allocator&lt;int&gt; &gt;::deallocate(std::allocator&lt;int&gt;&amp;, int*, unsigned long) /usr/include/c++/13/bits/alloc_traits.h:517
-    #3 0x5584574a8d88 in std::_Vector_base&lt;int, std::allocator&lt;int&gt; &gt;::_M_deallocate(int*, unsigned long) /usr/include/c++/13/bits/stl_vector.h:390
-    #4 0x5584574a898f in void std::vector&lt;int, std::allocator&lt;int&gt; &gt;::_M_realloc_insert&lt;int const&amp;&gt;(__gnu_cxx::__normal_iterator&lt;int*, std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt;, int const&amp;) /usr/include/c++/13/bits/vector.tcc:519
-    #5 0x5584574a752b in std::vector&lt;int, std::allocator&lt;int&gt; &gt;::push_back(int const&amp;) /usr/include/c++/13/bits/stl_vector.h:1292
+    #0 0x7fa56beff5e8 in operator delete(void*, unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:164
+    #1 0x5608904e509e in std::__new_allocator&lt;int&gt;::deallocate(int*, unsigned long) /usr/include/c++/13/bits/new_allocator.h:172
+    #2 0x5608904e3d88 in std::allocator_traits&lt;std::allocator&lt;int&gt; &gt;::deallocate(std::allocator&lt;int&gt;&amp;, int*, unsigned long) /usr/include/c++/13/bits/alloc_traits.h:517
+    #3 0x5608904e3d88 in std::_Vector_base&lt;int, std::allocator&lt;int&gt; &gt;::_M_deallocate(int*, unsigned long) /usr/include/c++/13/bits/stl_vector.h:390
+    #4 0x5608904e398f in void std::vector&lt;int, std::allocator&lt;int&gt; &gt;::_M_realloc_insert&lt;int const&amp;&gt;(__gnu_cxx::__normal_iterator&lt;int*, std::vector&lt;int, std::allocator&lt;int&gt; &gt; &gt;, int const&amp;) /usr/include/c++/13/bits/vector.tcc:519
+    #5 0x5608904e252b in std::vector&lt;int, std::allocator&lt;int&gt; &gt;::push_back(int const&amp;) /usr/include/c++/13/bits/stl_vector.h:1292
 ...</code></pre>
       <p>AddressSanitizer: «heap-use-after-free» және «freed by ... _M_realloc_insert ... push_back». Яғни <code>push_back</code> векторды көшіріп, ескі блокты босатты, ал <code>first</code> ескі блокқа көрсетіп қалды. Ереже: векторға элемент қосқаннан кейін ертерек алынған сілтеме, көрсеткіш және итераторларға сенбеңіз.</p>
       <div class="callout tip">
@@ -632,7 +645,7 @@ int main() {
 иелер: 2 (Адай)
 иелер: 1</code></pre>
       <p>Алғашында бір ие. Ішкі блокта көшірме жасалды, санауыш 2 болды. Блоктан шыққанда көшірме жойылып, санауыш қайтадан 1. Ең соңғы ие кеткенде нысан да кетеді.</p>
-      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 236" role="img" aria-label="Диаграмма: unique_ptr нысанға жалғыз иелік етеді; екі shared_ptr бір нысанды бөліседі, санауыш 2" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m9" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="10" y="20" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="37.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">unique_ptr a</text><text x="80.0" y="55.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">жалғыз иесі</text><rect x="230" y="20" width="160" height="50" rx="8" style="fill:var(--surface);stroke:var(--ok);stroke-width:1.8"/><text x="310.0" y="37.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">Шаңырақ нысаны</text><text x="310.0" y="55.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">үймеде</text><polyline points="150,45 228,45" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m9)"/><text x="189" y="32" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">иелік</text><rect x="10" y="110" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="127.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">shared_ptr b1</text><text x="80.0" y="145.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">санауыш = 2</text><rect x="10" y="170" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="187.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">shared_ptr b2</text><text x="80.0" y="205.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">санауыш = 2</text><rect x="230" y="125" width="160" height="70" rx="8" style="fill:var(--surface);stroke:var(--ok);stroke-width:1.8"/><text x="310.0" y="152.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">Нысан</text><text x="310.0" y="170.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">соңғы ие кеткенде</text><polyline points="150,135 228,150" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m9)"/><polyline points="150,195 228,172" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m9)"/></svg><figcaption class="viz-note">unique_ptr бір ғана иені білдіреді, shared_ptr иелердің санын санайды. Екеуі де нысанды өзі жояды.</figcaption></figure>
+      <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 236" role="img" aria-label="Диаграмма: unique_ptr нысанға жалғыз иелік етеді; екі shared_ptr бір нысанды бөліседі, санауыш 2" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="10" y="20" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="37.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">unique_ptr a</text><text x="80.0" y="55.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">жалғыз иесі</text><rect x="230" y="20" width="160" height="50" rx="8" style="fill:var(--surface);stroke:var(--ok);stroke-width:1.8"/><text x="310.0" y="37.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">Шаңырақ нысаны</text><text x="310.0" y="55.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">үймеде</text><polyline points="150,45 228,45" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m12)"/><text x="189" y="32" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">иелік</text><rect x="10" y="110" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="127.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">shared_ptr b1</text><text x="80.0" y="145.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">санауыш = 2</text><rect x="10" y="170" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="187.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">shared_ptr b2</text><text x="80.0" y="205.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">санауыш = 2</text><rect x="230" y="125" width="160" height="70" rx="8" style="fill:var(--surface);stroke:var(--ok);stroke-width:1.8"/><text x="310.0" y="152.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">Нысан</text><text x="310.0" y="170.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">соңғы ие кеткенде</text><polyline points="150,135 228,150" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m12)"/><polyline points="150,195 228,172" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m12)"/></svg><figcaption class="viz-note">unique_ptr бір ғана иені білдіреді, shared_ptr иелердің санын санайды. Екеуі де нысанды өзі жояды.</figcaption></figure>
       <p>Қайсысын таңдау керек? Әдепкі ереже: нысанның иесі бір ғана болса, <code>unique_ptr</code>; ал нақты бөлісу қажет болса ғана <code>shared_ptr</code>. Көп жағдайда мүлде көрсеткіш керек емес: жай жергілікті айнымалы немесе <code>std::vector</code> жеткілікті. Қазіргі C++ кодында жалаң <code>new</code>/<code>delete</code> дерлік кездеспейді.</p>
       <p>Тағы бір сөз: құрылымға көрсеткіш арқылы қол жеткізгенде <code>-&gt;</code> операторы қолданылады. <code>p-&gt;strings</code> - <code>(*p).strings</code> дегеннің қысқа жазылуы. Мысал ретінде домбыра құрылымын алайық:</p>
       <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
@@ -942,21 +955,21 @@ int main() {
 1 1.5
 
 =================================================================
-==15691==ERROR: LeakSanitizer: detected memory leaks
+==19734==ERROR: LeakSanitizer: detected memory leaks
 
 Direct leak of 40 byte(s) in 1 object(s) allocated from:
-    #0 0x7fb1a54fe6c8 in operator new[](unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:98
-    #1 0x55f893ba02ff in main main.cpp:4
-    #2 0x7fb1a442a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
-    #3 0x7fb1a442a28a in __libc_start_main_impl ../csu/libc-start.c:360
-    #4 0x55f893ba0224 in _start (./main+0x2224)
+    #0 0x7fa71eefe6c8 in operator new[](unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:98
+    #1 0x55d9798e92ff in main main.cpp:4
+    #2 0x7fa71de2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #3 0x7fa71de2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #4 0x55d9798e9224 in _start (./main+0x2224)
 
 Direct leak of 8 byte(s) in 1 object(s) allocated from:
-    #0 0x7fb1a54fe548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95
-    #1 0x55f893ba030d in main main.cpp:5
-    #2 0x7fb1a442a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
-    #3 0x7fb1a442a28a in __libc_start_main_impl ../csu/libc-start.c:360
-    #4 0x55f893ba0224 in _start (./main+0x2224)
+    #0 0x7fa71eefe548 in operator new(unsigned long) ../../../../src/libsanitizer/asan/asan_new_delete.cpp:95
+    #1 0x55d9798e930d in main main.cpp:5
+    #2 0x7fa71de2a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #3 0x7fa71de2a28a in __libc_start_main_impl ../csu/libc-start.c:360
+    #4 0x55d9798e9224 in _start (./main+0x2224)
 
 SUMMARY: AddressSanitizer: 48 byte(s) leaked in 2 allocation(s).</code></pre></div></details>
 <details open><summary>Өзін тексеру тізімі</summary><div class="details-body"><ul class="checklist" data-id="c3-t6">
@@ -980,7 +993,7 @@ SUMMARY: AddressSanitizer: 48 byte(s) leaked in 2 allocation(s).</code></pre></d
     <div class="footer-inner">
       <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
       <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
-      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
     </div>
   </footer>
 </body>
