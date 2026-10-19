@@ -6,8 +6,10 @@ import { requireStudent } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { KIND_LABEL, fmtDate, fmtPct } from "@/lib/format";
 import { avgPct, isOverdue, myAssignments } from "./data";
+import { getT } from "@/lib/i18n";
+import { STATUS_LABEL } from "@/lib/format";
 
-export async function generateMetadata() { return { title: "Басты бет" }; }
+export async function generateMetadata() { const t = await getT(); return { title: t("Басты бет") }; }
 export const dynamic = "force-dynamic";
 
 type ClassRow = { id: string; name: string; subject: string; teacher_name: string | null };
@@ -15,7 +17,7 @@ type GradeRow = { id: string; title: string; score: string; max_score: string; f
 
 type CourseRow = { course_id: string; title: string; total: string; completed: string };
 
-export default async function StudentHome() {
+export default async function StudentHome() { const t = await getT();
   const ctx = await requireStudent();
   const [rows, classes, grades, courses, unreadRows] = await Promise.all([
     myAssignments(ctx.userId),
@@ -41,32 +43,32 @@ export default async function StudentHome() {
 
   return (
     <>
-      <PageHeader title={`Сәлем, ${ctx.fullName.replace(/\s*\(демо\)\s*$/, "").split(" ")[0]}!`} subtitle="Оқу барысыңыз бір жерде." />
+      <PageHeader title={t("Сәлем, {v}!", { v: ctx.fullName.replace(/\s*\(демо\)\s*$/, "").split(" ")[0] })} subtitle={t("Оқу барысыңыз бір жерде.")} />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
-        <StatCard label="Барлық тапсырма" value={rows.length} />
-        <StatCard label="Орындалған" value={done} tone="ok" hint="жіберілген не бағаланған" />
-        <StatCard label="Күтіп тұр" value={waiting} tone={waiting ? "warn" : undefined} />
-        <StatCard label="Мерзімі өткен" value={overdue} tone={overdue ? "bad" : undefined} />
-        <StatCard label="Орташа нәтиже" value={fmtPct(avg)} hint={avg == null ? "әлі баға жоқ" : "ең үздік баллдар бойынша"} />
+        <StatCard label={t("Барлық тапсырма")} value={rows.length} />
+        <StatCard label={t("Орындалған")} value={done} tone="ok" hint={t("жіберілген не бағаланған")} />
+        <StatCard label={t("Күтіп тұр")} value={waiting} tone={waiting ? "warn" : undefined} />
+        <StatCard label={t("Мерзімі өткен")} value={overdue} tone={overdue ? "bad" : undefined} />
+        <StatCard label={t("Орташа нәтиже")} value={fmtPct(avg)} hint={avg == null ? t("әлі баға жоқ") : t("ең үздік баллдар бойынша")} />
       </div>
 
       {unread > 0 && (
         <p className="mt-4 rounded-xl border border-line bg-brand-soft px-4 py-3 text-sm" data-testid="unread-notice">
-          Оқылмаған хабарландыру: <strong>{unread}</strong>. <Link href="/notifications">Ашу</Link>
+          {t("Оқылмаған хабарландыру:")}{" "}<strong>{unread}</strong>. <Link href="/notifications">{t("Ашу")}</Link>
         </p>
       )}
 
-      <Section title="Курстарым" actions={courses.length ? <Link href="/student/courses" className="text-sm">Барлығы</Link> : undefined}>
+      <Section title={t("Курстарым")} actions={courses.length ? <Link href="/student/courses" className="text-sm">{t("Барлығы")}</Link> : undefined}>
         {courses.length === 0 ? (
-          <EmptyState title="Әзірге курс жоқ" text="Мұғалім курс жариялағанда ол осында көрінеді." />
+          <EmptyState title={t("Әзірге курс жоқ")} text={t("Мұғалім курс жариялағанда ол осында көрінеді.")} />
         ) : (
           <ul className="grid gap-3 md:grid-cols-3" data-testid="home-courses">
             {courses.map((c) => (
               <li key={c.course_id} className="card p-4">
                 <Link href={`/student/courses/${c.course_id}`} className="block break-words font-semibold">{c.title}</Link>
-                <div className="mt-3"><ProgressBar value={Number(c.completed)} max={Number(c.total)} label={`${c.title}: прогресс`} /></div>
-                <p className="mt-1 text-xs text-ink-muted">{Number(c.completed)} / {Number(c.total)} сабақ</p>
+                <div className="mt-3"><ProgressBar value={Number(c.completed)} max={Number(c.total)} label={t("{title}: прогресс", { title: c.title })} /></div>
+                <p className="mt-1 text-xs text-ink-muted">{Number(c.completed)}{" "}{t("/ {Number} сабақ", { Number: Number(c.total) })}</p>
               </li>
             ))}
           </ul>
@@ -75,9 +77,9 @@ export default async function StudentHome() {
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_20rem]">
         <div>
-          <h2 className="mb-3 text-lg font-semibold">Жақын мерзімдер</h2>
+          <h2 className="mb-3 text-lg font-semibold">{t("Жақын мерзімдер")}</h2>
           {upcoming.length === 0 ? (
-            <EmptyState title="Жақын мерзімдер жоқ" text={rows.length ? "Орындалуы тиіс мерзімді тапсырмалар жоқ." : "Сыныпқа қосылған соң мұғалім берген тапсырмалар осында көрінеді."} />
+            <EmptyState title={t("Жақын мерзімдер жоқ")} text={rows.length ? t("Орындалуы тиіс мерзімді тапсырмалар жоқ.") : t("Сыныпқа қосылған соң мұғалім берген тапсырмалар осында көрінеді.")} />
           ) : (
             <ul className="card divide-y divide-line">
               {upcoming.map((r) => {
@@ -87,11 +89,11 @@ export default async function StudentHome() {
                     <Link href={`/student/assignments/${r.assignment_id}`} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-ink no-underline hover:bg-surface-2">
                       <span className="min-w-0">
                         <span className="block truncate font-medium">{r.title}</span>
-                        <span className="text-xs text-ink-muted">{r.classroom_name} · {KIND_LABEL[r.kind] ?? r.kind}</span>
+                        <span className="text-xs text-ink-muted">{r.classroom_name} · {t(KIND_LABEL[r.kind] ?? r.kind)}</span>
                       </span>
                       <span className="flex items-center gap-3">
                         <span className={`text-sm ${late ? "font-semibold text-red-600" : "text-ink-muted"}`}>{fmtDate(r.deadline, true)}</span>
-                        <StatusBadge status={r.status} />
+                        <StatusBadge status={r.status}  label={t(STATUS_LABEL[r.status] ?? r.status)}/>
                       </span>
                     </Link>
                   </li>
@@ -103,33 +105,33 @@ export default async function StudentHome() {
 
         <aside className="space-y-6">
           <div>
-            <h2 className="mb-3 text-lg font-semibold">Менің сыныптарым</h2>
+            <h2 className="mb-3 text-lg font-semibold">{t("Менің сыныптарым")}</h2>
             {classes.length === 0 ? (
-              <EmptyState title="Сынып жоқ" text="Мұғалім берген кодпен сыныпқа қосылыңыз." />
+              <EmptyState title={t("Сынып жоқ")} text={t("Мұғалім берген кодпен сыныпқа қосылыңыз.")} />
             ) : (
               <ul className="space-y-2">
                 {classes.map((c) => (
                   <li key={c.id} className="card px-4 py-3">
                     <p className="font-semibold">{c.name} <span className="font-normal text-ink-muted">· {c.subject}</span></p>
-                    <p className="text-xs text-ink-muted">Мұғалім: {c.teacher_name ?? "-"}</p>
+                    <p className="text-xs text-ink-muted">{t("Мұғалім:")}{" "}{c.teacher_name ?? "-"}</p>
                   </li>
                 ))}
               </ul>
             )}
           </div>
           <div className="card p-4">
-            <h2 className="text-base font-semibold">Сыныпқа қосылу</h2>
-            <ActionForm action={joinClassAction} submitLabel="Қосылу" successToast={false} className="mt-2">
-              <label className="label" htmlFor="join-code">Мұғалім берген сынып коды</label>
+            <h2 className="text-base font-semibold">{t("Сыныпқа қосылу")}</h2>
+            <ActionForm action={joinClassAction} submitLabel={t("Қосылу")} successToast={false} className="mt-2">
+              <label className="label" htmlFor="join-code">{t("Мұғалім берген сынып коды")}</label>
               <input id="join-code" name="code" required minLength={6} maxLength={12} autoComplete="off" className="input font-mono uppercase tracking-widest" placeholder="ABCD2345" />
             </ActionForm>
           </div>
         </aside>
       </div>
 
-      <Section title="Соңғы бағалар" actions={grades.length ? <Link href="/student/grades" className="text-sm">Барлығы</Link> : undefined}>
+      <Section title={t("Соңғы бағалар")} actions={grades.length ? <Link href="/student/grades" className="text-sm">{t("Барлығы")}</Link> : undefined}>
         {grades.length === 0 ? (
-          <EmptyState title="Әзірге баға жоқ" text="Жұмысты жіберіп, мұғалім тексерген соң баға мен пікір осында шығады." />
+          <EmptyState title={t("Әзірге баға жоқ")} text={t("Жұмысты жіберіп, мұғалім тексерген соң баға мен пікір осында шығады.")} />
         ) : (
           <ul className="grid gap-3 md:grid-cols-2">
             {grades.map((g) => (
@@ -139,7 +141,7 @@ export default async function StudentHome() {
                   <span className="whitespace-nowrap font-bold text-brand">{Number(g.score)} / {Number(g.max_score)}</span>
                 </div>
                 <p className="text-xs text-ink-muted">{fmtDate(g.graded_at)} · {fmtPct((Number(g.score) / Number(g.max_score)) * 100)}</p>
-                {g.feedback && <p className="mt-2 rounded-lg bg-brand-soft px-3 py-2 text-sm"><span className="font-semibold">Мұғалім пікірі:</span> {g.feedback}</p>}
+                {g.feedback && <p className="mt-2 rounded-lg bg-brand-soft px-3 py-2 text-sm"><span className="font-semibold">{t("Мұғалім пікірі:")}</span> {g.feedback}</p>}
               </li>
             ))}
           </ul>

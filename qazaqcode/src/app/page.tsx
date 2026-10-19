@@ -5,6 +5,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { getT } from "@/lib/i18n";
 import type { TFn } from "@/lib/i18n/core";
 
+import { LangSwitch } from "@/components/LangSwitch";
 // Басты бет: оқу платформасы (оқушы мен мұғалімге). Мектептерге арналған ұсыныс бөлек бетте: /schools.
 export const dynamic = "force-dynamic";
 
@@ -25,7 +26,7 @@ export default async function Home() { const t = await getT();
       <header className="border-b border-line bg-surface">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-3 sm:px-6">
           <Link href="/" className="text-lg font-bold tracking-tight">Qazaq<span className="text-brand">Code</span></Link>
-          <div className="flex items-center gap-2"><ThemeToggle /><Link href="/login" className="btn-primary">{t("Кіру")}</Link></div>
+          <div className="flex items-center gap-2"><LangSwitch /><ThemeToggle /><Link href="/login" className="btn-primary">{t("Кіру")}</Link></div>
         </div>
       </header>
 

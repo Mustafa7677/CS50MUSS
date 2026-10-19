@@ -3,14 +3,15 @@ import { getContext } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { STATUS_LABEL } from "@/lib/format";
 import { csvResponse } from "../../csv";
+import { getT } from "@/lib/i18n";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET() { const t = await getT();
   const ctx = await getContext();
-  if (!ctx) return new Response("Жүйеге кіріңіз", { status: 401 });
+  if (!ctx) return new Response(t("Жүйеге кіріңіз"), { status: 401 });
   const m = ctx.memberships.find((x) => x.role === "school_admin" && x.org_id === ctx.active?.org_id);
-  if (!m) return new Response("Рұқсат жоқ", { status: 403 });
+  if (!m) return new Response(t("Рұқсат жоқ"), { status: 403 });
   try {
     const rows = await withUser(ctx.userId, (q) => q<any>(
       `select c.name as class_name, p.full_name as student, a.title, ls.status::text as sub_status, ls.submitted_at, ls.updated_at,
@@ -28,12 +29,12 @@ export async function GET() {
         where a.org_id = $1 order by c.name, p.full_name, a.title`, [m.org_id]));
     await auditExport(ctx.userId, "school_csv", { orgId: m.org_id });
     const fmt = (d: Date | null) => (d ? new Date(d).toISOString().slice(0, 10) : "");
-    return csvResponse("mektep-esebi.csv", ["Сынып", "Оқушы", "Тапсырма", "Күйі", "Балл", "Максималды балл", "Күні"],
+    return csvResponse("mektep-esebi.csv", [t("Сынып"), t("Оқушы"), t("Тапсырма"), t("Күйі"), t("Балл"), t("Максималды балл"), t("Күні")],
       rows.map((r) => {
         const st = r.sub_status == null ? "not_started" : r.sub_status === "draft" ? "in_progress" : r.sub_status;
-        return [r.class_name, r.student ?? "", r.title, STATUS_LABEL[st] ?? st, r.score ?? "", r.max_score ?? "", fmt(r.submitted_at)];
+        return [r.class_name, r.student ?? "", r.title, t(STATUS_LABEL[st] ?? st), r.score ?? "", r.max_score ?? "", fmt(r.submitted_at)];
       }));
   } catch {
-    return new Response("Қате болды", { status: 500 });
+    return new Response(t("Қате болды"), { status: 500 });
   }
 }
