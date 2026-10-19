@@ -7,10 +7,13 @@ import { Banner } from "@/components/ui";
 import { toast } from "@/components/Toaster";
 import { SelfCheck, type VisibleTest } from "./SelfCheck";
 import { saveDraftAction, submitAssignmentAction, type SubmitResult } from "../../actions";
+import { useT } from "@/lib/i18n/client";
+import type { TFn } from "@/lib/i18n/core";
 
+function EditorLoading() { const t = useT(); return <div className="h-[420px] animate-pulse rounded-lg border border-line bg-surface-2" aria-label={t("Редактор жүктелуде")} />; }
 const CodeEditor = dynamic(() => import("./CodeEditor"), {
   ssr: false,
-  loading: () => <div className="h-[420px] animate-pulse rounded-lg border border-line bg-surface-2" aria-label="Редактор жүктелуде" />,
+  loading: () => <EditorLoading />,
 });
 
 export type Question = { id: string; prompt: string; options: string[]; points: number };
@@ -28,9 +31,9 @@ export type WorkspaceProps = {
 };
 
 type Status = "idle" | "saving" | "saved" | "error";
-const NET_ERROR = "Байланыс үзілді. Кодыңыз браузерде сақталып тұр.";
+const NET_ERROR = (t: TFn) => t("Байланыс үзілді. Кодыңыз браузерде сақталып тұр.");
 
-export function Workspace(p: WorkspaceProps) {
+export function Workspace(p: WorkspaceProps) { const t = useT();
   const router = useRouter();
   const isQuiz = p.kind === "quiz";
   const [retrying, setRetrying] = useState(false);
@@ -72,7 +75,7 @@ export function Workspace(p: WorkspaceProps) {
       try {
         res = await saveDraftAction({ assignmentId: p.assignmentId, code: isQuiz ? null : codeRef.current, answers: answersRef.current, seconds: Math.round(active.current) });
       } catch {
-        res = { ok: false as const, error: NET_ERROR };
+        res = { ok: false as const, error: NET_ERROR(t) };
       }
       if (!res.ok) { setStatus("error"); setSaveErr(res.error); return false; }
       subId.current = res.data!.submissionId;
@@ -98,8 +101,8 @@ export function Workspace(p: WorkspaceProps) {
   // Белсенді уақыт (бет көрініп тұрғанда)
   useEffect(() => {
     if (!editable) return;
-    const t = setInterval(() => { if (document.visibilityState === "visible") active.current += 1; }, 1000);
-    return () => clearInterval(t);
+    const tt = setInterval(() => { if (document.visibilityState === "visible") active.current += 1; }, 1000);
+    return () => clearInterval(tt);
   }, [editable]);
 
   // Алдыңғы сақталмаған өзгерісті қалпына келтіру
@@ -141,11 +144,11 @@ export function Workspace(p: WorkspaceProps) {
     try {
       if (timer.current) clearTimeout(timer.current);
       const ok = await saveNow();
-      if (!ok || !subId.current) { setSubmitErr("Жұмыс сақталмады, сондықтан жіберілмеді. Кодыңыз жоғалған жоқ: «Қайталау» батырмасын басыңыз."); return; }
+      if (!ok || !subId.current) { setSubmitErr(t("Жұмыс сақталмады, сондықтан жіберілмеді. Кодыңыз жоғалған жоқ: «Қайталау» батырмасын басыңыз.")); return; }
       let res;
-      try { res = await submitAssignmentAction(subId.current, p.assignmentId); } catch { res = { ok: false as const, error: NET_ERROR }; }
+      try { res = await submitAssignmentAction(subId.current, p.assignmentId); } catch { res = { ok: false as const, error: NET_ERROR(t) }; }
       if (!res.ok) { setSubmitErr(res.error); return; }
-      backup(true); dirty.current = false; setDone(res.data ?? null); toast("Жұмыс жіберілді.", "ok");
+      backup(true); dirty.current = false; setDone(res.data ?? null); toast(t("Жұмыс жіберілді."), "ok");
       router.refresh();
     } finally { submittingRef.current = false; setSubmitting(false); }
   }
@@ -156,13 +159,13 @@ export function Workspace(p: WorkspaceProps) {
 
   const indicator = editable && (
     <div className="flex flex-wrap items-center gap-2 text-sm" role="status" aria-live="polite" data-testid="save-status">
-      {status === "saving" && <span className="text-ink-muted">Сақталуда...</span>}
-      {status === "saved" && <span className="text-emerald-600">Сақталды ✓</span>}
-      {status === "idle" && <span className="text-ink-muted">Автосақтау қосулы</span>}
+      {status === "saving" && <span className="text-ink-muted">{t("Сақталуда...")}</span>}
+      {status === "saved" && <span className="text-emerald-600">{t("Сақталды ✓")}</span>}
+      {status === "idle" && <span className="text-ink-muted">{t("Автосақтау қосулы")}</span>}
       {status === "error" && (
         <>
-          <span className="font-medium text-red-600">Сақталмады: {saveErr}</span>
-          <button type="button" className="btn-secondary px-3 py-1" onClick={() => void saveNow()}>Қайталау</button>
+          <span className="font-medium text-red-600">{t("Сақталмады:")}{" "}{saveErr}</span>
+          <button type="button" className="btn-secondary px-3 py-1" onClick={() => void saveNow()}>{t("Қайталау")}</button>
         </>
       )}
     </div>
@@ -171,48 +174,48 @@ export function Workspace(p: WorkspaceProps) {
   const submitBox = editable && (
     <div className="flex flex-wrap items-center gap-3">
       {emptyCode ? (
-        <button type="button" className="btn-primary" disabled>Жіберу</button>
+        <button type="button" className="btn-primary" disabled>{t("Жіберу")}</button>
       ) : (
-        <ConfirmButton action={submit} label={submitting ? "Жіберілуде..." : "Жіберу"} className="btn-primary" danger={false} confirmLabel="Иә, жіберу"
-          title="Жұмысты жіберу?"
+        <ConfirmButton action={submit} label={submitting ? t("Жіберілуде...") : t("Жіберу")} className="btn-primary" danger={false} confirmLabel={t("Иә, жіберу")}
+          title={t("Жұмысты жіберу?")}
           message={isQuiz
-            ? `${unanswered ? `Жауап берілмеген сұрақ: ${unanswered}. ` : ""}Жібергеннен кейін жауаптарды өзгерту мүмкін емес, нәтиже бірден шығады.`
-            : "Жібергеннен кейін кодты өзгерту мүмкін емес. Мұғалім тексеріп баға қояды."} />
+            ? t("{v}Жібергеннен кейін жауаптарды өзгерту мүмкін емес, нәтиже бірден шығады.", { v: unanswered ? t("Жауап берілмеген сұрақ: {unanswered}. ", { unanswered }) : "" })
+            : t("Жібергеннен кейін кодты өзгерту мүмкін емес. Мұғалім тексеріп баға қояды.")} />
       )}
-      {emptyCode && <span className="text-sm text-ink-muted">Алдымен код жазыңыз.</span>}
+      {emptyCode && <span className="text-sm text-ink-muted">{t("Алдымен код жазыңыз.")}</span>}
     </div>
   );
 
   const attemptNote = !editable && p.last && (
-    <p className="text-sm text-ink-muted">{p.last.attemptNo}-әрекет · {p.last.status === "graded" ? "бағаланған" : p.last.status === "under_review" ? "тексеріліп жатыр" : "жіберілген"}</p>
+    <p className="text-sm text-ink-muted">{p.last.attemptNo}{t("-әрекет ·")}{" "}{p.last.status === "graded" ? t("бағаланған") : p.last.status === "under_review" ? t("тексеріліп жатыр") : t("жіберілген")}</p>
   );
 
   return (
     <div className={fullscreen ? "fixed inset-0 z-50 flex flex-col gap-3 overflow-auto bg-surface p-4" : "space-y-4"} data-testid="workspace">
       {p.blocked && <Banner tone="bad">{p.blocked}</Banner>}
-      {restored && <Banner tone="info">Алдыңғы сақталмаған өзгерістеріңіз браузерден қалпына келтірілді.</Banner>}
+      {restored && <Banner tone="info">{t("Алдыңғы сақталмаған өзгерістеріңіз браузерден қалпына келтірілді.")}</Banner>}
       {done && (
         <Banner tone="info">
-          <span data-testid="submit-done">Жұмыс жіберілді.</span>
-          {done.status === "graded" && done.score != null && <> Нәтиже: <strong>{done.score} / {done.max_score}</strong>.</>}
+          <span data-testid="submit-done">{t("Жұмыс жіберілді.")}</span>
+          {done.status === "graded" && done.score != null && <>{" "}{t("Нәтиже:")}{" "}<strong>{done.score} / {done.max_score}</strong>.</>}
         </Banner>
       )}
 
       {isQuiz && !editable && p.result && (
         <div className="card p-4" data-testid="quiz-result">
-          <p className="text-sm font-semibold uppercase tracking-wide text-ink-muted">Тест нәтижесі</p>
+          <p className="text-sm font-semibold uppercase tracking-wide text-ink-muted">{t("Тест нәтижесі")}</p>
           <p className="mt-1 text-3xl font-bold text-brand">{p.result.score} / {p.result.max_score}</p>
-          <p className="text-sm">Дұрыс: <strong>{p.result.passed}</strong> · Қате: <strong>{p.result.total - p.result.passed}</strong> · Барлығы: {p.result.total}</p>
+          <p className="text-sm">{t("Дұрыс:")}{" "}<strong>{p.result.passed}</strong>{" "}{t("· Қате:")}{" "}<strong>{p.result.total - p.result.passed}</strong>{" "}{t("· Барлығы:")}{" "}{p.result.total}</p>
         </div>
       )}
 
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-lg font-semibold">{isQuiz ? "Сұрақтар" : editable ? "Шешіміңіз" : "Жіберілген шешім"}</h2>
+        <h2 className="text-lg font-semibold">{isQuiz ? t("Сұрақтар") : editable ? t("Шешіміңіз") : t("Жіберілген шешім")}</h2>
         <div className="flex items-center gap-3">
           {indicator}
           {!isQuiz && (
             <button type="button" className="btn-secondary px-3 py-1" aria-pressed={fullscreen} onClick={() => setFullscreen((f) => !f)}>
-              {fullscreen ? "Толық экраннан шығу" : "Толық экран"}
+              {fullscreen ? t("Толық экраннан шығу") : t("Толық экран")}
             </button>
           )}
         </div>
@@ -230,7 +233,7 @@ export function Workspace(p: WorkspaceProps) {
                     <span>{qi + 1}. {q.prompt}</span>
                     {!editable && ok != null && (
                       <span className={`badge ml-2 align-middle ${ok ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200" : "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200"}`} data-testid={ok ? "q-correct" : "q-wrong"}>
-                        {ok ? "Дұрыс ✓" : "Қате ✗"}
+                        {ok ? t("Дұрыс ✓") : t("Қате ✗")}
                       </span>
                     )}
                   </legend>
@@ -249,9 +252,9 @@ export function Workspace(p: WorkspaceProps) {
         </ol>
       ) : (
         <>
-          {editable && <Banner tone="info">Жұмысыңызды мұғалім тексеріп баға қояды. «Сынап көру» тек жеке тексеру үшін (баға емес), «Жіберу» бұған тәуелді емес.</Banner>}
+          {editable && <Banner tone="info">{t("Жұмысыңызды мұғалім тексеріп баға қояды. «Сынап көру» тек жеке тексеру үшін (баға емес), «Жіберу» бұған тәуелді емес.")}</Banner>}
           <div className={`overflow-hidden rounded-lg border border-line ${fullscreen ? "flex-1" : ""}`} data-testid="editor">
-            <CodeEditor value={code} onChange={onCode} kind={p.kind} readOnly={!editable} label="Код редакторы"
+            <CodeEditor value={code} onChange={onCode} kind={p.kind} readOnly={!editable} label={t("Код редакторы")}
               height={fullscreen ? "calc(100dvh - 15rem)" : "min(60vh, 480px)"} />
           </div>
         </>
@@ -266,8 +269,8 @@ export function Workspace(p: WorkspaceProps) {
           <button type="button" className="btn-secondary" onClick={() => {
             const c = p.last?.code ?? p.starterCode; codeRef.current = c; answersRef.current = {};
             setCode(c); setAnswers({}); setDone(null); setStatus("idle"); setRetrying(true);
-          }}>Қайта тапсыру</button>
-          <p className="hint">Жаңа әрекет басталады, алдыңғы жұмыс пен баға сақталады.</p>
+          }}>{t("Қайта тапсыру")}</button>
+          <p className="hint">{t("Жаңа әрекет басталады, алдыңғы жұмыс пен баға сақталады.")}</p>
         </div>
       )}
     </div>
