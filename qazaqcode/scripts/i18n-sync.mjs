@@ -40,7 +40,7 @@ export function scanKeys() {
   }
   return keys;
 }
-async function loadRu() {
+export async function loadRu() {
   // ru/*.ts оқу: transform-types режимінсіз де оқылсын деп, regex арқылы "key": "value" жұптары
   const dir = path.join(root, "src/lib/i18n/ru");
   const ru = {};
@@ -72,9 +72,10 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
     const out = [];
     for (const l of part) {
       const i = l.indexOf("\t");
-      const id = l.slice(0, i), v = l.slice(i + 1).trim();
+      const id = l.slice(0, i), raw = l.slice(i + 1).trim();
       const k = idMap.get(id);
-      if (!k || !v) { console.error("өткізілді:", id); continue; }
+      if (!k || !raw) { console.error("өткізілді:", id); continue; }
+      const v = /^\s*/.exec(k)[0] + raw + /\s*$/.exec(k)[0]; // кілттің жиектегі бос орындары сақталады
       out.push(`  ${JSON.stringify(k)}: ${JSON.stringify(v)},`);
     }
     const target = path.join(root, "src/lib/i18n/ru", `${process.argv[5] ?? "part"}.ts`);

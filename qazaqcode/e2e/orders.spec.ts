@@ -93,8 +93,8 @@ test("мектеп әкімшісі: лицензия бетінде «Лице�
   await expect(page.getByTestId("order-current")).toContainText("STARTER");
   await expect(page.getByTestId("price-list")).toContainText("Баға келісім бойынша");   // баға қойылмаған - жалған баға жоқ
   await expect(page.getByText("Әзірге тапсырыс жоқ")).toBeVisible();
-  await page.getByRole("button", { name: "Тапсырыс беру" }).click();
-  await expect(page.getByRole("alert").filter({ hasText: "реквизиттерін толтырыңыз" })).toBeVisible();
+  await expect(page.getByText("алдымен жоғарыдағы төлем реквизиттерін сақтаңыз")).toBeVisible();   // реквизитсіз тапсырыс формасы жоқ
+  await expect(page.locator("#ord-plan")).toHaveCount(0);
   // қате БИН (HTML валидациясын айналып өту)
   await page.locator("#bp-legal").fill(LEGAL);
   await page.locator("form:has(#bp-legal)").evaluate((f: HTMLFormElement) => { f.noValidate = true; f.querySelectorAll("[pattern],[minlength]").forEach((e) => { e.removeAttribute("pattern"); e.removeAttribute("minlength"); }); });
@@ -105,10 +105,11 @@ test("мектеп әкімшісі: лицензия бетінде «Лице�
   await page.locator("#bp-iik").fill("kz00 test 0000 0000 0001");
   await page.locator("#bp-kbe").fill("14");
   await page.getByRole("button", { name: "Реквизиттерді сақтау" }).click();
-  await expect(page.getByRole("alert").filter({ hasText: "БИН/ЖСН" })).toBeVisible();
+  await expect(page.getByRole("alert").filter({ hasText: "БИН/ЖСН" }).first()).toBeVisible();
   await page.locator("#bp-bin").fill("123456789012");
   await page.getByRole("button", { name: "Реквизиттерді сақтау" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "Реквизиттер сақталды" })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Реквизиттер сақталды" }).first()).toBeVisible();
+  await expect(page.locator("#ord-plan")).toBeVisible();     // реквизит сақталған соң тапсырыс формасы ашылады
   const row = (await q("select * from org_billing_profile where org_id=$1", [S.org]))[0];
   expect(row.iik).toBe("KZ00TEST000000000001");     // бос орындар алынды, үлкен әріп
   expect(row.bik).toBe("TESTKZKX");
@@ -124,7 +125,7 @@ test("тапсырыс беру: форма валидациясы, тарихт
   await page.locator("#ord-teachers").fill("10");
   await page.locator("#ord-note").fill("Келесі оқу жылына жаңарту");
   await page.getByRole("button", { name: "Тапсырыс беру" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "Тапсырыс жіберілді" })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Тапсырыс жіберілді" }).first()).toBeVisible();
   const row = page.getByTestId("order-row").first();
   await expect(row).toHaveAttribute("data-status", "requested");
   await expect(row).toContainText("Сұралды");
@@ -148,10 +149,10 @@ test("SUPER ADMIN: баға жоқ -> қате; бағаны UI-да бапта�
   await expect(c).toContainText(LEGAL);
   await expect(c).toContainText("баға ұсынылмаған");
   await c.getByRole("button", { name: "Баға тізімінен ұсыну" }).click();
-  await expect(c.getByRole("alert").filter({ hasText: "баға қойылмаған" })).toBeVisible();
+  await expect(c.getByRole("alert").filter({ hasText: "баға қойылмаған" }).first()).toBeVisible();
   // баға қосу (бағаны иесі енгізеді; бұл тест деректері)
   await page.goto("/admin/prices");
-  await expect(page.getByText("Баға қойылмаған")).toBeVisible();
+  await expect(page.getByText("Баға қойылмаған", { exact: true })).toBeVisible();
   await page.locator("#pf-plan").selectOption("pro");
   await page.locator("#pf-months").fill("12");
   await page.locator("#pf-limit").fill("500");
@@ -159,13 +160,13 @@ test("SUPER ADMIN: баға жоқ -> қате; бағаны UI-да бапта�
   await page.locator("#pf-vat").selectOption("added");
   await page.locator("#pf-rate").fill("12");
   await page.getByRole("button", { name: "Баға қосу" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "Баға сақталды" })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Баға сақталды" }).first()).toBeVisible();
   await expect(page.getByTestId("prices-table")).toContainText("PRO");
   await expect(page.getByTestId("prices-table")).toContainText("1 000 000,00");
   // дұрыс емес баға
   await page.locator("#pf-price").fill("0");
   await page.getByRole("button", { name: "Баға қосу" }).click();
-  await expect(page.getByRole("alert").filter({ hasText: "Бағаны дұрыс енгізіңіз" })).toBeVisible();
+  await expect(page.getByRole("alert").filter({ hasText: "Бағаны дұрыс енгізіңіз" }).first()).toBeVisible();
   await page.goto("/admin/orders");
   await card(page).getByRole("button", { name: "Баға тізімінен ұсыну" }).click();
   await expect(card(page)).toHaveAttribute("data-status", "quoted");
@@ -196,7 +197,7 @@ test("шот беру: сатушы профилі жоқта бас тарта�
   await page.locator("#sp-terms").fill("7");
   // ҚҚС ұсыныста бар, сатушы ҚҚС төлеушісі емес болса - шот берілмейді
   await page.getByRole("button", { name: "Сақтау" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "Сатушы реквизиттері сақталды" })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Сатушы реквизиттері сақталды" }).first()).toBeVisible();
   await page.goto("/admin/orders");
   await confirm(page, "Шот беру", "Шот беру");
   expect((await q("select status from licence_orders where id=$1", [S.orderId]))[0].status).toBe("quoted");
@@ -204,10 +205,10 @@ test("шот беру: сатушы профилі жоқта бас тарта�
   await page.goto("/admin/seller");
   await page.getByLabel("ҚҚС төлеушісімін").check();
   await page.getByRole("button", { name: "Сақтау" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "Сатушы реквизиттері сақталды" })).toBeHidden({ timeout: 1 }).catch(() => {});
+  await expect(page.getByRole("status").filter({ hasText: "Сатушы реквизиттері сақталды" }).first()).toBeHidden({ timeout: 1 }).catch(() => {});
   await page.locator("#sp-cert").fill("серия 00000 №0000000");
   await page.getByRole("button", { name: "Сақтау" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "Сатушы реквизиттері сақталды" })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Сатушы реквизиттері сақталды" }).first()).toBeVisible();
   await page.goto("/admin/orders");
   await confirm(page, "Шот беру", "Шот беру");
   await expect(card(page)).toHaveAttribute("data-status", "invoiced");
@@ -313,7 +314,7 @@ test("бас тарту: мектеп әкімшісі ашық тапсырыс
   await expect(page.getByTestId("order-row").first().getByRole("button", { name: "Бас тарту" })).toHaveCount(0);   // активтенген
   await page.locator("#ord-months").fill("6");
   await page.getByRole("button", { name: "Тапсырыс беру" }).click();
-  await expect(page.getByRole("status").filter({ hasText: "Тапсырыс жіберілді" })).toBeVisible();
+  await expect(page.getByRole("status").filter({ hasText: "Тапсырыс жіберілді" }).first()).toBeVisible();
   const rows = page.getByTestId("order-row");
   await expect(rows).toHaveCount(2);
   await rows.first().getByRole("button", { name: "Бас тарту" }).click();

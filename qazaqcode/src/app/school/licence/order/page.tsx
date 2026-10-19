@@ -45,7 +45,9 @@ export default async function OrderPage() {
       </Section>
 
       <Section title="2. Тапсырыс">
-        <OrderForm action={requestLicenceAction} disabled={!billing} defaults={{ plan: lic?.plan ?? "starter", students: lic?.max_students ?? 100, teachers: lic?.max_teachers ?? 5 }} />
+        {billing
+          ? <OrderForm action={requestLicenceAction} defaults={{ plan: lic?.plan ?? "starter", students: lic?.max_students ?? 100, teachers: lic?.max_teachers ?? 5 }} />
+          : <Banner tone="warn">Тапсырыс беру үшін алдымен жоғарыдағы төлем реквизиттерін сақтаңыз.</Banner>}
         <div className="mt-4" data-testid="price-list">
           <h3 className="mb-2 text-sm font-semibold">Қазіргі баға тізімі</h3>
           {prices.length === 0 ? (
