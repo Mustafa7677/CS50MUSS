@@ -234,3 +234,10 @@ Auth (Supabase)
 - Қосымша мен DB-функциялар желіге ШЫҚПАЙДЫ: тек `email_outbox`-қа жазады. Хатты бөлек `mailer` қызметі (`docker compose --profile mail up -d mailer`, `scripts/send-emails.mjs`) SMTP арқылы жібереді. Толық нұсқаулық: `docs/EMAIL.md` (провайдер, SPF/DKIM/DMARC, заң).
 - Қосымшаға `EMAIL_DRIVER` (өндірісте әдепкі `off`) беріледі, SMTP құпиялары тек `mailer`-ге. Миграция 0015 қолданылған болуы тиіс.
 - [ ] Чеклист: `EMAIL_DRIVER=smtp` + `SMTP_*` орнатылды; SPF/DKIM/DMARC жазбалары қойылды; `docker compose logs mailer` қатесіз; сынақ шақыру хаты нақты поштаға келді (нақты провайдермен СЫНАЛМАҒАН - docs/EMAIL.md); `scripts/emails-purge.mjs` cron-да.
+
+## Табыс арнасы: лицензия тапсырысы, шот, жаңарту еске салғыштары
+
+- Миграция `0014_licence_orders.sql`. Процесс пен шектеулер: `docs/BILLING.md`. Онлайн-төлем шлюзі ЖОҚ: төлемді SUPER ADMIN банк көшірмесінен қолмен растайды.
+- Іске қосудан бұрын SUPER ADMIN `/admin/seller` (сатушы реквизиттері) мен `/admin/prices` (баға бағдарламасы) беттерін ӨЗІ толтырады: кодта/миграцияда баға мен реквизит жоқ. Сатушы профилі бос болса шот берілмейді және PDF жасалмайды.
+- Жаңарту еске салғыштары (мерзімге 30/14/7/1 күн қалғанда мектеп әкімшілеріне хабарландыру, бір реттік): cron-да күніне 1 рет, мысалы `0 4 * * *` (09:00 Asia/Almaty): `DATABASE_URL=<иесі рөлі> node scripts/licence-reminders.mjs`. Қайта іске қосу қауіпсіз (журнал: `licence_reminder_log`).
+- [ ] Чеклист: `/admin/seller` мен `/admin/prices` толтырылды; бухгалтер/заңгер шот үлгісін тексерді (docs/BILLING.md сұрақтары); cron қосылды; `npx playwright test e2e/orders.spec.ts` және `db/tests/orders.test.mjs` staging-те жасыл.
