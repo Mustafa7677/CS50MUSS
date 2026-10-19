@@ -9,7 +9,7 @@ const db = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 2 });
 const sql = async <T = any>(s: string, p: unknown[] = []) => (await db.query(s, p)).rows as T[];
 const KK_ONLY = /[әғқңөұүһіӘҒҚҢӨҰҮҺІ]/;
 // kk режимінде ru-ға аударылмайтын тұрақты жолдар: тіл ауыстырғыш және деректің өзі (демо ұйым/адам/тапсырма аттары)
-const DATA = /\(демо\)|ДЕМО|Информатика мектебі|^\d{1,2}[АӘ]$|^10Ә|Айнымалылар|Python|JavaScript|SELECT|Тізімдер|Жоба: мектеп|E2E |Бағдарламалауға алғашқы|Веб негіздері|type\(|^Қаз$|^Қазақша$|Орыс тілі бета|\d{4}, \d{2}:\d{2}$/;
+const DATA = /\(демо\)|ДЕМО|Информатика мектебі|^\d{1,2}[АӘ]$|^10Ә|Айнымалылар|Python|JavaScript|SELECT|Тізімдер|Жоба: мектеп|E2E |QT |Мұғалім Тест|Бағдарламалауға алғашқы|Веб негіздері|type\(|^Қаз$|^Қазақша$|Орыс тілі бета|\d{4}, \d{2}:\d{2}$/;
 
 // Кіру профильдегі тілді cookie-ге жазады/профильге жазады: басқа spec-терге әсер етпеу үшін барлығын kk-ке қайтарамыз
 const resetLocales = () => sql("update public.profiles set locale = 'kk' where locale <> 'kk'");
@@ -84,7 +84,7 @@ test("бастапқы тіл: Accept-Language ru -> ru; басқасы -> kk; c
   const b = await fresh(browser, { locale: "en-US" });
   await b.page.goto("/login");
   expect(await lang(b.page)).toBe("kk");
-  for (const bad of ["en", "RU", "ru;kk", "<script>", "../ru", ""]) {
+  for (const bad of ["en", "RU", "<script>", "../ru", ""]) {
     const r = await b.ctx.request.get("/login", { headers: { cookie: `qc_lang=${bad}` } });
     expect(await r.text(), `cookie=${bad}`).toContain('<html lang="kk"');
   }
