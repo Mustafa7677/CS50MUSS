@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useId, useRef, useTransition } from "react";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useT } from "@/lib/i18n/client";
 
 /**
  * Қауіпті әрекет алдында растау диалогы. `action` - server action, `fields` - жасырын өрістер.
@@ -11,7 +12,7 @@ export function ConfirmButton({
 }: {
   action: (formData: FormData) => void | Promise<void>; fields?: Record<string, string>; label: string; title: string; message: string;
   confirmLabel?: string; className?: string; danger?: boolean;
-}) {
+}) { const t = useT();
   const ref = useRef<HTMLDialogElement>(null);
   const tid = useId();
   const [pending, start] = useTransition();
@@ -36,8 +37,8 @@ export function ConfirmButton({
           <h2 id={tid} className="text-lg font-bold">{title}</h2>
           <p className="mt-2 text-sm text-ink-muted">{message}</p>
           <div className="mt-5 flex justify-end gap-2">
-            <button type="button" className="btn-secondary" onClick={() => ref.current?.close()}>Бас тарту</button>
-            <button type="submit" disabled={pending} className={danger ? "btn-danger" : "btn-primary"}>{pending ? "Күтіңіз..." : confirmLabel}</button>
+            <button type="button" className="btn-secondary" onClick={() => ref.current?.close()}>{t("Бас тарту")}</button>
+            <button type="submit" disabled={pending} className={danger ? "btn-danger" : "btn-primary"}>{pending ? t("Күтіңіз...") : confirmLabel}</button>
           </div>
         </form>
       </dialog>

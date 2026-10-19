@@ -11,6 +11,14 @@ const schema = z.object({
   COOKIE_SECURE: z.enum(["true", "false"]).default("false"),
   // Сенімді reverse proxy саны (X-Forwarded-For оңнан санағанда): rate limit клиент IP-ін осыдан алады
   TRUSTED_PROXY_HOPS: z.coerce.number().int().min(0).max(5).default(1),
+  // E-mail (тек scripts/send-emails.mjs worker жібереді; қосымша тек outbox-қа жазады). Әдепкі: өндірісте off, әйтпесе console.
+  EMAIL_DRIVER: z.enum(["console", "smtp", "off"]).optional(),
+  SMTP_HOST: z.string().optional(),
+  SMTP_PORT: z.coerce.number().int().min(1).max(65535).optional(),
+  SMTP_USER: z.string().optional(),
+  SMTP_PASS: z.string().optional(),
+  SMTP_SECURE: z.enum(["true", "false"]).optional(),
+  SMTP_FROM: z.string().optional(),
 });
 
 /** Әлсіз/үлгі құпия: placeholder сөздер, қайталанатын үлгі, аз әртүрлі символ */
@@ -20,6 +28,12 @@ export function isWeakSecret(v: string): boolean {
   if (new Set(v).size < 10) return true;
   const half = v.slice(0, Math.floor(v.length / 2));
   return v.length % 2 === 0 && v === half + half;
+}
+
+/** Қосымша e-mail жіберу мүмкіндігі қосулы ма (UI «E-mail-ге жіберу» батырмасы үшін). */
+export function emailEnabled(): boolean {
+  const d = env().EMAIL_DRIVER ?? (process.env.NODE_ENV === "production" ? "off" : "console");
+  return d !== "off";
 }
 
 export type Env = z.infer<typeof schema>;
@@ -47,6 +61,12 @@ export function env(): Env {
     if (e.COOKIE_SECURE !== "true") throw new Error("Өндірісте COOKIE_SECURE=true болуы тиіс (HTTPS)");
     if (!e.APP_URL.startsWith("https://")) throw new Error("Өндірісте APP_URL https:// болуы тиіс");
     if (e.AUTH_DRIVER === "supabase" && !e.SUPABASE_URL!.startsWith("https://")) throw new Error("SUPABASE_URL https:// болуы тиіс");
+  }
+  // E-mail: SMTP_* толық тексеруі worker-де (transport.readEmailConfig: өндірісте HOST/PORT/FROM/USER/PASS міндетті). Қосымша контейнеріне SMTP құпиясы берілмейді,
+  // сондықтан мұнда тек драйвер түрі мен қауіпті комбинациялар. Мәндер қате хабарламасына қосылмайды.
+  if (!!e.SMTP_USER !== !!e.SMTP_PASS) throw new Error("SMTP_USER мен SMTP_PASS бірге берілуі тиіс");
+  if (e.EMAIL_DRIVER === "console" && process.env.NODE_ENV === "production" && process.env.ALLOW_LOCAL_AUTH_IN_PRODUCTION !== "yes") {
+    throw new Error("Өндірісте EMAIL_DRIVER=console рұқсат етілмейді (шақыру сілтемелері логқа түседі): smtp не off қолданыңыз");
   }
   cached = e;
   return e;

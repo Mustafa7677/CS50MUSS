@@ -10,7 +10,7 @@ import { extendLicenseAction, inviteSchoolAdminAction, setLicenseAction, setOrgS
 import { LicenceForm } from "./LicenceForm";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Ұйым лицензиясы" };
+export async function generateMetadata() { return { title: "Ұйым лицензиясы" }; }
 
 type Usage = {
   org_id: string; name: string; slug: string; status: string; license_state: string; plan: string | null; valid_until: string | null;

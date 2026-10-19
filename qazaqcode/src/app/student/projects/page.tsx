@@ -4,7 +4,7 @@ import { requireStudent } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { KIND_LABEL, fmtDate } from "@/lib/format";
 
-export const metadata = { title: "Жобалар" };
+export async function generateMetadata() { return { title: "Жобалар" }; }
 export const dynamic = "force-dynamic";
 
 type Row = {

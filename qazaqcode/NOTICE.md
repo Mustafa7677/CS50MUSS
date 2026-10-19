@@ -32,3 +32,7 @@ QazaqCode Platform - `CS50 қазақша` ашық жобасынан **бөл�
 ## Шрифттер
 
 `assets/fonts/DejaVuSans*.ttf` - DejaVu Fonts (Bitstream Vera лицензиясы негізінде, еркін таратылады; мәтіні `assets/fonts/LICENSE-DejaVu.txt`). PDF есептерінде қазақ әріптері үшін қолданылады.
+
+## Pyodide («жеке тексеру»)
+
+`public/vendor/pyodide/` - Pyodide (CPython WebAssembly), MPL-2.0; файлдар `pyodide` npm пакетінен өзгеріссіз көшірілген, лицензия жазбасы `public/vendor/pyodide/LICENSE-NOTICE`. Оқушының браузерінде ғана жұмыс істейді (docs/SELFCHECK.md).

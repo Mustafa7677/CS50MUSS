@@ -10,6 +10,9 @@ const securityHeaders = [
   { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
   // Content-Security-Policy (nonce) src/middleware.ts-те қойылады (әр сұранысқа жаңа nonce керек)
 ];
+// Pyodide worker (public/workers, public/vendor/pyodide): оқушы коды осында орындалады. Worker-дің өз CSP-і (жауап тақырыбынан):
+// тек өз көзі, WebAssembly үшін 'wasm-unsafe-eval' (unsafe-eval ЖОҚ), сыртқы желіге шығу жоқ (connect-src 'self' тек өз файлдарын алу үшін).
+const workerCsp = "default-src 'none'; script-src 'self' 'wasm-unsafe-eval'; connect-src 'self'; base-uri 'none'; form-action 'none'";
 const nextConfig = {
   distDir: process.env.NEXT_DIST_DIR || ".next",
   poweredByHeader: false,
@@ -17,6 +20,12 @@ const nextConfig = {
   outputFileTracingIncludes: { "/api/reports/**": ["./assets/fonts/**"] },
   // Docker образы үшін ғана (NEXT_OUTPUT=standalone); `next start` standalone-мен дұрыс жұмыс істемейді
   output: process.env.NEXT_OUTPUT === "standalone" ? "standalone" : undefined,
-  async headers() { return [{ source: "/(.*)", headers: securityHeaders }]; },
+  async headers() {
+    return [
+      { source: "/(.*)", headers: securityHeaders },
+      { source: "/workers/:path*", headers: [{ key: "Content-Security-Policy", value: workerCsp }, { key: "Cache-Control", value: "public, max-age=300, must-revalidate" }] },
+      { source: "/vendor/pyodide/:path*", headers: [{ key: "Content-Security-Policy", value: workerCsp }, { key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
+    ];
+  },
 };
 export default nextConfig;

@@ -8,11 +8,13 @@ import { requireStaff } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { archiveAssignmentAction, duplicateAssignmentAction, restoreAssignmentAction, saveAssignmentAction } from "../../../actions";
 import { loadClassOptions, uuidOr404 } from "../../../_data";
+import { getT } from "@/lib/i18n";
+import { STATUS_LABEL } from "@/lib/format";
 
-export const metadata = { title: "Тапсырманы өзгерту" };
+export async function generateMetadata() { const t = await getT(); return { title: t("Тапсырманы өзгерту") }; }
 export const dynamic = "force-dynamic";
 
-export default async function EditAssignment({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ ok?: string; err?: string }> }) {
+export default async function EditAssignment({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ ok?: string; err?: string }> }) { const t = await getT();
   const { id } = await params;
   const sp = await searchParams;
   uuidOr404(id);
@@ -24,7 +26,7 @@ export default async function EditAssignment({ params, searchParams }: { params:
       `select q.prompt, q.options, q.points, k.correct_index, k.explanation from public.assignment_questions q
        left join public.assignment_answer_keys k on k.question_id = q.id where q.assignment_id = $1 order by q.position`, [id]);
     const tcs = await q<any>("select input, expected_output, is_hidden, points from public.assignment_test_cases where assignment_id = $1 order by position", [id]);
-    const targets = (await q<{ classroom_id: string }>("select classroom_id from public.assignment_targets where assignment_id = $1", [id])).map((t) => t.classroom_id);
+    const targets = (await q<{ classroom_id: string }>("select classroom_id from public.assignment_targets where assignment_id = $1", [id])).map((tt) => tt.classroom_id);
     const locked = (await q<{ x: boolean }>("select exists (select 1 from public.submissions where assignment_id = $1) as x", [id]))[0].x;
     const works = (await q<{ n: string }>("select count(*) as n from public.submissions where assignment_id = $1 and status <> 'draft'", [id]))[0].n;
     return { a, qs, tcs, targets, locked, works: Number(works) };
@@ -45,17 +47,17 @@ export default async function EditAssignment({ params, searchParams }: { params:
     <>
       <PageHeader
         title={a.title}
-        subtitle={<span className="inline-flex items-center gap-2"><StatusBadge status={a.status} /> Жіберілген жұмыс: {data.works}</span>}
+        subtitle={<span className="inline-flex items-center gap-2"><StatusBadge status={a.status}  label={t(STATUS_LABEL[a.status] ?? a.status)}/>{" "}{t("Жіберілген жұмыс:")}{" "}{data.works}</span>}
         actions={<>
-          <Link href="/teacher/assignments" className="btn-secondary">Тізімге</Link>
+          <Link href="/teacher/assignments" className="btn-secondary">{t("Тізімге")}</Link>
           <form action={duplicateAssignmentAction}>
             <input type="hidden" name="assignment_id" value={a.id} /><input type="hidden" name="back" value={`/teacher/assignments/${a.id}/edit`} />
-            <button type="submit" className="btn-secondary">Көшіру</button>
+            <button type="submit" className="btn-secondary">{t("Көшіру")}</button>
           </form>
           {a.status === "archived"
-            ? <form action={restoreAssignmentAction}><input type="hidden" name="assignment_id" value={a.id} /><button type="submit" className="btn-secondary">Жобаға қайтару</button></form>
-            : <ConfirmButton action={archiveAssignmentAction} fields={{ assignment_id: a.id, back: `/teacher/assignments/${a.id}/edit` }} label="Мұрағатқа жіберу" className="btn-secondary"
-                title="Мұрағатқа жіберу?" message="Тапсырма оқушыларға көрінбейді; жұмыстар мен бағалар сақталады. Кейін жобаға қайтаруға болады." confirmLabel="Мұрағатқа жіберу" />}
+            ? <form action={restoreAssignmentAction}><input type="hidden" name="assignment_id" value={a.id} /><button type="submit" className="btn-secondary">{t("Жобаға қайтару")}</button></form>
+            : <ConfirmButton action={archiveAssignmentAction} fields={{ assignment_id: a.id, back: `/teacher/assignments/${a.id}/edit` }} label={t("Мұрағатқа жіберу")} className="btn-secondary"
+                title={t("Мұрағатқа жіберу?")} message={t("Тапсырма оқушыларға көрінбейді; жұмыстар мен бағалар сақталады. Кейін жобаға қайтаруға болады.")} confirmLabel={t("Мұрағатқа жіберу")} />}
         </>}
       />
       <Notices ok={sp.ok} err={sp.err} />

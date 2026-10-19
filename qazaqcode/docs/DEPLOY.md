@@ -219,3 +219,12 @@ Auth (Supabase)
 - [ ] Дербес деректер: заңгер растауы, ата-ана келісімі тәртібі, сақтау/өшіру саясаты, оқиғаны хабарлау жоспары.
 - [ ] Тәуелсіз пентест жоспарланған (SECURITY-AUDIT.md «Тексерілмеген аймақтар»).
 - [ ] Кері қайту жоспары жазылған: алдыңғы образ тегі, backup, жауапты адам.
+
+## Жеке тексеру (Pyodide) активтері
+
+- «Сынап көру» (оқушының браузеріндегі Python тексеруі, docs/SELFCHECK.md) Pyodide-ты ӨЗ хостымыздан береді: `public/vendor/pyodide/` (~13 МБ: `pyodide.js`, `pyodide.asm.mjs`, `pyodide.asm.wasm`, `python_stdlib.zip`, `pyodide-lock.json`, `LICENSE-NOTICE`, `VERSION`) және `public/workers/py-runner.js`. Сыртқы CDN-ге рұқсат жоқ.
+- Бұл файлдар git-те тұр (<30 МБ, сондықтан .gitignore-да емес). `pyodide` npm нұсқасы өзгерсе: `npm run vendor:pyodide` (қайта көшіреді), `node scripts/vendor-pyodide.mjs --check` нұсқа сәйкестігін тексереді; өзгерісті коммитке қосыңыз.
+- Docker: `Dockerfile` run сатысы `public/` қалтасын көшіреді (standalone режимі оны өзі көшірмейді). Көшірілмесе «Сынап көру» «Python ортасы жүктелмеді» қатесін береді.
+- Reverse proxy: `.wasm` файлы `Content-Type: application/wasm` болуы тиіс және `/vendor/pyodide/*` жауабына қосқан CSP/Cache-Control тақырыптарын өшірмеуі тиіс (қосымша gzip/br қосуға болады: wasm ~9,6 МБ).
+- Тексеру: `curl -sI https://<домен>/vendor/pyodide/pyodide.asm.wasm` -> `application/wasm`, `cache-control: ...immutable`; `curl -sI https://<домен>/workers/py-runner.js` -> `content-security-policy: default-src 'none'; script-src 'self' 'wasm-unsafe-eval'...`. Бет CSP-інде `worker-src 'self'` бар.
+- [ ] Чеклист: `/vendor/pyodide/` және `/workers/` өндірісте 200 береді; `npx playwright test e2e/selfcheck.spec.ts` staging-те жасыл.

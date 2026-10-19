@@ -7,8 +7,9 @@ import { ProgressBar } from "@/components/ui";
 import { requireStudent } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { completeLessonAction } from "../../actions";
+import { getT } from "@/lib/i18n";
 
-export const metadata = { title: "Курс" };
+export async function generateMetadata() { const t = await getT(); return { title: t("Курс") }; }
 export const dynamic = "force-dynamic";
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -17,7 +18,7 @@ type Course = { id: string; title: string; description: string | null };
 type Module = { id: string; title: string };
 type Lesson = { id: string; module_id: string; title: string; blocks: BlockData[]; assignment_id: string | null };
 
-export default async function CoursePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ lesson?: string }> }) {
+export default async function CoursePage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ lesson?: string }> }) { const t = await getT();
   const { id } = await params;
   const { lesson: lessonParam } = await searchParams;
   if (!UUID.test(id)) notFound();
@@ -56,22 +57,22 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
 
   return (
     <>
-      <p className="mb-3"><Link href="/student/courses" className="text-sm">← Курстар</Link></p>
+      <p className="mb-3"><Link href="/student/courses" className="text-sm">{t("← Курстар")}</Link></p>
       <div className="mb-6">
         <h1 className="break-words text-2xl font-bold tracking-tight">{course.title}</h1>
         {course.description && <p className="mt-1 break-words text-sm text-ink-muted">{course.description}</p>}
         <div className="mt-3 max-w-md">
-          <ProgressBar value={completed} max={total} label="Курс прогресі" />
-          <p className="mt-1 text-xs text-ink-muted" data-testid="course-progress">{completed} / {total} сабақ аяқталды</p>
+          <ProgressBar value={completed} max={total} label={t("Курс прогресі")} />
+          <p className="mt-1 text-xs text-ink-muted" data-testid="course-progress">{completed}{" "}{t("/ {total} сабақ аяқталды", { total })}</p>
         </div>
       </div>
 
       {total === 0 || !cur ? (
-        <div className="card px-6 py-10 text-center text-ink-muted">Бұл курста әзірге сабақ жоқ.</div>
+        <div className="card px-6 py-10 text-center text-ink-muted">{t("Бұл курста әзірге сабақ жоқ.")}</div>
       ) : (
         <div className="grid gap-6 lg:grid-cols-[17rem_1fr]">
           <details className="card p-3 lg:hidden">
-            <summary className="cursor-pointer text-sm font-semibold">Сабақтар тізімі ({completed}/{total})</summary>
+            <summary className="cursor-pointer text-sm font-semibold">{t("Сабақтар тізімі ({completed}/{total})", { completed, total })}</summary>
             <div className="mt-3"><LessonNav courseId={course.id} modules={navModules} currentId={cur.id} /></div>
           </details>
           <aside className="card hidden h-fit p-4 lg:block"><LessonNav courseId={course.id} modules={navModules} currentId={cur.id} /></aside>
@@ -80,27 +81,27 @@ export default async function CoursePage({ params, searchParams }: { params: Pro
             <div className="card space-y-5 p-5">
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <h2 className="break-words text-xl font-semibold" data-testid="lesson-title">{cur.title}</h2>
-                {done.has(cur.id) && <span className="badge bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">Аяқталған</span>}
+                {done.has(cur.id) && <span className="badge bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">{t("Аяқталған")}</span>}
               </div>
               {(Array.isArray(cur.blocks) ? cur.blocks : []).length === 0
-                ? <p className="text-sm text-ink-muted">Бұл сабақта мазмұн әзірге жоқ.</p>
+                ? <p className="text-sm text-ink-muted">{t("Бұл сабақта мазмұн әзірге жоқ.")}</p>
                 : (cur.blocks as BlockData[]).map((b, i) => <BlockView key={i} block={b} />)}
               {cur.assignment_id && aTitle && (
                 <div className="rounded-xl border border-line bg-brand-soft p-4">
-                  <p className="text-sm font-semibold">Сабаққа тапсырма бекітілген</p>
+                  <p className="text-sm font-semibold">{t("Сабаққа тапсырма бекітілген")}</p>
                   <Link href={`/student/assignments/${cur.assignment_id}`} className="btn-secondary mt-2 no-underline">{aTitle}</Link>
                 </div>
               )}
               {!done.has(cur.id) && (
-                <ActionForm action={completeLessonAction} submitLabel="Сабақты аяқтадым" successToast={false}>
+                <ActionForm action={completeLessonAction} submitLabel={t("Сабақты аяқтадым")} successToast={false}>
                   <input type="hidden" name="lessonId" value={cur.id} />
                   <input type="hidden" name="courseId" value={course.id} />
                 </ActionForm>
               )}
             </div>
             <div className="mt-4 flex items-center justify-between gap-3">
-              {prev ? <Link href={href(prev)} className="btn-secondary no-underline">← Алдыңғы</Link> : <span />}
-              {next ? <Link href={href(next)} className="btn-primary no-underline">Келесі →</Link> : <span />}
+              {prev ? <Link href={href(prev)} className="btn-secondary no-underline">{t("← Алдыңғы")}</Link> : <span />}
+              {next ? <Link href={href(next)} className="btn-primary no-underline">{t("Келесі →")}</Link> : <span />}
             </div>
           </article>
         </div>

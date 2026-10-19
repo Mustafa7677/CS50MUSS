@@ -1,9 +1,10 @@
 import Link from "next/link";
 import { currentUserId } from "@/lib/auth/session";
 import { withUser } from "@/lib/db";
+import { getT } from "@/lib/i18n";
 
 /** Қоңырау: оқылмаған хабарландыру саны. Серверлік компонент (RLS: тек өз хабарландыруы). */
-export async function NotificationBell({ userId }: { userId?: string } = {}) {
+export async function NotificationBell({ userId }: { userId?: string } = {}) { const t = await getT();
   let n = 0;
   try {
     const uid = userId ?? (await currentUserId());
@@ -11,7 +12,7 @@ export async function NotificationBell({ userId }: { userId?: string } = {}) {
     const r = await withUser(uid, (q) => q<{ n: string }>("select count(*) as n from public.notifications where user_id = auth.uid() and read_at is null"));
     n = Number(r[0]?.n ?? 0);
   } catch { n = 0; }
-  const label = n > 0 ? `Хабарландырулар: ${n} оқылмаған` : "Хабарландырулар";
+  const label = n > 0 ? t("Хабарландырулар: {n} оқылмаған", { n }) : t("Хабарландырулар");
   return (
     <Link href="/notifications" aria-label={label} title={label} data-testid="notification-bell" className="btn-secondary relative px-3 no-underline">
       <span aria-hidden>🔔</span>

@@ -119,7 +119,7 @@ export default async function AssignmentPage({ params }: { params: Promise<{ id:
             userId={ctx.userId} assignmentId={a.id} kind={a.kind} starterCode={a.starter_code ?? ""} questions={questions}
             draft={draft ? { id: draft.id, code: draft.code ?? "", answers: draft.answers ?? {}, seconds: draft.time_spent_seconds } : null}
             last={lastSub ? { code: lastSub.code ?? "", answers: lastSub.answers ?? {}, status: lastSub.status, attemptNo: lastSub.attempt_no } : null}
-            result={result} blocked={blocked} canRetry={!pastDeadline && attemptsLeft && !!lastSub && !draft}
+            result={result} blocked={blocked} visibleTests={a.kind === "python" ? tests : undefined} canRetry={!pastDeadline && attemptsLeft && !!lastSub && !draft}
           />
         </section>
       </div>

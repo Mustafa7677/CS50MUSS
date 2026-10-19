@@ -617,6 +617,7 @@ test.describe("g) HTTP тақырыптары, қателер, health", () => {
       const script = /script-src ([^;]*)/.exec(csp)?.[1] ?? "";
       expect(script, p).toMatch(/'nonce-[A-Za-z0-9+/=]+'/); expect(script, p).not.toContain("'unsafe-inline'"); expect(script, p).not.toContain("'unsafe-eval'");
       expect(csp).toContain("frame-ancestors 'none'"); expect(csp).toContain("object-src 'none'"); expect(csp).toContain("base-uri 'self'"); expect(csp).toContain("form-action 'self'");
+      expect(csp).toContain("worker-src 'self'"); expect(/worker-src[^;]*(https?:|\*|blob:)/.test(csp), `${p}: worker-src тек өз көзі`).toBe(false); // «жеке тексеру» Pyodide worker-і (docs/SELFCHECK.md)
       expect(h.get("x-frame-options")).toBe("DENY"); expect(h.get("x-content-type-options")).toBe("nosniff");
       expect(h.get("strict-transport-security")).toMatch(/max-age=\d{7,}/); expect(h.get("referrer-policy")).toBe("strict-origin-when-cross-origin");
       expect(h.get("permissions-policy")).toMatch(/camera=\(\)/); expect(h.get("x-powered-by")).toBeNull();

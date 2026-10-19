@@ -6,7 +6,7 @@ import { withUser } from "@/lib/db";
 import { KIND_LABEL, fmtDate } from "@/lib/format";
 import { isUuid } from "../_data";
 
-export const metadata = { title: "Тексеру кезегі" };
+export async function generateMetadata() { return { title: "Тексеру кезегі" }; }
 export const dynamic = "force-dynamic";
 
 type Row = { id: string; status: string; attempt_no: number; submitted_at: string | null; student: string; title: string; kind: string; class_id: string; class_name: string };

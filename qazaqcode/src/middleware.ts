@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 
 // Content-Security-Policy (nonce): Next.js өзінің inline-скрипттеріне nonce-ты сұраныстағы CSP тақырыбынан алады.
 // Барлық бет динамикалық (cookies/headers), сондықтан nonce әр сұранысқа жаңа. 'unsafe-inline' тек стильде (style="" атрибуттары
-// мен бренд <style>), скриптте жоқ. Мақсаты: XSS болса да сыртқы скрипт/форма жібермеу, clickjacking-ті жабу.
+// мен бренд <style>), скриптте жоқ. /workers/ және /vendor/ (Pyodide worker) middleware-ден тыс: оларға next.config.mjs-те өз қатаң CSP қойылған. Мақсаты: XSS болса да сыртқы скрипт/форма жібермеу, clickjacking-ті жабу.
 export function middleware(req: NextRequest) {
   const nonce = btoa(crypto.randomUUID());
   const dev = process.env.NODE_ENV !== "production";
@@ -14,6 +14,7 @@ export function middleware(req: NextRequest) {
     "media-src 'self' https:",
     "font-src 'self' data:",
     "connect-src 'self'",
+    "worker-src 'self'",                   // «жеке тексеру» Pyodide worker-і (/workers/py-runner.js); blob: және сыртқы көз жоқ
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
@@ -30,5 +31,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: [{ source: "/((?!_next/static|_next/image|favicon.ico).*)", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] }],
+  matcher: [{ source: "/((?!_next/static|_next/image|favicon.ico|workers/|vendor/).*)", missing: [{ type: "header", key: "next-router-prefetch" }, { type: "header", key: "purpose", value: "prefetch" }] }],
 };

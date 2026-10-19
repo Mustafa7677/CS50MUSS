@@ -4,11 +4,13 @@ import { withUser } from "@/lib/db";
 import { fmtPct } from "@/lib/format";
 import { EmptyState, PageHeader, StatusBadge } from "@/components/ui";
 import { UUID_RE, loadClasses } from "../queries";
+import { getT } from "@/lib/i18n";
+import { STATUS_LABEL } from "@/lib/format";
 
-export const metadata = { title: "Сыныптар" };
+export async function generateMetadata() { const t = await getT(); return { title: t("Сыныптар") }; }
 export const dynamic = "force-dynamic";
 
-export default async function ClassesPage({ searchParams }: { searchParams: Promise<{ teacher?: string }> }) {
+export default async function ClassesPage({ searchParams }: { searchParams: Promise<{ teacher?: string }> }) { const t = await getT();
   const sp = await searchParams;
   const ctx = await requireSchoolAdmin();
   const org = ctx.active.org_id;
@@ -21,31 +23,31 @@ export default async function ClassesPage({ searchParams }: { searchParams: Prom
 
   return (
     <>
-      <PageHeader title="Сыныптар" subtitle="Ұйымның барлық сыныптары. Мұнда статистика көрсетіледі; тапсырма мен баға беруді сынып мұғалімі жүргізеді." />
-      <form method="get" className="card mb-4 flex flex-wrap items-end gap-3 p-4" role="search" aria-label="Сыныптарды сүзу">
+      <PageHeader title={t("Сыныптар")} subtitle={t("Ұйымның барлық сыныптары. Мұнда статистика көрсетіледі; тапсырма мен баға беруді сынып мұғалімі жүргізеді.")} />
+      <form method="get" className="card mb-4 flex flex-wrap items-end gap-3 p-4" role="search" aria-label={t("Сыныптарды сүзу")}>
         <div className="min-w-[14rem] flex-1">
-          <label className="label" htmlFor="teacher">Мұғалім бойынша сүзу</label>
+          <label className="label" htmlFor="teacher">{t("Мұғалім бойынша сүзу")}</label>
           <select id="teacher" name="teacher" defaultValue={teacherId ?? ""} className="input">
-            <option value="">Барлық мұғалімдер</option>
-            {teachers.map((t) => <option key={t.user_id} value={t.user_id}>{t.full_name ?? "Аты көрінбейді"}</option>)}
+            <option value="">{t("Барлық мұғалімдер")}</option>
+            {teachers.map((tt) => <option key={tt.user_id} value={tt.user_id}>{tt.full_name ?? t("Аты көрінбейді")}</option>)}
           </select>
         </div>
-        <button type="submit" className="btn-primary">Сүзу</button>
-        {teacherId && <Link href="/school/classes" className="btn-secondary">Тазалау</Link>}
+        <button type="submit" className="btn-primary">{t("Сүзу")}</button>
+        {teacherId && <Link href="/school/classes" className="btn-secondary">{t("Тазалау")}</Link>}
       </form>
 
       {classes.length === 0 ? (
-        <EmptyState title={teacherId ? "Бұл мұғалімнің сыныбы жоқ" : "Сыныптар әлі жоқ"} text="Мұғалімдер өз кабинетінде сынып ашқанда осында көрінеді." />
+        <EmptyState title={teacherId ? t("Бұл мұғалімнің сыныбы жоқ") : t("Сыныптар әлі жоқ")} text={t("Мұғалімдер өз кабинетінде сынып ашқанда осында көрінеді.")} />
       ) : (
         <div className="table-wrap relative"><table className="w-full min-w-[52rem]" data-testid="classes-table">
-          <thead><tr><th className="th">Сынып</th><th className="th">Пән</th><th className="th">Оқу жылы</th><th className="th">Мұғалім</th><th className="th">Оқушы</th><th className="th">Жарияланған тапсырма</th><th className="th">Орташа %</th><th className="th"><span className="sr-only">Әрекет</span></th></tr></thead>
+          <thead><tr><th className="th">{t("Сынып")}</th><th className="th">{t("Пән")}</th><th className="th">{t("Оқу жылы")}</th><th className="th">{t("Мұғалім")}</th><th className="th">{t("Оқушы")}</th><th className="th">{t("Жарияланған тапсырма")}</th><th className="th">{t("Орташа %")}</th><th className="th"><span className="sr-only">{t("Әрекет")}</span></th></tr></thead>
           <tbody className="divide-y divide-line">
             {classes.map((c) => (
               <tr key={c.id}>
-                <td className="td font-medium"><Link href={`/school/classes/${c.id}`}>{c.name}</Link>{c.status !== "active" && <> <StatusBadge status="archived" /></>}</td>
+                <td className="td font-medium"><Link href={`/school/classes/${c.id}`}>{c.name}</Link>{c.status !== "active" && <> <StatusBadge status="archived"  label={t(STATUS_LABEL["archived"] ?? "archived")}/></>}</td>
                 <td className="td">{c.subject}</td><td className="td">{c.academic_year}</td><td className="td">{c.teacher_name ?? "-"}</td>
                 <td className="td">{c.students}</td><td className="td">{c.assignments}</td><td className="td">{fmtPct(c.avg_pct)}</td>
-                <td className="td text-right"><Link href={`/school/classes/${c.id}`}>Ашу</Link></td>
+                <td className="td text-right"><Link href={`/school/classes/${c.id}`}>{t("Ашу")}</Link></td>
               </tr>
             ))}
           </tbody></table></div>

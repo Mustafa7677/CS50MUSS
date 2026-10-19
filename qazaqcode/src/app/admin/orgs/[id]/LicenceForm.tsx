@@ -2,6 +2,7 @@
 import { useRef, useState } from "react";
 import { ActionForm } from "@/components/ActionForm";
 import type { ActionResult } from "@/lib/errors";
+import { useT } from "@/lib/i18n/client";
 
 type Action = (prev: ActionResult | null, f: FormData) => Promise<ActionResult>;
 type Init = { org: string; plan: string; status: string; max_students: number; max_teachers: number; valid_until: string; notes: string };
@@ -15,7 +16,7 @@ function addMonths(base: string, n: number) {
 }
 
 /** Лицензия формасы: пакетті таңдағанда лимиттер автотолтырылады (ENTERPRISE - қолмен); мерзімді +6 ай / +1 жыл батырмаларымен ұзартуға болады. */
-export function LicenceForm({ init, action }: { init: Init; action: Action }) {
+export function LicenceForm({ init, action }: { init: Init; action: Action }) { const t = useT();
   const [v, setV] = useState(init);
   const studentsRef = useRef<HTMLInputElement>(null);
   const set = (k: keyof Init, val: string | number) => setV((s) => ({ ...s, [k]: val }));
@@ -30,40 +31,40 @@ export function LicenceForm({ init, action }: { init: Init; action: Action }) {
   const extend = (n: number) => setV((s) => ({ ...s, valid_until: addMonths(s.valid_until && s.valid_until > today ? s.valid_until : today, n) }));
   const past = v.valid_until && v.valid_until < today;
   return (
-    <ActionForm action={action} submitLabel="Лицензияны сақтау" className="grid gap-4 sm:grid-cols-2">
+    <ActionForm action={action} submitLabel={t("Лицензияны сақтау")} className="grid gap-4 sm:grid-cols-2">
       <input type="hidden" name="org" value={v.org} />
       <div>
-        <label className="label" htmlFor="lic-plan">Пакет</label>
+        <label className="label" htmlFor="lic-plan">{t("Пакет")}</label>
         <select id="lic-plan" name="plan" value={v.plan} onChange={(e) => onPlan(e.target.value)} className="input">
-          <option value="starter">STARTER: 100 оқушы, 5 мұғалім</option><option value="pro">PRO: 500 оқушы, 25 мұғалім</option><option value="enterprise">ENTERPRISE: келісім бойынша</option>
+          <option value="starter">{t("STARTER: 100 оқушы, 5 мұғалім")}</option><option value="pro">{t("PRO: 500 оқушы, 25 мұғалім")}</option><option value="enterprise">{t("ENTERPRISE: келісім бойынша")}</option>
         </select>
-        <p className="hint" data-testid="plan-hint">{v.plan === "enterprise" ? "ENTERPRISE: лимиттерді келісімшарт бойынша қолмен енгізіңіз." : custom ? "Лимиттер пакеттегіден өзгеше (қолмен өзгертілген)." : "Лимиттер пакет бойынша автоматты толтырылды."}</p>
+        <p className="hint" data-testid="plan-hint">{v.plan === "enterprise" ? t("ENTERPRISE: лимиттерді келісімшарт бойынша қолмен енгізіңіз.") : custom ? t("Лимиттер пакеттегіден өзгеше (қолмен өзгертілген).") : t("Лимиттер пакет бойынша автоматты толтырылды.")}</p>
       </div>
       <div>
-        <label className="label" htmlFor="lic-status">Лицензия күйі</label>
+        <label className="label" htmlFor="lic-status">{t("Лицензия күйі")}</label>
         <select id="lic-status" name="status" value={v.status} onChange={(e) => set("status", e.target.value)} className="input">
-          <option value="active">Белсенді</option><option value="suspended">Тоқтатылған</option>
+          <option value="active">{t("Белсенді")}</option><option value="suspended">{t("Тоқтатылған")}</option>
         </select>
       </div>
       <div>
-        <label className="label" htmlFor="lic-ms">Оқушы лимиті</label>
+        <label className="label" htmlFor="lic-ms">{t("Оқушы лимиті")}</label>
         <input id="lic-ms" ref={studentsRef} name="max_students" type="number" min={0} max={100000} required value={v.max_students} onChange={(e) => set("max_students", Number(e.target.value))} className="input" />
       </div>
       <div>
-        <label className="label" htmlFor="lic-mt">Мұғалім лимиті</label>
+        <label className="label" htmlFor="lic-mt">{t("Мұғалім лимиті")}</label>
         <input id="lic-mt" name="max_teachers" type="number" min={0} max={10000} required value={v.max_teachers} onChange={(e) => set("max_teachers", Number(e.target.value))} className="input" />
       </div>
       <div>
-        <label className="label" htmlFor="lic-until">Мерзімі (дейін)</label>
+        <label className="label" htmlFor="lic-until">{t("Мерзімі (дейін)")}</label>
         <input id="lic-until" name="valid_until" type="date" required value={v.valid_until} onChange={(e) => set("valid_until", e.target.value)} className="input" />
         <div className="mt-2 flex flex-wrap gap-2">
-          <button type="button" className="btn-secondary px-3 py-1 text-xs" onClick={() => extend(6)}>+6 ай</button>
-          <button type="button" className="btn-secondary px-3 py-1 text-xs" data-testid="form-plus-year" onClick={() => extend(12)}>+1 жыл</button>
+          <button type="button" className="btn-secondary px-3 py-1 text-xs" onClick={() => extend(6)}>{t("+6 ай")}</button>
+          <button type="button" className="btn-secondary px-3 py-1 text-xs" data-testid="form-plus-year" onClick={() => extend(12)}>{t("+1 жыл")}</button>
         </div>
-        {past && <p className="hint text-amber-700 dark:text-amber-300">Өткен күн қойылса, лицензия бірден «мерзімі өткен» болады.</p>}
+        {past && <p className="hint text-amber-700 dark:text-amber-300">{t("Өткен күн қойылса, лицензия бірден «мерзімі өткен» болады.")}</p>}
       </div>
       <div>
-        <label className="label" htmlFor="lic-notes">Ескертпе (келісімшарт №)</label>
+        <label className="label" htmlFor="lic-notes">{t("Ескертпе (келісімшарт №)")}</label>
         <input id="lic-notes" name="notes" value={v.notes} onChange={(e) => set("notes", e.target.value)} maxLength={300} className="input" />
       </div>
     </ActionForm>

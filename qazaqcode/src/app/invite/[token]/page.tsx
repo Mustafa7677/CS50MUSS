@@ -6,7 +6,7 @@ import { withUser } from "@/lib/db";
 import { ROLE_LABEL } from "@/lib/format";
 import { messageForCode } from "@/lib/errors";
 
-export const metadata = { title: "Шақыру" };
+export async function generateMetadata() { return { title: "Шақыру" }; }
 
 export default async function InvitePage({ params, searchParams }: { params: Promise<{ token: string }>; searchParams: Promise<{ e?: string }> }) {
   const { token } = await params;

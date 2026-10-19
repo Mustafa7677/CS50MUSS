@@ -5,6 +5,7 @@ import { currentUserId } from "@/lib/auth/session";
 import { withUser } from "@/lib/db";
 import { env } from "@/lib/env";
 import { AppError, errorMessage, type ActionResult } from "@/lib/errors";
+import { getT } from "@/lib/i18n";
 
 const str = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
 const num = (f: FormData, k: string) => { const v = str(f, k); return v === "" ? null : Number(v); };
@@ -18,7 +19,7 @@ async function uid(): Promise<string> {
 }
 const inviteLink = (token: string) => `${env().APP_URL.replace(/\/$/, "")}/invite/${token}`;
 
-export async function createOrganizationAction(_: ActionResult | null, f: FormData): Promise<ActionResult<{ link: string }>> {
+export async function createOrganizationAction(_: ActionResult | null, f: FormData): Promise<ActionResult<{ link: string }>> { const t = await getT();
   try {
     const p = z.object({
       name: z.string().min(2).max(160), slug: z.string().regex(/^[a-z0-9][a-z0-9-]{1,38}[a-z0-9]$/), plan, valid_until: date,
@@ -27,14 +28,14 @@ export async function createOrganizationAction(_: ActionResult | null, f: FormDa
     const r = await withUser(await uid(), (q) => q<{ r: { org_id: string; admin_invite_token: string } }>(
       "select public.create_organization($1,$2,$3::license_plan,$4::date,$5::int,$6::int) as r", [p.name, p.slug, p.plan, p.valid_until, ms, mt]));
     revalidatePath("/admin");
-    return { ok: true, message: "Мектеп тіркелді. Мектеп әкімшісіне шақыру сілтемесін жіберіңіз (ол тек қазір көрсетіледі).", data: { link: inviteLink(r[0].r.admin_invite_token) } };
+    return { ok: true, message: t("Мектеп тіркелді. Мектеп әкімшісіне шақыру сілтемесін жіберіңіз (ол тек қазір көрсетіледі)."), data: { link: inviteLink(r[0].r.admin_invite_token) } };
   } catch (e) {
-    if (e instanceof z.ZodError) return { ok: false, error: "Деректер дұрыс емес: атауы 2+ символ, slug тек кішкентай латын әріп/сан/сызықша (3-40), күні толтырылған болуы тиіс." };
+    if (e instanceof z.ZodError) return { ok: false, error: t("Деректер дұрыс емес: атауы 2+ символ, slug тек кішкентай латын әріп/сан/сызықша (3-40), күні толтырылған болуы тиіс.") };
     return { ok: false, error: errorMessage(e) };
   }
 }
 
-export async function setLicenseAction(_: ActionResult | null, f: FormData): Promise<ActionResult> {
+export async function setLicenseAction(_: ActionResult | null, f: FormData): Promise<ActionResult> { const t = await getT();
   try {
     const p = z.object({
       org: z.string().uuid(), plan, valid_until: date, status: z.enum(["active", "suspended"]),
@@ -43,9 +44,9 @@ export async function setLicenseAction(_: ActionResult | null, f: FormData): Pro
     await withUser(await uid(), (q) => q("select public.set_license($1,$2::license_plan,$3,$4,$5::date,$6,$7)",
       [p.org, p.plan, p.max_students, p.max_teachers, p.valid_until, p.status, str(f, "notes") || null]));
     revalidatePath("/admin"); revalidatePath(`/admin/orgs/${p.org}`);
-    return { ok: true, message: "Лицензия жаңартылды." };
+    return { ok: true, message: t("Лицензия жаңартылды.") };
   } catch (e) {
-    if (e instanceof z.ZodError) return { ok: false, error: "Лицензия деректері дұрыс емес (лимиттер - бүтін сан, күн толтырылған)." };
+    if (e instanceof z.ZodError) return { ok: false, error: t("Лицензия деректері дұрыс емес (лимиттер - бүтін сан, күн толтырылған).") };
     return { ok: false, error: errorMessage(e) };
   }
 }
@@ -63,11 +64,11 @@ export async function extendLicenseAction(f: FormData): Promise<void> {
   revalidatePath("/admin"); revalidatePath(`/admin/orgs/${org}`);
 }
 
-export async function inviteSchoolAdminAction(_: ActionResult | null, f: FormData): Promise<ActionResult<{ link: string }>> {
+export async function inviteSchoolAdminAction(_: ActionResult | null, f: FormData): Promise<ActionResult<{ link: string }>> { const t = await getT();
   try {
     const org = z.string().uuid().parse(str(f, "org"));
     const email = str(f, "email").toLowerCase() || null;
-    const t = await withUser(await uid(), (q) => q<{ t: string }>("select public.create_invitation($1,'school_admin',$2,336) as t", [org, email]));
-    return { ok: true, message: "Шақыру жасалды (14 күн жарамды). Сілтеме тек қазір көрсетіледі.", data: { link: inviteLink(t[0].t) } };
+    const tt = await withUser(await uid(), (q) => q<{ t: string }>("select public.create_invitation($1,'school_admin',$2,336) as t", [org, email]));
+    return { ok: true, message: t("Шақыру жасалды (14 күн жарамды). Сілтеме тек қазір көрсетіледі."), data: { link: inviteLink(tt[0].t) } };
   } catch (e) { return { ok: false, error: errorMessage(e) }; }
 }

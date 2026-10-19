@@ -5,7 +5,7 @@ import { withUser } from "@/lib/db";
 import { LICENSE_STATE_LABEL, PLAN_LABEL, fmtDate } from "@/lib/format";
 import { UsageMeter } from "./UsageMeter";
 
-export const metadata = { title: "Лицензия" };
+export async function generateMetadata() { return { title: "Лицензия" }; }
 export const dynamic = "force-dynamic";
 
 type Usage = {
@@ -21,7 +21,7 @@ export default async function LicencePage() {
   if (!u) {
     return (
       <>
-        <PageHeader title="Лицензия" />
+        <PageHeader title="Лицензия" actions={<Link className="btn-primary" href="/school/licence/order" data-testid="renew-licence">Лицензияны жаңарту</Link>} />
         <EmptyState title="Лицензия табылмады" text="Ұйымға лицензия берілмеген. Платформа әкімшісіне хабарласыңыз." />
       </>
     );
@@ -31,7 +31,7 @@ export default async function LicencePage() {
   const days = u.days_left;
   return (
     <>
-      <PageHeader title="Лицензия" subtitle="Пакет, мерзім және лимиттердің қолданылуы. Лицензияны платформа әкімшісі басқарады: ұзарту не лимитті өзгерту үшін оған хабарласыңыз." />
+      <PageHeader title="Лицензия" subtitle="Пакет, мерзім және лимиттердің қолданылуы. Ұзарту не лимитті өзгерту үшін тапсырыс беріңіз: платформа әкімшісі шот береді, төлем расталған соң лицензия жаңарады." actions={<Link className="btn-primary" href="/school/licence/order" data-testid="renew-licence">Лицензияны жаңарту</Link>} />
 
       <section className="card p-5" data-testid="licence-summary" aria-label="Лицензия күйі">
         <div className="flex flex-wrap items-center gap-3">

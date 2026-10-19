@@ -5,10 +5,11 @@ import { getContext } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { publicBrand, brandStyle } from "@/lib/brand";
 import { messageForCode } from "@/lib/errors";
+import { getT } from "@/lib/i18n";
 
-export const metadata = { title: "Сыныпқа қосылу" };
+export async function generateMetadata() { const t = await getT(); return { title: t("Сыныпқа қосылу") }; }
 
-export default async function JoinPage({ searchParams }: { searchParams: Promise<{ code?: string; e?: string }> }) {
+export default async function JoinPage({ searchParams }: { searchParams: Promise<{ code?: string; e?: string }> }) { const t = await getT();
   const sp = await searchParams;
   const errMsg = messageForCode(sp.e);
   const code = (sp.code ?? "").trim().toUpperCase();
@@ -21,46 +22,46 @@ export default async function JoinPage({ searchParams }: { searchParams: Promise
       <style dangerouslySetInnerHTML={{ __html: brandStyle(brand) }} />
       <div className="card w-full max-w-md p-7">
         <p className="text-sm font-semibold uppercase tracking-widest text-brand">{cls?.org_name ?? brand.name}</p>
-        <h1 className="mt-1 text-2xl font-bold">Сыныпқа қосылу</h1>
+        <h1 className="mt-1 text-2xl font-bold">{t("Сыныпқа қосылу")}</h1>
         {!code && (
           <form method="get" className="mt-6">
-            <label className="label" htmlFor="code">Мұғалім берген сынып коды</label>
+            <label className="label" htmlFor="code">{t("Мұғалім берген сынып коды")}</label>
             <input id="code" name="code" required minLength={6} maxLength={12} autoComplete="off" className="input font-mono uppercase tracking-widest" placeholder="ABCD2345" />
-            <button type="submit" className="btn-primary mt-4">Жалғастыру</button>
-            <p className="mt-5 text-sm text-ink-muted">Аккаунтыңыз бар ма? <Link href="/login?next=/join">Кіріңіз</Link>.</p>
+            <button type="submit" className="btn-primary mt-4">{t("Жалғастыру")}</button>
+            <p className="mt-5 text-sm text-ink-muted">{t("Аккаунтыңыз бар ма?")}{" "}<Link href="/login?next=/join">{t("Кіріңіз")}</Link>.</p>
           </form>
         )}
         {code && !cls && (
           <>
-            <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">Сынып коды дұрыс емес немесе қосылу жабық.</p>
-            <p className="mt-4"><Link href="/join" className="btn-secondary">Қайта енгізу</Link></p>
+            <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{t("Сынып коды дұрыс емес немесе қосылу жабық.")}</p>
+            <p className="mt-4"><Link href="/join" className="btn-secondary">{t("Қайта енгізу")}</Link></p>
           </>
         )}
         {code && cls && (
           <>
             <div className="mt-3 rounded-lg bg-brand-soft p-3 text-sm">
               <p><strong>{cls.classroom_name}</strong> · {cls.subject}</p>
-              {cls.teacher_name && <p className="text-ink-muted">Мұғалім: {cls.teacher_name}</p>}
+              {cls.teacher_name && <p className="text-ink-muted">{t("Мұғалім:")}{" "}{cls.teacher_name}</p>}
             </div>
             {errMsg && <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{errMsg}</p>}
             {ctx ? (
-              <ActionForm action={joinClassAction} submitLabel="Сыныпқа қосылу" className="mt-5" successToast={false}>
+              <ActionForm action={joinClassAction} submitLabel={t("Сыныпқа қосылу")} className="mt-5" successToast={false}>
                 <input type="hidden" name="code" value={code} />
-                <p className="text-sm">Сіз <strong>{ctx.fullName}</strong> ретінде кірдіңіз.</p>
+                <p className="text-sm">{t("Сіз")}{" "}<strong>{ctx.fullName}</strong>{" "}{t("ретінде кірдіңіз.")}</p>
               </ActionForm>
             ) : (
               <>
-                <ActionForm action={registerWithCodeAction} submitLabel="Тіркелу және қосылу" className="mt-5" successToast={false}>
+                <ActionForm action={registerWithCodeAction} submitLabel={t("Тіркелу және қосылу")} className="mt-5" successToast={false}>
                   <input type="hidden" name="code" value={code} />
-                  <label className="label" htmlFor="name">Аты-жөніңіз</label>
+                  <label className="label" htmlFor="name">{t("Аты-жөніңіз")}</label>
                   <input id="name" name="name" required minLength={2} maxLength={120} autoComplete="name" className="input" />
                   <label className="label mt-4" htmlFor="email">E-mail</label>
                   <input id="email" name="email" type="email" required autoComplete="username" className="input" />
-                  <label className="label mt-4" htmlFor="password">Құпиясөз</label>
+                  <label className="label mt-4" htmlFor="password">{t("Құпиясөз")}</label>
                   <input id="password" name="password" type="password" required minLength={8} autoComplete="new-password" className="input" />
-                  <p className="hint">Кемінде 8 символ. Деректеріңіз тек мектебіңіздің ішінде көрінеді.</p>
+                  <p className="hint">{t("Кемінде 8 символ. Деректеріңіз тек мектебіңіздің ішінде көрінеді.")}</p>
                 </ActionForm>
-                <p className="mt-5 text-sm text-ink-muted">Аккаунтыңыз бар ма? <Link href={`/login?next=${encodeURIComponent("/join?code=" + code)}`}>Кіріңіз</Link>.</p>
+                <p className="mt-5 text-sm text-ink-muted">{t("Аккаунтыңыз бар ма?")}{" "}<Link href={`/login?next=${encodeURIComponent("/join?code=" + code)}`}>{t("Кіріңіз")}</Link>.</p>
               </>
             )}
           </>

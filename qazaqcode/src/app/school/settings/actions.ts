@@ -5,6 +5,7 @@ import { requireSchoolAdmin } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { AppError, errorMessage, type ActionResult } from "@/lib/errors";
 import { buttonContrast, AA } from "@/lib/brand-color";
+import { getT } from "@/lib/i18n";
 
 const str = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "color");
@@ -18,7 +19,7 @@ const schema = z.object({
 });
 
 /** Мектеп брендингін сақтау (ұйымды ТЕК сессиядағы әкімшінің белсенді ұйымынан алады: басқа ұйымға жазу мүмкін емес). */
-export async function saveBrandAction(_: ActionResult | null, f: FormData): Promise<ActionResult> {
+export async function saveBrandAction(_: ActionResult | null, f: FormData): Promise<ActionResult> { const t = await getT();
   const ctx = await requireSchoolAdmin();
   try {
     const p = schema.parse({ logo: str(f, "logo_url"), primary: str(f, "primary_color"), secondary: str(f, "secondary_color"),
@@ -27,13 +28,13 @@ export async function saveBrandAction(_: ActionResult | null, f: FormData): Prom
       [ctx.active.org_id, p.logo, p.primary.toLowerCase(), p.secondary.toLowerCase(), p.welcome, p.email, p.phone]));
     revalidatePath("/", "layout");
     const low = buttonContrast(p.primary) < AA;
-    return { ok: true, message: low ? "Баптаулар сақталды. Назар аударыңыз: негізгі түстің контрасты төмен, батырма мәтіні қиын оқылуы мүмкін." : "Баптаулар сақталды." };
+    return { ok: true, message: low ? t("Баптаулар сақталды. Назар аударыңыз: негізгі түстің контрасты төмен, батырма мәтіні қиын оқылуы мүмкін.") : t("Баптаулар сақталды.") };
   } catch (e) {
     if (e instanceof z.ZodError) {
       const m = e.issues[0]?.message;
-      if (m === "logo") return { ok: false, error: "Логотип сілтемесі https:// деп басталатын дұрыс сілтеме болуы тиіс.", field: "logo_url" };
-      if (m === "phone") return { ok: false, error: "Телефонда тек сандар, +, (), - және бос орын болады.", field: "contact_phone" };
-      if (m === "color") return { ok: false, error: "Түс #rrggbb пішімінде болуы тиіс (мысалы, #0e7490).", field: "primary_color" };
+      if (m === "logo") return { ok: false, error: t("Логотип сілтемесі https:// деп басталатын дұрыс сілтеме болуы тиіс."), field: "logo_url" };
+      if (m === "phone") return { ok: false, error: t("Телефонда тек сандар, +, (), - және бос орын болады."), field: "contact_phone" };
+      if (m === "color") return { ok: false, error: t("Түс #rrggbb пішімінде болуы тиіс (мысалы, #0e7490)."), field: "primary_color" };
       return { ok: false, error: errorMessage(new AppError("validation")) };
     }
     return { ok: false, error: errorMessage(e) };

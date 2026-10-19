@@ -1,22 +1,24 @@
 import { Banner } from "@/components/ui";
 import { safeErrText } from "@/lib/errors";
+import { getT } from "@/lib/i18n";
+import type { TFn } from "@/lib/i18n/core";
 
-const OK: Record<string, string> = {
-  created: "Сынып ашылды. Төмендегі кодты оқушыларға беріңіз.",
-  code: "Қосылу коды жаңартылды. Ескі код енді жұмыс істемейді.",
-  removed: "Оқушы сыныптан шығарылды.",
-  saved: "Тапсырма жоба ретінде сақталды.",
-  published: "Тапсырма жарияланды.",
-  archived: "Тапсырма мұрағатқа жіберілді.",
-  restored: "Тапсырма жобаға қайтарылды.",
-  duplicated: "Көшірме жоба ретінде жасалды. Қажет болса, сыныпқа беріңіз.",
-};
+const OK = (t: TFn): Record<string, string> => ({
+  created: t("Сынып ашылды. Төмендегі кодты оқушыларға беріңіз."),
+  code: t("Қосылу коды жаңартылды. Ескі код енді жұмыс істемейді."),
+  removed: t("Оқушы сыныптан шығарылды."),
+  saved: t("Тапсырма жоба ретінде сақталды."),
+  published: t("Тапсырма жарияланды."),
+  archived: t("Тапсырма мұрағатқа жіберілді."),
+  restored: t("Тапсырма жобаға қайтарылды."),
+  duplicated: t("Көшірме жоба ретінде жасалды. Қажет болса, сыныпқа беріңіз."),
+});
 /** ?ok= және ?err= параметрлерінен хабарлама (сервер әрекеттерінің нәтижесі) */
-export function Notices({ ok, err }: { ok?: string; err?: string }) {
+export async function Notices({ ok, err }: { ok?: string; err?: string }) { const t = await getT();
   return (
     <>
       {err && <Banner tone="bad">{safeErrText(err.slice(0, 300))}</Banner>}
-      {ok && OK[ok] && <Banner tone="info">{OK[ok]}</Banner>}
+      {ok && OK(t)[ok] && <Banner tone="info">{OK(t)[ok]}</Banner>}
     </>
   );
 }

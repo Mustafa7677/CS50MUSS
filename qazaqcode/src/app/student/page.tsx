@@ -7,7 +7,7 @@ import { withUser } from "@/lib/db";
 import { KIND_LABEL, fmtDate, fmtPct } from "@/lib/format";
 import { avgPct, isOverdue, myAssignments } from "./data";
 
-export const metadata = { title: "Басты бет" };
+export async function generateMetadata() { return { title: "Басты бет" }; }
 export const dynamic = "force-dynamic";
 
 type ClassRow = { id: string; name: string; subject: string; teacher_name: string | null };
