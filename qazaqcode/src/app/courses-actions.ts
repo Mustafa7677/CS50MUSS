@@ -134,12 +134,12 @@ const block = (t: TFn) => z.object({
 const title = (t: TFn) => z.string().trim().min(1, t("Модуль мен сабақ атаулары бос болмауы тиіс.")).max(160, t("Атау 160 символдан аспауы тиіс."));
 const lesson = (t: TFn) => z.object({
   id: UUID(t).optional(),
-  title,
+  title: title(t),
   assignment_id: UUID(t).nullish(),
   blocks: z.array(block(t)).max(60, t("Бір сабақта 60 блоктан артық болмауы тиіс.")),
 });
 const structure = (t: TFn) => z.object({
-  modules: z.array(z.object({ id: UUID(t).optional(), title, lessons: z.array(lesson(t)) })).max(50, t("Модуль саны 50-ден аспауы тиіс.")),
+  modules: z.array(z.object({ id: UUID(t).optional(), title: title(t), lessons: z.array(lesson(t)) })).max(50, t("Модуль саны 50-ден аспауы тиіс.")),
 }).refine((s) => s.modules.reduce((n, m) => n + m.lessons.length, 0) <= 500, t("Сабақ саны 500-ден аспауы тиіс."));
 
 export async function saveCourseStructureAction(courseId: string, area: Area, payload: unknown): Promise<ActionResult<TreeModule[]>> { const t = await getT();

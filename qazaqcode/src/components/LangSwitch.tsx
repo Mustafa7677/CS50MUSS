@@ -6,12 +6,12 @@ export async function LangSwitch() {
   const cur = await getLocale();
   const btn = (l: "kk" | "ru", label: string) => (
     <button type="submit" name="lang" value={l} lang={l} aria-pressed={cur === l} aria-label={l === "kk" ? "Қазақша" : "Русский"}
-      className={`rounded px-2 py-1 text-xs font-semibold ${cur === l ? "bg-brand text-brand-ink" : "text-ink-muted hover:bg-brand-soft"}`}>{label}</button>
+      className={`rounded px-1.5 py-1 text-xs font-semibold ${cur === l ? "bg-brand text-brand-ink" : "text-ink-muted hover:bg-brand-soft"}`}>{label}</button>
   );
   return (
     <form action={setLangAction} className="flex items-center gap-0.5 rounded-lg border border-line p-0.5" data-testid="lang-switch">
       {btn("kk", "Қаз")}{btn("ru", "Рус")}
-      {I18N_BETA && <span className="px-1 text-[10px] font-semibold uppercase text-ink-muted" title="Орыс тілі бета нұсқада / Русский язык: бета-версия">бета</span>}
+      {I18N_BETA && <span className="px-0.5 text-[10px] font-semibold uppercase text-ink-muted" title="Орыс тілі бета нұсқада / Русский язык: бета-версия">бета</span>}
     </form>
   );
 }

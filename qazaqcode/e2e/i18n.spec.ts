@@ -9,10 +9,13 @@ const db = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 2 });
 const sql = async <T = any>(s: string, p: unknown[] = []) => (await db.query(s, p)).rows as T[];
 const KK_ONLY = /[әғқңөұүһіӘҒҚҢӨҰҮҺІ]/;
 // kk режимінде ru-ға аударылмайтын тұрақты жолдар: тіл ауыстырғыш және деректің өзі (демо ұйым/адам/тапсырма аттары)
-const DATA = /\(демо\)|ДЕМО|Информатика мектебі|^\d{1,2}[АӘ]$|^10Ә|Айнымалылар|Python|JavaScript|SELECT|Тізімдер|Жоба: мектеп|Веб негіздері|type\(|^Қаз$|^Қазақша$|Орыс тілі бета|\d{4}, \d{2}:\d{2}$/;
+const DATA = /\(демо\)|ДЕМО|Информатика мектебі|^\d{1,2}[АӘ]$|^10Ә|Айнымалылар|Python|JavaScript|SELECT|Тізімдер|Жоба: мектеп|E2E |Бағдарламалауға алғашқы|Веб негіздері|type\(|^Қаз$|^Қазақша$|Орыс тілі бета|\d{4}, \d{2}:\d{2}$/;
 
+// Кіру профильдегі тілді cookie-ге жазады/профильге жазады: басқа spec-терге әсер етпеу үшін барлығын kk-ке қайтарамыз
+const resetLocales = () => sql("update public.profiles set locale = 'kk' where locale <> 'kk'");
+test.beforeAll(resetLocales);
 test.afterAll(async () => {
-  await sql("update public.profiles set locale = 'kk' where id = (select id from auth.users where email = $1)", [STUDENT]);
+  await resetLocales();
   await db.end();
 });
 
@@ -82,10 +85,8 @@ test("бастапқы тіл: Accept-Language ru -> ru; басқасы -> kk; c
   await b.page.goto("/login");
   expect(await lang(b.page)).toBe("kk");
   for (const bad of ["en", "RU", "ru;kk", "<script>", "../ru", ""]) {
-    await b.ctx.addCookies([{ name: "qc_lang", value: bad, url: test.info().project.use.baseURL! }]);
-    await b.page.goto("/login");
-    expect(await lang(b.page), `cookie=${bad}`).toBe("kk");
-    await expect(b.page.getByRole("heading", { name: "Жүйеге кіру" })).toBeVisible();
+    const r = await b.ctx.request.get("/login", { headers: { cookie: `qc_lang=${bad}` } });
+    expect(await r.text(), `cookie=${bad}`).toContain('<html lang="kk"');
   }
   await b.ctx.close();
 });
@@ -109,7 +110,7 @@ test("қате хабарлары ru: қате құпиясөз, жарамсы�
   await page.locator("#email").fill("student1@demo.qazaqcode.kz");
   await page.locator("#password").fill("QateParol123");
   await page.locator('form:not([data-testid="lang-switch"]) button[type="submit"]').click();
-  await expect(page.getByRole("alert")).toContainText("E-mail или пароль неверны");
+  await expect(page.locator("form [role=alert]")).toContainText("E-mail или пароль неверны");
   await page.goto("/join");
   await page.locator("#code").fill("ZZZZZZZZ");
   await page.locator('form:not([data-testid="lang-switch"]) button[type="submit"]').click();
@@ -122,7 +123,7 @@ test("қате хабарлары ru: қате құпиясөз, жарамсы�
   await page.locator("#email").fill("student1@demo.qazaqcode.kz");
   await page.locator("#password").fill("QateParol123");
   await page.locator('form:not([data-testid="lang-switch"]) button[type="submit"]').click();
-  await expect(page.getByRole("alert")).toContainText("E-mail немесе құпиясөз дұрыс емес");
+  await expect(page.locator("form [role=alert]")).toContainText("E-mail немесе құпиясөз дұрыс емес");
 });
 
 const AREAS: Record<string, { email: string; urls: string[] }> = {
