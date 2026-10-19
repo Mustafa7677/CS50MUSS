@@ -81,8 +81,8 @@ export function SettingsForm({ init, action, loginUrl }: { init: Init; action: A
             <input id="contact_phone" name="contact_phone" type="tel" value={v.contact_phone} onChange={(e) => set("contact_phone")(e.target.value)} maxLength={40} className="input" />
           </div>
         </div>
-        {state && !state.ok && <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{state.error}</p>}
-        {state?.ok && state.message && <p role="status" className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">{state.message}</p>}
+        {state && !state.ok && <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{t(state.error)}</p>}
+        {state?.ok && state.message && <p role="status" className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">{t(state.message)}</p>}
         <div className="mt-5"><button type="submit" disabled={pending} className="btn-primary">{pending ? t("Күтіңіз...") : t("Сақтау")}</button></div>
       </form>
 

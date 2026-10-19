@@ -40,8 +40,8 @@ export default async function LicencePage() { const t = await getT();
           <StatusBadge status={u.state === "active" ? "active" : u.state} label={t(LICENSE_STATE_LABEL[u.state] ?? u.state)} />
         </div>
         <dl className="mt-4 grid gap-4 text-sm sm:grid-cols-3">
-          <div><dt className="text-ink-muted">{t("Басталған күн")}</dt><dd className="font-semibold">{fmtDate(u.valid_from)}</dd></div>
-          <div><dt className="text-ink-muted">{t("Мерзімі (дейін)")}</dt><dd className="font-semibold" data-testid="licence-until">{fmtDate(u.valid_until)}</dd></div>
+          <div><dt className="text-ink-muted">{t("Басталған күн")}</dt><dd className="font-semibold">{fmtDate(u.valid_from, false, t.locale)}</dd></div>
+          <div><dt className="text-ink-muted">{t("Мерзімі (дейін)")}</dt><dd className="font-semibold" data-testid="licence-until">{fmtDate(u.valid_until, false, t.locale)}</dd></div>
           <div>
             <dt className="text-ink-muted">{t("Қалған уақыт")}</dt>
             <dd className={`font-semibold ${expired ? "text-red-600" : near ? "text-amber-600" : ""}`} data-testid="licence-days">

@@ -37,7 +37,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
           <thead><tr><th className="th">{t("Уақыты")}</th><th className="th">{t("Ұйым")}</th><th className="th">{t("Әрекет жасаған")}</th><th className="th">{t("Әрекет")}</th><th className="th">{t("Мәліметі")}</th></tr></thead>
           <tbody>{shown.map((r) => (
             <tr key={r.id} className="border-t border-line align-top">
-              <td className="td whitespace-nowrap">{fmtDate(r.created_at, true)}</td><td className="td">{r.org_name ?? "-"}</td><td className="td">{r.actor ?? t("жүйе")}</td>
+              <td className="td whitespace-nowrap">{fmtDate(r.created_at, true, t.locale)}</td><td className="td">{r.org_name ?? "-"}</td><td className="td">{r.actor ?? t("жүйе")}</td>
               <td className="td font-mono text-xs">{r.action}</td><td className="td font-mono text-xs text-ink-muted">{Object.keys(r.meta).length ? JSON.stringify(r.meta) : "-"}</td>
             </tr>))}</tbody></table></div>
       )}

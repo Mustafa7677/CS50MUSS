@@ -68,7 +68,7 @@ export async function ClassAnalytics({ classId, userId, studentBase }: { classId
                     <Link href={`${studentBase}/${s.student_id}`} className="font-medium">{s.full_name}</Link>
                     <p className="text-xs text-ink-muted">{why.join("; ")}</p>
                   </div>
-                  <span className="text-xs text-ink-muted">{t("Соңғы белсенділік:")}{" "}{s.last_activity ? fmtDate(s.last_activity) : "-"}</span>
+                  <span className="text-xs text-ink-muted">{t("Соңғы белсенділік:")}{" "}{s.last_activity ? fmtDate(s.last_activity, false, t.locale) : "-"}</span>
                 </li>
               ))}
             </ul>

@@ -64,7 +64,7 @@ export default async function AssignmentsPage({ searchParams }: { searchParams: 
                   <td className="td">{t(KIND_LABEL[r.kind] ?? r.kind)}</td>
                   <td className="td"><StatusBadge status={r.status}  label={t(STATUS_LABEL[r.status] ?? r.status)}/></td>
                   <td className="td">{r.classes?.length ? r.classes.join(", ") : <span className="text-ink-muted">{t("Берілмеген")}</span>}</td>
-                  <td className="td whitespace-nowrap">{fmtDate(r.deadline, true)}</td>
+                  <td className="td whitespace-nowrap">{fmtDate(r.deadline, true, t.locale)}</td>
                   <td className="td">{toNum(r.works)}</td>
                   <td className="td">
                     <div className="flex justify-end gap-2">

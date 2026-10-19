@@ -22,8 +22,8 @@ export async function StudentCard({ data, back }: { data: StudentCardData; back:
           <div className="mt-2"><ProgressBar value={s.done} max={s.total} label={t("Орындалу: {done} / {total}", { done: s.done, total: s.total })} /></div>
           <p className="mt-1 text-xs text-ink-muted">{s.done}{" "}{t("/ {total} тапсырма", { total: s.total })}</p>
         </div>
-        <StatCard label={t("Жалпы уақыт")} value={fmtDuration(s.seconds)} hint={t("тапсырмаларға жұмсалған")} />
-        <StatCard label={t("Соңғы белсенділік")} value={<span className="text-xl">{s.last ? fmtDate(s.last) : "-"}</span>} hint={s.last ? fmtDate(s.last, true) : t("әлі жұмыс жоқ")} />
+        <StatCard label={t("Жалпы уақыт")} value={fmtDuration(s.seconds, t.locale)} hint={t("тапсырмаларға жұмсалған")} />
+        <StatCard label={t("Соңғы белсенділік")} value={<span className="text-xl">{s.last ? fmtDate(s.last, false, t.locale) : "-"}</span>} hint={s.last ? fmtDate(s.last, true, t.locale) : t("әлі жұмыс жоқ")} />
       </div>
 
       <h2 className="mb-3 mt-8 text-lg font-semibold">{t("Тапсырмалар")}</h2>
@@ -41,13 +41,13 @@ export async function StudentCard({ data, back }: { data: StudentCardData; back:
                   <td className="td font-medium">{r.title}</td>
                   <td className="td">{t(KIND_LABEL[r.kind] ?? r.kind)}</td>
                   <td className="td">{r.classroom_name}</td>
-                  <td className="td whitespace-nowrap">{r.deadline ? fmtDate(r.deadline, true) : "-"}</td>
+                  <td className="td whitespace-nowrap">{r.deadline ? fmtDate(r.deadline, true, t.locale) : "-"}</td>
                   <td className="td"><StatusBadge status={r.status}  label={t(STATUS_LABEL[r.status] ?? r.status)}/></td>
                   <td className="td w-40">{r.best_pct == null ? "-" : (
                     <div className="flex items-center gap-2"><div className="w-20"><ProgressBar value={r.best_pct} label={`${r.title}: ${fmtPct(r.best_pct)}`} /></div><span className="text-xs">{fmtPct(r.best_pct)}</span></div>)}</td>
                   <td className="td">{r.attempts}</td>
-                  <td className="td whitespace-nowrap">{fmtDuration(r.time_spent)}</td>
-                  <td className="td whitespace-nowrap">{r.last_activity ? fmtDate(r.last_activity, true) : "-"}</td>
+                  <td className="td whitespace-nowrap">{fmtDuration(r.time_spent, t.locale)}</td>
+                  <td className="td whitespace-nowrap">{r.last_activity ? fmtDate(r.last_activity, true, t.locale) : "-"}</td>
                 </tr>
               ))}
             </tbody>

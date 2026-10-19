@@ -7,9 +7,11 @@ import { DIFFICULTY_LABEL, KIND_LABEL, fmtDate } from "@/lib/format";
 import { myAssignments } from "../../data";
 import { Hints } from "./Hints";
 import { Workspace, type Answers, type QuizResult, type Question } from "./Workspace";
+import { getT } from "@/lib/i18n";
+import { STATUS_LABEL } from "@/lib/format";
 
 export const dynamic = "force-dynamic";
-export const metadata = { title: "Тапсырма" };
+export async function generateMetadata() { const t = await getT(); return { title: t("Тапсырма") }; }
 
 type A = { id: string; title: string; description: string; kind: string; difficulty: string; max_score: string; starter_code: string | null;
   max_attempts: number | null; deadline: string | null; allow_late: boolean; hints: unknown };
@@ -18,7 +20,7 @@ type Grade = { score: string; max_score: string; feedback: string | null; graded
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-export default async function AssignmentPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function AssignmentPage({ params }: { params: Promise<{ id: string }> }) { const t = await getT();
   const ctx = await requireStudent();
   const { id } = await params;
   if (!UUID.test(id)) notFound();
@@ -57,45 +59,45 @@ export default async function AssignmentPage({ params }: { params: Promise<{ id:
   const attemptsLeft = a.max_attempts == null || used < a.max_attempts;
   const pastDeadline = !!a.deadline && new Date(a.deadline).getTime() < Date.now() && !a.allow_late;
   const blocked = pastDeadline
-    ? (lastSub || draft ? "Тапсыру мерзімі өтті: жұмысты енді жіберуге болмайды." : "Тапсыру мерзімі өтті, жұмыс жіберілмеді. Мұғалімге хабарласыңыз.")
-    : !draft && !attemptsLeft ? "Әрекеттер саны таусылды." : null;
+    ? (lastSub || draft ? t("Тапсыру мерзімі өтті: жұмысты енді жіберуге болмайды.") : t("Тапсыру мерзімі өтті, жұмыс жіберілмеді. Мұғалімге хабарласыңыз."))
+    : !draft && !attemptsLeft ? t("Әрекеттер саны таусылды.") : null;
   const hints = Array.isArray(a.hints) ? (a.hints as unknown[]).filter((h): h is string => typeof h === "string" && h.trim() !== "") : [];
 
   return (
     <>
-      <p className="mb-2 text-sm"><Link href="/student/assignments">← Тапсырмаларым</Link></p>
+      <p className="mb-2 text-sm"><Link href="/student/assignments">{t("← Тапсырмаларым")}</Link></p>
       <div className="grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-        <aside className="space-y-5 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto lg:pr-1" aria-label="Тапсырма шарты">
+        <aside className="space-y-5 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)] lg:self-start lg:overflow-y-auto lg:pr-1" aria-label={t("Тапсырма шарты")}>
           <div className="card space-y-4 p-5">
             <div>
               <div className="flex flex-wrap items-center gap-2">
-                <StatusBadge status={mine.status} />
-                <span className="badge bg-brand-soft text-brand">{KIND_LABEL[a.kind] ?? a.kind}</span>
-                <span className="badge bg-surface-2 text-ink-muted">{DIFFICULTY_LABEL[a.difficulty] ?? a.difficulty}</span>
+                <StatusBadge status={mine.status}  label={t(STATUS_LABEL[mine.status] ?? mine.status)}/>
+                <span className="badge bg-brand-soft text-brand">{t(KIND_LABEL[a.kind] ?? a.kind)}</span>
+                <span className="badge bg-surface-2 text-ink-muted">{t(DIFFICULTY_LABEL[a.difficulty] ?? a.difficulty)}</span>
               </div>
               <h1 className="mt-2 text-2xl font-bold tracking-tight">{a.title}</h1>
               <p className="text-sm text-ink-muted">{mine.classroom_name}</p>
             </div>
             <dl className="grid grid-cols-2 gap-3 text-sm">
-              <div><dt className="text-xs text-ink-muted">Мерзімі</dt><dd className={pastDeadline ? "font-semibold text-red-600" : ""}>{a.deadline ? fmtDate(a.deadline, true) : "Мерзімсіз"}</dd></div>
-              <div><dt className="text-xs text-ink-muted">Максималды балл</dt><dd>{Number(a.max_score)}</dd></div>
-              <div><dt className="text-xs text-ink-muted">Әрекеттер</dt><dd>{used}{a.max_attempts ? ` / ${a.max_attempts}` : " (шектеусіз)"}</dd></div>
-              {a.allow_late && <div><dt className="text-xs text-ink-muted">Кешігіп тапсыру</dt><dd>рұқсат етілген</dd></div>}
+              <div><dt className="text-xs text-ink-muted">{t("Мерзімі")}</dt><dd className={pastDeadline ? "font-semibold text-red-600" : ""}>{a.deadline ? fmtDate(a.deadline, true, t.locale) : t("Мерзімсіз")}</dd></div>
+              <div><dt className="text-xs text-ink-muted">{t("Максималды балл")}</dt><dd>{Number(a.max_score)}</dd></div>
+              <div><dt className="text-xs text-ink-muted">{t("Әрекеттер")}</dt><dd>{used}{a.max_attempts ? ` / ${a.max_attempts}` : (" " + t("(шектеусіз)"))}</dd></div>
+              {a.allow_late && <div><dt className="text-xs text-ink-muted">{t("Кешігіп тапсыру")}</dt><dd>{t("рұқсат етілген")}</dd></div>}
             </dl>
             <div>
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">Шарты</h2>
-              <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed">{a.description || "Сипаттама берілмеген."}</p>
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">{t("Шарты")}</h2>
+              <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed">{a.description || t("Сипаттама берілмеген.")}</p>
             </div>
             <Hints hints={hints} />
-            <Link href={`/student/ai?assignment=${a.id}`} className="btn-secondary w-full sm:w-auto" data-testid="ask-helper">🤖 Көмекшіден сұрау</Link>
+            <Link href={`/student/ai?assignment=${a.id}`} className="btn-secondary w-full sm:w-auto" data-testid="ask-helper">{t("🤖 Көмекшіден сұрау")}</Link>
             {tests.length > 0 && (
               <div>
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">Мысалдар</h2>
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">{t("Мысалдар")}</h2>
                 <ul className="mt-2 space-y-2">
-                  {tests.map((t, i) => (
+                  {tests.map((tt, i) => (
                     <li key={i} className="rounded-lg border border-line bg-surface-2 p-3 text-sm">
-                      <p className="text-xs text-ink-muted">Кіріс</p><pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs">{t.input || "(бос)"}</pre>
-                      <p className="mt-1 text-xs text-ink-muted">Күтілетін нәтиже</p><pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs">{t.expected_output}</pre>
+                      <p className="text-xs text-ink-muted">{t("Кіріс")}</p><pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs">{tt.input || t("(бос)")}</pre>
+                      <p className="mt-1 text-xs text-ink-muted">{t("Күтілетін нәтиже")}</p><pre className="overflow-x-auto whitespace-pre-wrap font-mono text-xs">{tt.expected_output}</pre>
                     </li>
                   ))}
                 </ul>
@@ -105,21 +107,21 @@ export default async function AssignmentPage({ params }: { params: Promise<{ id:
 
           {grade && (!result || grade.feedback) && (
             <div className="card border-emerald-300 p-5 dark:border-emerald-800" data-testid="grade-card">
-              <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">Баға</h2>
+              <h2 className="text-sm font-semibold uppercase tracking-wide text-ink-muted">{t("Баға")}</h2>
               <p className="mt-1 text-3xl font-bold text-emerald-600">{Number(grade.score)} / {Number(grade.max_score)}</p>
-              <p className="text-xs text-ink-muted">{fmtDate(grade.graded_at)}</p>
-              {grade.feedback && <p className="mt-3 rounded-lg bg-brand-soft px-3 py-2 text-sm"><span className="font-semibold">Мұғалім пікірі:</span> {grade.feedback}</p>}
+              <p className="text-xs text-ink-muted">{fmtDate(grade.graded_at, false, t.locale)}</p>
+              {grade.feedback && <p className="mt-3 rounded-lg bg-brand-soft px-3 py-2 text-sm"><span className="font-semibold">{t("Мұғалім пікірі:")}</span> {grade.feedback}</p>}
             </div>
           )}
         </aside>
 
-        <section aria-label="Жұмыс орны" className="min-w-0">
+        <section aria-label={t("Жұмыс орны")} className="min-w-0">
           <Workspace
             key={`${draft?.id ?? "n"}-${lastSub?.attempt_no ?? 0}`}
             userId={ctx.userId} assignmentId={a.id} kind={a.kind} starterCode={a.starter_code ?? ""} questions={questions}
             draft={draft ? { id: draft.id, code: draft.code ?? "", answers: draft.answers ?? {}, seconds: draft.time_spent_seconds } : null}
             last={lastSub ? { code: lastSub.code ?? "", answers: lastSub.answers ?? {}, status: lastSub.status, attemptNo: lastSub.attempt_no } : null}
-            result={result} blocked={blocked} visibleTests={a.kind === "python" ? tests.map((t) => ({ input: t.input, expected: t.expected_output })) : undefined} canRetry={!pastDeadline && attemptsLeft && !!lastSub && !draft}
+            result={result} blocked={blocked} visibleTests={a.kind === "python" ? tests.map((tt) => ({ input: tt.input, expected: tt.expected_output })) : undefined} canRetry={!pastDeadline && attemptsLeft && !!lastSub && !draft}
           />
         </section>
       </div>

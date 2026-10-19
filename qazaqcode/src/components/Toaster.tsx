@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from "react";
+import { useT } from "@/lib/i18n/client";
 
 type T = { id: number; text: string; kind: "ok" | "err" };
 const EVENT = "qc:toast";
@@ -10,6 +11,7 @@ export function toast(text: string, kind: "ok" | "err" = "ok") {
 }
 
 export function Toaster() {
+  const t = useT();
   const [items, setItems] = useState<T[]>([]);
   useEffect(() => {
     let n = 0;
@@ -25,7 +27,7 @@ export function Toaster() {
   return (
     <div aria-live="polite" className="pointer-events-none fixed bottom-4 right-4 z-50 flex max-w-sm flex-col gap-2">
       {items.map((i) => (
-        <div key={i.id} role="status" className={`pointer-events-auto rounded-lg px-4 py-3 text-sm font-medium shadow-lg ${i.kind === "ok" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>{i.text}</div>
+        <div key={i.id} role="status" className={`pointer-events-auto rounded-lg px-4 py-3 text-sm font-medium shadow-lg ${i.kind === "ok" ? "bg-emerald-600 text-white" : "bg-red-600 text-white"}`}>{t(i.text)}</div>
       ))}
     </div>
   );

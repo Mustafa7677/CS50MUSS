@@ -26,7 +26,7 @@ export default async function GradesPage() { const t = await getT();
   for (const r of rows) best.set(r.assignment_id, Math.max(best.get(r.assignment_id) ?? 0, pct(r)));
   const avg = best.size ? [...best.values()].reduce((a, b) => a + b, 0) / best.size : null;
   const chrono = [...rows].reverse();
-  const points = chrono.map((r) => ({ label: fmtDate(r.graded_at).replace(/ \d{4}$/, ""), pct: Math.round(pct(r)), title: r.title }));
+  const points = chrono.map((r) => ({ label: fmtDate(r.graded_at, false, t.locale).replace(/ \d{4}$/, ""), pct: Math.round(pct(r)), title: r.title }));
 
   return (
     <>
@@ -52,7 +52,7 @@ export default async function GradesPage() { const t = await getT();
                   <div className="flex flex-wrap items-start justify-between gap-2">
                     <div className="min-w-0">
                       <Link href={`/student/assignments/${r.assignment_id}`} className="font-semibold">{r.title}</Link>
-                      <p className="text-sm text-ink-muted">{r.classroom_name ?? "-"} · {fmtDate(r.graded_at)} · {r.source === "auto" ? t("автоматты") : t("мұғалім")}</p>
+                      <p className="text-sm text-ink-muted">{r.classroom_name ?? "-"} · {fmtDate(r.graded_at, false, t.locale)} · {r.source === "auto" ? t("автоматты") : t("мұғалім")}</p>
                     </div>
                     <p className="whitespace-nowrap text-lg font-bold text-brand">{Number(r.score)} / {Number(r.max_score)} <span className="text-sm font-medium text-ink-muted">({fmtPct(pct(r))})</span></p>
                   </div>

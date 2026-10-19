@@ -49,7 +49,7 @@ export default async function TeachersPage({ searchParams }: { searchParams: Pro
       <PageHeader title={t("Мұғалімдер")} subtitle={t("Мұғалімдерді шақырып, олардың қолжетімділігін басқарыңыз.")}
         actions={lic && <span className="badge bg-surface text-ink border border-line" data-testid="teacher-limit">{t("Мұғалім: {count} /", { count })}{" "}{lic.max_teachers}</span>} />
       {sp.ok && OK_MSG(t)[sp.ok] && <Banner tone="info">{OK_MSG(t)[sp.ok]}</Banner>}
-      {sp.err && <Banner tone="bad">{errorMessage(new AppError(/^[a-z_]+$/.test(sp.err) ? sp.err : "validation"))}</Banner>}
+      {sp.err && <Banner tone="bad">{t(errorMessage(new AppError(/^[a-z_]+$/.test(sp.err) ? sp.err : "validation")))}</Banner>}
 
       {lic && <div className="card mb-6 p-4"><div className="mb-1.5 flex justify-between text-sm"><span>{t("Лицензиядағы мұғалім лимиті")}</span><span>{count} / {lic.max_teachers}</span></div>
         <ProgressBar value={count} max={lic.max_teachers} label={t("Мұғалім лимиті")} /></div>}
@@ -68,9 +68,9 @@ export default async function TeachersPage({ searchParams }: { searchParams: Pro
               {teachers.map((tt) => (
                 <tr key={tt.user_id}>
                   <td className="td font-medium">{tt.full_name ?? <span className="text-ink-muted">{t("Аты көрінбейді")}</span>}</td>
-                  <td className="td">{fmtDate(tt.joined_at)}</td>
+                  <td className="td">{fmtDate(tt.joined_at, false, t.locale)}</td>
                   <td className="td">{tt.classes}</td>
-                  <td className="td">{tt.last_activity ? fmtDate(tt.last_activity, true) : "-"}</td>
+                  <td className="td">{tt.last_activity ? fmtDate(tt.last_activity, true, t.locale) : "-"}</td>
                   <td className="td"><StatusBadge status={tt.status === "active" ? "active" : "archived"} label={tt.status === "active" ? t("Белсенді") : t("Өшірілген")} /></td>
                   <td className="td text-right">
                     {tt.status === "active" ? (
@@ -95,7 +95,7 @@ export default async function TeachersPage({ searchParams }: { searchParams: Pro
               {active.map((i) => (
                 <tr key={i.id}>
                   <td className="td">{i.email ?? <span className="text-ink-muted">{t("кез келген e-mail")}</span>}</td>
-                  <td className="td">{fmtDate(i.created_at, true)}</td><td className="td">{fmtDate(i.expires_at, true)}</td>
+                  <td className="td">{fmtDate(i.created_at, true, t.locale)}</td><td className="td">{fmtDate(i.expires_at, true, t.locale)}</td>
                   <td className="td text-right"><ConfirmButton action={revokeInvitationAction} fields={{ id: i.id }} label={t("Бас тарту")} title={t("Шақырудан бас тарту")} message={t("Бұл шақыру сілтемесі жұмыс істемейді.")} confirmLabel={t("Иә, бас тарту")} /></td>
                 </tr>
               ))}
@@ -113,7 +113,7 @@ export default async function TeachersPage({ searchParams }: { searchParams: Pro
                 return (
                   <tr key={i.id}>
                     <td className="td">{i.email ?? <span className="text-ink-muted">{t("кез келген e-mail")}</span>}</td>
-                    <td className="td">{fmtDate(i.created_at, true)}</td>
+                    <td className="td">{fmtDate(i.created_at, true, t.locale)}</td>
                     <td className="td">{k === "accepted" ? <StatusBadge status="graded" label={t("Қолданылған{v}", { v: i.accepted_name ? `: ${i.accepted_name}` : "" })} />
                       : k === "revoked" ? <StatusBadge status="archived" label={t("Бас тартылған")} /> : <StatusBadge status="expired" label={t("Мерзімі өткен")} />}</td>
                   </tr>

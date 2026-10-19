@@ -17,7 +17,7 @@ const OK = (t: TFn): Record<string, string> => ({
 export async function Notices({ ok, err }: { ok?: string; err?: string }) { const t = await getT();
   return (
     <>
-      {err && <Banner tone="bad">{safeErrText(err.slice(0, 300))}</Banner>}
+      {err && <Banner tone="bad">{t(safeErrText(err.slice(0, 300)) ?? "")}</Banner>}
       {ok && OK(t)[ok] && <Banner tone="info">{OK(t)[ok]}</Banner>}
     </>
   );

@@ -138,6 +138,7 @@ export async function buildInvoicePdf(d: InvoiceData): Promise<Buffer> {
   const range = doc.bufferedPageRange();
   for (let i = 0; i < range.count; i++) {
     doc.switchToPage(range.start + i);
+    doc.page.margins.bottom = 0;   // төменгі жол шетте тұр: әйтпесе pdfkit бос бет қосады
     doc.font(FONT).fontSize(8).fillColor(MUTED).text(`Шот № ${d.invoice_no} · ${i + 1}/${range.count}`, M, doc.page.height - M + 8, { width: W, align: "center", lineBreak: false });
   }
   doc.end();

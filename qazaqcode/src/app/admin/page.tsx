@@ -66,7 +66,7 @@ export default async function AdminPage() { const t = await getT();
                       <h3 className="text-lg font-semibold">{u.name} <span className="font-mono text-xs text-ink-muted">/{u.slug}</span></h3>
                       <p className="mt-1 flex flex-wrap items-center gap-2 text-sm text-ink-muted">
                         <StatusBadge status={u.status === "suspended" ? "suspended" : u.license_state} label={u.status === "suspended" ? t("Ұйым тоқтатылған") : t(LICENSE_STATE_LABEL[u.license_state] ?? u.license_state)} />
-                        {u.plan && <span>{t(PLAN_LABEL[u.plan])}</span>}<span>{t("мерзімі:")}{" "}{fmtDate(u.valid_until)}</span>
+                        {u.plan && <span>{t(PLAN_LABEL[u.plan])}</span>}<span>{t("мерзімі:")}{" "}{fmtDate(u.valid_until, false, t.locale)}</span>
                       </p>
                     </div>
                     <div className="flex gap-2">

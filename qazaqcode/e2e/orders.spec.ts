@@ -232,11 +232,13 @@ test("шот PDF: %PDF, қазақ әріптері, реквизиттер, Қ�
   expect(res.headers()["cache-control"]).toContain("no-store");
   const buf = await res.body();
   expect(buf.subarray(0, 5).toString()).toBe("%PDF-");
+  if (process.env.E2E_SAVE_PDF) fs.writeFileSync(process.env.E2E_SAVE_PDF, buf);   // көзбен тексеру үшін (қосымша)
   const txt = pdfText(buf);
   for (const must of ["Төлем шоты", "Счёт на оплату", S.invoiceNo, SELLER_NAME, LEGAL, "210987654321", "123456789012", "KZ00SELL000000000002", "KZ00TEST000000000001",
     "ҚҚС", "12%", "1 000 000,00", "120 000,00", "1 120 000,00", "Төлем мақсаты", "Төлеу мерзімі", "серия 00000", "Тестов Басшы", "Тапсырыс беруші"]) {
     expect(txt.replace(/ /g, " "), `PDF-те «${must}» жоқ`).toContain(must);
   }
+  expect(txt).toContain("1/1");                                                  // бір бет (бос қосымша бет жоқ)
   expect(txt).not.toMatch(/заңгер|юрист|бухгалтер тексеруін|үлгісі/i);
   // жүктеу батырмасы
   const [dl] = await Promise.all([page.waitForEvent("download"), row.getByTestId("invoice-download").click()]);
@@ -318,7 +320,7 @@ test("бас тарту: мектеп әкімшісі ашық тапсырыс
   const rows = page.getByTestId("order-row");
   await expect(rows).toHaveCount(2);
   await rows.first().getByRole("button", { name: "Бас тарту" }).click();
-  await page.locator("dialog[open]").getByRole("button", { name: "Бас тарту", exact: true }).click();
+  await page.locator("dialog[open]").getByRole("button", { name: "Иә, тапсырыстан бас тарту", exact: true }).click();
   await expect(rows.first()).toHaveAttribute("data-status", "cancelled");
   await ctx.close();
 });

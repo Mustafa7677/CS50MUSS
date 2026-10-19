@@ -16,7 +16,7 @@ export function CopyButton({ text, label, className = "btn-secondary", testId }:
   }
   return (
     <button type="button" onClick={copy} className={className} data-testid={testId}>
-      {state === "ok" ? t("Көшірілді") : state === "err" ? t("Көшіру мүмкін болмады") : label}
+      {state === "ok" ? t("Көшірілді") : state === "err" ? t("Көшіру мүмкін болмады") : label ?? t("Көшіру")}
       <span className="sr-only" role="status" aria-live="polite">{state === "ok" ? t("Алмасу буферіне көшірілді") : ""}</span>
     </button>
   );
