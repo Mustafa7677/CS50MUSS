@@ -199,5 +199,157 @@ window.CS50KZ_COURSE_LECTURES["en"] = [
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
+ },
+ {
+  "id": "week-10",
+  "num": "A2 · 3-сабақ",
+  "title": "Салыстыру және санау",
+  "url": "en/lectures/week-10.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Салыстырмалы шырай",
+    "id": "comparative"
+   },
+   {
+    "t": "Ең жоғары дәреже және as ... as",
+    "id": "superlative"
+   },
+   {
+    "t": "Санауға болатын және болмайтын зат есімдер",
+    "id": "countable"
+   },
+   {
+    "t": "Мөлшер сөздері: much, many, some, any, a few, a little",
+    "id": "quantifiers"
+   },
+   {
+    "t": "Жаңа сөздер",
+    "id": "vocab"
+   },
+   {
+    "t": "Қазақ тілді оқушылардың жиі қателері",
+    "id": "mistakes"
+   },
+   {
+    "t": "IT-ағылшын: екі құралды салыстыру",
+    "id": "it-english"
+   },
+   {
+    "t": "Жаттығулар",
+    "id": "exercises"
+   }
+  ],
+  "minutes": 12,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-11",
+  "num": "A2 · 4-сабақ",
+  "title": "Кеңес, міндет, тыйым",
+  "url": "en/lectures/week-11.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Кеңес: should / shouldn't",
+    "id": "should"
+   },
+   {
+    "t": "Міндет және тыйым: must, have to, mustn't",
+    "id": "must"
+   },
+   {
+    "t": "Present Perfect: алғашқы таныстыру",
+    "id": "perfect"
+   },
+   {
+    "t": "Жаңа сөздер",
+    "id": "vocab"
+   },
+   {
+    "t": "Қате хабарламасын оқу",
+    "id": "errors"
+   },
+   {
+    "t": "Қазақ тілді оқушылардың жиі қателері",
+    "id": "mistakes"
+   },
+   {
+    "t": "IT-ағылшын: сұрақ қою",
+    "id": "it-english"
+   },
+   {
+    "t": "Жаттығулар",
+    "id": "exercises"
+   }
+  ],
+  "minutes": 12,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-16",
+  "num": "B2 · 1-сабақ",
+  "title": "Шартты сөйлемдер (2, 3) және wish",
+  "url": "en/lectures/week-16.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Екінші түрлі шарт: қазіргі «болса, болар еді»",
+    "id": "second"
+   },
+   {
+    "t": "Үшінші түрлі шарт: өткендегі болмаған оқиға",
+    "id": "third"
+   },
+   {
+    "t": "Аралас шарт: өткен себеп, қазіргі салдар",
+    "id": "mixed"
+   },
+   {
+    "t": "wish және if only: арман мен өкініш",
+    "id": "wish"
+   },
+   {
+    "t": "should have, could have: өткен әрекетті бағалау",
+    "id": "should-have"
+   },
+   {
+    "t": "Қосымша: шарттағы инверсия (кіріспе)",
+    "id": "inverted"
+   },
+   {
+    "t": "Сөздік: өкініш, салдар және шарт",
+    "id": "vocab"
+   },
+   {
+    "t": "Қазақ тілді оқушылардың жиі қателері",
+    "id": "mistakes"
+   },
+   {
+    "t": "IT-ағылшын: post-mortem (оқиғадан кейінгі талдау)",
+    "id": "it-english"
+   },
+   {
+    "t": "Жаттығулар",
+    "id": "exercises"
+   }
+  ],
+  "minutes": 17,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
  }
 ];
