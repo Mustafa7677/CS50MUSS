@@ -286,7 +286,7 @@
     await K.loadScript("assets/data/glossary.js");
     const ALLCARDS = window.CS50KZ_GLOSSARY || [];
     const inCourse = (card, c) => (card.cs || ["x"]).includes(c);
-    const NAMES = { all: "Барлығы", x: "CS50x", python: "CS50P", sql: "SQL", ai: "AI", web: "Web", cpp: "C++", java: "Java" };
+    const NAMES = { all: "Барлығы", x: "CS50x", python: "CS50P", sql: "SQL", ai: "AI", web: "Web", cpp: "C++", java: "Java", en: "English" };
     let cards = ALLCARDS;
     const KEY = "cs50kz:cards";
     let boxes = store.get(KEY, {});
@@ -435,7 +435,7 @@
   async function mixedQuiz(el) {
     await K.loadScript("assets/data/quiz.js");
     const ALL = window.CS50KZ_QUIZ || [];
-    const NAMES = { x: "CS50x", python: "CS50P", sql: "CS50 SQL", ai: "CS50 AI", web: "CS50 Web", cpp: "C++", java: "Java" };
+    const NAMES = { x: "CS50x", python: "CS50P", sql: "CS50 SQL", ai: "CS50 AI", web: "CS50 Web", cpp: "C++", java: "Java", en: "English" };
     let course = K.readJson("cs50kz:lastcourse", "x") || "x";
     if (!ALL.some((q) => (q.c || "x") === course)) course = "x";
     let pool = [], qs = [], i = 0, score = 0, from = "all";

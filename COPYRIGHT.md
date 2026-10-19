@@ -12,7 +12,7 @@
 |---|---|
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
-| B · Sagid Mustafa-ның дербес әзірлемесі | 472 |
+| B · Sagid Mustafa-ның дербес әзірлемесі | 522 |
 | C · Үшінші тарап | 19 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 55 |
 
@@ -22,6 +22,8 @@
 |---|---|---|---|---|
 | `cpp/**` | **B-course-cpp** C++ бағдарламалау: дербес авторлық курс (cpp/ лекциялары, курс беті) (10 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `java/**` | **B-course-java** Java бағдарламалау: дербес авторлық курс (java/ лекциялары, курс беті) (10 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `en/**` | **B-course-en** Ағылшын тілі A0-C1: дербес авторлық курс (en/ сабақтары, курс беті, ортақ беттер) (30 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `assets/js/en-course.js`<br>`assets/js/en-tools.js`<br>`assets/css/en-course.css`<br>`assets/data/en-*.js`<br>`docs/EN-COURSE-GUIDE.md`<br>`tools/make_en_pages.py` | **B-course-en-engine** Ағылшын курсының жаттығу қозғалтқышы, стильдері, деректері (assets/data/en-*.js) және құжаты (19 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `sources/**` | **A1-sources** Оригинальные тексты Harvard CS50 (конспекты и problem sets), сохранённые для перевода (141 файл) | David J. Malan, Carter Zenke, Brian Yu, Harvard University / CS50 (по заголовкам sources/*/README.md) | CC BY-NC-SA 4.0 | расталған |
 | `lectures/*.html` | **A2-lectures-x** CS50x: 12 лекций (перевод и адаптация) (12 файл) | Оригинал: David J. Malan, Harvard / CS50. Перевод и адаптация: Sagid Mustafa | CC BY-NC-SA 4.0 | расталған |
 | `python/lectures/*.html` | **A2-lectures-python** CS50P (Python): 10 лекций (10 файл) | Оригинал: David J. Malan, Harvard / CS50. Перевод и адаптация: Sagid Mustafa | CC BY-NC-SA 4.0 | расталған |
@@ -44,7 +46,7 @@
 | `games.html`<br>`assets/js/games-*.js`<br>`assets/css/games-ui*.css`<br>`assets/js/cabinet.js` | **B-games** Образовательные игры, система XP, кабинет (7 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/js/main.js`<br>`assets/js/exam.js`<br>`exam.html`<br>`assets/js/profile.js`<br>`profile.html`<br>`assets/js/cloud.js`<br>`teacher.html`<br>`assets/js/feedback.js`<br>`supabase/**`<br>`certificate.html`<br>`sw.js`<br>`manifest.webmanifest` | **B-platform** Платформа: движок сайта, прогресс, достижения, редактор, тест-система, профиль, кабинеты ученика и преподавателя, синхронизация (13 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/css/style.css`<br>`assets/img/bota*.svg`<br>`assets/img/icon*`<br>`assets/img/og.jpg`<br>`assets/img/og/**`<br>`tools/make_og.mjs` | **B-design** Дизайн, стили, фирменная графика (маскот Бота, иконки, превью) (24 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
-| `tools/build.py`<br>`tools/fetch_cs50.py`<br>`tools/__pycache__/**`<br>`tests/**`<br>`.github/**`<br>`licensing/**`<br>`robots.txt`<br>`sitemap.xml`<br>`.nojekyll`<br>`.gitignore`<br>`**/.gitkeep`<br>`tools/licence_audit.py` | **B-tools-tests** Скрипты сборки, тесты, CI (55 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `tools/build.py`<br>`tools/fetch_cs50.py`<br>`tools/__pycache__/**`<br>`tests/**`<br>`.github/**`<br>`licensing/**`<br>`robots.txt`<br>`sitemap.xml`<br>`.nojekyll`<br>`.gitignore`<br>`**/.gitkeep`<br>`tools/licence_audit.py` | **B-tools-tests** Скрипты сборки, тесты, CI (56 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `qazaqcode/**` | **B-qazaqcode** QazaqCode Platform (отдельный коммерческий продукт) (319 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `README.md`<br>`LICENSE.md`<br>`LICENSE-HARVARD.md`<br>`LICENSE-PROPRIETARY.md`<br>`COPYRIGHT.md`<br>`THIRD-PARTY-LICENSES.md`<br>`TAKEDOWN.md`<br>`copyright.html`<br>`404.html`<br>`test-results/**`<br>`MOBILE-TESTING.md` | **B-docs** Документы проекта: README, лицензии, правила обращения (10 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/vendor/sqljs/**` | **C-sqljs** sql.js (SQLite в WebAssembly) (4 файл) | sql.js authors; SQLite - общественное достояние | MIT | расталған |
@@ -57,6 +59,8 @@
 
 - **B-course-cpp**: Дербес авторлық курс; Harvard CS50 мәтіні/есептері көшірілмеген (жазу кезінде ескертілген талап)
 - **B-course-java**: Дербес авторлық курс; Harvard CS50 мәтіні/есептері көшірілмеген (жазу кезінде ескертілген талап)
+- **B-course-en**: Дербес авторлық курс; Harvard CS50 материалы емес. Мазмұн жасанды интеллект көмегімен дайындалған, мұғаліммен тексеру ұсынылады. Oxford/Cambridge/British Council т.б. сөздік тізімдері мен мәтіндері көшірілмеген (жазу кезінде ескертілген талап).
+- **B-course-en-engine**: Дербес авторлық код пен деректер; сөздік пен грамматика жазбалары өз сөзімізбен жазылған, сыртқы тізімдер көшірілмеген
 - **A1-sources**: Скачаны tools/fetch_cs50.py с cs50.harvard.edu; указан источник и лицензия в README каждого курса.
 - **A2-lectures-x**: Основной текст, структура и примеры кода следуют лекциям Harvard. Встроенные упражнения, тесты, визуализации и тексты проверок: отдельные записи R-* и B-*. В нескольких лекциях упомянуты фрагменты третьих лиц (Elon University, Stanford), они только описаны, не воспроизведены.
 - **A2-lectures-python**: См. примечание к A2-lectures-x.

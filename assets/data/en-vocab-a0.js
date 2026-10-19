@@ -1,0 +1,36 @@
+/* © 2026 Sagid Mustafa. All Rights Reserved. Ағылшын тілі A0-C1 курсының деректері (дербес авторлық материал, өз сөзімізбен жазылған). */
+/* Формат: docs/EN-COURSE-GUIDE.md. Әр жазба бір жолда. Мазмұн агенті осы файлды толықтырады. */
+window.CS50KZ_EN_VOCAB = window.CS50KZ_EN_VOCAB || {};
+window.CS50KZ_EN_VOCAB.a0 = [
+  {"id": "a0-hello", "w": "hello", "pos": "interj", "kz": "сәлем, сәлеметсіз бе", "ex": "Hello, my name is Aida.", "exkz": "Сәлем, менің атым Айда.", "p": "хелоу", "topic": "сәлемдесу", "lesson": 0},
+  {"id": "a0-hi", "w": "hi", "pos": "interj", "kz": "сәлем (достық, бейтарап)", "ex": "Hi, Aida!", "exkz": "Сәлем, Айда!", "p": "хай", "topic": "сәлемдесу", "lesson": 0},
+  {"id": "a0-good-morning", "w": "good morning", "pos": "phrase", "kz": "қайырлы таң", "ex": "Good morning, team!", "exkz": "Қайырлы таң, команда!", "p": "гуд морнин", "topic": "сәлемдесу", "lesson": 0},
+  {"id": "a0-goodbye", "w": "goodbye", "pos": "interj", "kz": "сау болыңыз, көріскенше", "ex": "Goodbye, see you tomorrow.", "exkz": "Сау болыңыз, ертең көрісеміз.", "p": "гудбай", "topic": "сәлемдесу", "lesson": 0},
+  {"id": "a0-please", "w": "please", "pos": "adv", "kz": "өтінемін", "ex": "Open the file, please.", "exkz": "Файлды ашыңызшы.", "p": "плиз", "topic": "сәлемдесу", "lesson": 0},
+  {"id": "a0-thank-you", "w": "thank you", "pos": "phrase", "kz": "рахмет", "ex": "Thank you very much!", "exkz": "Көп рахмет!", "p": "сэнк ю", "topic": "сәлемдесу", "lesson": 0},
+  {"id": "a0-sorry", "w": "sorry", "pos": "adj", "kz": "кешіріңіз, өкінішті", "ex": "Sorry, I am late.", "exkz": "Кешіріңіз, мен кешіктім.", "p": "сори", "topic": "сәлемдесу", "lesson": 0},
+  {"id": "a0-yes", "w": "yes", "pos": "adv", "kz": "иә", "ex": "Yes, I am a student.", "exkz": "Иә, мен студентпін.", "p": "йес", "topic": "сәлемдесу", "lesson": 0},
+  {"id": "a0-no", "w": "no", "pos": "adv", "kz": "жоқ", "ex": "No, thank you.", "exkz": "Жоқ, рахмет.", "p": "ноу", "topic": "сәлемдесу", "lesson": 0},
+  {"id": "a0-name", "w": "name", "pos": "noun", "kz": "аты, есімі", "ex": "What is your name?", "exkz": "Сенің атың кім?", "p": "нейм", "topic": "таныстыру", "lesson": 0},
+  {"id": "a0-nice-to-meet-you", "w": "nice to meet you", "pos": "phrase", "kz": "танысқаныма қуаныштымын", "ex": "Nice to meet you, Aida.", "exkz": "Танысқаныма қуаныштымын, Айда.", "p": "найс ту мит ю", "topic": "таныстыру", "lesson": 0},
+  {"id": "a0-from", "w": "from", "pos": "prep", "kz": "-дан, -ден (қайдан)", "ex": "I am from Almaty.", "exkz": "Мен Алматыданмын.", "p": "фром", "topic": "таныстыру", "lesson": 0},
+  {"id": "a0-this", "w": "this", "pos": "pron", "kz": "бұл", "ex": "This is a file.", "exkz": "Бұл файл.", "p": "зис (th - тіл тістің арасында)", "topic": "дыбыстар", "lesson": 0},
+  {"id": "a0-three", "w": "three", "pos": "num", "kz": "үш", "ex": "I have three files.", "exkz": "Менде үш файл бар.", "p": "срии (th - тіл тістің арасында)", "topic": "дыбыстар", "lesson": 0},
+  {"id": "a0-we", "w": "we", "pos": "pron", "kz": "біз", "ex": "We are students.", "exkz": "Біз студентпіз.", "p": "уи (w - ерін дөңгелек)", "topic": "дыбыстар", "lesson": 0},
+  {"id": "a0-have", "w": "have", "pos": "verb", "kz": "бар болу, ие болу", "ex": "I have a computer.", "exkz": "Менде компьютер бар.", "p": "хэв", "topic": "дыбыстар", "lesson": 0},
+  {"id": "a0-sing", "w": "sing", "pos": "verb", "kz": "ән салу", "ex": "I like to sing.", "exkz": "Мен ән айтқанды ұнатамын.", "p": "сиң (соңында ң)", "topic": "дыбыстар", "lesson": 0},
+  {"id": "a0-cat", "w": "cat", "pos": "noun", "kz": "мысық", "ex": "The cat is in the office.", "exkz": "Мысық кеңседе.", "p": "кэт", "topic": "дыбыстар", "lesson": 0},
+  {"id": "a0-ship", "w": "ship", "pos": "noun", "kz": "кеме", "ex": "The ship is here.", "exkz": "Кеме мұнда.", "p": "шип (қысқа и)", "topic": "дыбыстар", "lesson": 0},
+  {"id": "a0-computer", "w": "computer", "pos": "noun", "kz": "компьютер", "ex": "I have a computer.", "exkz": "Менде компьютер бар.", "p": "кәмпьютер", "topic": "компьютер", "lesson": 0, "it": true},
+  {"id": "a0-keyboard", "w": "keyboard", "pos": "noun", "kz": "пернетақта", "ex": "I type on the keyboard.", "exkz": "Мен пернетақтада теремін.", "p": "кибод", "topic": "компьютер", "lesson": 0, "it": true},
+  {"id": "a0-mouse", "w": "mouse", "pos": "noun", "kz": "тінтуір", "ex": "Click with the mouse.", "exkz": "Тінтуірмен басыңыз.", "p": "маус", "topic": "компьютер", "lesson": 0, "it": true},
+  {"id": "a0-screen", "w": "screen", "pos": "noun", "kz": "экран", "ex": "Look at the screen.", "exkz": "Экранға қараңыз.", "p": "скрин", "topic": "компьютер", "lesson": 0, "it": true},
+  {"id": "a0-file", "w": "file", "pos": "noun", "kz": "файл", "ex": "Open the file.", "exkz": "Файлды ашыңыз.", "p": "файл", "topic": "компьютер", "lesson": 0, "it": true},
+  {"id": "a0-folder", "w": "folder", "pos": "noun", "kz": "қалта", "ex": "The file is in the folder.", "exkz": "Файл қалтада тұр.", "p": "фоулдә", "topic": "компьютер", "lesson": 0, "it": true},
+  {"id": "a0-button", "w": "button", "pos": "noun", "kz": "батырма", "ex": "Click the button.", "exkz": "Батырманы басыңыз.", "p": "батн", "topic": "компьютер", "lesson": 0, "it": true},
+  {"id": "a0-password", "w": "password", "pos": "noun", "kz": "құпиясөз", "ex": "Enter your password.", "exkz": "Құпиясөзіңізді енгізіңіз.", "p": "пәсуод", "topic": "компьютер", "lesson": 0, "it": true},
+  {"id": "a0-open", "w": "open", "pos": "verb", "kz": "ашу", "ex": "Open the folder.", "exkz": "Қалтаны ашыңыз.", "p": "оупен", "topic": "компьютер", "lesson": 0, "it": true},
+  {"id": "a0-save", "w": "save", "pos": "verb", "kz": "сақтау", "ex": "Save the file.", "exkz": "Файлды сақтаңыз.", "p": "сейв", "topic": "компьютер", "lesson": 0, "it": true},
+  {"id": "a0-close", "w": "close", "pos": "verb", "kz": "жабу", "ex": "Close the window.", "exkz": "Терезені жабыңыз.", "p": "клоуз", "topic": "компьютер", "lesson": 0, "it": true},
+  {"id": "a0-delete", "w": "delete", "pos": "verb", "kz": "жою", "ex": "Delete the file.", "exkz": "Файлды жойыңыз.", "p": "дилит", "topic": "компьютер", "lesson": 0, "it": true}
+];

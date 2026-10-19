@@ -78,7 +78,7 @@ test("нав pill: курсты ауыстырады, авторлық курс�
   await blockFonts(page.context());
   await page.goto("cpp/index.html");
   await page.click(".course-pill");
-  await expect(page.locator(".course-menu .cm-row")).toHaveCount(7);
+  await expect(page.locator(".course-menu .cm-row")).toHaveCount(8);
   await expect(page.locator(".course-menu .cm-row.on")).toContainText("C++");
   await expect(page.locator(".course-menu .cm-sep")).toContainText("Авторлық");
   await page.click('.course-menu .cm-row:has-text("Java")');
@@ -95,14 +95,14 @@ test("нав pill: курсты ауыстырады, авторлық курс�
 test("витрина: басты бет пен courses.html-де C++ және Java карточкалары, авторлық белгі", async ({ page }) => {
   await blockFonts(page.context());
   await page.goto("index.html");
-  await expect(page.locator(".cx-home .cx-card")).toHaveCount(6);
+  await expect(page.locator(".cx-home .cx-card")).toHaveCount(7);
   await expect(page.locator('.cx-card[data-course="cpp"]')).toHaveAttribute("href", "cpp/");
   await expect(page.locator('.cx-card[data-course="java"] .cx-tags li')).toHaveText(["ООП", "Collections", "Stream", "көп ағын"]);
   await page.locator("details.route-later > summary").click(); // «Кейін қарайсың» блогы әдепкіде жабық
   await expect(page.locator('.cx-card[data-course="cpp"] .cx-glyph')).toBeVisible();
-  await expect(page.locator("[data-site-stats]")).toContainText("7 курс");
+  await expect(page.locator("[data-site-stats]")).toContainText("8 курс");
   await page.goto("courses.html");
-  await expect(page.locator(".cx-card.own")).toHaveCount(2);
+  await expect(page.locator(".cx-card.own")).toHaveCount(3);
 });
 
 test("сертификат: C++/Java өз мәтінімен, Harvard оговоркасыз, «Бейресми» жоқ", async ({ page }) => {

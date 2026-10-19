@@ -6,7 +6,7 @@
   const ROOT_URL = new URL("../../", document.currentScript.src).href;
   // Курс: CS50x - түбірде (lectures/), басқалары өз қалтасында (python/lectures/ т.б.).
   // CS50x-тің прогресс кілттері бұрынғыдай (week-0), басқа курстарда курс атымен (python:week-0) - шатаспайды.
-  const COURSE = (location.pathname.match(/\/(python|sql|ai|web|cpp|java)\/(?:lectures\/[\w-]+\.html|index\.html)?$/) || [])[1] || "x";
+  const COURSE = (location.pathname.match(/\/(python|sql|ai|web|cpp|java|en)\/(?:lectures\/[\w-]+\.html|index\.html)?$/) || location.pathname.match(/\/(en)\/[\w-]+\.html$/) || [])[1] || "x";
   const PAGE = (() => { const n = (location.pathname.match(/lectures\/([\w-]+)\.html$/) || [])[1]; return n ? (COURSE === "x" ? n : COURSE + ":" + n) : null; })();
 
   // Көшірмеден қорғау: сайт ресми мекенжайдан тыс жерде ашылса, түпнұсқаға сілтеме беретін ескерту көрсетеді.
@@ -135,7 +135,7 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
-    window.CS50KZ = { myCourses, botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), totalLectures: () => COURSE_META.reduce((n, c) => n + c.total, 0), COURSE_META, summary: summaryData, certStatus, certId, certVerifyCode, verifiedCourses, CERT_TASKS, ORDER, dayKey, COURSE, readJson };
+    window.CS50KZ = { logDay, myCourses, botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), totalLectures: () => COURSE_META.reduce((n, c) => n + c.total, 0), COURSE_META, summary: summaryData, certStatus, certId, certVerifyCode, verifiedCourses, CERT_TASKS, ORDER, dayKey, COURSE, readJson };
     if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .js-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
     if (document.querySelector(".flask-lab")) loadScript("assets/js/flask.js");
     if (document.querySelector(".exam")) loadScript("assets/js/exam.js");
@@ -365,7 +365,7 @@
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
         if (!k || !k.startsWith("check:")) continue;
-        const h = k.match(/\/(python|sql|ai|web|cpp|java)\/lectures\/(week-\d+)\.html:/);
+        const h = k.match(/\/(python|sql|ai|web|cpp|java|en)\/lectures\/(week-\d+)\.html:/);
         const x = h ? null : k.match(/\/lectures\/(week-\d+|ai)\.html:/);
         const id = h ? h[1] + ":" + h[2] : x ? x[1] : null;
         if (!id) continue;
@@ -420,7 +420,7 @@
       modal.innerHTML = `
         <div class="search-box" role="dialog" aria-modal="true" aria-label="Іздеу">
           <div class="search-input"><span>⌕</span><input type="search" placeholder="Лекциялардан іздеу: рекурсия, malloc, SQL JOIN..." autocomplete="off"><kbd>Esc</kbd></div>
-          <div class="search-scope" role="group" aria-label="Курс бойынша сүзу">${[["all", "Барлығы"], ["x", "CS50x"], ["python", "CS50P"], ["sql", "SQL"], ["ai", "AI"], ["web", "Web"], ["cpp", "C++"], ["java", "Java"]].map(([c, n]) => `<button type="button" data-s="${c}" class="${c === "all" ? "on" : ""}">${n}</button>`).join("")}</div>
+          <div class="search-scope" role="group" aria-label="Курс бойынша сүзу">${[["all", "Барлығы"], ["x", "CS50x"], ["python", "CS50P"], ["sql", "SQL"], ["ai", "AI"], ["web", "Web"], ["cpp", "C++"], ["java", "Java"], ["en", "English"]].map(([c, n]) => `<button type="button" data-s="${c}" class="${c === "all" ? "on" : ""}">${n}</button>`).join("")}</div>
           <ul class="search-results"></ul>
           <div class="search-foot"><span><kbd>↑</kbd><kbd>↓</kbd> таңдау</span><span><kbd>Enter</kbd> ашу</span></div>
         </div>`;
@@ -462,7 +462,7 @@
       document.body.classList.remove("no-scroll");
     };
 
-    const courseOfHit = (s) => (/^(python|sql|ai|web|cpp|java)\//.exec(s.u) || [])[1] || "x";
+    const courseOfHit = (s) => (/^(python|sql|ai|web|cpp|java|en)\//.exec(s.u) || [])[1] || "x";
     let scope = "all";
     function run() {
       const q = input.value.trim().toLowerCase();
@@ -926,7 +926,11 @@
     { id: "web", name: "CS50 Web", title: "Веб-бағдарламалау", color: "#c2410c", total: 9, href: "web/index.html" },
     { id: "cpp", name: "C++", title: "C++ бағдарламалау", color: "#4f46e5", total: 8, href: "cpp/index.html", own: true },
     { id: "java", name: "Java", title: "Java бағдарламалау", color: "#d97706", total: 8, href: "java/index.html", own: true },
+    { id: "en", name: "English", title: "Ағылшын тілі A0-C1", color: "#0f766e", total: 24, href: "en/index.html", own: true, nocert: true, unit: "сабақ" },
   ];
+  // Ағылшын курсы: лекция белгісі «A1 · 2-сабақ» (week-N -> деңгей мен сабақ)
+  const EN_LV = ["A0", "A1", "A2", "B1", "B2", "C1"];
+  const unitLabel = (courseId, n) => (courseId === "en" ? `${EN_LV[Math.floor(n / 4)]} · ${(n % 4) + 1}-сабақ` : `${n}-апта`);
   function courseReadCount(p, id) {
     return Object.keys(p.read || {}).filter((k) => p.read[k] && (id === "x" ? ORDER.includes(k) : k.startsWith(id + ":"))).length;
   }
@@ -985,7 +989,7 @@
       const lastId = lastRaw && lastRaw.id && !p.read[lastRaw.id] && ids.includes(lastRaw.id) ? lastRaw.id : null;
       const goId = lastId || nextId;
       const href = goId ? (c.id === "x" ? `lectures/${goId}.html` : `${c.id}/lectures/${goId.split(":")[1]}.html`) : null;
-      const label = goId ? (goId.split(":").pop() === "ai" ? "AI" : goId.split(":").pop().replace("week-", "") + "-апта") : "";
+      const label = goId ? (goId.split(":").pop() === "ai" ? "AI" : unitLabel(c.id, +goId.split(":").pop().replace("week-", ""))) : "";
       const ex = readJson(c.id === "x" ? "cs50kz:exam" : "cs50kz:exam:" + c.id, {}).best;
       return { c, read, pct: Math.round((read / c.total) * 100), href, label, started: read > 0 || !!lastRaw, done: read === c.total, ex: typeof ex === "number" ? ex : null };
     });
@@ -999,10 +1003,10 @@
           <div class="mc-ring" style="--pct:${r.pct}"><b>${r.pct}%</b></div>
           <div class="mc-body">
             <h3>${r.c.name}</h3>
-            <p>${escapeHtml(r.c.title)} · ${r.read}/${r.c.total} лекция</p>
-            ${r.done ? `<a class="mc-btn" href="${ROOT_URL}certificate.html${r.c.id === "x" ? "" : "?course=" + r.c.id}">Сертификатты алу 🎓</a>`
+            <p>${escapeHtml(r.c.title)} · ${r.read}/${r.c.total} ${r.c.unit || "лекция"}</p>
+            ${r.done && r.c.nocert ? `<a class="mc-btn" href="${ROOT_URL + r.c.href}">Курс аяқталды \u2713: қайталау</a>` : r.done ? `<a class="mc-btn" href="${ROOT_URL}certificate.html${r.c.id === "x" ? "" : "?course=" + r.c.id}">Сертификатты алу 🎓</a>`
               : r.href ? `<a class="mc-btn" href="${ROOT_URL + r.href}">${r.read ? "Жалғастыру" : "Бастау"}: ${r.label} →</a>` : ""}
-            ${r.ex != null || r.done ? `<a class="mc-exam" href="${ROOT_URL}exam.html${r.c.id === "x" ? "" : "?course=" + r.c.id}">${r.ex != null ? `📝 Емтихан: ${r.ex}%${r.ex >= 70 ? " ✓" : ""}` : "📝 Қорытынды емтихан"}</a>` : ""}
+            ${r.c.nocert ? "" : r.ex != null || r.done ? `<a class="mc-exam" href="${ROOT_URL}exam.html${r.c.id === "x" ? "" : "?course=" + r.c.id}">${r.ex != null ? `📝 Емтихан: ${r.ex}%${r.ex >= 70 ? " ✓" : ""}` : "📝 Қорытынды емтихан"}</a>` : ""}
           </div>
         </article>`).join("")}</div>`;
   }
@@ -1051,7 +1055,7 @@
     const p = Progress.load();
     const st = routeState(c, list, p), { L, next } = st;
     const steps = [...box.querySelectorAll(".route-step")];
-    const certHref = ROOT_URL + "certificate.html" + (c === "x" ? "" : "?course=" + c);
+    const certHref = c === "en" ? ROOT_URL + "en/index.html" : ROOT_URL + "certificate.html" + (c === "x" ? "" : "?course=" + c);
     const setStep = (i, href, title, small) => {
       const li = steps[i - 1];
       if (!li) return;
@@ -1065,7 +1069,7 @@
       setStep(2, url(L), L.num + " лекциясы", L.title);
       setStep(3, url(L, L.task || ""), null, L.tasks ? "Өзің орында" : "Бұл лекцияда тапсырма жоқ");
       setStep(4, url(L, L.quiz ? "quiz" : ""), null, null);
-      setStep(5, next ? url(next) : certHref, next ? "Келесі лекция" : "Сертификат", next ? next.num + ": " + next.title : "Курс аяқталады");
+      setStep(5, next ? url(next) : certHref, next ? (c === "en" ? "Келесі сабақ" : "Келесі лекция") : (c === "en" ? "Курс беті" : "Сертификат"), next ? next.num + ": " + next.title : "Курс аяқталады");
     }
     steps.forEach((li, i) => {
       const done = st.done[i], cur = st.current === i + 1;
@@ -1086,8 +1090,8 @@
     box.dataset.current = String(st.current);
     if (!L) {
       go.setAttribute("href", certHref);
-      go.innerHTML = 'Сертификатты алу <span aria-hidden="true">→</span>';
-      note.textContent = "Курс толық оқылды. Қорытынды емтиханнан өтіп, сертификат алыңыз.";
+      go.innerHTML = c === "en" ? 'Курс бетіне оралу <span aria-hidden="true">→</span>' : 'Сертификатты алу <span aria-hidden="true">→</span>';
+      note.textContent = c === "en" ? "Курс толық оқылды. Сөздік карточкаларымен қайталап, жобаңызды аяқтаңыз." : "Курс толық оқылды. Қорытынды емтиханнан өтіп, сертификат алыңыз.";
       return;
     }
     const target = [url(L), url(L), url(L, L.task || ""), url(L, L.quiz ? "quiz" : ""), next ? url(next) : certHref][st.current - 1];
@@ -1341,7 +1345,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
     let course = "all";
     // Әр жолдың курсы: сілтемесінен (python/, sql/, ai/, web/ не CS50x)
     const inCourse = (r, c) => (r.dataset.c || "x").split(" ").includes(c);
-    const names = { all: "Барлығы", x: "CS50x", python: "CS50P", sql: "SQL", ai: "AI", web: "Web", cpp: "C++", java: "Java" };
+    const names = { all: "Барлығы", x: "CS50x", python: "CS50P", sql: "SQL", ai: "AI", web: "Web", cpp: "C++", java: "Java", en: "English" };
     const present = new Set(rows.flatMap((r) => (r.dataset.c || "x").split(" ")));
     const chips = document.createElement("div");
     chips.className = "seg g-courses";
@@ -1848,7 +1852,7 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
     };
     return { course, meta, crit, learning: crit.lectures.ok, verified: Object.values(crit).every((x) => x.ok) };
   }
-  const verifiedCourses = () => { const p = Progress.load(), tm = taskMap(); return COURSE_META.filter((c) => certStatus(c.id, p, tm).verified).map((c) => c.id); };
+  const verifiedCourses = () => { const p = Progress.load(), tm = taskMap(); return COURSE_META.filter((c) => !c.nocert && certStatus(c.id, p, tm).verified).map((c) => c.id); };
   // Детерминді қысқа хэш (cyrb53) -> 31 таңбалы әліпби (ұқсас таңбасыз)
   function shortHash(str, len) {
     let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
@@ -1919,6 +1923,7 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
       A("course-web", "🕸", "CS50 Web түлегі", "CS50 Web курсының барлық 9 лекциясын оқу", readC("web"), 9),
       A("course-cpp", "⚙️", "C++ түлегі", "C++ курсының барлық 8 лекциясын оқу", readC("cpp"), 8),
       A("course-java", "☕", "Java түлегі", "Java курсының барлық 8 лекциясын оқу", readC("java"), 8),
+      A("course-en", "🔤", "Ағылшын курсын аяқтады", "Ағылшын тілі курсының барлық 24 сабағын оқу", readC("en"), 24),
       A("builder", "🛠", "Жасаушы", "«Жобалар шеберханасында» бір жобаны аяқтау", Math.min(1, Object.keys((readJson("cs50kz:projects", {}).finished || {})).filter((k) => k !== "all").length), 1),
       A("capstone", "🏗", "Капстоун шебері", "«Жобалар шеберханасының» барлық 4 жобасын аяқтау", Object.keys((readJson("cs50kz:projects", {}).finished || {})).filter((k) => k !== "all").length, 4),
       A("verified", "🏅", "Расталған түлек", "Бірінші «Расталған білім сертификатын» алу (емтихан, тапсырмалар, тест)", verifiedCourses().length, 1),

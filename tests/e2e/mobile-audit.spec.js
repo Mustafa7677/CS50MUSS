@@ -196,7 +196,7 @@ for (const d of SMALL) {
 
 // ================= b) Ұзын лекциялар =================
 const longest = (c) => { const dir = path.join(ROOT, c, "lectures"); return fs.readdirSync(dir).filter((f) => f.endsWith(".html")).map((f) => [f, fs.statSync(path.join(dir, f)).size]).sort((a, b) => b[1] - a[1])[0]; };
-for (const c of ["python", "ai", "sql", "web", "cpp", "java"]) {
+for (const c of ["python", "ai", "sql", "web", "cpp", "java", "en"]) {
   const [file, size] = longest(c);
   for (const d of SMALL) {
     test.describe(`ұзын лекция ${c}/${file} ${d.n}`, () => {

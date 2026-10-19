@@ -40,13 +40,15 @@ test("site_stats өз-өзімен келісімді және нақты фай
   expect(S.exam_q).toBe(by.x.lect * 2);
   for (const [code, d] of Object.entries(by)) {
     const dir = path.join(ROOT, code === "x" ? "lectures" : code + "/lectures");
-    expect(fs.readdirSync(dir).filter((f) => /^(week-\d+|ai)\.html$/.test(f)).length, code).toBe(d.lect);
+    // тұғыр сабақтар («жақында» белгісі) дайын лекцияға есептелмейді
+    const ready = fs.readdirSync(dir).filter((f) => /^(week-\d+|ai)\.html$/.test(f) && !fs.readFileSync(path.join(dir, f), "utf8").includes("<!-- soon -->"));
+    expect(ready.length, code).toBe(d.lect);
   }
   // main.js COURSE_META (JS жағындағы тұрақты) build-тің lect_<курс> мәнімен бірдей
   const js = fs.readFileSync(path.join(ROOT, "assets/js/main.js"), "utf8");
   const meta = [...js.matchAll(/\{ id: "(\w+)", name: "[^"]*", title: "[^"]*", color: "#\w+", total: (\d+)/g)];
   expect(meta.length).toBe(S.courses);
-  for (const [, id, total] of meta) expect(+total, "COURSE_META " + id).toBe(by[id].lect);
+  for (const [, id, total] of meta) expect(+total, "COURSE_META " + id).toBe(by[id].plan); // plan = курстың жоспарланған сабақ саны (дайындары lect)
 });
 
 test("белгілер <!--n:КІЛТ--> мәні site_stats-пен бірдей (барлық бет және README)", () => {

@@ -2,7 +2,7 @@
  * Дербес авторлық интерактивті визуализаторлар (C++ және Java курстары).
  * Vanilla JS, сыртқы кітапхана жоқ. Әр виджет - деректермен басқарылатын «қадамдар» тізімі:
  * код жолдары + әр қадамдағы күй. Беттегі <div class="viz own-viz" data-viz="ID" data-title="..."></div> өздігінен қосылады.
- * ID-лер: cpp-pointers, cpp-vector, cpp-vtable, java-refs, java-hashmap, java-threads.
+ * ID-лер: cpp-pointers, cpp-vector, cpp-vtable, java-refs, java-hashmap, java-threads, en-tobe (ағылшын курсы).
  */
 (function () {
   "use strict";
@@ -530,6 +530,68 @@
   })();
 
   /* =====================================================================
+   * 7) en-tobe: ағылшын to be (I am / she is / we are) пен қазақша жалғаудың салыстырмасы (ағылшын курсы)
+   * ===================================================================== */
+  (function () {
+    var init = function () { return { n: 0, k: 0, ar: 0, hl: "" }; };
+    function variant(label, words, kz, ex) {
+      return {
+        label: label, code: words, init: init,
+        steps: [
+          S(0, ex[0], function (s) { s.n = 1; s.k = 1; s.hl = "e0"; }),
+          S(1, ex[1], function (s) { s.n = 2; s.hl = "e1"; }),
+          S(2, ex[2], function (s) { s.n = 3; s.k = 3; s.ar = 1; s.hl = "e2"; },
+            { res: { ok: true, t: ex[3] } })
+        ],
+        kz: kz
+      };
+    }
+    var V = [
+      variant("I am Aida.", ["I", "am", "Aida"], ["Мен", "Айда", "-мын"],
+        ["I - бастауыш («мен»). Ағылшынша сөйлем бастауыштан басталады.",
+         "am - to be етістігі. I-мен тек am қолданылады. Қазақшада мұндай жеке сөз жоқ.",
+         "Aida - есім. Қазақша «Айда-мын»: есімнің соңына жалғау қосылады, ол ағылшынша am қызметін атқарады.",
+         "I + am ≈ -мын. Жалғау қазақшада сөздің соңында, ал ағылшынша am бастауыштан кейін жеке сөз болып тұрады."]),
+      variant("She is a developer.", ["She", "is", "a developer"], ["Ол", "бағдарламашы", "(жалғау жоқ)"],
+        ["She - бастауыш («ол», қыз не әйел).",
+         "is - to be етістігі: she / he / it үшін is.",
+         "a developer - кім екені (a - «бір» дегендей сөз). Қазақшада 3-жақта жалғау жоқ: «Ол бағдарламашы», ал ағылшынша is міндетті.",
+         "3-жақта қазақша жалғау қойылмайды, ағылшынша is қойылады. Is түсіп қалса, сөйлем қате болады."]),
+      variant("We are students.", ["We", "are", "students"], ["Біз", "студент", "-піз"],
+        ["We - бастауыш («біз»).",
+         "are - to be етістігі: we / you / they үшін are.",
+         "students - көпше формасы. Қазақша «студент-піз»: жалғау бастауышқа сәйкес келеді.",
+         "We + are ≈ -піз. Ағылшынша you, we, they үшін бір форма - are."])
+    ];
+    DEFS["en-tobe"] = {
+      title: "to be: ағылшынша етістік пен қазақша жалғау",
+      intro: "Үш сөйлемді қадамдап саламыз: жоғарыда ағылшынша, төменде қазақша. «Алға» батырмасын не → пернесін басыңыз.",
+      variants: V,
+      render: function (st, m) {
+        var vi = m.vi, uid = m.uid, o = defs(uid), v = V[vi], X = [8, 112, 200], W = [96, 80, 132];
+        o += '<text class="ov-zt" x="8" y="18">ENGLISH</text><text class="ov-zt" x="8" y="118">ҚАЗАҚША</text>';
+        for (var i = 0; i < 3; i++) {
+          var on = i < st.n, hl = st.hl === "e" + i;
+          o += '<rect class="ov-box' + (on ? "" : " ghost") + (hl ? " hl" : "") + '" x="' + X[i] + '" y="28" width="' + W[i] + '" height="40" rx="8"/>';
+          if (on) o += '<text class="ov-val" x="' + (X[i] + W[i] / 2) + '" y="53" text-anchor="middle">' + esc(v.code[i]) + "</text>";
+        }
+        var kzOrder = [0, 1, 2];
+        for (var j = 0; j < 3; j++) {
+          var kon = j < st.k && (j === 0 || st.k === 3), none = j === 2 && v.kz[2].charAt(0) === "(";
+          var khl = st.hl === "e2" && j === 2;
+          o += '<rect class="ov-box' + (kon ? (none ? " dead" : "") : " ghost") + (khl ? " hl" : "") + '" x="' + X[j] + '" y="128" width="' + W[j] + '" height="40" rx="8"/>';
+          if (kon) o += '<text class="ov-val' + (none ? " dim" : "") + '" x="' + (X[j] + W[j] / 2) + '" y="153" text-anchor="middle">' + esc(v.kz[kzOrder[j]]) + "</text>";
+        }
+        if (st.ar) o += '<path class="ov-arrow dash" d="M152 70 V99 H' + (X[2] + W[2] / 2) + ' V126" marker-end="url(#' + uid + 'a)"/>';
+        return '<svg class="ov-svg" viewBox="0 0 340 184" aria-hidden="true" focusable="false">' + o + "</svg>";
+      },
+      sum: function (st) {
+        return "Ағылшынша " + (st.n ? "сөздер: " + st.n + " / 3" : "сөз жоқ") + "; қазақша " + (st.k === 3 ? "сөйлем құрылды" : st.k ? "бастауыш қойылды" : "бос") + ".";
+      }
+    };
+  })();
+
+  /* =====================================================================
    * Қозғалтқыш
    * ===================================================================== */
   function mount(root) {
@@ -586,7 +648,7 @@
         elRes.hidden = false; elRes.textContent = "Нәтиже: " + sp.res.t;
         elRes.className = "ov-result " + (sp.res.ok === true ? "ok" : sp.res.ok === "warn" ? "warn" : "bad");
       } else { elRes.hidden = true; elRes.textContent = ""; }
-      var html = def.render(st, { uid: uid + "v" + vi, step: step });
+      var html = def.render(st, { uid: uid + "v" + vi, step: step, vi: vi });
       if (st.out && st.out.length) html += '<pre class="ov-out" aria-hidden="true"><span class="ov-out-h">консоль</span>' + st.out.map(esc).join("\n") + "</pre>";
       elStage.innerHTML = html;
       elStage.setAttribute("aria-label", "Күй: " + def.sum(st) + (st.out && st.out.length ? " Консольде: " + st.out.join(", ") + "." : ""));
