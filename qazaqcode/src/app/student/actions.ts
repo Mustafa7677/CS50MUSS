@@ -5,6 +5,7 @@ import { currentUserId } from "@/lib/auth/session";
 import { withUser } from "@/lib/db";
 import { AppError, errorMessage, type ActionResult } from "@/lib/errors";
 import { rateLimit } from "@/lib/rate-limit";
+import { getT } from "@/lib/i18n";
 
 export type SaveDraftInput = { assignmentId: string; code: string | null; answers: Record<string, number>; seconds: number };
 export type SubmitResult = { status: "graded" | "submitted"; score?: number; max_score?: number; passed?: number; total?: number };
@@ -38,7 +39,7 @@ export async function saveDraftAction(input: SaveDraftInput): Promise<ActionResu
 }
 
 /** Жұмысты жіберу. Тест болса бірден бағаланады. */
-export async function submitAssignmentAction(submissionId: string, assignmentId: string): Promise<ActionResult<SubmitResult>> {
+export async function submitAssignmentAction(submissionId: string, assignmentId: string): Promise<ActionResult<SubmitResult>> { const t = await getT();
   try {
     const u = await uid();
     const id = z.string().uuid().parse(submissionId);
@@ -47,7 +48,7 @@ export async function submitAssignmentAction(submissionId: string, assignmentId:
     const rows = await withUser(u, (q) => q<{ r: SubmitResult }>("select public.submit_assignment($1) as r", [id]));
     revalidatePath("/student", "layout");
     revalidatePath(`/student/assignments/${aid}`);
-    return { ok: true, data: rows[0].r, message: "Жұмыс жіберілді." };
+    return { ok: true, data: rows[0].r, message: t("Жұмыс жіберілді.") };
   } catch (e) {
     if (e instanceof z.ZodError) return { ok: false, error: errorMessage(new AppError("validation")) };
     return { ok: false, error: errorMessage(e) };
@@ -55,7 +56,7 @@ export async function submitAssignmentAction(submissionId: string, assignmentId:
 }
 
 /** Сабақты аяқтады деп белгілеу (қайталауға қауіпсіз: on conflict do nothing). */
-export async function completeLessonAction(_: ActionResult | null, f: FormData): Promise<ActionResult> {
+export async function completeLessonAction(_: ActionResult | null, f: FormData): Promise<ActionResult> { const t = await getT();
   try {
     const u = await uid();
     const p = z.object({ lessonId: z.string().uuid(), courseId: z.string().uuid() }).parse({ lessonId: f.get("lessonId"), courseId: f.get("courseId") });
@@ -64,7 +65,7 @@ export async function completeLessonAction(_: ActionResult | null, f: FormData):
     revalidatePath(`/student/courses/${p.courseId}`);
     revalidatePath("/student/courses");
     revalidatePath("/student");
-    return { ok: true, message: "Сабақ аяқталды деп белгіленді." };
+    return { ok: true, message: t("Сабақ аяқталды деп белгіленді.") };
   } catch (e) {
     if (e instanceof z.ZodError) return { ok: false, error: errorMessage(new AppError("validation")) };
     return { ok: false, error: errorMessage(e) };

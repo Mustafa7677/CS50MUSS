@@ -8,7 +8,7 @@ import { KIND_LABEL, STATUS_LABEL, fmtDate } from "@/lib/format";
 import { archiveAssignmentAction, duplicateAssignmentAction } from "../actions";
 import { KINDS, toNum } from "../_data";
 
-export const metadata = { title: "Тапсырмалар" };
+export async function generateMetadata() { return { title: "Тапсырмалар" }; }
 export const dynamic = "force-dynamic";
 
 type Row = { id: string; title: string; kind: string; status: string; deadline: string | null; classes: string[] | null; works: string };

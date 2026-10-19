@@ -240,6 +240,27 @@ if (!hasWelcome) {
   log("жүйелік хабарландырулар қосылды");
 }
 
+// ---------- ДЕМО белсенділік журналы (метрика бетін көрсету үшін) ----------
+// ТЕК is_demo ұйымға жазылады: нақты ұйымға ешқашан. Дерек ойдан құрастырылған (детерминді), «ДЕМО» ұйымы метрикада әдепкіде есепке кірмейді
+// (/admin/metrics: «ДЕМО ұйымдарын қосу» белгісімен ғана көрінеді). Қайталап іске қосу қауіпсіз (on conflict do nothing).
+const hasActivity = (await q("select to_regclass('public.activity_days') as t"))[0].t;
+const demoOrg = (await q("select is_demo from organizations where id=$1", [org]))[0]?.is_demo;
+if (hasActivity && demoOrg) {
+  const cal = await q("select d, extract(isodow from d)::int as dow from (select public.metrics_today() - g as d, g from generate_series(0, 41) g) x order by g");
+  const rows = [];
+  cal.forEach((c, g) => {
+    if (c.dow > 5) return;                                      // демалыс күндері белсенділік жоқ
+    const thr = 0.25 + 0.4 * (1 - g / 42);                      // уақыт өте белсенділік артады
+    for (const s of students) if (s.i % 4 !== 3 && h(s.i, g + 20) < thr) rows.push([s.id, c.d, "student"]);
+    teachers.forEach((t, k) => { if (h(k + 1, g) < 0.85) rows.push([t, c.d, "teacher"]); });
+    if (h(5, g) < 0.4) rows.push([admin, c.d, "school_admin"]);
+  });
+  await q(`insert into public.activity_days (user_id, org_id, day, role)
+           select u, $1, d, r::public.member_role from unnest($2::uuid[], $3::date[], $4::text[]) as t(u, d, r) on conflict do nothing`,
+    [org, rows.map((r) => r[0]), rows.map((r) => r[1]), rows.map((r) => r[2])]);
+  log(`ДЕМО белсенділік журналы: ${rows.length} жол (ойдан құрастырылған, тек демо ұйымда)`);
+}
+
 const cnt = (await q(`select (select count(*) from organization_members where org_id=$1 and role='student' and status='active') st,
   (select count(*) from organization_members where org_id=$1 and role='teacher' and status='active') te,
   (select count(*) from classrooms where org_id=$1) cl, (select count(*) from assignments where org_id=$1) a,

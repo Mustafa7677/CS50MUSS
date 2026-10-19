@@ -4,7 +4,7 @@ import { requireStudent } from "@/lib/context";
 import { DIFFICULTY_LABEL, KIND_LABEL, STATUS_LABEL, fmtDate } from "@/lib/format";
 import { FILTERS, isOverdue, myAssignments } from "../data";
 
-export const metadata = { title: "Тапсырмаларым" };
+export async function generateMetadata() { return { title: "Тапсырмаларым" }; }
 export const dynamic = "force-dynamic";
 
 export default async function AssignmentsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {

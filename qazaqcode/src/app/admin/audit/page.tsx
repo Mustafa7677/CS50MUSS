@@ -3,12 +3,13 @@ import { EmptyState, PageHeader } from "@/components/ui";
 import { requirePlatformAdmin } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { fmtDate } from "@/lib/format";
+import { getT } from "@/lib/i18n";
 
-export const metadata = { title: "Аудит журналы" };
+export async function generateMetadata() { const t = await getT(); return { title: t("Аудит журналы") }; }
 const PAGE = 50;
 type Row = { id: string; created_at: string; org_name: string | null; actor: string | null; action: string; entity: string; entity_id: string | null; meta: Record<string, unknown> };
 
-export default async function AuditPage({ searchParams }: { searchParams: Promise<{ org?: string; page?: string }> }) {
+export default async function AuditPage({ searchParams }: { searchParams: Promise<{ org?: string; page?: string }> }) { const t = await getT();
   const ctx = await requirePlatformAdmin();
   const sp = await searchParams;
   const page = Math.max(1, Number(sp.page) || 1);
@@ -25,24 +26,24 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
   const href = (p: number) => `/admin/audit?${new URLSearchParams({ ...(org ? { org } : {}), page: String(p) })}`;
   return (
     <>
-      <PageHeader title="Аудит журналы" subtitle="Лицензия, мүшелік, баға және ұйым өзгерістері. Журнал өзгертілмейді және өшірілмейді." />
+      <PageHeader title={t("Аудит журналы")} subtitle={t("Лицензия, мүшелік, баға және ұйым өзгерістері. Журнал өзгертілмейді және өшірілмейді.")} />
       <form className="mb-4 flex flex-wrap items-end gap-3" method="get">
-        <div><label className="label" htmlFor="org">Ұйым</label>
-          <select id="org" name="org" defaultValue={org ?? ""} className="input"><option value="">Барлығы</option>{orgs.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}</select></div>
-        <button className="btn-secondary" type="submit">Сүзу</button>
+        <div><label className="label" htmlFor="org">{t("Ұйым")}</label>
+          <select id="org" name="org" defaultValue={org ?? ""} className="input"><option value="">{t("Барлығы")}</option>{orgs.map((o) => <option key={o.id} value={o.id}>{o.name}</option>)}</select></div>
+        <button className="btn-secondary" type="submit">{t("Сүзу")}</button>
       </form>
-      {shown.length === 0 ? <EmptyState title="Жазба жоқ" /> : (
+      {shown.length === 0 ? <EmptyState title={t("Жазба жоқ")} /> : (
         <div className="table-wrap"><table className="w-full">
-          <thead><tr><th className="th">Уақыты</th><th className="th">Ұйым</th><th className="th">Әрекет жасаған</th><th className="th">Әрекет</th><th className="th">Мәліметі</th></tr></thead>
+          <thead><tr><th className="th">{t("Уақыты")}</th><th className="th">{t("Ұйым")}</th><th className="th">{t("Әрекет жасаған")}</th><th className="th">{t("Әрекет")}</th><th className="th">{t("Мәліметі")}</th></tr></thead>
           <tbody>{shown.map((r) => (
             <tr key={r.id} className="border-t border-line align-top">
-              <td className="td whitespace-nowrap">{fmtDate(r.created_at, true)}</td><td className="td">{r.org_name ?? "-"}</td><td className="td">{r.actor ?? "жүйе"}</td>
+              <td className="td whitespace-nowrap">{fmtDate(r.created_at, true)}</td><td className="td">{r.org_name ?? "-"}</td><td className="td">{r.actor ?? t("жүйе")}</td>
               <td className="td font-mono text-xs">{r.action}</td><td className="td font-mono text-xs text-ink-muted">{Object.keys(r.meta).length ? JSON.stringify(r.meta) : "-"}</td>
             </tr>))}</tbody></table></div>
       )}
       <div className="mt-4 flex gap-2">
-        {page > 1 && <Link className="btn-secondary" href={href(page - 1)}>← Алдыңғы</Link>}
-        {more && <Link className="btn-secondary" href={href(page + 1)}>Келесі →</Link>}
+        {page > 1 && <Link className="btn-secondary" href={href(page - 1)}>{t("← Алдыңғы")}</Link>}
+        {more && <Link className="btn-secondary" href={href(page + 1)}>{t("Келесі →")}</Link>}
       </div>
     </>
   );

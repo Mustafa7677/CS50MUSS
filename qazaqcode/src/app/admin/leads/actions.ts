@@ -4,6 +4,7 @@ import { z } from "zod";
 import { currentUserId } from "@/lib/auth/session";
 import { withUser } from "@/lib/db";
 import { AppError, errorMessage, type ActionResult } from "@/lib/errors";
+import { getT } from "@/lib/i18n";
 
 const str = (f: FormData, k: string) => String(f.get(k) ?? "").trim();
 async function uid(): Promise<string> {
@@ -12,16 +13,16 @@ async function uid(): Promise<string> {
   return u;
 }
 
-export async function setLeadStatusAction(_: ActionResult | null, f: FormData): Promise<ActionResult> {
+export async function setLeadStatusAction(_: ActionResult | null, f: FormData): Promise<ActionResult> { const t = await getT();
   try {
     const p = z.object({
-      id: z.string().uuid(), status: z.enum(["new", "contacted", "demo", "pilot", "won", "lost"]), notes: z.string().max(2000, "Жазба 2000 таңбадан аспауы тиіс.").nullable(),
+      id: z.string().uuid(), status: z.enum(["new", "contacted", "demo", "pilot", "won", "lost"]), notes: z.string().max(2000, t("Жазба 2000 таңбадан аспауы тиіс.")).nullable(),
     }).parse({ id: str(f, "id"), status: str(f, "status"), notes: str(f, "notes") || null });
     await withUser(await uid(), (q) => q("select public.set_lead_status($1,$2,$3)", [p.id, p.status, p.notes]));
     revalidatePath("/admin/leads");
-    return { ok: true, message: "Сақталды." };
+    return { ok: true, message: t("Сақталды.") };
   } catch (e) {
-    if (e instanceof z.ZodError) return { ok: false, error: e.issues[0]?.message ?? "Деректер дұрыс емес." };
+    if (e instanceof z.ZodError) return { ok: false, error: e.issues[0]?.message ?? t("Деректер дұрыс емес.") };
     return { ok: false, error: errorMessage(e) };
   }
 }

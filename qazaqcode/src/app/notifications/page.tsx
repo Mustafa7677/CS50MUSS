@@ -6,15 +6,16 @@ import { getContext, homeFor } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { fmtDate } from "@/lib/format";
 import { markAllReadAction } from "./actions";
+import { getT } from "@/lib/i18n";
 
-export const metadata = { title: "Хабарландырулар" };
+export async function generateMetadata() { const t = await getT(); return { title: t("Хабарландырулар") }; }
 export const dynamic = "force-dynamic";
 
 type Row = { id: string; kind: string; title: string; body: string | null; link: string | null; read_at: string | null; created_at: string };
 
 const safeLink = (l: string | null) => (l && /^\/(?!\/)/.test(l) ? l : null);
 
-export default async function NotificationsPage() {
+export default async function NotificationsPage() { const t = await getT();
   const ctx = await getContext();
   if (!ctx) redirect("/login");
   const rows = await withUser(ctx.userId, (q) => q<Row>(
@@ -24,15 +25,15 @@ export default async function NotificationsPage() {
 
   return (
     <main id="main" className="mx-auto max-w-3xl px-4 py-6">
-      <p className="mb-3"><Link href={home} className="text-sm">← Басты бетке</Link></p>
-      <PageHeader title="Хабарландырулар" subtitle={unread ? `Оқылмаған: ${unread}` : "Барлығы оқылған."} />
+      <p className="mb-3"><Link href={home} className="text-sm">{t("← Басты бетке")}</Link></p>
+      <PageHeader title={t("Хабарландырулар")} subtitle={unread ? t("Оқылмаған: {unread}", { unread }) : t("Барлығы оқылған.")} />
       {unread > 0 && (
-        <ActionForm action={markAllReadAction} submitLabel="Бәрін оқылды деп белгілеу" submitClassName="btn-secondary" className="mb-4" successToast={false}>
-          <span className="sr-only">Оқылмаған хабарландырулар бар</span>
+        <ActionForm action={markAllReadAction} submitLabel={t("Бәрін оқылды деп белгілеу")} submitClassName="btn-secondary" className="mb-4" successToast={false}>
+          <span className="sr-only">{t("Оқылмаған хабарландырулар бар")}</span>
         </ActionForm>
       )}
       {rows.length === 0 ? (
-        <EmptyState title="Хабарландыру жоқ" text="Жаңа тапсырма, баға немесе курс болғанда осында хабар түседі." />
+        <EmptyState title={t("Хабарландыру жоқ")} text={t("Жаңа тапсырма, баға немесе курс болғанда осында хабар түседі.")} />
       ) : (
         <ul className="card divide-y divide-line" data-testid="notification-list">
           {rows.map((r) => {
@@ -40,7 +41,7 @@ export default async function NotificationsPage() {
             const inner = (
               <>
                 <span className="flex items-start gap-2">
-                  {!r.read_at && <span aria-label="Оқылмаған" className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-brand" />}
+                  {!r.read_at && <span aria-label={t("Оқылмаған")} className="mt-1.5 h-2.5 w-2.5 shrink-0 rounded-full bg-brand" />}
                   <span className="min-w-0">
                     <span className={`block break-words ${r.read_at ? "" : "font-semibold"}`}>{r.title}</span>
                     {r.body && <span className="block break-words text-sm text-ink-muted">{r.body}</span>}

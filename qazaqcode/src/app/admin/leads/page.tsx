@@ -4,7 +4,7 @@ import { LEAD_COLS, LEAD_STATUSES, LEAD_STATUS_LABEL, likePattern, type LeadRow 
 import { requirePlatformAdmin } from "@/lib/context";
 import { withUser } from "@/lib/db";
 
-export const metadata = { title: "Пилот сұраулары" };
+export async function generateMetadata() { return { title: "Пилот сұраулары" }; }
 export const dynamic = "force-dynamic";
 const LIMIT = 200;
 

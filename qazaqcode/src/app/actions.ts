@@ -9,6 +9,7 @@ import { ORG_COOKIE, getContext, homeFor } from "@/lib/context";
 import { AppError, errorCode, errorMessage, type ActionResult } from "@/lib/errors";
 import { rateLimit } from "@/lib/rate-limit";
 import { env } from "@/lib/env";
+import { getT } from "@/lib/i18n";
 
 const email = z.string().trim().toLowerCase().email().max(160);
 const password = z.string().min(8, "weak_password").max(128);
@@ -44,7 +45,7 @@ export async function logoutAction(): Promise<void> {
 const regSchema = z.object({ name, email, password });
 
 /** Шақыру арқылы тіркелу (мұғалім / мектеп әкімшісі) */
-export async function registerWithInviteAction(_: ActionResult | null, f: FormData): Promise<ActionResult> {
+export async function registerWithInviteAction(_: ActionResult | null, f: FormData): Promise<ActionResult> { const t = await getT();
   const token = str(f, "token");
   let dest = "/app";
   try {
@@ -63,14 +64,14 @@ export async function registerWithInviteAction(_: ActionResult | null, f: FormDa
     }
     if (dest === "/app") { const ctx = await getContext(); dest = ctx ? homeFor(ctx) : "/app"; }
   } catch (e) {
-    if (e instanceof z.ZodError) return { ok: false, error: errorMessage(new AppError("validation")) + " Құпиясөз кемінде 8 символ." };
+    if (e instanceof z.ZodError) return { ok: false, error: errorMessage(new AppError("validation")) + (" " + t("Құпиясөз кемінде 8 символ.")) };
     return fail(e);
   }
   redirect(dest);
 }
 
 /** Сынып коды арқылы тіркелу (оқушы) */
-export async function registerWithCodeAction(_: ActionResult | null, f: FormData): Promise<ActionResult> {
+export async function registerWithCodeAction(_: ActionResult | null, f: FormData): Promise<ActionResult> { const t = await getT();
   const code = str(f, "code");
   let dest = "/student";
   try {
@@ -88,7 +89,7 @@ export async function registerWithCodeAction(_: ActionResult | null, f: FormData
       dest = `/join?code=${encodeURIComponent(code)}&e=${errorCode(e)}`;
     }
   } catch (e) {
-    if (e instanceof z.ZodError) return { ok: false, error: errorMessage(new AppError("validation")) + " Құпиясөз кемінде 8 символ." };
+    if (e instanceof z.ZodError) return { ok: false, error: errorMessage(new AppError("validation")) + (" " + t("Құпиясөз кемінде 8 символ.")) };
     return fail(e);
   }
   redirect(dest);

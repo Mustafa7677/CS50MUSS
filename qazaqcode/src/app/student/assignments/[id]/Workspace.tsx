@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { Banner } from "@/components/ui";
 import { toast } from "@/components/Toaster";
+import { SelfCheck, type VisibleTest } from "./SelfCheck";
 import { saveDraftAction, submitAssignmentAction, type SubmitResult } from "../../actions";
 
 const CodeEditor = dynamic(() => import("./CodeEditor"), {
@@ -22,6 +23,8 @@ export type WorkspaceProps = {
   result: QuizResult | null;
   blocked: string | null;
   canRetry: boolean;
+  /** Тек is_hidden=false кейістер (RLS + page.tsx сүзгісі): жасырындары браузерге ЕШҚАШАН берілмейді */
+  visibleTests?: VisibleTest[];
 };
 
 type Status = "idle" | "saving" | "saved" | "error";
@@ -246,13 +249,15 @@ export function Workspace(p: WorkspaceProps) {
         </ol>
       ) : (
         <>
-          {editable && <Banner tone="info">Жұмысыңызды мұғалім тексеріп баға қояды. Бұл жерде кодты автоматты іске қосу жоқ.</Banner>}
+          {editable && <Banner tone="info">Жұмысыңызды мұғалім тексеріп баға қояды. «Сынап көру» тек жеке тексеру үшін (баға емес), «Жіберу» бұған тәуелді емес.</Banner>}
           <div className={`overflow-hidden rounded-lg border border-line ${fullscreen ? "flex-1" : ""}`} data-testid="editor">
             <CodeEditor value={code} onChange={onCode} kind={p.kind} readOnly={!editable} label="Код редакторы"
               height={fullscreen ? "calc(100dvh - 15rem)" : "min(60vh, 480px)"} />
           </div>
         </>
       )}
+
+      {editable && p.kind === "python" && <SelfCheck code={code} tests={p.visibleTests ?? []} />}
 
       {submitErr && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{submitErr}</p>}
       {submitBox}

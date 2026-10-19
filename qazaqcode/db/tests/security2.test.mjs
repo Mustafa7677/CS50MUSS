@@ -6,7 +6,7 @@ import { pool, admin, as, asAnon, fails, newUser, reset, future } from "./helper
 
 after(() => pool.end());
 
-const ANON_ALLOWED = ["classroom_preview", "invitation_preview", "org_branding", "submit_lead"];
+const ANON_ALLOWED = ["classroom_preview", "email_unsubscribe", "invitation_preview", "org_branding", "submit_lead"];
 const INTERNAL = ["notify", "audit_log", "new_join_code", "handle_new_user", "audit_trigger", "audit_event_trigger", "audit_logs_guard", "require_user", "plan_limits"];
 
 describe("каталог: RLS, грант, функциялар", () => {

@@ -10,7 +10,7 @@ import { KIND_LABEL, fmtDate, fmtDuration, fmtNum } from "@/lib/format";
 import { beginReviewAction, gradeSubmissionAction } from "../../actions";
 import { toNum, uuidOr404 } from "../../_data";
 
-export const metadata = { title: "Жұмысты тексеру" };
+export async function generateMetadata() { return { title: "Жұмысты тексеру" }; }
 export const dynamic = "force-dynamic";
 
 export default async function SubmissionPage({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ err?: string }> }) {

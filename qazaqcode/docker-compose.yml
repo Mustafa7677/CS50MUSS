@@ -6,6 +6,7 @@
 #   localdb    app + db                - ПИЛОТ/СТЕЙДЖИНГ: жергілікті Postgres + dev auth shim (AUTH_DRIVER=local). ӨНДІРІС ЕМЕС.
 #   tools      migrate, backup, restore - бір реттік қызметтер (`docker compose --profile tools run --rm migrate`)
 #   sandbox    runner                  - код орындау (D агенті; docs/SANDBOX.md)
+#   mail       mailer                  - e-mail worker (scripts/send-emails.mjs): outbox -> SMTP; docs/EMAIL.md
 #
 # Желілер: `edge` - сыртқы (app ↔ reverse proxy, Supabase-ке шығыс); `data` - internal (интернетке шығу жоқ): db осында ғана.
 # Порттар: app тек 127.0.0.1:3000-те тыңдайды; HTTPS-ті reverse proxy (Caddy/nginx) береді - docs/DEPLOY.md.
@@ -22,6 +23,7 @@ x-app-env: &app-env
   APP_URL: ${APP_URL:?APP_URL (https://...) керек}
   COOKIE_SECURE: ${COOKIE_SECURE:-true}
   TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-1}
+  EMAIL_DRIVER: ${EMAIL_DRIVER:-off}      # қосымша тек outbox-қа жазады; SMTP құпиясы қосымшаға берілмейді (тек mailer-ге)
 
 services:
   app:
@@ -94,6 +96,35 @@ services:
     volumes: ["./backups:/app/backups:ro"]
     entrypoint: ["bash", "scripts/restore.sh"]    # аргументтер: файл --yes
     networks: [edge, data]
+
+  # --- E-mail worker (профиль `mail`): outbox кезегін SMTP арқылы жібереді. Сыртқа шығатын жалғыз қызмет (SMTP), DB-ге қолжетімді ---
+  # СЫНАЛМАҒАН (Docker демоны жоқ ортада): `docker compose --profile mail config` өз машинаңызда тексеріңіз. Нұсқа: docs/EMAIL.md
+  mailer:
+    profiles: [mail]
+    build: { context: ., target: mailer }
+    image: qazaqcode/mailer:local
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: ${MAILER_DATABASE_URL:-${DATABASE_URL:?DATABASE_URL керек}}   # ұсыныс: тек claim/mark/purge функцияларына құқығы бар qc_mailer рөлі
+      APP_URL: ${APP_URL:?APP_URL (https://...) керек}
+      EMAIL_DRIVER: ${EMAIL_DRIVER:-smtp}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_SECURE: ${SMTP_SECURE:-false}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASS: ${SMTP_PASS:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      EMAIL_POLL_SECONDS: ${EMAIL_POLL_SECONDS:-15}
+    networks: [edge, data]
+    read_only: true
+    security_opt: ["no-new-privileges:true"]
+    cap_drop: [ALL]
+    pids_limit: 64
+    mem_limit: 256m
+    tmpfs: ["/tmp"]
+    stop_grace_period: 30s
+    logging: { driver: json-file, options: { max-size: "10m", max-file: "5" } }
 
   # runner (sandbox, профиль `sandbox`) қызметін D агенті осы жерге қосады.
 

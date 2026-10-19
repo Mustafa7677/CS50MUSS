@@ -1,11 +1,13 @@
 import { CodeCopy } from "./CodeCopy";
+import { getT } from "@/lib/i18n";
+import type { TFn } from "@/lib/i18n/core";
 
 export type BlockData = { type: string; content: string; language?: string; caption?: string };
 
-const LANG: Record<string, string> = { python: "Python", sql: "SQL", javascript: "JavaScript", html: "HTML", css: "CSS", text: "Мәтін" };
+const LANG = (t: TFn): Record<string, string> => ({ python: "Python", sql: "SQL", javascript: "JavaScript", html: "HTML", css: "CSS", text: t("Мәтін") });
 
 /** Оқушы көретін блок рендері (сервер-үйлесімді). Сурет/видео тек https. */
-export function BlockView({ block }: { block: BlockData }) {
+export async function BlockView({ block }: { block: BlockData }) { const t = await getT();
   const { type, content, language, caption } = block;
   if (type === "text") {
     return <div className="whitespace-pre-wrap break-words leading-relaxed">{content}</div>;
@@ -13,7 +15,7 @@ export function BlockView({ block }: { block: BlockData }) {
   if (type === "note") {
     return (
       <div role="note" className="rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
-        <p className="mb-1 font-semibold">Ескерту</p>
+        <p className="mb-1 font-semibold">{t("Ескерту")}</p>
         <div className="whitespace-pre-wrap break-words">{content}</div>
       </div>
     );
@@ -22,7 +24,7 @@ export function BlockView({ block }: { block: BlockData }) {
     return (
       <figure className="overflow-hidden rounded-xl border border-line bg-surface-2">
         <figcaption className="flex items-center justify-between gap-2 border-b border-line px-3 py-1.5 text-xs text-ink-muted">
-          <span>{LANG[language ?? "text"] ?? language ?? "Мәтін"}</span>
+          <span>{LANG(t)[language ?? "text"] ?? language ?? t("Мәтін")}</span>
           <CodeCopy text={content} />
         </figcaption>
         <pre className="max-w-full overflow-x-auto p-3 text-sm leading-relaxed"><code className="font-mono">{content}</code></pre>
@@ -44,11 +46,11 @@ export function BlockView({ block }: { block: BlockData }) {
     return (
       <figure>
         <video src={content} controls preload="metadata" className="max-w-full rounded-xl border border-line">
-          Браузеріңіз бейнені қолдамайды.
+          {t("Браузеріңіз бейнені қолдамайды.")}
         </video>
         <figcaption className="mt-1 text-sm text-ink-muted">
           {caption && <span>{caption} - </span>}
-          <a href={content} target="_blank" rel="noopener noreferrer" className="text-brand underline">Бейнені жаңа бетте ашу</a>
+          <a href={content} target="_blank" rel="noopener noreferrer" className="text-brand underline">{t("Бейнені жаңа бетте ашу")}</a>
         </figcaption>
       </figure>
     );

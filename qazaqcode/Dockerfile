@@ -31,6 +31,18 @@ USER app
 # db/migrate.sh --dev-shim өндірісте ҚОЛДАНЫЛМАЙДЫ (db/migrate.sh өзі қорғайды)
 ENTRYPOINT ["bash"]
 
+# ---------- 3b) e-mail worker (docker compose --profile mail): Next.js жоқ, тек pg + nodemailer + шаблондар ----------
+FROM ${NODE_IMAGE} AS mailer
+WORKDIR /app
+ENV NODE_ENV=production
+RUN addgroup -S -g 10001 app && adduser -S -u 10001 -G app app
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev --ignore-scripts --no-audit --no-fund && npm cache clean --force
+COPY scripts/send-emails.mjs scripts/emails-purge.mjs ./scripts/
+COPY src/lib/email ./src/lib/email
+USER app
+CMD ["node", "scripts/send-emails.mjs"]
+
 # ---------- 4) өндіріс образы (әдепкі соңғы саты) ----------
 FROM ${NODE_IMAGE} AS run
 WORKDIR /app
@@ -41,7 +53,8 @@ COPY --from=build --chown=app:app /app/.next/standalone ./
 COPY --from=build --chown=app:app /app/.next/static ./.next/static
 # трассировка шрифтті жіберіп алса да, олар образда болуы тиіс (PDF шрифтсіз 500 береді)
 COPY --from=build --chown=app:app /app/assets ./assets
-# public/ қалтасы жоқ (статикалық файл жоқ). Пайда болса: COPY --from=build --chown=app:app /app/public ./public
+# public/: Pyodide («жеке тексеру», public/vendor/pyodide, ~13 МБ) және worker. standalone оларды өзі көшірмейді. Мазмұны git-те тұр; жаңарту: node scripts/vendor-pyodide.mjs
+COPY --from=build --chown=app:app /app/public ./public
 RUN mkdir -p .next/cache && chown app:app .next/cache
 USER app
 EXPOSE 3000

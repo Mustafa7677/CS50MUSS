@@ -7,7 +7,7 @@ import { withUser } from "@/lib/db";
 import { LICENSE_STATE_LABEL, PLAN_LABEL, fmtDate } from "@/lib/format";
 import { createOrganizationAction, extendLicenseAction, inviteSchoolAdminAction, setOrgStatusAction } from "./actions";
 
-export const metadata = { title: "Ұйымдар" };
+export async function generateMetadata() { return { title: "Ұйымдар" }; }
 type Usage = {
   days_left?: number | null;
   org_id: string; name: string; slug: string; status: string; license_state: string; plan: string | null; valid_until: string | null;

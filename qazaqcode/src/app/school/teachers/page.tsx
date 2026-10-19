@@ -5,18 +5,21 @@ import { fmtDate } from "@/lib/format";
 import { Banner, EmptyState, PageHeader, ProgressBar, Section, StatusBadge } from "@/components/ui";
 import { ConfirmButton } from "@/components/ConfirmButton";
 import { InviteForm } from "@/components/school/InviteForm";
-import { inviteTeacherAction, revokeInvitationAction, setTeacherStatusAction } from "../actions";
+import { emailEnabled } from "@/lib/env";
+import { emailInviteAction, inviteTeacherAction, revokeInvitationAction, setTeacherStatusAction } from "../actions";
 import { loadLicense } from "../queries";
+import { getT } from "@/lib/i18n";
+import type { TFn } from "@/lib/i18n/core";
 
-export const metadata = { title: "Мұғалімдер" };
+export async function generateMetadata() { const t = await getT(); return { title: t("Мұғалімдер") }; }
 export const dynamic = "force-dynamic";
 
-const OK_MSG: Record<string, string> = { removed: "Мұғалім өшірілді.", activated: "Мұғалім қайта белсендірілді.", revoked: "Шақырудан бас тартылды." };
+const OK_MSG = (t: TFn): Record<string, string> => ({ removed: t("Мұғалім өшірілді."), activated: t("Мұғалім қайта белсендірілді."), revoked: t("Шақырудан бас тартылды.") });
 
 type T = { user_id: string; full_name: string | null; status: string; joined_at: string; classes: number; last_activity: string | null };
 type Inv = { id: string; email: string | null; expires_at: string; accepted_at: string | null; revoked_at: string | null; created_at: string; accepted_name: string | null };
 
-export default async function TeachersPage({ searchParams }: { searchParams: Promise<{ ok?: string; err?: string }> }) {
+export default async function TeachersPage({ searchParams }: { searchParams: Promise<{ ok?: string; err?: string }> }) { const t = await getT();
   const sp = await searchParams;
   const ctx = await requireSchoolAdmin();
   const org = ctx.active.org_id;
@@ -38,44 +41,44 @@ export default async function TeachersPage({ searchParams }: { searchParams: Pro
   const kind = (i: Inv) => i.accepted_at ? "accepted" : i.revoked_at ? "revoked" : new Date(i.expires_at).getTime() < now ? "expired" : "active";
   const active = invs.filter((i) => kind(i) === "active");
   const past = invs.filter((i) => kind(i) !== "active");
-  const count = teachers.filter((t) => t.status === "active").length;
+  const count = teachers.filter((tt) => tt.status === "active").length;
   const full = !!lic && count >= lic.max_teachers;
 
   return (
     <>
-      <PageHeader title="Мұғалімдер" subtitle="Мұғалімдерді шақырып, олардың қолжетімділігін басқарыңыз."
-        actions={lic && <span className="badge bg-surface text-ink border border-line" data-testid="teacher-limit">Мұғалім: {count} / {lic.max_teachers}</span>} />
-      {sp.ok && OK_MSG[sp.ok] && <Banner tone="info">{OK_MSG[sp.ok]}</Banner>}
+      <PageHeader title={t("Мұғалімдер")} subtitle={t("Мұғалімдерді шақырып, олардың қолжетімділігін басқарыңыз.")}
+        actions={lic && <span className="badge bg-surface text-ink border border-line" data-testid="teacher-limit">{t("Мұғалім: {count} /", { count })}{" "}{lic.max_teachers}</span>} />
+      {sp.ok && OK_MSG(t)[sp.ok] && <Banner tone="info">{OK_MSG(t)[sp.ok]}</Banner>}
       {sp.err && <Banner tone="bad">{errorMessage(new AppError(/^[a-z_]+$/.test(sp.err) ? sp.err : "validation"))}</Banner>}
 
-      {lic && <div className="card mb-6 p-4"><div className="mb-1.5 flex justify-between text-sm"><span>Лицензиядағы мұғалім лимиті</span><span>{count} / {lic.max_teachers}</span></div>
-        <ProgressBar value={count} max={lic.max_teachers} label="Мұғалім лимиті" /></div>}
+      {lic && <div className="card mb-6 p-4"><div className="mb-1.5 flex justify-between text-sm"><span>{t("Лицензиядағы мұғалім лимиті")}</span><span>{count} / {lic.max_teachers}</span></div>
+        <ProgressBar value={count} max={lic.max_teachers} label={t("Мұғалім лимиті")} /></div>}
 
       <section className="card p-5" aria-labelledby="inv-h">
-        <h2 id="inv-h" className="text-lg font-semibold">Мұғалімді шақыру</h2>
-        {full && <Banner tone="warn"><span data-testid="limit-warning">Мұғалім лимиті толған ({count} / {lic!.max_teachers}).</span> Шақыру сілтемесін жасауға болады, бірақ орын босағанша мұғалім тіркеле алмайды. Орын босату үшін мұғалімді өшіріңіз не лицензияны кеңейтіңіз.</Banner>}
-        <div className="mt-3"><InviteForm action={inviteTeacherAction} /></div>
+        <h2 id="inv-h" className="text-lg font-semibold">{t("Мұғалімді шақыру")}</h2>
+        {full && <Banner tone="warn"><span data-testid="limit-warning">{t("Мұғалім лимиті толған ({count} / {max_teachers}).", { count, max_teachers: lic!.max_teachers })}</span>{" "}{t("Шақыру сілтемесін жасауға болады, бірақ орын босағанша мұғалім тіркеле алмайды. Орын босату үшін мұғалімді өшіріңіз не лицензияны кеңейтіңіз.")}</Banner>}
+        <div className="mt-3"><InviteForm action={inviteTeacherAction} emailAction={emailInviteAction} emailEnabled={emailEnabled()} /></div>
       </section>
 
-      <Section title="Мұғалімдер тізімі">
-        {teachers.length === 0 ? <EmptyState title="Мұғалім жоқ" text="Жоғарыдағы форма арқылы бірінші мұғалімді шақырыңыз." /> : (
+      <Section title={t("Мұғалімдер тізімі")}>
+        {teachers.length === 0 ? <EmptyState title={t("Мұғалім жоқ")} text={t("Жоғарыдағы форма арқылы бірінші мұғалімді шақырыңыз.")} /> : (
           <div className="table-wrap relative"><table className="w-full min-w-[42rem]" data-testid="teachers-table">
-            <thead><tr><th className="th">Аты</th><th className="th">Қосылған күні</th><th className="th">Сынып</th><th className="th">Соңғы белсенділік</th><th className="th">Күйі</th><th className="th"><span className="sr-only">Әрекет</span></th></tr></thead>
+            <thead><tr><th className="th">{t("Аты")}</th><th className="th">{t("Қосылған күні")}</th><th className="th">{t("Сынып")}</th><th className="th">{t("Соңғы белсенділік")}</th><th className="th">{t("Күйі")}</th><th className="th"><span className="sr-only">{t("Әрекет")}</span></th></tr></thead>
             <tbody className="divide-y divide-line">
-              {teachers.map((t) => (
-                <tr key={t.user_id}>
-                  <td className="td font-medium">{t.full_name ?? <span className="text-ink-muted">Аты көрінбейді</span>}</td>
-                  <td className="td">{fmtDate(t.joined_at)}</td>
-                  <td className="td">{t.classes}</td>
-                  <td className="td">{t.last_activity ? fmtDate(t.last_activity, true) : "-"}</td>
-                  <td className="td"><StatusBadge status={t.status === "active" ? "active" : "archived"} label={t.status === "active" ? "Белсенді" : "Өшірілген"} /></td>
+              {teachers.map((tt) => (
+                <tr key={tt.user_id}>
+                  <td className="td font-medium">{tt.full_name ?? <span className="text-ink-muted">{t("Аты көрінбейді")}</span>}</td>
+                  <td className="td">{fmtDate(tt.joined_at)}</td>
+                  <td className="td">{tt.classes}</td>
+                  <td className="td">{tt.last_activity ? fmtDate(tt.last_activity, true) : "-"}</td>
+                  <td className="td"><StatusBadge status={tt.status === "active" ? "active" : "archived"} label={tt.status === "active" ? t("Белсенді") : t("Өшірілген")} /></td>
                   <td className="td text-right">
-                    {t.status === "active" ? (
-                      <ConfirmButton action={setTeacherStatusAction} fields={{ user_id: t.user_id, status: "removed" }} label="Өшіру" title="Мұғалімді өшіру"
-                        message={`${t.full_name ?? "Мұғалім"} жүйеге кіре алмайды. Оның сыныптары мен тапсырмалары өшпейді, мұғалімді кейін қайта белсендіруге болады.`} confirmLabel="Иә, өшіру" />
+                    {tt.status === "active" ? (
+                      <ConfirmButton action={setTeacherStatusAction} fields={{ user_id: tt.user_id, status: "removed" }} label={t("Өшіру")} title={t("Мұғалімді өшіру")}
+                        message={t("{v} жүйеге кіре алмайды. Оның сыныптары мен тапсырмалары өшпейді, мұғалімді кейін қайта белсендіруге болады.", { v: tt.full_name ?? t("Мұғалім") })} confirmLabel={t("Иә, өшіру")} />
                     ) : (
-                      <ConfirmButton action={setTeacherStatusAction} fields={{ user_id: t.user_id, status: "active" }} label="Қайта белсендіру" title="Мұғалімді қайта белсендіру"
-                        message="Мұғалімге қолжетімділік қайтарылады (лицензия лимиті тексеріледі)." confirmLabel="Иә, белсендіру" className="btn-secondary" danger={false} />
+                      <ConfirmButton action={setTeacherStatusAction} fields={{ user_id: tt.user_id, status: "active" }} label={t("Қайта белсендіру")} title={t("Мұғалімді қайта белсендіру")}
+                        message={t("Мұғалімге қолжетімділік қайтарылады (лицензия лимиті тексеріледі).")} confirmLabel={t("Иә, белсендіру")} className="btn-secondary" danger={false} />
                     )}
                   </td>
                 </tr>
@@ -84,16 +87,16 @@ export default async function TeachersPage({ searchParams }: { searchParams: Pro
         )}
       </Section>
 
-      <Section title="Белсенді шақырулар">
-        {active.length === 0 ? <p className="text-sm text-ink-muted">Белсенді шақыру жоқ.</p> : (
+      <Section title={t("Белсенді шақырулар")}>
+        {active.length === 0 ? <p className="text-sm text-ink-muted">{t("Белсенді шақыру жоқ.")}</p> : (
           <div className="table-wrap relative"><table className="w-full min-w-[32rem]" data-testid="active-invites">
-            <thead><tr><th className="th">E-mail</th><th className="th">Жасалған</th><th className="th">Мерзімі</th><th className="th"><span className="sr-only">Әрекет</span></th></tr></thead>
+            <thead><tr><th className="th">E-mail</th><th className="th">{t("Жасалған")}</th><th className="th">{t("Мерзімі")}</th><th className="th"><span className="sr-only">{t("Әрекет")}</span></th></tr></thead>
             <tbody className="divide-y divide-line">
               {active.map((i) => (
                 <tr key={i.id}>
-                  <td className="td">{i.email ?? <span className="text-ink-muted">кез келген e-mail</span>}</td>
+                  <td className="td">{i.email ?? <span className="text-ink-muted">{t("кез келген e-mail")}</span>}</td>
                   <td className="td">{fmtDate(i.created_at, true)}</td><td className="td">{fmtDate(i.expires_at, true)}</td>
-                  <td className="td text-right"><ConfirmButton action={revokeInvitationAction} fields={{ id: i.id }} label="Бас тарту" title="Шақырудан бас тарту" message="Бұл шақыру сілтемесі жұмыс істемейді." confirmLabel="Иә, бас тарту" /></td>
+                  <td className="td text-right"><ConfirmButton action={revokeInvitationAction} fields={{ id: i.id }} label={t("Бас тарту")} title={t("Шақырудан бас тарту")} message={t("Бұл шақыру сілтемесі жұмыс істемейді.")} confirmLabel={t("Иә, бас тарту")} /></td>
                 </tr>
               ))}
             </tbody></table></div>
@@ -101,18 +104,18 @@ export default async function TeachersPage({ searchParams }: { searchParams: Pro
       </Section>
 
       {past.length > 0 && (
-        <Section title="Қолданылған және мерзімі өткен шақырулар">
+        <Section title={t("Қолданылған және мерзімі өткен шақырулар")}>
           <div className="table-wrap relative"><table className="w-full min-w-[32rem]">
-            <thead><tr><th className="th">E-mail</th><th className="th">Жасалған</th><th className="th">Күйі</th></tr></thead>
+            <thead><tr><th className="th">E-mail</th><th className="th">{t("Жасалған")}</th><th className="th">{t("Күйі")}</th></tr></thead>
             <tbody className="divide-y divide-line">
               {past.map((i) => {
                 const k = kind(i);
                 return (
                   <tr key={i.id}>
-                    <td className="td">{i.email ?? <span className="text-ink-muted">кез келген e-mail</span>}</td>
+                    <td className="td">{i.email ?? <span className="text-ink-muted">{t("кез келген e-mail")}</span>}</td>
                     <td className="td">{fmtDate(i.created_at, true)}</td>
-                    <td className="td">{k === "accepted" ? <StatusBadge status="graded" label={`Қолданылған${i.accepted_name ? `: ${i.accepted_name}` : ""}`} />
-                      : k === "revoked" ? <StatusBadge status="archived" label="Бас тартылған" /> : <StatusBadge status="expired" label="Мерзімі өткен" />}</td>
+                    <td className="td">{k === "accepted" ? <StatusBadge status="graded" label={t("Қолданылған{v}", { v: i.accepted_name ? `: ${i.accepted_name}` : "" })} />
+                      : k === "revoked" ? <StatusBadge status="archived" label={t("Бас тартылған")} /> : <StatusBadge status="expired" label={t("Мерзімі өткен")} />}</td>
                   </tr>
                 );
               })}

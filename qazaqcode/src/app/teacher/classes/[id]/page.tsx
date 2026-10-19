@@ -27,7 +27,7 @@ export default async function ClassPage({ params, searchParams }: { params: Prom
   const sp = await searchParams;
   const ctx = await requireStaff();
   const cls = await loadClass(ctx, id);
-  const tab: Tab = (TABS.find((t) => t.id === sp.tab)?.id ?? "students") as Tab;
+  const tab: Tab = (TABS.find((tt) => tt.id === sp.tab)?.id ?? "students") as Tab;
   const pending = toNum((await withUser(ctx.userId, (q) => q<{ n: string }>(
     "select count(*) as n from public.submissions where classroom_id = $1 and status in ('submitted','under_review')", [cls.id])))[0].n);
 
@@ -44,10 +44,10 @@ export default async function ClassPage({ params, searchParams }: { params: Prom
       {cls.description && <p className="-mt-3 mb-5 max-w-2xl whitespace-pre-line text-sm text-ink-muted">{cls.description}</p>}
       <Notices ok={sp.ok} err={sp.err} />
       <nav aria-label="Сынып бөлімдері" className="mb-6 flex gap-1 overflow-x-auto border-b border-line">
-        {TABS.map((t) => (
-          <Link key={t.id} href={`/teacher/classes/${cls.id}?tab=${t.id}`} aria-current={tab === t.id ? "page" : undefined} scroll={false}
-            className={`-mb-px whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-semibold no-underline ${tab === t.id ? "border-brand text-ink" : "border-transparent text-ink-muted hover:text-ink"}`}>
-            {t.label}
+        {TABS.map((tt) => (
+          <Link key={tt.id} href={`/teacher/classes/${cls.id}?tab=${tt.id}`} aria-current={tab === tt.id ? "page" : undefined} scroll={false}
+            className={`-mb-px whitespace-nowrap border-b-2 px-4 py-2.5 text-sm font-semibold no-underline ${tab === tt.id ? "border-brand text-ink" : "border-transparent text-ink-muted hover:text-ink"}`}>
+            {tt.label}
           </Link>
         ))}
       </nav>

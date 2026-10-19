@@ -7,7 +7,7 @@ import { ActivityChart, type ActivityPoint } from "@/components/school/ActivityC
 import { ReportButtons } from "@/components/analytics/ReportButtons";
 import { loadClasses, loadLicense, pct } from "./queries";
 
-export const metadata = { title: "Мектеп панелі" };
+export async function generateMetadata() { return { title: "Мектеп панелі" }; }
 export const dynamic = "force-dynamic";
 
 type Overview = {
@@ -117,9 +117,9 @@ export default async function SchoolDashboard() {
         <Section title="Мұғалімдер" actions={<Link href="/school/teachers" className="text-sm">Басқару</Link>}>
           {teachers.length === 0 ? <EmptyState title="Мұғалім жоқ" text="Мұғалімдер бетінен шақыру сілтемесін жасаңыз." /> : (
             <ul className="card divide-y divide-line">
-              {teachers.map((t) => (
-                <li key={t.user_id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
-                  <span className="font-medium">{t.full_name ?? "-"}</span><span className="text-ink-muted">сынып: {t.classes}</span>
+              {teachers.map((tt) => (
+                <li key={tt.user_id} className="flex items-center justify-between gap-3 px-4 py-3 text-sm">
+                  <span className="font-medium">{tt.full_name ?? "-"}</span><span className="text-ink-muted">сынып: {tt.classes}</span>
                 </li>
               ))}
             </ul>

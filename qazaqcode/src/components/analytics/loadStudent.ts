@@ -1,6 +1,7 @@
 import { withUser } from "@/lib/db";
 import { errorCode } from "@/lib/errors";
 import type { ProgressRow } from "./metrics";
+import { getT } from "@/lib/i18n";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -13,7 +14,7 @@ export type StudentCardData = { id: string; fullName: string; classes: { id: str
  * Оқушы карточкасының деректері. Құқықты дерекқор шешеді (student_progress -> 'forbidden', RLS).
  * null = табылмады не құқық жоқ (шақырушы notFound() жасайды). `classId` берілсе, оқушы сол сыныпта болуы тиіс.
  */
-export async function loadStudentCard(userId: string, studentId: string, opts: { classId?: string } = {}): Promise<StudentCardData | null> {
+export async function loadStudentCard(userId: string, studentId: string, opts: { classId?: string } = {}): Promise<StudentCardData | null> { const t = await getT();
   if (!UUID_RE.test(studentId) || (opts.classId && !UUID_RE.test(opts.classId))) return null;
   try {
     const d = await withUser(userId, async (q) => {
@@ -31,7 +32,7 @@ export async function loadStudentCard(userId: string, studentId: string, opts: {
     if (opts.classId && !d.classes.some((c) => c.id === opts.classId)) return null;
     // Мұғалімге тек өзі көре алатын сыныптар көрінеді (RLS), сондықтан басқа сыныптардың тапсырмалары кестеден шығарылады.
     const names = new Set(d.classes.map((c) => c.name));
-    return { id: studentId, fullName: d.prof.full_name ?? "Аты көрінбейді", classes: d.classes, rows: d.rows.filter((r: StudentProgressRow) => names.has(r.classroom_name)) };
+    return { id: studentId, fullName: d.prof.full_name ?? t("Аты көрінбейді"), classes: d.classes, rows: d.rows.filter((r: StudentProgressRow) => names.has(r.classroom_name)) };
   } catch (e) {
     if (errorCode(e) === "forbidden") return null;
     throw e;
