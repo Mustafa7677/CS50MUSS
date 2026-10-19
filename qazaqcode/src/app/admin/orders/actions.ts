@@ -52,7 +52,7 @@ export async function issueInvoiceAction(f: FormData): Promise<void> {
 
 export async function markPaidAction(_: ActionResult | null, f: FormData): Promise<ActionResult> { const t = await getT();
   try {
-    const p = z.object({ id: uuid, ref: z.string().min(1, t("Төлем құжатының нөмірін енгізіңіз.")).max(100), date }).parse({ id: str(f, "id"), ref: str(f, "ref"), date: str(f, "date") });
+    const p = z.object({ id: uuid, ref: z.string().min(1, t("Төлем құжатының нөмірін енгізіңіз.")).max(100), date: date(t) }).parse({ id: str(f, "id"), ref: str(f, "ref"), date: str(f, "date") });
     await withUser(await uid(), (q) => q("select public.mark_paid($1,$2,$3::date)", [p.id, p.ref, p.date]));
     done();
     return { ok: true, message: t("Төлем расталды.") };
