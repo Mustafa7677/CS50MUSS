@@ -83,8 +83,8 @@ async function Students({ classId, userId }: { classId: string; userId: string }
               <td className="td">{toNum(r.graded)}</td>
               <td className="td">{fmtPct(r.avg_pct)}</td>
               <td className="td">{toNum(r.attempts)}</td>
-              <td className="td">{fmtDuration(r.avg_seconds)}</td>
-              <td className="td whitespace-nowrap">{fmtDate(r.last_activity, true)}</td>
+              <td className="td">{fmtDuration(r.avg_seconds, t.locale)}</td>
+              <td className="td whitespace-nowrap">{fmtDate(r.last_activity, true, t.locale)}</td>
               <td className="td text-right">
                 <ConfirmButton action={removeStudentAction} fields={{ class_id: classId, student_id: r.student_id }} label={t("Сыныптан шығару")} className="btn-secondary text-xs"
                   title={t("Оқушыны сыныптан шығару?")} message={t("{full_name} сыныптан шығарылады: жаңа тапсырмаларды көрмейді. Бұрынғы жұмыстары мен бағалары сақталады.", { full_name: r.full_name })} confirmLabel={t("Шығару")} />
@@ -156,7 +156,7 @@ async function Assignments({ classId, userId }: { classId: string; userId: strin
               <td className="td font-medium"><Link href={`/teacher/assignments/${r.assignment_id}/edit`}>{r.title}</Link></td>
               <td className="td">{t(KIND_LABEL[r.kind] ?? r.kind)}</td>
               <td className="td"><StatusBadge status={r.status}  label={t(STATUS_LABEL[r.status] ?? r.status)}/></td>
-              <td className="td whitespace-nowrap">{fmtDate(r.deadline, true)}</td>
+              <td className="td whitespace-nowrap">{fmtDate(r.deadline, true, t.locale)}</td>
               <td className="td">{toNum(r.submitted)} / {toNum(r.assigned)}</td>
               <td className="td">{toNum(r.graded)}</td>
               <td className="td">{fmtPct(r.avg_pct)}</td>

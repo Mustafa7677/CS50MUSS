@@ -37,7 +37,7 @@ export default async function ProjectsPage() { const t = await getT();
                 <h2 className="min-w-0 break-words font-semibold">{r.title}</h2>
                 <StatusBadge status={r.status === "draft" ? "in_progress" : r.status}  label={t(STATUS_LABEL[r.status === "draft" ? "in_progress" : r.status] ?? r.status === "draft" ? "in_progress" : r.status)}/>
               </div>
-              <p className="text-xs text-ink-muted">{t(KIND_LABEL[r.kind] ?? r.kind)} · {fmtDate(r.updated_at, true)}</p>
+              <p className="text-xs text-ink-muted">{t(KIND_LABEL[r.kind] ?? r.kind)} · {fmtDate(r.updated_at, true, t.locale)}</p>
               {r.code
                 ? <pre className="mt-3 max-h-40 overflow-auto rounded-lg border border-line bg-surface-2 p-3 text-xs"><code className="font-mono">{r.code}</code></pre>
                 : <p className="mt-3 text-sm text-ink-muted">{t("Код жоқ.")}</p>}

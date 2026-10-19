@@ -3,5 +3,6 @@
 import type { Catalog } from "./core";
 import { common } from "./ru/common";
 import { ui } from "./ru/ui";
+import { ops } from "./ru/ops";
 
-export const ru: Catalog = { ...common, ...ui };
+export const ru: Catalog = { ...common, ...ui, ...ops };

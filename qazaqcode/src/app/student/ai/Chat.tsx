@@ -69,7 +69,7 @@ export function Chat({ chips, assignment }: { chips: Chip[]; assignment: { id: s
             </div>
           ) : (
             <div key={m.id} className="flex justify-start" data-testid="ai-reply">
-              {m.error ? <p role="alert" className="max-w-full rounded-2xl bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{m.error}</p>
+              {m.error ? <p role="alert" className="max-w-full rounded-2xl bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{t(m.error)}</p>
                 : m.card && <CardView card={m.card} onPick={(c) => ask({ topicId: c.id }, c.title)} disabled={busy} />}
             </div>
           )))}

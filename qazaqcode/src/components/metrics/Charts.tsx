@@ -1,11 +1,13 @@
 import type { Cohort, DailyPoint, FunnelStep } from "@/lib/metrics/types";
 import { retentionShare, bandOf, type Band } from "@/lib/metrics/health";
+import { getT } from "@/lib/i18n";
+import { N } from "@/lib/i18n/core";
 
 // Графиктер: таза SVG/CSS, сыртқы кітапхана жоқ. Түстер тек токендер (brand/accent/ink-muted/line), қараңғы режим мен white-label үшін.
 const short = (d: string) => `${d.slice(8, 10)}.${d.slice(5, 7)}`;
 
 /** DAU бағандары + жылжымалы WAU (тұтас сызық) және MAU (үзік сызық): түс қана емес, сызық түрі де ажыратады */
-export function ActiveUsersChart({ data }: { data: DailyPoint[] }) {
+export async function ActiveUsersChart({ data }: { data: DailyPoint[] }) { const t = await getT();
   const W = 640, H = 220, L = 34, R = 8, T = 10, B = 24;
   const max = Math.max(1, ...data.map((d) => Math.max(d.dau, d.wau, d.mau)));
   const n = data.length;
@@ -18,11 +20,11 @@ export function ActiveUsersChart({ data }: { data: DailyPoint[] }) {
   return (
     <figure className="m-0" data-testid="chart-active-users">
       <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full" role="img"
-        aria-label={`Белсенді қолданушылар: соңғы ${n} күн. Бүгін DAU ${last?.dau ?? 0}, WAU ${last?.wau ?? 0}, MAU ${last?.mau ?? 0}. Толық деректер кестеде.`}>
-        {ticks.map((t) => (
-          <g key={t}>
-            <line x1={L} x2={W - R} y1={y(t)} y2={y(t)} className="stroke-current text-line" strokeWidth="1" />
-            <text x={L - 4} y={y(t) + 3} textAnchor="end" fontSize="10" className="fill-current text-ink-muted">{t}</text>
+        aria-label={t("Белсенді қолданушылар: соңғы {n} күн. Бүгін DAU {v}, WAU {v2}, MAU {v3}. Толық деректер кестеде.", { n, v: last?.dau ?? 0, v2: last?.wau ?? 0, v3: last?.mau ?? 0 })}>
+        {ticks.map((tt) => (
+          <g key={tt}>
+            <line x1={L} x2={W - R} y1={y(tt)} y2={y(tt)} className="stroke-current text-line" strokeWidth="1" />
+            <text x={L - 4} y={y(tt) + 3} textAnchor="end" fontSize="10" className="fill-current text-ink-muted">{tt}</text>
           </g>
         ))}
         {data.map((d, i) => <rect key={d.day} x={x(i) - bw / 2} y={y(d.dau)} width={bw} height={Math.max(0, H - B - y(d.dau))} className="fill-current text-brand" opacity="0.55"><title>{`${short(d.day)}: DAU ${d.dau}, WAU ${d.wau}, MAU ${d.mau}`}</title></rect>)}
@@ -33,14 +35,14 @@ export function ActiveUsersChart({ data }: { data: DailyPoint[] }) {
         ))}
       </svg>
       <figcaption className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-muted">
-        <span><span aria-hidden className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-brand align-middle opacity-60" />DAU (күндік)</span>
-        <span><span aria-hidden className="mr-1 inline-block h-0.5 w-4 bg-accent align-middle" />WAU (7 күн)</span>
-        <span><span aria-hidden className="mr-1 inline-block w-4 border-t-2 border-dashed border-ink-muted align-middle" />MAU (30 күн)</span>
+        <span><span aria-hidden className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-brand align-middle opacity-60" />{t("DAU (күндік)")}</span>
+        <span><span aria-hidden className="mr-1 inline-block h-0.5 w-4 bg-accent align-middle" />{t("WAU (7 күн)")}</span>
+        <span><span aria-hidden className="mr-1 inline-block w-4 border-t-2 border-dashed border-ink-muted align-middle" />{t("MAU (30 күн)")}</span>
       </figcaption>
-      <details className="mt-2 text-xs"><summary className="cursor-pointer text-ink-muted">Деректер кестесі</summary>
+      <details className="mt-2 text-xs"><summary className="cursor-pointer text-ink-muted">{t("Деректер кестесі")}</summary>
         <div className="table-wrap mt-2 max-h-64"><table className="w-full">
-          <caption className="sr-only">Күн сайынғы белсенді қолданушылар</caption>
-          <thead><tr><th scope="col" className="th">Күні</th><th scope="col" className="th">DAU</th><th scope="col" className="th">оқушы</th><th scope="col" className="th">мұғалім</th><th scope="col" className="th">әкімші</th><th scope="col" className="th">WAU</th><th scope="col" className="th">MAU</th></tr></thead>
+          <caption className="sr-only">{t("Күн сайынғы белсенді қолданушылар")}</caption>
+          <thead><tr><th scope="col" className="th">{t("Күні")}</th><th scope="col" className="th">DAU</th><th scope="col" className="th">{t("оқушы")}</th><th scope="col" className="th">{t("мұғалім")}</th><th scope="col" className="th">{t("әкімші")}</th><th scope="col" className="th">WAU</th><th scope="col" className="th">MAU</th></tr></thead>
           <tbody>{[...data].reverse().map((d) => <tr key={d.day} className="border-t border-line"><th scope="row" className="td font-normal">{d.day}</th><td className="td">{d.dau}</td><td className="td">{d.student}</td><td className="td">{d.teacher}</td><td className="td">{d.school_admin}</td><td className="td">{d.wau}</td><td className="td">{d.mau}</td></tr>)}</tbody>
         </table></div>
       </details>
@@ -49,16 +51,16 @@ export function ActiveUsersChart({ data }: { data: DailyPoint[] }) {
 }
 
 export const FUNNEL_LABEL: Record<FunnelStep["key"], string> = {
-  leads: "Пилот сұрауы (лид)", org: "Ұйым құрылды", class: "≥1 белсенді сынып", assignment: "≥1 жарияланған тапсырма",
-  submission: "≥1 оқушы жұмысы жіберілген", streak4: "4 апта қатарынан белсенді",
+  leads: N("Пилот сұрауы (лид)"), org: N("Ұйым құрылды"), class: N("≥1 белсенді сынып"), assignment: N("≥1 жарияланған тапсырма"),
+  submission: N("≥1 оқушы жұмысы жіберілген"), streak4: N("4 апта қатарынан белсенді"),
 };
 
 /** Воронка: көлденең бағандар. Лид пен ұйым арасында тікелей байланыс жоқ (лид ұйымға байланбаған), сондықтан лидтен ұйымға % көрсетілмейді. */
-export function Funnel({ steps }: { steps: FunnelStep[] }) {
+export async function Funnel({ steps }: { steps: FunnelStep[] }) { const t = await getT();
   const max = Math.max(1, ...steps.map((s) => s.count));
   const orgs = steps.find((s) => s.key === "org")?.count ?? 0;
   return (
-    <ol className="space-y-3" data-testid="funnel" aria-label="Activation воронкасы">
+    <ol className="space-y-3" data-testid="funnel" aria-label={t("Activation воронкасы")}>
       {steps.map((s, i) => {
         const prev = i >= 2 ? steps[i - 1].count : null;
         const conv = prev != null && prev > 0 ? Math.round((s.count / prev) * 100) : null;
@@ -67,7 +69,7 @@ export function Funnel({ steps }: { steps: FunnelStep[] }) {
           <li key={s.key} data-testid={`funnel-${s.key}`}>
             <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-3 text-sm">
               <span className="font-medium">{i + 1}. {FUNNEL_LABEL[s.key]}</span>
-              <span><strong>{s.count}</strong>{conv != null && <span className="ml-2 text-xs text-ink-muted">алдыңғыдан {conv}%{ofOrgs != null && i > 2 ? `, ұйымдардан ${ofOrgs}%` : ""}</span>}</span>
+              <span><strong>{s.count}</strong>{conv != null && <span className="ml-2 text-xs text-ink-muted">{t("алдыңғыдан {conv}%", { conv })}{ofOrgs != null && i > 2 ? t(", ұйымдардан {ofOrgs}%", { ofOrgs }) : ""}</span>}</span>
             </div>
             <div className="h-3 w-full overflow-hidden rounded-full bg-surface-2" aria-hidden>
               <div className={`h-full rounded-full ${s.key === "leads" ? "bg-ink-muted opacity-60" : "bg-brand"}`} style={{ width: `${(s.count / max) * 100}%`, minWidth: s.count ? 4 : 0 }} />
@@ -80,23 +82,23 @@ export function Funnel({ steps }: { steps: FunnelStep[] }) {
 }
 
 /** Retention жылу картасы: ұяшық = белсенді / когорт көлемі; фон интенсивтілігі = үлес (мәтін әрқашан токен-ink, контраст сақталады) */
-export function RetentionTable({ cohorts, weeks, unit }: { cohorts: Cohort[]; weeks: number; unit: string }) {
+export async function RetentionTable({ cohorts, weeks, unit }: { cohorts: Cohort[]; weeks: number; unit: string }) { const t = await getT();
   return (
     <div className="table-wrap" data-testid="retention-table">
       <table className="w-full min-w-[640px] border-collapse text-center">
-        <caption className="sr-only">Когорттық retention: {unit}, құрылған/алғаш белсенді болған аптасы бойынша</caption>
-        <thead><tr><th scope="col" className="th">Когорт (апта)</th><th scope="col" className="th">{unit}</th>
+        <caption className="sr-only">{t("Когорттық retention: {unit}, құрылған/алғаш белсенді болған аптасы бойынша", { unit })}</caption>
+        <thead><tr><th scope="col" className="th">{t("Когорт (апта)")}</th><th scope="col" className="th">{unit}</th>
           {Array.from({ length: weeks }, (_, i) => <th key={i} scope="col" className="th text-center">{i === 0 ? "0" : `+${i}`}</th>)}</tr></thead>
         <tbody>
           {cohorts.map((c) => (
             <tr key={c.cohort} className="border-t border-line">
               <th scope="row" className="td whitespace-nowrap text-left font-medium">{c.cohort}</th>
-              <td className="td">{c.size}{c.size < 5 && <span className="ml-1 text-xs text-ink-muted" title="Шағын n: үлестер сенімсіз">(шағын n)</span>}</td>
+              <td className="td">{c.size}{c.size < 5 && <span className="ml-1 text-xs text-ink-muted" title={t("Шағын n: үлестер сенімсіз")}>{t("(шағын n)")}</span>}</td>
               {Array.from({ length: weeks }, (_, i) => {
                 const a = c.active[i];
                 const s = retentionShare(a, c.size);
                 return s == null
-                  ? <td key={i} className="td text-ink-muted" aria-label="әлі жоқ">·</td>
+                  ? <td key={i} className="td text-ink-muted" aria-label={t("әлі жоқ")}>·</td>
                   : <td key={i} className="td text-xs font-semibold" title={`${a} / ${c.size}`}
                       style={{ background: `color-mix(in srgb, var(--brand) ${Math.round(s * 70)}%, transparent)` }}>{Math.round(s * 100)}%</td>;
               })}
@@ -108,7 +110,7 @@ export function RetentionTable({ cohorts, weeks, unit }: { cohorts: Cohort[]; we
   );
 }
 
-export const BAND_LABEL: Record<Band, string> = { good: "Жақсы", watch: "Бақылау керек", risk: "Қауіп", no_data: "Ұпай жоқ" };
+export const BAND_LABEL: Record<Band, string> = { good: N("Жақсы"), watch: N("Бақылау керек"), risk: N("Қауіп"), no_data: N("Ұпай жоқ") };
 const BAND_TONE: Record<Band, string> = {
   good: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200",
   watch: "bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-200",
@@ -122,15 +124,15 @@ export function HealthBadge({ score, band }: { score: number | null; band?: Band
 }
 
 /** Мектеп әкімшісіне: күн сайынғы белсенді оқушы/мұғалім бағандары */
-export function OrgDailyBars({ data }: { data: { day: string; students: number; teachers: number }[] }) {
+export async function OrgDailyBars({ data }: { data: { day: string; students: number; teachers: number }[] }) { const t = await getT();
   const max = Math.max(1, ...data.map((d) => Math.max(d.students, d.teachers)));
   const mid = Math.floor(data.length / 2);
   return (
     <figure className="m-0" data-testid="org-daily">
-      <div role="img" aria-label={`Күн сайынғы белсенді оқушылар мен мұғалімдер, соңғы ${data.length} күн. Толық деректер кестеде.`}>
+      <div role="img" aria-label={t("Күн сайынғы белсенді оқушылар мен мұғалімдер, соңғы {length} күн. Толық деректер кестеде.", { length: data.length })}>
         <div className="flex h-40 items-end gap-[2px] border-b border-line" aria-hidden>
           {data.map((d) => (
-            <div key={d.day} className="flex h-full min-w-0 flex-1 items-end justify-center gap-px" title={`${short(d.day)}: оқушы ${d.students}, мұғалім ${d.teachers}`}>
+            <div key={d.day} className="flex h-full min-w-0 flex-1 items-end justify-center gap-px" title={t("{short}: оқушы {students}, мұғалім {teachers}", { short: short(d.day), students: d.students, teachers: d.teachers })}>
               <div className="w-1/2 rounded-t-sm bg-brand" style={{ height: `${(d.students / max) * 100}%`, minHeight: d.students ? 2 : 0 }} />
               <div className="w-1/2 rounded-t-sm bg-ink-muted opacity-60" style={{ height: `${(d.teachers / max) * 100}%`, minHeight: d.teachers ? 2 : 0 }} />
             </div>
@@ -141,13 +143,13 @@ export function OrgDailyBars({ data }: { data: { day: string; students: number; 
         </div>
       </div>
       <figcaption className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink-muted">
-        <span><span aria-hidden className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-brand align-middle" />Белсенді оқушы</span>
-        <span><span aria-hidden className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-ink-muted align-middle opacity-60" />Белсенді мұғалім</span>
-        <span>Ең биік мән: {max}</span>
+        <span><span aria-hidden className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-brand align-middle" />{t("Белсенді оқушы")}</span>
+        <span><span aria-hidden className="mr-1 inline-block h-2.5 w-2.5 rounded-sm bg-ink-muted align-middle opacity-60" />{t("Белсенді мұғалім")}</span>
+        <span>{t("Ең биік мән:")}{" "}{max}</span>
       </figcaption>
       <div className="sr-only"><table>
-        <caption>Күн сайынғы белсенді қолданушылар</caption>
-        <thead><tr><th scope="col">Күні</th><th scope="col">Оқушы</th><th scope="col">Мұғалім</th></tr></thead>
+        <caption>{t("Күн сайынғы белсенді қолданушылар")}</caption>
+        <thead><tr><th scope="col">{t("Күні")}</th><th scope="col">{t("Оқушы")}</th><th scope="col">{t("Мұғалім")}</th></tr></thead>
         <tbody>{data.map((d) => <tr key={d.day}><th scope="row">{d.day}</th><td>{d.students}</td><td>{d.teachers}</td></tr>)}</tbody>
       </table></div>
     </figure>

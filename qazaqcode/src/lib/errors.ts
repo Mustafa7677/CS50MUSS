@@ -1,4 +1,5 @@
 import { N } from "./i18n/core";
+import { ru } from "./i18n/ru";
 
 // Хабарлама мәтіні = i18n кілті (қазақша): клиент/сервер t() арқылы ru-ға аударады (N() - скрипт үшін белгі).
 // Дерекқордағы бизнес-қателер (exception хабары) -> қазақша түсініктеме. Белгісіз қателер клиентке ашылмайды.
@@ -91,4 +92,7 @@ const EXTRA_ERR = [
   N("Идентификатор дұрыс емес."),
 ];
 const KNOWN_ERR = new Set<string>([...Object.values(MESSAGES), ...EXTRA_ERR, N("Күтпеген қате болды. Кейінірек қайталап көріңіз.")]);
-export const safeErrText = (t: string | undefined): string | null => (t ? (KNOWN_ERR.has(t) ? t : /^[a-z_]+$/.test(t) && MESSAGES[t] ? MESSAGES[t] : N("Қате болды.")) : null);
+// ?err= мәтіні орыс тілінде де келеді (сервер әрекеті t() арқылы аударған): тек біздің аудармаларымыз ғана өтеді
+const KNOWN_RU = new Set<string>([...KNOWN_ERR].map((k) => ru[k]).filter(Boolean));
+const GENERIC = N("Қате болды.");
+export const safeErrText = (t: string | undefined): string | null => (t ? (KNOWN_ERR.has(t) || KNOWN_RU.has(t) ? t : /^[a-z_]+$/.test(t) && MESSAGES[t] ? MESSAGES[t] : GENERIC) : null);

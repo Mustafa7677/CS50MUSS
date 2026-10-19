@@ -47,7 +47,7 @@ export default async function NotificationsPage() { const t = await getT();
                     {r.body && <span className="block break-words text-sm text-ink-muted">{r.body}</span>}
                   </span>
                 </span>
-                <span className="mt-1 block text-xs text-ink-muted">{fmtDate(r.created_at, true)}</span>
+                <span className="mt-1 block text-xs text-ink-muted">{fmtDate(r.created_at, true, t.locale)}</span>
               </>
             );
             return (

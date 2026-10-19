@@ -45,7 +45,7 @@ export default async function JoinPage({ searchParams }: { searchParams: Promise
               <p><strong>{cls.classroom_name}</strong> · {cls.subject}</p>
               {cls.teacher_name && <p className="text-ink-muted">{t("Мұғалім:")}{" "}{cls.teacher_name}</p>}
             </div>
-            {errMsg && <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{errMsg}</p>}
+            {errMsg && <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{t(errMsg)}</p>}
             {ctx ? (
               <ActionForm action={joinClassAction} submitLabel={t("Сыныпқа қосылу")} className="mt-5" successToast={false}>
                 <input type="hidden" name="code" value={code} />

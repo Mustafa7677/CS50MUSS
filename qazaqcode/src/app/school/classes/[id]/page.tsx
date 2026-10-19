@@ -42,7 +42,7 @@ export default async function ClassDetail({ params }: { params: Promise<{ id: st
                 <tr key={s.student_id}>
                   <td className="td font-medium"><Link href={`/school/students/${s.student_id}`}>{s.full_name}</Link></td><td className="td">{s.assigned}</td><td className="td">{s.submitted}</td><td className="td">{s.graded}</td>
                   <td className="td w-36">{s.assigned > 0 ? <div className="flex items-center gap-2"><div className="w-20"><ProgressBar value={s.submitted} max={s.assigned} label={t("{full_name}: орындау", { full_name: s.full_name })} /></div><span className="text-xs text-ink-muted">{pct(s.submitted, s.assigned)}%</span></div> : "-"}</td>
-                  <td className="td">{fmtPct(s.avg_pct)}</td><td className="td">{s.last_activity ? fmtDate(s.last_activity, true) : "-"}</td>
+                  <td className="td">{fmtPct(s.avg_pct)}</td><td className="td">{s.last_activity ? fmtDate(s.last_activity, true, t.locale) : "-"}</td>
                 </tr>
               ))}
             </tbody></table></div>
@@ -57,7 +57,7 @@ export default async function ClassDetail({ params }: { params: Promise<{ id: st
               {assignments.map((a: any) => (
                 <tr key={a.assignment_id}>
                   <td className="td font-medium">{a.title}</td><td className="td">{t(KIND_LABEL[a.kind] ?? a.kind)}</td><td className="td"><StatusBadge status={a.status}  label={t(STATUS_LABEL[a.status] ?? a.status)}/></td>
-                  <td className="td">{a.deadline ? fmtDate(a.deadline, true) : "-"}</td>
+                  <td className="td">{a.deadline ? fmtDate(a.deadline, true, t.locale) : "-"}</td>
                   <td className="td">{a.submitted} / {a.assigned}</td><td className="td">{a.graded}</td><td className="td">{fmtPct(a.avg_pct)}</td>
                 </tr>
               ))}

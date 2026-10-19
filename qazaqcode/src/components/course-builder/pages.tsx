@@ -31,7 +31,7 @@ const OK = (t: TFn): Record<string, string> => ({
 async function Notices({ ok, err }: { ok?: string; err?: string }) { const t = await getT();
   return (
     <>
-      {err && <Banner tone="bad">{safeErrText(err.slice(0, 300))}</Banner>}
+      {err && <Banner tone="bad">{t(safeErrText(err.slice(0, 300)) ?? "")}</Banner>}
       {ok && OK(t)[ok] && <Banner tone="info">{OK(t)[ok]}</Banner>}
     </>
   );
@@ -85,7 +85,7 @@ export async function CourseListPage({ area, searchParams }: { area: Area; searc
                   <td className="td">{num(r.lessons)}<span className="text-ink-muted">{" "}{t("/ {num} модуль", { num: num(r.modules) })}</span></td>
                   <td className="td">{r.classes?.length ? r.classes.join(", ") : <span className="text-ink-muted">{t("Бекітілмеген")}</span>}</td>
                   {!onlyMine && <td className="td">{r.author ?? "-"}{r.mine && <span className="text-ink-muted">{" "}{t("(сіз)")}</span>}</td>}
-                  <td className="td whitespace-nowrap">{fmtDate(r.updated_at, true)}</td>
+                  <td className="td whitespace-nowrap">{fmtDate(r.updated_at, true, t.locale)}</td>
                   <td className="td">
                     <div className="flex justify-end gap-2">
                       <Link href={`${base}/${r.id}`} className="btn-secondary text-xs">{t("Ашу")}</Link>

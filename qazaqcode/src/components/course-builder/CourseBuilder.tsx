@@ -103,11 +103,11 @@ export function CourseBuilder({ courseId, area, initial, assignments }: { course
     };
     start(async () => {
       const r = await saveCourseStructureAction(courseId, area, payload);
-      if (!r.ok) { setMsg({ ok: false, text: r.error }); return; }
+      if (!r.ok) { setMsg({ ok: false, text: t(r.error) }); return; }
       const fresh = r.data ?? [];
       // жаңа id-ларды позиция бойынша қолданамыз (UI күйі: ашық сабақтар т.б. сақталады)
       setMods((prev) => prev.map((m, i) => ({ ...m, id: fresh[i]?.id ?? m.id, lessons: m.lessons.map((l, j) => ({ ...l, id: fresh[i]?.lessons[j]?.id ?? l.id })) })));
-      setMsg({ ok: true, text: r.message ?? t("Сақталды.") });
+      setMsg({ ok: true, text: r.message ? t(r.message) : t("Сақталды.") });
       toast(r.message ?? t("Сақталды."), "ok");
     });
   }

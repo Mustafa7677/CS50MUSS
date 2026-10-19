@@ -92,7 +92,7 @@ export default async function StudentHome() { const t = await getT();
                         <span className="text-xs text-ink-muted">{r.classroom_name} · {t(KIND_LABEL[r.kind] ?? r.kind)}</span>
                       </span>
                       <span className="flex items-center gap-3">
-                        <span className={`text-sm ${late ? "font-semibold text-red-600" : "text-ink-muted"}`}>{fmtDate(r.deadline, true)}</span>
+                        <span className={`text-sm ${late ? "font-semibold text-red-600" : "text-ink-muted"}`}>{fmtDate(r.deadline, true, t.locale)}</span>
                         <StatusBadge status={r.status}  label={t(STATUS_LABEL[r.status] ?? r.status)}/>
                       </span>
                     </Link>
@@ -140,7 +140,7 @@ export default async function StudentHome() { const t = await getT();
                   <Link href={`/student/assignments/${g.assignment_id}`} className="font-medium">{g.title}</Link>
                   <span className="whitespace-nowrap font-bold text-brand">{Number(g.score)} / {Number(g.max_score)}</span>
                 </div>
-                <p className="text-xs text-ink-muted">{fmtDate(g.graded_at)} · {fmtPct((Number(g.score) / Number(g.max_score)) * 100)}</p>
+                <p className="text-xs text-ink-muted">{fmtDate(g.graded_at, false, t.locale)} · {fmtPct((Number(g.score) / Number(g.max_score)) * 100)}</p>
                 {g.feedback && <p className="mt-2 rounded-lg bg-brand-soft px-3 py-2 text-sm"><span className="font-semibold">{t("Мұғалім пікірі:")}</span> {g.feedback}</p>}
               </li>
             ))}

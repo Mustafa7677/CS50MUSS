@@ -254,8 +254,8 @@ export function AssignmentForm({
         )}
       </section>
 
-      {state && !state.ok && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{state.error}</p>}
-      {state?.ok && state.message && <p role="status" className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">{state.message}</p>}
+      {state && !state.ok && <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{t(state.error)}</p>}
+      {state?.ok && state.message && <p role="status" className="rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">{t(state.message)}</p>}
       <div className="sticky bottom-0 -mx-4 flex flex-wrap items-center gap-3 border-t border-line bg-surface/95 px-4 py-3 backdrop-blur lg:mx-0 lg:rounded-xl lg:border">
         <button type="submit" name="intent" value="save" disabled={pending} className="btn-secondary">{pending ? t("Күтіңіз...") : saveLabel}</button>
         <button type="submit" name="intent" value="publish" disabled={pending} className="btn-primary" data-testid="publish-btn">{publishLabel}</button>

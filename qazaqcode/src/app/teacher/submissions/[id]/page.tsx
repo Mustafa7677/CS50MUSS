@@ -73,8 +73,8 @@ export default async function SubmissionPage({ params, searchParams }: { params:
             <dl className="grid grid-cols-2 gap-4 text-sm sm:grid-cols-4">
               <div><dt className="text-xs text-ink-muted">{t("Күйі")}</dt><dd className="mt-0.5"><StatusBadge status={s.status}  label={t(STATUS_LABEL[s.status] ?? s.status)}/></dd></div>
               <div><dt className="text-xs text-ink-muted">{t("Әрекет нөмірі")}</dt><dd className="mt-0.5 font-semibold">{s.attempt_no}</dd></div>
-              <div><dt className="text-xs text-ink-muted">{t("Жіберілген")}</dt><dd className="mt-0.5 font-semibold">{fmtDate(s.submitted_at, true)}</dd></div>
-              <div><dt className="text-xs text-ink-muted">{t("Кеткен уақыт")}</dt><dd className="mt-0.5 font-semibold">{fmtDuration(s.time_spent_seconds)}</dd></div>
+              <div><dt className="text-xs text-ink-muted">{t("Жіберілген")}</dt><dd className="mt-0.5 font-semibold">{fmtDate(s.submitted_at, true, t.locale)}</dd></div>
+              <div><dt className="text-xs text-ink-muted">{t("Кеткен уақыт")}</dt><dd className="mt-0.5 font-semibold">{fmtDuration(s.time_spent_seconds, t.locale)}</dd></div>
             </dl>
           </section>
 
@@ -92,7 +92,7 @@ export default async function SubmissionPage({ params, searchParams }: { params:
                         <div className="flex flex-wrap items-start justify-between gap-2">
                           <p className="font-semibold">{i + 1}. {qn.prompt}</p>
                           <span className={`badge ${ok ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200" : "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-200"}`}>
-                            {ok ? t("Дұрыс") : chosen === null ? t("Жауапсыз") : t("Қате")} · {ok ? fmtNum(qn.points) : 0} / {fmtNum(qn.points)}
+                            {ok ? t("Дұрыс") : chosen === null ? t("Жауапсыз") : t("Қате")} · {ok ? fmtNum(qn.points, t.locale) : 0} / {fmtNum(qn.points, t.locale)}
                           </span>
                         </div>
                         <ul className="mt-2 space-y-1 text-sm">
@@ -137,8 +137,8 @@ export default async function SubmissionPage({ params, searchParams }: { params:
                   <li key={o.id} className="flex flex-wrap items-center gap-3 py-2">
                     <span className="font-medium">{o.attempt_no}{t("-әрекет")}</span>
                     <StatusBadge status={o.status}  label={t(STATUS_LABEL[o.status] ?? o.status)}/>
-                    <span className="text-ink-muted">{fmtDate(o.submitted_at, true)}</span>
-                    {o.score != null && <span>{fmtNum(o.score)} / {fmtNum(max)}</span>}
+                    <span className="text-ink-muted">{fmtDate(o.submitted_at, true, t.locale)}</span>
+                    {o.score != null && <span>{fmtNum(o.score, t.locale)} / {fmtNum(max, t.locale)}</span>}
                     <span className="ml-auto">{o.id === s.id ? <span className="text-ink-muted">{t("осы жұмыс")}</span> : <Link href={`/teacher/submissions/${o.id}`}>{t("Ашу")}</Link>}</span>
                   </li>
                 ))}
@@ -152,8 +152,8 @@ export default async function SubmissionPage({ params, searchParams }: { params:
             <h2 id="gr-h" className="text-lg font-semibold">{t("Бағалау")}</h2>
             {s.g_score != null && (
               <div className="mt-2 rounded-lg bg-brand-soft p-3 text-sm" data-testid="prev-grade">
-                <p>{t("Қазіргі баға:")}{" "}<strong>{fmtNum(s.g_score)} / {fmtNum(max)}</strong> {s.g_source === "auto" ? t("(автоматты)") : `(${s.grader ?? t("мұғалім")})`}</p>
-                <p className="text-xs text-ink-muted">{fmtDate(s.graded_at, true)}</p>
+                <p>{t("Қазіргі баға:")}{" "}<strong>{fmtNum(s.g_score, t.locale)} / {fmtNum(max, t.locale)}</strong> {s.g_source === "auto" ? t("(автоматты)") : `(${s.grader ?? t("мұғалім")})`}</p>
+                <p className="text-xs text-ink-muted">{fmtDate(s.graded_at, true, t.locale)}</p>
                 {s.g_feedback && <p className="mt-1 whitespace-pre-line">{t("Пікір:")}{" "}{s.g_feedback}</p>}
               </div>
             )}
@@ -167,7 +167,7 @@ export default async function SubmissionPage({ params, searchParams }: { params:
                 )}
                 <ActionForm action={gradeSubmissionAction} submitLabel={s.g_score != null ? t("Бағаны жаңарту") : t("Бағаны сақтау")} className="mt-3">
                   <input type="hidden" name="submission_id" value={s.id} />
-                  <label className="label" htmlFor="g-score">{t("Баға (0 - {fmtNum})", { fmtNum: fmtNum(max) })}</label>
+                  <label className="label" htmlFor="g-score">{t("Баға (0 - {fmtNum})", { fmtNum: fmtNum(max, t.locale) })}</label>
                   <input id="g-score" name="score" type="number" required min={0} max={max} step="any" inputMode="decimal" defaultValue={s.g_score ?? ""} className="input" />
                   <label className="label mt-3" htmlFor="g-fb">{t("Пікір")}</label>
                   <textarea id="g-fb" name="feedback" rows={5} maxLength={4000} defaultValue={s.g_feedback ?? ""} className="input" placeholder={t("Оқушыға түсіндірме, ұсыныс")} />

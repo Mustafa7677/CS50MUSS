@@ -53,7 +53,7 @@ export default async function StudentsPage({ searchParams }: { searchParams: Pro
                   <td className="td font-medium"><Link href={`/school/students/${r.user_id}`}>{r.full_name ?? t("Аты көрінбейді")}</Link></td>
                   <td className="td">{r.classes ?? "-"}</td>
                   <td className="td">{fmtPct(r.avg_pct)}</td>
-                  <td className="td whitespace-nowrap">{r.last_activity ? fmtDate(r.last_activity, true) : "-"}</td>
+                  <td className="td whitespace-nowrap">{r.last_activity ? fmtDate(r.last_activity, true, t.locale) : "-"}</td>
                 </tr>
               ))}
             </tbody></table></div>

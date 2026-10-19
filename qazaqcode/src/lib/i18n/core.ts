@@ -13,7 +13,7 @@ export const isLocale = (v: unknown): v is Locale => v === "kk" || v === "ru";
 export const toLocale = (v: unknown): Locale => (isLocale(v) ? v : DEFAULT_LOCALE);
 
 export type Params = Record<string, string | number | null | undefined>;
-export type TFn = (key: string, params?: Params) => string;
+export type TFn = ((key: string, params?: Params) => string) & { readonly locale: Locale };
 export type Catalog = Record<string, string>;
 
 /** Көптік санат: kk - көптік жоқ (әрқашан other); ru - 1 / 2-4 / 5+ (one / few / many). */
@@ -74,10 +74,11 @@ export function interpolate(locale: Locale, tpl: string, params?: Params): strin
 }
 
 export function makeT(locale: Locale, dict: Catalog): TFn {
-  return (key, params) => {
+  const t = (key: string, params?: Params) => {
     const v = locale === "kk" ? key : dict[key];
     return interpolate(locale, v ? v : key, params);
   };
+  return Object.assign(t, { locale });
 }
 
 /** Жолды аудармай белгілеу (құрам/кестедегі тұрақтылар үшін): шығарып алу скрипті кілтті табады, мәтін өзгермейді. */

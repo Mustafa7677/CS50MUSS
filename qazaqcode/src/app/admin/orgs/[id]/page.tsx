@@ -26,8 +26,8 @@ const ACTION_LABEL = (t: TFn): Record<string, string> => ({
 });
 function describe(a: Audit, t: TFn): string {
   const m = a.meta ?? {};
-  if (a.action === "license.set") return t("{v} · оқушы {max_students} · мұғалім {max_teachers} · дейін {fmtDate} · {v2}", { v: t(PLAN_LABEL[m.plan] ?? m.plan), max_students: m.max_students, max_teachers: m.max_teachers, fmtDate: fmtDate(m.valid_until), v2: m.status === "suspended" ? t("тоқтатылған") : t("белсенді") });
-  if (a.action === "license.extend") return t("+{months} ай: {fmtDate} -> {fmtDate2}", { months: m.months, fmtDate: fmtDate(m.from), fmtDate2: fmtDate(m.valid_until) });
+  if (a.action === "license.set") return t("{v} · оқушы {max_students} · мұғалім {max_teachers} · дейін {fmtDate} · {v2}", { v: t(PLAN_LABEL[m.plan] ?? m.plan), max_students: m.max_students, max_teachers: m.max_teachers, fmtDate: fmtDate(m.valid_until, false, t.locale), v2: m.status === "suspended" ? t("тоқтатылған") : t("белсенді") });
+  if (a.action === "license.extend") return t("+{months} ай: {fmtDate} -> {fmtDate2}", { months: m.months, fmtDate: fmtDate(m.from, false, t.locale), fmtDate2: fmtDate(m.valid_until, false, t.locale) });
   if (a.action === "organization.status") return m.status === "suspended" ? t("тоқтатылды") : t("белсендірілді");
   if (a.action === "organization.create") return t("пакет {v}", { v: t(PLAN_LABEL[m.plan] ?? m.plan) });
   return "";
@@ -56,7 +56,7 @@ export default async function OrgLicencePage({ params }: { params: Promise<{ id:
 
       <div className="flex flex-wrap items-center gap-3" data-testid="org-state">
         <StatusBadge status={active ? usage.license_state : "org_suspended"} label={active ? t(LICENSE_STATE_LABEL[usage.license_state] ?? usage.license_state) : t("Ұйым тоқтатылған")} />
-        {lic && <span className="text-sm text-ink-muted">{t(PLAN_LABEL[lic.plan])}{" "}{t("· мерзімі:")}{" "}<strong data-testid="org-until">{fmtDate(lic.valid_until)}</strong> ({lic.days_left < 0 ? t("{v} күн бұрын аяқталған", { v: -lic.days_left }) : t("{days_left} күн қалды", { days_left: lic.days_left })})</span>}
+        {lic && <span className="text-sm text-ink-muted">{t(PLAN_LABEL[lic.plan])}{" "}{t("· мерзімі:")}{" "}<strong data-testid="org-until">{fmtDate(lic.valid_until, false, t.locale)}</strong> ({lic.days_left < 0 ? t("{v} күн бұрын аяқталған", { v: -lic.days_left }) : t("{days_left} күн қалды", { days_left: lic.days_left })})</span>}
       </div>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -103,7 +103,7 @@ export default async function OrgLicencePage({ params }: { params: Promise<{ id:
             <thead><tr><th className="th">{t("Уақыты")}</th><th className="th">{t("Кім")}</th><th className="th">{t("Әрекет")}</th><th className="th">{t("Мәліметі")}</th></tr></thead>
             <tbody>{audit.map((a) => (
               <tr key={a.id} className="border-t border-line align-top">
-                <td className="td whitespace-nowrap">{fmtDate(a.created_at, true)}</td><td className="td">{a.actor ?? t("жүйе")}</td>
+                <td className="td whitespace-nowrap">{fmtDate(a.created_at, true, t.locale)}</td><td className="td">{a.actor ?? t("жүйе")}</td>
                 <td className="td">{ACTION_LABEL(t)[a.action] ?? a.action}</td><td className="td text-ink-muted">{describe(a, t)}</td>
               </tr>))}</tbody></table></div>
         )}

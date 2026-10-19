@@ -31,7 +31,7 @@ export default async function InvitePage({ params, searchParams }: { params: Pro
             <p className="text-sm font-semibold uppercase tracking-widest text-brand">{inv.org_name}</p>
             <h1 className="mt-1 text-2xl font-bold">{t("Шақыру:")}{" "}{t(ROLE_LABEL[inv.role] ?? inv.role)}</h1>
             <p className="mt-2 text-sm text-ink-muted">{t("Сізді «{org_name}» ұйымына {role} ретінде шақырды.", { org_name: inv.org_name, role: t(ROLE_LABEL[inv.role])?.toLowerCase() })}</p>
-            {errMsg && <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{errMsg}</p>}
+            {errMsg && <p role="alert" className="mt-4 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{t(errMsg)}</p>}
             {ctx ? (
               <div className="mt-6">
                 <p className="text-sm">{t("Сіз")}{" "}<strong>{ctx.fullName}</strong>{" "}{t("ретінде кірдіңіз.")}</p>

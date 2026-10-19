@@ -36,7 +36,7 @@ export async function ActivityBars({ data, title: titleProp }: { data: DayPoint[
       <div className="sr-only"><table>
         <caption>{title}{t(": күн сайынғы деректер")}</caption>
         <thead><tr><th scope="col">{t("Күні")}</th><th scope="col">{t("Жіберілген жұмыс")}</th><th scope="col">{t("Белсенді оқушы")}</th></tr></thead>
-        <tbody>{data.map((d) => <tr key={d.day}><th scope="row">{fmtDate(d.day)}</th><td>{d.submissions}</td><td>{d.active_students}</td></tr>)}</tbody>
+        <tbody>{data.map((d) => <tr key={d.day}><th scope="row">{fmtDate(d.day, false, t.locale)}</th><td>{d.submissions}</td><td>{d.active_students}</td></tr>)}</tbody>
       </table></div>
     </figure>
   );

@@ -45,7 +45,7 @@ export default async function AssignmentsPage({ searchParams }: { searchParams: 
                   <StatusBadge status={r.status}  label={t(STATUS_LABEL[r.status] ?? r.status)}/>
                 </div>
                 <dl className="mt-3 grid grid-cols-2 gap-3 text-sm md:grid-cols-4">
-                  <div><dt className="text-xs text-ink-muted">{t("Мерзімі")}</dt><dd className={late ? "font-semibold text-red-600" : ""}>{r.deadline ? fmtDate(r.deadline, true) : t("Мерзімсіз")}</dd></div>
+                  <div><dt className="text-xs text-ink-muted">{t("Мерзімі")}</dt><dd className={late ? "font-semibold text-red-600" : ""}>{r.deadline ? fmtDate(r.deadline, true, t.locale) : t("Мерзімсіз")}</dd></div>
                   <div><dt className="text-xs text-ink-muted">{t("Ең үздік баға")}</dt><dd>{r.best_score != null ? `${Number(r.best_score)} / ${Number(r.max_score)}` : "-"}</dd></div>
                   <div><dt className="text-xs text-ink-muted">{t("Әрекет")}</dt><dd>{r.attempts_used}{r.max_attempts ? ` / ${r.max_attempts}` : (" " + t("(шектеусіз)"))}</dd></div>
                   <div className="flex items-end md:justify-end">

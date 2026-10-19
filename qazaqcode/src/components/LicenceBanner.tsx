@@ -43,7 +43,7 @@ export async function LicenceBanner({ ctx }: { ctx: Ctx }) { const t = await get
     return (
       <div data-testid="licence-banner" data-state={n.state}>
         <Banner tone="bad">
-          <strong>{t("Лицензия күйі: {label}.", { label })}</strong>{n.state === "expired" && n.valid_until ? t(" Мерзімі {fmtDate} күні аяқталды.", { fmtDate: fmtDate(n.valid_until) }) : ""}{" "}
+          <strong>{t("Лицензия күйі: {label}.", { label })}</strong>{n.state === "expired" && n.valid_until ? t(" Мерзімі {fmtDate} күні аяқталды.", { fmtDate: fmtDate(n.valid_until, false, t.locale) }) : ""}{" "}
           {student
             ? t("Жаңа тапсырма, сынып және курс ашу шектелген; жұмысыңыз бен бағаларыңыз сақталған.")
             : t("Жаңа тапсырма, сынып және курс жасау шектелген; деректер сақталған, оқуға болады, экспорт қолжетімді.")}
@@ -56,7 +56,7 @@ export async function LicenceBanner({ ctx }: { ctx: Ctx }) { const t = await get
     return (
       <div data-testid="licence-banner" data-state="expiring">
         <Banner tone="warn">
-          <strong>{t("Лицензия мерзімі аяқталуға жақын:")}</strong> {n.days_left <= 0 ? t("бүгін аяқталады") : t("{plural} қалды", { plural: plural(n.days_left, t) })}{n.valid_until ? ` (${fmtDate(n.valid_until)})` : ""}.
+          <strong>{t("Лицензия мерзімі аяқталуға жақын:")}</strong> {n.days_left <= 0 ? t("бүгін аяқталады") : t("{plural} қалды", { plural: plural(n.days_left, t) })}{n.valid_until ? ` (${fmtDate(n.valid_until, false, t.locale)})` : ""}.
           {student ? (" " + t("Мерзім біткен соң жаңа тапсырма мен курс ашу шектеледі, бар деректер сақталады.")) : (" " + t("Мерзім біткен соң жаңа сынып, тапсырма және курс жасау шектеледі; деректер өшірілмейді."))}
           {more}
         </Banner>

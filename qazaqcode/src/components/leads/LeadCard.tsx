@@ -14,7 +14,7 @@ export async function LeadCard({ l }: { l: LeadRow }) { const t = await getT();
       <div className="flex flex-wrap items-start justify-between gap-2">
         <div className="min-w-0">
           <h3 className="break-words text-lg font-bold">{l.org_name}</h3>
-          <p className="text-sm text-ink-muted">{t(LEAD_TYPE_LABEL[l.org_type] ?? l.org_type)}{l.students_estimate ? t(" · шамамен {students_estimate} оқушы", { students_estimate: l.students_estimate }) : ""} · {fmtDate(l.created_at, true)}</p>
+          <p className="text-sm text-ink-muted">{t(LEAD_TYPE_LABEL[l.org_type] ?? l.org_type)}{l.students_estimate ? t(" · шамамен {students_estimate} оқушы", { students_estimate: l.students_estimate }) : ""} · {fmtDate(l.created_at, true, t.locale)}</p>
         </div>
         <StatusBadge status={TONE[l.status] ?? "none"} label={t(LEAD_STATUS_LABEL[l.status] ?? l.status)} />
       </div>

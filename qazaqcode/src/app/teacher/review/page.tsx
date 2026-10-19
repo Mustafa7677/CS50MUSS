@@ -55,7 +55,7 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
                   <td className="td font-medium">{r.student}</td>
                   <td className="td">{r.title} <span className="text-xs text-ink-muted">· {t(KIND_LABEL[r.kind] ?? r.kind)}{r.attempt_no > 1 ? t(" · {attempt_no}-әрекет", { attempt_no: r.attempt_no }) : ""}</span></td>
                   <td className="td">{r.class_name}</td>
-                  <td className="td whitespace-nowrap">{fmtDate(r.submitted_at, true)}</td>
+                  <td className="td whitespace-nowrap">{fmtDate(r.submitted_at, true, t.locale)}</td>
                   <td className="td"><StatusBadge status={r.status}  label={t(STATUS_LABEL[r.status] ?? r.status)}/></td>
                   <td className="td text-right"><Link href={`/teacher/submissions/${r.id}`} className="btn-primary text-xs">{t("Ашу")}</Link></td>
                 </tr>

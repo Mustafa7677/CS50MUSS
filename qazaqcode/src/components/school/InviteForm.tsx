@@ -37,7 +37,7 @@ export function InviteForm({ action, emailAction, emailEnabled = false }: { acti
         <button type="submit" disabled={pending} className="btn-primary">{pending ? t("Күтіңіз...") : t("Шақыру сілтемесін жасау")}</button>
       </form>
       <p className="hint">{t("E-mail көрсетілсе, сілтемені тек сол мекенжайдағы адам қабылдай алады.")}</p>
-      {state && !state.ok && <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{state.error}</p>}
+      {state && !state.ok && <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{t(state.error)}</p>}
       {link && (
         <div role="status" className="mt-4 rounded-xl border border-emerald-300 bg-emerald-50 p-4 dark:border-emerald-800 dark:bg-emerald-950">
           <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-100">{t("Шақыру сілтемесі дайын")}</p>
@@ -57,7 +57,7 @@ export function InviteForm({ action, emailAction, emailEnabled = false }: { acti
           )}
           {emailAction && !emailEnabled && <p className="mt-2 text-xs text-ink-muted">{t("E-mail жіберу бұл ортада қосылмаған: сілтемені көшіріп, өзіңіз жіберіңіз.")}</p>}
           {mail && mail.ok && <p role="status" data-testid="invite-email-ok" className="mt-2 text-sm font-medium text-emerald-900 dark:text-emerald-100">{mail.message}</p>}
-          {mail && !mail.ok && mail.error && <p role="alert" data-testid="invite-email-error" className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{mail.error}</p>}
+          {mail && !mail.ok && mail.error && <p role="alert" data-testid="invite-email-error" className="mt-2 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{t(mail.error)}</p>}
           <p className="mt-2 text-xs text-emerald-900 dark:text-emerald-100">
             {t("Назар аударыңыз: сілтеме тек қазір көрсетіледі. Қауіпсіздік үшін дерекқорда тек хэш сақталады, сондықтан бетті жаңартсаңыз немесе жапсаңыз сілтемені қайта көру мүмкін емес. Жоғалтсаңыз, ескі шақырудан бас тартып, жаңасын жасаңыз.")}
           </p>

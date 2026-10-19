@@ -14,7 +14,7 @@ export function LinkActionForm({ action, children, submitLabel, className = "" }
   return (
     <form action={formAction} className={className}>
       {children}
-      {state && !state.ok && <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{state.error}</p>}
+      {state && !state.ok && <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{t(state.error)}</p>}
       {link && (
         <div className="mt-3 rounded-lg border border-emerald-300 bg-emerald-50 p-3 text-sm dark:border-emerald-800 dark:bg-emerald-950" data-testid="invite-link-box">
           <p className="font-medium">{state?.ok ? state.message : ""}</p>

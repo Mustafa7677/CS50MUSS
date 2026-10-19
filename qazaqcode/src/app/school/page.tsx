@@ -46,15 +46,15 @@ export default async function SchoolDashboard() { const t = await getT();
       <PageHeader title={t("Мектеп панелі")} subtitle={ctx.active.org_name} />
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4" data-testid="stats">
-        <StatCard label={t("Оқушылар")} value={<span data-testid="stat-students">{fmtNum(ov.students)}</span>} hint={t("белсенді оқушы аккаунты")} />
-        <StatCard label={t("Белсенді оқушы")} value={<span data-testid="stat-active">{fmtNum(ov.active_students_30d)}</span>} hint={t("соңғы 30 күнде")} />
-        <StatCard label={t("Мұғалімдер")} value={<span data-testid="stat-teachers">{fmtNum(ov.teachers)}</span>} />
-        <StatCard label={t("Сыныптар")} value={<span data-testid="stat-classes">{fmtNum(ov.classes)}</span>} hint={t("белсенді сыныптар")} />
-        <StatCard label={t("Жарияланған тапсырма")} value={<span data-testid="stat-assignments">{fmtNum(ov.assignments_published)}</span>} />
+        <StatCard label={t("Оқушылар")} value={<span data-testid="stat-students">{fmtNum(ov.students, t.locale)}</span>} hint={t("белсенді оқушы аккаунты")} />
+        <StatCard label={t("Белсенді оқушы")} value={<span data-testid="stat-active">{fmtNum(ov.active_students_30d, t.locale)}</span>} hint={t("соңғы 30 күнде")} />
+        <StatCard label={t("Мұғалімдер")} value={<span data-testid="stat-teachers">{fmtNum(ov.teachers, t.locale)}</span>} />
+        <StatCard label={t("Сыныптар")} value={<span data-testid="stat-classes">{fmtNum(ov.classes, t.locale)}</span>} hint={t("белсенді сыныптар")} />
+        <StatCard label={t("Жарияланған тапсырма")} value={<span data-testid="stat-assignments">{fmtNum(ov.assignments_published, t.locale)}</span>} />
         <StatCard label={t("Орындалуы")}
           value={<span data-testid="stat-completion">{ov.expected_completions > 0 ? `${donePct}%` : "-"}</span>}
           hint={ov.expected_completions > 0 ? t("{completed} / {expected_completions} жұмыс", { completed: ov.completed, expected_completions: ov.expected_completions }) : t("күтілетін орындау жоқ")} />
-        <StatCard label={t("Тексеруді күтетін")} value={<span data-testid="stat-pending">{fmtNum(ov.pending_review)}</span>} tone={ov.pending_review > 0 ? "warn" : undefined} hint={t("жіберілген жұмыс")} />
+        <StatCard label={t("Тексеруді күтетін")} value={<span data-testid="stat-pending">{fmtNum(ov.pending_review, t.locale)}</span>} tone={ov.pending_review > 0 ? "warn" : undefined} hint={t("жіберілген жұмыс")} />
         <StatCard label={t("Орташа үлгерім")} value={<span data-testid="stat-avg">{fmtPct(ov.avg_score_pct)}</span>} hint={ov.graded > 0 ? t("{graded} бағаланған жұмыс", { graded: ov.graded }) : t("әлі баға жоқ")} />
       </div>
 
@@ -69,7 +69,7 @@ export default async function SchoolDashboard() { const t = await getT();
           ) : (
             <>
               <p className="mt-3 text-sm"><span className="text-ink-muted">{t("Жоспар:")}</span> <strong>{t(PLAN_LABEL[lic.plan ?? ""] ?? lic.plan)}</strong></p>
-              <p className="text-sm"><span className="text-ink-muted">{t("Жарамды:")}</span> <strong>{fmtDate(lic.valid_until)}</strong>{" "}{t("дейін")}
+              <p className="text-sm"><span className="text-ink-muted">{t("Жарамды:")}</span> <strong>{fmtDate(lic.valid_until, false, t.locale)}</strong>{" "}{t("дейін")}
                 {lic.days_left != null && lic.days_left >= 0 && <span className="text-ink-muted">{" "}{t("(қалды: {days_left} күн)", { days_left: lic.days_left })}</span>}
                 {lic.days_left != null && lic.days_left < 0 && <span className="text-red-600">{" "}{t("(мерзімі {v} күн бұрын аяқталған)", { v: -lic.days_left })}</span>}
               </p>
@@ -134,7 +134,7 @@ export default async function SchoolDashboard() { const t = await getT();
               {recent.map((a) => (
                 <li key={a.id} className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 text-sm">
                   <div className="min-w-0"><p className="truncate font-medium">{a.title}</p>
-                    <p className="text-xs text-ink-muted">{a.author ?? "-"} · {t(KIND_LABEL[a.kind] ?? a.kind)} · {fmtDate(a.created_at)}</p></div>
+                    <p className="text-xs text-ink-muted">{a.author ?? "-"} · {t(KIND_LABEL[a.kind] ?? a.kind)} · {fmtDate(a.created_at, false, t.locale)}</p></div>
                   <StatusBadge status={a.status}  label={t(STATUS_LABEL[a.status] ?? a.status)}/>
                 </li>
               ))}
