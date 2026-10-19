@@ -9,7 +9,7 @@ import { ORG_COOKIE, getContext, homeFor } from "@/lib/context";
 import { AppError, errorCode, errorMessage, type ActionResult } from "@/lib/errors";
 import { rateLimit } from "@/lib/rate-limit";
 import { env } from "@/lib/env";
-import { getT } from "@/lib/i18n";
+import { getT, LANG_COOKIE, isLocale } from "@/lib/i18n";
 
 const email = z.string().trim().toLowerCase().email().max(160);
 const password = z.string().min(8, "weak_password").max(128);
@@ -18,6 +18,17 @@ const name = z.string().trim().min(2).max(120);
 const fail = (e: unknown): ActionResult => ({ ok: false, error: errorMessage(e) });
 const safeNext = (n: unknown) => (typeof n === "string" && /^\/(?!\/)[\w\-/?=&%.]*$/.test(n) ? n : "/app");
 const str = (f: FormData, k: string) => String(f.get(k) ?? "");
+
+/** Кіргенде тілді профильмен үйлестіру: cookie бар болса - профильге жазамыз, жоқ болса - профильдегі тілді cookie-ге. */
+async function syncLanguage(uid: string): Promise<void> {
+  try {
+    const jar = await cookies();
+    const c = jar.get(LANG_COOKIE)?.value;
+    if (isLocale(c)) { await withUser(uid, (q) => q("update public.profiles set locale = $1 where id = auth.uid()", [c])); return; }
+    const r = await withUser(uid, (q) => q<{ locale: string }>("select locale from public.profiles where id = auth.uid()"));
+    if (isLocale(r[0]?.locale)) jar.set(LANG_COOKIE, r[0].locale, { httpOnly: false, sameSite: "lax", secure: env().COOKIE_SECURE === "true", path: "/", maxAge: 60 * 60 * 24 * 365 });
+  } catch { /* тіл баптауы кіруді бұғаттамауы тиіс */ }
+}
 
 export async function loginAction(_: ActionResult | null, f: FormData): Promise<ActionResult> {
   let next = "/app";
@@ -28,6 +39,7 @@ export async function loginAction(_: ActionResult | null, f: FormData): Promise<
     await rateLimit("login-email", 30, 10 * 60_000, p.email, false); // IP-ге қарамай бір аккаунтқа (таратылған шабуыл)
     const r = await driver().signIn(p.email, p.password);
     await createSession(r.userId, r.accessToken);
+    await syncLanguage(r.userId);
     next = safeNext(f.get("next"));
   } catch (e) {
     if (e instanceof z.ZodError) return { ok: false, error: errorMessage(new AppError("invalid_credentials")) };

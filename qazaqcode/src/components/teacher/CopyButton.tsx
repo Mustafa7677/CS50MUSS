@@ -3,7 +3,7 @@ import { useState } from "react";
 import { useT } from "@/lib/i18n/client";
 
 /** Мәтінді алмасу буферіне көшіру (клиент). Қолжетімсіз болса, мәтінді белгілеп қояды. */
-export function CopyButton({ text, label = "Көшіру", className = "btn-secondary", testId }: { text: string; label?: string; className?: string; testId?: string }) { const t = useT();
+export function CopyButton({ text, label, className = "btn-secondary", testId }: { text: string; label?: string; className?: string; testId?: string }) { const t = useT();
   const [state, setState] = useState<"idle" | "ok" | "err">("idle");
   async function copy() {
     try {

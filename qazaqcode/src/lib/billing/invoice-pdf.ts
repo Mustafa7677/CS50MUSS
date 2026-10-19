@@ -56,20 +56,21 @@ export async function buildInvoicePdf(d: InvoiceData): Promise<Buffer> {
 
   // 3) Тараптар
   const yPartyStart = doc.y;
-  doc.font(FONT_BOLD).fontSize(9).fillColor(MUTED).text("Орындаушы / Исполнитель:", M, yPartyStart, { width: 68 });
+  doc.font(FONT_BOLD).fontSize(8.5).fillColor(MUTED).text("Орындаушы / Исполнитель:", M, yPartyStart, { width: 128 });
   doc.y = yPartyStart; doc.x = M;
   const partyBody = (r: Requisites, withVat: boolean) => {
     doc.font(FONT).fontSize(9.5).fillColor(INK);
     const lines = [r.legal_name, `БИН/ЖСН: ${r.bin_iin}`, `Мекенжайы / Адрес: ${r.address}`,
       ...(withVat ? [r.vat_payer ? `ҚҚС төлеушісі, куәлік: ${r.vat_cert}` : "ҚҚС төлеушісі емес"] : []),
+      ...(!withVat ? [`Банк: ${r.bank_name}, БИК ${r.bik}`, `ИИК / ЖСК: ${r.iik}, КБе ${r.kbe}`] : []),
       ...(!withVat && r.contact_name ? [`Байланыс: ${r.contact_name}${r.contact_phone ? `, ${r.contact_phone}` : ""}`] : [])];
     let yy = doc.y;
-    for (const l of lines) { doc.text(l, M + 120, yy, { width: W - 120 }); yy = doc.y; }
+    for (const l of lines) { doc.text(l, M + 135, yy, { width: W - 135 }); yy = doc.y; }
     doc.y = yy + 8;
   };
   partyBody(s, true);
   const yBuyer = doc.y;
-  doc.font(FONT_BOLD).fontSize(9).fillColor(MUTED).text("Тапсырыс беруші / Заказчик:", M, yBuyer, { width: 110 });
+  doc.font(FONT_BOLD).fontSize(8.5).fillColor(MUTED).text("Тапсырыс беруші / Заказчик:", M, yBuyer, { width: 128 });
   doc.y = yBuyer;
   partyBody(d.buyer, false);
   doc.moveDown(0.4);

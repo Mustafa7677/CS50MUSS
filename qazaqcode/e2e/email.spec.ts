@@ -37,7 +37,6 @@ test.afterAll(async () => {
   await sql("delete from public.email_suppressions where email_hash = any($1)", [(await sql("select public.email_hash_of(e) h from unnest($1::text[]) e", [[em("unsub"), em("one")]])).map((r) => r.h)]);
   // шақырулар: басқа спектерлерге (школа: «белсенді шақыру жоқ») кедергі болмасын
   await sql("delete from public.invitations where created_at > $1 and accepted_at is null", [STARTED]);
-  await sql("delete from public.audit_logs where created_at > $1 and action in ('invitation.create','invitation.email')", [STARTED]);
   await db.end();
 });
 

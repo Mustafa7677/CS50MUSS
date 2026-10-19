@@ -2,7 +2,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SelfCheckRunner, type CaseResult, type RunPhase, type WorkerLike } from "@/lib/selfcheck/runner";
 
-export type VisibleTest = { input: string; expected_output: string };
+// Өріс аты «expected» (дерекқор бағанының аты емес): RSC жүктемесінде жасырын-баған атаулары болмауы тиіс (e2e/security.spec.ts)
+export type VisibleTest = { input: string; expected: string };
 const WORKER_URL = "/workers/py-runner.js";
 const ERR: Record<string, string> = {
   load_failed: "Python ортасы жүктелмеді.", load_timeout: "Python ортасы уақытында жүктелмеді.", worker_error: "Python ортасы іске қосылмады.", busy: "Басқа тексеру жүріп жатыр.",
@@ -32,7 +33,7 @@ export function SelfCheck({ code, tests }: { code: string; tests: VisibleTest[] 
       onCase: (c) => setResults((prev) => [...prev, c]),
     });
     runner.current = r;
-    const cases = hasTests ? tests.map((t) => ({ input: t.input, expected: t.expected_output })) : [{ input: "", expected: null }];
+    const cases = hasTests ? tests.map((t) => ({ input: t.input, expected: t.expected })) : [{ input: "", expected: null }];
     const out = await r.run(code, cases);
     if (!out.ok) setErr(`${ERR[out.reason] ?? "Қате."} ${out.message}`);
   }
@@ -92,7 +93,7 @@ export function SelfCheck({ code, tests }: { code: string; tests: VisibleTest[] 
                 {r.error && <pre className="mt-2 max-w-full overflow-x-auto whitespace-pre-wrap break-words rounded bg-red-50 p-2 font-mono text-xs text-red-800 dark:bg-red-950 dark:text-red-200">{r.error}</pre>}
                 {r.status === "fail" && t && (
                   <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                    <div className="min-w-0"><p className="text-xs text-ink-muted">Күтілетін нәтиже</p><pre className="max-w-full overflow-x-auto whitespace-pre-wrap break-words rounded bg-surface-2 p-2 font-mono text-xs">{flag(t.expected_output)}</pre></div>
+                    <div className="min-w-0"><p className="text-xs text-ink-muted">Күтілетін нәтиже</p><pre className="max-w-full overflow-x-auto whitespace-pre-wrap break-words rounded bg-surface-2 p-2 font-mono text-xs">{flag(t.expected)}</pre></div>
                     <div className="min-w-0"><p className="text-xs text-ink-muted">Сіздің шығысыңыз</p><pre className="max-w-full overflow-x-auto whitespace-pre-wrap break-words rounded bg-surface-2 p-2 font-mono text-xs" data-testid="selfcheck-actual">{flag(r.stdout)}</pre></div>
                     {r.diff.length > 0 && (
                       <ul className="col-span-full list-disc pl-5 text-xs" data-testid="selfcheck-diff">

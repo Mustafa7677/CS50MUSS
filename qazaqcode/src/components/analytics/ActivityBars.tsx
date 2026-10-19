@@ -8,7 +8,8 @@ const short = (d: string) => `${d.slice(8, 10)}.${d.slice(5, 7)}`;
  * Белсенділік диаграммасы: таза CSS бағандар (сыртқы кітапхана жоқ), түстер тек токендер.
  * Көрмейтін оқырмандар үшін <div class="sr-only"> ішінде кесте.
  */
-export async function ActivityBars({ data, title = "Белсенділік" }: { data: DayPoint[]; title?: string }) { const t = await getT();
+export async function ActivityBars({ data, title: titleProp }: { data: DayPoint[]; title?: string }) { const t = await getT();
+  const title = titleProp ?? t("Белсенділік");
   const max = Math.max(1, ...data.map((d) => Math.max(d.submissions, d.active_students)));
   const total = data.reduce((a, d) => a + d.submissions, 0);
   const mid = Math.floor(data.length / 2);

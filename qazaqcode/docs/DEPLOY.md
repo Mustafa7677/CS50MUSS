@@ -228,3 +228,9 @@ Auth (Supabase)
 - Reverse proxy: `.wasm` файлы `Content-Type: application/wasm` болуы тиіс және `/vendor/pyodide/*` жауабына қосқан CSP/Cache-Control тақырыптарын өшірмеуі тиіс (қосымша gzip/br қосуға болады: wasm ~9,6 МБ).
 - Тексеру: `curl -sI https://<домен>/vendor/pyodide/pyodide.asm.wasm` -> `application/wasm`, `cache-control: ...immutable`; `curl -sI https://<домен>/workers/py-runner.js` -> `content-security-policy: default-src 'none'; script-src 'self' 'wasm-unsafe-eval'...`. Бет CSP-інде `worker-src 'self'` бар.
 - [ ] Чеклист: `/vendor/pyodide/` және `/workers/` өндірісте 200 береді; `npx playwright test e2e/selfcheck.spec.ts` staging-те жасыл.
+
+## E-mail worker (шақырулар, еске салғыштар, пилот жауаптары)
+
+- Қосымша мен DB-функциялар желіге ШЫҚПАЙДЫ: тек `email_outbox`-қа жазады. Хатты бөлек `mailer` қызметі (`docker compose --profile mail up -d mailer`, `scripts/send-emails.mjs`) SMTP арқылы жібереді. Толық нұсқаулық: `docs/EMAIL.md` (провайдер, SPF/DKIM/DMARC, заң).
+- Қосымшаға `EMAIL_DRIVER` (өндірісте әдепкі `off`) беріледі, SMTP құпиялары тек `mailer`-ге. Миграция 0015 қолданылған болуы тиіс.
+- [ ] Чеклист: `EMAIL_DRIVER=smtp` + `SMTP_*` орнатылды; SPF/DKIM/DMARC жазбалары қойылды; `docker compose logs mailer` қатесіз; сынақ шақыру хаты нақты поштаға келді (нақты провайдермен СЫНАЛМАҒАН - docs/EMAIL.md); `scripts/emails-purge.mjs` cron-да.

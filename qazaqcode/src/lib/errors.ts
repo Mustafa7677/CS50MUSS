@@ -73,7 +73,7 @@ export function errorCode(e: unknown): string {
 
 export function errorMessage(e: unknown): string {
   const code = errorCode(e);
-  if (code === "internal") { console.error("[qazaqcode] күтпеген қате:", e); return N("Күтпеген қате болды. Кейінірек қайталап көріңіз."); }
+  if (code === "internal") { console.error("[qazaqcode] unexpected error:", e); return N("Күтпеген қате болды. Кейінірек қайталап көріңіз."); }
   return MESSAGES[code] ?? N("Қате болды.");
 }
 

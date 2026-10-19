@@ -11,7 +11,7 @@ type Action = (prev: ActionResult | null, formData: FormData) => Promise<ActionR
  * `reset` - сәтті болғанда пішінді тазалау; `successToast` - хабарландыру көрсету.
  */
 export function ActionForm({
-  action, children, submitLabel = "Сақтау", className = "", reset = false, successToast = true, submitClassName = "btn-primary", footer,
+  action, children, submitLabel, className = "", reset = false, successToast = true, submitClassName = "btn-primary", footer,
 }: {
   action: Action; children: React.ReactNode; submitLabel?: string; className?: string; reset?: boolean; successToast?: boolean;
   submitClassName?: string; footer?: React.ReactNode;
