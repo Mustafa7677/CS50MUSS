@@ -4,6 +4,7 @@ import { RequestForm } from "@/components/leads/RequestForm";
 import { getT } from "@/lib/i18n";
 import type { TFn } from "@/lib/i18n/core";
 
+import { LangSwitch } from "@/components/LangSwitch";
 // Жария бет (маркетинг). Ойдан шығарылған клиент, пікір, статистика ЖОҚ: тек өнімнің нақты мүмкіндіктері.
 // Байланыс e-mail тек орта айнымалысынан (CONTACT_EMAIL) алынады; жоқ болса батырма көрсетілмейді.
 export const dynamic = "force-dynamic";
@@ -64,7 +65,7 @@ export default async function Schools() { const t = await getT();
             {NAV(t).map(([l, h]) => <a key={h} href={h} className="text-ink-muted hover:text-ink">{l}</a>)}
           </nav>
           <div className="flex items-center gap-2">
-            <ThemeToggle />
+            <LangSwitch /><ThemeToggle />
             <Link href="/login" className="btn-secondary">{t("Кіру")}</Link>
           </div>
         </div>

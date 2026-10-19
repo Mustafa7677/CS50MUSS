@@ -3,11 +3,12 @@ import { EmptyState, PageHeader, StatusBadge } from "@/components/ui";
 import { requireStudent } from "@/lib/context";
 import { DIFFICULTY_LABEL, KIND_LABEL, STATUS_LABEL, fmtDate } from "@/lib/format";
 import { FILTERS, isOverdue, myAssignments } from "../data";
+import { getT } from "@/lib/i18n";
 
-export async function generateMetadata() { return { title: "Тапсырмаларым" }; }
+export async function generateMetadata() { const t = await getT(); return { title: t("Тапсырмаларым") }; }
 export const dynamic = "force-dynamic";
 
-export default async function AssignmentsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) {
+export default async function AssignmentsPage({ searchParams }: { searchParams: Promise<{ status?: string }> }) { const t = await getT();
   const ctx = await requireStudent();
   const sp = await searchParams;
   const filter = (FILTERS as readonly string[]).includes(sp.status ?? "") ? sp.status! : "";
@@ -18,16 +19,16 @@ export default async function AssignmentsPage({ searchParams }: { searchParams: 
 
   return (
     <>
-      <PageHeader title="Тапсырмаларым" subtitle={`Барлығы: ${all.length}`} />
-      <nav aria-label="Күй бойынша сүзгі" className="mb-5 flex flex-wrap gap-2">
-        <Chip href="/student/assignments" active={!filter} label={`Барлығы (${all.length})`} />
-        {FILTERS.map((s) => <Chip key={s} href={`/student/assignments?status=${s}`} active={filter === s} label={`${STATUS_LABEL[s]} (${count(s)})`} />)}
+      <PageHeader title={t("Тапсырмаларым")} subtitle={t("Барлығы: {length}", { length: all.length })} />
+      <nav aria-label={t("Күй бойынша сүзгі")} className="mb-5 flex flex-wrap gap-2">
+        <Chip href="/student/assignments" active={!filter} label={t("Барлығы ({length})", { length: all.length })} />
+        {FILTERS.map((s) => <Chip key={s} href={`/student/assignments?status=${s}`} active={filter === s} label={`${t(STATUS_LABEL[s])} (${count(s)})`} />)}
       </nav>
 
       {all.length === 0 ? (
-        <EmptyState title="Тапсырма жоқ" text="Мұғалім тапсырма бергенде немесе сыныпқа қосылған соң осында көрінеді." action={<Link href="/student" className="btn-secondary">Сыныпқа қосылу</Link>} />
+        <EmptyState title={t("Тапсырма жоқ")} text={t("Мұғалім тапсырма бергенде немесе сыныпқа қосылған соң осында көрінеді.")} action={<Link href="/student" className="btn-secondary">{t("Сыныпқа қосылу")}</Link>} />
       ) : rows.length === 0 ? (
-        <EmptyState title="Бұл күйде тапсырма жоқ" action={<Link href="/student/assignments" className="btn-secondary">Сүзгіні тазалау</Link>} />
+        <EmptyState title={t("Бұл күйде тапсырма жоқ")} action={<Link href="/student/assignments" className="btn-secondary">{t("Сүзгіні тазалау")}</Link>} />
       ) : (
         <ul className="space-y-3">
           {rows.map((r) => {
@@ -38,18 +39,18 @@ export default async function AssignmentsPage({ searchParams }: { searchParams: 
                   <div className="min-w-0">
                     <Link href={`/student/assignments/${r.assignment_id}`} className="text-base font-semibold">{r.title}</Link>
                     <p className="mt-0.5 text-sm text-ink-muted">
-                      {KIND_LABEL[r.kind] ?? r.kind} · {DIFFICULTY_LABEL[r.difficulty] ?? r.difficulty} · {r.classroom_name}
+                      {t(KIND_LABEL[r.kind] ?? r.kind)} · {t(DIFFICULTY_LABEL[r.difficulty] ?? r.difficulty)} · {r.classroom_name}
                     </p>
                   </div>
-                  <StatusBadge status={r.status} />
+                  <StatusBadge status={r.status}  label={t(STATUS_LABEL[r.status] ?? r.status)}/>
                 </div>
                 <dl className="mt-3 grid grid-cols-2 gap-3 text-sm md:grid-cols-4">
-                  <div><dt className="text-xs text-ink-muted">Мерзімі</dt><dd className={late ? "font-semibold text-red-600" : ""}>{r.deadline ? fmtDate(r.deadline, true) : "Мерзімсіз"}</dd></div>
-                  <div><dt className="text-xs text-ink-muted">Ең үздік баға</dt><dd>{r.best_score != null ? `${Number(r.best_score)} / ${Number(r.max_score)}` : "-"}</dd></div>
-                  <div><dt className="text-xs text-ink-muted">Әрекет</dt><dd>{r.attempts_used}{r.max_attempts ? ` / ${r.max_attempts}` : " (шектеусіз)"}</dd></div>
+                  <div><dt className="text-xs text-ink-muted">{t("Мерзімі")}</dt><dd className={late ? "font-semibold text-red-600" : ""}>{r.deadline ? fmtDate(r.deadline, true) : t("Мерзімсіз")}</dd></div>
+                  <div><dt className="text-xs text-ink-muted">{t("Ең үздік баға")}</dt><dd>{r.best_score != null ? `${Number(r.best_score)} / ${Number(r.max_score)}` : "-"}</dd></div>
+                  <div><dt className="text-xs text-ink-muted">{t("Әрекет")}</dt><dd>{r.attempts_used}{r.max_attempts ? ` / ${r.max_attempts}` : (" " + t("(шектеусіз)"))}</dd></div>
                   <div className="flex items-end md:justify-end">
                     <Link href={`/student/assignments/${r.assignment_id}`} className="btn-secondary">
-                      {r.status === "not_started" ? "Бастау" : r.status === "in_progress" ? "Жалғастыру" : "Ашу"}
+                      {r.status === "not_started" ? t("Бастау") : r.status === "in_progress" ? t("Жалғастыру") : t("Ашу")}
                     </Link>
                   </div>
                 </dl>

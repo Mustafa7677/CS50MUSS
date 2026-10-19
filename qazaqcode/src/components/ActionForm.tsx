@@ -21,16 +21,16 @@ export function ActionForm({
   useEffect(() => {
     if (state?.ok) {
       if (reset) ref.current?.reset();
-      if (successToast && state.message) toast(state.message, "ok");
+      if (successToast && state.message) toast(t(state.message), "ok");
     }
-  }, [state, reset, successToast]);
+  }, [state, reset, successToast, t]);
   return (
     <form ref={ref} action={formAction} className={className} noValidate={false}>
       {children}
-      {state && !state.ok && <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{state.error}</p>}
-      {state?.ok && state.message && <p role="status" className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">{state.message}</p>}
+      {state && !state.ok && <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950 dark:text-red-200">{t(state.error)}</p>}
+      {state?.ok && state.message && <p role="status" className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-sm text-emerald-800 dark:bg-emerald-950 dark:text-emerald-200">{t(state.message)}</p>}
       <div className="mt-4 flex items-center gap-3">
-        <button type="submit" disabled={pending} className={submitClassName}>{pending ? t("Күтіңіз...") : submitLabel}</button>
+        <button type="submit" disabled={pending} className={submitClassName}>{pending ? t("Күтіңіз...") : submitLabel ?? t("Сақтау")}</button>
         {footer}
       </div>
     </form>

@@ -5,13 +5,15 @@ import { requireStaff } from "@/lib/context";
 import { withUser } from "@/lib/db";
 import { KIND_LABEL, fmtDate } from "@/lib/format";
 import { isUuid } from "../_data";
+import { getT } from "@/lib/i18n";
+import { STATUS_LABEL } from "@/lib/format";
 
-export async function generateMetadata() { return { title: "Тексеру кезегі" }; }
+export async function generateMetadata() { const t = await getT(); return { title: t("Тексеру кезегі") }; }
 export const dynamic = "force-dynamic";
 
 type Row = { id: string; status: string; attempt_no: number; submitted_at: string | null; student: string; title: string; kind: string; class_id: string; class_name: string };
 
-export default async function ReviewPage({ searchParams }: { searchParams: Promise<{ class?: string; err?: string }> }) {
+export default async function ReviewPage({ searchParams }: { searchParams: Promise<{ class?: string; err?: string }> }) { const t = await getT();
   const sp = await searchParams;
   const ctx = await requireStaff();
   const filter = isUuid(sp.class) ? sp.class : null;
@@ -26,36 +28,36 @@ export default async function ReviewPage({ searchParams }: { searchParams: Promi
   }));
   return (
     <>
-      <PageHeader title="Тексеру кезегі" subtitle="Жіберілген және тексеріліп жатқан жұмыстар: ең ескісі жоғарыда." />
+      <PageHeader title={t("Тексеру кезегі")} subtitle={t("Жіберілген және тексеріліп жатқан жұмыстар: ең ескісі жоғарыда.")} />
       <Notices err={sp.err} />
       {classes.length > 0 && (
         <form method="get" className="mb-4 flex flex-wrap items-end gap-2">
           <div>
-            <label className="label" htmlFor="rv-class">Сынып бойынша сүзгі</label>
+            <label className="label" htmlFor="rv-class">{t("Сынып бойынша сүзгі")}</label>
             <select id="rv-class" name="class" defaultValue={filter ?? ""} className="input min-w-48">
-              <option value="">Барлық сыныптар</option>
+              <option value="">{t("Барлық сыныптар")}</option>
               {classes.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </div>
-          <button type="submit" className="btn-secondary">Сүзу</button>
+          <button type="submit" className="btn-secondary">{t("Сүзу")}</button>
         </form>
       )}
       {rows.length === 0 ? (
-        <EmptyState title="Тексеретін жұмыс жоқ" text="Оқушылар код не мәтін түріндегі тапсырманы жібергенде, жұмыс осында пайда болады. Тесттер автоматты бағаланады." action={<Link href="/teacher" className="btn-secondary">Сыныптарыма</Link>} />
+        <EmptyState title={t("Тексеретін жұмыс жоқ")} text={t("Оқушылар код не мәтін түріндегі тапсырманы жібергенде, жұмыс осында пайда болады. Тесттер автоматты бағаланады.")} action={<Link href="/teacher" className="btn-secondary">{t("Сыныптарыма")}</Link>} />
       ) : (
         <div className="table-wrap relative">
           <table className="w-full min-w-[44rem]">
-            <caption className="sr-only">Тексеруді күтетін жұмыстар</caption>
-            <thead className="border-b border-line"><tr><th className="th">Оқушы</th><th className="th">Тапсырма</th><th className="th">Сынып</th><th className="th">Жіберілген</th><th className="th">Күйі</th><th className="th"><span className="sr-only">Ашу</span></th></tr></thead>
+            <caption className="sr-only">{t("Тексеруді күтетін жұмыстар")}</caption>
+            <thead className="border-b border-line"><tr><th className="th">{t("Оқушы")}</th><th className="th">{t("Тапсырма")}</th><th className="th">{t("Сынып")}</th><th className="th">{t("Жіберілген")}</th><th className="th">{t("Күйі")}</th><th className="th"><span className="sr-only">{t("Ашу")}</span></th></tr></thead>
             <tbody className="divide-y divide-line">
               {rows.map((r) => (
                 <tr key={r.id} data-testid="review-row">
                   <td className="td font-medium">{r.student}</td>
-                  <td className="td">{r.title} <span className="text-xs text-ink-muted">· {KIND_LABEL[r.kind] ?? r.kind}{r.attempt_no > 1 ? ` · ${r.attempt_no}-әрекет` : ""}</span></td>
+                  <td className="td">{r.title} <span className="text-xs text-ink-muted">· {t(KIND_LABEL[r.kind] ?? r.kind)}{r.attempt_no > 1 ? t(" · {attempt_no}-әрекет", { attempt_no: r.attempt_no }) : ""}</span></td>
                   <td className="td">{r.class_name}</td>
                   <td className="td whitespace-nowrap">{fmtDate(r.submitted_at, true)}</td>
-                  <td className="td"><StatusBadge status={r.status} /></td>
-                  <td className="td text-right"><Link href={`/teacher/submissions/${r.id}`} className="btn-primary text-xs">Ашу</Link></td>
+                  <td className="td"><StatusBadge status={r.status}  label={t(STATUS_LABEL[r.status] ?? r.status)}/></td>
+                  <td className="td text-right"><Link href={`/teacher/submissions/${r.id}`} className="btn-primary text-xs">{t("Ашу")}</Link></td>
                 </tr>
               ))}
             </tbody>

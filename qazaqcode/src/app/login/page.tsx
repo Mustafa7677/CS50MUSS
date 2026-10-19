@@ -6,6 +6,7 @@ import { getContext, homeFor } from "@/lib/context";
 import { publicBrand, brandStyle } from "@/lib/brand";
 import { getT } from "@/lib/i18n";
 
+import { LangSwitch } from "@/components/LangSwitch";
 export async function generateMetadata() { const t = await getT(); return { title: t("Кіру") }; }
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; org?: string }> }) { const t = await getT();
@@ -15,6 +16,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const brand = await publicBrand(sp.org);
   return (
     <main id="main" className="grid min-h-screen place-items-center px-4 py-10">
+      <div className="fixed right-3 top-3 z-40"><LangSwitch /></div>
       <style dangerouslySetInnerHTML={{ __html: brandStyle(brand) }} />
       <div className="card w-full max-w-md p-7">
         <p className="text-sm font-semibold uppercase tracking-widest text-brand">{brand.name}</p>

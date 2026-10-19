@@ -7,6 +7,7 @@ import { publicBrand, brandStyle } from "@/lib/brand";
 import { messageForCode } from "@/lib/errors";
 import { getT } from "@/lib/i18n";
 
+import { LangSwitch } from "@/components/LangSwitch";
 export async function generateMetadata() { const t = await getT(); return { title: t("Сыныпқа қосылу") }; }
 
 export default async function JoinPage({ searchParams }: { searchParams: Promise<{ code?: string; e?: string }> }) { const t = await getT();
@@ -19,6 +20,7 @@ export default async function JoinPage({ searchParams }: { searchParams: Promise
   const brand = await publicBrand(cls?.org_slug);
   return (
     <main id="main" className="grid min-h-screen place-items-center px-4 py-10">
+      <div className="fixed right-3 top-3 z-40"><LangSwitch /></div>
       <style dangerouslySetInnerHTML={{ __html: brandStyle(brand) }} />
       <div className="card w-full max-w-md p-7">
         <p className="text-sm font-semibold uppercase tracking-widest text-brand">{cls?.org_name ?? brand.name}</p>

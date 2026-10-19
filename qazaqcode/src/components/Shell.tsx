@@ -6,6 +6,7 @@ import { ROLE_LABEL } from "@/lib/format";
 import type { Ctx, Membership } from "@/lib/context";
 import { getT } from "@/lib/i18n";
 
+import { LangSwitch } from "@/components/LangSwitch";
 export type NavItem = { href: string; label: string; icon?: string };
 
 /** Барлық рөл панельдерінің ортақ қабығы: sidebar + жоғарғы жолақ + брендинг + лицензия ескертуі. */
@@ -46,7 +47,7 @@ export async function Shell({ ctx, active, nav, children, area }: { ctx: Ctx; ac
           </details>
           <p className="hidden text-sm text-ink-muted lg:block">{active ? `${active.org_name}` : t("Платформа")}</p>
           <div className="flex items-center gap-2">
-            <ThemeToggle />
+            <LangSwitch /><ThemeToggle />
           </div>
         </header>
         <main id="main" className="mx-auto max-w-6xl px-4 py-6 lg:px-8">

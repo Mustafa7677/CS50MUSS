@@ -32,6 +32,12 @@ export function scanKeys() {
       if (CYR.test(k) && !keys.has(k)) keys.set(k, path.relative(root, f));
     }
   }
+  // errors.ts: ішіндегі барлық қазақша жолдар - көрсетілетін хабарлама (кілт)
+  const ef = path.join(root, "src/lib/errors.ts");
+  for (const m of fs.readFileSync(ef, "utf8").matchAll(/"((?:[^"\\\n]|\\.)*)"/g)) {
+    let k; try { k = JSON.parse(`"${m[1]}"`); } catch { continue; }
+    if (CYR.test(k) && !keys.has(k)) keys.set(k, "src/lib/errors.ts");
+  }
   return keys;
 }
 async function loadRu() {

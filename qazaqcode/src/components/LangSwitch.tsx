@@ -11,7 +11,7 @@ export async function LangSwitch() {
   return (
     <form action={setLangAction} className="flex items-center gap-0.5 rounded-lg border border-line p-0.5" data-testid="lang-switch">
       {btn("kk", "Қаз")}{btn("ru", "Рус")}
-      {I18N_BETA && <span className="px-1 text-[10px] font-semibold uppercase text-ink-muted" title={cur === "ru" ? "Бета-версия перевода" : "Орыс тілі бета нұсқада"}>{cur === "ru" ? "бета" : "бета"}</span>}
+      {I18N_BETA && <span className="px-1 text-[10px] font-semibold uppercase text-ink-muted" title="Орыс тілі бета нұсқада / Русский язык: бета-версия">бета</span>}
     </form>
   );
 }
