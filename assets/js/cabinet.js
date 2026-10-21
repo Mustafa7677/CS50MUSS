@@ -28,7 +28,7 @@
     box.innerHTML = `
       <div class="cab-hero"><div class="cab-level" aria-label="Деңгей ${lv}"><b>${lv}</b><span>деңгей</span></div>
         <div class="cab-xp"><p><b>${xp}</b> XP · келесі деңгейге ${Math.max(0, next - xp)} XP қалды</p>
-          <div class="g-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%;background:var(--c1,#087a96)"></i></div></div></div>
+          <div class="g-bar" role="progressbar" aria-label="Келесі деңгейге дейінгі прогресс" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}"><i style="width:${pct}%;background:var(--c1,#087a96)"></i></div></div></div>
       <div class="cab-stats">
         <div><b>${read}</b><span>лекция оқылды</span></div><div><b>${s.t || 0}</b><span>тапсырма орындалды</span></div>
         <div><b>🔥 ${s.s || 0}</b><span>күн қатарынан</span></div><div><b>${done.length}/${ach.length}</b><span>жетістік</span></div>
