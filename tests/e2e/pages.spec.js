@@ -6,6 +6,8 @@ const { ROOT, PAGES, blockFonts, collectErrors } = require("../support/helpers")
 
 const idsCache = {};
 const idsOf = (file) => (idsCache[file] ||= new Set([...fs.readFileSync(file, "utf8").matchAll(/\sid="([^"]+)"/g)].map((m) => m[1])));
+// en/grammar.html ережелерін JS жасайды: якорь идентификаторлары деректер файлдарынан алынады
+const grammarIds = () => fs.readdirSync(path.join(ROOT, "assets/data")).filter((f) => /^en-grammar-.*\.js$/.test(f)).flatMap((f) => [...fs.readFileSync(path.join(ROOT, "assets/data", f), "utf8").matchAll(/"id":\s*"([^"]+)"/g)].map((m) => m[1]));
 
 for (const [label, viewport, colorScheme] of [["desktop-light", { width: 1280, height: 900 }, "light"], ["mobile-dark", { width: 390, height: 844 }, "dark"]]) {
   test.describe(label, () => {
@@ -42,7 +44,7 @@ for (const [label, viewport, colorScheme] of [["desktop-light", { width: 1280, h
             const [fileq, hash] = h.split("#"); const file = fileq.split("?")[0];
             const target = file ? path.normalize(path.join(path.dirname(path.join(ROOT, f)), file)) : path.join(ROOT, f);
             if (file && !fs.existsSync(target)) { broken.push("сілтеме " + h); continue; }
-            if (hash && target.endsWith(".html") && !/^(add=|import=|login=|sql)/.test(hash) && !idsOf(target).has(hash) && !((f === "games.html" || target.endsWith("games.html")) && /^[a-z]+$/.test(hash))) broken.push("якорь " + h);
+            if (hash && target.endsWith(".html") && !/^(add=|import=|login=|sql)/.test(hash) && !idsOf(target).has(hash) && !(/en\/grammar\.html$|^grammar\.html$/.test(target) && grammarIds().includes(hash)) && !((f === "games.html" || target.endsWith("games.html")) && /^[a-z]+$/.test(hash))) broken.push("якорь " + h);
           }
           expect(broken, "сынған сілтемелер").toEqual([]);
           // Әлеуметтік желі суреті нақты бар файлға сілтеуі керек
