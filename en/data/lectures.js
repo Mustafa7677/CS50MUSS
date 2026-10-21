@@ -811,7 +811,7 @@ window.CS50KZ_COURSE_LECTURES["en"] = [
  {
   "id": "week-14",
   "num": "B1 · 3-сабақ",
-  "title": "Ырық етіс (Passive)",
+  "title": "Ырықсыз етіс (Passive)",
   "url": "en/lectures/week-14.html",
   "topics": [
    {
@@ -819,11 +819,11 @@ window.CS50KZ_COURSE_LECTURES["en"] = [
     "id": "goals"
    },
    {
-    "t": "Ырық етіс: be + V3",
+    "t": "Ырықсыз етіс: be + V3",
     "id": "passive"
    },
    {
-    "t": "Ырық етісті қашан қолданамыз",
+    "t": "Ырықсыз етісті қашан қолданамыз",
     "id": "when"
    },
    {
@@ -1007,7 +1007,7 @@ window.CS50KZ_COURSE_LECTURES["en"] = [
     "id": "polite"
    },
    {
-    "t": "Ырық етіс (Passive) толық",
+    "t": "Ырықсыз етіс (Passive) толық",
     "id": "passive"
    },
    {
