@@ -813,6 +813,7 @@ def main():
             own_files += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / code).glob("*.html") if f.name != "index.html")  # курстың ортақ беттері
         own_files += ["assets/js/own-viz.js", "assets/css/own-viz.css"]  # дербес курстардың интерактивті визуализаторлары
         own_files += ["assets/js/en-course.js", "assets/js/en-tools.js", "assets/css/en-course.css"]  # ағылшын курсының жаттығу қозғалтқышы мен құралдары
+        own_files += ["assets/js/games-en.js", "assets/css/en-games.css", "assets/js/en-trainer.js", "assets/js/en-home.js"]  # ағылшын ойындары, сөздік жаттықтырғышы, курс беті
         own_files += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / "assets/data").glob("en-*.js"))
         own_files = [f for f in own_files if (ROOT / f).exists()]
         sw = swp.read_text(encoding="utf-8")

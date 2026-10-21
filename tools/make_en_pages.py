@@ -146,7 +146,7 @@ def index_page():
              ("placement.html", "Деңгей анықтау тесті", "30 шақты сұрақ; нәтиже «шамамен A?-B?» және қай сабақтан бастауға болатынын көрсетеді. Болжамды құрал.")]
     tool_html = "\n".join(f'        <a class="oc-card en-tool-card" href="{h}"><h3>{t}</h3><p>{d}</p></a>' for h, t, d in tools)
     return head("English: Ағылшын тілі A0-C1 - CS50 қазақша",
-                "Ағылшын тілі A0-C1: авторлық қазақша курс. Грамматика, сөздік, оқу, жазу, тыңдау мен айту жаттығулары, IT-ағылшын. 24 сабақ, деңгей анықтау тесті.", "../") + shell("../") + f'''
+                "Ағылшын тілі A0-C1: авторлық қазақша курс. Грамматика, сөздік, оқу, жазу, тыңдау мен айту жаттығулары, IT-ағылшын. 24 сабақ, деңгей анықтау тесті.", "../", extra_css='  <link rel="stylesheet" href="../assets/css/en-course.css">', extra_js='\n  <script defer src="../assets/js/en-home.js"></script>') + shell("../") + f'''
   <div class="layout single wide">
     <article class="content course-home own-course en-course" id="main">
       <section class="py-hero oc-hero" data-c="en" style="--hc:{COLOR};--hc2:{COLOR2};--hglow:{GLOW}">
@@ -285,7 +285,7 @@ TOOLS = {
 def tool_page(key):
     label, h1, intro, desc, scripts = TOOLS[key]
     js = "".join(f'\n  <script defer src="{s}"></script>' for s in scripts) + \
-         '\n  <script defer src="../assets/js/en-course.js"></script>\n  <script defer src="../assets/js/en-tools.js"></script>'
+         '\n  <script defer src="../assets/js/en-course.js"></script>' + ('\n  <script defer src="../assets/js/en-trainer.js"></script>' if key in ("vocab", "grammar", "phrasebank") else "") + '\n  <script defer src="../assets/js/en-tools.js"></script>'
     warn = ('<div class="callout warn"><span class="callout-title">Болжамды құрал</span><p>Нәтиже ресми емтихан деңгейі емес және IELTS/TOEFL баламасы емес: тек қай сабақтан бастауға болатынын болжайды. '
             'Контентті тәжірибелі ағылшын тілі мұғалімімен тексерген жөн.</p></div>' if key == "placement" else "")
     return head(f"English · {label} - CS50 қазақша", desc, "../", extra_css='  <link rel="stylesheet" href="../assets/css/en-course.css">', extra_js=js) + shell("../") + f'''

@@ -10,6 +10,7 @@
  */
 (function () {
   "use strict";
+  if (window.CS50KZ_EN) return; /* бір бетте екі рет қосылса да, қозғалтқыш бір рет іске қосылады */
 
   /* ---------- Қарапайым көмекшілер ---------- */
   var LS = {
@@ -120,6 +121,16 @@
       if (K().logDay) K().logDay();
       return e;
     },
+    /* 3 деңгейлі баға: 0 - білмедім (1-қорап), 1 - қиын (қорап өзгермейді, ертең), 2 - білдім (келесі қорап). Формат {b,due,m} сақталады, қосымша: n (қайталау), x (қате), t (соңғы уақыт) */
+    grade: function (id, q) {
+      var v = this.all(), e = v[id] || { b: 1, due: 0, m: 0 };
+      if (q >= 2) e.b = Math.min(5, e.b + 1); else if (q <= 0) { e.b = 1; e.m = 0; e.x = (e.x || 0) + 1; }
+      e.due = Date.now() + (q === 1 ? DAY : BOX_DAYS[e.b] * DAY);
+      e.n = (e.n || 0) + 1; e.t = Date.now();
+      v[id] = e; this.save(v);
+      if (K().logDay) K().logDay();
+      return e;
+    },
     due: function (id) { var e = this.all()[id]; return !e || (e.due || 0) <= Date.now(); },
     count: function () { var v = this.all(), n = 0; for (var k in v) if (v[k].m === 1 || v[k].b >= 4) n++; return n; }
   };
@@ -143,6 +154,7 @@
     exSave(ctx.key, rec);
     ctx.result.className = "en-ex-result " + (ok ? "ok" : "bad");
     ctx.result.textContent = (ok ? "✓ Керемет! " : "Қайта көріңіз. ") + "Нәтиже: " + got + " / " + total + (ok ? "" : ". Қателерді түзетіп, қайта тексеріңіз.");
+    ctx.el.classList.toggle("is-retry", !ok && !ctx.el.classList.contains("is-done"));
     if (ok) markDone(ctx.el, true, !prev.ok);
     return ok;
   }
@@ -438,6 +450,44 @@
     });
   }
 
+  /* Сабақ бетін оқуға ыңғайлы ету: тек класс/атрибут қосады, бар разметканы өзгертпейді */
+  function decorate() {
+    var root = document.getElementById("main");
+    if (!root) return;
+    root.querySelectorAll(".en-w, .en-bad, .en-good, .term-en").forEach(function (e) { if (!e.hasAttribute("lang")) e.setAttribute("lang", "en"); });
+    root.querySelectorAll(".callout").forEach(function (c) {
+      var t = c.querySelector(".callout-title"), tx = t ? t.textContent.toLowerCase() : "";
+      if (/қазақшамен салыстыр/.test(tx)) c.classList.add("en-kzcmp");
+      else if (/ереже|rule/.test(tx)) c.classList.add("en-rulebox");
+      else if (/мысал|example/.test(tx)) c.classList.add("en-exbox");
+      else if (/қате|mistake/.test(tx)) c.classList.add("en-mistbox");
+    });
+    root.querySelectorAll("li").forEach(function (li) { if (li.querySelector(".en-bad") && li.querySelector(".en-good")) li.classList.add("en-mis"); });
+    var mh = document.getElementById("mistakes");
+    if (mh) mh.classList.add("en-h-mistakes");
+    var it = document.getElementById("it-english");
+    if (it) it.classList.add("en-h-it");
+    /* Кеңес: жаттығудағы көмек әдепкіде жабық, батырма арқылы ашылады */
+    root.querySelectorAll(".en-ex .en-hint").forEach(function (hint) {
+      if (hint.dataset.enHint || hint.textContent.trim().indexOf("Кеңес") !== 0) return;
+      hint.dataset.enHint = "1";
+      var id = "enh" + (++UID), btn = h("button", { type: "button", class: "en-hint-btn", "aria-expanded": "false", "aria-controls": id, text: "💡 Кеңес" });
+      hint.id = id; hint.hidden = true;
+      btn.addEventListener("click", function () { var open = hint.hidden; hint.hidden = !open; btn.setAttribute("aria-expanded", String(open)); });
+      hint.before(btn, " ");
+    });
+    /* Оқу прогресі: ақпараттық жіңішке жолақ (экран оқығышқа жасырын) */
+    if (document.querySelector(".lecture-head[data-n]") && !document.querySelector(".en-readbar")) {
+      var bar = h("div", { class: "en-readbar", "aria-hidden": "true" }, h("i"));
+      document.body.append(bar);
+      var upd = function () {
+        var d = document.documentElement, max = d.scrollHeight - innerHeight;
+        bar.firstChild.style.width = (max > 0 ? Math.min(100, Math.round(scrollY / max * 100)) : 0) + "%";
+      };
+      addEventListener("scroll", upd, { passive: true }); upd();
+    }
+  }
+
   function init() {
     var exs = document.querySelectorAll(".en-ex");
     var needTts = document.querySelector(".en-say, .en-vocab, .en-ex[data-type=listen], .en-ex[data-type=speak]");
@@ -449,6 +499,7 @@
     var h2 = document.getElementById("exercises");
     if (exs.length && h2 && !document.querySelector(".en-ex-sum")) h2.after(h("p", { class: "en-ex-sum", "aria-live": "polite" }));
     exs.forEach(mountEx);
+    decorate();
     updateSummary();
     ttsNotice();
   }

@@ -183,3 +183,211 @@ button.en-chip:hover { border-color: var(--en); }
 .en-dialog { margin: 14px 0; display: grid; gap: 8px; }
 .en-dialog p { margin: 0; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--en); border-radius: 10px; }
 .en-dialog small { color: var(--muted); }
+
+/* =====================================================================
+ * Дизайн жақсартулары (сабақ беті): оқуға ыңғайлы типография, блоктар, жаттығу күйлері, a11y.
+ * Бар разметканы өзгертпейді: тек CSS пен en-course.js қосатын кластар (en-kzcmp, en-mis, en-hint-btn...).
+ * ===================================================================== */
+:root {
+  --en-kz-bg: #f4f1fb; --en-kz-line: #6d49b8; --en-rule-bg: #e8f1fd; --en-rule-line: #2459b0;
+  --en-mis-bg: #fdf0ed; --en-it-bg: #fff6e0; --en-it-line: #b7791f;
+  --lv-a0: #0f766e; --lv-a1: #2563eb; --lv-a2: #7c3aed; --lv-b1: #c2410c; --lv-b2: #be185d; --lv-c1: #92400e;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --en-kz-bg: #231d38; --en-kz-line: #b39ef0; --en-rule-bg: #15263f; --en-rule-line: #7fb2ff; --en-mis-bg: #33201e; --en-it-bg: #33290f; --en-it-line: #f0c05a;
+    --lv-a0: #5eead4; --lv-a1: #8bb4ff; --lv-a2: #c4b0ff; --lv-b1: #ffb27d; --lv-b2: #ff9fc9; --lv-c1: #f5cf8a; }
+}
+:root[data-theme="dark"] { --en-kz-bg: #231d38; --en-kz-line: #b39ef0; --en-rule-bg: #15263f; --en-rule-line: #7fb2ff; --en-mis-bg: #33201e; --en-it-bg: #33290f; --en-it-line: #f0c05a;
+  --lv-a0: #5eead4; --lv-a1: #8bb4ff; --lv-a2: #c4b0ff; --lv-b1: #ffb27d; --lv-b2: #ff9fc9; --lv-c1: #f5cf8a; }
+
+/* типография: ағылшын мәтіні (lang="en") мен қазақша мәтінді айыру */
+body[data-course="en"] .content p, body[data-course="en"] .content li { line-height: 1.7; }
+body[data-course="en"] .content [lang="en"], body[data-course="en"] .content q { font-feature-settings: "liga" 1; }
+body[data-course="en"] .content q[lang="en"], body[data-course="en"] .en-s [lang="en"] { font-weight: 600; font-style: normal; color: var(--text); quotes: none; }
+body[data-course="en"] .content em:not(.en-bad):not(.en-good) { font-style: normal; font-weight: 600; background: linear-gradient(transparent 62%, var(--en-soft) 62%); padding: 0 2px; }
+body[data-course="en"] .en-s small, body[data-course="en"] .en-examples small, body[data-course="en"] .en-dialog small { font-style: italic; }
+body[data-course="en"] .content h2 { margin-top: 2.2em; padding-bottom: 6px; border-bottom: 2px solid var(--en-line); }
+body[data-course="en"] .content h3 { margin-top: 1.6em; }
+.en-w[lang="en"] { letter-spacing: .005em; }
+
+/* «Қазақшамен салыстыру»: күлгін ескерту-блок */
+.callout.en-kzcmp { background: var(--en-kz-bg); border-color: var(--en-kz-line); border-left-width: 5px; }
+.callout.en-kzcmp .callout-title { color: var(--en-kz-line); }
+.callout.en-kzcmp .callout-title::before { content: "ҚАЗ ↔ ENG  "; font-weight: 800; letter-spacing: .04em; font-size: .8em; opacity: .85; }
+.callout.en-rulebox { background: var(--en-rule-bg); border-color: var(--en-rule-line); border-left-width: 5px; }
+.callout.en-rulebox .callout-title { color: var(--en-rule-line); }
+.callout.en-exbox { border-left-width: 5px; border-color: var(--en); background: var(--en-soft); }
+.callout.en-mistbox { background: var(--en-mis-bg); border-color: var(--bad); border-left-width: 5px; }
+.callout .callout-title { font-weight: 800; }
+
+/* «Жиі қателер»: қате мен дұрыс жұбы */
+.en-h-mistakes { border-bottom-color: var(--bad) !important; }
+.en-h-it { border-bottom-color: var(--en-it-line) !important; }
+li.en-mis { list-style: none; margin: 10px 0 10px -1.2em; padding: 10px 14px; background: var(--en-mis-bg); border: 1px solid var(--border); border-left: 5px solid var(--bad); border-radius: 10px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+li.en-mis .en-bad { text-decoration: line-through; text-decoration-thickness: 2px; text-decoration-color: var(--bad); }
+li.en-mis .en-bad::before { content: "✗ "; text-decoration: none; display: inline-block; }
+li.en-mis .en-good::before { content: "✓ "; }
+.en-bad, .en-good { font-style: normal; }
+.en-good { background: var(--ok-soft); padding: 0 6px; border-radius: 6px; }
+.en-bad { background: var(--bad-soft); padding: 0 6px; border-radius: 6px; }
+/* IT-ағылшын бөлімі */
+.en-h-it ~ .terminal, .en-h-it + p + .terminal { border-left: 4px solid var(--en-it-line); }
+
+/* Жаттығу картасы: күйлері (әдепкі / қайталау / дұрыс) */
+.en-ex.task { border-left: 5px solid var(--border); transition: border-color .2s, box-shadow .2s; }
+.en-ex.task:focus-within { box-shadow: 0 0 0 3px var(--en-line); }
+.en-ex.task.is-retry { border-left-color: var(--bad); }
+.en-ex.task.is-done { border-left-color: var(--ok); }
+.en-ex-result.bad::before { content: "✗ "; }
+.en-ex-result:not(.ok):not(.bad):empty { display: none; }
+.en-q.is-bad { background: var(--bad-soft); }
+.en-hint[hidden] { display: none; }
+.en-hint-btn { font: 700 13.5px var(--font); padding: 4px 12px; min-height: 32px; border-radius: 999px; border: 1px dashed var(--en-line); background: transparent; color: var(--en); cursor: pointer; }
+.en-hint-btn:hover { background: var(--en-soft); }
+.en-hint-btn[aria-expanded="true"] { background: var(--en-soft); border-style: solid; }
+.en-hint { display: inline-block; margin: 4px 0 0; padding: 4px 10px; border-left: 3px solid var(--gold); background: var(--surface-2); border-radius: 0 8px 8px 0; color: var(--text); }
+.en-hint-btn:focus-visible, .en-opt:focus-within, .en-crit-i:focus-within { outline: 3px solid var(--gold); outline-offset: 2px; }
+.en-opt input:focus-visible, .en-crit-i input:focus-visible, .en-self input:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.en-ex-sum { display: inline-block; padding: 6px 14px; border-radius: 999px; background: var(--en-soft); border: 1px solid var(--en-line); }
+
+/* оқу прогрессі */
+.en-readbar { position: fixed; left: 0; top: 0; right: 0; height: 3px; z-index: 60; pointer-events: none; }
+.en-readbar i { display: block; height: 100%; width: 0; background: var(--en); }
+@media print { .en-readbar { display: none; } }
+
+/* сөздік карточкасы: ағылшынша сөз бетіне көрнекі акцент */
+.en-vocab li, .en-vitem { border-left: 4px solid var(--en-line); }
+.en-vocab li.known, .en-vitem.known { border-left-color: var(--ok); }
+.en-w { font-size: 19px; }
+.en-m { color: var(--text); }
+.en-p { font-style: italic; }
+
+/* мобильді 390px */
+@media (max-width: 560px) {
+  body[data-course="en"] .content h2 { margin-top: 1.8em; }
+  li.en-mis { margin-left: 0; flex-direction: column; }
+  .en-ex.task { border-left-width: 4px; padding-left: 12px; padding-right: 12px; }
+  .en-ex-ctrl .btn { flex: 1 1 140px; }
+  .en-blank { font-size: 16px; }
+  .en-opt { padding: 10px; }
+  .en-subnav a { padding: 8px 12px; font-size: 13.5px; }
+}
+@media (prefers-reduced-motion: reduce) { .en-ex.task { transition: none; } }
+.en-vocab li > .en-say, .en-vitem .en-vhead .en-say { align-self: flex-start; }
+.en-vocab li > .en-w { display: inline; }
+
+/* Сөздік жаттықтырғышы: статистика, режимдер, нұсқалар */
+.en-vstats { border: 1px solid var(--en-line); background: var(--en-soft); border-radius: 16px; padding: 14px 16px; margin: 12px 0; display: grid; gap: 10px; }
+.en-vs-top { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); gap: 14px 22px; align-items: center; }
+.en-vs-t { margin: 0 0 6px; }
+.en-vs-ok { color: var(--ok); font-weight: 700; }
+.en-vs-sel { display: inline-flex; align-items: center; gap: 6px; margin-top: 8px; font-size: 14px; }
+.en-vs-num { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.en-vs-num li { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px 10px; display: flex; flex-direction: column; min-width: 0; }
+.en-vs-num b { font: 800 20px var(--font); color: var(--en); }
+.en-vs-num span { font-size: 12.5px; color: var(--muted); }
+.en-vs-boxes > summary { cursor: pointer; min-height: 40px; display: flex; align-items: center; font-weight: 600; }
+.en-box-list { list-style: none; margin: 6px 0; padding: 0; display: grid; gap: 6px; }
+.en-box-list li { display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+.en-top-modes, .en-modes { margin: 6px 0 10px; }
+.en-tr-head { display: grid; gap: 8px; margin-bottom: 8px; }
+.en-card-stage .en-card { margin: 0 auto; }
+.en-center { justify-content: center; }
+.en-keyhint { color: var(--muted); font-size: 13px; text-align: center; margin: 6px 0 0; }
+.en-quiz-opts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin: 12px 0 6px; }
+.en-qopt { min-height: 52px; display: flex; gap: 8px; align-items: center; justify-content: flex-start; text-align: left; overflow-wrap: anywhere; }
+.en-qk { color: var(--muted); font-weight: 600; }
+.en-qopt.correct { border-color: var(--ok); background: var(--ok-soft); }
+.en-qopt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.en-play-big { min-height: 52px; }
+.en-hard { border-color: var(--gold); }
+.en-spell-in { text-align: center; margin: 8px auto 0; }
+.en-q.is-bad { background: transparent; }
+@media (max-width: 560px) {
+  .en-vs-top { grid-template-columns: minmax(0, 1fr); }
+  .en-quiz-opts { grid-template-columns: minmax(0, 1fr); }
+  .en-card-stage { max-width: none; }
+}
+
+/* Грамматика: жиі қателер; IT-фразалар: жаттықтыру */
+.en-plist[hidden], .en-glist[hidden], .en-mis-list[hidden], .en-drill[hidden], .en-mis-practice[hidden], .en-mis-rev[hidden], .en-mis-show[hidden] { display: none; }
+.en-views { margin: 4px 0 8px; }
+.en-mis-list { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); gap: 12px; margin-top: 8px; }
+.en-mis-card { background: var(--surface); border: 1px solid var(--border); border-left: 5px solid var(--bad); border-radius: 12px; padding: 12px 14px; display: grid; gap: 8px; align-content: start; min-width: 0; }
+.en-mis-card p { margin: 0; overflow-wrap: anywhere; }
+.en-mis-card .en-bad { text-decoration: line-through; text-decoration-color: var(--bad); }
+.en-why { color: var(--muted); font-size: 14.5px; }
+.en-mis-practice.on { background: var(--en); color: var(--surface); }
+.en-drill-stage { max-width: 640px; margin-top: 12px; }
+.en-drill .en-card { text-align: center; }
+.en-mask { font-family: var(--mono); letter-spacing: .02em; overflow-wrap: anywhere; font-size: 20px; }
+.en-mask.shown { font-family: var(--font); color: var(--en); }
+
+/* Курс беті: «Бүгін не істеймін», деңгей жолы, нәтижелер (assets/js/en-home.js) */
+.en-home { display: grid; gap: 28px; margin: 22px 0 10px; }
+.en-home h2 { margin: 0 0 10px; }
+.en-today-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+.en-tcard { background: var(--surface); border: 1px solid var(--border); border-top: 4px solid var(--en); border-radius: 16px; padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.en-t-words { border-top-color: var(--gold); }
+.en-t-place { border-top-color: var(--lv-a2); }
+.en-t-k { font: 700 12.5px var(--font); letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.en-t-v { font: 800 20px/1.25 var(--font); overflow-wrap: anywhere; }
+.en-t-s { color: var(--muted); font-size: 14.5px; }
+.en-t-go { margin-top: auto; align-self: flex-start; min-height: 44px; }
+.en-tcard .en-t-s { margin-bottom: 8px; }
+.en-meter { position: relative; height: 10px; border-radius: 999px; background: var(--surface-2); overflow: hidden; margin: 2px 0 10px; }
+.en-meter i { position: absolute; left: 0; top: 0; bottom: 0; background: var(--en); border-radius: 999px; }
+.en-meter i.r { background: var(--en-line); }
+.en-meter-big { height: 14px; }
+.en-path-note { margin: 0 0 14px; color: var(--muted); }
+.en-path-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; position: relative; counter-reset: lv; }
+.en-path-list::before { content: ""; position: absolute; left: 6%; right: 6%; top: 34px; height: 4px; background: var(--border); border-radius: 4px; z-index: 0; }
+.en-node { position: relative; z-index: 1; min-width: 0; --lc: var(--lv-a0); }
+.en-node.lv-a0 { --lc: var(--lv-a0); } .en-node.lv-a1 { --lc: var(--lv-a1); } .en-node.lv-a2 { --lc: var(--lv-a2); }
+.en-node.lv-b1 { --lc: var(--lv-b1); } .en-node.lv-b2 { --lc: var(--lv-b2); } .en-node.lv-c1 { --lc: var(--lv-c1); }
+.en-node-a { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 4px; padding: 0 4px 12px; color: var(--text); text-decoration: none; border-radius: 14px; height: 100%; }
+.en-node-a, .en-node-a:hover, .en-node-a * { text-decoration: none; }
+.en-node-a:hover .en-node-dot { transform: translateY(-2px); }
+.en-node-a:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+.en-node-dot { width: 68px; height: 68px; border-radius: 50%; display: grid; place-items: center; align-content: center; background: var(--surface); border: 4px solid var(--lc); transition: transform .15s; position: relative; }
+.en-node-dot b { font: 800 15px var(--font); color: var(--lc); line-height: 1; }
+.en-node-ico { font-size: 18px; line-height: 1; }
+.is-plan .en-node-dot { border-style: dashed; opacity: .85; }
+.is-full .en-node-dot { background: var(--lc); }
+.is-full .en-node-dot b { color: var(--surface); }
+.is-read .en-node-dot::after { content: "✓"; position: absolute; right: -4px; bottom: -4px; width: 24px; height: 24px; border-radius: 50%; background: var(--ok); color: #fff; font: 800 14px/24px var(--font); text-align: center; }
+.en-node-name { font: 700 14px/1.25 var(--font); overflow-wrap: anywhere; }
+.en-node-st { font-size: 12.5px; color: var(--muted); }
+.en-node-bar { display: block; position: relative; width: 100%; max-width: 120px; height: 8px; border-radius: 999px; background: var(--surface-2); overflow: hidden; }
+.en-node-bar i { position: absolute; left: 0; top: 0; bottom: 0; }
+.en-node-bar i.r { background: color-mix(in srgb, var(--lc) 35%, transparent); }
+.en-node-bar i.d { background: var(--lc); }
+.en-node-meta { font-size: 12.5px; color: var(--muted); }
+.en-node-rec { font: 700 11.5px var(--font); padding: 2px 8px; border-radius: 999px; background: var(--en-soft); border: 1px solid var(--en-line); color: var(--en); }
+.en-overall { margin-top: 14px; }
+.en-overall-t { margin: 0 0 6px; }
+.en-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; font-size: 13px; color: var(--muted); margin: 0; }
+.en-legend span { display: inline-block; width: 12px; height: 12px; border-radius: 3px; }
+.en-legend .k1 { background: var(--en); } .en-legend .k2 { background: var(--en-line); } .en-legend .k3 { background: var(--surface-2); border: 1px solid var(--border); }
+.en-res-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 10px; }
+.en-res-grid li { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 12px 14px; display: flex; flex-direction: column; min-width: 0; }
+.en-res-grid b { font: 800 22px var(--font); color: var(--en); overflow-wrap: anywhere; }
+.en-res-grid span { font-size: 13px; color: var(--muted); }
+.en-res-note { color: var(--muted); font-size: 14px; margin: 10px 0; }
+.en-games-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.en-games-t { font-weight: 700; margin-right: 4px; }
+.en-gchip { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--en-line); background: var(--en-soft); color: var(--text); font: 600 14.5px var(--font); text-decoration: none; }
+.en-gchip:hover { border-color: var(--en); }
+.en-gchip:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+@media (max-width: 900px) {
+  .en-today-grid { grid-template-columns: minmax(0, 1fr); }
+  .en-res-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .en-path-list { grid-template-columns: minmax(0, 1fr); gap: 0; padding-left: 4px; }
+  .en-path-list::before { left: 38px; right: auto; top: 30px; bottom: 30px; width: 4px; height: auto; }
+  .en-node-a { display: grid; grid-template-columns: 60px minmax(0, 1fr); text-align: left; align-items: center; column-gap: 14px; row-gap: 2px; padding: 8px 0; }
+  .en-node-dot { width: 60px; height: 60px; grid-row: 1 / span 4; grid-column: 1; }
+  .en-node-a > :not(.en-node-dot) { grid-column: 2; }
+  .en-node-bar { max-width: none; }
+  .en-node-rec { justify-self: start; }
+}
+@media (prefers-reduced-motion: reduce) { .en-node-dot { transition: none; } }

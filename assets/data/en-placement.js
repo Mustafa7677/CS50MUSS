@@ -1,10 +1,35 @@
 /* © 2026 Sagid Mustafa. All Rights Reserved. Ағылшын тілі A0-C1 курсының деректері (дербес авторлық материал, өз сөзімізбен жазылған). */
 /* Формат: docs/EN-COURSE-GUIDE.md. Әр жазба бір жолда. Мазмұн агенті осы файлды толықтырады. */
-window.CS50KZ_EN_PLACEMENT = { version: 1, questions: [
-  {"id": "pl-a0-1", "lvl": "a0", "q": "She ___ a teacher.", "o": ["am", "is", "are", "be"], "a": 1, "e": "she + is."},
-  {"id": "pl-a1-1", "lvl": "a1", "q": "I ___ to work by bus every day.", "o": ["go", "goes", "am going", "went"], "a": 0, "e": "every day - Present Simple; I + go."},
-  {"id": "pl-a2-1", "lvl": "a2", "q": "We ___ to the cinema last Sunday.", "o": ["go", "goed", "went", "have gone"], "a": 2, "e": "last Sunday - Past Simple; go -> went."},
-  {"id": "pl-b1-1", "lvl": "b1", "q": "I ___ in this company since 2020.", "o": ["work", "am working", "worked", "have worked"], "a": 3, "e": "since + Present Perfect."},
-  {"id": "pl-b2-1", "lvl": "b2", "q": "If I ___ more time yesterday, I would have finished the task.", "o": ["have", "had", "had had", "would have"], "a": 2, "e": "3-түрлі шарт: if + had + V3."},
-  {"id": "pl-c1-1", "lvl": "c1", "q": "Not only ___ the code slow, but it was also full of bugs.", "o": ["was", "did", "is", "has"], "a": 0, "e": "Not only-дан кейін инверсия: was the code."}
+/* Деңгей тесті - болжамды құрал: 30 сұрақ, әр деңгейде 5; diff - қиындық белгісі (easy / medium / hard). Нәтиже ресми деңгей емес. */
+window.CS50KZ_EN_PLACEMENT = { version: 2, questions: [
+  {"id": "pl-a0-1", "lvl": "a0", "diff": "easy", "q": "She ___ a teacher.", "o": ["am", "is", "are", "be"], "a": 1, "e": "she + is."},
+  {"id": "pl-a0-2", "lvl": "a0", "diff": "easy", "q": "I ___ from Kazakhstan.", "o": ["is", "am", "are", "be"], "a": 1, "e": "I + am."},
+  {"id": "pl-a0-3", "lvl": "a0", "diff": "medium", "q": "This is ___ apple.", "o": ["a", "two", "an", "some"], "a": 2, "e": "apple дауысты дыбыстан басталады: an apple."},
+  {"id": "pl-a0-4", "lvl": "a0", "diff": "medium", "q": "___ you a developer? - Yes, I am.", "o": ["Do", "Are", "Is", "Does"], "a": 1, "e": "you + are: сұрақта Are you ...?"},
+  {"id": "pl-a0-5", "lvl": "a0", "diff": "hard", "q": "My sister ___ a new laptop.", "o": ["have", "has", "haves", "is have"], "a": 1, "e": "3-жақ бірлікте have -> has."},
+  {"id": "pl-a1-1", "lvl": "a1", "diff": "easy", "q": "I ___ to work by bus every day.", "o": ["go", "goes", "am going", "went"], "a": 0, "e": "every day - Present Simple; I + go."},
+  {"id": "pl-a1-2", "lvl": "a1", "diff": "easy", "q": "Please be quiet. She ___ TV at the moment.", "o": ["watches", "is watching", "watch", "watched"], "a": 1, "e": "at the moment - Present Continuous."},
+  {"id": "pl-a1-3", "lvl": "a1", "diff": "medium", "q": "There ___ three bugs in the report.", "o": ["are", "is", "were", "be"], "a": 0, "e": "there are + көпше зат есім."},
+  {"id": "pl-a1-4", "lvl": "a1", "diff": "medium", "q": "I can't ___ the file.", "o": ["opens", "opening", "open", "to open"], "a": 2, "e": "can't + етістіктің негізгі түрі."},
+  {"id": "pl-a1-5", "lvl": "a1", "diff": "hard", "q": "He ___ coffee in the morning.", "o": ["don't drink", "doesn't drink", "not drinks", "isn't drink"], "a": 1, "e": "3-жақ бірлікте болымсыз: doesn't + негізгі етістік."},
+  {"id": "pl-a2-1", "lvl": "a2", "diff": "easy", "q": "We ___ to the cinema last Sunday.", "o": ["go", "goed", "went", "have gone"], "a": 2, "e": "last Sunday - Past Simple; go -> went."},
+  {"id": "pl-a2-2", "lvl": "a2", "diff": "easy", "q": "I'm going to ___ the report tomorrow.", "o": ["sending", "send", "sent", "to send"], "a": 1, "e": "going to + негізгі форма."},
+  {"id": "pl-a2-3", "lvl": "a2", "diff": "medium", "q": "This laptop is ___ than that one.", "o": ["cheapest", "more cheap", "cheaper", "cheap"], "a": 2, "e": "қысқа сын есімнің салыстырмалы шырайы: cheaper."},
+  {"id": "pl-a2-4", "lvl": "a2", "diff": "medium", "q": "I have ___ money, so I can't buy it.", "o": ["a few", "many", "a little", "few of"], "a": 2, "e": "money саналмайды: a little."},
+  {"id": "pl-a2-5", "lvl": "a2", "diff": "hard", "q": "She ___ when I called her.", "o": ["sleeps", "was sleeping", "has slept", "sleep"], "a": 1, "e": "өткендегі белгілі сәтте созылған әрекет: Past Continuous."},
+  {"id": "pl-b1-1", "lvl": "b1", "diff": "easy", "q": "I ___ in this company since 2020.", "o": ["work", "am working", "worked", "have worked"], "a": 3, "e": "since + Present Perfect."},
+  {"id": "pl-b1-2", "lvl": "b1", "diff": "easy", "q": "If it ___ tomorrow, we will stay at home.", "o": ["rains", "will rain", "rained", "would rain"], "a": 0, "e": "1-түрлі шарт: if + Present Simple, will + етістік."},
+  {"id": "pl-b1-3", "lvl": "b1", "diff": "medium", "q": "The bug ___ by the tester yesterday.", "o": ["found", "was found", "has find", "is finding"], "a": 1, "e": "Ырық етіс, Past Simple: was found."},
+  {"id": "pl-b1-4", "lvl": "b1", "diff": "medium", "q": "The developer ___ wrote this code is on holiday.", "o": ["who", "which", "whose", "what"], "a": 0, "e": "Адамға қатысты анықтауыш: who."},
+  {"id": "pl-b1-5", "lvl": "b1", "diff": "hard", "q": "I have never ___ to London.", "o": ["be", "been", "was", "being"], "a": 1, "e": "Present Perfect: have never been."},
+  {"id": "pl-b2-1", "lvl": "b2", "diff": "easy", "q": "If I ___ more time yesterday, I would have finished the task.", "o": ["have", "had", "had had", "would have"], "a": 2, "e": "3-түрлі шарт: if + had + V3."},
+  {"id": "pl-b2-2", "lvl": "b2", "diff": "easy", "q": "I wish I ___ more time to prepare.", "o": ["have", "had", "would have", "will have"], "a": 1, "e": "Қазіргі арман: wish + Past Simple."},
+  {"id": "pl-b2-3", "lvl": "b2", "diff": "medium", "q": "Could you tell me where ___?", "o": ["is the file", "the file is", "does the file", "the file does"], "a": 1, "e": "Жанама сұрақта жай сөз реті."},
+  {"id": "pl-b2-4", "lvl": "b2", "diff": "medium", "q": "She suggested ___ the function.", "o": ["to split", "splitting", "split", "to splitting"], "a": 1, "e": "suggest + -ing."},
+  {"id": "pl-b2-5", "lvl": "b2", "diff": "hard", "q": "___ the warnings, he deployed on Friday.", "o": ["Although", "Despite", "However", "Because"], "a": 1, "e": "Despite + зат есім."},
+  {"id": "pl-c1-1", "lvl": "c1", "diff": "easy", "q": "Not only ___ the code slow, but it was also full of bugs.", "o": ["was", "did", "is", "has"], "a": 0, "e": "Not only-дан кейін инверсия: was the code."},
+  {"id": "pl-c1-2", "lvl": "c1", "diff": "easy", "q": "The build failed, so someone ___ the config.", "o": ["must have changed", "should have changing", "might to change", "can't changed"], "a": 0, "e": "Қорытынды (сенімділік): must have + V3."},
+  {"id": "pl-c1-3", "lvl": "c1", "diff": "medium", "q": "It is essential that every request ___ logged.", "o": ["is", "be", "was", "will be"], "a": 1, "e": "Субъюнктив: that-сөйлемде негізгі форма (be)."},
+  {"id": "pl-c1-4", "lvl": "c1", "diff": "medium", "q": "Rarely ___ this module need changes.", "o": ["it does", "does", "do", "is"], "a": 1, "e": "Rarely-ден кейін инверсия: does this module need."},
+  {"id": "pl-c1-5", "lvl": "c1", "diff": "hard", "q": "___ I need is a clear specification.", "o": ["That", "What", "It", "Which"], "a": 1, "e": "What-cleft: What I need is ..."}
 ] };

@@ -116,46 +116,31 @@
       listBox.replaceChildren(ul, f.length > 400 ? h("p", { class: "en-info", text: "Алғашқы 400 сөз көрсетілді; іздеу не сүзгі қолданыңыз." }) : null);
     }
 
-    /* --- Интервалды қайталау карточкалары (Лейтнер) --- */
-    var dir = "en";
-    function openDeck() {
-      var pool = filtered(), due = pool.filter(function (w) { return VS.due(w.id); });
-      st.mode = "deck";
+    /* --- Жаттықтырғыш: карточка, көп таңдау, жазу, дыбыс (en-trainer.js) --- */
+    var dirState = { v: "en" };
+    var modeBtns = {};
+    function setMode(m) {
+      st.mode = m;
+      var T = E.trainer;
+      Object.keys(modeBtns).forEach(function (k) { var on = k === m; modeBtns[k].classList.toggle("on", on); modeBtns[k].setAttribute("aria-pressed", String(on)); });
+      if (deckBox._cleanup) deckBox._cleanup();
+      if (m === "list") { deckBox.hidden = true; listBox.hidden = false; cardBtn.textContent = "Карточкалармен қайталау"; render(); return; }
       listBox.hidden = true; deckBox.hidden = false; cardBtn.textContent = "Тізімге оралу";
-      var order = E.shuffle(due), i = 0, knew = 0;
-      var dirSel = h("select", { class: "en-sel", "aria-label": "Карточка бағыты" }, h("option", { value: "en", text: "English → Қазақша" }), h("option", { value: "kz", text: "Қазақша → English" }));
-      dirSel.value = dir;
-      dirSel.addEventListener("change", function () { dir = dirSel.value; draw(); });
-      var stage = h("div", { class: "en-card-stage", "aria-live": "polite" });
-      deckBox.replaceChildren(h("p", { class: "en-info", text: "Қайталауға дайын карточка: " + due.length + " / " + pool.length + ". «Білдім» десеңіз, карточка кейінірек (1, 3, 7, 14 күннен соң) қайта шығады." }), dirSel, stage);
-      function draw() {
-        if (!pool.length) { stage.replaceChildren(h("p", { text: "Қайталайтын сөз жоқ: сүзгіні өзгертіңіз." })); return; }
-        if (!order.length) { stage.replaceChildren(h("div", { class: "en-empty", role: "status" }, h("p", { class: "en-empty-t", text: "Бүгін қайталайтын карточка жоқ ✓" }), h("p", { text: "Кейін оралыңыз немесе тізімнен жаңа сөздерді қарап шығыңыз." }))); return; }
-        if (i >= order.length) { stage.replaceChildren(h("div", { class: "en-empty", role: "status" }, h("p", { class: "en-empty-t", text: "Дайын! Білдім: " + knew + " / " + order.length }), h("p", { text: "Білмеген сөздер ертең қайта шығады." }))); return; }
-        var w = order[i], flipped = false;
-        var front = dir === "en" ? w.w : w.kz, back = dir === "en" ? w.kz : w.w;
-        var card = h("div", { class: "en-card" }, h("p", { class: "en-card-n", text: (i + 1) + " / " + order.length }),
-          h("p", { class: "en-card-f", lang: dir === "en" ? "en" : "kk", text: front }),
-          dir === "en" ? E.sayButton(w.w) : null,
-          h("div", { class: "en-card-b", hidden: true },
-            h("p", { class: "en-card-t", lang: dir === "en" ? "kk" : "en", text: back }),
-            w.p ? h("p", { class: "en-p", text: "Оқылуы: " + w.p }) : null,
-            w.ex ? h("p", { class: "en-s", lang: "en", text: w.ex }) : null));
-        var flip = h("button", { type: "button", class: "btn", text: "Жауапты көрсету" });
-        var yes = h("button", { type: "button", class: "btn en-yes", text: "Білдім", hidden: true });
-        var no = h("button", { type: "button", class: "btn secondary en-no", text: "Білмедім", hidden: true });
-        flip.addEventListener("click", function () { flipped = true; card.querySelector(".en-card-b").hidden = false; flip.hidden = true; yes.hidden = no.hidden = false; if (dir === "kz") TTS.say(w.w); yes.focus(); });
-        yes.addEventListener("click", function () { VS.review(w.id, true); knew++; i++; draw(); });
-        no.addEventListener("click", function () { VS.review(w.id, false); i++; draw(); });
-        stage.replaceChildren(card, h("div", { class: "en-ex-ctrl" }, flip, yes, no));
-        flip.focus();
-      }
-      draw();
+      if (!T) { deckBox.replaceChildren(h("p", { class: "en-info", text: "Жаттықтырғыш жүктелмеді. Бетті жаңартыңыз." })); return; }
+      T.start(deckBox, { pool: filtered(), all: all, mode: m, dir: dirState, setMode: true, onChange: function () { updInfo(); if (panel && panel.refresh) panel.refresh(); } });
     }
-    cardBtn.addEventListener("click", function () {
-      if (st.mode === "deck") { st.mode = "list"; deckBox.hidden = true; listBox.hidden = false; cardBtn.textContent = "Карточкалармен қайталау"; render(); }
-      else openDeck();
-    });
+    var panel = E.trainer ? E.trainer.statsPanel(all) : null;
+    var modeBar = h("div", { class: "seg en-chips en-top-modes", role: "group", "aria-label": "Бөлім" }, [["list", "Тізім"], ["card", "Карточка"], ["choice", "Таңдау"], ["spell", "Жазу"], ["listen", "Дыбыс"]].map(function (m) {
+      var dis = m[0] === "listen" && !TTS.ok, b = h("button", { type: "button", "data-mode": m[0], "aria-pressed": String(m[0] === "list"), class: m[0] === "list" ? "on" : "", disabled: dis || (m[0] !== "list" && !E.trainer), title: dis ? "Бұл браузерде дыбыстау жоқ" : false, text: m[1] });
+      b.addEventListener("click", function () { setMode(m[0]); });
+      modeBtns[m[0]] = b; return b;
+    }));
+    root.insertBefore(modeBar, bar.nextSibling);
+    if (panel) root.insertBefore(panel, modeBar);
+    cardBtn.addEventListener("click", function () { setMode(st.mode === "list" ? "card" : "list"); });
+    /* сүзгі өзгерсе, жаттықтырғыш қайта басталады */
+    var baseRender = render;
+    render = function () { if (st.mode === "list") baseRender(); else { updInfo(); if (modeBtns[st.mode]) setMode(st.mode); } };
     render();
   }
 
@@ -180,8 +165,29 @@
       list.querySelectorAll("details").forEach(function (d) { d.open = open; });
       toggle.dataset.open = open ? "1" : "0"; toggle.textContent = open ? "Барлығын жабу" : "Барлығын ашу";
     });
+    /* Көрініс: ережелер | жиі қателер (+ жаттықтыру: дұрыс жауапты жасыру) */
+    var view = "rules", practice = false, mis = [];
+    all.forEach(function (g) { arr(g.mistakes).forEach(function (m) { if (m && m.bad && m.good) mis.push({ g: g, m: m }); }); });
+    var misList = h("div", { class: "en-mis-list", hidden: true });
+    var practiceBtn = h("button", { type: "button", class: "btn secondary en-mis-practice", hidden: true, "aria-pressed": "false", text: "Жаттықтыру режимі: дұрыс жауапты жасыру" });
+    practiceBtn.addEventListener("click", function () { practice = !practice; practiceBtn.setAttribute("aria-pressed", String(practice)); practiceBtn.classList.toggle("on", practice); practiceBtn.textContent = practice ? "Жаттықтыру режимі қосулы: ережеге оралу" : "Жаттықтыру режимі: дұрыс жауапты жасыру"; render(); });
+    var viewSeg = h("div", { class: "seg en-chips en-views", role: "group", "aria-label": "Көрініс" }, [["rules", "Ережелер (" + all.length + ")"], ["mistakes", "Жиі қателер (" + mis.length + ")"]].map(function (x) {
+      var b = h("button", { type: "button", "data-view": x[0], "aria-pressed": String(x[0] === "rules"), class: x[0] === "rules" ? "on" : "", disabled: x[0] === "mistakes" && !mis.length, text: x[1] });
+      b.addEventListener("click", function () { view = x[0]; viewSeg.querySelectorAll("button").forEach(function (y) { var on = y === b; y.classList.toggle("on", on); y.setAttribute("aria-pressed", String(on)); }); render(); });
+      return b;
+    }));
+    function misCard(x) {
+      var rev = h("div", { class: "en-mis-rev", hidden: practice },
+        h("p", null, h("span", { class: "en-good", lang: "en" }, h("span", { class: "sr-only", text: "Дұрыс: " }), "✓ " + x.m.good), " ", E.sayButton(x.m.good, "Дыбыстау")),
+        x.m.why ? h("p", { class: "en-why", text: x.m.why }) : null);
+      var show = practice ? h("button", { type: "button", class: "btn secondary en-mis-show", text: "Дұрыс жауапты көрсету" }) : null;
+      if (show) show.addEventListener("click", function () { rev.hidden = false; show.hidden = true; });
+      return h("article", { class: "en-mis-card" },
+        h("div", { class: "en-vhead" }, levelBadge(x.g.lvl), h("a", { class: "en-lesson-link", href: "#" + x.g.id, text: x.g.title })),
+        h("p", null, h("span", { class: "en-bad", lang: "en" }, h("span", { class: "sr-only", text: "Қате: " }), "✗ " + x.m.bad)), show, rev);
+    }
     root.replaceChildren(chips("Деңгей", [{ v: "all", t: "Барлығы (" + all.length + ")" }].concat(LV.filter(function (l) { return counts[l]; }).map(function (l) { return { v: l, t: LVN[l] + " (" + counts[l] + ")" }; })), "all", function (v) { st.lvl = v; render(); }),
-      h("div", { class: "en-filters" }, q), h("div", { class: "en-row" }, info, toggle), list);
+      viewSeg, h("div", { class: "en-filters" }, q, practiceBtn), h("div", { class: "en-row" }, info, toggle), list, misList);
     function rule(g) {
       var d = h("details", { class: "en-rule", id: g.id },
         h("summary", null, levelBadge(g.lvl), h("b", { text: " " + g.title })),
@@ -200,10 +206,26 @@
         if (st.q && lowerAll({ t: g.title, r: g.rule || "", k: g.kz || "", e: arr(g.examples).map(function (x) { return x.en + " " + (x.kz || ""); }).join(" "), tg: arr(g.tags).join(" ") }).indexOf(st.q) < 0) return false;
         return true;
       });
+      var isM = view === "mistakes";
+      list.hidden = isM; misList.hidden = !isM; toggle.hidden = isM; practiceBtn.hidden = !isM;
+      if (isM) {
+        var mf = mis.filter(function (x) { return (st.lvl === "all" || x.g.lvl === st.lvl) && (!st.q || lowerAll({ a: x.m.bad, b: x.m.good, c: x.m.why || "", d: x.g.title }).indexOf(st.q) >= 0); });
+        info.textContent = "Жиі қателер: " + mf.length + " / " + mis.length + (practice ? " · алдымен өзіңіз түзетіп көріңіз" : "");
+        misList.replaceChildren.apply(misList, mf.length ? mf.map(misCard) : [h("div", { class: "en-empty", role: "status" }, h("p", { class: "en-empty-t", text: "Ештеңе табылмады" }), h("p", { text: "Іздеу сөзін не деңгейді өзгертіңіз." }))]);
+        return;
+      }
       info.textContent = "Көрсетілген ережелер: " + f.length + " / " + all.length;
       list.replaceChildren.apply(list, f.length ? f.map(rule) : [h("div", { class: "en-empty", role: "status" }, h("p", { class: "en-empty-t", text: "Ештеңе табылмады" }), h("p", { text: "Іздеу сөзін не деңгейді өзгертіңіз." }))]);
       toggle.dataset.open = "0"; toggle.textContent = "Барлығын ашу";
     }
+    misList.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest("a.en-lesson-link[href^='#']");
+      if (!a) return;
+      e.preventDefault();
+      viewSeg.querySelector('[data-view="rules"]').click();
+      var d = document.getElementById(a.getAttribute("href").slice(1));
+      if (d && d.tagName === "DETAILS") { d.open = true; d.scrollIntoView(); }
+    });
     render();
     var target = location.hash && document.getElementById(decodeURIComponent(location.hash.slice(1)));
     if (target && target.tagName === "DETAILS") { target.open = true; target.scrollIntoView(); }
@@ -230,13 +252,59 @@
     var lvlSel = h("select", { class: "en-sel", "aria-label": "Деңгей" }, h("option", { value: "all", text: "Барлық деңгей" }), LV.filter(function (l) { return all.some(function (p) { return p.lvl === l; }); }).map(function (l) { return h("option", { value: l, text: LVN[l] }); }));
     lvlSel.addEventListener("change", function () { st.lvl = lvlSel.value; render(); });
     var info = h("p", { class: "en-info", "aria-live": "polite" }), list = h("ul", { class: "en-plist" });
+    var PK = "cs50kz:en:phr", view = "list", hideLvl = "half";
+    var viewSeg = h("div", { class: "seg en-chips en-views", role: "group", "aria-label": "Көрініс" }, [["list", "Тізім"], ["drill", "Жаттықтыру"]].map(function (x) {
+      var b = h("button", { type: "button", "data-view": x[0], "aria-pressed": String(x[0] === "list"), class: x[0] === "list" ? "on" : "", text: x[1] });
+      b.addEventListener("click", function () { view = x[0]; viewSeg.querySelectorAll("button").forEach(function (y) { var on = y === b; y.classList.toggle("on", on); y.setAttribute("aria-pressed", String(on)); }); render(); });
+      return b;
+    }));
+    var drillBox = h("div", { class: "en-drill", hidden: true });
+    /* жасыру-еске түсіру: қазақшасы көрінеді, ағылшынша мәтіннің бір бөлігі (не бәрі) жасырылады */
+    function maskPhrase(text, full) {
+      var n = 0;
+      return String(text).split(/(\s+)/).map(function (t) {
+        if (/^\s+$/.test(t) || !/[A-Za-z]/.test(t)) return t;
+        var core = t.replace(/[^A-Za-z'-]/g, "");
+        if (core.length > 3) n++;
+        if (full || (core.length > 3 && n % 2 === 1)) return t.replace(core, new Array(core.length + 1).join("_"));
+        return t;
+      }).join("");
+    }
+    function drill(pool) {
+      var rec = LS.get(PK, {}); if (!rec || typeof rec !== "object") rec = {};
+      var score = function (p) { var r = rec[p.id]; return !r ? 0 : (r.x || 0) > (r.ok || 0) ? -1 : 1 + (r.ok || 0); };
+      var queue = E.shuffle(pool).sort(function (a, b) { return score(a) - score(b); }).slice(0, 10), i = 0, ok = 0;
+      var lvlSel = h("select", { class: "en-sel", "aria-label": "Жасыру деңгейі" }, h("option", { value: "half", text: "Жартылай жасыру" }), h("option", { value: "full", text: "Толық жасыру" }));
+      lvlSel.value = hideLvl; lvlSel.addEventListener("change", function () { hideLvl = lvlSel.value; draw(); });
+      var stage = h("div", { class: "en-drill-stage", "aria-live": "polite" });
+      drillBox.replaceChildren(h("p", { class: "en-info", text: "Қазақша мағынасын оқып, ағылшынша фразаны есіңізге түсіріңіз (дауыстап айтыңыз), сосын тексеріңіз. Сессия: " + queue.length + " фраза." }), lvlSel, stage);
+      function draw() {
+        if (!queue.length) { stage.replaceChildren(h("div", { class: "en-empty", role: "status" }, h("p", { class: "en-empty-t", text: "Жаттықтыруға фраза жоқ" }), h("p", { text: "Сүзгіні өзгертіңіз." }))); return; }
+        if (i >= queue.length) {
+          var again = h("button", { type: "button", class: "btn", text: "Тағы бір сессия" }); again.addEventListener("click", function () { drill(pool); });
+          stage.replaceChildren(h("div", { class: "en-empty", role: "status" }, h("p", { class: "en-empty-t", text: "Дайын! Еске түсірдім: " + ok + " / " + queue.length }), h("p", { text: "Қиын болған фразалар келесі сессияда алдымен шығады." })), h("div", { class: "en-ex-ctrl" }, again)); again.focus(); return;
+        }
+        var p = queue[i], shown = false;
+        var mask = h("p", { class: "en-pen en-mask", lang: "en", text: maskPhrase(p.en, hideLvl === "full") });
+        var reveal = h("button", { type: "button", class: "btn", text: "Көрсету" });
+        var yes = h("button", { type: "button", class: "btn en-yes", text: "Еске түсірдім", hidden: true }), no = h("button", { type: "button", class: "btn secondary", text: "Қайта қараймын", hidden: true });
+        reveal.addEventListener("click", function () { shown = true; mask.textContent = p.en; mask.classList.add("shown"); reveal.hidden = true; yes.hidden = no.hidden = false; yes.focus(); });
+        function mark(good) { var r = rec[p.id] || { ok: 0, x: 0 }; if (good) { r.ok++; ok++; } else r.x++; r.t = Date.now(); rec[p.id] = r; LS.set(PK, rec); if (K().logDay) K().logDay(); i++; draw(); }
+        yes.addEventListener("click", function () { mark(true); }); no.addEventListener("click", function () { mark(false); });
+        stage.replaceChildren(h("div", { class: "en-card" }, h("p", { class: "en-card-n", text: (i + 1) + " / " + queue.length }), p.lvl ? levelBadge(p.lvl) : null, h("p", { class: "en-pkz", text: p.kz }), mask, p.note ? h("p", { class: "en-note", text: p.note }) : null), h("div", { class: "en-ex-ctrl" }, reveal, yes, no, E.sayButton(p.en, "Дыбыстау")));
+        reveal.focus();
+      }
+      draw();
+    }
     root.replaceChildren(chips("Санат", [{ v: "all", t: "Барлығы (" + all.length + ")" }].concat(cats.map(function (c) { return { v: c, t: (CATS[c] || c) + " (" + all.filter(function (p) { return (p.cat || "general") === c; }).length + ")" }; })), "all", function (v) { st.cat = v; render(); }),
-      h("div", { class: "en-filters" }, q, lvlSel), info, list);
+      viewSeg, h("div", { class: "en-filters" }, q, lvlSel), info, list, drillBox);
     function render() {
       var f = all.filter(function (p) {
         return (st.cat === "all" || (p.cat || "general") === st.cat) && (st.lvl === "all" || p.lvl === st.lvl) && (!st.q || lowerAll({ a: p.en, b: p.kz, c: p.note || "" }).indexOf(st.q) >= 0);
       });
       info.textContent = "Көрсетілген фразалар: " + f.length + " / " + all.length;
+      list.hidden = view === "drill"; drillBox.hidden = view !== "drill";
+      if (view === "drill") { drill(f); return; }
       list.replaceChildren.apply(list, f.length ? f.map(function (p) {
         var cp = h("button", { type: "button", class: "btn secondary en-copy", text: "Көшіру", "aria-label": "Көшіру: " + p.en });
         cp.addEventListener("click", function () { copyText(p.en, cp); });

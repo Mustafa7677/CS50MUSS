@@ -14,12 +14,12 @@ const noHScroll = async (page) => {
   expect(w.s).toBeLessThanOrEqual(w.c);
 };
 
-test("games.html: ойындар хабында 5 ойын бар (games-b), барлығы 9 карточка", async ({ page, context }) => {
+test("games.html: ойындар хабында 5 ойын бар (games-b), барлығы 14 карточка (5 ағылшын ойыны қосылған)", async ({ page, context }) => {
   await blockFonts(context);
   const errs = collectErrors(page);
   await page.goto("games.html");
   for (const id of ["sqlescape", "memory", "webbuilder", "binary", "oracle"]) await expect(page.locator(`.game-card[href="#${id}"]`)).toBeVisible();
-  await expect(page.locator(".gx-grid .game-card")).toHaveCount(9);
+  await expect(page.locator(".gx-grid .game-card")).toHaveCount(14);
   const c = await page.evaluate(() => window.CS50GamesB.counts);
   expect(c.sqlRooms).toBe(6);
   expect(c.memoryTasks).toBeGreaterThanOrEqual(42);
@@ -40,7 +40,7 @@ test("games.html: «C++» және «Java» сүзгі чиптері дұрыс
   expect(await visible()).toEqual(["battle", "bughunt", "oracle"]);
   await expect(page.locator('.game-card[href="#oracle"] .gx-tag')).toContainText(["C++", "Java"]);
   await page.click('.gx-chip[data-cat="all"]');
-  expect((await visible()).length).toBe(9);
+  expect((await visible()).length).toBe(14);
   expect(errs).toEqual([]);
 });
 

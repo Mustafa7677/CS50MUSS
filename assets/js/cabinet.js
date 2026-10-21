@@ -2,11 +2,13 @@
 /* CS50 қазақша: «Менің кабинетім» - прогресс, статистика, жетістіктер, жеке рекордтар.
    Барлық сан - осы құрылғыдағы нақты деректен (localStorage). Басқа адамдармен рейтинг ЖОҚ (сервер жоқ): жеке рекордтар ғана. */
 (function () {
+  /* main.js window.CS50KZ-ді DOMContentLoaded ішінде жасайды: defer-скрипт одан ерте жүреді, сондықтан іске қосуды күтеміз */
+  const start = function () {
   const K = window.CS50KZ;
   const box = document.querySelector(".cabinet");
   if (!K || !box) return;
   const esc = K.escapeHtml;
-  const GAMES = { runner: ["🎮", "Code Runner"], bughunt: ["🐛", "Bug Hunter"], battle: ["⚔️", "Code Battle"], algo: ["🧠", "Algorithm Race"], sqlescape: ["🗄️", "SQL Escape Room"], memory: ["💻", "Memory Master"], webbuilder: ["🌐", "Web Builder"], binary: ["🔢", "Binary Challenge"] };
+  const GAMES = { runner: ["🎮", "Code Runner"], bughunt: ["🐛", "Bug Hunter"], battle: ["⚔️", "Code Battle"], algo: ["🧠", "Algorithm Race"], sqlescape: ["🗄️", "SQL Escape Room"], memory: ["💻", "Memory Master"], webbuilder: ["🌐", "Web Builder"], binary: ["🔢", "Binary Challenge"], oracle: ["🔮", "Output Oracle"], enmatch: ["🔗", "Word Match"], enspell: ["🔤", "Spell It"], enbuild: ["🧱", "Sentence Builder"], enarticle: ["🅰️", "Article Rush"], enbugfix: ["🛠️", "Bug Report Fixer"] };
   const level = (xp) => Math.floor(Math.sqrt(xp / 40)) + 1;
 
   function draw() {
@@ -39,4 +41,6 @@
   }
   draw();
   document.addEventListener("cs50kz:games", draw);
+};
+  if (window.CS50KZ) start(); else document.addEventListener("DOMContentLoaded", start);
 })();

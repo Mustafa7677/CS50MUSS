@@ -26,8 +26,14 @@
     oracle: { cats: ["cpp", "java"], tags: ["C++", "Java", "Нәтиже"], diff: 2, max: 800 },
     webbuilder: { cats: ["web"], tags: ["HTML", "CSS"], diff: 1, max: 100 },
     binary: { cats: ["algo"], tags: ["Екілік", "Биттер"], diff: 2, max: 350 },
+    enmatch: { cats: ["en"], tags: ["English", "Сөздік"], diff: 1, max: 250 },
+    enspell: { cats: ["en"], tags: ["English", "Емле"], diff: 2, max: 130 },
+    enbuild: { cats: ["en"], tags: ["English", "Сөйлем"], diff: 2, max: 120 },
+    enarticle: { cats: ["en"], tags: ["English", "Артикль"], diff: 2, max: 300 },
+    enbugfix: { cats: ["en"], tags: ["English", "IT-мәтін"], diff: 3, max: 120 },
   };
   const CATS = [["all", "Бәрі"], ["python", "Python"], ["c", "C"], ["cpp", "C++"], ["java", "Java"], ["sql", "SQL"], ["web", "Веб"], ["algo", "Алгоритм"]];
+  CATS.push(["en", "Ағылшын"]);
   const meta = (d) => META[d.id] || { cats: ["algo"], tags: ["Ойын"], diff: 2, max: 0 };
   const GLYPHS = ["{ }", "01", "</>", ";", "( )", "#", "[ ]", "=>", "&&", "10", "0x", "++"];
 
