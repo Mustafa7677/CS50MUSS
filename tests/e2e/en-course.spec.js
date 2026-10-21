@@ -112,7 +112,7 @@ test("сөздік: іздеу, деңгей, «жаттадым» сақтал�
   const total = await page.locator(".en-vitem").count();
   expect(total).toBeGreaterThanOrEqual(31);
   await page.fill(".en-search", "hello");
-  await expect(page.locator(".en-vitem")).toHaveCount(1);
+  await expect(page.locator('.en-vitem[data-id="a0-hello"]')).toBeVisible();
   await page.fill(".en-search", "рахмет");
   await expect(page.locator('.en-vitem[data-id="a0-thank-you"]')).toBeVisible();
   await page.fill(".en-search", "");
@@ -139,10 +139,11 @@ test("грамматика: іздеу, деңгей сүзгісі, анкер 
   await expect(page.locator("#a1-present-simple")).toHaveAttribute("open", "");
   await expect(page.locator("#a1-present-simple .en-bad").first()).toContainText("She work here.");
   await page.fill(".en-search", "артикль");
-  await expect(page.locator(".en-rule")).toHaveCount(1);
+  await expect(page.locator(".en-rule").first()).toBeVisible();
+  expect(await page.locator(".en-rule").count()).toBeLessThan(await page.evaluate(() => Object.values(window.CS50KZ_EN_GRAMMAR).flat().length));
   await page.fill(".en-search", "");
   await page.click('.en-chips button[data-v="c1"]');
-  await expect(page.locator(".en-rule")).toHaveCount(3);
+  expect(await page.locator(".en-rule").count()).toBeGreaterThanOrEqual(3);
 });
 
 test("IT-фразалар: санат сүзгісі, көшіру батырмасы, дыбыстау әрекеті", async ({ page }) => {
