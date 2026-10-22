@@ -1,0 +1,278 @@
+/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
+ * «Математика» курсының стильдері: сабақ блоктары (.math-*), есептер (.mx-*), визуализация (.mv-*), ортақ беттер, курс беті (.mx-subj).
+ * Түстер сайт айнымалыларынан; жарық/қараңғы режимде контраст WCAG AA. Жаңа CSS тек осы файлда (docs/MATH-COURSE-GUIDE.md). */
+:root {
+  --mc: #15803d;
+  --mc-soft: #e5f5ea;
+  --mc-line: #9bd3ae;
+  --mf: #ede9fe;      /* формула блогы */
+  --mf-line: #c4b5fd;
+  --mf-ink: #4c1d95;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --mc: #5fd39a; --mc-soft: #12301f; --mc-line: #1f5a3a; --mf: #231c3d; --mf-line: #4b3d8c; --mf-ink: #c9b8ff; }
+}
+:root[data-theme="dark"] { --mc: #5fd39a; --mc-soft: #12301f; --mc-line: #1f5a3a; --mf: #231c3d; --mf-line: #4b3d8c; --mf-ink: #c9b8ff; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.mx-fb[hidden], .mx-expl[hidden], .mx-sol[hidden], .mx-fcond[hidden] { display: none; }
+
+/* ---------- KaTeX: мобильдіде көлденең айналуды бұзбау ---------- */
+.katex { font-size: 1.08em; }
+.katex-display { margin: 1em 0; overflow-x: auto; overflow-y: hidden; max-width: 100%; padding: 2px 0; -webkit-overflow-scrolling: touch; }
+.katex-display > .katex { max-width: 100%; }
+.content .katex, .math-ex .katex { overflow-wrap: normal; }
+.math-no-katex .math-ex, .math-no-katex .math-formula { }
+.math-no-katex .content::before {
+  content: "Формулалар көрсететін KaTeX жүктелмеді: формулалар TeX мәтіні ретінде көрінеді."; display: block; margin-bottom: 12px; padding: 8px 12px;
+  border-radius: 10px; background: var(--warn-soft); color: var(--warn); font-size: 14px;
+}
+
+/* ---------- Ішкі навигация ---------- */
+.math-subnav { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 8px; }
+.math-subnav a {
+  display: inline-block; padding: 9px 16px; min-height: 40px; border-radius: 999px; border: 1px solid var(--border);
+  background: var(--surface); color: var(--text); font: 600 14px var(--font); text-decoration: none;
+}
+.math-subnav a:hover { border-color: var(--mc); }
+.math-subnav a[aria-current="page"] { background: var(--mc); color: var(--surface); border-color: var(--mc); }
+.math-subnav a:focus-visible, .mx-input:focus-visible, .mx-sel:focus-visible, .mx-search:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.math-ai-note { margin-top: 18px; }
+.math-lesson .math-prereq a { font-weight: 600; }
+
+/* ---------- Анықтама / теорема / формула / қораптар ---------- */
+.math-def, .math-thm, .math-prop, .math-remember, .math-attention, .math-formula, .math-example, .math-remark {
+  margin: 18px 0; padding: 14px 18px 14px; border-radius: 12px; border: 1px solid var(--border); border-left-width: 5px; background: var(--surface); min-width: 0;
+}
+.math-def { border-left-color: var(--note); background: var(--note-soft); }
+.math-thm, .math-prop { border-left-color: var(--mc); background: var(--mc-soft); }
+.math-remark { border-left-color: var(--muted); background: var(--surface-2); }
+.math-remember { border-left-color: var(--gold); background: var(--gold-soft); }
+.math-attention { border-left-color: var(--bad); background: var(--bad-soft); }
+.math-formula { border-left-color: #7c3aed; background: var(--mf); border-color: var(--mf-line); }
+.math-tag, .math-fname, .math-box-title {
+  display: block; font: 800 12.5px var(--font); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 6px;
+}
+.math-def .math-tag { color: var(--note); }
+.math-thm .math-tag, .math-prop .math-tag { color: var(--mc); }
+.math-remark .math-tag { color: var(--muted); }
+.math-remember .math-box-title { color: var(--gold-text); }
+.math-attention .math-box-title { color: var(--bad); }
+.math-formula .math-fname { color: var(--mf-ink); }
+.math-def > :last-child, .math-thm > :last-child, .math-prop > :last-child, .math-remember > :last-child, .math-attention > :last-child, .math-remark > :last-child { margin-bottom: 0; }
+.math-fbody { overflow-x: auto; overflow-y: hidden; max-width: 100%; }
+.math-fbody .katex-display { margin: .4em 0; }
+.math-fnote { margin: 4px 0 0; font-size: 14.5px; color: var(--muted); }
+
+/* ---------- Қорытып шығару ---------- */
+details.math-derive { margin: 20px 0; border: 1px solid var(--mc-line); border-left: 5px solid var(--mc); border-radius: 12px; background: var(--surface); }
+details.math-derive > summary {
+  cursor: pointer; padding: 12px 18px; font: 700 16px var(--font); color: var(--mc); list-style: none; display: flex; align-items: center; gap: 8px; min-height: 44px;
+}
+details.math-derive > summary::-webkit-details-marker { display: none; }
+details.math-derive > summary::before { content: "▸"; display: inline-block; transition: transform .15s; }
+details.math-derive[open] > summary::before { transform: rotate(90deg); }
+details.math-derive > summary:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; border-radius: 10px; }
+.math-derive-body { padding: 4px 18px 16px; border-top: 1px dashed var(--mc-line); }
+.math-derive-body > :first-child { margin-top: 12px; }
+.math-steps { padding-left: 1.3em; margin: 10px 0; }
+.math-steps > li { margin: 8px 0; min-width: 0; }
+.math-qed { text-align: right; margin: 6px 0 0; font-size: 18px; color: var(--mc); }
+.mx-derive-tools { margin: 10px 0; display: flex; gap: 8px; flex-wrap: wrap; }
+
+/* ---------- Шешілген мысал ---------- */
+.math-example { border-left-color: var(--mc); }
+.math-example > h3 { margin: 0 0 8px; font-size: 18px; }
+.math-problem { font-weight: 600; margin: 6px 0 10px; }
+.math-answer { margin: 10px 0 0; padding: 8px 12px; border-radius: 8px; background: var(--ok-soft); color: var(--text); }
+.math-answer b { color: var(--ok); }
+
+/* ---------- Жиі қателер ---------- */
+.math-mistakes { list-style: none; padding: 0; margin: 12px 0; display: grid; gap: 10px; }
+.math-mistakes > li { border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; background: var(--surface); min-width: 0; }
+.math-bad, .math-good { display: inline-block; padding: 1px 8px; border-radius: 8px; max-width: 100%; }
+.math-bad { background: var(--bad-soft); color: var(--text); border: 1px solid var(--bad); }
+.math-good { background: var(--ok-soft); color: var(--text); border: 1px solid var(--ok); }
+
+/* ---------- Кестелер (формулалар кестесі) ---------- */
+.math-table th, .math-table td { vertical-align: middle; }
+.math-table .katex-display { margin: .2em 0; }
+
+/* ---------- Визуализация ---------- */
+.math-viz { margin: 20px 0; padding: 14px; border: 1px solid var(--border); border-radius: 14px; background: var(--surface); container-type: inline-size; max-width: 100%; overflow: hidden; }
+.mv-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 10px; }
+.mv-title { font: 700 17px var(--display); color: var(--text); }
+.mv-canvas-wrap { position: relative; width: 100%; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.mv-canvas { display: block; width: 100%; height: auto; touch-action: pan-y; cursor: grab; }
+.mv-canvas.dragging { cursor: grabbing; }
+.mv-canvas.fixed { cursor: default; touch-action: auto; }
+.mv-ctrl { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; margin-top: 10px; }
+.mv-ctrl label { display: inline-flex; align-items: center; gap: 8px; font: 600 14px var(--font); color: var(--text); min-height: 36px; flex-wrap: wrap; }
+.mv-ctrl input[type=range] { width: min(46vw, 220px); accent-color: var(--mc); min-height: 32px; }
+.mv-ctrl select, .mv-ctrl input[type=text] { font: 500 14px var(--font); padding: 6px 8px; min-height: 36px; border: 2px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); max-width: 100%; }
+.mv-btn { font: 600 14px var(--font); min-width: 40px; min-height: 40px; padding: 6px 12px; border-radius: 999px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+.mv-btn:hover { border-color: var(--mc); }
+.mv-btn:focus-visible, .mv-ctrl input:focus-visible, .mv-ctrl select:focus-visible, .mv-canvas:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.mv-btn.on { background: var(--mc); color: var(--surface); border-color: var(--mc); }
+.mv-val { font: 700 13.5px var(--mono); color: var(--mc); min-width: 3.4em; display: inline-block; }
+.mv-read { margin: 10px 0 0; padding: 8px 12px; background: var(--surface-2); border-radius: 8px; font-size: 14.5px; line-height: 1.55; overflow-x: auto; }
+.mv-read b { font-family: var(--mono); }
+.mv-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 8px 0 0; padding: 0; list-style: none; font-size: 13.5px; }
+.mv-legend li { display: inline-flex; align-items: center; gap: 6px; }
+.mv-sw { display: inline-block; width: 18px; height: 4px; border-radius: 2px; }
+.mv-note { font-size: 13.5px; color: var(--muted); margin: 8px 0 0; }
+.mv-err { color: var(--bad); font-size: 14px; }
+
+/* ---------- Есептер ---------- */
+.math-ex.task.is-done { border-color: var(--mc-line); }
+.mx-badge { margin-left: auto; font: 700 12.5px var(--font); color: var(--ok); background: var(--ok-soft); border-radius: 999px; padding: 3px 10px; white-space: nowrap; }
+.mx-sum { font-weight: 700; color: var(--mc); margin: 10px 0; }
+.mx-body { margin-top: 10px; display: grid; gap: 14px; }
+.mx-item { position: relative; border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px 12px 14px; background: var(--surface); min-width: 0; }
+.mx-item.ok { border-color: var(--ok); background: color-mix(in srgb, var(--ok-soft) 55%, var(--surface)); }
+.mx-item.bad { border-color: var(--bad); }
+.mx-num { font-weight: 800; color: var(--mc); margin-right: 6px; }
+.mx-q { margin: 0 0 10px; min-width: 0; overflow-x: auto; overflow-y: hidden; }
+.mx-in { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.mx-in.wide { display: block; }
+.mx-input {
+  font: 600 16px var(--mono); padding: 8px 12px; min-height: 44px; width: min(100%, 360px); max-width: 100%; border: 2px solid var(--border); border-radius: 8px;
+  background: var(--surface); color: var(--text);
+}
+.mx-input.ok, .mx-sel.ok { border-color: var(--ok); background: var(--ok-soft); }
+.mx-input.bad, .mx-sel.bad { border-color: var(--bad); background: var(--bad-soft); }
+.mx-input.mx-cell { width: 4.6em; text-align: center; padding: 6px 4px; }
+.mx-note { color: var(--muted); font-size: 13px; display: block; margin-top: 4px; }
+.mx-unit { font-weight: 600; }
+.mx-preview { min-height: 1.4em; margin: 6px 0 0; font-size: 15px; color: var(--muted); overflow-x: auto; overflow-y: hidden; }
+.mx-preview.err { color: var(--bad); font-size: 13.5px; }
+.mx-pv-lbl { font-size: 13px; }
+.mx-matrix { display: grid; grid-template-columns: repeat(var(--cols, 2), auto); gap: 6px; padding: 8px 10px; border-left: 3px solid var(--text); border-right: 3px solid var(--text); border-radius: 10px; width: max-content; max-width: 100%; }
+.mx-mbrk { max-width: 100%; overflow-x: auto; }
+.mx-mname { font-weight: 700; margin-right: 6px; }
+.mx-opts { display: grid; gap: 4px; }
+.mx-opts.tf { grid-auto-flow: column; justify-content: start; gap: 12px; }
+.mx-opt { display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border: 1px solid transparent; border-radius: 8px; cursor: pointer; min-height: 40px; min-width: 0; }
+.mx-opt:hover { background: var(--surface-2); }
+.mx-opt input { margin-top: 4px; width: 18px; height: 18px; accent-color: var(--mc); flex: none; }
+.mx-opt.correct { background: var(--ok-soft); border-color: var(--ok); }
+.mx-opt.correct span::after { content: " \2713"; font-weight: 700; color: var(--ok); }
+.mx-opt.wrong { background: var(--bad-soft); border-color: var(--bad); }
+.mx-opt.wrong span::after { content: " \2717"; font-weight: 700; color: var(--bad); }
+.mx-match { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; }
+.mx-match li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.mx-left { min-width: 120px; flex: 1 1 140px; overflow-x: auto; }
+.mx-arrow { color: var(--muted); }
+.mx-sel, .mx-search { font: 500 15px var(--font); padding: 8px 10px; min-height: 44px; max-width: 100%; border: 2px solid var(--border); border-radius: 8px; background: var(--surface); color: var(--text); }
+.mx-search { width: min(100%, 420px); }
+.mx-order { list-style: none; counter-reset: ord; padding: 0; margin: 0; display: grid; gap: 8px; }
+.mx-ostep { counter-increment: ord; display: flex; align-items: center; gap: 10px; padding: 8px 10px; border: 2px solid var(--border); border-radius: 10px; background: var(--surface); min-width: 0; }
+.mx-ostep::before { content: counter(ord); font: 800 14px var(--mono); color: var(--mc); min-width: 1.4em; text-align: center; }
+.mx-ostep.ok { border-color: var(--ok); background: var(--ok-soft); }
+.mx-ostep.bad { border-color: var(--bad); background: var(--bad-soft); }
+.mx-otxt { flex: 1; min-width: 0; overflow-x: auto; overflow-y: hidden; }
+.mx-octl { display: inline-flex; gap: 4px; }
+.mx-mv { min-width: 40px; min-height: 40px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface-2); color: var(--text); font-size: 16px; cursor: pointer; }
+.mx-mv:disabled { opacity: .35; cursor: not-allowed; }
+.mx-mv:focus-visible { outline: 3px solid var(--gold); outline-offset: 2px; }
+.mx-fb { margin-top: 8px; font-weight: 600; font-size: 14.5px; overflow-x: auto; }
+.mx-fb.ok { color: var(--ok); }
+.mx-fb.bad { color: var(--bad); }
+.mx-fb.warn { color: var(--warn); }
+.mx-fb.info { color: var(--text); font-weight: 400; }
+.mx-expl { margin: 6px 0 0; color: var(--muted); font-size: 14.5px; }
+.mx-tools { margin-top: 10px; }
+.mx-solbtn { min-height: 40px; }
+.mx-sol { margin: 10px 0 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.mx-solstep { padding: 8px 12px; border-left: 4px solid var(--mc); background: var(--mc-soft); border-radius: 0 8px 8px 0; overflow-x: auto; }
+.mx-solstep.hint { border-left-color: var(--gold); background: var(--gold-soft); }
+.mx-solstep.ans { border-left-color: var(--ok); background: var(--ok-soft); }
+.mx-solk { font-weight: 800; }
+.mx-ctrl { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0 4px; }
+.mx-result { margin: 6px 0 0; font-weight: 700; }
+.mx-result.ok { color: var(--ok); }
+.mx-result.bad { color: var(--bad); }
+.mx-err { color: var(--bad); }
+.mx-empty { padding: 24px; border: 2px dashed var(--border); border-radius: 14px; text-align: center; color: var(--muted); }
+
+/* ---------- Ортақ беттер ---------- */
+.mx-filters { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin: 12px 0 18px; }
+.mx-filters label { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+.mx-count { color: var(--muted); font-size: 14px; margin: 0; }
+.mx-fsec { margin: 26px 0; }
+.mx-fh { margin-top: 0; }
+.mx-fitem, .mx-term { padding: 12px 16px; margin: 10px 0; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); min-width: 0; }
+.mx-fitem h3, .mx-term h3 { margin: 0 0 4px; font-size: 17px; }
+.mx-ftex { overflow-x: auto; overflow-y: hidden; }
+.mx-fcond, .mx-fnote, .mx-tmeta { color: var(--muted); font-size: 14.5px; margin: 4px 0; }
+.mx-ten { color: var(--muted); font-weight: 500; font-size: .9em; }
+.mx-chip { display: inline-block; font: 600 12px var(--font); color: var(--mc); border: 1px solid var(--mc-line); background: var(--mc-soft); border-radius: 999px; padding: 2px 10px; }
+.mx-chip.lv-easy { color: var(--ok); } .mx-chip.lv-medium { color: var(--warn); } .mx-chip.lv-hard { color: var(--bad); }
+.mx-phead { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 8px; }
+.mx-pbar { height: 8px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin-bottom: 12px; }
+.mx-pbar span { display: block; height: 100%; background: var(--mc); }
+.mx-pdone { text-align: center; padding: 24px 12px; }
+.mx-hint0 { color: var(--muted); }
+
+/* Курс беті: пән модульдері */
+.mx-group-h { margin-top: 36px; }
+.mx-subj { margin: 22px 0 30px; padding: 16px 18px 6px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); border-top: 5px solid var(--mc); scroll-margin-top: 84px; }
+.mx-shead { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px 16px; }
+.mx-shead h3 { margin: 0; font-size: 20px; line-height: 1.3; }
+.mx-snum { display: inline-flex; align-items: center; justify-content: center; min-width: 34px; height: 34px; border-radius: 50%; background: var(--mc); color: var(--surface); font: 800 15px var(--font); margin-right: 10px; vertical-align: middle; }
+.mx-sen { color: var(--muted); font-weight: 500; font-size: 14px; display: block; margin-top: 2px; }
+.mx-sstat { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 14px; color: var(--muted); }
+.mx-sstat b { color: var(--text); }
+.mx-sbar { height: 6px; background: var(--surface-2); border-radius: 999px; overflow: hidden; margin: 8px 0 6px; }
+.mx-sbar i { display: block; height: 100%; background: var(--mc); width: 0; }
+.mx-sdesc { margin: 6px 0; color: var(--muted); }
+.mx-spre { margin: 4px 0 8px; font-size: 14px; color: var(--muted); }
+.mx-spre a { font-weight: 600; }
+.mx-subj .course-weeks { margin-top: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
+.mx-subj .week-card h3 { font-size: 16px; padding-right: 0; }
+.mx-subj .week-card p { font-size: 14px; }
+.mx-subj .week-card .wc-ico { display: none; }
+.mx-start { margin: 22px 0; padding: 16px 18px; border: 1px solid var(--mc-line); border-radius: 16px; background: var(--mc-soft); }
+.mx-start h2 { margin-top: 0; }
+.mx-target { margin-left: 6px; }
+.mx-path { list-style: none; counter-reset: pth; padding: 0; margin: 12px 0; display: grid; gap: 8px; }
+.mx-pstep { counter-increment: pth; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.mx-pstep::before { content: counter(pth); font: 800 14px var(--mono); color: var(--surface); background: var(--muted); border-radius: 50%; min-width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; }
+.mx-pstep.done::before, .mx-pstep.known::before { background: var(--ok); }
+.mx-pstep.doing::before { background: var(--gold); color: #14213d; }
+.mx-pstep.next { border-color: var(--mc); box-shadow: 0 0 0 2px var(--mc-line); }
+.mx-pname { font-weight: 700; }
+.mx-pst { color: var(--muted); font-size: 13.5px; }
+.mx-kn { margin-left: auto; font-size: 13.5px; display: inline-flex; gap: 6px; align-items: center; min-height: 36px; }
+.mx-go { padding: 6px 14px; }
+.mx-graph { overflow-x: auto; max-width: 100%; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 6px; margin-top: 10px; }
+.mx-graph svg { display: block; }
+.mx-edge { fill: none; stroke: var(--border); stroke-width: 1.4; }
+.mx-edge.on { stroke: var(--mc); stroke-width: 2.4; }
+.mx-node { fill: var(--surface-2); stroke: var(--border); stroke-width: 1.4; }
+.mx-node.done, .mx-node.known { fill: var(--ok-soft); stroke: var(--ok); }
+.mx-node.doing { fill: var(--gold-soft); stroke: var(--gold); }
+.mx-node.need { stroke: var(--mc); stroke-width: 2.4; }
+.mx-node.target { stroke-width: 3.4; stroke: var(--mc); }
+.mx-node.soon { stroke-dasharray: 4 3; }
+.mx-ntxt { font: 600 11.5px var(--font); fill: var(--text); pointer-events: none; }
+
+@media (max-width: 600px) {
+  .math-def, .math-thm, .math-prop, .math-remember, .math-attention, .math-formula, .math-example, .math-remark { padding: 12px 14px; }
+  .mx-subj { padding: 14px 12px 4px; }
+  .mx-input { width: 100%; }
+  .mx-kn { margin-left: 0; }
+}
+@media print { details.math-derive:not([open]) > .math-derive-body { display: block; } .mv-ctrl, .mx-ctrl, .mx-tools { display: none; } }
+@media (prefers-reduced-motion: reduce) { details.math-derive > summary::before { transition: none; } }
+
+/* «Математика» белгісі ұзынырақ: ортаңғы енде жоғарғы мәзір сыймай қалмасын */
+@media (max-width: 1240px) and (min-width: 769px) {
+  body[data-course="math"] .nav { gap: 2px; }
+  body[data-course="math"] .nav a { padding: 6px 8px; font-size: 14px; white-space: nowrap; }
+  body[data-course="math"] .nav a.profile-open { padding: 0; }
+}
+@media (max-width: 440px) {
+  body[data-course="math"] .cp-label { display: none; }
+  body[data-course="math"] .course-pill { padding: 0 10px; }
+}

@@ -24,6 +24,8 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import math_plan  # noqa: E402  («Математика» курсының жалғыз жоспары: tools/math_plan.py)
 SITE_URL = "https://mustafa7677.github.io/CS50MUSS/"
 ORDER = [f"week-{i}" for i in range(8)] + ["ai"] + [f"week-{i}" for i in range(8, 11)]
 
@@ -42,6 +44,8 @@ OWN_COURSES = {
     # Ағылшын тілі A0-C1: 6 деңгей x 4 сабақ = 24 бет (en/lectures/week-0..23.html). Әлі жазылмаған сабақ беттерінде SOON белгісі бар:
     # олар бет ретінде тұрады (бас, нав, footer, B лицензиясы), бірақ дайын лекция ретінде статистикаға, іздеуге, сайтмапқа кірмейді.
     "en": {"short": "English", "color": "#0f766e", "order": [f"week-{i}" for i in range(24)]},
+    # Математика: 24 пән, жалпы math_plan.TOTAL сабақ (math/lectures/week-0..N.html, N - пәндер бойынша ГЛОБАЛДЫ нөмір). Тұғырлар (SOON) en курсындағыдай.
+    "math": {"short": "Math", "color": "#15803d", "order": [f"week-{i}" for i in range(math_plan.TOTAL)]},
 }
 SOON = "<!-- soon -->"   # en/lectures/week-N.html ішіндегі «жақында» белгісі; мазмұн жазылғанда өшіріледі (docs/EN-COURSE-GUIDE.md)
 EN_LEVELS = ["A0", "A1", "A2", "B1", "B2", "C1"]
@@ -56,6 +60,8 @@ def unit_label(code, name):
     n = int(name.split("-")[1])
     if code == "en":
         return f"{EN_LEVELS[n // 4]} · {n % 4 + 1}-сабақ"
+    if code == "math":
+        return math_plan.unit_label(n)
     return f"{n}-апта"
 
 
@@ -75,6 +81,7 @@ GLYPHS = {
     "java": '<path d="M13 30h30v12c0 8-6 14-15 14s-15-6-15-14z"/><path d="M43 33h4c5 0 7 3 7 6s-2 6-7 6h-5"/><path d="M22 6c-4 5 4 6 0 12M31 6c-4 5 4 6 0 12M40 8c-3 4 3 5 0 9"/><path d="M8 60h40"/>',
     "en": '<path d="M8 12h30a4 4 0 0 1 4 4v16a4 4 0 0 1-4 4H24l-8 7v-7h-8a4 4 0 0 1-4-4V16a4 4 0 0 1 4-4z"/><path d="M16 22h18M16 29h11"/><path d="M46 28h6a4 4 0 0 1 4 4v14a4 4 0 0 1-4 4h-3v6l-7-6H34a4 4 0 0 1-4-4v-2"/>',
     "web": '<circle cx="32" cy="32" r="24"/><path d="M8 32h48M32 8c-8 8-11 16-11 24s3 16 11 24M32 8c8 8 11 16 11 24s-3 16-11 24M12 20h40M12 44h40"/>',
+    "math": '<path d="M48 10H18l16 22-16 22h30"/><path d="M40 22l8 8M48 22l-8 8" opacity=".55"/>',
 }
 CATALOG = [
     {"id": "x", "code": "CS50x", "href": "index.html", "c": "#087a96", "c2": "#0a4c7a", "title": "Информатикаға кіріспе",
@@ -101,6 +108,9 @@ CATALOG = [
     {"id": "en", "code": "English", "href": "en/", "c": "#0f766e", "c2": "#134e4a", "title": "Ағылшын тілі A0-C1", "own": True,
      "desc": "Ағылшын тілін нөлден бастап: грамматика, сөздік, оқу, жазу, тыңдау мен айту. IT және бағдарламалау ағылшыншасына бағытталған.",
      "tags": ["грамматика", "сөздік", "IT-ағылшын", "A0-C1"], "state": "wip"},
+    {"id": "math", "code": "Math", "href": "math/", "c": "#15803d", "c2": "#14532d", "title": "Математика", "own": True,
+     "desc": "24 пән: алгебра мен анализден ықтималдыққа, дискретті математикаға, сандар теориясы мен топологияға дейін. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
+     "tags": ["анализ", "сызықтық алгебра", "ықтималдық", "дәлелдеу"], "state": "wip"},
 ]
 
 
@@ -123,6 +133,34 @@ def sync_week_cards(path, ready, info=None):
         return f'<div{attrs}>{body}\n      <div class="status">Жақында</div>\n    </div>'
     s = re.sub(r'<(a|div)( class="week-card[^"]*" data-id="([\w-]+)"[^>]*)>(.*?)<div class="status[^"]*">[^<]*</div>\s*</\1>', card, s, flags=re.S)
     path.write_text(s, encoding="utf-8")
+
+
+def sync_math_index(path):
+    """math/index.html: әр пәннің «Дайын: N / жоспар: M» санағы (дайын = сілтеме болған карточкалар)."""
+    s = path.read_text(encoding="utf-8")
+
+    def subj(m):
+        body = m.group(0)
+        ready = len(re.findall(r'<a class="week-card[^"]*" data-id="week-\d+"', body))
+        plan = len(re.findall(r'class="week-card[^"]*" data-id="week-\d+"', body))
+        body = re.sub(r'(<b class="mx-sready">)\d+(</b>)', lambda k: f"{k.group(1)}{ready}{k.group(2)}", body, count=1)
+        return re.sub(r'(<b class="mx-splan">)\d+(</b>)', lambda k: f"{k.group(1)}{plan}{k.group(2)}", body, count=1)
+    s2 = re.sub(r'<section class="mx-subj".*?</section>', subj, s, flags=re.S)
+    if s2 != s:
+        path.write_text(s2, encoding="utf-8")
+
+
+def write_math_plan():
+    """math/data/plan.js: браузер үшін жоспар (math-course.js: формулалар, сөздік, жаттықтырғыш, «қайдан бастау»)."""
+    subs = []
+    for i, sb in enumerate(math_plan.SUBJECTS):
+        subs.append({"no": sb[0], "slug": sb[1], "kz": sb[2], "en": sb[3], "group": sb[4], "pre": sb[5], "start": math_plan.STARTS[i], "count": len(sb[7]),
+                     "lessons": [t for t, _ in sb[7]]})
+    out = ("window.CS50KZ_MATH_PLAN = " + json.dumps({"total": math_plan.TOTAL, "subjects": subs}, ensure_ascii=False, separators=(",", ":")) + ";\n")
+    (ROOT / "math" / "data").mkdir(parents=True, exist_ok=True)
+    fp = ROOT / "math" / "data" / "plan.js"
+    if not fp.exists() or fp.read_text(encoding="utf-8") != out:
+        fp.write_text(out, encoding="utf-8")
 
 
 def courses_block(prefix, skip=()):
@@ -177,10 +215,10 @@ def route_block(prefix, code, local=False):
     course_href = "#weeks" if local else (f"{prefix}index.html#main" if code == "x" else f"{prefix}{code}/index.html#weeks")
     steps = [
         (course_href, short, "Курсты таңда"),
-        (lec(first), f"{num(first)} " + ("сабағы" if code == "en" else "лекциясы"), "Оқы, 15-20 минут"),
+        (lec(first), f"{num(first)} " + ("сабағы" if code in ("en", "math") else "лекциясы"), "Оқы, 15-20 минут"),
         (lec(first) + (f"#{task_id}" if task_id else ""), "Бірінші тапсырма", "Өзің орында"),
         (lec(first) + (f"#{quiz_id}" if quiz_id else ""), "Нәтиже", "Тест және тексеру"),
-        (lec(second) if second else lec(first), "Келесі сабақ" if code == "en" else "Келесі лекция", num(second) if second else "Жалғастыр"),
+        (lec(second) if second else lec(first), "Келесі сабақ" if code in ("en", "math") else "Келесі лекция", num(second) if second else "Жалғастыр"),
     ]
     items = "\n".join(
         f'      <li class="route-step" data-step="{i}"><a href="{h}"><span class="route-dot" aria-hidden="true">{i}</span>'
@@ -192,7 +230,7 @@ def route_block(prefix, code, local=False):
       <ol class="route-line">
 {items}
       </ol>
-      <div class="route-cta"><a class="btn gold route-go" href="{lec(first)}">Бастау: {num(first)} <span aria-hidden="true">→</span></a><p class="route-note" aria-live="polite">Жаңа келдіңіз бе? {num(first)}{"" if code == "en" else "дан"} бастаңыз: ол ең қысқа жол.</p></div>
+      <div class="route-cta"><a class="btn gold route-go" href="{lec(first)}">Бастау: {num(first)} <span aria-hidden="true">→</span></a><p class="route-note" aria-live="polite">Жаңа келдіңіз бе? {num(first)}{"" if code in ("en", "math") else "дан"} бастаңыз: ол ең қысқа жол.</p></div>
     </section>
     <!-- /build:route -->"""
 
@@ -287,7 +325,7 @@ def course_of(rel):
 
 
 PILL = {"x": ("CS50x", "#087a96"), "python": ("CS50P", "#3776ab"), "sql": ("SQL", "#7c3aed"), "ai": ("AI", "#c42a68"), "web": ("Web", "#c2410c"),
-        "cpp": ("C++", "#4f46e5"), "java": ("Java", "#d97706"), "en": ("English", "#0f766e")}
+        "cpp": ("C++", "#4f46e5"), "java": ("Java", "#d97706"), "en": ("English", "#0f766e"), "math": ("Математика", "#15803d")}
 
 
 def nav_block(prefix, active, course=None):
@@ -337,7 +375,7 @@ def footer_block(p):
         '<a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · '
         '<a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · '
         '<a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p>'
-        f'<p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="{p}cpp/">C++</a> · <a href="{p}java/">Java</a> · <a href="{p}en/">Ағылшын тілі</a></p>'
+        f'<p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="{p}cpp/">C++</a> · <a href="{p}java/">Java</a> · <a href="{p}en/">Ағылшын тілі</a> · <a href="{p}math/">Математика</a></p>'
         f'<p class="ft-links"><a href="{p}copyright.html">Авторлық құқық және лицензиялар</a> · '
         '<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · '
         '<a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>\n'
@@ -365,7 +403,7 @@ def process_page(path, prefix, active):
     m = re.search(r'<meta name="description" content="([^"]*)">', s)
     rel = path.relative_to(ROOT).as_posix()
     own = re.match(rf"({OWN_RE})/", rel)
-    desc = m.group(1) if m else (("Ағылшын тілі A0-C1: авторлық оқу курсы, жаттығулар мен сөздік." if own.group(1) == "en" else f"{OWN_COURSES[own.group(1)]['short']} бағдарламалау: авторлық оқу курсы, тесттер мен жаттығулар.") if own
+    desc = m.group(1) if m else (("Ағылшын тілі A0-C1: авторлық оқу курсы, жаттығулар мен сөздік." if own.group(1) == "en" else "Математика: авторлық оқу курсы, қорытып шығарулар, есептер мен формулалар." if own.group(1) == "math" else f"{OWN_COURSES[own.group(1)]['short']} бағдарламалау: авторлық оқу курсы, тесттер мен жаттығулар.") if own
                                  else "Гарвардтың CS50 курсы қазақ тілінде: лекциялар, тесттер, тапсырмалар.")
     url = SITE_URL + ("" if rel == "index.html" else rel)
     og = f"assets/img/og/{path.stem}.jpg" if rel.startswith("lectures/") else "assets/img/og.jpg"
@@ -423,6 +461,14 @@ def lecture_meta(name, s, url=None):
             "task": next((i for i in ("practice", "exercises", "problem-set") if re.search(rf'<h2 id="{i}"', article)), "")}
 
 
+def plain_tex(text):
+    """Іздеу үзіндісінде $...$ формулаларын оқылатын мәтінге айналдыру: \\frac{a}{b} -> a b."""
+    def f(m):
+        t = re.sub(r"\\[A-Za-z]+", " ", m.group(1))
+        return " " + re.sub(r"[{}^_\\]", " ", t) + " "
+    return re.sub(r"\s+", " ", re.sub(r"\$\$?([^$]+)\$\$?", f, text)).strip()
+
+
 def sections(name, s, meta):
     """Мақаланы h2/h3 бойынша бөліктерге бөлу (іздеу үшін)."""
     article = article_of(s)
@@ -432,6 +478,8 @@ def sections(name, s, meta):
         hid = re.search(r'id="([^"]+)"', parts[i]).group(1)
         heading = strip_tags(parts[i])
         body = strip_tags(re.sub(r"<pre\b.*?</pre>", " ", parts[i + 1], flags=re.S))
+        if "$" in body:
+            body = plain_tex(body)
         out.append({"l": meta["num"] + ": " + meta["title"], "h": heading,
                     "u": f"{meta['url']}#{hid}", "t": body[:900]})
     return out
@@ -610,7 +658,7 @@ def compute_stats():
                 continue
             meta = lecture_meta(name, s, f"{prefix}/lectures/{name}.html" if prefix else None)
             n_lect += 1
-            n_tasks += len(re.findall(r'class="(?:(?:autograder|js-grader|sql-grader)\b|en-ex[ "])', s))
+            n_tasks += len(re.findall(r'class="(?:(?:autograder|js-grader|sql-grader)\b|en-ex[ "]|math-ex[ "])', s))
             q_code += quiz_questions(name, s, meta)
             t_code += glossary_terms(name, s, dict(meta, num=meta["num"]), code)
         quiz += q_code
@@ -675,6 +723,7 @@ DESC_TEMPLATES = {
     "cpp/index.html": "C++ бағдарламалау: авторлық қазақша курс. Жад пен көрсеткіштер, ООП, STL, шаблондар және өз жобаң. {lect_cpp} лекция, тесттер, жаттығулар.",
     "java/index.html": "Java бағдарламалау: авторлық қазақша курс. Нысандар, интерфейстер, Collections, Stream API, көп ағын және өз жобаң. {lect_java} лекция, тесттер, жаттығулар.",
     "en/index.html": "Ағылшын тілі A0-C1: авторлық қазақша курс. Грамматика, сөздік, оқу, жазу, тыңдау мен айту жаттығулары, IT-ағылшын. 24 сабақ, деңгей анықтау тесті.",
+    "math/index.html": "Математика: авторлық қазақша курс. 24 пән: сызықтық алгебра, анализ, ықтималдық, дискретті математика, сандар теориясы, топология және т.б. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
 }
 INDEX_LD = "Гарвард университетінің CS50x курсы қазақ тілінде: {lect_x} лекция, тесттер, тапсырмалар, интерактив визуализациялар."
 
@@ -745,7 +794,7 @@ def main():
             terms += glossary_terms(name, s, labeled, code)
             quiz += [dict(q, c=code) for q in quiz_questions(name, s, meta)]
             sm = re.search(r'<h2 id="summary">.*?</h2>\s*(?:<p>(?:(?!</p>).)*</p>\s*)?(<ul>.*?</ul>|<table>.*?</table>)', s, re.S)
-            if sm:
+            if sm and code != "math":  # math: формулалар TeX; шпаргалка беті KaTeX жүктемейді
                 sheets.append((meta, sm.group(1), code))
             course_pages.append(meta["url"])
         if (ROOT / code / "index.html").exists():
@@ -758,7 +807,11 @@ def main():
                     if len(d) > 150:
                         d = d[:147].rsplit(" ", 1)[0].rstrip(",;:") + "..."
                     info[m_["id"]] = (m_["title"], d)
+            if code == "math":
+                write_math_plan()
             sync_week_cards(ROOT / code / "index.html", {m["id"] for m in clist}, info)
+            if code == "math":
+                sync_math_index(ROOT / code / "index.html")
             process_page(ROOT / code / "index.html", "../", "index")
             for extra in sorted((ROOT / code).glob("*.html")):  # курстың ортақ беттері (en/vocab.html т.б.)
                 if extra.name != "index.html":
@@ -809,12 +862,18 @@ def main():
         own_files = []
         for code in OWN_COURSES:
             own_files += [f"{code}/index.html", f"{code}/data/lectures.js"] + sorted(
-                f.relative_to(ROOT).as_posix() for f in (ROOT / code / "lectures").glob("week-*.html"))
+                f.relative_to(ROOT).as_posix() for f in (ROOT / code / "lectures").glob("week-*.html")
+                if code != "math" or not is_soon(f.read_text(encoding="utf-8")))  # math: тек дайын сабақтар (154 тұғыр кэшке салынбайды)
             own_files += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / code).glob("*.html") if f.name != "index.html")  # курстың ортақ беттері
         own_files += ["assets/js/own-viz.js", "assets/css/own-viz.css"]  # дербес курстардың интерактивті визуализаторлары
         own_files += ["assets/js/en-course.js", "assets/js/en-tools.js", "assets/css/en-course.css"]  # ағылшын курсының жаттығу қозғалтқышы мен құралдары
         own_files += ["assets/js/games-en.js", "assets/css/en-games.css", "assets/js/en-trainer.js", "assets/js/en-home.js"]  # ағылшын ойындары, сөздік жаттықтырғышы, курс беті
         own_files += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / "assets/data").glob("en-*.js"))
+        # Математика: қозғалтқыш, визуализация, стиль, жергілікті KaTeX (MIT), жоспар және дерек файлдары
+        own_files += ["assets/js/math-course.js", "assets/js/math-viz.js", "assets/css/math-course.css", "math/data/plan.js",
+                      "assets/vendor/katex/katex.min.js", "assets/vendor/katex/auto-render.min.js", "assets/vendor/katex/katex.min.css"]
+        own_files += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / "assets/vendor/katex/fonts").glob("*.woff2"))
+        own_files += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / "assets/data").glob("math-*.js"))
         own_files = [f for f in own_files if (ROOT / f).exists()]
         sw = swp.read_text(encoding="utf-8")
         sw2 = re.sub(r"/\*own-courses:begin\*/.*?/\*own-courses:end\*/",
