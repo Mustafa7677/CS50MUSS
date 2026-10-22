@@ -78,7 +78,7 @@ test("курстар беті мен курс беті: маршрут бар, �
   await blockFonts(page.context());
   await page.goto("courses.html");
   await expect(page.locator(".route[data-route='x'] .route-step")).toHaveCount(5);
-  await expect(page.locator(".cx-card")).toHaveCount(8);
+  await expect(page.locator(".cx-card")).toHaveCount(9);
   await page.goto("python/index.html");
   const route = page.locator(".route[data-route='python']");
   await expect(route.locator(".route-step")).toHaveCount(5);

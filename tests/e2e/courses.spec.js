@@ -6,7 +6,7 @@ test("курстар беті және CS50P: лекция, тест, «Оқыд
   const errs = collectErrors(page);
   await blockFonts(page.context());
   await page.goto("courses.html");
-  await expect(page.locator(".cx-card")).toHaveCount(8);
+  await expect(page.locator(".cx-card")).toHaveCount(9);
   await expect(page.locator(".cx-card .cx-bar:visible")).toHaveCount(0);
   await page.click('.cx-card[href="python/"]');
   await expect(page).toHaveURL(/python\/(index\.html)?$/);
@@ -47,7 +47,7 @@ test("курстар беті және CS50P: лекция, тест, «Оқыд
   // CS50x басты беті CS50P прогресін өзінікі деп санамайды; басты бетте CS50x-тен басқа 6 курс
   await page.goto("index.html");
   await expect(page.locator(".dash-stats")).toContainText("0/12");
-  await expect(page.locator(".cx-home .cx-card")).toHaveCount(7);
+  await expect(page.locator(".cx-home .cx-card")).toHaveCount(8);
   // Іздеу CS50P бөлімдерін табады
   await page.keyboard.press("Control+k");
   await expect(page.locator(".search-modal input")).toBeFocused();
@@ -144,7 +144,7 @@ test("барлық 7 курстың басты беттері мен серти�
   const errs = collectErrors(page);
   await blockFonts(page.context());
   await page.goto("courses.html");
-  await expect(page.locator(".cx-card")).toHaveCount(8);
+  await expect(page.locator(".cx-card")).toHaveCount(9);
   for (const [code, n, ready] of [["python", 10, 10], ["sql", 7, 7], ["ai", 7, 7], ["web", 9, 9], ["cpp", 8, ownLectures("cpp").length], ["java", 8, ownLectures("java").length]]) {
     await page.goto(`${code}/index.html`);
     await expect(page.locator(".week-card")).toHaveCount(n);
@@ -163,7 +163,7 @@ test("құрылым: курс таңдағыш, іздеу/сөздік/кар�
   await page.goto("sql/lectures/week-0.html");
   await expect(page.locator(".course-pill .cp-label")).toHaveText("SQL");
   await page.click(".course-pill");
-  await expect(page.locator(".course-menu .cm-row")).toHaveCount(8);
+  await expect(page.locator(".course-menu .cm-row")).toHaveCount(9);
   await expect(page.locator(".course-menu .cm-row.on")).toContainText("CS50 SQL");
   await page.keyboard.press("Escape");
   await expect(page.locator(".course-menu")).toBeHidden();
@@ -208,7 +208,7 @@ test("«Менің курстарым»: басты бет пен профиль
   await expect(py.locator(".mc-btn")).toHaveAttribute("href", /python\/lectures\/week-2\.html$/);
   await page.goto("profile.html");
   await expect(page.locator(".pf-mycourses, .my-courses .mc-card").first()).toBeVisible();
-  await expect(page.locator(".pf-stats")).toContainText("4/85");
+  await expect(page.locator(".pf-stats")).toContainText("4/239");
   // Курс таңдағыштағы прогресс
   await page.click(".course-pill");
   await expect(page.locator('.course-menu .cm-row:has-text("CS50P") .cm-n')).toHaveText("2/10");

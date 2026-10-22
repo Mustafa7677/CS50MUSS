@@ -8,6 +8,7 @@
 |---|---|---|---|---|
 | sql.js (SQLite WebAssembly/asm.js) | `assets/vendor/sqljs/` | MIT | sql.js authors (2017) | Лицензия: `assets/vendor/sqljs/LICENSE`. SQLite - public domain |
 | QR Code Generator for JavaScript | `assets/vendor/qrcode/qrcode.js` | MIT | Kazuhiko Arase (2009) | Лицензия файл тақырыбында. «QR Code» - DENSO WAVE INCORPORATED тіркелген тауар белгісі |
+| KaTeX 0.16.11 (katex.min.js, auto-render.min.js, katex.min.css, fonts/*.woff2) | `assets/vendor/katex/` | MIT | Khan Academy және авторлар (2013-2020) | Лицензия: `assets/vendor/katex/LICENSE`. Математика курсындағы формулаларды көрсетеді; жергілікті көшірме, CDN жоқ, офлайн жұмыс істейді. Қаріптер KaTeX пакетімен бірге таратылады (олардың өз лицензиялары бар: SIL OFL 1.1 негізінде) |
 | Flask 3.1.3 | `assets/vendor/flask/flask-bundle.zip` | BSD-3-Clause | Pallets | Лицензия мәтіні архив ішінде `licenses/flask-LICENSE.txt` |
 | Werkzeug 3.1.9 | сол архив | BSD-3-Clause | Pallets | `licenses/werkzeug-LICENSE.txt` |
 | Jinja2 3.1.6 | сол архив | BSD-3-Clause | Pallets | `licenses/jinja2-LICENSE.txt` |

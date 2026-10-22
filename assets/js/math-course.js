@@ -23,6 +23,7 @@
   };
   var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   /* Мәтінде тек осы теңдерге рұқсат; қалғаны экрандалады. Формулалар ($...$) экрандалмайды-ақ қауіпсіз: auto-render мәтін түйінінен оқиды. */
+  var plainText = function (s) { return String(s).replace(/<[^>]+>/g, "").replace(/\$/g, "").replace(/\s+/g, " ").trim() || "нұсқа"; };
   var rich = function (s) { return esc(s).replace(/&lt;(\/?)(b|i|em|strong|code|sub|sup|u|small)&gt;/g, "<$1$2>").replace(/&lt;br\s*\/?&gt;/g, "<br>"); };
   function h(tag, attrs) {
     var e = document.createElement(tag), k, kids = Array.prototype.slice.call(arguments, 2);
@@ -792,7 +793,7 @@
     var name = "mx" + (++UID), multi = Array.isArray(item.a), order = item.o.map(function (_, i) { return i; });
     if (item.shuffle) order = shuffle(order, rng(hash(ctx.key + item.q)));
     var opts = order.map(function (k) {
-      return h("label", { class: "mx-opt" }, h("input", { type: multi ? "checkbox" : "radio", name: name, value: String(k) }), h("span", { html: rich(item.o[k]) }));
+      return h("label", { class: "mx-opt" }, h("input", { type: multi ? "checkbox" : "radio", name: name, value: String(k), "aria-label": plainText(item.o[k]) }), h("span", { html: rich(item.o[k]) }));
     });
     var el = h("div", { class: "mx-opts", role: multi ? "group" : "radiogroup" }, opts);
     if (multi) el.prepend(h("small", { class: "mx-note", text: "Бірнеше жауап дұрыс болуы мүмкін." }));
@@ -1349,7 +1350,7 @@
       var width = 20 + (maxD + 1) * W2 + maxD * GX, height = 20 + maxRows * (H2 + GY);
       var NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg");
       svg.setAttribute("viewBox", "0 0 " + width + " " + height); svg.setAttribute("width", width); svg.setAttribute("height", height);
-      svg.setAttribute("role", "img"); svg.setAttribute("aria-label", "Пәндер арасындағы алғышарт байланыстары");
+      svg.setAttribute("role", "group"); svg.setAttribute("aria-label", "Пәндер арасындағы алғышарт байланыстары");
       var tno = +target.value, need = []; closure(tno, need);
       plan.subjects.forEach(function (s) { s.pre.forEach(function (p) {
         var a = pos[p], b = pos[s.no], ln = document.createElementNS(NS, "path");

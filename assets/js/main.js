@@ -6,7 +6,7 @@
   const ROOT_URL = new URL("../../", document.currentScript.src).href;
   // Курс: CS50x - түбірде (lectures/), басқалары өз қалтасында (python/lectures/ т.б.).
   // CS50x-тің прогресс кілттері бұрынғыдай (week-0), басқа курстарда курс атымен (python:week-0) - шатаспайды.
-  const COURSE = (location.pathname.match(/\/(python|sql|ai|web|cpp|java|en)\/(?:lectures\/[\w-]+\.html|index\.html)?$/) || location.pathname.match(/\/(en)\/[\w-]+\.html$/) || [])[1] || "x";
+  const COURSE = (location.pathname.match(/\/(python|sql|ai|web|cpp|java|en|math)\/(?:lectures\/[\w-]+\.html|index\.html)?$/) || location.pathname.match(/\/(en|math)\/[\w-]+\.html$/) || [])[1] || "x";
   const PAGE = (() => { const n = (location.pathname.match(/lectures\/([\w-]+)\.html$/) || [])[1]; return n ? (COURSE === "x" ? n : COURSE + ":" + n) : null; })();
 
   // Көшірмеден қорғау: сайт ресми мекенжайдан тыс жерде ашылса, түпнұсқаға сілтеме беретін ескерту көрсетеді.
@@ -365,7 +365,7 @@
       for (let i = 0; i < localStorage.length; i++) {
         const k = localStorage.key(i);
         if (!k || !k.startsWith("check:")) continue;
-        const h = k.match(/\/(python|sql|ai|web|cpp|java|en)\/lectures\/(week-\d+)\.html:/);
+        const h = k.match(/\/(python|sql|ai|web|cpp|java|en|math)\/lectures\/(week-\d+)\.html:/);
         const x = h ? null : k.match(/\/lectures\/(week-\d+|ai)\.html:/);
         const id = h ? h[1] + ":" + h[2] : x ? x[1] : null;
         if (!id) continue;
@@ -420,7 +420,7 @@
       modal.innerHTML = `
         <div class="search-box" role="dialog" aria-modal="true" aria-label="Іздеу">
           <div class="search-input"><span>⌕</span><input type="search" placeholder="Лекциялардан іздеу: рекурсия, malloc, SQL JOIN..." autocomplete="off"><kbd>Esc</kbd></div>
-          <div class="search-scope" role="group" aria-label="Курс бойынша сүзу">${[["all", "Барлығы"], ["x", "CS50x"], ["python", "CS50P"], ["sql", "SQL"], ["ai", "AI"], ["web", "Web"], ["cpp", "C++"], ["java", "Java"], ["en", "English"]].map(([c, n]) => `<button type="button" data-s="${c}" class="${c === "all" ? "on" : ""}">${n}</button>`).join("")}</div>
+          <div class="search-scope" role="group" aria-label="Курс бойынша сүзу">${[["all", "Барлығы"], ["x", "CS50x"], ["python", "CS50P"], ["sql", "SQL"], ["ai", "AI"], ["web", "Web"], ["cpp", "C++"], ["java", "Java"], ["en", "English"], ["math", "Math"]].map(([c, n]) => `<button type="button" data-s="${c}" class="${c === "all" ? "on" : ""}">${n}</button>`).join("")}</div>
           <ul class="search-results"></ul>
           <div class="search-foot"><span><kbd>↑</kbd><kbd>↓</kbd> таңдау</span><span><kbd>Enter</kbd> ашу</span></div>
         </div>`;
@@ -462,7 +462,7 @@
       document.body.classList.remove("no-scroll");
     };
 
-    const courseOfHit = (s) => (/^(python|sql|ai|web|cpp|java|en)\//.exec(s.u) || [])[1] || "x";
+    const courseOfHit = (s) => (/^(python|sql|ai|web|cpp|java|en|math)\//.exec(s.u) || [])[1] || "x";
     let scope = "all";
     function run() {
       const q = input.value.trim().toLowerCase();
@@ -927,10 +927,14 @@
     { id: "cpp", name: "C++", title: "C++ бағдарламалау", color: "#4f46e5", total: 8, href: "cpp/index.html", own: true },
     { id: "java", name: "Java", title: "Java бағдарламалау", color: "#d97706", total: 8, href: "java/index.html", own: true },
     { id: "en", name: "English", title: "Ағылшын тілі A0-C1", color: "#0f766e", total: 24, href: "en/index.html", own: true, nocert: true, unit: "сабақ" },
+    { id: "math", name: "Math", title: "Математика", color: "#15803d", total: 154, href: "math/index.html", own: true, nocert: true, unit: "сабақ" },
   ];
   // Ағылшын курсы: лекция белгісі «A1 · 2-сабақ» (week-N -> деңгей мен сабақ)
   const EN_LV = ["A0", "A1", "A2", "B1", "B2", "C1"];
-  const unitLabel = (courseId, n) => (courseId === "en" ? `${EN_LV[Math.floor(n / 4)]} · ${(n % 4) + 1}-сабақ` : `${n}-апта`);
+  // Математика: 24 пән, сабақ саны пәнде әртүрлі (жалғыз жоспар: tools/math_plan.py; тест MATH_COUNTS пен COURSE_META.total сәйкестігін тексереді)
+  const MATH_COUNTS = [7, 8, 6, 8, 7, 7, 6, 6, 7, 5, 6, 6, 7, 6, 7, 6, 6, 7, 7, 6, 6, 5, 6, 6];
+  const mathLabel = (n) => { let i = 0; while (i < MATH_COUNTS.length - 1 && n >= MATH_COUNTS[i]) { n -= MATH_COUNTS[i]; i++; } return `${i + 1}-пән · ${n + 1}-сабақ`; };
+  const unitLabel = (courseId, n) => (courseId === "en" ? `${EN_LV[Math.floor(n / 4)]} · ${(n % 4) + 1}-сабақ` : courseId === "math" ? mathLabel(n) : `${n}-апта`);
   function courseReadCount(p, id) {
     return Object.keys(p.read || {}).filter((k) => p.read[k] && (id === "x" ? ORDER.includes(k) : k.startsWith(id + ":"))).length;
   }
@@ -1055,7 +1059,7 @@
     const p = Progress.load();
     const st = routeState(c, list, p), { L, next } = st;
     const steps = [...box.querySelectorAll(".route-step")];
-    const certHref = c === "en" ? ROOT_URL + "en/index.html" : ROOT_URL + "certificate.html" + (c === "x" ? "" : "?course=" + c);
+    const certHref = c === "en" || c === "math" ? ROOT_URL + c + "/index.html" : ROOT_URL + "certificate.html" + (c === "x" ? "" : "?course=" + c);
     const setStep = (i, href, title, small) => {
       const li = steps[i - 1];
       if (!li) return;
@@ -1069,7 +1073,7 @@
       setStep(2, url(L), L.num + " лекциясы", L.title);
       setStep(3, url(L, L.task || ""), null, L.tasks ? "Өзің орында" : "Бұл лекцияда тапсырма жоқ");
       setStep(4, url(L, L.quiz ? "quiz" : ""), null, null);
-      setStep(5, next ? url(next) : certHref, next ? (c === "en" ? "Келесі сабақ" : "Келесі лекция") : (c === "en" ? "Курс беті" : "Сертификат"), next ? next.num + ": " + next.title : "Курс аяқталады");
+      setStep(5, next ? url(next) : certHref, next ? (c === "en" || c === "math" ? "Келесі сабақ" : "Келесі лекция") : (c === "en" || c === "math" ? "Курс беті" : "Сертификат"), next ? next.num + ": " + next.title : "Курс аяқталады");
     }
     steps.forEach((li, i) => {
       const done = st.done[i], cur = st.current === i + 1;
@@ -1090,8 +1094,8 @@
     box.dataset.current = String(st.current);
     if (!L) {
       go.setAttribute("href", certHref);
-      go.innerHTML = c === "en" ? 'Курс бетіне оралу <span aria-hidden="true">→</span>' : 'Сертификатты алу <span aria-hidden="true">→</span>';
-      note.textContent = c === "en" ? "Курс толық оқылды. Сөздік карточкаларымен қайталап, жобаңызды аяқтаңыз." : "Курс толық оқылды. Қорытынды емтиханнан өтіп, сертификат алыңыз.";
+      go.innerHTML = c === "en" || c === "math" ? 'Курс бетіне оралу <span aria-hidden="true">→</span>' : 'Сертификатты алу <span aria-hidden="true">→</span>';
+      note.textContent = c === "math" ? "Курс толық оқылды. Жаттықтырғышта қайталап, формулалар анықтамалығын пайдаланыңыз." : c === "en" ? "Курс толық оқылды. Сөздік карточкаларымен қайталап, жобаңызды аяқтаңыз." : "Курс толық оқылды. Қорытынды емтиханнан өтіп, сертификат алыңыз.";
       return;
     }
     const target = [url(L), url(L), url(L, L.task || ""), url(L, L.quiz ? "quiz" : ""), next ? url(next) : certHref][st.current - 1];
@@ -1345,7 +1349,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
     let course = "all";
     // Әр жолдың курсы: сілтемесінен (python/, sql/, ai/, web/ не CS50x)
     const inCourse = (r, c) => (r.dataset.c || "x").split(" ").includes(c);
-    const names = { all: "Барлығы", x: "CS50x", python: "CS50P", sql: "SQL", ai: "AI", web: "Web", cpp: "C++", java: "Java", en: "English" };
+    const names = { all: "Барлығы", x: "CS50x", python: "CS50P", sql: "SQL", ai: "AI", web: "Web", cpp: "C++", java: "Java", en: "English", math: "Math" };
     const present = new Set(rows.flatMap((r) => (r.dataset.c || "x").split(" ")));
     const chips = document.createElement("div");
     chips.className = "seg g-courses";
@@ -1923,6 +1927,7 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
       A("course-web", "🕸", "CS50 Web түлегі", "CS50 Web курсының барлық 9 лекциясын оқу", readC("web"), 9),
       A("course-cpp", "⚙️", "C++ түлегі", "C++ курсының барлық 8 лекциясын оқу", readC("cpp"), 8),
       A("course-java", "☕", "Java түлегі", "Java курсының барлық 8 лекциясын оқу", readC("java"), 8),
+      A("course-math", "📐", "Математик", "Математика курсының барлық 154 сабағын оқу", readC("math"), 154),
       A("course-en", "🔤", "Ағылшын курсын аяқтады", "Ағылшын тілі курсының барлық 24 сабағын оқу", readC("en"), 24),
       A("builder", "🛠", "Жасаушы", "«Жобалар шеберханасында» бір жобаны аяқтау", Math.min(1, Object.keys((readJson("cs50kz:projects", {}).finished || {})).filter((k) => k !== "all").length), 1),
       A("capstone", "🏗", "Капстоун шебері", "«Жобалар шеберханасының» барлық 4 жобасын аяқтау", Object.keys((readJson("cs50kz:projects", {}).finished || {})).filter((k) => k !== "all").length, 4),

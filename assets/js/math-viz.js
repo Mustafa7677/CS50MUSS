@@ -228,7 +228,7 @@
       var cf = compile(f.f, vars);
       return { src: f.f, fn: cf, color: PAL[(f.color != null ? f.color : i) % PAL.length], dash: f.dash, on: true, label: f.label || ("f" + (i + 1) + "(x) = " + f.f) };
     });
-    var plot = new Plot(root, { view: cfg.view || [-6, 6, -4, 4], aria: title + ": " + fns.map(function (f) { return f.src; }).join("; "), hover: function (x) {
+    var plot = new Plot(root, { view: cfg.view || [-6, 6, -4, 4], equal: !!cfg.equal, aria: title + ": " + fns.map(function (f) { return f.src; }).join("; "), hover: function (x) {
       var env = envOf(); env.x = x;
       shellRef.read.innerHTML = "";
       var parts = fns.filter(function (f) { return f.on; }).map(function (f) { var y = f.fn(env); return "<b>" + esc2(f.src) + "</b>: x = " + fmt(x, 2) + ", y = " + (isFinite(y) ? fmt(y, 3) : "анықталмаған"); });

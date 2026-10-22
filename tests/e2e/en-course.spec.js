@@ -18,7 +18,7 @@ test("құрылым: 24 сабақ беті бар, дайын сабақ са�
   expect(READY.length).toBeGreaterThanOrEqual(1);
   expect(S.by_course.en.lect).toBe(READY.length);
   expect(S.by_course.en.plan).toBe(24);
-  expect(S.lect_own).toBe(S.by_course.cpp.lect + S.by_course.java.lect + S.by_course.en.lect);
+  expect(S.lect_own).toBe(S.by_course.cpp.lect + S.by_course.java.lect + S.by_course.en.lect + S.by_course.math.lect);
   expect(S.lect_harvard).toBe(45);
 });
 
@@ -71,7 +71,7 @@ test("ауыстырғыш пен іздеу: English курсы нав-меню
   await blockFonts(page.context());
   await page.goto("en/index.html");
   await page.click(".course-pill");
-  await expect(page.locator(".course-menu .cm-row")).toHaveCount(8);
+  await expect(page.locator(".course-menu .cm-row")).toHaveCount(9);
   await expect(page.locator(".course-menu .cm-row.on")).toContainText("English");
   await page.keyboard.press("Escape");
   await page.keyboard.press("Control+k");
@@ -80,7 +80,7 @@ test("ауыстырғыш пен іздеу: English курсы нав-меню
   await expect(page.locator(".certificate")).not.toContainText("Ағылшын");
   await page.goto("courses.html");
   await expect(page.locator('.cx-card[data-course="en"]')).toHaveAttribute("href", "en/");
-  await expect(page.locator(".cx-card.own")).toHaveCount(3);
+  await expect(page.locator(".cx-card.own")).toHaveCount(4);
 });
 
 for (const t of TOOLS) {
