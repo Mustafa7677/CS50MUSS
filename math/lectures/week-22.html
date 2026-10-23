@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math 4 · Дифференциалдық есептеу · 2-сабақ: Шектерді есептеу тәсілдері - CS50 қазақша">
-  <meta property="og:description" content="Математика, 4 · Дифференциалдық есептеу · 2-сабақ: Шектерді есептеу тәсілдері. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Шек қасиеттері, ерекше шектер, анықталмағандықтарды ашу, шексіз аз шамалар.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-22.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math 4 · Дифференциалдық есептеу · 2-сабақ: Шектерді есептеу тәсілдері - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-22.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, 4 · Дифференциалдық есептеу · 2-сабақ: Шектерді есептеу тәсілдері. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Шек қасиеттері, ерекше шектер, анықталмағандықтарды ашу, шексіз аз шамалар.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,515 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="22">
         <div class="num">4 · Дифференциалдық есептеу · 2-сабақ</div>
         <h1>Шектерді есептеу тәсілдері</h1>
-        <p>Шек қасиеттері, ерекше шектер, анықталмағандықтарды ашу, шексіз аз шамалар.</p>
+        <p>Бұл сабақта шектерді ε-δ тілінсіз, тез және сенімді есептеуді үйренесіз: алгебралық қайта жазу, қысу теоремасы, екі тамаша шек және шексіз аз шамаларды баламалау. Бұл әдістер туындыны, қатарды және интегралды есептегенде күнделікті қолданылады.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-4">Дифференциалдық есептеу</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-4">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны жасанды интеллект көмегімен дайындалған, сондықтан математик-оқытушымен тексеріп алған жөн. Бұл ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+            <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>шектің түрін (анықталған не анықталмағандық) тану және әр түрге қолайлы тәсілді таңдау;</li>
+        <li>$\frac00$ түріндегі шектерді көбейткіштерге жіктеу не түйіндес өрнекке көбейту арқылы ашу;</li>
+        <li>рационал өрнектің шексіздіктегі шегін дәреже ережесі бойынша бірден жазу;</li>
+        <li>қысу теоремасын қолданып, шектің бар екенін негіздеу;</li>
+        <li>бірінші және екінші тамаша шектерді дәлелдеп, олардың көмегімен тригонометриялық және көрсеткіштік шектерді есептеу;</li>
+        <li>шексіз аз шамаларды баламалап, күрделі шекті бірнеше жолға келтіру.</li>
+      </ul>
+
+      <h2 id="prereq">Алғышарттар</h2>
+      <p class="math-prereq">Бұл сабаққа алдыңғы <a href="week-21.html">шек ұғымы мен анықтамасы</a> (бір жақты шектер, шектердің арифметикасы), сондай-ақ <a href="../index.html#subj-1">1. Жоғары математикаға дайындық</a> пәніндегі көпмүшеліктерді көбейткіштерге жіктеу (<a href="week-2.html">3-сабақ</a>), көрсеткіштік және логарифмдік функциялар (<a href="week-3.html">4-сабақ</a>) және тригонометриялық теңбе-теңдіктер (<a href="week-4.html">5-</a>, <a href="week-5.html">6-сабақ</a>) қажет.</p>
+
+      <h2 id="intuition">Интуиция: шекті «жасырып тұрған» өрнекті ашу</h2>
+      <p>Алдыңғы сабақта шектің не екенін білдік: аргумент нүктеге жақындағанда функция қайда бара жатыр. Енді практикалық сұрақ: әр шек үшін ондаған мән қойып, кесте жасамай-ақ жауапты қалай табуға болады? Жауап: көп жағдайда шек өрнектің «ішінде жасырылған», ал біздің міндетіміз өрнекті шекті көрінетіндей етіп қайта жазу.</p>
+      <p>Қарапайым мысал: $\dfrac{x^2-9}{x-3}$ өрнегінде $x=3$ қойсақ, $\dfrac00$ шығады. Бұл жауап емес, тек «осы түрде шекті көрмей тұрмыз» дегенді білдіреді. Ал алымды $(x-3)(x+3)$ деп жазсақ, ортақ көбейткіш $x-3$ жоғалады да, қарапайым $x+3$ қалады, және шек бірден 6 болады. Күнделікті өмірмен салыстыру: екі үлкен санның айырмасын не қатынасын есептегенде, екеуі де шексіздікке ұмтылса, нәтиже екеуінің «қайсысы тез өсетініне» тәуелді. Бір жақ 1000 есе тез өссе, қатынас шексіз үлкен болады; екеуі бірдей жылдамдықпен өссе, қатынас тұрақты санға келеді.</p>
+      <p>Осы «жылдамдық» ойы шексіз аз шамалардың баламалығының негізі. $x$ нөлге жақын болғанда $\sin x$ мен $x$ екеуі де нөлге ұмтылады, бірақ олардың қатынасы 1-ге тең: олар «бірдей жылдамдықпен» кішірейеді. Сондықтан нөл маңайында $\sin x$-ті $x$-пен ауыстыруға болады, және мұны біз сабақта дәлелдейміз. Дәл осылай $1-\cos x$ нөлге $x$-тен жылдамырақ ұмтылады (ол $x^2/2$-ге ұқсас), сондықтан $\frac{1-\cos x}{x^2}$ ақырлы шекке келеді.</p>
+      <p>Бағдарламалау тәжірибесінде де осы құбылыс бар. Компьютерде $x=10^{-8}$ үшін $\frac{1-\cos x}{x^2}$ есептесек, нәтиже $0$ болып шығуы мүмкін (дұрыс жауап $0{,}5$): екі жуық тең санды шегергенде мәнді таңбалар жоғалады. Шекті аналитикалық түрде есептеу осындай қателіктің алдын алады. Мини-жобада мұны өз көзіңізбен көресіз.</p>
+      <p>Сабақтың жоспары былай: алдымен шектің қай түрі «анықталмағандық» болатынын жеке-жеке қарастырамыз; сонан кейін алгебралық әдістерді, қысу теоремасын, екі тамаша шекті және баламалар кестесін үйренеміз. Әр әдіс сыртқы түрі әртүрлі шектерге қолданылады, сондықтан шек есептегенде бірінші қадам - түрін анықтау.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 2.1 · Анықталмағандық</span>
+        <p>Шектердің арифметикалық заңдарын тікелей қолдануға болмайтын жағдай <strong>анықталмағандық</strong> (<span class="term-en">indeterminate form</span>) деп аталады. Негізгі түрлері:
+        $$\frac00,\quad\frac\infty\infty,\quad 0\cdot\infty,\quad\infty-\infty,\quad 1^\infty,\quad 0^0,\quad\infty^0.$$ Бұл жазулар «нәтиже белгісіз» дегенді білдіреді; әр жағдайда шек бар болуы да, болмауы да мүмкін, ол өрнектің нақты түріне тәуелді.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>$\frac{c}{0}$ ($c\ne0$) түрі анықталмағандық емес: ол шексіздікке (таңбасы бойынша $\pm\infty$ не бір жақты шектермен) апарады. $\frac{0}{c}$ ($c\ne0$) нөлге тең. $c\cdot\infty$ ($c\ne0$) шексіздікті береді. Анықталмағандық - шек <em>белгісіз</em>, ал $\frac{1}{0}$ - шек <em>шексіз</em> болатын жағдай.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 2.1 · Қысу теоремасы</span>
+        <p>Егер $a$ нүктесінің маңайында (мүмкін, $a$-дан басқа) $g(x)\le f(x)\le h(x)$ және $\displaystyle\lim_{x\to a}g(x)=\lim_{x\to a}h(x)=L$ болса, онда $\displaystyle\lim_{x\to a}f(x)=L$.</p></div>
+      <p><em>Негіздеме.</em> $f$ функциясы екі функцияның арасына «қысылған», екеуі де $L$-ге ұмтылады. Сондықтан $f$-тің басқа жолы жоқ. Дәлелдеуі 1-қорытуда.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 2.2 · Үзіліссіз функцияны қою</span>
+        <p>Егер $\displaystyle\lim_{x\to a}g(x)=b$ және $f$ функциясы $b$ нүктесінде үзіліссіз болса, онда $\displaystyle\lim_{x\to a}f(g(x))=f(b)$. Яғни үзіліссіз функциядан шек белгісін «ішке кіргізуге» болады: $\lim f(g(x))=f(\lim g(x))$.</p></div>
+      <p><em>Негіздеме.</em> Үзіліссіздіктің анықтамасы келесі сабақта; мұнда оны тек құрал ретінде қолданамыз ($\sin$, $\cos$, $e^x$, $\ln x$ өз облыстарында үзіліссіз).</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 2.3 · Бірінші тамаша шек</span>
+        <p>$$\lim_{x\to0}\frac{\sin x}{x}=1\qquad(x\text{ радианмен}).$$</p></div>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 2.4 · Екінші тамаша шек</span>
+        <p>$$\lim_{x\to\pm\infty}\left(1+\frac1x\right)^x=e\approx2{,}71828,\qquad\text{эквивалентті түрде}\qquad \lim_{t\to0}(1+t)^{1/t}=e.$$</p></div>
+      <p>Екі шектің де «үйреншікті» түрі: біріншісі $\frac00$, екіншісі $1^\infty$ анықталмағандығы. Көп күрделі шектер осы екеуіне түрлендіру арқылы шешіледі. Мысалы, 3-мысалдағы $(1+\frac3x)^{2x}$ екінші тамаша шекке келтіріледі.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 2.1 · Салдарлар (нөл маңайында)</span>
+        <div class="math-fbody">$$\lim_{x\to0}\frac{\tan x}{x}=1,\ \ \lim_{x\to0}\frac{1-\cos x}{x^2}=\frac12,\ \ \lim_{x\to0}\frac{e^x-1}{x}=1,\ \ \lim_{x\to0}\frac{\ln(1+x)}{x}=1,\ \ \lim_{x\to0}\frac{a^x-1}{x}=\ln a$$</div>
+        <p class="math-fnote">Бұлар бірінші және екінші тамаша шектен шығады (2-, 3-, 5-қорыту). $\lim_{x\to0}\frac{\arcsin x}{x}=1$ да орындалады.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 2.2 · Шексіз аз шама және баламалық</span>
+        <p>$\displaystyle\lim_{x\to a}\alpha(x)=0$ болса, $\alpha$ - $x\to a$ кезіндегі <strong>шексіз аз шама</strong> (<span class="term-en">infinitesimal</span>). Екі шексіз аз $\alpha,\beta$ шамасы <strong>баламалы</strong> (<span class="term-en">equivalent</span>) деп аталады, егер $\displaystyle\lim_{x\to a}\dfrac{\alpha}{\beta}=1$; жазуы: $\alpha\sim\beta$.</p></div>
+      <div class="math-thm" id="thm-5"><span class="math-tag">Теорема 2.5 · Баламалармен ауыстыру</span>
+        <p>$\alpha\sim\alpha_1$, $\beta\sim\beta_1$ болса, онда $\displaystyle\lim\frac{\alpha}{\beta}=\lim\frac{\alpha_1}{\beta_1}$ (екі жағының бірі бар болса, екіншісі де бар және тең). Ауыстыруға <b>көбейткіш не бөлгіш</b> болып тұрған шамаларды болады; қосылғыштарды болмайды.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 2.2 · Баламалар кестесі ($x\to0$)</span>
+        <div class="math-fbody">$$\sin x\sim x,\ \ \tan x\sim x,\ \ \arcsin x\sim x,\ \ \arctan x\sim x,\ \ 1-\cos x\sim\frac{x^2}{2},\ \ e^x-1\sim x,\ \ \ln(1+x)\sim x,\ \ (1+x)^k-1\sim kx$$</div>
+        <p class="math-fnote">Баламаларды көбейтіндіде не бөлшекте қолданыңыз. Қосындыда сақ болыңыз: $\sin x-x$ және $\tan x-\sin x$ тәрізді айырмада бас мүшелер жойылып кетеді.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 2.3 · Дәреже ережесі (рационал өрнек, $x\to\infty$)</span>
+        <div class="math-fbody">$$\lim_{x\to\infty}\frac{a_nx^n+\dots+a_0}{b_mx^m+\dots+b_0}=\begin{cases}0,&amp;n&lt;m\\[2pt] \dfrac{a_n}{b_m},&amp;n=m\\[4pt] \pm\infty,&amp;n>m\end{cases}$$</div>
+        <p class="math-fnote">Шарты: $a_n\ne0$, $b_m\ne0$. Шексіз шектің таңбасы жетекші мүшелердің таңбасына және $x\to\pm\infty$ бағытына тәуелді.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Бірінші тамаша шек <b>радианмен</b> өлшенген бұрыш үшін ғана дұрыс. Градуспен $\sin x^\circ/x\to\pi/180$. Баламалар кестесі де радианға арналған.</p></div>
+
+      <div class="math-remark"><span class="math-box-title">Шек есептеу алгоритмі</span>
+        <p>Жаңа шекті көргенде мына ретпен жүріңіз; әр қадам алдыңғысы нәтиже бермегенде ғана қолданылады.</p>
+        <ol class="math-steps">
+          <li><b>Қойып көру.</b> Нүктені (не шексіздікті) тікелей қойыңыз. Егер нәтиже анықталған сан болса және функция сол нүктеде үзіліссіз болса, жұмыс бітті. $\frac{c}{0}$ шықса, бір жақты шектермен шексіздікті тексеріңіз.</li>
+          <li><b>Түрін атау.</b> Нәтиже анықталмағандық болса ($\frac00$, $\frac\infty\infty$, $\infty-\infty$, $1^\infty$), қай түр екенін атаңыз: әр түрдің өз «дәрісі» бар.</li>
+          <li><b>Алгебра.</b> $\frac00$ мен көпмүшелік болса: көбейткіштерге жіктеп қысқартыңыз. Түбір болса: түйіндес өрнекке көбейтіңіз. $\frac\infty\infty$ және $x\to\infty$ болса: ең жоғары дәрежеге бөліңіз.</li>
+          <li><b>Тамаша шектер.</b> Тригонометриялық өрнек нөлде болса, бірінші тамаша шекке келтіріңіз. $1^\infty$ болса, негізді $1+\alpha$ түрінде жазып, екінші тамаша шекті қолданыңыз.</li>
+          <li><b>Баламалар.</b> Көбейтінді не бөлшек түрінде шексіз аз шамалар болса, оларды баламаларымен ауыстырыңыз. Қосынды болса, алдымен көбейткіштерге бөліңіз.</li>
+          <li><b>Тексеру.</b> Нәтижені аргументтің нүктеге жақын екі-үш мәнінде калькулятормен тексеріңіз: мәндер жауапқа жақындап келе ме?</li>
+        </ol></div>
+      <p>Алгоритмнің мәнін мысалмен көрейік. $\displaystyle\lim_{x\to0}\frac{\sin 3x\cdot(e^{2x}-1)}{x\ln(1+5x)}$ шегінде нөлді қойсақ $\frac00$ шығады. Бұл көбейтінді және бөлшек, сондықтан баламалар жарамды: $\sin3x\sim3x$, $e^{2x}-1\sim2x$, $\ln(1+5x)\sim5x$. Нәтижесінде $\dfrac{3x\cdot2x}{x\cdot5x}=\dfrac65$. Бұл шекті алгебралық жолмен шешу өте ұзақ болар еді, ал баламалар оны бір жолға сыйғызды. Бірақ баламаларға тым сеніп кетуге болмайды: $\displaystyle\lim_{x\to0}\frac{\sin x-\tan x}{x^3}$ есебінде алым мен бөлгіш үшін $\sin x\sim x$ және $\tan x\sim x$ деп жазсақ, $\frac{x-x}{x^3}=0$ шығады, ал дұрыс жауап $-\frac12$. Себебі қосындыда бас мүшелер бір-бірін жойып, кіші ретті мүше қалады. Мұндай жағдайда дәлірек жуықтау керек: келесі пәндерде (қатарлар) Тейлор формуласы дәл осыны береді: $\sin x=x-\frac{x^3}{6}+\dots$ және $\tan x=x+\frac{x^3}{3}+\dots$, демек $\sin x-\tan x\approx-\frac{x^3}{2}$.</p>
+      <p>Шексіздіктегі шектерде де осыған ұқсас «жетекші мүше» идеясы жұмыс істейді. Көпмүшелікті алғанда, $x$ өте үлкен болса, ең жоғары дәрежелі мүше қалғандарынан басым болады: $3x^2-100x+7$ өрнегі $x=10^6$ кезінде $3\cdot10^{12}$ шамасында, ал $100x=10^8$ оның айтарлықтай кіші бөлігі ғана. Сондықтан $\frac{3x^2-100x+7}{5x^2+2}$ шегі жетекші коэффициенттердің $\frac35$ қатынасына тең. Түбірлі өрнектерде де сол қағида: $\sqrt{x^2+x}\approx x$ үлкен $x$ үшін, бірақ айырмада ($\sqrt{x^2+x}-x$) осы жуықтау жеткіліксіз, өйткені жетекші мүшелер жойылады. Түйіндес өрнекке көбейту дәл осы жойылуды алгебралық түрде «көрсетеді».</p>
+
+      <div class="math-remember"><span class="math-box-title">Өсу жылдамдықтарының иерархиясы</span>
+        <p>$x\to+\infty$ кезінде функциялар шексіздікке әртүрлі жылдамдықпен кетеді. Кез келген $\alpha>0$ және $a>1$ үшін: $\ln x\ll x^{\alpha}\ll a^x\ll x!$, ал символ $\ll$ «әлдеқайда баяу өседі» дегенді білдіреді, яғни $\displaystyle\lim_{x\to\infty}\frac{\ln x}{x^{\alpha}}=0$ және $\displaystyle\lim_{x\to\infty}\frac{x^{\alpha}}{a^x}=0$. Мұны Лопиталь ережесі арқылы 7-сабақта дәлелдейміз. Қазір оны есте сақтаңыз: мысалы, $\frac{x^{100}}{1{,}01^x}\to0$, дегенмен $x=1000$ үшін бұл бөлшек әлі өте үлкен. Бағдарламалауда мұны алгоритм күрделілігінің $O(\log n)$, $O(n^2)$, $O(2^n)$ айырмасы ретінде көресіз.</p></div>
+      <p>Бұл иерархия шектердегі «кім жеңеді» сұрағына жауап береді. $\displaystyle\lim_{x\to\infty}\frac{x^5+2^x}{3^x}$ шегінде алымда $2^x$ басым, бөлгіште $3^x$, және $\left(\frac23\right)^x\to0$: жауабы 0. $\displaystyle\lim_{x\to\infty}\frac{\ln x+x}{2x-5}$ шегінде $\ln x$ мүшесі $x$-тің қасында елеусіз, сондықтан жауап $\frac12$. Осындай жеңіл есептерді жиі шығарып үйренсеңіз, шектің мәнін көбіне ойша бағалауға болады, содан кейін оны ресми түрде дәлелдеу ғана қалады.</p>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <p>Бұл сабақтың қорытулары шектің мұнда қолданатын барлық негізгі құралдарын дәлелдейді. Әрқайсысын жауып қойып, өзіңіз қайталап жазып көріңіз.</p>
+      <div class="mx-derive-tools"></div>
+
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: қысу теоремасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $g\le f\le h$ және $\lim g=\lim h=L$ болса, $\lim f=L$ екенін дәлелдеу.</p>
+          <ol class="math-steps">
+            <li><b>$\varepsilon$ алу.</b> $\varepsilon>0$ кез келген сан болсын.</li>
+            <li><b>$g$ үшін.</b> $\lim g=L$, сондықтан $\delta_1>0$ бар: $0&lt;|x-a|&lt;\delta_1\Rightarrow L-\varepsilon&lt;g(x)&lt;L+\varepsilon$.</li>
+            <li><b>$h$ үшін.</b> Дәл солай $\delta_2>0$ бар: $0&lt;|x-a|&lt;\delta_2\Rightarrow L-\varepsilon&lt;h(x)&lt;L+\varepsilon$.</li>
+            <li><b>Теңсіздік жүрген маңай.</b> $g\le f\le h$ орындалатын маңайдың радиусы $\delta_3$ болсын. $\delta=\min\{\delta_1,\delta_2,\delta_3\}$.</li>
+            <li><b>Бағалау.</b> $0&lt;|x-a|&lt;\delta$ болса: $L-\varepsilon&lt;g(x)\le f(x)\le h(x)&lt;L+\varepsilon$, яғни $|f(x)-L|&lt;\varepsilon$.</li>
+            <li><b>Қолдану.</b> $x^2\sin\frac1x$ үшін: $-x^2\le x^2\sin\frac1x\le x^2$, екі шеті нөлге ұмтылады, сондықтан $\lim_{x\to0}x^2\sin\frac1x=0$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-2" open>
+        <summary>Қорытып шығару 2: бірінші тамаша шек $\lim\frac{\sin x}{x}=1$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $x\to0$ кезінде $\frac{\sin x}{x}\to1$ екенін көрсету. Бастапқы мәліметтер: $0&lt;x&lt;\frac\pi2$ болсын, бірлік шеңбердің бойында $x$ радиан бұрышты қарастырамыз.</p>
+          <ol class="math-steps">
+            <li><b>Үш аудан.</b> $O$ центрлі бірлік шеңберде $A=(1;0)$, $B=(\cos x;\sin x)$ нүктелері, және $A$ нүктесіндегі жанама мен $OB$ сәулесінің қиылысуы $C=(1;\tan x)$ болсын.</li>
+            <li>$OAB$ үшбұрышының ауданы $\frac12\cdot1\cdot\sin x=\frac{\sin x}{2}$.</li>
+            <li>$OAB$ сектордың ауданы (бұрыш $x$, радиус 1) $\frac{x}{2}$.</li>
+            <li>$OAC$ үшбұрышының ауданы $\frac12\cdot1\cdot\tan x=\frac{\tan x}{2}$.</li>
+            <li><b>Салыстыру.</b> Үшбұрыш секторға, сектор үлкен үшбұрышқа сыйады: $\frac{\sin x}{2}&lt;\frac x2&lt;\frac{\tan x}{2}$, яғни $\sin x&lt;x&lt;\tan x$.</li>
+            <li><b>Бөлу.</b> $\sin x>0$-ге бөлеміз: $1&lt;\dfrac{x}{\sin x}&lt;\dfrac{1}{\cos x}$. Кері шамаларға көшсек: $\cos x&lt;\dfrac{\sin x}{x}&lt;1$.</li>
+            <li><b>Жұптылық.</b> $\frac{\sin x}{x}$ жұп функция, сондықтан $x&lt;0$ үшін де дәл осы теңсіздік.</li>
+            <li><b>Қысу.</b> $\cos x\to1$ ($x\to0$), демек қысу теоремасы бойынша $\frac{\sin x}{x}\to1$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-3" open>
+        <summary>Қорытып шығару 3: $\lim_{x\to0}\frac{1-\cos x}{x^2}=\frac12$ және $\lim\frac{\tan x}{x}=1$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> 2.1 формуласындағы екі тригонометриялық шекті бірінші тамаша шектен шығару.</p>
+          <ol class="math-steps">
+            <li>Жарты бұрыш формуласы: $1-\cos x=2\sin^2\dfrac{x}{2}$.</li>
+            <li>Сондықтан $\dfrac{1-\cos x}{x^2}=\dfrac{2\sin^2(x/2)}{x^2}=\dfrac12\cdot\dfrac{\sin^2(x/2)}{(x/2)^2}=\dfrac12\left(\dfrac{\sin(x/2)}{x/2}\right)^2$.</li>
+            <li>$x\to0$ болса, $t=\frac{x}{2}\to0$, және бірінші тамаша шек бойынша $\frac{\sin t}{t}\to1$.</li>
+            <li>Көбейтінді заңы бойынша жалпы шек $\frac12\cdot1^2=\frac12$.</li>
+            <li><b>Тангенс.</b> $\dfrac{\tan x}{x}=\dfrac{\sin x}{x}\cdot\dfrac{1}{\cos x}$.</li>
+            <li>Бірінші көбейткіш 1-ге, екіншісі $\frac{1}{\cos 0}=1$-ге ұмтылады. Көбейтінді 1.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-4" open>
+        <summary>Қорытып шығару 4: екінші тамаша шек (e саны)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> алдымен $a_n=\left(1+\frac1n\right)^n$ тізбегінің шегі бар екенін көрсету ($e$ осылай анықталады), сонан соң нақты $x$ үшін түрін алу.</p>
+          <ol class="math-steps">
+            <li><b>Ньютон биномы.</b> $a_n=\sum_{k=0}^n\binom nk\frac{1}{n^k}=\sum_{k=0}^n\frac{1}{k!}\cdot\frac{n(n-1)\cdots(n-k+1)}{n^k}=\sum_{k=0}^n\frac{1}{k!}\left(1-\frac1n\right)\cdots\left(1-\frac{k-1}{n}\right)$.</li>
+            <li><b>Өсу.</b> $n$ үлкейгенде әр мүше өседі (жақшалар үлкейеді) және жаңа оң мүше қосылады, сондықтан $a_n&lt;a_{n+1}$.</li>
+            <li><b>Шектелгендік.</b> Әр жақша 1-ден аспайды, сондықтан $a_n\le\sum_{k=0}^n\frac1{k!}\le1+1+\frac12+\frac1{2^2}+\dots+\frac1{2^{n-1}}&lt;1+2=3$ ($k!\ge2^{k-1}$).</li>
+            <li><b>Шек.</b> Өспелі және жоғарыдан шектелген тізбектің шегі бар (Вейерштрасс теоремасы, тізбектер тақырыбында толық қаралады). Оны $e$ деп белгілейміз, $2&lt;e\le3$.</li>
+            <li><b>Нақты $x\to+\infty$.</b> $n\le x&lt;n+1$ болсын. Онда $1+\frac1{n+1}&lt;1+\frac1x\le1+\frac1n$, ал дәреже өсуші: $\left(1+\frac1{n+1}\right)^n\le\left(1+\frac1x\right)^x\le\left(1+\frac1n\right)^{n+1}$.</li>
+            <li><b>Екі шетінің шегі.</b> Сол шет: $\left(1+\frac1{n+1}\right)^{n+1}\cdot\left(1+\frac1{n+1}\right)^{-1}\to e\cdot1$. Оң шет: $\left(1+\frac1n\right)^n\cdot\left(1+\frac1n\right)\to e\cdot1$.</li>
+            <li><b>Қысу.</b> $x\to+\infty$ болса $n\to\infty$, сондықтан $\left(1+\frac1x\right)^x\to e$. Ал $x\to-\infty$ үшін $x=-y$ ауыстырамыз: $\left(1-\frac1y\right)^{-y}=\left(\frac{y}{y-1}\right)^y=\left(1+\frac1{y-1}\right)^{y-1}\left(1+\frac{1}{y-1}\right)\to e\cdot1$.</li>
+            <li><b>$t$ түрі.</b> $t=\frac1x$ деп ауыстырсақ, $(1+t)^{1/t}\to e$ ($t\to0$).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-5" open>
+        <summary>Қорытып шығару 5: $\lim\frac{\ln(1+x)}{x}=1$, $\lim\frac{e^x-1}{x}=1$, $\lim\frac{a^x-1}{x}=\ln a$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> көрсеткіштік және логарифмдік шектерді екінші тамаша шектен шығару. Логарифм үзіліссіз екенін қолданамыз (Теорема 2.2).</p>
+          <ol class="math-steps">
+            <li>$\dfrac{\ln(1+x)}{x}=\dfrac1x\ln(1+x)=\ln(1+x)^{1/x}$ (логарифм қасиеті).</li>
+            <li>$x\to0$ болса, $(1+x)^{1/x}\to e$ (2.4 теорема, $t$ түрі).</li>
+            <li>$\ln$ функциясы $e$ нүктесінде үзіліссіз, сондықтан Теорема 2.2 бойынша шек $\ln e=1$.</li>
+            <li><b>Көрсеткіштік.</b> $e^x-1=u$ деп белгілейміз. Онда $x\to0\iff u\to0$ және $x=\ln(1+u)$.</li>
+            <li>$\dfrac{e^x-1}{x}=\dfrac{u}{\ln(1+u)}=\dfrac{1}{\ln(1+u)/u}\to\dfrac{1}{1}=1$.</li>
+            <li><b>Жалпы негіз.</b> $a^x=e^{x\ln a}$, сондықтан $\dfrac{a^x-1}{x}=\ln a\cdot\dfrac{e^{x\ln a}-1}{x\ln a}$. Екінші көбейткіш ($x\ln a\to0$) 1-ге ұмтылады ($a\ne1$).</li>
+            <li>Нәтиже: $\lim_{x\to0}\dfrac{a^x-1}{x}=\ln a$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-6" open>
+        <summary>Қорытып шығару 6: дәреже ережесі және баламаларды ауыстыру ережесі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> (а) $n=m$ жағдайында рационал өрнектің шегін негіздеу; (ә) Теорема 2.5-ті дәлелдеу.</p>
+          <ol class="math-steps">
+            <li><b>(а) Жетекші дәрежеге бөлу.</b> Алымы мен бөлгішін $x^m$-ге бөлеміз: $\dfrac{a_nx^{n-m}+a_{n-1}x^{n-1-m}+\dots+a_0x^{-m}}{b_m+b_{m-1}x^{-1}+\dots+b_0x^{-m}}$.</li>
+            <li>$k>0$ болғанда $x^{-k}\to0$ ($x\to\infty$). $n=m$ болса, алым $\to a_n$, бөлгіш $\to b_m$. Шек $\frac{a_n}{b_m}$.</li>
+            <li>$n&lt;m$ болса, алымдағы барлық дәреже теріс, алым $\to0$, бөлгіш $\to b_m\ne0$: шек 0.</li>
+            <li>$n>m$ болса, алымда $x^{n-m}\to\pm\infty$ жетекші, бөлгіш $b_m$-ге ұмтылады: шек шексіз.</li>
+            <li><b>(ә) Баламалар.</b> $\dfrac{\alpha}{\beta}=\dfrac{\alpha}{\alpha_1}\cdot\dfrac{\alpha_1}{\beta_1}\cdot\dfrac{\beta_1}{\beta}$ деп жазамыз.</li>
+            <li>$\frac{\alpha}{\alpha_1}\to1$ және $\frac{\beta_1}{\beta}\to1$ баламалық анықтамасы бойынша. Көбейтінді заңынан: егер $\frac{\alpha_1}{\beta_1}\to L$ болса, онда $\frac\alpha\beta\to1\cdot L\cdot1=L$.</li>
+            <li>Керісінше де дәл солай. Қосындыға ауыстыруға болмайды: $\sin x\sim x$ және $\tan x\sim x$, бірақ $\tan x-\sin x\not\sim x-x=0$ (шын мәнінде $\tan x-\sin x\sim\frac{x^3}{2}$).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+
+      <div class="math-example" id="ex-1">
+        <h3>Мысал 1. Түйіндес өрнекке көбейту</h3>
+        <p class="math-problem">$\displaystyle\lim_{x\to1}\frac{\sqrt{x+3}-2}{x-1}$ шегін табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. Түрін анықтау.</b> $x=1$ қойсақ, алым $\sqrt4-2=0$, бөлгіш $0$: түрі $\frac00$.</li>
+          <li><b>2-қадам. Түйіндеспен көбейту.</b> Алымы мен бөлгішін $\sqrt{x+3}+2$-ге көбейтеміз: $\dfrac{(\sqrt{x+3}-2)(\sqrt{x+3}+2)}{(x-1)(\sqrt{x+3}+2)}$.</li>
+          <li><b>3-қадам. Квадраттар айырмасы.</b> Алым: $(x+3)-4=x-1$.</li>
+          <li><b>4-қадам. Қысқарту.</b> $x\ne1$ үшін $\dfrac{x-1}{(x-1)(\sqrt{x+3}+2)}=\dfrac{1}{\sqrt{x+3}+2}$.</li>
+          <li><b>5-қадам. Шек.</b> $x\to1$: $\dfrac{1}{\sqrt4+2}=\dfrac14$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\dfrac14$.</p>
+      </div>
+
+      <div class="math-example" id="ex-2">
+        <h3>Мысал 2. Бірінші тамаша шек</h3>
+        <p class="math-problem">(а) $\displaystyle\lim_{x\to0}\frac{\sin5x}{\sin3x}$; (ә) $\displaystyle\lim_{x\to0}\frac{1-\cos4x}{x^2}$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. (а) Теңестіру.</b> $\dfrac{\sin5x}{\sin3x}=\dfrac{\sin5x}{5x}\cdot\dfrac{3x}{\sin3x}\cdot\dfrac{5x}{3x}$.</li>
+          <li><b>2-қадам. (а) Шек.</b> Бірінші көбейткіш $\to1$, екіншісі $\to1$ (бірінші тамаша шек), үшіншісі $\frac53$. Жауабы: $\dfrac53$.</li>
+          <li><b>3-қадам. (ә) Жарты бұрыш.</b> $1-\cos4x=2\sin^22x$.</li>
+          <li><b>4-қадам. (ә) Құрастыру.</b> $\dfrac{2\sin^22x}{x^2}=2\cdot\left(\dfrac{\sin2x}{2x}\right)^2\cdot4=8\left(\dfrac{\sin2x}{2x}\right)^2$.</li>
+          <li><b>5-қадам. (ә) Шек.</b> $8\cdot1^2=8$. Тексеру (баламамен): $1-\cos4x\sim\frac{(4x)^2}{2}=8x^2$, және $\frac{8x^2}{x^2}=8$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> (а) $\dfrac53$; (ә) $8$.</p>
+      </div>
+
+      <div class="math-example" id="ex-3">
+        <h3>Мысал 3. Екінші тамаша шек, $1^\infty$ түрі</h3>
+        <p class="math-problem">(а) $\displaystyle\lim_{x\to\infty}\left(1+\frac3x\right)^{2x}$; (ә) $\displaystyle\lim_{x\to\infty}\left(\frac{x}{x+1}\right)^x$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. (а) Түрі.</b> Негіз $\to1$, дәреже $\to\infty$: $1^\infty$.</li>
+          <li><b>2-қадам. (а) Қайта жазу.</b> $u=\frac x3$ деп белгілейміз ($x\to\infty\iff u\to\infty$). Онда $\left(1+\frac1u\right)^{6u}=\left[\left(1+\frac1u\right)^u\right]^6$.</li>
+          <li><b>3-қадам. (а) Шек.</b> Ішкі жақша $\to e$, демек нәтиже $e^6$.</li>
+          <li><b>4-қадам. (ә) Түрлендіру.</b> $\dfrac{x}{x+1}=1-\dfrac{1}{x+1}$. $y=x+1$ деп белгілесек, өрнек $\left(1-\dfrac1y\right)^{y-1}=\left(1-\dfrac1y\right)^y\left(1-\dfrac1y\right)^{-1}$.</li>
+          <li><b>5-қадам. (ә) Шек.</b> $\left(1-\frac1y\right)^y\to e^{-1}$ ($t=-\frac1y$ қойып, екінші тамаша шектің $t$ түрі), ал $\left(1-\frac1y\right)^{-1}\to1$. Нәтиже $e^{-1}$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> (а) $e^6$; (ә) $e^{-1}=\dfrac1e$.</p>
+      </div>
+
+      <div class="math-example" id="ex-4">
+        <h3>Мысал 4. Шексіздіктегі шектер: дәреже ережесі және $\infty-\infty$</h3>
+        <p class="math-problem">(а) $\displaystyle\lim_{x\to\infty}\frac{3x^2-x+1}{5x^2+2}$; (ә) $\displaystyle\lim_{x\to+\infty}\left(\sqrt{x^2+x}-x\right)$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. (а) Дәрежелер.</b> Алымның және бөлгіштің дәрежесі 2, тең. Жетекші коэффициенттердің қатынасы: $\frac35$.</li>
+          <li><b>2-қадам. (а) Тексеру.</b> $x^2$-ге бөлсек: $\dfrac{3-1/x+1/x^2}{5+2/x^2}\to\dfrac35$.</li>
+          <li><b>3-қадам. (ә) Түрі.</b> Екі шама да $+\infty$-ке кетеді: $\infty-\infty$.</li>
+          <li><b>4-қадам. (ә) Түйіндеспен көбейту.</b> $\sqrt{x^2+x}-x=\dfrac{(x^2+x)-x^2}{\sqrt{x^2+x}+x}=\dfrac{x}{\sqrt{x^2+x}+x}$.</li>
+          <li><b>5-қадам. (ә) $x$-ке бөлу.</b> $x>0$ үшін $\sqrt{x^2+x}=x\sqrt{1+1/x}$. Өрнек $\dfrac{x}{x\sqrt{1+1/x}+x}=\dfrac{1}{\sqrt{1+1/x}+1}$.</li>
+          <li><b>6-қадам. (ә) Шек.</b> $x\to\infty$: $\dfrac{1}{1+1}=\dfrac12$. Тексеру: $x=10^4$ үшін $\sqrt{10^8+10^4}-10^4\approx0{,}49999$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> (а) $\dfrac35$; (ә) $\dfrac12$.</p>
+      </div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$\frac00=1$ немесе $\frac00=0$</span> → <span class="math-good">$\frac00$ - анықталмағандық, өрнекті түрлендіру керек</span><br>Неге қате: $\frac{x}{x}\to1$, $\frac{x^2}{x}\to0$, $\frac{3x}{x}\to3$, үшеуі де $x\to0$ кезінде $\frac00$.</li>
+        <li><span class="math-bad">$\lim_{x\to\infty}\left(1+\frac1x\right)^x=1^\infty=1$</span> → <span class="math-good">шек $e$</span><br>Неге қате: $1^\infty$ анықталмағандық. Негіз 1-ге тең емес, тек ұмтылады, ал дәреже шексіз өседі: екі әсер бәсекелеседі.</li>
+        <li><span class="math-bad">$\sin x$ градуспен енгізілген кезде $\frac{\sin x}{x}\to1$</span> → <span class="math-good">шек тек радианда 1; градуста $\frac{\pi}{180}$</span><br>Неге қате: дәлелдеуде доға ұзындығы $x$ радианға тең болды.</li>
+        <li><span class="math-bad">Қосындыдағы баламаны ауыстыру: $\tan x-\sin x\sim x-x=0$</span> → <span class="math-good">$\tan x-\sin x=\tan x(1-\cos x)\sim\frac{x^3}{2}$</span><br>Неге қате: баламаларды тек көбейткіште не бөлгіште ауыстыруға болады. Қосындыда бас мүшелер жойылып, кіші ретті мүше қалады.</li>
+        <li><span class="math-bad">$\lim_{x\to\infty}\left(\sqrt{x^2+x}-x\right)=\infty-\infty=0$</span> → <span class="math-good">түйіндес өрнекке көбейтіп, шегі $\frac12$ екенін табамыз</span><br>Неге қате: $\infty-\infty$ анықталмағандық; шек кез келген болуы мүмкін.</li>
+        <li><span class="math-bad">$\lim_{x\to\infty}\dfrac{3x^2+1}{x^3-1}=\dfrac{3}{1}$</span> → <span class="math-good">дәрежелер әртүрлі ($2&lt;3$), шек 0</span><br>Неге қате: коэффициенттерді тек дәрежелер тең болғанда ғана салыстырады.</li>
+        <li><span class="math-bad">$\lim_{x\to0}\dfrac{\sin x}{x}$ шегі жоқ, себебі $x=0$ бөлгіш нөлге тең</span> → <span class="math-good">шек бар және 1-ге тең</span><br>Неге қате: шек нүктенің өзіне тәуелді емес; 1.1 формуласындағы теңсіздік $\cos x&lt;\frac{\sin x}{x}&lt;1$ шектің 1 екенін көрсетті.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <p>Графиктерді жылжытып, нөл маңайын үлкейтіп қараңыз. Бұл суреттер есептеулердегі қағаз жүзіндегі қорытындыларды көзбен растайды.</p>
+      <div class="math-viz" data-viz="graph" data-title="Бірінші тамаша шек: sin(x)/x" data-config='{"fns":[{"f":"sin(x)/x","label":"sin(x)/x"},{"f":"cos(x)","label":"cos x","dash":[6,4]},{"f":"1","label":"y = 1","dash":[3,3]}],"view":[-8,8,-0.6,1.4]}'></div>
+      <p><b>Бақылаңыз:</b> нөлде $\frac{\sin x}{x}$ графигі «тесік» болып көрінеді, бірақ екі жағынан да 1-ге жақындайды. Үзік қисық $\cos x$ оның астында жатады және де 1-ге ұмтылады: бұл 2-қорытудағы $\cos x&lt;\frac{\sin x}{x}&lt;1$ қысуы.</p>
+      <div class="math-viz" data-viz="graph" data-title="Қысу: x²·sin(1/x) параболалар арасында" data-config='{"fns":[{"f":"x^2*sin(1/x)","label":"x²·sin(1/x)"},{"f":"x^2","label":"x²","dash":[6,4]},{"f":"-x^2","label":"−x²","dash":[6,4]}],"view":[-0.8,0.8,-0.5,0.5]}'></div>
+      <p><b>Бақылаңыз:</b> тербелетін қисық екі параболаның арасынан шықпайды. Параболалар нөлде 0-ге ұмтылады, сондықтан қысылған функцияның шегі де 0. Тербеліс жиілесе де, амплитуда $x^2$-пен кемиді.</p>
+      <div class="math-viz" data-viz="graph" data-title="Екінші тамаша шек: (1 + 1/x)^x → e" data-config='{"fns":[{"f":"(1+1/x)^x","label":"(1+1/x)^x"},{"f":"2.718281828","label":"y = e","dash":[6,4]}],"view":[0.2,30,0,3.2]}'></div>
+      <p><b>Бақылаңыз:</b> $x$ өскен сайын график өсіп, $y=e\approx2{,}718$ түзуіне төменнен жақындайды, бірақ ешқашан қиып өтпейді. Бұл 4-қорытудағы тізбектің өспелі және 3-пен шектелген екенін көрсетеді.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Төменде 20 есеп блогы бар: оңайдан қиынға қарай. Әр есепте «Кеңес» батырмасы алдымен кеңес, сонан соң қадамдық шешімді, ең соңында жауапты ашады. Көбейтуді <code>2x</code> не <code>2*x</code>, дәрежені <code>x^2</code>, <code>e</code> санын <code>e</code> немесе <code>exp(1)</code> деп жазуға болады.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m4-2-subst">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m4-2-t1">1. Тікелей қою</h3></div>
+        <p>Алдымен қоюға болатынын тексеріңіз (бөлгіш нөл емес пе?). Жауапты санмен не бөлшекпен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\displaystyle\\lim_{x\\to2}\\dfrac{x^3-2x}{x+1}$","a":"4/3","v":"limit((x**3-2*x)/(x+1), x, 2)","hint":"Бөлгіш $2+1=3\\ne0$.","sol":{"steps":["Алым: $8-4=4$.","Бөлгіш: $3$."],"ans":"$\\dfrac43$"}},{"q":"$\\displaystyle\\lim_{x\\to0}\\dfrac{\\cos x+2}{e^x+1}$","a":"3/2","v":"limit((cos(x)+2)/(exp(x)+1), x, 0)","hint":"Үзіліссіз функциялар: нөлді қойыңыз.","sol":{"steps":["Алым: $\\cos0+2=3$; бөлгіш: $e^0+1=2$."],"ans":"$\\dfrac32$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m4-2-tf">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m4-2-t2">2. Шындық па, жалған ба?</h3></div>
+        <p>Әр пікірді бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\lim_{x\\to0}\\dfrac{\\sin x}{x}=1$ тек $x$ градуспен берілгенде дұрыс.","a":false,"e":"Жалған: радианмен дұрыс. Градуспен шек $\\frac{\\pi}{180}$.","hint":"Дәлелдеуде бұрыш радианмен алынды."},{"q":"$\\dfrac00$ әрдайым 1-ге тең.","a":false,"e":"Жалған: $\\frac00$ анықталмағандық, нәтиже өрнекке тәуелді.","hint":"$\\frac{3x}{x}$ мен $\\frac{x^2}{x}$ салыстырыңыз."},{"q":"$\\lim_{x\\to\\infty}\\left(1+\\dfrac1x\\right)^x=e$.","a":true,"e":"Ақиқат: Теорема 2.4.","hint":"Екінші тамаша шек."},{"q":"$\\lim_{x\\to\\infty}\\dfrac{2x+1}{x^3}=2$.","a":false,"e":"Жалған: бөлгіштің дәрежесі жоғары, шек 0.","hint":"Дәреже ережесі: $1< 3$."},{"q":"$g\\le f\\le h$ және $\\lim g=\\lim h=3$ болса, $\\lim f=3$.","a":true,"e":"Ақиқат: қысу теоремасы.","hint":"Теорема 2.1."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m4-2-forms">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m4-2-t3">3. Анықталмағандық түрін тану</h3></div>
+        <p>Әр шектің түрін анықтаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\displaystyle\\lim_{x\\to2}\\dfrac{x^2-4}{x-2}$ шегі қай түрде?","o":["$\\dfrac00$","$\\dfrac\\infty\\infty$","$1^\\infty$","$\\infty-\\infty$"],"a":0,"e":"$x=2$ қойсақ, алым мен бөлгіш екеуі де 0.","hint":"$x=2$ қойып көріңіз."},{"q":"$\\displaystyle\\lim_{x\\to\\infty}\\left(1+\\dfrac2x\\right)^{x}$ шегі қай түрде?","o":["$\\dfrac00$","$1^\\infty$","$\\infty-\\infty$","$0\\cdot\\infty$"],"a":1,"e":"Негіз $\\to1$, дәреже $\\to\\infty$.","hint":"Негіз мен дәреже қайда ұмтылады?"},{"q":"$\\displaystyle\\lim_{x\\to0^+}\\dfrac{1}{x}$ - анықталмағандық па?","o":["иә, $\\frac00$","иә, $\\frac\\infty\\infty$","жоқ, шек $+\\infty$","жоқ, шек 0"],"a":2,"e":"Бөлгіш 0-ге, алым $1$: $\\frac{c}{0}$ түрі, бұл анықталмағандық емес.","hint":"Алымы нөл емес."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m4-2-match">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m4-2-t4">4. Тамаша шектерді сәйкестендіру</h3></div>
+        <p>Әр шекті оның мәнімен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Әр шек үшін дұрыс мәнді таңдаңыз.","pairs":[["$\\lim_{x\\to0}\\dfrac{\\sin x}{x}$","1"],["$\\lim_{x\\to\\infty}\\left(1+\\dfrac1x\\right)^x$","$e$"],["$\\lim_{x\\to0}\\dfrac{1-\\cos x}{x^2}$","$\\dfrac12$"],["$\\lim_{x\\to0}\\dfrac{2^x-1}{x}$","$\\ln2$"]],"hint":"2.1 формуласындағы салдарларды еске түсіріңіз.","sol":{"steps":["Бірінші тамаша шек: 1.","Екінші тамаша шек: $e$.","$\\frac{1-\\cos x}{x^2}\\to\\frac12$ (3-қорыту).","$\\frac{a^x-1}{x}\\to\\ln a$, $a=2$."]},"e":"Төрт шек те нөл маңайындағы баламалар кестесінің негізі."}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m4-2-sin">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m4-2-t5">5. Бірінші тамаша шектің қарапайым түрлері</h3></div>
+        <p>Жауапты санмен немесе бөлшекпен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\displaystyle\\lim_{x\\to0}\\dfrac{\\sin3x}{x}$","a":3,"v":"limit(sin(3*x)/x, x, 0)","hint":"$\\dfrac{\\sin3x}{x}=3\\cdot\\dfrac{\\sin3x}{3x}$.","sol":{"steps":["$3\\cdot\\dfrac{\\sin3x}{3x}\\to3\\cdot1$."],"ans":"$3$"}},{"q":"$\\displaystyle\\lim_{x\\to0}\\dfrac{\\tan2x}{x}$","a":2,"v":"limit(tan(2*x)/x, x, 0)","hint":"$\\dfrac{\\tan2x}{x}=2\\cdot\\dfrac{\\tan2x}{2x}$.","sol":{"steps":["$2\\cdot\\dfrac{\\tan2x}{2x}\\to2\\cdot1$."],"ans":"$2$"}},{"q":"$\\displaystyle\\lim_{x\\to0}\\dfrac{x}{\\sin(x/4)}$","a":4,"v":"limit(x/sin(x/4), x, 0)","hint":"$\\dfrac{x}{\\sin(x/4)}=4\\cdot\\dfrac{x/4}{\\sin(x/4)}$.","sol":{"steps":["$4\\cdot\\dfrac{x/4}{\\sin(x/4)}\\to4$."],"ans":"$4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m4-2-factor">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m4-2-t6">6. Көбейткіштерге жіктеу</h3></div>
+        <p>Жауапты бөлшекпен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\displaystyle\\lim_{x\\to3}\\dfrac{x^2-x-6}{x^2-9}$","a":"5/6","v":"limit((x**2-x-6)/(x**2-9), x, 3)","hint":"$x^2-x-6=(x-3)(x+2)$, $x^2-9=(x-3)(x+3)$.","sol":{"steps":["$\\dfrac{(x-3)(x+2)}{(x-3)(x+3)}=\\dfrac{x+2}{x+3}$.","$x=3$: $\\dfrac56$."],"ans":"$\\dfrac56$"}},{"q":"$\\displaystyle\\lim_{x\\to1}\\dfrac{x^3-1}{x^2-1}$","a":"3/2","v":"limit((x**3-1)/(x**2-1), x, 1)","hint":"$x^3-1=(x-1)(x^2+x+1)$.","sol":{"steps":["$\\dfrac{(x-1)(x^2+x+1)}{(x-1)(x+1)}=\\dfrac{x^2+x+1}{x+1}$.","$x=1$: $\\dfrac32$."],"ans":"$\\dfrac32$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m4-2-simp">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m4-2-t7">7. Қысқартылған өрнекті жазу</h3></div>
+        <p>Қысқарту нәтижесін $x$ арқылы жазыңыз ($x\ne$ нүкте деп есептейміз). Эквивалентті жазулар қабылданады.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\dfrac{x^3-8}{x-2}$ өрнегін қысқартыңыз ($x\\ne2$).","a":"x^2+2*x+4","v":"simplify((x**3-8)/(x-2))","hint":"$a^3-b^3=(a-b)(a^2+ab+b^2)$.","sol":{"steps":["$x^3-8=(x-2)(x^2+2x+4)$."],"ans":"$x^2+2x+4$"}},{"q":"$\\dfrac{x^2-5x+6}{x-2}$ өрнегін қысқартыңыз ($x\\ne2$).","a":"x-3","v":"simplify((x**2-5*x+6)/(x-2))","hint":"$x^2-5x+6=(x-2)(x-3)$.","sol":{"steps":["$(x-2)(x-3)/(x-2)=x-3$."],"ans":"$x-3$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m4-2-p-sin">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m4-2-t8">8. Параметрлік: синус қатынасы</h3></div>
+        <p>Сандар кездейсоқ таңдалады. «Жаңа нұсқа» басқа сандар береді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"int":[2,9]},"n":{"int":[2,9]}},"require":["m != n"],"type":"num","q":"$\\displaystyle\\lim_{x\\to0}\\dfrac{\\sin #{m}x}{\\sin #{n}x}$ шегін табыңыз (бөлшек не ондық).","a":"m/n","v":"limit(sin(m*x)/sin(n*x), x, 0)","hint":"Алым мен бөлгішті сәйкес $#{m}x$ және $#{n}x$ етіп теңестіріңіз.","sol":{"steps":["$\\dfrac{\\sin #{m}x}{#{m}x}\\cdot\\dfrac{#{n}x}{\\sin #{n}x}\\cdot\\dfrac{#{m}x}{#{n}x}$.","Алғашқы екі көбейткіш $\\to1$."],"ans":"$\\dfrac{#{m}}{#{n}}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m4-2-exp">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m4-2-t9">9. Екінші тамаша шек</h3></div>
+        <p>Жауапты $e$-нің дәрежесі түрінде жазыңыз (мысалы, <code>exp(6)</code> не <code>e^6</code>).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\displaystyle\\lim_{x\\to\\infty}\\left(1+\\dfrac{3}{x}\\right)^{2x}$","a":"exp(6)","v":"limit((1+3/x)**(2*x), x, oo)","hint":"$u=x/3$ қойыңыз: $\\left[\\left(1+\\frac1u\\right)^u\\right]^6$.","sol":{"steps":["$\\left(1+\\frac3x\\right)^{2x}=\\left[\\left(1+\\frac3x\\right)^{x/3}\\right]^{6}$.","Ішкі жақша $\\to e$."],"ans":"$e^6$"}},{"q":"$\\displaystyle\\lim_{x\\to0}(1+5x)^{1/x}$","a":"exp(5)","v":"limit((1+5*x)**(1/x), x, 0)","hint":"$t=5x$ деп алыңыз: $(1+t)^{5/t}$.","sol":{"steps":["$(1+5x)^{1/x}=\\left[(1+5x)^{1/(5x)}\\right]^5$.","Ішкі жақша $\\to e$."],"ans":"$e^5$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m4-2-order1">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m4-2-t10">10. Түйіндес өрнекпен ашу реті</h3></div>
+        <p>$\lim_{x\to4}\dfrac{\sqrt x-2}{x-4}$ есебінің қадамдарын дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\displaystyle\\lim_{x\\to4}\\dfrac{\\sqrt x-2}{x-4}$ шегін есептеу.","steps":["$x=4$ қойып, түрін анықтаймыз: $\\frac00$.","Алымы мен бөлгішін түйіндес $\\sqrt x+2$-ге көбейтеміз.","Алымда квадраттар айырмасы: $(\\sqrt x)^2-4=x-4$.","$x-4$ қысқартылады, қалатыны: $\\dfrac{1}{\\sqrt x+2}$.","$x=4$ қойып, нәтижені аламыз: $\\dfrac14$."],"hint":"Түрін анықтау - ең бірінші қадам.","sol":{"ans":"$\\dfrac14$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m4-2-equiv">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m4-2-t11">11. Баламалық</h3></div>
+        <p>Дұрыс жауапты таңдаңыз. Бірінші сұрақта бірнеше жауап дұрыс.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x\\to0$ кезінде $3x$ шамасына баламалы шамаларды белгілеңіз.","o":["$\\sin3x$","$\\tan3x$","$e^{3x}-1$","$\\sin x$","$3x^2$"],"a":[0,1,2],"e":"$\\sin u\\sim u$, $\\tan u\\sim u$, $e^u-1\\sim u$ ($u=3x$). $\\sin x\\sim x$ ($3x$-ке емес), $3x^2$ жылдамырақ кішірейеді.","hint":"$u=3x\\to0$ деп алып, кестені қолданыңыз."},{"q":"$\\displaystyle\\lim_{x\\to0}\\dfrac{\\ln(1+4x)}{\\sin2x}$ шегі?","o":["$1$","$2$","$4$","$\\frac12$"],"a":1,"e":"$\\ln(1+4x)\\sim4x$, $\\sin2x\\sim2x$; $\\frac{4x}{2x}=2$.","hint":"Баламаларды ауыстырыңыз."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m4-2-table">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m4-2-t12">12. sin(x)/x мәндерінің кестесі</h3></div>
+        <p>Калькуляторды <b>радиан</b> режиміне қойып, 6 ондық таңбаға дейін жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$h(x)=\\dfrac{\\sin x}{x}$ функциясының $x=0{,}5;\\ 0{,}1;\\ 0{,}01$ нүктелеріндегі мәндері (жол түрінде).","orient":"row","name":"$h(x)$:","a":["2*sin(1/2)","10*sin(1/10)","100*sin(1/100)"],"tol":0.00002,"v":"[N(sin(Rational(1,2))*2), N(sin(Rational(1,10))*10), N(sin(Rational(1,100))*100)]","hint":"$\\sin0{,}1\\approx0{,}0998334$, оны $0{,}1$-ге бөліңіз.","sol":{"steps":["$\\sin0{,}5/0{,}5=0{,}479426/0{,}5=0{,}958851$.","$\\sin0{,}1/0{,}1=0{,}998334$; $\\sin0{,}01/0{,}01=0{,}999983$."],"ans":"$0{,}958851;\\ 0{,}998334;\\ 0{,}999983$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m4-2-inf">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m4-2-t13">13. ∞ − ∞ түрі</h3></div>
+        <p>Түйіндес өрнекке көбейтіңіз. Жауапты бөлшекпен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\displaystyle\\lim_{x\\to+\\infty}\\left(\\sqrt{x^2+3x}-x\\right)$","a":"3/2","v":"limit(sqrt(x**2+3*x)-x, x, oo)","hint":"$\\dfrac{3x}{\\sqrt{x^2+3x}+x}$, сонан соң $x$-ке бөліңіз.","sol":{"steps":["$\\dfrac{(x^2+3x)-x^2}{\\sqrt{x^2+3x}+x}=\\dfrac{3x}{\\sqrt{x^2+3x}+x}$.","$x$-ке бөлсек: $\\dfrac{3}{\\sqrt{1+3/x}+1}\\to\\dfrac32$."],"ans":"$\\dfrac32$"}},{"q":"$\\displaystyle\\lim_{x\\to+\\infty}\\left(\\sqrt{x^2+1}-\\sqrt{x^2-1}\\right)$","a":0,"v":"limit(sqrt(x**2+1)-sqrt(x**2-1), x, oo)","hint":"Түйіндес өрнек: $\\sqrt{x^2+1}+\\sqrt{x^2-1}$.","sol":{"steps":["$\\dfrac{(x^2+1)-(x^2-1)}{\\sqrt{x^2+1}+\\sqrt{x^2-1}}=\\dfrac{2}{\\sqrt{x^2+1}+\\sqrt{x^2-1}}$.","Бөлгіш $\\to\\infty$, нәтиже 0."],"ans":"$0$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m4-2-trig">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m4-2-t14">14. Тригонометриялық шектер</h3></div>
+        <p>Жауапты санмен не бөлшекпен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\displaystyle\\lim_{x\\to0}\\dfrac{1-\\cos6x}{x^2}$","a":18,"v":"limit((1-cos(6*x))/x**2, x, 0)","hint":"$1-\\cos6x=2\\sin^23x$.","sol":{"steps":["$\\dfrac{2\\sin^23x}{x^2}=2\\cdot9\\left(\\dfrac{\\sin3x}{3x}\\right)^2\\to18$."],"ans":"$18$"}},{"q":"$\\displaystyle\\lim_{x\\to0}\\dfrac{\\tan x-\\sin x}{x^3}$","a":"1/2","v":"limit((tan(x)-sin(x))/x**3, x, 0)","hint":"$\\tan x-\\sin x=\\tan x\\,(1-\\cos x)$.","sol":{"steps":["$\\dfrac{\\tan x(1-\\cos x)}{x^3}=\\dfrac{\\tan x}{x}\\cdot\\dfrac{1-\\cos x}{x^2}$.","$1\\cdot\\dfrac12$."],"ans":"$\\dfrac12$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m4-2-power">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m4-2-t15">15. 1^∞ түрінің жалпы жағдайы</h3></div>
+        <p>Жауапты $e$-нің дәрежесі түрінде жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\displaystyle\\lim_{x\\to\\infty}\\left(\\dfrac{x}{x+2}\\right)^x$","a":"exp(-2)","v":"limit((x/(x+2))**x, x, oo)","hint":"$\\dfrac{x}{x+2}=1-\\dfrac{2}{x+2}$.","sol":{"steps":["$\\left(1-\\frac{2}{x+2}\\right)^x=\\left[\\left(1-\\frac{2}{x+2}\\right)^{x+2}\\right]\\cdot\\left(1-\\frac2{x+2}\\right)^{-2}$.","Бірінші жақша $\\to e^{-2}$, екіншісі $\\to1$."],"ans":"$e^{-2}$"}},{"q":"$\\displaystyle\\lim_{x\\to0}(\\cos x)^{1/x^2}$","a":"exp(-1/2)","v":"limit(cos(x)**(1/x**2), x, 0)","hint":"$\\cos x=1-(1-\\cos x)$, $1-\\cos x\\sim\\frac{x^2}{2}$.","sol":{"steps":["$(\\cos x)^{1/x^2}=\\left[(1-(1-\\cos x))^{\\frac{1}{1-\\cos x}}\\right]^{\\frac{1-\\cos x}{x^2}}$.","Ішкі жақша $\\to e^{-1}$, дәреже $\\to\\frac12$."],"ans":"$e^{-1/2}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m4-2-p-trig">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m4-2-t16">16. Параметрлік: аралас шек</h3></div>
+        <p>Сандар әр нұсқада өзгереді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[2,6]},"b":{"int":[2,6]},"c":{"int":[2,5]}},"type":"num","q":"$\\displaystyle\\lim_{x\\to0}\\dfrac{\\sin #{a}x\\cdot\\tan #{b}x}{#{c}x^2}$ шегін табыңыз (бөлшек не ондық).","a":"a*b/c","v":"limit(sin(a*x)*tan(b*x)/(c*x**2), x, 0)","hint":"Баламалар: $\\sin #{a}x\\sim #{a}x$, $\\tan #{b}x\\sim #{b}x$.","sol":{"steps":["$\\dfrac{#{a}x\\cdot #{b}x}{#{c}x^2}=\\dfrac{#{a*b}}{#{c}}$."],"ans":"$\\dfrac{#{a*b}}{#{c}}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m4-2-tf2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m4-2-t17">17. Баламаларды қолдану шектері</h3></div>
+        <p>Әр пікірдің ақиқат не жалған екенін негіздеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x\\to0$ кезінде $\\sin x-x\\sim0$ деп алып, $\\displaystyle\\lim\\dfrac{\\sin x-x}{x^3}=0$ деуге болады.","a":false,"e":"Жалған: қосындыда баламаны ауыстыруға болмайды. Нақты шек $-\\frac16$ (Тейлор қатарынан: $\\sin x=x-\\frac{x^3}{6}+\\dots$).","hint":"Баламалар тек көбейткіште/бөлгіште."},{"q":"$\\displaystyle\\lim_{x\\to0}\\dfrac{\\sin x}{x}$ және $\\displaystyle\\lim_{x\\to0}\\dfrac{\\tan x}{x}$ бірдей мән береді.","a":true,"e":"Ақиқат: екеуі де 1.","hint":"3-қорытудағы нәтиже."},{"q":"$\\displaystyle\\lim_{x\\to\\infty}\\dfrac{\\sin x}{x}=1$.","a":false,"e":"Жалған: $|\\sin x|\\le1$, сондықтан қысу бойынша шек 0. Бірінші тамаша шек $x\\to0$ үшін ғана.","hint":"$-\\frac1x\\le\\frac{\\sin x}{x}\\le\\frac1x$."},{"q":"$f(x)=\\dfrac{x^2}{x}$ функциясы $x=0$ нүктесінде анықталмаған, сондықтан $\\lim_{x\\to0}f(x)$ жоқ.","a":false,"e":"Жалған: $x\\ne0$ үшін $f(x)=x$, сондықтан шек бар және 0-ге тең; нүктеде анықталмағандық шектің жоқтығын білдірмейді.","hint":"Қысқартыңыз."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m4-2-find-a">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m4-2-t18">18. Параметрді табу</h3></div>
+        <p>Жауапты санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\displaystyle\\lim_{x\\to\\infty}\\left(1+\\dfrac{a}{x}\\right)^{3x}=e^6$ болса, $a$ неге тең?","a":2,"v":"solve(Eq(3*a, 6), a)[0]","hint":"Шек $e^{3a}$ екенін көрсетіңіз.","sol":{"steps":["$\\left(1+\\frac ax\\right)^{3x}=\\left[\\left(1+\\frac ax\\right)^{x/a}\\right]^{3a}\\to e^{3a}$.","$3a=6$."],"ans":"$a=2$"}},{"q":"$\\displaystyle\\lim_{x\\to0}\\dfrac{\\sin(ax)}{\\ln(1+4x)}=\\dfrac32$ болса, $a$ неге тең?","a":6,"v":"solve(Eq(a/4, Rational(3,2)), a)[0]","hint":"Баламалар: $\\sin ax\\sim ax$, $\\ln(1+4x)\\sim4x$.","sol":{"steps":["Шек $\\dfrac{ax}{4x}=\\dfrac a4$.","$\\dfrac a4=\\dfrac32$."],"ans":"$a=6$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m4-2-order2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m4-2-t19">19. Қысу теоремасын қолдану реті</h3></div>
+        <p>$\lim_{x\to0}x\cos\frac1x=0$ екенін дәлелдеу қадамдарын ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\lim_{x\\to0}x\\cos\\dfrac1x=0$ екенін дәлелдеу.","steps":["$x\\ne0$ үшін $-1\\le\\cos\\frac1x\\le1$ екенін жазамыз.","Оң және теріс $x$ үшін жеке қарастырмау үшін модульге көшеміз: $\\left|x\\cos\\frac1x\\right|\\le|x|$.","Яғни $-|x|\\le x\\cos\\frac1x\\le|x|$.","$\\lim_{x\\to0}|x|=0$ және $\\lim_{x\\to0}(-|x|)=0$ екенін белгілейміз.","Қысу теоремасы бойынша $\\lim_{x\\to0}x\\cos\\frac1x=0$."],"hint":"Бағалау → екі шеттің шегі → қорытынды.","sol":{"ans":"Шек 0."}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m4-2-reveal">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m4-2-t20">20. Қадамдық шешім: косинустар айырмасы</h3></div>
+        <p>Бұл есепті «Кеңес» және «Келесі қадам» батырмаларымен біртіндеп ашып оқыңыз. Алдымен өзіңіз шешіп көріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$\\displaystyle\\lim_{x\\to0}\\dfrac{\\cos x-\\cos3x}{x^2}$ шегін табыңыз.","hint":"Косинустар айырмасын көбейтіндіге айналдырыңыз: $\\cos A-\\cos B=-2\\sin\\frac{A+B}{2}\\sin\\frac{A-B}{2}$. Не болмаса әрқайсысын $1-\\cos$ арқылы жазыңыз.","steps":["Айырмаға жіктейміз: $\\cos x-\\cos3x=(1-\\cos3x)-(1-\\cos x)$.","$x^2$-ге бөлеміз: $\\dfrac{1-\\cos3x}{x^2}-\\dfrac{1-\\cos x}{x^2}$.","Баламалар бойынша: $1-\\cos3x\\sim\\dfrac{(3x)^2}{2}=\\dfrac{9x^2}{2}$ және $1-\\cos x\\sim\\dfrac{x^2}{2}$. Бұл жерде қосындыға баламаны ауыстырмаймыз: шектерді жеке-жеке аламыз.","Әр бөлігінің шегі бар: $\\dfrac92$ және $\\dfrac12$. Шектердің айырмасы заңы бойынша жауап $\\dfrac92-\\dfrac12=4$.","Тексеру (екінші тәсіл): $\\cos x-\\cos3x=2\\sin2x\\sin x$, сондықтан $\\dfrac{2\\sin2x\\sin x}{x^2}\\to2\\cdot2\\cdot1=4$."],"ans":"$4$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Тамаша шектер ғылымның көптеген жерінде кездеседі. Екінші тамаша шек күрделі пайыздың «үздіксіз» түрін береді: $A$ теңге жылдық $r$ ставкамен $n$ рет капиталданса, жыл соңында $A(1+r/n)^n$ болады, ал $n\to\infty$ кезінде $Ae^{r}$ шығады. Радиоактивті ыдырау мен популяция өсуі де осы $e^{kt}$ түрінде. Бірінші тамаша шек кішкентай бұрыштар үшін $\sin\theta\approx\theta$ жуықтауының негізі: маятниктің кіші тербелістері осыған сүйенеді. Сандық есептеуде $\frac{\sin x}{x}$ сияқты өрнектерді нөл маңайында дұрыс есептеу үшін шектен хабардар болу қажет.</p>
+      <p><b>Мини-жоба: «Тамаша шектер және есептеу қателігі».</b> Бағдарлама $e$ санын $(1+1/n)^n$ арқылы жуықтайды, қателігі $n$-ге қалай тәуелді екенін көрсетеді, сонан соң $\frac{1-\cos x}{x^2}$ өрнегін «тура» және «түрлендіріп» (жарты бұрыш формуласымен) есептеп, кіші $x$ үшін қателікті салыстырады.</p>
+<pre data-lang="python"><code class="language-python">import math
+
+# 1) e санын (1 + 1/n)^n арқылы жуықтау
+print("n          (1+1/n)^n      қате")
+for k in range(1, 8):
+    n = 10 ** k
+    val = (1 + 1 / n) ** n
+    print(f"{n:<10d} {val:.10f}   {abs(val - math.e):.2e}")
+
+# 2) (1 - cos x)/x^2 : тура және түрлендірілген есептеу
+def direct(x):
+    return (1 - math.cos(x)) / x**2
+
+def stable(x):
+    s = math.sin(x / 2)
+    return 2 * s * s / x**2   # 1 - cos x = 2 sin^2(x/2)
+
+print("\nx          тура           тұрақты        (шын мәні 0.5)")
+for k in (1, 3, 5, 7, 8):
+    x = 10.0 ** (-k)
+    print(f"{x:<10.0e} {direct(x):<14.10f} {stable(x):.10f}")
+
+# 3) sin(x)/x мәндері
+for k in range(1, 6):
+    x = 10.0 ** (-k)
+    print(x, math.sin(x) / x)
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Бірінші кестеде $n=10^7$ кезінде қателік $10^{-7}$ шамасында. Қателіктің $n$-ге қалай тәуелді екенін бағалаңыз (шамамен $\frac{e}{2n}$). Қателік $10^{-3}$ болуы үшін $n$ шамамен қанша болуы керек?</li>
+        <li>Тура формулада $x=10^{-8}$ үшін неге $0$ шығады? Оны $\cos x$ мәнінің компьютерде $1$-ге дөңгелектелуімен түсіндіріңіз.</li>
+        <li>Үздіксіз пайыз: $A=1000$ теңге, жылдық ставка $r=12\%$. $n=1,\,12,\,365,\,10^6$ үшін жыл соңындағы сомасын шығарып, $1000\,e^{0{,}12}$ мәнімен салыстырыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Қысу теоремасы</td><td>$g\le f\le h$, $\lim g=\lim h=L\Rightarrow\lim f=L$</td><td>маңайда</td></tr>
+        <tr><td>Бірінші тамаша шек</td><td>$\lim_{x\to0}\frac{\sin x}{x}=1$</td><td>радиан</td></tr>
+        <tr><td>Салдарлар</td><td>$\frac{\tan x}{x}\to1$, $\frac{1-\cos x}{x^2}\to\frac12$</td><td>$x\to0$</td></tr>
+        <tr><td>Екінші тамаша шек</td><td>$(1+\frac1x)^x\to e$, $(1+t)^{1/t}\to e$</td><td>$x\to\infty$, $t\to0$</td></tr>
+        <tr><td>Көрсеткіштік, логарифмдік</td><td>$\frac{e^x-1}{x}\to1$, $\frac{\ln(1+x)}{x}\to1$, $\frac{a^x-1}{x}\to\ln a$</td><td>$x\to0$</td></tr>
+        <tr><td>Баламалар</td><td>$\sin x\sim\tan x\sim x$, $1-\cos x\sim\frac{x^2}{2}$</td><td>көбейткіш не бөлгіш</td></tr>
+        <tr><td>Дәреже ережесі</td><td>$\frac{a_nx^n+\dots}{b_mx^m+\dots}\to0,\ \frac{a_n}{b_m},\ \infty$</td><td>$n&lt;m$, $n=m$, $n>m$</td></tr>
+        <tr><td>$\frac00$ әдістері</td><td>көбейткіштерге жіктеу, түйіндеспен көбейту</td><td>қысқартқанда $x\ne a$</td></tr>
+        <tr><td>$1^\infty$ түрі</td><td>$u^v=\left[(1+\alpha)^{1/\alpha}\right]^{\alpha v}$, $\alpha=u-1$</td><td>$\alpha\to0$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m4-2-self">
+        <li><input type="checkbox"> <span>Мен шектің түрін (анықталған не анықталмағандық) анықтап, қолайлы тәсіл таңдай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $\frac00$ түріндегі шектерді жіктеу не түйіндеспен көбейту арқылы аша аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен рационал өрнектің шексіздіктегі шегін дәреже ережесімен жаза аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қысу теоремасын қолданып шектің барын негіздей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бірінші тамаша шектің геометриялық дәлелдеуін қайталай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $1^\infty$ түріндегі шектерді $e$ арқылы есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен баламаларды қашан ауыстыруға болатынын және қашан болмайтынын айта аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. lim (x → 0) sin(7x)/x неге тең?</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 7</label>
+<label><input type="radio" value="c"> 1/7</label>
+<label><input type="radio" value="d"> 0</label>
+<p class="explain">sin(7x)/x = 7·sin(7x)/(7x) → 7·1 = 7.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. lim (x → ∞) (1 + 1/x)^(2x) неге тең?</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> e</label>
+<label><input type="radio" value="c"> e²</label>
+<label><input type="radio" value="d"> ∞</label>
+<p class="explain">(1 + 1/x)^(2x) = [(1 + 1/x)^x]² → e².</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. lim (x → ∞) (5x² + 3)/(2x² − x) неге тең?</p>
+<label><input type="radio" value="a"> 5/2</label>
+<label><input type="radio" value="b"> 0</label>
+<label><input type="radio" value="c"> ∞</label>
+<label><input type="radio" value="d"> 3/(−1)</label>
+<p class="explain">Дәрежелері тең (2 = 2), шек жетекші коэффициенттердің қатынасы 5/2.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. lim (x → 0) (1 − cos x)/x² неге тең?</p>
+<label><input type="radio" value="a"> 0</label>
+<label><input type="radio" value="b"> 1</label>
+<label><input type="radio" value="c"> 2</label>
+<label><input type="radio" value="d"> 1/2</label>
+<p class="explain">1 − cos x = 2sin²(x/2), сондықтан өрнек (1/2)·(sin(x/2)/(x/2))² → 1/2.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. Қайсысы анықталмағандық емес?</p>
+<label><input type="radio" value="a"> 0/0</label>
+<label><input type="radio" value="b"> 1/0 (алым 1, бөлгіш 0-ге ұмтылады)</label>
+<label><input type="radio" value="c"> ∞ − ∞</label>
+<label><input type="radio" value="d"> 1^∞</label>
+<p class="explain">c/0 (c ≠ 0) түрі шексіздікке апарады, оның шегі белгілі (±∞ не жоқ). Қалғандары анықталмағандықтар.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. lim (x → 2) (x² − 4)/(x − 2) неге тең?</p>
+<label><input type="radio" value="a"> 0</label>
+<label><input type="radio" value="b"> 2</label>
+<label><input type="radio" value="c"> 4</label>
+<label><input type="radio" value="d"> жоқ</label>
+<p class="explain">(x − 2)(x + 2)/(x − 2) = x + 2 (x ≠ 2), шек 2 + 2 = 4.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. x → 0 кезінде қайсысы 3x шамасына баламалы емес?</p>
+<label><input type="radio" value="a"> 3x²</label>
+<label><input type="radio" value="b"> sin 3x</label>
+<label><input type="radio" value="c"> tan 3x</label>
+<label><input type="radio" value="d"> e^(3x) − 1</label>
+<p class="explain">3x²/(3x) = x → 0, 1-ге ұмтылмайды. Қалған үшеуі 3x-ке баламалы (u = 3x → 0).</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. lim (x → +∞) (√(x² + 3x) − x) неге тең?</p>
+<label><input type="radio" value="a"> 0</label>
+<label><input type="radio" value="b"> 3</label>
+<label><input type="radio" value="c"> ∞</label>
+<label><input type="radio" value="d"> 3/2</label>
+<p class="explain">Түйіндеспен көбейтеміз: 3x/(√(x² + 3x) + x) = 3/(√(1 + 3/x) + 1) → 3/2.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-21.html"><small>Алдыңғы</small>← 4 · Дифференциалдық есептеу · 1-сабақ: Шек ұғымы және анықтамасы</a>
