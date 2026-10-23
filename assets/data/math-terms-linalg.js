@@ -71,5 +71,16 @@ window.CS50KZ_MATH_TERMS.linalg = [
   {"id": "la-image", "kz": "образ", "en": "image", "def": "Бейнелеудің барлық мәндер жиыны.", "lesson": 7},
   {"id": "la-colspace-t", "kz": "бағандар кеңістігі", "en": "column space", "def": "Матрица бағандарының созылған кеңістігі.", "lesson": 7},
   {"id": "la-nullspace-t", "kz": "нөл кеңістік", "en": "null space", "def": "$A\\mathbf{x}=\\mathbf{0}$ жүйесінің шешімдер жиыны.", "lesson": 7},
-  {"id": "la-ranknull-t", "kz": "ранг–нөлдік теоремасы", "en": "rank–nullity theorem", "def": "Ранг пен ядро өлшемдерінің қосындысы айнымалылар санына тең.", "lesson": 7}
+  {"id": "la-ranknull-t", "kz": "ранг–нөлдік теоремасы", "en": "rank–nullity theorem", "def": "Ранг пен ядро өлшемдерінің қосындысы айнымалылар санына тең.", "lesson": 7},
+  {"id": "la-eigenvalue", "kz": "меншікті мән", "en": "eigenvalue", "def": "$A\\mathbf{v}=\\lambda\\mathbf{v}$ теңдеуіндегі $\\lambda$ саны.", "lesson": 8},
+  {"id": "la-eigenvector", "kz": "меншікті вектор", "en": "eigenvector", "def": "Матрица бағытын өзгертпейтін нөл емес вектор.", "lesson": 8},
+  {"id": "la-eigenspace", "kz": "меншікті кеңістік", "en": "eigenspace", "def": "Берілген меншікті мәнге сәйкес барлық векторлар мен нөлден құралған ішкі кеңістік.", "lesson": 8},
+  {"id": "la-charpoly-t", "kz": "сипаттамалық көпмүше", "en": "characteristic polynomial", "def": "$\\det(A-\\lambda I)$ көпмүшесі.", "lesson": 8},
+  {"id": "la-diagonalizable", "kz": "диагональданатын матрица", "en": "diagonalizable matrix", "def": "$A=PDP^{-1}$ түрінде жазылатын матрица.", "lesson": 8},
+  {"id": "la-algmult", "kz": "алгебралық еселік", "en": "algebraic multiplicity", "def": "Меншікті мәннің сипаттамалық көпмүшедегі түбір ретіндегі еселігі.", "lesson": 8},
+  {"id": "la-geomult", "kz": "геометриялық еселік", "en": "geometric multiplicity", "def": "Меншікті кеңістіктің өлшемі.", "lesson": 8},
+  {"id": "la-markov", "kz": "Марков матрицасы", "en": "Markov matrix", "def": "Бағандарының қосындысы 1 болатын теріс емес элементті матрица.", "lesson": 8},
+  {"id": "la-steady", "kz": "тұрақты күй", "en": "steady state", "def": "$M\\mathbf{x}=\\mathbf{x}$ теңдеуін қанағаттандыратын ықтималдық векторы.", "lesson": 8},
+  {"id": "la-powerit", "kz": "дәрежелік итерация", "en": "power iteration", "def": "Вектордың қайта-қайта матрицаға көбейтілуі арқылы басым меншікті векторды табу.", "lesson": 8},
+  {"id": "la-pagerank", "kz": "PageRank", "en": "PageRank", "def": "Веб-беттердің маңыздылығын сілтемелер матрицасының меншікті векторымен өлшейтін алгоритм.", "lesson": 8}
 ];

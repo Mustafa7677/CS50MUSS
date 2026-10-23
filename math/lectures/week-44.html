@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math 7 · Векторлық анализ · 2-сабақ: Дивергенция және ротор - CS50 қазақша">
-  <meta property="og:description" content="Математика, 7 · Векторлық анализ · 2-сабақ: Дивергенция және ротор. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Дивергенция мен роторды анықтау, физикалық мағынасы, Гамильтон операторы.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-44.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math 7 · Векторлық анализ · 2-сабақ: Дивергенция және ротор - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-44.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, 7 · Векторлық анализ · 2-сабақ: Дивергенция және ротор. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Дивергенция мен роторды анықтау, физикалық мағынасы, Гамильтон операторы.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,23 +57,528 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="44">
         <div class="num">7 · Векторлық анализ · 2-сабақ</div>
         <h1>Дивергенция және ротор</h1>
-        <p>Дивергенция мен роторды анықтау, физикалық мағынасы, Гамильтон операторы.</p>
+        <p>Бұл сабақта векторлық өрістің екі негізгі «дифференциалдық өлшемін» үйренесіз: <b>дивергенция</b> (өрістің нүктеден қаншалықты «ағып шығатынын» өлшейді) және <b>ротор</b> (өрістің нүктенің маңында қаншалықты «айналатынын» өлшейді). Екеуін де дербес туындылар арқылы есептейміз, физикалық мағынасын кішкентай текше мен тіктөртбұрыш арқылы қорытып шығарамыз, сосын Гамильтон операторы $\nabla$ тілінде негізгі тепе-теңдіктерді дәлелдейміз. Олар кейінгі Грин, Стокс және Гаусс–Остроградский теоремаларының ішкі мағынасы.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-7">Векторлық анализ</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-7">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
 
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны жасанды интеллект көмегімен дайындалған, сондықтан математик-оқытушымен тексеріп алған жөн. Бұл ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>векторлық өрістің дивергенциясы мен роторын координаталарда есептеу;</li>
+        <li>дивергенцияның ағын тығыздығы, ал роторның айналым тығыздығы екенін текше мен тіктөртбұрыш арқылы қорытып шығару;</li>
+        <li>Гамильтон операторы $\nabla$ арқылы $\operatorname{grad}$, $\operatorname{div}$, $\operatorname{rot}$ және лапласианды жазу;</li>
+        <li>$\operatorname{rot}\operatorname{grad}u=\mathbf{0}$ және $\operatorname{div}\operatorname{rot}\mathbf{F}=0$ тепе-теңдіктерін дәлелдеу;</li>
+        <li>берілген өрістің соленоидты (дивергенциясыз) не құйынсыз (роторсыз) екенін тексеру;</li>
+        <li>$\operatorname{div}(u\mathbf{F})$ және $\Delta r^n$ сияқты өрнектерді тепе-теңдіктермен ықшамдау.</li>
+      </ul>
+
+      <h2 id="prereq">Алғышарттар</h2>
+      <p class="math-prereq">Бұл сабаққа: <a href="week-43.html">7. Векторлық анализ, 1-сабақ: скаляр және векторлық өрістер</a> (градиент, өріс сызықтары), <a href="../index.html#subj-6">6. Көп айнымалы анализ</a> (дербес туындылар және аралас туындылардың теңдігі, <a href="week-37.html">2-сабақ</a>), <a href="../index.html#subj-2">2. Сызықтық алгебра</a> (<a href="week-7.html">векторлар</a>, векторлық көбейтінді мен анықтауыш <a href="week-12.html">6-сабақ</a>).</p>
+
+      <h2 id="intuition">Интуиция: ағып шығу мен айналу</h2>
+      <p>Өзен ағысын елестетіңіз. Су бетінде бір кішкентай көлемді ойша бөліп алайық. Егер ол көлемге кіретін су мөлшері шығатын судан аз болса, онда көлемнің ішінде бір <em>көз</em> (бұлақ) бар: су жерден шығып жатыр. Керісінше, шығатыны аз болса, көлемде <em>батпақ немесе науа</em> (су жұтатын жер) бар. Кірген мен шыққан тең болса, судың тығыздығы бұзылмайды. Көздің қуаттылығын, яғни бірлік көлемнен бір секундта шығатын ағынды өлшейтін сан - <b>дивергенция</b>.</p>
+      <p>Ал енді суға кішкентай қалақшалы дөңгелек тастайық. Ағыс жылдамдығы дөңгелектің екі жағында әртүрлі болса, дөңгелек айнала бастайды. Қалақшаның айналу жылдамдығы мен осі - сол нүктедегі <b>роторға</b> байланысты. Тіпті ағыс түзу сызық бойымен жүрсе де (мысалы, жағалауға жақын қабат баяу, ортасы жылдам), дөңгелек айналады: өйткені екі жақтағы қысым әртүрлі. Керісінше, құйында шеңбер бойымен жүзіп бара жатқан жапырақ өз осінен айналмай, тек орбита бойымен жүруі мүмкін (потенциалды құйын). Демек, «ағыс қисық» және «ағыс айналдырады» әртүрлі нәрсе.</p>
+      <p>Екі шама да нүктенің маңындағы өрістің <em>өзгерісін</em> өлшейді, сондықтан туындыға ұқсайды: градиент скаляр өрістің еңісін өлшегендей, дивергенция мен ротор векторлық өрістің «еңісін» өлшейді. Бірақ вектордың туындысы көп: $\mathbf{F}=(P,Q,R)$ үшін тоғыз дербес туынды бар ($P_x,P_y,P_z,Q_x,\dots$). Олардың үштен бір бөлігі (диагональ) дивергенцияны құрайды, қалған алтауы ($P_y,Q_x,\dots$ жұп-жұбымен алынған айырымдар) роторды құрайды. Бұл - матрицаның ізі мен кососиметриялық бөлігі сияқты.</p>
+      <p>Бағдарламалау тұрғысынан: екі өлшемді жел өрісі екі сан массивімен берілсін (<code>u[i][j]</code>, <code>v[i][j]</code>). Дивергенция - жасыл түстегі «саңылау», ротор - құйынның күші. Метеорологияда осы екеуін сандық болжам модельдерінде жиі есептейді: конвергенция аймақтары (теріс дивергенция) бұлт пен жауын-шашынды туғызады, ал ротор циклон мен антициклонды сипаттайды. Видеоэффектілерде де құйынды табу үшін оптикалық ағын өрісінің роторы алынады.</p>
+      <p>Қорытындыға үш сұрақ: кіру мен шығу айырмасы нөл болса, өріс қандай болады (дивергенциясыз)? Дөңгелек қозғалмаса ше (құйынсыз)? Бірдей уақытта екі қасиет те орындалса, өріс неге ұқсайды? Үшінші сұрақтың жауабы кейін гармониялық өрістерге апарады: ол - толқындар мен жылу теңдеулерінің өрісі. Бұл сабақта сол үшін қажетті қарапайым құралдарды жинаймыз.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 2.1 · Дивергенция</span>
+        <p>$\mathbf{F}=(P,Q,R)$ өрісінің <strong>дивергенциясы</strong> (<span class="term-en">divergence</span>) деп скаляр өрісті айтамыз:
+        $$\operatorname{div}\mathbf{F}=\frac{\partial P}{\partial x}+\frac{\partial Q}{\partial y}+\frac{\partial R}{\partial z}.$$
+        Жазықтықта $\operatorname{div}\mathbf{F}=P_x+Q_y$. Дивергенция - сан (скаляр), вектор емес.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 2.2 · Ротор</span>
+        <p>$\mathbf{F}=(P,Q,R)$ өрісінің <strong>роторы</strong> (<span class="term-en">curl</span>) деп векторлық өрісті айтамыз:
+        $$\operatorname{rot}\mathbf{F}=\left(\frac{\partial R}{\partial y}-\frac{\partial Q}{\partial z},\ \frac{\partial P}{\partial z}-\frac{\partial R}{\partial x},\ \frac{\partial Q}{\partial x}-\frac{\partial P}{\partial y}\right).$$
+        Есте сақтау үшін формалды анықтауыш: $\operatorname{rot}\mathbf{F}=\begin{vmatrix}\mathbf{i}&amp;\mathbf{j}&amp;\mathbf{k}\\ \partial_x&amp;\partial_y&amp;\partial_z\\ P&amp;Q&amp;R\end{vmatrix}$. Жазықтықтағы өріс ($R=0$, $P,Q$ тек $x,y$-ке тәуелді) үшін ротор тек $\mathbf{k}$ бойымен: $(Q_x-P_y)\,\mathbf{k}$.</p></div>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 2.3 · Гамильтон операторы</span>
+        <p><strong>Гамильтон операторы</strong> (<span class="term-en">nabla operator</span>) $\nabla=\left(\partial_x,\partial_y,\partial_z\right)$ формалды вектор. Онымен: $\nabla u=\operatorname{grad}u$, $\nabla\cdot\mathbf{F}=\operatorname{div}\mathbf{F}$ (скаляр көбейтінді), $\nabla\times\mathbf{F}=\operatorname{rot}\mathbf{F}$ (векторлық көбейтінді). Екінші ретті оператор - <strong>лапласиан</strong> (<span class="term-en">Laplacian</span>): $\Delta u=\nabla\cdot\nabla u=u_{xx}+u_{yy}+u_{zz}$.</p></div>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 2.4 · Соленоидты және құйынсыз өріс</span>
+        <p>$\operatorname{div}\mathbf{F}=0$ болатын өріс <strong>соленоидты</strong> (<span class="term-en">solenoidal field</span>, дивергенциясыз). $\operatorname{rot}\mathbf{F}=\mathbf{0}$ болатын өріс <strong>құйынсыз</strong> (<span class="term-en">irrotational field</span>). $\Delta u=0$ болатын функция <strong>гармониялық</strong> (<span class="term-en">harmonic function</span>) деп аталады.</p></div>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 2.1 · Дивергенция мен ротор</span>
+        <div class="math-fbody">$$\operatorname{div}\mathbf{F}=P_x+Q_y+R_z,\qquad \operatorname{rot}\mathbf{F}=(R_y-Q_z,\ P_z-R_x,\ Q_x-P_y)$$</div><p class="math-fnote">Шарты: $P,Q,R$ дифференциалданатын функциялар.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 2.1 · Дивергенцияның мағынасы</span>
+        <p>$\mathbf{F}$ өрісі үзіліссіз дифференциалданатын болсын. $M_0$ нүктесін қамтитын кіші көлем $V$-ның беті $S$, сыртқы нормаль $\mathbf{n}$ болсын. Онда
+        $$\operatorname{div}\mathbf{F}(M_0)=\lim_{V\to M_0}\frac{1}{|V|}\iint_S\mathbf{F}\cdot\mathbf{n}\,dS,$$
+        яғни дивергенция - <em>ағын тығыздығы</em>: бірлік көлемнен шығатын ағын.</p></div>
+      <p><em>Негіздеме.</em> Беттік интеграл туралы толық баяндау 6-сабақта болады, ал бұл жерде текше үшін есептеуді 1-қорытуда көрсетеміз: шығатын мен кіретін ағындардың айырмасы $\operatorname{div}\mathbf{F}\cdot\Delta V$ болады.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 2.2 · Ротордың мағынасы</span>
+        <p>$\mathbf{n}$ - бірлік вектор, $S_\varepsilon$ - $M_0$ нүктесін қамтитын, $\mathbf{n}$-ге перпендикуляр кішкентай жазық облыс, $\Gamma_\varepsilon$ - оның шекарасы (бағыты $\mathbf{n}$ бойынша оң, яғни сағат тіліне қарсы). Онда
+        $$(\operatorname{rot}\mathbf{F}\cdot\mathbf{n})(M_0)=\lim_{S_\varepsilon\to M_0}\frac{1}{|S_\varepsilon|}\oint_{\Gamma_\varepsilon}\mathbf{F}\cdot d\mathbf{r}.$$
+        Ротор - <em>айналым тығыздығы</em>: оның $\mathbf{n}$ бағытындағы проекциясы бірлік ауданға келетін айналым. Роторның бағыты - ең үлкен айналым осі, ұзындығы - сол айналымның шамасы.</p></div>
+      <p><em>Негіздеме.</em> Қисық сызықты интегралды келесі сабақта толық енгіземіз; осы жерде $xy$-жазықтықтағы төртбұрыш үшін есептеуді 2-қорытуда көрсетеміз.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 2.3 · Екінші ретті тепе-теңдіктер</span>
+        <p>$u$ және $\mathbf{F}$ екі рет үзіліссіз дифференциалданатын болсын. Онда
+        $$\operatorname{rot}(\operatorname{grad}u)=\mathbf{0},\qquad \operatorname{div}(\operatorname{rot}\mathbf{F})=0.$$
+        Яғни градиент өрісі әрқашан құйынсыз, ал ротор өрісі әрқашан соленоидты.</p></div>
+      <p><em>Негіздеме.</em> Екі жағдайда да аралас туындылардың теңдігі $u_{xy}=u_{yx}$ жұп-жұбымен қысқарады (3- және 4-қорыту).</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 2.4 · Көбейтінді ережелері</span>
+        <p>Скаляр өріс $u$ мен векторлық өріс $\mathbf{F}$ үшін:
+        $$\operatorname{div}(u\mathbf{F})=u\operatorname{div}\mathbf{F}+\nabla u\cdot\mathbf{F},\qquad \operatorname{rot}(u\mathbf{F})=u\operatorname{rot}\mathbf{F}+\nabla u\times\mathbf{F}.$$
+        Сонымен қатар $\operatorname{div}\mathbf{r}=3$, $\operatorname{rot}\mathbf{r}=\mathbf{0}$, ал $r^n$ үшін $\Delta r^n=n(n+1)\,r^{n-2}$.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 2.2 · Лапласиан</span>
+        <div class="math-fbody">$$\Delta u=\nabla\cdot(\nabla u)=u_{xx}+u_{yy}+u_{zz}$$</div><p class="math-fnote">Шарты: $u$ екі рет дифференциалданады. $\Delta u=0$ - Лаплас теңдеуі.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 2.3 · Негізгі тепе-теңдіктер</span>
+        <div class="math-fbody">$$\operatorname{rot}\nabla u=\mathbf{0},\quad \operatorname{div}\operatorname{rot}\mathbf{F}=0,\quad \operatorname{div}(u\mathbf{F})=u\operatorname{div}\mathbf{F}+\nabla u\cdot\mathbf{F}$$</div><p class="math-fnote">Шарты: функциялар $C^2$ класында (аралас туындылар үзіліссіз).</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 2.4 · Қатты дененің айналуы</span>
+        <div class="math-fbody">$$\mathbf{v}=\boldsymbol{\omega}\times\mathbf{r}\ \Longrightarrow\ \operatorname{rot}\mathbf{v}=2\boldsymbol{\omega},\quad \operatorname{div}\mathbf{v}=0$$</div><p class="math-fnote">Шарты: $\boldsymbol{\omega}$ - тұрақты бұрыштық жылдамдық векторы.</p></div>
+      <p>Операторлардың арасындағы байланысты бір сызбада есте ұстаған ыңғайлы. Скаляр өрістен градиент арқылы векторлық өріске өтеміз; векторлық өрістен ротор арқылы тағы векторлық өріске, ал дивергенция арқылы скаляр өріске келеміз. Осылайша «скаляр - вектор - вектор - скаляр» тізбегі шығады: $u\xrightarrow{\ \operatorname{grad}\ }\mathbf{F}\xrightarrow{\ \operatorname{rot}\ }\mathbf{G}\xrightarrow{\ \operatorname{div}\ }w$. Теорема 2.3 бұл тізбектің қатарынан екі қадамының нәтижесі нөл екенін айтады: екі қатар тұрған оператордың композициясы нөлге айналады. Дифференциалдық геометрияда мұны «шекараның шекарасы жоқ» деп атайды: $\partial\partial=0$. Бұл сабақтағы тепе-теңдіктер сол терең идеяның үш өлшемдегі қарапайым көрінісі.</p>
+      <p>Тағы бір пайдалы бақылау: ротор да, дивергенция да <em>сызықтық</em> операторлар. Яғни $\operatorname{div}(\alpha\mathbf{F}+\beta\mathbf{G})=\alpha\operatorname{div}\mathbf{F}+\beta\operatorname{div}\mathbf{G}$ және ротор үшін де дәл солай. Сызықтылық күрделі өрісті қарапайым бөліктерге жіктеп, әр бөлікті жеке есептеуге мүмкіндік береді. Мысалы, $\mathbf{F}=(x+y,\ x-y,\ 0)$ өрісін тұрақты матрицамен әсер ететін бөліктерге бөліп, әрқайсысының дивергенциясы мен роторын бөлек табуға болады. Бұдан қоса, бір кездегі қиын көрінген есептерді (мысалы, жазықтық өрісінің $\operatorname{rot}$-ын) екі қарапайым дербес туындыға әкеледі: $Q_x-P_y$.</p>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Дивергенция - <b>скаляр</b>, ротор - <b>вектор</b>. Дивергенция диагональ дербес туындыларды қосады ($P_x+Q_y+R_z$), ротор айқас дербес туындылардың айырмасын алады. Екі тепе-теңдік: <b>rot grad = 0</b> және <b>div rot = 0</b>.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Ротор мен дивергенцияны шатастырмаңыз: $\operatorname{div}$ нәтижесі сан, сондықтан «$\operatorname{div}$-тің роторы» немесе «роторға $\operatorname{div}$-ті» ұқсату мағынасыз әрекет болуы мүмкін. Тек ретті тіркестер дұрыс: $\operatorname{grad}\to\operatorname{div}$ (лапласиан), $\operatorname{grad}\to\operatorname{rot}$, $\operatorname{rot}\to\operatorname{div}$. «$\operatorname{rot}$ скаляр өріске» және «$\operatorname{grad}$ векторлық өріске» дегендер анықталмаған.</p></div>
+      <div class="math-remark"><span class="math-box-title">Екінші ретті операторлар</span>
+        <p>Бес мағыналы екінші ретті тіркес бар: $\operatorname{div}\operatorname{grad}u=\Delta u$, $\operatorname{rot}\operatorname{grad}u=\mathbf{0}$, $\operatorname{div}\operatorname{rot}\mathbf{F}=0$, $\operatorname{grad}\operatorname{div}\mathbf{F}$ және $\operatorname{rot}\operatorname{rot}\mathbf{F}=\operatorname{grad}\operatorname{div}\mathbf{F}-\Delta\mathbf{F}$ (мұнда $\Delta\mathbf{F}$ - компоненттері бойынша лапласиан). Соңғы екеуі нөлге тең емес жалпы жағдайда. Максвелл теңдеулерінде дәл осы операторлар қолданылады.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <p>Қорытулар - бұл сабақтың жүрегі: дивергенция мен роторды «формула» емес, <em>өлшем</em> ретінде түсінесіз. Әр қадамды қағазға сызып отырыңыз.</p>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: дивергенция - ағын тығыздығы (теорема 2.1)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Текшенің бетінен шығатын ағынның $\operatorname{div}\mathbf{F}\cdot\Delta V$ болатынын көрсету.</p>
+          <ol class="math-steps">
+            <li>Қыры осьтерге параллель кішкентай тік қорап алайық: $[x_0,x_0+\Delta x]\times[y_0,y_0+\Delta y]\times[z_0,z_0+\Delta z]$. Көлемі $\Delta V=\Delta x\Delta y\Delta z$. Ағын $\iint\mathbf{F}\cdot\mathbf{n}\,dS$ алты жақтан тұрады.</li>
+            <li>$x=x_0+\Delta x$ жағының сыртқы нормалі $+\mathbf{i}$, сондықтан бұл жақтан шығатын ағын $\iint P(x_0+\Delta x,y,z)\,dy\,dz\approx P(x_0+\Delta x,y_0,z_0)\,\Delta y\Delta z$ (жақ кішкентай, $P$ шамамен тұрақты).</li>
+            <li>Қарсы $x=x_0$ жағының сыртқы нормалі $-\mathbf{i}$, сондықтан ағын $\approx-P(x_0,y_0,z_0)\,\Delta y\Delta z$ (теріс таңба: өріс осы жақтан қорапқа енеді).</li>
+            <li>Бұл екі жақтың қосындысы: $[P(x_0+\Delta x,y_0,z_0)-P(x_0,y_0,z_0)]\Delta y\Delta z\approx P_x\,\Delta x\Delta y\Delta z=P_x\Delta V$ (бір айнымалы дифференциал бойынша).</li>
+            <li>Дәл солай $y$-жақтарынан $Q_y\Delta V$, $z$-жақтарынан $R_z\Delta V$ шығады. Барлық жақтан толық ағын: $\Phi\approx(P_x+Q_y+R_z)\,\Delta V$.</li>
+            <li>Екі жағын $\Delta V$-ға бөліп, қорапты нүктеге тартамыз ($\Delta V\to0$). Жуықтау қателіктері $\Delta V$-ға қатысты жоғары ретті, сондықтан шекте тепе-теңдік болады: $\lim\dfrac{\Phi}{\Delta V}=P_x+Q_y+R_z=\operatorname{div}\mathbf{F}$.</li>
+            <li>Қорытынды мағына: $\operatorname{div}\mathbf{F}(M_0)>0$ - $M_0$-де көз (өріс шығады), $<0$ - су жұтатын жер, $=0$ - нүктеде шығу мен кіру тең.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2" open>
+        <summary>Қорытып шығару 2: ротор - айналым тығыздығы (теорема 2.2, $z$-компонент)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $xy$-жазықтықтағы кішкентай тіктөртбұрыш бойынша айналымның $(Q_x-P_y)\,\Delta x\Delta y$ екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>Тіктөртбұрыш $[x_0,x_0+\Delta x]\times[y_0,y_0+\Delta y]$. Контурды $\mathbf{k}$ оң бағытында, яғни сағат тіліне қарсы айналып өтеміз. Айналым $\oint\mathbf{F}\cdot d\mathbf{r}=\oint P\,dx+Q\,dy$.</li>
+            <li>Төменгі қабырға ($y=y_0$, $x$ артады, $dy=0$): $\int P\,dx\approx P(x_0,y_0)\,\Delta x$.</li>
+            <li>Оң қабырға ($x=x_0+\Delta x$, $y$ артады, $dx=0$): $\int Q\,dy\approx Q(x_0+\Delta x,y_0)\,\Delta y$.</li>
+            <li>Жоғарғы қабырға ($y=y_0+\Delta y$, $x$ кемиді): $-\int P\,dx\approx-P(x_0,y_0+\Delta y)\,\Delta x$. Сол қабырға ($x=x_0$, $y$ кемиді): $-\int Q\,dy\approx-Q(x_0,y_0)\,\Delta y$.</li>
+            <li>Қосамыз: $\oint\approx[Q(x_0+\Delta x,y_0)-Q(x_0,y_0)]\Delta y-[P(x_0,y_0+\Delta y)-P(x_0,y_0)]\Delta x\approx Q_x\,\Delta x\Delta y-P_y\,\Delta y\Delta x$.</li>
+            <li>Ауданы $\Delta S=\Delta x\Delta y$ болғандықтан: $\dfrac{1}{\Delta S}\oint\mathbf{F}\cdot d\mathbf{r}\to Q_x-P_y$. Бұл - $\operatorname{rot}\mathbf{F}$-тің $\mathbf{k}$-ға проекциясы.</li>
+            <li>Басқа координаталық жазықтықтарда ($yz$ және $zx$) циклдік ауыстыру $x\to y\to z\to x$ арқылы $R_y-Q_z$ және $P_z-R_x$ шығады. Бұл - ротордың анықтамасы.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3" open>
+        <summary>Қорытып шығару 3: $\operatorname{rot}\operatorname{grad}u=\mathbf{0}$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Кез келген $C^2$ скаляр өрістің градиенті құйынсыз екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>$\mathbf{F}=\nabla u$ болсын: $P=u_x$, $Q=u_y$, $R=u_z$.</li>
+            <li>Роторының бірінші компоненті: $R_y-Q_z=(u_z)_y-(u_y)_z=u_{zy}-u_{yz}$.</li>
+            <li>Аралас туындылар үзіліссіз болса, $u_{zy}=u_{yz}$ (Шварц теоремасы, көп айнымалы анализде дәлелденген). Демек бірінші компонент нөл.</li>
+            <li>Дәл солай екінші компонент: $P_z-R_x=u_{xz}-u_{zx}=0$.</li>
+            <li>Үшінші компонент: $Q_x-P_y=u_{yx}-u_{xy}=0$. Үш компонент те нөл: $\operatorname{rot}\nabla u=\mathbf{0}$.</li>
+            <li>Физикалық мағына: градиент бағытымен өріс «қайта айналып келмейді», сондықтан құйын жоқ. Керісінше (құйынсыз өріс потенциалды бола ма?) 4-сабақта қарастырылады.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4" open>
+        <summary>Қорытып шығару 4: $\operatorname{div}\operatorname{rot}\mathbf{F}=0$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Кез келген $C^2$ векторлық өрістің роторы соленоидты екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>$\mathbf{G}=\operatorname{rot}\mathbf{F}=(R_y-Q_z,\ P_z-R_x,\ Q_x-P_y)$ деп белгілейміз.</li>
+            <li>Дивергенция анықтамасы: $\operatorname{div}\mathbf{G}=\partial_x(R_y-Q_z)+\partial_y(P_z-R_x)+\partial_z(Q_x-P_y)$.</li>
+            <li>Жақшаларды ашамыз: $R_{yx}-Q_{zx}+P_{zy}-R_{xy}+Q_{xz}-P_{yz}$.</li>
+            <li>Аралас туындыларды топтаймыз: $(R_{yx}-R_{xy})+(P_{zy}-P_{yz})+(Q_{xz}-Q_{zx})$.</li>
+            <li>Әр жақшада аралас туындылар тең ($R_{yx}=R_{xy}$ т.с.с.), сондықтан әрқайсысы нөл. Демек $\operatorname{div}\operatorname{rot}\mathbf{F}=0$.</li>
+            <li>Мағынасы: роторлық өрістің күш сызықтары жабық (басы мен аяғы жоқ), яғни ол көз де, су жұтатын жер де емес.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5" open>
+        <summary>Қорытып шығару 5: $\Delta r^n=n(n+1)\,r^{n-2}$ және $\operatorname{div}(\mathbf{r}/r^3)=0$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Радиалды өрістердің лапласианын есептеп, Ньютон өрісінің дивергенциясыз екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>Алдымен көбейтінді ережесін шығарамыз: $\operatorname{div}(u\mathbf{F})=\partial_x(uP)+\partial_y(uQ)+\partial_z(uR)=u(P_x+Q_y+R_z)+(u_xP+u_yQ+u_zR)=u\operatorname{div}\mathbf{F}+\nabla u\cdot\mathbf{F}$.</li>
+            <li>1-сабақ бойынша $\nabla r^n=n\,r^{n-2}\mathbf{r}$. Лапласиан дегеніміз осы өрістің дивергенциясы: $\Delta r^n=\operatorname{div}\left(n\,r^{n-2}\mathbf{r}\right)$.</li>
+            <li>Көбейтінді ережесін $u=n\,r^{n-2}$, $\mathbf{F}=\mathbf{r}$ үшін қолданамыз: $\Delta r^n=n\,r^{n-2}\operatorname{div}\mathbf{r}+\nabla\left(n\,r^{n-2}\right)\cdot\mathbf{r}$.</li>
+            <li>$\operatorname{div}\mathbf{r}=1+1+1=3$. Ал $\nabla\left(n\,r^{n-2}\right)=n(n-2)\,r^{n-4}\mathbf{r}$, ендеше $\nabla(\dots)\cdot\mathbf{r}=n(n-2)\,r^{n-4}|\mathbf{r}|^2=n(n-2)\,r^{n-2}$.</li>
+            <li>Қосамыз: $\Delta r^n=3n\,r^{n-2}+n(n-2)\,r^{n-2}=n(n+1)\,r^{n-2}$.</li>
+            <li>$n=-1$ болғанда $n(n+1)=0$, демек $\Delta\dfrac1r=0$ ($r\ne0$): $\dfrac1r$ гармониялық. $\dfrac{\mathbf{r}}{r^3}=-\nabla\dfrac1r$ болғандықтан, $\operatorname{div}\dfrac{\mathbf{r}}{r^3}=-\Delta\dfrac1r=0$. Ньютон мен Кулон өрісі нүктелік көзден тыс соленоидты.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1">
+        <h3>Мысал 1. Дивергенция мен роторды нүктеде есептеу</h3>
+        <p class="math-problem">$\mathbf{F}=(x^2y,\ yz^2,\ xz)$ өрісінің $M(1,\,2,\,-1)$ нүктесіндегі $\operatorname{div}\mathbf{F}$ және $\operatorname{rot}\mathbf{F}$ мәндерін табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Компоненттер: $P=x^2y$, $Q=yz^2$, $R=xz$.</li>
+          <li><b>2-қадам.</b> Дивергенция: $P_x=2xy$, $Q_y=z^2$, $R_z=x$, сондықтан $\operatorname{div}\mathbf{F}=2xy+z^2+x$. $M$ нүктесінде: $2\cdot1\cdot2+1+1=6$.</li>
+          <li><b>3-қадам.</b> Ротордың 1-компоненті: $R_y-Q_z=0-2yz=-2yz$. $M$-де: $-2\cdot2\cdot(-1)=4$.</li>
+          <li><b>4-қадам.</b> 2-компонент: $P_z-R_x=0-z=-z$. $M$-де: $1$. 3-компонент: $Q_x-P_y=0-x^2=-x^2$. $M$-де: $-1$.</li>
+          <li><b>5-қадам.</b> Тексеру: $\operatorname{div}\operatorname{rot}\mathbf{F}=\partial_x(-2yz)+\partial_y(-z)+\partial_z(-x^2)=0$ - теорема 2.3 сақталады.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\operatorname{div}\mathbf{F}(M)=6$, $\operatorname{rot}\mathbf{F}(M)=(4,\,1,\,-1)$.</p>
+      </div>
+      <div class="math-example" id="ex-2">
+        <h3>Мысал 2. Өрістің құйынсыз екенін тексеру</h3>
+        <p class="math-problem">$\mathbf{F}=(2xy+z^3,\ x^2,\ 3xz^2)$ өрісі құйынсыз ба?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $P=2xy+z^3$, $Q=x^2$, $R=3xz^2$.</li>
+          <li><b>2-қадам.</b> $R_y-Q_z=0-0=0$.</li>
+          <li><b>3-қадам.</b> $P_z-R_x=3z^2-3z^2=0$.</li>
+          <li><b>4-қадам.</b> $Q_x-P_y=2x-2x=0$.</li>
+          <li><b>5-қадам.</b> Үш компонент те нөл, ендеше $\operatorname{rot}\mathbf{F}=\mathbf{0}$ барлық кеңістікте. Бұл өріс $u=x^2y+xz^3$ функциясының градиенті екенін де тексеруге болады: $u_x=2xy+z^3$, $u_y=x^2$, $u_z=3xz^2$ (потенциалдың қалай табылатынын 4-сабақта үйренеміз).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> иә, $\operatorname{rot}\mathbf{F}=\mathbf{0}$.</p>
+      </div>
+      <div class="math-example" id="ex-3">
+        <h3>Мысал 3. Соленоидты болу шарты</h3>
+        <p class="math-problem">$\mathbf{F}=(x+3y,\ y-2z,\ x+\lambda z)$ өрісі соленоидты болатындай $\lambda$ мәнін табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\operatorname{div}\mathbf{F}=P_x+Q_y+R_z$.</li>
+          <li><b>2-қадам.</b> $P_x=(x+3y)_x=1$, $Q_y=(y-2z)_y=1$, $R_z=(x+\lambda z)_z=\lambda$.</li>
+          <li><b>3-қадам.</b> $\operatorname{div}\mathbf{F}=2+\lambda$ - тұрақты (нүктеге тәуелсіз).</li>
+          <li><b>4-қадам.</b> Соленоидты болу шарты $\operatorname{div}\mathbf{F}=0$: $2+\lambda=0$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\lambda=-2$.</p>
+      </div>
+      <div class="math-example" id="ex-4">
+        <h3>Мысал 4. Қатты дененің айналуы</h3>
+        <p class="math-problem">Дене $z$-осі айналасында $\omega=3$ рад/с бұрыштық жылдамдықпен айналады: $\mathbf{v}=\boldsymbol{\omega}\times\mathbf{r}$, $\boldsymbol{\omega}=(0,0,3)$. $\operatorname{rot}\mathbf{v}$ мен $\operatorname{div}\mathbf{v}$ есептеңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Векторлық көбейтінді: $\boldsymbol{\omega}\times\mathbf{r}=\begin{vmatrix}\mathbf{i}&amp;\mathbf{j}&amp;\mathbf{k}\\0&amp;0&amp;3\\x&amp;y&amp;z\end{vmatrix}=(0\cdot z-3y,\ 3x-0\cdot z,\ 0)=(-3y,\ 3x,\ 0)$.</li>
+          <li><b>2-қадам.</b> $P=-3y$, $Q=3x$, $R=0$.</li>
+          <li><b>3-қадам.</b> $\operatorname{rot}\mathbf{v}=(R_y-Q_z,\ P_z-R_x,\ Q_x-P_y)=(0,\ 0,\ 3-(-3))=(0,0,6)$.</li>
+          <li><b>4-қадам.</b> $\operatorname{div}\mathbf{v}=P_x+Q_y+R_z=0+0+0=0$.</li>
+          <li><b>5-қадам.</b> Салыстыру: $6=2\cdot3$, яғни $\operatorname{rot}\mathbf{v}=2\boldsymbol{\omega}$ (формула 2.4). Роторды екі есе алу себебі - ротор айналымды шеңбер бойымен алады, ал нүктенің өз бұрыштық жылдамдығы жартысын құрайды.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\operatorname{rot}\mathbf{v}=(0,0,6)=2\boldsymbol{\omega}$, $\operatorname{div}\mathbf{v}=0$.</p>
+      </div>
+      <div class="math-example" id="ex-5">
+        <h3>Мысал 5. Гармониялық функцияны тексеру</h3>
+        <p class="math-problem">$u=\ln(x^2+y^2)$ функциясы жазықтықта (бастапқы нүктеден басқа жерде) гармониялық па?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Лапласиан жазықтықта $\Delta u=u_{xx}+u_{yy}$.</li>
+          <li><b>2-қадам.</b> $u_x=\dfrac{2x}{x^2+y^2}$. Бөлшекті дифференциалдаймыз: $u_{xx}=\dfrac{2(x^2+y^2)-2x\cdot2x}{(x^2+y^2)^2}=\dfrac{2(y^2-x^2)}{(x^2+y^2)^2}$.</li>
+          <li><b>3-қадам.</b> Симметрия бойынша $u_{yy}=\dfrac{2(x^2-y^2)}{(x^2+y^2)^2}$.</li>
+          <li><b>4-қадам.</b> Қосамыз: $\Delta u=\dfrac{2(y^2-x^2)+2(x^2-y^2)}{(x^2+y^2)^2}=0$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> иә: $\Delta u=0$ ($x^2+y^2\ne0$ болғанда). Бұл $2\ln r$ екі өлшемді Ньютон потенциалы.</p>
+      </div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$\operatorname{div}\mathbf{F}=(P_x,\,Q_y,\,R_z)$</span> → <span class="math-good">$\operatorname{div}\mathbf{F}=P_x+Q_y+R_z$</span><br>Неге қате: дивергенция скаляр: үш диагональ туынды қосылады, вектор болып қалмайды.</li>
+        <li><span class="math-bad">$\operatorname{rot}\mathbf{F}$-тің 2-компоненті $R_x-P_z$</span> → <span class="math-good">$P_z-R_x$</span><br>Неге қате: компоненттердің таңбасы циклдік тәртіппен анықталады: $(R_y-Q_z,\ P_z-R_x,\ Q_x-P_y)$. Ортаңғысын «қате» жазу - ең жиі қателік. Анықтауыштың ортаңғы элементі минус таңбамен ашылады.</li>
+        <li><span class="math-bad">$\operatorname{rot}\mathbf{F}=0$ деп жазу</span> → <span class="math-good">$\operatorname{rot}\mathbf{F}=\mathbf{0}$ (нөл вектор)</span><br>Неге қате: ротор - вектор, ал оның нөлі де вектор: сан мен нөл вектор әртүрлі объектілер.</li>
+        <li><span class="math-bad">$\operatorname{div}(u\mathbf{F})=u\operatorname{div}\mathbf{F}$</span> → <span class="math-good">$\operatorname{div}(u\mathbf{F})=u\operatorname{div}\mathbf{F}+\nabla u\cdot\mathbf{F}$</span><br>Неге қате: $u$ нүктеден нүктеге өзгереді, сондықтан дифференциалдағанда екінші мүше шығады (көбейтіндінің туындысы).</li>
+        <li><span class="math-bad">$\operatorname{div}\mathbf{F}=0$ болса, $\mathbf{F}=\mathbf{0}$</span> → <span class="math-good">$\operatorname{div}\mathbf{F}=0$ - өріс нөл деген сөз емес</span><br>Неге қате: $\mathbf{F}=(y,0,0)$ үшін $\operatorname{div}=0$, бірақ өріс нөл емес: ағын кіреді де шығады. Соленоидты болу - ағынның сақталуы.</li>
+        <li><span class="math-bad">$\operatorname{rot}\mathbf{F}=\mathbf{0}$ болса, өріс түзу сызықты болады, ал $\operatorname{rot}\neq\mathbf{0}$ болса, сызықтары қисық</span> → <span class="math-good">екеуі де тәуелсіз ұғымдар</span><br>Неге қате: $\mathbf{F}=(y,0,0)$ түзу сызықты, бірақ $\operatorname{rot}=(0,0,-1)$; ал $(-y,x)/(x^2+y^2)$ шеңбер бойымен жүреді, бірақ $\operatorname{rot}=\mathbf{0}$ ($r\ne0$). Ротор ағыстың «қисықтығын» емес, дөңгелектің айналуын өлшейді.</li>
+        <li><span class="math-bad">$\Delta u=(\nabla u)^2$ деп алу</span> → <span class="math-good">$\Delta u=\nabla\cdot\nabla u=u_{xx}+u_{yy}+u_{zz}$</span><br>Неге қате: лапласиан градиенттің дивергенциясы; $|\nabla u|^2$ мүлде басқа шама (бірінші туындылардың квадраттарының қосындысы).</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <p>Төмендегі суреттер дивергенция мен ротордың жергілікті сипатын көрсетеді.</p>
+      <div class="math-viz" data-viz="vectors" data-title="Айналу өрісі: F = (−y, x) радиусқа перпендикуляр" data-config='{"u":[2,1],"v":[-1,2],"view":[-4,4,-4,4]}'></div>
+      <p><b>Бақылаңыз:</b> $\mathbf{r}=(2,1)$ нүктесінде $\mathbf{F}=(-y,x)=(-1,2)$. Скаляр көбейтінді $\mathbf{r}\cdot\mathbf{F}=-2+2=0$ және ұзындықтары $|\mathbf{r}|=|\mathbf{F}|=\sqrt5$ тең: өріс шеңбердің жанамасы бойымен жүреді. Екінші вектордың координаталарын өзгертіп, скаляр көбейтіндінің қалай нөлден ауытқитынын көріңіз. Мұндай өріс үшін $\operatorname{rot}=(0,0,2)$, $\operatorname{div}=0$.</p>
+      <div class="math-viz" data-viz="graph" data-title="Бір өлшемді ағын: [P(x+h) − P(x)]/h → P'(x)" data-config='{"fns":[{"f":"((x+h)^2-x^2)/h","label":"айырымдық қатынас (x+h)² − x² бөлінген h","color":1},{"f":"2*x","label":"P'(x) = 2x","color":0,"dash":[6,4]}],"params":[{"n":"h","min":0.1,"max":3,"step":0.1,"v":2}],"view":[-4,4,-6,10]}'></div>
+      <p><b>Бақылаңыз:</b> $P=x^2$ өрісі $x$-осінің бойымен ағады. Бөлшектің сол жағы - кішкентай кесіндіге шығатын ағын мен кірген ағын айырмасының кесінді ұзындығына қатынасы (1D «дивергенция»). $h$ кішірейген сайын ол $P'(x)=2x$ түзуіне жақындайды. Үш өлшемде үш осьтің үлесі қосылып $P_x+Q_y+R_z$ болады.</p>
+      <div class="math-viz" data-viz="graph" data-title="Көз бен су жұтатын жер: P(x) = x³ − 3x және оның туындысы" data-config='{"fns":[{"f":"x^3-3*x","label":"P(x) = x³ − 3x","color":0},{"f":"3*x^2-3","label":"div F = P'(x) = 3x² − 3","color":1}],"view":[-3,3,-6,6]}'></div>
+      <p><b>Бақылаңыз:</b> $\mathbf{F}=(x^3-3x,\,0,\,0)$ өрісінің дивергенциясы $3x^2-3$. $|x|&lt;1$ аралығында ол теріс (өріс сығылады, су жұтатын жер), $|x|&gt;1$ болғанда оң (көз). $x=\pm1$ нүктелерінде дивергенция нөл. Графиктен $P$-ның кему аралығы мен $P'$-тың теріс аралығының сәйкес келетінін тексеріңіз.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m7-2-div1">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m7-2-t1">1. Дивергенцияны есептеу</h3></div>
+        <p>Санмен жауап беріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(3x,\\ 2y,\\ z)$ өрісінің $\\operatorname{div}\\mathbf{F}$ мәнін табыңыз.","a":6,"hint":"Үш диагональ дербес туындыны қосыңыз.","sol":{"steps":["$P_x=3$, $Q_y=2$, $R_z=1$.","$3+2+1=6$."],"ans":"$6$"},"v":"diff(3*x,x)+diff(2*y,y)+diff(z,z)"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m7-2-tf">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m7-2-t2">2. Шындық па, жалған ба?</h3></div>
+        <p>Әр пікірді бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\operatorname{div}\\mathbf{F}$ - векторлық өріс.","a":false,"e":"Жалған: дивергенция скаляр өріс (бір сан), ал ротор векторлық өріс.","hint":"Дивергенция қосынды ретінде анықталған.","sol":{"steps":["$P_x+Q_y+R_z$ - сан."],"ans":"Жалған"}},{"q":"$\\operatorname{rot}\\mathbf{F}$ - векторлық өріс.","a":true,"e":"Ақиқат: $\\operatorname{rot}\\mathbf{F}=(R_y-Q_z,P_z-R_x,Q_x-P_y)$ - вектор.","hint":"Ротордың үш компоненті бар.","sol":{"steps":["Ротордың 3 компоненті бар."],"ans":"Ақиқат"}},{"q":"$\\mathbf{r}=(x,y,z)$ радиус-вектор өрісі үшін $\\operatorname{div}\\mathbf{r}=3$.","a":true,"e":"Ақиқат: $1+1+1=3$.","hint":"Әр дербес туынды 1-ге тең.","sol":{"steps":["$x_x+y_y+z_z=3$."],"ans":"Ақиқат"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m7-2-match">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m7-2-t3">3. Өріс пен div, rot</h3></div>
+        <p>Әр өрісті оның div және rot мәнімен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Әр өріске дұрыс сипаттаманы таңдаңыз.","pairs":[["$(x,\\,y,\\,z)$","div = 3, rot = 0"],["$(-y,\\,x,\\,0)$","div = 0, rot = (0, 0, 2)"],["$(y,\\,-x,\\,0)$","div = 0, rot = (0, 0, −2)"],["$(x,\\,0,\\,0)$","div = 1, rot = 0"]],"hint":"Әр өріс үшін $P_x+Q_y+R_z$ мен $Q_x-P_y$ санаңыз.","sol":{"steps":["$(x,y,z)$: $1+1+1=3$, айқас туындылар нөл.","$(-y,x,0)$: $Q_x-P_y=1-(-1)=2$.","$(y,-x,0)$: $Q_x-P_y=-1-1=-2$.","$(x,0,0)$: $P_x=1$, қалғаны нөл."]},"e":"Ротордың z-компоненті $Q_x-P_y$ бойынша таңбалары айналу бағытын көрсетеді."}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m7-2-pick">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m7-2-t4">4. Оператор түрі</h3></div>
+        <p>Дұрыс нұсқаны белгілеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Векторлық өріске $\\operatorname{rot}$ қолданғанда не шығады?","a":1,"o":["скаляр өріс","векторлық өріс","тек сан","матрица"],"e":"Ротор векторлық өрістен векторлық өріс жасайды, ал дивергенция - скаляр өріс.","hint":"Ротордың үш компоненті бар.","sol":{"steps":["Ротор - вектор."],"ans":"векторлық өріс"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m7-2-lap">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m7-2-t5">5. Лапласиан</h3></div>
+        <p>Санмен жауап беріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$u=x^2+y^2+z^2$ үшін $\\Delta u$ мәнін табыңыз.","a":6,"hint":"Екінші ретті таза туындыларды қосыңыз.","sol":{"steps":["$u_{xx}=2$, $u_{yy}=2$, $u_{zz}=2$."],"ans":"$6$"},"v":"diff(x**2+y**2+z**2,x,2)+diff(x**2+y**2+z**2,y,2)+diff(x**2+y**2+z**2,z,2)"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m7-2-divx">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-2-t6">6. Дивергенция өрнегі</h3></div>
+        <p>Өрнекті жазыңыз ($x,y,z$).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(x^2y,\\ yz,\\ xyz)$ өрісінің $\\operatorname{div}\\mathbf{F}$ өрнегін жазыңыз.","a":"3*x*y+z","vars":["x","y","z"],"dom":[0.3,2.5],"hint":"Әр компонентті өз айнымалысы бойынша дифференциалдаңыз.","sol":{"steps":["$P_x=2xy$, $Q_y=z$, $R_z=xy$.","$2xy+z+xy=3xy+z$."],"ans":"$3xy+z$"},"v":"diff(x**2*y,x)+diff(y*z,y)+diff(x*y*z,z)"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m7-2-rotv">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-2-t7">7. Роторды есептеу</h3></div>
+        <p>Векторды (баған) енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(x^2y,\\ yz^2,\\ xz)$ өрісінің $(1,\\,2,\\,-1)$ нүктесіндегі роторын жазыңыз.","a":[4,1,-1],"name":"$\\operatorname{rot}\\mathbf{F}=$","hint":"Ротор формуласын компонент-компонентімен қолданыңыз.","sol":{"steps":["$R_y-Q_z=-2yz=4$.","$P_z-R_x=-z=1$.","$Q_x-P_y=-x^2=-1$."],"ans":"$(4,\\,1,\\,-1)$"},"v":"Matrix([diff(x*z,y)-diff(y*z**2,z),diff(x**2*y,z)-diff(x*z,x),diff(y*z**2,x)-diff(x**2*y,y)]).subs({x:1,y:2,z:-1})"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m7-2-lam">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-2-t8">8. Соленоидты болу шарты</h3></div>
+        <p>Санмен жауап беріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(x+3y,\\ y-2z,\\ x+\\lambda z)$ соленоидты болатын $\\lambda$ мәнін табыңыз.","a":-2,"hint":"$\\operatorname{div}\\mathbf{F}=0$ теңдеуін шешіңіз.","sol":{"steps":["$\\operatorname{div}\\mathbf{F}=1+1+\\lambda$.","$2+\\lambda=0$."],"ans":"$\\lambda=-2$"},"v":"solve(diff(x+3*y,x)+diff(y-2*z,y)+diff(x+a*z,z),a)[0]"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m7-2-ordc">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-2-t9">9. Құйынсыздықты тексеру реті</h3></div>
+        <p>Қадамдарды дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(P,Q,R)$ өрісінің құйынсыз екенін тексеру.","hint":"Алдымен компоненттерді жазамыз, соңында қорытынды.","steps":["$P$, $Q$, $R$ компоненттерін жазамыз.","Алты дербес туындыны ($P_y,P_z,Q_x,Q_z,R_x,R_y$) есептейміз.","Ротор компоненттерін құрамыз: $R_y-Q_z$, $P_z-R_x$, $Q_x-P_y$.","Үшеуінің де нөл екенін тексереміз.","Нөл болса, $\\operatorname{rot}\\mathbf{F}=\\mathbf{0}$ деп қорытамыз."],"sol":{"ans":"$\\operatorname{rot}\\mathbf{F}=\\mathbf{0}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m7-2-multi">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-2-t10">10. Тепе-теңдіктер</h3></div>
+        <p>Барлық дұрыс тепе-теңдікті белгілеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қайсысы кез келген $C^2$ өріс үшін дұрыс?","a":[0,1],"o":["$\\operatorname{rot}\\nabla u=\\mathbf{0}$","$\\operatorname{div}\\operatorname{rot}\\mathbf{F}=0$","$\\nabla\\operatorname{div}\\mathbf{F}=\\mathbf{0}$","$\\operatorname{div}\\nabla u=0$"],"e":"$\\nabla\\operatorname{div}\\mathbf{F}$ мен $\\operatorname{div}\\nabla u=\\Delta u$ жалпы нөл емес (мысалы, $u=x^2$ үшін $\\Delta u=2$).","hint":"Екі негізгі тепе-теңдікті еске түсіріңіз.","sol":{"steps":["$\\operatorname{rot}\\nabla u=\\mathbf{0}$ - дұрыс.","$\\operatorname{div}\\operatorname{rot}\\mathbf{F}=0$ - дұрыс.","$\\nabla\\operatorname{div}\\mathbf{F}=\\mathbf{0}$ - жалпы жағдайда қате."],"ans":"1-ші және 2-ші"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m7-2-p-div">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-2-t11">11. Параметрлік: дивергенция</h3></div>
+        <p>Сандар кездейсоқ таңдалады. «Жаңа нұсқа» басқасын береді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,5]},"b":{"int":[-4,4],"nz":true},"c":{"int":[1,4]},"p":{"int":[1,3]},"q":{"int":[-3,3],"nz":true},"s":{"int":[1,3]}},"type":"num","q":"$\\mathbf{F}=(#{a}xy,\\ #{b}yz,\\ #{c}zx)$ өрісінің $(#{p},\\,#{p:q},\\,#{s})$ нүктесіндегі дивергенциясын табыңыз.","a":"a*q+b*s+c*p","v":"(diff(a*x*y,x)+diff(b*y*z,y)+diff(c*z*x,z)).subs({x:p,y:q,z:s})","hint":"$\\operatorname{div}\\mathbf{F}=#{a}y+#{b}z+#{c}x$ өрнегін нүктеге қойыңыз.","sol":{"steps":["$P_x=#{a}y$, $Q_y=#{b}z$, $R_z=#{c}x$.","$\\operatorname{div}\\mathbf{F}=#{a}\\cdot #{p:q}+#{p:b}\\cdot #{s}+#{c}\\cdot #{p}$."],"ans":"$\\operatorname{div}\\mathbf{F}=#{a*q+b*s+c*p}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="interval" data-id="m7-2-dpos">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-2-t12">12. Көз аймағы</h3></div>
+        <p>Аралық түрінде жауап беріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(x^3-3x,\\ 0,\\ 0)$ өрісі үшін $\\operatorname{div}\\mathbf{F}>0$ болатын $x$ жиынын жазыңыз.","a":"(-oo; -1) U (1; oo)","hint":"$\\operatorname{div}\\mathbf{F}=3x^2-3$ теңсіздігін шешіңіз.","sol":{"steps":["$3x^2-3>0$.","$x^2>1$, яғни $|x|>1$."],"ans":"$(-\\infty;-1)\\cup(1;+\\infty)$"},"v":"solveset(diff(x**3-3*x,x)>0,x,S.Reals)"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m7-2-rotz">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-2-t13">13. Ротордың z-компоненті</h3></div>
+        <p>Өрнекті жазыңыз ($x,y$).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(y^2,\\ x^3,\\ 0)$ өрісі үшін $(\\operatorname{rot}\\mathbf{F})_z$ өрнегін жазыңыз.","a":"3*x^2-2*y","vars":["x","y"],"dom":[0.3,2.5],"hint":"$(\\operatorname{rot}\\mathbf{F})_z=Q_x-P_y$.","sol":{"steps":["$Q_x=3x^2$.","$P_y=2y$."],"ans":"$3x^2-2y$"},"v":"diff(x**3,x)-diff(y**2,y)"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m7-2-lap3">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-2-t14">14. Радиалды лапласиан</h3></div>
+        <p>Санмен жауап беріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$r=\\sqrt{x^2+y^2+z^2}$ болсын. $(3,\\,4,\\,0)$ нүктесінде $\\Delta r^3$ мәнін табыңыз.","a":60,"hint":"$\\Delta r^n=n(n+1)\\,r^{n-2}$ формуласын қолданыңыз.","sol":{"steps":["$n=3$: $\\Delta r^3=12\\,r$.","$r=5$ болғанда $12\\cdot5=60$."],"ans":"$60$"},"v":"sum(diff((x**2+y**2+z**2)**Rational(3,2),s,2) for s in (x,y,z)).subs({x:3,y:4,z:0})"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m7-2-p-rot">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-2-t15">15. Параметрлік: айналатын дене</h3></div>
+        <p>Бұрыштық жылдамдық әр нұсқада өзгереді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"k":{"int":[-5,5],"nz":true}},"type":"num","q":"Дене $\\boldsymbol{\\omega}=(0,0,#{k})$ бұрыштық жылдамдықпен айналады, $\\mathbf{v}=\\boldsymbol{\\omega}\\times\\mathbf{r}=(#{-k}y,\\ #{k}x,\\ 0)$. $(\\operatorname{rot}\\mathbf{v})_z$ мәнін табыңыз.","a":"2*k","v":"diff(k*x,x)-diff(-k*y,y)","hint":"$(\\operatorname{rot}\\mathbf{v})_z=Q_x-P_y$.","sol":{"steps":["$Q_x=#{k}$, $P_y=#{-k}$.","$Q_x-P_y=2\\cdot #{p:k}$."],"ans":"$(\\operatorname{rot}\\mathbf{v})_z=#{2*k}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m7-2-tf2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-2-t16">16. Күрделі пікірлер</h3></div>
+        <p>Әр пікірді бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Егер $\\operatorname{div}\\mathbf{F}=0$ және $\\operatorname{rot}\\mathbf{F}=\\mathbf{0}$ болса, $\\mathbf{F}=\\nabla u$ үшін $\\Delta u=0$ шығады (потенциал бар деп).","a":true,"e":"Ақиқат: потенциал гармониялық. Мысалы, $\\mathbf{F}=\\mathbf{r}/r^3$ үшін $u=-1/r$.","hint":"$\\operatorname{div}\\nabla u=\\Delta u$.","sol":{"steps":["$\\mathbf{F}=\\nabla u\\Rightarrow\\operatorname{div}\\mathbf{F}=\\Delta u$.","$\\operatorname{div}\\mathbf{F}=0\\Rightarrow\\Delta u=0$."],"ans":"Ақиқат"}},{"q":"$\\operatorname{rot}\\mathbf{F}=\\mathbf{0}$ болса, $\\mathbf{F}$ міндетті түрде түзу сызықты ағыс.","a":false,"e":"Жалған: потенциалды құйын шеңбер бойымен ағады, бірақ ротор нөл.","hint":"$\\mathbf{F}=(-y,x)/(x^2+y^2)$ мысалын қараңыз.","sol":{"steps":["$\\mathbf{F}=(-y,x)/(x^2+y^2)$ шеңбер бойымен ағады, бірақ $\\operatorname{rot}=\\mathbf{0}$ ($r\\ne0$)."],"ans":"Жалған"}},{"q":"$\\operatorname{div}\\operatorname{rot}\\mathbf{F}=0$ теңдігі аралас туындылар тең болғанда ғана орындалады.","a":true,"e":"Ақиқат: функциялар $C^2$ болса, Шварц теоремасы бойынша қысқарады; әйтпесе кері мысалдар бар.","hint":"Дәлелдеуде нені пайдаландық?","sol":{"steps":["6 мүше жұп-жұбымен қысқарады: $R_{yx}-R_{xy}$ т.с.с."],"ans":"Ақиқат"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m7-2-pfc">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-2-t17">17. rot grad = 0 дәлелінің реті</h3></div>
+        <p>Қадамдарды дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\operatorname{rot}\\nabla u=\\mathbf{0}$ дәлелі.","hint":"Бастапқы белгілеуден аралас туындыға дейін.","steps":["$\\mathbf{F}=\\nabla u$ деп $P=u_x$, $Q=u_y$, $R=u_z$ аламыз.","Роторды жазамыз: $(R_y-Q_z,\\ P_z-R_x,\\ Q_x-P_y)$.","$u$-дің екінші туындыларын қоямыз: $(u_{zy}-u_{yz},\\ u_{xz}-u_{zx},\\ u_{yx}-u_{xy})$.","Шварц теоремасын қолданамыз: аралас туындылар тең.","Әр компонент нөл: $\\operatorname{rot}\\nabla u=\\mathbf{0}$."],"sol":{"ans":"$\\operatorname{rot}\\nabla u=\\mathbf{0}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m7-2-reveal">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-2-t18">18. Қадамдық шешім: соленоидты радиалды өріс</h3></div>
+        <p>Бұл есепті «Кеңес» және «Келесі қадам» арқылы біртіндеп ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$\\mathbf{F}=f(r)\\,\\mathbf{r}$ өрісі ($r\\ne0$) соленоидты болатындай $f(r)$ функциясын табыңыз.","hint":"$\\operatorname{div}(f\\mathbf{r})=f\\operatorname{div}\\mathbf{r}+\\nabla f\\cdot\\mathbf{r}$ және $\\nabla f(r)=f'(r)\\,\\mathbf{r}/r$.","steps":["Көбейтінді ережесі: $\\operatorname{div}(f\\mathbf{r})=3f+\\nabla f\\cdot\\mathbf{r}$.","$\\nabla f(r)=f'(r)\\dfrac{\\mathbf{r}}{r}$, сондықтан $\\nabla f\\cdot\\mathbf{r}=f'(r)\\dfrac{r^2}{r}=r\\,f'(r)$.","Шарт: $3f+rf'=0$, яғни $\\dfrac{f'}{f}=-\\dfrac3r$.","Интегралдаймыз: $\\ln|f|=-3\\ln r+C$, демек $f=\\dfrac{C}{r^3}$."],"ans":"$f(r)=\\dfrac{C}{r^3}$, яғни $\\mathbf{F}=C\\dfrac{\\mathbf{r}}{r^3}$ (Ньютон/Кулон өрісі)"}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m7-2-lapx">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-2-t19">19. Лапласиан өрнегі</h3></div>
+        <p>Өрнекті жазыңыз ($x,y,z$).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$u=x^3y+y^3z$ үшін $\\Delta u$ өрнегін жазыңыз.","a":"6*x*y+6*y*z","vars":["x","y","z"],"dom":[0.3,2.5],"hint":"Үш екінші ретті таза туындыны қосыңыз.","sol":{"steps":["$u_{xx}=6xy$.","$u_{yy}=6yz$.","$u_{zz}=0$."],"ans":"$6xy+6yz$"},"v":"diff(x**3*y+y**3*z,x,2)+diff(x**3*y+y**3*z,y,2)+diff(x**3*y+y**3*z,z,2)"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m7-2-pr">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-2-t20">20. Көбейтінді ережесі</h3></div>
+        <p>Санмен жауап беріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$u=x^2+y^2$, $\\mathbf{F}=(x,y,z)$. $(1,\\,2,\\,3)$ нүктесінде $\\operatorname{div}(u\\mathbf{F})$ мәнін табыңыз.","a":25,"hint":"$\\operatorname{div}(u\\mathbf{F})=u\\operatorname{div}\\mathbf{F}+\\nabla u\\cdot\\mathbf{F}$.","sol":{"steps":["$u(M)=5$, $\\operatorname{div}\\mathbf{F}=3$: $5\\cdot3=15$.","$\\nabla u=(2x,2y,0)=(2,4,0)$, $\\nabla u\\cdot\\mathbf{F}=2+8=10$.","$15+10=25$."],"ans":"$25$"},"v":"(diff((x**2+y**2)*x,x)+diff((x**2+y**2)*y,y)+diff((x**2+y**2)*z,z)).subs({x:1,y:2,z:3})"}]}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Дивергенция мен ротор - физиканың «жергілікті» тілі. Сұйық пен газ механикасында $\operatorname{div}\mathbf{v}=0$ сығылмайтын сұйықтықты білдіреді, ал $\operatorname{rot}\mathbf{v}$ - құйын (вортицитет). Электромагнетизмде Максвелл теңдеулері дәл осы екі операторға құрылған: $\operatorname{div}\mathbf{E}$ зарядтың тығыздығын, $\operatorname{rot}\mathbf{B}$ токты береді. Суреттерді өңдеуде оптикалық ағын өрісінің дивергенциясы нысанның жақындап не алыстап келе жатқанын, ал ротор айналуын көрсетеді. Ойын графикасында құйынды түтін мен судың «жүйелі» қозғалысын $\operatorname{div}=0$ шартымен жасайды.</p>
+      <p><b>Мини-жоба: «Дивергенция мен ротор калькуляторы».</b> Бағдарлама орталық айырым арқылы кез келген $\mathbf{F}(x,y,z)$ өрісінің дивергенциясы мен роторын сандық түрде есептейді, нәтижені 1-мысалмен салыстырады, айналу өрісінде $\operatorname{rot}=2\omega$ екенін тексереді, шағын текшеден өтетін ағынды көлемге бөліп $\operatorname{div}$-ге жақындайтынын көрсетеді және екі тепе-теңдікті сандық жолмен тексереді. «Іске қосу» батырмасын басыңыз.</p>
+<pre data-lang="python"><code class="language-python">import random
+
+H = 1e-4
+
+def d(f, i, p, h=H):
+    """f функциясының i-ші айнымалы бойынша дербес туындысы (орталық айырым)."""
+    a = list(p); b = list(p)
+    a[i] += h; b[i] -= h
+    return (f(*a) - f(*b)) / (2 * h)
+
+def div(F, p):
+    return sum(d(lambda *q, k=k: F(*q)[k], k, p) for k in range(3))
+
+def curl(F, p):
+    P = lambda *q: F(*q)[0]
+    Q = lambda *q: F(*q)[1]
+    R = lambda *q: F(*q)[2]
+    return (d(R, 1, p) - d(Q, 2, p),
+            d(P, 2, p) - d(R, 0, p),
+            d(Q, 0, p) - d(P, 1, p))
+
+F = lambda x, y, z: (x * x * y, y * z * z, x * z)
+p = (1.0, 2.0, -1.0)
+print("div F  =", round(div(F, p), 4), "(дәл мән 6)")
+print("rot F  =", [round(c, 4) for c in curl(F, p)], "(дәл мән [4, 1, -1])")
+
+# Айналу өрісі: rot = 2*omega
+w = 3.0
+rot_field = lambda x, y, z: (-w * y, w * x, 0.0)
+print("айналу өрісі: rot =", [round(c, 4) for c in curl(rot_field, (0.3, -0.7, 1.1))])
+
+# Ағын тығыздығы: кішкентай текшеден өтетін ағын / көлем -&gt; div
+def flux_box(F, c, e, n=20):
+    """Центрі c, қыры e текшенің беті арқылы ағын (орта нүктелер әдісі)."""
+    s = 0.0
+    da = (e / n) ** 2
+    for axis in range(3):
+        for sign in (-1, 1):
+            for i in range(n):
+                for j in range(n):
+                    q = list(c)
+                    u = -e / 2 + (i + 0.5) * e / n
+                    v = -e / 2 + (j + 0.5) * e / n
+                    idx = [k for k in range(3) if k != axis]
+                    q[idx[0]] += u
+                    q[idx[1]] += v
+                    q[axis] += sign * e / 2
+                    s += sign * F(*q)[axis] * da
+    return s
+
+e = 0.2
+print("ағын/көлем =", round(flux_box(F, p, e) / e ** 3, 4), "div =", round(div(F, p), 4))
+
+# Сәйкестіктер: div(rot G) = 0 және rot(grad u) = 0 (сандық)
+G = lambda x, y, z: (x * y * z, x + z * z, y * y - x)
+q = (0.5, 1.5, -0.8)
+cG = lambda x, y, z: curl(G, (x, y, z))
+print("div(rot G) =", round(div(cG, q), 3), "(≈ 0, айырым қателігі)")
+u = lambda x, y, z: x * x * y + y * z
+gu = lambda x, y, z: tuple(d(u, k, (x, y, z)) for k in range(3))
+print("rot(grad u) =", [round(c, 3) for c in curl(gu, q)])
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li><code>flux_box</code> үшін текше қырын <code>e = 0.2</code> шамасынан <code>e = 1.0</code> етіп арттырып, ағын/көлем мен дивергенция арасындағы айырма қалай өсетінін бақылаңыз. Неліктен?</li>
+        <li>$\mathbf{F}=\mathbf{r}/r^3$ өрісін енгізіп, <code>(1, 2, 2)</code> нүктесінде дивергенцияның нөлге жақын екенін тексеріңіз (5-қорыту).</li>
+        <li><code>laplacian(u, p)</code> функциясын жазыңыз: ол <code>d(d(u,i,p),i,p)</code> емес, тура екінші ретті айырым $[u(x+h)-2u(x)+u(x-h)]/h^2$ арқылы жұмыс істесін. $u=r^3$ үшін $(3,4,0)$ нүктесінде нәтиже $60$-қа жақын болуы керек.</li>
+        <li>Екі өлшемді желдің дивергенциясы мен роторын $20\times20$ торда есептеп, ең үлкен оң дивергенция нүктесін табатын шағын бағдарлама жасаңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Дивергенция</td><td>$\operatorname{div}\mathbf{F}=P_x+Q_y+R_z$</td><td>$P,Q,R$ дифференциалданады</td></tr>
+        <tr><td>Ротор</td><td>$\operatorname{rot}\mathbf{F}=(R_y-Q_z,\,P_z-R_x,\,Q_x-P_y)$</td><td>3D; жазықтықта тек $Q_x-P_y$</td></tr>
+        <tr><td>Лапласиан</td><td>$\Delta u=u_{xx}+u_{yy}+u_{zz}$</td><td>$u\in C^2$</td></tr>
+        <tr><td>rot grad</td><td>$\operatorname{rot}\nabla u=\mathbf{0}$</td><td>$u\in C^2$</td></tr>
+        <tr><td>div rot</td><td>$\operatorname{div}\operatorname{rot}\mathbf{F}=0$</td><td>$\mathbf{F}\in C^2$</td></tr>
+        <tr><td>Көбейтінді ережесі</td><td>$\operatorname{div}(u\mathbf{F})=u\operatorname{div}\mathbf{F}+\nabla u\cdot\mathbf{F}$</td><td>$u,\mathbf{F}$ дифференциалданады</td></tr>
+        <tr><td>Радиус-вектор</td><td>$\operatorname{div}\mathbf{r}=3$, $\operatorname{rot}\mathbf{r}=\mathbf{0}$</td><td>барлық нүктеде</td></tr>
+        <tr><td>Радиалды лапласиан</td><td>$\Delta r^n=n(n+1)r^{n-2}$</td><td>$r\ne0$</td></tr>
+        <tr><td>Айналу</td><td>$\operatorname{rot}(\boldsymbol{\omega}\times\mathbf{r})=2\boldsymbol{\omega}$</td><td>$\boldsymbol{\omega}$ тұрақты</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m7-2-self">
+        <li><input type="checkbox"> <span>Мен дивергенция мен роторды координаталарда есептей аламын және оның скаляр не вектор екенін білемін.</span></li>
+        <li><input type="checkbox"> <span>Мен дивергенцияның ағын тығыздығы екенін текше арқылы түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен ротордың айналым тығыздығы екенін тіктөртбұрыш арқылы түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $\operatorname{rot}\nabla u=\mathbf{0}$ және $\operatorname{div}\operatorname{rot}\mathbf{F}=0$ тепе-теңдіктерін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен өрістің соленоидты не құйынсыз екенін тексере аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $\Delta r^n$ және $\operatorname{div}(u\mathbf{F})$ сияқты өрнектерді көбейтінді ережесімен ықшамдай аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. F = (x², y², z²) өрісінің (1; 1; 1) нүктесіндегі дивергенциясы неге тең?</p>
+<label><input type="radio" value="a"> 3</label>
+<label><input type="radio" value="b"> 2</label>
+<label><input type="radio" value="c"> 6</label>
+<label><input type="radio" value="d"> 0</label>
+<p class="explain">div F = 2x + 2y + 2z = 6 (1; 1; 1) нүктесінде.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. F = (y; −x; 0) өрісінің роторы қандай?</p>
+<label><input type="radio" value="a"> (0; 0; 2)</label>
+<label><input type="radio" value="b"> (0; 0; 0)</label>
+<label><input type="radio" value="c"> (0; 0; −2)</label>
+<label><input type="radio" value="d"> (1; 1; 0)</label>
+<p class="explain">(rot F)_z = Q_x − P_y = −1 − 1 = −2. Қалған компоненттер нөл.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. Кез келген екі рет үзіліссіз дифференциалданатын u үшін rot(grad u) неге тең?</p>
+<label><input type="radio" value="a"> Δu</label>
+<label><input type="radio" value="b"> нөл вектор</label>
+<label><input type="radio" value="c"> нөл саны</label>
+<label><input type="radio" value="d"> grad(div u)</label>
+<p class="explain">Аралас туындылар тең болғандықтан, rot ∇u = 0 нөл вектор (сан емес).</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. r = (x; y; z) радиус-вектор өрісінің дивергенциясы қандай?</p>
+<label><input type="radio" value="a"> 0</label>
+<label><input type="radio" value="b"> 1</label>
+<label><input type="radio" value="c"> 2</label>
+<label><input type="radio" value="d"> 3</label>
+<p class="explain">div r = 1 + 1 + 1 = 3.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. F = (x; y; λz) өрісі соленоидты болатындай λ мәні қандай?</p>
+<label><input type="radio" value="a"> −2</label>
+<label><input type="radio" value="b"> 2</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> 1</label>
+<p class="explain">div F = 1 + 1 + λ = 0 ⇒ λ = −2.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. u = x² + y² функциясының жазықтықтағы лапласианы неге тең?</p>
+<label><input type="radio" value="a"> 2</label>
+<label><input type="radio" value="b"> 4</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> 2x + 2y</label>
+<p class="explain">u_xx = 2, u_yy = 2, сондықтан Δu = 4.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">7. F = (2xy; x²; 0) өрісі үшін қай пікір дұрыс?</p>
+<label><input type="radio" value="a"> rot F ≠ 0</label>
+<label><input type="radio" value="b"> div F = 0</label>
+<label><input type="radio" value="c"> rot F = 0</label>
+<label><input type="radio" value="d"> rot F = (0; 0; 4x)</label>
+<p class="explain">(rot F)_z = Q_x − P_y = 2x − 2x = 0; өріс құйынсыз. div F = 2y болғандықтан, соленоидты емес.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">8. Нүктеде div F > 0 болса, ол нені білдіреді?</p>
+<label><input type="radio" value="a"> нүкте көз (өріс шығады)</label>
+<label><input type="radio" value="b"> нүкте су жұтатын жер</label>
+<label><input type="radio" value="c"> өріс нөлге тең</label>
+<label><input type="radio" value="d"> өріс құйынсыз</label>
+<p class="explain">Оң дивергенция - ағын тығыздығы оң, яғни нүктеден өріс шығады (көз).</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
       <nav class="pager">
         <a href="week-43.html"><small>Алдыңғы</small>← 7 · Векторлық анализ · 1-сабақ: Скаляр және векторлық өрістер</a>
         <a class="next" href="week-45.html"><small>Келесі</small>7 · Векторлық анализ · 3-сабақ: Қисық сызықты интеграл →</a>

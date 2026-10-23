@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math 2 · Сызықтық алгебра · 8-сабақ: Меншікті мәндер мен меншікті векторлар - CS50 қазақша">
-  <meta property="og:description" content="Математика, 2 · Сызықтық алгебра · 8-сабақ: Меншікті мәндер мен меншікті векторлар. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Меншікті мәндер мен меншікті векторлар, сипаттамалық көпмүше, диагональдау, матрица дәрежелері, Фибоначчи формуласы, Марков тізбегі және PageRank.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-14.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math 2 · Сызықтық алгебра · 8-сабақ: Меншікті мәндер мен меншікті векторлар - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-14.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, 2 · Сызықтық алгебра · 8-сабақ: Меншікті мәндер мен меншікті векторлар. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Меншікті мәндер мен меншікті векторлар, сипаттамалық көпмүше, диагональдау, матрица дәрежелері, Фибоначчи формуласы, Марков тізбегі және PageRank.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,515 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="14">
         <div class="num">2 · Сызықтық алгебра · 8-сабақ</div>
         <h1>Меншікті мәндер мен меншікті векторлар</h1>
-        <p>Сипаттамалық көпмүше, диагональдау, матрицаның дәрежелері және қолданыстар.</p>
+        <p>Бұл сабақта матрица векторды түрлендіргенде бағытын сақтайтын ерекше бағыттарды - меншікті векторларды және оларға сәйкес созу коэффициенттерін - меншікті мәндерді үйренесіз. Олар матрицаны диагональ етіп, дәрежелерін оңай есептеуге, динамикалық жүйелердің ұзақ мерзімді тәртібін болжауға және Google PageRank алгоритмін түсінуге мүмкіндік береді. Сабақ - сызықтық алгебра курсының шыңы: алдыңғы жеті сабақтың бәрі осында жиналады.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-2">Сызықтық алгебра</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-2">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны жасанды интеллект көмегімен дайындалған, сондықтан математик-оқытушымен тексеріп алған жөн. Бұл ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>меншікті мән мен меншікті векторды анықтау және берілген вектордың меншікті вектор екенін тексеру;</li>
+        <li>сипаттамалық көпмүшені $\det(A-\lambda I)$ арқылы құрып, меншікті мәндерді табу, олардың ізі мен анықтауышқа байланысын қолдану;</li>
+        <li>әр меншікті мәнге сәйкес меншікті кеңістіктің (базисін) табу, алгебралық және геометриялық еселікті салыстыру;</li>
+        <li>матрицаны $A=PDP^{-1}$ түрінде диагональдап, $A^k$ мен $A^{-1}$ есептеу, диагональданбайтын матрицаны тану;</li>
+        <li>меншікті мәндер арқылы Фибоначчи сандарының тұйық формуласын және Марков тізбегінің тұрақты күйін табу;</li>
+        <li>дәрежелік итерация мен PageRank алгоритмін Python-да бағдарламалау.</li>
+      </ul>
+
+      <h2 id="prereq">Алғышарттар</h2>
+      <p class="math-prereq">Бұл сабақ <a href="week-12.html">анықтауышты</a> (сипаттамалық теңдеу), <a href="week-13.html">базис пен базисті ауыстыруды</a> ($P^{-1}AP$), <a href="week-11.html">кері матрицаны</a>, <a href="week-10.html">матрицалық көбейтуді және дәрежелерді</a> және <a href="week-9.html">біртекті жүйелерді</a> ($(A-\lambda I)\mathbf{v}=\mathbf{0}$ жүйесі) қолданады. <a href="week-2.html">Көпмүшеліктердің түбірлері</a> мен квадрат теңдеу де керек.</p>
+
+      <h2 id="intuition">Интуиция: матрицаның «өз» бағыттары</h2>
+      <p>Резеңке жазықтықты екі қолмен бір бағытта созсаңыз, көп нүкте басқа жаққа қозғалады. Бірақ сол созу бағытымен жатқан нүктелер сол сызықта қалады, тек ұзарады; ал созуға перпендикуляр бағыттағы нүктелер де сол түзуінде қалады (мүмкін қысылып). Мұндай ерекше бағыттар - түрлендірудің «өз бағыттары». Матрица үшін бұл - $A\mathbf{v}=\lambda\mathbf{v}$ теңдеуін қанағаттандыратын $\mathbf{v}$ векторлары: $A$ оларды бұрмай, тек $\lambda$ есе созады (немесе қысады, не таңбасын өзгертеді). Оларды <strong>меншікті векторлар</strong> (<span class="term-en">eigenvectors</span>), ал $\lambda$ сандарын <strong>меншікті мәндер</strong> (<span class="term-en">eigenvalues</span>) деп атайды («eigen» неміс тілінде «өз»).</p>
+      <p>Неге бұл маңызды? Себебі меншікті бағыттарда матрицаның күрделі әрекеті жай санға көбейтуге айналады. Егер жазықтықтың базисін екі меншікті вектордан құрсақ, түрлендіру әр координатаны жеке-жеке созады: матрица диагональ болады. Диагональ матрицаның дәрежесін есептеу оңай: диагональ сандарын дәрежеге шығару. Сондықтан $A^{100}$ сияқты есептерді шешуге болады: бұл — халық санының өсуі, кезекті күнгі ауа райының болжамы, тербелістер, қаржы модельдері сияқты «қадам-қадам» процестерде қайталанатын түрлендіру.</p>
+      <p>Мысал: екі қаланың тұрғындары жыл сайын көшеді: бірінші қаладағылардың 90 пайызы қалады, 10 пайызы екінші қалаға көшеді; екінші қаладағылардың 80 пайызы қалады, 20 пайызы біріншіге көшеді. Бұл $\mathbf{x}_{k+1}=M\mathbf{x}_k$ түріндегі процесс. Көп жыл өткенде тұрғындардың бөлінуі қандай болады? Жауап $M$ матрицасының меншікті векторында: меншікті мәні 1 болатын вектор тұрақты күйді береді (4-мысал). Google іздеу жүйесінің PageRank алгоритмі де дәл осы идея: интернеттің бетін «кездейсоқ серуендеуші» көп қадамнан кейін кім қай бетте болатынын сипаттайтын тұрақты күй — үлкен матрицаның меншікті векторы.</p>
+      <p>Меншікті мәндердің тағы бір рөлі - тұрақтылық. $\mathbf{x}_{k+1}=A\mathbf{x}_k$ жүйесінде барлық меншікті мәндердің модулі 1-ден кіші болса, жүйе нөлге жақындайды (тұрақты); модулі 1-ден үлкен меншікті мән болса, жүйе өседі (тұрақсыз). Көпір мен ғимараттың тербелістері, электр тізбектері, дифференциалдық теңдеулер жүйесі (9-пән) - бәрінде меншікті мәндер негізгі сұрақтың жауабын береді. Геометрияда меншікті бағыттар эллипстің осьтерін береді, статистикада басты компоненттер әдісінің (PCA) негізі де дәл сол.</p>
+      <p>Сабақта біз екі нәрсені үйренеміз: меншікті мәндерді <em>қалай табу</em> (сипаттамалық теңдеу) және олар <em>не үшін</em> керек (диагональдау, дәрежелер, динамика). Нақты ойды ұстаңыз: меншікті вектор - бағыт, меншікті мән - сол бағыттағы масштаб. Қалған бәрі соның салдары.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 8.1 · Меншікті мән және меншікті вектор</span>
+        <p>$A$ - $n\times n$ матрица болсын. Нөл емес $\mathbf{v}\in\mathbb{R}^n$ векторы және $\lambda$ саны үшін $A\mathbf{v}=\lambda\mathbf{v}$ орындалса, $\lambda$ - $A$-ның <strong>меншікті мәні</strong> (<span class="term-en">eigenvalue</span>), $\mathbf{v}$ - оған сәйкес <strong>меншікті вектор</strong> (<span class="term-en">eigenvector</span>) деп аталады. $E_\lambda=N(A-\lambda I)$ - $\lambda$-ға сәйкес <strong>меншікті кеңістік</strong> (<span class="term-en">eigenspace</span>): ол нөл вектор мен барлық меншікті вектордан тұрады.</p></div>
+      <p>Нөл вектор меншікті вектор болмайды (әйтпесе әр $\lambda$ меншікті мән болар еді). Бірақ $\lambda=0$ меншікті мән бола алады: ол $A\mathbf{v}=\mathbf{0}$ нөлдік емес $\mathbf{v}$ барын, яғни $A$ қайтымсыз екенін білдіреді.</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 8.2 · Сипаттамалық көпмүше</span>
+        <p>$p_A(\lambda)=\det(A-\lambda I)$ - $n$-ші дәрежелі көпмүше, <strong>сипаттамалық көпмүше</strong> (<span class="term-en">characteristic polynomial</span>) деп аталады. $p_A(\lambda)=0$ теңдеуі - <strong>сипаттамалық теңдеу</strong>.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 8.1 · Меншікті мәндерді табу</span>
+        <p>$\lambda$ саны $A$-ның меншікті мәні $\iff$ $\det(A-\lambda I)=0$. Әр меншікті мән үшін меншікті векторлар - $(A-\lambda I)\mathbf{v}=\mathbf{0}$ жүйесінің нөлдік емес шешімдері. $2\times2$ үшін $p_A(\lambda)=\lambda^2-(\operatorname{tr}A)\lambda+\det A$.</p></div>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 8.1 · $2\times2$ сипаттамалық теңдеу</span>
+        <div class="math-fbody">$$\lambda^2-(a+d)\lambda+(ad-bc)=0,\qquad \lambda_{1,2}=\frac{\operatorname{tr}A\pm\sqrt{(\operatorname{tr}A)^2-4\det A}}{2}$$</div>
+        <p class="math-fnote">$A=\begin{pmatrix}a&amp;b\\c&amp;d\end{pmatrix}$. Дискриминант теріс болса, меншікті мәндер комплекс (мысалы, бұру матрицасында).</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 8.2 · Із және анықтауыш</span>
+        <p>$n\times n$ матрицаның (комплекс сандарды қоса есептегенде, еселікпен) меншікті мәндері $\lambda_1,\dots,\lambda_n$ болса, $\operatorname{tr}A=\lambda_1+\dots+\lambda_n$ және $\det A=\lambda_1\lambda_2\cdots\lambda_n$. Үшбұрышты (диагональ) матрицаның меншікті мәндері - диагональ элементтері.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 8.3 · Әртүрлі мәндердің векторлары тәуелсіз</span>
+        <p>Әртүрлі меншікті мәндерге сәйкес меншікті векторлар сызықтық тәуелсіз. Сондықтан $n\times n$ матрицаның $n$ әртүрлі нақты меншікті мәні болса, оның $n$ тәуелсіз меншікті векторы бар.</p></div>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 8.3 · Диагональданатын матрица</span>
+        <p>$A$ - <strong>диагональданатын</strong> (<span class="term-en">diagonalizable</span>), егер $A=PDP^{-1}$ болатын қайтымды $P$ және диагональ $D$ бар болса. Онда $D$ диагоналінде меншікті мәндер, $P$ бағандарында сәйкес меншікті векторлар тұрады.</p></div>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 8.4 · Диагональдау белгісі және дәрежелер</span>
+        <p>$A$ диагональданады $\iff$ оның $n$ сызықтық тәуелсіз меншікті векторы бар. Онда $A^k=PD^kP^{-1}$ ($k\ge0$), ал қайтымды $A$ үшін $A^{-1}=PD^{-1}P^{-1}$. Әр меншікті мәннің <em>геометриялық еселігі</em> $\dim E_\lambda$ оның <em>алгебралық еселігінен</em> (сипаттамалық көпмүшедегі түбір еселігі) аспайды; диагональдану үшін олар барлық $\lambda$ үшін тең болуы керек.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 8.2 · Диагональдау және дәреже</span>
+        <div class="math-fbody">$$A=PDP^{-1},\quad D=\mathrm{diag}(\lambda_1,\dots,\lambda_n),\quad A^k=P\,\mathrm{diag}(\lambda_1^k,\dots,\lambda_n^k)\,P^{-1}$$</div>
+        <p class="math-fnote">$P=(\mathbf{v}_1\ \cdots\ \mathbf{v}_n)$ — меншікті векторлар бағандары. $P$ қайтымды болуы керек.</p></div>
+      <div class="math-thm" id="thm-5"><span class="math-tag">Теорема 8.5 · Симметриялы матрица</span>
+        <p>Нақты симметриялы матрицаның ($A^T=A$) барлық меншікті мәні нақты, ал әртүрлі меншікті мәндерге сәйкес меншікті векторлар өзара ортогональ. Сондықтан ол ортогональ матрицамен диагональданады: $A=QDQ^T$.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 8.3 · Кейли–Гамильтон ($2\times2$)</span>
+        <div class="math-fbody">$$A^2-(\operatorname{tr}A)A+(\det A)I=O$$</div>
+        <p class="math-fnote">Матрица өзінің сипаттамалық теңдеуін қанағаттандырады. Салдар: қайтымды $A$ үшін $A^{-1}=\dfrac{(\operatorname{tr}A)I-A}{\det A}$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта: алгоритм</span>
+        <p>(1) $\det(A-\lambda I)=0$ теңдеуін шеш — меншікті мәндер. (2) Әр $\lambda$ үшін $(A-\lambda I)\mathbf{v}=\mathbf{0}$ жүйесін шешіп, меншікті кеңістіктің базисін тап. (3) Әрқайсысы бір вектор бере отырып, тәуелсіз векторлар $n$ болса, $P$ мен $D$-ны құр. Тексеру: $AP=PD$ немесе $A\mathbf{v}=\lambda\mathbf{v}$.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Меншікті вектор масштабқа дейін анықталған: $\mathbf{v}$ және $5\mathbf{v}$ екеуі де меншікті вектор. Сондықтан жауапта кез келген еселікті алуға болады. Сонымен қатар әр меншікті мәнге бірнеше тәуелсіз вектор сәйкес келуі мүмкін (меншікті кеңістіктің өлшемі > 1) немесе кемі (диагональданбайтын матрица).</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <p>Бес қорыту теорияның негізгі нәтижелерін дәлелдейді және оларды Фибоначчи есебіне қолданады.</p>
+      <div class="mx-derive-tools"></div>
+
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: сипаттамалық теңдеу, із және анықтауыш</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> меншікті мәндердің $\det(A-\lambda I)=0$ теңдеуінен табылатынын көрсетіп, $2\times2$ жағдайда $\lambda^2-\operatorname{tr}A\,\lambda+\det A$ екенін және $\lambda_1+\lambda_2=\operatorname{tr}A$, $\lambda_1\lambda_2=\det A$ екенін дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$A\mathbf{v}=\lambda\mathbf{v}$, $\mathbf{v}\ne\mathbf{0}$ $\iff$ $(A-\lambda I)\mathbf{v}=\mathbf{0}$ (өйткені $\lambda\mathbf{v}=\lambda I\mathbf{v}$).</li>
+            <li>Біртекті жүйенің нөлдік емес шешімі бар $\iff$ $A-\lambda I$ қайтымсыз (11-сабақ, 5.3 теоремасы) $\iff$ $\det(A-\lambda I)=0$ (6.4 теоремасы).</li>
+            <li>$A=\begin{pmatrix}a&amp;b\\c&amp;d\end{pmatrix}$ үшін $\det(A-\lambda I)=\begin{vmatrix}a-\lambda&amp;b\\c&amp;d-\lambda\end{vmatrix}=(a-\lambda)(d-\lambda)-bc$.</li>
+            <li>Жақшаны ашамыз: $\lambda^2-(a+d)\lambda+(ad-bc)=\lambda^2-\operatorname{tr}A\cdot\lambda+\det A$.</li>
+            <li>Түбірлері $\lambda_1,\lambda_2$ болса, көпмүше $\lambda^2-(\lambda_1+\lambda_2)\lambda+\lambda_1\lambda_2$ түрінде жіктеледі (Виет формулалары). Коэффициенттерді салыстырамыз: $\lambda_1+\lambda_2=\operatorname{tr}A$, $\lambda_1\lambda_2=\det A$.</li>
+            <li>Жалпы $n\times n$ үшін де: $\det(A-\lambda I)=(-1)^n(\lambda^n-\operatorname{tr}A\cdot\lambda^{n-1}+\dots+(-1)^n\det A)$ және $\lambda=0$ қойсақ, $\det A=p_A(0)=\lambda_1\cdots\lambda_n$.</li>
+            <li>Мысал: $A=\begin{pmatrix}4&amp;1\\2&amp;3\end{pmatrix}$: $\operatorname{tr}=7$, $\det=10$; $\lambda^2-7\lambda+10=0\Rightarrow\lambda=5,2$. Қосындысы $7$ ✓, көбейтіндісі $10$ ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-2" open>
+        <summary>Қорытып шығару 2: әртүрлі меншікті мәндердің векторлары тәуелсіз</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 8.3-ті дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$\mathbf{v}_1,\dots,\mathbf{v}_k$ - әртүрлі $\lambda_1,\dots,\lambda_k$ мәндеріне сәйкес меншікті векторлар. Индукциямен $k$ бойынша.</li>
+            <li>$k=1$: $\mathbf{v}_1\ne\mathbf{0}$ - бір вектор тәуелсіз.</li>
+            <li>Өту: алғашқы $k-1$ вектор тәуелсіз және $c_1\mathbf{v}_1+\dots+c_k\mathbf{v}_k=\mathbf{0}$ делік. (*)</li>
+            <li>$A$-ны қолданамыз: $c_1\lambda_1\mathbf{v}_1+\dots+c_k\lambda_k\mathbf{v}_k=\mathbf{0}$. (**)</li>
+            <li>(*) теңдікті $\lambda_k$-ға көбейтіп (**)-дан шегереміз: $c_1(\lambda_1-\lambda_k)\mathbf{v}_1+\dots+c_{k-1}(\lambda_{k-1}-\lambda_k)\mathbf{v}_{k-1}=\mathbf{0}$.</li>
+            <li>Алғашқы $k-1$ вектор тәуелсіз, сондықтан $c_i(\lambda_i-\lambda_k)=0$, ал $\lambda_i\ne\lambda_k$, демек $c_1=\dots=c_{k-1}=0$.</li>
+            <li>Сонда (*) теңдіктен $c_k\mathbf{v}_k=\mathbf{0}$, $\mathbf{v}_k\ne\mathbf{0}$, сондықтан $c_k=0$. Барлық коэффициент нөл: векторлар тәуелсіз.</li>
+            <li>Салдар: $n$ әртүрлі меншікті мән ⇒ $n$ тәуелсіз меншікті вектор ⇒ диагональданады. Мысал: $\lambda=5$, $\mathbf{v}=(1,1)$ және $\lambda=2$, $\mathbf{v}=(1,-2)$: параллель емес ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-3" open>
+        <summary>Қорытып шығару 3: диагональдау және $A^k=PD^kP^{-1}$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $AP=PD$ теңдігін, $A=PDP^{-1}$ және $A^k$ формуласын шығару.</p>
+          <ol class="math-steps">
+            <li>$P=(\mathbf{v}_1\ \cdots\ \mathbf{v}_n)$, $\mathbf{v}_j$ - $\lambda_j$-ға сәйкес меншікті векторлар. Матрицалық көбейтіндіні бағандар бойынша оқимыз (4-сабақ): $AP=(A\mathbf{v}_1\ \cdots\ A\mathbf{v}_n)=(\lambda_1\mathbf{v}_1\ \cdots\ \lambda_n\mathbf{v}_n)$.</li>
+            <li>Екінші жағынан, $PD=P\,\mathrm{diag}(\lambda_1,\dots,\lambda_n)$-дың $j$-ші бағаны $\lambda_j\mathbf{v}_j$ (диагональ матрицаға көбейту бағандарды масштабтайды). Демек $AP=PD$.</li>
+            <li>$\mathbf{v}_j$ тәуелсіз болғандықтан $P$ қайтымды (11-сабақ). Оң жақтан $P^{-1}$-ге көбейтеміз: $A=PDP^{-1}$.</li>
+            <li>Дәреже: $A^2=PDP^{-1}PDP^{-1}=PD(P^{-1}P)DP^{-1}=PD^2P^{-1}$. Индукциямен $A^k=PD^kP^{-1}$ (ортадағы $P^{-1}P=I$ қысқарады).</li>
+            <li>$D^k=\mathrm{diag}(\lambda_1^k,\dots,\lambda_n^k)$ (диагональ матрицаның көбейтіндісі диагональ элементтерін көбейтеді).</li>
+            <li>Кері матрица: $A^{-1}=(PDP^{-1})^{-1}=PD^{-1}P^{-1}$ (5.1 теоремасының (3) пункті), $D^{-1}=\mathrm{diag}(1/\lambda_j)$, егер барлық $\lambda_j\ne0$.</li>
+            <li>Мысал: $A=\begin{pmatrix}4&amp;1\\2&amp;3\end{pmatrix}$, $P=\begin{pmatrix}1&amp;1\\1&amp;-2\end{pmatrix}$, $D=\mathrm{diag}(5,2)$: $A^5=\begin{pmatrix}2094&amp;1031\\2062&amp;1063\end{pmatrix}$ (2-мысал).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-4" open>
+        <summary>Қорытып шығару 4: Фибоначчи сандарының тұйық формуласы (Бине)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $F=\begin{pmatrix}1&amp;1\\1&amp;0\end{pmatrix}$ матрицасын диагональдап, $F_n=\dfrac{\varphi^n-\psi^n}{\sqrt5}$ формуласын шығару ($\varphi=\frac{1+\sqrt5}{2}$, $\psi=\frac{1-\sqrt5}{2}$).</p>
+          <ol class="math-steps">
+            <li>10-сабақтағы 5-қорыту бойынша $F^n=\begin{pmatrix}F_{n+1}&amp;F_n\\F_n&amp;F_{n-1}\end{pmatrix}$. Сондықтан $F_n=(F^n)_{12}$.</li>
+            <li>Сипаттамалық теңдеу: $\operatorname{tr}F=1$, $\det F=-1$: $\lambda^2-\lambda-1=0$, $\lambda=\dfrac{1\pm\sqrt5}{2}$, яғни $\varphi$ және $\psi$ ($\varphi+\psi=1$, $\varphi\psi=-1$, $\varphi-\psi=\sqrt5$).</li>
+            <li>Меншікті векторлар: $(F-\lambda I)\mathbf{v}=\mathbf{0}$, бірінші жол $(1-\lambda)v_1+v_2=0$, $\mathbf{v}=(\lambda,1)$ жарайды (тексеру: екінші жол $v_1-\lambda v_2=\lambda-\lambda=0$ ✓).</li>
+            <li>$P=\begin{pmatrix}\varphi&amp;\psi\\1&amp;1\end{pmatrix}$, $D=\mathrm{diag}(\varphi,\psi)$, $\det P=\varphi-\psi=\sqrt5$, $P^{-1}=\dfrac1{\sqrt5}\begin{pmatrix}1&amp;-\psi\\-1&amp;\varphi\end{pmatrix}$.</li>
+            <li>$F^n=PD^nP^{-1}=\dfrac1{\sqrt5}\begin{pmatrix}\varphi&amp;\psi\\1&amp;1\end{pmatrix}\begin{pmatrix}\varphi^n&amp;0\\0&amp;\psi^n\end{pmatrix}\begin{pmatrix}1&amp;-\psi\\-1&amp;\varphi\end{pmatrix}$.</li>
+            <li>$(1,2)$ элементін есептейміз: алдымен $PD^n$-ның 1-жолы $(\varphi^{n+1},\ \psi^{n+1})$; оны $P^{-1}$-дің 2-бағанына $(-\psi,\varphi)^T$ көбейтеміз: $\dfrac1{\sqrt5}\big(-\psi\varphi^{n+1}+\varphi\psi^{n+1}\big)$.</li>
+            <li>$\varphi\psi=-1$ арқылы: $-\psi\varphi^{n+1}=-(\varphi\psi)\varphi^n=\varphi^n$, және $\varphi\psi^{n+1}=(\varphi\psi)\psi^n=-\psi^n$. Демек $F_n=\dfrac{\varphi^n-\psi^n}{\sqrt5}$.</li>
+            <li>$|\psi|\approx0{,}618<1$, сондықтан $\psi^n\to0$ және $F_n\approx\dfrac{\varphi^n}{\sqrt5}$: өсу жылдамдығы $\varphi\approx1{,}618$ (алтын қима). Мысал: $F_{10}=\dfrac{\varphi^{10}-\psi^{10}}{\sqrt5}=\dfrac{122{,}99-0{,}0081}{2{,}236}=55$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-5" open>
+        <summary>Қорытып шығару 5: симметриялы $2\times2$ матрица - нақты мәндер және ортогональ векторлар</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $A=\begin{pmatrix}a&amp;b\\b&amp;d\end{pmatrix}$ ($b$ нақты) үшін меншікті мәндердің нақты екенін және әртүрлі мәндерге сәйкес векторлардың ортогональ екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>Сипаттамалық теңдеу: $\lambda^2-(a+d)\lambda+(ad-b^2)=0$. Дискриминант: $D=(a+d)^2-4(ad-b^2)$.</li>
+            <li>Жақшаны ашамыз: $D=a^2+2ad+d^2-4ad+4b^2=(a-d)^2+4b^2\ge0$. Демек түбірлер нақты.</li>
+            <li>$D=0$ тек $a=d$ және $b=0$ болғанда: $A=aI$, барлық вектор меншікті. Әйтпесе $D>0$ — екі әртүрлі нақты мән.</li>
+            <li>$\lambda_1\ne\lambda_2$ меншікті мәндері, $\mathbf{v}_1,\mathbf{v}_2$ — векторлар: $A\mathbf{v}_1=\lambda_1\mathbf{v}_1$, $A\mathbf{v}_2=\lambda_2\mathbf{v}_2$.</li>
+            <li>$\mathbf{v}_2^TA\mathbf{v}_1$ есептейміз екі жолмен. Бір жағынан $=\lambda_1\,\mathbf{v}_2\cdot\mathbf{v}_1$. Екінші жағынан $A=A^T$: $\mathbf{v}_2^TA\mathbf{v}_1=(A\mathbf{v}_2)^T\mathbf{v}_1=\lambda_2\,\mathbf{v}_2\cdot\mathbf{v}_1$.</li>
+            <li>Шегереміз: $(\lambda_1-\lambda_2)\,\mathbf{v}_1\cdot\mathbf{v}_2=0$, ал $\lambda_1\ne\lambda_2$, сондықтан $\mathbf{v}_1\cdot\mathbf{v}_2=0$: ортогональ.</li>
+            <li>Мысал: $A=\begin{pmatrix}2&amp;1\\1&amp;2\end{pmatrix}$: $D=0+4=4$, $\lambda=3,1$; $\mathbf{v}_1=(1,1)$, $\mathbf{v}_2=(1,-1)$, $\mathbf{v}_1\cdot\mathbf{v}_2=0$ ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+
+      <div class="math-example" id="ex-1">
+        <h3>Мысал 1. Меншікті мәндер мен векторлар</h3>
+        <p class="math-problem">$A=\begin{pmatrix}4&amp;1\\2&amp;3\end{pmatrix}$ матрицасының меншікті мәндерін және меншікті векторларын табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. Сипаттамалық теңдеу.</b> $\operatorname{tr}A=7$, $\det A=12-2=10$. $\lambda^2-7\lambda+10=0$.</li>
+          <li><b>2-қадам. Түбірлер.</b> $(\lambda-5)(\lambda-2)=0$: $\lambda_1=5$, $\lambda_2=2$.</li>
+          <li><b>3-қадам. $\lambda=5$.</b> $A-5I=\begin{pmatrix}-1&amp;1\\2&amp;-2\end{pmatrix}$. $-v_1+v_2=0\Rightarrow v_1=v_2$. Вектор $\mathbf{v}_1=(1,1)$.</li>
+          <li><b>4-қадам. $\lambda=2$.</b> $A-2I=\begin{pmatrix}2&amp;1\\2&amp;1\end{pmatrix}$. $2v_1+v_2=0\Rightarrow v_2=-2v_1$. Вектор $\mathbf{v}_2=(1,-2)$.</li>
+          <li><b>5-қадам. Тексеру.</b> $A(1,1)^T=(5,5)=5(1,1)$ ✓; $A(1,-2)^T=(4-2,\ 2-6)=(2,-4)=2(1,-2)$ ✓. Із: $5+2=7$ ✓, анықтауыш: $5\cdot2=10$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\lambda_1=5$, $\mathbf{v}_1=(1,1)$; $\lambda_2=2$, $\mathbf{v}_2=(1,-2)$ (масштабқа дейін).</p>
+      </div>
+
+      <div class="math-example" id="ex-2">
+        <h3>Мысал 2. Диагональдау және $A^5$</h3>
+        <p class="math-problem">1-мысалдағы $A$ матрицасы үшін $A=PDP^{-1}$ жазып, $A^5$ есептеңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. $P$ және $D$.</b> $P=\begin{pmatrix}1&amp;1\\1&amp;-2\end{pmatrix}$, $D=\begin{pmatrix}5&amp;0\\0&amp;2\end{pmatrix}$.</li>
+          <li><b>2-қадам. $P^{-1}$.</b> $\det P=-2-1=-3$; $P^{-1}=\dfrac1{-3}\begin{pmatrix}-2&amp;-1\\-1&amp;1\end{pmatrix}=\dfrac13\begin{pmatrix}2&amp;1\\1&amp;-1\end{pmatrix}$.</li>
+          <li><b>3-қадам. $D^5$.</b> $\mathrm{diag}(5^5,2^5)=\mathrm{diag}(3125,32)$.</li>
+          <li><b>4-қадам. $PD^5$.</b> $\begin{pmatrix}1&amp;1\\1&amp;-2\end{pmatrix}\begin{pmatrix}3125&amp;0\\0&amp;32\end{pmatrix}=\begin{pmatrix}3125&amp;32\\3125&amp;-64\end{pmatrix}$.</li>
+          <li><b>5-қадам. $A^5=PD^5P^{-1}$.</b> $\dfrac13\begin{pmatrix}3125&amp;32\\3125&amp;-64\end{pmatrix}\begin{pmatrix}2&amp;1\\1&amp;-1\end{pmatrix}=\dfrac13\begin{pmatrix}6282&amp;3093\\6186&amp;3189\end{pmatrix}=\begin{pmatrix}2094&amp;1031\\2062&amp;1063\end{pmatrix}$.</li>
+          <li><b>6-қадам. Тексеру.</b> Із: $2094+1063=3157=3125+32$ ✓ ($\operatorname{tr}A^5=\lambda_1^5+\lambda_2^5$).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $A^5=\begin{pmatrix}2094&amp;1031\\2062&amp;1063\end{pmatrix}$.</p>
+      </div>
+
+      <div class="math-example" id="ex-3">
+        <h3>Мысал 3. Диагональданбайтын матрица</h3>
+        <p class="math-problem">$A=\begin{pmatrix}2&amp;1&amp;0\\0&amp;2&amp;0\\0&amp;0&amp;3\end{pmatrix}$ матрицасының меншікті мәндері мен векторларын табыңыз. Диагональданады ма?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. Меншікті мәндер.</b> Жоғарғы үшбұрышты: мәндер диагональда: $2$ (екі рет), $3$. Алгебралық еселіктер: $\lambda=2$ — 2, $\lambda=3$ — 1.</li>
+          <li><b>2-қадам. $\lambda=3$.</b> $(A-3I)=\begin{pmatrix}-1&amp;1&amp;0\\0&amp;-1&amp;0\\0&amp;0&amp;0\end{pmatrix}$: $v_2=0$, $v_1=0$, $v_3$ - бос: $\mathbf{v}=(0,0,1)$.</li>
+          <li><b>3-қадам. $\lambda=2$.</b> $(A-2I)=\begin{pmatrix}0&amp;1&amp;0\\0&amp;0&amp;0\\0&amp;0&amp;1\end{pmatrix}$: $v_2=0$, $v_3=0$, $v_1$ - бос: $\mathbf{v}=(1,0,0)$. Меншікті кеңістік бір өлшемді.</li>
+          <li><b>4-қадам. Геометриялық еселік.</b> $\lambda=2$ үшін алгебралық еселік 2, геометриялық 1: тәуелсіз меншікті векторлар жиыны $1+1=2<3$.</li>
+          <li><b>5-қадам. Қорытынды.</b> $3$ тәуелсіз меншікті вектор жоқ — матрица диагональданбайды (ығысу сияқты әрекет бар: $(1,1)$ бағытын $(2,1)$-ге айналдырады).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> диагональданбайды: $\lambda=2$ үшін алгебралық еселік 2, геометриялық 1.</p>
+      </div>
+
+      <div class="math-example" id="ex-4">
+        <h3>Мысал 4. Марков тізбегі: ұзақ мерзімді тұрақты күй</h3>
+        <p class="math-problem">Екі қаланың тұрғындары жыл сайын көшеді: $M=\begin{pmatrix}0{,}9&amp;0{,}2\\0{,}1&amp;0{,}8\end{pmatrix}$ ($\mathbf{x}_{k+1}=M\mathbf{x}_k$, бағандардың қосындысы 1). Ұзақ мерзімде тұрғындардың үлесі қандай болады?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. Меншікті мәндер.</b> $\operatorname{tr}M=1{,}7$, $\det M=0{,}72-0{,}02=0{,}70$. $\lambda^2-1{,}7\lambda+0{,}7=0$: $\lambda=1$ және $\lambda=0{,}7$ (қосындысы $1{,}7$, көбейтіндісі $0{,}7$).</li>
+          <li><b>2-қадам. $\lambda=1$.</b> $M-I=\begin{pmatrix}-0{,}1&amp;0{,}2\\0{,}1&amp;-0{,}2\end{pmatrix}$: $-0{,}1v_1+0{,}2v_2=0\Rightarrow v_1=2v_2$, $\mathbf{v}=(2,1)$.</li>
+          <li><b>3-қадам. $\lambda=0{,}7$.</b> $M-0{,}7I=\begin{pmatrix}0{,}2&amp;0{,}2\\0{,}1&amp;0{,}1\end{pmatrix}$: $\mathbf{w}=(1,-1)$.</li>
+          <li><b>4-қадам. Бастапқы күйді жіктеу.</b> Кез келген $\mathbf{x}_0=c_1(2,1)+c_2(1,-1)$. Онда $M^k\mathbf{x}_0=c_1(2,1)+c_2\,0{,}7^k(1,-1)$.</li>
+          <li><b>5-қадам. Шек.</b> $0{,}7^k\to0$, демек $\mathbf{x}_k\to c_1(2,1)$. Қосынды сақталады (тұрғындардың жалпы саны өзгермейді), сондықтан тұрақты күй: $\left(\dfrac23,\dfrac13\right)$ — бірінші қалада тұрғындардың $2/3$ бөлігі.</li>
+          <li><b>6-қадам. Тексеру.</b> $M(2/3,1/3)^T=(0{,}6+0{,}0667,\ 0{,}0667+0{,}2667)=(2/3,1/3)$ ✓, тұрақты күй бастапқы бөлінуге тәуелсіз.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> тұрақты күй $(2/3;\ 1/3)$; жақындау жылдамдығы $0{,}7^k$.</p>
+      </div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Нөл векторды меншікті вектор деп санау</span> → <span class="math-good">меншікті вектор нөл емес болуы керек</span><br>Неге қате: $A\cdot\mathbf{0}=\lambda\cdot\mathbf{0}$ кез келген $\lambda$ үшін орындалады, ол ақпарат бермейді.</li>
+        <li><span class="math-bad">Сипаттамалық теңдеуді $\det A-\lambda=0$ деп жазу</span> → <span class="math-good">$\det(A-\lambda I)=0$</span><br>Неге қате: $\lambda$ санын матрицадан шегеруге болмайды, тек диагональдан ($\lambda I$) шегереді. $2\times2$-де $\det A-\lambda=ad-bc-\lambda$ — қате көпмүше.</li>
+        <li><span class="math-bad">Меншікті мәндерді $A$ диагональ элементтерімен шатастыру: $\begin{pmatrix}4&amp;1\\2&amp;3\end{pmatrix}$ үшін $\lambda=4,3$</span> → <span class="math-good">диагональ элементтер тек үшбұрышты матрицада меншікті мәндер</span><br>Неге қате: дұрыс мәндер $5$ және $2$ ($\lambda^2-7\lambda+10=0$). Тек қосындысы ($7$) дұрыс.</li>
+        <li><span class="math-bad">Меншікті векторлар бірегей деп ойлау (тек $(1,1)$)</span> → <span class="math-good">масштабқа дейін анықталған: $(2,2)$, $(-1,-1)$ да жарайды</span><br>Неге қате: меншікті кеңістік — ішкі кеңістік. Жауап: «$\mathbf{v}=t(1,1)$, $t\ne0$».</li>
+        <li><span class="math-bad">Әр матрица диагональданады деп санау</span> → <span class="math-good">әр меншікті мән үшін геометриялық еселік алгебралық еселікке тең болуы керек</span><br>Неге қате: 3-мысалдағы матрица диагональданбайды. $n$ әртүрлі меншікті мән болса диагональданатыны кепілді.</li>
+        <li><span class="math-bad">$A^k=PD^kP^{-1}$ формуласында $P$ мен $P^{-1}$ орнын ауыстыру: $P^{-1}D^kP$</span> → <span class="math-good">$PD^kP^{-1}$ ($P$ бағандары — меншікті векторлар)</span><br>Неге қате: $AP=PD$ теңдігі $P$ сол жақта болуы керек екенін көрсетеді.</li>
+        <li><span class="math-bad">Меншікті мәндердің қосындысы мен көбейтіндісін есептемей тексермеу</span> → <span class="math-good">әрдайым $\lambda_1+\lambda_2=\operatorname{tr}A$, $\lambda_1\lambda_2=\det A$ тексеру</span><br>Неге қате: бұл бірден арифметикалық қатені әшкерелейді (тез бақылау).</li>
+        <li><span class="math-bad">$A$ және $A^T$ меншікті векторлары бірдей деп санау</span> → <span class="math-good">меншікті мәндері бірдей, ал векторлары әртүрлі</span><br>Неге қате: $\det(A-\lambda I)=\det(A^T-\lambda I)$ мәндерді береді, бірақ меншікті векторлар жалпы басқа.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <p>Суреттерде қызыл және жасыл үзік сызықтар матрицаның нақты меншікті бағыттары. «Меншікті бағыттар» түймесі олардың көрсетілуін қосады/өшіреді; астындағы жолда $\lambda_1,\lambda_2$ мәндері беріледі.</p>
+      <div class="math-viz" data-viz="lintrans" data-title="A = (4, 1; 2, 3): меншікті мәндері 5 және 2" data-config='{"m":[[4,1],[2,3]],"view":[-8,8,-6,6]}'></div>
+      <p><b>Бақылаңыз:</b> матрицада $a=4$, $b=1$, $c=2$, $d=3$ слайдерлері бар. Суреттегі тікбұрышты қызыл және жасыл түзулер 1-мысалдағы $\mathbf{v}_1=(1,1)$ ($\lambda=5$) және $\mathbf{v}_2=(1,-2)$ ($\lambda=2$) бағыттары. Осы түзулердегі нүктелер түрлендіруден кейін сол түзуде қалады, бірақ $5$ не $2$ есе ұзарады. Астындағы жолда $\lambda_1=5$, $\lambda_2=2$, $\det A=10$, ізі $7$ жазылған.</p>
+      <div class="math-viz" data-viz="lintrans" data-title="Бұру: нақты меншікті бағыт жоқ" data-config='{"m":[[0.71,-0.71],[0.71,0.71]]}'></div>
+      <p><b>Бақылаңыз:</b> $45^\circ$-қа бұру матрицасында сипаттамалық теңдеу $\lambda^2-\sqrt2\lambda+1=0$ (дискриминант $2-4<0$): меншікті мәндер комплекс, суретте «нақты меншікті мәндер жоқ (айналу сипаты)» жазуы шығады. Ешбір түзу өзіне түспейді, барлық нүкте айналады. Енді $b$-ны $0$-ге жақындатып, түрлендіруді созуға айналдырыңыз: меншікті түзулер пайда болады. Нақты мәндер дискриминант оң болғанда ғана бар.</p>
+      <div class="math-viz" data-viz="lintrans" data-title="Ығысу: диагональданбайды (1, 1; 0, 1)" data-config='{"m":[[1,1],[0,1]]}'></div>
+      <p><b>Бақылаңыз:</b> ығысу матрицасының екі меншікті мәні де $1$ (алгебралық еселік 2), бірақ меншікті түзу тек біреу — $Ox$ осі. Суретте қызыл түзу ғана көрінеді: екінші тәуелсіз меншікті бағыт жоқ. Бұл — диагональданбайтын матрицаның геометриялық белгісі (3-мысал). Ығысу коэффициентін $b$ слайдермен $0$-ге түсірсеңіз, бірлік матрица шығады: барлық бағыт меншікті.</p>
+
+      <p>Үш суретті салыстырып, қорытынды жасаңыз: меншікті бағыттардың саны матрицаның геометриялық мінезін айтады. Екі әртүрлі нақты меншікті мән болса, жазықтықтың екі бағыты тек созылады не қысылады, қалғаны араласады. Комплекс мәндер болса, түрлендіру бұру сипатына ие. Бір ғана меншікті бағыт қалса (қайталанатын мән), ығысу пайда болады. Осы үш жағдай дифференциалдық теңдеулер жүйесінде (9-пән) тұрақтылықтың түрлерін береді: түйін, шоғыр (спираль) және азғындаған түйін. Сондықтан бұл сабақтың суреттерін есте сақтаңыз.</p>
+
+      <p>Курстың қорытындысы ретінде осы сабақтың байланыстарын жазып қойыңыз: векторлар (1) сызықтық комбинацияны, скаляр көбейтінді (2) ортогональдықты, Гаусс әдісі (3) ранг пен шешімдерді, матрицалық көбейту (4) түрлендірулерді, кері матрица мен LU (5) қайтымдылықты, анықтауыш (6) көлем масштабын, базис (7) координаталарды береді. Меншікті мәндер (8) осы құралдардың бәрін қолданып, матрицаның «ең қарапайым» көрінісін, яғни диагональ түрін табады.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Төменде 20 есеп блогы бар (оңайдан қиынға), жалпы 40-тан астам тапсырма. «Кеңес» батырмасы алдымен кеңес, сонан соң қадам-қадам шешімді, ең соңында жауапты ашады. Меншікті векторды кез келген масштабта жазуға болмайды (ұяшық нақты санды күтеді), сондықтан нұсқауды оқыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m2-8-check">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m2-8-t1">1. Меншікті вектор тексеру</h3></div>
+        <p>$A\mathbf{v}=\lambda\mathbf{v}$ болса, $\lambda$ санын жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}4&1\\\\2&3\\end{pmatrix}$, $\\mathbf{v}=(1,1)$. $A\\mathbf{v}=\\lambda\\mathbf{v}$; $\\lambda=\\ ?$","a":5,"v":"(Matrix([[4,1],[2,3]])*Matrix([1,1]))[0]","hint":"$A\\mathbf{v}=(5,5)$.","sol":{"steps":["$(4+1,\\ 2+3)=(5,5)=5(1,1)$."],"ans":"$5$"}},{"q":"$A=\\begin{pmatrix}2&0\\\\0&-3\\end{pmatrix}$, $\\mathbf{v}=(0,1)$. $\\lambda=\\ ?$","a":-3,"v":"(Matrix([[2,0],[0,-3]])*Matrix([0,1]))[1]","hint":"Диагональ матрица.","sol":{"steps":["$A\\mathbf{v}=(0,-3)=-3(0,1)$."],"ans":"$-3$"}},{"q":"$A=\\begin{pmatrix}2&1\\\\1&2\\end{pmatrix}$, $\\mathbf{v}=(1,-1)$. $\\lambda=\\ ?$","a":1,"v":"(Matrix([[2,1],[1,2]])*Matrix([1,-1]))[0]","hint":"$A\\mathbf{v}=(2-1,\\ 1-2)$.","sol":{"steps":["$(1,-1)=1\\cdot(1,-1)$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m2-8-tf">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m2-8-t2">2. Шындық па, жалған ба?</h3></div>
+        <p>Әр пікірді бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Нөл вектор меншікті вектор бола алады.","a":false,"e":"Жалған: меншікті вектор нөл емес болуы керек.","hint":"Анықтамадағы $\\mathbf{v}\\ne\\mathbf{0}$."},{"q":"$\\lambda=0$ меншікті мән болуы мүмкін.","a":true,"e":"Ақиқат: онда $A\\mathbf{v}=\\mathbf{0}$ нөлдік емес $\\mathbf{v}$ үшін, яғни $A$ қайтымсыз.","hint":"$\\det A=0$."},{"q":"Үшбұрышты матрицаның меншікті мәндері - диагональ элементтері.","a":true,"e":"Ақиқат: $\\det(A-\\lambda I)=\\prod(a_{ii}-\\lambda)$.","hint":"Үшбұрышты матрицаның анықтауышы."},{"q":"Меншікті мәндердің көбейтіндісі матрицаның ізіне тең.","a":false,"e":"Жалған: көбейтіндісі анықтауышқа, қосындысы ізге тең.","hint":"8.2 теоремасы."},{"q":"Әр меншікті вектордың $5\\mathbf{v}$ еселігі де сол меншікті мәнге сәйкес меншікті вектор.","a":true,"e":"Ақиқат: $A(5\\mathbf{v})=5\\lambda\\mathbf{v}=\\lambda(5\\mathbf{v})$.","hint":"Сызықтылық."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m2-8-pick">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m2-8-t3">3. Сипаттамалық теңдеу</h3></div>
+        <p>Дұрыс жауапты таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\begin{pmatrix}2&1\\\\1&2\\end{pmatrix}$ матрицасының сипаттамалық теңдеуі:","o":["$\\lambda^2-4\\lambda+3=0$","$\\lambda^2-4\\lambda+5=0$","$\\lambda^2+4\\lambda+3=0$","$\\lambda^2-3\\lambda+4=0$"],"a":0,"e":"$\\operatorname{tr}=4$, $\\det=3$.","hint":"$\\lambda^2-\\operatorname{tr}\\lambda+\\det$."},{"q":"Меншікті мәндері $2$ және $5$ болатын матрицаның ізі мен анықтауышы:","o":["ізі 7, анықтауышы 10","ізі 10, анықтауышы 7","ізі 3, анықтауышы 10","ізі 7, анықтауышы 3"],"a":0,"e":"Қосынды $=\\operatorname{tr}$, көбейтінді $=\\det$.","hint":"8.2 теоремасы."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m2-8-match">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m2-8-t4">4. Матрица және меншікті мәндер</h3></div>
+        <p>Әр матрицаны оның меншікті мәндерімен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Әр матрицаға меншікті мәндерін таңдаңыз.","pairs":[["$\\begin{pmatrix}3&0\\\\0&7\\end{pmatrix}$","3 және 7"],["$\\begin{pmatrix}2&5\\\\0&4\\end{pmatrix}$","2 және 4"],["$\\begin{pmatrix}2&1\\\\1&2\\end{pmatrix}$","1 және 3"],["$\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$","нақты мәндер жоқ"]],"hint":"Диагональ және үшбұрышты матрицалар; сипаттамалық теңдеу.","sol":{"steps":["Диагональ: 3, 7.","Үшбұрышты: диагональ 2, 4.","$\\lambda^2-4\\lambda+3=0$: 1, 3.","$\\lambda^2+1=0$: нақты мән жоқ."]},"e":"90° бұрудың нақты меншікті векторы жоқ."}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m2-8-trdet">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-8-t5">5. Із және анықтауыш</h3></div>
+        <p>Жауапты санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\begin{pmatrix}5&2\\\\3&4\\end{pmatrix}$ матрицасының меншікті мәндерінің қосындысы.","a":9,"v":"5+4","hint":"Із.","sol":{"steps":["$5+4$."],"ans":"$9$"}},{"q":"Сол матрицаның меншікті мәндерінің көбейтіндісі.","a":14,"v":"5*4-2*3","hint":"Анықтауыш.","sol":{"steps":["$20-6$."],"ans":"$14$"}},{"q":"Сол матрицаның үлкен меншікті мәні.","a":7,"v":"7","hint":"$\\lambda^2-9\\lambda+14=0$.","sol":{"steps":["$(\\lambda-7)(\\lambda-2)=0$."],"ans":"$7$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m2-8-vec">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-8-t6">6. Меншікті вектор</h3></div>
+        <p>Бірінші координатасы 1 болатын меншікті векторды жол түрінде жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}4&1\\\\2&3\\end{pmatrix}$, $\\lambda=2$. $\\mathbf{v}=(1,y)$; $y=\\ ?$","orient":"row","name":"$\\mathbf{v}=$","a":[1,-2],"v":"[1,-2]","hint":"$(A-2I)\\mathbf{v}=\\mathbf{0}$: $2+y=0$.","sol":{"steps":["$2v_1+v_2=0\\Rightarrow y=-2$."],"ans":"$(1,-2)$"}},{"q":"$A=\\begin{pmatrix}3&1\\\\0&2\\end{pmatrix}$, $\\lambda=2$. $\\mathbf{v}=(1,y)$; $y=\\ ?$","orient":"row","name":"$\\mathbf{v}=$","a":[1,-1],"v":"[1,-1]","hint":"$(A-2I)=\\begin{pmatrix}1&1\\\\0&0\\end{pmatrix}$.","sol":{"steps":["$v_1+v_2=0$."],"ans":"$(1,-1)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m2-8-charpoly">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-8-t7">7. Сипаттамалық көпмүше</h3></div>
+        <p>$\det(A-xI)$ өрнегін $x$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}2&1\\\\1&2\\end{pmatrix}$. $\\det(A-xI)=\\ ?$","a":"x^2-4*x+3","v":"Matrix([[2-x,1],[1,2-x]]).det()","hint":"$(2-x)^2-1$.","sol":{"steps":["$(2-x)^2-1=x^2-4x+3$."],"ans":"$x^2-4x+3$"}},{"q":"$A=\\begin{pmatrix}1&3\\\\2&0\\end{pmatrix}$. $\\det(A-xI)=\\ ?$","a":"x^2-x-6","v":"Matrix([[1-x,3],[2,-x]]).det()","hint":"$(1-x)(-x)-6$.","sol":{"steps":["$-x+x^2-6$."],"ans":"$x^2-x-6=(x-3)(x+2)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m2-8-order1">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-8-t8">8. Меншікті жұпты табу реті</h3></div>
+        <p>Қадамдарды дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A$ матрицасының меншікті мәндері мен векторларын табу.","steps":["$A-\\lambda I$ матрицасын жазамыз.","$\\det(A-\\lambda I)=0$ сипаттамалық теңдеуін құрамыз.","Теңдеуді шешіп, меншікті мәндерді табамыз.","Әр $\\lambda$ үшін $(A-\\lambda I)\\mathbf{v}=\\mathbf{0}$ жүйесін шешеміз.","$A\\mathbf{v}=\\lambda\\mathbf{v}$ арқылы тексереміз."],"hint":"Алдымен мәндер, содан кейін векторлар.","sol":{"ans":"Мәндер → векторлар → тексеру."}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m2-8-p-tri">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-8-t9">9. Параметрлік: үшбұрышты матрица</h3></div>
+        <p>Үлкен меншікті мәнді табыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,5]},"d":{"int":[6,9]},"b":{"int":[-4,4],"nz":true}},"type":"num","q":"$A=\\begin{pmatrix}#{a}&#{b}\\\\0&#{d}\\end{pmatrix}$. Үлкен меншікті мәні қанша?","a":"d","v":"max(a,d)","hint":"Үшбұрышты: диагональ.","sol":{"steps":["$\\lambda_1=#{a}$, $\\lambda_2=#{d}$."],"ans":"$#{d}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m2-8-p-pow">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-8-t10">10. Параметрлік: матрица дәрежесі</h3></div>
+        <p>$A=PDP^{-1}$ арқылы $(A^n)_{12}$ элементін табыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"p":{"int":[1,3]},"q":{"int":[2,4]},"n":{"int":[2,4]}},"require":["p != q"],"type":"num","q":"$A=\\begin{pmatrix}#{p}&#{q-p}\\\\0&#{q}\\end{pmatrix}$ ($\\lambda=#{p},#{q}$). $(A^{#{n}})_{12}=\\ ?$","a":"q^n-p^n","v":"(Matrix([[p,q-p],[0,q]])**n)[0,1]","hint":"$A=\\begin{pmatrix}1&1\\\\0&1\\end{pmatrix}\\mathrm{diag}(#{p},#{q})\\begin{pmatrix}1&-1\\\\0&1\\end{pmatrix}$.","sol":{"steps":["$(A^n)_{12}=q^n-p^n=#{q}^{#{n}}-#{p}^{#{n}}$."],"ans":"$#{q^n-p^n}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="interval" data-id="m2-8-int">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-8-t11">11. Нақты меншікті мәндер шарты</h3></div>
+        <p>Аралық түрінде жазыңыз (шексіздік - oo).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}2&a\\\\1&2\\end{pmatrix}$ матрицасының меншікті мәндері нақты болатын $a$ мәндері.","a":"[0; oo)","v":"Interval(0,oo)","hint":"Дискриминант $(\\operatorname{tr})^2-4\\det=16-4(4-a)=4a\\ge0$.","sol":{"steps":["$D=4a\\ge0$."],"ans":"$a\\ge0$"}},{"q":"$A=\\begin{pmatrix}a&1\\\\1&a\\end{pmatrix}$ матрицасының екі меншікті мәні де оң болатын $a$ мәндері.","a":"(1; oo)","v":"Interval.open(1,oo)","hint":"Мәндер $a+1$ және $a-1$.","sol":{"steps":["$\\lambda=a\\pm1>0\\iff a>1$."],"ans":"$a>1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m2-8-pow">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-8-t12">12. Дәреже, кері және із</h3></div>
+        <p>$A$ матрицасының меншікті мәндері $3$ және $-1$. Жауапты санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A^5$ матрицасының ізі.","a":242,"v":"3**5+(-1)**5","hint":"Меншікті мәндер $3^5$ және $(-1)^5$.","sol":{"steps":["$243-1$."],"ans":"$242$"}},{"q":"$\\det(A^3)=\\ ?$","a":-27,"v":"(3*(-1))**3","hint":"$\\det A=3\\cdot(-1)$.","sol":{"steps":["$(-3)^3$."],"ans":"$-27$"}},{"q":"$A^{-1}$ матрицасының меншікті мәндерінің қосындысы $\\left(\\tfrac13+(-1)\\right)=\\ ?$ ( бөлшекпен)","a":"-2/3","v":"Rational(1,3)-1","hint":"$A^{-1}$ мәндері $1/\\lambda$.","sol":{"steps":["$\\tfrac13-1$."],"ans":"$-\\tfrac23$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m2-8-diag">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-8-t13">13. Диагональ матрица D</h3></div>
+        <p>$D=\mathrm{diag}(\lambda_1,\lambda_2)$ матрицасын жазыңыз ($\lambda_1<\lambda_2$).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}4&1\\\\2&3\\end{pmatrix}$. $D=\\ ?$","name":"$D=$","a":[[2,0],[0,5]],"v":"Matrix([[2,0],[0,5]])","hint":"Мәндер 2 және 5.","sol":{"steps":["$\\lambda^2-7\\lambda+10=0$."],"ans":"$\\mathrm{diag}(2,5)$"}},{"q":"$A=\\begin{pmatrix}2&1\\\\1&2\\end{pmatrix}$. $D=\\ ?$","name":"$D=$","a":[[1,0],[0,3]],"v":"Matrix([[1,0],[0,3]])","hint":"Мәндер 1 және 3.","sol":{"steps":["$\\lambda^2-4\\lambda+3=0$."],"ans":"$\\mathrm{diag}(1,3)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m2-8-multi">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-8-t14">14. Диагональдану және еселік</h3></div>
+        <p>Дұрыс жауаптарды белгілеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қай матрицалар диагональданады?","o":["$\\begin{pmatrix}1&1\\\\0&1\\end{pmatrix}$","$\\begin{pmatrix}2&0\\\\0&2\\end{pmatrix}$","$\\begin{pmatrix}2&1\\\\1&2\\end{pmatrix}$","$\\begin{pmatrix}3&1\\\\0&5\\end{pmatrix}$"],"a":[1,2,3],"e":"1-ші: меншікті мән 1 (еселік 2), бірақ тек бір тәуелсіз вектор. 2-ші: диагональ. 3-ші: симметриялы. 4-ші: екі әртүрлі мән (3 және 5).","hint":"Әртүрлі мәндер, симметрия, геометриялық еселік."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m2-8-fib">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-8-t15">15. Бине формуласы</h3></div>
+        <p>$\varphi=\frac{1+\sqrt5}{2}$, $\psi=\frac{1-\sqrt5}{2}$. Жауапты бүтін санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\varphi\\cdot\\psi=\\ ?$","a":-1,"v":"((1+sqrt(5))/2)*((1-sqrt(5))/2)","hint":"$\\dfrac{1-5}{4}$.","sol":{"steps":["$(1-5)/4=-1$."],"ans":"$-1$"}},{"q":"$\\dfrac{\\varphi^6-\\psi^6}{\\sqrt5}=F_6=\\ ?$","a":8,"v":"(Matrix([[1,1],[1,0]])**6)[0,1]","hint":"Фибоначчи: 1, 1, 2, 3, 5, 8.","sol":{"steps":["$F_6=8$."],"ans":"$8$"}},{"q":"$\\varphi+\\psi=\\ ?$","a":1,"v":"1","hint":"$\\frac{1+\\sqrt5+1-\\sqrt5}{2}$.","sol":{"steps":["$2/2$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m2-8-tf2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-8-t16">16. Түсіну тексеруі</h3></div>
+        <p>Әр пікірді талдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A$ қайтымды болса, оның меншікті мәндерінің ешқайсысы нөл емес.","a":true,"e":"Ақиқат: $\\det A=\\lambda_1\\cdots\\lambda_n\\ne0$.","hint":"Анықтауыш - көбейтінді."},{"q":"$A$ және $A^2$ матрицаларының меншікті векторлары ортақ (бар болса).","a":true,"e":"Ақиқат: $A\\mathbf{v}=\\lambda\\mathbf{v}$ ⇒ $A^2\\mathbf{v}=\\lambda^2\\mathbf{v}$.","hint":"$A$-ны қайта қолданыңыз."},{"q":"Нақты матрицаның меншікті мәндері әрдайым нақты.","a":false,"e":"Жалған: $\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$ үшін $\\lambda=\\pm i$.","hint":"Бұру матрицасы."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m2-8-p-markov">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-8-t17">17. Параметрлік: Марков тұрақты күйі</h3></div>
+        <p>Жауапты бөлшек түрінде жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,4]},"b":{"int":[1,4]}},"type":"num","q":"$M=\\begin{pmatrix}1-0{,}#{a}&0{,}#{b}\\\\0{,}#{a}&1-0{,}#{b}\\end{pmatrix}$ матрицасы үшін ($\\lambda=1$ меншікті вектор, қосындысы 1) тұрақты күйдің бірінші координатасы қанша?","a":"b/(a+b)","v":"Rational(b,a+b)","hint":"$M\\mathbf{x}=\\mathbf{x}$: $-0{,}#{a}x_1+0{,}#{b}x_2=0$.","sol":{"steps":["$#{a}x_1=#{b}x_2$, $x_1+x_2=1$.","$x_1=\\dfrac{#{b}}{#{a+b}}$."],"ans":"$\\dfrac{#{b}}{#{a+b}}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m2-8-order2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-8-t18">18. Дәлелдеу реті: тәуелсіздік</h3></div>
+        <p>Екі әртүрлі меншікті мәнге сәйкес векторлардың тәуелсіздігін дәлелдеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A\\mathbf{v}_1=\\lambda_1\\mathbf{v}_1$, $A\\mathbf{v}_2=\\lambda_2\\mathbf{v}_2$, $\\lambda_1\\ne\\lambda_2$ болса, $\\mathbf{v}_1,\\mathbf{v}_2$ тәуелсіз.","steps":["$c_1\\mathbf{v}_1+c_2\\mathbf{v}_2=\\mathbf{0}$ деп аламыз.","$A$-ны қолданамыз: $c_1\\lambda_1\\mathbf{v}_1+c_2\\lambda_2\\mathbf{v}_2=\\mathbf{0}$.","Бастапқы теңдікті $\\lambda_2$-ге көбейтіп шегереміз: $c_1(\\lambda_1-\\lambda_2)\\mathbf{v}_1=\\mathbf{0}$.","$\\lambda_1\\ne\\lambda_2$, $\\mathbf{v}_1\\ne\\mathbf{0}$ болғандықтан $c_1=0$; сонан соң $c_2=0$."],"hint":"Теңдікке $A$-ны қолдану.","sol":{"ans":"Тәуелсіз."}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m2-8-char3">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-8-t19">19. $3\times3$ сипаттамалық көпмүше</h3></div>
+        <p>Өрнекті $x$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}2&0&0\\\\0&3&4\\\\0&4&9\\end{pmatrix}$. $\\det(A-xI)=\\ ?$ (жақшаны ашпай жазуға болады)","a":"(2-x)*(x^2-12*x+11)","v":"Matrix([[2-x,0,0],[0,3-x,4],[0,4,9-x]]).det()","hint":"Бірінші жол бойынша жіктеңіз.","sol":{"steps":["$(2-x)\\big[(3-x)(9-x)-16\\big]=(2-x)(x^2-12x+11)$.","$x^2-12x+11=(x-1)(x-11)$."],"ans":"$(2-x)(x-1)(x-11)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m2-8-reveal">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-8-t20">20. Қадамдық шешім: матрицаны меншікті жұптардан құру</h3></div>
+        <p>Бұл есепті «Кеңес» және «Келесі қадам» батырмаларымен біртіндеп ашып оқыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$2\\times2$ матрица $A$-ның меншікті мәні $\\lambda_1=1$ (вектор $(1,1)$) және $\\lambda_2=3$ (вектор $(1,-1)$). $A$ матрицасын және $A^{10}$-ның бірінші жолын табыңыз.","hint":"$A=PDP^{-1}$, $P$ бағандары — меншікті векторлар.","steps":["$P=\\begin{pmatrix}1&1\\\\1&-1\\end{pmatrix}$, $D=\\mathrm{diag}(1,3)$, $\\det P=-2$, $P^{-1}=\\dfrac12\\begin{pmatrix}1&1\\\\1&-1\\end{pmatrix}$.","$PD=\\begin{pmatrix}1&3\\\\1&-3\\end{pmatrix}$, $A=PDP^{-1}=\\dfrac12\\begin{pmatrix}1+3&1-3\\\\1-3&1+3\\end{pmatrix}=\\begin{pmatrix}2&-1\\\\-1&2\\end{pmatrix}$.","Тексеру: $A(1,1)^T=(1,1)$ ✓; $A(1,-1)^T=(3,-3)=3(1,-1)$ ✓; ізі $4=1+3$, анықтауышы $3$ ✓.","$A^{10}=PD^{10}P^{-1}$, $D^{10}=\\mathrm{diag}(1,3^{10})=\\mathrm{diag}(1,59049)$. $A^{10}$-ның $(1,1)$ элементі: $\\dfrac12(1+59049)=29525$; $(1,2)$ элементі: $\\dfrac12(1-59049)=-29524$."],"ans":"$A=\\begin{pmatrix}2&-1\\\\-1&2\\end{pmatrix}$; $A^{10}$-ның 1-жолы $(29525,\\ -29524)$. Тексеру: ізі $29525+29525=59050=1+3^{10}$."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Google-дың PageRank алгоритмі интернет беттерінің маңыздылығын сілтемелер графынан меншікті вектор ретінде есептейді. Басты компоненттер әдісі (PCA) деректердің ковариация матрицасының меншікті векторларын табады: ең үлкен меншікті мәнге сәйкес бағыт деректер ең көп таралған бағыт. Құрылыс инженериясында көпірдің табиғи тербеліс жиіліктері — қатаңдық матрицасының меншікті мәндері. Кванттық механикада физикалық шамалар — операторлардың меншікті мәндері. Экологияда популяцияның өсу жылдамдығы Лесли матрицасының үлкен меншікті мәні. Дифференциалдық теңдеулер жүйесі $\mathbf{x}'=A\mathbf{x}$ шешімдері $e^{\lambda t}\mathbf{v}$ түрінде (9-пән).</p>
+      <p><b>Мини-жоба: «Дәрежелік итерация және PageRank».</b> Төмендегі бағдарлама үлкен меншікті мәнді дәрежелік итерациямен табады: кез келген векторды $A$-ға қайта-қайта көбейтіп нормалау, вектор басым меншікті бағытқа жақындайды. Сонан соң төрт беттен тұратын кішкентай «интернеттің» PageRank мәндерін есептейді, Фибоначчи сандарын Бине формуласымен тексереді және Марков тізбегінің тұрақты күйін табады.</p>
+<pre data-lang="python"><code class="language-python">import math
+
+def matvec(A, v):
+    return [sum(a * x for a, x in zip(row, v)) for row in A]
+
+def power_iteration(A, steps=60):
+    v = [1.0] * len(A)
+    for _ in range(steps):
+        w = matvec(A, v)
+        norm = math.sqrt(sum(x * x for x in w))
+        v = [x / norm for x in w]
+    Av = matvec(A, v)
+    lam = sum(a * b for a, b in zip(Av, v))      # Рэлей қатынасы
+    return lam, v
+
+lam, v = power_iteration([[4, 1], [2, 3]])
+print(round(lam, 6), [round(x, 4) for x in v])    # 5.0, (0.7071, 0.7071)
+
+# Екі өлшемді меншікті мәндер формуламен
+def eig2(a, b, c, d):
+    tr, det = a + d, a * d - b * c
+    disc = tr * tr - 4 * det
+    if disc < 0:
+        return None
+    s = math.sqrt(disc)
+    return (tr - s) / 2, (tr + s) / 2
+
+print(eig2(4, 1, 2, 3), eig2(0, -1, 1, 0))
+
+# PageRank: 4 бет, сілтемелер: 0->1,2; 1->2; 2->0; 3->2
+links = {0: [1, 2], 1: [2], 2: [0], 3: [2]}
+n, d = 4, 0.85
+M = [[0.0] * n for _ in range(n)]
+for j, outs in links.items():
+    for i in outs:
+        M[i][j] = 1 / len(outs)
+G = [[d * M[i][j] + (1 - d) / n for j in range(n)] for i in range(n)]
+rank = [1 / n] * n
+for _ in range(100):
+    rank = matvec(G, rank)
+print([round(x, 4) for x in rank], round(sum(rank), 4))
+
+# Бине формуласы
+phi, psi = (1 + 5 ** 0.5) / 2, (1 - 5 ** 0.5) / 2
+print([round((phi ** k - psi ** k) / 5 ** 0.5) for k in range(1, 11)])
+
+# Марков тізбегі: тұрақты күй
+x = [1.0, 0.0]
+P = [[0.9, 0.2], [0.1, 0.8]]
+for _ in range(60):
+    x = matvec(P, x)
+print([round(t, 4) for t in x])               # [0.6667, 0.3333]
+</code></pre>
+      <p><b>Код қалай жұмыс істейді.</b> <code>power_iteration</code> әр қадамда $\mathbf{v}\leftarrow A\mathbf{v}/|A\mathbf{v}|$ жасайды. $\mathbf{v}_0$ меншікті векторлардың комбинациясы болғандықтан, $A^k\mathbf{v}_0=c_1\lambda_1^k\mathbf{w}_1+c_2\lambda_2^k\mathbf{w}_2$, ал $|\lambda_1|>|\lambda_2|$ болса, бірінші мүше басым болып, бағыт $\mathbf{w}_1$-ге жақындайды; жақындау жылдамдығы $|\lambda_2/\lambda_1|^k$ (бұл жерде $0{,}4^k$). Рэлей қатынасы $\mathbf{v}\cdot A\mathbf{v}$ меншікті мәнді береді. PageRank-те «Google матрицасы» $G=dM+(1-d)/n$ барлық бетке кездейсоқ өту мүмкіндігін қосады; оның басым меншікті мәні 1, ал тұрақты вектор итерация арқылы табылады. Нәтижеде 3-бетке (индекс 2) көп сілтеме бар, ол ең жоғары ($\approx0{,}394$); 4-бетке (индекс 3) ешкім сілтемейді, тек кездейсоқ өту қалады: $0{,}15/4=0{,}0375$. Ең соңғы блок тұрақты күйді $(2/3,1/3)$ береді (4-мысал).</p>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Дәрежелік итерацияны $\begin{pmatrix}2&amp;1\\1&amp;2\end{pmatrix}$ үшін іске қосыңыз: жақындау жылдамдығын $|\lambda_2/\lambda_1|=1/3$ формуласымен салыстырыңыз (қанша қадам керек?). Бастапқы вектор $(1,-1)$ болса не болады (ол $\lambda=1$ меншікті вектор)?</li>
+        <li>PageRank-ті $d=0{,}5$ және $d=0{,}95$ үшін есептеп, нәтижелер қалай өзгеретінін түсіндіріңіз. 4-бет үшін мән неге $(1-d)/n$?</li>
+        <li>Кейли–Гамильтон тексерісі: $A=\begin{pmatrix}4&amp;1\\2&amp;3\end{pmatrix}$ үшін $A^2-7A+10I$ нөл матрица екенін <code>matvec</code>-ті қолданып бағдарламалаңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Меншікті жұп</td><td>$A\mathbf{v}=\lambda\mathbf{v}$</td><td>$\mathbf{v}\ne\mathbf{0}$</td></tr>
+        <tr><td>Сипаттамалық теңдеу</td><td>$\det(A-\lambda I)=0$</td><td>$A$ квадрат</td></tr>
+        <tr><td>$2\times2$ жағдай</td><td>$\lambda^2-\operatorname{tr}A\,\lambda+\det A=0$</td><td>-</td></tr>
+        <tr><td>Із және анықтауыш</td><td>$\sum\lambda_i=\operatorname{tr}A$, $\prod\lambda_i=\det A$</td><td>еселікпен, комплексті қоса</td></tr>
+        <tr><td>Меншікті кеңістік</td><td>$E_\lambda=N(A-\lambda I)$</td><td>-</td></tr>
+        <tr><td>Тәуелсіздік</td><td>әртүрлі $\lambda$ ⇒ тәуелсіз векторлар</td><td>-</td></tr>
+        <tr><td>Диагональдау</td><td>$A=PDP^{-1}$</td><td>$n$ тәуелсіз меншікті вектор</td></tr>
+        <tr><td>Дәреже</td><td>$A^k=PD^kP^{-1}$</td><td>диагональданады</td></tr>
+        <tr><td>Симметриялы</td><td>нақты $\lambda$, ортогональ векторлар, $A=QDQ^T$</td><td>$A^T=A$</td></tr>
+        <tr><td>Кейли–Гамильтон</td><td>$A^2-\operatorname{tr}A\,A+\det A\,I=O$</td><td>$2\times2$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m2-8-self">
+        <li><input type="checkbox"> <span>Мен меншікті мән мен меншікті вектордың анықтамасын айтып, берілген жұпты тексеремін.</span></li>
+        <li><input type="checkbox"> <span>Мен сипаттамалық теңдеуді құрып, $2\times2$ және үшбұрышты $3\times3$ матрицаның меншікті мәндерін табамын.</span></li>
+        <li><input type="checkbox"> <span>Мен әр меншікті мәнге сәйкес меншікті кеңістіктің базисін табамын.</span></li>
+        <li><input type="checkbox"> <span>Мен матрицаны диагональдап ($A=PDP^{-1}$), $A^k$ мен $A^{-1}$ есептеймін.</span></li>
+        <li><input type="checkbox"> <span>Мен матрицаның диагональданбайтынын геометриялық және алгебралық еселіктер арқылы анықтаймын.</span></li>
+        <li><input type="checkbox"> <span>Мен меншікті мәндерді Фибоначчи, Марков тізбегі және PageRank есептеріне қолданамын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="a">
+<p class="q-text">1. [[4, 1], [2, 3]] матрицасының меншікті мәндері қандай?</p>
+<label><input type="radio" value="a"> 5 және 2</label>
+<label><input type="radio" value="b"> 4 және 3</label>
+<label><input type="radio" value="c"> 7 және 10</label>
+<label><input type="radio" value="d"> 1 және 6</label>
+<p class="explain">λ² − 7λ + 10 = 0 (із 7, анықтауыш 10): λ = 5 және 2. Диагональ элементтері (4, 3) — меншікті мәндер емес.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. Меншікті мәндері 2 және 5 болатын матрицаның анықтауышы мен ізі қандай?</p>
+<label><input type="radio" value="a"> det = 7, tr = 10</label>
+<label><input type="radio" value="b"> det = 3, tr = 7</label>
+<label><input type="radio" value="c"> det = 10, tr = 7</label>
+<label><input type="radio" value="d"> det = 10, tr = 10</label>
+<p class="explain">Көбейтінді (2·5 = 10) — анықтауыш, қосынды (2 + 5 = 7) — із.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. [[2, 1], [0, 2]] матрицасы туралы қай пікір дұрыс?</p>
+<label><input type="radio" value="a"> диагональданады</label>
+<label><input type="radio" value="b"> диагональданбайды</label>
+<label><input type="radio" value="c"> меншікті мәндері 2 және 1</label>
+<label><input type="radio" value="d"> қайтымсыз</label>
+<p class="explain">λ = 2 (алгебралық еселік 2), ал меншікті кеңістік тек (1, 0) бағытында (геометриялық еселік 1). Екі тәуелсіз вектор жоқ.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. A = PDP⁻¹ болса, A⁵ неге тең?</p>
+<label><input type="radio" value="a"> P⁵DP⁻⁵</label>
+<label><input type="radio" value="b"> P⁻¹D⁵P</label>
+<label><input type="radio" value="c"> 5PDP⁻¹</label>
+<label><input type="radio" value="d"> PD⁵P⁻¹</label>
+<p class="explain">Көбейткенде ортадағы P⁻¹P = I қысқарады: A⁵ = PD⁵P⁻¹, ал D⁵ — диагональ элементтерін 5-ші дәрежеге шығару.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. [[0, −1], [1, 0]] (90°-қа бұру) матрицасының нақты меншікті мәндері бар ма?</p>
+<label><input type="radio" value="a"> жоқ: λ² + 1 = 0</label>
+<label><input type="radio" value="b"> бар: λ = ±1</label>
+<label><input type="radio" value="c"> бар: λ = 0</label>
+<label><input type="radio" value="d"> бар: λ = 1 және i</label>
+<p class="explain">Сипаттамалық теңдеу λ² + 1 = 0, түбірлері ±i (комплекс). Ешбір нақты вектор өз түзуінде қалмайды.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. Фибоначчи матрицасы [[1, 1], [1, 0]] үшін үлкен меншікті мән қандай?</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 2</label>
+<label><input type="radio" value="c"> (1 + √5)/2 ≈ 1,618</label>
+<label><input type="radio" value="d"> √5</label>
+<p class="explain">λ² − λ − 1 = 0 ⇒ λ = (1 ± √5)/2. Үлкен мән алтын қима φ, Фибоначчи сандарының өсу жылдамдығы.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. Нақты симметриялы матрицаның әртүрлі меншікті мәндеріне сәйкес меншікті векторлары қандай?</p>
+<label><input type="radio" value="a"> параллель</label>
+<label><input type="radio" value="b"> өзара ортогональ</label>
+<label><input type="radio" value="c"> тең ұзындықты</label>
+<label><input type="radio" value="d"> тәуелді</label>
+<p class="explain">(λ₁ − λ₂)(v₁·v₂) = 0 және λ₁ ≠ λ₂ болғандықтан v₁·v₂ = 0.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. Марков тізбегінің M = [[0,9; 0,2], [0,1; 0,8]] матрицасы үшін тұрақты күй қандай?</p>
+<label><input type="radio" value="a"> (1/2, 1/2)</label>
+<label><input type="radio" value="b"> (0,9; 0,1)</label>
+<label><input type="radio" value="c"> (1/3, 2/3)</label>
+<label><input type="radio" value="d"> (2/3, 1/3)</label>
+<p class="explain">λ = 1 меншікті вектор (2, 1); қосындысы 1 болуы үшін бөлеміз: (2/3, 1/3). Екінші мән 0,7, оның әсері 0,7ᵏ → 0.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-13.html"><small>Алдыңғы</small>← 2 · Сызықтық алгебра · 7-сабақ: Векторлық кеңістік, базис және сызықтық бейнелеу</a>
