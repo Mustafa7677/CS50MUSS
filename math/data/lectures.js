@@ -2027,7 +2027,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -2068,6 +2068,62 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
    }
   ],
   "minutes": 25,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-37",
+  "num": "6 · Көп айнымалы анализ · 2-сабақ",
+  "title": "Шек, үзіліссіздік және дербес туындылар",
+  "url": "math/lectures/week-37.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: бағыт таңдау және бір айнымалыны «қатыру»",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 23,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2411,7 +2467,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 20,
+  "minutes": 21,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2427,7 +2483,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -2483,7 +2539,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -2523,7 +2579,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 20,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
