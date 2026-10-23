@@ -154,7 +154,7 @@ def write_math_plan():
     """math/data/plan.js: браузер үшін жоспар (math-course.js: формулалар, сөздік, жаттықтырғыш, «қайдан бастау»)."""
     subs = []
     for i, sb in enumerate(math_plan.SUBJECTS):
-        subs.append({"no": sb[0], "slug": sb[1], "kz": sb[2], "en": sb[3], "group": sb[4], "pre": sb[5], "start": math_plan.STARTS[i], "count": len(sb[7]),
+        subs.append({"no": sb[0], "slug": sb[1], "kz": sb[2], "en": sb[3], "group": sb[4], "start": math_plan.STARTS[i], "count": len(sb[7]),
                      "lessons": [t for t, _ in sb[7]]})
     out = ("window.CS50KZ_MATH_PLAN = " + json.dumps({"total": math_plan.TOTAL, "subjects": subs}, ensure_ascii=False, separators=(",", ":")) + ";\n")
     (ROOT / "math" / "data").mkdir(parents=True, exist_ok=True)
@@ -723,7 +723,7 @@ DESC_TEMPLATES = {
     "cpp/index.html": "C++ бағдарламалау: авторлық қазақша курс. Жад пен көрсеткіштер, ООП, STL, шаблондар және өз жобаң. {lect_cpp} лекция, тесттер, жаттығулар.",
     "java/index.html": "Java бағдарламалау: авторлық қазақша курс. Нысандар, интерфейстер, Collections, Stream API, көп ағын және өз жобаң. {lect_java} лекция, тесттер, жаттығулар.",
     "en/index.html": "Ағылшын тілі A0-C1: авторлық қазақша курс. Грамматика, сөздік, оқу, жазу, тыңдау мен айту жаттығулары, IT-ағылшын. 24 сабақ, деңгей анықтау тесті.",
-    "math/index.html": "Математика: авторлық қазақша курс. 24 пән: сызықтық алгебра, анализ, ықтималдық, дискретті математика, сандар теориясы, топология және т.б. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
+    "math/index.html": "Математика: авторлық қазақша курс. 24 пән: Linear Algebra, Calculus, Probability Theory, Discrete Mathematics, Number Theory, Topology және т.б. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
 }
 INDEX_LD = "Гарвард университетінің CS50x курсы қазақ тілінде: {lect_x} лекция, тесттер, тапсырмалар, интерактив визуализациялар."
 

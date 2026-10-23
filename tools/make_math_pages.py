@@ -113,7 +113,7 @@ def lesson_label(n):
 
 
 def subj_h(s):
-    return f'{s["no"]}. {s["kz"]}'
+    return f'{s["no"]}. {s["en"]}'
 
 
 # ---------------------------------------------------------------- курс беті
@@ -129,20 +129,14 @@ def card(n):
 
 
 def subject_block(s):
-    pre = ""
-    if s["pre"]:
-        links = ", ".join(f'<a href="#subj-{p}">{p}. {a(SUBJ[p - 1]["kz"])}</a>' for p in s["pre"])
-        pre = f'\n        <p class="mx-spre">Алғышарт: {links}</p>'
-    else:
-        pre = '\n        <p class="mx-spre">Алғышарт: жоқ (орта мектеп алгебрасы жеткілікті).</p>'
     cards = "\n".join(card(s["start"] + k) for k in range(s["count"]))
     return f'''      <section class="mx-subj" id="subj-{s["no"]}" data-subj="{s["no"]}" data-slug="{s["slug"]}" aria-labelledby="s{s["no"]}-h">
         <div class="mx-shead">
-          <h3 id="s{s["no"]}-h"><span class="mx-snum" aria-hidden="true">{s["no"]}</span>{a(s["kz"])}<span class="mx-sen">{a(s["en"])}</span></h3>
+          <h3 id="s{s["no"]}-h"><span class="mx-snum" aria-hidden="true">{s["no"]}</span>{a(s["en"])}</h3>
           <div class="mx-sstat"><span>Дайын: <b class="mx-sready">0</b> / жоспар: <b class="mx-splan">{s["count"]}</b></span><span>оқылды: <b class="mx-sread">0</b></span></div>
         </div>
         <div class="mx-sbar" aria-hidden="true"><i></i></div>
-        <p class="mx-sdesc">{a(s["desc"])}</p>{pre}
+        <p class="mx-sdesc">{a(s["desc"])}</p>
         <div class="weeks course-weeks">
 {cards}
         </div>
@@ -154,8 +148,8 @@ def index_page():
               '<a href="../ai/">AI</a><a href="../web/">Web</a><a href="../cpp/">C++</a><a href="../java/">Java</a><a href="../en/">English</a>'
               '<a class="on" aria-current="page" href="../math/">Math</a></nav>')
     groups = []
-    for g, gname, gdesc in (("H", "Жоғары математика", "17 пән: орта мектептен кейінгі негізгі математика - алгебрадан бастап есептеуге, ықтималдыққа, дискретті математикаға және оңтайландыруға дейін. Әр пәннің сабақтарын ретімен оқыңыз."),
-                            ("A", "Жетілдірілген математика", "7 пән: қатаң дәлелдеу тілімен жазылған курстар. Алдымен тиісті жоғары математика пәндерін оқып алған жөн.")):
+    for g, gname, gdesc in (("H", P.GROUPS["H"], "17 пән: орта мектептен кейінгі негізгі математика - алгебрадан бастап есептеуге, ықтималдыққа, дискретті математикаға және оңтайландыруға дейін. Әр пән өз алдына тәуелсіз: кез келгенін таңдап оқуға болады."),
+                            ("A", P.GROUPS["A"], "7 пән: қатаң дәлелдеу тілімен жазылған курстар. Әр пән өз алдына тәуелсіз.")):
         blocks = "\n".join(subject_block(s) for s in SUBJ if s["group"] == g)
         groups.append(f'''      <h2 class="mx-group-h" id="group-{g.lower()}">{gname}</h2>
       <p>{gdesc}</p>
@@ -163,9 +157,10 @@ def index_page():
     tools = [("formulas.html", "Формулалар анықтамалығы", "Пән бойынша формулалар, іздеу, шарттары мен сабаққа сілтеме. Формулалар KaTeX-пен көрсетіледі."),
              ("glossary.html", "Математика сөздігі", "Терминдер қазақша мен ағылшынша: қысқа анықтама және қай сабақта түсіндірілгені."),
              ("practice.html", "Жаттықтырғыш", "Кездейсоқ коэффициентті есептер: пән мен қиындықты таңдап, серия шешіңіз. Әр сайын жаңа сандар.")]
+    jump = " ".join(f'<a href="#subj-{x["no"]}">{a(x["en"])}</a>' for x in SUBJ)
     tool_html = "\n".join(f'        <a class="oc-card en-tool-card" href="{h}"><h3>{t}</h3><p>{d}</p></a>' for h, t, d in tools)
     return head("Math: Математика - CS50 қазақша",
-                "Математика: авторлық қазақша курс. 24 пән: сызықтық алгебра, анализ, ықтималдық, дискретті математика, сандар теориясы, топология және т.б. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
+                "Математика: авторлық қазақша курс. 24 пән: Linear Algebra, Calculus, Probability Theory, Discrete Mathematics, Number Theory, Topology және т.б. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
                 "../", katex=False, plan=True) + shell("../") + f'''
   <div class="layout single wide">
     <article class="content course-home own-course math-course" id="main">
@@ -176,7 +171,7 @@ def index_page():
           <h1>Математика <span>24 пән</span></h1>
           <p>Жоғары математиканы нөлден бастап түсіндіріп оқыңыз: теория, анықтама, теорема, формулаларды қорытып шығару, қадамдық шешілген мысалдар, интерактивті есептер мен визуализация. Әр пән өз алғышарттарымен байланысқан.</p>
           <div class="hero-actions">
-            <a class="btn gold" href="#start">Қайдан бастау керек?</a>
+            <a class="btn gold" href="#weeks">Пәнді таңдау</a>
             <a class="btn ghost" href="formulas.html">Формулалар</a>
             <a class="btn ghost" href="glossary.html">Сөздік</a>
             <a class="btn ghost" href="practice.html">Жаттықтырғыш</a>
@@ -203,14 +198,9 @@ f = x**<span class="f">3</span> + <span class="f">2</span>*x
       <!-- /build:route -->
       {subnav("", "home")}
       <section class="mx-start" id="start" aria-labelledby="start-h" data-math-app="home">
-        <h2 id="start-h">Қайдан бастау керек?</h2>
-        <p>Мақсатыңыздағы пәнді таңдаңыз: төменде оған жетуге қажет пәндер ретімен шығады. Білетін пәніңізді «білемін» деп белгілесеңіз, жол қысқарады. Пәннің дайын сабақтары болса, келесі сабаққа түймесі шығады.</p>
-        <label>Мақсатты пән: <select class="mx-sel mx-target" aria-label="Мақсатты пән"></select></label>
-        <ol class="mx-path" aria-live="polite"></ol>
-        <h3>Пәндер арасындағы байланыс</h3>
-        <p class="mx-note">Көрсеткі «алдымен осы пән» дегенді білдіреді. Таңдалған мақсатқа апаратын жол жуан сызықпен көрсетіледі. Графты бүйіріне жылжытуға болады.</p>
-        <div class="mx-graph" role="region" aria-label="Пәндер графы" tabindex="0"></div>
-        <noscript><p class="callout warn">Жол мен граф JavaScript арқылы жұмыс істейді. Төмендегі пәндерді ретімен оқуға болады.</p></noscript>
+        <h2 id="start-h">Пәнді таңдаңыз</h2>
+        <p>Пәндер бір-біріне байланбайды: кез келгенін ашып, оқи беруге болады. Қажет ұғымдар сабақтың өзінде қысқаша еске салынады. Пән атаулары ағылшынша, түсіндірме қазақша.</p>
+        <nav class="mx-jump" aria-label="Пәндерге өту">{jump}</nav>
       </section>
       <h2 id="weeks">Пәндер мен сабақтар</h2>
       <p>24 пән, әр пәнде 5-8 сабақ. Әр сабақта мақсаттар, интуиция, анықтама, теорема, қорытып шығару, қадамдық шешілген мысалдар, жиі қателер, визуализация, интерактивті есептер, қорытынды формулалар және қорытынды тест бар. Жазылып біткен сабақтар ашық, қалғандары «Жақында» белгісімен тұр.</p>
@@ -329,7 +319,6 @@ def skeleton(n):
         next_ = f'<a class="next" href="week-{n + 1}.html"><small>Келесі</small>{lesson_label(n + 1)}: {a(ns["lessons"][nk][0])} →</a>'
     else:
         next_ = ""
-    pre_links = " ".join(f'<a href="../index.html#subj-{q}">{q}. {a(SUBJ[q - 1]["kz"])}</a>' for q in s["pre"]) or "орта мектеп алгебрасы"
     return head(f"Math {lab}: {t} - CS50 қазақша", d, p, katex=True, plan=False, viz=True) + shell(p) + f'''
   <div class="layout">
     <aside class="toc">
@@ -354,8 +343,8 @@ def skeleton(n):
       <h2 id="goals">Сабақ мақсаттары</h2>
       <ul><li>ЖАЗЫҢЫЗ: 4-6 өлшенетін мақсат.</li></ul>
 
-      <h2 id="prereq">Алғышарттар</h2>
-      <p class="math-prereq">Бұл сабаққа: {pre_links}. ЖАЗЫҢЫЗ: нақты сабақтарға сілтеме.</p>
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">ЖАЗЫҢЫЗ: осы сабаққа қажет ұғымдарды 2-4 сөйлеммен осы жерде еске түсіріңіз (басқа пәнге сілтеме БЕРМЕҢІЗ).</p>
 
       <h2 id="intuition">Интуиция</h2>
       <p>ЖАЗЫҢЫЗ: формуласыз, суретпен/мысалмен түсіндіру.</p>

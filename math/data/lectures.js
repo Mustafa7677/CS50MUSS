@@ -403,7 +403,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -459,7 +459,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -515,7 +515,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -555,7 +555,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 24,
+  "minutes": 25,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -571,7 +571,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -627,7 +627,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -683,7 +683,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -739,7 +739,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -795,7 +795,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -842,7 +842,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-15",
-  "num": "3 · Аналитикалық геометрия · 1-сабақ",
+  "num": "Analytic Geometry · 1-сабақ",
   "title": "Жазықтықтағы координаталар",
   "url": "math/lectures/week-15.html",
   "topics": [
@@ -851,7 +851,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -898,7 +898,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-16",
-  "num": "3 · Аналитикалық геометрия · 2-сабақ",
+  "num": "Analytic Geometry · 2-сабақ",
   "title": "Түзу және оның теңдеулері",
   "url": "math/lectures/week-16.html",
   "topics": [
@@ -907,7 +907,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -954,7 +954,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-17",
-  "num": "3 · Аналитикалық геометрия · 3-сабақ",
+  "num": "Analytic Geometry · 3-сабақ",
   "title": "Шеңбер және эллипс",
   "url": "math/lectures/week-17.html",
   "topics": [
@@ -963,7 +963,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1010,7 +1010,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-18",
-  "num": "3 · Аналитикалық геометрия · 4-сабақ",
+  "num": "Analytic Geometry · 4-сабақ",
   "title": "Гипербола және парабола",
   "url": "math/lectures/week-18.html",
   "topics": [
@@ -1019,7 +1019,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1066,7 +1066,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-19",
-  "num": "3 · Аналитикалық геометрия · 5-сабақ",
+  "num": "Analytic Geometry · 5-сабақ",
   "title": "Екінші ретті қисықтар және түрлендірулер",
   "url": "math/lectures/week-19.html",
   "topics": [
@@ -1075,7 +1075,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1122,7 +1122,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-20",
-  "num": "3 · Аналитикалық геометрия · 6-сабақ",
+  "num": "Analytic Geometry · 6-сабақ",
   "title": "Кеңістіктегі жазықтық, түзу және беттер",
   "url": "math/lectures/week-20.html",
   "topics": [
@@ -1131,7 +1131,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1635,7 +1635,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1675,7 +1675,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1691,7 +1691,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1731,7 +1731,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1747,7 +1747,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1803,7 +1803,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1859,7 +1859,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1915,7 +1915,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1971,7 +1971,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -2139,7 +2139,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -2195,7 +2195,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -2241,6 +2241,62 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
+  "id": "week-45",
+  "num": "Vector Calculus · 3-сабақ",
+  "title": "Қисық сызықты интеграл",
+  "url": "math/lectures/week-45.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: жолдың бойымен қосу",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 20,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
   "id": "week-49",
   "num": "8 · Тізбектер және қатарлар · 1-сабақ",
   "title": "Сандық тізбектер және олардың шегі",
@@ -2251,7 +2307,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -2311,7 +2367,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -2361,6 +2417,62 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
+  "id": "week-51",
+  "num": "8 · Тізбектер және қатарлар · 3-сабақ",
+  "title": "Оң мүшелі қатарлардың жинақтылық белгілері",
+  "url": "math/lectures/week-51.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: оң қосылғыштар және «жеткілікті тез кішірею»",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 18,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
   "id": "week-55",
   "num": "9 · Жай дифференциалдық теңдеулер · 1-сабақ",
   "title": "Негізгі ұғымдар және бағыт өрісі",
@@ -2371,7 +2483,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -2427,7 +2539,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
