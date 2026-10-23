@@ -1,3 +1,35 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Интегралдық есептеу» пәні. Формат: §9.2 (терминдер). */
+/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Интегралдық есептеу» пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2 (терминдер). */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
-window.CS50KZ_MATH_TERMS.intcalc = [];
+window.CS50KZ_MATH_TERMS.intcalc = [
+  {"id":"ic-t-antiderivative","kz":"алғашқы функция","en":"antiderivative","def":"$F'=f$ болатын $F$ функциясы.","lesson":1},
+  {"id":"ic-t-indefinite","kz":"анықталмаған интеграл","en":"indefinite integral","def":"Барлық алғашқы функциялардың жиыны $F(x)+C$.","lesson":1},
+  {"id":"ic-t-const","kz":"интегралдау тұрақтысы","en":"constant of integration","def":"Алғашқы функциялардың тұрақтыға ерекшелігін білдіретін $C$.","lesson":1},
+  {"id":"ic-t-integrand","kz":"интеграл астындағы функция","en":"integrand","def":"Интеграл белгісінің астындағы $f(x)$ функциясы.","lesson":1},
+  {"id":"ic-t-initial","kz":"бастапқы шарт","en":"initial condition","def":"Тұрақты $C$-ны анықтайтын $F(x_0)=y_0$ шарты.","lesson":1},
+  {"id":"ic-t-particular","kz":"жеке алғашқы функция","en":"particular antiderivative","def":"Бастапқы шартпен таңдалған бір алғашқы функция.","lesson":1},
+  {"id":"ic-t-partition","kz":"бөлу","en":"partition","def":"Кесіндінің $a=x_0<\\dots<x_n=b$ нүктелерімен бөлінуі.","lesson":2},
+  {"id":"ic-t-riemann-sum","kz":"Риман қосындысы","en":"Riemann sum","def":"$\\sum f(\\xi_i)\\Delta x_i$ қосындысы.","lesson":2},
+  {"id":"ic-t-definite","kz":"анықталған интеграл","en":"definite integral","def":"Риман қосындыларының шегі $\\int_a^bf\\,dx$.","lesson":2},
+  {"id":"ic-t-limits","kz":"интегралдау шегі","en":"limits of integration","def":"Анықталған интегралдың төменгі және жоғарғы шектері.","lesson":2},
+  {"id":"ic-t-integrable","kz":"интегралданады","en":"Riemann integrable","def":"Функцияның Риман қосындыларының шегі бар болуы.","lesson":2},
+  {"id":"ic-t-average","kz":"орташа мән","en":"average value","def":"$\\frac{1}{b-a}\\int_a^bf\\,dx$ саны.","lesson":2},
+  {"id":"ic-t-variable-limit","kz":"айнымалы жоғарғы шекті интеграл","en":"integral with variable upper limit","def":"$\\Phi(x)=\\int_a^xf(t)\\,dt$ функциясы.","lesson":3},
+  {"id":"ic-t-displacement","kz":"орын ауыстыру","en":"displacement","def":"Жылдамдықтың интегралы $\\int v\\,dt$; бағытты ескереді.","lesson":3},
+  {"id":"ic-t-distance","kz":"жүрілген жол","en":"distance travelled","def":"$\\int|v|\\,dt$; әрдайым теріс емес.","lesson":3},
+  {"id":"ic-t-differential","kz":"дифференциал","en":"differential","def":"$du=\\varphi'(x)\\,dx$ жазбасы.","lesson":4},
+  {"id":"ic-t-substitution","kz":"айнымалыны ауыстыру","en":"substitution","def":"Интегралды жаңа айнымалыға көшіру әдісі.","lesson":4},
+  {"id":"ic-t-lbp","kz":"LIATE ережесі","en":"LIATE rule","def":"Бөліктеуде $u$ таңдау тәртібі.","lesson":5},
+  {"id":"ic-t-by-parts","kz":"бөліктеп интегралдау","en":"integration by parts","def":"$\\int u\\,dv=uv-\\int v\\,du$ әдісі.","lesson":5},
+  {"id":"ic-t-wallis","kz":"Валлис интегралы","en":"Wallis integral","def":"$\\int_0^{\\pi/2}\\sin^nx\\,dx$ интегралы.","lesson":5},
+  {"id":"ic-t-rational","kz":"рационал функция","en":"rational function","def":"Екі көпмүшеліктің қатынасы.","lesson":6},
+  {"id":"ic-t-proper","kz":"дұрыс бөлшек","en":"proper fraction","def":"Алымының дәрежесі бөлгіштен кіші рационал бөлшек.","lesson":6},
+  {"id":"ic-t-partial","kz":"қарапайым бөлшектерге жіктеу","en":"partial fraction decomposition","def":"Дұрыс бөлшекті қарапайым бөлшектердің қосындысына жіктеу.","lesson":6},
+  {"id":"ic-t-universal","kz":"универсал ауыстыру","en":"Weierstrass substitution","def":"$t=\\tan\\frac x2$ ауыстыруы.","lesson":6},
+  {"id":"ic-t-orthogonal","kz":"ортогоналды жүйе","en":"orthogonal system","def":"Көбейтіндісінің интегралы нөлге тең функциялар жүйесі.","lesson":6},
+  {"id":"ic-t-improper","kz":"меншіксіз интеграл","en":"improper integral","def":"Шегі шексіз не функциясы шектелмеген интеграл.","lesson":7},
+  {"id":"ic-t-converge","kz":"жинақталады","en":"converges","def":"Меншіксіз интегралдың шегі ақырлы болуы.","lesson":7},
+  {"id":"ic-t-diverge","kz":"жинақталмайды","en":"diverges","def":"Меншіксіз интегралдың шегі жоқ не шексіз болуы.","lesson":7},
+  {"id":"ic-t-volume-rev","kz":"айналу денесі","en":"solid of revolution","def":"Қисықты осьтен айналдырудан шыққан дене.","lesson":7},
+  {"id":"ic-t-arc","kz":"доға ұзындығы","en":"arc length","def":"Қисықтың ұзындығы $\\int\\sqrt{1+f'^2}\\,dx$.","lesson":7},
+  {"id":"ic-t-work","kz":"жұмыс","en":"work","def":"Айнымалы күштің түзу бойымен жұмысы $\\int F\\,dx$.","lesson":7}
+];

@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math 2 · Сызықтық алгебра · 7-сабақ: Векторлық кеңістік, базис және сызықтық бейнелеу - CS50 қазақша">
-  <meta property="og:description" content="Математика, 2 · Сызықтық алгебра · 7-сабақ: Векторлық кеңістік, базис және сызықтық бейнелеу. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Векторлық кеңістік, ішкі кеңістік, сызықтық тәуелсіздік, базис пен өлшем, ядро мен образ, ранг–нөлдік теоремасы, сызықтық бейнелеудің матрицасы және базисті ауыстыру.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-13.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math 2 · Сызықтық алгебра · 7-сабақ: Векторлық кеңістік, базис және сызықтық бейнелеу - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-13.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, 2 · Сызықтық алгебра · 7-сабақ: Векторлық кеңістік, базис және сызықтық бейнелеу. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Векторлық кеңістік, ішкі кеңістік, сызықтық тәуелсіздік, базис пен өлшем, ядро мен образ, ранг–нөлдік теоремасы, сызықтық бейнелеудің матрицасы және базисті ауыстыру.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,521 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="13">
         <div class="num">2 · Сызықтық алгебра · 7-сабақ</div>
         <h1>Векторлық кеңістік, базис және сызықтық бейнелеу</h1>
-        <p>Ішкі кеңістік, сызықтық тәуелсіздік, базис, өлшем, сызықтық бейнелеу матрицасы.</p>
+        <p>Бұл сабақта вектор ұғымын кеңейтіп, көпмүшелер, матрицалар мен функциялар да «вектор» болатын жалпы векторлық кеңістік теориясын құрасыз. Базис пен өлшем ұғымдары кеңістікті «координаталар жүйесімен» сипаттауға мүмкіндік береді, ал сызықтық бейнелеудің ядросы мен образы мен ранг–нөлдік теоремасы жүйелердің шешімдер құрылымын түсіндіреді. Бұл сабақ курстың ең абстрактілі бөлігі, бірақ оның барлық идеясы алдыңғы сабақтардағы нақты есептеулерден шығады.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-2">Сызықтық алгебра</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-2">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны жасанды интеллект көмегімен дайындалған, сондықтан математик-оқытушымен тексеріп алған жөн. Бұл ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>векторлық кеңістік аксиомаларын айтып, берілген жиынның (көпмүшелер, матрицалар, функциялар) векторлық кеңістік не ішкі кеңістік екенін тексеру;</li>
+        <li>векторлар жүйесінің сызықтық тәуелсіздігін Гаусс әдісі (ранг) арқылы анықтау;</li>
+        <li>кеңістіктің базисін таңдап, өлшемін табу, вектордың базистегі координаталарын есептеу;</li>
+        <li>матрицаның бағандар кеңістігі мен ядросының (нөл кеңістігінің) базисін табу және ранг–нөлдік теоремасын қолдану;</li>
+        <li>сызықтық бейнелеуді анықтап, оның матрицасын құру, ядросы мен образын табу;</li>
+        <li>базисті ауыстырғанда координаталар мен матрица қалай өзгеретінін есептеп, Python-да бағдарламалау.</li>
+      </ul>
+
+      <h2 id="prereq">Алғышарттар</h2>
+      <p class="math-prereq">Бұл сабақ барлық алдыңғы сабақтарды қолданады: <a href="week-7.html">сызықтық комбинация мен созылған кеңістік</a>, <a href="week-8.html">ортогональдық</a>, <a href="week-9.html">ранг және біртекті жүйелер</a>, <a href="week-10.html">матрица мен вектордың көбейтіндісі</a>, <a href="week-11.html">кері матрица</a> және <a href="week-12.html">анықтауыш</a> (қайтымдылық белгісі). Көпмүшелердің қосындысы мен санға көбейтіндісі <a href="week-2.html">көпмүшеліктер сабағынан</a> белгілі.</p>
+
+      <h2 id="intuition">Интуиция: «вектор» нені білдіреді?</h2>
+      <p>Бірінші сабақта вектор дегеніміз - сандар тізімі не көрсеткі деп білдік. Енді көпмүшелерді қарастырайық: $p(x)=2+3x+x^2$ және $q(x)=1-x$. Оларды қосуға ($p+q=3+2x+x^2$) және санға көбейтуге ($2p=4+6x+2x^2$) болады, және осы амалдар $\mathbb{R}^n$-дегі векторлармен бірдей қасиеттерге ие: орын ауыстырымдылық, терімділік, нөл көпмүше, қарама-қарсы көпмүше. Көпмүше $2+3x+x^2$ практикада тізім $(2,3,1)$ ретінде жазылады. Сондықтан «көпмүше де - вектор» деу табиғи.</p>
+      <p>Дәл солай $2\times2$ матрицалар да вектор: оларды қосуға және санға көбейтуге болады, тізім ретінде төрт сан $(a,b,c,d)$. Функциялар да вектор: $(f+g)(x)=f(x)+g(x)$ және $(kf)(x)=kf(x)$. Осы көптеген объектілердің ортақ қасиеті - екі амал мен олардың сегіз заңы. Математиктер соны <strong>векторлық кеңістік</strong> (<span class="term-en">vector space</span>) деп атады. Сол кезде бір теорияны бәріне қолдануға болады: сызықтық алгебраның теоремасы бір рет дәлелденеді де, көпмүшелерге, матрицаларға, функцияларға, сигналдарға бірден жарайды.</p>
+      <p>Сурет: ұшақтың кеңістікте орнын анықтау үшін үш сан керек: бойлық, ендік, биіктік. Үш өлшемді кеңістікте бір бағытқа ғана қозғалу мүмкін болса, кеңістіктің бір «сызығы» ғана бар (бір өлшем). Екі тәуелсіз бағыт жазықтықты береді. <strong>Базис</strong> (<span class="term-en">basis</span>) - кеңістіктің «минималды координаталық жүйесі»: ондағы бағыттардың ешқайсысын қалғандарынан алуға болмайды (тәуелсіздік), бірақ олардың комбинациялары кеңістіктің барлығын береді (жабу). Базистегі бағыттар саны - кеңістіктің <strong>өлшемі</strong>.</p>
+      <p>Базис - координаталық жүйені таңдау. Сол кеңістіктің басқа базисі басқа координаталар береді; вектордың өзі өзгермейді, тек «жазылу тілі» өзгереді (өлшем бірліктерін ауыстырғандай, метр мен фут). Қолайлы базисті таңдау есепті жеңілдетеді. Бұл идея келесі сабақтың басты нәтижесіне - меншікті векторлар базисінде матрица диагональ болатынына - жетелейді.</p>
+      <p>Соңында, сызықтық бейнелеулер. Мұнда екі кеңістік арасындағы сызықтық ереже қарастырылады (ол қосуды және санға көбейтуді сақтайды). Көпмүшенің туындысы ($p\mapsto p'$) - сызықтық бейнелеу, интеграл да сызықтық, матрицаның транспонирленгені де. Оның ядросы - «нөлге айналатындар» (туынды үшін тұрақтылар), образы - «шығатындар» жиыны. Ранг–нөлдік теоремасы бұл екеуінің өлшемдері қосындысы бастапқы кеңістіктің өлшеміне тең екенін айтады: 3-сабақтағы «негізгі айнымалылар + бос айнымалылар = белгісіздер» теңдігінің кең нұсқасы.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 7.1 · Векторлық кеңістік</span>
+        <p><strong>Векторлық кеңістік</strong> (<span class="term-en">vector space</span>) $V$ - екі амалы бар жиын: қосу ($\mathbf{u}+\mathbf{v}\in V$) және нақты санға көбейту ($k\mathbf{u}\in V$), олар 1-сабақтағы теорема 1.1-дің сегіз қасиетін қанағаттандырады: қосудың орын ауыстырымдылығы мен терімділігі, нөл вектор $\mathbf{0}$, қарама-қарсы вектор $-\mathbf{u}$, санға көбейтудің екі үлестірімділігі, $(km)\mathbf{u}=k(m\mathbf{u})$ және $1\cdot\mathbf{u}=\mathbf{u}$. $V$ элементтері <strong>векторлар</strong> деп аталады.</p></div>
+      <p>Мысалдар: $\mathbb{R}^n$; $P_n$ - дәрежесі $n$-нен аспайтын көпмүшелер ($\dim=n+1$); $\mathbb{R}^{m\times n}$ - $m\times n$ матрицалар ($\dim=mn$); $C[a,b]$ - үзіліссіз функциялар (шексіз өлшемді). Мысал емес: оң сандар жиыны ($-1$-ге көбейту жиыннан шығарады), және дәрежесі <em>дәл</em> $n$ көпмүшелер (нөл көпмүше жоқ, қосындының дәрежесі төмендеуі мүмкін).</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 7.2 · Ішкі кеңістік</span>
+        <p>$V$ кеңістігінің бос емес $W$ ішкі жиыны <strong>ішкі кеңістік</strong> (<span class="term-en">subspace</span>) деп аталады, егер ол өзі амалдарға қатысты векторлық кеңістік болса. Тексеру белгісі: (а) $\mathbf{0}\in W$; (ә) $\mathbf{u},\mathbf{v}\in W\Rightarrow\mathbf{u}+\mathbf{v}\in W$; (б) $\mathbf{u}\in W$, $k\in\mathbb{R}\Rightarrow k\mathbf{u}\in W$.</p></div>
+      <p>Мысалы, $\mathbb{R}^3$ ішіндегі $x+2y-z=0$ жазықтығы ішкі кеңістік; $x+2y-z=1$ жазықтығы емес (нөл вектор жоқ). Кез келген $\operatorname{span}(\mathbf{v}_1,\dots,\mathbf{v}_k)$ ішкі кеңістік. $A\mathbf{x}=\mathbf{0}$ жүйесінің шешімдер жиыны ішкі кеңістік.</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 7.3 · Сызықтық тәуелсіздік</span>
+        <p>$\mathbf{v}_1,\dots,\mathbf{v}_k$ векторлары <strong>сызықтық тәуелсіз</strong> (<span class="term-en">linearly independent</span>) деп аталады, егер $c_1\mathbf{v}_1+\dots+c_k\mathbf{v}_k=\mathbf{0}$ теңдігінен тек $c_1=\dots=c_k=0$ шықса. Әйтпесе олар <strong>сызықтық тәуелді</strong>: бір вектор қалғандарының сызықтық комбинациясы болады.</p></div>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 7.4 · Базис және өлшем</span>
+        <p>$V$ кеңістігінің <strong>базисі</strong> (<span class="term-en">basis</span>) - сызықтық тәуелсіз және $V$-ны жабатын ($\operatorname{span}=V$) векторлар жүйесі. Базис векторларының саны $V$-ның <strong>өлшемі</strong> (<span class="term-en">dimension</span>) $\dim V$ деп аталады.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 7.1 · Тәуелсіздік белгісі</span>
+        <p>$\mathbf{v}_1,\dots,\mathbf{v}_k\in\mathbb{R}^n$ және $A=(\mathbf{v}_1\ \cdots\ \mathbf{v}_k)$ ($n\times k$ матрица, бағандары берілген векторлар) болсын. Векторлар сызықтық тәуелсіз $\iff$ $A\mathbf{x}=\mathbf{0}$ жүйесінің тек тривиал шешімі бар $\iff$ $\operatorname{rank}A=k$.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 7.2 · Базистегі жалғыз жіктелу</span>
+        <p>$\{\mathbf{b}_1,\dots,\mathbf{b}_n\}$ - $V$-ның базисі болса, әр $\mathbf{v}\in V$ үшін $\mathbf{v}=x_1\mathbf{b}_1+\dots+x_n\mathbf{b}_n$ болатын $(x_1,\dots,x_n)$ жалғыз. Бұл сандар $\mathbf{v}$-ның базистегі <strong>координаталары</strong> (<span class="term-en">coordinates</span>) $[\mathbf{v}]_B$.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 7.3 · Өлшемнің корректілігі</span>
+        <p>$V$ кеңістігі $n$ вектормен жабылса, онда $V$-дағы кез келген $n$-нен көп вектор сызықтық тәуелді. Сондықтан $V$-ның кез келген екі базисінде векторлар саны бірдей: $\dim V$ дұрыс анықталған. $\dim V=n$ болса, $V$-дағы кез келген $n$ тәуелсіз вектор базис құрайды.</p></div>
+      <div class="math-def" id="def-5"><span class="math-tag">Анықтама 7.5 · Сызықтық бейнелеу, ядро және образ</span>
+        <p>$T:V\to W$ бейнелеуі <strong>сызықтық</strong> (<span class="term-en">linear map</span>) деп аталады, егер $T(\mathbf{u}+\mathbf{v})=T(\mathbf{u})+T(\mathbf{v})$ және $T(k\mathbf{u})=kT(\mathbf{u})$. <strong>Ядро</strong> (<span class="term-en">kernel</span>) $\ker T=\{\mathbf{v}:T(\mathbf{v})=\mathbf{0}\}$, <strong>образ</strong> (<span class="term-en">image</span>) $\operatorname{im}T=\{T(\mathbf{v}):\mathbf{v}\in V\}$. Екеуі де ішкі кеңістіктер ($\ker T\subseteq V$, $\operatorname{im}T\subseteq W$).</p></div>
+      <p>$A$ матрицасы үшін $T(\mathbf{x})=A\mathbf{x}$ бейнелеуінің ядросы - <strong>нөл кеңістік</strong> (<span class="term-en">null space</span>) $N(A)=\{\mathbf{x}:A\mathbf{x}=\mathbf{0}\}$, ал образы - <strong>бағандар кеңістігі</strong> (<span class="term-en">column space</span>) $C(A)=\operatorname{span}(\text{бағандар})$ (4-сабақтағы $A\mathbf{x}=x_1\mathbf{a}_1+\dots$ формуласы). $\dim C(A)=\operatorname{rank}A$.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 7.4 · Ранг–нөлдік теоремасы</span>
+        <p>$A$ - $m\times n$ матрица болса, $\operatorname{rank}A+\dim N(A)=n$, яғни $\dim\operatorname{im}T+\dim\ker T=\dim V$.</p></div>
+      <div class="math-thm" id="thm-5"><span class="math-tag">Теорема 7.5 · Сызықтық бейнелеудің матрицасы</span>
+        <p>$T:\mathbb{R}^n\to\mathbb{R}^m$ сызықтық болса, оны $T(\mathbf{x})=A\mathbf{x}$ арқылы беретін жалғыз $A$ ($m\times n$) бар, оның $j$-ші бағаны $T(\mathbf{e}_j)$. Жалпы базистер үшін $B$ базисінде $\mathbf{x}$, $C$ базисінде $\mathbf{y}=T(\mathbf{x})$ болса, матрица $A_{C\leftarrow B}$ бағандары $[T(\mathbf{b}_j)]_C$.</p></div>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 7.1 · Базисті ауыстыру</span>
+        <div class="math-fbody">$$\mathbf{x}=P\,[\mathbf{x}]_B,\qquad [\mathbf{x}]_B=P^{-1}\mathbf{x},\qquad [T]_B=P^{-1}AP$$</div>
+        <p class="math-fnote">$P$ - бағандары $B$ базисінің векторлары болатын матрица (қайтымды). $A$ - стандартты базистегі $T$ матрицасы, $[T]_B$ - $B$ базисіндегі матрица.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 7.2 · Ранг–нөлдік теңдігі</span>
+        <div class="math-fbody">$$\dim\operatorname{im}T+\dim\ker T=\dim V\qquad\Longleftrightarrow\qquad \operatorname{rank}A+\operatorname{nullity}A=n$$</div>
+        <p class="math-fnote">Нөлдік (nullity) = ядроның өлшемі = бос айнымалылар саны.</p></div>
+      <div class="math-remark"><span class="math-box-title">Мысал: туынды - сызықтық бейнелеу</span>
+        <p>$D:P_2\to P_1$, $D(a+bx+cx^2)=b+2cx$ сызықтық. $\{1,x,x^2\}$ және $\{1,x\}$ базистерінде оның матрицасы $\begin{pmatrix}0&amp;1&amp;0\\0&amp;0&amp;2\end{pmatrix}$ ($D(1)=0$, $D(x)=1$, $D(x^2)=2x$ бағандары). Ядро - тұрақтылар ($\dim=1$), образ - $P_1$ ($\dim=2$), $1+2=3=\dim P_2$ ✓.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта: үш есептеу</span>
+        <p>(1) Тәуелсіздікті тексеру: векторларды баған етіп матрица жасап, рангын тап; ранг $=$ векторлар саны болса, тәуелсіз. (2) Бағандар кеңістігінің базисі: RREF-тегі жетекші бағандарға сәйкес <em>бастапқы</em> $A$ бағандары. (3) Нөл кеңістіктің базисі: әр бос айнымалыға 1 беріп, қалған бос айнымалыны 0 қойып табылған шешімдер.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Бағандар кеңістігінің базисіне RREF-тің бағандарын емес, бастапқы $A$ матрицасының сәйкес бағандарын аламыз: жол түрлендірулері бағандар кеңістігін өзгертеді (бағандар араласады), тек бағандар арасындағы тәуелділікті сақтайды.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <p>Бес қорыту абстрактілі ұғымдарды нақты есептеуге байланыстырады.</p>
+      <div class="mx-derive-tools"></div>
+
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: ішкі кеңістіктің тексеру белгісі және $N(A)$ ішкі кеңістік</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> (а), (ә), (б) шарттары $W$-ның амалдарға қатысты кеңістік болуына жеткілікті екенін және $N(A)$ осы шарттарды қанағаттандыратынын көрсету.</p>
+          <ol class="math-steps">
+            <li>$W\subseteq V$ болсын. (ә) және (б) бойынша қосу мен санға көбейту $W$ ішінде орындалады (жабық). Сегіз аксиоманың көбі ($\mathbf{u}+\mathbf{v}=\mathbf{v}+\mathbf{u}$, терімділік, үлестірімділік т.б.) $V$-дағы барлық векторлар үшін орындалады, демек $W$-дағылар үшін де.</li>
+            <li>Нөл вектор: (а) бойынша $\mathbf{0}\in W$ (немесе (б)-дан $0\cdot\mathbf{u}=\mathbf{0}\in W$).</li>
+            <li>Қарама-қарсы вектор: $-\mathbf{u}=(-1)\mathbf{u}\in W$ ((б) бойынша).</li>
+            <li>Демек сегіз аксиоманың бәрі $W$-да орындалады: $W$ - кеңістік.</li>
+            <li>$N(A)$: (а) $A\mathbf{0}=\mathbf{0}$, сондықтан $\mathbf{0}\in N(A)$.</li>
+            <li>(ә) $A\mathbf{u}=A\mathbf{v}=\mathbf{0}$ болса, $A(\mathbf{u}+\mathbf{v})=A\mathbf{u}+A\mathbf{v}=\mathbf{0}$; (б) $A(k\mathbf{u})=kA\mathbf{u}=\mathbf{0}$. Демек $N(A)$ ішкі кеңістік.</li>
+            <li>Керісінше мысал: $S=\{(x,y):xy\ge0\}$. $(1,1)\in S$ және $(-2,0)\in S$, бірақ олардың қосындысы $(-1,1)$, $xy=-1<0$: (ә) бұзылды.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-2" open>
+        <summary>Қорытып шығару 2: тәуелсіздік белгісі және базистегі жалғыз жіктелу</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 7.1 мен 7.2-ні дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$A\mathbf{x}=x_1\mathbf{v}_1+\dots+x_k\mathbf{v}_k$ (4-сабақ). Сондықтан $A\mathbf{x}=\mathbf{0}$ шешімдері дәл $\sum x_i\mathbf{v}_i=\mathbf{0}$ комбинацияларының коэффициенттері.</li>
+            <li>Тәуелсіздік $\iff$ тек $\mathbf{x}=\mathbf{0}$ шешім $\iff$ бос айнымалы жоқ (3-сабақ) $\iff\operatorname{rank}A=k$.</li>
+            <li>Мысал: $(1,2,3)$, $(2,-1,1)$, $(4,3,7)$: $A=\begin{pmatrix}1&amp;2&amp;4\\2&amp;-1&amp;3\\3&amp;1&amp;7\end{pmatrix}$, $\operatorname{rank}A=2<3$: тәуелді ($\mathbf{v}_3=2\mathbf{v}_1+\mathbf{v}_2$).</li>
+            <li><b>Жалғыз жіктелу.</b> Базис жабатын болғандықтан, $\mathbf{v}=\sum x_i\mathbf{b}_i$ болатын $x_i$ бар (бар болуы).</li>
+            <li>Екі жіктелу болсын: $\mathbf{v}=\sum x_i\mathbf{b}_i=\sum y_i\mathbf{b}_i$. Азайтсақ, $\sum(x_i-y_i)\mathbf{b}_i=\mathbf{0}$.</li>
+            <li>Базис тәуелсіз, сондықтан барлық $x_i-y_i=0$, яғни $x_i=y_i$: жіктелу жалғыз.</li>
+            <li>Салдар: базис таңдасақ, кез келген $n$-өлшемді кеңістік $\mathbb{R}^n$-ге ұқсас болады: вектор $\leftrightarrow$ координаталар тізімі. Мысалы, $P_2$ ішінде $p=2+3x+x^2\leftrightarrow(2,3,1)$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-3" open>
+        <summary>Қорытып шығару 3: $n$ вектор жапқан кеңістікте $n$-нен көп вектор тәуелді</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 7.3-тің негізгі леммасын дәлелдеу: $V=\operatorname{span}(\mathbf{w}_1,\dots,\mathbf{w}_n)$ және $\mathbf{u}_1,\dots,\mathbf{u}_m\in V$, $m>n$ болса, $\mathbf{u}_i$ тәуелді.</p>
+          <ol class="math-steps">
+            <li>Әр $\mathbf{u}_j\in V$ болғандықтан, $\mathbf{u}_j=\sum_{i=1}^{n}a_{ij}\mathbf{w}_i$ (коэффициенттер $a_{ij}$).</li>
+            <li>$\sum_jc_j\mathbf{u}_j=\mathbf{0}$ теңдігін қарастырамыз: $\sum_jc_j\sum_ia_{ij}\mathbf{w}_i=\sum_i\left(\sum_ja_{ij}c_j\right)\mathbf{w}_i=\mathbf{0}$.</li>
+            <li>Жеткілікті шарт: барлық $i$ үшін $\sum_ja_{ij}c_j=0$. Бұл $n$ теңдеуі, $m$ белгісізі ($c_1,\dots,c_m$) бар біртекті жүйе.</li>
+            <li>$m>n$, сондықтан 3-сабақтың теоремасы бойынша жүйенің нөлдік емес шешімі бар: кемінде бір $c_j\ne0$.</li>
+            <li>Бұл $\sum c_j\mathbf{u}_j=\mathbf{0}$ тривиал емес комбинациясы: $\mathbf{u}_j$ тәуелді.</li>
+            <li><b>Салдар.</b> $B_1$ ($n$ вектор), $B_2$ ($m$ вектор) екі базис болсын. $B_2$ тәуелсіз және $B_1$ жабады, сондықтан $m\le n$. Рөлдерді ауыстырсақ $n\le m$. Демек $m=n$: өлшем бірмәнді.</li>
+            <li>Мысал: $\mathbb{R}^2$-де кез келген үш вектор тәуелді ($(1,0),(0,1),(3,5)$: $(3,5)=3(1,0)+5(0,1)$).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-4" open>
+        <summary>Қорытып шығару 4: ранг–нөлдік теоремасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\operatorname{rank}A+\dim N(A)=n$ екенін, ядро мен образдың базисін көрсету арқылы дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$A$-ны RREF $R$-ге келтіреміз. $r$ жетекші бағана (негізгі айнымалылар), $n-r$ бос айнымалы бар.</li>
+            <li><b>Ядро.</b> $A\mathbf{x}=\mathbf{0}\iff R\mathbf{x}=\mathbf{0}$ (түрлендірулер шешімді сақтайды). Жалпы шешім бос айнымалылар $t_1,\dots,t_{n-r}$ арқылы $\mathbf{x}=t_1\mathbf{s}_1+\dots+t_{n-r}\mathbf{s}_{n-r}$ түрінде жазылады, мұнда $\mathbf{s}_k$ - $k$-шы бос айнымалы 1, қалған бос айнымалылар 0 болғандағы шешім.</li>
+            <li>$\mathbf{s}_k$ тәуелсіз: $k$-шы бос айнымалы координатасында тек $\mathbf{s}_k$ 1-ге тең, қалғандары 0. Демек $\{\mathbf{s}_k\}$ - $N(A)$ базисі, $\dim N(A)=n-r$.</li>
+            <li><b>Образ.</b> Жетекші бағандар (бастапқы $A$-дағы) тәуелсіз: оларға $A\mathbf{x}=\mathbf{0}$ тек тривиал шешім береді (қалған координаталар 0 деп алсақ, $R$-дың жетекші бағандары бірлік векторлар).</li>
+            <li>Жетекші емес баған $R$-да жетекші бағандардың комбинациясы; бұл тәуелділік $A$-да да сақталады (шешім жиыны ортақ). Сондықтан жетекші бағандар $C(A)$-ны жабады.</li>
+            <li>Демек жетекші бағандар $C(A)$ базисі, $\dim C(A)=r=\operatorname{rank}A$. Жиынтығы: $r+(n-r)=n$.</li>
+            <li>Мысал: $A=\begin{pmatrix}1&amp;2&amp;0&amp;1\\2&amp;4&amp;1&amp;4\\3&amp;6&amp;1&amp;5\end{pmatrix}$: RREF жетекші бағандары 1 және 3, $r=2$, бос айнымалылар $x_2,x_4$ ($n-r=2$). $2+2=4$ ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-5" open>
+        <summary>Қорытып шығару 5: сызықтық бейнелеудің матрицасы және базисті ауыстыру</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $T(\mathbf{x})=A\mathbf{x}$ матрицасының бағандары $T(\mathbf{e}_j)$ екенін және $[T]_B=P^{-1}AP$ формуласын шығару.</p>
+          <ol class="math-steps">
+            <li>$\mathbf{x}=x_1\mathbf{e}_1+\dots+x_n\mathbf{e}_n$. Сызықтылықтан $T(\mathbf{x})=x_1T(\mathbf{e}_1)+\dots+x_nT(\mathbf{e}_n)$.</li>
+            <li>Бұл - $A=(T(\mathbf{e}_1)\ \cdots\ T(\mathbf{e}_n))$ матрицасы мен $\mathbf{x}$-тің көбейтіндісі (4-сабақ). Матрица жалғыз: $A\mathbf{e}_j$ - $A$-ның $j$-ші бағаны.</li>
+            <li><b>Базис ауыстыру.</b> $B=\{\mathbf{b}_1,\dots,\mathbf{b}_n\}$ және $P=(\mathbf{b}_1\ \cdots\ \mathbf{b}_n)$. Вектордың $B$-дағы координаталары $[\mathbf{x}]_B=\mathbf{c}$ болса, $\mathbf{x}=c_1\mathbf{b}_1+\dots=P\mathbf{c}$. $B$ базис болғандықтан $P$ қайтымды: $\mathbf{c}=P^{-1}\mathbf{x}$.</li>
+            <li>$T$-ның $B$ базисіндегі матрицасы $[T]_B$: $[T(\mathbf{x})]_B=[T]_B[\mathbf{x}]_B$.</li>
+            <li>Сол жақ: $[T(\mathbf{x})]_B=P^{-1}T(\mathbf{x})=P^{-1}A\mathbf{x}=P^{-1}AP\,[\mathbf{x}]_B$ (себебі $\mathbf{x}=P[\mathbf{x}]_B$).</li>
+            <li>Демек $[T]_B=P^{-1}AP$ (барлық $[\mathbf{x}]_B$ үшін; матрица жалғыз).</li>
+            <li>Мысал: $A=\begin{pmatrix}0&amp;1\\1&amp;0\end{pmatrix}$ ($y=x$ түзуінен шағылу), $B=\{(1,1),(1,-1)\}$, $P=\begin{pmatrix}1&amp;1\\1&amp;-1\end{pmatrix}$. $P^{-1}AP=\begin{pmatrix}1&amp;0\\0&amp;-1\end{pmatrix}$: бұл базисте шағылу диагональ матрица (бірінші вектор тұрақты, екіншісінің таңбасы өзгереді).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+
+      <div class="math-example" id="ex-1">
+        <h3>Мысал 1. Ішкі кеңістікті тексеру</h3>
+        <p class="math-problem">Қайсысы ішкі кеңістік? (а) $W_1=\{(x,y,z):x+2y-z=0\}\subset\mathbb{R}^3$; (ә) $W_2=\{(x,y):xy\ge0\}\subset\mathbb{R}^2$; (б) $W_3=\{(x,y):x+y=1\}$; (в) $W_4=\{a+bx+cx^2:\ a+b+c=0\}\subset P_2$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. (а)</b> $\mathbf{0}$ қанағаттандырады. $\mathbf{u},\mathbf{v}\in W_1$ болса, $(u_1+v_1)+2(u_2+v_2)-(u_3+v_3)=0+0=0$; $k\mathbf{u}$ үшін $k\cdot0=0$. Ішкі кеңістік (өлшемі 2: жазықтық).</li>
+          <li><b>2-қадам. (ә)</b> $(1,1)$ мен $(-2,0)$ жиында, қосындысы $(-1,1)$, $xy=-1<0$. Қосуға жабық емес.</li>
+          <li><b>3-қадам. (б)</b> $(0,0)$ үшін $0+0\ne1$: нөл вектор жоқ. Ішкі кеңістік емес.</li>
+          <li><b>4-қадам. (в)</b> $a+b+c=0$ шарты $p(1)=0$ дегенге тең. Нөл көпмүше үшін орындалады. $p(1)=q(1)=0$ ⇒ $(p+q)(1)=0$, $(kp)(1)=0$. Ішкі кеңістік. Базисі: $\{x-1,\ x^2-1\}$ (өлшемі 2).</li>
+          <li><b>5-қадам. Сабақ.</b> Ішкі кеңістіктер әрдайым нөл вектор арқылы өтеді және $\mathbf{u}+\mathbf{v}$, $k\mathbf{u}$ ішінде қалады. «Теңдеу = 0» түрі (біртекті) ішкі кеңістік береді, «теңдеу = 1» бермейді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> (а) және (в) - ішкі кеңістік; (ә), (б) - емес.</p>
+      </div>
+
+      <div class="math-example" id="ex-2">
+        <h3>Мысал 2. Тәуелсіздік және базис</h3>
+        <p class="math-problem">$\mathbf{v}_1=(1,2,3)$, $\mathbf{v}_2=(2,-1,1)$, $\mathbf{v}_3=(4,3,7)$. Тәуелсіз бе? Тәуелді болса, тәуелділікті жазып, созылған кеңістіктің базисі мен өлшемін табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. Матрица.</b> Бағандары $\mathbf{v}_i$: $A=\begin{pmatrix}1&amp;2&amp;4\\2&amp;-1&amp;3\\3&amp;1&amp;7\end{pmatrix}$.</li>
+          <li><b>2-қадам. Гаусс.</b> $R_2-2R_1=(0,-5,-5)$; $R_3-3R_1=(0,-5,-5)$; $R_3-R_2=(0,0,0)$. Ранг $=2<3$: векторлар тәуелді.</li>
+          <li><b>3-қадам. Тәуелділік.</b> Бос айнымалы $x_3=t$. $-5x_2-5t=0\Rightarrow x_2=-t$; $x_1+2x_2+4t=0\Rightarrow x_1=-2t$. $t=1$: $-2\mathbf{v}_1-\mathbf{v}_2+\mathbf{v}_3=\mathbf{0}$, яғни $\mathbf{v}_3=2\mathbf{v}_1+\mathbf{v}_2$.</li>
+          <li><b>4-қадам. Тексеру.</b> $2(1,2,3)+(2,-1,1)=(4,3,7)$ ✓.</li>
+          <li><b>5-қадам. Базис.</b> Жетекші бағандар 1 және 2: $\{\mathbf{v}_1,\mathbf{v}_2\}$ - $\operatorname{span}$ базисі, $\dim=2$ (жазықтық).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> тәуелді, $\mathbf{v}_3=2\mathbf{v}_1+\mathbf{v}_2$; базис $\{\mathbf{v}_1,\mathbf{v}_2\}$, өлшемі 2.</p>
+      </div>
+
+      <div class="math-example" id="ex-3">
+        <h3>Мысал 3. Нөл кеңістік, бағандар кеңістігі, ранг–нөлдік</h3>
+        <p class="math-problem">$A=\begin{pmatrix}1&amp;2&amp;0&amp;1\\2&amp;4&amp;1&amp;4\\3&amp;6&amp;1&amp;5\end{pmatrix}$ үшін $N(A)$ мен $C(A)$ базистерін табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. RREF.</b> $R_2-2R_1=(0,0,1,2)$; $R_3-3R_1=(0,0,1,2)$; $R_3-R_2=(0,0,0,0)$. Нәтиже $\begin{pmatrix}1&amp;2&amp;0&amp;1\\0&amp;0&amp;1&amp;2\\0&amp;0&amp;0&amp;0\end{pmatrix}$. Жетекші бағандар 1 және 3, ранг 2.</li>
+          <li><b>2-қадам. Бос айнымалылар.</b> $x_2=s$, $x_4=t$. $x_3=-2t$, $x_1=-2s-t$.</li>
+          <li><b>3-қадам. $N(A)$ базисі.</b> $\mathbf{x}=s(-2,1,0,0)+t(-1,0,-2,1)$. Базис: $\mathbf{s}_1=(-2,1,0,0)$, $\mathbf{s}_2=(-1,0,-2,1)$. Өлшемі 2.</li>
+          <li><b>4-қадам. $C(A)$ базисі.</b> Жетекші бағандар (бастапқы $A$): $(1,2,3)^T$ және $(0,1,1)^T$. Өлшемі 2.</li>
+          <li><b>5-қадам. Теорема.</b> $\operatorname{rank}A+\dim N(A)=2+2=4=n$ ✓. Тексеру: $A\mathbf{s}_2=(-1+0+0+1,\ -2+0-2+4,\ -3+0-2+5)=(0,0,0)$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $N(A)=\operatorname{span}\{(-2,1,0,0),(-1,0,-2,1)\}$; $C(A)=\operatorname{span}\{(1,2,3),(0,1,1)\}$.</p>
+      </div>
+
+      <div class="math-example" id="ex-4">
+        <h3>Мысал 4. Координаталар және базисті ауыстыру</h3>
+        <p class="math-problem">$B=\{\mathbf{b}_1=(1,1),\mathbf{b}_2=(1,-1)\}$. (а) $\mathbf{v}=(3,1)$ векторының $B$-дағы координаталарын табыңыз. (ә) $y=x$ түзуінен шағылу матрицасының $B$ базисіндегі түрін табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. (а) Жүйе.</b> $x\mathbf{b}_1+y\mathbf{b}_2=(3,1)$: $x+y=3$, $x-y=1$.</li>
+          <li><b>2-қадам. Шешім.</b> $x=2$, $y=1$: $[\mathbf{v}]_B=(2,1)$. Тексеру: $2(1,1)+1(1,-1)=(3,1)$ ✓. Матрицамен: $P^{-1}\mathbf{v}$, $P=\begin{pmatrix}1&amp;1\\1&amp;-1\end{pmatrix}$, $P^{-1}=\tfrac12\begin{pmatrix}1&amp;1\\1&amp;-1\end{pmatrix}$.</li>
+          <li><b>3-қадам. (ә) Стандартты матрица.</b> Шағылу $(x,y)\mapsto(y,x)$: $A=\begin{pmatrix}0&amp;1\\1&amp;0\end{pmatrix}$.</li>
+          <li><b>4-қадам. Базис векторларына әсері.</b> $A\mathbf{b}_1=(1,1)=1\cdot\mathbf{b}_1+0\cdot\mathbf{b}_2$; $A\mathbf{b}_2=(-1,1)\cdot$: $A(1,-1)=(-1,1)=-\mathbf{b}_2$, яғни $0\cdot\mathbf{b}_1+(-1)\cdot\mathbf{b}_2$.</li>
+          <li><b>5-қадам. $[T]_B$.</b> Бағандар $[A\mathbf{b}_j]_B$: $[T]_B=\begin{pmatrix}1&amp;0\\0&amp;-1\end{pmatrix}$. Формуламен: $P^{-1}AP=\tfrac12\begin{pmatrix}1&amp;1\\1&amp;-1\end{pmatrix}\begin{pmatrix}1&amp;-1\\1&amp;1\end{pmatrix}=\begin{pmatrix}1&amp;0\\0&amp;-1\end{pmatrix}$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $[\mathbf{v}]_B=(2,1)$; $[T]_B=\mathrm{diag}(1,-1)$.</p>
+      </div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">«Нөл векторды қамтымайтын жиын да ішкі кеңістік бола алады»</span> → <span class="math-good">ішкі кеңістікте әрдайым $\mathbf{0}$ бар</span><br>Неге қате: $0\cdot\mathbf{u}=\mathbf{0}$, сондықтан санға көбейтуге жабық жиында нөл вектор бар. $x+y=1$ түзуі координаталар басынан өтпейді.</li>
+        <li><span class="math-bad">Тәуелсіздікті тек жұптап тексеру: «ешбір екеуі параллель емес, сондықтан тәуелсіз»</span> → <span class="math-good">бүкіл жүйені тексеру ($\operatorname{rank}=k$)</span><br>Неге қате: 2-мысалда $\mathbf{v}_1,\mathbf{v}_2,\mathbf{v}_3$ жұптап параллель емес, бірақ жүйе тәуелді ($\mathbf{v}_3=2\mathbf{v}_1+\mathbf{v}_2$).</li>
+        <li><span class="math-bad">Бағандар кеңістігінің базисіне RREF бағандарын алу</span> → <span class="math-good">бастапқы $A$-ның жетекші бағандарын алу</span><br>Неге қате: 3-мысалда RREF бағандары $(1,0,0)$, $(0,1,0)$, ал бастапқы $C(A)$ бағандары $(1,2,3)$ және $(0,1,1)$: кеңістіктер басқа.</li>
+        <li><span class="math-bad">Базис векторларының саны өлшемнен артық бола алады</span> → <span class="math-good">базис дәл $\dim V$ вектордан тұрады</span><br>Неге қате: артық вектор тәуелді болады (3-қорыту), кем болса жаппайды.</li>
+        <li><span class="math-bad">$\operatorname{rank}A+\operatorname{rank}A^T=n$ (ранг–нөлдік теоремасын шатастыру)</span> → <span class="math-good">$\operatorname{rank}A+\dim N(A)=n$</span><br>Неге қате: ядро өлшемі - бос айнымалылар саны. Ал $\operatorname{rank}A=\operatorname{rank}A^T$ (қосымша факт).</li>
+        <li><span class="math-bad">Координаталарды баған ретімен шатастыру: $[\mathbf{v}]_B=P\mathbf{v}$</span> → <span class="math-good">$[\mathbf{v}]_B=P^{-1}\mathbf{v}$</span><br>Неге қате: $P[\mathbf{v}]_B=\mathbf{v}$ (базис векторларынан вектор жасайды). Кері бағыт үшін $P^{-1}$.</li>
+        <li><span class="math-bad">Сызықтық емес бейнелеуді сызықтық деп санау: $T(x,y)=(x+1,y)$</span> → <span class="math-good">$T(\mathbf{0})=\mathbf{0}$ болуы керек</span><br>Неге қате: $T(0,0)=(1,0)\ne\mathbf{0}$. Сызықтық бейнелеу нөлді нөлге апарады; ығысу (параллель көшіру) сызықтық емес.</li>
+        <li><span class="math-bad">Өлшемді «қанша сан керек» емес, «қанша элемент бар» деп түсіну: $\dim\{0\}=1$</span> → <span class="math-good">$\dim\{\mathbf{0}\}=0$ (базис - бос жиын)</span><br>Неге қате: өлшем - тәуелсіз бағыттар саны.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <p>Базис пен сызықтық түрлендірулерді жазықтықта көріңіз. Векторлардың ұштарын сүйреп, слайдермен координаталарды өзгертіңіз.</p>
+      <div class="math-viz" data-viz="vectors" data-title="Базис: b₁ = (1, 1), b₂ = (1, −1) және v = (3, 1)" data-config='{"u":[1,1],"v":[1,-1],"view":[-3,5,-3,4]}'></div>
+      <p><b>Бақылаңыз:</b> $\mathbf{u}=\mathbf{b}_1=(1,1)$ және $\mathbf{v}=\mathbf{b}_2=(1,-1)$ бір түзуде жатпайды, сондықтан жазықтықтың базисі. Қосындыны қосып, $2\mathbf{b}_1+\mathbf{b}_2=(3,1)$ нүктесіне жету жолын көріңіз: $(3,1)$ нүктесінің бұл базистегі координаталары $(2,1)$. $\mathbf{v}$-ны $(2,2)$ етіп параллельге ауыстырсаңыз, базис жоғалады: тәуелді, жабу түзуге дейін қысқарады.</p>
+      <div class="math-viz" data-viz="lintrans" data-title="Ядросы бар түрлендіру: A = (1, 2; 2, 4)" data-config='{"m":[[1,2],[2,4]]}'></div>
+      <p><b>Бақылаңыз:</b> матрица рангы 1: образ - $y=2x$ түзуі ($\dim C(A)=1$), ал ядро - $A\mathbf{x}=\mathbf{0}$ шешімдері: $x+2y=0$ түзуі ($\dim N(A)=1$). $1+1=2=n$: ранг–нөлдік теоремасы. Ядродағы әр вектор (мысалы, $(2,-1)$) нөлге айналады: сурет бүкіл жазықтықты бір түзуге «түсіреді», әр нүкте ядроға параллель бағытпен.</p>
+      <div class="math-viz" data-viz="lintrans" data-title="Базисті ауыстыру: шағылу y = x" data-config='{"m":[[0,1],[1,0]]}'></div>
+      <p><b>Бақылаңыз:</b> меншікті бағыттар түймесі қызыл және жасыл түзулерді көрсетеді: $y=x$ (вектор өзгермейді) және $y=-x$ (таңба өзгереді). Дәл осылар 4-мысалдың $B$ базисі: $\mathbf{b}_1=(1,1)$ және $\mathbf{b}_2=(1,-1)$. Осы векторлар бойымен координаталар жүйесін алсақ, шағылу $\mathrm{diag}(1,-1)$ болады. Қолайлы базис түрлендіруді қарапайым етеді.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Төменде 20 есеп блогы бар (оңайдан қиынға), жалпы 40-тан астам тапсырма. «Кеңес» батырмасы алдымен кеңес, сонан соң қадам-қадам шешімді, ең соңында жауапты ашады. Векторларды ұяшықтарға жол бойынша жазыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="tf" data-id="m2-7-tf">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m2-7-t1">1. Шындық па, жалған ба?</h3></div>
+        <p>Әр пікірді бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Ішкі кеңістік әрдайым нөл векторды қамтиды.","a":true,"e":"Ақиқат: $0\\cdot\\mathbf{u}=\\mathbf{0}$.","hint":"Санға көбейтуге жабықтық."},{"q":"$\\mathbb{R}^2$-де кез келген үш вектор сызықтық тәуелді.","a":true,"e":"Ақиқат: $\\dim\\mathbb{R}^2=2$ (3-қорыту).","hint":"Екіден артық болмайды."},{"q":"$x+y=1$ жиыны $\\mathbb{R}^2$-нің ішкі кеңістігі.","a":false,"e":"Жалған: нөл вектор жоқ.","hint":"$(0,0)$ тексеріңіз."},{"q":"Екі әртүрлі базистегі векторлар саны әртүрлі болуы мүмкін.","a":false,"e":"Жалған: өлшем бірмәнді.","hint":"7.3 теоремасы."},{"q":"Сызықтық бейнелеу $T(\\mathbf{0})=\\mathbf{0}$ қанағаттандырады.","a":true,"e":"Ақиқат: $T(\\mathbf{0})=T(0\\cdot\\mathbf{0})=0\\cdot T(\\mathbf{0})=\\mathbf{0}$.","hint":"Санға көбейту ережесі."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m2-7-sub">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m2-7-t2">2. Ішкі кеңістіктер</h3></div>
+        <p>Дұрыс жауапты таңдаңыз. Бірінші сұрақта бірнеше жауап дұрыс.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қайсысы $\\mathbb{R}^3$-тің ішкі кеңістігі?","o":["$\\{(x,y,z):x=0\\}$","$\\{(x,y,z):x+y+z=1\\}$","$\\{(t,2t,3t):t\\in\\mathbb{R}\\}$","$\\{(x,y,z):z\\ge0\\}$"],"a":[0,2],"e":"1-ші - жазықтық, 3-ші - түзу (екеуі де нөлден өтеді). 2-ші нөлді қамтымайды. 4-ші санға көбейтуге жабық емес ($-1$-ге көбейтсек).","hint":"Нөл вектор, қосу, санға көбейту."},{"q":"$\\mathbb{R}^{2\\times2}$ матрицалар кеңістігінің өлшемі қандай?","o":["2","3","4","8"],"a":2,"e":"Төрт тәуелсіз элемент: базис — 4 «бірлік» матрица.","hint":"Төрт ұяшық."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m2-7-dim">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m2-7-t3">3. Өлшемді анықтау</h3></div>
+        <p>Жауапты бүтін санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P_4$ (дәрежесі $\\le4$ көпмүшелер) кеңістігінің өлшемі.","a":5,"v":"4+1","hint":"Базис: $1,x,x^2,x^3,x^4$.","sol":{"steps":["$1,x,\\dots,x^4$ - бес."],"ans":"$5$"}},{"q":"$\\mathbb{R}^{3\\times2}$ матрицалар кеңістігінің өлшемі.","a":6,"v":"3*2","hint":"Ұяшықтар саны.","sol":{"steps":["$3\\cdot2$."],"ans":"$6$"}},{"q":"$2\\times2$ симметриялы матрицалар кеңістігінің өлшемі.","a":3,"v":"3","hint":"$\\begin{pmatrix}a&b\\\\b&d\\end{pmatrix}$: үш параметр.","sol":{"steps":["$a,b,d$ еркін."],"ans":"$3$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m2-7-match">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m2-7-t4">4. Кеңістік және өлшем</h3></div>
+        <p>Әр кеңістікті өлшемімен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Әр кеңістікке өлшемін таңдаңыз.","pairs":[["$\\{\\mathbf{0}\\}$","0"],["$\\mathbb{R}^3$ ішіндегі $x+y+z=0$ жазықтығы","2"],["$P_2$","3"],["$\\mathbb{R}^{2\\times2}$","4"]],"hint":"Базис векторларының санын санаңыз.","sol":{"steps":["Бос жиын - базис.","Жазықтық: екі тәуелсіз бағыт.","$1,x,x^2$.","Төрт бірлік матрица."]},"e":"Өлшем - базис векторларының саны."}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m2-7-coord">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-7-t5">5. Базистегі координаталар</h3></div>
+        <p>Координаталарды $(x,y)$ жол түрінде жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$B=\\{(1,1),(1,-1)\\}$. $\\mathbf{v}=(5,1)$ векторының $B$-дағы координаталары.","orient":"row","name":"$[\\mathbf{v}]_B=$","a":[3,2],"v":"[3,2]","hint":"$x+y=5$, $x-y=1$.","sol":{"steps":["$x=3$, $y=2$."],"ans":"$(3,2)$"}},{"q":"$B=\\{(1,2),(0,1)\\}$. $\\mathbf{v}=(3,7)$ векторының $B$-дағы координаталары.","orient":"row","name":"$[\\mathbf{v}]_B=$","a":[3,1],"v":"[3,1]","hint":"$x(1,2)+y(0,1)=(3,7)$.","sol":{"steps":["$x=3$; $2x+y=7\\Rightarrow y=1$."],"ans":"$(3,1)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m2-7-rank">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-7-t6">6. Ранг және нөлдік</h3></div>
+        <p>Жауапты бүтін санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}1&2&1\\\\0&1&1\\\\1&3&2\\end{pmatrix}$ матрицасының рангы.","a":2,"v":"Matrix([[1,2,1],[0,1,1],[1,3,2]]).rank()","hint":"$R_3-R_1-R_2$.","sol":{"steps":["$R_3-R_1=(0,1,1)$, $R_3-R_1-R_2=(0,0,0)$."],"ans":"$2$"}},{"q":"Сол матрицаның ядросының өлшемі $\\dim N(A)=\\ ?$","a":1,"v":"3-Matrix([[1,2,1],[0,1,1],[1,3,2]]).rank()","hint":"$n-r$.","sol":{"steps":["$3-2$."],"ans":"$1$"}},{"q":"$3\\times5$ матрицаның рангы 3. Нөл кеңістігінің өлшемі қандай?","a":2,"v":"5-3","hint":"$n=5$.","sol":{"steps":["$5-3$."],"ans":"$2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m2-7-indep">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-7-t7">7. Тәуелсіздік</h3></div>
+        <p>Дұрыс жауапты таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қай жүйе сызықтық тәуелсіз?","o":["$(1,2),(2,4)$","$(1,0,0),(0,1,0),(0,0,1)$","$(1,1,0),(0,1,1),(1,2,1)$","$(1,2),(3,4),(5,6)$"],"a":1,"e":"1-ші: екінші біріншінің екі еселігі. 3-ші: үшіншісі = біріншісі + екіншісі. 4-ші: $\\mathbb{R}^2$-де үш вектор әрдайым тәуелді.","hint":"Ранг пен векторлар санын салыстырыңыз."},{"q":"$\\mathbb{R}^3$-те төрт вектор:","o":["әрдайым тәуелді","әрдайым тәуелсіз","базис болады","ештеңе айта алмаймыз"],"a":0,"e":"$\\dim\\mathbb{R}^3=3$, төрт вектор артық.","hint":"3-қорыту."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m2-7-order1">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-7-t8">8. Тәуелсіздікті тексеру реті</h3></div>
+        <p>Қадамдарды дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbb{R}^n$-дегі $k$ вектордың тәуелсіздігін тексеру.","steps":["Векторларды баған етіп $n\\times k$ матрица жасаймыз.","Матрицаны Гаусс әдісімен баспалдақты түрге келтіреміз.","Жетекші элементтер санын (рангты) санаймыз.","Ранг $k$-ға тең болса — тәуелсіз, кем болса — тәуелді."],"hint":"Теорема 7.1.","sol":{"ans":"Матрица → Гаусс → ранг → шешім."}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m2-7-p-coord">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-7-t9">9. Параметрлік: координаталар</h3></div>
+        <p>$B=\{(1,1),(1,-1)\}$ базисіндегі координаталарды жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"p":{"int":[-4,5]},"q":{"int":[-4,5]},"s":{"calc":"p+q"},"d":{"calc":"p-q"}},"type":"matrix","orient":"row","q":"$\\mathbf{v}=(#{s},\\,#{d})$ векторының $B$-дағы координаталары $(x,y)$.","name":"$[\\mathbf{v}]_B=$","a":["p","q"],"v":"[p,q]","hint":"$x+y=#{s}$, $x-y=#{d}$.","sol":{"steps":["$x=\\dfrac{#{s}+#{p:d}}{2}=#{p}$, $y=\\dfrac{#{s}-#{p:d}}{2}=#{q}$."],"ans":"$(#{p},\\,#{q})$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m2-7-p-null">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-7-t10">10. Параметрлік: ранг–нөлдік</h3></div>
+        <p>Сан кездейсоқ таңдалады.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"int":[2,4]},"n":{"int":[5,8]},"r":{"int":[1,2]}},"type":"num","q":"$#{m}\\times #{n}$ матрицаның рангы $#{r}$. Ядросының өлшемі қанша?","a":"n-r","v":"n-r","hint":"$\\operatorname{rank}+\\operatorname{nullity}=n$.","sol":{"steps":["$#{n}-#{r}$."],"ans":"$#{n-r}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="interval" data-id="m2-7-int">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m2-7-t11">11. Тәуелсіздік шарты</h3></div>
+        <p>Аралық түрінде жазыңыз (шексіздік - oo, бірігу - U).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$(a,1)$ және $(1,a)$ векторлары тәуелсіз болатын $a$ мәндері.","a":"(-oo; -1) U (-1; 1) U (1; oo)","v":"Union(Interval.open(-oo,-1), Interval.open(-1,1), Interval.open(1,oo))","hint":"$a\\cdot a-1\\cdot1\\ne0$.","sol":{"steps":["$a^2-1\\ne0$."],"ans":"$a\\ne\\pm1$"}},{"q":"$(1,2,3)$, $(2,4,a)$ векторлары тәуелсіз болатын $a$ мәндері.","a":"(-oo; 6) U (6; oo)","v":"Union(Interval.open(-oo,6), Interval.open(6,oo))","hint":"Екінші вектор біріншінің еселігі болғанда тәуелді.","sol":{"steps":["$(2,4,a)=2(1,2,3)\\iff a=6$."],"ans":"$a\\ne6$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m2-7-deriv">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-7-t12">12. Туындының матрицасы</h3></div>
+        <p>$D:P_3\to P_2$, $D(p)=p'$; базистер $\{1,x,x^2,x^3\}$ және $\{1,x,x^2\}$. Матрицаны жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$D$ матрицасы ($3\\times4$). Бағандары $D(1),D(x),D(x^2),D(x^3)$ координаталары.","name":"$[D]=$","a":[[0,1,0,0],[0,0,2,0],[0,0,0,3]],"v":"Matrix([[0,1,0,0],[0,0,2,0],[0,0,0,3]])","hint":"$D(x^3)=3x^2$.","sol":{"steps":["$D(1)=0$, $D(x)=1$, $D(x^2)=2x$, $D(x^3)=3x^2$."],"ans":"$\\begin{pmatrix}0&1&0&0\\\\0&0&2&0\\\\0&0&0&3\\end{pmatrix}$"}},{"q":"Сол $D$ үшін $\\dim\\ker D$ және $\\dim\\operatorname{im}D$ қосындысы нешеге тең?","name":"$\\dim\\ker+\\dim\\operatorname{im}=$","a":[4],"orient":"row","v":"[4]","hint":"Ранг–нөлдік теоремасы: $\\dim P_3$.","sol":{"steps":["Ядро - тұрақтылар ($1$), образ - $P_2$ ($3$)."],"ans":"$4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m2-7-dims">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-7-t13">13. Ядро мен образдың өлшемдері</h3></div>
+        <p>Жауапты бүтін санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$T:\\mathbb{R}^5\\to\\mathbb{R}^3$ сызықтық, $\\operatorname{im}T=\\mathbb{R}^3$ (сюръективті). $\\dim\\ker T=\\ ?$","a":2,"v":"5-3","hint":"$\\dim\\operatorname{im}=3$.","sol":{"steps":["$5-3$."],"ans":"$2$"}},{"q":"$T:\\mathbb{R}^3\\to\\mathbb{R}^5$ сызықтық, $\\ker T=\\{\\mathbf{0}\\}$. $\\dim\\operatorname{im}T=\\ ?$","a":3,"v":"3-0","hint":"Ядро нөл.","sol":{"steps":["$3-0$."],"ans":"$3$"}},{"q":"$A$ - $4\\times4$, $\\det A=0$, рангы 3. $\\dim N(A)=\\ ?$","a":1,"v":"4-3","hint":"$n-r$.","sol":{"steps":["$4-3$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m2-7-map">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-7-t14">14. Түрлендіру нәтижесі</h3></div>
+        <p>Өрнекті $x$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$T(x,y)=(x+2y,\\,3x-y)$. $T(x,2x)$ векторының бірінші координатасы.","a":"5*x","v":"x+2*(2*x)","hint":"$y=2x$ қойыңыз.","sol":{"steps":["$x+2\\cdot2x$."],"ans":"$5x$"}},{"q":"Сол $T$ үшін $T(x,2x)$ векторының екінші координатасы.","a":"x","v":"3*x-2*x","hint":"$3x-y$ мұнда $y=2x$.","sol":{"steps":["$3x-2x$."],"ans":"$x$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m2-7-ker">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-7-t15">15. Ядро және образ</h3></div>
+        <p>Дұрыс жауаптарды белгілеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$T(\\mathbf{x})=A\\mathbf{x}$ үшін қай тұжырымдар эквивалентті (инъективтілік)?","o":["$\\ker T=\\{\\mathbf{0}\\}$","$A$-ның бағандары сызықтық тәуелсіз","$A\\mathbf{x}=\\mathbf{0}$-дің нөлдік емес шешімі бар","$\\operatorname{rank}A=n$"],"a":[0,1,3],"e":"3-ші тұжырым қарама-қарсы. Алғашқы үшеуі (ядро нөл, тәуелсіз бағандар, ранг $n$) бір нәрсе.","hint":"7.1 және 7.4 теоремалары.","sol":{"steps":["Ядро нөл ⇔ тривиал шешім ⇔ ранг $n$."],"ans":"Бірінші, екінші, төртінші."}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m2-7-tf2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-7-t16">16. Түсіну тексеруі</h3></div>
+        <p>Әр пікірді талдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Екі ішкі кеңістіктің қиылысуы әрдайым ішкі кеңістік.","a":true,"e":"Ақиқат: нөл ортақ, қосу және санға көбейту екеуінде де орындалады.","hint":"Ішкі кеңістік шарттарын тексеріңіз."},{"q":"Екі ішкі кеңістіктің бірігуі әрдайым ішкі кеңістік.","a":false,"e":"Жалған: $x$ осі мен $y$ осінің бірігуінде $(1,0)+(0,1)=(1,1)$ жиыннан тыс.","hint":"Осьтермен мысал."},{"q":"$\\operatorname{rank}A=\\operatorname{rank}A^T$.","a":true,"e":"Ақиқат: жолдар мен бағандар кеңістіктерінің өлшемі тең (жетекші элементтер саны).","hint":"Мысал: $\\begin{pmatrix}1&2\\\\2&4\\end{pmatrix}$ екі жағы да 1."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m2-7-p-orth">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-7-t17">17. Параметрлік: ортогональ базистегі координата</h3></div>
+        <p>Ортогональ базис координатасы скаляр көбейтіндімен табылады (2-сабақ).</p>
+        <script type="application/json" class="math-ex-data">{"params":{"p":{"int":[1,3]},"q":{"int":[1,3]},"c":{"int":[-3,3],"nz":true},"d":{"int":[-3,3],"nz":true},"vx":{"calc":"c*p-d*q"},"vy":{"calc":"c*q+d*p"}},"type":"num","q":"$\\mathbf{b}_1=(#{p},\\,#{q})$, $\\mathbf{b}_2=(#{-q},\\,#{p})$ ортогональ. $\\mathbf{v}=(#{vx},\\,#{vy})$ векторының $\\mathbf{b}_1$ бойынша координатасын табыңыз.","a":"c","v":"Rational(vx*p+vy*q,p*p+q*q)","hint":"$x=\\dfrac{\\mathbf{v}\\cdot\\mathbf{b}_1}{\\mathbf{b}_1\\cdot\\mathbf{b}_1}$.","sol":{"steps":["$\\mathbf{v}\\cdot\\mathbf{b}_1=#{vx*p+vy*q}$, $\\mathbf{b}_1\\cdot\\mathbf{b}_1=#{p^2+q^2}$."],"ans":"$x=#{c}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m2-7-order2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-7-t18">18. Дәлелдеу реті: жалғыз жіктелу</h3></div>
+        <p>Дәлелдеу қадамдарын дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Базис бойынша жіктелудің жалғыздығы.","steps":["$\\mathbf{v}=\\sum x_i\\mathbf{b}_i$ және $\\mathbf{v}=\\sum y_i\\mathbf{b}_i$ екі жіктелу делік.","Бірін екіншісінен шегереміз: $\\sum(x_i-y_i)\\mathbf{b}_i=\\mathbf{0}$.","Базис векторлары сызықтық тәуелсіз, сондықтан барлық $x_i-y_i=0$.","Демек $x_i=y_i$: жіктелу жалғыз."],"hint":"Айырмаға тәуелсіздік қолданылады.","sol":{"ans":"Жіктелу жалғыз."}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m2-7-null">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-7-t19">19. Нөл кеңістіктің векторы</h3></div>
+        <p>Векторды жол түрінде жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}1&2&1\\\\0&1&1\\\\1&3&2\\end{pmatrix}$. $A\\mathbf{x}=\\mathbf{0}$, $x_3=1$ болатын шешім $\\mathbf{x}=(x_1,x_2,1)$.","orient":"row","name":"$\\mathbf{x}=$","a":[1,-1,1],"v":"[1,-1,1]","hint":"$x_2+1=0$ және $x_1+2x_2+1=0$.","sol":{"steps":["$R_2$: $x_2+x_3=0\\Rightarrow x_2=-1$.","$R_1$: $x_1-2+1=0\\Rightarrow x_1=1$."],"ans":"$(1,-1,1)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m2-7-reveal">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m2-7-t20">20. Қадамдық шешім: көпмүшелер кеңістігінің ішкі кеңістігі</h3></div>
+        <p>Бұл есепті «Кеңес» және «Келесі қадам» батырмаларымен біртіндеп ашып оқыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$W=\\{p\\in P_2:\\ p(1)=0\\}$ жиынының ішкі кеңістік екенін көрсетіп, базисі мен өлшемін табыңыз. $p(x)=x^2-3x+2$ көпмүшесінің координаталарын табыңыз.","hint":"$p(x)=a+bx+cx^2$ болса, $p(1)=a+b+c$.","steps":["Ішкі кеңістік: $0(1)=0$; $p(1)=q(1)=0$ болса, $(p+q)(1)=0$, $(kp)(1)=0$.","Жалпы $p\\in W$: $a=-b-c$, яғни $p=-b-c+bx+cx^2=b(x-1)+c(x^2-1)$.","Демек $W=\\operatorname{span}\\{x-1,\\ x^2-1\\}$; екеуі тәуелсіз (бірі 1-дәрежелі, екіншісі 2-дәрежелі). $\\dim W=2$.","$x^2-3x+2=b(x-1)+c(x^2-1)$: $x^2$ коэффициенті $c=1$; $x$ коэффициенті $b=-3$; тұрақты: $-b-c=3-1=2$ ✓. Координаталар $(b,c)=(-3,1)$."],"ans":"$\\dim W=2$, базис $\\{x-1,\\ x^2-1\\}$, $x^2-3x+2\\leftrightarrow(-3,1)$. (Шын мәнінде $x^2-3x+2=(x-1)(x-2)$.)"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Деректер ғылымында кесте бағандары көбіне тәуелді (артық ақпарат): ранг оның қанша «нағыз» өлшемі бар екенін айтады. Кодтау теориясында сызықтық кодтар ($\mathbb{F}_2^n$ ішкі кеңістіктері) қателерді түзетуге мүмкіндік береді. Сигналдарды өңдеуде сигналдарды базис векторларының комбинациясы ретінде жазады (Фурье, вейвлет базисі), сығу — бірнеше маңызды коэффициентті ғана сақтау. Компьютерлік графикада объект өз координаталар жүйесінде (базисте) сипатталады да, дүние координаталарына $P$ матрицасымен түрленеді. Дифференциалдық теңдеулердің шешімдері де кеңістік құрайды: біртекті сызықтық теңдеудің шешімдер жиыны векторлық кеңістік (9-пән).</p>
+      <p><b>Мини-жоба: «Базис, ранг және ядро».</b> Бағдарлама бөлшектермен RREF жасайды, одан рангты, бағандар кеңістігінің базисін, нөл кеңістіктің базисін табады, вектордың базистегі координаталарын шығарады және базисті ауыстырады.</p>
+<pre data-lang="python"><code class="language-python">from fractions import Fraction
+
+def rref(M):
+    A = [[Fraction(x) for x in row] for row in M]
+    rows, cols = len(A), len(A[0])
+    piv, r = [], 0
+    for c in range(cols):
+        if r == rows:
+            break
+        p = next((i for i in range(r, rows) if A[i][c] != 0), None)
+        if p is None:
+            continue
+        A[r], A[p] = A[p], A[r]
+        A[r] = [x / A[r][c] for x in A[r]]
+        for i in range(rows):
+            if i != r and A[i][c] != 0:
+                f = A[i][c]
+                A[i] = [a - f * b for a, b in zip(A[i], A[r])]
+        piv.append(c)
+        r += 1
+    return A, piv
+
+def rank(M):
+    return len(rref(M)[1])
+
+def column_space_basis(M):
+    _, piv = rref(M)
+    return [[row[c] for row in M] for c in piv]   # бастапқы бағандар
+
+def null_space_basis(M):
+    R, piv = rref(M)
+    n = len(M[0])
+    free = [c for c in range(n) if c not in piv]
+    basis = []
+    for f in free:
+        v = [Fraction(0)] * n
+        v[f] = Fraction(1)
+        for i, c in enumerate(piv):
+            v[c] = -R[i][f]
+        basis.append(v)
+    return basis
+
+def coordinates(basis, v):
+    # basis бағандары b_j; x_1 b_1 + ... = v жүйесін шешеміз
+    n = len(basis)
+    aug = [[basis[j][i] for j in range(n)] + [v[i]] for i in range(len(v))]
+    R, piv = rref(aug)
+    return [R[i][-1] for i in range(n)]
+
+A = [[1, 2, 0, 1], [2, 4, 1, 4], [3, 6, 1, 5]]
+print("ранг:", rank(A))
+print("C(A) базисі:", [[str(x) for x in b] for b in column_space_basis(A)])
+ns = null_space_basis(A)
+print("N(A) базисі:", [[str(x) for x in b] for b in ns])
+print("ранг + нөлдік:", rank(A) + len(ns), "=", len(A[0]))
+for b in ns:
+    print([str(sum(a * x for a, x in zip(row, b))) for row in A])   # A b = 0
+
+B = [[1, 1], [1, -1]]
+print([str(x) for x in coordinates(B, [3, 1])])    # ['2', '1']
+print(rank([[1, 2, 4], [2, -1, 3], [3, 1, 7]]))    # 2: тәуелді
+</code></pre>
+      <p><b>Код қалай жұмыс істейді.</b> <code>rank</code> RREF-тегі жетекші бағандарды санайды. <code>column_space_basis</code> жетекші бағандардың индекстерін алып, <em>бастапқы</em> матрицаның бағандарын қайтарады (назар аудару ескертуі). <code>null_space_basis</code> әр бос айнымалыны 1, қалған бос айнымалыларды 0 деп қойып, жетекші айнымалыларды RREF-тен табады: $x_c=-R_{i,f}$. Бұл дәл 4-қорытудағы $\mathbf{s}_k$ векторлары. <code>coordinates</code> базис векторларынан құралған жүйені шешеді. Соңғы тексеріс ранг–нөлдік теоремасын растайды: $2+2=4$. Бағдарламаның бөлшектермен жұмыс істеуі дәлдікті сақтап, рангты дұрыс анықтауға мүмкіндік береді.</p>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Кез келген векторлар жүйесінің <code>is_independent(vectors)</code> функциясын жазыңыз (векторларды баған етіп, рангты $k$-мен салыстырыңыз) және 2-мысалдың үш векторы үшін <code>False</code> шығатынын тексеріңіз.</li>
+        <li>Базисті ауыстыру функциясын жазыңыз: берілген екі базис $B$, $C$ үшін $[\mathbf{v}]_B$-дан $[\mathbf{v}]_C$-ны табыңыз ($P_C^{-1}P_B$). 4-мысалдағы $B$ мен стандартты базис үшін тексеріңіз.</li>
+        <li>Кездейсоқ $5\times8$ матрица жасап (бүтін сандар $0,1$), ранг пен нөлдіктің қосындысы әрдайым 8 екенін 100 рет тексеріңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Ішкі кеңістік</td><td>$\mathbf{0}\in W$, қосу және санға көбейтуге жабық</td><td>$W\subseteq V$</td></tr>
+        <tr><td>Тәуелсіздік</td><td>$\sum c_i\mathbf{v}_i=\mathbf{0}\Rightarrow c_i=0$; ранг $=k$</td><td>векторлар - баған</td></tr>
+        <tr><td>Базис</td><td>тәуелсіз және жабатын жүйе</td><td>$|B|=\dim V$</td></tr>
+        <tr><td>Координаталар</td><td>$\mathbf{v}=P[\mathbf{v}]_B$, $[\mathbf{v}]_B=P^{-1}\mathbf{v}$</td><td>$P=(\mathbf{b}_1\cdots\mathbf{b}_n)$</td></tr>
+        <tr><td>Өлшем</td><td>$\dim\mathbb{R}^n=n$, $\dim P_n=n+1$, $\dim\mathbb{R}^{m\times n}=mn$</td><td>-</td></tr>
+        <tr><td>Бағандар кеңістігі</td><td>$\dim C(A)=\operatorname{rank}A$</td><td>базис: жетекші бағандар</td></tr>
+        <tr><td>Нөл кеңістік</td><td>$N(A)=\{\mathbf{x}:A\mathbf{x}=\mathbf{0}\}$, $\dim=n-r$</td><td>базис: бос айнымалылар</td></tr>
+        <tr><td>Ранг–нөлдік</td><td>$\operatorname{rank}A+\dim N(A)=n$</td><td>$A$: $m\times n$</td></tr>
+        <tr><td>Сызықтық бейнелеу</td><td>$A=(T(\mathbf{e}_1)\cdots T(\mathbf{e}_n))$</td><td>$T(\mathbf{x})=A\mathbf{x}$</td></tr>
+        <tr><td>Базисті ауыстыру</td><td>$[T]_B=P^{-1}AP$</td><td>$P$ қайтымды</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m2-7-self">
+        <li><input type="checkbox"> <span>Мен векторлық кеңістіктің аксиомаларын айтып, ішкі кеңістікті үш шартпен тексеремін.</span></li>
+        <li><input type="checkbox"> <span>Мен векторлар жүйесінің тәуелсіздігін ранг арқылы анықтаймын.</span></li>
+        <li><input type="checkbox"> <span>Мен базис пен өлшемді табамын және вектордың координаталарын есептеймін.</span></li>
+        <li><input type="checkbox"> <span>Мен бағандар кеңістігі мен нөл кеңістіктің базистерін табамын, ранг–нөлдік теоремасын қолданамын.</span></li>
+        <li><input type="checkbox"> <span>Мен сызықтық бейнелеудің матрицасын құрып, ядросы мен образын сипаттаймын.</span></li>
+        <li><input type="checkbox"> <span>Мен базисті ауыстырғанда координаталар мен матрица қалай өзгеретінін есептеймін.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. Қайсысы R³ кеңістігінің ішкі кеңістігі?</p>
+<label><input type="radio" value="a"> {(x, y, z): x + y + z = 1}</label>
+<label><input type="radio" value="b"> {(x, y, z): x + y + z = 0}</label>
+<label><input type="radio" value="c"> {(x, y, z): z ≥ 0}</label>
+<label><input type="radio" value="d"> {(x, y, z): x·y = 0}</label>
+<p class="explain">Тек x + y + z = 0 нөл векторды қамтып, қосу мен санға көбейтуге жабық. Қалғандары: нөлді қамтымайды, −1-ге көбейтуге жабық емес, не қосуға жабық емес (x·y = 0).</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">2. (1, 2, 3), (2, −1, 1), (4, 3, 7) векторлары туралы қай пікір дұрыс?</p>
+<label><input type="radio" value="a"> тәуелсіз</label>
+<label><input type="radio" value="b"> R³ базисі</label>
+<label><input type="radio" value="c"> екеуі ғана тәуелді</label>
+<label><input type="radio" value="d"> тәуелді: v₃ = 2v₁ + v₂</label>
+<p class="explain">2·(1, 2, 3) + (2, −1, 1) = (4, 3, 7). Матрицаның рангы 2 < 3.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. R⁶ кеңістігіндегі 4×6 матрицаның рангы 3. Ядросының өлшемі қандай?</p>
+<label><input type="radio" value="a"> 3</label>
+<label><input type="radio" value="b"> 1</label>
+<label><input type="radio" value="c"> 2</label>
+<label><input type="radio" value="d"> 4</label>
+<p class="explain">Ранг–нөлдік теоремасы: rank + nullity = n = 6, сондықтан nullity = 6 − 3 = 3.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">4. {(1, 1), (1, −1)} базисінде (3, 1) векторының координаталары қандай?</p>
+<label><input type="radio" value="a"> (3, 1)</label>
+<label><input type="radio" value="b"> (1, 2)</label>
+<label><input type="radio" value="c"> (2, 1)</label>
+<label><input type="radio" value="d"> (4, 2)</label>
+<p class="explain">x + y = 3, x − y = 1 ⇒ x = 2, y = 1. Тексеру: 2(1, 1) + (1, −1) = (3, 1).</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. P₂ (дәрежесі ≤ 2 көпмүшелер) кеңістігінің өлшемі қандай?</p>
+<label><input type="radio" value="a"> 2</label>
+<label><input type="radio" value="b"> 3</label>
+<label><input type="radio" value="c"> 4</label>
+<label><input type="radio" value="d"> шексіз</label>
+<p class="explain">Базис {1, x, x²}: үш вектор.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">6. Туынды D: P₂ → P₁ сызықтық бейнелеуінің ядросы қандай?</p>
+<label><input type="radio" value="a"> {0} ғана</label>
+<label><input type="radio" value="b"> барлық P₁</label>
+<label><input type="radio" value="c"> бірінші дәрежелі көпмүшелер</label>
+<label><input type="radio" value="d"> тұрақты көпмүшелер</label>
+<p class="explain">p′ = 0 ⇔ p тұрақты. Өлшемі 1; образ P₁ (өлшемі 2); 1 + 2 = 3 = dim P₂.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. Матрицаның бағандар кеңістігінің базисін қалай аламыз?</p>
+<label><input type="radio" value="a"> RREF жетекші бағандарына сәйкес бастапқы матрица бағандарын</label>
+<label><input type="radio" value="b"> RREF бағандарының өзін</label>
+<label><input type="radio" value="c"> RREF жолдарын</label>
+<label><input type="radio" value="d"> матрицаның барлық бағандарын</label>
+<p class="explain">Жол түрлендірулері бағандар кеңістігін өзгертеді, сондықтан жетекші бағандарды бастапқы матрицадан аламыз.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">8. Базис ауыстырғанда T түрлендіруінің матрицасы қалай өзгереді (P — жаңа базис бағандарынан құралған матрица)?</p>
+<label><input type="radio" value="a"> PA</label>
+<label><input type="radio" value="b"> AP</label>
+<label><input type="radio" value="c"> P⁻¹AP</label>
+<label><input type="radio" value="d"> PAP</label>
+<p class="explain">[T(x)]_B = P⁻¹T(x) = P⁻¹A·P[x]_B, сондықтан жаңа матрица P⁻¹AP.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-12.html"><small>Алдыңғы</small>← 2 · Сызықтық алгебра · 6-сабақ: Анықтауыш</a>
