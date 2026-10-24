@@ -661,6 +661,7 @@ test("формулалар: пән бойынша сүзу, іздеу, KaTeX, �
   await page.route(/assets\/data\/math-formulas-precalc\.js/, (r) => r.fulfill({ status: 200, contentType: "application/javascript", body: `window.CS50KZ_MATH_FORMULAS=window.CS50KZ_MATH_FORMULAS||{};window.CS50KZ_MATH_FORMULAS.precalc=[
       {"id":"pc-quad","name":"Квадрат теңдеудің түбірлері","tex":"x=\\\\frac{-b\\\\pm\\\\sqrt{b^2-4ac}}{2a}","cond":"a\\\\ne0","note":"Дискриминант D=b^2-4ac","tags":["квадрат","түбір"],"lesson":2,"anchor":"theory"},
       {"id":"pc-vertex","name":"Парабола төбесі","tex":"x_{\\\\text{в}}=-\\\\frac{b}{2a}","lesson":1,"anchor":"f-2"}];` }));
+  await page.route(/assets\/data\/math-formulas-linalg\.js/, (r) => r.fulfill({ status: 200, contentType: "application/javascript", body: "window.CS50KZ_MATH_FORMULAS=window.CS50KZ_MATH_FORMULAS||{};window.CS50KZ_MATH_FORMULAS.linalg=[];" }));
   await page.goto("math/formulas.html#precalc");
   await expect(page.locator(".mx-fitem")).toHaveCount(2);
   await expect(page.locator("#mx-app .mx-sel").first()).toHaveValue("precalc");
@@ -782,7 +783,7 @@ test("math_verify.py бұзылған кілтті табады (файл:есе
 
 test("құжат: docs/MATH-COURSE-GUIDE.md негізгі бөлімдерді қамтиды", () => {
   const g = fs.readFileSync(path.join(ROOT, "docs/MATH-COURSE-GUIDE.md"), "utf8");
-  for (const k of ["math_plan.py", "week-N", "math-def", "math-thm", "math-remember", "math-attention", "math-derive", "data-type", "param", "\\\\frac", "math_verify.py", "KaTeX", "cs50kz:math:", "check:<бет", "math-formulas-", "math-terms-", "math-problems-", "All Rights Reserved", "сертификат", "Жоғары математикаға дайындық", "Stochastic Processes"]) expect(g, k).toContain(k);
+  for (const k of ["math_plan.py", "week-N", "math-def", "math-thm", "math-remember", "math-attention", "math-derive", "data-type", "param", "\\\\frac", "math_verify.py", "KaTeX", "cs50kz:math:", "check:<бет", "math-formulas-", "math-terms-", "math-problems-", "All Rights Reserved", "сертификат", "Higher Mathematics", "Stochastic Processes"]) expect(g, k).toContain(k);
   for (const t of ["num", "expr", "interval", "choice", "tf", "matrix", "match", "order", "reveal", "param"]) expect(g, t).toContain("`" + t + "`");
 });
 

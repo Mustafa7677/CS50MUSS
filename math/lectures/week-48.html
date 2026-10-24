@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Math 7 · Векторлық анализ · 6-сабақ: Беттік интеграл, Стокс және Гаусс–Остроградский теоремалары - CS50 қазақша</title>
+  <title>Math Vector Calculus · 6-сабақ: Беттік интеграл, Стокс және Гаусс–Остроградский теоремалары - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
@@ -11,8 +11,8 @@
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
-  <meta property="og:title" content="Math 7 · Векторлық анализ · 6-сабақ: Беттік интеграл, Стокс және Гаусс–Остроградский теоремалары - CS50 қазақша">
-  <meta property="og:description" content="Математика, 7 · Векторлық анализ · 6-сабақ: Беттік интеграл, Стокс және Гаусс–Остроградский теоремалары. Сабақ жақында жазылады.">
+  <meta property="og:title" content="Math Vector Calculus · 6-сабақ: Беттік интеграл, Стокс және Гаусс–Остроградский теоремалары - CS50 қазақша">
+  <meta property="og:description" content="Бет бойынша интеграл, ағын, теоремалар және қолданыстар.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-48.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -22,15 +22,20 @@
   <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-48.html">
   <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
   <link rel="license" href="../../copyright.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math 7 · Векторлық анализ · 6-сабақ: Беттік интеграл, Стокс және Гаусс–Остроградский теоремалары - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-48.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Vector Calculus · 6-сабақ: Беттік интеграл, Стокс және Гаусс–Остроградский теоремалары - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-48.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, 7 · Векторлық анализ · 6-сабақ: Беттік интеграл, Стокс және Гаусс–Остроградский теоремалары. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Бет бойынша интеграл, ағын, теоремалар және қолданыстар.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,27 +57,536 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="48">
-        <div class="num">7 · Векторлық анализ · 6-сабақ</div>
+        <div class="num">Vector Calculus · 6-сабақ</div>
         <h1>Беттік интеграл, Стокс және Гаусс–Остроградский теоремалары</h1>
-        <p>Бет бойынша интеграл, ағын, теоремалар және қолданыстар.</p>
+        <p>Соңғы сабақта қисық сызықты интегралдың «екі өлшемді ағасы» - беттік интегралды енгіземіз және екі ұлы теореманы дәлелдейміз: <b>Стокс теоремасы</b> (бет бойынша ротор интегралы = шекара контурындағы айналым) және <b>Гаусс-Остроградский теоремасы</b> (дене бойынша дивергенция интегралы = шекара беті арқылы ағын). Бұл екі теорема Грин теоремасының жалпылаулары және Ньютон-Лейбниц формуласының жоғары өлшемдегі нұсқалары. Олар Максвелл теңдеулерінің, сақталу заңдарының және сұйықтар механикасының негізі.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-7">Векторлық анализ</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-7">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
 
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны жасанды интеллект көмегімен дайындалған, сондықтан математик-оқытушымен тексеріп алған жөн. Бұл ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>бетті параметрлеп, бет элементі $dS=|\mathbf{r}_u\times\mathbf{r}_v|\,du\,dv$ және $z=f(x,y)$ үшін $dS=\sqrt{1+f_x^2+f_y^2}\,dx\,dy$ формулаларын қолдану;</li>
+        <li>бірінші текті ($\iint f\,dS$) және екінші текті ($\iint\mathbf{F}\cdot\mathbf{n}\,dS$, ағын) беттік интегралдарды есептеу;</li>
+        <li>беттің бағыты мен шекара контурының бағытын «оң бұранда» ережесімен келістіру;</li>
+        <li>Гаусс-Остроградский теоремасымен жабық бет арқылы ағынды көлемдік интегралға ауыстыру;</li>
+        <li>Стокс теоремасымен контурдағы айналымды бет бойынша ротор ағынына ауыстыру (және керісінше);</li>
+        <li>екі теореманың негізгі қосымшаларын (көлем формуласы, Гаусс заңы, $\operatorname{div}\operatorname{rot}=0$) шығарып, теоремалардың Грин теоремасымен байланысын түсіндіру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Бұл блок - қажетті құралдардың қысқаша еске салуы. Өз пәнімізден <a href="week-44.html">2-сабақ</a> (дивергенция, ротор), <a href="week-45.html">3-сабақ</a> (қисық сызықты интеграл) және <a href="week-47.html">5-сабақ</a> (Грин теоремасы) қажет.</p>
+      <ul>
+        <li><b>Үш еселі интеграл.</b> $\iiint_Vg\,dV$ - денедегі қосу. Сфералық координаталарда $x=\rho\sin\varphi\cos\theta$, $y=\rho\sin\varphi\sin\theta$, $z=\rho\cos\varphi$, $dV=\rho^2\sin\varphi\,d\rho\,d\varphi\,d\theta$. Мысалы, бірлік шардың көлемі $\int_0^{2\pi}\!\int_0^\pi\!\int_0^1\rho^2\sin\varphi\,d\rho\,d\varphi\,d\theta=\frac{4\pi}{3}$.</li>
+        <li><b>Векторлық көбейтінді.</b> $\mathbf{a}\times\mathbf{b}$ - $\mathbf{a}$ мен $\mathbf{b}$-ға перпендикуляр вектор, ұзындығы жасалған параллелограмм ауданына тең: $|\mathbf{a}\times\mathbf{b}|=|\mathbf{a}||\mathbf{b}|\sin\varphi$. Мысалы, $(1,0,0)\times(0,2,0)=(0,0,2)$.</li>
+        <li><b>Жазық нүктелер жиынының параметрленуі.</b> Бетті $\mathbf{r}(u,v)=(x(u,v),y(u,v),z(u,v))$ түрінде береміз. Мысалы, радиусы $R$ сфера: $\mathbf{r}(\varphi,\theta)=R(\sin\varphi\cos\theta,\ \sin\varphi\sin\theta,\ \cos\varphi)$.</li>
+      </ul>
+
+
+      <h2 id="intuition">Интуиция: тор мен қаптың бетінен өтетін ағын</h2>
+      <p>Қолыңыздағы сетканы өзен ағысына перпендикуляр қойсаңыз, көп су өтеді; ағысқа параллель қойсаңыз, су торға тиіп қана өтеді. Тордың бір бөлігінен өтетін су мөлшері: ағыс жылдамдығының торға перпендикуляр құраушысы × тор ауданы. Бұл - бөлікке арналған <b>ағын</b> (flux): $\mathbf{F}\cdot\mathbf{n}\,\Delta S$. Бүкіл беттен өтетін ағын - осы кішкентай ағындардың қосындысы, яғни <b>екінші текті беттік интеграл</b> $\iint_S\mathbf{F}\cdot\mathbf{n}\,dS$. Тор екі жағын айырады, сондықтан ағынның таңбасын анықтау үшін нормальдың бағыты (қай жағы «алға») алдын ала таңдалуы керек.</p>
+      <p>Енді тордың орнына жабық қап алайық (шар, куб). Қаптан шығатын су мөлшері қап ішінде қанша су пайда болып жатқанына тең: ішінде көз (бұлақ) болса, су шығады; ішінде су жұтатын жер болса, кіреді. Көздің қуаты - дивергенция, ал барлық көздің қосындысы - дивергенцияның көлемдік интегралы. Сонымен: <em>жабық бет арқылы шығатын ағын = ішіндегі дивергенцияның интегралы</em>. Бұл - Гаусс-Остроградский теоремасы.</p>
+      <p>Ал Стокс теоремасы Грин теоремасының кеңістіктік нұсқасы. Ілмектің (сым ілмектің) бойымен өрістің жұмысын (циркуляцияны) есептесек, ол ілмекке керілген кез келген «сабын қабығы» (бет) арқылы өтетін ротор ағынына тең. Қабықтың пішіні өзгерсе де (шекарасы сол ілмек болса), ағын өзгермейді: себебі жабық бет арқылы роторлық өрістің ағыны нөл ($\operatorname{div}\operatorname{rot}=0$).</p>
+      <p>Бұл теоремалар бір идеяның үш көрінісі. Ньютон-Лейбниц: кесіндідегі туынды интегралы = шеткі нүктелердегі мәндердің айырымы. Грин: облыстағы $Q_x-P_y$ интегралы = шекара контурындағы интеграл. Стокс: беттегі ротор интегралы = шекара контурындағы интеграл. Гаусс-Остроградский: көлемдегі дивергенция интегралы = шекара беттегі интеграл. Әрқайсысында «ішкі туынды» = «шекара мәні». Математикада бұл жалпы Стокс теоремасының жеке жағдайлары.</p>
+      <p>Бағдарламалауда ағынды есептеу: бетті үшбұрыштар торымен жуықтап, әр үшбұрыштың ауданын мен нормалін алып, $\mathbf{F}\cdot\mathbf{n}\,\Delta S$ қосу. Дәл осылай CFD (сұйық ағысын есептеу) пен ойын графикасындағы жарық есептеледі. Гаусс-Остроградский теоремасы сандық схемаларда «ұяшық арқылы ағын» ретінде (ақырлы көлем әдісі) қолданылады: ұяшық ішіндегі шаманың өзгерісі - беттерден өткен ағындардың қосындысы.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 6.1 · Параметрленген бет және бет элементі</span>
+        <p>Бет $\mathbf{r}(u,v)=(x(u,v),y(u,v),z(u,v))$, $(u,v)\in\Omega$ түрінде берілсін. $\mathbf{r}_u$, $\mathbf{r}_v$ - координаталық қисықтардың жанама векторлары, егер $\mathbf{r}_u\times\mathbf{r}_v\ne\mathbf{0}$ болса, бет <strong>тегіс</strong> (<span class="term-en">smooth surface</span>). $\mathbf{N}=\mathbf{r}_u\times\mathbf{r}_v$ - нормаль вектор, <strong>бет элементі</strong> $dS=|\mathbf{r}_u\times\mathbf{r}_v|\,du\,dv$, бірлік нормаль $\mathbf{n}=\mathbf{N}/|\mathbf{N}|$.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 6.2 · Беттік интегралдар</span>
+        <p><strong>Бірінші текті беттік интеграл</strong> (<span class="term-en">surface integral of the first kind</span>): $\iint_Sf\,dS=\iint_\Omega f(\mathbf{r}(u,v))\,|\mathbf{r}_u\times\mathbf{r}_v|\,du\,dv$ ($f\equiv1$ болса, бет ауданы). <strong>Екінші текті беттік интеграл</strong> (<span class="term-en">flux integral</span>, ағын): бағытталған $S$ үшін
+        $$\iint_S\mathbf{F}\cdot\mathbf{n}\,dS=\iint_\Omega\mathbf{F}(\mathbf{r}(u,v))\cdot(\mathbf{r}_u\times\mathbf{r}_v)\,du\,dv,$$
+        егер $\mathbf{r}_u\times\mathbf{r}_v$ таңдалған нормаль бағытымен сәйкес келсе (әйтпесе минус таңба).</p></div>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 6.1 · Графиктің бет элементі мен ағыны</span>
+        <div class="math-fbody">$$z=f(x,y):\quad dS=\sqrt{1+f_x^2+f_y^2}\,dx\,dy,\qquad \iint_S\mathbf{F}\cdot\mathbf{n}\,dS=\iint_D\left(-Pf_x-Qf_y+R\right)dx\,dy$$</div><p class="math-fnote">Шарты: нормаль жоғары қараған ($n_z>0$); төменгі жағы үшін минус таңба. $D$ - бетті $xy$-жазықтыққа проекциялау.</p></div>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 6.3 · Беттің және контурдың бағыты</span>
+        <p>Бет пен оның $\partial S$ шекарасының бағыттары <strong>келісілген</strong> (оң бұранда ережесі): оң қолдың саусақтары шекараны жүру бағытымен иілсе, бас бармақ нормаль $\mathbf{n}$ бағытын көрсетеді. Жабық бет үшін нормаль <em>сыртқа</em> бағытталады.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 6.1 · Гаусс-Остроградский теоремасы</span>
+        <p>$V$ - кеңістіктегі шектелген облыс, шекарасы $S=\partial V$ бөлікті-тегіс жабық бет (нормаль сыртқа), $\mathbf{F}=(P,Q,R)$ - $V\cup S$-те $C^1$ өріс болсын. Онда
+        $$\oiint_{S}\mathbf{F}\cdot\mathbf{n}\,dS=\iiint_V\operatorname{div}\mathbf{F}\,dV.$$</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 6.2 · Гаусс-Остроградский</span>
+        <div class="math-fbody">$$\oiint_{S}P\,dy\,dz+Q\,dz\,dx+R\,dx\,dy=\iiint_V\left(P_x+Q_y+R_z\right)dV$$</div><p class="math-fnote">Шарты: нормаль сыртқа, $\mathbf{F}\in C^1(V\cup S)$.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 6.2 · Стокс теоремасы</span>
+        <p>$S$ - бағытталған тегіс (бөлікті-тегіс) бет, $\partial S$ - оның келісілген бағыттағы шекарасы, $\mathbf{F}\in C^1$ болсын. Онда
+        $$\oint_{\partial S}\mathbf{F}\cdot d\mathbf{r}=\iint_S\operatorname{rot}\mathbf{F}\cdot\mathbf{n}\,dS.$$</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 6.3 · Стокс формуласы</span>
+        <div class="math-fbody">$$\oint_{\partial S}P\,dx+Q\,dy+R\,dz=\iint_S\operatorname{rot}\mathbf{F}\cdot\mathbf{n}\,dS$$</div><p class="math-fnote">Шарты: бағыттар оң бұранда ережесімен келісілген; $S$ жазық болса, Грин теоремасы шығады.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 6.3 · Салдарлар</span>
+        <p>1) $V=\dfrac13\oiint_S\mathbf{r}\cdot\mathbf{n}\,dS$ (көлем формуласы). 2) Нүктелік көз өрісі $\mathbf{F}=\dfrac{\mathbf{r}}{r^3}$ үшін нөлді қамтитын кез келген жабық бет арқылы ағын $4\pi$ (Гаусс заңы). 3) Кез келген жабық бет үшін $\oiint_S\operatorname{rot}\mathbf{F}\cdot\mathbf{n}\,dS=0$. 4) Екі беттің шекарасы бір контур болса, олар арқылы ротор ағыны тең.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 6.4 · Гаусс заңы және көлем</span>
+        <div class="math-fbody">$$\oiint_S\frac{\mathbf{r}\cdot\mathbf{n}}{r^3}\,dS=4\pi\ (0\in V),\qquad V=\frac13\oiint_S\mathbf{r}\cdot\mathbf{n}\,dS$$</div><p class="math-fnote">Шарты: $S$ - жабық бет, нормаль сыртқа; бірінші теңдік үшін нөл $V$-ның ішінде.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Үш теорема бір кестеде: <b>Грин</b> ($\oint=\iint(Q_x-P_y)$), <b>Стокс</b> ($\oint=\iint\operatorname{rot}\cdot\mathbf{n}\,dS$), <b>Гаусс-Остроградский</b> ($\oiint=\iiint\operatorname{div}$). Әрқайсысында сол жақта шекара, оң жақта «ішкі туынды». Гаусста нормаль сыртқа; Стоксте бағыттар келісілген.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Нормаль бағыты - ағынның таңбасын анықтайды. Сфера үшін сыртқы нормаль $\mathbf{n}=\mathbf{r}/R$. Беттің бір жақты (Мёбиус жапырағы) бағытталмайтыны да бар. Гаусс теоремасында бет жабық болуы шарт. Егер бет ашық (жабық емес) болса, оған жабық етіп қақпақ қосу керек, немесе Стоксқа жүгіну керек. Өрістің үзіліс нүктесі $V$ ішінде болса, теорема тікелей қолданылмайды (Гаусс заңы).</p></div>
+      <div class="math-remark"><span class="math-box-title">Бір идея, төрт теорема</span>
+        <p>Ньютон-Лейбниц: $\int_a^bf'\,dx=f(b)-f(a)$. Грин: $\iint(Q_x-P_y)\,dA=\oint P\,dx+Q\,dy$. Стокс: $\iint\operatorname{rot}\mathbf{F}\cdot\mathbf{n}\,dS=\oint\mathbf{F}\cdot d\mathbf{r}$. Гаусс-Остроградский: $\iiint\operatorname{div}\mathbf{F}\,dV=\oiint\mathbf{F}\cdot\mathbf{n}\,dS$. Әрқайсысы бір өлшемге төмен «шекараға» көшіреді. Бұл жалпы Стокс теоремасының ($\int_{\Omega}d\omega=\int_{\partial\Omega}\omega$) жеке жағдайы. Осымен «Vector Calculus» пәні аяқталады.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <p>Төменде бет элементін, ағын формуласын, екі ұлы теореманы және Гаусс заңын дәлелдейміз. Дәлелдеулер қарапайым облыстарға (проекцияланатын беттер) арналған; жалпы жағдай кесу арқылы келтіріледі.</p>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: бет элементі $dS=|\mathbf{r}_u\times\mathbf{r}_v|\,du\,dv$ және графиктің бет элементі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Параметрленген беттің ауданын параллелограмдар қосындысы ретінде шығару.</p>
+          <ol class="math-steps">
+            <li>$(u,v)$ жазықтығындағы кішкентай тіктөртбұрыш $[u,u+\Delta u]\times[v,v+\Delta v]$ бетте қисық төртбұрышқа бейнеленеді. Оның қабырғалары шамамен $\mathbf{r}_u\Delta u$ және $\mathbf{r}_v\Delta v$ векторлары.</li>
+            <li>Қисық төртбұрышты осы екі вектордан тұрғызылған параллелограммен жуықтаймыз. Параллелограмм ауданы - векторлық көбейтіндінің ұзындығы: $\Delta S\approx|\mathbf{r}_u\Delta u\times\mathbf{r}_v\Delta v|=|\mathbf{r}_u\times\mathbf{r}_v|\,\Delta u\Delta v$.</li>
+            <li>Бөлудің барлық бөлігін қосып, шекке көшеміз: $S=\iint_\Omega|\mathbf{r}_u\times\mathbf{r}_v|\,du\,dv$. Тығыздықпен: $\iint f\,dS=\iint f(\mathbf{r})|\mathbf{r}_u\times\mathbf{r}_v|\,du\,dv$.</li>
+            <li>Графиктің жағдайы $z=f(x,y)$: параметр ретінде $u=x$, $v=y$ аламыз. $\mathbf{r}=(x,y,f)$, $\mathbf{r}_x=(1,0,f_x)$, $\mathbf{r}_y=(0,1,f_y)$.</li>
+            <li>Көбейтінді: $\mathbf{r}_x\times\mathbf{r}_y=\begin{vmatrix}\mathbf{i}&amp;\mathbf{j}&amp;\mathbf{k}\\1&amp;0&amp;f_x\\0&amp;1&amp;f_y\end{vmatrix}=(-f_x,\ -f_y,\ 1)$.</li>
+            <li>Ұзындығы $\sqrt{f_x^2+f_y^2+1}$, сондықтан $dS=\sqrt{1+f_x^2+f_y^2}\,dx\,dy$. Бұл вектордың үшінші компоненті оң (жоғары қараған нормаль).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2" open>
+        <summary>Қорытып шығару 2: екінші текті беттік интегралдың есептеу формуласы (ағын)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\iint_S\mathbf{F}\cdot\mathbf{n}\,dS=\iint_\Omega\mathbf{F}\cdot(\mathbf{r}_u\times\mathbf{r}_v)\,du\,dv$ формуласын шығару.</p>
+          <ol class="math-steps">
+            <li>Ағын - бөліктердің ағындарының қосындысы: $\Phi=\lim\sum\mathbf{F}(M_i)\cdot\mathbf{n}_i\,\Delta S_i$ (әр бөлікте өріс пен нормаль шамамен тұрақты).</li>
+            <li>Нормаль: $\mathbf{n}=\dfrac{\mathbf{r}_u\times\mathbf{r}_v}{|\mathbf{r}_u\times\mathbf{r}_v|}$ (бағыт сәйкес болса). Бет элементі: $\Delta S_i\approx|\mathbf{r}_u\times\mathbf{r}_v|\,\Delta u\Delta v$ (1-қорыту).</li>
+            <li>Көбейтеміз: $\mathbf{n}\,\Delta S\approx(\mathbf{r}_u\times\mathbf{r}_v)\,\Delta u\Delta v$ - модуль қысқарады.</li>
+            <li>Демек $\Phi\approx\sum\mathbf{F}(\mathbf{r}(u_i,v_i))\cdot(\mathbf{r}_u\times\mathbf{r}_v)\,\Delta u_i\Delta v_i$; шекте $\iint_\Omega\mathbf{F}\cdot(\mathbf{r}_u\times\mathbf{r}_v)\,du\,dv$.</li>
+            <li>Графикке қолдансақ: $\mathbf{r}_x\times\mathbf{r}_y=(-f_x,-f_y,1)$ және $\mathbf{F}\cdot(-f_x,-f_y,1)=-Pf_x-Qf_y+R$. Бұл - формула 6.1.</li>
+            <li>Мысал: жазықтық $x+y+z=1$ ($z=1-x-y$, $f_x=f_y=-1$) үшін $\mathbf{F}=(x,y,z)$: $-x(-1)-y(-1)+z=x+y+z=1$. Ағын $=\iint_D1\,dA$ ($D$ - проекция).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3" open>
+        <summary>Қорытып шығару 3: Гаусс-Остроградский теоремасы ($R$-компоненті)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $z$-түрлі денеде $\oiint R\,\mathbf{k}\cdot\mathbf{n}\,dS=\iiint R_z\,dV$ екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>Дене $V=\{(x,y)\in D,\ z_1(x,y)\le z\le z_2(x,y)\}$ ($z$-түрлі). Шекарасы үш бөліктен: төменгі бет $S_1$ ($z=z_1$), жоғарғы бет $S_2$ ($z=z_2$), бүйір $S_3$ (тік цилиндр).</li>
+            <li>Оң жақ: $\iiint_VR_z\,dV=\iint_D\left(\int_{z_1}^{z_2}R_z\,dz\right)dx\,dy=\iint_D\left[R(x,y,z_2)-R(x,y,z_1)\right]dx\,dy$ (Ньютон-Лейбниц).</li>
+            <li>Сол жақта $\mathbf{F}=(0,0,R)$ үшін ағын $\iint R\,n_z\,dS$. Бүйір бетте $n_z=0$, сондықтан $S_3$-тің үлесі нөл.</li>
+            <li>Жоғарғы бет $S_2$ (сыртқы нормаль жоғары): 6.1 формула бойынша $\iint_{S_2}R\,n_z\,dS=\iint_DR(x,y,z_2)\,dx\,dy$ (өйткені $n_z\,dS=dx\,dy$).</li>
+            <li>Төменгі бет $S_1$ (сыртқы нормаль төмен): $n_z\,dS=-dx\,dy$, сондықтан үлес $-\iint_DR(x,y,z_1)\,dx\,dy$.</li>
+            <li>Қосамыз: $\oiint R\,n_z\,dS=\iint_D[R(x,y,z_2)-R(x,y,z_1)]\,dx\,dy=\iiint R_z\,dV$. Дәл солай $P$ және $Q$ компоненттері ($x$-түрлі, $y$-түрлі денелер үшін). Үшеуін қоссақ, теорема шығады, ал жалпы денені қарапайым бөліктерге кесуге болады (ішкі қабырғалар қысқарады). ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4" open>
+        <summary>Қорытып шығару 4: Стокс теоремасы ($P$-компоненті, график бет)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $S$: $z=f(x,y)$ беті, $\partial S$ оның проекциясы $\partial D$ үстінде жатсын. $\oint_{\partial S}P\,dx=\iint_S\operatorname{rot}(P\mathbf{i})\cdot\mathbf{n}\,dS$ екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>Контур бет үстінде жатқандықтан, $\partial S$ бойында $z=f(x,y)$. Сол жақты $\partial D$ бойымен жазамыз: $\oint_{\partial S}P(x,y,z)\,dx=\oint_{\partial D}P(x,y,f(x,y))\,dx$.</li>
+            <li>Грин теоремасын ($Q=0$) $\tilde P(x,y)=P(x,y,f(x,y))$ функциясына қолданамыз: $\oint_{\partial D}\tilde P\,dx=-\iint_D\dfrac{\partial\tilde P}{\partial y}\,dA$.</li>
+            <li>Тізбектік ереже: $\dfrac{\partial\tilde P}{\partial y}=P_y+P_zf_y$. Сондықтан сол жақ $=-\iint_D(P_y+P_zf_y)\,dA$.</li>
+            <li>Оң жақ: $\mathbf{F}=(P,0,0)$ үшін $\operatorname{rot}\mathbf{F}=(0,\ P_z,\ -P_y)$. Формула 6.1 бойынша ($P\to0,Q\to P_z,R\to-P_y$): $\iint_S\operatorname{rot}\mathbf{F}\cdot\mathbf{n}\,dS=\iint_D\left(-0\cdot f_x-P_zf_y-P_y\right)dA=-\iint_D(P_zf_y+P_y)\,dA$.</li>
+            <li>Екі жақ тең. Дәл солай $Q\,dy$ және $R\,dz$ компоненттері; үшеуін қосып Стокс формуласын аламыз. Бағыттың келісімі: $\partial D$ сағат тіліне қарсы болса, нормаль жоғары ($n_z>0$) - оң бұранда. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5" open>
+        <summary>Қорытып шығару 5: салдарлар: көлем формуласы, Гаусс заңы, $\oiint\operatorname{rot}\mathbf{F}\cdot\mathbf{n}\,dS=0$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Гаусс-Остроградский теоремасынан үш пайдалы формуланы шығару.</p>
+          <ol class="math-steps">
+            <li><b>Көлем.</b> $\mathbf{F}=\mathbf{r}=(x,y,z)$ болса, $\operatorname{div}\mathbf{r}=3$. Гаусс: $\oiint\mathbf{r}\cdot\mathbf{n}\,dS=\iiint3\,dV=3V$, демек $V=\tfrac13\oiint\mathbf{r}\cdot\mathbf{n}\,dS$. Мысал: радиусы $R$ шар үшін $\mathbf{r}\cdot\mathbf{n}=R$, бет ауданы $4\pi R^2$, $V=\tfrac13R\cdot4\pi R^2=\tfrac43\pi R^3$.</li>
+            <li><b>Ротор ағыны.</b> Кез келген $\mathbf{G}=\operatorname{rot}\mathbf{F}$ үшін $\oiint\mathbf{G}\cdot\mathbf{n}\,dS=\iiint\operatorname{div}\operatorname{rot}\mathbf{F}\,dV=0$ (2-сабақ).</li>
+            <li><b>Гаусс заңы.</b> $\mathbf{F}=\mathbf{r}/r^3$ үшін $\operatorname{div}\mathbf{F}=0$ ($r\ne0$, 2-сабақ). Нөл $V$ ішінде болсын. Нөл төңірегіндегі кішкентай шарды $B_\varepsilon$ кесіп тастаймыз; $V\setminus B_\varepsilon$ облысында $\mathbf{F}$ тегіс.</li>
+            <li>Гаусс теоремасын $V\setminus B_\varepsilon$ үшін қолданамыз. Оның шекарасы - сыртқы $S$ (сыртқы нормальмен) және ішкі сфера $S_\varepsilon$ (облысқа қатысты сыртқы нормаль нөлге қарай бағытталған, яғни $-\mathbf{r}/\varepsilon$). Сондықтан $\oiint_S\mathbf{F}\cdot\mathbf{n}\,dS-\oiint_{S_\varepsilon}\mathbf{F}\cdot\dfrac{\mathbf{r}}{\varepsilon}\,dS=\iiint0\,dV=0$.</li>
+            <li>Шарда $\mathbf{F}\cdot\dfrac{\mathbf{r}}{\varepsilon}=\dfrac{\mathbf{r}\cdot\mathbf{r}}{\varepsilon^3\cdot\varepsilon}=\dfrac{1}{\varepsilon^2}$, сфера ауданы $4\pi\varepsilon^2$. Демек $\oiint_{S_\varepsilon}=\dfrac{1}{\varepsilon^2}\cdot4\pi\varepsilon^2=4\pi$.</li>
+            <li>Нәтиже: $\oiint_S\mathbf{F}\cdot\mathbf{n}\,dS=4\pi$ кез келген $S$ үшін (нөлді қамтыса) және $0$ (қамтымаса). Электростатикада бұл зарядтың Гаусс заңы: ағын = $4\pi\times$ заряд (Гаусс бірлігінде).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1">
+        <h3>Мысал 1. Бірінші текті беттік интеграл: жарты сфера</h3>
+        <p class="math-problem">$\iint_Sz\,dS$ интегралын есептеңіз, $S$ - $x^2+y^2+z^2=1$ сферасының жоғарғы жарты бөлігі ($z\ge0$).</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Сфералық параметрлеу: $\mathbf{r}(\varphi,\theta)=(\sin\varphi\cos\theta,\ \sin\varphi\sin\theta,\ \cos\varphi)$, $\varphi\in[0,\pi/2]$, $\theta\in[0,2\pi]$.</li>
+          <li><b>2-қадам.</b> $\mathbf{r}_\varphi=(\cos\varphi\cos\theta,\ \cos\varphi\sin\theta,\ -\sin\varphi)$, $\mathbf{r}_\theta=(-\sin\varphi\sin\theta,\ \sin\varphi\cos\theta,\ 0)$.</li>
+          <li><b>3-қадам.</b> Олардың көбейтіндісінің ұзындығы $|\mathbf{r}_\varphi\times\mathbf{r}_\theta|=\sin\varphi$ (радиусы 1 сфера үшін), яғни $dS=\sin\varphi\,d\varphi\,d\theta$.</li>
+          <li><b>4-қадам.</b> Интеграл: $\iint z\,dS=\int_0^{2\pi}\int_0^{\pi/2}\cos\varphi\sin\varphi\,d\varphi\,d\theta=2\pi\cdot\dfrac12=\pi$.</li>
+          <li><b>5-қадам.</b> Тексеру: бұл жарты сфераның проекциясы бірлік дөңгелек ($dS=dA/z$, сондықтан $z\,dS=dA$), оның ауданы $\pi$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\pi$.</p>
+      </div>
+      <div class="math-example" id="ex-2">
+        <h3>Мысал 2. Сфера арқылы ағын</h3>
+        <p class="math-problem">$\mathbf{F}=(x,y,z)$ өрісінің радиусы $2$ сфера арқылы сыртқа ағынын табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Сфераның кез келген нүктесінде сыртқы нормаль $\mathbf{n}=\mathbf{r}/2$, сондықтан $\mathbf{F}\cdot\mathbf{n}=\dfrac{\mathbf{r}\cdot\mathbf{r}}{2}=\dfrac{4}{2}=2$ (тұрақты).</li>
+          <li><b>2-қадам.</b> Ағын $=2\cdot\text{(бет ауданы)}=2\cdot4\pi\cdot2^2=2\cdot16\pi=32\pi$.</li>
+          <li><b>3-қадам.</b> Гаусс-Остроградский арқылы тексеру: $\operatorname{div}\mathbf{F}=3$, шар көлемі $\dfrac43\pi\cdot2^3=\dfrac{32\pi}{3}$. $\iiint3\,dV=3\cdot\dfrac{32\pi}{3}=32\pi$ - сәйкес.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $32\pi$.</p>
+      </div>
+      <div class="math-example" id="ex-3">
+        <h3>Мысал 3. Гаусс-Остроградский: ауыр беттік интегралды көлемге айналдыру</h3>
+        <p class="math-problem">$\mathbf{F}=(x^3,y^3,z^3)$ өрісінің бірлік сфера арқылы сыртқа ағынын табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Беттік интегралды тікелей есептеу ұзақ. Гаусс теоремасын қолданамыз: $\operatorname{div}\mathbf{F}=3x^2+3y^2+3z^2=3\rho^2$.</li>
+          <li><b>2-қадам.</b> Бірлік шар $V$ үшін сфералық координаталар: $dV=\rho^2\sin\varphi\,d\rho\,d\varphi\,d\theta$.</li>
+          <li><b>3-қадам.</b> $\iiint3\rho^2\,dV=3\int_0^{2\pi}\!d\theta\int_0^{\pi}\!\sin\varphi\,d\varphi\int_0^1\rho^4\,d\rho=3\cdot2\pi\cdot2\cdot\dfrac15=\dfrac{12\pi}{5}$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\dfrac{12\pi}{5}\approx7{,}54$.</p>
+      </div>
+      <div class="math-example" id="ex-4">
+        <h3>Мысал 4. Стокс теоремасы: айналым</h3>
+        <p class="math-problem">$\mathbf{F}=(-yz,\ xz,\ x^2+y^2)$ өрісінің $C$: $x^2+y^2=4$, $z=3$ шеңбері бойымен (жоғарыдан қарағанда сағат тіліне қарсы) айналымын табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Контур бағытына келісілген бет ретінде $z=3$ жазықтығындағы дөңгелек $S$ ($x^2+y^2\le4$) аламыз, нормаль $\mathbf{n}=\mathbf{k}$ (жоғары).</li>
+          <li><b>2-қадам.</b> Ротор: $R_y-Q_z=2y-x$, $P_z-R_x=-y-2x$, $Q_x-P_y=z-(-z)=2z$. Сондықтан $\operatorname{rot}\mathbf{F}\cdot\mathbf{k}=2z$.</li>
+          <li><b>3-қадам.</b> Жазықтықта $z=3$, сондықтан $\operatorname{rot}\mathbf{F}\cdot\mathbf{n}=6$ тұрақты. Стокс: $\oint=\iint_S6\,dS=6\cdot\pi\cdot2^2=24\pi$.</li>
+          <li><b>4-қадам.</b> Тура тексеру: $x=2\cos t$, $y=2\sin t$, $z=3$: $\mathbf{F}\cdot\mathbf{r}'=(-yz)(-2\sin t)+(xz)(2\cos t)=12\sin^2t+12\cos^2t=12$. $\int_0^{2\pi}12\,dt=24\pi$. Сәйкес.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $24\pi$.</p>
+      </div>
+      <div class="math-example" id="ex-5">
+        <h3>Мысал 5. График бет арқылы ағын</h3>
+        <p class="math-problem">$\mathbf{F}=(x,y,z)$ өрісінің $x+y+z=1$ жазықтығының бірінші октанттағы бөлігі арқылы жоғары қараған нормальмен ағынын табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Бет: $z=1-x-y$, $f_x=-1$, $f_y=-1$. Проекция $D$: $x\ge0$, $y\ge0$, $x+y\le1$ үшбұрышы, ауданы $\dfrac12$.</li>
+          <li><b>2-қадам.</b> Формула 6.1: $-Pf_x-Qf_y+R=-x(-1)-y(-1)+z=x+y+z$.</li>
+          <li><b>3-қадам.</b> Бетте $x+y+z=1$, сондықтан интеграл астындағы функция $1$.</li>
+          <li><b>4-қадам.</b> Ағын $=\iint_D1\,dA=\dfrac12$.</li>
+          <li><b>5-қадам.</b> Геометриялық тексеру: $\mathbf{n}=\dfrac{(1,1,1)}{\sqrt3}$, $\mathbf{F}\cdot\mathbf{n}=\dfrac{x+y+z}{\sqrt3}=\dfrac1{\sqrt3}$, бет ауданы $\dfrac{\sqrt3}{2}$; көбейтінді $\dfrac12$ - сәйкес.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\dfrac12$.</p>
+      </div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$dS=dx\,dy$ деп алу (көлбеу бет үшін)</span> → <span class="math-good">$dS=\sqrt{1+f_x^2+f_y^2}\,dx\,dy$</span><br>Неге қате: көлбеу бет проекциясынан үлкен. $dx\,dy$ - проекцияның ауданы, ал $dS$ - беттің ауданы. Тек горизонталь бет үшін тең.</li>
+        <li><span class="math-bad">ағынды есептегенде нормальдың бағытын тексермеу</span> → <span class="math-good">бағытты алдын ала таңдап, $\mathbf{r}_u\times\mathbf{r}_v$ онымен сәйкес болуын тексеру</span><br>Неге қате: бағыт кері болса, ағын таңбасы өзгереді. Жабық бетте нормаль әрқашан сыртқа.</li>
+        <li><span class="math-bad">Гаусс теоремасын ашық бетке қолдану</span> → <span class="math-good">бетті жабу (қақпақ қосу) не Стокс қолдану</span><br>Неге қате: теорема жабық бет үшін. Ашық беттен өтетін ағынды көлемге ауыстыру үшін қақпақтың ағынын бөлек есептеп шегереміз.</li>
+        <li><span class="math-bad">$\mathbf{F}=\mathbf{r}/r^3$ үшін Гаусс теоремасын нөл ішіндегі бетке қолданып, ағын $=\iiint0=0$</span> → <span class="math-good">ағын $=4\pi$</span><br>Неге қате: нөлде өріс үзілісті, $C^1$ шарты бұзылған. Нөлді кесіп тастау керек (5-қорыту).</li>
+        <li><span class="math-bad">Стоксте контур мен нормальдың бағытын тәуелсіз таңдау</span> → <span class="math-good">оң бұранда ережесімен келістіру</span><br>Неге қате: бағыттар сәйкес болмаса, айналым мен ротор ағыны таңбасымен ерекшеленеді.</li>
+        <li><span class="math-bad">сфера үшін $dS=d\varphi\,d\theta$</span> → <span class="math-good">$dS=R^2\sin\varphi\,d\varphi\,d\theta$</span><br>Неге қате: сфералық координатада доға ұзындығы бойынша ауданға $\sin\varphi$ көбейткіші кіреді (жарты шеңбердің кеңдігі экваторда үлкен, полюсте нөл).</li>
+        <li><span class="math-bad">жабық бет арқылы ағын әрқашан нөл</span> → <span class="math-good">тек $\operatorname{div}\mathbf{F}=0$ болғанда (не ішінде көз жоқ)</span><br>Неге қате: $\mathbf{F}=\mathbf{r}$ үшін ағын $3V\ne0$. Ағын нөл болатыны - роторлық өріс үшін ($\mathbf{F}=\operatorname{rot}\mathbf{G}$).</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <p>Суреттер бет элементінің неліктен проекциядан үлкен екенін және ағынның геометриялық мағынасын көрсетеді.</p>
+      <div class="math-viz" data-viz="graph" data-title="Сфера: dS / dA = R / √(R² − x²) (экваторға жақындағанда өседі)" data-config='{"fns":[{"f":"R/sqrt(R^2-x^2)","label":"dS/dA = R/z (қима y = 0)","color":0},{"f":"1","label":"горизонталь бет: dS = dA","color":3,"dash":[6,4]}],"params":[{"n":"R","min":1,"max":3,"step":0.5,"v":2}],"view":[-3,3,0,6]}'></div>
+      <p><b>Бақылаңыз:</b> Жарты сфера үшін $dS=\dfrac{R}{z}\,dA$, ал қимада $z=\sqrt{R^2-x^2}$. Төбеде ($x=0$) коэффициент $1$ (бет горизонталь), экваторға жақындағанда ($|x|\to R$) шексіз өседі: бет тік болғандықтан, оның проекциясы кішкентай. Сондықтан $z\,dS$ интегралы тұрақты ($\pi R^2$ проекцияға тең, $R=1$ болғанда $\pi$).</p>
+      <div class="math-viz" data-viz="graph" data-title="Параболоид z = a(x² + y²): dS/dA = √(1 + 4a²x²) қимада y = 0" data-config='{"fns":[{"f":"sqrt(1+4*a^2*x^2)","label":"dS/dA","color":1},{"f":"1","label":"горизонталь: 1","color":3,"dash":[6,4]}],"params":[{"n":"a","min":0,"max":2,"step":0.1,"v":1}],"view":[-3,3,0,8]}'></div>
+      <p><b>Бақылаңыз:</b> Параболоид төбеде жазық ($dS=dA$), шетте көлбеу ($f_x=2ax$ өседі). $a$ ұлғайған сайын шеті тіктеліп, коэффициент жылдам өседі. $a=0$ болса, бет жазықтық ($z=0$) және коэффициент $1$.</p>
+      <div class="math-viz" data-viz="vectors" data-title="Ағын: F·n — өрістің нормаль бағытындағы проекциясы" data-config='{"u":[2,1],"v":[1,1],"view":[-4,4,-4,4]}'></div>
+      <p><b>Бақылаңыз:</b> $\mathbf{F}=(2,1)$ және $\mathbf{n}=(1,1)$ векторлары. Скаляр көбейтінді $\mathbf{F}\cdot\mathbf{n}=3$, нормаль бірлік емес ($|\mathbf{n}|=\sqrt2$), сондықтан бірлік нормальмен ағын тығыздығы $\dfrac{3}{\sqrt2}\approx2{,}12$. Нормальді $\mathbf{F}$-ке перпендикуляр етіп бұрсаңыз ($\mathbf{n}=(1,-2)$), ағын нөл болады: өріс бетке жанама, ал су торға тимей өтеді.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m7-6-area1">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m7-6-t1">1. Көлбеу жазықтықтың ауданы</h3></div>
+        <p>Санмен жауап беріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$z=x+y$ жазықтығының $[0,1]\\times[0,1]$ шаршысының үстіндегі бөлігінің ауданын табыңыз.","a":"sqrt(3)","hint":"$dS=\\sqrt{1+f_x^2+f_y^2}\\,dA$.","sol":{"steps":["$f_x=f_y=1$, $dS=\\sqrt3\\,dA$.","$\\sqrt3\\cdot1$."],"ans":"$\\sqrt3$"},"v":"integrate(sqrt(1+diff(x+y,x)**2+diff(x+y,y)**2),(x,0,1),(y,0,1))"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m7-6-tf">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m7-6-t2">2. Шындық па, жалған ба?</h3></div>
+        <p>Әр пікірді бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Гаусс-Остроградский теоремасы жабық бет үшін қолданылады.","a":true,"e":"Ақиқат: бет жабық, нормаль сыртқа бағытталған.","hint":"Теорема шарттары.","sol":{"steps":["Бет $V$ облысының шекарасы болуы керек."],"ans":"Ақиқат"}},{"q":"Жабық бет арқылы ағын үшін нормаль ішке бағытталады.","a":false,"e":"Жалған: жабық бет үшін нормаль сыртқа бағытталады.","hint":"Сыртқа бағыт.","sol":{"steps":["Дәстүр: сыртқы нормаль."],"ans":"Жалған"}},{"q":"Стокс теоремасы Грин теоремасының кеңістіктік жалпылауы.","a":true,"e":"Ақиқат: жазық бетте Стокс Грин теоремасына айналады.","hint":"Жазық бет үшін қарастырыңыз.","sol":{"steps":["Бет жазық ($z=0$) болса, $\\operatorname{rot}\\mathbf{F}\\cdot\\mathbf{k}=Q_x-P_y$."],"ans":"Ақиқат"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m7-6-match">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m7-6-t3">3. Теорема және формула</h3></div>
+        <p>Әр теореманы оның формуласымен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Дұрыс сәйкестікті таңдаңыз.","pairs":[["Грин","$\\oint P\\,dx+Q\\,dy=\\iint(Q_x-P_y)\\,dA$"],["Стокс","$\\oint\\mathbf{F}\\cdot d\\mathbf{r}=\\iint\\operatorname{rot}\\mathbf{F}\\cdot\\mathbf{n}\\,dS$"],["Гаусс-Остроградский","$\\oiint\\mathbf{F}\\cdot\\mathbf{n}\\,dS=\\iiint\\operatorname{div}\\mathbf{F}\\,dV$"],["Ньютон-Лейбниц","$\\int_a^bf'(x)\\,dx=f(b)-f(a)$"]],"hint":"Әр формулада қанша еселі интеграл бар екенін қараңыз.","sol":{"steps":["Грин: жазықтық, контур және облыс.","Стокс: бет және контур.","Гаусс: дене және жабық бет.","Ньютон-Лейбниц: кесінді және екі шеткі нүкте."]},"e":"Төрт теорема - бір идея: туындының интегралы шекарадағы мәнге тең."}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m7-6-pick">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m7-6-t4">4. Қай теорема?</h3></div>
+        <p>Дұрыс нұсқаны белгілеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Жабық бет арқылы ағынды көлемдік интегралға қай теорема ауыстырады?","a":1,"o":["Грин","Гаусс-Остроградский","Стокс","Ньютон-Лейбниц"],"e":"Ағын ↔ дивергенция: Гаусс-Остроградский теоремасы.","hint":"Дивергенция.","sol":{"steps":["Дивергенция көлемде интегралданады."],"ans":"Гаусс-Остроградский"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m7-6-cube">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m7-6-t5">5. Куб арқылы ағын</h3></div>
+        <p>Санмен жауап беріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(x,y,z)$ өрісінің $[0,1]^3$ кубының беті арқылы сыртқа ағыны.","a":3,"hint":"$\\operatorname{div}\\mathbf{F}=3$.","sol":{"steps":["Гаусс: $\\iiint3\\,dV=3\\cdot1$."],"ans":"$3$"},"v":"integrate(3,(x,0,1),(y,0,1),(z,0,1))"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m7-6-shell">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-6-t6">6. Сфера арқылы ағын</h3></div>
+        <p>Санмен жауап беріңіз (π-мен).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(2x,0,0)$ өрісінің бірлік сфера арқылы сыртқа ағыны қанша?","a":"8*pi/3","hint":"$\\operatorname{div}\\mathbf{F}=2$ және шар көлемі $\\frac{4\\pi}{3}$.","sol":{"steps":["Гаусс: $2\\cdot\\frac{4\\pi}{3}$."],"ans":"$\\dfrac{8\\pi}{3}$"},"v":"integrate(2*4*pi*u**2,(u,0,1))"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m7-6-dsx">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-6-t7">7. Бет элементінің көбейткіші</h3></div>
+        <p>Өрнекті жазыңыз ($x,y$).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$z=x^2+y^2$ беті үшін $dS=g(x,y)\\,dx\\,dy$. $g$ өрнегін жазыңыз.","a":"sqrt(1+4*x^2+4*y^2)","vars":["x","y"],"dom":[-1.5,1.5],"hint":"$g=\\sqrt{1+z_x^2+z_y^2}$.","sol":{"steps":["$z_x=2x$, $z_y=2y$."],"ans":"$\\sqrt{1+4x^2+4y^2}$"},"v":"sqrt(1+diff(x**2+y**2,x)**2+diff(x**2+y**2,y)**2)"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m7-6-cr">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-6-t8">8. Нормаль вектор</h3></div>
+        <p>Векторды (баған) енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{r}(u,v)=(u\\cos v,\\ u\\sin v,\\ u^2)$. $(u,v)=(1,0)$ нүктесінде $\\mathbf{r}_u\\times\\mathbf{r}_v$ векторын табыңыз.","a":[-2,0,1],"name":"$\\mathbf{r}_u\\times\\mathbf{r}_v=$","hint":"$\\mathbf{r}_u=(\\cos v,\\sin v,2u)$, $\\mathbf{r}_v=(-u\\sin v,u\\cos v,0)$.","sol":{"steps":["$\\mathbf{r}_u=(1,0,2)$, $\\mathbf{r}_v=(0,1,0)$.","$(0\\cdot0-2\\cdot1,\\ 2\\cdot0-1\\cdot0,\\ 1\\cdot1-0\\cdot0)=(-2,0,1)$."],"ans":"$(-2,\\,0,\\,1)$"},"v":"Matrix([1,0,2]).cross(Matrix([0,1,0]))"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m7-6-flux5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-6-t9">9. График арқылы ағын</h3></div>
+        <p>Санмен жауап беріңіз (бөлшек не ондық).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(x,y,z)$, $S$: $x+y+z=1$ бірінші октантта, нормаль жоғары. Ағынды табыңыз.","a":0.5,"hint":"$-Pf_x-Qf_y+R$ формуласы.","sol":{"steps":["Интеграл астындағы функция $1$.","Проекция ауданы $\\frac12$."],"ans":"$\\dfrac12$"},"v":"integrate(-x*diff(1-x-y,x)-y*diff(1-x-y,y)+(1-x-y),(y,0,1-x),(x,0,1))"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m7-6-ordgs">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-6-t10">10. Гаусс теоремасымен ағынды есептеу</h3></div>
+        <p>Қадамдарды дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Жабық бет арқылы ағынды Гаусс-Остроградский теоремасымен есептеу.","hint":"Шарттарды тексеруден бастаймыз.","steps":["Бет жабық екенін және нормаль сыртқа екенін тексереміз.","$\\mathbf{F}$-тің дене ішінде $C^1$ екенін тексереміз.","$\\operatorname{div}\\mathbf{F}=P_x+Q_y+R_z$ есептейміз.","Дене бойынша үш еселі интегралды (мүмкін болса сфералық не цилиндрлік координатада) құрамыз.","Интегралды есептеп, ағынды аламыз."],"sol":{"ans":"$\\iiint\\operatorname{div}\\mathbf{F}\\,dV$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m7-6-multi">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-6-t11">11. Бағыттар</h3></div>
+        <p>Барлық дұрыс пікірді белгілеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қайсысы дұрыс?","a":[0,2],"o":["нормаль кері болса, ағын таңбасын өзгертеді","Гаусс теоремасында нормаль ішке бағытталады","Стоксте контур мен нормаль оң бұранда ережесімен келістіріледі","бет ауданы нормаль бағытына тәуелді"],"e":"Ауданы бағытқа тәуелсіз; Гаусста нормаль сыртқа.","hint":"Оң бұранда ережесін еске түсіріңіз.","sol":{"steps":["Жабық бетте нормаль сыртқа; нормаль кері болса ағын таңбасы кері."],"ans":"1-ші және 3-ші"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m7-6-p-box">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-6-t12">12. Параметрлік: қорап арқылы ағын</h3></div>
+        <p>Сандар кездейсоқ таңдалады.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,4]},"b":{"int":[1,4]},"c":{"int":[1,4]},"p":{"int":[1,3]},"q":{"int":[1,3]},"s":{"int":[1,3]}},"type":"num","q":"$\\mathbf{F}=(#{a}x,\\ #{b}y,\\ #{c}z)$ өрісінің $[0,#{p}]\\times[0,#{q}]\\times[0,#{s}]$ қорабының беті арқылы сыртқа ағыны.","a":"(a+b+c)*p*q*s","v":"integrate(a+b+c,(x,0,p),(y,0,q),(z,0,s))","hint":"$\\operatorname{div}\\mathbf{F}=#{a+b+c}$ - тұрақты.","sol":{"steps":["Қорап көлемі $#{p*q*s}$.","Ағын $=#{a+b+c}\\cdot#{p*q*s}$."],"ans":"$#{(a+b+c)*p*q*s}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m7-6-hemi">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m7-6-t13">13. Жарты сфера</h3></div>
+        <p>Санмен жауап беріңіз (π-мен).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\iint_Sz\\,dS$, $S$ - бірлік сфераның жоғарғы жарты бөлігі.","a":"pi","hint":"$dS=\\sin\\varphi\\,d\\varphi\\,d\\theta$, $z=\\cos\\varphi$.","sol":{"steps":["$\\int_0^{2\\pi}\\int_0^{\\pi/2}\\cos\\varphi\\sin\\varphi\\,d\\varphi\\,d\\theta=2\\pi\\cdot\\frac12$."],"ans":"$\\pi$"},"v":"integrate(cos(u)*sin(u),(u,0,pi/2))*2*pi"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m7-6-g3">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-6-t14">14. Гаусс: x³, y³, z³</h3></div>
+        <p>Санмен жауап беріңіз (π-мен).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(x^3,y^3,z^3)$ өрісінің бірлік сфера арқылы ағыны.","a":"12*pi/5","hint":"$\\operatorname{div}\\mathbf{F}=3\\rho^2$; қабаттар бойынша көлем $4\\pi\\rho^2\\,d\\rho$.","sol":{"steps":["$\\int_0^13\\rho^2\\cdot4\\pi\\rho^2\\,d\\rho=\\frac{12\\pi}{5}$."],"ans":"$\\dfrac{12\\pi}{5}$"},"v":"integrate(3*u**2*4*pi*u**2,(u,0,1))"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m7-6-stokes">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-6-t15">15. Стокс: айналым</h3></div>
+        <p>Санмен жауап беріңіз (π-мен).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(-yz,\\,xz,\\,x^2+y^2)$, $C$: $x^2+y^2=4$, $z=3$ (қарсы сағат). $\\oint_C\\mathbf{F}\\cdot d\\mathbf{r}$ неге тең?","a":"24*pi","hint":"$\\mathbf{F}\\cdot\\mathbf{r}'=12$.","sol":{"steps":["$x=2\\cos t$, $y=2\\sin t$, $z=3$.","$\\int_0^{2\\pi}12\\,dt=24\\pi$."],"ans":"$24\\pi$"},"v":"integrate((-3*(2*sin(t)))*diff(2*cos(t),t)+(2*cos(t)*3)*diff(2*sin(t),t),(t,0,2*pi))"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m7-6-p-sph">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-6-t16">16. Параметрлік: сфера арқылы ағын</h3></div>
+        <p>Радиус әр нұсқада өзгереді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"k":{"int":[1,4]}},"type":"num","q":"$\\mathbf{F}=(x,y,z)$ өрісінің радиусы $#{k}$ сфера арқылы сыртқа ағынын табыңыз.","a":"4*pi*k^3","v":"integrate(3*4*pi*u**2,(u,0,k))","hint":"Гаусс: $3\\cdot$шар көлемі, не $\\mathbf{F}\\cdot\\mathbf{n}=#{k}$ және бет ауданы $4\\pi\\cdot#{k^2}$.","sol":{"steps":["$\\mathbf{F}\\cdot\\mathbf{n}=#{k}$ (тұрақты).","Бет ауданы $4\\pi\\cdot#{k^2}$.","Көбейтінді $#{k}\\cdot4\\pi\\cdot#{k^2}$."],"ans":"$#{4*k^3}\\pi$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m7-6-hemi2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-6-t17">17. Стокс арқылы: жарты сфера ағыны</h3></div>
+        <p>Санмен жауап беріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf{F}=(-y,x,0)$. Жоғарғы бірлік жарты сфера арқылы жоғары қараған нормальмен $\\iint\\operatorname{rot}\\mathbf{F}\\cdot\\mathbf{n}\\,dS$ неге тең (π-мен)?","a":"2*pi","hint":"$\\operatorname{rot}\\mathbf{F}=(0,0,2)$. Стокс: ағын экватордағы айналымға тең.","sol":{"steps":["$\\operatorname{rot}\\mathbf{F}\\cdot\\mathbf{n}\\,dS=2\\,dA$ (проекция).","$2\\cdot\\pi=2\\pi$ (немесе экватор бойымен айналым $2\\pi$)."],"ans":"$2\\pi$"},"v":"integrate(2,(y,-sqrt(1-x**2),sqrt(1-x**2)),(x,-1,1))"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m7-6-tf2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-6-t18">18. Күрделі пікірлер</h3></div>
+        <p>Әр пікірді бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Кез келген жабық бет арқылы $\\operatorname{rot}\\mathbf{G}$ өрісінің ағыны нөл.","a":true,"e":"Ақиқат: $\\operatorname{div}\\operatorname{rot}\\mathbf{G}=0$, сондықтан көлемдік интеграл нөл.","hint":"$\\operatorname{div}\\operatorname{rot}=0$.","sol":{"steps":["Гаусс: $\\iiint\\operatorname{div}\\operatorname{rot}\\mathbf{G}\\,dV=0$."],"ans":"Ақиқат"}},{"q":"$\\mathbf{F}=\\mathbf{r}/r^3$ өрісі үшін кез келген жабық бет арқылы ағын нөл.","a":false,"e":"Жалған: нөлді қамтыса $4\\pi$, қамтымаса $0$.","hint":"Нөл бет ішінде болуы мүмкін.","sol":{"steps":["Нөлді қамтитын бет үшін $4\\pi$."],"ans":"Жалған"}},{"q":"Екі әртүрлі бетті бір контур шектесе, олар арқылы ротор ағыны бірдей (бағыттар келісілген болса).","a":true,"e":"Ақиқат: екі ағын да бір контур бойындағы айналымға тең.","hint":"Стокс.","sol":{"steps":["Екеуі де $\\oint_{\\partial S}\\mathbf{F}\\cdot d\\mathbf{r}$-ға тең."],"ans":"Ақиқат"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m7-6-ordgd">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-6-t19">19. Гаусс теоремасының ($R$-компонент) дәлелі</h3></div>
+        <p>Қадамдарды дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\oiint R\\,n_z\\,dS=\\iiint R_z\\,dV$ дәлелі.","hint":"Көлемнен бастаймыз.","steps":["Денені $z$-түрлі деп алып, оң жақты $\\iint_D\\int_{z_1}^{z_2}R_z\\,dz\\,dA$ түрінде жазамыз.","Ішкі интегралды Ньютон-Лейбниц бойынша есептейміз.","Бүйір беттегі ағын $n_z=0$ болғандықтан нөл.","Жоғарғы және төменгі беттегі ағындарды $\\pm\\iint R\\,dA$ ретінде жазамыз.","Нәтижелерді салыстырып, теңдікті аламыз."],"sol":{"ans":"$\\oiint R\\,n_z\\,dS=\\iiint R_z\\,dV$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m7-6-reveal">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-6-t20">20. Қадамдық шешім: Гаусс заңы</h3></div>
+        <p>Бұл есепті «Кеңес» және «Келесі қадам» арқылы біртіндеп ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$\\mathbf{F}=\\dfrac{\\mathbf{r}}{r^3}$ өрісінің нөлді қамтитын кез келген жабық бет арқылы сыртқа ағынын табыңыз.","hint":"Нөл төңірегіндегі шағын шарды кесіп тастаңыз және $\\operatorname{div}\\mathbf{F}=0$ екенін пайдаланыңыз.","steps":["$r\\ne0$ болғанда $\\operatorname{div}\\dfrac{\\mathbf{r}}{r^3}=0$ (2-сабақ).","Шағын шарды $B_\\varepsilon$ кесіп тастаймыз. Қалған облыста $\\iiint\\operatorname{div}\\mathbf{F}\\,dV=0$, сондықтан сыртқы бет ағыны = $\\varepsilon$ сферасы арқылы ағын.","Сферада $\\mathbf{F}\\cdot\\mathbf{n}=\\dfrac{1}{\\varepsilon^2}$ (тұрақты).","Ағын $=\\dfrac{1}{\\varepsilon^2}\\cdot4\\pi\\varepsilon^2=4\\pi$."],"ans":"$4\\pi$ (радиуспен де, бет пішінімен де байланысты емес)"}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m7-6-vol">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m7-6-t21">21. Көлем формуласы</h3></div>
+        <p>Санмен жауап беріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$V=\\tfrac13\\oiint\\mathbf{r}\\cdot\\mathbf{n}\\,dS$ формуласымен қыры $a=3$ кубтың көлемін табыңыз.","a":27,"hint":"Кубтың центрі нөлде, әр жақ нөлден $\\frac a2$ қашықтықта.","sol":{"steps":["Әр жақта $\\mathbf{r}\\cdot\\mathbf{n}=\\frac a2=1{,}5$, жақ ауданы $9$.","Алты жақ: $6\\cdot1{,}5\\cdot9=81$; $\\frac13\\cdot81=27$."],"ans":"$27$"},"v":"Rational(1,3)*6*9*Rational(3,2)"}]}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Гаусс-Остроградский теоремасы сақталу заңдарының математикалық негізі: көлемдегі массаның (зарядтың, жылудың) өзгерісі шекарадан өткен ағынға тең. Ақырлы көлем әдісінде есептеу торының әр ұяшығы үшін осы теорема қолданылады. Стокс теоремасы Фарадей индукция заңын береді: контурдағы ЭҚК - бетті қиып өтетін магнит ағынының өзгеру жылдамдығы. Гаусс заңы электростатика мен гравитацияның негізгі теңдеуі. Компьютерлік графикада бетті үшбұрыштау және әр үшбұрыштың $\mathbf{n}\,\Delta S$ шамасы бойынша көлемді, ағынды, жарықты есептеу осы теоремалардың дискретті түрі.</p>
+      <p><b>Мини-жоба: «Беттік интеграл калькуляторы».</b> Бағдарлама параметрленген бет үшін бет ауданын және ағынды сандық түрде есептейді, Гаусс-Остроградский теоремасын $\mathbf{F}=(x^3,y^3,z^3)$ үшін тексереді, Гаусс заңын куб үшін көрсетеді ($4\pi$), Стокс теоремасымен айналымды есептейді және көлемді $V=\frac13\oiint\mathbf{r}\cdot\mathbf{n}\,dS$ формуласымен табады. «Іске қосу» батырмасын басыңыз (есептеу бірнеше секундқа созылуы мүмкін).</p>
+<pre data-lang="python"><code class="language-python">import math
+
+def cross(a, b):
+    return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+
+def dot(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+def surface_integral(F, r, ru, rv, ua, ub, va, vb, n=200):
+    """∬ F · (r_u × r_v) du dv: беттің ағыны (орта нүктелер әдісі)."""
+    hu, hv = (ub - ua) / n, (vb - va) / n
+    s = 0.0
+    for i in range(n):
+        u = ua + (i + 0.5) * hu
+        for j in range(n):
+            v = va + (j + 0.5) * hv
+            s += dot(F(*r(u, v)), cross(ru(u, v), rv(u, v))) * hu * hv
+    return s
+
+def area(r, ru, rv, ua, ub, va, vb, n=200):
+    hu, hv = (ub - ua) / n, (vb - va) / n
+    s = 0.0
+    for i in range(n):
+        u = ua + (i + 0.5) * hu
+        for j in range(n):
+            v = va + (j + 0.5) * hv
+            c = cross(ru(u, v), rv(u, v))
+            s += math.sqrt(dot(c, c)) * hu * hv
+    return s
+
+# Сфера: r(φ, θ) = R (sinφ cosθ, sinφ sinθ, cosφ)
+R = 2.0
+sph = lambda p, t: (R * math.sin(p) * math.cos(t), R * math.sin(p) * math.sin(t), R * math.cos(p))
+sph_p = lambda p, t: (R * math.cos(p) * math.cos(t), R * math.cos(p) * math.sin(t), -R * math.sin(p))
+sph_t = lambda p, t: (-R * math.sin(p) * math.sin(t), R * math.sin(p) * math.cos(t), 0.0)
+print("сфера ауданы:", round(area(sph, sph_p, sph_t, 0, math.pi, 0, 2 * math.pi), 4), " 4πR² =", round(4 * math.pi * R * R, 4))
+
+# Гаусс: F = (x³, y³, z³), бірлік сфера: ағын = 12π/5
+R = 1.0
+F = lambda x, y, z: (x ** 3, y ** 3, z ** 3)
+flux = surface_integral(F, sph, sph_p, sph_t, 0, math.pi, 0, 2 * math.pi)
+print("ағын:", round(flux, 5), " ∭div dV = 12π/5 =", round(12 * math.pi / 5, 5))
+
+# Гаусс заңы: F = r/r³, куб [-1,1]³ ішінде нөл бар; ағын 4π
+def cube_flux(F, a, n=200):
+    tot = 0.0
+    h = 2 * a / n
+    for axis in range(3):
+        for sign in (-1, 1):
+            for i in range(n):
+                for j in range(n):
+                    p = [0.0, 0.0, 0.0]
+                    idx = [k for k in range(3) if k != axis]
+                    p[idx[0]] = -a + (i + 0.5) * h
+                    p[idx[1]] = -a + (j + 0.5) * h
+                    p[axis] = sign * a
+                    tot += sign * F(*p)[axis] * h * h
+    return tot
+
+G = lambda x, y, z: tuple(c / (x * x + y * y + z * z) ** 1.5 for c in (x, y, z))
+print("Гаусс заңы (куб):", round(cube_flux(G, 1.0, 100), 4), " 4π =", round(4 * math.pi, 4))
+
+# Стокс: F = (-y z, x z, x² + y²), C: x²+y²=4, z=3 -&gt; 24π
+def circ(Fv, rr, dr, n=2000):
+    s = 0.0
+    for i in range(n):
+        t = 2 * math.pi * (i + 0.5) / n
+        s += dot(Fv(*rr(t)), dr(t)) * 2 * math.pi / n
+    return s
+
+Fs = lambda x, y, z: (-y * z, x * z, x * x + y * y)
+c = circ(Fs, lambda t: (2 * math.cos(t), 2 * math.sin(t), 3.0), lambda t: (-2 * math.sin(t), 2 * math.cos(t), 0.0))
+print("айналым:", round(c, 4), " 24π =", round(24 * math.pi, 4))
+
+# Көлем формуласы V = (1/3) ∯ r·n dS (шар радиусы 2)
+R = 2.0
+rn = surface_integral(lambda x, y, z: (x, y, z), sph, sph_p, sph_t, 0, math.pi, 0, 2 * math.pi)
+print("V = (1/3)∯ r·n dS =", round(rn / 3, 4), " 4πR³/3 =", round(4 * math.pi * R ** 3 / 3, 4))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Тордың <code>n</code> параметрін 50, 100, 200 етіп өзгертіп, ағын қателігінің қалай азаятынын кестеге жазыңыз. Қателік қандай жылдамдықпен кемиді?</li>
+        <li>Тор (торус) бетін параметрлеп, оның ауданын <code>area</code> функциясымен есептеңіз. Тор үшін $S=4\pi^2Rr$ екенін тексеріңіз.</li>
+        <li>Шарға емес, қыры $2$ кубқа Гаусс-Остроградский теоремасын $\mathbf{F}=(x^2,y^2,z^2)$ үшін тексеріңіз: ағын мен $\iiint\operatorname{div}\mathbf{F}\,dV$ сәйкес болсын (центр нөлде).</li>
+        <li>Стокс теоремасын жарты сфера мен оның экваторының дөңгелегі үшін салыстырыңыз: $\mathbf{F}=(-y,x,0)$ ротор ағыны екі бетте де $2\pi$ болуы тиіс.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Бет элементі</td><td>$dS=|\mathbf{r}_u\times\mathbf{r}_v|\,du\,dv$; $z=f$: $\sqrt{1+f_x^2+f_y^2}\,dx\,dy$</td><td>тегіс бет</td></tr>
+        <tr><td>Бірінші текті</td><td>$\iint f\,dS=\iint f(\mathbf{r})|\mathbf{r}_u\times\mathbf{r}_v|\,du\,dv$</td><td>$f\equiv1$ - ауданы</td></tr>
+        <tr><td>Ағын</td><td>$\iint\mathbf{F}\cdot\mathbf{n}\,dS=\iint\mathbf{F}\cdot(\mathbf{r}_u\times\mathbf{r}_v)\,du\,dv$</td><td>бағыт сәйкес</td></tr>
+        <tr><td>График арқылы ағын</td><td>$\iint(-Pf_x-Qf_y+R)\,dx\,dy$</td><td>$n_z>0$</td></tr>
+        <tr><td>Гаусс-Остроградский</td><td>$\oiint\mathbf{F}\cdot\mathbf{n}\,dS=\iiint\operatorname{div}\mathbf{F}\,dV$</td><td>бет жабық, нормаль сыртқа</td></tr>
+        <tr><td>Стокс</td><td>$\oint_{\partial S}\mathbf{F}\cdot d\mathbf{r}=\iint\operatorname{rot}\mathbf{F}\cdot\mathbf{n}\,dS$</td><td>оң бұранда ережесі</td></tr>
+        <tr><td>Көлем</td><td>$V=\tfrac13\oiint\mathbf{r}\cdot\mathbf{n}\,dS$</td><td>жабық бет</td></tr>
+        <tr><td>Гаусс заңы</td><td>$\oiint\dfrac{\mathbf{r}\cdot\mathbf{n}}{r^3}\,dS=4\pi$</td><td>нөл ішінде</td></tr>
+        <tr><td>Ротор ағыны</td><td>$\oiint\operatorname{rot}\mathbf{G}\cdot\mathbf{n}\,dS=0$</td><td>жабық бет</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m7-6-self">
+        <li><input type="checkbox"> <span>Мен бетті параметрлеп, $dS=|\mathbf{r}_u\times\mathbf{r}_v|\,du\,dv$ мен графиктің бет элементін қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бірінші және екінші текті беттік интегралдарды есептей аламын, нормаль бағытын дұрыс таңдаймын.</span></li>
+        <li><input type="checkbox"> <span>Мен Гаусс-Остроградский теоремасын тұжырымдап, жабық бет арқылы ағынды көлемдік интегралға ауыстыра аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Стокс теоремасын тұжырымдап, бет пен контурдың бағытын оң бұранда ережесімен келістіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Гаусс заңын ($4\pi$) мен көлем формуласын шығара аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Ньютон-Лейбниц, Грин, Стокс және Гаусс-Остроградский теоремаларының ортақ идеясын айта аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. z = f(x; y) беті үшін бет элементі dS қандай?</p>
+<label><input type="radio" value="a"> dx dy</label>
+<label><input type="radio" value="b"> √(1 + f_x² + f_y²) dx dy</label>
+<label><input type="radio" value="c"> (1 + f_x² + f_y²) dx dy</label>
+<label><input type="radio" value="d"> f_x f_y dx dy</label>
+<p class="explain">Бет элементі: |r_x × r_y| dx dy = √(1 + f_x² + f_y²) dx dy.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">2. F = (x; y; z) өрісінің радиусы 1 сфера арқылы сыртқа ағыны:</p>
+<label><input type="radio" value="a"> 4π</label>
+<label><input type="radio" value="b"> 3</label>
+<label><input type="radio" value="c"> 4π/3</label>
+<label><input type="radio" value="d"> 0</label>
+<p class="explain">F·n = 1, бет ауданы 4π; Гаусс бойынша 3·(4π/3) = 4π.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">3. Гаусс-Остроградский теоремасындағы нормаль қалай бағытталады?</p>
+<label><input type="radio" value="a"> ішке</label>
+<label><input type="radio" value="b"> жанама</label>
+<label><input type="radio" value="c"> кез келген</label>
+<label><input type="radio" value="d"> сыртқа</label>
+<p class="explain">Жабық бет үшін нормаль сыртқа бағытталады.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. Стокс теоремасы қай шамаларды байланыстырады?</p>
+<label><input type="radio" value="a"> бет интегралы мен көлем интегралын</label>
+<label><input type="radio" value="b"> контурдағы айналым мен бет бойынша ротор ағынын</label>
+<label><input type="radio" value="c"> екі еселі интеграл мен ауданды</label>
+<label><input type="radio" value="d"> градиент пен потенциалды</label>
+<p class="explain">Стокс: ∮ F·dr = ∬ rot F·n dS.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. div F = 2 тұрақты, V көлемді дене. Жабық бет арқылы сыртқа ағын:</p>
+<label><input type="radio" value="a"> 2V</label>
+<label><input type="radio" value="b"> V/2</label>
+<label><input type="radio" value="c"> V</label>
+<label><input type="radio" value="d"> 0</label>
+<p class="explain">Гаусс: ∭ 2 dV = 2V.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">6. (1 − x − y = z) жазықтығының бірінші октант бөлігінің проекциясының ауданы:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 1/6</label>
+<label><input type="radio" value="c"> 1/3</label>
+<label><input type="radio" value="d"> 1/2</label>
+<p class="explain">Проекция - катеттері 1 тең үшбұрыш: ауданы 1/2.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. F = r/r³ өрісінің нөлді қамтитын жабық бет арқылы ағыны:</p>
+<label><input type="radio" value="a"> 0</label>
+<label><input type="radio" value="b"> 4π</label>
+<label><input type="radio" value="c"> 2π</label>
+<label><input type="radio" value="d"> 1</label>
+<p class="explain">Гаусс заңы: ағын 4π.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">8. Жазықтықтағы z = 0 бет үшін Стокс теоремасы қандай теоремаға айналады?</p>
+<label><input type="radio" value="a"> Гаусс-Остроградский</label>
+<label><input type="radio" value="b"> Ньютон-Лейбниц</label>
+<label><input type="radio" value="c"> Грин</label>
+<label><input type="radio" value="d"> потенциалдылық шарты</label>
+<p class="explain">Жазық бетте rot F·k = Q_x − P_y, яғни Стокс формуласы Грин формуласына айналады.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
       <nav class="pager">
-        <a href="week-47.html"><small>Алдыңғы</small>← 7 · Векторлық анализ · 5-сабақ: Грин теоремасы</a>
-        <a class="next" href="week-49.html"><small>Келесі</small>8 · Тізбектер және қатарлар · 1-сабақ: Сандық тізбектер және олардың шегі →</a>
-      </nav>
+        <a href="week-47.html"><small>Алдыңғы</small>← Vector Calculus · 5-сабақ: Грин теоремасы</a>
+        </nav>
 
       <p class="translator-note">Бұл курс - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 курсының аудармасы емес, одан мәтін алынбаған. Математиканың өзі (анықтамалар, теоремалар, формулалар) жалпыға ортақ білім; ал баяндау, мысалдар мен есептер өз сөзімізбен жазылған және белгілі оқулықтар мен есептер жинақтарынан көшірілмеген. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
     </article>
