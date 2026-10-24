@@ -2185,6 +2185,62 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
+  "id": "week-39",
+  "num": "Multivariable Calculus · 4-сабақ",
+  "title": "Күрделі және айқын емес функциялардың туындысы",
+  "url": "math/lectures/week-39.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: тізбектегі өзгерістер және жасырын байланыс",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 21,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
   "id": "week-43",
   "num": "7 · Векторлық анализ · 1-сабақ",
   "title": "Скаляр және векторлық өрістер",
@@ -2368,6 +2424,62 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
    },
    {
     "t": "Интуиция: тау мен жол",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 21,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-47",
+  "num": "Vector Calculus · 5-сабақ",
+  "title": "Грин теоремасы",
+  "url": "math/lectures/week-47.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: бір орамның барлық майда құйындарының қосындысы",
     "id": "intuition"
    },
    {
@@ -2641,6 +2753,118 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
+  "id": "week-53",
+  "num": "Sequences and Series · 5-сабақ",
+  "title": "Дәрежелік қатарлар",
+  "url": "math/lectures/week-53.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: шексіз дәрежелі көпмүшелік",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 17,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-54",
+  "num": "Sequences and Series · 6-сабақ",
+  "title": "Тейлор және Маклорен қатарлары",
+  "url": "math/lectures/week-54.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: функцияны бір нүктедегі туындылардан қалпына келтіру",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 19,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
   "id": "week-55",
   "num": "9 · Жай дифференциалдық теңдеулер · 1-сабақ",
   "title": "Негізгі ұғымдар және бағыт өрісі",
@@ -2809,8 +3033,64 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
+  "id": "week-58",
+  "num": "Ordinary Differential Equations · 4-сабақ",
+  "title": "Дәл дифференциалды және Бернулли теңдеулері",
+  "url": "math/lectures/week-58.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 21,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
   "id": "week-62",
-  "num": "10 · Дербес туындылы дифференциалдық теңдеулер · 1-сабақ",
+  "num": "Partial Differential Equations · 1-сабақ",
   "title": "Негізгі ұғымдар және жіктеу",
   "url": "math/lectures/week-62.html",
   "topics": [
@@ -2866,7 +3146,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-63",
-  "num": "10 · Дербес туындылы дифференциалдық теңдеулер · 2-сабақ",
+  "num": "Partial Differential Equations · 2-сабақ",
   "title": "Толқын теңдеуі және Даламбер формуласы",
   "url": "math/lectures/week-63.html",
   "topics": [
@@ -2936,6 +3216,62 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
    },
    {
     "t": "Интуиция: жылу қалай жайылады?",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 22,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-65",
+  "num": "Partial Differential Equations · 4-сабақ",
+  "title": "Лаплас теңдеуі",
+  "url": "math/lectures/week-65.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: тепе-теңдік күйдің «орташа» қасиеті",
     "id": "intuition"
    },
    {
