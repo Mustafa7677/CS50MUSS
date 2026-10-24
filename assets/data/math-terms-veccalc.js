@@ -1,3 +1,36 @@
 /* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Векторлық анализ» пәні. Формат: §9.2 (терминдер). */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
-window.CS50KZ_MATH_TERMS.veccalc = [];
+window.CS50KZ_MATH_TERMS.veccalc = [
+{"id": "vc-scalar-field", "kz": "скаляр өріс", "en": "scalar field", "def": "Кеңістіктің әр нүктесіне бір сан сәйкес қоятын функция.", "lesson": 1},
+{"id": "vc-vector-field", "kz": "векторлық өріс", "en": "vector field", "def": "Кеңістіктің әр нүктесіне бір вектор сәйкес қоятын ереже.", "lesson": 1},
+{"id": "vc-level-set", "kz": "деңгей жиыны", "en": "level set", "def": "$u=c$ теңдеуін қанағаттандыратын нүктелер жиыны (сызық не бет).", "lesson": 1},
+{"id": "vc-field-line", "kz": "өріс сызығы", "en": "field line", "def": "Әр нүктесіндегі жанамасы өріс векторына параллель қисық.", "lesson": 1},
+{"id": "vc-gradient", "kz": "градиент", "en": "gradient", "def": "Скаляр өрістің дербес туындыларынан құралған вектор, ең жылдам өсу бағытын көрсетеді.", "lesson": 1},
+{"id": "vc-directional", "kz": "бағыт бойынша туынды", "en": "directional derivative", "def": "Өрістің берілген бірлік бағытпен өзгеру жылдамдығы: $\\nabla u\\cdot\\mathbf{e}$.", "lesson": 1},
+{"id": "vc-nabla", "kz": "набла операторы", "en": "nabla operator", "def": "Формалды вектор $\\nabla=(\\partial_x,\\partial_y,\\partial_z)$; grad, div, rot осы арқылы жазылады.", "lesson": 1},
+{"id": "vc-tangent-plane", "kz": "жанама жазықтық", "en": "tangent plane", "def": "Деңгей бетінің нүктесіндегі градиентке перпендикуляр жазықтық.", "lesson": 1},
+{"id": "vc-divergence", "kz": "дивергенция", "en": "divergence", "def": "Векторлық өрістің ағын тығыздығы: $P_x+Q_y+R_z$.", "lesson": 2},
+{"id": "vc-curl", "kz": "ротор", "en": "curl", "def": "Векторлық өрістің айналым тығыздығын көрсететін векторлық өріс.", "lesson": 2},
+{"id": "vc-laplacian", "kz": "лапласиан", "en": "Laplacian", "def": "Градиенттің дивергенциясы: $\\Delta u=u_{xx}+u_{yy}+u_{zz}$.", "lesson": 2},
+{"id": "vc-solenoidal", "kz": "соленоидты өріс", "en": "solenoidal field", "def": "Дивергенциясы нөлге тең өріс.", "lesson": 2},
+{"id": "vc-irrotational", "kz": "құйынсыз өріс", "en": "irrotational field", "def": "Роторы нөл вектор болатын өріс.", "lesson": 2},
+{"id": "vc-harmonic", "kz": "гармониялық функция", "en": "harmonic function", "def": "Лаплас теңдеуін $\\Delta u=0$ қанағаттандыратын функция.", "lesson": 2},
+{"id": "vc-smooth-curve", "kz": "тегіс қисық", "en": "smooth curve", "def": "Параметрлеуі үзіліссіз дифференциалданатын және $\\mathbf{r}'\\ne\\mathbf{0}$ қисық.", "lesson": 3},
+{"id": "vc-arc-element", "kz": "доға дифференциалы", "en": "arc length element", "def": "Ұзындық элементі $ds=|\\mathbf{r}'|\\,dt$.", "lesson": 3},
+{"id": "vc-line-first", "kz": "бірінші текті интеграл", "en": "line integral of the first kind", "def": "Скаляр өрістің қисық бойымен доға ұзындығы бойынша интегралы.", "lesson": 3},
+{"id": "vc-line-second", "kz": "екінші текті интеграл", "en": "line integral of the second kind", "def": "Векторлық өрістің қисық бойымен жұмысы: $\\int\\mathbf{F}\\cdot d\\mathbf{r}$.", "lesson": 3},
+{"id": "vc-circulation", "kz": "циркуляция", "en": "circulation", "def": "Өрістің жабық контур бойымен екінші текті интегралы.", "lesson": 3},
+{"id": "vc-potential", "kz": "потенциал", "en": "potential", "def": "$\\nabla u=\\mathbf{F}$ болатын $u$ функциясы.", "lesson": 4},
+{"id": "vc-conservative", "kz": "консервативті өріс", "en": "conservative field", "def": "Жұмысы жолға тәуелсіз өріс (потенциалды өріс).", "lesson": 4},
+{"id": "vc-path-independent", "kz": "жолға тәуелсіздік", "en": "path independence", "def": "Интеграл тек бастапқы және соңғы нүктеге тәуелді болу қасиеті.", "lesson": 4},
+{"id": "vc-simply-connected", "kz": "жай байланысты облыс", "en": "simply connected domain", "def": "Ішіндегі кез келген контурды облыстан шықпай нүктеге қысуға болатын облыс.", "lesson": 4},
+{"id": "vc-positive-orient", "kz": "контурдың оң бағыты", "en": "positive orientation", "def": "Бойымен жүргенде облыс сол жақта қалатын бағыт.", "lesson": 5},
+{"id": "vc-green-thm", "kz": "Грин теоремасы", "en": "Green's theorem", "def": "Жазықтықтағы контур интегралы мен облыс бойынша қос интегралды байланыстыратын теорема.", "lesson": 5},
+{"id": "vc-area-contour", "kz": "контурмен аудан", "en": "area by contour", "def": "Облыс ауданын $\\frac12\\oint x\\,dy-y\\,dx$ арқылы табу.", "lesson": 5},
+{"id": "vc-multiply-connected", "kz": "көпбайланысты облыс", "en": "multiply connected domain", "def": "Тесіктері бар облыс; шекарасы бірнеше контурдан тұрады.", "lesson": 5},
+{"id": "vc-surface-element", "kz": "бет элементі", "en": "surface element", "def": "Беттің кішкентай бөлігінің ауданы $dS$.", "lesson": 6},
+{"id": "vc-flux", "kz": "ағын", "en": "flux", "def": "Векторлық өрістің бет арқылы өтуі: $\\iint\\mathbf{F}\\cdot\\mathbf{n}\\,dS$.", "lesson": 6},
+{"id": "vc-normal", "kz": "нормаль", "en": "normal vector", "def": "Бетке перпендикуляр вектор.", "lesson": 6},
+{"id": "vc-stokes-thm", "kz": "Стокс теоремасы", "en": "Stokes' theorem", "def": "Контурдағы айналым мен бет бойынша ротор ағынын байланыстыратын теорема.", "lesson": 6},
+{"id": "vc-gauss-thm", "kz": "Гаусс-Остроградский теоремасы", "en": "divergence theorem", "def": "Жабық бет арқылы ағын мен дене бойынша дивергенция интегралын байланыстыратын теорема.", "lesson": 6}
+];

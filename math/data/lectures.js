@@ -2634,7 +2634,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-49",
-  "num": "8 · Тізбектер және қатарлар · 1-сабақ",
+  "num": "Sequences and Series · 1-сабақ",
   "title": "Сандық тізбектер және олардың шегі",
   "url": "math/lectures/week-49.html",
   "topics": [
@@ -2694,7 +2694,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-50",
-  "num": "8 · Тізбектер және қатарлар · 2-сабақ",
+  "num": "Sequences and Series · 2-сабақ",
   "title": "Сан қатарлары және жинақтылық",
   "url": "math/lectures/week-50.html",
   "topics": [
@@ -2717,6 +2717,70 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
    {
     "t": "Қосындыны жуықтау және дәлдікті бағалау",
     "id": "approx"
+   },
+   {
+    "t": "Қосындыны табу әдістері: арифметикалық-геометриялық қатар",
+    "id": "technique"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 21,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-51",
+  "num": "Sequences and Series · 3-сабақ",
+  "title": "Оң мүшелі қатарлардың жинақтылық белгілері",
+  "url": "math/lectures/week-51.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: оң қосылғыштар және «жеткілікті тез кішірею»",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Белгіні таңдау стратегиясы және қосымша бақылаулар",
+    "id": "strategy"
    },
    {
     "t": "Қорытып шығару",
@@ -2748,62 +2812,6 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
    }
   ],
   "minutes": 20,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-51",
-  "num": "8 · Тізбектер және қатарлар · 3-сабақ",
-  "title": "Оң мүшелі қатарлардың жинақтылық белгілері",
-  "url": "math/lectures/week-51.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Интуиция: оң қосылғыштар және «жеткілікті тез кішірею»",
-    "id": "intuition"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 18,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2859,10 +2867,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
-  "task": "exercises"
+  "task": "practice"
  },
  {
   "id": "week-53",
@@ -2885,6 +2893,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
    {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Радиусты табу тәсілдері және ерекше жағдайлар",
+    "id": "methods"
    },
    {
     "t": "Қорытып шығару",
@@ -2915,7 +2927,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 18,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2943,6 +2955,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Тейлор жуықтауының қолданбалары мен ережелері",
+    "id": "applications"
+   },
+   {
     "t": "Қорытып шығару",
     "id": "derivations"
    },
@@ -2971,7 +2987,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 19,
+  "minutes": 21,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"

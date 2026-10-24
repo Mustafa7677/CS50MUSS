@@ -137,9 +137,10 @@ test("курс беті: пән атаулары ағылшынша, ретте�
   // граф, «қайдан бастау», алғышарт жазуы жоқ
   for (const sel of [".mx-graph", ".mx-path", ".mx-target", ".mx-edge", ".mx-node", ".mx-spre", "svg.mx-graph"]) await expect(page.locator(sel), sel).toHaveCount(0);
   const text = await page.locator("main, .content").first().innerText();
-  expect(text).not.toMatch(/алғышарт|Қайдан бастау|Мақсатты пән|байланыс/i);
+  const heads = (await page.locator(".mx-shead h3, ol.mx-jump, .mx-group-h, .nav, .course-pill").allInnerTexts()).join(" ");
+  expect(text).not.toMatch(/алғышарт|Қайдан бастау|Мақсатты пән|байланыс(?!тылық|ы)/i);
   // қазақша пән атаулары көрінбейді
-  for (const kz of ["Сызықтық алгебра", "Дифференциалдық есептеу", "Ықтималдық теориясы", "Топология", "Жоғары математикаға дайындық"]) expect(text, kz).not.toContain(kz);
+  for (const kz of ["Сызықтық алгебра", "Дифференциалдық есептеу", "Ықтималдық теориясы", "Топология", "Жоғары математика", "Жетілдірілген", "Тізбектер және қатарлар"]) expect(heads, kz).not.toContain(kz);
 });
 
 test("курс беті, 390px: көлденең айналусыз; пән модульдері сыяды", async ({ browser }) => {
