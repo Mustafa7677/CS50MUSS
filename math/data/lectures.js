@@ -1178,7 +1178,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-21",
-  "num": "4 · Дифференциалдық есептеу · 1-сабақ",
+  "num": "Differential Calculus · 1-сабақ",
   "title": "Шек ұғымы және анықтамасы",
   "url": "math/lectures/week-21.html",
   "topics": [
@@ -1187,7 +1187,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1234,7 +1234,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-22",
-  "num": "4 · Дифференциалдық есептеу · 2-сабақ",
+  "num": "Differential Calculus · 2-сабақ",
   "title": "Шектерді есептеу тәсілдері",
   "url": "math/lectures/week-22.html",
   "topics": [
@@ -1243,7 +1243,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1290,7 +1290,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-23",
-  "num": "4 · Дифференциалдық есептеу · 3-сабақ",
+  "num": "Differential Calculus · 3-сабақ",
   "title": "Үзіліссіздік",
   "url": "math/lectures/week-23.html",
   "topics": [
@@ -1299,7 +1299,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1346,7 +1346,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-24",
-  "num": "4 · Дифференциалдық есептеу · 4-сабақ",
+  "num": "Differential Calculus · 4-сабақ",
   "title": "Туынды анықтамасы және геометриялық мағынасы",
   "url": "math/lectures/week-24.html",
   "topics": [
@@ -1355,7 +1355,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1402,7 +1402,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-25",
-  "num": "4 · Дифференциалдық есептеу · 5-сабақ",
+  "num": "Differential Calculus · 5-сабақ",
   "title": "Дифференциалдау ережелері",
   "url": "math/lectures/week-25.html",
   "topics": [
@@ -1411,7 +1411,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1458,7 +1458,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-26",
-  "num": "4 · Дифференциалдық есептеу · 6-сабақ",
+  "num": "Differential Calculus · 6-сабақ",
   "title": "Күрделі, айқын емес және кері функция туындысы",
   "url": "math/lectures/week-26.html",
   "topics": [
@@ -1467,7 +1467,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1514,7 +1514,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-27",
-  "num": "4 · Дифференциалдық есептеу · 7-сабақ",
+  "num": "Differential Calculus · 7-сабақ",
   "title": "Орта мән теоремалары және Лопиталь ережесі",
   "url": "math/lectures/week-27.html",
   "topics": [
@@ -1523,7 +1523,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -1570,7 +1570,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-28",
-  "num": "4 · Дифференциалдық есептеу · 8-сабақ",
+  "num": "Differential Calculus · 8-сабақ",
   "title": "Функцияны зерттеу және оңтайландыру",
   "url": "math/lectures/week-28.html",
   "topics": [
@@ -1579,7 +1579,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "goals"
    },
    {
-    "t": "Алғышарттар",
+    "t": "Қысқаша еске салу",
     "id": "prereq"
    },
    {
@@ -2129,6 +2129,62 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
+  "id": "week-38",
+  "num": "Multivariable Calculus · 3-сабақ",
+  "title": "Градиент және бағыт бойынша туынды",
+  "url": "math/lectures/week-38.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: ең тік беткейді қалай табамыз",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 22,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
   "id": "week-43",
   "num": "7 · Векторлық анализ · 1-сабақ",
   "title": "Скаляр және векторлық өрістер",
@@ -2291,7 +2347,63 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 20,
+  "minutes": 21,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-46",
+  "num": "Vector Calculus · 4-сабақ",
+  "title": "Потенциалды өріс",
+  "url": "math/lectures/week-46.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: тау мен жол",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 21,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2473,6 +2585,62 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
+  "id": "week-52",
+  "num": "Sequences and Series · 4-сабақ",
+  "title": "Таңбасы ауыспалы қатарлар және абсолют жинақтылық",
+  "url": "math/lectures/week-52.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: алға және артқа қадам",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 17,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
   "id": "week-55",
   "num": "9 · Жай дифференциалдық теңдеулер · 1-сабақ",
   "title": "Негізгі ұғымдар және бағыт өрісі",
@@ -2533,6 +2701,62 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "num": "9 · Жай дифференциалдық теңдеулер · 2-сабақ",
   "title": "Айнымалылары бөлінетін теңдеулер",
   "url": "math/lectures/week-56.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 21,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-57",
+  "num": "Ordinary Differential Equations · 3-сабақ",
+  "title": "Бірінші ретті сызықтық теңдеулер",
+  "url": "math/lectures/week-57.html",
   "topics": [
    {
     "t": "Сабақ мақсаттары",
@@ -2656,6 +2880,62 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
    },
    {
     "t": "Интуиция: ішектегі толқын неге жүгіреді?",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 22,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-64",
+  "num": "Partial Differential Equations · 3-сабақ",
+  "title": "Жылуөткізгіштік теңдеуі және Фурье әдісі",
+  "url": "math/lectures/week-64.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция: жылу қалай жайылады?",
     "id": "intuition"
    },
    {

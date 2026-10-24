@@ -3,87 +3,552 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Math 10 · Дербес туындылы дифференциалдық теңдеулер · 3-сабақ: Жылуөткізгіштік теңдеуі және Фурье әдісі - CS50 қазақша</title>
+  <title>Math Partial Differential Equations · 3-сабақ: Жылуөткізгіштік теңдеуі және Фурье әдісі - CS50 қазақша</title>
   <!-- build:head -->
-  <meta name="theme-color" content="#0a4c7a">
-  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
-  <link rel="manifest" href="../../manifest.webmanifest">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="CS50 қазақша">
-  <meta property="og:title" content="Math 10 · Дербес туындылы дифференциалдық теңдеулер · 3-сабақ: Жылуөткізгіштік теңдеуі және Фурье әдісі - CS50 қазақша">
-  <meta property="og:description" content="Математика, 10 · Дербес туындылы дифференциалдық теңдеулер · 3-сабақ: Жылуөткізгіштік теңдеуі және Фурье әдісі. Сабақ жақында жазылады.">
-  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-64.html">
-  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
-  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-64.html">
-  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
-  <link rel="license" href="../../copyright.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math 10 · Дербес туындылы дифференциалдық теңдеулер · 3-сабақ: Жылуөткізгіштік теңдеуі және Фурье әдісі - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-64.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, 10 · Дербес туындылы дифференциалдық теңдеулер · 3-сабақ: Жылуөткізгіштік теңдеуі және Фурье әдісі. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Айнымалыларды бөлу, меншікті функциялар, Фурье қатары арқылы шешім.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
   <header class="topbar">
     <div class="topbar-inner">
       <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
-      <nav class="nav">
-        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="math" style="--c:#15803d"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Математика</span><span class="cp-chev" aria-hidden="true">▾</span></button>
-        <a href="../../math/index.html" class="active">Лекциялар</a>
-        <a href="../../practice.html">Жаттығу</a>
-        <a href="../../games.html">Ойындар</a>
-        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
-        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
-        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
-        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
-        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
-        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
-      </nav>
+      <nav class="nav"></nav>
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="64">
-        <div class="num">10 · Дербес туындылы дифференциалдық теңдеулер · 3-сабақ</div>
+        <div class="num">Partial Differential Equations · 3-сабақ</div>
         <h1>Жылуөткізгіштік теңдеуі және Фурье әдісі</h1>
-        <p>Айнымалыларды бөлу, меншікті функциялар, Фурье қатары арқылы шешім.</p>
+        <p>Бұл сабақта жылуөткізгіштік теңдеуін қорытып, оны Фурье әдісімен шешеміз: бастапқы температураны синустардың қосындысына жіктеп, әр синустың өз жылдамдығымен өшетінін көреміз. Максимум принципі, энергияның кемуі, біртекті емес және жылу өткізбейтін шеттік шарттар да қарастырылады.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-10">Дербес туындылы дифференциалдық теңдеулер</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-10">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны жасанды интеллект көмегімен дайындалған, сондықтан математик-оқытушымен тексеріп алған жөн. Бұл ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>Фурье заңы мен энергия балансынан жылуөткізгіштік теңдеуі $u_t=k\,u_{xx}$ теңдеуін қорытып, $k$ тұрақтысының мағынасын түсіндіру;</li>
+        <li>айнымалыларды бөлу әдісімен шектік есептің меншікті мәндері мен меншікті функцияларын табу;</li>
+        <li>бастапқы температура үшін Фурье коэффициенттерін есептеп, шешімді қатар түрінде жазу;</li>
+        <li>максимум принципі мен энергия әдісі арқылы шешімнің жалғыздығын және уақыт бойынша кемуін дәлелдеу;</li>
+        <li>біртекті емес шектік шарттарды (тұрақты температуралар) стационар шешімді алып тастау арқылы біртекті шартқа келтіру;</li>
+        <li>жылу өткізбейтін (Нейман) шектік шартты қолданып, жылудың сақталуын және $t\to\infty$ кезіндегі орташа температураны түсіндіру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Бұл сабақ өз алдына толық; қажеттінің бәрін еске түсірейік. <b>Дербес туынды:</b> $u_t$ - $x$-ті тұрақты деп алып, $t$ бойынша туынды; $u_{xx}$ - $x$ бойынша екі рет. <b>Жай теңдеу:</b> $T'=-\mu T$ шешімі $T=Ce^{-\mu t}$, ал $X''+\lambda X=0$ ($\lambda>0$) шешімі $X=A\cos\sqrt\lambda x+B\sin\sqrt\lambda x$. <b>Қатар:</b> $\sum c_n$ жинақталатыны оның дербес қосындыларының шегі бар болуын білдіреді; мүшелері $n^{-3}$ сияқты жылдам кемитін қатар өте жақсы жинақталады. <b>Ортогональдық:</b> $\int_0^L\sin\frac{n\pi x}{L}\sin\frac{m\pi x}{L}dx=0$ ($n\ne m$), $=\frac L2$ ($n=m$). Егер толқын теңдеуі сабағын оқыған болсаңыз, <a href="week-63.html">Фурье әдісінің бөлу қадамдары</a> сонда да көрсетілген, бірақ бұл сабақта оны қайта толық қорытамыз.</p>
+
+      <h2 id="intuition">Интуиция: жылу қалай жайылады?</h2>
+      <p>Ыстық шайға салқын қасық салсаңыз, қасықтың жылынатыны таныс. Ыстық шай қасықтың ұшына жылуын береді, жылу қасық бойымен жайылып, ақырында шай мен қасық бірдей температураға жетеді. Жылудың жайылуы бағыты бар үдеріс: суық қасық шайды қыздырмайды, ыстық жағы суық жағына қарай жылу береді. Дәл осы бағыттылық толқын теңдеуінен жылу теңдеуін түбегейлі ажыратады.</p>
+      <p>Жылу теңдеуінің ойын «көршілерге қарап жаңарту» ережесімен түсіндіруге болады. Біліктің бойын кішкене бөліктерге бөлейік. Әр бөліктің температурасы көрші екі бөліктің орташа температурасына қарай ұмтылады: бөлік көршілерінің орташасынан суық болса, қызады; ыстық болса, суиды. Көршілердің орташасы мен өз температурасының айырмасы дәл екінші туындыға ($u_{xx}$ айырма түрінде) жуық. Сондықтан «температураның өзгеру жылдамдығы $u_t$ осы айырмаға пропорционал» деген қағида $u_t=k\,u_{xx}$ теңдеуін береді. Бұл толқын теңдеуінен айырмашылық: толқында $u_{tt}$ (үдеу) қисықтыққа пропорционал, ал мұнда $u_t$ (жылдамдықтың өзі) пропорционал. Нәтижесінде жылуда инерция жоқ: тербеліс емес, тек тегістелу болады.</p>
+      <p>Тегістелудің нақты бейнесі: біліктің ортасында ыстық бөлік, шетінде суық бөлік болса, ең ыстық нүктенің температурасы төмендейді, ең суық нүктенікі көтеріледі, график тегістеле береді. Ұсақ толқынды (жылдам тербелетін) профильдер тез тегістеледі, ал ұзын толқынды профильдер баяу. Бұл Фурье қатарынан көрінеді: $n$-ші модалық үлес $e^{-k(n\pi/L)^2t}$ көбейткішімен өшеді, яғни жоғары гармоникалар $n^2$ жылдамдығымен жойылады. Фотошоптағы «бұлдырату» (blur) сүзгісі дәл осыны істейді: ұсақ бөлшектер (жоғары жиіліктер) алдымен жоғалады.</p>
+      <p>Тағы бір маңызды сұрақ: ақпарат қаншалықты жылдам таралады? Толқын теңдеуінде шекті жылдамдықпен. Жылу теңдеуінде математикалық түрде кез келген кішкентай уақыттан кейін жылу барлық нүктеге жетеді (өте аз мөлшерде болса да). Бұл «шексіз жылдамдықты тарау» физикалық тұрғыдан дәл емес (өйткені молекулалар шекті жылдамдықпен қозғалады), бірақ макроскопиялық үлгі ретінде тамаша жұмыс істейді.</p>
+      <p>Қорыта айтқанда, бұл сабақтағы қағидалар мынау: (1) жылу ыстықтан суыққа ағады (Фурье заңы), (2) жылудың жалпы мөлшері сақталады (энергия балансы), (3) бұдан $u_t=k\,u_{xx}$, (4) шешімді синустардың қосындысы ретінде іздейміз, әр синус өз жылдамдығымен өшеді, (5) максимум принципі: ішкі нүктеде бастапқы мен шекаралық температураның ең үлкен мәнінен жоғары температура пайда болмайды.</p>
+
+      <p>Өмірлік мысал: пештен алынған ыстық нанның ішін қарастырайық. Қыртысы тез суиды, ал ортасы ұзақ ыстық қалады. Нанның қалыңдығы екі есе болса, ортасының суу уақыты шамамен төрт есе артады, себебі уақыт масштабы $L^2/k$. Дәл сондықтан үлкен бөлке нан тез суымайды, ал жұқа лаваш бірнеше минутта суиды. Компьютер процессорында да солай: жылу кристалдың ішінен радиаторға қарай жайылады, ал салқындатқыштың тиімділігі шектік шартпен (қабырға температурасымен) анықталады. Осы мысалдардың бәрінде қарапайым сурет бірдей: бастапқы күй модаларға жіктеледі, әр мода өз жылдамдығымен өшеді, ең ұзын толқынды мода ең ұзақ тұрады.</p>
+      <p>Сондықтан практикада жиі бірінші модамен ғана шектеледі: уақыт жеткілікті өткенде басқа модалар бірінші моданың жанында елеусіз болады. Мысалы, мысал 2-де 0,5 уақыт бірлігінен кейін бірінші мода дәлдікті 0,07% деңгейінде береді. Осы себептен жылулық есептеулерде «ұзақ уақытта шешім $b_1e^{-k\lambda_1t}\sin\frac{\pi x}{L}$ түрінде» деген қарапайым ереже жиі қолданылады.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 3.1 · Жылуөткізгіштік теңдеуі</span>
+        <p><strong>Жылуөткізгіштік теңдеуі</strong> (<span class="term-en">heat equation</span>) деп $u_t=k\,u_{xx}$ теңдеуін айтамыз, мұнда $u(x,t)$ - стерженнің $x$ нүктесінің $t$ сәтіндегі температурасы, $k>0$ - температураөткізгіштік коэффициенті. Алғашқы шектік есеп ($0\le x\le L$, $t\ge0$):
+        $$u(0,t)=u(L,t)=0,\qquad u(x,0)=\varphi(x).$$ Мұнда $u=0$ шеттері бекітілген (ұсталған) нөл температураны білдіреді.</p></div>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 3.1 · Температураөткізгіштік</span>
+        <div class="math-fbody">$$k=\frac{\kappa}{c\rho}$$</div>
+        <p class="math-fnote">$\kappa$ - жылуөткізгіштік коэффициенті (Вт/(м·К)), $c$ - меншікті жылу сыйымдылығы, $\rho$ - тығыздық. $k$ өлшемі м²/с.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 3.1 · Фурье әдісі: шешім</span>
+        <p>$\varphi$ бөлікті тегіс және $\varphi(0)=\varphi(L)=0$ болсын. Онда есептің шешімі
+        $$u(x,t)=\sum_{n=1}^{\infty}b_n\,e^{-k(n\pi/L)^2t}\sin\frac{n\pi x}{L},\qquad b_n=\frac2L\int_0^L\varphi(x)\sin\frac{n\pi x}{L}\,dx.$$ $t>0$ кезінде қатар жылдам жинақталады және $u$ шексіз дифференциалданады.</p></div>
+      <p><em>Негіздеме.</em> Айнымалыларды бөлу (2-қорыту), коэффициенттерді ортогональдықпен табу (3-қорыту). Жинақтылық: $|b_n|\le M$ болғандықтан $t>0$ кезінде $e^{-k n^2\pi^2t/L^2}$ көбейткіші қатарды экспоненциалды жылдам кемітеді, туындыларды мүшелеп алуға болады.</p>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 3.2 · Мода және оның өшу жылдамдығы</span>
+        <div class="math-fbody">$$u_n(x,t)=e^{-\lambda_nkt}\sin\frac{n\pi x}{L},\qquad \lambda_n=\Big(\frac{n\pi}{L}\Big)^2$$</div>
+        <p class="math-fnote">Шарты: $u(0,t)=u(L,t)=0$. Өшу уақыты $\tau_n=\dfrac{L^2}{k n^2\pi^2}$; жоғары мода $n^2$ есе тез өшеді.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Жылу теңдеуінде толқындағыдай $\cos\omega t$ жоқ: уақыт көбейткіші $e^{-\lambda kt}$ (экспоненциалды кему). Сондықтан $t\to\infty$ кезінде бұл есептің шешімі нөлге ұмтылады, ал басым мода – ең кіші $n=1$ моданың үлесі.</p></div>
+
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 3.2 · Максимум принципі және жалғыздық</span>
+        <p>$u$ - $[0,L]\times[0,T]$ тік төртбұрышында үздіксіз және $0&lt;x&lt;L$, $0&lt;t\le T$ аймағында $u_t=k\,u_{xx}$ теңдеуін қанағаттандыратын функция болсын. Онда $u$-дің максимумы тік төртбұрыштың «параболалық шекарасында» (төменгі қабырға $t=0$ және екі бүйір қабырға) жетеді. Салдар: шектік есептің шешімі жалғыз және деректерге үздіксіз тәуелді.</p></div>
+      <p><em>Негіздеме.</em> 4-қорытуды қараңыз. Минимум үшін де осындай (u орнына $-u$). Физикалық мағынасы: стержень ішінде ешқашан бастапқы және шеткі температуралардың ең ыстығынан да ыстық нүкте пайда болмайды.</p>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Максимум принципі жылу теңдеуіне (параболалық) тән. Толқын теңдеуінде бұл жоқ: бөртпелер қосылғанда амплитуда бастапқыдан үлкен болуы мүмкін (резонанс).</p></div>
+
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 3.3 · Энергияның кемуі</span>
+        <p>Шектік шарттар $u(0,t)=u(L,t)=0$ болсын. Онда $\displaystyle\int_0^Lu^2dx\le e^{-2k\pi^2t/L^2}\int_0^L\varphi^2dx$.</p></div>
+      <p><em>Негіздеме.</em> 5-қорыту: $\dfrac{d}{dt}\int u^2=-2k\int u_x^2\le-2k(\pi/L)^2\int u^2$. Жылу «сыртқа ағып», температуралық «энергия» кемиді.</p>
+
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 3.4 · Жылу өткізбейтін шеттер (Нейман)</span>
+        <p>$u_x(0,t)=u_x(L,t)=0$ және $u(x,0)=\varphi(x)$ болса, шешім
+        $$u(x,t)=\frac{a_0}{2}+\sum_{n=1}^{\infty}a_n\,e^{-k(n\pi/L)^2t}\cos\frac{n\pi x}{L},\quad a_n=\frac2L\int_0^L\varphi(x)\cos\frac{n\pi x}{L}\,dx.$$ $t\to\infty$ кезінде $u\to\dfrac{a_0}{2}=\dfrac1L\int_0^L\varphi\,dx$ - бастапқы температураның орташа мәні.</p></div>
+      <p><em>Негіздеме.</em> Бөлуде $X'(0)=X'(L)=0$ шарты $\lambda_n=(n\pi/L)^2$, $X_n=\cos\frac{n\pi x}{L}$ береді және қосымша $\lambda_0=0$, $X_0=1$ (тұрақты). Жылу жүйеден шықпайды, сондықтан $\int_0^Lu\,dx$ тұрақты, соңғы күй – тұрақты орташа температура.</p>
+
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 3.3 · Біртекті емес шеттік шарттар</span>
+        <div class="math-fbody">$$u(x,t)=T_1+\frac{T_2-T_1}{L}\,x+w(x,t),\qquad w_t=kw_{xx},\ w(0,t)=w(L,t)=0$$</div>
+        <p class="math-fnote">Шарты: $u(0,t)=T_1$, $u(L,t)=T_2$ тұрақты. Стационар шешім – түзу; $w$ – оны алып тастағаннан кейінгі ауытқу.</p></div>
+
+      <div class="math-remark"><b>Ескертпе (шексіз стержень).</b> Стержень екі жаққа шексіз ұзын болса, шектік шарттар жоқ, ал бастапқы шарт $u(x,0)=\varphi(x)$ жеткілікті. Шешімді «жылу ядросы» (гаусс функциясы) береді: $$u(x,t)=\frac{1}{\sqrt{4\pi kt}}\int_{-\infty}^{\infty}\varphi(s)\,e^{-(x-s)^2/(4kt)}\,ds.$$ Мағынасы: әр бастапқы нүктелік жылу көзі $s$ уақыт өткенде ені $\sqrt{2kt}$ болатын қоңырау тәрізді профильге айналады, ал жалпы шешім барлық көздердің қосындысы. Бұл формулада $t>0$ кезінде кез келген $x$ үшін ядро оң, яғни жылу бір мезетте барлық жерге жетеді. Қалыпты үлестірімнің ықтималдық тығыздығымен ұқсастық кездейсоқ емес: диффузия бөлшектердің кездейсоқ қозғалысының шегі.</div>
+      <div class="math-remark"><b>Ескертпе (кері уақыт).</b> Жылу теңдеуін уақыт бойынша кері бағытта шешуге тырысу (қазіргі температурадан өткен күйді табу) дұрыс қойылмаған есеп: $e^{-k\lambda_nt}$ көбейткіші кері бағытта $e^{+k\lambda_nt}$ болып, жоғары гармоникалардағы кішкентай қателікті шексіз үлкейтеді. Сондықтан кофе қашан қанша градус болғанын дәл есептеу мүмкін емес, ал болашақтағы күйді есептеу тұрақты. Бұл құбылыс уақыттың бағытын (термодинамикадағы «уақыт жебесін») математикалық түрде көрсетеді. Толқын теңдеуінде ($u_{tt}$) бұл жоқ: толқынды кері қарай да жүргізуге болады.</div>
+      <div class="math-remark"><b>Ескертпе (бірліктер).</b> $k$ өлшемі м²/с, сондықтан $L^2/k$ уақыт өлшемінде. Бұл «диффузия уақыты» заңы: ұзындық екі есе болса, жылулық тепе-теңдік төрт есе ұзағырақ орнайды. Сондықтан үлкен тастың іші ұзақ қызады, ал жұқа пластина лезде суиды.</div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <p>Бес қорытуда бес түрлі идея қолданылады: физикалық баланс, айнымалыларды бөлу, интегралды есептеу, максимум принципі және энергия әдісі. Әрқайсысын қағазға өзіңіз жазып көріңіз.</p>
+      <div class="mx-derive-tools"></div>
+
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: жылу теңдеуі (Фурье заңы + энергия балансы)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> жіңішке стержень үшін $u_t=k\,u_{xx}$ теңдеуін шығару.</p>
+          <ol class="math-steps">
+            <li><b>Фурье заңы.</b> Жылу ағыны (бірлік уақытта көлденең қимадан өтетін жылу) $q=-\kappa\,u_x$. Минус таңбасы: жылу температурасы жоғарыдан төмен жаққа ағады (градиентке қарсы).</li>
+            <li><b>Кесінді.</b> $[x,x+\Delta x]$ кесіндісінің жылу мөлшері шамамен $c\rho\,u\,\Delta x$ (көлденең қима ауданы 1 деп алынды).</li>
+            <li><b>Баланс.</b> Кесіндідегі жылудың өзгеру жылдамдығы = кіріс ағын − шығыс ағын: $c\rho\,\Delta x\,u_t=q(x)-q(x+\Delta x)$.</li>
+            <li><b>Ағынды қою.</b> $q(x)-q(x+\Delta x)=-\kappa u_x(x,t)+\kappa u_x(x+\Delta x,t)=\kappa\big[u_x(x+\Delta x,t)-u_x(x,t)\big]$.</li>
+            <li><b>Шекке көшу.</b> $\Delta x$-ке бөліп, $\Delta x\to0$ дейміз: $c\rho\,u_t=\kappa\,u_{xx}$.</li>
+            <li><b>Нәтиже.</b> $u_t=k\,u_{xx}$, $k=\dfrac{\kappa}{c\rho}$. Болат үшін $k\approx1{,}2\cdot10^{-5}$ м²/с (шамамен), яғни 1 м стерженьнің жылулық тепе-теңдік уақыты шамамен $L^2/k$ секунд, көптеген сағат.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-2" open>
+        <summary>Қорытып шығару 2: айнымалыларды бөлу және меншікті мәндер</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $u_t=ku_{xx}$, $u(0,t)=u(L,t)=0$ есебінің қарапайым шешімдерін табу.</p>
+          <ol class="math-steps">
+            <li><b>Қойылым.</b> $u=X(x)T(t)$. Теңдеуге қойсақ: $XT'=kX''T$. Екі жағын $kXT$-ге бөлсек: $\dfrac{T'}{kT}=\dfrac{X''}{X}$. Сол жағы тек $t$-ге, оң жағы тек $x$-ке тәуелді, олай болса екеуі де тұрақты: оны $-\lambda$ деп белгілейміз.</li>
+            <li><b>Екі жай теңдеу.</b> $X''+\lambda X=0$, $T'=-\lambda kT$. Шектік шарттардан $X(0)=X(L)=0$ (нөлге тең емес шешім үшін $T\not\equiv0$).</li>
+            <li><b>$\lambda&lt;0$.</b> $\mu=\sqrt{-\lambda}$: $X=Ae^{\mu x}+Be^{-\mu x}$. $X(0)=0\Rightarrow B=-A$; $X(L)=A(e^{\mu L}-e^{-\mu L})=0$ және $e^{\mu L}\ne e^{-\mu L}$ болғандықтан $A=0$. Тривиал шешім.</li>
+            <li><b>$\lambda=0$.</b> $X=Ax+B$: $X(0)=0\Rightarrow B=0$, $X(L)=AL=0\Rightarrow A=0$. Тривиал шешім.</li>
+            <li><b>$\lambda>0$.</b> $X=A\cos\sqrt\lambda x+B\sin\sqrt\lambda x$. $X(0)=0\Rightarrow A=0$. $X(L)=B\sin\sqrt\lambda L=0$, $B\ne0$ болса $\sqrt\lambda L=n\pi$, яғни $\lambda_n=(n\pi/L)^2$, $X_n=\sin\dfrac{n\pi x}{L}$.</li>
+            <li><b>Уақыт бөлігі.</b> $T'=-\lambda_nkT\Rightarrow T_n=e^{-\lambda_nkt}$ (қалауымызша тұрақтыға дейін).</li>
+            <li><b>Қарапайым шешімдер.</b> $u_n=e^{-k(n\pi/L)^2t}\sin\dfrac{n\pi x}{L}$. Теңдеу мен шектік шарттар сызықтық және біртекті, сондықтан суперпозиция бойынша $u=\sum b_nu_n$ те шешім (қатар жинақталса). Бастапқы шарттан $b_n$ табылады (3-қорытуда).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-3" open>
+        <summary>Қорытып шығару 3: Фурье коэффициенттері; $\varphi=x(\pi-x)$ мысалы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $b_n$ формуласын шығарып, $L=\pi$, $\varphi(x)=x(\pi-x)$ үшін есептеу.</p>
+          <ol class="math-steps">
+            <li><b>Бастапқы шарт.</b> $t=0$: $\varphi(x)=\sum_{n\ge1}b_n\sin\dfrac{n\pi x}{L}$.</li>
+            <li><b>Ортогональдық.</b> $\sin\dfrac{m\pi x}{L}$-ге көбейтіп, $[0,L]$ бойынша мүшелеп интегралдаймыз: $\displaystyle\int_0^L\varphi\sin\frac{m\pi x}{L}dx=\sum b_n\int_0^L\sin\frac{n\pi x}{L}\sin\frac{m\pi x}{L}dx=b_m\cdot\frac L2$.</li>
+            <li><b>Формула.</b> $b_m=\dfrac2L\displaystyle\int_0^L\varphi(x)\sin\frac{m\pi x}{L}dx$.</li>
+            <li><b>Мысал, $L=\pi$.</b> $I_n=\displaystyle\int_0^\pi x(\pi-x)\sin nx\,dx$. Бөліктеп интегралдаймыз: $u=x(\pi-x)$, $dv=\sin nx\,dx$, $du=(\pi-2x)dx$, $v=-\dfrac{\cos nx}{n}$.</li>
+            <li>$I_n=\Big[-\dfrac{x(\pi-x)\cos nx}{n}\Big]_0^\pi+\dfrac1n\displaystyle\int_0^\pi(\pi-2x)\cos nx\,dx$. Бірінші мүше нөл ($x=0,\pi$ кезінде $x(\pi-x)=0$).</li>
+            <li>Қалған интегралды тағы бөліктеп: $\displaystyle\int_0^\pi(\pi-2x)\cos nx\,dx=\Big[\dfrac{(\pi-2x)\sin nx}{n}\Big]_0^\pi+\dfrac2n\int_0^\pi\sin nx\,dx=0+\dfrac2n\cdot\dfrac{1-\cos n\pi}{n}$.</li>
+            <li>Сонымен $I_n=\dfrac{2(1-\cos n\pi)}{n^3}$: $n$ тақ болса $\dfrac4{n^3}$, жұп болса $0$. Демек $b_n=\dfrac2\pi I_n=\dfrac{8}{\pi n^3}$ (тақ $n$), $b_n=0$ (жұп $n$).</li>
+            <li><b>Тексеру.</b> $x=\pi/2$ кезінде $\varphi=\pi^2/4\approx2{,}4674$; қатар $\dfrac8\pi\Big(1-\dfrac1{27}+\dfrac1{125}-\dots\Big)\approx2{,}4674$ ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-4" open>
+        <summary>Қорытып шығару 4: максимум принципі және жалғыздық</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 3.2.</p>
+          <ol class="math-steps">
+            <li><b>Белгілеу.</b> $Q=[0,L]\times[0,T]$, $\Gamma$ - параболалық шекара ($t=0$, $x=0$, $x=L$), $M=\max_\Gamma u$.</li>
+            <li><b>Көмекші функция.</b> $\varepsilon>0$ үшін $v=u-\varepsilon t$. Онда $v_t-kv_{xx}=(u_t-ku_{xx})-\varepsilon=-\varepsilon&lt;0$.</li>
+            <li><b>Қарсы жору.</b> $v$ максимумын $Q$-дің $\Gamma$-ға жатпайтын нүктесінде, яғни $0&lt;x_0&lt;L$, $0&lt;t_0\le T$ жерде алсын делік.</li>
+            <li><b>Максимум шарттары.</b> $x$ бойынша ішкі максимумда $v_{xx}(x_0,t_0)\le0$. Уақыт бойынша: егер $t_0&lt;T$ болса $v_t=0$, егер $t_0=T$ болса $v_t\ge0$ (одан бұрынғы мәндер аспайды). Екі жағдайда да $v_t(x_0,t_0)\ge0$.</li>
+            <li><b>Қайшылық.</b> Онда $v_t-kv_{xx}\ge0-0=0$, ал 2-қадам бойынша $-\varepsilon&lt;0$. Қайшылық.</li>
+            <li><b>Бағалау.</b> Демек $\max_Qv=\max_\Gamma v\le M$. Сондықтан $u=v+\varepsilon t\le M+\varepsilon T$ барлық $Q$-да. $\varepsilon\to0$: $u\le M$.</li>
+            <li><b>Жалғыздық.</b> Екі шешімнің айырмасы $w$ бірдей деректермен $\Gamma$-да нөл. Максимум принципінен $w\le0$, ал $-w$ үшін де: $w\ge0$. Олай болса $w\equiv0$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-5" open>
+        <summary>Қорытып шығару 5: энергияның экспоненциалды кемуі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $E(t)=\int_0^Lu^2dx$ үшін $E(t)\le e^{-2k\pi^2t/L^2}E(0)$.</p>
+          <ol class="math-steps">
+            <li><b>Туынды.</b> $E'(t)=2\displaystyle\int_0^Luu_t\,dx=2k\int_0^Luu_{xx}\,dx$.</li>
+            <li><b>Бөліктеп интегралдау.</b> $\displaystyle\int_0^Luu_{xx}dx=\big[uu_x\big]_0^L-\int_0^Lu_x^2dx=-\int_0^Lu_x^2dx$, себебі $u(0,t)=u(L,t)=0$.</li>
+            <li><b>Нәтиже.</b> $E'(t)=-2k\displaystyle\int_0^Lu_x^2\,dx\le0$: энергия кемиді.</li>
+            <li><b>Пуанкаре теңсіздігі.</b> $u(\cdot,t)=\sum c_n\sin\dfrac{n\pi x}{L}$ деп жазсақ, $\displaystyle\int u^2=\dfrac L2\sum c_n^2$, $\displaystyle\int u_x^2=\dfrac L2\sum\Big(\dfrac{n\pi}{L}\Big)^2c_n^2\ge\Big(\dfrac\pi L\Big)^2\dfrac L2\sum c_n^2$, себебі $n^2\ge1$.</li>
+            <li><b>Дифференциалдық теңсіздік.</b> $E'(t)\le-2k\dfrac{\pi^2}{L^2}E(t)$.</li>
+            <li><b>Интегралдау.</b> $\dfrac{d}{dt}\Big(e^{2k\pi^2t/L^2}E\Big)=e^{2k\pi^2t/L^2}\Big(E'+\dfrac{2k\pi^2}{L^2}E\Big)\le0$. Демек $e^{2k\pi^2t/L^2}E(t)\le E(0)$.</li>
+            <li><b>Қорытынды.</b> $E(t)\le e^{-2k\pi^2t/L^2}E(0)$, ал дәл теңдік тек бастапқы шарт тек $n=1$ модадан тұрғанда.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+
+      <div class="math-example" id="ex-1">
+        <h3>Мысал 1. Екі мода</h3>
+        <p class="math-problem">$u_t=u_{xx}$, $0\le x\le\pi$, $u(0,t)=u(\pi,t)=0$, $u(x,0)=\sin x+3\sin2x$. $u(x,t)$-ні және $u(\pi/2,\ln2)$ мәнін табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. Коэффициенттер.</b> $L=\pi$, $k=1$, бастапқы шарт өзі синустардың қосындысы: $b_1=1$, $b_2=3$, қалғандары нөл.</li>
+          <li><b>2-қадам. Өшу жылдамдықтары.</b> $\lambda_nk=n^2$: $e^{-t}$ және $e^{-4t}$.</li>
+          <li><b>3-қадам. Шешім.</b> $u=e^{-t}\sin x+3e^{-4t}\sin2x$.</li>
+          <li><b>4-қадам. Мән.</b> $x=\pi/2$: $\sin\frac\pi2=1$, $\sin\pi=0$. $u(\pi/2,\ln2)=e^{-\ln2}\cdot1=\dfrac12$.</li>
+          <li><b>5-қадам. Тексеру.</b> $u_t=-e^{-t}\sin x-12e^{-4t}\sin2x$, $u_{xx}=-e^{-t}\sin x-12e^{-4t}\sin2x$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $u=e^{-t}\sin x+3e^{-4t}\sin2x$, $u(\pi/2,\ln2)=\tfrac12$.</p>
+      </div>
+
+      <div class="math-example" id="ex-2">
+        <h3>Мысал 2. Параболалық бастапқы температура</h3>
+        <p class="math-problem">$k=1$, $L=\pi$, $\varphi(x)=x(\pi-x)$. Шешімді жазып, $u(\pi/2,0{,}5)$ мәнін бағалаңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. Коэффициенттер.</b> 3-қорытудан $b_n=\dfrac8{\pi n^3}$ (тақ $n$), $0$ (жұп $n$).</li>
+          <li><b>2-қадам. Шешім.</b> $u=\dfrac8\pi\displaystyle\sum_{n=1,3,5,\dots}\dfrac{e^{-n^2t}}{n^3}\sin nx$.</li>
+          <li><b>3-қадам. Мән.</b> $x=\pi/2$: $\sin\frac{n\pi}2=+1$ ($n=1$), $-1$ ($n=3$). $t=0{,}5$: $e^{-0{,}5}\approx0{,}6065$, $e^{-4{,}5}\approx0{,}0111$.</li>
+          <li><b>4-қадам. Қосу.</b> $\dfrac8\pi\Big(0{,}6065-\dfrac{0{,}0111}{27}\Big)\approx2{,}5465\cdot(0{,}6065-0{,}00041)\approx1{,}5435$.</li>
+          <li><b>5-қадам. Салыстыру.</b> $t=0$ кезінде $\varphi(\pi/2)=2{,}467$; $t=0{,}5$ кезінде $1{,}54$: ортасы суыды. Бір ғана мода $\frac8\pi e^{-0{,}5}\approx1{,}5445$ беріп, қатенің 0,07% болатынын көрсетеді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $u\approx1{,}543$.</p>
+      </div>
+
+      <div class="math-example" id="ex-3">
+        <h3>Мысал 3. Бірқалыпты қыздырылған стержень</h3>
+        <p class="math-problem">$L=1$, $k=0{,}01$, шеттері $0$, бастапқы температура $\varphi\equiv100$. $b_n$-ді табыңыз, $u(\tfrac12,10)$ мәнін бағалаңыз және ортаның температурасы бастапқының 1%-ына дейін қанша уақытта түсетінін бағалаңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. Коэффициент.</b> $b_n=2\displaystyle\int_0^1100\sin n\pi x\,dx=200\cdot\dfrac{1-\cos n\pi}{n\pi}=\dfrac{400}{n\pi}$ (тақ $n$), $0$ (жұп).</li>
+          <li><b>2-қадам. Бірінші мода.</b> $\lambda_1k=0{,}01\pi^2\approx0{,}0987$. $u(\tfrac12,t)\approx\dfrac{400}{\pi}e^{-0{,}0987t}$.</li>
+          <li><b>3-қадам. $t=10$.</b> $e^{-0{,}987}\approx0{,}3727$, $\dfrac{400}\pi\approx127{,}32$. $u\approx47{,}45$ (толық қатар $47{,}449$ береді).</li>
+          <li><b>4-қадам. 1% уақыты.</b> Бастапқы температураның 1%-ы - 1 градус. Ең басым мода үшін $127{,}3\,e^{-0{,}0987t}=1\Rightarrow t=\dfrac{\ln127{,}3}{0{,}0987}\approx\dfrac{4{,}85}{0{,}0987}\approx49$ уақыт бірлігі.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $b_n=\frac{400}{n\pi}$ (тақ $n$), $u(\frac12,10)\approx47{,}4$, 1%-ға түсу уақыты шамамен $49$.</p>
+      </div>
+
+      <div class="math-example" id="ex-4">
+        <h3>Мысал 4. Шеттері әртүрлі температурада</h3>
+        <p class="math-problem">$u_t=u_{xx}$, $0\le x\le\pi$, $u(0,t)=20$, $u(\pi,t)=50$, $u(x,0)=20+\dfrac{30x}\pi+4\sin2x$. $u(x,t)$ мен $t\to\infty$ кезіндегі шекті табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. Стационар шешім.</b> $v(x)=20+\dfrac{30x}{\pi}$: $v''=0$, $v(0)=20$, $v(\pi)=50$.</li>
+          <li><b>2-қадам. Ауытқу.</b> $w=u-v$: $w_t=w_{xx}$, $w(0,t)=w(\pi,t)=0$, $w(x,0)=4\sin2x$.</li>
+          <li><b>3-қадам. $w$ шешімі.</b> $w=4e^{-4t}\sin2x$.</li>
+          <li><b>4-қадам. Жауап.</b> $u=20+\dfrac{30x}\pi+4e^{-4t}\sin2x$. $t\to\infty$: $u\to20+\dfrac{30x}{\pi}$; $x=\pi/2$ кезінде $35$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $u=20+\frac{30x}\pi+4e^{-4t}\sin2x$; шек $20+30x/\pi$ (ортада $35$).</p>
+      </div>
+
+      <div class="math-example" id="ex-5">
+        <h3>Мысал 5. Жылу өткізбейтін шеттер</h3>
+        <p class="math-problem">$u_t=u_{xx}$, $u_x(0,t)=u_x(\pi,t)=0$, $u(x,0)=2+\cos3x$. Шешімді және $t\to\infty$ шегін табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам. Базис.</b> Нейман шартында $X_n=\cos nx$, $\lambda_n=n^2$ ($n=0,1,2,\dots$), $\lambda_0=0$ тұрақты мода.</li>
+          <li><b>2-қадам. Коэффициенттер.</b> $\varphi=2\cdot\cos0x+1\cdot\cos3x$: $\dfrac{a_0}2=2$, $a_3=1$.</li>
+          <li><b>3-қадам. Шешім.</b> $u=2+e^{-9t}\cos3x$.</li>
+          <li><b>4-қадам. Тексеру.</b> $u_x=-3e^{-9t}\sin3x$: $x=0,\pi$ кезінде $0$ ✓. $u_t=-9e^{-9t}\cos3x=u_{xx}$ ✓.</li>
+          <li><b>5-қадам. Жылудың сақталуы.</b> $\displaystyle\int_0^\pi u\,dx=2\pi+e^{-9t}\int_0^\pi\cos3x\,dx=2\pi$. Тұрақты. $t\to\infty$: $u\to2$ – орташа температура.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $u=2+e^{-9t}\cos3x\to2$.</p>
+      </div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Уақыт көбейткіші $\cos(\omega t)$</span> → <span class="math-good">$e^{-k\lambda_nt}$</span><br>Неге қате: жылу теңдеуі бірінші ретті $t$ бойынша, ол тербеліс емес, экспоненциалды кему береді.</li>
+        <li><span class="math-bad">$u=\sum b_n\sin\frac{n\pi x}{L}$ қатарында уақыт көбейткішін ұмыту</span> → <span class="math-good">$b_n e^{-k(n\pi/L)^2t}\sin\frac{n\pi x}{L}$</span><br>Неге қате: әр модаға өз жылдамдығы тиесілі; $t=0$ кезінде ғана көбейткіш 1.</li>
+        <li><span class="math-bad">$b_n=\int_0^L\varphi\sin\frac{n\pi x}{L}dx$</span> → <span class="math-good">$b_n=\dfrac2L\int_0^L\varphi\sin\frac{n\pi x}{L}dx$</span><br>Неге қате: $\int_0^L\sin^2\frac{n\pi x}{L}dx=\frac L2$, сондықтан $\frac2L$ керек.</li>
+        <li><span class="math-bad">Біртекті емес шарт $u(0,t)=20$ үшін тікелей синус қатарын жазу</span> → <span class="math-good">Алдымен стационар түзуді алып тастау</span><br>Неге қате: $\sin\frac{n\pi x}{L}$ функциялары $x=0$ кезінде нөл, сондықтан $20$ мәнін бере алмайды.</li>
+        <li><span class="math-bad">Нейман шартында синус пайдалану</span> → <span class="math-good">Косинус және тұрақты мода</span><br>Неге қате: $\frac{d}{dx}\sin$ шеттерде нөл емес; $\cos\frac{n\pi x}{L}$ туындысы $\sin$ болғандықтан $x=0,L$ кезінде нөл.</li>
+        <li><span class="math-bad">$t\to\infty$ кезінде температура әрдайым нөлге ұмтылады</span> → <span class="math-good">Шекара шарттарына тәуелді: Дирихле нөл – нөл, Нейман – орташа мән, $T_1\ne T_2$ – түзу</span><br>Неге қате: соңғы күй стационар шешім болады.</li>
+        <li><span class="math-bad">Ішкі нүктеде температура бастапқыдан жоғары болуы мүмкін (сыртқы көзсіз)</span> → <span class="math-good">Максимум принципі бұған жол бермейді</span><br>Неге қате: максимум параболалық шекарада жетеді.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <p>Уақыт слайдерін жылжытып, жылудың жайылуын бақылаңыз.</p>
+      <div class="math-viz" data-viz="graph" data-title="Үш мода және олардың өшуі (L = π)" data-config='{"fns":[{"f":"exp(-k*t)*sin(x)","label":"n=1: e^{-kt} sin x"},{"f":"exp(-4*k*t)*sin(2*x)","label":"n=2: e^{-4kt} sin 2x"},{"f":"exp(-9*k*t)*sin(3*x)","label":"n=3: e^{-9kt} sin 3x"}],"params":[{"n":"k","min":0.1,"max":2,"step":0.1,"v":1},{"n":"t","min":0,"max":2,"step":0.02,"v":0}],"view":[0,3.1416,-1.2,1.2]}'></div>
+      <p><b>Бақылаңыз:</b> $t$ артқанда 3-мода ең тез, 2-мода одан баяу, 1-мода ең баяу өшеді. $k$ үлкен болса, барлығы тезірек. Нөл нүктелері (түйіндер) орнында тұрады.</p>
+      <div class="math-viz" data-viz="graph" data-title="Мысал 2: u(x,t), бастапқы шарт x(π − x)" data-config='{"fns":[{"f":"x*(pi-x)","label":"t = 0: φ(x)","dash":[6,4]},{"f":"8/pi*(exp(-t)*sin(x)+exp(-9*t)*sin(3*x)/27+exp(-25*t)*sin(5*x)/125)","label":"u(x,t), 3 мүше"}],"params":[{"n":"t","min":0,"max":2,"step":0.02,"v":0.3}],"view":[0,3.1416,-0.2,2.8]}'></div>
+      <p><b>Бақылаңыз:</b> $t$ кішкентай болса, профиль параболаға жақын, содан кейін бірден $\sin x$ тәрізді тегіс қоңырауға айналады және төмендейді. Максимум әрқашан ортада.</p>
+      <div class="math-viz" data-viz="graph" data-title="Бастапқы пішіннің қатар жуықтауы (t = 0)" data-config='{"fns":[{"f":"x*(pi-x)","label":"φ(x)"},{"f":"8/pi*sin(x)","label":"1 мүше"},{"f":"8/pi*(sin(x)+sin(3*x)/27+sin(5*x)/125)","label":"3 мүше","dash":[6,4]}],"view":[0,3.1416,-0.2,2.8]}'></div>
+      <p><b>Бақылаңыз:</b> коэффициенттер $n^{-3}$ жылдамдықпен кемиді, сондықтан бір мүше де жақсы жуықтау, үш мүше қисықтан көзге ілінбейді.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер оңайдан қиынға қарай орналасқан. «Кеңес» батырмасын өзіңіз басқанда ғана кеңес, қадамдар және жауап ашылады. Экспонентаны <code>exp(-t)</code>, синусты <code>sin(2*x)</code> деп жазыңыз.</p>
+      <p class="mx-sum"></p>
+
+      <div class="math-ex task" data-type="tf" data-id="m10-3-tf-basic">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m10-3-t1">1. Жылу теңдеуі туралы пікірлер</h3></div>
+        <p>Әр пікірдің ақиқат не жалған екенін белгілеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Жылу теңдеуінің $n$-ші модасының уақыт көбейткіші $e^{-k\\lambda_nt}$ түрінде.","a":true,"e":"Ақиқат: $T'=-k\\lambda_nT$ теңдеуінің шешімі.","hint":"Бөлуден шыққан уақыт теңдеуін еске түсіріңіз."},{"q":"Шеттері нөл температурада ұсталған стерженьде $t\\to\\infty$ кезінде температура нөлге ұмтылады.","a":true,"e":"Ақиқат: барлық мода $e^{-k\\lambda_nt}$-мен өшеді.","hint":"Ең баяу мода $n=1$."},{"q":"Жоғары гармоникалар төменгілерден баяу өшеді.","a":false,"e":"Жалған: өшу жылдамдығы $k(n\\pi/L)^2$, $n$ өскенде артады.","hint":"$\\lambda_n=(n\\pi/L)^2$."},{"q":"Сыртқы жылу көзі жоқ стерженьнің ішкі нүктесінде температура бастапқы және шеткі температуралардың ең үлкенінен жоғары бола алады.","a":false,"e":"Жалған: максимум принципі бойынша максимум параболалық шекарада жетеді.","hint":"Теорема 3.2."},{"q":"Фурье заңы бойынша жылу ыстықтан суыққа қарай ағады.","a":true,"e":"Ақиқат: $q=-\\kappa u_x$, минус таңба градиентке қарсы бағытты көрсетеді.","hint":"Минус таңбасының мағынасын ойлаңыз."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m10-3-num-rate">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m10-3-t2">2. Өшу жылдамдығы</h3></div>
+        <p>$L=\pi$ болғанда $n$-ші модалық көбейткіш $e^{-kn^2t}$. Жауапты санмен жазыңыз (өрнек те болады: pi^2).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$k=2$, $n=1$: көбейткіштегі $t$ алдындағы коэффициент (өшу жылдамдығы).","a":2,"v":"2*1**2","hint":"$k(n\\pi/L)^2$, $L=\\pi$.","sol":{"steps":["$(n\\pi/L)^2=1$.","$k\\cdot1=2$."],"ans":"$2$"}},{"q":"$k=3$, $n=2$: өшу жылдамдығы.","a":12,"v":"3*(2*pi/pi)**2","hint":"$n^2=4$.","sol":{"steps":["$k n^2=3\\cdot4$."],"ans":"$12$"}},{"q":"$k=1$, $L=1$, $n=1$: өшу жылдамдығы.","a":"pi^2","v":"1*(pi/1)**2","hint":"$(n\\pi/L)^2=\\pi^2$.","sol":{"steps":["$k(\\pi/L)^2=\\pi^2$."],"ans":"$\\pi^2\\approx9{,}87$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m10-3-pick-eig">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m10-3-t3">3. Меншікті функциялар</h3></div>
+        <p>Дұрыс жауапты таңдаңыз. Біріншісінде бірнеше жауап болуы мүмкін.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$X(0)=X(L)=0$ шартындағы $X''+\\lambda X=0$ есебінің меншікті функциялары қайсысы?","o":["$\\sin\\dfrac{\\pi x}{L}$","$\\sin\\dfrac{2\\pi x}{L}$","$\\cos\\dfrac{\\pi x}{L}$","$x(L-x)$"],"a":[0,1],"e":"Тек $\\sin\\frac{n\\pi x}{L}$ түрлері $x=0$ және $x=L$ кезінде нөл және теңдеуді қанағаттандырады.","hint":"Шеттегі мәндерін тексеріңіз."},{"q":"$k=\\kappa/(c\\rho)$ болса, тығыздық $\\rho$ екі есе артса $k$ қалай өзгереді?","o":["екі есе артады","екі есе кемиді","өзгермейді","төрт есе артады"],"a":1,"e":"$k$ $\\rho$-ға кері пропорционал.","hint":"$\\rho$ бөлгіште."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m10-3-match-bc">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m10-3-t4">4. Шектік шарттардың түрлері</h3></div>
+        <p>Әр шартты оның мағынасымен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Дұрыс сипаттаманы таңдаңыз.","pairs":[["$u=g$ шекарада","Дирихле: температура берілген"],["$u_x=0$ шекарада","Нейман: жылу өткізбейтін қабырға"],["$\\alpha u+\\beta u_x=g$","Робин: аралас шарт"],["$u(x,0)=\\varphi(x)$","бастапқы шарт"]],"hint":"Шарттың кімге (мәнге не туындыға) қатысты екенін қараңыз.","sol":{"steps":["Мәнді беру – Дирихле, туындыны беру – Нейман.","Екеуінің қоспасы – Робин.","$t=0$ кезіндегі шарт – бастапқы."]},"e":"Нейман шарты $q=-\\kappa u_x=0$, яғни жылу ағыны жоқ."}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m10-3-num-eval">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m10-3-t5">5. Екі модалы шешімнің мәні</h3></div>
+        <p>$u_t=u_{xx}$, $0\le x\le\pi$, шеттері $0$. Жауапты санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$u(x,0)=\\sin x+3\\sin2x$ болса, $u(\\pi/2,\\ln2)=\\ ?$","a":0.5,"v":"exp(-log(2))*sin(pi/2)+3*exp(-4*log(2))*sin(pi)","hint":"$u=e^{-t}\\sin x+3e^{-4t}\\sin2x$.","sol":{"steps":["$e^{-\\ln2}=\\tfrac12$, $\\sin\\frac\\pi2=1$.","$\\sin\\pi=0$."],"ans":"$\\tfrac12$"}},{"q":"$u(x,0)=2\\sin3x$ болса, $t=\\dfrac{\\ln2}{9}$ кезінде $u(\\pi/6,t)=\\ ?$","a":1,"v":"2*exp(-9*(log(2)/9))*sin(3*pi/6)","hint":"$u=2e^{-9t}\\sin3x$.","sol":{"steps":["$e^{-9t}=e^{-\\ln2}=\\tfrac12$.","$\\sin\\frac{3\\pi}{6}=1$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m10-3-expr-two">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m10-3-t6">6. Шешімді жазу</h3></div>
+        <p>Өрнекті $x$, $t$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$k=2$, $L=\\pi$, $\\varphi=2\\sin x-\\sin3x$. $u(x,t)=\\ ?$","a":"2*exp(-2*t)*sin(x)-exp(-18*t)*sin(3*x)","vars":["x","t"],"v":"2*exp(-2*1**2*t)*sin(1*x)-exp(-2*3**2*t)*sin(3*x)","hint":"Өшу көбейткіші $e^{-kn^2t}$.","sol":{"steps":["$n=1$: $e^{-2t}$; $n=3$: $e^{-2\\cdot9t}=e^{-18t}$."],"ans":"$u=2e^{-2t}\\sin x-e^{-18t}\\sin3x$"}},{"q":"Нейман: $u_x(0,t)=u_x(\\pi,t)=0$, $k=4$, $\\varphi=3+2\\cos x$. $u(x,t)=\\ ?$","a":"3+2*exp(-4*t)*cos(x)","vars":["x","t"],"v":"3+2*exp(-4*1**2*t)*cos(1*x)","hint":"Тұрақты мода өшпейді.","sol":{"steps":["$\\lambda_0=0$: тұрақты 3 қалады.","$n=1$: $e^{-4t}\\cos x$."],"ans":"$u=3+2e^{-4t}\\cos x$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m10-3-p-rate">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m10-3-t7">7. Параметрлік: өшу жылдамдығы</h3></div>
+        <p>$L=\pi$. Сандар әр нұсқада өзгереді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"k":{"int":[1,5]},"n":{"int":[1,4]}},"type":"num","q":"$u_t=#{k}\\,u_{xx}$ теңдеуінің $e^{-\\mu t}\\sin(#{n}x)$ шешімінде $\\mu=\\ ?$","a":"k*n^2","v":"k*(n*pi/pi)**2","hint":"$\\mu=k\\lambda_n$, $\\lambda_n=n^2$.","sol":{"steps":["$\\lambda=#{n}^2=#{n^2}$.","$\\mu=#{k}\\cdot #{n^2}$."],"ans":"$\\mu=#{k*n^2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m10-3-mat-bn">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m10-3-t8">8. Фурье коэффициенттері</h3></div>
+        <p>$\varphi=x(\pi-x)$, $L=\pi$. Алғашқы үш $b_n$ мәнін жол түрінде жазыңыз (0,001 дәлдікпен).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$b_1,b_2,b_3=\\ ?$","orient":"row","name":"$b$:","a":[2.546479089,0,0.0943140403],"tol":0.001,"v":"[8/(pi*n**3) if n%2==1 else 0 for n in (1,2,3)]","hint":"$b_n=\\dfrac{8}{\\pi n^3}$ тақ $n$ үшін, жұп үшін нөл.","sol":{"steps":["$b_1=8/\\pi\\approx2{,}5465$.","$b_2=0$.","$b_3=\\dfrac{8}{27\\pi}\\approx0{,}0943$."],"ans":"$2{,}5465;\\ 0;\\ 0{,}0943$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m10-3-num-steady">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m10-3-t9">9. Стационар шешім</h3></div>
+        <p>$u_t=ku_{xx}$, $0\le x\le L$, $u(0,t)=20$, $u(L,t)=50$. Жауапты санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$t\\to\\infty$ кезінде $x=L/2$ нүктесіндегі температура.","a":35,"v":"20+(50-20)/2","hint":"Стационар шешім – түзу.","sol":{"steps":["$v(x)=20+30x/L$.","$v(L/2)=20+15$."],"ans":"$35$"}},{"q":"$t\\to\\infty$ кезінде $x=L/4$ нүктесіндегі температура.","a":27.5,"v":"20+(50-20)/4","hint":"$v(L/4)=20+30/4$.","sol":{"steps":["$v(L/4)=20+7{,}5$."],"ans":"$27{,}5$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m10-3-ord-sep">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m10-3-t10">10. Фурье әдісінің реті</h3></div>
+        <p>Қадамдарды дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$u_t=ku_{xx}$, $u(0,t)=u(L,t)=0$, $u(x,0)=\\varphi$ шешу.","steps":["$u=X(x)T(t)$ қойып, айнымалыларды бөлеміз: $T'/(kT)=X''/X=-\\lambda$.","$X''+\\lambda X=0$, $X(0)=X(L)=0$ шешеміз: $\\lambda_n=(n\\pi/L)^2$, $X_n=\\sin\\frac{n\\pi x}{L}$.","$T_n=e^{-k\\lambda_nt}$ табамыз.","Қарапайым шешімдерді қосамыз: $u=\\sum b_nT_nX_n$.","$t=0$ және ортогональдықтан $b_n=\\frac2L\\int\\varphi\\sin\\frac{n\\pi x}{L}$ табамыз."],"hint":"Бөлу – меншікті есеп – уақыт – қосу – коэффициенттер.","sol":{"ans":"$u=\\sum b_ne^{-k\\lambda_nt}\\sin\\frac{n\\pi x}{L}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m10-3-p-steady">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m10-3-t11">11. Параметрлік: орта температура</h3></div>
+        <p>Сандар әр нұсқада өзгереді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"ta":{"int":[0,30]},"tb":{"int":[40,90]}},"type":"num","q":"Стерженьнің шеттері $u(0,t)=#{ta}$ және $u(L,t)=#{tb}$ температурада ұсталады. Ұзақ уақыттан кейін ортасындағы температура қандай?","a":"(ta+tb)/2","v":"ta+(tb-ta)*Rational(1,2)","hint":"Стационар шешім $T_1+\\dfrac{T_2-T_1}{L}x$.","sol":{"steps":["$v(L/2)=#{ta}+\\dfrac{#{tb}-#{ta}}2$."],"ans":"$#{(ta+tb)/2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m10-3-num-tau">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m10-3-t12">12. Өшу уақыты</h3></div>
+        <p>$\tau_1=\dfrac{L^2}{k\pi^2}$. Жауапты өрнекпен немесе 0,01 дәлдікпен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$L=2$, $k=0{,}4$ болғанда $\\tau_1=\\ ?$","a":"10/pi^2","tol":0.01,"v":"4/(Rational(2,5)*pi**2)","hint":"$L^2=4$.","sol":{"steps":["$\\tau_1=\\dfrac{4}{0{,}4\\pi^2}=\\dfrac{10}{\\pi^2}\\approx1{,}01$."],"ans":"$10/\\pi^2\\approx1{,}01$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m10-3-num-b">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m10-3-t13">13. Бірқалыпты бастапқы температура</h3></div>
+        <p>$L=\pi$, $\varphi\equiv1$. $b_n=\frac2\pi\int_0^\pi\sin nx\,dx$. Жауапты өрнекпен жазыңыз (pi).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$b_1=\\ ?$","a":"4/pi","v":"2/pi*integrate(sin(x),(x,0,pi))","hint":"$\\int_0^\\pi\\sin x\\,dx=2$.","sol":{"steps":["$b_1=\\dfrac2\\pi\\cdot2$."],"ans":"$\\dfrac4\\pi$"}},{"q":"$b_3=\\ ?$","a":"4/(3*pi)","v":"2/pi*integrate(sin(3*x),(x,0,pi))","hint":"$\\int_0^\\pi\\sin3x\\,dx=\\frac23$.","sol":{"steps":["$b_3=\\dfrac2\\pi\\cdot\\dfrac23$."],"ans":"$\\dfrac4{3\\pi}$"}},{"q":"$b_2=\\ ?$","a":0,"v":"2/pi*integrate(sin(2*x),(x,0,pi))","hint":"$\\int_0^\\pi\\sin2x\\,dx=0$.","sol":{"steps":["$1-\\cos2\\pi=0$."],"ans":"$0$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m10-3-expr-nonh">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m10-3-t14">14. Біртекті емес шеттік шарт</h3></div>
+        <p>Өрнекті $x$, $t$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$u_t=u_{xx}$, $u(0,t)=10$, $u(\\pi,t)=40$, $u(x,0)=10+\\dfrac{30x}\\pi-2\\sin x$. $u(x,t)=\\ ?$","a":"10+30*x/pi-2*exp(-t)*sin(x)","vars":["x","t"],"v":"(10*(pi-x)+40*x)/pi-2*exp(-1**2*t)*sin(1*x)","hint":"Стационар түзуді алып тастаңыз: $w=u-v$.","sol":{"steps":["$v=10+30x/\\pi$.","$w(x,0)=-2\\sin x\\Rightarrow w=-2e^{-t}\\sin x$."],"ans":"$u=10+\\frac{30x}\\pi-2e^{-t}\\sin x$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m10-3-pick-max">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m10-3-t15">15. Максимум принципінің салдарлары</h3></div>
+        <p>Дұрыс жауаптардың барлығын белгілеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қайсысы дұрыс?","o":["Егер $\\varphi\\ge0$ және шеттері $0$ болса, онда барлық $t>0$ үшін $u\\ge0$","Егер $\\varphi\\le5$, шеттері $0$ болса, онда $u\\le5$","Жалғыздықты екі шешімнің айырмасына максимум және минимум принциптерін қолданып дәлелдейміз","Толқын теңдеуі де максимум принципін қанағаттандырады"],"a":[0,1,2],"e":"Үш бірінші тұжырым Теорема 3.2-ден шығады. Толқын теңдеуінде максимум принципі жоқ.","hint":"$\\Gamma$ бойындағы мәндерді салыстырыңыз."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m10-3-tf-hard">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m10-3-t16">16. Нейман, энергия және жылудың сақталуы</h3></div>
+        <p>Әр пікірдің ақиқат не жалған екенін белгілеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Нейман шартында $\\int_0^Lu\\,dx$ уақытқа тәуелсіз.","a":true,"e":"Ақиқат: $\\frac{d}{dt}\\int u=k\\int u_{xx}=k[u_x]_0^L=0$.","hint":"$u_t=ku_{xx}$ интегралдаңыз."},{"q":"Нейман есебінде $t\\to\\infty$ кезінде шешім нөлге ұмтылады.","a":false,"e":"Жалған: ол бастапқы температураның орташа мәніне ұмтылады.","hint":"$\\lambda_0=0$ моданы еске түсіріңіз."},{"q":"$\\varphi$ үзілісті болса да, $t>0$ кезінде жылу теңдеуінің шешімі тегіс.","a":true,"e":"Ақиқат: $e^{-k n^2\\pi^2t/L^2}$ көбейткіші қатарды экспоненциалды кемітеді.","hint":"Коэффициенттердің жылдам кемуін ойлаңыз."},{"q":"Энергия $\\int u^2dx$ Дирихле нөл шартында арта алады.","a":false,"e":"Жалған: $E'=-2k\\int u_x^2\\le0$.","hint":"5-қорытудағы $E'$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m10-3-rev-tent">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m10-3-t17">17. Қадамдық шешім: үшбұрыш бастапқы шарт</h3></div>
+        <p>Бұл есепті «Кеңес» және «Келесі қадам» батырмаларымен біртіндеп ашып оқыңыз. Алдымен өзіңіз шешіп көріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$k=1$, $L=\\pi$, шеттері $0$, $\\varphi(x)=x$ ($x\\le\\pi/2$), $\\varphi(x)=\\pi-x$ ($x\\ge\\pi/2$). Шешімнің бірінші мүшесін және $u(\\pi/2,1)$ мәнін бағалаңыз.","hint":"Формула: $b_n=\\dfrac2\\pi\\int_0^\\pi\\varphi\\sin nx\\,dx$ және симметрия бойынша жұп $n$ үшін $b_n=0$.","steps":["Интегралды екі бөлікке бөлеміз: $b_n=\\dfrac2\\pi\\Big[\\int_0^{\\pi/2}x\\sin nx\\,dx+\\int_{\\pi/2}^{\\pi}(\\pi-x)\\sin nx\\,dx\\Big]$.","Бөліктеп интегралдап есептесек, $b_n=\\dfrac{4\\sin(n\\pi/2)}{\\pi n^2}$. Жұп $n$ үшін $\\sin(n\\pi/2)=0$ ✓.","$b_1=\\dfrac4\\pi$, $b_3=-\\dfrac{4}{9\\pi}$. Шешім: $u=\\dfrac4\\pi e^{-t}\\sin x-\\dfrac{4}{9\\pi}e^{-9t}\\sin3x+\\dots$","$t=1$, $x=\\pi/2$: $\\dfrac4\\pi e^{-1}\\cdot1-\\dfrac4{9\\pi}e^{-9}\\cdot(-1)\\approx1{,}2732\\cdot0{,}3679+0{,}0000$ (екінші мүше $\\approx 5\\cdot10^{-5}$). Жауап шамамен $0{,}4684$."],"ans":"$u\\approx\\dfrac4\\pi e^{-t}\\sin x$, $u(\\pi/2,1)\\approx0{,}468$."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m10-3-p-half">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m10-3-t18">18. Параметрлік: жартылай өшу уақыты</h3></div>
+        <p>Сандар әр нұсқада өзгереді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"k":{"int":[1,5]}},"type":"num","q":"$u_t=#{k}\\,u_{xx}$, $u(x,0)=A\\sin x$, $L=\\pi$, шеттері $0$. Қай $t$ кезінде амплитуда $\\tfrac A2$ болады? (өрнек: ln(2)/k түрінде жазуға болады)","a":"ln(2)/k","v":"log(2)/k","hint":"$u=Ae^{-kt}\\sin x$.","sol":{"steps":["$e^{-#{k}t}=\\tfrac12$.","$t=\\dfrac{\\ln2}{#{k}}$."],"ans":"$t=\\dfrac{\\ln2}{#{k}}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m10-3-ord-energy">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m10-3-t19">19. Энергияның кему дәлелі</h3></div>
+        <p>Қадамдарды дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$E(t)=\\int_0^Lu^2dx\\le e^{-2k\\pi^2t/L^2}E(0)$ дәлелдеу.","steps":["$E'=2\\int uu_t\\,dx=2k\\int uu_{xx}\\,dx$.","Бөліктеп интегралдап, шеттік шарттан $E'=-2k\\int u_x^2\\,dx$.","Пуанкаре теңсіздігін қолданамыз: $\\int u_x^2\\ge(\\pi/L)^2\\int u^2$.","$E'\\le-2k(\\pi/L)^2E$ дифференциалдық теңсіздігін аламыз.","Көбейткішке $e^{2k\\pi^2t/L^2}$ көбейтіп, интегралдап қорытындыға келеміз."],"hint":"Алдымен $E'$, соңында экспоненциалға көбейту.","sol":{"ans":"$E(t)\\le e^{-2k\\pi^2t/L^2}E(0)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m10-3-num-decay">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m10-3-t20">20. Энергияның кему бағасы</h3></div>
+        <p>Бағалаудағы көрсеткіш $2k\pi^2/L^2$. Жауапты санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$k=3$, $L=\\pi$ болса, көрсеткіш неге тең?","a":6,"v":"2*3*pi**2/pi**2","hint":"$L^2=\\pi^2$.","sol":{"steps":["$2\\cdot3\\cdot\\pi^2/\\pi^2=6$."],"ans":"$6$"}},{"q":"$k=2$, $L=2\\pi$ болса, көрсеткіш неге тең?","a":1,"v":"2*2*pi**2/(2*pi)**2","hint":"$L^2=4\\pi^2$.","sol":{"steps":["$\\dfrac{2\\cdot2\\cdot\\pi^2}{4\\pi^2}=1$."],"ans":"$1$"}}]}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Жылу теңдеуі ғимараттың жылу оқшаулауынан процессордың салқындатқышына дейінгі есептерде жұмыс істейді. Металды шыңдау, тамақты қыздыру не мұздату, жердегі температураның тереңдікпен өзгеруі (қыс пен жаздың жылу толқыны бірнеше метр тереңдікте тез сөнеді) – барлығы осы теңдеу. Диффузия құбылысы (бояудың суда жайылуы) да сондай теңдеумен сипатталады. Статистикада жылу теңдеуінің іргелі шешімі – қалыпты (Гаусс) үлестірім, ал қаржыда Блэк-Шоулз теңдеуі жылу теңдеуіне келтіріледі. Суретті бұлдырату Гаусс ядросымен свёртка, яғни жылу теңдеуінің бір уақыт қадамы.</p>
+      <p><b>Мини-жоба: «Стерженьді қыздыру».</b> Бағдарлама шешімді қатар түрінде есептейді, коэффициенттерді сандық интегралмен табады, шешімнің теңдеуді қанағаттандыратынын тексереді және максимум принципін бақылайды.</p>
+<pre data-lang="python"><code class="language-python">import math
+
+L = math.pi
+k = 1.0
+
+def phi(x):
+    return x * (L - x)
+
+def b_coef(n, m=2000):
+    """b_n = (2/L) * integral phi(x) sin(n pi x / L) dx (трапеция тәсілі)."""
+    h = L / m
+    s = 0.0
+    for i in range(1, m):
+        x = i * h
+        s += phi(x) * math.sin(n * math.pi * x / L)
+    return 2.0 / L * s * h
+
+B = [b_coef(n) for n in range(1, 12)]
+print("b_n:", [round(v, 5) for v in B[:5]])
+print("8/(pi n^3):", [round(8 / (math.pi * n**3), 5) for n in (1, 3, 5)])
+
+def u(x, t):
+    return sum(B[n - 1] * math.exp(-k * (n * math.pi / L) ** 2 * t) * math.sin(n * math.pi * x / L)
+               for n in range(1, 12))
+
+for t in (0.0, 0.1, 0.5, 1.0, 2.0):
+    print(f"t={t:3.1f}  ортасы u={u(L / 2, t):8.5f}")
+
+# теңдеу қалдығы u_t - k u_xx
+H = 1e-3
+def res(x, t):
+    ut = (u(x, t + H) - u(x, t - H)) / (2 * H)
+    uxx = (u(x + H, t) - 2 * u(x, t) + u(x - H, t)) / H**2
+    return ut - k * uxx
+
+print("қалдық:", max(abs(res(x, 0.5)) for x in (0.5, 1.0, 1.5, 2.5)))
+
+# максимум принципі: ешқашан бастапқы максимумнан аспайды
+m0 = max(phi(i * L / 200) for i in range(201))
+mx = max(u(i * L / 200, t) for i in range(201) for t in (0.0, 0.05, 0.2, 1.0))
+print("max бастапқы:", round(m0, 5), " max кейін:", round(mx, 5))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li><code>phi</code> функциясын «қорап» (<code>1.0</code> егер <code>1 &lt; x &lt; 2</code>, әйтпесе <code>0.0</code>) етіп өзгертіп, неге үзілісті бастапқы шарт болса да $t&gt;0$ кезінде графигі тегіс екенін сандармен көрсетіңіз (қатардағы бөлшектер қалай өседі?).</li>
+        <li>11 орнына 3, 5, 20 мүше алып, $t=0$ және $t=0{,}05$ кезіндегі қатенің қалай өзгеретінін салыстырыңыз. Неге уақыт өткен сайын аз мүше жеткілікті?</li>
+        <li>Нейман шартына арналған нұсқасын жазыңыз: <code>cos</code> модалары және <code>a0/2</code> тұрақты мүшесі. $t=10$ кезінде $u$ бастапқы орташа температураға тең екенін тексеріңіз.</li>
+        <li>Диффузия уақытын тексеріңіз: <code>L</code> мәнін екі есе арттырып, максимум $t=0{,}5$ кезінде қанша азайғанын, ал максимумның жартыға түсу уақыты қанша есе өскенін салыстырыңыз. Нәтиже $L^2/k$ заңына сәйкес келуі керек (төрт есе шамасында).</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Жылу теңдеуі</td><td>$u_t=ku_{xx}$, $k=\kappa/(c\rho)$</td><td>біртекті стержень</td></tr>
+        <tr><td>Меншікті мәндер</td><td>$\lambda_n=(n\pi/L)^2$, $X_n=\sin\frac{n\pi x}{L}$</td><td>$u(0)=u(L)=0$</td></tr>
+        <tr><td>Шешім</td><td>$\sum b_ne^{-k\lambda_nt}\sin\frac{n\pi x}{L}$</td><td>$t\ge0$</td></tr>
+        <tr><td>Коэффициент</td><td>$b_n=\frac2L\int_0^L\varphi\sin\frac{n\pi x}{L}dx$</td><td>ортогональдық</td></tr>
+        <tr><td>Максимум принципі</td><td>$\max_Qu=\max_\Gamma u$</td><td>$\Gamma$ - параболалық шекара</td></tr>
+        <tr><td>Энергия</td><td>$\int u^2\le e^{-2k\pi^2t/L^2}\int\varphi^2$</td><td>Дирихле нөл</td></tr>
+        <tr><td>Нейман</td><td>$\frac{a_0}2+\sum a_ne^{-k\lambda_nt}\cos\frac{n\pi x}{L}$</td><td>$u_x(0)=u_x(L)=0$</td></tr>
+        <tr><td>Біртекті емес шеттер</td><td>$u=T_1+\frac{T_2-T_1}Lx+w$</td><td>тұрақты $T_1,T_2$</td></tr>
+        <tr><td>Дәл мысал</td><td>$x(\pi-x)$: $b_n=\frac{8}{\pi n^3}$ (тақ $n$)</td><td>$L=\pi$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m10-3-self">
+        <li><input type="checkbox"> <span>Мен Фурье заңы мен баланстан $u_t=ku_{xx}$ теңдеуін қорыта аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен айнымалыларды бөліп, $\lambda&lt;0$, $\lambda=0$, $\lambda&gt;0$ жағдайларын қарап, меншікті мәндерді таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен берілген бастапқы температура үшін $b_n$ коэффициенттерін есептеймін.</span></li>
+        <li><input type="checkbox"> <span>Мен максимум принципін және оның жалғыздыққа қолданылуын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен біртекті емес шеттік шартты стационар шешімді алып тастау арқылы біртекті етіп келтіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Нейман шарты кезінде $t\to\infty$ шегінің орташа температура екенін түсіндіре аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. Жылу теңдеуінің дұрыс түрі қандай?</p>
+<label><input type="radio" value="a"> u_tt = k·u_xx</label>
+<label><input type="radio" value="b"> u_t = k·u_xx</label>
+<label><input type="radio" value="c"> u_t = k·u_x</label>
+<label><input type="radio" value="d"> u_xx + u_yy = 0</label>
+<p class="explain">Температураның өзгеру жылдамдығы u_t екінші дербес туынды u_xx-ке пропорционал.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">2. u_t = u_xx, u(0,t) = u(π,t) = 0 есебінің қарапайым шешімі қайсысы?</p>
+<label><input type="radio" value="a"> e^(−4t)·sin 2x</label>
+<label><input type="radio" value="b"> cos 2t·sin 2x</label>
+<label><input type="radio" value="c"> e^(4t)·sin 2x</label>
+<label><input type="radio" value="d"> e^(−t)·cos x</label>
+<p class="explain">u = e^(−n²t)·sin nx; n = 2 үшін e^(−4t)·sin 2x. Оң көрсеткіш не cos t көбейткіші дұрыс емес, ал cos x шеттік шартты бұзады.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">3. L = π, k = 1 және φ = sin x + 3 sin 2x болса, u(π/2, ln 2) неге тең?</p>
+<label><input type="radio" value="a"> 3/2</label>
+<label><input type="radio" value="b"> 1/4</label>
+<label><input type="radio" value="c"> 1/2</label>
+<label><input type="radio" value="d"> 2</label>
+<p class="explain">u = e^(−t) sin x + 3e^(−4t) sin 2x. x = π/2: sin 2x = 0, қалады e^(−ln 2)·1 = 1/2.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. Шеттері 20 және 50 температурада ұсталған стерженьдегі ұзақ уақыттан кейінгі ортаңғы температура қандай?</p>
+<label><input type="radio" value="a"> 30</label>
+<label><input type="radio" value="b"> 20</label>
+<label><input type="radio" value="c"> 50</label>
+<label><input type="radio" value="d"> 35</label>
+<p class="explain">Стационар шешім түзу: ортасында (20 + 50)/2 = 35.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. Максимум принципі бойынша ішкі нүктедегі температура ...</p>
+<label><input type="radio" value="a"> ең үлкен мәнін шекара мен бастапқы күйде алады</label>
+<label><input type="radio" value="b"> әрқашан арта береді</label>
+<label><input type="radio" value="c"> ішкі нүктеде ең үлкен болады</label>
+<label><input type="radio" value="d"> бастапқы орташа мәннен тұрақты</label>
+<p class="explain">Сыртқы көз жоқ болса, ешқандай ішкі нүкте параболалық шекарадағы максимумнан асып кете алмайды.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. Жылу өткізбейтін шеттері бар стерженьде t → ∞ кезінде температура неге ұмтылады?</p>
+<label><input type="radio" value="a"> нөлге</label>
+<label><input type="radio" value="b"> шекара температурасына</label>
+<label><input type="radio" value="c"> бастапқы орташа температураға</label>
+<label><input type="radio" value="d"> шексіздікке</label>
+<p class="explain">Нейман шартында жылу сақталады, сондықтан соңғы күй – тұрақты орташа температура.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. b_n = (2/L)∫₀ᴸ φ(x) sin(nπx/L) dx формуласындағы 2/L көбейткіші неден шығады?</p>
+<label><input type="radio" value="a"> ∫ sin² (nπx/L) dx = L/2 болуынан</label>
+<label><input type="radio" value="b"> ∫ sin dx = 0 болуынан</label>
+<label><input type="radio" value="c"> k тұрақтысынан</label>
+<label><input type="radio" value="d"> Лаплас теңдеуінен</label>
+<p class="explain">Ортогональдықта ∫ sin²(nπx/L)dx = L/2; коэффициентті бөлу үшін 2/L-ге көбейтеміз.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. n-ші модалық өшу жылдамдығы қалай тәуелді?</p>
+<label><input type="radio" value="a"> n-ге сызықты</label>
+<label><input type="radio" value="b"> n² -қа пропорционал</label>
+<label><input type="radio" value="c"> n-ге тәуелсіз</label>
+<label><input type="radio" value="d"> 1/n-ге пропорционал</label>
+<p class="explain">Өшу көрсеткіші k(nπ/L)², яғни n²-қа пропорционал: жоғары гармоникалар тез өшеді.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
-        <a href="week-63.html"><small>Алдыңғы</small>← 10 · Дербес туындылы дифференциалдық теңдеулер · 2-сабақ: Толқын теңдеуі және Даламбер формуласы</a>
-        <a class="next" href="week-65.html"><small>Келесі</small>10 · Дербес туындылы дифференциалдық теңдеулер · 4-сабақ: Лаплас теңдеуі →</a>
+        <a href="week-63.html"><small>Алдыңғы</small>← Partial Differential Equations · 2-сабақ: Толқын теңдеуі және Даламбер формуласы</a>
+        <a class="next" href="week-65.html"><small>Келесі</small>Partial Differential Equations · 4-сабақ: Лаплас теңдеуі →</a>
       </nav>
 
       <p class="translator-note">Бұл курс - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 курсының аудармасы емес, одан мәтін алынбаған. Математиканың өзі (анықтамалар, теоремалар, формулалар) жалпыға ортақ білім; ал баяндау, мысалдар мен есептер өз сөзімізбен жазылған және белгілі оқулықтар мен есептер жинақтарынан көшірілмеген. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
     </article>
   </div>
 
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
-      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
-      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
-    </div>
-  </footer>
+  <footer class="footer"></footer>
 </body>
 </html>

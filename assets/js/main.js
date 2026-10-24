@@ -123,6 +123,7 @@
     initCourseCards();
     initBeginnerPath();
     initCourseMenu();
+    initMathHelper();
     initCheatsheet();
     myCourses(document.querySelector(".my-courses"));
     if (PAGE || document.body.dataset.course) { try { localStorage.setItem("cs50kz:lastcourse", JSON.stringify(COURSE)); } catch (e) {} }
@@ -607,6 +608,7 @@
     mini.className = "qt-mini";
     done.after(mini);
     miniQuote(mini);
+    if (COURSE === "math") return; // математика: «Ботаның кеңесі» өздігінен шықпайды (тек «Көмекші» батырмасы)
     const tip = document.createElement("div");
     tip.className = "bota-tip";
     tip.innerHTML = `<img src="${ROOT_URL}assets/img/bota-think.svg" alt="" width="64" height="64"><p><b>Ботаның кеңесі:</b> ${BOTA_TIPS[(PAGE.length * 7 + new Date().getDate()) % BOTA_TIPS.length]}</p>`;
@@ -933,7 +935,8 @@
   const EN_LV = ["A0", "A1", "A2", "B1", "B2", "C1"];
   // Математика: 24 пән, сабақ саны пәнде әртүрлі (жалғыз жоспар: tools/math_plan.py; тест MATH_COUNTS пен COURSE_META.total сәйкестігін тексереді)
   const MATH_COUNTS = [7, 8, 6, 8, 7, 7, 6, 6, 7, 5, 6, 6, 7, 6, 7, 6, 6, 7, 7, 6, 6, 5, 6, 6];
-  const mathLabel = (n) => { let i = 0; while (i < MATH_COUNTS.length - 1 && n >= MATH_COUNTS[i]) { n -= MATH_COUNTS[i]; i++; } return `${i + 1}-пән · ${n + 1}-сабақ`; };
+  const MATH_NAMES = ["Precalculus", "Linear Algebra", "Analytic Geometry", "Differential Calculus", "Integral Calculus", "Multivariable Calculus", "Vector Calculus", "Sequences and Series", "Ordinary Differential Equations", "Partial Differential Equations", "Complex Analysis", "Fourier & Laplace Transforms", "Probability Theory", "Mathematical Statistics", "Discrete Mathematics", "Numerical Analysis", "Mathematical Optimization", "Real Analysis", "Abstract Algebra", "Number Theory", "Topology", "Differential Geometry", "Functional Analysis", "Stochastic Processes"]; // пән атаулары ТЕК ағылшынша (tools/math_plan.py)
+  const mathLabel = (n) => { let i = 0; while (i < MATH_COUNTS.length - 1 && n >= MATH_COUNTS[i]) { n -= MATH_COUNTS[i]; i++; } return `${MATH_NAMES[i]} · ${n + 1}-сабақ`; };
   const unitLabel = (courseId, n) => (courseId === "en" ? `${EN_LV[Math.floor(n / 4)]} · ${(n % 4) + 1}-сабақ` : courseId === "math" ? mathLabel(n) : `${n}-апта`);
   function courseReadCount(p, id) {
     return Object.keys(p.read || {}).filter((k) => p.read[k] && (id === "x" ? ORDER.includes(k) : k.startsWith(id + ":"))).length;
@@ -2207,17 +2210,52 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
     "Код - адамдарға арналған мәтін, компьютер оны тек орындайды. Әдемі жазыңыз!",
   ];
 
-  function botaSay(text, mood = "happy") {
+  function botaSay(text, mood = "happy", opts) {
+    // Математика беттерінде көмекші ӨЗІ шықпайды: тек «Көмекші» батырмасын басқанда (opts.manual)
+    if (COURSE === "math" && !(opts && opts.manual)) return;
     const old = document.querySelector(".bota-pop");
     if (old) old.remove();
     const b = document.createElement("div");
-    b.className = "bota-pop";
+    b.className = "bota-pop" + (opts && opts.manual ? " math-help-pop" : "");
+    if (opts && opts.manual) b.setAttribute("role", "status");
     b.innerHTML = `<img src="${ROOT_URL}assets/img/bota-${mood}.svg" alt="Бота" width="72" height="72"><p>${escapeHtml(text)}</p><button type="button" aria-label="Жабу">✕</button>`;
     document.body.appendChild(b);
     requestAnimationFrame(() => b.classList.add("show"));
     const close = () => { b.classList.remove("show"); setTimeout(() => b.remove(), 300); };
     b.querySelector("button").addEventListener("click", close);
-    setTimeout(close, 6500);
+    setTimeout(close, opts && opts.manual ? 20000 : 6500);
+  }
+
+  // ---------- Математика: «Көмекші» батырмасы (көмекші өзі шықпайды, тек басқанда) ----------
+  const MATH_HELP = {
+    lesson: ["Осы сабақта: «{h}». Алдымен интуицияны оқыңыз, қорытып шығаруды жауып қойып өзіңіз қайталап көріңіз.",
+      "Есептерде алдымен өзіңіз шешіп көріңіз. Қиын болса, «Кеңес» және «Келесі қадам» батырмаларын біртіндеп ашыңыз.",
+      "Формуланы жаттамаңыз: оның шартын және қайдан шыққанын түсініңіз. Жиі қателер бөлімін міндетті оқыңыз.",
+      "Қажет ұғым ұмыт болса, «Қысқаша еске салу» бөліміне оралыңыз: ол сабақтың өзінде жазылған."],
+    index: ["Пәнді таңдаңыз: пәндер бір-біріне байланбайды, кез келгенін ашып оқи беруге болады.",
+      "Жоғарыдағы мазмұннан пәнге тез өтуге болады. Әр пәнде сабақтарды 1, 2, 3 ретімен оқыған ыңғайлы."],
+    formulas: ["Пәнді таңдап немесе іздеу жолына сөз жазып, керек формуланы табыңыз. Әр формуланың шарты мен сабағына сілтеме бар."],
+    glossary: ["Терминді іздеңіз: қазақша да, ағылшынша да жұмыс істейді. Анықтаманың жанында қай сабақта түсіндірілгені көрсетілген."],
+    practice: ["Пәнді және қиындықты таңдап, «Серияны бастау» батырмасын басыңыз. Әр сайын сандар өзгереді.", "Қате болса, жауабын көрмей тұрып қайта ойланыңыз: кеңес пен қадамдық шешім өз қалауыңызбен ашылады."],
+  };
+  function initMathHelper() {
+    if (COURSE !== "math" || document.querySelector(".math-help-btn")) return;
+    const kind = PAGE ? "lesson" : (location.pathname.match(/\/(formulas|glossary|practice)\.html$/) || [])[1] || "index";
+    const btn = document.createElement("button");
+    btn.type = "button"; btn.className = "math-help-btn";
+    btn.setAttribute("aria-label", "Көмекші");
+    btn.innerHTML = '<span aria-hidden="true">💡</span><b>Көмекші</b>';
+    let n = 0;
+    btn.addEventListener("click", () => {
+      const open = document.querySelector(".math-help-pop");
+      const list = MATH_HELP[kind];
+      if (open && n >= list.length) { open.remove(); n = 0; return; }
+      const h1 = (document.querySelector("h1") || {}).textContent || "";
+      botaSay(list[n % list.length].replace("{h}", h1.trim()), "think", { manual: true });
+      n++;
+    });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") { const o = document.querySelector(".math-help-pop"); if (o) o.remove(); } });
+    document.body.appendChild(btn);
   }
 
   // ---------- Апталық челлендж: санағыштар ----------

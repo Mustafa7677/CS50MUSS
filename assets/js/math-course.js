@@ -1144,7 +1144,7 @@
 
   function subjOptions(plan, withAll) {
     var opts = withAll ? [h("option", { value: "all", text: "Барлық пәндер" })] : [];
-    plan.subjects.forEach(function (s) { opts.push(h("option", { value: s.slug, text: s.no + ". " + s.kz })); });
+    plan.subjects.forEach(function (s) { opts.push(h("option", { value: s.slug, text: s.no + ". " + s.en })); });
     return opts;
   }
   function loadSubjects(kind, plan, which) {
@@ -1168,7 +1168,7 @@
           var s = plan.subjects.filter(function (x) { return x.slug === sl; })[0];
           var rows = dataOf("formulas", sl).filter(function (f) { return !needle || (f.name + " " + (f.tags || []).join(" ") + " " + (f.note || "") + " " + (f.cond || "")).toLowerCase().indexOf(needle) >= 0 || (f.tex || "").toLowerCase().indexOf(needle) >= 0; });
           if (!rows.length) return;
-          var sec = h("section", { class: "mx-fsec", id: "fs-" + sl }, h("h2", { class: "mx-fh", id: "f-" + sl, text: s.no + ". " + s.kz }));
+          var sec = h("section", { class: "mx-fsec", id: "fs-" + sl }, h("h2", { class: "mx-fh", id: "f-" + sl, text: s.no + ". " + s.en }));
           rows.forEach(function (f) {
             n++;
             sec.append(h("article", { class: "mx-fitem", id: f.id }, h("h3", { text: f.name }), h("div", { class: "mx-ftex", html: esc("$$" + f.tex + "$$") }),
@@ -1202,7 +1202,7 @@
         rows.forEach(function (r) {
           out.append(h("article", { class: "mx-term", id: r.t.id }, h("h3", null, r.t.kz, " ", h("span", { class: "mx-ten", text: "(" + r.t.en + ")" })),
             r.t.def ? h("p", { html: rich(r.t.def) }) : null,
-            h("p", { class: "mx-tmeta" }, h("span", { class: "mx-chip", text: r.s.no + ". " + r.s.kz }), r.t.lesson ? h("a", { href: lessonHref(plan, r.s.no, r.t.lesson), text: " " + r.s.no + "." + r.t.lesson + "-сабақ →" }) : null)));
+            h("p", { class: "mx-tmeta" }, h("span", { class: "mx-chip", text: r.s.no + ". " + r.s.en }), r.t.lesson ? h("a", { href: lessonHref(plan, r.s.no, r.t.lesson), text: " " + r.s.no + "." + r.t.lesson + "-сабақ →" }) : null)));
         });
         info.textContent = rows.length ? "Термин: " + rows.length : "";
         if (!rows.length) out.append(emptyState(needle ? "Ештеңе табылмады." : "Бұл пәннің терминдері жақында қосылады."));
@@ -1259,7 +1259,7 @@
           } });
           var bar = h("div", { class: "mx-pbar" }, h("span", { style: "width:" + Math.round(idx / seq.length * 100) + "%" }));
           var s = plan.subjects.filter(function (x) { return x.slug === p._s; })[0];
-          stage.append(h("div", { class: "mx-phead" }, h("span", { class: "mx-chip", text: (s ? s.no + ". " + s.kz : "") }), h("span", { class: "mx-chip lv-" + (p.lvl || ""), text: (LV.filter(function (x) { return x[0] === p.lvl; })[0] || ["", ""])[1] }), h("b", { text: "Есеп " + (idx + 1) + " / " + seq.length })), bar, b.el, h("div", { class: "mx-ctrl" }, chk, next), res);
+          stage.append(h("div", { class: "mx-phead" }, h("span", { class: "mx-chip", text: (s ? s.no + ". " + s.en : "") }), h("span", { class: "mx-chip lv-" + (p.lvl || ""), text: (LV.filter(function (x) { return x[0] === p.lvl; })[0] || ["", ""])[1] }), h("b", { text: "Есеп " + (idx + 1) + " / " + seq.length })), bar, b.el, h("div", { class: "mx-ctrl" }, chk, next), res);
           renderMath(stage);
           var focus = stage.querySelector("input,select"); if (focus && window.matchMedia && !matchMedia("(pointer: coarse)").matches) focus.focus();
         };
@@ -1278,14 +1278,13 @@
     stage.append(h("p", { class: "mx-hint0", text: "Пән мен қиындықты таңдап, «Серияны бастау» батырмасын басыңыз. Әр есептің сандары кездейсоқ өзгереді." }));
   }
 
-  /* --- Курс беті: пән карточкалары мен «қайдан бастау» жолы --- */
+  /* --- Курс беті: пән карточкаларының оқу барысы (пәндер тәуелсіз, граф/алғышарт жоқ) --- */
   function readSet() {
     var p = (K().readJson ? K().readJson("cs50kz:progress", {}) : LS.get("cs50kz:progress", {})) || {};
     return p.read && typeof p.read === "object" ? p.read : {};
   }
   function appHome(box, plan) {
     var read = readSet();
-    var known = LS.get("cs50kz:math:known", {}); if (!known || typeof known !== "object" || Array.isArray(known)) known = {};
     var stat = {};
     plan.subjects.forEach(function (s) {
       var ready = 0, rd = 0, i;
@@ -1301,76 +1300,6 @@
         var rdEl = sec.querySelector(".mx-sread"); if (rdEl) rdEl.textContent = rd;
       }
     });
-    /* Қайдан бастау: мақсатты пән -> алғышарттар жолы */
-    var target = box.querySelector(".mx-target");
-    var path = box.querySelector(".mx-path");
-    var graph = box.querySelector(".mx-graph");
-    if (!target || !path) return;
-    target.append.apply(target, plan.subjects.map(function (s) { return h("option", { value: s.no, text: s.no + ". " + s.kz }); }));
-    var saved = LS.get("cs50kz:math:target", null);
-    if (saved && plan.subjects[saved - 1]) target.value = String(saved);
-    function closure(no, acc) { if (acc.indexOf(no) >= 0) return; plan.subjects[no - 1].pre.forEach(function (p) { closure(p, acc); }); acc.push(no); }
-    function status(no) {
-      var s = stat[no];
-      if (known[no]) return "known";
-      if (s.ready && s.read >= s.ready) return "done";
-      if (s.read > 0) return "doing";
-      return s.ready ? "todo" : "soon";
-    }
-    var LBL = { known: "білемін", done: "оқылды ✓", doing: "оқып жатырмын", todo: "бастау керек", soon: "жақында" };
-    function paintPath() {
-      var no = +target.value || 1, order = [];
-      closure(no, order);
-      LS.set("cs50kz:math:target", no);
-      path.textContent = "";
-      var nextShown = false;
-      order.forEach(function (n) {
-        var s = plan.subjects[n - 1], stt = status(n), isNext = !nextShown && (stt === "todo" || stt === "doing" || stt === "soon");
-        if (isNext) nextShown = true;
-        var firstReady = null, i;
-        for (i = 0; i < s.count; i++) { var c = document.querySelector('#subj-' + n + ' .week-card[data-id="week-' + (s.start + i) + '"]'); if (c && !c.classList.contains("soon") && !read["math:week-" + (s.start + i)]) { firstReady = s.start + i; break; } }
-        var chk = h("input", { type: "checkbox", "aria-label": "Мен бұл пәнді білемін: " + s.kz }); chk.checked = !!known[n];
-        chk.addEventListener("change", function () { if (chk.checked) known[n] = 1; else delete known[n]; LS.set("cs50kz:math:known", known); paintPath(); paintGraph(); });
-        path.append(h("li", { class: "mx-pstep " + stt + (isNext ? " next" : "") },
-          h("a", { href: "#subj-" + n, class: "mx-pname", text: n + ". " + s.kz }),
-          h("span", { class: "mx-pst", text: LBL[stt] + (stt !== "soon" ? " · " + stat[n].read + "/" + stat[n].ready : "") }),
-          isNext && firstReady != null ? h("a", { class: "btn gold mx-go", href: "lectures/week-" + firstReady + ".html", text: "Оқуды бастау →" }) : null,
-          h("label", { class: "mx-kn" }, chk, " білемін")));
-      });
-    }
-    /* Граф: тереңдік бойынша бағандар */
-    var depth = {};
-    plan.subjects.forEach(function (s) { depth[s.no] = s.pre.length ? 1 + Math.max.apply(null, s.pre.map(function (p) { return depth[p]; })) : 0; });
-    function paintGraph() {
-      if (!graph) return;
-      var cols = {}, maxD = 0;
-      plan.subjects.forEach(function (s) { (cols[depth[s.no]] = cols[depth[s.no]] || []).push(s); maxD = Math.max(maxD, depth[s.no]); });
-      var W2 = 150, GX = 60, H2 = 34, GY = 12, pos = {}, maxRows = 0;
-      Object.keys(cols).forEach(function (d) { maxRows = Math.max(maxRows, cols[d].length); cols[d].forEach(function (s, i) { pos[s.no] = { x: 10 + d * (W2 + GX), y: 10 + i * (H2 + GY) }; }); });
-      var width = 20 + (maxD + 1) * W2 + maxD * GX, height = 20 + maxRows * (H2 + GY);
-      var NS = "http://www.w3.org/2000/svg", svg = document.createElementNS(NS, "svg");
-      svg.setAttribute("viewBox", "0 0 " + width + " " + height); svg.setAttribute("width", width); svg.setAttribute("height", height);
-      svg.setAttribute("role", "group"); svg.setAttribute("aria-label", "Пәндер арасындағы алғышарт байланыстары");
-      var tno = +target.value, need = []; closure(tno, need);
-      plan.subjects.forEach(function (s) { s.pre.forEach(function (p) {
-        var a = pos[p], b = pos[s.no], ln = document.createElementNS(NS, "path");
-        ln.setAttribute("d", "M" + (a.x + W2) + " " + (a.y + H2 / 2) + " C" + (a.x + W2 + GX / 2) + " " + (a.y + H2 / 2) + " " + (b.x - GX / 2) + " " + (b.y + H2 / 2) + " " + b.x + " " + (b.y + H2 / 2));
-        ln.setAttribute("class", "mx-edge" + (need.indexOf(s.no) >= 0 && need.indexOf(p) >= 0 ? " on" : "")); svg.appendChild(ln);
-      }); });
-      plan.subjects.forEach(function (s) {
-        var g = document.createElementNS(NS, "a"); g.setAttributeNS("http://www.w3.org/1999/xlink", "href", "#subj-" + s.no); g.setAttribute("href", "#subj-" + s.no);
-        var rect = document.createElementNS(NS, "rect"), tx = document.createElementNS(NS, "text"), p0 = pos[s.no], stt = status(s.no);
-        rect.setAttribute("x", p0.x); rect.setAttribute("y", p0.y); rect.setAttribute("width", W2); rect.setAttribute("height", H2); rect.setAttribute("rx", 8);
-        rect.setAttribute("class", "mx-node " + stt + (need.indexOf(s.no) >= 0 ? " need" : "") + (s.no === tno ? " target" : ""));
-        tx.setAttribute("x", p0.x + 8); tx.setAttribute("y", p0.y + H2 / 2 + 4); tx.setAttribute("class", "mx-ntxt");
-        var nm = s.no + ". " + s.kz; tx.textContent = nm.length > 21 ? nm.slice(0, 20) + "…" : nm;
-        var tt = document.createElementNS(NS, "title"); tt.textContent = s.no + ". " + s.kz + " (" + s.en + ")"; g.appendChild(tt);
-        g.appendChild(rect); g.appendChild(tx); svg.appendChild(g);
-      });
-      graph.textContent = ""; graph.appendChild(svg);
-    }
-    target.addEventListener("change", function () { paintPath(); paintGraph(); });
-    paintPath(); paintGraph();
   }
 
   function initApps() {
