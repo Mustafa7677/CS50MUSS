@@ -129,7 +129,7 @@ test("курс беті: пән атаулары ағылшынша, ретте�
   expect(await jump.allInnerTexts()).toEqual(EN);
   for (let i = 0; i < 24; i++) await expect(jump.nth(i)).toHaveAttribute("href", `#subj-${i + 1}`);
   // пән тақырыптары ағылшынша, топтар реті 1-17 / 18-24
-  expect(await page.locator(".mx-subj h3").evaluateAll((els) => els.map((e) => e.textContent.trim()))).toEqual(PLAN.subjects.map((s) => s.en.replace(/&/, "&")));
+  expect(await page.locator(".mx-shead h3").evaluateAll((els) => els.map((e) => e.textContent.trim()))).toEqual(PLAN.subjects.map((s) => `${s.no}${s.en}`));
   expect(await page.locator(".mx-subj").evaluateAll((els) => els.map((e) => +e.dataset.subj))).toEqual(Array.from({ length: 24 }, (_, i) => i + 1));
   await expect(page.locator("#group-h ~ .mx-subj").first()).toHaveAttribute("data-subj", "1");
   // карточкалардағы сабақ реті 1,2,3...

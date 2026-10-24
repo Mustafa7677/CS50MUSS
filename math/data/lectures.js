@@ -1626,7 +1626,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-29",
-  "num": "5 · Интегралдық есептеу · 1-сабақ",
+  "num": "Integral Calculus · 1-сабақ",
   "title": "Алғашқы функция және анықталмаған интеграл",
   "url": "math/lectures/week-29.html",
   "topics": [
@@ -1682,7 +1682,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-30",
-  "num": "5 · Интегралдық есептеу · 2-сабақ",
+  "num": "Integral Calculus · 2-сабақ",
   "title": "Анықталған интеграл және Риман қосындылары",
   "url": "math/lectures/week-30.html",
   "topics": [
@@ -1738,7 +1738,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-31",
-  "num": "5 · Интегралдық есептеу · 3-сабақ",
+  "num": "Integral Calculus · 3-сабақ",
   "title": "Ньютон–Лейбниц формуласы",
   "url": "math/lectures/week-31.html",
   "topics": [
@@ -1794,7 +1794,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-32",
-  "num": "5 · Интегралдық есептеу · 4-сабақ",
+  "num": "Integral Calculus · 4-сабақ",
   "title": "Айнымалыны ауыстыру",
   "url": "math/lectures/week-32.html",
   "topics": [
@@ -1850,7 +1850,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-33",
-  "num": "5 · Интегралдық есептеу · 5-сабақ",
+  "num": "Integral Calculus · 5-сабақ",
   "title": "Бөліктеп интегралдау",
   "url": "math/lectures/week-33.html",
   "topics": [
@@ -1906,7 +1906,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-34",
-  "num": "5 · Интегралдық есептеу · 6-сабақ",
+  "num": "Integral Calculus · 6-сабақ",
   "title": "Рационал және тригонометриялық өрнектерді интегралдау",
   "url": "math/lectures/week-34.html",
   "topics": [
@@ -1962,7 +1962,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-35",
-  "num": "5 · Интегралдық есептеу · 7-сабақ",
+  "num": "Integral Calculus · 7-сабақ",
   "title": "Меншіксіз интегралдар және геометриялық қолданыс",
   "url": "math/lectures/week-35.html",
   "topics": [
@@ -2011,7 +2011,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3084,6 +3084,62 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
    }
   ],
   "minutes": 21,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-59",
+  "num": "Ordinary Differential Equations · 5-сабақ",
+  "title": "Екінші ретті біртекті сызықтық теңдеулер",
+  "url": "math/lectures/week-59.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 20,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
