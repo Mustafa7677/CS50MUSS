@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Ordinary Differential Equations · 6-сабақ: Біртекті емес теңдеулер - CS50 қазақша">
-  <meta property="og:description" content="Математика, Ordinary Differential Equations · 6-сабақ: Біртекті емес теңдеулер. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Белгісіз коэффициенттер және тұрақтыны вариациялау әдістері, резонанс.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-60.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Ordinary Differential Equations · 6-сабақ: Біртекті емес теңдеулер - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-60.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Ordinary Differential Equations · 6-сабақ: Біртекті емес теңдеулер. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Белгісіз коэффициенттер және тұрақтыны вариациялау әдістері, резонанс.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,528 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="60">
         <div class="num">Ordinary Differential Equations · 6-сабақ</div>
         <h1>Біртекті емес теңдеулер</h1>
-        <p>Белгісіз коэффициенттер және тұрақтыны вариациялау әдістері, резонанс.</p>
+        <p>Бұл сабақта $y''+py'+qy=f(x)$ біртекті емес екінші ретті сызықтық теңдеуді шешуді үйренесіз: белгісіз коэффициенттер әдісін, тұрақтыны вариациялау әдісін және резонанс құбылысын. Сыртқы күш әсер еткен серіппе, кернеу берілген электр тізбегі, жел түскен көпір - бәрі осындай теңдеумен сипатталады, ал резонанс көпірлердің құлауы мен радио қабылдағыштың баптауының математикалық себебін түсіндіреді.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-9">Ordinary Differential Equations</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-9">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны жасанды интеллект көмегімен дайындалған, сондықтан математик-оқытушымен тексеріп алған жөн. Бұл ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>біртекті емес теңдеудің жалпы шешімі $y=y_h+y_p$ құрылымын түсіндіріп қолдану;</li>
+        <li>оң жағы көпмүшелік, экспонента, синус және косинус болғанда белгісіз коэффициенттер әдісімен $y_p$-ның түрін таңдап, коэффициенттерін табу;</li>
+        <li>резонанс жағдайын ($e^{\alpha x}$ біртекті шешіммен беттесуін) анықтап, $x^s$ көбейткішін қосу;</li>
+        <li>тұрақтыны вариациялау әдісімен $y_p$ формуласын қолдану (оң жағы кез келген үзіліссіз функция);</li>
+        <li>сыртқы күштің жиілігі табиғи жиілікке жақындағанда болатын құбылыстарды (соғу, резонанс) сипаттау;</li>
+        <li>бастапқы шарттар бойынша толық шешімді жазып, өтпелі және тұрақты бөліктерін ажырату.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Бұл сабақ <a href="week-57.html">3-сабақтағы</a> $y=y_h+y_p$ құрылымына және <a href="week-59.html">5-сабақтағы</a> $ar^2+br+c=0$ сипаттамалық теңдеуге, оның үш жағдайына сүйенеді. Қосымша екі құрал: (1) <b>Комплекс санның нақты бөлігі</b> $\mathrm{Re}(u+iv)=u$. Мысалы, $e^{i\omega x}=\cos\omega x+i\sin\omega x$ болғандықтан, $\mathrm{Re}\,e^{i\omega x}=\cos\omega x$. (2) <b>Комплекс санның модулі:</b> $|u+iv|=\sqrt{u^2+v^2}$, мысалы $|1+4i|=\sqrt{17}$. Екі айнымалының сызықтық жүйесін шешу ($A+4B=1$, $B-4A=0$) де қажет болады.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Бала орындықта тербеліп отыр делік. Егер ешкім итермесе, орындық өзінің табиғи ырғағымен тербеліп, үйкеліс әсерінен ақырындап тоқтайды: бұл біртекті теңдеудің шешімі. Енді біреу орындықты бір ырғақпен итере берсін. Бастапқыда орындық екі қозғалыстың араласуын көрсетеді: өзінің өшетін тербелісі және итерудің ырғағын қуған мәжбүрлі тербеліс. Біраз уақыттан кейін орындықтың табиғи тербелісі өшіп қалады, ал итерудің ырғағымен жүретін қозғалыс қалады. Міне, біртекті емес теңдеудің шешімі осыны дәл сипаттайды: $y=y_h+y_p$, мұндағы $y_h$ - өшетін өзіндік тербеліс, $y_p$ - сыртқы күштің мәжбүр етуі.</p>
+      <p>Ең қызығы - итеру ырғағы орындықтың өзінің табиғи ырғағына сәйкес келгенде не болатыны. Дұрыс уақытта итерсеңіз, әр итеру тербеліс амплитудасын арттыра түседі: бала биік көтеріледі. Бұл - <b>резонанс</b>. Математикада бұл жағдай оң жақтағы функцияның біртекті теңдеудің шешімімен беттесуі ретінде көрінеді және шешімде $x$ (не $t$) көбейткіші пайда болады: амплитуда уақытпен сызықты түрде өседі. Ал егер ырғақ табиғи ырғаққа жақын болса, бірақ тең болмаса, амплитуда көтеріліп, түсіп отырады: бұл - <em>соғу</em> құбылысы (екі шамалас камертонды бірге соқсаңыз, дыбыс күшейіп-әлсіреп естіледі).</p>
+      <p>Дербес шешімді қалай табамыз? Әдістердің бірі - «болжау»: оң жақтың түріне қарап, шешімнің түрін болжау және белгісіз коэффициенттерді қою арқылы табу. Оң жақ көпмүшелік болса, шешім де сол дәрежелі көпмүшелік, оң жақ экспонента болса, шешім де экспонента, оң жақ синус не косинус болса, шешім синус пен косинус комбинациясы болады. Себебі экспоненталар, көпмүшеліктер, синус-косинус дифференциалданғанда өз «отбасынан» шықпайды. Бұл - белгісіз коэффициенттер әдісі, ол тез әрі қолмен есептеуге ыңғайлы, бірақ оң жағы тек осы «жақсы» функциялар болғанда жұмыс істейді.</p>
+      <p>Екінші әдіс - тұрақтыны вариациялау. 3-сабақта бірінші ретті теңдеуде тұрақты $C$-ны функция етіп алғанбыз. Мұнда да сол идея: біртекті шешім $C_1y_1+C_2y_2$ болса, $C_1,C_2$ тұрақтыларын функцияларға айналдырып, біртекті емес теңдеуді қанағаттандыратындай етіп таңдаймыз. Әдіс әмбебап: оң жақ кез келген үзіліссіз функция болады, бірақ интегралдар шығады, олар кейде қиын.</p>
+      <p>Электр тізбегінде бұл теңдеу $LI''+RI'+I/C=E'(t)$ түрінде жазылады: кернеу көзі синусоидалы болса, тізбектегі ток та синусоидалы болады, бірақ амплитудасы мен фазасы өзгереді. Радио қабылдағышты бапталатын жиілікке (резонанс) келтіру, бейнекамерадағы тұрақтандырғыш, қоңырау мен телефонның діріл сигналы - бәрінде осы математика жасырын жұмыс істейді. Осы сабақтың соңында өзіңіз симуляция жазып, резонансты өз көзіңізбен көресіз.</p>
+      <p>Сабақтың жоспары: (1) құрылым теоремасы; (2) оң жағы көпмүшелік, экспонента, тригонометриялық болғандағы белгісіз коэффициенттер; (3) резонанс ережесі және оның негіздемесі; (4) тұрақтыны вариациялау; (5) резонанс пен соғу; (6) өтпелі және тұрақты күй.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 6.1 · Біртекті емес теңдеу</span>
+        <p><strong>Екінші ретті біртекті емес сызықтық теңдеу</strong> (<span class="term-en">non-homogeneous linear equation</span>) - $a\,y''+b\,y'+c\,y=f(x)$ түріндегі теңдеу, мұндағы $f\not\equiv0$ - <strong>сыртқы күш</strong> (<span class="term-en">forcing term</span>). Сәйкес <strong>біртекті теңдеу</strong> $ay''+by'+cy=0$. Оператор белгісі: $L[y]=ay''+by'+cy$, теңдеу $L[y]=f$.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 6.1 · Шешім құрылымы және суперпозиция</span>
+        <p>(а) $y_p$ - $L[y]=f$ теңдеуінің бір дербес шешімі, $y_1,y_2$ - сәйкес біртекті теңдеудің тәуелсіз шешімдері болса, барлық шешім $y=C_1y_1+C_2y_2+y_p$ түрінде жазылады. (б) $L[y_{p1}]=f_1$, $L[y_{p2}]=f_2$ болса, $L[y_{p1}+y_{p2}]=f_1+f_2$: оң жақтар қосындысының дербес шешімі шешімдер қосындысы.</p></div>
+      <p><em>Негіздеме.</em> Шешімдердің айырмасы біртекті теңдеуді қанағаттандырады (5-сабақтың 1-қорытуы). Толық дәлелдеу 1-қорытуда.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 6.1 · Белгісіз коэффициенттер: оң жақтың түрі</span>
+        <div class="math-fbody">$$f(x)=P_n(x)\,e^{\alpha x}\ \Rightarrow\ y_p=x^s\,Q_n(x)\,e^{\alpha x}$$</div>
+        <p class="math-fnote">$P_n$ - $n$ дәрежелі көпмүшелік, $Q_n$ - сол дәрежелі, коэффициенттері белгісіз көпмүшелік. $s$ - $\alpha$ саны сипаттамалық теңдеудің түбірі болу еселігі: $s=0$ (түбір емес), $s=1$ (жай түбір), $s=2$ (екі еселі түбір).</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 6.2 · Тригонометриялық оң жақ</span>
+        <div class="math-fbody">$$f=e^{\alpha x}\big(P(x)\cos\beta x+R(x)\sin\beta x\big)\ \Rightarrow\ y_p=x^s e^{\alpha x}\big(Q(x)\cos\beta x+S(x)\sin\beta x\big)$$</div>
+        <p class="math-fnote">$Q,S$ - дәрежесі $P,R$-дің үлкен дәрежесіне тең көпмүшеліктер, екеуінде де барлық коэффициент белгісіз (оң жақта тек косинус болса да, синус енгізіледі). $s=1$, егер $\alpha\pm i\beta$ сипаттамалық түбір болса, әйтпесе $s=0$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта: белгісіз коэффициенттер алгоритмі</span>
+        <p>(1) Біртекті теңдеуді шешіп, $y_h$ және сипаттамалық түбірлерді табыңыз. (2) $f$ түріне қарап $y_p$-ның түрін жазыңыз. (3) Түбірмен беттесуін тексеріп, қажет болса $x^s$ көбейтіңіз. (4) $y_p$-ны теңдеуге қойып, коэффициенттерді салыстырып табыңыз. (5) $y=y_h+y_p$ жазыңыз. (6) Бастапқы шарттан $C_1,C_2$ табыңыз (<b>$y_h$ емес, толық $y$ бойынша</b>).</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Бастапқы шарттарды $y_h$ үшін емес, толық $y=y_h+y_p$ үшін қоясыз. Бұл ең жиі қателік: $C_1,C_2$-ні $y_p$-ны ескермей тапсаңыз, жауап бұзылады.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 6.2 · Тұрақтыны вариациялау формуласы</span>
+        <p>$y_1,y_2$ - $y''+py'+qy=0$ теңдеуінің тәуелсіз шешімдері, $W=y_1y_2'-y_1'y_2$ олардың Вронскианы болсын. Онда $y''+py'+qy=f(x)$ теңдеуінің дербес шешімі
+        $$y_p=-y_1\int\frac{y_2f}{W}\,dx+y_2\int\frac{y_1f}{W}\,dx.$$</p></div>
+      <p><em>Негіздеме.</em> 3-қорытуда.</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 6.2 · Резонанс</span>
+        <p>Сыртқы күш $f$ сәйкес біртекті теңдеудің шешімімен беттесетін жағдай <strong>резонанс</strong> (<span class="term-en">resonance</span>) деп аталады. Тербелмелі жүйе $y''+\omega^2y=\cos\Omega t$ үшін $\Omega=\omega$ болғанда резонанс болады, дербес шешім $y_p=\dfrac{t}{2\omega}\sin\omega t$ - амплитудасы уақытпен сызықты өседі.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 6.3 · Резонанс және соғу</span>
+        <div class="math-fbody">$$y''+\omega^2y=\cos\Omega t,\ y(0)=y'(0)=0:\quad y=\frac{\cos\Omega t-\cos\omega t}{\omega^2-\Omega^2}\ (\Omega\ne\omega),\qquad y=\frac{t\sin\omega t}{2\omega}\ (\Omega=\omega)$$</div>
+        <p class="math-fnote">Бірінші формула $\Omega\to\omega$ шегінде екіншісіне көшеді. $\Omega\approx\omega$ болғанда амплитуда баяу өзгеріп отырады (соғу).</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 6.4 · Комплекс әдіс</span>
+        <div class="math-fbody">$$L[y]=\cos\beta x\ \Rightarrow\ y_p=\mathrm{Re}\,\frac{e^{i\beta x}}{p(i\beta)},\quad p(r)=ar^2+br+c,\quad |y_p|_{\max}=\frac{1}{|p(i\beta)|}$$</div>
+        <p class="math-fnote">Шарты: $p(i\beta)\ne0$ (резонанс емес). Синус үшін $\mathrm{Im}$ алынады. $1/|p(i\beta)|$ - жүйенің жиілік жауабының амплитудасы.</p></div>
+      <div class="math-remark">
+        <p><b>Өтпелі және тұрақты бөлік.</b> Тербелістің үйкелісі бар ($b>0$) жағдайында $y_h\to0$ (өтпелі), ал $y_p$ (тұрақты күй) сыртқы күштің жиілігімен жалғасады. Сондықтан ұзақ уақыт өткенде бастапқы шарттың маңызы жоқ: жүйе «бастапқы күйін ұмытады».</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <p>Төмендегі дәлелдеулерді оқып қана қоймай, жауып қойып, өзіңіз қағазға қайталап жазып көріңіз.</p>
+      <div class="mx-derive-tools"></div>
+
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: шешім құрылымы және суперпозиция</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $L[y]=ay''+by'+cy$ үшін барлық шешім $y_h+y_p$ екенін және оң жақтарды қосуға болатынын дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$L$ сызықтық: $L[u+v]=L[u]+L[v]$, $L[\lambda u]=\lambda L[u]$ (5-сабақ, 1-қорыту).</li>
+            <li>$y$ - $L[y]=f$ теңдеуінің кез келген шешімі, $y_p$ - бір дербес шешім ($L[y_p]=f$) болсын. $u=y-y_p$ деп алайық.</li>
+            <li>$L[u]=L[y]-L[y_p]=f-f=0$: $u$ біртекті теңдеудің шешімі, сондықтан $u=C_1y_1+C_2y_2$.</li>
+            <li>Демек $y=C_1y_1+C_2y_2+y_p$. Керісінше, мұндай әр функция шешім: $L[C_1y_1+C_2y_2+y_p]=0+0+f=f$.</li>
+            <li>Суперпозиция: $L[y_{p1}+y_{p2}]=L[y_{p1}]+L[y_{p2}]=f_1+f_2$.</li>
+            <li>Мысал: $y''-y=e^{x}+x$ теңдеуінің дербес шешімі $y_{p1}=\tfrac12xe^{x}$ ($f_1=e^x$) пен $y_{p2}=-x$ ($f_2=x$) қосындысы: $y_p=\tfrac12xe^{x}-x$. Тексеру: $y_p''=e^{x}+\tfrac12xe^{x}$, $y_p''-y_p=e^{x}+x$ ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-2" open>
+        <summary>Қорытып шығару 2: белгісіз коэффициенттер әдісінің негіздемесі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $ay''+by'+cy=P_n(x)e^{\alpha x}$ үшін дербес шешімнің түрі неге $x^sQ_n(x)e^{\alpha x}$ екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>Негізгі лемма. $y=e^{\alpha x}u(x)$ деп ауыстырамыз: $y'=e^{\alpha x}(u'+\alpha u)$, $y''=e^{\alpha x}(u''+2\alpha u'+\alpha^2u)$.</li>
+            <li>Операторға қоямыз: $L[e^{\alpha x}u]=e^{\alpha x}\big[au''+(2a\alpha+b)u'+(a\alpha^2+b\alpha+c)u\big]=e^{\alpha x}\big[au''+p'(\alpha)u'+p(\alpha)u\big]$, мұнда $p(r)=ar^2+br+c$, $p'(\alpha)=2a\alpha+b$.</li>
+            <li>Теңдеу $L[y]=P_n e^{\alpha x}$ болса, $e^{\alpha x}$ қысқарады: $au''+p'(\alpha)u'+p(\alpha)u=P_n(x)$ - көпмүшелік коэффициентті, тұрақты коэффициентті теңдеу.</li>
+            <li><b>$p(\alpha)\ne0$ ($\alpha$ түбір емес).</b> $u$ - $n$ дәрежелі көпмүшелік болсын $Q_n$. Сол жағының ең жоғарғы мүшесі $p(\alpha)\cdot(\text{жоғарғы мүше})$, туындылар дәрежені төмендетеді. Сондықтан коэффициенттерді жоғарыдан төмен қарай біртіндеп табуға болады: $s=0$.</li>
+            <li><b>$p(\alpha)=0$, $p'(\alpha)\ne0$ (жай түбір).</b> Теңдеу $au''+p'(\alpha)u'=P_n$: $u'$ бойынша $n$ дәрежелі көпмүшелік алынады, яғни $u$ дәрежесі $n+1$ және $u=xQ_n(x)$ (тұрақты мүше қосуға болады, ол $y_h$-ға кіреді): $s=1$.</li>
+            <li><b>$p(\alpha)=p'(\alpha)=0$ (екі еселі түбір).</b> Теңдеу $au''=P_n$: $u''=P_n/a$, $u$ дәрежесі $n+2$, $u=x^2Q_n(x)$: $s=2$.</li>
+            <li>Мысал: $y''-3y'+2y=e^{x}$: $p(r)=r^2-3r+2$, $\alpha=1$: $p(1)=0$, $p'(1)=-1\ne0$, $s=1$. $u'':$ $u''-u'=1$, $u=-x$: $y_p=-xe^{x}$ ✓ (2-мысал).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-3" open>
+        <summary>Қорытып шығару 3: тұрақтыны вариациялау формуласы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $y''+py'+qy=f$ теңдеуінің дербес шешімін $y_p=u_1y_1+u_2y_2$ түрінде іздеп, Теорема 6.2 формуласын алу.</p>
+          <ol class="math-steps">
+            <li>$y_1,y_2$ - біртекті теңдеудің тәуелсіз шешімдері. $y_p=u_1(x)y_1+u_2(x)y_2$, мұнда $u_1,u_2$ - белгісіз функциялар. Бір теңдеуден екі функция табу мүмкін емес, сондықтан қосымша шарт қоямыз.</li>
+            <li>Туындысы: $y_p'=u_1'y_1+u_2'y_2+u_1y_1'+u_2y_2'$. Қосымша шарт ретінде $u_1'y_1+u_2'y_2=0$ деп аламыз (бұл $y_p'$-ты қарапайым етеді): $y_p'=u_1y_1'+u_2y_2'$.</li>
+            <li>Екінші туынды: $y_p''=u_1'y_1'+u_2'y_2'+u_1y_1''+u_2y_2''$.</li>
+            <li>Теңдеуге қоямыз: $y_p''+py_p'+qy_p=u_1(y_1''+py_1'+qy_1)+u_2(y_2''+py_2'+qy_2)+u_1'y_1'+u_2'y_2'=0+0+u_1'y_1'+u_2'y_2'$. Ол $f$-ке тең болуы керек.</li>
+            <li>Екі белгісіздің жүйесі: $u_1'y_1+u_2'y_2=0$, $u_1'y_1'+u_2'y_2'=f$. Оның анықтауышы $y_1y_2'-y_2y_1'=W\ne0$, сондықтан бірмәнді шешілетін (Крамер): $u_1'=-\dfrac{y_2f}{W}$, $u_2'=\dfrac{y_1f}{W}$.</li>
+            <li>Тексеру: бірінші теңдеу: $-\dfrac{y_2fy_1}{W}+\dfrac{y_1fy_2}{W}=0$ ✓. Екінші: $-\dfrac{y_2fy_1'}{W}+\dfrac{y_1fy_2'}{W}=\dfrac{f(y_1y_2'-y_1'y_2)}{W}=f$ ✓.</li>
+            <li>Интегралдаймыз: $u_1=-\int\dfrac{y_2f}{W}dx$, $u_2=\int\dfrac{y_1f}{W}dx$. Интегралдау тұрақтылары $y_h$-қа кіреді. Мысал: $y''+y=\sec x$, $y_1=\cos x$, $y_2=\sin x$, $W=1$: $u_1=-\int\tan x\,dx=\ln|\cos x|$, $u_2=\int dx=x$, $y_p=\cos x\ln|\cos x|+x\sin x$ (4-мысал).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-4" open>
+        <summary>Қорытып шығару 4: резонанс және соғу</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $y''+\omega^2y=\cos\Omega t$, $y(0)=y'(0)=0$ шешімін $\Omega\ne\omega$ және $\Omega=\omega$ жағдайларында алу.</p>
+          <ol class="math-steps">
+            <li>Біртекті шешім $y_h=C_1\cos\omega t+C_2\sin\omega t$. $\Omega\ne\omega$ болса, $y_p=A\cos\Omega t$ деп іздейміз ($y_p''=-\Omega^2A\cos\Omega t$).</li>
+            <li>Қоямыз: $(\omega^2-\Omega^2)A\cos\Omega t=\cos\Omega t$, $A=\dfrac1{\omega^2-\Omega^2}$.</li>
+            <li>Жалпы шешім: $y=C_1\cos\omega t+C_2\sin\omega t+\dfrac{\cos\Omega t}{\omega^2-\Omega^2}$. $y(0)=0\Rightarrow C_1=-\dfrac{1}{\omega^2-\Omega^2}$. $y'(0)=\omega C_2=0\Rightarrow C_2=0$.</li>
+            <li>Нәтиже: $y=\dfrac{\cos\Omega t-\cos\omega t}{\omega^2-\Omega^2}$. Косинустардың айырмасы: $\cos\Omega t-\cos\omega t=2\sin\dfrac{(\omega+\Omega)t}{2}\sin\dfrac{(\omega-\Omega)t}{2}$, сондықтан $y=\dfrac{2}{\omega^2-\Omega^2}\sin\dfrac{(\omega-\Omega)t}{2}\sin\dfrac{(\omega+\Omega)t}{2}$.</li>
+            <li>Мағынасы: тез тербеліс ($\sin\frac{(\omega+\Omega)t}2$) баяу өзгеретін амплитудаға ($\sin\frac{(\omega-\Omega)t}2$) көбейтілген. Бұл - соғу: $\Omega\to\omega$ болса, баяу период ұзарады, ал амплитуда $\dfrac{2}{\omega^2-\Omega^2}$ артады.</li>
+            <li>Резонанс ($\Omega=\omega$): $y_p=t(A\cos\omega t+B\sin\omega t)$. $y_p''=2\omega(-A\sin\omega t+B\cos\omega t)-\omega^2y_p$ ⇒ $y_p''+\omega^2y_p=2\omega B\cos\omega t-2\omega A\sin\omega t=\cos\omega t$ ⇒ $B=\dfrac1{2\omega}$, $A=0$.</li>
+            <li>Бастапқы шарттар $y(0)=y'(0)=0$: $y=\dfrac{t\sin\omega t}{2\omega}$. Шектік тексеру: $\dfrac{\cos\Omega t-\cos\omega t}{\omega^2-\Omega^2}\to\dfrac{t\sin\omega t}{2\omega}$, $\Omega\to\omega$ (Лопиталь: $\Omega$ бойынша туынды $-t\sin\Omega t$ және $-2\Omega$).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-5" open>
+        <summary>Қорытып шығару 5: комплекс әдіс: жиілік жауабы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $ay''+by'+cy=\cos\beta x$ теңдеуінің дербес шешімін комплекс экспонента арқылы табу және амплитудасын есептеу.</p>
+          <ol class="math-steps">
+            <li>$\cos\beta x=\mathrm{Re}\,e^{i\beta x}$. Комплекс теңдеу $L[z]=e^{i\beta x}$ қарастырамыз. Коэффициенттер нақты болғандықтан, $z$ шешім болса, $\mathrm{Re}\,z$ нақты теңдеудің шешімі ($L[\mathrm{Re}\,z]=\mathrm{Re}\,L[z]$).</li>
+            <li>$z=Ae^{i\beta x}$ деп іздейміз ($A$ - комплекс тұрақты). Лемма бойынша ($\alpha=i\beta$): $L[Ae^{i\beta x}]=Ap(i\beta)e^{i\beta x}$.</li>
+            <li>$Ap(i\beta)=1$ болуы керек: $A=\dfrac1{p(i\beta)}$ ($p(i\beta)\ne0$ болса ғана).</li>
+            <li>Демек $y_p=\mathrm{Re}\dfrac{e^{i\beta x}}{p(i\beta)}$. Полярлық түрде $p(i\beta)=|p(i\beta)|e^{i\theta}$ болса, $y_p=\dfrac{\cos(\beta x-\theta)}{|p(i\beta)|}$.</li>
+            <li>Амплитуда: $\dfrac{1}{|p(i\beta)|}=\dfrac{1}{\sqrt{(c-a\beta^2)^2+b^2\beta^2}}$. $b=0$ болса, $c-a\beta^2=0$ кезінде (резонанс) амплитуда шексіз; үйкеліс ($b>0$) болса амплитуда шекті, ең үлкен мәніне жақын жиілікте жетеді.</li>
+            <li>Мысал: $y''+2y'+5y=\cos2x$: $p(2i)=-4+4i+5=1+4i$, $A=\dfrac1{1+4i}=\dfrac{1-4i}{17}$. $\mathrm{Re}\Big[\dfrac{(1-4i)(\cos2x+i\sin2x)}{17}\Big]=\dfrac{\cos2x+4\sin2x}{17}$ (3-мысалмен сәйкес). Амплитуда $\dfrac1{\sqrt{17}}$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+
+      <div class="math-example" id="ex-1">
+        <h3>Мысал 1. Көпмүшелік оң жағы</h3>
+        <p class="math-problem">$y''-3y'+2y=4x+1$, $y(0)=0$, $y'(0)=1$ есебін шешіңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> <b>Біртекті шешім.</b> $r^2-3r+2=0$, $r=1,2$. $y_h=C_1e^{x}+C_2e^{2x}$.</li>
+          <li><b>2-қадам.</b> <b>Түрін таңдау.</b> $f=4x+1$ - бірінші дәрежелі көпмүшелік, $\alpha=0$ түбір емес ($p(0)=2\ne0$), сондықтан $y_p=Ax+B$.</li>
+          <li><b>3-қадам.</b> <b>Қою.</b> $y_p'=A$, $y_p''=0$: $0-3A+2(Ax+B)=2Ax+(2B-3A)$. Теңестіреміз: $2A=4$, $2B-3A=1$.</li>
+          <li><b>4-қадам.</b> <b>Коэффициенттер.</b> $A=2$, $2B=1+6=7$, $B=\dfrac72$. $y_p=2x+\dfrac72$.</li>
+          <li><b>5-қадам.</b> <b>Жалпы шешім.</b> $y=C_1e^{x}+C_2e^{2x}+2x+\dfrac72$, $y'=C_1e^{x}+2C_2e^{2x}+2$.</li>
+          <li><b>6-қадам.</b> <b>Бастапқы шарттар.</b> $y(0)=C_1+C_2+\dfrac72=0$ және $y'(0)=C_1+2C_2+2=1$, яғни $C_1+C_2=-\dfrac72$, $C_1+2C_2=-1$. Шегереміз: $C_2=\dfrac52$, $C_1=-6$.</li>
+          <li><b>7-қадам.</b> <b>Тексеру.</b> $y=-6e^{x}+\dfrac52e^{2x}+2x+\dfrac72$: $y(0)=-6+\tfrac52+\tfrac72=0$ ✓; $y'(0)=-6+5+2=1$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $y=-6e^{x}+\dfrac52e^{2x}+2x+\dfrac72$.</p>
+      </div>
+
+      <div class="math-example" id="ex-2">
+        <h3>Мысал 2. Экспонента оң жағы және резонанс</h3>
+        <p class="math-problem">$y''-3y'+2y=e^{3x}$ және $y''-3y'+2y=e^{x}$ теңдеулерінің дербес шешімдерін табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> <b>Біртекті шешім.</b> $r=1,2$, $p(r)=r^2-3r+2$.</li>
+          <li><b>2-қадам.</b> <b>(а) $f=e^{3x}$.</b> $\alpha=3$: $p(3)=9-9+2=2\ne0$, түбір емес, $y_p=Ae^{3x}$. Қоямыз: $A\,p(3)e^{3x}=2Ae^{3x}=e^{3x}$, $A=\dfrac12$. $y_p=\dfrac12e^{3x}$.</li>
+          <li><b>3-қадам.</b> <b>(б) $f=e^{x}$.</b> $\alpha=1$ - түбір! $p(1)=0$, $p'(1)=2\cdot1-3=-1\ne0$, жай түбір, $s=1$: $y_p=Axe^{x}$.</li>
+          <li><b>4-қадам.</b> <b>Қою.</b> Лемма бойынша $L[xe^{x}]=e^{x}\big(p(1)x+p'(1)\big)=-e^{x}$. Сондықтан $-Ae^{x}=e^{x}$, $A=-1$. $y_p=-xe^{x}$.</li>
+          <li><b>5-қадам.</b> <b>Тікелей тексеру.</b> $y=-xe^{x}$: $y'=-e^{x}-xe^{x}$, $y''=-2e^{x}-xe^{x}$. $y''-3y'+2y=-2e^{x}-xe^{x}+3e^{x}+3xe^{x}-2xe^{x}=e^{x}$ ✓.</li>
+          <li><b>6-қадам.</b> <b>Неге $Ae^{x}$ жұмыс істемейді?</b> $e^{x}$ біртекті теңдеудің шешімі: $L[Ae^{x}]=0\ne e^{x}$. Сондықтан $x$ көбейткіші керек.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> (а) $y_p=\dfrac12e^{3x}$; (б) $y_p=-xe^{x}$.</p>
+      </div>
+
+      <div class="math-example" id="ex-3">
+        <h3>Мысал 3. Тригонометриялық оң жақ</h3>
+        <p class="math-problem">$y''+2y'+5y=\cos2x$ теңдеуінің дербес шешімін табыңыз және толық шешімін $y(0)=y'(0)=0$ шартымен жазыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> <b>Біртекті бөлік.</b> $r^2+2r+5=0$, $r=-1\pm2i$. $y_h=e^{-x}(C_1\cos2x+C_2\sin2x)$.</li>
+          <li><b>2-қадам.</b> <b>Түрін таңдау.</b> $2i$ түбір емес (түбірлер $-1\pm2i$), сондықтан $y_p=A\cos2x+B\sin2x$.</li>
+          <li><b>3-қадам.</b> <b>Туындылар.</b> $y_p'=-2A\sin2x+2B\cos2x$, $y_p''=-4A\cos2x-4B\sin2x$.</li>
+          <li><b>4-қадам.</b> <b>Қою.</b> $\cos2x$: $-4A+4B+5A=A+4B$; $\sin2x$: $-4B-4A+5B=B-4A$. Теңдеулер: $A+4B=1$, $B-4A=0$.</li>
+          <li><b>5-қадам.</b> <b>Шешу.</b> $B=4A$, $A+16A=1$, $A=\dfrac1{17}$, $B=\dfrac4{17}$. $y_p=\dfrac{\cos2x+4\sin2x}{17}$.</li>
+          <li><b>6-қадам.</b> <b>Шарттар.</b> $y=e^{-x}(C_1\cos2x+C_2\sin2x)+y_p$. $y(0)=C_1+\dfrac1{17}=0$, $C_1=-\dfrac1{17}$. $y'(0)=-C_1+2C_2+\dfrac{8}{17}=0$ ⇒ $\dfrac1{17}+2C_2+\dfrac8{17}=0$, $C_2=-\dfrac9{34}$.</li>
+          <li><b>7-қадам.</b> <b>Тексеру және мағына.</b> $y(0)=-\tfrac1{17}+\tfrac1{17}=0$ ✓. $x$ өскенде $e^{-x}$ бөлігі өшеді (өтпелі), $y_p$ қалады: амплитудасы $\sqrt{\tfrac{1}{17^2}+\tfrac{16}{17^2}}=\dfrac1{\sqrt{17}}\approx0{,}243$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $y=e^{-x}\Big(-\dfrac1{17}\cos2x-\dfrac9{34}\sin2x\Big)+\dfrac{\cos2x+4\sin2x}{17}$.</p>
+      </div>
+
+      <div class="math-example" id="ex-4">
+        <h3>Мысал 4. Тұрақтыны вариациялау</h3>
+        <p class="math-problem">$y''+y=\sec x$ ($-\tfrac\pi2<x<\tfrac\pi2$) теңдеуінің жалпы шешімін табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> <b>Біртекті шешім.</b> $r^2+1=0$, $r=\pm i$. $y_1=\cos x$, $y_2=\sin x$. Оң жағы $\sec x$ белгісіз коэффициент әдісіне жатпайды.</li>
+          <li><b>2-қадам.</b> <b>Вронскиан.</b> $W=\cos x\cos x-(-\sin x)\sin x=1$.</li>
+          <li><b>3-қадам.</b> <b>$u_1'$ және $u_2'$.</b> $u_1'=-\dfrac{y_2f}{W}=-\sin x\cdot\dfrac1{\cos x}=-\tan x$, $u_2'=\dfrac{y_1f}{W}=\cos x\cdot\dfrac1{\cos x}=1$.</li>
+          <li><b>4-қадам.</b> <b>Интегралдау.</b> $u_1=\int(-\tan x)\,dx=\ln\cos x$ (аралықта $\cos x>0$), $u_2=x$.</li>
+          <li><b>5-қадам.</b> <b>Дербес шешім.</b> $y_p=u_1y_1+u_2y_2=\cos x\ln\cos x+x\sin x$.</li>
+          <li><b>6-қадам.</b> <b>Жалпы шешім.</b> $y=C_1\cos x+C_2\sin x+\cos x\ln\cos x+x\sin x$.</li>
+          <li><b>7-қадам.</b> <b>Тексеру.</b> $y_p'=-\sin x\ln\cos x-\sin x+\sin x+x\cos x=-\sin x\ln\cos x+x\cos x$; $y_p''=-\cos x\ln\cos x+\dfrac{\sin^2x}{\cos x}+\cos x-x\sin x$. $y_p''+y_p=\dfrac{\sin^2x}{\cos x}+\cos x=\dfrac{\sin^2x+\cos^2x}{\cos x}=\sec x$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $y=C_1\cos x+C_2\sin x+\cos x\ln\cos x+x\sin x$.</p>
+      </div>
+
+      <div class="math-example" id="ex-5">
+        <h3>Мысал 5. Резонанс</h3>
+        <p class="math-problem">$y''+4y=\cos2t$, $y(0)=y'(0)=0$ есебін шешіп, амплитуданың өсуін сипаттаңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> <b>Біртекті шешім.</b> $r=\pm2i$. Оң жақ $\cos2t$ осы жиілікпен беттеседі - резонанс.</li>
+          <li><b>2-қадам.</b> <b>Түрі.</b> $y_p=t(A\cos2t+B\sin2t)$ ($s=1$, себебі $2i$ - түбір).</li>
+          <li><b>3-қадам.</b> <b>Қою.</b> $y_p''=-4y_p+4(-A\sin2t+B\cos2t)$, сондықтан $y_p''+4y_p=4B\cos2t-4A\sin2t=\cos2t$. $B=\dfrac14$, $A=0$.</li>
+          <li><b>4-қадам.</b> <b>Шешім.</b> $y=C_1\cos2t+C_2\sin2t+\dfrac t4\sin2t$. $y(0)=C_1=0$. $y'(0)=2C_2=0$ (себебі $(\tfrac t4\sin2t)'=\tfrac14\sin2t+\tfrac t2\cos2t$, нөлде 0). Сонда $y=\dfrac t4\sin2t$.</li>
+          <li><b>5-қадам.</b> <b>Тексеру.</b> $y''=\cos2t-t\sin2t$ (екі рет дифференциалдау: $\tfrac14\sin2t+\tfrac t2\cos2t$-тің туындысы $\tfrac12\cos2t+\tfrac12\cos2t-t\sin2t$). $y''+4y=\cos2t-t\sin2t+t\sin2t=\cos2t$ ✓.</li>
+          <li><b>6-қадам.</b> <b>Мағынасы.</b> Амплитуда $\dfrac t4$ уақытпен шектеусіз өседі: нақты жүйеде үйкеліс, сызықтық емес әсер немесе бұзылу оны тоқтатады. Мысалы $t=8\pi$ кезінде амплитуда $2\pi\approx6{,}3$ есе бастапқы күшке қарағанда.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $y=\dfrac t4\sin2t$, амплитудасы $t/4$.</p>
+      </div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Оң жақ $f=e^{x}$ болғанда, $x$ көбейткішін тексермей, $y_p=Ae^{x}$ алу (түбір $r=1$ болғанда)</span> → <span class="math-good">$y_p=Axe^{x}$</span><br>Неге қате: $e^{x}$ біртекті теңдеудің шешімі, сондықтан $L[Ae^{x}]=0$ және оң жақты бере алмайды.</li>
+        <li><span class="math-bad">Оң жақ $\cos2x$ болғанда $y_p=A\cos2x$ алу</span> → <span class="math-good">$y_p=A\cos2x+B\sin2x$</span><br>Неге қате: бірінші туынды (үйкеліс мүшесі) $\cos$-ты $\sin$-ға айналдырады; тек косинус жеткіліксіз. Тек $b=0$ болғанда ғана $B=0$ шығады.</li>
+        <li><span class="math-bad">Бастапқы шартты $y_h$ үшін қою, $y_p$-ны ұмыту</span> → <span class="math-good">толық $y=y_h+y_p$ үшін $y(0)$, $y'(0)$ қою</span><br>Неге қате: $y_p(0)$, $y_p'(0)$ нөл болуы міндетті емес. 1-мысалда $y_p(0)=\tfrac72$, $y_p'(0)=2$.</li>
+        <li><span class="math-bad">Оң жағы $x^2$ болғанда $y_p=Ax^2$ алу</span> → <span class="math-good">$y_p=Ax^2+Bx+C$</span><br>Неге қате: туындылар төмен дәрежелі мүшелер береді, сондықтан барлық төмен дәрежелі мүше қатысуы керек.</li>
+        <li><span class="math-bad">Тұрақтыны вариациялауда $u_1'=\dfrac{y_2f}{W}$ (таңбаны ұмыту)</span> → <span class="math-good">$u_1'=-\dfrac{y_2f}{W}$, $u_2'=\dfrac{y_1f}{W}$</span><br>Неге қате: Крамер ережесінде бірінші белгісіз үшін таңба теріс. Тексеру: $u_1'y_1+u_2'y_2=0$.</li>
+        <li><span class="math-bad">Вариация әдісінде $f$-ті $y''$ алдындағы коэффициентке бөлмей қолдану ($2y''+\dots=f$)</span> → <span class="math-good">алдымен теңдеуді $y''+py'+qy=f/a$ түріне келтіру</span><br>Неге қате: формула $y''$ алдында 1 болғанда ғана жарамды.</li>
+        <li><span class="math-bad">Резонансты шамадан тыс деп санау: $y''+9y=\cos2t$ үшін $x$ көбейткішін қосу</span> → <span class="math-good">$2i$ түбір емес ($\pm3i$), $s=0$</span><br>Неге қате: резонанс тек жиіліктер дәл сәйкес келгенде. Мұнда $y_p=\dfrac{\cos2t}{5}$.</li>
+        <li><span class="math-bad">Оң жақтарды қосып, бір $y_p$ түрін таңдау, бірақ резонанс бөліктерін бөлек тексермеу</span> → <span class="math-good">әр қосылғышқа жеке $y_p$ табу, соңында қосу</span><br>Неге қате: $f=e^{x}+x$ үшін бірінші бөлік резонансты болуы мүмкін, ал екіншісі жоқ. Суперпозиция принципі әр бөлікті бөлек шешуге мүмкіндік береді.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Соғу және резонанс: y'' + ω²y = cos Ωt" data-config='{"fns":[{"f":"(cos(W*x)-cos(w*x))/(w^2-W^2)","label":"Ω ≠ ω: соғу"},{"f":"x*sin(w*x)/(2*w)","label":"Ω = ω: резонанс","dash":[6,4]}],"params":[{"n":"w","min":1,"max":3,"step":0.1,"v":2},{"n":"W","min":1,"max":3,"step":0.1,"v":1.8}],"view":[0,40,-8,8]}'></div>
+      <p><b>Бақылаңыз:</b> $\Omega$ мен $\omega$ жақын болғанда тез тербеліс баяу өзгеретін конвертпен көбейтіледі (соғу). Конверт периоды $\dfrac{4\pi}{|\omega-\Omega|}$. $\Omega=\omega$ болса, соғу периоды шексіз ұзарады және амплитуда $t/(2\omega)$ бойынша сызықты өседі (үзік сызық).</p>
+      <div class="math-viz" data-viz="graph" data-title="y'' − 3y' + 2y = 4x + 1: шешімдер әулеті" data-config='{"fns":["c1*exp(x)+c2*exp(2*x)+2*x+3.5",{"f":"2*x+3.5","label":"дербес шешім 2x + 7/2","dash":[6,4]}],"params":[{"n":"c1","min":-8,"max":4,"step":0.5,"v":-6},{"n":"c2","min":-4,"max":4,"step":0.5,"v":2.5}],"view":[-2,2,-20,30]}'></div>
+      <p><b>Бақылаңыз:</b> $c_1=-6$, $c_2=2{,}5$ болса, 1-мысалдағы шешім $y(0)=0$, $y'(0)=1$ шығады. $x\to-\infty$ кезінде біртекті бөлік өшеді де, қисық түзу $y_p=2x+\tfrac72$ ға жақындайды; ал оң жақта $e^{2x}$ жеңеді (жүйе тұрақсыз, себебі түбірлер оң).</p>
+      <div class="math-viz" data-viz="graph" data-title="Өтпелі және тұрақты күй: y'' + 2y' + 5y = cos 2x" data-config='{"fns":[{"f":"exp(-x)*(-cos(2*x)/17-9*sin(2*x)/34)+(cos(2*x)+4*sin(2*x))/17","label":"толық шешім"},{"f":"(cos(2*x)+4*sin(2*x))/17","label":"тұрақты күй y_p","dash":[6,4]}],"view":[0,10,-0.4,0.4]}'></div>
+      <p><b>Бақылаңыз:</b> Толық шешім (көк) бастапқыда $0$-ден басталып, $e^{-x}$ бойынша өтпелі бөлігі өшкен сайын тұрақты күйге (үзік) қосылады. Амплитуда $1/\sqrt{17}\approx0{,}243$. Жүйе бастапқы күйін шамамен 3-4 бірлік уақытта ұмытады.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Төменде 21 есеп блогы бар: оңайдан қиынға. «Кеңес» батырмасы алдымен кеңес, одан кейін қадамдық шешімді, соңында жауапты ашады. Өрнек енгізгенде көбейтуді <code>2x</code> не <code>2*x</code>, дәрежені <code>x^2</code>, экспонентаны <code>exp(x)</code> деп, тригонометрияны <code>cos(2x)</code>, <code>sin(2x)</code> деп жазыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="tf" data-id="m9-6-tf-struct">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m9-6-t1">1. Құрылым туралы</h3></div>
+        <p>Әр пікірді бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Біртекті емес теңдеудің жалпы шешімі $y_h+y_p$ түрінде жазылады.","a":true,"e":"Ақиқат (Теорема 6.1).","hint":"Екі шешімнің айырмасы біртекті теңдеуді қанағаттандырады."},{"q":"$y_p$-ны табу үшін бастапқы шарттарды қолдану керек.","a":false,"e":"Жалған: $y_p$ - кез келген бір дербес шешім, бастапқы шарттар соңында толық $y$ үшін қойылады.","hint":"Бастапқы шарттар қай функцияға қойылады?"},{"q":"$L[y_1]=f_1$, $L[y_2]=f_2$ болса, $L[y_1+y_2]=f_1+f_2$.","a":true,"e":"Ақиқат: оператор сызықтық.","hint":"Суперпозиция."},{"q":"$f=e^{x}$ болса және $r=1$ сипаттамалық түбір болса, $y_p=Ae^{x}$ жеткілікті.","a":false,"e":"Жалған: резонанс, $y_p=Axe^{x}$.","hint":"$L[e^{x}]=0$."}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="choice" data-id="m9-6-choice-trial">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m9-6-t2">2. Дербес шешімнің түрін таңдау</h3></div>
+        <p>Дұрыс түрді таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''-3y'+2y=x^2$ үшін $y_p$ түрі:","o":["$Ax^2$","$Ax^2+Bx+C$","$(Ax^2+Bx+C)e^{x}$","$Ax^3$"],"a":1,"e":"$0$ түбір емес ($p(0)=2$), $f$ - екінші дәрежелі көпмүшелік.","hint":"$\\alpha=0$ түбір ме?"},{"q":"$y''+y=\\sin x$ үшін $y_p$ түрі:","o":["$A\\sin x$","$A\\cos x+B\\sin x$","$x(A\\cos x+B\\sin x)$","$Ax\\sin x$"],"a":2,"e":"$\\pm i$ - сипаттамалық түбір: резонанс, $s=1$.","hint":"$r^2+1=0$ түбірлері $\\pm i$."}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="num" data-id="m9-6-num-const">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m9-6-t3">3. Тұрақты оң жақ</h3></div>
+        <p>Жауапты санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''+3y=6$ теңдеуінің тұрақты дербес шешімі $y_p=\\ ?$","a":2,"v":"Rational(6,3)","hint":"$y_p=A$, $y_p''=0$.","sol":{"steps":["$3A=6$."],"ans":"$A=2$"}},{"q":"$y''+y'-2y=-8$ теңдеуінің тұрақты дербес шешімі?","a":4,"v":"solve(Eq(-2*d,-8),d)[0]","hint":"$-2A=-8$.","sol":{"steps":["$-2A=-8$."],"ans":"$A=4$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="match" data-id="m9-6-match-forms">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m9-6-t4">4. Оң жақ және дербес шешім түрі</h3></div>
+        <p>$y''+y'-2y=f$ теңдеуі үшін (түбірлері $1$ және $-2$) оң жақты $y_p$ түрімен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Дұрыс жұптарды таңдаңыз.","pairs":[["$f=3x$","$Ax+B$"],["$f=e^{2x}$","$Ae^{2x}$"],["$f=e^{x}$","$Axe^{x}$"],["$f=\\cos x$","$A\\cos x+B\\sin x$"]],"hint":"Түбірлер $r^2+r-2=0$: $r=1,-2$.","sol":{"steps":["$0$ түбір емес - көпмүшелік.","$2$ түбір емес.","$1$ - түбір, $x$ қосамыз.","$\\pm i$ түбір емес."]},"e":"Түбірмен беттесу ғана $x$ көбейткішін қосады."}</script>
+      </div>
+
+      <div class="math-ex task" data-type="expr" data-id="m9-6-expr-poly">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-6-t5">5. Көпмүшелік дербес шешім</h3></div>
+        <p>Өрнекті $x$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''-3y'+2y=4x+1$ теңдеуінің дербес шешімі $y_p=\\ ?$ (көпмүшелік)","a":"2*x+7/2","v":"(4*x)/2+(1+3*Rational(4,2))/2","hint":"$y_p=Ax+B$: $2A=4$, $2B-3A=1$.","sol":{"steps":["$A=2$, $B=\\dfrac{1+6}{2}=\\dfrac72$."],"ans":"$y_p=2x+\\dfrac72$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="order" data-id="m9-6-order-undet">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-6-t6">6. Белгісіз коэффициенттер реті</h3></div>
+        <p>Қадамдарды дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''-3y'+2y=4x+1$, $y(0)=0$, $y'(0)=1$ шешу.","steps":["Біртекті теңдеуді шешеміз: $y_h=C_1e^{x}+C_2e^{2x}$.","Оң жаққа қарап $y_p=Ax+B$ деп жазамыз (түбірмен беттеспейді).","$y_p$-ны теңдеуге қойып коэффициенттерді табамыз: $A=2$, $B=\\tfrac72$.","Жалпы шешім $y=y_h+y_p$ жазамыз.","$y(0)$ және $y'(0)$ шарттарынан $C_1=-6$, $C_2=\\tfrac52$ табамыз."],"hint":"Алдымен $y_h$ (беттесуді тексеру үшін), соңында шарттар.","sol":{"ans":"$y=-6e^{x}+\\tfrac52e^{2x}+2x+\\tfrac72$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="num" data-id="m9-6-num-resA">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-6-t7">7. Резонанс коэффициенті</h3></div>
+        <p>Жауапты санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''-3y'+2y=e^{x}$ үшін $y_p=Axe^{x}$ болса, $A=\\ ?$","a":-1,"v":"1/(2*1-3)","hint":"$L[xe^{\\alpha x}]=e^{\\alpha x}\\,p'(\\alpha)$ ($p(\\alpha)=0$ болғанда).","sol":{"steps":["$p'(r)=2r-3$, $p'(1)=-1$.","$-A=1$."],"ans":"$A=-1$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="expr" data-id="m9-6-expr-trig">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-6-t8">8. Тригонометриялық дербес шешім</h3></div>
+        <p>Өрнекті $x$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''+2y'+5y=\\cos2x$ үшін $y_p=\\ ?$","a":"(cos(2*x)+4*sin(2*x))/17","v":"re(exp(2*I*x)/((2*I)**2+2*(2*I)+5))","hint":"$A+4B=1$, $B-4A=0$.","sol":{"steps":["$-4A+4B+5A=A+4B=1$.","$-4B-4A+5B=B-4A=0$."],"ans":"$y_p=\\dfrac{\\cos2x+4\\sin2x}{17}$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="expr" data-id="m9-6-expr-uprime">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-6-t9">9. Вариация әдісі: u₁′</h3></div>
+        <p>Өрнекті $x$ арқылы жазыңыз ($-\pi/2&lt;x&lt;\pi/2$).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''+y=\\sec x$, $y_1=\\cos x$, $y_2=\\sin x$, $W=1$. $u_1'(x)=\\ ?$","a":"-tan(x)","dom":[-1,1],"v":"-sin(x)*(1/cos(x))/1","hint":"$u_1'=-y_2f/W$.","sol":{"steps":["$u_1'=-\\sin x\\cdot\\dfrac1{\\cos x}$."],"ans":"$-\\tan x$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="param" data-id="m9-6-p-const-ivp">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-6-t10">10. Параметрлік: тұрақты күш</h3></div>
+        <p>Сандар кездейсоқ таңдалады.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"pick":[1,4,9]},"c":{"int":[1,5]},"w":{"int":[-3,6]}},"type":"num","q":"$y''+#{a}y=#{a*c}$, $y(0)=#{w}$, $y'(0)=0$. $y\\!\\left(\\dfrac{\\pi}{\\sqrt{#{a}}}\\right)=\\ ?$","a":"2*c-w","v":"c+(w-c)*cos(sqrt(a)*(pi/sqrt(a)))","hint":"$y=#{c}+(#{w}-#{c})\\cos(\\sqrt{#{a}}\\,x)$.","sol":{"steps":["$y_p=#{c}$, $y_h=C_1\\cos+C_2\\sin$.","$y(0)=#{c}+C_1=#{w}$, $y'(0)=0\\Rightarrow C_2=0$.","$\\cos\\pi=-1$: $y=#{c}-(#{w}-#{c})$."],"ans":"$#{2*c-w}$"}}</script>
+      </div>
+
+      <div class="math-ex task" data-type="param" data-id="m9-6-p-exp-coef">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-6-t11">11. Параметрлік: коэффициент</h3></div>
+        <p>Сандар кездейсоқ таңдалады.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"g":{"int":[1,3]},"h":{"int":[-3,-1]},"r":{"int":[4,6]},"m":{"int":[1,4]},"k":{"calc":"m*(r-g)*(r-h)"}},"require":["g+h != 0"],"type":"num","q":"$y''#{+(-(g+h))}y'#{+g*h}y=#{k}e^{#{r}x}$. $y_p=Ae^{#{r}x}$ болса, $A=\\ ?$","a":"m","v":"solve(Eq(d*(r**2-(g+h)*r+g*h),k),d)[0]","hint":"$A\\,p(#{r})=#{k}$, $p(r)=(r-#{g})(r-#{p:h})$.","sol":{"steps":["$p(#{r})=(#{r}-#{g})(#{r}-#{p:h})=#{(r-g)*(r-h)}$.","$A=#{k}/#{(r-g)*(r-h)}$."],"ans":"$A=#{m}$"}}</script>
+      </div>
+
+      <div class="math-ex task" data-type="choice" data-id="m9-6-choice-res">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-6-t12">12. Резонанс па?</h3></div>
+        <p>Дұрыс жауапты таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қай теңдеуде резонанс болады?","o":["$y''+4y=\\cos3t$","$y''+4y=\\cos2t$","$y''+4y'+5y=\\cos2t$","$y''-4y=\\cos2t$"],"a":1,"e":"Тек $y''+4y=\\cos2t$ үшін $\\pm2i$ - сипаттамалық түбір. Үшіншіде үйкеліс бар (түбірлер $-2\\pm i$).","hint":"$\\cos\\Omega t$ жиілігі $\\Omega$ сипаттамалық түбірдің жорамал бөлігі $\\pm i\\omega$ болғанда."}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="expr" data-id="m9-6-expr-res">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-6-t13">13. Резонанстық дербес шешім</h3></div>
+        <p>Өрнекті $t$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''+4y=\\cos2t$ үшін $y_p=\\ ?$ (бастапқы шарттары $y(0)=y'(0)=0$ болатын)","vars":["t"],"dom":[0,4],"a":"t*sin(2*t)/4","v":"re(t*exp(2*I*t)/(4*I))","hint":"$y_p=t(A\\cos2t+B\\sin2t)$.","sol":{"steps":["$B=\\tfrac14$, $A=0$."],"ans":"$y_p=\\dfrac{t\\sin2t}4$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="expr" data-id="m9-6-expr-full">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-6-t14">14. Толық шешім</h3></div>
+        <p>Өрнекті $x$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''-3y'+2y=4x+1$, $y(0)=0$, $y'(0)=1$. $y(x)=\\ ?$","a":"-6*exp(x)+5*exp(2*x)/2+2*x+7/2","v":"dsolve(Eq(Function('f')(x).diff(x,2)-3*Function('f')(x).diff(x)+2*Function('f')(x),4*x+1),Function('f')(x),ics={Function('f')(0):0,Function('f')(x).diff(x).subs(x,0):1}).rhs","hint":"$y_p=2x+\\tfrac72$, $C_1=-6$, $C_2=\\tfrac52$.","sol":{"steps":["$y=C_1e^x+C_2e^{2x}+2x+\\tfrac72$.","$C_1+C_2=-\\tfrac72$, $C_1+2C_2=-1$."],"ans":"$y=-6e^{x}+\\tfrac52e^{2x}+2x+\\tfrac72$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="num" data-id="m9-6-num-beat">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-6-t15">15. Резонанстағы мән</h3></div>
+        <p>Жауапты өрнек түрінде жазуға болады (мысалы, pi/16).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''+4y=\\cos2t$, $y(0)=y'(0)=0$ шешімі $y=\\dfrac t4\\sin2t$. $y\\!\\left(\\dfrac\\pi4\\right)=\\ ?$","a":"pi/16","v":"(pi/4)*sin(2*pi/4)/4","hint":"$\\sin\\tfrac\\pi2=1$.","sol":{"steps":["$y=\\dfrac{\\pi/4}{4}\\cdot1$."],"ans":"$\\dfrac{\\pi}{16}$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="reveal" data-id="m9-6-reveal-var2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-6-t16">16. Қадамдық шешім: вариация формуласы</h3></div>
+        <p>«Кеңес» және «Келесі қадам» батырмаларымен біртіндеп ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$y''+y=\\dfrac1{\\sin x}$ ($0<x<\\pi$) теңдеуінің дербес шешімін тұрақтыны вариациялау әдісімен табыңыз.","hint":"$y_1=\\cos x$, $y_2=\\sin x$, $W=1$, $f=\\csc x$.","steps":["$u_1'=-y_2f/W=-\\sin x\\cdot\\dfrac1{\\sin x}=-1$.","$u_2'=y_1f/W=\\cos x\\cdot\\dfrac1{\\sin x}=\\cot x$.","$u_1=-x$, $u_2=\\int\\cot x\\,dx=\\ln\\sin x$ ($\\sin x>0$).","$y_p=u_1y_1+u_2y_2=-x\\cos x+\\sin x\\ln\\sin x$."],"ans":"$y_p=-x\\cos x+\\sin x\\,\\ln\\sin x$"}</script>
+      </div>
+
+      <div class="math-ex task" data-type="tf" data-id="m9-6-tf-res2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-6-t17">17. Резонанс туралы</h3></div>
+        <p>Әр пікірді бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Үйкеліссіз жүйеде ($y''+\\omega^2y=\\cos\\omega t$) амплитуда уақытпен сызықты өседі.","a":true,"e":"Ақиқат: $y=t\\sin\\omega t/(2\\omega)$.","hint":"Формула 6.3."},{"q":"Үйкелісі бар жүйеде ($y''+by'+cy=\\cos\\beta t$, $b>0$) амплитуда шектеусіз өсуі мүмкін.","a":false,"e":"Жалған: $p(i\\beta)\\ne0$ ($b>0$), амплитуда $1/|p(i\\beta)|$ шекті.","hint":"$|p(i\\beta)|^2=(c-\\beta^2)^2+b^2\\beta^2>0$."},{"q":"Соғуда амплитуданың баяу өзгеру периоды $|\\omega-\\Omega|$ кішірейген сайын ұзарады.","a":true,"e":"Ақиқат: конверт периоды $4\\pi/|\\omega-\\Omega|$.","hint":"Формуладағы $\\sin\\frac{(\\omega-\\Omega)t}{2}$."}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="order" data-id="m9-6-order-var">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-6-t18">18. Вариация әдісінің реті</h3></div>
+        <p>Қадамдарды дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''+py'+qy=f$ теңдеуінің дербес шешімін тұрақтыны вариациялау әдісімен табу.","steps":["Біртекті теңдеудің екі тәуелсіз шешімі $y_1,y_2$ мен Вронскианды $W$ табамыз.","$y_p=u_1y_1+u_2y_2$ деп жазып, $u_1'y_1+u_2'y_2=0$ шартын қоямыз.","Теңдеуге қойып, екінші шартты аламыз: $u_1'y_1'+u_2'y_2'=f$.","Жүйені шешеміз: $u_1'=-y_2f/W$, $u_2'=y_1f/W$.","Интегралдап, $y_p=u_1y_1+u_2y_2$ жазамыз."],"hint":"Алдымен біртекті шешімдер.","sol":{"ans":"$y_p=-y_1\\int\\frac{y_2f}W+y_2\\int\\frac{y_1f}W$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="matrix" data-id="m9-6-mat-AB">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-6-t19">19. Коэффициенттер векторы</h3></div>
+        <p>Бөлшекті 1/17 түрінде жазуға болады.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''+2y'+5y=\\cos2x$ үшін $y_p=A\\cos2x+B\\sin2x$. $\\begin{pmatrix}A\\\\B\\end{pmatrix}=\\ ?$","name":"$(A;B)=$","a":[["1/17"],["4/17"]],"v":"Matrix([Rational(1,17), Rational(4,17)])","hint":"$A+4B=1$, $B-4A=0$.","sol":{"steps":["$B=4A$, $17A=1$."],"ans":"$(\\tfrac1{17};\\tfrac4{17})$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="choice" data-id="m9-6-choice-multi">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-6-t20">20. Резонанстық түрлер</h3></div>
+        <p>Дұрыс түрді таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''-3y'+2y=xe^{x}$ үшін $y_p$ түрі (түбірлер $1$ және $2$):","o":["$(Ax+B)e^{x}$","$(Ax^2+Bx)e^{x}$","$(Ax^2+Bx+C)e^{x}$","$(Ax+B)xe^{2x}$"],"a":1,"e":"$\\alpha=1$ жай түбір ($s=1$), $f$ - бірінші дәрежелі көпмүшелік: $x(Ax+B)e^{x}$.","hint":"$s=1$ және $Q_1(x)=Ax+B$."}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="num" data-id="m9-6-num-amp">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-6-t21">21. Тұрақты күйдің амплитудасы</h3></div>
+        <p>Жауапты өрнек түрінде жазуға болады (мысалы, 1/sqrt(17)).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''+2y'+5y=\\cos2x$ тұрақты күйінің амплитудасы $\\dfrac{1}{|p(2i)|}=\\ ?$","a":"1/sqrt(17)","v":"1/Abs((2*I)**2+2*(2*I)+5)","hint":"$p(2i)=-4+4i+5=1+4i$.","sol":{"steps":["$|1+4i|=\\sqrt{17}$."],"ans":"$\\dfrac1{\\sqrt{17}}\\approx0{,}243$"}}]}</script>
+      </div>
+
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Біртекті емес екінші ретті теңдеу «сыртқы әсері бар тербелмелі жүйе» ұғымының математикалық тілі. Инженерияда ғимарат пен көпір желдің ырғағымен резонанс бермеу үшін есептеледі; аудио өңдеуде эквалайзердің «пик» сүзгісі дәл резонанстық жүйе; радио қабылдағыштың контуры қажетті жиілікке резонансқа келтіріліп, басқа жиіліктер өшіріледі; ММ-жүйелерде (MEMS) гироскоп пен акселерометр тербелмелі жүйенің жиілік жауабын өлшейді. Ойын қозғалтқышында мәжбүрлі тербелісті орындаудың орнына жиілік жауабының амплитудасы $1/|p(i\beta)|$ тікелей қолданылады.</p>
+      <p><b>Мини-жоба: «Резонанс эксперименті».</b> Бағдарлама $y''+by'+cy=\cos\beta t$ жүйесінің қозғау жиілігін $\beta$ өзгертіп, тұрақты күй амплитудасын формуламен $1/|p(i\beta)|$ және сандық симуляциямен есептейді, содан кейін резонанс шыңының орнын табады.</p>
+<pre data-lang="python"><code class="language-python">import math
+
+def amplitude_formula(b, c, beta):
+    """1/|p(i beta)|, p(r) = r^2 + b r + c."""
+    p = complex(c - beta ** 2, b * beta)
+    return 1 / abs(p)
+
+def amplitude_simulated(b, c, beta, T=60.0, dt=2e-4):
+    """Сандық симуляция: соңғы периодтағы максимум амплитуда."""
+    y, v, t = 0.0, 0.0, 0.0
+    peak = 0.0
+    while t &lt; T:
+        a = math.cos(beta * t) - b * v - c * y
+        v += a * dt
+        y += v * dt
+        t += dt
+        if t > T - 2 * math.pi / beta:
+            peak = max(peak, abs(y))
+    return peak
+
+b, c = 0.4, 4.0          # өзіндік жиілік ~ sqrt(c) = 2
+for beta in (0.5, 1.0, 1.5, 1.9, 2.0, 2.1, 3.0, 4.0):
+    f = amplitude_formula(b, c, beta)
+    s = amplitude_simulated(b, c, beta)
+    print(f"beta={beta:3.1f}  формула={f:.4f}  симуляция={s:.4f}")
+
+# Резонанс шыңы: |p|^2 = (c - beta^2)^2 + b^2 beta^2 минимум
+best = max(((amplitude_formula(b, c, k / 1000), k / 1000) for k in range(100, 4000)))
+print("шың: beta =", best[1], " амплитуда =", round(best[0], 4))
+print("теория: beta* = sqrt(c - b^2/2) =", round(math.sqrt(c - b * b / 2), 4))
+</code></pre>
+      <p><b>Нәтижені түсіндіру.</b> Амплитуда $\beta\approx\sqrt{c-b^2/2}$ жиілігінде ең үлкен: бұл өзіндік жиілікке өте жақын, бірақ үйкеліс оны сәл төмендетеді. $b$ кішірейген сайын шың жоғарылап, жіңішкереді; $b=0$ болғанда шексіз болады (таза резонанс).</p>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$b$ мәнін $0{,}1$, $0{,}4$, $1{,}0$ етіп өзгертіп, шыңның биіктігі мен ені қалай өзгеретінін салыстырыңыз. «Сапа факторы» $Q=\sqrt c/b$ шыңның жіңішкелігін өлшейтінін тексеріңіз.</li>
+        <li>Үйкеліссіз жағдай $b=0$, $c=4$, $\beta=1{,}9$ үшін симуляциядағы амплитуданың баяу өзгеруін (соғуды) бақылап, периодын $4\pi/|\omega-\beta|$ формуласымен салыстырыңыз.</li>
+        <li>Тұрақты күйге жету уақытын табыңыз: жүйе $y(0)=y'(0)=0$-ден басталады, амплитуда тұрақты күйдің $5\%$ шегіне кіретін уақыт $\approx\dfrac{3}{b/2}$ екенін ($e^{-bt/2}$ өтпелі бөлігі) көрсетіңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Құрылым</td><td>$y=C_1y_1+C_2y_2+y_p$</td><td>$L[y_p]=f$</td></tr>
+        <tr><td>Суперпозиция</td><td>$f=f_1+f_2\Rightarrow y_p=y_{p1}+y_{p2}$</td><td>сызықтық теңдеу</td></tr>
+        <tr><td>Көпмүшелік·экспонента</td><td>$f=P_ne^{\alpha x}\Rightarrow y_p=x^sQ_ne^{\alpha x}$</td><td>$s$ - $\alpha$ түбір еселігі</td></tr>
+        <tr><td>Тригонометрия</td><td>$y_p=x^se^{\alpha x}(Q\cos\beta x+S\sin\beta x)$</td><td>$s=1$, егер $\alpha\pm i\beta$ түбір</td></tr>
+        <tr><td>Лемма</td><td>$L[e^{\alpha x}u]=e^{\alpha x}(au''+p'(\alpha)u'+p(\alpha)u)$</td><td>$p(r)=ar^2+br+c$</td></tr>
+        <tr><td>Вариация</td><td>$y_p=-y_1\int\frac{y_2f}W+y_2\int\frac{y_1f}W$</td><td>$y''$ алдында 1</td></tr>
+        <tr><td>Резонанс</td><td>$y''+\omega^2y=\cos\omega t\Rightarrow y=\dfrac{t\sin\omega t}{2\omega}$</td><td>амплитуда сызықты өседі</td></tr>
+        <tr><td>Жиілік жауабы</td><td>амплитуда $=\dfrac{1}{|p(i\beta)|}$</td><td>$p(i\beta)\ne0$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m9-6-self">
+        <li><input type="checkbox"> <span>Мен $y=y_h+y_p$ құрылымын түсіндіріп, суперпозицияны қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен оң жақтың түріне қарай $y_p$-ның түрін жаза аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен резонанс жағдайын анықтап, $x^s$ көбейткішін қоса аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен коэффициенттерді салыстыру арқылы $y_p$-ның коэффициенттерін таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен тұрақтыны вариациялау формуласын қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бастапқы шарттарды толық шешімге қоя аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен резонанс пен соғу құбылысын сипаттай аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. y'' + 4y = 8 теңдеуінің тұрақты дербес шешімі:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 2</label>
+<label><input type="radio" value="c"> 4</label>
+<label><input type="radio" value="d"> 8</label>
+<p class="explain">4A = 8, A = 2.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">2. y'' − y = e^(2x) үшін y_p түрі:</p>
+<label><input type="radio" value="a"> Ae^(2x)</label>
+<label><input type="radio" value="b"> Axe^(2x)</label>
+<label><input type="radio" value="c"> Ae^x</label>
+<label><input type="radio" value="d"> Axe^x</label>
+<p class="explain">Түбірлер ±1; 2 түбір емес.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. y'' − y = e^x үшін y_p түрі:</p>
+<label><input type="radio" value="a"> Ae^x</label>
+<label><input type="radio" value="b"> Axe^x</label>
+<label><input type="radio" value="c"> Ax²e^x</label>
+<label><input type="radio" value="d"> A</label>
+<p class="explain">r = 1 түбір: резонанс, s = 1.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">4. y'' + y = cos x теңдеуінің дербес шешімінің түрі:</p>
+<label><input type="radio" value="a"> A cos x</label>
+<label><input type="radio" value="b"> A cos x + B sin x</label>
+<label><input type="radio" value="c"> x(A cos x + B sin x)</label>
+<label><input type="radio" value="d"> Ax cos x</label>
+<p class="explain">±i сипаттамалық түбір: резонанс.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. y'' + 4y = cos 2t, y(0) = y'(0) = 0 шешімі:</p>
+<label><input type="radio" value="a"> (t/4) sin 2t</label>
+<label><input type="radio" value="b"> (1/4) cos 2t</label>
+<label><input type="radio" value="c"> t cos 2t</label>
+<label><input type="radio" value="d"> (1/3)(cos t − cos 2t)</label>
+<p class="explain">Резонанс: y = t sin(ωt)/(2ω), ω = 2.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. Тұрақтыны вариациялауда u₁' неге тең?</p>
+<label><input type="radio" value="a"> y₂f/W</label>
+<label><input type="radio" value="b"> −y₂f/W</label>
+<label><input type="radio" value="c"> y₁f/W</label>
+<label><input type="radio" value="d"> −y₁f/W</label>
+<p class="explain">Крамер ережесі: u₁' = −y₂f/W.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. Үйкелісі бар жүйеде (b > 0) уақыт өткенде шешімнің қай бөлігі өшеді?</p>
+<label><input type="radio" value="a"> y_p</label>
+<label><input type="radio" value="b"> y_h</label>
+<label><input type="radio" value="c"> екеуі де</label>
+<label><input type="radio" value="d"> ешқайсысы</label>
+<p class="explain">Біртекті шешімнің нақты бөлігі теріс түбірлерде e^(−bt/2) бойынша өшеді.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. y'' + 2y' + 5y = cos 2x тұрақты күйінің амплитудасы:</p>
+<label><input type="radio" value="a"> 1/17</label>
+<label><input type="radio" value="b"> 1/√17</label>
+<label><input type="radio" value="c"> 4/17</label>
+<label><input type="radio" value="d"> 1/5</label>
+<p class="explain">|p(2i)| = |1 + 4i| = √17.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-59.html"><small>Алдыңғы</small>← Ordinary Differential Equations · 5-сабақ: Екінші ретті біртекті сызықтық теңдеулер</a>

@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Ordinary Differential Equations · 7-сабақ: Теңдеулер жүйесі және тербелістер - CS50 қазақша">
-  <meta property="og:description" content="Математика, Ordinary Differential Equations · 7-сабақ: Теңдеулер жүйесі және тербелістер. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Сызықтық жүйелер, фазалық жазықтық, серіппелі маятник, популяция модельдері.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-61.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Ordinary Differential Equations · 7-сабақ: Теңдеулер жүйесі және тербелістер - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-61.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Ordinary Differential Equations · 7-сабақ: Теңдеулер жүйесі және тербелістер. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Сызықтық жүйелер, фазалық жазықтық, серіппелі маятник, популяция модельдері.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,26 +57,554 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="61">
         <div class="num">Ordinary Differential Equations · 7-сабақ</div>
         <h1>Теңдеулер жүйесі және тербелістер</h1>
-        <p>Сызықтық жүйелер, фазалық жазықтық, серіппелі маятник, популяция модельдері.</p>
+        <p>Бұл сабақта екі белгісізді сызықтық дифференциалдық теңдеулер жүйесін $\mathbf x'=A\mathbf x$ шешуді, фазалық жазықтықта шешімнің мінезін (түйін, ершік, спираль, центр) анықтауды және жүйелердің негізгі қолданыстарын үйренесіз: серіппелі маятник, қосылған ыдыстар және жыртқыш-жемтік популяция моделі. Бұл - курстың қорытынды сабағы: алдыңғы сабақтардың барлығы осы жерде бір суретке жиналады.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-9">Ordinary Differential Equations</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-9">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны жасанды интеллект көмегімен дайындалған, сондықтан математик-оқытушымен тексеріп алған жөн. Бұл ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>екінші ретті теңдеуді жүйеге келтіріп, оның матрицасын жазу;</li>
+        <li>$\mathbf x'=A\mathbf x$ жүйесінің жалпы шешімін меншікті мәндер мен меншікті векторлар арқылы құру (нақты әртүрлі және комплекс жағдайда);</li>
+        <li>комплекс меншікті мәндерден нақты шешімдерді алу;</li>
+        <li>ізі $\tau=\operatorname{tr}A$ және анықтауышы $\Delta=\det A$ бойынша тепе-теңдік нүктесін жіктеу (түйін, ершік, спираль, центр) және оның орнықтылығын анықтау;</li>
+        <li>серіппелі маятниктің демпфирлеу режимдерін (тербелмелі, критикалық, шамадан тыс) жүйе тілінде түсіндіру;</li>
+        <li>жыртқыш-жемтік моделінің тепе-теңдігін, сызықтандыруын және сақталатын шамасын табу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Бұл сабақ <a href="week-59.html">5-сабақтағы</a> сипаттамалық теңдеу мен комплекс түбірлерге сүйенеді. Үш қосымша құрал керек. (1) <b>Матрица мен вектор.</b> $A=\begin{pmatrix}a&amp;b\\c&amp;d\end{pmatrix}$ матрицасының $\mathbf v=\begin{pmatrix}p\\q\end{pmatrix}$ векторына көбейтіндісі: $A\mathbf v=\begin{pmatrix}ap+bq\\cp+dq\end{pmatrix}$. Мысалы, $\begin{pmatrix}1&amp;2\\3&amp;0\end{pmatrix}\begin{pmatrix}1\\1\end{pmatrix}=\begin{pmatrix}3\\3\end{pmatrix}$. (2) <b>Меншікті мән мен меншікті вектор:</b> $\mathbf v\ne\mathbf 0$ үшін $A\mathbf v=\lambda\mathbf v$ орындалса, $\lambda$ - меншікті мән, $\mathbf v$ - меншікті вектор. Жоғарыдағы мысалда $\lambda=3$, $\mathbf v=(1;1)$. Меншікті мәндер сипаттамалық теңдеуден: $\lambda^2-\tau\lambda+\Delta=0$, мұндағы $\tau=a+d$ (із), $\Delta=ad-bc$ (анықтауыш); жоғарыдағы $A$ үшін $\tau=1$, $\Delta=-6$, $\lambda^2-\lambda-6=0$, $\lambda=3,-2$. (3) <b>Екі белгісізді сызықтық жүйе:</b> $C_1+2C_2=7$, $C_1-3C_2=2$ ⇒ шегеріп $5C_2=5$, $C_2=1$, $C_1=5$.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Екі ыдыс бір-бірімен түтікпен жалғасқан: бірінші ыдыстағы тұз екіншіге өтеді, екіншісінен қайта оралады. Әр ыдыстағы тұздың өзгеруі <em>екі шамаға</em> тәуелді: өзінің мөлшеріне және көршісінің мөлшеріне. Бір ғана функция емес, екі функция қатар өзгереді: $x(t)$ және $y(t)$, және әрқайсысының туындысы екеуіне де байланысты: $x'=-0{,}05x+0{,}05y$, $y'=0{,}05x-0{,}05y$. Мұндай теңдеулер жиыны <b>жүйе</b> деп аталады. Жүйені матрицалық түрде $\mathbf x'=A\mathbf x$ деп жазуға болады, мұнда $\mathbf x=(x;y)$ вектор.</p>
+      <p>Неге жүйелер маңызды? Біріншіден, табиғаттағы құбылыстардың көбі бірнеше өзара әсерлесетін шамадан тұрады: жыртқыштар мен жемтіктер, ұлпа мен дәрі, тізбектегі екі контур. Екіншіден, кез келген жоғары ретті теңдеуді жүйеге айналдыруға болады: екінші ретті $y''=f(y,y')$ теңдеуінде $x_1=y$, $x_2=y'$ деп алсақ, $x_1'=x_2$, $x_2'=f(x_1,x_2)$. Яғни «орын мен жылдамдық» жұбы бір вектор болады. Үшіншіден, компьютер дифференциалдық теңдеулерді дәл осы жүйелік түрде шешеді: 1-сабақтағы Эйлер әдісі векторлар үшін де сол күйі жұмыс істейді.</p>
+      <p>Скаляр жағдайда $x'=\lambda x$ шешімі $x=Ce^{\lambda t}$. Жүйеге де осы идеяны көшіреміз: $\mathbf x=e^{\lambda t}\mathbf v$ түрінде шешім іздейміз. Қойсақ, $\lambda e^{\lambda t}\mathbf v=Ae^{\lambda t}\mathbf v$, яғни $A\mathbf v=\lambda\mathbf v$: меншікті мән есебі! Сонда жүйені шешу матрицаның меншікті мәндері мен меншікті векторларын табуға келеді, ал 5-сабақтағы сипаттамалық теңдеу - осы теорияның дербес жағдайы. Меншікті бағыттар - фазалық жазықтықтағы «ерекше түзулер»: сол түзулердің бойында шешім түзу бойымен қозғалады, экспоненциалды алыстайды не жақындайды.</p>
+      <p>Фазалық жазықтық - осьтері $x$ және $y$ болатын жазықтық: оның әр нүктесі жүйенің күйі. Уақыт өткен сайын нүкте траектория бойымен жүреді. Траекториялардың кескіні (фазалық портрет) жүйенің мінезін бір қарағанда көрсетеді. Меншікті мәндер нақты оң болса, траекториялар нөл нүктесінен алыстайды (тұрақсыз түйін); екеуі теріс болса, нөлге жақындайды (орнықты түйін); таңбалары әртүрлі болса, ершік (бір бағытта жақындап, екінші бағытта алыстайды). Комплекс болса, траекториялар айналады: нақты бөлік теріс болса спираль нөлге жақындайды, нөл болса центр (тұйық орбиталар), оң болса спираль алыстайды.</p>
+      <p>Серіппелі маятник өшетін тербеліс болғанда фазалық жазықтықта ($y$, $y'$) траектория нөлге қарай спиральмен оралады. Үйкелісі күшті болса, траектория спираль жасамай, түйін сияқты бағытпен нөлге жақындайды. Бұл суреттің барлығы бір ғана матрицаның меншікті мәндерімен анықталады.</p>
+      <p>Соңында жыртқыш-жемтік моделі. Қояндар (жемтік) көбейеді, қасқырлар (жыртқыш) оларды жейді, қасқырлар көбейеді, қояндар азаяды, қасқырлар аштықтан азаяды, қояндар қайта көбейеді. Бұл тербеліс сызықты емес жүйемен сипатталады, бірақ тепе-теңдік маңында оны сызықты жүйе ретінде қарастыруға болады және ол центр береді: популяциялар кезеңімен тербеледі. Осы модельдің сақталатын шамасы бар, ол тербелістің неге жабық сызықпен жүретінін түсіндіреді.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 7.1 · Сызықтық жүйе</span>
+        <p>Екі белгісізді <strong>біртекті сызықтық жүйе</strong> (<span class="term-en">linear system</span>) - $x_1'=ax_1+bx_2$, $x_2'=cx_1+dx_2$ жүйесі, матрицалық түрде $\mathbf x'=A\mathbf x$, $A=\begin{pmatrix}a&amp;b\\c&amp;d\end{pmatrix}$, $\mathbf x=\begin{pmatrix}x_1\\x_2\end{pmatrix}$. <strong>Коши есебі</strong>: қосымша $\mathbf x(0)=\mathbf x_0$ шарты. Шешім $\mathbf x(t)$ - вектор-функция, оның траекториясы $(x_1(t);x_2(t))$ <strong>фазалық жазықтықта</strong> (<span class="term-en">phase plane</span>) қисық сызады.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 7.1 · Бар болуы, жалғыздығы, құрылым</span>
+        <p>Кез келген $\mathbf x_0$ үшін $\mathbf x'=A\mathbf x$, $\mathbf x(0)=\mathbf x_0$ есебінің барлық $t\in\mathbb R$ үшін анықталған жалғыз шешімі бар. Шешімдер жиыны - 2 өлшемді сызықтық кеңістік: екі сызықтық тәуелсіз шешім $\mathbf x_1,\mathbf x_2$ бар, ал жалпы шешім $C_1\mathbf x_1+C_2\mathbf x_2$.</p></div>
+      <p><em>Негіздеме.</em> Шешім $e^{tA}\mathbf x_0$ (матрицалық экспонента), ол қатар арқылы анықталады. Біз нақты шешімдерді меншікті векторлар арқылы тікелей тұрғызамыз (2-4 қорыту); жалғыздық пен өлшем 5-сабақтың 5-қорытуына ұқсас дәлелденеді.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 7.1 · Екінші ретті теңдеуді жүйеге келтіру</span>
+        <div class="math-fbody">$$y''+by'+cy=0,\ \ x_1=y,\ x_2=y'\ \Longrightarrow\ \mathbf x'=\begin{pmatrix}0&amp;1\\-c&amp;-b\end{pmatrix}\mathbf x$$</div>
+        <p class="math-fnote">Матрицаның сипаттамалық теңдеуі $\lambda^2+b\lambda+c=0$ - 5-сабақтағы сипаттамалық теңдеу.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 7.2 · Нақты әртүрлі меншікті мәндер</span>
+        <div class="math-fbody">$$\mathbf x(t)=C_1e^{\lambda_1t}\mathbf v_1+C_2e^{\lambda_2t}\mathbf v_2,\qquad A\mathbf v_i=\lambda_i\mathbf v_i$$</div>
+        <p class="math-fnote">$\lambda_1\ne\lambda_2$ нақты. $\mathbf v_1,\mathbf v_2$ сызықтық тәуелсіз. Тұрақтылар $\mathbf x(0)=C_1\mathbf v_1+C_2\mathbf v_2$ жүйесінен табылады.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 7.3 · Комплекс меншікті мәндер</span>
+        <div class="math-fbody">$$\lambda=\alpha\pm i\beta,\ \mathbf v=\mathbf a+i\mathbf b:\quad \mathbf x=e^{\alpha t}\big[C_1(\mathbf a\cos\beta t-\mathbf b\sin\beta t)+C_2(\mathbf a\sin\beta t+\mathbf b\cos\beta t)\big]$$</div>
+        <p class="math-fnote">Нақты матрица үшін. $\alpha&lt;0$ - спираль нөлге жақындайды, $\alpha=0$ - центр (эллипс түрлі тұйық орбиталар), $\alpha>0$ - спираль алыстайды.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 7.2 · Тепе-теңдік және орнықтылық</span>
+        <p>$\mathbf x'=A\mathbf x$ үшін $\mathbf x\equiv\mathbf 0$ - <strong>тепе-теңдік нүктесі</strong> (<span class="term-en">equilibrium</span>). Ол <strong>асимптотикалық орнықты</strong> (<span class="term-en">asymptotically stable</span>), егер барлық шешім $t\to\infty$ кезінде $\mathbf 0$-ге ұмтылса; <strong>орнықсыз</strong> (<span class="term-en">unstable</span>), егер қандай да бір шешім алыстаса.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 7.2 · Із және анықтауыш бойынша жіктеу</span>
+        <p>$\tau=\operatorname{tr}A$, $\Delta=\det A\ne0$, $\mathcal D=\tau^2-4\Delta$ болсын. Онда: (а) $\Delta&lt;0$ - ершік (орнықсыз). (б) $\Delta>0$, $\mathcal D\ge0$ - түйін: $\tau&lt;0$ орнықты, $\tau>0$ орнықсыз. (в) $\Delta>0$, $\mathcal D&lt;0$ - спираль: $\tau&lt;0$ орнықты, $\tau>0$ орнықсыз; $\tau=0$ - центр (орнықты, бірақ асимптотикалық емес). Орнықтылық үшін: $\tau&lt;0$ және $\Delta>0$.</p></div>
+      <p><em>Негіздеме.</em> 4-қорытуда: $\lambda_{1,2}=\dfrac{\tau\pm\sqrt{\mathcal D}}2$, $\lambda_1+\lambda_2=\tau$, $\lambda_1\lambda_2=\Delta$.</p>
+      <div class="math-remember"><span class="math-box-title">Есте сақта: жүйені шешу алгоритмі</span>
+        <p>(1) $\lambda^2-\tau\lambda+\Delta=0$ шешіп, меншікті мәндерді табыңыз. (2) Әр $\lambda$ үшін $(A-\lambda I)\mathbf v=\mathbf 0$ арқылы $\mathbf v$ табыңыз. (3) Формула 7.2 не 7.3 бойынша жалпы шешімді жазыңыз. (4) $\mathbf x(0)$ арқылы $C_1,C_2$ табыңыз. (5) $\tau,\Delta$ бойынша портрет түрін айтыңыз. (6) Тексеру: $\mathbf x'=A\mathbf x$ және $\mathbf x(0)$.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Меншікті вектор тек бағыт: $\mathbf v$ мен $2\mathbf v$ бірдей. $(A-\lambda I)\mathbf v=\mathbf 0$ жүйесінде екі теңдеу пропорционал болуы керек (анықтауыш нөл): егер екі теңдеу қарама-қайшы шықса, $\lambda$ дұрыс емес. Сондай-ақ жүйеде $\Delta=0$ болса (бір меншікті мән нөл), тепе-теңдік нүктелері түзу бойында жатады: бұл жағдай жеке қарастырылады (екі ыдыс есебі).</p></div>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 7.3 · Жыртқыш-жемтік моделі (Лотка-Вольтерра)</span>
+        <p>$x(t)$ - жемтік, $y(t)$ - жыртқыш саны: <strong>Лотка-Вольтерра жүйесі</strong> (<span class="term-en">Lotka-Volterra system</span>)
+        $$x'=x\,(a-by),\qquad y'=y\,(-c+dx),\qquad a,b,c,d>0.$$
+        Жемтік жыртқышсыз экспоненциалды өседі ($a$), кездесулер жемтікті азайтады ($-bxy$) және жыртқышты көбейтеді ($dxy$), жыртқыш жемтіксіз өледі ($-c$). Тепе-теңдік: $(x^*;y^*)=\big(\tfrac cd;\tfrac ab\big)$.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 7.4 · Сызықтандыру және сақталатын шама</span>
+        <div class="math-fbody">$$u'=-\frac{bc}{d}\,v,\quad v'=\frac{ad}{b}\,u,\quad \omega=\sqrt{ac};\qquad H(x,y)=dx-c\ln x+by-a\ln y=\text{const}$$</div>
+        <p class="math-fnote">$u=x-x^*$, $v=y-y^*$ - тепе-теңдіктен ауытқу. Сызықты жүйе центр береді (періоды $2\pi/\sqrt{ac}$); $H$ траекториялар бойында тұрақты, сондықтан орбиталар тұйық.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <p>Төмендегі дәлелдеулерді оқып қана қоймай, жауып қойып, өзіңіз қағазға қайталап жазып көріңіз.</p>
+      <div class="mx-derive-tools"></div>
+
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: екінші ретті теңдеу және жүйе</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $y''+by'+cy=0$ теңдеуін жүйеге келтіру және матрицаның меншікті мәндерінің сипаттамалық теңдеуге сәйкес келетінін көрсету.</p>
+          <ol class="math-steps">
+            <li>Жаңа белгісіздер: $x_1=y$ (орын), $x_2=y'$ (жылдамдық). Сонда $x_1'=y'=x_2$.</li>
+            <li>Екінші теңдеу: $x_2'=y''=-by'-cy=-cx_1-bx_2$.</li>
+            <li>Матрицалық түрде: $\begin{pmatrix}x_1\\x_2\end{pmatrix}'=\begin{pmatrix}0&amp;1\\-c&amp;-b\end{pmatrix}\begin{pmatrix}x_1\\x_2\end{pmatrix}$. Матрица $A=\begin{pmatrix}0&amp;1\\-c&amp;-b\end{pmatrix}$.</li>
+            <li>Ізі $\tau=-b$, анықтауышы $\Delta=0\cdot(-b)-1\cdot(-c)=c$. Сипаттамалық теңдеу: $\lambda^2-\tau\lambda+\Delta=\lambda^2+b\lambda+c=0$ - 5-сабақтағы сипаттамалық теңдеу.</li>
+            <li>Меншікті вектор: $(A-\lambda I)\mathbf v=0$ бірінші жолынан $-\lambda v_1+v_2=0$, яғни $\mathbf v=(1;\lambda)$. Сондықтан шешім $\mathbf x=e^{\lambda t}(1;\lambda)$, оның бірінші компоненті $y=e^{\lambda t}$, екіншісі $y'=\lambda e^{\lambda t}$ ✓.</li>
+            <li>Мысал: $y''+3y'+2y=0$, $A=\begin{pmatrix}0&amp;1\\-2&amp;-3\end{pmatrix}$, $\tau=-3$, $\Delta=2$, $\lambda=-1,-2$, орнықты түйін ($\mathcal D=1>0$). Бұл 5-сабақтағы нақты түбірлер жағдайы.</li>
+            <li>Қорытынды: екінші ретті теңдеудің кез келген теориясын жүйе тілінде де айтуға болады, ал жүйе теориясы көп белгісізді жағдайға жалпыланады.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-2" open>
+        <summary>Қорытып шығару 2: меншікті мәндер: нақты әртүрлі жағдай</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\mathbf x=e^{\lambda t}\mathbf v$ шешім болуы үшін $A\mathbf v=\lambda\mathbf v$ қажет және жеткілікті екенін көрсетіп, $\lambda_1\ne\lambda_2$ кезінде шешімдердің тәуелсіздігін дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$\mathbf x=e^{\lambda t}\mathbf v$ ($\mathbf v$ тұрақты вектор) деп алайық. Сонда $\mathbf x'=\lambda e^{\lambda t}\mathbf v$ және $A\mathbf x=e^{\lambda t}A\mathbf v$.</li>
+            <li>$\mathbf x'=A\mathbf x$ теңдігі $e^{\lambda t}(\lambda\mathbf v-A\mathbf v)=\mathbf 0$ дегенге пара-пар, ал $e^{\lambda t}\ne0$, сондықтан $A\mathbf v=\lambda\mathbf v$.</li>
+            <li>Нөлден өзгеше $\mathbf v$ болуы үшін $(A-\lambda I)\mathbf v=\mathbf 0$ жүйесінің анықтауышы нөл: $\det(A-\lambda I)=\lambda^2-\tau\lambda+\Delta=0$ (2×2 жағдайда $(a-\lambda)(d-\lambda)-bc=\lambda^2-(a+d)\lambda+ad-bc$).</li>
+            <li>Тәуелсіздік. $\lambda_1\ne\lambda_2$ және $A\mathbf v_i=\lambda_i\mathbf v_i$. Айталық $\mathbf v_2=k\mathbf v_1$ ($k\ne0$). Сонда $A\mathbf v_2=kA\mathbf v_1=k\lambda_1\mathbf v_1=\lambda_1\mathbf v_2$, бірақ $A\mathbf v_2=\lambda_2\mathbf v_2$. Демек $(\lambda_1-\lambda_2)\mathbf v_2=\mathbf 0$, ал $\mathbf v_2\ne\mathbf 0$ ⇒ $\lambda_1=\lambda_2$: қайшылық. Векторлар тәуелсіз.</li>
+            <li>Шешімдердің $\mathbf x_i=e^{\lambda_it}\mathbf v_i$ тәуелсіздігі: $t=0$ кезінде $C_1\mathbf v_1+C_2\mathbf v_2=\mathbf 0$ тек $C_1=C_2=0$ береді. Кез келген $\mathbf x_0$ үшін $\mathbf x_0=C_1\mathbf v_1+C_2\mathbf v_2$ жүйесі бірмәнді шешіледі (тәуелсіз векторлар базис).</li>
+            <li>Мысал (1-мысал): $A=\begin{pmatrix}1&amp;2\\3&amp;0\end{pmatrix}$, $\lambda^2-\lambda-6=0$, $\lambda=3,-2$; $\lambda=3$: $\begin{pmatrix}-2&amp;2\\3&amp;-3\end{pmatrix}\mathbf v=0$ ⇒ $\mathbf v=(1;1)$; $\lambda=-2$: $\begin{pmatrix}3&amp;2\\3&amp;2\end{pmatrix}\mathbf v=0$ ⇒ $\mathbf v=(2;-3)$.</li>
+            <li>Геометриялық мағынасы: меншікті векторлар бағытындағы түзулер траекторияны өзіне жібермейтін «арналар». $\lambda>0$ болса, нүкте сол түзу бойымен алыстайды, $\lambda&lt;0$ болса, жақындайды.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-3" open>
+        <summary>Қорытып шығару 3: комплекс меншікті мәндер: нақты шешімдер</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\lambda=\alpha\pm i\beta$, $\mathbf v=\mathbf a+i\mathbf b$ болғанда нақты шешімдерді шығару және траекторияның спираль не центр екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>Комплекс шешім $\mathbf z=e^{(\alpha+i\beta)t}(\mathbf a+i\mathbf b)$ жүйені қанағаттандырады (2-қорытудың алгебрасы комплекс $\lambda$ үшін де сол күйі).</li>
+            <li>Эйлер формуласымен ашамыз: $\mathbf z=e^{\alpha t}(\cos\beta t+i\sin\beta t)(\mathbf a+i\mathbf b)=e^{\alpha t}\big[(\mathbf a\cos\beta t-\mathbf b\sin\beta t)+i(\mathbf a\sin\beta t+\mathbf b\cos\beta t)\big]$.</li>
+            <li>$A$ нақты матрица, сондықтан $\mathbf z'=A\mathbf z$ теңдігінің нақты және жорамал бөліктері жеке-жеке жүйені қанағаттандырады: $\mathbf x_1=\mathrm{Re}\,\mathbf z$, $\mathbf x_2=\mathrm{Im}\,\mathbf z$ - нақты шешімдер.</li>
+            <li>Тәуелсіздік: $t=0$ кезінде $\mathbf x_1(0)=\mathbf a$, $\mathbf x_2(0)=\mathbf b$. $\mathbf a,\mathbf b$ тәуелсіз екенін көрсетейік: $\mathbf b=k\mathbf a$ болса, $\mathbf v=(1+ik)\mathbf a$ нақты бағыттың еселігі болып, $A\mathbf a$ нақты вектор болған кезде $\lambda=\alpha+i\beta$ нақты болуы тиіс, ал $\beta\ne0$. Қайшылық.</li>
+            <li>Траектория: $\alpha&lt;0$ болса, $e^{\alpha t}\to0$ және айналу $\beta$ жылдамдықпен жүреді: спираль нөлге оралады. $\alpha=0$: $\mathbf x=C_1(\mathbf a\cos\beta t-\mathbf b\sin\beta t)+C_2(\dots)$ периодты (период $2\pi/\beta$), траектория тұйық - эллипс (центр). $\alpha>0$: спираль алыстайды.</li>
+            <li>Мысал (2-мысал): $A=\begin{pmatrix}-1&amp;2\\-2&amp;-1\end{pmatrix}$, $\lambda=-1\pm2i$. $\lambda=-1+2i$ үшін $\begin{pmatrix}-2i&amp;2\\-2&amp;-2i\end{pmatrix}\mathbf v=0$, бірінші жол: $-2iv_1+2v_2=0$, $v_2=iv_1$, $\mathbf v=(1;i)=\mathbf a+i\mathbf b$, $\mathbf a=(1;0)$, $\mathbf b=(0;1)$. Тексеру екінші жолда: $-2\cdot1-2i\cdot i=-2+2=0$ ✓.</li>
+            <li>Нақты шешімдер: $\mathbf x_1=e^{-t}(\cos2t;-\sin2t)$, $\mathbf x_2=e^{-t}(\sin2t;\cos2t)$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-4" open>
+        <summary>Қорытып шығару 4: із және анықтауыш бойынша жіктеу</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 7.2-ні дәлелдеу: меншікті мәндердің таңбасын $\tau$, $\Delta$ арқылы анықтау.</p>
+          <ol class="math-steps">
+            <li>Меншікті мәндер $\lambda^2-\tau\lambda+\Delta=0$ түбірлері. Виет формулалары: $\lambda_1+\lambda_2=\tau$, $\lambda_1\lambda_2=\Delta$. Дискриминант $\mathcal D=\tau^2-4\Delta$, $\lambda_{1,2}=\dfrac{\tau\pm\sqrt{\mathcal D}}{2}$.</li>
+            <li><b>$\Delta&lt;0$.</b> $\lambda_1\lambda_2&lt;0$: түбірлер нақты ($\mathcal D>\tau^2\ge0$) және таңбалары қарама-қарсы. Бір бағытта $e^{\lambda_1t}$ өседі, екіншісінде $e^{\lambda_2t}$ өшеді: ершік. Кез келген шешімнің өсетін құраушысы бар (орнықсыз), тек бір түзуден басталған шешім ғана нөлге жақындайды.</li>
+            <li><b>$\Delta>0$, $\mathcal D\ge0$.</b> $\lambda_1\lambda_2>0$: түбірлер нақты және бірдей таңбалы, таңба $\tau$ таңбасымен бірдей ($\lambda_1+\lambda_2=\tau$). $\tau&lt;0$ болса екеуі де теріс: барлық шешім өшеді (орнықты түйін); $\tau>0$ - екеуі де оң (орнықсыз түйін).</li>
+            <li><b>$\Delta>0$, $\mathcal D&lt;0$.</b> Түбірлер комплекс түйіндес: $\lambda=\dfrac\tau2\pm i\dfrac{\sqrt{-\mathcal D}}2$. Нақты бөлігі $\alpha=\tau/2$. Формула 7.3 бойынша: $\tau&lt;0$ - спираль нөлге жақындайды, $\tau>0$ - алыстайды, $\tau=0$ - центр.</li>
+            <li><b>Орнықтылық шарты.</b> Асимптотикалық орнықтылық ⇔ екі меншікті мәннің нақты бөлігі теріс ⇔ $\tau&lt;0$ және $\Delta>0$. Шынымен: нақты түбірлерде екеуі теріс ⇔ қосындысы теріс және көбейтіндісі оң; комплекс түбірлерде нақты бөлігі $\tau/2$ және $\Delta=|\lambda|^2>0$.</li>
+            <li>Тексеру кестесі: $\begin{pmatrix}2&amp;1\\1&amp;2\end{pmatrix}$: $\tau=4,\Delta=3,\mathcal D=4$ - орнықсыз түйін; $\begin{pmatrix}1&amp;2\\3&amp;2\end{pmatrix}$: $\Delta=-4$ - ершік; $\begin{pmatrix}0&amp;1\\-4&amp;0\end{pmatrix}$: $\tau=0,\Delta=4$ - центр; $\begin{pmatrix}-1&amp;1\\-1&amp;-1\end{pmatrix}$: $\tau=-2,\Delta=2,\mathcal D=-4$ - орнықты спираль.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <details class="math-derive" id="d-5" open>
+        <summary>Қорытып шығару 5: Лотка-Вольтерра: сызықтандыру және сақталатын шама</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Жыртқыш-жемтік жүйесінің тепе-теңдігін табу, оны сызықтандыру, $H$ шамасының сақталатынын дәлелдеу және орташа популяциялардың тепе-теңдікке тең екенін көрсету.</p>
+          <ol class="math-steps">
+            <li><b>Тепе-теңдік.</b> $x'=y'=0$: $x(a-by)=0$, $y(-c+dx)=0$. Тривиал емес шешім: $y^*=\dfrac ab$, $x^*=\dfrac cd$.</li>
+            <li><b>Сызықтандыру.</b> $x=x^*+u$, $y=y^*+v$ қоямыз. $x'=u'=(x^*+u)(a-by^*-bv)=(x^*+u)(-bv)$, себебі $a-by^*=0$. Кіші $u,v$ үшін $uv$ мүшесін тастаймыз: $u'\approx-bx^*v=-\dfrac{bc}dv$. Сол сияқты $v'=(y^*+v)\,du\approx dy^*u=\dfrac{ad}bu$.</li>
+            <li><b>Центр.</b> Матрица $\begin{pmatrix}0&amp;-bc/d\\ad/b&amp;0\end{pmatrix}$: $\tau=0$, $\Delta=\dfrac{bc}d\cdot\dfrac{ad}b=ac>0$. Центр, $\lambda=\pm i\sqrt{ac}$, период $T=\dfrac{2\pi}{\sqrt{ac}}$. Алайда сызықтандыру орнықтылық нәтижесінде центр жағдайында ақырғы шешім бермейді, сондықтан келесі қадам керек.</li>
+            <li><b>Сақталатын шама.</b> $H=dx-c\ln x+by-a\ln y$ ($x,y>0$). Тізбектей дифференциалдаймыз: $\dfrac{dH}{dt}=(d-\dfrac cx)x'+(b-\dfrac ay)y'$.</li>
+            <li>Жүйені қоямыз: $(d-\tfrac cx)\,x(a-by)=(dx-c)(a-by)$ және $(b-\tfrac ay)\,y(-c+dx)=(by-a)(dx-c)$. Қосындысы: $(dx-c)\big[(a-by)+(by-a)\big]=0$. Демек $H$ тұрақты.</li>
+            <li>$H$ өзінің минимумына $(x^*;y^*)$ нүктесінде жетеді (дөңес функция), сондықтан деңгей сызықтары $H=\text{const}$ - тепе-теңдікті қоршайтын тұйық қисықтар. Траектория сол қисықта қалады: орбиталар тұйық, популяциялар периодты тербеледі.</li>
+            <li><b>Орташа мән.</b> $(\ln x)'=\dfrac{x'}x=a-by$. Периодтың $T$ ішінде интегралдасақ: $\ln x(T)-\ln x(0)=0=aT-b\int_0^Ty\,dt$, сондықтан $\dfrac1T\int_0^Ty\,dt=\dfrac ab=y^*$. Дәл солай $\dfrac1T\int_0^Tx\,dt=\dfrac cd=x^*$.</li>
+            <li>Мысал (5-мысал): $x'=2x-xy$, $y'=-3y+xy$: $(3;2)$, $\omega=\sqrt{6}$, $T\approx2{,}565$, $H=x-3\ln x+y-2\ln y$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+
+      <div class="math-example" id="ex-1">
+        <h3>Мысал 1. Нақты меншікті мәндер</h3>
+        <p class="math-problem">$\mathbf x'=\begin{pmatrix}1&2\\3&0\end{pmatrix}\mathbf x$, $\mathbf x(0)=\begin{pmatrix}7\\2\end{pmatrix}$ есебін шешіп, портреттің түрін анықтаңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> <b>Сипаттамалық теңдеу.</b> $\tau=1$, $\Delta=-6$. $\lambda^2-\lambda-6=0$, $\lambda_1=3$, $\lambda_2=-2$. $\Delta&lt;0$: ершік.</li>
+          <li><b>2-қадам.</b> <b>$\lambda=3$ меншікті векторы.</b> $A-3I=\begin{pmatrix}-2&2\\3&-3\end{pmatrix}$; $-2v_1+2v_2=0$ ⇒ $\mathbf v_1=(1;1)$.</li>
+          <li><b>3-қадам.</b> <b>$\lambda=-2$ меншікті векторы.</b> $A+2I=\begin{pmatrix}3&2\\3&2\end{pmatrix}$; $3v_1+2v_2=0$ ⇒ $\mathbf v_2=(2;-3)$.</li>
+          <li><b>4-қадам.</b> <b>Жалпы шешім.</b> $\mathbf x=C_1e^{3t}\begin{pmatrix}1\\1\end{pmatrix}+C_2e^{-2t}\begin{pmatrix}2\\-3\end{pmatrix}$.</li>
+          <li><b>5-қадам.</b> <b>Бастапқы шарт.</b> $C_1+2C_2=7$, $C_1-3C_2=2$. Шегереміз: $5C_2=5$, $C_2=1$, $C_1=5$.</li>
+          <li><b>6-қадам.</b> <b>Жауап.</b> $x_1=5e^{3t}+2e^{-2t}$, $x_2=5e^{3t}-3e^{-2t}$. Тексеру: $x_1(0)=7$, $x_2(0)=2$ ✓; $x_1'=15e^{3t}-4e^{-2t}$ және $x_1+2x_2=5e^{3t}+2e^{-2t}+10e^{3t}-6e^{-2t}=15e^{3t}-4e^{-2t}$ ✓.</li>
+          <li><b>7-қадам.</b> <b>Портрет.</b> $t\to\infty$ кезінде $e^{3t}$ басым, траектория $(1;1)$ бағытына қарай кетеді; $(2;-3)$ түзуінен басталған шешімдер ғана нөлге жақындайды.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\mathbf x=5e^{3t}(1;1)+e^{-2t}(2;-3)$; ершік.</p>
+      </div>
+
+      <div class="math-example" id="ex-2">
+        <h3>Мысал 2. Комплекс меншікті мәндер</h3>
+        <p class="math-problem">$\mathbf x'=\begin{pmatrix}-1&2\\-2&-1\end{pmatrix}\mathbf x$, $\mathbf x(0)=\begin{pmatrix}1\\0\end{pmatrix}$ есебін шешіңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> <b>Меншікті мәндер.</b> $\tau=-2$, $\Delta=1+4=5$, $\lambda^2+2\lambda+5=0$, $\lambda=-1\pm2i$. Сонда $\mathcal D=-16&lt;0$, $\tau&lt;0$: орнықты спираль.</li>
+          <li><b>2-қадам.</b> <b>Меншікті вектор.</b> $\lambda=-1+2i$: $A-\lambda I=\begin{pmatrix}-2i&2\\-2&-2i\end{pmatrix}$, бірінші жол $-2iv_1+2v_2=0$, $v_2=iv_1$, $\mathbf v=(1;i)$, $\mathbf a=(1;0)$, $\mathbf b=(0;1)$.</li>
+          <li><b>3-қадам.</b> <b>Нақты шешімдер.</b> Формула 7.3: $\mathbf x_1=e^{-t}(\cos2t;-\sin2t)$, $\mathbf x_2=e^{-t}(\sin2t;\cos2t)$.</li>
+          <li><b>4-қадам.</b> <b>Бастапқы шарт.</b> $\mathbf x(0)=C_1\mathbf x_1(0)+C_2\mathbf x_2(0)=C_1(1;0)+C_2(0;1)=(1;0)$, сондықтан $C_1=1$, $C_2=0$.</li>
+          <li><b>5-қадам.</b> <b>Жауап.</b> $x_1=e^{-t}\cos2t$, $x_2=-e^{-t}\sin2t$.</li>
+          <li><b>6-қадам.</b> <b>Тексеру.</b> $x_1'=-e^{-t}\cos2t-2e^{-t}\sin2t$, ал $-x_1+2x_2=-e^{-t}\cos2t-2e^{-t}\sin2t$ ✓. $x_2'=e^{-t}\sin2t-2e^{-t}\cos2t$ және $-2x_1-x_2=-2e^{-t}\cos2t+e^{-t}\sin2t$ ✓.</li>
+          <li><b>7-қадам.</b> <b>Мінезі.</b> Нүкте $(1;0)$-ден басталып, сағат тілімен айналып, спираль бойымен нөлге оралады. Бір айналым уақыты $\pi$, радиусы әр айналымда $e^{-\pi}\approx0{,}043$ есе кемиді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\mathbf x=e^{-t}(\cos2t;\,-\sin2t)$.</p>
+      </div>
+
+      <div class="math-example" id="ex-3">
+        <h3>Мысал 3. Із және анықтауыш бойынша жіктеу</h3>
+        <p class="math-problem">Төмендегі матрицалар үшін тепе-теңдіктің түрін анықтаңыз: (а) $\begin{pmatrix}2&1\\1&2\end{pmatrix}$; (ә) $\begin{pmatrix}1&2\\3&2\end{pmatrix}$; (б) $\begin{pmatrix}0&1\\-4&0\end{pmatrix}$; (в) $\begin{pmatrix}-1&1\\-1&-1\end{pmatrix}$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> <b>(а).</b> $\tau=4$, $\Delta=3$, $\mathcal D=16-12=4>0$. Меншікті мәндер $\lambda=\dfrac{4\pm2}{2}=3,1$: екеуі де оң. Орнықсыз түйін.</li>
+          <li><b>2-қадам.</b> <b>(ә).</b> $\tau=3$, $\Delta=2-6=-4&lt;0$. Ершік. $\lambda=\dfrac{3\pm5}{2}=4,-1$ ✓.</li>
+          <li><b>3-қадам.</b> <b>(б).</b> $\tau=0$, $\Delta=4>0$, $\mathcal D=-16$. $\lambda=\pm2i$: центр. Бұл $y''+4y=0$ жүйесі, тербеліс периоды $\pi$.</li>
+          <li><b>4-қадам.</b> <b>(в).</b> $\tau=-2$, $\Delta=1+1=2$, $\mathcal D=4-8=-4&lt;0$. $\lambda=-1\pm i$. Орнықты спираль.</li>
+          <li><b>5-қадам.</b> <b>Орнықтылық.</b> Тек (в) асимптотикалық орнықты ($\tau&lt;0$, $\Delta>0$). (б) орнықты, бірақ асимптотикалық емес: траектория нөлге жақындамай, тұйық эллипс бойымен жүреді. (а), (ә) орнықсыз.</li>
+          <li><b>6-қадам.</b> <b>Тексеру тәсілі.</b> $\lambda_1+\lambda_2=\tau$ және $\lambda_1\lambda_2=\Delta$ теңдіктерін тексеріңіз: (а) $3+1=4$, $3\cdot1=3$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> (а) орнықсыз түйін; (ә) ершік; (б) центр; (в) орнықты спираль.</p>
+      </div>
+
+      <div class="math-example" id="ex-4">
+        <h3>Мысал 4. Серіппелі маятник жүйе ретінде</h3>
+        <p class="math-problem">$y''+3y'+2y=0$ теңдеуін жүйеге келтіріп, меншікті мәндерін, меншікті векторларын және $y(0)=1$, $y'(0)=0$ шешімін табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> <b>Жүйе.</b> $x_1=y$, $x_2=y'$: $\mathbf x'=\begin{pmatrix}0&1\\-2&-3\end{pmatrix}\mathbf x$.</li>
+          <li><b>2-қадам.</b> <b>Меншікті мәндер.</b> $\tau=-3$, $\Delta=2$, $\lambda^2+3\lambda+2=0$, $\lambda=-1,-2$. $\mathcal D=1>0$, $\tau&lt;0$: орнықты түйін.</li>
+          <li><b>3-қадам.</b> <b>Меншікті векторлар.</b> Формула бойынша $\mathbf v=(1;\lambda)$: $\mathbf v_1=(1;-1)$, $\mathbf v_2=(1;-2)$. Тексеру: $A\mathbf v_1=(−1;−2+3)=(-1;1)=-1\cdot(1;-1)$ ✓.</li>
+          <li><b>4-қадам.</b> <b>Жалпы шешім.</b> $\mathbf x=C_1e^{-t}(1;-1)+C_2e^{-2t}(1;-2)$, $y=C_1e^{-t}+C_2e^{-2t}$.</li>
+          <li><b>5-қадам.</b> <b>Шарттар.</b> $C_1+C_2=1$, $-C_1-2C_2=0$ ⇒ $C_2=-1$, $C_1=2$.</li>
+          <li><b>6-қадам.</b> <b>Жауап.</b> $y=2e^{-t}-e^{-2t}$, $y'=-2e^{-t}+2e^{-2t}$. $y(0)=1$ ✓, $y'(0)=0$ ✓.</li>
+          <li><b>7-қадам.</b> <b>Мағынасы.</b> Үйкеліс күшті, тербеліс жоқ: жүк бастапқыда еш жылдамдықсыз босатылса, тепе-теңдікке біртіндеп оралады, бірақ оны қиып өтпейді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $y=2e^{-t}-e^{-2t}$.</p>
+      </div>
+
+      <div class="math-example" id="ex-5">
+        <h3>Мысал 5. Жыртқыш-жемтік</h3>
+        <p class="math-problem">$x'=2x-xy$, $y'=-3y+xy$ жүйесінің тепе-теңдіктерін табыңыз, $(3;2)$ маңында сызықтандырып, тербеліс периодын және сақталатын шаманы анықтаңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> <b>Тепе-теңдіктер.</b> $x(2-y)=0$, $y(-3+x)=0$. Шешімдер: $(0;0)$ және $(3;2)$.</li>
+          <li><b>2-қадам.</b> <b>$(0;0)$.</b> Сызықтандырсақ $x'\approx2x$, $y'\approx-3y$: $\Delta=-6&lt;0$, ершік. Жыртқыш жоқ болса, жемтік көбейеді; жемтік жоқ болса жыртқыш өледі.</li>
+          <li><b>3-қадам.</b> <b>$(3;2)$.</b> $x=3+u$, $y=2+v$: $u'=(3+u)(-v)\approx-3v$, $v'=(2+v)u\approx2u$. Матрица $\begin{pmatrix}0&-3\\2&0\end{pmatrix}$: $\tau=0$, $\Delta=6$, $\lambda=\pm i\sqrt6$ - центр.</li>
+          <li><b>4-қадам.</b> <b>Период.</b> $T=\dfrac{2\pi}{\sqrt6}\approx2{,}565$.</li>
+          <li><b>5-қадам.</b> <b>Сақталатын шама.</b> $H=x-3\ln x+y-2\ln y$ (Формула 7.4, $a=2,b=1,c=3,d=1$). Тексеру: $\dfrac{dH}{dt}=(1-\tfrac3x)x(2-y)+(1-\tfrac2y)y(-3+x)=(x-3)(2-y)+(y-2)(x-3)=0$ ✓.</li>
+          <li><b>6-қадам.</b> <b>Орташа мәндер.</b> Периодта жемтіктің орташа саны $x^*=3$, жыртқыштікі $y^*=2$ (4-қорытудың 7-қадамы).</li>
+          <li><b>7-қадам.</b> <b>Мағына.</b> Популяциялар $H=\text{const}$ тұйық қисығымен жүреді: жемтік саны максимумынан кейін жыртқыштар көбейеді, жемтік азаяды, жыртқыштар азаяды және цикл қайталанады. Жыртқыш саны жемтік санынан фаза бойынша кешігеді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Тепе-теңдік $(3;2)$, центр, $T\approx2{,}565$; $H=x-3\ln x+y-2\ln y$ сақталады.</p>
+      </div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Меншікті векторды табу кезінде екі теңдеуді бір-бірінен тәуелсіз деп шешіп, тек нөлдік $\mathbf v=0$ алу</span> → <span class="math-good">$(A-\lambda I)\mathbf v=0$ жүйесінің екі теңдеуі пропорционал; біреуін жазып, $\mathbf v$ бағытын алу</span><br>Неге қате: $\lambda$ меншікті мән болса, $\det(A-\lambda I)=0$, сондықтан нөлден өзгеше шешім бар. Тек нөл шықса, $\lambda$ дұрыс емес.</li>
+        <li><span class="math-bad">Жалпы шешімді $C_1e^{\lambda_1t}+C_2e^{\lambda_2t}$ деп скаляр түрінде жазу</span> → <span class="math-good">$C_1e^{\lambda_1t}\mathbf v_1+C_2e^{\lambda_2t}\mathbf v_2$ (векторлар)</span><br>Неге қате: $\mathbf x$ - вектор-функция, әр компонент өз коэффициентімен.</li>
+        <li><span class="math-bad">Бастапқы шартты $\mathbf x(0)=(7;2)$ үшін $C_1=7$, $C_2=2$ деп алу</span> → <span class="math-good">$C_1\mathbf v_1+C_2\mathbf v_2=\mathbf x_0$ жүйесін шешу</span><br>Неге қате: $\mathbf v_1,\mathbf v_2$ бірлік векторлар емес; $C_i$ - сол бағыттар бойынша жіктеу коэффициенттері.</li>
+        <li><span class="math-bad">Комплекс жағдайда жауапқа $e^{(\alpha+i\beta)t}\mathbf v$ комплекс векторын қалдыру</span> → <span class="math-good">нақты және жорамал бөліктерін бөліп, нақты шешімдерді жазу (Формула 7.3)</span><br>Неге қате: нақты есептің жауабы нақты функция болуы тиіс.</li>
+        <li><span class="math-bad">Центрді «орнықты» деп, нөлге жақындайды деп жазу</span> → <span class="math-good">центр орнықты, бірақ асимптотикалық орнықты емес: траектория тұйық сызық бойымен айналады</span><br>Неге қате: $\alpha=0$ болғанда $e^{\alpha t}=1$, амплитуда өшпейді.</li>
+        <li><span class="math-bad">$\tau&lt;0$ болса, нөл орнықты деп тұжырымдау</span> → <span class="math-good">тағы $\Delta>0$ керек; $\Delta&lt;0$ болса ершік (орнықсыз)</span><br>Неге қате: $A=\begin{pmatrix}-3&amp;0\\0&amp;1\end{pmatrix}$ үшін $\tau=-2&lt;0$, бірақ $\lambda=1>0$ - ершік. Екі шарт та қажет.</li>
+        <li><span class="math-bad">Екінші ретті теңдеудің жүйесінде $\mathbf v=(\lambda;1)$ жазу</span> → <span class="math-good">$\mathbf v=(1;\lambda)$, себебі $x_2=x_1'$</span><br>Неге қате: екінші компонент бірінші компоненттің туындысы: $y=e^{\lambda t}$, $y'=\lambda e^{\lambda t}$.</li>
+        <li><span class="math-bad">Лотка-Вольтерра жүйесінде сызықтандыруды тепе-теңдіктен алыс нүктеде қолдану</span> → <span class="math-good">тек $(x^*;y^*)$ маңында ($u,v$ кіші), алыста $H$ сақталады деген дәл нәтижені пайдалану</span><br>Неге қате: $uv$ мүшесін тастау тек кіші ауытқуларда жарамды; үлкен амплитудада тербеліс периоды $\sqrt{ac}$ формуласынан өзгеше.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Үш демпфирлеу режимі: y(0)=1, y'(0)=0" data-config='{"fns":[{"f":"(4*exp(-x)-exp(-4*x))/3","label":"шамадан тыс: y&#39;&#39;+5y&#39;+4y=0"},{"f":"(1+2*x)*exp(-2*x)","label":"критикалық: y&#39;&#39;+4y&#39;+4y=0"},{"f":"exp(-x)*(cos(2*x)+sin(2*x)/2)","label":"тербелмелі: y&#39;&#39;+2y&#39;+5y=0"}],"view":[0,6,-0.4,1.2]}'></div>
+      <p><b>Бақылаңыз:</b> Көк қисық тербеліссіз баяу өшеді (түйін, екі нақты теріс түбір). Критикалық режимде (қызыл) жүйе тез әрі тербеліссіз тоқтайды: бұл есік жабатын механизмдерде қолданылады. Тербелмелі режимде (жасыл) шешім нөл деңгейін қиып өтеді де, амплитудасы $e^{-x}$ бойынша өшеді (спираль). Үшеуі де бір теңдеудің түбірлеріне байланысты.</p>
+      <div class="math-viz" data-viz="graph" data-title="Спираль: x₁ = e^(αt)cos βt, x₂ = −e^(αt)sin βt" data-config='{"fns":[{"f":"exp(al*x)*cos(be*x)","label":"x1(t)"},{"f":"-exp(al*x)*sin(be*x)","label":"x2(t)"}],"params":[{"n":"al","min":-1.2,"max":0.3,"step":0.05,"v":-1},{"n":"be","min":0.5,"max":5,"step":0.1,"v":2}],"view":[0,8,-1.5,1.5]}'></div>
+      <p><b>Бақылаңыз:</b> $\alpha=-1$, $\beta=2$ болса, 2-мысалдың шешімі шығады. Екі компонент $\pi/2$ фазаға ығысқан, сондықтан фазалық жазықтықта нүкте шеңбер бойымен (спираль) жүреді. $\alpha=0$ болса, амплитуда өшпейді (центр); $\alpha>0$ болса, өсетін спираль.</p>
+      <div class="math-viz" data-viz="graph" data-title="Лотка-Вольтерра: тепе-теңдік маңындағы тербеліс (x* = 3, y* = 2)" data-config='{"fns":[{"f":"3+A*cos(sqrt(6)*x)","label":"жемтік x(t)"},{"f":"2+A*sqrt(6)/3*sin(sqrt(6)*x)","label":"жыртқыш y(t)"}],"params":[{"n":"A","min":0.1,"max":1.5,"step":0.1,"v":0.8}],"view":[0,10,0,5]}'></div>
+      <p><b>Бақылаңыз:</b> Сызықтандырылған жүйенің шешімі: екі популяция $T=2\pi/\sqrt6\approx2{,}57$ периодымен тербеледі, жыртқыштың тербелісі жемтіктен ширек периодқа кешігеді. Орташа мәндер тепе-теңдікке $(3;2)$ тең. Бұл жуықтау кіші амплитудаға ғана жарамды: нақты жүйеде үлкен амплитудада қисықтар симметриялы емес.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Төменде 21 есеп блогы бар: оңайдан қиынға. «Кеңес» батырмасы алдымен кеңес, одан кейін қадамдық шешімді, соңында жауапты ашады. Өрнек енгізгенде көбейтуді <code>2t</code> не <code>2*t</code>, дәрежені <code>t^2</code>, экспонентаны <code>exp(3t)</code> деп жазыңыз. Матрица не вектор енгізетін есептерде ұяшықтарды толтырыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="tf" data-id="m9-7-tf-sys">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m9-7-t1">1. Жүйелер туралы</h3></div>
+        <p>Әр пікірді бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''+by'+cy=0$ теңдеуін $x_1=y$, $x_2=y'$ арқылы екі теңдеулі жүйеге келтіруге болады.","a":true,"e":"Ақиқат: $x_1'=x_2$, $x_2'=-cx_1-bx_2$.","hint":"Орын мен жылдамдықты екі белгісіз деп алыңыз."},{"q":"$A\\mathbf v=\\lambda\\mathbf v$ теңдеуінде $\\mathbf v=\\mathbf 0$ меншікті вектор бола алады.","a":false,"e":"Жалған: меншікті вектор нөлден өзгеше болуы тиіс.","hint":"Анықтаманы еске түсіріңіз."},{"q":"Матрицаның ізі меншікті мәндердің қосындысына тең.","a":true,"e":"Ақиқат: $\\lambda_1+\\lambda_2=\\tau$ (Виет).","hint":"$\\lambda^2-\\tau\\lambda+\\Delta=0$."},{"q":"Центр асимптотикалық орнықты.","a":false,"e":"Жалған: траектория нөлге жақындамайды, тұйық орбитамен жүреді.","hint":"$\\alpha=0$."}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="choice" data-id="m9-7-choice-mat">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m9-7-t2">2. Жүйенің матрицасы</h3></div>
+        <p>Дұрыс жауапты таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y''+5y'+6y=0$ теңдеуін $x_1=y$, $x_2=y'$ арқылы жүйеге келтіргенде матрица:","o":["$\\begin{pmatrix}0&1\\\\-6&-5\\end{pmatrix}$","$\\begin{pmatrix}0&1\\\\6&5\\end{pmatrix}$","$\\begin{pmatrix}1&0\\\\-5&-6\\end{pmatrix}$","$\\begin{pmatrix}-5&-6\\\\1&0\\end{pmatrix}$"],"a":0,"e":"$x_1'=x_2$, $x_2'=-6x_1-5x_2$.","hint":"$y''=-5y'-6y$."}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="num" data-id="m9-7-num-trdet">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m9-7-t3">3. Із және анықтауыш</h3></div>
+        <p>Жауапты санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}2&1\\\\1&2\\end{pmatrix}$ үшін $\\tau=\\ ?$","a":4,"v":"Matrix([[2,1],[1,2]]).trace()","hint":"Диагональ қосындысы.","sol":{"steps":["$2+2$."],"ans":"$4$"}},{"q":"Сол матрица үшін $\\Delta=\\det A=\\ ?$","a":3,"v":"Matrix([[2,1],[1,2]]).det()","hint":"$ad-bc$.","sol":{"steps":["$4-1$."],"ans":"$3$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="match" data-id="m9-7-match-portrait">
+        <div class="task-head"><span class="badge easy">Оңай</span><h3 id="m9-7-t4">4. Меншікті мәндер және портрет</h3></div>
+        <p>Әр меншікті мәндер жұбын фазалық портретпен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Дұрыс жұптарды таңдаңыз.","pairs":[["$\\lambda=-1,\\ -3$","орнықты түйін"],["$\\lambda=2,\\ -1$","ершік"],["$\\lambda=\\pm3i$","центр"],["$\\lambda=-1\\pm2i$","орнықты спираль"]],"hint":"Нақты бөліктердің таңбасына қараңыз.","sol":{"steps":["Екеуі де теріс нақты - түйін, нөлге.","Таңбалары әртүрлі - ершік.","Таза жорамал - центр.","Нақты бөлік теріс, жорамал бөлік бар - спираль."]},"e":"Нақты бөліктер орнықтылықты, жорамал бөліктер айналуды білдіреді."}</script>
+      </div>
+
+      <div class="math-ex task" data-type="num" data-id="m9-7-num-eig">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-7-t5">5. Меншікті мән</h3></div>
+        <p>Жауапты санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}1&2\\\\3&0\\end{pmatrix}$ матрицасының ең үлкен меншікті мәні?","a":3,"v":"max(Matrix([[1,2],[3,0]]).eigenvals().keys())","hint":"$\\lambda^2-\\lambda-6=0$.","sol":{"steps":["$\\tau=1$, $\\Delta=-6$.","$(\\lambda-3)(\\lambda+2)=0$."],"ans":"$3$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="matrix" data-id="m9-7-mat-Av">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-7-t6">6. Меншікті векторды тексеру</h3></div>
+        <p>Векторды баған түрінде жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}1&2\\\\3&0\\end{pmatrix}$, $\\mathbf v=\\begin{pmatrix}1\\\\1\\end{pmatrix}$. $A\\mathbf v=\\ ?$ (бұл $\\lambda\\mathbf v$ болады)","name":"$A\\mathbf v=$","a":[[3],[3]],"v":"Matrix([[1,2],[3,0]])*Matrix([1,1])","hint":"$1\\cdot1+2\\cdot1$, $3\\cdot1+0\\cdot1$.","sol":{"steps":["$(1+2;\\ 3+0)=(3;3)$."],"ans":"$3\\mathbf v$: $\\lambda=3$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="expr" data-id="m9-7-expr-x1">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-7-t7">7. Жүйенің шешімі</h3></div>
+        <p>Өрнекті $t$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf x'=\\begin{pmatrix}1&2\\\\3&0\\end{pmatrix}\\mathbf x$, $\\mathbf x(0)=(7;2)$. $x_1(t)=\\ ?$","vars":["t"],"dom":[-1,1],"a":"5*exp(3*t)+2*exp(-2*t)","v":"((Matrix([[1,2],[3,0]])*t).exp()*Matrix([7,2]))[0]","hint":"$\\mathbf x=C_1e^{3t}(1;1)+C_2e^{-2t}(2;-3)$, $C_1=5$, $C_2=1$.","sol":{"steps":["$C_1+2C_2=7$, $C_1-3C_2=2$ ⇒ $C_2=1$, $C_1=5$.","$x_1=5e^{3t}\\cdot1+1\\cdot e^{-2t}\\cdot2$."],"ans":"$x_1=5e^{3t}+2e^{-2t}$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="order" data-id="m9-7-order-sys">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-7-t8">8. Жүйені шешу реті</h3></div>
+        <p>Қадамдарды дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf x'=A\\mathbf x$, $\\mathbf x(0)=\\mathbf x_0$ жүйесін шешу (нақты әртүрлі меншікті мәндер).","steps":["Сипаттамалық теңдеуді жазамыз: $\\lambda^2-\\tau\\lambda+\\Delta=0$.","Меншікті мәндерді $\\lambda_1,\\lambda_2$ табамыз.","Әр $\\lambda_i$ үшін $(A-\\lambda_iI)\\mathbf v_i=\\mathbf 0$ шешіп, $\\mathbf v_i$ табамыз.","Жалпы шешім: $\\mathbf x=C_1e^{\\lambda_1t}\\mathbf v_1+C_2e^{\\lambda_2t}\\mathbf v_2$.","$\\mathbf x(0)=\\mathbf x_0$ шартынан $C_1,C_2$ табамыз."],"hint":"Алдымен меншікті мәндер, соңында тұрақтылар.","sol":{"ans":"$\\mathbf x=C_1e^{\\lambda_1t}\\mathbf v_1+C_2e^{\\lambda_2t}\\mathbf v_2$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="num" data-id="m9-7-num-disc2">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-7-t9">9. Дискриминант</h3></div>
+        <p>Жауапты санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}-1&1\\\\-1&-1\\end{pmatrix}$ үшін $\\mathcal D=\\tau^2-4\\Delta=\\ ?$","a":-4,"v":"Matrix([[-1,1],[-1,-1]]).trace()**2-4*Matrix([[-1,1],[-1,-1]]).det()","hint":"$\\tau=-2$, $\\Delta=2$.","sol":{"steps":["$4-8$."],"ans":"$-4$ (спираль)"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="choice" data-id="m9-7-choice-class">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-7-t10">10. Тепе-теңдіктің түрі</h3></div>
+        <p>Дұрыс жауапты таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}1&2\\\\3&2\\end{pmatrix}$ ($\\tau=3$, $\\Delta=-4$) үшін нөлдік тепе-теңдік:","o":["орнықты түйін","ершік","центр","орнықты спираль"],"a":1,"e":"$\\Delta<0$ ⇒ ершік ($\\lambda=4,-1$).","hint":"$\\Delta$ таңбасы."},{"q":"$A=\\begin{pmatrix}0&1\\\\-4&0\\end{pmatrix}$ үшін нөлдік тепе-теңдік:","o":["ершік","орнықсыз түйін","центр","орнықты түйін"],"a":2,"e":"$\\tau=0$, $\\Delta=4>0$, $\\lambda=\\pm2i$: центр.","hint":"$\\lambda^2+4=0$."}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="param" data-id="m9-7-p-disc">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-7-t11">11. Параметрлік: екінші ретті теңдеудің жүйесі</h3></div>
+        <p>Сандар кездейсоқ таңдалады.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"g":{"int":[1,5]},"h":{"int":[-5,-1]}},"type":"num","q":"$y''#{+(-(g+h))}y'#{+g*h}y=0$ теңдеуін $x_1=y$, $x_2=y'$ жүйесіне келтіргенде матрицаның $\\mathcal D=\\tau^2-4\\Delta$ дискриминанты қанша?","require":["g+h != 0"],"a":"(g-h)^2","v":"(g+h)**2-4*g*h","hint":"$\\tau=#{g+h}$, $\\Delta=#{g*h}$.","sol":{"steps":["$\\tau=#{g+h}$, $\\Delta=#{g*h}$.","$\\mathcal D=#{(g+h)^2}-4\\cdot #{p:g*h}$."],"ans":"$#{(g-h)^2}$"}}</script>
+      </div>
+
+      <div class="math-ex task" data-type="param" data-id="m9-7-p-lv">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m9-7-t12">12. Параметрлік: жыртқыш-жемтік тепе-теңдігі</h3></div>
+        <p>Сандар кездейсоқ таңдалады.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"b":{"int":[1,3]},"d":{"int":[1,3]},"m":{"int":[1,4]},"n":{"int":[1,4]},"a":{"calc":"b*n"},"c":{"calc":"d*m"}},"type":"num","q":"$x'=x(#{a}-#{b}y)$, $y'=y(-#{c}+#{d}x)$. Тепе-теңдік $(x^*;y^*)$ болса, $x^*+y^*=\\ ?$","a":"m+n","v":"c/d+a/b","hint":"$x^*=c/d$, $y^*=a/b$.","sol":{"steps":["$x^*=\\dfrac{#{c}}{#{d}}=#{m}$, $y^*=\\dfrac{#{a}}{#{b}}=#{n}$."],"ans":"$#{m+n}$"}}</script>
+      </div>
+
+      <div class="math-ex task" data-type="expr" data-id="m9-7-expr-x2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-7-t13">13. Спираль шешімі</h3></div>
+        <p>Өрнекті $t$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf x'=\\begin{pmatrix}-1&2\\\\-2&-1\\end{pmatrix}\\mathbf x$, $\\mathbf x(0)=(1;0)$. $x_2(t)=\\ ?$","vars":["t"],"dom":[0,2],"a":"-exp(-t)*sin(2*t)","v":"re(((Matrix([[-1,2],[-2,-1]])*t).exp()*Matrix([1,0]))[1])","hint":"$\\lambda=-1\\pm2i$, $\\mathbf v=(1;i)$.","sol":{"steps":["$\\mathbf x_1=e^{-t}(\\cos2t;-\\sin2t)$, $\\mathbf x_2=e^{-t}(\\sin2t;\\cos2t)$.","$C_1=1$, $C_2=0$."],"ans":"$x_2=-e^{-t}\\sin2t$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="num" data-id="m9-7-num-omega">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-7-t14">14. Тербеліс жиілігі</h3></div>
+        <p>Жауапты санмен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x'=2x-xy$, $y'=-3y+xy$ жүйесінің $(3;2)$ маңындағы кіші тербелістің бұрыштық жиілігі $\\omega=\\ ?$","a":"sqrt(6)","tol":0.001,"v":"sqrt(Matrix([[0,-3],[2,0]]).det())","hint":"Сызықтандырылған матрица $\\begin{pmatrix}0&-3\\\\2&0\\end{pmatrix}$.","sol":{"steps":["$\\Delta=0+6=6$, $\\lambda=\\pm i\\sqrt6$."],"ans":"$\\omega=\\sqrt6\\approx2{,}45$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="num" data-id="m9-7-num-H">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-7-t15">15. Сақталатын шама</h3></div>
+        <p>Жауапты өрнек түрінде жазуға болады.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$H=x-3\\ln x+y-2\\ln y$. $H(3;2)=\\ ?$","a":"5-3*log(3)-2*log(2)","tol":0.001,"v":"(3-3*log(3))+(2-2*log(2))","hint":"$x=3$, $y=2$ қойыңыз.","sol":{"steps":["$3-3\\ln3+2-2\\ln2$."],"ans":"$5-3\\ln3-2\\ln2\\approx0{,}32$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="reveal" data-id="m9-7-reveal-osc">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-7-t16">16. Қадамдық шешім: тербелмелі жүйе</h3></div>
+        <p>«Кеңес» және «Келесі қадам» батырмаларымен біртіндеп ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$y''+2y'+2y=0$, $y(0)=1$, $y'(0)=0$ есебін жүйе арқылы шешіңіз.","hint":"$x_1=y$, $x_2=y'$, матрица $\\begin{pmatrix}0&1\\\\-2&-2\\end{pmatrix}$.","steps":["$\\tau=-2$, $\\Delta=2$, $\\lambda^2+2\\lambda+2=0$, $\\lambda=-1\\pm i$ (орнықты спираль).","Меншікті вектор $(1;\\lambda)=(1;-1+i)$: $\\mathbf a=(1;-1)$, $\\mathbf b=(0;1)$.","Бірінші компонент (орын): $y=e^{-t}(C_1\\cos t+C_2\\sin t)$ ($\\mathbf a$-ның бірінші компоненті 1, $\\mathbf b$-ның бірінші компоненті 0).","$y(0)=C_1=1$. $y'(0)=-C_1+C_2=0\\Rightarrow C_2=1$. $y=e^{-t}(\\cos t+\\sin t)$."],"ans":"$y=e^{-t}(\\cos t+\\sin t)$."}</script>
+      </div>
+
+      <div class="math-ex task" data-type="tf" data-id="m9-7-tf-stab">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-7-t17">17. Орнықтылық</h3></div>
+        <p>Әр пікірді бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\tau<0$ болса, нөлдік тепе-теңдік әрдайым асимптотикалық орнықты.","a":false,"e":"Жалған: $\\Delta<0$ болса, ершік. Мысалы $\\mathrm{diag}(-3;1)$: $\\tau=-2$, бірақ $\\lambda=1>0$.","hint":"Тағы бір шарт қажет."},{"q":"$\\tau<0$ және $\\Delta>0$ болса, нөл асимптотикалық орнықты.","a":true,"e":"Ақиқат: екі меншікті мәннің нақты бөлігі теріс.","hint":"Виет: $\\lambda_1+\\lambda_2=\\tau$, $\\lambda_1\\lambda_2=\\Delta$."},{"q":"Лотка-Вольтерра жүйесінде $H=dx-c\\ln x+by-a\\ln y$ шамасы траектория бойында өзгермейді.","a":true,"e":"Ақиқат: $dH/dt=0$ (4-қорыту).","hint":"Дифференциалдап, жүйені қойыңыз."}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="order" data-id="m9-7-order-cplx">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-7-t18">18. Комплекс жағдайдағы реті</h3></div>
+        <p>Қадамдарды дұрыс ретке қойыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\lambda=\\alpha\\pm i\\beta$ болғанда нақты шешімді құру.","steps":["$\\lambda=\\alpha+i\\beta$ үшін $(A-\\lambda I)\\mathbf v=\\mathbf 0$ шешіп, $\\mathbf v=\\mathbf a+i\\mathbf b$ табамыз.","Комплекс шешімді жазамыз: $e^{(\\alpha+i\\beta)t}(\\mathbf a+i\\mathbf b)$.","Эйлер формуласымен нақты және жорамал бөліктерге бөлеміз.","Нақты және жорамал бөліктер - екі нақты шешім.","Жалпы шешім: олардың сызықтық комбинациясы, тұрақтыларды $\\mathbf x(0)$ арқылы табамыз."],"hint":"Комплекс шешімнен нақты бөлікке өтеміз.","sol":{"ans":"$\\mathbf x=C_1\\mathrm{Re}\\,\\mathbf z+C_2\\mathrm{Im}\\,\\mathbf z$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="matrix" data-id="m9-7-mat-v2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-7-t19">19. Екінші меншікті вектор</h3></div>
+        <p>Векторды баған түрінде жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A=\\begin{pmatrix}1&2\\\\3&0\\end{pmatrix}$, $\\mathbf v_2=\\begin{pmatrix}2\\\\-3\\end{pmatrix}$. $A\\mathbf v_2=\\ ?$ (бұл $\\lambda_2\\mathbf v_2$ болуы керек)","name":"$A\\mathbf v_2=$","a":[[-4],[6]],"v":"Matrix([[1,2],[3,0]])*Matrix([2,-3])","hint":"$1\\cdot2+2\\cdot(-3)$, $3\\cdot2+0$.","sol":{"steps":["$(2-6;\\ 6)=(-4;6)=-2\\,(2;-3)$."],"ans":"$\\lambda_2=-2$"}}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="choice" data-id="m9-7-choice-spiral">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-7-t20">20. Спиральдың мінезі</h3></div>
+        <p>Дұрыс пікірлерді белгілеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Меншікті мәндері $-1\\pm2i$ болатын жүйе үшін қайсысы ақиқат?","o":["траектория нөл маңында айналады","шешім нөлге ұмтылады","траектория тұйық эллипс","бір айналым уақыты $\\pi$"],"a":[0,1,3],"e":"$\\alpha=-1<0$: спираль нөлге жақындайды; $\\beta=2$: период $2\\pi/\\beta=\\pi$. Тұйық эллипс тек $\\alpha=0$ болғанда.","hint":"$\\alpha$ мен $\\beta$ мағынасы."}]}</script>
+      </div>
+
+      <div class="math-ex task" data-type="num" data-id="m9-7-num-tank2">
+        <div class="task-head"><span class="badge hard">Қиын</span><h3 id="m9-7-t21">21. Екі ыдыс</h3></div>
+        <p>Жауапты ондық бөлшекпен жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x'=-0{,}05x+0{,}05y$, $y'=0{,}05x-0{,}05y$ жүйесінің матрицасының ізі қанша? (меншікті мәндері $0$ және $\\tau$)","a":-0.1,"v":"Matrix([[-Rational(1,20),Rational(1,20)],[Rational(1,20),-Rational(1,20)]]).trace()","hint":"Диагональ қосындысы.","sol":{"steps":["$-0{,}05-0{,}05$."],"ans":"$-0{,}1$; $\\lambda=0,-0{,}1$"}}]}</script>
+      </div>
+
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Жүйелер қазіргі ғылым мен технологияның барлық жерінде. Экологияда популяциялар арасындағы әсерлесу, фармакологияда дәрінің қан мен ұлпа арасындағы алмасуы, электроникада байланысқан контурлар, механикада көп массалы серіппелі жүйелер, эпидемиологияда SIR моделі, физикалық қозғалтқышта жеке денелердің қозғалысы - барлығы жүйе. Басқару жүйесінің тұрақтылығы дәл $\mathbf x'=A\mathbf x$ матрицасының меншікті мәндерімен тексеріледі: нақты бөліктер теріс болса, жүйе тұрақты. Нейрондық желілерде рекуррентті қабаттың «жад» қасиеті де осы мәнмен байланысты.</p>
+      <p><b>Мини-жоба: «Фазалық портрет симуляторы».</b> Бағдарлама 2×2 матрица берілгенде $\tau$, $\Delta$ бойынша тепе-теңдіктің түрін айтады, Рунге-Кутта әдісімен (төртінші реттегі, Эйлерден дәлірек) траекторияны есептейді және мәтіндік фазалық портрет салады. Одан кейін Лотка-Вольтерра жүйесін интегралдап, $H$ шамасының сақталуын тексереді.</p>
+<pre data-lang="python"><code class="language-python">import math
+
+def classify(A):
+    (a, b), (c, d) = A
+    tr, det = a + d, a * d - b * c
+    disc = tr * tr - 4 * det
+    if det &lt; 0:
+        return "ершік (орнықсыз)"
+    if det == 0:
+        return "ерекше жағдай (det = 0)"
+    if disc >= 0:
+        return "орнықты түйін" if tr &lt; 0 else "орнықсыз түйін"
+    if tr == 0:
+        return "центр"
+    return "орнықты спираль" if tr &lt; 0 else "орнықсыз спираль"
+
+def rk4(f, state, t0, t1, n):
+    h = (t1 - t0) / n
+    x = list(state)
+    for _ in range(n):
+        k1 = f(x)
+        k2 = f([xi + h / 2 * ki for xi, ki in zip(x, k1)])
+        k3 = f([xi + h / 2 * ki for xi, ki in zip(x, k2)])
+        k4 = f([xi + h * ki for xi, ki in zip(x, k3)])
+        x = [xi + h / 6 * (a + 2 * b + 2 * c + d) for xi, a, b, c, d in zip(x, k1, k2, k3, k4)]
+    return x
+
+def linear(A):
+    return lambda x: [A[0][0] * x[0] + A[0][1] * x[1], A[1][0] * x[0] + A[1][1] * x[1]]
+
+for A in ([[2, 1], [1, 2]], [[1, 2], [3, 2]], [[0, 1], [-4, 0]], [[-1, 1], [-1, -1]]):
+    print(A, "->", classify(A))
+
+# 2-мысал: x(0) = (1, 0), нақты шешім (e^{-t} cos 2t, -e^{-t} sin 2t)
+A = [[-1, 2], [-2, -1]]
+t = 1.5
+num = rk4(linear(A), [1.0, 0.0], 0, t, 3000)
+exact = [math.exp(-t) * math.cos(2 * t), -math.exp(-t) * math.sin(2 * t)]
+print("t=1.5 сандық:", [round(v, 6) for v in num], " нақты:", [round(v, 6) for v in exact])
+
+# Лотка-Вольтерра: x' = 2x - xy, y' = -3y + xy
+lv = lambda s: [2 * s[0] - s[0] * s[1], -3 * s[1] + s[0] * s[1]]
+H = lambda s: s[0] - 3 * math.log(s[0]) + s[1] - 2 * math.log(s[1])
+s = [1.5, 1.0]
+H0 = H(s)
+for k in range(1, 6):
+    s = rk4(lv, s, 0, 2.0, 2000)
+    print(f"t={2*k:2d}  x={s[0]:.4f} y={s[1]:.4f}  H-H0={H(s)-H0:+.2e}")
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Матрицаны $\begin{pmatrix}0&1\\-c&-b\end{pmatrix}$ деп алып, $b$ мәнін $0$-ден $5$-ке дейін өзгертіп ($c=4$), классификацияның центр - спираль - түйін өзгеруін шығарыңыз. $b=4$ қайсы шекара?</li>
+        <li>Лотка-Вольтерра орбитасының периодын сандық түрде (траектория бастапқы нүктеге қайта келген уақыт) анықтап, кіші амплитудада $2\pi/\sqrt6$ формуласымен, үлкен амплитудада салыстырыңыз.</li>
+        <li>Эйлер әдісін RK4-пен ауыстырып, $H$-тың сақталуы қалай бұзылатынын көріңіз: Эйлер әдісінде орбита спираль жасап «жайыла» бастайды.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Жүйе</td><td>$\mathbf x'=A\mathbf x$</td><td>$A$ - $2\times2$ матрица</td></tr>
+        <tr><td>Екінші ретті теңдеу</td><td>$x_1=y$, $x_2=y'$: $A=\begin{pmatrix}0&1\\-c&-b\end{pmatrix}$</td><td>$y''+by'+cy=0$</td></tr>
+        <tr><td>Меншікті мәндер</td><td>$\lambda^2-\tau\lambda+\Delta=0$, $\tau=\operatorname{tr}A$, $\Delta=\det A$</td><td>$A\mathbf v=\lambda\mathbf v$</td></tr>
+        <tr><td>Нақты $\lambda_1
+e\lambda_2$</td><td>$\mathbf x=C_1e^{\lambda_1t}\mathbf v_1+C_2e^{\lambda_2t}\mathbf v_2$</td><td>$\mathbf v_i\ne\mathbf 0$ тәуелсіз</td></tr>
+        <tr><td>Комплекс $lpha\pm ieta$</td><td>$e^{\alpha t}[C_1(\mathbf a\cos\beta t-\mathbf b\sin\beta t)+C_2(\mathbf a\sin\beta t+\mathbf b\cos\beta t)]$</td><td>$\mathbf v=\mathbf a+i\mathbf b$</td></tr>
+        <tr><td>Жіктеу</td><td>$\Delta&lt;0$ ершік; $\Delta>0$: $\tau^2-4\Delta\ge0$ түйін, $&lt;0$ спираль; $\tau=0$ центр</td><td>орнықты ⇔ $\tau&lt;0,\Delta>0$</td></tr>
+        <tr><td>Лотка-Вольтерра</td><td>$(x^*;y^*)=(c/d;a/b)$, $\omega=\sqrt{ac}$</td><td>$H=dx-c\ln x+by-a\ln y$ сақталады</td></tr>
+        <tr><td>Түрлері бойынша</td><td>бөлу - сызықты - дәл - Бернулли - біртекті - тұрақты коэф. - жүйе</td><td>1-ші және 2-ші ретті теңдеулер</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m9-7-self">
+        <li><input type="checkbox"> <span>Мен екінші ретті теңдеуді жүйеге келтіріп, матрицасын жаза аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен меншікті мәндер мен меншікті векторларды тауып, жүйенің жалпы шешімін жаза аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен комплекс меншікті мәндерден нақты шешімдерді құра аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $\tau$ мен $\Delta$ бойынша тепе-теңдіктің түрін және орнықтылығын анықтай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен серіппелі маятниктің демпфирлеу режимдерін түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен жыртқыш-жемтік жүйесінің тепе-теңдігін, сызықтандыруын және сақталатын шамасын таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бүкіл курстағы теңдеу түрлерін (бөлінетін, сызықты, дәл, Бернулли, біртекті, тұрақты коэффициентті, жүйе) ажырата аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="a">
+<p class="q-text">1. y'' + 4y = 0 теңдеуінің жүйедегі матрицасы (x₁ = y, x₂ = y'):</p>
+<label><input type="radio" value="a"> ((0, 1), (−4, 0))</label>
+<label><input type="radio" value="b"> ((0, 1), (4, 0))</label>
+<label><input type="radio" value="c"> ((1, 0), (0, −4))</label>
+<label><input type="radio" value="d"> ((0, −4), (1, 0))</label>
+<p class="explain">x₁' = x₂, x₂' = −4x₁.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">2. A = ((1, 2), (3, 0)) матрицасының меншікті мәндері:</p>
+<label><input type="radio" value="a"> 3 және −2</label>
+<label><input type="radio" value="b"> 1 және 2</label>
+<label><input type="radio" value="c"> 6 және −1</label>
+<label><input type="radio" value="d"> 2 және −3</label>
+<p class="explain">λ² − λ − 6 = 0, λ = 3, −2.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. λ = −1 ± 2i болғанда нөлдік тепе-теңдік:</p>
+<label><input type="radio" value="a"> орнықты спираль</label>
+<label><input type="radio" value="b"> орнықсыз спираль</label>
+<label><input type="radio" value="c"> центр</label>
+<label><input type="radio" value="d"> ершік</label>
+<p class="explain">Нақты бөлік −1 < 0: спираль нөлге жақындайды.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. τ = 0, Δ = 9 болса тепе-теңдік:</p>
+<label><input type="radio" value="a"> ершік</label>
+<label><input type="radio" value="b"> центр</label>
+<label><input type="radio" value="c"> орнықты түйін</label>
+<label><input type="radio" value="d"> орнықсыз түйін</label>
+<p class="explain">λ = ±3i: таза жорамал, центр.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. Қай жағдайда нөлдік тепе-теңдік ершік?</p>
+<label><input type="radio" value="a"> Δ > 0</label>
+<label><input type="radio" value="b"> Δ < 0</label>
+<label><input type="radio" value="c"> τ < 0</label>
+<label><input type="radio" value="d"> τ = 0</label>
+<p class="explain">Δ = λ₁λ₂ < 0: меншікті мәндердің таңбалары әртүрлі.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">6. y'' + 5y' + 4y = 0 жүйесінде нөлдік тепе-теңдік:</p>
+<label><input type="radio" value="a"> орнықты түйін</label>
+<label><input type="radio" value="b"> центр</label>
+<label><input type="radio" value="c"> ершік</label>
+<label><input type="radio" value="d"> спираль</label>
+<p class="explain">λ = −1, −4: екеуі де теріс нақты.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. x' = x(2 − y), y' = y(−3 + x) жүйесінің нөлдік емес тепе-теңдігі:</p>
+<label><input type="radio" value="a"> (2, 3)</label>
+<label><input type="radio" value="b"> (3, 2)</label>
+<label><input type="radio" value="c"> (−3, 2)</label>
+<label><input type="radio" value="d"> (0, 3)</label>
+<p class="explain">2 − y = 0 ⇒ y = 2; −3 + x = 0 ⇒ x = 3.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">8. Лотка-Вольтерра жүйесінің H(x, y) шамасы:</p>
+<label><input type="radio" value="a"> уақытпен өседі</label>
+<label><input type="radio" value="b"> уақытпен кемиді</label>
+<label><input type="radio" value="c"> траектория бойында тұрақты</label>
+<label><input type="radio" value="d"> әрқашан нөл</label>
+<p class="explain">dH/dt = 0, сондықтан орбиталар тұйық.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-60.html"><small>Алдыңғы</small>← Ordinary Differential Equations · 6-сабақ: Біртекті емес теңдеулер</a>
-        <a class="next" href="week-62.html"><small>Келесі</small>Partial Differential Equations · 1-сабақ: Негізгі ұғымдар және жіктеу →</a>
+        <a class="next" href="../index.html#subj-9"><small>Курс беті</small>Математика курсы →</a>
       </nav>
 
       <p class="translator-note">Бұл курс - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 курсының аудармасы емес, одан мәтін алынбаған. Математиканың өзі (анықтамалар, теоремалар, формулалар) жалпыға ортақ білім; ал баяндау, мысалдар мен есептер өз сөзімізбен жазылған және белгілі оқулықтар мен есептер жинақтарынан көшірілмеген. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../../copyright.html">Авторлық құқық және лицензиялар</a>.</p>

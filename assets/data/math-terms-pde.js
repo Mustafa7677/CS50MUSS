@@ -1,3 +1,33 @@
 /* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Дербес туындылы дифференциалдық теңдеулер» пәні. Формат: §9.2 (терминдер). */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
-window.CS50KZ_MATH_TERMS.pde = [];
+window.CS50KZ_MATH_TERMS.pde = [
+  {"id":"pde-term-pde","kz":"дербес туындылы теңдеу","en":"partial differential equation","def":"Бірнеше айнымалының белгісіз функциясы мен оның дербес туындылары арасындағы байланыс.","lesson":1},
+  {"id":"pde-term-order","kz":"теңдеудің реті","en":"order","def":"Теңдеуге кіретін дербес туындылардың ең жоғары реті.","lesson":1},
+  {"id":"pde-term-linear","kz":"сызықтық теңдеу","en":"linear equation","def":"Белгісіз функция мен туындылары тек бірінші дәрежеде, коэффициенттері тек айнымалыларға тәуелді теңдеу.","lesson":1},
+  {"id":"pde-term-superposition","kz":"суперпозиция принципі","en":"superposition principle","def":"Сызықтық біртекті теңдеудің шешімдерінің сызықтық комбинациясы да шешім болады.","lesson":1},
+  {"id":"pde-term-characteristic","kz":"сипаттама","en":"characteristic curve","def":"Бойымен шешім қарапайым түрде өзгеретін қисық; тасымалдауда $x-ct=\\text{const}$.","lesson":1},
+  {"id":"pde-term-bc","kz":"шектік шарт","en":"boundary condition","def":"Облыс шекарасындағы шешімге қойылатын шарт (Дирихле, Нейман, Робин).","lesson":1},
+  {"id":"pde-term-wellposed","kz":"дұрыс қойылған есеп","en":"well-posed problem","def":"Шешімі бар, жалғыз және деректерге үздіксіз тәуелді есеп.","lesson":1},
+  {"id":"pde-term-hyperbolic","kz":"гиперболалық теңдеу","en":"hyperbolic equation","def":"Дискриминанты $B^2-AC>0$ болатын екінші ретті теңдеу (толқын теңдеуі).","lesson":1},
+  {"id":"pde-term-parabolic","kz":"параболалық теңдеу","en":"parabolic equation","def":"Дискриминанты нөлге тең екінші ретті теңдеу (жылу теңдеуі).","lesson":1},
+  {"id":"pde-term-elliptic","kz":"эллиптикалық теңдеу","en":"elliptic equation","def":"Дискриминанты теріс екінші ретті теңдеу (Лаплас теңдеуі).","lesson":1},
+  {"id":"pde-term-wave","kz":"толқын теңдеуі","en":"wave equation","def":"$u_{tt}=c^2u_{xx}$ теңдеуі, ішектің тербелісін сипаттайды.","lesson":2},
+  {"id":"pde-term-dalembert","kz":"Даламбер формуласы","en":"d'Alembert formula","def":"Шексіз ішек үшін Коши есебінің нақты шешімі.","lesson":2},
+  {"id":"pde-term-dependence","kz":"тәуелділік аймағы","en":"domain of dependence","def":"Нүктедегі шешім тәуелді болатын бастапқы деректер кесіндісі.","lesson":2},
+  {"id":"pde-term-energy","kz":"энергияның сақталуы","en":"energy conservation","def":"Бос ішектің толық энергиясы уақыт бойынша өзгермейтінін айтатын заң.","lesson":2},
+  {"id":"pde-term-standing","kz":"тұрақты толқын","en":"standing wave","def":"Түйіндері қозғалмайтын, ақырлы ішектің өз жиіліктеріндегі тербеліс.","lesson":2},
+  {"id":"pde-term-heat","kz":"жылуөткізгіштік теңдеуі","en":"heat equation","def":"$u_t=k\\,u_{xx}$ теңдеуі, температураның таралуын сипаттайды.","lesson":3},
+  {"id":"pde-term-separation","kz":"айнымалыларды бөлу әдісі","en":"separation of variables","def":"Шешімді $X(x)T(t)$ көбейтіндісі түрінде іздеу әдісі.","lesson":3},
+  {"id":"pde-term-eigen","kz":"меншікті функция","en":"eigenfunction","def":"Шектік есептің нөлге тең емес шешімі, мысалы $\\sin\\frac{n\\pi x}{L}$.","lesson":3},
+  {"id":"pde-term-maxprinciple","kz":"максимум принципі","en":"maximum principle","def":"Шешімнің ең үлкен мәні шекарада (не бастапқы күйде) жететіні туралы теорема.","lesson":3},
+  {"id":"pde-term-steady","kz":"стационар шешім","en":"steady-state solution","def":"Уақытқа тәуелсіз, $u_t=0$ болатын шешім.","lesson":3},
+  {"id":"pde-term-laplace","kz":"Лаплас теңдеуі","en":"Laplace equation","def":"$u_{xx}+u_{yy}=0$ теңдеуі, тепе-теңдік күйді сипаттайды.","lesson":4},
+  {"id":"pde-term-harmonic","kz":"гармониялық функция","en":"harmonic function","def":"Лаплас теңдеуін қанағаттандыратын екі рет дифференциалданатын функция.","lesson":4},
+  {"id":"pde-term-dirichlet","kz":"Дирихле есебі","en":"Dirichlet problem","def":"Шекарадағы мәндер берілген кездегі Лаплас теңдеуінің шектік есебі.","lesson":4},
+  {"id":"pde-term-meanvalue","kz":"орта мән қасиеті","en":"mean value property","def":"Гармониялық функцияның центрдегі мәні шеңбердегі орташаға тең.","lesson":4},
+  {"id":"pde-term-finitediff","kz":"ақырлы айырмалар әдісі","en":"finite difference method","def":"Туындыны тордағы мәндердің айырмасымен ауыстыру арқылы теңдеуді сандық шешу.","lesson":5},
+  {"id":"pde-term-explicit","kz":"айқын схема","en":"explicit scheme","def":"Жаңа уақыт қабатының мәні ескі қабаттан тікелей есептелетін схема.","lesson":5},
+  {"id":"pde-term-implicit","kz":"айқын емес схема","en":"implicit scheme","def":"Әр қадамда теңдеулер жүйесін шешуді қажет ететін схема.","lesson":5},
+  {"id":"pde-term-stability","kz":"сандық тұрақтылық","en":"numerical stability","def":"Кішкентай қателіктердің өспейтін қасиеті.","lesson":5},
+  {"id":"pde-term-cfl","kz":"CFL шарты","en":"CFL condition","def":"Сандық тәуелділік аймағы физикалықты қамтуы керек: $c\\Delta t\\le h$.","lesson":5}
+];
