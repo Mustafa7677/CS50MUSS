@@ -94,8 +94,8 @@ test("курс беті: 24 пән 2 топта, ескерту, дайын/жо
   await open(page, "math/index.html");
   await expect(page.locator("body")).toHaveAttribute("data-license", "B");
   await expect(page.locator(".course-pill .cp-label")).toHaveText("Математика");
-  await expect(page.locator("#ai-note")).toContainText("жасанды интеллект");
-  await expect(page.locator("#ai-note")).toContainText("математик-оқытушы");
+  await expect(page.locator("#ai-note")).toContainText("жауапкершілікті автор");
+  await expect(page.locator("#ai-note")).toContainText("Sagid Mustafa");
   await expect(page.locator("#ai-note")).toContainText("сертификат берілмейді");
   await expect(page.locator(".mx-group-h")).toHaveText(["Higher Mathematics", "Advanced Mathematics"]);
   await expect(page.locator(".mx-subj")).toHaveCount(24);
