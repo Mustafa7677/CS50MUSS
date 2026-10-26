@@ -5,69 +5,391 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Math Numerical Analysis · 4-сабақ: Интерполяция - CS50 қазақша</title>
   <!-- build:head -->
-  <meta name="theme-color" content="#0a4c7a">
-  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
-  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
-  <link rel="manifest" href="../../manifest.webmanifest">
-  <meta property="og:type" content="website">
-  <meta property="og:site_name" content="CS50 қазақша">
-  <meta property="og:title" content="Math Numerical Analysis · 4-сабақ: Интерполяция - CS50 қазақша">
-  <meta property="og:description" content="Математика, Numerical Analysis · 4-сабақ: Интерполяция. Сабақ жақында жазылады.">
-  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-102.html">
-  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
-  <meta property="og:image:width" content="1200">
-  <meta property="og:image:height" content="630">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
-  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-102.html">
-  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
-  <link rel="license" href="../../copyright.html">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Numerical Analysis · 4-сабақ: Интерполяция - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-102.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Numerical Analysis · 4-сабақ: Интерполяция. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Лагранж және Ньютон интерполяциясы, қателік бағасы, сплайндар.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
   <header class="topbar">
     <div class="topbar-inner">
       <a class="brand" href="../../index.html">CS50 <span>қазақша</span></a>
-      <nav class="nav">
-        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="math" style="--c:#15803d"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Математика</span><span class="cp-chev" aria-hidden="true">▾</span></button>
-        <a href="../../math/index.html" class="active">Лекциялар</a>
-        <a href="../../practice.html">Жаттығу</a>
-        <a href="../../games.html">Ойындар</a>
-        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
-        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
-        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
-        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
-        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
-        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
-      </nav>
+      <nav class="nav"></nav>
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="102">
         <div class="num">Numerical Analysis · 4-сабақ</div>
         <h1>Интерполяция</h1>
-        <p>Лагранж және Ньютон интерполяциясы, қателік бағасы, сплайндар.</p>
+        <p>Өлшеулер тек санаулы нүктеде жасалады: сағат сайынғы температура, кестедегі функция мәндері. Арасындағы мәндерді қалай бағалаймыз? Бұл сабақта интерполяцияны үйренеміз: $n+1$ нүкте арқылы өтетін жалғыз $n$-дәрежелі көпмүшені Лагранж және Ньютон формаларында құрамыз, интерполяция қатесінің формуласын дәлелдейміз (ол $f$-тің $(n+1)$-туындысына тәуелді), «көп нүкте - әрдайым жақсы» емес екенін Рунге құбылысымен көрсетеміз және Чебышёв түйіндері мен сплайндарды шешім ретінде қарастырамыз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-16">Numerical Analysis</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-16">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>$n+1$ түйін арқылы өтетін $\le n$ дәрежелі интерполяциялық көпмүшенің бар және жалғыз екенін дәлелдеу;</li>
+        <li>Лагранж формасындағы көпмүшені құру;</li>
+        <li>Ньютонның бөлінген айырмалары кестесін құрып, жаңа түйін қосуды түсіндіру;</li>
+        <li>интерполяция қатесінің формуласын $f\in C^{n+1}$ шартымен қолданып, қатені бағалау;</li>
+        <li>Рунге құбылысын түсіндіру және Чебышёв түйіндерінің артықшылығын көрсету;</li>
+        <li>бөлікті-сызықтық интерполяция мен сплайндардың идеясын білу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Көпмүшелер: $n$-дәрежелі нөлдік емес көпмүшенің ең көбі $n$ түбірі бар. Ролль теоремасы: $g\in C[a,b]$, $(a,b)$-да дифференциалданады, $g(a)=g(b)$ болса, $g'(\xi)=0$ болатын $\xi\in(a,b)$ бар. $C^k[a,b]$ - $k$ рет үзіліссіз дифференциалданатын функциялар. $\cos$ функциясы және $\arccos$.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Екі нүкте арқылы бір түзу өтеді, үш нүкте арқылы (бір түзуде жатпаса) бір парабола. Жалпы: $n+1$ нүкте арқылы дәрежесі $n$-нен аспайтын бір ғана көпмүше өтеді. Оны «кесте мәндерінің арасын толтырушы» ретінде пайдаланамыз: түйіндерде дәл, арасында - жуық.</p>
+      <p>Лагранж идеясы «базистік» көпмүшелерден тұрады: әрқайсысы өз түйінінде 1, басқа түйіндерде 0. Оларды $y_i$-ге көбейтіп қоссақ, дайын. Ньютон формасы басқаша: жаңа нүкте қосқанда бұрынғы есептеулерді қайталамай, бір ғана мүше қосамыз - тәжірибеде ыңғайлы.</p>
+      <p>Түйін көп болған сайын көпмүше дәлірек болуы керек сияқты. Бірақ Рунге көрсетті: $f(x)=\frac{1}{1+25x^2}$ функциясын $[-1;1]$-де бірқалыпты орналасқан түйіндермен интерполяцияласақ, түйіндер көбейгенде шеттерде көпмүше қатты тербеледі, қате <em>өседі</em>. Себебі - қате формуласындағы $\prod(x-x_i)$ көбейткіші шеттерде үлкен.</p>
+      <p>Шешімдер: (1) түйіндерді шеттерге «жиірек» орналастыру (Чебышёв түйіндері) - сонда $\prod(x-x_i)$ біркелкі кіші; (2) бір жоғары дәрежелі көпмүшенің орнына әр аралыққа төмен дәрежелі бөліктер (сплайндар) - компьютер графикасы мен CAD жүйелерінің негізі.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 4.1 · Интерполяция есебі</span>
+        <p>Әртүрлі түйіндер $x_0,\dots,x_n$ және мәндер $y_0,\dots,y_n$ берілген. $P(x_i)=y_i$ ($i=0..n$) шартын қанағаттандыратын $\deg P\le n$ көпмүше - <strong>интерполяциялық көпмүше</strong> (<span class="term-en">interpolating polynomial</span>).</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 4.1 · Бар болуы және жалғыздығы</span>
+        <p>Әртүрлі $n+1$ түйін үшін интерполяциялық көпмүше бар және жалғыз.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту: бар болуы - Лагранж формуласы; жалғыздығы - екі шешімнің айырмасының $n+1$ түбірі бар.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 4.1 · Лагранж формасы</span>
+        <div class="math-fbody">$$P(x)=\sum_{i=0}^{n}y_i\,\ell_i(x),\qquad\ell_i(x)=\prod_{j\ne i}\frac{x-x_j}{x_i-x_j}$$</div>
+        <p class="math-fnote">$\ell_i(x_k)=1$, егер $k=i$, әйтпесе $0$. Шарты: түйіндер әртүрлі.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 4.2 · Бөлінген айырмалар</span>
+        <p>$f[x_i]=f(x_i)$, $f[x_i,x_{i+1}]=\frac{f[x_{i+1}]-f[x_i]}{x_{i+1}-x_i}$, жалпы $f[x_i,\dots,x_{i+k}]=\frac{f[x_{i+1},\dots,x_{i+k}]-f[x_i,\dots,x_{i+k-1}]}{x_{i+k}-x_i}$ - <strong>бөлінген айырмалар</strong> (<span class="term-en">divided differences</span>).</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 4.2 · Ньютон формасы</span>
+        <div class="math-fbody">$$P(x)=f[x_0]+f[x_0,x_1](x-x_0)+\dots+f[x_0,\dots,x_n]\prod_{j=0}^{n-1}(x-x_j)$$</div>
+        <p class="math-fnote">Жаңа түйін $x_{n+1}$ қосылса, тек соңғы мүше $f[x_0..x_{n+1}]\prod_{j=0}^{n}(x-x_j)$ қосылады. Мәнді Горнер схемасы сияқты тиімді есептейміз.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 4.2 · Интерполяция қатесі</span>
+        <p>$f\in C^{n+1}[a,b]$, түйіндер $x_0,\dots,x_n\in[a,b]$ әртүрлі, $P$ - интерполяциялық көпмүше. Онда әр $x\in[a,b]$ үшін $\xi\in(a,b)$ табылады: $$f(x)-P(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}\,\omega(x),\qquad\omega(x)=\prod_{i=0}^n(x-x_i).$$ Демек $|f(x)-P(x)|\le\frac{M_{n+1}}{(n+1)!}|\omega(x)|$, $M_{n+1}=\max_{[a,b]}|f^{(n+1)}|$.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту (Ролль теоремасын $n+2$ рет қолдану). $f\in C^{n+1}$ шарты маңызды: туынды жоқ не шектелмеген болса, баға орындалмауы мүмкін.</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 4.3 · Чебышёв түйіндері</span>
+        <p>$[-1;1]$-де <strong>Чебышёв түйіндері</strong> (<span class="term-en">Chebyshev nodes</span>): $x_i=\cos\frac{(2i+1)\pi}{2(n+1)}$, $i=0..n$ - $T_{n+1}(x)=\cos((n+1)\arccos x)$ көпмүшесінің түбірлері. Олар шеттерде жиірек орналасқан.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 4.3 · Чебышёв түйіндерінің оңтайлылығы</span>
+        <p>Чебышёв түйіндері үшін $\max_{[-1,1]}|\omega(x)|=2^{-n}$, және бұл - $n+1$ түйін бойынша мүмкін болатын ең кіші мән.</p></div>
+      <p><em>Негіздеме.</em> $\omega(x)=2^{-n}T_{n+1}(x)$ (жетекші коэффициенті 1), ал $|T_{n+1}|\le1$. Оңтайлылық (Чебышёв теоремасы) дәлелін келтірмейміз. Салыстыру: бірқалыпты түйіндерде $\max|\omega|$ шеттерде әлдеқайда үлкен.</p>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 4.4 · Сплайн</span>
+        <p>Әр $[x_i,x_{i+1}]$ аралығында төмен дәрежелі көпмүше, түйіндерде тегіс жалғасқан функция - <strong>сплайн</strong> (<span class="term-en">spline</span>). Бөлікті-сызықтық интерполяция $f\in C^2$ болғанда қатесі $\le\frac{h^2}{8}\max|f''|$ ($h$ - ең үлкен қадам); кубтық сплайн ($C^2$ жалғасқан) $f\in C^4$ болғанда $O(h^4)$ дәлдік береді (соңғы бағаны дәлелсіз келтіреміз).</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Таңдау ережесі: бірнеше түйін (2-5) - бір көпмүше; көп түйін және түйіндерді өзіміз таңдай алсақ - Чебышёв түйіндері; көп түйін, түйіндер бекітілген (өлшеулер) - сплайн. Деректер шулы болса - интерполяция емес, ең кіші квадраттармен жуықтау.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Интерполяциялық көпмүше түйіндерден <b>тыс</b> (экстраполяция) өте сенімсіз: $\omega(x)$ аралықтан шыққанда тез өседі. Сондай-ақ бірқалыпты түйіндерде дәрежені арттыру қатені азайтпауы мүмкін (Рунге). «Көбірек нүкте» ≠ «дәлірек» жоғары дәрежелі көпмүшеде.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: бар болуы мен жалғыздығы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 4.1-ді дәлелдеу.</p>
+          <ol class="math-steps">
+            <li><b>Бар болуы.</b> $\ell_i(x)=\prod_{j\ne i}\frac{x-x_j}{x_i-x_j}$ - $n$ сызықтық көбейткіштің көбейтіндісі, дәрежесі $n$; бөлгіштер нөл емес (түйіндер әртүрлі).</li>
+            <li>$\ell_i(x_i)=1$ (әр көбейткіш 1), ал $k\ne i$ үшін $\ell_i(x_k)=0$ ($(x_k-x_k)$ көбейткіші бар).</li>
+            <li>$P=\sum y_i\ell_i$: $P(x_k)=\sum_iy_i\ell_i(x_k)=y_k$, $\deg P\le n$ ✓.</li>
+            <li><b>Жалғыздығы.</b> $P,Q$ екі шешім болсын. $R=P-Q$, $\deg R\le n$, және $R(x_i)=0$ барлық $n+1$ түйінде.</li>
+            <li>Нөлдік емес $\le n$ дәрежелі көпмүшенің ең көбі $n$ түбірі бар, демек $R\equiv0$, $P=Q$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: интерполяция қатесінің формуласы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $f(x)-P(x)=\frac{f^{(n+1)}(\xi)}{(n+1)!}\omega(x)$ дәлелдеу ($f\in C^{n+1}[a,b]$).</p>
+          <ol class="math-steps">
+            <li>$x$ түйін болса, екі жақ та 0 - дайын. $x$ түйін емес болсын. Тұрақты $K$-ны $f(x)-P(x)=K\omega(x)$ болатындай етіп аламыз ($\omega(x)\ne0$).</li>
+            <li>Көмекші функция: $g(t)=f(t)-P(t)-K\omega(t)$, $t\in[a,b]$. $g\in C^{n+1}$.</li>
+            <li>$g$-ның нөлдері: барлық $n+1$ түйін ($f=P$, $\omega=0$) және $t=x$ (таңдауымыз бойынша) - барлығы $n+2$ әртүрлі нүкте.</li>
+            <li>Ролль: көршілес нөлдер арасында $g'$-тың нөлі бар - $g'$-та кемінде $n+1$ нөл; сол сияқты $g''$-та $n$, ..., $g^{(n+1)}$-де кемінде бір нөл $\xi$.</li>
+            <li>$P^{(n+1)}\equiv0$ ($\deg P\le n$), ал $\omega^{(n+1)}=(n+1)!$ ($\omega$ - жетекші коэффициенті 1, дәрежесі $n+1$).</li>
+            <li>$0=g^{(n+1)}(\xi)=f^{(n+1)}(\xi)-K(n+1)!$, яғни $K=\frac{f^{(n+1)}(\xi)}{(n+1)!}$. ∎</li>
+            <li>Мұнда $f^{(n+1)}$-нің бар болуы (Ролльді $n+1$ рет қолдану үшін) нақты керек болды.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: бөлікті-сызықтық интерполяцияның қатесі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $f\in C^2$ болса, $|f-S|\le\frac{h^2}8\max|f''|$ екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>$[x_i,x_{i+1}]$ аралығында $S$ - екі түйінді интерполяция ($n=1$).</li>
+            <li>Қате формуласы: $f(x)-S(x)=\frac{f''(\xi)}{2}(x-x_i)(x-x_{i+1})$.</li>
+            <li>$|(x-x_i)(x-x_{i+1})|$ аралық ортасында ең үлкен: $\frac h2\cdot\frac h2=\frac{h^2}4$.</li>
+            <li>Демек $|f-S|\le\frac{M_2}{2}\cdot\frac{h^2}{4}=\frac{M_2h^2}{8}$.</li>
+            <li>Қадамды екі есе кішірейтсек, қате 4 есе азаяды ($O(h^2)$) - жоғары дәрежелі көпмүшеден айырмашылығы, бұл баға әрдайым жұмыс істейді.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Лагранж көпмүшесі</h3>
+        <p class="math-problem">$(0;1)$, $(1;3)$, $(3;2)$ нүктелері арқылы өтетін көпмүше және $P(2)$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\ell_0=\frac{(x-1)(x-3)}{(0-1)(0-3)}=\frac{(x-1)(x-3)}{3}$; $\ell_1=\frac{x(x-3)}{1\cdot(-2)}$; $\ell_2=\frac{x(x-1)}{3\cdot2}$.</li>
+          <li><b>2-қадам.</b> $P=1\cdot\ell_0+3\ell_1+2\ell_2$.</li>
+          <li><b>3-қадам.</b> Ашсақ: $P(x)=-\frac56x^2+\frac{17}6x+1$.</li>
+          <li><b>4-қадам.</b> Тексеру: $P(0)=1$, $P(1)=-\frac56+\frac{17}6+1=3$, $P(3)=-7{,}5+8{,}5+1=2$ ✓. $P(2)=-\frac{10}3+\frac{17}3+1=\frac{10}3$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $P(x)=-\frac56x^2+\frac{17}6x+1$, $P(2)=\frac{10}3$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Бөлінген айырмалар</h3>
+        <p class="math-problem">Сол нүктелер үшін Ньютон формасы.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $f[0]=1$, $f[1]=3$, $f[3]=2$.</li>
+          <li><b>2-қадам.</b> $f[0,1]=\frac{3-1}{1}=2$; $f[1,3]=\frac{2-3}{2}=-\frac12$.</li>
+          <li><b>3-қадам.</b> $f[0,1,3]=\frac{-\frac12-2}{3-0}=-\frac56$.</li>
+          <li><b>4-қадам.</b> $P(x)=1+2x-\frac56x(x-1)$ - ашсақ, 1-мысалмен бірдей ✓ (жалғыздық).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $P=1+2x-\frac56x(x-1)$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Қатені бағалау</h3>
+        <p class="math-problem">$f(x)=\ln x$ үшін $1,2,4$ түйіндерімен интерполяция. $x=3$-тегі қатені бағалап, нақты қатемен салыстырыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $f'''(x)=\frac{2}{x^3}$, $[1;4]$-те $M_3=2$.</li>
+          <li><b>2-қадам.</b> $\omega(3)=(3-1)(3-2)(3-4)=-2$.</li>
+          <li><b>3-қадам.</b> Баға: $|f(3)-P(3)|\le\frac{2}{3!}\cdot2=\frac23\approx0{,}67$.</li>
+          <li><b>4-қадам.</b> Нақты: $P(3)\approx1{,}1552$, $\ln3\approx1{,}0986$, қате $\approx0{,}057$ - бағадан кіші ✓ (баға ең нашар жағдайды ескереді).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> баға $\frac23$, нақты қате $\approx0{,}057$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Чебышёв түйіндері</h3>
+        <p class="math-problem">$[-1;1]$-де 3 Чебышёв түйінін тауып, $\max|\omega|$-ны бірқалыпты түйіндермен ($-1,0,1$) салыстырыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $x_i=\cos\frac{(2i+1)\pi}{6}$: $\cos\frac\pi6=\frac{\sqrt3}2$, $\cos\frac\pi2=0$, $\cos\frac{5\pi}6=-\frac{\sqrt3}2$.</li>
+          <li><b>2-қадам.</b> $\omega(x)=x\left(x^2-\frac34\right)=\frac14T_3(x)$, $\max|\omega|=\frac14$.</li>
+          <li><b>3-қадам.</b> Бірқалыпты: $\omega=x(x^2-1)$, $\max_{[-1,1]}|\omega|$: $\omega'=3x^2-1=0$, $x=\frac1{\sqrt3}$, $|\omega|=\frac{2}{3\sqrt3}\approx0{,}385$.</li>
+          <li><b>4-қадам.</b> Чебышёв: $0{,}25&lt;0{,}385$. Түйін саны өскенде айырма экспоненциалды артады.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\pm\frac{\sqrt3}2,\ 0$; $0{,}25$ қарсы $0{,}385$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$n+1$ нүктеге $n+1$ дәрежелі көпмүше</span> → <span class="math-good">$\le n$ дәрежелі</span><br>Неге қате: $n+1$ шарт - $n+1$ коэффициент.</li>
+        <li><span class="math-bad">Көп түйін әрдайым дәлірек</span> → <span class="math-good">Рунге құбылысы</span><br>Неге қате: бірқалыпты түйіндерде шеттерде қате өседі.</li>
+        <li><span class="math-bad">Қате формуласын тегіс емес $f$-ке қолдану ($|x|$)</span> → <span class="math-good">$f\in C^{n+1}$ шарты</span><br>Неге қате: туынды жоқ нүктеде баға жарамсыз.</li>
+        <li><span class="math-bad">Интерполяцияны түйіндерден алыс экстраполяцияға қолдану</span> → <span class="math-good">тек түйіндер аралығында</span><br>Неге қате: $\omega(x)$ тыс жерде тез өседі.</li>
+        <li><span class="math-bad">$\ell_i$ бөлгішінде $(x-x_j)$</span> → <span class="math-good">$(x_i-x_j)$</span><br>Неге қате: бөлгіш - тұрақты сан.</li>
+        <li><span class="math-bad">Шулы деректерді жоғары дәрежелі көпмүшемен интерполяциялау</span> → <span class="math-good">ең кіші квадраттар</span><br>Неге қате: көпмүше шуды «қайталайды» және тербеледі.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="ω(x): бірқалыпты (9 түйін) және Чебышёв түйіндері" data-config='{"fns": [{"f": "(x+1)*(x+0.75)*(x+0.5)*(x+0.25)*x*(x-0.25)*(x-0.5)*(x-0.75)*(x-1)", "label": "бірқалыпты түйіндер"}, {"f": "cos(9*acos(x))/256", "label": "Чебышёв: T₉(x)/2⁸", "color": 1}], "view": [-1, 1, -0.012, 0.012]}'></div>
+      <p><b>Бақылаңыз:</b> Көк қисық (бірқалыпты түйіндер) ортада кіші, бірақ шеттерге қарай қатты тербеледі - Рунге құбылысының себебі. Қызыл қисық (Чебышёв) барлық жерде $\pm\frac1{256}\approx0{,}0039$ шегінде біркелкі «тербеледі».</p>
+      <div class="math-viz" data-viz="graph" data-title="Рунге функциясы және оның 3 түйінді интерполяциясы" data-config='{"fns": [{"f": "1/(1+25*x^2)", "label": "f(x) = 1/(1 + 25x²)"}, {"f": "1-0.961538*x^2", "label": "P₂: түйіндер −1, 0, 1", "color": 1}, {"f": "1/(1+25*x^2)-(1-0.961538*x^2)", "label": "қате f − P₂", "color": 2, "dash": [5, 4]}], "view": [-1.2, 1.2, -1, 1.2]}'></div>
+      <p><b>Бақылаңыз:</b> Үш түйінде $P_2$ функциямен дәл сәйкес келеді, ал арасында қате $\approx0{,}7$-ге жетеді. Бағдарламада 11 бірқалыпты түйінмен $P_{10}$ шеттерде 1,9-ға дейін «ұшады» (мини-жоба), ал Чебышёв түйіндерімен қате азаяды.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m16-4-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-4-t1">1. Сызықтық интерполяция</h3></div>
+        <p>$f(1)=4$, $f(3)=10$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(2)$","a":7,"v":"4+(10-4)*Rational(2-1,3-1)","hint":"Түзу.","sol":{"steps":["$4+\\frac{6}{2}\\cdot1$."],"ans":"$7$"}},{"q":"$P(2{,}5)$","a":8.5,"v":"4+(10-4)*Rational(15,10)/2","hint":"Көлбеулік 3.","sol":{"steps":["$4+3\\cdot1{,}5$."],"ans":"$8{,}5$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m16-4-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-4-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"4 әртүрлі түйін арқылы өтетін дәрежесі $\\le3$ көпмүше жалғыз.","a":true,"e":"Теорема 4.1.","hint":"$n=3$."},{"q":"Бірқалыпты түйіндер санын арттырсақ, кез келген үзіліссіз функцияның интерполяция қатесі әрдайым кемиді.","a":false,"e":"Рунге құбылысы.","hint":"$\\frac{1}{1+25x^2}$."},{"q":"Лагранж базистік көпмүшесі $\\ell_i$ өз түйінінде 1-ге тең.","a":true,"e":"Анықтама бойынша.","hint":"$\\ell_i(x_i)$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-4-num3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-4-t3">3. Бөлінген айырмалар</h3></div>
+        <p>$f(0)=1$, $f(2)=5$, $f(3)=10$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$f[0,2]$","a":2,"v":"Rational(5-1,2)","hint":"$\\frac{5-1}{2-0}$.","sol":{"steps":["$2$."],"ans":"$2$"}},{"q":"$f[0,2,3]$","a":1,"v":"(Rational(10-5,1)-2)/3","hint":"$f[2,3]=5$.","sol":{"steps":["$\\frac{5-2}{3-0}$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m16-4-exp4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-4-t4">4. Интерполяциялық көпмүше</h3></div>
+        <p>Көпмүшені $x$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$(0;1)$, $(2;5)$, $(3;10)$ нүктелері арқылы","a":"x^2+1","v":"expand(1+2*x+1*x*(x-2))","hint":"Ньютон: $1+2x+1\\cdot x(x-2)$.","sol":{"steps":["$1+2x+x^2-2x$."],"ans":"$x^2+1$"}},{"q":"$(-1;2)$, $(1;2)$ нүктелері арқылы $\\le1$ дәрежелі","a":"2","v":"2+0*x","hint":"Тұрақты.","sol":{"steps":["Түзу горизонталь."],"ans":"$2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-4-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-4-t5">5. Қате бағасы</h3></div>
+        <p>$f(x)=\sin x$, түйіндер $0$, $\frac\pi2$ (сызықтық интерполяция).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x=\\frac\\pi4$ нүктесіндегі қате бағасы $\\frac{M_2}{2}|\\omega|$ ($0{,}001$ дәлдік)","a":"pi^2/32","tol":0.001,"v":"Rational(1,2)*(pi/4)*(pi/4)","hint":"$M_2=1$, $|\\omega|=\\frac\\pi4\\cdot\\frac\\pi4$.","sol":{"steps":["$\\frac12\\cdot\\frac{\\pi^2}{16}$."],"ans":"$\\frac{\\pi^2}{32}\\approx0{,}308$"}},{"q":"Нақты қате $\\sin\\frac\\pi4-\\frac12$ ($0{,}001$ дәлдік)","a":"sqrt(2)/2-1/2","tol":0.001,"v":"sin(pi/4)-Rational(1,2)","hint":"$P(\\frac\\pi4)=\\frac12$.","sol":{"steps":["$0{,}7071-0{,}5$."],"ans":"$\\approx0{,}207$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m16-4-cho6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-4-t6">6. Түйіндерді таңдау</h3></div>
+        <p>$[-1;1]$-де 10 түйінмен интерполяция. Қайсысы жақсы?</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Түйіндер","o":["Чебышёв түйіндері (шеттерде жиі)","бірқалыпты түйіндер","ортада жиі түйіндер","кездейсоқ түйіндер"],"a":0,"e":"$\\max|\\omega|$ ең кіші.","hint":"Теорема 4.3."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m16-4-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-4-t7">7. Ұғымдар</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Ұғым мен қасиет.","pairs":[["Лагранж формасы","Σ yᵢ·ℓᵢ(x)"],["Ньютон формасы","жаңа түйін - бір жаңа мүше"],["Рунге құбылысы","бірқалыпты түйіндерде шетте тербеліс"],["бөлікті-сызықтық","қатесі h²·M₂/8"]],"hint":"Әрқайсысының ерекшелігі.","sol":{"steps":["Сплайн - бөлікті көпмүше."]},"e":"Формалар бір көпмүшенің әртүрлі жазылуы."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m16-4-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-4-t8">8. Параметрлік: сызықтық интерполяция</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[0,5]},"h":{"int":[2,6]},"u":{"int":[-9,9]},"w":{"int":[-9,9]},"k":{"int":[1,3]}},"require":["k < h"],"type":"num","q":"$f(#{a})=#{u}$, $f(#{a+h})=#{w}$. Сызықтық интерполяция бойынша $f(#{a+k})\\approx?$","a":"u+(w-u)*k/h","v":"u+Rational(w-u,h)*k","hint":"$f(a)+\\frac{f(b)-f(a)}{b-a}(x-a)$.","sol":{"steps":["Көлбеулік $\\frac{#{w-u}}{#{h}}$.","$#{u}+\\frac{#{w-u}}{#{h}}\\cdot#{k}$."],"ans":"$#{u+(w-u)*k/h}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m16-4-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-4-t9">9. Параметрлік: сплайн қадамы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"pick":[1,2,4,8]},"k":{"int":[2,6]}},"type":"num","q":"Бөлікті-сызықтық интерполяция, $\\max|f''|=#{m}$. Қате $10^{-#{k}}$-нан аспауы үшін ең үлкен қадам $h$ ($0{,}0001$ дәлдік)?","a":"sqrt(8*10^(-k)/m)","v":"sqrt(8*Rational(1,10**k)/m)","tol":0.0001,"hint":"$\\frac{h^2M_2}{8}\\le\\varepsilon$.","sol":{"steps":["$h\\le\\sqrt{\\frac{8\\varepsilon}{M_2}}=\\sqrt{\\frac{8\\cdot10^{-#{k}}}{#{m}}}$."],"ans":"$#{sqrt(8*10^(-k)/m)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-4-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-4-t10">10. Чебышёв</h3></div>
+        <p>Чебышёв түйіндері, $n+1$ түйін.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$n+1=6$ болса, $\\max|\\omega|$ ($2^{-n}$, бөлшекпен)","a":"1/32","v":"Rational(1,2**5)","hint":"$n=5$.","sol":{"steps":["$2^{-5}$."],"ans":"$\\frac1{32}$"}},{"q":"$n+1=4$ түйіннің ең үлкені $\\cos\\frac{\\pi}{8}$ ($0{,}001$ дәлдік)","a":"cos(pi/8)","tol":0.001,"v":"cos(pi/8)","hint":"$i=0$: $\\cos\\frac{\\pi}{2\\cdot4}$.","sol":{"steps":["$\\cos22{,}5^\\circ$."],"ans":"$\\approx0{,}924$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m16-4-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-4-t11">11. Қате формуласының дәлелі</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$f(x)-P(x)=\\frac{f^{(n+1)}(\\xi)}{(n+1)!}\\omega(x)$.","steps":["$K$-ны $f(x)-P(x)=K\\omega(x)$ болатындай таңдаймыз.","$g(t)=f(t)-P(t)-K\\omega(t)$ құрамыз.","$g$-ның $n+2$ нөлі бар екенін көрсетеміз.","Ролль теоремасын қайталап, $g^{(n+1)}(\\xi)=0$ аламыз.","$K=\\frac{f^{(n+1)}(\\xi)}{(n+1)!}$."],"hint":"Көмекші функция және Ролль.","sol":{"ans":"Қате формуласы дәлелденді."}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m16-4-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-4-t12">12. Қадамдық шешім: интерполяция арқылы туынды</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$x_0-h$, $x_0$, $x_0+h$ түйіндері арқылы өтетін параболаның $x_0$-дегі туындысын табыңыз.","hint":"Ньютон формасын $x_0-h$-тан бастаңыз.","steps":["$P(x)=f_{-1}+f[x_{-1},x_0](x-x_{-1})+f[x_{-1},x_0,x_1](x-x_{-1})(x-x_0)$.","$P'(x_0)=f[x_{-1},x_0]+f[x_{-1},x_0,x_1]\\cdot h$.","$f[x_{-1},x_0]=\\frac{f_0-f_{-1}}{h}$, $f[x_{-1},x_0,x_1]=\\frac{f_1-2f_0+f_{-1}}{2h^2}$.","$P'(x_0)=\\frac{f_0-f_{-1}}{h}+\\frac{f_1-2f_0+f_{-1}}{2h}=\\frac{f_1-f_{-1}}{2h}$ - орталық айырма (келесі сабақ)."],"ans":"$P'(x_0)=\\frac{f(x_0+h)-f(x_0-h)}{2h}$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Кестелік функцияларды есептеу, компьютер графикасы (Безье қисықтары, сплайндар), анимациядағы кадрлар арасындағы аралық күйлер, сандық интегралдау мен дифференциалдау формулаларының негізі (келесі сабақ), сигналдарды қайта іріктеу.</p>
+      <p><b>Мини-жоба: «Рунге құбылысы».</b> $f(x)=\frac1{1+25x^2}$ функциясын бірқалыпты және Чебышёв түйіндерімен интерполяциялап, $n$ өскендегі максимал қатені салыстырамыз.</p>
+<pre data-lang="python"><code class="language-python">import math
+
+def newton_coeffs(xs, ys):
+    c = list(ys); n = len(xs)
+    for k in range(1, n):
+        for i in range(n - 1, k - 1, -1):
+            c[i] = (c[i] - c[i - 1]) / (xs[i] - xs[i - k])
+    return c
+
+def newton_eval(c, xs, x):
+    p = c[-1]
+    for i in range(len(c) - 2, -1, -1):
+        p = p * (x - xs[i]) + c[i]
+    return p
+
+f = lambda x: 1 / (1 + 25 * x * x)
+grid = [-1 + 2 * k / 2000 for k in range(2001)]
+for n in (4, 8, 12, 16, 20):
+    eq = [-1 + 2 * i / n for i in range(n + 1)]
+    ch = [math.cos((2 * i + 1) * math.pi / (2 * (n + 1))) for i in range(n + 1)]
+    errs = []
+    for nodes in (eq, ch):
+        c = newton_coeffs(nodes, [f(t) for t in nodes])
+        errs.append(max(abs(f(x) - newton_eval(c, nodes, x)) for x in grid))
+    print(f"n={n:2d}: бірқалыпты {errs[0]:9.4f}   Чебышёв {errs[1]:.4f}")
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$f(x)=|x|$ функциясын Чебышёв түйіндерімен интерполяцияласаңыз, қате қалай кемиді? Неге қате бағасы (Теорема 4.2) бұл жерде жарамсыз?</li>
+        <li>Бөлікті-сызықтық интерполяцияны жазып, $h=\frac{2}{n}$ кезіндегі қатені $n=10,20,40$ үшін өлшеңіз. Ол 4 есе кеми ме?</li>
+        <li>1-мысалдағы нүктелер үшін <code>newton_coeffs</code> қайтаратын коэффициенттер $1,2,-\frac56$ екенін тексеріңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Бар және жалғыз</td><td>$\deg P\le n$, $P(x_i)=y_i$</td><td>түйіндер әртүрлі</td></tr>
+        <tr><td>Лагранж</td><td>$P=\sum y_i\ell_i$</td><td>$\ell_i(x_k)=\delta_{ik}$</td></tr>
+        <tr><td>Ньютон</td><td>$P=\sum f[x_0..x_k]\prod_{j&lt;k}(x-x_j)$</td><td>бөлінген айырмалар</td></tr>
+        <tr><td>Қате</td><td>$\frac{f^{(n+1)}(\xi)}{(n+1)!}\prod(x-x_i)$</td><td>$f\in C^{n+1}$</td></tr>
+        <tr><td>Чебышёв</td><td>$x_i=\cos\frac{(2i+1)\pi}{2(n+1)}$, $\max|\omega|=2^{-n}$</td><td>$[-1;1]$</td></tr>
+        <tr><td>Бөлікті-сызықтық</td><td>$|f-S|\le\frac{h^2}{8}M_2$</td><td>$f\in C^2$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m16-4-self">
+        <li><input type="checkbox"> <span>Мен интерполяциялық көпмүшенің бар және жалғыз екенін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Лагранж және Ньютон формаларын құра аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бөлінген айырмалар кестесін есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қате формуласын шарттарымен қолданып, қатені бағалай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Рунге құбылысын және Чебышёв түйіндерінің рөлін түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бөлікті-сызықтық интерполяцияның қатесін бағалай аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. 5 әртүрлі түйін арқылы өтетін интерполяциялық көпмүшенің ең үлкен дәрежесі:</p>
+<label><input type="radio" value="a"> 5</label>
+<label><input type="radio" value="b"> 6</label>
+<label><input type="radio" value="c"> 4</label>
+<label><input type="radio" value="d"> 3</label>
+<p class="explain">n + 1 түйін → дәреже ≤ n.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. Интерполяция қатесі формуласының шарты:</p>
+<label><input type="radio" value="a"> f үзіліссіз ғана</label>
+<label><input type="radio" value="b"> f ∈ Cⁿ⁺¹</label>
+<label><input type="radio" value="c"> f көпмүше</label>
+<label><input type="radio" value="d"> түйіндер бірқалыпты</label>
+<p class="explain">Ролль теоремасы n + 1 рет қолданылады.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. Рунге құбылысы қай жағдайда пайда болады?</p>
+<label><input type="radio" value="a"> жоғары дәрежелі, бірқалыпты түйіндер</label>
+<label><input type="radio" value="b"> Чебышёв түйіндері</label>
+<label><input type="radio" value="c"> сплайндар</label>
+<label><input type="radio" value="d"> сызықтық интерполяция</label>
+<p class="explain">ω(x) шеттерде үлкен.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. Ньютон формасының артықшылығы:</p>
+<label><input type="radio" value="a"> дәлірек</label>
+<label><input type="radio" value="b"> түйіндер қажет емес</label>
+<label><input type="radio" value="c"> дәрежесі кіші</label>
+<label><input type="radio" value="d"> жаңа түйін қосу оңай</label>
+<p class="explain">Бір мүше қосылады.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">5. Бөлікті-сызықтық интерполяцияда қадам 2 есе кішірейсе, қате:</p>
+<label><input type="radio" value="a"> 2 есе кемиді</label>
+<label><input type="radio" value="b"> өзгермейді</label>
+<label><input type="radio" value="c"> 4 есе кемиді</label>
+<label><input type="radio" value="d"> 8 есе кемиді</label>
+<p class="explain">O(h²).</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. Лагранж базистік көпмүшесі ℓᵢ(xⱼ), j ≠ i:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 0</label>
+<label><input type="radio" value="c"> yᵢ</label>
+<label><input type="radio" value="d"> xᵢ</label>
+<p class="explain">Анықтама.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. Чебышёв түйіндері қай жерде жиірек?</p>
+<label><input type="radio" value="a"> аралықтың шеттерінде</label>
+<label><input type="radio" value="b"> ортасында</label>
+<label><input type="radio" value="c"> біркелкі</label>
+<label><input type="radio" value="d"> кездейсоқ</label>
+<p class="explain">cos функциясының қасиеті.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. Интерполяцияны түйіндерден тыс қолдану:</p>
+<label><input type="radio" value="a"> дәлірек</label>
+<label><input type="radio" value="b"> әрдайым дұрыс</label>
+<label><input type="radio" value="c"> тек сызықтықта дұрыс</label>
+<label><input type="radio" value="d"> сенімсіз (экстраполяция)</label>
+<p class="explain">ω(x) тез өседі.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-101.html"><small>Алдыңғы</small>← Numerical Analysis · 3-сабақ: Сызықтық жүйелерді сандық шешу</a>
@@ -78,12 +400,6 @@
     </article>
   </div>
 
-  <footer class="footer">
-    <div class="footer-inner">
-      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/bota.svg" alt="" width="52" height="52"><span><b>CS50</b> қазақша</span></a><p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>
-      <div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар 🎮</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li></ul></div>
-      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
-    </div>
-  </footer>
+  <footer class="footer"></footer>
 </body>
 </html>
