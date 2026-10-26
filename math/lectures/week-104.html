@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Numerical Analysis · 6-сабақ: Дифференциалдық теңдеулерді сандық шешу - CS50 қазақша">
-  <meta property="og:description" content="Математика, Numerical Analysis · 6-сабақ: Дифференциалдық теңдеулерді сандық шешу. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Эйлер әдісі, Рунге–Кутта әдістері, тұрақтылық.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-104.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Numerical Analysis · 6-сабақ: Дифференциалдық теңдеулерді сандық шешу - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-104.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Numerical Analysis · 6-сабақ: Дифференциалдық теңдеулерді сандық шешу. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Эйлер әдісі, Рунге–Кутта әдістері, тұрақтылық.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,372 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="104">
         <div class="num">Numerical Analysis · 6-сабақ</div>
         <h1>Дифференциалдық теңдеулерді сандық шешу</h1>
-        <p>Эйлер әдісі, Рунге–Кутта әдістері, тұрақтылық.</p>
+        <p>Көп дифференциалдық теңдеуді (планеталар қозғалысы, эпидемия моделі, химиялық реакция) формуламен шешу мүмкін емес. Бірақ шешімді қадам-қадаммен «құрып» шығуға болады: бастапқы нүктеден көлбеулік бойынша кішкене қадам жасаймыз, сосын қайталаймыз. Бұл сабақта Эйлер, жетілдірілген Эйлер (Хойн) және классикалық Рунге–Кутта (RK4) әдістерін құрамыз, олардың жергілікті және жаһандық қателерін (шарттарымен) талдаймыз, тұрақтылықты $y'=\lambda y$ сынақ теңдеуінде зерттейміз және «қатаң» теңдеулер үшін айқын емес әдістің қажеттілігін көрсетеміз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-16">Numerical Analysis</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-16">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>Коши есебін $y'=f(t,y)$, $y(t_0)=y_0$ сандық түрде қою және Эйлер әдісін геометриялық түсіндіру;</li>
+        <li>жергілікті ($O(h^2)$) және жаһандық ($O(h)$) қатені ажырату, шарттарын (Липшиц, тегістік) атау;</li>
+        <li>Хойн (2-ретті) және RK4 (4-ретті) әдістерін орындау;</li>
+        <li>әдістің ретін тәжірибе арқылы (қадамды екі есе кішірейтіп) тексеру;</li>
+        <li>$y'=\lambda y$ үшін айқын Эйлердің тұрақтылық шартын $|1+h\lambda|\le1$ табу;</li>
+        <li>қатаң теңдеулерде айқын емес Эйлердің артықшылығын түсіндіру және жүйелерге әдістерді қолдану.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Бірінші ретті ЖДТ және Коши есебі: $y'=f(t,y)$, $y(t_0)=y_0$; мысалы $y'=\lambda y$ шешімі $y=y_0e^{\lambda t}$. Тейлор формуласы $y(t+h)=y(t)+hy'(t)+\frac{h^2}{2}y''(\xi)$ ($y\in C^2$). Липшиц шарты: $|f(t,y_1)-f(t,y_2)|\le L|y_1-y_2|$. Геометриялық прогрессия және $(1+x)\le e^x$.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Қараңғы бөлмеде жүріп келе жатырсыз: әр қадамда тек аяғыңыздың астындағы еңісті сезесіз. Еңіс бағытымен бір қадам басасыз, қайта сезесіз, тағы бір қадам. Бұл - <b>Эйлер әдісі</b>. Қадам кіші болса, жол шын қисыққа жақын; бірақ әр қадамда кішкене қате жиналады, және ол жалпы алғанда $h$-қа пропорционал.</p>
+      <p>Жақсырақ: қадам басар алдында «болжау» жасап, қадамның соңындағы еңісті де бағалаймыз, сосын екі еңістің орташасымен жүреміз (Хойн әдісі). Ал RK4 бір қадамда төрт еңісті өлшеп, оларды Симпсон формуласы сияқты салмақтармен біріктіреді. Нәтижесінде қадамды 2 есе кішірейтсек, қате 16 есе азаяды.</p>
+      <p>Бірақ дәлдіктен басқа, <b>тұрақтылық</b> маңызды. Ыстық шәйдің суынуы $y'=-10y$ сияқты тез сөнетін процесс. Эйлер әдісімен $h=0{,}25$ алсақ, әр қадамда сан $(1-2{,}5)=-1{,}5$ есе көбейеді: шешім сөнудің орнына тербеліп, шексіз өседі! Қадам тым үлкен болса, айқын әдіс «жарылады».</p>
+      <p>Қатаң есептер (тез және баяу процестер бірге) айқын емес әдістерді қажет етеді: келесі мәнді «болашақтағы» еңіс арқылы теңдеуден табамыз. Бір қадам қымбатырақ (теңдеу шешу керек), бірақ кез келген $h$-та тұрақты.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 6.1 · Коши есебі және тор</span>
+        <p>$y'=f(t,y)$, $y(t_0)=y_0$ - <strong>Коши есебі</strong> (<span class="term-en">initial value problem</span>). Қадам $h>0$, тор $t_n=t_0+nh$; $y_n\approx y(t_n)$ - сандық шешім. $f$ $y$ бойынша Липшиц шартын қанағаттандырса, шешім бар және жалғыз (Пикар теоремасы, мұнда дәлелсіз).</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 6.2 · Эйлер әдісі</span>
+        <p><strong>Эйлер әдісі</strong> (<span class="term-en">Euler's method</span>): $y_{n+1}=y_n+hf(t_n,y_n)$. Геометриялық мағынасы: $(t_n,y_n)$ нүктесінен бағыт өрісінің көлбеулігімен түзу бойынша $h$ қадам.</p></div>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 6.3 · Жергілікті және жаһандық қате</span>
+        <p><strong>Жергілікті қате</strong> (<span class="term-en">local truncation error</span>) - дәл шешімнен бастап бір қадам жасағандағы қате: $\tau_{n+1}=y(t_{n+1})-y(t_n)-hf(t_n,y(t_n))$. <strong>Жаһандық қате</strong> (<span class="term-en">global error</span>) - $e_n=y(t_n)-y_n$ (барлық қадамдардың жиынтық әсері). Жаһандық қатесі $O(h^p)$ әдіс - $p$-ретті.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 6.1 · Эйлер әдісінің жинақталуы</span>
+        <p>$f$ $y$ бойынша $L$ тұрақтысымен Липшиц шартын қанағаттандырсын және шешім $y\in C^2[t_0,T]$, $|y''|\le M$. Онда $[t_0,T]$-да $|e_n|\le\frac{Mh}{2L}\left(e^{L(t_n-t_0)}-1\right)$ ($L>0$). Демек жергілікті қате $O(h^2)$, ал жаһандық - $O(h)$ (1-ретті әдіс).</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту.</p>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 6.4 · Рунге–Кутта әдістері</span>
+        <p><strong>Хойн әдісі</strong> (<span class="term-en">Heun's method</span>) (жетілдірілген Эйлер): $k_1=f(t_n,y_n)$, $k_2=f(t_n+h,\ y_n+hk_1)$, $y_{n+1}=y_n+\frac h2(k_1+k_2)$ - 2-ретті. Классикалық <strong>Рунге–Кутта әдісі</strong> (<span class="term-en">Runge–Kutta method</span>) (RK4): $k_1=f(t_n,y_n)$, $k_2=f\left(t_n+\frac h2,y_n+\frac h2k_1\right)$, $k_3=f\left(t_n+\frac h2,y_n+\frac h2k_2\right)$, $k_4=f(t_n+h,y_n+hk_3)$, $y_{n+1}=y_n+\frac h6(k_1+2k_2+2k_3+k_4)$ - 4-ретті ($f$ жеткілікті тегіс болғанда).</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 6.2 · Сынақ теңдеуіндегі тұрақтылық</span>
+        <p>$y'=\lambda y$, $\lambda&lt;0$ (дәл шешім сөнеді). (1) Айқын Эйлер: $y_{n+1}=(1+h\lambda)y_n$; сандық шешім сөнеді $\iff|1+h\lambda|&lt;1\iff0&lt;h&lt;\frac{2}{|\lambda|}$. (2) <strong>Айқын емес Эйлер</strong> (<span class="term-en">backward Euler</span>) $y_{n+1}=y_n+hf(t_{n+1},y_{n+1})$: $y_{n+1}=\frac{y_n}{1-h\lambda}$, кез келген $h>0$ үшін сөнеді. (3) RK4: $y_{n+1}=R(h\lambda)y_n$, $R(z)=1+z+\frac{z^2}2+\frac{z^3}6+\frac{z^4}{24}$ - $e^z$-тің Тейлор көпмүшесі.</p></div>
+      <p><em>Негіздеме.</em> (1)-(2): әдісті $f=\lambda y$-ке тікелей қолдану (3-қорыту); (3): RK4 қадамдарын $f=\lambda y$ үшін ашу.</p>
+      <div class="math-def" id="def-5"><span class="math-tag">Анықтама 6.5 · Қатаң теңдеу</span>
+        <p>Айқын әдістер тек өте кіші $h$-та тұрақты болатын, ал шешімнің өзі баяу өзгеретін есептер - <strong>қатаң теңдеулер</strong> (<span class="term-en">stiff equations</span>) (мысалы, $\lambda=-1000$ компонентті жүйе). Оларға айқын емес әдістер қолданылады.</p></div>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 6.1 · Эйлер және айқын емес Эйлер</span>
+        <div class="math-fbody">$$y_{n+1}=y_n+hf(t_n,y_n),\qquad y_{n+1}=y_n+hf(t_{n+1},y_{n+1})$$</div>
+        <p class="math-fnote">Біріншісі - айқын, екіншісі әр қадамда $y_{n+1}$ бойынша теңдеу шешуді талап етеді. Екеуі де 1-ретті.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 6.2 · RK4</span>
+        <div class="math-fbody">$$y_{n+1}=y_n+\frac h6\left(k_1+2k_2+2k_3+k_4\right)$$</div>
+        <p class="math-fnote">4-ретті: $h$ екі есе кішірейсе, жаһандық қате $\approx16$ есе азаяды ($f$ мен шешім жеткілікті тегіс болса). Әр қадамда 4 рет $f$ есептеледі.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 6.3 · Эйлердің тұрақтылық шарты</span>
+        <div class="math-fbody">$$|1+h\lambda|\le1\iff h\le\frac{2}{|\lambda|}\quad(\lambda\lt0)$$</div>
+        <p class="math-fnote">$h=\frac2{|\lambda|}$ кезінде сандық шешім $\pm y_0$ тербеледі (сөнбейді); қатаң теңсіздік керек.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Әдістердің реті: Эйлер - 1, Хойн - 2, RK4 - 4. Тәжірибелік тексеру: $h$ мен $\frac h2$ шешімдерінің қатесінің қатынасы $\approx2^p$. Тұрақтылық: айқын әдістер үшін $h|\lambda|$ шектелген; айқын емес Эйлер - $\lambda&lt;0$ үшін шектеусіз.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Жоғары рет әрдайым жақсы нәтиже бермейді: тегістік жоқ болса (мысалы, $f$ үзілісті), RK4 те баяу жинақталады. Тұрақтылық шарты дәлдік шартынан бөлек: дәлдік үшін $h=0{,}1$ жеткілікті болса да, $\lambda=-1000$ компонент айқын Эйлерге $h&lt;0{,}002$ талап етеді. Сонымен қатар, Эйлер әдісі гармоникалық тербелісте энергияны жасанды түрде арттырады (орбита «ашылады»).</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: Эйлер әдісінің жаһандық қатесі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.1-дің бағасын қорыту.</p>
+          <ol class="math-steps">
+            <li>Жергілікті қате: Тейлор бойынша ($y\in C^2$) $y(t_{n+1})=y(t_n)+hy'(t_n)+\frac{h^2}{2}y''(\xi_n)$, ал $y'(t_n)=f(t_n,y(t_n))$. Демек $|\tau_{n+1}|\le\frac{Mh^2}{2}$.</li>
+            <li>Жаһандық қате: $e_{n+1}=y(t_{n+1})-y_{n+1}=e_n+h\big[f(t_n,y(t_n))-f(t_n,y_n)\big]+\tau_{n+1}$.</li>
+            <li>Липшиц: $|f(t_n,y(t_n))-f(t_n,y_n)|\le L|e_n|$, сондықтан $|e_{n+1}|\le(1+hL)|e_n|+\frac{Mh^2}{2}$.</li>
+            <li>$e_0=0$-ден индукциямен (геометриялық прогрессия): $|e_n|\le\frac{Mh^2}{2}\cdot\frac{(1+hL)^n-1}{hL}$.</li>
+            <li>$1+hL\le e^{hL}$, $nh=t_n-t_0$: $|e_n|\le\frac{Mh}{2L}\left(e^{L(t_n-t_0)}-1\right)$ - $O(h)$.</li>
+            <li>Байқаңыз: әр қадамның қатесі $O(h^2)$, бірақ қадам саны $\frac{T-t_0}{h}$, сондықтан жиынтығы $O(h)$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: Хойн әдісінің реті</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Хойн әдісінің жергілікті қатесі $O(h^3)$ екенін $y'=\lambda y$ мысалында тексеру (жалпы дәлел ұқсас, Тейлор арқылы).</p>
+          <ol class="math-steps">
+            <li>$f=\lambda y$: $k_1=\lambda y_n$, $k_2=\lambda(y_n+h\lambda y_n)$.</li>
+            <li>$y_{n+1}=y_n+\frac h2\big(\lambda y_n+\lambda y_n+h\lambda^2y_n\big)=\left(1+h\lambda+\frac{(h\lambda)^2}{2}\right)y_n$.</li>
+            <li>Дәл шешім: $y(t_{n+1})=e^{h\lambda}y(t_n)=\left(1+h\lambda+\frac{(h\lambda)^2}2+\frac{(h\lambda)^3}6+\dots\right)y(t_n)$.</li>
+            <li>Айырма $\frac{(h\lambda)^3}{6}y_n+\dots$ - жергілікті қате $O(h^3)$, жаһандық $O(h^2)$.</li>
+            <li>Эйлер үшін $1+h\lambda$ - айырма $\frac{(h\lambda)^2}2$, $O(h^2)$. RK4 үшін $R(h\lambda)$ Тейлор жіктелуімен $z^4$-ке дейін сәйкес, айырма $O(h^5)$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: айқын және айқын емес Эйлердің тұрақтылығы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $y'=\lambda y$, $\lambda&lt;0$ үшін тұрақтылық шарттарын табу.</p>
+          <ol class="math-steps">
+            <li>Айқын: $y_{n+1}=y_n+h\lambda y_n=(1+h\lambda)y_n$, демек $y_n=(1+h\lambda)^ny_0$.</li>
+            <li>$y_n\to0\iff|1+h\lambda|&lt;1\iff-1&lt;1+h\lambda&lt;1\iff-2&lt;h\lambda&lt;0\iff h&lt;\frac2{|\lambda|}$.</li>
+            <li>Айқын емес: $y_{n+1}=y_n+h\lambda y_{n+1}\Rightarrow y_{n+1}(1-h\lambda)=y_n\Rightarrow y_{n+1}=\frac{y_n}{1-h\lambda}$.</li>
+            <li>$\lambda&lt;0$ болса $1-h\lambda>1$, сондықтан $\left|\frac{1}{1-h\lambda}\right|&lt;1$ кез келген $h>0$ үшін - шартсыз тұрақты.</li>
+            <li>Мысал: $\lambda=-10$, $h=0{,}25$: айқын көбейткіш $-1{,}5$ (жарылады: 4 қадамда $5{,}06$), айқын емес $\frac1{3{,}5}\approx0{,}286$ (сөнеді); дәл шешім $e^{-10}\approx4{,}5\cdot10^{-5}$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Эйлер: бір қадам</h3>
+        <p class="math-problem">$y'=t+y$, $y(0)=1$, $h=0{,}1$. $y(0{,}1)$-ді Эйлер және RK4 әдістерімен жуықтаңыз. Дәл шешім $y=2e^t-t-1$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Эйлер: $y_1=1+0{,}1\cdot(0+1)=1{,}1$. Дәл: $2e^{0{,}1}-1{,}1\approx1{,}110342$; қате $\approx0{,}0103$.</li>
+          <li><b>2-қадам.</b> RK4: $k_1=0+1=1$; $k_2=0{,}05+(1+0{,}05\cdot1)=1{,}1$; $k_3=0{,}05+(1+0{,}05\cdot1{,}1)=1{,}105$.</li>
+          <li><b>3-қадам.</b> $k_4=0{,}1+(1+0{,}1\cdot1{,}105)=1{,}2105$.</li>
+          <li><b>4-қадам.</b> $y_1=1+\frac{0{,}1}{6}(1+2{,}2+2{,}21+1{,}2105)=1+\frac{0{,}1}6\cdot6{,}6205\approx1{,}1103417$; қате $\approx1{,}7\cdot10^{-7}$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Эйлер $1{,}1$; RK4 $\approx1{,}1103417$ (дәл $1{,}1103418$).</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Ретті тексеру</h3>
+        <p class="math-problem">$y'=y$, $y(0)=1$, $T=1$. $h=0{,}1$ және $h=0{,}05$ кезіндегі қателер.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Эйлер: $-0{,}1245$ және $-0{,}0650$ - қатынасы $\approx1{,}92\approx2^1$.</li>
+          <li><b>2-қадам.</b> Хойн: $-0{,}00420$ және $-0{,}00109$ - қатынасы $\approx3{,}85\approx2^2$.</li>
+          <li><b>3-қадам.</b> RK4: $-2{,}08\cdot10^{-6}$ және $-1{,}36\cdot10^{-7}$ - қатынасы $\approx15{,}3\approx2^4$.</li>
+          <li><b>4-қадам.</b> Ретті тәжірибе растайды: 1, 2, 4. Бірдей есептеу көлемінде (RK4 4 есе көп $f$ есептейді) RK4 әлдеқайда дәл.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Реттер 1, 2, 4.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Тұрақтылық</h3>
+        <p class="math-problem">$y'=-20y$, $y(0)=1$. Айқын Эйлер үшін қандай $h$-та сандық шешім сөнеді? $h=0{,}1$ болса не болады?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\lambda=-20$: шарт $h&lt;\frac{2}{20}=0{,}1$.</li>
+          <li><b>2-қадам.</b> $h=0{,}1$: $1+h\lambda=-1$, $y_n=(-1)^n$ - тербеледі, сөнбейді.</li>
+          <li><b>3-қадам.</b> $h=0{,}15$: көбейткіш $-2$, $y_n=(-2)^n$ - жарылады.</li>
+          <li><b>4-қадам.</b> Айқын емес Эйлер $h=0{,}15$: көбейткіш $\frac1{1+3}=0{,}25$ - сөнеді ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $h&lt;0{,}1$ керек.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Жүйе: тербеліс</h3>
+        <p class="math-problem">$x''=-x$ ($x(0)=1$, $x'(0)=0$) теңдеуін жүйеге келтіріп, Эйлер әдісімен $h=0{,}1$ бір қадам жасаңыз. Энергия $E=x^2+v^2$ қалай өзгереді?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $v=x'$: $x'=v$, $v'=-x$. Бастапқы $(1;0)$, $E_0=1$.</li>
+          <li><b>2-қадам.</b> Эйлер: $x_1=1+0{,}1\cdot0=1$, $v_1=0+0{,}1\cdot(-1)=-0{,}1$.</li>
+          <li><b>3-қадам.</b> $E_1=1+0{,}01=1{,}01$. Жалпы $E_{n+1}=(1+h^2)E_n$ (тексеріңіз): энергия әр қадамда өседі.</li>
+          <li><b>4-қадам.</b> Шын шешім $x=\cos t$, $E\equiv1$. Эйлер «спираль бойымен сыртқа» кетеді; ұзақ модельдеуде симплектикалық әдістер (мысалы, жартылай айқын Эйлер) қолданылады.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $(x_1,v_1)=(1;\ -0{,}1)$, $E_1=1{,}01$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Эйлердің жаһандық қатесі $O(h^2)$</span> → <span class="math-good">жергілікті $O(h^2)$, жаһандық $O(h)$</span><br>Неге қате: $\frac1h$ қадамда жергілікті қателер жиналады.</li>
+        <li><span class="math-bad">RK4 кез келген $h$-та тұрақты</span> → <span class="math-good">тұрақтылық облысы шектеулі</span><br>Неге қате: $y'=\lambda y$ үшін $|R(h\lambda)|\le1$ керек ($h|\lambda|\lesssim2{,}78$ нақты $\lambda$ үшін).</li>
+        <li><span class="math-bad">RK4 формуласында $k_2$ мен $k_3$-ті $t_n+h$ нүктесінде есептеу</span> → <span class="math-good">$t_n+\frac h2$ нүктесінде</span><br>Неге қате: $k_2,k_3$ - орта нүктедегі көлбеуліктер.</li>
+        <li><span class="math-bad">Айқын емес Эйлер формуласын айқын деп есептеу</span> → <span class="math-good">$y_{n+1}$ - теңдеудің шешімі</span><br>Неге қате: $f$ сызықтық емес болса, әр қадамда Ньютон әдісі керек.</li>
+        <li><span class="math-bad">Тұрақтылық тек дәлдікке байланысты</span> → <span class="math-good">бөлек шарт</span><br>Неге қате: $y'=-1000y$: шешім бірден сөнеді, бірақ айқын әдіс $h&lt;0{,}002$ талап етеді.</li>
+        <li><span class="math-bad">Екінші ретті теңдеуге Эйлерді тікелей қолдану</span> → <span class="math-good">алдымен бірінші ретті жүйеге келтіру</span><br>Неге қате: $x''=g$ → $x'=v$, $v'=g$.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="y′ = y: дәл шешім, Эйлер (баспалдақ) және оның қатесі" data-config='{"fns": [{"f": "exp(x)", "label": "дәл: eᵗ"}, {"f": "(1+h)^floor(x/h)", "label": "Эйлер: (1 + h)ⁿ", "color": 1}, {"f": "(1+h+h^2/2)^floor(x/h)", "label": "Хойн: (1 + h + h²/2)ⁿ", "color": 2}], "params": [{"n": "h", "min": 0.02, "max": 0.5, "step": 0.01, "v": 0.2}], "view": [0, 3, 0, 21]}'></div>
+      <p><b>Бақылаңыз:</b> $h$ слайдері - қадам. Баспалдақтар - $t_n=nh$ нүктелеріндегі сандық мәндер. Эйлер дәл шешімнен төмен қалады және айырма $h$-пен шамамен сызықтық кемиді; Хойн әлдеқайда жақын ($O(h^2)$).</p>
+      <div class="math-viz" data-viz="graph" data-title="Тұрақтылық көбейткіштері: |1 + z| және 1/|1 − z|, z = hλ" data-config='{"fns": [{"f": "abs(1+x)", "label": "айқын Эйлер |1 + z|"}, {"f": "1/abs(1-x)", "label": "айқын емес 1/|1 − z|", "color": 1}, {"f": "abs(1+x+x^2/2+x^3/6+x^4/24)", "label": "RK4 |R(z)|", "color": 2}, {"f": "1", "label": "шекара 1", "color": 3, "dash": [5, 4]}], "view": [-4, 0.5, 0, 2]}'></div>
+      <p><b>Бақылаңыз:</b> Көлденең ось - $z=h\lambda\le0$ (нақты). Көбейткіш 1-ден кіші болғанда сандық шешім сөнеді. Айқын Эйлер тек $-2&lt;z&lt;0$ аралығында, RK4 шамамен $-2{,}79&lt;z&lt;0$ аралығында, ал айқын емес Эйлер барлық $z&lt;0$ үшін тұрақты.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m16-6-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-6-t1">1. Эйлер қадамдары</h3></div>
+        <p>$y'=2y$, $y(0)=3$, $h=0{,}1$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y_1$","a":3.6,"v":"3+Rational(1,10)*2*3","hint":"$y_0+hf(t_0,y_0)$.","sol":{"steps":["$3+0{,}1\\cdot6$."],"ans":"$3{,}6$"}},{"q":"$y_2$","a":4.32,"v":"3*Rational(12,10)**2","hint":"$y_n=(1+2h)^ny_0$.","sol":{"steps":["$3{,}6\\cdot1{,}2$."],"ans":"$4{,}32$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m16-6-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-6-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Эйлер әдісінің жаһандық қатесі $O(h)$.","a":true,"e":"Теорема 6.1.","hint":"1-ретті."},{"q":"RK4-те әр қадамда $f$ төрт рет есептеледі.","a":true,"e":"$k_1..k_4$.","hint":"Формула."},{"q":"Айқын Эйлер $y'=-y$ үшін кез келген $h$-та тұрақты.","a":false,"e":"$h\\lt 2$ керек.","hint":"$|1-h|\\lt 1$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m16-6-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-6-t3">3. Әдістің реті</h3></div>
+        <p>$h$ екі есе кішірейгенде жаһандық қате шамамен неше есе азаяды?</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"RK4","o":["16","2","4","8"],"a":0,"e":"$2^4$.","hint":"4-ретті."},{"q":"Хойн","o":["4","2","16","1"],"a":0,"e":"$2^2$.","hint":"2-ретті."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-6-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-6-t4">4. Хойн қадамы</h3></div>
+        <p>$y'=t+y$, $y(0)=1$, $h=0{,}1$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$k_2$","a":1.2,"v":"Rational(1,10)+(1+Rational(1,10)*1)","hint":"$k_1=1$; $k_2=f(0{,}1;\\ 1{,}1)$.","sol":{"steps":["$0{,}1+1{,}1$."],"ans":"$1{,}2$"}},{"q":"$y_1$","a":1.11,"v":"1+Rational(1,20)*(1+Rational(12,10))","hint":"$y_0+\\frac h2(k_1+k_2)$.","sol":{"steps":["$1+0{,}05\\cdot2{,}2$."],"ans":"$1{,}11$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-6-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-6-t5">5. Тұрақтылық шегі</h3></div>
+        <p>Айқын Эйлер, $y'=\lambda y$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\lambda=-50$ үшін ең үлкен тұрақты $h$ (шекара)","a":0.04,"v":"Rational(2,50)","hint":"$\\frac{2}{|\\lambda|}$.","sol":{"steps":["$\\frac2{50}$."],"ans":"$0{,}04$"}},{"q":"$\\lambda=-50$, $h=0{,}05$: көбейткіш $1+h\\lambda$","a":-1.5,"v":"1+Rational(5,100)*(-50)","hint":"$1-2{,}5$.","sol":{"steps":["$|-1{,}5|>1$ - жарылады."],"ans":"$-1{,}5$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m16-6-exp6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-6-t6">6. Көбейткіш</h3></div>
+        <p>$y'=\lambda y$ үшін бір қадамның көбейткішін $z=h\lambda$ арқылы жазыңыз ($z$ орнына $x$ айнымалысын қолданыңыз).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Хойн әдісі","a":"1+x+x^2/2","v":"1+x+x**2/2","hint":"2-қорыту.","sol":{"steps":["$1+z+\\frac{z^2}{2}$."],"ans":"$1+z+\\frac{z^2}2$"}},{"q":"Айқын емес Эйлер","a":"1/(1-x)","v":"1/(1-x)","dom":[-3,0.5],"hint":"$y_{n+1}=y_n+zy_{n+1}$.","sol":{"steps":["$y_{n+1}(1-z)=y_n$."],"ans":"$\\frac1{1-z}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m16-6-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-6-t7">7. Әдістер</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Қасиеттер.","pairs":[["айқын Эйлер","1-ретті, шартты тұрақты"],["айқын емес Эйлер","1-ретті, λ < 0 үшін шартсыз тұрақты"],["Хойн","2-ретті"],["RK4","4-ретті, 4 есептеу/қадам"]],"hint":"Рет пен тұрақтылық.","sol":{"steps":["Айқын емес әдіс теңдеу шешуді талап етеді."]},"e":"Әдісті есептің қасиетіне қарай таңдаймыз."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m16-6-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-6-t8">8. Параметрлік: Эйлер</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[-3,3],"nz":true},"y":{"int":[1,5]},"n":{"int":[1,3]}},"type":"num","q":"$y'=#{a}y$, $y(0)=#{y}$, $h=0{,}1$. Эйлер әдісімен $y_{#{n}}$?","a":"y*(1+a/10)^n","v":"y*(1+Rational(a,10))**n","hint":"$y_n=(1+h\\lambda)^ny_0$.","sol":{"steps":["$1+h\\lambda=1+0{,}1\\cdot#{p:a}=#{1+a/10}$.","$#{y}\\cdot#{1+a/10}^{#{n}}$."],"ans":"$#{y*(1+a/10)^n}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m16-6-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-6-t9">9. Параметрлік: тұрақтылық</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"l":{"pick":[10,20,40,50,100,200]}},"type":"num","q":"$y'=-#{l}y$ теңдеуін айқын Эйлермен $[0;1]$-де шешу үшін тұрақтылық талап ететін ең аз қадам саны $N$ ($h=\\frac1N\\lt \\frac2{|\\lambda|}$, қатаң)?","a":"l/2+1","v":"floor(Rational(l,2))+1","hint":"$\\frac1N\\lt \\frac{2}{#{l}}\\iff N>\\frac{#{l}}{2}$.","sol":{"steps":["$N>#{l/2}$ - ең кіші бүтін $N=#{l/2+1}$."],"ans":"$#{l/2+1}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-6-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-6-t10">10. Жүйе</h3></div>
+        <p>$x'=v$, $v'=-x$, $(x_0,v_0)=(1;0)$, $h=0{,}1$, Эйлер.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"2 қадамнан кейінгі $x_2$","a":0.99,"v":"1+Rational(1,10)*Rational(-1,10)","hint":"$x_1=1$, $v_1=-0{,}1$.","sol":{"steps":["$x_2=x_1+hv_1=1-0{,}01$."],"ans":"$0{,}99$"}},{"q":"$E_2=x_2^2+v_2^2$ ($v_2=v_1-hx_1=-0{,}2$)","a":1.0201,"v":"Rational(99,100)**2+Rational(-2,10)**2","hint":"$(1+h^2)^2E_0$.","sol":{"steps":["$0{,}9801+0{,}04$."],"ans":"$1{,}0201=1{,}01^2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m16-6-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-6-t11">11. RK4 қадамы</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"RK4 бір қадамы.","steps":["$k_1=f(t_n,y_n)$.","$k_2=f\\left(t_n+\\frac h2,\\ y_n+\\frac h2k_1\\right)$.","$k_3=f\\left(t_n+\\frac h2,\\ y_n+\\frac h2k_2\\right)$.","$k_4=f(t_n+h,\\ y_n+hk_3)$.","$y_{n+1}=y_n+\\frac h6(k_1+2k_2+2k_3+k_4)$."],"hint":"Әр $k$ алдыңғысына сүйенеді.","sol":{"ans":"Салмақтар $1,2,2,1$."}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m16-6-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-6-t12">12. Қадамдық шешім: Эйлер мен e</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$y'=y$, $y(0)=1$ есебін $[0;1]$-де $N$ қадаммен Эйлер әдісімен шешсек, $y_N=\\left(1+\\frac1N\\right)^N$. $N\\to\\infty$ кезінде не болады және жаһандық қате қалай кемиді?","hint":"$\\ln\\left(1+\\frac1N\\right)=\\frac1N-\\frac1{2N^2}+\\dots$","steps":["$y_N=\\left(1+\\frac1N\\right)^N\\to e$ - бұл $e$-нің анықтамаларының бірі.","$N\\ln\\left(1+\\frac1N\\right)=1-\\frac{1}{2N}+O\\left(\\frac1{N^2}\\right)$.","$y_N=e\\cdot e^{-\\frac{1}{2N}+\\dots}\\approx e\\left(1-\\frac{1}{2N}\\right)$.","Қате $\\approx-\\frac{e}{2N}=-\\frac{e}{2}h$ - дәл $O(h)$; $h=0{,}1$: $-0{,}136$ (нақты $-0{,}1245$)."],"ans":"$y_N\\to e$, қате $\\approx-\\frac{e}{2}h$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Ғарыш аппараттарының траекториясы, климат модельдері, SIR эпидемия моделі, электр тізбектері, ойын физикасы - бәрі ЖДТ-ны сандық шешеді. Python-да <code>scipy.integrate.solve_ivp</code> RK45 (адаптивті қадамды Рунге–Кутта) және қатаң есептерге айқын емес әдістерді (BDF, Radau) ұсынады.</p>
+      <p><b>Мини-жоба: «ЖДТ шешушісі».</b> Эйлер, Хойн, RK4-ті жалпы $f(t,y)$ (скаляр не вектор) үшін жазып, реттерін тексереміз және SIR моделін модельдейміз.</p>
+<pre data-lang="python"><code class="language-python">import math
+
+def step_euler(f, t, y, h): return [yi + h * ki for yi, ki in zip(y, f(t, y))]
+def step_heun(f, t, y, h):
+    k1 = f(t, y); k2 = f(t + h, [yi + h * a for yi, a in zip(y, k1)])
+    return [yi + h / 2 * (a + b) for yi, a, b in zip(y, k1, k2)]
+def step_rk4(f, t, y, h):
+    k1 = f(t, y)
+    k2 = f(t + h/2, [yi + h/2 * a for yi, a in zip(y, k1)])
+    k3 = f(t + h/2, [yi + h/2 * a for yi, a in zip(y, k2)])
+    k4 = f(t + h, [yi + h * a for yi, a in zip(y, k3)])
+    return [yi + h / 6 * (a + 2*b + 2*c + d) for yi, a, b, c, d in zip(y, k1, k2, k3, k4)]
+
+def solve(step, f, y0, t0, T, n):
+    h, t, y = (T - t0) / n, t0, list(y0)
+    for _ in range(n): y = step(f, t, y, h); t += h
+    return y
+
+f = lambda t, y: [y[0]]
+for name, st in (("Эйлер", step_euler), ("Хойн", step_heun), ("RK4", step_rk4)):
+    e1 = abs(solve(st, f, [1], 0, 1, 10)[0] - math.e)
+    e2 = abs(solve(st, f, [1], 0, 1, 20)[0] - math.e)
+    print(f"{name:6s} қате(h=0.1)={e1:.2e}  қатынас={e1 / e2:.2f}  тәжірибелік рет={math.log2(e1 / e2):.2f}")
+
+beta, gamma = 0.3, 0.1                       # SIR: S' = -βSI, I' = βSI - γI, R' = γI
+sir = lambda t, y: [-beta * y[0] * y[1], beta * y[0] * y[1] - gamma * y[1], gamma * y[1]]
+S, I, R = solve(step_rk4, sir, [0.99, 0.01, 0.0], 0, 160, 1600)
+print(f"160 күннен кейін: S={S:.3f}, I={I:.4f}, R={R:.3f}, қосынды={S + I + R:.6f}")
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$y'=-50y$ үшін $h=0{,}05$ және $h=0{,}03$-пен айқын Эйлерді іске қосыңыз. Нәтижелерді 2-визуализациямен түсіндіріңіз.</li>
+        <li>Айқын емес Эйлерді $y'=\lambda y$ үшін (формуламен) және $y'=-y^3$ үшін (әр қадамда Ньютон әдісімен) жазыңыз.</li>
+        <li>SIR моделінде індет шыңы қай күні болады және ең көп ауырғандар үлесі қанша? $\beta$-ны 0,2-ге азайтсақ ше?</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Эйлер</td><td>$y_{n+1}=y_n+hf(t_n,y_n)$</td><td>1-ретті</td></tr>
+        <tr><td>Жаһандық қате</td><td>$|e_n|\le\frac{Mh}{2L}(e^{L(t_n-t_0)}-1)$</td><td>Липшиц, $y\in C^2$</td></tr>
+        <tr><td>Хойн</td><td>$y_{n+1}=y_n+\frac h2(k_1+k_2)$</td><td>2-ретті</td></tr>
+        <tr><td>RK4</td><td>$y_n+\frac h6(k_1+2k_2+2k_3+k_4)$</td><td>4-ретті</td></tr>
+        <tr><td>Тұрақтылық (Эйлер)</td><td>$|1+h\lambda|&lt;1$, $h&lt;\frac2{|\lambda|}$</td><td>$\lambda&lt;0$</td></tr>
+        <tr><td>Айқын емес Эйлер</td><td>$y_{n+1}=\frac{y_n}{1-h\lambda}$</td><td>шартсыз тұрақты ($\lambda&lt;0$)</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m16-6-self">
+        <li><input type="checkbox"> <span>Мен Эйлер әдісін геометриялық түсіндіріп, орындай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен жергілікті және жаһандық қатені ажыратып, Эйлер бағасын қорыта аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Хойн және RK4 қадамдарын орындай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен әдістің ретін тәжірибе арқылы тексере аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $y'=\lambda y$ үшін тұрақтылық шартын таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қатаң теңдеулер мен айқын емес әдістердің рөлін түсіндіре аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="a">
+<p class="q-text">1. y′ = y, y(0) = 2, h = 0,5. Эйлер: y₁ = ?</p>
+<label><input type="radio" value="a"> 3</label>
+<label><input type="radio" value="b"> 2,5</label>
+<label><input type="radio" value="c"> 4</label>
+<label><input type="radio" value="d"> 2e^0,5</label>
+<p class="explain">2 + 0,5·2.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">2. Эйлер әдісінің жаһандық қате реті:</p>
+<label><input type="radio" value="a"> O(h²)</label>
+<label><input type="radio" value="b"> O(h⁴)</label>
+<label><input type="radio" value="c"> O(1)</label>
+<label><input type="radio" value="d"> O(h)</label>
+<p class="explain">Жергілікті O(h²) жиналады.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">3. RK4 әдісінің реті:</p>
+<label><input type="radio" value="a"> 2</label>
+<label><input type="radio" value="b"> 1</label>
+<label><input type="radio" value="c"> 4</label>
+<label><input type="radio" value="d"> 5</label>
+<p class="explain">Классикалық Рунге–Кутта.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. y′ = −100y үшін айқын Эйлердің тұрақтылық шарты:</p>
+<label><input type="radio" value="a"> h < 0,1</label>
+<label><input type="radio" value="b"> h < 0,02</label>
+<label><input type="radio" value="c"> кез келген h</label>
+<label><input type="radio" value="d"> h < 2</label>
+<p class="explain">h < 2/|λ|.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. Айқын емес Эйлердің артықшылығы:</p>
+<label><input type="radio" value="a"> λ < 0 үшін кез келген h-та тұрақты</label>
+<label><input type="radio" value="b"> 4-ретті</label>
+<label><input type="radio" value="c"> теңдеу шешу қажет емес</label>
+<label><input type="radio" value="d"> энергияны сақтайды</label>
+<p class="explain">y₍ₙ₊₁₎ = yₙ/(1 − hλ).</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">6. h екі есе кішірейгенде Хойн әдісінің қатесі:</p>
+<label><input type="radio" value="a"> ≈ 2 есе кемиді</label>
+<label><input type="radio" value="b"> ≈ 16 есе кемиді</label>
+<label><input type="radio" value="c"> өзгермейді</label>
+<label><input type="radio" value="d"> ≈ 4 есе кемиді</label>
+<p class="explain">2-ретті.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">7. Екінші ретті ЖДТ-ны сандық шешу үшін:</p>
+<label><input type="radio" value="a"> Эйлерді екі рет қолданамыз</label>
+<label><input type="radio" value="b"> мүмкін емес</label>
+<label><input type="radio" value="c"> бірінші ретті жүйеге келтіреміз</label>
+<label><input type="radio" value="d"> тек RK4</label>
+<p class="explain">x′ = v, v′ = g.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. Гармоникалық тербелісте айқын Эйлер энергияны:</p>
+<label><input type="radio" value="a"> сақтайды</label>
+<label><input type="radio" value="b"> арттырады</label>
+<label><input type="radio" value="c"> азайтады</label>
+<label><input type="radio" value="d"> нөлге теңейді</label>
+<p class="explain">E₍ₙ₊₁₎ = (1 + h²)Eₙ.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-103.html"><small>Алдыңғы</small>← Numerical Analysis · 5-сабақ: Сандық интегралдау және дифференциалдау</a>
