@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Mathematical Optimization · 3-сабақ: Қостық теориясы - CS50 қазақша">
-  <meta property="og:description" content="Математика, Mathematical Optimization · 3-сабақ: Қостық теориясы. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Қос есеп, әлсіз және күшті қостық, экономикалық мағына.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-107.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Mathematical Optimization · 3-сабақ: Қостық теориясы - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-107.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Mathematical Optimization · 3-сабақ: Қостық теориясы. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Қос есеп, әлсіз және күшті қостық, экономикалық мағына.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,352 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="107">
         <div class="num">Mathematical Optimization · 3-сабақ</div>
         <h1>Қостық теориясы</h1>
-        <p>Қос есеп, әлсіз және күшті қостық, экономикалық мағына.</p>
+        <p>Әр сызықтық бағдарламалау есебінің «егізі» бар - қос есеп. Егер бастапқы есеп «ресурстармен ең көп пайда табу» болса, қос есеп «ресурстарға қандай баға қою керек, сонда өндірістің мағынасы болмай қалады?» деп сұрайды. Таңғаларлығы - екі есептің оңтайлы мәндері тең. Бұл сабақта қос есепті құруды, әлсіз және күшті қостық теоремаларын, толықтауыш бостық шарттарын және «көлеңкелі бағалардың» экономикалық мағынасын үйренеміз. Қостық оңтайлылықты тексерудің және көптеген алгоритмдердің негізі.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-17">Mathematical Optimization</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-17">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>берілген СБ есебінің қос есебін құру (кесте ережелері бойынша);</li>
+        <li>әлсіз қостық теоремасын дәлелдеп, жарамды шешімдер арқылы оңтайлы мәнді екі жақтан бағалау;</li>
+        <li>күшті қостық теоремасын тұжырымдау және оның салдарын түсіндіру;</li>
+        <li>толықтауыш бостық шарттарымен оңтайлы шешімді тексеру және қос шешімді табу;</li>
+        <li>қос айнымалыларды көлеңкелі бағалар ретінде түсіндіру;</li>
+        <li>симплекс кестесінің соңғы жолынан қос шешімді оқу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Сызықтық бағдарламалау: $\max\mathbf c^T\mathbf x$, $A\mathbf x\le\mathbf b$, $\mathbf x\ge\mathbf0$; оңтайлы шешім төбеде; симплекс әдісі мен толықтырушы айнымалылар. Матрицаны транспонирлеу: $(A^T)_{ij}=A_{ji}$, $(A\mathbf x)^T\mathbf y=\mathbf x^TA^T\mathbf y$. Скаляр көбейтінді теріс емес векторлар үшін: $\mathbf u,\mathbf v\ge0\Rightarrow\mathbf u^T\mathbf v\ge0$.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Цех ағаш өңдеу мен бояу сағаттарын пайдаланып үстел мен орындық жасайды. Енді басқа компания келіп: «Сағаттарыңды маған сат» дейді. Әр сағатқа қандай баға сұрау керек? Баға тым төмен болса, өзің өндіргенің пайдалырақ. Ең кемі - кез келген өнімнің ресурстарының «құны» сол өнімнің пайдасынан кем болмауы керек. Ал сатып алушы ең аз төлегісі келеді. Бұл - қос есеп.</p>
+      <p>Әлсіз қостық: кез келген жарамды өндіріс жоспарының пайдасы кез келген «әділ» баға жүйесіндегі ресурстар құнынан аспайды. Демек, қос есептің кез келген жарамды шешімі бастапқы есептің оңтайлы мәніне <em>жоғарғы баға</em> береді. Бұл оңтайлылықтың «сертификаты»: екі шешімнің мәндері тең болса, екеуі де оңтайлы.</p>
+      <p>Күшті қостық: оңтайлы мәндер дәл тең. Ал толықтауыш бостық шарты интуитивті: егер ресурс толық пайдаланылмаса (артығы қалса), оның бағасы нөл - оның қосымша бірлігі пайданы өсірмейді. Егер өнім өндірілсе, оның ресурстарының құны дәл пайдасына тең.</p>
+      <p>Көлеңкелі баға - «ресурстың шекті құндылығы»: ресурсты бір бірлікке арттырсақ, оңтайлы пайда қаншаға өседі. Менеджер үшін ең пайдалы ақпарат: қай ресурсқа инвестиция салу керек.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 3.1 · Қос есеп</span>
+        <p>Бастапқы (<strong>тура есеп</strong> (<span class="term-en">primal problem</span>)) $(P)$: $\max\ \mathbf c^T\mathbf x$, $A\mathbf x\le\mathbf b$, $\mathbf x\ge\mathbf0$. Оның <strong>қос есебі</strong> (<span class="term-en">dual problem</span>) $(D)$: $\min\ \mathbf b^T\mathbf y$, $A^T\mathbf y\ge\mathbf c$, $\mathbf y\ge\mathbf0$. $P$-ның әр шектеуіне $D$-ның бір айнымалысы $y_i$, $P$-ның әр айнымалысына $D$-ның бір шектеуі сәйкес.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 3.1 · Әлсіз қостық</span>
+        <p>$\mathbf x$ - $(P)$-ның, $\mathbf y$ - $(D)$-ның кез келген жарамды шешімі болса, $\mathbf c^T\mathbf x\le\mathbf b^T\mathbf y$. Салдары: (1) $\mathbf c^T\mathbf x=\mathbf b^T\mathbf y$ болса, екеуі де оңтайлы; (2) $(P)$ шектелмеген болса, $(D)$ шешімсіз; $(D)$ шектелмеген болса, $(P)$ шешімсіз.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 3.2 · Күшті қостық</span>
+        <p>$(P)$-ның оңтайлы шешімі бар болса, $(D)$-ның да оңтайлы шешімі бар және оңтайлы мәндер тең: $\max\mathbf c^T\mathbf x=\min\mathbf b^T\mathbf y$.</p></div>
+      <p><em>Негіздеме.</em> Дәлелі симплекс әдісінің соңғы кестесінен (не Фаркаш леммасынан) шығады; толық дәлелді бұл курста келтірмейміз. 2-мысалда оны нақты есепте тексереміз.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 3.3 · Толықтауыш бостық</span>
+        <p>$\mathbf x$, $\mathbf y$ - сәйкесінше $(P)$ мен $(D)$-ның жарамды шешімдері. Олар екеуі де оңтайлы $\iff$ барлық $i,j$ үшін: $y_i\,(b_i-\mathbf a_i^T\mathbf x)=0$ және $x_j\,\big((A^T\mathbf y)_j-c_j\big)=0$. Яғни: шектеу қатаң орындалса ($b_i-\mathbf a_i^T\mathbf x>0$), онда $y_i=0$; $x_j>0$ болса, $j$-қос шектеу теңдікпен орындалады. Бұл - <strong>толықтауыш бостық</strong> (<span class="term-en">complementary slackness</span>).</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту (күшті қостыққа сүйенеді).</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 3.2 · Көлеңкелі баға</span>
+        <p>Оңтайлы қос айнымалы $y_i^*$ - $i$-ресурстың <strong>көлеңкелі бағасы</strong> (<span class="term-en">shadow price</span>): $b_i$-ді аз $\Delta$-ға өзгерткенде (оңтайлы базис сақталатын аралықта) оңтайлы мән $y_i^*\Delta$-ға өзгереді.</p></div>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 3.1 · Қос есеп (канондық)</span>
+        <div class="math-fbody">$$(P)\ \max\mathbf c^T\mathbf x,\ A\mathbf x\le\mathbf b,\ \mathbf x\ge0\quad\Longleftrightarrow\quad(D)\ \min\mathbf b^T\mathbf y,\ A^T\mathbf y\ge\mathbf c,\ \mathbf y\ge0$$</div>
+        <p class="math-fnote">Қостың қосы - бастапқы есеп. Шектеу «$=$» болса, қос айнымалы таңбасы еркін; айнымалы таңбасы еркін болса, қос шектеу «$=$».</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 3.2 · Әлсіз қостық</span>
+        <div class="math-fbody">$$\mathbf c^T\mathbf x\le\mathbf b^T\mathbf y$$</div>
+        <p class="math-fnote">Кез келген жарамды $\mathbf x$, $\mathbf y$ үшін. «Қостық саңылауы» $\mathbf b^T\mathbf y-\mathbf c^T\mathbf x\ge0$ оңтайлылықта нөлге айналады.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 3.3 · Толықтауыш бостық</span>
+        <div class="math-fbody">$$y_i\,s_i=0,\qquad x_j\,t_j=0$$</div>
+        <p class="math-fnote">$s_i=b_i-\mathbf a_i^T\mathbf x$ - тура есептің бостығы, $t_j=(A^T\mathbf y)_j-c_j$ - қос есептің бостығы.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Қос есепті құру кестесі ($\max\to\min$): $P$-ның $\le$ шектеуі → $y_i\ge0$; $=$ шектеуі → $y_i$ еркін; $x_j\ge0$ → қос шектеу $\ge$; $x_j$ еркін → қос шектеу $=$. Мақсат коэффициенттері мен оң жақтар орындарын ауыстырады, матрица транспонирленеді.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Қостық тек таңбалар дұрыс болғанда жұмыс істейді: $\min$ есептің қосы - $\max$; $\ge$ шектеулерді алдымен $\le$-ге келтіру (екі жағын $-1$-ге көбейту) не кесте ережесін дұрыс қолдану керек. Жиі қате - $A$-ны транспонирлемеу. Сонымен қатар көлеңкелі баға тек кіші өзгерістерге жарамды: үлкен өзгерісте оңтайлы төбе ауысып, баға өзгереді.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: әлсіз қостық теоремасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\mathbf c^T\mathbf x\le\mathbf b^T\mathbf y$ теңсіздігін дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$\mathbf y$ қос-жарамды: $A^T\mathbf y\ge\mathbf c$; ал $\mathbf x\ge0$. Сондықтан $\mathbf c^T\mathbf x\le(A^T\mathbf y)^T\mathbf x$ (әр компонентте $c_jx_j\le(A^T\mathbf y)_jx_j$, себебі $x_j\ge0$).</li>
+            <li>$(A^T\mathbf y)^T\mathbf x=\mathbf y^TA\mathbf x$.</li>
+            <li>$\mathbf x$ тура-жарамды: $A\mathbf x\le\mathbf b$; ал $\mathbf y\ge0$. Сондықтан $\mathbf y^TA\mathbf x\le\mathbf y^T\mathbf b$.</li>
+            <li>Тізбек: $\mathbf c^T\mathbf x\le\mathbf y^TA\mathbf x\le\mathbf b^T\mathbf y$. ∎</li>
+            <li>Салдар (1): $\mathbf c^T\mathbf x=\mathbf b^T\mathbf y$ болса, кез келген жарамды $\mathbf x'$ үшін $\mathbf c^T\mathbf x'\le\mathbf b^T\mathbf y=\mathbf c^T\mathbf x$ - $\mathbf x$ оңтайлы; $\mathbf y$ үшін де солай.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: толықтауыш бостық</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 3.3-ті әлсіз және күшті қостықтан шығару.</p>
+          <ol class="math-steps">
+            <li>1-қорытудағы тізбек: $\mathbf c^T\mathbf x\le\mathbf y^TA\mathbf x\le\mathbf b^T\mathbf y$.</li>
+            <li>Оңтайлылықта (күшті қостық) шеттері тең, сондықтан екі теңсіздік те теңдікке айналады.</li>
+            <li>Екінші теңдік: $\mathbf y^T(\mathbf b-A\mathbf x)=\sum_iy_is_i=0$; әр қосылғыш $\ge0$, демек әрқайсысы нөл: $y_is_i=0$.</li>
+            <li>Бірінші теңдік: $(A^T\mathbf y-\mathbf c)^T\mathbf x=\sum_jt_jx_j=0$, сол сияқты $x_jt_j=0$.</li>
+            <li>Керісінше: шарттар орындалса, екі теңсіздік те теңдік, сондықтан $\mathbf c^T\mathbf x=\mathbf b^T\mathbf y$ және әлсіз қостық бойынша екеуі де оңтайлы. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Қос есепті құру</h3>
+        <p class="math-problem">$\max\ 3x+5y$, $x\le4$, $2y\le12$, $3x+2y\le18$, $x,y\ge0$ (алдыңғы сабақ). Қос есебін жазыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $A=\begin{pmatrix}1&amp;0\\0&amp;2\\3&amp;2\end{pmatrix}$, $\mathbf b=(4;12;18)$, $\mathbf c=(3;5)$.</li>
+          <li><b>2-қадам.</b> Әр шектеуге қос айнымалы $y_1,y_2,y_3\ge0$.</li>
+          <li><b>3-қадам.</b> Қос мақсат: $\min\ 4y_1+12y_2+18y_3$.</li>
+          <li><b>4-қадам.</b> Қос шектеулер ($A^T\mathbf y\ge\mathbf c$): $x$ бағаны - $y_1+3y_3\ge3$; $y$ бағаны - $2y_2+2y_3\ge5$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\min\ 4y_1+12y_2+18y_3$, $y_1+3y_3\ge3$, $2y_2+2y_3\ge5$, $\mathbf y\ge0$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Күшті қостықты тексеру</h3>
+        <p class="math-problem">Тура есептің оңтайлы шешімі $(2;6)$, $z=36$. Толықтауыш бостықпен қос шешімді табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Тура бостықтар: $s_1=4-2=2>0$ - демек $y_1=0$; $s_2=12-12=0$; $s_3=18-6-12=0$.</li>
+          <li><b>2-қадам.</b> $x=2>0$ - бірінші қос шектеу теңдік: $y_1+3y_3=3$, яғни $y_3=1$.</li>
+          <li><b>3-қадам.</b> $y=6>0$ - екінші теңдік: $2y_2+2y_3=5$, $y_2=1{,}5$.</li>
+          <li><b>4-қадам.</b> $\mathbf y^*=(0;\ 1{,}5;\ 1)$, жарамды ($\ge0$). Қос мән: $0+18+18=36$ ✓ - күшті қостық.</li>
+          <li><b>5-қадам.</b> Бұл мәндер соңғы симплекс кестесіндегі $z=36-\frac32s_2-s_3$ коэффициенттерімен сәйкес келеді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\mathbf y^*=(0;\ 1{,}5;\ 1)$, мәні 36.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Көлеңкелі бағалар</h3>
+        <p class="math-problem">2-мысал бойынша: 2-ресурсты ($12\to13$) және 1-ресурсты ($4\to5$) бір бірлікке арттыру пайданы қаншаға өзгертеді?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $y_2^*=1{,}5$: оңтайлы мән $\approx36+1{,}5=37{,}5$.</li>
+          <li><b>2-қадам.</b> Тексеру: $2y\le13\Rightarrow y=6{,}5$; $3x+13=18\Rightarrow x=\frac53$; $z=5+32{,}5=37{,}5$ ✓.</li>
+          <li><b>3-қадам.</b> $y_1^*=0$: 1-ресурстың артығы бар ($s_1=2$), оны арттыру пайда әкелмейді.</li>
+          <li><b>4-қадам.</b> Демек инвестиция 2-ресурсқа (бірлігіне 1,5) және 3-ресурсқа (бірлігіне 1) тиімді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $+1{,}5$ және $0$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Әлсіз қостық: бағалау</h3>
+        <p class="math-problem">Тура есептің жарамды шешімі $(4;3)$, қос есептің жарамды шешімі $(1;\ 2;\ 1)$. Оңтайлы мәнді екі жақтан бағалаңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Тура: $(4;3)$ жарамды ($4\le4$, $6\le12$, $18\le18$), $z=12+15=27$.</li>
+          <li><b>2-қадам.</b> Қос: $1+3=4\ge3$ ✓, $4+2=6\ge5$ ✓; мән $4+24+18=46$.</li>
+          <li><b>3-қадам.</b> Әлсіз қостық: $27\le z^*\le46$.</li>
+          <li><b>4-қадам.</b> Шын мәні 36 - аралықтың ішінде ✓. Саңылау $46-27=19$ шешімдер оңтайлы емес екенін көрсетеді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $27\le z^*\le46$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Қос есепте $A$-ны транспонирлемеу</span> → <span class="math-good">$A^T\mathbf y\ge\mathbf c$</span><br>Неге қате: тура айнымалыға қос шектеу сәйкес келеді - бағандар жолға айналады.</li>
+        <li><span class="math-bad">Қос есептің бағыты да $\max$</span> → <span class="math-good">$\max$-тың қосы - $\min$</span><br>Неге қате: қос мән тура мәннен жоғарғы баға береді.</li>
+        <li><span class="math-bad">Әлсіз қостық: $\mathbf c^T\mathbf x\ge\mathbf b^T\mathbf y$</span> → <span class="math-good">$\mathbf c^T\mathbf x\le\mathbf b^T\mathbf y$ ($\max$ тура есеп)</span><br>Неге қате: пайда ресурстар құнынан аспайды.</li>
+        <li><span class="math-bad">Толық пайдаланылмаған ресурстың көлеңкелі бағасы оң</span> → <span class="math-good">нөл</span><br>Неге қате: толықтауыш бостық: $s_i>0\Rightarrow y_i=0$.</li>
+        <li><span class="math-bad">Көлеңкелі бағаны үлкен өзгеріске қолдану</span> → <span class="math-good">тек базис сақталатын аралықта</span><br>Неге қате: оңтайлы төбе ауысса, баға өзгереді.</li>
+        <li><span class="math-bad">Шектеу «$=$» болса да $y_i\ge0$</span> → <span class="math-good">$y_i$ таңбасы еркін</span><br>Неге қате: теңдік екі жақты шектеу ($\le$ және $\ge$).</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Әлсіз қостық: t·(2; 6) тура және t·(0; 1,5; 1) қос шешімдер" data-config='{"fns": [{"f": "36*min(x,1)", "label": "тура мән z(t·x*), 0 ≤ t ≤ 1"}, {"f": "36*max(x,1)", "label": "қос мән w(t·y*), t ≥ 1", "color": 1}, {"f": "36", "label": "z* = 36", "color": 2, "dash": [5, 4]}], "view": [0, 2, 0, 75]}'></div>
+      <p><b>Бақылаңыз:</b> $t\in[0;1]$ үшін $t\cdot(2;6)$ - тура жарамды шешімдер (шектеулер сызықтық, $\mathbf0$ мен $(2;6)$ арасындағы кесінді), мәні $36t\le36$. $t\ge1$ үшін $t\cdot(0;1{,}5;1)$ - қос жарамды ($A^T\mathbf y\ge\mathbf c$ сақталады), мәні $36t\ge36$. Әлсіз қостық: көк әрдайым қызылдан төмен; олар тек $t=1$-де түйіседі (күшті қостық).</p>
+      <div class="math-viz" data-viz="graph" data-title="Көлеңкелі баға: 2-ресурсқа тәуелді оңтайлы мән z*(b₂)" data-config='{"fns": [{"f": "min(min(12+2.5*x,18+1.5*x),45)", "label": "z*(b₂)"}, {"f": "36+1.5*(x-12)", "label": "36 + 1,5·(b₂ − 12)", "color": 1, "dash": [5, 4]}], "view": [0, 24, 0, 55]}'></div>
+      <p><b>Бақылаңыз:</b> Бұл - дәл тәуелділік (төбелерді қайта есептеу арқылы). $6\le b_2\le18$ аралығында көлбеулік $1{,}5=y_2^*$; $b_2&lt;6$ болса $x\le4$ шешуші болады да, көлбеулік $2{,}5$; $b_2>18$ болса $z^*=45$ - ресурс енді «артық», көлеңкелі бағасы 0. Көлеңкелі баға - жергілікті шама.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m17-3-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m17-3-t1">1. Әлсіз қостық</h3></div>
+        <p>Тура ($\max$) жарамды шешімнің мәні 40, қос жарамды шешімнің мәні 52.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Оңтайлы мәннің төменгі бағасы","a":40,"v":"min([40,52])","hint":"$\\mathbf c^T\\mathbf x\\le z^*$.","sol":{"steps":["Тура мән - төменгі баға."],"ans":"$40$"}},{"q":"Жоғарғы бағасы","a":52,"v":"max([40,52])","hint":"$z^*\\le\\mathbf b^T\\mathbf y$.","sol":{"steps":["Қос мән."],"ans":"$52$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m17-3-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m17-3-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қостың қосы - бастапқы есеп.","a":true,"e":"Кесте ережелерін екі рет қолдансақ.","hint":"Симметрия."},{"q":"Тура есеп шектелмеген болса, қос есептің жарамды шешімі жоқ.","a":true,"e":"Әлсіз қостық: әйтпесе ол жоғарғы баға берер еді.","hint":"Салдар (2)."},{"q":"Ресурс толық пайдаланылмаса, оның көлеңкелі бағасы оң болуы мүмкін.","a":false,"e":"$s_i>0\\Rightarrow y_i=0$.","hint":"Толықтауыш бостық."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m17-3-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m17-3-t3">3. Қос айнымалылар саны</h3></div>
+        <p>Тура есепте 3 айнымалы және 5 шектеу ($\le$) бар.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қос есепте неше айнымалы?","o":["5","3","8","15"],"a":0,"e":"Әр шектеуге бір қос айнымалы.","hint":"Шектеулер саны."},{"q":"Қос есепте неше негізгі шектеу (таңба шектеулерінсіз)?","o":["3","5","8","2"],"a":0,"e":"Әр тура айнымалыға бір қос шектеу.","hint":"Айнымалылар саны."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m17-3-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-3-t4">4. Қос жарамды шешімді бағалау</h3></div>
+        <p>1-мысалдағы қос есеп: $\min\ 4y_1+12y_2+18y_3$, $y_1+3y_3\ge3$, $2y_2+2y_3\ge5$, $\mathbf y\ge0$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf y=(0;\\ 2;\\ 1)$ қос мәні (жарамдылығын тексеріп)","a":42,"v":"4*0+12*2+18*1","hint":"$0+3=3\\ge3$ ✓, $4+2=6\\ge5$ ✓.","sol":{"steps":["$0+24+18$."],"ans":"$42$ - тура оңтайлы мәннің жоғарғы бағасы ($\\ge36$)"}},{"q":"$\\mathbf y=(3;\\ 2{,}5;\\ 0)$ қос мәні","a":42,"v":"4*3+12*Rational(5,2)+0","hint":"$3\\ge3$ ✓, $5\\ge5$ ✓.","sol":{"steps":["$12+30$."],"ans":"$42$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m17-3-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-3-t5">5. Қос мақсат</h3></div>
+        <p>Тура: $\max\ 2x_1+x_2$, $x_1+x_2\le6$, $x_1-x_2\le2$, $\mathbf x\ge0$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Тура оңтайлы мән (төбелерді тексеріңіз)","a":10,"v":"max([2*a+b for a,b in [(0,0),(2,0),(4,2),(0,6)]])","hint":"Қиылысу: $x_1=4$, $x_2=2$.","sol":{"steps":["$(0;0)$: 0; $(2;0)$: 4; $(4;2)$: 10; $(0;6)$: 6."],"ans":"$10$"}},{"q":"Қос шешім $\\mathbf y=(1{,}5;\\ 0{,}5)$ болса, қос мән","a":10,"v":"6*Rational(3,2)+2*Rational(1,2)","hint":"$6y_1+2y_2$.","sol":{"steps":["$9+1$; тең - екеуі де оңтайлы ✓."],"ans":"$10$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m17-3-mat6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-3-t6">6. Толықтауыш бостық</h3></div>
+        <p>Алдыңғы есеп, тура оңтайлы $(4;2)$. Қос шектеулер: $y_1+y_2\ge2$, $y_1-y_2\ge1$. Екі тура айнымалы да оң - екі қос шектеу де теңдік.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf y^*=(y_1;y_2)$","name":"$\\mathbf y^*=$","a":[1.5,0.5],"orient":"row","v":"list(Matrix([[1,1],[1,-1]]).solve(Matrix([2,1])))","hint":"$y_1+y_2=2$, $y_1-y_2=1$.","sol":{"steps":["Қоссақ: $2y_1=3$.","$y_1=1{,}5$, $y_2=0{,}5$."],"ans":"$(1{,}5;\\ 0{,}5)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m17-3-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-3-t7">7. Кесте ережелері</h3></div>
+        <p>Тура ($\max$) элементін қос ($\min$) элементімен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Сәйкестік.","pairs":[["≤ шектеу","yᵢ ≥ 0"],["= шектеу","yᵢ таңбасы еркін"],["xⱼ ≥ 0","қос шектеу ≥"],["xⱼ таңбасы еркін","қос шектеу ="]],"hint":"«Есте сақта» кестесі.","sol":{"steps":["Теңдік ↔ еркін таңба."]},"e":"Бұл ережелер кез келген СБ-ның қосын құруға жеткілікті."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m17-3-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-3-t8">8. Параметрлік: көлеңкелі баға</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"y":{"pick":[0.5,1,1.5,2,3]},"z":{"int":[20,60]},"d":{"int":[1,4]}},"type":"num","q":"Оңтайлы пайда $#{z}$, ресурстың көлеңкелі бағасы $#{y}$. Ресурсты $#{d}$ бірлікке арттырса (базис сақталады), жаңа оңтайлы пайда?","a":"z+y*d","v":"z+nsimplify(y)*d","hint":"$z^*+y_i^*\\Delta$.","sol":{"steps":["$#{z}+#{y}\\cdot#{d}$."],"ans":"$#{z+y*d}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m17-3-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-3-t9">9. Параметрлік: қостық саңылауы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,4]},"b":{"int":[1,4]},"u":{"int":[1,5]},"w":{"int":[1,5]}},"type":"num","q":"Тура: $\\max\\ #{a}x_1+#{b}x_2$, $x_1\\le#{u}$, $x_2\\le#{w}$, $\\mathbf x\\ge0$. Қос жарамды шешім $\\mathbf y=(#{a+1};#{b+1})$. Қостық саңылауы $\\mathbf b^T\\mathbf y-z^*$?","a":"u+w","v":"u*(a+1)+w*(b+1)-(a*u+b*w)","hint":"$z^*=#{a}\\cdot#{u}+#{b}\\cdot#{w}$.","sol":{"steps":["$\\mathbf b^T\\mathbf y=#{u}\\cdot#{a+1}+#{w}\\cdot#{b+1}$.","Айырма $=#{u}+#{w}$."],"ans":"$#{u+w}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m17-3-cho10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-3-t10">10. Нәтижелер жұбы</h3></div>
+        <p>Қай комбинация мүмкін ЕМЕС?</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Тура/қос есептер.","o":["екеуі де оңтайлы, мәндері әртүрлі","екеуі де шешімсіз","тура шектелмеген, қос шешімсіз","екеуі де оңтайлы, мәндері тең"],"a":0,"e":"Күшті қостық: оңтайлы болса мәндер тең. «Екеуі де шешімсіз» мүмкін (арнайы мысалдар бар).","hint":"Күшті қостық."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m17-3-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-3-t11">11. Оңтайлылықты тексеру</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Тура шешім $\\mathbf x$ оңтайлы ма?","steps":["$\\mathbf x$-тің жарамдылығын тексереміз.","Бостықтарды $s_i$ есептейміз; $s_i>0$ үшін $y_i=0$ қоямыз.","$x_j>0$ үшін қос шектеуді теңдік етіп жазамыз.","Алынған жүйеден $\\mathbf y$-ті табамыз.","$\\mathbf y$ қос-жарамды болса, $\\mathbf x$ оңтайлы."],"hint":"Толықтауыш бостық.","sol":{"ans":"Сертификат - қос шешім."}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m17-3-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-3-t12">12. Қадамдық шешім: рацион есебінің қосы</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Рацион: $\\min\\ 3a+2b$, $2a+b\\ge8$, $a+3b\\ge9$, $a,b\\ge0$ (оңтайлы $(3;2)$, мән 13). Қос есепті жазып, шешіңіз және мағынасын айтыңыз.","hint":"$\\min$-тың қосы - $\\max$; $\\ge$ шектеулер → $y\\ge0$.","steps":["Қос: $\\max\\ 8y_1+9y_2$, $2y_1+y_2\\le3$, $y_1+3y_2\\le2$, $\\mathbf y\\ge0$.","$a,b>0$ - екі қос шектеу теңдік: $2y_1+y_2=3$, $y_1+3y_2=2$.","$y_1=1{,}4$, $y_2=0{,}2$; мәні $11{,}2+1{,}8=13$ ✓.","Мағынасы: витамин сатушы белокты бірлігіне 1,4, витаминді 0,2-ден бағалайды - тағамдар «қымбатырақ» болмайтын ең жоғары бағалар."],"ans":"$\\mathbf y^*=(1{,}4;\\ 0{,}2)$, мәні 13"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Көлеңкелі бағалар - ресурстарды бөлу мен баға қоюда; қостық - оңтайлылықтың сертификаты (шешушілер тура және қос есепті бірге шешеді); ойындар теориясында (екі ойыншының нөлдік қосындылы ойыны - қос СБ жұбы); машиналық оқытуда (тірек векторлар әдісі - SVM қос есебі).</p>
+      <p><b>Мини-жоба: «Қостық тексергіші».</b> Тура және қос шешімдердің жарамдылығын, мәндердің теңдігін және толықтауыш бостықты автоматты тексереміз; көлеңкелі бағаны оң жақты өзгертіп сандық түрде бағалаймыз.</p>
+<pre data-lang="python"><code class="language-python">from fractions import Fraction as Fr
+from itertools import combinations
+
+def best_vertex(c, A, b):                    # 2 айнымалы max есебін төбелерді тексеріп шешу
+    rows = A + [[-1, 0], [0, -1]]; rhs = b + [0, 0]
+    best = None
+    for i, j in combinations(range(len(rows)), 2):
+        (a1, b1), (a2, b2) = rows[i], rows[j]
+        det = a1 * b2 - a2 * b1
+        if det == 0: continue
+        x = Fr(rhs[i] * b2 - rhs[j] * b1, det); y = Fr(a1 * rhs[j] - a2 * rhs[i], det)
+        if all(r[0] * x + r[1] * y &lt;= q for r, q in zip(rows, rhs)):
+            z = c[0] * x + c[1] * y
+            if best is None or z &gt; best[0]: best = (z, (x, y))
+    return best
+
+c, A, b = [3, 5], [[1, 0], [0, 2], [3, 2]], [4, 12, 18]
+z, x = best_vertex(c, A, b)
+y = [Fr(0), Fr(3, 2), Fr(1)]
+dual_ok = all(sum(A[i][j] * y[i] for i in range(3)) &gt;= c[j] for j in range(2))
+print("тура:", z, x, " қос мәні:", sum(bi * yi for bi, yi in zip(b, y)), " қос жарамды:", dual_ok)
+slack = [bi - sum(A[i][j] * x[j] for j in range(2)) for i, bi in enumerate(b)]
+print("бостықтар:", slack, " y_i*s_i:", [yi * si for yi, si in zip(y, slack)])
+for i in range(3):
+    b2 = b[:]; b2[i] += 1
+    print(f"b{i+1}+1: Δz = {best_vertex(c, A, b2)[0] - z}")
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Шығыстағы $\Delta z$ мәндері көлеңкелі бағалармен $(0;\ 1{,}5;\ 1)$ сәйкес келе ме?</li>
+        <li>$b_2$-ні 12-ден 20-ға дейін бірлікпен арттырып, $\Delta z$ қашан өзгеретінін табыңыз (көлеңкелі баға жарамды аралығы).</li>
+        <li>Рацион есебінің қосын шешетін функция жазып, $\mathbf y^*=(1{,}4;\ 0{,}2)$ екенін тексеріңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Қос есеп</td><td>$\min\mathbf b^T\mathbf y$, $A^T\mathbf y\ge\mathbf c$, $\mathbf y\ge0$</td><td>$(P)$: $\max\mathbf c^T\mathbf x$, $A\mathbf x\le\mathbf b$</td></tr>
+        <tr><td>Әлсіз қостық</td><td>$\mathbf c^T\mathbf x\le\mathbf b^T\mathbf y$</td><td>жарамды $\mathbf x,\mathbf y$</td></tr>
+        <tr><td>Күшті қостық</td><td>$\max=\min$</td><td>оңтайлы шешім бар</td></tr>
+        <tr><td>Толықтауыш бостық</td><td>$y_is_i=0$, $x_jt_j=0$</td><td>$\iff$ оңтайлылық</td></tr>
+        <tr><td>Көлеңкелі баға</td><td>$\Delta z^*\approx y_i^*\Delta b_i$</td><td>базис сақталса</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m17-3-self">
+        <li><input type="checkbox"> <span>Мен СБ есебінің қосын кесте ережелерімен құра аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен әлсіз қостықты дәлелдеп, оңтайлы мәнді екі жақтан бағалай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен күшті қостықтың мағынасын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен толықтауыш бостықпен қос шешімді таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен көлеңкелі бағаларды түсіндіріп, қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен симплекс кестесінен қос шешімді оқи аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="d">
+<p class="q-text">1. max есептің қос есебі:</p>
+<label><input type="radio" value="a"> max есеп</label>
+<label><input type="radio" value="b"> дәл сол есеп</label>
+<label><input type="radio" value="c"> шешімсіз</label>
+<label><input type="radio" value="d"> min есеп</label>
+<p class="explain">max ↔ min.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. Әлсіз қостық (max тура есеп):</p>
+<label><input type="radio" value="a"> cᵀx ≥ bᵀy</label>
+<label><input type="radio" value="b"> cᵀx = bᵀy әрдайым</label>
+<label><input type="radio" value="c"> cᵀx ≤ bᵀy</label>
+<label><input type="radio" value="d"> cᵀx = 0</label>
+<p class="explain">Кез келген жарамды шешімдер үшін.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. Тура және қос оңтайлы мәндер:</p>
+<label><input type="radio" value="a"> тура үлкен</label>
+<label><input type="radio" value="b"> тең</label>
+<label><input type="radio" value="c"> қос үлкен</label>
+<label><input type="radio" value="d"> қатысы жоқ</label>
+<p class="explain">Күшті қостық.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">4. Ресурс толық пайдаланылмаса (sᵢ > 0), көлеңкелі баға:</p>
+<label><input type="radio" value="a"> 0</label>
+<label><input type="radio" value="b"> оң</label>
+<label><input type="radio" value="c"> теріс</label>
+<label><input type="radio" value="d"> шексіз</label>
+<p class="explain">Толықтауыш бостық.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">5. Тура есепте 4 шектеу болса, қос айнымалылар саны:</p>
+<label><input type="radio" value="a"> 2</label>
+<label><input type="radio" value="b"> 8</label>
+<label><input type="radio" value="c"> 16</label>
+<label><input type="radio" value="d"> 4</label>
+<p class="explain">Әр шектеуге бір.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. Тура есеп шектелмеген болса, қос есеп:</p>
+<label><input type="radio" value="a"> шектелмеген</label>
+<label><input type="radio" value="b"> оңтайлы</label>
+<label><input type="radio" value="c"> шешімсіз</label>
+<label><input type="radio" value="d"> дәл сол</label>
+<p class="explain">Әлсіз қостық салдары.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. Тура шектеу «=» болса, қос айнымалы:</p>
+<label><input type="radio" value="a"> ≥ 0</label>
+<label><input type="radio" value="b"> таңбасы еркін</label>
+<label><input type="radio" value="c"> ≤ 0</label>
+<label><input type="radio" value="d"> 0</label>
+<p class="explain">Кесте ережесі.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">8. Көлеңкелі баға нені көрсетеді?</p>
+<label><input type="radio" value="a"> ресурсты бір бірлікке арттырғандағы оңтайлы мәннің өзгерісін</label>
+<label><input type="radio" value="b"> ресурстың нарықтық бағасын</label>
+<label><input type="radio" value="c"> өнім санын</label>
+<label><input type="radio" value="d"> шектеулер санын</label>
+<p class="explain">Шекті құндылық.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-106.html"><small>Алдыңғы</small>← Mathematical Optimization · 2-сабақ: Сызықтық бағдарламалау және симплекс әдісі</a>

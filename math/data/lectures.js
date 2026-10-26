@@ -5231,5 +5231,341 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
+ },
+ {
+  "id": "week-105",
+  "num": "Mathematical Optimization · 1-сабақ",
+  "title": "Оңтайландыру есептері және дөңес жиындар",
+  "url": "math/lectures/week-105.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-106",
+  "num": "Mathematical Optimization · 2-сабақ",
+  "title": "Сызықтық бағдарламалау және симплекс әдісі",
+  "url": "math/lectures/week-106.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-107",
+  "num": "Mathematical Optimization · 3-сабақ",
+  "title": "Қостық теориясы",
+  "url": "math/lectures/week-107.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-108",
+  "num": "Mathematical Optimization · 4-сабақ",
+  "title": "Шектеусіз оңтайландыру: градиенттік әдістер",
+  "url": "math/lectures/week-108.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-109",
+  "num": "Mathematical Optimization · 5-сабақ",
+  "title": "Шектелген оңтайландыру: Лагранж және KKT",
+  "url": "math/lectures/week-109.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-110",
+  "num": "Mathematical Optimization · 6-сабақ",
+  "title": "Дөңес оңтайландыру және машиналық оқыту",
+  "url": "math/lectures/week-110.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
  }
 ];

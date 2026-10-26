@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Mathematical Optimization · 5-сабақ: Шектелген оңтайландыру: Лагранж және KKT - CS50 қазақша">
-  <meta property="og:description" content="Математика, Mathematical Optimization · 5-сабақ: Шектелген оңтайландыру: Лагранж және KKT. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Лагранж көбейткіштері, Каруш–Кун–Таккер шарттары.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-109.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Mathematical Optimization · 5-сабақ: Шектелген оңтайландыру: Лагранж және KKT - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-109.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Mathematical Optimization · 5-сабақ: Шектелген оңтайландыру: Лагранж және KKT. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Лагранж көбейткіштері, Каруш–Кун–Таккер шарттары.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,362 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="109">
         <div class="num">Mathematical Optimization · 5-сабақ</div>
         <h1>Шектелген оңтайландыру: Лагранж және KKT</h1>
-        <p>Лагранж көбейткіштері, Каруш–Кун–Таккер шарттары.</p>
+        <p>Шектеусіз есепте минимумда градиент нөлге тең. Ал шектеу болса - бюджет, физикалық заң, ресурс - минимум шекарада жатуы мүмкін, және онда градиент нөл емес. Бұл сабақта теңдік шектеулері үшін Лагранж көбейткіштері әдісін, теңсіздік шектеулері үшін оның жалпылауы - Каруш–Кун–Таккер (KKT) шарттарын үйренеміз. Әр шарттың геометриялық мағынасын, оның қашан қажетті және қашан жеткілікті екенін (дөңестік, тұрақтылық шарты) нақты көрсетеміз, сондай-ақ көбейткіштің «сезімталдық» мағынасын түсіндіреміз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-17">Mathematical Optimization</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-17">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>теңдік шектеулі есепте Лагранж функциясын құрып, $\nabla f=\lambda\nabla g$ жүйесін шешу;</li>
+        <li>Лагранж шартының геометриялық мағынасын (деңгей сызықтарының жанасуы) түсіндіру;</li>
+        <li>тұрақтылық шарты ($\nabla g\ne0$) бұзылғанда әдіс істен шығатынын қарсы мысалмен көрсету;</li>
+        <li>KKT шарттарын жазу: стационарлық, жарамдылық, $\mu\ge0$, толықтауыш бостық;</li>
+        <li>дөңес есепте KKT шарттарының жеткілікті екенін дәлелдеу;</li>
+        <li>көбейткішті шектеудің шекті құны ретінде түсіндіру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Градиент деңгей сызығына перпендикуляр: $\nabla g(\mathbf x_0)\ne0$ болса, ол $g=c$ қисығына нормаль. Дөңес функцияның бірінші ретті шарты: $f(\mathbf y)\ge f(\mathbf x)+\nabla f(\mathbf x)^T(\mathbf y-\mathbf x)$. Шектеусіз минимумның шарты $\nabla f=0$. Сызықтық бағдарламалаудағы қостық пен толықтауыш бостық ($y_is_i=0$).</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Таудың үстінен өтетін жол бойымен ($g(x,y)=0$) жүріп, ең биік нүктені іздейсіз. Жолдың ең биік нүктесінде сіз биіктік деңгей сызығымен <em>жанасасыз</em>: егер жол деңгей сызығын қиып өтсе, жол бойымен әрі қарай биіктей аласыз. Жанасу нүктесінде екі қисықтың нормальдары параллель: $\nabla f=\lambda\nabla g$. Бұл - Лагранж шарты.</p>
+      <p>Теңсіздік шектеуі ($g(\mathbf x)\le0$) екі жағдай береді. Минимум облыстың ішінде болса, шектеу «белсенді емес», және әдеттегідей $\nabla f=0$. Шекарада болса, шектеу «белсенді» және $f$ облыстан <em>сыртқа</em> қарай кемиді: $-\nabla f$ сыртқы нормальға бағыттас, яғни $\nabla f=-\mu\nabla g$, $\mu\ge0$. Екі жағдайды бір формулаға біріктіретін шарт - $\mu g=0$ (толықтауыш бостық).</p>
+      <p>Көбейткіштің мағынасы бар: шектеуді сәл «босатсақ» ($g\le\varepsilon$), оңтайлы мән шамамен $\mu\varepsilon$-ға жақсарады. Демек $\mu$ - шектеудің «бағасы», сызықтық бағдарламалаудағы көлеңкелі бағаның жалпылауы.</p>
+      <p>Маңызды ескерту: бұл шарттар «әдетте» қажетті, бірақ әрдайым емес. Шектеудің градиенті нөлге айналатын «бұзылған» нүктелерде Лагранж шарты орындалмауы мүмкін, ал минимум сонда жатады. Ал дөңес есептерде шарттар әрі қажетті (жұмсақ шартпен), әрі жеткілікті - бұл оларды сенімді құрал етеді.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 5.1 · Лагранж функциясы</span>
+        <p>$\min f(\mathbf x)$, $g(\mathbf x)=0$ есебі үшін <strong>Лагранж функциясы</strong> (<span class="term-en">Lagrangian</span>) $\mathcal L(\mathbf x,\lambda)=f(\mathbf x)-\lambda g(\mathbf x)$, $\lambda$ - <strong>Лагранж көбейткіші</strong> (<span class="term-en">Lagrange multiplier</span>). Бірнеше шектеу болса, $\mathcal L=f-\sum_i\lambda_ig_i$.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 5.1 · Лагранж көбейткіштері теоремасы</span>
+        <p>$f,g\in C^1$, $\mathbf x^*$ - $g=0$ шектеуіндегі жергілікті экстремум және <strong>тұрақтылық шарты</strong> (<span class="term-en">constraint qualification</span>) орындалсын: $\nabla g(\mathbf x^*)\ne\mathbf0$. Онда $\nabla f(\mathbf x^*)=\lambda\nabla g(\mathbf x^*)$ болатын $\lambda$ бар. (Бірнеше шектеуде: $\nabla g_i(\mathbf x^*)$ сызықтық тәуелсіз болса, $\nabla f=\sum\lambda_i\nabla g_i$.)</p></div>
+      <p><em>Негіздеме.</em> Дәлелі айқындалмаған функция туралы теоремаға сүйенеді; 1-қорытуда екі айнымалы жағдайдың идеясын (жанама бағыт) келтіреміз. Тұрақтылық шарты міндетті - 2-мысал.</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 5.2 · KKT шарттары</span>
+        <p>$\min f(\mathbf x)$, $g_i(\mathbf x)\le0$ ($i=1..m$), $h_j(\mathbf x)=0$. $\mathbf x^*$ нүктесінде <strong>KKT шарттары</strong> (<span class="term-en">Karush–Kuhn–Tucker conditions</span>): (1) стационарлық $\nabla f+\sum\mu_i\nabla g_i+\sum\lambda_j\nabla h_j=\mathbf0$; (2) тура жарамдылық $g_i\le0$, $h_j=0$; (3) қос жарамдылық $\mu_i\ge0$; (4) толықтауыш бостық $\mu_ig_i(\mathbf x^*)=0$.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 5.2 · KKT қажеттілігі</span>
+        <p>$f,g_i,h_j\in C^1$, $\mathbf x^*$ - жергілікті минимум, және тұрақтылық шарты орындалсын (мысалы, LICQ: белсенді $g_i$ және барлық $h_j$ градиенттері сызықтық тәуелсіз). Онда KKT шарттарын қанағаттандыратын $\mu,\lambda$ бар.</p></div>
+      <p><em>Негіздеме.</em> Дәлелін бұл курста келтірмейміз (Фаркаш леммасына сүйенеді). Тұрақтылық шартынсыз тұжырым жалған болуы мүмкін.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 5.3 · Дөңес есепте KKT жеткілікті</span>
+        <p>$f$ және барлық $g_i$ дөңес, дифференциалданатын, $h_j$ сызықтық (аффиндік) болсын. Егер $\mathbf x^*$ KKT шарттарын қандай да бір $\mu\ge0$, $\lambda$-мен қанағаттандырса, онда $\mathbf x^*$ - ғаламдық минимум.</p></div>
+      <p><em>Негіздеме.</em> 3-қорыту. Бұл бағытта тұрақтылық шарты қажет емес.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 5.1 · Лагранж шарты</span>
+        <div class="math-fbody">$$\nabla f(\mathbf x^*)=\lambda\nabla g(\mathbf x^*),\qquad g(\mathbf x^*)=0$$</div>
+        <p class="math-fnote">$n+1$ белгісіз ($\mathbf x,\lambda$), $n+1$ теңдеу. Шарты: $\nabla g(\mathbf x^*)\ne0$. Табылған нүктелер - тек үміткерлер; минимум/максимум екенін бөлек тексеру керек.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 5.2 · KKT</span>
+        <div class="math-fbody">$$\nabla f+\sum_i\mu_i\nabla g_i=\mathbf0,\quad g_i\le0,\quad\mu_i\ge0,\quad\mu_ig_i=0$$</div>
+        <p class="math-fnote">Теңсіздік шектеулері $g_i\le0$ түрінде ($\ge$ болса таңбасын ауыстырыңыз).</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 5.3 · Көбейткіштің мағынасы</span>
+        <div class="math-fbody">$$\frac{d f^*(\varepsilon)}{d\varepsilon}=-\mu$$</div>
+        <p class="math-fnote">Шектеу $g\le\varepsilon$ түрінде: оны $\varepsilon$-ға босатқанда оңтайлы мәннің өзгеру жылдамдығы (тегіс жағдайда, дәлелсіз). Теңдік шектеуде $\frac{df^*}{dc}=\lambda$ ($g=c$, $\mathcal L=f-\lambda(g-c)$).</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>KKT есебін шешу тәсілі: әр теңсіздікке «белсенді» ($g_i=0$) не «белсенді емес» ($\mu_i=0$) жағдайын болжап, стационарлық пен шектеулерді шешеміз; сосын $\mu_i\ge0$ мен $g_i\le0$-ді тексереміз. Шарттарды қанағаттандыратын нұсқа - үміткер; дөңес есепте ол оңтайлы.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Таңба келісімі маңызды: $\min f$, $g\le0$ болса $\nabla f+\mu\nabla g=0$, $\mu\ge0$. Шектеу $g\ge0$ түрінде берілсе, оны $-g\le0$ деп жазыңыз. Сондай-ақ Лагранж әдісі тек жергілікті экстремум үміткерлерін береді: максимум мен минимумды ажырату үшін мәндерді салыстыру (жабық облыста) не екінші ретті шарттар керек.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: Лагранж шартының геометриясы (екі айнымалы)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\mathbf x^*$ - $g(x,y)=0$ қисығындағы экстремум, $\nabla g(\mathbf x^*)\ne0$ болса, $\nabla f\parallel\nabla g$ екенін түсіндіру.</p>
+          <ol class="math-steps">
+            <li>$\nabla g(\mathbf x^*)\ne0$ болғандықтан, $\mathbf x^*$ маңында $g=0$ - тегіс қисық; оны $\mathbf r(t)$, $\mathbf r(0)=\mathbf x^*$, $\mathbf r'(0)\ne0$ деп параметрлейміз (айқындалмаған функция теоремасы, дәлелсіз).</li>
+            <li>$g(\mathbf r(t))\equiv0$ - туындысы: $\nabla g(\mathbf x^*)\cdot\mathbf r'(0)=0$. Демек $\nabla g\perp$ жанама вектор.</li>
+            <li>$\varphi(t)=f(\mathbf r(t))$ $t=0$-де экстремумға жетеді, сондықтан $\varphi'(0)=\nabla f(\mathbf x^*)\cdot\mathbf r'(0)=0$: $\nabla f\perp$ жанама.</li>
+            <li>Жазықтықта жанамаға перпендикуляр векторлар бір түзуде: $\nabla f=\lambda\nabla g$.</li>
+            <li>Тұрақтылық шартының рөлі: $\nabla g=0$ болса, қисық «сынық» болуы мүмкін (жанама жоқ) - 2-мысал.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: теңсіздік шектеуі: $\mu\ge0$ таңбасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\min f$, $g\le0$, минимум шекарада ($g(\mathbf x^*)=0$, $\nabla g\ne0$) болса, $\nabla f=-\mu\nabla g$, $\mu\ge0$ екенін түсіндіру.</p>
+          <ol class="math-steps">
+            <li>Шекара - $g=0$ деңгей қисығы; Лагранж аргументі бойынша $\nabla f=-\mu\nabla g$ қандай да бір $\mu$ үшін.</li>
+            <li>$\nabla g$ облыстан сыртқа бағытталған ($g$ сыртқа қарай өседі), сондықтан $\mathbf d=-\nabla g$ - облыстың ішіне кіретін бағыт.</li>
+            <li>$\mathbf x^*$ минимум болса, ішке қарай кіші қадамда $f$ кемімеуі керек: $\nabla f\cdot\mathbf d\ge0$.</li>
+            <li>$\nabla f\cdot(-\nabla g)=\mu\|\nabla g\|^2\ge0$, демек $\mu\ge0$.</li>
+            <li>Минимум ішкі нүктеде болса ($g&lt;0$), $\nabla f=0$, яғни $\mu=0$. Екеуін біріктіретін шарт - $\mu g=0$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: дөңес есепте KKT жеткілікті</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 5.3-ті (тек теңсіздіктермен) дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$\mathbf x$ - кез келген жарамды нүкте. $f$ дөңес: $f(\mathbf x)\ge f(\mathbf x^*)+\nabla f(\mathbf x^*)^T(\mathbf x-\mathbf x^*)$.</li>
+            <li>Стационарлық: $\nabla f(\mathbf x^*)=-\sum\mu_i\nabla g_i(\mathbf x^*)$. Қоямыз: $f(\mathbf x)\ge f(\mathbf x^*)-\sum\mu_i\nabla g_i(\mathbf x^*)^T(\mathbf x-\mathbf x^*)$.</li>
+            <li>Әр $g_i$ дөңес: $\nabla g_i(\mathbf x^*)^T(\mathbf x-\mathbf x^*)\le g_i(\mathbf x)-g_i(\mathbf x^*)$.</li>
+            <li>$\mu_i\ge0$, сондықтан $-\mu_i\nabla g_i^T(\mathbf x-\mathbf x^*)\ge-\mu_i\big(g_i(\mathbf x)-g_i(\mathbf x^*)\big)=-\mu_ig_i(\mathbf x)+\mu_ig_i(\mathbf x^*)$.</li>
+            <li>Толықтауыш бостық $\mu_ig_i(\mathbf x^*)=0$, ал $\mathbf x$ жарамды: $g_i(\mathbf x)\le0$, демек $-\mu_ig_i(\mathbf x)\ge0$.</li>
+            <li>Барлығын жинасақ: $f(\mathbf x)\ge f(\mathbf x^*)$. ∎ Әр шарт (дөңестік, $\mu\ge0$, толықтауыш бостық) нақты қолданылды.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Лагранж әдісі</h3>
+        <p class="math-problem">$\max\ xy$, $x+y=10$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\nabla(xy)=(y;x)$, $\nabla(x+y)=(1;1)$; $\nabla g\ne0$ ✓.</li>
+          <li><b>2-қадам.</b> $y=\lambda$, $x=\lambda$, $x+y=10$: $x=y=5$, $\lambda=5$.</li>
+          <li><b>3-қадам.</b> $f=25$. Максимум екенін тексеру: шектеу бойынша $f=x(10-x)$ - ойыс парабола, $x=5$-те максимум ✓.</li>
+          <li><b>4-қадам.</b> $\lambda=5$: шектеуді $x+y=10+\varepsilon$ етсек, максимум $\left(\frac{10+\varepsilon}{2}\right)^2\approx25+5\varepsilon$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $x=y=5$, $\max=25$, $\lambda=5$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Тұрақтылық шарты бұзылғанда</h3>
+        <p class="math-problem">$\min\ x$, $g(x,y)=y^2-x^3=0$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Шектеу $x^3=y^2\ge0$ береді, сондықтан $x\ge0$; минимум $x=0$, нүкте $(0;0)$.</li>
+          <li><b>2-қадам.</b> $\nabla f=(1;0)$, $\nabla g=(-3x^2;2y)=(0;0)$ осы нүктеде.</li>
+          <li><b>3-қадам.</b> $\nabla f=\lambda\nabla g$ теңдеуі $(1;0)=(0;0)$ - ешбір $\lambda$-мен орындалмайды.</li>
+          <li><b>4-қадам.</b> Демек Лагранж шарты минимум нүктесінде орындалмады - себебі $\nabla g=0$ (қисықта «үшкір» нүкте). Теорема шарты бұзылды, сондықтан қайшылық жоқ.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Минимум $(0;0)$, бірақ Лагранж шарты орындалмайды.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. KKT</h3>
+        <p class="math-problem">$\min\ x^2+y^2$, $x+y\ge2$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Стандарт түр: $g=2-x-y\le0$. Дөңес есеп (дөңес $f$, сызықтық $g$).</li>
+          <li><b>2-қадам.</b> Белсенді емес жағдай ($\mu=0$): $\nabla f=0\Rightarrow(0;0)$, бірақ $g(0;0)=2>0$ - жарамсыз.</li>
+          <li><b>3-қадам.</b> Белсенді жағдай ($x+y=2$): $\nabla f+\mu\nabla g=(2x-\mu;\ 2y-\mu)=0\Rightarrow x=y=\frac\mu2$; $x+y=2\Rightarrow\mu=2$, $x=y=1$.</li>
+          <li><b>4-қадам.</b> Тексеру: $\mu=2\ge0$ ✓, $g=0$ ✓. Дөңес - ғаламдық минимум, $f=2$.</li>
+          <li><b>5-қадам.</b> Мағынасы: шектеуді $x+y\ge2+\varepsilon$ етсек, $f^*=\frac{(2+\varepsilon)^2}{2}\approx2+2\varepsilon$ - өзгеріс жылдамдығы $\mu=2$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $(1;1)$, $f^*=2$, $\mu=2$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Екі шектеу</h3>
+        <p class="math-problem">$\min\ (x-3)^2+(y-2)^2$, $x+y\le4$, $x\ge0$, $y\ge0$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Шектеусіз минимум $(3;2)$: $x+y=5>4$ - жарамсыз, сондықтан $x+y\le4$ белсенді болуы ықтимал.</li>
+          <li><b>2-қадам.</b> $x+y=4$ белсенді, қалғандары емес: $(2(x-3)+\mu;\ 2(y-2)+\mu)=0$, яғни $x-3=y-2$, $x+y=4$: $x=2{,}5$, $y=1{,}5$, $\mu=1$.</li>
+          <li><b>3-қадам.</b> Тексеру: $x,y>0$ (басқа шектеулер белсенді емес, олардың $\mu=0$), $\mu=1\ge0$ ✓.</li>
+          <li><b>4-қадам.</b> Дөңес есеп - $(2{,}5;1{,}5)$ ғаламдық минимум, $f=0{,}25+0{,}25=0{,}5$. Геометриялық: $(3;2)$ нүктесінің $x+y=4$ түзуіне проекциясы.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $(2{,}5;\ 1{,}5)$, $f^*=0{,}5$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Лагранж шарты әрдайым қажетті</span> → <span class="math-good">тұрақтылық шарты ($\nabla g\ne0$) кезінде</span><br>Неге қате: 2-мысал: $\nabla g=0$ нүктесіндегі минимум.</li>
+        <li><span class="math-bad">Лагранж нүктесі - міндетті түрде минимум</span> → <span class="math-good">үміткер; түрін тексеру керек</span><br>Неге қате: ол максимум не ер тәрізді нүкте болуы мүмкін.</li>
+        <li><span class="math-bad">KKT-де $\mu$ таңбасы маңызды емес</span> → <span class="math-good">$\min$, $g\le0$ үшін $\mu\ge0$</span><br>Неге қате: теріс $\mu$ нүктені облыстың ішіне қарай жақсартуға болатынын көрсетеді.</li>
+        <li><span class="math-bad">$\ge$ шектеуді түрлендірмей KKT жазу</span> → <span class="math-good">$g\ge0\to-g\le0$</span><br>Неге қате: таңба келісімі бұзылса, $\mu$ таңбасы қате шығады.</li>
+        <li><span class="math-bad">Белсенді емес шектеудің $\mu$-сы оң</span> → <span class="math-good">$\mu_ig_i=0$, $g_i&lt;0\Rightarrow\mu_i=0$</span><br>Неге қате: толықтауыш бостық.</li>
+        <li><span class="math-bad">Дөңес емес есепте KKT нүктесі ғаламдық минимум</span> → <span class="math-good">тек дөңес есепте жеткілікті</span><br>Неге қате: дөңес емес есепте KKT нүктелері көп болуы мүмкін.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Лагранж: xy = c деңгей қисығы x + y = 10 түзуімен жанасады" data-config='{"fns": [{"f": "10-x", "label": "шектеу x + y = 10"}, {"f": "c/x", "label": "деңгей қисығы xy = c", "color": 1}], "params": [{"n": "c", "min": 5, "max": 35, "step": 0.5, "v": 16}], "view": [0, 12, 0, 12], "equal": true}'></div>
+      <p><b>Бақылаңыз:</b> $c$-ны арттырыңыз: деңгей қисығы түзуді екі нүктеде қияды ($c&lt;25$), $c=25$-те $(5;5)$-те жанасады, $c>25$ болса қиылыспайды. Жанасу нүктесінде нормальдар параллель: $\nabla f=\lambda\nabla g$.</p>
+      <div class="math-viz" data-viz="graph" data-title="KKT: min x² + y², x + y ≥ 2" data-config='{"fns": [{"f": "2-x", "label": "шекара x + y = 2"}, {"f": "sqrt(max(r-x^2,0))", "label": "x² + y² = r (жоғарғы жарты)", "color": 1}, {"f": "-sqrt(max(r-x^2,0))", "label": "x² + y² = r (төменгі)", "color": 1}], "params": [{"n": "r", "min": 0.2, "max": 6, "step": 0.1, "v": 1}], "view": [-3, 3.5, -3, 3.5], "equal": true}'></div>
+      <p><b>Бақылаңыз:</b> Жарамды облыс - түзудің жоғарғы-оң жағы. $r$-ды арттырыңыз: шеңбер облысқа алғаш рет $r=2$-де $(1;1)$-де тиеді - бұл минимум. Онда $\nabla f=(2;2)$ облыстың ішіне қараған, яғни $-\nabla f$ облыстан сыртқа - $\mu=2>0$.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m17-5-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m17-5-t1">1. Лагранж</h3></div>
+        <p>$\max\ xy$, $x+y=s$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$s=8$: ең үлкен мән","a":16,"v":"Rational(8,2)**2","hint":"$x=y=\\frac s2$.","sol":{"steps":["$4\\cdot4$."],"ans":"$16$"}},{"q":"$s=8$ кездегі $\\lambda$","a":4,"v":"Rational(8,2)","hint":"$y=\\lambda$.","sol":{"steps":["$\\lambda=y=4$."],"ans":"$4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m17-5-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m17-5-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Шектеуде экстремум нүктесінде $\\nabla f$ мен $\\nabla g$ параллель ($\\nabla g\\ne0$ болса).","a":true,"e":"Лагранж теоремасы.","hint":"Жанасу."},{"q":"KKT-де белсенді емес шектеудің көбейткіші нөл.","a":true,"e":"Толықтауыш бостық.","hint":"$\\mu_ig_i=0$."},{"q":"Дөңес емес есепте KKT нүктесі әрдайым ғаламдық минимум.","a":false,"e":"Жеткіліктілік тек дөңес есепте.","hint":"Теорема 5.3."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m17-5-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m17-5-t3">3. Белсенді шектеу</h3></div>
+        <p>$\min\ (x-1)^2$, $x\le3$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Шектеу белсенді ме? $\\mu$ қандай?","o":["белсенді емес, $\\mu=0$","белсенді, $\\mu=4$","белсенді, $\\mu=0$","белсенді емес, $\\mu=2$"],"a":0,"e":"Минимум $x=1\\lt 3$ - ішкі нүкте.","hint":"Шектеусіз минимум жарамды ма?"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m17-5-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-5-t4">4. KKT шешу</h3></div>
+        <p>$\min\ (x-1)^2$, $x\ge3$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x^*$","a":3,"v":"max([1,3])","hint":"Шектеусіз минимум $x=1$ жарамсыз.","sol":{"steps":["Шекара $x=3$."],"ans":"$3$"}},{"q":"$\\mu$ ($g=3-x\\le0$)","a":4,"v":"2*(3-1)","hint":"$f'+\\mu g'=2(x-1)-\\mu=0$.","sol":{"steps":["$\\mu=2(3-1)$."],"ans":"$4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m17-5-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-5-t5">5. Проекция</h3></div>
+        <p>$\min\ (x-4)^2+(y-1)^2$, $x+y\le3$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x^*$","a":3,"v":"solve([Eq(x-4,y-1),Eq(x+y,3)],[x,y])[x]","hint":"Белсенді: $x-4=y-1$, $x+y=3$.","sol":{"steps":["$x=y+3$; $2y+3=3$."],"ans":"$x=3$, $y=0$"}},{"q":"$\\mu$","a":2,"v":"-2*(3-4)","hint":"$2(x-4)+\\mu=0$.","sol":{"steps":["$\\mu=-2(3-4)$."],"ans":"$2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m17-5-exp6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-5-t6">6. Лагранж функциясы</h3></div>
+        <p>$\min\ x^2+y^2$, $x+2y=5$. $\mathcal L=f-\lambda g$, $g=x+2y-5$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\frac{\\partial\\mathcal L}{\\partial x}$ ($\\lambda$ орнына $t$ жазыңыз)","a":"2*x-t","v":"diff(x**2+y**2-t*(x+2*y-5),x)","vars":["x","y","t"],"hint":"$2x-\\lambda$.","sol":{"steps":["$\\partial_x$."],"ans":"$2x-\\lambda$"}},{"q":"$\\frac{\\partial\\mathcal L}{\\partial y}$","a":"2*y-2*t","v":"diff(x**2+y**2-t*(x+2*y-5),y)","vars":["x","y","t"],"hint":"$2y-2\\lambda$.","sol":{"steps":["$\\partial_y$."],"ans":"$2y-2\\lambda$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m17-5-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-5-t7">7. KKT шарттары</h3></div>
+        <p>Шартты атауымен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"KKT.","pairs":[["∇f + Σμᵢ∇gᵢ = 0","стационарлық"],["gᵢ(x) ≤ 0","тура жарамдылық"],["μᵢ ≥ 0","қос жарамдылық"],["μᵢ·gᵢ(x) = 0","толықтауыш бостық"]],"hint":"Анықтама.","sol":{"steps":["Төрт шарт бірге."]},"e":"Сызықтық бағдарламалаудағы қостықтың жалпылауы."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m17-5-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-5-t8">8. Параметрлік: Лагранж</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,4]},"b":{"int":[1,4]},"c":{"int":[4,20]}},"type":"num","q":"$\\min\\ x^2+y^2$, $#{a}x+#{b}y=#{c}$. Ең кіші мән?","a":"c^2/(a^2+b^2)","v":"Rational(c**2,a**2+b**2)","hint":"Нүктеден түзуге дейінгі қашықтықтың квадраты.","sol":{"steps":["$2x=\\lambda#{a}$, $2y=\\lambda#{b}$; $\\lambda=\\frac{2\\cdot#{c}}{#{a^2+b^2}}$.","$f^*=\\frac{#{c}^2}{#{a^2+b^2}}$."],"ans":"$#{c^2/(a^2+b^2)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m17-5-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-5-t9">9. Параметрлік: көбейткіш мағынасы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"s":{"int":[4,20]}},"type":"num","q":"$\\max\\ xy$, $x+y=#{s}$. Шектеуді $#{s}+0{,}1$-ге арттырса, ең үлкен мән шамамен қаншаға өседі ($\\lambda\\cdot0{,}1$)?","a":"s/20","v":"Rational(s,2)*Rational(1,10)","hint":"$\\lambda=\\frac{s}{2}$.","sol":{"steps":["$\\lambda=#{s/2}$.","$\\Delta\\approx#{s/2}\\cdot0{,}1$."],"ans":"$#{s/20}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m17-5-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-5-t10">10. Қорап</h3></div>
+        <p>Беттің ауданы 24 болатын төртбұрышты (жабық) қораптың ең үлкен көлемі. Симметрия бойынша оңтайлы - куб.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Ең үлкен көлем","a":8,"v":"2**3","hint":"$2(ab+bc+ca)=24$; Лагранж $a=b=c$.","sol":{"steps":["$6a^2=24$, $a=2$.","$V=8$."],"ans":"$8$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m17-5-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-5-t11">11. KKT есебін шешу</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"KKT жоспары.","steps":["Шектеулерді $g_i\\le0$ түріне келтіреміз.","Шектеусіз минимумды тексереміз (барлық $\\mu_i=0$).","Жарамсыз болса, белсенді шектеулер жиынын болжаймыз.","Стационарлық пен белсенді шектеулерден $\\mathbf x$, $\\mu$ табамыз.","$\\mu_i\\ge0$ мен жарамдылықты тексеріп, дөңестікпен оңтайлылықты растаймыз."],"hint":"Ішкі → шекара.","sol":{"ans":"KKT нүктесі"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m17-5-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-5-t12">12. Қадамдық шешім: ақпарат теңсіздігі</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$\\max\\ -\\sum_{i=1}^np_i\\ln p_i$ (энтропия), $\\sum p_i=1$, $p_i>0$. Ең үлкен энтропия қандай үлестірімде?","hint":"Лагранж: $-\\ln p_i-1=\\lambda$.","steps":["$\\mathcal L=-\\sum p_i\\ln p_i-\\lambda\\left(\\sum p_i-1\\right)$.","$\\frac{\\partial\\mathcal L}{\\partial p_i}=-\\ln p_i-1-\\lambda=0\\Rightarrow p_i=e^{-1-\\lambda}$ - барлығы бірдей.","$\\sum p_i=1\\Rightarrow p_i=\\frac1n$; энтропия $\\ln n$.","Мақсат ойыс (әр $-p\\ln p$ ойыс), шектеу сызықтық - бұл дөңес есеп (ойыс функцияның максимумы), сондықтан табылған нүкте ғаламдық максимум."],"ans":"Бірқалыпты үлестірім, $H_{\\max}=\\ln n$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Экономикадағы тұтынушы есебі (бюджетпен пайдалылықты максимумдау; $\lambda$ - ақшаның шекті пайдалылығы), портфель теориясы (Марковиц), механика (байланыстар - Лагранж көбейткіштері реакция күштері), машиналық оқытудағы тірек векторлар әдісі (SVM - KKT арқылы шешіледі).</p>
+      <p><b>Мини-жоба: «KKT тексергіші».</b> Берілген нүкте мен көбейткіштер үшін KKT шарттарын сандық тексеріп, оңтайлы нүктені торлы іздеумен салыстырамыз.</p>
+<pre data-lang="python"><code class="language-python">def check_kkt(grad_f, gs, grad_gs, x, mu, tol=1e-9):
+    gf = grad_f(x)
+    station = [gf[k] + sum(m * gg(x)[k] for m, gg in zip(mu, grad_gs)) for k in range(len(x))]
+    return {
+        "стационарлық": all(abs(s) &lt; tol for s in station),
+        "тура жарамдылық": all(g(x) &lt;= tol for g in gs),
+        "μ ≥ 0": all(m &gt;= -tol for m in mu),
+        "толықтауыш бостық": all(abs(m * g(x)) &lt; tol for m, g in zip(mu, gs)),
+    }
+
+# 4-мысал: min (x-3)^2 + (y-2)^2,  x + y &lt;= 4,  -x &lt;= 0,  -y &lt;= 0
+f = lambda p: (p[0] - 3)**2 + (p[1] - 2)**2
+grad_f = lambda p: [2*(p[0] - 3), 2*(p[1] - 2)]
+gs = [lambda p: p[0] + p[1] - 4, lambda p: -p[0], lambda p: -p[1]]
+grad_gs = [lambda p: [1, 1], lambda p: [-1, 0], lambda p: [0, -1]]
+print(check_kkt(grad_f, gs, grad_gs, [2.5, 1.5], [1, 0, 0]))
+print(check_kkt(grad_f, gs, grad_gs, [2.0, 2.0], [2, 0, 0]))     # KKT емес нүкте
+
+best = min((f((i / 200, j / 200)), (i / 200, j / 200)) for i in range(0, 801) for j in range(0, 801) if i + j &lt;= 800)
+print("торлы іздеу:", best)
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Екінші нүкте $(2;2)$ үшін қандай шарт бұзылды? Ол неге оңтайлы емес?</li>
+        <li>3-мысалды ($\min x^2+y^2$, $x+y\ge2$) осы функциямен тексеріңіз; $\mu=2$ екенін растаңыз.</li>
+        <li>Лагранж әдісімен $\max\ x+2y$, $x^2+y^2=5$ есебін шешіп, нәтижені бұрыш бойынша торлы іздеумен салыстырыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Лагранж</td><td>$\nabla f=\lambda\nabla g$, $g=0$</td><td>$\nabla g\ne0$</td></tr>
+        <tr><td>Лагранж функциясы</td><td>$\mathcal L=f-\lambda g$</td><td>-</td></tr>
+        <tr><td>KKT</td><td>$\nabla f+\sum\mu_i\nabla g_i=0$</td><td>$g_i\le0$, $\mu_i\ge0$, $\mu_ig_i=0$</td></tr>
+        <tr><td>Қажеттілік</td><td>минимум $\Rightarrow$ KKT</td><td>тұрақтылық шарты (LICQ)</td></tr>
+        <tr><td>Жеткіліктілік</td><td>KKT $\Rightarrow$ ғаламдық минимум</td><td>дөңес есеп</td></tr>
+        <tr><td>Көбейткіш мағынасы</td><td>$\frac{df^*}{dc}=\lambda$</td><td>шектеудің шекті бағасы</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m17-5-self">
+        <li><input type="checkbox"> <span>Мен Лагранж функциясын құрып, жүйені шеше аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Лагранж шартының геометриялық мағынасын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен тұрақтылық шарты бұзылғандағы қарсы мысалды келтіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен KKT шарттарын жазып, белсенді шектеулерді анықтай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен дөңес есепте KKT жеткілікті екенін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен көбейткішті шектеудің бағасы ретінде түсіндіре аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. max xy, x + y = 6. Ең үлкен мән:</p>
+<label><input type="radio" value="a"> 6</label>
+<label><input type="radio" value="b"> 9</label>
+<label><input type="radio" value="c"> 12</label>
+<label><input type="radio" value="d"> 36</label>
+<p class="explain">x = y = 3.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">2. Лагранж шартының геометриясы:</p>
+<label><input type="radio" value="a"> ∇f пен ∇g параллель</label>
+<label><input type="radio" value="b"> ∇f = 0</label>
+<label><input type="radio" value="c"> ∇g = 0</label>
+<label><input type="radio" value="d"> ∇f ⊥ ∇g</label>
+<p class="explain">Деңгей қисықтары жанасады.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">3. Лагранж теоремасының шарты:</p>
+<label><input type="radio" value="a"> f дөңес</label>
+<label><input type="radio" value="b"> g сызықтық</label>
+<label><input type="radio" value="c"> x* ішкі нүкте</label>
+<label><input type="radio" value="d"> ∇g(x*) ≠ 0</label>
+<p class="explain">Тұрақтылық шарты.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">4. KKT-де (min, g ≤ 0) көбейткіштің таңбасы:</p>
+<label><input type="radio" value="a"> μ ≤ 0</label>
+<label><input type="radio" value="b"> кез келген</label>
+<label><input type="radio" value="c"> μ ≥ 0</label>
+<label><input type="radio" value="d"> μ = 0</label>
+<p class="explain">Қос жарамдылық.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. Белсенді емес шектеу үшін:</p>
+<label><input type="radio" value="a"> μ > 0</label>
+<label><input type="radio" value="b"> μ = 0</label>
+<label><input type="radio" value="c"> g = 0</label>
+<label><input type="radio" value="d"> μ < 0</label>
+<p class="explain">Толықтауыш бостық.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">6. KKT шарттары жеткілікті болатын есеп:</p>
+<label><input type="radio" value="a"> дөңес есеп</label>
+<label><input type="radio" value="b"> кез келген</label>
+<label><input type="radio" value="c"> сызықтық емес</label>
+<label><input type="radio" value="d"> теңдік шектеусіз</label>
+<p class="explain">Теорема 5.3.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">7. min x² + y², x + y ≥ 2. Минимум нүктесі:</p>
+<label><input type="radio" value="a"> (0, 0)</label>
+<label><input type="radio" value="b"> (2, 0)</label>
+<label><input type="radio" value="c"> (2, 2)</label>
+<label><input type="radio" value="d"> (1, 1)</label>
+<p class="explain">μ = 2.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">8. Көбейткіш λ нені көрсетеді?</p>
+<label><input type="radio" value="a"> x-тің мәнін</label>
+<label><input type="radio" value="b"> f-тің мәнін</label>
+<label><input type="radio" value="c"> шектеуді өзгерткендегі оңтайлы мәннің өзгеру жылдамдығын</label>
+<label><input type="radio" value="d"> қадам ұзындығын</label>
+<p class="explain">Шекті баға.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-108.html"><small>Алдыңғы</small>← Mathematical Optimization · 4-сабақ: Шектеусіз оңтайландыру: градиенттік әдістер</a>
