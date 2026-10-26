@@ -233,10 +233,13 @@ def render(n, Ls, probs):
             st = art.rfind("<p", 0, m.start())
             en_ = art.find("</p>", m.end())
             ctx = art[st:en_]
-        sent = plain(ctx)
+        sent = plain(ctx).replace("$$", "$")
         if len(sent) > 260:
             cut = sent.find(". ", 120)
             sent = sent[:cut + 1] if 0 < cut < 260 else sent[:257].rstrip() + "…"
+        sent = sent.replace("$$", "$")
+        if sent.count("$") % 2:  # кесу формуланың ортасына түссе
+            sent = sent[:sent.rfind("$")].rstrip(" ,:;") + "…"
         terms.append(dict(kz=kz, en=en, defn=sent))
     return page, fm, terms
 
