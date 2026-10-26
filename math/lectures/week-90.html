@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Mathematical Statistics · 5-сабақ: Корреляция және сызықтық регрессия - CS50 қазақша">
-  <meta property="og:description" content="Математика, Mathematical Statistics · 5-сабақ: Корреляция және сызықтық регрессия. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Корреляция коэффициенті, ең кіші квадраттар әдісі, детерминация.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-90.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Mathematical Statistics · 5-сабақ: Корреляция және сызықтық регрессия - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-90.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Mathematical Statistics · 5-сабақ: Корреляция және сызықтық регрессия. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Корреляция коэффициенті, ең кіші квадраттар әдісі, детерминация.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,370 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="90">
         <div class="num">Mathematical Statistics · 5-сабақ</div>
         <h1>Корреляция және сызықтық регрессия</h1>
-        <p>Корреляция коэффициенті, ең кіші квадраттар әдісі, детерминация.</p>
+        <p>Оқуға жұмсалған уақыт пен емтихан бағасы, жарнама бюджеті мен сатылым, бой мен салмақ - екі шама бірге өзгере ме және бірінен екіншісін болжауға бола ма? Бұл сабақта екі шаманың сызықтық байланысын өлшейтін корреляция коэффициентін, ең кіші квадраттар әдісімен регрессия түзуін құруды, детерминация коэффициентін $R^2$ және ең маңызды ескертуді - «корреляция себептілік емес» - үйренеміз. Барлық формулаларды өзіміз қорытып шығарамыз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-14">Mathematical Statistics</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-14">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>таңдама ковариациясы мен Пирсон корреляция коэффициентін есептеу және $|r|\le1$ екенін дәлелдеу;</li>
+        <li>корреляцияның тек <em>сызықтық</em> байланысты өлшейтінін мысалмен көрсету;</li>
+        <li>ең кіші квадраттар әдісімен регрессия түзуінің $b$, $a$ коэффициенттерін қорыту;</li>
+        <li>қалдықтарды, $SSE$ және $R^2$-ты есептеп, $R^2=r^2$ екенін түсіндіру;</li>
+        <li>корреляцияның мәнділігін $t$-критериймен тексеру;</li>
+        <li>корреляция мен себептілікті, экстраполяция қаупін ажырату.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Таңдама орташасы $\bar x$, дисперсиясы $s_x^2=\frac1{n-1}\sum(x_i-\bar x)^2$, $\sum(x_i-\bar x)=0$. Квадрат функция $f(b)=Ab^2-2Bb+C$ ($A>0$) ең кіші мәнге $b=\frac BA$ нүктесінде жетеді. Дербес туынды: көп айнымалы функцияның бір айнымалы бойынша туындысы (қалғандары тұрақты). $t$-критерий: $T\sim t(k)$ болса, $|T|\ge t_{1-\alpha/2}(k)$ - сыни облыс.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Сыныптағы оқушылардың «оқуға жұмсаған сағаты» мен «бағасын» нүкте ретінде салайық. Нүктелер оңға жоғары қарай созылған «бұлт» болса, байланыс оң: көп оқығандардың бағасы жоғарырақ. Бұлт неғұрлым жіңішке түзуге ұқсаса, байланыс соғұрлым күшті. Корреляция коэффициенті $r$ осыны $-1$-ден $1$-ге дейінгі бір санмен береді.</p>
+      <p>Корреляция тек <em>түзу сызықты</em> байланысты көреді. $y=x^2$ нүктелері ($x=-2..2$) толық анықталған байланыс, бірақ $r=0$: сол жақтағы «кему» мен оң жақтағы «өсу» бір-бірін жояды. Сондықтан $r=0$ «байланыс жоқ» емес, «сызықтық байланыс жоқ» дегенді білдіреді. Әрдайым алдымен нүктелер графигін салыңыз.</p>
+      <p>Регрессия бір қадам әрі барады: нүктелер бұлтына «ең жақсы» түзуді жүргізеді. «Ең жақсы» - тік бағыттағы қателердің (қалдықтардың) квадраттарының қосындысы ең кіші болатын түзу. Квадрат неге? Ол үлкен қателерді қатаң «жазалайды» және формулалар қарапайым шығады.</p>
+      <p>Ең маңызды сабақ: жазда балмұздақ сатылымы мен суға бату оқиғалары бірге өседі ($r>0$). Бірақ балмұздақ суға батуды тудырмайды - екеуінің ортақ себебі бар (ыстық ауа райы). Корреляция себепті көрсетпейді; себепті анықтау үшін бақыланатын эксперимент керек.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 5.1 · Ковариация және корреляция</span>
+        <p>$(x_i,y_i)$ жұптары үшін таңдама <strong>ковариациясы</strong> (<span class="term-en">covariance</span>) $s_{xy}=\frac{1}{n-1}\sum(x_i-\bar x)(y_i-\bar y)$. Пирсонның <strong>корреляция коэффициенті</strong> (<span class="term-en">correlation coefficient</span>) $$r=\frac{s_{xy}}{s_xs_y}=\frac{S_{xy}}{\sqrt{S_{xx}S_{yy}}},$$ мұнда $S_{xy}=\sum(x_i-\bar x)(y_i-\bar y)$, $S_{xx}=\sum(x_i-\bar x)^2$, $S_{yy}=\sum(y_i-\bar y)^2$ ($S_{xx},S_{yy}>0$).</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 5.1 · Корреляцияның қасиеттері</span>
+        <p>(1) $-1\le r\le1$. (2) $|r|=1$ $\iff$ барлық нүкте бір түзуде жатады ($y_i=a+bx_i$, $b\ne0$; $r$-дың таңбасы $b$-ныкіндей). (3) $r$ өлшем бірлігіне тәуелсіз: $x\to cx+d$ ($c>0$) түрлендіру $r$-ды өзгертпейді. (4) $r$ симметриялы: $r_{xy}=r_{yx}$.</p></div>
+      <p><em>Негіздеме.</em> (1)-(2): 1-қорыту (Коши–Буняковский теңсіздігі). (3): $S_{xy}$ мен $\sqrt{S_{xx}}$ екеуі де $c$-ға көбейеді, қатынасы өзгермейді.</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 5.2 · Регрессия түзуі</span>
+        <p>$\hat y=a+bx$ түзуі үшін $e_i=y_i-\hat y_i$ - <strong>қалдық</strong> (<span class="term-en">residual</span>). $SSE(a,b)=\sum e_i^2$-ны ең кіші ететін $a,b$ - <strong>ең кіші квадраттар әдісі</strong> (<span class="term-en">least squares method</span>) бойынша <strong>сызықтық регрессия</strong> (<span class="term-en">linear regression</span>) коэффициенттері.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 5.2 · Ең кіші квадраттар бағалары</span>
+        <p>$S_{xx}>0$ болса, $SSE$ ең кіші мәнге жалғыз нүктеде жетеді: $$b=\frac{S_{xy}}{S_{xx}}=r\frac{s_y}{s_x},\qquad a=\bar y-b\bar x.$$ Түзу $(\bar x,\bar y)$ нүктесі арқылы өтеді, ал қалдықтардың қосындысы $\sum e_i=0$.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту.</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 5.3 · Детерминация коэффициенті</span>
+        <p>$SST=S_{yy}$ - жалпы шашырау, $SSE=\sum e_i^2$ - түсіндірілмеген шашырау. <strong>Детерминация коэффициенті</strong> (<span class="term-en">coefficient of determination</span>) $R^2=1-\frac{SSE}{SST}$ - $y$ шашырауының түзу «түсіндірген» үлесі, $0\le R^2\le1$.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 5.3 · $R^2=r^2$</span>
+        <p>Бір айнымалы сызықтық регрессияда $SSE=S_{yy}-\frac{S_{xy}^2}{S_{xx}}$ және сондықтан $R^2=r^2$.</p></div>
+      <p><em>Негіздеме.</em> 3-қорыту.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 5.4 · Корреляцияның мәнділігі</span>
+        <p>$(X_i,Y_i)$ тәуелсіз жұптар, бірлескен үлестірімі екі өлшемді қалыпты болсын, $H_0$: бас жиынтықтағы корреляция $\rho=0$. Онда $H_0$ кезінде $$T=\frac{r\sqrt{n-2}}{\sqrt{1-r^2}}\sim t(n-2).$$</p></div>
+      <p><em>Негіздеме.</em> Бұл фактіні дәлелсіз келтіреміз; ол регрессия еңісінің $t$-критерийімен тең күшті.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 5.1 · Регрессия коэффициенттері</span>
+        <div class="math-fbody">$$b=\frac{S_{xy}}{S_{xx}},\qquad a=\bar y-b\bar x$$</div>
+        <p class="math-fnote">Есептеуге ыңғайлы түрлері: $S_{xy}=\sum x_iy_i-n\bar x\bar y$, $S_{xx}=\sum x_i^2-n\bar x^2$.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 5.2 · Корреляция</span>
+        <div class="math-fbody">$$r=\frac{S_{xy}}{\sqrt{S_{xx}S_{yy}}}$$</div>
+        <p class="math-fnote">$r$ мен $b$-ның таңбалары бірдей.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 5.3 · Детерминация</span>
+        <div class="math-fbody">$$R^2=1-\frac{SSE}{SST}=r^2,\qquad SSE=S_{yy}-bS_{xy}$$</div>
+        <p class="math-fnote">Бір айнымалы регрессия үшін. $R^2=0{,}6$ - $y$ шашырауының 60%-ы $x$-пен сызықтық түрде түсіндіріледі.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Регрессия есебінің жоспары: 1) нүктелер графигі (сызықты ма, шеткі мән бар ма?); 2) $\bar x,\bar y,S_{xx},S_{xy},S_{yy}$; 3) $b$, $a$; 4) $r$, $R^2$; 5) қалдықтар графигі (заңдылық болмауы керек); 6) болжамды тек деректер аралығында жасау.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p><b>Корреляция ≠ себептілік.</b> $r$ жоғары болса да, (а) үшінші, жасырын фактор екеуіне де әсер етуі; (б) себеп кері бағытта болуы; (в) кездейсоқ сәйкестік болуы мүмкін. Сонымен қатар, бір шеткі мән $r$-ды күрт өзгерте алады, ал деректер аралығынан тыс болжау (экстраполяция) өте қауіпті.</p></div>
+      <div class="math-remark"><span class="math-box-title">Ескертпе</span>
+        <p>$y$-ті $x$ бойынша және $x$-ті $y$ бойынша регрессиялар әртүрлі түзулер береді (еңістері $r\frac{s_y}{s_x}$ және $\frac{1}{r}\frac{s_y}{s_x}$, $y$-ті $x$ арқылы өрнектегенде), тек $|r|=1$ болса олар сәйкес келеді. «Ортаға регрессия» құбылысы осыдан: $|r|&lt;1$ болса, болжам $\hat y$ өзінің орташасына $x$-тен жақынырақ (стандарт ауытқу бірлігімен).</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: $|r|\le1$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Коши–Буняковский теңсіздігі арқылы дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$u_i=x_i-\bar x$, $v_i=y_i-\bar y$ деп белгілейміз. $r=\frac{\sum u_iv_i}{\sqrt{\sum u_i^2\sum v_i^2}}$.</li>
+            <li>Кез келген нақты $t$ үшін $g(t)=\sum(v_i-tu_i)^2\ge0$.</li>
+            <li>Ашсақ: $g(t)=t^2\sum u_i^2-2t\sum u_iv_i+\sum v_i^2$ - $t$ бойынша квадрат үшмүше, ешқашан теріс емес.</li>
+            <li>Демек дискриминанты $\le0$: $4\left(\sum u_iv_i\right)^2-4\sum u_i^2\sum v_i^2\le0$, яғни $\left(\sum u_iv_i\right)^2\le\sum u_i^2\sum v_i^2$.</li>
+            <li>Түбір алсақ: $|r|\le1$.</li>
+            <li>Теңдік $\iff$ дискриминант нөл $\iff$ қандай да бір $t$ үшін $g(t)=0$, яғни барлық $i$ үшін $v_i=tu_i$ - нүктелер бір түзуде.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: ең кіші квадраттар формулалары</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $SSE(a,b)=\sum(y_i-a-bx_i)^2$-ны ең кіші ететін $a,b$-ны табу.</p>
+          <ol class="math-steps">
+            <li>$a$ бойынша дербес туынды: $\frac{\partial SSE}{\partial a}=-2\sum(y_i-a-bx_i)=0\Rightarrow n\bar y-na-nb\bar x=0\Rightarrow a=\bar y-b\bar x$.</li>
+            <li>Бұл теңдеу $\sum e_i=0$ дегенді және түзудің $(\bar x,\bar y)$ арқылы өтетінін білдіреді.</li>
+            <li>$a$-ны қойсақ: $y_i-a-bx_i=(y_i-\bar y)-b(x_i-\bar x)=v_i-bu_i$.</li>
+            <li>$SSE(b)=\sum(v_i-bu_i)^2=S_{xx}b^2-2S_{xy}b+S_{yy}$ - $b$ бойынша парабола ($S_{xx}>0$).</li>
+            <li>Ең кіші мәні $b=\frac{S_{xy}}{S_{xx}}$ нүктесінде. $r$ арқылы: $b=\frac{S_{xy}}{\sqrt{S_{xx}S_{yy}}}\sqrt{\frac{S_{yy}}{S_{xx}}}=r\frac{s_y}{s_x}$.</li>
+            <li>$SSE$ - дөңес квадраттық функция, сондықтан табылған сыни нүкте - жалғыз ғаламдық минимум.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: $R^2=r^2$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $SSE$-тің ең кіші мәнін тауып, $R^2$-пен байланыстыру.</p>
+          <ol class="math-steps">
+            <li>$b=\frac{S_{xy}}{S_{xx}}$ мәнін $SSE(b)=S_{xx}b^2-2S_{xy}b+S_{yy}$-ге қоямыз.</li>
+            <li>$SSE=\frac{S_{xy}^2}{S_{xx}}-2\frac{S_{xy}^2}{S_{xx}}+S_{yy}=S_{yy}-\frac{S_{xy}^2}{S_{xx}}$.</li>
+            <li>$R^2=1-\frac{SSE}{S_{yy}}=\frac{S_{xy}^2}{S_{xx}S_{yy}}=r^2$.</li>
+            <li>Сонымен $SSE=S_{yy}(1-r^2)$: $|r|=1$ болса қате нөл, $r=0$ болса түзу $\hat y=\bar y$ ештеңе түсіндірмейді.</li>
+            <li>$SSE\ge0$ болғандықтан, бұл тағы бір рет $r^2\le1$ екенін көрсетеді.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Толық есеп</h3>
+        <p class="math-problem">Деректер: $x$: $1,2,3,4,5$; $y$: $2,4,5,4,5$. $r$, регрессия түзуі, $R^2$ және $x=6$ үшін болжам.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\bar x=3$, $\bar y=4$. Ауытқулар: $u=(-2,-1,0,1,2)$, $v=(-2,0,1,0,1)$.</li>
+          <li><b>2-қадам.</b> $S_{xy}=4+0+0+0+2=6$, $S_{xx}=10$, $S_{yy}=4+0+1+0+1=6$.</li>
+          <li><b>3-қадам.</b> $r=\frac{6}{\sqrt{60}}\approx0{,}775$ - күшті оң байланыс.</li>
+          <li><b>4-қадам.</b> $b=\frac{6}{10}=0{,}6$, $a=4-0{,}6\cdot3=2{,}2$: $\hat y=2{,}2+0{,}6x$.</li>
+          <li><b>5-қадам.</b> $SSE=6-0{,}6\cdot6=2{,}4$; $R^2=1-\frac{2{,}4}{6}=0{,}6=r^2$ ✓.</li>
+          <li><b>6-қадам.</b> $x=6$: $\hat y=5{,}8$. Бірақ $x=6$ деректер аралығынан тыс - бұл экстраполяция, сақ болыңыз.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $r\approx0{,}775$; $\hat y=2{,}2+0{,}6x$; $R^2=0{,}6$; $\hat y(6)=5{,}8$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. r = 0, бірақ байланыс бар</h3>
+        <p class="math-problem">$x$: $-2,-1,0,1,2$; $y=x^2$: $4,1,0,1,4$. $r$-ды табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\bar x=0$, $\bar y=2$.</li>
+          <li><b>2-қадам.</b> $S_{xy}=\sum x_i(y_i-2)=(-2)(2)+(-1)(-1)+0+1\cdot(-1)+2\cdot2=-4+1-1+4=0$.</li>
+          <li><b>3-қадам.</b> $r=0$.</li>
+          <li><b>4-қадам.</b> Байланыс толық анықталған ($y=x^2$), бірақ сызықтық емес. Нүктелер графигі бірден көрсетер еді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $r=0$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Мәнділікті тексеру</h3>
+        <p class="math-problem">$n=20$ жұпта $r=0{,}45$. $\alpha=0{,}05$ деңгейде $\rho=0$ гипотезасын тексеріңіз ($t_{0{,}975}(18)=2{,}101$).</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $T=\frac{0{,}45\sqrt{18}}{\sqrt{1-0{,}2025}}=\frac{0{,}45\cdot4{,}243}{0{,}893}\approx2{,}14$.</li>
+          <li><b>2-қадам.</b> $|T|=2{,}14>2{,}101$: $H_0$ жоққа шығарылады (шекарада).</li>
+          <li><b>3-қадам.</b> Бірақ $R^2=0{,}2$: $x$ $y$ шашырауының тек 20%-ын түсіндіреді. «Мәнді» байланыс әлсіз болуы мүмкін.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> 5% деңгейде мәнді; $R^2\approx0{,}2$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Есептеу формулалары</h3>
+        <p class="math-problem">$n=6$, $\sum x=21$, $\sum y=42$, $\sum x^2=91$, $\sum xy=168$. Регрессия түзуі?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\bar x=3{,}5$, $\bar y=7$.</li>
+          <li><b>2-қадам.</b> $S_{xy}=168-6\cdot3{,}5\cdot7=168-147=21$.</li>
+          <li><b>3-қадам.</b> $S_{xx}=91-6\cdot3{,}5^2=91-73{,}5=17{,}5$.</li>
+          <li><b>4-қадам.</b> $b=\frac{21}{17{,}5}=1{,}2$; $a=7-1{,}2\cdot3{,}5=2{,}8$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\hat y=2{,}8+1{,}2x$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">«$r=0$, демек байланыс жоқ»</span> → <span class="math-good">«сызықтық байланыс жоқ»</span><br>Неге қате: $y=x^2$ мысалы.</li>
+        <li><span class="math-bad">«$r=0{,}9$, демек $x$ $y$-ті тудырады»</span> → <span class="math-good">корреляция себептілікті дәлелдемейді</span><br>Неге қате: жасырын фактор, кері себеп, кездейсоқтық.</li>
+        <li><span class="math-bad">$b=\frac{S_{xy}}{S_{yy}}$</span> → <span class="math-good">$b=\frac{S_{xy}}{S_{xx}}$</span><br>Неге қате: еңіс - $x$ бір бірлікке өскендегі $y$-тің өзгерісі, бөлімде $x$-тің шашырауы.</li>
+        <li><span class="math-bad">$R^2=r$</span> → <span class="math-good">$R^2=r^2$</span><br>Неге қате: $r=0{,}5$ болса, түсіндірілген үлес тек 25%.</li>
+        <li><span class="math-bad">Деректер аралығынан тыс еркін болжау</span> → <span class="math-good">тек бақыланған $x$ аралығында</span><br>Неге қате: тыс жерде байланыс сызықты болмауы мүмкін.</li>
+        <li><span class="math-bad">$x$ бойынша $y$ регрессиясынан $x=\frac{y-a}{b}$ деп кері болжау</span> → <span class="math-good">$x$-ті $y$ бойынша жеке регрессия</span><br>Неге қате: екі регрессия $|r|&lt;1$ болса әртүрлі.</li>
+        <li><span class="math-bad">Нүктелер графигін салмай $r$-ға сену</span> → <span class="math-good">алдымен график</span><br>Неге қате: бір шеткі мән $r$-ды толық өзгерте алады.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="SSE еңістің функциясы ретінде (1-мысал)" data-config='{"fns": [{"f": "10*x^2-12*x+6", "label": "SSE(b) = 10b² − 12b + 6"}, {"f": "2.4", "label": "ең кіші SSE = 2,4", "color": 1, "dash": [6, 4]}], "view": [-0.5, 1.7, 0, 8]}'></div>
+      <p><b>Бақылаңыз:</b> Көлденең ось - еңіс $b$ (ал $a=\bar y-b\bar x$). Парабола $b=0{,}6$-да ең кіші мәнге ($2{,}4$) жетеді. $b=0$ болғанда $SSE=S_{yy}=6$ - «түзу жоқ» моделі; айырма $6-2{,}4=3{,}6$ - түзу түсіндірген шашырау, $R^2=\frac{3{,}6}{6}$.</p>
+      <div class="math-viz" data-viz="graph" data-title="Регрессия түзуі және «ортаға регрессия»" data-config='{"fns": [{"f": "2.2+0.6*x", "label": "ŷ = 2,2 + 0,6x"}, {"f": "4+r*(x-3)*sqrt(6/10)", "label": "ŷ = ȳ + r(s_y/s_x)(x − x̄)", "color": 1, "dash": [6, 4]}, {"f": "4+(x-3)*sqrt(6/10)", "label": "r = 1 болса", "color": 2, "dash": [3, 3]}], "params": [{"n": "r", "min": -1, "max": 1, "step": 0.05, "v": 0.775}], "view": [0, 6, 1, 7]}'></div>
+      <p><b>Бақылаңыз:</b> $r=0{,}775$ болса, қызыл түзу көк регрессия түзуімен сәйкес келеді. $r$-ды кішірейтсеңіз, түзу горизонталь $\hat y=\bar y=4$ сызығына жақындайды: әлсіз байланыста болжам орташаға «тартылады». Жасыл түзу - $|r|=1$ (толық сызықтық байланыс).</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m14-5-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-5-t1">1. Ковариация мен корреляция</h3></div>
+        <p>$S_{xy}=12$, $S_{xx}=16$, $S_{yy}=25$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$r$","a":0.6,"v":"12/sqrt(16*25)","hint":"$\\frac{S_{xy}}{\\sqrt{S_{xx}S_{yy}}}$.","sol":{"steps":["$\\frac{12}{20}$."],"ans":"$0{,}6$"}},{"q":"Еңіс $b$","a":0.75,"v":"Rational(12,16)","hint":"$\\frac{S_{xy}}{S_{xx}}$.","sol":{"steps":["$\\frac{12}{16}$."],"ans":"$0{,}75$"}},{"q":"$R^2$","a":0.36,"v":"Rational(12,20)**2","hint":"$r^2$.","sol":{"steps":["$0{,}6^2$."],"ans":"$0{,}36$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m14-5-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-5-t2">2. Қасиеттер</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Барлық $x$-ті сантиметрден метрге аударсақ, $r$ өзгермейді.","a":true,"e":"$r$ - бірліксіз.","hint":"$x\\to0{,}01x$."},{"q":"$r=-0{,}9$ байланыс $r=0{,}5$-тен әлсіз.","a":false,"e":"Күші $|r|$-мен өлшенеді; таңба - бағыт.","hint":"$|-0{,}9|>0{,}5$."},{"q":"Регрессия түзуі әрдайым $(\\bar x,\\bar y)$ арқылы өтеді.","a":true,"e":"$a=\\bar y-b\\bar x$.","hint":"2-қорыту."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m14-5-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-5-t3">3. Түсіндіру</h3></div>
+        <p>Ең дұрыс түсіндірмені таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қалаларда өрт сөндірушілер саны мен өрт шығыны арасында $r=0{,}8$.","o":["Екеуі де өрттің көлеміне тәуелді (ортақ себеп)","Өрт сөндірушілер шығынды арттырады","Шығын өрт сөндірушілерді тудырады","Байланыс жоқ"],"a":0,"e":"Үлкен өртке көп сөндіруші келеді және шығын да көп.","hint":"Жасырын фактор."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-5-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-5-t4">4. Регрессия коэффициенттері</h3></div>
+        <p>$x$: $2,4,6,8$; $y$: $3,7,8,10$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$b$","a":1.1,"v":"sum([(a1-5)*(b1-7) for a1,b1 in zip([2,4,6,8],[3,7,8,10])])/Rational(20)","hint":"$\\bar x=5$, $\\bar y=7$, $S_{xx}=20$.","sol":{"steps":["$S_{xy}=(-3)(-4)+(-1)(0)+(1)(1)+(3)(3)=22$.","$\\frac{22}{20}$."],"ans":"$1{,}1$"}},{"q":"$a$","a":1.5,"v":"7-Rational(11,10)*5","hint":"$\\bar y-b\\bar x$.","sol":{"steps":["$7-5{,}5$."],"ans":"$1{,}5$"}},{"q":"$x=5$ кездегі болжам","a":7,"v":"Rational(3,2)+Rational(11,10)*5","hint":"$x=\\bar x$.","sol":{"steps":["$1{,}5+5{,}5$."],"ans":"$7$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-5-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-5-t5">5. Есептеу формулалары</h3></div>
+        <p>$n=5$, $\sum x=15$, $\sum y=30$, $\sum x^2=55$, $\sum xy=100$, $\sum y^2=208$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$S_{xy}$","a":10,"v":"100-5*3*6","hint":"$\\sum xy-n\\bar x\\bar y$.","sol":{"steps":["$100-90$."],"ans":"$10$"}},{"q":"$r$ ($0{,}001$ дәлдік)","a":"10/sqrt(10*28)","tol":0.001,"v":"(100-90)/sqrt((55-45)*(208-180))","hint":"$S_{xx}=10$, $S_{yy}=28$.","sol":{"steps":["$\\frac{10}{\\sqrt{280}}$."],"ans":"$\\approx0{,}598$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m14-5-mat6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-5-t6">6. Графиктер</h3></div>
+        <p>Нүктелер бұлтының сипаттамасын $r$-мен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Сипаттама.","pairs":[["түзуде жатыр, оңға төмен","r = −1"],["оңға жоғары, жіңішке бұлт","r ≈ 0,9"],["дөңгелек бұлт","r ≈ 0"],["парабола y = x², симметриялы","r = 0 (бірақ байланыс бар)"]],"hint":"Таңба - бағыт, $|r|$ - жіңішкелік.","sol":{"steps":["Парабола - сызықтық емес байланыс."]},"e":"$r$ тек сызықтық байланысты өлшейді."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m14-5-par7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-5-t7">7. Параметрлік: еңіс</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"r":{"pick":[-0.8,-0.5,0.3,0.6,0.9]},"u":{"int":[2,6]},"w":{"int":[3,12]}},"type":"num","q":"$r=#{r}$, $s_x=#{u}$, $s_y=#{w}$. Регрессия еңісі $b$?","a":"r*w/u","v":"nsimplify(r)*w/u","hint":"$b=r\\frac{s_y}{s_x}$.","sol":{"steps":["$#{r}\\cdot\\frac{#{w}}{#{u}}$."],"ans":"$#{r*w/u}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-5-num8">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-5-t8">8. Мәнділік</h3></div>
+        <p>$n=27$, $r=0{,}4$; $t_{0{,}975}(25)=2{,}060$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$T$ ($0{,}01$ дәлдік)","a":"0.4*5/sqrt(0.84)","tol":0.01,"v":"Rational(2,5)*sqrt(25)/sqrt(1-Rational(4,25))","hint":"$\\frac{r\\sqrt{n-2}}{\\sqrt{1-r^2}}$.","sol":{"steps":["$\\frac{0{,}4\\cdot5}{\\sqrt{0{,}84}}=\\frac{2}{0{,}9165}$."],"ans":"$\\approx2{,}18$ - мәнді"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-5-num9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-5-t9">9. SSE</h3></div>
+        <p>$S_{xx}=40$, $S_{xy}=-30$, $S_{yy}=50$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$SSE$","a":27.5,"v":"50-Rational(-30)**2/40","hint":"$S_{yy}-\\frac{S_{xy}^2}{S_{xx}}$.","sol":{"steps":["$50-\\frac{900}{40}=50-22{,}5$."],"ans":"$27{,}5$"}},{"q":"$R^2$","a":0.45,"v":"1-Rational(55,2)/50","hint":"$1-\\frac{SSE}{S_{yy}}$.","sol":{"steps":["$1-0{,}55$."],"ans":"$0{,}45$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m14-5-exp10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-5-t10">10. Регрессия түзуі</h3></div>
+        <p>$\bar x=4$, $\bar y=10$, $s_x=2$, $s_y=6$, $r=0{,}5$. $\hat y$-ті $x$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\hat y=?$","a":"4+1.5*x","v":"10+Rational(1,2)*6/2*(x-4)","hint":"$b=r\\frac{s_y}{s_x}=1{,}5$, $a=\\bar y-b\\bar x$.","sol":{"steps":["$b=1{,}5$.","$a=10-6=4$."],"ans":"$\\hat y=4+1{,}5x$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m14-5-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-5-t11">11. Регрессиялық талдау</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Регрессиялық талдау жоспары.","steps":["Нүктелер графигін салып, сызықтықты және шеткі мәндерді тексереміз.","$\\bar x$, $\\bar y$, $S_{xx}$, $S_{xy}$, $S_{yy}$ есептейміз.","$b=\\frac{S_{xy}}{S_{xx}}$, $a=\\bar y-b\\bar x$.","$r$ мен $R^2$ табамыз.","Қалдықтарды тексеріп, болжамды тек деректер аралығында жасаймыз."],"hint":"Графиктен бастаңыз.","sol":{"ans":"График → қосындылар → коэффициенттер → $R^2$ → қалдықтар"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m14-5-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-5-t12">12. Қадамдық шешім: шеткі мәннің әсері</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"1-мысалдың деректеріне $(10;\\ 0)$ нүктесін қоссақ, $r$ қалай өзгереді?","hint":"Жаңа $n=6$, $\\bar x=\\frac{25}{6}$, $\\bar y=\\frac{20}{6}$.","steps":["$\\sum x=25$, $\\sum y=20$, $\\sum x^2=155$, $\\sum y^2=86$, $\\sum xy=66$.","$S_{xx}=155-\\frac{625}{6}\\approx50{,}83$, $S_{yy}=86-\\frac{400}{6}\\approx19{,}33$, $S_{xy}=66-\\frac{500}{6}\\approx-17{,}33$.","$r=\\frac{-17{,}33}{\\sqrt{50{,}83\\cdot19{,}33}}\\approx-0{,}55$.","Бір ғана шеткі нүкте $r$-ды $+0{,}775$-тен $-0{,}55$-ке ауыстырды! Сондықтан әрдайым график салу керек."],"ans":"$r\\approx-0{,}55$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Сызықтық регрессия - машиналық оқытудың ең қарапайым моделі, бизнес-болжау, ғылыми өлшеулердегі калибрлеу. Python 3.10+ нұсқасында <code>statistics.correlation</code> және <code>statistics.linear_regression</code> функциялары бар.</p>
+      <p><b>Мини-жоба: «Регрессияны нөлден жазу».</b> Формулалармен $a$, $b$, $r$, $R^2$ есептеп, нәтижені <code>statistics</code> модулімен салыстырамыз және шеткі мәннің әсерін көреміз.</p>
+<pre data-lang="python"><code class="language-python">import math, statistics as st
+
+def regress(xs, ys):
+    n = len(xs); mx, my = sum(xs) / n, sum(ys) / n
+    sxy = sum((x - mx) * (y - my) for x, y in zip(xs, ys))
+    sxx = sum((x - mx) ** 2 for x in xs)
+    syy = sum((y - my) ** 2 for y in ys)
+    b = sxy / sxx; a = my - b * mx
+    r = sxy / math.sqrt(sxx * syy)
+    sse = sum((y - a - b * x) ** 2 for x, y in zip(xs, ys))
+    return a, b, r, 1 - sse / syy
+
+xs, ys = [1, 2, 3, 4, 5], [2, 4, 5, 4, 5]
+print("өзіміз:", regress(xs, ys))
+print("statistics:", st.linear_regression(xs, ys), st.correlation(xs, ys))
+print("шеткі нүктемен:", regress(xs + [10], ys + [0]))
+
+xs2 = [-2, -1, 0, 1, 2]
+print("y = x^2 үшін r:", regress(xs2, [x * x for x in xs2])[2])
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Әр нүктені кезекпен алып тастап, $r$ қалай өзгеретінін басып шығарыңыз («әсерлі» нүктелерді табу).</li>
+        <li>Қалдықтарды $e_i=y_i-\hat y_i$ шығарып, олардың қосындысы 0 екенін және $\sum x_ie_i=0$ екенін тексеріңіз. Неге екіншісі де нөл?</li>
+        <li>$y=x^2$ деректеріне $\hat y=a+bx+cx^2$ моделін құру үшін не өзгерту керек? (Нұсқау: $x^2$-ты жаңа айнымалы деп алыңыз.)</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Корреляция</td><td>$r=\frac{S_{xy}}{\sqrt{S_{xx}S_{yy}}}$</td><td>$-1\le r\le1$</td></tr>
+        <tr><td>Еңіс</td><td>$b=\frac{S_{xy}}{S_{xx}}=r\frac{s_y}{s_x}$</td><td>$S_{xx}>0$</td></tr>
+        <tr><td>Бос мүше</td><td>$a=\bar y-b\bar x$</td><td>түзу $(\bar x,\bar y)$ арқылы</td></tr>
+        <tr><td>Қалдық қосындысы</td><td>$SSE=S_{yy}-\frac{S_{xy}^2}{S_{xx}}$</td><td>ең кіші квадраттар</td></tr>
+        <tr><td>Детерминация</td><td>$R^2=1-\frac{SSE}{SST}=r^2$</td><td>бір айнымалы</td></tr>
+        <tr><td>Мәнділік</td><td>$T=\frac{r\sqrt{n-2}}{\sqrt{1-r^2}}\sim t(n-2)$</td><td>қалыпты, $\rho=0$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m14-5-self">
+        <li><input type="checkbox"> <span>Мен $r$-ды есептеп, $|r|\le1$ екенін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $r$ тек сызықтық байланысты өлшейтінін мысалмен көрсете аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен ең кіші квадраттар формулаларын қорыта аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $R^2$-ты есептеп, $R^2=r^2$ екенін түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен корреляцияның мәнділігін тексере аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен корреляция мен себептілікті ажыратып, экстраполяцияның қаупін түсіндіре аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. r = 0,8 болса, R² = ?</p>
+<label><input type="radio" value="a"> 0,8</label>
+<label><input type="radio" value="b"> 0,9</label>
+<label><input type="radio" value="c"> 0,64</label>
+<label><input type="radio" value="d"> 0,4</label>
+<p class="explain">R² = r².</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. S_xy = 15, S_xx = 30. Еңіс b = ?</p>
+<label><input type="radio" value="a"> 2</label>
+<label><input type="radio" value="b"> 0,5</label>
+<label><input type="radio" value="c"> 15</label>
+<label><input type="radio" value="d"> 0,25</label>
+<p class="explain">15/30.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. x̄ = 2, ȳ = 5, b = 1,5. a = ?</p>
+<label><input type="radio" value="a"> 2</label>
+<label><input type="radio" value="b"> 8</label>
+<label><input type="radio" value="c"> 3,5</label>
+<label><input type="radio" value="d"> 5</label>
+<p class="explain">5 − 1,5·2.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. r = 0 дегеніміз:</p>
+<label><input type="radio" value="a"> ешқандай байланыс жоқ</label>
+<label><input type="radio" value="b"> y тұрақты</label>
+<label><input type="radio" value="c"> x = y</label>
+<label><input type="radio" value="d"> сызықтық байланыс жоқ</label>
+<p class="explain">y = x² мысалы.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">5. Қай түрлендіру r-ды өзгертпейді?</p>
+<label><input type="radio" value="a"> x-ті −x-ке ауыстыру</label>
+<label><input type="radio" value="b"> y-ті y²-қа ауыстыру</label>
+<label><input type="radio" value="c"> x-ті см-ден м-ге аудару</label>
+<label><input type="radio" value="d"> бір нүкте қосу</label>
+<p class="explain">Оң коэффициентті сызықтық түрлендіру.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. Регрессия түзуі әрдайым қай нүкте арқылы өтеді?</p>
+<label><input type="radio" value="a"> (0, 0)</label>
+<label><input type="radio" value="b"> (x̄, ȳ)</label>
+<label><input type="radio" value="c"> (0, ȳ)</label>
+<label><input type="radio" value="d"> (x̄, 0)</label>
+<p class="explain">a = ȳ − b·x̄.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. Жоғары корреляция туралы дұрыс тұжырым:</p>
+<label><input type="radio" value="a"> себептілікті дәлелдемейді</label>
+<label><input type="radio" value="b"> себептілікті дәлелдейді</label>
+<label><input type="radio" value="c"> R² = 1 дегенді білдіреді</label>
+<label><input type="radio" value="d"> шеткі мән жоқ дегенді білдіреді</label>
+<p class="explain">Ортақ себеп, кері себеп, кездейсоқтық мүмкін.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. Ең кіші квадраттар әдісі нені кішірейтеді?</p>
+<label><input type="radio" value="a"> қалдықтар қосындысын</label>
+<label><input type="radio" value="b"> x бойынша қашықтықты</label>
+<label><input type="radio" value="c"> r-ды</label>
+<label><input type="radio" value="d"> қалдықтар квадраттарының қосындысын</label>
+<p class="explain">SSE = Σeᵢ².</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-89.html"><small>Алдыңғы</small>← Mathematical Statistics · 4-сабақ: Гипотезаларды тексеру</a>

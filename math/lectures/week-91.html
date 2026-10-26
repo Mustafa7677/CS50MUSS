@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Mathematical Statistics · 6-сабақ: Хи-квадрат тесті және дисперсиялық талдау - CS50 қазақша">
-  <meta property="og:description" content="Математика, Mathematical Statistics · 6-сабақ: Хи-квадрат тесті және дисперсиялық талдау. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Келісім және тәуелсіздік тесттері, бір факторлы дисперсиялық талдау.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-91.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Mathematical Statistics · 6-сабақ: Хи-квадрат тесті және дисперсиялық талдау - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-91.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Mathematical Statistics · 6-сабақ: Хи-квадрат тесті және дисперсиялық талдау. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Келісім және тәуелсіздік тесттері, бір факторлы дисперсиялық талдау.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,372 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="91">
         <div class="num">Mathematical Statistics · 6-сабақ</div>
         <h1>Хи-квадрат тесті және дисперсиялық талдау</h1>
-        <p>Келісім және тәуелсіздік тесттері, бір факторлы дисперсиялық талдау.</p>
+        <p>Ойын сүйегі әділ ме? Жынысы мен сүйікті пәні арасында байланыс бар ма? Үш түрлі оқыту әдісінің нәтижелері әртүрлі ме? Бұл сұрақтар екі салыстыруға келмейді: бірнеше категория не бірнеше топ бар. Бұл сабақта категориялық деректер үшін $\chi^2$ («хи-квадрат») тестін (келісім және тәуелсіздік) және үш не одан көп топтың орташаларын салыстыратын дисперсиялық талдауды (ANOVA) үйренеміз. Шашыраудың жіктелуін $SST=SSB+SSW$ өзіміз дәлелдейміз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-14">Mathematical Statistics</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-14">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>бақыланған және күтілетін жиіліктер арқылы $\chi^2$ статистикасын есептеу;</li>
+        <li>келісім тестін (берілген үлестірімге сәйкестік) еркіндік дәрежесімен қолдану;</li>
+        <li>қиылысу кестесінде тәуелсіздік тестін жүргізу және күтілетін жиілікті $\frac{(\text{жол})(\text{баған})}{N}$ табу;</li>
+        <li>$\chi^2$ тестінің шарттарын (күтілетін жиіліктер $\ge5$) тексеру;</li>
+        <li>$SST=SSB+SSW$ жіктелуін дәлелдеп, бір факторлы ANOVA-ның $F$ статистикасын есептеу;</li>
+        <li>ANOVA нәтижесін дұрыс түсіндіру (қай топ өзгеше екенін ол айтпайды).</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Гипотезаны тексеру: $H_0$, $H_1$, мәнділік деңгейі $\alpha$, p-мән, сыни облыс. $\chi^2(k)$ үлестірімі - $k$ тәуелсіз стандарт қалыпты шаманың квадраттарының қосындысы; $\chi^2_{0{,}95}$: $k=1$: $3{,}841$; $2$: $5{,}991$; $3$: $7{,}815$; $4$: $9{,}488$; $5$: $11{,}070$. Тәуелсіз оқиғалар: $P(AB)=P(A)P(B)$. $\sum(x_i-\bar x)=0$.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Сүйекті 60 рет лақтырдық. Әділ болса, әр жақ шамамен 10 рет түседі. Нақты сандар: 8, 12, 9, 7, 10, 14. Айырмалар бар, бірақ кездейсоқтықтан да солай болуы мүмкін. Барлық айырманы бір санға жинайық: әр жақтағы $\frac{(\text{бақыланған}-\text{күтілген})^2}{\text{күтілген}}$ қосындысы - $\chi^2$. Ол үлкен болса, «әділ сүйек» гипотезасына күмән туады.</p>
+      <p>Неге күтілгенге бөлеміз? 10-ның орнына 15 түсуі мен 1000-ның орнына 1005 түсуі - әртүрлі «таңқаларлық»: біріншісі күшті ауытқу, екіншісі елеусіз. Бөлу айырманы «салыстырмалы» етеді, және сонда статистиканың үлестірімі (жуық) $\chi^2$ болады.</p>
+      <p>Тәуелсіздік тесті: 100 студенттен жынысы мен ұнататын пәнін сұрадық. Егер жыныс пен таңдау тәуелсіз болса, ұлдардың ішіндегі «математиканы ұнататындар» үлесі қыздардағыдай болар еді. Күтілетін кестені осы болжаммен құрып, бақыланған кестемен $\chi^2$ арқылы салыстырамыз.</p>
+      <p>ANOVA: үш топтың орташаларын салыстыру үшін неге үш рет $t$-тест жасамаймыз? Себебі тест саны көбейгенде кездейсоқ «мәнді» нәтиже ықтималдығы өседі. ANOVA бір сұрақ қояды: топтар <em>арасындағы</em> шашырау топтар <em>ішіндегі</em> шашыраумен салыстырғанда тым үлкен бе? Үлкен болса, кемінде бір топтың орташасы басқаша.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 6.1 · Хи-квадрат статистикасы</span>
+        <p>$k$ категория, бақыланған жиіліктер $O_1,\dots,O_k$, $H_0$ бойынша күтілетін жиіліктер $E_i=np_i$. <strong>Хи-квадрат статистикасы</strong> (<span class="term-en">chi-squared statistic</span>) $$\chi^2=\sum_{i=1}^k\frac{(O_i-E_i)^2}{E_i}.$$</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 6.1 · Келісім тесті</span>
+        <p>$H_0$: категориялардың ықтималдықтары $p_1,\dots,p_k$ (толық белгілі). $n\to\infty$ кезінде $H_0$ бойынша $\chi^2$ статистикасының үлестірімі $\chi^2(k-1)$-ге жинақталады. Практикада барлық $E_i\ge5$ болса жуықтау жақсы. Сыни облыс: $\chi^2\ge\chi^2_{1-\alpha}(k-1)$. Бұл - <strong>келісім тесті</strong> (<span class="term-en">goodness-of-fit test</span>).</p></div>
+      <p><em>Негіздеме.</em> Пирсон теоремасы; дәлелі көп өлшемді ОШТ-ға сүйенеді, бұл курста келтірмейміз. $k=2$ жағдайы 2-қорытуда тексеріледі. Еркіндік дәрежесі $k-1$: жиіліктер $\sum O_i=n$ шартымен байланысқан. Параметрлер деректерден бағаланса, әр бағаланған параметр үшін еркіндік дәрежесі тағы бір кемиді.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 6.2 · Тәуелсіздік тесті</span>
+        <p>$r\times c$ <strong>қиылысу кестесі</strong> (<span class="term-en">contingency table</span>), $O_{ij}$ - $i$-жол, $j$-баған жиілігі, жол қосындылары $R_i$, баған қосындылары $C_j$, барлығы $N$. $H_0$: екі белгі тәуелсіз. Күтілетін жиіліктер $E_{ij}=\frac{R_iC_j}{N}$, статистика $\chi^2=\sum_{i,j}\frac{(O_{ij}-E_{ij})^2}{E_{ij}}$, ал $H_0$ кезінде жуық үлестірімі $\chi^2\big((r-1)(c-1)\big)$.</p></div>
+      <p><em>Негіздеме.</em> $E_{ij}$ формуласы - 1-қорыту. Еркіндік дәрежесі: $rc$ ұяшықтан шектеулер мен бағаланған параметрлер санын шегергенде $(r-1)(c-1)$ қалады (дәлелсіз).</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 6.2 · Бір факторлы дисперсиялық талдау</span>
+        <p>$k$ топ, $j$-топта $n_j$ бақылау $x_{j1},\dots,x_{jn_j}$, топ орташасы $\bar x_j$, жалпы орташа $\bar x$, $N=\sum n_j$. Топаралық шашырау $SSB=\sum_jn_j(\bar x_j-\bar x)^2$, топ ішіндегі шашырау $SSW=\sum_j\sum_i(x_{ji}-\bar x_j)^2$, жалпы $SST=\sum_{j,i}(x_{ji}-\bar x)^2$. <strong>Дисперсиялық талдау</strong> (<span class="term-en">analysis of variance</span>) (ANOVA) статистикасы $$F=\frac{SSB/(k-1)}{SSW/(N-k)}.$$</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 6.3 · Шашыраудың жіктелуі</span>
+        <p>Кез келген деректер үшін $SST=SSB+SSW$.</p></div>
+      <p><em>Негіздеме.</em> 3-қорыту.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 6.4 · ANOVA-ның F-критерийі</span>
+        <p>Топтар тәуелсіз, әр топта бақылаулар $N(\mu_j,\sigma^2)$ (дисперсиялар тең). $H_0:\mu_1=\dots=\mu_k$ кезінде $F\sim F(k-1,\,N-k)$ - Фишер үлестірімі. Сыни облыс $F\ge F_{1-\alpha}(k-1,N-k)$.</p></div>
+      <p><em>Негіздеме.</em> Дәлелі қалыпты таңдаманың негізгі фактісіне сүйенеді; келтірмейміз. Интуиция: $H_0$ кезінде алым мен бөлім екеуі де $\sigma^2$-ты бағалайды, сондықтан $F\approx1$; топтар әртүрлі болса, алым үлкейеді.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 6.1 · Хи-квадрат</span>
+        <div class="math-fbody">$$\chi^2=\sum\frac{(O-E)^2}{E}$$</div>
+        <p class="math-fnote">Келісім: $\mathrm{df}=k-1$; тәуелсіздік: $\mathrm{df}=(r-1)(c-1)$. Шарт: барлық $E\ge5$ (не көпшілігі $\ge5$ және ешқайсысы $&lt;1$).</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 6.2 · Күтілетін жиілік</span>
+        <div class="math-fbody">$$E_{ij}=\frac{R_i\,C_j}{N}$$</div>
+        <p class="math-fnote">Тәуелсіздік гипотезасы бойынша.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 6.3 · ANOVA</span>
+        <div class="math-fbody">$$SST=SSB+SSW,\qquad F=\frac{SSB/(k-1)}{SSW/(N-k)}$$</div>
+        <p class="math-fnote">Шарттар: тәуелсіз топтар, қалыпты, тең дисперсиялар. $F_{0{,}95}(2,9)=4{,}256$, $F_{0{,}95}(2,12)=3{,}885$, $F_{0{,}95}(3,12)=3{,}490$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>$\chi^2$ - тек <b>жиіліктерге</b> (санақтарға) қолданылады, пайыздарға не орташаларға емес. ANOVA - сандық шаманың <b>орташаларын</b> салыстырады. Екеуінде де $H_0$ жоққа шығарылса, «қайда» айырма бар екенін қосымша талдау (кесте ұяшықтарының үлесі, топтарды жұптап салыстыру түзетумен) көрсетеді.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Пайыз не үлесті $\chi^2$ формуласына $O$ ретінде қоюға болмайды: статистика таңдама көлеміне тәуелді. Мысалы, 60%/40% бөлінуі $n=10$-да елеусіз, ал $n=1000$-да өте мәнді. Әрдайым нақты санақтарды қолданыңыз.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: тәуелсіздік кезіндегі күтілетін жиілік</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $E_{ij}=\frac{R_iC_j}{N}$ формуласын түсіндіру.</p>
+          <ol class="math-steps">
+            <li>$A_i$ - «$i$-жолға жатады», $B_j$ - «$j$-бағанға жатады». Олардың ықтималдықтарын жиіліктермен бағалаймыз: $\hat P(A_i)=\frac{R_i}N$, $\hat P(B_j)=\frac{C_j}N$.</li>
+            <li>$H_0$ (тәуелсіздік): $P(A_iB_j)=P(A_i)P(B_j)\approx\frac{R_i}{N}\cdot\frac{C_j}{N}$.</li>
+            <li>$N$ бақылауда ұяшықтың күтілетін жиілігі: $E_{ij}=N\cdot\frac{R_iC_j}{N^2}=\frac{R_iC_j}{N}$.</li>
+            <li>Тексеру: $\sum_jE_{ij}=\frac{R_i\sum_jC_j}{N}=R_i$ - күтілетін кестенің жол қосындылары бақыланғандай (баған үшін де солай).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: екі категорияда $\chi^2=Z^2$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $k=2$ жағдайда келісім тестінің $\chi^2$ статистикасы үлестің $z$-статистикасының квадраты екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>Категориялар: «сәттілік» ($O_1=X$, $E_1=np$) және «сәтсіздік» ($O_2=n-X$, $E_2=n(1-p)$).</li>
+            <li>$O_2-E_2=(n-X)-n(1-p)=-(X-np)$, яғни екі айырманың модулі бірдей.</li>
+            <li>$\chi^2=(X-np)^2\left(\frac1{np}+\frac1{n(1-p)}\right)=\frac{(X-np)^2}{np(1-p)}$.</li>
+            <li>Бұл $Z^2$, мұнда $Z=\frac{X-np}{\sqrt{np(1-p)}}$ - Муавр–Лаплас бойынша $\approx N(0,1)$.</li>
+            <li>Демек $\chi^2\approx Z^2\sim\chi^2(1)$ - еркіндік дәрежесі $k-1=1$. Сонымен қатар $\chi^2_{0{,}95}(1)=3{,}841=1{,}96^2$ ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: $SST=SSB+SSW$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> жалпы шашыраудың топаралық және топ ішіндегі бөліктерге жіктелуін дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>Әр бақылау үшін: $x_{ji}-\bar x=(x_{ji}-\bar x_j)+(\bar x_j-\bar x)$.</li>
+            <li>Квадраттап, барлық $j,i$ бойынша қосамыз: $SST=\sum_{j,i}(x_{ji}-\bar x_j)^2+2\sum_{j,i}(x_{ji}-\bar x_j)(\bar x_j-\bar x)+\sum_{j,i}(\bar x_j-\bar x)^2$.</li>
+            <li>Бірінші қосынды - $SSW$. Үшінші: ішкі қосынды $i$ бойынша $n_j$ бірдей мүше, яғни $\sum_jn_j(\bar x_j-\bar x)^2=SSB$.</li>
+            <li>Ортаңғы: әр $j$ үшін $(\bar x_j-\bar x)$ - тұрақты, ал $\sum_i(x_{ji}-\bar x_j)=0$ (топ ішіндегі ауытқулар қосындысы). Демек ортаңғы мүше нөл.</li>
+            <li>Қорытынды: $SST=SSB+SSW$. Бұл - регрессиядағы $SST=SSR+SSE$ жіктелуінің ұқсасы.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Келісім: сүйек</h3>
+        <p class="math-problem">60 лақтыру: 1 - 8, 2 - 12, 3 - 9, 4 - 7, 5 - 10, 6 - 14. $\alpha=0{,}05$ деңгейде сүйек әділ ме?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $H_0$: $p_i=\frac16$; $E_i=10$ (барлығы $\ge5$ ✓).</li>
+          <li><b>2-қадам.</b> $\chi^2=\frac{4+4+1+9+0+16}{10}=3{,}4$.</li>
+          <li><b>3-қадам.</b> $\mathrm{df}=5$, $\chi^2_{0{,}95}(5)=11{,}070$.</li>
+          <li><b>4-қадам.</b> $3{,}4&lt;11{,}07$, p-мән $\approx0{,}64$: $H_0$ жоққа шығарылмайды - деректер әділ сүйекке қайшы келмейді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\chi^2=3{,}4$; әділдікке қарсы дерек жоқ.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Тәуелсіздік 2×2</h3>
+        <p class="math-problem">100 адам: ұлдардың 30-ы А өнімін, 20-сы Б өнімін; қыздардың 20-сы А, 30-ы Б өнімін таңдады. Таңдау жынысқа тәуелді ме? ($\alpha=0{,}05$)</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Жол қосындылары 50, 50; баған 50, 50; $N=100$. $E_{ij}=\frac{50\cdot50}{100}=25$.</li>
+          <li><b>2-қадам.</b> $\chi^2=4\cdot\frac{(30-25)^2}{25}=4$.</li>
+          <li><b>3-қадам.</b> $\mathrm{df}=(2-1)(2-1)=1$, $\chi^2_{0{,}95}(1)=3{,}841$.</li>
+          <li><b>4-қадам.</b> $4>3{,}841$, p-мән $\approx0{,}046$: $H_0$ жоққа шығарылады (шекарада). Таңдау мен жыныс арасында байланыс бар деп есептейміз.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\chi^2=4$, $p\approx0{,}046$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Тәуелсіздік 2×3</h3>
+        <p class="math-problem">Екі қаланың тұрғындары үш тасымалды таңдады: 1-қала: 40, 10, 10; 2-қала: 20, 20, 20. Тәуелсіздікті тексеріңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $R=(60,60)$, $C=(60,30,30)$, $N=120$. Күтілетін: әр жолда $30,15,15$.</li>
+          <li><b>2-қадам.</b> 1-жол: $\frac{100}{30}+\frac{25}{15}+\frac{25}{15}=3{,}33+1{,}67+1{,}67=6{,}67$; 2-жол да $6{,}67$.</li>
+          <li><b>3-қадам.</b> $\chi^2\approx13{,}33$, $\mathrm{df}=(2-1)(3-1)=2$, $\chi^2_{0{,}95}(2)=5{,}991$.</li>
+          <li><b>4-қадам.</b> $13{,}33>5{,}991$ ($p\approx0{,}001$): тасымал таңдауы қалаға тәуелді. Ең үлкен үлес - бірінші бағандағы айырма.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\chi^2\approx13{,}3$; тәуелді.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. ANOVA</h3>
+        <p class="math-problem">Үш әдіс, әрқайсысында 4 оқушы. А: 5, 7, 6, 6; Б: 8, 9, 7, 8; В: 4, 5, 6, 5. Орташалар әртүрлі ме? ($\alpha=0{,}05$)</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Топ орташалары $6,\ 8,\ 5$; жалпы орташа $\bar x=\frac{76}{12}\approx6{,}333$.</li>
+          <li><b>2-қадам.</b> Квадраттар: $(6-6{,}333)^2\approx0{,}111$, $(8-6{,}333)^2\approx2{,}778$, $(5-6{,}333)^2\approx1{,}778$; $SSB=4\cdot4{,}667\approx18{,}67$.</li>
+          <li><b>3-қадам.</b> $SSW$: әр топта ауытқулар квадраттарының қосындысы $2$, сондықтан $SSW=6$.</li>
+          <li><b>4-қадам.</b> $F=\frac{18{,}67/2}{6/9}=\frac{9{,}333}{0{,}667}=14$; $F_{0{,}95}(2,9)=4{,}256$.</li>
+          <li><b>5-қадам.</b> $14>4{,}256$ ($p\approx0{,}002$): кемінде бір әдістің орташасы басқаша. Қайсысы екенін табу үшін қосымша салыстыру керек.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $F=14$; орташалар әртүрлі.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$\chi^2$ формуласына пайыздарды қою</span> → <span class="math-good">нақты санақтарды қою</span><br>Неге қате: статистика $n$-ге тәуелді; пайыз ақпаратты жоғалтады.</li>
+        <li><span class="math-bad">$\chi^2=\sum\frac{(O-E)^2}{O}$</span> → <span class="math-good">бөлімде $E$</span><br>Неге қате: $H_0$ бойынша күтілетін шама қолданылады.</li>
+        <li><span class="math-bad">Тәуелсіздік тестінде $\mathrm{df}=rc-1$</span> → <span class="math-good">$(r-1)(c-1)$</span><br>Неге қате: жол және баған қосындылары бекітілген.</li>
+        <li><span class="math-bad">$E_{ij}&lt;5$ болса да тестті қолдану</span> → <span class="math-good">категорияларды біріктіру не дәл тест</span><br>Неге қате: жуықтау нашар, p-мән сенімсіз.</li>
+        <li><span class="math-bad">Үш топты үш $t$-тестпен салыстыру</span> → <span class="math-good">ANOVA (не түзетілген жұптық салыстырулар)</span><br>Неге қате: I текті қате жинақталады.</li>
+        <li><span class="math-bad">«ANOVA мәнді, демек барлық топ әртүрлі»</span> → <span class="math-good">«кемінде біреуі өзгеше»</span><br>Неге қате: $H_1$ - барлық $\mu_j$ тең емес.</li>
+        <li><span class="math-bad">$F=\frac{SSB}{SSW}$ (еркіндік дәрежесіне бөлмей)</span> → <span class="math-good">$F=\frac{SSB/(k-1)}{SSW/(N-k)}$</span><br>Неге қате: орташа квадраттар салыстырылады.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="χ²(k) тығыздықтары: k = 2, 3, 5" data-config='{"fns": [{"f": "exp(-x/2)/2", "label": "k = 2"}, {"f": "sqrt(x)*exp(-x/2)/sqrt(2*pi)", "label": "k = 3", "color": 1}, {"f": "x^1.5*exp(-x/2)/(3*sqrt(2*pi))", "label": "k = 5", "color": 2}, {"f": "0.15*(sign(x-c)+1)/2", "label": "x ≥ c (сыни облыс)", "color": 3, "dash": [5, 4]}], "params": [{"n": "c", "min": 3, "max": 12, "step": 0.001, "v": 11.07}], "view": [0, 16, 0, 0.55]}'></div>
+      <p><b>Бақылаңыз:</b> $\chi^2(k)$ үлестірімінің күтімі $k$, сондықтан $k$ өскенде шыңы оңға жылжиды. $c=11{,}07$ - $k=5$ үшін 5% сыни мән; 1-мысалдағы $\chi^2=3{,}4$ сыни облыстан алыс. $c$-ны $5{,}991$ ($k=2$) не $7{,}815$ ($k=3$) етіп қойып көріңіз.</p>
+      <div class="math-viz" data-viz="graph" data-title="ANOVA интуициясы: топаралық және топ ішіндегі шашырау" data-config='{"fns": [{"f": "exp(-(x-6+d)^2/(2*s^2))/(s*sqrt(2*pi))", "label": "1-топ"}, {"f": "exp(-(x-6)^2/(2*s^2))/(s*sqrt(2*pi))", "label": "2-топ", "color": 1}, {"f": "exp(-(x-6-d)^2/(2*s^2))/(s*sqrt(2*pi))", "label": "3-топ", "color": 2}], "params": [{"n": "d", "min": 0, "max": 4, "step": 0.1, "v": 1.5}, {"n": "s", "min": 0.3, "max": 3, "step": 0.1, "v": 1}], "view": [-2, 14, 0, 1]}'></div>
+      <p><b>Бақылаңыз:</b> $d$ - топ орташаларының айырмасы (топаралық шашырау), $s$ - топ ішіндегі стандарт ауытқу. $d$ үлкен, $s$ кіші болса, қисықтар бөлек тұрады - $F$ үлкен. $s$-ты үлкейтсеңіз, сол $d$-да қисықтар қабаттасып, айырманы «көру» қиындайды - $F$ кішірейеді.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m14-6-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-6-t1">1. χ² статистикасы</h3></div>
+        <p>Бақыланған: $18, 22$; күтілетін: $20, 20$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\chi^2$","a":0.4,"v":"Rational(4,20)+Rational(4,20)","hint":"$\\sum\\frac{(O-E)^2}{E}$.","sol":{"steps":["$\\frac{4}{20}+\\frac{4}{20}$."],"ans":"$0{,}4$"}},{"q":"Еркіндік дәрежесі","a":1,"v":"2-1","hint":"$k-1$.","sol":{"steps":["$2-1$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-6-num2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-6-t2">2. Күтілетін жиілік</h3></div>
+        <p>$2\times2$ кесте: жол қосындылары $40, 60$; баған $30, 70$; $N=100$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$E_{11}$","a":12,"v":"Rational(40*30,100)","hint":"$\\frac{R_1C_1}{N}$.","sol":{"steps":["$\\frac{1200}{100}$."],"ans":"$12$"}},{"q":"$E_{22}$","a":42,"v":"Rational(60*70,100)","hint":"$\\frac{R_2C_2}{N}$.","sol":{"steps":["$\\frac{4200}{100}$."],"ans":"$42$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m14-6-tf3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-6-t3">3. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\chi^2$ тестіне пайыздарды тікелей қоюға болады.","a":false,"e":"Тек санақтар.","hint":"Статистика $n$-ге тәуелді."},{"q":"Кез келген деректерде $SST=SSB+SSW$.","a":true,"e":"3-қорыту, тек алгебра.","hint":"Қалыптылық қажет емес."},{"q":"$3\\times4$ кестеде тәуелсіздік тестінің еркіндік дәрежесі $6$.","a":true,"e":"$(3-1)(4-1)=6$.","hint":"$(r-1)(c-1)$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-6-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-6-t4">4. Келісім тесті</h3></div>
+        <p>Компания клиенттердің 50%-ы А, 30%-ы Б, 20%-ы В тарифін таңдайды дейді. 200 клиент: А - 90, Б - 70, В - 40.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\chi^2$ ($0{,}01$ дәлдік)","a":"100/100+100/60+0","tol":0.01,"v":"Rational((90-100)**2,100)+Rational((70-60)**2,60)+Rational((40-40)**2,40)","hint":"$E=100,60,40$.","sol":{"steps":["$\\frac{100}{100}+\\frac{100}{60}+0$."],"ans":"$\\approx2{,}67$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m14-6-cho5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-6-t5">5. Шешім</h3></div>
+        <p>Алдыңғы есеп: $\chi^2\approx2{,}67$, $\mathrm{df}=2$, $\chi^2_{0{,}95}(2)=5{,}991$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"5% деңгейде шешім.","o":["Компанияның мәлімдемесіне қарсы дерек жоқ","Мәлімдеме жалған","Мәлімдеме дәлелденді","df = 3 алу керек"],"a":0,"e":"$2{,}67\\lt 5{,}991$.","hint":"Сыни мәнмен салыстырыңыз."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-6-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-6-t6">6. Тәуелсіздік 2×2</h3></div>
+        <p>Кесте: $[[15,25],[35,25]]$ (жолдар - топ, бағандар - жауап).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\chi^2$ ($0{,}01$ дәлдік)","a":"50/12","tol":0.01,"v":"sum([(o-e)**2/Rational(e) for o,e in zip([15,25,35,25],[20,20,30,30])])","hint":"$R=(40,60)$, $C=(50,50)$, $E=(20,20;30,30)$.","sol":{"steps":["$\\frac{25}{20}+\\frac{25}{20}+\\frac{25}{30}+\\frac{25}{30}$.","$=2{,}5+1{,}667$."],"ans":"$\\approx4{,}17$ (df $=1$, мәнді)"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m14-6-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-6-t7">7. Қай әдіс?</h3></div>
+        <p>Сұрақты әдіспен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Әдіс.","pairs":[["сүйек әділ ме (санақтар)","χ² келісім тесті"],["жыныс пен таңдау байланысы","χ² тәуелсіздік тесті"],["үш топтың орташа бағасы","ANOVA"],["екі топтың орташасы","екі таңдамалы t-тест"]],"hint":"Санақтар - $\\chi^2$, орташалар - $t$ не ANOVA.","sol":{"steps":["Деректердің түріне қараңыз."]},"e":"Екі топ үшін ANOVA $F=t^2$ береді."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m14-6-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-6-t8">8. Параметрлік: келісім</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді. Бөлшекпен не $0{,}01$ дәлдікпен.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[-8,8]},"b":{"int":[-8,8]},"c":{"calc":"-a-b"}},"type":"num","tol":0.01,"q":"Сүйек емес, үш тең мүмкіндікті категория, $n=60$ ($E=20$). Бақыланған: $#{20+a}$, $#{20+b}$, $#{20+c}$. $\\chi^2=?$","a":"(a^2+b^2+c^2)/20","v":"Rational(a**2+b**2+c**2,20)","hint":"$\\sum\\frac{(O-20)^2}{20}$.","sol":{"steps":["Ауытқулар $#{a}$, $#{b}$, $#{c}$.","$\\frac{#{a^2}+#{b^2}+#{c^2}}{20}$."],"ans":"$#{(a^2+b^2+c^2)/20}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-6-num9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-6-t9">9. ANOVA</h3></div>
+        <p>Үш топ ($n_j=5$): орташалары $10, 12, 14$; $SSW=48$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$SSB$","a":40,"v":"5*((10-12)**2+0+(14-12)**2)","hint":"$\\bar x=12$, $\\sum n_j(\\bar x_j-\\bar x)^2$.","sol":{"steps":["$5(4+0+4)$."],"ans":"$40$"}},{"q":"$F$","a":5,"v":"(40/Rational(2))/(48/Rational(12))","hint":"$\\frac{SSB/2}{SSW/12}$.","sol":{"steps":["$\\frac{20}{4}$."],"ans":"$5$ ($>F_{0{,}95}(2,12)=3{,}885$ - мәнді)"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-6-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-6-t10">10. SST</h3></div>
+        <p>4-мысалдың деректері.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$SST$ ($0{,}01$ дәлдік)","a":"18+2/3+6","tol":0.01,"v":"sum([(t-Rational(76,12))**2 for t in [5,7,6,6,8,9,7,8,4,5,6,5]])","hint":"$SSB+SSW$.","sol":{"steps":["$18{,}67+6$."],"ans":"$\\approx24{,}67$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m14-6-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-6-t11">11. Тәуелсіздік тесті</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\chi^2$ тәуелсіздік тесті.","steps":["Қиылысу кестесін санақтармен құрып, жол және баған қосындыларын табамыз.","$E_{ij}=\\frac{R_iC_j}{N}$ есептеп, барлығы $\\ge5$ екенін тексереміз.","$\\chi^2=\\sum\\frac{(O-E)^2}{E}$.","$\\mathrm{df}=(r-1)(c-1)$, сыни мәнмен салыстырамыз.","Қорытынды және қай ұяшықтар көп үлес қосқанын түсіндіреміз."],"hint":"Күтілетін жиіліктер - статистикадан бұрын.","sol":{"ans":"Кесте → $E$ → $\\chi^2$ → df → қорытынды"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m14-6-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-6-t12">12. Қадамдық шешім: екі топта ANOVA = t²</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Екі топ ($k=2$) үшін ANOVA-ның $F$ статистикасы екі таңдамалы (біріккен дисперсиялы) $t$ статистикасының квадраты екенін көрсетіңіз.","hint":"$\\bar x=\\frac{n_1\\bar x_1+n_2\\bar x_2}{N}$.","steps":["$\\bar x_1-\\bar x=\\frac{n_2(\\bar x_1-\\bar x_2)}{N}$, $\\bar x_2-\\bar x=-\\frac{n_1(\\bar x_1-\\bar x_2)}{N}$.","$SSB=n_1\\frac{n_2^2(\\bar x_1-\\bar x_2)^2}{N^2}+n_2\\frac{n_1^2(\\bar x_1-\\bar x_2)^2}{N^2}=\\frac{n_1n_2}{N}(\\bar x_1-\\bar x_2)^2$.","$\\frac{SSW}{N-2}=s_p^2$ және $\\frac{n_1n_2}{N}=\\left(\\frac1{n_1}+\\frac1{n_2}\\right)^{-1}$.","$F=\\frac{SSB/1}{s_p^2}=\\frac{(\\bar x_1-\\bar x_2)^2}{s_p^2(1/n_1+1/n_2)}=T^2$."],"ans":"$F=T^2$, сондықтан екі топта екі тест бірдей шешім береді."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> $\chi^2$ тесті - сауалнамаларды талдау, генетика (Мендель заңдарына сәйкестік), кездейсоқ сандар генераторларын тексеру, A/B тесттегі конверсиялар (2×2 кесте). ANOVA - бірнеше нұсқаны (дизайн, дәрі мөлшері, оқыту әдісі) салыстыратын эксперименттер.</p>
+      <p><b>Мини-жоба: «Кездейсоқ сандар генераторын тексеру».</b> <code>random</code> модулінің сүйекті әділ модельдейтінін $\chi^2$ келісім тестімен тексереміз, әдейі «бұрмаланған» генераторды да тексереміз, сосын ANOVA-ны нөлден жазамыз.</p>
+<pre data-lang="python"><code class="language-python">import random
+random.seed(9)
+CRIT5 = 11.070                                  # χ²(5) үшін 5% сыни мән
+
+def chi2_gof(counts, probs):
+    n = sum(counts)
+    return sum((o - n * p) ** 2 / (n * p) for o, p in zip(counts, probs))
+
+def roll_counts(n, gen):
+    c = [0] * 6
+    for _ in range(n):
+        c[gen() - 1] += 1
+    return c
+
+fair = lambda: random.randint(1, 6)
+loaded = lambda: 6 if random.random() &lt; 0.22 else random.randint(1, 5)
+for name, g in (("әділ", fair), ("бұрмаланған", loaded)):
+    c = roll_counts(600, g)
+    x = chi2_gof(c, [1 / 6] * 6)
+    print(name, c, round(x, 2), "H0 жоққа шығарылады" if x &gt;= CRIT5 else "қарсы дерек жоқ")
+
+def anova(groups):
+    allx = [x for g in groups for x in g]; N, k = len(allx), len(groups)
+    m = sum(allx) / N
+    ssb = sum(len(g) * (sum(g) / len(g) - m) ** 2 for g in groups)
+    ssw = sum((x - sum(g) / len(g)) ** 2 for g in groups for x in g)
+    return ssb, ssw, (ssb / (k - 1)) / (ssw / (N - k))
+print(anova([[5, 7, 6, 6], [8, 9, 7, 8], [4, 5, 6, 5]]))   # (18.67, 6.0, 14.0)
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>«Әділ» генераторды 1000 рет тексеріп (әр жолы 600 лақтыру), $H_0$ неше рет жоққа шығарылатынын санаңыз. Шамамен 5% бола ма? Неге?</li>
+        <li>Бұрмаланған генераторда «алтылық» ықтималдығын $0{,}2$-ге түсірсеңіз, 600 лақтыруда тест оны жиі анықтай ма? 6000 лақтыруда ше? (Қуат.)</li>
+        <li>$2\times2$ кесте үшін $\chi^2$ тәуелсіздік тестінің функциясын жазып, 2-мысалды тексеріңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Хи-квадрат</td><td>$\chi^2=\sum\frac{(O-E)^2}{E}$</td><td>$E\ge5$</td></tr>
+        <tr><td>Келісім</td><td>$\mathrm{df}=k-1$</td><td>$p_i$ толық белгілі</td></tr>
+        <tr><td>Тәуелсіздік</td><td>$E_{ij}=\frac{R_iC_j}{N}$, $\mathrm{df}=(r-1)(c-1)$</td><td>санақтар</td></tr>
+        <tr><td>Жіктелу</td><td>$SST=SSB+SSW$</td><td>кез келген деректер</td></tr>
+        <tr><td>ANOVA</td><td>$F=\frac{SSB/(k-1)}{SSW/(N-k)}\sim F(k-1,N-k)$</td><td>қалыпты, тең дисперсия</td></tr>
+        <tr><td>Байланыс</td><td>$k=2$: $\chi^2=Z^2$, $F=T^2$</td><td>-</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m14-6-self">
+        <li><input type="checkbox"> <span>Мен $\chi^2$ статистикасын есептеп, еркіндік дәрежесін анықтай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен келісім тестін жүргізе аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қиылысу кестесінде күтілетін жиіліктерді тауып, тәуелсіздікті тексере аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $\chi^2$ тестінің шарттарын тексере аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $SST=SSB+SSW$ жіктелуін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен ANOVA-ның $F$ статистикасын есептеп, нәтижесін дұрыс түсіндіре аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="d">
+<p class="q-text">1. O = (12, 8), E = (10, 10). χ² = ?</p>
+<label><input type="radio" value="a"> 0,4</label>
+<label><input type="radio" value="b"> 4</label>
+<label><input type="radio" value="c"> 2</label>
+<label><input type="radio" value="d"> 0,8</label>
+<p class="explain">4/10 + 4/10.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. Сүйек үшін келісім тестінің еркіндік дәрежесі:</p>
+<label><input type="radio" value="a"> 6</label>
+<label><input type="radio" value="b"> 1</label>
+<label><input type="radio" value="c"> 5</label>
+<label><input type="radio" value="d"> 36</label>
+<p class="explain">k − 1 = 5.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. 2 × 3 кестеде тәуелсіздік тестінің df:</p>
+<label><input type="radio" value="a"> 5</label>
+<label><input type="radio" value="b"> 2</label>
+<label><input type="radio" value="c"> 6</label>
+<label><input type="radio" value="d"> 1</label>
+<p class="explain">(2 − 1)(3 − 1).</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">4. R₁ = 30, C₂ = 40, N = 120. E₁₂ = ?</p>
+<label><input type="radio" value="a"> 10</label>
+<label><input type="radio" value="b"> 40</label>
+<label><input type="radio" value="c"> 30</label>
+<label><input type="radio" value="d"> 12</label>
+<p class="explain">30·40/120.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">5. χ² тестінің шарты:</p>
+<label><input type="radio" value="a"> бақыланған жиіліктер тең</label>
+<label><input type="radio" value="b"> деректер қалыпты</label>
+<label><input type="radio" value="c"> N ≤ 100</label>
+<label><input type="radio" value="d"> күтілетін жиіліктер ≥ 5</label>
+<p class="explain">Жуықтау шарты.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. ANOVA-да H₀ жоққа шығарылса:</p>
+<label><input type="radio" value="a"> барлық топ әртүрлі</label>
+<label><input type="radio" value="b"> дисперсиялар әртүрлі</label>
+<label><input type="radio" value="c"> кемінде бір топтың орташасы өзгеше</label>
+<label><input type="radio" value="d"> топтар тәуелді</label>
+<p class="explain">H₁: барлық μ тең емес.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. SSB = 30, SSW = 60, k = 3, N = 33. F = ?</p>
+<label><input type="radio" value="a"> 0,5</label>
+<label><input type="radio" value="b"> 7,5</label>
+<label><input type="radio" value="c"> 2</label>
+<label><input type="radio" value="d"> 15</label>
+<p class="explain">(30/2)/(60/30) = 15/2.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">8. Екі категорияда χ² статистикасы:</p>
+<label><input type="radio" value="a"> z-статистиканың квадраты</label>
+<label><input type="radio" value="b"> t-статистика</label>
+<label><input type="radio" value="c"> F-статистиканың түбірі</label>
+<label><input type="radio" value="d"> әрдайым 0</label>
+<p class="explain">χ² = Z².</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-90.html"><small>Алдыңғы</small>← Mathematical Statistics · 5-сабақ: Корреляция және сызықтық регрессия</a>

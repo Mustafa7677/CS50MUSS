@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Mathematical Statistics · 2-сабақ: Нүктелік бағалау - CS50 қазақша">
-  <meta property="og:description" content="Математика, Mathematical Statistics · 2-сабақ: Нүктелік бағалау. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Орынсыз бағалау, ең үлкен ұқсастық және моменттер әдісі.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-87.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Mathematical Statistics · 2-сабақ: Нүктелік бағалау - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-87.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Mathematical Statistics · 2-сабақ: Нүктелік бағалау. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Орынсыз бағалау, ең үлкен ұқсастық және моменттер әдісі.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,368 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="87">
         <div class="num">Mathematical Statistics · 2-сабақ</div>
         <h1>Нүктелік бағалау</h1>
-        <p>Орынсыз бағалау, ең үлкен ұқсастық және моменттер әдісі.</p>
+        <p>Деректер бар, модель бар (мысалы, «уақыт экспоненциалдық үлестірілген»), бірақ модельдің параметрі ($\lambda$, $p$, $\mu$) белгісіз. Оны деректерден қалай «ең жақсы» бағалаймыз және «жақсы» деген не? Бұл сабақта бағалаудың үш сапа өлшемін (ығыспағандық, орнықтылық, орташа квадраттық қате), бағалауды құрудың екі негізгі әдісін (моменттер әдісі мен шынайылықтың максимумы әдісі) үйренеміз және оларды нақты модельдерде өзіміз қорытып шығарамыз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-14">Mathematical Statistics</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-14">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>бағалауды (estimator) статистика ретінде анықтап, оның ығысуын, дисперсиясын және орташа квадраттық қатесін есептеу;</li>
+        <li>$MSE=D+\text{bias}^2$ жіктелуін дәлелдеп, ығысқан бағалау кейде жақсырақ болатынын түсіндіру;</li>
+        <li>орнықтылықты Чебышёв теңсіздігі арқылы тексеру;</li>
+        <li>моменттер әдісімен бағалау құру;</li>
+        <li>шынайылық функциясын жазып, логарифмдеу және туынды арқылы шынайылықтың максимумы бағасын табу;</li>
+        <li>шекарасы параметрге тәуелді модельде (бірқалыпты $U(0,\theta)$) туынды неге жарамайтынын көрсету.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Таңдама $X_1,\dots,X_n$ - тәуелсіз, бірдей үлестірілген шамалар; $E\bar X=\mu$, $D\bar X=\frac{\sigma^2}n$, $ES^2=\sigma^2$. Дискретті шаманың $P(X=k)$ және үзіліссіздің тығыздығы $f(x)$. Логарифм көбейтіндіні қосындыға айналдырады: $\ln\prod a_i=\sum\ln a_i$; $\ln$ өспелі, сондықтан $L$ мен $\ln L$-дің максимум нүктесі бірдей. Чебышёв: $P(|Y-EY|\ge\varepsilon)\le\frac{DY}{\varepsilon^2}$.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Монетаның «әділдігін» тексеру үшін оны 100 рет лақтырдыңыз, 58 рет елтаңба түсті. $p$-ның бағасы қандай? Әрине, $\hat p=0{,}58$. Бірақ неге дәл осы? Бір жауап: шын $p$ кезінде орташа үлес $p$-ға тең (ығыспағандық). Екінші жауап: $p=0{,}58$ болғанда дәл осы нәтиже (58 елтаңба) ең ықтимал болады - бұл <b>шынайылықтың максимумы</b> идеясы. Бұл сабақта екі идеяның да жалпы түрін құрамыз.</p>
+      <p>Бағалау - кездейсоқ шама: басқа таңдама алсақ, басқа сан шығады. Сондықтан «бағалау жақсы ма?» деген сұрақ бір санға емес, оның <em>үлестіріміне</em> қатысты. Нысанаға оқ атуды елестетіңіз: оқтардың ортасы нысананың центрінде болса - ығысу жоқ; оқтар бір-біріне жақын болса - дисперсия кіші. Ең жақсы атқыш - екеуін де ұстанатын. Орташа квадраттық қате (MSE) осы екі қасиетті бір санға біріктіреді.</p>
+      <p>Кейде таңқаларлық жағдай болады: сәл «бұрмаланған» (ығысқан), бірақ әлдеқайда тұрақты бағалау жалпы алғанда дәлірек. Мысалы, $\sigma^2$ үшін $n+1$-ге бөлу (қалыпты модельде) $n-1$-ге бөлуден кіші MSE береді. Ығыспағандық - құнды қасиет, бірақ жалғыз критерий емес.</p>
+      <p>Ал «қай таңдамада қай бағалау» деген сұраққа әмбебап рецепт - шынайылықтың максимумы: «параметрдің қандай мәнінде біз көрген деректер ең ықтимал болар еді?» Бұл әдіс заманауи статистика мен машиналық оқытудың (логистикалық регрессия, нейрондық желілерді оқыту) негізі.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 2.1 · Бағалау және оның ығысуы</span>
+        <p>$\theta$ параметрінің <strong>бағалауы</strong> (<span class="term-en">estimator</span>) - таңдаманың кез келген функциясы $\hat\theta=T(X_1,\dots,X_n)$. Оның <strong>ығысуы</strong> (<span class="term-en">bias</span>) $\operatorname{bias}(\hat\theta)=E\hat\theta-\theta$. $E\hat\theta=\theta$ (әр $\theta$ үшін) болса, бағалау <strong>ығыспаған</strong> (<span class="term-en">unbiased</span>) деп аталады.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 2.2 · Орнықтылық және MSE</span>
+        <p>$\hat\theta_n$ <strong>орнықты бағалау</strong> (<span class="term-en">consistent estimator</span>) деп аталады, егер әр $\theta$ үшін $\hat\theta_n\xrightarrow{P}\theta$, яғни $P(|\hat\theta_n-\theta|\ge\varepsilon)\to0$. <strong>Орташа квадраттық қате</strong> (<span class="term-en">mean squared error</span>) $MSE(\hat\theta)=E(\hat\theta-\theta)^2$.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 2.1 · MSE жіктелуі</span>
+        <p>$D\hat\theta&lt;\infty$ болса, $MSE(\hat\theta)=D\hat\theta+\operatorname{bias}(\hat\theta)^2$.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 2.2 · Орнықтылықтың жеткілікті шарты</span>
+        <p>$\operatorname{bias}(\hat\theta_n)\to0$ және $D\hat\theta_n\to0$ ($n\to\infty$) болса, $\hat\theta_n$ орнықты.</p></div>
+      <p><em>Негіздеме.</em> Шарттар бойынша $MSE\to0$. Марков теңсіздігін $(\hat\theta_n-\theta)^2$-ге қолданамыз: $P(|\hat\theta_n-\theta|\ge\varepsilon)\le\frac{MSE}{\varepsilon^2}\to0$.</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 2.3 · Моменттер әдісі</span>
+        <p>$k$-моментті $m_k(\theta)=EX^k$ параметр арқылы өрнектеп, оны таңдама моментіне $\frac1n\sum X_i^k$ теңестіреміз ($k=1,2,\dots$ - белгісіз параметр санынша). Алынған теңдеулер жүйесінің шешімі - <strong>моменттер әдісінің бағасы</strong> (<span class="term-en">method of moments estimator</span>).</p></div>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 2.4 · Шынайылық функциясы</span>
+        <p>$x_1,\dots,x_n$ бекітілген деректер үшін <strong>шынайылық функциясы</strong> (<span class="term-en">likelihood function</span>) $L(\theta)=\prod_{i=1}^nf(x_i;\theta)$ (дискретті жағдайда $f=P(X=x;\theta)$). $L(\theta)$-ны ең үлкен ететін $\hat\theta$ - <strong>шынайылықтың максимумы бағасы</strong> (<span class="term-en">maximum likelihood estimator</span>) (ШМБ, ағылш. MLE). Әдетте $\ell(\theta)=\ln L(\theta)$ қолданылады.</p></div>
+      <div class="math-remark"><span class="math-box-title">Ескертпе</span>
+        <p>$L(\theta)$ - $\theta$-ның функциясы, деректер бекітілген. Ол $\theta$ бойынша ықтималдық тығыздығы <em>емес</em>: $\int L(\theta)\,d\theta$ 1-ге тең болуы міндетті емес.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 2.3 · Шынайылықтың максимумы бағаларының мысалдары</span>
+        <p>(1) Бернулли $p$: $\hat p=\bar x$. (2) Пуассон $\lambda$: $\hat\lambda=\bar x$. (3) Экспоненциалдық $\lambda$: $\hat\lambda=\frac1{\bar x}$ ($\bar x>0$). (4) Қалыпты $N(\mu,\sigma^2)$: $\hat\mu=\bar x$, $\hat\sigma^2=\frac1n\sum(x_i-\bar x)^2$ (ығысқан!). (5) $U(0,\theta)$: $\hat\theta=\max x_i$.</p></div>
+      <p><em>Негіздеме.</em> (3) - 2-қорыту, (5) - 3-қорыту, (1), (2), (4) ұқсас (есептерде).</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 2.1 · MSE жіктелуі</span>
+        <div class="math-fbody">$$MSE(\hat\theta)=D\hat\theta+\left(E\hat\theta-\theta\right)^2$$</div>
+        <p class="math-fnote">Ығыспаған бағалауда $MSE=D\hat\theta$.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 2.2 · Логарифмдік шынайылық</span>
+        <div class="math-fbody">$$\ell(\theta)=\sum_{i=1}^n\ln f(x_i;\theta),\qquad \ell'(\hat\theta)=0$$</div>
+        <p class="math-fnote">Шарты: $\ell$ дифференциалданады және максимум облыстың ішкі нүктесінде. Сыни нүктенің максимум екенін ($\ell''&lt;0$ не шекарадағы мәндермен салыстыру) тексеріңіз.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 2.3 · Моменттер әдісі (бір параметр)</span>
+        <div class="math-fbody">$$EX=m_1(\theta)=\bar x\ \Rightarrow\ \hat\theta=m_1^{-1}(\bar x)$$</div>
+        <p class="math-fnote">$m_1$ кері функциясы бар болса. Мысалы, $U(0,\theta)$: $EX=\frac\theta2$, сондықтан $\hat\theta_{MM}=2\bar x$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>ШМБ табу алгоритмі: 1) $L(\theta)=\prod f(x_i;\theta)$ жазу; 2) $\ell=\ln L$ - қосындыға айналдыру; 3) $\ell'(\theta)=0$ шешу; 4) максимум екенін және параметр облысында екенін тексеру; 5) егер облыс шекарасы деректерге тәуелді болса, туындыға сенбеу, $L$-ді тікелей талдау.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>ШМБ әрдайым ығыспаған емес: $\hat\sigma^2=\frac1n\sum(x_i-\bar x)^2$ және $\max x_i$ - екеуі де жүйелі түрде кіші. Бірақ олар орнықты, ал ығысуы $n$ өскенде жоғалады. Ығыспаған нұсқасы: $\frac{n}{n-1}\hat\sigma^2=s^2$ және $\frac{n+1}{n}\max x_i$.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: $MSE=D+\text{bias}^2$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 2.1-ді дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$m=E\hat\theta$ деп белгілейміз. $\hat\theta-\theta=(\hat\theta-m)+(m-\theta)$; мұнда $m-\theta=\operatorname{bias}$ - тұрақты сан.</li>
+            <li>Квадраттаймыз: $(\hat\theta-\theta)^2=(\hat\theta-m)^2+2(\hat\theta-m)(m-\theta)+(m-\theta)^2$.</li>
+            <li>Күтім: $E(\hat\theta-m)^2=D\hat\theta$; ортаңғы мүше $2(m-\theta)E(\hat\theta-m)=2(m-\theta)\cdot0=0$.</li>
+            <li>Қорытынды: $MSE=D\hat\theta+\operatorname{bias}^2$.</li>
+            <li>Мысал: $\hat\theta=0$ (деректерге қарамайтын «бағалау») - дисперсиясы 0, ығысуы $-\theta$; $\theta$ нөлге жақын болса, ол тіпті жақсы болып көрінуі мүмкін. Сондықтан бағалауды бір $\theta$-да емес, барлық $\theta$-да салыстырады.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: экспоненциалдық модельде ШМБ</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $f(x;\lambda)=\lambda e^{-\lambda x}$ ($x\ge0$) үшін $\hat\lambda=\frac{1}{\bar x}$ екенін көрсету ($\bar x>0$).</p>
+          <ol class="math-steps">
+            <li>Шынайылық: $L(\lambda)=\prod_{i=1}^n\lambda e^{-\lambda x_i}=\lambda^ne^{-\lambda\sum x_i}$, $\lambda>0$.</li>
+            <li>Логарифм: $\ell(\lambda)=n\ln\lambda-\lambda\sum x_i=n\ln\lambda-\lambda n\bar x$.</li>
+            <li>Туынды: $\ell'(\lambda)=\frac n\lambda-n\bar x$. $\ell'=0\iff\lambda=\frac1{\bar x}$.</li>
+            <li>Екінші туынды $\ell''=-\frac{n}{\lambda^2}&lt;0$ - $\ell$ ойыс, сыни нүкте жалғыз ғаламдық максимум.</li>
+            <li>$\hat\lambda=\frac1{\bar x}$. Ескерту: ол сәл ығысқан ($E\frac1{\bar X}=\frac{n}{n-1}\lambda$, $n\ge2$; бұл фактіні дәлелсіз келтіреміз), бірақ орнықты: ҮСЗ бойынша $\bar X\to\frac1\lambda$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: $U(0,\theta)$ үшін ШМБ - туынды жұмыс істемейтін жағдай</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\hat\theta=\max x_i$ екенін және оның ығысуын табу.</p>
+          <ol class="math-steps">
+            <li>$f(x;\theta)=\frac1\theta$, $0\le x\le\theta$. Шынайылық: $L(\theta)=\theta^{-n}$, егер <em>барлық</em> $x_i\le\theta$, яғни $\theta\ge\max x_i$; әйтпесе $L(\theta)=0$.</li>
+            <li>$\theta\ge M=\max x_i$ облысында $\theta^{-n}$ кемімелі, сондықтан максимум облыстың шекарасында: $\hat\theta=M$. Мұнда $\ell'(\theta)=-\frac n\theta\ne0$ - «туындыны нөлге теңестіру» әдісі жарамайды.</li>
+            <li>$M$-нің үлестірімі: $P(M\le t)=P(\text{барлық }X_i\le t)=\left(\frac t\theta\right)^n$, $0\le t\le\theta$.</li>
+            <li>Тығыздық $\frac{nt^{n-1}}{\theta^n}$; $EM=\int_0^\theta t\cdot\frac{nt^{n-1}}{\theta^n}dt=\frac{n}{n+1}\theta$.</li>
+            <li>Демек $M$ ығысқан (кіші), ал $\frac{n+1}{n}M$ - ығыспаған. Моменттер әдісі $2\bar X$ та ығыспаған, бірақ дисперсиясы үлкенірек: $D(2\bar X)=\frac{\theta^2}{3n}$, ал $D\left(\frac{n+1}nM\right)=\frac{\theta^2}{n(n+2)}$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Бернулли: ШМБ</h3>
+        <p class="math-problem">100 лақтыруда 58 елтаңба. $p$-ның ШМБ-сын табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $L(p)=p^{58}(1-p)^{42}$ (нақты ретпен; $C_{100}^{58}$ көбейткіші максимум нүктесін өзгертпейді).</li>
+          <li><b>2-қадам.</b> $\ell(p)=58\ln p+42\ln(1-p)$.</li>
+          <li><b>3-қадам.</b> $\ell'(p)=\frac{58}{p}-\frac{42}{1-p}=0\Rightarrow58(1-p)=42p\Rightarrow p=0{,}58$.</li>
+          <li><b>4-қадам.</b> $\ell''&lt;0$ - максимум. $\hat p=\bar x=0{,}58$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\hat p=0{,}58$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Пуассон: ШМБ</h3>
+        <p class="math-problem">5 сағатта серверге келген қателер: $2, 0, 3, 1, 4$. Пуассон моделінде $\lambda$-ның ШМБ-сы?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $L(\lambda)=\prod e^{-\lambda}\frac{\lambda^{x_i}}{x_i!}=e^{-5\lambda}\lambda^{\sum x_i}\big/\prod x_i!$.</li>
+          <li><b>2-қадам.</b> $\ell=-5\lambda+(\sum x_i)\ln\lambda+\text{const}$, $\sum x_i=10$.</li>
+          <li><b>3-қадам.</b> $\ell'=-5+\frac{10}{\lambda}=0\Rightarrow\hat\lambda=2=\bar x$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\hat\lambda=2$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Танк есебі</h3>
+        <p class="math-problem">Зауыт танктерге $1,2,\dots,\theta$ нөмірлерін береді. Кездейсоқ 4 танктің нөмірлері: $19, 40, 42, 60$. $\theta$-ны бағалаңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Үзіліссіз ұқсасы - $U(0,\theta)$; ШМБ $M=60$ - жүйелі кіші.</li>
+          <li><b>2-қадам.</b> Ығыспаған түзету (дискретті жағдайда дәл формула): $\hat\theta=M+\frac{M}{n}-1=60+15-1=74$.</li>
+          <li><b>3-қадам.</b> Моменттер әдісі: $E X=\frac{\theta+1}{2}$, $\bar x=40{,}25\Rightarrow\hat\theta=2\bar x-1=79{,}5$.</li>
+          <li><b>4-қадам.</b> Екеуі де ығыспаған, бірақ $\max$-қа негізделген баға дисперсиясы әлдеқайда кіші, сондықтан сенімдірек.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\hat\theta\approx74$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Ығысу мен MSE</h3>
+        <p class="math-problem">$X_i\sim N(\mu,\sigma^2)$. $\sigma^2$-тың екі бағасы: $s^2$ (ығыспаған) және $\hat\sigma^2=\frac{n-1}{n}s^2$. Белгілі факт: $Ds^2=\frac{2\sigma^4}{n-1}$. $n=5$ үшін MSE-лерді салыстырыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $MSE(s^2)=Ds^2=\frac{2\sigma^4}{4}=0{,}5\sigma^4$.</li>
+          <li><b>2-қадам.</b> $\hat\sigma^2$: $E=\frac45\sigma^2$, ығысу $-\frac15\sigma^2$; $D=\left(\frac45\right)^2\cdot0{,}5\sigma^4=0{,}32\sigma^4$.</li>
+          <li><b>3-қадам.</b> $MSE(\hat\sigma^2)=0{,}32\sigma^4+0{,}04\sigma^4=0{,}36\sigma^4$.</li>
+          <li><b>4-қадам.</b> Ығысқан ШМБ $\hat\sigma^2$-тың MSE-сі кіші. Ығыспағандық пен «ең аз қате» - әртүрлі мақсаттар.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $MSE(s^2)=0{,}5\sigma^4>MSE(\hat\sigma^2)=0{,}36\sigma^4$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">«Бағалау ығыспаған болса, ол әрдайым ең жақсы»</span> → <span class="math-good">MSE-ні салыстыру керек</span><br>Неге қате: ығысқан, бірақ дисперсиясы кіші бағалаудың MSE-сі кішірек болуы мүмкін (4-мысал).</li>
+        <li><span class="math-bad">$U(0,\theta)$ үшін $\ell'(\theta)=0$ шешу</span> → <span class="math-good">$L(\theta)$-ны облыс шекарасымен талдау</span><br>Неге қате: шекара деректерге тәуелді; $\ell'$ ешқашан нөл емес.</li>
+        <li><span class="math-bad">Шынайылықты $\sum f(x_i;\theta)$ деп жазу</span> → <span class="math-good">$L=\prod f(x_i;\theta)$</span><br>Неге қате: тәуелсіз бақылаулардың бірлескен ықтималдығы - көбейтінді; қосынды тек логарифмнен кейін.</li>
+        <li><span class="math-bad">ШМБ инварианттылығын ұмыту: $\lambda$-ның ШМБ-сы $\frac1{\bar x}$ болса, $\frac1\lambda$-ның ШМБ-сын қайта есептеу</span> → <span class="math-good">$\widehat{g(\theta)}=g(\hat\theta)$</span><br>Неге қате: ШМБ кез келген функцияға «өтеді»: $\widehat{1/\lambda}=\bar x$.</li>
+        <li><span class="math-bad">$E\frac1{\bar X}=\frac1{E\bar X}$</span> → <span class="math-good">жалпы жағдайда тең емес</span><br>Неге қате: $E g(Y)\ne g(EY)$ сызықтық емес $g$ үшін.</li>
+        <li><span class="math-bad">Сыни нүктенің максимум екенін тексермеу</span> → <span class="math-good">$\ell''&lt;0$ не шекаралармен салыстыру</span><br>Неге қате: сыни нүкте минимум не ер тәрізді нүкте болуы мүмкін.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Бернулли моделінің логарифмдік шынайылығы" data-config='{"fns": [{"f": "k*ln(x)+(100-k)*ln(1-x)", "label": "ℓ(p), 100 лақтыру, k елтаңба"}], "params": [{"n": "k", "min": 1, "max": 99, "step": 1, "v": 58}], "view": [0.01, 0.99, -150, -50]}'></div>
+      <p><b>Бақылаңыз:</b> Көлденең ось - $p$. Қисықтың шыңы дәл $p=\frac{k}{100}$ нүктесінде. $k$-ны өзгертіңіз: шың жылжиды. Шың маңындағы қисықтың «өткірлігі» бағаның дәлдігін көрсетеді: $n$ үлкен болса, қисық тарырақ (келесі сабақтағы сенімділік интервалы).</p>
+      <div class="math-viz" data-viz="graph" data-title="U(0, θ): шынайылық L(θ) = θ⁻ⁿ (θ ≥ max xᵢ)" data-config='{"fns": [{"f": "(sign(x-M)+1)/2*x^(-4)*10^7", "label": "L(θ)·10⁷, n = 4"}], "params": [{"n": "M", "min": 20, "max": 80, "step": 1, "v": 60}], "view": [0, 120, 0, 2]}'></div>
+      <p><b>Бақылаңыз:</b> $\theta&lt;\max x_i$ болса $L=0$ (кем дегенде бір бақылау мүмкін емес болар еді), ал одан кейін $L$ кемиді. Максимум - секіріс нүктесінде, $\theta=M$. Туынды бұл нүктеде жоқ.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m14-2-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-2-t1">1. Ығысу</h3></div>
+        <p>$E\hat\theta=\theta+2$, $D\hat\theta=5$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Ығысу.","a":2,"v":"(Symbol('theta')+2)-Symbol('theta')","hint":"$E\\hat\\theta-\\theta$.","sol":{"steps":["$\\theta+2-\\theta$."],"ans":"$2$"}},{"q":"MSE.","a":9,"v":"5+2**2","hint":"$D+\\text{bias}^2$.","sol":{"steps":["$5+4$."],"ans":"$9$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-2-num2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-2-t2">2. ШМБ-ны есептеу</h3></div>
+        <p>Деректер берілген. ШМБ-ны есептеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Бернулли: $1,0,1,1,0,1,1,1$. $\\hat p$ (бөлшек)","a":"3/4","v":"Rational(6,8)","hint":"$\\bar x$.","sol":{"steps":["$\\frac68$."],"ans":"$\\frac34$"}},{"q":"Экспоненциалдық: $2, 5, 1, 4$. $\\hat\\lambda$ (бөлшек)","a":"1/3","v":"1/Rational(2+5+1+4,4)","hint":"$\\frac1{\\bar x}$.","sol":{"steps":["$\\bar x=3$."],"ans":"$\\frac13$"}},{"q":"$U(0,\\theta)$: $3{,}1;\\ 7{,}4;\\ 5{,}2$. $\\hat\\theta$","a":7.4,"v":"Rational(74,10)","hint":"$\\max x_i$.","sol":{"steps":["$\\max$."],"ans":"$7{,}4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m14-2-tf3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-2-t3">3. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\bar X$ - $\\mu$-дің ығыспаған бағасы.","a":true,"e":"$E\\bar X=\\mu$.","hint":"Күтімнің сызықтығы."},{"q":"Қалыпты модельдегі $\\sigma^2$-тың ШМБ-сы ығыспаған.","a":false,"e":"$\\hat\\sigma^2=\\frac1n\\sum(x_i-\\bar x)^2$, $E=\\frac{n-1}n\\sigma^2$.","hint":"$n$-ге бөлінеді."},{"q":"Ығыспаған бағалаудың MSE-сі оның дисперсиясына тең.","a":true,"e":"bias $=0$.","hint":"$MSE=D+\\text{bias}^2$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-2-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-2-t4">4. Моменттер әдісі</h3></div>
+        <p>Моменттер әдісімен бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$U(0,\\theta)$, $\\bar x=4{,}5$. $\\hat\\theta_{MM}$","a":9,"v":"2*Rational(9,2)","hint":"$EX=\\frac\\theta2$.","sol":{"steps":["$\\frac\\theta2=4{,}5$."],"ans":"$9$"}},{"q":"Геометриялық ($P(X=k)=(1-p)^{k-1}p$), $\\bar x=4$. $\\hat p_{MM}$ (бөлшек)","a":"1/4","v":"1/Rational(4)","hint":"$EX=\\frac1p$.","sol":{"steps":["$\\frac1p=4$."],"ans":"$\\frac14$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m14-2-exp5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-2-t5">5. Логарифмдік шынайылық</h3></div>
+        <p>$n$ бақылау, қосындысы $S$. $\lambda$ айнымалысын $x$ деп жазыңыз (енгізу $x$, $n$, $S$ арқылы).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Экспоненциалдық модель: $\\ell(\\lambda)=?$","a":"n*ln(x)-x*S","v":"n*log(x)-x*Symbol('S')","vars":["x","n","S"],"dom":[0.5,4],"hint":"$\\ln(\\lambda^ne^{-\\lambda S})$.","sol":{"steps":["$n\\ln\\lambda-\\lambda S$."],"ans":"$n\\ln\\lambda-\\lambda S$"}},{"q":"Оның туындысы $\\ell'(\\lambda)$.","a":"n/x-S","v":"diff(n*log(x)-x*Symbol('S'),x)","vars":["x","n","S"],"dom":[0.5,4],"hint":"$(\\ln\\lambda)'=\\frac1\\lambda$.","sol":{"steps":["$\\frac n\\lambda-S$."],"ans":"$\\frac n\\lambda-S$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m14-2-cho6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-2-t6">6. Қай бағалау?</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$U(0,\\theta)$ үшін ығыспаған бағалауларды белгілеңіз.","o":["$2\\bar X$","$\\max X_i$","$\\frac{n+1}{n}\\max X_i$","$\\bar X$"],"a":[0,2],"e":"$E2\\bar X=\\theta$, $E\\max=\\frac{n}{n+1}\\theta$.","hint":"Әрқайсысының күтімін есептеңіз."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m14-2-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-2-t7">7. ШМБ</h3></div>
+        <p>Модельді ШМБ-сымен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"ШМБ.","pairs":[["Бернулли p","x̄"],["Экспоненциалдық λ","1/x̄"],["U(0, θ)","max xᵢ"],["Қалыпты σ²","(1/n)Σ(xᵢ − x̄)²"]],"hint":"Теорема 2.3.","sol":{"steps":["Пуассон $\\lambda$-ның ШМБ-сы да $\\bar x$."]},"e":"Бернулли мен Пуассонда ШМБ бірдей - таңдама орташасы."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m14-2-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-2-t8">8. Параметрлік: ШМБ</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді. Бөлшекпен.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"n":{"int":[5,20]},"S":{"int":[20,80]}},"type":"num","q":"Экспоненциалдық модель: $n=#{n}$ бақылаудың қосындысы $#{S}$. $\\hat\\lambda$?","a":"n/S","v":"Rational(n,S)","hint":"$\\hat\\lambda=\\frac1{\\bar x}=\\frac nS$.","sol":{"steps":["$\\bar x=\\frac{#{S}}{#{n}}$.","$\\hat\\lambda=\\frac{#{n}}{#{S}}$."],"ans":"$#{f:n/S}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m14-2-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-2-t9">9. Параметрлік: MSE</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"b":{"int":[-4,4]},"d":{"int":[1,12]}},"type":"num","q":"Бағалаудың ығысуы $#{b}$, дисперсиясы $#{d}$. MSE?","a":"d+b^2","v":"d+b**2","hint":"$D+\\text{bias}^2$.","sol":{"steps":["$#{d}+#{p:b}^2$."],"ans":"$#{d+b^2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-2-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-2-t10">10. max-тің күтімі</h3></div>
+        <p>$U(0,\theta)$, $n$ бақылау, $M=\max X_i$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$n=4$, $\\theta=10$: $EM$","a":8,"v":"integrate(t*4*t**3/10**4,(t,0,10))","hint":"$\\frac{n}{n+1}\\theta$.","sol":{"steps":["$\\frac45\\cdot10$."],"ans":"$8$"}},{"q":"$n=4$, $\\theta=10$: $P(M\\le5)$ (бөлшек)","a":"1/16","v":"Rational(5,10)**4","hint":"$\\left(\\frac t\\theta\\right)^n$.","sol":{"steps":["$\\left(\\frac12\\right)^4$."],"ans":"$\\frac1{16}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-2-num11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-2-t11">11. Пуассон ШМБ</h3></div>
+        <p>Деректер: $3,1,4,1,5,9,2,6$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\hat\\lambda$","a":3.875,"v":"Rational(3+1+4+1+5+9+2+6,8)","hint":"$\\bar x$.","sol":{"steps":["$\\frac{31}{8}$."],"ans":"$3{,}875$"}},{"q":"ШМБ инварианттылығы: $P(X=0)=e^{-\\lambda}$ ықтималдығының ШМБ-сы ($0{,}001$ дәлдік)","a":"exp(-31/8)","tol":0.001,"v":"exp(-Rational(31,8))","hint":"$e^{-\\hat\\lambda}$.","sol":{"steps":["$e^{-3{,}875}$."],"ans":"$\\approx0{,}021$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m14-2-ord12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-2-t12">12. ШМБ табу алгоритмі</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Шынайылықтың максимумы бағасын табу.","steps":["$L(\\theta)=\\prod f(x_i;\\theta)$ жазамыз.","Логарифмдейміз: $\\ell=\\sum\\ln f(x_i;\\theta)$.","$\\ell'(\\theta)=0$ теңдеуін шешеміз.","$\\ell''\\lt 0$ не шекаралармен салыстырып, максимум екенін тексереміз."],"hint":"Көбейтінді → логарифм → туынды → тексеру.","sol":{"ans":"$\\hat\\theta$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m14-2-rev13">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-2-t13">13. Қадамдық шешім: қалыпты модельдің ШМБ</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$N(\\mu,\\sigma^2)$ үшін $\\mu$ мен $v=\\sigma^2$-тың ШМБ-ларын табыңыз.","hint":"$\\ell=-\\frac n2\\ln(2\\pi v)-\\frac{1}{2v}\\sum(x_i-\\mu)^2$.","steps":["$\\frac{\\partial\\ell}{\\partial\\mu}=\\frac1v\\sum(x_i-\\mu)=0\\Rightarrow\\hat\\mu=\\bar x$.","$\\frac{\\partial\\ell}{\\partial v}=-\\frac{n}{2v}+\\frac{1}{2v^2}\\sum(x_i-\\mu)^2=0$.","$\\mu=\\bar x$ қойып: $\\hat v=\\frac1n\\sum(x_i-\\bar x)^2$.","Максимум: $\\mu$ бойынша $\\ell$ - ойыс парабола; $v$ бойынша $v\\to0^+$ және $v\\to\\infty$ кезінде $\\ell\\to-\\infty$ (егер $\\sum(x_i-\\bar x)^2>0$), сондықтан жалғыз сыни нүкте - максимум."],"ans":"$\\hat\\mu=\\bar x$, $\\hat\\sigma^2=\\frac1n\\sum(x_i-\\bar x)^2$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Шынайылықтың максимумы - логистикалық регрессия, нейрондық желілердің «кросс-энтропия» шығын функциясы, сенсор шуын бағалау негізі. Бағалауды «модельдеу арқылы» тексеру (көп рет таңдама генерациялап, бағалаудың ығысуы мен MSE-сін өлшеу) - статистиктердің күнделікті құралы.</p>
+      <p><b>Мини-жоба: «Бағалаулар жарысы».</b> $U(0,\theta)$ моделінде үш бағалауды ($2\bar X$, $\max$, $\frac{n+1}{n}\max$) мыңдаған рет модельдеп, ығысуы мен MSE-сін салыстырамыз.</p>
+<pre data-lang="python"><code class="language-python">import random, statistics as st
+random.seed(2)
+theta, n, R = 10.0, 5, 50_000
+
+est = {"2*mean": [], "max": [], "(n+1)/n*max": []}
+for _ in range(R):
+    xs = [random.uniform(0, theta) for _ in range(n)]
+    m = max(xs)
+    est["2*mean"].append(2 * st.fmean(xs))
+    est["max"].append(m)
+    est["(n+1)/n*max"].append((n + 1) / n * m)
+
+for name, v in est.items():
+    bias = st.fmean(v) - theta
+    mse = st.fmean([(e - theta) ** 2 for e in v])
+    print(f"{name:12s} ығысу={bias:+.3f}  MSE={mse:.3f}")
+print("теория: MSE(2*mean) =", theta**2 / (3 * n), " MSE((n+1)/n*max) =", theta**2 / (n * (n + 2)))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$n$-ді 5, 20, 100 етіп өзгертіңіз. Қай бағалаудың MSE-сі $\frac1n$, қайсысыныкі $\frac1{n^2}$ ретімен кемиді?</li>
+        <li>Экспоненциалдық модельде $\hat\lambda=\frac1{\bar x}$-тың ығысуын модельдеп, $\frac{n}{n-1}\lambda$ формуласымен салыстырыңыз.</li>
+        <li>$\max$ бағалауының MSE-сі $\frac{2\theta^2}{(n+1)(n+2)}$ екенін модельдеу арқылы тексеріңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Ығысу</td><td>$E\hat\theta-\theta$</td><td>ығыспаған: $0$</td></tr>
+        <tr><td>MSE</td><td>$D\hat\theta+\text{bias}^2$</td><td>$D&lt;\infty$</td></tr>
+        <tr><td>Орнықтылық</td><td>$\text{bias}\to0$, $D\to0$ жеткілікті</td><td>$n\to\infty$</td></tr>
+        <tr><td>Моменттер әдісі</td><td>$m_k(\theta)=\frac1n\sum x_i^k$</td><td>-</td></tr>
+        <tr><td>Шынайылық</td><td>$L=\prod f(x_i;\theta)$, $\ell=\ln L$</td><td>тәуелсіз бақылау</td></tr>
+        <tr><td>ШМБ мысалдары</td><td>$\bar x$; $\frac1{\bar x}$; $\max x_i$</td><td>Бернулли/Пуассон; Exp; $U(0,\theta)$</td></tr>
+        <tr><td>Инварианттылық</td><td>$\widehat{g(\theta)}=g(\hat\theta)$</td><td>ШМБ</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m14-2-self">
+        <li><input type="checkbox"> <span>Мен бағалаудың ығысуын, дисперсиясын және MSE-сін есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $MSE=D+\text{bias}^2$ жіктелуін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен моменттер әдісімен бағалау құра аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен шынайылық функциясын жазып, ШМБ-ны туынды арқылы таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $U(0,\theta)$ мысалында туынды неге жарамайтынын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бағалауларды модельдеу арқылы салыстыра аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="d">
+<p class="q-text">1. Бағалаудың ығысуы 0, дисперсиясы 4. MSE = ?</p>
+<label><input type="radio" value="a"> 16</label>
+<label><input type="radio" value="b"> 2</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> 4</label>
+<p class="explain">MSE = D + bias².</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. Бернулли моделінде p-ның ШМБ-сы:</p>
+<label><input type="radio" value="a"> 1/x̄</label>
+<label><input type="radio" value="b"> max xᵢ</label>
+<label><input type="radio" value="c"> x̄</label>
+<label><input type="radio" value="d"> s²</label>
+<p class="explain">Сәттіліктердің үлесі.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. U(0, θ) моделінде θ-ның ШМБ-сы:</p>
+<label><input type="radio" value="a"> 2x̄</label>
+<label><input type="radio" value="b"> max xᵢ</label>
+<label><input type="radio" value="c"> x̄</label>
+<label><input type="radio" value="d"> min xᵢ</label>
+<p class="explain">L(θ) = θ⁻ⁿ, θ ≥ max xᵢ.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">4. Шынайылық функциясы - бұл:</p>
+<label><input type="radio" value="a"> θ-ның функциясы, деректер бекітілген</label>
+<label><input type="radio" value="b"> деректердің тығыздығы, θ бекітілген</label>
+<label><input type="radio" value="c"> θ бойынша ықтималдық тығыздығы</label>
+<label><input type="radio" value="d"> таңдама орташасы</label>
+<p class="explain">L(θ) = Π f(xᵢ; θ).</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">5. Неге шынайылықты логарифмдейміз?</p>
+<label><input type="radio" value="a"> мәні кішірейеді</label>
+<label><input type="radio" value="b"> ығысуды жою үшін</label>
+<label><input type="radio" value="c"> дисперсияны азайту үшін</label>
+<label><input type="radio" value="d"> көбейтінді қосындыға айналады, максимум нүктесі өзгермейді</label>
+<p class="explain">ln өспелі.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. Экспоненциалдық модель, x̄ = 5. λ-ның ШМБ-сы:</p>
+<label><input type="radio" value="a"> 5</label>
+<label><input type="radio" value="b"> 25</label>
+<label><input type="radio" value="c"> 0,2</label>
+<label><input type="radio" value="d"> 0,04</label>
+<p class="explain">1/x̄.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. Орнықты бағалау дегеніміз:</p>
+<label><input type="radio" value="a"> әрдайым ығыспаған</label>
+<label><input type="radio" value="b"> n → ∞ кезінде параметрге ықтималдық бойынша жинақталады</label>
+<label><input type="radio" value="c"> дисперсиясы нөл</label>
+<label><input type="radio" value="d"> кез келген n-да дәл</label>
+<p class="explain">Анықтама.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">8. Ығыспаған бағалау әрдайым MSE бойынша ең жақсы ма?</p>
+<label><input type="radio" value="a"> жоқ</label>
+<label><input type="radio" value="b"> иә</label>
+<label><input type="radio" value="c"> тек n = 1 болса</label>
+<label><input type="radio" value="d"> тек қалыпты модельде</label>
+<p class="explain">4-мысал: ығысқан бағалаудың MSE-сі кіші.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-86.html"><small>Алдыңғы</small>← Mathematical Statistics · 1-сабақ: Таңдама және сипаттамалық статистика</a>

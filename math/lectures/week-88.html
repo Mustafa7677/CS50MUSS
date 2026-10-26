@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Mathematical Statistics · 3-сабақ: Сенімділік интервалдары - CS50 қазақша">
-  <meta property="og:description" content="Математика, Mathematical Statistics · 3-сабақ: Сенімділік интервалдары. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Орта мен үлес үшін сенімділік интервалы, Стьюдент үлестірімі.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-88.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Mathematical Statistics · 3-сабақ: Сенімділік интервалдары - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-88.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Mathematical Statistics · 3-сабақ: Сенімділік интервалдары. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Орта мен үлес үшін сенімділік интервалы, Стьюдент үлестірімі.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,381 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="88">
         <div class="num">Mathematical Statistics · 3-сабақ</div>
         <h1>Сенімділік интервалдары</h1>
-        <p>Орта мен үлес үшін сенімділік интервалы, Стьюдент үлестірімі.</p>
+        <p>Нүктелік баға бір сан береді: «орташа 12,1». Бірақ бұл санның қаншалықты сенімді екенін айтпайды. Сенімділік интервалы «параметр, жоғары сенімділікпен, 11,9 мен 12,3 арасында» деп, бағаның дәлдігін де көрсетеді. Бұл сабақта интервал құрудың жалпы әдісін («пивот» шама) үйреніп, орташа (σ белгілі және белгісіз), үлес және дисперсия үшін интервалдарды қорытамыз, және «95% сенімділік» деген сөздің шын мағынасын түсінеміз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-14">Mathematical Statistics</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-14">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>сенімділік интервалының анықтамасын және «95%» дегеннің дұрыс түсіндірмесін айту;</li>
+        <li>пивот шама әдісімен $\sigma$ белгілі болғандағы орташа үшін $z$-интервалды қорыту;</li>
+        <li>$\sigma$ белгісіз болғанда Стьюдент үлестірімін ($t$) қолданып интервал құру;</li>
+        <li>үлес үшін жуық интервалды (ОШТ) және оның қолдану шарттарын білу;</li>
+        <li>қалыпты модельде дисперсия үшін $\chi^2$-интервал құру;</li>
+        <li>берілген дәлдік үшін қажетті таңдама көлемін есептеу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">$X\sim N(\mu,\sigma^2)$ болса $\frac{X-\mu}{\sigma}\sim N(0,1)$; $\Phi(1{,}645)\approx0{,}95$, $\Phi(1{,}96)\approx0{,}975$, $\Phi(2{,}576)\approx0{,}995$. Тәуелсіз қалыпты шамалардың орташасы да қалыпты: $\bar X\sim N\!\left(\mu,\frac{\sigma^2}{n}\right)$. Орталық шектік теорема: үлкен $n$ үшін $\bar X\approx N\!\left(\mu,\frac{\sigma^2}n\right)$ кез келген ақырлы дисперсиялы үлестірімде. Таңдама дисперсиясы $s^2=\frac1{n-1}\sum(x_i-\bar x)^2$.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Балықшы торды суға лақтырады. Балықтың қай жерде екенін білмейді, бірақ торы кең болса, балықты ұстау ықтималдығы жоғары. Сенімділік интервалы - сондай тор. Параметр (балық) бекітілген, ал интервал (тор) - кездейсоқ: әр жаңа таңдама жаңа интервал береді. «95%» - тордың сапасы: 100 рет лақтырғанда шамамен 95-інде балық ұсталады.</p>
+      <p>Сондықтан нақты интервал алғаннан кейін «$\mu$ 95% ықтималдықпен $[11{,}9;\ 12{,}3]$-те жатыр» деу - қатаң айтқанда, дұрыс емес: $\mu$ кездейсоқ емес, ол не ішінде, не сыртында. Дұрысы: «осы әдіспен құрылған интервалдардың 95%-ы $\mu$-ді қамтиды». Бұл айырма нәзік, бірақ маңызды (визуализацияда көресіз).</p>
+      <p>Интервалдың ені екі нәрсеге тәуелді: сенімділік деңгейі (99% интервал 95%-дан кеңірек: тор үлкенірек) және деректер саны (ені $\frac{1}{\sqrt n}$ ретімен тарылады). Ені екі есе тар болсын десек, таңдаманы төрт есе үлкейту керек.</p>
+      <p>$\sigma$ белгісіз болса, оны $s$-пен ауыстырамыз. Бірақ $s$ өзі кездейсоқ, сондықтан қосымша белгісіздік пайда болады. Оны ескеру үшін қалыпты үлестірімнің орнына «құйрығы қалыңырақ» Стьюдент үлестірімі қолданылады; $n$ үлкен болса, ол қалыптыға жақындайды.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 3.1 · Сенімділік интервалы</span>
+        <p>$0&lt;\gamma&lt;1$. Таңдаманың екі функциясы $T_1\le T_2$ үшін әр $\theta$-да $P_\theta(T_1\le\theta\le T_2)\ge\gamma$ болса, $[T_1,T_2]$ - $\theta$ үшін $\gamma$ деңгейлі <strong>сенімділік интервалы</strong> (<span class="term-en">confidence interval</span>). $\gamma$ - <strong>сенімділік деңгейі</strong> (<span class="term-en">confidence level</span>) (әдетте 0,90; 0,95; 0,99), $\alpha=1-\gamma$.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 3.2 · Пивот шама</span>
+        <p>Таңдама мен $\theta$-ның функциясы $Q(X_1,\dots,X_n;\theta)$ <strong>пивот</strong> (<span class="term-en">pivotal quantity</span>) деп аталады, егер оның үлестірімі $\theta$-ға тәуелсіз және толық белгілі болса. Мысалы, $\sigma$ белгілі қалыпты модельде $Z=\frac{\bar X-\mu}{\sigma/\sqrt n}\sim N(0,1)$.</p></div>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 3.3 · Стьюдент және хи-квадрат үлестірімдері</span>
+        <p>$Z_1,\dots,Z_k$ тәуелсіз $N(0,1)$ болса, $\sum Z_i^2$ - $k$ еркіндік дәрежелі <strong>хи-квадрат үлестірімі</strong> (<span class="term-en">chi-squared distribution</span>), $\chi^2(k)$. $Z\sim N(0,1)$ мен $V\sim\chi^2(k)$ тәуелсіз болса, $\frac{Z}{\sqrt{V/k}}$ - $k$ еркіндік дәрежелі <strong>Стьюдент үлестірімі</strong> (<span class="term-en">Student's t-distribution</span>), $t(k)$. Оның тығыздығы симметриялы, қоңырау пішінді, бірақ құйрығы $N(0,1)$-ден қалың; $k\to\infty$ кезінде $N(0,1)$-ге жақындайды.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 3.1 · Қалыпты таңдаманың негізгі фактісі</span>
+        <p>$X_1,\dots,X_n$ тәуелсіз $N(\mu,\sigma^2)$ болса: (1) $\bar X$ пен $S^2$ тәуелсіз; (2) $\frac{(n-1)S^2}{\sigma^2}\sim\chi^2(n-1)$; (3) $T=\frac{\bar X-\mu}{S/\sqrt n}\sim t(n-1)$.</p></div>
+      <p><em>Негіздеме.</em> (3) (1) мен (2)-ден және $t$-үлестірімнің анықтамасынан шығады: $T=\frac{(\bar X-\mu)/(\sigma/\sqrt n)}{\sqrt{S^2/\sigma^2}}$. (1) мен (2)-нің дәлелі сызықтық алгебраны (ортогональ түрлендіру) қажет етеді; бұл курста оларды дәлелсіз қабылдаймыз. Тәуелсіздік (1) тек қалыпты модельге тән.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 3.1 · Орташа, σ белгілі (z-интервал)</span>
+        <div class="math-fbody">$$\bar x\pm z_{1-\alpha/2}\frac{\sigma}{\sqrt n}$$</div>
+        <p class="math-fnote">Шарты: қалыпты модель (не $n$ үлкен, ОШТ). $z_{0{,}95}=1{,}645$ (90%), $z_{0{,}975}=1{,}96$ (95%), $z_{0{,}995}=2{,}576$ (99%).</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 3.2 · Орташа, σ белгісіз (t-интервал)</span>
+        <div class="math-fbody">$$\bar x\pm t_{1-\alpha/2}(n-1)\,\frac{s}{\sqrt n}$$</div>
+        <p class="math-fnote">Шарты: қалыпты модель (кіші $n$-да маңызды; шеткі мән мен күшті асимметрия болмауы керек). 95% үшін $t_{0{,}975}$: $n-1=4$: $2{,}776$; $9$: $2{,}262$; $15$: $2{,}131$; $24$: $2{,}064$; $29$: $2{,}045$.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 3.3 · Үлес (жуық интервал)</span>
+        <div class="math-fbody">$$\hat p\pm z_{1-\alpha/2}\sqrt{\frac{\hat p(1-\hat p)}{n}}$$</div>
+        <p class="math-fnote">Шарты: $n$ үлкен, $n\hat p\ge10$ және $n(1-\hat p)\ge10$ (ОШТ жуықтауы). $\hat p$ 0-ге не 1-ге жақын болса, бұл интервал нашар жұмыс істейді; басқа әдістер (мысалы, Уилсон интервалы) бар.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 3.4 · Дисперсия (қалыпты модель)</span>
+        <div class="math-fbody">$$\left[\frac{(n-1)s^2}{\chi^2_{1-\alpha/2}(n-1)};\ \frac{(n-1)s^2}{\chi^2_{\alpha/2}(n-1)}\right]$$</div>
+        <p class="math-fnote">Шарты: қалыпты модель - бұл интервал қалыптылықтан ауытқуға өте сезімтал. Мысалы, $n-1=9$: $\chi^2_{0{,}025}=2{,}700$, $\chi^2_{0{,}975}=19{,}023$. Интервал $s^2$-қа қатысты симметриялы емес.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 3.5 · Таңдама көлемі</span>
+        <div class="math-fbody">$$n\ge\left(\frac{z_{1-\alpha/2}\,\sigma}{E}\right)^2$$</div>
+        <p class="math-fnote">$E$ - қалаған «қателік шегі» (интервал енінің жартысы). Үлес үшін $\sigma^2$ орнына $p(1-p)\le\frac14$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Интервалдың жалпы түрі: <b>баға ± (квантиль) × (стандарт қате)</b>. Әр есепте үш нәрсені анықтаңыз: қандай баға ($\bar x$, $\hat p$), қандай үлестірім ($z$ не $t$), қандай стандарт қате ($\frac{\sigma}{\sqrt n}$, $\frac{s}{\sqrt n}$, $\sqrt{\frac{\hat p(1-\hat p)}{n}}$).</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>«95% интервал» деректердің 95%-ы сол аралықта жатыр дегенді білдірмейді. Ол <em>параметр</em> (мысалы, $\mu$) туралы. Жеке бақылаулардың шашырауы $\frac{s}{\sqrt n}$-нан әлдеқайда кең, шамамен $\pm2s$.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: $\sigma$ белгілі болғандағы $z$-интервал</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\gamma$ деңгейлі интервалды пивот арқылы құру.</p>
+          <ol class="math-steps">
+            <li>Пивот: $Z=\frac{\bar X-\mu}{\sigma/\sqrt n}\sim N(0,1)$ - оның үлестірімі $\mu$-ге тәуелсіз.</li>
+            <li>$z=z_{1-\alpha/2}$ болсын, яғни $\Phi(z)=1-\frac\alpha2$. Симметрия бойынша $P(-z\le Z\le z)=2\Phi(z)-1=1-\alpha=\gamma$.</li>
+            <li>Теңсіздікті $\mu$ бойынша шешеміз: $-z\le\frac{\bar X-\mu}{\sigma/\sqrt n}\le z\iff\bar X-z\frac{\sigma}{\sqrt n}\le\mu\le\bar X+z\frac{\sigma}{\sqrt n}$.</li>
+            <li>Демек $P\left(\bar X-z\frac\sigma{\sqrt n}\le\mu\le\bar X+z\frac\sigma{\sqrt n}\right)=\gamma$ - кездейсоқ интервал $\mu$-ді $\gamma$ ықтималдықпен қамтиды.</li>
+            <li>Ені $2z\frac{\sigma}{\sqrt n}$: $\gamma$ артса $z$ артады (кеңейеді), $n$ артса тарылады.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: $t$-интервал</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\sigma$ белгісіз қалыпты модельде интервал құру.</p>
+          <ol class="math-steps">
+            <li>Теорема 3.1 (3): $T=\frac{\bar X-\mu}{S/\sqrt n}\sim t(n-1)$ - $\mu$ мен $\sigma$-ға тәуелсіз үлестірім, яғни пивот.</li>
+            <li>$t=t_{1-\alpha/2}(n-1)$ - $t(n-1)$ үлестірімінің квантилі; симметрия бойынша $P(-t\le T\le t)=1-\alpha$.</li>
+            <li>1-қорытудағыдай шешсек: $\bar X-t\frac{S}{\sqrt n}\le\mu\le\bar X+t\frac{S}{\sqrt n}$.</li>
+            <li>$t_{0{,}975}(9)=2{,}262>1{,}96$: $\sigma$-ны білмегеніміз үшін интервалды кеңейтеміз. $n$ өскенде айырма азаяды ($t_{0{,}975}(29)=2{,}045$).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: үлес үшін жуық интервал</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $X_i$ - Бернулли($p$), $\hat p=\bar X$ үшін интервал.</p>
+          <ol class="math-steps">
+            <li>$E\hat p=p$, $D\hat p=\frac{p(1-p)}n$.</li>
+            <li>ОШТ: $\frac{\hat p-p}{\sqrt{p(1-p)/n}}\approx N(0,1)$ (үлкен $n$).</li>
+            <li>Белгісіз $p$-ны бөлімде $\hat p$-мен ауыстырамыз (орнықты бағалау, $n$ үлкенде қателік аз): $\frac{\hat p-p}{\sqrt{\hat p(1-\hat p)/n}}\approx N(0,1)$.</li>
+            <li>Шешсек: $\hat p\pm z\sqrt{\frac{\hat p(1-\hat p)}n}$. Бұл - жуық интервал: оның нақты сенімділігі $\gamma$-дан төмен болуы мүмкін, әсіресе $p$ 0-ге не 1-ге жақын және $n$ кіші болғанда.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: дисперсия үшін $\chi^2$-интервал</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> қалыпты модельде $\sigma^2$ үшін интервал.</p>
+          <ol class="math-steps">
+            <li>Пивот: $Q=\frac{(n-1)S^2}{\sigma^2}\sim\chi^2(n-1)$ (Теорема 3.1 (2)).</li>
+            <li>$a=\chi^2_{\alpha/2}(n-1)$, $b=\chi^2_{1-\alpha/2}(n-1)$: $P(a\le Q\le b)=1-\alpha$.</li>
+            <li>$a\le\frac{(n-1)S^2}{\sigma^2}\le b\iff\frac{(n-1)S^2}{b}\le\sigma^2\le\frac{(n-1)S^2}{a}$ (кері шамаға өткенде теңсіздік бағыты ауысады).</li>
+            <li>$\chi^2$ асимметриялы, сондықтан интервал $s^2$-қа қатысты симметриялы емес. $\sigma$ үшін интервал - шекаралардан түбір.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. t-интервал</h3>
+        <p class="math-problem">Пакеттің салмағы (кг): $12{,}1$; $11{,}8$; $12{,}4$; $12{,}0$; $11{,}6$; $12{,}3$; $12{,}2$; $11{,}9$; $12{,}5$; $12{,}2$. Қалыпты модель. $\mu$ үшін 95% интервал.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $n=10$, $\bar x=12{,}1$.</li>
+          <li><b>2-қадам.</b> Ауытқулар квадраттарының қосындысы $0{,}70$; $s^2=\frac{0{,}70}{9}\approx0{,}0778$, $s\approx0{,}279$.</li>
+          <li><b>3-қадам.</b> $t_{0{,}975}(9)=2{,}262$; стандарт қате $\frac{0{,}279}{\sqrt{10}}\approx0{,}0882$.</li>
+          <li><b>4-қадам.</b> Қателік шегі $2{,}262\cdot0{,}0882\approx0{,}200$.</li>
+          <li><b>5-қадам.</b> Интервал: $[11{,}90;\ 12{,}30]$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\mu\in[11{,}90;\ 12{,}30]$ (95%).</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. z-интервал және таңдама көлемі</h3>
+        <p class="math-problem">Шамның жану уақытында $\sigma=120$ сағат (белгілі). $n=36$ шамда $\bar x=1500$. 95% интервал? Қателік шегі 20 сағат болуы үшін неше шам керек?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Стандарт қате $\frac{120}{6}=20$; шегі $1{,}96\cdot20=39{,}2$.</li>
+          <li><b>2-қадам.</b> Интервал $[1460{,}8;\ 1539{,}2]$.</li>
+          <li><b>3-қадам.</b> $n\ge\left(\frac{1{,}96\cdot120}{20}\right)^2=11{,}76^2\approx138{,}3$, яғни $n=139$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $[1460{,}8;\ 1539{,}2]$; $n=139$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Үлес</h3>
+        <p class="math-problem">Сауалнамада 400 адамның 208-і жаңа өнімді ұнатады. Ұнататындар үлесі үшін 95% интервал.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\hat p=0{,}52$; шарттар: $n\hat p=208\ge10$, $n(1-\hat p)=192\ge10$ ✓.</li>
+          <li><b>2-қадам.</b> Стандарт қате $\sqrt{\frac{0{,}52\cdot0{,}48}{400}}\approx0{,}02498$.</li>
+          <li><b>3-қадам.</b> Шегі $1{,}96\cdot0{,}02498\approx0{,}049$.</li>
+          <li><b>4-қадам.</b> Интервал $[0{,}471;\ 0{,}569]$. Ол $0{,}5$-ті қамтиды: деректер көпшіліктің ұнататынын сенімді түрде көрсетпейді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $[0{,}471;\ 0{,}569]$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Дисперсия</h3>
+        <p class="math-problem">1-мысалдағы деректер. $\sigma^2$ үшін 95% интервал.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $(n-1)s^2=0{,}70$; $\chi^2_{0{,}025}(9)=2{,}700$, $\chi^2_{0{,}975}(9)=19{,}023$.</li>
+          <li><b>2-қадам.</b> Төменгі шекара $\frac{0{,}70}{19{,}023}\approx0{,}0368$; жоғарғы $\frac{0{,}70}{2{,}700}\approx0{,}2593$.</li>
+          <li><b>3-қадам.</b> $\sigma$ үшін: $[0{,}192;\ 0{,}509]$ кг.</li>
+          <li><b>4-қадам.</b> Интервал $s^2=0{,}0778$-ге қатысты оңға қарай «созылған» - $\chi^2$ асимметриясының салдары.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\sigma^2\in[0{,}037;\ 0{,}259]$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">«$\mu$ 95% ықтималдықпен $[11{,}9;12{,}3]$-те»</span> → <span class="math-good">«осы әдіспен құрылған интервалдардың 95%-ы $\mu$-ді қамтиды»</span><br>Неге қате: $\mu$ - тұрақты; кездейсоқ - интервал.</li>
+        <li><span class="math-bad">$\sigma$ белгісіз, $n=10$, бірақ $z=1{,}96$ қолдану</span> → <span class="math-good">$t_{0{,}975}(9)=2{,}262$</span><br>Неге қате: $s$-тің кездейсоқтығы ескерілмейді, интервал тым тар.</li>
+        <li><span class="math-bad">Стандарт қатеге $\sigma$-ны (не $s$-ты) $\sqrt n$-ге бөлмей қою</span> → <span class="math-good">$\frac{s}{\sqrt n}$</span><br>Неге қате: орташаның шашырауы жеке бақылаудікінен $\sqrt n$ есе кіші.</li>
+        <li><span class="math-bad">Еркіндік дәрежесін $n$ деп алу</span> → <span class="math-good">$n-1$</span><br>Неге қате: бір еркіндік дәрежесі $\bar x$-ті бағалауға «жұмсалады».</li>
+        <li><span class="math-bad">Үлес интервалын $n=20$, $\hat p=0{,}05$ үшін қолдану</span> → <span class="math-good">шарттарды тексеру ($n\hat p=1&lt;10$)</span><br>Неге қате: ОШТ жуықтауы жарамсыз; интервал теріс шекара да беруі мүмкін.</li>
+        <li><span class="math-bad">Дисперсия интервалында $\chi^2$ квантильдерін ауыстырып қою</span> → <span class="math-good">жоғарғы квантиль - төменгі шекарада</span><br>Неге қате: $\sigma^2=\frac{(n-1)s^2}{Q}$, $Q$ үлкен болса $\sigma^2$ кіші.</li>
+        <li><span class="math-bad">Сенімділікті арттыру интервалды тарылтады</span> → <span class="math-good">кеңейтеді</span><br>Неге қате: 99% интервал 95%-дан кең: $2{,}576>1{,}96$.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Стьюдент үлестірімі мен қалыпты (биіктігі 1-ге нормаланған пішін)" data-config='{"fns": [{"f": "(1+x^2/k)^(-(k+1)/2)", "label": "t(k) пішіні"}, {"f": "exp(-x^2/2)", "label": "N(0,1) пішіні", "color": 1, "dash": [6, 4]}], "params": [{"n": "k", "min": 1, "max": 40, "step": 1, "v": 3}], "view": [-5, 5, 0, 1.05]}'></div>
+      <p><b>Бақылаңыз:</b> Мұнда тығыздықтар емес, олардың шыңы 1 болатын пішіні салынған (нормалау тұрақтысы алынып тасталды). $k=1$ болса, $t$-құйрықтар өте қалың (Коши үлестірімі). $k$ өскенде қисық қалыптыға жабысады: $k\approx30$-да айырма аз. Сондықтан кіші $n$-да $t$-квантиль $1{,}96$-дан айтарлықтай үлкен.</p>
+      <div class="math-viz" data-viz="graph" data-title="Интервал ені n бойынша (σ = 1)" data-config='{"fns": [{"f": "2*1.96/sqrt(x)", "label": "95%: 2·1,96/√n"}, {"f": "2*2.576/sqrt(x)", "label": "99%: 2·2,576/√n", "color": 1}, {"f": "2*1.645/sqrt(x)", "label": "90%", "color": 2, "dash": [5, 4]}], "view": [1, 200, 0, 2]}'></div>
+      <p><b>Бақылаңыз:</b> Сенімділік деңгейі жоғары болған сайын интервал кеңірек. Барлық қисық $\frac1{\sqrt n}$ заңымен кемиді: $n=25$-тен $n=100$-ге өткенде ені екі есе тарылады.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m14-3-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-3-t1">1. z-интервал</h3></div>
+        <p>$\sigma=10$, $n=25$, $\bar x=80$. 95% ($z=1{,}96$).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Стандарт қате","a":2,"v":"10/sqrt(25)","hint":"$\\frac\\sigma{\\sqrt n}$.","sol":{"steps":["$\\frac{10}{5}$."],"ans":"$2$"}},{"q":"Қателік шегі","a":3.92,"v":"Rational(196,100)*2","hint":"$z\\cdot$ стандарт қате.","sol":{"steps":["$1{,}96\\cdot2$."],"ans":"$3{,}92$"}},{"q":"Жоғарғы шекара","a":83.92,"v":"80+Rational(196,100)*2","hint":"$\\bar x+$ шек.","sol":{"steps":["$80+3{,}92$."],"ans":"$83{,}92$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m14-3-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-3-t2">2. Мағынасы</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"99% интервал сол деректердегі 95% интервалдан кең.","a":true,"e":"$2{,}576>1{,}96$.","hint":"Тор үлкенірек."},{"q":"Таңдаманы 4 есе үлкейтсек, интервал ені 4 есе тарылады.","a":false,"e":"Ені $\\frac{1}{\\sqrt n}$ ретімен - 2 есе тарылады.","hint":"$\\sqrt4=2$."},{"q":"95% интервал деректердің 95%-ын қамтиды.","a":false,"e":"Интервал параметр туралы; деректердің шашырауы әлдеқайда кең.","hint":"Стандарт қате мен стандарт ауытқу."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m14-3-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-3-t3">3. Қай квантиль?</h3></div>
+        <p>Сәйкес квантильді таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қалыпты модель, $\\sigma$ белгісіз, $n=16$, 95% интервал.","o":["$t_{0{,}975}(15)=2{,}131$","$z_{0{,}975}=1{,}96$","$t_{0{,}975}(16)$","$z_{0{,}95}=1{,}645$"],"a":0,"e":"$n-1=15$ еркіндік дәрежесі.","hint":"$\\sigma$ белгісіз."},{"q":"$\\sigma$ белгілі, 90% интервал.","o":["$z_{0{,}95}=1{,}645$","$z_{0{,}975}=1{,}96$","$z_{0{,}9}$","$t_{0{,}95}$"],"a":0,"e":"$1-\\frac{0{,}1}{2}=0{,}95$.","hint":"$\\alpha=0{,}1$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-3-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-3-t4">4. t-интервал</h3></div>
+        <p>$n=16$, $\bar x=50$, $s=8$, $t_{0{,}975}(15)=2{,}131$. 95% интервал шекаралары.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Төменгі шекара","a":45.738,"v":"50-Rational(2131,1000)*8/4","hint":"$\\bar x-t\\frac s{\\sqrt n}$.","sol":{"steps":["$\\frac{8}{4}=2$; $2{,}131\\cdot2=4{,}262$.","$50-4{,}262$."],"ans":"$45{,}738$"}},{"q":"Жоғарғы шекара","a":54.262,"v":"50+Rational(2131,1000)*8/4","hint":"$\\bar x+4{,}262$.","sol":{"steps":["$50+4{,}262$."],"ans":"$54{,}262$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-3-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-3-t5">5. Үлес</h3></div>
+        <p>500 адамның 150-і «иә» деп жауап берді. 95% интервал ($0{,}001$ дәлдік).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қателік шегі","a":"1.96*sqrt(0.3*0.7/500)","tol":0.001,"v":"Rational(196,100)*sqrt(Rational(3,10)*Rational(7,10)/500)","hint":"$1{,}96\\sqrt{\\frac{0{,}3\\cdot0{,}7}{500}}$.","sol":{"steps":["$\\sqrt{0{,}00042}\\approx0{,}0205$.","$1{,}96\\cdot0{,}0205$."],"ans":"$\\approx0{,}040$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-3-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-3-t6">6. Таңдама көлемі</h3></div>
+        <p>Бүтін санмен (жоғары дөңгелектеп).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\sigma=15$, қателік шегі $E=3$, 95%. Ең кіші $n$.","a":97,"v":"ceiling((Rational(196,100)*15/3)**2)","hint":"$\\left(\\frac{1{,}96\\cdot15}{3}\\right)^2$.","sol":{"steps":["$9{,}8^2=96{,}04$."],"ans":"$97$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m14-3-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-3-t7">7. Интервалдар</h3></div>
+        <p>Жағдайды формуламен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Интервал түрі.","pairs":[["орташа, σ белгілі","x̄ ± z·σ/√n"],["орташа, σ белгісіз (қалыпты)","x̄ ± t(n−1)·s/√n"],["үлес, n үлкен","p̂ ± z·√(p̂(1−p̂)/n)"],["дисперсия (қалыпты)","χ²(n−1) квантильдері"]],"hint":"Стандарт қатеге қараңыз.","sol":{"steps":["Баға ± квантиль × стандарт қате."]},"e":"Дисперсия интервалы ғана симметриялы емес."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m14-3-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-3-t8">8. Параметрлік: қателік шегі</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"s":{"pick":[4,6,8,10,12]},"n":{"pick":[16,25,36,64,100]}},"type":"num","tol":0.001,"q":"$\\sigma=#{s}$ (белгілі), $n=#{n}$. 95% интервалдың қателік шегі ($z=1{,}96$)?","a":"1.96*s/sqrt(n)","v":"Rational(196,100)*s/sqrt(n)","hint":"$1{,}96\\frac{\\sigma}{\\sqrt n}$.","sol":{"steps":["$\\frac{#{s}}{\\sqrt{#{n}}}=#{s/sqrt(n)}$.","$1{,}96\\cdot#{s/sqrt(n)}$."],"ans":"$#{1.96*s/sqrt(n)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m14-3-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-3-t9">9. Параметрлік: көлемді арттыру</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"n":{"pick":[20,30,50,100]},"k":{"pick":[2,3,4,5]}},"type":"num","q":"$n=#{n}$ таңдамада интервал ені $W$. Енін $#{k}$ есе тарылту үшін таңдама көлемі қандай болуы керек ($\\sigma$ белгілі, деңгей сол)?","a":"n*k^2","v":"n*k**2","hint":"Ені $\\propto\\frac1{\\sqrt n}$.","sol":{"steps":["$\\frac{1}{\\sqrt{n'}}=\\frac{1}{#{k}\\sqrt{#{n}}}\\Rightarrow n'=#{k}^2\\cdot#{n}$."],"ans":"$#{n*k^2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-3-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-3-t10">10. Дисперсия интервалы</h3></div>
+        <p>$n=10$, $s^2=4$, қалыпты модель. $\chi^2_{0{,}025}(9)=2{,}700$, $\chi^2_{0{,}975}(9)=19{,}023$. $0{,}01$ дәлдік.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\sigma^2$-тың төменгі шекарасы","a":"36/19.023","tol":0.01,"v":"9*4/Rational(19023,1000)","hint":"$\\frac{(n-1)s^2}{\\chi^2_{0{,}975}}$.","sol":{"steps":["$\\frac{36}{19{,}023}$."],"ans":"$\\approx1{,}89$"}},{"q":"$\\sigma^2$-тың жоғарғы шекарасы","a":"36/2.7","tol":0.01,"v":"9*4/Rational(27,10)","hint":"$\\frac{(n-1)s^2}{\\chi^2_{0{,}025}}$.","sol":{"steps":["$\\frac{36}{2{,}7}$."],"ans":"$\\approx13{,}33$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-3-num11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-3-t11">11. Кері есеп</h3></div>
+        <p>95% $z$-интервал $[46{,}08;\ 53{,}92]$ берілген, $\sigma=10$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\bar x$","a":50,"v":"(Rational(4608,100)+Rational(5392,100))/2","hint":"Ортасы.","sol":{"steps":["$\\frac{46{,}08+53{,}92}{2}$."],"ans":"$50$"}},{"q":"$n$","a":25,"v":"solve(Eq(Rational(196,100)*10/sqrt(n),Rational(392,100)),n)[0]","hint":"Шегі $3{,}92=1{,}96\\frac{10}{\\sqrt n}$.","sol":{"steps":["$\\sqrt n=5$."],"ans":"$25$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m14-3-ord12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-3-t12">12. t-интервал құру</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mu$ үшін 95% $t$-интервал.","steps":["Модельдің қалыптылығын (шеткі мән, асимметрия) тексереміз.","$\\bar x$ және $s$ есептейміз.","Стандарт қате $\\frac{s}{\\sqrt n}$.","Кестеден $t_{0{,}975}(n-1)$ аламыз.","$\\bar x\\pm t\\frac s{\\sqrt n}$ жазып, мағынасын түсіндіреміз."],"hint":"Шарттан бастаңыз.","sol":{"ans":"$\\bar x\\pm t_{0{,}975}(n-1)\\frac{s}{\\sqrt n}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m14-3-rev13">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-3-t13">13. Қадамдық шешім: бір жақты интервал</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$\\sigma$ белгілі. $\\mu$ үшін 95% <em>төменгі</em> сенімділік шекарасын құрыңыз (яғни $P(\\mu\\ge T)=0{,}95$).","hint":"$P(Z\\le z_{0{,}95})=0{,}95$.","steps":["$Z=\\frac{\\bar X-\\mu}{\\sigma/\\sqrt n}$, $P(Z\\le1{,}645)=0{,}95$.","$\\frac{\\bar X-\\mu}{\\sigma/\\sqrt n}\\le1{,}645\\iff\\mu\\ge\\bar X-1{,}645\\frac{\\sigma}{\\sqrt n}$.","Демек $T=\\bar X-1{,}645\\frac{\\sigma}{\\sqrt n}$.","Бір жақты шекарада $z_{0{,}95}$, екі жақтыда $z_{0{,}975}$ қолданылады: бүкіл $\\alpha$ бір құйрықта."],"ans":"$\\mu\\ge\\bar x-1{,}645\\frac{\\sigma}{\\sqrt n}$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Сенімділік интервалдары - A/B тесттердің нәтижесі («конверсия $+2\%\pm1{,}1\%$»), сауалнамалардағы «статистикалық қателік», өнеркәсіптегі сапа бақылауы, ғылыми мақалалардағы әр өлшемнің «$\pm$» белгісі.</p>
+      <p><b>Мини-жоба: «Интервал торы».</b> 1000 рет таңдама алып, әр жолы 95% интервал құрамыз және олардың нешесі шын $\mu$-ді қамтитынын санаймыз. Үлес интервалының кіші $n$-да «нашарлауын» да көреміз.</p>
+<pre data-lang="python"><code class="language-python">import math, random, statistics as st
+random.seed(4)
+mu, sigma, n, R = 12.0, 0.3, 10, 2000
+t975 = 2.262                                # t(9) квантилі
+hit_t = hit_z = 0
+for _ in range(R):
+    xs = [random.gauss(mu, sigma) for _ in range(n)]
+    m, s = st.fmean(xs), st.stdev(xs)
+    hit_t += abs(m - mu) &lt;= t975 * s / math.sqrt(n)
+    hit_z += abs(m - mu) &lt;= 1.96 * s / math.sqrt(n)    # қате: z мен s
+print("t-интервал қамтыды:", hit_t / R, "  (s бар z-интервал):", hit_z / R)
+
+# Үлес интервалының нақты сенімділігі
+def coverage(p, n, R=4000):
+    hit = 0
+    for _ in range(R):
+        ph = sum(random.random() &lt; p for _ in range(n)) / n
+        e = 1.96 * math.sqrt(ph * (1 - ph) / n)
+        hit += ph - e &lt;= p &lt;= ph + e
+    return hit / R
+for p, n in ((0.5, 30), (0.05, 30), (0.05, 400)):
+    print(f"p={p}, n={n}: қамту {coverage(p, n):.3f}")
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$n$-ді 5 етіп, $t_{0{,}975}(4)=2{,}776$ қойыңыз. «$s$ бар $z$-интервалдың» қамтуы 95%-дан қаншалықты төмен түседі?</li>
+        <li>Деректерді экспоненциалдық үлестірімнен алыңыз ($n=10$). $t$-интервалдың нақты қамтуы 95% бола ма? $n=50$ болса ше?</li>
+        <li>Уилсон интервалын іздеп, жүзеге асырыңыз да, $p=0{,}05$, $n=30$ жағдайындағы қамтуын салыстырыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Анықтама</td><td>$P(T_1\le\theta\le T_2)\ge\gamma$</td><td>интервал кездейсоқ</td></tr>
+        <tr><td>$z$-интервал</td><td>$\bar x\pm z\frac{\sigma}{\sqrt n}$</td><td>$\sigma$ белгілі</td></tr>
+        <tr><td>$t$-интервал</td><td>$\bar x\pm t(n-1)\frac{s}{\sqrt n}$</td><td>қалыпты, $\sigma$ белгісіз</td></tr>
+        <tr><td>Үлес</td><td>$\hat p\pm z\sqrt{\frac{\hat p(1-\hat p)}n}$</td><td>$n\hat p,\,n(1-\hat p)\ge10$</td></tr>
+        <tr><td>Дисперсия</td><td>$\left[\frac{(n-1)s^2}{\chi^2_{1-\alpha/2}},\frac{(n-1)s^2}{\chi^2_{\alpha/2}}\right]$</td><td>қалыпты</td></tr>
+        <tr><td>Көлем</td><td>$n\ge\left(\frac{z\sigma}{E}\right)^2$</td><td>-</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m14-3-self">
+        <li><input type="checkbox"> <span>Мен «95% сенімділік» сөзін дұрыс түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен пивот әдісімен $z$-интервалды қорыта аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $\sigma$ белгісіз болғанда $t$-интервалды қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен үлес интервалын құрып, оның шарттарын тексере аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қалыпты модельде дисперсия интервалын құра аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қажетті таңдама көлемін есептей аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="a">
+<p class="q-text">1. σ = 6, n = 36. Стандарт қате:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 6</label>
+<label><input type="radio" value="c"> 1/6</label>
+<label><input type="radio" value="d"> 36</label>
+<p class="explain">6/√36.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">2. 95% интервал үшін z-квантиль:</p>
+<label><input type="radio" value="a"> 1,645</label>
+<label><input type="radio" value="b"> 2,576</label>
+<label><input type="radio" value="c"> 0,95</label>
+<label><input type="radio" value="d"> 1,96</label>
+<p class="explain">Φ(1,96) = 0,975.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">3. σ белгісіз, n = 10, қалыпты модель. Қай үлестірім?</p>
+<label><input type="radio" value="a"> N(0,1)</label>
+<label><input type="radio" value="b"> t(10)</label>
+<label><input type="radio" value="c"> t(9)</label>
+<label><input type="radio" value="d"> χ²(10)</label>
+<p class="explain">Еркіндік дәрежесі n − 1.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. Таңдаманы 9 есе үлкейтсек, интервал ені:</p>
+<label><input type="radio" value="a"> 9 есе тарылады</label>
+<label><input type="radio" value="b"> 3 есе тарылады</label>
+<label><input type="radio" value="c"> өзгермейді</label>
+<label><input type="radio" value="d"> 3 есе кеңейеді</label>
+<p class="explain">√9 = 3.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. Қай түсіндірме дұрыс?</p>
+<label><input type="radio" value="a"> Осындай интервалдардың 95%-ы μ-ді қамтиды</label>
+<label><input type="radio" value="b"> μ 95% ықтималдықпен осы нақты интервалда</label>
+<label><input type="radio" value="c"> деректердің 95%-ы интервалда</label>
+<label><input type="radio" value="d"> x̄ 95% ықтималдықпен интервалда</label>
+<p class="explain">Кездейсоқ - интервал.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">6. Дисперсия интервалы қай үлестірімге сүйенеді?</p>
+<label><input type="radio" value="a"> t</label>
+<label><input type="radio" value="b"> Пуассон</label>
+<label><input type="radio" value="c"> бірқалыпты</label>
+<label><input type="radio" value="d"> χ²</label>
+<p class="explain">(n − 1)S²/σ² ~ χ²(n − 1).</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">7. Үлес интервалын қолдану шарты:</p>
+<label><input type="radio" value="a"> n ≥ 2</label>
+<label><input type="radio" value="b"> p̂ = 0,5</label>
+<label><input type="radio" value="c"> np̂ ≥ 10 және n(1 − p̂) ≥ 10</label>
+<label><input type="radio" value="d"> σ белгілі</label>
+<p class="explain">ОШТ жуықтауы.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. Сенімділік деңгейін 95%-дан 99%-ға көтерсек, интервал:</p>
+<label><input type="radio" value="a"> тарылады</label>
+<label><input type="radio" value="b"> кеңейеді</label>
+<label><input type="radio" value="c"> өзгермейді</label>
+<label><input type="radio" value="d"> жоғалады</label>
+<p class="explain">z: 1,96 → 2,576.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-87.html"><small>Алдыңғы</small>← Mathematical Statistics · 2-сабақ: Нүктелік бағалау</a>
