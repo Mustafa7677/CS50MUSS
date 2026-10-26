@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Probability Theory · 2-сабақ: Ықтималдық және оның қасиеттері - CS50 қазақша">
-  <meta property="og:description" content="Математика, Probability Theory · 2-сабақ: Ықтималдық және оның қасиеттері. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Сынақ, оқиға, классикалық және аксиоматикалық анықтама, қосу формуласы.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-80.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Probability Theory · 2-сабақ: Ықтималдық және оның қасиеттері - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-80.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Probability Theory · 2-сабақ: Ықтималдық және оның қасиеттері. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Сынақ, оқиға, классикалық және аксиоматикалық анықтама, қосу формуласы.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,379 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="80">
         <div class="num">Probability Theory · 2-сабақ</div>
         <h1>Ықтималдық және оның қасиеттері</h1>
-        <p>Сынақ, оқиға, классикалық және аксиоматикалық анықтама, қосу формуласы.</p>
+        <p>«Ықтималдығы 0,3» деген сөздің нақты мағынасы не? Бұл сабақта кездейсоқ тәжірибені математикалық тілге аударамыз: элементар нәтижелер кеңістігі, оқиғалар және олармен амалдар. Содан кейін ықтималдықты үш қарапайым аксиомамен анықтап, одан барлық негізгі ережелерді (толықтауыш, қосу формуласы, монотондық) өзіміз дәлелдейміз. Соңында классикалық және геометриялық ықтималдықты қолданамыз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-13">Probability Theory</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-13">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>кездейсоқ тәжірибенің элементар нәтижелер кеңістігін $\Omega$ жазу және оқиғаны оның ішкі жиыны ретінде көрсету;</li>
+        <li>оқиғалармен амалдарды ($A\cup B$, $A\cap B$, $\bar A$, $A\setminus B$) сөзбен және жиынмен аудару;</li>
+        <li>Колмогоров аксиомаларынан толықтауыш ережесін, монотондықты және қосу формуласын дәлелдеу;</li>
+        <li>классикалық анықтаманы оның шарты (нәтижелер саны ақырлы және тең мүмкіндікті) орындалғанда ғана қолдану;</li>
+        <li>екі және үш оқиға үшін қосу-шегеру формуласын қолдану;</li>
+        <li>геометриялық ықтималдықты аудандардың қатынасы ретінде есептеу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Жиындар туралы еске салайық. $A\cup B$ - $A$-ға <em>немесе</em> $B$-ға жататын элементтер (бірігу), $A\cap B$ - екеуіне де жататындар (қиылысу), $A\setminus B$ - $A$-да бар, бірақ $B$-да жоқ элементтер. $A\cap B=\varnothing$ болса, жиындар қиылыспайды. Санау үшін алдыңғы сабақтағы $C_n^k=\dfrac{n!}{k!\,(n-k)!}$ формуласы керек: $n$ элементтен $k$ элементті ретсіз таңдау саны.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Тиынды 1000 рет лақтырсаңыз, «елтаңба» шамамен 500 рет түседі: 497 немесе 512, бірақ 900 емес. Тәжірибені көп қайталағанда оқиғаның <b>жиілігі</b> (түскен саны / лақтыру саны) бір санға жақындай береді. Сол сан - ықтималдық. Бірақ бұл «анықтама» ретінде ыңғайсыз: «жақындайды» дегенді дәлелдеу үшін ықтималдық ұғымы алдын ала керек. Сондықтан математикада ықтималдықты басқаша - бірнеше қарапайым ережемен (аксиомамен) анықтайды, ал жиіліктің жақындауы кейін теорема ретінде дәлелденеді (7-сабақ).</p>
+      <p>Кез келген кездейсоқ тәжірибеде алдымен «не болуы мүмкін?» деп сұраймыз. Ойын сүйегі үшін жауап: $1,2,3,4,5,6$. Бұл тізім - <em>нәтижелер кеңістігі</em>. «Жұп сан түсті» деген сөйлем осы тізімнің бір бөлігін, $\{2,4,6\}$-ны көрсетеді. Сонымен оқиға - нәтижелердің жиыны, ал «немесе», «және», «емес» сөздері жиындардың бірігуіне, қиылысуына және толықтауышына айналады. Бұл аударма - ықтималдық теориясының бүкіл тілінің негізі.</p>
+      <p>Ықтималдықты «әр оқиғаға берілген салмақ» деп елестетіңіз. Бүкіл кеңістіктің салмағы 1 (бірдеңе әйтеуір болады). Салмақ теріс емес. Ал бір-бірімен бірге бола алмайтын оқиғалардың салмақтары қосылады: «1 түсті немесе 2 түсті» оқиғасының ықтималдығы $\frac16+\frac16$. Осы үш ереже ғана - бүкіл теорияның іргетасы. Қалғанының бәрі (толықтауыш, қосу формуласы т.б.) осыдан қорытылады.</p>
+      <p>Ескерту: «тең мүмкіндікті» деген сөз ешқашан өздігінен шықпайды. Екі сүйек лақтырғанда «қосынды 7» мен «қосынды 12» тең мүмкіндікті емес. Ал (бірінші, екінші) реттелген жұптары - 36 тең мүмкіндікті нәтиже. Дұрыс нәтижелер кеңістігін таңдау - есептің жартысы.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 2.1 · Нәтижелер кеңістігі және оқиға</span>
+        <p>Кездейсоқ тәжірибенің барлық мүмкін нәтижелерінің жиыны <strong>элементар нәтижелер кеңістігі</strong> (<span class="term-en">sample space</span>) деп аталады және $\Omega$ деп белгіленеді. $\Omega$-ның ішкі жиындары <strong>оқиға</strong> (<span class="term-en">event</span>) деп аталады. $\Omega$ - ақиқат оқиға, $\varnothing$ - мүмкін емес оқиға. Тәжірибе нәтижесі $\omega\in A$ болса, «$A$ оқиғасы орындалды» дейміз.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 2.2 · Оқиғалармен амалдар</span>
+        <p>$A\cup B$ - «$A$ немесе $B$ (не екеуі де)», $A\cap B$ (жиі $AB$) - «$A$ және $B$», $\bar A=\Omega\setminus A$ - «$A$ емес» (<strong>қарама-қарсы оқиға</strong> (<span class="term-en">complementary event</span>)), $A\setminus B$ - «$A$, бірақ $B$ емес». $A\cap B=\varnothing$ болса, $A$ мен $B$ <strong>үйлесімсіз оқиғалар</strong> (<span class="term-en">mutually exclusive events</span>) деп аталады.</p></div>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 2.3 · Ықтималдық (Колмогоров аксиомалары)</span>
+        <p>$\Omega$-ның оқиғаларына сан беретін $P$ функциясы <strong>ықтималдық</strong> (<span class="term-en">probability</span>) деп аталады, егер: (A1) кез келген $A$ үшін $P(A)\ge0$; (A2) $P(\Omega)=1$; (A3) қос-қостан үйлесімсіз $A_1,A_2,\dots$ (ақырлы не саналымды көп) оқиғалар үшін $P(A_1\cup A_2\cup\dots)=P(A_1)+P(A_2)+\dots$. (Ақырсыз $\Omega$-да $P$ барлық ішкі жиындарға емес, тек «өлшенетін» оқиғаларға анықталуы мүмкін; бұл нәзіктік осы курста бізге кедергі келтірмейді.)</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 2.1 · Аксиомалардың салдарлары</span>
+        <p>Кез келген $A,B$ оқиғалары үшін: (1) $P(\varnothing)=0$; (2) $P(\bar A)=1-P(A)$; (3) $A\subset B$ болса $P(A)\le P(B)$, атап айтқанда $0\le P(A)\le1$; (4) $P(A\setminus B)=P(A)-P(A\cap B)$.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 2.2 · Қосу формуласы (қосу-шегеру)</span>
+        <p>Кез келген $A,B$ үшін $P(A\cup B)=P(A)+P(B)-P(A\cap B)$. Үш оқиға үшін $P(A\cup B\cup C)=P(A)+P(B)+P(C)-P(AB)-P(AC)-P(BC)+P(ABC)$. Сонымен қатар әрдайым $P(A\cup B)\le P(A)+P(B)$.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту: $A\cup B$-ны үйлесімсіз бөліктерге бөлу.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 2.1 · Классикалық ықтималдық</span>
+        <div class="math-fbody">$$P(A)=\frac{|A|}{|\Omega|}$$</div>
+        <p class="math-fnote">Шарты: $\Omega$ ақырлы және <b>барлық элементар нәтижелер тең мүмкіндікті</b>. Бұл шарт орындалмаса (мысалы, қосындылар $2,\dots,12$), формула қате нәтиже береді.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 2.2 · Геометриялық ықтималдық</span>
+        <div class="math-fbody">$$P(A)=\frac{S(A)}{S(\Omega)}$$</div>
+        <p class="math-fnote">Шарты: нәтиже $\Omega$ облысынан (кесінді, фигура, дене) «кез келген нүкте бірдей мүмкіндікпен» таңдалады; $S$ - ұзындық, аудан не көлем, $0&lt;S(\Omega)&lt;\infty$.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 2.3 · Қосу формуласы</span>
+        <div class="math-fbody">$$P(A\cup B)=P(A)+P(B)-P(A\cap B)$$</div>
+        <p class="math-fnote">Кез келген екі оқиға үшін. Үйлесімсіз болса $P(A\cap B)=0$ және формула жай қосуға айналады.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 2.4 · Қарама-қарсы оқиға</span>
+        <div class="math-fbody">$$P(\bar A)=1-P(A)$$</div>
+        <p class="math-fnote">«Кемінде бір» түріндегі есептерде ең ыңғайлы құрал: «кемінде бір» оқиғасына қарама-қарсы оқиға - «бірде-бір».</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Ықтималдықты есептеудің үш сұрағы: 1) $\Omega$ қандай және оның нәтижелері тең мүмкіндікті ме? 2) Оқиғаны жиын ретінде жаза аламын ба? 3) Тура санау қиын болса, қарама-қарсы оқиға оңай ма?</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p><b>Үйлесімсіз</b> ($A\cap B=\varnothing$, бірге болмайды) және <b>тәуелсіз</b> (бірі екіншісінің ықтималдығын өзгертпейді, 3-сабақ) - мүлде басқа ұғымдар. Оң ықтималдықты екі үйлесімсіз оқиға ешқашан тәуелсіз емес: біреуі болса, екіншісі болмайтыны анық.</p></div>
+      <div class="math-remark"><span class="math-box-title">Ескертпе</span>
+        <p>Ықтималдығы 0 оқиға міндетті түрде мүмкін емес емес. $[0;1]$ кесіндісінен кездейсоқ нүкте таңдасақ, «дәл $0{,}5$ түсті» оқиғасының геометриялық ықтималдығы $0$ (нүктенің ұзындығы 0), бірақ ол мүмкін. Сол сияқты $P(A)=1$ оқиғаның «сөзсіз» болуы міндетті емес.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: аксиомалардан негізгі қасиеттер</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 2.1-дің төрт тұжырымын тек (A1)-(A3) арқылы дәлелдеу.</p>
+          <ol class="math-steps">
+            <li><b>$P(\varnothing)=0$.</b> $\Omega=\Omega\cup\varnothing$ және $\Omega\cap\varnothing=\varnothing$. (A3): $P(\Omega)=P(\Omega)+P(\varnothing)$, демек $P(\varnothing)=0$.</li>
+            <li><b>Толықтауыш.</b> $A\cup\bar A=\Omega$ және $A\cap\bar A=\varnothing$. (A3) және (A2): $P(A)+P(\bar A)=1$.</li>
+            <li><b>Монотондық.</b> $A\subset B$ болса, $B=A\cup(B\setminus A)$ - үйлесімсіз бөліктер. (A3): $P(B)=P(A)+P(B\setminus A)$, ал (A1) бойынша $P(B\setminus A)\ge0$. Демек $P(A)\le P(B)$.</li>
+            <li>Атап айтқанда $A\subset\Omega$, сондықтан $P(A)\le P(\Omega)=1$; ал (A1) бойынша $P(A)\ge0$.</li>
+            <li><b>Айырма.</b> $A=(A\setminus B)\cup(A\cap B)$, бөліктер үйлесімсіз. (A3): $P(A)=P(A\setminus B)+P(A\cap B)$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: қосу формуласы $P(A\cup B)=P(A)+P(B)-P(AB)$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> кез келген (міндетті түрде үйлесімсіз емес) екі оқиға үшін формуланы дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$A\cup B$-ны үш үйлесімсіз бөлікке бөлеміз: $A\setminus B$, $A\cap B$, $B\setminus A$ (Венн диаграммасының үш облысы).</li>
+            <li>(A3): $P(A\cup B)=P(A\setminus B)+P(AB)+P(B\setminus A)$.</li>
+            <li>1-қорытудың соңғы қадамы бойынша $P(A\setminus B)=P(A)-P(AB)$ және $P(B\setminus A)=P(B)-P(AB)$.</li>
+            <li>Қоямыз: $P(A\cup B)=P(A)-P(AB)+P(AB)+P(B)-P(AB)=P(A)+P(B)-P(AB)$.</li>
+            <li>Мағынасы: $P(A)+P(B)$ қосындысында ортақ бөлік $AB$ екі рет саналды, сондықтан бір рет шегереміз.</li>
+            <li>$P(AB)\ge0$ болғандықтан $P(A\cup B)\le P(A)+P(B)$ («бірігу бағасы»).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: туған күн есебі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $n$ адамның ($n\le365$) кемінде екеуінің туған күні бір күнге түсу ықтималдығын табу. Болжам: жылда 365 күн, әр адамның туған күні тәуелсіз және барлық күн тең мүмкіндікті.</p>
+          <ol class="math-steps">
+            <li>$\Omega$ - $n$ адамға туған күн тағайындаудың реттелген тізімдері: $|\Omega|=365^n$, барлығы тең мүмкіндікті.</li>
+            <li>$A$ - «кемінде екеуі бір күнде». Тура санау қиын, қарама-қарсы оқиғаны аламыз: $\bar A$ - «барлық туған күн әртүрлі».</li>
+            <li>$\bar A$ үшін көбейту ережесі: бірінші адамға 365 күн, екіншіге 364, ..., $n$-шіге $365-n+1$. $|\bar A|=A_{365}^n$.</li>
+            <li>$P(\bar A)=\dfrac{365\cdot364\cdots(365-n+1)}{365^n}=\prod_{j=0}^{n-1}\left(1-\dfrac{j}{365}\right)$.</li>
+            <li>$P(A)=1-\prod_{j=0}^{n-1}\left(1-\dfrac{j}{365}\right)$.</li>
+            <li>Сандық: $n=23$ үшін көбейтінді $\approx0{,}4927$, яғни $P(A)\approx0{,}507$ - жартысынан көп. Интуиция қателеседі, себебі жұптар саны $C_{23}^2=253$ - көп.</li>
+            <li>Жуықтау: $1-x\le e^{-x}$ болғандықтан $P(\bar A)\le e^{-\sum j/365}=e^{-n(n-1)/730}$, демек $P(A)\ge1-e^{-n(n-1)/730}$ (визуализациядағы қисық).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Екі ойын сүйегі</h3>
+        <p class="math-problem">Екі ойын сүйегі лақтырылды. «Қосынды 8» оқиғасының ықтималдығы қандай? «Кемінде бір алтылық» ше?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\Omega$ - реттелген жұптар $(i,j)$, $i,j\in\{1,\dots,6\}$; $|\Omega|=36$, барлығы тең мүмкіндікті.</li>
+          <li><b>2-қадам.</b> Қосынды 8: $(2,6),(3,5),(4,4),(5,3),(6,2)$ - 5 нәтиже. $P=\dfrac{5}{36}$.</li>
+          <li><b>3-қадам.</b> «Кемінде бір алтылық»: қарама-қарсы оқиға «алтылық жоқ» - $5\cdot5=25$ нәтиже.</li>
+          <li><b>4-қадам.</b> $P=1-\dfrac{25}{36}=\dfrac{11}{36}$.</li>
+          <li><b>5-қадам.</b> Тексеру тура санаумен: бірінші 6 - 6 нәтиже, екінші 6 - 6 нәтиже, екеуі де - 1; $6+6-1=11$ ✓ (қосу формуласы).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\dfrac{5}{36}$ және $\dfrac{11}{36}$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Ақаулы бөлшектер</h3>
+        <p class="math-problem">Жәшікте 10 бөлшек, оның 3-еуі ақаулы. Кездейсоқ 4 бөлшек алынды. Дәл біреуі ақаулы болу ықтималдығы?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\Omega$ - 10-нан 4 бөлшектің ретсіз таңдаулары, $|\Omega|=C_{10}^4=210$, тең мүмкіндікті.</li>
+          <li><b>2-қадам.</b> Қолайлы: 3 ақаулыдан 1, 7 жарамдыдан 3: $C_3^1\cdot C_7^3=3\cdot35=105$.</li>
+          <li><b>3-қадам.</b> $P=\dfrac{105}{210}=\dfrac12$.</li>
+          <li><b>4-қадам.</b> Тексеру: 0, 1, 2, 3 ақаулы ықтималдықтары $\dfrac{35}{210},\dfrac{105}{210},\dfrac{63}{210},\dfrac{7}{210}$, қосындысы 1 ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\dfrac12$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. 2-ге немесе 3-ке бөлінетін сан</h3>
+        <p class="math-problem">$1..100$ сандарынан кездейсоқ біреуі таңдалады. Ол 2-ге немесе 3-ке бөліне ме - ықтималдығы?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $A$ - 2-ге бөлінеді: 50 сан; $B$ - 3-ке бөлінеді: $\lfloor100/3\rfloor=33$ сан.</li>
+          <li><b>2-қадам.</b> $A\cap B$ - 6-ға бөлінеді: $\lfloor100/6\rfloor=16$ сан.</li>
+          <li><b>3-қадам.</b> Қосу формуласы: $|A\cup B|=50+33-16=67$.</li>
+          <li><b>4-қадам.</b> $P=\dfrac{67}{100}=0{,}67$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $0{,}67$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Кездесу (геометриялық)</h3>
+        <p class="math-problem">Екі дос 12:00 мен 13:00 аралығында кездейсоқ уақытта келеді және досын 15 минут күтеді. Кездесу ықтималдығы?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Келу уақыттары (сағатпен) $x,y\in[0;1]$; $\Omega$ - бірлік шаршы, ауданы 1. Кез келген нүкте тең мүмкіндікті деп аламыз.</li>
+          <li><b>2-қадам.</b> Кездесу шарты: $|x-y|\le\dfrac14$ - шаршыдағы екі түзу $y=x\pm\frac14$ арасындағы жолақ.</li>
+          <li><b>3-қадам.</b> Жолақтан тыс - екі тең бүйірлі тікбұрышты үшбұрыш, катеттері $\frac34$: аудандары $2\cdot\dfrac12\left(\dfrac34\right)^2=\dfrac{9}{16}$.</li>
+          <li><b>4-қадам.</b> $P=1-\dfrac{9}{16}=\dfrac{7}{16}\approx0{,}44$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\dfrac{7}{16}$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Екі сүйек: «қосынды 2, 3, ..., 12» - 11 нәтиже, сондықтан P(қосынды 7) = $\frac1{11}$</span> → <span class="math-good">$\frac{6}{36}=\frac16$</span><br>Неге қате: қосындылар тең мүмкіндікті емес; тең мүмкіндікті нәтижелер - 36 реттелген жұп.</li>
+        <li><span class="math-bad">$P(A\cup B)=P(A)+P(B)$ әрдайым</span> → <span class="math-good">$P(A)+P(B)-P(AB)$</span><br>Неге қате: ортақ бөлік екі рет саналады; жай қосу тек үйлесімсіз оқиғаларға.</li>
+        <li><span class="math-bad">Үйлесімсіз оқиғалар - тәуелсіз</span> → <span class="math-good">үйлесімсіз ($P(A),P(B)>0$) оқиғалар тәуелді</span><br>Неге қате: біреуі болса, екіншісі мүмкін емес: $P(B\mid A)=0\ne P(B)$.</li>
+        <li><span class="math-bad">Ықтималдығы 0 - мүмкін емес</span> → <span class="math-good">$P=0$ мүмкін оқиғаға да болады</span><br>Неге қате: үзіліссіз жағдайда (кесіндіден дәл бір нүкте) мүмкін оқиғаның ықтималдығы 0.</li>
+        <li><span class="math-bad">«Кемінде бір алтылық» (3 лақтыру): $3\cdot\frac16=\frac12$</span> → <span class="math-good">$1-\left(\frac56\right)^3=\frac{91}{216}$</span><br>Неге қате: $\frac16$-ларды қосу оқиғалардың қиылысуын ескермейді; 6 лақтыруда «ықтималдық 1» шығып кетер еді.</li>
+        <li><span class="math-bad">$P(A)=1{,}2$ немесе $P(A)=-0{,}1$ жауабын қабылдау</span> → <span class="math-good">$0\le P(A)\le1$</span><br>Неге қате: шекарадан шықса, есептеуде қате бар - қайта тексеріңіз.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Туған күн есебі: бағалау 1 − e^{−n(n−1)/730}" data-config='{"fns": [{"f": "1-exp(-x*(x-1)/730)", "label": "төменгі баға"}, {"f": "0.5", "label": "0,5 деңгейі", "color": 1, "dash": [6, 4]}], "view": [0, 70, -0.05, 1.05]}'></div>
+      <p><b>Бақылаңыз:</b> Қисық $0{,}5$ деңгейін $n\approx23$ маңында қияды, ал $n=50$ болса ықтималдық $0{,}97$-ден асады. Бұл 3-қорытудағы төменгі баға; дәл мән одан сәл ғана үлкен (мысалы $n=23$: баға $0{,}500$, дәл $0{,}507$).</p>
+      <div class="math-viz" data-viz="graph" data-title="Кездесу есебі: |x − y| ≤ 1/4 жолағы" data-config='{"fns": [{"f": "x+0.25", "label": "y = x + 1/4"}, {"f": "x-0.25", "label": "y = x − 1/4", "color": 1}, {"f": "x", "label": "y = x", "color": 2, "dash": [4, 4]}], "view": [0, 1, 0, 1], "equal": true}'></div>
+      <p><b>Бақылаңыз:</b> Бірлік шаршыдағы екі сызықтың арасындағы жолақ - кездесу облысы. Шеттегі екі үшбұрыштың катеті $3/4$; күту уақытын $t$ сағат десек, жауап $1-(1-t)^2$. $t=1/4$ болса $7/16$.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m13-2-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-2-t1">1. Ойын сүйегі</h3></div>
+        <p>Бір ойын сүйегі лақтырылды. Ықтималдықты бөлшекпен енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Жай сан түсу ықтималдығы.","a":"1/2","v":"Rational(3,6)","hint":"Жай сандар: 2, 3, 5.","sol":{"steps":["$\\frac36$."],"ans":"$\\frac12$"}},{"q":"4-тен үлкен сан түсу ықтималдығы.","a":"1/3","v":"Rational(2,6)","hint":"5 және 6.","sol":{"steps":["$\\frac26$."],"ans":"$\\frac13$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m13-2-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-2-t2">2. Аксиомалар</h3></div>
+        <p>Тұжырымды бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(A)=0{,}7$, $P(B)=0{,}6$ болса, $A$ мен $B$ үйлесімсіз бола алмайды.","a":true,"e":"Үйлесімсіз болса $P(A\\cup B)=1{,}3>1$ - мүмкін емес.","hint":"Қосу формуласы."},{"q":"$A\\subset B$ болса, $P(B)\\le P(A)$.","a":false,"e":"Керісінше: $P(A)\\le P(B)$ (монотондық).","hint":"Үлкен жиынның салмағы кіші бола ма?"},{"q":"$P(\\bar A)=1-P(A)$ кез келген оқиға үшін орындалады.","a":true,"e":"$A$ мен $\\bar A$ үйлесімсіз және бірігуі $\\Omega$.","hint":"(A2) және (A3)."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m13-2-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-2-t3">3. Оқиғаны жиынмен жазу</h3></div>
+        <p>Дұрыс жазуды таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"«$A$ орындалды, бірақ $B$ орындалмады».","o":["$A\\cap\\bar B$","$A\\cup\\bar B$","$\\bar A\\cap B$","$\\overline{A\\cup B}$"],"a":0,"e":"«және» - қиылысу, «$B$ емес» - $\\bar B$.","hint":"Бұл $A\\setminus B$."},{"q":"«$A$ да, $B$ да орындалмады».","o":["$\\overline{A\\cup B}$","$\\overline{A\\cap B}$","$\\bar A\\cup\\bar B$","$A\\cap B$"],"a":0,"e":"Де Морган: $\\overline{A\\cup B}=\\bar A\\cap\\bar B$.","hint":"«Кемінде біреуі» оқиғасына қарама-қарсы."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-2-num4">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-2-t4">4. Қарама-қарсы оқиға</h3></div>
+        <p>Ондық бөлшекпен не бөлшекпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(A)=0{,}35$. $P(\\bar A)=?$","a":0.65,"v":"1-Rational(35,100)","hint":"$1-P(A)$.","sol":{"steps":["$1-0{,}35$."],"ans":"$0{,}65$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-2-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-2-t5">5. Қосу формуласы</h3></div>
+        <p>Санды енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(A)=0{,}5$, $P(B)=0{,}4$, $P(AB)=0{,}2$. $P(A\\cup B)=?$","a":0.7,"v":"Rational(5,10)+Rational(4,10)-Rational(2,10)","hint":"$P(A)+P(B)-P(AB)$.","sol":{"steps":["$0{,}5+0{,}4-0{,}2$."],"ans":"$0{,}7$"}},{"q":"Сол деректермен $P(\\overline{A\\cup B})$ - «ешқайсысы орындалмады».","a":0.3,"v":"1-(Rational(5,10)+Rational(4,10)-Rational(2,10))","hint":"Алдыңғы жауапты 1-ден шегеріңіз.","sol":{"steps":["$1-0{,}7$."],"ans":"$0{,}3$"}},{"q":"Сол деректермен $P(A\\setminus B)$.","a":0.3,"v":"Rational(5,10)-Rational(2,10)","hint":"$P(A)-P(AB)$.","sol":{"steps":["$0{,}5-0{,}2$."],"ans":"$0{,}3$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-2-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-2-t6">6. Екі сүйек</h3></div>
+        <p>Бөлшекпен енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Екі сүйектің қосындысы 10-нан кем емес.","a":"1/6","v":"Rational(len([1 for i in range(1,7) for j in range(1,7) if i+j>=10]),36)","hint":"10, 11, 12 қосындыларын санаңыз.","sol":{"steps":["10: 3 жұп, 11: 2 жұп, 12: 1 жұп.","$\\frac{6}{36}$."],"ans":"$\\frac16$"}},{"q":"Екі сүйектегі сандар әртүрлі.","a":"5/6","v":"Rational(len([1 for i in range(1,7) for j in range(1,7) if i!=j]),36)","hint":"Қарама-қарсы: «бірдей» - 6 нәтиже.","sol":{"steps":["$1-\\frac6{36}$."],"ans":"$\\frac56$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-2-num7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-2-t7">7. Классикалық схема</h3></div>
+        <p>Жәшікте 6 ақ және 4 қара шар. Кездейсоқ 3 шар алынды. Бөлшекпен енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Барлығы ақ.","a":"1/6","v":"binomial(6,3)/binomial(10,3)","hint":"$\\frac{C_6^3}{C_{10}^3}$.","sol":{"steps":["$\\frac{20}{120}$."],"ans":"$\\frac16$"}},{"q":"Дәл 2 ақ, 1 қара.","a":"1/2","v":"binomial(6,2)*binomial(4,1)/binomial(10,3)","hint":"$C_6^2C_4^1$.","sol":{"steps":["$\\frac{15\\cdot4}{120}$."],"ans":"$\\frac12$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m13-2-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-2-t8">8. Сөз және жиын</h3></div>
+        <p>Сипаттаманы жиынмен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$A$, $B$ оқиғалары.","pairs":[["кемінде біреуі","$A\\cup B$"],["екеуі де","$A\\cap B$"],["дәл біреуі","$(A\\setminus B)\\cup(B\\setminus A)$"],["ешқайсысы","$\\bar A\\cap\\bar B$"]],"hint":"«дәл біреуі» - бірігуден қиылысуды алып тастау.","sol":{"steps":["«немесе» - $\\cup$, «және» - $\\cap$."]},"e":"Дәл біреуінің ықтималдығы $P(A)+P(B)-2P(AB)$."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m13-2-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-2-t9">9. Параметрлік: қосу формуласы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді. Пайызбен берілген, жауапты пайызбен енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[30,60]},"b":{"int":[20,50]},"c":{"int":[5,20]}},"require":["a+b-c <= 100"],"type":"num","q":"Студенттердің $#{a}\\%$-ы Python, $#{b}\\%$-ы Java біледі, $#{c}\\%$-ы екеуін де біледі. Кездейсоқ студент екі тілдің ешқайсысын білмеу ықтималдығы неше пайыз?","a":"100-a-b+c","v":"100-(a+b-c)","hint":"Алдымен «кемінде бір тіл» ықтималдығын табыңыз.","sol":{"steps":["$P(A\\cup B)=#{a}+#{b}-#{c}=#{a+b-c}\\%$.","Қарама-қарсы оқиға: $100-#{a+b-c}$."],"ans":"$#{100-a-b+c}\\%$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m13-2-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-2-t10">10. Параметрлік: кемінде бір</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді. Жауапты бөлшекпен не ондық бөлшекпен ($0{,}001$ дәлдікпен).</p>
+        <script type="application/json" class="math-ex-data">{"params":{"n":{"int":[2,5]}},"type":"num","tol":0.001,"q":"Ойын сүйегі $#{n}$ рет лақтырылды. Кемінде бір рет алтылық түсу ықтималдығы?","a":"1-(5/6)^n","v":"1-Rational(5,6)**n","hint":"Қарама-қарсы оқиға: бірде-бір алтылық жоқ.","sol":{"steps":["«Алтылық жоқ»: әр лақтыруда 5 нұсқа, барлығы $5^{#{n}}$ нәтиже $6^{#{n}}$-нің ішінде.","$P=1-\\left(\\frac56\\right)^{#{n}}$."],"ans":"$\\approx#{round(1000*(1-(5/6)^n))/1000}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-2-num11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-2-t11">11. Үш оқиға</h3></div>
+        <p>Санды енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$1..120$ сандарының ішінде 2-ге, 3-ке немесе 5-ке бөлінетіндер саны.","a":88,"v":"len([k for k in range(1,121) if k%2==0 or k%3==0 or k%5==0])","hint":"Қосу-шегеру: $60+40+24-20-12-8+4$.","sol":{"steps":["Жалғыз: $60+40+24=124$.","Жұптар: $20+12+8=40$.","Үштік (30-ға бөлінетін): $4$.","$124-40+4$."],"ans":"$88$"}},{"q":"Сол сандардан кездейсоқ біреуі таңдалса, ешқайсысына бөлінбеу ықтималдығы (бөлшек).","a":"4/15","v":"Rational(120-88,120)","hint":"$1-\\frac{88}{120}$.","sol":{"steps":["$\\frac{32}{120}$."],"ans":"$\\frac{4}{15}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-2-num12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-2-t12">12. Геометриялық ықтималдық</h3></div>
+        <p>Бөлшекпен не ондық бөлшекпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Бірлік шаршыдан кездейсоқ $(x,y)$ нүктесі алынды. $x+y\\le1$ болу ықтималдығы.","a":"1/2","v":"integrate(1-x,(x,0,1))","hint":"Үшбұрыш ауданы.","sol":{"steps":["Облыс - катеттері 1 үшбұрыш, ауданы $\\frac12$."],"ans":"$\\frac12$"}},{"q":"Сол нүкте үшін $x^2+y^2\\le1$ болу ықтималдығы (ондық, $0{,}001$ дәлдік).","a":"pi/4","v":"pi/4","tol":0.001,"hint":"Ширек дөңгелек.","sol":{"steps":["Ширек дөңгелек ауданы $\\frac{\\pi}{4}$, шаршыныкі 1."],"ans":"$\\frac{\\pi}4\\approx0{,}785$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m13-2-ord13">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-2-t13">13. Туған күн есебі</h3></div>
+        <p>Шешім қадамдарын ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$n$ адамның кемінде екеуінің туған күні бір күн болу ықтималдығы.","steps":["$\\Omega$: $365^n$ тең мүмкіндікті тізім.","Қарама-қарсы оқиғаны аламыз: барлық туған күн әртүрлі.","Оны көбейту ережесімен санаймыз: $365\\cdot364\\cdots(365-n+1)$.","Классикалық анықтамамен $P(\\bar A)$ табамыз.","$P(A)=1-P(\\bar A)$."],"hint":"Идея - қарама-қарсы оқиға.","sol":{"ans":"$P(A)=1-\\frac{A_{365}^n}{365^n}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m13-2-rev14">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-2-t14">14. Қадамдық шешім: хаттар</h3></div>
+        <p>«Кеңес» және «Келесі қадам» батырмаларымен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"3 хат 3 конвертке кездейсоқ салынды. Кемінде бір хаттың өз конвертіне түсу ықтималдығы?","hint":"$A_i$ - «$i$-хат өз конвертінде». Үш оқиғаның қосу формуласы.","steps":["$|\\Omega|=3!=6$ тең мүмкіндікті орналасу.","$P(A_i)=\\frac{2!}{3!}=\\frac13$, $P(A_iA_j)=\\frac{1!}{3!}=\\frac16$, $P(A_1A_2A_3)=\\frac16$.","$P(A_1\\cup A_2\\cup A_3)=3\\cdot\\frac13-3\\cdot\\frac16+\\frac16$.","$=1-\\frac12+\\frac16=\\frac23$.","Тексеру тізіммен: 6 орналасудың тек 2-еуінде ешбір хат өз орнында емес ($231$, $312$), сондықтан $1-\\frac26=\\frac23$ ✓."],"ans":"$\\frac23$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Ықтималдық модельдері хэш-кестелердегі коллизияларды (туған күн есебінің дәл өзі: $n$ кілт $m$ ұяшыққа), желідегі пакеттің жоғалуын, A/B тестілеуді, ойын балансын бағалайды. Бағдарламада ықтималдықты жиі <b>Монте-Карло әдісімен</b> тексереді: тәжірибені миллион рет модельдеп, жиілікті санайды.</p>
+      <p><b>Мини-жоба: «Монте-Карло тексергіші».</b> Сабақтағы үш есептің жауабын модельдеу арқылы тексереміз және жиіліктің дәл мәнге жақындайтынын көреміз.</p>
+<pre data-lang="python"><code class="language-python">import random
+random.seed(1)
+
+def freq(trial, N=200_000):
+    return sum(trial() for _ in range(N)) / N
+
+# 1) Екі сүйек: «кемінде бір алтылық», дәл мәні 11/36 ≈ 0.3056
+print(freq(lambda: 6 in (random.randint(1, 6), random.randint(1, 6))), 11 / 36)
+
+# 2) Туған күн, n = 23: дәл мәні
+def birthday_exact(n):
+    q = 1.0
+    for j in range(n):
+        q *= (365 - j) / 365
+    return 1 - q
+print(freq(lambda: len(set(random.randrange(365) for _ in range(23))) &lt; 23, 50_000), birthday_exact(23))
+
+# 3) Кездесу есебі: |x - y| &lt;= 1/4, дәл мәні 7/16
+print(freq(lambda: abs(random.random() - random.random()) &lt;= 0.25), 7 / 16)
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$N$-ді 1000, 10 000, 100 000 етіп өзгертіп, жиілік пен дәл мән айырмасын кестеге жазыңыз. Айырма шамамен $1/\sqrt N$ жылдамдығымен кемитінін байқайсыз ба?</li>
+        <li>Хэш-кесте: $m=1000$ ұяшыққа $n$ кілт кездейсоқ түседі. Коллизия ықтималдығы $0{,}5$-тен асатын ең кіші $n$ қандай? (<code>birthday_exact</code>-ты $m$ параметрімен жалпылаңыз.)</li>
+        <li>Хаттар есебін $n$ хат үшін модельдеңіз. $n$ өскенде жауап $1-1/e\approx0{,}632$-ге жақындайтынын тексеріңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Аксиомалар</td><td>$P\ge0$, $P(\Omega)=1$, үйлесімсіздерге аддитивтік</td><td>-</td></tr>
+        <tr><td>Қарама-қарсы</td><td>$P(\bar A)=1-P(A)$</td><td>кез келген $A$</td></tr>
+        <tr><td>Монотондық</td><td>$A\subset B\Rightarrow P(A)\le P(B)$</td><td>-</td></tr>
+        <tr><td>Қосу формуласы</td><td>$P(A\cup B)=P(A)+P(B)-P(AB)$</td><td>кез келген $A,B$</td></tr>
+        <tr><td>Үш оқиға</td><td>$\sum P(A_i)-\sum P(A_iA_j)+P(ABC)$</td><td>-</td></tr>
+        <tr><td>Классикалық</td><td>$P(A)=\frac{|A|}{|\Omega|}$</td><td>ақырлы, тең мүмкіндікті</td></tr>
+        <tr><td>Геометриялық</td><td>$P(A)=\frac{S(A)}{S(\Omega)}$</td><td>бірқалыпты таңдау</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m13-2-self">
+        <li><input type="checkbox"> <span>Мен тәжірибенің $\Omega$ кеңістігін жазып, нәтижелердің тең мүмкіндікті екенін тексере аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен «немесе / және / емес» сөздерін жиын амалдарына аудара аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен үш аксиоманы атап, олардан $P(\bar A)=1-P(A)$ қорыта аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қосу формуласын дәлелдеп, екі және үш оқиғаға қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен «кемінде бір» есептерін қарама-қарсы оқиғамен шеше аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен үйлесімсіздік пен тәуелсіздіктің айырмасын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен геометриялық ықтималдықты аудандар қатынасы ретінде есептей аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="a">
+<p class="q-text">1. Екі сүйек лақтырғанда «қосынды 7» ықтималдығы?</p>
+<label><input type="radio" value="a"> 1/6</label>
+<label><input type="radio" value="b"> 1/11</label>
+<label><input type="radio" value="c"> 1/12</label>
+<label><input type="radio" value="d"> 7/36</label>
+<p class="explain">6 жұп: (1,6),(2,5),(3,4),(4,3),(5,2),(6,1); 6/36.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">2. P(A) = 0,6, P(B) = 0,5, P(AB) = 0,3. P(A ∪ B) = ?</p>
+<label><input type="radio" value="a"> 1,1</label>
+<label><input type="radio" value="b"> 0,3</label>
+<label><input type="radio" value="c"> 0,9</label>
+<label><input type="radio" value="d"> 0,8</label>
+<p class="explain">0,6 + 0,5 − 0,3 = 0,8.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">3. Қай тұжырым кез келген оқиға үшін ақиқат?</p>
+<label><input type="radio" value="a"> P(A ∪ B) = P(A) + P(B)</label>
+<label><input type="radio" value="b"> P(AB) = P(A)·P(B)</label>
+<label><input type="radio" value="c"> P(Ā) = 1 − P(A)</label>
+<label><input type="radio" value="d"> P(A) < 1</label>
+<p class="explain">Қалғандары тек ерекше жағдайларда (үйлесімсіз, тәуелсіз) орындалады.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. Үйлесімсіз оқиғалар дегеніміз:</p>
+<label><input type="radio" value="a"> бір-біріне әсер етпейтін оқиғалар</label>
+<label><input type="radio" value="b"> бірге орындала алмайтын оқиғалар</label>
+<label><input type="radio" value="c"> ықтималдықтары тең оқиғалар</label>
+<label><input type="radio" value="d"> қарама-қарсы оқиғалар ғана</label>
+<p class="explain">A ∩ B = ∅. Тәуелсіздік - басқа ұғым.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. Монета 3 рет лақтырылды. Кемінде бір «елтаңба» ықтималдығы?</p>
+<label><input type="radio" value="a"> 7/8</label>
+<label><input type="radio" value="b"> 3/8</label>
+<label><input type="radio" value="c"> 1/2</label>
+<label><input type="radio" value="d"> 3/2</label>
+<p class="explain">1 − (1/2)³ = 7/8.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">6. Классикалық анықтаманы қолданудың шарты?</p>
+<label><input type="radio" value="a"> нәтижелер ақырсыз</label>
+<label><input type="radio" value="b"> оқиғалар тәуелсіз</label>
+<label><input type="radio" value="c"> P(A) > 0</label>
+<label><input type="radio" value="d"> нәтижелер ақырлы және тең мүмкіндікті</label>
+<p class="explain">Тең мүмкіндік болмаса |A|/|Ω| қате береді.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">7. [0; 1] кесіндісінен кездейсоқ нүкте. Оның 0,3-тен кіші болу ықтималдығы?</p>
+<label><input type="radio" value="a"> 0,7</label>
+<label><input type="radio" value="b"> 0</label>
+<label><input type="radio" value="c"> 0,3</label>
+<label><input type="radio" value="d"> 0,5</label>
+<p class="explain">Ұзындықтар қатынасы: 0,3 / 1.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. P(A) = 0 болса, міндетті түрде:</p>
+<label><input type="radio" value="a"> A = ∅</label>
+<label><input type="radio" value="b"> A мүмкін емес деп айта алмаймыз</label>
+<label><input type="radio" value="c"> A = Ω</label>
+<label><input type="radio" value="d"> Ā = ∅</label>
+<p class="explain">Үзіліссіз модельде мүмкін оқиғаның да ықтималдығы 0 болуы мүмкін.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-79.html"><small>Алдыңғы</small>← Probability Theory · 1-сабақ: Комбинаторика негіздері</a>

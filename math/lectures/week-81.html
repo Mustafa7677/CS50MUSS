@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Probability Theory · 3-сабақ: Шартты ықтималдық және Байес формуласы - CS50 қазақша">
-  <meta property="og:description" content="Математика, Probability Theory · 3-сабақ: Шартты ықтималдық және Байес формуласы. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Тәуелсіздік, толық ықтималдық формуласы, Байес теоремасы.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-81.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Probability Theory · 3-сабақ: Шартты ықтималдық және Байес формуласы - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-81.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Probability Theory · 3-сабақ: Шартты ықтималдық және Байес формуласы. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Тәуелсіздік, толық ықтималдық формуласы, Байес теоремасы.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,385 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="81">
         <div class="num">Probability Theory · 3-сабақ</div>
         <h1>Шартты ықтималдық және Байес формуласы</h1>
-        <p>Тәуелсіздік, толық ықтималдық формуласы, Байес теоремасы.</p>
+        <p>Жаңа ақпарат алған сайын біз болжамымызды өзгертеміз: аспан бұлтты болса, жаңбыр ықтималдығы артады. Бұл сабақта «$B$ белгілі болғандағы $A$-ның ықтималдығы» ұғымын нақты анықтаймыз, одан көбейту ережесін, толық ықтималдық және Байес формулаларын қорытамыз. Соңында тәуелсіздікті анықтап, медициналық тест, спам-сүзгі сияқты нақты есептерде интуиция неге жиі алдайтынын көреміз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-13">Probability Theory</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-13">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>шартты ықтималдықты $P(A\mid B)=\dfrac{P(AB)}{P(B)}$ анықтамасымен және «кішірейген кеңістік» ретінде есептеу;</li>
+        <li>көбейту ережесін тізбектелген тәжірибелерге (қайтарусыз таңдау) қолдану;</li>
+        <li>толық ықтималдық формуласын толық топқа бөлу арқылы қолдану және оны «ағаш» диаграммасымен көрсету;</li>
+        <li>Байес формуласымен «себептің» ықтималдығын қайта бағалау;</li>
+        <li>екі және бірнеше оқиғаның тәуелсіздігін тексеру, қос-қостан тәуелсіздік пен толық тәуелсіздікті ажырату;</li>
+        <li>$P(A\mid B)$ мен $P(B\mid A)$-ны шатастыру қатесін тану.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Алдыңғы сабақтан: оқиға - нәтижелер жиыны, $AB$ - «$A$ және $B$», $\bar A$ - қарама-қарсы оқиға, $P(\bar A)=1-P(A)$. Классикалық ықтималдық $P(A)=|A|/|\Omega|$ (нәтижелер тең мүмкіндікті болса). Үйлесімсіз оқиғалар үшін $P(A\cup B)=P(A)+P(B)$.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Сыныпта 30 оқушы: 18 қыз, 12 ұл. Қыздардың 6-сы, ұлдардың 4-еуі көзілдірік киеді. Кездейсоқ оқушы көзілдірікті болу ықтималдығы $\frac{10}{30}$. Енді «таңдалған оқушы - қыз» екенін білдік делік. Онда біз тек 18 қызға қараймыз, ал олардың 6-сы көзілдірікті: $\frac{6}{18}=\frac13$. Шартты ықтималдықтың бүкіл мағынасы осы: <b>жаңа ақпарат кеңістікті кішірейтеді</b>, ал ықтималдық жаңа кеңістіктің ішінде қайта есептеледі.</p>
+      <p>Енді керісінше сұрақ: көзілдірікті оқушы таңдалды, оның қыз болу ықтималдығы қандай? 10 көзілдірікті оқушының 6-сы қыз: $\frac{6}{10}$. Байқаңыз: «қыз болса, көзілдірікті» ($\frac13$) мен «көзілдірікті болса, қыз» ($\frac35$) - әртүрлі сандар. Осы екеуін шатастыру - сот залында да, ауруханада да кездесетін ең қауіпті қате. Байес формуласы біреуінен екіншісін дұрыс есептеуді үйретеді.</p>
+      <p>Медициналық тестті елестетіңіз: ауру адамды 99% дәлдікпен табады, сау адамға 5% жағдайда қателесіп «ауру» дейді. Ауру өте сирек - мың адамның біреуінде. Тест «оң» болса, сіздің ауру болу ықтималдығыңыз қанша? Көп адам «99%» дейді. Шын жауап - шамамен 2%! Себебі 1000 адамның ішінде шамамен 1 ауру оң шығады, ал 999 саудың 50-ге жуығы да оң шығады. «Оң» шыққандардың басым көпшілігі - сау. Бұл - Байес формуласының ең әйгілі сабағы (2-мысал).</p>
+      <p><b>Тәуелсіздік</b> - бір оқиғаның болуы екіншісінің ықтималдығын өзгертпейтін жағдай: монетаның екі лақтыруы, екі түрлі сүйек. Бірақ тәуелсіздікті «сезіммен» емес, формуламен тексеру керек: кейде бір-біріне байланысты сияқты көрінетін оқиғалар тәуелсіз болып шығады, және керісінше.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 3.1 · Шартты ықтималдық</span>
+        <p>$P(B)>0$ болсын. $B$ орындалған жағдайдағы $A$-ның <strong>шартты ықтималдығы</strong> (<span class="term-en">conditional probability</span>) деп $$P(A\mid B)=\frac{P(AB)}{P(B)}$$ санын айтамыз. Бекітілген $B$ үшін $P(\cdot\mid B)$ функциясы өзі де Колмогоров аксиомаларын қанағаттандырады, яғни ықтималдық болады.</p></div>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 3.1 · Көбейту ережесі</span>
+        <div class="math-fbody">$$P(AB)=P(B)\,P(A\mid B)=P(A)\,P(B\mid A)$$</div>
+        <p class="math-fnote">Шарты: сәйкес шартты ықтималдық анықталған ($P(B)>0$ не $P(A)>0$). Көп оқиға үшін: $P(A_1A_2\cdots A_n)=P(A_1)P(A_2\mid A_1)\cdots P(A_n\mid A_1\cdots A_{n-1})$ (барлық шарттардың ықтималдығы оң).</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 3.2 · Толық топ</span>
+        <p>$H_1,\dots,H_n$ оқиғалары қос-қостан үйлесімсіз, $P(H_i)>0$ және $H_1\cup\dots\cup H_n=\Omega$ болса, олар <strong>оқиғалардың толық тобы</strong> (<span class="term-en">partition of the sample space</span>) құрайды. Оларды «гипотезалар» деп те атайды: тәжірибеде олардың дәл біреуі орындалады.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 3.1 · Толық ықтималдық формуласы</span>
+        <p>$H_1,\dots,H_n$ толық топ болса, кез келген $A$ үшін $$P(A)=\sum_{i=1}^{n}P(H_i)\,P(A\mid H_i).$$</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту: $A$-ны $AH_1,\dots,AH_n$ бөліктеріне бөлу.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 3.2 · Байес формуласы</span>
+        <p>$H_1,\dots,H_n$ толық топ және $P(A)>0$ болса, әр $k$ үшін $$P(H_k\mid A)=\frac{P(H_k)\,P(A\mid H_k)}{\sum_{i=1}^{n}P(H_i)\,P(A\mid H_i)}.$$ $P(H_k)$ - <strong>априорлық ықтималдық</strong> (<span class="term-en">prior probability</span>) (тәжірибеге дейінгі), $P(H_k\mid A)$ - <strong>апостериорлық ықтималдық</strong> (<span class="term-en">posterior probability</span>) (тәжірибеден кейінгі).</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту.</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 3.3 · Тәуелсіздік</span>
+        <p>$A$ және $B$ <strong>тәуелсіз оқиғалар</strong> (<span class="term-en">independent events</span>) деп аталады, егер $P(AB)=P(A)P(B)$. $P(B)>0$ болса, бұл $P(A\mid B)=P(A)$ шартына тең күшті. $A_1,\dots,A_n$ <em>толық тәуелсіз</em> (жиынтықта тәуелсіз) деп аталады, егер олардың кез келген ішкі жиыны үшін $P(A_{i_1}\cdots A_{i_k})=P(A_{i_1})\cdots P(A_{i_k})$.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 3.3 · Тәуелсіздіктің қасиеттері</span>
+        <p>(1) $A$ мен $B$ тәуелсіз болса, $A$ мен $\bar B$, $\bar A$ мен $B$, $\bar A$ мен $\bar B$ та тәуелсіз. (2) Толық тәуелсіздіктен қос-қостан тәуелсіздік шығады, бірақ <b>керісінше емес</b> (3-қорытудағы қарсы мысал).</p></div>
+      <p><em>Негіздеме.</em> (1): $P(A\bar B)=P(A)-P(AB)=P(A)-P(A)P(B)=P(A)P(\bar B)$; қалғандары осыны қайталап қолданудан шығады.</p>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 3.2 · Тәуелсіз оқиғалардың «кемінде біреуі»</span>
+        <div class="math-fbody">$$P(A_1\cup\dots\cup A_n)=1-\prod_{i=1}^{n}\bigl(1-P(A_i)\bigr)$$</div>
+        <p class="math-fnote">Шарты: $A_1,\dots,A_n$ толық тәуелсіз. Мысалы, әрқайсысы 0,9 ықтималдықпен жұмыс істейтін 3 тәуелсіз резерв сервердің кемінде біреуі жұмыс істеу ықтималдығы $1-0{,}1^3=0{,}999$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Байес есебін шешу жоспары: 1) гипотезаларды жазыңыз және олардың толық топ екенін тексеріңіз; 2) әр гипотезаға $P(H_i)$ мен $P(A\mid H_i)$ жазыңыз (ағаш); 3) толық ықтималдықпен $P(A)$ табыңыз; 4) керек тармақты $P(A)$-ға бөліңіз. Тексеру: барлық $P(H_i\mid A)$ қосындысы 1.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>$P(A\mid B)\ne P(B\mid A)$ (жалпы жағдайда). Олар $P(A\mid B)P(B)=P(B\mid A)P(A)$ арқылы байланысады, яғни тек $P(A)=P(B)$ болғанда тең. «Тест 99% дәл» деген P(оң | ауру) туралы, ал пациентті P(ауру | оң) қызықтырады.</p></div>
+      <div class="math-remark"><span class="math-box-title">Ескертпе</span>
+        <p>Тәуелсіздік - модельдің болжамы, оны деректерден не тәжірибенің құрылысынан негіздеу керек. Мысалы, бір компанияның екі сервері бір электр желісіне қосылса, олардың істен шығуы тәуелсіз емес, ал жоғарыдағы $0{,}999$ бағасы тым оптимистік болады.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: толық ықтималдық формуласы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $P(A)=\sum_i P(H_i)P(A\mid H_i)$ теңдігін аксиомалардан дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$H_1\cup\dots\cup H_n=\Omega$ болғандықтан $A=A\cap\Omega=AH_1\cup AH_2\cup\dots\cup AH_n$.</li>
+            <li>$H_i$ қос-қостан үйлесімсіз, сондықтан $AH_i$ бөліктері де үйлесімсіз: $AH_i\cap AH_j\subset H_iH_j=\varnothing$.</li>
+            <li>Аддитивтік аксиомасы: $P(A)=P(AH_1)+\dots+P(AH_n)$.</li>
+            <li>Әр қосылғышқа көбейту ережесі ($P(H_i)>0$): $P(AH_i)=P(H_i)\,P(A\mid H_i)$.</li>
+            <li>Қорытынды: $P(A)=\sum_{i=1}^nP(H_i)P(A\mid H_i)$. Ағашта бұл - $A$-ға апаратын барлық тармақтардың (тармақ бойындағы көбейтінділердің) қосындысы.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: Байес формуласы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $P(H_k\mid A)$-ны белгілі $P(H_i)$ және $P(A\mid H_i)$ арқылы өрнектеу.</p>
+          <ol class="math-steps">
+            <li>Шартты ықтималдық анықтамасы ($P(A)>0$): $P(H_k\mid A)=\dfrac{P(H_kA)}{P(A)}$.</li>
+            <li>Алымға көбейту ережесін басқа реттілікпен қолданамыз: $P(H_kA)=P(H_k)P(A\mid H_k)$.</li>
+            <li>Бөлімге толық ықтималдық формуласы: $P(A)=\sum_iP(H_i)P(A\mid H_i)$.</li>
+            <li>Қоямыз: $P(H_k\mid A)=\dfrac{P(H_k)P(A\mid H_k)}{\sum_iP(H_i)P(A\mid H_i)}$.</li>
+            <li>Тексеру: $\sum_kP(H_k\mid A)=\dfrac{\sum_kP(H_k)P(A\mid H_k)}{P(A)}=1$ - апостериорлық ықтималдықтар да толық топқа үлестіріледі.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: қос-қостан тәуелсіздіктен толық тәуелсіздік шықпайды</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Нақты қарсы мысал құру.</p>
+          <ol class="math-steps">
+            <li>Монета екі рет лақтырылады, $\Omega=\{EE,ES,SE,SS\}$ (E - елтаңба, S - сан жағы), барлығы $\frac14$-тен.</li>
+            <li>$A$ - «1-лақтыру Е», $B$ - «2-лақтыру Е», $C$ - «екі нәтиже бірдей». $P(A)=P(B)=P(C)=\frac12$.</li>
+            <li>$AB=\{EE\}$, $AC=\{EE\}$, $BC=\{EE\}$ - әрқайсысының ықтималдығы $\frac14=\frac12\cdot\frac12$. Демек кез келген екеуі тәуелсіз.</li>
+            <li>Ал $ABC=\{EE\}$, $P(ABC)=\frac14$, бірақ $P(A)P(B)P(C)=\frac18$.</li>
+            <li>$\frac14\ne\frac18$, сондықтан $A,B,C$ толық тәуелсіз емес: $A$ мен $B$ белгілі болса, $C$ толық анықталады.</li>
+            <li>Қорытынды: үш және одан көп оқиғаның тәуелсіздігін тексергенде барлық ішкі жиындарды тексеру керек.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Қайтарусыз таңдау (көбейту ережесі)</h3>
+        <p class="math-problem">Жәшікте 5 ақ, 3 қара шар. Қайтарусыз 2 шар алынды. Екеуі де қара болу ықтималдығы? Екінші шардың қара болу ықтималдығы?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $K_1$ - «1-шар қара», $K_2$ - «2-шар қара». $P(K_1)=\frac38$.</li>
+          <li><b>2-қадам.</b> 1-шар қара болса, қалғаны 5 ақ, 2 қара: $P(K_2\mid K_1)=\frac27$.</li>
+          <li><b>3-қадам.</b> Көбейту ережесі: $P(K_1K_2)=\frac38\cdot\frac27=\frac{3}{28}$.</li>
+          <li><b>4-қадам.</b> $P(K_2)$ толық ықтималдықпен: $P(K_1)P(K_2\mid K_1)+P(\bar K_1)P(K_2\mid\bar K_1)=\frac38\cdot\frac27+\frac58\cdot\frac37=\frac{6+15}{56}=\frac38$.</li>
+          <li><b>5-қадам.</b> Қызық нәтиже: 2-шардың қара болу ықтималдығы 1-шардікіндей, $\frac38$ (симметрия: кезекті ретке қоюдың маңызы жоқ).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac{3}{28}$ және $\frac38$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Медициналық тест (Байес)</h3>
+        <p class="math-problem">Ауру 0,1% адамда бар. Тест ауру адамды 99% ықтималдықпен табады, сау адамға 5% ықтималдықпен қате «оң» нәтиже береді. Тест оң шықты. Адамның ауру болу ықтималдығы?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Гипотезалар: $H_1$ - ауру, $P(H_1)=0{,}001$; $H_2$ - сау, $P(H_2)=0{,}999$. Толық топ.</li>
+          <li><b>2-қадам.</b> $A$ - «тест оң». $P(A\mid H_1)=0{,}99$, $P(A\mid H_2)=0{,}05$.</li>
+          <li><b>3-қадам.</b> Толық ықтималдық: $P(A)=0{,}001\cdot0{,}99+0{,}999\cdot0{,}05=0{,}00099+0{,}04995=0{,}05094$.</li>
+          <li><b>4-қадам.</b> Байес: $P(H_1\mid A)=\dfrac{0{,}00099}{0{,}05094}\approx0{,}0194$.</li>
+          <li><b>5-қадам.</b> Түсінік: 100 000 адамның 100-і ауру, оның 99-ы оң шығады; 99 900 саудың 4995-і де оң шығады. Оң шыққан 5094 адамның тек 99-ы ауру.</li>
+          <li><b>6-қадам.</b> Практикалық сабақ: сирек ауруда бір оң тест жеткіліксіз; екінші, тәуелсіз тест жасалады (5-есепте).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\approx0{,}019$, яғни шамамен 2%.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Үш зауыт</h3>
+        <p class="math-problem">Дүкендегі шамдардың 50%-ы 1-зауыттан, 30%-ы 2-зауыттан, 20%-ы 3-зауыттан. Ақау үлесі сәйкесінше 1%, 2%, 5%. Кездейсоқ шам ақаулы болу ықтималдығы? Ақаулы шам қай зауыттан болуы ықтималырақ?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $P(H_1)=0{,}5$, $P(H_2)=0{,}3$, $P(H_3)=0{,}2$; $P(A\mid H_i)=0{,}01;\ 0{,}02;\ 0{,}05$.</li>
+          <li><b>2-қадам.</b> $P(A)=0{,}005+0{,}006+0{,}010=0{,}021$.</li>
+          <li><b>3-қадам.</b> $P(H_1\mid A)=\frac{0{,}005}{0{,}021}\approx0{,}238$, $P(H_2\mid A)=\frac{0{,}006}{0{,}021}\approx0{,}286$, $P(H_3\mid A)=\frac{0{,}010}{0{,}021}\approx0{,}476$.</li>
+          <li><b>4-қадам.</b> Тексеру: $0{,}238+0{,}286+0{,}476=1$ ✓.</li>
+          <li><b>5-қадам.</b> Үшінші зауыт ең аз шам шығарады, бірақ ақаулы шамның ең ықтимал «себебі» сол.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $P(A)=0{,}021$; ең ықтималы 3-зауыт ($\approx0{,}476$).</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Тәуелсіздікті тексеру</h3>
+        <p class="math-problem">Бір сүйек лақтырылды. $A$ - «жұп сан», $B$ - «3-ке бөлінеді», $C$ - «4-тен кіші». $A$ мен $B$ тәуелсіз бе? $A$ мен $C$ ше?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $A=\{2,4,6\}$, $B=\{3,6\}$, $C=\{1,2,3\}$. $P(A)=\frac12$, $P(B)=\frac13$, $P(C)=\frac12$.</li>
+          <li><b>2-қадам.</b> $AB=\{6\}$: $P(AB)=\frac16=\frac12\cdot\frac13$. Тәуелсіз.</li>
+          <li><b>3-қадам.</b> $AC=\{2\}$: $P(AC)=\frac16\ne\frac12\cdot\frac12=\frac14$. Тәуелді.</li>
+          <li><b>4-қадам.</b> Мағынасы: «3-ке бөлінеді» туралы ақпарат жұптықтың ықтималдығын өзгертпейді ($P(A\mid B)=\frac12$), ал «4-тен кіші» өзгертеді ($P(A\mid C)=\frac13$).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $A,B$ тәуелсіз; $A,C$ тәуелді.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$P(A\mid B)=P(B\mid A)$</span> → <span class="math-good">$P(A\mid B)=\frac{P(B\mid A)P(A)}{P(B)}$</span><br>Неге қате: екеуі тек $P(A)=P(B)$ болса тең; медициналық тест мысалында 0,99 пен 0,019.</li>
+        <li><span class="math-bad">$P(A\mid B)=\frac{P(A)}{P(B)}$</span> → <span class="math-good">$P(A\mid B)=\frac{P(AB)}{P(B)}$</span><br>Неге қате: алымда қиылысу тұрады; $\frac{P(A)}{P(B)}$ бірден үлкен болып кетуі мүмкін.</li>
+        <li><span class="math-bad">Үйлесімсіз оқиғалар тәуелсіз</span> → <span class="math-good">$P(A),P(B)>0$ болса, үйлесімсіз оқиғалар тәуелді</span><br>Неге қате: $P(AB)=0\ne P(A)P(B)$.</li>
+        <li><span class="math-bad">Қайтарусыз таңдауда екі алуды тәуелсіз деп көбейту: $\frac38\cdot\frac38$</span> → <span class="math-good">$\frac38\cdot\frac27$</span><br>Неге қате: бірінші нәтиже жәшіктің құрамын өзгертеді.</li>
+        <li><span class="math-bad">Қос-қостан тәуелсіз болса, $P(ABC)=P(A)P(B)P(C)$</span> → <span class="math-good">бұл қосымша тексеріледі</span><br>Неге қате: 3-қорытудағы қарсы мысал: қос-қостан тәуелсіз, бірақ толық тәуелсіз емес.</li>
+        <li><span class="math-bad">Байес формуласында толық топ емес гипотезалар алу (мысалы, біреуін ұмыту)</span> → <span class="math-good">гипотезалар қиылыспайды және $\Omega$-ны толық жабады</span><br>Неге қате: $\sum P(H_i)\ne1$ болса, апостериорлық ықтималдықтар да қате.</li>
+        <li><span class="math-bad">«Ойыншы 5 рет ұтылды, енді ұтуы керек» (тәуелсіз ойындарда)</span> → <span class="math-good">әр тәуелсіз ойында ықтималдық өзгермейді</span><br>Неге қате: «ойыншының қатесі»: тәуелсіз тәжірибеде өткен нәтижелер келесісіне әсер етпейді.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Апостериорлық ықтималдық сырқаттың таралуына тәуелді" data-config='{"fns": [{"f": "0.99*x/(0.99*x+0.05*(1-x))", "label": "P(ауру | оң), жалған оң 5%"}, {"f": "0.99*x/(0.99*x+s*(1-x))", "label": "жалған оң = s", "color": 1}], "params": [{"n": "s", "min": 0.001, "max": 0.2, "step": 0.001, "v": 0.01}], "view": [0, 0.2, 0, 1.05]}'></div>
+      <p><b>Бақылаңыз:</b> Көлденең ось - аурудың таралуы $P(H_1)$, тік ось - тест оң болғандағы ауру ықтималдығы. Таралу $0{,}001$ болса, көк қисық $\approx0{,}02$ береді (2-мысал). $s$ слайдерімен жалған оң үлесін азайтыңыз: тест «сау адамға қателеспейтін» болған сайын апостериорлық ықтималдық күрт өседі. Сирек ауруда тесттің «ерекшелігі» (specificity) сезімталдығынан маңыздырақ.</p>
+      <div class="math-viz" data-viz="graph" data-title="Тәуелсіз резервтер: 1 − (1 − p)^n" data-config='{"fns": [{"f": "1-(1-p)^x", "label": "кемінде біреуі жұмыс істейді"}], "params": [{"n": "p", "min": 0.05, "max": 0.95, "step": 0.05, "v": 0.6}], "view": [0, 10, 0, 1.05]}'></div>
+      <p><b>Бақылаңыз:</b> Әр сервер $p$ ықтималдықпен жұмыс істейді, $x$ - сервер саны (бүтін мәндерге қараңыз). $p=0{,}6$ болса, 3 сервер $0{,}936$, 5 сервер $0{,}99$ береді. Бұл формула тек тәуелсіздік болжамымен дұрыс.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m13-3-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-3-t1">1. Шартты ықтималдық: сынып</h3></div>
+        <p>30 оқушы: 18 қыз, 12 ұл; қыздардың 6-сы, ұлдардың 4-еуі көзілдірікті. Бөлшекпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"P(көзілдірікті | ұл)","a":"1/3","v":"Rational(4,12)","hint":"Тек 12 ұлға қараңыз.","sol":{"steps":["$\\frac{4}{12}$."],"ans":"$\\frac13$"}},{"q":"P(ұл | көзілдірікті)","a":"2/5","v":"Rational(4,10)","hint":"Тек 10 көзілдірікті оқушыға қараңыз.","sol":{"steps":["$\\frac{4}{10}$."],"ans":"$\\frac25$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-3-num2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-3-t2">2. Анықтама бойынша</h3></div>
+        <p>Санды енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(AB)=0{,}12$, $P(B)=0{,}4$. $P(A\\mid B)=?$","a":0.3,"v":"Rational(12,100)/Rational(4,10)","hint":"$\\frac{P(AB)}{P(B)}$.","sol":{"steps":["$\\frac{0{,}12}{0{,}4}$."],"ans":"$0{,}3$"}},{"q":"$P(A)=0{,}5$, $P(B\\mid A)=0{,}6$. $P(AB)=?$","a":0.3,"v":"Rational(1,2)*Rational(6,10)","hint":"Көбейту ережесі.","sol":{"steps":["$0{,}5\\cdot0{,}6$."],"ans":"$0{,}3$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m13-3-tf3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-3-t3">3. Тәуелсіздік</h3></div>
+        <p>Тұжырымды бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(A)=0{,}3$, $P(B)=0{,}5$, $P(AB)=0{,}15$ болса, $A$ мен $B$ тәуелсіз.","a":true,"e":"$0{,}3\\cdot0{,}5=0{,}15$.","hint":"$P(A)P(B)$ мен $P(AB)$-ны салыстырыңыз."},{"q":"$P(A)=0{,}3>0$, $P(B)=0{,}5>0$ және $A$, $B$ үйлесімсіз. Олар тәуелсіз.","a":false,"e":"$P(AB)=0\\ne0{,}15$.","hint":"Үйлесімсіз болса $P(AB)=0$."},{"q":"$A$ мен $B$ тәуелсіз болса, $\\bar A$ мен $\\bar B$ та тәуелсіз.","a":true,"e":"Теорема 3.3 (1).","hint":"$P(\\bar A\\bar B)=1-P(A\\cup B)$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-3-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-3-t4">4. Қайтарусыз таңдау</h3></div>
+        <p>10 бөлшектің 4-еуі ақаулы. Қайтарусыз 3 бөлшек алынды. Бөлшекпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Үшеуі де ақаулы.","a":"1/30","v":"binomial(4,3)/binomial(10,3)","hint":"$\\frac4{10}\\cdot\\frac39\\cdot\\frac28$.","sol":{"steps":["Көбейту ережесі: $\\frac{4\\cdot3\\cdot2}{10\\cdot9\\cdot8}=\\frac{24}{720}$."],"ans":"$\\frac{1}{30}$"}},{"q":"Біріншісі жарамды, екіншісі ақаулы, үшіншісі жарамды (дәл осы ретпен).","a":"1/6","v":"Rational(6*4*5,10*9*8)","hint":"Әр қадамда жәшіктің құрамы өзгереді.","sol":{"steps":["$\\frac6{10}\\cdot\\frac49\\cdot\\frac58=\\frac{120}{720}$."],"ans":"$\\frac16$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-3-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-3-t5">5. Толық ықтималдық</h3></div>
+        <p>Ондық бөлшекпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Емтиханға студенттердің 70%-ы дайындалды. Дайындалған студент 0,9 ықтималдықпен, дайындалмаған 0,3 ықтималдықпен өтеді. Кездейсоқ студенттің өту ықтималдығы?","a":0.72,"v":"Rational(7,10)*Rational(9,10)+Rational(3,10)*Rational(3,10)","hint":"Екі гипотеза: дайындалды / дайындалмады.","sol":{"steps":["$0{,}7\\cdot0{,}9+0{,}3\\cdot0{,}3$.","$=0{,}63+0{,}09$."],"ans":"$0{,}72$"}},{"q":"Студент өтті. Оның дайындалған болу ықтималдығы? ($0{,}001$ дәлдік)","a":"7/8","v":"Rational(63,72)","tol":0.001,"hint":"Байес: $\\frac{0{,}63}{0{,}72}$.","sol":{"steps":["$\\frac{0{,}63}{0{,}72}=0{,}875$."],"ans":"$0{,}875$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m13-3-cho6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-3-t6">6. Қай формула?</h3></div>
+        <p>Сұраққа сәйкес шаманы таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Тест «оң» болғанда пациенттің ауру болу ықтималдығы.","o":["P(ауру | оң)","P(оң | ауру)","P(ауру)","P(оң)"],"a":0,"e":"Шарт - бізге белгілі ақпарат (тест оң).","hint":"Тік сызықтан кейін - белгілі нәрсе."},{"q":"Тесттің «сезімталдығы» (ауруды табу қабілеті).","o":["P(ауру | оң)","P(оң | ауру)","P(теріс | сау)","P(сау)"],"a":1,"e":"Ауру адам арасындағы оң нәтиже үлесі.","hint":"Ауру екені белгілі."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m13-3-par7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-3-t7">7. Параметрлік: Байес</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді. Жауапты бөлшекпен не $0{,}001$ дәлдікпен.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[20,60]},"u":{"int":[2,9]},"w":{"int":[1,9]}},"require":["u != w"],"type":"num","tol":0.001,"q":"Өнімнің $#{a}\\%$-ын А цехы, қалғанын Б цехы шығарады. А цехының ақау үлесі $#{u}\\%$, Б цехынікі $#{w}\\%$. Кездейсоқ өнім ақаулы шықты. Оның А цехынан болу ықтималдығы?","a":"a*u/(a*u+(100-a)*w)","v":"Rational(a*u, a*u+(100-a)*w)","hint":"Байес: $\\dfrac{P(A)P(\\text{ақау}\\mid A)}{P(\\text{ақау})}$.","sol":{"steps":["$P(\\text{ақау})=#{a/100}\\cdot#{u/100}+#{(100-a)/100}\\cdot#{w/100}$.","$P(A\\mid\\text{ақау})=\\dfrac{#{a}\\cdot#{u}}{#{a}\\cdot#{u}+#{100-a}\\cdot#{w}}$."],"ans":"$\\approx#{round(1000*a*u/(a*u+(100-a)*w))/1000}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m13-3-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-3-t8">8. Параметрлік: тәуелсіз резервтер</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді. $0{,}0001$ дәлдікпен.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"r":{"pick":[0.1,0.2,0.3,0.4]},"n":{"int":[2,4]}},"type":"num","tol":0.0001,"q":"Әр сервер басқаларынан тәуелсіз $#{r}$ ықтималдықпен істен шығады. $#{n}$ сервердің кемінде біреуі жұмыс істеу ықтималдығы?","a":"1-r^n","v":"1-nsimplify(r)**n","hint":"Қарама-қарсы оқиға: барлығы істен шықты.","sol":{"steps":["Барлығы істен шығуы: $#{r}^{#{n}}$ (тәуелсіздік).","$1-#{r}^{#{n}}$."],"ans":"$#{1-r^n}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m13-3-mat9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-3-t9">9. Ұғымдар</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Байес формуласының бөліктері.","pairs":[["$P(H_k)$","априорлық ықтималдық"],["$P(H_k\\mid A)$","апостериорлық ықтималдық"],["$P(A\\mid H_k)$","гипотеза кезіндегі дерек ықтималдығы"],["$\\sum_i P(H_i)P(A\\mid H_i)$","толық ықтималдық"]],"hint":"«Апостериорлық» - тәжірибеден кейінгі.","sol":{"steps":["Бөлім - $P(A)$."]},"e":"Апостериорлық ықтималдық = априорлық × дерек ықтималдығы / толық ықтималдық."}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-3-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-3-t10">10. Екі тест</h3></div>
+        <p>2-мысалдағы тест екінші рет (тәуелсіз) жасалып, тағы оң шықты. Енді ауру ықтималдығы? ($0{,}001$ дәлдік)</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"P(ауру | екі тест оң)","a":"363/1288","tol":0.001,"v":"Rational(1,1000)*Rational(99,100)**2/(Rational(1,1000)*Rational(99,100)**2+Rational(999,1000)*Rational(5,100)**2)","hint":"Ауру болса екі оң: $0{,}99^2$; сау болса: $0{,}05^2$ (тест нәтижелері гипотеза бойынша шартты тәуелсіз).","sol":{"steps":["Алым: $0{,}001\\cdot0{,}9801=0{,}0009801$.","Бөлім: $0{,}0009801+0{,}999\\cdot0{,}0025=0{,}0009801+0{,}0024975$.","$\\frac{0{,}0009801}{0{,}0034776}\\approx0{,}282$."],"ans":"$\\approx0{,}282$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-3-num11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-3-t11">11. Монеталар</h3></div>
+        <p>Қалтада 3 монета: 2-еуі қалыпты, біреуінің екі жағы да елтаңба. Кездейсоқ монета алынып, 2 рет лақтырылды: екеуі де елтаңба. Бөлшекпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Монетаның екі жағы да елтаңба болу ықтималдығы.","a":"2/3","v":"Rational(1,3)*1/(Rational(1,3)*1+Rational(2,3)*Rational(1,4))","hint":"Қалыпты монетада $P(EE)=\\frac14$, ерекше монетада $P(EE)=1$.","sol":{"steps":["$P(EE)=\\frac23\\cdot\\frac14+\\frac13\\cdot1=\\frac16+\\frac13=\\frac12$.","$\\frac{1/3}{1/2}$."],"ans":"$\\frac23$"}},{"q":"Үшінші лақтыруда да елтаңба түсу ықтималдығы (алғашқы екеуін ескеріп).","a":"5/6","v":"Rational(2,3)*1+Rational(1,3)*Rational(1,2)","hint":"Жаңартылған гипотеза ықтималдықтарымен толық ықтималдық.","sol":{"steps":["$\\frac23\\cdot1+\\frac13\\cdot\\frac12$."],"ans":"$\\frac56$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m13-3-tf12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-3-t12">12. Үш оқиға</h3></div>
+        <p>3-қорытудағы $A,B,C$ (екі монета) үшін бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(C\\mid AB)=P(C)$.","a":false,"e":"$A$ мен $B$ орындалса, екі нәтиже бірдей: $P(C\\mid AB)=1\\ne\\frac12$.","hint":"$AB=\\{EE\\}$."},{"q":"$P(C\\mid A)=P(C)$.","a":true,"e":"$P(AC)=\\frac14$, $P(A)=\\frac12$, $P(C\\mid A)=\\frac12$.","hint":"Қос-қостан тәуелсіздік."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m13-3-ord13">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-3-t13">13. Байес есебінің жоспары</h3></div>
+        <p>Қадамдарды ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Байес формуласымен есеп шығару.","steps":["Гипотезаларды жазып, толық топ екенін тексереміз.","Әр гипотезаға $P(H_i)$ және $P(A\\mid H_i)$ жазамыз.","Толық ықтималдықпен $P(A)$ есептейміз.","Керек тармақтың $P(H_k)P(A\\mid H_k)$ көбейтіндісін $P(A)$-ға бөлеміз.","Апостериорлық ықтималдықтар қосындысы 1 екенін тексереміз."],"hint":"Бөлім алдымен табылады.","sol":{"ans":"Гипотезалар → ағаш → $P(A)$ → бөлу → тексеру"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m13-3-rev14">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-3-t14">14. Қадамдық шешім: Монти Холл</h3></div>
+        <p>Батырмалармен біртіндеп ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Үш есіктің біреуінің артында көлік бар. Сіз 1-есікті таңдадыңыз. Жүргізуші (көлік қай жерде екенін біледі және әрдайым ешкі тұрған, сіз таңдамаған есікті ашады; екі нұсқа болса, кездейсоқ таңдайды) 3-есікті ашты, артында ешкі. 2-есікке ауысу керек пе?","hint":"$H_i$ - «көлік $i$-есікте», $A$ - «жүргізуші 3-есікті ашты».","steps":["$P(H_1)=P(H_2)=P(H_3)=\\frac13$.","$P(A\\mid H_1)=\\frac12$ (2 мен 3 арасынан кездейсоқ), $P(A\\mid H_2)=1$ (тек 3 қалады), $P(A\\mid H_3)=0$.","$P(A)=\\frac13\\cdot\\frac12+\\frac13\\cdot1+0=\\frac12$.","$P(H_1\\mid A)=\\frac{1/6}{1/2}=\\frac13$, $P(H_2\\mid A)=\\frac{1/3}{1/2}=\\frac23$.","Ауысқан тиімді: ұту ықтималдығы $\\frac23$. Шешім жүргізушінің ережесіне тәуелді - ереже басқа болса, жауап та өзгереді."],"ans":"Ауысу керек: $\\frac23$ қарсы $\\frac13$."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Байес формуласы - спам-сүзгілердің, медициналық диагностиканың, ақаулықты іздеудің, машиналық оқытудағы «наив Байес» классификаторының негізі. Ол жаңа дерек келген сайын сенімімізді жаңартудың дұрыс ережесін береді.</p>
+      <p><b>Мини-жоба: «Кішкентай спам-сүзгі».</b> Әр сөздің спам және қалыпты хаттарда кездесу жиілігінен P(сөз | спам) бағалаймыз, сосын сөздер гипотеза бойынша шартты тәуелсіз деген (жеңілдетілген) болжаммен Байес формуласын қолданамыз.</p>
+<pre data-lang="python"><code class="language-python">from fractions import Fraction as Fr
+
+spam = ["тегін сыйлық ұтып алыңыз", "тегін бонус қазір", "ұтыс сыйлық тегін"]
+ham = ["ертең сабақ бар ма", "сыйлық үшін рахмет", "қазір жиналыс басталады"]
+
+def counts(docs):
+    c = {}
+    for d in docs:
+        for w in set(d.split()):
+            c[w] = c.get(w, 0) + 1
+    return c
+
+cs, ch = counts(spam), counts(ham)
+p_spam = Fr(len(spam), len(spam) + len(ham))
+
+def p_word(w, c, n):
+    return Fr(c.get(w, 0) + 1, n + 2)          # Лаплас тегістеуі: нөлдік ықтималдықтан қашу
+
+def posterior(text):
+    ps, ph = p_spam, 1 - p_spam
+    for w in text.split():
+        ps *= p_word(w, cs, len(spam))
+        ph *= p_word(w, ch, len(ham))
+    return ps / (ps + ph)                        # Байес: бөлім - толық ықтималдық
+
+for t in ["тегін сыйлық", "ертең жиналыс", "сыйлық"]:
+    print(t, "-&gt;", float(posterior(t)))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Неге <code>+1</code> (Лаплас тегістеуі) керек? Оны алып тастап, «тегін жиналыс» хатын тексеріңіз: не болады?</li>
+        <li>Медициналық тест есебін Монте-Карло әдісімен модельдеңіз: 1 000 000 «адам» жасап, тест оң шыққандардың ішіндегі ауру үлесін санаңыз.</li>
+        <li>Монти Холл ойынын модельдеп, «ауыспау» мен «ауысу» стратегияларының ұту жиілігін салыстырыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Шартты ықтималдық</td><td>$P(A\mid B)=\frac{P(AB)}{P(B)}$</td><td>$P(B)>0$</td></tr>
+        <tr><td>Көбейту ережесі</td><td>$P(AB)=P(A)P(B\mid A)$</td><td>$P(A)>0$</td></tr>
+        <tr><td>Толық ықтималдық</td><td>$P(A)=\sum P(H_i)P(A\mid H_i)$</td><td>$H_i$ - толық топ</td></tr>
+        <tr><td>Байес</td><td>$P(H_k\mid A)=\frac{P(H_k)P(A\mid H_k)}{P(A)}$</td><td>$P(A)>0$</td></tr>
+        <tr><td>Тәуелсіздік</td><td>$P(AB)=P(A)P(B)$</td><td>анықтама</td></tr>
+        <tr><td>Кемінде біреуі</td><td>$1-\prod(1-p_i)$</td><td>толық тәуелсіз</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m13-3-self">
+        <li><input type="checkbox"> <span>Мен шартты ықтималдықты «кішірейген кеңістік» ретінде түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен көбейту ережесін қайтарусыз таңдауға қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен толық ықтималдық формуласын ағаш диаграммасымен шығара аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Байес формуласын қорытып, медициналық тест есебін шеше аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $P(A\mid B)$ мен $P(B\mid A)$-ның айырмасын мысалмен көрсете аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен тәуелсіздікті формуламен тексеріп, оны үйлесімсіздіктен ажырата аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қос-қостан тәуелсіздік толық тәуелсіздік емес екенін мысалмен көрсете аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. P(AB) = 0,2, P(B) = 0,5. P(A | B) = ?</p>
+<label><input type="radio" value="a"> 0,1</label>
+<label><input type="radio" value="b"> 0,4</label>
+<label><input type="radio" value="c"> 0,7</label>
+<label><input type="radio" value="d"> 2,5</label>
+<p class="explain">0,2 / 0,5 = 0,4.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">2. A мен B тәуелсіз, P(A) = 0,4, P(B) = 0,5. P(AB) = ?</p>
+<label><input type="radio" value="a"> 0,2</label>
+<label><input type="radio" value="b"> 0,9</label>
+<label><input type="radio" value="c"> 0,1</label>
+<label><input type="radio" value="d"> 0,45</label>
+<p class="explain">Тәуелсіз: 0,4·0,5.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">3. Жәшікте 2 ақ, 3 қара шар, қайтарусыз 2 шар алынады. Екеуі де ақ болу ықтималдығы?</p>
+<label><input type="radio" value="a"> 4/25</label>
+<label><input type="radio" value="b"> 2/5</label>
+<label><input type="radio" value="c"> 1/5</label>
+<label><input type="radio" value="d"> 1/10</label>
+<p class="explain">2/5 · 1/4 = 1/10.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">4. Байес формуласының бөлімінде не тұрады?</p>
+<label><input type="radio" value="a"> P(H_k)</label>
+<label><input type="radio" value="b"> P(A | H_k)</label>
+<label><input type="radio" value="c"> толық ықтималдық P(A)</label>
+<label><input type="radio" value="d"> 1</label>
+<p class="explain">P(A) = Σ P(Hᵢ)P(A | Hᵢ).</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. Оң ықтималдықты екі үйлесімсіз оқиға:</p>
+<label><input type="radio" value="a"> тәуелсіз</label>
+<label><input type="radio" value="b"> тәуелді</label>
+<label><input type="radio" value="c"> қарама-қарсы</label>
+<label><input type="radio" value="d"> тең ықтималды</label>
+<p class="explain">P(AB) = 0 ≠ P(A)P(B).</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">6. Сирек ауру (0,1%), тест 99% сезімтал, 5% жалған оң. Оң тесттен кейін ауру ықтималдығы шамамен:</p>
+<label><input type="radio" value="a"> 2%</label>
+<label><input type="radio" value="b"> 99%</label>
+<label><input type="radio" value="c"> 95%</label>
+<label><input type="radio" value="d"> 50%</label>
+<p class="explain">Байес: 0,00099 / 0,05094 ≈ 0,019.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">7. Қос-қостан тәуелсіз үш оқиға туралы қай тұжырым дұрыс?</p>
+<label><input type="radio" value="a"> олар әрдайым толық тәуелсіз</label>
+<label><input type="radio" value="b"> олар үйлесімсіз</label>
+<label><input type="radio" value="c"> P(ABC) = 0</label>
+<label><input type="radio" value="d"> олар толық тәуелсіз болмауы мүмкін</label>
+<p class="explain">Екі монета мысалы: P(ABC) = 1/4 ≠ 1/8.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">8. Монета 5 рет елтаңба түсті. 6-лақтыруда елтаңба ықтималдығы (қалыпты монета):</p>
+<label><input type="radio" value="a"> 1/64</label>
+<label><input type="radio" value="b"> кішірек</label>
+<label><input type="radio" value="c"> 1/2</label>
+<label><input type="radio" value="d"> үлкенірек</label>
+<p class="explain">Лақтырулар тәуелсіз.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-80.html"><small>Алдыңғы</small>← Probability Theory · 2-сабақ: Ықтималдық және оның қасиеттері</a>

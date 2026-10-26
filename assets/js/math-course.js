@@ -118,8 +118,24 @@
     asin: Math.asin, acos: Math.acos, atan: Math.atan, acot: function (x) { return Math.PI / 2 - Math.atan(x); },
     sinh: Math.sinh, cosh: Math.cosh, tanh: Math.tanh, asinh: Math.asinh, acosh: Math.acosh, atanh: Math.atanh,
     exp: Math.exp, ln: Math.log, lg: Math.log10, lb: Math.log2, sqrt: Math.sqrt, cbrt: Math.cbrt,
-    abs: Math.abs, sign: Math.sign, floor: Math.floor, ceil: Math.ceil, round: Math.round, trunc: Math.trunc
+    abs: Math.abs, sign: Math.sign, floor: Math.floor, ceil: Math.ceil, round: Math.round, trunc: Math.trunc,
+    erf: erf, Phi: function (z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
   };
+  /* Қате функциясы erf(x): |x| < 3 үшін Тейлор қатары, 3 ≤ |x| ≤ 6 үшін erfc-тің тізбекті бөлшегі; салыстырмалы қателігі ~1e-14 */
+  function erf(x) {
+    var s = x < 0 ? -1 : 1, sum, term, n, f, k;
+    x = Math.abs(x);
+    if (!(x === x)) return NaN;
+    if (x < 3) {
+      sum = x; term = x; n = 0;
+      while (Math.abs(term) > 1e-17 * Math.abs(sum) && n < 200) { n++; term *= -x * x / n; sum += term / (2 * n + 1); }
+      return s * 2 / Math.sqrt(Math.PI) * sum;
+    }
+    if (x > 6) return s;
+    f = 0;
+    for (k = 80; k >= 1; k--) f = (k / 2) / (x + f);
+    return s * (1 - Math.exp(-x * x) / Math.sqrt(Math.PI) / (x + f));
+  }
   var ALIAS = { tg: "tan", ctg: "cot", arcsin: "asin", arccos: "acos", arctg: "atan", arctan: "atan", arcctg: "acot", arccot: "acot", sh: "sinh", ch: "cosh", th: "tanh" };
   var FUNCN = { log: 1, min: 1, max: 1, root: 1, atan2: 1, pow: 1 };
   function isFunc(n) { return Object.prototype.hasOwnProperty.call(FUNC1, n) || Object.prototype.hasOwnProperty.call(ALIAS, n) || Object.prototype.hasOwnProperty.call(FUNCN, n); }
@@ -856,13 +872,43 @@
       fill: function () { cells.forEach(function (row, ri) { row.forEach(function (i, ci) { var v = norm[ri][ci]; i.value = typeof v === "number" ? fmtNum(v) : fmtNum(evalNumber(v, ctx.scope)); }); }); }
     };
   };
+  /* <option> ішінде KaTeX жұмыс істемейді: TeX-ті оқылатын Unicode мәтінге айналдырамыз ($\frac{a}{b}$ → a/b, \cup → ∪ ...) */
+  var TEX_SYM = { cup: "∪", cap: "∩", setminus: "∖", in: "∈", notin: "∉", subset: "⊂", subseteq: "⊆", emptyset: "∅", varnothing: "∅", infty: "∞", pi: "π", alpha: "α", beta: "β",
+    gamma: "γ", delta: "δ", varepsilon: "ε", epsilon: "ε", lambda: "λ", mu: "μ", sigma: "σ", theta: "θ", varphi: "φ", phi: "φ", omega: "ω", Omega: "Ω", Delta: "Δ", Sigma: "Σ",
+    le: "≤", leq: "≤", ge: "≥", geq: "≥", ne: "≠", neq: "≠", approx: "≈", equiv: "≡", cdot: "·", times: "×", pm: "±", to: "→", Rightarrow: "⇒", iff: "⇔", infty_: "∞",
+    sum: "Σ", prod: "Π", int: "∫", partial: "∂", nabla: "∇", circ: "∘", neg: "¬", land: "∧", lor: "∨", forall: "∀", exists: "∃", mid: "|", ldots: "…", dots: "…", cdots: "⋯",
+    sqrt: "√", lfloor: "⌊", rfloor: "⌋", lceil: "⌈", rceil: "⌉", langle: "⟨", rangle: "⟩", oplus: "⊕", mathbb: "", quad: " ", qquad: " " };
+  var SUP = { "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹", "n": "ⁿ", "-": "⁻", "+": "⁺", "k": "ᵏ", "T": "ᵀ" };
+  var SUB = { "0": "₀", "1": "₁", "2": "₂", "3": "₃", "4": "₄", "5": "₅", "6": "₆", "7": "₇", "8": "₈", "9": "₉", "n": "ₙ", "k": "ₖ", "i": "ᵢ", "j": "ⱼ" };
+  function texPlain(src) {
+    var s = String(src);
+    if (s.indexOf("$") < 0 && s.indexOf("\\") < 0) return s;
+    var wrap = function (a) { return /[+\-−\s·]/.test(a) ? "(" + a + ")" : a; };
+    var supsub = function (t) {
+      return t.replace(/\^\{([^{}]*)\}/g, function (m, a) { return /^[0-9n+\-kT]+$/.test(a) ? a.split("").map(function (c) { return SUP[c]; }).join("") : "^(" + a + ")"; })
+        .replace(/\^([0-9nkT])/g, function (m, c) { return SUP[c]; })
+        .replace(/_\{([^{}]*)\}/g, function (m, a) { return /^[0-9nkij]+$/.test(a) ? a.split("").map(function (c) { return SUB[c]; }).join("") : "_(" + a + ")"; })
+        .replace(/_([0-9nkij])/g, function (m, c) { return SUB[c]; });
+    };
+    s = s.replace(/\\\{/g, "\u0001").replace(/\\\}/g, "\u0002").replace(/\$/g, "").replace(/\\(?:left|right|displaystyle|textstyle|,|;|!|:)/g, "").replace(/\\(?:text|mathrm|mathbf|operatorname)\{([^{}]*)\}/g, "$1");
+    s = s.replace(/\\mathbb\{?([A-Z])\}?/g, function (m, c) { return { R: "ℝ", N: "ℕ", Z: "ℤ", Q: "ℚ", C: "ℂ" }[c] || c; });
+    s = s.replace(/\\(?:bar|overline)\s*([A-Za-z])/g, " $1̅");
+    s = s.replace(/\\([A-Za-z]+)/g, function (m, w) { return Object.prototype.hasOwnProperty.call(TEX_SYM, w) ? TEX_SYM[w] + " " : (/^(frac|dfrac|tfrac|binom|sqrt|bar|overline|vec|hat)$/.test(w) ? m : w + " "); });
+    for (var g = 0; g < 5; g++) {
+      s = supsub(s);
+      s = s.replace(/\\[dt]?frac\s*\{([^{}]*)\}\{([^{}]*)\}/g, function (m, a, b) { return wrap(a.trim()) + "/" + wrap(b.trim()); })
+        .replace(/\\binom\s*\{([^{}]*)\}\{([^{}]*)\}/g, "C($1,$2)").replace(/√ ?\{([^{}]*)\}/g, "√($1)").replace(/\\sqrt\s*\{([^{}]*)\}/g, "√($1)")
+        .replace(/\\(?:bar|overline)\s*\{([^{}]*)\}/g, "$1̅").replace(/\\(?:vec|hat)\s*\{([^{}]*)\}/g, "$1");
+    }
+    return s.replace(/[{}]/g, "").replace(/\u0001/g, "{").replace(/\u0002/g, "}").replace(/\s+/g, " ").replace(/ ([)\],.;:!?²³⁰¹⁴-⁹ⁿ₀-₉/])/g, "$1").replace(/([(\[/]) /g, "$1").trim();
+  }
   W.match = function (item, ctx) {
     var pairs = item.pairs, rights = [];
     pairs.forEach(function (p) { if (rights.indexOf(p[1]) < 0) rights.push(p[1]); });
     rights = shuffle(rights, rng(hash(ctx.key + pairs.length)));
     var rows = pairs.map(function (p, i) {
       var sel = h("select", { class: "mx-sel", "aria-label": "Сәйкестік " + (i + 1) }, h("option", { value: "", text: "- таңдаңыз -" }),
-        rights.map(function (r) { return h("option", { value: r, html: esc(r) }); }));
+        rights.map(function (r) { return h("option", { value: r, text: texPlain(r) }); }));
       var left = h("span", { class: "mx-left", html: rich(p[0]) });
       return { sel: sel, row: h("li", null, left, h("span", { class: "mx-arrow", "aria-hidden": "true", text: "→" }), sel), ans: p[1] };
     });

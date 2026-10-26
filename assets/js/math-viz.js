@@ -539,6 +539,7 @@
     };
     sel.addEventListener("change", build); sN.inp.addEventListener("change", resample);
     plot.draw = function () {
+      if (!sliders.length) return; // build() әлі шақырылмаған (өлшем бақылаушысы ертерек іске қосылуы мүмкін)
       var D = DISTS[sel.value], p = sliders.map(function (s) { return s.get(); });
       if (sel.value === "uniform" && p[1] <= p[0]) { sh.read.textContent = "b мәні a мәнінен үлкен болуы керек."; plot.clear(); return; }
       var r = D.range(p), N = data.length, nb = D.disc ? Math.round(r[1] - r[0]) : 28, k;
