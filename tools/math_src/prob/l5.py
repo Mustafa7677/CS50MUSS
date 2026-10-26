@@ -165,12 +165,13 @@ LESSON = L(
               r"<b>Мини-жоба: «Үлестірімдер кітапханасы».</b> Әр үлестірімнің $P(X=k)$ функциясын жазып, Монте-Карло модельдеуімен салыстырамыз, және Пуассон жуықтауының дәлдігін өлшейміз."],
         code=r'''
 import random
-from math import comb, exp, factorial
+from math import comb, exp, lgamma, log
 
-def binom_pmf(k, n, p):  return comb(n, k) * p**k * (1 - p)**(n - k)
+def binom_pmf(k, n, p):  # логарифм арқылы: үлкен n-де comb(n, k) float-қа сыймайды
+    return exp(lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1) + k * log(p) + (n - k) * log(1 - p))
 def geom_pmf(k, p):      return (1 - p)**(k - 1) * p
 def hyper_pmf(k, N, M, n): return comb(M, k) * comb(N - M, n - k) / comb(N, n)
-def pois_pmf(k, lam):    return exp(-lam) * lam**k / factorial(k)
+def pois_pmf(k, lam):    return exp(-lam + k * log(lam) - lgamma(k + 1))
 
 random.seed(3)
 # 1) Биномдық: модельдеу мен формула
