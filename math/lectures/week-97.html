@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Discrete Mathematics · 6-сабақ: Ағаштар және графтардағы алгоритмдер - CS50 қазақша">
-  <meta property="og:description" content="Математика, Discrete Mathematics · 6-сабақ: Ағаштар және графтардағы алгоритмдер. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Ағаш, ең қысқа жол, ені мен тереңдігі бойынша іздеу, ең аз қаңқа.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-97.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Discrete Mathematics · 6-сабақ: Ағаштар және графтардағы алгоритмдер - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-97.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Discrete Mathematics · 6-сабақ: Ағаштар және графтардағы алгоритмдер. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Ағаш, ең қысқа жол, ені мен тереңдігі бойынша іздеу, ең аз қаңқа.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,388 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="97">
         <div class="num">Discrete Mathematics · 6-сабақ</div>
         <h1>Ағаштар және графтардағы алгоритмдер</h1>
-        <p>Ағаш, ең қысқа жол, ені мен тереңдігі бойынша іздеу, ең аз қаңқа.</p>
+        <p>Ағаш - циклсіз байланысты граф: файлдар жүйесі, отбасы шежіресі, турнир кестесі, шешімдер ағашы. Бұл сабақта ағаштың бірнеше тең күшті анықтамасын және $|E|=n-1$ қасиетін дәлелдейміз, бинар ағаштардың биіктігін бағалаймыз, графты аралаудың екі негізгі алгоритмін (BFS, DFS), ең кіші қаңқалы ағашты (Крускал, Прим) және ең қысқа жолды (Дейкстра) табуды үйренеміз. Әр алгоритмнің неге <em>дұрыс</em> жұмыс істейтінін түсіндіреміз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-15">Discrete Mathematics</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-15">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>ағаштың тең күшті анықтамаларын білу және $|E|=|V|-1$ екенін дәлелдеу;</li>
+        <li>тамырлы және бинар ағаштарда биіктік пен жапырақтар санын бағалау;</li>
+        <li>BFS (енімен) және DFS (тереңдікпен) аралау тәртібін анықтау;</li>
+        <li>Крускал және Прим алгоритмдерімен ең кіші қаңқалы ағашты табу және «қима» қасиетімен негіздеу;</li>
+        <li>Дейкстра алгоритмімен теріс емес салмақты графта ең қысқа жолдарды есептеу;</li>
+        <li>алгоритмдердің жұмыс уақытын $O(\cdot)$ түрінде бағалау.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Алдыңғы сабақтан: граф $G=(V,E)$, төбе дәрежесі, $\sum\deg v=2|E|$, жол, цикл, байланыстылық; $n$ төбелі байланысты графта кемінде $n-1$ қабырға бар. Математикалық индукция мен қарсы жору. Логарифм: $2^h\ge m\iff h\ge\log_2m$.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Бес ауылды электр желісімен қосу керек. Кез келген екі ауыл арасындағы кабель бағасы белгілі. Ең арзан желі қандай? Ол міндетті түрде <b>ағаш</b>: егер желіде цикл болса, оның бір кабелін алып тастасақ та барлығы қосулы қалады, ал баға азаяды. Ең арзан «барлығын қосатын ағаш» - ең кіші қаңқалы ағаш (MST).</p>
+      <p>Таңқаларлығы, бұл есепті «ашкөз» тәсіл шешеді: әр қадамда цикл тудырмайтын ең арзан кабельді таңдаймыз (Крускал). Ашкөз тәсіл көп есепте қате береді, бірақ мұнда ол әрдайым ең жақсы нәтижеге апарады - мұның себебін «қима» қасиеті түсіндіреді.</p>
+      <p>Ал навигатор екі қала арасындағы ең қысқа жолды қалай табады? Дейкстра алгоритмі бастапқы нүктеден «толқын» таратады: әр қадамда әлі бекітілмеген ең жақын төбені бекітеді. Салмақтар теріс емес болса, бекітілген қашықтық ешқашан өзгермейді.</p>
+      <p>Графты аралау - лабиринттен шығу. BFS - «толқын»: алдымен көршілер, сосын көршілердің көршілері; ол ең аз қадамды жолды табады. DFS - «бір жолмен соңына дейін, сосын кері қайту»; ол циклдерді табуға және рекурсивті есептерге ыңғайлы.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 6.1 · Ағаш</span>
+        <p>Циклсіз байланысты граф - <strong>ағаш</strong> (<span class="term-en">tree</span>). Циклсіз граф (міндетті түрде байланысты емес) - <strong>орман</strong> (<span class="term-en">forest</span>). Дәрежесі 1 төбе - <strong>жапырақ</strong> (<span class="term-en">leaf</span>).</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 6.1 · Ағаштың тең күшті сипаттамалары</span>
+        <p>$n$ төбелі $G$ графы үшін келесілер тең күшті: (1) $G$ - ағаш; (2) кез келген екі төбені дәл бір жол қосады; (3) $G$ байланысты және $|E|=n-1$; (4) $G$ циклсіз және $|E|=n-1$; (5) $G$ байланысты, бірақ кез келген қабырғаны алып тастасақ, байланыссыз болады.</p></div>
+      <p><em>Негіздеме.</em> Негізгі бөлігі ($|E|=n-1$) - 1-қорыту; қалғаны осыдан және ағаштың анықтамасынан шығады.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 6.2 · Жапырақтар</span>
+        <p>$n\ge2$ төбелі әр ағашта кемінде 2 жапырақ бар.</p></div>
+      <p><em>Негіздеме.</em> Ең ұзын жолдың ұштарын алайық: ұштың басқа көршісі болса, не жол ұзарар еді, не цикл пайда болар еді. Сондықтан ұштардың дәрежесі 1.</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 6.2 · Тамырлы және бинар ағаш</span>
+        <p>Бір төбесі (<strong>тамыр</strong> (<span class="term-en">root</span>)) бөлінген ағаш - тамырлы. Әр төбенің ең көбі 2 баласы болса - <strong>бинар ағаш</strong> (<span class="term-en">binary tree</span>). Тамырдан ең алыс жапыраққа дейінгі қабырғалар саны - ағаштың <strong>биіктігі</strong> (<span class="term-en">height</span>) $h$.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 6.3 · Бинар ағаштың биіктігі</span>
+        <p>Биіктігі $h$ бинар ағашта ең көбі $2^h$ жапырақ және $2^{h+1}-1$ төбе бар. Демек $m$ жапырақты бинар ағаштың биіктігі $h\ge\lceil\log_2m\rceil$.</p></div>
+      <p><em>Негіздеме.</em> $h$ бойынша индукция: тамырдың әр баласының ағашының биіктігі $\le h-1$, онда жапырақтар $\le2\cdot2^{h-1}$. Салдары: $n$ элементті салыстыру арқылы сұрыптау кемінде $\log_2n!\approx n\log_2n$ салыстыруды қажет етеді ($n!$ жапырақты шешім ағашы).</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 6.3 · Қаңқалы ағаш</span>
+        <p>$G$-нің барлық төбесін қамтитын ағаш болатын ішкі графы - <strong>қаңқалы ағаш</strong> (<span class="term-en">spanning tree</span>). Әр байланысты графта бар (циклдерден қабырға алып тастай беру). Салмақты графта қабырғалар салмағының қосындысы ең кіші қаңқалы ағаш - <strong>ең кіші қаңқалы ағаш</strong> (<span class="term-en">minimum spanning tree</span>) (MST).</p></div>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 6.4 · Қима қасиеті</span>
+        <p>$V$-ны екі бос емес бөлікке $S$ және $V\setminus S$ бөлейік. Осы бөліктерді қосатын қабырғалардың ішіндегі салмағы ең кіші $e$ (жалғыз болса) кез келген MST-ге кіреді; салмақтар тең болса, $e$-ні қамтитын кемінде бір MST бар.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту. Крускал мен Примнің дұрыстығы осыдан шығады.</p>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 6.4 · Ең қысқа жол</span>
+        <p>Салмақты графта жолдың ұзындығы - оның қабырғалары салмақтарының қосындысы. $s$-тен $v$-ге ең кіші ұзындық - <strong>ең қысқа жол</strong> (<span class="term-en">shortest path</span>) қашықтығы $d(v)$. <strong>Дейкстра алгоритмі</strong> (<span class="term-en">Dijkstra's algorithm</span>): бастапқыда $d(s)=0$, басқалары $\infty$; әр қадамда бекітілмеген ең кіші $d(u)$ төбесін бекітіп, оның көршілері үшін $d(w)\leftarrow\min(d(w),\ d(u)+w(u,w))$.</p></div>
+      <div class="math-thm" id="thm-5"><span class="math-tag">Теорема 6.5 · Дейкстраның дұрыстығы</span>
+        <p>Барлық салмақ теріс емес болса, төбе бекітілген сәттегі $d(u)$ - $s$-тен $u$-ге ең қысқа жолдың ұзындығы.</p></div>
+      <p><em>Негіздеме.</em> 3-қорыту.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 6.1 · Ағаш</span>
+        <div class="math-fbody">$$|E|=|V|-1$$</div>
+        <p class="math-fnote">Байланысты графта $|E|\ge|V|-1$; теңдік $\iff$ ағаш.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 6.2 · Бинар ағаш биіктігі</span>
+        <div class="math-fbody">$$h\ \ge\ \lceil\log_2 m\rceil$$</div>
+        <p class="math-fnote">$m$ - жапырақтар саны. Теңгерілген ағаштарда $h\approx\log_2n$, сондықтан іздеу $O(\log n)$.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 6.3 · Кэли формуласы</span>
+        <div class="math-fbody">$$\tau(K_n)=n^{\,n-2}$$</div>
+        <p class="math-fnote">$n$ нөмірленген төбедегі әртүрлі ағаштар саны (Кэли теоремасы; дәлелін келтірмейміз, $n\le4$ үшін есептерде тексереміз).</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Алгоритмдердің күрделілігі ($n=|V|$, $m=|E|$): BFS, DFS - $O(n+m)$; Крускал - $O(m\log m)$ (сұрыптау + union-find); Прим мен Дейкстра кезекпен (heap) - $O(m\log n)$.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Дейкстра <b>теріс салмақта</b> қате нәтиже береді: бекітілген төбеге кейінірек теріс қабырға арқылы қысқарақ жол табылуы мүмкін. Мұндай графтарға Беллман–Форд алгоритмі қолданылады. Сондай-ақ MST - ең қысқа жолдар ағашы емес: MST жалпы бағаны кішірейтеді, ал екі нүкте арасындағы жол MST-де ұзын болуы мүмкін.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: ағашта $|E|=n-1$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $n$ төбелі әр ағашта дәл $n-1$ қабырға бар екенін дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$n$ бойынша индукция. База $n=1$: 0 қабырға ✓.</li>
+            <li>Болжам: $n-1$ төбелі әр ағашта $n-2$ қабырға.</li>
+            <li>$n\ge2$ төбелі $T$ ағашы. Теорема 6.2 бойынша онда жапырақ $\ell$ бар.</li>
+            <li>$\ell$ мен оның жалғыз қабырғасын алып тастаймыз: $T-\ell$ циклсіз (ішкі граф) және байланысты ($\ell$ - жолдың ішкі төбесі бола алмайды, өйткені дәрежесі 1).</li>
+            <li>$T-\ell$ - $n-1$ төбелі ағаш, болжам бойынша $n-2$ қабырға. Демек $T$-да $n-1$ қабырға. ∎</li>
+            <li>Керісінше: $n$ төбелі байланысты граф $n-1$ қабырғалы болса, ол ағаш. Әйтпесе циклдегі қабырғаларды алып тастап, қаңқалы ағаш (қабырға $n-1$) алар едік - бірақ біз кемінде бір қабырға алып тастадық, қайшылық.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: қима қасиеті</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $S$ мен $V\setminus S$ арасындағы ең жеңіл $e=\{u,v\}$ қабырғасы ($u\in S$) қандай да бір MST-де бар екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>$T$ - кез келген MST. $e\in T$ болса - дайын. Әйтпесе $e$-ні $T$-ға қосамыз: ағашқа бір қабырға қосқанда дәл бір цикл пайда болады.</li>
+            <li>Цикл $u\in S$-тен басталып $v\notin S$-ке барады және қайта $u$-ға оралады, сондықтан ол бөліктер шекарасын кемінде екі рет кесіп өтеді: $e$-ден басқа шекаралық қабырға $f$ бар.</li>
+            <li>$e$ - ең жеңіл шекаралық қабырға: $w(e)\le w(f)$.</li>
+            <li>$T'=T+e-f$: циклдің бір қабырғасын алып тастадық, сондықтан $T'$ байланысты және $n-1$ қабырғалы - ағаш.</li>
+            <li>$w(T')=w(T)+w(e)-w(f)\le w(T)$. $T$ - ең кіші, сондықтан $T'$ та MST, және $e\in T'$. ∎</li>
+            <li>Крускал: таңдалған әр қабырға - екі түрлі құрауыш арасындағы ең жеңіл қабырға, демек «қауіпсіз».</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: Дейкстраның дұрыстығы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> бекітілген әр төбенің $d(u)$ мәні шын қашықтық екенін индукциямен көрсету (салмақтар $\ge0$).</p>
+          <ol class="math-steps">
+            <li>Инвариант: бекітілген төбелер үшін $d$ - шын қашықтық; бекітілмегендер үшін $d(w)$ - тек бекітілгендер арқылы өтетін ең қысқа жолдың ұзындығы.</li>
+            <li>База: тек $s$ бекітілген, $d(s)=0$ ✓.</li>
+            <li>Келесі бекітілетін $u$ - бекітілмегендердің ішінде $d$-сы ең кіші. $s$-тен $u$-ге кез келген жолды алайық; ол бекітілгендер жиынынан бірінші рет $y$ төбесінде шығады.</li>
+            <li>Жолдың $y$-ке дейінгі бөлігінің ұзындығы $\ge d(y)\ge d(u)$ ($u$-ды ең кіші етіп таңдадық), ал қалған бөлігі $\ge0$ (теріс салмақ жоқ).</li>
+            <li>Демек кез келген жол $\ge d(u)$, ал $d(u)$-ға тең жол бар. $u$-ды бекіту дұрыс. Көршілерді жаңарту инвариантты сақтайды. ∎</li>
+            <li>«Қалған бөлігі $\ge0$» қадамында теріс емес салмақтар міндетті - сондықтан теріс қабырғада дәлел (және алгоритм) бұзылады.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Крускал</h3>
+        <p class="math-problem">Салмақты граф: төбелер $A,B,C,D,E$; қабырғалар $AB=4$, $AC=1$, $BC=2$, $BD=5$, $CD=8$, $CE=10$, $DE=2$. MST-ні Крускал алгоритмімен табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Қабырғаларды салмақ бойынша сұрыптаймыз: $AC1$, $BC2$, $DE2$, $AB4$, $BD5$, $CD8$, $CE10$.</li>
+          <li><b>2-қадам.</b> $AC$ (1), $BC$ (2), $DE$ (2) - цикл жоқ, қосамыз. Құрауыштар: $\{A,B,C\}$, $\{D,E\}$.</li>
+          <li><b>3-қадам.</b> $AB$ (4): $A$ мен $B$ бір құрауышта - цикл, өткіземіз.</li>
+          <li><b>4-қадам.</b> $BD$ (5): екі құрауышты қосады - қосамыз. Енді 4 қабырға $=n-1$, тоқтаймыз.</li>
+          <li><b>5-қадам.</b> MST: $AC,BC,DE,BD$, салмағы $1+2+2+5=10$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> MST салмағы $10$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Дейкстра</h3>
+        <p class="math-problem">Салмақты граф: төбелер $A,B,C,D,E$; қабырғалар $AB=4$, $AC=1$, $BC=2$, $BD=5$, $CD=8$, $CE=10$, $DE=2$. $A$-дан барлық төбеге ең қысқа қашықтықтарды табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $d=(A0,B\infty,C\infty,D\infty,E\infty)$. $A$-ны бекітеміз: $d(B)=4$, $d(C)=1$.</li>
+          <li><b>2-қадам.</b> $C$-ны бекітеміз ($1$): $d(B)=\min(4,1+2)=3$, $d(D)=1+8=9$, $d(E)=1+10=11$.</li>
+          <li><b>3-қадам.</b> $B$-ны бекітеміз ($3$): $d(D)=\min(9,3+5)=8$.</li>
+          <li><b>4-қадам.</b> $D$-ны бекітеміз ($8$): $d(E)=\min(11,8+2)=10$. Соңында $E$ ($10$).</li>
+          <li><b>5-қадам.</b> Ең қысқа жол $A\to E$: $A\to C\to B\to D\to E$, ұзындығы 10. Байқаңыз: $A\to C\to E$ (11) - қабырға саны аз, бірақ ұзынырақ.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $d(B)=3$, $d(C)=1$, $d(D)=8$, $d(E)=10$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. BFS және DFS</h3>
+        <p class="math-problem">Граф: $1-2$, $1-3$, $2-4$, $2-5$, $3-6$. $1$-ден BFS пен DFS тәртібін жазыңыз (көршілер өсу ретімен).</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> BFS (кезек): $1$; көршілері $2,3$; $2$-нің көршілері $4,5$; $3$-тің $6$. Тәртіп: $1,2,3,4,5,6$.</li>
+          <li><b>2-қадам.</b> DFS (стек/рекурсия): $1\to2\to4$ (тұйық), кері $2\to5$, кері $1\to3\to6$. Тәртіп: $1,2,4,5,3,6$.</li>
+          <li><b>3-қадам.</b> BFS «қабат-қабатымен» жүреді: $1$-ден қашықтығы 1 ($2,3$), сосын 2 ($4,5,6$).</li>
+          <li><b>4-қадам.</b> Бұл граф - ағаш (6 төбе, 5 қабырға, байланысты).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> BFS: $1,2,3,4,5,6$; DFS: $1,2,4,5,3,6$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Ағаш қасиеттері</h3>
+        <p class="math-problem">Ағашта 3 төбенің дәрежесі 3, 2 төбенің дәрежесі 2, қалғандары - жапырақтар. Неше жапырақ бар?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Жапырақтар саны $\ell$. $n=5+\ell$, $|E|=n-1=4+\ell$.</li>
+          <li><b>2-қадам.</b> Қол алысу: $\sum\deg=3\cdot3+2\cdot2+\ell=13+\ell=2(4+\ell)$.</li>
+          <li><b>3-қадам.</b> $13+\ell=8+2\ell\Rightarrow\ell=5$.</li>
+          <li><b>4-қадам.</b> Тексеру: $n=10$, $|E|=9$, $\sum\deg=18$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $5$ жапырақ.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Ағашта $|E|=|V|$</span> → <span class="math-good">$|E|=|V|-1$</span><br>Неге қате: бір қабырға артық болса, цикл пайда болады.</li>
+        <li><span class="math-bad">Дейкстраны теріс салмақты графқа қолдану</span> → <span class="math-good">Беллман–Форд</span><br>Неге қате: бекітілген қашықтық кейін қысқаруы мүмкін.</li>
+        <li><span class="math-bad">Крускалда цикл тудыратын қабырғаны қосу</span> → <span class="math-good">тек әртүрлі құрауыштарды қосатын қабырға</span><br>Неге қате: цикл - ағаш емес; union-find арқылы тексереміз.</li>
+        <li><span class="math-bad">MST екі төбе арасындағы ең қысқа жолды береді</span> → <span class="math-good">MST - жалпы баға; жол - Дейкстра</span><br>Неге қате: 2-мысалда MST-дегі $A\to E$ жолы $AC,CB,BD,DE$ ұзындығы 10 - мұнда сәйкес келді, бірақ жалпы жағдайда солай емес.</li>
+        <li><span class="math-bad">BFS салмақты графта ең қысқа жолды табады</span> → <span class="math-good">тек қабырға саны бойынша</span><br>Неге қате: салмақ болса - Дейкстра.</li>
+        <li><span class="math-bad">Бинар ағашта $n$ жапырақ үшін биіктік $\ge n$</span> → <span class="math-good">$\ge\lceil\log_2n\rceil$</span><br>Неге қате: әр деңгейде жапырақтар саны екі еселенеді.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Бинар ағаш: биіктік h пен жапырақтар саны" data-config='{"fns": [{"f": "2^x", "label": "ең көп жапырақ 2ʰ"}, {"f": "2^(x+1)-1", "label": "ең көп төбе 2ʰ⁺¹ − 1", "color": 1}, {"f": "x+1", "label": "«жол» ағашы: h + 1 төбе", "color": 2, "dash": [5, 4]}], "view": [0, 10, 0, 1100]}'></div>
+      <p><b>Бақылаңыз:</b> Бірдей биіктікте ағаш ең көбі $2^h$ жапыраққа ие (толық бинар ағаш), ал ең нашар жағдайда (тізбек) тек $h+1$ төбе. Сондықтан теңгерілген іздеу ағашында $10^6$ элементтің биіктігі $\approx20$, ал теңгерілмегенде $10^6$ болуы мүмкін.</p>
+      <div class="math-viz" data-viz="graph" data-title="Сұрыптаудың төменгі шекарасы: log₂(n!) ≈ n log₂ n" data-config='{"fns": [{"f": "x*ln(x)/ln(2)-x/ln(2)", "label": "n log₂ n − n log₂ e (Стирлинг)"}, {"f": "x*ln(x)/ln(2)", "label": "n log₂ n", "color": 1}, {"f": "x^2/2", "label": "n²/2 (қарапайым сұрыптау)", "color": 2, "dash": [5, 4]}], "view": [1, 64, 0, 600]}'></div>
+      <p><b>Бақылаңыз:</b> Шешім ағашында $n!$ жапырақ болғандықтан, салыстыру арқылы сұрыптау кемінде $\log_2n!$ салыстыру жасайды; Стирлинг бойынша бұл $\approx n\log_2n-n\log_2e$. Сұрыптау (merge sort) $n\log_2n$-ге жетеді, ал қарапайым көпіршікті сұрыптау $\approx\frac{n^2}{2}$.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m15-6-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-6-t1">1. Ағаш қабырғалары</h3></div>
+        <p>Санды енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"25 төбелі ағаштағы қабырғалар саны","a":24,"v":"25-1","hint":"$|E|=n-1$.","sol":{"steps":["$25-1$."],"ans":"$24$"}},{"q":"3 ағаштан тұратын орманда 30 төбе. Неше қабырға?","a":27,"v":"30-3","hint":"Әр ағашта $n_i-1$.","sol":{"steps":["$\\sum(n_i-1)=30-3$."],"ans":"$27$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m15-6-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-6-t2">2. Ағаш па?</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"7 төбелі, 6 қабырғалы байланысты граф - ағаш.","a":true,"e":"Теорема 6.1 (3).","hint":"$|E|=n-1$ және байланысты."},{"q":"7 төбелі, 6 қабырғалы кез келген граф - ағаш.","a":false,"e":"Мысалы, $K_4$-тің 6 қабырғасы және 3 оқшау төбе - циклі бар, байланыссыз.","hint":"Байланыстылық не циклсіздік керек."},{"q":"Ағашта кез келген екі төбе арасында дәл бір жол бар.","a":true,"e":"Теорема 6.1 (2).","hint":"Екі жол болса - цикл."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m15-6-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-6-t3">3. Қай алгоритм?</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Ең аз ауысыммен (қабырға санымен) екі станция арасындағы маршрут.","o":["BFS","Дейкстра","Крускал","DFS"],"a":0,"e":"Салмақсыз ең қысқа жол - BFS.","hint":"Әр қабырға «бір ауысым»."},{"q":"Барлық ауылды ең арзан кабельмен қосу.","o":["Крускал","BFS","Дейкстра","DFS"],"a":0,"e":"Ең кіші қаңқалы ағаш.","hint":"MST."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-6-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-6-t4">4. Крускал</h3></div>
+        <p>Салмақты граф: төбелер $A,B,C,D,E$; қабырғалар $AB=4$, $AC=1$, $BC=2$, $BD=5$, $CD=8$, $CE=10$, $DE=2$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"MST салмағы","a":10,"v":"1+2+2+5","hint":"Сұрыптап, цикл тудырмайтындарды қосыңыз.","sol":{"steps":["$AC,BC,DE,BD$."],"ans":"$10$"}},{"q":"$BD$ салмағы 9 болса, MST салмағы?","a":13,"v":"1+2+2+8","hint":"Енді $\\{A,B,C\\}$ мен $\\{D,E\\}$ арасындағы ең жеңіл қабырға - $CD=8$.","sol":{"steps":["$AC,BC,DE$, сосын $CD=8$ ($BD=9$-дан жеңіл)."],"ans":"$1+2+2+8=13$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-6-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-6-t5">5. Дейкстра</h3></div>
+        <p>Салмақты граф: төбелер $A,B,C,D,E$; қабырғалар $AB=4$, $AC=1$, $BC=2$, $BD=5$, $CD=8$, $CE=10$, $DE=2$. $A$-дан ең қысқа қашықтықтар.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$d(D)$","a":8,"v":"min(4+5, 1+2+5, 1+8)","hint":"$A\\to C\\to B\\to D$.","sol":{"steps":["$1+2+5$."],"ans":"$8$"}},{"q":"$CE$ салмағы 6 болса, $d(E)$?","a":7,"v":"min(1+6, 1+2+5+2)","hint":"$A\\to C\\to E$.","sol":{"steps":["$1+6=7\\lt 10$."],"ans":"$7$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m15-6-ord6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-6-t6">6. BFS тәртібі</h3></div>
+        <p>Граф: $1-2$, $1-3$, $2-4$, $3-4$, $4-5$. $1$-ден BFS (көршілер өсу ретімен) тәртібін ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"BFS тәртібі.","steps":["$1$","$2$","$3$","$4$","$5$"],"hint":"Қашықтық 0, 1, 1, 2, 3.","sol":{"ans":"$1,2,3,4,5$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m15-6-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-6-t7">7. Күрделілік</h3></div>
+        <p>Алгоритмді жұмыс уақытымен сәйкестендіріңіз ($n$ төбе, $m$ қабырға).</p>
+        <script type="application/json" class="math-ex-data">{"q":"Күрделілік.","pairs":[["BFS","O(n + m)"],["Крускал","O(m log m)"],["Дейкстра (heap)","O(m log n)"],["Барлық Гамильтон циклдерін тексеру","O(n!) ретті"]],"hint":"Аралау - сызықтық.","sol":{"steps":["Крускалдың негізгі құны - сұрыптау."]},"e":"Гамильтон циклінің жалпы тиімді алгоритмі белгісіз."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m15-6-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-6-t8">8. Параметрлік: жапырақтар</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,5]},"b":{"int":[1,5]}},"type":"num","q":"Ағашта $#{a}$ төбенің дәрежесі 3, $#{b}$ төбенің дәрежесі 4, қалғандары - жапырақтар (дәрежесі 2 төбе жоқ). Неше жапырақ?","a":"a+2*b+2","v":"solve(Eq(3*a+4*b+x, 2*(a+b+x-1)), x)[0]","hint":"$\\sum\\deg=2(n-1)$, $n=#{a}+#{b}+\\ell$.","sol":{"steps":["$3\\cdot#{a}+4\\cdot#{b}+\\ell=2(#{a+b}+\\ell-1)$.","$\\ell=#{a}+2\\cdot#{b}+2$."],"ans":"$#{a+2*b+2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m15-6-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-6-t9">9. Параметрлік: бинар ағаш</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"int":[5,3000]}},"type":"num","q":"$#{m}$ жапырағы бар бинар ағаштың ең кіші мүмкін биіктігі?","a":"ceil(lb(m))","v":"ceiling(log(m,2))","hint":"$h\\ge\\lceil\\log_2m\\rceil$, және бұл шекараға жетуге болады.","sol":{"steps":["$2^{h}\\ge#{m}$ болатын ең кіші $h$."],"ans":"$#{ceil(lb(m))}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-6-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-6-t10">10. Кэли формуласы</h3></div>
+        <p>Нөмірленген төбелердегі ағаштар саны.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$n=4$: ағаштар саны","a":16,"v":"4**2","hint":"$n^{n-2}$. Тексеру: 4 «жұлдыз» + 12 «жол».","sol":{"steps":["Жұлдыз: орталығы 4 тәсіл.","Жол $a-b-c-d$: $\\frac{4!}{2}=12$.","$4+12=16=4^2$ ✓."],"ans":"$16$"}},{"q":"$n=6$","a":1296,"v":"6**4","hint":"$6^4$.","sol":{"steps":["$6^4$."],"ans":"$1296$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m15-6-tf11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-6-t11">11. Алгоритмдер туралы</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Барлық салмақ әртүрлі болса, MST жалғыз.","a":true,"e":"Қима қасиеті әр қадамда бірмәнді таңдау береді (белгілі факт).","hint":"Тең салмақтар - бірнеше MST себебі."},{"q":"Әр салмаққа 10 қоссақ, ең қысқа жолдар өзгермейді.","a":false,"e":"Қабырғасы көп жолдар көбірек «айыппұл» алады: 2-мысалда $A\\to C\\to E$ ($11+20=31$) $A\\to C\\to B\\to D\\to E$-тен ($10+40=50$) қысқа болып қалады.","hint":"Жолдардың қабырға саны әртүрлі."},{"q":"Әр салмаққа 10 қоссақ, MST өзгермейді.","a":true,"e":"Әр қаңқалы ағашта дәл $n-1$ қабырға, сондықтан барлығына бірдей $10(n-1)$ қосылады.","hint":"Қабырға саны бірдей."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m15-6-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-6-t12">12. Қадамдық шешім: теріс салмақ</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Бағытталған граф: $s\\to a=2$, $s\\to b=3$, $b\\to a=-2$. Дейкстра $s$-тен $d(a)$-ны қандай деп табады? Шын мәні?","hint":"Дейкстра ең кіші $d$-ны бекітеді.","steps":["$d(s)=0$; $s$ бекітілді: $d(a)=2$, $d(b)=3$.","Ең кішісі $a$ ($2$) - бекітіледі.","$b$ бекітілгенде $d(a)$-ны $3-2=1$-ге жаңартқысы келеді, бірақ $a$ бекітіліп қойған.","Дейкстра: $d(a)=2$; шын мәні $1$ ($s\\to b\\to a$). Теріс салмақта дәлелдегі «қалған бөлігі $\\ge0$» қадамы бұзылады."],"ans":"Дейкстра 2 береді, шын қашықтық 1."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> BFS - әлеуметтік желідегі «достар арақашықтығы», веб-краулерлер; DFS - тәуелділіктерді сұрыптау (топологиялық сұрыптау), циклдерді табу; Крускал/Прим - желі жобалау, кластерлеу; Дейкстра - GPS навигаторлар, желі маршрутизаторлары (OSPF протоколы).</p>
+      <p><b>Мини-жоба: «Графтағы алгоритмдер».</b> Union-find арқылы Крускал, heap арқылы Дейкстра жазып, 1-2-мысалдарды тексереміз.</p>
+<pre data-lang="python"><code class="language-python">import heapq
+
+edges = [("A","B",4), ("A","C",1), ("B","C",2), ("B","D",5), ("C","D",8), ("C","E",10), ("D","E",2)]
+
+def kruskal(vertices, edges):
+    parent = {v: v for v in vertices}
+    def find(v):
+        while parent[v] != v:
+            parent[v] = parent[parent[v]]; v = parent[v]
+        return v
+    mst = []
+    for u, v, w in sorted(edges, key=lambda e: e[2]):
+        ru, rv = find(u), find(v)
+        if ru != rv:
+            parent[ru] = rv; mst.append((u, v, w))
+    return mst
+
+def dijkstra(edges, s):
+    g = {}
+    for u, v, w in edges:
+        g.setdefault(u, []).append((v, w)); g.setdefault(v, []).append((u, w))
+    dist, pq = {s: 0}, [(0, s)]
+    while pq:
+        d, u = heapq.heappop(pq)
+        if d &gt; dist[u]: continue           # ескі жазба
+        for v, w in g[u]:
+            if d + w &lt; dist.get(v, float("inf")):
+                dist[v] = d + w; heapq.heappush(pq, (d + w, v))
+    return dist
+
+mst = kruskal("ABCDE", edges)
+print("MST:", mst, "салмағы", sum(w for *_, w in mst))
+print("Дейкстра A-дан:", dijkstra(edges, "A"))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li><code>dijkstra</code>-ны «алдыңғы төбе» сөздігімен толықтырып, $A\to E$ ең қысқа жолдың өзін басып шығарыңыз.</li>
+        <li>Прим алгоритмін heap арқылы жазып, Крускалмен бірдей MST салмағын беретінін тексеріңіз.</li>
+        <li>Кэли формуласын тексеру: $n=5$ төбедегі барлық $C_{10}^4$ қабырға жиынын тізіп, олардың нешеуі ағаш екенін санаңыз ($5^3=125$ шыға ма?).</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Ағаш</td><td>$|E|=|V|-1$, циклсіз, байланысты</td><td>тең күшті анықтамалар</td></tr>
+        <tr><td>Жапырақтар</td><td>$\ge2$</td><td>$n\ge2$</td></tr>
+        <tr><td>Бинар ағаш</td><td>$h\ge\lceil\log_2m\rceil$</td><td>$m$ жапырақ</td></tr>
+        <tr><td>Қима қасиеті</td><td>шекарадағы ең жеңіл қабырға MST-де</td><td>Крускал, Прим</td></tr>
+        <tr><td>Дейкстра</td><td>$d(w)\leftarrow\min(d(w),d(u)+w)$</td><td>салмақтар $\ge0$</td></tr>
+        <tr><td>Кэли</td><td>$n^{n-2}$</td><td>нөмірленген ағаштар</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m15-6-self">
+        <li><input type="checkbox"> <span>Мен ағаштың тең күшті анықтамаларын атап, $|E|=n-1$ екенін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бинар ағаштың биіктігін бағалай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен BFS пен DFS тәртібін анықтай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Крускал мен Приммен MST тауып, қима қасиетімен негіздей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Дейкстра алгоритмін қолданып, оның теріс салмақта неге бұзылатынын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен алгоритмдердің күрделілігін бағалай аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. 100 төбелі ағашта неше қабырға?</p>
+<label><input type="radio" value="a"> 100</label>
+<label><input type="radio" value="b"> 99</label>
+<label><input type="radio" value="c"> 101</label>
+<label><input type="radio" value="d"> 50</label>
+<p class="explain">|E| = n − 1.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">2. Ағашта екі төбені неше жол қосады?</p>
+<label><input type="radio" value="a"> дәл бір</label>
+<label><input type="radio" value="b"> кемінде екі</label>
+<label><input type="radio" value="c"> ешқайсысы</label>
+<label><input type="radio" value="d"> шексіз</label>
+<p class="explain">Екі жол болса - цикл.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">3. Ең кіші қаңқалы ағашты табатын алгоритм:</p>
+<label><input type="radio" value="a"> Дейкстра</label>
+<label><input type="radio" value="b"> BFS</label>
+<label><input type="radio" value="c"> Эйлер</label>
+<label><input type="radio" value="d"> Крускал</label>
+<p class="explain">Прим де жарайды.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">4. Дейкстра қай жағдайда қате береді?</p>
+<label><input type="radio" value="a"> граф ағаш болса</label>
+<label><input type="radio" value="b"> салмақтар тең болса</label>
+<label><input type="radio" value="c"> теріс салмақтар болса</label>
+<label><input type="radio" value="d"> граф байланысты болса</label>
+<p class="explain">Бекітілген қашықтық кейін қысқаруы мүмкін.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. 1024 жапырақты бинар ағаштың ең кіші биіктігі:</p>
+<label><input type="radio" value="a"> 1024</label>
+<label><input type="radio" value="b"> 10</label>
+<label><input type="radio" value="c"> 512</label>
+<label><input type="radio" value="d"> 11</label>
+<p class="explain">2¹⁰ = 1024.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">6. Салмақсыз графта ең аз қабырғалы жолды табатын алгоритм:</p>
+<label><input type="radio" value="a"> BFS</label>
+<label><input type="radio" value="b"> DFS</label>
+<label><input type="radio" value="c"> Крускал</label>
+<label><input type="radio" value="d"> Прим</label>
+<p class="explain">Енімен аралау.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">7. 4 нөмірленген төбедегі ағаштар саны:</p>
+<label><input type="radio" value="a"> 12</label>
+<label><input type="radio" value="b"> 4</label>
+<label><input type="radio" value="c"> 24</label>
+<label><input type="radio" value="d"> 16</label>
+<p class="explain">Кэли: 4².</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">8. n ≥ 2 төбелі ағашта жапырақтар саны кемінде:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> n/2</label>
+<label><input type="radio" value="c"> 2</label>
+<label><input type="radio" value="d"> n − 1</label>
+<p class="explain">Ең ұзын жолдың ұштары.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-96.html"><small>Алдыңғы</small>← Discrete Mathematics · 5-сабақ: Графтар теориясының негіздері</a>

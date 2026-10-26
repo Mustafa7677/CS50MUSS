@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Discrete Mathematics · 7-сабақ: Булев алгебрасы және логикалық схемалар - CS50 қазақша">
-  <meta property="og:description" content="Математика, Discrete Mathematics · 7-сабақ: Булев алгебрасы және логикалық схемалар. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Булев функциялары, қалыпты түрлер, логикалық элементтер, ықшамдау.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-98.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Discrete Mathematics · 7-сабақ: Булев алгебрасы және логикалық схемалар - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-98.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Discrete Mathematics · 7-сабақ: Булев алгебрасы және логикалық схемалар. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Булев функциялары, қалыпты түрлер, логикалық элементтер, ықшамдау.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,374 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="98">
         <div class="num">Discrete Mathematics · 7-сабақ</div>
         <h1>Булев алгебрасы және логикалық схемалар</h1>
-        <p>Булев функциялары, қалыпты түрлер, логикалық элементтер, ықшамдау.</p>
+        <p>Компьютердің процессоры - миллиардтаған кішкентай «қақпалардың» (вентильдердің) жиынтығы, әрқайсысы 0 мен 1-ден тұратын қарапайым логикалық амал орындайды. Бұл сабақта осы амалдардың алгебрасын - Буль алгебрасын - үйренеміз: оның заңдарын, кез келген логикалық функцияны ақиқат кестесінен формулаға (ДҚФ, КҚФ) айналдыруды, Карно картасымен формуланы ықшамдауды және екі бит пен үш битті қосатын схемаларды (жартылай және толық қосқыш) құрамыз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-15">Discrete Mathematics</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-15">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>Буль алгебрасының негізгі заңдарын (дистрибутивтік, Де Морган, жұтылу) қолданып, өрнекті ықшамдау;</li>
+        <li>ақиқат кестесінен мінсіз дизъюнктивтік (ДҚФ) және конъюнктивтік (КҚФ) қалыпты формаларды құру;</li>
+        <li>$\{\land,\lor,\neg\}$ және $\{\text{NAND}\}$ жүйелерінің толық екенін түсіндіру;</li>
+        <li>3 айнымалы үшін Карно картасымен минимал ДҚФ табу;</li>
+        <li>жартылай және толық қосқыштың схемасын құрып, $n$-биттік қосуды түсіндіру;</li>
+        <li>$n$ айнымалыдан $2^{2^n}$ Буль функциясы бар екенін дәлелдеу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Логика: $\neg,\land,\lor$ байланыстырғыштары, ақиқат кестесі, Де Морган заңдары $\neg(p\land q)\equiv\neg p\lor\neg q$, дистрибутивтік. Жиындар: $|\{0,1\}^n|=2^n$ - ұзындығы $n$ биттік жолдар саны. Екілік санау жүйесі: $1011_2=8+2+1=11$.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Үйдегі баспалдақтың шамы астынан да, үстінен де қосылады: кез келген ажыратқышты ауыстырсаңыз, шамның күйі өзгереді. Бұл - XOR функциясы: $f(a,b)=1$, егер $a\ne b$. Мұндай кез келген «ереже» 0/1 кірістері мен 0/1 шығысы бар кестемен беріледі. Буль алгебрасы кестеден схемаға дейінгі жолды көрсетеді.</p>
+      <p>Кез келген кестені формулаға айналдырудың әмбебап тәсілі бар: шығысы 1 болатын әр жол үшін «дәл осы жолда ғана 1 беретін» конъюнкция жазып, оларды $\lor$-пен біріктіреміз. Сондықтан тек «және», «немесе», «емес» вентильдерімен <em>кез келген</em> цифрлық құрылғыны жасауға болады. Тіпті бір ғана NAND вентилі жеткілікті - микросхема өндірісінде дәл осы қолданылады.</p>
+      <p>Бірақ әмбебап формула көбінесе ұзын: көп вентиль - көп транзистор, көп энергия. Сондықтан формуланы ықшамдау маңызды. Карно картасы - ақиқат кестесін «көршілес жолдары тек бір битпен ерекшеленетіндей» етіп орналастырады, сонда қосуға болатын мүшелер көзге көрінеді.</p>
+      <p>Ең маңызды схема - қосқыш. Екі битті қосқанда «қосынды» биті XOR-ге, ал «тасымал» AND-ге тең. Үш битті (тасымалды қоса) қосатын толық қосқыштарды тізбектеп, кез келген ұзындықтағы сандарды қосамыз - процессордың арифметикалық блогының жүрегі.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 7.1 · Буль функциясы</span>
+        <p>$f:\{0,1\}^n\to\{0,1\}$ функциясы - $n$ айнымалы <strong>Буль функциясы</strong> (<span class="term-en">Boolean function</span>). Белгілер: $\bar x$ (терістеу), $xy$ не $x\land y$ (көбейту), $x+y$ не $x\lor y$ (қосу), $x\oplus y$ (XOR, 2 модулі бойынша қосу).</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 7.1 · Буль алгебрасының заңдары</span>
+        <p>Кез келген $x,y,z\in\{0,1\}$ үшін: $x+0=x$, $x\cdot1=x$; $x+\bar x=1$, $x\bar x=0$; $x+x=x$, $xx=x$ (идемпотенттік); $x(y+z)=xy+xz$ және $x+yz=(x+y)(x+z)$ (екі дистрибутивтік); $\overline{x+y}=\bar x\,\bar y$, $\overline{xy}=\bar x+\bar y$ (Де Морган); $x+xy=x$, $x(x+y)=x$ (<strong>жұтылу заңы</strong> (<span class="term-en">absorption law</span>)).</p></div>
+      <p><em>Негіздеме.</em> Әр заң 2 не 4 (не 8) жолы бар ақиқат кестесімен тексеріледі. Ерекшелігі: $x+yz=(x+y)(x+z)$ - сандар арифметикасында жалған, ал Буль алгебрасында ақиқат.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 7.2 · Буль функцияларының саны</span>
+        <p>$n$ айнымалыдан дәл $2^{2^n}$ Буль функциясы бар.</p></div>
+      <p><em>Негіздеме.</em> Кестеде $2^n$ жол, әр жолға 0 не 1 - көбейту ережесі (1-қорыту).</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 7.2 · Қалыпты формалар</span>
+        <p>Әр айнымалы не оның терістеуі бар конъюнкция - <strong>минтерм</strong> (<span class="term-en">minterm</span>). Мінсіз <strong>дизъюнктивтік қалыпты форма</strong> (<span class="term-en">disjunctive normal form</span>) (ДҚФ): $f=1$ болатын әр жолдың минтермінің дизъюнкциясы. Мінсіз <strong>конъюнктивтік қалыпты форма</strong> (<span class="term-en">conjunctive normal form</span>) (КҚФ): $f=0$ болатын әр жолдың «макстермінің» (әр айнымалы не терістеуі бар дизъюнкция) конъюнкциясы.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 7.3 · Функционалдық толықтық</span>
+        <p>Кез келген Буль функциясын тек $\land,\lor,\neg$ арқылы жазуға болады (тұрақты $0$ функциясы үшін $x\bar x$). Сонымен қатар, бір ғана $\text{NAND}(x,y)=\overline{xy}$ амалы жеткілікті: $\bar x=\text{NAND}(x,x)$, $xy=\overline{\text{NAND}(x,y)}$, $x+y=\text{NAND}(\bar x,\bar y)$.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту (мінсіз ДҚФ) және NAND өрнектерін Де Морган арқылы тексеру.</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 7.3 · Карно картасы</span>
+        <p><strong>Карно картасы</strong> (<span class="term-en">Karnaugh map</span>) - ақиқат кестесінің торы, мұнда көршілес ұяшықтар (шеттерді қоса) тек бір айнымалымен ерекшеленеді (Грей коды: $00,01,11,10$). Бірлер тұрған көршілес $2^k$ ұяшықтан тұратын тікбұрышты топ $k$ айнымалыны жоятын бір конъюнкцияға сәйкес.</p></div>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 7.4 · Қосқыштар</span>
+        <p><strong>Жартылай қосқыш</strong> (<span class="term-en">half adder</span>): екі бит $a,b$ үшін қосынды $s=a\oplus b$, тасымал $c=ab$. <strong>Толық қосқыш</strong> (<span class="term-en">full adder</span>): үш бит $a,b,c_{in}$ үшін $s=a\oplus b\oplus c_{in}$, $c_{out}=ab+c_{in}(a\oplus b)$ (= «көпшілік» функциясы $ab+ac_{in}+bc_{in}$).</p></div>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 7.1 · Минтерм және ДҚФ</span>
+        <div class="math-fbody">$$f(x_1,\dots,x_n)=\sum_{\sigma:\,f(\sigma)=1}x_1^{\sigma_1}\cdots x_n^{\sigma_n},\qquad x^1=x,\ x^0=\bar x$$</div>
+        <p class="math-fnote">Мінсіз ДҚФ жалғыз (минтермдердің ретіне дейін), бірақ ұзын; ықшамдау - Карно картасы не алгебра заңдары.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 7.2 · Толық қосқыш</span>
+        <div class="math-fbody">$$s=a\oplus b\oplus c_{in},\qquad c_{out}=ab+ac_{in}+bc_{in}$$</div>
+        <p class="math-fnote">Шығыс $(c_{out}s)_2=a+b+c_{in}$ - екілік жазудағы қосынды ($0..3$).</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 7.3 · Функциялар саны</span>
+        <div class="math-fbody">$$\left|\{f:\{0,1\}^n\to\{0,1\}\}\right|=2^{2^n}$$</div>
+        <p class="math-fnote">$n=2$: 16; $n=3$: 256; $n=5$: $\approx4{,}3\cdot10^9$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Ықшамдау құралдары: жұтылу $x+xy=x$; «жапсыру» $xy+x\bar y=x$; Де Морган. Карно картасында топтар: 1, 2, 4, 8 ұяшық (тек $2^k$), мүмкіндігінше үлкен, шеттер «оралып» көршілес, әр 1 кемінде бір топта.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>$x+yz=(x+y)(x+z)$ - Буль алгебрасында ақиқат, бірақ $x+x=x$ болғандықтан әдеттегі сандық интуиция алдауы мүмкін: Буль «қосуы» - бұл $\lor$, ал $1+1=1$. Ал XOR ($\oplus$) - 2 модулі бойынша қосу: $1\oplus1=0$. Екеуін шатастырмаңыз.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: Буль функцияларының саны</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $n$ айнымалыдан $2^{2^n}$ функция бар екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>Кіріс - ұзындығы $n$ биттік жол; олардың саны $2^n$ (әр орынға 2 таңдау).</li>
+            <li>Функция әр кіріске 0 не 1 сәйкес қояды, яғни ақиқат кестесінің шығыс бағаны - ұзындығы $2^n$ биттік жол.</li>
+            <li>Әртүрлі функциялар - әртүрлі бағандар; бағандар саны $2^{2^n}$.</li>
+            <li>Тексеру $n=1$: $2^2=4$ функция: $0$, $1$, $x$, $\bar x$ ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: мінсіз ДҚФ кез келген функцияны береді</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 7.3-тің бірінші бөлігін дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$\sigma=(\sigma_1,\dots,\sigma_n)$ кірісі үшін минтерм $m_\sigma=x_1^{\sigma_1}\cdots x_n^{\sigma_n}$ ($x^1=x$, $x^0=\bar x$).</li>
+            <li>$m_\sigma(\tau)=1\iff$ барлық $i$ үшін $x_i^{\sigma_i}=1$ $\tau$-да $\iff\tau_i=\sigma_i$, яғни $\tau=\sigma$. Минтерм тек «өз» жолында 1.</li>
+            <li>$g=\sum_{\sigma:f(\sigma)=1}m_\sigma$ деп алайық.</li>
+            <li>$f(\tau)=1$ болса, $m_\tau$ қосындыда бар, $g(\tau)=1$. $f(\tau)=0$ болса, қосындыдағы әр $m_\sigma$ үшін $\sigma\ne\tau$, $m_\sigma(\tau)=0$, сондықтан $g(\tau)=0$.</li>
+            <li>Демек $g=f$. $f\equiv0$ болса, $x_1\bar x_1$ жарайды.</li>
+            <li>NAND толықтығы: $\neg$, $\land$, $\lor$ үшеуі де NAND арқылы өрнектеледі (Де Морган), сондықтан кез келген ДҚФ тек NAND вентильдерімен жиналады.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: толық қосқыш формулалары</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $a+b+c$ қосындысының екілік жазуы $(c_{out}s)_2$ екенін тексеру.</p>
+          <ol class="math-steps">
+            <li>$a+b+c\in\{0,1,2,3\}$, екілік жазуы екі бит: кіші бит $s$ - қосындының жұптығы, үлкен бит $c_{out}$ - қосынды $\ge2$ ма.</li>
+            <li>$s=1\iff$ бірлер саны тақ $\iff a\oplus b\oplus c=1$ (XOR - 2 модулі бойынша қосу).</li>
+            <li>$c_{out}=1\iff$ кемінде екі бит 1 $\iff ab+ac+bc=1$ («көпшілік» функциясы).</li>
+            <li>Балама түрі: $c_{out}=ab+c(a\oplus b)$: не $a,b$ екеуі 1, не дәл біреуі 1 және $c=1$ - сол оқиғалар.</li>
+            <li>Тексеру: $a=b=c=1$: $s=1\oplus1\oplus1=1$, $c_{out}=1$: $11_2=3$ ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Ақиқат кестесінен ДҚФ</h3>
+        <p class="math-problem">$f(x,y,z)=1$ дәл $(x,y,z)\in\{(0,1,1),(1,0,1),(1,1,0),(1,1,1)\}$ болғанда (көпшілік функциясы). Мінсіз ДҚФ пен ықшам формуланы жазыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Минтермдер: $\bar xyz$, $x\bar yz$, $xy\bar z$, $xyz$.</li>
+          <li><b>2-қадам.</b> Мінсіз ДҚФ: $f=\bar xyz+x\bar yz+xy\bar z+xyz$.</li>
+          <li><b>3-қадам.</b> $xyz$-ты үш рет «қайталап» (идемпотенттік) жапсырамыз: $\bar xyz+xyz=yz$, $x\bar yz+xyz=xz$, $xy\bar z+xyz=xy$.</li>
+          <li><b>4-қадам.</b> Ықшам: $f=xy+xz+yz$ - толық қосқыштың тасымалы.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $f=xy+xz+yz$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Алгебралық ықшамдау</h3>
+        <p class="math-problem">$f=\overline{(\bar x+y)}+xy+\bar xy$ өрнегін ықшамдаңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Де Морган: $\overline{\bar x+y}=x\bar y$.</li>
+          <li><b>2-қадам.</b> $f=x\bar y+xy+\bar xy$.</li>
+          <li><b>3-қадам.</b> $x\bar y+xy=x(\bar y+y)=x$. Сонда $f=x+\bar xy$.</li>
+          <li><b>4-қадам.</b> $x+\bar xy=(x+\bar x)(x+y)=x+y$ (екінші дистрибутивтік).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $f=x+y$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Карно картасы</h3>
+        <p class="math-problem">$f(x,y,z)$ бірлері: $\bar x\bar y\bar z$, $\bar x\bar yz$, $\bar xyz$, $x\bar y\bar z$, $x\bar yz$. Минимал ДҚФ табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Карта: жолдар $x=0,1$; бағандар $yz=00,01,11,10$. $x=0$: $1,1,1,0$; $x=1$: $1,1,0,0$.</li>
+          <li><b>2-қадам.</b> $yz\in\{00,01\}$ бағандары екі жолда да 1: төрттік топ - $y=0$ тұрақты, яғни $\bar y$.</li>
+          <li><b>3-қадам.</b> $x=0$ жолында $01,11$ бағандары: екілік топ - $x=0$, $z=1$: $\bar xz$.</li>
+          <li><b>4-қадам.</b> Минимал ДҚФ: $f=\bar y+\bar xz$. Тексеру: 5 бірдің бәрі жабылды, нөлдер ($\bar xy\bar z$, $xyz$, $xy\bar z$) жабылмады ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $f=\bar y+\bar xz$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. 4 биттік қосу</h3>
+        <p class="math-problem">$0110_2+0111_2$ қосындысын толық қосқыштар тізбегімен есептеңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> 0-разряд: $0+1+0$: $s_0=1$, $c=0$.</li>
+          <li><b>2-қадам.</b> 1-разряд: $1+1+0$: $s_1=0$, $c=1$.</li>
+          <li><b>3-қадам.</b> 2-разряд: $1+1+1$: $s_2=1$, $c=1$. 3-разряд: $0+0+1$: $s_3=1$, $c=0$.</li>
+          <li><b>4-қадам.</b> Нәтиже $1101_2=13$; тексеру $6+7=13$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $1101_2=13$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Буль алгебрасында $1+1=2$ не $0$</span> → <span class="math-good">$1+1=1$ ($\lor$)</span><br>Неге қате: «$+$» - дизъюнкция; ал $1\oplus1=0$ - XOR.</li>
+        <li><span class="math-bad">$\overline{xy}=\bar x\,\bar y$</span> → <span class="math-good">$\overline{xy}=\bar x+\bar y$</span><br>Неге қате: Де Морган: терістеу көбейтуді қосуға ауыстырады.</li>
+        <li><span class="math-bad">Карно картасында 3 ұяшықты топ</span> → <span class="math-good">тек $1,2,4,8$ ұяшық</span><br>Неге қате: топ $2^k$ ұяшық болса ғана бір конъюнкцияға сәйкес.</li>
+        <li><span class="math-bad">Карно картасында бағандарды $00,01,10,11$ ретімен жазу</span> → <span class="math-good">$00,01,11,10$ (Грей коды)</span><br>Неге қате: көршілес бағандар бір битпен ғана ерекшеленуі керек.</li>
+        <li><span class="math-bad">Мінсіз ДҚФ-та минтермге кейбір айнымалыны жазбау</span> → <span class="math-good">әр минтермде барлық $n$ айнымалы</span><br>Неге қате: әйтпесе ол бір жолда емес, бірнеше жолда 1 береді.</li>
+        <li><span class="math-bad">Тасымал $c_{out}=a\oplus b\oplus c$</span> → <span class="math-good">$c_{out}=ab+ac+bc$</span><br>Неге қате: XOR - қосынды биті; тасымал - «кемінде екеуі».</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Буль амалдарының [0,1]-ге жалғасы: AND = min, OR = max, NOT = 1 − x" data-config='{"fns": [{"f": "min(x,y)", "label": "x ∧ y = min(x, y)"}, {"f": "max(x,y)", "label": "x ∨ y = max(x, y)", "color": 1}, {"f": "1-x", "label": "¬x = 1 − x", "color": 2, "dash": [5, 4]}], "params": [{"n": "y", "min": 0, "max": 1, "step": 1, "v": 1}], "view": [-0.1, 1.1, -0.1, 1.1]}'></div>
+      <p><b>Бақылаңыз:</b> $y$ слайдері тек 0 не 1. $x=0$ және $x=1$ нүктелеріндегі мәндер - ақиқат кестесі: $y=1$ болса $x\land y=x$, $x\lor y=1$; $y=0$ болса $x\land y=0$, $x\lor y=x$. Аралықтағы мәндер «анық емес логиканың» (fuzzy logic) бір нұсқасы.</p>
+      <div class="math-viz" data-viz="graph" data-title="Толық қосқыш: қосынды биті мен тасымал" data-config='{"fns": [{"f": "x-2*floor(x/2)", "label": "s = (a + b + c) mod 2"}, {"f": "floor(x/2)", "label": "c_out = ⌊(a + b + c)/2⌋", "color": 1}], "view": [-0.5, 3.5, -0.2, 1.5]}'></div>
+      <p><b>Бақылаңыз:</b> Көлденең ось - бірлер саны $a+b+c\in\{0,1,2,3\}$ (тек бүтін нүктелерге қараңыз). Қосынды биті жұптықты (XOR), тасымал «кемінде екеуін» (көпшілік) көрсетеді: $3=11_2$ - екеуі де 1.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m15-7-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-7-t1">1. Функциялар саны</h3></div>
+        <p>Санды енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"2 айнымалыдан Буль функцияларының саны","a":16,"v":"2**(2**2)","hint":"$2^{2^n}$.","sol":{"steps":["$2^4$."],"ans":"$16$"}},{"q":"4 айнымалылы ақиқат кестесіндегі жолдар","a":16,"v":"2**4","hint":"$2^n$.","sol":{"steps":["$2^4$."],"ans":"$16$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m15-7-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-7-t2">2. Заңдар</h3></div>
+        <p>Буль алгебрасында бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x+x=x$","a":true,"e":"Идемпотенттік.","hint":"$0+0=0$, $1+1=1$."},{"q":"$x+yz=(x+y)(x+z)$","a":true,"e":"Екінші дистрибутивтік заң.","hint":"8 жолды тексеріңіз."},{"q":"$x\\oplus x=x$","a":false,"e":"$x\\oplus x=0$.","hint":"XOR - айырмашылық."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m15-7-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-7-t3">3. Вентиль</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Екі биттің қосынды биті (тасымалсыз) қай вентиль?","o":["XOR","AND","OR","NAND"],"a":0,"e":"$1+1=10_2$: кіші бит 0.","hint":"$1+1$-дің кіші биті."},{"q":"Жартылай қосқыштың тасымалы:","o":["AND","XOR","OR","NOT"],"a":0,"e":"Тек $a=b=1$ болса тасымал.","hint":"$1+1=10_2$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m15-7-exp4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-7-t4">4. Ықшамдау</h3></div>
+        <p>Өрнекті ықшамдап, жауапты бір айнымалымен жазыңыз ($\bar x$ орнына $1-x$).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$xy+x\\bar y$","a":"x","v":"x*y+x*(1-y)","vars":["x","y"],"dom":[0,1],"hint":"Жапсыру: $x(y+\\bar y)$.","sol":{"steps":["$x\\cdot1$."],"ans":"$x$"}},{"q":"$\\bar xy+xy$ ($\\bar x=1-x$)","a":"y","v":"(1-x)*y+x*y","vars":["x","y"],"dom":[0,1],"hint":"Жапсыру: $y(\\bar x+x)$.","sol":{"steps":["$y\\cdot1$."],"ans":"$y$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-7-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-7-t5">5. Екілік қосу</h3></div>
+        <p>Нәтижені ондық санмен енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$1011_2+0110_2$","a":17,"v":"11+6","hint":"$11+6$.","sol":{"steps":["Разрядтап: $1+0=1$, $1+1=10$, $0+1+1=10$, $1+0+1=10$.","$10001_2$."],"ans":"$17$"}},{"q":"Толық қосқыш $a=1$, $b=0$, $c_{in}=1$: $c_{out}$","a":1,"v":"1*0+1*1+0*1","hint":"Кемінде екеуі 1 ме?","sol":{"steps":["$ab+ac+bc=0+1+0$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m15-7-mat6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-7-t6">6. Заң атауы</h3></div>
+        <p>Теңдікті атауымен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Заңдар.","pairs":[["x + xy = x","жұтылу"],["(x + y)‾ = x̄·ȳ","Де Морган"],["xy + xȳ = x","жапсыру"],["x(y + z) = xy + xz","дистрибутивтік"]],"hint":"Теорема 7.1.","sol":{"steps":["Жапсыру - дистрибутивтік пен $y+\\bar y=1$ салдары."]},"e":"Бұл заңдар - ықшамдаудың негізгі құралдары."}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m15-7-ord7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-7-t7">7. ДҚФ құру</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Ақиқат кестесінен мінсіз ДҚФ.","steps":["Шығысы 1 болатын жолдарды табамыз.","Әр жол үшін минтерм жазамыз: 1 - айнымалы, 0 - оның терістеуі.","Минтермдерді $\\lor$-пен біріктіреміз.","Заңдармен не Карно картасымен ықшамдаймыз."],"hint":"Жолдар → минтермдер → дизъюнкция.","sol":{"ans":"$f=\\sum m_\\sigma$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m15-7-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-7-t8">8. Параметрлік: функциялар</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"n":{"int":[1,4]}},"type":"num","q":"$#{n}$ айнымалыдан неше Буль функциясы бар?","a":"2^(2^n)","v":"2**(2**n)","hint":"Кестеде $2^{#{n}}$ жол.","sol":{"steps":["$2^{2^{#{n}}}=2^{#{2^n}}$."],"ans":"$#{2^(2^n)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m15-7-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-7-t9">9. Параметрлік: қосу</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,15]},"b":{"int":[1,15]}},"type":"num","q":"4 биттік қосқышқа $a=#{a}$ және $b=#{b}$ берілді. Ең үлкен разрядтан шығатын тасымал ($c_{out}$ = 1, егер $a+b\\ge16$)?","a":"floor((a+b)/16)","v":"floor(Rational(a+b,16))","hint":"4 бит $0..15$ сақтайды.","sol":{"steps":["$a+b=#{a+b}$."],"ans":"$#{floor((a+b)/16)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-7-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-7-t10">10. Карно</h3></div>
+        <p>$f(x,y,z)=\sum$ минтермдер $\{0,2,4,6\}$ (нөмір $=4x+2y+z$). Минимал ДҚФ-тағы литералдар саны?</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Литералдар саны","a":1,"v":"len(['z'])","hint":"$0,2,4,6$ - $z=0$ болатын барлық жол.","sol":{"steps":["Бір төрттік топ: $f=\\bar z$."],"ans":"$1$ ($f=\\bar z$)"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m15-7-tf11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-7-t11">11. Толықтық</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Тек NOR ($\\overline{x+y}$) вентильдерімен кез келген функцияны құруға болады.","a":true,"e":"$\\bar x=\\text{NOR}(x,x)$, $x+y=\\overline{\\text{NOR}(x,y)}$, $xy=\\text{NOR}(\\bar x,\\bar y)$.","hint":"NAND-ға симметриялы."},{"q":"Тек AND және OR (терістеусіз) вентильдерімен $\\bar x$ функциясын құруға болады.","a":false,"e":"AND мен OR монотонды: кірісті 0-ден 1-ге өзгерту шығысты кемітпейді, ал $\\bar x$ кемітеді.","hint":"Монотондылық."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m15-7-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-7-t12">12. Қадамдық шешім: XOR-ды NAND-пен құру</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$x\\oplus y$-ті 4 NAND вентилімен құрыңыз.","hint":"$u=\\text{NAND}(x,y)$ деп бастаңыз.","steps":["$u=\\overline{xy}$.","$v=\\text{NAND}(x,u)=\\overline{x\\,\\overline{xy}}$, $w=\\text{NAND}(y,u)=\\overline{y\\,\\overline{xy}}$.","$\\text{NAND}(v,w)=x\\overline{xy}+y\\overline{xy}=(x+y)\\overline{xy}$ (Де Морган).","$(x+y)(\\bar x+\\bar y)=x\\bar y+\\bar xy=x\\oplus y$ ✓."],"ans":"$x\\oplus y=\\text{NAND}(\\text{NAND}(x,u),\\text{NAND}(y,u))$, $u=\\text{NAND}(x,y)$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Процессорлар, жад, контроллерлер - Буль функцияларын іске асыратын схемалар. Бағдарламада биттік амалдар (<code>&amp;</code>, <code>|</code>, <code>^</code>, <code>~</code>) - Буль алгебрасы; жалаушалар (flags), маскалар, хэш-функциялар солармен жазылады. SAT-шешушілер (Буль формуласы қанағаттандырылатын ба?) - заманауи верификацияның құралы.</p>
+      <p><b>Мини-жоба: «Кестеден схемаға».</b> Кез келген функцияның мінсіз ДҚФ-сын шығарамыз, толық қосқыштардан $n$-биттік қосқыш жасаймыз және оны Python-ның <code>+</code> амалымен салыстырамыз.</p>
+<pre data-lang="python"><code class="language-python">from itertools import product
+
+def dnf(f, names):
+    terms = []
+    for bits in product([0, 1], repeat=len(names)):
+        if f(*bits):
+            terms.append("".join(n if b else n + "'" for n, b in zip(names, bits)))
+    return " + ".join(terms) or "0"
+
+majority = lambda x, y, z: int(x + y + z &gt;= 2)
+print("көпшілік:", dnf(majority, "xyz"))
+
+def full_adder(a, b, c):
+    s = a ^ b ^ c
+    cout = (a &amp; b) | (c &amp; (a ^ b))
+    return s, cout
+
+def add_bits(x, y, n=8):
+    c, out = 0, 0
+    for i in range(n):
+        s, c = full_adder((x &gt;&gt; i) &amp; 1, (y &gt;&gt; i) &amp; 1, c)
+        out |= s &lt;&lt; i
+    return out, c                      # c - толып кету (overflow) тасымалы
+
+print(add_bits(6, 7, 4), add_bits(200, 100, 8))
+print("барлығы дұрыс:", all(add_bits(x, y, 8) == ((x + y) % 256, (x + y) // 256) for x in range(256) for y in range(256)))
+
+nand = lambda a, b: 1 - (a &amp; b)
+xor_from_nand = lambda x, y: nand(nand(x, nand(x, y)), nand(y, nand(x, y)))
+print("XOR = 4 NAND:", all(xor_from_nand(x, y) == x ^ y for x in (0, 1) for y in (0, 1)))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li><code>dnf</code> функциясын мінсіз КҚФ шығаратын етіп өзгертіңіз (шығысы 0 жолдар бойынша).</li>
+        <li>Екі биттік санды салыстыратын $f(a_1a_0,b_1b_0)=1\iff a>b$ функциясының мінсіз ДҚФ-сын шығарып, қолмен ықшамдаңыз.</li>
+        <li>$n$-биттік қосқыштағы тасымал тізбегінің ең ұзын «ағыны» қандай кірістерде болады? (Мысалы, $1111+0001$.)</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Функциялар саны</td><td>$2^{2^n}$</td><td>$n$ айнымалы</td></tr>
+        <tr><td>Де Морган</td><td>$\overline{x+y}=\bar x\bar y$, $\overline{xy}=\bar x+\bar y$</td><td>-</td></tr>
+        <tr><td>Жұтылу, жапсыру</td><td>$x+xy=x$, $xy+x\bar y=x$</td><td>ықшамдау</td></tr>
+        <tr><td>Мінсіз ДҚФ</td><td>$\sum_{f(\sigma)=1}m_\sigma$</td><td>кез келген $f$</td></tr>
+        <tr><td>NAND толықтығы</td><td>$\bar x,\ xy,\ x+y$ NAND арқылы</td><td>әмбебап вентиль</td></tr>
+        <tr><td>Толық қосқыш</td><td>$s=a\oplus b\oplus c$, $c_{out}=ab+ac+bc$</td><td>$a+b+c=(c_{out}s)_2$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m15-7-self">
+        <li><input type="checkbox"> <span>Мен Буль алгебрасының заңдарымен өрнекті ықшамдай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен ақиқат кестесінен мінсіз ДҚФ пен КҚФ құра аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен NAND вентилінің толықтығын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен 3 айнымалы Карно картасымен минимал ДҚФ таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен жартылай және толық қосқыштың формулаларын қорыта аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $2^{2^n}$ формуласын дәлелдей аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. Буль алгебрасында 1 + 1 = ?</p>
+<label><input type="radio" value="a"> 0</label>
+<label><input type="radio" value="b"> 2</label>
+<label><input type="radio" value="c"> 1</label>
+<label><input type="radio" value="d"> 10</label>
+<p class="explain">Дизъюнкция: 1 ∨ 1 = 1.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. 3 айнымалыдан Буль функцияларының саны:</p>
+<label><input type="radio" value="a"> 8</label>
+<label><input type="radio" value="b"> 256</label>
+<label><input type="radio" value="c"> 64</label>
+<label><input type="radio" value="d"> 16</label>
+<p class="explain">2^(2³) = 2⁸.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. x + xy = ?</p>
+<label><input type="radio" value="a"> x</label>
+<label><input type="radio" value="b"> y</label>
+<label><input type="radio" value="c"> xy</label>
+<label><input type="radio" value="d"> x + y</label>
+<p class="explain">Жұтылу заңы.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. Жартылай қосқыштың қосынды биті:</p>
+<label><input type="radio" value="a"> a·b</label>
+<label><input type="radio" value="b"> a + b</label>
+<label><input type="radio" value="c"> ¬a</label>
+<label><input type="radio" value="d"> a ⊕ b</label>
+<p class="explain">XOR.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">5. Қай вентиль жалғыз өзі функционалдық толық?</p>
+<label><input type="radio" value="a"> AND</label>
+<label><input type="radio" value="b"> OR</label>
+<label><input type="radio" value="c"> NAND</label>
+<label><input type="radio" value="d"> XOR</label>
+<p class="explain">NAND арқылы ¬, ∧, ∨ өрнектеледі.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. Карно картасында топтағы ұяшықтар саны бола алмайды:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 3</label>
+<label><input type="radio" value="c"> 2</label>
+<label><input type="radio" value="d"> 4</label>
+<p class="explain">Тек 2ᵏ.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. Толық қосқышта a = b = c = 1 болса, (c_out, s):</p>
+<label><input type="radio" value="a"> (1, 1)</label>
+<label><input type="radio" value="b"> (1, 0)</label>
+<label><input type="radio" value="c"> (0, 1)</label>
+<label><input type="radio" value="d"> (0, 0)</label>
+<p class="explain">1 + 1 + 1 = 11₂.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. (x + y)‾ = ?</p>
+<label><input type="radio" value="a"> x̄ + ȳ</label>
+<label><input type="radio" value="b"> x·y</label>
+<label><input type="radio" value="c"> x ⊕ y</label>
+<label><input type="radio" value="d"> x̄·ȳ</label>
+<p class="explain">Де Морган.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-97.html"><small>Алдыңғы</small>← Discrete Mathematics · 6-сабақ: Ағаштар және графтардағы алгоритмдер</a>

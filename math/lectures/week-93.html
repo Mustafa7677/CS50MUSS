@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Discrete Mathematics · 2-сабақ: Дәлелдеу әдістері - CS50 қазақша">
-  <meta property="og:description" content="Математика, Discrete Mathematics · 2-сабақ: Дәлелдеу әдістері. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Тікелей дәлелдеу, қарама-қайшылық, индукция, мысалдар және қателер.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-93.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Discrete Mathematics · 2-сабақ: Дәлелдеу әдістері - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-93.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Discrete Mathematics · 2-сабақ: Дәлелдеу әдістері. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Тікелей дәлелдеу, қарама-қайшылық, индукция, мысалдар және қателер.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,389 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="93">
         <div class="num">Discrete Mathematics · 2-сабақ</div>
         <h1>Дәлелдеу әдістері</h1>
-        <p>Тікелей дәлелдеу, қарама-қайшылық, индукция, мысалдар және қателер.</p>
+        <p>Математикада «мен тексердім, жұмыс істейді» жеткіліксіз: тұжырым <em>барлық</em> жағдайда ақиқат екенін көрсету керек. Бұл сабақта дәлелдеудің негізгі әдістерін - тура дәлел, контрапозиция, қарсы жору (қайшылыққа келтіру), жағдайларға бөлу, математикалық индукция (кәдімгі және күшті), бар болуды дәлелдеу және Дирихле принципін - әрқайсысын классикалық мысалмен үйренеміз. Сонымен қатар жалпы тұжырымды бір қарсы мысалмен жоққа шығаруды үйренеміз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-15">Discrete Mathematics</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-15">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>тұжырымның логикалық құрылымын ($p\to q$, $\forall$, $\exists$) анықтап, сәйкес әдісті таңдау;</li>
+        <li>тура дәлелді және контрапозиция арқылы дәлелді жазу;</li>
+        <li>қарсы жору әдісімен $\sqrt2$-нің иррационалдығын және жай сандардың шексіздігін дәлелдеу;</li>
+        <li>кәдімгі және күшті математикалық индукцияны дұрыс құрылыммен (база, болжам, қадам) жазу;</li>
+        <li>Дирихле (көгершін ұялары) принципін қолдану;</li>
+        <li>жалпы тұжырымды қарсы мысалмен жоққа шығару және дәлелдегі жиі логикалық қателерді табу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Алдыңғы сабақтан: $p\to q\equiv\neg q\to\neg p$ (контрапозиция); $\neg\forall x\,P(x)\equiv\exists x\,\neg P(x)$. Бүтін сан $n$ <em>жұп</em>, егер $n=2k$ ($k\in\mathbb Z$), <em>тақ</em>, егер $n=2k+1$. $a\mid b$ («$a$ $b$-ны бөледі») - $b=ak$ болатын бүтін $k$ бар. Рационал сан - $\frac pq$ түріндегі сан ($p,q\in\mathbb Z$, $q\ne0$). Жай сан - 1-ден үлкен және тек 1-ге және өзіне бөлінетін натурал сан.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Дәлел - сенімнің тізбегі: әр қадам алдыңғысынан немесе бұрын дәлелденген фактілерден логика заңдарымен шығады. Бағдарламаның дұрыстығын тестпен «тексеру» мен оны дәлелдеу арасындағы айырма осында: тест тек тексерілген кірістерге кепілдік береді, ал дәлел - барлығына.</p>
+      <p><b>Қарсы жору</b>: тұжырымды жалған деп алып, қайшылыққа (мүмкін емес нәрсеге) келеміз. Демек жорамал қате, ал тұжырым ақиқат. Шерлок Холмс әдісі: «Мүмкін емес нұсқаларды алып тастаңыз - қалғаны ақиқат».</p>
+      <p><b>Индукция</b> - домино тізбегі. Бірінші домино құлайды (база). Кез келген домино құласа, келесісі құлайды (қадам). Олай болса, барлығы құлайды. Бұл жерде «кез келген» сөзі маңызды: қадам бір нақты домино үшін емес, жалпы $k$ үшін дәлелденуі керек.</p>
+      <p><b>Дирихле принципі</b> қарапайым көрінеді: 10 көгершін 9 ұяға кірсе, кемінде бір ұяда екі көгершін бар. Бірақ оның салдарлары таңқаларлық: Алматыда шаштарының саны бірдей кемінде екі адам бар (адамда 200 мыңнан аз шаш, ал қалада 2 миллионнан астам адам).</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 2.1 · Тура дәлел және контрапозиция</span>
+        <p>$p\to q$ түріндегі тұжырымның <strong>тура дәлелі</strong> (<span class="term-en">direct proof</span>): $p$-ны ақиқат деп алып, логикалық қадамдармен $q$-ға келеміз. <strong>Контрапозиция арқылы дәлел</strong> (<span class="term-en">proof by contraposition</span>): оның орнына $\neg q\to\neg p$-ны тура дәлелдейміз (олар тепе-тең күшті).</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 2.2 · Қарсы жору</span>
+        <p>$P$-ны дәлелдеу үшін $\neg P$-ны жорып, одан қайшылыққа ($r\land\neg r$) келеміз. Бұл - <strong>қарсы жору әдісі</strong> (<span class="term-en">proof by contradiction</span>). Негізі: $(\neg P\to\text{қайшылық})\equiv P$.</p></div>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 2.3 · Математикалық индукция</span>
+        <p>$P(n)$, $n\ge n_0$ пікірлері. Егер (база) $P(n_0)$ ақиқат және (қадам) кез келген $k\ge n_0$ үшін $P(k)\to P(k+1)$ болса, онда барлық $n\ge n_0$ үшін $P(n)$ ақиқат. Бұл - <strong>математикалық индукция</strong> (<span class="term-en">mathematical induction</span>). <strong>Күшті индукция</strong> (<span class="term-en">strong induction</span>): қадамда $P(n_0),\dots,P(k)$ барлығын болжап, $P(k+1)$-ді дәлелдейміз.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 2.1 · Индукция принципі</span>
+        <p>Жоғарыдағы база мен қадам орындалса, $\forall n\ge n_0:\ P(n)$.</p></div>
+      <p><em>Негіздеме.</em> Қарсы жору: $P(n)$ жалған болатын $n\ge n_0$ бар делік. Натурал сандардың кез келген бос емес ішкі жиынында ең кіші элемент бар (реттеу принципі) - ең кіші қарсы мысал $m$ болсын. База бойынша $m>n_0$, сондықтан $m-1\ge n_0$ және $P(m-1)$ ақиқат ($m$ - ең кішісі). Қадам бойынша $P(m)$ ақиқат - қайшылық.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 2.2 · √2 иррационал</span>
+        <p>$\sqrt2$ рационал сан емес.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 2.3 · Жай сандар шексіз</span>
+        <p>Жай сандар шексіз көп.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 2.4 · Дирихле принципі</span>
+        <p>$n$ затты $m$ жәшікке салса және $n>m$ болса, кемінде бір жәшікте кемінде 2 зат бар. Жалпы түрі: кемінде бір жәшікте кемінде $\left\lceil\frac nm\right\rceil$ зат бар. Бұл - <strong>Дирихле принципі</strong> (<span class="term-en">pigeonhole principle</span>).</p></div>
+      <p><em>Негіздеме.</em> Қарсы жору: әр жәшікте ең көбі $\left\lceil\frac nm\right\rceil-1$ зат болса, барлығы $\le m\left(\left\lceil\frac nm\right\rceil-1\right)&lt;m\cdot\frac nm=n$ - қайшылық ($\lceil t\rceil-1&lt;t$ болғандықтан).</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 2.1 · Индукция сызбасы</span>
+        <div class="math-fbody">$$P(n_0)\ \land\ \forall k\ge n_0\,\bigl(P(k)\to P(k+1)\bigr)\ \Longrightarrow\ \forall n\ge n_0\ P(n)$$</div>
+        <p class="math-fnote">Екі бөлік те міндетті: базасыз «дәлел» жалған тұжырымды да «дәлелдей» береді.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 2.2 · Арифметикалық прогрессия қосындысы</span>
+        <div class="math-fbody">$$1+2+\dots+n=\frac{n(n+1)}{2}$$</div>
+        <p class="math-fnote">$n\ge1$; 3-қорытуда индукциямен дәлелденеді.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 2.3 · Дирихле принципі</span>
+        <div class="math-fbody">$$\max_{1\le j\le m}N_j\ \ge\ \left\lceil\frac nm\right\rceil$$</div>
+        <p class="math-fnote">$n$ зат, $m$ жәшік, $N_j$ - $j$-жәшіктегі зат саны. $\lceil t\rceil$ - $t$-дан кіші емес ең кіші бүтін сан.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Әдісті таңдау: «$p\Rightarrow q$» - алдымен тура, қиын болса контрапозиция; «бір нәрсе <em>жоқ</em> не <em>мүмкін емес</em>» (иррационал, шексіз) - қарсы жору; «барлық $n$ үшін» - индукция; «бар болады» - мысал құру (конструктивті) не Дирихле; «барлық $x$ үшін» дегенді жоққа шығару - бір қарсы мысал.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Индукция қадамында $P(k+1)$-ді «болжап» қойып, одан $P(k)$-ға келу - қате (кері бағыт). Сондай-ақ индукция қадамы <em>кез келген</em> $k\ge n_0$ үшін жарамды болуы керек; «жылқылардың бәрі бір түсті» деген атақты «дәлелде» қадам $k=1\to2$ үшін бұзылады.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: √2 иррационал (қарсы жору)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\sqrt2\ne\frac pq$ (бүтін $p,q$) екенін дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>Қарсы жорамал: $\sqrt2=\frac pq$, мұнда $p,q$ - бүтін, $q\ne0$, және бөлшек қысқартылмайтын (ортақ бөлгіш тек $\pm1$).</li>
+            <li>Квадраттасақ: $p^2=2q^2$, демек $p^2$ жұп.</li>
+            <li>$p$ тақ болса, $p^2=(2k+1)^2=4k^2+4k+1$ тақ болар еді. Сондықтан $p$ жұп (контрапозиция): $p=2m$.</li>
+            <li>Қоямыз: $4m^2=2q^2\Rightarrow q^2=2m^2$, сондықтан $q^2$, демек $q$ та жұп.</li>
+            <li>$p$ мен $q$ екеуі де 2-ге бөлінеді - бөлшектің қысқартылмайтынына қайшы.</li>
+            <li>Демек жорамал жалған, $\sqrt2$ иррационал.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: жай сандардың шексіздігі (Евклид)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> жай сандардың ақырлы тізімі болмайтынын дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>Қарсы жорамал: жай сандар ақырлы: $p_1,p_2,\dots,p_k$ - барлығы.</li>
+            <li>$N=p_1p_2\cdots p_k+1$ санын қарастырамыз. $N>1$.</li>
+            <li>$N>1$ болғандықтан оның кемінде бір жай бөлгіші $p$ бар (1-ден үлкен кез келген натурал санның ең кіші 1-ден үлкен бөлгіші жай).</li>
+            <li>Жорамал бойынша $p$ - $p_1,\dots,p_k$-ның бірі, сондықтан $p\mid p_1\cdots p_k$.</li>
+            <li>Онда $p\mid N-p_1\cdots p_k=1$ - мүмкін емес ($p\ge2$).</li>
+            <li>Қайшылық: жай сандар шексіз. Ескерту: $N$ өзі міндетті түрде жай емес: $2\cdot3\cdot5\cdot7\cdot11\cdot13+1=30031=59\cdot509$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: $1+2+\dots+n=\frac{n(n+1)}{2}$ (индукция)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> формуланы барлық $n\ge1$ үшін дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$P(n)$: $1+2+\dots+n=\frac{n(n+1)}{2}$.</li>
+            <li><b>База</b> $n=1$: сол жақ $1$, оң жақ $\frac{1\cdot2}{2}=1$ ✓.</li>
+            <li><b>Индукциялық болжам</b>: кез келген $k\ge1$ үшін $P(k)$ ақиқат деп алайық: $1+\dots+k=\frac{k(k+1)}{2}$.</li>
+            <li><b>Қадам</b>: $1+\dots+k+(k+1)=\frac{k(k+1)}{2}+(k+1)$ (болжамды қолдандық).</li>
+            <li>$=(k+1)\left(\frac k2+1\right)=\frac{(k+1)(k+2)}{2}$ - бұл дәл $P(k+1)$.</li>
+            <li>Индукция принципі бойынша $P(n)$ барлық $n\ge1$ үшін ақиқат.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: күшті индукция: жай көбейткіштерге жіктелу</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $n\ge2$ кез келген натурал сан жай сандардың көбейтіндісі екенін дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$P(n)$: «$n$ - жай сандардың (бір не бірнеше) көбейтіндісі».</li>
+            <li><b>База</b> $n=2$: 2 - жай, бір көбейткішті көбейтінді ✓.</li>
+            <li><b>Күшті болжам</b>: $2\le j\le k$ барлық $j$ үшін $P(j)$ ақиқат.</li>
+            <li><b>Қадам</b>: $k+1$ жай болса - дайын. Жай болмаса, $k+1=ab$, $2\le a,b\le k$.</li>
+            <li>Болжам бойынша $a$ мен $b$ жай сандардың көбейтіндісі, сондықтан $ab=k+1$ та солай.</li>
+            <li>Кәдімгі индукция жетпейді: бізге $P(k)$ емес, $P(a)$ мен $P(b)$ керек, ал $a,b$ кез келген кіші сандар.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Тура дәлел</h3>
+        <p class="math-problem">Екі тақ санның көбейтіндісі тақ екенін дәлелдеңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $a=2k+1$, $b=2m+1$ ($k,m\in\mathbb Z$) - тақ санның анықтамасы.</li>
+          <li><b>2-қадам.</b> $ab=4km+2k+2m+1=2(2km+k+m)+1$.</li>
+          <li><b>3-қадам.</b> $2km+k+m$ - бүтін, демек $ab$ тақ санның анықтамасына сәйкес. ∎</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $ab=2(2km+k+m)+1$ - тақ.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Контрапозиция</h3>
+        <p class="math-problem">$n^2$ жұп болса, $n$ жұп екенін дәлелдеңіз ($n\in\mathbb Z$).</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Тура дәлел ыңғайсыз ($n^2=2k$-дан $n$ туралы қалай білеміз?). Контрапозиция: «$n$ тақ болса, $n^2$ тақ».</li>
+          <li><b>2-қадам.</b> $n=2k+1\Rightarrow n^2=4k^2+4k+1=2(2k^2+2k)+1$ - тақ.</li>
+          <li><b>3-қадам.</b> Контрапозиция дәлелденді, демек бастапқы тұжырым да ақиқат. (Бұл факт √2 дәлелінде қолданылды.)</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Дәлелденді.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Индукция: бөлінгіштік</h3>
+        <p class="math-problem">Барлық $n\ge1$ үшін $3\mid n^3-n$ екенін дәлелдеңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> База $n=1$: $1-1=0$, $3\mid0$ ✓.</li>
+          <li><b>2-қадам.</b> Болжам: $3\mid k^3-k$.</li>
+          <li><b>3-қадам.</b> Қадам: $(k+1)^3-(k+1)=k^3+3k^2+3k+1-k-1=(k^3-k)+3(k^2+k)$.</li>
+          <li><b>4-қадам.</b> Бірінші қосылғыш болжам бойынша 3-ке бөлінеді, екіншісі айқын. Демек $3\mid(k+1)^3-(k+1)$.</li>
+          <li><b>5-қадам.</b> Балама тура дәлел: $n^3-n=(n-1)n(n+1)$ - қатар тұрған үш санның бірі 3-ке бөлінеді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Дәлелденді.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Дирихле</h3>
+        <p class="math-problem">$1,2,\dots,10$ сандарынан 6 сан таңдалды. Олардың ішінде қосындысы 11 болатын екі сан бар екенін дәлелдеңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Сандарды 5 «жәшікке» бөлеміз: $\{1,10\},\{2,9\},\{3,8\},\{4,7\},\{5,6\}$ - әр жұптың қосындысы 11.</li>
+          <li><b>2-қадам.</b> 6 сан 5 жәшікке түседі, $6>5$.</li>
+          <li><b>3-қадам.</b> Дирихле: кемінде бір жәшіктен екі сан таңдалды, олардың қосындысы 11.</li>
+          <li><b>4-қадам.</b> 5 сан жеткіліксіз екенін мысал көрсетеді: $\{1,2,3,4,5\}$ - қосындысы 11 болатын жұп жоқ.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Дәлелденді; 6 - ең кіші жеткілікті сан.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Бірнеше мысалды тексеріп, «$\forall n$» деп қорыту</span> → <span class="math-good">жалпы дәлел</span><br>Неге қате: $n^2+n+41$ $n=1..39$ үшін жай, бірақ $n=40$-та құрама.</li>
+        <li><span class="math-bad">Индукцияда базаны тексермеу</span> → <span class="math-good">база міндетті</span><br>Неге қате: «$n=n+1$» қадамы ақиқат «болып көрінеді», бірақ база жалған - тұжырым жалған.</li>
+        <li><span class="math-bad">Қадамда $P(k+1)$-ден бастап $P(k)$-ға келу</span> → <span class="math-good">$P(k)$-ны қолданып, $P(k+1)$-ге келу</span><br>Неге қате: бұл кері импликацияны дәлелдейді, ол жеткіліксіз.</li>
+        <li><span class="math-bad">$p\to q$-ны дәлелдеу үшін $q\to p$-ны дәлелдеу</span> → <span class="math-good">$p\to q$ не $\neg q\to\neg p$</span><br>Неге қате: кері пікір тепе-тең күшті емес.</li>
+        <li><span class="math-bad">Қарсы жоруда терістеуді қате жазу: «$\sqrt2$ рационал емес» терістеуі «$\sqrt2$ бүтін»</span> → <span class="math-good">«$\sqrt2$ рационал»</span><br>Неге қате: терістеу нақты логикалық $\neg$ болуы керек.</li>
+        <li><span class="math-bad">«$N=p_1\cdots p_k+1$ әрдайым жай»</span> → <span class="math-good">$N$-нің жай бөлгіші тізімде жоқ</span><br>Неге қате: $30031=59\cdot509$.</li>
+        <li><span class="math-bad">Дирихледе жәшік санын қате таңдау</span> → <span class="math-good">жәшіктерді есеп шартына қарай құру</span><br>Неге қате: жәшік - «бірдей болу» белгісі (мысалы, қосындысы 11 жұп).</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Индукция мысалы: n(n+1)/2 және қосынды 1 + ... + n" data-config='{"fns": [{"f": "x*(x+1)/2", "label": "n(n+1)/2"}, {"f": "floor(x)*(floor(x)+1)/2", "label": "1 + 2 + ... + ⌊x⌋", "color": 1}], "view": [0, 12, 0, 80]}'></div>
+      <p><b>Бақылаңыз:</b> Баспалдақ (қызыл) - бүтін $n$-дегі қосынды, көк қисық - формула. Бүтін нүктелерде олар сәйкес келеді - бұл тек 12 жағдайды «көрсету», дәлел емес. Дәлел - индукция (3-қорыту), ол барлық $n$-ді қамтиды.</p>
+      <div class="math-viz" data-viz="graph" data-title="Дирихле: ⌈n/m⌉ - ең толы жәшіктегі кепілдендірілген зат саны" data-config='{"fns": [{"f": "ceil(x/m)", "label": "⌈n/m⌉"}, {"f": "x/m", "label": "n/m (орташа)", "color": 1, "dash": [6, 4]}], "params": [{"n": "m", "min": 1, "max": 12, "step": 1, "v": 5}], "view": [0, 40, 0, 10]}'></div>
+      <p><b>Бақылаңыз:</b> $m$ - жәшік саны, көлденең ось - зат саны $n$. Ең толы жәшікте кемінде $\lceil n/m\rceil$ зат: бұл орташадан кем емес ең кіші бүтін сан. $m=5$, $n=6$ болса, $\lceil6/5\rceil=2$ (4-мысал).</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="choice" data-id="m15-2-cho1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-2-t1">1. Әдісті таңдау</h3></div>
+        <p>Ең табиғи әдісті таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"«$\\sqrt3$ иррационал».","o":["қарсы жору","индукция","тура есептеу","Дирихле"],"a":0,"e":"«Бір нәрсе <em>емес</em>» - қарсы жору.","hint":"Рационал деп жорып көріңіз."},{"q":"«Барлық $n\\ge1$ үшін $2^n>n$».","o":["индукция","қарсы жору","Дирихле","бір мысал"],"a":0,"e":"«Барлық натурал $n$» - индукция.","hint":"$n\\to n+1$."},{"q":"«367 адамның ішінде туған күні бірдей екеуі бар».","o":["Дирихле","индукция","тура дәлел","контрапозиция"],"a":0,"e":"367 зат, 366 жәшік.","hint":"Жәшік - күн."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m15-2-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-2-t2">2. Логикалық құрылым</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$p\\to q$-ны дәлелдеу үшін $\\neg q\\to\\neg p$-ны дәлелдеу жеткілікті.","a":true,"e":"Контрапозиция тепе-тең күшті.","hint":"Алдыңғы сабақ."},{"q":"«Барлық жай сандар тақ» пікірін жоққа шығару үшін бір қарсы мысал жеткілікті.","a":true,"e":"$2$ - жұп жай сан.","hint":"$\\neg\\forall\\equiv\\exists\\neg$."},{"q":"Индукцияда базаны тексеру міндетті емес, егер қадам дәлелденсе.","a":false,"e":"Базасыз жалған тұжырымдар да «дәлелденеді».","hint":"Бірінші домино."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-2-num3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-2-t3">3. Дирихле</h3></div>
+        <p>Санды енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қапта 5 түсті шұлық бар. Қараңғыда кемінде бір жұп (бір түсті 2 шұлық) кепілді болуы үшін ең аз дегенде неше шұлық алу керек?","a":6,"v":"5+1","hint":"Жәшік - түс.","sol":{"steps":["5 шұлық әртүрлі түсті болуы мүмкін.","6-сы - кемінде біреуі қайталанады."],"ans":"$6$"}},{"q":"100 адам 12 айда туған. Кемінде неше адамның туған айы бірдей болуы кепілді?","a":9,"v":"ceiling(Rational(100,12))","hint":"$\\lceil100/12\\rceil$.","sol":{"steps":["$\\lceil8{,}33\\rceil$."],"ans":"$9$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m15-2-ord4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-2-t4">4. Индукция құрылымы</h3></div>
+        <p>$1+3+5+\dots+(2n-1)=n^2$ дәлелінің қадамдарын ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Тақ сандар қосындысы.","steps":["База: $n=1$, $1=1^2$.","Болжам: $1+3+\\dots+(2k-1)=k^2$.","$(k+1)$-ші мүшені қосамыз: $k^2+(2k+1)$.","$k^2+2k+1=(k+1)^2$ - бұл $P(k+1)$.","Индукция принципі бойынша барлық $n\\ge1$ үшін ақиқат."],"hint":"База → болжам → қадам → қорытынды.","sol":{"ans":"$n^2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m15-2-exp5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-2-t5">5. Индукцияға формула</h3></div>
+        <p>$n$ арқылы өрнек жазыңыз (кейін оны индукциямен дәлелдеуге болады).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$2+4+6+\\dots+2n$","a":"n*(n+1)","v":"summation(2*k,(k,1,n))","vars":["n"],"dom":[1,9],"hint":"$2(1+2+\\dots+n)$.","sol":{"steps":["$2\\cdot\\frac{n(n+1)}{2}$."],"ans":"$n(n+1)$"}},{"q":"$1^2+2^2+\\dots+n^2$","a":"n*(n+1)*(2*n+1)/6","v":"summation(k**2,(k,1,n))","vars":["n"],"dom":[1,9],"hint":"Белгілі формула; $n=1,2,3$ үшін $1,5,14$.","sol":{"steps":["$\\frac{n(n+1)(2n+1)}{6}$."],"ans":"$\\frac{n(n+1)(2n+1)}{6}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-2-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-2-t6">6. Қарсы мысал</h3></div>
+        <p>Ең кіші қарсы мысалды табыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"«Барлық $n\\ge1$ үшін $2^n+1$ жай» - ең кіші қарсы мысал $n$.","a":3,"v":"min([n for n in range(1,10) if not isprime(2**n+1)])","hint":"$n=1,2,3$-ті тексеріңіз.","sol":{"steps":["$n=1$: 3 жай; $n=2$: 5 жай; $n=3$: 9 құрама."],"ans":"$3$"}},{"q":"«$n^2-n+11$ барлық $n\\ge1$ үшін жай» - ең кіші қарсы мысал $n$.","a":11,"v":"min([n for n in range(1,30) if not isprime(n*n-n+11)])","hint":"$n=11$: $11^2-11+11=121$.","sol":{"steps":["$n=1..10$ үшін жай.","$n=11$: $121=11^2$."],"ans":"$11$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m15-2-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-2-t7">7. Тұжырым және әдіс</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Классикалық дәлелдер.","pairs":[["√2 иррационал","қарсы жору"],["1 + ... + n = n(n+1)/2","индукция"],["әр n ≥ 2 жай көбейткіштерге жіктеледі","күшті индукция"],["n² жұп ⇒ n жұп","контрапозиция"]],"hint":"Әр қорытуға қараңыз.","sol":{"steps":["Әдіс - тұжырымның құрылымына сай."]},"e":"Бір тұжырымды бірнеше әдіспен дәлелдеуге болады."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m15-2-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-2-t8">8. Параметрлік: Дирихле</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"int":[3,12]},"n":{"int":[20,100]}},"type":"num","q":"$#{n}$ шар $#{m}$ жәшікке салынды. Кемінде бір жәшікте кепілдендірілген ең үлкен шар саны (яғни $\\lceil n/m\\rceil$)?","a":"ceil(n/m)","v":"ceiling(Rational(n,m))","hint":"$\\left\\lceil\\frac{#{n}}{#{m}}\\right\\rceil$.","sol":{"steps":["$\\frac{#{n}}{#{m}}\\approx#{round(100*n/m)/100}$, жоғары дөңгелектейміз."],"ans":"$#{ceil(n/m)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m15-2-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-2-t9">9. Параметрлік: индукциялық формула</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"n":{"int":[5,40]}},"type":"num","q":"$1+3+5+\\dots+(2n-1)$ қосындысын $n=#{n}$ үшін есептеңіз.","a":"n^2","v":"sum([2*k-1 for k in range(1,n+1)])","hint":"Тақ сандар қосындысы $n^2$.","sol":{"steps":["Формула: $n^2$ (индукциямен дәлелденді)."],"ans":"$#{n^2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m15-2-tf10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-2-t10">10. Қатені табу</h3></div>
+        <p>«Барлық жылқылар бір түсті» деген «индукциялық дәлел»: база $n=1$ ақиқат; қадамда $k+1$ жылқыдан біріншісін алып тастасақ, $k$ жылқы бір түсті; соңғысын алып тастасақ та; екі топ қиылысады, демек барлығы бір түсті.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қадам $k=1\\to k+1=2$ үшін жарамды.","a":false,"e":"$k+1=2$ болса, екі топтың ($\\{1\\}$ және $\\{2\\}$) ортақ жылқысы жоқ.","hint":"Топтардың қиылысуын тексеріңіз."},{"q":"Қадам $k\\ge2$ үшін жарамды.","a":true,"e":"Ол жағдайда топтар қиылысады; бірақ тізбек $1\\to2$-де үзіледі.","hint":"Домино тізбегі бір жерде үзілсе жеткілікті."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-2-num11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-2-t11">11. Күшті индукция</h3></div>
+        <p>Тек 3 және 5 теңгелік монеталар бар.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Осы монеталармен төлеуге болмайтын ең үлкен сома.","a":7,"v":"max([s for s in range(1,40) if len([j for j in range(0,9) if s-5*j>=0 and (s-5*j)%3==0])==0])","hint":"$1,2,4,7$ төленбейді.","sol":{"steps":["$8=3+5$, $9=3\\cdot3$, $10=5\\cdot2$.","Күшті индукция: $n\\ge11$ болса $n=(n-3)+3$, ал $n-3\\ge8$ төленеді.","$7$ - төленбейтін ең үлкен сома."],"ans":"$7$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m15-2-ord12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-2-t12">12. Қарсы жору: √3</h3></div>
+        <p>$\sqrt3$-тің иррационалдығының дәлелін ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Дәлел.","steps":["$\\sqrt3=\\frac pq$ қысқартылмайтын бөлшек деп жорамалдаймыз.","$p^2=3q^2$, демек $3\\mid p^2$.","3 жай болғандықтан $3\\mid p$: $p=3m$.","$9m^2=3q^2\\Rightarrow q^2=3m^2$, демек $3\\mid q$.","$p,q$ екеуі де 3-ке бөлінеді - қайшылық."],"hint":"√2 дәлелімен бірдей құрылым.","sol":{"ans":"$\\sqrt3$ иррационал."}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m15-2-rev13">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-2-t13">13. Қадамдық шешім: Бернулли теңсіздігі</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$x\\ge-1$ және $n\\ge1$ бүтін болса, $(1+x)^n\\ge1+nx$ екенін индукциямен дәлелдеңіз.","hint":"Қадамда $(1+x)^{k+1}=(1+x)^k(1+x)$ және $1+x\\ge0$.","steps":["База $n=1$: $1+x\\ge1+x$ ✓.","Болжам: $(1+x)^k\\ge1+kx$.","$1+x\\ge0$ болғандықтан теңсіздікті $1+x$-ке көбейтуге болады: $(1+x)^{k+1}\\ge(1+kx)(1+x)=1+(k+1)x+kx^2$.","$kx^2\\ge0$, сондықтан $(1+x)^{k+1}\\ge1+(k+1)x$ ✓. Шарт $x\\ge-1$ көбейту қадамында қажет болды."],"ans":"$(1+x)^n\\ge1+nx$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Индукция - рекурсивті алгоритмдердің дұрыстығын дәлелдеудің негізгі құралы (рекурсия - индукцияның «бағдарламалық» түрі). Циклдердің «инварианты» - индукциялық болжам. Дирихле принципі хэш-кестелердегі коллизиялардың сөзсіздігін, сығымдау алгоритмдерінің шектеулерін түсіндіреді.</p>
+      <p><b>Мини-жоба: «Болжам мен қарсы мысал іздеу».</b> Бағдарлама тұжырымды көп мәнде тексеріп, қарсы мысалды табады (не таппайды). Бұл дәлел емес, бірақ болжам жасауға және қате тұжырымды тез анықтауға көмектеседі.</p>
+<pre data-lang="python"><code class="language-python">from math import isqrt
+
+def is_prime(n):
+    return n &gt;= 2 and all(n % d for d in range(2, isqrt(n) + 1))
+
+def counterexample(claim, rng):
+    return next((n for n in rng if not claim(n)), None)
+
+print("n^2+n+41 жай:", counterexample(lambda n: is_prime(n*n + n + 41), range(1, 1000)))
+print("2^n+1 жай:", counterexample(lambda n: is_prime(2**n + 1), range(1, 50)))
+print("sum 1..n = n(n+1)/2:", counterexample(lambda n: sum(range(1, n + 1)) == n*(n+1)//2, range(1, 2000)))
+
+# Евклид конструкциясы: p1*...*pk + 1 жай бола ма?
+primes, prod = [], 1
+for p in (q for q in range(2, 50) if is_prime(q)):
+    primes.append(p); prod *= p
+    N = prod + 1
+    small = next((d for d in range(2, isqrt(N) + 1) if N % d == 0), None)
+    print(primes[-1], N, "жай" if small is None else f"бөлгіш {small}")
+    if len(primes) == 7: break
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>«Әр жұп сан $n\ge4$ - екі жай санның қосындысы» (Гольдбах болжамы) пікірін $10^4$-ке дейін тексеріңіз. Қарсы мысал табылмаса, бұл дәлел бола ма?</li>
+        <li>3 және 5 теңгелік монета есебін $a$ және $b$ теңгеге жалпылаңыз ($\gcd(a,b)=1$). Төленбейтін ең үлкен сома $ab-a-b$ екенін бағдарламамен тексеріңіз.</li>
+        <li>Дирихле: $1..2n$ сандарынан $n+1$ сан таңдалса, біреуі екіншісін бөлетінін кездейсоқ таңдаулармен тексеріңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Тура дәлел</td><td>$p\Rightarrow\dots\Rightarrow q$</td><td>$p\to q$</td></tr>
+        <tr><td>Контрапозиция</td><td>$\neg q\Rightarrow\neg p$</td><td>тепе-тең күшті</td></tr>
+        <tr><td>Қарсы жору</td><td>$\neg P\Rightarrow$ қайшылық</td><td>«емес», «шексіз»</td></tr>
+        <tr><td>Индукция</td><td>$P(n_0)$, $P(k)\to P(k+1)$</td><td>база + қадам</td></tr>
+        <tr><td>Күшті индукция</td><td>$P(n_0..k)\to P(k+1)$</td><td>кіші кез келген мәндер керек</td></tr>
+        <tr><td>Дирихле</td><td>$\lceil n/m\rceil$</td><td>$n$ зат, $m$ жәшік</td></tr>
+        <tr><td>Жоққа шығару</td><td>бір қарсы мысал</td><td>$\forall$ пікірі</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m15-2-self">
+        <li><input type="checkbox"> <span>Мен тұжырымның құрылымына қарай дәлелдеу әдісін таңдай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен контрапозиция арқылы дәлел жаза аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $\sqrt2$ иррационал және жай сандардың шексіздігін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен индукцияны база, болжам, қадам құрылымымен жаза аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен күшті индукцияның қажеттілігін мысалмен түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Дирихле принципін қолдана аламын және «дәлелдегі» қатені таба аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. Индукцияның екі бөлігі:</p>
+<label><input type="radio" value="a"> болжам және қорытынды</label>
+<label><input type="radio" value="b"> база және қадам</label>
+<label><input type="radio" value="c"> мысал және қарсы мысал</label>
+<label><input type="radio" value="d"> тура және кері</label>
+<p class="explain">P(n₀) және P(k) → P(k + 1).</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">2. √2 иррационалдығы қай әдіспен дәлелденеді?</p>
+<label><input type="radio" value="a"> қарсы жору</label>
+<label><input type="radio" value="b"> индукция</label>
+<label><input type="radio" value="c"> Дирихле</label>
+<label><input type="radio" value="d"> бір мысал</label>
+<p class="explain">Рационал деп жорып, қайшылыққа келеміз.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">3. «n² тақ ⇒ n тақ» контрапозициясы:</p>
+<label><input type="radio" value="a"> n тақ ⇒ n² тақ</label>
+<label><input type="radio" value="b"> n² жұп ⇒ n жұп</label>
+<label><input type="radio" value="c"> n жұп ⇒ n² тақ</label>
+<label><input type="radio" value="d"> n жұп ⇒ n² жұп</label>
+<p class="explain">¬q → ¬p.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">4. 13 адамның ішінде туған айы бірдей кемінде неше адам бар?</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 13</label>
+<label><input type="radio" value="c"> 2</label>
+<label><input type="radio" value="d"> 12</label>
+<p class="explain">13 > 12: Дирихле.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. «∀n: P(n)» пікірін жоққа шығару үшін не жеткілікті?</p>
+<label><input type="radio" value="a"> барлық n-ді тексеру</label>
+<label><input type="radio" value="b"> бір қарсы мысал</label>
+<label><input type="radio" value="c"> индукция</label>
+<label><input type="radio" value="d"> екі мысал</label>
+<p class="explain">¬∀ ≡ ∃¬.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">6. 2·3·5·7·11·13 + 1 = 30031 саны:</p>
+<label><input type="radio" value="a"> құрама (59·509)</label>
+<label><input type="radio" value="b"> жай</label>
+<label><input type="radio" value="c"> жұп</label>
+<label><input type="radio" value="d"> 13-ке бөлінеді</label>
+<p class="explain">Евклид санының өзі жай болуы міндетті емес.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">7. Күшті индукцияда қадамда не болжанады?</p>
+<label><input type="radio" value="a"> тек P(k)</label>
+<label><input type="radio" value="b"> тек P(k + 1)</label>
+<label><input type="radio" value="c"> ештеңе</label>
+<label><input type="radio" value="d"> P(n₀), ..., P(k) барлығы</label>
+<p class="explain">Кіші кез келген мәндер.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">8. 1 + 3 + ... + (2n − 1) = ?</p>
+<label><input type="radio" value="a"> n(n + 1)/2</label>
+<label><input type="radio" value="b"> 2n</label>
+<label><input type="radio" value="c"> n²</label>
+<label><input type="radio" value="d"> n² − 1</label>
+<p class="explain">Тақ сандар қосындысы.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-92.html"><small>Алдыңғы</small>← Discrete Mathematics · 1-сабақ: Логика және жиындар</a>

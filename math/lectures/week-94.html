@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Discrete Mathematics · 3-сабақ: Қатынастар және функциялар - CS50 қазақша">
-  <meta property="og:description" content="Математика, Discrete Mathematics · 3-сабақ: Қатынастар және функциялар. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Эквиваленттік және реттік қатынастар, инъекция, сюръекция, биекция.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-94.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Discrete Mathematics · 3-сабақ: Қатынастар және функциялар - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-94.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Discrete Mathematics · 3-сабақ: Қатынастар және функциялар. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Эквиваленттік және реттік қатынастар, инъекция, сюръекция, биекция.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,379 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="94">
         <div class="num">Discrete Mathematics · 3-сабақ</div>
         <h1>Қатынастар және функциялар</h1>
-        <p>Эквиваленттік және реттік қатынастар, инъекция, сюръекция, биекция.</p>
+        <p>«Достық», «кіші немесе тең», «бір қаладан», «$a$ саны $b$-ны бөледі» - бұлардың барлығы объектілер арасындағы <b>қатынастар</b>. Ал функция - ерекше қатынас: әр кіріске дәл бір шығыс. Бұл сабақта қатынастардың қасиеттерін (рефлексивтік, симметриялық, транзитивтік), эквиваленттік қатынас пен оның кластарын, реттік қатынасты, функциялардың түрлерін (инъекция, сюръекция, биекция), олардың құрамасы мен кері функциясын, сондай-ақ шексіз жиындардың «өлшемін» салыстыруды (Кантор диагоналы) үйренеміз.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-15">Discrete Mathematics</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-15">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>қатынасты декарттық көбейтіндінің ішкі жиыны ретінде жазып, оның қасиеттерін тексеру;</li>
+        <li>эквиваленттік қатынастың кластары жиынды бөліктерге бөлетінін дәлелдеу және модуль бойынша кластарды табу;</li>
+        <li>жартылай реттік қатынасты тану және Хассе диаграммасын түсіндіру;</li>
+        <li>функцияның инъекция, сюръекция, биекция екенін тексеру, құрама мен кері функцияны табу;</li>
+        <li>ақырлы жиындар арасындағы функциялар, инъекциялар, қатынастар санын есептеу;</li>
+        <li>$\mathbb Z$ мен $\mathbb Q$ саналымды, ал $\mathbb R$ саналымсыз екенін түсіндіру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Жиындар: $A\times B=\{(a,b): a\in A,\ b\in B\}$, $|A\times B|=|A||B|$, $|\mathcal P(S)|=2^{|S|}$. Логика: $\forall$, $\exists$, $p\to q$. Бөлінгіштік: $a\mid b$ - $b=ak$ ($k\in\mathbb Z$). Санау: $n$ элементтен $k$ элементті ретімен таңдау саны $A_n^k=\frac{n!}{(n-k)!}$.</p>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Қатынасты кесте деп елестетіңіз: жолдарда $A$-ның элементтері, бағандарда $B$-ның элементтері, ал ұяшықта «байланысты ма?» деген сұраққа «иә/жоқ». Әр қатынас - осындай кесте, яғни $A\times B$-ның ішкі жиыны. Дерекқордағы кестелер (relations) осы ұғымнан шыққан.</p>
+      <p>«Бір сыныпта оқиды» қатынасы ерекше: әр адам өзімен бір сыныпта (рефлексивті), Асан Бөкемен бір сыныпта болса, Бөке де Асанмен (симметриялы), және бір сыныптастың сыныптасы да сыныптас (транзитивті). Мұндай қатынас - <b>эквиваленттік</b>: ол мектепті сыныптарға (кластарға) бөледі, әр оқушы дәл бір класта. Модуль бойынша салыстыру (сағат арифметикасы) - ең маңызды мысал.</p>
+      <p>Функция - «машина»: әр кіріске дәл бір шығыс. Ал оның «жақсы» қасиеттері: <b>инъекция</b> - әртүрлі кірістер әртүрлі шығыс береді (жеке куәлік нөмірі), <b>сюръекция</b> - әр мүмкін шығыс бір кіріспен «жабылады», <b>биекция</b> - екеуі де, яғни кері функциясы бар. Биекция екі жиынның «бірдей өлшемді» екенін көрсетеді.</p>
+      <p>Таңқаларлық факт: жұп сандар жиыны барлық натурал сандармен «бірдей өлшемді» ($n\mapsto2n$ - биекция), ал рационал сандар да саналымды. Бірақ нақты сандар «көбірек»: оларды нөмірлеу мүмкін емес. Мұны Кантордың диагональ әдісі көрсетеді - информатикадағы «шешілмейтін есептердің» (тоқтау есебі) дәлелі де осы идеяға сүйенеді.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 3.1 · Қатынас</span>
+        <p>$A$ мен $B$ арасындағы <strong>қатынас</strong> (<span class="term-en">relation</span>) - $R\subseteq A\times B$ ішкі жиыны; $(a,b)\in R$ орнына $aRb$ жазамыз. $A$-дағы қатынас ($R\subseteq A\times A$): <strong>рефлексивті</strong> (<span class="term-en">reflexive</span>), егер $\forall a:\ aRa$; <strong>симметриялы</strong> (<span class="term-en">symmetric</span>), егер $aRb\to bRa$; <strong>антисимметриялы</strong> (<span class="term-en">antisymmetric</span>), егер $aRb\land bRa\to a=b$; <strong>транзитивті</strong> (<span class="term-en">transitive</span>), егер $aRb\land bRc\to aRc$.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 3.2 · Эквиваленттік және реттік қатынас</span>
+        <p>Рефлексивті, симметриялы, транзитивті қатынас - <strong>эквиваленттік қатынас</strong> (<span class="term-en">equivalence relation</span>). $a$-ның <strong>эквиваленттік класы</strong> (<span class="term-en">equivalence class</span>) $[a]=\{x\in A: xRa\}$. Рефлексивті, антисимметриялы, транзитивті қатынас - <strong>жартылай реттік қатынас</strong> (<span class="term-en">partial order</span>) (мысалы, $\le$ сандарда, $\mid$ натурал сандарда, $\subseteq$ жиындарда).</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 3.1 · Кластар жиынды бөліктерге бөледі</span>
+        <p>$R$ - $A$-дағы эквиваленттік қатынас болсын. Онда (1) әр $a\in A$ өз класында жатады; (2) кез келген екі класс не тең, не қиылыспайды. Демек кластар $A$-ны қиылыспайтын бөліктерге бөледі. Керісінше, $A$-ның кез келген бөліктенуі «бір бөлікте жату» эквиваленттік қатынасын анықтайды.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту.</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 3.3 · Модуль бойынша салыстыру</span>
+        <p>$n\ge2$. $a\equiv b\pmod n$, егер $n\mid a-b$. Бұл $\mathbb Z$-тегі эквиваленттік қатынас, оның кластары - $[0],[1],\dots,[n-1]$ (қалдықтар кластары).</p></div>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 3.4 · Функция және оның түрлері</span>
+        <p>$f:A\to B$ <strong>функция</strong> (<span class="term-en">function</span>) - әр $a\in A$-ға дәл бір $f(a)\in B$ сәйкес қоятын қатынас. $f$ <strong>инъекция</strong> (<span class="term-en">injection</span>), егер $f(a_1)=f(a_2)\to a_1=a_2$; <strong>сюръекция</strong> (<span class="term-en">surjection</span>), егер $\forall b\in B\ \exists a:\ f(a)=b$; <strong>биекция</strong> (<span class="term-en">bijection</span>), егер екеуі де. <strong>Құрама функция</strong> (<span class="term-en">composition</span>) $(g\circ f)(a)=g(f(a))$.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 3.2 · Кері функция</span>
+        <p>$f:A\to B$-ның $f^{-1}:B\to A$ кері функциясы ($f^{-1}\circ f=\mathrm{id}_A$, $f\circ f^{-1}=\mathrm{id}_B$) бар болады $\iff$ $f$ биекция.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 3.3 · Ақырлы жиындардағы санау</span>
+        <p>$|A|=m$, $|B|=n$. (1) $f:A\to B$ функциялар саны $n^m$. (2) Инъекциялар саны $A_n^m=\frac{n!}{(n-m)!}$ ($m\le n$), әйтпесе 0. (3) $A$-дағы қатынастар саны $2^{m^2}$, рефлексивтілері $2^{m^2-m}$, симметриялылары $2^{m(m+1)/2}$. (4) $m=n$ болса, $f$ инъекция $\iff$ сюръекция $\iff$ биекция.</p></div>
+      <p><em>Негіздеме.</em> (1): әр $a$-ға $n$ таңдау. (2): әртүрлі мәндер ретімен. (3): $A\times A$-ның ішкі жиындары; рефлексивтіде диагональ бекітілген; симметриялыда $\{a,b\}$ жұптары мен диагональ еркін. (4): Дирихле принципі.</p>
+      <div class="math-def" id="def-5"><span class="math-tag">Анықтама 3.5 · Саналымды жиын</span>
+        <p>$A$ <strong>саналымды</strong> (<span class="term-en">countable</span>), егер ол ақырлы не $\mathbb N$-мен биекцияда болса. Мысалдар: $\mathbb Z$ ($0,1,-1,2,-2,\dots$), $\mathbb Q$ (бөлшектерді «диагональдар» бойымен нөмірлеу).</p></div>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 3.4 · Кантор теоремасы</span>
+        <p>$[0;1)$ аралығы (демек $\mathbb R$) саналымсыз.</p></div>
+      <p><em>Негіздеме.</em> 3-қорыту.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 3.1 · Функциялар саны</span>
+        <div class="math-fbody">$$|B^A|=n^m,\qquad A_n^m=\frac{n!}{(n-m)!}$$</div>
+        <p class="math-fnote">$|A|=m$, $|B|=n$. Бірінші - барлық функциялар, екінші - инъекциялар ($m\le n$).</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 3.2 · Қатынастар саны</span>
+        <div class="math-fbody">$$2^{m^2},\qquad 2^{m^2-m},\qquad 2^{\frac{m(m+1)}{2}}$$</div>
+        <p class="math-fnote">$|A|=m$ жиынындағы сәйкесінше барлық, рефлексивті және симметриялы қатынастар.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Тексеру ережесі: қасиеттер ($\forall$-пікірлер) <b>барлық</b> элемент үшін орындалуы керек, ал бұзылуын көрсету үшін бір қарсы мысал жеткілікті. Мысалы, «$a$ $b$-ны бөледі» симметриялы емес: $2\mid4$, бірақ $4\nmid2$.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Симметриялы емес ≠ антисимметриялы. «$a&lt;b$ немесе $a=b+1$» сияқты қатынас екеуі де емес бола алады, ал «тең» қатынасы әрі симметриялы, әрі антисимметриялы. Сондай-ақ, функцияның «бір кіріске бір шығыс» шарты инъекциямен шатаспасын: $f(x)=x^2$ - функция, бірақ $\mathbb R$-да инъекция емес.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: эквиваленттік кластар бөліктеу береді</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 3.1-дің (2) тұжырымын дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$[a]\cap[b]\ne\varnothing$ делік: $c\in[a]\cap[b]$, яғни $cRa$ және $cRb$.</li>
+            <li>Симметрия: $aRc$. Транзитивтік: $aRc$ және $cRb$-дан $aRb$.</li>
+            <li>Енді $x\in[a]$ алайық: $xRa$. Транзитивтік: $xRa$, $aRb\Rightarrow xRb$, яғни $x\in[b]$. Демек $[a]\subseteq[b]$.</li>
+            <li>Симметрия бойынша $bRa$, сондықтан дәл осылай $[b]\subseteq[a]$. Демек $[a]=[b]$.</li>
+            <li>Сонымен екі класс не қиылыспайды, не тең. (1): рефлексивтік бойынша $aRa$, яғни $a\in[a]$ - әр элемент кемінде бір класта.</li>
+            <li>Үш қасиеттің үшеуі де қолданылды: рефлексивтік - жабу үшін, симметрия мен транзитивтік - қиылыспау үшін.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: кері функция тек биекцияда</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $f$-тің кері функциясы бар болуы $f$-тің биекция болуымен тең күшті екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>($\Rightarrow$) $g=f^{-1}$ бар делік. $f(a_1)=f(a_2)$ болса, $g$ қолданып $a_1=g(f(a_1))=g(f(a_2))=a_2$ - инъекция.</li>
+            <li>Кез келген $b\in B$ үшін $a=g(b)$ алсақ, $f(a)=f(g(b))=b$ - сюръекция.</li>
+            <li>($\Leftarrow$) $f$ биекция. Әр $b$ үшін сюръекция бойынша $f(a)=b$ болатын $a$ бар, инъекция бойынша ол жалғыз. $g(b)=a$ деп анықтаймыз.</li>
+            <li>Анықтама бойынша $f(g(b))=b$; ал $g(f(a))$ - $f(a')=f(a)$ болатын жалғыз $a'$, яғни $a$. Демек $g=f^{-1}$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: Кантордың диагональ әдісі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $[0;1)$ аралығындағы сандарды тізімге нөмірлеп шығу мүмкін емес екенін дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>Қарсы жорамал: барлық сандар тізімделген: $x_1,x_2,x_3,\dots$ Әрқайсысын ондық бөлшекпен жазамыз: $x_i=0{,}d_{i1}d_{i2}d_{i3}\dots$ (9-дар тізбегімен аяқталатын жазуларды қолданбаймыз).</li>
+            <li>Жаңа сан құрамыз: $y=0{,}e_1e_2e_3\dots$, мұнда $e_i=5$, егер $d_{ii}\ne5$; және $e_i=4$, егер $d_{ii}=5$.</li>
+            <li>$y\in[0;1)$ және оның жазуында 9 жоқ, сондықтан бұл оның жалғыз ондық жазуы.</li>
+            <li>Әр $i$ үшін $y$ пен $x_i$ $i$-орындағы цифрымен ерекшеленеді ($e_i\ne d_{ii}$), сондықтан $y\ne x_i$.</li>
+            <li>Демек $y$ тізімде жоқ - қайшылық. $[0;1)$ саналымсыз, ал $\mathbb R\supset[0;1)$ - одан да.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Қасиеттерді тексеру</h3>
+        <p class="math-problem">$A=\{1,2,3\}$, $R=\{(1,1),(2,2),(3,3),(1,2),(2,1)\}$. $R$ эквиваленттік қатынас па? Кластарын табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Рефлексивті: $(1,1),(2,2),(3,3)\in R$ ✓.</li>
+          <li><b>2-қадам.</b> Симметриялы: $(1,2)$ мен $(2,1)$ екеуі де бар; басқа диагональдан тыс жұп жоқ ✓.</li>
+          <li><b>3-қадам.</b> Транзитивті: $(1,2),(2,1)\Rightarrow(1,1)$ ✓; $(2,1),(1,2)\Rightarrow(2,2)$ ✓; басқа тізбектер диагональ арқылы ✓.</li>
+          <li><b>4-қадам.</b> Кластар: $[1]=[2]=\{1,2\}$, $[3]=\{3\}$ - бөліктеу $\{\{1,2\},\{3\}\}$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Иә; кластар $\{1,2\}$ және $\{3\}$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Модуль бойынша кластар</h3>
+        <p class="math-problem">$a\equiv b\pmod5$ қатынасының кластарын жазып, $-7$, $23$, $100$ қай класта екенін табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Кластар: $[0],[1],[2],[3],[4]$ - 5-ке бөлгендегі қалдықтар бойынша.</li>
+          <li><b>2-қадам.</b> $-7=5\cdot(-2)+3$: $[3]$. (Қалдық $0\le r&lt;5$.)</li>
+          <li><b>3-қадам.</b> $23=5\cdot4+3$: $[3]$. Демек $-7\equiv23\pmod5$; тексеру: $23-(-7)=30$, $5\mid30$ ✓.</li>
+          <li><b>4-қадам.</b> $100$: $[0]$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $-7,23\in[3]$; $100\in[0]$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Функция түрлері</h3>
+        <p class="math-problem">$f:\mathbb Z\to\mathbb Z$, $f(n)=2n+3$ және $g:\mathbb R\to\mathbb R$, $g(x)=2x+3$. Қайсысы биекция? Кері функциясын табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Инъекция (екеуі де): $2n_1+3=2n_2+3\Rightarrow n_1=n_2$.</li>
+          <li><b>2-қадам.</b> $f$ сюръекция ма? $f(n)=4$ болса $n=\frac12\notin\mathbb Z$ - жоқ. $f$ биекция емес (жұп сандар жабылмайды).</li>
+          <li><b>3-қадам.</b> $g$: кез келген $y$ үшін $x=\frac{y-3}{2}\in\mathbb R$ - сюръекция. $g$ биекция.</li>
+          <li><b>4-қадам.</b> $g^{-1}(y)=\frac{y-3}{2}$. Тексеру: $g(g^{-1}(y))=2\cdot\frac{y-3}{2}+3=y$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $g$ - биекция, $g^{-1}(y)=\frac{y-3}2$; $f$ - тек инъекция.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Санау</h3>
+        <p class="math-problem">$|A|=3$, $|B|=5$. $A\to B$ функциялар, инъекциялар және $B\to A$ сюръекциялар санын табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Функциялар $A\to B$: $5^3=125$.</li>
+          <li><b>2-қадам.</b> Инъекциялар: $5\cdot4\cdot3=60$.</li>
+          <li><b>3-қадам.</b> Сюръекциялар $B\to A$ ($5$ элемент 3 мәнге, әр мән кемінде бір рет): қосу-шегеру. Барлығы $3^5=243$; бір мәнді «жіберіп алатындар» $3\cdot2^5=96$; екі мәнді жіберетіндер $3\cdot1^5=3$.</li>
+          <li><b>4-қадам.</b> $243-96+3=150$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $125$; $60$; $150$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">«Бөледі» қатынасы симметриялы</span> → <span class="math-good">антисимметриялы (натурал сандарда)</span><br>Неге қате: $2\mid4$, бірақ $4\nmid2$.</li>
+        <li><span class="math-bad">Рефлексивтікті бір элементте тексеру</span> → <span class="math-good">барлық $a$ үшін $aRa$</span><br>Неге қате: бір $(3,3)$ жоқ болса, қатынас рефлексивті емес.</li>
+        <li><span class="math-bad">$f(x)=x^2$, $\mathbb R\to\mathbb R$ - биекция</span> → <span class="math-good">инъекция да, сюръекция да емес</span><br>Неге қате: $f(-1)=f(1)$; $-1$ мәні жоқ.</li>
+        <li><span class="math-bad">$|A|=m$, $|B|=n$ функциялар саны $m^n$</span> → <span class="math-good">$n^m$</span><br>Неге қате: әр кіріске ($m$ дана) $n$ шығыс таңдалады.</li>
+        <li><span class="math-bad">Кез келген функцияның кері функциясы бар</span> → <span class="math-good">тек биекцияның</span><br>Неге қате: $x^2$-тың кері функциясы $\mathbb R$-да жоқ ($[0,\infty)$-ға шектеу керек).</li>
+        <li><span class="math-bad">$-7\bmod5=-2$</span> → <span class="math-good">$3$ (қалдық $0..4$)</span><br>Неге қате: математикада қалдық теріс емес; кейбір бағдарламалау тілдері басқаша есептейді.</li>
+        <li><span class="math-bad">«Шексіз жиындардың бәрі бірдей өлшемді»</span> → <span class="math-good">$\mathbb N$ мен $\mathbb R$ әртүрлі</span><br>Неге қате: Кантор диагоналы.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Функция түрлері: y = x³ (биекция), y = x² (жоқ), y = eˣ (инъекция)" data-config='{"fns": [{"f": "x^3", "label": "x³ - биекция ℝ→ℝ"}, {"f": "x^2", "label": "x² - инъекция емес", "color": 1}, {"f": "exp(x)", "label": "eˣ - сюръекция емес", "color": 2}, {"f": "c", "label": "y = c (горизонталь сызық)", "color": 3, "dash": [5, 4]}], "params": [{"n": "c", "min": -3, "max": 4, "step": 0.1, "v": 1}], "view": [-3, 3, -4, 5]}'></div>
+      <p><b>Бақылаңыз:</b> «Горизонталь сызық тесті»: $y=c$ сызығы графикті неше рет қиятынына қараңыз. $x^3$ - әр $c$ үшін дәл бір рет (биекция). $x^2$ - $c>0$ болса екі рет (инъекция емес), $c&lt;0$ болса мүлде қимайды. $e^x$ - ең көбі бір рет (инъекция), бірақ $c\le0$ үшін нөл рет (сюръекция емес).</p>
+      <div class="math-viz" data-viz="graph" data-title="Модуль бойынша қалдық: x mod n" data-config='{"fns": [{"f": "x-n*floor(x/n)", "label": "x mod n"}], "params": [{"n": "n", "min": 2, "max": 9, "step": 1, "v": 5}], "view": [-12, 12, -1, 10]}'></div>
+      <p><b>Бақылаңыз:</b> Бүтін $x$ нүктелерінде функция қалдықтар класының нөмірін береді: мәндер $0,1,\dots,n-1$ қайталанады. $-7$ нүктесінде мән $3$ (2-мысал). «Ара тісі» пішіні - $\mathbb Z$-тің $n$ класқа бөлінуі.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="tf" data-id="m15-3-tf1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-3-t1">1. Қасиеттер</h3></div>
+        <p>Нақты сандардағы қатынастар. Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\le$ қатынасы симметриялы.","a":false,"e":"$1\\le2$, бірақ $2\\not\\le1$.","hint":"Бір қарсы мысал."},{"q":"$\\le$ қатынасы транзитивті.","a":true,"e":"$a\\le b\\le c\\Rightarrow a\\le c$.","hint":"Анықтама."},{"q":"«$|a-b|\\le1$» қатынасы транзитивті.","a":false,"e":"$0$ мен $1$, $1$ мен $2$ байланысты, бірақ $|0-2|=2$.","hint":"$0,1,2$-ні тексеріңіз."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-3-num2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-3-t2">2. Модуль</h3></div>
+        <p>Ең кіші теріс емес қалдықты табыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$47\\bmod6$","a":5,"v":"47%6","hint":"$47=6\\cdot7+5$.","sol":{"steps":["$47-42$."],"ans":"$5$"}},{"q":"$-13\\bmod4$","a":3,"v":"(-13)%4","hint":"$-13=4\\cdot(-4)+3$.","sol":{"steps":["$-13+16=3$."],"ans":"$3$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m15-3-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-3-t3">3. Функция түрі</h3></div>
+        <p>$f:\mathbb N\to\mathbb N$ үшін дұрыс сипаттаманы таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$f(n)=n+1$","o":["инъекция, сюръекция емес","биекция","сюръекция, инъекция емес","екеуі де емес"],"a":0,"e":"$1$ мәні жабылмайды.","hint":"$f(n)=1$ шешімі бар ма?"},{"q":"$f(n)=\\lceil n/2\\rceil$","o":["сюръекция, инъекция емес","инъекция","биекция","екеуі де емес"],"a":0,"e":"$f(1)=f(2)=1$; кез келген $k=f(2k)$.","hint":"Екі сан бір мән бере ме?"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-3-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-3-t4">4. Санау</h3></div>
+        <p>$|A|=4$, $|B|=3$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A\\to B$ функциялар саны","a":81,"v":"3**4","hint":"$n^m$.","sol":{"steps":["$3^4$."],"ans":"$81$"}},{"q":"$B\\to A$ инъекциялар саны","a":24,"v":"factorial(4)/factorial(1)","hint":"$4\\cdot3\\cdot2$.","sol":{"steps":["$A_4^3$."],"ans":"$24$"}},{"q":"$A$-дағы қатынастар саны","a":65536,"v":"2**16","hint":"$2^{m^2}$.","sol":{"steps":["$2^{16}$."],"ans":"$65\\,536$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-3-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-3-t5">5. Эквиваленттік кластар</h3></div>
+        <p>Санды енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\{1,\\dots,20\\}$-да «5-ке бөлгенде қалдығы бірдей» қатынасының кластар саны","a":5,"v":"len(set([k%5 for k in range(1,21)]))","hint":"Қалдықтар $0..4$.","sol":{"steps":["5 класс."],"ans":"$5$"}},{"q":"$[7]$ класындағы элементтер саны (сол жиында)","a":4,"v":"len([k for k in range(1,21) if k%5==2])","hint":"$2,7,12,17$.","sol":{"steps":["Қалдығы 2."],"ans":"$4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m15-3-exp6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-3-t6">6. Құрама функция</h3></div>
+        <p>$f(x)=2x+1$, $g(x)=x^2$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$(g\\circ f)(x)$","a":"(2*x+1)^2","v":"(2*x+1)**2","hint":"Алдымен $f$, сосын $g$.","sol":{"steps":["$g(f(x))=(2x+1)^2$."],"ans":"$(2x+1)^2$"}},{"q":"$(f\\circ g)(x)$","a":"2*x^2+1","v":"2*x**2+1","hint":"Алдымен $g$.","sol":{"steps":["$f(x^2)$."],"ans":"$2x^2+1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m15-3-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-3-t7">7. Қатынас түрі</h3></div>
+        <p>Қатынасты түрімен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Қатынастар.","pairs":[["≡ (mod n), ℤ-де","эквиваленттік"],["⊆, жиындарда","жартылай реттік"],["«дос», адамдарда","симметриялы, транзитивті емес"],["<, сандарда","транзитивті, рефлексивті емес"]],"hint":"Үш қасиетті тексеріңіз.","sol":{"steps":["Досымның досы міндетті түрде досым емес."]},"e":"$<$ - қатаң рет."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m15-3-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-3-t8">8. Параметрлік: функциялар саны</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"int":[2,5]},"n":{"int":[2,6]}},"type":"num","q":"$|A|=#{m}$, $|B|=#{n}$. $A\\to B$ функциялар саны?","a":"n^m","v":"n**m","hint":"Әр $a\\in A$-ға $#{n}$ таңдау.","sol":{"steps":["$#{n}^{#{m}}$."],"ans":"$#{n^m}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m15-3-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-3-t9">9. Параметрлік: симметриялы қатынастар</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"int":[2,6]}},"type":"num","q":"$|A|=#{m}$. $A$-дағы симметриялы қатынастар саны?","a":"2^(m*(m+1)/2)","v":"2**(m*(m+1)/2)","hint":"Диагональ ($#{m}$) және ретсіз жұптар ($C_{#{m}}^2$) еркін.","sol":{"steps":["Еркін «ұяшықтар»: $#{m}+#{m*(m-1)/2}=#{m*(m+1)/2}$."],"ans":"$2^{#{m*(m+1)/2}}=#{2^(m*(m+1)/2)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-3-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-3-t10">10. Сюръекциялар</h3></div>
+        <p>Қосу-шегеру әдісімен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"4 элементті жиыннан 2 элементті жиынға сюръекциялар саны","a":14,"v":"2**4-2","hint":"Барлығынан тұрақты функцияларды алып тастаңыз.","sol":{"steps":["$2^4-2\\cdot1^4$."],"ans":"$14$"}},{"q":"4 элементтен 3 элементке сюръекциялар","a":36,"v":"3**4-3*2**4+3","hint":"$3^4-3\\cdot2^4+3\\cdot1^4$.","sol":{"steps":["$81-48+3$."],"ans":"$36$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-3-num11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-3-t11">11. Эквиваленттік қатынастар саны</h3></div>
+        <p>Бөліктеу санына тең.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\{1,2,3\\}$-дағы эквиваленттік қатынастар саны","a":5,"v":"1+3+1","hint":"Бөліктеулерді тізіңіз.","sol":{"steps":["$\\{123\\}$; $\\{12\\}\\{3\\}$, $\\{13\\}\\{2\\}$, $\\{23\\}\\{1\\}$; $\\{1\\}\\{2\\}\\{3\\}$."],"ans":"$5$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m15-3-ord12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-3-t12">12. Кантор диагоналы</h3></div>
+        <p>Дәлел қадамдарын ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$[0;1)$ саналымсыз.","steps":["Барлық сандар тізімделген деп жорамалдаймыз.","Әр $x_i$-ді ондық бөлшекпен жазамыз.","$y$-тің $i$-цифрын $x_i$-дің $i$-цифрынан өзгеше етіп аламыз.","$y$ ешбір $x_i$-ге тең емес екенін көрсетеміз.","Қайшылық: тізім толық емес."],"hint":"Қарсы жору құрылымы.","sol":{"ans":"$\\mathbb R$ саналымсыз."}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m15-3-rev13">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-3-t13">13. Қадамдық шешім: ℚ⁺ саналымды</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Оң рационал сандардың $\\mathbb N$-мен биекциясы бар екенін көрсетіңіз (саналымдылық).","hint":"$\\frac pq$ бөлшектерін $p+q$ қосындысы бойынша топтаңыз.","steps":["$p+q=2$: $\\frac11$. $p+q=3$: $\\frac12,\\frac21$. $p+q=4$: $\\frac13,\\frac31$ ($\\frac22$ - қайталау, өткіземіз).","Әр топ ақырлы, сондықтан топтарды ретімен тізіп, әр жаңа (қысқартылмайтын) бөлшекке келесі нөмірді береміз.","Әр оң рационал сан дәл бір рет кездеседі: $\\frac pq$ ($\\gcd=1$) өзінің $p+q$ тобында.","Демек $n\\mapsto$ «$n$-ші бөлшек» - биекция $\\mathbb N\\to\\mathbb Q^+$."],"ans":"$\\mathbb Q^+$ саналымды: $1,\\frac12,2,\\frac13,3,\\frac14,\\frac23,\\frac32,4,\\dots$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Реляциялық дерекқорлар - қатынастар теориясы. Эквиваленттік кластар - «бірдей» объектілерді топтау (union-find алгоритмі, кластерлеу). Хэш-функция - инъекция болуы қалаулы, бірақ кіріс кеңістігі үлкен болса Дирихле бойынша мүмкін емес. Кері функция - шифрлау мен шифрды ашудың негізі.</p>
+      <p><b>Мини-жоба: «Қатынастарды тексеру».</b> Ақырлы жиындағы қатынасты жұптар жиыны ретінде сақтап, оның қасиеттерін автоматты тексереміз және эквиваленттік кластарды табамыз; сюръекциялар санын толық тізіммен тексереміз.</p>
+<pre data-lang="python"><code class="language-python">from itertools import product
+
+def props(A, R):
+    refl = all((a, a) in R for a in A)
+    sym = all((b, a) in R for (a, b) in R)
+    anti = all(a == b for (a, b) in R if (b, a) in R)
+    trans = all((a, d) in R for (a, b) in R for (c, d) in R if b == c)
+    return dict(refl=refl, sym=sym, anti=anti, trans=trans)
+
+def classes(A, R):
+    out = []
+    for a in A:
+        cl = frozenset(x for x in A if (x, a) in R)
+        if cl not in out:
+            out.append(cl)
+    return [sorted(c) for c in out]
+
+A = range(1, 13)
+mod4 = {(a, b) for a in A for b in A if (a - b) % 4 == 0}
+print(props(A, mod4), classes(A, mod4))
+divides = {(a, b) for a in A for b in A if b % a == 0}
+print("бөледі:", props(A, divides))
+
+def surjections(m, n):
+    return sum(1 for f in product(range(n), repeat=m) if len(set(f)) == n)
+print("сюръекциялар 5-&gt;3:", surjections(5, 3), " 4-&gt;3:", surjections(4, 3))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$\{1,\dots,4\}$-дағы барлық $2^{16}$ қатынасты тізіп, эквиваленттік қатынастардың санын табыңыз (жауап: 15 - Белл саны).</li>
+        <li>Сюръекциялар санының қосу-шегеру формуласын $S(m,n)=\sum_{j=0}^{n}(-1)^jC_n^j(n-j)^m$ жазып, толық тізіммен салыстырыңыз.</li>
+        <li>«Бөледі» қатынасының Хассе диаграммасы үшін «тікелей ізбасарларды» ($a\mid b$, ал арасында $c$ жоқ) шығарыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Қатынас</td><td>$R\subseteq A\times B$</td><td>-</td></tr>
+        <tr><td>Эквиваленттік</td><td>рефлексивті, симметриялы, транзитивті</td><td>кластар - бөліктеу</td></tr>
+        <tr><td>Жартылай рет</td><td>рефлексивті, антисимметриялы, транзитивті</td><td>$\le$, $\mid$, $\subseteq$</td></tr>
+        <tr><td>Биекция</td><td>инъекция + сюръекция</td><td>$\iff$ кері функция бар</td></tr>
+        <tr><td>Функциялар саны</td><td>$n^m$; инъекция $\frac{n!}{(n-m)!}$</td><td>$|A|=m$, $|B|=n$</td></tr>
+        <tr><td>Қатынастар саны</td><td>$2^{m^2}$</td><td>$|A|=m$</td></tr>
+        <tr><td>Саналымдылық</td><td>$\mathbb N,\mathbb Z,\mathbb Q$ - иә; $\mathbb R$ - жоқ</td><td>Кантор</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m15-3-self">
+        <li><input type="checkbox"> <span>Мен қатынастың рефлексивтік, симметрия, антисимметрия, транзитивтігін тексере аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен эквиваленттік кластар бөліктеу беретінін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен модуль бойынша кластарды таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен функцияның инъекция/сюръекция/биекция екенін тексеріп, кері функциясын таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен функциялар, инъекциялар, қатынастар санын есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Кантор диагоналының идеясын түсіндіре аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. Эквиваленттік қатынастың үш қасиеті:</p>
+<label><input type="radio" value="a"> рефлексивті, антисимметриялы, транзитивті</label>
+<label><input type="radio" value="b"> симметриялы, антисимметриялы, транзитивті</label>
+<label><input type="radio" value="c"> рефлексивті, симметриялы, транзитивті</label>
+<label><input type="radio" value="d"> тек транзитивті</label>
+<p class="explain">Антисимметрия - реттік қатынаста.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. |A| = 2, |B| = 5. A → B функциялар саны:</p>
+<label><input type="radio" value="a"> 32</label>
+<label><input type="radio" value="b"> 25</label>
+<label><input type="radio" value="c"> 10</label>
+<label><input type="radio" value="d"> 20</label>
+<p class="explain">5².</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. f(x) = x³, ℝ → ℝ:</p>
+<label><input type="radio" value="a"> биекция</label>
+<label><input type="radio" value="b"> тек инъекция</label>
+<label><input type="radio" value="c"> тек сюръекция</label>
+<label><input type="radio" value="d"> функция емес</label>
+<p class="explain">Әр y-ке дәл бір x = ∛y.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. −8 mod 3 = ?</p>
+<label><input type="radio" value="a"> −2</label>
+<label><input type="radio" value="b"> 2</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> 1</label>
+<p class="explain">−8 = 3·(−3) + 1.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">5. Кері функция қашан бар?</p>
+<label><input type="radio" value="a"> функция инъекция болса ғана жеткілікті</label>
+<label><input type="radio" value="b"> әрдайым</label>
+<label><input type="radio" value="c"> функция биекция болса</label>
+<label><input type="radio" value="d"> функция үзіліссіз болса</label>
+<p class="explain">Теорема 3.2.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. Қай жиын саналымсыз?</p>
+<label><input type="radio" value="a"> ℤ</label>
+<label><input type="radio" value="b"> ℝ</label>
+<label><input type="radio" value="c"> ℚ</label>
+<label><input type="radio" value="d"> жұп сандар</label>
+<p class="explain">Кантордың диагональ әдісі.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. |A| = 3 жиынындағы қатынастар саны:</p>
+<label><input type="radio" value="a"> 512</label>
+<label><input type="radio" value="b"> 9</label>
+<label><input type="radio" value="c"> 64</label>
+<label><input type="radio" value="d"> 8</label>
+<p class="explain">2⁹.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. «a | b» (натурал сандарда) қандай қатынас?</p>
+<label><input type="radio" value="a"> эквиваленттік</label>
+<label><input type="radio" value="b"> симметриялы</label>
+<label><input type="radio" value="c"> функция</label>
+<label><input type="radio" value="d"> жартылай реттік</label>
+<p class="explain">Рефлексивті, антисимметриялы, транзитивті.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div>
 
       <nav class="pager">
         <a href="week-93.html"><small>Алдыңғы</small>← Discrete Mathematics · 2-сабақ: Дәлелдеу әдістері</a>
