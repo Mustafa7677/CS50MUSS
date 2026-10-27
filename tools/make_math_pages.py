@@ -146,7 +146,7 @@ def subject_block(s):
 def index_page():
     switch = ('<nav class="cx-switch" aria-label="Курсты таңдау"><a href="../index.html">CS50x</a><a href="../python/">CS50P</a><a href="../sql/">SQL</a>'
               '<a href="../ai/">AI</a><a href="../web/">Web</a><a href="../cpp/">C++</a><a href="../java/">Java</a><a href="../en/">English</a>'
-              '<a class="on" aria-current="page" href="../math/">Math</a></nav>')
+              '<a class="on" aria-current="page" href="../math/">Математика</a></nav>')
     groups = []
     for g, gname, gdesc in (("H", P.GROUPS["H"], "17 пән: орта мектептен кейінгі негізгі математика - алгебрадан бастап есептеуге, ықтималдыққа, дискретті математикаға және оңтайландыруға дейін. Әр пән өз алдына тәуелсіз: кез келгенін таңдап оқуға болады."),
                             ("A", P.GROUPS["A"], "7 пән: қатаң дәлелдеу тілімен жазылған курстар. Әр пән өз алдына тәуелсіз.")):

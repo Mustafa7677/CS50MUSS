@@ -100,7 +100,7 @@ COURSE = {
         ]),
 }
 
-SWITCH = [("x", "CS50x", "../index.html"), ("python", "CS50P", "../python/"), ("sql", "SQL", "../sql/"), ("ai", "AI", "../ai/"), ("web", "Web", "../web/"), ("cpp", "C++", "../cpp/"), ("java", "Java", "../java/"), ("en", "English", "../en/"), ("math", "Math", "../math/")]
+SWITCH = [("x", "CS50x", "../index.html"), ("python", "CS50P", "../python/"), ("sql", "SQL", "../sql/"), ("ai", "AI", "../ai/"), ("web", "Web", "../web/"), ("cpp", "C++", "../cpp/"), ("java", "Java", "../java/"), ("en", "English", "../en/"), ("math", "Математика", "../math/")]
 
 
 def switch(cur, up="../"):

@@ -319,6 +319,7 @@ def head_block(prefix, title, desc, url, image="assets/img/og.jpg", kind="M"):
     copy, lic = license_meta(kind, prefix)
     return f"""<!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="{prefix}assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="{prefix}assets/img/icon-192.png">
   <link rel="manifest" href="{prefix}manifest.webmanifest">
@@ -351,6 +352,20 @@ def course_of(rel):
 
 PILL = {"x": ("CS50x", "#087a96"), "python": ("CS50P", "#3776ab"), "sql": ("SQL", "#7c3aed"), "ai": ("AI", "#c42a68"), "web": ("Web", "#c2410c"),
         "cpp": ("C++", "#4f46e5"), "java": ("Java", "#d97706"), "en": ("English", "#0f766e"), "math": ("Математика", "#15803d")}
+
+
+SWITCH = [("x", "CS50x", "index.html"), ("python", "CS50P", "python/"), ("sql", "SQL", "sql/"), ("ai", "AI", "ai/"), ("web", "Web", "web/"),
+          ("cpp", "C++", "cpp/"), ("java", "Java", "java/"), ("en", "English", "en/"), ("math", "Математика", "math/")]
+
+
+def switch_block(prefix, course):
+    """Курстар ауыстырғышы (.cx-switch) - барлық беттерде бірдей тізім (Математика да)."""
+    items = []
+    for code, label, href in SWITCH:
+        on = ' class="on" aria-current="page"' if code == course else ""
+        k = ' data-k="math"' if code == "math" else ""
+        items.append(f'<a{on}{k} href="{prefix}{href}">{label}</a>')
+    return '<nav class="cx-switch" aria-label="Курсты таңдау">' + "".join(items) + "</nav>"
 
 
 def nav_block(prefix, active, course=None):
@@ -455,6 +470,7 @@ def process_page(path, prefix, active):
         rc = "x" if rel in ("index.html", "courses.html") else rel.split("/")[0]
         s = re.sub(r"<!-- build:route -->.*?<!-- /build:route -->", lambda _: route_block("" if rc != "x" else prefix, rc, rc != "x"), s, flags=re.S)
     s = re.sub(r'<nav class="nav">.*?</nav>', lambda _: nav_block(prefix, active, course_of(rel)), s, count=1, flags=re.S)
+    s = re.sub(r'<nav class="cx-switch"[^>]*>.*?</nav>', lambda _: switch_block(prefix, course_of(rel)), s, count=1, flags=re.S)
     s = re.sub(r'<footer class="footer">.*?</footer>', lambda _: footer_block(prefix), s, count=1, flags=re.S)
     hs = HEAD_STYLE.get(rel)
     if hs:
