@@ -2,7 +2,7 @@ window.CS50KZ_COURSE_LECTURES = window.CS50KZ_COURSE_LECTURES || {};
 window.CS50KZ_COURSE_LECTURES["math"] = [
  {
   "id": "week-0",
-  "num": "1 · Жоғары математикаға дайындық · 1-сабақ",
+  "num": "Precalculus · 1-сабақ",
   "title": "Функция ұғымы мен графигі",
   "url": "math/lectures/week-0.html",
   "topics": [
@@ -51,14 +51,14 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
  },
  {
   "id": "week-1",
-  "num": "1 · Жоғары математикаға дайындық · 2-сабақ",
+  "num": "Precalculus · 2-сабақ",
   "title": "Алгебралық өрнектер мен теңдеулер",
   "url": "math/lectures/week-1.html",
   "topics": [
@@ -107,14 +107,14 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
  },
  {
   "id": "week-2",
-  "num": "1 · Жоғары математикаға дайындық · 3-сабақ",
+  "num": "Precalculus · 3-сабақ",
   "title": "Көпмүшеліктер мен рационал функциялар",
   "url": "math/lectures/week-2.html",
   "topics": [
@@ -170,7 +170,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-3",
-  "num": "1 · Жоғары математикаға дайындық · 4-сабақ",
+  "num": "Precalculus · 4-сабақ",
   "title": "Көрсеткіштік және логарифмдік функциялар",
   "url": "math/lectures/week-3.html",
   "topics": [
@@ -219,14 +219,14 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 22,
+  "minutes": 23,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
  },
  {
   "id": "week-4",
-  "num": "1 · Жоғары математикаға дайындық · 5-сабақ",
+  "num": "Precalculus · 5-сабақ",
   "title": "Тригонометрия: бұрыш пен бірлік шеңбер",
   "url": "math/lectures/week-4.html",
   "topics": [
@@ -282,7 +282,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-5",
-  "num": "1 · Жоғары математикаға дайындық · 6-сабақ",
+  "num": "Precalculus · 6-сабақ",
   "title": "Тригонометриялық функциялар мен теңдеулер",
   "url": "math/lectures/week-5.html",
   "topics": [
@@ -338,7 +338,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-6",
-  "num": "1 · Жоғары математикаға дайындық · 7-сабақ",
+  "num": "Precalculus · 7-сабақ",
   "title": "Қосынды белгісі, тізбектер және индукция",
   "url": "math/lectures/week-6.html",
   "topics": [
@@ -387,14 +387,14 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 21,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
  },
  {
   "id": "week-7",
-  "num": "2 · Сызықтық алгебра · 1-сабақ",
+  "num": "Linear Algebra · 1-сабақ",
   "title": "Векторлар және олармен амалдар",
   "url": "math/lectures/week-7.html",
   "topics": [
@@ -443,14 +443,14 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
  },
  {
   "id": "week-8",
-  "num": "2 · Сызықтық алгебра · 2-сабақ",
+  "num": "Linear Algebra · 2-сабақ",
   "title": "Скаляр көбейтінді және ортогональдық",
   "url": "math/lectures/week-8.html",
   "topics": [
@@ -506,7 +506,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-9",
-  "num": "2 · Сызықтық алгебра · 3-сабақ",
+  "num": "Linear Algebra · 3-сабақ",
   "title": "Сызықтық теңдеулер жүйесі және Гаусс әдісі",
   "url": "math/lectures/week-9.html",
   "topics": [
@@ -562,7 +562,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-10",
-  "num": "2 · Сызықтық алгебра · 4-сабақ",
+  "num": "Linear Algebra · 4-сабақ",
   "title": "Матрицалар және матрицалық амалдар",
   "url": "math/lectures/week-10.html",
   "topics": [
@@ -618,7 +618,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-11",
-  "num": "2 · Сызықтық алгебра · 5-сабақ",
+  "num": "Linear Algebra · 5-сабақ",
   "title": "Кері матрица және LU жіктелуі",
   "url": "math/lectures/week-11.html",
   "topics": [
@@ -667,14 +667,14 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 22,
+  "minutes": 23,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
  },
  {
   "id": "week-12",
-  "num": "2 · Сызықтық алгебра · 6-сабақ",
+  "num": "Linear Algebra · 6-сабақ",
   "title": "Анықтауыш",
   "url": "math/lectures/week-12.html",
   "topics": [
@@ -730,7 +730,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-13",
-  "num": "2 · Сызықтық алгебра · 7-сабақ",
+  "num": "Linear Algebra · 7-сабақ",
   "title": "Векторлық кеңістік, базис және сызықтық бейнелеу",
   "url": "math/lectures/week-13.html",
   "topics": [
@@ -786,7 +786,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-14",
-  "num": "2 · Сызықтық алгебра · 8-сабақ",
+  "num": "Linear Algebra · 8-сабақ",
   "title": "Меншікті мәндер мен меншікті векторлар",
   "url": "math/lectures/week-14.html",
   "topics": [
@@ -835,7 +835,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 22,
+  "minutes": 23,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -891,7 +891,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 26,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -947,7 +947,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 24,
+  "minutes": 25,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1171,7 +1171,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 26,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1227,7 +1227,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 24,
+  "minutes": 25,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1339,7 +1339,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1395,7 +1395,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 21,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1451,7 +1451,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 20,
+  "minutes": 21,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1507,7 +1507,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 21,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1619,7 +1619,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 22,
+  "minutes": 23,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1787,7 +1787,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1955,7 +1955,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2018,7 +2018,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-36",
-  "num": "6 · Көп айнымалы анализ · 1-сабақ",
+  "num": "Multivariable Calculus · 1-сабақ",
   "title": "Көп айнымалы функциялар және деңгей сызықтары",
   "url": "math/lectures/week-36.html",
   "topics": [
@@ -2067,14 +2067,14 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 26,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
  },
  {
   "id": "week-37",
-  "num": "6 · Көп айнымалы анализ · 2-сабақ",
+  "num": "Multivariable Calculus · 2-сабақ",
   "title": "Шек, үзіліссіздік және дербес туындылар",
   "url": "math/lectures/week-37.html",
   "topics": [
@@ -2179,7 +2179,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2291,7 +2291,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 22,
+  "minutes": 23,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2347,7 +2347,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 21,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2410,7 +2410,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-43",
-  "num": "7 · Векторлық анализ · 1-сабақ",
+  "num": "Vector Calculus · 1-сабақ",
   "title": "Скаляр және векторлық өрістер",
   "url": "math/lectures/week-43.html",
   "topics": [
@@ -2459,7 +2459,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 22,
+  "minutes": 23,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2627,7 +2627,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 21,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2683,7 +2683,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 21,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2799,7 +2799,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 21,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2863,7 +2863,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 21,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2979,7 +2979,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 19,
+  "minutes": 20,
   "quiz": 8,
   "tasks": 1,
   "task": "practice"
@@ -3039,7 +3039,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 18,
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3106,7 +3106,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-55",
-  "num": "9 · Жай дифференциалдық теңдеулер · 1-сабақ",
+  "num": "Ordinary Differential Equations · 1-сабақ",
   "title": "Негізгі ұғымдар және бағыт өрісі",
   "url": "math/lectures/week-55.html",
   "topics": [
@@ -3162,7 +3162,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
  },
  {
   "id": "week-56",
-  "num": "9 · Жай дифференциалдық теңдеулер · 2-сабақ",
+  "num": "Ordinary Differential Equations · 2-сабақ",
   "title": "Айнымалылары бөлінетін теңдеулер",
   "url": "math/lectures/week-56.html",
   "topics": [
@@ -3267,7 +3267,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 21,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3379,7 +3379,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 20,
+  "minutes": 21,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3435,7 +3435,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 20,
+  "minutes": 21,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3491,7 +3491,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 26,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3547,7 +3547,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3777,6 +3777,678 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
+  "id": "week-67",
+  "num": "Complex Analysis · 1-сабақ",
+  "title": "Комплекс сандар",
+  "url": "math/lectures/week-67.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-68",
+  "num": "Complex Analysis · 2-сабақ",
+  "title": "Комплекс айнымалы функциялар және Коши–Риман шарттары",
+  "url": "math/lectures/week-68.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-69",
+  "num": "Complex Analysis · 3-сабақ",
+  "title": "Элементар комплекс функциялар",
+  "url": "math/lectures/week-69.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 13,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-70",
+  "num": "Complex Analysis · 4-сабақ",
+  "title": "Комплекс интеграл және Коши теоремасы",
+  "url": "math/lectures/week-70.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 15,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-71",
+  "num": "Complex Analysis · 5-сабақ",
+  "title": "Лоран қатары және ерекше нүктелер",
+  "url": "math/lectures/week-71.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-72",
+  "num": "Complex Analysis · 6-сабақ",
+  "title": "Шегерімдер теориясы және қолданысы",
+  "url": "math/lectures/week-72.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-73",
+  "num": "Fourier & Laplace Transforms · 1-сабақ",
+  "title": "Фурье қатарлары",
+  "url": "math/lectures/week-73.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 13,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-74",
+  "num": "Fourier & Laplace Transforms · 2-сабақ",
+  "title": "Фурье қатарының комплекс түрі және Парсеваль теңдігі",
+  "url": "math/lectures/week-74.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 13,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-75",
+  "num": "Fourier & Laplace Transforms · 3-сабақ",
+  "title": "Фурье түрлендіруі",
+  "url": "math/lectures/week-75.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-76",
+  "num": "Fourier & Laplace Transforms · 4-сабақ",
+  "title": "Лаплас түрлендіруі және қасиеттері",
+  "url": "math/lectures/week-76.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 13,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-77",
+  "num": "Fourier & Laplace Transforms · 5-сабақ",
+  "title": "Кері Лаплас түрлендіруі және теңдеулерді шешу",
+  "url": "math/lectures/week-77.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 13,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-78",
+  "num": "Fourier & Laplace Transforms · 6-сабақ",
+  "title": "Дискретті Фурье түрлендіруі және FFT",
+  "url": "math/lectures/week-78.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
   "id": "week-79",
   "num": "Probability Theory · 1-сабақ",
   "title": "Комбинаторика негіздері",
@@ -3883,7 +4555,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 15,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3939,7 +4611,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 15,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3995,7 +4667,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 14,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -4051,7 +4723,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 14,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -4107,7 +4779,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 12,
+  "minutes": 13,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -4275,7 +4947,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 12,
+  "minutes": 13,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -4387,7 +5059,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 14,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -4443,7 +5115,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 12,
+  "minutes": 13,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -4611,7 +5283,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 15,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -4891,7 +5563,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 14,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -5059,7 +5731,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 14,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -5283,7 +5955,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 15,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -5339,7 +6011,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 15,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -5517,6 +6189,118 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "num": "Mathematical Optimization · 6-сабақ",
   "title": "Дөңес оңтайландыру және машиналық оқыту",
   "url": "math/lectures/week-110.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 15,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-111",
+  "num": "Real Analysis · 1-сабақ",
+  "title": "Нақты сандар және супремум",
+  "url": "math/lectures/week-111.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 15,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-112",
+  "num": "Real Analysis · 2-сабақ",
+  "title": "Тізбек шегі және Коши тізбектері",
+  "url": "math/lectures/week-112.html",
   "topics": [
    {
     "t": "Сабақ мақсаттары",

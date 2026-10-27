@@ -1,3 +1,21 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Нақты анализ» пәні. Формат: §9.2 (терминдер). */
+/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Real Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
-window.CS50KZ_MATH_TERMS.real = [];
+window.CS50KZ_MATH_TERMS.real = [
+ {"id": "real-t1", "kz": "реттелген өріс", "en": "ordered field", "def": "$\\mathbb R$ - реттелген өріс (ordered field): қосу мен көбейтудің әдеттегі аксиомалары (ауыстырымдылық, терімділік, үлестірімділік, $0$, $1$, қарама-қарсы және кері элементтер) және реттік аксиомалар: кез келген $a,b$ үшін дәл біреуі $a<b$, $a=b$, $b<a$…", "lesson": 1},
+ {"id": "real-t2", "kz": "жоғарғы шекарасы", "en": "upper bound", "def": "$A\\subset\\mathbb R$. $M$ - $A$-ның жоғарғы шекарасы (upper bound), егер $\\forall a\\in A$: $a\\le M$; бар болса, $A$ жоғарыдан шектелген.", "lesson": 1},
+ {"id": "real-t3", "kz": "супремумы", "en": "supremum", "def": "$A\\subset\\mathbb R$. $M$ - $A$-ның жоғарғы шекарасы (upper bound), егер $\\forall a\\in A$: $a\\le M$; бар болса, $A$ жоғарыдан шектелген.", "lesson": 1},
+ {"id": "real-t4", "kz": "инфимум", "en": "infimum", "def": "$A\\subset\\mathbb R$. $M$ - $A$-ның жоғарғы шекарасы (upper bound), егер $\\forall a\\in A$: $a\\le M$; бар болса, $A$ жоғарыдан шектелген.", "lesson": 1},
+ {"id": "real-t5", "kz": "Толықтық аксиомасы", "en": "completeness axiom", "def": "Толықтық аксиомасы (completeness axiom): $\\mathbb R$-дің бос емес, жоғарыдан шектелген кез келген ішкі жиынының супремумы бар.", "lesson": 1},
+ {"id": "real-t6", "kz": "Архимед қасиеті", "en": "Archimedean property", "def": "Негіздеме. Архимед қасиеті (Archimedean property).", "lesson": 1},
+ {"id": "real-t7", "kz": "Тығыздық", "en": "density", "def": "Негіздеме. Тығыздық (density): әр аралықта шексіз көп рационал және иррационал сан бар.", "lesson": 1},
+ {"id": "real-t8", "kz": "Кірістірілген кесінділер", "en": "nested intervals", "def": "Негіздеме. Кірістірілген кесінділер (nested intervals). Тұйықтық маңызды: $\\bigcap\\left(0;\\frac1n\\right)=\\varnothing$. $\\mathbb Q$-да теорема жалған.", "lesson": 1},
+ {"id": "real-t9", "kz": "жинақталады", "en": "converges", "def": "$(a_n)$ тізбегі $a\\in\\mathbb R$-ге жинақталады (converges) ($\\lim a_n=a$, $a_n\\to a$), егер $\\forall\\varepsilon>0\\ \\exists N\\in\\mathbb N\\ \\forall n\\ge N:\\ |a_n-a|<\\varepsilon.$ Мұндай $a$ жоқ болса, тізбек жинақсыз (divergent).", "lesson": 2},
+ {"id": "real-t10", "kz": "жинақсыз", "en": "divergent", "def": "$(a_n)$ тізбегі $a\\in\\mathbb R$-ге жинақталады (converges) ($\\lim a_n=a$, $a_n\\to a$), егер $\\forall\\varepsilon>0\\ \\exists N\\in\\mathbb N\\ \\forall n\\ge N:\\ |a_n-a|<\\varepsilon.$ Мұндай $a$ жоқ болса, тізбек жинақсыз (divergent).", "lesson": 2},
+ {"id": "real-t11", "kz": "шектелген", "en": "bounded", "def": "(1) Тізбектің шегі (бар болса) жалғыз. (2) Жинақты тізбек шектелген (bounded): $\\exists M\\ \\forall n:\\ |a_n|\\le M$.", "lesson": 2},
+ {"id": "real-t12", "kz": "Қысу теоремасы", "en": "squeeze theorem", "def": "$a_n\\to a$, $b_n\\to b$ болса: $a_n\\pm b_n\\to a\\pm b$, $a_nb_n\\to ab$, $b\\ne0$ кезінде $\\frac{a_n}{b_n}\\to\\frac ab$ ($b_n\\ne0$ мүшелер үшін).", "lesson": 2},
+ {"id": "real-t13", "kz": "Монотонды тізбек", "en": "monotone sequence", "def": "Негіздеме. Монотонды тізбек (monotone sequence). Толықтық аксиомасынан.", "lesson": 2},
+ {"id": "real-t14", "kz": "ішкі тізбегі", "en": "subsequence", "def": "$n_1<n_2<n_3<\\dots$ болса, $(a_{n_k})_k$ - $(a_n)$-нің ішкі тізбегі (subsequence). $a_n\\to a$ болса, оның әр ішкі тізбегі де $a$-ға жинақталады (себебі $n_k\\ge k$).", "lesson": 2},
+ {"id": "real-t15", "kz": "Больцано–Вейерштрасс теоремасы", "en": "Bolzano–Weierstrass theorem", "def": "Негіздеме. Больцано–Вейерштрасс теоремасы (Bolzano–Weierstrass theorem).", "lesson": 2},
+ {"id": "real-t16", "kz": "Коши тізбегі", "en": "Cauchy sequence", "def": "$(a_n)$ - Коши тізбегі (Cauchy sequence), егер $\\forall\\varepsilon>0\\ \\exists N\\ \\forall m,n\\ge N:\\ |a_m-a_n|<\\varepsilon$. Шек туралы ештеңе айтылмайды - тек мүшелердің бір-біріне жақындығы.", "lesson": 2},
+ {"id": "real-t17", "kz": "Коши критерийі", "en": "Cauchy criterion", "def": "Негіздеме. Коши критерийі (Cauchy criterion). «$\\Leftarrow$» - толықтықтың эквивалентті тұжырымы; $\\mathbb Q$-да жалған.", "lesson": 2}
+];

@@ -1,3 +1,13 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Нақты анализ» пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1 (формулалар). */
+/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Real Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
-window.CS50KZ_MATH_FORMULAS.real = [];
+window.CS50KZ_MATH_FORMULAS.real = [
+ {"id": "real-1-1", "name": "ε-сипаттама", "tex": "s=\\sup A\\iff\\big(\\forall a\\in A:\\ a\\le s\\big)\\ \\wedge\\ \\big(\\forall\\varepsilon>0\\ \\exists a\\in A:\\ a>s-\\varepsilon\\big)", "cond": "", "note": "$A\\ne\\varnothing$.", "tags": ["Real Analysis", "Нақты сандар және супремум"], "lesson": 1, "anchor": "f-1"},
+ {"id": "real-1-2", "name": "Инфимум арқылы", "tex": "\\inf A=-\\sup(-A)", "cond": "", "note": "$-A=\\{-a:a\\in A\\}$.", "tags": ["Real Analysis", "Нақты сандар және супремум"], "lesson": 1, "anchor": "f-2"},
+ {"id": "real-1-3", "name": "Архимед қасиеті", "tex": "\\forall x\\in\\mathbb R\\ \\exists n\\in\\mathbb N:\\ n>x;\\qquad\\forall\\varepsilon>0\\ \\exists n:\\ \\tfrac1n<\\varepsilon", "cond": "", "note": "Толықтық аксиомасынан.", "tags": ["Real Analysis", "Нақты сандар және супремум"], "lesson": 1, "anchor": "f-3"},
+ {"id": "real-1-4", "name": "Қосынды мен еселік", "tex": "\\sup(A+B)=\\sup A+\\sup B,\\qquad\\sup(cA)=c\\sup A\\ (c>0)", "cond": "", "note": "Бос емес, жоғарыдан шектелген.", "tags": ["Real Analysis", "Нақты сандар және супремум"], "lesson": 1, "anchor": "f-4"},
+ {"id": "real-2-1", "name": "Шек анықтамасы", "tex": "\\lim_{n\\to\\infty}a_n=a\\iff\\forall\\varepsilon>0\\ \\exists N\\ \\forall n\\ge N:\\ |a_n-a|<\\varepsilon", "cond": "", "note": "$N$ $\\varepsilon$-ға тәуелді.", "tags": ["Real Analysis", "Тізбек шегі және Коши тізбектері"], "lesson": 2, "anchor": "f-1"},
+ {"id": "real-2-2", "name": "Жинақсыздық", "tex": "a_n\\not\\to a\\iff\\exists\\varepsilon>0\\ \\forall N\\ \\exists n\\ge N:\\ |a_n-a|\\ge\\varepsilon", "cond": "", "note": "Кванторлардың теріске шығаруы.", "tags": ["Real Analysis", "Тізбек шегі және Коши тізбектері"], "lesson": 2, "anchor": "f-2"},
+ {"id": "real-2-3", "name": "Коши шарты", "tex": "\\forall\\varepsilon>0\\ \\exists N\\ \\forall m,n\\ge N:\\ |a_m-a_n|<\\varepsilon", "cond": "", "note": "$\\mathbb R$-де жинақтылыққа тең күшті.", "tags": ["Real Analysis", "Тізбек шегі және Коши тізбектері"], "lesson": 2, "anchor": "f-3"},
+ {"id": "real-2-4", "name": "Монотонды шек", "tex": "a_n\\uparrow,\\ a_n\\le M\\ \\Rightarrow\\ \\lim a_n=\\sup_na_n", "cond": "", "note": "Толықтықтан.", "tags": ["Real Analysis", "Тізбек шегі және Коши тізбектері"], "lesson": 2, "anchor": "f-4"},
+ {"id": "real-2-5", "name": "Маңызды шектер", "tex": "\\frac1{n^p}\\to0\\ (p>0),\\quad q^n\\to0\\ (|q|<1),\\quad\\sqrt[n]{n}\\to1,\\quad\\frac{n^k}{a^n}\\to0\\ (a>1)", "cond": "", "note": "Дәлелдері - есептерде және жобада.", "tags": ["Real Analysis", "Тізбек шегі және Коши тізбектері"], "lesson": 2, "anchor": "f-5"}
+];

@@ -1,3 +1,8 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Нақты анализ» пәні. Формат: §9.3 (параметрлік есептер банкі). */
+/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Real Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
-window.CS50KZ_MATH_PROBLEMS.real = [];
+window.CS50KZ_MATH_PROBLEMS.real = [
+ {"id": "real-p1", "lvl": "medium", "params": {"a": {"int": [-9, 9]}, "b": {"int": [1, 9]}}, "type": "num", "q": "$\\sup\\left\\{#{a}-\\frac{#{b}}{n}:n\\in\\mathbb N\\right\\}=?$", "a": "a", "v": "a", "hint": "$\\frac{#{b}}n\\to0$, бірақ оң.", "sol": {"steps": ["$#{a}-\\frac{#{b}}n&lt;#{a}$, ал $\\varepsilon$ үшін $n>\\frac{#{b}}{\\varepsilon}$."], "ans": "$#{a}$ (max жоқ)"}},
+ {"id": "real-p2", "lvl": "hard", "params": {"a": {"int": [2, 9]}, "b": {"int": [-9, 1]}}, "type": "num", "q": "$A=\\left\\{\\frac{#{a}n#{+b}}{n+1}:n\\in\\mathbb N\\right\\}$. $\\inf A=?$ ($0{,}001$ дәлдік)", "a": "(a+b)/2", "v": "Rational(a+b, 2)", "tol": 0.001, "hint": "$\\frac{an+b}{n+1}=a+\\frac{b-a}{n+1}$; $b&lt;a$ болғанда өседі.", "sol": {"steps": ["$b-a&lt;0$: тізбек өспелі.", "Ең кішісі $n=1$: $\\frac{#{a}+(#{b})}{2}$."], "ans": "$#{(a+b)/2}$ (ал $\\sup=#{a}$)"}},
+ {"id": "real-p3", "lvl": "medium", "params": {"c": {"int": [1, 9]}, "k": {"int": [1, 4]}}, "type": "num", "q": "$a_n=\\frac{#{c}}{n}$, $\\varepsilon=10^{-#{k}}$. $|a_n|&lt;\\varepsilon$ барлық $n\\ge N$ үшін орындалатын ең кіші $N$?", "a": "c*10^k+1", "v": "c*10**k+1", "hint": "$\\frac{#{c}}n&lt;10^{-#{k}}\\iff n>#{c}\\cdot10^{#{k}}$.", "sol": {"steps": ["$n>#{c*10^k}$."], "ans": "$#{c*10^k+1}$"}},
+ {"id": "real-p4", "lvl": "hard", "params": {"c": {"int": [2, 12]}}, "type": "num", "q": "$a_1=\\sqrt{#{c}}$, $a_{n+1}=\\sqrt{#{c}+a_n}$. $\\lim a_n=?$ ($0{,}001$ дәлдік)", "a": "(1+sqrt(1+4*c))/2", "v": "(1+sqrt(1+4*c))/2", "tol": 0.001, "hint": "Өспелі, шектелген; $L^2=#{c}+L$, $L>0$.", "sol": {"steps": ["$L=\\frac{1+\\sqrt{1+4\\cdot#{c}}}2$."], "ans": "$\\approx#{round(1000*(1+sqrt(1+4*c))/2)/1000}$"}}
+];
