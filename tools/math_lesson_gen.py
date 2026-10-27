@@ -82,10 +82,13 @@ def plain(s):
 def theory_html(items, k, fm, terms_ctx, plain_map=None):
     """plain_map: {"d1": "...", "t2": "..."} - анықтама/теореманың «қарапайым тілмен» түсіндірмесі (e<k>.py)."""
     out, c = [], {"def": 0, "thm": 0, "f": 0}
+    use_plain = bool(plain_map)
     plain_map = dict(plain_map or {})
 
     def pl(key):
         t = plain_map.pop(key, None)
+        if use_plain and not t:
+            raise SystemExit(f"сабақ {k}: «plain» ішінде {key} жоқ - әр анықтама мен теоремаға қарапайым түсіндірме керек")
         return f'\n        <p class="mx-plain"><b>Қарапайым тілмен:</b> {t}</p>' if t else ""
     for it in items:
         kind = it[0]
@@ -200,6 +203,8 @@ def render(n, Ls, probs):
     # қорытулар
     o.append('      <h2 id="derivations">Қорытып шығару</h2>\n      <div class="mx-derive-tools"></div>')
     ideas = dict((E or {}).get("ideas", {}))
+    if E and set(ideas) != set(range(1, len(Ls["derivations"]) + 1)):
+        raise SystemExit(f"week-{n}: «ideas» әр қорытуға керек: {sorted(ideas)} ≠ 1..{len(Ls['derivations'])}")
     for i, (t, goal, steps) in enumerate(Ls["derivations"], 1):
         op = " open" if i == 1 else ""
         st = "\n".join(f"            <li>{x}</li>" for x in steps)

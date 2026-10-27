@@ -12,7 +12,7 @@
 |---|---|
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
-| B · Sagid Mustafa-ның дербес әзірлемесі | 927 |
+| B · Sagid Mustafa-ның дербес әзірлемесі | 939 |
 | C · Үшінші тарап | 43 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 55 |
 
@@ -26,7 +26,7 @@
 | `assets/js/en-course.js`<br>`assets/js/en-tools.js`<br>`assets/css/en-course.css`<br>`assets/data/en-*.js`<br>`docs/EN-COURSE-GUIDE.md`<br>`tools/make_en_pages.py` | **B-course-en-engine** Ағылшын курсының жаттығу қозғалтқышы, стильдері, деректері (assets/data/en-*.js) және құжаты (19 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/js/en-trainer.js`<br>`assets/js/en-home.js`<br>`assets/js/games-en.js`<br>`assets/css/en-games.css` | **B-course-en-trainer-games** Ағылшын курсы: сөздік жаттықтырғышы, курс беті (en-home), ағылшын ойындары (games-en) және олардың стильдері (4 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `math/**` | **B-course-math** Математика (24 пән): дербес авторлық курс (math/ сабақтары, курс беті, формулалар, сөздік және жаттықтырғыш беттері) (162 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
-| `assets/js/math-course.js`<br>`assets/js/math-viz.js`<br>`assets/css/math-course.css`<br>`assets/data/math-*.js`<br>`docs/MATH-COURSE-GUIDE.md`<br>`tools/make_math_pages.py`<br>`tools/math_plan.py`<br>`tools/math_verify.py`<br>`tools/math_lesson_gen.py`<br>`tools/math_src/**`<br>`tools/math_pedagogy.py`<br>`tools/math_prereq.py` | **B-course-math-engine** Математика курсының қозғалтқышы (есептер, қауіпсіз өрнек парсері, визуализация), стильдері, деректері (assets/data/math-*.js), құжаты және құралдары (236 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `assets/js/math-course.js`<br>`assets/js/math-viz.js`<br>`assets/css/math-course.css`<br>`assets/data/math-*.js`<br>`docs/MATH-COURSE-GUIDE.md`<br>`tools/make_math_pages.py`<br>`tools/math_plan.py`<br>`tools/math_verify.py`<br>`tools/math_lesson_gen.py`<br>`tools/math_src/**`<br>`tools/math_pedagogy.py`<br>`tools/math_prereq.py` | **B-course-math-engine** Математика курсының қозғалтқышы (есептер, қауіпсіз өрнек парсері, визуализация), стильдері, деректері (assets/data/math-*.js), құжаты және құралдары (248 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/vendor/katex/**` | **C-katex** KaTeX 0.16.11 (формулаларды көрсету; жергілікті көшірме, CDN жоқ) (24 файл) | Khan Academy and other contributors | MIT | расталған |
 | `sources/**` | **A1-sources** Оригинальные тексты Harvard CS50 (конспекты и problem sets), сохранённые для перевода (141 файл) | David J. Malan, Carter Zenke, Brian Yu, Harvard University / CS50 (по заголовкам sources/*/README.md) | CC BY-NC-SA 4.0 | расталған |
 | `lectures/*.html` | **A2-lectures-x** CS50x: 12 лекций (перевод и адаптация) (12 файл) | Оригинал: David J. Malan, Harvard / CS50. Перевод и адаптация: Sagid Mustafa | CC BY-NC-SA 4.0 | расталған |
