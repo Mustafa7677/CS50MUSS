@@ -6,13 +6,14 @@
   <title>Math Functional Analysis · 3-сабақ: Гильберт кеңістіктері - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Functional Analysis · 3-сабақ: Гильберт кеңістіктері - CS50 қазақша">
-  <meta property="og:description" content="Математика, Functional Analysis · 3-сабақ: Гильберт кеңістіктері. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Скаляр көбейтінді, ортогональ проекция, Рисс теоремасы, ортонормаланған базис.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-144.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Functional Analysis · 3-сабақ: Гильберт кеңістіктері - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-144.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Functional Analysis · 3-сабақ: Гильберт кеңістіктері. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Скаляр көбейтінді, ортогональ проекция, Рисс теоремасы, ортонормаланған базис.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,475 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="144">
+    <article class="content math-lesson" style="--sc:#6b21a8" id="main">
+      <div class="lecture-head" style="--lc:#6b21a8" data-n="144" data-msubj="funcanal" data-glyph="ℋ">
         <div class="num">Functional Analysis · 3-сабақ</div>
         <h1>Гильберт кеңістіктері</h1>
-        <p>Скаляр көбейтінді, ортогональ проекция, Рисс теоремасы, ортонормаланған базис.</p>
+        <p>Евклид геометриясының ең пайдалы құралдары - бұрыш, перпендикулярлық, проекция және Пифагор теоремасы. Олардың бәрі скаляр көбейтіндіге сүйенеді. Егер функциялар кеңістігінде де скаляр көбейтінді енгізсек ($\langle f,g\rangle=\int fg$), осы геометрия шексіз өлшемге көшеді: Фурье қатары - функцияны ортонормаланған базис бойынша жіктеу, ал ең жақсы жуықтау (ең кіші квадраттар) - ортогональ проекция.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 50 мин</span><span>Есептер ≈ 1 сағ</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Толық скаляр көбейтінді кеңістік - Гильберт кеңістігі. Бұл сабақта Коши-Буняковский теңсіздігін және параллелограмм заңын дәлелдейміз, ортонормаланған жүйелер үшін Бессель теңсіздігін аламыз, Гильберт кеңістігіндегі проекция теоремасы мен Рисстің көрсету теоремасын дәлелдейміз, Грам-Шмидт процесімен Лежандр көпмүшелерін құрамыз және Парсеваль теңдігінен $\sum\frac1{n^2}=\frac{\pi^2}6$ аламыз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-23">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=funcanal">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Functional Analysis: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-23">Functional Analysis</a></span><ol><li><a href="week-142.html" title="Нормаланған және Банах кеңістіктері">1</a></li><li><a href="week-143.html" title="Lp кеңістіктері">2</a></li><li><a href="week-144.html" aria-current="page" title="Гильберт кеңістіктері">3</a></li><li><a href="week-145.html" title="Шектелген сызықтық операторлар">4</a></li><li><a href="week-146.html" title="Қос кеңістік және Хан–Банах теоремасы">5</a></li><li><a href="week-147.html" title="Спектр және компакт операторлар">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-23">Functional Analysis</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Гильберт кеңістігі - бұрыш пен перпендикулярлық бар шексіз өлшемді кеңістік; онда Пифагор теоремасы, проекция және «координаталар» (Фурье коэффициенттері) мектептегідей жұмыс істейді.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>скаляр көбейтінді мен Гильберт кеңістігін анықтап, $\mathbb R^n$, $\ell^2$, $L^2$ мысалдарымен жұмыс істеу;</li>
+        <li>Коши-Буняковский теңсіздігін және параллелограмм заңын дәлелдеу, $\|\cdot\|_1$ мен $\|\cdot\|_\infty$ скаляр көбейтіндіден шықпайтынын көрсету;</li>
+        <li>ортонормаланған жүйе үшін Бессель теңсіздігін дәлелдеу, Грам-Шмидт процесін орындау;</li>
+        <li>Гильберт кеңістігінде тұйық ішкі кеңістікке ең жақын нүктенің бар әрі жалғыз екенін (проекция теоремасы) дәлелдеу;</li>
+        <li>Рисстің көрсету теоремасын дәлелдеу;</li>
+        <li>Парсеваль теңдігін Фурье қатарына қолданып, Базель есебін шешу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Норма, Банах кеңістігі (1-сабақ). Гёльдер теңсіздігі, $\ell^2$ толықтығы (2-сабақ). Скаляр көбейтінді, ортогональдық, Грам-Шмидт процесі, ортогональ проекция, ең кіші квадраттар (сызықтық алгебра). Фурье қатарлары (Fourier & Laplace Transforms, 1-2-сабақтар).</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-143.html">Functional Analysis · 2-сабақ: Lp кеңістіктері</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: функцияны синуспен жуықтау</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">$[0,\pi]$-да $f(x)=1$ функциясын $\sin x$-қа «проекциялайық»: $\|f-c\sin x\|_2$ ең кіші болатын $c$ қандай? (Скаляр көбейтінді $\langle f,g\rangle=\int_0^\pi fg$.)</p>
+        <ol class="math-steps">
+          <li>Проекция коэффициенті: $c=\frac{\langle f,\sin\rangle}{\langle\sin,\sin\rangle}$.</li>
+          <li>$\langle1,\sin\rangle=\int_0^\pi\sin x\,dx=2$; $\langle\sin,\sin\rangle=\int_0^\pi\sin^2x\,dx=\frac\pi2$.</li>
+          <li>$c=\frac2{\pi/2}=\frac4\pi\approx1{,}27$. Ең жақсы жуықтау: $\frac4\pi\sin x$.</li>
+          <li>Тексеру: $f-c\sin x$ қалдығы $\sin x$-қа перпендикуляр: $\int_0^\pi(1-\frac4\pi\sin x)\sin x\,dx=2-\frac4\pi\cdot\frac\pi2=0$ ✓.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Функцияны «ең жақсы жуықтау» - векторды түзуге перпендикуляр түсіру сияқты. Қалдық әрдайым перпендикуляр - бұл проекция теоремасы.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Скаляр көбейтінді бұрышты өлшейді: $\cos\theta=\frac{\langle x,y\rangle}{\|x\|\|y\|}$. Функциялар үшін $\langle\sin x,\cos x\rangle=\int_{-\pi}^{\pi}\sin x\cos x=0$ - олар «перпендикуляр». Фурье қатарындағы синустар мен косинустар - бір-біріне перпендикуляр шексіз көп бағыт.</p>
+      <p>Параллелограмм заңы: диагональдардың квадраттарының қосындысы қабырғалар квадраттарының қосындысының екі еселенгеніне тең. Ол скаляр көбейтіндісі бар нормалардың ерекше белгісі. $\|\cdot\|_1$ (ромб шарлары) мен $\|\cdot\|_\infty$ (шаршы шарлары) оны бұзады - бұл «бұрышсыз» геометриялар.</p>
+      <p>Проекция - ең жақсы жуықтау: $x$-тің ішкі кеңістіктегі ең жақын нүктесі $Px$, ал қателік $x-Px$ ішкі кеңістікке перпендикуляр. Ортонормаланған базис $e_1,\dots,e_n$ болса, $Px=\sum\langle x,e_k\rangle e_k$. Шексіз өлшемде бар болуы үшін толықтық керек - Гильберт кеңістігінің мәні осында.</p>
+      <p>Бессель: проекцияның ұзындығы вектордың ұзындығынан аспайды, $\sum|\langle x,e_k\rangle|^2\le\|x\|^2$. Базис толық болса - теңдік (Парсеваль): «энергия» коэффициенттердің квадраттарының қосындысына тең. $f(x)=x$ үшін бұл $\sum\frac1{n^2}=\frac{\pi^2}6$ береді.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · көлеңке</span>
+        <p>Проекция - күн тік түскендегі көлеңке: таяқтың көлеңкесі - оның жерге ең жақын бейнесі, ал таяқ пен көлеңкені қосатын сызық жерге перпендикуляр. Гильберт кеңістігінде дәл осылай: тұйық ішкі кеңістікке әр векторның жалғыз «көлеңкесі» бар.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · музыкалық аккорд</span>
+        <p>Дыбысты таза ноталардың (синустардың) қосындысына жіктеу - Фурье коэффициенттерін табу. Ноталар бір-біріне перпендикуляр, ал Парсеваль теңдігі - дыбыстың толық энергиясы ноталардың энергияларының қосындысы.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$\langle x,y\rangle$</td><td>скаляр көбейтінді</td><td>$x$ пен $y$-тің «сәйкестігі»; $\langle f,g\rangle=\int fg$</td></tr>
+        <tr><td>$x\perp y$</td><td>$x$ $y$-ке перпендикуляр</td><td>$\langle x,y\rangle=0$</td></tr>
+        <tr><td>$\delta_{jk}$</td><td>Кронекер дельтасы</td><td>$j=k$ болса $1$, әйтпесе $0$</td></tr>
+        <tr><td>$\langle x,e_k\rangle$</td><td>Фурье коэффициенті</td><td>$x$-тің $e_k$ бағытындағы «координатасы»</td></tr>
+        <tr><td>$M^\perp$</td><td>ортогональ толықтауыш</td><td>$M$-ге перпендикуляр барлық векторлар</td></tr>
+        <tr><td>$P_Mx$</td><td>проекция</td><td>$M$-дегі $x$-ке ең жақын нүкте</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 3.1 · Скаляр көбейтінді және Гильберт кеңістігі</span>
+        <p>$V$ - нақты векторлық кеңістік. <strong>Скаляр көбейтінді</strong> (<span class="term-en">inner product</span>) $\langle\cdot,\cdot\rangle:V\times V\to\mathbb R$: сызықтық (әр аргумент бойынша), симметриялы, $\langle x,x\rangle&gt;0$ ($x\ne0$). $\|x\|=\sqrt{\langle x,x\rangle}$. Толық скаляр көбейтінді кеңістік - <strong>Гильберт кеңістігі</strong> (<span class="term-en">Hilbert space</span>). Мысалдар: $\mathbb R^n$, $\ell^2$ ($\langle x,y\rangle=\sum x_ky_k$), $L^2[a,b]$ ($\langle f,g\rangle=\int fg$; толық нұсқасы - Лебег мағынасында).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Скаляр көбейтінді ұзындық пен бұрышты береді; толық болса - Гильберт кеңістігі.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 3.1 · Коши-Буняковский және параллелограмм</span>
+        <p>(1) $|\langle x,y\rangle|\le\|x\|\|y\|$; теңдік $\iff x,y$ коллинеар. (2) $\|\cdot\|$ - норма. (3) Параллелограмм заңы: $\|x+y\|^2+\|x-y\|^2=2\|x\|^2+2\|y\|^2$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Скаляр көбейтінді ұзындықтардың көбейтіндісінен аспайды; параллелограмм заңы - нормада скаляр көбейтінді бар екенінің белгісі.</p></div>
+      <p><em>Негіздеме.</em> (3)-ті қанағаттандырмайтын норма скаляр көбейтіндіден шықпайды: $\|\cdot\|_1$, $\|\cdot\|_\infty$ ($\mathbb R^2$-де $x=(1,0)$, $y=(0,1)$).</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 3.2 · Ортонормаланған жүйе</span>
+        <p>$\{e_k\}$ - <strong>ортонормаланған жүйе</strong> (<span class="term-en">orthonormal system</span>), егер $\langle e_j,e_k\rangle=\delta_{jk}$. $\langle x,e_k\rangle$ - $x$-тің Фурье коэффициенттері. Мысал: $L^2[-\pi,\pi]$-де $\frac1{\sqrt{2\pi}},\frac{\cos nx}{\sqrt\pi},\frac{\sin nx}{\sqrt\pi}$. <strong>Грам-Шмидт процесі</strong> (<span class="term-en">Gram-Schmidt process</span>) сызықтық тәуелсіз жүйені ортонормаланғанға айналдырады.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Ортонормаланған жүйе - өзара перпендикуляр бірлік векторлар; Фурье коэффициенттері - осы бағыттардағы координаталар.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 3.2 · Пифагор және Бессель</span>
+        <p>(1) $x\perp y\Rightarrow\|x+y\|^2=\|x\|^2+\|y\|^2$. (2) Бессель: ортонормаланған $\{e_k\}$ үшін $\sum_k\langle x,e_k\rangle^2\le\|x\|^2$. (3) Парсеваль: жүйе толық (сызықтық қабықшасы тығыз) болса, $\sum_k\langle x,e_k\rangle^2=\|x\|^2$ және $x=\sum\langle x,e_k\rangle e_k$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Пифагор теоремасы шексіз өлшемде де дұрыс; координаталардың квадраттарының қосындысы ұзындықтың квадратынан аспайды, ал толық базисте - тең.</p></div>
+      <p><em>Негіздеме.</em> (3)-ті дәлелсіз келтіреміз; тригонометриялық жүйенің $L^2$-де толықтығы да бұл курста дәлелсіз.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 3.3 · Проекция теоремасы</span>
+        <p>$H$ - Гильберт кеңістігі, $M\subseteq H$ - тұйық ішкі кеңістік. Әр $x\in H$ үшін $\|x-m_0\|=\min_{m\in M}\|x-m\|$ болатын жалғыз $m_0=Px\in M$ бар; ол $x-Px\perp M$ шартымен сипатталады. $M$-нің ортонормаланған базисі $e_1,\dots,e_n$ болса, $Px=\sum_{k=1}^n\langle x,e_k\rangle e_k$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Тұйық ішкі кеңістікте кез келген векторға ең жақын жалғыз нүкте бар, және айырма кеңістікке перпендикуляр.</p></div>
+      <p><em>Негіздеме.</em> Толықтық пен тұйықтық маңызды: толық емес кеңістікте ең жақын нүкте болмауы мүмкін.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 3.4 · Рисстің көрсету теоремасы</span>
+        <p>$H$ - Гильберт кеңістігі, $\varphi:H\to\mathbb R$ - сызықтық және шектелген ($|\varphi(x)|\le C\|x\|$). Онда $\varphi(x)=\langle x,y\rangle$ болатын жалғыз $y\in H$ бар, және $\|\varphi\|=\|y\|$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Әр шектелген сызықтық функционал - белгілі бір вектормен скаляр көбейтінді.</p></div>
+      <p><em>Негіздеме.</em> <strong>Рисс теоремасы</strong> (<span class="term-en">Riesz representation theorem</span>). Гильберт кеңістігі өз қос кеңістігімен тең (5-сабақ).</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 3.1 · Коши-Буняковский</span>
+        <div class="math-fbody">$$|\langle x,y\rangle|\le\|x\|\,\|y\|$$</div>
+        <p class="math-fnote">Бұрыш: $\cos\theta=\frac{\langle x,y\rangle}{\|x\|\|y\|}$.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 3.2 · Параллелограмм заңы</span>
+        <div class="math-fbody">$$\|x+y\|^2+\|x-y\|^2=2\|x\|^2+2\|y\|^2$$</div>
+        <p class="math-fnote">Скаляр көбейтінді нормасы.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 3.3 · Бессель</span>
+        <div class="math-fbody">$$\sum_k\langle x,e_k\rangle^2\le\|x\|^2$$</div>
+        <p class="math-fnote">Ортонормаланған жүйе.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 3.4 · Парсеваль</span>
+        <div class="math-fbody">$$\|x\|^2=\sum_k\langle x,e_k\rangle^2$$</div>
+        <p class="math-fnote">Толық жүйе.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 3.5 · Проекция</span>
+        <div class="math-fbody">$$Px=\sum_{k=1}^n\langle x,e_k\rangle e_k,\qquad x-Px\perp M$$</div>
+        <p class="math-fnote">Ең жақсы жуықтау.</p></div>
+      <div class="math-formula" id="f-6"><span class="math-fname">Формула 3.6 · Рисс</span>
+        <div class="math-fbody">$$\varphi(x)=\langle x,y\rangle,\quad\|\varphi\|=\|y\|$$</div>
+        <p class="math-fnote">Шектелген сызықтық функционал.</p></div>
+      <div class="math-formula" id="f-7"><span class="math-fname">Формула 3.7 · Базель есебі</span>
+        <div class="math-fbody">$$\sum_{n=1}^\infty\frac1{n^2}=\frac{\pi^2}6$$</div>
+        <p class="math-fnote">Парсеваль, $f(x)=x$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Гильберт кеңістігінде есеп шығару: (1) ең жақсы жуықтау - ортогональ проекция; базис ортонормаланбаса, алдымен Грам-Шмидт, не нормаль теңдеулер $\langle x-Px,m_j\rangle=0$; (2) қателік: $\|x-Px\|^2=\|x\|^2-\sum\langle x,e_k\rangle^2$ (Пифагор); (3) сандық қатарлар - Парсеваль арқылы: функцияның Фурье коэффициенттерін тауып, $\|f\|^2$-мен теңестіру; (4) сызықтық функционалды скаляр көбейтінді ретінде жазу - Рисс.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>(1) Бессель - теңсіздік, Парсеваль - тек толық жүйе үшін теңдік: $\{\sin nx\}$ жүйесі $[-\pi,\pi]$-де толық емес (жұп функцияларды жоғалтады). (2) Проекция теоремасы тұйық ішкі кеңістік пен толық кеңістікті талап етеді. (3) Әр норма скаляр көбейтіндіден шықпайды - параллелограмм заңын тексеріңіз. (4) Грам-Шмидтте әр қадамда нормалауды ұмытпаңыз; әйтпесе $Px=\sum\langle x,e_k\rangle e_k$ формуласы қате болады.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $[-\pi,\pi]$-да $\sin x$ пен $\cos x$ перпендикуляр ма?</span></summary>
+        <p>Иә: $\int_{-\pi}^\pi\sin x\cos x\,dx=0$.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> $\mathbb R^2$-де $x=(1,2)$-ні $e=(1,0)$ осіне проекциялаңыз.</span></summary>
+        <p>$\langle x,e\rangle e=(1,0)$; қалдық $(0,2)\perp e$.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> Бессель теңсіздігі неге «теңсіздік»?</span></summary>
+        <p>Жүйе толық болмаса, $x$-тің кейбір бөлігі жүйеге перпендикуляр қалады және координаталарға кірмейді.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> $C[0,1]$ $\|\cdot\|_\infty$ нормасымен Гильберт кеңістігі ме?</span></summary>
+        <p>Жоқ: параллелограмм заңы орындалмайды ($f=1$, $g=x$: $\|f+g\|^2+\|f-g\|^2=4+1=5\ne2+2=4$).</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: Коши-Буняковский</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 3.1 (1)-(2)-ні дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $\|x-ty\|^2\ge0$ барлық $t$ үшін - бұл $t$ бойынша квадрат үшмүше, оның дискриминанты теріс емес бола алмайды.</p>
+          <ol class="math-steps">
+            <li>$y=0$ - айқын. $t\in\mathbb R$: $0\le\|x-ty\|^2=\|x\|^2-2t\langle x,y\rangle+t^2\|y\|^2$.</li>
+            <li>Квадрат үшмүше $t$ бойынша теріс емес - дискриминант $\le0$: $4\langle x,y\rangle^2-4\|x\|^2\|y\|^2\le0$.</li>
+            <li>Демек $|\langle x,y\rangle|\le\|x\|\|y\|$; теңдік - үшмүшенің түбірі бар, $x=ty$.</li>
+            <li>Үшбұрыш теңсіздігі: $\|x+y\|^2=\|x\|^2+2\langle x,y\rangle+\|y\|^2\le(\|x\|+\|y\|)^2$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: параллелограмм заңы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 3.1 (3)-ті дәлелдеу және $\|\cdot\|_1$ үшін бұзылуы.</p>
+          <p class="mx-idea"><b>Идея:</b> $\|x+y\|^2$ пен $\|x-y\|^2$-ны ашып қосамыз - аралас мүшелер жойылады. $\|\cdot\|_1$-де бұл бұзылатынын бір мысалмен көрсетеміз.</p>
+          <ol class="math-steps">
+            <li>$\|x\pm y\|^2=\|x\|^2\pm2\langle x,y\rangle+\|y\|^2$.</li>
+            <li>Қосамыз: $\|x+y\|^2+\|x-y\|^2=2\|x\|^2+2\|y\|^2$.</li>
+            <li>$\|\cdot\|_1$, $x=(1,0)$, $y=(0,1)$: сол жағы $2^2+2^2=8$, оң жағы $2+2=4$ - бұзылды.</li>
+            <li>$\|\cdot\|_\infty$: сол жағы $1+1=2$, оң жағы $4$ - бұзылды. Демек бұл нормалар скаляр көбейтіндіден шықпайды. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: Бессель теңсіздігі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 3.2 (2)-ні дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $x$ пен оның дербес Фурье қосындысының айырмасы барлық $e_k$-ға перпендикуляр, сондықтан Пифагор: дербес қосынды ұзындығы $\|x\|$-тан аспайды.</p>
+          <ol class="math-steps">
+            <li>$c_k=\langle x,e_k\rangle$, $s_n=\sum_{k\le n}c_ke_k$. $\langle x-s_n,e_j\rangle=c_j-c_j=0$ ($j\le n$) - $x-s_n\perp s_n$.</li>
+            <li>Пифагор: $\|x\|^2=\|x-s_n\|^2+\|s_n\|^2\ge\|s_n\|^2$.</li>
+            <li>Ортонормалдық: $\|s_n\|^2=\sum_{k\le n}c_k^2$.</li>
+            <li>Демек әр $n$ үшін $\sum_{k\le n}c_k^2\le\|x\|^2$; $n\to\infty$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: проекция теоремасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 3.3-ті дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Ең жақын нүктеге ұмтылатын тізбек параллелограмм заңы бойынша Коши; толықтық шегін береді, тұйықтық оны $M$-де ұстайды.</p>
+          <ol class="math-steps">
+            <li>$d=\inf_{m\in M}\|x-m\|$, $m_n\in M$, $\|x-m_n\|\to d$. Параллелограмм заңы $x-m_n$, $x-m_k$-ға: $\|m_n-m_k\|^2=2\|x-m_n\|^2+2\|x-m_k\|^2-4\left\|x-\frac{m_n+m_k}2\right\|^2$.</li>
+            <li>$\frac{m_n+m_k}2\in M$, демек соңғы мүше $\ge4d^2$: $\|m_n-m_k\|^2\le2\|x-m_n\|^2+2\|x-m_k\|^2-4d^2\to0$ - Коши.</li>
+            <li>$H$ толық, $M$ тұйық: $m_n\to m_0\in M$, $\|x-m_0\|=d$. Жалғыздық - сол есептеу ($m_n$, $m_k$ орнына екі минимум).</li>
+            <li>Ортогональдық: $m\in M$, $t\in\mathbb R$: $\|x-m_0-tm\|^2\ge d^2$ $\Rightarrow-2t\langle x-m_0,m\rangle+t^2\|m\|^2\ge0$ әр $t$ үшін, демек $\langle x-m_0,m\rangle=0$. Ортонормаланған базис бойынша: $\langle x-\sum c_ke_k,e_j\rangle=0$ береді $Px=\sum\langle x,e_k\rangle e_k$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5">
+        <summary>Қорытып шығару 5: Рисс теоремасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 3.4-ті дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Ядроға перпендикуляр бір бағыт жеткілікті: функционал тек сол бағыттағы құраушыны «көреді».</p>
+          <ol class="math-steps">
+            <li>$\varphi=0$: $y=0$. Әйтпесе $N=\ker\varphi$ - тұйық ($\varphi$ үзіліссіз), $N\ne H$.</li>
+            <li>Проекция теоремасы: $z\notin N$ алып, $z-Pz\perp N$, $w=z-Pz\ne0$, $w\perp N$.</li>
+            <li>Әр $x$: $\varphi(x)w-\varphi(w)x\in N$ ($\varphi$ мәні нөл), демек $\langle\varphi(x)w-\varphi(w)x,w\rangle=0$: $\varphi(x)\|w\|^2=\varphi(w)\langle x,w\rangle$.</li>
+            <li>$y=\frac{\varphi(w)}{\|w\|^2}w$: $\varphi(x)=\langle x,y\rangle$. Жалғыз: $\langle x,y-y'\rangle=0$ әр $x$ үшін $\Rightarrow y=y'$. Норма: Коши-Буняковский, $x=y$-те теңдік. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Грам-Шмидт</h3>
+        <p class="math-problem">$[-1,1]$-де $1,x,x^2$ жүйесін ортонормалау.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\|1\|^2=2$: $e_0=\frac1{\sqrt2}$.</li>
+          <li><b>2-қадам.</b> $\langle x,e_0\rangle=0$, $\|x\|^2=\frac23$: $e_1=\sqrt{\frac32}\,x$.</li>
+          <li><b>3-қадам.</b> $x^2-\langle x^2,e_0\rangle e_0-\langle x^2,e_1\rangle e_1=x^2-\frac13$; $\left\|x^2-\frac13\right\|^2=\frac8{45}$.</li>
+          <li><b>4-қадам.</b> $e_2=\frac{\sqrt{10}}4(3x^2-1)$ - Лежандр көпмүшелері (нормаланған).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac1{\sqrt2}$, $\sqrt{\frac32}x$, $\frac{\sqrt{10}}4(3x^2-1)$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Ең жақсы жуықтау</h3>
+        <p class="math-problem">$f(x)=x^3$-ке $[-1,1]$-де $\le1$ дәрежелі көпмүшелермен $L^2$ бойынша ең жақсы жуықтау.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $M=\operatorname{span}(e_0,e_1)$. $\langle x^3,e_0\rangle=0$ (тақ функция).</li>
+          <li><b>2-қадам.</b> $\langle x^3,e_1\rangle=\sqrt{\frac32}\int_{-1}^1x^4=\sqrt{\frac32}\cdot\frac25$.</li>
+          <li><b>3-қадам.</b> $Pf=\sqrt{\frac32}\cdot\frac25\cdot\sqrt{\frac32}x=\frac35x$.</li>
+          <li><b>4-қадам.</b> Тексеру: $x^3-\frac35x\perp1$, $\perp x$: $\int(x^4-\frac35x^2)=\frac25-\frac25=0$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac35x$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Параллелограмм</h3>
+        <p class="math-problem">$\|\cdot\|_\infty$ скаляр көбейтіндіден шыға ма?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $x=(1,0)$, $y=(0,1)$: $\|x+y\|_\infty=\|x-y\|_\infty=1$.</li>
+          <li><b>2-қадам.</b> Сол жағы $1+1=2$, оң жағы $2+2=4$.</li>
+          <li><b>3-қадам.</b> $2\ne4$ - параллелограмм заңы бұзылды.</li>
+          <li><b>4-қадам.</b> Демек $(\mathbb R^2,\|\cdot\|_\infty)$ - Банах, бірақ Гильберт емес (бұрыш ұғымы жоқ).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Жоқ.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Базель есебі</h3>
+        <p class="math-problem">$f(x)=x$ $[-\pi,\pi]$-да; Парсеваль.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $f$ тақ: Фурье қатары тек синустар, $b_n=\frac1\pi\int_{-\pi}^\pi x\sin nx\,dx=\frac{2(-1)^{n+1}}n$.</li>
+          <li><b>2-қадам.</b> Парсеваль (тригонометриялық жүйе үшін): $\frac1\pi\int_{-\pi}^\pi f^2=\sum b_n^2$.</li>
+          <li><b>3-қадам.</b> $\frac1\pi\cdot\frac{2\pi^3}3=\sum\frac4{n^2}$.</li>
+          <li><b>4-қадам.</b> Демек $\sum\frac1{n^2}=\frac{\pi^2}6$ (тригонометриялық жүйенің толықтығына сүйендік).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac{\pi^2}6$.</p></div>
+      <div class="math-example" id="ex-5"><h3>Мысал 5. Рисс</h3>
+        <p class="math-problem">$\mathbb R^3$-те $\varphi(x)=2x_1-x_2+3x_3$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\varphi(x)=\langle x,y\rangle$, $y=(2,-1,3)$.</li>
+          <li><b>2-қадам.</b> $\|\varphi\|=\|y\|=\sqrt{14}$.</li>
+          <li><b>3-қадам.</b> $L^2[0,1]$-де $\varphi(f)=\int_0^1xf(x)\,dx$: $y(x)=x$, $\|\varphi\|=\|x\|_2=\frac1{\sqrt3}$.</li>
+          <li><b>4-қадам.</b> Ал $\varphi(f)=f(0)$ - $L^2$-де шектелмеген, Рисс қолданылмайды.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $y=(2,-1,3)$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Бессель - әрдайым теңдік</span> → <span class="math-good">тек толық жүйеде (Парсеваль)</span><br>Неге қате: $\{\sin nx\}$, жұп $f$.</li>
+        <li><span class="math-bad">Әр норма скаляр көбейтіндіден</span> → <span class="math-good">параллелограмм заңы қажет</span><br>Неге қате: $\|\cdot\|_1$, $\|\cdot\|_\infty$.</li>
+        <li><span class="math-bad">Проекция әрдайым бар</span> → <span class="math-good">тұйық ішкі кеңістік, толық кеңістік</span><br>Неге қате: Теорема 3.3.</li>
+        <li><span class="math-bad">$Px=\sum\langle x,v_k\rangle v_k$ кез келген базиспен</span> → <span class="math-good">ортонормаланған базис</span><br>Неге қате: алдымен Грам-Шмидт.</li>
+        <li><span class="math-bad">$f\mapsto f(0)$ - $L^2$-де шектелген функционал</span> → <span class="math-good">шектелмеген</span><br>Неге қате: «ине» функциялар.</li>
+        <li><span class="math-bad">$(C[a,b],\|\cdot\|_2)$ - Гильберт</span> → <span class="math-good">толық емес; $L^2$ - Лебег</span><br>Неге қате: 2-сабақ.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="x³-тің [−1, 1]-дегі ең жақсы сызықтық L²-жуықтауы" data-config='{"fns": [{"f": "x^3", "label": "f(x) = x³"}, {"f": "0.6*x", "label": "Pf = (3/5)x", "color": 1}, {"f": "c*x", "label": "басқа түзу cx", "color": 2, "dash": [5, 4]}], "params": [{"n": "c", "min": 0, "max": 1.2, "step": 0.05, "v": 1}], "view": [-1.2, 1.2, -1.2, 1.2]}'></div>
+      <p><b>Бақылаңыз:</b> $\|x^3-cx\|_2^2=\frac27-\frac45c+\frac23c^2$ - $c=\frac35$-те ең кіші. Жүгірткіні жылжытыңыз: $c=\frac35$ түзуі $x^3$-ке «орташа» ең жақын - қателік $x^3-\frac35x$ барлық сызықтық функцияларға перпендикуляр. Бұл - ең кіші квадраттардың шексіз өлшемді нұсқасы.</p>
+      <div class="math-viz" data-viz="graph" data-title="Базель: Σ 1/n² жартылай қосындылары → π²/6" data-config='{"fns": [{"f": "pi^2/6 - 1/(floor(x) + 0.5)", "label": "Σ_{n ≤ N} 1/n² (жуық: π²/6 − 1/(N + ½))"}, {"f": "pi^2/6", "label": "π²/6", "color": 1, "dash": [5, 4]}], "view": [1, 50, 1, 1.7]}'></div>
+      <p><b>Бақылаңыз:</b> Жартылай қосындылар $\frac{\pi^2}6\approx1{,}6449$-ға жақындайды; қалдығы шамамен $\frac1{N+1/2}$ (интегралдық баға). Бұл шекті Парсеваль теңдігі $f(x)=x$ үшін береді - Гильберт кеңістігі геометриясының сандық қатарға қолданылуы. (Графикте жуық формула; дәл қосындылар жобада.)</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m23-3-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m23-3-t1">1. Скаляр көбейтінді</h3></div>
+        <p>Есептеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\langle(1,2,3),(4,-1,2)\\rangle$","a":8,"v":"4 - 2 + 6","hint":"$\\sum x_ky_k$.","sol":{"steps":["$4-2+6$."],"ans":"$8$"}},{"q":"$L^2[-\\pi,\\pi]$-де $\\langle\\sin x,\\cos x\\rangle$","a":0,"v":"integrate(sin(x)*cos(x), (x, -pi, pi))","hint":"Тақ функция.","sol":{"steps":["$\\frac12\\int\\sin2x=0$."],"ans":"$0$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m23-3-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m23-3-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\|\\cdot\\|_\\infty$ скаляр көбейтіндіден шығады.","a":false,"e":"Параллелограмм заңы бұзылады.","hint":"$x=(1,0)$, $y=(0,1)$."},{"q":"Бессель теңсіздігі әр ортонормаланған жүйе үшін дұрыс.","a":true,"e":"Теорема 3.2 (2).","hint":"Пифагор."},{"q":"$\\ell^2$ - Гильберт кеңістігі.","a":true,"e":"Толық (2-сабақ), $\\langle x,y\\rangle=\\sum x_ky_k$.","hint":"Гёльдер $p=2$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m23-3-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m23-3-t3">3. Параллелограмм заңы</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\|x+y\\|^2+\\|x-y\\|^2=?$","o":["$2\\|x\\|^2+2\\|y\\|^2$","$\\|x\\|^2+\\|y\\|^2$","$4\\langle x,y\\rangle$","$(\\|x\\|+\\|y\\|)^2$"],"a":0,"e":"Ашып қосамыз.","hint":"Теорема 3.1 (3)."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m23-3-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m23-3-t4">4. Грам-Шмидт</h3></div>
+        <p>$[-1,1]$, $\langle f,g\rangle=\int_{-1}^1fg$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\|x\\|^2$","a":"2/3","v":"integrate(x**2, (x, -1, 1))","hint":"$\\int x^2$.","sol":{"steps":["$\\frac23$."],"ans":"$\\frac23$"}},{"q":"$x^2$-ның $\\operatorname{span}(1,x)$-ке проекциясы (тұрақты)","a":"1/3","v":"integrate(x**2, (x, -1, 1)) / 2","hint":"$\\frac{\\langle x^2,1\\rangle}{\\langle1,1\\rangle}$; $\\langle x^2,x\\rangle=0$.","sol":{"steps":["$\\frac{2/3}{2}$."],"ans":"$\\frac13$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m23-3-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m23-3-t5">5. Ең жақсы жуықтау</h3></div>
+        <p>$f(x)=x^3$, $[-1,1]$, $\operatorname{span}(1,x)$-ке проекция $Pf=cx$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$c=?$","a":"3/5","v":"integrate(x**4, (x, -1, 1)) / integrate(x**2, (x, -1, 1))","hint":"$\\frac{\\langle x^3,x\\rangle}{\\langle x,x\\rangle}$.","sol":{"steps":["$\\frac{2/5}{2/3}$."],"ans":"$\\frac35$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m23-3-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m23-3-t6">6. Рисс</h3></div>
+        <p>$\varphi(x)=2x_1-x_2+3x_3$ ($\mathbb R^3$).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\|\\varphi\\|^2$","a":14,"v":"4 + 1 + 9","hint":"$\\|y\\|^2$, $y=(2,-1,3)$.","sol":{"steps":["$4+1+9$."],"ans":"$14$"}},{"q":"$L^2[0,1]$-де $\\varphi(f)=\\int_0^1xf$: $\\|\\varphi\\|^2$","a":"1/3","v":"integrate(x**2, (x, 0, 1))","hint":"$y(x)=x$.","sol":{"steps":["$\\int x^2=\\frac13$."],"ans":"$\\frac13$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m23-3-exp7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m23-3-t7">7. Проекция қателігі</h3></div>
+        <p>$\|x^3-cx\|_2^2$ ($[-1,1]$) өрнегін $c$ арқылы ($c$-ны $x$ деп).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$E(c)=?$","a":"2/7 - 4/5*x + 2/3*x^2","v":"Rational(2, 7) - Rational(4, 5)*x + Rational(2, 3)*x**2","hint":"$\\int(x^6-2cx^4+c^2x^2)$.","sol":{"steps":["$\\frac27-\\frac45c+\\frac23c^2$; минимумы $c=\\frac35$."],"ans":"$\\frac27-\\frac45c+\\frac23c^2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m23-3-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m23-3-t8">8. Ұғым - тұжырым</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Теорема - мазмұны.","pairs":[["Бессель","Σ⟨x, e_k⟩² ≤ ‖x‖²"],["Парсеваль","Σ⟨x, e_k⟩² = ‖x‖² (толық жүйе)"],["Проекция","x − Px ⊥ M, жалғыз ең жақын нүкте"],["Рисс","φ(x) = ⟨x, y⟩"]],"hint":"Теоремалар 3.2-3.4.","sol":{"steps":["Барлығы - скаляр көбейтінді геометриясы."]},"e":"Гильберт кеңістігінің төрт тірегі."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m23-3-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m23-3-t9">9. Параметрлік: Рисс векторы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[-5,5]},"b":{"int":[-5,5]},"c":{"int":[-5,5]}},"type":"num","q":"$\\varphi(x)=#{a}x_1#{+b}x_2#{+c}x_3$. $\\|\\varphi\\|^2=?$","a":"a^2 + b^2 + c^2","v":"int(a)**2 + int(b)**2 + int(c)**2","hint":"Рисс: $y=(#{a},#{b},#{c})$.","sol":{"steps":["$#{a^2}+#{b^2}+#{c^2}$."],"ans":"$#{a^2 + b^2 + c^2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m23-3-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m23-3-t10">10. Параметрлік: $x^n$-нің проекциясы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"k":{"int":[1,4]}},"type":"num","q":"$f(x)=x^{#{2*k+1}}$, $[-1,1]$. $\\operatorname{span}(x)$-ке проекция $cx$: $c=?$","a":"3/(2*k+3)","v":"Rational(3, 2*int(k) + 3)","hint":"$c=\\frac{\\langle x^{#{2*k+1}},x\\rangle}{\\langle x,x\\rangle}=\\frac{2/#{2*k+3}}{2/3}$.","sol":{"steps":["$\\frac3{#{2*k+3}}$."],"ans":"$#{3/(2*k+3)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m23-3-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m23-3-t11">11. Проекция теоремасының дәлелі</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Ең жақын нүктенің бар болуы.","steps":["$d=\\inf\\|x-m\\|$, минимизациялаушы тізбек $m_n$.","Параллелограмм заңы: $\\|m_n-m_k\\|^2\\le2\\|x-m_n\\|^2+2\\|x-m_k\\|^2-4d^2$.","$(m_n)$ - Коши тізбегі.","Толықтық пен тұйықтық: $m_n\\to m_0\\in M$.","$\\|x-m_0\\|=d$, $x-m_0\\perp M$."],"hint":"Теорема 3.3.","sol":{"ans":"$Px=m_0$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m23-3-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m23-3-t12">12. Қадамдық шешім: Коши-Буняковский</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$|\\langle x,y\\rangle|\\le\\|x\\|\\|y\\|$ дәлелдеңіз.","steps":["$0\\le\\|x-ty\\|^2=\\|x\\|^2-2t\\langle x,y\\rangle+t^2\\|y\\|^2$ әр $t$ үшін.","Квадрат үшмүше теріс емес - дискриминант $\\le0$.","$4\\langle x,y\\rangle^2-4\\|x\\|^2\\|y\\|^2\\le0$.","Түбір алу."],"ans":"Теорема 3.1."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Гильберт кеңістіктері - кванттық механиканың тілі (күйлер - бірлік векторлар, бақыланатын шамалар - операторлар), сигнал өңдеудің (Фурье, вейвлеттер - ортонормаланған базистер), машиналық оқытудағы ядро әдістерінің (RKHS, SVM) және ең кіші квадраттар регрессиясының (проекция) негізі. Сурет сығу (JPEG) - ортонормаланған базистегі ұсақ коэффициенттерді тастау.</p>
+      <p><b>Мини-жоба: «Проекциялар мен Парсеваль».</b> Грам-Шмидтті функциялар үшін сандық интегралдаумен орындап, Лежандр көпмүшелерін аламыз; $e^x$-ке $\le3$ дәрежелі көпмүшелермен $L^2$ бойынша ең жақсы жуықтауды табамыз; $f(x)=x$ үшін Фурье коэффициенттері арқылы $\sum\frac1{n^2}$-ді есептейміз.</p>
+<pre data-lang="python"><code class="language-python">import math
+
+N = 4000
+grid = [-1 + 2 * (k + 0.5) / N for k in range(N)]
+
+def ip(f, g):
+    return sum(f(t) * g(t) for t in grid) * 2 / N
+
+def gram_schmidt(funcs):
+    basis = []
+    for f in funcs:
+        coeffs = [(ip(f, e), e) for e in basis]
+        g = (lambda t, f=f, coeffs=coeffs: f(t) - sum(c * e(t) for c, e in coeffs))
+        norm = math.sqrt(ip(g, g))
+        basis.append(lambda t, g=g, norm=norm: g(t) / norm)
+    return basis
+
+monomials = [lambda t, k=k: t ** k for k in range(4)]
+E = gram_schmidt(monomials)
+print("e2(0), e2(1) ≈", round(E[2](0), 4), round(E[2](1), 4), " (дәл: −√10/4 ≈", round(-math.sqrt(10) / 4, 4), ", √10/2 ≈", round(math.sqrt(10) / 2, 4), ")")
+print("ортонормалдық ⟨e_i, e_j⟩:", [[round(ip(E[i], E[j]), 3) + 0.0 for j in range(4)] for i in range(4)])
+
+f = math.exp
+c = [ip(f, e) for e in E]
+Pf = lambda t: sum(ck * e(t) for ck, e in zip(c, E))
+err = math.sqrt(ip(lambda t: f(t) - Pf(t), lambda t: f(t) - Pf(t)))
+print("e^x ≈ 3-дәрежелі проекция, L²-қателік ≈", round(err, 6), "; max қателік ≈", round(max(abs(f(t) - Pf(t)) for t in grid), 5))
+print("Бессель: Σc_k² =", round(sum(ck * ck for ck in c), 6), "≤ ‖e^x‖² =", round(ip(f, f), 6))
+
+S = 0.0
+for n in range(1, 100001):
+    S += 1 / n ** 2
+print("Σ 1/n² (n ≤ 10⁵) =", round(S, 8), "  π²/6 =", round(math.pi ** 2 / 6, 8))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$e^x$ проекциясының $L^2$-қателігін $\|e^x\|^2-\sum c_k^2$ формуласымен тексеріңіз (Пифагор). Дәрежені $5$-ке дейін көтеріп, қателіктің қалай кемитінін бақылаңыз.</li>
+        <li>$\sum_{n\le N}\frac1{n^2}$ мен $\frac{\pi^2}6$ айырмасы шамамен $\frac1N$ екенін тексеріңіз. Парсевальды $f(x)=x^2$-қа қолданып, $\sum\frac1{n^4}=\frac{\pi^4}{90}$ шығатынын сандық тексеріңіз.</li>
+        <li>Грам-Шмидтті $[0,1]$-да $1,x,x^2$ үшін орындаңыз (ығысқан Лежандр көпмүшелері). Нәтиже $[-1,1]$-дегіден қалай ерекшеленеді?</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Гильберт</td><td>толық скаляр көбейтінді кеңістік</td><td>$\mathbb R^n$, $\ell^2$, $L^2$</td></tr>
+        <tr><td>Коши-Буняковский</td><td>$|\langle x,y\rangle|\le\|x\|\|y\|$</td><td>дискриминант</td></tr>
+        <tr><td>Параллелограмм</td><td>$\|x+y\|^2+\|x-y\|^2=2\|x\|^2+2\|y\|^2$</td><td>$\|\cdot\|_1,\|\cdot\|_\infty$ - жоқ</td></tr>
+        <tr><td>Бессель/Парсеваль</td><td>$\sum c_k^2\le\|x\|^2$; толық жүйеде $=$</td><td>Базель: $\frac{\pi^2}6$</td></tr>
+        <tr><td>Проекция</td><td>ең жақын нүкте бар, жалғыз; $x-Px\perp M$</td><td>$Px=\sum\langle x,e_k\rangle e_k$</td></tr>
+        <tr><td>Рисс</td><td>$\varphi(x)=\langle x,y\rangle$</td><td>$\|\varphi\|=\|y\|$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m23-3-self">
+        <li><input type="checkbox"> <span>Мен скаляр көбейтінді мен Гильберт кеңістігін мысалдармен анықтай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Коши-Буняковский мен параллелограмм заңын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Грам-Шмидт процесін функцияларға қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Бессель теңсіздігі мен проекция теоремасын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Рисс теоремасын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Парсеваль теңдігінен $\sum\frac1{n^2}=\frac{\pi^2}6$ ала аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="a">
+<p class="q-text">1. Гильберт кеңістігі:</p>
+<label><input type="radio" value="a"> толық скаляр көбейтінді кеңістік</label>
+<label><input type="radio" value="b"> кез келген Банах</label>
+<label><input type="radio" value="c"> ақырлы өлшемді</label>
+<label><input type="radio" value="d"> компакт</label>
+<p class="explain">Анықтама.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">2. ‖·‖∞ параллелограмм заңын:</p>
+<label><input type="radio" value="a"> қанағаттандырады</label>
+<label><input type="radio" value="b"> тек ℝ¹-де бұзады</label>
+<label><input type="radio" value="c"> анықтамайды</label>
+<label><input type="radio" value="d"> бұзады</label>
+<p class="explain">2 ≠ 4.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">3. Бессель:</p>
+<label><input type="radio" value="a"> Σ⟨x, e_k⟩² ≥ ‖x‖²</label>
+<label><input type="radio" value="b"> Σ⟨x, e_k⟩ = ‖x‖</label>
+<label><input type="radio" value="c"> Σ⟨x, e_k⟩² ≤ ‖x‖²</label>
+<label><input type="radio" value="d"> ⟨x, y⟩ ≤ 1</label>
+<p class="explain">Теорема 3.2.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. x³-тің span(1, x)-ке проекциясы [−1, 1]:</p>
+<label><input type="radio" value="a"> x</label>
+<label><input type="radio" value="b"> (3/5)x</label>
+<label><input type="radio" value="c"> (1/3)</label>
+<label><input type="radio" value="d"> 0</label>
+<p class="explain">⟨x³, x⟩/⟨x, x⟩.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. Σ 1/n² =</p>
+<label><input type="radio" value="a"> π²/6</label>
+<label><input type="radio" value="b"> π/4</label>
+<label><input type="radio" value="c"> 1</label>
+<label><input type="radio" value="d"> ∞</label>
+<p class="explain">Парсеваль.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">6. Рисс: φ(x) = 2x₁ − x₂ + 3x₃, ‖φ‖ =</p>
+<label><input type="radio" value="a"> 14</label>
+<label><input type="radio" value="b"> 4</label>
+<label><input type="radio" value="c"> 2</label>
+<label><input type="radio" value="d"> √14</label>
+<p class="explain">‖(2, −1, 3)‖.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">7. Проекция теоремасы талап етеді:</p>
+<label><input type="radio" value="a"> ақырлы өлшем</label>
+<label><input type="radio" value="b"> компактылық</label>
+<label><input type="radio" value="c"> толықтық және тұйық ішкі кеңістік</label>
+<label><input type="radio" value="d"> ештеңе</label>
+<p class="explain">Параллелограмм + толықтық.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. Грам-Шмидт [−1, 1]-де 1, x, x²-тан береді:</p>
+<label><input type="radio" value="a"> Чебышёв көпмүшелері</label>
+<label><input type="radio" value="b"> Лежандр көпмүшелері</label>
+<label><input type="radio" value="c"> тригонометриялық жүйе</label>
+<label><input type="radio" value="d"> мономдар</label>
+<p class="explain">e₂ ∝ 3x² − 1.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=funcanal">Functional Analysis емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-143.html"><small>Алдыңғы</small>← Functional Analysis · 2-сабақ: Lp кеңістіктері</a>

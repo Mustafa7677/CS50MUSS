@@ -6,13 +6,14 @@
   <title>Math Complex Analysis · 6-сабақ: Шегерімдер теориясы және қолданысы - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Complex Analysis · 6-сабақ: Шегерімдер теориясы және қолданысы - CS50 қазақша">
-  <meta property="og:description" content="Математика, Complex Analysis · 6-сабақ: Шегерімдер теориясы және қолданысы. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Шегерімді есептеу, шегерімдер теоремасы, нақты интегралдарды есептеу.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-72.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Complex Analysis · 6-сабақ: Шегерімдер теориясы және қолданысы - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-72.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Complex Analysis · 6-сабақ: Шегерімдер теориясы және қолданысы. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Шегерімді есептеу, шегерімдер теоремасы, нақты интегралдарды есептеу.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,452 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="72">
+    <article class="content math-lesson" style="--sc:#7e22ce" id="main">
+      <div class="lecture-head" style="--lc:#7e22ce" data-n="72" data-msubj="complex" data-glyph="ℂ">
         <div class="num">Complex Analysis · 6-сабақ</div>
         <h1>Шегерімдер теориясы және қолданысы</h1>
-        <p>Шегерімді есептеу, шегерімдер теоремасы, нақты интегралдарды есептеу.</p>
+        <p>Тұйық контур бойынша интеграл тек ішіндегі ерекше нүктелердің Лоран қатарларындағы бір ғана коэффициентке - $c_{-1}$-ге, яғни шегерімге - тәуелді. Бұл бақылау интеграл есептеуді алгебраға айналдырады: интеграл $=2\pi i\times$(шегерімдердің қосындысы).</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 55 мин</span><span>Есептер ≈ 1 сағ</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Әсіресе күшті қолданысы - нақты анализде «қиын» интегралдар: $\int_{-\infty}^{\infty}\frac{dx}{1+x^4}$, $\int_0^{2\pi}\frac{dt}{2+\cos t}$, $\int_{-\infty}^{\infty}\frac{\cos ax}{1+x^2}dx$ бірнеше жолда есептеледі. Бұл сабақта шегерімдер теоремасын дәлелдеп, полюстердегі шегерімді есептеу формулаларын қорытамыз және үш түрлі нақты интегралды есептеу тәсілін шарттарымен (қай кезде қолдануға болады, қай кезде жоқ) үйренеміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-11">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=complex">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Complex Analysis: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-11">Complex Analysis</a></span><ol><li><a href="week-67.html" title="Комплекс сандар">1</a></li><li><a href="week-68.html" title="Комплекс айнымалы функциялар және Коши–Риман шарттары">2</a></li><li><a href="week-69.html" title="Элементар комплекс функциялар">3</a></li><li><a href="week-70.html" title="Комплекс интеграл және Коши теоремасы">4</a></li><li><a href="week-71.html" title="Лоран қатары және ерекше нүктелер">5</a></li><li><a href="week-72.html" aria-current="page" title="Шегерімдер теориясы және қолданысы">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-11">Complex Analysis</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Тұйық контур бойынша интеграл - ішіндегі ерекше нүктелердің шегерімдерінің қосындысы, $2\pi i$-ге көбейтілген; бұл әдіс қиын нақты интегралдарды бірнеше жолда есептейді.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>шегерімді Лоран қатарының $c_{-1}$ коэффициенті ретінде анықтау;</li>
+        <li>шегерімдер теоремасын дәлелдеп, тұйық контур бойынша интеграл есептеу;</li>
+        <li>қарапайым және $m$-ретті полюстегі шегерім формулаларын, $\frac gh$ формуласын қорытып, қолдану;</li>
+        <li>$\int_{-\infty}^{\infty}\frac{P(x)}{Q(x)}dx$ интегралын жоғарғы жарты жазықтықтағы шегерімдер арқылы есептеу (шарттарымен);</li>
+        <li>$\int_0^{2\pi}R(\cos t,\sin t)\,dt$ интегралын $z=e^{it}$ ауыстыруымен есептеу;</li>
+        <li>$\int_{-\infty}^{\infty}\frac{\cos ax}{1+x^2}dx$ түріндегі интегралдарды есептеу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Лоран қатары, полюс реті, $m$-ретті полюстің сипаттамасы $f=\frac{g}{(z-a)^m}$ (5-сабақ). $\oint(z-a)^n\,dz=2\pi i\cdot[n=-1]$, контурды деформациялау, $ML$-бағасы, Коши формуласы (4-сабақ). Меншіксіз интеграл $\int_{-\infty}^{\infty}$ және абсолютті жинақталу; рационал функцияның $\infty$-дегі мінезі.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-71.html">Complex Analysis · 5-сабақ: Лоран қатары және ерекше нүктелер</a></li><li><a href="week-35.html">Integral Calculus · 7-сабақ: Меншіксіз интегралдар және геометриялық қолданыс</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: нақты интегралды комплекс жолмен</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">$\int_{-\infty}^{\infty}\frac{dx}{x^2+1}$-ді шегерімдермен есептейік.</p>
+        <ol class="math-steps">
+          <li>$f(z)=\frac1{z^2+1}=\frac1{(z-i)(z+i)}$ - полюстер $\pm i$. Жоғарғы жарты жазықтықта тек $i$.</li>
+          <li>Шегерім: $\operatorname{Res}_if=\lim_{z\to i}(z-i)f(z)=\frac1{2i}$.</li>
+          <li>Жартылай дөңгелек контур: интеграл $=2\pi i\cdot\frac1{2i}=\pi$; доға бойындағы бөлік радиус өскенде нөлге ұмтылады ($\frac{\pi R}{R^2-1}\to0$).</li>
+          <li>Жауап $\pi$ - нақты анализдегі $\arctan x\big|_{-\infty}^{\infty}=\pi$-мен сәйкес ✓.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Нақты осьті жартылай шеңбермен тұйықтап, интегралды ішкі полюстердің шегерімдеріне келтірдік. Алғашқы функцияны табу қажет емес.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Лоран қатарын контур бойынша мүшелеп интегралдасақ, $\oint(z-a)^n\,dz$ тек $n=-1$ кезінде нөлден өзгеше. Демек әр ерекше нүкте интегралға дәл $2\pi ic_{-1}$ үлес қосады - функцияның қалған бөлігі «ізсіз» жоғалады. Сондықтан $c_{-1}$ шегерім (residue - «қалдық, із») деп аталады.</p>
+      <p>Шегерімді табу үшін бүкіл Лоран қатары керек емес. Қарапайым полюсте $f\approx\frac{c_{-1}}{z-a}$, демек $c_{-1}=\lim(z-a)f(z)$. Жоғары ретті полюсте $(z-a)^m$-ге көбейтіп, керекті коэффициентті туынды арқылы «шығарамыз».</p>
+      <p>Нақты интегралды есептеудің идеясы: нақты осьтегі $[-R;R]$ кесіндісін жоғарғы жарты шеңбермен тұйықтаймыз. Тұйық контур бойынша интеграл - шегерімдер; ал жарты шеңбердегі интеграл $R\to\infty$ кезінде $ML$-бағасы бойынша жойылады (функция жеткілікті тез кемісе). Қалғаны - іздеген нақты интеграл.</p>
+      <p>Тригонометриялық интегралда $t$ бүкіл $[0;2\pi]$-ді жүргенде $z=e^{it}$ бірлік шеңберді айналып шығады. $\cos t=\frac{z+z^{-1}}2$, $dt=\frac{dz}{iz}$ қойсақ, интеграл рационал функцияның бірлік шеңбер бойынша интегралына айналады - тағы шегерімдер.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · кіріс-шығысты санау</span>
+        <p>Контур - аймақтың шекарасы. Шекара бойынша интеграл - аймақтан «ағып шығатын» жалпы шама, ал оның көзі тек ерекше нүктелерде. Әр ерекше нүктенің «үлесі» - шегерім.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · жанама жол</span>
+        <p>Нақты интеграл - тікелей жол, кейде өте ауыр. Комплекс жазықтыққа шығып, айналып келсек, жол жеңіл: доғадағы бөлік жоғалады, ал қалғаны бірнеше шегерімге тең.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$\operatorname{Res}_af$</td><td>$a$ нүктесіндегі шегерім</td><td>Лоран қатарындағы $c_{-1}$</td></tr>
+        <tr><td>$2\pi i\sum\operatorname{Res}$</td><td>шегерімдер теоремасы</td><td>тұйық контур бойынша интеграл</td></tr>
+        <tr><td>$\lim_{z\to a}(z-a)f(z)$</td><td>қарапайым полюстегі шегерім</td><td>бірінші ретті полюс үшін</td></tr>
+        <tr><td>$\frac{g(a)}{h'(a)}$</td><td>бөлшектің шегерімі</td><td>$h$-тың қарапайым нөлінде</td></tr>
+        <tr><td>$z=e^{it}$</td><td>алмастыру</td><td>тригонометриялық интегралды шеңберге көшіру</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 6.1 · Шегерім</span>
+        <p>$a$ - $f$-тің оқшауланған ерекше нүктесі, $f=\sum c_n(z-a)^n$ - $0&lt;|z-a|&lt;R$ сақинасындағы Лоран қатары. <strong>Шегерім</strong> (<span class="term-en">residue</span>): $\operatorname{Res}_{z=a}f=c_{-1}=\frac1{2\pi i}\oint_{|z-a|=r}f(z)\,dz$ ($0&lt;r&lt;R$). Жойылатын ерекше нүктеде шегерім $0$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Шегерім - ерекше нүкте маңындағы Лоран қатарының $\frac1{z-a}$ мүшесінің коэффициенті.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 6.1 · Шегерімдер теоремасы</span>
+        <p>$\gamma$ - қарапайым тұйық оң бағытталған контур, $f$ $\gamma$ бойында және ішінде голоморфты, тек ішкі $a_1,\dots,a_k$ нүктелерінен басқа. Онда $$\oint_\gamma f(z)\,dz=2\pi i\sum_{j=1}^k\operatorname{Res}_{z=a_j}f.$$</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Контур бойынша интеграл - ішіндегі шегерімдердің қосындысының $2\pi i$ еселігі.</p></div>
+      <p><em>Негіздеме.</em> <strong>Шегерімдер теоремасы</strong> (<span class="term-en">residue theorem</span>). Контурдың өзінде ерекше нүкте болмауы керек.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 6.2 · Полюстердегі шегерім</span>
+        <p>(1) $a$ - қарапайым (1-ретті) полюс: $\operatorname{Res}_af=\lim_{z\to a}(z-a)f(z)$. (2) $f=\frac gh$, $g,h$ $a$-да голоморфты, $g(a)\ne0$, $h(a)=0$, $h'(a)\ne0$: $\operatorname{Res}_af=\frac{g(a)}{h'(a)}$. (3) $a$ - $m$-ретті полюс: $$\operatorname{Res}_af=\frac1{(m-1)!}\lim_{z\to a}\frac{d^{m-1}}{dz^{m-1}}\Big[(z-a)^mf(z)\Big].$$</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Полюстегі шегерімді Лоран қатарын жазбай-ақ шекпен не туындымен есептейміз.</p></div>
+      <p><em>Негіздеме.</em> Мәнді ерекше нүктеде формула жоқ: Лоран қатарын тікелей жазамыз.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 6.3 · Рационал функцияның интегралы</span>
+        <p>$P$, $Q$ көпмүшелер, $\deg Q\ge\deg P+2$, $Q$-дың нақты түбірі жоқ. Онда меншіксіз интеграл абсолютті жинақталады және $$\int_{-\infty}^{\infty}\frac{P(x)}{Q(x)}dx=2\pi i\sum_{\operatorname{Im}a>0}\operatorname{Res}_{z=a}\frac{P(z)}{Q(z)}$$ (қосынды - $Q$-дың жоғарғы жарты жазықтықтағы түбірлері бойынша).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Бөлімі алымынан кемінде $2$ дәрежеге жоғары рационал функцияның нақты осьтегі интегралы - жоғарғы жартыдағы шегерімдер арқылы.</p></div>
+      <p><em>Негіздеме.</em> $\deg Q=\deg P+1$ болса, интеграл абсолютті жинақталмайды, бұл формуланы тікелей қолдануға болмайды.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 6.4 · Тригонометриялық интеграл</span>
+        <p>$R(c,s)$ - рационал функция, ал $R(\cos t,\sin t)$ $[0;2\pi]$-де шектеусіз емес (бөлгіш нөлге айналмайды). $z=e^{it}$: $$\int_0^{2\pi}R(\cos t,\sin t)\,dt=\oint_{|z|=1}R\left(\frac{z+z^{-1}}2,\frac{z-z^{-1}}{2i}\right)\frac{dz}{iz}=2\pi i\sum_{|a|&lt;1}\operatorname{Res}_a(\dots).$$</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $\cos t$, $\sin t$-ның рационал функциясын $0$-ден $2\pi$-ге дейін интегралдау - бірлік шеңбер бойынша комплекс интеграл.</p></div>
+      <p><em>Негіздеме.</em> $dz=ie^{it}dt=iz\,dt$.</p>
+      <div class="math-thm" id="thm-5"><span class="math-tag">Теорема 6.5 · Тербелмелі интеграл</span>
+        <p>$\deg Q\ge\deg P+2$, $Q$-дың нақты түбірі жоқ, $\alpha>0$. Онда $$\int_{-\infty}^{\infty}\frac{P(x)}{Q(x)}e^{i\alpha x}dx=2\pi i\sum_{\operatorname{Im}a>0}\operatorname{Res}_a\left(\frac PQe^{i\alpha z}\right),$$ ал $\cos\alpha x$, $\sin\alpha x$ интегралдары - оның нақты және жорамал бөліктері ($P/Q$ нақты коэффициентті болса).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $e^{i\alpha x}$ көбейткіші бар интегралдар да жоғарғы жарты жазықтықтағы шегерімдермен есептеледі.</p></div>
+      <p><em>Негіздеме.</em> Жоғарғы жарты жазықтықта $|e^{i\alpha z}|=e^{-\alpha\operatorname{Im}z}\le1$. $\deg Q=\deg P+1$ жағдайы да дұрыс, бірақ оған Жордан леммасы керек; оны дәлелсіз еске саламыз.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 6.1 · Шегерімдер теоремасы</span>
+        <div class="math-fbody">$$\oint_\gamma f\,dz=2\pi i\sum_j\operatorname{Res}_{a_j}f$$</div>
+        <p class="math-fnote">Тек контур ішіндегі ерекше нүктелер.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 6.2 · Қарапайым полюс</span>
+        <div class="math-fbody">$$\operatorname{Res}_af=\lim_{z\to a}(z-a)f(z)=\frac{g(a)}{h'(a)}$$</div>
+        <p class="math-fnote">Екінші түрі: $f=\frac gh$, $g(a)\ne0$, $h$-тың нөлі 1-ретті.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 6.3 · m-ретті полюс</span>
+        <div class="math-fbody">$$\operatorname{Res}_af=\frac1{(m-1)!}\lim_{z\to a}\frac{d^{m-1}}{dz^{m-1}}\big[(z-a)^mf(z)\big]$$</div>
+        <p class="math-fnote">$m$ - полюс реті (не одан үлкен кез келген сан).</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 6.4 · Рационал интеграл</span>
+        <div class="math-fbody">$$\int_{-\infty}^{\infty}\frac{P}{Q}dx=2\pi i\sum_{\operatorname{Im}a&gt;0}\operatorname{Res}_a\frac PQ$$</div>
+        <p class="math-fnote">$\deg Q\ge\deg P+2$, нақты полюс жоқ.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 6.5 · Тригонометриялық ауыстыру</span>
+        <div class="math-fbody">$$z=e^{it},\quad\cos t=\frac{z+z^{-1}}2,\quad\sin t=\frac{z-z^{-1}}{2i},\quad dt=\frac{dz}{iz}$$</div>
+        <p class="math-fnote">$[0;2\pi]$ бірлік шеңберге айналады.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Шегерімді табу тәсілін таңдау: (1) қарапайым полюс, $f=\frac gh$ түрі - $\frac{g(a)}{h'(a)}$ (ең жылдам); (2) $m$-ретті полюс, $m$ кіші - туынды формуласы; (3) $m$ үлкен не мәнді ерекше нүкте - белгілі қатарлардан Лоран жіктеуі. Әрдайым алдымен полюстің <em>ретін</em> анықтаңыз: формула (1)-ді 2-ретті полюсте қолдану - жиі қате.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Нақты интегралға көшкенде <em>шарттарды</em> тексеріңіз. (1) Жарты шеңбердегі интеграл жойылуы үшін функция $\frac1{R^2}$-тан тез не дәл сондай кемуі керек ($\deg Q\ge\deg P+2$). $\int_{-\infty}^\infty\frac{x\,dx}{1+x^2}$ жинақталмайды (тек симметриялы шек $\lim\int_{-R}^R=0$ бар). (2) Нақты осьте полюс болса (мысалы, $\int\frac{dx}{x^2-1}$), интеграл кәдімгі мағынада жинақталмайды - бұл формула қолданылмайды. (3) $\cos ax$-ті тікелей $\cos az$ деп алуға болмайды: $\cos(iy)=\operatorname{ch}y$ шексіз өседі, сондықтан $e^{iaz}$ алып, нақты бөлігін аламыз.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $\operatorname{Res}_0\frac{e^z}{z}$?</span></summary>
+        <p>$e^0=1$.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> $\operatorname{Res}_0\frac1{z^2}$?</span></summary>
+        <p>$0$: $c_{-1}=0$ (тек $c_{-2}=1$).</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> $\oint_{|z|=3}\frac{dz}{z(z-1)}$?</span></summary>
+        <p>$2\pi i(-1+1)=0$: шегерімдер $0$-де $-1$, $1$-де $1$.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> Неге $\int\frac{dx}{x^2+1}$ үшін тек $i$-ді аламыз, $-i$-ді емес?</span></summary>
+        <p>Контур жоғарғы жарты жазықтықты қоршайды, $-i$ одан тыс.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: шегерімдер теоремасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.1-ді дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Әр ерекше нүктені кішкене шеңбермен қоршаймыз; Коши теоремасы бойынша үлкен контур кішкене шеңберлердің қосындысына тең, ал әр шеңберде тек $c_{-1}$ «тірі қалады».</p>
+          <ol class="math-steps">
+            <li>Әр $a_j$-ді кішкене шеңбер $C_j$-мен қоршаймыз: шеңберлер бір-бірімен қиылыспайды және $\gamma$-ның ішінде.</li>
+            <li>$\gamma$ мен шеңберлер арасындағы облыста $f$ голоморфты; контурды деформациялау (4-сабақ) бойынша $\oint_\gamma f=\sum_j\oint_{C_j}f$.</li>
+            <li>$C_j$ бойында $f=\sum_nc_n^{(j)}(z-a_j)^n$ - Лоран қатары шеңберде бірқалыпты жинақталады, мүшелеп интегралдаймыз.</li>
+            <li>$\oint_{C_j}(z-a_j)^n\,dz=2\pi i\cdot[n=-1]$, демек $\oint_{C_j}f=2\pi ic_{-1}^{(j)}=2\pi i\operatorname{Res}_{a_j}f$.</li>
+            <li>Қосып, $\oint_\gamma f=2\pi i\sum_j\operatorname{Res}_{a_j}f$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: полюстердегі шегерім формулалары</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.2-ні Лоран қатарынан қорыту.</p>
+          <p class="mx-idea"><b>Идея:</b> Лоран қатарын $(z-a)^m$-ге көбейтсек, $c_{-1}$ Тейлор қатарының $(m-1)$-ші коэффициентіне айналады - оны туындымен табамыз.</p>
+          <ol class="math-steps">
+            <li>(3) $m$-ретті полюс: $f=\frac{c_{-m}}{(z-a)^m}+\dots+\frac{c_{-1}}{z-a}+c_0+\dots$; $(z-a)^mf=c_{-m}+\dots+c_{-1}(z-a)^{m-1}+c_0(z-a)^m+\dots$ - дәрежелік қатар.</li>
+            <li>$c_{-1}$ - осы қатардағы $(z-a)^{m-1}$ коэффициенті, яғни Тейлор формуласы бойынша $\frac1{(m-1)!}\frac{d^{m-1}}{dz^{m-1}}[(z-a)^mf]\big|_{z=a}$ (шек - $a$-дағы мән).</li>
+            <li>(1) - (3)-тің $m=1$ жағдайы: $\operatorname{Res}=\lim(z-a)f$.</li>
+            <li>(2) $h(a)=0$, $h'(a)\ne0$: $(z-a)\frac{g(z)}{h(z)}=\frac{g(z)}{\frac{h(z)-h(a)}{z-a}}\to\frac{g(a)}{h'(a)}$ ($z\to a$).</li>
+            <li>Сонымен қатар бұл шектің ақырлы, нөлдік емес болуы $a$-ның қарапайым полюс екенін растайды. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: рационал функцияның интегралы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.3-ті жарты шеңбер контурымен дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Жартылай шеңбер контурын аламыз; доға бойындағы интеграл ML-бағасы бойынша $\frac1R$ ретімен нөлге ұмтылады.</p>
+          <ol class="math-steps">
+            <li>Жинақталу: $|x|$ үлкен болғанда $\left|\frac{P(x)}{Q(x)}\right|\le\frac{K}{x^2}$ ($\deg Q-\deg P\ge2$), сондықтан $\int_{-\infty}^\infty$ абсолютті жинақты және $=\lim_{R\to\infty}\int_{-R}^R$.</li>
+            <li>$R$ жеткілікті үлкен: $Q$-дың барлық жоғарғы түбірлері $|z|&lt;R$ ішінде. $\Gamma_R$ - $[-R;R]$ кесіндісі мен жоғарғы жарты шеңбер $S_R:z=Re^{it}$, $t\in[0;\pi]$.</li>
+            <li>Шегерімдер теоремасы: $\int_{-R}^R\frac PQdx+\int_{S_R}\frac PQdz=2\pi i\sum_{\operatorname{Im}a>0}\operatorname{Res}_a\frac PQ$ (оң жағы $R$-ге тәуелсіз).</li>
+            <li>$S_R$ бойында $\left|\frac{P}{Q}\right|\le\frac{K}{R^2}$, ұзындығы $\pi R$: $\left|\int_{S_R}\right|\le\frac{\pi K}{R}\to0$ ($ML$).</li>
+            <li>$R\to\infty$: $\int_{-\infty}^\infty\frac PQdx=2\pi i\sum\operatorname{Res}$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: тригонометриялық интеграл</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\int_0^{2\pi}\frac{dt}{2+\cos t}$ есептеу (Теорема 6.4).</p>
+          <p class="mx-idea"><b>Идея:</b> $z=e^{it}$ алмастыруы $\cos t$ пен $\sin t$-ны $z$-тің рационал функцияларына, ал интегралды бірлік шеңберге көшіреді.</p>
+          <ol class="math-steps">
+            <li>$z=e^{it}$: $2+\cos t=2+\frac{z+z^{-1}}2=\frac{z^2+4z+1}{2z}$, $dt=\frac{dz}{iz}$.</li>
+            <li>$\oint_{|z|=1}\frac{2z}{z^2+4z+1}\cdot\frac{dz}{iz}=\frac2i\oint_{|z|=1}\frac{dz}{z^2+4z+1}$.</li>
+            <li>Түбірлер $z=-2\pm\sqrt3$; $|-2+\sqrt3|\approx0{,}268&lt;1$ - ішінде, $|-2-\sqrt3|>1$ - сыртта.</li>
+            <li>$\operatorname{Res}_{-2+\sqrt3}\frac{1}{z^2+4z+1}=\frac{1}{2z+4}\Big|_{-2+\sqrt3}=\frac{1}{2\sqrt3}$ (формула (2)).</li>
+            <li>Интеграл $=\frac2i\cdot2\pi i\cdot\frac1{2\sqrt3}=\frac{2\pi}{\sqrt3}\approx3{,}628$. Тексеру: интеграл астындағы функция $[\frac13;1]$ аралығында, демек интеграл $[\frac{2\pi}3;2\pi]$-де ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Шегерімдер</h3>
+        <p class="math-problem">$f=\frac{e^z}{z(z-1)^2}$ функциясының шегерімдері.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $z=0$ - қарапайым полюс: $\operatorname{Res}_0=\lim_{z\to0}z f=\frac{e^0}{(0-1)^2}=1$.</li>
+          <li><b>2-қадам.</b> $z=1$ - 2-ретті полюс: $(z-1)^2f=\frac{e^z}z$.</li>
+          <li><b>3-қадам.</b> $\frac{d}{dz}\frac{e^z}{z}=\frac{e^z(z-1)}{z^2}$, $z=1$-де $0$.</li>
+          <li><b>4-қадам.</b> $\operatorname{Res}_1=\frac1{1!}\cdot0=0$.</li>
+          <li><b>5-қадам.</b> Демек $\oint_{|z|=2}f\,dz=2\pi i(1+0)=2\pi i$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\operatorname{Res}_0=1$, $\operatorname{Res}_1=0$; интеграл $2\pi i$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Классикалық интеграл</h3>
+        <p class="math-problem">$\int_{-\infty}^{\infty}\frac{dx}{1+x^4}$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\deg Q=4\ge0+2$, нақты түбір жоқ - Теорема 6.3 қолданылады.</li>
+          <li><b>2-қадам.</b> $z^4=-1$: $z=e^{i\pi/4},e^{3i\pi/4},e^{5i\pi/4},e^{7i\pi/4}$; жоғарғы жарты жазықтықта $a_1=e^{i\pi/4}$, $a_2=e^{3i\pi/4}$.</li>
+          <li><b>3-қадам.</b> Формула (2): $\operatorname{Res}_a\frac1{1+z^4}=\frac1{4a^3}=\frac{a}{4a^4}=-\frac a4$ ($a^4=-1$).</li>
+          <li><b>4-қадам.</b> Қосынды: $-\frac14(e^{i\pi/4}+e^{3i\pi/4})=-\frac14\cdot i\sqrt2$ (нақты бөліктері жойылады, $\sin\frac\pi4+\sin\frac{3\pi}4=\sqrt2$).</li>
+          <li><b>5-қадам.</b> $2\pi i\cdot\left(-\frac{i\sqrt2}4\right)=\frac{\pi\sqrt2}{2}=\frac\pi{\sqrt2}\approx2{,}2214$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac{\pi}{\sqrt2}$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Екі еселі полюс</h3>
+        <p class="math-problem">$\int_{-\infty}^{\infty}\frac{dx}{(x^2+1)^2}$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Жоғарғы жарты жазықтықта тек $z=i$, 2-ретті полюс.</li>
+          <li><b>2-қадам.</b> $(z-i)^2f=\frac{1}{(z+i)^2}$; туындысы $-\frac{2}{(z+i)^3}$; $z=i$-де $-\frac{2}{(2i)^3}=-\frac{2}{-8i}=\frac{1}{4i}$.</li>
+          <li><b>3-қадам.</b> $\operatorname{Res}_i=\frac1{4i}$.</li>
+          <li><b>4-қадам.</b> Интеграл $=2\pi i\cdot\frac1{4i}=\frac\pi2$.</li>
+          <li><b>5-қадам.</b> Тексеру: $x=\operatorname{tg}\theta$ ауыстыруымен $\int_{-\pi/2}^{\pi/2}\cos^2\theta\,d\theta=\frac\pi2$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac\pi2$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Тербелмелі интеграл</h3>
+        <p class="math-problem">$\int_{-\infty}^{\infty}\frac{\cos ax}{1+x^2}dx$, $a>0$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\cos ax=\operatorname{Re}e^{iax}$; $f(z)=\frac{e^{iaz}}{1+z^2}$, Теорема 6.5.</li>
+          <li><b>2-қадам.</b> Жоғарғы жарты жазықтықта $z=i$: $\operatorname{Res}_i=\frac{e^{ia\cdot i}}{2i}=\frac{e^{-a}}{2i}$.</li>
+          <li><b>3-қадам.</b> $2\pi i\cdot\frac{e^{-a}}{2i}=\pi e^{-a}$ - нақты, сондықтан $\sin$ интегралы $0$ (тақ функция - сәйкес).</li>
+          <li><b>4-қадам.</b> $\int_{-\infty}^\infty\frac{\cos ax}{1+x^2}dx=\pi e^{-a}$. $a=0$ кезінде $\pi$ - $\int\frac{dx}{1+x^2}$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\pi e^{-a}$.</p></div>
+      <div class="math-example" id="ex-5"><h3>Мысал 5. Мәнді ерекше нүкте</h3>
+        <p class="math-problem">$\oint_{|z|=1}z^2\sin\frac1z\,dz$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\sin\frac1z=\frac1z-\frac1{6z^3}+\frac1{120z^5}-\dots$</li>
+          <li><b>2-қадам.</b> $z^2\sin\frac1z=z-\frac1{6z}+\frac1{120z^3}-\dots$</li>
+          <li><b>3-қадам.</b> $\operatorname{Res}_0=c_{-1}=-\frac16$ (полюс формулалары қолданылмайды: мәнді ерекше нүкте).</li>
+          <li><b>4-қадам.</b> Интеграл $=2\pi i\cdot\left(-\frac16\right)=-\frac{\pi i}3$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $-\frac{\pi i}{3}$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">2-ретті полюсте $\lim(z-a)f$</span> → <span class="math-good">$\frac{d}{dz}[(z-a)^2f]$</span><br>Неге қате: $\lim(z-a)f$ шексіз болады.</li>
+        <li><span class="math-bad">Барлық полюстердің шегерімін қосу</span> → <span class="math-good">тек контур ішіндегілерді (жоғарғы жарты жазықтықтағыларды)</span><br>Неге қате: сыртқылар үлес қоспайды.</li>
+        <li><span class="math-bad">$\int\frac{\cos ax}{1+x^2}$ үшін $\cos az$ алу</span> → <span class="math-good">$e^{iaz}$, нақты бөлігі</span><br>Неге қате: $\cos(iy)$ шексіз өседі.</li>
+        <li><span class="math-bad">$\deg Q=\deg P+1$ кезінде Теорема 6.3</span> → <span class="math-good">интеграл абсолютті жинақталмайды</span><br>Неге қате: мысалы $\int\frac{x\,dx}{1+x^2}$.</li>
+        <li><span class="math-bad">Тригонометриялық ауыстыруда $dt=dz$</span> → <span class="math-good">$dt=\frac{dz}{iz}$</span><br>Неге қате: $dz=iz\,dt$.</li>
+        <li><span class="math-bad">Мәнді ерекше нүктеде полюс формуласы</span> → <span class="math-good">Лоран қатары</span><br>Неге қате: ақырлы $m$ жоқ.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Жарты шеңбер әдісі: ∫ dx/(1 + x²) кесіндіде және жарты шеңбер бағасы" data-config='{"fns": [{"f": "2*atan(x)", "label": "[−R; R] бойынша интеграл = 2·arctg R"}, {"f": "0*x + pi", "label": "π = 2πi·Res_{z=i}", "color": 1, "dash": [5, 4]}, {"f": "pi*x/(x^2-1)", "label": "жарты шеңбер: |∫| ≤ πR/(R² − 1)", "color": 2}], "view": [1.05, 20, 0, 5]}'></div>
+      <p><b>Бақылаңыз:</b> Көлденең ось - $R$. Кесіндідегі интеграл ($2\operatorname{arctg}R$) мен жарты шеңбердегі интегралдың қосындысы әрдайым $2\pi i\cdot\operatorname{Res}_i\frac1{1+z^2}=\pi$. $R$ өскенде жарты шеңбер үлесі ($ML$-бағасы, жасыл) нөлге түседі, ал кесінді интегралы $\pi$-ге ұмтылады.</p>
+      <div class="math-viz" data-viz="graph" data-title="Тригонометриялық интеграл: 1/(a + cos t)" data-config='{"fns": [{"f": "1/(a+cos(x))", "label": "1/(a + cos t)"}, {"f": "0*x + 1/sqrt(a^2-1)", "label": "орташа мәні 1/√(a² − 1)", "color": 1, "dash": [5, 4]}], "params": [{"n": "a", "min": 1.1, "max": 5, "step": 0.1, "v": 2}], "view": [0, 6.2832, 0, 5]}'></div>
+      <p><b>Бақылаңыз:</b> $a>1$ үшін $\int_0^{2\pi}\frac{dt}{a+\cos t}=\frac{2\pi}{\sqrt{a^2-1}}$ (4-қорытудың жалпылауы: ішкі түбір $-a+\sqrt{a^2-1}$, шегерімі $\frac{1}{2\sqrt{a^2-1}}$). Үзік сызық - функцияның орташа мәні $\frac{1}{\sqrt{a^2-1}}$. $a\to1$ кезінде $t=\pi$-де бөлгіш нөлге жақындайды, интеграл шексіз өседі; $a\le1$ болса, бөлгіш нөлге айналады - формула қолданылмайды.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m11-6-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m11-6-t1">1. Қарапайым полюс</h3></div>
+        <p>$\operatorname{Res}$ мәнін жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\operatorname{Res}_{z=2}\\frac{z+1}{z-2}$","a":3,"v":"2+1","hint":"$\\lim(z-2)f$.","sol":{"steps":["$2+1$."],"ans":"$3$"}},{"q":"$\\operatorname{Res}_{z=0}\\frac{\\cos z}{z}$","a":1,"v":"cos(0)","hint":"$\\cos0$.","sol":{"steps":["$\\lim z\\cdot\\frac{\\cos z}z$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m11-6-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m11-6-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Жойылатын ерекше нүктедегі шегерім $0$.","a":true,"e":"Бас бөлік жоқ, $c_{-1}=0$.","hint":"Анықтама."},{"q":"$\\oint_{|z|=1}\\frac{dz}{z-2}=2\\pi i$.","a":false,"e":"$2$ сыртта, интеграл $0$.","hint":"Тек ішкі нүктелер."},{"q":"$\\int_{-\\infty}^\\infty\\frac{x\\,dx}{1+x^2}$ Теорема 6.3 бойынша $0$.","a":false,"e":"$\\deg Q=\\deg P+1$: интеграл жинақталмайды.","hint":"Дәреже шартын тексеріңіз."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m11-6-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m11-6-t3">3. Формула таңдау</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\operatorname{Res}_{z=\\pi}\\frac{1}{\\sin z}$","o":["$\\frac{1}{\\cos\\pi}=-1$","$1$","$0$","$\\pi$"],"a":0,"e":"$\\frac gh$: $g=1$, $h=\\sin z$, $h'(\\pi)=-1$.","hint":"$\\frac{g(a)}{h'(a)}$."},{"q":"$\\frac{1}{z^3}$-тің $0$-дегі шегерімі","o":["$0$","$1$","$\\frac12$","$2\\pi i$"],"a":0,"e":"Лоран қатарында тек $z^{-3}$, $c_{-1}=0$.","hint":"Лоран қатары $z^{-3}$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m11-6-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m11-6-t4">4. m-ретті полюс</h3></div>
+        <p>$\operatorname{Res}_{z=0}\frac{e^{2z}}{z^3}$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Шегерім","a":2,"v":"diff(exp(2*x),x,2).subs(x,0)/factorial(2)","hint":"$m=3$: $\\frac{1}{2!}\\frac{d^2}{dz^2}e^{2z}$.","sol":{"steps":["$\\frac12\\cdot4e^0$."],"ans":"$2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m11-6-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m11-6-t5">5. Контурлық интеграл</h3></div>
+        <p>$I=\oint_{|z|=3}\frac{z\,dz}{(z-1)(z+2)}$. $\frac{I}{2\pi i}=?$</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\frac{I}{2\\pi i}$","a":1,"v":"Rational(1,1+2)+Rational(-2,-2-1)","hint":"Екі полюс те ішінде.","sol":{"steps":["$\\operatorname{Res}_1=\\frac13$, $\\operatorname{Res}_{-2}=\\frac{-2}{-3}=\\frac23$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m11-6-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m11-6-t6">6. Рационал интеграл</h3></div>
+        <p>$\int_{-\infty}^\infty\frac{dx}{x^2+4}$ ($0{,}001$ дәлдік).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Мәні","a":"pi/2","v":"integrate(1/(symbols('x')**2+4), (symbols('x'), -oo, oo))","tol":0.001,"hint":"Жоғарғы полюс $2i$.","sol":{"steps":["$\\operatorname{Res}_{2i}=\\frac1{4i}$; $2\\pi i\\cdot\\frac{1}{4i}$."],"ans":"$\\frac\\pi2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m11-6-num7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m11-6-t7">7. Тригонометриялық интеграл</h3></div>
+        <p>$\int_0^{2\pi}\frac{dt}{5+4\cos t}$ ($0{,}001$ дәлдік).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Мәні","a":"2*pi/3","v":"2*pi/3","tol":0.001,"hint":"$z=e^{it}$: $\\frac1i\\oint\\frac{dz}{2z^2+5z+2}$; ішкі түбір $-\\frac12$.","sol":{"steps":["$2z^2+5z+2=(2z+1)(z+2)$.","$\\operatorname{Res}_{-1/2}=\\frac{1}{4z+5}\\big|_{-1/2}=\\frac13$.","$\\frac1i\\cdot2\\pi i\\cdot\\frac13$."],"ans":"$\\frac{2\\pi}3$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m11-6-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m11-6-t8">8. Тәсілдер</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Интеграл - тәсіл.","pairs":[["∫ dx/(1 + x⁴)","жоғарғы жарты шеңбер, шегерімдер"],["∫₀^{2π} dt/(2 + cos t)","z = e^{it}, бірлік шеңбер"],["∫ cos(ax)/(1 + x²)","e^{iaz}, нақты бөлігі"],["∮ z² sin(1/z) dz","Лоран қатары, c₋₁"]],"hint":"Әр интегралдың түріне қараңыз.","sol":{"steps":["Тербелмелі интегралда $e^{iaz}$."]},"e":"Барлығы - шегерімдер теоремасы."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m11-6-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m11-6-t9">9. Параметрлік: қарапайым полюстер</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[-5,5]},"b":{"int":[-5,5]}},"require":["a != b"],"type":"num","q":"$\\operatorname{Res}_{z=#{a}}\\frac{1}{(z#{+(-a)})(z#{+(-b)})}=?$ ($0{,}001$ дәлдік)","a":"1/(a-b)","v":"Rational(1, a-b)","tol":0.001,"hint":"$\\lim(z-a)f=\\frac{1}{a-b}$.","sol":{"steps":["$\\frac{1}{#{a}-(#{b})}$."],"ans":"$\\approx#{round(1000/(a-b))/1000}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m11-6-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m11-6-t10">10. Параметрлік: ∫ dx/(x² + c²)</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"c":{"int":[1,9]}},"type":"num","q":"$\\int_{-\\infty}^\\infty\\frac{dx}{x^2+#{c^2}}=?$ ($0{,}001$ дәлдік)","a":"pi/c","v":"pi/c","tol":0.001,"hint":"Жоғарғы полюс $#{c}i$, шегерімі $\\frac{1}{2\\cdot#{c}i}$.","sol":{"steps":["$2\\pi i\\cdot\\frac{1}{2\\cdot#{c}i}=\\frac{\\pi}{#{c}}$."],"ans":"$\\approx#{round(1000*pi/c)/1000}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m11-6-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m11-6-t11">11. Рационал интегралды есептеу</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Алгоритм.","steps":["$\\deg Q\\ge\\deg P+2$ және нақты түбір жоқ екенін тексереміз.","$Q$-дың жоғарғы жарты жазықтықтағы түбірлерін табамыз.","Әр түбірдің ретін анықтап, шегерімін есептейміз.","Шегерімдерді қосып, $2\\pi i$-ге көбейтеміз.","Нәтиже нақты екенін және таңбасын тексереміз."],"hint":"Алдымен шарттар.","sol":{"ans":"Теорема 6.3"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m11-6-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m11-6-t12">12. Қадамдық шешім: ∫ x² dx/(1 + x⁴)</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$\\int_{-\\infty}^\\infty\\frac{x^2\\,dx}{1+x^4}$ есептеңіз.","hint":"$\\deg Q-\\deg P=2$; $\\operatorname{Res}_a\\frac{z^2}{1+z^4}=\\frac{a^2}{4a^3}=\\frac1{4a}$.","steps":["Шарт орындалады: $4\\ge2+2$; нақты түбір жоқ.","Жоғарғы полюстер $a_1=e^{i\\pi/4}$, $a_2=e^{3i\\pi/4}$; шегерімдер $\\frac{1}{4a}=\\frac{\\bar a}{4}$ ($|a|=1$).","$\\bar a_1+\\bar a_2=e^{-i\\pi/4}+e^{-3i\\pi/4}=-i\\sqrt2$ (нақты бөліктері жойылады).","$2\\pi i\\cdot\\frac{-i\\sqrt2}4=\\frac{\\pi\\sqrt2}2=\\frac\\pi{\\sqrt2}$.","Қызық: $\\int\\frac{x^2dx}{1+x^4}=\\int\\frac{dx}{1+x^4}$ - $x\\mapsto\\frac1x$ ауыстыруы мұны тікелей көрсетеді."],"ans":"$\\frac{\\pi}{\\sqrt2}$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Шегерімдер - кері Лаплас түрлендіруін есептеудің (Бромвич интегралы), басқару теориясында жүйенің тұрақтылығын (Найквист критерийі, аргумент принципі) және ықтималдықта сипаттамалық функциядан үлестірімді табудың құралы. Физикада - дисперсиялық қатынастар (Крамерс–Крониг), өріс теориясында - интегралдарды контурды бұру арқылы есептеу.</p>
+      <p><b>Мини-жоба: «Шегерімдер және сандық интеграл».</b> Нақты интегралдарды сандық (трапеция) әдіспен есептеп, шегерім формуласымен салыстырамыз; шегерімді кішкене шеңбер бойынша интегралмен де тексереміз.</p>
+<pre data-lang="python"><code class="language-python">import cmath, math
+
+def trapz(f, a, b, n=200000):
+    h = (b - a) / n
+    return h * (0.5 * f(a) + sum(f(a + k * h) for k in range(1, n)) + 0.5 * f(b))
+
+def residue_numeric(f, a, r=1e-3, n=256):
+    s = 0
+    for k in range(n):
+        w = a + r * cmath.exp(2j * math.pi * k / n)
+        s += f(w) * (w - a)
+    return s / n                               # (1/2πi)∮ f dz  шеңберде
+
+R = 2000.0
+print("∫ dx/(1+x^4):     сандық", round(trapz(lambda x: 1 / (1 + x**4), -R, R), 6), " шегерім", round(math.pi / math.sqrt(2), 6))
+print("∫ dx/(x^2+1)^2:   сандық", round(trapz(lambda x: 1 / (x * x + 1) ** 2, -R, R), 6), " шегерім", round(math.pi / 2, 6))
+print("∫ dt/(2+cos t):   сандық", round(trapz(lambda t: 1 / (2 + math.cos(t)), 0, 2 * math.pi, 2000), 6), " шегерім", round(2 * math.pi / math.sqrt(3), 6))
+a = 1.5
+print("∫ cos(ax)/(1+x^2): сандық", round(trapz(lambda x: math.cos(a * x) / (1 + x * x), -R, R), 6), " шегерім", round(math.pi * math.exp(-a), 6))
+
+f = lambda z: cmath.exp(z) / (z * (z - 1) ** 2)
+print("Res_0 ≈", residue_numeric(f, 0), "  Res_1 ≈", residue_numeric(f, 1))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$R=20$ қойыңыз: қай интегралдың қатесі ең үлкен және неге? Құйрықтың кему жылдамдығын ($\frac1{x^4}$, $\frac1{x^2}$, тербелмелі $\frac{\cos ax}{x^2}$) салыстырып, $\int_R^\infty$ қалдығын бағалаңыз.</li>
+        <li>$\int_0^{2\pi}\frac{dt}{2+\cos t}$ үшін трапеция әдісі тек $n=2000$ нүктемен неге соншалық дәл? (4-сабақтағы жобамен байланыстырыңыз.)</li>
+        <li>$\int_{-\infty}^\infty\frac{dx}{(x^2+1)(x^2+4)}$ интегралын шегерімдермен қолмен есептеп ($\frac\pi6$), бағдарламамен тексеріңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Шегерім</td><td>$\operatorname{Res}_af=c_{-1}$</td><td>оқшауланған ерекше нүкте</td></tr>
+        <tr><td>Шегерімдер теоремасы</td><td>$\oint_\gamma f=2\pi i\sum\operatorname{Res}$</td><td>тек ішкі нүктелер</td></tr>
+        <tr><td>Қарапайым полюс</td><td>$\lim(z-a)f=\frac{g(a)}{h'(a)}$</td><td>$h'(a)\ne0$</td></tr>
+        <tr><td>$m$-ретті полюс</td><td>$\frac1{(m-1)!}\lim\frac{d^{m-1}}{dz^{m-1}}[(z-a)^mf]$</td><td>-</td></tr>
+        <tr><td>$\int_{-\infty}^\infty\frac PQ$</td><td>$2\pi i\sum_{\operatorname{Im}a>0}\operatorname{Res}$</td><td>$\deg Q\ge\deg P+2$, нақты полюс жоқ</td></tr>
+        <tr><td>$\int_0^{2\pi}R(\cos,\sin)$</td><td>$z=e^{it}$, $dt=\frac{dz}{iz}$</td><td>бірлік шеңбердің ішіндегі полюстер</td></tr>
+        <tr><td>Тербелмелі</td><td>$e^{i\alpha z}$, нақты бөлігі</td><td>$\alpha>0$, жоғарғы жарты жазықтық</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m11-6-self">
+        <li><input type="checkbox"> <span>Мен шегерімді $c_{-1}$ ретінде анықтап, Лоран қатарынан таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен шегерімдер теоремасын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қарапайым және $m$-ретті полюстердегі шегерімді есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $\int_{-\infty}^\infty\frac PQdx$ интегралын шарттарын тексеріп есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен тригонометриялық интегралды $z=e^{it}$ ауыстыруымен есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $\int\frac{\cos ax}{Q(x)}dx$ интегралын $e^{iaz}$ арқылы есептей аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="a">
+<p class="q-text">1. Шегерім дегеніміз:</p>
+<label><input type="radio" value="a"> Лоран қатарының c₋₁ коэффициенті</label>
+<label><input type="radio" value="b"> Тейлор қатарының c₀</label>
+<label><input type="radio" value="c"> функцияның полюстегі мәні</label>
+<label><input type="radio" value="d"> полюс реті</label>
+<p class="explain">Res f = c₋₁.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">2. ∮ f dz контур бойынша неге тең?</p>
+<label><input type="radio" value="a"> барлық шегерімдер қосындысы</label>
+<label><input type="radio" value="b"> 0 әрдайым</label>
+<label><input type="radio" value="c"> π · шегерімдер</label>
+<label><input type="radio" value="d"> 2πi · (ішкі шегерімдер қосындысы)</label>
+<p class="explain">Шегерімдер теоремасы.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">3. Res_{z=0} (sin z)/z² неге тең?</p>
+<label><input type="radio" value="a"> 0</label>
+<label><input type="radio" value="b"> −1</label>
+<label><input type="radio" value="c"> 1</label>
+<label><input type="radio" value="d"> 1/2</label>
+<p class="explain">1/z − z/6 + …</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. ∫ dx/(1 + x²) (−∞-тен ∞-ке):</p>
+<label><input type="radio" value="a"> 2π</label>
+<label><input type="radio" value="b"> π</label>
+<label><input type="radio" value="c"> π/2</label>
+<label><input type="radio" value="d"> 1</label>
+<p class="explain">2πi · 1/(2i).</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. ∫₀^{2π} R(cos t, sin t) dt үшін ауыстыру:</p>
+<label><input type="radio" value="a"> z = e^{it}</label>
+<label><input type="radio" value="b"> z = it</label>
+<label><input type="radio" value="c"> z = t²</label>
+<label><input type="radio" value="d"> z = cos t</label>
+<p class="explain">Бірлік шеңбер.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">6. Теорема 6.3-тің шарты:</p>
+<label><input type="radio" value="a"> deg Q ≥ deg P</label>
+<label><input type="radio" value="b"> Q-дың нақты түбірі бар</label>
+<label><input type="radio" value="c"> P тұрақты</label>
+<label><input type="radio" value="d"> deg Q ≥ deg P + 2 және нақты полюс жоқ</label>
+<p class="explain">Жарты шеңбер интегралы жойылуы үшін.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">7. ∫ cos(ax)/(1 + x²) dx есептеуде (a > 0) алынатын функция:</p>
+<label><input type="radio" value="a"> cos(az)/(1 + z²)</label>
+<label><input type="radio" value="b"> sin(az)/(1 + z²)</label>
+<label><input type="radio" value="c"> e^{iaz}/(1 + z²)</label>
+<label><input type="radio" value="d"> e^{−iaz}/(1 + z²)</label>
+<p class="explain">Жоғарғы жарты жазықтықта шектелген.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. 2-ретті полюсте Res = lim (z − a) f(z) формуласы:</p>
+<label><input type="radio" value="a"> әрдайым дұрыс</label>
+<label><input type="radio" value="b"> қолданылмайды</label>
+<label><input type="radio" value="c"> тек нақты a үшін дұрыс</label>
+<label><input type="radio" value="d"> тек a = 0 үшін дұрыс</label>
+<p class="explain">Шек шексіз.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәннің соңғы сабағын аяқтадыңыз. Білімді <a href="../exam.html?s=complex">Complex Analysis емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-71.html"><small>Алдыңғы</small>← Complex Analysis · 5-сабақ: Лоран қатары және ерекше нүктелер</a>

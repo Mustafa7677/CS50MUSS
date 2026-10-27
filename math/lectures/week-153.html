@@ -6,13 +6,14 @@
   <title>Math Stochastic Processes · 6-сабақ: Мартингалдар және қолданыстар - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Stochastic Processes · 6-сабақ: Мартингалдар және қолданыстар - CS50 қазақша">
-  <meta property="og:description" content="Математика, Stochastic Processes · 6-сабақ: Мартингалдар және қолданыстар. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Мартингал анықтамасы, тоқтау уақыты, ойын есебі, қаржы модельдері.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-153.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Stochastic Processes · 6-сабақ: Мартингалдар және қолданыстар - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-153.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Stochastic Processes · 6-сабақ: Мартингалдар және қолданыстар. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Мартингал анықтамасы, тоқтау уақыты, ойын есебі, қаржы модельдері.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,496 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="153">
+    <article class="content math-lesson" style="--sc:#854d0e" id="main">
+      <div class="lecture-head" style="--lc:#854d0e" data-n="153" data-msubj="stochastic" data-glyph="∿">
         <div class="num">Stochastic Processes · 6-сабақ</div>
         <h1>Мартингалдар және қолданыстар</h1>
-        <p>Мартингал анықтамасы, тоқтау уақыты, ойын есебі, қаржы модельдері.</p>
+        <p>Әділ ойын дегеніміз не? Қанша ойнасаңыз да, келесі раундтан кейінгі капиталыңыздың күтілетін мәні қазіргі капиталыңызға тең болатын ойын. Бұл ұғымның математикалық атауы - мартингал.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 55 мин</span><span>Есептер ≈ 1 сағ 10 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ 10 мин</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Мартингалдар ықтималдық теориясының ең күшті құралдарының бірі: ойыншының күйреу есебін бір жолда шешеді, қаржыда әділ бағаны анықтайды, ал «жүйемен ойнап ұтуға бола ма?» деген сұраққа нақты жауап береді. Бұл сабақта шартты күтім арқылы мартингалды анықтаймыз, негізгі мысалдарды дәлелдейміз, тоқтау уақытын енгізіп, тоқтау туралы теореманы дәлелдейміз және оның шарттары неге керек екенін «екі еселеу» стратегиясымен көрсетеміз. Ойыншының күйреу есебін мартингалдармен қайта шешіп, 2-сабақтың нәтижелерімен салыстырамыз; Пойа урнасы мен қаржыдағы тәуекелге бейтарап бағалауды қарастырамыз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-24">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=stochastic">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Stochastic Processes: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-24">Stochastic Processes</a></span><ol><li><a href="week-148.html" title="Кездейсоқ процестер негіздері">1</a></li><li><a href="week-149.html" title="Марков тізбектері">2</a></li><li><a href="week-150.html" title="Марков тізбектерінің ұзақ мерзімді тәртібі">3</a></li><li><a href="week-151.html" title="Пуассон процесі">4</a></li><li><a href="week-152.html" title="Броун қозғалысы">5</a></li><li><a href="week-153.html" aria-current="page" title="Мартингалдар және қолданыстар">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-24">Stochastic Processes</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Мартингал - әділ ойындағы капитал: келесі қадамнан кейінгі күтілетін мәні дәл қазіргі мәніне тең; тоқтау туралы теорема - «ақылға қонымды» тоқтау ережесі әділ ойынды ұтымды ете алмайды.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>сүзгілеуді, мартингалды, субмартингал мен супермартингалды анықтау; $EM_n=EM_0$ екенін дәлелдеу;</li>
+        <li>$S_n$, $S_n^2-n$, $\left(\frac qp\right)^{S_n}$, Пойа урнасы үлесінің мартингал екенін дәлелдеу;</li>
+        <li>тоқтау уақытын анықтап, тоқтатылған мартингалды және тоқтау туралы теореманы дәлелдеу;</li>
+        <li>тоқтау туралы теоремамен ойыншының күйреу ықтималдығын және ойынның орташа ұзақтығын табу;</li>
+        <li>«екі еселеу» стратегиясы арқылы теорема шарттарының қажеттігін көрсету;</li>
+        <li>биномдық қаржы моделінде тәуекелге бейтарап ықтималдықты табу және Броун қозғалысының мартингалдарын тану.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Кездейсоқ жүру (1-сабақ). Ойыншының күйреуі, бірінші қадам талдауы (2-сабақ). Броун қозғалысы, шартты күтім (5-сабақ). Шартты ықтималдық, толық күтім формуласы (Probability Theory, 3-4-сабақ). Монотонды және басылған жинақталу теоремалары (Real Analysis).</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-152.html">Stochastic Processes · 5-сабақ: Броун қозғалысы</a></li><li><a href="week-82.html">Probability Theory · 4-сабақ: Кездейсоқ шамалар, күтім және дисперсия</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: «3-ке жетсем тоқтаймын»</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">Әділ монетамен $\pm1$ ойнаймыз, капитал $1$. Ереже: $3$-ке жетсем не $0$-ге түссем тоқтаймын. Ұту ықтималдығы қандай?</p>
+        <ol class="math-steps">
+          <li>Ойын әділ, сондықтан тоқтаған кездегі капиталдың орта мәні бастапқыға тең: $E S_\tau=1$.</li>
+          <li>Тоқтаған кезде капитал не $3$ (ықтималдығы $h$), не $0$: $ES_\tau=3h+0$.</li>
+          <li>$3h=1$, демек $h=\frac13$.</li>
+          <li>Тексеру (бірінші қадам талдауы): $h_1=\frac12h_2$, $h_2=\frac12h_1+\frac12$, шешімі $h_1=\frac13$ ✓.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Мартингал әдісі бір жолда жауап берді: «әділ ойында орта мән сақталады». Тек тоқтау уақыты «жақсы» (мұнда шектелген капитал) болуы керек.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Мартингал - «болашақты болжаудың ең жақсы әдісі - қазіргі мәнді айту» болатын процесс. Монета лақтырып $\pm1$ ұтатын ойыншының капиталы - мартингал. Казинодағы рулеткада ойыншының капиталы - супермартингал (орташа кемиді), ал казиноның капиталы - субмартингал.</p>
+      <p>Тоқтау уақыты - «қашан тоқтау керектігін тек осы сәтке дейінгі ақпаратпен шешу» ережесі: «$10$ ұтқанда тоқтаймын» - тоқтау уақыты; «ең жоғары капиталға жеткенде тоқтаймын» - жоқ (болашақты білу керек). Тоқтау туралы теорема: әділ ойында ешбір ақылға қонымды тоқтау ережесі орташа ұтыс бермейді.</p>
+      <p>Бірақ «ақылға қонымды» - маңызды сөз. Екі еселеу стратегиясы: $1$ қойыңыз, ұтылсаңыз - $2$, тағы ұтылсаңыз - $4$, ... бірінші ұтыста тоқтаңыз. Әрдайым $1$ ұтасыз! Шешім: бұл үшін шектеусіз капитал мен уақыт керек - теорема шарттары бұзылады.</p>
+      <p>Мартингал әдісі: есептің жауабын «сақталатын шама» арқылы табу. $S_n$ - мартингал болса, тоқтау сәтінде $ES_\tau=S_0$ - бұдан күйреу ықтималдығы шығады. $S_n^2-n$ - мартингал болса, $ES_\tau^2-E\tau=S_0^2$ - бұдан орташа уақыт шығады. Физикадағы энергияның сақталуы сияқты.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · казино жүйесі</span>
+        <p>«Ұтылсам - екі есе қоямын» жүйесі әрдайым $1$ ұтыс береді сияқты. Бірақ бұл үшін шексіз ақша мен уақыт керек. Шектеулі капиталда сирек, бірақ орасан шығын жиі ұсақ ұтыстарды теңестіреді - орташа нөл.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · әділ баға</span>
+        <p>Қаржыда дисконтталған акция бағасы (тәуекелге бейтарап ықтималдықпен) - мартингал: бүгінгі баға ертеңгі бағалардың әділ орта мәні. Опционның бағасы да осылай есептеледі.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$\mathcal F_n$</td><td>сүзгілеу</td><td>$n$ сәтке дейінгі ақпарат</td></tr>
+        <tr><td>$E[X\mid\mathcal F_n]$</td><td>шартты күтім</td><td>сол ақпаратпен ең жақсы болжам</td></tr>
+        <tr><td>$\tau$</td><td>тоқтау уақыты</td><td>тоқтау шешімі тек өткенге тәуелді</td></tr>
+        <tr><td>$\tau\wedge n$</td><td>тау мен $n$-нің минимумы</td><td>ең көбі $n$ қадамда тоқтату</td></tr>
+        <tr><td>$M_{\tau\wedge n}$</td><td>тоқтатылған мартингал</td><td>$\tau$-дан кейін «қатып қалған» процесс</td></tr>
+        <tr><td>$q^*$</td><td>тәуекелге бейтарап ықтималдық</td><td>бағаны мартингал ететін ықтималдық</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 6.1 · Мартингал</span>
+        <p>$\xi_1,\xi_2,\dots$ - кездейсоқ шамалар, $\mathcal F_n$ - $\xi_1,\dots,\xi_n$ анықтайтын ақпарат (<strong>сүзгілеу</strong> (<span class="term-en">filtration</span>)). $\{M_n\}$ - <strong>мартингал</strong> (<span class="term-en">martingale</span>), егер (1) $M_n$ тек $\xi_1,\dots,\xi_n$-нен анықталады; (2) $E|M_n|&lt;\infty$; (3) $E[M_{n+1}\mid\mathcal F_n]=M_n$. $\ge$ болса - <strong>субмартингал</strong> (<span class="term-en">submartingale</span>), $\le$ болса - <strong>супермартингал</strong> (<span class="term-en">supermartingale</span>).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Мартингал - келесі мәнінің шартты күтімі қазіргі мәніне тең процесс; субмартингалда орта есеппен өседі, супермартингалда кемиді.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 6.1 · Күтімнің сақталуы</span>
+        <p>$M_n$ мартингал болса, әр $n$ үшін $EM_n=EM_0$; одан да жалпы, $m\le n$ үшін $E[M_n\mid\mathcal F_m]=M_m$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Мартингалдың орта мәні уақыт бойы өзгермейді.</p></div>
+      <p><em>Негіздеме.</em> Субмартингалда $EM_n$ кемімейді, супермартингалда өспейді.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 6.2 · Кездейсоқ жүрудің мартингалдары</span>
+        <p>$S_n=\xi_1+\dots+\xi_n$, $P(\xi_i=1)=p$, $P(\xi_i=-1)=q$, тәуелсіз. (1) $S_n-n(p-q)$ - мартингал. (2) $p=\frac12$ болса, $S_n^2-n$ - мартингал. (3) $\left(\frac qp\right)^{S_n}$ - мартингал (де Муавр).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Кездейсоқ жүрудің «дрейфін алып тастасақ», симметриялы жүрудің квадратынан $n$-ді алсақ, не $\left(\frac qp\right)^{S_n}$ алсақ - мартингалдар шығады.</p></div>
+      <p><em>Негіздеме.</em> Жалпы: тәуелсіз, күтімі $1$ шамалардың көбейтіндісі - мартингал.</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 6.2 · Тоқтау уақыты</span>
+        <p>$\tau\in\{0,1,2,\dots\}\cup\{\infty\}$ - <strong>тоқтау уақыты</strong> (<span class="term-en">stopping time</span>), егер әр $n$ үшін $\{\tau=n\}$ оқиғасы тек $\xi_1,\dots,\xi_n$ арқылы анықталса. Мысалы, $\tau_A=\min\{n:S_n\in A\}$ - тоқтау уақыты; $\max$-ке жеткен соңғы сәт - тоқтау уақыты емес. $\tau\wedge n=\min(\tau,n)$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Тоқтау уақыты - «қазір тоқтаймын ба?» шешімін тек осы сәтке дейінгі ақпаратпен қабылдау.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 6.3 · Тоқтау туралы теорема</span>
+        <p>$M_n$ - мартингал, $\tau$ - тоқтау уақыты. (1) $M_{\tau\wedge n}$ - мартингал, демек $EM_{\tau\wedge n}=EM_0$. (2) Егер (a) $\tau\le N$ (шектелген), немесе (b) $P(\tau&lt;\infty)=1$ және барлық $n$ үшін $|M_{\tau\wedge n}|\le K$ болса, $EM_\tau=EM_0$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Тоқтатылған мартингал да мартингал; тоқтау уақыты шектелген болса не тоқтатылған процесс шектелген болса, тоқтау сәтіндегі орта мән бастапқыға тең.</p></div>
+      <p><em>Негіздеме.</em> Тағы бір жеткілікті шарт (дәлелсіз): $E\tau&lt;\infty$ және өсімшелер шектелген, $|M_{n+1}-M_n|\le K$. Мысалы, Вальд теңдігі: $ES_\tau=E\tau\cdot E\xi$.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 6.4 · Дубтың жинақталу теоремасы</span>
+        <p>$M_n$ - мартингал және $\sup_nE|M_n|&lt;\infty$ болса, $M_n$ ықтималдығы $1$ ақырлы шекке жинақталады. Атап айтқанда, теріс емес мартингал жинақталады.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Шектелген (не теріс емес) мартингал міндетті түрде бір шекке ұмтылады (дәлелсіз).</p></div>
+      <p><em>Негіздеме.</em> Дәлелсіз келтіреміз. Шек $EM_\infty\ne EM_0$ болуы мүмкін: $M_n=\prod\eta_i$, $\eta_i=0$ не $2$ ($\frac12$ ықтималдықпен) - $M_n\to0$, бірақ $EM_n=1$.</p>
+      <div class="math-thm" id="thm-5"><span class="math-tag">Теорема 6.5 · Броун қозғалысының мартингалдары</span>
+        <p>$W$ - Броун қозғалысы, $\mathcal F_s$ - $W(u)$, $u\le s$ ақпараты. $W(t)$, $W(t)^2-t$ және $\exp\left(\sigma W(t)-\frac{\sigma^2t}2\right)$ - үзіліссіз уақыттағы мартингалдар: $s\le t$ үшін $E[M_t\mid\mathcal F_s]=M_s$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Броун қозғалысының өзі, $W^2-t$ және экспоненциалды $e^{\sigma W-\sigma^2t/2}$ - үзіліссіз уақыттағы мартингалдар.</p></div>
+      <p><em>Негіздеме.</em> Тоқтау туралы теореманың үзіліссіз нұсқасы ұқсас шарттармен дұрыс (дәлелсіз).</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 6.1 · Мартингал</span>
+        <div class="math-fbody">$$E[M_{n+1}\mid\mathcal F_n]=M_n$$</div>
+        <p class="math-fnote">Әділ ойын.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 6.2 · Жүрудің мартингалдары</span>
+        <div class="math-fbody">$$S_n-n(p-q),\quad S_n^2-n\ (p=\tfrac12),\quad\Big(\frac qp\Big)^{S_n}$$</div></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 6.3 · Тоқтатылған мартингал</span>
+        <div class="math-fbody">$$M_{\tau\wedge n}=M_0+\sum_{k=1}^n\mathbf 1\{\tau\ge k\}(M_k-M_{k-1})$$</div>
+        <p class="math-fnote">Мартингал.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 6.4 · Тоқтау туралы теорема</span>
+        <div class="math-fbody">$$EM_\tau=EM_0$$</div>
+        <p class="math-fnote">$\tau$ шектелген, не $M_{\tau\wedge n}$ шектелген және $\tau&lt;\infty$.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 6.5 · Пойа урнасы</span>
+        <div class="math-fbody">$$E\Big[\frac{R_{n+1}}{n+3}\,\Big|\,\mathcal F_n\Big]=\frac{R_n}{n+2}$$</div>
+        <p class="math-fnote">Бастапқыда $1$ қызыл, $1$ көк.</p></div>
+      <div class="math-formula" id="f-6"><span class="math-fname">Формула 6.6 · Тәуекелге бейтарап ықтималдық</span>
+        <div class="math-fbody">$$q^*=\frac{1+r-d}{u-d}$$</div>
+        <p class="math-fnote">Биномдық модель, $d&lt;1+r&lt;u$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Мартингал әдісімен есеп шығару жоспары: (1) процесс үшін мартингал табыңыз: $S_n-n\mu$, $S_n^2-nD\xi$, $e^{\theta S_n}/(Ee^{\theta\xi})^n$; (2) тоқтау уақытын анықтаңыз ($\tau=$ шекараға жету); (3) теорема шарттарын тексеріңіз: $\tau$ шектелген бе? $M_{\tau\wedge n}$ шектелген бе? болмаса $\tau\wedge n$ арқылы өтіп, шекке көшіңіз; (4) $EM_\tau=EM_0$ теңдеуін шешіңіз; (5) нәтижені бірінші қадам талдауымен салыстырыңыз.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>(1) Тоқтау туралы теорема шартсыз дұрыс емес: $S_n$ симметриялы, $\tau=\min\{n:S_n=1\}$ - $P(\tau&lt;\infty)=1$, бірақ $ES_\tau=1\ne0=ES_0$ (мұнда $S_{\tau\wedge n}$ төменнен шектелмеген, $E\tau=\infty$). (2) $EM_n=EM_0$ мартингалдықты білдірмейді: $M_n=n\xi_1$ ($E\xi_1=0$) - $EM_n=0$, бірақ $E[M_2\mid\mathcal F_1]=2\xi_1\ne\xi_1$. (3) Мартингал жинақталуы мүмкін, бірақ күтім шекке өтпеуі мүмкін (Теорема 6.4-тің ескертуі). (4) Тоқтау уақыты болашақты «көрмеуі» керек: «ең жоғары нүктеде сату» - тоқтау уақыты емес.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> Әділ ойын: капитал $5$, мақсат $20$. Ұту ықтималдығы?</span></summary>
+        <p>$\frac5{20}=\frac14$.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> Рулеткада ойыншының капиталы қандай процесс?</span></summary>
+        <p>Супермартингал: әр ставканың орта мәні теріс.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> «Акция ең жоғары болған күні сату» - тоқтау уақыты ма?</span></summary>
+        <p>Жоқ: ең жоғары күнді білу үшін болашақты білу керек.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> Пойа урнасында ($1$ қызыл, $1$ көк) $100$ қадамнан кейінгі қызыл үлестің орта мәні?</span></summary>
+        <p>$\frac12$ - мартингал.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: күтімнің сақталуы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.1-ді дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Толық күтім формуласы: шартты күтімнің күтімі - күтім. Әр қадамда орта мән бірдей, индукция.</p>
+          <ol class="math-steps">
+            <li>Толық күтім формуласы: $E\big[E[X\mid\mathcal F_n]\big]=EX$.</li>
+            <li>$EM_{n+1}=E\big[E[M_{n+1}\mid\mathcal F_n]\big]=EM_n$.</li>
+            <li>Индукция: $EM_n=EM_0$.</li>
+            <li>Жалпы түрі: $E[M_{n+1}\mid\mathcal F_m]=E\big[E[M_{n+1}\mid\mathcal F_n]\mid\mathcal F_m\big]=E[M_n\mid\mathcal F_m]$ ($m\le n$, мұнаралық қасиет) - индукция бойынша $M_m$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: кездейсоқ жүрудің мартингалдары</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.2-ні дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Келесі қадам $\xi_{n+1}$ өткеннен тәуелсіз: оның орта мәнін, квадратының орта мәнін не $r^{\xi}$-дің орта мәнін тікелей есептейміз.</p>
+          <ol class="math-steps">
+            <li>$\xi_{n+1}$ - $\mathcal F_n$-нен тәуелсіз, ал $S_n$ - $\mathcal F_n$ бойынша белгілі. (1) $E[S_{n+1}-(n+1)(p-q)\mid\mathcal F_n]=S_n+(p-q)-(n+1)(p-q)=S_n-n(p-q)$.</li>
+            <li>(2) $E[S_{n+1}^2\mid\mathcal F_n]=S_n^2+2S_nE\xi_{n+1}+E\xi_{n+1}^2=S_n^2+0+1$. Демек $E[S_{n+1}^2-(n+1)\mid\mathcal F_n]=S_n^2-n$.</li>
+            <li>(3) $r=\frac qp$. $E[r^{S_{n+1}}\mid\mathcal F_n]=r^{S_n}E[r^{\xi_{n+1}}]=r^{S_n}\left(p\cdot\frac qp+q\cdot\frac pq\right)=r^{S_n}(q+p)=r^{S_n}$.</li>
+            <li>Интегралданушылық: $|S_n|\le n$, сондықтан барлық шамалар шектелген. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: тоқтау туралы теорема</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.3-ті дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Тоқтатылған процесті өсімшелердің қосындысы ретінде жазамыз: әр өсімшені «әлі тоқтаған жоқпыз ба» индикаторына көбейтеміз, ал ол өткенмен анықталады.</p>
+          <ol class="math-steps">
+            <li>(1) Телескоп: $M_{\tau\wedge n}=M_0+\sum_{k=1}^n\mathbf 1\{\tau\ge k\}(M_k-M_{k-1})$. $\{\tau\ge k\}=\{\tau\le k-1\}^c$ - $\mathcal F_{k-1}$ бойынша белгілі.</li>
+            <li>Сондықтан $E[M_{\tau\wedge(n+1)}-M_{\tau\wedge n}\mid\mathcal F_n]=\mathbf 1\{\tau\ge n+1\}E[M_{n+1}-M_n\mid\mathcal F_n]=0$ - тоқтатылған процесс мартингал, $EM_{\tau\wedge n}=EM_0$.</li>
+            <li>(2a) $\tau\le N$: $n=N$ алсақ, $M_{\tau\wedge N}=M_\tau$, демек $EM_\tau=EM_0$.</li>
+            <li>(2b) $\tau&lt;\infty$ болғандықтан $M_{\tau\wedge n}\to M_\tau$, ал $|M_{\tau\wedge n}|\le K$ - басылған жинақталу теоремасы бойынша $EM_{\tau\wedge n}\to EM_\tau$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: ойыншының күйреуі мартингалдармен</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Симметриялы жүру, $S_0=i$, $\tau$ - $\{0,N\}$-ға жету уақыты.</p>
+          <p class="mx-idea"><b>Идея:</b> $S_n$ мен $S_n^2-n$ мартингалдарына тоқтау теоремасын қолданамыз; екінші жағдайда шекке өту үшін монотонды және басылған жинақталу.</p>
+          <ol class="math-steps">
+            <li>$P(\tau&lt;\infty)=1$ (2-сабақ) және $0\le S_{\tau\wedge n}\le N$ - Теорема 6.3 (2b): $ES_\tau=i$.</li>
+            <li>$ES_\tau=N\cdot h_i+0\cdot(1-h_i)$, демек $h_i=\frac iN$.</li>
+            <li>$S_n^2-n$ мартингалы: $E[S_{\tau\wedge n}^2]-E[\tau\wedge n]=i^2$. $n\to\infty$: $E[\tau\wedge n]\uparrow E\tau$ (монотонды жинақталу), $S^2_{\tau\wedge n}\le N^2$ (басылған жинақталу).</li>
+            <li>$E\tau=ES_\tau^2-i^2=N^2\cdot\frac iN-i^2=i(N-i)$ ✓ - 2-сабақтағы нәтиже. Асимметриялы жағдайда $\left(\frac qp\right)^{S_n}$ мартингалы $h_i=\frac{1-r^i}{1-r^N}$ береді.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5">
+        <summary>Қорытып шығару 5: Пойа урнасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Урнада $1$ қызыл, $1$ көк шар. Әр қадамда шар алып, оны және тағы бір сол түсті шарды қайтарамыз. $R_n$ - $n$ қадамнан кейінгі қызыл шарлар саны.</p>
+          <p class="mx-idea"><b>Идея:</b> Қызыл шар алу ықтималдығы - қазіргі үлес; оны есептесек, келесі үлестің шартты күтімі дәл қазіргі үлес.</p>
+          <ol class="math-steps">
+            <li>$n$ қадамнан кейін урнада $n+2$ шар. Қызыл алу ықтималдығы $\frac{R_n}{n+2}$.</li>
+            <li>$E[R_{n+1}\mid\mathcal F_n]=R_n+\frac{R_n}{n+2}=R_n\frac{n+3}{n+2}$.</li>
+            <li>Үлес $X_n=\frac{R_n}{n+2}$: $E[X_{n+1}\mid\mathcal F_n]=\frac{R_n(n+3)}{(n+2)(n+3)}=X_n$ - мартингал, $EX_n=\frac12$.</li>
+            <li>$0\le X_n\le1$ - Дуб теоремасы бойынша $X_n$ жинақталады. Шек $X_\infty\sim U[0,1]$ (дәлелсіз; $R_n$ үлестірімі $\{1,\dots,n+1\}$-де бірқалыпты екенінен шығады).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Тексеру</h3>
+        <p class="math-problem">$S_n$ симметриялы. $E[S_{n+1}^2\mid S_n=5]$ және $E[S_{n+1}^2-(n+1)\mid S_n=5]$, $n=9$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $S_{n+1}=5\pm1$: $E[S_{n+1}^2\mid S_n=5]=\frac{36+16}2=26=25+1$.</li>
+          <li><b>2-қадам.</b> $E[S_{10}^2-10\mid S_9=5]=26-10=16=S_9^2-9$ ✓.</li>
+          <li><b>3-қадам.</b> Ал $S_n^2$ өзі - субмартингал: $E[S_{n+1}^2\mid\mathcal F_n]=S_n^2+1\ge S_n^2$.</li>
+          <li><b>4-қадам.</b> Компенсатор $n$ - $S_n^2$-тің «өсу жылдамдығы».</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $26$; $16$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Күйреу</h3>
+        <p class="math-problem">Әділ ойын, $i=4$, $N=10$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $ES_\tau=4$: $10h=4$, $h=0{,}4$.</li>
+          <li><b>2-қадам.</b> $E\tau=4\cdot6=24$.</li>
+          <li><b>3-қадам.</b> Асимметриялы $p=0{,}45$: $r=\frac{11}9$, $E r^{S_\tau}=r^4$: $h\,r^{10}+(1-h)=r^4$.</li>
+          <li><b>4-қадам.</b> $h=\frac{r^4-1}{r^{10}-1}=\frac{1-r^4}{1-r^{10}}\approx0{,}191$ (әділ ойындағы $0{,}4$-тің орнына).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $0{,}4$; $24$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Екі еселеу стратегиясы</h3>
+        <p class="math-problem">Әділ монета: $1$ қойып, ұтылсаңыз - екі есе. Бірінші ұтыста тоқтаймыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $k$ рет ұтылып, сосын ұтсақ: $-(1+2+\dots+2^{k-1})+2^k=1$. Ұтыс әрдайым $M_\tau=1$, $P(\tau&lt;\infty)=1$.</li>
+          <li><b>2-қадам.</b> $EM_\tau=1\ne0=EM_0$ - теорема бұзылды ма? Жоқ: $\tau$ шектелмеген және $M_{\tau\wedge n}\ge-(2^n-1)$ - төменнен шектелмеген.</li>
+          <li><b>3-қадам.</b> Ұтыс алдындағы ең үлкен шығынның күтімі: $\sum_k(2^k-1)2^{-(k+1)}=\infty$.</li>
+          <li><b>4-қадам.</b> Шектеулі капиталмен ($\tau\le N$) Теорема 6.3 (2a) бойынша орташа ұтыс $0$ - кіші ұтыстар сирек, бірақ орасан шығынмен теңеседі.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Шарттар орындалмайды.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Пойа урнасы</h3>
+        <p class="math-problem">$R_0=1$ қызыл, $1$ көк. $3$ қадамнан кейін $5$ шар, $R_3=3$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Келесі қадамда қызыл алу: $\frac35$.</li>
+          <li><b>2-қадам.</b> $EX_{10}=\frac12$ - бастапқы үлес.</li>
+          <li><b>3-қадам.</b> $P(R_1=2)=\frac12$, $P(R_2=3)=\frac12\cdot\frac23=\frac13$ - $R_2\in\{1,2,3\}$ бірқалыпты.</li>
+          <li><b>4-қадам.</b> Ұзақ мерзімде үлес кездейсоқ шекке жинақталады - «бай байи түседі», бірақ қайсысы байитыны кездейсоқ.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac35$; $\frac12$.</p></div>
+      <div class="math-example" id="ex-5"><h3>Мысал 5. Опцион бағасы</h3>
+        <p class="math-problem">Биномдық модель: $S_0=100$, $u=1{,}2$, $d=0{,}9$, $r=0{,}05$. Колл-опцион $K=100$, бір кезең.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Тәуекелге бейтарап ықтималдық: $q^*=\frac{1{,}05-0{,}9}{1{,}2-0{,}9}=0{,}5$.</li>
+          <li><b>2-қадам.</b> Осы ықтималдықпен дисконтталған баға $\frac{S_n}{(1+r)^n}$ - мартингал: $\frac{0{,}5\cdot120+0{,}5\cdot90}{1{,}05}=100$ ✓.</li>
+          <li><b>3-қадам.</b> Опционның төлемі: $\max(120-100,0)=20$ не $0$.</li>
+          <li><b>4-қадам.</b> Әділ баға $=\frac{0{,}5\cdot20}{1{,}05}\approx9{,}52$ - арбитражсыздық қағидасы (дәлелсіз).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\approx9{,}52$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$EM_n$ тұрақты болса - мартингал</span> → <span class="math-good">шартты күтім керек</span><br>Неге қате: $M_n=n\xi_1$.</li>
+        <li><span class="math-bad">Тоқтау туралы теореманы шартсыз қолдану</span> → <span class="math-good">шектелгендік шарттары</span><br>Неге қате: Екі еселеу стратегиясы.</li>
+        <li><span class="math-bad">Кез келген кездейсоқ уақыт - тоқтау уақыты</span> → <span class="math-good">болашақты білмеуі керек</span><br>Неге қате: «Максимумда сату».</li>
+        <li><span class="math-bad">$S_n^2$ - мартингал</span> → <span class="math-good">субмартингал; $S_n^2-n$ - мартингал</span><br>Неге қате: $+1$ әр қадамда.</li>
+        <li><span class="math-bad">Жинақталатын мартингалда $EM_\infty=EM_0$</span> → <span class="math-good">міндетті емес</span><br>Неге қате: $\prod\eta_i\to0$.</li>
+        <li><span class="math-bad">Опцион бағасын нақты ықтималдықпен есептеу</span> → <span class="math-good">тәуекелге бейтарап $q^*$</span><br>Неге қате: Дисконтталған баға - мартингал.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Экспоненциалды мартингал Mₜ = exp(σW(t) − σ²t/2) тығыздығы" data-config='{"fns": [{"f": "exp(-(ln(x) + s^2*t/2)^2/(2*s^2*t))/(x*s*sqrt(2*pi*t))", "label": "Mₜ тығыздығы"}], "params": [{"n": "t", "min": 0.1, "max": 6, "step": 0.1, "v": 1}, {"n": "s", "min": 0.3, "max": 1.5, "step": 0.1, "v": 1}], "view": [0.01, 4, 0, 2.5]}'></div>
+      <p><b>Бақылаңыз:</b> Барлық $t$ үшін $EM_t=1$, бірақ $t$ өскен сайын массаның көбі $0$-ге жақын жиналады, ал сирек үлкен мәндер орта мәнді $1$-де ұстайды. Дуб бойынша $M_t\to0$ (ықтималдығы $1$), ал $EM_t=1$ - күтім шекке өтпейді.</p>
+      <div class="math-viz" data-viz="graph" data-title="Mₜ: орта мән 1, медиана және P(Mₜ &gt; 1)" data-config='{"fns": [{"f": "1", "label": "E Mₜ = 1"}, {"f": "exp(-s^2*x/2)", "label": "медиана e^(−σ²t/2)", "color": 1}, {"f": "1 - Phi(s*sqrt(x)/2)", "label": "P(Mₜ > 1)", "color": 2, "dash": [5, 4]}], "params": [{"n": "s", "min": 0.3, "max": 1.5, "step": 0.1, "v": 1}], "view": [0, 20, 0, 1.1]}'></div>
+      <p><b>Бақылаңыз:</b> Медиана мен «бастапқыдан көп болу» ықтималдығы нөлге ұмтылады, ал орта мән $1$. Әділ ойын жеке ойыншы үшін көбіне шығынмен аяқталады - ұтыс аз ғана бақыттылардың үлесінде. Бұл - қаржыдағы ұзақ мерзімді инвестицияның «медиана мен орта мән» парадоксы.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m24-6-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m24-6-t1">1. Симметриялы жүру</h3></div>
+        <p>$S_n$ симметриялы, $S_0=0$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$E[S_{n+1}\\mid S_n=5]$","a":5,"v":"Rational(1, 2)*6 + Rational(1, 2)*4","hint":"Мартингал.","sol":{"steps":["$\\frac{6+4}2$."],"ans":"$5$"}},{"q":"$ES_{10}^2$","a":10,"v":"10","hint":"$S_n^2-n$ - мартингал.","sol":{"steps":["$E(S_{10}^2-10)=0$."],"ans":"$10$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m24-6-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m24-6-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Мартингалда $EM_n=EM_0$.","a":true,"e":"Теорема 6.1.","hint":"Толық күтім."},{"q":"$S_n^2$ - мартингал (симметриялы жүру).","a":false,"e":"Субмартингал: $E[S_{n+1}^2\\mid\\mathcal F_n]=S_n^2+1$.","hint":"Теорема 6.2 (2)."},{"q":"«Капитал ең жоғары болатын сәт» - тоқтау уақыты.","a":false,"e":"Болашақты білу керек.","hint":"Анықтама."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m24-6-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m24-6-t3">3. Мартингал</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$p=0{,}6$ жүру үшін қайсысы мартингал?","o":["$S_n-0{,}2n$","$S_n$","$S_n^2-n$","$S_n+0{,}2n$"],"a":0,"e":"$S_n-n(p-q)$.","hint":"$E\\xi=0{,}2$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m24-6-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-6-t4">4. Күйреу мартингалмен</h3></div>
+        <p>Әділ ойын, $i=4$, $N=10$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(N$-ге бірінші жету$)$","a":0.4,"v":"Rational(4, 10)","hint":"$ES_\\tau=i$.","sol":{"steps":["$10h=4$."],"ans":"$0{,}4$"}},{"q":"$E\\tau$","a":24,"v":"4*(10 - 4)","hint":"$ES_\\tau^2-E\\tau=i^2$.","sol":{"steps":["$100\\cdot0{,}4-16$."],"ans":"$24$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m24-6-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-6-t5">5. Пойа урнасы</h3></div>
+        <p>$1$ қызыл, $1$ көк шардан бастаймыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$10$ қадамнан кейінгі қызыл үлестің күтімі","a":0.5,"v":"Rational(1, 2)","hint":"Мартингал.","sol":{"steps":["$EX_n=X_0$."],"ans":"$\\frac12$"}},{"q":"$P(R_2=3)$","a":"1/3","v":"Rational(1, 2)*Rational(2, 3)","hint":"Екі рет қызыл.","sol":{"steps":["$\\frac12\\cdot\\frac23$."],"ans":"$\\frac13$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m24-6-num6">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m24-6-t6">6. Де Муавр мартингалы</h3></div>
+        <p>$p=\frac23$, $q=\frac13$, $r=\frac qp=\frac12$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$E[r^{\\xi}]$","a":1,"v":"Rational(2, 3)*Rational(1, 2) + Rational(1, 3)*2","hint":"$p\\cdot r+q\\cdot\\frac1r$.","sol":{"steps":["$\\frac13+\\frac23$."],"ans":"$1$"}},{"q":"$S_0=1$, $N=3$: $P(3$-ке $0$-ден бұрын жету$)$","a":"4/7","v":"(1 - Rational(1, 2))/(1 - Rational(1, 2)**3)","hint":"$hr^3+(1-h)=r^1$.","sol":{"steps":["$h=\\frac{1-r}{1-r^3}=\\frac{1/2}{7/8}$."],"ans":"$\\frac47$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m24-6-exp7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-6-t7">7. Компенсатор</h3></div>
+        <p>$p=\frac34$ жүру: $S_n-c_n$ мартингал болатын $c_n$ ($n$-ді $x$ деп).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$c_n=?$","a":"x/2","v":"x*(Rational(3, 4) - Rational(1, 4))","hint":"$n(p-q)$.","sol":{"steps":["$n\\left(\\frac34-\\frac14\\right)$."],"ans":"$\\frac n2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m24-6-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-6-t8">8. Процесс - түрі</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Процесс - оның түрі.","pairs":[["Sₙ, p = ½","мартингал"],["Sₙ², p = ½","субмартингал"],["Sₙ, p = 0.4","супермартингал"],["W(t)² − t","үзіліссіз уақыттағы мартингал"]],"hint":"Шартты күтімді есептеңіз.","sol":{"steps":["$E[S_{n+1}\\mid\\mathcal F_n]=S_n+(p-q)$."]},"e":"Әділ, тиімді, тиімсіз ойын."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m24-6-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-6-t9">9. Параметрлік: әділ ойын</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"i":{"int":[1,9]},"d":{"int":[1,9]}},"type":"num","q":"Әділ ойын: капитал $#{i}$, мақсат $#{i+d}$. Мақсатқа жету ықтималдығы?","a":"i/(i + d)","v":"Rational(int(i), int(i) + int(d))","hint":"$ES_\\tau=S_0$.","sol":{"steps":["$#{i+d}\\,h=#{i}$."],"ans":"$#{i/(i+d)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m24-6-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m24-6-t10">10. Параметрлік: тәуекелге бейтарап ықтималдық</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,5]},"b":{"int":[1,5]},"c":{"int":[0,9]}},"type":"num","q":"Биномдық модель: $u=#{1 + a/10}$, $d=#{1 - b/10}$, $r=#{c/100}$. $q^*=?$","a":"(c/10 + b)/(a + b)","v":"(Rational(int(c), 100) + Rational(int(b), 10))/(Rational(int(a), 10) + Rational(int(b), 10))","hint":"$q^*=\\frac{1+r-d}{u-d}$.","sol":{"steps":["$\\frac{#{c/100}+#{b/10}}{#{a/10}+#{b/10}}$."],"ans":"$#{(c/10 + b)/(a + b)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m24-6-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m24-6-t11">11. Тоқтатылған мартингал</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$EM_{\\tau\\wedge n}=EM_0$.","steps":["$M_{\\tau\\wedge n}=M_0+\\sum_{k\\le n}\\mathbf 1\\{\\tau\\ge k\\}(M_k-M_{k-1})$.","$\\{\\tau\\ge k\\}$ - $\\mathcal F_{k-1}$ бойынша белгілі.","$E[\\mathbf 1\\{\\tau\\ge k\\}(M_k-M_{k-1})\\mid\\mathcal F_{k-1}]=0$.","$M_{\\tau\\wedge n}$ - мартингал.","Теорема 6.1: $EM_{\\tau\\wedge n}=EM_0$."],"hint":"Теорема 6.3 (1).","sol":{"ans":"$EM_{\\tau\\wedge n}=EM_0$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m24-6-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m24-6-t12">12. Қадамдық шешім: ойынның орташа ұзақтығы</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Әділ ойында $S_0=i$, $\\{0,N\\}$-ға жету уақыты үшін $E\\tau=i(N-i)$ екенін мартингалмен дәлелдеңіз.","steps":["$S_n^2-n$ - мартингал; тоқтатылған: $ES_{\\tau\\wedge n}^2-E[\\tau\\wedge n]=i^2$.","$n\\to\\infty$: монотонды жинақталу $E[\\tau\\wedge n]\\to E\\tau$; $S_{\\tau\\wedge n}^2\\le N^2$ - басылған жинақталу.","$E\\tau=ES_\\tau^2-i^2$, ал $ES_\\tau^2=N^2\\cdot\\frac iN=Ni$.","$E\\tau=Ni-i^2=i(N-i)$."],"ans":"$i(N-i)$."}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m24-6-cho13">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-6-t13">13. Екі еселеу стратегиясы</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Екі еселеу стратегиясында $EM_\\tau=1\\ne0$. Тоқтау туралы теореманың қай шарты бұзылады?","o":["$\\tau$ шектелмеген және $M_{\\tau\\wedge n}$ шектелмеген","$\\tau$ тоқтау уақыты емес","$M_n$ мартингал емес","$P(\\tau=\\infty)>0$"],"a":0,"e":"Шығын $2^n-1$-ге дейін өседі.","hint":"Теорема 6.3 (2)."}]}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Мартингалдар - қаржы математикасының (арбитражсыз бағалау: дисконтталған баға тәуекелге бейтарап өлшеммен мартингал), алгоритмдер талдауының (Азума теңсіздігі, рандомдалған алгоритмдердің концентрациясы), статистиканың (тізбекті тексеру, Вальд тесті), машиналық оқытудың (онлайн оқыту, бандиттер) және ойындар теориясының негізі.</p>
+      <p><b>Мини-жоба: «Казино зертханасы».</b> Тоқтау туралы теореманы модельдеу арқылы тексереміз: ойыншының күйреуінде $h_i$ мен $E\tau$; екі еселеу стратегиясында шектеусіз және шектеулі капиталмен орташа ұтыс; Пойа урнасының шектік үлесінің бірқалыпты екенін; биномдық модельдегі опцион бағасын тәуекелге бейтарап күтіммен және модельдеумен.</p>
+<pre data-lang="python"><code class="language-python">import random
+
+random.seed(9)
+R = 20000
+
+def ruin(i, N):
+    t = 0
+    while 0 &lt; i &lt; N:
+        i += 1 if random.random() &lt; 0.5 else -1
+        t += 1
+    return i, t
+
+res = [ruin(4, 10) for _ in range(R)]
+print(f"күйреу: h ≈ {sum(s == 10 for s, _ in res) / R:.4f} (0.4),  E τ ≈ {sum(t for _, t in res) / R:.2f} (24)")
+
+def doubling(cap):
+    bet, total = 1, 0
+    while True:
+        if bet &gt; cap + total:
+            return total
+        if random.random() &lt; 0.5:
+            return total + bet
+        total -= bet
+        bet *= 2
+
+for cap in (7, 1023, 10 ** 6):
+    g = [doubling(cap) for _ in range(R)]
+    print(f"екі еселеу, капитал {cap}: орташа ұтыс ≈ {sum(g) / R:+.3f},  ұтыс үлесі {sum(x &gt; 0 for x in g) / R:.4f}")
+
+def polya(n):
+    red, total = 1, 2
+    for _ in range(n):
+        if random.random() &lt; red / total:
+            red += 1
+        total += 1
+    return red / total
+
+xs = [polya(300) for _ in range(5000)]
+bins = [0] * 5
+for x in xs:
+    bins[min(int(x * 5), 4)] += 1
+print("Пойа: үлестің гистограммасы (бірқалыпты болса әрқайсысы ≈ 0.2):", [round(b / len(xs), 3) for b in bins])
+
+S0, u, d, r, K = 100, 1.2, 0.9, 0.05, 100
+q = (1 + r - d) / (u - d)
+price = q * max(S0 * u - K, 0) / (1 + r)
+sim = sum(max(S0 * (u if random.random() &lt; q else d) - K, 0) for _ in range(R)) / R / (1 + r)
+print(f"опцион: q* = {q:.3f},  баға = {price:.4f},  модельдеу ≈ {sim:.4f}")
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Капитал $7$ кезінде екі еселеу стратегиясының орташа ұтысы неге нөлге жақын? Ұтыс үлесі $\frac78$-ге тең екенін түсіндіріңіз.</li>
+        <li>Пойа урнасын $2$ қызыл, $1$ көк шардан бастаңыз. Үлестің орта мәні $\frac23$ болып қала ма? Гистограмма қалай өзгереді?</li>
+        <li>Капитал $10^6$ кезінде модельдеу орташа ұтысты $+1$-ге жақын көрсетуі мүмкін, ал теориялық орта мән $0$. Неге? (Нұсқау: үлкен шығынның ықтималдығы $2^{-19}$ шамасында - $20000$ тәжірибеде ол сирек байқалады.)</li>
+        <li>$p=0{,}45$ жүру үшін $\left(\frac qp\right)^{S_n}$ мартингалын пайдаланып, $i=4$, $N=10$ үшін $h$-ты есептеп, модельдеумен салыстырыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Мартингал</td><td>$E[M_{n+1}\mid\mathcal F_n]=M_n$</td><td>$EM_n=EM_0$</td></tr>
+        <tr><td>Мысалдар</td><td>$S_n-n(p-q)$, $S_n^2-n$, $(\frac qp)^{S_n}$</td><td>Пойа урнасы</td></tr>
+        <tr><td>Тоқтау уақыты</td><td>$\{\tau=n\}$ тек өткенмен анықталады</td><td>$M_{\tau\wedge n}$ - мартингал</td></tr>
+        <tr><td>Тоқтау туралы теорема</td><td>$EM_\tau=EM_0$</td><td>$\tau$ не $M_{\tau\wedge n}$ шектелген</td></tr>
+        <tr><td>Қарсы мысал</td><td>екі еселеу: $EM_\tau=1$</td><td>шектеусіз шығын</td></tr>
+        <tr><td>Қолданыстар</td><td>$h_i=\frac iN$, $E\tau=i(N-i)$, $q^*=\frac{1+r-d}{u-d}$</td><td>Дуб жинақталуы</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m24-6-self">
+        <li><input type="checkbox"> <span>Мен мартингалды, субмартингал мен супермартингалды анықтай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен кездейсоқ жүрудің мартингалдарын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен тоқтау уақытын тани аламын және тоқтау туралы теореманы дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен ойыншының күйреу есебін мартингалдармен шеше аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен екі еселеу стратегиясы арқылы теорема шарттарының маңызын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен биномдық модельде тәуекелге бейтарап ықтималдықты таба аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. Мартингал анықтамасы:</p>
+<label><input type="radio" value="a"> E Mₙ = 0</label>
+<label><input type="radio" value="b"> E[Mₙ₊₁ | Fₙ] = Mₙ</label>
+<label><input type="radio" value="c"> Mₙ₊₁ = Mₙ</label>
+<label><input type="radio" value="d"> Mₙ тәуелсіз</label>
+<p class="explain">Әділ ойын.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">2. Симметриялы жүру үшін мартингал:</p>
+<label><input type="radio" value="a"> Sₙ² − n</label>
+<label><input type="radio" value="b"> Sₙ²</label>
+<label><input type="radio" value="c"> Sₙ + n</label>
+<label><input type="radio" value="d"> 2Sₙ + 1 + n</label>
+<p class="explain">Теорема 6.2.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">3. Тоқтау уақыты:</p>
+<label><input type="radio" value="a"> капитал ең жоғары сәт</label>
+<label><input type="radio" value="b"> соңғы ұтылған сәт</label>
+<label><input type="radio" value="c"> ойынның ортасы</label>
+<label><input type="radio" value="d"> алғаш 10 ұтқан сәт</label>
+<p class="explain">Тек өткенге тәуелді.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">4. Әділ ойын, i = 4, N = 10: ұту ықтималдығы</p>
+<label><input type="radio" value="a"> 0,5</label>
+<label><input type="radio" value="b"> 0,6</label>
+<label><input type="radio" value="c"> 0,4</label>
+<label><input type="radio" value="d"> 0,24</label>
+<p class="explain">E S_τ = i.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. Әділ ойын, i = 4, N = 10: E τ =</p>
+<label><input type="radio" value="a"> 40</label>
+<label><input type="radio" value="b"> 24</label>
+<label><input type="radio" value="c"> 16</label>
+<label><input type="radio" value="d"> 6</label>
+<p class="explain">i(N − i).</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">6. Екі еселеу стратегиясында бұзылатын шарт:</p>
+<label><input type="radio" value="a"> шектелгендік</label>
+<label><input type="radio" value="b"> мартингалдық</label>
+<label><input type="radio" value="c"> тоқтау уақыты</label>
+<label><input type="radio" value="d"> тәуелсіздік</label>
+<p class="explain">Шектеусіз шығын.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">7. Пойа урнасында қызыл үлестің күтімі:</p>
+<label><input type="radio" value="a"> 1-ге ұмтылады</label>
+<label><input type="radio" value="b"> 0-ге ұмтылады</label>
+<label><input type="radio" value="c"> өседі</label>
+<label><input type="radio" value="d"> бастапқы үлеске тең</label>
+<p class="explain">Мартингал.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">8. u = 1,2, d = 0,9, r = 0,05 үшін q* =</p>
+<label><input type="radio" value="a"> 0,6</label>
+<label><input type="radio" value="b"> 0,4</label>
+<label><input type="radio" value="c"> 0,5</label>
+<label><input type="radio" value="d"> 0,25</label>
+<p class="explain">(1 + r − d)/(u − d).</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәннің соңғы сабағын аяқтадыңыз. Білімді <a href="../exam.html?s=stochastic">Stochastic Processes емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-152.html"><small>Алдыңғы</small>← Stochastic Processes · 5-сабақ: Броун қозғалысы</a>

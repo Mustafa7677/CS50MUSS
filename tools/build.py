@@ -26,6 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import math_plan  # noqa: E402  («Математика» курсының жалғыз жоспары: tools/math_plan.py)
+import math_pedagogy  # noqa: E402  (математика: сабақ ұзақтығы, алғышарттар, оқу жолы, емтихан банкі)
 SITE_URL = "https://mustafa7677.github.io/CS50MUSS/"
 ORDER = [f"week-{i}" for i in range(8)] + ["ai"] + [f"week-{i}" for i in range(8, 11)]
 
@@ -44,7 +45,7 @@ OWN_COURSES = {
     # Ағылшын тілі A0-C1: 6 деңгей x 4 сабақ = 24 бет (en/lectures/week-0..23.html). Әлі жазылмаған сабақ беттерінде SOON белгісі бар:
     # олар бет ретінде тұрады (бас, нав, footer, B лицензиясы), бірақ дайын лекция ретінде статистикаға, іздеуге, сайтмапқа кірмейді.
     "en": {"short": "English", "color": "#0f766e", "order": [f"week-{i}" for i in range(24)]},
-    # Математика: 24 пән, жалпы math_plan.TOTAL сабақ (math/lectures/week-0..N.html, N - пәндер бойынша ГЛОБАЛДЫ нөмір). Тұғырлар (SOON) en курсындағыдай.
+    # Математика: 25 пән, жалпы math_plan.TOTAL сабақ (math/lectures/week-0..N.html, N - пәндер бойынша ГЛОБАЛДЫ нөмір). Тұғырлар (SOON) en курсындағыдай.
     "math": {"short": "Math", "color": "#15803d", "order": [f"week-{i}" for i in range(math_plan.TOTAL)]},
 }
 SOON = "<!-- soon -->"   # en/lectures/week-N.html ішіндегі «жақында» белгісі; мазмұн жазылғанда өшіріледі (docs/EN-COURSE-GUIDE.md)
@@ -109,7 +110,7 @@ CATALOG = [
      "desc": "Ағылшын тілін нөлден бастап: грамматика, сөздік, оқу, жазу, тыңдау мен айту. IT және бағдарламалау ағылшыншасына бағытталған.",
      "tags": ["грамматика", "сөздік", "IT-ағылшын", "A0-C1"], "state": "wip"},
     {"id": "math", "code": "Math", "href": "math/", "c": "#15803d", "c2": "#14532d", "title": "Математика", "own": True,
-     "desc": "24 пән: алгебра мен анализден ықтималдыққа, дискретті математикаға, сандар теориясы мен топологияға дейін. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
+     "desc": "25 пән: алгебра мен анализден ықтималдыққа, дискретті математикаға, сандар теориясы мен топологияға дейін. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
      "tags": ["анализ", "сызықтық алгебра", "ықтималдық", "дәлелдеу"], "state": "wip"},
 ]
 
@@ -150,12 +151,36 @@ def sync_math_index(path):
         path.write_text(s2, encoding="utf-8")
 
 
+def tex_free_excerpt(text):
+    """Мәтіннің $...$ формуласы жоқ сөйлемдері (бастан, ретімен); бәрінде формула болса - бірінші формулаға дейінгі бөлігі."""
+    sents = re.split(r"(?<=[.!?])\s+(?=[A-ZА-ЯӘҒҚҢӨҰҮҺІЁ«])", text)
+    lead = []
+    for x in sents:
+        if "$" in x:
+            break
+        lead.append(x)
+    start = next((i for i, x in enumerate(sents) if x.startswith("Бұл сабақ") and "$" not in x), None)
+    if len(" ".join(lead)) < 60:  # басы қысқа не формулалы: «Бұл сабақта ...» сөйлемінен, ол да жоқ болса - бос (жоспардағы сипаттама)
+        lead = []
+        for x in (sents[start:] if start is not None else []):
+            if "$" in x:
+                break
+            lead.append(x)
+    keep = lead
+    out = ""
+    for x in keep:
+        if len(out) > 150:
+            break
+        out = (out + " " + x).strip()
+    return out
+
+
 def write_math_plan():
     """math/data/plan.js: браузер үшін жоспар (math-course.js: формулалар, сөздік, жаттықтырғыш, «қайдан бастау»)."""
     subs = []
     for i, sb in enumerate(math_plan.SUBJECTS):
         subs.append({"no": sb[0], "slug": sb[1], "kz": sb[2], "en": sb[3], "group": sb[4], "start": math_plan.STARTS[i], "count": len(sb[7]),
-                     "lessons": [t for t, _ in sb[7]]})
+                     "color": math_plan.STYLE[sb[1]][0], "glyph": math_plan.STYLE[sb[1]][1], "lessons": [t for t, _ in sb[7]]})
     out = ("window.CS50KZ_MATH_PLAN = " + json.dumps({"total": math_plan.TOTAL, "subjects": subs}, ensure_ascii=False, separators=(",", ":")) + ";\n")
     (ROOT / "math" / "data").mkdir(parents=True, exist_ok=True)
     fp = ROOT / "math" / "data" / "plan.js"
@@ -196,6 +221,36 @@ def courses_block(prefix, skip=()):
     return "<!-- build:courses -->\n" + "\n".join(out) + "\n        <!-- /build:courses -->"
 
 
+# Басты бет: «Бір шаңырақ астында» - барлық курс бірден көрінеді. <!-- build:home-courses --> ... <!-- /build:home-courses -->
+SHORT = {"x": "Алгоритмдерден веб пен жасанды интеллектке дейін: бағдарламалауға ең жақсы кіру есігі.",
+         "python": "Python нөлден тереңге", "sql": "Деректер мен кестелер", "ai": "Іздеуден нейрон желіге дейін",
+         "web": "Django, JavaScript, React", "cpp": "Жад, ООП, STL", "java": "Нысандар, Stream, көп ағын",
+         "en": "A0-ден C1-ге дейін", "math": "Арифметикадан топологияға дейін"}
+
+
+NAME = {"x": "Информатикаға кіріспе", "python": "Python", "sql": "Дерекқор", "ai": "Жасанды интеллект", "web": "Веб",
+        "cpp": "C++", "java": "Java", "en": "Ағылшын тілі", "math": "Математика"}
+
+
+def home_courses_block(prefix=""):
+    out = []
+    for c in CATALOG:
+        n_lec = STATS["by_course"][c["id"]]["lect"]
+        unit = "сабақ" if c["id"] in ("math", "en") else "лекция"
+        feat = " kh-feat" if c["id"] == "x" else ""
+        href = "lectures/week-0.html" if c["id"] == "x" else c["href"]
+        lead = ' <span class="kh-start">Бастау осыдан</span>' if c["id"] == "x" else ""
+        out.append(f"""        <a class="kh-tile{feat}{" own" if c.get("own") else ""}" href="{prefix}{href}" data-course="{c["id"]}" data-total="{n_lec}" style="--c:{c["c"]};--c2:{c["c2"]}">
+          <span class="kh-band" aria-hidden="true"></span>
+          <svg class="kh-glyph" viewBox="0 0 64 64" aria-hidden="true">{GLYPHS[c["id"]]}</svg>
+          <span class="kh-code">{"Авторлық курс" if c.get("own") else ("Гарвард " + c["code"] if c["id"] == "x" else "Гарвард CS50")}{lead}</span>
+          <span class="kh-title">{NAME[c["id"]]}</span>
+          <span class="kh-sub">{SHORT[c["id"]]}</span>
+          <span class="kh-meta">{n_lec} {unit}</span>
+        </a>""")
+    return "<!-- build:home-courses -->\n" + "\n".join(out) + "\n        <!-- /build:home-courses -->"
+
+
 # «Бір негізгі маршрут»: CS50x → 0-лекция → бірінші тапсырма → нәтиже → келесі лекция. Статикалық нұсқа (JS-сыз да жұмыс істейді);
 # main.js initBeginnerPath() оны оқушының прогресіне қарай жаңартады (data-route, data-step, aria-current="step").
 def route_block(prefix, code, local=False):
@@ -215,7 +270,7 @@ def route_block(prefix, code, local=False):
     course_href = "#weeks" if local else (f"{prefix}index.html#main" if code == "x" else f"{prefix}{code}/index.html#weeks")
     steps = [
         (course_href, short, "Курсты таңда"),
-        (lec(first), f"{num(first)} " + ("сабағы" if code in ("en", "math") else "лекциясы"), "Оқы, 15-20 минут"),
+        (lec(first), f"{num(first)} " + ("сабағы" if code in ("en", "math") else "лекциясы"), ("Оқы, " + (lambda m: f"≈ {math_pedagogy.fmt_min(m)}" if m else "45-75 минут")(math_pedagogy.week0_minutes()) if code == "math" else "Оқы, 15-20 минут")),
         (lec(first) + (f"#{task_id}" if task_id else ""), "Бірінші тапсырма", "Өзің орында"),
         (lec(first) + (f"#{quiz_id}" if quiz_id else ""), "Нәтиже", "Тест және тексеру"),
         (lec(second) if second else lec(first), "Келесі сабақ" if code in ("en", "math") else "Келесі лекция", num(second) if second else "Жалғастыр"),
@@ -294,6 +349,7 @@ def head_block(prefix, title, desc, url, image="assets/img/og.jpg", kind="M"):
     copy, lic = license_meta(kind, prefix)
     return f"""<!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="{prefix}assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="{prefix}assets/img/icon-192.png">
   <link rel="manifest" href="{prefix}manifest.webmanifest">
@@ -326,6 +382,20 @@ def course_of(rel):
 
 PILL = {"x": ("CS50x", "#087a96"), "python": ("CS50P", "#3776ab"), "sql": ("SQL", "#7c3aed"), "ai": ("AI", "#c42a68"), "web": ("Web", "#c2410c"),
         "cpp": ("C++", "#4f46e5"), "java": ("Java", "#d97706"), "en": ("English", "#0f766e"), "math": ("Математика", "#15803d")}
+
+
+SWITCH = [("x", "CS50x", "index.html"), ("python", "CS50P", "python/"), ("sql", "SQL", "sql/"), ("ai", "AI", "ai/"), ("web", "Web", "web/"),
+          ("cpp", "C++", "cpp/"), ("java", "Java", "java/"), ("en", "English", "en/"), ("math", "Математика", "math/")]
+
+
+def switch_block(prefix, course):
+    """Курстар ауыстырғышы (.cx-switch) - барлық беттерде бірдей тізім (Математика да)."""
+    items = []
+    for code, label, href in SWITCH:
+        on = ' class="on" aria-current="page"' if code == course else ""
+        k = ' data-k="math"' if code == "math" else ""
+        items.append(f'<a{on}{k} href="{prefix}{href}">{label}</a>')
+    return '<nav class="cx-switch" aria-label="Курсты таңдау">' + "".join(items) + "</nav>"
 
 
 def nav_block(prefix, active, course=None):
@@ -412,13 +482,19 @@ def process_page(path, prefix, active):
     for code, c in ALL_COURSES.items():  # басқа курс лекцияларының баннер түсі мен нөмірі
         m = re.match(rf"{code}/lectures/week-(\d+)\.html$", rel)
         if m:
-            HEAD_STYLE.setdefault(rel, (c["color"], m.group(1)))
+            if code == "math":  # математика: әр пәннің өз түсі мен белгісі (math_plan.STYLE)
+                slug, col, glyph = math_plan.subject_style(int(m.group(1)))
+                HEAD_STYLE.setdefault(rel, (col, m.group(1), f' data-msubj="{slug}" data-glyph="{html.escape(glyph)}"'))
+            else:
+                HEAD_STYLE.setdefault(rel, (c["color"], m.group(1)))
     kind = license_kind(rel)
     block = head_block(prefix, title, desc, url, og if (ROOT / og).exists() else "assets/img/og.jpg", kind)
     if "<!-- build:head -->" in s:
         s = re.sub(r"<!-- build:head -->.*?<!-- /build:head -->", block, s, flags=re.S)
     else:
         s = s.replace("</title>", "</title>\n  " + block, 1)
+    if "<!-- build:home-courses" in s:
+        s = re.sub(r"<!-- build:home-courses -->.*?<!-- /build:home-courses -->", lambda _: home_courses_block(prefix), s, flags=re.S)
     if "<!-- build:courses" in s:
         skip = ("x",) if rel == "index.html" else ()
         s = re.sub(r"<!-- build:courses -->.*?<!-- /build:courses -->", lambda _: courses_block(prefix, skip), s, flags=re.S)
@@ -426,10 +502,11 @@ def process_page(path, prefix, active):
         rc = "x" if rel in ("index.html", "courses.html") else rel.split("/")[0]
         s = re.sub(r"<!-- build:route -->.*?<!-- /build:route -->", lambda _: route_block("" if rc != "x" else prefix, rc, rc != "x"), s, flags=re.S)
     s = re.sub(r'<nav class="nav">.*?</nav>', lambda _: nav_block(prefix, active, course_of(rel)), s, count=1, flags=re.S)
+    s = re.sub(r'<nav class="cx-switch"[^>]*>.*?</nav>', lambda _: switch_block(prefix, course_of(rel)), s, count=1, flags=re.S)
     s = re.sub(r'<footer class="footer">.*?</footer>', lambda _: footer_block(prefix), s, count=1, flags=re.S)
     hs = HEAD_STYLE.get(rel)
     if hs:
-        attrs = f' style="--lc:{hs[0]}"' + (f' data-n="{hs[1]}"' if hs[1] else "")
+        attrs = f' style="--lc:{hs[0]}"' + (f' data-n="{hs[1]}"' if hs[1] else "") + (hs[2] if len(hs) > 2 else "")
         s = re.sub(r'<div class="lecture-head"[^>]*>', f'<div class="lecture-head"{attrs}>', s, count=1)
     s = re.sub(r'<body(?: data-license="[A-Z]")?' if own else r'<body(?![^>]*data-license)', f'<body data-license="{kind}"', s, count=1)
     if 'class="skip-link"' not in s:
@@ -723,7 +800,7 @@ DESC_TEMPLATES = {
     "cpp/index.html": "C++ бағдарламалау: авторлық қазақша курс. Жад пен көрсеткіштер, ООП, STL, шаблондар және өз жобаң. {lect_cpp} лекция, тесттер, жаттығулар.",
     "java/index.html": "Java бағдарламалау: авторлық қазақша курс. Нысандар, интерфейстер, Collections, Stream API, көп ағын және өз жобаң. {lect_java} лекция, тесттер, жаттығулар.",
     "en/index.html": "Ағылшын тілі A0-C1: авторлық қазақша курс. Грамматика, сөздік, оқу, жазу, тыңдау мен айту жаттығулары, IT-ағылшын. 24 сабақ, деңгей анықтау тесті.",
-    "math/index.html": "Математика: авторлық қазақша курс. 24 пән: Linear Algebra, Calculus, Probability Theory, Discrete Mathematics, Number Theory, Topology және т.б. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
+    "math/index.html": "Математика: авторлық қазақша курс. 25 пән: Linear Algebra, Calculus, Probability Theory, Discrete Mathematics, Number Theory, Topology және т.б. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
 }
 INDEX_LD = "Гарвард университетінің CS50x курсы қазақ тілінде: {lect_x} лекция, тесттер, тапсырмалар, интерактив визуализациялар."
 
@@ -776,6 +853,8 @@ def main():
         sm = re.search(r'<h2 id="summary">.*?</h2>\s*(?:<p>(?:(?!</p>).)*</p>\s*)?(<ul>.*?</ul>|<table>.*?</table>)', s, re.S)
         if sm:
             sheets.append((meta, sm.group(1), "x"))
+    if math_pedagogy.main():  # математика: алғышарттар оқу жолына қайшы болса, жинақ тоқтайды
+        sys.exit(1)
     # Қосымша курстар: лекциялар (../../), курс беті (../), іздеу мен сөздікке қосу
     course_pages = []
     for code, c in ALL_COURSES.items():
@@ -804,6 +883,9 @@ def main():
                     lp = ROOT / code / "lectures" / f"{m_['id']}.html"
                     dm = re.search(r'<div class="lecture-head"[^>]*>.*?<p>(.*?)</p>', lp.read_text(encoding="utf-8"), re.S)
                     d = strip_tags(dm.group(1)) if dm else ""
+                    if code == "math":  # курс беті KaTeX жүктемейді: үзіндіде TeX формуласы бар сөйлемдер алынбайды
+                        si, sk = math_plan.locate(int(m_["id"].split("-")[1]))
+                        d = tex_free_excerpt(d) or math_plan.SUBJECTS[si][7][sk][1]  # бәрінде формула болса - жоспардағы сипаттама
                     if len(d) > 150:
                         d = d[:147].rsplit(" ", 1)[0].rstrip(",;:") + "..."
                     info[m_["id"]] = (m_["title"], d)
@@ -863,7 +945,7 @@ def main():
         for code in OWN_COURSES:
             own_files += [f"{code}/index.html", f"{code}/data/lectures.js"] + sorted(
                 f.relative_to(ROOT).as_posix() for f in (ROOT / code / "lectures").glob("week-*.html")
-                if code != "math" or not is_soon(f.read_text(encoding="utf-8")))  # math: тек дайын сабақтар (154 тұғыр кэшке салынбайды)
+                if code != "math" or not is_soon(f.read_text(encoding="utf-8")))  # math: тек дайын сабақтар (162 тұғыр кэшке салынбайды)
             own_files += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / code).glob("*.html") if f.name != "index.html")  # курстың ортақ беттері
         own_files += ["assets/js/own-viz.js", "assets/css/own-viz.css"]  # дербес курстардың интерактивті визуализаторлары
         own_files += ["assets/js/en-course.js", "assets/js/en-tools.js", "assets/css/en-course.css"]  # ағылшын курсының жаттығу қозғалтқышы мен құралдары

@@ -2,6 +2,37 @@
 // CS50 қазақша - интерактив элементтер
 
 (function () {
+  // ---------- «Шаңырақ ашылуы»: беттер арасындағы ауысу (View Transitions, style.css: kz-iris) ----------
+  // Сілтеме басылғанда нүкте сақталады; жаңа бет сол нүктеден алтын жиекті шеңбер болып ашылады (жиек - style.css).
+  // Артқа қайтқанда (traverse) - ортадан. Қозғалысты азайту баптауы қосулы болса - анимация жоқ.
+  (function initIris() {
+    const KEY = "cs50kz:vt";
+    const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.addEventListener("click", (e) => {
+      const a = e.target.closest && e.target.closest("a[href]");
+      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === "_blank" || a.hasAttribute("download")) return;
+      let u; try { u = new URL(a.href, location.href); } catch (_) { return; }
+      if (u.origin !== location.origin || (u.pathname === location.pathname && u.hash)) return;
+      try { sessionStorage.setItem(KEY, JSON.stringify({ x: e.clientX, y: e.clientY, t: Date.now() })); } catch (_) {}
+    }, true);
+    window.addEventListener("pagereveal", (e) => {
+      if (!e.viewTransition) return;
+      if (calm()) { e.viewTransition.skipTransition(); return; }
+      let pt = null;
+      try { pt = JSON.parse(sessionStorage.getItem(KEY) || "null"); sessionStorage.removeItem(KEY); } catch (_) {}
+      const nav = window.navigation && navigation.activation;
+      const back = nav && nav.navigationType === "traverse";
+      const W = innerWidth, H = innerHeight;
+      const x = !back && pt && Date.now() - pt.t < 8000 ? pt.x : W / 2;
+      const y = !back && pt && Date.now() - pt.t < 8000 ? pt.y : H / 2;
+      const r = Math.ceil(Math.hypot(Math.max(x, W - x), Math.max(y, H - y))) + 24;
+      const html = document.documentElement;
+      html.style.setProperty("--vt-x", x + "px");
+      html.style.setProperty("--vt-y", y + "px");
+      html.style.setProperty("--vt-r", r + "px");
+    });
+  })();
+
   // Сайттың түбір мекенжайы (main.js-тің орнынан анықталады: file:// пен GitHub Pages-те де жұмыс істейді)
   const ROOT_URL = new URL("../../", document.currentScript.src).href;
   // Курс: CS50x - түбірде (lectures/), басқалары өз қалтасында (python/lectures/ т.б.).
@@ -537,7 +568,8 @@
     const words = article.innerText.split(/\s+/).length;
     const meta = document.createElement("div");
     meta.className = "lecture-meta";
-    meta.innerHTML = `<span>⏱ ≈ ${Math.max(5, Math.round(words / 160))} мин оқу</span>` +
+    // математика сабағында ұзақтық нақты есептелген (.mx-meta, tools/math_pedagogy.py): жалпы бағаны қайталамаймыз
+    meta.innerHTML = (head.querySelector(".mx-meta") ? "" : `<span>⏱ ≈ ${Math.max(5, Math.round(words / 160))} мин оқу</span>`) +
       `<span>📝 ${article.querySelectorAll(".question").length} сұрақ</span>` +
       `<span>🧩 ${article.querySelectorAll(".task").length} тапсырма</span>` +
       (p.read[PAGE] ? '<span class="done">✓ Оқылды</span>' : "") +
@@ -929,13 +961,13 @@
     { id: "cpp", name: "C++", title: "C++ бағдарламалау", color: "#4f46e5", total: 8, href: "cpp/index.html", own: true },
     { id: "java", name: "Java", title: "Java бағдарламалау", color: "#d97706", total: 8, href: "java/index.html", own: true },
     { id: "en", name: "English", title: "Ағылшын тілі A0-C1", color: "#0f766e", total: 24, href: "en/index.html", own: true, nocert: true, unit: "сабақ" },
-    { id: "math", name: "Math", title: "Математика", color: "#15803d", total: 154, href: "math/index.html", own: true, nocert: true, unit: "сабақ" },
+    { id: "math", name: "Math", title: "Математика", color: "#15803d", total: 162, href: "math/index.html", own: true, nocert: true, unit: "сабақ" },
   ];
   // Ағылшын курсы: лекция белгісі «A1 · 2-сабақ» (week-N -> деңгей мен сабақ)
   const EN_LV = ["A0", "A1", "A2", "B1", "B2", "C1"];
-  // Математика: 24 пән, сабақ саны пәнде әртүрлі (жалғыз жоспар: tools/math_plan.py; тест MATH_COUNTS пен COURSE_META.total сәйкестігін тексереді)
-  const MATH_COUNTS = [7, 8, 6, 8, 7, 7, 6, 6, 7, 5, 6, 6, 7, 6, 7, 6, 6, 7, 7, 6, 6, 5, 6, 6];
-  const MATH_NAMES = ["Precalculus", "Linear Algebra", "Analytic Geometry", "Differential Calculus", "Integral Calculus", "Multivariable Calculus", "Vector Calculus", "Sequences and Series", "Ordinary Differential Equations", "Partial Differential Equations", "Complex Analysis", "Fourier & Laplace Transforms", "Probability Theory", "Mathematical Statistics", "Discrete Mathematics", "Numerical Analysis", "Mathematical Optimization", "Real Analysis", "Abstract Algebra", "Number Theory", "Topology", "Differential Geometry", "Functional Analysis", "Stochastic Processes"]; // пән атаулары ТЕК ағылшынша (tools/math_plan.py)
+  // Математика: 25 пән, сабақ саны пәнде әртүрлі (жалғыз жоспар: tools/math_plan.py; тест MATH_COUNTS пен COURSE_META.total сәйкестігін тексереді)
+  const MATH_COUNTS = [7, 8, 6, 8, 7, 7, 6, 6, 7, 5, 6, 6, 7, 6, 7, 6, 6, 7, 7, 6, 6, 5, 6, 6, 8];
+  const MATH_NAMES = ["Precalculus", "Linear Algebra", "Analytic Geometry", "Differential Calculus", "Integral Calculus", "Multivariable Calculus", "Vector Calculus", "Sequences and Series", "Ordinary Differential Equations", "Partial Differential Equations", "Complex Analysis", "Fourier & Laplace Transforms", "Probability Theory", "Mathematical Statistics", "Discrete Mathematics", "Numerical Analysis", "Mathematical Optimization", "Real Analysis", "Abstract Algebra", "Number Theory", "Topology", "Differential Geometry", "Functional Analysis", "Stochastic Processes", "Arithmetic"]; // пән атаулары ТЕК ағылшынша (tools/math_plan.py)
   const mathLabel = (n) => { let i = 0; while (i < MATH_COUNTS.length - 1 && n >= MATH_COUNTS[i]) { n -= MATH_COUNTS[i]; i++; } return `${MATH_NAMES[i]} · ${n + 1}-сабақ`; };
   const unitLabel = (courseId, n) => (courseId === "en" ? `${EN_LV[Math.floor(n / 4)]} · ${(n % 4) + 1}-сабақ` : courseId === "math" ? mathLabel(n) : `${n}-апта`);
   function courseReadCount(p, id) {
@@ -1020,12 +1052,23 @@
 
   // ---------- Курс витринасы: әр курстағы өз прогресі ----------
   function initCourseCards() {
+    const p = Progress.load();
+    const readOf = (c) => Object.keys(p.read).filter((k) => p.read[k] && (c === "x" ? ORDER.includes(k) : k.startsWith(c + ":"))).length;
+    // басты беттегі «шаңырақ» тақтайшалары: оқылған үлес жолақпен және мәтінмен
+    document.querySelectorAll(".kh-tile[data-total]").forEach((t) => {
+      const read = readOf(t.dataset.course), total = +t.dataset.total || 0;
+      if (!read || !total) return;
+      const pct = Math.min(100, Math.round((read / total) * 100));
+      t.classList.add("kh-on");
+      t.style.setProperty("--p", pct + "%");
+      const meta = t.querySelector(".kh-meta");
+      if (meta) meta.textContent = pct === 100 ? `${total}/${total} - аяқталды ✓` : `${read}/${total} оқылды`;
+    });
     const cards = document.querySelectorAll(".cx-card[data-total]");
     if (!cards.length) return;
-    const p = Progress.load();
     cards.forEach((card) => {
       const c = card.dataset.course, total = +card.dataset.total || 0;
-      const read = Object.keys(p.read).filter((k) => p.read[k] && (c === "x" ? ORDER.includes(k) : k.startsWith(c + ":"))).length;
+      const read = readOf(c);
       if (!read || !total) return;
       const pct = Math.min(100, Math.round((read / total) * 100));
       const bar = card.querySelector(".cx-bar"), go = card.querySelector(".cx-go");

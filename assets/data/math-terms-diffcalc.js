@@ -34,7 +34,7 @@ window.CS50KZ_MATH_TERMS.diffcalc = [
   {"id": "dc-rolle-t", "kz": "Ролль теоремасы", "en": "Rolle's theorem", "def": "Ұштарда мәндері тең функцияның туындысы бір нүктеде нөл.", "lesson": 7},
   {"id": "dc-lagrange-t", "kz": "Лагранж теоремасы", "en": "mean value theorem", "def": "Орташа өзгеру жылдамдығы бір нүктедегі туындыға тең.", "lesson": 7},
   {"id": "dc-lhopital-t", "kz": "Лопиталь ережесі", "en": "L'Hôpital's rule", "def": "0/0 не ∞/∞ шегін туындылар қатынасымен табады.", "lesson": 7},
-  {"id": "dc-critical", "kz": "кризистік нүкте", "en": "critical point", "def": "f' нөл не жоқ болатын нүкте.", "lesson": 8},
+  {"id": "dc-critical", "kz": "критикалық нүкте", "en": "critical point", "def": "f' нөл не жоқ болатын нүкте.", "lesson": 8},
   {"id": "dc-convex", "kz": "дөңес функция", "en": "convex function", "def": "Графигі жанамадан жоғары жататын функция.", "lesson": 8},
   {"id": "dc-inflection", "kz": "иілу нүктесі", "en": "inflection point", "def": "Дөңестік бағыты ауысатын нүкте.", "lesson": 8},
   {"id": "dc-oblique-t", "kz": "көлбеу асимптота", "en": "oblique asymptote", "def": "y = kx + b түріндегі асимптота.", "lesson": 8},

@@ -6,13 +6,14 @@
   <title>Math Numerical Analysis · 2-сабақ: Теңдеулердің түбірін табу - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Numerical Analysis · 2-сабақ: Теңдеулердің түбірін табу - CS50 қазақша">
-  <meta property="og:description" content="Математика, Numerical Analysis · 2-сабақ: Теңдеулердің түбірін табу. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Бисекция, Ньютон, хорда әдістері, жинақтылық жылдамдығы.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-100.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Numerical Analysis · 2-сабақ: Теңдеулердің түбірін табу - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-100.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Numerical Analysis · 2-сабақ: Теңдеулердің түбірін табу. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Бисекция, Ньютон, хорда әдістері, жинақтылық жылдамдығы.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,435 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="100">
+    <article class="content math-lesson" style="--sc:#155e75" id="main">
+      <div class="lecture-head" style="--lc:#155e75" data-n="100" data-msubj="numerical" data-glyph="≈">
         <div class="num">Numerical Analysis · 2-сабақ</div>
         <h1>Теңдеулердің түбірін табу</h1>
-        <p>Бисекция, Ньютон, хорда әдістері, жинақтылық жылдамдығы.</p>
+        <p>$x^3-x-2=0$ не $x=\cos x$ сияқты теңдеулердің түбірін формуламен жазу мүмкін емес (не өте қиын), бірақ оны кез келген дәлдікпен <em>сандық</em> түрде табуға болады. Бұл сабақта төрт негізгі әдісті - кесіндіні екіге бөлу, қарапайым итерация (қозғалмайтын нүкте), Ньютон әдісі және хордалар (секанттар) әдісін - құрамыз, олардың жинақтылық шарттарын және жылдамдығын (сызықтық, квадраттық) дәлелдейміз, әдістер қашан істен шығатынын қарсы мысалдармен көрсетеміз.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 45 мин</span><span>Есептер ≈ 1 сағ 10 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-16">Numerical Analysis</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-16">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=numerical">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Numerical Analysis: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-16">Numerical Analysis</a></span><ol><li><a href="week-99.html" title="Қателіктер және есептеу тұрақтылығы">1</a></li><li><a href="week-100.html" aria-current="page" title="Теңдеулердің түбірін табу">2</a></li><li><a href="week-101.html" title="Сызықтық жүйелерді сандық шешу">3</a></li><li><a href="week-102.html" title="Интерполяция">4</a></li><li><a href="week-103.html" title="Сандық интегралдау және дифференциалдау">5</a></li><li><a href="week-104.html" title="Дифференциалдық теңдеулерді сандық шешу">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Формуласы жоқ теңдеудің түбірін қадамдап жақындап табамыз: екіге бөлу баяу, бірақ әрдайым жұмыс істейді; Ньютон әдісі өте жылдам (әр қадамда дұрыс цифрлар екі еселенеді), бірақ жақсы бастама керек.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>аралық мән теоремасы бойынша түбірді оқшаулау және екіге бөлу әдісінің қадам санын алдын ала бағалау;</li>
+        <li>қарапайым итерацияның жинақталу шартын $|g'(x)|\le q&lt;1$ тексеру және қатені бағалау;</li>
+        <li>Ньютон формуласын $x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}$ қорытып, оның квадраттық жинақталу шарттарын атау;</li>
+        <li>Ньютон әдісі істен шығатын жағдайларды (туынды нөлге жақын, нашар бастапқы нүкте, цикл) тану;</li>
+        <li>хордалар әдісін туындысыз қолдану;</li>
+        <li>жинақталу ретін (сызықтық, квадраттық) ажырату және тоқтату шартын дұрыс таңдау.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Аралық мән (Больцано–Коши) теоремасы: $f$ $[a,b]$-да үзіліссіз және $f(a)f(b)&lt;0$ болса, $(a,b)$-да түбір бар. Туынды және жанама теңдеуі $y=f(x_0)+f'(x_0)(x-x_0)$. Лагранж теоремасы: $f(x)-f(y)=f'(\xi)(x-y)$. Тейлор формуласы қалдықпен: $f(x)=f(a)+f'(a)(x-a)+\frac{f''(\xi)}{2}(x-a)^2$ ($f\in C^2$). Геометриялық прогрессия: $q^n\to0$, $|q|&lt;1$.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-99.html">Numerical Analysis · 1-сабақ: Қателіктер және есептеу тұрақтылығы</a></li><li><a href="week-27.html">Differential Calculus · 7-сабақ: Орта мән теоремалары және Лопиталь ережесі</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: √2-ні Ньютонмен</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">$f(x)=x^2-2$, $x_0=1$. Ньютон әдісі: $x_{n+1}=x_n-\frac{x_n^2-2}{2x_n}=\frac{x_n}2+\frac1{x_n}$. Үш қадам жасаңыз.</p>
+        <ol class="math-steps">
+          <li>$x_1=\frac12+1=1{,}5$.</li>
+          <li>$x_2=0{,}75+\frac1{1{,}5}=1{,}41\overline6$.</li>
+          <li>$x_3=0{,}708\overline3+\frac1{1{,}41\overline6}\approx1{,}4142157$.</li>
+          <li>$\sqrt2=1{,}4142136$: қате $\approx2\cdot10^{-6}$. Дұрыс цифрлар саны: $1\to3\to6$ - әр қадамда шамамен екі еселенеді.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Ньютон әдісі қисықты жанамамен алмастырып, жанаманың нөлін келесі жуықтау етеді. Түбірге жақын болса, жинақталу квадраттық.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Бір нөмірді ойладым, 1-ден 1000-ға дейін, «үлкен/кіші» деп жауап берем. Әр сұрақпен аралықты екіге бөлесіз: 10 сұрақта табасыз ($2^{10}=1024$). Бұл - <b>екіге бөлу</b>: баяу, бірақ мүлтіксіз сенімді. Тек $f$ үзіліссіз және кесіндінің ұштарында таңбасы әртүрлі болса жеткілікті.</p>
+      <p>Калькуляторға кез келген санды теріп, <code>cos</code> батырмасын қайта-қайта басыңыз. Сан $0{,}739085\dots$-ке жақындайды - бұл $x=\cos x$ теңдеуінің түбірі. Бұл - <b>қарапайым итерация</b>: $x_{n+1}=g(x_n)$. Ол $g$ «қысатын» болғанда ($|g'|&lt;1$) жұмыс істейді, әр қадамда қате шамамен тұрақты есе азаяды.</p>
+      <p><b>Ньютон әдісі</b> - ең жылдам. Қисыққа нүктеде жанама жүргізіп, оның $Ox$ осімен қиылысуын келесі жуықтау етеміз. Түбірге жақын болса, әр қадамда дұрыс цифрлар саны шамамен екі еселенеді: 1, 2, 4, 8, 16 цифр. $\sqrt2$-ні 4 қадамда машиналық дәлдікпен табады. Бірақ жанама жатық болса, ол «ұшып кетеді».</p>
+      <p>Тәжірибедегі ереже: сенімділік үшін екіге бөлумен түбірдің маңын табыңыз, сосын Ньютонмен жылдам «жылтыратыңыз». Көптеген стандарт кітапханалар (мысалы, Брент әдісі) дәл осылай жасайды.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · ойын: санды табу</span>
+        <p>Екіге бөлу - «$1$-ден $100$-ге дейінгі санды тап, мен «үлкен/кіші» деймін» ойыны: әр сұрақ аралықты екі есе қысқартады. Баяу, бірақ $7$ сұрақта міндетті табасыз.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · таудан түсу</span>
+        <p>Ньютон әдісі - тұманда тау беткейінде тұрып, аяқ астындағы еңіс бойынша жер деңгейіне қай жерде жететініңізді болжау. Беткей тегіс болса - тез жетесіз; жар болса - алысқа «лақтырылуыңыз» мүмкін.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$x_n\to r$</td><td>итерациялар тізбегі</td><td>түбірге жақындайтын жуықтаулар</td></tr>
+        <tr><td>$e_n=|x_n-r|$</td><td>қате</td><td>$n$-ші қадамдағы ауытқу</td></tr>
+        <tr><td>$e_{n+1}\approx Ce_n^p$</td><td>жинақталу реті $p$</td><td>$p=1$ - сызықтық, $p=2$ - квадраттық</td></tr>
+        <tr><td>$x=g(x)$</td><td>қозғалмайтын нүкте түрі</td><td>түбір - $g$-ның қозғалмайтын нүктесі</td></tr>
+        <tr><td>$|g'|\le q&lt;1$</td><td>сығу шарты</td><td>итерация жинақталуына жеткілікті</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 2.1 · Түбір және жинақталу реті</span>
+        <p>$f(r)=0$ болса, $r$ - <strong>түбір</strong> (<span class="term-en">root</span>). $x_n\to r$ тізбегінің <strong>жинақталу реті</strong> (<span class="term-en">order of convergence</span>) $p\ge1$, егер $e_n=|x_n-r|$ үшін $\lim\frac{e_{n+1}}{e_n^p}=C$, $0&lt;C&lt;\infty$ ($p=1$ болса, қосымша $C&lt;1$ талап етіледі). $p=1$ - сызықтық, $p=2$ - квадраттық.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Жинақталу реті - әр қадамда қате қаншалықты тез кемитіні: сызықтық - бірдей есе, квадраттық - квадраты бойынша.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 2.1 · Екіге бөлу әдісі</span>
+        <p>$f\in C[a,b]$, $f(a)f(b)&lt;0$. $c_n$ - $n$-қадамдағы кесіндінің ортасы болсын. Онда $(a,b)$-да түбір $r$ бар және $|c_n-r|\le\frac{b-a}{2^{n}}$ ($c_1=\frac{a+b}2$). Дәлдік $\varepsilon$ үшін $n\ge\log_2\frac{b-a}{\varepsilon}$ қадам жеткілікті.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Таңбасы ауысатын кесіндіні екіге бөле берсек, $n$ қадамнан кейін қате $\frac{b-a}{2^{n+1}}$-ден аспайды.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту.</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 2.2 · Қарапайым итерация</span>
+        <p>$f(x)=0$ теңдеуін $x=g(x)$ түріне келтіріп, $x_{n+1}=g(x_n)$ тізбегін құрамыз. $g(r)=r$ болса, $r$ - $g$-ның <strong>қозғалмайтын нүктесі</strong> (<span class="term-en">fixed point</span>).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Теңдеуді $x=g(x)$ түріне келтіріп, $g$-ны қайта-қайта қолданамыз.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 2.2 · Қозғалмайтын нүкте теоремасы</span>
+        <p>$g:[a,b]\to[a,b]$ (кесіндіні өзіне бейнелейді), дифференциалданады және барлық $x\in[a,b]$ үшін $|g'(x)|\le q&lt;1$. Онда $[a,b]$-да жалғыз қозғалмайтын нүкте $r$ бар, кез келген $x_0\in[a,b]$ үшін $x_n\to r$, және $|x_n-r|\le q^n|x_0-r|$, сондай-ақ $|x_n-r|\le\frac{q}{1-q}|x_n-x_{n-1}|$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $g$ кесіндіні өзіне жіберсе және туындысы $1$-ден кіші болса, қозғалмайтын нүкте жалғыз және итерация оған жинақталады.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту.</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 2.3 · Ньютон әдісі</span>
+        <p><strong>Ньютон әдісі</strong> (<span class="term-en">Newton's method</span>): $x_{n+1}=x_n-\dfrac{f(x_n)}{f'(x_n)}$ ($f'(x_n)\ne0$). Геометриялық мағынасы: $x_{n+1}$ - $(x_n,f(x_n))$ нүктесіндегі жанаманың $Ox$-пен қиылысуы.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Әр қадамда функцияны жанамамен алмастырып, жанаманың нөлін келесі жуықтау етеміз.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 2.3 · Ньютон әдісінің жергілікті квадраттық жинақталуы</span>
+        <p>$f\in C^2$ түбір $r$ маңайында, $f(r)=0$ және $f'(r)\ne0$ болсын. Онда $r$-дің жеткілікті кіші маңайынан алынған кез келген $x_0$ үшін $x_n\to r$ және $$x_{n+1}-r=\frac{f''(\xi_n)}{2f'(x_n)}(x_n-r)^2$$ қандай да бір $\xi_n$ үшін (ол $x_n$ мен $r$ арасында); демек $e_{n+1}\le Me_n^2$ - квадраттық жинақталу.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Түбірге жеткілікті жақын бастасақ және туынды нөл болмаса, Ньютон әдісінің қатесі әр қадамда квадраттайды.</p></div>
+      <p><em>Негіздеме.</em> 3-қорыту. «Жеткілікті кіші маңай» шарты маңызды: жаһандық жинақталуға кепілдік жоқ.</p>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 2.4 · Хордалар (секанттар) әдісі</span>
+        <p>Туындыны ақырлы айырмамен ауыстырамыз: $x_{n+1}=x_n-f(x_n)\dfrac{x_n-x_{n-1}}{f(x_n)-f(x_{n-1})}$. Екі бастапқы нүкте керек. Ньютон шарттары орындалса, жергілікті жинақталу реті $p=\frac{1+\sqrt5}{2}\approx1{,}618$ (бұл бағаны дәлелсіз келтіреміз).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Туындыны соңғы екі нүктенің қиюшысымен алмастырамыз - туынды есептеудің қажеті жоқ.</p></div>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 2.1 · Екіге бөлу қадамы</span>
+        <div class="math-fbody">$$n\ \ge\ \log_2\frac{b-a}{\varepsilon}$$</div>
+        <p class="math-fnote">Шарты: $f$ үзіліссіз, $f(a)f(b)&lt;0$. Әр қадамда бір $f$ есептеуі.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 2.2 · Ньютон формуласы</span>
+        <div class="math-fbody">$$x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}$$</div>
+        <p class="math-fnote">Шарттары (квадраттық жинақталу үшін): $f\in C^2$, $f'(r)\ne0$, $x_0$ түбірге жеткілікті жақын. Мысалы $\sqrt a$: $x_{n+1}=\frac12\left(x_n+\frac{a}{x_n}\right)$.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 2.3 · Итерация қатесінің бағасы</span>
+        <div class="math-fbody">$$|x_n-r|\le\frac{q}{1-q}\,|x_n-x_{n-1}|$$</div>
+        <p class="math-fnote">$|g'|\le q&lt;1$ болса. Тоқтату шарты: көршілес жуықтаулардың айырмасы, $q$ 1-ге жақын болса, нақты қатені кем бағалайды.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Әдістерді салыстыру: екіге бөлу - әрдайым жинақталады, сызықтық ($q=\frac12$), туынды керек емес; итерация - $|g'|&lt;1$ болса сызықтық; Ньютон - түбірге жақын болса квадраттық, $f'$ керек; хорда - $\approx1{,}618$ ретті, туындысыз. Тоқтату: $|x_{n+1}-x_n|&lt;\varepsilon$ <em>және</em> $|f(x_{n+1})|$ кіші, сондай-ақ қадам санына шек.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Ньютон әдісі істен шығуы мүмкін: (1) $f'(x_n)\approx0$ - жанама жатық, келесі нүкте өте алысқа кетеді; (2) цикл: $f(x)=x^3-2x+2$, $x_0=0$ үшін $x_1=1$, $x_2=0$, ... шексіз тербеледі; (3) еселі түбірде ($f'(r)=0$) жинақталу тек сызықтық. Сондай-ақ $f(a)f(b)&lt;0$ шарты орындалмаса, екіге бөлу түбірді «көрмей» қалуы мүмкін (мысалы, $x^2$ - түбір бар, бірақ таңба өзгермейді).</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> Екіге бөлу әдісінде $[0;1]$-ден бастап $10$ қадамнан кейінгі қатенің шегі?</span></summary>
+        <p>$\frac1{2^{11}}\approx0{,}0005$.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> Ньютон әдісі $f'(x_n)=0$ болса не болады?</span></summary>
+        <p>Жанама көлденең - қадам анықталмайды (нөлге бөлу).</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> $x=\cos x$ итерациясы $x_{n+1}=\cos x_n$ жинақтала ма?</span></summary>
+        <p>Иә: түбір маңында $|g'|=|\sin x|\approx0{,}67&lt;1$.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> Квадраттық жинақталуда қате $10^{-3}$ болса, келесі қадамда шамамен?</span></summary>
+        <p>$10^{-6}$ ретімен.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: екіге бөлу әдісінің қатесі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $|c_n-r|\le\frac{b-a}{2^n}$ екенін көрсету.</p>
+          <p class="mx-idea"><b>Идея:</b> Әр қадамда түбірі бар кесінді екі есе қысқарады, ал түбір мен ортаның қашықтығы кесінді ұзындығының жартысынан аспайды.</p>
+          <ol class="math-steps">
+            <li>Аралық мән теоремасы бойынша $[a,b]$-да түбір бар. Ортасы $c=\frac{a+b}2$. $f(c)=0$ болса - дайын; әйтпесе $f(a)f(c)&lt;0$ не $f(c)f(b)&lt;0$ - жаңа кесінді, онда да түбір бар.</li>
+            <li>Әр қадамда кесінді ұзындығы екі есе кемиді: $n$ рет бөлгеннен кейінгі кесінді $[a_n,b_n]$ ұзындығы $\frac{b-a}{2^n}$ және ол түбір $r$-ді қамтиды.</li>
+            <li>$c_n$ - $n$-қадамда таңдалған орта, ол $(n-1)$-кесіндінің ортасы, ұзындығы $\frac{b-a}{2^{n-1}}$; демек $|c_n-r|\le\frac12\cdot\frac{b-a}{2^{n-1}}=\frac{b-a}{2^n}$.</li>
+            <li>$\frac{b-a}{2^n}\le\varepsilon\iff2^n\ge\frac{b-a}{\varepsilon}\iff n\ge\log_2\frac{b-a}{\varepsilon}$.</li>
+            <li>Мысал: $[1,2]$, $\varepsilon=10^{-6}$: $n\ge\log_210^6\approx19{,}93$, яғни 20 қадам.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: қозғалмайтын нүкте теоремасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $|g'|\le q&lt;1$ болса итерацияның жинақталуын және қате бағаларын дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Бар болуы - аралық мән теоремасы; жалғыздығы және жинақталуы - Лагранж теоремасы бойынша қашықтықтар әр қадамда $q$ есе қысқарады.</p>
+          <ol class="math-steps">
+            <li><b>Бар болуы.</b> $h(x)=g(x)-x$ үзіліссіз; $g(a)\ge a$, $g(b)\le b$ (себебі $g$ мәндері $[a,b]$-да), сондықтан $h(a)\ge0\ge h(b)$ - аралық мән бойынша $h(r)=0$.</li>
+            <li><b>Жалғыздығы.</b> $r_1\ne r_2$ екі нүкте болса, Лагранж: $|r_1-r_2|=|g(r_1)-g(r_2)|=|g'(\xi)||r_1-r_2|\le q|r_1-r_2|&lt;|r_1-r_2|$ - қайшылық.</li>
+            <li><b>Жинақталу.</b> $x_n\in[a,b]$ (индукция). $|x_{n+1}-r|=|g(x_n)-g(r)|=|g'(\xi_n)||x_n-r|\le q|x_n-r|$, демек $|x_n-r|\le q^n|x_0-r|\to0$.</li>
+            <li><b>Апостериорлық баға.</b> $|x_{n-1}-r|\le|x_{n-1}-x_n|+|x_n-r|\le|x_{n-1}-x_n|+q|x_{n-1}-r|$, яғни $|x_{n-1}-r|\le\frac{|x_n-x_{n-1}|}{1-q}$.</li>
+            <li>Сонда $|x_n-r|\le q|x_{n-1}-r|\le\frac{q}{1-q}|x_n-x_{n-1}|$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: Ньютон әдісінің квадраттық қатесі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 2.3-тегі қате формуласын қорыту.</p>
+          <p class="mx-idea"><b>Идея:</b> Тейлор формуласын $x_n$ нүктесінде жазып, $r$-ді қоямыз; Ньютон қадамын шегерсек, тек квадраттық мүше қалады.</p>
+          <ol class="math-steps">
+            <li>Тейлор формуласы $x_n$ нүктесінде ($f\in C^2$): $0=f(r)=f(x_n)+f'(x_n)(r-x_n)+\frac{f''(\xi_n)}{2}(r-x_n)^2$, $\xi_n$ - $x_n$ мен $r$ арасында.</li>
+            <li>$f'(x_n)\ne0$-ге бөлеміз: $\frac{f(x_n)}{f'(x_n)}+r-x_n=-\frac{f''(\xi_n)}{2f'(x_n)}(r-x_n)^2$.</li>
+            <li>Сол жақ: $r-\left(x_n-\frac{f(x_n)}{f'(x_n)}\right)=r-x_{n+1}$.</li>
+            <li>Демек $x_{n+1}-r=\frac{f''(\xi_n)}{2f'(x_n)}(x_n-r)^2$.</li>
+            <li>$r$ маңайындағы кесіндіде $|f''|\le M_2$, $|f'|\ge m_1>0$ ($f'(r)\ne0$ және үзіліссіз болғандықтан осындай маңай бар) болса, $e_{n+1}\le\frac{M_2}{2m_1}e_n^2=Me_n^2$.</li>
+            <li>$Me_0&lt;1$ болса (жеткілікті жақын бастау), $e_n\to0$ және квадраттық: $Me_n\le(Me_0)^{2^n}$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Екіге бөлу</h3>
+        <p class="math-problem">$f(x)=x^3-x-2$ түбірін $[1;2]$ кесіндісінде екіге бөлумен табыңыз (5 қадам).</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $f(1)=-2$, $f(2)=4$ - таңбалары әртүрлі.</li>
+          <li><b>2-қадам.</b> $c_1=1{,}5$: $f=-0{,}125&lt;0$ → $[1{,}5;2]$. $c_2=1{,}75$: $f\approx1{,}61$ → $[1{,}5;1{,}75]$.</li>
+          <li><b>3-қадам.</b> $c_3=1{,}625$: $f\approx0{,}67$ → $[1{,}5;1{,}625]$. $c_4=1{,}5625$: $f\approx0{,}25$ → $[1{,}5;1{,}5625]$.</li>
+          <li><b>4-қадам.</b> $c_5=1{,}53125$: $f\approx0{,}059$ → $[1{,}5;1{,}53125]$. Қате бағасы $\frac{1}{2^5}\approx0{,}031$.</li>
+          <li><b>5-қадам.</b> Шын түбір $r\approx1{,}52138$; $|c_5-r|\approx0{,}0099$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $r\approx1{,}52$; 20 қадам $10^{-6}$ дәлдік береді.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Ньютон: сол теңдеу</h3>
+        <p class="math-problem">$f(x)=x^3-x-2$, $x_0=1{,}5$. Ньютон әдісімен 3 қадам.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $f'(x)=3x^2-1$.</li>
+          <li><b>2-қадам.</b> $x_1=1{,}5-\frac{-0{,}125}{5{,}75}\approx1{,}521739$.</li>
+          <li><b>3-қадам.</b> $x_2\approx1{,}5213798$, $x_3\approx1{,}52137970680457$.</li>
+          <li><b>4-қадам.</b> Қателер: $\approx3{,}6\cdot10^{-4}$, $10^{-7}$, $10^{-14}$ - әр қадамда цифрлар екі еселенді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $r\approx1{,}5213797068$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Квадрат түбір</h3>
+        <p class="math-problem">$\sqrt2$-ні Ньютон әдісімен $x_0=1$-ден табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $f(x)=x^2-2$: $x_{n+1}=x_n-\frac{x_n^2-2}{2x_n}=\frac12\left(x_n+\frac2{x_n}\right)$.</li>
+          <li><b>2-қадам.</b> $x_1=1{,}5$; $x_2=\frac12(1{,}5+1{,}3333)=1{,}416667$.</li>
+          <li><b>3-қадам.</b> $x_3\approx1{,}4142157$; $x_4\approx1{,}41421356237469$.</li>
+          <li><b>4-қадам.</b> $\sqrt2=1{,}41421356237310$: $x_4$-тің қатесі $\approx1{,}6\cdot10^{-12}$. Бұл әдісті ежелгі Вавилон есептеушілері де қолданған.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> 4 қадамда 12 цифр.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Қарапайым итерация</h3>
+        <p class="math-problem">$x=\cos x$ теңдеуі. $[0{,}5;1]$ кесіндісінде итерация жинақтала ма? 10 қадамнан кейінгі қатені бағалаңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $g(x)=\cos x$ кемімелі, $g(0{,}5)\approx0{,}878$, $g(1)\approx0{,}540$ - мәндер $[0{,}5;1]$-де ✓.</li>
+          <li><b>2-қадам.</b> $|g'(x)|=|\sin x|\le\sin1\approx0{,}842=q&lt;1$ ✓ - теорема шарттары орындалды.</li>
+          <li><b>3-қадам.</b> $|x_{10}-r|\le q^{10}|x_0-r|\le0{,}842^{10}\cdot0{,}5\approx0{,}09$ (априорлық, өрескел).</li>
+          <li><b>4-қадам.</b> Шын жинақталу жылдамырақ: түбір маңында $|g'(r)|=\sin0{,}739\approx0{,}674$. $r\approx0{,}739085$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Жинақталады; $r\approx0{,}739085$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$f(a)f(b)>0$ болса, түбір жоқ</span> → <span class="math-good">түбір болуы мүмкін (жұп сан)</span><br>Неге қате: $x^2-0{,}01$ $[-1;1]$-де: $f(\pm1)>0$, бірақ екі түбір бар.</li>
+        <li><span class="math-bad">Ньютон әдісі әрдайым жинақталады</span> → <span class="math-good">тек түбірге жеткілікті жақын бастаса</span><br>Неге қате: $x^3-2x+2$, $x_0=0$: $0\to1\to0\to\dots$ цикл.</li>
+        <li><span class="math-bad">$x=g(x)$ итерациясы кез келген $g$-мен жұмыс істейді</span> → <span class="math-good">$|g'|&lt;1$ шарты</span><br>Неге қате: $x^2=2$ үшін $g(x)=\frac2x$: $|g'(\sqrt2)|=1$, тізбек $1,2,1,2,\dots$ тербеледі.</li>
+        <li><span class="math-bad">Тоқтату тек $|f(x_n)|&lt;\varepsilon$ бойынша</span> → <span class="math-good">$|x_{n+1}-x_n|$ және $|f|$ екеуі де</span><br>Неге қате: жатық функцияда $|f|$ кіші, бірақ $x$ түбірден алыс болуы мүмкін.</li>
+        <li><span class="math-bad">Еселі түбірде де Ньютон квадраттық</span> → <span class="math-good">$f'(r)=0$ болса - тек сызықтық</span><br>Неге қате: $f=x^2$: $x_{n+1}=\frac{x_n}{2}$ - әр қадамда қате екі есе кемиді.</li>
+        <li><span class="math-bad">Екіге бөлудің қадам санын $\frac{b-a}{\varepsilon}$ деп есептеу</span> → <span class="math-good">$\log_2\frac{b-a}{\varepsilon}$</span><br>Неге қате: кесінді экспоненциалды тарылады.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="tangent" data-title="Ньютон әдісінің бір қадамы: жанама Ox-ты қияды" data-config='{"f": "x^3-x-2", "x0": 1.8, "h": 0.6, "view": [0.8, 2.3, -3, 6]}'></div>
+      <p><b>Бақылаңыз:</b> Жанама $(x_0,f(x_0))$ нүктесінен жүргізілген; оның $Ox$-пен қиылысуы - келесі жуықтау $x_1$. Қиюшы $h\to0$ кезінде жанамаға айналады - хордалар әдісі осы қиюшыны қолданады. $x_0$-ді өзгертіп, жанама түбірге қаншалықты жақын «түсетінін» бақылаңыз.</p>
+      <div class="math-viz" data-viz="graph" data-title="Қарапайым итерация: y = cos x және y = x" data-config='{"fns": [{"f": "cos(x)", "label": "y = cos x"}, {"f": "x", "label": "y = x", "color": 1}, {"f": "x^2/2+0.5", "label": "y = x²/2 + 1/2 (|g′| > 1 болатын мысал)", "color": 2, "dash": [5, 4]}], "view": [-0.2, 2, -0.2, 2], "equal": true}'></div>
+      <p><b>Бақылаңыз:</b> Қиылысу нүктесі - қозғалмайтын нүкте $r\approx0{,}739$. Онда $y=\cos x$ қисығының көлбеулігі $|{-\sin r}|\approx0{,}67&lt;1$ - «өрмекші торы» ішке қарай бұралады. Жасыл қисық $g(x)=\frac{x^2+1}{2}$ қозғалмайтын нүктесі $x=1$-де $g'(1)=1$: шекаралық жағдай, жинақталу өте баяу.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m16-2-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-2-t1">1. Екіге бөлу: қадам саны</h3></div>
+        <p>Ең аз қадам санын табыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$[0;1]$ кесіндісі, дәлдік $10^{-3}$","a":10,"v":"ceiling(log(1000,2))","hint":"$2^n\\ge1000$.","sol":{"steps":["$2^{10}=1024$."],"ans":"$10$"}},{"q":"$[2;6]$, дәлдік $10^{-6}$","a":22,"v":"ceiling(log(4*10**6,2))","hint":"$2^n\\ge4\\cdot10^6$.","sol":{"steps":["$\\log_2(4\\cdot10^6)\\approx21{,}93$."],"ans":"$22$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-2-num2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-2-t2">2. Ньютон қадамы</h3></div>
+        <p>Бір қадам жасаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$f(x)=x^2-5$, $x_0=2$. $x_1=?$","a":2.25,"v":"2-(2**2-5)/Rational(2*2)","hint":"$x_1=x_0-\\frac{f(x_0)}{f'(x_0)}$.","sol":{"steps":["$2-\\frac{-1}{4}$."],"ans":"$2{,}25$"}},{"q":"$f(x)=e^x-2$, $x_0=0$. $x_1=?$","a":1,"v":"0-(exp(0)-2)/exp(0)","hint":"$f'(x)=e^x$.","sol":{"steps":["$0-\\frac{1-2}{1}$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m16-2-tf3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-2-t3">3. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Екіге бөлу әдісі үшін туынды керек.","a":false,"e":"Тек үзіліссіздік пен таңба өзгерісі.","hint":"Әдіс тек $f$ мәндерін қолданады."},{"q":"Ньютон әдісі түбірге жақын болса, әдетте дұрыс цифрлар санын әр қадамда екі еселейді.","a":true,"e":"Квадраттық жинақталу ($f'(r)\\ne0$).","hint":"$e_{n+1}\\approx Me_n^2$."},{"q":"$|g'(r)|>1$ болса, $x_{n+1}=g(x_n)$ итерациясы $r$-ге жинақталады.","a":false,"e":"Қате әр қадамда өседі (тебілетін нүкте).","hint":"Лагранж: $e_{n+1}\\approx|g'(r)|e_n$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-2-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-2-t4">4. Ньютон: квадрат түбір</h3></div>
+        <p>$x_{n+1}=\frac12\left(x_n+\frac{a}{x_n}\right)$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$a=10$, $x_0=3$. $x_1$ (бөлшекпен)","a":"19/6","v":"Rational(1,2)*(3+Rational(10,3))","hint":"$\\frac12\\left(3+\\frac{10}{3}\\right)$.","sol":{"steps":["$\\frac12\\cdot\\frac{19}{3}$."],"ans":"$\\frac{19}{6}\\approx3{,}1667$"}},{"q":"$x_2$ ($10^{-6}$ дәлдік)","a":"(19/6+60/19)/2","tol":1e-06,"v":"Rational(1,2)*(Rational(19,6)+10/Rational(19,6))","hint":"$\\frac12\\left(\\frac{19}6+\\frac{10\\cdot6}{19}\\right)$.","sol":{"steps":["$\\frac12(3{,}166667+3{,}157895)$."],"ans":"$\\approx3{,}162281$ ($\\sqrt{10}=3{,}162278$)"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m16-2-cho5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-2-t5">5. Итерация функциясы</h3></div>
+        <p>$x^3+x-1=0$ теңдеуінің түбірі $r\approx0{,}68$. Қай $g$ таңдау итерацияның жинақталуын қамтамасыз етеді?</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x=g(x)$","o":["$g(x)=\\dfrac{1}{1+x^2}$","$g(x)=1-x^3$","$g(x)=\\sqrt[3]{1-x}$ және $g(x)=1-x^3$ екеуі де","ешқайсысы"],"a":0,"e":"$g=\\frac1{1+x^2}$: $|g'(r)|=\\frac{2r}{(1+r^2)^2}\\approx0{,}64\\lt 1$. Ал $1-x^3$: $|g'(r)|=3r^2\\approx1{,}39>1$.","hint":"$|g'(r)|$-ді есептеңіз."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m16-2-mat6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-2-t6">6. Жинақталу реті</h3></div>
+        <p>Әдісті ретімен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Рет.","pairs":[["екіге бөлу","сызықтық, q = 1/2"],["Ньютон (жай түбір)","квадраттық"],["хордалар","≈ 1,618"],["Ньютон (еселі түбір)","сызықтық"]],"hint":"$f'(r)=0$ квадраттықты бұзады.","sol":{"steps":["Хорда - алтын қима ретті."]},"e":"Жоғары рет - аз қадам, бірақ әр қадам қымбатырақ болуы мүмкін."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m16-2-par7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-2-t7">7. Параметрлік: Ньютон қадамы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[2,30]},"u":{"int":[1,6]}},"type":"num","tol":1e-09,"q":"$\\sqrt{#{a}}$ үшін Ньютон әдісі: $x_0=#{u}$. $x_1=?$","a":"(u+a/u)/2","v":"Rational(1,2)*(u+Rational(a,u))","hint":"$x_1=\\frac12\\left(x_0+\\frac{a}{x_0}\\right)$.","sol":{"steps":["$\\frac12\\left(#{u}+\\frac{#{a}}{#{u}}\\right)$."],"ans":"$#{(u+a/u)/2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m16-2-par8">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-2-t8">8. Параметрлік: итерация бағасы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді. $10^{-4}$ дәлдікпен.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"c":{"pick":[0.2,0.5,0.8]},"d":{"pick":[0.01,0.001]}},"type":"num","tol":0.0001,"q":"$|g'|\\le#{c}$, соңғы екі жуықтаудың айырмасы $|x_n-x_{n-1}|=#{d}$. $|x_n-r|$-дің жоғарғы бағасы?","a":"c/(1-c)*d","v":"nsimplify(c)/(1-nsimplify(c))*nsimplify(d)","hint":"$\\frac{q}{1-q}|x_n-x_{n-1}|$.","sol":{"steps":["$\\frac{#{c}}{#{1-c}}\\cdot#{d}$."],"ans":"$#{c/(1-c)*d}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-2-num9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-2-t9">9. Еселі түбір</h3></div>
+        <p>$f(x)=(x-1)^2$, Ньютон әдісі.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x_n$ мен $x_{n+1}$ арасындағы қатенің қатынасы $\\frac{x_{n+1}-1}{x_n-1}$","a":0.5,"v":"simplify(((x-(x-1)**2/(2*(x-1)))-1)/(x-1))","hint":"$x_{n+1}=x_n-\\frac{(x_n-1)^2}{2(x_n-1)}$.","sol":{"steps":["$x_{n+1}-1=\\frac{x_n-1}{2}$."],"ans":"$\\frac12$ - сызықтық"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-2-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-2-t10">10. Цикл</h3></div>
+        <p>$f(x)=x^3-2x+2$, $x_0=0$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x_1$","a":1,"v":"0-(0-0+2)/Rational(3*0-2)","hint":"$f'(x)=3x^2-2$.","sol":{"steps":["$0-\\frac{2}{-2}$."],"ans":"$1$"}},{"q":"$x_2$","a":0,"v":"1-(1-2+2)/Rational(3-2)","hint":"$f(1)=1$, $f'(1)=1$.","sol":{"steps":["$1-\\frac11$."],"ans":"$0$ - цикл"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m16-2-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-2-t11">11. Гибрид әдіс</h3></div>
+        <p>Сенімді әрі жылдам түбір іздеу жоспары.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қадамдарды ретке келтіріңіз.","steps":["$f(a)f(b)\\lt 0$ кесіндісін табамыз.","Екіге бөлумен кесіндіні бірнеше рет тарылтамыз.","Ортасынан Ньютон әдісін бастаймыз.","Ньютон қадамы кесіндіден шығып кетсе, оның орнына екіге бөлу қадамын жасаймыз.","$|x_{n+1}-x_n|$ мен $|f|$ кіші болғанда тоқтаймыз."],"hint":"Алдымен сенімділік, сосын жылдамдық.","sol":{"ans":"Екіге бөлу + Ньютон"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m16-2-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-2-t12">12. Қадамдық шешім: кері санды бөлусіз табу</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$\\frac1a$-ны тек көбейту мен азайту арқылы есептеудің Ньютон формуласын табыңыз (ерте компьютерлер осылай бөлген).","hint":"$f(x)=\\frac1x-a$ алыңыз.","steps":["$f(x)=\\frac1x-a$, $f'(x)=-\\frac1{x^2}$.","$x_{n+1}=x_n-\\frac{1/x_n-a}{-1/x_n^2}=x_n+x_n-ax_n^2$.","$x_{n+1}=x_n(2-ax_n)$ - тек көбейту мен азайту.","$a=3$, $x_0=0{,}3$: $x_1=0{,}33$, $x_2=0{,}3333$, $x_3=0{,}33333333$ - квадраттық (жинақталу шарты: $0\\lt x_0\\lt \\frac2a$)."],"ans":"$x_{n+1}=x_n(2-ax_n)$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Түбір іздеу - калькулятордағы $\sqrt{\ }$, $\ln$; оптимизация ($f'(x)=0$ теңдеуі); қаржыдағы ішкі табыс нормасы (IRR); физикадағы тепе-теңдік нүктелері; компьютер графикасындағы сәуленің бетпен қиылысуы. Python-да <code>scipy.optimize.brentq</code> гибрид әдісті қолданады.</p>
+      <p><b>Мини-жоба: «Төрт әдіс жарысы».</b> Бір теңдеуді төрт әдіспен шешіп, қадам санын және қатенің азаю жылдамдығын салыстырамыз.</p>
+<pre data-lang="python"><code class="language-python">import math
+f  = lambda x: x**3 - x - 2
+df = lambda x: 3*x*x - 1
+r = 1.5213797068045676
+
+def bisection(a, b, eps=1e-12):
+    n = 0
+    while b - a &gt; eps:
+        m = (a + b) / 2; n += 1
+        if f(a) * f(m) &lt;= 0: b = m
+        else: a = m
+    return (a + b) / 2, n
+
+def newton(x, eps=1e-14, maxit=50):
+    for n in range(1, maxit + 1):
+        x_new = x - f(x) / df(x)
+        print(f"  N{n}: қате {abs(x_new - r):.2e}")
+        if abs(x_new - x) &lt; eps: return x_new, n
+        x = x_new
+    return x, maxit
+
+def secant(x0, x1, eps=1e-14):
+    n = 0
+    while abs(x1 - x0) &gt; eps:
+        x0, x1 = x1, x1 - f(x1) * (x1 - x0) / (f(x1) - f(x0)); n += 1
+    return x1, n
+
+def fixed_point(g, x, eps=1e-12):
+    n = 0
+    while True:
+        x_new = g(x); n += 1
+        if abs(x_new - x) &lt; eps: return x_new, n
+        x = x_new
+
+print("екіге бөлу:", bisection(1, 2))
+print("Ньютон:", newton(1.5))
+print("хорда:", secant(1, 2))
+print("итерация x = (x+2)^(1/3):", fixed_point(lambda x: (x + 2) ** (1/3), 1.5))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Ньютон шығысындағы қателерді қараңыз: келесі қате алдыңғының квадратына пропорционал ма? $\frac{e_{n+1}}{e_n^2}$-ты басып шығарыңыз.</li>
+        <li>$f(x)=x^3-2x+2$, $x_0=0$ үшін Ньютонды іске қосыңыз (циклді көріңіз), сосын $x_0=-2$-ден бастаңыз.</li>
+        <li>Гибрид әдісті (екіге бөлу + Ньютон) жазып, $f(x)=\arctan x$ үшін $x_0=2$-ден сынаңыз (таза Ньютон бұл жерде «ұшып кетеді»).</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Екіге бөлу</td><td>$|c_n-r|\le\frac{b-a}{2^n}$</td><td>$f$ үзіліссіз, $f(a)f(b)&lt;0$</td></tr>
+        <tr><td>Итерация</td><td>$x_{n+1}=g(x_n)$, $|x_n-r|\le q^n|x_0-r|$</td><td>$|g'|\le q&lt;1$, $g([a,b])\subseteq[a,b]$</td></tr>
+        <tr><td>Ньютон</td><td>$x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}$</td><td>$f\in C^2$, $f'(r)\ne0$, жақын бастау</td></tr>
+        <tr><td>Ньютон қатесі</td><td>$e_{n+1}=\frac{|f''(\xi)|}{2|f'(x_n)|}e_n^2$</td><td>квадраттық</td></tr>
+        <tr><td>Хорда</td><td>$x_{n+1}=x_n-f(x_n)\frac{x_n-x_{n-1}}{f(x_n)-f(x_{n-1})}$</td><td>рет $\approx1{,}618$</td></tr>
+        <tr><td>$\sqrt a$</td><td>$x_{n+1}=\frac12\left(x_n+\frac a{x_n}\right)$</td><td>$a>0$, $x_0>0$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m16-2-self">
+        <li><input type="checkbox"> <span>Мен екіге бөлу әдісінің қадам санын алдын ала есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қарапайым итерацияның жинақталу шартын тексере аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Ньютон формуласын қорытып, оның квадраттық жинақталуын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Ньютон әдісі істен шығатын жағдайларды тани аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен хордалар әдісін қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен жинақталу ретін (сызықтық, квадраттық) ажырата аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="a">
+<p class="q-text">1. Екіге бөлу әдісінің әр қадамында қате кемінде неше есе кемиді (бағасы)?</p>
+<label><input type="radio" value="a"> 2</label>
+<label><input type="radio" value="b"> 10</label>
+<label><input type="radio" value="c"> квадраттық</label>
+<label><input type="radio" value="d"> 4</label>
+<p class="explain">Кесінді екі есе тарылады.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">2. Ньютон формуласы:</p>
+<label><input type="radio" value="a"> xₙ₊₁ = xₙ − f′(xₙ)/f(xₙ)</label>
+<label><input type="radio" value="b"> xₙ₊₁ = f(xₙ)</label>
+<label><input type="radio" value="c"> xₙ₊₁ = (a + b)/2</label>
+<label><input type="radio" value="d"> xₙ₊₁ = xₙ − f(xₙ)/f′(xₙ)</label>
+<p class="explain">Жанаманың Ox-пен қиылысуы.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">3. x = g(x) итерациясының жинақталу шарты:</p>
+<label><input type="radio" value="a"> g′(x) > 1</label>
+<label><input type="radio" value="b"> g(x) > 0</label>
+<label><input type="radio" value="c"> |g′(x)| ≤ q < 1</label>
+<label><input type="radio" value="d"> g үзіліссіз ғана</label>
+<p class="explain">Қысатын бейнелеу.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. Ньютон әдісінің (жай түбірде) жинақталу реті:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 2</label>
+<label><input type="radio" value="c"> 1,618</label>
+<label><input type="radio" value="d"> 3</label>
+<p class="explain">Квадраттық.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. Еселі түбірде Ньютон әдісі:</p>
+<label><input type="radio" value="a"> сызықтық жинақталады</label>
+<label><input type="radio" value="b"> квадраттық</label>
+<label><input type="radio" value="c"> жинақталмайды</label>
+<label><input type="radio" value="d"> бір қадамда табады</label>
+<p class="explain">f′(r) = 0.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">6. [0; 1] кесіндісінде 10⁻⁶ дәлдікке екіге бөлумен шамамен неше қадам?</p>
+<label><input type="radio" value="a"> 6</label>
+<label><input type="radio" value="b"> 1000000</label>
+<label><input type="radio" value="c"> 10</label>
+<label><input type="radio" value="d"> 20</label>
+<p class="explain">2²⁰ ≈ 10⁶.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">7. Хордалар әдісінің артықшылығы:</p>
+<label><input type="radio" value="a"> әрдайым жинақталады</label>
+<label><input type="radio" value="b"> квадраттық</label>
+<label><input type="radio" value="c"> туынды керек емес</label>
+<label><input type="radio" value="d"> бір бастапқы нүкте</label>
+<p class="explain">Туынды айырмамен ауыстырылады.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. f(a)·f(b) > 0 болса:</p>
+<label><input type="radio" value="a"> түбір жоқ</label>
+<label><input type="radio" value="b"> [a, b]-да түбір болуы да, болмауы да мүмкін</label>
+<label><input type="radio" value="c"> дәл бір түбір</label>
+<label><input type="radio" value="d"> екі түбір</label>
+<p class="explain">Жұп сан түбір болуы мүмкін.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=numerical">Numerical Analysis емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-99.html"><small>Алдыңғы</small>← Numerical Analysis · 1-сабақ: Қателіктер және есептеу тұрақтылығы</a>

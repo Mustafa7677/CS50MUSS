@@ -12,6 +12,7 @@ const LESSONS = fs.readdirSync(path.join(MATH, "lectures")).filter((f) => /^week
 const isSoon = (f) => fs.readFileSync(path.join(MATH, "lectures", f), "utf8").includes("<!-- soon -->");
 const READY = LESSONS.filter((f) => !isSoon(f));
 const TOOLS = ["formulas", "glossary", "practice"];
+const PED = ["route", "exam"]; // tools/math_pedagogy.py жасайтын беттер: оқу жолы, пән емтихандары
 const PLAN_JS = fs.readFileSync(path.join(MATH, "data/plan.js"), "utf8");
 const PLAN = JSON.parse(PLAN_JS.replace(/^window\.CS50KZ_MATH_PLAN = /, "").replace(/;\s*$/, ""));
 const { site_stats: S } = JSON.parse(execFileSync("python3", [path.join(ROOT, "tools/build.py"), "--stats"], { encoding: "utf8" }));
@@ -25,8 +26,9 @@ async function open(page, url) {
 const API = (page, fn, ...args) => page.evaluate(([f, a]) => { const r = window.CS50KZ_MATH[f](...a); return r; }, [fn, args]);
 
 // ------------------------------------------------------------------ құрылым
-test("құрылым: 24 пән, жоспар = build деректері, main.js COURSE_META және MATH_COUNTS сәйкес", () => {
-  expect(PLAN.subjects.length).toBe(24);
+test("құрылым: 25 пән, жоспар = build деректері, main.js COURSE_META және MATH_COUNTS сәйкес", () => {
+  expect(PLAN.subjects.length).toBe(25);
+  expect(PLAN.subjects.filter((s) => s.group === "F").map((s) => s.slug)).toEqual(["arith"]);
   expect(PLAN.subjects.filter((s) => s.group === "H").length).toBe(17);
   expect(PLAN.subjects.filter((s) => s.group === "A").length).toBe(7);
   for (const s of PLAN.subjects) { expect(s.count, s.en).toBeGreaterThanOrEqual(5); expect(s.count, s.en).toBeLessThanOrEqual(8); }
@@ -38,8 +40,8 @@ test("құрылым: 24 пән, жоспар = build деректері, main.j
   expect(main).toContain(`{ id: "math", name: "Math", title: "Математика", color: "#15803d", total: ${total}`);
   const counts = JSON.parse(main.match(/const MATH_COUNTS = (\[[\d,\s]*\]);/)[1]);
   expect(counts).toEqual(PLAN.subjects.map((s) => s.count));
-  // пәндер тәуелсіз: алғышарт жоқ; пән атаулары ТЕК ағылшынша
-  const EN = ["Precalculus", "Linear Algebra", "Analytic Geometry", "Differential Calculus", "Integral Calculus", "Multivariable Calculus", "Vector Calculus", "Sequences and Series", "Ordinary Differential Equations", "Partial Differential Equations", "Complex Analysis", "Fourier & Laplace Transforms", "Probability Theory", "Mathematical Statistics", "Discrete Mathematics", "Numerical Analysis", "Mathematical Optimization", "Real Analysis", "Abstract Algebra", "Number Theory", "Topology", "Differential Geometry", "Functional Analysis", "Stochastic Processes"];
+  // пән атаулары ТЕК ағылшынша; алғышарттар жоспарда емес, сабақ деңгейінде (tools/math_prereq.py)
+  const EN = ["Precalculus", "Linear Algebra", "Analytic Geometry", "Differential Calculus", "Integral Calculus", "Multivariable Calculus", "Vector Calculus", "Sequences and Series", "Ordinary Differential Equations", "Partial Differential Equations", "Complex Analysis", "Fourier & Laplace Transforms", "Probability Theory", "Mathematical Statistics", "Discrete Mathematics", "Numerical Analysis", "Mathematical Optimization", "Real Analysis", "Abstract Algebra", "Number Theory", "Topology", "Differential Geometry", "Functional Analysis", "Stochastic Processes", "Arithmetic"];
   expect(PLAN.subjects.map((s) => s.en)).toEqual(EN);
   for (const s of PLAN.subjects) { expect(s.pre, s.en).toBeUndefined(); expect(s.kz, s.en).toBe(s.en); }
   // сабақ беттерінің нөмірлері: пәндер ретімен
@@ -68,7 +70,7 @@ test("тұғырлар: <!-- soon -->, noindex, sitemap-қа кірмейді; �
   }
   expect(soon).toBe(LESSONS.length - READY.length);
   expect(sm).toContain("math/</loc>");
-  for (const t of TOOLS) expect(sm).toContain(`math/${t}.html`);
+  for (const t of [...TOOLS, ...PED]) expect(sm).toContain(`math/${t}.html`);
 });
 
 test("тұғыр беті: қатесіз ашылады, тақырып «Пән · k-сабақ» (пән ағылшынша), алдыңғы/келесі сілтемелер дұрыс", async ({ page }) => {
@@ -89,7 +91,7 @@ test("тұғыр беті: қатесіз ашылады, тақырып «Пә�
 });
 
 // ------------------------------------------------------------------ курс беті
-test("курс беті: 24 пән 2 топта, ескерту, дайын/жоспар санағы, сертификатсыз, B лицензиясы", async ({ page }) => {
+test("курс беті: 25 пән 3 топта, ескерту, дайын/жоспар санағы, сертификатсыз, B лицензиясы", async ({ page }) => {
   const errs = collectErrors(page);
   await open(page, "math/index.html");
   await expect(page.locator("body")).toHaveAttribute("data-license", "B");
@@ -97,8 +99,8 @@ test("курс беті: 24 пән 2 топта, ескерту, дайын/жо
   await expect(page.locator("#ai-note")).toContainText("жауапкершілікті автор");
   await expect(page.locator("#ai-note")).toContainText("Sagid Mustafa");
   await expect(page.locator("#ai-note")).toContainText("сертификат берілмейді");
-  await expect(page.locator(".mx-group-h")).toHaveText(["Higher Mathematics", "Advanced Mathematics"]);
-  await expect(page.locator(".mx-subj")).toHaveCount(24);
+  await expect(page.locator(".mx-group-h")).toHaveText(["Foundations", "Higher Mathematics", "Advanced Mathematics"]);
+  await expect(page.locator(".mx-subj")).toHaveCount(25);
   await expect(page.locator("#group-h ~ .mx-subj").first()).toBeVisible();
   await expect(page.locator(".week-card")).toHaveCount(PLAN.total);
   await expect(page.locator(".week-card:not(.soon)")).toHaveCount(READY.length);
@@ -120,25 +122,35 @@ test("курс беті: 24 пән 2 топта, ескерту, дайын/жо
   expect(errs).toEqual([]);
 });
 
-test("курс беті: пән атаулары ағылшынша, реттелген 1-24 мазмұны, граф/алғышарт/«қайдан бастау» жоқ", async ({ page }) => {
+test("курс беті: пән атаулары ағылшынша, мазмұны бет ретімен (Arithmetic бірінші), граф жоқ; оқу жолы блогы және әр пәннің алғышарты мен ұзақтығы", async ({ page }) => {
   await open(page, "math/index.html");
-  const EN = PLAN.subjects.map((s) => s.en);
-  // жоғарғы мазмұн: 24 нөмірленген якорь сілтеме, нөмір реті бойынша
+  // бетте көрінетін рет: Foundations (25-пән), сосын 1-24
+  const SHOWN = [PLAN.subjects[24], ...PLAN.subjects.slice(0, 24)];
+  const EN = SHOWN.map((s) => s.en);
+  // жоғарғы мазмұн: 25 якорь сілтеме, бет реті бойынша
   const jump = page.locator("ol.mx-jump li a");
-  await expect(jump).toHaveCount(24);
+  await expect(jump).toHaveCount(25);
   expect(await jump.allInnerTexts()).toEqual(EN);
-  for (let i = 0; i < 24; i++) await expect(jump.nth(i)).toHaveAttribute("href", `#subj-${i + 1}`);
-  // пән тақырыптары ағылшынша, топтар реті 1-17 / 18-24
-  expect(await page.locator(".mx-shead h3").evaluateAll((els) => els.map((e) => e.textContent.trim()))).toEqual(PLAN.subjects.map((s) => `${s.no}${s.en}`));
-  expect(await page.locator(".mx-subj").evaluateAll((els) => els.map((e) => +e.dataset.subj))).toEqual(Array.from({ length: 24 }, (_, i) => i + 1));
+  for (let i = 0; i < 25; i++) await expect(jump.nth(i)).toHaveAttribute("href", `#subj-${SHOWN[i].no}`);
+  // пән тақырыптары ағылшынша, топтар реті 25 / 1-17 / 18-24
+  expect(await page.locator(".mx-shead h3").evaluateAll((els) => els.map((e) => e.textContent.trim()))).toEqual(SHOWN.map((s) => `${s.no}${s.en}`));
+  expect(await page.locator(".mx-subj").evaluateAll((els) => els.map((e) => +e.dataset.subj))).toEqual(SHOWN.map((s) => s.no));
+  await expect(page.locator("#group-f ~ .mx-subj").first()).toHaveAttribute("data-subj", "25");
   await expect(page.locator("#group-h ~ .mx-subj").first()).toHaveAttribute("data-subj", "1");
   // карточкалардағы сабақ реті 1,2,3...
   for (const s of PLAN.subjects) expect(await page.locator(`#subj-${s.no} .week-card .num`).allInnerTexts()).toEqual(Array.from({ length: s.count }, (_, k) => `${k + 1}-сабақ`));
-  // граф, «қайдан бастау», алғышарт жазуы жоқ
-  for (const sel of [".mx-graph", ".mx-path", ".mx-target", ".mx-edge", ".mx-node", ".mx-spre", "svg.mx-graph"]) await expect(page.locator(sel), sel).toHaveCount(0);
-  const text = await page.locator("main, .content").first().innerText();
-  const heads = (await page.locator(".mx-shead h3, ol.mx-jump, .mx-group-h, .nav, .course-pill").allInnerTexts()).join(" ");
-  expect(text).not.toMatch(/алғышарт|Қайдан бастау|Мақсатты пән|байланыс(?!тылық|ы)/i);
+  // граф жоқ; оқу жолы бір блок, сызықтық тізім (6 кезең)
+  for (const sel of [".mx-graph", ".mx-edge", ".mx-node", "svg.mx-graph"]) await expect(page.locator(sel), sel).toHaveCount(0);
+  await expect(page.locator(".mx-routebox a[href='route.html']")).toHaveCount(1);
+  await expect(page.locator(".mx-routebox .mx-stages li")).toHaveCount(6);
+  // әр пәнде: алғышарт пәндері (ағылшынша атаумен) не «орта мектеп»; дайын пәнде ұзақтық пен емтихан сілтемесі
+  await expect(page.locator(".mx-subj .mx-smeta")).toHaveCount(25);
+  await expect(page.locator("#subj-25 .mx-smeta")).toContainText("мүлде нөлден");
+  await expect(page.locator("#subj-1 .mx-smeta")).toContainText("Arithmetic");
+  await expect(page.locator("#subj-14 .mx-smeta")).toContainText("Probability Theory");
+  await expect(page.locator("#subj-13 .mx-smeta")).toContainText(/≈ \d+ сағ/);
+  await expect(page.locator('#subj-13 .mx-smeta a[href="exam.html?s=prob"]')).toHaveCount(1);
+  const heads = (await page.locator(".mx-shead h3, ol.mx-jump, .mx-group-h, .nav, .course-pill, .mx-smeta").allInnerTexts()).join(" ");
   // қазақша пән атаулары көрінбейді
   for (const kz of ["Сызықтық алгебра", "Дифференциалдық есептеу", "Ықтималдық теориясы", "Топология", "Жоғары математика", "Жетілдірілген", "Тізбектер және қатарлар"]) expect(heads, kz).not.toContain(kz);
 });
@@ -736,7 +748,7 @@ test("жаттықтырғыш: пән/қиындық сүзгісі, серия
 
 // ------------------------------------------------------------------ лицензия, құжат, кэш, құралдар
 test("лицензия: барлық math беттері B, All Rights Reserved, Harvard сілтемесіз; реестрде B-course-math және C-katex; сертификат жоқ", () => {
-  const files = ["index.html", ...TOOLS.map((t) => t + ".html"), ...LESSONS.map((f) => "lectures/" + f)];
+  const files = ["index.html", ...TOOLS.map((t) => t + ".html"), ...PED.map((t) => t + ".html"), ...LESSONS.map((f) => "lectures/" + f)];
   for (const f of files) {
     const s = fs.readFileSync(path.join(MATH, f), "utf8");
     expect(s, f).toContain('data-license="B"');
@@ -823,7 +835,7 @@ test("офлайн (нағыз): service worker кэшінен сабақ, KaTeX
     await p.locator('.math-ex[data-id="m1-1-val"] .mx-check').click();
     await expect(p.locator('.math-ex[data-id="m1-1-val"] .mx-item').first()).toHaveClass(/ok/);
     await p.goto(B + "math/index.html");
-    await expect(p.locator(".mx-subj")).toHaveCount(24);
+    await expect(p.locator(".mx-subj")).toHaveCount(25);
     await p.goto(B + "math/formulas.html");
     await expect(p.locator("#mx-app .mx-sel").first()).toBeVisible();
     expect(errs).toEqual([]);
@@ -854,12 +866,91 @@ test("сүзгілер мен беттер: формулалар/сөздік/ж
   }
 });
 
-test("сабақ беті: қысқаша еске салу бөлімі (id=prereq, math-prereq) басқа пәнге сілтемесіз", async ({ page }) => {
+test("сабақ беті: «Қысқаша еске салу» бөлімінде «Алдымен оқыңыз» тізімі (math_prereq.py), сілтемелер дайын сабақтарға", async ({ page }) => {
   await open(page, LESSON0);
   await expect(page.locator("h2#prereq")).toHaveCount(1);
-  await expect(page.locator("h2#prereq")).not.toHaveText(/Алғышарт/);
   await expect(page.locator(".math-prereq")).toHaveCount(1);
-  await expect(page.locator('.math-prereq a[href*="index.html#subj"], .math-prereq a[href*="week-"]')).toHaveCount(0);
+  // Precalculus-тың бірінші сабағы енді Arithmetic-тің соңғы сабағына сүйенеді
+  await expect(page.locator(".mx-pre")).toContainText("Arithmetic · 8-сабақ");
+  await expect(page.locator('.mx-pre li a[href$="week-161.html"]')).toHaveCount(1);
+  await open(page, "math/lectures/week-154.html");
+  await expect(page.locator(".mx-pre")).toContainText("бастапқы сабағы");
+  await open(page, "math/lectures/week-110.html");
+  const links = page.locator(".mx-pre li a");
+  expect(await links.count()).toBeGreaterThanOrEqual(2);
+  for (const h of await links.evaluateAll((els) => els.map((e) => e.getAttribute("href")))) expect(READY, h).toContain(h);
+  await expect(page.locator(".mx-pre")).toContainText("Mathematical Statistics · 5-сабақ");
+  await expect(page.locator('.mx-pre a[href="../route.html"]')).toHaveCount(1);
+});
+
+test("педагогика: әр дайын сабақта нақты ұзақтық, алғышарт блогы, емтихан сілтемесі; деңгейлер тек Жеңіл/Орташа/Күрделі; оқу жолы алғышарттарға сай", () => {
+  expect(execFileSync("python3", [path.join(ROOT, "tools/math_pedagogy.py"), "--check"], { encoding: "utf8" })).toContain("үйлесімді");
+  for (const f of READY) {
+    const s = fs.readFileSync(path.join(MATH, "lectures", f), "utf8");
+    expect(s, f).toMatch(/<p class="lecture-meta mx-meta"[^>]*><span>⏱ Оқу ≈ [^<]+<\/span><span>Есептер ≈ [^<]+<\/span><span>Тест ≈ \d+ мин<\/span><span><b>Барлығы ≈ [^<]+<\/b>/);
+    expect(s, f).not.toContain("15-20 минут");
+    expect(s, f).toContain('<div class="mx-pre">');
+    expect(s, f).toMatch(/class="callout mx-examlink"[\s\S]*?href="\.\.\/exam\.html\?s=\w+"/);
+    const badges = [...s.matchAll(/<span class="badge (easy|medium|hard)">([^<]*)<\/span>/g)].map((m) => m[1] + ":" + m[2]);
+    for (const b of badges) expect(["easy:Жеңіл", "medium:Орташа", "hard:Күрделі"], f).toContain(b);
+    expect(s, f).toMatch(/<a href="\.\.\/route\.html">Оқу жолы<\/a><a href="\.\.\/exam\.html\?s=\w+">Емтихан<\/a><\/nav>/);
+  }
+});
+
+test("разметка: мәтіндегі (TeX ішіндегі) «<» әрдайым &lt; - браузер оны тег деп оқып, мәтінді жасырмауы керек", () => {
+  const TAGS = new Set("a abbr article aside b blockquote body br button canvas caption code col details div dl dt dd em figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hr html i img input kbd label li link main mark meta nav noscript ol option p path pre q s samp script section select small span strong style sub summary sup svg table tbody td textarea tfoot th thead time title tr u ul var circle line rect g polyline polygon text defs".split(" "));
+  const bad = [];
+  for (const f of READY) {
+    const s = fs.readFileSync(path.join(MATH, "lectures", f), "utf8").replace(/<script\b[\s\S]*?<\/script>|<pre\b[\s\S]*?<\/pre>|<code\b[\s\S]*?<\/code>|<!--[\s\S]*?-->|<style\b[\s\S]*?<\/style>/g, "");
+    for (const m of s.matchAll(/<\/?([A-Za-z][^\s\/><]*)/g)) if (!TAGS.has(m[1].toLowerCase())) bad.push(`${f}: <${m[1].slice(0, 30)}`);
+  }
+  expect(bad).toEqual([]);
+});
+
+test("оқу жолы: 6 кезең, 25 пән бір рет, оқылған сабақ белгіленеді, келесі қадам - бірінші оқылмаған дайын сабақ; 390px", async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const page = await ctx.newPage();
+  const errs = collectErrors(page);
+  await blockFonts(ctx);
+  // Arithmetic (154-161) толық оқылған, Precalculus-тан week-0 оқылған: келесі қадам - week-1
+  await page.addInitScript(() => { const read = { "math:week-0": 1 }; for (let k = 154; k <= 161; k++) read[`math:week-${k}`] = 1; localStorage.setItem("cs50kz:progress", JSON.stringify({ read })); });
+  await page.goto("math/route.html");
+  await page.waitForFunction(() => window.CS50KZ_MATH && window.CS50KZ_MATH.ready);
+  await expect(page.locator(".mx-stage")).toHaveCount(6);
+  const slugs = await page.locator(".mx-rsubj").evaluateAll((els) => els.map((e) => e.dataset.slug));
+  expect(slugs.length).toBe(25);
+  expect(new Set(slugs).size).toBe(25);
+  expect(slugs[0]).toBe("arith");
+  expect(slugs[1]).toBe("precalc");
+  await expect(page.locator('li[data-id="week-0"].is-read')).toHaveCount(1);
+  await expect(page.locator(".mx-rnow .btn")).toHaveAttribute("href", "lectures/week-1.html");
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(true);
+  expect(errs).toEqual([]);
+  await ctx.close();
+});
+
+test("пән емтиханы: әр сабақтан 3 сұрақ, жауап тек «Тапсыру»-да тексеріледі, нәтиже сабақтар бойынша, сақталады", async ({ page }) => {
+  const errs = collectErrors(page);
+  await open(page, "math/exam.html?s=prob");
+  await expect(page.locator("#mx-app .mx-sel")).toHaveValue("prob");
+  const opts = await page.locator("#mx-app .mx-sel option").allInnerTexts();
+  for (const o of opts) expect(PLAN.subjects.map((s) => `${s.no}. ${s.en}`)).toContain(o);
+  await page.click("text=Емтиханды бастау");
+  await expect(page.locator(".mx-eitem")).toHaveCount(21);
+  await expect(page.locator(".mx-eitem .mx-fb:visible")).toHaveCount(0);
+  await expect(page.locator(".mx-eitem .katex-error")).toHaveCount(0);
+  await page.click("text=Тапсыру және тексеру");
+  await expect(page.locator(".mx-eres")).toContainText("21 сұраққа жауап берілмеген");
+  await expect(page.locator(".mx-eitem .mx-fb:visible")).toHaveCount(0);
+  await page.click("text=Бәрібір тапсыру");
+  await expect(page.locator(".mx-eres h3")).toHaveText("Нәтиже: 0 / 21 (0%)");
+  await expect(page.locator(".mx-eres tbody tr")).toHaveCount(7);
+  await expect(page.locator(".mx-eres tbody tr a").first()).toHaveAttribute("href", /week-79\.html$/);
+  await expect(page.locator(".mx-eitem.bad")).toHaveCount(21);
+  const st = await page.evaluate(() => JSON.parse(localStorage.getItem("cs50kz:math:exam")));
+  expect(st.prob.last).toBe(0);
+  expect(st.prob.n).toBe(1);
+  expect(errs).toEqual([]);
 });
 
 test("көмекші: математика беттерінде өзі шықпайды, «Көмекші» батырмасын басқанда ғана шығады", async ({ page }) => {
@@ -916,4 +1007,69 @@ test("көмекші, 390px: батырма көрінеді, мазмұнды �
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), url).toBe(true);
   }
   await ctx.close();
+});
+
+test("дизайн: әр пәннің өз түсі мен белгісі, кезең сүзгісі, сабақтар жолағы, карта үзіндісінде TeX жоқ", async ({ page }) => {
+  await open(page, "math/index.html");
+  const cols = await page.locator(".mx-subj").evaluateAll((els) => els.map((e) => e.style.getPropertyValue("--sc")));
+  expect(new Set(cols).size).toBe(25);
+  expect(await page.locator(".mx-subj[data-glyph]").count()).toBe(25);
+  // карта үзінділерінде өңделмеген $...$ жоқ (курс беті KaTeX жүктемейді)
+  expect((await page.locator(".mx-subj .week-card p").allInnerTexts()).filter((t) => t.includes("$"))).toEqual([]);
+  // сүзгі: «Нөлден бастау» - тек Arithmetic; 4-кезең - тек сол кезеңнің пәндері; «Барлығы» - қайта 25
+  await page.click('.mx-fchip[data-stage="0"]');
+  await expect(page.locator(".mx-subj:not(.is-hidden)")).toHaveCount(1);
+  await expect(page.locator(".mx-subj:not(.is-hidden)")).toHaveAttribute("data-slug", "arith");
+  await page.click('.mx-fchip[data-stage="5"]');
+  await expect(page.locator(".mx-subj:not(.is-hidden)")).toHaveCount(7);
+  await expect(page.locator('.mx-fchip[data-stage="5"]')).toHaveAttribute("aria-pressed", "true");
+  await page.click('.mx-fchip[data-stage=""]');
+  await expect(page.locator(".mx-subj:not(.is-hidden)")).toHaveCount(25);
+  // сабақ беті: баннер мен блоктар пән түсімен, пән ішіндегі сабақтар жолағы
+  await open(page, "math/lectures/week-128.html");
+  await expect(page.locator(".lecture-head")).toHaveAttribute("data-msubj", "numtheory");
+  await expect(page.locator(".mx-strip li")).toHaveCount(6);
+  await expect(page.locator('.mx-strip a[aria-current="page"]')).toHaveText("4");
+  await expect(page.locator(".mx-intro")).toHaveCount(1);
+});
+
+test("жеңіл қабат: бір сөйлем, қолмен жылыту, ұқсастық, белгілер, қарапайым тілмен, идея, тоқта-ойлан", async ({ page }) => {
+  await open(page, "math/lectures/week-131.html");
+  await expect(page.locator(".mx-big p")).toHaveCount(1);
+  // бөлімдер ретті: мақсаттар → еске салу → қолмен → интуиция → белгілер → теория → тоқта-ойлан → қорытулар
+  const ids = await page.locator("article h2[id]").evaluateAll((els) => els.map((e) => e.id));
+  const order = ["goals", "prereq", "warmup", "intuition", "symbols", "theory", "checks", "derivations"];
+  expect(order.map((i) => ids.indexOf(i))).toEqual([...order.map((i) => ids.indexOf(i))].sort((a, b) => a - b));
+  for (const i of order) expect(ids).toContain(i);
+  expect(await page.locator(".mx-warmup .math-steps li").count()).toBeGreaterThanOrEqual(3);
+  expect(await page.locator(".mx-analogy").count()).toBeGreaterThanOrEqual(1);
+  expect(await page.locator(".mx-symbols tbody tr").count()).toBeGreaterThanOrEqual(4);
+  // әр анықтама мен теоремада «Қарапайым тілмен», әр қорытуда «Идея»
+  const boxes = await page.locator("#theory ~ .math-def, #theory ~ .math-thm, #theory ~ .math-prop").count();
+  expect(await page.locator(".math-def .mx-plain, .math-thm .mx-plain, .math-prop .mx-plain").count()).toBe(boxes);
+  expect(await page.locator("details.math-derive .mx-idea").count()).toBe(await page.locator("details.math-derive").count());
+  // тоқта-ойлан: жауап жасырын, басқанда ашылады
+  const chk = page.locator("details.mx-check").first();
+  await expect(chk.locator("p")).toBeHidden();
+  await chk.locator("summary").click();
+  await expect(chk.locator("p")).toBeVisible();
+  expect(await page.locator(".katex-error").count()).toBe(0);
+});
+
+test("жеңіл қабат: барлық сабақта бар - генерацияланатын және қолмен жазылған (бір сөйлем, қолмен, белгілер, тоқта-ойлан)", () => {
+  let checked = 0;
+  for (const s of PLAN.subjects) {
+    for (let k = 0; k < s.count; k++) {
+      const html = fs.readFileSync(path.join(MATH, "lectures", `week-${s.start + k}.html`), "utf8");
+      for (const mark of ['class="mx-big"', 'id="warmup"', 'class="mx-analogy"', 'id="symbols"', 'id="checks"', 'class="mx-idea"', 'class="mx-plain"'])
+        expect(html.includes(mark), `${s.slug} ${k + 1}: ${mark}`).toBe(true);
+      checked++;
+    }
+  }
+  expect(checked).toBe(PLAN.total);
+});
+
+test("жеңіл қабат: 1-10 пәндердің беттері tools/math_easy/ файлдарымен сәйкес (math_easy_inject.py --check)", () => {
+  const out = execFileSync("python3", [path.join(ROOT, "tools/math_easy_inject.py"), "--check"], { encoding: "utf8" });
+  expect(out).toMatch(/67 сабақ сәйкес/);
 });

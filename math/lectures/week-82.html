@@ -6,13 +6,14 @@
   <title>Math Probability Theory · 4-сабақ: Кездейсоқ шамалар, күтім және дисперсия - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Probability Theory · 4-сабақ: Кездейсоқ шамалар, күтім және дисперсия - CS50 қазақша">
-  <meta property="og:description" content="Математика, Probability Theory · 4-сабақ: Кездейсоқ шамалар, күтім және дисперсия. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Дискретті және үзіліссіз шамалар, үлестіру функциясы, сандық сипаттамалар.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-82.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Probability Theory · 4-сабақ: Кездейсоқ шамалар, күтім және дисперсия - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-82.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Probability Theory · 4-сабақ: Кездейсоқ шамалар, күтім және дисперсия. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Дискретті және үзіліссіз шамалар, үлестіру функциясы, сандық сипаттамалар.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,457 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="82">
+    <article class="content math-lesson" style="--sc:#c2410c" id="main">
+      <div class="lecture-head" style="--lc:#c2410c" data-n="82" data-msubj="prob" data-glyph="ℙ">
         <div class="num">Probability Theory · 4-сабақ</div>
         <h1>Кездейсоқ шамалар, күтім және дисперсия</h1>
-        <p>Дискретті және үзіліссіз шамалар, үлестіру функциясы, сандық сипаттамалар.</p>
+        <p>Көп жағдайда бізді оқиғаның өзі емес, тәжірибенің нәтижесінде шығатын <b>сан</b> қызықтырады: ұтыс сомасы, ақаулы бөлшектер саны, сервердің жауап уақыты. Мұндай санды кездейсоқ шама дейміз.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 45 мин</span><span>Есептер ≈ 1 сағ 20 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ 10 мин</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Бұл сабақта кездейсоқ шаманың үлестірім заңын, үлестірім функциясын, математикалық күтімді (орташа мәнді) және дисперсияны (шашырауды) анықтаймыз, олардың қасиеттерін дәлелдейміз және «индикаторлар әдісі» деген күшті құралды үйренеміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-13">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=prob">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Probability Theory: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-13">Probability Theory</a></span><ol><li><a href="week-79.html" title="Комбинаторика негіздері">1</a></li><li><a href="week-80.html" title="Ықтималдық және оның қасиеттері">2</a></li><li><a href="week-81.html" title="Шартты ықтималдық және Байес формуласы">3</a></li><li><a href="week-82.html" aria-current="page" title="Кездейсоқ шамалар, күтім және дисперсия">4</a></li><li><a href="week-83.html" title="Дискретті үлестірімдер">5</a></li><li><a href="week-84.html" title="Үзіліссіз үлестірімдер">6</a></li><li><a href="week-85.html" title="Үлкен сандар заңы және орталық шектік теорема">7</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-13">Probability Theory</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Кездейсоқ шама - нәтижеге сан беретін ереже; күтім - оның «ұзақ мерзімдегі орта мәні», дисперсия - сол орта мәннен шашырау.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>дискретті кездейсоқ шаманың үлестірім заңын кесте түрінде жазып, қосындысы 1 екенін тексеру;</li>
+        <li>үлестірім функциясын $F(x)=P(X\le x)$ құрып, оның қасиеттерін түсіндіру;</li>
+        <li>математикалық күтімді $E X=\sum x_ip_i$ және оның сызықтығын қолдану;</li>
+        <li>дисперсияны $D X=E X^2-(E X)^2$ формуласымен есептеп, $D(aX+b)=a^2D X$ қасиетін дәлелдеу;</li>
+        <li>күрделі шаманы индикаторлардың қосындысына жіктеп, күтімін оңай табу;</li>
+        <li>үзіліссіз шаманың тығыздығы бойынша ықтималдық пен күтімді интегралмен есептеу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Ықтималдықтың қасиеттері: $0\le P(A)\le1$, $P(\Omega)=1$, үйлесімсіз оқиғалардың ықтималдықтары қосылады. Тәуелсіздік: $P(AB)=P(A)P(B)$. Қосынды белгісі $\sum$ және оның сызықтығы: $\sum(ax_i+by_i)=a\sum x_i+b\sum y_i$. Үзіліссіз жағдай үшін анықталған интеграл: $\int_a^b f(x)\,dx$ - қисық астындағы аудан.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-81.html">Probability Theory · 3-сабақ: Шартты ықтималдық және Байес формуласы</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: лотерея билеті әділ ме</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">Билет $100$ теңге. $\frac1{1000}$ ықтималдықпен $50000$ теңге, $\frac1{100}$ ықтималдықпен $1000$ теңге ұтасыз, әйтпесе ештеңе. Таза ұтыстың күтімі?</p>
+        <ol class="math-steps">
+          <li>Ұтыс мәндері мен ықтималдықтары: $50000$ ($0{,}001$), $1000$ ($0{,}01$), $0$ (қалғаны).</li>
+          <li>Ұтыстың күтімі: $50000\cdot0{,}001+1000\cdot0{,}01=50+10=60$ теңге.</li>
+          <li>Таза ұтыс: $60-100=-40$ теңге - орта есеппен әр билеттен $40$ теңге жоғалтасыз.</li>
+          <li>$1000$ билет алсаңыз, орташа $60000$ ұтып, $100000$ төлейсіз.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Күтім - «көп рет қайталағанда бір әрекетке шаққандағы орташа нәтиже». Ол бір рет ойнағанда не болатынын емес, ұзақ мерзімді айтады.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Ойын: сүйек лақтырасыз, 6 түссе 10 теңге ұтасыз, басқа жағдайда 1 теңге төлейсіз. Ойнау тиімді ме? Бір ойынның нәтижесі кездейсоқ, бірақ 600 ойында шамамен 100 рет ұтып ($+1000$), 500 рет ұтыласыз ($-500$): орташа әр ойынға $+\frac{500}{600}\approx0{,}83$ теңге. Бұл «ұзақ мерзімдегі орташа» - <b>математикалық күтім</b>. Формуласы: әр мәнді оның ықтималдығымен көбейтіп қосу, $10\cdot\frac16+(-1)\cdot\frac56=\frac56$.</p>
+      <p>Енді екі инвестицияны салыстырайық. Біріншісі әрдайым 5% береді. Екіншісі жартылай ықтималдықпен $+30\%$ не $-20\%$ береді. Екеуінің күтімі бірдей, 5%. Бірақ екіншісі әлдеқайда «тәуекелді». Бұл айырманы <b>дисперсия</b> өлшейді: мәндердің күтімнен ауытқуының квадратының орташасы. Бірінші инвестицияның дисперсиясы 0, екіншісінікі $0{,}25^2=0{,}0625$.</p>
+      <p>Күтімнің ең пайдалы қасиеті - <b>сызықтық</b>: $E(X+Y)=EX+EY$, тіпті $X$ пен $Y$ тәуелді болса да. Бұл күрделі шаманы қарапайым бөліктерге бөлуге мүмкіндік береді. Мысалы, 100 адам шляпаларын кездейсоқ ауыстырып алса, өз шляпасын алғандардың орташа саны қанша? Тура есептеу өте қиын, ал индикаторлармен бір жолда: әр адам $\frac1{100}$ ықтималдықпен өз шляпасын алады, 100 адам - орташа $1$.</p>
+      <p>Кейбір шамалар үзіліссіз мән қабылдайды (уақыт, ұзындық). Онда нақты бір мәннің ықтималдығы 0, сондықтан ықтималдықты <em>тығыздық</em> арқылы, аралықтағы аудан ретінде береміз. Формулалар дискретті жағдайға ұқсас, тек $\sum$ орнына $\int$ тұрады.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · тепе-теңдік нүктесі</span>
+        <p>Күтім - ауырлық центрі: сызғышқа $x_i$ нүктелерде $p_i$ салмақтар қойсақ, сызғыш дәл $EX$ нүктесінде тепе-теңдікте тұрады. Дисперсия - салмақтардың центрден қаншалықты алыс шашырағаны.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · индикаторлар әдісі</span>
+        <p>Күрделі шаманы «иә/жоқ» шамаларының қосындысы етіп жазсақ, күтімді оңай табамыз: күтімдер әрдайым қосылады, тіпті шамалар тәуелді болса да.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$X:\Omega\to\mathbb R$</td><td>кездейсоқ шама</td><td>әр нәтижеге сан</td></tr>
+        <tr><td>$F(x)=P(X\le x)$</td><td>үлестірім функциясы</td><td>$x$-тен аспау ықтималдығы</td></tr>
+        <tr><td>$EX$</td><td>күтім</td><td>$\sum x_ip_i$ не $\int xf(x)dx$</td></tr>
+        <tr><td>$DX$</td><td>дисперсия</td><td>$E(X-EX)^2=EX^2-(EX)^2$</td></tr>
+        <tr><td>$\sigma=\sqrt{DX}$</td><td>стандарт ауытқу</td><td>шашыраудың «бірліктердегі» өлшемі</td></tr>
+        <tr><td>$f(x)$</td><td>тығыздық</td><td>үзіліссіз шаманың ықтималдығының «тығыздығы»</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 4.1 · Кездейсоқ шама</span>
+        <p>$\Omega$-ның әр нәтижесіне нақты сан сәйкес қоятын $X:\Omega\to\mathbb R$ функциясы <strong>кездейсоқ шама</strong> (<span class="term-en">random variable</span>) деп аталады. Егер $X$ ақырлы не саналымды $x_1,x_2,\dots$ мәндер қабылдаса, ол <em>дискретті</em> деп аталады, ал $p_i=P(X=x_i)$ кестесі - оның <strong>үлестірім заңы</strong> (<span class="term-en">probability mass function</span>). Мұнда $p_i\ge0$ және $\sum_ip_i=1$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Кездейсоқ шама - тәжірибенің әр нәтижесіне сан сәйкестендіру.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 4.2 · Үлестірім функциясы</span>
+        <p>$F(x)=P(X\le x)$, $x\in\mathbb R$ - $X$-тің <strong>үлестірім функциясы</strong> (<span class="term-en">cumulative distribution function</span>). Қасиеттері: кемімейді; $\lim_{x\to-\infty}F(x)=0$, $\lim_{x\to+\infty}F(x)=1$; оңнан үзіліссіз; $P(a&lt;X\le b)=F(b)-F(a)$. Дискретті шамада $F$ - баспалдақ функция, секіріс биіктігі $p_i$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $F(x)$ - шаманың $x$-тен аспау ықтималдығы; ол кемімейді, $0$-ден $1$-ге дейін өседі.</p></div>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 4.3 · Математикалық күтім</span>
+        <p>Дискретті $X$ үшін <strong>математикалық күтім</strong> (<span class="term-en">expectation</span>) $E X=\sum_ix_ip_i$, егер қатар абсолютті жинақталса ($\sum|x_i|p_i&lt;\infty$). Тығыздығы $f$ үзіліссіз $X$ үшін $E X=\int_{-\infty}^{\infty}x f(x)\,dx$ (сол шартпен). Функциясының күтімі: $E\,g(X)=\sum g(x_i)p_i$ не $\int g(x)f(x)\,dx$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Күтім - мәндердің ықтималдықтарымен салмақталған орта мәні.</p></div>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 4.4 · Дисперсия және стандарт ауытқу</span>
+        <p>$EX^2&lt;\infty$ болса, <strong>дисперсия</strong> (<span class="term-en">variance</span>) $D X=E(X-EX)^2$, ал <strong>стандарт ауытқу</strong> (<span class="term-en">standard deviation</span>) $\sigma_X=\sqrt{DX}$. Дисперсия - мәндердің күтім маңындағы шашырауының өлшемі; $\sigma$ $X$-пен бірдей өлшем бірлігінде.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Дисперсия - орта мәннен ауытқудың квадратының орта мәні; стандарт ауытқу - оның түбірі.</p></div>
+      <div class="math-def" id="def-5"><span class="math-tag">Анықтама 4.5 · Тығыздық</span>
+        <p>$X$ <em>үзіліссіз</em> (абсолютті үзіліссіз) деп аталады, егер $f(x)\ge0$, $\int_{-\infty}^{\infty}f=1$ функциясы бар болып, кез келген $a\le b$ үшін $P(a\le X\le b)=\int_a^bf(x)\,dx$ болса. $f$ - <strong>үлестірім тығыздығы</strong> (<span class="term-en">probability density function</span>). Онда $F'(x)=f(x)$ ($f$ үзіліссіз нүктелерде) және кез келген жеке мән үшін $P(X=c)=0$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Үзіліссіз шамада жеке нүктенің ықтималдығы нөл; ықтималдық - тығыздықтың астындағы аудан.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 4.1 · Күтімнің қасиеттері</span>
+        <p>Күтімдері бар $X,Y$ және тұрақты $a,b$ үшін: (1) $E(aX+b)=aEX+b$; (2) $E(X+Y)=EX+EY$ (тәуелсіздік <b>қажет емес</b>); (3) $X\ge0$ болса $EX\ge0$; (4) $X$, $Y$ тәуелсіз және $E|XY|&lt;\infty$ болса, $E(XY)=EX\cdot EY$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Күтім сызықты: тұрақтыға көбейту мен қосу сақталады, ал қосындының күтімі әрдайым күтімдердің қосындысы.</p></div>
+      <p><em>Негіздеме.</em> (1)-(3) қосынды/интегралдың сызықтығы мен оң таңбасынан; (2)-нің дискретті дәлелі 2-қорытуда.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 4.2 · Дисперсияның қасиеттері</span>
+        <p>(1) $DX=EX^2-(EX)^2\ge0$; (2) $D(aX+b)=a^2DX$; (3) $DX=0$ $\iff$ $X$ ықтималдығы 1-мен тұрақты; (4) $X$, $Y$ тәуелсіз болса, $D(X+Y)=DX+DY$. Жалпы жағдайда $D(X+Y)=DX+DY+2\operatorname{cov}(X,Y)$, мұнда $\operatorname{cov}(X,Y)=E(XY)-EX\,EY$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Дисперсия теріс емес, ығыстыруға тәуелсіз, масштабтың квадратымен өседі; тәуелсіз шамаларда қосылады.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 4.1 · Дисперсияны есептеу формуласы</span>
+        <div class="math-fbody">$$DX=EX^2-(EX)^2$$</div>
+        <p class="math-fnote">Әдетте анықтамадан ыңғайлы: алдымен $EX$ және $EX^2=\sum x_i^2p_i$ табылады. Нәтиже теріс шықса, есептеуде қате бар.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 4.2 · Сызықтық түрлендіру</span>
+        <div class="math-fbody">$$E(aX+b)=aEX+b,\qquad D(aX+b)=a^2DX,\qquad \sigma_{aX+b}=|a|\,\sigma_X$$</div>
+        <p class="math-fnote">Мысалы, температураны Цельсийден Фаренгейтке аударғанда ($1{,}8X+32$) орташа сол формуламен, ал стандарт ауытқу тек $1{,}8$ есе өзгереді: ығысу шашырауға әсер етпейді.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 4.3 · Индикатор</span>
+        <div class="math-fbody">$$I_A=\begin{cases}1,&amp;\omega\in A\\0,&amp;\omega\notin A\end{cases},\qquad E I_A=P(A),\qquad D I_A=P(A)(1-P(A))$$</div>
+        <p class="math-fnote">«Неше оқиға орындалды?» деген шама индикаторлардың қосындысы $N=I_{A_1}+\dots+I_{A_n}$, сондықтан $EN=\sum P(A_i)$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Күтім - «салмақ центрі», дисперсия - «шашырау». Сызықтық: күтім <em>әрдайым</em> қосылады, дисперсия тек тәуелсіз (дәлірек, корреляцияланбаған) шамалар үшін қосылады. Тұрақтыны дисперсиядан квадратпен шығарамыз: $D(-X)=DX$, $D(2X)=4DX$.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Күтім әрдайым бола бермейді. Мысалы, $P(X=2^k)=2^{-k}$ ($k=1,2,\dots$) болса, $\sum2^k2^{-k}=1+1+\dots=\infty$ («Санкт-Петербург парадоксы»). Сол сияқты $f(x)=\frac{1}{\pi(1+x^2)}$ тығыздығы бар Коши үлестірімінде $\int|x|f\,dx=\infty$, күтім жоқ. Сондықтан формулаларды қолданар алдында жинақтылықты тексеріңіз.</p></div>
+      <div class="math-remark"><span class="math-box-title">Ескертпе</span>
+        <p>$E(XY)=EX\,EY$ теңдігі тәуелсіздікті <em>білдірмейді</em>. Мысалы, $X$ мәндері $-1,0,1$ (әрқайсысы $\frac13$), $Y=X^2$. Онда $E(XY)=EX^3=0=EX\cdot EY$, бірақ $Y$ толығымен $X$ арқылы анықталады.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> Әділ сүйектің күтімі?</span></summary>
+        <p>$\frac{1+2+\dots+6}6=3{,}5$.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> $EX=2$ болса, $E(3X-1)$?</span></summary>
+        <p>$5$.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> $DX=4$ болса, $D(-2X+7)$?</span></summary>
+        <p>$(-2)^2\cdot4=16$.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> Үзіліссіз шама үшін $P(X=1)$ неге тең?</span></summary>
+        <p>$0$: бір нүктенің астында аудан жоқ.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: дисперсияның екі формуласы және $D(aX+b)=a^2DX$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $DX=EX^2-(EX)^2$ және сызықтық түрлендіру формуласын күтімнің қасиеттерінен шығару.</p>
+          <p class="mx-idea"><b>Идея:</b> Квадратты ашып, күтімнің сызықтығын қолданамыз: $E(X-m)^2=EX^2-2m\cdot m+m^2$.</p>
+          <ol class="math-steps">
+            <li>$m=EX$ деп белгілейміз (тұрақты сан). Анықтама: $DX=E(X-m)^2=E(X^2-2mX+m^2)$.</li>
+            <li>Күтімнің сызықтығы: $=EX^2-2m\,EX+m^2=EX^2-2m^2+m^2$.</li>
+            <li>Демек $DX=EX^2-m^2=EX^2-(EX)^2$. $(X-m)^2\ge0$ болғандықтан $DX\ge0$, яғни әрдайым $EX^2\ge(EX)^2$.</li>
+            <li>Енді $Y=aX+b$. $EY=am+b$, сондықтан $Y-EY=a(X-m)$: ығысу $b$ жойылды.</li>
+            <li>$DY=E\,a^2(X-m)^2=a^2E(X-m)^2=a^2DX$.</li>
+            <li>Тексеру: сүйек үшін $EX=3{,}5$, $EX^2=\frac{91}{6}$, $DX=\frac{91}{6}-\frac{49}{4}=\frac{35}{12}$; $2X+1$ үшін $D=4\cdot\frac{35}{12}=\frac{35}{3}$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: күтімнің аддитивтігі $E(X+Y)=EX+EY$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> дискретті $X$, $Y$ үшін (тәуелсіздіксіз) дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Бірлескен үлестірім бойынша қосындыны екіге бөлеміз; әр бөлік бір шаманың күтіміне жиналады.</p>
+          <ol class="math-steps">
+            <li>$X$ мәндері $x_i$, $Y$ мәндері $y_j$, бірлескен үлестірім $p_{ij}=P(X=x_i,\,Y=y_j)$.</li>
+            <li>$X+Y$ функциясының күтімі бірлескен үлестірім арқылы: $E(X+Y)=\sum_{i,j}(x_i+y_j)p_{ij}$ (қатарлар абсолютті жинақталады деп аламыз).</li>
+            <li>Бөлеміз: $=\sum_{i,j}x_ip_{ij}+\sum_{i,j}y_jp_{ij}$.</li>
+            <li>$\sum_jp_{ij}=P(X=x_i)=p_i$ (толық ықтималдық, $\{Y=y_j\}$ - толық топ). Сондықтан бірінші қосынды $\sum_ix_ip_i=EX$.</li>
+            <li>Сол сияқты екінші қосынды $\sum_jy_jq_j=EY$.</li>
+            <li>Демек $E(X+Y)=EX+EY$. Дәлелде тәуелсіздік ешқайда қолданылмады.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: тәуелсіз шамалардың дисперсиясы қосылады</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $X,Y$ тәуелсіз ($DX,DY$ бар) болса $D(X+Y)=DX+DY$ екенін көрсету.</p>
+          <p class="mx-idea"><b>Идея:</b> Ауытқулардың қосындысының квадратын ашсақ, аралас мүше - ковариация, ал тәуелсіздікте ол нөл.</p>
+          <ol class="math-steps">
+            <li>$a=EX$, $b=EY$ деп белгілейміз. $D(X+Y)=E\big((X-a)+(Y-b)\big)^2$.</li>
+            <li>Квадратты ашамыз: $=E(X-a)^2+E(Y-b)^2+2E\big[(X-a)(Y-b)\big]$.</li>
+            <li>Соңғы мүше - $2\operatorname{cov}(X,Y)$, мұнда $E[(X-a)(Y-b)]=E(XY)-ab$.</li>
+            <li>Тәуелсіздік бойынша $E(XY)=EX\cdot EY=ab$, сондықтан коварияция 0.</li>
+            <li>Қорытынды: $D(X+Y)=DX+DY$. Тәуелсіздік (не кем дегенде $\operatorname{cov}=0$) шын мәнінде қажет: $Y=X$ болса, $D(2X)=4DX\ne2DX$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: индикаторлар әдісі: шляпа есебі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $n$ адам шляпаларын кездейсоқ (барлық $n!$ орналасу тең мүмкіндікті) алғанда, өз шляпасын алғандар санының күтімін табу.</p>
+          <p class="mx-idea"><b>Идея:</b> Шляпасын алған адамдар санын индикаторлардың қосындысы етіп жазамыз: әр индикатордың күтімі $\frac1n$, барлығы $1$.</p>
+          <ol class="math-steps">
+            <li>$A_i$ - «$i$-адам өз шляпасын алды», $N=\sum_{i=1}^nI_{A_i}$.</li>
+            <li>$P(A_i)$: $i$-адамның шляпасы бекітілгенде, қалғандарын $(n-1)!$ тәсілмен орналастыруға болады: $P(A_i)=\frac{(n-1)!}{n!}=\frac1n$.</li>
+            <li>Күтімнің аддитивтігі (2-қорыту): $EN=\sum_iEI_{A_i}=\sum_iP(A_i)=n\cdot\frac1n=1$.</li>
+            <li>Назар аударыңыз: $A_i$ оқиғалары тәуелді, бірақ күтім үшін бұл маңызды емес.</li>
+            <li>Тексеру $n=3$: 6 орналасуда сәйкестер саны $3,1,1,1,0,0$; орташасы $\frac{6}{6}=1$ ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Ойын (күтім мен дисперсия)</h3>
+        <p class="math-problem">Сүйек лақтырылады: 6 түссе $+10$ теңге, әйтпесе $-1$ теңге. $X$ - ұтыс. $EX$, $DX$, $\sigma_X$ табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Үлестірім заңы: $P(X=10)=\frac16$, $P(X=-1)=\frac56$. Қосынды 1 ✓.</li>
+          <li><b>2-қадам.</b> $EX=10\cdot\frac16+(-1)\cdot\frac56=\frac{10-5}{6}=\frac56\approx0{,}83$.</li>
+          <li><b>3-қадам.</b> $EX^2=100\cdot\frac16+1\cdot\frac56=\frac{105}{6}=17{,}5$.</li>
+          <li><b>4-қадам.</b> $DX=17{,}5-\left(\frac56\right)^2=\frac{105}{6}-\frac{25}{36}=\frac{630-25}{36}=\frac{605}{36}\approx16{,}81$.</li>
+          <li><b>5-қадам.</b> $\sigma_X=\sqrt{605}/6\approx4{,}10$. Шашырау орташадан әлдеқайда үлкен: бір ойынның нәтижесі өте кездейсоқ.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $EX=\frac56$, $DX=\frac{605}{36}$, $\sigma\approx4{,}10$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Үлестірім функциясы</h3>
+        <p class="math-problem">$X$ - екі монета лақтырғандағы елтаңба саны. Үлестірім заңын және $F(x)$-ті жазыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\Omega=\{EE,ES,SE,SS\}$, тең мүмкіндікті. $P(X=0)=\frac14$, $P(X=1)=\frac12$, $P(X=2)=\frac14$.</li>
+          <li><b>2-қадам.</b> $x&lt;0$: $F(x)=0$. $0\le x&lt;1$: $F(x)=\frac14$.</li>
+          <li><b>3-қадам.</b> $1\le x&lt;2$: $F(x)=\frac14+\frac12=\frac34$. $x\ge2$: $F(x)=1$.</li>
+          <li><b>4-қадам.</b> Секірістер $x=0,1,2$ нүктелерінде, биіктіктері $\frac14,\frac12,\frac14$. Мысалы $P(0&lt;X\le2)=F(2)-F(0)=\frac34$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $F(x)=0;\ \frac14;\ \frac34;\ 1$ аралықтарда $(-\infty,0),[0,1),[1,2),[2,\infty)$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Үзіліссіз шама</h3>
+        <p class="math-problem">$X$ тығыздығы $f(x)=2x$ ($0\le x\le1$), басқа жерде $0$. $P(X\le\frac12)$, $EX$, $DX$ табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Тексеру: $\int_0^12x\,dx=1$ ✓, $f\ge0$ ✓.</li>
+          <li><b>2-қадам.</b> $P(X\le\frac12)=\int_0^{1/2}2x\,dx=\frac14$.</li>
+          <li><b>3-қадам.</b> $EX=\int_0^1x\cdot2x\,dx=\frac23$.</li>
+          <li><b>4-қадам.</b> $EX^2=\int_0^12x^3\,dx=\frac12$, $DX=\frac12-\frac49=\frac1{18}$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac14$; $EX=\frac23$; $DX=\frac1{18}$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Индикаторлар: бос жәшіктер</h3>
+        <p class="math-problem">10 шар 5 жәшікке тәуелсіз және бірқалыпты лақтырылады. Бос жәшіктер санының күтімі?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $A_j$ - «$j$-жәшік бос», $N=\sum_{j=1}^5I_{A_j}$.</li>
+          <li><b>2-қадам.</b> Бір шардың $j$-жәшікке түспеу ықтималдығы $\frac45$; 10 шар тәуелсіз: $P(A_j)=\left(\frac45\right)^{10}\approx0{,}1074$.</li>
+          <li><b>3-қадам.</b> $EN=5\left(\frac45\right)^{10}\approx0{,}537$.</li>
+          <li><b>4-қадам.</b> $N$-нің үлестірімін табу өте күрделі, ал күтімі бір жолда табылды - индикаторлар әдісінің күші.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $5\cdot0{,}8^{10}\approx0{,}537$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$D(X+Y)=DX+DY$ әрдайым</span> → <span class="math-good">тек $\operatorname{cov}(X,Y)=0$ (мысалы, тәуелсіз) болса</span><br>Неге қате: $Y=X$ болса $D(2X)=4DX$.</li>
+        <li><span class="math-bad">$D(X-Y)=DX-DY$</span> → <span class="math-good">тәуелсіз болса $D(X-Y)=DX+DY$</span><br>Неге қате: $D(-Y)=(-1)^2DY$; шашырау азаймайды, қосылады.</li>
+        <li><span class="math-bad">$D(3X+5)=3DX+5$</span> → <span class="math-good">$D(3X+5)=9DX$</span><br>Неге қате: ығысу дисперсияны өзгертпейді, ал көбейткіш квадратпен шығады.</li>
+        <li><span class="math-bad">$E(X^2)=(EX)^2$</span> → <span class="math-good">$EX^2=DX+(EX)^2\ge(EX)^2$</span><br>Неге қате: теңдік тек тұрақты шамада.</li>
+        <li><span class="math-bad">Үзіліссіз шамада $P(X=c)=f(c)$</span> → <span class="math-good">$P(X=c)=0$, ал $f(c)$ - тығыздық</span><br>Неге қате: тығыздық 1-ден үлкен болуы мүмкін ($f=2x$, $x=1$ нүктесінде 2); ықтималдық - интеграл.</li>
+        <li><span class="math-bad">Үлестірім заңында $\sum p_i$ тексермеу</span> → <span class="math-good">әрдайым $\sum p_i=1$ тексеру</span><br>Неге қате: қате кестенің күтімі мен дисперсиясы да қате.</li>
+        <li><span class="math-bad">$E\frac1X=\frac1{EX}$</span> → <span class="math-good">жалпы жағдайда $E\,g(X)\ne g(EX)$</span><br>Неге қате: мысалы $X=1$ не $3$ (жартыдан): $E\frac1X=\frac23$, ал $\frac1{EX}=\frac12$.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="dist" data-title="Үлестірім, күтім және дисперсия" data-config='{"dist": "binomial"}'></div>
+      <p><b>Бақылаңыз:</b> Оқылатын жолда теориялық күтім $E$ мен дисперсия $D$ және таңдаманың орташасы мен дисперсиясы көрсетіледі. Таңдама көлемін 50-ден 5000-ға дейін өзгертіңіз: таңдама шамалары теориялық мәндерге жақындайды. Үлестірімді «Пуассон» не «Бірқалыпты» етіп ауыстырып, $D$ қалай өзгеретінін бақылаңыз.</p>
+      <div class="math-viz" data-viz="graph" data-title="Тығыздық f(x) = 2x және үлестірім функциясы F(x) = x²" data-config='{"fns": [{"f": "2*x*(sign(x)+1)*(sign(1-x)+1)/4", "label": "f(x)"}, {"f": "min(max(x,0),1)^2", "label": "F(x)", "color": 1}], "view": [-0.5, 1.5, -0.2, 2.2]}'></div>
+      <p><b>Бақылаңыз:</b> Тығыздық 1-ден асады ($x=1$ нүктесінде 2), бірақ оның астындағы аудан 1. $F$ - $f$-тің алғашқы функциясы: $F(\frac12)=\frac14$ (3-мысал). $F$ ешқашан кемімейді және 0-ден 1-ге дейін өседі.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m13-4-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-4-t1">1. Үлестірім заңы</h3></div>
+        <p>$X$ мәндері $0,1,2,3$, ықтималдықтары $0{,}1;\ 0{,}3;\ p;\ 0{,}2$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$p=?$","a":0.4,"v":"1-Rational(1,10)-Rational(3,10)-Rational(2,10)","hint":"$\\sum p_i=1$.","sol":{"steps":["$1-0{,}6$."],"ans":"$0{,}4$"}},{"q":"$EX=?$","a":1.7,"v":"0*Rational(1,10)+1*Rational(3,10)+2*Rational(4,10)+3*Rational(2,10)","hint":"$\\sum x_ip_i$.","sol":{"steps":["$0+0{,}3+0{,}8+0{,}6$."],"ans":"$1{,}7$"}},{"q":"$P(X\\ge2)=?$","a":0.6,"v":"Rational(4,10)+Rational(2,10)","hint":"$x=2$ және $x=3$.","sol":{"steps":["$0{,}4+0{,}2$."],"ans":"$0{,}6$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-4-num2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-4-t2">2. Сызықтық түрлендіру</h3></div>
+        <p>$EX=3$, $DX=4$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$E(2X-5)$","a":1,"v":"2*3-5","hint":"$aEX+b$.","sol":{"steps":["$6-5$."],"ans":"$1$"}},{"q":"$D(2X-5)$","a":16,"v":"2**2*4","hint":"$a^2DX$.","sol":{"steps":["$4\\cdot4$."],"ans":"$16$"}},{"q":"$EX^2$","a":13,"v":"4+3**2","hint":"$DX+(EX)^2$.","sol":{"steps":["$4+9$."],"ans":"$13$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m13-4-tf3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-4-t3">3. Қасиеттер</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Кез келген $X,Y$ үшін $E(X+Y)=EX+EY$ (күтімдер бар болса).","a":true,"e":"Тәуелсіздік қажет емес (2-қорыту).","hint":"Сызықтық."},{"q":"$D(-X)=-DX$.","a":false,"e":"$D(-X)=(-1)^2DX=DX$; дисперсия теріс болмайды.","hint":"$D(aX)=a^2DX$."},{"q":"Үзіліссіз шаманың тығыздығы 1-ден үлкен мән қабылдай алмайды.","a":false,"e":"$f(x)=2x$ ($[0,1]$) - мысал. Аудан 1 болуы керек, мән емес.","hint":"Тығыздық - ықтималдық емес."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-4-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-4-t4">4. Сүйек</h3></div>
+        <p>Бір ойын сүйегі. Бөлшекпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$EX$","a":"7/2","v":"sum([Rational(k,6) for k in range(1,7)])","hint":"$\\frac{1+\\dots+6}{6}$.","sol":{"steps":["$\\frac{21}{6}$."],"ans":"$\\frac72$"}},{"q":"$DX$","a":"35/12","v":"sum([Rational(k*k,6) for k in range(1,7)])-Rational(49,4)","hint":"$EX^2=\\frac{91}{6}$.","sol":{"steps":["$\\frac{91}{6}-\\frac{49}{4}=\\frac{182-147}{12}$."],"ans":"$\\frac{35}{12}$"}},{"q":"Екі тәуелсіз сүйек қосындысының дисперсиясы","a":"35/6","v":"2*(sum([Rational(k*k,6) for k in range(1,7)])-Rational(49,4))","hint":"Тәуелсіз - қосылады.","sol":{"steps":["$2\\cdot\\frac{35}{12}$."],"ans":"$\\frac{35}{6}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-4-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-4-t5">5. Тығыздық</h3></div>
+        <p>$f(x)=cx^2$, $0\le x\le3$; басқа жерде $0$. Бөлшекпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$c=?$","a":"1/9","v":"1/integrate(x**2,(x,0,3))","hint":"$\\int_0^3cx^2dx=1$.","sol":{"steps":["$c\\cdot9=1$."],"ans":"$\\frac19$"}},{"q":"$EX=?$","a":"9/4","v":"integrate(x*x**2/9,(x,0,3))","hint":"$\\int_0^3x\\cdot\\frac{x^2}{9}dx$.","sol":{"steps":["$\\frac19\\cdot\\frac{81}{4}$."],"ans":"$\\frac94$"}},{"q":"$P(X\\le1)=?$","a":"1/27","v":"integrate(x**2/9,(x,0,1))","hint":"$F(1)=\\frac{1^3}{27}$.","sol":{"steps":["$\\frac19\\cdot\\frac13$."],"ans":"$\\frac1{27}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m13-4-cho6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-4-t6">6. Үлестірім функциясы</h3></div>
+        <p>Қай функция үлестірім функциясы бола алады?</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Үлестірім функциясы бола алатындарды белгілеңіз.","o":["$F(x)=\\begin{cases}0,&x\\lt0\\\\x,&0\\le x\\lt1\\\\1,&x\\ge1\\end{cases}$","$F(x)=\\sin x$","$F(x)=\\begin{cases}0,&x\\lt0\\\\1-e^{-x},&x\\ge0\\end{cases}$","$F(x)=x^2$"],"a":[0,2],"e":"$\\sin x$ кемиді және теріс; $x^2$ шексіздікте 1-ге ұмтылмайды.","hint":"Кемімейді, $0\\to1$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m13-4-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-4-t7">7. Ұғымдар</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Сипаттама мен формула.","pairs":[["орташа мән","$\\sum x_ip_i$"],["шашырау","$EX^2-(EX)^2$"],["шашырау, X-пен бірдей бірлікте","$\\sqrt{DX}$"],["оқиға ықтималдығы","$EI_A$"]],"hint":"Индикатордың күтімі - ықтималдық.","sol":{"steps":["$E$, $D$, $\\sigma$, $EI_A=P(A)$."]},"e":"Стандарт ауытқу - дисперсияның түбірі."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m13-4-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-4-t8">8. Параметрлік: дисперсия</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді. Бөлшекпен.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,6]},"b":{"int":[7,12]}},"type":"num","q":"$X$ тең ықтималдықпен ($\\frac12$) $#{a}$ не $#{b}$ мәнін қабылдайды. $DX=?$","a":"(b-a)^2/4","v":"Rational(a**2+b**2,2)-Rational(a+b,2)**2","hint":"Екі нүктелі шамада $DX=\\left(\\frac{b-a}{2}\\right)^2$.","sol":{"steps":["$EX=\\frac{#{a}+#{b}}{2}$, ауытқу әрқашан $\\pm\\frac{#{b-a}}{2}$.","$DX=\\left(\\frac{#{b-a}}{2}\\right)^2$."],"ans":"$#{(b-a)^2/4}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m13-4-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-4-t9">9. Параметрлік: сызықтық түрлендіру</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"int":[-5,5]},"s":{"int":[1,5]},"a":{"int":[-4,4],"nz":true},"b":{"int":[-9,9]}},"type":"num","q":"$EX=#{m}$, $\\sigma_X=#{s}$. $Y=#{a}X#{+b}$ болса, $DY=?$","a":"a^2*s^2","v":"a**2*s**2","hint":"$DY=a^2DX$, $DX=\\sigma^2$.","sol":{"steps":["$DX=#{s}^2=#{s^2}$.","$DY=#{p:a}^2\\cdot#{s^2}$; ығысу $#{b}$ әсер етпейді."],"ans":"$#{a^2*s^2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-4-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-4-t10">10. Индикаторлар</h3></div>
+        <p>Индикаторлар әдісімен шешіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Монета 20 рет лақтырылады. «Елтаңба, одан кейін бірден сан жағы» (ES) тіркесі неше рет кездеседі - күтімі?","a":"19/4","v":"19*Rational(1,4)","hint":"$A_i$ - «$i$ және $i+1$ лақтыру ES», $i=1..19$.","sol":{"steps":["$P(A_i)=\\frac14$.","$EN=19\\cdot\\frac14$."],"ans":"$\\frac{19}{4}$"}},{"q":"20 адамдық топта (жылда 365 күн, бірқалыпты, тәуелсіз) туған күні сәйкес келетін жұптар санының күтімі ($0{,}001$ дәлдік).","a":"190/365","v":"binomial(20,2)*Rational(1,365)","tol":0.001,"hint":"Әр жұп үшін индикатор: $P=\\frac1{365}$.","sol":{"steps":["Жұптар: $C_{20}^2=190$.","$190\\cdot\\frac1{365}\\approx0{,}521$."],"ans":"$\\approx0{,}521$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-4-num11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-4-t11">11. Ойын әділ бе?</h3></div>
+        <p>Санды енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Екі сүйек лақтырылады. Қосынды 7 түссе $a$ теңге ұтасыз, әйтпесе 1 теңге төлейсіз. Ойын әділ ($EX=0$) болатын $a$?","a":5,"v":"solve(Eq(a*Rational(1,6)-Rational(5,6),0),a)[0]","hint":"$P(\\text{7})=\\frac16$.","sol":{"steps":["$EX=a\\cdot\\frac16-1\\cdot\\frac56=0$.","$a=5$."],"ans":"$5$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-4-num12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-4-t12">12. Коварияция</h3></div>
+        <p>$X,Y$ үшін $DX=4$, $DY=9$, $\operatorname{cov}(X,Y)=-2$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$D(X+Y)$","a":9,"v":"4+9+2*(-2)","hint":"$DX+DY+2\\operatorname{cov}$.","sol":{"steps":["$4+9-4$."],"ans":"$9$"}},{"q":"$D(2X-Y)$","a":33,"v":"4*4+9-2*2*(-2)","hint":"$D(aX+bY)=a^2DX+b^2DY+2ab\\operatorname{cov}$.","sol":{"steps":["$4\\cdot4+1\\cdot9+2\\cdot2\\cdot(-1)\\cdot(-2)$.","$16+9+8$."],"ans":"$33$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m13-4-ord13">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-4-t13">13. Дисперсияны есептеу</h3></div>
+        <p>Қадамдарды ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Дискретті шаманың дисперсиясын табу.","steps":["Үлестірім заңын жазып, $\\sum p_i=1$ тексереміз.","$EX=\\sum x_ip_i$ есептейміз.","$EX^2=\\sum x_i^2p_i$ есептейміз.","$DX=EX^2-(EX)^2$.","$DX\\ge0$ екенін тексеріп, қажет болса $\\sigma=\\sqrt{DX}$."],"hint":"Алдымен заң, соңында тексеру.","sol":{"ans":"$DX=EX^2-(EX)^2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m13-4-rev14">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-4-t14">14. Қадамдық шешім: купондар</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Әр шоколадта $n$ түрлі суреттің бірі (тең ықтималдықпен, тәуелсіз). Барлық $n$ суретті жинау үшін орташа неше шоколад керек?","hint":"Жинауды кезеңдерге бөліңіз: $k$ түрлі сурет бар болғанда жаңасын күту.","steps":["$T=T_1+T_2+\\dots+T_n$, мұнда $T_k$ - $(k-1)$ түр жиналғаннан кейін жаңа түрді күту саны.","$k$-кезеңде жаңа сурет ықтималдығы $p_k=\\frac{n-k+1}{n}$. Сәтті болғанша күту саны геометриялық, $ET_k=\\frac{1}{p_k}$ (5-сабақта дәлелденеді).","Аддитивтік: $ET=\\sum_{k=1}^n\\frac{n}{n-k+1}=n\\left(1+\\frac12+\\dots+\\frac1n\\right)$.","$n=10$: $ET=10\\cdot2{,}929\\approx29{,}3$ шоколад."],"ans":"$ET=n\\sum_{j=1}^{n}\\frac1j\\approx n\\ln n$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Күтім - алгоритмнің орташа жұмыс уақыты (мысалы, quicksort-тың $O(n\log n)$ бағасы индикаторлармен дәлелденеді), сақтандыру сыйлықақысы, ойынның «әділдігі». Дисперсия - тәуекел мен сенімділіктің өлшемі: портфель теориясында тәуелсіз активтерге бөлу дисперсияны азайтады.</p>
+      <p><b>Мини-жоба: «Күтім мен дисперсия зертханасы».</b> Кез келген дискретті үлестірім үшін $E$, $D$ есептейтін функция, Монте-Карло тексеруі және купон жинау есебінің модельдеуі.</p>
+<pre data-lang="python"><code class="language-python">import random
+from fractions import Fraction as Fr
+
+def stats(law):                      # law: {мән: ықтималдық}
+    assert sum(law.values()) == 1, "ықтималдықтар қосындысы 1 емес"
+    m = sum(x * p for x, p in law.items())
+    m2 = sum(x * x * p for x, p in law.items())
+    return m, m2 - m * m
+
+game = {10: Fr(1, 6), -1: Fr(5, 6)}
+print("Ойын: E, D =", stats(game))
+
+# Монте-Карло тексеру
+random.seed(7)
+N = 100_000
+xs = [10 if random.randint(1, 6) == 6 else -1 for _ in range(N)]
+mean = sum(xs) / N
+var = sum((x - mean) ** 2 for x in xs) / (N - 1)
+print("Таңдама:", round(mean, 3), round(var, 2), " теория:", float(Fr(5, 6)), float(Fr(605, 36)))
+
+# Купон жинау: n = 10
+def coupons(n):
+    seen, t = set(), 0
+    while len(seen) &lt; n:
+        seen.add(random.randrange(n)); t += 1
+    return t
+print("Купон, орташа:", sum(coupons(10) for _ in range(20_000)) / 20_000, " теория:", 10 * sum(1 / j for j in range(1, 11)))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li><code>stats</code> функциясын екі сүйектің қосындысы үшін қолданыңыз (заңды бағдарламамен құрыңыз). $D=\frac{35}{6}$ шыға ма?</li>
+        <li>Шляпа есебін модельдеңіз ($n=100$): <code>random.shuffle</code> арқылы орналастырып, сәйкестер санының орташасы 1-ге жақын ба?</li>
+        <li>Санкт-Петербург ойынын модельдеп, $N$ өскенде таңдама орташасының тұрақтанбайтынын бақылаңыз. Неге?</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Үлестірім заңы</td><td>$p_i=P(X=x_i)$</td><td>$p_i\ge0$, $\sum p_i=1$</td></tr>
+        <tr><td>Үлестірім функциясы</td><td>$F(x)=P(X\le x)$</td><td>кемімейді, $0\to1$</td></tr>
+        <tr><td>Күтім</td><td>$\sum x_ip_i$; $\int xf(x)dx$</td><td>абсолютті жинақталса</td></tr>
+        <tr><td>Дисперсия</td><td>$DX=EX^2-(EX)^2$</td><td>$EX^2&lt;\infty$</td></tr>
+        <tr><td>Сызықтық</td><td>$E(aX+b)=aEX+b$, $D(aX+b)=a^2DX$</td><td>-</td></tr>
+        <tr><td>Қосынды</td><td>$E(X+Y)=EX+EY$; $D(X+Y)=DX+DY$</td><td>дисперсия үшін тәуелсіз</td></tr>
+        <tr><td>Индикатор</td><td>$EI_A=P(A)$</td><td>-</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m13-4-self">
+        <li><input type="checkbox"> <span>Мен үлестірім заңын жазып, оны тексере аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен үлестірім функциясын құрып, $P(a&lt;X\le b)$ таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен күтім мен дисперсияны есептеп, мағынасын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $D(aX+b)=a^2DX$ формуласын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен күтімнің аддитивтігі тәуелсіздікті қажет етпейтінін түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен индикаторлар әдісін қолданып, күрделі шаманың күтімін таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен тығыздық арқылы ықтималдық пен күтімді интегралмен есептей аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. X мәндері 0 және 2, әрқайсысы 1/2 ықтималдықпен. EX = ?</p>
+<label><input type="radio" value="a"> 2</label>
+<label><input type="radio" value="b"> 0</label>
+<label><input type="radio" value="c"> 1</label>
+<label><input type="radio" value="d"> 1/2</label>
+<p class="explain">0·1/2 + 2·1/2 = 1.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. Сол X үшін DX = ?</p>
+<label><input type="radio" value="a"> 2</label>
+<label><input type="radio" value="b"> 1</label>
+<label><input type="radio" value="c"> 4</label>
+<label><input type="radio" value="d"> 0</label>
+<p class="explain">EX² = 2, (EX)² = 1, D = 1.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. EX = 2, DX = 3. D(4X + 1) = ?</p>
+<label><input type="radio" value="a"> 48</label>
+<label><input type="radio" value="b"> 13</label>
+<label><input type="radio" value="c"> 12</label>
+<label><input type="radio" value="d"> 49</label>
+<p class="explain">4²·3 = 48; ығысу әсер етпейді.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. Қай теңдік тәуелсіздіксіз де дұрыс?</p>
+<label><input type="radio" value="a"> D(X+Y) = DX + DY</label>
+<label><input type="radio" value="b"> E(XY) = EX·EY</label>
+<label><input type="radio" value="c"> D(XY) = DX·DY</label>
+<label><input type="radio" value="d"> E(X+Y) = EX + EY</label>
+<p class="explain">Күтімнің сызықтығы әрдайым орындалады.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">5. Үзіліссіз X үшін P(X = 3) = ?</p>
+<label><input type="radio" value="a"> f(3)</label>
+<label><input type="radio" value="b"> F(3)</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> 1/3</label>
+<p class="explain">Жеке нүктенің интегралы 0.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. Индикатор I_A-ның күтімі:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> P(A)</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> P(A)(1 − P(A))</label>
+<p class="explain">E I_A = 1·P(A) + 0·P(Ā).</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. n адам шляпаларын кездейсоқ алса, өз шляпасын алғандардың орташа саны:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> n/2</label>
+<label><input type="radio" value="c"> 1/n</label>
+<label><input type="radio" value="d"> 0</label>
+<p class="explain">n · (1/n) = 1.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. DX = 0 болса:</p>
+<label><input type="radio" value="a"> EX = 0</label>
+<label><input type="radio" value="b"> X тәуелсіз</label>
+<label><input type="radio" value="c"> X = 0</label>
+<label><input type="radio" value="d"> X ықтималдығы 1-мен тұрақты</label>
+<p class="explain">Шашырау жоқ - мән тұрақты (тұрақты нөл болуы міндетті емес).</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=prob">Probability Theory емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-81.html"><small>Алдыңғы</small>← Probability Theory · 3-сабақ: Шартты ықтималдық және Байес формуласы</a>

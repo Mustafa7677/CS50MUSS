@@ -44,10 +44,13 @@ test("курстар беті және CS50P: лекция, тест, «Оқыд
   await expect(page.locator('.cx-card[data-course="python"] .cx-bar')).toBeVisible();
   await expect(page.locator('.cx-card[data-course="python"] .cx-foot')).toContainText("1/10 лекция оқылды");
   await expect(page.locator('.cx-card[data-course="x"] .cx-bar')).toBeHidden();
-  // CS50x басты беті CS50P прогресін өзінікі деп санамайды; басты бетте CS50x-тен басқа 6 курс
+  // CS50x басты беті CS50P прогресін өзінікі деп санамайды; басты бетте барлық 9 курс тақтайшасы, CS50P-де өз прогресі
   await page.goto("index.html");
   await expect(page.locator(".dash-stats")).toContainText("0/12");
-  await expect(page.locator(".cx-home .cx-card")).toHaveCount(8);
+  await expect(page.locator(".kh-tile")).toHaveCount(9);
+  await expect(page.locator('.kh-tile[data-course="python"] .kh-meta')).toHaveText("1/10 оқылды");
+  await expect(page.locator('.kh-tile[data-course="python"]')).toHaveClass(/kh-on/);
+  await expect(page.locator('.kh-tile[data-course="x"]')).not.toHaveClass(/kh-on/);
   // Іздеу CS50P бөлімдерін табады
   await page.keyboard.press("Control+k");
   await expect(page.locator(".search-modal input")).toBeFocused();
@@ -208,7 +211,7 @@ test("«Менің курстарым»: басты бет пен профиль
   await expect(py.locator(".mc-btn")).toHaveAttribute("href", /python\/lectures\/week-2\.html$/);
   await page.goto("profile.html");
   await expect(page.locator(".pf-mycourses, .my-courses .mc-card").first()).toBeVisible();
-  await expect(page.locator(".pf-stats")).toContainText("4/239");
+  await expect(page.locator(".pf-stats")).toContainText("4/247");
   // Курс таңдағыштағы прогресс
   await page.click(".course-pill");
   await expect(page.locator('.course-menu .cm-row:has-text("CS50P") .cm-n')).toHaveText("2/10");

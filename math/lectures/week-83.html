@@ -6,13 +6,14 @@
   <title>Math Probability Theory · 5-сабақ: Дискретті үлестірімдер - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Probability Theory · 5-сабақ: Дискретті үлестірімдер - CS50 қазақша">
-  <meta property="og:description" content="Математика, Probability Theory · 5-сабақ: Дискретті үлестірімдер. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Бернулли, биномдық, геометриялық, Пуассон үлестірімдері.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-83.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Probability Theory · 5-сабақ: Дискретті үлестірімдер - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-83.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Probability Theory · 5-сабақ: Дискретті үлестірімдер. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Бернулли, биномдық, геометриялық, Пуассон үлестірімдері.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,456 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="83">
+    <article class="content math-lesson" style="--sc:#c2410c" id="main">
+      <div class="lecture-head" style="--lc:#c2410c" data-n="83" data-msubj="prob" data-glyph="ℙ">
         <div class="num">Probability Theory · 5-сабақ</div>
         <h1>Дискретті үлестірімдер</h1>
-        <p>Бернулли, биномдық, геометриялық, Пуассон үлестірімдері.</p>
+        <p>Көптеген кездейсоқ құбылыс бірнеше «стандарт» модельге келеді: «$n$ тәжірибеде неше сәттілік?», «бірінші сәттілікке дейін неше әрекет?», «бір сағатта неше қоңырау?».</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 50 мин</span><span>Есептер ≈ 1 сағ 20 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ 20 мин</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Бұл сабақта бес негізгі дискретті үлестірімді - Бернулли, биномдық, геометриялық, гипергеометриялық және Пуассон үлестірімдерін - нөлден құрамыз, олардың формулаларын, күтімі мен дисперсиясын қорытамыз және қай жағдайда қайсысын қолдану керегін үйренеміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-13">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=prob">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Probability Theory: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-13">Probability Theory</a></span><ol><li><a href="week-79.html" title="Комбинаторика негіздері">1</a></li><li><a href="week-80.html" title="Ықтималдық және оның қасиеттері">2</a></li><li><a href="week-81.html" title="Шартты ықтималдық және Байес формуласы">3</a></li><li><a href="week-82.html" title="Кездейсоқ шамалар, күтім және дисперсия">4</a></li><li><a href="week-83.html" aria-current="page" title="Дискретті үлестірімдер">5</a></li><li><a href="week-84.html" title="Үзіліссіз үлестірімдер">6</a></li><li><a href="week-85.html" title="Үлкен сандар заңы және орталық шектік теорема">7</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-13">Probability Theory</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Көп кездейсоқ құбылыс бірнеше стандарт модельге келеді: «$n$ тәжірибеде неше сәттілік» (биномдық), «бірінші сәттілікке дейін» (геометриялық), «сирек оқиғалар саны» (Пуассон).</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>есептің шартынан үлестірімнің түрін (биномдық, геометриялық, гипергеометриялық, Пуассон) тану;</li>
+        <li>биномдық үлестірім формуласын $P(X=k)=C_n^kp^kq^{n-k}$ қорытып, $EX=np$, $DX=npq$ екенін индикаторлармен дәлелдеу;</li>
+        <li>геометриялық үлестірімнің күтімін $\frac1p$ табу және оның «есте сақтамау» қасиетін түсіндіру;</li>
+        <li>қайтарусыз таңдауда гипергеометриялық үлестірімді қолдану;</li>
+        <li>сирек оқиғалар үшін Пуассон үлестірімін және Пуассон жуықтауын ($\lambda=np$) қолдану;</li>
+        <li>нәтижені Python-да модельдеу арқылы тексеру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Бізге керек: $C_n^k=\frac{n!}{k!(n-k)!}$ және Ньютон биномы $(a+b)^n=\sum C_n^ka^kb^{n-k}$; тәуелсіз оқиғалар үшін $P(AB)=P(A)P(B)$; кездейсоқ шаманың күтімі $EX=\sum x_ip_i$, дисперсиясы $DX=EX^2-(EX)^2$; күтім әрдайым қосылады, ал тәуелсіз шамалардың дисперсиясы да қосылады. Геометриялық қатар: $|q|&lt;1$ болса $\sum_{k=0}^{\infty}q^k=\frac{1}{1-q}$. Сондай-ақ $e^\lambda=\sum_{k=0}^\infty\frac{\lambda^k}{k!}$.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-82.html">Probability Theory · 4-сабақ: Кездейсоқ шамалар, күтім және дисперсия</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: айыппұл соққылары</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">Футболшы пенальтиді $0{,}8$ ықтималдықпен соғады. $5$ соққыдан дәл $4$ гол болу ықтималдығы? Орта есеппен неше гол?</p>
+        <ol class="math-steps">
+          <li>Қай $4$ соққы сәтті болатынын таңдау: $C_5^4=5$ тәсіл.</li>
+          <li>Әр нақты тізбектің ықтималдығы: $0{,}8^4\cdot0{,}2=0{,}08192$.</li>
+          <li>$P(X=4)=5\cdot0{,}08192\approx0{,}41$.</li>
+          <li>Орта мән $np=5\cdot0{,}8=4$ гол.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Биномдық формула = «қай орындар сәтті» (теру) × «бір тізбектің ықтималдығы» (көбейту ережесі).</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Баскетболшы айып добын 70% ықтималдықпен түсіреді. Ол 10 рет лақтырады. Неше рет түсіреді? Орташа 7, бірақ 5 немесе 9 болуы да мүмкін. Әр лақтыру - «сәттілік/сәтсіздік» тәжірибесі (Бернулли тәжірибесі), лақтырулар тәуелсіз, ықтималдық тұрақты. Сәттіліктер саны - <b>биномдық</b> шама. Бұл үш шарт (тәуелсіздік, екі нәтиже, тұрақты $p$) - биномдық модельдің «паспорты».</p>
+      <p>Енді сұрақ басқа: баскетболшы бірінші рет қашан қателеседі? Ол 1-лақтыруда, 2-лақтыруда, ... болуы мүмкін. Бұл - <b>геометриялық</b> шама. Оның таңғаларлық қасиеті - «есте сақтамау»: 5 рет қатарынан түсірсе, келесі қатеге дейінгі күту уақыты басынан бастағандай. Монета «өткенді есте сақтамайды».</p>
+      <p>Бақылауға 100 бөлшектің 10-ы ақаулы партиядан 5 бөлшек <em>қайтарусыз</em> алынды. Енді тәжірибелер тәуелсіз емес: бірінші ақаулы бөлшек алынса, қалғанында ақаулы аз. Бұл - <b>гипергеометриялық</b> үлестірім. Партия үлкен, ал таңдама кішкентай болса, ол биномдыққа жақын.</p>
+      <p>Ал бір сағатта call-орталыққа келетін қоңыраулар саны? Ықтимал тұтынушы мыңдаған, әрқайсысы өте кіші ықтималдықпен қоңырау шалады. Биномдық модельде $n$ өте үлкен, $p$ өте кіші, ал орташа $\lambda=np$ қалыпты сан. Мұндай «сирек оқиғалар заңы» - <b>Пуассон</b> үлестірімі. Ол серверге сұраныстар, радиоактивті ыдырау, мәтіндегі қателер санын модельдейді.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · модельдер жинағы</span>
+        <p>Әр стандарт үлестірім - дайын құрал: монета (Бернулли), бірнеше монета (биномдық), «сәттілікке дейін лақтыру» (геометриялық), урнадан қайтарусыз алу (гипергеометриялық), сағатына қоңыраулар (Пуассон). Есепті дұрыс модельге «таныстыру» - жартылай шешім.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · баспа қателері</span>
+        <p>Кітапта $1000$ бет, әр бетте қате болу ықтималдығы $0{,}002$. Қателер саны - биномдық, бірақ $n$ үлкен, $p$ кішкене: Пуассонмен $\lambda=2$ жуықтау әлдеқайда оңай және дәл.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$B(n,p)$</td><td>биномдық үлестірім</td><td>$n$ тәжірибедегі сәттіліктер саны</td></tr>
+        <tr><td>$q=1-p$</td><td>сәтсіздік ықтималдығы</td><td>бір тәжірибеде</td></tr>
+        <tr><td>$P(T=k)=q^{k-1}p$</td><td>геометриялық</td><td>бірінші сәттілік $k$-шы тәжірибеде</td></tr>
+        <tr><td>$\mathrm{Pois}(\lambda)$</td><td>Пуассон</td><td>$e^{-\lambda}\frac{\lambda^k}{k!}$, орта мәні $\lambda$</td></tr>
+        <tr><td>$\frac{C_M^kC_{N-M}^{n-k}}{C_N^n}$</td><td>гипергеометриялық</td><td>қайтарусыз алынған белгіленген заттар саны</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 5.1 · Бернулли схемасы</span>
+        <p>$n$ тәуелсіз тәжірибе жасалады, әрқайсысында «сәттілік» $p$, «сәтсіздік» $q=1-p$ ықтималдықпен, $0&lt;p&lt;1$. Бір тәжірибенің индикаторы <strong>Бернулли үлестірімі</strong> (<span class="term-en">Bernoulli distribution</span>) бойынша: $P(I=1)=p$, $P(I=0)=q$, $EI=p$, $DI=pq$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Бірдей, тәуелсіз «иә/жоқ» тәжірибелер тізбегі.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 5.2 · Биномдық үлестірім</span>
+        <p>Бернулли схемасындағы сәттіліктер саны $X$ <strong>биномдық үлестірім</strong> (<span class="term-en">binomial distribution</span>) бойынша үлестірілген, $X\sim B(n,p)$: $$P(X=k)=C_n^k\,p^k\,q^{n-k},\qquad k=0,1,\dots,n.$$</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $n$ тәжірибедегі сәттіліктер саны - қай орындар сәтті болатынын таңдау және сол тізбектің ықтималдығы.</p></div>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 5.3 · Геометриялық үлестірім</span>
+        <p>Тәуелсіз Бернулли тәжірибелерінде бірінші сәттілікке дейінгі (сәттілікті қоса) тәжірибелер саны $T$ <strong>геометриялық үлестірім</strong> (<span class="term-en">geometric distribution</span>) бойынша үлестірілген: $P(T=k)=q^{k-1}p$, $k=1,2,\dots$ (Кейбір кітаптарда сәтсіздіктер саны $T-1$ алынады; формулалар сәйкесінше ығысады.)</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Бірінші сәттілікке дейін неше тәжірибе керек.</p></div>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 5.4 · Гипергеометриялық үлестірім</span>
+        <p>$N$ заттың $M$-і «белгіленген»; қайтарусыз $n$ зат алынады ($n\le N$). Белгіленгендер саны $X$ <strong>гипергеометриялық үлестірім</strong> (<span class="term-en">hypergeometric distribution</span>) бойынша: $$P(X=k)=\frac{C_M^k\,C_{N-M}^{n-k}}{C_N^n},$$ мұнда $\max(0,n-N+M)\le k\le\min(n,M)$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Урнадан қайтарусыз алғанда белгіленген заттар саны - тәжірибелер тәуелсіз емес.</p></div>
+      <div class="math-def" id="def-5"><span class="math-tag">Анықтама 5.5 · Пуассон үлестірімі</span>
+        <p>$\lambda>0$ болсын. $X$ мәндері $0,1,2,\dots$ және $P(X=k)=e^{-\lambda}\dfrac{\lambda^k}{k!}$ болса, $X$ <strong>Пуассон үлестірімі</strong> (<span class="term-en">Poisson distribution</span>) бойынша үлестірілген, $X\sim\mathrm{Pois}(\lambda)$. $EX=DX=\lambda$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Сирек оқиғалар саны: орта мәні $\lambda$, мәндері $0,1,2,\dots$</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 5.1 · Биномдық шаманың сипаттамалары</span>
+        <p>$X\sim B(n,p)$ болса, $EX=np$, $DX=npq$. Ең ықтимал мән (мода) $k_0$: $(n+1)p-1\le k_0\le(n+1)p$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Биномдық шаманың орта мәні $np$, дисперсиясы $npq$; ең ықтимал мән $np$ маңында.</p></div>
+      <p><em>Негіздеме.</em> $X=I_1+\dots+I_n$ (тәуелсіз индикаторлар), 2-қорыту. Мода: $\frac{P(X=k+1)}{P(X=k)}=\frac{(n-k)p}{(k+1)q}\ge1\iff k\le(n+1)p-1$.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 5.2 · Геометриялық шаманың сипаттамалары және есте сақтамау</span>
+        <p>$P(T=k)=q^{k-1}p$ болса: $P(T>k)=q^k$; $ET=\frac1p$; $DT=\frac{q}{p^2}$; кез келген $m,k\ge0$ бүтін үшін $P(T>m+k\mid T>m)=P(T>k)$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Геометриялық шаманың орта мәні $\frac1p$, және ол есте сақтамайды.</p></div>
+      <p><em>Негіздеме.</em> 3-қорыту. Есте сақтамау: $\frac{P(T>m+k)}{P(T>m)}=\frac{q^{m+k}}{q^m}=q^k$.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 5.3 · Пуассон жуықтауы (сирек оқиғалар заңы)</span>
+        <p>$n\to\infty$, $p=p_n\to0$ және $np_n\to\lambda>0$ болса, әр бекітілген $k$ үшін $C_n^kp_n^k(1-p_n)^{n-k}\to e^{-\lambda}\dfrac{\lambda^k}{k!}$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $n$ үлкен, $p$ кішкене болса, биномдық Пуассонға жақын ($\lambda=np$).</p></div>
+      <p><em>Негіздеме.</em> 4-қорыту. Практикада $n$ үлкен (мысалы $\ge50$), $p$ кіші ($\le0{,}1$), $np$ шамалы болса, $B(n,p)\approx\mathrm{Pois}(np)$; қателіктің бағасы $\sum_k|B-\mathrm{Pois}|\le2np^2$ (Ле Кам теңсіздігі, дәлелсіз келтіреміз).</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 5.1 · Биномдық формула</span>
+        <div class="math-fbody">$$P(X=k)=C_n^k\,p^k\,(1-p)^{n-k},\quad EX=np,\quad DX=np(1-p)$$</div>
+        <p class="math-fnote">Шарты: $n$ тәуелсіз тәжірибе, әрқайсысында бірдей $p$.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 5.2 · Геометриялық</span>
+        <div class="math-fbody">$$P(T=k)=(1-p)^{k-1}p,\quad ET=\frac1p,\quad DT=\frac{1-p}{p^2}$$</div>
+        <p class="math-fnote">$T$ - бірінші сәттілік болған тәжірибенің нөмірі.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 5.3 · Гипергеометриялық күтім</span>
+        <div class="math-fbody">$$EX=n\frac{M}{N},\qquad DX=n\frac MN\left(1-\frac MN\right)\frac{N-n}{N-1}$$</div>
+        <p class="math-fnote">Күтім биномдықтағыдай ($p=\frac MN$), ал дисперсия «$\frac{N-n}{N-1}$» түзету көбейткішімен кішірек (қайтарусыз таңдау шашырауды азайтады).</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 5.4 · Пуассон</span>
+        <div class="math-fbody">$$P(X=k)=e^{-\lambda}\frac{\lambda^k}{k!},\qquad EX=DX=\lambda$$</div>
+        <p class="math-fnote">Шарты: $\lambda>0$; $\lambda$ - бірлік уақыттағы (аудандағы) оқиғалардың орташа саны.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Үлестірімді тану кестесі. «$n$ тәуелсіз әрекетте неше сәттілік» - $B(n,p)$. «Бірінші сәттілік қашан» - геометриялық. «Қайтарусыз таңдауда неше белгіленген» - гипергеометриялық. «Белгілі уақытта неше сирек оқиға, орташасы $\lambda$» - Пуассон.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Биномдық формула тек тәуелсіз тәжірибелерге және <em>тұрақты</em> $p$-ға жарайды. Қайтарусыз таңдауда тәжірибелер тәуелді: мысалы, 10 бөлшектің 3-еуі ақаулы, 5 бөлшек алынса, «дәл 2 ақаулы» ықтималдығы гипергеометриялық $\frac{C_3^2C_7^3}{C_{10}^5}=\frac{105}{252}\approx0{,}417$, ал биномдық $C_5^2\,0{,}3^2\,0{,}7^3\approx0{,}309$ - айырма үлкен.</p></div>
+      <div class="math-remark"><span class="math-box-title">Ескертпе</span>
+        <p>Пуассон үлестірімінде $EX=DX$. Нақты деректерде дисперсия орташадан әлдеқайда үлкен болса, Пуассон моделі жарамсыз болуы мүмкін (оқиғалар «топтасып» келеді).</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $B(10;0{,}3)$-тің орта мәні мен дисперсиясы?</span></summary>
+        <p>$3$ және $10\cdot0{,}3\cdot0{,}7=2{,}1$.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> Сүйекті алтылық шыққанша лақтырамыз. Орташа неше лақтыру?</span></summary>
+        <p>$\frac1{1/6}=6$.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> $\mathrm{Pois}(2)$ үшін $P(X=0)$?</span></summary>
+        <p>$e^{-2}\approx0{,}135$.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> Карталар колодасынан (52) қайтарусыз 5 карта алынды. Тұздар саны қандай үлестірім?</span></summary>
+        <p>Гипергеометриялық: $N=52$, $M=4$, $n=5$.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: биномдық формула</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $P(X=k)=C_n^kp^kq^{n-k}$ екенін көрсету және ықтималдықтардың қосындысы 1 екенін тексеру.</p>
+          <p class="mx-idea"><b>Идея:</b> Сәттіліктердің орнын таңдаймыз (теру) және әр тізбектің ықтималдығын тәуелсіздік бойынша көбейтеміз.</p>
+          <ol class="math-steps">
+            <li>Нәтиже - $n$ әріптен тұратын тізбек: С (сәттілік) не Ж (сәтсіздік).</li>
+            <li>Тәжірибелер тәуелсіз, сондықтан нақты бір тізбектің ықтималдығы әріптердің ықтималдықтарының көбейтіндісі: дәл $k$ С және $n-k$ Ж болса, $p^kq^{n-k}$ (ретке тәуелсіз).</li>
+            <li>$\{X=k\}$ оқиғасы осындай тізбектердің бірігуі; олар үйлесімсіз. Мұндай тізбектер саны - С тұратын $k$ орынды таңдау: $C_n^k$.</li>
+            <li>Қосу ережесі: $P(X=k)=C_n^kp^kq^{n-k}$.</li>
+            <li>Тексеру: $\sum_{k=0}^nC_n^kp^kq^{n-k}=(p+q)^n=1^n=1$ (Ньютон биномы).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: $EX=np$, $DX=npq$ (индикаторлармен)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> биномдық шаманың күтімі мен дисперсиясын қосындыларсыз табу.</p>
+          <p class="mx-idea"><b>Идея:</b> Санды индикаторлардың қосындысы етіп жазамыз: күтімдер мен (тәуелсіздікте) дисперсиялар қосылады.</p>
+          <ol class="math-steps">
+            <li>$I_j$ - $j$-тәжірибедегі сәттіліктің индикаторы. Онда $X=I_1+\dots+I_n$.</li>
+            <li>$EI_j=1\cdot p+0\cdot q=p$; $I_j^2=I_j$, сондықтан $EI_j^2=p$ және $DI_j=p-p^2=pq$.</li>
+            <li>Күтімнің аддитивтігі: $EX=\sum EI_j=np$.</li>
+            <li>$I_j$ тәуелсіз, сондықтан дисперсиялар қосылады: $DX=\sum DI_j=npq$.</li>
+            <li>Сандық тексеру: $B(10;0{,}7)$ үшін $EX=7$, $DX=2{,}1$, $\sigma\approx1{,}45$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: геометриялық шаманың күтімі $ET=\frac1p$</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> күтімді «құйрық» формуласымен есептеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $P(T&gt;k)=q^k$; теріс емес шаманың күтімі - «құйрықтардың» қосындысы, геометриялық қатар.</p>
+          <ol class="math-steps">
+            <li>$\{T>k\}$ - алғашқы $k$ тәжірибенің бәрі сәтсіз: $P(T>k)=q^k$ (тәуелсіздік).</li>
+            <li>Мәндері натурал шама үшін $ET=\sum_{k=1}^\infty k\,P(T=k)=\sum_{k=0}^\infty P(T>k)$ (әр $k$ мәні $P(T=k)$ салмағымен $k$ рет саналады: $k=\sum_{j=0}^{k-1}1$).</li>
+            <li>Геометриялық қатар: $ET=\sum_{k=0}^\infty q^k=\frac{1}{1-q}=\frac1p$.</li>
+            <li>Ұқсас есептеумен $ET^2=\frac{1+q}{p^2}$, сондықтан $DT=\frac{1+q}{p^2}-\frac1{p^2}=\frac q{p^2}$.</li>
+            <li>Мысал: сүйектен 6 түсіру үшін орташа $ET=6$ лақтыру, ал $\sigma=\frac{\sqrt{5/6}}{1/6}\approx5{,}5$ - шашырау өте үлкен.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: Пуассон жуықтауы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $np=\lambda$ ($p=\frac\lambda n$) болғанда $C_n^kp^k(1-p)^{n-k}\to e^{-\lambda}\frac{\lambda^k}{k!}$ екенін көрсету ($k$ бекітілген).</p>
+          <p class="mx-idea"><b>Идея:</b> Биномдық ықтималдықты $\frac{\lambda^k}{k!}$, $\frac{n(n-1)\cdots}{n^k}\to1$ және $\left(1-\frac\lambda n\right)^n\to e^{-\lambda}$ бөліктеріне жіктейміз.</p>
+          <ol class="math-steps">
+            <li>Жазамыз: $C_n^kp^k(1-p)^{n-k}=\dfrac{n(n-1)\cdots(n-k+1)}{k!}\cdot\dfrac{\lambda^k}{n^k}\cdot\left(1-\dfrac\lambda n\right)^{n}\cdot\left(1-\dfrac\lambda n\right)^{-k}$.</li>
+            <li>Бірінші және екінші көбейткіштер: $\dfrac{\lambda^k}{k!}\cdot\dfrac{n}{n}\cdot\dfrac{n-1}{n}\cdots\dfrac{n-k+1}{n}$; әр бөлшек $\to1$ (олардың саны $k$ - тұрақты).</li>
+            <li>Үшіншісі: $\left(1-\frac\lambda n\right)^n\to e^{-\lambda}$ (ерекше шек).</li>
+            <li>Төртіншісі: $\left(1-\frac\lambda n\right)^{-k}\to1$ ($k$ бекітілген).</li>
+            <li>Нәтиже: шек $\dfrac{\lambda^k}{k!}e^{-\lambda}$. Қосынды: $\sum_ke^{-\lambda}\frac{\lambda^k}{k!}=e^{-\lambda}e^\lambda=1$ ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Айып доптары</h3>
+        <p class="math-problem">Баскетболшы әр добын тәуелсіз 0,7 ықтималдықпен түсіреді, 5 рет лақтырады. Дәл 4 рет түсіру ықтималдығы? Кемінде 4 рет?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $X\sim B(5;0{,}7)$.</li>
+          <li><b>2-қадам.</b> $P(X=4)=C_5^4\,0{,}7^4\,0{,}3=5\cdot0{,}2401\cdot0{,}3=0{,}36015$.</li>
+          <li><b>3-қадам.</b> $P(X=5)=0{,}7^5=0{,}16807$.</li>
+          <li><b>4-қадам.</b> $P(X\ge4)=0{,}36015+0{,}16807=0{,}52822$.</li>
+          <li><b>5-қадам.</b> Тексеру: $EX=3{,}5$; 4 және 5 - орташадан жоғары, ықтималдық жартыдан сәл артық - мағыналы.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\approx0{,}360$ және $\approx0{,}528$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Пароль іздеу (геометриялық)</h3>
+        <p class="math-problem">Шабуылшы әр әрекетте 0,02 ықтималдықпен парольді табады (әрекеттер тәуелсіз). Орташа неше әрекет керек? 50 әрекеттен кейін әлі табылмау ықтималдығы?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $T$ - геометриялық, $p=0{,}02$: $ET=\frac{1}{0{,}02}=50$.</li>
+          <li><b>2-қадам.</b> $P(T>50)=0{,}98^{50}$.</li>
+          <li><b>3-қадам.</b> $\ln0{,}98^{50}=50\ln0{,}98\approx50\cdot(-0{,}0202)=-1{,}0101$, яғни $0{,}98^{50}\approx0{,}364$.</li>
+          <li><b>4-қадам.</b> Демек «орташа» 50 әрекет болса да, 36% жағдайда 50 әрекет жеткіліксіз.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $ET=50$; $P(T>50)\approx0{,}364$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Лотерея (гипергеометриялық)</h3>
+        <p class="math-problem">49 саннан 6-сы ұтатын. Ойыншы 6 сан таңдайды. Дәл 3 санды табу ықтималдығы?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $N=49$, $M=6$ ұтатын, $n=6$ таңдалған. $X$ - гипергеометриялық.</li>
+          <li><b>2-қадам.</b> $P(X=3)=\dfrac{C_6^3\,C_{43}^3}{C_{49}^6}$.</li>
+          <li><b>3-қадам.</b> $C_6^3=20$, $C_{43}^3=12341$, $C_{49}^6=13\,983\,816$.</li>
+          <li><b>4-қадам.</b> $P=\dfrac{246\,820}{13\,983\,816}\approx0{,}0177$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\approx0{,}0177$ (шамамен 57 ойынның біреуінде).</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Сирек ақау (Пуассон)</h3>
+        <p class="math-problem">Бір бетте типографиялық қате 0,002 ықтималдықпен (әр таңбаға тәуелсіз), бетте 1500 таңба. Бетте кемінде бір қате болу ықтималдығы?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Дәл модель: $X\sim B(1500;\,0{,}002)$. $\lambda=np=3$.</li>
+          <li><b>2-қадам.</b> Пуассон жуықтауы: $P(X=0)\approx e^{-3}\approx0{,}0498$.</li>
+          <li><b>3-қадам.</b> $P(X\ge1)\approx1-0{,}0498=0{,}9502$.</li>
+          <li><b>4-қадам.</b> Дәл мән: $1-0{,}998^{1500}\approx0{,}9503$. Айырма $10^{-4}$ ретті; Ле Кам бағасы $2np^2=0{,}012$ - кепілдендірілген шекара.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\approx0{,}950$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Қайтарусыз таңдауға биномдық формула</span> → <span class="math-good">гипергеометриялық</span><br>Неге қате: тәжірибелер тәуелді: $p$ әр алудан кейін өзгереді.</li>
+        <li><span class="math-bad">$P(X=k)=p^kq^{n-k}$ ($C_n^k$ жоқ)</span> → <span class="math-good">$C_n^kp^kq^{n-k}$</span><br>Неге қате: $p^kq^{n-k}$ - бір нақты тізбектің ықтималдығы; ондай тізбек $C_n^k$.</li>
+        <li><span class="math-bad">«Кемінде 1» үшін $P(X=1)$ есептеу</span> → <span class="math-good">$1-P(X=0)$</span><br>Неге қате: «кемінде» - бірнеше мән; қарама-қарсы оқиға ыңғайлы.</li>
+        <li><span class="math-bad">Геометриялық: «5 сәтсіздіктен кейін сәттілік ықтималдығы артады»</span> → <span class="math-good">$p$ өзгермейді (есте сақтамау)</span><br>Неге қате: тәжірибелер тәуелсіз; «ойыншының қатесі».</li>
+        <li><span class="math-bad">Пуассонды $np$ үлкен, $p$ үлкен жағдайда қолдану ($n=20$, $p=0{,}5$)</span> → <span class="math-good">биномдық не қалыпты жуықтау</span><br>Неге қате: жуықтау тек сирек оқиғаларға ($p$ кіші) жарайды.</li>
+        <li><span class="math-bad">$DX=np$ (биномдық)</span> → <span class="math-good">$DX=np(1-p)$</span><br>Неге қате: $np$ - күтім; дисперсия әрдайым күтімнен кіші.</li>
+        <li><span class="math-bad">Геометриялықта $ET=\frac{q}{p}$ мен $\frac1p$-ны шатастыру</span> → <span class="math-good">анықтаманы тексеру: $T$ сәттілікті қоса ма?</span><br>Неге қате: $T$ сәттілікті қоса санаса $\frac1p$, тек сәтсіздіктерді санаса $\frac qp$.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="dist" data-title="Биномдық және Пуассон үлестірімдері" data-config='{"dist": "binomial"}'></div>
+      <p><b>Бақылаңыз:</b> $n=50$, $p=0{,}05$ қойыңыз ($\lambda=2{,}5$), сосын үлестірімді «Пуассон» етіп, $\lambda=2{,}5$ орнатыңыз: пішіндер іс жүзінде бірдей - бұл Пуассон жуықтауы. $p=0{,}5$ болса биномдық симметриялы, $p$ кіші болса - солға ығысқан.</p>
+      <div class="math-viz" data-viz="graph" data-title="Геометриялық: P(T &gt; k) = (1 − p)^k" data-config='{"fns": [{"f": "(1-p)^x", "label": "P(T > x)"}, {"f": "exp(-p*x)", "label": "e^{−px} (жуықтау)", "color": 1, "dash": [6, 4]}], "params": [{"n": "p", "min": 0.01, "max": 0.5, "step": 0.01, "v": 0.02}], "view": [0, 200, 0, 1.05]}'></div>
+      <p><b>Бақылаңыз:</b> $p=0{,}02$ болса, $k=50$ нүктесінде қисық $\approx0{,}364$ (2-мысал). Құйрық экспоненциалды кемиді; $p$ кіші болғанда $(1-p)^k\approx e^{-pk}$ - бұл келесі сабақтағы экспоненциалдық үлестірімнің дискретті ұқсасы.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m13-5-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-5-t1">1. Биномдық формула</h3></div>
+        <p>Монета 4 рет лақтырылады. Бөлшекпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Дәл 2 елтаңба.","a":"3/8","v":"binomial(4,2)*Rational(1,2)**4","hint":"$C_4^2\\cdot\\frac1{16}$.","sol":{"steps":["$\\frac{6}{16}$."],"ans":"$\\frac38$"}},{"q":"Кемінде 1 елтаңба.","a":"15/16","v":"1-Rational(1,2)**4","hint":"$1-P(X=0)$.","sol":{"steps":["$1-\\frac1{16}$."],"ans":"$\\frac{15}{16}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-5-num2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-5-t2">2. Сипаттамалар</h3></div>
+        <p>Санды енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$X\\sim B(20;\\,0{,}3)$. $EX$","a":6,"v":"20*Rational(3,10)","hint":"$np$.","sol":{"steps":["$20\\cdot0{,}3$."],"ans":"$6$"}},{"q":"Сол шама үшін $DX$","a":4.2,"v":"20*Rational(3,10)*Rational(7,10)","hint":"$npq$.","sol":{"steps":["$6\\cdot0{,}7$."],"ans":"$4{,}2$"}},{"q":"$X\\sim\\mathrm{Pois}(4)$. $DX$","a":4,"v":"4","hint":"Пуассонда $DX=\\lambda$.","sol":{"steps":["$\\lambda=4$."],"ans":"$4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m13-5-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-5-t3">3. Қай үлестірім?</h3></div>
+        <p>Модельді таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Бір сағаттағы апат қоңырауларының саны (орташа 3).","o":["Пуассон","биномдық","геометриялық","гипергеометриялық"],"a":0,"e":"Көп ықтимал көзден келетін сирек оқиғалар.","hint":"$\\lambda$ берілген."},{"q":"Колодадан (52 карта) қайтарусыз 5 карта: тұз саны.","o":["Пуассон","биномдық","геометриялық","гипергеометриялық"],"a":3,"e":"Қайтарусыз таңдау.","hint":"Колода құрамы өзгереді."},{"q":"Сүйекті бірінші 6 түскенше лақтыру саны.","o":["Пуассон","биномдық","геометриялық","гипергеометриялық"],"a":2,"e":"Бірінші сәттілікке дейінгі күту.","hint":"«Бірінші ... қашан?»"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m13-5-tf4">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-5-t4">4. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Биномдық шаманың дисперсиясы күтімінен үлкен болуы мүмкін.","a":false,"e":"$npq\\le np$, себебі $q\\le1$.","hint":"$DX/EX=q$."},{"q":"Геометриялық шама үшін $P(T>8\\mid T>5)=P(T>3)$.","a":true,"e":"Есте сақтамау: $\\frac{q^8}{q^5}=q^3$.","hint":"Теорема 5.2."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-5-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-5-t5">5. Ақаулы бөлшектер</h3></div>
+        <p>Бөлшектің ақаулы болу ықтималдығы 0,1 (тәуелсіз). 6 бөлшек тексеріледі. $0{,}0001$ дәлдікпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Дәл 1 ақаулы.","a":0.354294,"tol":0.0001,"v":"binomial(6,1)*Rational(1,10)*Rational(9,10)**5","hint":"$C_6^1\\cdot0{,}1\\cdot0{,}9^5$.","sol":{"steps":["$6\\cdot0{,}1\\cdot0{,}59049$."],"ans":"$0{,}3543$"}},{"q":"Ең көбі 1 ақаулы.","a":0.885735,"tol":0.0001,"v":"Rational(9,10)**6+binomial(6,1)*Rational(1,10)*Rational(9,10)**5","hint":"$P(0)+P(1)$.","sol":{"steps":["$0{,}9^6=0{,}531441$.","$0{,}531441+0{,}354294$."],"ans":"$0{,}8857$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-5-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-5-t6">6. Геометриялық</h3></div>
+        <p>Әр әрекет тәуелсіз $p=0{,}25$ ықтималдықпен сәтті.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$ET$","a":4,"v":"1/Rational(1,4)","hint":"$\\frac1p$.","sol":{"steps":["$\\frac{1}{0{,}25}$."],"ans":"$4$"}},{"q":"$P(T=3)$ (бөлшек)","a":"9/64","v":"Rational(3,4)**2*Rational(1,4)","hint":"$q^2p$.","sol":{"steps":["$\\frac9{16}\\cdot\\frac14$."],"ans":"$\\frac{9}{64}$"}},{"q":"$P(T>4)$ (бөлшек)","a":"81/256","v":"1-sum([Rational(3,4)**(k-1)*Rational(1,4) for k in range(1,5)])","hint":"$q^4$.","sol":{"steps":["$\\left(\\frac34\\right)^4$."],"ans":"$\\frac{81}{256}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-5-num7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-5-t7">7. Гипергеометриялық</h3></div>
+        <p>10 бөлшектің 3-еуі ақаулы, қайтарусыз 4 бөлшек алынды. Бөлшекпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Дәл 2 ақаулы.","a":"3/10","v":"binomial(3,2)*binomial(7,2)/binomial(10,4)","hint":"$\\frac{C_3^2C_7^2}{C_{10}^4}$.","sol":{"steps":["$\\frac{3\\cdot21}{210}$."],"ans":"$\\frac{3}{10}$"}},{"q":"Ақаулы санының күтімі.","a":"6/5","v":"sum([k*binomial(3,k)*binomial(7,4-k)/binomial(10,4) for k in range(0,4)])","hint":"$n\\frac MN$.","sol":{"steps":["$4\\cdot\\frac3{10}$."],"ans":"$\\frac65$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m13-5-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-5-t8">8. Параметрлік: биномдық күтім</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"n":{"int":[10,60]},"r":{"pick":[0.1,0.2,0.25,0.4,0.5]}},"type":"num","q":"$X\\sim B(#{n};\\,#{r})$. $DX=?$","a":"n*r*(1-r)","v":"n*nsimplify(r)*(1-nsimplify(r))","hint":"$DX=npq$.","sol":{"steps":["$#{n}\\cdot#{r}\\cdot#{1-r}$."],"ans":"$#{n*r*(1-r)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m13-5-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-5-t9">9. Параметрлік: Пуассон</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді. $0{,}0001$ дәлдікпен.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"l":{"int":[1,5]},"k":{"int":[0,3]}},"type":"num","tol":0.0001,"q":"Бір минутта серверге орташа $#{l}$ сұраныс келеді (Пуассон). Бір минутта дәл $#{k}$ сұраныс келу ықтималдығы?","a":"exp(-l)*l^k/k!","v":"exp(-l)*l**k/factorial(k)","hint":"$e^{-\\lambda}\\frac{\\lambda^k}{k!}$.","sol":{"steps":["$e^{-#{l}}\\cdot\\dfrac{#{l}^{#{k}}}{#{k}!}$."],"ans":"$\\approx#{round(10000*exp(-l)*l^k/k!)/10000}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-5-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-5-t10">10. Пуассон жуықтауы</h3></div>
+        <p>1000 адамның әрқайсысы бір күнде тәуелсіз 0,003 ықтималдықпен жедел жәрдем шақырады. $0{,}001$ дәлдікпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Пуассон жуықтауымен: дәл 2 шақыру.","a":"4.5*exp(-3)","tol":0.001,"v":"exp(-3)*9/2","hint":"$\\lambda=3$.","sol":{"steps":["$e^{-3}\\frac{3^2}{2!}=4{,}5e^{-3}$."],"ans":"$\\approx0{,}224$"}},{"q":"Пуассон жуықтауымен: 2-ден көп шақыру.","a":"1-8.5*exp(-3)","tol":0.001,"v":"1-exp(-3)*(1+3+Rational(9,2))","hint":"$1-P(0)-P(1)-P(2)$.","sol":{"steps":["$1-e^{-3}(1+3+4{,}5)=1-8{,}5e^{-3}$."],"ans":"$\\approx0{,}577$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-5-num11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-5-t11">11. Мода</h3></div>
+        <p>Ең ықтимал мәнді табыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$X\\sim B(15;\\,0{,}3)$ үшін ең ықтимал $k$.","a":4,"v":"max(range(16), key=lambda k: binomial(15,k)*Rational(3,10)**k*Rational(7,10)**(15-k))","hint":"$(n+1)p-1\\le k_0\\le(n+1)p$.","sol":{"steps":["$(n+1)p=4{,}8$; $3{,}8\\le k_0\\le4{,}8$.","$k_0=4$."],"ans":"$4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m13-5-mat12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-5-t12">12. Күтімдер</h3></div>
+        <p>Шаманы күтімімен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Күтім.","pairs":[["$B(12;\\,\\tfrac13)$","4"],["$\\mathrm{Pois}(2{,}5)$","2,5"],["Геометриялық, $p=\\frac15$","5"],["Гипергеом.: $N=20$, $M=5$, $n=4$","1"]],"hint":"$np$, $\\lambda$, $\\frac1p$, $n\\frac MN$.","sol":{"steps":["$12\\cdot\\frac13=4$; $2{,}5$; $5$; $4\\cdot\\frac5{20}=1$."]},"e":"Гипергеометриялық күтім биномдықтағыдай."}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m13-5-ord13">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-5-t13">13. Пуассон жуықтауының дәлелі</h3></div>
+        <p>Қадамдарды ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$B(n,\\lambda/n)\\to\\mathrm{Pois}(\\lambda)$.","steps":["$p=\\lambda/n$ қойып, $C_n^kp^k(1-p)^{n-k}$-ны төрт көбейткішке жазамыз.","$\\frac{n(n-1)\\cdots(n-k+1)}{n^k}\\to1$ екенін көрсетеміз.","$\\left(1-\\frac\\lambda n\\right)^n\\to e^{-\\lambda}$ ерекше шегін қолданамыз.","$\\left(1-\\frac\\lambda n\\right)^{-k}\\to1$.","Шекті жинап, $e^{-\\lambda}\\frac{\\lambda^k}{k!}$ аламыз."],"hint":"Алдымен жазу, соңында жинау.","sol":{"ans":"$e^{-\\lambda}\\frac{\\lambda^k}{k!}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m13-5-rev14">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-5-t14">14. Қадамдық шешім: Пуассонның күтімі</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$X\\sim\\mathrm{Pois}(\\lambda)$ үшін $EX=\\lambda$ екенін дәлелдеңіз.","hint":"$k=0$ мүшесі нөл; $\\frac{k}{k!}=\\frac{1}{(k-1)!}$.","steps":["$EX=\\sum_{k=0}^\\infty k\\,e^{-\\lambda}\\frac{\\lambda^k}{k!}$; $k=0$ мүшесі 0.","$k\\ge1$ үшін $\\frac{k}{k!}=\\frac{1}{(k-1)!}$: $EX=e^{-\\lambda}\\sum_{k=1}^\\infty\\frac{\\lambda^k}{(k-1)!}$.","$j=k-1$ ауыстыру: $=\\lambda e^{-\\lambda}\\sum_{j=0}^\\infty\\frac{\\lambda^j}{j!}=\\lambda e^{-\\lambda}e^\\lambda$.","$EX=\\lambda$. Ұқсас жолмен $E[X(X-1)]=\\lambda^2$, сондықтан $DX=\\lambda^2+\\lambda-\\lambda^2=\\lambda$."],"ans":"$EX=DX=\\lambda$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Биномдық модель - A/B тесттегі конверсиялар саны, пакеттердің жоғалуы; геометриялық - қайта жіберу (retry) саны, хэштеудегі зондтар саны; гипергеометриялық - сапа бақылау, карта ойындары; Пуассон - серверге сұраныстар, кезек теориясы. Бұл үлестірімдерді тану - модельдеудің бірінші қадамы.</p>
+      <p><b>Мини-жоба: «Үлестірімдер кітапханасы».</b> Әр үлестірімнің $P(X=k)$ функциясын жазып, Монте-Карло модельдеуімен салыстырамыз, және Пуассон жуықтауының дәлдігін өлшейміз.</p>
+<pre data-lang="python"><code class="language-python">import random
+from math import comb, exp, lgamma, log
+
+def binom_pmf(k, n, p):  # логарифм арқылы: үлкен n-де comb(n, k) float-қа сыймайды
+    return exp(lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1) + k * log(p) + (n - k) * log(1 - p))
+def geom_pmf(k, p):      return (1 - p)**(k - 1) * p
+def hyper_pmf(k, N, M, n): return comb(M, k) * comb(N - M, n - k) / comb(N, n)
+def pois_pmf(k, lam):    return exp(-lam + k * log(lam) - lgamma(k + 1))
+
+random.seed(3)
+# 1) Биномдық: модельдеу мен формула
+n, p, R = 10, 0.7, 100_000
+sim = [sum(random.random() &lt; p for _ in range(n)) for _ in range(R)]
+for k in (5, 7, 9):
+    print(k, round(sim.count(k) / R, 4), round(binom_pmf(k, n, p), 4))
+
+# 2) Пуассон жуықтауының қателігі: sum |B - Pois|
+for n, p in ((20, 0.15), (100, 0.03), (1000, 0.003)):
+    lam = n * p
+    err = sum(abs(binom_pmf(k, n, p) - pois_pmf(k, lam)) for k in range(n + 1))
+    print(f"n={n:5d} p={p:&lt;6} қате={err:.5f}  Ле Кам шекарасы={2 * n * p * p:.5f}")
+
+# 3) Гипергеометриялық пен биномдықты салыстыру (10 бөлшек, 3 ақаулы, 5 алынды)
+print(hyper_pmf(2, 10, 3, 5), binom_pmf(2, 5, 0.3))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Геометриялық шаманы модельдеп (бірінші сәттілікке дейін), таңдама орташасы $\frac1p$-ға жақын ба? Таңдама дисперсиясы $\frac{q}{p^2}$-ға ше?</li>
+        <li>Гипергеометриялық пен биномдықтың айырмасы $N$ өскенде (таңдама $n$ тұрақты, $M/N$ тұрақты) қалай кемиді? $N=10,100,1000$.</li>
+        <li>Call-орталыққа минутына орташа 2 қоңырау келеді. Операторлар минутына ең көбі 4 қоңырауға жауап бере алады. Артық жүктеме ықтималдығын табыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Биномдық</td><td>$C_n^kp^kq^{n-k}$; $np$; $npq$</td><td>тәуелсіз, тұрақты $p$</td></tr>
+        <tr><td>Геометриялық</td><td>$q^{k-1}p$; $\frac1p$; $\frac q{p^2}$</td><td>бірінші сәттілік нөмірі</td></tr>
+        <tr><td>Гипергеометриялық</td><td>$\frac{C_M^kC_{N-M}^{n-k}}{C_N^n}$; $n\frac MN$</td><td>қайтарусыз</td></tr>
+        <tr><td>Пуассон</td><td>$e^{-\lambda}\frac{\lambda^k}{k!}$; $\lambda$; $\lambda$</td><td>сирек оқиғалар</td></tr>
+        <tr><td>Пуассон жуықтауы</td><td>$B(n,p)\approx\mathrm{Pois}(np)$</td><td>$n$ үлкен, $p$ кіші</td></tr>
+        <tr><td>Есте сақтамау</td><td>$P(T>m+k\mid T>m)=P(T>k)$</td><td>геометриялық</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m13-5-self">
+        <li><input type="checkbox"> <span>Мен есептің шартынан үлестірім түрін тани аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен биномдық формуланы қорытып, $EX=np$, $DX=npq$ дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен геометриялық шаманың күтімін және есте сақтамау қасиетін түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қайтарусыз таңдауда гипергеометриялық формуланы қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Пуассон жуықтауының шарттарын атап, оны қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен нәтижені модельдеу арқылы тексере аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="d">
+<p class="q-text">1. X ~ B(10; 0,5). EX = ?</p>
+<label><input type="radio" value="a"> 2,5</label>
+<label><input type="radio" value="b"> 10</label>
+<label><input type="radio" value="c"> 0,5</label>
+<label><input type="radio" value="d"> 5</label>
+<p class="explain">np = 5.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. X ~ B(10; 0,5). DX = ?</p>
+<label><input type="radio" value="a"> 5</label>
+<label><input type="radio" value="b"> 0,25</label>
+<label><input type="radio" value="c"> 2,5</label>
+<label><input type="radio" value="d"> 10</label>
+<p class="explain">npq = 10·0,5·0,5.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. Бірінші 6 түскенше сүйекті лақтыру санының күтімі:</p>
+<label><input type="radio" value="a"> 1/6</label>
+<label><input type="radio" value="b"> 6</label>
+<label><input type="radio" value="c"> 5</label>
+<label><input type="radio" value="d"> 3,5</label>
+<p class="explain">Геометриялық: 1/p = 6.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">4. Пуассон үлестірімінде EX мен DX:</p>
+<label><input type="radio" value="a"> тең</label>
+<label><input type="radio" value="b"> DX = (EX)²</label>
+<label><input type="radio" value="c"> DX = 0</label>
+<label><input type="radio" value="d"> EX = 1</label>
+<p class="explain">Екеуі де λ.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">5. Колодадан қайтарусыз 5 карта алғандағы тұз саны:</p>
+<label><input type="radio" value="a"> биномдық</label>
+<label><input type="radio" value="b"> геометриялық</label>
+<label><input type="radio" value="c"> Пуассон</label>
+<label><input type="radio" value="d"> гипергеометриялық</label>
+<p class="explain">Қайтарусыз таңдау.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. Пуассон жуықтауы қай жағдайда жақсы?</p>
+<label><input type="radio" value="a"> n кіші, p үлкен</label>
+<label><input type="radio" value="b"> p = 0,5</label>
+<label><input type="radio" value="c"> n үлкен, p кіші</label>
+<label><input type="radio" value="d"> кез келген жағдайда</label>
+<p class="explain">Сирек оқиғалар заңы.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. Монета 3 рет: дәл 1 елтаңба ықтималдығы:</p>
+<label><input type="radio" value="a"> 1/8</label>
+<label><input type="radio" value="b"> 3/8</label>
+<label><input type="radio" value="c"> 1/2</label>
+<label><input type="radio" value="d"> 1/3</label>
+<p class="explain">C(3,1)/8.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">8. Геометриялық шама үшін P(T > 10 | T > 7) = ?</p>
+<label><input type="radio" value="a"> P(T > 3)</label>
+<label><input type="radio" value="b"> P(T > 10)</label>
+<label><input type="radio" value="c"> P(T > 17)</label>
+<label><input type="radio" value="d"> 1</label>
+<p class="explain">Есте сақтамау қасиеті.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=prob">Probability Theory емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-82.html"><small>Алдыңғы</small>← Probability Theory · 4-сабақ: Кездейсоқ шамалар, күтім және дисперсия</a>

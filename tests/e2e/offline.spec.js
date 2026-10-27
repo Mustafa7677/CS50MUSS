@@ -27,7 +27,7 @@ test("офлайн: беттер кэштен қатесіз ашылады, б�
       await expect(p.locator("h1").first()).toBeVisible();
     }
     await p.goto(B + "jok-bet.html");
-    await expect(p.locator(".hero h1, h1").first()).toContainText("Информатикаға");
+    await expect(p.locator(".kz-hero h1, h1").first()).toContainText("Бір шаңырақ астында");
     expect(errs).toEqual([]);
     await c.close();
   } finally { srv.kill(); }

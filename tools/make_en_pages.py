@@ -130,7 +130,7 @@ def card(i, c=COLOR):
 
 def index_page():
     switch = ('<nav class="cx-switch" aria-label="Курсты таңдау"><a href="../index.html">CS50x</a><a href="../python/">CS50P</a><a href="../sql/">SQL</a>'
-              '<a href="../ai/">AI</a><a href="../web/">Web</a><a href="../cpp/">C++</a><a href="../java/">Java</a><a class="on" aria-current="page" href="../en/">English</a><a href="../math/">Math</a></nav>')
+              '<a href="../ai/">AI</a><a href="../web/">Web</a><a href="../cpp/">C++</a><a href="../java/">Java</a><a class="on" aria-current="page" href="../en/">English</a><a href="../math/">Математика</a></nav>')
     groups = []
     for li, (code, name, desc) in enumerate(LEVELS):
         cards = "\n".join(card(li * 4 + k) for k in range(4))

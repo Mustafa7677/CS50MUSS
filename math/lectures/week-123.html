@@ -6,13 +6,14 @@
   <title>Math Abstract Algebra · 6-сабақ: Көпмүшелер сақинасы - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Abstract Algebra · 6-сабақ: Көпмүшелер сақинасы - CS50 қазақша">
-  <meta property="og:description" content="Математика, Abstract Algebra · 6-сабақ: Көпмүшелер сақинасы. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Көпмүшелерді бөлу, келтірілмейтін көпмүшелер, факторизация.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-123.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Abstract Algebra · 6-сабақ: Көпмүшелер сақинасы - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-123.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Abstract Algebra · 6-сабақ: Көпмүшелер сақинасы. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Көпмүшелерді бөлу, келтірілмейтін көпмүшелер, факторизация.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,488 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="123">
+    <article class="content math-lesson" style="--sc:#5b21b6" id="main">
+      <div class="lecture-head" style="--lc:#5b21b6" data-n="123" data-msubj="abstract" data-glyph="≅">
         <div class="num">Abstract Algebra · 6-сабақ</div>
         <h1>Көпмүшелер сақинасы</h1>
-        <p>Көпмүшелерді бөлу, келтірілмейтін көпмүшелер, факторизация.</p>
+        <p>Мектепте көпмүшелерді бағанмен бөлуді, түбірлерді табуды үйрендік. Енді бұл тәсілдердің бүтін сандар арифметикасымен бірдей екенін көреміз: $F[x]$ көпмүшелер сақинасында ($F$ - өріс) қалдықпен бөлу, Евклид алгоритмі, Безу теңдігі және жайға жіктеу бар; жай сандардың орнын келтірілмейтін көпмүшелер алады.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 50 мин</span><span>Есептер ≈ 1 сағ</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Бірақ «келтірілмейтін» ұғымы өріске тәуелді: $x^2+1$ $\mathbb R$-де жіктелмейді, $\mathbb C$-да $(x-i)(x+i)$, ал $\mathbb Z_2$-де $(x+1)^2$. Бұл сабақта бөлу алгоритмін, Безу теоремасын, түбірлер санының шегін дәлелдеп, келтірілмейтіндікті тексеру құралдарын - рационал түбір теоремасын, $2$-$3$ дәрежелі критерийді және Эйзенштейн критерийін меңгереміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-19">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=abstract">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Abstract Algebra: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-19">Abstract Algebra</a></span><ol><li><a href="week-118.html" title="Топтар және олардың негізгі қасиеттері">1</a></li><li><a href="week-119.html" title="Топшалар, циклдік топтар және Лагранж теоремасы">2</a></li><li><a href="week-120.html" title="Қалыпты топшалар, фактор-топтар және гомоморфизмдер">3</a></li><li><a href="week-121.html" title="Симметриялық топтар">4</a></li><li><a href="week-122.html" title="Сақиналар және өрістер">5</a></li><li><a href="week-123.html" aria-current="page" title="Көпмүшелер сақинасы">6</a></li><li><a href="week-124.html" title="Өріс кеңейтімдері және Галуа теориясына кіріспе">7</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-19">Abstract Algebra</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Өріс үстіндегі көпмүшелер бүтін сандар сияқты әрекет етеді: қалдықпен бөлуге, ЕҮОБ табуға, «жай» (келтірілмейтін) көбейткіштерге жіктеуге болады.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>$F[x]$-те қалдықпен бөлу алгоритмін дәлелдеп, бөлінді мен қалдықты табу;</li>
+        <li>Безу теоремасын және $n$ дәрежелі көпмүшенің өрісте $n$-нен көп түбірі жоқ екенін дәлелдеу;</li>
+        <li>көпмүшелер үшін Евклид алгоритмін және Безу теңдігін қолдану;</li>
+        <li>келтірілмейтін көпмүшені анықтап, $2$-$3$ дәрежелі көпмүшелер үшін түбір критерийін дәлелдеу, $4$ дәрежеде оның жалған екенін көрсету;</li>
+        <li>рационал түбір теоремасы мен Эйзенштейн критерийін дәлелдеп, қолдану;</li>
+        <li>бір көпмүшенің әртүрлі өрістер ($\mathbb Q,\mathbb R,\mathbb C,\mathbb Z_p$) үстінде жіктелуін салыстыру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Сақина, бүтіндік облысы, өріс, идеал (5-сабақ). Көпмүшелерді бөлу, Безу теоремасы (precalculus, 3-сабақ). Евклид алгоритмі, Безу теңдігі, Евклид леммасы, арифметиканың негізгі теоремасы (сандар теориясы, 1-2-сабақтар). Комплекс сандар, алгебраның негізгі теоремасы (комплекс анализ).</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-122.html">Abstract Algebra · 5-сабақ: Сақиналар және өрістер</a></li><li><a href="week-2.html">Precalculus · 3-сабақ: Көпмүшеліктер мен рационал функциялар</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: бағанмен бөлу және түбір</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">$f(x)=x^3-2x^2-5x+6$. $f(1)$-ді есептеңіз, $f$-ті $x-1$-ге бөліңіз және толық жіктеңіз.</p>
+        <ol class="math-steps">
+          <li>$f(1)=1-2-5+6=0$. Безу теоремасы бойынша $x-1$ - $f$-тің бөлгіші.</li>
+          <li>Бөлу: $x^3-2x^2-5x+6=(x-1)(x^2-x-6)$. Тексеру: $(x-1)(x^2-x-6)=x^3-x^2-6x-x^2+x+6$ ✓.</li>
+          <li>$x^2-x-6=(x-3)(x+2)$. Демек $f=(x-1)(x-3)(x+2)$, түбірлері $1,3,-2$.</li>
+          <li>Рационал түбір теоремасымен тексеру: түбірлер $6$-ның бөлгіштері ішінде болуы керек: $\pm1,\pm2,\pm3,\pm6$ ✓.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Түбір табылса, көпмүшені $(x-a)$-ға бөліп, дәрежесін төмендетеміз. Бұл бүтін санды жай көбейткішке бөлгенмен бірдей.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Бүтін сандарда $17=3\cdot5+2$, қалдық $|2|&lt;|5|$. Көпмүшелерде «өлшем» - дәреже: $x^4+3x^3-2x+5=(x^2+x+1)(x^2+2x-3)+(8-x)$, қалдықтың дәрежесі $1&lt;2$. Бөлу үшін басқы коэффициентке бөлу керек - сондықтан коэффициенттер өрістен алынады.</p>
+      <p>Қалдықпен бөлу бар жерде Евклид алгоритмі бар, демек ЕҮОБ және Безу теңдігі бар, демек Евклид леммасы және жалғыз жіктеу бар. Бүтін сандар үшін 2-сабақта жүргізген бүкіл тізбек көпмүшелерге көшеді.</p>
+      <p>$2$ немесе $3$ дәрежелі көпмүше жіктелсе, көбейткіштердің бірі сызықтық болады, демек түбір бар. Сондықтан $2$-$3$ дәрежеде «түбір жоқ $\iff$ келтірілмейді». $4$ дәрежеде бұл жалған: $x^4+4$-тің нақты түбірі жоқ, бірақ $x^4+4=(x^2+2x+2)(x^2-2x+2)$.</p>
+      <p>Эйзенштейн критерийі: $x^5-6x+3$ - барлық коэффициент (басқысынан басқа) $3$-ке бөлінеді, ал бос мүше $9$-ға бөлінбейді. Бұл $\mathbb Q$ үстінде келтірілмейтіндікке кепілдік береді, түбірлерді іздемей-ақ.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · көпмүше - сан</span>
+        <p>$x=10$ қойсақ, $x^2+3x+2$ саны $132$-ге айналады; ал $(x+1)(x+2)$ - $11\cdot12=132$. Көпмүшені жіктеу - санды жіктеудің «$x$-ке дейінгі» нұсқасы; келтірілмейтін көпмүшелер - жай сандардың баламасы.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · келтірілмейтіндік қай өрісте?</span>
+        <p>$x^2+1$ нақты сандарда «жай» (түбірі жоқ), ал комплекс сандарда $(x-i)(x+i)$. Құрылыс материалы (өріс) өзгерсе, «жай» деген ұғым да өзгереді.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$F[x]$</td><td>$F$ үстіндегі көпмүшелер</td><td>коэффициенттері $F$-тен</td></tr>
+        <tr><td>$\deg f$</td><td>$f$-тің дәрежесі</td><td>$x$-тің ең үлкен дәрежесі</td></tr>
+        <tr><td>$f=qg+r$</td><td>қалдықпен бөлу</td><td>бөлінді $q$, қалдық $r$, $\deg r&lt;\deg g$</td></tr>
+        <tr><td>$(x-a)\mid f$</td><td>$x-a$ $f$-ті бөледі</td><td>$a$ - $f$-тің түбірі</td></tr>
+        <tr><td>$\gcd(f,g)$</td><td>көпмүшелердің ЕҮОБ-ы</td><td>екеуін бөлетін ең үлкен дәрежелі келтірілген көпмүше</td></tr>
+        <tr><td>$\mathbb Z_p[x]$</td><td>$p$ модулі бойынша көпмүшелер</td><td>коэффициенттері $\mathbb Z_p$-дан</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 6.1 · Көпмүшелер сақинасы</span>
+        <p>$R$ коммутативті сақина. $R[x]$ - $f=a_nx^n+\dots+a_1x+a_0$ ($a_i\in R$) түріндегі <strong>көпмүшелер сақинасы</strong> (<span class="term-en">polynomial ring</span>). $a_n\ne0$ болса, $\deg f=n$, $a_n$ - басқы коэффициент; $a_n=1$ болса - келтірілген көпмүше. $\deg0=-\infty$. $R$ бүтіндік облысы болса, $\deg(fg)=\deg f+\deg g$, демек $R[x]$ те бүтіндік облысы.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Көпмүшелерді қосып, көбейтуге болады - олар сақина құрайды; дәреже көбейткенде қосылады (өрісте).</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 6.1 · Қалдықпен бөлу</span>
+        <p>$F$ - өріс, $f,g\in F[x]$, $g\ne0$. $f=qg+r$, $\deg r&lt;\deg g$ болатын $q,r\in F[x]$ бар және жалғыз.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Өріс үстінде көпмүшені кез келген нөл емес көпмүшеге қалдықпен бөлуге болады, қалдықтың дәрежесі кіші.</p></div>
+      <p><em>Негіздеме.</em> Өріс шарты маңызды: $\mathbb Z[x]$-те $x$-ті $2x$-ке қалдықпен бөлу мүмкін емес.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 6.2 · Безу теоремасы және түбірлер саны</span>
+        <p>$F$ - өріс. (1) $f(a)$ - $f$-ті $x-a$-ға бөлгендегі қалдық; $f(a)=0\iff(x-a)\mid f$. (2) $\deg f=n\ge0$ болса, $f$-тің $F$-те $n$-нен көп түбірі жоқ.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $f(a)$ - $x-a$-ға бөлгендегі қалдық; түбір = бөлгіш. Дәрежесі $n$ көпмүшенің $n$-нен көп түбірі жоқ.</p></div>
+      <p><em>Негіздеме.</em> (2) бүтіндік облысы емес сақинада жалған: $\mathbb Z_8$-да $x^2-1$-дің $4$ түбірі бар.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 6.3 · ЕҮОБ және Безу теңдігі</span>
+        <p>$F[x]$-тің әр идеалы бас идеал: $I=\langle d\rangle$. $f,g$ (бір мезгілде нөл емес) үшін $\langle f,g\rangle=\langle d\rangle$, мұнда $d=\gcd(f,g)$ - келтірілген ортақ бөлгіш, кез келген ортақ бөлгішке бөлінеді, және $d=uf+vg$ кейбір $u,v\in F[x]$ үшін. $d$ Евклид алгоритмімен табылады.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Көпмүшелердің ЕҮОБ-ын Евклид алгоритмімен табамыз, және ол $uf+vg$ түрінде жазылады.</p></div>
+      <p><em>Негіздеме.</em> $\gcd(x^2-1,x^2+2x+1)=x+1$.</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 6.2 · Келтірілмейтін көпмүше</span>
+        <p>$f\in F[x]$, $\deg f\ge1$ - $F$ үстінде <strong>келтірілмейтін көпмүше</strong> (<span class="term-en">irreducible polynomial</span>), егер $f=gh$ болса, $g$ не $h$ тұрақты болса. Әйтпесе - келтірілетін. $F[x]$-те әр $\deg\ge1$ көпмүше келтірілмейтіндердің көбейтіндісіне тұрақты көбейткіштер мен ретке дейін жалғыз жіктеледі.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Келтірілмейтін көпмүше - тек тривиал түрде жіктелетін көпмүше, яғни «жай» көпмүше.</p></div>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 6.4 · Келтірілмейтіндік критерийлері</span>
+        <p>(1) $\deg f\in\{2,3\}$: $f$ $F$ үстінде келтірілмейтін $\iff f$-тің $F$-те түбірі жоқ. (2) Рационал түбір: $f=a_nx^n+\dots+a_0\in\mathbb Z[x]$, $\frac pq$ ($\gcd(p,q)=1$) - түбір болса, $p\mid a_0$, $q\mid a_n$. (3) <strong>Эйзенштейн критерийі</strong> (<span class="term-en">Eisenstein's criterion</span>): жай $p$ үшін $p\nmid a_n$, $p\mid a_i$ ($i&lt;n$), $p^2\nmid a_0$ болса, $f$-ті екі тұрақты емес бүтін коэффициентті көпмүшенің көбейтіндісіне жіктеуге болмайды; демек (Гаусс леммасы бойынша) $f$ $\mathbb Q$ үстінде келтірілмейтін.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $2$-$3$ дәрежеде келтірілмейтіндік = түбірдің жоқтығы. Бүтін коэффициентті көпмүшенің рационал түбірлері $\frac pq$ түрінде шектелген. Эйзенштейн жай сан арқылы келтірілмейтіндікті береді.</p></div>
+      <p><em>Негіздеме.</em> (1) $4$ дәрежеде жалған: $x^4+4$. Гаусс леммасын (бүтін коэффициентті көпмүше $\mathbb Q$-да жіктелсе, $\mathbb Z$-та да жіктеледі) бұл сабақта дәлелсіз қолданамыз.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 6.1 · Қалдықпен бөлу</span>
+        <div class="math-fbody">$$f=qg+r,\quad\deg r&lt;\deg g$$</div>
+        <p class="math-fnote">$F$ - өріс.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 6.2 · Безу теоремасы</span>
+        <div class="math-fbody">$$f(a)=0\iff(x-a)\mid f(x)$$</div>
+        <p class="math-fnote">Қалдық $=f(a)$.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 6.3 · Түбірлер саны</span>
+        <div class="math-fbody">$$\left|\{a\in F:f(a)=0\}\right|\le\deg f$$</div>
+        <p class="math-fnote">$F$ - өріс (бүтіндік облысы).</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 6.4 · Көпмүше ЕҮОБ-ы</span>
+        <div class="math-fbody">$$\gcd(f,g)=uf+vg$$</div>
+        <p class="math-fnote">Евклид алгоритмі.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 6.5 · Рационал түбір</span>
+        <div class="math-fbody">$$f\!\left(\tfrac pq\right)=0\Rightarrow p\mid a_0,\ q\mid a_n$$</div>
+        <p class="math-fnote">$\gcd(p,q)=1$.</p></div>
+      <div class="math-formula" id="f-6"><span class="math-fname">Формула 6.6 · Эйзенштейн</span>
+        <div class="math-fbody">$$p\nmid a_n,\ \ p\mid a_0,\dots,a_{n-1},\ \ p^2\nmid a_0$$</div>
+        <p class="math-fnote">$\mathbb Q$ үстінде келтірілмейтін.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Көпмүшенің $F$ үстінде келтірілмейтінін тексеру: (1) $\deg\le3$ - түбірлерді іздеңіз ($\mathbb Q$ үшін - рационал түбір теоремасымен ақырлы тізім, $\mathbb Z_p$ үшін - барлық $p$ элементті қойып); (2) $\mathbb Z[x]$ - Эйзенштейнді (кейде $x\mapsto x+1$ ауыстырудан кейін) тексеріңіз; (3) $\mathbb Z_p$-ға келтіру: басқы коэффициент $p$-ға бөлінбесе және $f\bmod p$ келтірілмейтін болса, $f$ $\mathbb Q$ үстінде келтірілмейтін; (4) $\mathbb R$ үстінде келтірілмейтіндер - тек сызықтықтар және дискриминанты теріс квадраттар; $\mathbb C$ үстінде - тек сызықтықтар (алгебраның негізгі теоремасы).</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>(1) «Түбірі жоқ $\Rightarrow$ келтірілмейтін» тек $2$-$3$ дәреже үшін: $(x^2+1)^2$ $\mathbb R$ үстінде түбірсіз, бірақ келтірілетін. (2) Келтірілмейтіндік өріске тәуелді: $x^2-2$ $\mathbb Q$ үстінде келтірілмейтін, $\mathbb R$ үстінде $(x-\sqrt2)(x+\sqrt2)$. (3) Эйзенштейн - жеткілікті шарт, қажетті емес: $x^2+1$ келтірілмейтін, бірақ ешбір $p$ үшін шарт орындалмайды (тек $x\mapsto x+1$-ден кейін: $x^2+2x+2$, $p=2$). (4) Бүтіндік облысы емес сақинада түбірлер саны дәрежеден асуы мүмкін: $\mathbb Z_8$, $x^2-1$.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $x^2+1$ $\mathbb Z_5$ үстінде келтірілмейтін бе?</span></summary>
+        <p>Жоқ: $2^2+1=5\equiv0$, демек $x=2$ түбір: $x^2+1=(x-2)(x-3)$ $\mathbb Z_5$-те.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> $x^3-2$ $\mathbb Q$ үстінде келтірілмейтін бе?</span></summary>
+        <p>Иә: рационал түбірлер тек $\pm1,\pm2$, ешқайсысы түбір емес, ал дәрежесі $3$.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> $x^4+10x+5$ $\mathbb Q$ үстінде келтірілмейтін бе?</span></summary>
+        <p>Иә: Эйзенштейн, $p=5$ ($5\mid10$, $5\mid5$, $25\nmid5$, $5\nmid1$).</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> $x^5-1$-ді $x-1$-ге бөлгенде қалдық неге тең?</span></summary>
+        <p>$f(1)=0$ (Безу).</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: қалдықпен бөлу</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.1-ді дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Бүтін сандарды бағанмен бөлгендей: басқы мүшені жою үшін $g$-ның тиісті еселігін алып тастаймыз, дәреже төмендейді, индукция.</p>
+          <ol class="math-steps">
+            <li>Бар болуы, $\deg f$ бойынша индукция. $\deg f&lt;\deg g$ болса, $q=0$, $r=f$.</li>
+            <li>$\deg f=n\ge m=\deg g$, басқы коэффициенттер $a$, $b$. $f_1=f-\frac abx^{n-m}g$ - $x^n$ мүшесі жойылады, $\deg f_1&lt;n$ ($b^{-1}$ бар - $F$ өріс).</li>
+            <li>Индукция: $f_1=q_1g+r$, $\deg r&lt;m$. Онда $f=\left(q_1+\frac abx^{n-m}\right)g+r$.</li>
+            <li>Жалғыздық: $qg+r=q'g+r'\Rightarrow(q-q')g=r'-r$. $q\ne q'$ болса, сол жақтың дәрежесі $\ge m$, оң жақтың - $&lt;m$. Демек $q=q'$, $r=r'$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: Безу теоремасы және түбірлер саны</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.2-ні дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $x-a$-ға бөлгенде қалдық тұрақты, оны $x=a$ қойып табамыз. Түбірлер санын индукциямен шектейміз.</p>
+          <ol class="math-steps">
+            <li>(1) $f=q(x)(x-a)+r$, $\deg r&lt;1$, яғни $r$ - тұрақты. $x=a$: $f(a)=r$. Демек $f(a)=0\iff r=0\iff(x-a)\mid f$.</li>
+            <li>(2) $n$ бойынша индукция. $n=0$: нөл емес тұрақтының түбірі жоқ.</li>
+            <li>$f$-тің түбірі $a$ болсын: $f=(x-a)q$, $\deg q=n-1$. $b\ne a$ - басқа түбір: $(b-a)q(b)=0$, $b-a\ne0$, бүтіндік облысында $q(b)=0$.</li>
+            <li>Индукция: $q$-дің түбірлері $\le n-1$, демек $f$-тікі $\le n$. ∎ (Сандар теориясындағы Лагранж теоремасы - $F=\mathbb Z_p$ жағдайы.)</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: $2$-$3$ дәрежелі критерий</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.4 (1)-ді дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Түбір бар - сызықты көбейткіш бар. Керісінше, $2$-$3$ дәрежелі көпмүшенің кез келген жіктеуінде $1$ дәрежелі көбейткіш болуы керек.</p>
+          <ol class="math-steps">
+            <li>$f$-тің түбірі $a$ бар болса, $f=(x-a)q$, $\deg q=\deg f-1\ge1$ - келтірілетін.</li>
+            <li>$f=gh$, $g,h$ тұрақты емес: $\deg g+\deg h=\deg f\le3$, екеуі де $\ge1$, демек біреуі $1$ дәрежелі: $g=cx+d$, $c\ne0$.</li>
+            <li>$a=-\frac dc\in F$ - $g$-нің, демек $f$-тің түбірі.</li>
+            <li>Сонымен $2$-$3$ дәрежеде: келтірілетін $\iff$ түбір бар. $4$ дәрежеде $2+2$ жіктелу түбір бермейді. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: рационал түбір теоремасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.4 (2)-ні дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $\frac pq$-ды қойып, $q^n$-ге көбейтеміз: шеткі мүшелер $p$ мен $q$-ге бөлінгіштікті береді.</p>
+          <ol class="math-steps">
+            <li>$f\left(\frac pq\right)=0$, $q^n$-ге көбейтеміз: $a_np^n+a_{n-1}p^{n-1}q+\dots+a_1pq^{n-1}+a_0q^n=0$.</li>
+            <li>$a_0q^n=-p(a_np^{n-1}+\dots+a_1q^{n-1})$, демек $p\mid a_0q^n$. $\gcd(p,q^n)=1$, Евклид леммасы: $p\mid a_0$.</li>
+            <li>Дәл солай $a_np^n=-q(\dots)$: $q\mid a_np^n$, $\gcd(q,p^n)=1$, демек $q\mid a_n$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5">
+        <summary>Қорытып шығару 5: Эйзенштейн критерийі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.4 (3)-ті дәлелдеу ($\mathbb Z[x]$-тегі жіктелу).</p>
+          <p class="mx-idea"><b>Идея:</b> Көбейткіштердің бос мүшелерінің дәл біреуі $p$-ға бөлінеді; басқы коэффициентке дейін «$p$-ға бөлінгіштікті» тасымалдап, қайшылық аламыз.</p>
+          <ol class="math-steps">
+            <li>$f=gh$, $g=b_kx^k+\dots+b_0$, $h=c_lx^l+\dots+c_0$, $k,l\ge1$, бүтін коэффициенттер.</li>
+            <li>$a_0=b_0c_0$, $p\mid a_0$, $p^2\nmid a_0$: $b_0$, $c_0$-дің дәл біреуі $p$-ға бөлінеді, мысалы $p\mid b_0$, $p\nmid c_0$.</li>
+            <li>$p\nmid a_n=b_kc_l$, демек $p\nmid b_k$. $p\nmid b_s$ болатын ең кіші $s$ алайық: $1\le s\le k&lt;n$.</li>
+            <li>$a_s=b_sc_0+b_{s-1}c_1+\dots+b_0c_s$: $b_0,\dots,b_{s-1}$ $p$-ға бөлінеді, $b_sc_0$ бөлінбейді, демек $p\nmid a_s$. Бірақ $s&lt;n$, шарт бойынша $p\mid a_s$ - қайшылық.</li>
+            <li>Сонымен $f$ бүтін коэффициентті тұрақты емес көбейткіштерге жіктелмейді; Гаусс леммасы бойынша $\mathbb Q$ үстінде де. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Қалдықпен бөлу</h3>
+        <p class="math-problem">$x^4+3x^3-2x+5$-ті $x^2+x+1$-ге бөлу.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $x^4\div x^2=x^2$: $x^4+3x^3-2x+5-x^2(x^2+x+1)=2x^3-x^2-2x+5$.</li>
+          <li><b>2-қадам.</b> $2x^3\div x^2=2x$: $2x^3-x^2-2x+5-2x(x^2+x+1)=-3x^2-4x+5$.</li>
+          <li><b>3-қадам.</b> $-3x^2\div x^2=-3$: $-3x^2-4x+5+3(x^2+x+1)=-x+8$.</li>
+          <li><b>4-қадам.</b> $q=x^2+2x-3$, $r=8-x$, $\deg r=1&lt;2$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $q=x^2+2x-3$, $r=8-x$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Рационал түбірлер</h3>
+        <p class="math-problem">$2x^3-3x^2-3x+2$ - $\mathbb Q$ үстінде жіктеу.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Үміткерлер $\frac pq$: $p\mid2$, $q\mid2$: $\pm1,\pm2,\pm\frac12$.</li>
+          <li><b>2-қадам.</b> $f(2)=16-12-6+2=0$ ✓, $f(-1)=-2-3+3+2=0$ ✓, $f\left(\frac12\right)=\frac14-\frac34-\frac32+2=0$ ✓.</li>
+          <li><b>3-қадам.</b> $f=2(x-2)(x+1)\left(x-\frac12\right)=(x-2)(x+1)(2x-1)$.</li>
+          <li><b>4-қадам.</b> Үш түбір - дәреже $3$, басқа түбір жоқ (Теорема 6.2).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $(x-2)(x+1)(2x-1)$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Өріске тәуелділік</h3>
+        <p class="math-problem">$x^2+1$ - $\mathbb Q$, $\mathbb R$, $\mathbb C$, $\mathbb Z_2$, $\mathbb Z_5$, $\mathbb Z_3$ үстінде.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\mathbb Q$, $\mathbb R$: $x^2\ge0$ - түбір жоқ, $\deg2$ - келтірілмейтін.</li>
+          <li><b>2-қадам.</b> $\mathbb C$: $(x-i)(x+i)$. $\mathbb Z_2$: $1^2+1=0$, $x^2+1=(x+1)^2$.</li>
+          <li><b>3-қадам.</b> $\mathbb Z_5$: $2^2+1=5\equiv0$: $(x-2)(x-3)$. $\mathbb Z_3$: $0,1,4\to1,2,2$ - түбір жоқ, келтірілмейтін.</li>
+          <li><b>4-қадам.</b> Байланыс: $-1$ квадраттық қалдық $\iff p\equiv1\pmod4$ (сандар теориясы, 5-сабақ).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\mathbb Q,\mathbb R,\mathbb Z_3$: келтірілмейтін.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Түбірсіз, бірақ келтірілетін</h3>
+        <p class="math-problem">$x^4+4$ (Софи Жермен).</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $x^4+4&gt;0$ - нақты түбір жоқ.</li>
+          <li><b>2-қадам.</b> $x^4+4=(x^2+2)^2-4x^2=(x^2+2x+2)(x^2-2x+2)$.</li>
+          <li><b>3-қадам.</b> Әр көбейткіштің дискриминанты $4-8&lt;0$ - $\mathbb R$ үстінде келтірілмейтін.</li>
+          <li><b>4-қадам.</b> Демек $2$-$3$ дәрежелі критерий $4$ дәрежеге жарамайды.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $(x^2+2x+2)(x^2-2x+2)$.</p></div>
+      <div class="math-example" id="ex-5"><h3>Мысал 5. Эйзенштейн</h3>
+        <p class="math-problem">$x^5-6x+3$ және $x^4+x^3+x^2+x+1$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $x^5-6x+3$: $p=3$: $3\nmid1$, $3\mid-6,3$ (және $0$ коэффициенттер), $9\nmid3$ - келтірілмейтін.</li>
+          <li><b>2-қадам.</b> $\Phi_5=x^4+x^3+x^2+x+1$: тікелей шарт жоқ. $x\mapsto x+1$: $\Phi_5(x+1)=\frac{(x+1)^5-1}x=x^4+5x^3+10x^2+10x+5$.</li>
+          <li><b>3-қадам.</b> $p=5$: $5\mid5,10,10,5$, $25\nmid5$ - келтірілмейтін.</li>
+          <li><b>4-қадам.</b> $f(x)$ жіктелсе, $f(x+1)$ де жіктеледі - демек $\Phi_5$ келтірілмейтін.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Екеуі де $\mathbb Q$ үстінде келтірілмейтін.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Түбірі жоқ - келтірілмейтін</span> → <span class="math-good">тек $\deg\le3$</span><br>Неге қате: $x^4+4$.</li>
+        <li><span class="math-bad">Келтірілмейтіндік - көпмүшенің өз қасиеті</span> → <span class="math-good">өріске тәуелді</span><br>Неге қате: $x^2-2$: $\mathbb Q$ мен $\mathbb R$.</li>
+        <li><span class="math-bad">Эйзенштейн қолданылмаса - келтірілетін</span> → <span class="math-good">тек жеткілікті шарт</span><br>Неге қате: $x^2+1$.</li>
+        <li><span class="math-bad">Кез келген сақинада $\le n$ түбір</span> → <span class="math-good">тек бүтіндік облысында</span><br>Неге қате: $\mathbb Z_8$: $x^2-1$.</li>
+        <li><span class="math-bad">Рационал түбірлерді тексермей іздеу</span> → <span class="math-good">$p\mid a_0$, $q\mid a_n$ - ақырлы тізім</span><br>Неге қате: $\pm1,\pm2,\pm\frac12$.</li>
+        <li><span class="math-bad">$\mathbb Z[x]$-те қалдықпен бөлу әрдайым бар</span> → <span class="math-good">басқы коэффициент кері элемент болуы тиіс</span><br>Неге қате: $x\div2x$.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="x³ + ax + 1: үшінші дәрежелі көпмүшенің әрдайым нақты түбірі бар" data-config='{"fns": [{"f": "x^3 + a*x + 1", "label": "f(x) = x³ + ax + 1"}], "params": [{"n": "a", "min": -5, "max": 3, "step": 0.1, "v": -3}], "view": [-3, 3, -6, 6]}'></div>
+      <p><b>Бақылаңыз:</b> Тақ дәрежелі нақты көпмүше $-\infty$-тен $+\infty$-ке өтеді, демек әрдайым нақты түбірі бар - $\mathbb R$ үстінде $3$ дәрежелі көпмүше әрдайым келтірілетін. $a$-ны өзгертіңіз: түбірлер саны $1$ не $3$, бірақ ешқашан $0$ емес. $\mathbb Q$ үстінде жағдай басқа: $x^3-3x+1$ (дәл $a=-3$) - рационал түбірі жоқ ($\pm1$ жарамайды), демек $\mathbb Q$ үстінде келтірілмейтін.</p>
+      <div class="math-viz" data-viz="graph" data-title="x⁴ + 4 = (x² + 2x + 2)(x² − 2x + 2)" data-config='{"fns": [{"f": "x^4 + 4", "label": "x⁴ + 4"}, {"f": "x^2 + 2*x + 2", "label": "x² + 2x + 2", "color": 1}, {"f": "x^2 - 2*x + 2", "label": "x² − 2x + 2", "color": 2}], "view": [-3, 3, -1, 12]}'></div>
+      <p><b>Бақылаңыз:</b> Үш қисықтың ешқайсысы $x$ осін қиып өтпейді - нақты түбір жоқ. Бірақ $x^4+4$ екі квадраттың көбейтіндісі: кез келген $x$ үшін көк қисықтың мәні қалған екеуінің көбейтіндісіне тең. Бұл - «түбір жоқ $\Rightarrow$ келтірілмейтін» тұжырымының $4$ дәрежеде жалған екенінің суреті.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m19-6-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m19-6-t1">1. Безу теоремасы</h3></div>
+        <p>Есептеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x^5+1$-ді $x-2$-ге бөлгендегі қалдық","a":33,"v":"2**5 + 1","hint":"$f(2)$.","sol":{"steps":["$32+1$."],"ans":"$33$"}},{"q":"$x^2+1$-дің $\\mathbb Z_5$-тегі түбірлер саны","a":2,"v":"len([a for a in range(5) if (a*a + 1) % 5 == 0])","hint":"$0,\\dots,4$ қойыңыз.","sol":{"steps":["$2$ және $3$."],"ans":"$2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m19-6-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m19-6-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbb Q$-да түбірі жоқ $4$ дәрежелі көпмүше келтірілмейтін.","a":false,"e":"$x^4+4=(x^2+2x+2)(x^2-2x+2)$.","hint":"Теорема 6.4 (1) тек $\\deg\\le3$."},{"q":"$x^2+1$ $\\mathbb R$ үстінде келтірілмейтін.","a":true,"e":"Нақты түбір жоқ, $\\deg2$.","hint":"Теорема 6.4 (1)."},{"q":"$x^2+1$ $\\mathbb Z_2$ үстінде келтірілмейтін.","a":false,"e":"$(x+1)^2=x^2+2x+1=x^2+1$.","hint":"$x=1$ қойыңыз."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m19-6-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m19-6-t3">3. Эйзенштейн</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қай көпмүшеге $p=2$ үшін Эйзенштейн критерийі қолданылады?","o":["$x^3+6x+2$","$x^3+6x+4$","$x^3+x+2$","$2x^3+6x+2$"],"a":0,"e":"$2\\mid6,2$; $4\\nmid2$; $2\\nmid1$.","hint":"Үш шартты тексеріңіз."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m19-6-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m19-6-t4">4. Түбірлер және ЕҮОБ</h3></div>
+        <p>Табыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$2x^3-3x^2-3x+2$-нің рационал түбірлер саны","a":3,"v":"len(solve(2*x**3 - 3*x**2 - 3*x + 2, x))","hint":"$\\pm1,\\pm2,\\pm\\frac12$.","sol":{"steps":["$2,-1,\\frac12$."],"ans":"$3$"}},{"q":"$\\deg\\gcd(x^2-1,\\ x^2+2x+1)$","a":1,"v":"Poly(gcd(x**2 - 1, x**2 + 2*x + 1), x).degree()","hint":"Екеуін де жіктеңіз.","sol":{"steps":["$\\gcd=x+1$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m19-6-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m19-6-t5">5. $\mathbb Z_p$ үстіндегі көпмүшелер</h3></div>
+        <p>Санаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbb Z_2$ үстіндегі келтірілген келтірілмейтін квадрат көпмүшелер саны","a":1,"v":"len([(b, c) for b in range(2) for c in range(2) if all((t*t + b*t + c) % 2 for t in range(2))])","hint":"$x^2,x^2+1,x^2+x,x^2+x+1$.","sol":{"steps":["Тек $x^2+x+1$."],"ans":"$1$"}},{"q":"$\\mathbb Z_3$ үстіндегі сол сан","a":3,"v":"len([(b, c) for b in range(3) for c in range(3) if all((t*t + b*t + c) % 3 for t in range(3))])","hint":"Барлығы $9$, келтірілетіндері $(x-a)(x-b)$: $6$.","sol":{"steps":["$9-6=3$."],"ans":"$3$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m19-6-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m19-6-t6">6. Бөлу</h3></div>
+        <p>$x^4+3x^3-2x+5=(x^2+x+1)q+r$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$r(0)$ (қалдықтың бос мүшесі)","a":8,"v":"Poly(x**4 + 3*x**3 - 2*x + 5, x).rem(Poly(x**2 + x + 1, x)).as_expr().subs(x, 0)","hint":"Бағанмен бөліңіз.","sol":{"steps":["$r=8-x$."],"ans":"$8$"}},{"q":"$q(1)$","a":0,"v":"Poly(x**4 + 3*x**3 - 2*x + 5, x).quo(Poly(x**2 + x + 1, x)).as_expr().subs(x, 1)","hint":"$q=x^2+2x-3$.","sol":{"steps":["$1+2-3$."],"ans":"$0$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m19-6-exp7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m19-6-t7">7. Бөлінді</h3></div>
+        <p>$x^3-1$-ді $x-1$-ге бөлгендегі бөлінді ($x$ арқылы).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$q(x)=?$","a":"x^2+x+1","v":"Poly(x**3 - 1, x).quo(Poly(x - 1, x)).as_expr()","hint":"$x^3-1=(x-1)(\\dots)$.","sol":{"steps":["Бағанмен бөлу."],"ans":"$x^2+x+1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m19-6-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m19-6-t8">8. Көпмүше - жіктелуі</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Көпмүше және өріс - нәтиже.","pairs":[["x² + 1, ℤ₂ үстінде","(x + 1)²"],["x² + 1, ℂ үстінде","(x − i)(x + i)"],["x² − 2, ℚ үстінде","келтірілмейтін"],["x⁴ + 4, ℚ үстінде","екі квадрат көпмүшенің көбейтіндісі"]],"hint":"Әр өрісте түбір іздеңіз.","sol":{"steps":["Келтірілмейтіндік өріске тәуелді."]},"e":"Бір көпмүше - әртүрлі жауап."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m19-6-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m19-6-t9">9. Параметрлік: Безу теоремасы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[-3,3]},"b":{"int":[-5,5]},"c":{"int":[-5,5]}},"type":"num","q":"$x^3#{+b}x#{+c}$-ті $x-(#{a})$-ге бөлгендегі қалдық?","a":"a^3 + b*a + c","v":"int(a)**3 + int(b)*int(a) + int(c)","hint":"Қалдық $=f(#{a})$.","sol":{"steps":["$(#{a})^3+(#{b})(#{a})+(#{c})$."],"ans":"$#{a^3 + b*a + c}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m19-6-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m19-6-t10">10. Параметрлік: келтірілмейтін квадраттар</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"p":{"pick":[2,3,5,7,11]}},"type":"num","q":"$\\mathbb Z_{#{p}}$ үстіндегі келтірілген келтірілмейтін квадрат көпмүшелер саны?","a":"(p^2 - p)/2","v":"len([(b, c) for b in range(int(p)) for c in range(int(p)) if all((t*t + b*t + c) % int(p) for t in range(int(p)))])","hint":"Барлығы $#{p^2}$; келтірілетіндері $(x-a)(x-b)$: $a=b$ ($#{p}$) не $a\\ne b$ ($\\binom{#{p}}2$).","sol":{"steps":["$#{p^2}-#{p}-#{(p^2-p)/2}=#{(p^2-p)/2}$."],"ans":"$#{(p^2-p)/2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m19-6-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m19-6-t11">11. Көпмүшелер үшін Евклид алгоритмі</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\gcd(f,g)$, $\\deg f\\ge\\deg g$.","steps":["$f$-ті $g$-ге қалдықпен бөлеміз: $f=q_1g+r_1$.","$g$-ні $r_1$-ге бөлеміз: $g=q_2r_1+r_2$.","Қалдық нөл болғанша қайталаймыз.","Соңғы нөл емес қалдықты аламыз.","Оны басқы коэффициентіне бөліп, келтірілген түрге келтіреміз."],"hint":"Дәреже әр қадамда кемиді.","sol":{"ans":"$\\gcd(f,g)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m19-6-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m19-6-t12">12. Қадамдық шешім: Эйзенштейн критерийі</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$x^4-10x^2+15$ $\\mathbb Q$ үстінде келтірілмейтін екенін дәлелдеңіз.","steps":["$p=5$ таңдаймыз.","Басқы коэффициент $1$: $5\\nmid1$ ✓.","Қалған коэффициенттер $0,-10,0,15$ - барлығы $5$-ке бөлінеді ✓.","Бос мүше $15$: $25\\nmid15$ ✓. Эйзенштейн бойынша келтірілмейтін."],"ans":"$\\mathbb Q$ үстінде келтірілмейтін."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> $\mathbb Z_2[x]$-тегі көпмүшелер - CRC бақылау сомаларының (Ethernet, ZIP, PNG) негізі: хабар көпмүше ретінде келтірілмейтін (немесе арнайы) көпмүшеге бөлінеді, қалдық бақылау сомасы болады. Рид-Соломон кодтары ақырлы өрістегі көпмүшелерді қолданады: $n$ дәрежелі көпмүше $n+1$ нүктемен анықталады (Теорема 6.2), сондықтан қосымша нүктелер жоғалған деректерді қалпына келтіреді.</p>
+      <p><b>Мини-жоба: «$\mathbb Z_p[x]$ калькуляторы».</b> $\mathbb Z_p$ үстінде көпмүшелерді бөлу мен ЕҮОБ-ты өзіміз жазамыз, $\mathbb Z_2$ үстіндегі $n$ дәрежелі келтірілмейтін көпмүшелерді санаймыз және CRC бақылау сомасын есептейміз.</p>
+<pre data-lang="python"><code class="language-python">from itertools import product
+
+def trim(f):
+    while f and f[-1] == 0:
+        f = f[:-1]
+    return f
+
+def divmod_p(f, g, p):
+    f, g = trim(f[:]), trim(g)
+    q = [0] * max(len(f) - len(g) + 1, 1)
+    inv = pow(g[-1], -1, p)
+    while len(f) &gt;= len(g) and f:
+        k = len(f) - len(g)
+        c = f[-1] * inv % p
+        q[k] = c
+        for i, gi in enumerate(g):
+            f[i + k] = (f[i + k] - c * gi) % p
+        f = trim(f)
+    return trim(q), f
+
+def gcd_p(f, g, p):
+    while trim(g):
+        f, g = g, divmod_p(f, g, p)[1]
+    f = trim(f)
+    inv = pow(f[-1], -1, p)
+    return [c * inv % p for c in f]
+
+# коэффициенттер өсу ретімен: [a0, a1, ...]
+print("x^4+x+1 ÷ x^2+1, Z_2 үстінде:", divmod_p([1, 1, 0, 0, 1], [1, 0, 1], 2))
+print("gcd(x^2-1, x^2+2x+1), Z_7 үстінде:", gcd_p([6, 0, 1], [1, 2, 1], 7))
+
+def irreducible(f, p):
+    n = len(f) - 1
+    for d in range(1, n // 2 + 1):
+        for coeffs in product(range(p), repeat=d):
+            g = list(coeffs) + [1]
+            if not divmod_p(f, g, p)[1]:
+                return False
+    return True
+
+counts = {n: sum(1 for c in product(range(2), repeat=n) if irreducible(list(c) + [1], 2)) for n in range(1, 9)}
+print("Z_2 үстіндегі келтірілмейтіндер саны, дәреже 1..8:", counts)
+
+def crc(bits, gen):
+    msg = [int(b) for b in bits][::-1]
+    shifted = [0] * (len(gen) - 1) + msg
+    return divmod_p(shifted, gen, 2)[1]
+
+print("CRC (x^3+x+1):", crc("11010011101100", [1, 1, 0, 1]))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$\mathbb Z_2$ үстіндегі келтірілмейтіндер саны $2,1,2,3,6,9,18,30$ болуы керек. Бұл $\frac1n\sum_{d\mid n}\mu(d)2^{n/d}$ формуласымен (Гаусс; осы курста дәлелдемейміз) сәйкес пе?</li>
+        <li>Хабардағы бір битті өзгертіп, CRC-ді қайта есептеңіз. Қалдық өзгере ме? Неге?</li>
+        <li><code>gcd_p</code> арқылы $x^4+1$ мен $x^2+1$-дің $\mathbb Z_2$ үстіндегі ЕҮОБ-ын табыңыз. $\mathbb Z_2$ үстінде $x^4+1=(x+1)^4$ екенін тексеріңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Қалдықпен бөлу</td><td>$f=qg+r$, $\deg r&lt;\deg g$</td><td>$F$ - өріс</td></tr>
+        <tr><td>Безу</td><td>$f(a)=0\iff(x-a)\mid f$</td><td>$\le\deg f$ түбір</td></tr>
+        <tr><td>ЕҮОБ</td><td>$\gcd(f,g)=uf+vg$</td><td>Евклид алгоритмі</td></tr>
+        <tr><td>$\deg2,3$</td><td>келтірілмейтін $\iff$ түбір жоқ</td><td>$4$ дәрежеде жалған</td></tr>
+        <tr><td>Рационал түбір</td><td>$p\mid a_0$, $q\mid a_n$</td><td>ақырлы тізім</td></tr>
+        <tr><td>Эйзенштейн</td><td>$p\mid a_i$, $p^2\nmid a_0$, $p\nmid a_n$</td><td>жеткілікті шарт</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m19-6-self">
+        <li><input type="checkbox"> <span>Мен $F[x]$-те қалдықпен бөлуді дәлелдеп, орындай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Безу теоремасын және түбірлер саны дәрежеден аспайтынын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен көпмүшелердің ЕҮОБ-ын Евклид алгоритмімен таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $2$-$3$ дәрежелі көпмүшенің келтірілмейтіндігін тексеріп, $4$ дәрежедегі қарсы мысалды келтіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен рационал түбір теоремасы мен Эйзенштейн критерийін дәлелдеп, қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бір көпмүшенің әртүрлі өрістер үстінде жіктелуін салыстыра аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="d">
+<p class="q-text">1. x⁵ + 1 ÷ (x − 2) қалдығы:</p>
+<label><input type="radio" value="a"> 31</label>
+<label><input type="radio" value="b"> 1</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> 33</label>
+<p class="explain">f(2).</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. F[x]-те n дәрежелі көпмүшенің түбірлері:</p>
+<label><input type="radio" value="a"> дәл n</label>
+<label><input type="radio" value="b"> ≥ n</label>
+<label><input type="radio" value="c"> ≤ n</label>
+<label><input type="radio" value="d"> кез келген сан</label>
+<p class="explain">Теорема 6.2.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. x² + 1 (ℤ₂ үстінде) =</p>
+<label><input type="radio" value="a"> келтірілмейтін</label>
+<label><input type="radio" value="b"> (x + 1)²</label>
+<label><input type="radio" value="c"> (x − i)(x + i)</label>
+<label><input type="radio" value="d"> x² − 1</label>
+<p class="explain">1 + 1 = 0.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">4. x⁴ + 4 (ℚ үстінде):</p>
+<label><input type="radio" value="a"> келтірілетін</label>
+<label><input type="radio" value="b"> келтірілмейтін</label>
+<label><input type="radio" value="c"> түбірі бар</label>
+<label><input type="radio" value="d"> сызықтыққа жіктеледі</label>
+<p class="explain">Софи Жермен.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">5. x⁵ − 6x + 3 үшін Эйзенштейн p =</p>
+<label><input type="radio" value="a"> 2</label>
+<label><input type="radio" value="b"> 5</label>
+<label><input type="radio" value="c"> 6</label>
+<label><input type="radio" value="d"> 3</label>
+<p class="explain">3 | 6, 3; 9 ∤ 3.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. 2x³ − 3x² − 3x + 2 рационал түбірлері:</p>
+<label><input type="radio" value="a"> 1, 2, 3</label>
+<label><input type="radio" value="b"> жоқ</label>
+<label><input type="radio" value="c"> 2, −1, 1/2</label>
+<label><input type="radio" value="d"> ±1</label>
+<p class="explain">p | 2, q | 2.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. ℤ₃ үстіндегі келтірілген келтірілмейтін квадраттар саны:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 3</label>
+<label><input type="radio" value="c"> 6</label>
+<label><input type="radio" value="d"> 9</label>
+<p class="explain">(9 − 3)/2.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">8. Деңгейі 2-3 көпмүше келтірілмейтін ⇔</p>
+<label><input type="radio" value="a"> түбірі жоқ</label>
+<label><input type="radio" value="b"> коэффициенттері жай</label>
+<label><input type="radio" value="c"> дискриминант оң</label>
+<label><input type="radio" value="d"> басқы коэффициенті 1</label>
+<p class="explain">Теорема 6.4 (1).</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=abstract">Abstract Algebra емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-122.html"><small>Алдыңғы</small>← Abstract Algebra · 5-сабақ: Сақиналар және өрістер</a>

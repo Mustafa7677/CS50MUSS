@@ -6,13 +6,14 @@
   <title>Math Number Theory · 6-сабақ: Диофант теңдеулері және RSA - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Number Theory · 6-сабақ: Диофант теңдеулері және RSA - CS50 қазақша">
-  <meta property="og:description" content="Математика, Number Theory · 6-сабақ: Диофант теңдеулері және RSA. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Сызықтық диофант теңдеулері, Пифагор үштіктері, RSA криптожүйесі.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-130.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Number Theory · 6-сабақ: Диофант теңдеулері және RSA - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-130.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Number Theory · 6-сабақ: Диофант теңдеулері және RSA. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Сызықтық диофант теңдеулері, Пифагор үштіктері, RSA криптожүйесі.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,475 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="130">
+    <article class="content math-lesson" style="--sc:#9a3412" id="main">
+      <div class="lecture-head" style="--lc:#9a3412" data-n="130" data-msubj="numtheory" data-glyph="ℤ">
         <div class="num">Number Theory · 6-сабақ</div>
         <h1>Диофант теңдеулері және RSA</h1>
-        <p>Сызықтық диофант теңдеулері, Пифагор үштіктері, RSA криптожүйесі.</p>
+        <p>Дүкенде $7$ және $11$ теңгелік маркалар бар. Дәл $100$ теңгеге неше тәсілмен сатып алуға болады? Бұл - $7x+11y=100$ теңдеуінің теріс емес бүтін шешімдерін іздеу.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 45 мин</span><span>Есептер ≈ 1 сағ</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 1 сағ 50 мин</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Шешімдері бүтін сан болуы керек теңдеулер Диофант есімімен аталады. Бұл сабақта сызықтық Диофант теңдеуін толық шешеміз, Пифагор үштіктерінің барлығын сипаттаймыз және модуль бойынша кедергілер арқылы шешімнің жоқтығын дәлелдеуді үйренеміз. Соңында курстың бүкіл материалын біріктіретін RSA шифрын құрып, оның дұрыстығын Ферма теоремасы мен қытай қалдықтары туралы теорема арқылы дәлелдейміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-20">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=numtheory">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Number Theory: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-20">Number Theory</a></span><ol><li><a href="week-125.html" title="Бөлінгіштік және ЕҮОБ">1</a></li><li><a href="week-126.html" title="Жай сандар және арифметиканың негізгі теоремасы">2</a></li><li><a href="week-127.html" title="Салыстырулар">3</a></li><li><a href="week-128.html" title="Ферма, Эйлер және қытай қалдықтары теоремалары">4</a></li><li><a href="week-129.html" title="Квадраттық қалдықтар">5</a></li><li><a href="week-130.html" aria-current="page" title="Диофант теңдеулері және RSA">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-20">Number Theory</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Диофант теңдеулерінің бүтін шешімдерін ЕҮОБ, жұптылық және модуль бойынша қалдықтар арқылы іздейміз; RSA шифры дәл осы арифметикаға (Эйлер теоремасына) сүйенеді.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>сызықтық Диофант теңдеуінің шешімділік шартын дәлелдеп, барлық шешімдерін жазу;</li>
+        <li>теріс емес шешімдер санын шешімдердің жалпы түрінен табу;</li>
+        <li>барлық қарапайым Пифагор үштіктерінің формуласын дәлелдеу;</li>
+        <li>модуль бойынша кедергімен (mod $3$, $4$, $8$) теңдеудің шешімсіз екенін дәлелдеу;</li>
+        <li>RSA кілттерін құрып, шифрлау мен шифрды ашуды орындау;</li>
+        <li>RSA-ның дұрыстығын барлық хабарлар үшін дәлелдеп, оның қауіпсіздігі неге сүйенетінін түсіндіру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">ЕҮОБ, Безу теңдігі, кеңейтілген Евклид алгоритмі (1-сабақ). Арифметиканың негізгі теоремасы (2-сабақ). Салыстырулар, кері элемент, жылдам дәрежелеу (3-сабақ). Эйлер функциясы, Ферма теоремасы, қытай қалдықтары туралы теорема (4-сабақ). Квадраттық қалдықтар (5-сабақ) - жылдам шолу үшін.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-129.html">Number Theory · 5-сабақ: Квадраттық қалдықтар</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: маркалар есебі</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">$7$ және $11$ теңгелік маркалармен дәл $100$ теңге құрастыру: $7x+11y=100$, $x,y\ge0$ бүтін.</p>
+        <ol class="math-steps">
+          <li>$\gcd(7,11)=1\mid100$ - бүтін шешімдер бар.</li>
+          <li>$11$ бойынша: $7x\equiv100\equiv1\pmod{11}$. $7^{-1}\equiv8$ ($7\cdot8=56\equiv1$), демек $x\equiv8$.</li>
+          <li>$x=8$: $56+11y=100$, $y=4$ ✓. Барлық бүтін шешімдер: $x=8+11t$, $y=4-7t$.</li>
+          <li>Теріс емес болуы үшін $t=0$ ғана: жалғыз тәсіл $8$ маркасы $7$ теңгелік, $4$ маркасы $11$ теңгелік.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Бір шешімді модуль арифметикасымен табамыз, қалғандары одан «қадаммен» шығады. Шектеулер (теріс еместік) шешімдерді іріктейді.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>$ax+by=c$ түзуі жазықтықта шексіз көп нүктеден өтеді, бірақ бүтін координаталы нүктелер - сирек. Олар бар болса, түзу бойымен бірдей қадаммен орналасады: бір шешімнен келесісіне $\left(\frac bd,-\frac ad\right)$ векторымен өтеміз ($d=\gcd(a,b)$). Демек бір шешім мен ЕҮОБ бүкіл жиынды анықтайды.</p>
+      <p>Теңдеудің шешімі жоқ екенін дәлелдеудің ең күшті қарапайым құралы - модуль бойынша қарау. $x^2+y^2=2023$: квадраттар $\bmod4$ тек $0,1$, қосындысы $0,1,2$, ал $2023\equiv3\pmod4$. Шешім жоқ - бірде-бір сан тексерусіз.</p>
+      <p>RSA идеясы: $m\mapsto m^e\bmod n$ дәрежелеу оңай, ал кері амал (модуль бойынша $e$-дәрежелі түбір) - $n$-нің жай көбейткіштерін білмей тиімді жолы белгісіз. $p$ мен $q$-ды білсек, $\varphi(n)=(p-1)(q-1)$, ал $d=e^{-1}\bmod\varphi(n)$ - Эйлер теоремасы бойынша $(m^e)^d=m^{1+k\varphi(n)}\equiv m$.</p>
+      <p>Қауіпсіздік $n=pq$-ды факторлаудың қиындығына сүйенеді. Бұл дәлелденген факт емес, тек ең жақсы белгілі алгоритмдердің баяулығы: $2048$-биттік $n$ үшін бүгінгі техникамен практикада мүмкін емес. Ал кішкене $n$ - бірден бұзылады (жобада көреміз).</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · бір жақты қақпа</span>
+        <p>RSA: ашық кілт $(n,e)$ - кез келген адам хат салатын пошта жәшігі. Жәшікті ашу үшін $d$ кілті керек, ал оны табу үшін $n=pq$-ны жіктеу керек - үлкен сандар үшін бұл іс жүзінде мүмкін емес.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · модуль - сүзгі</span>
+        <p>$x^2+y^2=4k+3$ теңдеуінің шешімі жоқ екенін барлық сандарды тексермей-ақ көреміз: квадраттар $4$ бойынша тек $0$ не $1$, қосындысы $3$ бола алмайды. Модуль - «мүмкін емес» шешімдерді сүзгі.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$ax+by=c$</td><td>сызықтық Диофант теңдеуі</td><td>бүтін $x,y$ ізделеді</td></tr>
+        <tr><td>$(x,y,z)$</td><td>Пифагор үштігі</td><td>$x^2+y^2=z^2$ натурал шешімі</td></tr>
+        <tr><td>$(n,e)$</td><td>ашық кілт</td><td>шифрлау: $c=m^e\bmod n$</td></tr>
+        <tr><td>$d\equiv e^{-1}\pmod{\varphi(n)}$</td><td>жабық кілт</td><td>дешифрлау: $m=c^d\bmod n$</td></tr>
+        <tr><td>$\varphi(pq)=(p-1)(q-1)$</td><td>Эйлер функциясы</td><td>$p$, $q$ белгілі болғанда ғана оңай</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 6.1 · Диофант теңдеуі</span>
+        <p>Бүтін коэффициентті, шешімдері бүтін сандар арасынан ізделетін теңдеу - <strong>Диофант теңдеуі</strong> (<span class="term-en">Diophantine equation</span>). $ax+by=c$ ($a,b$ бір мезгілде нөл емес) - <strong>сызықтық Диофант теңдеуі</strong> (<span class="term-en">linear Diophantine equation</span>). $x^2+y^2=z^2$ теңдеуінің натурал шешімі - <strong>Пифагор үштігі</strong> (<span class="term-en">Pythagorean triple</span>); $\gcd(x,y,z)=1$ болса - қарапайым үштік.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Тек бүтін шешімдер ізделетін теңдеу - Диофант теңдеуі.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 6.1 · Сызықтық Диофант теңдеуі</span>
+        <p>$d=\gcd(a,b)$. $ax+by=c$ бүтін сандарда шешілетін $\iff d\mid c$. $(x_0,y_0)$ - бір шешім болса, барлық шешімдер: $x=x_0+\frac bd t$, $y=y_0-\frac ad t$, $t\in\mathbb Z$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $ax+by=c$ шешілетін $\iff$ ЕҮОБ $c$-ны бөледі; бір шешімнен қалғандары бірдей қадаммен шығады.</p></div>
+      <p><em>Негіздеме.</em> Бір шешімді кеңейтілген Евклид береді: $ax'+by'=d\Rightarrow x_0=\frac cd x'$, $y_0=\frac cd y'$.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 6.2 · Пифагор үштіктері</span>
+        <p>$x,y,z\in\mathbb N$, $y$ жұп. $(x,y,z)$ - қарапайым Пифагор үштігі $\iff x=m^2-n^2$, $y=2mn$, $z=m^2+n^2$, мұнда $m>n>0$, $\gcd(m,n)=1$, $m$ мен $n$ әртүрлі жұптықта.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Барлық негізгі Пифагор үштіктері екі өзара жай $m&gt;n$ саннан формуламен шығады: $m^2-n^2$, $2mn$, $m^2+n^2$.</p></div>
+      <p><em>Негіздеме.</em> Қарапайым үштікте катеттердің дәл біреуі жұп.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 6.3 · Екі квадраттың қосындысы</span>
+        <p>(1) $n\equiv3\pmod4$ болса, $n=x^2+y^2$ бүтін шешімі жоқ. (2) $n\equiv7\pmod8$ болса, $n=x^2+y^2+z^2$ шешімі жоқ. (3) Ферма-Эйлер: тақ жай $p$ екі квадраттың қосындысы $\iff p\equiv1\pmod4$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Модуль бойынша қалдықтар кейбір сандардың екі (үш) квадраттың қосындысы еместігін бірден көрсетеді.</p></div>
+      <p><em>Негіздеме.</em> (3)-тің «$\Rightarrow$» бағыты (1)-ден шығады; «$\Leftarrow$» бағытын бұл сабақта дәлелсіз келтіреміз (дәлелі Туэ леммасы немесе Гаусс бүтін сандары арқылы).</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 6.2 · RSA</span>
+        <p><strong>RSA</strong> (<span class="term-en">RSA</span>): $p\ne q$ - үлкен жай сандар, $n=pq$, $\varphi(n)=(p-1)(q-1)$; $e$: $\gcd(e,\varphi(n))=1$; $d\equiv e^{-1}\pmod{\varphi(n)}$. <strong>Ашық кілт</strong> (<span class="term-en">public key</span>) $(n,e)$, <strong>жабық кілт</strong> (<span class="term-en">private key</span>) $d$. Шифрлау: $c=m^e\bmod n$; шифрды ашу: $m=c^d\bmod n$, $0\le m&lt;n$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> RSA: екі үлкен жай санның көбейтіндісі ашық, ал шифрды ашатын $d$ кілті $\varphi(n)$-ді білуді талап етеді.</p></div>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 6.4 · RSA-ның дұрыстығы</span>
+        <p>Жоғарыдағы шарттарда кез келген $m\in\{0,1,\dots,n-1\}$ үшін $(m^e)^d\equiv m\pmod n$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $e$ мен $d$ бір-біріне $\varphi(n)$ бойынша кері, сондықтан шифрлап, сосын дешифрласақ, бастапқы хат қайтады.</p></div>
+      <p><em>Негіздеме.</em> $\gcd(m,n)>1$ болатын $m$ үшін де дұрыс: Эйлер теоремасы тікелей жарамайды, сондықтан дәлел ҚҚТ арқылы.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 6.1 · Сызықтық Диофант</span>
+        <div class="math-fbody">$$ax+by=c:\ \ d\mid c,\quad x=x_0+\frac bd t,\ \ y=y_0-\frac ad t$$</div>
+        <p class="math-fnote">$d=\gcd(a,b)$, $t\in\mathbb Z$.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 6.2 · Пифагор үштіктері</span>
+        <div class="math-fbody">$$(m^2-n^2,\ 2mn,\ m^2+n^2)$$</div>
+        <p class="math-fnote">$m>n$, $\gcd(m,n)=1$, әртүрлі жұптық.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 6.3 · Квадраттар $\bmod4$, $\bmod8$</span>
+        <div class="math-fbody">$$x^2\bmod4\in\{0,1\},\qquad x^2\bmod8\in\{0,1,4\}$$</div>
+        <p class="math-fnote">Кедергі әдісі.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 6.4 · RSA кілттері</span>
+        <div class="math-fbody">$$n=pq,\ \ ed\equiv1\pmod{(p-1)(q-1)}$$</div>
+        <p class="math-fnote">$\gcd(e,\varphi(n))=1$.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 6.5 · RSA шифрлау</span>
+        <div class="math-fbody">$$c=m^e\bmod n,\qquad m=c^d\bmod n$$</div>
+        <p class="math-fnote">Жылдам дәрежелеу.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Диофант теңдеуін шешу жоспары: (1) сызықтық болса - ЕҮОБ-ты тексеріп, кеңейтілген Евклидпен бір шешім тауып, жалпы шешімді жазыңыз; шектеулер ($x,y\ge0$) $t$-ға арналған теңсіздіктерге айналады; (2) сызықтық емес болса - алдымен кіші модульдер бойынша ($2,3,4,8,9$) кедергіні іздеңіз; (3) көбейткіштерге жіктеңіз ($x^2-y^2=(x-y)(x+y)$) және бөлгіштерді санаңыз; (4) өзара жай көбейткіштердің көбейтіндісі квадрат болса, әрқайсысы квадрат (канондық жіктеу) - Пифагор үштіктерінің дәлелі осы.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>(1) Модуль бойынша кедергі тек шешімнің жоқтығын дәлелдейді: барлық модульдер бойынша шешім бар болса да, бүтін шешім болмауы мүмкін (мысалы, $3x^3+4y^3+5z^3=0$ - Сельмер мысалы, нөлдік емес бүтін шешімі жоқ, бірақ әр модуль бойынша бар). (2) RSA-да $e$ мен $\varphi(n)$ өзара жай болуы міндетті: әйтпесе $d$ жоқ және $m\mapsto m^e$ биекция емес. (3) «Оқулықтағы» RSA ($c=m^e$ тікелей) практикада қауіпті: бірдей хабар бірдей шифр береді, кіші $m$ мен кіші $e$ үшін $m^e&lt;n$ болса, түбір қарапайым $\sqrt[e]c$. Нақты жүйелерде толтыру (OAEP) қолданылады.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $6x+10y=7$ бүтін шешімі бар ма?</span></summary>
+        <p>Жоқ: $\gcd(6,10)=2\nmid7$.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> $m=2$, $n=1$ қандай Пифагор үштігін береді?</span></summary>
+        <p>$(3,4,5)$.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> $2027$ екі квадраттың қосындысы бола ма?</span></summary>
+        <p>Жоқ: $2027\equiv3\pmod4$.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> RSA-да $p=5$, $q=11$, $e=3$. $d$ неге тең?</span></summary>
+        <p>$\varphi=4\cdot10=40$; $3d\equiv1\pmod{40}$: $d=27$ ($81=2\cdot40+1$).</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: сызықтық Диофант теңдеуі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.1-ді дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> ЕҮОБ сол жақты бөледі, демек $c$-ны да. Керісінше, Безу коэффициенттерін $\frac cd$-ға көбейтеміз; барлық шешімдер - біртекті теңдеудің шешімдерін қосу.</p>
+          <ol class="math-steps">
+            <li>$\Rightarrow$: $d\mid a$, $d\mid b$, демек $d\mid ax+by=c$.</li>
+            <li>$\Leftarrow$: Безу: $ax'+by'=d$. $c=dk$ болса, $a(kx')+b(ky')=c$ - шешім.</li>
+            <li>Барлық шешімдер: $(x,y)$ - кез келген шешім. $a(x-x_0)=-b(y-y_0)$; $d$-ға бөлеміз: $a'(x-x_0)=-b'(y-y_0)$, $a'=\frac ad$, $b'=\frac bd$, $\gcd(a',b')=1$.</li>
+            <li>Евклид леммасы: $b'\mid x-x_0$, $x=x_0+b't$. Қойсақ: $y=y_0-a't$.</li>
+            <li>Керісінше, мұндай $(x,y)$ шешім: $a(x_0+b't)+b(y_0-a't)=c+(ab'-ba')t=c$, себебі $ab'=ba'=\frac{ab}d$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: Пифагор үштіктері</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.2-ні дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $y^2=(z-x)(z+x)$; көбейткіштердің жартылары өзара жай, ал көбейтіндісі квадрат - демек әрқайсысы квадрат.</p>
+          <ol class="math-steps">
+            <li>Қарапайым үштікте $x$, $y$ екеуі де жұп емес (әйтпесе $2\mid z$, $\gcd\ge2$). Екеуі де тақ емес: $x^2+y^2\equiv2\pmod4$, бірақ $z^2\bmod4\in\{0,1\}$. Демек біреуі ($y$) жұп, $x$, $z$ тақ.</li>
+            <li>$y^2=(z-x)(z+x)$; $z\pm x$ жұп: $\left(\frac y2\right)^2=\frac{z+x}2\cdot\frac{z-x}2$.</li>
+            <li>$g=\gcd\left(\frac{z+x}2,\frac{z-x}2\right)$ қосындыны ($z$) және айырманы ($x$) бөледі; $\gcd(x,z)=1$, демек $g=1$.</li>
+            <li>Өзара жай екі натурал санның көбейтіндісі квадрат болса, әрқайсысы квадрат (канондық жіктеу, 2-сабақ): $\frac{z+x}2=m^2$, $\frac{z-x}2=n^2$, $\gcd(m,n)=1$, $m>n>0$.</li>
+            <li>Онда $z=m^2+n^2$, $x=m^2-n^2$, $y=2mn$; $x$ тақ, демек $m$, $n$ әртүрлі жұптықта. Керісінше: $(m^2-n^2)^2+(2mn)^2=(m^2+n^2)^2$ - тепе-теңдік; шарттар $\gcd=1$ береді (ортақ жай $q$ $z\pm x=2m^2,2n^2$-ді бөледі, $q$ тақ, $q\mid m,n$ - қайшылық). ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: модуль бойынша кедергі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.3 (1)-(2)-ні дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Квадраттардың $4$ және $8$ бойынша мүмкін қалдықтарын тізіп, қосындының мүмкін қалдықтарын тексереміз.</p>
+          <ol class="math-steps">
+            <li>$x$ жұп: $x^2=4k^2\equiv0\pmod4$; $x$ тақ: $x^2=4k(k+1)+1\equiv1\pmod8$ (себебі $k(k+1)$ жұп).</li>
+            <li>Демек $x^2\bmod4\in\{0,1\}$, $x^2\bmod8\in\{0,1,4\}$.</li>
+            <li>(1): $x^2+y^2\bmod4\in\{0,1,2\}$ - $3$ жоқ.</li>
+            <li>(2): $\{0,1,4\}$-тен үш санның қосындысы $\bmod8$: $0,1,2,3,4,5,6$ - $7$ жоқ (тікелей тексеру). ∎</li>
+            <li>Ферма-Эйлердің «$\Rightarrow$» бағыты: тақ жай $p=x^2+y^2$ болса, (1) бойынша $p\not\equiv3$, демек $p\equiv1\pmod4$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: RSA-ның дұрыстығы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.4-ті дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $p$ бойынша Ферма, $q$ бойынша Ферма; екі модуль бойынша $m^{ed}\equiv m$, сосын қытай теоремасы $n$ бойынша біріктіреді.</p>
+          <ol class="math-steps">
+            <li>$ed\equiv1\pmod{\varphi(n)}$: $ed=1+k(p-1)(q-1)$, $k\ge0$.</li>
+            <li>$p$ модулі бойынша: $p\nmid m$ болса, Ферма: $m^{ed}=m\cdot\left(m^{p-1}\right)^{k(q-1)}\equiv m$. $p\mid m$ болса, екі жақ та $\equiv0$. Демек әрдайым $m^{ed}\equiv m\pmod p$.</li>
+            <li>Дәл солай $m^{ed}\equiv m\pmod q$.</li>
+            <li>$p\ne q$ - өзара жай; $p\mid m^{ed}-m$ және $q\mid m^{ed}-m$, демек $n=pq\mid m^{ed}-m$ (ҚҚТ-тің жалғыздық бөлігі).</li>
+            <li>$0\le m&lt;n$ болғандықтан, $c^d\bmod n$ дәл $m$-ді қайтарады. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5">
+        <summary>Қорытып шығару 5: RSA мысалы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $p=61$, $q=53$, $e=17$: кілттерді құру және $m=65$ хабарын шифрлау.</p>
+          <p class="mx-idea"><b>Идея:</b> Нақты сандармен барлық қадамды қолмен өтеміз: кілттерді құру, шифрлау, дешифрлау.</p>
+          <ol class="math-steps">
+            <li>$n=3233$, $\varphi(n)=60\cdot52=3120$, $\gcd(17,3120)=1$ ✓.</li>
+            <li>$d\equiv17^{-1}\pmod{3120}$: кеңейтілген Евклид $d=2753$; тексеру $17\cdot2753=46801=15\cdot3120+1$ ✓.</li>
+            <li>$c=65^{17}\bmod3233=2790$ (жылдам дәрежелеу: $17=10001_2$, төрт квадраттау және бір көбейту).</li>
+            <li>Шифрды ашу: $2790^{2753}\bmod3233=65$ ✓.</li>
+            <li>Шабуыл: $3233$-ті сынап бөлумен $\sqrt{3233}\approx57$-ге дейін тексеріп, $53$-ті табамыз - кілт бұзылды. Сондықтан нақты $p$, $q$ - $300$-ден астам цифрлы.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Сызықтық теңдеу</h3>
+        <p class="math-problem">$35x+21y=14$ барлық бүтін шешімдері.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\gcd(35,21)=7$, $7\mid14$ - шешім бар. $7$-ге бөлеміз: $5x+3y=2$.</li>
+          <li><b>2-қадам.</b> Бір шешім: $5\cdot1+3\cdot(-1)=2$, $(x_0,y_0)=(1,-1)$.</li>
+          <li><b>3-қадам.</b> Теорема 6.1: $x=1+3t$, $y=-1-5t$, $t\in\mathbb Z$.</li>
+          <li><b>4-қадам.</b> Тексеру $t=1$: $35\cdot4+21\cdot(-6)=140-126=14$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $(1+3t,\,-1-5t)$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Маркалар есебі</h3>
+        <p class="math-problem">$7x+11y=100$, $x,y\ge0$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\gcd=1$. Бір шешім: $7\cdot8+11\cdot4=56+44=100$, $(8,4)$.</li>
+          <li><b>2-қадам.</b> Жалпы: $x=8+11t$, $y=4-7t$.</li>
+          <li><b>3-қадам.</b> $x\ge0\Rightarrow t\ge-\frac8{11}$, яғни $t\ge0$; $y\ge0\Rightarrow t\le\frac47$, яғни $t\le0$.</li>
+          <li><b>4-қадам.</b> Жалғыз $t=0$: бір ғана тәсіл.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $x=8$, $y=4$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Пифагор үштіктері</h3>
+        <p class="math-problem">$m=3,n=2$ және $m=4,n=1$ үштіктері; $m=3,n=1$ неге жарамайды?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $(3,2)$: $(9-4,\ 12,\ 13)=(5,12,13)$.</li>
+          <li><b>2-қадам.</b> $(4,1)$: $(15,\ 8,\ 17)$; тексеру $225+64=289$ ✓.</li>
+          <li><b>3-қадам.</b> $(3,1)$: екеуі де тақ - $(8,6,10)=2\cdot(4,3,5)$, қарапайым емес.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $(5,12,13)$, $(15,8,17)$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Кедергі</h3>
+        <p class="math-problem">$x^2+y^2=2023$ және $x^2-3y^2=2$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $2023\equiv3\pmod4$; Теорема 6.3 (1): шешім жоқ.</li>
+          <li><b>2-қадам.</b> $x^2-3y^2=2$-ні $\bmod3$ қараймыз: $x^2\equiv2\pmod3$.</li>
+          <li><b>3-қадам.</b> Квадраттар $\bmod3$: $0,1$ - $2$ жоқ. Шешім жоқ.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Екеуі де шешімсіз.</p></div>
+      <div class="math-example" id="ex-5"><h3>Мысал 5. Кіші RSA</h3>
+        <p class="math-problem">$p=5$, $q=11$, $e=3$. $d$ және $m=2$ шифры.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $n=55$, $\varphi=40$, $\gcd(3,40)=1$.</li>
+          <li><b>2-қадам.</b> $3d\equiv1\pmod{40}$: $3\cdot27=81=2\cdot40+1$, $d=27$.</li>
+          <li><b>3-қадам.</b> $c=2^3=8$.</li>
+          <li><b>4-қадам.</b> Тексеру: $8^{27}=2^{81}$; $2^{81}\equiv2\pmod{55}$ (Теорема 6.4) ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $d=27$, $c=8$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$ax+by=c$ әрдайым шешілетін</span> → <span class="math-good">$\gcd(a,b)\mid c$</span><br>Неге қате: $4x+6y=9$ шешімсіз.</li>
+        <li><span class="math-bad">Жалпы шешім $x_0+bt$, $y_0-at$</span> → <span class="math-good">$\frac bd t$, $\frac ad t$</span><br>Неге қате: $d>1$ болса, шешімдер жоғалады.</li>
+        <li><span class="math-bad">Модуль бойынша шешім бар $\Rightarrow$ бүтін шешім бар</span> → <span class="math-good">тек жоқтығын дәлелдейді</span><br>Неге қате: Сельмер мысалы.</li>
+        <li><span class="math-bad">$m,n$ кез келген - қарапайым үштік</span> → <span class="math-good">$\gcd=1$, әртүрлі жұптық</span><br>Неге қате: $(3,1)\to(8,6,10)$.</li>
+        <li><span class="math-bad">RSA тек $\gcd(m,n)=1$ үшін жұмыс істейді</span> → <span class="math-good">барлық $0\le m&lt;n$</span><br>Неге қате: Дәлел ҚҚТ арқылы.</li>
+        <li><span class="math-bad">RSA-ның қауіпсіздігі дәлелденген</span> → <span class="math-good">факторлаудың қиындығына сүйенеді</span><br>Неге қате: Кіші $n$ бірден бұзылады.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="ax + by = c түзуі және бүтін нүктелер" data-config='{"fns": [{"f": "(c - a*x)/b", "label": "y = (c − ax)/b"}], "params": [{"n": "a", "min": 1, "max": 9, "step": 1, "v": 7}, {"n": "b", "min": 1, "max": 12, "step": 1, "v": 11}, {"n": "c", "min": 0, "max": 100, "step": 1, "v": 100}], "view": [-1, 16, -1, 12]}'></div>
+      <p><b>Бақылаңыз:</b> $7x+11y=100$ түзуі бірінші ширекте тек бір бүтін нүктеден өтеді: $(8,4)$. $c$-ны өзгертіңіз: бүтін нүктелер $(11,-7)$ қадаммен орналасады, сондықтан ширекте $0$, $1$ не $2$ нүкте болады. $a=4$, $b=6$ ($\gcd=2$) және тақ $c$ қойыңыз - түзуде бірде-бір бүтін нүкте жоқ.</p>
+      <div class="math-viz" data-viz="graph" data-title="RSA: m ↦ mᵉ mod 33" data-config='{"fns": [{"f": "floor(x)^e - 33*floor(floor(x)^e/33)", "label": "mᵉ mod 33 (m = ⌊x⌋)"}, {"f": "floor(x)", "label": "m", "color": 1, "dash": [4, 3]}], "params": [{"n": "e", "min": 1, "max": 9, "step": 1, "v": 3}], "view": [0, 33, -0.5, 33]}'></div>
+      <p><b>Бақылаңыз:</b> $n=33=3\cdot11$, $\varphi=20$. $e=3$, $7$, $9$ ($\gcd(e,20)=1$): $0,\dots,32$ мәндері араласып, бірақ әрқайсысы дәл бір рет шығады - алмастыру, демек шифрды ашуға болады. $e=2$ не $5$ қойыңыз: кейбір мәндер қайталанады, кейбіреуі жоқ - $d$ жоқ, шифр ашылмайды.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m20-6-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m20-6-t1">1. Сызықтық теңдеу</h3></div>
+        <p>Есептеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$6x+10y=c$ шешілетін ең кіші натурал $c$","a":2,"v":"gcd(6,10)","hint":"Теорема 6.1.","sol":{"steps":["$\\gcd(6,10)=2$."],"ans":"$2$"}},{"q":"$3x+5y=1$ теңдеуінің $0\\le x\\lt 5$ болатын шешіміндегі $x$","a":2,"v":"mod_inverse(3,5)","hint":"$3x\\equiv1\\pmod5$.","sol":{"steps":["$3\\cdot2+5\\cdot(-1)=1$."],"ans":"$2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m20-6-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m20-6-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$4x+6y=9$ бүтін шешімі бар.","a":false,"e":"$\\gcd(4,6)=2\\nmid9$.","hint":"Теорема 6.1."},{"q":"Қарапайым Пифагор үштігінде катеттердің дәл біреуі жұп.","a":true,"e":"Екеуі тақ болса, $z^2\\equiv2\\pmod4$.","hint":"Квадраттар $\\bmod4$."},{"q":"$x^2+y^2=4k+3$ теңдеуінің бүтін шешімі жоқ.","a":true,"e":"$x^2+y^2\\bmod4\\in\\{0,1,2\\}$.","hint":"Теорема 6.3."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m20-6-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m20-6-t3">3. Пифагор үштігі</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$m=5$, $n=2$ қандай үштік береді?","o":["$(21,20,29)$","$(25,4,29)$","$(21,10,29)$","$(3,4,5)$"],"a":0,"e":"$(25-4,\\ 2\\cdot5\\cdot2,\\ 25+4)$.","hint":"$(m^2-n^2,2mn,m^2+n^2)$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m20-6-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-6-t4">4. Теріс емес шешімдер</h3></div>
+        <p>Шешімдер санын табыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$7x+11y=100$, $x,y\\ge0$","a":1,"v":"len([t for t in range(0, 15) if (100 - 7*t) % 11 == 0 and 100 - 7*t >= 0])","hint":"$x=8+11t$, $y=4-7t$.","sol":{"steps":["$t=0$ ғана."],"ans":"$1$"}},{"q":"$3x+5y=47$, $x,y\\ge0$","a":3,"v":"len([t for t in range(0, 16) if (47 - 3*t) % 5 == 0 and 47 - 3*t >= 0])","hint":"$(14,1)$ - бір шешім; $x=14-5t$, $y=1+3t$.","sol":{"steps":["$t=0,1,2$: $(14,1)$, $(9,4)$, $(4,7)$."],"ans":"$3$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m20-6-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-6-t5">5. RSA кілттері</h3></div>
+        <p>$p=5$, $q=11$, $e=3$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Жабық кілт $d$","a":27,"v":"mod_inverse(3, 40)","hint":"$\\varphi(55)=40$.","sol":{"steps":["$3\\cdot27=81\\equiv1\\pmod{40}$."],"ans":"$27$"}},{"q":"$m=7$ шифры $c=7^3\\bmod55$","a":13,"v":"pow(7,3,55)","hint":"$343=6\\cdot55+13$.","sol":{"steps":["$343-330=13$."],"ans":"$13$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m20-6-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-6-t6">6. Жалпы шешім</h3></div>
+        <p>$35x+21y=14$, $x=1+3t$, $y=-1-5t$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$t=2$ болғанда $y$","a":-11,"v":"-1-5*2","hint":"Формулаға қойыңыз.","sol":{"steps":["$-1-10$; тексеру $35\\cdot7+21\\cdot(-11)=245-231=14$ ✓."],"ans":"$-11$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m20-6-exp7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-6-t7">7. Шешімдер параметрі</h3></div>
+        <p>$5x+3y=2$, $(x_0,y_0)=(1,-1)$. $y$-ті $t$ арқылы жазыңыз ($t$-ны $x$ деп).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$y(t)=?$","a":"-1-5*x","v":"-1-5*x","hint":"$y=y_0-\\frac ad t$.","sol":{"steps":["$a=5$, $d=1$."],"ans":"$-1-5t$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m20-6-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-6-t8">8. Ұғым - шарт</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Нәтиже - қажетті шарт.","pairs":[["ax + by = c шешілетін","gcd(a, b) | c"],["RSA жабық кілті d бар","gcd(e, φ(n)) = 1"],["(m² − n², 2mn, m² + n²) қарапайым","gcd(m, n) = 1, әртүрлі жұптық"],["тақ жай p = x² + y²","p ≡ 1 (mod 4)"]],"hint":"Теоремалар 6.1-6.3, RSA анықтамасы.","sol":{"steps":["Әр шарт қарсы мысалмен міндетті."]},"e":"Шарттарды тексеру - бірінші қадам."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m20-6-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-6-t9">9. Параметрлік: Диофант теңдеуі</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"b":{"pick":[5,7,11,13]},"a":{"int":[2,4]}},"type":"num","q":"$#{a}x+#{b}y=1$. $0\\le x\\lt #{b}$ болатын шешімдегі $x=?$","a":"pow(a, b-2) - b*floor(pow(a, b-2)/b)","v":"mod_inverse(int(a), int(b))","hint":"$#{a}x\\equiv1\\pmod{#{b}}$; $#{b}$ жай: $x\\equiv#{a}^{#{b-2}}$.","sol":{"steps":["$x=#{pow(a, b-2) - b*floor(pow(a, b-2)/b)}$, $y=\\frac{1-#{a}x}{#{b}}$."],"ans":"$#{pow(a, b-2) - b*floor(pow(a, b-2)/b)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m20-6-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m20-6-t10">10. Параметрлік: RSA шифрлау</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"int":[2,30]}},"type":"num","q":"$n=33$, $e=3$. $m=#{m}$ шифры $c=#{m}^3\\bmod33=?$","a":"m^3 - 33*floor(m^3/33)","v":"pow(int(m), 3, 33)","hint":"$#{m}^3=#{m^3}$.","sol":{"steps":["$#{m^3}=33\\cdot#{floor(m^3/33)}+#{m^3 - 33*floor(m^3/33)}$."],"ans":"$#{m^3 - 33*floor(m^3/33)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m20-6-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m20-6-t11">11. RSA кілттерін құру</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"RSA.","steps":["Екі үлкен әртүрлі жай $p$, $q$ таңдаймыз.","$n=pq$, $\\varphi(n)=(p-1)(q-1)$ есептейміз.","$\\gcd(e,\\varphi(n))=1$ болатын $e$ таңдаймыз.","Кеңейтілген Евклидпен $d\\equiv e^{-1}\\pmod{\\varphi(n)}$ табамыз.","$(n,e)$-ні жариялаймыз, $d$, $p$, $q$-ды құпия сақтаймыз."],"hint":"Теорема 6.4.","sol":{"ans":"$(n,e)$ - ашық, $d$ - жабық"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m20-6-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m20-6-t12">12. Қадамдық шешім: үш квадрат</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$x^2+y^2+z^2=2023$ теңдеуінің бүтін шешімі жоқ екенін дәлелдеңіз.","steps":["$2023=8\\cdot252+7$, яғни $2023\\equiv7\\pmod8$.","Жұп $x$: $x^2\\equiv0$ не $4\\pmod8$; тақ $x=2k+1$: $x^2=4k(k+1)+1\\equiv1\\pmod8$.","Үш санның $\\{0,1,4\\}$-тен қосындысы $\\bmod8$: $0,1,2,3,4,5,6$.","$7$ жоқ - шешім жоқ (Теорема 6.3 (2))."],"ans":"Шешімсіз."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> RSA - бірінші кеңінен қолданылған ашық кілтті жүйе (1977): HTTPS сертификаттары, электронды қолтаңба, SSH кілттері. Бүгін көп жерде эллипстік қисық криптографиясы қолданылады, бірақ RSA әлі де кең таралған. Сызықтық Диофант теңдеулері кесте құру, ресурстарды бөлу, бүтін санды программалау есептерінде кездеседі.</p>
+      <p><b>Мини-жоба: «Ойыншық RSA және оны бұзу».</b> Кеңейтілген Евклидпен Диофант теңдеуін шешеміз, Пифагор үштіктерін генерациялаймыз, RSA кілттерін құрып, мәтінді шифрлап-ашамыз, сосын кіші $n$-ді факторлап, жабық кілтті қалпына келтіреміз.</p>
+<pre data-lang="python"><code class="language-python">from math import gcd
+
+def ext_gcd(a, b):
+    if b == 0:
+        return a, 1, 0
+    g, x, y = ext_gcd(b, a % b)
+    return g, y, x - (a // b) * y
+
+def solve_dioph(a, b, c):
+    g, x, y = ext_gcd(a, b)
+    if c % g:
+        return None
+    return x * (c // g), y * (c // g), b // g, -(a // g)
+
+x0, y0, dx, dy = solve_dioph(7, 11, 100)
+nonneg = [(x0 + dx * t, y0 + dy * t) for t in range(-100, 100) if x0 + dx * t &gt;= 0 and y0 + dy * t &gt;= 0]
+print("7x + 11y = 100, x, y &gt;= 0:", nonneg)
+
+triples = sorted((m * m - n * n, 2 * m * n, m * m + n * n)
+                 for m in range(2, 7) for n in range(1, m) if gcd(m, n) == 1 and (m - n) % 2 == 1)
+print("қарапайым үштіктер:", triples)
+
+p, q, e = 61, 53, 17
+n, phi = p * q, (p - 1) * (q - 1)
+d = pow(e, -1, phi)
+print("n =", n, " phi =", phi, " d =", d)
+message = "СӘЛЕМ"
+cipher = [pow(ord(ch), e, n) for ch in message]
+plain = "".join(chr(pow(c, d, n)) for c in cipher)
+print("шифр:", cipher, " ашылды:", plain)
+print("барлық m үшін дұрыс:", all(pow(pow(m, e, n), d, n) == m for m in range(n)))
+
+def crack(n, e):
+    f = next(k for k in range(2, int(n ** 0.5) + 1) if n % k == 0)
+    return pow(e, -1, (f - 1) * (n // f - 1))
+
+print("бұзылған d =", crack(n, e))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>«Барлық $m$ үшін дұрыс» тексеруі $\gcd(m,n)>1$ болатын $m$-ді де қамтиды ма? Мұндай $m$ неше? ($n-\varphi(n)$.)</li>
+        <li><code>message</code> әр әрпі жеке шифрланады. Оған қайталанатын әріптер қосып (мысалы, «АТА»), бірдей әріптер бірдей шифр беретінін тексеріңіз. Бұл неге қауіпті?</li>
+        <li><code>crack</code> функциясының жұмыс уақыты $\sqrt n$-ге пропорционал. $n\approx2^{2048}$ үшін неше қадам керек?</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Сызықтық Диофант</td><td>$d\mid c$; $x_0+\frac bd t$, $y_0-\frac ad t$</td><td>кеңейтілген Евклид</td></tr>
+        <tr><td>Теріс емес шешімдер</td><td>$t$ үшін теңсіздіктер</td><td>шекті сан</td></tr>
+        <tr><td>Пифагор үштіктері</td><td>$(m^2-n^2,2mn,m^2+n^2)$</td><td>$\gcd=1$, әртүрлі жұптық</td></tr>
+        <tr><td>Кедергі</td><td>$\bmod4$, $\bmod8$, $\bmod3$</td><td>тек жоқтығын дәлелдейді</td></tr>
+        <tr><td>RSA</td><td>$c=m^e$, $m=c^d$, $ed\equiv1\ (\varphi)$</td><td>барлық $m$ үшін дұрыс</td></tr>
+        <tr><td>Қауіпсіздік</td><td>факторлаудың қиындығы</td><td>дәлелденбеген</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m20-6-self">
+        <li><input type="checkbox"> <span>Мен сызықтық Диофант теңдеуінің барлық шешімдерін жазып, оны дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен теріс емес шешімдер санын таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қарапайым Пифагор үштіктерінің формуласын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен модуль бойынша кедергімен шешімнің жоқтығын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен RSA кілттерін құрып, шифрлап, шифрды аша аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен RSA-ның барлық хабар үшін дұрыстығын Ферма және ҚҚТ арқылы дәлелдей аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. ax + by = c шешілетін ⇔</p>
+<label><input type="radio" value="a"> a | c</label>
+<label><input type="radio" value="b"> c > 0</label>
+<label><input type="radio" value="c"> gcd(a, b) | c</label>
+<label><input type="radio" value="d"> a, b жай</label>
+<p class="explain">Теорема 6.1.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. 35x + 21y = 14 жалпы шешімі (x₀ = 1, y₀ = −1):</p>
+<label><input type="radio" value="a"> x = 1 + 21t, y = −1 − 35t</label>
+<label><input type="radio" value="b"> x = 1 + 3t, y = −1 − 5t</label>
+<label><input type="radio" value="c"> x = 1 + 5t, y = −1 − 3t</label>
+<label><input type="radio" value="d"> жалғыз шешім</label>
+<p class="explain">d = 7.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. 7x + 11y = 100, x, y ≥ 0 шешімдер саны:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 0</label>
+<label><input type="radio" value="c"> 2</label>
+<label><input type="radio" value="d"> шексіз</label>
+<p class="explain">(8, 4).</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. m = 3, n = 2 үштігі:</p>
+<label><input type="radio" value="a"> (3, 4, 5)</label>
+<label><input type="radio" value="b"> (8, 6, 10)</label>
+<label><input type="radio" value="c"> (7, 24, 25)</label>
+<label><input type="radio" value="d"> (5, 12, 13)</label>
+<p class="explain">(9 − 4, 12, 13).</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">5. x² + y² = 2023:</p>
+<label><input type="radio" value="a"> шексіз шешім</label>
+<label><input type="radio" value="b"> бір шешім</label>
+<label><input type="radio" value="c"> шешім жоқ</label>
+<label><input type="radio" value="d"> екі шешім</label>
+<p class="explain">2023 ≡ 3 (mod 4).</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. p = 61, q = 53, e = 17 үшін d:</p>
+<label><input type="radio" value="a"> 17</label>
+<label><input type="radio" value="b"> 2753</label>
+<label><input type="radio" value="c"> 3120</label>
+<label><input type="radio" value="d"> 3233</label>
+<p class="explain">17 · 2753 ≡ 1 (mod 3120).</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. RSA-ның дұрыстығы қандай m үшін дәлелденді?</p>
+<label><input type="radio" value="a"> барлық 0 ≤ m < n</label>
+<label><input type="radio" value="b"> тек gcd(m, n) = 1</label>
+<label><input type="radio" value="c"> тек жай m</label>
+<label><input type="radio" value="d"> тек m < p</label>
+<p class="explain">ҚҚТ арқылы.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. RSA қауіпсіздігі неге сүйенеді?</p>
+<label><input type="radio" value="a"> e-нің құпиялығы</label>
+<label><input type="radio" value="b"> Ферма теоремасы</label>
+<label><input type="radio" value="c"> n-нің жұптығы</label>
+<label><input type="radio" value="d"> n = pq факторлаудың қиындығы</label>
+<p class="explain">Ашық кілт (n, e).</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәннің соңғы сабағын аяқтадыңыз. Білімді <a href="../exam.html?s=numtheory">Number Theory емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-129.html"><small>Алдыңғы</small>← Number Theory · 5-сабақ: Квадраттық қалдықтар</a>

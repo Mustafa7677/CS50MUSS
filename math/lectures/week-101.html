@@ -6,13 +6,14 @@
   <title>Math Numerical Analysis · 3-сабақ: Сызықтық жүйелерді сандық шешу - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Numerical Analysis · 3-сабақ: Сызықтық жүйелерді сандық шешу - CS50 қазақша">
-  <meta property="og:description" content="Математика, Numerical Analysis · 3-сабақ: Сызықтық жүйелерді сандық шешу. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Гаусс әдісінің тұрақтылығы, Якоби және Зейдель итерациялары.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-101.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Numerical Analysis · 3-сабақ: Сызықтық жүйелерді сандық шешу - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-101.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Numerical Analysis · 3-сабақ: Сызықтық жүйелерді сандық шешу. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Гаусс әдісінің тұрақтылығы, Якоби және Зейдель итерациялары.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,435 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="101">
+    <article class="content math-lesson" style="--sc:#155e75" id="main">
+      <div class="lecture-head" style="--lc:#155e75" data-n="101" data-msubj="numerical" data-glyph="≈">
         <div class="num">Numerical Analysis · 3-сабақ</div>
         <h1>Сызықтық жүйелерді сандық шешу</h1>
-        <p>Гаусс әдісінің тұрақтылығы, Якоби және Зейдель итерациялары.</p>
+        <p>Инженерлік есептеулер, графика, машиналық оқыту - бәрі ақырында $A\mathbf x=\mathbf b$ жүйесін шешуге келеді, кейде миллиондаған белгісізбен. Бұл сабақта Гаусс әдісінің жұмыс көлемін ($\approx\frac23n^3$) есептейміз, «бас элементті таңдау» (pivoting) неге міндетті екенін көрсетеміз, LU жіктелуін қолданамыз, матрицаның шарттылық санымен шешімнің сезімталдығын бағалаймыз және үлкен жүйелерге арналған итерациялық әдістерді (Якоби, Гаусс–Зейдель) және олардың жинақталу шартын үйренеміз.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 50 мин</span><span>Есептер ≈ 1 сағ 10 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-16">Numerical Analysis</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-16">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=numerical">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Numerical Analysis: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-16">Numerical Analysis</a></span><ol><li><a href="week-99.html" title="Қателіктер және есептеу тұрақтылығы">1</a></li><li><a href="week-100.html" title="Теңдеулердің түбірін табу">2</a></li><li><a href="week-101.html" aria-current="page" title="Сызықтық жүйелерді сандық шешу">3</a></li><li><a href="week-102.html" title="Интерполяция">4</a></li><li><a href="week-103.html" title="Сандық интегралдау және дифференциалдау">5</a></li><li><a href="week-104.html" title="Дифференциалдық теңдеулерді сандық шешу">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Сызықтық жүйені компьютер Гаусс әдісімен (LU жіктелуі) шешеді; ал шарттылық саны деректердегі кішкене қатенің шешімде неше есе үлкейетінін айтады.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>Гаусс әдісінің амалдар санын бағалау ($\approx\frac23n^3$) және LU жіктелуін бірнеше оң жақпен шешуге қолдану;</li>
+        <li>бас элементті таңдаудың (partial pivoting) қажеттілігін мысалмен көрсету;</li>
+        <li>вектор мен матрица нормаларын ($\|\cdot\|_\infty$) және шарттылық санын $\kappa(A)=\|A\|\|A^{-1}\|$ есептеу;</li>
+        <li>$\frac{\|\delta\mathbf x\|}{\|\mathbf x\|}\le\kappa(A)\frac{\|\delta\mathbf b\|}{\|\mathbf b\|}$ бағасын дәлелдеу;</li>
+        <li>Якоби және Гаусс–Зейдель итерацияларын орындау;</li>
+        <li>диагоналі басым матрицада итерацияның жинақталатынын түсіндіру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Матрицаны векторға көбейту, кері матрица $A^{-1}$ ($AA^{-1}=I$), Гаусс әдісі (жолдармен элементар түрлендірулер), үшбұрышты жүйені кері қоюмен шешу. Қосынды $\sum_{k=1}^nk^2=\frac{n(n+1)(2n+1)}6\approx\frac{n^3}3$. Дөңгелектеу қатесі мен шарттылық ұғымы (1-сабақ).</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-100.html">Numerical Analysis · 2-сабақ: Теңдеулердің түбірін табу</a></li><li><a href="week-11.html">Linear Algebra · 5-сабақ: Кері матрица және LU жіктелуі</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: нашар шартталған жүйе</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">$\begin{cases}x+y=2\\x+1{,}001y=2{,}001\end{cases}$ жүйесін шешіңіз, сосын оң жақты сәл өзгертіңіз: $2{,}001\to2{,}002$.</p>
+        <ol class="math-steps">
+          <li>Айырма: $0{,}001y=0{,}001$, $y=1$, $x=1$.</li>
+          <li>Өзгертілген: $0{,}001y=0{,}002$, $y=2$, $x=0$.</li>
+          <li>Деректер $0{,}05\%$-ға өзгерді, ал шешім $(1;1)$-ден $(0;2)$-ге «секірді».</li>
+          <li>Себебі: екі түзу дерлік параллель - олардың қиылысу нүктесі кішкене жылжуға өте сезімтал. Шарттылық саны $\approx4000$.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Кейбір жүйелер табиғатынан сезімтал. Шарттылық саны «кірістің салыстырмалы қатесі шешімде ең көбі неше есе үлкейеді» дегенге жауап береді.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Мектептегі Гаусс әдісі қағазда тамаша жұмыс істейді. Компьютерде екі мәселе бар. Біріншісі - жылдамдық: $n=10\,000$ болса, $\frac23n^3\approx7\cdot10^{11}$ амал. Екіншісі - дәлдік: егер «бас элемент» (бөлгіш) кездейсоқ өте кішкене болса, бөлу дөңгелектеу қатесін алып санға айналдырады. Шешім қарапайым: әр бағанда модулі ең үлкен элементті жоғарыға алып шығамыз.</p>
+      <p>Кейбір жүйелер өздері «сезімтал». $x+2y=3$, $1{,}001x+2y=3{,}001$ түзулері іс жүзінде параллель; оң жақты $0{,}001$-ге өзгертсек, шешім $(1,1)$-ден $(0;1{,}5)$-ке «секіреді». Мұндай матрицаның шарттылық саны үлкен ($\approx6000$): кірістің салыстырмалы қатесі шешімде 6000 есе күшеюі мүмкін. Бұл - есептің қасиеті, алгоритмдікі емес.</p>
+      <p>Үлкен «сирек» (көп элементі нөл) жүйелерде Гаусс әдісі тиімсіз: ол нөлдерді толтырып жібереді. Оның орнына итерация: $x_1$-ді бірінші теңдеуден, $x_2$-ні екіншісінен... басқаларын алдыңғы жуықтаудан алып есептейміз, және қайталаймыз. Егер әр теңдеуде диагональ коэффициенті «басым» болса, бұл процесс шешімге жинақталады.</p>
+      <p>Ереже: бағдарламада $A^{-1}$-ді ешқашан тікелей есептеп, $\mathbf b$-ға көбейтпеңіз. LU жіктелуі әрі жылдамырақ, әрі дәлірек; кері матрица тек өзі қажет болғанда ғана.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · екі дерлік параллель жол</span>
+        <p>Екі жол өте кішкене бұрышпен қиылысса, жолдардың бірін сәл жылжытсаңыз, қиылысу нүктесі километрлерге ауысады. Нашар шартталған матрица дәл осындай.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · ауыр жүкті бұрыштан көтеру</span>
+        <p>Бас элементті таңдау - бөлуді ең үлкен санға жасау: кішкене санға бөлу дөңгелектеу қатесін үлкейтеді (кішкене тұтқамен ауыр жүк көтеру сияқты). Жолдарды ауыстырып, ең мықты «тұтқаны» таңдаймыз.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$A=LU$</td><td>LU жіктелуі</td><td>төменгі және жоғарғы үшбұрышты матрицалардың көбейтіндісі</td></tr>
+        <tr><td>$\frac23n^3$</td><td>Гаусс әдісінің құны</td><td>$n$ үлкен болғанда амалдар саны</td></tr>
+        <tr><td>$\|A\|_\infty$</td><td>матрица нормасы</td><td>жолдар бойынша абсолют қосындылардың максимумы</td></tr>
+        <tr><td>$\kappa(A)=\|A\|\|A^{-1}\|$</td><td>шарттылық саны</td><td>сезімталдықтың өлшемі, $\ge1$</td></tr>
+        <tr><td>$A=D+L+U$</td><td>матрицаны бөлу</td><td>итерациялық әдістер үшін</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 3.1 · Гаусс әдісінің жұмыс көлемі</span>
+        <p>$n\times n$ жүйені Гаусс әдісімен шешу шамамен $\frac23n^3$ көбейту/қосу амалын қажет етеді (тура жүріс), ал үшбұрышты жүйені кері қоюмен шешу - $\approx n^2$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $n$ теңдеулі жүйені Гаусс әдісімен шешу шамамен $\frac23n^3$ амал - $n$ екі есе өссе, уақыт сегіз есе өседі.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту.</p>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 3.1 · LU жіктелуі</span>
+        <p>$A=LU$, мұнда $L$ - диагоналі бірлер төменгі үшбұрышты, $U$ - жоғарғы үшбұрышты матрица - <strong>LU жіктелуі</strong> (<span class="term-en">LU decomposition</span>). Бас элементті таңдаумен: $PA=LU$, $P$ - алмастыру матрицасы. Сонда $A\mathbf x=\mathbf b$ екі үшбұрышты жүйеге бөлінеді: $L\mathbf y=P\mathbf b$, $U\mathbf x=\mathbf y$ ($\approx2n^2$ амал).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Гаусс әдісінің қадамдарын «жазып алсақ», $A$ үшбұрышты екі матрицаның көбейтіндісі болады; сонда әр жаңа оң жақ үшін тек жеңіл үшбұрышты жүйелер қалады.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 3.2 · Бас элементті таңдау</span>
+        <p><strong>Бас элементті таңдау</strong> (<span class="term-en">partial pivoting</span>): $k$-қадамда $k$-бағанның $k..n$ жолдарынан модулі ең үлкен элементті тауып, оның жолын $k$-жолмен ауыстырамыз. Сонда барлық көбейткіштер $|l_{ik}|\le1$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Әр қадамда бағандағы модулі ең үлкен элементті бас элемент етеміз - тұрақтылық үшін.</p></div>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 3.3 · Нормалар</span>
+        <p>Вектордың <strong>максимум нормасы</strong> (<span class="term-en">infinity norm</span>) $\|\mathbf x\|_\infty=\max_i|x_i|$. Оған сәйкес матрица нормасы $\|A\|_\infty=\max_i\sum_j|a_{ij}|$ (жолдар қосындысының максимумы); ол $\|A\mathbf x\|\le\|A\|\|\mathbf x\|$ және $\|AB\|\le\|A\|\|B\|$ қасиеттерін қанағаттандырады.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Вектор мен матрицаның «өлшемдері»; матрица нормасы - вектордың ең үлкен созылуы.</p></div>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 3.4 · Матрицаның шарттылық саны</span>
+        <p>Айрықша емес $A$ үшін <strong>матрицаның шарттылық саны</strong> (<span class="term-en">condition number of a matrix</span>) $\kappa(A)=\|A\|\,\|A^{-1}\|\ge1$. $\kappa$ үлкен болса, жүйе жаман шартталған.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Шарттылық саны - матрица мен оның кері матрицасының нормаларының көбейтіндісі.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 3.2 · Шешімнің сезімталдығы</span>
+        <p>$A\mathbf x=\mathbf b$ ($\mathbf b\ne0$) және $A(\mathbf x+\delta\mathbf x)=\mathbf b+\delta\mathbf b$ болса, $$\frac{\|\delta\mathbf x\|}{\|\mathbf x\|}\le\kappa(A)\,\frac{\|\delta\mathbf b\|}{\|\mathbf b\|}.$$</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Оң жақтың салыстырмалы қатесі шешімде ең көбі $\kappa(A)$ есе үлкейеді.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту. Ереже: $\kappa\approx10^k$ болса, шешімде шамамен $k$ ондық цифр жоғалуы мүмкін.</p>
+      <div class="math-def" id="def-5"><span class="math-tag">Анықтама 3.5 · Итерациялық әдістер</span>
+        <p>$A=D+L+U$ (диагональ, қатаң төменгі, қатаң жоғарғы бөліктер). <strong>Якоби әдісі</strong> (<span class="term-en">Jacobi method</span>): $x_i^{(k+1)}=\frac{1}{a_{ii}}\Big(b_i-\sum_{j\ne i}a_{ij}x_j^{(k)}\Big)$. <strong>Гаусс–Зейдель әдісі</strong> (<span class="term-en">Gauss–Seidel method</span>): сол формула, бірақ $j&lt;i$ үшін жаңа $x_j^{(k+1)}$ мәндері бірден қолданылады.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Якоби мен Гаусс-Зейдель - шешімді жуықтаудан бастап, қадамдап түзететін әдістер; үлкен сирек матрицаларға ыңғайлы.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 3.3 · Диагональ басымдығы жеткілікті</span>
+        <p>$A$ жолдар бойынша қатаң <strong>диагоналі басым</strong> (<span class="term-en">diagonally dominant</span>) болса ($|a_{ii}|>\sum_{j\ne i}|a_{ij}|$ әр $i$ үшін), онда Якоби және Гаусс–Зейдель әдістері кез келген бастапқы векторда жалғыз шешімге жинақталады.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Әр жолдағы диагональ элемент қалғандарының қосындысынан үлкен болса, итерациялар жинақталады.</p></div>
+      <p><em>Негіздеме.</em> Якоби үшін 3-қорыту; Гаусс–Зейдель үшін дәлел ұқсас, бірақ ұзынырақ, оны келтірмейміз.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 3.1 · Шарттылық бағасы</span>
+        <div class="math-fbody">$$\frac{\|\delta\mathbf x\|}{\|\mathbf x\|}\le\kappa(A)\frac{\|\delta\mathbf b\|}{\|\mathbf b\|},\qquad\kappa(A)=\|A\|\|A^{-1}\|$$</div>
+        <p class="math-fnote">Шарты: $A$ айрықша емес, $\mathbf b\ne\mathbf0$. $A$-ның өзі $\delta A$-ға бұзылса, ұқсас (күрделірек) баға бар.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 3.2 · Якоби итерациясы</span>
+        <div class="math-fbody">$$x_i^{(k+1)}=\frac{1}{a_{ii}}\Big(b_i-\sum_{j\ne i}a_{ij}x_j^{(k)}\Big)$$</div>
+        <p class="math-fnote">$a_{ii}\ne0$. Матрица түрінде: $\mathbf x^{(k+1)}=D^{-1}(\mathbf b-(L+U)\mathbf x^{(k)})$.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 3.3 · Жұмыс көлемі</span>
+        <div class="math-fbody">$$W(n,m)\approx\tfrac23n^3+2mn^2$$</div>
+        <p class="math-fnote">Бір матрицаны LU-ға бір рет жіктеу ($\frac23n^3$) және $m$ оң жақтың әрқайсысы үшін екі үшбұрышты жүйе ($2n^2$). Әр оң жаққа Гаусс әдісін қайталау $\frac23mn^3$ болар еді.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Практикалық ережелер: 1) әрдайым бас элементті таңдаңыз; 2) $A^{-1}\mathbf b$ емес, LU + екі үшбұрышты жүйе; 3) $\kappa(A)$-ны бағалаңыз - ол дәлдіктің шегін көрсетеді; 4) үлкен сирек жүйелер - итерациялық әдістер.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Қалдықтың $\|A\tilde{\mathbf x}-\mathbf b\|$ кіші болуы шешімнің дәл екенін <em>білдірмейді</em>: жаман шартталған жүйеде қалдық $10^{-10}$ болса да, шешім қатесі $\kappa\cdot10^{-10}$ ретті болуы мүмкін. Сондай-ақ анықтауыштың кіші болуы жаман шартталудың өлшемі емес: $10^{-1}I$ ($n=20$) - $\det=10^{-20}$, бірақ $\kappa=1$.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $n=1000$ жүйені шешу $1$ секунд алса, $n=2000$ шамамен қанша?</span></summary>
+        <p>$8$ секунд ($n^3$).</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> Бірлік матрицаның шарттылық саны?</span></summary>
+        <p>$1$ - ең жақсы мүмкін мән.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> $\kappa(A)=10^6$, деректер $10^{-10}$ салыстырмалы дәлдікпен. Шешімнің дәлдігі шамамен?</span></summary>
+        <p>$10^{-4}$: $6$ цифр «жоғалады».</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> Неге $A^{-1}$-ді есептеп, $x=A^{-1}b$ деп шешпейміз?</span></summary>
+        <p>Қымбатырақ (шамамен $3$ есе) және әдетте дәлдігі нашарлау; LU жеткілікті.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: Гаусс әдісінің амалдар саны</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> тура жүрістегі көбейтулер санын бағалау.</p>
+          <p class="mx-idea"><b>Идея:</b> Әр қадамда төмендегі әр жол үшін бір көбейткіш және жол бойымен азайтулар - қосындысы $\sum k^2\approx\frac{n^3}3$, көбейту мен қосуды бірге санағанда $\frac23n^3$.</p>
+          <ol class="math-steps">
+            <li>$k$-қадамда ($k=1..n-1$) $k$-жолдан төмен $n-k$ жолдың әрқайсысында $n-k$ элементті (оң жағын қоса $n-k+1$) жаңартамыз: әрқайсысында бір көбейту мен бір азайту.</li>
+            <li>Матрица бөлігі үшін көбейтулер: $\sum_{k=1}^{n-1}(n-k)^2=\sum_{m=1}^{n-1}m^2=\frac{(n-1)n(2n-1)}6\approx\frac{n^3}3$.</li>
+            <li>Сонша азайту да бар: барлығы $\approx\frac23n^3$ арифметикалық амал (бөлулер мен оң жақ $O(n^2)$).</li>
+            <li>Кері қою: $i$-теңдеуде $n-i$ көбейту, барлығы $\approx\frac{n^2}2$ көбейту ($\approx n^2$ амал).</li>
+            <li>Мысал: $n=1000$ - тура жүріс $\approx6{,}7\cdot10^8$ амал, кері қою $\approx10^6$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: шарттылық бағасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\frac{\|\delta\mathbf x\|}{\|\mathbf x\|}\le\kappa(A)\frac{\|\delta\mathbf b\|}{\|\mathbf b\|}$ дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Екі жүйенің айырмасы $A\delta x=\delta b$; $\delta x=A^{-1}\delta b$ және $\|b\|\le\|A\|\|x\|$ бағаларын бөліп, $\kappa$ шығады.</p>
+          <ol class="math-steps">
+            <li>Айырмасын аламыз: $A\delta\mathbf x=\delta\mathbf b$, яғни $\delta\mathbf x=A^{-1}\delta\mathbf b$.</li>
+            <li>Норма қасиеті: $\|\delta\mathbf x\|\le\|A^{-1}\|\|\delta\mathbf b\|$.</li>
+            <li>Ал $\mathbf b=A\mathbf x$, сондықтан $\|\mathbf b\|\le\|A\|\|\mathbf x\|$, яғни $\frac{1}{\|\mathbf x\|}\le\frac{\|A\|}{\|\mathbf b\|}$ ($\mathbf x\ne0$, себебі $\mathbf b\ne0$).</li>
+            <li>Көбейтеміз: $\frac{\|\delta\mathbf x\|}{\|\mathbf x\|}\le\|A^{-1}\|\|A\|\frac{\|\delta\mathbf b\|}{\|\mathbf b\|}=\kappa(A)\frac{\|\delta\mathbf b\|}{\|\mathbf b\|}$. ∎</li>
+            <li>$\kappa\ge1$: $1=\|I\|=\|AA^{-1}\|\le\|A\|\|A^{-1}\|$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: Якоби әдісінің жинақталуы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> қатаң диагоналі басым матрицада Якоби итерациясы жинақталатынын көрсету.</p>
+          <p class="mx-idea"><b>Идея:</b> Қате векторы әр қадамда $D^{-1}(L+U)$ матрицасына көбейтіледі; диагональ басымдығы оның нормасын $1$-ден кіші етеді.</p>
+          <ol class="math-steps">
+            <li>Шын шешім $\mathbf x^*$ де тепе-теңдікті қанағаттандырады: $x_i^*=\frac{1}{a_{ii}}\big(b_i-\sum_{j\ne i}a_{ij}x_j^*\big)$.</li>
+            <li>Қате $\mathbf e^{(k)}=\mathbf x^{(k)}-\mathbf x^*$: айырсақ, $e_i^{(k+1)}=-\frac{1}{a_{ii}}\sum_{j\ne i}a_{ij}e_j^{(k)}$.</li>
+            <li>Модульмен: $|e_i^{(k+1)}|\le\frac{\sum_{j\ne i}|a_{ij}|}{|a_{ii}|}\|\mathbf e^{(k)}\|_\infty\le q\|\mathbf e^{(k)}\|_\infty$, мұнда $q=\max_i\frac{\sum_{j\ne i}|a_{ij}|}{|a_{ii}|}$.</li>
+            <li>Диагональ басымдығы бойынша $q&lt;1$. Демек $\|\mathbf e^{(k)}\|_\infty\le q^k\|\mathbf e^{(0)}\|_\infty\to0$.</li>
+            <li>Жалғыз шешімнің бар болуы да осыдан шығады: $A$ айрықша емес (әйтпесе $A\mathbf v=0$, $\mathbf v\ne0$ үшін ең үлкен $|v_i|$ жолы басымдыққа қайшы).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Бас элементті таңдау</h3>
+        <p class="math-problem">$10^{-20}x+y=1$, $x+y=2$ жүйесін double арифметикасында екі тәсілмен шешіңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Шын шешім: $x=\frac{1}{1-10^{-20}}\approx1$, $y\approx1$.</li>
+          <li><b>2-қадам.</b> <b>Таңдаусыз</b>: көбейткіш $10^{20}$. Екінші теңдеу: $(1-10^{20})y=2-10^{20}$; double-да $1-10^{20}=-10^{20}$ және $2-10^{20}=-10^{20}$, сондықтан $y=1$.</li>
+          <li><b>3-қадам.</b> Бірінші теңдеуден $x=\frac{1-y}{10^{-20}}=0$ - толық қате!</li>
+          <li><b>4-қадам.</b> <b>Таңдаумен</b>: жолдарды ауыстырамыз ($|1|>10^{-20}$). Көбейткіш $10^{-20}$: $(1-10^{-20})y=1-2\cdot10^{-20}$, double-да $y=1$; $x=2-y=1$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Таңдаусыз $x=0$ (қате), таңдаумен $x=1$, $y=1$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Шарттылық саны</h3>
+        <p class="math-problem">$A=\begin{pmatrix}1&amp;2\\1{,}001&amp;2\end{pmatrix}$. $\kappa_\infty(A)$ және $\mathbf b=(3;3{,}001)^T$ болғанда оң жақты $(3;3)^T$-ке өзгерткендегі әсер.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\det A=2-2{,}002=-0{,}002$; $A^{-1}=\frac{1}{-0{,}002}\begin{pmatrix}2&amp;-2\\-1{,}001&amp;1\end{pmatrix}=\begin{pmatrix}-1000&amp;1000\\500{,}5&amp;-500\end{pmatrix}$.</li>
+          <li><b>2-қадам.</b> $\|A\|_\infty=3{,}001$, $\|A^{-1}\|_\infty=2000$, $\kappa\approx6002$.</li>
+          <li><b>3-қадам.</b> $\mathbf b=(3;3{,}001)$: $\mathbf x=(1;1)$. $\mathbf b=(3;3)$: $\mathbf x=(0;1{,}5)$.</li>
+          <li><b>4-қадам.</b> Оң жақтың салыстырмалы өзгерісі $\frac{0{,}001}{3{,}001}\approx3{,}3\cdot10^{-4}$, шешімдікі $\frac{1}{1}=1$ - шамамен 3000 есе күшейді ($\le\kappa$ ✓).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\kappa\approx6002$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Якоби</h3>
+        <p class="math-problem">$4x_1-x_2+x_3=8$, $2x_1+5x_2+2x_3=3$, $x_1+2x_2+4x_3=11$ Бастапқы $\mathbf x^{(0)}=0$, 2 итерация.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Диагональ басымдығы: $4>2$, $5>4$, $4>3$ ✓.</li>
+          <li><b>2-қадам.</b> $x^{(1)}=\left(\frac84;\frac35;\frac{11}4\right)=(2;\ 0{,}6;\ 2{,}75)$.</li>
+          <li><b>3-қадам.</b> $x_1^{(2)}=\frac{8+0{,}6-2{,}75}{4}=1{,}4625$; $x_2^{(2)}=\frac{3-4-5{,}5}{5}=-1{,}3$; $x_3^{(2)}=\frac{11-2-1{,}2}{4}=1{,}95$.</li>
+          <li><b>4-қадам.</b> Шын шешім $(1;-1;3)$; итерациялар оған жақындайды.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\mathbf x^{(2)}=(1{,}4625;\ -1{,}3;\ 1{,}95)$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Гаусс–Зейдель</h3>
+        <p class="math-problem">Сол жүйе, $\mathbf x^{(0)}=0$, 2 итерация.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $x_1=\frac84=2$; $x_2=\frac{3-2\cdot2-0}{5}=-0{,}2$; $x_3=\frac{11-2-2(-0{,}2)}{4}=2{,}35$.</li>
+          <li><b>2-қадам.</b> 2-итерация: $x_1=\frac{8-0{,}2-2{,}35}{4}=1{,}3625$; $x_2=\frac{3-2{,}725-4{,}7}{5}=-0{,}885$; $x_3=\frac{11-1{,}3625+1{,}77}{4}\approx2{,}852$.</li>
+          <li><b>3-қадам.</b> Шын шешімнен ауытқуы ($\infty$-нормада): Якоби $\approx1{,}05$, Гаусс–Зейдель $\approx0{,}36$ - Гаусс–Зейдель тезірек.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\mathbf x^{(2)}\approx(1{,}3625;\ -0{,}885;\ 2{,}852)$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$\mathbf x=A^{-1}\mathbf b$ деп кері матрицаны есептеу</span> → <span class="math-good">LU + екі үшбұрышты жүйе</span><br>Неге қате: кері матрица 3 есе қымбат және дәлдігі нашар.</li>
+        <li><span class="math-bad">Бас элементті таңдамау (нөл емес болса жеткілікті)</span> → <span class="math-good">модулі ең үлкенін таңдау</span><br>Неге қате: 1-мысал: $10^{-20}$ нөл емес, бірақ нәтиже толық қате.</li>
+        <li><span class="math-bad">$\det A$ кіші - жүйе жаман шартталған</span> → <span class="math-good">$\kappa(A)$-ға қарау</span><br>Неге қате: $0{,}1I$: $\det$ өте кіші, $\kappa=1$.</li>
+        <li><span class="math-bad">Қалдық кіші - шешім дәл</span> → <span class="math-good">шешім қатесі $\lesssim\kappa\cdot$ салыстырмалы қалдық</span><br>Неге қате: жаман шартталған жүйеде қалдық алдайды.</li>
+        <li><span class="math-bad">Якобиді кез келген матрицаға қолдану</span> → <span class="math-good">жинақталу шартын тексеру</span><br>Неге қате: диагональ басым емес матрицада итерация тарап кетуі мүмкін.</li>
+        <li><span class="math-bad">$\|A\|_\infty$ - бағандар қосындысының максимумы</span> → <span class="math-good">жолдар қосындысының максимумы</span><br>Неге қате: бағандар - $\|A\|_1$ нормасы.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="lintrans" data-title="Жаман шартталған матрица: тор «жалпиып» кетеді" data-config='{"m": [[1, 2], [1.001, 2]]}'></div>
+      <p><b>Бақылаңыз:</b> Бұл матрица жазықтықты дерлік бір түзуге «жаншады»: бірлік шаршы өте жіңішке параллелограмға айналады (анықтауыш $-0{,}002$). Кері түрлендіру сол жіңішке бағытты 1000 еседен көп созады - сондықтан $\mathbf b$-ның кішкене өзгерісі $\mathbf x$-ті қатты өзгертеді. Слайдерлермен $c$ элементін өзгертіп, параллелограммның «ашылуын» бақылаңыз.</p>
+      <div class="math-viz" data-viz="graph" data-title="Итерация қатесінің кемуі: Якоби мен Гаусс–Зейдель" data-config='{"fns": [{"f": "2*q^x", "label": "Якоби: C·qᵏ"}, {"f": "2*q^(2*x)", "label": "Гаусс–Зейдель (типтік): C·q²ᵏ", "color": 1}], "params": [{"n": "q", "min": 0.1, "max": 0.99, "step": 0.01, "v": 0.75}], "view": [0, 30, 0, 2]}'></div>
+      <p><b>Бақылаңыз:</b> Якобидің қатесі $q^k$-тан тез емес кемиді, мұнда $q=\max_i\frac{\sum_{j\ne i}|a_{ij}|}{|a_{ii}|}$; біздің жүйеде $q=0{,}8$. Кейбір матрица кластарында (мысалы, үшдиагональды) Гаусс–Зейдель шамамен екі есе жылдам ($q^{2k}$); жалпы жағдайда бұл кепілді емес. $q\to1$ болса, итерация өте баяулайды.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m16-3-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-3-t1">1. Нормалар</h3></div>
+        <p>$A=\begin{pmatrix}2&-1\\-3&4\end{pmatrix}$, $\mathbf x=(-5;2)^T$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\|\\mathbf x\\|_\\infty$","a":5,"v":"max([abs(-5),abs(2)])","hint":"Ең үлкен модуль.","sol":{"steps":["$\\max(5,2)$."],"ans":"$5$"}},{"q":"$\\|A\\|_\\infty$","a":7,"v":"max([2+1,3+4])","hint":"Жолдар қосындысы.","sol":{"steps":["$\\max(3,7)$."],"ans":"$7$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-3-num2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-3-t2">2. Жұмыс көлемі</h3></div>
+        <p>Шамамен $\frac23n^3$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$n=300$ үшін Гаусс тура жүрісінің амалдар саны (миллионмен)","a":18,"v":"Rational(2,3)*300**3/10**6","hint":"$\\frac23\\cdot2{,}7\\cdot10^7$.","sol":{"steps":["$1{,}8\\cdot10^7$."],"ans":"$18$ млн"}},{"q":"$n$ екі есе артса, жұмыс неше есе артады?","a":8,"v":"2**3","hint":"$n^3$.","sol":{"steps":["$2^3$."],"ans":"$8$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m16-3-tf3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-3-t3">3. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Әрдайым $\\kappa(A)\\ge1$.","a":true,"e":"$1=\\|I\\|\\le\\|A\\|\\|A^{-1}\\|$.","hint":"$AA^{-1}=I$."},{"q":"$\\det A$ өте кіші болса, $A$ міндетті түрде жаман шартталған.","a":false,"e":"$0{,}1I_{20}$: $\\det=10^{-20}$, $\\kappa=1$.","hint":"Масштабтау."},{"q":"Бір матрицамен көп оң жақты шешу үшін LU жіктелуі тиімді.","a":true,"e":"Жіктеу бір рет, әр оң жаққа тек $O(n^2)$.","hint":"$\\frac23n^3+2mn^2$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m16-3-mat4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-3-t4">4. Якоби қадамы</h3></div>
+        <p>$4x_1-x_2+x_3=8$, $2x_1+5x_2+2x_3=3$, $x_1+2x_2+4x_3=11$ $\mathbf x^{(0)}=(1;1;1)$ үшін $\mathbf x^{(1)}$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf x^{(1)}=?$","name":"$\\mathbf x^{(1)}=$","a":[[2],[-0.2],[2]],"v":"Matrix([[Rational(8+1-1,4)],[Rational(3-2-2,5)],[Rational(11-1-2,4)]])","hint":"Әр теңдеуден $x_i$-ді өрнектеп, қалғандарына 1 қойыңыз.","sol":{"steps":["$x_1=\\frac{8+1-1}{4}=2$.","$x_2=\\frac{3-2-2}{5}=-0{,}2$.","$x_3=\\frac{11-1-2}{4}=2$."],"ans":"$(2;\\ -0{,}2;\\ 2)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-3-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-3-t5">5. Шарттылық</h3></div>
+        <p>$A=\begin{pmatrix}1&1\\1&1{,}01\end{pmatrix}$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\|A^{-1}\\|_\\infty$","a":201,"v":"max([sum([abs(t) for t in Matrix([[1,1],[1,Rational(101,100)]]).inv().row(i)]) for i in range(2)])","hint":"$A^{-1}=\\frac{1}{0{,}01}\\begin{pmatrix}1{,}01&-1\\\\-1&1\\end{pmatrix}$.","sol":{"steps":["$A^{-1}=\\begin{pmatrix}101&-100\\\\-100&100\\end{pmatrix}$.","Жолдар: $201$, $200$."],"ans":"$201$"}},{"q":"$\\kappa_\\infty(A)$","a":404.01,"v":"Rational(201,100)*201","hint":"$\\|A\\|_\\infty=2{,}01$.","sol":{"steps":["$2{,}01\\cdot201$."],"ans":"$404{,}01$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m16-3-cho6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-3-t6">6. Диагональ басымдығы</h3></div>
+        <p>Қай матрица жолдар бойынша қатаң диагоналі басым?</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Таңдаңыз.","o":["$\\begin{pmatrix}5&2&1\\\\1&4&2\\\\2&1&6\\end{pmatrix}$","$\\begin{pmatrix}1&2\\\\3&4\\end{pmatrix}$","$\\begin{pmatrix}3&3\\\\1&5\\end{pmatrix}$","$\\begin{pmatrix}2&-1&-1\\\\-1&2&-1\\\\-1&-1&2\\end{pmatrix}$"],"a":0,"e":"Біріншіде: $5>3$, $4>3$, $6>3$. Үшінші: $3=3$ (қатаң емес). Төртінші: $2=2$.","hint":"$|a_{ii}|>\\sum_{j\\ne i}|a_{ij}|$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m16-3-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-3-t7">7. Әдіс пен қасиет</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Қасиеттер.","pairs":[["Гаусс (тура жүріс)","≈ (2/3)n³ амал"],["үшбұрышты жүйе","≈ n² амал"],["Якоби","диагоналі басым болса жинақталады"],["бас элементті таңдау","|lᵢₖ| ≤ 1"]],"hint":"Тура әдіс пен итерация.","sol":{"steps":["Pivoting көбейткіштерді шектейді."]},"e":"Тура әдістер ақырлы қадамда, итерациялар - жуықтап."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m16-3-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-3-t8">8. Параметрлік: қате бағасы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"k":{"int":[2,6]},"d":{"int":[6,12]}},"type":"num","q":"$\\kappa(A)=10^{#{k}}$, оң жақтың салыстырмалы қатесі $10^{-#{d}}$. Шешімнің салыстырмалы қатесінің жоғарғы бағасы $10$-ның неше дәрежесі?","a":"k-d","v":"k+(-d)","hint":"$\\kappa\\cdot\\frac{\\|\\delta b\\|}{\\|b\\|}$.","sol":{"steps":["$10^{#{k}}\\cdot10^{-#{d}}$."],"ans":"$#{k-d}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m16-3-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-3-t9">9. Параметрлік: 2×2 шарттылық</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"w":{"pick":[0.1,0.01,0.001]}},"type":"num","tol":0.01,"q":"$A=\\begin{pmatrix}1&1\\\\1&1+#{w}\\end{pmatrix}$. $\\kappa_\\infty(A)=?$","a":"(2+w)*(2+w)/w","v":"(2+nsimplify(w))*(2+nsimplify(w))/nsimplify(w)","hint":"$A^{-1}=\\frac1{\\varepsilon}\\begin{pmatrix}1+\\varepsilon&-1\\\\-1&1\\end{pmatrix}$.","sol":{"steps":["$\\|A\\|_\\infty=2+\\varepsilon$, $\\|A^{-1}\\|_\\infty=\\frac{2+\\varepsilon}{\\varepsilon}$."],"ans":"$\\frac{(2+\\varepsilon)^2}{\\varepsilon}\\approx#{(2+w)*(2+w)/w}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m16-3-ord10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-3-t10">10. LU арқылы шешу</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$A\\mathbf x=\\mathbf b$ шешу.","steps":["Бас элементті таңдаумен $PA=LU$ жіктелуін табамыз.","$P\\mathbf b$-ны есептейміз.","$L\\mathbf y=P\\mathbf b$-ны тура қоюмен шешеміз.","$U\\mathbf x=\\mathbf y$-ті кері қоюмен шешеміз.","Қалдықты $\\|A\\mathbf x-\\mathbf b\\|$ тексереміз."],"hint":"Жіктеу → алмастыру → екі үшбұрышты жүйе.","sol":{"ans":"$PA=LU$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-3-num11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-3-t11">11. Гаусс–Зейдель</h3></div>
+        <p>$4x_1-x_2+x_3=8$, $2x_1+5x_2+2x_3=3$, $x_1+2x_2+4x_3=11$ $\mathbf x^{(0)}=0$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Бірінші итерациядағы $x_3^{(1)}$","a":2.35,"v":"(11-2-2*Rational(-1,5))/4","hint":"$x_1^{(1)}=2$, $x_2^{(1)}=-0{,}2$ бірден қолданылады.","sol":{"steps":["$\\frac{11-2+0{,}4}{4}$."],"ans":"$2{,}35$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m16-3-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-3-t12">12. Қадамдық шешім: LU жіктелуі</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$A=\\begin{pmatrix}2&1\\\\6&4\\end{pmatrix}$ үшін $A=LU$ (таңдаусыз) табыңыз да, $A\\mathbf x=(3;10)^T$ шешіңіз.","hint":"Көбейткіш $l_{21}=\\frac{6}{2}$.","steps":["$l_{21}=3$: екінші жол $-3\\cdot$ бірінші: $(0;\\ 4-3)=(0;1)$.","$L=\\begin{pmatrix}1&0\\\\3&1\\end{pmatrix}$, $U=\\begin{pmatrix}2&1\\\\0&1\\end{pmatrix}$.","$L\\mathbf y=\\mathbf b$: $y_1=3$, $y_2=10-9=1$.","$U\\mathbf x=\\mathbf y$: $x_2=1$, $x_1=\\frac{3-1}{2}=1$. Тексеру: $2+1=3$, $6+4=10$ ✓."],"ans":"$\\mathbf x=(1;1)$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Ақырлы элементтер әдісі (құрылыс, аэродинамика), схемаларды талдау, ең кіші квадраттар (машиналық оқыту), PageRank (итерациялық әдіс), графикадағы түрлендірулер. NumPy-дағы <code>numpy.linalg.solve</code> LAPACK кітапханасының LU-pivoting әдісін қолданады.</p>
+      <p><b>Мини-жоба: «Гаусс, pivoting, итерация».</b> Бас элементті таңдаумен Гаусс әдісін, Якоби мен Гаусс–Зейдельді жазып, Гильберт матрицасының шарттылығын зерттейміз.</p>
+<pre data-lang="python"><code class="language-python">from fractions import Fraction
+
+def gauss(A, b, pivot=True):
+    n = len(A); M = [row[:] + [bi] for row, bi in zip(A, b)]
+    for k in range(n):
+        if pivot:
+            p = max(range(k, n), key=lambda i: abs(M[i][k])); M[k], M[p] = M[p], M[k]
+        for i in range(k + 1, n):
+            l = M[i][k] / M[k][k]
+            for j in range(k, n + 1): M[i][j] -= l * M[k][j]
+    x = [0.0] * n
+    for i in reversed(range(n)):
+        x[i] = (M[i][n] - sum(M[i][j] * x[j] for j in range(i + 1, n))) / M[i][i]
+    return x
+
+A = [[1e-20, 1.0], [1.0, 1.0]]; b = [1.0, 2.0]
+print("таңдаусыз:", gauss(A, b, False), " таңдаумен:", gauss(A, b, True))
+
+def jacobi(A, b, it, seidel=False):
+    n = len(A); x = [0.0] * n
+    for _ in range(it):
+        new = x[:] if not seidel else x
+        for i in range(n):
+            s = sum(A[i][j] * (new[j] if seidel else x[j]) for j in range(n) if j != i)
+            new[i] = (b[i] - s) / A[i][i]
+        x = new
+    return x
+S = [[4, -1, 1], [2, 5, 2], [1, 2, 4]]; c = [8, 3, 11]
+print("Якоби 20:", [round(v, 6) for v in jacobi(S, c, 20)])
+print("Гаусс-Зейдель 10:", [round(v, 6) for v in jacobi(S, c, 10, seidel=True)])
+
+# Гильберт матрицасы: дәл (бөлшектермен) және float шешімдерді салыстыру
+n = 10
+H = [[1 / (i + j + 1) for j in range(n)] for i in range(n)]
+x_true = [1.0] * n
+bh = [sum(H[i][j] for j in range(n)) for i in range(n)]
+x_float = gauss(H, bh)
+print("Гильберт n=10, float шешімнің ең үлкен қатесі:", max(abs(v - 1) for v in x_float))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Гильберт матрицасында $n=4,6,8,12$ үшін қатені басып шығарыңыз. Ол $\kappa(H_n)$ өсуімен (шамамен $e^{3{,}5n}$) қалай байланысты?</li>
+        <li><code>gauss</code> функциясын <code>Fraction</code> сандарымен іске қосыңыз (дәл арифметика). Гильберт жүйесінің дәл шешімі $(1,\dots,1)$ шыға ма?</li>
+        <li>Якоби мен Гаусс–Зейдельде қате $10^{-10}$-нан кіші болғанша неше итерация керек екенін санаңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Гаусс</td><td>$\approx\frac23n^3$ амал</td><td>бас элементті таңдаумен</td></tr>
+        <tr><td>LU</td><td>$PA=LU$; $L\mathbf y=P\mathbf b$, $U\mathbf x=\mathbf y$</td><td>көп оң жақ</td></tr>
+        <tr><td>Норма</td><td>$\|A\|_\infty=\max_i\sum_j|a_{ij}|$</td><td>-</td></tr>
+        <tr><td>Шарттылық</td><td>$\kappa=\|A\|\|A^{-1}\|\ge1$</td><td>$\det A\ne0$</td></tr>
+        <tr><td>Сезімталдық</td><td>$\frac{\|\delta x\|}{\|x\|}\le\kappa\frac{\|\delta b\|}{\|b\|}$</td><td>$\mathbf b\ne0$</td></tr>
+        <tr><td>Якоби</td><td>$x_i\leftarrow\frac{b_i-\sum_{j\ne i}a_{ij}x_j}{a_{ii}}$</td><td>диагоналі басым - жинақты</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m16-3-self">
+        <li><input type="checkbox"> <span>Мен Гаусс әдісінің жұмыс көлемін бағалай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бас элементті таңдаудың қажеттілігін мысалмен көрсете аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен LU жіктелуімен жүйені шеше аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $\|A\|_\infty$ және $\kappa(A)$ есептеп, шешімнің сезімталдығын бағалай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Якоби және Гаусс–Зейдель итерацияларын орындай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен диагональ басымдығы жинақталуды неге қамтамасыз ететінін түсіндіре аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. Гаусс әдісінің жұмыс көлемі n бойынша:</p>
+<label><input type="radio" value="a"> ≈ n²</label>
+<label><input type="radio" value="b"> ≈ (2/3)n³</label>
+<label><input type="radio" value="c"> ≈ n</label>
+<label><input type="radio" value="d"> ≈ 2ⁿ</label>
+<p class="explain">Тура жүріс.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">2. Бас элементті таңдау не үшін керек?</p>
+<label><input type="radio" value="a"> дөңгелектеу қатесінің күшеюін болдырмау</label>
+<label><input type="radio" value="b"> жылдамдық үшін</label>
+<label><input type="radio" value="c"> анықтауышты табу үшін</label>
+<label><input type="radio" value="d"> матрицаны симметриялы ету</label>
+<p class="explain">Кішкене бөлгіш қатені күшейтеді.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">3. κ(A) = 10⁸, оң жақ қатесі 10⁻¹⁶. Шешімнің салыстырмалы қатесінің бағасы:</p>
+<label><input type="radio" value="a"> 10⁻¹⁶</label>
+<label><input type="radio" value="b"> 10⁸</label>
+<label><input type="radio" value="c"> 10⁻²⁴</label>
+<label><input type="radio" value="d"> 10⁻⁸</label>
+<p class="explain">κ·10⁻¹⁶.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">4. ‖A‖∞ қалай есептеледі?</p>
+<label><input type="radio" value="a"> бағандар қосындысының максимумы</label>
+<label><input type="radio" value="b"> барлық элементтер қосындысы</label>
+<label><input type="radio" value="c"> жолдар модульдерінің қосындысының максимумы</label>
+<label><input type="radio" value="d"> ең үлкен элемент</label>
+<p class="explain">Анықтама.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. Якоби әдісінің жинақталуына жеткілікті шарт:</p>
+<label><input type="radio" value="a"> симметриялық</label>
+<label><input type="radio" value="b"> қатаң диагональ басымдығы</label>
+<label><input type="radio" value="c"> det A > 0</label>
+<label><input type="radio" value="d"> A үшбұрышты</label>
+<p class="explain">Теорема 3.3.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">6. Гаусс–Зейдельдің Якобиден айырмасы:</p>
+<label><input type="radio" value="a"> жаңа мәндер бірден қолданылады</label>
+<label><input type="radio" value="b"> кері матрица қолданылады</label>
+<label><input type="radio" value="c"> тек 2×2 матрицаларға</label>
+<label><input type="radio" value="d"> pivoting қолданылады</label>
+<p class="explain">Анықтама.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">7. Жүйені шешу үшін неге A⁻¹b есептемейміз?</p>
+<label><input type="radio" value="a"> мүмкін емес</label>
+<label><input type="radio" value="b"> кері матрица жоқ</label>
+<label><input type="radio" value="c"> LU баяу</label>
+<label><input type="radio" value="d"> қымбат әрі дәлдігі төмен</label>
+<p class="explain">LU тиімдірек.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">8. κ(A)-ның ең кіші мүмкін мәні:</p>
+<label><input type="radio" value="a"> 0</label>
+<label><input type="radio" value="b"> −1</label>
+<label><input type="radio" value="c"> 1</label>
+<label><input type="radio" value="d"> ∞</label>
+<p class="explain">‖I‖ = 1.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=numerical">Numerical Analysis емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-100.html"><small>Алдыңғы</small>← Numerical Analysis · 2-сабақ: Теңдеулердің түбірін табу</a>

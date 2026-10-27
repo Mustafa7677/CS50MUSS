@@ -6,13 +6,14 @@
   <title>Math Differential Geometry · 4-сабақ: Екінші квадраттық форма және Гаусс қисықтығы - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Differential Geometry · 4-сабақ: Екінші квадраттық форма және Гаусс қисықтығы - CS50 қазақша">
-  <meta property="og:description" content="Математика, Differential Geometry · 4-сабақ: Екінші квадраттық форма және Гаусс қисықтығы. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Негізгі қисықтықтар, орташа және Гаусс қисықтығы, Theorema Egregium идеясы.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-140.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Differential Geometry · 4-сабақ: Екінші квадраттық форма және Гаусс қисықтығы - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-140.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Differential Geometry · 4-сабақ: Екінші квадраттық форма және Гаусс қисықтығы. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Негізгі қисықтықтар, орташа және Гаусс қисықтығы, Theorema Egregium идеясы.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,500 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="140">
+    <article class="content math-lesson" style="--sc:#115e59" id="main">
+      <div class="lecture-head" style="--lc:#115e59" data-n="140" data-msubj="diffgeom" data-glyph="κ">
         <div class="num">Differential Geometry · 4-сабақ</div>
         <h1>Екінші квадраттық форма және Гаусс қисықтығы</h1>
-        <p>Негізгі қисықтықтар, орташа және Гаусс қисықтығы, Theorema Egregium идеясы.</p>
+        <p>Апельсин қабығын үстелге жайып көріңіз - ол міндетті түрде жыртылады. Ал цилиндр пішінді қағазды жаюға болады. Неге? Себебі сфера әр нүктесінде «екі бағытта бірдей иілген» (оң Гаусс қисықтығы), цилиндр - тек бір бағытта (нөлдік Гаусс қисықтығы), ал жазықтық мүлдем иілмеген.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 55 мин</span><span>Есептер ≈ 1 сағ</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Гаусстың «керемет теоремасы» (Theorema Egregium) бұл қисықтықтың бетті кеңістікке қалай орналастырғанымызға емес, тек беттің ішкі метрикасына тәуелді екенін айтады - демек созбай-жыртпай оны өзгерту мүмкін емес. Бұл сабақта екінші квадраттық форманы, нормаль қисықтықты, бас қисықтықтарды, Гаусс және орташа қисықтықтарды енгізіп, сфера, цилиндр, тор, ер тәрізді бет үшін есептейміз, Эйлер формуласын дәлелдейміз және Theorema Egregium-ның мағынасы мен салдарын талқылаймыз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-22">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=diffgeom">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Differential Geometry: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-22">Differential Geometry</a></span><ol><li><a href="week-137.html" title="Қисықтар: параметрлеу, доға ұзындығы, қисықтық">1</a></li><li><a href="week-138.html" title="Френе реперi және бұралу">2</a></li><li><a href="week-139.html" title="Беттер және бірінші квадраттық форма">3</a></li><li><a href="week-140.html" aria-current="page" title="Екінші квадраттық форма және Гаусс қисықтығы">4</a></li><li><a href="week-141.html" title="Геодезиялық сызықтар және Гаусс–Бонне теоремасы">5</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-22">Differential Geometry</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Гаусс қисықтығы $K=k_1k_2$ - беттің ең көп және ең аз иілуінің көбейтіндісі; Гаусстың «керемет теоремасы» бойынша оны беттен шықпай-ақ өлшеуге болады.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>екінші квадраттық форманың $e$, $f$, $g$ коэффициенттерін есептеу;</li>
+        <li>нормаль қисықтықты анықтап, Мёнье теоремасын түсіндіру;</li>
+        <li>бас қисықтықтарды Вейнгартен операторының меншікті мәндері ретінде табу;</li>
+        <li>Гаусс қисықтығы $K=\frac{eg-f^2}{EG-F^2}$ және орташа қисықтық $H$ формулаларын қолдану, нүктелерді эллипстік, гиперболалық, параболалық деп жіктеу;</li>
+        <li>Эйлер формуласын $k_n(\theta)=k_1\cos^2\theta+k_2\sin^2\theta$ дәлелдеу;</li>
+        <li>Theorema Egregium-ды тұжырымдап, одан сфераның изометриялы картасы жоқ екенін шығару.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Регуляр бет, бірлік нормаль, бірінші квадраттық форма, изометрия (3-сабақ). Қисықтық, бас нормаль (1-2-сабақтар). Симметриялы матрица, меншікті мәндер мен векторлар, спектрлік теорема (сызықтық алгебра, 8-сабақ). Екі айнымалы функцияның Тейлор формуласы және Гессиан (multivariable calculus).</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-139.html">Differential Geometry · 3-сабақ: Беттер және бірінші квадраттық форма</a></li><li><a href="week-14.html">Linear Algebra · 8-сабақ: Меншікті мәндер мен меншікті векторлар</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: үш беттің иілуі</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">Сфера (радиусы $1$), цилиндр (радиусы $1$) және ер тәрізді бет $z=xy$ - әрқайсысында ең көп және ең аз иілу бағыттарын табайық.</p>
+        <ol class="math-steps">
+          <li>Сфера: кез келген бағытта бет бірдей иілген: $k_1=k_2=1$, $K=1&gt;0$ - «шар тәрізді» нүкте.</li>
+          <li>Цилиндр: айнала бағытта $k_1=1$, ал бойлай (ось бойымен) түзу: $k_2=0$. $K=0$.</li>
+          <li>Ер $z=xy$ (басы): бір бағытта жоғары иіледі, екіншісінде төмен: $k_1=1$, $k_2=-1$, $K=-1&lt;0$.</li>
+          <li>Қорытынды: $K&gt;0$ - бет бір жаққа иілген, $K&lt;0$ - ер тәрізді, $K=0$ - бір бағытта түзу.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Цилиндрдің $K=0$ болуы - оны жазықтыққа жаюға болатынының себебі; сфераның $K&gt;0$ болуы - апельсин қабығы жыртылатынының себебі.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Беттің нүктесінде жанама жазықтық жүргізейік. Бет жанама жазықтықтан нормаль бағытында қаншалықты «ауытқиды»? Тейлор бойынша ауытқу $\frac12(e\,du^2+2f\,du\,dv+g\,dv^2)$ - бұл екінші квадраттық форма. Бірінші форма бет бойындағы қашықтықты, екінші форма - беттің кеңістікте иілуін өлшейді.</p>
+      <p>Нүктеден әр бағытта қима жасасақ, әр қиманың қисықтығы әртүрлі: цилиндрдің бойымен - $0$, айналасымен - $\frac1R$. Бұл нормаль қисықтықтардың ең үлкені мен ең кішісі - бас қисықтықтар $k_1,k_2$, ал олардың бағыттары перпендикуляр (Эйлер).</p>
+      <p>Гаусс қисықтығы $K=k_1k_2$. Сферада екі бас қисықтық бірдей таңбалы - $K&gt;0$, бет «тостаған» тәрізді. Ер тәрізді бетте ($z=xy$) бір бағытта жоғары, бір бағытта төмен иіледі - $K&lt;0$. Цилиндрде бір бас қисықтық нөл - $K=0$.</p>
+      <p>Керемет фактор: $k_1$ мен $k_2$ жеке-жеке кеңістіктегі орналасуға тәуелді (цилиндр мен жазықтықта әртүрлі), бірақ көбейтіндісі $K$ тек метрикаға тәуелді (екеуінде де $0$). Сондықтан сфераның ($K=\frac1{R^2}$) жазықтыққа ($K=0$) изометриялы картасы жоқ - кез келген географиялық карта қашықтықтарды бұрмалайды.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · пицца тілімі</span>
+        <p>Пицца тілімін ұстағанда оның ұшы салбырап кетеді. Бірақ шетін көлденең иіп ұстасаңыз ($k_1\ne0$), ұзына бойы иіле алмайды: $K=0$ сақталуы керек (Theorema Egregium). Сондықтан тілім түзу тұрады.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · карта жасау</span>
+        <p>Жер шарының картасын қашықтықтарды бұрмаламай жасау мүмкін емес: сфераның $K&gt;0$, жазықтықтың $K=0$, ал $K$ - ішкі шама, оны изометрия өзгертпейді.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$II=e\,du^2+2f\,du\,dv+g\,dv^2$</td><td>екінші квадраттық форма</td><td>бет кеңістікте қалай иілгенін өлшейді</td></tr>
+        <tr><td>$k_n(w)$</td><td>нормаль қисықтық</td><td>$w$ бағытындағы иілу</td></tr>
+        <tr><td>$k_1,\ k_2$</td><td>бас қисықтықтар</td><td>иілудің ең үлкен және ең кіші мәні</td></tr>
+        <tr><td>$K=k_1k_2$</td><td>Гаусс қисықтығы</td><td>$\frac{eg-f^2}{EG-F^2}$</td></tr>
+        <tr><td>$H=\frac{k_1+k_2}2$</td><td>орташа қисықтық</td><td>бас қисықтықтардың орта мәні</td></tr>
+        <tr><td>$S$</td><td>Вейнгартен операторы</td><td>нормальдың өзгерісі: меншікті мәндері $k_1,k_2$</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 4.1 · Екінші квадраттық форма</span>
+        <p>$x(u,v)$ - регуляр бет, $n$ - бірлік нормаль. <strong>Екінші квадраттық форма</strong> (<span class="term-en">second fundamental form</span>) $II=e\,du^2+2f\,du\,dv+g\,dv^2$, мұнда $e=x_{uu}\cdot n$, $f=x_{uv}\cdot n$, $g=x_{vv}\cdot n$. Бет бойындағы бірлік жылдамдықты қисықтың $\alpha''$ үдеуінің нормаль құраушысы $\alpha''\cdot n=II(\alpha',\alpha')$ - <strong>нормаль қисықтық</strong> (<span class="term-en">normal curvature</span>) $k_n$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Екінші форма беттің жанама жазықтықтан қаншалықты «ауытқитынын» (иілетінін) әр бағыт үшін өлшейді.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 4.1 · Нормаль қисықтық</span>
+        <p>(1) Жанама $w\ne0$ бағытындағы нормаль қисықтық $k_n(w)=\frac{II(w,w)}{I(w,w)}$ тек бағытқа тәуелді. (2) Мёнье: бет бойындағы қисықтың қисықтығы $\kappa$, бас нормалі мен бет нормалінің арасындағы бұрыш $\varphi$ болса, $\kappa\cos\varphi=k_n$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Бағыт бойынша иілу тек бағытқа тәуелді; бет бойындағы әр қисықтың нормаль бағыттағы иілуі сол бағыттың иілуіне тең.</p></div>
+      <p><em>Негіздеме.</em> Бағыты бірдей барлық қисықтардың нормаль қисықтығы бірдей.</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 4.2 · Бас, Гаусс және орташа қисықтықтар</span>
+        <p><strong>Вейнгартен операторы</strong> (<span class="term-en">shape operator</span>) $S$ - матрицасы $\mathcal I^{-1}\mathcal{II}$, мұнда $\mathcal I=\begin{pmatrix}E&amp;F\\F&amp;G\end{pmatrix}$, $\mathcal{II}=\begin{pmatrix}e&amp;f\\f&amp;g\end{pmatrix}$. Оның меншікті мәндері $k_1\ge k_2$ - <strong>бас қисықтықтар</strong> (<span class="term-en">principal curvatures</span>); меншікті бағыттары - бас бағыттар. <strong>Гаусс қисықтығы</strong> (<span class="term-en">Gaussian curvature</span>) $K=k_1k_2$, <strong>орташа қисықтық</strong> (<span class="term-en">mean curvature</span>) $H=\frac{k_1+k_2}2$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Бас қисықтықтар - ең көп және ең аз иілу; олардың көбейтіндісі - Гаусс, орта мәні - орташа қисықтық.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 4.2 · Қисықтық формулалары</span>
+        <p>$K=\frac{eg-f^2}{EG-F^2}$, $H=\frac{eG-2fF+gE}{2(EG-F^2)}$, $k_{1,2}=H\pm\sqrt{H^2-K}$. Нүкте: $K&gt;0$ - <strong>эллипстік нүкте</strong> (<span class="term-en">elliptic point</span>), $K&lt;0$ - <strong>гиперболалық нүкте</strong> (<span class="term-en">hyperbolic point</span>), $K=0$, $H\ne0$ - параболалық. График $z=f(x,y)$-тің $f_x=f_y=0$ нүктесінде: $K=f_{xx}f_{yy}-f_{xy}^2$ (Гессианның анықтауышы).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $K$ мен $H$-ты екі форманың коэффициенттерінен формуламен есептейміз; $K$-ның таңбасы нүкте түрін береді.</p></div>
+      <p><em>Негіздеме.</em> $K$-ның таңбасы нормальдің бағытына тәуелсіз; $H$-тың таңбасы тәуелді.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 4.3 · Эйлер формуласы</span>
+        <p>Бас бағыттар перпендикуляр ($k_1\ne k_2$ болса), және $w$ бірінші бас бағытпен $\theta$ бұрыш жасаса, $k_n(w)=k_1\cos^2\theta+k_2\sin^2\theta$. Демек $k_1=\max k_n$, $k_2=\min k_n$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Кез келген бағыттағы иілу - бас иілулердің $\cos^2$ және $\sin^2$ салмақтары бар орта мәні.</p></div>
+      <p><em>Негіздеме.</em> $S$ бірінші форма бойынша өзіне-өзі түйіндес - спектрлік теорема.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 4.4 · Мысалдар</span>
+        <p>(1) Жазықтық: $II=0$, $K=H=0$. (2) Радиусы $R$ сфера: $k_1=k_2=\frac1R$, $K=\frac1{R^2}$. (3) Радиусы $R$ цилиндр: $k_1=\frac1R$, $k_2=0$, $K=0$. (4) Ер тәрізді бет $z=xy$: $K=-\frac1{(1+x^2+y^2)^2}$, $(0,0)$-де $K=-1$, $H=0$. (5) Тор: $K=\frac{\cos v}{r(R+r\cos v)}$ - сыртында оң, ішінде теріс.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Жазықтықта $K=0$, сферада $\frac1{R^2}$, цилиндрде $0$, ерде теріс.</p></div>
+      <p><em>Негіздеме.</em> Тордың $\iint K\,dA=0$ (5-сабақ, Гаусс-Бонне).</p>
+      <div class="math-thm" id="thm-5"><span class="math-tag">Теорема 4.5 · Theorema Egregium (Гаусс)</span>
+        <p>Гаусс қисықтығы $K$ тек бірінші квадраттық формаға ($E,F,G$ және олардың туындыларына) тәуелді. Атап айтқанда, $F=0$ болса: $K=-\frac1{2\sqrt{EG}}\left[\left(\frac{E_v}{\sqrt{EG}}\right)_v+\left(\frac{G_u}{\sqrt{EG}}\right)_u\right]$. Салдар: жергілікті изометрия $K$-ны сақтайды; сфераның ешбір бөлігі жазықтыққа изометриялы емес.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Гаусс қисықтығы тек ішкі өлшемдерге ($E,F,G$) тәуелді, сондықтан изометрия оны өзгертпейді.</p></div>
+      <p><em>Негіздеме.</em> <strong>Theorema Egregium</strong> (<span class="term-en">Theorema Egregium</span>). Жалпы дәлелі ұзақ (Гаусс теңдеулері арқылы) - бұл сабақта дәлелсіз; формуланы сфера мен тор үшін тексереміз.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 4.1 · Екінші форма</span>
+        <div class="math-fbody">$$e=x_{uu}\cdot n,\quad f=x_{uv}\cdot n,\quad g=x_{vv}\cdot n$$</div>
+        <p class="math-fnote">$n$ - бірлік нормаль.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 4.2 · Нормаль қисықтық</span>
+        <div class="math-fbody">$$k_n(w)=\frac{II(w,w)}{I(w,w)}$$</div>
+        <p class="math-fnote">Мёнье: $\kappa\cos\varphi=k_n$.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 4.3 · Гаусс қисықтығы</span>
+        <div class="math-fbody">$$K=k_1k_2=\frac{eg-f^2}{EG-F^2}$$</div>
+        <p class="math-fnote">Ішкі инвариант.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 4.4 · Орташа қисықтық</span>
+        <div class="math-fbody">$$H=\frac{k_1+k_2}2=\frac{eG-2fF+gE}{2(EG-F^2)}$$</div>
+        <p class="math-fnote">Минимал беттерде $H=0$.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 4.5 · Бас қисықтықтар</span>
+        <div class="math-fbody">$$k_{1,2}=H\pm\sqrt{H^2-K}$$</div>
+        <p class="math-fnote">$k^2-2Hk+K=0$.</p></div>
+      <div class="math-formula" id="f-6"><span class="math-fname">Формула 4.6 · Эйлер формуласы</span>
+        <div class="math-fbody">$$k_n(\theta)=k_1\cos^2\theta+k_2\sin^2\theta$$</div>
+        <p class="math-fnote">Бас бағыттардан өлшенген бұрыш.</p></div>
+      <div class="math-formula" id="f-7"><span class="math-fname">Формула 4.7 · Критикалық нүктедегі график</span>
+        <div class="math-fbody">$$K=f_{xx}f_{yy}-f_{xy}^2$$</div>
+        <p class="math-fnote">$f_x=f_y=0$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>$K$ мен $H$-ты есептеу реті: (1) $x_u,x_v$, $E,F,G$; (2) $n=\frac{x_u\times x_v}{|x_u\times x_v|}$; (3) $x_{uu},x_{uv},x_{vv}$ және $e,f,g$ (скаляр көбейтінділер $n$-мен; көбіне $n$-нің бөлгішін соңына қалдыру ыңғайлы: $e=\frac{\det(x_{uu},x_u,x_v)}{\sqrt{EG-F^2}}$); (4) $K$, $H$; (5) $k_{1,2}=H\pm\sqrt{H^2-K}$. Тексеру: сферада $K=\frac1{R^2}$, жазықтық пен цилиндрде $K=0$. Критикалық нүктеде - Гессиан анықтауышы (екінші туынды тест!).</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>(1) $K$ - ішкі (тек метрикаға тәуелді), ал $H$, $k_1$, $k_2$ - сыртқы: цилиндр мен жазықтықта $K=0$ бірдей, бірақ $H=\frac1{2R}$ және $0$. (2) $H$-тың таңбасы $n$-нің бағытын таңдауға тәуелді; $K$-ның таңбасы - тәуелсіз. (3) $K=\frac{eg-f^2}{EG-F^2}$, $eg-f^2$ емес: бөлгішті ұмытпаңыз (ол тек $E=G=1$, $F=0$ нүктесінде $1$). (4) Theorema Egregium - тек $K$ туралы: изометрия $k_1$, $k_2$-ні жеке сақтамайды.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> Тордың (бәліштің) сыртқы жиегіндегі нүктелерде $K$ таңбасы қандай? Ішкі жиегінде ше?</span></summary>
+        <p>Сыртында $K&gt;0$ (шар тәрізді), ішінде $K&lt;0$ (ер тәрізді).</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> Конустың Гаусс қисықтығы қандай?</span></summary>
+        <p>$0$ (төбесінен басқа нүктелерде): оны жазықтыққа жаюға болады.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> Радиусы $2$ сфераның $K$-сы неге тең?</span></summary>
+        <p>$\frac14$.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> $k_1=3$, $k_2=-1$ болса, $H$ пен $K$ қандай?</span></summary>
+        <p>$H=1$, $K=-3$ - ер тәрізді нүкте.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: нормаль қисықтық</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 4.1-ді дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Жанаманың нормальмен скаляр көбейтіндісі нөл; оны дифференциалдасақ, үдеудің нормаль құраушысы екінші формаға айналады.</p>
+          <ol class="math-steps">
+            <li>$\alpha(t)=x(u(t),v(t))$, $\alpha'\cdot n=0$ (жанама). Дифференциалдасақ: $\alpha''\cdot n=-\alpha'\cdot n'$.</li>
+            <li>$\alpha''=x_{uu}u'^2+2x_{uv}u'v'+x_{vv}v'^2+x_uu''+x_vv''$; $x_u\cdot n=x_v\cdot n=0$, демек $\alpha''\cdot n=eu'^2+2fu'v'+gv'^2=II(\alpha',\alpha')$.</li>
+            <li>Бірлік жылдамдыққа келтірсек: $k_n=\frac{II(\alpha',\alpha')}{|\alpha'|^2}=\frac{II(w,w)}{I(w,w)}$ - тек $w=\alpha'$ бағытына тәуелді.</li>
+            <li>Мёнье: бірлік жылдамдықта $\alpha''=\kappa N_\alpha$, демек $k_n=\kappa N_\alpha\cdot n=\kappa\cos\varphi$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: Гаусс және орташа қисықтық</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 4.2-ні дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $k_n(w)$-ның экстремумдары - $\mathcal{II}w=k\mathcal Iw$ меншікті мән есебі; анықтауыш квадрат теңдеу береді, оның түбірлерінің көбейтіндісі - $K$.</p>
+          <ol class="math-steps">
+            <li>$k_n(w)=\frac{w^\top\mathcal{II}w}{w^\top\mathcal Iw}$. Экстремумдар (Лагранж): $\mathcal{II}w=k\,\mathcal Iw$, яғни $\det(\mathcal{II}-k\mathcal I)=0$.</li>
+            <li>Анықтауышты жайсақ: $(EG-F^2)k^2-(eG-2fF+gE)k+(eg-f^2)=0$.</li>
+            <li>Виет: $k_1k_2=\frac{eg-f^2}{EG-F^2}=K$, $k_1+k_2=\frac{eG-2fF+gE}{EG-F^2}=2H$.</li>
+            <li>Критикалық нүктедегі график: $E=G=1$, $F=0$, $n=(0,0,1)$, $e=f_{xx}$, $f=f_{xy}$, $g=f_{yy}$ - $K=f_{xx}f_{yy}-f_{xy}^2$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: Эйлер формуласы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 4.3-ті дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Бірінші форма бойынша ортонормаланған базисте $\mathcal{II}$ - симметриялы матрица; оны диагональдасақ, Эйлер формуласы шығады.</p>
+          <ol class="math-steps">
+            <li>Жанама жазықтықта бірінші форма бойынша ортонормаланған базис алайық - онда $\mathcal I=I_2$, ал $\mathcal{II}$ - симметриялы матрица.</li>
+            <li>Спектрлік теорема: $\mathcal{II}$-ні ортонормаланған меншікті векторлар $e_1,e_2$ диагональдайды, меншікті мәндер $k_1,k_2$ - бас бағыттар перпендикуляр.</li>
+            <li>$w=\cos\theta\,e_1+\sin\theta\,e_2$: $k_n(w)=II(w,w)=k_1\cos^2\theta+k_2\sin^2\theta$.</li>
+            <li>$\cos^2+\sin^2=1$: $k_n$ - $k_1$ мен $k_2$-нің дөңес комбинациясы, $k_2\le k_n\le k_1$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: сфера мен цилиндр</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 4.4 (2)-(3)-ті есептеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Сферада нормаль радиус-векторға пропорционал, сондықтан әр бағыттағы иілу $\frac1R$; цилиндрде ось бойымен - түзу.</p>
+          <ol class="math-steps">
+            <li>Сфера: $x$ - радиус-вектор, $|x|=R$; ішке қараған нормаль $n=-\frac xR$. Кез келген бет қисығы үшін $\alpha''\cdot n$: $\alpha\cdot\alpha=R^2\Rightarrow\alpha''\cdot\alpha=-|\alpha'|^2$.</li>
+            <li>Бірлік жылдамдық: $k_n=\alpha''\cdot\left(-\frac\alpha R\right)=\frac1R$ - әр бағытта бірдей, $k_1=k_2=\frac1R$, $K=\frac1{R^2}$.</li>
+            <li>Цилиндр $(R\cos u,R\sin u,v)$: $x_{uu}=(-R\cos u,-R\sin u,0)$, $x_{uv}=x_{vv}=0$, $n=(-\cos u,-\sin u,0)$ (ішке).</li>
+            <li>$e=R$, $f=g=0$; $E=R^2$, $F=0$, $G=1$: $K=0$, $H=\frac{R\cdot1}{2R^2}=\frac1{2R}$; $k_1=\frac1R$, $k_2=0$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5">
+        <summary>Қорытып шығару 5: Theorema Egregium-ды тексеру</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $F=0$ формуласын сфера мен цилиндрде тексеру (теореманың өзі дәлелсіз).</p>
+          <p class="mx-idea"><b>Идея:</b> Сфера үшін $K$-ны тек $E,G$ және олардың туындыларымен жазылатын формуламен есептеп, $\frac1{R^2}$ шығатынын көреміз.</p>
+          <ol class="math-steps">
+            <li>Сфера: $E=R^2\cos^2v$, $G=R^2$, $\sqrt{EG}=R^2\cos v$. $E_v=-2R^2\cos v\sin v$, $G_u=0$.</li>
+            <li>$\frac{E_v}{\sqrt{EG}}=-2\sin v$, оның $v$-туындысы $-2\cos v$.</li>
+            <li>$K=-\frac1{2R^2\cos v}\cdot(-2\cos v)=\frac1{R^2}$ ✓ - $e,f,g$-сыз, тек метрикадан.</li>
+            <li>Цилиндр: $E,G$ тұрақты, туындылар нөл - $K=0$ ✓. Салдар: сфераның бөлігі жазықтыққа изометриялы болса, $K$ сақталар еді, бірақ $\frac1{R^2}\ne0$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Ер тәрізді бет</h3>
+        <p class="math-problem">$z=xy$, $(0,0)$ нүктесі.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $f_x=y$, $f_y=x$ - $(0,0)$ критикалық нүкте.</li>
+          <li><b>2-қадам.</b> $f_{xx}=0$, $f_{xy}=1$, $f_{yy}=0$: $K=0-1=-1$, $H=\frac{0+0}2=0$.</li>
+          <li><b>3-қадам.</b> $k_{1,2}=\pm1$; бас бағыттар $y=\pm x$: $(t,t)$ бағытында $z=t^2$ (жоғары), $(t,-t)$ бағытында $z=-t^2$ (төмен).</li>
+          <li><b>4-қадам.</b> Гиперболалық нүкте; $H=0$ - бұл нүктеде бет «минимал».</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $K=-1$, $H=0$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Параболоид</h3>
+        <p class="math-problem">$z=x^2+y^2$, төбесі $(0,0)$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $f_{xx}=f_{yy}=2$, $f_{xy}=0$.</li>
+          <li><b>2-қадам.</b> $K=4$, $H=2$, $k_1=k_2=2$ - кіндік нүкте (барлық бағытта бірдей).</li>
+          <li><b>3-қадам.</b> Эллипстік нүкте: бет жанама жазықтықтың бір жағында.</li>
+          <li><b>4-қадам.</b> 1-сабақпен салыстыру: $y=x^2$ қимасының қисықтығы төбеде $2$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $K=4$, $H=2$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Тор</h3>
+        <p class="math-problem">$R=3$, $r=1$ тордың сыртқы және ішкі экваторы.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $K(v)=\frac{\cos v}{r(R+r\cos v)}$.</li>
+          <li><b>2-қадам.</b> Сыртқы экватор $v=0$: $K=\frac1{1\cdot4}=\frac14&gt;0$ - эллипстік.</li>
+          <li><b>3-қадам.</b> Ішкі экватор $v=\pi$: $K=\frac{-1}{1\cdot2}=-\frac12&lt;0$ - гиперболалық (ер тәрізді).</li>
+          <li><b>4-қадам.</b> Жоғарғы/төменгі шеңберлер $v=\pm\frac\pi2$: $K=0$ - параболалық.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac14$ және $-\frac12$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Эйлер формуласы</h3>
+        <p class="math-problem">Цилиндр $R=2$: бойымен $45°$ бұрыштағы нормаль қисықтық.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $k_1=\frac12$ (айналасы бойынша), $k_2=0$ (бойымен).</li>
+          <li><b>2-қадам.</b> $\theta$ - $k_1$ бағытынан бұрыш: $45°$.</li>
+          <li><b>3-қадам.</b> $k_n=\frac12\cos^245°+0=\frac14$.</li>
+          <li><b>4-қадам.</b> Бұл бағыттағы спиральдің қисықтығы да $\frac14$: $(2\cos t,2\sin t,2t)$ - $\frac a{a^2+b^2}=\frac2{8}$ ✓ (Мёнье, $\varphi=0$).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac14$.</p></div>
+      <div class="math-example" id="ex-5"><h3>Мысал 5. Карталар</h3>
+        <p class="math-problem">Неге жер шарының қашықтықтарды дәл сақтайтын картасы жоқ?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Карта - сфераның бөлігінен жазықтыққа бейнелеу; қашықтықтарды сақтаса - изометрия.</li>
+          <li><b>2-қадам.</b> Theorema Egregium: изометрия $K$-ны сақтайды.</li>
+          <li><b>3-қадам.</b> Сферада $K=\frac1{R^2}&gt;0$, жазықтықта $K=0$.</li>
+          <li><b>4-қадам.</b> Демек мұндай карта жоқ: Меркатор бұрыштарды, Ламберт аудандарды сақтайды, бірақ ешқайсысы қашықтықтарды емес.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Изометриялы карта жоқ.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$K=eg-f^2$</span> → <span class="math-good">$\frac{eg-f^2}{EG-F^2}$</span><br>Неге қате: Бөлгіш.</li>
+        <li><span class="math-bad">$H$ - ішкі инвариант</span> → <span class="math-good">тек $K$ ішкі</span><br>Неге қате: цилиндр мен жазықтық.</li>
+        <li><span class="math-bad">Цилиндрдің Гаусс қисықтығы $\frac1R$</span> → <span class="math-good">$K=\frac1R\cdot0=0$</span><br>Неге қате: $k_2=0$.</li>
+        <li><span class="math-bad">Изометрия бас қисықтықтарды сақтайды</span> → <span class="math-good">тек көбейтіндісін</span><br>Неге қате: жазықтық $\to$ цилиндр.</li>
+        <li><span class="math-bad">$K$-ның таңбасы нормальге тәуелді</span> → <span class="math-good">$K$ - тәуелсіз, $H$ - тәуелді</span><br>Неге қате: $k_1k_2$.</li>
+        <li><span class="math-bad">Бас бағыттар кез келген</span> → <span class="math-good">перпендикуляр (бірінші форма бойынша)</span><br>Неге қате: Эйлер.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Эйлер формуласы: k_n(θ) = k₁cos²θ + k₂sin²θ" data-config='{"fns": [{"f": "p*cos(x)^2 + q*sin(x)^2", "label": "k_n(θ)"}, {"f": "p", "label": "k₁ = p", "color": 1, "dash": [5, 4]}, {"f": "q", "label": "k₂ = q", "color": 2, "dash": [5, 4]}], "params": [{"n": "p", "min": -2, "max": 2, "step": 0.1, "v": 1}, {"n": "q", "min": -2, "max": 2, "step": 0.1, "v": -0.5}], "view": [0, 3.1416, -2.2, 2.2]}'></div>
+      <p><b>Бақылаңыз:</b> Бағыт $\theta$ бас бағыттан $0$-ден $\pi$-ге айналғанда нормаль қисықтық $k_1$ мен $k_2$ арасында тербеледі (жүгірткілер: $p=k_1$, $q=k_2$). $k_1k_2&gt;0$ (эллипстік) - бәрі бір таңбалы; $k_1k_2&lt;0$ (гиперболалық) - екі асимптоталық бағыт бар, онда $k_n=0$; $k_2=0$ (цилиндр) - бір бағытта нөл.</p>
+      <div class="math-viz" data-viz="graph" data-title="Тордың Гаусс қисықтығы K(v) = cos v / (r(R + r cos v))" data-config='{"fns": [{"f": "cos(x)/(r*(R + r*cos(x)))", "label": "K(v)"}, {"f": "0", "label": "K = 0", "color": 2}], "params": [{"n": "R", "min": 1.5, "max": 5, "step": 0.1, "v": 3}, {"n": "r", "min": 0.3, "max": 1.4, "step": 0.1, "v": 1}], "view": [-3.1416, 3.1416, -1.6, 0.8]}'></div>
+      <p><b>Бақылаңыз:</b> $v=0$ - тордың сыртқы экваторы ($K&gt;0$, сфера сияқты), $v=\pm\pi$ - ішкі экватор ($K&lt;0$, ер тәрізді). Оң және теріс аймақтар бір-бірін теңестіреді: $\iint K\,dA=0$ (5-сабақ, Гаусс-Бонне). $R$-ді $r$-ге жақындатыңыз - ішкі экватордағы теріс қисықтық күшейеді.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m22-4-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m22-4-t1">1. Гаусс қисықтығы</h3></div>
+        <p>Есептеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Радиусы $2$ сфераның $K$","a":"1/4","v":"Rational(1, 4)","hint":"$\\frac1{R^2}$.","sol":{"steps":["$k_1=k_2=\\frac12$."],"ans":"$\\frac14$"}},{"q":"Радиусы $5$ цилиндрдің $K$","a":0,"v":"0","hint":"$k_2=0$.","sol":{"steps":["$\\frac15\\cdot0$."],"ans":"$0$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m22-4-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m22-4-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Гаусс қисықтығы тек бірінші квадраттық формаға тәуелді.","a":true,"e":"Theorema Egregium.","hint":"Теорема 4.5."},{"q":"Орташа қисықтық изометрияда сақталады.","a":false,"e":"Жазықтық $H=0$, цилиндр $H=\\frac1{2R}$.","hint":"Сыртқы шама."},{"q":"Ер тәрізді бет $z=xy$ $(0,0)$-де гиперболалық.","a":true,"e":"$K=-1\\lt 0$.","hint":"Гессиан анықтауышы."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m22-4-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m22-4-t3">3. Формула</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$K=?$","o":["$\\frac{eg-f^2}{EG-F^2}$","$eg-f^2$","$\\frac{eG+gE}{2}$","$k_1+k_2$"],"a":0,"e":"$k_1k_2$, Виет.","hint":"Теорема 4.2."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m22-4-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m22-4-t4">4. Критикалық нүктелер</h3></div>
+        <p>$(0,0)$ нүктесіндегі $K$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$z=x^2+y^2$","a":4,"v":"2*2 - 0","hint":"$f_{xx}f_{yy}-f_{xy}^2$.","sol":{"steps":["$2\\cdot2$."],"ans":"$4$"}},{"q":"$z=x^2-3y^2$","a":-12,"v":"2*(-6) - 0","hint":"$f_{xx}=2$, $f_{yy}=-6$.","sol":{"steps":["$-12$; гиперболалық."],"ans":"$-12$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m22-4-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m22-4-t5">5. Тор</h3></div>
+        <p>$R=3$, $r=1$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Сыртқы экватордағы $K$ ($v=0$)","a":"1/4","v":"Rational(1, 1*(3 + 1))","hint":"$\\frac{\\cos v}{r(R+r\\cos v)}$.","sol":{"steps":["$\\frac1{4}$."],"ans":"$\\frac14$"}},{"q":"Ішкі экватордағы $K$ ($v=\\pi$)","a":"-1/2","v":"Rational(-1, 1*(3 - 1))","hint":"$\\cos\\pi=-1$.","sol":{"steps":["$\\frac{-1}{2}$."],"ans":"$-\\frac12$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m22-4-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m22-4-t6">6. Эйлер формуласы</h3></div>
+        <p>$k_1=\frac12$, $k_2=0$ (цилиндр $R=2$).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\theta=45°$ бағытындағы $k_n$","a":"1/4","v":"Rational(1, 2)*Rational(1, 2)","hint":"$k_1\\cos^2\\theta$.","sol":{"steps":["$\\frac12\\cdot\\frac12$."],"ans":"$\\frac14$"}},{"q":"$\\theta=60°$ бағытындағы $k_n$","a":"1/8","v":"Rational(1, 2)*Rational(1, 4)","hint":"$\\cos^260°=\\frac14$.","sol":{"steps":["$\\frac12\\cdot\\frac14$."],"ans":"$\\frac18$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m22-4-exp7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m22-4-t7">7. Ер тәрізді бет</h3></div>
+        <p>$z=xy$ бетінің $(t,0)$ нүктелеріндегі $K$-ны $t$ арқылы ($t$-ны $x$ деп).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$K(t,0)=?$","a":"-1/(1+x^2)^2","v":"-1/(1+x**2)**2","hint":"$K=-\\frac1{(1+x^2+y^2)^2}$.","sol":{"steps":["$y=0$."],"ans":"$-\\frac1{(1+t^2)^2}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m22-4-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m22-4-t8">8. Бет - қисықтықтар</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Бет - $(K,H)$.","pairs":[["жазықтық","K = 0, H = 0"],["радиусы R сфера","K = 1/R², H = ±1/R"],["радиусы R цилиндр","K = 0, H = ±1/(2R)"],["z = xy, (0, 0)","K = −1, H = 0"]],"hint":"Теорема 4.4.","sol":{"steps":["$K=k_1k_2$, $H=\\frac{k_1+k_2}2$."]},"e":"$K$ - ішкі, $H$ - сыртқы."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m22-4-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m22-4-t9">9. Параметрлік: критикалық нүкте</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[-4,4]},"b":{"int":[-4,4]},"c":{"int":[-3,3]}},"type":"num","q":"$z=#{a}x^2+#{c}xy+#{b}y^2$ бетінің $(0,0)$ нүктесіндегі Гаусс қисықтығы?","a":"4*a*b - c^2","v":"4*int(a)*int(b) - int(c)**2","hint":"$f_{xx}=2a$, $f_{xy}=c$, $f_{yy}=2b$.","sol":{"steps":["$(2\\cdot#{a})(2\\cdot#{b})-(#{c})^2$."],"ans":"$#{4*a*b - c^2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m22-4-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m22-4-t10">10. Параметрлік: бас қисықтықтар</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"p":{"int":[1,5]},"q":{"int":[1,5]}},"type":"num","q":"$K=#{p*q}$, $H=#{(p+q)/2}$ болса, ең үлкен бас қисықтық $k_1=?$","a":"max(p, q)","v":"max(int(p), int(q))","hint":"$k^2-2Hk+K=0$.","sol":{"steps":["$k^2-#{p+q}k+#{p*q}=0$: түбірлері $#{p}$, $#{q}$."],"ans":"$#{max(p, q)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m22-4-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m22-4-t11">11. Бас қисықтықтарды табу</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Бет $x(u,v)$.","steps":["$E,F,G$-ны $x_u,x_v$ арқылы табамыз.","Бірлік нормаль $n$.","$e,f,g$ - екінші туындылардың $n$-мен скаляр көбейтіндісі.","$K=\\frac{eg-f^2}{EG-F^2}$, $H=\\frac{eG-2fF+gE}{2(EG-F^2)}$.","$k_{1,2}=H\\pm\\sqrt{H^2-K}$."],"hint":"Теорема 4.2.","sol":{"ans":"$k_1$, $k_2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m22-4-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m22-4-t12">12. Қадамдық шешім: Эйлер формуласы</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Нормаль қисықтық $k_n(\\theta)=k_1\\cos^2\\theta+k_2\\sin^2\\theta$ екенін дәлелдеңіз.","steps":["Жанама жазықтықта бірінші форма бойынша ортонормаланған базис: $\\mathcal I=I_2$.","$\\mathcal{II}$ симметриялы - спектрлік теорема: ортонормаланған меншікті векторлар $e_1,e_2$, мәндері $k_1,k_2$.","$w=\\cos\\theta\\,e_1+\\sin\\theta\\,e_2$, $|w|=1$.","$k_n=II(w,w)=k_1\\cos^2\\theta+k_2\\sin^2\\theta$."],"ans":"Теорема 4.3."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Гаусс қисықтығы картографияда (картаның бұрмалануы сөзсіз), сәулет пен инженерияда (теріс қисықтықты қабықшалар - градирнялар, Шухов мұнарасы - қатты әрі жеңіл), компьютерлік графикада (беттің қисықтығы бойынша сегментация және бетті «жаю»), биологияда (жасуша мембраналары, $H$ - Хельфрих энергиясы) және жалпы салыстырмалылықта (кеңістік-уақыттың қисықтығы) қолданылады.</p>
+      <p><b>Мини-жоба: «Қисықтық картасы».</b> Параметрленген беттер үшін $E,F,G,e,f,g$-ны сандық дифференциалдаумен есептеп, $K$ мен $H$-ты табамыз; торда $K$-ның таңбасын картаға түсіреміз, Theorema Egregium формуласын ($F=0$) екінші форманы қолданбай тексереміз.</p>
+<pre data-lang="python"><code class="language-python">import math
+
+def sub(a, b):
+    return [x - y for x, y in zip(a, b)]
+
+def dot(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+def cross(a, b):
+    return [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]
+
+def curvatures(X, u, v, h=1e-4):
+    xu = [c / (2 * h) for c in sub(X(u + h, v), X(u - h, v))]
+    xv = [c / (2 * h) for c in sub(X(u, v + h), X(u, v - h))]
+    x0 = X(u, v)
+    xuu = [(a - 2 * b + c) / h ** 2 for a, b, c in zip(X(u + h, v), x0, X(u - h, v))]
+    xvv = [(a - 2 * b + c) / h ** 2 for a, b, c in zip(X(u, v + h), x0, X(u, v - h))]
+    xuv = [(a - b - c + d) / (4 * h * h) for a, b, c, d in zip(X(u + h, v + h), X(u + h, v - h), X(u - h, v + h), X(u - h, v - h))]
+    nn = cross(xu, xv)
+    n = [c / math.sqrt(dot(nn, nn)) for c in nn]
+    E, F, G = dot(xu, xu), dot(xu, xv), dot(xv, xv)
+    e, f, g = dot(xuu, n), dot(xuv, n), dot(xvv, n)
+    K = (e * g - f * f) / (E * G - F * F)
+    H = (e * G - 2 * f * F + g * E) / (2 * (E * G - F * F))
+    return K, H
+
+R, r = 3.0, 1.0
+torus = lambda u, v: [(R + r * math.cos(v)) * math.cos(u), (R + r * math.cos(v)) * math.sin(u), r * math.sin(v)]
+sphere = lambda u, v: [2 * math.cos(v) * math.cos(u), 2 * math.cos(v) * math.sin(u), 2 * math.sin(v)]
+saddle = lambda u, v: [u, v, u * v]
+print("сфера R = 2: K ≈", round(curvatures(sphere, 0.3, 0.4)[0], 4), "(1/4)")
+print("ер тәрізді бет (0, 0): K, H ≈", [round(c, 4) + 0.0 for c in curvatures(saddle, 0, 0)])
+for v in (0, math.pi / 2, math.pi):
+    print(f"тор v = {v:.3f}: K ≈ {round(curvatures(torus, 0.2, v)[0], 4) + 0.0:.4f}, формула {math.cos(v) / (r * (R + r * math.cos(v))):.4f}")
+
+row = ""
+for k in range(24):
+    v = -math.pi + 2 * math.pi * k / 24
+    K = curvatures(torus, 0.0, v)[0]
+    row += "+" if K &gt; 1e-6 else ("-" if K &lt; -1e-6 else "0")
+print("тордағы K таңбасы (v: −π → π):", row)
+
+def egregium(Ef, Gf, u, v, h=1e-4):
+    def sq(a, b):
+        return math.sqrt(Ef(a, b) * Gf(a, b))
+    Ev = lambda a, b: (Ef(a, b + h) - Ef(a, b - h)) / (2 * h)
+    Gu = lambda a, b: (Gf(a + h, b) - Gf(a - h, b)) / (2 * h)
+    A = lambda a, b: Ev(a, b) / sq(a, b)
+    B = lambda a, b: Gu(a, b) / sq(a, b)
+    Av = (A(u, v + h) - A(u, v - h)) / (2 * h)
+    Bu = (B(u + h, v) - B(u - h, v)) / (2 * h)
+    return -(Av + Bu) / (2 * sq(u, v))
+
+print("Egregium, тор (тек E, G):", round(egregium(lambda u, v: (R + r * math.cos(v)) ** 2, lambda u, v: r * r, 0.2, 0.0), 4))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Тордағы $K$-ның таңба картасында «$+$» мен «$-$» аймақтары неше нүктеден тұрады? $K=0$ шеңберлері қайда?</li>
+        <li>Egregium функциясын сфера метрикасы ($E=4\cos^2v$, $G=4$) үшін қолданыңыз. $\frac14$ шыға ма? Бұл есептеуде беттің кеңістіктегі пішіні қолданылмағанына назар аударыңыз.</li>
+        <li>Катеноид $(\cosh v\cos u,\cosh v\sin u,v)$ үшін $H$-ты есептеңіз. $H=0$ - катеноид минимал бет (сабын қабыршағы).</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Екінші форма</td><td>$e=x_{uu}\cdot n$, $f=x_{uv}\cdot n$, $g=x_{vv}\cdot n$</td><td>иілу</td></tr>
+        <tr><td>Нормаль қисықтық</td><td>$k_n=\frac{II}{I}$</td><td>Мёнье: $\kappa\cos\varphi=k_n$</td></tr>
+        <tr><td>Бас қисықтықтар</td><td>$\mathcal I^{-1}\mathcal{II}$ меншікті мәндері</td><td>бағыттары перпендикуляр</td></tr>
+        <tr><td>$K$ және $H$</td><td>$K=\frac{eg-f^2}{EG-F^2}$, $H=\frac{eG-2fF+gE}{2(EG-F^2)}$</td><td>эллипстік/гиперболалық</td></tr>
+        <tr><td>Эйлер</td><td>$k_n=k_1\cos^2\theta+k_2\sin^2\theta$</td><td>спектрлік теорема</td></tr>
+        <tr><td>Egregium</td><td>$K$ тек метрикаға тәуелді</td><td>сфераның изометриялы картасы жоқ</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m22-4-self">
+        <li><input type="checkbox"> <span>Мен екінші квадраттық форманың коэффициенттерін есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен нормаль қисықтық пен Мёнье теоремасын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бас, Гаусс және орташа қисықтықтарды есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен нүктелерді эллипстік, гиперболалық, параболалық деп жіктей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Эйлер формуласын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Theorema Egregium-ды тұжырымдап, оның картографиялық салдарын түсіндіре аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="a">
+<p class="q-text">1. K =</p>
+<label><input type="radio" value="a"> k₁k₂</label>
+<label><input type="radio" value="b"> k₁ + k₂</label>
+<label><input type="radio" value="c"> (k₁ + k₂)/2</label>
+<label><input type="radio" value="d"> k₁ − k₂</label>
+<p class="explain">Анықтама.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">2. Радиусы R сфераның K:</p>
+<label><input type="radio" value="a"> 1/R</label>
+<label><input type="radio" value="b"> R²</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> 1/R²</label>
+<p class="explain">k₁ = k₂ = 1/R.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">3. Цилиндрдің K:</p>
+<label><input type="radio" value="a"> 1/R</label>
+<label><input type="radio" value="b"> 1/R²</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> −1</label>
+<p class="explain">k₂ = 0.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. z = xy, (0, 0): K =</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> −1</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> 2</label>
+<p class="explain">f_xx f_yy − f_xy².</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. Theorema Egregium:</p>
+<label><input type="radio" value="a"> K тек метрикаға тәуелді</label>
+<label><input type="radio" value="b"> H тек метрикаға тәуелді</label>
+<label><input type="radio" value="c"> k₁ = k₂</label>
+<label><input type="radio" value="d"> K = 0</label>
+<p class="explain">Гаусс.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">6. Тордың ішкі экваторында K:</p>
+<label><input type="radio" value="a"> > 0</label>
+<label><input type="radio" value="b"> = 0</label>
+<label><input type="radio" value="c"> анықталмаған</label>
+<label><input type="radio" value="d"> < 0</label>
+<p class="explain">cos π = −1.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">7. Эйлер формуласы:</p>
+<label><input type="radio" value="a"> k₁ + k₂</label>
+<label><input type="radio" value="b"> k₁sin θ</label>
+<label><input type="radio" value="c"> k₁cos²θ + k₂sin²θ</label>
+<label><input type="radio" value="d"> √(k₁k₂)</label>
+<p class="explain">Теорема 4.3.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. Сфераның изометриялы картасы жоқ, себебі:</p>
+<label><input type="radio" value="a"> сфера компакт</label>
+<label><input type="radio" value="b"> K сфера ≠ K жазықтық</label>
+<label><input type="radio" value="c"> сфера байланысты</label>
+<label><input type="radio" value="d"> H ≠ 0</label>
+<p class="explain">Egregium.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=diffgeom">Differential Geometry емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-139.html"><small>Алдыңғы</small>← Differential Geometry · 3-сабақ: Беттер және бірінші квадраттық форма</a>

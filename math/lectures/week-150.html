@@ -6,13 +6,14 @@
   <title>Math Stochastic Processes · 3-сабақ: Марков тізбектерінің ұзақ мерзімді тәртібі - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Stochastic Processes · 3-сабақ: Марков тізбектерінің ұзақ мерзімді тәртібі - CS50 қазақша">
-  <meta property="og:description" content="Математика, Stochastic Processes · 3-сабақ: Марков тізбектерінің ұзақ мерзімді тәртібі. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Классификация, стационар үлестірім, эргодтық теорема.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-150.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Stochastic Processes · 3-сабақ: Марков тізбектерінің ұзақ мерзімді тәртібі - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-150.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Stochastic Processes · 3-сабақ: Марков тізбектерінің ұзақ мерзімді тәртібі. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Классификация, стационар үлестірім, эргодтық теорема.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,478 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="150">
+    <article class="content math-lesson" style="--sc:#854d0e" id="main">
+      <div class="lecture-head" style="--lc:#854d0e" data-n="150" data-msubj="stochastic" data-glyph="∿">
         <div class="num">Stochastic Processes · 3-сабақ</div>
         <h1>Марков тізбектерінің ұзақ мерзімді тәртібі</h1>
-        <p>Классификация, стационар үлестірім, эргодтық теорема.</p>
+        <p>Ауа райы тізбегінде көп қадамнан кейін бүгінгі ауа райы ұмытылады: ұзақ мерзімде күндердің $\frac56$-сі ашық. Бұл кездейсоқ емес - көптеген Марков тізбектері «тепе-теңдікке» келеді, ал ол тепе-теңдік $\pi=\pi P$ теңдеуімен табылады.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 50 мин</span><span>Есептер ≈ 1 сағ 10 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Бірақ әр тізбек солай емес: кейбіреуі тербеледі (периодты), кейбіреуі бөліктерге бөлінеді (келтірілетін), ал шексіз тізбек «кетіп қалуы» мүмкін (өтпелі). Бұл сабақта күйлерді жіктейміз - қайтарымды және өтпелі, периодты және периодсыз; кездейсоқ жүру тек $p=\frac12$ болғанда бастапқы нүктеге қайтатынын дәлелдейміз; стационар үлестірімді табамыз, егжей-тегжейлі тепе-теңдік әдісін дәлелдейміз және графтағы кездейсоқ жүрудің стационар үлестірімі төбенің дәрежесіне пропорционал екенін көрсетеміз. Жинақталу және эргодтық теоремаларды дәл шарттарымен тұжырымдаймыз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-24">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=stochastic">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Stochastic Processes: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-24">Stochastic Processes</a></span><ol><li><a href="week-148.html" title="Кездейсоқ процестер негіздері">1</a></li><li><a href="week-149.html" title="Марков тізбектері">2</a></li><li><a href="week-150.html" aria-current="page" title="Марков тізбектерінің ұзақ мерзімді тәртібі">3</a></li><li><a href="week-151.html" title="Пуассон процесі">4</a></li><li><a href="week-152.html" title="Броун қозғалысы">5</a></li><li><a href="week-153.html" title="Мартингалдар және қолданыстар">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-24">Stochastic Processes</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Көп Марков тізбектері ұзақ уақытта тепе-теңдікке келеді: $\pi=\pi P$ стационар үлестірімі әр күйде өткізілетін уақыттың үлесін береді; оған тек тербелетін не бөлінген тізбектер ғана жетпейді.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>қатынасатын күйлерді, келтірілмейтін тізбекті, күйдің периодын анықтау және есептеу;</li>
+        <li>қайтарымды және өтпелі күйлерді ажырату, $\sum_np^{(n)}_{ii}$ критерийін дәлелдеу;</li>
+        <li>$\mathbb Z$-дегі кездейсоқ жүрудің тек $p=\frac12$ болғанда қайтарымды екенін дәлелдеу;</li>
+        <li>стационар үлестірімді $\pi=\pi P$ жүйесінен табу; егжей-тегжейлі тепе-теңдікті дәлелдеп, қолдану;</li>
+        <li>жинақталу және эргодтық теоремаларды шарттарымен тұжырымдап, шарттары бұзылғандағы қарсы мысалдарды келтіру;</li>
+        <li>Кац формуласы $m_j=\frac1{\pi_j}$ арқылы орташа қайту уақытын есептеу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Марков тізбектері, Чепмен-Колмогоров, бірінші қадам талдауы (2-сабақ). Кездейсоқ жүру (1-сабақ). Меншікті мәндер (Linear Algebra, 8-сабақ). Геометриялық үлестірім (Probability Theory, 5-сабақ). Қатарлардың жинақталуы, Стирлинг формуласы (Series). Графтар, төбенің дәрежесі (Discrete Mathematics).</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-149.html">Stochastic Processes · 2-сабақ: Марков тізбектері</a></li><li><a href="week-14.html">Linear Algebra · 8-сабақ: Меншікті мәндер мен меншікті векторлар</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: тепе-теңдікті қолмен табу</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">Ауа райы: $P=\begin{pmatrix}0{,}9&amp;0{,}1\\0{,}5&amp;0{,}5\end{pmatrix}$. Ұзақ мерзімде күндердің қанша үлесі жаңбырлы?</p>
+        <ol class="math-steps">
+          <li>Тепе-теңдікте «ашықтан жаңбырға ағыс» = «жаңбырдан ашыққа ағыс»: $\pi_1\cdot0{,}1=\pi_2\cdot0{,}5$.</li>
+          <li>Демек $\pi_1=5\pi_2$. Қосындысы $1$: $6\pi_2=1$, $\pi_2=\frac16$.</li>
+          <li>Тексеру: $\pi P=\left(\frac56\cdot0{,}9+\frac16\cdot0{,}5;\ \frac56\cdot0{,}1+\frac16\cdot0{,}5\right)=\left(\frac56;\frac16\right)$ ✓.</li>
+          <li>Кац формуласы: жаңбырлы күннен келесі жаңбырлы күнге дейін орташа $\frac1{\pi_2}=6$ күн.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Стационар үлестірім - ағыстар теңескен күй. Оны табу үшін $\pi P=\pi$ жүйесін не «ағыстардың теңдігін» шешеміз.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Үлестірімді «құм» деп елестетейік: әр қадамда әр күйдегі құм $p_{ij}$ үлестерімен көршілерге ағады. Стационар үлестірім - ағыс кезінде өзгермейтін құм бөлінісі: әр күйге кіретін құм шығатын құмға тең. Бұл $\pi=\pi P$ теңдеуі.</p>
+      <p>Тербелетін тізбек: $P=\begin{pmatrix}0&amp;1\\1&amp;0\end{pmatrix}$. Құм екі күй арасында кезекпен ауысады - стационар $\left(\frac12,\frac12\right)$ бар, бірақ $\mu_n$ оған жинақталмайды. Периодсыздық - тербеліске тыйым.</p>
+      <p>Қайтарымдылық: мас жүруші үйіне қайта ма? Түзуде - иә (ықтималдығы $1$), бірақ ауытқу болса ($p\ne\frac12$) - дрейф оны алып кетеді. Пойа: жазықтықта да қайтады, ал кеңістікте - жоқ (дәлелсіз). «Мас адам үйін табады, мас құс - таппауы мүмкін».</p>
+      <p>Кац формуласы: ұзақ уақытта $j$ күйінде уақыттың $\pi_j$ үлесін өткізсек, $j$-ге орта есеппен $\frac1{\pi_j}$ қадамда бір рет қайтамыз. Ауа райында жаңбыр $\pi_2=\frac16$ - жаңбырлы күннен келесі жаңбырлы күнге дейін орташа $6$ күн.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · қаладағы адамдар</span>
+        <p>Күн сайын адамдар аудандар арасында белгілі ықтималдықтармен көшеді. Бастапқыда бәрі бір ауданда болса да, бірнеше аптадан кейін аудандардағы халық үлестері тұрақтанады - бастапқы орынға тәуелсіз. Бұл - стационар үлестірім.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · маятник</span>
+        <p>Периодты тізбек ($\begin{pmatrix}0&amp;1\\1&amp;0\end{pmatrix}$) - маятник: ол екі шеткі нүкте арасында тербеле береді, ешқашан тоқтамайды. Уақыттың жартысын әр жақта өткізеді, бірақ «қазір қайда» деген сұрақтың шегі жоқ.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$i\leftrightarrow j$</td><td>қатынасатын күйлер</td><td>бір-біріне жетуге болады</td></tr>
+        <tr><td>$d(i)$</td><td>период</td><td>қайту уақыттарының ЕҮОБ-ы</td></tr>
+        <tr><td>$f_i$</td><td>қайту ықтималдығы</td><td>$i$-ге қайта оралу ықтималдығы</td></tr>
+        <tr><td>$\pi=\pi P$</td><td>стационар үлестірім</td><td>бір қадамнан кейін өзгермейтін үлестірім</td></tr>
+        <tr><td>$\pi_ip_{ij}=\pi_jp_{ji}$</td><td>егжей-тегжейлі тепе-теңдік</td><td>әр жұп арасында ағыстар тең</td></tr>
+        <tr><td>$m_j=\frac1{\pi_j}$</td><td>Кац формуласы</td><td>$j$-ге орташа қайту уақыты</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 3.1 · Күйлерді жіктеу</span>
+        <p>$i\to j$ ($j$-ге жетуге болады), егер қандай да бір $n\ge0$ үшін $p^{(n)}_{ij}&gt;0$. $i\leftrightarrow j$ - <strong>қатынасатын күйлер</strong> (<span class="term-en">communicating states</span>): $i\to j$ және $j\to i$. Бұл эквиваленттік қатынас, кластары - қатынас кластары. Тізбек бір ғана класты болса - <strong>келтірілмейтін</strong> (<span class="term-en">irreducible</span>). $i$ күйінің <strong>периоды</strong> (<span class="term-en">period</span>) $d(i)=\gcd\{n\ge1:p^{(n)}_{ii}&gt;0\}$; $d(i)=1$ болса - <strong>периодсыз</strong> (<span class="term-en">aperiodic</span>).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Күйлер бір-біріне жете алса, бір класта; тізбек бір класты болса - келтірілмейтін; период - қайту мүмкін қадамдар санының ЕҮОБ-ы.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 3.2 · Қайтарымдылық</span>
+        <p>$T_i=\min\{n\ge1:X_n=i\}$ - $i$-ге қайту уақыты, $f_i=P_i(T_i&lt;\infty)$. $f_i=1$ болса, $i$ - <strong>қайтарымды</strong> (<span class="term-en">recurrent</span>), $f_i&lt;1$ болса - <strong>өтпелі</strong> (<span class="term-en">transient</span>). Қайтарымды күйдің орташа қайту уақыты $m_i=E_iT_i$; $m_i&lt;\infty$ болса - оң қайтарымды.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Қайтарымды күйге міндетті түрде қайтамыз, өтпелі күйден біржола кетуіміз мүмкін.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 3.1 · Қайтарымдылық критерийі</span>
+        <p>$i$ қайтарымды $\iff\sum_{n=1}^\infty p^{(n)}_{ii}=\infty$. $i$ өтпелі болса, $i$-ге қайту санының күтімі $\sum_np^{(n)}_{ii}=\frac{f_i}{1-f_i}&lt;\infty$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Күй қайтарымды дәл $n$ қадамда оған қайту ықтималдықтарының қосындысы шексіз болғанда.</p></div>
+      <p><em>Негіздеме.</em> Дәлелдеуде күшті Марков қасиеті қолданылады: тоқтау уақытында тізбек жаңадан басталады (дәлелсіз). Қатынасатын күйлер бірге қайтарымды не бірге өтпелі, және периодтары бірдей (дәлелсіз).</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 3.2 · Түзудегі кездейсоқ жүру</span>
+        <p>$\mathbb Z$-дегі қарапайым кездейсоқ жүру $p=\frac12$ болғанда қайтарымды, $p\ne\frac12$ болғанда өтпелі. Оның периоды $2$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Түзудегі мас жүруші үйіне міндетті түрде қайтады, тек $p=\frac12$ болса; аз ғана ауытқу оны біржола алып кетеді.</p></div>
+      <p><em>Негіздеме.</em> Пойа теоремасы (дәлелсіз): $\mathbb Z^2$-де симметриялы жүру қайтарымды, $\mathbb Z^d$, $d\ge3$, - өтпелі.</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 3.3 · Стационар үлестірім</span>
+        <p>$\pi=(\pi_j)$ - <strong>стационар үлестірім</strong> (<span class="term-en">stationary distribution</span>), егер $\pi_j\ge0$, $\sum_j\pi_j=1$ және $\pi P=\pi$, яғни $\pi_j=\sum_i\pi_ip_{ij}$. $\mu_0=\pi$ болса, әр $n$ үшін $\mu_n=\pi$. Ақырлы тізбекте стационар үлестірім әрдайым бар (дәлелсіз).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Стационар үлестірім - бір қадамнан кейін өзгермейтін ықтималдықтар.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 3.3 · Егжей-тегжейлі тепе-теңдік</span>
+        <p>Егер $\pi_j\ge0$, $\sum\pi_j=1$ және барлық $i,j$ үшін $\pi_ip_{ij}=\pi_jp_{ji}$ болса, $\pi$ - стационар үлестірім. Салдар: байланысты ақырлы графта кездейсоқ жүру (әр қадамда көршілердің біріне бірдей ықтималдықпен) үшін $\pi_v=\frac{\deg v}{2|E|}$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Әр жұп күй арасындағы ағыстар тең болса, үлестірім стационар; графтағы жүруде әр төбенің үлесі оның дәрежесіне пропорционал.</p></div>
+      <p><em>Негіздеме.</em> Кері тұжырым дұрыс емес: стационар үлестірімнің бәрі егжей-тегжейлі тепе-теңдікті қанағаттандырмайды (мысалы, бір бағытта айналатын цикл).</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 3.4 · Жинақталу және эргодтық теоремалар</span>
+        <p>Тізбек ақырлы, келтірілмейтін және периодсыз болсын. Онда (1) стационар үлестірім $\pi$ жалғыз және $\pi_j&gt;0$; (2) әр $i,j$ үшін $p^{(n)}_{ij}\to\pi_j$; (3) $j$-де өткізілген уақыт үлесі $\frac1n\left|\{k&lt;n:X_k=j\}\right|\to\pi_j$ (ықтималдығы $1$); (4) Кац формуласы: $m_j=E_jT_j=\frac1{\pi_j}$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Ақырлы, келтірілмейтін, периодсыз тізбекте тепе-теңдік жалғыз, оған кез келген бастапқы күйден жақындаймыз, уақыт үлестері оған тең (дәлелсіз).</p></div>
+      <p><em>Негіздеме.</em> (1), (3), (4) периодсыздықсыз да дұрыс; (2) үшін периодсыздық қажет. Теореманы дәлелсіз келтіреміз (дәлелдеу - түйістіру әдісі).</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 3.1 · Период</span>
+        <div class="math-fbody">$$d(i)=\gcd\{n\ge1:\ p^{(n)}_{ii}&gt;0\}$$</div>
+        <p class="math-fnote">$d=1$ - периодсыз.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 3.2 · Қайтарымдылық критерийі</span>
+        <div class="math-fbody">$$\sum_{n\ge1}p^{(n)}_{ii}=\infty\iff f_i=1$$</div>
+        <p class="math-fnote">Өтпелі: $\frac{f_i}{1-f_i}$.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 3.3 · Стационар үлестірім</span>
+        <div class="math-fbody">$$\pi P=\pi,\quad\sum_j\pi_j=1$$</div>
+        <p class="math-fnote">Сол жақ меншікті вектор, $\lambda=1$.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 3.4 · Егжей-тегжейлі тепе-теңдік</span>
+        <div class="math-fbody">$$\pi_ip_{ij}=\pi_jp_{ji}$$</div>
+        <p class="math-fnote">Жеткілікті шарт.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 3.5 · Графтағы жүру</span>
+        <div class="math-fbody">$$\pi_v=\frac{\deg v}{2|E|}$$</div>
+        <p class="math-fnote">Байланысты граф.</p></div>
+      <div class="math-formula" id="f-6"><span class="math-fname">Формула 3.6 · Кац формуласы</span>
+        <div class="math-fbody">$$m_j=E_jT_j=\frac1{\pi_j}$$</div>
+        <p class="math-fnote">Келтірілмейтін ақырлы тізбек.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Ұзақ мерзімді тәртіпті зерттеу жоспары: (1) өту графын салып, қатынас кластарын табыңыз - тізбек келтірілмей ме? (2) периодты табыңыз: бір күйде $p_{ii}&gt;0$ болса, келтірілмейтін тізбек периодсыз; (3) $\pi$-ді табыңыз: алдымен егжей-тегжейлі тепе-теңдікті байқап көріңіз (жүру, туу-өлу тізбектері), болмаса $\pi P=\pi$, $\sum\pi=1$ жүйесін шешіңіз; (4) теорема шарттары орындалса: $p^{(n)}_{ij}\to\pi_j$, $m_j=\frac1{\pi_j}$.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>(1) Периодты тізбек: $\begin{pmatrix}0&amp;1\\1&amp;0\end{pmatrix}$ - $\pi=\left(\frac12,\frac12\right)$ бар және жалғыз, бірақ $P^n$ жинақталмайды. (2) Келтірілетін тізбек: $P=I$ - кез келген үлестірім стационар, жалғыздық жоқ. (3) Шексіз тізбек: $\mathbb Z$-дегі симметриялы жүру қайтарымды, бірақ стационар үлестірімі жоқ ($m_i=\infty$, нөлдік қайтарымды; дәлелсіз). (4) $\pi$ - $P$-ның сол жақ меншікті векторы, оң жақ емес: $P\mathbf1=\mathbf1$ әрдайым орындалады және ештеңе бермейді.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $P=\begin{pmatrix}0{,}5&amp;0{,}5\\0{,}5&amp;0{,}5\end{pmatrix}$ үшін $\pi$?</span></summary>
+        <p>$\left(\frac12,\frac12\right)$ - және тізбек оған бір қадамда жетеді.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> Үшбұрыш графта кездейсоқ жүрудің стационар үлестірімі қандай?</span></summary>
+        <p>Бірқалыпты $\left(\frac13,\frac13,\frac13\right)$: барлық төбенің дәрежесі $2$.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> Келтірілмейтін тізбекте бір күйде $p_{ii}&gt;0$. Периоды қандай?</span></summary>
+        <p>$1$: $i$-ге бір қадамда қайтуға болады, ал келтірілмейтін тізбекте периодтар бірдей.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> $\pi_j=0{,}2$ болса, $j$-ге орташа неше қадамда қайтамыз?</span></summary>
+        <p>$\frac1{0{,}2}=5$.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: қайтарымдылық критерийі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 3.1-ді дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Қайтулар санының күтімін екі тәсілмен есептейміз: ықтималдықтардың қосындысы ретінде және геометриялық үлестірім ретінде.</p>
+          <ol class="math-steps">
+            <li>$N_i=\sum_{n\ge1}\mathbf 1\{X_n=i\}$ - $i$-ге қайту саны. Күтімнің сызықтылығы: $E_iN_i=\sum_{n\ge1}P_i(X_n=i)=\sum_np^{(n)}_{ii}$.</li>
+            <li>Күшті Марков қасиеті: әр қайтудан кейін тізбек $i$-ден жаңадан басталады, сондықтан $P_i(N_i\ge k)=f_i^k$.</li>
+            <li>$f_i=1$: $P_i(N_i=\infty)=1$, демек $E_iN_i=\infty$.</li>
+            <li>$f_i&lt;1$: $E_iN_i=\sum_{k\ge1}P_i(N_i\ge k)=\sum_kf_i^k=\frac{f_i}{1-f_i}&lt;\infty$. Екі жағдай бір-бірін жоққа шығарады - критерий дәлелденді. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: түзудегі кездейсоқ жүру</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 3.2-ні дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $p^{(2n)}_{00}$-ді биномдық коэффициентпен жазып, Стирлинг формуласымен бағалаймыз; $\frac1{\sqrt n}$ қатары жинақсыз.</p>
+          <ol class="math-steps">
+            <li>$0$-ге тек жұп қадамда қайтуға болады - период $2$. $p^{(2n)}_{00}=\binom{2n}n(pq)^n$ (1-сабақ, Теорема 1.3).</li>
+            <li>Стирлинг формуласы: $\binom{2n}n\sim\frac{4^n}{\sqrt{\pi n}}$, демек $p^{(2n)}_{00}\sim\frac{(4pq)^n}{\sqrt{\pi n}}$.</li>
+            <li>$p=\frac12$: $4pq=1$, $\sum\frac1{\sqrt{\pi n}}=\infty$ - қайтарымды (Теорема 3.1).</li>
+            <li>$p\ne\frac12$: $4pq=1-(p-q)^2&lt;1$, қатар геометриялық қатармен салыстырғанда жинақты - өтпелі. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: егжей-тегжейлі тепе-теңдік</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 3.3-ті дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $\pi P$-ның $j$-ші координатасындағы әр мүшені тепе-теңдік шартымен ауыстырып, жолдың қосындысы $1$ екенін қолданамыз.</p>
+          <ol class="math-steps">
+            <li>$(\pi P)_j=\sum_i\pi_ip_{ij}$. Шарт бойынша $\pi_ip_{ij}=\pi_jp_{ji}$.</li>
+            <li>$\sum_i\pi_ip_{ij}=\sum_i\pi_jp_{ji}=\pi_j\sum_ip_{ji}=\pi_j\cdot1$ (жол қосындысы).</li>
+            <li>Графтағы жүру: $p_{uv}=\frac1{\deg u}$ ($u\sim v$). $\pi_u=c\deg u$ алсақ, $\pi_up_{uv}=c=\pi_vp_{vu}$ - симметриялы.</li>
+            <li>$\sum_u\deg u=2|E|$ (әр қабырға екі рет есептеледі), сондықтан $c=\frac1{2|E|}$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: екі күйлі тізбектің стационар үлестірімі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $P=\begin{pmatrix}1-a&amp;a\\b&amp;1-b\end{pmatrix}$ үшін $\pi$ табу.</p>
+          <p class="mx-idea"><b>Идея:</b> Екі күйлі тізбекте тепе-теңдік шарты бір ғана теңдеу береді; нормалау шартымен бірге $\pi$ анықталады.</p>
+          <ol class="math-steps">
+            <li>Егжей-тегжейлі тепе-теңдік: $\pi_1a=\pi_2b$ (екі күйлі тізбекте ол $\pi P=\pi$-мен пара-пар).</li>
+            <li>$\pi_1+\pi_2=1$: $\pi_1=\frac b{a+b}$, $\pi_2=\frac a{a+b}$.</li>
+            <li>Бұл 2-сабақтағы $\lim p^{(n)}_{11}=\frac b{a+b}$-мен сәйкес ✓.</li>
+            <li>Кац: $m_1=\frac{a+b}b$. Ауа райы ($a=0{,}1$, $b=0{,}5$): $\pi=\left(\frac56,\frac16\right)$, $m_2=6$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5">
+        <summary>Қорытып шығару 5: периодты тізбек - қарсы мысал</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $P=\begin{pmatrix}0&amp;1\\1&amp;0\end{pmatrix}$.</p>
+          <p class="mx-idea"><b>Идея:</b> $P^n$ кезекпен $I$ және $P$ болады - шек жоқ, бірақ $\pi=\left(\frac12,\frac12\right)$ бар және жалғыз.</p>
+          <ol class="math-steps">
+            <li>$P^2=I$, демек $P^n=I$ ($n$ жұп) және $P^n=P$ ($n$ тақ).</li>
+            <li>$p^{(n)}_{11}$: $1,0,1,0,\dots$ - шегі жоқ.</li>
+            <li>$\pi P=\pi\iff\pi_1=\pi_2$: $\pi=\left(\frac12,\frac12\right)$ - жалғыз.</li>
+            <li>Уақыт үлесі $\frac12$-ге жинақталады және $m_1=2=\frac1{\pi_1}$ ✓ - (3), (4) орындалады, ал (2) жоқ: $d=2$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Ауа райы</h3>
+        <p class="math-problem">$P=\begin{pmatrix}0{,}9&amp;0{,}1\\0{,}5&amp;0{,}5\end{pmatrix}$: $\pi$ және $m_2$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\pi_1\cdot0{,}1=\pi_2\cdot0{,}5\Rightarrow\pi_1=5\pi_2$.</li>
+          <li><b>2-қадам.</b> $\pi_1+\pi_2=1$: $\pi=\left(\frac56,\frac16\right)$.</li>
+          <li><b>3-қадам.</b> Кац: жаңбырлы күннен келесі жаңбырлы күнге дейін орташа $m_2=6$ күн.</li>
+          <li><b>4-қадам.</b> Тексеру: $\pi P=\left(\frac56\cdot0{,}9+\frac16\cdot0{,}5;\ \frac56\cdot0{,}1+\frac16\cdot0{,}5\right)=\left(\frac56,\frac16\right)$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\pi=\left(\frac56,\frac16\right)$, $m_2=6$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Үш күйлі тізбек</h3>
+        <p class="math-problem">$P=\begin{pmatrix}0{,}5&amp;0{,}5&amp;0\\0{,}25&amp;0{,}5&amp;0{,}25\\0&amp;0{,}5&amp;0{,}5\end{pmatrix}$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Келтірілмейтін ($1\leftrightarrow2\leftrightarrow3$), $p_{11}&gt;0$ - периодсыз.</li>
+          <li><b>2-қадам.</b> Егжей-тегжейлі тепе-теңдік: $\pi_1\cdot0{,}5=\pi_2\cdot0{,}25$, $\pi_2\cdot0{,}25=\pi_3\cdot0{,}5$.</li>
+          <li><b>3-қадам.</b> $\pi_2=2\pi_1$, $\pi_3=\pi_1$: $\pi=\left(\frac14,\frac12,\frac14\right)$.</li>
+          <li><b>4-қадам.</b> Теорема 3.4: $p^{(n)}_{13}\to\frac14$, ал $1$-ден бастағанда $1$-ге орташа $4$ қадамда қайтамыз.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\left(\frac14,\frac12,\frac14\right)$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Графтағы жүру</h3>
+        <p class="math-problem">Жұлдыз граф: орталық $c$ және $4$ жапырақ.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $|E|=4$, $\deg c=4$, әр жапырақтың дәрежесі $1$.</li>
+          <li><b>2-қадам.</b> $\pi_c=\frac4{8}=\frac12$, әр жапырақ $\frac18$.</li>
+          <li><b>3-қадам.</b> Кац: орталыққа орташа $2$ қадамда қайтамыз - иә, әр жапырақтан бірден орталыққа ораламыз.</li>
+          <li><b>4-қадам.</b> Бірақ тізбектің периоды $2$ (орталық - жапырақ - орталық): $\pi$ жалғыз, бірақ $p^{(n)}_{cc}$ жинақталмайды ($1,0,1,0,\dots$).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\pi_c=\frac12$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Кездейсоқ жүрудің қайтуы</h3>
+        <p class="math-problem">$\mathbb Z$-де $p=0{,}6$ жүру: $0$-ге қайту саны.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $4pq=0{,}96$; $p^{(2n)}_{00}\approx\frac{0{,}96^n}{\sqrt{\pi n}}$ - қатар жинақты, күй өтпелі.</li>
+          <li><b>2-қадам.</b> Қайту ықтималдығы $f_0=1-|p-q|=0{,}8$ (белгілі формула, мұнда дәлелсіз).</li>
+          <li><b>3-қадам.</b> Қайтулардың орташа саны $\frac{f_0}{1-f_0}=4$.</li>
+          <li><b>4-қадам.</b> Демек жүруші орташа $4$ рет қайтып, сосын біржола кетеді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Өтпелі; орташа $4$ қайту.</p></div>
+      <div class="math-example" id="ex-5"><h3>Мысал 5. Жалғыздықтың бұзылуы</h3>
+        <p class="math-problem">$P=\begin{pmatrix}1&amp;0&amp;0\\0{,}3&amp;0{,}4&amp;0{,}3\\0&amp;0&amp;1\end{pmatrix}$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $1$ және $3$ - жұтатын, $2$ - өтпелі. Қатынас кластары: $\{1\}$, $\{2\}$, $\{3\}$ - келтірілетін.</li>
+          <li><b>2-қадам.</b> $(1,0,0)$ және $(0,0,1)$ - екеуі де стационар; олардың кез келген дөңес комбинациясы да.</li>
+          <li><b>3-қадам.</b> $p^{(n)}_{21}\to\frac12$, бірақ $p^{(n)}_{11}=1$ - шек бастапқы күйге тәуелді.</li>
+          <li><b>4-қадам.</b> Демек келтірілмеушілік шарты жалғыздық үшін қажет.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Шексіз көп стационар үлестірім.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$P\pi^{\top}=\pi^{\top}$ шешу</span> → <span class="math-good">$\pi P=\pi$ (сол жақ вектор)</span><br>Неге қате: $P\mathbf1=\mathbf1$ ештеңе бермейді.</li>
+        <li><span class="math-bad">Стационар бар болса, $P^n$ жинақталады</span> → <span class="math-good">периодсыздық керек</span><br>Неге қате: $\begin{pmatrix}0&amp;1\\1&amp;0\end{pmatrix}$.</li>
+        <li><span class="math-bad">$\sum\pi_j=1$ шартын ұмыту</span> → <span class="math-good">$\pi P=\pi$ шешімдері - бір түзу</span><br>Неге қате: Нормалау.</li>
+        <li><span class="math-bad">Қайтарымды $\Rightarrow$ стационар үлестірім бар</span> → <span class="math-good">шексіз тізбекте нөлдік қайтарымдылық</span><br>Неге қате: $\mathbb Z$-дегі жүру.</li>
+        <li><span class="math-bad">Графтағы жүруде $\pi$ бірқалыпты</span> → <span class="math-good">$\pi_v\propto\deg v$</span><br>Неге қате: Жұлдыз граф.</li>
+        <li><span class="math-bad">Кац: $m_j=\pi_j$</span> → <span class="math-good">$m_j=\frac1{\pi_j}$</span><br>Неге қате: Жиі күйге тез қайтамыз.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Түзудегі жүру: 0-ге қайту ықтималдығы p₀₀⁽²ⁿ⁾ ≈ (4pq)ⁿ/√(πn)" data-config='{"fns": [{"f": "(4*p*(1 - p))^x/sqrt(pi*x)", "label": "p ықтималдықпен жүру"}, {"f": "1/sqrt(pi*x)", "label": "p = ½: 1/√(πn)", "color": 1, "dash": [5, 4]}], "params": [{"n": "p", "min": 0.5, "max": 0.9, "step": 0.02, "v": 0.6}], "view": [1, 60, 0, 0.6]}'></div>
+      <p><b>Бақылаңыз:</b> $p=\frac12$ болғанда $\frac1{\sqrt{\pi n}}$ баяу кемиді - қосындысы шексіз, жүруші шексіз көп рет қайтады. $p$ сәл ғана $\frac12$-ден ауытқыса, $(4pq)^n$ көбейткіші экспоненциалды кемиді - қосынды ақырлы, күй өтпелі.</p>
+      <div class="math-viz" data-viz="graph" data-title="Екі күйлі тізбектің стационар үлестірімі: a өзгергенде" data-config='{"fns": [{"f": "b/(x + b)", "label": "π₁ = b/(a + b)"}, {"f": "x/(x + b)", "label": "π₂ = a/(a + b)", "color": 1}, {"f": "(x + b)/b", "label": "Кац: m₁ = 1/π₁", "color": 2, "dash": [5, 4]}], "params": [{"n": "b", "min": 0.05, "max": 1, "step": 0.05, "v": 0.5}], "view": [0, 1, 0, 3]}'></div>
+      <p><b>Бақылаңыз:</b> Көлденең ось - $a=p_{12}$. $a$ өскен сайын тізбек 1-күйден жиі кетеді: $\pi_1$ кемиді, ал 1-күйге қайтудың орташа уақыты $m_1=\frac1{\pi_1}$ өседі. $a=b$ болғанда $\pi=\left(\frac12,\frac12\right)$.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m24-3-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m24-3-t1">1. Ауа райы</h3></div>
+        <p>$P=\begin{pmatrix}0{,}9&amp;0{,}1\\0{,}5&amp;0{,}5\end{pmatrix}$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\pi_1$","a":"5/6","v":"Rational(1, 2)/(Rational(1, 10) + Rational(1, 2))","hint":"$\\frac b{a+b}$.","sol":{"steps":["$\\frac{0{,}5}{0{,}6}$."],"ans":"$\\frac56$"}},{"q":"$m_1=E_1T_1$","a":"6/5","v":"(Rational(1, 10) + Rational(1, 2))/Rational(1, 2)","hint":"$\\frac1{\\pi_1}$.","sol":{"steps":["$\\frac65$."],"ans":"$\\frac65$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m24-3-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m24-3-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbb Z$-дегі симметриялы жүру қайтарымды.","a":true,"e":"$\\sum\\frac1{\\sqrt{\\pi n}}=\\infty$.","hint":"Теорема 3.2."},{"q":"Стационар үлестірім бар болса, $P^n$ әрдайым жинақталады.","a":false,"e":"Периодты тізбек.","hint":"$\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$."},{"q":"Егжей-тегжейлі тепе-теңдік стационарлық үшін жеткілікті.","a":true,"e":"Теорема 3.3.","hint":"Жол қосындысы."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m24-3-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m24-3-t3">3. Период</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbb Z$-дегі қарапайым жүрудің периоды:","o":["$2$","$1$","$\\infty$","$4$"],"a":0,"e":"Тек жұп қадамда қайтады.","hint":"$S_n$ жұптылығы."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m24-3-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-3-t4">4. Үш күйлі тізбек</h3></div>
+        <p>$P=\begin{pmatrix}0{,}5&amp;0{,}5&amp;0\\0{,}25&amp;0{,}5&amp;0{,}25\\0&amp;0{,}5&amp;0{,}5\end{pmatrix}$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\pi_2$","a":"1/2","v":"Rational(1, 2)","hint":"$\\pi_2=2\\pi_1=2\\pi_3$.","sol":{"steps":["$\\pi_1+2\\pi_1+\\pi_1=1$."],"ans":"$\\frac12$"}},{"q":"$m_1$","a":4,"v":"1/Rational(1, 4)","hint":"Кац.","sol":{"steps":["$\\frac1{1/4}$."],"ans":"$4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m24-3-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-3-t5">5. Графтағы жүру</h3></div>
+        <p>Жол граф $1-2-3-4$ (3 қабырға).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\pi_2$","a":"1/3","v":"Rational(2, 6)","hint":"$\\frac{\\deg v}{2|E|}$.","sol":{"steps":["$\\frac26$."],"ans":"$\\frac13$"}},{"q":"$1$-ге орташа қайту уақыты $m_1$","a":6,"v":"6/1","hint":"$\\frac{2|E|}{\\deg1}$.","sol":{"steps":["$\\pi_1=\\frac16$."],"ans":"$6$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m24-3-num6">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m24-3-t6">6. Өтпелі жүру</h3></div>
+        <p>$\mathbb Z$-де $p=0{,}6$; $0$-ге қайту ықтималдығы $f_0=1-|p-q|$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$f_0$","a":0.8,"v":"1 - abs(Rational(6, 10) - Rational(4, 10))","hint":"$1-0{,}2$.","sol":{"steps":["$|0{,}6-0{,}4|=0{,}2$."],"ans":"$0{,}8$"}},{"q":"Қайтулардың орташа саны","a":4,"v":"Rational(8, 10)/(1 - Rational(8, 10))","hint":"$\\frac f{1-f}$.","sol":{"steps":["$\\frac{0{,}8}{0{,}2}$."],"ans":"$4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m24-3-exp7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-3-t7">7. Стационар үлестірім</h3></div>
+        <p>$b=\frac12$ екі күйлі тізбек: $\pi_1$-ді $a$ арқылы ($a$-ны $x$ деп).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\pi_1=?$","a":"1/(2*x+1)","v":"Rational(1, 2)/(x + Rational(1, 2))","hint":"$\\frac b{a+b}$.","sol":{"steps":["$\\frac{1/2}{a+1/2}$."],"ans":"$\\frac1{2a+1}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m24-3-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-3-t8">8. Тізбек - қасиет</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Тізбек - оның ерекшелігі.","pairs":[["[[0, 1], [1, 0]]","периоды 2, Pⁿ жинақталмайды"],["P = I (3×3)","кез келген үлестірім стационар"],["ℤ-дегі жүру, p = 0.6","өтпелі"],["[[0.9, 0.1], [0.5, 0.5]]","π = (5/6, 1/6), Pⁿ жинақталады"]],"hint":"Қарсы мысалдар.","sol":{"steps":["Периодтылық, келтірілу, өтпелілік."]},"e":"Әр шарт маңызды."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m24-3-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-3-t9">9. Параметрлік: стационар үлестірім</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,9]},"b":{"int":[1,9]}},"type":"num","q":"$P=\\begin{pmatrix}1-0.#{a}&0.#{a}\\\\0.#{b}&1-0.#{b}\\end{pmatrix}$. $\\pi_1=?$","a":"b/(a + b)","v":"Rational(int(b), int(a) + int(b))","hint":"$\\pi_1a=\\pi_2b$.","sol":{"steps":["$\\frac{0.#{b}}{0.#{a}+0.#{b}}$."],"ans":"$#{b/(a+b)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m24-3-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m24-3-t10">10. Параметрлік: жол графта қайту</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"n":{"int":[3,12]}},"type":"num","q":"$#{n}$ төбелі жол графта ($1-2-\\dots-#{n}$) кездейсоқ жүру. Шеткі $1$ төбеге орташа қайту уақыты?","a":"2*(n - 1)","v":"2*(int(n) - 1)","hint":"$|E|=n-1$, $\\deg1=1$, $m_1=\\frac{2|E|}{\\deg1}$.","sol":{"steps":["$\\pi_1=\\frac1{2(#{n}-1)}$."],"ans":"$#{2*(n-1)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m24-3-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m24-3-t11">11. Графтағы жүрудің стационар үлестірімі</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\pi_v=\\frac{\\deg v}{2|E|}$.","steps":["$p_{uv}=\\frac1{\\deg u}$, $u\\sim v$.","$\\pi_u=c\\deg u$ деп болжаймыз.","$\\pi_up_{uv}=c=\\pi_vp_{vu}$ - егжей-тегжейлі тепе-теңдік.","Теорема 3.3 бойынша $\\pi$ стационар.","$\\sum\\deg u=2|E|$, демек $c=\\frac1{2|E|}$."],"hint":"Теорема 3.3.","sol":{"ans":"$\\frac{\\deg v}{2|E|}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m24-3-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m24-3-t12">12. Қадамдық шешім: жүрудің қайтарымдылығы</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$\\mathbb Z$-дегі симметриялы жүру қайтарымды екенін дәлелдеңіз.","steps":["$p^{(2n)}_{00}=\\binom{2n}n4^{-n}$.","Стирлинг: $\\binom{2n}n\\sim\\frac{4^n}{\\sqrt{\\pi n}}$.","$p^{(2n)}_{00}\\sim\\frac1{\\sqrt{\\pi n}}$, ал $\\sum\\frac1{\\sqrt n}=\\infty$.","Теорема 3.1: $\\sum p^{(n)}_{00}=\\infty\\Rightarrow$ қайтарымды."],"ans":"Қайтарымды."}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m24-3-cho13">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-3-t13">13. Жинақталу шарттары</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Ақырлы тізбекте $p^{(n)}_{ij}\\to\\pi_j$ болуы үшін жеткілікті шарт:","o":["келтірілмейтін және периодсыз","тек келтірілмейтін","тек периодсыз","стационар үлестірімнің бар болуы"],"a":0,"e":"Теорема 3.4.","hint":"Екі қарсы мысал: периодты және $P=I$."}]}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Стационар үлестірім - PageRank-тың (веб-беттің маңыздылығы - кездейсоқ серфердің стационар үлестірімі), MCMC әдістерінің (Метрополис алгоритмі егжей-тегжейлі тепе-теңдік арқылы қажетті үлестірімді стационар етеді), кезек теориясының (кезектің ұзақ мерзімді ұзындығы) және статистикалық физиканың (Эренфест моделі, Гиббс үлестірімі) негізі.</p>
+      <p><b>Мини-жоба: «Кішкентай PageRank».</b> $5$ беттен тұратын сілтемелер графын алып, «серфер» тізбегін құрастырамыз ($0{,}85$ ықтималдықпен сілтеме бойынша, $0{,}15$ ықтималдықпен кез келген бетке). $\pi$-ді дәрежелік әдіспен ($\mu\mapsto\mu P$) табамыз, модельдеу арқылы уақыт үлестерін және Кац формуласын тексереміз.</p>
+<pre data-lang="python"><code class="language-python">import random
+
+random.seed(3)
+links = {0: [1, 2], 1: [2], 2: [0], 3: [0, 2], 4: [3, 2]}
+n, damp = 5, 0.85
+P = [[(1 - damp) / n + (damp / len(links[i]) if j in links[i] else 0.0) for j in range(n)] for i in range(n)]
+print("жолдар қосындысы:", [round(sum(r), 10) for r in P])
+
+mu = [1.0 / n] * n
+for _ in range(200):
+    mu = [sum(mu[i] * P[i][j] for i in range(n)) for j in range(n)]
+print("π (дәрежелік әдіс):", [round(x, 4) for x in mu])
+residual = max(abs(sum(mu[i] * P[i][j] for i in range(n)) - mu[j]) for j in range(n))
+print("max |πP − π| =", f"{residual:.2e}")
+
+x, T = 0, 200000
+visits = [0] * n
+returns, last, gaps = 0, 0, []
+for t in range(1, T + 1):
+    r, acc = random.random(), 0.0
+    for j in range(n):
+        acc += P[x][j]
+        if r &lt; acc:
+            x = j
+            break
+    visits[x] += 1
+    if x == 2:
+        gaps.append(t - last)
+        last = t
+print("уақыт үлестері:", [round(v / T, 4) for v in visits])
+print(f"2-бетке орташа қайту ≈ {sum(gaps) / len(gaps):.3f}   Кац 1/π_2 = {1 / mu[2]:.3f}")
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$0{,}85$-ті $1$-ге өзгертіңіз (секірусіз серфер). Тізбек келтірілмейтін бола ма? $3$ және $4$ беттердің ұзақ мерзімдік үлесі қандай болады?</li>
+        <li>Жол граф $1-2-\dots-6$-дағы кездейсоқ жүрудің $\pi$-ін дәрежелік әдіспен табуға тырысыңыз. Неге $\mu_n$ жинақталмайды? «Жалқау» жүру $\frac12(I+P)$ көмектесе ме?</li>
+        <li>Метрополис алгоритмі: $\{1,\dots,10\}$-да мақсатты үлестірім $\pi_k\propto k$. Көрші күйді ұсынып, оны $\min\left(1,\frac{\pi_{\text{жаңа}}}{\pi_{\text{ескі}}}\right)$ ықтималдықпен қабылдаңыз; уақыт үлестері $\frac k{55}$-ке жақындайтынын тексеріңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Жіктеу</td><td>қатынас кластары, период $d(i)$</td><td>келтірілмейтін, периодсыз</td></tr>
+        <tr><td>Қайтарымдылық</td><td>$f_i=1\iff\sum p^{(n)}_{ii}=\infty$</td><td>күшті Марков қасиеті</td></tr>
+        <tr><td>$\mathbb Z$-дегі жүру</td><td>$p=\frac12$ - қайтарымды, $p\ne\frac12$ - өтпелі</td><td>Стирлинг</td></tr>
+        <tr><td>Стационар үлестірім</td><td>$\pi P=\pi$, $\sum\pi=1$</td><td>егжей-тегжейлі тепе-теңдік</td></tr>
+        <tr><td>Графтағы жүру</td><td>$\pi_v=\frac{\deg v}{2|E|}$</td><td>симметриялы ағыс</td></tr>
+        <tr><td>Жинақталу</td><td>ақырлы, келтірілмейтін, периодсыз: $p^{(n)}_{ij}\to\pi_j$</td><td>Кац: $m_j=\frac1{\pi_j}$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m24-3-self">
+        <li><input type="checkbox"> <span>Мен тізбектің қатынас кластары мен периодын таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қайтарымдылық критерийін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен түзудегі жүрудің қашан қайтарымды екенін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $\pi P=\pi$ жүйесін не егжей-тегжейлі тепе-теңдікті шеше аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен графтағы жүрудің стационар үлестірімін таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен жинақталу теоремасының шарттарын және қарсы мысалдарын келтіре аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. Стационар үлестірім теңдеуі:</p>
+<label><input type="radio" value="a"> Pπ = π</label>
+<label><input type="radio" value="b"> P² = P</label>
+<label><input type="radio" value="c"> πP = π, Σπ = 1</label>
+<label><input type="radio" value="d"> π = 0</label>
+<p class="explain">Сол жақ вектор.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. Ауа райы P = [[0.9, 0.1], [0.5, 0.5]], π =</p>
+<label><input type="radio" value="a"> (1/2, 1/2)</label>
+<label><input type="radio" value="b"> (5/6, 1/6)</label>
+<label><input type="radio" value="c"> (0.9, 0.1)</label>
+<label><input type="radio" value="d"> (1/6, 5/6)</label>
+<p class="explain">π₁·0.1 = π₂·0.5.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. ℤ-дегі симметриялы жүру:</p>
+<label><input type="radio" value="a"> қайтарымды</label>
+<label><input type="radio" value="b"> өтпелі</label>
+<label><input type="radio" value="c"> периодсыз</label>
+<label><input type="radio" value="d"> жұтатын</label>
+<p class="explain">Σ 1/√(πn) = ∞.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. ℤ-дегі жүрудің периоды:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 3</label>
+<label><input type="radio" value="c"> периоды жоқ</label>
+<label><input type="radio" value="d"> 2</label>
+<p class="explain">Жұп қадамдар.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">5. Графтағы жүруде π_v пропорционал:</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 1/deg v</label>
+<label><input type="radio" value="c"> deg v</label>
+<label><input type="radio" value="d"> |E|</label>
+<p class="explain">Теорема 3.3.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. Кац формуласы: m_j =</p>
+<label><input type="radio" value="a"> π_j</label>
+<label><input type="radio" value="b"> 1/π_j</label>
+<label><input type="radio" value="c"> 1 − π_j</label>
+<label><input type="radio" value="d"> 2π_j</label>
+<p class="explain">Теорема 3.4.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. [[0, 1], [1, 0]] үшін Pⁿ:</p>
+<label><input type="radio" value="a"> жинақталмайды</label>
+<label><input type="radio" value="b"> I-ге жинақталады</label>
+<label><input type="radio" value="c"> нөлге жинақталады</label>
+<label><input type="radio" value="d"> тұрақты</label>
+<p class="explain">Период 2.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. P = I үшін стационар үлестірім:</p>
+<label><input type="radio" value="a"> жалғыз</label>
+<label><input type="radio" value="b"> жоқ</label>
+<label><input type="radio" value="c"> тек бірқалыпты</label>
+<label><input type="radio" value="d"> шексіз көп</label>
+<p class="explain">Келтірілетін.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=stochastic">Stochastic Processes емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-149.html"><small>Алдыңғы</small>← Stochastic Processes · 2-сабақ: Марков тізбектері</a>

@@ -6,13 +6,14 @@
   <title>Math Topology · 5-сабақ: Бөліну аксиомалары және көбейтінді топологиясы - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Topology · 5-сабақ: Бөліну аксиомалары және көбейтінді топологиясы - CS50 қазақша">
-  <meta property="og:description" content="Математика, Topology · 5-сабақ: Бөліну аксиомалары және көбейтінді топологиясы. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Хаусдорф кеңістігі, көбейтінді және фактор-топология.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-135.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Topology · 5-сабақ: Бөліну аксиомалары және көбейтінді топологиясы - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-135.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Topology · 5-сабақ: Бөліну аксиомалары және көбейтінді топологиясы. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Хаусдорф кеңістігі, көбейтінді және фактор-топология.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,468 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="135">
+    <article class="content math-lesson" style="--sc:#3730a3" id="main">
+      <div class="lecture-head" style="--lc:#3730a3" data-n="135" data-msubj="topology" data-glyph="τ">
         <div class="num">Topology · 5-сабақ</div>
         <h1>Бөліну аксиомалары және көбейтінді топологиясы</h1>
-        <p>Хаусдорф кеңістігі, көбейтінді және фактор-топология.</p>
+        <p>Метрикалық кеңістікте тізбектің шегі жалғыз: екі әртүрлі нүктені қиылыспайтын шарлармен «бөлуге» болады. Жалпы топологиялық кеңістікте бұл міндетті емес: ақырлы толықтауыш топологиясында $1,2,3,\dots$ тізбегі <em>әр</em> нүктеге жинақталады.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 55 мин</span><span>Есептер ≈ 1 сағ</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Нүктелерді ашық жиындармен бөлу қабілеті - бөліну аксиомалары, ал олардың ең маңыздысы - Хаусдорф қасиеті. Бұл сабақта $T_1$ және Хаусдорф кеңістіктерін зерттейміз, сосын жаңа кеңістіктер құрудың екі негізгі тәсілін енгіземіз: көбейтінді топология ($\mathbb R^2=\mathbb R\times\mathbb R$, тор $S^1\times S^1$) және фактор-топология (кесіндінің ұштарын желімдеп шеңбер, шаршының қабырғаларын желімдеп тор алу). Фактор-кеңістік Хаусдорф болмауы мүмкін екенін де көреміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-21">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=topology">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Topology: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-21">Topology</a></span><ol><li><a href="week-131.html" title="Топологиялық кеңістіктер">1</a></li><li><a href="week-132.html" title="Үзіліссіз бейнелеулер және гомеоморфизм">2</a></li><li><a href="week-133.html" title="Байланыстылық">3</a></li><li><a href="week-134.html" title="Компактылық">4</a></li><li><a href="week-135.html" aria-current="page" title="Бөліну аксиомалары және көбейтінді топологиясы">5</a></li><li><a href="week-136.html" title="Іргелі топқа кіріспе">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-21">Topology</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Бөліну аксиомалары нүктелерді ашық жиындармен «ажырата алу» деңгейін өлшейді, ал көбейтінді мен фактор - бар кеңістіктерден жаңа кеңістік құрастыратын екі негізгі әдіс.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>$T_1$ және Хаусдорф аксиомаларын тұжырымдап, мысалдар мен қарсы мысалдарды ажырату;</li>
+        <li>Хаусдорф кеңістігінде тізбектің шегі жалғыз және компакт жиын тұйық екенін дәлелдеу;</li>
+        <li>көбейтінді топологиясын анықтап, проекциялардың үзіліссіздігін және «координаталар бойынша үзіліссіздік» критерийін дәлелдеу;</li>
+        <li>Хаусдорф, байланыстылық және компактылық көбейтіндіде сақталатынын дәлелдеу (түтік леммасы);</li>
+        <li>фактор-топологияны анықтап, $[0,1]/(0\sim1)\cong S^1$ және $\mathbb R/\mathbb Z\cong S^1$ гомеоморфизмдерін дәлелдеу;</li>
+        <li>шаршыдан тор мен Мёбиус жапырағын желімдеп алу, Хаусдорф емес фактор-кеңістік мысалын түсіндіру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Топология, база, ішкі кеңістік (1-сабақ). Үзіліссіз бейнелеу, гомеоморфизм (2-сабақ). Байланыстылық (3-сабақ). Компактылық, компакттан метрикалық кеңістікке үзіліссіз биекция (4-сабақ). Эквиваленттік қатынас, фактор-жиын (дискретті математика).</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-134.html">Topology · 4-сабақ: Компактылық</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: қағаздан цилиндр мен шеңбер</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">$[0,1]$ кесіндісінің ұштарын «желімдесек» ($0\sim1$) не шығады? Ал $[0,1]\times[0,1]$ шаршысының сол және оң жақтарын желімдесек ($(0,y)\sim(1,y)$)?</p>
+        <ol class="math-steps">
+          <li>Кесіндіні жіп деп ойлаңыз: екі ұшын бір нүктеге қоссақ - сақина, яғни шеңбер $S^1$.</li>
+          <li>Формуламен: $t\mapsto(\cos2\pi t,\sin2\pi t)$. Ол $0$ мен $1$-ді бір нүктеге $(1,0)$-ге жібереді, ал басқа нүктелерді ажыратады.</li>
+          <li>Шаршы - қағаз парағы. Сол жақ пен оң жақты желімдесек - цилиндр (түтік), яғни $S^1\times[0,1]$.</li>
+          <li>Егер цилиндрдің жоғарғы және төменгі шеңберлерін де желімдесек - тор (бәліш беті) $S^1\times S^1$ шығады.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Желімдеу - фактор-кеңістік; «$S^1\times[0,1]$» сияқты жазу - көбейтінді. Топологтар күрделі беттерді дәл осылай: шаршыдан желімдеу арқылы құрастырады.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Хаусдорф - «әр екі нүктенің жеке үйі бар»: $x\ne y$ үшін $U\ni x$, $V\ni y$ ашық және $U\cap V=\varnothing$. Метрикада $r=\frac{d(x,y)}2$ радиусты шарлар жарайды. Ақырлы толықтауыш топологиясында екі бос емес ашық жиын әрдайым қиылысады - ешбір екі нүкте бөлінбейді.</p>
+      <p>Көбейтінді - «координаталар бойынша» топология: $U\times V$ тіктөртбұрыштар - база. $\mathbb R\times\mathbb R$-дағы бұл топология евклидтік $\mathbb R^2$-мен бірдей (тіктөртбұрышқа шар сыяды және керісінше). $S^1\times S^1$ - тор (бәліштің беті).</p>
+      <p>Фактор-кеңістік - желімдеу. $[0,1]$-дің $0$ мен $1$ ұштарын бір нүкте деп алсақ - шеңбер. Шаршының қарама-қарсы қабырғаларын бір бағытта желімдесек - тор, бір жұбын бұрап желімдесек - Мёбиус жапырағы. Фактор-топологияда жиын ашық $\iff$ оның алғы бейнесі ашық.</p>
+      <p>Желімдеу қауіпті болуы мүмкін: $\mathbb R$-ді $x\sim y\iff x-y\in\mathbb Q$ бойынша желімдесек, фактор-кеңістіктің тек екі ашық жиыны қалады ($\varnothing$ және бүкіл кеңістік) - нүктелер мүлдем бөлінбейді.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · көршілер мен қоршаулар</span>
+        <p>Хаусдорф кеңістігі - әр екі үйдің өз қоршалған ауласы бар, аулалар қиылыспайды. Метрикалық кеңістікте бұл әрдайым мүмкін: арақашықтықтың жартысындай радиусты шарлар қиылыспайды. Ал кейбір «таңғажайып» топологияларда екі нүктенің аулалары әрдайым қабаттасады - сонда тізбектің екі шегі болуы мүмкін.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · шахмат тақтасы</span>
+        <p>Көбейтінді - координаталар торы: нүкте = (жол, баған). Шағын «тіктөртбұрыш» $U\times V$ - бір жолдың бөлігі мен бір бағанның бөлігінің көбейтіндісі. Барлық ашық жиындар осындай тіктөртбұрыштардан құралады.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$T_1,\ T_2$</td><td>тэ-бір, тэ-екі</td><td>бөліну аксиомалары: $T_2$ - Хаусдорф</td></tr>
+        <tr><td>$X\times Y$</td><td>$X$ пен $Y$-тің көбейтіндісі</td><td>$(x,y)$ жұптарының жиыны</td></tr>
+        <tr><td>$\pi_X$</td><td>$X$-ке проекция</td><td>$(x,y)\mapsto x$: екінші координатаны «ұмыту»</td></tr>
+        <tr><td>$x\sim y$</td><td>$x$ пен $y$ эквивалент</td><td>желімделетін нүктелер</td></tr>
+        <tr><td>$X/\!\sim$</td><td>$X$ бөлу эквиваленттік</td><td>желімделген кеңістік: әр класс бір нүкте</td></tr>
+        <tr><td>$q:X\to X/\!\sim$</td><td>фактор-бейнелеу</td><td>әр нүктені өз класына жібереді</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 5.1 · Бөліну аксиомалары</span>
+        <p>$X$ - <strong>$T_1$-кеңістік</strong> (<span class="term-en">T1 space</span>), егер әр $x\ne y$ үшін $x\in U$, $y\notin U$ болатын ашық $U$ бар. $X$ - <strong>Хаусдорф кеңістігі</strong> (<span class="term-en">Hausdorff space</span>) ($T_2$), егер әр $x\ne y$ үшін $x\in U$, $y\in V$, $U\cap V=\varnothing$ болатын ашық $U$, $V$ бар. Хаусдорф $\Rightarrow T_1$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $T_1$: кез келген нүктені екіншісін қамтымайтын ашық жиынмен ұстауға болады. Хаусдорф: екі нүктені қиылыспайтын екі ашық жиынмен толық ажыратуға болады.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 5.1 · Бөліну аксиомаларының қасиеттері</span>
+        <p>(1) Метрикалық кеңістік Хаусдорф. (2) $X$ - $T_1\iff$ әр нүкте $\{x\}$ тұйық. (3) Хаусдорф кеңістігінде тізбектің шегі (бар болса) жалғыз. (4) Хаусдорф кеңістігінде компакт жиын тұйық; компакттан Хаусдорфқа үзіліссіз биекция - гомеоморфизм.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Метрикалық кеңістіктер Хаусдорф; Хаусдорфта тізбектің шегі жалғыз және компакт жиын тұйық.</p></div>
+      <p><em>Негіздеме.</em> Қарсы мысал: шексіз жиындағы ақырлы толықтауыш топологиясы - $T_1$, бірақ Хаусдорф емес; онда $x_n=n$ әр нүктеге жинақталады.</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 5.2 · Көбейтінді топология</span>
+        <p>$X\times Y$-тегі <strong>көбейтінді топология</strong> (<span class="term-en">product topology</span>) - базасы $\{U\times V:U\subseteq X,\ V\subseteq Y$ ашық$\}$ топология. $\pi_X(x,y)=x$, $\pi_Y(x,y)=y$ - <strong>проекция</strong> (<span class="term-en">projection</span>). $\mathbb R\times\mathbb R$-дағы көбейтінді топология евклидтік $\mathbb R^2$-мен бірдей; $T^2=S^1\times S^1$ - <strong>тор</strong> (<span class="term-en">torus</span>).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Жазықтық $\mathbb R\times\mathbb R$-дегідей: ашық тіктөртбұрыштар және олардың бірігулері - ашық жиындар.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 5.2 · Көбейтінді қасиеттері</span>
+        <p>(1) $\pi_X$, $\pi_Y$ үзіліссіз; $f=(f_1,f_2):Z\to X\times Y$ үзіліссіз $\iff f_1$, $f_2$ үзіліссіз. (2) $X$, $Y$ Хаусдорф болса, $X\times Y$ Хаусдорф. (3) $X$, $Y$ байланысты болса, $X\times Y$ байланысты. (4) $X$, $Y$ компакт болса, $X\times Y$ компакт.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Көбейтінді жақсы қасиеттерді сақтайды: Хаусдорфтан Хаусдорф, байланыстыдан байланысты, компакттан компакт.</p></div>
+      <p><em>Негіздеме.</em> (4) - Тихонов теоремасының ақырлы жағдайы; дәлелде <strong>түтік леммасы</strong> (<span class="term-en">tube lemma</span>) қолданылады.</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 5.3 · Фактор-топология</span>
+        <p>$X$ - кеңістік, $q:X\to Y$ сюръекция. $Y$-тегі <strong>фактор-топология</strong> (<span class="term-en">quotient topology</span>): $V\subseteq Y$ ашық $\iff q^{-1}(V)$ $X$-те ашық. $\sim$ - $X$-тегі эквиваленттік қатынас болса, $X/\!\sim$ - кластар жиыны, $q(x)=[x]$; бұл - <strong>фактор-кеңістік</strong> (<span class="term-en">quotient space</span>) (желімдеу).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Нүктелерді желімдеп жаңа кеңістік аламыз; жиын ашық, егер оған «желімденген» нүктелердің бастапқы жиыны ашық болса.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 5.3 · Фактор-кеңістіктердің қасиеттері</span>
+        <p>(1) $q$ үзіліссіз; $g:X/\!\sim\ \to Z$ үзіліссіз $\iff g\circ q$ үзіліссіз. (2) $X$ компакт (байланысты) болса, $X/\!\sim$ компакт (байланысты). (3) $[0,1]/(0\sim1)\cong S^1$, $\mathbb R/\mathbb Z\cong S^1$ ($x\sim y\iff x-y\in\mathbb Z$), $[0,1]^2/\!\sim\ \cong S^1\times S^1$ (қарама-қарсы қабырғалар бір бағытта). (4) $\mathbb R/\mathbb Q$-да фактор-топология тривиал - Хаусдорф емес.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Желімделген кеңістіктен шығатын функция үзіліссіз, егер бастапқы кеңістіктен шыққанда үзіліссіз болса. Кесіндінің ұштарын желімдесек - шеңбер шығады.</p></div>
+      <p><em>Негіздеме.</em> Фактор-кеңістік Хаусдорф болуы үшін арнайы шарт керек; (3)-тегі дәлелдер компакттан Хаусдорфқа биекция арқылы.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 5.1 · Хаусдорф</span>
+        <div class="math-fbody">$$x\ne y\ \Rightarrow\ \exists U\ni x,\ V\ni y:\ U\cap V=\varnothing$$</div>
+        <p class="math-fnote">Метрикада $r=\frac{d(x,y)}2$.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 5.2 · $T_1$</span>
+        <div class="math-fbody">$$\forall x:\ \{x\}=\overline{\{x\}}$$</div>
+        <p class="math-fnote">Нүктелер тұйық.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 5.3 · Көбейтінді базасы</span>
+        <div class="math-fbody">$$\{U\times V:\ U\in\tau_X,\ V\in\tau_Y\}$$</div>
+        <p class="math-fnote">Проекциялар үзіліссіз.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 5.4 · Координаталар бойынша</span>
+        <div class="math-fbody">$$f=(\pi_X\circ f,\ \pi_Y\circ f)$$</div>
+        <p class="math-fnote">$f$ үзіліссіз $\iff$ екі координатасы үзіліссіз.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 5.5 · Фактор-топология</span>
+        <div class="math-fbody">$$V\in\tau_Y\iff q^{-1}(V)\in\tau_X$$</div>
+        <p class="math-fnote">Желімдеу.</p></div>
+      <div class="math-formula" id="f-6"><span class="math-fname">Формула 5.6 · Шеңбер</span>
+        <div class="math-fbody">$$[0,1]/(0\sim1)\cong\mathbb R/\mathbb Z\cong S^1$$</div>
+        <p class="math-fnote">$t\mapsto(\cos2\pi t,\sin2\pi t)$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Фактор-кеңістікті тану жоспары: (1) $X$-тен белгілі $Z$-ке үзіліссіз сюръекция $g$ табыңыз, ол дәл эквивалентті нүктелерді біріктіреді ($g(x)=g(y)\iff x\sim y$); (2) фактордың әмбебап қасиеті бойынша $\bar g:X/\!\sim\ \to Z$ үзіліссіз биекция; (3) $X$ компакт, $Z$ Хаусдорф болса, $\bar g$ - гомеоморфизм (компакттан Хаусдорфқа). Бұл схема шеңбер, тор, сфера $D^2/\partial D^2\cong S^2$ үшін жұмыс істейді.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>(1) Хаусдорф $\ne T_1$: ақырлы толықтауыш топологиясы - $T_1$, бірақ Хаусдорф емес. (2) Ішкі кеңістік Хаусдорф қасиетін мұралайды, бірақ фактор-кеңістік - мұраламайды: «екі бас нүктелі түзу» (екі $\mathbb R$ көшірмесін $0$-ден басқа нүктелерде желімдеу) - Хаусдорф емес, ал әр бөлігі $\mathbb R$-ге гомеоморфты. (3) Фактор-кеңістікте ашық жиынның бейнесі ашық болмауы мүмкін: $q:[0,1]\to S^1$-де $[0,\frac12)$ ашық, бірақ $q([0,\frac12))$ ашық емес ($1$-дің бейнесі - сол нүкте, ал $1$-ге жақын нүктелер жоқ).</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> Тривиал топологиясы бар екі нүктелі кеңістік Хаусдорф па?</span></summary>
+        <p>Жоқ: жалғыз бос емес ашық жиын - бүкіл кеңістік, екі нүкте бір ғана ашық жиында.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> $[0,1]\times[0,1]$ компакт па?</span></summary>
+        <p>Иә: компакттардың көбейтіндісі компакт (сонымен қатар $\mathbb R^2$-де тұйық әрі шектелген).</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> Шаршының барлық шекарасын бір нүктеге желімдесек не шығады?</span></summary>
+        <p>Сфера $S^2$: шаршыны «қапшық» етіп, аузын бір нүктеге жинағандай.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> Неге Хаусдорф кеңістігінде шек жалғыз?</span></summary>
+        <p>Екі әртүрлі шек болса, оларды қиылыспайтын ашық аулалармен бөлеміз, ал тізбек белгілі бір нөмірден кейін екі аулада бір мезгілде болуы керек - мүмкін емес.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: бөліну аксиомаларының қасиеттері</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 5.1-ді дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Метрикада шар радиусын арақашықтықтың жартысы етеміз. Хаусдорфта шектің жалғыздығы мен компакттың тұйықтығы - «қиылыспайтын аулалардан» шығады.</p>
+          <ol class="math-steps">
+            <li>(1) $r=\frac12d(x,y)$: $B(x,r)\cap B(y,r)=\varnothing$ ($z$ ортақ болса, $d(x,y)\le d(x,z)+d(z,y)&lt;2r$).</li>
+            <li>(2) $\{x\}$ тұйық $\iff X\setminus\{x\}$ ашық $\iff$ әр $y\ne x$-тің $x$-ті қамтымайтын ашық аймағы бар - дәл $T_1$.</li>
+            <li>(3) $x_n\to x$, $x_n\to y$, $x\ne y$: $U\ni x$, $V\ni y$ қиылыспайтын. $n&gt;N_1$ үшін $x_n\in U$, $n&gt;N_2$ үшін $x_n\in V$ - $n&gt;\max$ үшін $x_n\in U\cap V=\varnothing$. Қайшылық.</li>
+            <li>(4) $K$ компакт, $y\notin K$: әр $x\in K$-ға қиылыспайтын $U_x\ni x$, $V_x\ni y$. Ақырлы ішкі жабын $U_{x_1},\dots,U_{x_k}$; $V=\bigcap V_{x_i}$ - $y$-тің $K$-ны қимайтын аймағы. Екінші бөлік - Теорема 4.5-тің дәлелі сөзбе-сөз. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: көбейтінді: проекциялар және Хаусдорф</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 5.2 (1)-(2)-ні дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Проекцияның алғы бейнесі - «жолақ» $U\times Y$, ол ашық. Хаусдорф үшін бір координатада ажыратылатын нүктелерді жолақтармен бөлеміз.</p>
+          <ol class="math-steps">
+            <li>$\pi_X^{-1}(U)=U\times Y$ - базаның элементі, ашық. Демек $\pi_X$ үзіліссіз; $f$ үзіліссіз болса, $f_i=\pi_i\circ f$ үзіліссіз.</li>
+            <li>Керісінше: $f^{-1}(U\times V)=f_1^{-1}(U)\cap f_2^{-1}(V)$ - ашық; базаның элементтерін тексеру жеткілікті (Теорема 2.2 (4)).</li>
+            <li>(2) $(x,y)\ne(x',y')$, мысалы $x\ne x'$. $U\ni x$, $U'\ni x'$ қиылыспайтын. $U\times Y$ мен $U'\times Y$ - қиылыспайтын ашық аймақтар. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: көбейтінді: байланыстылық</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 5.2 (3)-ті дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Әр нүктені бекітілген $(a,b)$ нүктесіне «$T$ әрпі» пішінді байланысты жиын арқылы қосамыз.</p>
+          <ol class="math-steps">
+            <li>$(a,b)$ нүктесін бекітеміз. Әр $x\in X$ үшін $T_x=(\{x\}\times Y)\cup(X\times\{b\})$.</li>
+            <li>$\{x\}\times Y\cong Y$ және $X\times\{b\}\cong X$ - байланысты, ортақ нүктесі $(x,b)$ - $T_x$ байланысты (Теорема 3.4 (1)).</li>
+            <li>Барлық $T_x$-тің ортақ нүктесі $(a,b)$, бірігуі $X\times Y$ - байланысты. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: көбейтінді: компактылық</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 5.2 (4)-ті түтік леммасы арқылы дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Түтік леммасы: компакт «талшық» $\{x\}\times Y$-ті жабатын жиындар сол талшықтың айналасындағы тұтас «түтікті» де жабады.</p>
+          <ol class="math-steps">
+            <li>Түтік леммасы: $Y$ компакт, $x_0\in X$, $W$ ашық, $\{x_0\}\times Y\subseteq W$. Әр $y$-ке $U_y\times V_y\subseteq W$ (база), $(x_0,y)\in U_y\times V_y$. $V_y$-тардың ақырлы ішкі жабыны $V_{y_1},\dots,V_{y_k}$.</li>
+            <li>$U=\bigcap U_{y_i}$ - $x_0$-дің ашық аймағы, және $U\times Y\subseteq\bigcup(U_{y_i}\times V_{y_i})\subseteq W$ - «түтік».</li>
+            <li>$\mathcal W$ - $X\times Y$-тің ашық жабыны. Әр $x$ үшін $\{x\}\times Y\cong Y$ компакт - ақырлы $W_1,\dots,W_m\in\mathcal W$ жабады; түтік леммасы: $U_x\times Y\subseteq W_1\cup\dots\cup W_m$.</li>
+            <li>$\{U_x\}$ - $X$-тің жабыны, ақырлы ішкі жабын $U_{x_1},\dots,U_{x_r}$. Сәйкес ақырлы $W$-лар бүкіл $X\times Y$-ті жабады. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5">
+        <summary>Қорытып шығару 5: шеңбер фактор-кеңістік ретінде</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 5.3 (3)-ті $[0,1]/(0\sim1)$ үшін дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $[0,1]\to S^1$ бейнелеуі $0$ мен $1$-ді ғана бір нүктеге жібереді. Компакттан Хаусдорфқа үзіліссіз биекция - гомеоморфизм (4-сабақ).</p>
+          <ol class="math-steps">
+            <li>$g:[0,1]\to S^1$, $g(t)=(\cos2\pi t,\sin2\pi t)$ - үзіліссіз сюръекция; $g(s)=g(t)\iff s=t$ не $\{s,t\}=\{0,1\}$ - дәл $\sim$ бойынша.</li>
+            <li>Әмбебап қасиет (Теорема 5.3 (1)): $\bar g([t])=g(t)$ дұрыс анықталған, үзіліссіз ($\bar g\circ q=g$), биекция.</li>
+            <li>$[0,1]$ компакт, демек $[0,1]/\!\sim$ компакт (компакттың үзіліссіз бейнесі $q$). $S^1\subset\mathbb R^2$ - метрикалық, Хаусдорф.</li>
+            <li>Теорема 5.1 (4): $\bar g$ - гомеоморфизм. ∎ $\mathbb R/\mathbb Z$: $g(t)$ сол формуламен $\mathbb R$-де; $q$ $[0,1]$-ге шектелгенде сюръективті, сондықтан фактор $[0,1]/\!\sim$-пен бірдей.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Хаусдорф емес</h3>
+        <p class="math-problem">$\mathbb N$, ақырлы толықтауыш топологиясы; $x_n=n$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $T_1$: $\{m\}$ тұйық (ақырлы жиын тұйық).</li>
+          <li><b>2-қадам.</b> Хаусдорф емес: $U,V\ne\varnothing$ ашық - толықтауыштары ақырлы, $U\cap V$ толықтауышы ақырлы, бос емес.</li>
+          <li><b>3-қадам.</b> $x_n\to m$ әр $m$ үшін: $U\ni m$ ашық, $\mathbb N\setminus U$ ақырлы - тек ақырлы $n$ үшін $x_n\notin U$.</li>
+          <li><b>4-қадам.</b> Шегі жалғыз емес - Хаусдорф қасиеті бұзылған.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $x_n$ әр нүктеге жинақталады.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Ақырлы кеңістіктер</h3>
+        <p class="math-problem">$3$ нүктелі жиындағы $29$ топологияның қайсысы $T_1$?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $T_1\iff$ әр нүкте тұйық $\iff$ әр $X\setminus\{x\}$ ашық.</li>
+          <li><b>2-қадам.</b> Онда екі жиынның қиылысуы бойынша әр $\{x\}$ ашық - дискретті топология.</li>
+          <li><b>3-қадам.</b> Демек ақырлы $T_1$-кеңістік дискретті; $29$-дың ішінде тек біреу (ол Хаусдорф та).</li>
+          <li><b>4-қадам.</b> Жобада компьютермен тексереміз: $T_0$ (әлсізірек) - $19$, $T_1$ - $1$, $T_2$ - $1$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Тек дискретті.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. $\mathbb R^2$ көбейтінді ретінде</h3>
+        <p class="math-problem">$\mathbb R\times\mathbb R$ топологиясы евклидтік топологиямен бірдей.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $(a,b)\times(c,d)$ тіктөртбұрышының әр нүктесінің айналасына шар сыяды - тіктөртбұрыш евклидтік ашық.</li>
+          <li><b>2-қадам.</b> Шар $B(p,r)$-ның әр нүктесінің айналасына кіші шаршы сыяды - шар көбейтінді топологиясында ашық.</li>
+          <li><b>3-қадам.</b> Демек екі база бір топология тудырады.</li>
+          <li><b>4-қадам.</b> Салдар: $[a,b]\times[c,d]$ компакт (Теорема 5.2 (4)) - Гейне-Борельмен келіседі.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Бірдей топология.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Тор</h3>
+        <p class="math-problem">$[0,1]^2/\!\sim$, $(0,y)\sim(1,y)$, $(x,0)\sim(x,1)$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $g(x,y)=\big((\cos2\pi x,\sin2\pi x),(\cos2\pi y,\sin2\pi y)\big)\in S^1\times S^1$ - үзіліссіз сюръекция, дәл эквивалентті нүктелерді біріктіреді.</li>
+          <li><b>2-қадам.</b> $[0,1]^2$ компакт, $S^1\times S^1$ Хаусдорф (Теорема 5.2 (2)).</li>
+          <li><b>3-қадам.</b> Әмбебап қасиет + Теорема 5.1 (4): $[0,1]^2/\!\sim\ \cong S^1\times S^1$.</li>
+          <li><b>4-қадам.</b> Бір жұпты бұрап ($(0,y)\sim(1,1-y)$) желімдесек - Мёбиус жапырағы.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $T^2=S^1\times S^1$.</p></div>
+      <div class="math-example" id="ex-5"><h3>Мысал 5. Тривиал фактор</h3>
+        <p class="math-problem">$\mathbb R/\mathbb Q$, $x\sim y\iff x-y\in\mathbb Q$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $V\subseteq\mathbb R/\mathbb Q$ ашық, бос емес: $W=q^{-1}(V)$ ашық, қаныққан ($x\in W\Rightarrow x+\mathbb Q\subseteq W$).</li>
+          <li><b>2-қадам.</b> $W$ интервал $(a,b)$-ны қамтиды; $(a,b)+\mathbb Q=\mathbb R$ (әр $x$ үшін $(x-b,x-a)$-да рационал бар).</li>
+          <li><b>3-қадам.</b> Демек $W=\mathbb R$, $V$ - бүкіл кеңістік.</li>
+          <li><b>4-қадам.</b> Фактор-топология тривиал - нүктелер ашық жиындармен ажыратылмайды.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Тривиал топология.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$T_1$ - Хаусдорф</span> → <span class="math-good">Хаусдорф күштірек</span><br>Неге қате: Ақырлы толықтауыш топологиясы.</li>
+        <li><span class="math-bad">Фактор-кеңістік Хаусдорф қасиетін мұралайды</span> → <span class="math-good">мұраламауы мүмкін</span><br>Неге қате: $\mathbb R/\mathbb Q$; екі бас нүктелі түзу.</li>
+        <li><span class="math-bad">Шек әрдайым жалғыз</span> → <span class="math-good">тек Хаусдорф кеңістігінде</span><br>Неге қате: $x_n=n$, ақырлы толықтауыш.</li>
+        <li><span class="math-bad">$q$ ашық жиынды ашыққа жібереді</span> → <span class="math-good">міндетті емес</span><br>Неге қате: $q([0,\frac12))$ $S^1$-де.</li>
+        <li><span class="math-bad">Көбейтіндінің ашық жиындары - тек $U\times V$</span> → <span class="math-good">$U\times V$ - база, ашық жиындар - олардың бірігулері</span><br>Неге қате: Шар тіктөртбұрыш емес.</li>
+        <li><span class="math-bad">Фактор-кеңістікті «көзбен» тану жеткілікті</span> → <span class="math-good">гомеоморфизмді дәлелдеу керек</span><br>Неге қате: компакттан Хаусдорфқа схемасы.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Хаусдорф: екі нүкте қиылыспайтын аймақтармен бөлінеді" data-config='{"fns": [{"f": "0.5*exp(-((x-a)^2)/(0.5*((b-a)/2)^2))", "label": "x = a аймағы"}, {"f": "0.5*exp(-((x-b)^2)/(0.5*((b-a)/2)^2))", "label": "y = b аймағы", "color": 1}, {"f": "0", "label": "ось", "color": 2}], "params": [{"n": "a", "min": -2, "max": 0, "step": 0.1, "v": -1}, {"n": "b", "min": 0.5, "max": 3, "step": 0.1, "v": 1.5}], "view": [-3, 4, -0.1, 0.6]}'></div>
+      <p><b>Бақылаңыз:</b> Метрикалық кеңістікте $x$ пен $y$ нүктелерін радиусы $\frac{d(x,y)}2$ шарлармен бөлуге болады - суреттегі «төбелер» осы аймақтарды көрсетеді. $a$ мен $b$-ны жақындатыңыз: аймақтар кішірейеді, бірақ әрдайым бар - бұл Хаусдорф қасиеті. Ақырлы толықтауыш топологиясында мұндай аймақтар жоқ.</p>
+      <div class="math-viz" data-viz="graph" data-title="ℝ/ℤ ≅ S¹: t ↦ (cos 2πt, sin 2πt) координаталары" data-config='{"fns": [{"f": "cos(2*pi*x)", "label": "cos 2πt"}, {"f": "sin(2*pi*x)", "label": "sin 2πt", "color": 1}], "view": [-1, 3, -1.3, 1.3]}'></div>
+      <p><b>Бақылаңыз:</b> Екі координата да периоды $1$ функциялар: $t$ мен $t+n$ ($n\in\mathbb Z$) шеңбердің бір нүктесіне барады. Сондықтан $\mathbb R$-ді бүтін ығысулар бойынша желімдегенде шеңбер шығады. Бір период $[0,1]$ жеткілікті - $0$ мен $1$ бір нүкте.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m21-5-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m21-5-t1">1. Санау</h3></div>
+        <p>Есептеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\{1,\\dots,6\\}/\\!\\sim$, $a\\sim b\\iff a\\equiv b\\pmod3$: нүктелер саны","a":3,"v":"len(set([k % 3 for k in range(1, 7)]))","hint":"Қалдықтар кластары.","sol":{"steps":["$\\{1,4\\},\\{2,5\\},\\{3,6\\}$."],"ans":"$3$"}},{"q":"$\\{a,b\\}$-дағы $4$ топологияның неше Хаусдорф?","a":1,"v":"1","hint":"Ақырлы $T_1$ - дискретті.","sol":{"steps":["Тек дискретті."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m21-5-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m21-5-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Әр метрикалық кеңістік Хаусдорф.","a":true,"e":"$r=\\frac{d(x,y)}2$.","hint":"Теорема 5.1 (1)."},{"q":"Шексіз жиындағы ақырлы толықтауыш топологиясы Хаусдорф.","a":false,"e":"Бос емес ашық жиындар қиылысады.","hint":"Мысал 1."},{"q":"Екі компакт кеңістіктің көбейтіндісі компакт.","a":true,"e":"Түтік леммасы.","hint":"Теорема 5.2 (4)."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m21-5-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m21-5-t3">3. Фактор-кеңістік</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$[0,1]/(0\\sim1)$ неге гомеоморфты?","o":["$S^1$","$[0,1]$","$\\mathbb R$","нүкте"],"a":0,"e":"Ұштарды желімдеу - шеңбер.","hint":"Теорема 5.3 (3)."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m21-5-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m21-5-t4">4. Ақырлы кеңістік</h3></div>
+        <p>$X=\{a,b,c\}$, $\tau=\{\varnothing,\{a\},X\}$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Тұйық бір нүктелі жиындар саны","a":0,"v":"len([p for p in ['a', 'b', 'c'] if set('abc') - {p} in [set(), {'a'}, set('abc')]])","hint":"Тұйық жиындар: $X$, $\\{b,c\\}$, $\\varnothing$.","sol":{"steps":["Ешбір нүкте тұйық емес - $T_1$ емес."],"ans":"$0$"}},{"q":"$X$ - $T_1$ ме? (иә $1$, жоқ $0$)","a":0,"v":"0","hint":"Теорема 5.1 (2).","sol":{"steps":["$\\{a\\}$ тұйық емес."],"ans":"$0$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m21-5-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m21-5-t5">5. Көбейтінді</h3></div>
+        <p>Есептеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$X$ ($3$ нүкте) мен $Y$ ($2$ нүкте) дискретті. $X\\times Y$-тегі ашық жиындар саны","a":64,"v":"2**(3*2)","hint":"Көбейтінді дискретті.","sol":{"steps":["$2^6$."],"ans":"$64$"}},{"q":"$[0,1]\\times[0,2]$-дегі $f(x,y)=x+y$-тің ең үлкен мәні","a":3,"v":"1 + 2","hint":"Компакт, экстремум бар.","sol":{"steps":["$(1,2)$ нүктесінде."],"ans":"$3$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m21-5-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m21-5-t6">6. Желімдеу</h3></div>
+        <p>Есептеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$[0,1]$-дегі $0,\\frac15,\\dots,1$ нүктелері $[0,1]/(0\\sim1)$-де неше әртүрлі нүкте береді?","a":5,"v":"6 - 1","hint":"$0$ мен $1$ бір нүкте.","sol":{"steps":["$6$ нүктенің екеуі желімделеді."],"ans":"$5$"}},{"q":"$\\mathbb R/\\mathbb Z$-да $\\frac72$ мен $-\\frac12$ бір нүкте ме? (иә $1$, жоқ $0$)","a":1,"v":"1 if (Rational(7, 2) - Rational(-1, 2)).is_integer else 0","hint":"Айырмасы бүтін бе?","sol":{"steps":["$\\frac72+\\frac12=4\\in\\mathbb Z$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m21-5-exp7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m21-5-t7">7. Фактор бейнелеу</h3></div>
+        <p>$q:\mathbb R\to S^1\subset\mathbb R^2$ бейнелеуінің бірінші координатасы ($t$-ны $x$ деп).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$q_1(t)=?$","a":"cos(2*pi*x)","v":"cos(2*pi*x)","hint":"Периоды $1$.","sol":{"steps":["$(\\cos2\\pi t,\\sin2\\pi t)$."],"ans":"$\\cos2\\pi t$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m21-5-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m21-5-t8">8. Кеңістік - қасиет</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Кеңістік - бөліну қасиеті.","pairs":[["ℝ (евклидтік)","Хаусдорф"],["ℕ, ақырлы толықтауыш","T₁, Хаусдорф емес"],["{a, b}, тривиал топология","T₁ емес"],["ℝ/ℚ","тривиал топология"]],"hint":"Анықтамалар 5.1.","sol":{"steps":["Хаусдорф $\\Rightarrow T_1$."]},"e":"Әрқайсысы - бөлек деңгей."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m21-5-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m21-5-t9">9. Параметрлік: дискретті көбейтінді</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"int":[1,3]},"n":{"int":[1,3]}},"type":"num","q":"$#{m}$ және $#{n}$ нүктелі дискретті кеңістіктердің көбейтіндісінде неше ашық жиын бар?","a":"2^(m*n)","v":"2**(int(m)*int(n))","hint":"Көбейтінді дискретті, $#{m*n}$ нүкте.","sol":{"steps":["$2^{#{m*n}}$."],"ans":"$#{2^(m*n)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m21-5-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m21-5-t10">10. Параметрлік: тордағы торап</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"n":{"int":[2,9]}},"type":"num","q":"$[0,1]^2$-дегі $\\left(\\frac in,\\frac jn\\right)$ ($0\\le i,j\\le #{n}$) нүктелер торы. Торды ($T^2$) желімдегенде неше әртүрлі нүкте қалады?","a":"n^2","v":"int(n)**2","hint":"$i=0$ мен $i=#{n}$ бірдей; $j=0$ мен $j=#{n}$ бірдей.","sol":{"steps":["$#{(n+1)^2}$ нүктеден $i,j\\in\\{0,\\dots,#{n-1}\\}$ қалады."],"ans":"$#{n^2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m21-5-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m21-5-t11">11. Хаусдорфта шек жалғыз</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x_n\\to x$, $x_n\\to y$.","steps":["$x\\ne y$ деп алайық.","Хаусдорф: қиылыспайтын $U\\ni x$, $V\\ni y$.","$n>N_1$: $x_n\\in U$; $n>N_2$: $x_n\\in V$.","$n>\\max(N_1,N_2)$: $x_n\\in U\\cap V=\\varnothing$.","Қайшылық, демек $x=y$."],"hint":"Теорема 5.1 (3).","sol":{"ans":"Шек жалғыз"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m21-5-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m21-5-t12">12. Қадамдық шешім: $[0,1]/(0\sim1)\cong S^1$</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$[0,1]/(0\\sim1)$ шеңберге гомеоморфты екенін дәлелдеңіз.","steps":["$g(t)=(\\cos2\\pi t,\\sin2\\pi t)$ - үзіліссіз сюръекция, $g(s)=g(t)\\iff s\\sim t$.","Әмбебап қасиет: $\\bar g([t])=g(t)$ үзіліссіз биекция.","$[0,1]/\\!\\sim$ компакт ($[0,1]$-дің үзіліссіз бейнесі), $S^1$ Хаусдорф.","Компакттан Хаусдорфқа үзіліссіз биекция - гомеоморфизм."],"ans":"$[0,1]/(0\\sim1)\\cong S^1$."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Фактор-кеңістіктер ойын әлемдерінде («Пакман» экраны - тор: шетінен шықсаң, қарсы шетінен кіресің), физикада (периодты шекаралық шарттар - кристаллдардағы тор), роботтарда (буындардың бұрыштары $S^1\times\dots\times S^1$ кеңістігінде) және деректер талдауында (периодты деректер шеңберде) кездеседі. Хаусдорф қасиеті сандық әдістердің шегі жалғыз екеніне кепілдік береді.</p>
+      <p><b>Мини-жоба: «Бөліну аксиомалары және тор».</b> $3$ нүктелі жиындағы $29$ топологияның әрқайсысын $T_0$, $T_1$, $T_2$ аксиомалары бойынша тексереміз, сосын шаршы торды тор бетіне желімдеп, төбелер, қабырғалар, жақтар санынан Эйлер сипаттамасын ($V-E+F$) есептейміз.</p>
+<pre data-lang="python"><code class="language-python">n = 3
+N, full = 1 &lt;&lt; n, (1 &lt;&lt; n) - 1
+topologies = []
+for mask in range(1 &lt;&lt; N):
+    S = [a for a in range(N) if mask &gt;&gt; a &amp; 1]
+    if mask &amp; 1 and mask &gt;&gt; full &amp; 1 and all(mask &gt;&gt; (a | b) &amp; 1 and mask &gt;&gt; (a &amp; b) &amp; 1 for a in S for b in S):
+        topologies.append(S)
+
+def T0(S):
+    return all(any((U &gt;&gt; x &amp; 1) != (U &gt;&gt; y &amp; 1) for U in S) for x in range(n) for y in range(x + 1, n))
+
+def T1(S):
+    return all(any(U &gt;&gt; x &amp; 1 and not U &gt;&gt; y &amp; 1 for U in S) for x in range(n) for y in range(n) if x != y)
+
+def T2(S):
+    return all(any(U &gt;&gt; x &amp; 1 and V &gt;&gt; y &amp; 1 and U &amp; V == 0 for U in S for V in S) for x in range(n) for y in range(n) if x != y)
+
+print("топологиялар:", len(topologies), " T0:", sum(map(T0, topologies)), " T1:", sum(map(T1, topologies)), " T2:", sum(map(T2, topologies)))
+
+def torus_counts(k):
+    vertices = {(i % k, j % k) for i in range(k + 1) for j in range(k + 1)}
+    edges = set()
+    for i in range(k):
+        for j in range(k + 1):
+            edges.add(("h", i % k, j % k))
+            edges.add(("v", j % k, i % k))
+    faces = k * k
+    return len(vertices), len(edges), faces
+
+for k in (2, 3, 5):
+    V, E, F = torus_counts(k)
+    print(f"тор, {k}x{k} тор: V={V}, E={E}, F={F}, V-E+F={V - E + F}")
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Неге ақырлы $T_1$-кеңістік әрдайым дискретті? $29$ топологияның ішінде $T_0$-ден басқа шарт орындалатыны неше екенін түсіндіріңіз.</li>
+        <li>Тордың Эйлер сипаттамасы $V-E+F=0$, ал сфераныкы $2$ (желімдемейтін шаршы - $1$). $k$-ны өзгерткенде неге нәтиже өзгермейді? (Бұл - топологиялық инвариант; дәлелі алгебралық топологияда.)</li>
+        <li>Мёбиус жапырағы үшін ($(0,y)\sim(1,1-y)$) ұқсас санауды жазыңыз. Шекараны есептейтін болсақ, $V-E+F$ неге тең?</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>$T_1$</td><td>нүктелер тұйық</td><td>ақырлы $T_1$ - дискретті</td></tr>
+        <tr><td>Хаусдорф</td><td>нүктелер қиылыспайтын аймақтармен бөлінеді</td><td>шек жалғыз; компакт тұйық</td></tr>
+        <tr><td>Көбейтінді</td><td>база $U\times V$</td><td>проекциялар, координаталар бойынша үзіліссіздік</td></tr>
+        <tr><td>Мұраланатын</td><td>Хаусдорф, байланыстылық, компактылық</td><td>түтік леммасы</td></tr>
+        <tr><td>Фактор</td><td>$V$ ашық $\iff q^{-1}(V)$ ашық</td><td>желімдеу; әмбебап қасиет</td></tr>
+        <tr><td>Мысалдар</td><td>$S^1$, $T^2$, Мёбиус; $\mathbb R/\mathbb Q$ тривиал</td><td>компакттан Хаусдорфқа</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m21-5-self">
+        <li><input type="checkbox"> <span>Мен $T_1$ және Хаусдорф аксиомаларын мысалдармен ажырата аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Хаусдорф кеңістігінде шек жалғыз және компакт жиын тұйық екенін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен көбейтінді топологиясын анықтап, проекциялар мен координаталар бойынша үзіліссіздікті дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен көбейтіндіде Хаусдорф, байланыстылық, компактылық сақталатынын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен фактор-топологияны анықтап, $[0,1]/(0\sim1)\cong S^1$ екенін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен шаршыдан тор мен Мёбиус жапырағын желімдеп ала аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="d">
+<p class="q-text">1. Хаусдорф кеңістігінде:</p>
+<label><input type="radio" value="a"> әр жиын ашық</label>
+<label><input type="radio" value="b"> әр жиын тұйық</label>
+<label><input type="radio" value="c"> шек жоқ</label>
+<label><input type="radio" value="d"> шек жалғыз</label>
+<p class="explain">Теорема 5.1 (3).</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. Ақырлы толықтауыш топологиясы (шексіз жиын):</p>
+<label><input type="radio" value="a"> Хаусдорф</label>
+<label><input type="radio" value="b"> T₁ емес</label>
+<label><input type="radio" value="c"> T₁, Хаусдорф емес</label>
+<label><input type="radio" value="d"> дискретті</label>
+<p class="explain">Мысал 1.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. T₁ ⇔</p>
+<label><input type="radio" value="a"> әр нүкте ашық</label>
+<label><input type="radio" value="b"> әр нүкте тұйық</label>
+<label><input type="radio" value="c"> метрикалық</label>
+<label><input type="radio" value="d"> компакт</label>
+<p class="explain">Теорема 5.1 (2).</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">4. ℝ × ℝ көбейтінді топологиясы:</p>
+<label><input type="radio" value="a"> евклидтік ℝ²</label>
+<label><input type="radio" value="b"> дискретті</label>
+<label><input type="radio" value="c"> тривиал</label>
+<label><input type="radio" value="d"> ақырлы толықтауыш</label>
+<p class="explain">Тіктөртбұрыштар мен шарлар.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">5. S¹ × S¹ =</p>
+<label><input type="radio" value="a"> сфера</label>
+<label><input type="radio" value="b"> шеңбер</label>
+<label><input type="radio" value="c"> Мёбиус жапырағы</label>
+<label><input type="radio" value="d"> тор</label>
+<p class="explain">T².</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. ℝ/ℤ ≅</p>
+<label><input type="radio" value="a"> ℝ</label>
+<label><input type="radio" value="b"> ℤ</label>
+<label><input type="radio" value="c"> S¹</label>
+<label><input type="radio" value="d"> нүкте</label>
+<p class="explain">Периоды 1.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. ℝ/ℚ фактор-топологиясы:</p>
+<label><input type="radio" value="a"> дискретті</label>
+<label><input type="radio" value="b"> тривиал</label>
+<label><input type="radio" value="c"> евклидтік</label>
+<label><input type="radio" value="d"> Хаусдорф</label>
+<p class="explain">(a, b) + ℚ = ℝ.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">8. Компакт × компакт:</p>
+<label><input type="radio" value="a"> компакт</label>
+<label><input type="radio" value="b"> компакт емес</label>
+<label><input type="radio" value="c"> байланыссыз</label>
+<label><input type="radio" value="d"> дискретті</label>
+<p class="explain">Түтік леммасы.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=topology">Topology емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-134.html"><small>Алдыңғы</small>← Topology · 4-сабақ: Компактылық</a>

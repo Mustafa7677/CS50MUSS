@@ -6,13 +6,14 @@
   <title>Math Discrete Mathematics · 4-сабақ: Санау әдістері және рекуррентті қатынастар - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Discrete Mathematics · 4-сабақ: Санау әдістері және рекуррентті қатынастар - CS50 қазақша">
-  <meta property="og:description" content="Математика, Discrete Mathematics · 4-сабақ: Санау әдістері және рекуррентті қатынастар. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Қосу-алу принципі, Дирихле принципі, рекуррентті теңдеулер.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-95.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Discrete Mathematics · 4-сабақ: Санау әдістері және рекуррентті қатынастар - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-95.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Discrete Mathematics · 4-сабақ: Санау әдістері және рекуррентті қатынастар. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Қосу-алу принципі, Дирихле принципі, рекуррентті теңдеулер.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,435 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="95">
+    <article class="content math-lesson" style="--sc:#0369a1" id="main">
+      <div class="lecture-head" style="--lc:#0369a1" data-n="95" data-msubj="discrete" data-glyph="∪">
         <div class="num">Discrete Mathematics · 4-сабақ</div>
         <h1>Санау әдістері және рекуррентті қатынастар</h1>
-        <p>Қосу-алу принципі, Дирихле принципі, рекуррентті теңдеулер.</p>
+        <p>Көп санау есептерін бірден формуламен шешу қиын, бірақ «$n$-ші жауапты алдыңғыларымен байланыстыру» оңай. Ханой мұнаралары, Фибоначчи сандары, ешкімнің өз орнына түспейтін орналасулары - бәрі осылай шешіледі.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 45 мин</span><span>Есептер ≈ 1 сағ 10 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Бұл сабақта жалпы қосу-шегеру принципін, рекуррентті қатынас құруды, тұрақты коэффициентті сызықтық рекурренттерді сипаттамалық теңдеу арқылы шешуді және алгоритмдердің жұмыс уақытын беретін «бөл де билей» рекурренттерін үйренеміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-15">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=discrete">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Discrete Mathematics: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-15">Discrete Mathematics</a></span><ol><li><a href="week-92.html" title="Логика және жиындар">1</a></li><li><a href="week-93.html" title="Дәлелдеу әдістері">2</a></li><li><a href="week-94.html" title="Қатынастар және функциялар">3</a></li><li><a href="week-95.html" aria-current="page" title="Санау әдістері және рекуррентті қатынастар">4</a></li><li><a href="week-96.html" title="Графтар теориясының негіздері">5</a></li><li><a href="week-97.html" title="Ағаштар және графтардағы алгоритмдер">6</a></li><li><a href="week-98.html" title="Булев алгебрасы және логикалық схемалар">7</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-15">Discrete Mathematics</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Күрделі санау есептерін екі тәсілмен шешеміз: артық санағанды түзету (қосу-шегеру) және «$n$-ші жауапты алдыңғылары арқылы» өрнектеу (рекуррентті қатынас).</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>жалпы қосу-шегеру формуласын қолдану және «бұзылған орналасулар» санын $D_n$ табу;</li>
+        <li>есептің шартынан рекуррентті қатынас және бастапқы шарттарды құру;</li>
+        <li>$a_n=c_1a_{n-1}+c_2a_{n-2}$ түріндегі рекурренттерді сипаттамалық теңдеумен шешу (әртүрлі және қайталанатын түбірлер);</li>
+        <li>Бине формуласын қорытып, $F_{n+1}/F_n\to\varphi$ екенін түсіндіру;</li>
+        <li>$a_n=ca_{n-1}+d$ түріндегі біртекті емес рекуррентті шешу;</li>
+        <li>$T(n)=2T(n/2)+n$ сияқты рекурренттерді «ашу» арқылы бағалау.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Санау: $C_n^k=\frac{n!}{k!(n-k)!}$, Ньютон биномы $\sum_kC_n^k(-1)^k=0$ ($n\ge1$). Квадрат теңдеу $r^2-pr-q=0$ түбірлері $r=\frac{p\pm\sqrt{p^2+4q}}{2}$. Геометриялық прогрессия: $1+c+\dots+c^{n-1}=\frac{c^n-1}{c-1}$ ($c\ne1$). Математикалық индукция (рекуррент шешімін тексеру үшін). $e^{-1}=\sum_{k\ge0}\frac{(-1)^k}{k!}$.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-94.html">Discrete Mathematics · 3-сабақ: Қатынастар және функциялар</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: баспалдаққа шығу</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">Баспалдаққа бір не екі сатыдан аттап шығамыз. $5$ сатылы баспалдаққа неше тәсілмен шығуға болады?</p>
+        <ol class="math-steps">
+          <li>$a_n$ - $n$ сатыға шығу тәсілдері. Соңғы қадам не $1$, не $2$ саты: $a_n=a_{n-1}+a_{n-2}$.</li>
+          <li>$a_1=1$ (тек $1$), $a_2=2$ ($1+1$ не $2$).</li>
+          <li>$a_3=3$, $a_4=5$, $a_5=8$.</li>
+          <li>Фибоначчи сандары! Тексеру: $5$-ке $1,2$ қадамдармен $8$ құрам: $11111$, $2111$-тің $4$ орналасуы, $221$-дің $3$ орналасуы ✓.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> «Соңғы қадамға қарап» есепті кішірек есептерге бөлеміз - рекуррент шығады. Бұл динамикалық бағдарламалаудың идеясы.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Ханой мұнарасы: үш діңгек, біріншісінде $n$ диск (үлкені төменде). Бір қадамда бір дискіні ауыстырамыз, үлкенін кішісінің үстіне қоюға болмайды. Барлығын үшінші діңгекке көшіру үшін ең аз неше қадам керек? Үлкен дискіні жылжыту үшін алдымен үстіндегі $n-1$ дискіні көшіру керек, сосын үлкенін, сосын тағы $n-1$-ді. Демек $H_n=2H_{n-1}+1$. Бұл - <b>рекуррентті қатынас</b>: үлкен есеп кішісі арқылы.</p>
+      <p>Рекуррентті қатынас - рекурсивті бағдарлама сияқты: оған «база» (бастапқы мән) және «қадам» керек. Бірақ бағдарлама $H_{64}$-ті есептеу үшін 63 рет өзін шақырады, ал <b>жабық формула</b> $H_n=2^n-1$ бірден жауап береді. Рекуррентті «шешу» - жабық формуланы табу.</p>
+      <p>Фибоначчи сандары $F_n=F_{n-1}+F_{n-2}$ табиғатта (гүл жапырақтары, күнбағыс тұқымдары) және алгоритмдерде (Евклид алгоритмінің ең нашар жағдайы) кездеседі. Олардың жабық формуласында иррационал $\sqrt5$ бар, бірақ нәтиже әрдайым бүтін - сипаттамалық теңдеу әдісінің күші осында.</p>
+      <p>Қосу-шегеру: «ешбір хат өз конвертіне түспеуі» есебін тура санау қиын. Бірақ «кемінде бір хат өз орнында» оқиғаларын қиылыстарымен санау оңай, сосын «артық санағанды» кезекпен түзетеміз. Таңқаларлық нәтиже: $n$ үлкен болса, ешкім өз орнына түспеу ықтималдығы $\frac1e\approx0{,}368$-ге жақындайды.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · қонақтар тізімі</span>
+        <p>Футбол не шахмат ойнайтындарды санағанда, екеуін де ойнайтындар екі рет саналады - оларды бір рет шегереміз. Үш үйірме болса, түзетулер кезектесіп: қосу, шегеру, қосу. Бұл - қосу-шегеру принципі.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · пайыздық салым</span>
+        <p>$a_n=1{,}1a_{n-1}+100$ - әр жылы $10\%$ өсіп, $100$ қосылатын салым. Рекуррент тек «келесі қадамды» айтады; оны шешу - кез келген $n$ үшін тікелей формула табу.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$|A_1\cup\dots\cup A_n|$</td><td>бірігудің қуаты</td><td>қосу-шегеру формуласымен</td></tr>
+        <tr><td>$D_n$</td><td>бұзылған орналасулар</td><td>ешкім өз орнында емес алмастырулар саны</td></tr>
+        <tr><td>$a_n=c_1a_{n-1}+c_2a_{n-2}$</td><td>екінші ретті рекуррент</td><td>әр мүше алдыңғы екеуімен анықталады</td></tr>
+        <tr><td>$r^2-c_1r-c_2=0$</td><td>сипаттамалық теңдеу</td><td>$a_n=r^n$ түріндегі шешімдерді береді</td></tr>
+        <tr><td>$F_n$</td><td>Фибоначчи сандары</td><td>$0,1,1,2,3,5,8,\dots$</td></tr>
+        <tr><td>$\varphi=\frac{1+\sqrt5}2$</td><td>алтын қима</td><td>$\approx1{,}618$</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 4.1 · Жалпы қосу-шегеру принципі</span>
+        <p>Ақырлы $A_1,\dots,A_n$ жиындары үшін $$\Big|\bigcup_{i=1}^nA_i\Big|=\sum_i|A_i|-\sum_{i&lt;j}|A_i\cap A_j|+\sum_{i&lt;j&lt;k}|A_i\cap A_j\cap A_k|-\dots+(-1)^{n+1}|A_1\cap\dots\cap A_n|.$$ Бұл - <strong>қосу-шегеру принципі</strong> (<span class="term-en">inclusion-exclusion principle</span>).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Бірігудің элементтер санын: жеке жиындарды қосып, қос қиылысуларды шегеріп, үштік қиылысуларды қайта қосып, т.с.с. табамыз.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту.</p>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 4.1 · Бұзылған орналасу</span>
+        <p>$\{1,\dots,n\}$-нің ешбір элементі өз орнында тұрмайтын алмастыруы <strong>бұзылған орналасу</strong> (<span class="term-en">derangement</span>) деп аталады; саны $D_n$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Бұзылған орналасу - барлық элемент өз орнынан ауысқан алмастыру (хаттарды бәрін қате конвертке салу).</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 4.2 · Рекуррентті қатынас</span>
+        <p>$a_n$ мүшесін алдыңғы мүшелер арқылы өрнектейтін теңдеу <strong>рекуррентті қатынас</strong> (<span class="term-en">recurrence relation</span>) деп аталады. $a_n=c_1a_{n-1}+\dots+c_ka_{n-k}$ ($c_i$ - тұрақты, $c_k\ne0$) - $k$-ретті <strong>сызықтық біртекті рекуррент</strong> (<span class="term-en">linear homogeneous recurrence</span>); оның <strong>сипаттамалық теңдеуі</strong> (<span class="term-en">characteristic equation</span>) $r^k=c_1r^{k-1}+\dots+c_k$. Шешім $k$ бастапқы шартпен ($a_0,\dots,a_{k-1}$) бірмәнді анықталады.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Рекуррентті қатынас - келесі мүшені алдыңғылары арқылы беретін ереже.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 4.2 · Екінші ретті рекуррентті шешу</span>
+        <p>$a_n=c_1a_{n-1}+c_2a_{n-2}$, $c_2\ne0$, сипаттамалық теңдеу $r^2-c_1r-c_2=0$. (1) Әртүрлі түбірлер $r_1\ne r_2$ (комплекс те болуы мүмкін): $a_n=\alpha r_1^n+\beta r_2^n$. (2) Қайталанатын түбір $r_0$: $a_n=(\alpha+\beta n)r_0^n$. $\alpha,\beta$ бастапқы шарттардан табылады.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Сипаттамалық теңдеудің түбірлерін тауып, шешімді $Ar_1^n+Br_2^n$ түрінде жазамыз; $A$, $B$ бастапқы шарттардан.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту: (1) жағдайдың дәлелі; (2) $r_0^n$ және $nr_0^n$ шешім екенін тікелей қою арқылы тексеруге болады ($r_0=\frac{c_1}{2}$, $c_1^2+4c_2=0$ пайдаланылады).</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 4.3 · Бине формуласы</span>
+        <p>$F_0=0$, $F_1=1$, $F_n=F_{n-1}+F_{n-2}$ болса, $$F_n=\frac{\varphi^n-\psi^n}{\sqrt5},\qquad\varphi=\frac{1+\sqrt5}{2},\ \psi=\frac{1-\sqrt5}{2}.$$ $|\psi|&lt;1$ болғандықтан $F_n$ - $\frac{\varphi^n}{\sqrt5}$-тің ең жақын бүтін саны, және $\frac{F_{n+1}}{F_n}\to\varphi$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Фибоначчи сандарының нақты формуласы алтын қиманың дәрежелері арқылы.</p></div>
+      <p><em>Негіздеме.</em> 3-қорыту.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 4.4 · Бірінші ретті біртекті емес рекуррент</span>
+        <p>$a_n=ca_{n-1}+d$, $c\ne1$ болса, $a_n=c^n\left(a_0-p\right)+p$, мұнда $p=\frac{d}{1-c}$ - тұрақты шешім. $c=1$ болса, $a_n=a_0+nd$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $a_n=ca_{n-1}+d$ рекурренті - қозғалмайтын нүктеден ауытқу $c$ есе көбейеді.</p></div>
+      <p><em>Негіздеме.</em> $b_n=a_n-p$ айырмасы $b_n=cb_{n-1}$ біртекті рекурренті қанағаттандырады, демек $b_n=c^nb_0$.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 4.1 · Бұзылған орналасулар</span>
+        <div class="math-fbody">$$D_n=n!\sum_{k=0}^{n}\frac{(-1)^k}{k!},\qquad D_n=(n-1)(D_{n-1}+D_{n-2})$$</div>
+        <p class="math-fnote">$D_1=0$, $D_2=1$, $D_3=2$, $D_4=9$, $D_5=44$. $\frac{D_n}{n!}\to e^{-1}$.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 4.2 · Ханой мұнарасы</span>
+        <div class="math-fbody">$$H_n=2H_{n-1}+1,\ H_1=1\ \Longrightarrow\ H_n=2^n-1$$</div>
+        <p class="math-fnote">Төменгі баға: үлкен дискіні жылжыту үшін басқалары бір діңгекте жиналуы керек, сондықтан $2^n-1$-ден аз мүмкін емес.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 4.3 · Бөл де билей</span>
+        <div class="math-fbody">$$T(n)=2T(n/2)+n,\ T(1)=0\ \Longrightarrow\ T(n)=n\log_2n$$</div>
+        <p class="math-fnote">$n=2^m$ үшін; сұрыптау (merge sort) салыстыруларының ретін береді.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Рекуррентті шешу жоспары: 1) шарттан $a_n$-ді кіші есептер арқылы өрнектеу (соңғы қадамға қарап бөлу); 2) бастапқы шарттарды табу; 3) бірнеше мүшені есептеп, заңдылықты көру; 4) сипаттамалық теңдеу не «ашу»; 5) формуланы бастапқы мүшелермен және индукциямен тексеру.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Бастапқы шарттарды ұмытпаңыз: $a_n=a_{n-1}+a_{n-2}$ рекуррентін Фибоначчи де ($1,1,2,3,\dots$), Люка сандары да ($2,1,3,4,7,\dots$) қанағаттандырады. Рекуррент тек «ережені» береді, ал нақты тізбекті бастапқы мәндер анықтайды. Сондай-ақ сипаттамалық теңдеу әдісі тек <em>тұрақты</em> коэффициентті сызықтық рекурренттерге жарайды.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $1$-ден $100$-ге дейін $2$-ге не $3$-ке бөлінетін сандар саны?</span></summary>
+        <p>$50+33-16=67$.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> $D_3$ неге тең?</span></summary>
+        <p>$2$: $(2,3,1)$ және $(3,1,2)$.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> $a_n=2a_{n-1}$, $a_0=3$ шешімі?</span></summary>
+        <p>$a_n=3\cdot2^n$.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> $F_{n+1}/F_n$ неге ұмтылады?</span></summary>
+        <p>Алтын қимаға $\varphi\approx1{,}618$.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: қосу-шегеру принципі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> кез келген элемент оң жақта дәл бір рет саналатынын дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Бірігудің әр элементі формулада неше рет саналатынын есептейміз: $m$ жиында болса, $\sum(-1)^{k+1}C_m^k=1$ рет.</p>
+          <ol class="math-steps">
+            <li>Бірігуге жататын $x$ элемент дәл $m\ge1$ жиынға тиесілі болсын.</li>
+            <li>Ол $\sum|A_i|$-де $m=C_m^1$ рет, $\sum|A_i\cap A_j|$-де $C_m^2$ рет, ..., $j$ жиынның қиылыстарында $C_m^j$ рет саналады.</li>
+            <li>Оң жақтағы оның жалпы «салмағы»: $C_m^1-C_m^2+C_m^3-\dots+(-1)^{m+1}C_m^m$.</li>
+            <li>Биномнан: $0=(1-1)^m=\sum_{j=0}^m(-1)^jC_m^j=1-\left(C_m^1-C_m^2+\dots\right)$.</li>
+            <li>Демек салмақ $=1$: әр элемент дәл бір рет саналады. Бірігуге жатпайтын элемент мүлде саналмайды. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: екінші ретті рекуррент (әртүрлі түбірлер)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $a_n=\alpha r_1^n+\beta r_2^n$ барлық шешімді беретінін көрсету.</p>
+          <p class="mx-idea"><b>Идея:</b> $r^n$ түріндегі шешім іздесек, сипаттамалық теңдеу шығады; екі түбірден құралған комбинация бастапқы шарттарды қанағаттандырады.</p>
+          <ol class="math-steps">
+            <li>$r^n$ түріндегі шешім іздейміз: $r^n=c_1r^{n-1}+c_2r^{n-2}\iff r^{n-2}(r^2-c_1r-c_2)=0$. $r\ne0$ ($c_2\ne0$), демек $r$ - сипаттамалық теңдеудің түбірі.</li>
+            <li>Рекуррент сызықтық: екі шешімнің кез келген сызықтық комбинациясы да шешім. Сондықтан $\alpha r_1^n+\beta r_2^n$ - шешім.</li>
+            <li>Бастапқы шарттар: $\alpha+\beta=a_0$, $\alpha r_1+\beta r_2=a_1$. Анықтауыш $r_2-r_1\ne0$, сондықтан $\alpha,\beta$ бірмәнді табылады.</li>
+            <li>Ал рекурренттің шешімі $a_0,a_1$-мен бірмәнді анықталады (индукция). Демек табылған формула - <em>сол</em> шешім.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: Бине формуласы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Фибоначчи сандарының жабық формуласын табу.</p>
+          <p class="mx-idea"><b>Идея:</b> Фибоначчи үшін $r^2=r+1$, түбірлері $\varphi$ пен $\psi$; $F_0=0$, $F_1=1$ шарттарынан коэффициенттер $\pm\frac1{\sqrt5}$.</p>
+          <ol class="math-steps">
+            <li>Сипаттамалық теңдеу: $r^2=r+1$, түбірлері $\varphi=\frac{1+\sqrt5}2\approx1{,}618$, $\psi=\frac{1-\sqrt5}2\approx-0{,}618$.</li>
+            <li>$F_n=\alpha\varphi^n+\beta\psi^n$. $F_0=0$: $\alpha+\beta=0$. $F_1=1$: $\alpha(\varphi-\psi)=1$, $\varphi-\psi=\sqrt5$.</li>
+            <li>$\alpha=\frac1{\sqrt5}$, $\beta=-\frac1{\sqrt5}$: $F_n=\frac{\varphi^n-\psi^n}{\sqrt5}$.</li>
+            <li>$|\psi|&lt;1$, сондықтан $\left|\frac{\psi^n}{\sqrt5}\right|&lt;\frac12$ барлық $n\ge0$ үшін: $F_n$ - $\frac{\varphi^n}{\sqrt5}$-тің ең жақын бүтіні.</li>
+            <li>Тексеру: $n=10$: $\frac{1{,}618^{10}}{2{,}236}\approx\frac{122{,}99}{2{,}236}\approx55{,}00$, ал $F_{10}=55$ ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: бұзылған орналасулар формуласы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $D_n=n!\sum_{k=0}^n\frac{(-1)^k}{k!}$ қорыту.</p>
+          <p class="mx-idea"><b>Идея:</b> «$i$ өз орнында» оқиғаларына қосу-шегеру принципін қолданамыз.</p>
+          <ol class="math-steps">
+            <li>$A_i$ - $i$ өз орнында тұратын алмастырулар. $D_n=n!-|A_1\cup\dots\cup A_n|$.</li>
+            <li>$k$ бекітілген элементтің қиылысы: қалған $n-k$ элемент еркін - $(n-k)!$ алмастыру. Мұндай $k$-жиындар $C_n^k$.</li>
+            <li>Қосу-шегеру: $|\bigcup A_i|=\sum_{k=1}^n(-1)^{k+1}C_n^k(n-k)!$.</li>
+            <li>$C_n^k(n-k)!=\frac{n!}{k!}$, демек $D_n=n!-\sum_{k=1}^n(-1)^{k+1}\frac{n!}{k!}=n!\sum_{k=0}^n\frac{(-1)^k}{k!}$.</li>
+            <li>$\frac{D_n}{n!}=\sum_{k=0}^n\frac{(-1)^k}{k!}\to e^{-1}$; $n=5$: $\frac{44}{120}\approx0{,}3667$, $e^{-1}\approx0{,}3679$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Ханой мұнарасы</h3>
+        <p class="math-problem">$H_n=2H_{n-1}+1$, $H_1=1$ рекуррентін шешіңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Бірнеше мүше: $1,3,7,15,31$ - болжам $2^n-1$.</li>
+          <li><b>2-қадам.</b> Теорема 4.4: $c=2$, $d=1$, $p=\frac{1}{1-2}=-1$. $H_0=0$ деп алсақ ($H_1=2\cdot0+1$ ✓), $H_n=2^n(0+1)-1$.</li>
+          <li><b>3-қадам.</b> $H_n=2^n-1$. Индукция: $2(2^{n-1}-1)+1=2^n-1$ ✓.</li>
+          <li><b>4-қадам.</b> 64 диск, секундына бір қадам: $2^{64}-1\approx1{,}8\cdot10^{19}$ секунд - 500 миллиард жылдан астам.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $H_n=2^n-1$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Сипаттамалық теңдеу</h3>
+        <p class="math-problem">$a_n=5a_{n-1}-6a_{n-2}$, $a_0=1$, $a_1=4$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $r^2-5r+6=0$, $r_1=2$, $r_2=3$.</li>
+          <li><b>2-қадам.</b> $a_n=\alpha2^n+\beta3^n$. $\alpha+\beta=1$, $2\alpha+3\beta=4$.</li>
+          <li><b>3-қадам.</b> $\beta=2$, $\alpha=-1$: $a_n=2\cdot3^n-2^n$.</li>
+          <li><b>4-қадам.</b> Тексеру: $a_2=5\cdot4-6\cdot1=14$; формула $18-4=14$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $a_n=2\cdot3^n-2^n$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Қайталанатын түбір</h3>
+        <p class="math-problem">$a_n=4a_{n-1}-4a_{n-2}$, $a_0=1$, $a_1=6$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $r^2-4r+4=(r-2)^2=0$: $r_0=2$ (екі еселі).</li>
+          <li><b>2-қадам.</b> $a_n=(\alpha+\beta n)2^n$. $a_0=\alpha=1$; $a_1=2(1+\beta)=6\Rightarrow\beta=2$.</li>
+          <li><b>3-қадам.</b> $a_n=(1+2n)2^n$.</li>
+          <li><b>4-қадам.</b> Тексеру: $a_2=4\cdot6-4\cdot1=20$; формула $5\cdot4=20$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $a_n=(2n+1)2^n$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Рекуррент құру</h3>
+        <p class="math-problem">$1\times n$ жолақты $1\times1$ және $1\times2$ тақтайшалармен неше тәсілмен жабуға болады?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $t_n$ - тәсілдер саны. Соңғы тақтайшаға қараймыз: $1\times1$ болса, қалғаны $t_{n-1}$; $1\times2$ болса, $t_{n-2}$.</li>
+          <li><b>2-қадам.</b> $t_n=t_{n-1}+t_{n-2}$; $t_1=1$, $t_2=2$.</li>
+          <li><b>3-қадам.</b> $1,2,3,5,8,13,\dots$ - Фибоначчи: $t_n=F_{n+1}$.</li>
+          <li><b>4-қадам.</b> $n=10$: $t_{10}=F_{11}=89$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $t_n=F_{n+1}$; $t_{10}=89$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Рекуррентті бастапқы шарттарсыз «шешу»</span> → <span class="math-good">шешім $+$ бастапқы шарттар</span><br>Неге қате: бір рекуррентті көп тізбек қанағаттандырады.</li>
+        <li><span class="math-bad">Қайталанатын түбірде $a_n=\alpha r_0^n+\beta r_0^n$</span> → <span class="math-good">$(\alpha+\beta n)r_0^n$</span><br>Неге қате: екі тұрақты бір тұрақтыға қосылып кетеді, екі бастапқы шартты қанағаттандыру мүмкін емес.</li>
+        <li><span class="math-bad">Қосу-шегеруде таңбаларды ауыстырмау</span> → <span class="math-good">$+,-,+,\dots$</span><br>Неге қате: жұп сандағы қиылыстар шегеріледі, тақ сандағылар қосылады.</li>
+        <li><span class="math-bad">$D_n=n!-n\cdot(n-1)!$</span> → <span class="math-good">толық қосу-шегеру</span><br>Неге қате: бұл тек бірінші түзету; бірнеше элемент өз орнында болған жағдайлар қайта саналады.</li>
+        <li><span class="math-bad">$F_n=\frac{\varphi^n}{\sqrt5}$ дәл формула</span> → <span class="math-good">$F_n=\frac{\varphi^n-\psi^n}{\sqrt5}$ (не ең жақын бүтін)</span><br>Неге қате: $\frac{\varphi^n}{\sqrt5}$ бүтін емес.</li>
+        <li><span class="math-bad">Сызықтық емес рекуррентке ($a_n=a_{n-1}^2$) сипаттамалық теңдеу</span> → <span class="math-good">басқа әдіс (логарифм, ауыстыру)</span><br>Неге қате: әдіс тек сызықтық тұрақты коэффициентті рекурренттерге.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Фибоначчи: F(n) ≈ φⁿ/√5" data-config='{"fns": [{"f": "((1+sqrt(5))/2)^x/sqrt(5)", "label": "φˣ/√5"}, {"f": "(((1+sqrt(5))/2)^floor(x)-((1-sqrt(5))/2)^floor(x))/sqrt(5)", "label": "F(⌊x⌋) (Бине)", "color": 1}], "view": [0, 15, 0, 700]}'></div>
+      <p><b>Бақылаңыз:</b> Баспалдақ (қызыл) - Бине формуласы бойынша нақты Фибоначчи сандары, көк қисық - $\frac{\varphi^x}{\sqrt5}$. Бүтін нүктелерде олардың айырмасы $\frac{|\psi|^n}{\sqrt5}&lt;\frac12$ және тез нөлге ұмтылады: экспоненциалдық өсу $\varphi\approx1{,}618$ негізімен.</p>
+      <div class="math-viz" data-viz="series" data-title="Dₙ/n! = Σ (−1)ᵏ/k! → 1/e" data-config='{"term": "(-1)^n/n!", "start": 0, "N": 12, "limit": "exp(-1)"}'></div>
+      <p><b>Бақылаңыз:</b> Дербес қосындылар $\frac{D_n}{n!}$ - $n$ хат кездейсоқ салынғанда ешбірі өз конвертіне түспеу ықтималдығы. Олар $\frac1e\approx0{,}3679$ маңында тербеліп, өте тез жинақталады: $n=6$-да айырма $0{,}0002$-ден аз. Жауап іс жүзінде $n$-ге тәуелсіз!</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m15-4-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-4-t1">1. Рекуррент мүшелері</h3></div>
+        <p>Мүшелерді есептеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$a_n=3a_{n-1}-2$, $a_0=2$. $a_4=?$","a":82,"v":"3*(3*(3*(3*2-2)-2)-2)-2","hint":"$a_1=4$, $a_2=10$, ...","sol":{"steps":["$2\\to4\\to10\\to28\\to82$."],"ans":"$82$"}},{"q":"Фибоначчи: $F_{12}$ ($F_0=0$, $F_1=1$)","a":144,"v":"sum([1 for _ in range(144)])","hint":"$0,1,1,2,3,5,8,13,21,34,55,89,144$.","sol":{"steps":["$F_{10}=55$, $F_{11}=89$, $F_{12}=144$."],"ans":"$144$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-4-num2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-4-t2">2. Бұзылған орналасулар</h3></div>
+        <p>Санды енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$D_4$","a":9,"v":"factorial(4)*sum([Rational((-1)**k,factorial(k)) for k in range(0,5)])","hint":"$24\\left(1-1+\\frac12-\\frac16+\\frac1{24}\\right)$.","sol":{"steps":["$12-4+1$."],"ans":"$9$"}},{"q":"$D_6$ ($D_n=(n-1)(D_{n-1}+D_{n-2})$, $D_5=44$, $D_4=9$)","a":265,"v":"factorial(6)*sum([Rational((-1)**k,factorial(k)) for k in range(0,7)])","hint":"$5(44+9)$.","sol":{"steps":["$5\\cdot53$."],"ans":"$265$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m15-4-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m15-4-t3">3. Сипаттамалық теңдеу</h3></div>
+        <p>Дұрыс сипаттамалық теңдеуді таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$a_n=7a_{n-1}-10a_{n-2}$","o":["$r^2-7r+10=0$","$r^2+7r-10=0$","$r^2-7r-10=0$","$7r-10=0$"],"a":0,"e":"$r^2=7r-10$.","hint":"$a_n\\to r^2$, $a_{n-1}\\to r$, $a_{n-2}\\to1$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m15-4-exp4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-4-t4">4. Жабық формула</h3></div>
+        <p>$n$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$a_n=5a_{n-1}-6a_{n-2}$, $a_0=2$, $a_1=5$.","a":"2^n+3^n","v":"2**n+3**n","vars":["n"],"dom":[0,8],"hint":"$r^2-5r+6=0$: $r=2,3$.","sol":{"steps":["$\\alpha+\\beta=2$, $2\\alpha+3\\beta=5$.","$\\alpha=\\beta=1$."],"ans":"$2^n+3^n$"}},{"q":"$a_n=2a_{n-1}+3$, $a_0=1$.","a":"4*2^n-3","v":"4*2**n-3","vars":["n"],"dom":[0,8],"hint":"Тұрақты шешім $p=-3$.","sol":{"steps":["$a_n=2^n(1+3)-3$."],"ans":"$4\\cdot2^n-3$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-4-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-4-t5">5. Қосу-шегеру</h3></div>
+        <p>Санды енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$1..1000$ сандарының ішінде 2-ге, 3-ке, 5-ке бөлінбейтіндері","a":266,"v":"len([k for k in range(1,1001) if k%2 and k%3 and k%5])","hint":"$1000-|A_2\\cup A_3\\cup A_5|$.","sol":{"steps":["$|A_2\\cup A_3\\cup A_5|=500+333+200-166-100-66+33=734$.","$1000-734$."],"ans":"$266$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m15-4-mat6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-4-t6">6. Рекуррент пен шешім</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Шешімдер.","pairs":[["aₙ = 2aₙ₋₁, a₀ = 3","3·2ⁿ"],["aₙ = aₙ₋₁ + 5, a₀ = 1","1 + 5n"],["aₙ = 2aₙ₋₁ + 1, a₀ = 0","2ⁿ − 1"],["aₙ = 4aₙ₋₁ − 4aₙ₋₂, a₀ = 1, a₁ = 2","2ⁿ"]],"hint":"Бірнеше мүшені есептеп көріңіз.","sol":{"steps":["Соңғысы: $(1+\\beta n)2^n$, $a_1=2(1+\\beta)=2\\Rightarrow\\beta=0$."]},"e":"Әр жағдайда бастапқы шарт шешімді бекітеді."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m15-4-par7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m15-4-t7">7. Параметрлік: біртекті емес рекуррент</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"c":{"int":[2,4]},"d":{"int":[1,6]},"n":{"int":[3,6]}},"type":"num","q":"$a_k=#{c}a_{k-1}+#{d}$, $a_0=0$. $a_{#{n}}=?$","a":"d*(c^n-1)/(c-1)","v":"d*(c**n-1)/(c-1)","hint":"$a_n=p(1-c^n)$, $p=\\frac{d}{1-c}$.","sol":{"steps":["$p=\\frac{#{d}}{1-#{c}}$, $a_n=p\\left(1-#{c}^{n}\\right)=#{d}\\cdot\\frac{#{c}^{n}-1}{#{c}-1}$."],"ans":"$#{d*(c^n-1)/(c-1)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m15-4-par8">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-4-t8">8. Параметрлік: сипаттамалық теңдеу</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"r":{"int":[2,4]},"s":{"int":[-3,-1]},"b":{"calc":"r+s"},"c":{"calc":"-r*s"},"n":{"int":[3,5]}},"type":"num","q":"$a_k=#{b}a_{k-1}#{+c}a_{k-2}$, $a_0=2$, $a_1=#{b}$. $a_{#{n}}=?$","a":"r^n+s^n","v":"r**n+s**n","hint":"Түбірлері $#{r}$ және $#{s}$; $a_n=\\alpha r_1^n+\\beta r_2^n$.","sol":{"steps":["$r^2-#{p:b}r#{+(-c)}=0$: $r=#{r}$, $r=#{s}$.","$\\alpha=\\beta=1$: $a_n=#{r}^n+(#{s})^n$."],"ans":"$#{r^n+s^n}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-4-num9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-4-t9">9. Тақтайшалар</h3></div>
+        <p>$2\times n$ жолақты $1\times2$ домино тастарымен (көлденең не тік) жабу тәсілдері $t_n$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$t_8$ ($t_1=1$, $t_2=2$, $t_n=t_{n-1}+t_{n-2}$)","a":34,"v":"34","hint":"Сол жақ шеттегі тастарға қараңыз: бір тік не екі көлденең.","sol":{"steps":["$1,2,3,5,8,13,21,34$."],"ans":"$34$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m15-4-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-4-t10">10. Бөл де билей</h3></div>
+        <p>$T(n)=2T(n/2)+n$, $T(1)=0$, $n=2^m$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$T(1024)$","a":10240,"v":"1024*10","hint":"$T(n)=n\\log_2n$.","sol":{"steps":["$\\log_21024=10$."],"ans":"$10\\,240$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m15-4-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-4-t11">11. Сипаттамалық теңдеу әдісі</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$a_n=c_1a_{n-1}+c_2a_{n-2}$ шешу.","steps":["Сипаттамалық теңдеуді жазамыз: $r^2-c_1r-c_2=0$.","Түбірлерді табамыз.","Түбірлер әртүрлі не қайталанатынына қарай жалпы шешімді жазамыз.","Бастапқы шарттардан $\\alpha,\\beta$ табамыз.","Формуланы $a_2$, $a_3$-пен тексереміз."],"hint":"Теңдеу → түбірлер → жалпы шешім → тұрақтылар.","sol":{"ans":"$a_n=\\alpha r_1^n+\\beta r_2^n$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m15-4-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m15-4-t12">12. Қадамдық шешім: T(n) = 2T(n/2) + n</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$n=2^m$, $T(1)=0$, $T(n)=2T(n/2)+n$ рекуррентін «ашу» әдісімен шешіңіз.","hint":"$T(n)$-ды бірнеше рет ауыстырып жазыңыз.","steps":["$T(n)=2T(n/2)+n=2\\left[2T(n/4)+\\frac n2\\right]+n=4T(n/4)+2n$.","Тағы бір қадам: $8T(n/8)+3n$. Жалпы $j$ қадамнан кейін $2^jT(n/2^j)+jn$.","$j=m=\\log_2n$: $2^mT(1)+mn=n\\log_2n$.","Тексеру индукциямен: $2\\cdot\\frac n2\\log_2\\frac n2+n=n(\\log_2n-1)+n=n\\log_2n$ ✓."],"ans":"$T(n)=n\\log_2n$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Рекуррентті қатынастар - рекурсивті алгоритмдердің жұмыс уақыты (бинар іздеу $T(n)=T(n/2)+1$, сұрыптау), динамикалық бағдарламалау, қаржы (пайыздық өсім $a_n=1{,}1a_{n-1}+d$), популяция модельдері. Жабық формула мен мемоизация - бір мәселеге екі тәсіл.</p>
+      <p><b>Мини-жоба: «Рекурсия, мемоизация, формула».</b> Фибоначчиді үш тәсілмен есептеп, жылдамдықтарын салыстырамыз, бұзылған орналасуларды толық тізіммен тексереміз.</p>
+<pre data-lang="python"><code class="language-python">from functools import lru_cache
+from itertools import permutations
+from math import factorial, sqrt
+import time
+
+def fib_naive(n):
+    return n if n &lt; 2 else fib_naive(n - 1) + fib_naive(n - 2)
+
+@lru_cache(None)
+def fib_memo(n):
+    return n if n &lt; 2 else fib_memo(n - 1) + fib_memo(n - 2)
+
+def fib_binet(n):
+    phi = (1 + sqrt(5)) / 2
+    return round(phi ** n / sqrt(5))
+
+for f in (fib_naive, fib_memo, fib_binet):
+    t = time.time(); v = f(27); print(f.__name__, v, f"{time.time() - t:.4f} с")
+print("Бине дәлдігі:", all(fib_binet(n) == fib_memo(n) for n in range(70)), "| n=80:", fib_binet(80) == fib_memo(80))
+
+def derangements(n):
+    return sum(1 for p in permutations(range(n)) if all(p[i] != i for i in range(n)))
+for n in range(1, 8):
+    print(n, derangements(n), round(factorial(n) * sum((-1) ** k / factorial(k) for k in range(n + 1))))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li><code>fib_binet</code> қай $n$-нен бастап қате бере бастайды? Неге? (Жылжымалы үтір дәлдігі туралы ойланыңыз.)</li>
+        <li><code>fib_naive(n)</code> неше рет шақырылады? Шақырулар саны $c_n=c_{n-1}+c_{n-2}+1$ рекурренттін қанағаттандыратынын тексеріп, оны $F$ арқылы өрнектеңіз.</li>
+        <li>Ханой мұнарасын рекурсивті шешетін бағдарлама жазып, қадамдар санын $2^n-1$-мен салыстырыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Қосу-шегеру</td><td>$|\bigcup A_i|=\sum|A_i|-\sum|A_i\cap A_j|+\dots$</td><td>ақырлы жиындар</td></tr>
+        <tr><td>Бұзылған орналасу</td><td>$D_n=n!\sum_{k=0}^n\frac{(-1)^k}{k!}$</td><td>$\frac{D_n}{n!}\to\frac1e$</td></tr>
+        <tr><td>Сипаттамалық теңдеу</td><td>$r^2=c_1r+c_2$</td><td>сызықтық, тұрақты коэфф.</td></tr>
+        <tr><td>Әртүрлі түбірлер</td><td>$\alpha r_1^n+\beta r_2^n$</td><td>$r_1\ne r_2$</td></tr>
+        <tr><td>Қайталанатын түбір</td><td>$(\alpha+\beta n)r_0^n$</td><td>$r_1=r_2$</td></tr>
+        <tr><td>Бине</td><td>$F_n=\frac{\varphi^n-\psi^n}{\sqrt5}$</td><td>$F_0=0$, $F_1=1$</td></tr>
+        <tr><td>Біртекті емес</td><td>$a_n=c^n(a_0-p)+p$, $p=\frac d{1-c}$</td><td>$c\ne1$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m15-4-self">
+        <li><input type="checkbox"> <span>Мен жалпы қосу-шегеру принципін дәлелдеп, қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $D_n$ формуласын қорыта аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен есептің шартынан рекуррентті қатынас құра аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен сипаттамалық теңдеу әдісімен екінші ретті рекуррентті шеше аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Бине формуласын қорыта аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бөл де билей рекурренттерін «ашу» арқылы шеше аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="d">
+<p class="q-text">1. Ханой мұнарасы, 5 диск: ең аз қадам саны?</p>
+<label><input type="radio" value="a"> 32</label>
+<label><input type="radio" value="b"> 25</label>
+<label><input type="radio" value="c"> 10</label>
+<label><input type="radio" value="d"> 31</label>
+<p class="explain">2⁵ − 1.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. aₙ = 3aₙ₋₁, a₀ = 2. aₙ = ?</p>
+<label><input type="radio" value="a"> 3·2ⁿ</label>
+<label><input type="radio" value="b"> 2 + 3n</label>
+<label><input type="radio" value="c"> 2·3ⁿ</label>
+<label><input type="radio" value="d"> 6ⁿ</label>
+<p class="explain">Геометриялық прогрессия.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. r² − 5r + 6 = 0 түбірлері:</p>
+<label><input type="radio" value="a"> −2 және −3</label>
+<label><input type="radio" value="b"> 2 және 3</label>
+<label><input type="radio" value="c"> 1 және 6</label>
+<label><input type="radio" value="d"> 5 және 6</label>
+<p class="explain">(r − 2)(r − 3).</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">4. Қайталанатын түбір r₀ болса, жалпы шешім:</p>
+<label><input type="radio" value="a"> (α + βn)r₀ⁿ</label>
+<label><input type="radio" value="b"> αr₀ⁿ + βr₀ⁿ</label>
+<label><input type="radio" value="c"> αr₀ⁿ</label>
+<label><input type="radio" value="d"> α + βn</label>
+<p class="explain">Теорема 4.2.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">5. D₃ = ?</p>
+<label><input type="radio" value="a"> 3</label>
+<label><input type="radio" value="b"> 6</label>
+<label><input type="radio" value="c"> 1</label>
+<label><input type="radio" value="d"> 2</label>
+<p class="explain">231 және 312.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. Fₙ₊₁/Fₙ қайда ұмтылады?</p>
+<label><input type="radio" value="a"> 2</label>
+<label><input type="radio" value="b"> √5</label>
+<label><input type="radio" value="c"> (1 + √5)/2</label>
+<label><input type="radio" value="d"> 1</label>
+<p class="explain">Алтын қима φ.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. Көп хат кездейсоқ салынғанда ешбірі өз конвертіне түспеу ықтималдығы шамамен:</p>
+<label><input type="radio" value="a"> 0</label>
+<label><input type="radio" value="b"> 1/e ≈ 0,37</label>
+<label><input type="radio" value="c"> 1/2</label>
+<label><input type="radio" value="d"> 1/n</label>
+<p class="explain">Dₙ/n! → 1/e.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">8. T(n) = 2T(n/2) + n, T(1) = 0 шешімі:</p>
+<label><input type="radio" value="a"> n log₂ n</label>
+<label><input type="radio" value="b"> n²</label>
+<label><input type="radio" value="c"> 2ⁿ</label>
+<label><input type="radio" value="d"> n</label>
+<p class="explain">Рекуррентті ашу.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=discrete">Discrete Mathematics емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-94.html"><small>Алдыңғы</small>← Discrete Mathematics · 3-сабақ: Қатынастар және функциялар</a>

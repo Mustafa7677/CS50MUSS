@@ -6,13 +6,14 @@
   <title>Math Mathematical Optimization · 4-сабақ: Шектеусіз оңтайландыру: градиенттік әдістер - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Mathematical Optimization · 4-сабақ: Шектеусіз оңтайландыру: градиенттік әдістер - CS50 қазақша">
-  <meta property="og:description" content="Математика, Mathematical Optimization · 4-сабақ: Шектеусіз оңтайландыру: градиенттік әдістер. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Градиенттік түсу, қадам таңдау, Ньютон әдісі.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-108.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Mathematical Optimization · 4-сабақ: Шектеусіз оңтайландыру: градиенттік әдістер - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-108.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Mathematical Optimization · 4-сабақ: Шектеусіз оңтайландыру: градиенттік әдістер. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Градиенттік түсу, қадам таңдау, Ньютон әдісі.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,419 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="108">
+    <article class="content math-lesson" style="--sc:#a16207" id="main">
+      <div class="lecture-head" style="--lc:#a16207" data-n="108" data-msubj="optim" data-glyph="min">
         <div class="num">Mathematical Optimization · 4-сабақ</div>
         <h1>Шектеусіз оңтайландыру: градиенттік әдістер</h1>
-        <p>Градиенттік түсу, қадам таңдау, Ньютон әдісі.</p>
+        <p>Машиналық оқытудағы нейрондық желі миллиондаған параметрді «үйренеді» - бұл шектеусіз оңтайландыру: шығын функциясын ең кіші ету. Формуламен шешу мүмкін емес, сондықтан итерациялық әдістер қолданылады.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 50 мин</span><span>Есептер ≈ 1 сағ 10 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Бұл сабақта минимумның қажетті және жеткілікті шарттарын, градиенттік түсу әдісін, қадам ұзындығын таңдауды, жинақталу жылдамдығы мен «шарттылық» арасындағы байланысты, сондай-ақ Ньютон әдісін үйренеміз. «Бір қадамда функция қаншаға кемиді?» деген негізгі бағаны өзіміз дәлелдейміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-17">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=optim">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Mathematical Optimization: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-17">Mathematical Optimization</a></span><ol><li><a href="week-105.html" title="Оңтайландыру есептері және дөңес жиындар">1</a></li><li><a href="week-106.html" title="Сызықтық бағдарламалау және симплекс әдісі">2</a></li><li><a href="week-107.html" title="Қостық теориясы">3</a></li><li><a href="week-108.html" aria-current="page" title="Шектеусіз оңтайландыру: градиенттік әдістер">4</a></li><li><a href="week-109.html" title="Шектелген оңтайландыру: Лагранж және KKT">5</a></li><li><a href="week-110.html" title="Дөңес оңтайландыру және машиналық оқыту">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-17">Mathematical Optimization</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Градиенттік түсу - ең тік еңіс бойымен кішкене қадамдар жасау; қадам тым үлкен болса тербеледі, тым кішкене болса баяу; Ньютон әдісі қисықтықты ескеріп, әлдеқайда жылдам.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>минимумның бірінші ретті қажетті шартын $\nabla f=0$ және екінші ретті жеткілікті шартын (Гессиан оң анықталған) қолдану;</li>
+        <li>градиенттік түсу қадамын $\mathbf x_{k+1}=\mathbf x_k-\alpha\nabla f(\mathbf x_k)$ орындау;</li>
+        <li>$L$-тегіс функция үшін $\alpha=\frac1L$ қадамымен «кему леммасын» дәлелдеу;</li>
+        <li>квадраттық функцияда қадам ұзындығының тұрақтылық шартын $\alpha&lt;\frac{2}{\lambda_{\max}}$ және жинақталу жылдамдығының шарттылыққа $\kappa=\frac{\lambda_{\max}}{\lambda_{\min}}$ тәуелділігін түсіндіру;</li>
+        <li>Ньютон әдісінің қадамын $\mathbf x_{k+1}=\mathbf x_k-[\nabla^2f]^{-1}\nabla f$ орындау;</li>
+        <li>тоқтату критерийлерін және әдістердің артықшылық-кемшілігін салыстыру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Градиент $\nabla f$ - ең жылдам өсу бағыты, $-\nabla f$ - ең жылдам кему бағыты; бағыт бойынша туынды $D_{\mathbf u}f=\nabla f\cdot\mathbf u$ ($f$ дифференциалданса). Гессиан $\nabla^2f$ және оның меншікті мәндері (симметриялы матрицада нақты). Дөңес функцияда $\nabla f=0$ - ғаламдық минимум. Тейлор формуласы: $f(\mathbf x+\mathbf d)\approx f(\mathbf x)+\nabla f^T\mathbf d+\frac12\mathbf d^T\nabla^2f\,\mathbf d$.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-107.html">Mathematical Optimization · 3-сабақ: Қостық теориясы</a></li><li><a href="week-40.html">Multivariable Calculus · 5-сабақ: Экстремум және Лагранж көбейткіштері</a></li><li><a href="week-14.html">Linear Algebra · 8-сабақ: Меншікті мәндер мен меншікті векторлар</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: парабола бойымен түсу</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">$f(x)=x^2$, $x_0=4$, $x_{k+1}=x_k-\alpha f'(x_k)=x_k(1-2\alpha)$. $\alpha=0{,}1$, $\alpha=0{,}5$ және $\alpha=1{,}1$ үшін үш қадам жасаңыз.</p>
+        <ol class="math-steps">
+          <li>$\alpha=0{,}1$: көбейткіш $0{,}8$: $4\to3{,}2\to2{,}56\to2{,}05$ - баяу, бірақ нөлге.</li>
+          <li>$\alpha=0{,}5$: көбейткіш $0$: $4\to0$ - бір қадамда минимумға!</li>
+          <li>$\alpha=1{,}1$: көбейткіш $-1{,}2$: $4\to-4{,}8\to5{,}76\to-6{,}9$ - тербеліп, алыстайды.</li>
+          <li>Жинақталу шарты: $|1-2\alpha|&lt;1$, яғни $0&lt;\alpha&lt;1$. Мұнда $L=2$, ереже $\alpha&lt;\frac2L$.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Қадам ұзындығы (оқу жылдамдығы) - градиенттік түсудің ең маңызды параметрі. Оның шегі функцияның «қисықтығына» ($L$) тәуелді.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Тұманды таудан түсіп келе жатырсыз, тек аяғыңыздың астындағы еңісті сезесіз. Ең табиғи стратегия: ең тік төмен бағытпен бір қадам, сосын қайта қарау. Бұл - <b>градиенттік түсу</b>. Қадам ұзындығы $\alpha$ («оқыту жылдамдығы») маңызды: тым кіші болса - баяу, тым үлкен болса - аңғардың бір жағынан екінші жағына «секіріп», тіпті жоғарылап кетуіңіз мүмкін.</p>
+      <p>Ұзын, тар аңғар (мысалы, $f=x^2+10y^2$ - бір бағытта 10 есе тік) ерекше қиын. Градиент көбінесе аңғардың түбіне емес, қабырғасына көлденең бағытталады, сондықтан әдіс «зигзаг» жасап, баяу жылжиды. Аңғардың «созылуы» - шарттылық саны $\kappa$; ол неғұрлым үлкен болса, градиенттік түсу соғұрлым баяу.</p>
+      <p><b>Ньютон әдісі</b> еңісті ғана емес, «иілуді» (Гессианды) да ескереді: функцияны параболоидпен жуықтап, оның түбіне бірден секіреді. Квадраттық функцияда ол бір қадамда минимумды табады, ал жалпы жағдайда минимумға жақын квадраттық жылдамдықпен жинақталады. Бағасы - әр қадамда Гессианмен сызықтық жүйе шешу ($O(n^3)$).</p>
+      <p>Машиналық оқытуда параметрлер миллиондаған, сондықтан Ньютон тым қымбат; оның орнына градиенттік түсудің жақсартулары (импульс, Adam, стохастикалық градиент) қолданылады. Бірақ олардың барлығы осы сабақтағы негізгі идеяға сүйенеді.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · тұманда таудан түсу</span>
+        <p>Тұманда тұрсыз, тек аяқ астындағы еңісті сезесіз. Ең тік төмен бағытқа бір қадам - градиенттік түсу. Тар, ұзын шатқалда (нашар шартталған функция) бұл тәсіл беткейден беткейге секіріп, баяу жылжиды.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · нейрон желісі</span>
+        <p>Машиналық оқытуда миллиондаған салмақ градиенттік түсумен «үйретіледі»: әр қадамда қате функциясының градиенті есептеліп, салмақтар сәл түзетіледі. Оқу жылдамдығы - дәл осы $\alpha$.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$\nabla f$</td><td>градиент</td><td>ең тік өсу бағыты</td></tr>
+        <tr><td>$\nabla^2f$</td><td>Гессиан</td><td>екінші туындылар матрицасы - қисықтық</td></tr>
+        <tr><td>$\alpha$</td><td>қадам (оқу жылдамдығы)</td><td>градиент бағытында қаншалықты жүру</td></tr>
+        <tr><td>$L$</td><td>Липшиц тұрақтысы</td><td>градиенттің ең жылдам өзгеруі</td></tr>
+        <tr><td>$\kappa=\frac{\lambda_{\max}}{\lambda_{\min}}$</td><td>шарттылық саны</td><td>шатқалдың «тарлығы»</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 4.1 · Оңтайлылық шарттары</span>
+        <p>$f\in C^2$ ашық облыста. (1) Қажетті: $\mathbf x^*$ жергілікті минимум болса, $\nabla f(\mathbf x^*)=\mathbf0$ және $\nabla^2f(\mathbf x^*)$ оң жартылай анықталған. (2) Жеткілікті: $\nabla f(\mathbf x^*)=\mathbf0$ және $\nabla^2f(\mathbf x^*)$ оң анықталған болса, $\mathbf x^*$ - қатаң жергілікті минимум.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Минимумда градиент нөл; Гессиан оң анықталған болса - бұл шынымен жергілікті минимум.</p></div>
+      <p><em>Негіздеме.</em> Тейлор формуласынан: $f(\mathbf x^*+\mathbf d)=f(\mathbf x^*)+\frac12\mathbf d^T\nabla^2f\,\mathbf d+o(\|\mathbf d\|^2)$. Жеткіліктілікте квадраттық форма $\ge\frac{\lambda_{\min}}{2}\|\mathbf d\|^2$ қалдықты басып тастайды. $\nabla f=0$ нүктесі - <strong>стационар нүкте</strong> (<span class="term-en">stationary point</span>); Гессиан анықталмаған болса - <strong>ер тәрізді нүкте</strong> (<span class="term-en">saddle point</span>).</p>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 4.1 · Градиенттік түсу</span>
+        <p><strong>Градиенттік түсу</strong> (<span class="term-en">gradient descent</span>): $\mathbf x_{k+1}=\mathbf x_k-\alpha_k\nabla f(\mathbf x_k)$, мұнда $\alpha_k>0$ - <strong>қадам ұзындығы</strong> (<span class="term-en">step size</span>) (машиналық оқытуда «learning rate»). Тұрақты $\alpha$ не әр қадамда сызықтық іздеу (мысалы, $f$-ті $-\nabla f$ бағытында азайтатын $\alpha$).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Әр қадамда градиентке қарсы бағытта $\alpha$ ұзындықпен жүреміз.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 4.2 · L-тегістік</span>
+        <p>$f$ - <strong>L-тегіс</strong> (<span class="term-en">L-smooth</span>) функция, егер $\|\nabla f(\mathbf x)-\nabla f(\mathbf y)\|\le L\|\mathbf x-\mathbf y\|$. $f\in C^2$ болса, бұл $\nabla^2f$-тің меншікті мәндері $|\lambda|\le L$ болуымен тең күшті. Салдары (дәлелсіз): $f(\mathbf y)\le f(\mathbf x)+\nabla f(\mathbf x)^T(\mathbf y-\mathbf x)+\frac L2\|\mathbf y-\mathbf x\|^2$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $L$-тегіс: градиент өте жылдам өзгермейді - функция параболадан тез иілмейді.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 4.2 · Кему леммасы</span>
+        <p>$f$ $L$-тегіс болса, $\alpha=\frac1L$ қадамымен: $$f(\mathbf x_{k+1})\le f(\mathbf x_k)-\frac{1}{2L}\|\nabla f(\mathbf x_k)\|^2.$$ Демек $\nabla f\ne0$ болса функция қатаң кемиді, ал $f$ төменнен шектелген болса, $\nabla f(\mathbf x_k)\to0$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> $\alpha=\frac1L$ қадаммен әр қадам функцияны кемінде $\frac1{2L}\|\nabla f\|^2$-ге азайтады.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту. Дөңес $f$ үшін бұдан $f(\mathbf x_k)-f^*\le\frac{L\|\mathbf x_0-\mathbf x^*\|^2}{2k}$ бағасы шығады (дәлелін келтірмейміз).</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 4.3 · Квадраттық функциядағы градиенттік түсу</span>
+        <p>$f(\mathbf x)=\frac12\mathbf x^TQ\mathbf x$, $Q$ симметриялы оң анықталған, меншікті мәндері $0&lt;\lambda_{\min}\le\dots\le\lambda_{\max}$. Тұрақты $\alpha$-мен әр меншікті бағыттағы координата $(1-\alpha\lambda_i)$ есе көбейеді. Сондықтан әдіс жинақталады $\iff0&lt;\alpha&lt;\frac{2}{\lambda_{\max}}$. $\alpha=\frac{1}{\lambda_{\max}}$ болса, қате әр қадамда кемінде $1-\frac1\kappa$ есе кемиді, $\kappa=\frac{\lambda_{\max}}{\lambda_{\min}}$ - <strong>шарттылық саны</strong> (<span class="term-en">condition number</span>).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Квадраттық функцияда жинақталу жылдамдығы шарттылық санына тәуелді: тар шатқалда баяу.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту.</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 4.3 · Ньютон әдісі</span>
+        <p>Оңтайландырудағы <strong>Ньютон әдісі</strong> (<span class="term-en">Newton's method</span>): $\mathbf x_{k+1}=\mathbf x_k-[\nabla^2f(\mathbf x_k)]^{-1}\nabla f(\mathbf x_k)$ - $f$-тің квадраттық Тейлор жуықтауын ең кіші ететін нүкте. Бұл $\nabla f(\mathbf x)=0$ теңдеуіне қолданылған Ньютон әдісі; $\nabla^2f(\mathbf x^*)$ оң анықталған және $\mathbf x_0$ жеткілікті жақын болса, жергілікті квадраттық жинақталу.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Ньютон әдісі функцияны параболамен жуықтап, оның минимумына бірден секіреді.</p></div>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 4.1 · Градиенттік түсу</span>
+        <div class="math-fbody">$$\mathbf x_{k+1}=\mathbf x_k-\alpha\nabla f(\mathbf x_k)$$</div>
+        <p class="math-fnote">$L$-тегіс $f$ үшін $0&lt;\alpha\le\frac1L$ - кемуге кепілдік; квадраттық $f$ үшін тұрақтылық $\alpha&lt;\frac2{\lambda_{\max}}$.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 4.2 · Кему бағасы</span>
+        <div class="math-fbody">$$f(\mathbf x_{k+1})\le f(\mathbf x_k)-\frac{1}{2L}\|\nabla f(\mathbf x_k)\|^2$$</div>
+        <p class="math-fnote">Шарты: $L$-тегістік және $\alpha=\frac1L$.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 4.3 · Ньютон қадамы</span>
+        <div class="math-fbody">$$\nabla^2f(\mathbf x_k)\,\mathbf d=-\nabla f(\mathbf x_k),\qquad\mathbf x_{k+1}=\mathbf x_k+\mathbf d$$</div>
+        <p class="math-fnote">Кері матрицаны есептемей, сызықтық жүйені шешеміз. Гессиан оң анықталмаса, $\mathbf d$ кему бағыты болмауы мүмкін.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Тоқтату: $\|\nabla f(\mathbf x_k)\|\le\varepsilon$ (не $|f_{k+1}-f_k|$ кіші) және итерация санына шек. Қадамды таңдау: тым үлкен $\alpha$ - тербеліс не тарап кету; тым кіші - баяу. Бағалау: $\alpha\approx\frac1L$, $L$ - Гессианның ең үлкен меншікті мәнінің бағасы.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>$\nabla f=0$ - тек <em>қажетті</em> шарт: ер тәрізді нүкте ($x^2-y^2$, $(0;0)$) де стационар. Градиенттік түсу дөңес емес функцияда жергілікті минимумда не ер тәрізді нүкте маңында ұзақ «тұрып» қалуы мүмкін. Ньютон әдісі максимумға не ер тәрізді нүктеге де «тартылады» - ол $\nabla f=0$ нүктесін іздейді, минимумды емес.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $f(x)=3x^2$ үшін градиенттік түсу қай $\alpha$-да жинақталады?</span></summary>
+        <p>$f''=6=L$: $0&lt;\alpha&lt;\frac13$.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> Градиент нөл болатын нүкте әрдайым минимум ба?</span></summary>
+        <p>Жоқ: максимум не ер нүктесі де болуы мүмкін ($x^3$ нөлде).</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> Ньютон әдісі квадраттық функцияда неше қадамда минимумға жетеді?</span></summary>
+        <p>Бір қадамда.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> Неге Ньютон әдісі үлкен нейрон желілерінде сирек қолданылады?</span></summary>
+        <p>Гессиан $n\times n$ - миллиондаған параметрде оны сақтау және жүйені шешу тым қымбат.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: кему леммасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\alpha=\frac1L$ қадамымен $f(\mathbf x_{k+1})\le f(\mathbf x_k)-\frac1{2L}\|\nabla f(\mathbf x_k)\|^2$ дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $L$-тегістіктен функцияның жоғарғы параболалық бағасы шығады; оған градиенттік қадамды қойсақ, кему мөлшері табылады.</p>
+          <ol class="math-steps">
+            <li>$L$-тегістіктің салдары: $f(\mathbf y)\le f(\mathbf x)+\nabla f(\mathbf x)^T(\mathbf y-\mathbf x)+\frac L2\|\mathbf y-\mathbf x\|^2$.</li>
+            <li>$\mathbf x=\mathbf x_k$, $\mathbf y=\mathbf x_{k+1}=\mathbf x_k-\frac1L\mathbf g$, $\mathbf g=\nabla f(\mathbf x_k)$ қоямыз: $\mathbf y-\mathbf x=-\frac1L\mathbf g$.</li>
+            <li>$f(\mathbf x_{k+1})\le f(\mathbf x_k)-\frac1L\|\mathbf g\|^2+\frac L2\cdot\frac{1}{L^2}\|\mathbf g\|^2$.</li>
+            <li>$=f(\mathbf x_k)-\frac{1}{2L}\|\mathbf g\|^2$. ∎</li>
+            <li>Қосынды: $\sum_{k=0}^{K-1}\frac{1}{2L}\|\nabla f(\mathbf x_k)\|^2\le f(\mathbf x_0)-f(\mathbf x_K)\le f(\mathbf x_0)-\inf f$, демек $f$ төменнен шектелсе, $\|\nabla f(\mathbf x_k)\|\to0$.</li>
+            <li>Ескерту: бұл стационар нүктеге жақындауды көрсетеді; минимумға жинақталу үшін қосымша (мысалы, дөңестік) керек.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: квадраттық функцияда тұрақтылық және жылдамдық</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 4.3-ті меншікті векторлар базисінде дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Квадраттық функцияда қадам $\mathbf x\mapsto(I-\alpha Q)\mathbf x$; меншікті мәндер $1-\alpha\lambda_i$ - модулі $1$-ден кіші болуы керек.</p>
+          <ol class="math-steps">
+            <li>$\nabla f=Q\mathbf x$, сондықтан $\mathbf x_{k+1}=(I-\alpha Q)\mathbf x_k$; минимум $\mathbf x^*=\mathbf0$.</li>
+            <li>$Q$ симметриялы - ортонормаль меншікті векторлар базисі бар: $Q\mathbf v_i=\lambda_i\mathbf v_i$. $\mathbf x_k=\sum c_i^{(k)}\mathbf v_i$ деп жазсақ, $c_i^{(k+1)}=(1-\alpha\lambda_i)c_i^{(k)}$.</li>
+            <li>Демек $c_i^{(k)}=(1-\alpha\lambda_i)^kc_i^{(0)}$; жинақталу $\iff$ барлық $i$ үшін $|1-\alpha\lambda_i|&lt;1\iff0&lt;\alpha\lambda_i&lt;2\iff\alpha&lt;\frac{2}{\lambda_{\max}}$.</li>
+            <li>$\alpha=\frac1{\lambda_{\max}}$: көбейткіштер $1-\frac{\lambda_i}{\lambda_{\max}}\in\left[0;1-\frac{1}{\kappa}\right]$, ең баяуы $\lambda_{\min}$ бағытында: $1-\frac1\kappa$.</li>
+            <li>$\|\mathbf x_k\|\le\left(1-\frac1\kappa\right)^k\|\mathbf x_0\|$. $\kappa=10$: әр қадамда тек 10% кему; $\kappa=1$ (дөңгелек деңгей сызықтары) - бір қадамда минимум.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: Ньютон қадамы квадраттық моделден</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Ньютон қадамын квадраттық жуықтаудың минимумы ретінде қорыту.</p>
+          <p class="mx-idea"><b>Идея:</b> Тейлор бойынша квадраттық модель құрып, оның минимумын (сызықтық жүйе) табамыз - бұл Ньютон қадамы.</p>
+          <ol class="math-steps">
+            <li>Тейлор: $m(\mathbf d)=f(\mathbf x_k)+\mathbf g^T\mathbf d+\frac12\mathbf d^TH\mathbf d$, $\mathbf g=\nabla f(\mathbf x_k)$, $H=\nabla^2f(\mathbf x_k)$.</li>
+            <li>$H$ оң анықталған болса, $m$ қатаң дөңес; минимум $\nabla m=\mathbf g+H\mathbf d=0$.</li>
+            <li>$\mathbf d=-H^{-1}\mathbf g$ - Ньютон қадамы.</li>
+            <li>$f$ өзі квадраттық болса ($f=\frac12\mathbf x^TQ\mathbf x-\mathbf b^T\mathbf x$), модель дәл, сондықтан бір қадамда $\mathbf x_1=Q^{-1}\mathbf b$ - дәл минимум.</li>
+            <li>$\mathbf d$ кему бағыты: $\mathbf g^T\mathbf d=-\mathbf g^TH^{-1}\mathbf g&lt;0$ ($H^{-1}$ оң анықталған, $\mathbf g\ne0$).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Стационар нүктелерді жіктеу</h3>
+        <p class="math-problem">$f(x,y)=x^3-3x+y^2$ стационар нүктелерін тауып, түрін анықтаңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\nabla f=(3x^2-3;\ 2y)=0\Rightarrow x=\pm1$, $y=0$.</li>
+          <li><b>2-қадам.</b> $\nabla^2f=\begin{pmatrix}6x&amp;0\\0&amp;2\end{pmatrix}$.</li>
+          <li><b>3-қадам.</b> $(1;0)$: $\begin{pmatrix}6&amp;0\\0&amp;2\end{pmatrix}$ оң анықталған - жергілікті минимум, $f=-2$.</li>
+          <li><b>4-қадам.</b> $(-1;0)$: $\begin{pmatrix}-6&amp;0\\0&amp;2\end{pmatrix}$ анықталмаған - ер тәрізді нүкте.</li>
+          <li><b>5-қадам.</b> Ғаламдық минимум жоқ: $x\to-\infty$ кезінде $f\to-\infty$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $(1;0)$ - жергілікті минимум; $(-1;0)$ - ер тәрізді.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Градиенттік түсу</h3>
+        <p class="math-problem">$f(x,y)=x^2+10y^2$, $\mathbf x_0=(10;1)$, $\alpha=0{,}05$. Үш қадам.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\nabla f=(2x;\ 20y)$; Гессиан $\operatorname{diag}(2;20)$, $\lambda_{\max}=20$, $\kappa=10$.</li>
+          <li><b>2-қадам.</b> Көбейткіштер: $x$ бойынша $1-0{,}05\cdot2=0{,}9$, $y$ бойынша $1-0{,}05\cdot20=0$.</li>
+          <li><b>3-қадам.</b> $\mathbf x_1=(9;0)$, $\mathbf x_2=(8{,}1;0)$, $\mathbf x_3=(7{,}29;0)$; $f$: $101\to81\to65{,}61\to53{,}14$.</li>
+          <li><b>4-қадам.</b> $y$ бір қадамда нөлге түсті, ал $x$ әр қадамда тек 10%-ға кемиді ($1-\frac1\kappa=0{,}9$) - баяу бағыт.</li>
+          <li><b>5-қадам.</b> $\alpha=0{,}11>\frac{2}{20}$ болса, $y$ көбейткіші $-1{,}2$: $y_k$ тербеліп, өседі ($1\to-1{,}2\to1{,}44$) - тарап кету.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\mathbf x_3=(7{,}29;0)$; $\alpha$ $0{,}1$-ден аспауы керек.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Ньютон әдісі</h3>
+        <p class="math-problem">$f(x,y)=x^2+10y^2-2x$, $\mathbf x_0=(5;3)$. Бір Ньютон қадамы.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\nabla f=(2x-2;\ 20y)=(8;60)$; $H=\operatorname{diag}(2;20)$.</li>
+          <li><b>2-қадам.</b> $H\mathbf d=-\nabla f$: $\mathbf d=(-4;-3)$.</li>
+          <li><b>3-қадам.</b> $\mathbf x_1=(1;0)$ - $\nabla f(1;0)=0$, дәл минимум ($f=-1$).</li>
+          <li><b>4-қадам.</b> Квадраттық функцияда Ньютон бір қадамда жетеді, $\kappa$-ға тәуелсіз.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\mathbf x_1=(1;0)$ - минимум.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Бір айнымалы: Ньютон</h3>
+        <p class="math-problem">$f(x)=x-\ln x$ ($x>0$). Минимумды Ньютон әдісімен $x_0=0{,}5$-тен табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $f'=1-\frac1x$, $f''=\frac{1}{x^2}>0$ - қатаң дөңес, минимум $f'=0$: $x^*=1$.</li>
+          <li><b>2-қадам.</b> Ньютон: $x_{k+1}=x_k-\frac{1-1/x_k}{1/x_k^2}=x_k-x_k^2+x_k=2x_k-x_k^2$.</li>
+          <li><b>3-қадам.</b> $x_1=1-0{,}25=0{,}75$; $x_2=1{,}5-0{,}5625=0{,}9375$; $x_3\approx0{,}9961$; $x_4\approx0{,}99998$.</li>
+          <li><b>4-қадам.</b> Қате $1-x_{k+1}=(1-x_k)^2$ - дәл квадраттық жинақталу.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $x^*=1$; қате әр қадамда квадратталады.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$\nabla f=0$ - міндетті түрде минимум</span> → <span class="math-good">Гессианды тексеру</span><br>Неге қате: максимум не ер тәрізді нүкте болуы мүмкін.</li>
+        <li><span class="math-bad">Градиент бағытымен жүру ($+\nabla f$)</span> → <span class="math-good">$-\nabla f$</span><br>Неге қате: градиент - ең жылдам <em>өсу</em> бағыты.</li>
+        <li><span class="math-bad">Қадамды үлкейтсек әрдайым жылдамырақ</span> → <span class="math-good">$\alpha&lt;\frac{2}{\lambda_{\max}}$</span><br>Неге қате: тым үлкен қадам тербеліс пен тарап кетуге әкеледі.</li>
+        <li><span class="math-bad">Ньютон қадамында $H^{-1}$-ді тікелей есептеу</span> → <span class="math-good">$H\mathbf d=-\mathbf g$ жүйесін шешу</span><br>Неге қате: кері матрица қымбат және тұрақсыз.</li>
+        <li><span class="math-bad">Ньютон әдісі әрдайым минимумға жинақталады</span> → <span class="math-good">тек жақын бастап, $H\succ0$ болса</span><br>Неге қате: ол кез келген стационар нүктені іздейді.</li>
+        <li><span class="math-bad">Тоқтату тек итерация саны бойынша</span> → <span class="math-good">$\|\nabla f\|\le\varepsilon$ және шек</span><br>Неге қате: әйтпесе ерте не кеш тоқтаймыз.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Градиенттік түсу x бағыты: x_k = 10·(1 − 2α)ᵏ" data-config='{"fns": [{"f": "10*(1-2*a)^floor(x)", "label": "x_k (λ = 2)"}, {"f": "(1-20*a)^floor(x)", "label": "y_k (λ = 20)", "color": 1}], "params": [{"n": "a", "min": 0.01, "max": 0.12, "step": 0.005, "v": 0.05}], "view": [0, 20, -3, 10]}'></div>
+      <p><b>Бақылаңыз:</b> Көлденең ось - қадам нөмірі $k$. $\alpha$ - қадам ұзындығы. $\alpha=0{,}05$: $y_k$ бірден нөл, $x_k$ баяу кемиді. $\alpha$-ны $0{,}1$-ден асырыңыз: $y_k$ таңбасын ауыстырып өседі - тарап кету ($|1-20\alpha|>1$). Ең жақсы тұрақты қадам $\alpha=\frac{2}{\lambda_{\min}+\lambda_{\max}}=\frac1{11}$ (екі бағыттағы көбейткіштердің модульдері тең, $\frac{9}{11}$).</p>
+      <div class="math-viz" data-viz="graph" data-title="Шарттылық: (1 − 1/κ)ᵏ қате азаюы" data-config='{"fns": [{"f": "(1-1/c)^x", "label": "градиенттік түсу, α = 1/λmax"}, {"f": "((c-1)/(c+1))^x", "label": "ең жақсы тұрақты қадам", "color": 1, "dash": [5, 4]}], "params": [{"n": "c", "min": 1, "max": 100, "step": 1, "v": 10}], "view": [0, 100, 0, 1]}'></div>
+      <p><b>Бақылаңыз:</b> $c=\kappa$. $\kappa=1$ - бірден минимум; $\kappa=100$ - 100 қадамнан кейін қате тек $e^{-1}\approx37\%$-ға түседі. Сондықтан практикада айнымалыларды масштабтау (алдын ала шарттау) не Ньютон тәрізді әдістер қолданылады.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m17-4-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m17-4-t1">1. Градиент қадамы</h3></div>
+        <p>$f(x)=(x-3)^2$, $x_0=0$, $\alpha=0{,}25$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x_1$","a":1.5,"v":"0-Rational(1,4)*2*(0-3)","hint":"$f'(x)=2(x-3)$.","sol":{"steps":["$0-0{,}25\\cdot(-6)$."],"ans":"$1{,}5$"}},{"q":"$x_2$","a":2.25,"v":"Rational(3,2)-Rational(1,4)*2*(Rational(3,2)-3)","hint":"Қате әр қадамда 2 есе кемиді.","sol":{"steps":["$1{,}5+0{,}75$."],"ans":"$2{,}25$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m17-4-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m17-4-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$-\\nabla f$ - ең жылдам кему бағыты.","a":true,"e":"$D_{\\mathbf u}f=\\nabla f\\cdot\\mathbf u$ ең кіші $\\mathbf u=-\\frac{\\nabla f}{\\|\\nabla f\\|}$.","hint":"Бағыт бойынша туынды."},{"q":"$\\nabla f(\\mathbf x^*)=0$ және $\\nabla^2f(\\mathbf x^*)$ оң анықталған болса, $\\mathbf x^*$ - қатаң жергілікті минимум.","a":true,"e":"Жеткілікті шарт.","hint":"Теорема 4.1."},{"q":"Квадраттық функцияда Ньютон әдісі бір қадамда минимумды табады (Гессиан оң анықталған).","a":true,"e":"Квадраттық модель дәл.","hint":"3-қорыту."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m17-4-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m17-4-t3">3. Стационар нүкте түрі</h3></div>
+        <p>$\nabla f=0$ нүктесіндегі Гессиан берілген.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\begin{pmatrix}2&0\\\\0&-3\\end{pmatrix}$","o":["ер тәрізді нүкте","минимум","максимум","анықтау мүмкін емес"],"a":0,"e":"Меншікті мәндер әртүрлі таңбалы.","hint":"Меншікті мәндер."},{"q":"$\\begin{pmatrix}-1&0\\\\0&-4\\end{pmatrix}$","o":["максимум","минимум","ер тәрізді","анықтау мүмкін емес"],"a":0,"e":"Теріс анықталған.","hint":"Екеуі де теріс."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m17-4-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-4-t4">4. Тұрақтылық шегі</h3></div>
+        <p>$f(\mathbf x)=\frac12\mathbf x^TQ\mathbf x$, $Q$ меншікті мәндері $1$ және $50$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Тұрақты $\\alpha$-ның шегі $\\frac{2}{\\lambda_{\\max}}$","a":0.04,"v":"Rational(2,50)","hint":"$\\lambda_{\\max}=50$.","sol":{"steps":["$\\frac{2}{50}$."],"ans":"$0{,}04$"}},{"q":"Шарттылық саны $\\kappa$","a":50,"v":"Rational(50,1)","hint":"$\\frac{\\lambda_{\\max}}{\\lambda_{\\min}}$.","sol":{"steps":["$\\frac{50}{1}$."],"ans":"$50$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m17-4-mat5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-4-t5">5. Ньютон қадамы</h3></div>
+        <p>$f(x,y)=x^2+xy+y^2-3x$, $\mathbf x_0=(0;0)$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\mathbf x_1$","name":"$\\mathbf x_1=$","a":[2,-1],"orient":"row","v":"list(Matrix([[2,1],[1,2]]).solve(Matrix([3,0])))","hint":"$\\nabla f=(2x+y-3;\\ x+2y)$, $H=\\begin{pmatrix}2&1\\\\1&2\\end{pmatrix}$.","sol":{"steps":["$H\\mathbf d=-\\nabla f(\\mathbf0)=(3;0)$.","$2d_1+d_2=3$, $d_1+2d_2=0$: $d=(2;-1)$."],"ans":"$(2;\\ -1)$ - дәл минимум"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m17-4-exp6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-4-t6">6. Ньютон итерациясы (1D)</h3></div>
+        <p>$f(x)=x-\ln x$. Ньютон қадамының формуласы $x_{k+1}=g(x_k)$; $g(x)$-ті жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$g(x)=?$","a":"2*x-x^2","v":"x-diff(x-log(x),x)/diff(x-log(x),x,2)","dom":[0.2,3],"hint":"$x-\\frac{f'}{f''}$.","sol":{"steps":["$x-\\frac{1-1/x}{1/x^2}=x-(x^2-x)$."],"ans":"$2x-x^2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m17-4-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-4-t7">7. Әдістер</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Қасиеттер.","pairs":[["градиенттік түсу","тек ∇f, κ-ға сезімтал"],["Ньютон әдісі","∇f және ∇²f, жергілікті квадраттық"],["тым үлкен α","тербеліс не тарап кету"],["κ = 1","бір қадамда минимум (α = 1/λ)"]],"hint":"Әр әдістің құны мен жылдамдығы.","sol":{"steps":["Ньютон Гессианды қолданады."]},"e":"Әдісті есептің өлшеміне қарай таңдаймыз."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m17-4-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-4-t8">8. Параметрлік: 1D градиенттік түсу</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"int":[-5,5]},"u":{"int":[-5,5]},"a":{"pick":[0.1,0.2,0.25,0.4]}},"require":["u != m"],"type":"num","q":"$f(x)=(x#{+(-m)})^2$, $x_0=#{u}$, $\\alpha=#{a}$. $x_1=?$","a":"u-2*a*(u-m)","v":"u-2*nsimplify(a)*(u-m)","hint":"$f'(x)=2(x-#{m})$.","sol":{"steps":["$x_1=#{u}-#{a}\\cdot2\\cdot(#{u-m})$."],"ans":"$#{u-2*a*(u-m)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m17-4-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-4-t9">9. Параметрлік: қадам саны</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"k":{"pick":[2,5,10,20]},"n":{"int":[2,6]}},"type":"num","q":"Квадраттық функция, $\\kappa=#{k}$, $\\alpha=\\frac1{\\lambda_{\\max}}$. $#{n}$ қадамнан кейін ең баяу бағыттағы қате бастапқысының қандай үлесі ($0{,}001$ дәлдік)?","a":"(1-1/k)^n","v":"(1-Rational(1,k))**n","tol":0.001,"hint":"$\\left(1-\\frac1\\kappa\\right)^n$.","sol":{"steps":["$\\left(1-\\frac1{#{k}}\\right)^{#{n}}$."],"ans":"$\\approx#{round(1000*(1-1/k)^n)/1000}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m17-4-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-4-t10">10. Кему леммасы</h3></div>
+        <p>$f$ $L=4$ тегіс, $\|\nabla f(\mathbf x_k)\|=2$, $f(\mathbf x_k)=10$, $\alpha=\frac14$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$f(\\mathbf x_{k+1})$-тің кепілдендірілген жоғарғы шекарасы","a":9.5,"v":"10-Rational(1,2*4)*2**2","hint":"$f-\\frac{1}{2L}\\|\\nabla f\\|^2$.","sol":{"steps":["$10-\\frac18\\cdot4$."],"ans":"$9{,}5$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m17-4-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-4-t11">11. Градиенттік түсу алгоритмі</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Алгоритм.","steps":["$\\mathbf x_0$ және $\\alpha$ таңдаймыз.","$\\mathbf g=\\nabla f(\\mathbf x_k)$ есептейміз.","$\\|\\mathbf g\\|\\le\\varepsilon$ болса, тоқтаймыз.","$\\mathbf x_{k+1}=\\mathbf x_k-\\alpha\\mathbf g$.","$k\\leftarrow k+1$, 2-қадамға ораламыз."],"hint":"Тоқтату тексеруі қадам алдында.","sol":{"ans":"Градиенттік түсу"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m17-4-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-4-t12">12. Қадамдық шешім: ең жақсы тұрақты қадам</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Квадраттық функцияда ($\\lambda_{\\min}$, $\\lambda_{\\max}$) барлық бағыттағы ең нашар көбейткішті ең кіші ететін тұрақты $\\alpha$ қандай?","hint":"$\\max(|1-\\alpha\\lambda_{\\min}|,\\ |1-\\alpha\\lambda_{\\max}|)$-ді кішірейтіңіз.","steps":["$\\alpha$ өскенде $|1-\\alpha\\lambda_{\\min}|$ кемиді, $|1-\\alpha\\lambda_{\\max}|$ (бір сәттен кейін) өседі.","Ең жақсы - екеуі тең: $1-\\alpha\\lambda_{\\min}=\\alpha\\lambda_{\\max}-1$.","$\\alpha^*=\\frac{2}{\\lambda_{\\min}+\\lambda_{\\max}}$.","Көбейткіш $\\frac{\\lambda_{\\max}-\\lambda_{\\min}}{\\lambda_{\\max}+\\lambda_{\\min}}=\\frac{\\kappa-1}{\\kappa+1}$; $\\kappa=10$: $\\frac9{11}\\approx0{,}82$."],"ans":"$\\alpha^*=\\frac{2}{\\lambda_{\\min}+\\lambda_{\\max}}$, көбейткіш $\\frac{\\kappa-1}{\\kappa+1}$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Нейрондық желілерді оқыту (стохастикалық градиенттік түсу, Adam), сызықтық және логистикалық регрессия, компьютерлік көрудегі сурет қалпына келтіру, роботтардың траекториясын жоспарлау. Python-да <code>scipy.optimize.minimize</code> (BFGS, Newton-CG).</p>
+      <p><b>Мини-жоба: «Градиенттік түсу мен Ньютон».</b> Розенброк функциясы $f=(1-x)^2+100(y-x^2)^2$ - белгілі «қиын» тар аңғар. Екі әдісті салыстырамыз.</p>
+<pre data-lang="python"><code class="language-python">def f(x, y):  return (1 - x)**2 + 100 * (y - x*x)**2
+def grad(x, y): return (-2*(1 - x) - 400*x*(y - x*x), 200*(y - x*x))
+def hess(x, y): return ((2 - 400*(y - x*x) + 800*x*x, -400*x), (-400*x, 200.0))
+
+def gd(x, y, alpha=1e-3, iters=20000):
+    for k in range(iters):
+        gx, gy = grad(x, y)
+        if (gx*gx + gy*gy) ** 0.5 &lt; 1e-6: return x, y, k
+        x, y = x - alpha*gx, y - alpha*gy
+    return x, y, iters
+
+def newton(x, y, iters=50):
+    for k in range(iters):
+        gx, gy = grad(x, y)
+        if (gx*gx + gy*gy) ** 0.5 &lt; 1e-10: return x, y, k
+        (a, b), (c, d) = hess(x, y); det = a*d - b*c
+        dx = -( d*gx - b*gy) / det; dy = -(-c*gx + a*gy) / det
+        x, y = x + dx, y + dy
+    return x, y, iters
+
+print("градиенттік түсу:", gd(-1.2, 1.0))
+print("Ньютон:          ", newton(-1.2, 1.0))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Градиенттік түсуде $\alpha=2\cdot10^{-3}$ және $3\cdot10^{-3}$ қойып көріңіз. Не болады? Неге?</li>
+        <li>«Импульс» әдісін қосыңыз: $\mathbf v_{k+1}=\beta\mathbf v_k-\alpha\nabla f$, $\mathbf x_{k+1}=\mathbf x_k+\mathbf v_{k+1}$ ($\beta=0{,}9$). Итерация саны қалай өзгереді?</li>
+        <li>Сызықтық іздеу (Армихо ережесі: $\alpha$-ны $f$ жеткілікті кемігенше екі есе кішірейту) қосып, бекітілген $\alpha$-мен салыстырыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Қажетті шарт</td><td>$\nabla f=0$, $\nabla^2f\succeq0$</td><td>жергілікті минимум</td></tr>
+        <tr><td>Жеткілікті шарт</td><td>$\nabla f=0$, $\nabla^2f\succ0$</td><td>қатаң жергілікті минимум</td></tr>
+        <tr><td>Градиенттік түсу</td><td>$\mathbf x_{k+1}=\mathbf x_k-\alpha\nabla f$</td><td>$\alpha\le\frac1L$</td></tr>
+        <tr><td>Кему леммасы</td><td>$f_{k+1}\le f_k-\frac1{2L}\|\nabla f_k\|^2$</td><td>$L$-тегіс, $\alpha=\frac1L$</td></tr>
+        <tr><td>Квадраттық</td><td>тұрақты $\iff\alpha&lt;\frac2{\lambda_{\max}}$; көбейткіш $1-\frac1\kappa$</td><td>$\alpha=\frac1{\lambda_{\max}}$</td></tr>
+        <tr><td>Ньютон</td><td>$\nabla^2f\,\mathbf d=-\nabla f$</td><td>$\nabla^2f\succ0$, жақын бастау</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m17-4-self">
+        <li><input type="checkbox"> <span>Мен стационар нүктелерді тауып, Гессианмен жіктей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен градиенттік түсу қадамын орындай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен кему леммасын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен квадраттық функцияда тұрақтылық шартын және $\kappa$-ның рөлін түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Ньютон қадамын есептеп, оның артықшылық-кемшілігін айта аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен тоқтату критерийлерін таңдай аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="a">
+<p class="q-text">1. Градиенттік түсу қадамы:</p>
+<label><input type="radio" value="a"> x − α∇f(x)</label>
+<label><input type="radio" value="b"> x + α∇f(x)</label>
+<label><input type="radio" value="c"> x − ∇²f(x)</label>
+<label><input type="radio" value="d"> x/α</label>
+<p class="explain">Ең жылдам кему бағыты −∇f.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">2. ∇f = 0, Гессиан оң анықталған:</p>
+<label><input type="radio" value="a"> максимум</label>
+<label><input type="radio" value="b"> ер тәрізді</label>
+<label><input type="radio" value="c"> анықталмаған</label>
+<label><input type="radio" value="d"> қатаң жергілікті минимум</label>
+<p class="explain">Жеткілікті шарт.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">3. Квадраттық функцияда α-ның тұрақтылық шегі:</p>
+<label><input type="radio" value="a"> 1/λmin</label>
+<label><input type="radio" value="b"> λmax</label>
+<label><input type="radio" value="c"> 2/λmax</label>
+<label><input type="radio" value="d"> 2λmax</label>
+<p class="explain">|1 − αλ| < 1.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. Шарттылық саны κ үлкен болса, градиенттік түсу:</p>
+<label><input type="radio" value="a"> жылдам</label>
+<label><input type="radio" value="b"> баяу</label>
+<label><input type="radio" value="c"> бір қадамда</label>
+<label><input type="radio" value="d"> тарап кетеді әрдайым</label>
+<p class="explain">Көбейткіш 1 − 1/κ.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. Ньютон әдісі квадраттық функцияда:</p>
+<label><input type="radio" value="a"> бір қадамда минимумды табады</label>
+<label><input type="radio" value="b"> жинақталмайды</label>
+<label><input type="radio" value="c"> баяу</label>
+<label><input type="radio" value="d"> κ-ға тәуелді</label>
+<p class="explain">Модель дәл.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">6. Ньютон қадамының бағасы:</p>
+<label><input type="radio" value="a"> тек градиент</label>
+<label><input type="radio" value="b"> кездейсоқ іздеу</label>
+<label><input type="radio" value="c"> бір өлшемді іздеу</label>
+<label><input type="radio" value="d"> Гессианмен сызықтық жүйе шешу</label>
+<p class="explain">∇²f·d = −∇f.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">7. f = x² − y² үшін (0, 0) нүктесі:</p>
+<label><input type="radio" value="a"> минимум</label>
+<label><input type="radio" value="b"> максимум</label>
+<label><input type="radio" value="c"> ер тәрізді</label>
+<label><input type="radio" value="d"> стационар емес</label>
+<p class="explain">Гессиан анықталмаған.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. L-тегіс функция үшін α = 1/L қадамы:</p>
+<label><input type="radio" value="a"> әрдайым тарап кетеді</label>
+<label><input type="radio" value="b"> функцияның кемуіне кепілдік береді</label>
+<label><input type="radio" value="c"> минимумға бір қадамда жетеді</label>
+<label><input type="radio" value="d"> Гессианды қажет етеді</label>
+<p class="explain">Кему леммасы.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=optim">Mathematical Optimization емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-107.html"><small>Алдыңғы</small>← Mathematical Optimization · 3-сабақ: Қостық теориясы</a>

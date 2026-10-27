@@ -6,13 +6,14 @@
   <title>Math Mathematical Optimization · 2-сабақ: Сызықтық бағдарламалау және симплекс әдісі - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Mathematical Optimization · 2-сабақ: Сызықтық бағдарламалау және симплекс әдісі - CS50 қазақша">
-  <meta property="og:description" content="Математика, Mathematical Optimization · 2-сабақ: Сызықтық бағдарламалау және симплекс әдісі. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Модельдеу, графиктік шешім, симплекс-кесте.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-106.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Mathematical Optimization · 2-сабақ: Сызықтық бағдарламалау және симплекс әдісі - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-106.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Mathematical Optimization · 2-сабақ: Сызықтық бағдарламалау және симплекс әдісі. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Модельдеу, графиктік шешім, симплекс-кесте.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,406 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="106">
+    <article class="content math-lesson" style="--sc:#a16207" id="main">
+      <div class="lecture-head" style="--lc:#a16207" data-n="106" data-msubj="optim" data-glyph="min">
         <div class="num">Mathematical Optimization · 2-сабақ</div>
         <h1>Сызықтық бағдарламалау және симплекс әдісі</h1>
-        <p>Модельдеу, графиктік шешім, симплекс-кесте.</p>
+        <p>Зауыт екі өнім шығарады; әрқайсысы шектеулі ресурстарды (станок уақыты, шикізат) жұмсайды және белгілі пайда әкеледі. Пайданы ең үлкен ететін жоспар қандай? Мақсат та, шектеулер де сызықтық болса - бұл <b>сызықтық бағдарламалау</b> (СБ) есебі.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 45 мин</span><span>Есептер ≈ 1 сағ 10 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Бұл сабақта СБ есебін қоюды, екі айнымалыда графиктік әдісті, «оңтайлы шешім төбеде» теоремасын, стандарт түрге келтіруді және СБ-ның негізгі алгоритмі - симплекс әдісін қадам-қадаммен орындауды үйренеміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-17">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=optim">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Mathematical Optimization: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-17">Mathematical Optimization</a></span><ol><li><a href="week-105.html" title="Оңтайландыру есептері және дөңес жиындар">1</a></li><li><a href="week-106.html" aria-current="page" title="Сызықтық бағдарламалау және симплекс әдісі">2</a></li><li><a href="week-107.html" title="Қостық теориясы">3</a></li><li><a href="week-108.html" title="Шектеусіз оңтайландыру: градиенттік әдістер">4</a></li><li><a href="week-109.html" title="Шектелген оңтайландыру: Лагранж және KKT">5</a></li><li><a href="week-110.html" title="Дөңес оңтайландыру және машиналық оқыту">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-17">Mathematical Optimization</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Сызықтық бағдарламалауда жарамды облыс - көпбұрыш (көпжақ), ал оңтайлы шешім әрдайым оның бір төбесінде; симплекс әдісі төбеден көрші төбеге «жақсарта отырып» жүреді.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>сөзбен берілген есепті сызықтық бағдарламалау түрінде жазу;</li>
+        <li>екі айнымалы есепті графиктік әдіспен шешу (жарамды облыс, деңгей сызығы);</li>
+        <li>шектелген СБ есебінің оңтайлы шешімі жарамды облыстың төбесінде жататынын түсіндіру;</li>
+        <li>есепті стандарт түрге келтіру (толықтырушы айнымалылар) және базистік шешімді табу;</li>
+        <li>симплекс кестесімен бір-екі итерация орындау (кіретін және шығатын айнымалы, қатынас тесті);</li>
+        <li>шексіз және шешімсіз есептерді тану.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Сызықтық теңсіздіктер жүйесі және жазықтықтағы жарты жазықтықтар; түзудің теңдеуі $ax+by=c$. Дөңес жиын: көпжақ $\{A\mathbf x\le\mathbf b\}$ дөңес. Гаусс–Жордан әдісі: жолды санға бөлу, бір жолдың еселігін екіншісінен азайту. Вейерштрасс теоремасы: тұйық шектелген облыста үзіліссіз функцияның ең үлкен мәні бар.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-105.html">Mathematical Optimization · 1-сабақ: Оңтайландыру есептері және дөңес жиындар</a></li><li><a href="week-9.html">Linear Algebra · 3-сабақ: Сызықтық теңдеулер жүйесі және Гаусс әдісі</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: зауыт жоспары</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">Өнім A пайдасы $3$, B пайдасы $2$. Станок уақыты: $x+y\le4$, шикізат: $x+3y\le6$, $x,y\ge0$. Ең үлкен пайда?</p>
+        <ol class="math-steps">
+          <li>Көпбұрыштың төбелері: $(0;0)$, $(4;0)$, $(0;2)$ және $x+y=4$, $x+3y=6$ қиылысуы: $y=1$, $x=3$, яғни $(3;1)$.</li>
+          <li>Пайда $3x+2y$: $(0;0)\to0$, $(4;0)\to12$, $(0;2)\to4$, $(3;1)\to11$.</li>
+          <li>Ең үлкені $12$ - $(4;0)$ төбесінде: тек A өндірген тиімді.</li>
+          <li>Пайда түзулері $3x+2y=c$ параллель жылжиды; көпбұрыштан шығар алдындағы соңғы нүкте - төбе.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Шексіз көп жарамды нүктенің орнына тек ақырлы төбелерді тексеру жеткілікті. Симплекс бұл төбелерді ақылмен, барлығын тексермей аралайды.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Екі айнымалыда жарамды облыс - бірнеше жарты жазықтықтың қиылысы, көпбұрыш. Мақсат функциясы $3x+5y=z$ - параллель түзулер жиыны; $z$ өскен сайын түзу бір бағытқа жылжиды. Облыспен әлі де қиылысатын ең алыс түзу оңтайлы мәнді береді, және ол көпбұрышты әдетте бір <b>төбеде</b> «жанайды».</p>
+      <p>Сондықтан оңтайлы шешімді іздеу үшін тек төбелерді тексеру жеткілікті. Бірақ $n$ айнымалы, $m$ шектеуде төбелер саны $C_{n+m}^m$-ге дейін - астрономиялық. <b>Симплекс әдісі</b> ақылдырақ: бір төбеден мақсатты жақсартатын көрші төбеге «жылжиды», жақсарту мүмкін болмағанда тоқтайды.</p>
+      <p>Әр симплекс қадамы - Гаусс–Жордан түрлендіруі: бір айнымалы «базиске кіреді» (нөлден оң мәнге), біреуі «шығады». Шектеулерді бұзбау үшін шығатын айнымалыны «ең кіші қатынас» ережесімен таңдаймыз.</p>
+      <p>СБ - қолданбалы математиканың ең көп қолданылатын құралдарының бірі: логистика, өндірісті жоспарлау, тамақтану рационы, әуе компанияларының кестесі. Миллиондаған айнымалысы бар есептер күнделікті шешіледі.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · су деңгейі</span>
+        <p>Көпбұрышты бөлмені елестетіңіз, мақсат функциясы - белгілі бағытта көтерілетін су деңгейі. Бөлмеден ең соңғы шығатын нүкте - әрдайым бұрыш (төбе) не қабырға (екі төбенің арасы).</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · баспалдақпен көтерілу</span>
+        <p>Симплекс - көпжақтың қабырғалары бойымен жүру: әр қадамда көрші төбелердің ішінен пайданы арттыратынына көшеміз. Ешбір көрші жақсы болмаса - тоқтаймыз: бұл оңтайлы (дөңестік кепілдейді).</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$\max\ \mathbf c^T\mathbf x$</td><td>мақсат функциясы</td><td>сызықтық пайда</td></tr>
+        <tr><td>$A\mathbf x\le\mathbf b$</td><td>шектеулер</td><td>ресурстардың шектері</td></tr>
+        <tr><td>$\mathbf x\ge0$</td><td>теріс еместік</td><td>өндіріс көлемі теріс бола алмайды</td></tr>
+        <tr><td>$s_i$</td><td>толықтырушы айнымалы</td><td>$i$-ресурстың пайдаланылмаған қалдығы</td></tr>
+        <tr><td>$\frac{b_i}{a_{ij}}$</td><td>қатынас тесті</td><td>қай шектеу бірінші «тірелетінін» анықтайды</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 2.1 · Сызықтық бағдарламалау есебі</span>
+        <p><strong>Сызықтық бағдарламалау</strong> (<span class="term-en">linear programming</span>) (СБ): $\max\ \mathbf c^T\mathbf x$, шектеулер $A\mathbf x\le\mathbf b$, $\mathbf x\ge\mathbf0$. Шектеулерді қанағаттандыратын $\mathbf x$ - жарамды шешім; барлығының жиыны - жарамды облыс (дөңес көпжақ).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Сызықтық мақсатты сызықтық шектеулер ішінде максимумдау.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 2.2 · Төбе</span>
+        <p>Көпжақтың <strong>төбесі</strong> (<span class="term-en">vertex</span>) - оның ішіндегі ешбір кесіндінің ортасы бола алмайтын нүкте (екі әртүрлі нүктесінің $\frac12$ комбинациясы ретінде жазылмайды). $\mathbb R^2$-де - екі шекаралық түзудің қиылысы.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Төбе - көпжақтың «бұрышы»: оны екі басқа нүктенің ортасы ретінде жазу мүмкін емес.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 2.1 · СБ-ның негізгі теоремасы</span>
+        <p>Жарамды облыс бос емес және кемінде бір төбесі бар болсын (мысалы, $\mathbf x\ge0$ шектеуі бар кез келген бос емес көпжақ). Егер мақсат функциясы облыста жоғарыдан шектелген болса, онда оңтайлы шешім бар және кемінде бір оңтайлы шешім төбеде жатады.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Оңтайлы шешім бар болса, ол кемінде бір төбеде.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту шектелген көпжақ (көпбұрыш) жағдайында; жалпы жағдайдың дәлелін келтірмейміз.</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 2.3 · Стандарт түр және базистік шешім</span>
+        <p>Әр $\mathbf a_i^T\mathbf x\le b_i$ ($b_i\ge0$) теңсіздікке <strong>толықтырушы айнымалы</strong> (<span class="term-en">slack variable</span>) $s_i\ge0$ қосып теңдік аламыз: $\mathbf a_i^T\mathbf x+s_i=b_i$. $m$ теңдеуде $m$ айнымалыны (базис) өрнектеп, қалғандарын (базистік емес) нөлге теңесек, <strong>базистік шешім</strong> (<span class="term-en">basic solution</span>) шығады; барлық айнымалы $\ge0$ болса - базистік жарамды шешім. Базистік жарамды шешімдер дәл көпжақ төбелеріне сәйкес келеді (дәлелсіз).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Теңсіздіктерді «қалдық» айнымалыларын қосып теңдікке айналдырамыз; базистік шешім - бір төбе.</p></div>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 2.4 · Симплекс әдісі</span>
+        <p><strong>Симплекс әдісі</strong> (<span class="term-en">simplex method</span>) ($\max$ үшін): 1) $z$-жолында оң коэффициенттісі (немесе $z-\mathbf c^T\mathbf x=0$ жазылса - теріс коэффициенттісі) бар базистік емес айнымалыны таңдаймыз - <em>кіретін</em>; ондай жоқ болса - шешім оңтайлы. 2) Оның бағанындағы оң коэффициенттер бойынша $\frac{b_i}{a_{ij}}$ қатынастарының ең кішісі - <em>шығатын</em> айнымалының жолы (<strong>қатынас тесті</strong> (<span class="term-en">minimum ratio test</span>)); оң коэффициент жоқ болса - есеп шектелмеген. 3) Сол жол мен баған бойынша Гаусс–Жордан түрлендіруі.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Пайданы арттыратын айнымалыны «кіргіземіз», ал алдымен тірелетін шектеудің айнымалысын «шығарамыз» - келесі төбеге өтеміз.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 2.2 · Симплекс қадамының дұрыстығы</span>
+        <p>Қатынас тесті бойынша таңдалған шығатын айнымалымен жасалған қадам жарамдылықты сақтайды (барлық айнымалы $\ge0$), ал мақсат мәні кемімейді (кіретін айнымалының коэффициенті оң және қадам ұзындығы $\ge0$).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Қатынас тесті жаңа нүктенің әлі де жарамды (барлық айнымалы теріс емес) екенін кепілдейді.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту. Мақсат қатаң өседі, егер қадам ұзындығы оң болса; нөл болса (айныған жағдай) цикл мүмкін, оны арнайы ережелер (мысалы, Блэнд ережесі) болдырмайды.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 2.1 · Стандарт түр</span>
+        <div class="math-fbody">$$\max\ \mathbf c^T\mathbf x,\quad A\mathbf x+\mathbf s=\mathbf b,\quad\mathbf x,\mathbf s\ge\mathbf0$$</div>
+        <p class="math-fnote">$\mathbf b\ge0$ болса, $\mathbf x=0$, $\mathbf s=\mathbf b$ - бастапқы базистік жарамды шешім.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 2.2 · Қатынас тесті</span>
+        <div class="math-fbody">$$r=\arg\min\left\{\frac{b_i}{a_{ij}}:\ a_{ij}>0\right\}$$</div>
+        <p class="math-fnote">$j$ - кіретін айнымалының бағаны. Оң $a_{ij}$ жоқ болса, мақсат шектелмеген.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 2.3 · Төбелер санының бағасы</span>
+        <div class="math-fbody">$$N_v\le C_{n+m}^{m}$$</div>
+        <p class="math-fnote">$N_v$ - төбелер саны; $n$ айнымалы, $m$ теңсіздік (стандарт түрде $n+m$ айнымалы, $m$ базистік). Симплекс әдетте олардың аз бөлігін ғана аралайды.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Графиктік әдіс: 1) әр шектеудің шекаралық түзуін салып, жарамды жақты белгілеу; 2) жарамды көпбұрыштың төбелерін табу; 3) мақсат функциясын әр төбеде есептеу (не деңгей сызығын жылжыту); 4) ең үлкен мәнді таңдау. Бірдей мән екі көршілес төбеде болса - бүкіл қабырға оңтайлы.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>СБ есебінің үш нәтижесі болуы мүмкін: (1) оңтайлы шешім бар; (2) шешімсіз - жарамды облыс бос (шектеулер қайшы); (3) шектелмеген - мақсатты шексіз арттыруға болады. Сонымен қатар, бүтін сандық шешім қажет болса (мысалы, ұшақ саны), СБ шешімін дөңгелектеу оңтайлы бүтін шешім бермеуі мүмкін - бұл басқа, әлдеқайда қиын есеп.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $x+y\le2$, $x,y\ge0$ облысында $x+y$-тің максимумы қай нүктелерде?</span></summary>
+        <p>$x+y=2$ кесіндісінің бәрінде - $(2;0)$ мен $(0;2)$ төбелері және олардың арасы.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> СБ есебінің оңтайлы шешімі болмауы мүмкін бе?</span></summary>
+        <p>Иә: облыс бос болса не мақсат функциясы шексіз өссе.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> Симплекс кестесінде $z$-жолында оң коэффициент қалмаса не істейміз?</span></summary>
+        <p>Тоқтаймыз - ағымдағы төбе оңтайлы ($\max$ үшін).</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> $3$ шектеу және $2$ айнымалы болса, неше толықтырушы айнымалы керек?</span></summary>
+        <p>$3$ - әр шектеуге біреу.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: оңтайлы шешім төбеде (көпбұрыш)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> шектелген көпбұрышта сызықтық функцияның ең үлкен мәні төбеде екенін көрсету.</p>
+          <p class="mx-idea"><b>Идея:</b> Көпбұрыштың әр нүктесі - төбелердің дөңес комбинациясы, ал сызықтық функцияның комбинациядағы мәні төбелердегі мәндердің орташасы - ең үлкен төбеден аспайды.</p>
+          <ol class="math-steps">
+            <li>Шектелген дөңес көпбұрыштың әр нүктесі оның төбелерінің дөңес комбинациясы: $\mathbf x=\sum\lambda_k\mathbf v_k$, $\lambda_k\ge0$, $\sum\lambda_k=1$ (бұл фактіні дәлелсіз қабылдаймыз).</li>
+            <li>Сызықтық функция үшін $\mathbf c^T\mathbf x=\sum\lambda_k\mathbf c^T\mathbf v_k$.</li>
+            <li>$M=\max_k\mathbf c^T\mathbf v_k$ (ақырлы төбелер, сондықтан максимум бар).</li>
+            <li>$\mathbf c^T\mathbf x\le\sum\lambda_kM=M$.</li>
+            <li>Демек облыстағы ең үлкен мән $M$ және ол төбеде жетеді. ∎ Сонымен қатар, бірнеше төбе тең болса, олардың дөңес комбинациясы (қабырға) да оңтайлы.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: қатынас тесті жарамдылықты сақтайды</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> шығатын айнымалыны ең кіші қатынаспен таңдағанда барлық айнымалы теріс болмайтынын көрсету.</p>
+          <p class="mx-idea"><b>Идея:</b> Кіретін айнымалыны ең кіші қатынасқа дейін ғана өсіреміз - сонда бірде-бір базистік айнымалы теріс болмайды.</p>
+          <ol class="math-steps">
+            <li>Ағымдағы базистік шешімде базистік айнымалылар $x_{B_i}=b_i\ge0$. Кіретін $x_j$-ті $0$-ден $\theta\ge0$-ге арттырамыз, басқа базистік емес айнымалылар нөл.</li>
+            <li>Теңдеулер бойынша базистік айнымалылар өзгереді: $x_{B_i}(\theta)=b_i-a_{ij}\theta$.</li>
+            <li>$a_{ij}\le0$ болса, $x_{B_i}$ кемімейді - шектеу қоймайды. $a_{ij}>0$ болса, $x_{B_i}\ge0\iff\theta\le\frac{b_i}{a_{ij}}$.</li>
+            <li>Барлығы үшін $\theta^*=\min_{a_{ij}>0}\frac{b_i}{a_{ij}}$; сол жолдың айнымалысы нөлге түседі - шығатын айнымалы.</li>
+            <li>Мақсат: $z(\theta)=z_0+\bar c_j\theta$, $\bar c_j>0$ (кіретін бағанның $z$-коэффициенті), сондықтан $z(\theta^*)\ge z_0$.</li>
+            <li>Оң $a_{ij}$ жоқ болса, $\theta$ шектелмеген және $z\to\infty$ - есеп шектелмеген.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Графиктік әдіс</h3>
+        <p class="math-problem">$\max z=3x+5y$, шектеулер: $x\le4$, $2y\le12$, $3x+2y\le18$, $x,y\ge0$. Шешіңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Жарамды облыстың төбелері: $(0;0)$, $(4;0)$, $(4;3)$ [$x=4$ және $3x+2y=18$], $(2;6)$ [$y=6$ және $3x+2y=18$], $(0;6)$.</li>
+          <li><b>2-қадам.</b> Мақсат мәндері: $0$; $12$; $12+15=27$; $6+30=36$; $30$.</li>
+          <li><b>3-қадам.</b> Ең үлкені $(2;6)$ төбесінде, $z=36$.</li>
+          <li><b>4-қадам.</b> Тексеру деңгей сызығымен: $3x+5y=36$ түзуі облысқа тек $(2;6)$-да тиеді (оның көлбеулігі $-\frac35$ көршілес қабырғалардың $0$ және $-\frac32$ көлбеуліктерінің арасында).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $x=2$, $y=6$, $z_{\max}=36$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Симплекс әдісі</h3>
+        <p class="math-problem">Сол есепті симплекс әдісімен шешіңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Стандарт түр: $x+s_1=4$, $2y+s_2=12$, $3x+2y+s_3=18$; бастапқы база $s_1=4$, $s_2=12$, $s_3=18$, $z=0$ ($(0;0)$ төбесі).</li>
+          <li><b>2-қадам.</b> Кіретін: $y$ (коэффициенті 5 - ең үлкені). Қатынастар: 2-жол $\frac{12}2=6$, 3-жол $\frac{18}{2}=9$; 1-жолда $y$ жоқ. Ең кішісі - 2-жол: $s_2$ шығады.</li>
+          <li><b>3-қадам.</b> Түрлендіру: $y=6-\frac12s_2$; 3-жол: $3x-s_2+s_3=6$; $z=3x+30-\frac52s_2$. Жаңа төбе $(0;6)$, $z=30$.</li>
+          <li><b>4-қадам.</b> Кіретін: $x$ (коэффициенті 3>0). Қатынастар: 1-жол $\frac41=4$, 3-жол $\frac63=2$ - $s_3$ шығады: $x=2+\frac13s_2-\frac13s_3$.</li>
+          <li><b>5-қадам.</b> $z=3\left(2+\frac13s_2-\frac13s_3\right)+30-\frac52s_2=36-\frac32s_2-s_3$. Барлық коэффициенттер $\le0$ - оңтайлы: $x=2$, $y=6$, $z=36$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Екі итерация: $(0;0)\to(0;6)\to(2;6)$, $z=36$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Есепті қою: рацион</h3>
+        <p class="math-problem">Тағам А (1 кг): 2 бірлік белок, 1 бірлік витамин, бағасы 3 мың; тағам Б: 1 бірлік белок, 3 бірлік витамин, бағасы 2 мың. Кемінде 8 бірлік белок және 9 бірлік витамин керек. Ең арзан рацион?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Айнымалылар $a,b\ge0$ (кг). $\min\ 3a+2b$; $2a+b\ge8$, $a+3b\ge9$.</li>
+          <li><b>2-қадам.</b> Төбелер: $b$ осінде $(0;8)$ [$2a+b=8$-дің ұшы, $a+3b=24\ge9$ ✓]; қиылысу $2a+b=8$, $a+3b=9$: $a=3$, $b=2$; $a$ осінде $(9;0)$.</li>
+          <li><b>3-қадам.</b> Бағалар: $(0;8)$: $16$; $(3;2)$: $9+4=13$; $(9;0)$: $27$.</li>
+          <li><b>4-қадам.</b> Облыс шектелмеген, бірақ мақсат ($\min$, оң коэффициенттер) төменнен шектелген - минимум төбеде: $(3;2)$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $a=3$ кг, $b=2$ кг, баға $13$ мың.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Шектелмеген есеп</h3>
+        <p class="math-problem">$\max\ x+y$, $x-y\le1$, $-x+y\le2$, $x,y\ge0$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $x=y=t$ нүктелері: $0\le1$, $0\le2$ ✓ барлық $t\ge0$ үшін.</li>
+          <li><b>2-қадам.</b> $z=2t\to\infty$ - есеп шектелмеген.</li>
+          <li><b>3-қадам.</b> Симплексте: бір итерациядан кейін кіретін айнымалының бағанында оң коэффициент болмайды - қатынас тесті «бос».</li>
+          <li><b>4-қадам.</b> Мағынасы: модельде маңызды шектеу (ресурс, сұраныс) ұмытылған.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Оңтайлы шешім жоқ (шектелмеген).</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Оңтайлы шешімді облыстың ішкі нүктесінен іздеу</span> → <span class="math-good">төбелерде (шекарада)</span><br>Неге қате: сызықтық функцияның ішкі нүктеде экстремумы жоқ (градиенті нөл емес).</li>
+        <li><span class="math-bad">Қатынас тестінде теріс не нөл коэффициентті жолдарды есептеу</span> → <span class="math-good">тек $a_{ij}>0$ жолдар</span><br>Неге қате: теріс коэффициент шектеу қоймайды.</li>
+        <li><span class="math-bad">Шығатын айнымалыны ең үлкен қатынаспен таңдау</span> → <span class="math-good">ең кіші қатынас</span><br>Неге қате: әйтпесе басқа айнымалы теріс болып кетеді.</li>
+        <li><span class="math-bad">$\ge$ шектеуге толықтырушы айнымалыны «$+s$» деп қосу</span> → <span class="math-good">$\mathbf a^T\mathbf x-s=b$, $s\ge0$ (артық айнымалы)</span><br>Неге қате: $\ge$ теңсіздікте айырманы шегереміз.</li>
+        <li><span class="math-bad">СБ шешімін дөңгелектеп бүтін оңтайлы шешім алу</span> → <span class="math-good">бүтін бағдарламалау - бөлек есеп</span><br>Неге қате: дөңгелектенген нүкте жарамсыз не оңтайлы емес болуы мүмкін.</li>
+        <li><span class="math-bad">Шектелмеген облыс - шешім жоқ</span> → <span class="math-good">мақсат шектелген болса, шешім бар болуы мүмкін</span><br>Неге қате: 3-мысал: облыс шектелмеген, бірақ минимум бар.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Графиктік әдіс: шектеулер және деңгей сызығы 3x + 5y = z" data-config='{"fns": [{"f": "6", "label": "2y = 12"}, {"f": "(18-3*x)/2", "label": "3x + 2y = 18", "color": 1}, {"f": "(z-3*x)/5", "label": "3x + 5y = z", "color": 2, "dash": [6, 4]}], "params": [{"n": "z", "min": 0, "max": 45, "step": 1, "v": 30}], "view": [-0.5, 7, -0.5, 10], "equal": true}'></div>
+      <p><b>Бақылаңыз:</b> Жарамды облыс: $0\le x\le4$ (тік сызық $x=4$ салынбаған), $y\le6$, $3x+2y\le18$, $y\ge0$. $z$-ты арттырыңыз: жасыл деңгей сызығы жоғары-оңға жылжиды. $z=36$-да ол облысқа тек $(2;6)$ төбесінде тиеді; $z>36$ болса облыстан шығып кетеді.</p>
+      <div class="math-viz" data-viz="graph" data-title="Рацион есебі: min 3a + 2b" data-config='{"fns": [{"f": "8-2*x", "label": "2a + b = 8"}, {"f": "(9-x)/3", "label": "a + 3b = 9", "color": 1}, {"f": "(c-3*x)/2", "label": "3a + 2b = c", "color": 2, "dash": [6, 4]}], "params": [{"n": "c", "min": 5, "max": 30, "step": 0.5, "v": 16}], "view": [-0.5, 10, -0.5, 9], "equal": true}'></div>
+      <p><b>Бақылаңыз:</b> Жарамды облыс - екі түзудің жоғарғы-оң жағы (шектелмеген). $c$-ны азайтыңыз: деңгей сызығы солға-төмен жылжиды және $c=13$-те облысқа соңғы рет $(3;2)$ төбесінде тиеді. Облыс шектелмеген болса да, минимум бар.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m17-2-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m17-2-t1">1. Төбедегі мән</h3></div>
+        <p>$\max z=3x+5y$, шектеулер: $x\le4$, $2y\le12$, $3x+2y\le18$, $x,y\ge0$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$(4;3)$ төбесіндегі $z$","a":27,"v":"3*4+5*3","hint":"$3x+5y$.","sol":{"steps":["$12+15$."],"ans":"$27$"}},{"q":"$z_{\\max}$","a":36,"v":"max([3*a+5*b for a,b in [(0,0),(4,0),(4,3),(2,6),(0,6)]])","hint":"Барлық төбені тексеріңіз.","sol":{"steps":["$(2;6)$: $6+30$."],"ans":"$36$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m17-2-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m17-2-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Шектелген СБ есебінің оңтайлы шешімі кемінде бір төбеде жатады.","a":true,"e":"Негізгі теорема.","hint":"Сызықтық функция."},{"q":"СБ есебінің жарамды облысы әрдайым дөңес.","a":true,"e":"Жарты кеңістіктердің қиылысы.","hint":"1-сабақ."},{"q":"Симплекс әдісінде шығатын айнымалы ең үлкен қатынаспен таңдалады.","a":false,"e":"Ең кіші - жарамдылықты сақтау үшін.","hint":"Қатынас тесті."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m17-2-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m17-2-t3">3. Нәтиже түрі</h3></div>
+        <p>СБ есебінің нәтижесін таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\max x$, $x\\ge5$, $x\\le3$.","o":["шешімсіз (облыс бос)","шектелмеген","$x=5$","$x=3$"],"a":0,"e":"$x\\ge5$ және $x\\le3$ қайшы.","hint":"Облысты салыңыз."},{"q":"$\\max x$, $x\\ge5$.","o":["шектелмеген","шешімсіз","$x=5$","$x=0$"],"a":0,"e":"$x$ шексіз өседі.","hint":"Жоғарғы шекара бар ма?"}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m17-2-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-2-t4">4. Графиктік әдіс</h3></div>
+        <p>$\max z=2x+y$, $x+y\le5$, $x\le3$, $x,y\ge0$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$z_{\\max}$","a":8,"v":"max([2*a+b for a,b in [(0,0),(3,0),(3,2),(0,5)]])","hint":"Төбелер: $(0;0)$, $(3;0)$, $(3;2)$, $(0;5)$.","sol":{"steps":["$0,\\ 6,\\ 8,\\ 5$."],"ans":"$8$ ($x=3$, $y=2$)"}},{"q":"Мақсат $x+y$ болса, оңтайлы мән","a":5,"v":"max([a+b for a,b in [(0,0),(3,0),(3,2),(0,5)]])","hint":"Деңгей сызығы $x+y=5$ қабырғасына параллель.","sol":{"steps":["$(3;2)$ және $(0;5)$ екеуінде де 5: бүкіл қабырға оңтайлы."],"ans":"$5$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m17-2-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-2-t5">5. Қатынас тесті</h3></div>
+        <p>Кіретін баған коэффициенттері $(2;\ -1;\ 4)$, оң жақтар $(10;\ 3;\ 8)$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Шығатын жолдың нөмірі (1, 2 не 3)","a":3,"v":"3 if Rational(8,4) < Rational(10,2) else 1","hint":"Тек оң коэффициенттер: $\\frac{10}2$, $\\frac84$.","sol":{"steps":["2-жол ($-1$) есептелмейді.","$\\min(5;2)=2$ - 3-жол."],"ans":"$3$"}},{"q":"Кіретін айнымалының жаңа мәні $\\theta^*$","a":2,"v":"min([Rational(10,2),Rational(8,4)])","hint":"Ең кіші қатынас.","sol":{"steps":["$\\frac84$."],"ans":"$2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m17-2-mat6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-2-t6">6. Қиылысу төбесі</h3></div>
+        <p>$x+2y=10$ және $3x+y=15$ шектеулерінің қиылысу төбесі.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$(x;y)$","name":"$\\mathbf v=$","a":[4,3],"orient":"row","v":"list(Matrix([[1,2],[3,1]]).solve(Matrix([10,15])))","hint":"Жүйені шешіңіз.","sol":{"steps":["$x=10-2y$; $30-6y+y=15$.","$y=3$, $x=4$."],"ans":"$(4;3)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m17-2-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-2-t7">7. Ұғымдар</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Симплекс ұғымдары.","pairs":[["кіретін айнымалы","z-жолында оң коэффициенттісі (max)"],["шығатын айнымалы","ең кіші bᵢ/aᵢⱼ қатынасы"],["толықтырушы айнымалы","≤ теңсіздікті теңдікке айналдырады"],["оңтайлылық белгісі","z-жолында оң коэффициент жоқ"]],"hint":"Алгоритм қадамдары.","sol":{"steps":["Әр итерация - бір төбеден келесісіне."]},"e":"Симплекс - көпжақ төбелері бойымен жүру."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m17-2-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m17-2-t8">8. Параметрлік: төбелер</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,5]},"b":{"int":[1,5]},"M":{"int":[4,10]}},"type":"num","q":"$\\max\\ #{a}x+#{b}y$, $x+y\\le#{M}$, $x,y\\ge0$. Оңтайлы мән?","a":"M*max(a,b)","v":"M*max(a,b)","hint":"Төбелер: $(0;0)$, $(#{M};0)$, $(0;#{M})$.","sol":{"steps":["$#{a}\\cdot#{M}$ және $#{b}\\cdot#{M}$ салыстырамыз."],"ans":"$#{M*max(a,b)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m17-2-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-2-t9">9. Параметрлік: екі шектеу</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"u":{"int":[2,6]},"w":{"int":[2,6]}},"type":"num","q":"$\\max\\ x+y$, $2x+y\\le#{2*u+w}$, $x+2y\\le#{u+2*w}$, $x,y\\ge0$. Оңтайлы мән?","a":"u+w","v":"max([a+b for a,b in [(0,0),(Rational(2*u+w,2),0),(0,Rational(u+2*w,2)),(u,w)]])","hint":"Екі шектеудің қиылысы $(#{u};#{w})$.","sol":{"steps":["Төбелер: $(0;0)$, $(\\frac{#{2*u+w}}{2};0)$, $(0;\\frac{#{u+2*w}}{2})$, $(#{u};#{w})$.","Қиылысуда $#{u}+#{w}$ - ең үлкені."],"ans":"$#{u+w}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m17-2-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-2-t10">10. Симплекс итерациясы</h3></div>
+        <p>$\max z=3x+5y$, шектеулер: $x\le4$, $2y\le12$, $3x+2y\le18$, $x,y\ge0$. Бірінші итерацияда $y$ кірді, $s_2$ шықты.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Жаңа $z$ мәні","a":30,"v":"5*6","hint":"$y=6$.","sol":{"steps":["$z=5\\cdot6$."],"ans":"$30$"}},{"q":"Жаңа $s_3$ мәні","a":6,"v":"18-2*6","hint":"$3x+2y+s_3=18$, $x=0$, $y=6$.","sol":{"steps":["$18-12$."],"ans":"$6$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m17-2-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-2-t11">11. Симплекс алгоритмі</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Бір итерация.","steps":["Есепті стандарт түрге келтіріп, бастапқы базисті аламыз.","$z$-жолынан кіретін айнымалыны таңдаймыз.","Қатынас тестімен шығатын айнымалыны табамыз.","Гаусс–Жордан түрлендіруін орындаймыз.","Оңтайлылықты тексереміз; оң коэффициент қалса - қайталаймыз."],"hint":"Стандарт түр → кіру → шығу → түрлендіру → тексеру.","sol":{"ans":"Симплекс итерациясы"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m17-2-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m17-2-t12">12. Қадамдық шешім: өндіріс жоспары</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Цех үстел (пайда 50) мен орындық (пайда 20) жасайды. Үстелге 2 сағ ағаш өңдеу және 1 сағ бояу, орындыққа 1 сағ және 1 сағ. Аптасына ағаш өңдеуге 40 сағ, бояуға 30 сағ бар. Ең пайдалы жоспар?","hint":"$x$ - үстел, $y$ - орындық; $2x+y\\le40$, $x+y\\le30$.","steps":["$\\max\\ 50x+20y$, $2x+y\\le40$, $x+y\\le30$, $x,y\\ge0$.","Төбелер: $(0;0)$, $(20;0)$, $(10;20)$ [қиылысу], $(0;30)$.","Пайда: $0$; $1000$; $500+400=900$; $600$.","Оңтайлы: $(20;0)$ - тек үстел, пайда 1000. Орындық пайдасы 25-тен асса, $(10;20)$ оңтайлы болар еді (тексеріңіз)."],"ans":"20 үстел, 0 орындық, пайда 1000"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Өндірісті жоспарлау, жеткізу тізбегі, тасымалдау есебі (қоймалардан дүкендерге), желі ағыны, кесте құру. Өнеркәсіптік шешушілер (CPLEX, Gurobi, HiGHS) симплекс пен ішкі нүкте әдістерін қолданады; Python-да <code>scipy.optimize.linprog</code>.</p>
+      <p><b>Мини-жоба: «Кішкентай симплекс».</b> $\max\mathbf c^T\mathbf x$, $A\mathbf x\le\mathbf b$ ($\mathbf b\ge0$) есептерін бөлшектермен (дәл арифметика) шешетін симплекс әдісін жазып, сабақтағы мысалдарды тексереміз.</p>
+<pre data-lang="python"><code class="language-python">from fractions import Fraction as Fr
+
+def simplex(c, A, b):
+    m, n = len(A), len(c)
+    # кесте: әр жол [A | I | b]; соңғы жол - z: [-c | 0 | 0]
+    T = [[Fr(v) for v in A[i]] + [Fr(int(i == j)) for j in range(m)] + [Fr(b[i])] for i in range(m)]
+    T.append([Fr(-v) for v in c] + [Fr(0)] * m + [Fr(0)])
+    basis = [n + i for i in range(m)]
+    while True:
+        j = min(range(n + m), key=lambda k: T[-1][k])          # ең теріс коэффициент - кіретін
+        if T[-1][j] &gt;= 0: break                                 # оңтайлы
+        rows = [i for i in range(m) if T[i][j] &gt; 0]
+        if not rows: return "шектелмеген", None
+        r = min(rows, key=lambda i: T[i][-1] / T[i][j])         # қатынас тесті
+        piv = T[r][j]; T[r] = [v / piv for v in T[r]]
+        for i in range(m + 1):
+            if i != r and T[i][j] != 0:
+                f = T[i][j]; T[i] = [a - f * bb for a, bb in zip(T[i], T[r])]
+        basis[r] = j
+    x = [Fr(0)] * (n + m)
+    for i, bi in enumerate(basis): x[bi] = T[i][-1]
+    return T[-1][-1], x[:n]
+
+print(simplex([3, 5], [[1, 0], [0, 2], [3, 2]], [4, 12, 18]))     # (36, [2, 6])
+print(simplex([50, 20], [[2, 1], [1, 1]], [40, 30]))              # (1000, [20, 0])
+print(simplex([1, 1], [[1, -1], [-1, 1]], [1, 2]))                # шектелмеген
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Әр итерацияда базис пен ағымдағы $z$-ті басып шығарыңыз. 2-мысалдағы $(0;0)\to(0;6)\to(2;6)$ жолы шыға ма?</li>
+        <li>Өндіріс есебінде орындық пайдасын 20-дан 30-ға дейін өзгертіп, оңтайлы жоспардың қашан ауысатынын табыңыз.</li>
+        <li>Кездейсоқ $2\times2$ есептер үшін <code>simplex</code> нәтижесін барлық төбелерді тексерумен салыстыратын тест жазыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>СБ есебі</td><td>$\max\mathbf c^T\mathbf x$, $A\mathbf x\le\mathbf b$, $\mathbf x\ge0$</td><td>сызықтық</td></tr>
+        <tr><td>Негізгі теорема</td><td>оңтайлы шешім төбеде</td><td>бос емес, шектелген</td></tr>
+        <tr><td>Стандарт түр</td><td>$A\mathbf x+\mathbf s=\mathbf b$</td><td>$\mathbf s\ge0$</td></tr>
+        <tr><td>Кіретін</td><td>$z$-жолында жақсартатын коэффициент</td><td>жоқ болса - оңтайлы</td></tr>
+        <tr><td>Шығатын</td><td>$\min\frac{b_i}{a_{ij}}$, $a_{ij}>0$</td><td>жоқ болса - шектелмеген</td></tr>
+        <tr><td>Нәтижелер</td><td>оңтайлы / шешімсіз / шектелмеген</td><td>-</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m17-2-self">
+        <li><input type="checkbox"> <span>Мен сөзбен берілген есепті СБ түрінде жаза аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен екі айнымалы есепті графиктік әдіспен шеше аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен оңтайлы шешімнің төбеде жататынын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен есепті стандарт түрге келтіріп, базистік шешімді таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен симплекс итерациясын орындай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен шектелмеген және шешімсіз есептерді тани аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. СБ есебінің оңтайлы шешімі (бар болса) әрдайым қай жерде кездеседі?</p>
+<label><input type="radio" value="a"> облыстың ортасында</label>
+<label><input type="radio" value="b"> координаталар басында</label>
+<label><input type="radio" value="c"> төбеде</label>
+<label><input type="radio" value="d"> ешқайда</label>
+<p class="explain">Кемінде бір оңтайлы шешім төбеде.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. Қатынас тестінде қай жол таңдалады?</p>
+<label><input type="radio" value="a"> ең үлкен</label>
+<label><input type="radio" value="b"> bᵢ/aᵢⱼ ең кіші (aᵢⱼ > 0)</label>
+<label><input type="radio" value="c"> aᵢⱼ ең үлкен</label>
+<label><input type="radio" value="d"> bᵢ ең кіші</label>
+<p class="explain">Жарамдылықты сақтау.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. Толықтырушы айнымалы не үшін қосылады?</p>
+<label><input type="radio" value="a"> ≤ теңсіздікті теңдікке айналдыру</label>
+<label><input type="radio" value="b"> мақсатты өзгерту</label>
+<label><input type="radio" value="c"> шектеуді жою</label>
+<label><input type="radio" value="d"> бүтін шешім алу</label>
+<p class="explain">aᵀx + s = b.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. Кіретін бағанда оң коэффициент жоқ болса:</p>
+<label><input type="radio" value="a"> шешім оңтайлы</label>
+<label><input type="radio" value="b"> облыс бос</label>
+<label><input type="radio" value="c"> қайта бастау</label>
+<label><input type="radio" value="d"> есеп шектелмеген</label>
+<p class="explain">θ шектелмеген.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">5. max 2x + 3y, x + y ≤ 4, x, y ≥ 0. Оңтайлы мән:</p>
+<label><input type="radio" value="a"> 8</label>
+<label><input type="radio" value="b"> 4</label>
+<label><input type="radio" value="c"> 12</label>
+<label><input type="radio" value="d"> 10</label>
+<p class="explain">(0; 4) төбесі.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. СБ жарамды облысы:</p>
+<label><input type="radio" value="a"> шеңбер</label>
+<label><input type="radio" value="b"> дөңес көпжақ</label>
+<label><input type="radio" value="c"> дөңес емес</label>
+<label><input type="radio" value="d"> әрдайым шектелген</label>
+<p class="explain">Жарты кеңістіктердің қиылысы.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. Симплекстің бір итерациясы геометриялық тұрғыдан:</p>
+<label><input type="radio" value="a"> көрші төбеге өту</label>
+<label><input type="radio" value="b"> ішкі нүктеге өту</label>
+<label><input type="radio" value="c"> шеңбер бойымен жүру</label>
+<label><input type="radio" value="d"> кездейсоқ секіру</label>
+<p class="explain">Базис бір айнымалыға ауысады.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. z-жолында (max) оң коэффициент қалмаса:</p>
+<label><input type="radio" value="a"> есеп шектелмеген</label>
+<label><input type="radio" value="b"> облыс бос</label>
+<label><input type="radio" value="c"> тағы итерация керек</label>
+<label><input type="radio" value="d"> шешім оңтайлы</label>
+<p class="explain">Оңтайлылық белгісі.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=optim">Mathematical Optimization емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-105.html"><small>Алдыңғы</small>← Mathematical Optimization · 1-сабақ: Оңтайландыру есептері және дөңес жиындар</a>

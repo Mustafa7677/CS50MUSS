@@ -6,13 +6,14 @@
   <title>Math Numerical Analysis · 5-сабақ: Сандық интегралдау және дифференциалдау - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Numerical Analysis · 5-сабақ: Сандық интегралдау және дифференциалдау - CS50 қазақша">
-  <meta property="og:description" content="Математика, Numerical Analysis · 5-сабақ: Сандық интегралдау және дифференциалдау. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Тіктөртбұрыш, трапеция, Симпсон формулалары, қателік.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-103.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Numerical Analysis · 5-сабақ: Сандық интегралдау және дифференциалдау - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-103.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Numerical Analysis · 5-сабақ: Сандық интегралдау және дифференциалдау. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Тіктөртбұрыш, трапеция, Симпсон формулалары, қателік.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,422 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="103">
+    <article class="content math-lesson" style="--sc:#155e75" id="main">
+      <div class="lecture-head" style="--lc:#155e75" data-n="103" data-msubj="numerical" data-glyph="≈">
         <div class="num">Numerical Analysis · 5-сабақ</div>
         <h1>Сандық интегралдау және дифференциалдау</h1>
-        <p>Тіктөртбұрыш, трапеция, Симпсон формулалары, қателік.</p>
+        <p>$\int_0^1e^{-x^2}dx$ интегралы элементар функциялар арқылы алынбайды, ал өлшенген деректердің туындысы формуласыз беріледі. Бұл сабақта туындыны ақырлы айырмалармен, интегралды трапеция, орта нүкте және Симпсон формулаларымен жуықтаймыз.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 50 мин</span><span>Есептер ≈ 1 сағ 10 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Әр формуланың қатесін Тейлор формуласымен қорытамыз және оның қандай <b>тегістік шартымен</b> ($f\in C^2$, $C^3$, $C^4$) орындалатынын нақты көрсетеміз. Сонымен қатар сандық дифференциалдауда «тым кіші $h$» неге қате беретінін және Ричардсон экстраполяциясын үйренеміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-16">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=numerical">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Numerical Analysis: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-16">Numerical Analysis</a></span><ol><li><a href="week-99.html" title="Қателіктер және есептеу тұрақтылығы">1</a></li><li><a href="week-100.html" title="Теңдеулердің түбірін табу">2</a></li><li><a href="week-101.html" title="Сызықтық жүйелерді сандық шешу">3</a></li><li><a href="week-102.html" title="Интерполяция">4</a></li><li><a href="week-103.html" aria-current="page" title="Сандық интегралдау және дифференциалдау">5</a></li><li><a href="week-104.html" title="Дифференциалдық теңдеулерді сандық шешу">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-16">Numerical Analysis</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Туынды мен интегралды сандық есептеуде бөліктердің өлшемі $h$ маңызды: кішірейткенде формуланың қатесі кемиді, бірақ дифференциалдауда тым кіші $h$ дөңгелектеу қатесін өсіреді.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>алға және орталық айырмалардың қатесін шарттарымен ($C^2$, $C^3$, $C^4$) қорыту;</li>
+        <li>дөңгелектеу қатесі мен кесу қатесінің тепе-теңдігінен оңтайлы $h$-ты бағалау;</li>
+        <li>құрама трапеция, орта нүкте және Симпсон формулаларын қолдану және олардың ретін ($O(h^2)$, $O(h^4)$) білу;</li>
+        <li>қате бағасынан қажетті бөліктер санын $n$ есептеу;</li>
+        <li>Ричардсон экстраполяциясымен дәлдікті арттыру;</li>
+        <li>формуланың дәлдік дәрежесін (қандай көпмүшелерді дәл интегралдайтынын) тексеру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Тейлор формуласы Лагранж қалдығымен: $f\in C^{k}$ болса, $f(x+h)=\sum_{j=0}^{k-1}\frac{f^{(j)}(x)}{j!}h^j+\frac{f^{(k)}(\xi)}{k!}h^k$, $\xi$ - $x$ пен $x+h$ арасында. Үзіліссіз функцияның аралық мәні: бірнеше мәннің орташасы - функцияның қандай да бір нүктедегі мәні. Анықталған интеграл және Риман қосындылары. Машиналық эпсилон $\varepsilon_M\approx2{,}2\cdot10^{-16}$.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-102.html">Numerical Analysis · 4-сабақ: Интерполяция</a></li><li><a href="week-30.html">Integral Calculus · 2-сабақ: Анықталған интеграл және Риман қосындылары</a></li><li><a href="week-54.html">Sequences and Series · 6-сабақ: Тейлор және Маклорен қатарлары</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: трапециямен аудан</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">$\int_0^1x^2dx=\frac13$. Трапеция әдісімен $n=2$ және $n=4$ бөлікпен есептеңіз.</p>
+        <ol class="math-steps">
+          <li>$n=2$, $h=0{,}5$: $T_2=0{,}5\left(\frac{0}2+0{,}25+\frac12\right)=0{,}375$. Қате $0{,}0417$.</li>
+          <li>$n=4$, $h=0{,}25$: $T_4=0{,}25\left(0+0{,}0625+0{,}25+0{,}5625+0{,}5\right)=0{,}34375$. Қате $0{,}0104$.</li>
+          <li>$h$ екі есе кішірейді - қате $4$ есе кемиді ($h^2$).</li>
+          <li>Ричардсон: $\frac{4T_4-T_2}3=\frac{1{,}375-0{,}375}3=0{,}3333\dots$ - дәл жауап! (Бұл Симпсон формуласы.)</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Қатенің $h$-қа қалай тәуелді екенін білсек, екі жуықтауды біріктіріп, қатені «жоюға» болады - Ричардсон экстраполяциясы.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Туынды - «қисықтың көлбеулігі». Оны $\frac{f(x+h)-f(x)}{h}$ қиюшысының көлбеулігімен жуықтаймыз. $h$ кіші болса, дәлірек сияқты. Бірақ компьютерде $h=10^{-12}$ алсаңыз, $f(x+h)$ мен $f(x)$ өте жақын сандар - апатты қысқару! Демек $h$-ты тым үлкен алу да (кесу қатесі), тым кіші алу да (дөңгелектеу қатесі) жаман; ең жақсысы - аралықта.</p>
+      <p>Симметриялы (орталық) айырма $\frac{f(x+h)-f(x-h)}{2h}$ әлдеқайда дәл: Тейлор жіктелуінде $h$-тың тақ дәрежелері жойылады. Қате $h^2$ ретті - $h$-ты 10 есе кішірейтсек, қате 100 есе азаяды. Бұл артықшылық тек $f$ жеткілікті тегіс болғанда жұмыс істейді.</p>
+      <p>Интеграл - аудан. Аралықты $n$ бөлікке бөліп, әр бөліктегі функцияны түзумен (трапеция) не параболамен (Симпсон) ауыстырамыз. Парабола қисықты әлдеқайда жақсы «қайталайды»: $n=8$ бөлікте $\int_0^1e^xdx$ үшін трапеция $2\cdot10^{-3}$, ал Симпсон $2\cdot10^{-6}$ қате береді.</p>
+      <p>Ричардсон идеясы: егер қате $Ch^2$ болатынын білсек, $h$ және $\frac h2$ қадамдарымен екі нәтиже алып, оларды «қатені жоятындай» біріктіреміз. Трапециядан осылай Симпсон шығады - бір формуладан екіншісін тегін аламыз.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · ауданды тақтайшалармен</span>
+        <p>Трапеция - қисық астын көлбеу төбелі тақтайшалармен жабу; Симпсон - доғал төбелі (параболалы) тақтайшалармен. Иілген қисықта доғал төбелер әлдеқайда дәл.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · лупа және шу</span>
+        <p>Сандық туынды - көлбеуді өте жақын екі нүктеден өлшеу. Нүктелерді жақындатсақ, формуланың қатесі кемиді, бірақ мәндердегі кішкене «шу» жақын сандарды азайтқанда үлкейеді. Ең жақсы $h$ - орташа.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$h$</td><td>қадам</td><td>бөліктің ені</td></tr>
+        <tr><td>$\frac{f(x+h)-f(x-h)}{2h}$</td><td>орталық айырма</td><td>туындының $O(h^2)$ жуықтауы</td></tr>
+        <tr><td>$T_n,\ M_n,\ S_n$</td><td>трапеция, тіктөртбұрыш (ортаңғы нүкте), Симпсон</td><td>құрама квадратуралар</td></tr>
+        <tr><td>$O(h^p)$</td><td>$p$-ретті қате</td><td>$h$ екі есе кішірейсе, қате $2^p$ есе кемиді</td></tr>
+        <tr><td>$\frac{2^pA(h/2)-A(h)}{2^p-1}$</td><td>Ричардсон экстраполяциясы</td><td>бас қате мүшесін жою</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 5.1 · Ақырлы айырмалардың қатесі</span>
+        <p>$h>0$, $f$ $[x-h,x+h]$-да қажетті тегістікте. (1) $f\in C^2$: $\frac{f(x+h)-f(x)}{h}=f'(x)+\frac h2f''(\xi)$ - <strong>алға айырма</strong> (<span class="term-en">forward difference</span>), $O(h)$. (2) $f\in C^3$: $\frac{f(x+h)-f(x-h)}{2h}=f'(x)+\frac{h^2}{6}f'''(\eta)$ - <strong>орталық айырма</strong> (<span class="term-en">central difference</span>), $O(h^2)$. (3) $f\in C^4$: $\frac{f(x+h)-2f(x)+f(x-h)}{h^2}=f''(x)+\frac{h^2}{12}f^{(4)}(\zeta)$, $O(h^2)$. Барлық $\xi,\eta,\zeta\in(x-h,x+h)$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Алға айырманың қатесі $h$-қа пропорционал, орталық айырманыкі - $h^2$-қа; орталық әдетте әлдеқайда дәл.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту. Тегістік шарты төмен болса, қате реті төмендейді (мысалы, $|x|^{5/2}$ нүктеде $C^2$, бірақ $C^3$ емес).</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 5.2 · Дөңгелектеумен бірге қате</span>
+        <p>$f$ мәндері $\epsilon$ салыстырмалы қатемен есептелсе ($|f|\le M_0$), алға айырманың жалпы қатесі шамамен $\le\frac{Mh}{2}+\frac{2\epsilon M_0}{h}$; ол $h\approx2\sqrt{\epsilon M_0/M}$ кезінде ең кіші, ретті $\sqrt\epsilon$. Орталық айырма үшін $\frac{Mh^2}{6}+\frac{\epsilon M_0}{h}$, оңтайлы $h\sim\epsilon^{1/3}$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Мәндерде дөңгелектеу қатесі болса, жалпы қате $\frac\epsilon h+h^p$ сияқты - тым кіші $h$ зиян.</p></div>
+      <p><em>Негіздеме.</em> Екі қосылғыштың біреуі $h$-пен өседі, екіншісі кемиді; қосындының минимумы - туынды нөлге тең нүктеде. Double үшін алға айырма $h\approx10^{-8}$, орталық $h\approx10^{-5}$ маңында ең жақсы.</p>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 5.1 · Квадратуралық формулалар</span>
+        <p>$[a,b]$-ны $n$ тең бөлікке бөлеміз: $h=\frac{b-a}{n}$, $x_i=a+ih$. Құрама <strong>трапеция формуласы</strong> (<span class="term-en">trapezoidal rule</span>) $T_n=h\left[\frac{f_0}{2}+f_1+\dots+f_{n-1}+\frac{f_n}{2}\right]$; <strong>орта нүкте формуласы</strong> (<span class="term-en">midpoint rule</span>) $M_n=h\sum f\!\left(x_i+\frac h2\right)$; <strong>Симпсон формуласы</strong> (<span class="term-en">Simpson's rule</span>) ($n$ жұп) $S_n=\frac h3\left[f_0+4f_1+2f_2+4f_3+\dots+4f_{n-1}+f_n\right]$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Аралықты тең бөліктерге бөліп, әр бөлікте функцияны түзумен не параболамен алмастырып интегралдаймыз.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 5.3 · Квадратура қателері</span>
+        <p>(1) $f\in C^2[a,b]$: $\int_a^bf-T_n=-\frac{(b-a)h^2}{12}f''(\xi)$ және $\int_a^bf-M_n=\frac{(b-a)h^2}{24}f''(\xi')$. (2) $f\in C^4[a,b]$, $n$ жұп: $\int_a^bf-S_n=-\frac{(b-a)h^4}{180}f^{(4)}(\xi'')$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Трапеция мен ортаңғы нүкте қатесі $h^2$, Симпсон қатесі $h^4$ ретімен кемиді.</p></div>
+      <p><em>Негіздеме.</em> Трапеция үшін 2-қорыту; орта нүкте мен Симпсонның дәлелі ұқсас (Симпсон үшін ұзынырақ), оларды келтірмейміз.</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 5.2 · Дәлдік дәрежесі</span>
+        <p>Формула барлық $\deg\le m$ көпмүшелерді дәл интегралдап, $x^{m+1}$-ді дәл интегралдамаса, оның <strong>дәлдік дәрежесі</strong> (<span class="term-en">degree of exactness</span>) $m$. Трапеция мен орта нүкте - $m=1$; Симпсон - $m=3$ (параболаға негізделсе де, текше көпмүшелерді де дәл).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Дәлдік дәрежесі - формула дәл интегралдайтын көпмүшелердің ең үлкен дәрежесі.</p></div>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 5.4 · Ричардсон экстраполяциясы</span>
+        <p>$A(h)=A+Ch^p+O(h^{p+1})$ болса, $\frac{2^pA(h/2)-A(h)}{2^p-1}=A+O(h^{p+1})$. Трапеция үшін ($p=2$, $f$ жеткілікті тегіс): $\frac{4T_{2n}-T_n}{3}=S_{2n}$ - дәл Симпсон формуласы.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Қатенің бас мүшесі белгілі болса, екі жуықтаудың тиісті комбинациясы оны жояды.</p></div>
+      <p><em>Негіздеме.</em> 3-қорыту.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 5.1 · Трапеция қатесі</span>
+        <div class="math-fbody">$$\left|\int_a^bf-T_n\right|\le\frac{(b-a)h^2}{12}M_2,\qquad M_2=\max_{[a,b]}|f''|$$</div>
+        <p class="math-fnote">Шарты: $f\in C^2[a,b]$. $n$ екі есе артса, қате шамамен 4 есе кемиді.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 5.2 · Симпсон қатесі</span>
+        <div class="math-fbody">$$\left|\int_a^bf-S_n\right|\le\frac{(b-a)h^4}{180}M_4,\qquad M_4=\max_{[a,b]}|f^{(4)}|$$</div>
+        <p class="math-fnote">Шарты: $f\in C^4[a,b]$, $n$ жұп. $n$ екі есе артса, қате шамамен 16 есе кемиді.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 5.3 · Орталық айырма</span>
+        <div class="math-fbody">$$f'(x)\approx\frac{f(x+h)-f(x-h)}{2h},\qquad|R|\le\frac{h^2}{6}M_3$$</div>
+        <p class="math-fnote">$R$ - қате, $M_3=\max|f'''|$. Шарты: $f\in C^3$. Екінші туынды үшін $\frac{f(x+h)-2f(x)+f(x-h)}{h^2}$, $f\in C^4$ болса $O(h^2)$; тек $f\in C^2$ болса, қате тек $o(1)$ (жалпы жағдайда ретсіз).</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Қате реттерінің кестесі: алға айырма $O(h)$ [$C^2$]; орталық $O(h^2)$ [$C^3$]; екінші айырма $O(h^2)$ [$C^4$]; трапеция, орта нүкте $O(h^2)$ [$C^2$]; Симпсон $O(h^4)$ [$C^4$]. Тегістік шарты орындалмаса, рет төмендейді.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Сандық дифференциалдау дөңгелектеу қатесіне өте сезімтал (айырманы $h$-ға бөлеміз), ал сандық интегралдау - жоқ (салмақты қосынды). Сондықтан $h\to0$ туындыда қатені <em>арттырады</em>. Сонымен қатар, Симпсонның $O(h^4)$ бағасы $f^{(4)}$ шектеулі болмаса (мысалы, $\int_0^1\sqrt x\,dx$, нөлде туындылар шексіз) орындалмайды: жинақталу баяулайды.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> Симпсон формуласы қай дәрежеге дейінгі көпмүшелерді дәл интегралдайды?</span></summary>
+        <p>$3$-ке дейін (күтілгеннен бір дәреже артық).</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> Трапеция қатесі $h=0{,}1$-де $10^{-4}$. $h=0{,}05$-те шамамен?</span></summary>
+        <p>$2{,}5\cdot10^{-5}$.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> $f(x)=x$ үшін алға айырманың қатесі?</span></summary>
+        <p>$0$: сызықтық функцияда $f''=0$.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> Неге сандық туындыда $h=10^{-15}$ таңдамаймыз?</span></summary>
+        <p>$f(x+h)$ пен $f(x)$ дерлік бірдей - азайтуда барлық мәнді цифрлар жойылады (апатты қысқару).</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: алға және орталық айырмалардың қатесі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 5.1-дің (1) және (2) бөліктерін Тейлор формуласымен дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $f(x\pm h)$-ты Тейлор бойынша жазамыз; орталық айырмада жұп мүшелер жойылады - қате $h^2$.</p>
+          <ol class="math-steps">
+            <li>(1) $f\in C^2$: $f(x+h)=f(x)+hf'(x)+\frac{h^2}2f''(\xi)$, $\xi\in(x,x+h)$.</li>
+            <li>$h$-ға бөлсек: $\frac{f(x+h)-f(x)}{h}=f'(x)+\frac h2f''(\xi)$ - қате $O(h)$.</li>
+            <li>(2) $f\in C^3$: $f(x\pm h)=f(x)\pm hf'(x)+\frac{h^2}2f''(x)\pm\frac{h^3}6f'''(\xi_\pm)$.</li>
+            <li>Айырсақ, $f$ пен $f''$ мүшелері жойылады: $f(x+h)-f(x-h)=2hf'(x)+\frac{h^3}{6}\big(f'''(\xi_+)+f'''(\xi_-)\big)$.</li>
+            <li>$f'''$ үзіліссіз, сондықтан $\frac12\big(f'''(\xi_+)+f'''(\xi_-)\big)=f'''(\eta)$ (аралық мән). $2h$-ға бөлсек: $=f'(x)+\frac{h^2}6f'''(\eta)$ - $O(h^2)$.</li>
+            <li>Сандық: $f=e^x$, $x=1$, $h=0{,}01$: алға айырма қатесі $\approx0{,}0136$ ($\approx\frac h2e$), орталық $\approx4{,}5\cdot10^{-5}$ ($\approx\frac{h^2}6e$) ✓.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: трапеция формуласының қатесі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> бір бөліктегі қатені тауып, құрама формулаға жинау ($f\in C^2$).</p>
+          <p class="mx-idea"><b>Идея:</b> Бір бөліктегі қате - түзу мен функцияның айырмасының интегралы, ол $f''$ арқылы бағаланады; бөліктер бойынша қосамыз.</p>
+          <ol class="math-steps">
+            <li>Бір бөлік $[c,c+h]$. Түзу $p(x)$ - $c$ және $c+h$ түйіндеріндегі сызықтық интерполяция; $\int_c^{c+h}p=\frac h2(f(c)+f(c+h))$.</li>
+            <li>Интерполяция қатесі: $f(x)-p(x)=\frac{f''(\xi_x)}{2}(x-c)(x-c-h)$.</li>
+            <li>$(x-c)(x-c-h)\le0$ аралықта таңбасын өзгертпейді, сондықтан интегралдық орта мән теоремасы бойынша: $\int_c^{c+h}(f-p)=\frac{f''(\mu)}{2}\int_c^{c+h}(x-c)(x-c-h)dx$.</li>
+            <li>$\int_0^ht(t-h)dt=\frac{h^3}{3}-\frac{h^3}{2}=-\frac{h^3}{6}$. Бір бөліктің қатесі $-\frac{h^3}{12}f''(\mu)$.</li>
+            <li>$n$ бөлікті қосамыз: $-\frac{h^3}{12}\sum f''(\mu_i)=-\frac{h^3}{12}nf''(\xi)$ (аралық мән: орташа $=f''(\xi)$).</li>
+            <li>$nh=b-a$: $\int_a^bf-T_n=-\frac{(b-a)h^2}{12}f''(\xi)$. ∎ (Интегралдық орта мән теоремасы үшін $\xi_x$-тің $x$-ке үзіліссіз тәуелділігі керек; бұл нәзіктікті дәлелсіз қабылдаймыз.)</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: Ричардсон экстраполяциясы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\frac{4T_{2n}-T_n}{3}$ қатені $h^2$ ретінен жоғарылататынын көрсету.</p>
+          <p class="mx-idea"><b>Идея:</b> Трапеция қатесі $Ch^2+O(h^4)$; $4T(h/2)-T(h)$ комбинациясында $h^2$ мүшесі жойылады.</p>
+          <ol class="math-steps">
+            <li>Трапеция қатесінің жіктелуі (Эйлер–Маклорен формуласы, $f$ жеткілікті тегіс; дәлелсіз): $T_n=I+C_1h^2+C_2h^4+\dots$, мұнда $C_i$ $h$-қа тәуелсіз.</li>
+            <li>$T_{2n}$ үшін қадам $\frac h2$: $T_{2n}=I+\frac{C_1h^2}{4}+\frac{C_2h^4}{16}+\dots$</li>
+            <li>$4T_{2n}-T_n=3I+0\cdot C_1h^2+\left(\frac14-1\right)C_2h^4+\dots$</li>
+            <li>$\frac{4T_{2n}-T_n}{3}=I-\frac{C_2h^4}{4}+\dots$ - қате $O(h^4)$.</li>
+            <li>Алгебралық тексеру: $\frac{4T_{2n}-T_n}{3}$ салмақтары дәл $\frac{h'}{3}(1,4,2,4,\dots,1)$, $h'=\frac h2$ - Симпсон формуласы $S_{2n}$.</li>
+            <li>Сандық: $T_2=1{,}753931$, $T_4=1{,}727222$; $\frac{4T_4-T_2}{3}=1{,}718319=S_4$; $e-1=1{,}718282$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Айырмалар</h3>
+        <p class="math-problem">$f(x)=e^x$, $x=1$, $h=0{,}1$. Алға және орталық айырмаларды есептеп, қателерін салыстырыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $e^{1{,}1}\approx3{,}004166$, $e^{0{,}9}\approx2{,}459603$, $e\approx2{,}718282$.</li>
+          <li><b>2-қадам.</b> Алға: $\frac{3{,}004166-2{,}718282}{0{,}1}\approx2{,}858842$, қате $\approx0{,}1406$.</li>
+          <li><b>3-қадам.</b> Орталық: $\frac{3{,}004166-2{,}459603}{0{,}2}\approx2{,}722815$, қате $\approx0{,}0045$.</li>
+          <li><b>4-қадам.</b> Бағалар: $\frac h2e\approx0{,}136$; $\frac{h^2}6e\approx0{,}0045$ ✓ (Теорема 5.1).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Алға $\approx0{,}14$, орталық $\approx0{,}0045$ қате.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Трапеция мен Симпсон</h3>
+        <p class="math-problem">$\int_0^1e^xdx=e-1$ интегралын $n=4$ үшін трапеция және Симпсон формулаларымен есептеңіз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $h=0{,}25$; $f$: $1;\ 1{,}284025;\ 1{,}648721;\ 2{,}117000;\ 2{,}718282$.</li>
+          <li><b>2-қадам.</b> Жақша ішіндегі қосынды: $\frac{1+2{,}718282}{2}+1{,}284025+1{,}648721+2{,}117=6{,}908887$; $T_4=0{,}25\cdot6{,}908887\approx1{,}727222$; қате $\approx8{,}9\cdot10^{-3}$.</li>
+          <li><b>3-қадам.</b> Симпсон салмақтарымен қосынды: $1+4\cdot(1{,}284025+2{,}117)+2\cdot1{,}648721+2{,}718282=20{,}619824$; $S_4=\frac{0{,}25}{3}\cdot20{,}619824\approx1{,}718319$; қате $\approx3{,}7\cdot10^{-5}$.</li>
+          <li><b>4-қадам.</b> Бағалар ($M_2=M_4=e$ $[0,1]$-де): $\frac{h^2}{12}e\approx0{,}0142$, $\frac{h^4}{180}e\approx5{,}9\cdot10^{-5}$ - нақты қателер бағадан кіші ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $T_4\approx1{,}7272$, $S_4\approx1{,}7183$ ($e-1\approx1{,}71828$).</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Қажетті n</h3>
+        <p class="math-problem">$\int_0^2\sin x\,dx$ трапециямен $10^{-6}$ дәлдікпен есептеу үшін неше бөлік керек? Симпсонмен ше?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $|f''|=|\sin x|\le1$, $(b-a)=2$: $\frac{2h^2}{12}\le10^{-6}\Rightarrow h\le\sqrt{6\cdot10^{-6}}\approx0{,}00245$, $n=\frac2h\ge817$.</li>
+          <li><b>2-қадам.</b> Симпсон: $|f^{(4)}|\le1$: $\frac{2h^4}{180}\le10^{-6}\Rightarrow h^4\le9\cdot10^{-5}$, $h\le0{,}0974$, $n\ge20{,}5$, жұп - $n=22$.</li>
+          <li><b>3-қадам.</b> Симпсон шамамен 37 есе аз есептеу жасайды.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Трапеция $n\ge817$; Симпсон $n=22$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Оңтайлы h</h3>
+        <p class="math-problem">$e^x$-тің $x=1$-дегі туындысын алға айырмамен double арифметикасында есептейміз. $h=10^{-1},10^{-5},10^{-8},10^{-10}$ кезіндегі қателер.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Кесу қатесі $\approx\frac h2e$: $h=0{,}1$ - $0{,}14$; $h=10^{-5}$ - $1{,}4\cdot10^{-5}$.</li>
+          <li><b>2-қадам.</b> $h=10^{-8}$: кесу $\approx10^{-8}$, дөңгелектеу $\approx\frac{2\varepsilon_Me}{h}\approx10^{-7}$ шамасында, нақты қате $\approx7\cdot10^{-9}$ - ең жақсы маңай.</li>
+          <li><b>3-қадам.</b> $h=10^{-10}$: дөңгелектеу басым, қате $\approx1{,}5\cdot10^{-6}$ - $h=10^{-8}$-ден нашар!</li>
+          <li><b>4-қадам.</b> Оңтайлы $h\sim\sqrt{\varepsilon_M}\approx10^{-8}$ (Теорема 5.2).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Ең жақсы $h\approx10^{-8}$; кішірейту қатені арттырады.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Туындыда $h$ неғұрлым кіші болса, соғұрлым жақсы</span> → <span class="math-good">оңтайлы $h\sim\sqrt{\varepsilon_M}$ (алға) не $\varepsilon_M^{1/3}$ (орталық)</span><br>Неге қате: дөңгелектеу қатесі $\frac{\varepsilon}{h}$ ретімен өседі.</li>
+        <li><span class="math-bad">Орталық айырма кез келген $f$ үшін $O(h^2)$</span> → <span class="math-good">$f\in C^3$ болғанда</span><br>Неге қате: тегістік төмен болса, рет төмендейді.</li>
+        <li><span class="math-bad">Симпсон тақ $n$-мен</span> → <span class="math-good">$n$ жұп болуы керек</span><br>Неге қате: әр парабола екі бөлікті қамтиды.</li>
+        <li><span class="math-bad">Симпсон салмақтары $1,2,2,\dots,2,1$</span> → <span class="math-good">$1,4,2,4,\dots,4,1$ (көбейткіш $\frac h3$)</span><br>Неге қате: $1,2,\dots,2,1$ (көбейткіш $\frac h2$) - трапеция.</li>
+        <li><span class="math-bad">Трапеция қатесі $O(h)$</span> → <span class="math-good">$O(h^2)$ ($f\in C^2$)</span><br>Неге қате: қатенің бір бөліктегі реті $h^3$, бөліктер саны $\frac1h$.</li>
+        <li><span class="math-bad">$\int_0^1\sqrt x\,dx$ үшін Симпсон $O(h^4)$</span> → <span class="math-good">$f\notin C^4[0,1]$ - баға жарамсыз</span><br>Неге қате: нөлде туындылар шектелмеген; жинақталу баяу.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="riemann" data-title="Трапеция және орта нүкте: ∫₀² x² dx" data-config='{"f": "x^2", "a": 0, "b": 2, "n": 4, "method": "trap"}'></div>
+      <p><b>Бақылаңыз:</b> Әдісті «трапеция» мен «орта нүкте» арасында ауыстырыңыз. $x^2$ дөңес, сондықтан трапеция әрдайым артық (қисық хордадан төмен), ал орта нүкте кем береді; қателер шамамен $2:1$ қатынасында және таңбалары қарама-қарсы - теоремадағы $-\frac{1}{12}$ мен $+\frac1{24}$. $n$ екі есе артса, қате 4 есе кемиді.</p>
+      <div class="math-viz" data-viz="graph" data-title="Алға айырманың жалпы қатесі: h/2 · M + 2ε/h" data-config='{"fns": [{"f": "x/2*2.72+2*2.2*10^(-16)*2.72/x", "label": "жалпы қатенің бағасы"}, {"f": "x/2*2.72", "label": "кесу қатесі", "color": 1, "dash": [5, 4]}, {"f": "2*2.2*10^(-16)*2.72/x", "label": "дөңгелектеу қатесі", "color": 2, "dash": [3, 3]}], "view": [1e-09, 5e-08, 0, 1.2e-07]}'></div>
+      <p><b>Бақылаңыз:</b> Көлденең ось - $h$ (өте кіші мәндер). Кесу қатесі $h$-пен сызықтық өседі, дөңгелектеу қатесі $\frac1h$ ретімен кемиді; қосындының минимумы $h\approx2\sqrt{\varepsilon_M}\approx3\cdot10^{-8}$ маңында, мәні $\sim4\cdot10^{-8}$.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m16-5-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-5-t1">1. Айырмалар</h3></div>
+        <p>$f(x)=x^2$, $x=3$, $h=0{,}1$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Алға айырма","a":6.1,"v":"(Rational(31,10)**2-9)/Rational(1,10)","hint":"$\\frac{3{,}1^2-9}{0{,}1}$.","sol":{"steps":["$\\frac{0{,}61}{0{,}1}$."],"ans":"$6{,}1$ (қате $\\frac h2f''=0{,}1$)"}},{"q":"Орталық айырма","a":6,"v":"(Rational(31,10)**2-Rational(29,10)**2)/Rational(2,10)","hint":"$x^2$ үшін дәл.","sol":{"steps":["$\\frac{9{,}61-8{,}41}{0{,}2}$."],"ans":"$6$ (дәл: $f'''=0$)"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-5-num2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-5-t2">2. Трапеция</h3></div>
+        <p>$\int_0^2x^2dx$, $n=2$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$T_2$","a":3,"v":"1*(Rational(0,2)+1+Rational(4,2))","hint":"$h=1$: $1\\cdot\\left(\\frac02+1+\\frac42\\right)$.","sol":{"steps":["$0+1+2$."],"ans":"$3$"}},{"q":"Дәл мән","a":"8/3","v":"integrate(x**2,(x,0,2))","hint":"$\\frac{x^3}{3}$.","sol":{"steps":["$\\frac83$."],"ans":"$\\frac83$ (трапеция қатесі $\\frac13=\\frac{2\\cdot1^2}{12}\\cdot2$ ✓)"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m16-5-tf3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m16-5-t3">3. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Симпсон формуласы $x^3$-ті дәл интегралдайды.","a":true,"e":"Дәлдік дәрежесі 3.","hint":"$f^{(4)}=0$."},{"q":"Трапеция формуласы $x^2$-ты дәл интегралдайды.","a":false,"e":"Дәлдік дәрежесі 1; $f''=2\\ne0$.","hint":"Алдыңғы есеп."},{"q":"Сандық интегралдау дөңгелектеу қатесіне сандық дифференциалдаудан әлдеқайда аз сезімтал.","a":true,"e":"Интегралда салмақты қосынды, туындыда $h$-ға бөлу.","hint":"$\\frac{\\varepsilon}{h}$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-5-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-5-t4">4. Симпсон</h3></div>
+        <p>$\int_0^2x^4dx$, $n=2$ ($h=1$).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$S_2$ (бөлшекпен)","a":"20/3","v":"Rational(1,3)*(0+4*1+16)","hint":"$\\frac13(f_0+4f_1+f_2)$.","sol":{"steps":["$\\frac13(0+4+16)$."],"ans":"$\\frac{20}{3}$"}},{"q":"Қате $\\int-S_2$ (бөлшекпен)","a":"-4/15","v":"integrate(x**4,(x,0,2))-Rational(20,3)","hint":"Дәл мән $\\frac{32}{5}$.","sol":{"steps":["$\\frac{32}5-\\frac{20}3=\\frac{96-100}{15}$.","Бағамен салыстыру: $-\\frac{2\\cdot1^4}{180}\\cdot24=-\\frac4{15}$ - дәл сәйкес (себебі $f^{(4)}=24$ тұрақты)."],"ans":"$-\\frac{4}{15}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-5-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-5-t5">5. Ричардсон</h3></div>
+        <p>$T_n$ мен $T_{2n}$ берілген.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$T_2=1{,}753931$, $T_4=1{,}727222$. Ричардсон бағасы ($10^{-6}$ дәлдік)","a":"(4*1.727222-1.753931)/3","tol":1e-06,"v":"(4*Rational(1727222,10**6)-Rational(1753931,10**6))/3","hint":"$\\frac{4T_4-T_2}{3}$.","sol":{"steps":["$\\frac{6{,}908888-1{,}753931}{3}$."],"ans":"$\\approx1{,}718319$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m16-5-cho6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-5-t6">6. Қате реті</h3></div>
+        <p>Қадамды 2 есе азайтқанда қате шамамен неше есе кемиді?</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Симпсон формуласы ($f\\in C^4$)","o":["16","4","2","8"],"a":0,"e":"$O(h^4)$: $2^4$.","hint":"$h^4$."},{"q":"Алға айырма ($f\\in C^2$)","o":["2","4","16","1"],"a":0,"e":"$O(h)$.","hint":"$h^1$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m16-5-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-5-t7">7. Формула және шарт</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Қате реті және тегістік шарты.","pairs":[["алға айырма","O(h), f ∈ C²"],["орталық айырма","O(h²), f ∈ C³"],["трапеция","O(h²), f ∈ C²"],["Симпсон","O(h⁴), f ∈ C⁴"]],"hint":"Кесте «Есте сақта» блогында.","sol":{"steps":["Тегістік төмен болса, рет төмендейді."]},"e":"Әр бағаның өз шарты бар."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m16-5-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m16-5-t8">8. Параметрлік: трапеция үшін n</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"pick":[1,2,4]},"L":{"pick":[1,2,3]},"k":{"int":[3,6]}},"type":"num","q":"$[a,b]$ ұзындығы $#{L}$, $\\max|f''|=#{m}$. Трапециямен $10^{-#{k}}$ дәлдік үшін ең аз $n$?","a":"ceil(L*sqrt(L*m*10^k/12))","v":"ceiling(L*sqrt(Rational(L*m*10**k,12)))","hint":"$\\frac{(b-a)h^2M_2}{12}\\le\\varepsilon$, $n=\\frac{b-a}{h}$.","sol":{"steps":["$h\\le\\sqrt{\\frac{12\\varepsilon}{(b-a)M_2}}$, $n\\ge(b-a)\\sqrt{\\frac{(b-a)M_2}{12\\varepsilon}}$."],"ans":"$#{ceil(L*sqrt(L*m*10^k/12))}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m16-5-par9">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-5-t9">9. Параметрлік: орталық айырма</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді. $10^{-6}$ дәлдікпен.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,4]},"c":{"int":[1,3]}},"type":"num","tol":1e-06,"q":"$f(x)=x^3$, $x_0=#{c}$, $h=0{,}#{a}$. Орталық айырманың қатесі $D_h-f'(x_0)$?","a":"(a/10)^2","v":"((c+Rational(a,10))**3-(c-Rational(a,10))**3)/(2*Rational(a,10))-3*c**2","hint":"$x^3$ үшін қате дәл $\\frac{h^2}6f'''=h^2$.","sol":{"steps":["$f'''=6$, қате $\\frac{h^2}{6}\\cdot6=h^2$."],"ans":"$#{(a/10)^2}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m16-5-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-5-t10">10. Дәлдік дәрежесі</h3></div>
+        <p>Формула: $\int_{-1}^1f\approx f\left(-\frac1{\sqrt3}\right)+f\left(\frac1{\sqrt3}\right)$ (Гаусстың 2 нүктелі формуласы).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$f=x^2$: формула мәні","a":"2/3","v":"integrate(x**2,(x,-1,1))","hint":"$\\frac13+\\frac13$.","sol":{"steps":["Дәл интеграл да $\\frac23$ ✓."],"ans":"$\\frac23$"}},{"q":"$f=x^4$: формула мәні мен дәл интегралдың айырмасы","a":"2/9-2/5","v":"2*Rational(1,9)-integrate(x**4,(x,-1,1))","hint":"$\\frac19+\\frac19$ және $\\frac25$.","sol":{"steps":["$\\frac29-\\frac25=-\\frac{8}{45}$."],"ans":"$-\\frac{8}{45}$ - дәлдік дәрежесі 3"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m16-5-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-5-t11">11. Трапеция қатесінің дәлелі</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\int_a^bf-T_n=-\\frac{(b-a)h^2}{12}f''(\\xi)$.","steps":["Бір бөліктегі сызықтық интерполяция қатесін жазамыз.","Интегралдық орта мән теоремасын қолданамыз.","$\\int_0^ht(t-h)dt=-\\frac{h^3}{6}$ есептейміз.","Бір бөліктің қатесі $-\\frac{h^3}{12}f''(\\mu)$.","$n$ бөлікті қосып, $nh=b-a$ қоямыз."],"hint":"Бір бөлік → барлығы.","sol":{"ans":"$O(h^2)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m16-5-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m16-5-t12">12. Қадамдық шешім: Симпсонның дәлдік дәрежесі</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$\\int_{-h}^{h}f\\approx\\frac h3\\big(f(-h)+4f(0)+f(h)\\big)$ формуласының $x^3$-ті дәл, ал $x^4$-ті дәл емес интегралдайтынын көрсетіңіз.","hint":"Тақ функциялардың симметриялы аралықтағы интегралы 0.","steps":["$f=1$: $\\frac h3(1+4+1)=2h=\\int_{-h}^h1$ ✓. $f=x^2$: $\\frac h3(h^2+0+h^2)=\\frac{2h^3}3$ ✓.","$f=x$, $f=x^3$: формула да, интеграл да $0$ (тақ) ✓.","$f=x^4$: формула $\\frac h3\\cdot2h^4=\\frac{2h^5}{3}$, интеграл $\\frac{2h^5}{5}$ - тең емес.","Демек дәлдік дәрежесі 3 (параболаға негізделгеніне қарамастан симметрия бір дәреже «тегін» береді)."],"ans":"Дәлдік дәрежесі 3."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Физикалық модельдеу (жол = жылдамдықтың интегралы), ықтималдықтар ($\Phi$ функциясы - интеграл), машиналық оқытуда градиентті тексеру (gradient check - орталық айырма), сенсор деректерінен жылдамдық пен үдеуді бағалау.</p>
+      <p><b>Мини-жоба: «Квадратура және оңтайлы h».</b> Трапеция мен Симпсонның қате ретін тәжірибе арқылы өлшеп ($\log_2$ қатынасы), алға айырма үшін ең жақсы $h$-ты табамыз.</p>
+<pre data-lang="python"><code class="language-python">import math
+
+def trap(f, a, b, n):
+    h = (b - a) / n
+    return h * (f(a) / 2 + sum(f(a + i * h) for i in range(1, n)) + f(b) / 2)
+
+def simpson(f, a, b, n):
+    h = (b - a) / n
+    return h / 3 * (f(a) + f(b) + 4 * sum(f(a + i * h) for i in range(1, n, 2)) + 2 * sum(f(a + i * h) for i in range(2, n, 2)))
+
+I = math.e - 1
+prev = None
+for n in (2, 4, 8, 16, 32):
+    et, es = abs(trap(math.exp, 0, 1, n) - I), abs(simpson(math.exp, 0, 1, n) - I)
+    rate = "" if prev is None else f"  рет: трап {math.log2(prev[0] / et):.2f}, Симпсон {math.log2(prev[1] / es):.2f}"
+    print(f"n={n:3d}  трап {et:.2e}  Симпсон {es:.2e}{rate}")
+    prev = (et, es)
+
+# √x үшін Симпсон: тегістік жоқ - рет төмендейді
+J = 2 / 3
+print("√x, Симпсон қатесі:", [f"{abs(simpson(math.sqrt, 0, 1, n) - J):.1e}" for n in (8, 16, 32, 64)])
+
+best = min((abs((math.exp(1 + h) - math.exp(1)) / h - math.e), h) for h in [10.0 ** (-k) for k in range(1, 15)])
+print("алға айырма, ең жақсы h:", best[1], "қате", f"{best[0]:.1e}")
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>«Рет» бағанында трапеция үшін 2, Симпсон үшін 4 шыға ма? $\sqrt x$ үшін Симпсонның тәжірибелік ретін есептеңіз (теория бойынша $1{,}5$-ке жуық).</li>
+        <li>Орталық айырма үшін ең жақсы $h$-ты табыңыз. Ол $\varepsilon_M^{1/3}\approx6\cdot10^{-6}$ маңында ма?</li>
+        <li>Ромберг әдісін жазыңыз: $T_1,T_2,T_4,\dots$-тен Ричардсонды қайталап қолданып, $\int_0^1e^x$-ті $10^{-12}$ дәлдікпен алыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Алға айырма</td><td>$\frac{f(x+h)-f(x)}h=f'+\frac h2f''(\xi)$</td><td>$f\in C^2$</td></tr>
+        <tr><td>Орталық айырма</td><td>$\frac{f(x+h)-f(x-h)}{2h}=f'+\frac{h^2}6f'''(\eta)$</td><td>$f\in C^3$</td></tr>
+        <tr><td>Екінші айырма</td><td>$f''+\frac{h^2}{12}f^{(4)}(\zeta)$</td><td>$f\in C^4$</td></tr>
+        <tr><td>Трапеция</td><td>$-\frac{(b-a)h^2}{12}f''(\xi)$</td><td>$f\in C^2$</td></tr>
+        <tr><td>Симпсон</td><td>$-\frac{(b-a)h^4}{180}f^{(4)}(\xi)$</td><td>$f\in C^4$, $n$ жұп</td></tr>
+        <tr><td>Ричардсон</td><td>$\frac{4T_{2n}-T_n}{3}=S_{2n}$</td><td>тегіс $f$</td></tr>
+        <tr><td>Оңтайлы $h$</td><td>$\sqrt{\varepsilon_M}$ (алға), $\varepsilon_M^{1/3}$ (орталық)</td><td>дөңгелектеу</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m16-5-self">
+        <li><input type="checkbox"> <span>Мен ақырлы айырмалардың қатесін тегістік шарттарымен қорыта аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен сандық туындыдағы оңтайлы $h$-ты түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен трапеция, орта нүкте және Симпсон формулаларын қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қате бағасынан қажетті $n$-ді есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Ричардсон экстраполяциясын қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен формуланың дәлдік дәрежесін тексере аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="d">
+<p class="q-text">1. Орталық айырманың қате реті (f ∈ C³):</p>
+<label><input type="radio" value="a"> O(h)</label>
+<label><input type="radio" value="b"> O(h⁴)</label>
+<label><input type="radio" value="c"> O(1)</label>
+<label><input type="radio" value="d"> O(h²)</label>
+<p class="explain">Тақ дәрежелер жойылады.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. Трапеция формуласының қатесі (f ∈ C²):</p>
+<label><input type="radio" value="a"> O(h)</label>
+<label><input type="radio" value="b"> O(h⁴)</label>
+<label><input type="radio" value="c"> O(h²)</label>
+<label><input type="radio" value="d"> O(h³)</label>
+<p class="explain">−(b − a)h²f″(ξ)/12.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. Симпсон формуласы үшін n:</p>
+<label><input type="radio" value="a"> тақ болуы керек</label>
+<label><input type="radio" value="b"> жұп болуы керек</label>
+<label><input type="radio" value="c"> кез келген</label>
+<label><input type="radio" value="d"> 4-ке еселі</label>
+<p class="explain">Әр парабола екі бөлікте.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">4. Симпсонның дәлдік дәрежесі:</p>
+<label><input type="radio" value="a"> 3</label>
+<label><input type="radio" value="b"> 2</label>
+<label><input type="radio" value="c"> 1</label>
+<label><input type="radio" value="d"> 4</label>
+<p class="explain">x³-ті де дәл интегралдайды.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">5. Сандық туындыда h-ты тым кіші алсақ:</p>
+<label><input type="radio" value="a"> қате әрдайым кемиді</label>
+<label><input type="radio" value="b"> ештеңе өзгермейді</label>
+<label><input type="radio" value="c"> интеграл өзгереді</label>
+<label><input type="radio" value="d"> дөңгелектеу қатесі өседі</label>
+<p class="explain">ε/h мүшесі.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. (4T₂ₙ − Tₙ)/3 нені береді?</p>
+<label><input type="radio" value="a"> трапеция</label>
+<label><input type="radio" value="b"> орта нүкте</label>
+<label><input type="radio" value="c"> Симпсон S₂ₙ</label>
+<label><input type="radio" value="d"> дәл интегралды әрдайым</label>
+<p class="explain">Ричардсон экстраполяциясы.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. Симпсон қатесінің O(h⁴) бағасының шарты:</p>
+<label><input type="radio" value="a"> f ∈ C²</label>
+<label><input type="radio" value="b"> f ∈ C⁴</label>
+<label><input type="radio" value="c"> f үзіліссіз</label>
+<label><input type="radio" value="d"> f көпмүше</label>
+<p class="explain">f⁽⁴⁾ шектелген болуы керек.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">8. Алға айырма үшін double-да оңтайлы h шамамен:</p>
+<label><input type="radio" value="a"> 10⁻⁸</label>
+<label><input type="radio" value="b"> 10⁻¹⁶</label>
+<label><input type="radio" value="c"> 10⁻²</label>
+<label><input type="radio" value="d"> 1</label>
+<p class="explain">√ε_M.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=numerical">Numerical Analysis емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-102.html"><small>Алдыңғы</small>← Numerical Analysis · 4-сабақ: Интерполяция</a>

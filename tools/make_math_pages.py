@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
 # Harvard CS50 материалдары (олар осы файлда сақталмайды) CC BY-NC-SA 4.0 бойынша; үшінші тарап компоненттері өз лицензияларымен.
-"""«Математика» курсының (math/) бастапқы беттерін жасайды. Жоспар: tools/math_plan.py (24 пән, жалпы 154 сабақ).
+"""«Математика» курсының (math/) бастапқы беттерін жасайды. Жоспар: tools/math_plan.py (25 пән, жалпы 162 сабақ).
 
   python3 tools/make_math_pages.py            # жоқ беттерді жасайды (бар, дайын беттерге тиіспейді)
   python3 tools/make_math_pages.py --index    # math/index.html-ді қайта жазады (жоспар өзгергенде)
@@ -103,7 +103,7 @@ FOOT = '''
 
 
 def subnav(prefix, cur):
-    items = [("index.html", "Пәндер", "home"), ("formulas.html", "Формулалар", "formulas"), ("glossary.html", "Сөздік", "glossary"), ("practice.html", "Жаттықтырғыш", "practice")]
+    items = [("index.html", "Пәндер", "home"), ("formulas.html", "Формулалар", "formulas"), ("glossary.html", "Сөздік", "glossary"), ("practice.html", "Жаттықтырғыш", "practice"), ("route.html", "Оқу жолы", "route"), ("exam.html", "Емтихан", "exam")]
     s = "".join(f'<a href="{prefix}{h}"' + (' aria-current="page"' if k == cur else "") + f">{t}</a>" for h, t, k in items)
     return f'<nav class="math-subnav" aria-label="Математика курсының бөлімдері">{s}</nav>'
 
@@ -146,9 +146,10 @@ def subject_block(s):
 def index_page():
     switch = ('<nav class="cx-switch" aria-label="Курсты таңдау"><a href="../index.html">CS50x</a><a href="../python/">CS50P</a><a href="../sql/">SQL</a>'
               '<a href="../ai/">AI</a><a href="../web/">Web</a><a href="../cpp/">C++</a><a href="../java/">Java</a><a href="../en/">English</a>'
-              '<a class="on" aria-current="page" href="../math/">Math</a></nav>')
+              '<a class="on" aria-current="page" href="../math/">Математика</a></nav>')
     groups = []
-    for g, gname, gdesc in (("H", P.GROUPS["H"], "17 пән: орта мектептен кейінгі негізгі математика - алгебрадан бастап есептеуге, ықтималдыққа, дискретті математикаға және оңтайландыруға дейін. Әр пән өз алдына тәуелсіз: кез келгенін таңдап оқуға болады."),
+    for g, gname, gdesc in (("F", P.GROUPS["F"], "Нөлден бастаушыларға: сандар, төрт амал (бөлуді қоса), бөлшектер, пайыз, теріс сандар және алғашқы теңдеу. Математиканы ұмытып қалсаңыз не мүлде білмесеңіз - осы жерден бастаңыз."),
+                            ("H", P.GROUPS["H"], "17 пән: орта мектептен кейінгі негізгі математика - алгебрадан бастап есептеуге, ықтималдыққа, дискретті математикаға және оңтайландыруға дейін. Әр пән өз алдына тәуелсіз: кез келгенін таңдап оқуға болады."),
                             ("A", P.GROUPS["A"], "7 пән: қатаң дәлелдеу тілімен жазылған курстар. Әр пән өз алдына тәуелсіз.")):
         blocks = "\n".join(subject_block(s) for s in SUBJ if s["group"] == g)
         groups.append(f'''      <h2 class="mx-group-h" id="group-{g.lower()}">{gname}</h2>
@@ -157,10 +158,11 @@ def index_page():
     tools = [("formulas.html", "Формулалар анықтамалығы", "Пән бойынша формулалар, іздеу, шарттары мен сабаққа сілтеме. Формулалар KaTeX-пен көрсетіледі."),
              ("glossary.html", "Математика сөздігі", "Терминдер қазақша мен ағылшынша: қысқа анықтама және қай сабақта түсіндірілгені."),
              ("practice.html", "Жаттықтырғыш", "Кездейсоқ коэффициентті есептер: пән мен қиындықты таңдап, серия шешіңіз. Әр сайын жаңа сандар.")]
-    jump = "".join(f'<li><a href="#subj-{x["no"]}">{a(x["en"])}</a></li>' for x in SUBJ)
+    shown = [x for g in "FHA" for x in SUBJ if x["group"] == g]  # бетте көрінетін рет: Foundations бірінші
+    jump = "".join(f'<li><a href="#subj-{x["no"]}">{a(x["en"])}</a></li>' for x in shown)
     tool_html = "\n".join(f'        <a class="oc-card en-tool-card" href="{h}"><h3>{t}</h3><p>{d}</p></a>' for h, t, d in tools)
     return head("Math: Математика - CS50 қазақша",
-                "Математика: авторлық қазақша курс. 24 пән: Linear Algebra, Calculus, Probability Theory, Discrete Mathematics, Number Theory, Topology және т.б. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
+                "Математика: авторлық қазақша курс. 25 пән: Linear Algebra, Calculus, Probability Theory, Discrete Mathematics, Number Theory, Topology және т.б. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
                 "../", katex=False, plan=True) + shell("../") + f'''
   <div class="layout single wide">
     <article class="content course-home own-course math-course" id="main">
@@ -168,8 +170,8 @@ def index_page():
         <div class="py-hero-text">
           {switch}
           <span class="cx-eyebrow">Авторлық курс · Sagid Mustafa</span>
-          <h1>Математика <span>24 пән</span></h1>
-          <p>Жоғары математиканы нөлден бастап түсіндіріп оқыңыз: теория, анықтама, теорема, формулаларды қорытып шығару, қадамдық шешілген мысалдар, интерактивті есептер мен визуализация. Пәндер бір-бірінен тәуелсіз: кез келгенінен бастауға болады.</p>
+          <h1>Математика <span>25 пән</span></h1>
+          <p>Математиканы мүлде нөлден - сандар мен бөлуден - бастап жоғары математикаға дейін түсіндіріп оқыңыз: теория, анықтама, теорема, формулаларды қорытып шығару, қадамдық шешілген мысалдар, интерактивті есептер мен визуализация. Пәндер бір-бірінен тәуелсіз: кез келгенінен бастауға болады.</p>
           <div class="hero-actions">
             <a class="btn gold" href="#weeks">Пәнді таңдау</a>
             <a class="btn ghost" href="formulas.html">Формулалар</a>
@@ -177,7 +179,7 @@ def index_page():
             <a class="btn ghost" href="practice.html">Жаттықтырғыш</a>
           </div>
           <div class="cx-stats">
-            <div><b><!--n:lect_math-->0<!--/n--></b><span>сабақ дайын</span></div><div><b><!--n:plan_math-->{P.TOTAL}<!--/n--></b><span>сабақ жоспарда</span></div><div><b>24</b><span>пән</span></div>
+            <div><b><!--n:lect_math-->0<!--/n--></b><span>сабақ дайын</span></div><div><b><!--n:plan_math-->{P.TOTAL}<!--/n--></b><span>сабақ жоспарда</span></div><div><b>25</b><span>пән</span></div>
           </div>
         </div>
         <div class="py-win" aria-hidden="true">
@@ -203,7 +205,7 @@ f = x**<span class="f">3</span> + <span class="f">2</span>*x
         <nav aria-label="Пәндерге өту"><ol class="mx-jump">{jump}</ol></nav>
       </section>
       <h2 id="weeks">Пәндер мен сабақтар</h2>
-      <p>24 пән, әр пәнде 5-8 сабақ. Әр сабақта мақсаттар, интуиция, анықтама, теорема, қорытып шығару, қадамдық шешілген мысалдар, жиі қателер, визуализация, интерактивті есептер, қорытынды формулалар және қорытынды тест бар. Жазылып біткен сабақтар ашық, қалғандары «Жақында» белгісімен тұр.</p>
+      <p>25 пән, әр пәнде 5-8 сабақ. Әр сабақта мақсаттар, интуиция, анықтама, теорема, қорытып шығару, қадамдық шешілген мысалдар, жиі қателер, визуализация, интерактивті есептер, қорытынды формулалар және қорытынды тест бар. Жазылып біткен сабақтар ашық, қалғандары «Жақында» белгісімен тұр.</p>
 {chr(10).join(groups)}
       <section class="oc-block" aria-labelledby="tools">
         <h2 id="tools">Құралдар</h2>
@@ -276,7 +278,7 @@ def placeholder(n):
 # ---------------------------------------------------------------- ортақ беттер
 TOOLS = {
     "formulas": ("Формулалар", "Формулалар анықтамалығы", "Пән бойынша формулалар: іздеу, шарттары және сабаққа сілтеме. Формулалар KaTeX-пен көрсетіледі.",
-                 "Математика формулаларының анықтамалығы: 24 пән бойынша іздеу, шарттары және сабаққа сілтеме."),
+                 "Математика формулаларының анықтамалығы: 25 пән бойынша іздеу, шарттары және сабаққа сілтеме."),
     "glossary": ("Сөздік", "Математика сөздігі", "Математикалық терминдер қазақша және ағылшынша: қысқа анықтама мен сабаққа сілтеме.",
                  "Математика терминдерінің қазақша-ағылшынша сөздігі: пән бойынша сүзу және іздеу."),
     "practice": ("Жаттықтырғыш", "Кездейсоқ есептер жаттықтырғышы", "Пән мен қиындықты таңдап, кездейсоқ коэффициентті есептер сериясын шешіңіз. Әр сайын жаңа сандар.",

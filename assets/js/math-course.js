@@ -24,7 +24,9 @@
   var esc = function (s) { return String(s).replace(/[&<>"']/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]; }); };
   /* Мәтінде тек осы теңдерге рұқсат; қалғаны экрандалады. Формулалар ($...$) экрандалмайды-ақ қауіпсіз: auto-render мәтін түйінінен оқиды. */
   var plainText = function (s) { return String(s).replace(/<[^>]+>/g, "").replace(/\$/g, "").replace(/\s+/g, " ").trim() || "нұсқа"; };
-  var rich = function (s) { return esc(s).replace(/&lt;(\/?)(b|i|em|strong|code|sub|sup|u|small)&gt;/g, "<$1$2>").replace(/&lt;br\s*\/?&gt;/g, "<br>"); };
+  /* Дерек мәтінінде HTML мнемоникасы (&lt; &gt; &amp;) жазылса, оны таңбаға қайтарамыз: әйтпесе esc() оны екі рет экрандап, KaTeX «&lt;»-ды қате деп көрсетеді */
+  var unent = function (s) { return String(s).replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&amp;/g, "&"); };
+  var rich = function (s) { return esc(unent(s)).replace(/&lt;(\/?)(b|i|em|strong|code|sub|sup|u|small)&gt;/g, "<$1$2>").replace(/&lt;br\s*\/?&gt;/g, "<br>"); };
   function h(tag, attrs) {
     var e = document.createElement(tag), k, kids = Array.prototype.slice.call(arguments, 2);
     for (k in attrs || {}) {
@@ -94,6 +96,20 @@
         document.body.classList.add("math-no-katex");
       }
     } catch (e) { /* формула көрсетілмесе - мәтін қалады, бет бұзылмайды */ }
+    markScrollable(el);
+  }
+  /* Ұзын display-формула өз ішінде айналады: пернетақтамен де айналдыруға болсын (WCAG: scrollable-region-focusable) */
+  function markScrollable(root) {
+    if (!HAS_DOM || !root || !root.querySelectorAll) return;
+    root.querySelectorAll(".katex-display").forEach(function (d) {
+      if (d.scrollWidth > d.clientWidth + 1) {
+        if (!d.hasAttribute("tabindex")) { d.setAttribute("tabindex", "0"); d.setAttribute("role", "group"); d.setAttribute("aria-label", "Формула (көлденең айналады)"); }
+      } else if (d.getAttribute("aria-label") === "Формула (көлденең айналады)") { d.removeAttribute("tabindex"); d.removeAttribute("role"); d.removeAttribute("aria-label"); }
+    });
+  }
+  if (HAS_DOM) {
+    var msT = 0;
+    window.addEventListener("resize", function () { clearTimeout(msT); msT = setTimeout(function () { markScrollable(document); }, 200); });
   }
   /* Бір TeX жолын элементке рендерлеу (алдын ала көру үшін) */
   function renderTeX(el, tex, display) {
@@ -118,8 +134,24 @@
     asin: Math.asin, acos: Math.acos, atan: Math.atan, acot: function (x) { return Math.PI / 2 - Math.atan(x); },
     sinh: Math.sinh, cosh: Math.cosh, tanh: Math.tanh, asinh: Math.asinh, acosh: Math.acosh, atanh: Math.atanh,
     exp: Math.exp, ln: Math.log, lg: Math.log10, lb: Math.log2, sqrt: Math.sqrt, cbrt: Math.cbrt,
-    abs: Math.abs, sign: Math.sign, floor: Math.floor, ceil: Math.ceil, round: Math.round, trunc: Math.trunc
+    abs: Math.abs, sign: Math.sign, floor: Math.floor, ceil: Math.ceil, round: Math.round, trunc: Math.trunc,
+    erf: erf, Phi: function (z) { return 0.5 * (1 + erf(z / Math.SQRT2)); }
   };
+  /* Қате функциясы erf(x): |x| < 3 үшін Тейлор қатары, 3 ≤ |x| ≤ 6 үшін erfc-тің тізбекті бөлшегі; салыстырмалы қателігі ~1e-14 */
+  function erf(x) {
+    var s = x < 0 ? -1 : 1, sum, term, n, f, k;
+    x = Math.abs(x);
+    if (!(x === x)) return NaN;
+    if (x < 3) {
+      sum = x; term = x; n = 0;
+      while (Math.abs(term) > 1e-17 * Math.abs(sum) && n < 200) { n++; term *= -x * x / n; sum += term / (2 * n + 1); }
+      return s * 2 / Math.sqrt(Math.PI) * sum;
+    }
+    if (x > 6) return s;
+    f = 0;
+    for (k = 80; k >= 1; k--) f = (k / 2) / (x + f);
+    return s * (1 - Math.exp(-x * x) / Math.sqrt(Math.PI) / (x + f));
+  }
   var ALIAS = { tg: "tan", ctg: "cot", arcsin: "asin", arccos: "acos", arctg: "atan", arctan: "atan", arcctg: "acot", arccot: "acot", sh: "sinh", ch: "cosh", th: "tanh" };
   var FUNCN = { log: 1, min: 1, max: 1, root: 1, atan2: 1, pow: 1 };
   function isFunc(n) { return Object.prototype.hasOwnProperty.call(FUNC1, n) || Object.prototype.hasOwnProperty.call(ALIAS, n) || Object.prototype.hasOwnProperty.call(FUNCN, n); }
@@ -135,7 +167,9 @@
 
   function tokenize(src, opts) {
     var s = normalizeInput(src), toks = [], i = 0, m, c;
-    if (s.length > MAX_LEN) throw new PErr("Өрнек тым ұзын.");
+    /* opts.long: автор жазған визуализация өрнегі (сенімді мазмұн, мысалы Фурье дербес қосындысы); оқушы енгізуіне шек сол күйі */
+    var long = !!(opts && opts.long);
+    if (s.length > (long ? 4000 : MAX_LEN)) throw new PErr("Өрнек тым ұзын.");
     while (i < s.length) {
       c = s[i];
       if (/\s/.test(c)) { i++; continue; }
@@ -145,6 +179,8 @@
       }
       if (/[A-Za-z]/.test(c)) {
         m = /^[A-Za-z]+(?:_[A-Za-z0-9]+)?/.exec(s.slice(i));
+        var md = /^[A-Za-z]+\d+/.exec(s.slice(i)); /* atan2 сияқты атауында сан бар функция: әйтпесе «atan·2» болып бөлінеді */
+        if (md && (FUNCN.hasOwnProperty(md[0]) || FUNC1.hasOwnProperty(md[0]))) m = md;
         toks.push({ t: "id", v: m[0] }); i += m[0].length; continue;
       }
       m = /^(<=|>=|==|!=|&&|\|\||[-+*\/^()!,|<>])/.exec(s.slice(i));
@@ -155,7 +191,7 @@
       if (c === "=") throw new PErr("«=» белгісі мұнда керек емес (тек өрнектің өзін жазыңыз).");
       throw new PErr("Түсініксіз таңба: «" + c + "».");
     }
-    if (toks.length > MAX_TOKENS) throw new PErr("Өрнек тым күрделі.");
+    if (toks.length > (long ? 4000 : MAX_TOKENS)) throw new PErr("Өрнек тым күрделі.");
     return toks;
   }
 
@@ -856,13 +892,43 @@
       fill: function () { cells.forEach(function (row, ri) { row.forEach(function (i, ci) { var v = norm[ri][ci]; i.value = typeof v === "number" ? fmtNum(v) : fmtNum(evalNumber(v, ctx.scope)); }); }); }
     };
   };
+  /* <option> ішінде KaTeX жұмыс істемейді: TeX-ті оқылатын Unicode мәтінге айналдырамыз ($\frac{a}{b}$ → a/b, \cup → ∪ ...) */
+  var TEX_SYM = { cup: "∪", cap: "∩", setminus: "∖", in: "∈", notin: "∉", subset: "⊂", subseteq: "⊆", emptyset: "∅", varnothing: "∅", infty: "∞", pi: "π", alpha: "α", beta: "β",
+    gamma: "γ", delta: "δ", varepsilon: "ε", epsilon: "ε", lambda: "λ", mu: "μ", sigma: "σ", theta: "θ", varphi: "φ", phi: "φ", omega: "ω", Omega: "Ω", Delta: "Δ", Sigma: "Σ",
+    le: "≤", leq: "≤", ge: "≥", geq: "≥", ne: "≠", neq: "≠", approx: "≈", equiv: "≡", cdot: "·", times: "×", pm: "±", to: "→", Rightarrow: "⇒", iff: "⇔", infty_: "∞",
+    sum: "Σ", prod: "Π", int: "∫", partial: "∂", nabla: "∇", circ: "∘", neg: "¬", land: "∧", lor: "∨", forall: "∀", exists: "∃", mid: "|", ldots: "…", dots: "…", cdots: "⋯",
+    sqrt: "√", lfloor: "⌊", rfloor: "⌋", lceil: "⌈", rceil: "⌉", langle: "⟨", rangle: "⟩", oplus: "⊕", mathbb: "", quad: " ", qquad: " " };
+  var SUP = { "0": "⁰", "1": "¹", "2": "²", "3": "³", "4": "⁴", "5": "⁵", "6": "⁶", "7": "⁷", "8": "⁸", "9": "⁹", "n": "ⁿ", "-": "⁻", "+": "⁺", "k": "ᵏ", "T": "ᵀ" };
+  var SUB = { "0": "₀", "1": "₁", "2": "₂", "3": "₃", "4": "₄", "5": "₅", "6": "₆", "7": "₇", "8": "₈", "9": "₉", "n": "ₙ", "k": "ₖ", "i": "ᵢ", "j": "ⱼ" };
+  function texPlain(src) {
+    var s = String(src);
+    if (s.indexOf("$") < 0 && s.indexOf("\\") < 0) return s;
+    var wrap = function (a) { return /[+\-−\s·]/.test(a) ? "(" + a + ")" : a; };
+    var supsub = function (t) {
+      return t.replace(/\^\{([^{}]*)\}/g, function (m, a) { return /^[0-9n+\-kT]+$/.test(a) ? a.split("").map(function (c) { return SUP[c]; }).join("") : "^(" + a + ")"; })
+        .replace(/\^([0-9nkT])/g, function (m, c) { return SUP[c]; })
+        .replace(/_\{([^{}]*)\}/g, function (m, a) { return /^[0-9nkij]+$/.test(a) ? a.split("").map(function (c) { return SUB[c]; }).join("") : "_(" + a + ")"; })
+        .replace(/_([0-9nkij])/g, function (m, c) { return SUB[c]; });
+    };
+    s = s.replace(/\\\{/g, "\u0001").replace(/\\\}/g, "\u0002").replace(/\$/g, "").replace(/\\(?:left|right|displaystyle|textstyle|,|;|!|:)/g, "").replace(/\\(?:text|mathrm|mathbf|operatorname)\{([^{}]*)\}/g, "$1");
+    s = s.replace(/\\mathbb\{?([A-Z])\}?/g, function (m, c) { return { R: "ℝ", N: "ℕ", Z: "ℤ", Q: "ℚ", C: "ℂ" }[c] || c; });
+    s = s.replace(/\\(?:bar|overline)\s*([A-Za-z])/g, " $1̅");
+    s = s.replace(/\\([A-Za-z]+)/g, function (m, w) { return Object.prototype.hasOwnProperty.call(TEX_SYM, w) ? TEX_SYM[w] + " " : (/^(frac|dfrac|tfrac|binom|sqrt|bar|overline|vec|hat)$/.test(w) ? m : w + " "); });
+    for (var g = 0; g < 5; g++) {
+      s = supsub(s);
+      s = s.replace(/\\[dt]?frac\s*\{([^{}]*)\}\{([^{}]*)\}/g, function (m, a, b) { return wrap(a.trim()) + "/" + wrap(b.trim()); })
+        .replace(/\\binom\s*\{([^{}]*)\}\{([^{}]*)\}/g, "C($1,$2)").replace(/√ ?\{([^{}]*)\}/g, "√($1)").replace(/\\sqrt\s*\{([^{}]*)\}/g, "√($1)")
+        .replace(/\\(?:bar|overline)\s*\{([^{}]*)\}/g, "$1̅").replace(/\\(?:vec|hat)\s*\{([^{}]*)\}/g, "$1");
+    }
+    return s.replace(/[{}]/g, "").replace(/\u0001/g, "{").replace(/\u0002/g, "}").replace(/\s+/g, " ").replace(/ ([)\],.;:!?²³⁰¹⁴-⁹ⁿ₀-₉/])/g, "$1").replace(/([(\[/]) /g, "$1").trim();
+  }
   W.match = function (item, ctx) {
     var pairs = item.pairs, rights = [];
     pairs.forEach(function (p) { if (rights.indexOf(p[1]) < 0) rights.push(p[1]); });
     rights = shuffle(rights, rng(hash(ctx.key + pairs.length)));
     var rows = pairs.map(function (p, i) {
       var sel = h("select", { class: "mx-sel", "aria-label": "Сәйкестік " + (i + 1) }, h("option", { value: "", text: "- таңдаңыз -" }),
-        rights.map(function (r) { return h("option", { value: r, html: esc(r) }); }));
+        rights.map(function (r) { return h("option", { value: r, text: texPlain(r) }); }));
       var left = h("span", { class: "mx-left", html: rich(p[0]) });
       return { sel: sel, row: h("li", null, left, h("span", { class: "mx-arrow", "aria-hidden": "true", text: "→" }), sel), ans: p[1] };
     });
@@ -1115,7 +1181,7 @@
    * ===================================================================== */
   var PLAN = function () { return window.CS50KZ_MATH_PLAN || null; };
   var DATA_LOADED = {};
-  function loadData(kind, slug) { /* kind: formulas | terms | problems */
+  function loadData(kind, slug) { /* kind: formulas | terms | problems | exam */
     var k = kind + ":" + slug;
     if (DATA_LOADED[k]) return DATA_LOADED[k];
     DATA_LOADED[k] = new Promise(function (resolve) {
@@ -1134,7 +1200,7 @@
     _root = el ? new URL("../../", el.src).href : "/";
     return _root;
   }
-  var GLOBAL = { formulas: "CS50KZ_MATH_FORMULAS", terms: "CS50KZ_MATH_TERMS", problems: "CS50KZ_MATH_PROBLEMS" };
+  var GLOBAL = { formulas: "CS50KZ_MATH_FORMULAS", terms: "CS50KZ_MATH_TERMS", problems: "CS50KZ_MATH_PROBLEMS", exam: "CS50KZ_MATH_EXAM" };
   function dataOf(kind, slug) { var g = window[GLOBAL[kind]]; return g && Array.isArray(g[slug]) ? g[slug] : []; }
   function lessonHref(plan, subjNo, lesson) {
     var s = plan.subjects[subjNo - 1];
@@ -1215,7 +1281,7 @@
 
   /* --- Жаттықтырғыш: кездейсоқ параметрлік есептер --- */
   function appPractice(box, plan) {
-    var LV = [["all", "Барлық деңгей"], ["easy", "Оңай"], ["medium", "Орташа"], ["hard", "Қиын"]];
+    var LV = [["all", "Барлық деңгей"], ["easy", "Жеңіл"], ["medium", "Орташа"], ["hard", "Күрделі"]];
     var sel = h("select", { class: "mx-sel", "aria-label": "Пән" }, subjOptions(plan, true));
     var lv = h("select", { class: "mx-sel", "aria-label": "Қиындық" }, LV.map(function (x) { return h("option", { value: x[0], text: x[1] }); }));
     var cnt = h("select", { class: "mx-sel", "aria-label": "Сериядағы есеп саны" }, [5, 10, 15].map(function (n) { return h("option", { value: n, text: "Серия: " + n }); }));
@@ -1300,6 +1366,154 @@
         var rdEl = sec.querySelector(".mx-sread"); if (rdEl) rdEl.textContent = rd;
       }
     });
+    homeFilter();
+  }
+
+  /* Курс беті: пәндерді оқу жолының кезеңі бойынша сүзу (батырмалар: tools/math_pedagogy.py, «mfilter») */
+  function homeFilter() {
+    var bar = document.querySelector(".mx-filter");
+    if (!bar) return;
+    var KEY = "cs50kz:math:stage";
+    function apply(stage) {
+      bar.querySelectorAll(".mx-fchip").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.stage === stage)); });
+      document.querySelectorAll(".mx-subj").forEach(function (sec) { sec.classList.toggle("is-hidden", stage !== "" && sec.dataset.stage !== stage); });
+      document.querySelectorAll(".mx-group-h").forEach(function (hd) {
+        var any = false, el = hd.nextElementSibling;
+        while (el && !el.classList.contains("mx-group-h")) { if (el.classList.contains("mx-subj") && !el.classList.contains("is-hidden")) any = true; el = el.nextElementSibling; }
+        hd.classList.toggle("is-hidden", !any);
+      });
+      try { if (stage) sessionStorage.setItem(KEY, stage); else sessionStorage.removeItem(KEY); } catch (e) { /* жад жоқ */ }
+    }
+    bar.addEventListener("click", function (e) {
+      var b = e.target.closest(".mx-fchip");
+      if (b) apply(b.dataset.stage);
+    });
+    // жасырылған пәнге сілтеме («Пәндерге өту», «Алдымен: ...») басылса, сүзгі алынады
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#subj-"]');
+      var sec = a && document.getElementById(a.getAttribute("href").slice(1));
+      if (sec && sec.classList.contains("is-hidden")) apply("");
+    }, true);
+    var saved = "";
+    try { saved = sessionStorage.getItem(KEY) || ""; } catch (e) { /* жад жоқ */ }
+    if (saved && bar.querySelector('.mx-fchip[data-stage="' + saved + '"]') && !location.hash) apply(saved);
+  }
+
+  /* --- Оқу жолы: оқылған сабақтарды белгілеу және келесі қадам (math/route.html, tools/math_pedagogy.py) --- */
+  function appRoute(box, plan) {
+    var read = readSet(), next = null, total = 0, done = 0;
+    document.querySelectorAll(".mx-rsubj").forEach(function (sec) {
+      var all = 0, rd = 0;
+      sec.querySelectorAll("li[data-id]").forEach(function (li) {
+        var a = li.querySelector("a");
+        if (!a) return;
+        all++; total++;
+        if (read["math:" + li.dataset.id]) { rd++; done++; li.classList.add("is-read"); li.insertBefore(h("span", { class: "mx-rok", "aria-label": "оқылды", text: "✓ " }), li.firstChild); }
+        else if (!next) next = { a: a, sec: sec };
+      });
+      if (all && rd === all) sec.classList.add("is-done");
+    });
+    var pct = total ? Math.round(done / total * 100) : 0;
+    box.append(h("div", { class: "mx-rnow" },
+      h("p", null, "Оқылды: ", h("b", { text: done + " / " + total }), " дайын сабақ (" + pct + "%)"),
+      h("div", { class: "mx-pbar", "aria-hidden": "true" }, h("span", { style: "width:" + pct + "%" })),
+      next ? h("p", null, done ? "Келесі қадам: " : "Бастау: ", h("a", { class: "btn", href: next.a.getAttribute("href"), text: next.sec.querySelector("h3").textContent.replace(/^\d+/, "") + " · " + next.a.textContent + " →" }))
+           : h("p", { text: total ? "Барлық дайын сабақ оқылды. Пән емтихандарын тапсырыңыз." : "" })));
+  }
+
+  /* --- Пән емтиханы: әр сабақтан тест сұрағы + орташа + күрделі есеп; соңында бір рет тексеру (math/exam.html) --- */
+  function appExam(box, plan) {
+    var have = (box.getAttribute("data-subjects") || "").split(",").filter(Boolean);
+    var subs = plan.subjects.filter(function (s) { return have.indexOf(s.slug) >= 0; });
+    if (!subs.length) { box.append(emptyState("Емтихан үшін дайын пән әлі жоқ.")); return; }
+    var LVN = { quiz: "Тест", easy: "Жеңіл", medium: "Орташа", hard: "Күрделі" }, MIN = { quiz: 1.5, easy: 2, medium: 4, hard: 6 };
+    var sel = h("select", { class: "mx-sel", "aria-label": "Пән" }, subs.map(function (s) { return h("option", { value: s.slug, text: s.no + ". " + s.en }); }));
+    var start = h("button", { type: "button", class: "btn", text: "Емтиханды бастау" });
+    var best = h("p", { class: "mx-count" }), stage = h("div", { class: "mx-estage" });
+    box.append(h("div", { class: "mx-filters" }, h("label", null, "Пән ", sel), start, best), stage);
+    var st = LS.get("cs50kz:math:exam", {}); if (!st || typeof st !== "object") st = {};
+    var paint = function () {
+      var r = st[sel.value], cur = subs.filter(function (x) { return x.slug === sel.value; })[0];
+      best.textContent = r ? "Үздік нәтиже: " + r.best + "% · соңғысы: " + r.last + "%" : "";
+      /* пәннің өз түсі мен белгісі (курс бетіндегідей) */
+      box.classList.add("mx-exam");
+      if (cur && cur.color) { box.style.setProperty("--sc", cur.color); box.setAttribute("data-glyph", cur.glyph || ""); }
+    };
+    var hs = ""; try { hs = new URLSearchParams(location.search).get("s") || ""; } catch (e) { /* ескі браузер */ }
+    if (have.indexOf(hs) >= 0) sel.value = hs;
+    paint();
+    sel.addEventListener("change", function () { paint(); stage.textContent = ""; stage.append(h("p", { class: "mx-hint0", text: "«Емтиханды бастау» батырмасын басыңыз." })); try { history.replaceState(null, "", "?s=" + sel.value); } catch (e) { /* */ } });
+    var pick = function (arr) { return arr.length ? arr[Math.floor(Math.random() * arr.length)] : null; };
+    var run = function () {
+      var slug = sel.value, s = subs.filter(function (x) { return x.slug === slug; })[0];
+      stage.textContent = "";
+      loadData("exam", slug).then(function () {
+        var bank = dataOf("exam", slug);
+        if (!bank.length) { stage.append(emptyState("Бұл пәннің емтихан банкі жүктелмеді.")); return; }
+        var seq = [], l, used = {};
+        for (l = 1; l <= s.count; l++) {
+          var lb = bank.filter(function (x) { return x.l === l; });
+          if (!lb.length) continue;
+          ["quiz", "medium", "hard"].forEach(function (lv) {
+            var c = pick(lb.filter(function (x) { return x.lvl === lv && !used[x.id]; })) || pick(lb.filter(function (x) { return x.lvl !== "quiz" && !used[x.id]; }));
+            if (c) { used[c.id] = 1; seq.push(c); }
+          });
+        }
+        var mins = Math.round(seq.reduce(function (m, x) { return m + (MIN[x.lvl] || 3); }, 0) / 5) * 5, t0 = Date.now();
+        var clock = h("span", { class: "mx-chip", text: "0:00" });
+        var tick = setInterval(function () { var t = Math.floor((Date.now() - t0) / 1000); clock.textContent = Math.floor(t / 60) + ":" + ("0" + t % 60).slice(-2); }, 1000);
+        var fs = h("fieldset", { class: "mx-exam" }, h("legend", { class: "sr-only", text: s.en + " емтиханы" }));
+        var built = seq.map(function (it, i) {
+          var b = buildItem(Object.assign({}, it), { key: "exam:" + slug + ":" + it.id, type: it.type, scope: {}, fmt: function (x) { return x; } }, 0);
+          var card = h("section", { class: "mx-eitem", "aria-label": "Сұрақ " + (i + 1) },
+            h("div", { class: "mx-phead" }, h("b", { text: (i + 1) + "." }), h("span", { class: "mx-chip", text: it.l + "-сабақ" }), h("span", { class: "mx-chip lv-" + it.lvl, text: LVN[it.lvl] || "" })),
+            it.ctx ? h("p", { class: "mx-ectx", html: rich(it.ctx) }) : null, b.el);
+          fs.append(card);
+          return { b: b, it: it, card: card };
+        });
+        var res = h("div", { class: "mx-eres", role: "status", "aria-live": "polite" });
+        var submit = h("button", { type: "button", class: "btn gold", text: "Тапсыру және тексеру" });
+        stage.append(h("div", { class: "mx-phead" }, h("b", { text: s.no + ". " + s.en }), h("span", { class: "mx-chip", text: seq.length + " сұрақ" }), h("span", { class: "mx-chip", text: "ұсынылған уақыт ≈ " + mins + " мин" }), clock),
+          h("p", { class: "mx-hint0", text: "Барлық сұраққа жауап беріп, соңында «Тапсыру» батырмасын басыңыз. Жауаптар тек сонда тексеріледі; бос сұрақ қате саналады. Өту шегі - 70%." }),
+          fs, h("div", { class: "mx-ctrl" }, submit), res);
+        renderMath(stage);
+        submit.addEventListener("click", function () {
+          var empty = built.filter(function (x) { return x.b.wd.check().empty; }).length;
+          if (empty && !submit.dataset.armed) { /* бос сұрақ болса, бір рет ескертіп, екінші басуды күтеміз */
+            submit.dataset.armed = "1"; submit.textContent = "Бәрібір тапсыру";
+            res.textContent = ""; res.append(h("p", { class: "mx-fail", text: empty + " сұраққа жауап берілмеген: олар қате саналады. Тапсыру үшін батырманы тағы бір рет басыңыз." }));
+            return;
+          }
+          clearInterval(tick);
+          var score = 0, per = {};
+          built.forEach(function (x) {
+            var r = x.b.check(), ok = !!(r && r.ok && !r.empty);
+            if (!ok) x.b.showAnswer();
+            x.card.classList.add(ok ? "ok" : "bad");
+            per[x.it.l] = per[x.it.l] || [0, 0]; per[x.it.l][1]++; if (ok) { per[x.it.l][0]++; score++; }
+          });
+          fs.disabled = true; submit.disabled = true;
+          var pct = Math.round(score / built.length * 100);
+          var r0 = st[slug] || { best: 0, n: 0 };
+          st[slug] = { best: Math.max(r0.best || 0, pct), last: pct, n: (r0.n || 0) + 1, ts: Date.now() };
+          LS.set("cs50kz:math:exam", st); paint();
+          if (K().logDay) K().logDay();
+          var verdict = pct >= 85 ? "Өте жақсы: емтихан тапсырылды." : pct >= 70 ? "Емтихан тапсырылды." : "Емтихан тапсырылмады: 70%-ға жетпеді. Әлсіз сабақтарды қайталап, қайта тапсырыңыз.";
+          var rows = Object.keys(per).map(function (k) {
+            var p = per[k], weak = p[0] < p[1];
+            return h("tr", { class: weak ? "weak" : "" }, h("td", null, h("a", { href: lessonHref(plan, s.no, +k), text: k + ". " + s.lessons[k - 1] })), h("td", { text: p[0] + " / " + p[1] }), h("td", { text: weak ? "қайталаңыз" : "✓" }));
+          });
+          res.textContent = "";
+          res.append(h("h3", { text: "Нәтиже: " + score + " / " + built.length + " (" + pct + "%)" }), h("p", { class: pct >= 70 ? "mx-pass" : "mx-fail", text: verdict }),
+            h("div", { class: "math-table" }, h("table", null, h("thead", null, h("tr", null, h("th", { text: "Сабақ" }), h("th", { text: "Дұрыс" }), h("th", { text: "" }))), h("tbody", null, rows))),
+            h("p", { class: "mx-hint0", text: "Қате жауаптардың астында дұрыс жауап пен түсіндірме көрсетілді." }),
+            h("button", { type: "button", class: "btn", text: "Жаңа нұсқа", onclick: run }));
+          res.scrollIntoView({ block: "start" });
+        });
+      });
+    };
+    start.addEventListener("click", run);
+    stage.append(h("p", { class: "mx-hint0", text: "Пәнді таңдап, «Емтиханды бастау» батырмасын басыңыз. Әр сабақтан бір тест сұрағы, бір орташа және бір күрделі есеп алынады; әр жолы сұрақтар өзгереді." }));
   }
 
   function initApps() {
@@ -1315,6 +1529,8 @@
         else if (kind === "glossary") appGlossary(box, plan);
         else if (kind === "practice") appPractice(box, plan);
         else if (kind === "home") appHome(box, plan);
+        else if (kind === "route") appRoute(box, plan);
+        else if (kind === "exam") appExam(box, plan);
       } catch (e) { if (window.console) console.warn("math-app:", e); box.append(emptyState("Бет жүктелмеді: " + e.message)); }
     };
     go();

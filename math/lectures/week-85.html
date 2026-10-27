@@ -6,13 +6,14 @@
   <title>Math Probability Theory · 7-сабақ: Үлкен сандар заңы және орталық шектік теорема - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Probability Theory · 7-сабақ: Үлкен сандар заңы және орталық шектік теорема - CS50 қазақша">
-  <meta property="og:description" content="Математика, Probability Theory · 7-сабақ: Үлкен сандар заңы және орталық шектік теорема. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Чебышев теңсіздігі, үлкен сандар заңы, ОШТ және қолданысы.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-85.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Probability Theory · 7-сабақ: Үлкен сандар заңы және орталық шектік теорема - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-85.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Probability Theory · 7-сабақ: Үлкен сандар заңы және орталық шектік теорема. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Чебышев теңсіздігі, үлкен сандар заңы, ОШТ және қолданысы.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,436 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="85">
+    <article class="content math-lesson" style="--sc:#c2410c" id="main">
+      <div class="lecture-head" style="--lc:#c2410c" data-n="85" data-msubj="prob" data-glyph="ℙ">
         <div class="num">Probability Theory · 7-сабақ</div>
         <h1>Үлкен сандар заңы және орталық шектік теорема</h1>
-        <p>Чебышев теңсіздігі, үлкен сандар заңы, ОШТ және қолданысы.</p>
+        <p>Неге казино әрдайым ұтады, ал сауалнама 1000 адаммен бүкіл елдің пікірін 3% дәлдікпен болжайды? Жауап - ықтималдық теориясының екі басты теоремасында. <b>Үлкен сандар заңы</b>: көп тәуелсіз бақылаудың орташасы күтімге жақындайды. <b>Орталық шектік теорема</b>: сол орташаның ауытқуы қалыпты үлестірімге бағынады.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 50 мин</span><span>Есептер ≈ 1 сағ 10 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Бұл сабақта Марков пен Чебышёв теңсіздіктерін дәлелдеп, олардан үлкен сандар заңын шығарамыз, ал орталық шектік теореманы тұжырымдап, практикалық есептерде қолданамыз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-13">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=prob">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Probability Theory: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-13">Probability Theory</a></span><ol><li><a href="week-79.html" title="Комбинаторика негіздері">1</a></li><li><a href="week-80.html" title="Ықтималдық және оның қасиеттері">2</a></li><li><a href="week-81.html" title="Шартты ықтималдық және Байес формуласы">3</a></li><li><a href="week-82.html" title="Кездейсоқ шамалар, күтім және дисперсия">4</a></li><li><a href="week-83.html" title="Дискретті үлестірімдер">5</a></li><li><a href="week-84.html" title="Үзіліссіз үлестірімдер">6</a></li><li><a href="week-85.html" aria-current="page" title="Үлкен сандар заңы және орталық шектік теорема">7</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-13">Probability Theory</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Көп тәуелсіз тәжірибенің орта мәні шын күтімге жақындайды (үлкен сандар заңы), ал қосындының ауытқулары әрқашан қалыпты үлестірімге ұқсайды (орталық шектік теорема).</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>Марков және Чебышёв теңсіздіктерін дәлелдеп, ықтималдықты бағалауда қолдану;</li>
+        <li>үлкен сандар заңын (әлсіз түрі, ақырлы дисперсиямен) Чебышёв теңсіздігінен қорыту;</li>
+        <li>орталық шектік теореманы дұрыс шарттарымен тұжырымдау және $\bar X_n\approx N\!\left(\mu,\frac{\sigma^2}{n}\right)$ жуықтауын қолдану;</li>
+        <li>Муавр–Лаплас жуықтауымен биномдық ықтималдықтарды есептеу, үзіліссіздік түзетуін қолдану;</li>
+        <li>қажетті таңдама көлемін (сауалнама, Монте-Карло) бағалау;</li>
+        <li>«орташа $\sigma/\sqrt n$ жылдамдықпен жақындайды» деген заңдылықты модельдеумен тексеру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Күтімнің сызықтығы $E(\sum X_i)=\sum EX_i$; тәуелсіз шамалар үшін $D(\sum X_i)=\sum DX_i$; $D(aX)=a^2DX$. Биномдық $B(n,p)$: $EX=np$, $DX=np(1-p)$. Қалыпты үлестірім және стандарттау $Z=\frac{X-\mu}{\sigma}$, $\Phi(1{,}96)\approx0{,}975$, $\Phi(2)\approx0{,}977$. Индикатор: $I_A\le1$ және $EI_A=P(A)$.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-84.html">Probability Theory · 6-сабақ: Үзіліссіз үлестірімдер</a></li><li><a href="week-49.html">Sequences and Series · 1-сабақ: Сандық тізбектер және олардың шегі</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: 1000 монета</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">Монетаны $1000$ рет лақтырамыз. Елтаңба саны $S$. $P(470\le S\le530)$-ды бағалаңыз.</p>
+        <ol class="math-steps">
+          <li>$ES=500$, $DS=1000\cdot\frac14=250$, $\sigma\approx15{,}8$.</li>
+          <li>$470$ мен $530$ - орта мәннен $\frac{30}{15{,}8}\approx1{,}9$ стандарт ауытқу.</li>
+          <li>ОШТ бойынша $P(|Z|\le1{,}9)\approx2\Phi(1{,}9)-1\approx0{,}94$.</li>
+          <li>Чебышёв тек кепілдік береді: $P(|S-500|&lt;31)\ge1-\frac{250}{31^2}\approx0{,}74$ - дәлірек емес, бірақ әрдайым дұрыс.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> $1000$ лақтыруда елтаңбалар үлесі $0{,}47$-$0{,}53$ аралығында $94\%$ ықтималдықпен. Ауытқу $\sqrt n$ ретімен өседі, ал үлестегі ауытқу $\frac1{\sqrt n}$ ретімен кемиді.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Монетаны 10 рет лақтырсаңыз, 7 елтаңба түсуі таңқаларлық емес (70%). Ал 10 000 рет лақтырғанда 7000 елтаңба түссе, монетаның қалыпты екеніне күмәндануға толық негіз бар. Себебі тәжірибе саны өскен сайын <em>үлес</em> (жиілік) $\frac12$-ге жақындайды. Бұл - үлкен сандар заңы. Назар аударыңыз: елтаңба <em>санының</em> $5000$-нан айырмасы өсуі мүмкін (шамамен $\sqrt n$ ретті), бірақ <em>үлестің</em> айырмасы кішірейеді ($\frac{\sqrt n}{n}=\frac1{\sqrt n}$).</p>
+      <p>Үлкен сандар заңы «қайда» жақындайтынын айтады, бірақ «қалай» ауытқитынын айтпайды. Орталық шектік теорема (ОШТ) жауап береді: тәуелсіз, бірдей үлестірілген шамалардың қосындысы (дисперсия ақырлы болса) - бастапқы үлестірім қандай болса да - шамамен қалыпты. Сүйек лақтыру бірқалыпты, бірақ 30 сүйектің қосындысының гистограммасы «қоңырау» болып шығады. Сондықтан қалыпты үлестірім табиғатта соншалық жиі кездеседі.</p>
+      <p>Практикалық салдары: орташаның қателігі $\frac{\sigma}{\sqrt n}$ ретті. Дәлдікті 2 есе арттыру үшін таңдаманы 4 есе, 10 есе арттыру үшін 100 есе үлкейту керек. Монте-Карло әдісінің «баяу» жинақталуы, сауалнамалардағы «$\pm3\%$» қателігі - осының салдары.</p>
+      <p>Ал бұл теоремалар қашан жұмыс істемейді? Шамалар тәуелді болса (мысалы, бір-біріне әсер ететін нарық бағалары) немесе дисперсия шексіз болса (Коши үлестірімі), орташа тұрақтанбауы мүмкін. Шарттарды тексеру - дұрыс қолданудың кілті.</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · казино</span>
+        <p>Казино бір ойында ұтылуы мүмкін, бірақ миллион ойында оның табысы күтімге өте жақын (үлкен сандар заңы). Сондықтан казино тәуекелге емес, арифметикаға сенеді.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · сауалнама</span>
+        <p>$1000$ адамнан сұрау бүкіл елдің пікірін шамамен $\pm3\%$ дәлдікпен береді: қателік $\frac1{\sqrt{1000}}\approx3\%$ ретімен. Ел халқының саны маңызды емес - тек таңдаманың көлемі.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$\bar X_n=\frac{X_1+\dots+X_n}n$</td><td>таңдама орта мәні</td><td>$n$ бақылаудың орташасы</td></tr>
+        <tr><td>$P(|X-\mu|\ge\varepsilon)\le\frac{DX}{\varepsilon^2}$</td><td>Чебышёв теңсіздігі</td><td>ауытқу ықтималдығының жоғарғы шегі</td></tr>
+        <tr><td>$Y_n\xrightarrow{P}c$</td><td>ықтималдық бойынша жинақталу</td><td>ауытқу ықтималдығы нөлге ұмтылады</td></tr>
+        <tr><td>$\frac{S_n-n\mu}{\sigma\sqrt n}$</td><td>стандартталған қосынды</td><td>ОШТ бойынша $\approx N(0,1)$</td></tr>
+        <tr><td>$\Phi$</td><td>қалыпты үлестірім функциясы</td><td>ОШТ жуықтауында қолданылады</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 7.1 · Марков теңсіздігі</span>
+        <p>$X\ge0$ және $EX&lt;\infty$ болса, кез келген $a>0$ үшін $$P(X\ge a)\le\frac{EX}{a}.$$</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Теріс емес шаманың өте үлкен мәнге жету ықтималдығы орта мәнмен шектеледі.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 7.2 · Чебышёв теңсіздігі</span>
+        <p>$DX&lt;\infty$, $\mu=EX$ болса, кез келген $\varepsilon>0$ үшін $$P(|X-\mu|\ge\varepsilon)\le\frac{DX}{\varepsilon^2}.$$ Эквивалент түрі: $P(|X-\mu|\ge k\sigma)\le\frac1{k^2}$ ($k>0$).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Орта мәннен алыс ауытқу ықтималдығы дисперсиямен шектеледі - кез келген үлестірім үшін.</p></div>
+      <p><em>Негіздеме.</em> Марков теңсіздігін $(X-\mu)^2\ge0$ шамасына қолдану (1-қорыту).</p>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 7.1 · Ықтималдық бойынша жинақтылық</span>
+        <p>$Y_n$ тізбегі $c$ санына <strong>ықтималдық бойынша жинақталады</strong> (<span class="term-en">converges in probability</span>), егер кез келген $\varepsilon>0$ үшін $P(|Y_n-c|\ge\varepsilon)\to0$ ($n\to\infty$). Белгісі: $Y_n\xrightarrow{P}c$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Тізбек санға ықтималдық бойынша жинақталады, егер одан кез келген ауытқудың ықтималдығы нөлге ұмтылса.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 7.3 · Үлкен сандар заңы (Чебышёв түрі)</span>
+        <p>$X_1,X_2,\dots$ тәуелсіз, бірдей үлестірілген, $EX_i=\mu$, $DX_i=\sigma^2&lt;\infty$ болсын, $\bar X_n=\frac{X_1+\dots+X_n}{n}$. Онда әр $\varepsilon>0$ үшін $$P(|\bar X_n-\mu|\ge\varepsilon)\le\frac{\sigma^2}{n\varepsilon^2}\to0,$$ яғни $\bar X_n\xrightarrow{P}\mu$. Бұл - <strong>үлкен сандар заңы</strong> (<span class="term-en">law of large numbers</span>). Атап айтқанда (Бернулли теоремасы), $n$ тәжірибедегі оқиға жиілігі оның ықтималдығы $p$-ға ықтималдық бойынша жинақталады.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Тәуелсіз бақылаулардың орта мәні шын орта мәнге жинақталады.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту. (Дисперсия шарты жоқ күшті нұсқалары да бар, бірақ олардың дәлелі бұл курстың шеңберінен тыс.)</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 7.4 · Орталық шектік теорема</span>
+        <p>$X_1,X_2,\dots$ тәуелсіз, бірдей үлестірілген, $EX_i=\mu$, $0&lt;DX_i=\sigma^2&lt;\infty$ болсын, $S_n=X_1+\dots+X_n$. Онда кез келген $z\in\mathbb R$ үшін $$P\left(\frac{S_n-n\mu}{\sigma\sqrt n}\le z\right)\to\Phi(z),\qquad n\to\infty.$$ Яғни үлкен $n$ үшін $S_n\approx N(n\mu,\,n\sigma^2)$, $\bar X_n\approx N\!\left(\mu,\frac{\sigma^2}{n}\right)$. Бұл - <strong>орталық шектік теорема</strong> (<span class="term-en">central limit theorem</span>).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Көп тәуелсіз шаманың қосындысы (стандарттағаннан кейін) қалыпты үлестірімге жақындайды - бастапқы үлестірім қандай болса да.</p></div>
+      <p><em>Негіздеме.</em> Толық дәлелі сипаттамалық функциялар аппаратын қажет етеді, сондықтан бұл сабақта оны келтірмейміз. 3-қорытуда біз тек теоремадағы <em>нормалау</em> ($\sqrt n$) неге дәл осындай екенін көрсетеміз.</p>
+      <div class="math-thm" id="thm-5"><span class="math-tag">Теорема 7.5 · Муавр–Лаплас теоремасы</span>
+        <p>ОШТ-ның $X_i$ Бернулли шамалары болған жағдайы: $S_n\sim B(n,p)$, $0&lt;p&lt;1$, $q=1-p$. Онда $P\left(\frac{S_n-np}{\sqrt{npq}}\le z\right)\to\Phi(z)$. Практикада $npq\ge10$ (не $np\ge10$ және $nq\ge10$) болса, жуықтау жақсы.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Биномдық шама да (Бернуллилердің қосындысы) үлкен $n$-де қалыпты үлестірімге жақын.</p></div>
+      <p><em>Негіздеме.</em> ОШТ-дан: $\mu=p$, $\sigma^2=pq$.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 7.1 · Орташаның стандарт қателігі</span>
+        <div class="math-fbody">$$E\bar X_n=\mu,\qquad D\bar X_n=\frac{\sigma^2}{n},\qquad \sigma_{\bar X_n}=\frac{\sigma}{\sqrt n}$$</div>
+        <p class="math-fnote">Шарты: $X_i$ тәуелсіз (кем дегенде корреляцияланбаған), бірдей $\mu$, $\sigma^2$.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 7.2 · Үзіліссіздік түзетуі</span>
+        <div class="math-fbody">$$P(a\le S_n\le b)\approx\Phi\left(\frac{b+0{,}5-np}{\sqrt{npq}}\right)-\Phi\left(\frac{a-0{,}5-np}{\sqrt{npq}}\right)$$</div>
+        <p class="math-fnote">$S_n$ бүтін мәнді, сондықтан әр бүтін $k$-ға $[k-0{,}5;\,k+0{,}5]$ аралығы сәйкес келеді. $a,b$ - бүтін.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 7.3 · Таңдама көлемі (үлес үшін)</span>
+        <div class="math-fbody">$$n\ge\frac{z^2\,p(1-p)}{\varepsilon^2}\le\frac{z^2}{4\varepsilon^2}$$</div>
+        <p class="math-fnote">$p$ үлесін $\pm\varepsilon$ дәлдікпен, шамамен $2\Phi(z)-1$ сенімділікпен бағалау үшін (ОШТ жуықтауы). $p$ белгісіз болса, ең нашар жағдай $p(1-p)\le\frac14$. Мысалы $z=1{,}96$ (95%), $\varepsilon=0{,}03$: $n\ge1068$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Үш деңгейлі «жақындау» картасы: <b>Чебышёв</b> - кез келген ақырлы дисперсиялы шамаға кепілдік беретін, бірақ өрескел шекара; <b>ҮСЗ</b> - орташа күтімге ұмтылады; <b>ОШТ</b> - ауытқудың нақты (жуық) үлестірімі, дәлірек баға. Мысалы $P(|Z|\ge2)$: Чебышёв $\le0{,}25$, ал қалыпты шамада $\approx0{,}046$.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>ОШТ - <em>шектік</em> тұжырым: ол кез келген бекітілген $n$ үшін дәлдікке кепілдік бермейді. Асимметриялы үлестірімде (мысалы, $p=0{,}01$ биномдық) $n=30$ жеткіліксіз болуы мүмкін. Сондай-ақ ОШТ жеке шамаларды емес, олардың <b>қосындысын</b> қалыпты етеді: бір сүйек әлі де бірқалыпты.</p></div>
+      <div class="math-remark"><span class="math-box-title">Ескертпе</span>
+        <p>Шарттардың маңызы: Коши үлестірімінде ($f=\frac{1}{\pi(1+x^2)}$) күтім мен дисперсия жоқ. Тәуелсіз Коши шамаларының орташасы $\bar X_n$ қайтадан дәл сол Коши үлестірімінде (бұл фактіні дәлелсіз келтіреміз), яғни ешқандай $n$-да тұрақтанбайды. ҮСЗ мен ОШТ мұнда жұмыс істемейді (мини-жобада тексеріңіз).</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $EX=5$, $X\ge0$. Марков бойынша $P(X\ge20)\le$?</span></summary>
+        <p>$\frac5{20}=0{,}25$.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> Чебышёв: $DX=1$. $P(|X-\mu|\ge3)\le$?</span></summary>
+        <p>$\frac19\approx0{,}11$.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> Таңдаманы $4$ есе үлкейтсек, орта мәннің стандарт қатесі қалай өзгереді?</span></summary>
+        <p>$2$ есе кішірейеді ($\frac\sigma{\sqrt n}$).</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> ОШТ сүйек лақтыру сияқты қалыпты емес шамаларға да жарай ма?</span></summary>
+        <p>Иә: тек тәуелсіз, бірдей үлестірілген және дисперсиясы ақырлы болса.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: Марков және Чебышёв теңсіздіктері</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> екі теңсіздікті индикатор арқылы дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Шаманы индикатормен салыстырамыз: $X\ge aI_{\{X\ge a\}}$; күтім алсақ - Марков. Чебышёв - Марковты $(X-\mu)^2$-қа қолдану.</p>
+          <ol class="math-steps">
+            <li>$X\ge0$, $a>0$. $A=\{X\ge a\}$ оқиғасының индикаторы $I_A$. Әрдайым $a\,I_A\le X$: егер $X\ge a$ болса, сол жақ $a\le X$; әйтпесе сол жақ $0\le X$.</li>
+            <li>Күтімнің монотондығы: $a\,EI_A\le EX$, яғни $a\,P(X\ge a)\le EX$. Бөлсек - Марков теңсіздігі.</li>
+            <li>Чебышёв: $Y=(X-\mu)^2\ge0$, $EY=DX$. $\{|X-\mu|\ge\varepsilon\}=\{Y\ge\varepsilon^2\}$.</li>
+            <li>Марковты $Y$-ке $a=\varepsilon^2$-пен қолданамыз: $P(|X-\mu|\ge\varepsilon)\le\frac{DX}{\varepsilon^2}$.</li>
+            <li>$\varepsilon=k\sigma$ қойсақ: $P(|X-\mu|\ge k\sigma)\le\frac1{k^2}$. Мысалы, кез келген шаманың мәндерінің кемінде 75%-ы $\mu\pm2\sigma$ ішінде.</li>
+            <li>Шекараның дәл екенін көрсететін мысал: $P(X=\pm k)=\frac{1}{2k^2}$, $P(X=0)=1-\frac1{k^2}$ ($k\ge1$). Онда $\mu=0$, $\sigma=1$, $P(|X|\ge k)=\frac1{k^2}$ - теңдік орындалады.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: үлкен сандар заңы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $P(|\bar X_n-\mu|\ge\varepsilon)\le\frac{\sigma^2}{n\varepsilon^2}$ екенін көрсету.</p>
+          <p class="mx-idea"><b>Идея:</b> Таңдама орта мәнінің дисперсиясы $\frac{\sigma^2}n$; Чебышёвке қойсақ, ауытқу ықтималдығы нөлге ұмтылады.</p>
+          <ol class="math-steps">
+            <li>Күтім: $E\bar X_n=\frac1n\sum EX_i=\frac{n\mu}{n}=\mu$.</li>
+            <li>Дисперсия: тәуелсіздік бойынша $D(\sum X_i)=n\sigma^2$, сондықтан $D\bar X_n=\frac{1}{n^2}\cdot n\sigma^2=\frac{\sigma^2}{n}$.</li>
+            <li>Чебышёв теңсіздігін $\bar X_n$-ге қолданамыз: $P(|\bar X_n-\mu|\ge\varepsilon)\le\frac{D\bar X_n}{\varepsilon^2}=\frac{\sigma^2}{n\varepsilon^2}$.</li>
+            <li>Бекітілген $\varepsilon>0$ үшін $\frac{\sigma^2}{n\varepsilon^2}\to0$ ($n\to\infty$). Демек $\bar X_n\xrightarrow{P}\mu$.</li>
+            <li>Дәлелде толық тәуелсіздіктің орнына тек қос-қостан корреляцияланбау ($\operatorname{cov}(X_i,X_j)=0$) қолданылды.</li>
+            <li>Сандық: монета ($\sigma^2=\frac14$), $n=10\,000$, $\varepsilon=0{,}02$: $P\le\frac{0{,}25}{10^4\cdot4\cdot10^{-4}}=0{,}0625$. ОШТ бойынша нақты мән $\approx2(1-\Phi(4))\approx6\cdot10^{-5}$ - Чебышёв өрескел, бірақ кепілді.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: ОШТ-дағы $\sqrt n$ нормалауы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> неге қосындыны $n$-ге емес, $\sqrt n$-ге бөлеміз - соны түсіндіру (теореманың дәлелі емес).</p>
+          <p class="mx-idea"><b>Идея:</b> Қосындының стандарт ауытқуы $\sigma\sqrt n$ - сондықтан $\sqrt n$-ге бөлгенде шекті үлестірім тұрақтанады.</p>
+          <ol class="math-steps">
+            <li>$S_n$-нің күтімі $n\mu$, дисперсиясы $n\sigma^2$, стандарт ауытқуы $\sigma\sqrt n$.</li>
+            <li>$Z_n=\frac{S_n-n\mu}{\sigma\sqrt n}$ үшін $EZ_n=0$, $DZ_n=\frac{n\sigma^2}{\sigma^2n}=1$ - әр $n$-да бірдей. Нормаланған шаманың «масштабы» тұрақты.</li>
+            <li>Егер $n$-ге бөлсек ($\frac{S_n-n\mu}{n}=\bar X_n-\mu$), дисперсия $\frac{\sigma^2}n\to0$: шама 0-ге «жиырылады» (бұл ҮСЗ).</li>
+            <li>Егер мүлде бөлмесек, дисперсия $n\sigma^2\to\infty$: шама «жайылып кетеді».</li>
+            <li>Тек $\sqrt n$ нормалауы ғана шекте нөлдік емес, ақырлы шашырау қалдырады. ОШТ осы шектің әрдайым $N(0,1)$ екенін айтады - бұл бөлігі дәлелсіз қабылданады.</li>
+            <li>Тексеру: 12 тәуелсіз $U(0,1)$ шамасының қосындысынан 6 шегерсек, $E=0$, $D=12\cdot\frac1{12}=1$; оның гистограммасы $N(0,1)$-ге өте жақын (мини-жоба).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Чебышёв бағасы</h3>
+        <p class="math-problem">Зауыттағы күнделікті өнім $X$: $EX=500$, $\sigma=20$. Үлестірім белгісіз. $440&lt;X&lt;560$ болу ықтималдығын төменнен бағалаңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Аралық $|X-500|&lt;60=3\sigma$.</li>
+          <li><b>2-қадам.</b> Чебышёв: $P(|X-500|\ge60)\le\frac{400}{3600}=\frac19$.</li>
+          <li><b>3-қадам.</b> Демек $P(440&lt;X&lt;560)\ge1-\frac19=\frac89\approx0{,}889$.</li>
+          <li><b>4-қадам.</b> Егер $X$ қалыпты екені белгілі болса, нақты мән $\approx0{,}997$ болар еді; Чебышёв тек кепілді төменгі шекара береді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\ge\frac89$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Монета (Муавр–Лаплас)</h3>
+        <p class="math-problem">Монета 400 рет лақтырылады. Елтаңба саны 190-нан 215-ке дейін (қоса) болу ықтималдығы?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $S\sim B(400;\,0{,}5)$: $np=200$, $\sqrt{npq}=10$. $npq=100\ge10$ - жуықтау жарамды.</li>
+          <li><b>2-қадам.</b> Үзіліссіздік түзетуі: $P(190\le S\le215)\approx\Phi\left(\frac{215{,}5-200}{10}\right)-\Phi\left(\frac{189{,}5-200}{10}\right)$.</li>
+          <li><b>3-қадам.</b> $=\Phi(1{,}55)-\Phi(-1{,}05)\approx0{,}9394-0{,}1469$.</li>
+          <li><b>4-қадам.</b> $\approx0{,}7925$. (Дәл биномдық мән $\approx0{,}7926$ - мини-жобада тексеріңіз.)</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\approx0{,}79$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Сауалнама көлемі</h3>
+        <p class="math-problem">Сайлауда кандидатты қолдайтындар үлесін $\pm2\%$ дәлдікпен, 95% сенімділікпен бағалау үшін қанша адамнан сұрау керек?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\hat p$ - таңдамадағы үлес, $E\hat p=p$, $\sigma_{\hat p}=\sqrt{\frac{p(1-p)}{n}}$.</li>
+          <li><b>2-қадам.</b> ОШТ: $P(|\hat p-p|\le1{,}96\,\sigma_{\hat p})\approx0{,}95$. Талап: $1{,}96\sqrt{\frac{p(1-p)}{n}}\le0{,}02$.</li>
+          <li><b>3-қадам.</b> $p$ белгісіз - ең нашар жағдай $p(1-p)\le\frac14$: $n\ge\frac{1{,}96^2}{4\cdot0{,}02^2}=\frac{3{,}8416}{0{,}0016}=2401$.</li>
+          <li><b>4-қадам.</b> Байқаңыз: жауап елдің халқына тәуелсіз (таңдама кездейсоқ және тәуелсіз болса).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> шамамен 2401 адам.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Дөңгелектеу қателері</h3>
+        <p class="math-problem">100 сан бүтінге дейін дөңгелектенеді; әр қате $U(-0{,}5;\,0{,}5)$, тәуелсіз. Қосындының жалпы қатесі $\pm5$-тен асу ықтималдығы?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $EX_i=0$, $DX_i=\frac{1}{12}$. $S=\sum X_i$: $ES=0$, $DS=\frac{100}{12}$, $\sigma_S\approx2{,}887$.</li>
+          <li><b>2-қадам.</b> ОШТ: $P(|S|>5)\approx2\left(1-\Phi\left(\frac{5}{2{,}887}\right)\right)=2(1-\Phi(1{,}732))$.</li>
+          <li><b>3-қадам.</b> $\Phi(1{,}732)\approx0{,}9584$, сондықтан $P\approx0{,}083$.</li>
+          <li><b>4-қадам.</b> Ең нашар жағдайда қате 50 болуы мүмкін, бірақ іс жүзінде $\pm5$-тен асуы тек 8% жағдайда - қателер бір-бірін «жояды».</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\approx0{,}08$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">ҮСЗ: «5 рет елтаңба түссе, енді сан жағы жиірек түседі»</span> → <span class="math-good">жеке лақтырулар тәуелсіз; заң тек <em>үлес</em> туралы</span><br>Неге қате: үлес жақындайды, бірақ бұрынғы «артықшылықты» өтеу арқылы емес, жаңа көп нәтижелер оны «сұйылту» арқылы.</li>
+        <li><span class="math-bad">$\sigma_{\bar X}=\frac{\sigma}{n}$</span> → <span class="math-good">$\frac{\sigma}{\sqrt n}$</span><br>Неге қате: дисперсия $\frac{\sigma^2}n$, түбір $\frac\sigma{\sqrt n}$.</li>
+        <li><span class="math-bad">ОШТ кез келген шамаларға (тәуелді не шексіз дисперсиялы)</span> → <span class="math-good">тәуелсіз, бірдей үлестірілген, $\sigma^2&lt;\infty$</span><br>Неге қате: Коши шамаларында орташа тұрақтанбайды.</li>
+        <li><span class="math-bad">Муавр–Лапласты $n=20$, $p=0{,}02$ үшін қолдану</span> → <span class="math-good">Пуассон жуықтауы ($\lambda=0{,}4$)</span><br>Неге қате: $npq\approx0{,}39$ - өте кіші, қалыпты жуықтау жарамсыз.</li>
+        <li><span class="math-bad">Биномдық есепте үзіліссіздік түзетуін ұмыту</span> → <span class="math-good">$k\pm0{,}5$ шекаралары</span><br>Неге қате: $n$ кіші не орташа болса, түзетусіз қателік айтарлықтай.</li>
+        <li><span class="math-bad">Чебышёв: $P(|X-\mu|\ge\varepsilon)\le\frac{\sigma}{\varepsilon}$</span> → <span class="math-good">$\le\frac{\sigma^2}{\varepsilon^2}$</span><br>Неге қате: Марков $(X-\mu)^2$-ге қолданылады, сондықтан квадраттар.</li>
+        <li><span class="math-bad">«ОШТ бойынша кез келген үлкен таңдаманың өзі қалыпты»</span> → <span class="math-good">қалыпты - <em>орташа</em> (қосынды)</span><br>Неге қате: бақылаулардың гистограммасы бастапқы үлестірімнің пішінінде қалады.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Чебышёв шекарасы мен қалыпты құйрық" data-config='{"fns": [{"f": "min(1,1/x^2)", "label": "Чебышёв: 1/k²"}, {"f": "1-sqrt(1-exp(-2*x^2/pi))", "label": "қалыпты: P(|Z| ≥ k) (жуық)", "color": 1}], "view": [0, 4, 0, 1.05]}'></div>
+      <p><b>Бақылаңыз:</b> $k=2$ нүктесінде Чебышёв $0{,}25$ береді, ал қалыпты шамада $\approx0{,}046$. Чебышёв - <em>кез келген</em> шама үшін кепілдік, сондықтан ол консервативті. Ол үшін қалыптылық болжамы қажет емес.</p>
+      <div class="math-viz" data-viz="graph" data-title="Орташаның стандарт қателігі σ/√n" data-config='{"fns": [{"f": "s/sqrt(x)", "label": "σ/√n"}, {"f": "1.96*s/sqrt(x)", "label": "95% «қателік шегі»", "color": 1, "dash": [6, 4]}], "params": [{"n": "s", "min": 0.1, "max": 3, "step": 0.1, "v": 0.5}], "view": [1, 2500, 0, 0.5]}'></div>
+      <p><b>Бақылаңыз:</b> $\sigma=0{,}5$ (үлес үшін ең нашар жағдай) болса, $n\approx1068$ нүктесінде қызыл қисық $0{,}03$-ке, $n\approx2401$-де $0{,}02$-ге түседі (3-мысал). Қисық баяу кемиді: дәлдікті екі есе арттыру төрт есе көп деректі талап етеді.</p>
+      <div class="math-viz" data-viz="dist" data-title="Биномдық үлестірім «қоңырауға» айналады" data-config='{"dist": "binomial"}'></div>
+      <p><b>Бақылаңыз:</b> $p=0{,}2$ бекітіп, $n$-ді 5-тен 60-қа дейін өсіріңіз: асимметриялы бағандар біртіндеп симметриялы «қоңырауға» айналады - Муавр–Лаплас теоремасының көрінісі. $p$ кіші болса, бұл үшін үлкенірек $n$ керек.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m13-7-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-7-t1">1. Марков</h3></div>
+        <p>Санды енгізіңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$X\\ge0$, $EX=4$. Марков бойынша $P(X\\ge20)$-ның жоғарғы шекарасы.","a":0.2,"v":"Rational(4,20)","hint":"$\\frac{EX}{a}$.","sol":{"steps":["$\\frac{4}{20}$."],"ans":"$0{,}2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-7-num2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-7-t2">2. Чебышёв</h3></div>
+        <p>$EX=10$, $DX=4$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(|X-10|\\ge5)$ жоғарғы шекарасы.","a":0.16,"v":"Rational(4,25)","hint":"$\\frac{DX}{\\varepsilon^2}$.","sol":{"steps":["$\\frac{4}{25}$."],"ans":"$0{,}16$"}},{"q":"$P(6\\lt X\\lt 14)$ төменгі шекарасы.","a":0.75,"v":"1-Rational(4,16)","hint":"$\\varepsilon=4$.","sol":{"steps":["$1-\\frac{4}{16}$."],"ans":"$0{,}75$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-7-num3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-7-t3">3. Стандарт қателік</h3></div>
+        <p>$\sigma=12$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$n=36$ бақылау орташасының стандарт ауытқуы.","a":2,"v":"12/sqrt(36)","hint":"$\\frac{\\sigma}{\\sqrt n}$.","sol":{"steps":["$\\frac{12}{6}$."],"ans":"$2$"}},{"q":"Стандарт қателікті 1-ге дейін азайту үшін $n$.","a":144,"v":"solve(Eq(12/sqrt(n),1),n)[0]","hint":"$\\frac{12}{\\sqrt n}=1$.","sol":{"steps":["$\\sqrt n=12$."],"ans":"$144$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m13-7-tf4">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m13-7-t4">4. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"ОШТ бойынша 1000 сүйектің әрқайсысының мәні қалыпты үлестірілген.","a":false,"e":"Қалыпты - қосынды (орташа); жеке сүйек бірқалыпты.","hint":"Не туралы теорема?"},{"q":"Чебышёв теңсіздігі үшін шаманың қалыпты болуы қажет емес.","a":true,"e":"Тек ақырлы дисперсия керек.","hint":"1-қорыту."},{"q":"Таңдама 4 есе үлкейсе, орташаның стандарт қателігі 2 есе кішірейеді.","a":true,"e":"$\\frac{\\sigma}{\\sqrt{4n}}=\\frac12\\cdot\\frac{\\sigma}{\\sqrt n}$.","hint":"$\\sqrt4=2$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-7-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-7-t5">5. Муавр–Лаплас</h3></div>
+        <p>Монета 100 рет лақтырылады. Муавр–Лаплас жуықтауымен, үзіліссіздік түзетуін қолданып, $0{,}01$ дәлдікпен.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(45\\le S\\le55)$","a":"erf(1.1/sqrt(2))","tol":0.01,"v":"2*(1+erf(Rational(11,10)/sqrt(2)))/2-1","hint":"$\\mu=50$, $\\sigma=5$; $\\frac{55{,}5-50}{5}=1{,}1$.","sol":{"steps":["$2\\Phi(1{,}1)-1\\approx2\\cdot0{,}8643-1$."],"ans":"$\\approx0{,}729$"}},{"q":"$P(S\\ge60)$","a":"(1-erf(1.9/sqrt(2)))/2","tol":0.01,"v":"1-(1+erf(Rational(19,10)/sqrt(2)))/2","hint":"$\\frac{59{,}5-50}{5}=1{,}9$.","sol":{"steps":["$1-\\Phi(1{,}9)\\approx1-0{,}9713$."],"ans":"$\\approx0{,}029$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-7-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-7-t6">6. Таңдама көлемі</h3></div>
+        <p>Бүтін санмен (жоғары дөңгелектеңіз).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Үлесті $\\pm3\\%$ дәлдікпен, 95% ($z=1{,}96$) сенімділікпен бағалау үшін ең кіші $n$ ($p$ белгісіз).","a":1068,"v":"ceiling(Rational(196,100)**2/(4*Rational(3,100)**2))","hint":"$\\frac{z^2}{4\\varepsilon^2}$.","sol":{"steps":["$\\frac{3{,}8416}{0{,}0036}\\approx1067{,}1$."],"ans":"$1068$"}},{"q":"Егер $p\\approx0{,}1$ екені алдын ала белгілі болса.","a":385,"v":"ceiling(Rational(196,100)**2*Rational(9,100)/Rational(3,100)**2)","hint":"$\\frac{z^2p(1-p)}{\\varepsilon^2}$.","sol":{"steps":["$\\frac{3{,}8416\\cdot0{,}09}{0{,}0009}\\approx384{,}2$."],"ans":"$385$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m13-7-cho7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-7-t7">7. Қай құрал?</h3></div>
+        <p>Ең сәйкес құралды таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Үлестірімі белгісіз, тек $\\mu$ мен $\\sigma$ белгілі шама үшін кепілді баға.","o":["Чебышёв теңсіздігі","ОШТ","Пуассон жуықтауы","Байес формуласы"],"a":0,"e":"Чебышёв кез келген ақырлы дисперсиялы шамаға жарайды.","hint":"«Кепілді»."},{"q":"400 тәуелсіз тәжірибедегі сәттіліктер санының $[190,215]$-те болу ықтималдығы ($p=0{,}5$).","o":["Чебышёв теңсіздігі","Муавр–Лаплас","Пуассон жуықтауы","Марков теңсіздігі"],"a":1,"e":"$npq=100$ - қалыпты жуықтау дәл.","hint":"$n$ үлкен, $p$ орташа."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m13-7-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-7-t8">8. Шекаралар</h3></div>
+        <p>$P(|X-\mu|\ge2\sigma)$ бағалары.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Құрал мен $P(|X-\\mu|\\ge2\\sigma)$.","pairs":[["Чебышёв (кез келген шама)","≤ 0,25"],["қалыпты шама","≈ 0,046"],["U(0,1) шамасы","0"],["P(X=±2) = 1/8, P(X=0) = 3/4","= 0,25"]],"hint":"$U(0,1)$: $\\sigma\\approx0{,}289$, $2\\sigma\\approx0{,}577>0{,}5$.","sol":{"steps":["Бірқалыпты шама $\\mu\\pm0{,}5$-тен шықпайды.","Соңғысы - Чебышёв шекарасы дәл орындалатын мысал."]},"e":"Чебышёв шекарасы жалпы жағдайда жақсартылмайды."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m13-7-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m13-7-t9">9. Параметрлік: орташаның ықтималдығы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді. $0{,}001$ дәлдікпен.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"int":[50,100]},"s":{"pick":[10,12,15,20]},"n":{"pick":[16,25,36,64,100]},"k":{"pick":[1,1.5,2]},"d":{"calc":"k*s/sqrt(n)"}},"type":"num","tol":0.001,"q":"Бақылаулар тәуелсіз, $\\mu=#{m}$, $\\sigma=#{s}$. $n=#{n}$ бақылаудың орташасы үшін ОШТ бойынша $P(|\\bar X-#{m}|\\le#{d})$?","a":"erf(k/sqrt(2))","v":"erf(nsimplify(k)/sqrt(2))","hint":"$\\sigma_{\\bar X}=\\frac{#{s}}{\\sqrt{#{n}}}=#{s/sqrt(n)}$.","sol":{"steps":["$z=\\frac{#{d}}{#{s/sqrt(n)}}=#{k}$.","$2\\Phi(#{k})-1$."],"ans":"$\\approx#{round(1000*erf(k/sqrt(2)))/1000}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m13-7-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-7-t10">10. Параметрлік: сақтандыру</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді. $0{,}001$ дәлдікпен.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"n":{"pick":[400,900,1600,2500]},"r":{"pick":[0.1,0.2]},"z":{"pick":[1,1.5,2]},"c":{"calc":"n*r+z*sqrt(n*r*(1-r))"}},"type":"num","tol":0.001,"q":"Компанияның $#{n}$ клиентінің әрқайсысы жыл ішінде тәуелсіз $#{r}$ ықтималдықпен өтініш береді. Өтініштер саны $#{c}$-ден асу ықтималдығы (ОШТ, түзетусіз)?","a":"(1-erf(z/sqrt(2)))/2","v":"(1-erf(nsimplify(z)/sqrt(2)))/2","hint":"$np=#{n*r}$, $\\sqrt{npq}=#{sqrt(n*r*(1-r))}$.","sol":{"steps":["$z=\\frac{#{c}-#{n*r}}{#{sqrt(n*r*(1-r))}}=#{z}$.","$1-\\Phi(#{z})$."],"ans":"$\\approx#{round(1000*(1-erf(z/sqrt(2)))/2)/1000}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m13-7-num11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-7-t11">11. ҮСЗ бойынша кепілдік</h3></div>
+        <p>Монета $n$ рет лақтырылады. Чебышёв бойынша жиіліктің $0{,}5$-тен $0{,}05$-тен артық ауытқу ықтималдығы $0{,}01$-ден аспауы үшін ең кіші $n$?</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Чебышёв бойынша ең кіші $n$.","a":10000,"v":"ceiling(Rational(1,4)/(Rational(1,100)*Rational(5,100)**2))","hint":"$\\frac{pq}{n\\varepsilon^2}\\le0{,}01$.","sol":{"steps":["$\\frac{0{,}25}{n\\cdot0{,}0025}\\le0{,}01$.","$n\\ge\\frac{0{,}25}{0{,}000025}$."],"ans":"$10\\,000$"}},{"q":"Сол талап ОШТ бойынша ($z\\approx2{,}576$): ең кіші $n$.","a":664,"v":"ceiling(Rational(2576,1000)**2*Rational(1,4)/Rational(5,100)**2)","hint":"$z\\frac{0{,}5}{\\sqrt n}\\le0{,}05$.","sol":{"steps":["$\\sqrt n\\ge\\frac{2{,}576\\cdot0{,}5}{0{,}05}=25{,}76$.","$n\\ge663{,}6$."],"ans":"$664$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m13-7-ord12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-7-t12">12. ҮСЗ дәлелі</h3></div>
+        <p>Қадамдарды ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\bar X_n\\xrightarrow{P}\\mu$ дәлелі.","steps":["$E\\bar X_n=\\mu$ (сызықтық).","$D\\bar X_n=\\frac{\\sigma^2}{n}$ (тәуелсіздік).","Чебышёв теңсіздігін $\\bar X_n$-ге қолданамыз.","$\\frac{\\sigma^2}{n\\varepsilon^2}\\to0$."],"hint":"Күтім → дисперсия → теңсіздік → шек.","sol":{"ans":"$P(|\\bar X_n-\\mu|\\ge\\varepsilon)\\to0$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m13-7-rev13">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m13-7-t13">13. Қадамдық шешім: Монте-Карло дәлдігі</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$\\pi$-ді бірлік шаршыдағы кездейсоқ нүктелермен бағалаймыз: $\\hat\\pi=4\\cdot\\frac{\\text{ширек дөңгелекке түскендер}}{N}$. Қателік $0{,}01$-ден аспауы (95%) үшін $N$ шамамен қанша?","hint":"Әр нүкте - Бернулли шамасы, $p=\\frac\\pi4$.","steps":["$\\hat\\pi=4\\hat p$, мұнда $\\hat p$ - үлес, $D\\hat p=\\frac{p(1-p)}{N}$, $p=\\frac\\pi4\\approx0{,}785$.","$\\sigma_{\\hat\\pi}=4\\sqrt{\\frac{p(1-p)}{N}}=\\frac{4\\cdot0{,}4105}{\\sqrt N}\\approx\\frac{1{,}642}{\\sqrt N}$.","95%: $1{,}96\\cdot\\frac{1{,}642}{\\sqrt N}\\le0{,}01\\Rightarrow\\sqrt N\\ge321{,}8$.","$N\\gtrsim103\\,600$. Бір таңбаны қосу үшін $N$-ді 100 есе арттыру керек."],"ans":"$N\\approx1{,}04\\cdot10^5$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> ҮСЗ - сақтандыру мен казино бизнесінің, Монте-Карло әдісінің, машиналық оқытудағы «эмпирикалық тәуекелдің» негізі. ОШТ - сенімділік интервалдарының, A/B тесттердің, сапа бақылау карталарының негізі (келесі пәнде - Mathematical Statistics).</p>
+      <p><b>Мини-жоба: «Заңдарды көзбен көру».</b> ҮСЗ-ны (орташаның тұрақтануы), ОШТ-ны (12 бірқалыпты шаманың қосындысы) және Коши шамаларындағы «сәтсіздікті» модельдейміз.</p>
+<pre data-lang="python"><code class="language-python">import math, random
+random.seed(5)
+
+# 1) ҮСЗ: сүйектің жүгірмелі орташасы
+s = 0
+for n in range(1, 100_001):
+    s += random.randint(1, 6)
+    if n in (10, 100, 1000, 10_000, 100_000):
+        print(f"n={n:6d}  орташа={s / n:.4f}  (μ = 3.5, σ/√n = {math.sqrt(35 / 12) / math.sqrt(n):.4f})")
+
+# 2) ОШТ: 12 бірқалыпты шаманың қосындысы - 6 ≈ N(0,1)
+zs = [sum(random.random() for _ in range(12)) - 6 for _ in range(100_000)]
+for k in (1, 2, 3):
+    print(k, round(sum(abs(z) &lt;= k for z in zs) / len(zs), 4), round(math.erf(k / math.sqrt(2)), 4))
+
+# 3) Муавр–Лаплас дәлдігі (2-мысал)
+exact = sum(math.comb(400, k) for k in range(190, 216)) / 2 ** 400
+Phi = lambda z: 0.5 * (1 + math.erf(z / math.sqrt(2)))
+print("дәл:", round(exact, 4), " түзетумен:", round(Phi(1.55) - Phi(-1.05), 4), " түзетусіз:", round(Phi(1.5) - Phi(-1.0), 4))
+
+# 4) Коши: орташа тұрақтанбайды
+c = 0
+for n in range(1, 100_001):
+    c += math.tan(math.pi * (random.random() - 0.5))
+    if n in (100, 10_000, 100_000):
+        print("Коши орташасы, n =", n, ":", round(c / n, 3))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>1-бөлімде орташаның $3{,}5$-тен ауытқуы шынымен $\frac{\sigma}{\sqrt n}$ ретті ме? Бірнеше seed-пен тексеріп, кестеге жазыңыз.</li>
+        <li>2-бөлімде 12-нің орнына 2 және 3 шаманы алыңыз (нормалауды түзетіңіз: қосындының $E$ мен $D$-сын қайта есептеңіз). Қалыпты жуықтау қаншалықты нашарлайды?</li>
+        <li>$\pi$-ді Монте-Карло әдісімен $N=10^3,10^4,10^5,10^6$ үшін бағалап, қателіктің $\frac{1{,}64}{\sqrt N}$-ге сәйкестігін тексеріңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Марков</td><td>$P(X\ge a)\le\frac{EX}a$</td><td>$X\ge0$, $a>0$</td></tr>
+        <tr><td>Чебышёв</td><td>$P(|X-\mu|\ge\varepsilon)\le\frac{\sigma^2}{\varepsilon^2}$</td><td>$\sigma^2&lt;\infty$</td></tr>
+        <tr><td>Орташа</td><td>$E\bar X=\mu$, $\sigma_{\bar X}=\frac{\sigma}{\sqrt n}$</td><td>тәуелсіз</td></tr>
+        <tr><td>ҮСЗ</td><td>$\bar X_n\xrightarrow{P}\mu$</td><td>тәуелсіз, $\sigma^2&lt;\infty$</td></tr>
+        <tr><td>ОШТ</td><td>$\frac{S_n-n\mu}{\sigma\sqrt n}\to N(0,1)$</td><td>т.б.у., $0&lt;\sigma^2&lt;\infty$</td></tr>
+        <tr><td>Муавр–Лаплас</td><td>$B(n,p)\approx N(np,npq)$</td><td>$npq\ge10$</td></tr>
+        <tr><td>Таңдама көлемі</td><td>$n\ge\frac{z^2}{4\varepsilon^2}$</td><td>үлес, ең нашар жағдай</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m13-7-self">
+        <li><input type="checkbox"> <span>Мен Марков пен Чебышёв теңсіздіктерін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен ҮСЗ-ны Чебышёв теңсіздігінен қорыта аламын және оның шарттарын атаймын.</span></li>
+        <li><input type="checkbox"> <span>Мен ОШТ-ны дұрыс тұжырымдап, $\sqrt n$ нормалауын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Муавр–Лаплас жуықтауын үзіліссіздік түзетуімен қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен сауалнама не Монте-Карло үшін таңдама көлемін бағалай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен ҮСЗ мен ОШТ жұмыс істемейтін мысал (Коши) келтіре аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. X ≥ 0, EX = 3. Марков бойынша P(X ≥ 12) ≤ ?</p>
+<label><input type="radio" value="a"> 0,75</label>
+<label><input type="radio" value="b"> 0,25</label>
+<label><input type="radio" value="c"> 0,025</label>
+<label><input type="radio" value="d"> 4</label>
+<p class="explain">3/12.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">2. Чебышёв бойынша кез келген шаманың мәндерінің μ ± 2σ ішіндегі үлесі кемінде:</p>
+<label><input type="radio" value="a"> 75%</label>
+<label><input type="radio" value="b"> 95%</label>
+<label><input type="radio" value="c"> 68%</label>
+<label><input type="radio" value="d"> 50%</label>
+<p class="explain">1 − 1/2² = 3/4.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">3. σ = 10, n = 100. Орташаның стандарт қателігі:</p>
+<label><input type="radio" value="a"> 0,1</label>
+<label><input type="radio" value="b"> 10</label>
+<label><input type="radio" value="c"> 100</label>
+<label><input type="radio" value="d"> 1</label>
+<p class="explain">10/√100.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">4. ОШТ-ның шарттарына жатпайтыны:</p>
+<label><input type="radio" value="a"> тәуелсіздік</label>
+<label><input type="radio" value="b"> бірдей үлестірім</label>
+<label><input type="radio" value="c"> шамалар қалыпты болуы</label>
+<label><input type="radio" value="d"> ақырлы дисперсия</label>
+<p class="explain">Бастапқы шамалардың қалыпты болуы қажет емес.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. Дәлдікті 3 есе арттыру үшін таңдама көлемін неше есе арттыру керек?</p>
+<label><input type="radio" value="a"> 3</label>
+<label><input type="radio" value="b"> 9</label>
+<label><input type="radio" value="c"> √3</label>
+<label><input type="radio" value="d"> 27</label>
+<p class="explain">Қателік 1/√n ретті.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">6. Монета 100 рет: елтаңба санының стандарт ауытқуы:</p>
+<label><input type="radio" value="a"> 5</label>
+<label><input type="radio" value="b"> 25</label>
+<label><input type="radio" value="c"> 50</label>
+<label><input type="radio" value="d"> 10</label>
+<p class="explain">√(100·0,5·0,5) = 5.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">7. Қай үлестірімде орташа n өскенде тұрақтанбайды?</p>
+<label><input type="radio" value="a"> экспоненциалдық</label>
+<label><input type="radio" value="b"> Пуассон</label>
+<label><input type="radio" value="c"> бірқалыпты</label>
+<label><input type="radio" value="d"> Коши</label>
+<p class="explain">Коши үлестірімінде күтім жоқ.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">8. ҮСЗ нені тұжырымдайды?</p>
+<label><input type="radio" value="a"> қосынды қалыпты</label>
+<label><input type="radio" value="b"> әр шама күтімге тең</label>
+<label><input type="radio" value="c"> орташа күтімге ықтималдық бойынша жақындайды</label>
+<label><input type="radio" value="d"> дисперсия өседі</label>
+<p class="explain">Нормаланған ауытқудың пішіні туралы - ОШТ.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәннің соңғы сабағын аяқтадыңыз. Білімді <a href="../exam.html?s=prob">Probability Theory емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-84.html"><small>Алдыңғы</small>← Probability Theory · 6-сабақ: Үзіліссіз үлестірімдер</a>

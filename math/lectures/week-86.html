@@ -6,13 +6,14 @@
   <title>Math Mathematical Statistics · 1-сабақ: Таңдама және сипаттамалық статистика - CS50 қазақша</title>
   <!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
+  <meta name="color-scheme" content="light dark">
   <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
   <link rel="manifest" href="../../manifest.webmanifest">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Mathematical Statistics · 1-сабақ: Таңдама және сипаттамалық статистика - CS50 қазақша">
-  <meta property="og:description" content="Математика, Mathematical Statistics · 1-сабақ: Таңдама және сипаттамалық статистика. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Орта, медиана, дисперсия, гистограмма, эмпирикалық үлестірім.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-86.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +25,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Mathematical Statistics · 1-сабақ: Таңдама және сипаттамалық статистика - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-86.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Mathematical Statistics · 1-сабақ: Таңдама және сипаттамалық статистика. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Орта, медиана, дисперсия, гистограмма, эмпирикалық үлестірім.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +58,448 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="86">
+    <article class="content math-lesson" style="--sc:#b91c1c" id="main">
+      <div class="lecture-head" style="--lc:#b91c1c" data-n="86" data-msubj="stats" data-glyph="σ">
         <div class="num">Mathematical Statistics · 1-сабақ</div>
         <h1>Таңдама және сипаттамалық статистика</h1>
-        <p>Орта, медиана, дисперсия, гистограмма, эмпирикалық үлестірім.</p>
+        <p>Статистика - деректерден қорытынды шығару өнері. Бірақ кез келген талдау қарапайым сұрақтан басталады: деректер «қандай»? Олардың ортасы қай жерде, қаншалықты шашыраған, оқшау («шеткі») мәндер бар ма?</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 50 мин</span><span>Есептер ≈ 1 сағ 20 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ 20 мин</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Бұл сабақта бас жиынтық пен таңдаманы ажыратамыз, орта мән, медиана, квартильдер, дисперсия мен стандарт ауытқуды анықтаймыз, дисперсия формуласында неге $n-1$-ге бөлетінімізді дәлелдейміз және деректерді гистограмма мен «қорапша» диаграммасымен сипаттауды үйренеміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-14">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=stats">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Mathematical Statistics: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-14">Mathematical Statistics</a></span><ol><li><a href="week-86.html" aria-current="page" title="Таңдама және сипаттамалық статистика">1</a></li><li><a href="week-87.html" title="Нүктелік бағалау">2</a></li><li><a href="week-88.html" title="Сенімділік интервалдары">3</a></li><li><a href="week-89.html" title="Гипотезаларды тексеру">4</a></li><li><a href="week-90.html" title="Корреляция және сызықтық регрессия">5</a></li><li><a href="week-91.html" title="Хи-квадрат тесті және дисперсиялық талдау">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-14">Mathematical Statistics</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Сипаттамалық статистика деректерді бірнеше санға сығады: «орталық» (орта мән, медиана) және «шашырау» (дисперсия, квартильдер); бірақ әр санның өз әлсіз жағы бар.</p></div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>бас жиынтық, таңдама, параметр және статистика ұғымдарын ажырату;</li>
+        <li>таңдаманың орта мәнін, медианасын, модасын, құлашын, квартильдерін және квартильаралық құлашын есептеу;</li>
+        <li>таңдама дисперсиясын $s^2=\frac{1}{n-1}\sum(x_i-\bar x)^2$ есептеу және $n-1$-дің себебін (ығыспағандық) дәлелдеу;</li>
+        <li>шеткі мәндерді $1{,}5\cdot IQR$ ережесімен анықтау және медиананың орташадан «төзімді» екенін түсіндіру;</li>
+        <li>$z$-бағаны есептеп, әртүрлі шкаладағы мәндерді салыстыру;</li>
+        <li>Python-да сипаттамалық статистиканы стандарт кітапханамен (<code>statistics</code>) есептеу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Кездейсоқ шама $X$, оның күтімі $EX=\mu$ және дисперсиясы $DX=\sigma^2=EX^2-\mu^2$. Тәуелсіз шамалар үшін $D(X_1+\dots+X_n)=\sum DX_i$, кез келген шамалар үшін $E(\sum X_i)=\sum EX_i$. Қосынды белгісі: $\sum_{i=1}^n(ax_i+b)=a\sum x_i+nb$.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-82.html">Probability Theory · 4-сабақ: Кездейсоқ шамалар, күтім және дисперсия</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="warmup">Алдымен қолмен: жалақылар</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">Шағын фирмада $7$ қызметкердің жалақысы (мың теңге): $200,\ 210,\ 220,\ 250,\ 260,\ 270,\ 1500$. Орта мән мен медиана қандай? Қайсысы «типтік» жалақыны жақсы көрсетеді?</p>
+        <ol class="math-steps">
+          <li>Орта мән: $\frac{2910}7\approx416$.</li>
+          <li>Медиана - реттелген тізімнің ортасы (төртінші мән): $250$.</li>
+          <li>Алты адам $270$-тен аспайды, бірақ орта мән $416$ - директордың $1500$-і орта мәнді «тартып» тұр.</li>
+          <li>Шеткі мәнді тексеру: төменгі жарты $\{200,210,220\}$, $Q_1=210$; жоғарғы жарты $\{260,270,1500\}$, $Q_3=270$; $IQR=60$, $Q_3+1{,}5\,IQR=360&lt;1500$ - шеткі мән.</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> Орта мән шеткі мәндерге сезімтал, медиана - төзімді. Деректерді алдымен көзбен қарап, шеткі мәндерді іздеу - талдаудың бірінші қадамы.</p></div>
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Елдегі барлық оқушылардың математикадан орташа бағасын білгіңіз келеді. Миллиондаған оқушыны тексеру мүмкін емес, сондықтан кездейсоқ 500 оқушыны аламыз. Барлық оқушылар - <b>бас жиынтық</b>, ал 500 адам - <b>таңдама</b>. Бас жиынтықтың белгісіз орташасы - <em>параметр</em> ($\mu$), ал таңдамадан есептелген орташа - <em>статистика</em> ($\bar x$). Статистиканың бүкіл ғылымы осы сұрақ төңірегінде: $\bar x$ арқылы $\mu$ туралы не айта аламыз?</p>
+      <p>Бір кафеде 9 адамның айлық табысы (мың теңгемен): 150, 180, 200, 210, 220, 230, 250, 280, 5000 (соңғысы - миллионер). Орташа $\approx747$ мың - бұл ешкімнің шын табысына ұқсамайды. Ал медиана (ортадағы мән) - 220 мың - «типтік» адамды дұрыс сипаттайды. Сондықтан табыс, баға сияқты асимметриялы деректерде медиананы жиі қолданады: ол шеткі мәндерге «төзімді».</p>
+      <p>Орташа «қай жерде» екенін айтады, ал шашырау - «қаншалықты сенімді» екенін. Екі сыныптың орташа бағасы 75 болсын: біріншісінде барлығы 70-80 аралығында, екіншісінде жартысы 50, жартысы 100. Олар мүлде әртүрлі. Шашыраудың негізгі өлшемі - стандарт ауытқу: мәндердің орташадан «типтік» қашықтығы.</p>
+      <p>Ең таңқаларлық жайт - дисперсия формуласындағы $n-1$. Неге $n$-ге емес? Себебі ауытқуларды бас жиынтықтың шын ортасынан емес, таңдаманың өз ортасынан $\bar x$ өлшейміз, ал $\bar x$ деректерге «ыңғайланған»: ауытқулардың квадраттарының қосындысы шын ортаға қарағанда әрдайым кішірек шығады. $n-1$-ге бөлу осы жүйелі кемшілікті дәл түзетеді (2-қорыту).</p>
+
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · ауырлық центрі мен ортаңғы адам</span>
+        <p>Орта мән - салмақтар тепе-теңдікте тұратын нүкте (бір өте ауыр салмақ оны алысқа жылжытады). Медиана - кезекте тұрған адамдардың дәл ортасындағы адам (кезектің соңындағы алыптың бойы оны өзгертпейді).</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · n − 1 - «жоғалған» еркіндік</span>
+        <p>Дисперсияны таңдама орта мәнінен есептегенде, ауытқулардың қосындысы әрдайым нөл - біреуі қалғандарынан анықталады. Тек $n-1$ «еркін» ауытқу қалады, сондықтан $n-1$-ге бөлеміз.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$\bar x$</td><td>таңдама орта мәні</td><td>мәндердің арифметикалық ортасы</td></tr>
+        <tr><td>$x_{(1)}\le\dots\le x_{(n)}$</td><td>реттелген таңдама</td><td>өсу ретімен жазылған мәндер</td></tr>
+        <tr><td>$s^2$</td><td>таңдама дисперсиясы</td><td>$\frac1{n-1}\sum(x_i-\bar x)^2$</td></tr>
+        <tr><td>$Q_1,\ Q_3$</td><td>квартильдер</td><td>деректердің $25\%$ және $75\%$ шекаралары</td></tr>
+        <tr><td>$IQR=Q_3-Q_1$</td><td>квартильаралық құлаш</td><td>ортаңғы жартының ені</td></tr>
+        <tr><td>$z=\frac{x-\bar x}s$</td><td>z-баға</td><td>мән орта мәннен неше стандарт ауытқу алыс</td></tr>
+      </tbody></table>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 1.1 · Бас жиынтық және таңдама</span>
+        <p>Зерттелетін барлық объектілердің жиыны - <strong>бас жиынтық</strong> (<span class="term-en">population</span>). Оның бөлігі - <strong>таңдама</strong> (<span class="term-en">sample</span>). Математикалық модельде <em>кездейсоқ таңдама</em> - тәуелсіз және бірдей үлестірілген $X_1,\dots,X_n$ кездейсоқ шамалары; бақыланған мәндер $x_1,\dots,x_n$ - олардың нақты іске асуы. Таңдамадан есептелетін кез келген функция $T(X_1,\dots,X_n)$ <strong>статистика</strong> (<span class="term-en">statistic</span>) деп аталады.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Бізді қызықтыратын барлық объектілер - бас жиынтық; біз тек оның бір бөлігін - таңдаманы өлшейміз.</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 1.2 · Орталық үрдіс өлшемдері</span>
+        <p><strong>Таңдама орта мәні</strong> (<span class="term-en">sample mean</span>) $\bar x=\frac1n\sum_{i=1}^nx_i$. Реттелген таңдама $x_{(1)}\le\dots\le x_{(n)}$ бойынша <strong>медиана</strong> (<span class="term-en">median</span>): $n$ тақ болса $x_{((n+1)/2)}$, жұп болса $\frac12\big(x_{(n/2)}+x_{(n/2+1)}\big)$. <strong>Мода</strong> (<span class="term-en">mode</span>) - ең жиі кездесетін мән (бірнешеу болуы не мүлде болмауы мүмкін).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Деректердің «ортасы» - орта мән (бәрін қосып бөлу) не медиана (реттегенде ортаңғысы).</p></div>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 1.3 · Шашырау өлшемдері</span>
+        <p><strong>Құлаш</strong> (<span class="term-en">range</span>) $x_{(n)}-x_{(1)}$. <strong>Таңдама дисперсиясы</strong> (<span class="term-en">sample variance</span>) $s^2=\frac{1}{n-1}\sum_{i=1}^n(x_i-\bar x)^2$ ($n\ge2$), <strong>таңдама стандарт ауытқуы</strong> (<span class="term-en">sample standard deviation</span>) $s=\sqrt{s^2}$. Квартильдер: $Q_1$ - реттелген таңдаманың медианадан төмен жартысының медианасы, $Q_3$ - жоғары жартысының медианасы ($n$ тақ болса, медиананың өзі екі жартыға да кірмейді). <strong>Квартильаралық құлаш</strong> (<span class="term-en">interquartile range</span>) $IQR=Q_3-Q_1$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Деректердің «жайылуы» - құлаш, дисперсия, стандарт ауытқу, квартильаралық құлаш.</p></div>
+      <div class="math-remark"><span class="math-box-title">Ескертпе</span>
+        <p>Квартильдерді есептеудің бірнеше стандарты бар (Excel, Python <code>statistics.quantiles</code>, R-дің 9 әдісі). Олар кішкентай таңдамада сәл әртүрлі нәтиже береді, ал $n$ үлкен болса айырма жоғалады. Бұл курста жоғарыда анықталған «жартылардың медианасы» әдісін қолданамыз, әр есепте әдісті атап өтеміз.</p></div>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 1.4 · Шеткі мән және z-баға</span>
+        <p>$x$ мәні $x&lt;Q_1-1{,}5\,IQR$ не $x>Q_3+1{,}5\,IQR$ болса, оны <strong>шеткі мән</strong> (<span class="term-en">outlier</span>) деп белгілейміз (Тьюки ережесі; бұл келісім, «заң» емес). $x$-тің <strong>z-бағасы</strong> (<span class="term-en">z-score</span>) $z=\frac{x-\bar x}{s}$ - мәннің орташадан неше стандарт ауытқу қашық екенін көрсетеді.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Шеткі мән - квартильдерден тым алыс жатқан мән; z-баға мәнді «стандарт бірліктерде» өлшейді.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 1.1 · Орта мән мен дисперсияның қасиеттері</span>
+        <p>(1) $\sum_{i=1}^n(x_i-\bar x)=0$. (2) $c\mapsto\sum(x_i-c)^2$ функциясы $c=\bar x$ болғанда ғана ең кіші мәнге жетеді. (3) $\sum(x_i-\bar x)^2=\sum x_i^2-n\bar x^2$. (4) $y_i=ax_i+b$ болса $\bar y=a\bar x+b$, $s_y=|a|s_x$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Орта мәннен ауытқулардың қосындысы нөл, ал квадраттық ауытқулардың қосындысы дәл орта мәнде ең кіші.</p></div>
+      <p><em>Негіздеме.</em> 1-қорыту.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 1.2 · Таңдама сипаттамаларының күтімі</span>
+        <p>$X_1,\dots,X_n$ тәуелсіз, бірдей үлестірілген, $EX_i=\mu$, $DX_i=\sigma^2&lt;\infty$, $n\ge2$ болсын. Онда $E\bar X=\mu$, $D\bar X=\frac{\sigma^2}n$ және $ES^2=\sigma^2$, мұнда $S^2=\frac{1}{n-1}\sum(X_i-\bar X)^2$. Ал $\frac1n\sum(X_i-\bar X)^2$ шамасының күтімі $\frac{n-1}{n}\sigma^2&lt;\sigma^2$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Таңдама орта мәнінің күтімі - шын орта мән; $n-1$-ге бөлінген дисперсияның күтімі - шын дисперсия.</p></div>
+      <p><em>Негіздеме.</em> 2-қорыту.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 1.3 · Медиана абсолют ауытқуды кішірейтеді</span>
+        <p>$c\mapsto\sum_{i=1}^n|x_i-c|$ функциясы медианада ең кіші мәнге жетеді ($n$ жұп болса - екі орталық мән арасындағы кез келген нүктеде).</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Абсолют ауытқулардың қосындысы медианада ең кіші.</p></div>
+      <p><em>Негіздеме.</em> 3-қорыту.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 1.1 · Орта мән мен дисперсия</span>
+        <div class="math-fbody">$$\bar x=\frac1n\sum_{i=1}^nx_i,\qquad s^2=\frac{1}{n-1}\sum_{i=1}^n(x_i-\bar x)^2=\frac{\sum x_i^2-n\bar x^2}{n-1}$$</div>
+        <p class="math-fnote">$n\ge2$. Екінші түрі есептеуге ыңғайлы, бірақ компьютерде үлкен сандармен дөңгелектеу қатесін арттыруы мүмкін.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 1.2 · Тьюки ережесі</span>
+        <div class="math-fbody">$$x\lt Q_1-1{,}5\,IQR\quad\text{не}\quad x\gt Q_3+1{,}5\,IQR$$</div>
+        <p class="math-fnote">«Қорапша» (box plot) диаграммасы: қорап $[Q_1,Q_3]$, ішінде медиана сызығы, «мұрттар» шеткі емес ең кіші/үлкен мәнге дейін, шеткі мәндер нүктемен.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 1.3 · z-баға</span>
+        <div class="math-fbody">$$z=\frac{x-\bar x}{s}$$</div>
+        <p class="math-fnote">Бірліксіз шама; әртүрлі шкаладағы (мысалы, екі түрлі тест) нәтижелерді салыстыруға мүмкіндік береді.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Деректер симметриялы болса, орташа ≈ медиана. Оң жаққа созылған (табыс, баға) болса, орташа > медиана. Орташа мен стандарт ауытқу шеткі мәндерге сезімтал, ал медиана мен $IQR$ - төзімді.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Python-да <code>statistics.variance</code> мен <code>statistics.stdev</code> $n-1$-ге бөледі (таңдама), ал <code>pvariance</code>, <code>pstdev</code> - $n$-ге (бас жиынтық). Калькулятор мен кестелік бағдарламаларда да екі түрлі батырма/функция болады: қайсысын қолданғаныңызды әрдайым тексеріңіз.</p></div>
+
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $3,5,7,100$ медианасы?</span></summary>
+        <p>$\frac{5+7}2=6$.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> Барлық мәнге $10$ қоссақ, орта мән мен дисперсия қалай өзгереді?</span></summary>
+        <p>Орта мән $10$-ға өседі, дисперсия өзгермейді.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> Барлық мәнді $2$-ге көбейтсек, стандарт ауытқу қалай өзгереді?</span></summary>
+        <p>$2$ есе өседі (дисперсия $4$ есе).</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> z-баға $-2$ нені білдіреді?</span></summary>
+        <p>Мән орта мәннен екі стандарт ауытқу төмен.</p></details>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: орта мәннің қасиеттері</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 1.1-дің (1)-(3) тұжырымдарын дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Қосындыны ашып, $\sum x_i=n\bar x$ екенін қолданамыз; квадраттық қосынды үшін $c$-ны $\bar x$ арқылы жазып, Пифагор сияқты жіктейміз.</p>
+          <ol class="math-steps">
+            <li>(1): $\sum(x_i-\bar x)=\sum x_i-n\bar x=n\bar x-n\bar x=0$. Ауытқулар бір-бірін «теңестіреді»: орташа - деректердің «салмақ центрі».</li>
+            <li>(2): $g(c)=\sum(x_i-c)^2$. Жазамыз: $x_i-c=(x_i-\bar x)+(\bar x-c)$.</li>
+            <li>Квадратқа шығарып қосамыз: $g(c)=\sum(x_i-\bar x)^2+2(\bar x-c)\sum(x_i-\bar x)+n(\bar x-c)^2$.</li>
+            <li>(1) бойынша ортаңғы мүше нөл: $g(c)=\sum(x_i-\bar x)^2+n(\bar x-c)^2\ge g(\bar x)$, теңдік тек $c=\bar x$ болғанда.</li>
+            <li>(3): $c=0$ қойсақ, $\sum x_i^2=\sum(x_i-\bar x)^2+n\bar x^2$, яғни $\sum(x_i-\bar x)^2=\sum x_i^2-n\bar x^2$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: $ES^2=\sigma^2$ ($n-1$-ге бөлудің себебі)</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> таңдама дисперсиясы бас жиынтық дисперсиясының ығыспаған бағасы екенін дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Тепе-теңдікті шын орта мән $\mu$ үшін жазып, күтім аламыз: $\bar X$-тің дисперсиясы $\frac{\sigma^2}n$ - дәл бір $\sigma^2$-ты «жейді».</p>
+          <ol class="math-steps">
+            <li>1-қорытудағы тепе-теңдікті $c=\mu$ үшін жазамыз: $\sum(X_i-\mu)^2=\sum(X_i-\bar X)^2+n(\bar X-\mu)^2$.</li>
+            <li>Күтім аламыз. Сол жақ: $\sum E(X_i-\mu)^2=n\sigma^2$.</li>
+            <li>$E(\bar X-\mu)^2=D\bar X=\frac{\sigma^2}{n}$ (тәуелсіздік), сондықтан $nE(\bar X-\mu)^2=\sigma^2$.</li>
+            <li>Демек $E\sum(X_i-\bar X)^2=n\sigma^2-\sigma^2=(n-1)\sigma^2$.</li>
+            <li>$S^2=\frac{1}{n-1}\sum(X_i-\bar X)^2$ үшін $ES^2=\sigma^2$, ал $n$-ге бөлсек күтім $\frac{n-1}{n}\sigma^2$ - жүйелі түрде кіші.</li>
+            <li>Мағынасы: $n$ ауытқудың біреуі «артық» - олардың қосындысы нөл (1-қорыту), сондықтан тек $n-1$ «еркіндік дәрежесі» бар.</li>
+            <li>Ескерту: $ES^2=\sigma^2$ болса да, $ES&lt;\sigma$ (жалпы жағдайда), себебі түбір ойыс функция; $s$ - $\sigma$-ның сәл ығысқан бағасы.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: медиана $\sum|x_i-c|$-ны кішірейтеді</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 1.3-ті «нүктелерді санау» арқылы дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $c$-ны жылжытқанда сол жақтағы және оң жақтағы нүктелер санын салыстырамыз: олар тең болғанда (медиана) жылжудың пайдасы жоқ.</p>
+          <ol class="math-steps">
+            <li>$h(c)=\sum|x_i-c|$. $c$ ешбір $x_i$-ге тең емес нүктеде $c$-ны оңға кішкене $\delta>0$-ге жылжытайық.</li>
+            <li>$c$-дан сол жақтағы ($x_i&lt;c$) әр нүктенің қашықтығы $\delta$-ға артады, оң жақтағылардікі $\delta$-ға кемиді (жылжу кішкентай болса).</li>
+            <li>Сол жақта $L$ нүкте, оң жақта $R$ нүкте болса, $h(c+\delta)-h(c)=(L-R)\delta$.</li>
+            <li>$L&lt;R$ болса, оңға жылжу $h$-ты азайтады; $L>R$ болса, солға жылжу азайтады. Демек минимумда $L$ мен $R$ «теңесуі» керек.</li>
+            <li>$n$ тақ: тек $c=x_{((n+1)/2)}$ нүктесінде екі жақта да $\frac{n-1}{2}$ нүкте - бұл медиана. $n$ жұп: $x_{(n/2)}$ мен $x_{(n/2+1)}$ арасындағы кез келген $c$-да $L=R=\frac n2$, $h$ тұрақты және ең кіші.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Толық сипаттама</h3>
+        <p class="math-problem">Таңдама: $3, 5, 7, 8, 9, 10, 12, 15, 30$. Орта мән, медиана, квартильдер, $IQR$, шеткі мәндер, $s^2$, $s$ табыңыз.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $n=9$, қосынды $99$: $\bar x=11$.</li>
+          <li><b>2-қадам.</b> Реттелген, $n$ тақ: медиана - 5-мүше, $9$.</li>
+          <li><b>3-қадам.</b> Төменгі жарты $3,5,7,8$: $Q_1=\frac{5+7}{2}=6$. Жоғарғы жарты $10,12,15,30$: $Q_3=\frac{12+15}{2}=13{,}5$. $IQR=7{,}5$.</li>
+          <li><b>4-қадам.</b> Шекаралар: $6-11{,}25=-5{,}25$ және $13{,}5+11{,}25=24{,}75$. $30>24{,}75$ - шеткі мән.</li>
+          <li><b>5-қадам.</b> Ауытқулар: $-8,-6,-4,-3,-2,-1,1,4,19$ (қосындысы 0 ✓). Квадраттар қосындысы $64+36+16+9+4+1+1+16+361=508$.</li>
+          <li><b>6-қадам.</b> $s^2=\frac{508}{8}=63{,}5$, $s\approx7{,}97$. Байқаңыз: бір шеткі мән (30) квадраттар қосындысының 71%-ын береді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\bar x=11$, медиана $9$, $Q_1=6$, $Q_3=13{,}5$, $IQR=7{,}5$, шеткі мән $30$, $s^2=63{,}5$, $s\approx7{,}97$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Шеткі мәннің әсері</h3>
+        <p class="math-problem">1-мысалда 30-ды 15-ке ауыстырсақ, орташа мен медиана қалай өзгереді? Стандарт ауытқу ше?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Жаңа қосынды $99-15=84$: $\bar x=\frac{84}{9}\approx9{,}33$.</li>
+          <li><b>2-қадам.</b> Реттелген: $3,5,7,8,9,10,12,15,15$ - медиана әлі $9$.</li>
+          <li><b>3-қадам.</b> $\sum x_i^2=9+25+49+64+81+100+144+225+225=922$; $\sum(x_i-\bar x)^2=922-9\cdot\left(\frac{84}{9}\right)^2=922-784=138$.</li>
+          <li><b>4-қадам.</b> $s^2=\frac{138}{8}=17{,}25$, $s\approx4{,}15$ - екі есеге жуық кеміді.</li>
+          <li><b>5-қадам.</b> Қорытынды: бір мәнді өзгерту $\bar x$ пен $s$-ке қатты әсер етті, ал медианаға мүлде әсер етпеді.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\bar x\approx9{,}33$, медиана $9$, $s\approx4{,}15$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. z-бағалармен салыстыру</h3>
+        <p class="math-problem">Асан математикадан 82 алды (сынып: $\bar x=70$, $s=8$), Бөке физикадан 88 алды (сынып: $\bar x=80$, $s=10$). Кімнің нәтижесі өз сыныбына қатысты жоғары?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Асан: $z=\frac{82-70}{8}=1{,}5$.</li>
+          <li><b>2-қадам.</b> Бөке: $z=\frac{88-80}{10}=0{,}8$.</li>
+          <li><b>3-қадам.</b> Асан өз сыныбының орташасынан 1,5 стандарт ауытқу жоғары, Бөке - 0,8.</li>
+          <li><b>4-қадам.</b> Балл саны Бөкеде көп болса да, салыстырмалы нәтиже Асанда жоғары.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Асан ($z=1{,}5$ > $0{,}8$).</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Жиілік кестесінен</h3>
+        <p class="math-problem">30 отбасындағы балалар саны: 0 бала - 4 отбасы, 1 - 9, 2 - 11, 3 - 4, 4 - 2. Орташа, медиана, мода, $s$?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\sum f_ix_i=0+9+22+12+8=51$, $\bar x=\frac{51}{30}=1{,}7$.</li>
+          <li><b>2-қадам.</b> Медиана: 15- және 16-мүшелердің ортасы. Жинақталған жиілік: $4,13,24,\dots$ - 15 және 16-мүшелер «2» тобында: медиана $2$.</li>
+          <li><b>3-қадам.</b> Мода $2$ (11 рет).</li>
+          <li><b>4-қадам.</b> $\sum f_ix_i^2=0+9+44+36+32=121$; $\sum f_i(x_i-\bar x)^2=121-30\cdot1{,}7^2=121-86{,}7=34{,}3$.</li>
+          <li><b>5-қадам.</b> $s^2=\frac{34{,}3}{29}\approx1{,}183$, $s\approx1{,}09$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\bar x=1{,}7$, медиана $2$, мода $2$, $s\approx1{,}09$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Медиананы реттемей, ортадағы мүшені алу</span> → <span class="math-good">алдымен ретке келтіру</span><br>Неге қате: медиана - <em>реттелген</em> таңдаманың ортасы.</li>
+        <li><span class="math-bad">Таңдама дисперсиясында $n$-ге бөлу</span> → <span class="math-good">$n-1$-ге бөлу</span><br>Неге қате: $n$-ге бөлу $\sigma^2$-ты жүйелі түрде кем бағалайды (2-қорыту).</li>
+        <li><span class="math-bad">$s=\frac{1}{n-1}\sum|x_i-\bar x|$</span> → <span class="math-good">$s=\sqrt{\frac{1}{n-1}\sum(x_i-\bar x)^2}$</span><br>Неге қате: стандарт ауытқу - квадраттардың орташасының түбірі, абсолют ауытқулардың орташасы емес.</li>
+        <li><span class="math-bad">Шеткі мәнді «қате» деп бірден өшіру</span> → <span class="math-good">алдымен себебін тексеру</span><br>Неге қате: шеткі мән маңызды ақпарат болуы мүмкін (миллионер, ақау); оны өшіру нәтижені бұрмалайды.</li>
+        <li><span class="math-bad">$\sum(x_i-\bar x)^2=\sum x_i^2-\bar x^2$</span> → <span class="math-good">$\sum x_i^2-n\bar x^2$</span><br>Неге қате: $n$ көбейткіші ұмытылады; тексеру: $s^2\ge0$.</li>
+        <li><span class="math-bad">Асимметриялы деректерде тек орташаны келтіру</span> → <span class="math-good">медиана мен $IQR$-ды да келтіру</span><br>Неге қате: табыс сияқты деректерде орташа «типтік» мәнді көрсетпейді.</li>
+        <li><span class="math-bad">Стандарт ауытқудың өлшем бірлігін квадрат деп жазу</span> → <span class="math-good">$s$ - $x$-пен бірдей бірлікте, $s^2$ - квадрат бірлікте</span><br>Неге қате: мысалы, бой см-мен болса, $s$ - см, $s^2$ - см².</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Σ(xᵢ − c)² және Σ|xᵢ − c|: минимум қайда?" data-config='{"fns": [{"f": "((x-3)^2+(x-5)^2+(x-7)^2+(x-8)^2+(x-9)^2+(x-10)^2+(x-12)^2+(x-15)^2+(x-30)^2)/60", "label": "Σ(xᵢ − c)² / 60"}, {"f": "abs(x-3)+abs(x-5)+abs(x-7)+abs(x-8)+abs(x-9)+abs(x-10)+abs(x-12)+abs(x-15)+abs(x-30)", "label": "Σ|xᵢ − c|", "color": 1}], "view": [0, 25, 0, 140]}'></div>
+      <p><b>Бақылаңыз:</b> Көлденең ось - $c$. Көк парабола $c=\bar x=11$-де, қызыл сынық сызық $c=9$ (медиана) нүктесінде ең кіші мәнге жетеді. Шеткі 30 мәні параболаның минимумын оңға «тартады», ал сынық сызықтың минимумы орнында қалады - медиананың төзімділігі.</p>
+      <div class="math-viz" data-viz="dist" data-title="Таңдама гистограммасы мен үлестірім" data-config='{"dist": "normal"}'></div>
+      <p><b>Бақылаңыз:</b> Таңдама көлемін 10-нан 5000-ға дейін өзгертіңіз: кіші таңдамада гистограмма «тісті», ал таңдама орташасы мен дисперсиясы теориялық $E$ мен $D$-дан айтарлықтай ауытқиды. $N$ өскен сайын олар жақындайды - келесі сабақтағы «бағалаудың» мәні осы.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m14-1-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-1-t1">1. Орта мән мен медиана</h3></div>
+        <p>Таңдама: $4, 8, 6, 10, 2$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\bar x$","a":6,"v":"Rational(4+8+6+10+2,5)","hint":"Қосындыны 5-ке бөліңіз.","sol":{"steps":["$\\frac{30}{5}$."],"ans":"$6$"}},{"q":"Медиана","a":6,"v":"sorted([4,8,6,10,2])[2]","hint":"Ретке келтіріңіз: $2,4,6,8,10$.","sol":{"steps":["Ортадағы 3-мүше."],"ans":"$6$"}},{"q":"Құлаш","a":8,"v":"max([4,8,6,10,2])-min([4,8,6,10,2])","hint":"Ең үлкен минус ең кіші.","sol":{"steps":["$10-2$."],"ans":"$8$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-1-num2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-1-t2">2. Таңдама дисперсиясы</h3></div>
+        <p>Сол таңдама: $4, 8, 6, 10, 2$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$s^2$","a":10,"v":"sum([(t-6)**2 for t in [4,8,6,10,2]])/Rational(4)","hint":"Ауытқулар: $-2,2,0,4,-4$.","sol":{"steps":["Квадраттар: $4+4+0+16+16=40$.","$\\frac{40}{4}$."],"ans":"$10$"}},{"q":"$n$-ге бөлгендегі «бас жиынтық» дисперсиясы","a":8,"v":"sum([(t-6)**2 for t in [4,8,6,10,2]])/Rational(5)","hint":"$\\frac{40}{5}$.","sol":{"steps":["$\\frac{40}{5}$."],"ans":"$8$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m14-1-tf3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-1-t3">3. Қасиеттер</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Ауытқулардың қосындысы $\\sum(x_i-\\bar x)$ әрдайым нөлге тең.","a":true,"e":"1-қорыту.","hint":"$\\sum x_i=n\\bar x$."},{"q":"Ең үлкен мәнді өте үлкен санға ауыстырсақ, медиана өзгереді.","a":false,"e":"Медиана тек реттегі орынға тәуелді ($n\\ge3$ болса).","hint":"Ортадағы мүше өзгере ме?"},{"q":"Барлық мәнге 5 қоссақ, стандарт ауытқу 5-ке артады.","a":false,"e":"$s_{x+5}=s_x$: ығысу шашырауды өзгертпейді.","hint":"$s_y=|a|s_x$, мұнда $a=1$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m14-1-cho4">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m14-1-t4">4. Қай өлшем?</h3></div>
+        <p>Ең сәйкес өлшемді таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Бірнеше миллиардер бар қаладағы «типтік» табыс.","o":["медиана","орта мән","құлаш","дисперсия"],"a":0,"e":"Медиана шеткі мәндерге төзімді.","hint":"Асимметриялы деректер."},{"q":"Шеткі мәндерге төзімді шашырау өлшемі.","o":["IQR","стандарт ауытқу","құлаш","дисперсия"],"a":0,"e":"$IQR$ ортадағы 50% деректерге ғана тәуелді.","hint":"Квартильдер."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-1-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-1-t5">5. Квартильдер</h3></div>
+        <p>Таңдама: $12, 15, 17, 20, 22, 25, 28, 31, 40, 60$ ($n=10$, «жартылардың медианасы» әдісі).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Медиана","a":23.5,"v":"Rational(22+25,2)","hint":"5- және 6-мүшелердің ортасы.","sol":{"steps":["$\\frac{22+25}{2}$."],"ans":"$23{,}5$"}},{"q":"$Q_1$","a":17,"v":"sorted([12,15,17,20,22])[2]","hint":"Төменгі жарты: $12,15,17,20,22$.","sol":{"steps":["Оның медианасы - 3-мүше."],"ans":"$17$"}},{"q":"$Q_3$","a":31,"v":"sorted([25,28,31,40,60])[2]","hint":"Жоғарғы жарты: $25,28,31,40,60$.","sol":{"steps":["Оның медианасы."],"ans":"$31$"}},{"q":"Жоғарғы шекара $Q_3+1{,}5\\,IQR$","a":52,"v":"31+Rational(3,2)*(31-17)","hint":"$IQR=14$.","sol":{"steps":["$31+21$."],"ans":"$52$ (демек 60 - шеткі мән)"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-1-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-1-t6">6. Жиілік кестесі</h3></div>
+        <p>Сүйек 20 рет лақтырылды: 1 - 2 рет, 2 - 3, 3 - 4, 4 - 5, 5 - 3, 6 - 3.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\bar x$","a":3.65,"v":"Rational(1*2+2*3+3*4+4*5+5*3+6*3,20)","hint":"$\\frac{\\sum f_ix_i}{n}$.","sol":{"steps":["$\\frac{2+6+12+20+15+18}{20}=\\frac{73}{20}$."],"ans":"$3{,}65$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m14-1-mat7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-1-t7">7. Сәйкестендіру</h3></div>
+        <p>Ұғымды анықтамасымен сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Ұғымдар.","pairs":[["параметр","бас жиынтықтың сипаттамасы (μ, σ)"],["статистика","таңдамадан есептелетін шама"],["медиана","реттелген таңдаманың ортасы"],["z-баға","мәннің орташадан неше s қашықтығы"]],"hint":"Параметр - белгісіз, статистика - есептелетін.","sol":{"steps":["$\\mu$ - параметр, $\\bar x$ - статистика."]},"e":"Статистика $\\bar x$ параметр $\\mu$-ді бағалайды."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m14-1-par8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-1-t8">8. Параметрлік: орташа</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,9]},"b":{"int":[10,19]},"c":{"int":[20,29]},"d":{"int":[30,39]}},"type":"num","q":"Таңдама: $#{a},\\ #{b},\\ #{c},\\ #{d}$. Таңдама орта мәні?","a":"(a+b+c+d)/4","v":"Rational(a+b+c+d,4)","hint":"Қосындыны 4-ке бөліңіз.","sol":{"steps":["$\\frac{#{a}+#{b}+#{c}+#{d}}{4}=\\frac{#{a+b+c+d}}{4}$."],"ans":"$#{(a+b+c+d)/4}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m14-1-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m14-1-t9">9. Параметрлік: сызықтық түрлендіру</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"m":{"int":[10,40]},"s":{"int":[2,9]},"a":{"int":[2,5]},"b":{"int":[-20,20]}},"type":"num","q":"Таңдамада $\\bar x=#{m}$, $s_x=#{s}$. Әр мәнді $y=#{a}x#{+b}$ түрлендірдік. $s_y=?$","a":"a*s","v":"a*s","hint":"$s_y=|a|s_x$; ығысу әсер етпейді.","sol":{"steps":["$s_y=#{a}\\cdot#{s}$."],"ans":"$#{a*s}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-1-num10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-1-t10">10. Деректерді біріктіру</h3></div>
+        <p>Екі топ: 1-топ $n_1=10$, $\bar x_1=60$; 2-топ $n_2=15$, $\bar x_2=70$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Біріккен топтың орта мәні.","a":66,"v":"Rational(10*60+15*70,25)","hint":"Қосындыларды біріктіріңіз.","sol":{"steps":["$\\frac{10\\cdot60+15\\cdot70}{25}=\\frac{1650}{25}$."],"ans":"$66$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m14-1-num11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-1-t11">11. Есептеу формуласы</h3></div>
+        <p>$n=8$, $\sum x_i=40$, $\sum x_i^2=260$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$s^2$","a":"60/7","v":"(260-8*Rational(40,8)**2)/7","hint":"$\\frac{\\sum x_i^2-n\\bar x^2}{n-1}$.","sol":{"steps":["$\\bar x=5$, $260-8\\cdot25=60$.","$\\frac{60}{7}$."],"ans":"$\\frac{60}{7}\\approx8{,}57$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m14-1-exp12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-1-t12">12. Ығыспағандық</h3></div>
+        <p>$X_i$ тәуелсіз, $DX_i=\sigma^2$. $\sigma$-ны $s$ айнымалысымен белгілеп ($\sigma\to s$), өрнекті $n$ және $s$ арқылы жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$E\\sum_{i=1}^n(X_i-\\bar X)^2$","a":"(n-1)*s^2","v":"(n-1)*s**2","vars":["n","s"],"dom":[2,9],"hint":"2-қорыту.","sol":{"steps":["$n\\sigma^2-\\sigma^2$."],"ans":"$(n-1)\\sigma^2$"}},{"q":"$E\\left[\\frac1n\\sum(X_i-\\bar X)^2\\right]$","a":"(n-1)*s^2/n","v":"(n-1)*s**2/n","vars":["n","s"],"dom":[2,9],"hint":"Алдыңғыны $n$-ге бөліңіз.","sol":{"steps":["$\\frac{(n-1)\\sigma^2}{n}$."],"ans":"$\\frac{n-1}{n}\\sigma^2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m14-1-ord13">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-1-t13">13. Қорапша диаграммасын құру</h3></div>
+        <p>Қадамдарды ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Box plot құру.","steps":["Деректерді ретке келтіреміз.","Медиананы табамыз.","Жартылардың медианасы ретінде $Q_1$, $Q_3$ табамыз.","$IQR$ және $Q_1-1{,}5IQR$, $Q_3+1{,}5IQR$ шекараларын есептейміз.","Қорапты, медиана сызығын, мұрттарды салып, шеткі мәндерді нүктемен белгілейміз."],"hint":"Реттеу - бірінші қадам.","sol":{"ans":"Реттеу → медиана → квартильдер → шекаралар → сызу"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m14-1-rev14">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m14-1-t14">14. Қадамдық шешім: жаңа бақылау қосу</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$n$ бақылаудың орташасы $\\bar x_n$ белгілі. Жаңа $x_{n+1}$ келді. Барлық деректерді қайта қоспай, $\\bar x_{n+1}$-ді қалай есептейміз?","hint":"$\\sum_{i=1}^{n}x_i=n\\bar x_n$.","steps":["$\\bar x_{n+1}=\\frac{n\\bar x_n+x_{n+1}}{n+1}$.","$=\\bar x_n+\\frac{x_{n+1}-\\bar x_n}{n+1}$.","Мағынасы: жаңа мән орташаны өз ауытқуының $\\frac1{n+1}$ бөлігіне жылжытады.","Бұл «ағынды» (streaming) алгоритм: жадта тек $n$ мен $\\bar x_n$ сақталады; Уэлфорд алгоритмі дисперсияны да осылай жаңартады (мини-жоба)."],"ans":"$\\bar x_{n+1}=\\bar x_n+\\frac{x_{n+1}-\\bar x_n}{n+1}$"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Сипаттамалық статистика - кез келген деректер талдауының бірінші қадамы: сайт жүктелу уақыттары, сатылымдар, сенсор көрсеткіштері. Деректер ағыны үлкен болғанда (миллиондаған жазба) орташа мен дисперсияны бір өтуде, сандық тұрақты түрде есептейтін алгоритм керек.</p>
+      <p><b>Мини-жоба: «Сипаттамалық есеп + Уэлфорд алгоритмі».</b> Стандарт <code>statistics</code> модулімен 1-мысалды тексереміз, квартильдерді өз әдісімізбен есептейміз, және дисперсияны бір өтуде есептейтін Уэлфорд алгоритмін жазамыз.</p>
+<pre data-lang="python"><code class="language-python">import statistics as st
+
+data = [3, 5, 7, 8, 9, 10, 12, 15, 30]
+
+def median(xs):
+    xs = sorted(xs); n = len(xs)
+    return xs[n // 2] if n % 2 else (xs[n // 2 - 1] + xs[n // 2]) / 2
+
+def quartiles(xs):                     # «жартылардың медианасы» әдісі
+    xs = sorted(xs); n = len(xs)
+    lower, upper = xs[: n // 2], xs[(n + 1) // 2:]
+    return median(lower), median(xs), median(upper)
+
+q1, q2, q3 = quartiles(data)
+iqr = q3 - q1
+print("орташа", st.mean(data), "медиана", q2, "Q1,Q3", q1, q3)
+print("s^2 =", st.variance(data), " s =", round(st.stdev(data), 3))
+print("шеткі мәндер:", [x for x in data if x &lt; q1 - 1.5 * iqr or x &gt; q3 + 1.5 * iqr])
+print("Python quantiles (басқа әдіс):", st.quantiles(data, n=4))
+
+def welford(stream):                   # бір өтуде орташа мен s^2
+    n, mean, m2 = 0, 0.0, 0.0
+    for x in stream:
+        n += 1
+        d = x - mean
+        mean += d / n
+        m2 += d * (x - mean)
+    return mean, m2 / (n - 1)
+print("Уэлфорд:", welford(data))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li><code>st.quantiles</code> неге басқа $Q_1$, $Q_3$ береді? <code>method=\"inclusive\"</code> параметрін қосып салыстырыңыз.</li>
+        <li>$x_i=10^9+\{4,7,13,16\}$ деректерінде $s^2$-ты «$\sum x_i^2-n\bar x^2$» формуласымен (float) және Уэлфорд алгоритмімен есептеңіз. Қайсысы дұрыс $30$ береді? Неге?</li>
+        <li>z-бағасы $|z|>2$ мәндерді шеткі деп белгілеу ережесін Тьюки ережесімен 1-мысалда салыстырыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Орта мән</td><td>$\bar x=\frac1n\sum x_i$</td><td>шеткіге сезімтал</td></tr>
+        <tr><td>Медиана</td><td>реттелген таңдаманың ортасы</td><td>төзімді</td></tr>
+        <tr><td>Таңдама дисперсиясы</td><td>$s^2=\frac{1}{n-1}\sum(x_i-\bar x)^2$</td><td>$n\ge2$, $ES^2=\sigma^2$</td></tr>
+        <tr><td>Есептеу формуласы</td><td>$\sum(x_i-\bar x)^2=\sum x_i^2-n\bar x^2$</td><td>-</td></tr>
+        <tr><td>Квартильаралық құлаш</td><td>$IQR=Q_3-Q_1$</td><td>әдісті атау</td></tr>
+        <tr><td>Тьюки ережесі</td><td>$x\notin[Q_1-1{,}5IQR,\ Q_3+1{,}5IQR]$</td><td>келісім</td></tr>
+        <tr><td>z-баға</td><td>$z=\frac{x-\bar x}{s}$</td><td>$s>0$</td></tr>
+        <tr><td>Сызықтық түрлендіру</td><td>$\bar y=a\bar x+b$, $s_y=|a|s_x$</td><td>$y=ax+b$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m14-1-self">
+        <li><input type="checkbox"> <span>Мен бас жиынтық пен таңдаманы, параметр мен статистиканы ажырата аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен орта мән, медиана, квартильдер мен $IQR$-ды есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $s^2$ формуласындағы $n-1$-дің себебін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен шеткі мәндерді анықтап, медиананың төзімділігін түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен z-бағамен әртүрлі шкаладағы нәтижелерді салыстыра аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен жиілік кестесінен сипаттамаларды есептей аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. Таңдама: 2, 4, 9. Орта мән?</p>
+<label><input type="radio" value="a"> 4</label>
+<label><input type="radio" value="b"> 9</label>
+<label><input type="radio" value="c"> 5</label>
+<label><input type="radio" value="d"> 15</label>
+<p class="explain">15/3 = 5.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. Таңдама: 2, 4, 9. Медиана?</p>
+<label><input type="radio" value="a"> 5</label>
+<label><input type="radio" value="b"> 4</label>
+<label><input type="radio" value="c"> 9</label>
+<label><input type="radio" value="d"> 2</label>
+<p class="explain">Ортадағы мән.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. Таңдама дисперсиясы неге n − 1-ге бөлінеді?</p>
+<label><input type="radio" value="a"> σ²-тың ығыспаған бағасын алу үшін</label>
+<label><input type="radio" value="b"> есептеу оңай болу үшін</label>
+<label><input type="radio" value="c"> s оң болу үшін</label>
+<label><input type="radio" value="d"> медианамен тең болу үшін</label>
+<p class="explain">E S² = σ².</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. Шеткі мәндерге ең төзімді өлшем:</p>
+<label><input type="radio" value="a"> орта мән</label>
+<label><input type="radio" value="b"> стандарт ауытқу</label>
+<label><input type="radio" value="c"> құлаш</label>
+<label><input type="radio" value="d"> медиана</label>
+<p class="explain">Медиана тек ортадағы мүшелерге тәуелді.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">5. Барлық мәндерді 3-ке көбейтсек, s қалай өзгереді?</p>
+<label><input type="radio" value="a"> 9 есе артады</label>
+<label><input type="radio" value="b"> өзгермейді</label>
+<label><input type="radio" value="c"> 3 есе артады</label>
+<label><input type="radio" value="d"> 3-ке артады</label>
+<p class="explain">s_y = |a|·s_x.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. Q₁ = 10, Q₃ = 18. Тьюки ережесі бойынша жоғарғы шекара:</p>
+<label><input type="radio" value="a"> 26</label>
+<label><input type="radio" value="b"> 30</label>
+<label><input type="radio" value="c"> 28</label>
+<label><input type="radio" value="d"> 36</label>
+<p class="explain">18 + 1,5·8 = 30.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. x = 85, x̄ = 70, s = 5. z-баға?</p>
+<label><input type="radio" value="a"> 3</label>
+<label><input type="radio" value="b"> 15</label>
+<label><input type="radio" value="c"> −3</label>
+<label><input type="radio" value="d"> 0,33</label>
+<p class="explain">(85 − 70)/5.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. Табыс деректерінде (оңға созылған) әдетте:</p>
+<label><input type="radio" value="a"> орташа < медиана</label>
+<label><input type="radio" value="b"> орташа = медиана</label>
+<label><input type="radio" value="c"> мода > орташа</label>
+<label><input type="radio" value="d"> орташа > медиана</label>
+<p class="explain">Үлкен мәндер орташаны оңға тартады.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=stats">Mathematical Statistics емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-85.html"><small>Алдыңғы</small>← Probability Theory · 7-сабақ: Үлкен сандар заңы және орталық шектік теорема</a>

@@ -404,7 +404,7 @@
     const classes = () => get(TC, []).filter((x) => x && typeof x.code === "string" && typeof x.pw === "string"); // бүлінген жазбаларды өткіземіз
     const saveClass = (c) => { const l = classes().filter((x) => x.code !== c.code); l.unshift(c); put(TC, l.slice(0, 10)); };
     // Курс көрінісі: кесте таңдалған курстың лекциялары бойынша (summary.r/q немесе summary.c[курс].r/q)
-    const CM = [{ id: "x", name: "CS50x" }, { id: "python", name: "CS50P", n: 10 }, { id: "sql", name: "SQL", n: 7 }, { id: "ai", name: "AI", n: 7 }, { id: "web", name: "Web", n: 9 }, { id: "cpp", name: "C++", n: 8 }, { id: "java", name: "Java", n: 8 }, { id: "en", name: "English", n: 24 }, { id: "math", name: "Math", n: 154 }];
+    const CM = [{ id: "x", name: "CS50x" }, { id: "python", name: "CS50P", n: 10 }, { id: "sql", name: "SQL", n: 7 }, { id: "ai", name: "AI", n: 7 }, { id: "web", name: "Web", n: 9 }, { id: "cpp", name: "C++", n: 8 }, { id: "java", name: "Java", n: 8 }, { id: "en", name: "English", n: 24 }, { id: "math", name: "Math", n: 162 }];
     const idsOf = (c) => (c === "x" ? (K.ORDER || []) : Array.from({ length: CM.find((m) => m.id === c).n }, (_, i) => c + ":week-" + i));
     let vcourse = "x", ORDER = idsOf("x");
     const labOf = (id) => (id === "ai" ? "AI" : id.replace(/^.*week-/, ""));
