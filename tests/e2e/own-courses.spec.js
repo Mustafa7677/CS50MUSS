@@ -95,11 +95,12 @@ test("нав pill: курсты ауыстырады, авторлық курс�
 test("витрина: басты бет пен courses.html-де C++ және Java карточкалары, авторлық белгі", async ({ page }) => {
   await blockFonts(page.context());
   await page.goto("index.html");
-  await expect(page.locator(".cx-home .cx-card")).toHaveCount(8);
-  await expect(page.locator('.cx-card[data-course="cpp"]')).toHaveAttribute("href", "cpp/");
-  await expect(page.locator('.cx-card[data-course="java"] .cx-tags li')).toHaveText(["ООП", "Collections", "Stream", "көп ағын"]);
-  await page.locator("details.route-later > summary").click(); // «Кейін қарайсың» блогы әдепкіде жабық
-  await expect(page.locator('.cx-card[data-course="cpp"] .cx-glyph')).toBeVisible();
+  // басты бет: барлық курс бірден көрінеді («Бір шаңырақ астында»), авторлық курстар белгіленген
+  await expect(page.locator(".kh-tile")).toHaveCount(9);
+  await expect(page.locator(".kh-tile.own")).toHaveCount(4);
+  await expect(page.locator('.kh-tile[data-course="cpp"]')).toHaveAttribute("href", "cpp/");
+  await expect(page.locator('.kh-tile[data-course="java"] .kh-code')).toHaveText("Авторлық курс");
+  await expect(page.locator('.kh-tile[data-course="cpp"] .kh-glyph')).toBeVisible();
   await expect(page.locator("[data-site-stats]")).toContainText("9 курс");
   await page.goto("courses.html");
   await expect(page.locator(".cx-card.own")).toHaveCount(4);

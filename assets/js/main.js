@@ -1021,12 +1021,28 @@
 
   // ---------- Курс витринасы: әр курстағы өз прогресі ----------
   function initCourseCards() {
+    const p = Progress.load();
+    const readOf = (c) => Object.keys(p.read).filter((k) => p.read[k] && (c === "x" ? ORDER.includes(k) : k.startsWith(c + ":"))).length;
+    // басылған тақтайша курс бетінің тақырып блогына «ұласады» (View Transitions; style.css: course-head)
+    document.querySelectorAll(".kh-tile").forEach((t) => t.addEventListener("click", () => {
+      document.querySelectorAll(".kh-tile").forEach((o) => { o.style.viewTransitionName = ""; });
+      if (t.dataset.course !== "x") t.style.viewTransitionName = "course-head";
+    }));
+    // басты беттегі «шаңырақ» тақтайшалары: оқылған үлес жолақпен және мәтінмен
+    document.querySelectorAll(".kh-tile[data-total]").forEach((t) => {
+      const read = readOf(t.dataset.course), total = +t.dataset.total || 0;
+      if (!read || !total) return;
+      const pct = Math.min(100, Math.round((read / total) * 100));
+      t.classList.add("kh-on");
+      t.style.setProperty("--p", pct + "%");
+      const meta = t.querySelector(".kh-meta");
+      if (meta) meta.textContent = pct === 100 ? `${total}/${total} - аяқталды ✓` : `${read}/${total} оқылды`;
+    });
     const cards = document.querySelectorAll(".cx-card[data-total]");
     if (!cards.length) return;
-    const p = Progress.load();
     cards.forEach((card) => {
       const c = card.dataset.course, total = +card.dataset.total || 0;
-      const read = Object.keys(p.read).filter((k) => p.read[k] && (c === "x" ? ORDER.includes(k) : k.startsWith(c + ":"))).length;
+      const read = readOf(c);
       if (!read || !total) return;
       const pct = Math.min(100, Math.round((read / total) * 100));
       const bar = card.querySelector(".cx-bar"), go = card.querySelector(".cx-go");

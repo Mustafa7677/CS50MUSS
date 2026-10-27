@@ -221,6 +221,36 @@ def courses_block(prefix, skip=()):
     return "<!-- build:courses -->\n" + "\n".join(out) + "\n        <!-- /build:courses -->"
 
 
+# Басты бет: «Бір шаңырақ астында» - барлық курс бірден көрінеді. <!-- build:home-courses --> ... <!-- /build:home-courses -->
+SHORT = {"x": "Алгоритмдерден веб пен жасанды интеллектке дейін: бағдарламалауға ең жақсы кіру есігі.",
+         "python": "Python нөлден тереңге", "sql": "Деректер мен кестелер", "ai": "Іздеуден нейрон желіге дейін",
+         "web": "Django, JavaScript, React", "cpp": "Жад, ООП, STL", "java": "Нысандар, Stream, көп ағын",
+         "en": "A0-ден C1-ге дейін", "math": "Арифметикадан топологияға дейін"}
+
+
+NAME = {"x": "Информатикаға кіріспе", "python": "Python", "sql": "Дерекқор", "ai": "Жасанды интеллект", "web": "Веб",
+        "cpp": "C++", "java": "Java", "en": "Ағылшын тілі", "math": "Математика"}
+
+
+def home_courses_block(prefix=""):
+    out = []
+    for c in CATALOG:
+        n_lec = STATS["by_course"][c["id"]]["lect"]
+        unit = "сабақ" if c["id"] in ("math", "en") else "лекция"
+        feat = " kh-feat" if c["id"] == "x" else ""
+        href = "lectures/week-0.html" if c["id"] == "x" else c["href"]
+        lead = ' <span class="kh-start">Бастау осыдан</span>' if c["id"] == "x" else ""
+        out.append(f"""        <a class="kh-tile{feat}{" own" if c.get("own") else ""}" href="{prefix}{href}" data-course="{c["id"]}" data-total="{n_lec}" style="--c:{c["c"]};--c2:{c["c2"]}">
+          <span class="kh-band" aria-hidden="true"></span>
+          <svg class="kh-glyph" viewBox="0 0 64 64" aria-hidden="true">{GLYPHS[c["id"]]}</svg>
+          <span class="kh-code">{"Авторлық курс" if c.get("own") else ("Гарвард " + c["code"] if c["id"] == "x" else "Гарвард CS50")}{lead}</span>
+          <span class="kh-title">{NAME[c["id"]]}</span>
+          <span class="kh-sub">{SHORT[c["id"]]}</span>
+          <span class="kh-meta">{n_lec} {unit}</span>
+        </a>""")
+    return "<!-- build:home-courses -->\n" + "\n".join(out) + "\n        <!-- /build:home-courses -->"
+
+
 # «Бір негізгі маршрут»: CS50x → 0-лекция → бірінші тапсырма → нәтиже → келесі лекция. Статикалық нұсқа (JS-сыз да жұмыс істейді);
 # main.js initBeginnerPath() оны оқушының прогресіне қарай жаңартады (data-route, data-step, aria-current="step").
 def route_block(prefix, code, local=False):
@@ -463,6 +493,8 @@ def process_page(path, prefix, active):
         s = re.sub(r"<!-- build:head -->.*?<!-- /build:head -->", block, s, flags=re.S)
     else:
         s = s.replace("</title>", "</title>\n  " + block, 1)
+    if "<!-- build:home-courses" in s:
+        s = re.sub(r"<!-- build:home-courses -->.*?<!-- /build:home-courses -->", lambda _: home_courses_block(prefix), s, flags=re.S)
     if "<!-- build:courses" in s:
         skip = ("x",) if rel == "index.html" else ()
         s = re.sub(r"<!-- build:courses -->.*?<!-- /build:courses -->", lambda _: courses_block(prefix, skip), s, flags=re.S)
