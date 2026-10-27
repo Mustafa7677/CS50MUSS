@@ -16,7 +16,7 @@
 | `lectures/ai.html` | CS50x | 3288 | 5 | 288 | 7 | 0 | 3 | - | https://cs50.harvard.edu/x/weeks/ai/ |
 | `lectures/week-0.html` | CS50x | 8290 | 8 | 391 | 7 | 1 | 6 | - | https://cs50.harvard.edu/x/weeks/0/ |
 | `lectures/week-1.html` | CS50x | 8385 | 9 | 644 | 7 | 0 | 3 | - | https://cs50.harvard.edu/x/weeks/1/ |
-| `lectures/week-10.html` | CS50x | 2017 | 3 | 184 | 15 | 0 | 1 | - | https://cs50.harvard.edu/x/weeks/10/ |
+| `lectures/week-10.html` | CS50x | 2016 | 3 | 184 | 15 | 0 | 1 | - | https://cs50.harvard.edu/x/weeks/10/ |
 | `lectures/week-2.html` | CS50x | 6745 | 7 | 597 | 7 | 0 | 4 | Лекция басындағы кітап үзінділері авторлық құқыққа байланысты аударылмай, тек сипатталды. | https://cs50.harvard.edu/x/weeks/2/ |
 | `lectures/week-3.html` | CS50x | 5837 | 8 | 490 | 7 | 2 | 2 | - | https://cs50.harvard.edu/x/weeks/3/ |
 | `lectures/week-4.html` | CS50x | 6572 | 8 | 526 | 7 | 2 | 4 | Binky анимациясының (Nick Parlante, Stanford) мазмұны тек сипатталды. | https://cs50.harvard.edu/x/weeks/4/ |
@@ -51,7 +51,7 @@
 | `web/lectures/week-6.html` | CS50 Web | 5326 | 4 | 1503 | 8 | 0 | 3 | - | https://cs50.harvard.edu/web/notes/6/ |
 | `web/lectures/week-7.html` | CS50 Web | 4942 | 4 | 705 | 8 | 0 | 3 | - | https://cs50.harvard.edu/web/notes/7/ |
 | `web/lectures/week-8.html` | CS50 Web | 5207 | 2 | 160 | 8 | 0 | 2 | - | https://cs50.harvard.edu/web/notes/8/ |
-| **Барлығы 45** | | 235709 | 190 | 50633 | 356 | 9 | 157 | | |
+| **Барлығы 45** | | 235708 | 190 | 50633 | 356 | 9 | 157 | | |
 
 ## Қорытынды
 

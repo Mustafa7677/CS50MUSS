@@ -538,11 +538,11 @@
     const meta = document.createElement("div");
     meta.className = "lecture-meta";
     // математика сабағында ұзақтық нақты есептелген (.mx-meta, tools/math_pedagogy.py): жалпы бағаны қайталамаймыз
-    meta.innerHTML = (head.querySelector(".mx-meta") ? "" : `<span>⏱ ≈ ${Math.max(5, Math.round(words / 160))} мин оқу</span>`) +
-      `<span>📝 ${article.querySelectorAll(".question").length} сұрақ</span>` +
-      `<span>🧩 ${article.querySelectorAll(".task").length} тапсырма</span>` +
+    meta.innerHTML = (head.querySelector(".mx-meta") ? "" : `<span>≈ ${Math.max(5, Math.round(words / 160))} мин оқу</span>`) +
+      `<span>${article.querySelectorAll(".question").length} сұрақ</span>` +
+      `<span>${article.querySelectorAll(".task").length} тапсырма</span>` +
       (p.read[PAGE] ? '<span class="done">✓ Оқылды</span>' : "") +
-      '<span class="print-btn" role="button" tabindex="0">🖨 PDF / басып шығару</span>';
+      '<span class="print-btn" role="button" tabindex="0">PDF / басып шығару</span>';
     const srcLink = head.querySelector(".source-link"); // дербес курстарда түпнұсқа сілтемесі жоқ
     if (srcLink) srcLink.before(meta); else head.append(meta);
     meta.querySelector(".print-btn").addEventListener("click", () => {
@@ -681,7 +681,7 @@
           <button type="button" class="qt-prev" aria-label="Алдыңғы сөз">‹</button>
           <button type="button" class="qt-play" aria-label="Тоқтату"></button>
           <button type="button" class="qt-next" aria-label="Келесі сөз">›</button>
-          <button type="button" class="qt-img">🖼 Сурет</button><button type="button" class="qt-copy">Көшіру</button>
+          <button type="button" class="qt-img">Сурет</button><button type="button" class="qt-copy">Көшіру</button>
         </div>
         <i class="qt-time" aria-hidden="true"></i>`;
       const body = card.querySelector(".qt-body"), bar = card.querySelector(".qt-time"), play = card.querySelector(".qt-play");
@@ -705,7 +705,7 @@
             ${faceHtml(q.a, P, "qt-mono")}
             <span><b>${escapeHtml(q.a)}</b><small>${escapeHtml(q.y)}${q.src ? " · " + escapeHtml(q.src) : ""}</small></span>
           </figcaption>
-          ${q.cs ? `<p class="qt-cs">💡 ${escapeHtml(q.cs)}</p>` : ""}`;
+          ${q.cs ? `<p class="qt-cs">${escapeHtml(q.cs)}</p>` : ""}`;
         card.querySelector(".qt-count").textContent = `${pos + 1} / ${Q.length}`;
         faces.querySelectorAll("button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.a === q.a)));
         schedule();
@@ -869,7 +869,7 @@
         <text x="32" y="37" text-anchor="middle">${done ? "✓" : `${Math.min(g.today, g.goal)}/${g.goal}`}</text>
       </svg>
       <div class="goal-txt">
-        <b>🎯 Бүгінгі мақсат: ${g.goal} әрекет</b>
+        <b>Бүгінгі мақсат: ${g.goal} әрекет</b>
         <span>${done ? "Орындалды - керемет! 🎉" : g.today ? `Тағы ${g.goal - g.today} әрекет қалды` : "Лекция бөлімі, тест, карточка не тапсырма - бәрі саналады"}${g.streak ? ` · 🔥 ${g.streak} күн қатарынан` : ""}</span>
       </div>
       <div class="goal-pick" role="group" aria-label="Күнделікті мақсат">${goalChoices().map((n) => `<button type="button" data-g="${n}" aria-pressed="${n === g.goal}">${n}</button>`).join("")}</div>`;
@@ -1166,7 +1166,7 @@
           <div class="dash-actions">
             ${cont ? `<a class="btn gold" href="${ROOT_URL + cont.url}">${read || last ? "Жалғастыру" : "Бастау"}: ${escapeHtml(cont.num)} →</a>` : `<a class="btn gold" href="${ROOT_URL}certificate.html">Сертификатты алу 🎓</a>`}
             <a class="btn ghost-dark" href="${ROOT_URL}certificate.html">Сертификат</a>
-            <button type="button" class="btn ghost-dark share-progress">👩‍🏫 Мұғалімге жіберу</button>
+            <button type="button" class="btn ghost-dark share-progress">Мұғалімге жіберу</button>
           </div>
         </div>`;
 
