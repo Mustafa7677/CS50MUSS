@@ -1584,7 +1584,7 @@ parent.postMessage({tag:${JSON.stringify(tag)},res:__res},"*");<\/script>`;
       if (w.id !== id) w = { id };
       const done = GOALS.filter((g) => (w[g.k] || 0) >= g.n).length;
       const d = new Date(), left = 7 - (d.getDay() || 7);
-      el.innerHTML = `<div class="wk-head"><b>🎯 Апталық челлендж</b><span>${done === GOALS.length ? "Орындалды! 🏆" : `${done}/4 · ${left ? left + " күн қалды" : "бүгін соңғы күн"}`}</span></div>
+      el.innerHTML = `<div class="wk-head"><b>Апталық челлендж</b><span>${done === GOALS.length ? "Орындалды! 🏆" : `${done}/4 · ${left ? left + " күн қалды" : "бүгін соңғы күн"}`}</span></div>
         <div class="wk-goals">${GOALS.map((g) => { const v = Math.min(w[g.k] || 0, g.n); return `<div class="wk-goal ${v >= g.n ? "done" : ""}"><span>${g.ico}</span><div><b>${g.t}</b><i><em style="width:${(v / g.n) * 100}%"></em></i><small>${v} / ${g.n}</small></div></div>`; }).join("")}</div>`;
       if (done === GOALS.length && !w.done) {
         w.done = true; store.set("cs50kz:week", w);

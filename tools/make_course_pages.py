@@ -144,8 +144,8 @@ for code, c in COURSE.items():
           <div class="hero-actions">
             <a class="btn gold" href="lectures/week-0.html">Бастау: 0-апта <span aria-hidden="true">→</span></a>
             <a class="btn ghost" href="{c['url']}" target="_blank" rel="noopener">Түпнұсқа курс</a>
-            <a class="btn ghost" href="../exam.html?course={code}">📝 Қорытынды емтихан</a>
-            <a class="btn ghost" href="../map.html?course={code}">🗺 Курс картасы</a>
+            <a class="btn ghost" href="../exam.html?course={code}">Қорытынды емтихан</a>
+            <a class="btn ghost" href="../map.html?course={code}">Курс картасы</a>
           </div>
           <div class="cx-stats">
             {"".join(f"<div><b>{a}</b><span>{b}</span></div>" for a, b in c['stats'])}
@@ -303,8 +303,8 @@ def own_article(code, c):
           <div class="hero-actions">
             <a class="btn gold" href="lectures/week-0.html">Бастау: 0-апта <span aria-hidden="true">→</span></a>
             <a class="btn ghost" href="#project">Қорытынды жоба</a>
-            <a class="btn ghost" href="../exam.html?course={code}">📝 Қорытынды емтихан</a>
-            <a class="btn ghost" href="../map.html?course={code}">🗺 Курс картасы</a>
+            <a class="btn ghost" href="../exam.html?course={code}">Қорытынды емтихан</a>
+            <a class="btn ghost" href="../map.html?course={code}">Курс картасы</a>
           </div>
           <div class="cx-stats">
             {"".join(f"<div><b>{a}</b><span>{b}</span></div>" for a, b in c['stats'])}
