@@ -39,6 +39,12 @@
   --orn-faint: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'><g fill='none' stroke='%23007f97' stroke-opacity='.10' stroke-width='2' stroke-linecap='round'><path d='M24 44 V26'/><path d='M24 26 C24 14 12 8 7 14 C3 19 9 25 13 21 C15.5 18.5 13 15.5 11 17'/><path d='M24 26 C24 14 36 8 41 14 C45 19 39 25 35 21 C32.5 18.5 35 15.5 37 17'/><path d='M24 36 C20 32 15 33 15 37 M24 36 C28 32 33 33 33 37'/><path d='M24 4 L28 9 L24 14 L20 9 Z'/></g></svg>");
 }
 
+/* Браузердің «мәжбүрлі қараңғы режимі» (Chrome/Samsung/Telegram ішіндегі браузер) сайттың түстерін
+   бұзбасын: «only» - түстерді өзгертуге тыйым; түнгі режимді сайт өзі береді (төмендегі dark блоктары). */
+:root { color-scheme: only light; }
+:root[data-theme="dark"] { color-scheme: only dark; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { color-scheme: only dark; } }
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #0b1424;            /* түнгі дала */
@@ -3631,39 +3637,26 @@ html { scroll-padding-top: 84px; }
 .kh-tools a:hover { text-decoration: underline; }
 
 /* ===================================================================
-   «Шаңырақ ашылуы» - беттер арасындағы ауысу (View Transitions: Chrome,
-   Edge, Samsung, Safari 18+). Жаңа бет басылған нүктеден шеңбер болып
-   ашылады, жиегінде алтын шаңырақ уықтары; ескі бет күңгірттеніп кетеді.
-   Жоғарғы жолақ орнында қалады. main.js: initIris() нүкте мен радиусты береді.
+   Беттер арасындағы ауысу (View Transitions: Chrome, Edge, Samsung, Safari 18+).
+   Байсалды және жұмсақ: ескі бет сәл кішірейіп, бұлдырап сөнеді; жаңа бет
+   төменнен баяу көтеріліп, айқындалады. Жоғарғы жолақ орнында тұрады.
+   Қолдамайтын браузерде бет әдеттегідей ашылады.
    =================================================================== */
 @view-transition { navigation: auto; }
-@property --kz-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
 .topbar { view-transition-name: topbar; }
-::view-transition-group(topbar) { z-index: 3; }
+::view-transition-group(topbar) { z-index: 3; animation: none; }
+::view-transition-old(topbar) { display: none; }
+::view-transition-new(topbar) { animation: none; }
 @media (prefers-reduced-motion: no-preference) {
-  /* бір радиус (--kz-r) екі бетті де басқарады: жаңа бет - шеңбер, ескі бетте сәл үлкен тесік;
-     арасындағы саңылаудан астыңғы алтын «уықтар» көрінеді - шаңырақ жиегі */
-  ::view-transition-image-pair(root) {
-    background: repeating-conic-gradient(from 0deg at var(--vt-x, 50%) var(--vt-y, 50%), #f2b705 0deg 5deg, #ffd970 5deg 7deg, #c98f00 7deg 11.25deg);
-  }
-  ::view-transition-old(root) {
-    animation: kz-hole .85s cubic-bezier(.62,0,.24,1) both;
-    -webkit-mask-image: radial-gradient(circle at var(--vt-x, 50%) var(--vt-y, 50%), transparent calc(var(--kz-r) + 16px), #000 calc(var(--kz-r) + 17px));
-            mask-image: radial-gradient(circle at var(--vt-x, 50%) var(--vt-y, 50%), transparent calc(var(--kz-r) + 16px), #000 calc(var(--kz-r) + 17px));
-  }
-  ::view-transition-new(root) {
-    animation: kz-open .85s cubic-bezier(.62,0,.24,1) both;
-    clip-path: circle(var(--kz-r) at var(--vt-x, 50%) var(--vt-y, 50%));
-  }
+  ::view-transition-old(root) { animation: pg-out .2s cubic-bezier(.4,0,1,1) both; }
+  ::view-transition-new(root) { animation: pg-in .55s cubic-bezier(.16,1,.3,1) .14s both; }
 }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
-@keyframes kz-open { from { --kz-r: 0px; } to { --kz-r: var(--vt-r, 150vmax); } }
-@keyframes kz-hole {
-  from { --kz-r: 0px; filter: none; }
-  to { --kz-r: var(--vt-r, 150vmax); filter: brightness(.5) saturate(.7); }
-}
+@keyframes pg-out { to { opacity: 0; transform: scale(.985); filter: blur(6px); } }
+@keyframes pg-in { from { opacity: 0; transform: translateY(16px); filter: blur(4px); } }
+
 
 @media (max-width: 419px) { .kh-title { font-size: 15px; letter-spacing: -.01em; } .kh-feat .kh-title { font-size: 22px; } }
 .kh-feat { border-color: rgba(255,255,255,.14); }

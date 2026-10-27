@@ -349,7 +349,7 @@ def head_block(prefix, title, desc, url, image="assets/img/og.jpg", kind="M"):
     copy, lic = license_meta(kind, prefix)
     return f"""<!-- build:head -->
   <meta name="theme-color" content="#0a4c7a">
-  <meta name="color-scheme" content="light dark">
+  <meta name="color-scheme" content="light dark only">
   <link rel="icon" href="{prefix}assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="{prefix}assets/img/icon-192.png">
   <link rel="manifest" href="{prefix}manifest.webmanifest">

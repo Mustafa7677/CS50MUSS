@@ -2,37 +2,6 @@
 // CS50 қазақша - интерактив элементтер
 
 (function () {
-  // ---------- «Шаңырақ ашылуы»: беттер арасындағы ауысу (View Transitions, style.css: kz-iris) ----------
-  // Сілтеме басылғанда нүкте сақталады; жаңа бет сол нүктеден алтын жиекті шеңбер болып ашылады (жиек - style.css).
-  // Артқа қайтқанда (traverse) - ортадан. Қозғалысты азайту баптауы қосулы болса - анимация жоқ.
-  (function initIris() {
-    const KEY = "cs50kz:vt";
-    const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
-    document.addEventListener("click", (e) => {
-      const a = e.target.closest && e.target.closest("a[href]");
-      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === "_blank" || a.hasAttribute("download")) return;
-      let u; try { u = new URL(a.href, location.href); } catch (_) { return; }
-      if (u.origin !== location.origin || (u.pathname === location.pathname && u.hash)) return;
-      try { sessionStorage.setItem(KEY, JSON.stringify({ x: e.clientX, y: e.clientY, t: Date.now() })); } catch (_) {}
-    }, true);
-    window.addEventListener("pagereveal", (e) => {
-      if (!e.viewTransition) return;
-      if (calm()) { e.viewTransition.skipTransition(); return; }
-      let pt = null;
-      try { pt = JSON.parse(sessionStorage.getItem(KEY) || "null"); sessionStorage.removeItem(KEY); } catch (_) {}
-      const nav = window.navigation && navigation.activation;
-      const back = nav && nav.navigationType === "traverse";
-      const W = innerWidth, H = innerHeight;
-      const x = !back && pt && Date.now() - pt.t < 8000 ? pt.x : W / 2;
-      const y = !back && pt && Date.now() - pt.t < 8000 ? pt.y : H / 2;
-      const r = Math.ceil(Math.hypot(Math.max(x, W - x), Math.max(y, H - y))) + 24;
-      const html = document.documentElement;
-      html.style.setProperty("--vt-x", x + "px");
-      html.style.setProperty("--vt-y", y + "px");
-      html.style.setProperty("--vt-r", r + "px");
-    });
-  })();
-
   // Сайттың түбір мекенжайы (main.js-тің орнынан анықталады: file:// пен GitHub Pages-те де жұмыс істейді)
   const ROOT_URL = new URL("../../", document.currentScript.src).href;
   // Курс: CS50x - түбірде (lectures/), басқалары өз қалтасында (python/lectures/ т.б.).
