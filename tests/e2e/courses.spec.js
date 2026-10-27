@@ -211,7 +211,7 @@ test("«Менің курстарым»: басты бет пен профиль
   await expect(py.locator(".mc-btn")).toHaveAttribute("href", /python\/lectures\/week-2\.html$/);
   await page.goto("profile.html");
   await expect(page.locator(".pf-mycourses, .my-courses .mc-card").first()).toBeVisible();
-  await expect(page.locator(".pf-stats")).toContainText("4/239");
+  await expect(page.locator(".pf-stats")).toContainText("4/247");
   // Курс таңдағыштағы прогресс
   await page.click(".course-pill");
   await expect(page.locator('.course-menu .cm-row:has-text("CS50P") .cm-n')).toHaveText("2/10");

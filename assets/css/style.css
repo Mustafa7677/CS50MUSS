@@ -3631,23 +3631,40 @@ html { scroll-padding-top: 84px; }
 .kh-tools a:hover { text-decoration: underline; }
 
 /* ===================================================================
-   Беттер арасындағы ауысу (View Transitions, қолдайтын браузерлерде).
-   Жоғарғы жолақ орнында тұрады, мазмұн жұмсақ ауысады; басты беттегі
-   курс тақтайшасы курс бетінің тақырып блогына «ұласады».
+   «Шаңырақ ашылуы» - беттер арасындағы ауысу (View Transitions: Chrome,
+   Edge, Samsung, Safari 18+). Жаңа бет басылған нүктеден шеңбер болып
+   ашылады, жиегінде алтын шаңырақ уықтары; ескі бет күңгірттеніп кетеді.
+   Жоғарғы жолақ орнында қалады. main.js: initIris() нүкте мен радиусты береді.
    =================================================================== */
 @view-transition { navigation: auto; }
+@property --kz-r { syntax: "<length>"; inherits: false; initial-value: 0px; }
 .topbar { view-transition-name: topbar; }
-.py-hero { view-transition-name: course-head; }
+::view-transition-group(topbar) { z-index: 3; }
 @media (prefers-reduced-motion: no-preference) {
-  ::view-transition-old(root) { animation: vt-out .22s ease-in both; }
-  ::view-transition-new(root) { animation: vt-in .32s cubic-bezier(.2,.7,.2,1) both; }
-  ::view-transition-group(course-head) { animation-duration: .42s; animation-timing-function: cubic-bezier(.2,.75,.2,1); }
+  /* бір радиус (--kz-r) екі бетті де басқарады: жаңа бет - шеңбер, ескі бетте сәл үлкен тесік;
+     арасындағы саңылаудан астыңғы алтын «уықтар» көрінеді - шаңырақ жиегі */
+  ::view-transition-image-pair(root) {
+    background: repeating-conic-gradient(from 0deg at var(--vt-x, 50%) var(--vt-y, 50%), #f2b705 0deg 5deg, #ffd970 5deg 7deg, #c98f00 7deg 11.25deg);
+  }
+  ::view-transition-old(root) {
+    animation: kz-hole .85s cubic-bezier(.62,0,.24,1) both;
+    -webkit-mask-image: radial-gradient(circle at var(--vt-x, 50%) var(--vt-y, 50%), transparent calc(var(--kz-r) + 16px), #000 calc(var(--kz-r) + 17px));
+            mask-image: radial-gradient(circle at var(--vt-x, 50%) var(--vt-y, 50%), transparent calc(var(--kz-r) + 16px), #000 calc(var(--kz-r) + 17px));
+  }
+  ::view-transition-new(root) {
+    animation: kz-open .85s cubic-bezier(.62,0,.24,1) both;
+    clip-path: circle(var(--kz-r) at var(--vt-x, 50%) var(--vt-y, 50%));
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
-@keyframes vt-out { to { opacity: 0; transform: translateY(-6px); } }
-@keyframes vt-in { from { opacity: 0; transform: translateY(10px); } }
+@keyframes kz-open { from { --kz-r: 0px; } to { --kz-r: var(--vt-r, 150vmax); } }
+@keyframes kz-hole {
+  from { --kz-r: 0px; filter: none; }
+  to { --kz-r: var(--vt-r, 150vmax); filter: brightness(.5) saturate(.7); }
+}
+
 @media (max-width: 419px) { .kh-title { font-size: 15px; letter-spacing: -.01em; } .kh-feat .kh-title { font-size: 22px; } }
 .kh-feat { border-color: rgba(255,255,255,.14); }
 @media (max-width: 419px) {
