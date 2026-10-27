@@ -3,7 +3,7 @@ window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.ode = [
  {"id": "ode-ode", "kz": "жай дифференциалдық теңдеу", "en": "ordinary differential equation", "def": "Бір айнымалының белгісіз функциясын, оның туындыларын және айнымалыны байланыстыратын теңдеу.", "lesson": 1},
  {"id": "ode-order-t", "kz": "теңдеудің реті", "en": "order", "def": "Теңдеуге кіретін ең жоғары туындының реті.", "lesson": 1},
- {"id": "ode-linear-t", "kz": "сызықты теңдеу", "en": "linear equation", "def": "Белгісіз функция мен оның туындылары бойынша бірінші дәрежелі теңдеу.", "lesson": 1},
+ {"id": "ode-linear-t", "kz": "сызықтық теңдеу", "en": "linear equation", "def": "Белгісіз функция мен оның туындылары бойынша бірінші дәрежелі теңдеу.", "lesson": 1},
  {"id": "ode-solution", "kz": "шешім", "en": "solution", "def": "Теңдеуге қойғанда тепе-теңдікке айналатын функция.", "lesson": 1},
  {"id": "ode-general", "kz": "жалпы шешім", "en": "general solution", "def": "n-ші ретті теңдеудің n еркін тұрақты қамтитын шешімдер әулеті.", "lesson": 1},
  {"id": "ode-particular", "kz": "дербес шешім", "en": "particular solution", "def": "Жалпы шешімде тұрақтыларға нақты мән беріп алынған шешім.", "lesson": 1},
@@ -11,7 +11,7 @@ window.CS50KZ_MATH_TERMS.ode = [
  {"id": "ode-direction", "kz": "бағыт өрісі", "en": "direction field", "def": "Жазықтықтың әр нүктесінде шешім қисығының еңісін көрсететін кесінділер жиыны.", "lesson": 1},
  {"id": "ode-isocline-t", "kz": "изоклин", "en": "isocline", "def": "Бойында шешімнің еңісі тұрақты болатын сызық.", "lesson": 1},
  {"id": "ode-equilibrium-t", "kz": "тепе-теңдік шешімі", "en": "equilibrium solution", "def": "Тұрақты функция болатын шешім.", "lesson": 1},
- {"id": "ode-euler-t", "kz": "Эйлер әдісі", "en": "Euler method", "def": "Дифференциалдық теңдеудің жуық шешімін жанама бойымен қадамдап табу әдісі.", "lesson": 1},
+ {"id": "ode-euler-t", "kz": "Эйлер әдісі", "en": "Euler's method", "def": "Дифференциалдық теңдеудің жуық шешімін жанама бойымен қадамдап табу әдісі.", "lesson": 1},
  {"id": "ode-sep-t", "kz": "айнымалылары бөлінетін теңдеу", "en": "separable equation", "def": "y'=g(x)h(y) түріндегі теңдеу: оң жағы x-ке және y-ке тәуелді көбейткіштердің көбейтіндісі.", "lesson": 2},
  {"id": "ode-auton-t", "kz": "автономды теңдеу", "en": "autonomous equation", "def": "Оң жағы тәуелсіз айнымалыға тікелей тәуелді емес y'=f(y) теңдеуі.", "lesson": 2},
  {"id": "ode-halflife-t", "kz": "жартылай ыдырау периоды", "en": "half-life", "def": "Шама екі есе кемитін уақыт аралығы.", "lesson": 2},
@@ -27,7 +27,7 @@ window.CS50KZ_MATH_TERMS.ode = [
  {"id": "ode-exact-t", "kz": "дәл дифференциалды теңдеу", "en": "exact equation", "def": "Сол жағы бір функцияның толық дифференциалы болатын M dx + N dy = 0 теңдеуі.", "lesson": 4},
  {"id": "ode-total-diff-t", "kz": "толық дифференциал", "en": "total differential", "def": "dF = F_x dx + F_y dy өрнегі.", "lesson": 4},
  {"id": "ode-potential-t", "kz": "потенциал", "en": "potential", "def": "F_x = M, F_y = N болатын F(x, y) функциясы.", "lesson": 4},
- {"id": "ode-bernoulli-t", "kz": "Бернулли теңдеуі", "en": "Bernoulli equation", "def": "y' + p y = q y^n түріндегі сызықты емес теңдеу.", "lesson": 4},
+ {"id": "ode-bernoulli-t", "kz": "Бернулли теңдеуі", "en": "Bernoulli equation", "def": "y' + p y = q y^n түріндегі сызықтық емес теңдеу.", "lesson": 4},
  {"id": "ode-homog-fn-t", "kz": "біртекті функция", "en": "homogeneous function", "def": "g(tx, ty) = t^k g(x, y) қасиеті бар функция.", "lesson": 4},
  {"id": "ode-homog-eq-t", "kz": "біртекті теңдеу (y' = φ(y/x))", "en": "homogeneous equation", "def": "Оң жағы тек y/x қатынасына тәуелді теңдеу.", "lesson": 4},
  {"id": "ode-char-t", "kz": "сипаттамалық теңдеу", "en": "characteristic equation", "def": "y=e^{rx} қойғанда шығатын ar²+br+c=0 алгебралық теңдеуі.", "lesson": 5},
@@ -49,5 +49,5 @@ window.CS50KZ_MATH_TERMS.ode = [
  {"id": "ode-saddle-t", "kz": "ершік", "en": "saddle", "def": "Меншікті мәндерінің таңбалары әртүрлі тепе-теңдік; орнықсыз.", "lesson": 7},
  {"id": "ode-center-t", "kz": "центр", "en": "center", "def": "Таза жорамал меншікті мәндерге сәйкес тұйық орбиталы тепе-теңдік.", "lesson": 7},
  {"id": "ode-stability-t", "kz": "орнықтылық", "en": "stability", "def": "Тепе-теңдіктен шағын ауытқудың уақыт өткен сайын өшуі не өспеуі.", "lesson": 7},
- {"id": "ode-lv-t", "kz": "Лотка-Вольтерра жүйесі", "en": "Lotka-Volterra system", "def": "Жыртқыш пен жемтік популяцияларын сипаттайтын сызықты емес жүйе.", "lesson": 7}
+ {"id": "ode-lv-t", "kz": "Лотка-Вольтерра жүйесі", "en": "Lotka-Volterra system", "def": "Жыртқыш пен жемтік популяцияларын сипаттайтын сызықтық емес жүйе.", "lesson": 7}
 ];

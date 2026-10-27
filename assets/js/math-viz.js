@@ -28,7 +28,7 @@
   function compile(src, vars) {
     var api = M();
     if (!api) throw new Error("math-course.js жүктелмеді");
-    return api.compileSrc(src, { vars: vars });
+    return api.compileSrc(src, { vars: vars, long: true }); /* визуализация өрнегін автор жазады: ұзындық шегі кеңірек */
   }
   function slider(label, o) {
     var id = "mv" + (++UID), wrap = ce("label"), nm = ce("span", null, label), inp = ce("input"), val = ce("span", "mv-val");

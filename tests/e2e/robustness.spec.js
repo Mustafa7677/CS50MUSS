@@ -9,7 +9,7 @@ const VALUES = { "бұзылған JSON": "{не JSON", null: "null", "жол": 
 
 for (const [kind, val] of Object.entries(VALUES)) {
   test(`бүлінген жад (${kind}): барлық беттер қатесіз ашылады`, async ({ browser }) => {
-    test.setTimeout(180_000);
+    test.setTimeout(Math.max(180_000, PAGES.length * 1_500)); // бет саны өскен сайын уақыт шегі де өседі
     const c = await browser.newContext();
     await blockFonts(c);
     await c.addInitScript(([keys, v]) => {

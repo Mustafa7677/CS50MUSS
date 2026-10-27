@@ -537,7 +537,8 @@
     const words = article.innerText.split(/\s+/).length;
     const meta = document.createElement("div");
     meta.className = "lecture-meta";
-    meta.innerHTML = `<span>⏱ ≈ ${Math.max(5, Math.round(words / 160))} мин оқу</span>` +
+    // математика сабағында ұзақтық нақты есептелген (.mx-meta, tools/math_pedagogy.py): жалпы бағаны қайталамаймыз
+    meta.innerHTML = (head.querySelector(".mx-meta") ? "" : `<span>⏱ ≈ ${Math.max(5, Math.round(words / 160))} мин оқу</span>`) +
       `<span>📝 ${article.querySelectorAll(".question").length} сұрақ</span>` +
       `<span>🧩 ${article.querySelectorAll(".task").length} тапсырма</span>` +
       (p.read[PAGE] ? '<span class="done">✓ Оқылды</span>' : "") +

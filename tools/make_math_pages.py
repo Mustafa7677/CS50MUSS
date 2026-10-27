@@ -103,7 +103,7 @@ FOOT = '''
 
 
 def subnav(prefix, cur):
-    items = [("index.html", "Пәндер", "home"), ("formulas.html", "Формулалар", "formulas"), ("glossary.html", "Сөздік", "glossary"), ("practice.html", "Жаттықтырғыш", "practice")]
+    items = [("index.html", "Пәндер", "home"), ("formulas.html", "Формулалар", "formulas"), ("glossary.html", "Сөздік", "glossary"), ("practice.html", "Жаттықтырғыш", "practice"), ("route.html", "Оқу жолы", "route"), ("exam.html", "Емтихан", "exam")]
     s = "".join(f'<a href="{prefix}{h}"' + (' aria-current="page"' if k == cur else "") + f">{t}</a>" for h, t, k in items)
     return f'<nav class="math-subnav" aria-label="Математика курсының бөлімдері">{s}</nav>'
 

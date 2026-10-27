@@ -26,6 +26,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import math_plan  # noqa: E402  («Математика» курсының жалғыз жоспары: tools/math_plan.py)
+import math_pedagogy  # noqa: E402  (математика: сабақ ұзақтығы, алғышарттар, оқу жолы, емтихан банкі)
 SITE_URL = "https://mustafa7677.github.io/CS50MUSS/"
 ORDER = [f"week-{i}" for i in range(8)] + ["ai"] + [f"week-{i}" for i in range(8, 11)]
 
@@ -215,7 +216,7 @@ def route_block(prefix, code, local=False):
     course_href = "#weeks" if local else (f"{prefix}index.html#main" if code == "x" else f"{prefix}{code}/index.html#weeks")
     steps = [
         (course_href, short, "Курсты таңда"),
-        (lec(first), f"{num(first)} " + ("сабағы" if code in ("en", "math") else "лекциясы"), "Оқы, 15-20 минут"),
+        (lec(first), f"{num(first)} " + ("сабағы" if code in ("en", "math") else "лекциясы"), ("Оқы, " + (lambda m: f"≈ {math_pedagogy.fmt_min(m)}" if m else "45-75 минут")(math_pedagogy.week0_minutes()) if code == "math" else "Оқы, 15-20 минут")),
         (lec(first) + (f"#{task_id}" if task_id else ""), "Бірінші тапсырма", "Өзің орында"),
         (lec(first) + (f"#{quiz_id}" if quiz_id else ""), "Нәтиже", "Тест және тексеру"),
         (lec(second) if second else lec(first), "Келесі сабақ" if code in ("en", "math") else "Келесі лекция", num(second) if second else "Жалғастыр"),
@@ -776,6 +777,8 @@ def main():
         sm = re.search(r'<h2 id="summary">.*?</h2>\s*(?:<p>(?:(?!</p>).)*</p>\s*)?(<ul>.*?</ul>|<table>.*?</table>)', s, re.S)
         if sm:
             sheets.append((meta, sm.group(1), "x"))
+    if math_pedagogy.main():  # математика: алғышарттар оқу жолына қайшы болса, жинақ тоқтайды
+        sys.exit(1)
     # Қосымша курстар: лекциялар (../../), курс беті (../), іздеу мен сөздікке қосу
     course_pages = []
     for code, c in ALL_COURSES.items():
