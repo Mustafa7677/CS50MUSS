@@ -1041,3 +1041,18 @@ test("жеңіл қабат: бір сөйлем, қолмен жылыту, ұ�
   await expect(chk.locator("p")).toBeVisible();
   expect(await page.locator(".katex-error").count()).toBe(0);
 });
+
+test("жеңіл қабат: әр генерацияланатын сабақта бар (бір сөйлем, қолмен, белгілер, тоқта-ойлан)", () => {
+  const src = path.join(ROOT, "tools", "math_src");
+  const slugs = fs.readdirSync(src).filter((d) => fs.statSync(path.join(src, d)).isDirectory() && !d.startsWith("_"));
+  let checked = 0;
+  for (const s of PLAN.subjects.filter((x) => slugs.includes(x.slug))) {
+    for (let k = 0; k < s.count; k++) {
+      const html = fs.readFileSync(path.join(MATH, "lectures", `week-${s.start + k}.html`), "utf8");
+      for (const mark of ['class="mx-big"', 'id="warmup"', 'class="mx-analogy"', 'id="symbols"', 'id="checks"', 'class="mx-idea"', 'class="mx-plain"'])
+        expect(html.includes(mark), `${s.slug} ${k + 1}: ${mark}`).toBe(true);
+      checked++;
+    }
+  }
+  expect(checked).toBeGreaterThanOrEqual(87);
+});

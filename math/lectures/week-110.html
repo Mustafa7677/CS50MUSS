@@ -67,7 +67,7 @@
       <div class="lecture-head" style="--lc:#a16207" data-n="110" data-msubj="optim" data-glyph="min">
         <div class="num">Mathematical Optimization · 6-сабақ</div>
         <h1>Дөңес оңтайландыру және машиналық оқыту</h1>
-        <p>Машиналық оқытудағы «модельді үйрету» дегеніміз - деректерге сай келмеу өлшемін (шығын функциясын) ең кіші ету. Ең маңызды үш модель - ең кіші квадраттар (сызықтық регрессия), логистикалық регрессия (жіктеу) және олардың регуляризацияланған нұсқалары (ridge, lasso) - дөңес есептер.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 45 мин</span><span>Есептер ≈ 1 сағ</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 1 сағ 50 мин</b></span></p><!-- /build:mmeta -->
+        <p>Машиналық оқытудағы «модельді үйрету» дегеніміз - деректерге сай келмеу өлшемін (шығын функциясын) ең кіші ету. Ең маңызды үш модель - ең кіші квадраттар (сызықтық регрессия), логистикалық регрессия (жіктеу) және олардың регуляризацияланған нұсқалары (ridge, lasso) - дөңес есептер.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 50 мин</span><span>Есептер ≈ 1 сағ</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
       </div><!-- build:mintro -->
       <p class="mx-intro">Сондықтан алдыңғы сабақтардағы құралдар толық жұмыс істейді: жергілікті минимум ғаламдық, стационарлық шарт жеткілікті, градиенттік түсу кепілді жинақталады. Бұл сабақта осы есептерді құрып, шешімнің бар болуы мен жалғыздығының <em>шарттарын</em> дәлелдейміз және шешім жоқ болатын маңызды жағдайды (сызықтық бөлінетін деректер) көреміз.</p>
       <!-- /build:mintro -->
@@ -78,6 +78,9 @@
         <span class="callout-title">Курс туралы</span>
         <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
+
+      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>
+        <p>Машиналық оқытудағы модельді үйрету - қате функциясын минимумдау; ең кіші квадраттар, ridge, логистикалық регрессия және lasso - бәрі дөңес оңтайландыру есептері.</p></div>
 
       <h2 id="goals">Сабақ мақсаттары</h2>
       <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
@@ -93,31 +96,65 @@
       <h2 id="prereq">Қысқаша еске салу</h2>
       <p class="math-prereq">Дөңес функция және «жергілікті минимум = ғаламдық» қасиеті (1-сабақ). Градиенттік түсу және $L$-тегістік (4-сабақ). Матрицаны көбейту, транспонирлеу, ранг, оң анықталған матрица: $\mathbf x^TM\mathbf x>0$ ($\mathbf x\ne\mathbf0$). Норма: $\|\mathbf v\|^2=\mathbf v^T\mathbf v$. Экспонента мен натурал логарифмнің туындылары.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-109.html">Mathematical Optimization · 5-сабақ: Шектелген оңтайландыру: Лагранж және KKT</a></li><li><a href="week-90.html">Mathematical Statistics · 5-сабақ: Корреляция және сызықтық регрессия</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
 
+      <h2 id="warmup">Алдымен қолмен: бір параметрлі модельді үйрету</h2>
+      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>
+      <div class="mx-warmup"><p class="math-problem">Модель $\hat y=wx$, деректер $(1;2)$, $(2;3)$, $(3;7)$. Квадраттық қатені $\sum(wx_i-y_i)^2$ минимумдайтын $w$ қандай?</p>
+        <ol class="math-steps">
+          <li>Қате: $E(w)=(w-2)^2+(2w-3)^2+(3w-7)^2$ - $w$ бойынша парабола (дөңес).</li>
+          <li>$E'(w)=2(w-2)+4(2w-3)+6(3w-7)=28w-58=0$.</li>
+          <li>$w=\frac{58}{28}\approx2{,}07$. Бұл - қалыпты теңдеу $\left(\sum x_i^2\right)w=\sum x_iy_i$: $14w=29$.</li>
+          <li>Ridge қоссақ ($+\lambda w^2$, $\lambda=1$): $15w=29$, $w\approx1{,}93$ - салмақ нөлге қарай «тартылады».</li>
+        </ol>
+        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> «Үйрету» = қатенің туындысын нөлге теңестіру (не градиенттік түсу). Регуляризация салмақтарды кішірейтіп, модельді шамадан тыс бейімделуден сақтайды.</p></div>
+
       <h2 id="intuition">Интуиция</h2>
       <p>Үш нүкте арқылы түзу жүргізу мүмкін болмаса, «ең жақсы» түзуді іздейміз: әр нүктедегі тік қатенің (қалдықтың) квадраттарының қосындысы ең кіші болсын. Квадрат алу ыңғайлы: функция тегіс және дөңес, сондықтан минимумды туындыны нөлге теңестіріп табамыз - сызықтық теңдеулер жүйесі шығады.</p>
       <p>Параметрлер саны деректерден көп болса не белгілер бір-біріне тәуелді болса, «ең жақсы» шешім көп болады, әрі олардың кейбірі өте үлкен сандардан тұрады. <b>Регуляризация</b> - шешімге «айыппұл»: $\lambda\|\mathbf x\|^2$ қосу үлкен коэффициенттерді тежейді және шешімді жалғыз етеді. $\lambda\|\mathbf x\|_1$ (lasso) одан әрі көп коэффициенттерді дәл нөлге айналдырады - «маңызды белгілерді таңдау».</p>
       <p>Жіктеуде («спам/спам емес») жауап $\pm1$. Логистикалық регрессия $\mathbf w^T\mathbf x$ санын сигмоида $\sigma(z)=\frac{1}{1+e^{-z}}$ арқылы ықтималдыққа айналдырады. Әр мысалдың «шиеленісі» $m=y\,\mathbf w^T\mathbf x$ (шекара): оң болса - дұрыс, теріс болса - қате. Шығын $\ln(1+e^{-m})$ - қате мысалды қатты, дұрыс мысалды әлсіз айыптайды.</p>
       <p>Қызық тұзақ: деректер түзумен мінсіз бөлінсе, $\mathbf w$-ны екі есе үлкейту барлық $m$-ді екі есе үлкейтіп, шығынды азайта береді - минимум «шексіздікте». Градиенттік түсу тоқтамайды, $\|\mathbf w\|$ шексіз өседі. Регуляризация бұл мәселені де шешеді.</p>
 
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · тігінші</span>
+        <p>Шамадан тыс бейімделу - бір адамның әр бүгісіне дәл тігілген костюм: басқа адамға мүлде жарамайды. Регуляризация - «тым күрделі пішім үшін айыппұл»: костюм қарапайымырақ, бірақ көп адамға жарайды.</p></div>
+      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · lasso - артықты тастау</span>
+        <p>Lasso ($L_1$ айыппұл) кішкене салмақтарды дәл нөлге айналдырады - маңызсыз белгілерді модельден толық алып тастайды. Ridge ($L_2$) оларды тек кішірейтеді.</p></div>
+
+      <h2 id="symbols">Белгілерді оқу</h2>
+      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>
+      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>
+      <tbody>
+        <tr><td>$\|A\mathbf x-\mathbf b\|^2$</td><td>квадраттық қате</td><td>болжам мен деректердің айырмасы</td></tr>
+        <tr><td>$A^TA\mathbf x=A^T\mathbf b$</td><td>қалыпты теңдеулер</td><td>ең кіші квадраттар шешімінің шарты</td></tr>
+        <tr><td>$\lambda\|\mathbf x\|^2$</td><td>ridge айыппұлы</td><td>салмақтарды кішірейтеді</td></tr>
+        <tr><td>$\sigma(z)=\frac1{1+e^{-z}}$</td><td>сигмоида</td><td>санды ықтималдыққа айналдырады</td></tr>
+        <tr><td>$\lambda\|\mathbf x\|_1$</td><td>lasso айыппұлы</td><td>сирек (көп нөлді) шешім береді</td></tr>
+      </tbody></table>
+
       <h2 id="theory">Анықтамалар мен теоремалар</h2>
       <div class="math-def" id="def-1"><span class="math-tag">Анықтама 6.1 · Ең кіші квадраттар</span>
-        <p>$A\in\mathbb R^{m\times n}$, $\mathbf b\in\mathbb R^m$. <strong>Ең кіші квадраттар әдісі</strong> (<span class="term-en">least squares method</span>): $\min_{\mathbf x}f(\mathbf x)=\|A\mathbf x-\mathbf b\|^2$. $\mathbf r=A\mathbf x-\mathbf b$ - <strong>қалдық</strong> (<span class="term-en">residual</span>). Түзу $y=x_1+x_2t$ үшін $A$-ның жолдары $(1;\ t_i)$, $\mathbf b=(y_i)$.</p></div>
+        <p>$A\in\mathbb R^{m\times n}$, $\mathbf b\in\mathbb R^m$. <strong>Ең кіші квадраттар әдісі</strong> (<span class="term-en">least squares method</span>): $\min_{\mathbf x}f(\mathbf x)=\|A\mathbf x-\mathbf b\|^2$. $\mathbf r=A\mathbf x-\mathbf b$ - <strong>қалдық</strong> (<span class="term-en">residual</span>). Түзу $y=x_1+x_2t$ үшін $A$-ның жолдары $(1;\ t_i)$, $\mathbf b=(y_i)$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Деректерге ең жақсы сай келетін параметрлерді квадраттық қатені минимумдау арқылы табамыз.</p></div>
       <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 6.1 · Қалыпты теңдеулер</span>
-        <p>(1) $\mathbf x^*$ - $\|A\mathbf x-\mathbf b\|^2$ минимумы $\iff A^TA\mathbf x^*=A^T\mathbf b$ (<strong>қалыпты теңдеулер</strong> (<span class="term-en">normal equations</span>)). (2) Шешім әрдайым бар. (3) Шешім жалғыз $\iff$ $A$-ның бағандары сызықтық тәуелсіз ($\operatorname{rank}A=n$); сонда $\mathbf x^*=(A^TA)^{-1}A^T\mathbf b$.</p></div>
+        <p>(1) $\mathbf x^*$ - $\|A\mathbf x-\mathbf b\|^2$ минимумы $\iff A^TA\mathbf x^*=A^T\mathbf b$ (<strong>қалыпты теңдеулер</strong> (<span class="term-en">normal equations</span>)). (2) Шешім әрдайым бар. (3) Шешім жалғыз $\iff$ $A$-ның бағандары сызықтық тәуелсіз ($\operatorname{rank}A=n$); сонда $\mathbf x^*=(A^TA)^{-1}A^T\mathbf b$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Минимум $A^TA\mathbf x=A^T\mathbf b$ теңдеуімен сипатталады; $A$-ның бағандары тәуелсіз болса, шешім жалғыз.</p></div>
       <p><em>Негіздеме.</em> (2)-нің дәлелі $A^T\mathbf b$-ның $A^TA$-ның бағандар кеңістігінде жататынына сүйенеді ($\operatorname{im}A^TA=\operatorname{im}A^T$); оны сызықтық алгебрадан дайын аламыз. (1) мен (3)-ті төменде дәлелдейміз.</p>
       <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 6.2 · Ridge регрессия</span>
-        <p>$\lambda>0$ болса, $\min\|A\mathbf x-\mathbf b\|^2+\lambda\|\mathbf x\|^2$ есебінің кез келген $A$ үшін жалғыз шешімі бар: $\mathbf x_\lambda=(A^TA+\lambda I)^{-1}A^T\mathbf b$.</p></div>
+        <p>$\lambda>0$ болса, $\min\|A\mathbf x-\mathbf b\|^2+\lambda\|\mathbf x\|^2$ есебінің кез келген $A$ үшін жалғыз шешімі бар: $\mathbf x_\lambda=(A^TA+\lambda I)^{-1}A^T\mathbf b$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Ridge айыппұлы қосылса, шешім әрдайым жалғыз және тұрақты.</p></div>
       <p><em>Негіздеме.</em> Бұл - <strong>регуляризация</strong> (<span class="term-en">regularization</span>) (<strong>ridge регрессия</strong> (<span class="term-en">ridge regression</span>), L2). $\lambda\to\infty$ кезінде $\mathbf x_\lambda\to\mathbf0$: регуляризация коэффициенттерді нөлге қарай «қысады».</p>
       <div class="math-def" id="def-2"><span class="math-tag">Анықтама 6.2 · Логистикалық регрессия</span>
-        <p>Деректер $(\mathbf x_i,y_i)$, $y_i\in\{-1;1\}$. <strong>Сигмоида</strong> (<span class="term-en">sigmoid</span>) $\sigma(z)=\frac{1}{1+e^{-z}}$, модель $P(y=1\mid\mathbf x)=\sigma(\mathbf w^T\mathbf x)$. <strong>Логистикалық регрессия</strong> (<span class="term-en">logistic regression</span>) шығыны (теріс логарифмдік шындыққа ұқсастық): $\ell(\mathbf w)=\sum_i\ln\left(1+e^{-m_i}\right)$, $m_i=y_i\mathbf w^T\mathbf x_i$.</p></div>
+        <p>Деректер $(\mathbf x_i,y_i)$, $y_i\in\{-1;1\}$. <strong>Сигмоида</strong> (<span class="term-en">sigmoid</span>) $\sigma(z)=\frac{1}{1+e^{-z}}$, модель $P(y=1\mid\mathbf x)=\sigma(\mathbf w^T\mathbf x)$. <strong>Логистикалық регрессия</strong> (<span class="term-en">logistic regression</span>) шығыны (теріс логарифмдік шындыққа ұқсастық): $\ell(\mathbf w)=\sum_i\ln\left(1+e^{-m_i}\right)$, $m_i=y_i\mathbf w^T\mathbf x_i$.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Логистикалық регрессия сызықтық баллды сигмоида арқылы ықтималдыққа айналдырады; шығын - сәйкессіздіктің логарифмдік өлшемі.</p></div>
       <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 6.3 · Логистикалық шығынның дөңестігі</span>
-        <p>$\ell$ дөңес және $\nabla\ell(\mathbf w)=-\sum_i\sigma(-m_i)\,y_i\mathbf x_i$. $\lambda>0$ болса, $\ell(\mathbf w)+\frac\lambda2\|\mathbf w\|^2$ қатаң дөңес және оның жалғыз минимумы бар.</p></div>
+        <p>$\ell$ дөңес және $\nabla\ell(\mathbf w)=-\sum_i\sigma(-m_i)\,y_i\mathbf x_i$. $\lambda>0$ болса, $\ell(\mathbf w)+\frac\lambda2\|\mathbf w\|^2$ қатаң дөңес және оның жалғыз минимумы бар.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Логистикалық шығын дөңес - градиенттік түсу ғаламдық минимумға жақындайды.</p></div>
       <p><em>Негіздеме.</em> Қасиет: $\sigma'(z)=\sigma(z)\sigma(-z)=\sigma(z)(1-\sigma(z))$.</p>
       <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 6.4 · Бөлінетін деректер</span>
-        <p>Барлық $i$ үшін $y_i\mathbf w_0^T\mathbf x_i>0$ болатын $\mathbf w_0$ бар болса (<strong>сызықтық бөлінетін</strong> (<span class="term-en">linearly separable</span>) деректер), онда $\inf\ell=0$, бірақ $\ell$-дің минимумы жоқ.</p></div>
+        <p>Барлық $i$ үшін $y_i\mathbf w_0^T\mathbf x_i>0$ болатын $\mathbf w_0$ бар болса (<strong>сызықтық бөлінетін</strong> (<span class="term-en">linearly separable</span>) деректер), онда $\inf\ell=0$, бірақ $\ell$-дің минимумы жоқ.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Деректер түзумен толық бөлінсе, логистикалық шығынның минимумы жоқ - салмақтар шексіз өседі (регуляризация керек).</p></div>
       <p><em>Негіздеме.</em> Дәлелі: $\ell>0$ барлық жерде, ал $t\to\infty$ кезінде $\ell(t\mathbf w_0)=\sum\ln(1+e^{-tm_i})\to0$.</p>
       <div class="math-def" id="def-3"><span class="math-tag">Анықтама 6.3 · Lasso және жұмсақ табалдырық</span>
-        <p><strong>Lasso</strong> (<span class="term-en">lasso</span>) (L1): $\min\|A\mathbf x-\mathbf b\|^2+\lambda\|\mathbf x\|_1$, $\|\mathbf x\|_1=\sum|x_j|$. Бір айнымалыда $\min_x\frac12(x-a)^2+\lambda|x|$ шешімі - <strong>жұмсақ табалдырық</strong> (<span class="term-en">soft thresholding</span>): $S_\lambda(a)=\operatorname{sign}(a)\max(|a|-\lambda;0)$. $|a|\le\lambda$ болса, шешім дәл $0$ - сирек шешімнің себебі.</p></div>
+        <p><strong>Lasso</strong> (<span class="term-en">lasso</span>) (L1): $\min\|A\mathbf x-\mathbf b\|^2+\lambda\|\mathbf x\|_1$, $\|\mathbf x\|_1=\sum|x_j|$. Бір айнымалыда $\min_x\frac12(x-a)^2+\lambda|x|$ шешімі - <strong>жұмсақ табалдырық</strong> (<span class="term-en">soft thresholding</span>): $S_\lambda(a)=\operatorname{sign}(a)\max(|a|-\lambda;0)$. $|a|\le\lambda$ болса, шешім дәл $0$ - сирек шешімнің себебі.</p>
+        <p class="mx-plain"><b>Қарапайым тілмен:</b> Lasso жалғыз айнымалыда «жұмсақ табалдырық» береді: кішкене мәндерді нөлге айналдырады.</p></div>
       <div class="math-formula" id="f-1"><span class="math-fname">Формула 6.1 · Қалыпты теңдеулер</span>
         <div class="math-fbody">$$A^TA\,\mathbf x=A^T\mathbf b$$</div>
         <p class="math-fnote">Жалғыз шешім: $A$ бағандары сызықтық тәуелсіз. Сандық тұрғыда QR жіктеу тұрақтырақ ($A^TA$-ның шарттылығы $A$-ныкының квадраты).</p></div>
@@ -138,12 +175,24 @@
       <div class="math-attention"><span class="math-box-title">Назар аудар</span>
         <p>Логистикалық регрессияда <em>регуляризациясыз</em> минимумның бар болуы деректерге тәуелді. Бөлінетін деректерде градиенттік түсу «жинақталмайды»: шығын $0$-ге жақындайды, ал $\|\mathbf w\|\to\infty$. Сондықтан «итерация тоқтады» не «шығын кіші» - шешім табылды дегенді білдірмейді. Ал ең кіші квадраттарда минимум әрдайым бар, бірақ жалғыз болмауы мүмкін.</p></div>
 
+      <h2 id="checks">Тоқта, ойлан</h2>
+      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
+      <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $A$-ның екі бағаны бірдей болса, ең кіші квадраттар шешімі жалғыз ба?</span></summary>
+        <p>Жоқ: $A^TA$ айрықша - шешімдер шексіз көп. Ridge жалғыздықты қалпына келтіреді.</p></details>
+      <details class="mx-check" id="chk-2"><summary><span class="mx-q"><b>2.</b> $\sigma(0)$ неге тең?</span></summary>
+        <p>$\frac12$.</p></details>
+      <details class="mx-check" id="chk-3"><summary><span class="mx-q"><b>3.</b> $\lambda$-ны өте үлкен етсек, ridge шешімі неге ұмтылады?</span></summary>
+        <p>Нөлге.</p></details>
+      <details class="mx-check" id="chk-4"><summary><span class="mx-q"><b>4.</b> Lasso ($\lambda=1$) бір айнымалы есепте $a=0{,}5$ болса, шешім?</span></summary>
+        <p>$0$: $|a|\le\lambda$ кезде жұмсақ табалдырық нөл береді.</p></details>
+
       <h2 id="derivations">Қорытып шығару</h2>
       <div class="mx-derive-tools"></div>
       <details class="math-derive" id="d-1" open>
         <summary>Қорытып шығару 1: қалыпты теңдеулер және жалғыздық</summary>
         <div class="math-derive-body">
           <p><b>Мақсат:</b> Теорема 6.1-дің (1) және (3) бөлімдерін дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Квадраттық қатені ашып, градиентін нөлге теңестіреміз; $A^TA$ оң анықталған болса - жалғыз минимум.</p>
           <ol class="math-steps">
             <li>$f(\mathbf x)=(A\mathbf x-\mathbf b)^T(A\mathbf x-\mathbf b)=\mathbf x^TA^TA\mathbf x-2\mathbf b^TA\mathbf x+\mathbf b^T\mathbf b$.</li>
             <li>$\nabla f=2A^TA\mathbf x-2A^T\mathbf b$, $\nabla^2f=2A^TA$. Кез келген $\mathbf v$ үшін $\mathbf v^TA^TA\mathbf v=\|A\mathbf v\|^2\ge0$ - Гессиан оң жартылай анықталған, $f$ дөңес.</li>
@@ -158,6 +207,7 @@
         <summary>Қорытып шығару 2: ridge шешімінің жалғыздығы</summary>
         <div class="math-derive-body">
           <p><b>Мақсат:</b> Теорема 6.2-ні дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> $A^TA+\lambda I$ матрицасының меншікті мәндері $\lambda$-дан кем емес - әрдайым қайтымды.</p>
           <ol class="math-steps">
             <li>$g(\mathbf x)=\|A\mathbf x-\mathbf b\|^2+\lambda\|\mathbf x\|^2$, $\nabla g=2(A^TA+\lambda I)\mathbf x-2A^T\mathbf b$, $\nabla^2g=2(A^TA+\lambda I)$.</li>
             <li>$\mathbf v\ne\mathbf0$: $\mathbf v^T(A^TA+\lambda I)\mathbf v=\|A\mathbf v\|^2+\lambda\|\mathbf v\|^2\ge\lambda\|\mathbf v\|^2>0$.</li>
@@ -171,6 +221,7 @@
         <summary>Қорытып шығару 3: логистикалық шығынның дөңестігі</summary>
         <div class="math-derive-body">
           <p><b>Мақсат:</b> Теорема 6.3-ті дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Бір айнымалы $\ln(1+e^{-z})$-тің екінші туындысы оң; дөңес функцияның сызықтық аргументпен композициясы және қосындысы дөңес.</p>
           <ol class="math-steps">
             <li>Бір айнымалы $\phi(z)=\ln(1+e^{-z})$: $\phi'(z)=\frac{-e^{-z}}{1+e^{-z}}=-\sigma(-z)$.</li>
             <li>$\phi''(z)=\sigma'(-z)=\sigma(-z)\sigma(z)>0$ - $\phi$ қатаң дөңес.</li>
@@ -186,6 +237,7 @@
         <summary>Қорытып шығару 4: жұмсақ табалдырық</summary>
         <div class="math-derive-body">
           <p><b>Мақсат:</b> $\min_xh(x)=\frac12(x-a)^2+\lambda|x|$ ($\lambda>0$) шешімі $S_\lambda(a)$ екенін дәлелдеу.</p>
+          <p class="mx-idea"><b>Идея:</b> Бір айнымалыда $\frac12(x-a)^2+\lambda|x|$-ті $x&gt;0$, $x&lt;0$, $x=0$ жағдайларында қарап, минимум нүктесін табамыз.</p>
           <ol class="math-steps">
             <li>$h$ қатаң дөңес (қатаң дөңес $\frac12(x-a)^2$ плюс дөңес $\lambda|x|$), сондықтан минимум жалғыз.</li>
             <li>$x>0$ аралығында $h'(x)=x-a+\lambda$. $a>\lambda$ болса, $h'=0$ нүктесі $x=a-\lambda>0$ - ол минимум.</li>

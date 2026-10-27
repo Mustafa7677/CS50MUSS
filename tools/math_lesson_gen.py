@@ -303,6 +303,9 @@ def check_easy(E, name):
     assert len(E["symbols"]) >= 4 and all(len(a) == 3 for a in E["symbols"]), name + ": symbols (кемі 4)"
     assert 3 <= len(E["checks"]) <= 6 and all(len(a) == 2 for a in E["checks"]), name + ": checks (3-6)"
     assert len(E["big"]) <= 260, name + ": big тым ұзын"
+    kz = re.findall(r"\\text\{[^}]*[А-Яа-яӘәІіҢңҒғҮүҰұҚқӨөҺһЁё][^}]*\}", _flat(E))
+    if kz:
+        raise SystemExit(f"{name}: \\text{{}} ішінде кирилл мәтін {kz[:2]} - мәтінді формуладан шығарыңыз")
     bad = re.findall(r"[\x00-\x08\x0b-\x1f]", _flat(E))
     if bad:
         raise SystemExit(f"{name}: басқару таңбасы {bad!r} - жолды r\"...\" етіп жазыңыз (мысалы \\alpha, \\beta)")
