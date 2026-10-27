@@ -95,9 +95,13 @@ test("нав pill: курсты ауыстырады, авторлық курс�
 test("витрина: басты бет пен courses.html-де C++ және Java карточкалары, авторлық белгі", async ({ page }) => {
   await blockFonts(page.context());
   await page.goto("index.html");
-  // басты бет: барлық курс бірден көрінеді («Бір шаңырақ астында»), авторлық курстар белгіленген
-  await expect(page.locator(".kh-tile")).toHaveCount(9);
-  await expect(page.locator(".kh-tile.own")).toHaveCount(4);
+  // басты бет: бағдарламалау академиясының жеті тілі тақтайша болып көрінеді, авторлық C++ мен Java белгіленген;
+  // ағылшын мен математика - өз академиясының карточкасында (бағдарламалаудың бөлімі емес)
+  await expect(page.locator(".kh-tile")).toHaveCount(7);
+  await expect(page.locator(".kh-tile.own")).toHaveCount(2);
+  await expect(page.locator('.kh-tile[data-course="en"], .kh-tile[data-course="math"]')).toHaveCount(0);
+  await expect(page.locator('.ac-card[href="en/"]')).toHaveCount(1);
+  await expect(page.locator('.ac-card[href="math/"]')).toHaveCount(1);
   await expect(page.locator('.kh-tile[data-course="cpp"]')).toHaveAttribute("href", "cpp/");
   await expect(page.locator('.kh-tile[data-course="java"] .kh-code')).toHaveText("Авторлық курс");
   await expect(page.locator('.kh-tile[data-course="cpp"] .kh-glyph')).toBeVisible();

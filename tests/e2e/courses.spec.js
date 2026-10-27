@@ -44,10 +44,12 @@ test("курстар беті және CS50P: лекция, тест, «Оқыд
   await expect(page.locator('.cx-card[data-course="python"] .cx-bar')).toBeVisible();
   await expect(page.locator('.cx-card[data-course="python"] .cx-foot')).toContainText("1/10 лекция оқылды");
   await expect(page.locator('.cx-card[data-course="x"] .cx-bar')).toBeHidden();
-  // CS50x басты беті CS50P прогресін өзінікі деп санамайды; басты бетте барлық 9 курс тақтайшасы, CS50P-де өз прогресі
+  // CS50x басты беті CS50P прогресін өзінікі деп санамайды; басты бетте жеті тіл тақтайшасы, CS50P-де өз прогресі
   await page.goto("index.html");
   await expect(page.locator(".dash-stats")).toContainText("0/12");
-  await expect(page.locator(".kh-tile")).toHaveCount(9);
+  await expect(page.locator(".kh-tile")).toHaveCount(7);
+  // бағдарламалау академиясының карточкасы осы прогресті көрсетеді
+  await expect(page.locator('.ac-card[href="programming.html"] .ac-prog')).toContainText(/^1\/\d+ оқылды$/);
   await expect(page.locator('.kh-tile[data-course="python"] .kh-meta')).toHaveText("1/10 оқылды");
   await expect(page.locator('.kh-tile[data-course="python"]')).toHaveClass(/kh-on/);
   await expect(page.locator('.kh-tile[data-course="x"]')).not.toHaveClass(/kh-on/);

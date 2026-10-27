@@ -70,6 +70,8 @@ def is_ready(code, name):
     p = ROOT / code / "lectures" / f"{name}.html"
     return p.exists() and not is_soon(p.read_text(encoding="utf-8"))
 ALL_COURSES = {**COURSES, **OWN_COURSES}
+# Үш дербес академия: бағдарламалау (жеті курс), ағылшын тілі, математика. Ағылшын мен математика бағдарламалаудың бөлімі емес.
+ACADEMIES = {"code": ["x", "python", "sql", "ai", "web", "cpp", "java"], "en": ["en"], "math": ["math"]}
 OWN_RE = "|".join(OWN_COURSES)
 
 # Курстар витринасы (courses.html мен басты бетте): <!-- build:courses --> ... <!-- /build:courses -->
@@ -188,6 +190,12 @@ def write_math_plan():
         fp.write_text(out, encoding="utf-8")
 
 
+# courses.html: курстар үш академия бойынша топталады (тақырып - академия беті)
+ACAD_HEAD = {"x": ("Бағдарламалау академиясы", "programming.html", "жеті курс, әр тілдің өз маршруты"),
+             "en": ("English Academy", "en/", "ағылшын тілі A0-C1, төрт дағды"),
+             "math": ("Математика академиясы", "math/", "25 пән, арифметикадан топологияға")}
+
+
 def courses_block(prefix, skip=()):
     STATE = {"ready": "Толық дайын", "wip": "Аударылуда", "soon": "Жоспарда"}
     OWN_STATE = {"ready": "Толық дайын", "wip": "Жазылуда", "soon": "Жоспарда"}
@@ -204,6 +212,9 @@ def courses_block(prefix, skip=()):
             state = "ready"
         n_lec = STATS["by_course"][c["id"]]["lect"]
         total = f' data-total="{n_lec}"' if n_lec else ""
+        head = ACAD_HEAD.get(c["id"])
+        if head:
+            out.append(f'        <h3 class="cx-acad" id="acad-{c["id"]}"><a href="{prefix}{head[1]}">{head[0]}</a><span>{head[2]}</span></h3>')
         out.append(f"""        <{tag} class="cx-card {state}{" own" if c.get("own") else ""}"{href} data-course="{c["id"]}"{total} style="--c:{c["c"]};--c2:{c["c2"]}">
           <div class="cx-band">
             <span class="cx-code">{c["code"]}</span>
@@ -233,8 +244,11 @@ NAME = {"x": "Информатикаға кіріспе", "python": "Python", "s
 
 
 def home_courses_block(prefix=""):
+    """Басты беттегі «Бағдарламалау академиясы: тілдер» тақтайшалары (ағылшын мен математика - өз академиясының карточкасында)."""
     out = []
     for c in CATALOG:
+        if c["id"] not in ACADEMIES["code"]:
+            continue
         n_lec = STATS["by_course"][c["id"]]["lect"]
         unit = "сабақ" if c["id"] in ("math", "en") else "лекция"
         feat = " kh-feat" if c["id"] == "x" else ""
@@ -249,6 +263,37 @@ def home_courses_block(prefix=""):
           <span class="kh-meta">{n_lec} {unit}</span>
         </a>""")
     return "<!-- build:home-courses -->\n" + "\n".join(out) + "\n        <!-- /build:home-courses -->"
+
+
+COURSE_LISTS = {}  # main() толтырады: курс коды -> дайын лекциялар (id, title, url) - академия маршруттары үшін
+
+
+def academy_code_block():
+    """programming.html: Бағдарламалау академиясының жеті маршруты. Әр бекет - курстың дайын лекциясы, оқу ретімен.
+    main.js initAcademyCode() оқылғандарын белгілейді (li[data-id] - прогресс кілті: CS50x-те week-0, басқаларында python:week-0)."""
+    out = []
+    for cid in ACADEMIES["code"]:
+        c = next(x for x in CATALOG if x["id"] == cid)
+        lst = COURSE_LISTS.get(cid, [])
+        steps = []
+        for m in lst:
+            key = m["id"] if cid == "x" else f'{cid}:{m["id"]}'
+            n = "AI" if m["id"] == "ai" else m["id"].split("-")[1]
+            steps.append(f'<li data-id="{key}"><a href="{m["url"]}"><span class="pa-n">{n}</span><span class="pa-t">{html.escape(m["title"], quote=False)}</span></a></li>')
+        first = lst[0]["url"] if lst else c["href"]
+        home = "index.html#main" if cid == "x" else c["href"]
+        kind = "авторлық курс" if c.get("own") else "Гарвард CS50"
+        out.append(f"""        <section class="pa-track" id="t-{cid}" data-course="{cid}" style="--c:{c["c"]};--c2:{c["c2"]}" aria-labelledby="t-{cid}-h">
+          <div class="pa-th">
+            <svg class="pa-glyph" viewBox="0 0 64 64" aria-hidden="true">{GLYPHS[cid]}</svg>
+            <div class="pa-tt"><h3 id="t-{cid}-h">{html.escape(c["title"], quote=False)}</h3><p>{c["code"]}, {kind}, {len(lst)} лекция</p></div>
+            <a class="pa-home" href="{home}">Курс беті</a>
+          </div>
+          <p class="pa-desc">{html.escape(c["desc"], quote=False)}</p>
+          <ol class="pa-line">{"".join(steps)}</ol>
+          <div class="pa-foot"><span class="pa-bar" aria-hidden="true"><i></i></span><span class="pa-stat">{len(lst)} лекция</span><a class="btn gold pa-next" href="{first}">Бастау</a></div>
+        </section>""")
+    return "<!-- build:academy-code -->\n" + "\n".join(out) + "\n        <!-- /build:academy-code -->"
 
 
 # «Бір негізгі маршрут»: CS50x → 0-лекция → бірінші тапсырма → нәтиже → келесі лекция. Статикалық нұсқа (JS-сыз да жұмыс істейді);
@@ -430,7 +475,8 @@ def footer_block(p):
         f'      <div class="ft-brand"><a class="ft-logo" href="{p}index.html"><img src="{p}assets/img/bota.svg" alt="" width="52" height="52">'
         '<span><b>CS50</b> қазақша</span></a>'
         '<p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>\n'
-        + "      " + col("Оқу", [("index.html#main", "Лекциялар"), ("courses.html", "Барлық курстар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік"), ("exam.html", "Қорытынды емтихан")])
+        + "      " + col("Академиялар", [("programming.html", "Бағдарламалау"), ("en/", "English Academy"), ("en/skills.html", "Ағылшын: дағдылар"), ("math/", "Математика")])
+        + col("Оқу", [("index.html#main", "Лекциялар"), ("courses.html", "Барлық курстар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік"), ("exam.html", "Қорытынды емтихан")])
         + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("games.html", "Ойындар 🎮"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы"), ("projects.html", "Жобалар шеберханасы")])
         + col("Жоба", [("about.html", "Курс туралы"), ("alash.html", "Алаш тұлғалары"), ("certificate.html", "Сертификат"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің кабинетім")])
         + '\n      <div class="ft-legal">'
@@ -495,6 +541,8 @@ def process_page(path, prefix, active):
         s = s.replace("</title>", "</title>\n  " + block, 1)
     if "<!-- build:home-courses" in s:
         s = re.sub(r"<!-- build:home-courses -->.*?<!-- /build:home-courses -->", lambda _: home_courses_block(prefix), s, flags=re.S)
+    if "<!-- build:academy-code" in s:
+        s = re.sub(r"<!-- build:academy-code -->.*?<!-- /build:academy-code -->", lambda _: academy_code_block(), s, flags=re.S)
     if "<!-- build:courses" in s:
         skip = ("x",) if rel == "index.html" else ()
         s = re.sub(r"<!-- build:courses -->.*?<!-- /build:courses -->", lambda _: courses_block(prefix, skip), s, flags=re.S)
@@ -772,6 +820,9 @@ def flat_stats(st):
             f[f"{k}_{code}"] = str(v)
     w = NUM_WORDS.get(st["courses"], str(st["courses"]))
     f["courses_word"], f["Courses_word"] = w, w[:1].upper() + w[1:]
+    for a, ids in ACADEMIES.items():  # академия бойынша жиынтық: <!--n:lect_acode--> т.б.
+        for k in ("lect", "quiz", "tasks"):
+            f[f"{k}_a{a}"] = str(sum(st["by_course"][i][k] for i in ids))
     f["site"] = f'{st["courses"]} курс · {st["lect"]} лекция · {st["quiz"]} тест сұрағы · {st["terms"]} термин'
     return f
 
@@ -900,11 +951,13 @@ def main():
                     process_page(extra, "../", "")
                     course_pages.append(f"{code}/{extra.name}")
             c["ready"] = len(clist)
+            COURSE_LISTS[code] = clist
             course_pages.append(f"{code}/")
         (ROOT / code / "data").mkdir(exist_ok=True)
         (ROOT / code / "data" / "lectures.js").write_text(
             f"window.CS50KZ_COURSE_LECTURES = window.CS50KZ_COURSE_LECTURES || {{}};\nwindow.CS50KZ_COURSE_LECTURES[{json.dumps(code)}] = "
             + json.dumps(clist, ensure_ascii=False, indent=1) + ";\n", encoding="utf-8")
+    COURSE_LISTS["x"] = lectures
     build_cheatsheet(sheets)
     n = build_glossary(terms)
     for page, active in [("index.html", "index"), ("about.html", "about"),
@@ -913,7 +966,7 @@ def main():
                          ("flashcards.html", "practice"), ("viz.html", "practice"),
                          ("teacher.html", ""), ("404.html", ""), ("cheatsheet.html", "practice"),
                          ("debug.html", "practice"), ("map.html", "practice"),
-                         ("detective.html", "practice"), ("flask.html", "practice"), ("projects.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("games.html", "games"), ("copyright.html", "about"), ("alash.html", "about"), ("courses.html", "courses")]:
+                         ("detective.html", "practice"), ("flask.html", "practice"), ("projects.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("games.html", "games"), ("copyright.html", "about"), ("alash.html", "about"), ("courses.html", "courses"), ("programming.html", "courses")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
     # Сандар: бір дерекқөз (STATS). Циклдағы нақты есеппен сәйкестігін тексереміз (айырмашылық - build қатесі).
@@ -934,7 +987,7 @@ def main():
     (ROOT / "assets/data/quiz.js").write_text(
         "window.CS50KZ_QUIZ = " + json.dumps(quiz, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     pages = ["", "practice.html", "playground.html", "viz.html", "flashcards.html", "glossary.html",
-             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "projects.html", "exam.html", "profile.html", "games.html", "copyright.html", "alash.html", "courses.html"] + [l["url"] for l in lectures] + course_pages
+             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "projects.html", "exam.html", "profile.html", "games.html", "copyright.html", "alash.html", "courses.html", "programming.html"] + [l["url"] for l in lectures] + course_pages
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"  <url><loc>{SITE_URL}{u}</loc></url>\n" for u in pages) + "</urlset>\n", encoding="utf-8")
@@ -949,7 +1002,7 @@ def main():
             own_files += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / code).glob("*.html") if f.name != "index.html")  # курстың ортақ беттері
         own_files += ["assets/js/own-viz.js", "assets/css/own-viz.css"]  # дербес курстардың интерактивті визуализаторлары
         own_files += ["assets/js/en-course.js", "assets/js/en-tools.js", "assets/css/en-course.css"]  # ағылшын курсының жаттығу қозғалтқышы мен құралдары
-        own_files += ["assets/js/games-en.js", "assets/css/en-games.css", "assets/js/en-trainer.js", "assets/js/en-home.js"]  # ағылшын ойындары, сөздік жаттықтырғышы, курс беті
+        own_files += ["assets/js/games-en.js", "assets/css/en-games.css", "assets/js/en-trainer.js", "assets/js/en-home.js", "assets/js/en-skills.js"]  # ағылшын ойындары, сөздік жаттықтырғышы, курс беті
         own_files += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / "assets/data").glob("en-*.js"))
         # Математика: қозғалтқыш, визуализация, стиль, жергілікті KaTeX (MIT), жоспар және дерек файлдары
         own_files += ["assets/js/math-course.js", "assets/js/math-viz.js", "assets/css/math-course.css", "math/data/plan.js",

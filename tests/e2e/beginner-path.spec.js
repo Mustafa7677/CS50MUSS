@@ -21,11 +21,11 @@ test("жаңа қолданушы: «Бастау: 0-апта», 5 қадам, �
   expect(hrefs).toEqual(["index.html#main", "lectures/week-0.html", "lectures/week-0.html#practice", "lectures/week-0.html#quiz", "lectures/week-1.html"]);
   await expect(route.locator("[aria-current='step']")).toHaveCount(1);
   await expect(route.locator(".route-step[data-step='1']")).toHaveAttribute("aria-current", "step");
-  // барлық курс басты бетте бірден көрінеді; CS50x тақтайшасы бірінші, «Бастау осыдан» белгісімен 0-лекцияға апарады
+  // бағдарламалау тілдері басты бетте бірден көрінеді; CS50x тақтайшасы бірінші, «Бастау осыдан» белгісімен 0-лекцияға апарады
   await expect(page.locator("details.route-later")).toHaveCount(0);
   const tiles = page.locator(".kh-tile");
-  await expect(tiles).toHaveCount(9);
-  for (let i = 0; i < 9; i++) await expect(tiles.nth(i)).toBeVisible();
+  await expect(tiles).toHaveCount(7);
+  for (let i = 0; i < 7; i++) await expect(tiles.nth(i)).toBeVisible();
   await expect(tiles.first()).toHaveAttribute("data-course", "x");
   await expect(tiles.first()).toHaveAttribute("href", "lectures/week-0.html");
   await expect(tiles.first().locator(".kh-start")).toHaveText("Бастау осыдан");
