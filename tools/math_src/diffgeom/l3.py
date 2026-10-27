@@ -172,7 +172,7 @@ def EFG(surf, u, v):
     dot = lambda a, b: sum(x * y for x, y in zip(a, b))
     return dot(xu, xu), dot(xu, xv), dot(xv, xv)
 
-def area(surf, u0, u1, v0, v1, n=300):
+def area(surf, u0, u1, v0, v1, n=150):
     du, dv = (u1 - u0) / n, (v1 - v0) / n
     total = 0.0
     for i in range(n):
@@ -195,7 +195,7 @@ helix_len = sum(math.dist((math.cos(2 * math.pi * k / n), math.sin(2 * math.pi *
                           (math.cos(2 * math.pi * (k + 1) / n), math.sin(2 * math.pi * (k + 1) / n), 2 * math.pi * (k + 1) / n)) for k in range(n))
 print("спираль ұзындығы:", round(helix_len, 5), " жайылған парақтағы кесінді 2π√2 =", round(2 * math.pi * math.sqrt(2), 5))
 """,
-        tasks=[r"Сфера ауданын есептегенде $n$-ді $50$, $100$, $300$ алып, қателіктің қалай кемитінін бақылаңыз. Неге ортаңғы нүкте ережесі жақсы жұмыс істейді?",
+        tasks=[r"Сфера ауданын есептегенде $n$-ді $50$, $100$, $200$ алып, қателіктің қалай кемитінін бақылаңыз. Неге ортаңғы нүкте ережесі жақсы жұмыс істейді?",
                r"Параболоид $z=x^2+y^2$-тің $x^2+y^2\le1$ үстіндегі бөлігінің ауданын есептеңіз. Дәл жауап $\frac\pi6(5\sqrt5-1)$ екенін полярлық координаталармен тексеріңіз.",
                r"Сфера үшін «полярлық» параметрлеуді ($\sin\theta$) жазып, $E,F,G$-ны есептеңіз. Аудан өзгере ме?"]),
     summary=[

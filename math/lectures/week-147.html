@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Functional Analysis · 6-сабақ: Спектр және компакт операторлар - CS50 қазақша">
-  <meta property="og:description" content="Математика, Functional Analysis · 6-сабақ: Спектр және компакт операторлар. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Спектр, компакт операторлар, самоқосалқы операторлар, спектрлік теорема идеясы.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-147.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Functional Analysis · 6-сабақ: Спектр және компакт операторлар - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-147.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Functional Analysis · 6-сабақ: Спектр және компакт операторлар. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Спектр, компакт операторлар, самоқосалқы операторлар, спектрлік теорема идеясы.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,428 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" style="--sc:#6b21a8" id="main">
       <div class="lecture-head" style="--lc:#6b21a8" data-n="147" data-msubj="funcanal" data-glyph="ℋ">
         <div class="num">Functional Analysis · 6-сабақ</div>
         <h1>Спектр және компакт операторлар</h1>
-        <p>Спектр, компакт операторлар, самоқосалқы операторлар, спектрлік теорема идеясы.</p>
+        <p>Матрицаның меншікті мәндері - оның «табиғи жиіліктері»: тербелетін ішектің дыбыс биіктігі, көпірдің резонансы, кванттық бөлшектің энергия деңгейлері. Шексіз өлшемде меншікті мән ұғымы спектрге кеңейеді: $T-\lambda I$ қайтымсыз болатын $\lambda$-лар.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 45 мин</span><span>Есептер ≈ 1 сағ</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 1 сағ 50 мин</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Таңғаларлығы - спектрде меншікті мән болмайтын нүктелер де бар: Вольтерра операторының спектрі $\{0\}$, бірақ $0$ меншікті мән емес. Бұл сабақта спектрді анықтап, оның тұйық және $\|T\|$ радиусты дөңгелекте жататынын дәлелдейміз, Вольтерра операторының спектрін есептейміз. Сосын «ақырлы өлшемге ұқсайтын» операторлар класы - компакт операторларды енгіземіз: олар үшін спектрлік теорема матрицалардағыдай жұмыс істейді. Соңында $\min(x,y)$ ядролы интегралдық оператордың меншікті функцияларын тауып, олардан $\sum\frac1{(2n-1)^2}=\frac{\pi^2}8$ аламыз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-23">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=funcanal">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Functional Analysis: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-23">Functional Analysis</a></span><ol><li><a href="week-142.html" title="Нормаланған және Банах кеңістіктері">1</a></li><li><a href="week-143.html" title="Lp кеңістіктері">2</a></li><li><a href="week-144.html" title="Гильберт кеңістіктері">3</a></li><li><a href="week-145.html" title="Шектелген сызықтық операторлар">4</a></li><li><a href="week-146.html" title="Қос кеңістік және Хан–Банах теоремасы">5</a></li><li><a href="week-147.html" aria-current="page" title="Спектр және компакт операторлар">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-23">Functional Analysis</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>спектр мен меншікті мәнді анықтап, ақырлы және шексіз өлшем айырмашылығын түсіндіру;</li>
+        <li>спектрдің тұйық және $\{|\lambda|\le\|T\|\}$ дөңгелегінде жататынын Нейман қатары арқылы дәлелдеу;</li>
+        <li>Вольтерра операторының спектрі $\{0\}$, ал $0$ меншікті мән емес екенін дәлелдеу;</li>
+        <li>компакт операторды анықтап, ақырлы рангты операторлардың компакт, ал шексіз өлшемде тепе-теңдік операторының компакт емес екенін көрсету;</li>
+        <li>өзіне-өзі түйіндес оператордың меншікті мәндері нақты, меншікті векторлары ортогональ екенін дәлелдеу; компакт өзіне-өзі түйіндес операторлар үшін спектрлік теореманы қолдану;</li>
+        <li>интегралдық оператордың меншікті функцияларын дифференциалдық теңдеуге келтіріп табу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Шектелген операторлар, Нейман қатары (4-сабақ). Гильберт кеңістігі, ортонормаланған базис, Парсеваль (3-сабақ). $\ell^2$-де бірлік шардың компакт еместігі (1-сабақ). Меншікті мәндер, симметриялы матрицаның спектрлік теоремасы (сызықтық алгебра, 8-сабақ). Сызықтық дифференциалдық теңдеулер (ODE).</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-146.html">Functional Analysis · 5-сабақ: Қос кеңістік және Хан–Банах теоремасы</a></li><li><a href="week-14.html">Linear Algebra · 8-сабақ: Меншікті мәндер мен меншікті векторлар</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Ақырлы өлшемде $A-\lambda I$ қайтымсыз $\iff\det(A-\lambda I)=0\iff\lambda$ - меншікті мән. Шексіз өлшемде оператор инъективті, бірақ сюръективті емес болуы мүмкін (оңға ығысу), сондықтан $\lambda$ спектрде, бірақ меншікті мән емес болуы мүмкін.</p>
+      <p>Нейман қатары спектрдің «үлкен» $\lambda$-дан бос екенін береді: $|\lambda|&gt;\|T\|$ болса, $T-\lambda I=-\lambda(I-\frac T\lambda)$, ал $\left\|\frac T\lambda\right\|&lt;1$ - қайтымды. Сондықтан спектр радиусы $\|T\|$ дөңгелекте. Вольтерра үшін $\|V^n\|=\frac1{n!}$ - кез келген $\lambda\ne0$ үшін қатар жинақталады, спектр тек $\{0\}$.</p>
+      <p>Компакт оператор шексіз өлшемді шарды «сығып», компакт жиынға жібереді - ақырлы өлшемді операторлардың шегі сияқты. Мысалы $\ell^2$-де $D(x_n)=\left(\frac{x_n}n\right)$: жоғары координаталарды күшті басады. Мұндай операторлардың спектрі матрицалардікі сияқты - нөлге жинақталатын меншікті мәндер.</p>
+      <p>Ішек тербелісі: $-u''=\mu u$, шеттерде шекаралық шарттар. Оның кері операторы - интегралдық оператор (Грин функциясымен), компакт және өзіне-өзі түйіндес. Меншікті функциялар - синустар, меншікті мәндер $\frac1{\mu_n}$ - нөлге жинақталады. Меншікті мәндердің қосындысы ядроның диагоналінің интегралына тең - бұдан сандық қатарлар шығады.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 6.1 · Спектр</span>
+        <p>$X$ - Банах кеңістігі, $T\in B(X)$. $\lambda$ - $T$-ның <strong>меншікті мәні</strong> (<span class="term-en">eigenvalue</span>), егер $Tx=\lambda x$ болатын $x\ne0$ бар. <strong>Спектр</strong> (<span class="term-en">spectrum</span>) $\sigma(T)=\{\lambda:T-\lambda I$ қайтымды емес (шектелген кері операторы жоқ)$\}$. Меншікті мәндер $\subseteq\sigma(T)$. <strong>Спектрлік радиус</strong> (<span class="term-en">spectral radius</span>) $r(T)=\sup\{|\lambda|:\lambda\in\sigma(T)\}$ (комплекс скалярлар үстінде).</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 6.1 · Спектрдің қасиеттері</span>
+        <p>(1) $\sigma(T)$ - тұйық жиын және $\sigma(T)\subseteq\{|\lambda|\le\|T\|\}$. (2) Ақырлы өлшемде $\sigma(T)$ - дәл меншікті мәндер жиыны. (3) Гельфанд: $r(T)=\lim_{n\to\infty}\|T^n\|^{1/n}$; комплекс Банах кеңістігінде $\sigma(T)\ne\varnothing$.</p></div>
+      <p><em>Негіздеме.</em> (3)-ті дәлелсіз келтіреміз (комплекс анализ қажет).</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 6.2 · Вольтерра операторы</span>
+        <p>$C[0,1]$-де $(Vf)(x)=\int_0^xf$: $\sigma(V)=\{0\}$, бірақ $0$ - меншікті мән емес ($V$ инъективті), және $V$-ның ешбір меншікті мәні жоқ.</p></div>
+      <p><em>Негіздеме.</em> Спектрде, бірақ меншікті мән емес - шексіз өлшемнің құбылысы.</p>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 6.2 · Компакт оператор</span>
+        <p>$T\in B(X,Y)$ - <strong>компакт оператор</strong> (<span class="term-en">compact operator</span>), егер әр шектелген тізбек $(x_n)$ үшін $(Tx_n)$-нің жинақталатын ішкі тізбегі бар болса. Ақырлы рангты ($\dim\operatorname{im}T&lt;\infty$) шектелген оператор - компакт.</p></div>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 6.3 · Компакт операторлардың мысалдары</span>
+        <p>(1) Шексіз өлшемде $I$ компакт емес. (2) $\ell^2$-де $D(x_n)=(d_nx_n)$, $d_n\to0$ - компакт; меншікті мәндері $d_n$. (3) Ақырлы рангты операторлардың норма бойынша шегі компакт. (4) Үздіксіз ядролы интегралдық оператор $L^2[0,1]$-де компакт.</p></div>
+      <p><em>Негіздеме.</em> (3)-(4)-ті дәлелсіз келтіреміз ((4) - Арцела-Асколи теоремасы). Компакт оператордың нөлден өзгеше меншікті мәндері тек нөлге жинақтала алады.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 6.4 · Өзіне-өзі түйіндес операторлар</span>
+        <p>$H$ - Гильберт кеңістігі, $T\in B(H)$ <strong>өзіне-өзі түйіндес</strong> (<span class="term-en">self-adjoint</span>): $\langle Tx,y\rangle=\langle x,Ty\rangle$. (1) Меншікті мәндері нақты; әртүрлі меншікті мәндердің меншікті векторлары ортогональ. (2) Спектрлік теорема: $T$ компакт әрі өзіне-өзі түйіндес болса, $H$-тың $\ker T$-ге ортогональ бөлігінде $T$-ның меншікті векторларынан тұратын ортонормаланған базис бар, $Tx=\sum\lambda_k\langle x,e_k\rangle e_k$, $\lambda_k\to0$.</p></div>
+      <p><em>Негіздеме.</em> (2)-ні дәлелсіз келтіреміз; ақырлы өлшемде - симметриялы матрицаның диагональдануы.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 6.1 · Спектр</span>
+        <div class="math-fbody">$$\sigma(T)=\mathbb{C}\setminus\rho(T),\quad \rho(T)=\{\lambda:\ (T-\lambda I)^{-1}\in B(X)\}$$</div>
+        <p class="math-fnote">Меншікті мәндерді қамтиды.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 6.2 · Спектрдің шекарасы</span>
+        <div class="math-fbody">$$|\lambda|&gt;\|T\|\Rightarrow(T-\lambda I)^{-1}=-\sum_{n\ge0}\frac{T^n}{\lambda^{n+1}}$$</div>
+        <p class="math-fnote">Нейман қатары.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 6.3 · Гельфанд формуласы</span>
+        <div class="math-fbody">$$r(T)=\lim_{n\to\infty}\|T^n\|^{1/n}$$</div>
+        <p class="math-fnote">Вольтерра: $\left(\frac1{n!}\right)^{1/n}\to0$.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 6.4 · Спектрлік жіктеу</span>
+        <div class="math-fbody">$$Tx=\sum_k\lambda_k\langle x,e_k\rangle e_k,\quad\lambda_k\to0$$</div>
+        <p class="math-fnote">Компакт, өзіне-өзі түйіндес.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 6.5 · min ядросы</span>
+        <div class="math-fbody">$$\int_0^1\min(x,y)\sin\big((n-\tfrac12)\pi y\big)\,dy=\frac{\sin((n-\frac12)\pi x)}{(n-\frac12)^2\pi^2}$$</div>
+        <p class="math-fnote">Меншікті функциялар.</p></div>
+      <div class="math-formula" id="f-6"><span class="math-fname">Формула 6.6 · Іздің формуласы</span>
+        <div class="math-fbody">$$\sum_n\lambda_n=\int_0^1k(x,x)\,dx$$</div>
+        <p class="math-fnote">Мерсер (дәлелсіз); $\sum\frac1{(2n-1)^2}=\frac{\pi^2}8$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Спектрді табу жоспары: (1) меншікті мәндерді іздеңіз: $Tx=\lambda x$ теңдеуін шешіңіз (интегралдық операторда - дифференциалдап, ОДТ-ға келтіріңіз, шекаралық шарттарды ұмытпаңыз); (2) Нейман бойынша $|\lambda|&gt;\|T\|$ (не $|\lambda|&gt;r(T)$) - спектрде емес; (3) қалған $\lambda$ үшін $T-\lambda I$-ның инъективтілігін және сюръективтілігін бөлек тексеріңіз; (4) компакт оператор үшін $\lambda\ne0$ спектрде $\iff$ меншікті мән (Фредгольм альтернативасы, дәлелсіз).</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>(1) Шексіз өлшемде спектр $\ne$ меншікті мәндер: Вольтерра, оңға ығысу ($\sigma(S)$ - бірлік дөңгелек, меншікті мән жоқ; дәлелсіз). (2) Компакт оператордың спектрінде $0$ әрдайым бар (шексіз өлшемде), бірақ ол меншікті мән болмауы мүмкін. (3) Спектрлік теорема өзіне-өзі түйіндес (симметриялы) және компакт операторлар үшін; жалпы оператор диагональданбауы мүмкін (Вольтерра). (4) Нақты скалярлармен спектр бос болуы мүмкін ($90°$ бұру матрицасы) - сондықтан теория комплекс сандармен құрылады.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: спектр шектелген және тұйық</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.1 (1)-ді дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$|\lambda|&gt;\|T\|$: $T-\lambda I=-\lambda\left(I-\frac T\lambda\right)$, $\left\|\frac T\lambda\right\|&lt;1$ - Нейман бойынша қайтымды. Демек $\lambda\notin\sigma(T)$.</li>
+            <li>Тұйық: $\lambda_0\notin\sigma(T)$, $R=(T-\lambda_0I)^{-1}$. $T-\lambda I=(T-\lambda_0I)\big(I-(\lambda-\lambda_0)R\big)$.</li>
+            <li>$|\lambda-\lambda_0|\|R\|&lt;1$ болса, екінші көбейткіш қайтымды (Нейман), демек $T-\lambda I$ қайтымды.</li>
+            <li>Сонымен спектрдің толықтауышы ашық - $\sigma(T)$ тұйық. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: Вольтерра спектрі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.2-ні дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>4-сабақ: $\|V^n\|=\frac1{n!}$. $\lambda\ne0$: $\sum\frac{\|V^n\|}{|\lambda|^{n+1}}=\frac1{|\lambda|}\sum\frac1{n!|\lambda|^n}&lt;\infty$.</li>
+            <li>$S=-\sum\frac{V^n}{\lambda^{n+1}}$ жинақты, $(V-\lambda I)S=S(V-\lambda I)=I$ (Нейман тексеруі). Демек $\lambda\notin\sigma(V)$.</li>
+            <li>$0\in\sigma(V)$: $V$ сюръективті емес - бейнедегі әр функция $g(0)=0$ және дифференциалданады; $g\equiv1$ бейнеде жоқ.</li>
+            <li>$V$ инъективті: $\int_0^xf=0$ әр $x$ үшін $\Rightarrow f=0$ (дифференциалдап). Демек $0$ меншікті мән емес; басқа $\lambda$ спектрде емес - меншікті мән жоқ. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: компакт операторлар</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.3 (1)-(2)-ні дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>(1) $\ell^2$-де $e_n$ шектелген, ал $Ie_n=e_n$, $\|e_n-e_m\|=\sqrt2$ - жинақталатын ішкі тізбек жоқ: $I$ компакт емес.</li>
+            <li>(2) $D_N(x)=(d_1x_1,\dots,d_Nx_N,0,\dots)$ - ақырлы рангты, компакт.</li>
+            <li>$\|D-D_N\|=\sup_{n&gt;N}|d_n|\to0$, ал компакт операторлардың норма бойынша шегі компакт (Теорема 6.3 (3), дәлелсіз) - $D$ компакт.</li>
+            <li>Меншікті мәндер: $De_n=d_ne_n$. Мысалы $d_n=\frac1n$: $\sigma(D)=\{\frac1n\}\cup\{0\}$, $0$ меншікті мән емес ($D$ инъективті). ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: өзіне-өзі түйіндес операторлар</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.4 (1)-ді дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$Tx=\lambda x$, $\|x\|=1$ (комплекс скалярлар): $\lambda=\langle Tx,x\rangle=\langle x,Tx\rangle=\bar\lambda$ - нақты.</li>
+            <li>$Tx=\lambda x$, $Ty=\mu y$, $\lambda\ne\mu$: $\lambda\langle x,y\rangle=\langle Tx,y\rangle=\langle x,Ty\rangle=\mu\langle x,y\rangle$.</li>
+            <li>$(\lambda-\mu)\langle x,y\rangle=0$, демек $\langle x,y\rangle=0$.</li>
+            <li>Мысал: $\begin{pmatrix}2&amp;1\\1&amp;2\end{pmatrix}$ - меншікті мәндері $1,3$, векторлары $(1,-1)$, $(1,1)$ - ортогональ ✓. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5">
+        <summary>Қорытып шығару 5: min ядросының меншікті функциялары</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $(Kf)(x)=\int_0^1\min(x,y)f(y)\,dy$ үшін $Kf=\lambda f$ шешу.</p>
+          <ol class="math-steps">
+            <li>$(Kf)(x)=\int_0^xyf(y)\,dy+x\int_x^1f(y)\,dy$. Дифференциалдасақ: $(Kf)'=\int_x^1f$, $(Kf)''=-f$.</li>
+            <li>$Kf=\lambda f$ ($\lambda\ne0$): $\lambda f''=-f$; шекаралық шарттар: $(Kf)(0)=0\Rightarrow f(0)=0$, $(Kf)'(1)=0\Rightarrow f'(1)=0$.</li>
+            <li>$f=\sin\omega x$, $\omega=\frac1{\sqrt\lambda}$; $f'(1)=\omega\cos\omega=0\Rightarrow\omega=(n-\frac12)\pi$.</li>
+            <li>$\lambda_n=\frac1{(n-\frac12)^2\pi^2}$, $f_n=\sqrt2\sin((n-\frac12)\pi x)$ - ортонормаланған. Ізі: $\sum\lambda_n=\int_0^1\min(x,x)=\frac12$ (Мерсер), демек $\sum\frac1{(2n-1)^2}=\frac{\pi^2}8$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Симметриялы матрица</h3>
+        <p class="math-problem">$A=\begin{pmatrix}2&amp;1\\1&amp;2\end{pmatrix}$: спектр және спектрлік жіктеу.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\det(A-\lambda I)=(2-\lambda)^2-1=0$: $\lambda=1,3$.</li>
+          <li><b>2-қадам.</b> $e_1=\frac1{\sqrt2}(1,-1)$, $e_2=\frac1{\sqrt2}(1,1)$ - ортонормаланған.</li>
+          <li><b>3-қадам.</b> $Ax=1\cdot\langle x,e_1\rangle e_1+3\langle x,e_2\rangle e_2$.</li>
+          <li><b>4-қадам.</b> $\|A\|_2=3=r(A)$ - симметриялы матрицада норма спектрлік радиусқа тең.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\sigma(A)=\{1,3\}$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Диагональ оператор</h3>
+        <p class="math-problem">$\ell^2$-де $D(x_n)=\left(\frac{x_n}n\right)$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $De_n=\frac1ne_n$ - меншікті мәндер $1,\frac12,\frac13,\dots$</li>
+          <li><b>2-қадам.</b> $\|D\|=1$, компакт ($d_n\to0$).</li>
+          <li><b>3-қадам.</b> $0\in\sigma(D)$: $D^{-1}$ болса, $\|D^{-1}e_n\|=n$ - шектелмеген.</li>
+          <li><b>4-қадам.</b> $0$ меншікті мән емес: $Dx=0\Rightarrow x=0$. $\sigma(D)=\{0\}\cup\{\frac1n\}$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\{0\}\cup\{\frac1n\}$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Вольтерра</h3>
+        <p class="math-problem">$\lambda=2$ үшін $(V-2I)f=g$ шешу, $g\equiv1$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Нейман: $f=-\sum\frac{V^ng}{2^{n+1}}$, $V^n1=\frac{x^n}{n!}$.</li>
+          <li><b>2-қадам.</b> $f(x)=-\frac12\sum\frac{(x/2)^n}{n!}=-\frac12e^{x/2}$.</li>
+          <li><b>3-қадам.</b> Тексеру: $Vf=-\frac12\cdot2(e^{x/2}-1)=1-e^{x/2}$; $Vf-2f=1-e^{x/2}+e^{x/2}=1$ ✓.</li>
+          <li><b>4-қадам.</b> Әр $\lambda\ne0$ үшін солай - $\sigma(V)=\{0\}$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $f=-\frac12e^{x/2}$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Ішек тербелісі</h3>
+        <p class="math-problem">$\min(x,y)$ ядролы операторның алғашқы меншікті мәндері.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\lambda_n=\frac1{(n-\frac12)^2\pi^2}$: $\lambda_1=\frac4{\pi^2}\approx0.405$, $\lambda_2=\frac4{9\pi^2}\approx0.045$.</li>
+          <li><b>2-қадам.</b> Меншікті функциялар $\sin\frac{\pi x}2$, $\sin\frac{3\pi x}2$ - бір шеті бекітілген, бір шеті еркін ішектің тербеліс модалары.</li>
+          <li><b>3-қадам.</b> $\lambda_n\to0$ - компакт оператордың белгісі.</li>
+          <li><b>4-қадам.</b> $\sum\lambda_n=\frac12$: $\frac4{\pi^2}\sum\frac1{(2n-1)^2}=\frac12$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac4{\pi^2}$, $\frac4{9\pi^2}$.</p></div>
+      <div class="math-example" id="ex-5"><h3>Мысал 5. Нақты спектр бос</h3>
+        <p class="math-problem">$R=\begin{pmatrix}0&amp;-1\\1&amp;0\end{pmatrix}$ ($90°$ бұру).</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\det(R-\lambda I)=\lambda^2+1$ - нақты түбір жоқ.</li>
+          <li><b>2-қадам.</b> Нақты сандар үстінде спектр бос - бұру ешбір бағытты сақтамайды.</li>
+          <li><b>3-қадам.</b> Комплекс сандар үстінде $\sigma(R)=\{\pm i\}$.</li>
+          <li><b>4-қадам.</b> Сондықтан спектр теориясы комплекс кеңістіктерде құрылады; Гельфанд бойынша онда спектр әрдайым бос емес.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\{\pm i\}$ ($\mathbb C$-да).</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Спектр - тек меншікті мәндер</span> → <span class="math-good">шексіз өлшемде көбірек</span><br>Неге қате: Вольтерра: $\sigma=\{0\}$, меншікті мән жоқ.</li>
+        <li><span class="math-bad">$\|T\|=r(T)$ әрдайым</span> → <span class="math-good">$r(T)\le\|T\|$</span><br>Неге қате: $\|V\|=1$, $r(V)=0$.</li>
+        <li><span class="math-bad">Компакт оператордың $0$ - меншікті мәні</span> → <span class="math-good">$0\in\sigma$, бірақ меншікті мән болмауы мүмкін</span><br>Неге қате: $D(x_n)=(\frac{x_n}n)$.</li>
+        <li><span class="math-bad">Тепе-теңдік әрдайым компакт</span> → <span class="math-good">тек ақырлы өлшемде</span><br>Неге қате: $\|e_n-e_m\|=\sqrt2$.</li>
+        <li><span class="math-bad">Интегралдық теңдеуді шешкенде шекаралық шарттарды ұмыту</span> → <span class="math-good">$f(0)=0$, $f'(1)=0$</span><br>Неге қате: $\omega=(n-\frac12)\pi$.</li>
+        <li><span class="math-bad">Кез келген оператор диагональданады</span> → <span class="math-good">компакт өзіне-өзі түйіндес - иә; жалпы - жоқ</span><br>Неге қате: Вольтерра.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="min(x, y) ядросының меншікті функциялары sin((n − ½)πx)" data-config='{"fns": [{"f": "sin((n - 0.5)*pi*x)", "label": "fₙ(x)"}, {"f": "sin(0.5*pi*x)", "label": "f₁ (негізгі мода)", "color": 1, "dash": [5, 4]}], "params": [{"n": "n", "min": 1, "max": 6, "step": 1, "v": 2}], "view": [0, 1, -1.2, 1.2]}'></div>
+      <p><b>Бақылаңыз:</b> Әр меншікті функция $x=0$-де нөл (бекітілген шет), ал $x=1$-де жанамасы көлденең (еркін шет). $n$ өскен сайын тербелістер көбейеді, меншікті мән $\lambda_n=\frac1{(n-\frac12)^2\pi^2}$ кемиді - компакт оператор жоғары «жиіліктерді» басады.</p>
+      <div class="math-viz" data-viz="graph" data-title="Компакт оператордың меншікті мәндері нөлге жинақталады" data-config='{"fns": [{"f": "1/((floor(x) - 0.5)^2*pi^2)", "label": "λₙ = 1/((n − ½)²π²), n = ⌊x⌋"}, {"f": "1/floor(x)", "label": "D(xₙ) = xₙ/n: λₙ = 1/n", "color": 1}], "view": [1, 15, 0, 1.05]}'></div>
+      <p><b>Бақылаңыз:</b> Екі компакт оператордың меншікті мәндері: $\min$ ядросы ($\sim\frac1{n^2}$ - тез) және диагональ $\frac1n$ (баяу). Екеуінде де $\lambda_n\to0$ - компакт операторда нөлден өзгеше меншікті мәндер тек нөлге жинақтала алады. Тепе-теңдік операторында барлық меншікті мән $1$ - ол компакт емес.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m23-6-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m23-6-t1">1. Матрица спектрі</h3></div>
+        <p>$A=\begin{pmatrix}2&amp;1\\1&amp;2\end{pmatrix}$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Ең үлкен меншікті мән","a":3,"v":"max(Matrix([[2, 1], [1, 2]]).eigenvals().keys())","hint":"$(2-\\lambda)^2=1$.","sol":{"steps":["$\\lambda=1,3$."],"ans":"$3$"}},{"q":"Меншікті мәндердің қосындысы","a":4,"v":"Matrix([[2, 1], [1, 2]]).trace()","hint":"Із.","sol":{"steps":["$1+3$."],"ans":"$4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m23-6-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m23-6-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Шексіз өлшемде спектр тек меншікті мәндерден тұрады.","a":false,"e":"Вольтерра: $\\sigma=\\{0\\}$, меншікті мән жоқ.","hint":"Теорема 6.2."},{"q":"Өзіне-өзі түйіндес оператордың меншікті мәндері нақты.","a":true,"e":"$\\lambda=\\bar\\lambda$.","hint":"Теорема 6.4 (1)."},{"q":"$\\ell^2$-де тепе-теңдік операторы компакт.","a":false,"e":"$\\|e_n-e_m\\|=\\sqrt2$.","hint":"Теорема 6.3 (1)."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m23-6-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m23-6-t3">3. Спектрдің шекарасы</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\sigma(T)$ қай жиында жатады?","o":["$\\{|\\lambda|\\le\\|T\\|\\}$","$\\{|\\lambda|\\ge\\|T\\|\\}$","$\\{\\lambda=\\|T\\|\\}$","$\\mathbb R$"],"a":0,"e":"Нейман қатары.","hint":"Теорема 6.1."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m23-6-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m23-6-t4">4. Диагональ оператор</h3></div>
+        <p>$\ell^2$-де $D(x_n)=\left(\frac{x_n}n\right)$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\|D\\|$","a":1,"v":"1","hint":"$\\sup|d_n|$.","sol":{"steps":["$d_1=1$."],"ans":"$1$"}},{"q":"$\\|D-D_{10}\\|$ ($D_{10}$ - алғашқы 10 координата)","a":"1/11","v":"Rational(1, 11)","hint":"$\\sup_{n>10}\\frac1n$.","sol":{"steps":["$\\frac1{11}$."],"ans":"$\\frac1{11}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m23-6-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m23-6-t5">5. Вольтерра</h3></div>
+        <p>$(Vf)(x)=\int_0^xf$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\|V^3\\|$ ($\\sup$-норма)","a":"1/6","v":"Rational(1, factorial(3))","hint":"$\\frac1{n!}$.","sol":{"steps":["$\\frac1{3!}$."],"ans":"$\\frac16$"}},{"q":"$(V-2I)f=1$ шешімінің $f(0)$","a":"-1/2","v":"Rational(-1, 2)","hint":"$f=-\\frac12e^{x/2}$.","sol":{"steps":["$-\\frac12e^0$."],"ans":"$-\\frac12$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m23-6-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m23-6-t6">6. min ядросы</h3></div>
+        <p>$\lambda_n=\frac1{(n-\frac12)^2\pi^2}$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\lambda_1\\cdot\\pi^2$","a":4,"v":"1/(Rational(1, 2))**2","hint":"$n=1$: $(\\frac12)^2$.","sol":{"steps":["$\\frac1{1/4}$."],"ans":"$4$"}},{"q":"$\\sum_n\\lambda_n$","a":"1/2","v":"integrate(x, (x, 0, 1))","hint":"$\\int_0^1\\min(x,x)\\,dx$.","sol":{"steps":["$\\int_0^1x$."],"ans":"$\\frac12$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m23-6-exp7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m23-6-t7">7. Меншікті мәндер</h3></div>
+        <p>$\min(x,y)$ ядросының $\lambda_n$-ін $n$ арқылы ($n$-ді $x$ деп).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\lambda_n=?$","a":"1/((x-1/2)^2*pi^2)","v":"1/((x - Rational(1, 2))**2*pi**2)","hint":"$\\omega=(n-\\frac12)\\pi$, $\\lambda=\\frac1{\\omega^2}$.","sol":{"steps":["$f'(1)=0$."],"ans":"$\\frac1{(n-\\frac12)^2\\pi^2}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m23-6-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m23-6-t8">8. Оператор - спектр</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Оператор - спектрі.","pairs":[["[[2, 1], [1, 2]]","{1, 3}"],["Вольтерра V","{0}, меншікті мәнсіз"],["D(xₙ) = xₙ/n","{0} ∪ {1/n}"],["90° бұру (ℂ үстінде)","{±i}"]],"hint":"Мысалдар.","sol":{"steps":["Меншікті мәндер және қайтымсыздық."]},"e":"Спектр - меншікті мәндерден кең."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m23-6-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m23-6-t9">9. Параметрлік: симметриялы матрица</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,6]},"b":{"int":[1,5]}},"type":"num","q":"$\\begin{pmatrix}#{a}&#{b}\\\\#{b}&#{a}\\end{pmatrix}$-ның ең үлкен меншікті мәні?","a":"a + b","v":"max(Matrix([[int(a), int(b)], [int(b), int(a)]]).eigenvals().keys())","hint":"Меншікті векторлар $(1,1)$, $(1,-1)$.","sol":{"steps":["$#{a}\\pm#{b}$."],"ans":"$#{a+b}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m23-6-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m23-6-t10">10. Параметрлік: min ядросы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"n":{"int":[1,5]}},"type":"num","q":"$\\min(x,y)$ ядролы оператордың $#{n}$-ші меншікті мәнінің кері шамасы $\\frac1{\\lambda_{#{n}}}$ (жуық мән не $\\pi$ арқылы)?","a":"(n - 0.5)^2*pi^2","v":"(int(n) - Rational(1, 2))**2*pi**2","hint":"$\\frac1{\\lambda_n}=(n-\\frac12)^2\\pi^2$.","sol":{"steps":["$(#{n}-\\frac12)^2\\pi^2$."],"ans":"$#{(n - 0.5)^2}\\pi^2$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m23-6-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m23-6-t11">11. Вольтерра спектрі</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\sigma(V)=\\{0\\}$.","steps":["$\\|V^n\\|=\\frac1{n!}$.","$\\lambda\\ne0$: $\\sum\\frac{V^n}{\\lambda^{n+1}}$ жинақты.","$(V-\\lambda I)^{-1}$ бар - $\\lambda\\notin\\sigma$.","$V$ сюръективті емес: $0\\in\\sigma$.","$V$ инъективті: $0$ меншікті мән емес."],"hint":"Теорема 6.2.","sol":{"ans":"$\\sigma(V)=\\{0\\}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m23-6-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m23-6-t12">12. Қадамдық шешім: ортогональ меншікті векторлар</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Өзіне-өзі түйіндес оператордың әртүрлі меншікті мәндеріне сәйкес меншікті векторлары ортогональ екенін дәлелдеңіз.","steps":["$Tx=\\lambda x$, $Ty=\\mu y$, $\\lambda\\ne\\mu$ (нақты).","$\\lambda\\langle x,y\\rangle=\\langle Tx,y\\rangle$.","$=\\langle x,Ty\\rangle=\\mu\\langle x,y\\rangle$.","$(\\lambda-\\mu)\\langle x,y\\rangle=0\\Rightarrow\\langle x,y\\rangle=0$."],"ans":"Теорема 6.4 (1)."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Спектрлік теория - кванттық механиканың (энергия деңгейлері - Гамильтонианның спектрі), тербелістер теориясының (көпірлер, ғимараттар, музыкалық аспаптардың модалары), деректер талдауының (PCA - ковариация операторының меншікті векторлары; Карунен-Лоэв жіктеуі - Броун қозғалысы $\min(s,t)$ ковариациясымен!) және графтарды кластерлеудің (Лаплас матрицасының спектрі) негізі.</p>
+      <p><b>Мини-жоба: «Ішек модалары».</b> $\min(x,y)$ ядролы интегралдық операторды матрицамен жуықтап, оның меншікті мәндерін дәрежелік әдіспен табамыз, формуламен $\frac1{(n-\frac12)^2\pi^2}$ салыстырамыз, іздің $\frac12$-ге тең екенін тексереміз және Вольтерра операторының дәрежелерінің нормалары $\frac1{n!}$-ге ұмтылатынын көреміз.</p>
+<pre data-lang="python"><code class="language-python">import math
+
+N = 120
+h = 1.0 / N
+xs = [(i + 0.5) * h for i in range(N)]
+K = [[min(xi, yj) * h for yj in xs] for xi in xs]
+
+def matvec(M, v):
+    return [sum(a * b for a, b in zip(row, v)) for row in M]
+
+def dot(a, b):
+    return sum(x * y for x, y in zip(a, b))
+
+def power_method(M, deflate=(), iters=300):
+    v = [1.0] * len(M)
+    for _ in range(iters):
+        w = matvec(M, v)
+        for lam, e in deflate:
+            c = dot(w, e)
+            w = [wi - c * ei for wi, ei in zip(w, e)]
+        nv = math.sqrt(dot(w, w))
+        v = [wi / nv for wi in w]
+    lam = dot(v, matvec(M, v))
+    return lam, v
+
+found = []
+for n in range(1, 5):
+    lam, v = power_method(K, found)
+    found.append((lam, v))
+    exact = 1 / ((n - 0.5) ** 2 * math.pi ** 2)
+    print(f"λ_{n} ≈ {lam:.6f}   формула {exact:.6f}")
+
+trace = sum(K[i][i] for i in range(N))
+print("із (матрица) ≈", round(trace, 6), " ∫ min(x, x) dx = 0.5")
+
+V = [[h if j &lt; i else (h / 2 if j == i else 0.0) for j in range(N)] for i in range(N)]
+P = [row[:] for row in V]
+for n in range(2, 7):
+    P = [[sum(P[i][k] * V[k][j] for k in range(N)) for j in range(N)] for i in range(N)] if n &lt;= 4 else P
+    if n &lt;= 4:
+        norm_inf = max(sum(abs(a) for a in row) for row in P)
+        print(f"‖V^{n}‖∞ ≈ {norm_inf:.5f}   1/{n}! = {1 / math.factorial(n):.5f}")
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$N$-ді $60$ және $240$ етіп өзгертіп, $\lambda_1$-дің дәлдігі қалай жақсаратынын бақылаңыз.</li>
+        <li>Табылған $v$ (меншікті вектор) $\sqrt2\sin\frac{\pi x}2$-ге пропорционал екенін бірнеше нүктеде тексеріңіз.</li>
+        <li>Броун қозғалысының ковариациясы $\min(s,t)$. Карунен-Лоэв жіктеуі бойынша $W(t)=\sum\sqrt{\lambda_n}\,Z_n\,\sqrt2\sin((n-\frac12)\pi t)$, $Z_n$ - тәуелсіз стандарт қалыпты. Осы қатардың алғашқы 50 мүшесімен Броун траекториясын модельдеңіз (Stochastic Processes, 5-сабақ).</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Спектр</td><td>$T-\lambda I$ қайтымсыз</td><td>меншікті мәндерді қамтиды</td></tr>
+        <tr><td>Шекарасы</td><td>$\sigma\subseteq\{|\lambda|\le\|T\|\}$, тұйық</td><td>Нейман</td></tr>
+        <tr><td>Вольтерра</td><td>$\sigma(V)=\{0\}$, меншікті мән жоқ</td><td>$\|V^n\|=\frac1{n!}$</td></tr>
+        <tr><td>Компакт оператор</td><td>шектелгенді салыстырмалы компактқа</td><td>$\lambda_n\to0$</td></tr>
+        <tr><td>Өзіне-өзі түйіндес</td><td>нақты $\lambda$, ортогональ векторлар</td><td>спектрлік теорема</td></tr>
+        <tr><td>$\min(x,y)$</td><td>$\lambda_n=\frac1{(n-\frac12)^2\pi^2}$</td><td>$\sum\frac1{(2n-1)^2}=\frac{\pi^2}8$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m23-6-self">
+        <li><input type="checkbox"> <span>Мен спектр мен меншікті мәнді ажырата аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен спектрдің тұйық және шектелген екенін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Вольтерра операторының спектрін есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен компакт оператордың мысалдары мен қарсы мысалдарын келтіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен өзіне-өзі түйіндес оператордың меншікті мәндері нақты, векторлары ортогональ екенін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен интегралдық оператордың меншікті функцияларын дифференциалдық теңдеу арқылы таба аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="d">
+<p class="q-text">1. σ(T) =</p>
+<label><input type="radio" value="a"> тек меншікті мәндер</label>
+<label><input type="radio" value="b"> ‖T‖</label>
+<label><input type="radio" value="c"> ker T</label>
+<label><input type="radio" value="d"> T − λI қайтымсыз болатын λ</label>
+<p class="explain">Анықтама.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">2. σ(T) ⊆</p>
+<label><input type="radio" value="a"> {|λ| ≥ ‖T‖}</label>
+<label><input type="radio" value="b"> ℕ</label>
+<label><input type="radio" value="c"> {|λ| ≤ ‖T‖}</label>
+<label><input type="radio" value="d"> {0}</label>
+<p class="explain">Нейман.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">3. Вольтерра операторының спектрі:</p>
+<label><input type="radio" value="a"> {1}</label>
+<label><input type="radio" value="b"> {0}</label>
+<label><input type="radio" value="c"> [0, 1]</label>
+<label><input type="radio" value="d"> бос</label>
+<p class="explain">Теорема 6.2.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">4. ℓ²-де тепе-теңдік I:</p>
+<label><input type="radio" value="a"> компакт емес</label>
+<label><input type="radio" value="b"> компакт</label>
+<label><input type="radio" value="c"> ақырлы рангты</label>
+<label><input type="radio" value="d"> нөлдік</label>
+<p class="explain">‖eₙ − eₘ‖ = √2.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">5. Өзіне-өзі түйіндес оператордың меншікті мәндері:</p>
+<label><input type="radio" value="a"> таза жорымал</label>
+<label><input type="radio" value="b"> нөл</label>
+<label><input type="radio" value="c"> оң</label>
+<label><input type="radio" value="d"> нақты</label>
+<p class="explain">λ = λ̄.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">6. [[2, 1], [1, 2]] меншікті мәндері:</p>
+<label><input type="radio" value="a"> 2 және 2</label>
+<label><input type="radio" value="b"> 0 және 4</label>
+<label><input type="radio" value="c"> 1 және 3</label>
+<label><input type="radio" value="d"> 1 және 2</label>
+<p class="explain">(2 − λ)² = 1.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">7. min(x, y) ядросының λ₁ =</p>
+<label><input type="radio" value="a"> 1/π²</label>
+<label><input type="radio" value="b"> 4/π²</label>
+<label><input type="radio" value="c"> 1/2</label>
+<label><input type="radio" value="d"> π²/8</label>
+<p class="explain">n = 1.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">8. Σ 1/(2n − 1)² =</p>
+<label><input type="radio" value="a"> π²/8</label>
+<label><input type="radio" value="b"> π²/6</label>
+<label><input type="radio" value="c"> 1/2</label>
+<label><input type="radio" value="d"> π/4</label>
+<p class="explain">Іздің формуласы.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәннің соңғы сабағын аяқтадыңыз. Білімді <a href="../exam.html?s=funcanal">Functional Analysis емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-146.html"><small>Алдыңғы</small>← Functional Analysis · 5-сабақ: Қос кеңістік және Хан–Банах теоремасы</a>
