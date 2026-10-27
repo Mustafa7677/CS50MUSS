@@ -1056,11 +1056,9 @@ test("жеңіл қабат: бір сөйлем, қолмен жылыту, ұ�
   expect(await page.locator(".katex-error").count()).toBe(0);
 });
 
-test("жеңіл қабат: әр генерацияланатын сабақта бар (бір сөйлем, қолмен, белгілер, тоқта-ойлан)", () => {
-  const src = path.join(ROOT, "tools", "math_src");
-  const slugs = fs.readdirSync(src).filter((d) => fs.statSync(path.join(src, d)).isDirectory() && !d.startsWith("_"));
+test("жеңіл қабат: барлық сабақта бар - генерацияланатын және қолмен жазылған (бір сөйлем, қолмен, белгілер, тоқта-ойлан)", () => {
   let checked = 0;
-  for (const s of PLAN.subjects.filter((x) => slugs.includes(x.slug))) {
+  for (const s of PLAN.subjects) {
     for (let k = 0; k < s.count; k++) {
       const html = fs.readFileSync(path.join(MATH, "lectures", `week-${s.start + k}.html`), "utf8");
       for (const mark of ['class="mx-big"', 'id="warmup"', 'class="mx-analogy"', 'id="symbols"', 'id="checks"', 'class="mx-idea"', 'class="mx-plain"'])
@@ -1068,5 +1066,10 @@ test("жеңіл қабат: әр генерацияланатын сабақт�
       checked++;
     }
   }
-  expect(checked).toBeGreaterThanOrEqual(95);
+  expect(checked).toBe(PLAN.total);
+});
+
+test("жеңіл қабат: 1-10 пәндердің беттері tools/math_easy/ файлдарымен сәйкес (math_easy_inject.py --check)", () => {
+  const out = execFileSync("python3", [path.join(ROOT, "tools/math_easy_inject.py"), "--check"], { encoding: "utf8" });
+  expect(out).toMatch(/67 сабақ сәйкес/);
 });
