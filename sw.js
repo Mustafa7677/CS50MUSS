@@ -34,9 +34,14 @@ self.addEventListener("fetch", (e) => {
   // Сайттың өз файлдары (JS, деректер, суреттер) серверден тексеріліп алынады: браузердің 10 минуттық
   // HTTP кэші ескі нұсқаны бермесін. Бет навигациясын өзгертпейміз (redirect-пен қате бермесін).
   const own = new URL(req.url).origin === location.origin;
-  const net = own && req.mode !== "navigate" ? new Request(req, { cache: "no-cache" }) : req;
+  // Бет навигациясы да серверде тексеріледі (GitHub Pages HTML-ді 10 минут кэштейді - жаңа нұсқа кешікпесін).
+  // Navigate сұрауын көшіруге болмайды, сондықтан URL бойынша жаңа сұрау; бағыттау болса - браузердің өз сұрауы.
+  const nav = own && req.mode === "navigate";
+  const get = nav
+    ? fetch(req.url, { cache: "no-cache", credentials: "same-origin" }).then((r) => (r.redirected || !r.ok ? fetch(req) : r)).catch(() => fetch(req))
+    : fetch(own ? new Request(req, { cache: "no-cache" }) : req);
   e.respondWith(
-    fetch(net)
+    get
       .then((res) => {
         if (res.status === 200 && (new URL(req.url).origin === location.origin || /fonts|cdnjs|jsdelivr/.test(req.url))) {
           const copy = res.clone();
