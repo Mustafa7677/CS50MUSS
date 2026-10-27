@@ -45,7 +45,7 @@ OWN_COURSES = {
     # Ағылшын тілі A0-C1: 6 деңгей x 4 сабақ = 24 бет (en/lectures/week-0..23.html). Әлі жазылмаған сабақ беттерінде SOON белгісі бар:
     # олар бет ретінде тұрады (бас, нав, footer, B лицензиясы), бірақ дайын лекция ретінде статистикаға, іздеуге, сайтмапқа кірмейді.
     "en": {"short": "English", "color": "#0f766e", "order": [f"week-{i}" for i in range(24)]},
-    # Математика: 24 пән, жалпы math_plan.TOTAL сабақ (math/lectures/week-0..N.html, N - пәндер бойынша ГЛОБАЛДЫ нөмір). Тұғырлар (SOON) en курсындағыдай.
+    # Математика: 25 пән, жалпы math_plan.TOTAL сабақ (math/lectures/week-0..N.html, N - пәндер бойынша ГЛОБАЛДЫ нөмір). Тұғырлар (SOON) en курсындағыдай.
     "math": {"short": "Math", "color": "#15803d", "order": [f"week-{i}" for i in range(math_plan.TOTAL)]},
 }
 SOON = "<!-- soon -->"   # en/lectures/week-N.html ішіндегі «жақында» белгісі; мазмұн жазылғанда өшіріледі (docs/EN-COURSE-GUIDE.md)
@@ -110,7 +110,7 @@ CATALOG = [
      "desc": "Ағылшын тілін нөлден бастап: грамматика, сөздік, оқу, жазу, тыңдау мен айту. IT және бағдарламалау ағылшыншасына бағытталған.",
      "tags": ["грамматика", "сөздік", "IT-ағылшын", "A0-C1"], "state": "wip"},
     {"id": "math", "code": "Math", "href": "math/", "c": "#15803d", "c2": "#14532d", "title": "Математика", "own": True,
-     "desc": "24 пән: алгебра мен анализден ықтималдыққа, дискретті математикаға, сандар теориясы мен топологияға дейін. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
+     "desc": "25 пән: алгебра мен анализден ықтималдыққа, дискретті математикаға, сандар теориясы мен топологияға дейін. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
      "tags": ["анализ", "сызықтық алгебра", "ықтималдық", "дәлелдеу"], "state": "wip"},
 ]
 
@@ -768,7 +768,7 @@ DESC_TEMPLATES = {
     "cpp/index.html": "C++ бағдарламалау: авторлық қазақша курс. Жад пен көрсеткіштер, ООП, STL, шаблондар және өз жобаң. {lect_cpp} лекция, тесттер, жаттығулар.",
     "java/index.html": "Java бағдарламалау: авторлық қазақша курс. Нысандар, интерфейстер, Collections, Stream API, көп ағын және өз жобаң. {lect_java} лекция, тесттер, жаттығулар.",
     "en/index.html": "Ағылшын тілі A0-C1: авторлық қазақша курс. Грамматика, сөздік, оқу, жазу, тыңдау мен айту жаттығулары, IT-ағылшын. 24 сабақ, деңгей анықтау тесті.",
-    "math/index.html": "Математика: авторлық қазақша курс. 24 пән: Linear Algebra, Calculus, Probability Theory, Discrete Mathematics, Number Theory, Topology және т.б. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
+    "math/index.html": "Математика: авторлық қазақша курс. 25 пән: Linear Algebra, Calculus, Probability Theory, Discrete Mathematics, Number Theory, Topology және т.б. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
 }
 INDEX_LD = "Гарвард университетінің CS50x курсы қазақ тілінде: {lect_x} лекция, тесттер, тапсырмалар, интерактив визуализациялар."
 
@@ -913,7 +913,7 @@ def main():
         for code in OWN_COURSES:
             own_files += [f"{code}/index.html", f"{code}/data/lectures.js"] + sorted(
                 f.relative_to(ROOT).as_posix() for f in (ROOT / code / "lectures").glob("week-*.html")
-                if code != "math" or not is_soon(f.read_text(encoding="utf-8")))  # math: тек дайын сабақтар (154 тұғыр кэшке салынбайды)
+                if code != "math" or not is_soon(f.read_text(encoding="utf-8")))  # math: тек дайын сабақтар (162 тұғыр кэшке салынбайды)
             own_files += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / code).glob("*.html") if f.name != "index.html")  # курстың ортақ беттері
         own_files += ["assets/js/own-viz.js", "assets/css/own-viz.css"]  # дербес курстардың интерактивті визуализаторлары
         own_files += ["assets/js/en-course.js", "assets/js/en-tools.js", "assets/css/en-course.css"]  # ағылшын курсының жаттығу қозғалтқышы мен құралдары

@@ -930,13 +930,13 @@
     { id: "cpp", name: "C++", title: "C++ бағдарламалау", color: "#4f46e5", total: 8, href: "cpp/index.html", own: true },
     { id: "java", name: "Java", title: "Java бағдарламалау", color: "#d97706", total: 8, href: "java/index.html", own: true },
     { id: "en", name: "English", title: "Ағылшын тілі A0-C1", color: "#0f766e", total: 24, href: "en/index.html", own: true, nocert: true, unit: "сабақ" },
-    { id: "math", name: "Math", title: "Математика", color: "#15803d", total: 154, href: "math/index.html", own: true, nocert: true, unit: "сабақ" },
+    { id: "math", name: "Math", title: "Математика", color: "#15803d", total: 162, href: "math/index.html", own: true, nocert: true, unit: "сабақ" },
   ];
   // Ағылшын курсы: лекция белгісі «A1 · 2-сабақ» (week-N -> деңгей мен сабақ)
   const EN_LV = ["A0", "A1", "A2", "B1", "B2", "C1"];
-  // Математика: 24 пән, сабақ саны пәнде әртүрлі (жалғыз жоспар: tools/math_plan.py; тест MATH_COUNTS пен COURSE_META.total сәйкестігін тексереді)
-  const MATH_COUNTS = [7, 8, 6, 8, 7, 7, 6, 6, 7, 5, 6, 6, 7, 6, 7, 6, 6, 7, 7, 6, 6, 5, 6, 6];
-  const MATH_NAMES = ["Precalculus", "Linear Algebra", "Analytic Geometry", "Differential Calculus", "Integral Calculus", "Multivariable Calculus", "Vector Calculus", "Sequences and Series", "Ordinary Differential Equations", "Partial Differential Equations", "Complex Analysis", "Fourier & Laplace Transforms", "Probability Theory", "Mathematical Statistics", "Discrete Mathematics", "Numerical Analysis", "Mathematical Optimization", "Real Analysis", "Abstract Algebra", "Number Theory", "Topology", "Differential Geometry", "Functional Analysis", "Stochastic Processes"]; // пән атаулары ТЕК ағылшынша (tools/math_plan.py)
+  // Математика: 25 пән, сабақ саны пәнде әртүрлі (жалғыз жоспар: tools/math_plan.py; тест MATH_COUNTS пен COURSE_META.total сәйкестігін тексереді)
+  const MATH_COUNTS = [7, 8, 6, 8, 7, 7, 6, 6, 7, 5, 6, 6, 7, 6, 7, 6, 6, 7, 7, 6, 6, 5, 6, 6, 8];
+  const MATH_NAMES = ["Precalculus", "Linear Algebra", "Analytic Geometry", "Differential Calculus", "Integral Calculus", "Multivariable Calculus", "Vector Calculus", "Sequences and Series", "Ordinary Differential Equations", "Partial Differential Equations", "Complex Analysis", "Fourier & Laplace Transforms", "Probability Theory", "Mathematical Statistics", "Discrete Mathematics", "Numerical Analysis", "Mathematical Optimization", "Real Analysis", "Abstract Algebra", "Number Theory", "Topology", "Differential Geometry", "Functional Analysis", "Stochastic Processes", "Arithmetic"]; // пән атаулары ТЕК ағылшынша (tools/math_plan.py)
   const mathLabel = (n) => { let i = 0; while (i < MATH_COUNTS.length - 1 && n >= MATH_COUNTS[i]) { n -= MATH_COUNTS[i]; i++; } return `${MATH_NAMES[i]} · ${n + 1}-сабақ`; };
   const unitLabel = (courseId, n) => (courseId === "en" ? `${EN_LV[Math.floor(n / 4)]} · ${(n % 4) + 1}-сабақ` : courseId === "math" ? mathLabel(n) : `${n}-апта`);
   function courseReadCount(p, id) {

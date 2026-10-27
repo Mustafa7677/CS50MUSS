@@ -11,7 +11,7 @@ const PAGES = [
     c + "/index.html",
     ...(c === "en" || c === "math" ? fs.readdirSync(path.join(ROOT, c)).filter((f) => f.endsWith(".html") && f !== "index.html").map((f) => `${c}/${f}`) : []),
     ...(fs.existsSync(path.join(ROOT, c, "lectures")) ? fs.readdirSync(path.join(ROOT, c, "lectures")) : []).filter((f) => f.endsWith(".html"))
-      // math: 154 бет-тұғыр (<!-- soon -->) бірдей құрылымды, оларды math-course.spec.js тексереді; мұнда тек дайын сабақтар
+      // math: бет-тұғырлар (<!-- soon -->) бірдей құрылымды, оларды math-course.spec.js тексереді; мұнда тек дайын сабақтар
       .filter((f) => c !== "math" || !fs.readFileSync(path.join(ROOT, c, "lectures", f), "utf8").includes("<!-- soon -->")).map((f) => `${c}/lectures/${f}`),
   ]),
 ].sort();
