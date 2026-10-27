@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Stochastic Processes · 1-сабақ: Кездейсоқ процестер негіздері - CS50 қазақша">
-  <meta property="og:description" content="Математика, Stochastic Processes · 1-сабақ: Кездейсоқ процестер негіздері. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Процесс ұғымы, траектория, ақырлы өлшемді үлестірімдер, мысалдар.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-148.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Stochastic Processes · 1-сабақ: Кездейсоқ процестер негіздері - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-148.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Stochastic Processes · 1-сабақ: Кездейсоқ процестер негіздері. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Процесс ұғымы, траектория, ақырлы өлшемді үлестірімдер, мысалдар.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,433 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" style="--sc:#854d0e" id="main">
       <div class="lecture-head" style="--lc:#854d0e" data-n="148" data-msubj="stochastic" data-glyph="∿">
         <div class="num">Stochastic Processes · 1-сабақ</div>
         <h1>Кездейсоқ процестер негіздері</h1>
-        <p>Процесс ұғымы, траектория, ақырлы өлшемді үлестірімдер, мысалдар.</p>
+        <p>Акция бағасы, кезектегі адамдар саны, ауа температурасы, бөлшектің судағы орны - бәрі уақыт бойы кездейсоқ өзгереді. Бір кездейсоқ шама бір сәттің бейнесін береді, ал бүкіл тарихты сипаттау үшін уақытпен индекстелген кездейсоқ шамалар тұқымдасы - кездейсоқ процесс керек.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 40 мин</span><span>Есептер ≈ 1 сағ 10 мин</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 2 сағ</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Бұл сабақта процесті анықтап, оны екі көзқараспен қараймыз: әр $t$ үшін кездейсоқ шама және әр $\omega$ үшін траектория (функция). Процестің ақырлы өлшемді үлестірімдерін, орта мән және ковариация функцияларын енгіземіз. Басты мысалымыз - кездейсоқ жүру: оның орта мәнін, дисперсиясын, ковариациясын есептеп, нақты ықтималдықтарын табамыз және шағылу принципі арқылы «максимум $a$-ға жетті ме?» деген сұраққа жауап береміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-24">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=stochastic">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Stochastic Processes: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-24">Stochastic Processes</a></span><ol><li><a href="week-148.html" aria-current="page" title="Кездейсоқ процестер негіздері">1</a></li><li><a href="week-149.html" title="Марков тізбектері">2</a></li><li><a href="week-150.html" title="Марков тізбектерінің ұзақ мерзімді тәртібі">3</a></li><li><a href="week-151.html" title="Пуассон процесі">4</a></li><li><a href="week-152.html" title="Броун қозғалысы">5</a></li><li><a href="week-153.html" title="Мартингалдар және қолданыстар">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-24">Stochastic Processes</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>кездейсоқ процесті, күй кеңістігін, траекторияны және ақырлы өлшемді үлестірімдерді анықтау;</li>
+        <li>процестің орта мән және ковариация функцияларын есептеп, ковариация функциясының теріс емес анықталғанын дәлелдеу;</li>
+        <li>кездейсоқ жүрудің $E S_n$, $D S_n$, $\operatorname{Cov}(S_m,S_n)$ шамаларын дәлелдеп, $P(S_n=k)$ формуласын шығару;</li>
+        <li>тәуелсіз және стационар өсімшелер, әлсіз стационарлық ұғымдарын мысалмен түсіндіру;</li>
+        <li>шағылу принципін дәлелдеп, кездейсоқ жүрудің максимумының үлестірімін табу;</li>
+        <li>процестерді модельдеп, теориялық шамаларды Монте-Карло әдісімен тексеру.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Ықтималдық аксиомалары (Probability Theory, 2-сабақ). Кездейсоқ шамалар, күтім, дисперсия (Probability Theory, 4-сабақ). Биномдық үлестірім (Probability Theory, 5-сабақ). Қалыпты үлестірім, ОШТ (Probability Theory, 6-7-сабақ). Комбинаторика: биномдық коэффициент (Probability Theory, 1-сабақ).</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-82.html">Probability Theory · 4-сабақ: Кездейсоқ шамалар, күтім және дисперсия</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Монетаны $n$ рет лақтырып, «елтаңба» шықса $+1$, «сан» шықса $-1$ қадам жасайық. $S_n$ - $n$ қадамнан кейінгі орын. Бір тәжірибе ($\omega$) бүкіл сынық сызықты - траекторияны береді. Тәжірибені қайталасақ, басқа траектория шығады. Процесс - осы барлық мүмкін траекториялар және олардың ықтималдықтары.</p>
+      <p>Бір сәттегі шама $S_n$ туралы білу аз: $S_{10}$ және $S_{11}$ байланысты (екеуі $S_{10}$-ды бөліседі). Сондықтан процесс ақырлы өлшемді үлестірімдермен - кез келген $t_1&lt;\dots&lt;t_k$ сәттеріндегі бірлескен үлестіріммен сипатталады. Екінші ретті сипаттама - орта мән $m(t)$ және ковариация $C(s,t)$.</p>
+      <p>Симметриялы жүрудің орта мәні $0$, бірақ дисперсиясы $n$ - яғни типтік ауытқу $\sqrt n$. $100$ қадамнан кейін жүрушінің орны шамамен $\pm10$ аралығында. Бұл «$\sqrt n$ заңы» Броун қозғалысына (5-сабақ) апарады.</p>
+      <p>Шағылу принципі - әдемі комбинаторлық айла: $a$ деңгейге жеткен траекторияның сол сәттен кейінгі бөлігін $a$ түзуіне қатысты шағылыстырсақ, соңы $b$-да емес, $2a-b$-да аяқталатын траектория шығады. Бұл сәйкестік максимумды есептеуді соңғы нүктені есептеуге келтіреді.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 1.1 · Кездейсоқ процесс</span>
+        <p>$(\Omega,\mathcal F,P)$ - ықтималдық кеңістігі, $T$ - индекстер жиыны (уақыт). <strong>Кездейсоқ процесс</strong> (<span class="term-en">stochastic process</span>) - кездейсоқ шамалар тұқымдасы $\{X_t:t\in T\}$, $X_t:\Omega\to E$. $E$ - <strong>күй кеңістігі</strong> (<span class="term-en">state space</span>). $T=\{0,1,2,\dots\}$ - дискретті уақыт, $T=[0,\infty)$ - үзіліссіз уақыт. Тиянақталған $\omega$ үшін $t\mapsto X_t(\omega)$ функциясы - <strong>траектория</strong> (<span class="term-en">sample path</span>).</p></div>
+      <div class="math-def" id="def-2"><span class="math-tag">Анықтама 1.2 · Ақырлы өлшемді үлестірімдер</span>
+        <p>Әр $t_1&lt;\dots&lt;t_k$ үшін $(X_{t_1},\dots,X_{t_k})$ векторының бірлескен үлестірімі - процестің <strong>ақырлы өлшемді үлестірімі</strong> (<span class="term-en">finite-dimensional distribution</span>). <strong>Орта мән функциясы</strong> (<span class="term-en">mean function</span>) $m(t)=EX_t$, <strong>ковариация функциясы</strong> (<span class="term-en">covariance function</span>) $C(s,t)=\operatorname{Cov}(X_s,X_t)$ ($EX_t^2&lt;\infty$ болғанда). Ақырлы өлшемді үлестірімдері көп өлшемді қалыпты болатын процесс - <strong>гаусстық процесс</strong> (<span class="term-en">Gaussian process</span>); ол $m$ және $C$ арқылы толық анықталады.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 1.1 · Ковариация функциясының қасиеттері</span>
+        <p>(1) $C(s,t)=C(t,s)$ және $C(t,t)=DX_t\ge0$. (2) $C$ теріс емес анықталған: кез келген $t_1,\dots,t_k$ және нақты $c_1,\dots,c_k$ үшін $\sum_{i,j}c_ic_jC(t_i,t_j)\ge0$.</p></div>
+      <p><em>Негіздеме.</em> Керісінше, симметриялы теріс емес анықталған кез келген $C$ және кез келген $m$ үшін осындай гаусстық процесс бар (Колмогоров теоремасы, дәлелсіз).</p>
+      <div class="math-def" id="def-3"><span class="math-tag">Анықтама 1.3 · Кездейсоқ жүру</span>
+        <p>$\xi_1,\xi_2,\dots$ - тәуелсіз, $P(\xi_i=1)=p$, $P(\xi_i=-1)=q=1-p$. $S_0=0$, $S_n=\xi_1+\dots+\xi_n$ - қарапайым <strong>кездейсоқ жүру</strong> (<span class="term-en">random walk</span>); $p=\frac12$ болса - симметриялы. Процестің <strong>тәуелсіз өсімшелері</strong> (<span class="term-en">independent increments</span>) бар: $0\le n_0&lt;n_1&lt;\dots&lt;n_k$ үшін $S_{n_1}-S_{n_0},\dots,S_{n_k}-S_{n_{k-1}}$ тәуелсіз; <strong>стационар өсімшелері</strong> (<span class="term-en">stationary increments</span>) бар: $S_{n+m}-S_m$ үлестірімі $m$-ге тәуелсіз.</p></div>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 1.2 · Кездейсоқ жүрудің моменттері</span>
+        <p>$ES_n=n(p-q)$, $DS_n=4npq$, және $m\le n$ үшін $\operatorname{Cov}(S_m,S_n)=4pq\,m$, яғни $\operatorname{Cov}(S_m,S_n)=4pq\min(m,n)$.</p></div>
+      <p><em>Негіздеме.</em> Симметриялы жүру: $ES_n=0$, $DS_n=n$, $\operatorname{Cov}(S_m,S_n)=\min(m,n)$.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 1.3 · Кездейсоқ жүрудің үлестірімі</span>
+        <p>$|k|\le n$ және $n+k$ жұп болса, $P(S_n=k)=\binom{n}{\frac{n+k}2}p^{\frac{n+k}2}q^{\frac{n-k}2}$; басқа жағдайда $P(S_n=k)=0$.</p></div>
+      <p><em>Негіздеме.</em> $S_n$ жұптылығы $n$-нің жұптылығымен бірдей.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 1.4 · Шағылу принципі</span>
+        <p>Симметриялы жүру, $M_n=\max_{0\le k\le n}S_k$, $a\ge1$ бүтін. Онда $P(M_n\ge a)=P(S_n\ge a)+P(S_n&gt;a)=2P(S_n&gt;a)+P(S_n=a)$.</p></div>
+      <p><em>Негіздеме.</em> Дәлелдеу тек симметриялы жүру үшін жұмыс істейді: шағылыстыру траекторияның ықтималдығын сақтауы керек.</p>
+      <div class="math-def" id="def-4"><span class="math-tag">Анықтама 1.4 · Әлсіз стационарлық</span>
+        <p>$\{X_t\}$ - <strong>әлсіз стационар</strong> (<span class="term-en">weakly stationary</span>), егер $m(t)\equiv m$ тұрақты және $C(s,t)$ тек $t-s$ айырмасына тәуелді болса: $C(s,t)=R(t-s)$. Мысалы $X_t=A\cos(\omega t+\Theta)$, $\Theta\sim U[0,2\pi]$, $A$ одан тәуелсіз, $EA^2&lt;\infty$: $m\equiv0$, $C(s,t)=\frac{EA^2}2\cos\omega(t-s)$. Кездейсоқ жүру әлсіз стационар емес ($DS_n=n$ өседі).</p></div>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 1.1 · Траектория</span>
+        <div class="math-fbody">$$t\mapsto X_t(\omega)$$</div>
+        <p class="math-fnote">Тиянақталған нәтиже $\omega$.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 1.2 · Ковариация функциясы</span>
+        <div class="math-fbody">$$C(s,t)=E\big[(X_s-m(s))(X_t-m(t))\big]$$</div>
+        <p class="math-fnote">$m(t)=EX_t$.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 1.3 · Жүрудің моменттері</span>
+        <div class="math-fbody">$$ES_n=n(p-q),\quad DS_n=4npq$$</div>
+        <p class="math-fnote">$q=1-p$.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 1.4 · Жүрудің ковариациясы</span>
+        <div class="math-fbody">$$\operatorname{Cov}(S_m,S_n)=4pq\min(m,n)$$</div>
+        <p class="math-fnote">Симметриялыда $\min(m,n)$.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 1.5 · Жүрудің үлестірімі</span>
+        <div class="math-fbody">$$P(S_n=k)=\binom{n}{\frac{n+k}2}p^{\frac{n+k}2}q^{\frac{n-k}2}$$</div>
+        <p class="math-fnote">$n+k$ жұп.</p></div>
+      <div class="math-formula" id="f-6"><span class="math-fname">Формула 1.6 · Шағылу принципі</span>
+        <div class="math-fbody">$$P(M_n\ge a)=2P(S_n&gt;a)+P(S_n=a)$$</div>
+        <p class="math-fnote">Симметриялы, $a\ge1$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Процесті зерттеу жоспары: (1) индекстер жиыны мен күй кеңістігін анықтаңыз; (2) процесті тәуелсіз «кірпіштер» арқылы өрнектеңіз (жүруде - $\xi_i$); (3) $m(t)$ және $C(s,t)$ есептеңіз - сызықтық және тәуелсіздік арқылы; (4) нақты ықтималдықтар үшін комбинаторика не шартты ықтималдық; (5) нәтижені модельдеу арқылы тексеріңіз.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>(1) Бірдей бір өлшемді үлестірімдер процестерді анықтамайды: $X_t=Z$ (барлық $t$ үшін бір шама) және $Y_t$ - тәуелсіз $N(0,1)$ тізбегі - әр $t$-да $N(0,1)$, бірақ $\operatorname{Cov}(X_s,X_t)=1$, ал $\operatorname{Cov}(Y_s,Y_t)=0$ ($s\ne t$). (2) $\operatorname{Cov}=0$ тәуелсіздікті білдірмейді (гаусстық жағдайдан басқа). (3) Шағылу принципі $p\ne\frac12$ үшін осы түрде дұрыс емес. (4) $S_n=k$ болуы үшін $n+k$ жұп болуы шарт: $P(S_5=0)=0$.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: ковариация функциясының теріс емес анықталғандығы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 1.1-ді дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>(1) $\operatorname{Cov}$ симметриялы, $C(t,t)=\operatorname{Cov}(X_t,X_t)=DX_t\ge0$.</li>
+            <li>(2) $Y=\sum_ic_iX_{t_i}$ қарастырайық. Дисперсия теріс емес: $DY\ge0$.</li>
+            <li>Ковариацияның екі сызықтылығы: $DY=\operatorname{Cov}\left(\sum_ic_iX_{t_i},\sum_jc_jX_{t_j}\right)=\sum_{i,j}c_ic_j\operatorname{Cov}(X_{t_i},X_{t_j})$.</li>
+            <li>Демек $\sum_{i,j}c_ic_jC(t_i,t_j)=DY\ge0$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: кездейсоқ жүрудің моменттері</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 1.2-ні дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$E\xi_i=p-q$, $E\xi_i^2=1$, $D\xi_i=1-(p-q)^2=(1-p+q)(1+p-q)=2q\cdot2p=4pq$.</li>
+            <li>Күтімнің сызықтылығы: $ES_n=n(p-q)$. Тәуелсіздік бойынша дисперсиялар қосылады: $DS_n=4npq$.</li>
+            <li>$m\le n$: $S_n=S_m+(S_n-S_m)$, ал $S_n-S_m=\xi_{m+1}+\dots+\xi_n$ шамасы $S_m$-нен тәуелсіз.</li>
+            <li>$\operatorname{Cov}(S_m,S_n)=\operatorname{Cov}(S_m,S_m)+\operatorname{Cov}(S_m,S_n-S_m)=DS_m+0=4pq\,m$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: кездейсоқ жүрудің үлестірімі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 1.3-ті дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$u$ - оң қадамдар саны, $d$ - теріс қадамдар саны: $u+d=n$, $u-d=k$.</li>
+            <li>Шешім: $u=\frac{n+k}2$, $d=\frac{n-k}2$ - олар бүтін әрі теріс емес болуы үшін $n+k$ жұп және $|k|\le n$ болуы керек.</li>
+            <li>$u$ оң қадамның орнын $\binom nu$ тәсілмен таңдаймыз; әр осындай тізбектің ықтималдығы $p^uq^d$ (тәуелсіздік).</li>
+            <li>Демек $P(S_n=k)=\binom n{\frac{n+k}2}p^{\frac{n+k}2}q^{\frac{n-k}2}$; яғни $u\sim\mathrm{Bin}(n,p)$ және $S_n=2u-n$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: шағылу принципі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 1.4-ті дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>Симметриялы жүруде ұзындығы $n$ әр траекторияның ықтималдығы $2^{-n}$ - ықтималдықтар траекториялар санына келеді.</li>
+            <li>$b&lt;a$ болсын. $a$-ға жетіп, $b$-да аяқталатын траекторияда $\tau$ - $a$-ға алғаш жеткен сәт. $\tau$-дан кейінгі бөлігін $a$ түзуіне қатысты шағылыстырайық: $S_k\mapsto2a-S_k$, $k\ge\tau$.</li>
+            <li>Нәтиже - $2a-b&gt;a$ нүктесінде аяқталатын траектория; бұл сәйкестік өзара бірмәнді (кері түрлендіру - тағы шағылыстыру). Демек $P(M_n\ge a,S_n=b)=P(S_n=2a-b)$.</li>
+            <li>$b\ge a$ үшін $\{S_n=b\}\subseteq\{M_n\ge a\}$. Қосындылаймыз: $P(M_n\ge a)=\sum_{b\ge a}P(S_n=b)+\sum_{b&lt;a}P(S_n=2a-b)=P(S_n\ge a)+P(S_n&gt;a)$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5">
+        <summary>Қорытып шығару 5: кездейсоқ синусоида</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $X_t=A\cos(\omega t+\Theta)$ әлсіз стационар екенін көрсету.</p>
+          <ol class="math-steps">
+            <li>$E\cos(\omega t+\Theta)=\frac1{2\pi}\int_0^{2\pi}\cos(\omega t+\theta)\,d\theta=0$; $A$ және $\Theta$ тәуелсіз, сондықтан $m(t)=EA\cdot0=0$.</li>
+            <li>$\cos\alpha\cos\beta=\frac12[\cos(\alpha-\beta)+\cos(\alpha+\beta)]$.</li>
+            <li>$E[\cos(\omega s+\Theta)\cos(\omega t+\Theta)]=\frac12\cos\omega(t-s)+\frac12E\cos(\omega(s+t)+2\Theta)=\frac12\cos\omega(t-s)$.</li>
+            <li>$C(s,t)=EA^2\cdot\frac12\cos\omega(t-s)$ - тек $t-s$-ке тәуелді. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Симметриялы жүру</h3>
+        <p class="math-problem">$p=\frac12$, $n=100$: орта мән, дисперсия, типтік ауытқу.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $ES_{100}=0$, $DS_{100}=100$, $\sigma=10$.</li>
+          <li><b>2-қадам.</b> ОШТ бойынша $S_{100}\approx N(0,100)$: $P(|S_{100}|\le20)\approx P(|Z|\le2)\approx0.95$.</li>
+          <li><b>3-қадам.</b> Демек $100$ қадамнан кейін жүруші шамамен $95\%$ ықтималдықпен $[-20,20]$ аралығында.</li>
+          <li><b>4-қадам.</b> Жалпы: орын $\sqrt n$ ретімен өседі, ал $n$ ретімен емес.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $0$, $100$, $10$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Ауытқымалы жүру</h3>
+        <p class="math-problem">$p=0.7$, $n=10$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $ES_{10}=10(0.7-0.3)=4$.</li>
+          <li><b>2-қадам.</b> $DS_{10}=4\cdot10\cdot0.7\cdot0.3=8.4$.</li>
+          <li><b>3-қадам.</b> $P(S_{10}=10)=0.7^{10}\approx0.028$ - барлық қадам оң.</li>
+          <li><b>4-қадам.</b> $P(S_{10}=4)=\binom{10}7\,0.7^7\,0.3^3\approx0.267$ - ең ықтимал мән.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $4$, $8.4$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Нақты ықтималдық</h3>
+        <p class="math-problem">Симметриялы жүру: $P(S_4=2)$, $P(S_4=0)$, $P(S_5=0)$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $P(S_4=2)=\binom43\frac1{16}=\frac4{16}=\frac14$.</li>
+          <li><b>2-қадам.</b> $P(S_4=0)=\binom42\frac1{16}=\frac6{16}=\frac38$.</li>
+          <li><b>3-қадам.</b> $P(S_5=0)=0$: $5+0$ тақ.</li>
+          <li><b>4-қадам.</b> Тексеру: $P(S_4=\pm4)+P(S_4=\pm2)+P(S_4=0)=\frac{2+8+6}{16}=1$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac14$, $\frac38$, $0$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Шағылу принципі</h3>
+        <p class="math-problem">Симметриялы жүру: $P(M_4\ge2)$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $P(S_4&gt;2)=P(S_4=4)=\frac1{16}$, $P(S_4=2)=\frac4{16}$.</li>
+          <li><b>2-қадам.</b> $P(M_4\ge2)=2\cdot\frac1{16}+\frac4{16}=\frac6{16}=\frac38$.</li>
+          <li><b>3-қадам.</b> Тікелей тексеру: $16$ траекторияның $6$-уы $2$-ге жетеді: $++\ast\ast$ (4 траектория), $+-++$, $-+++$.</li>
+          <li><b>4-қадам.</b> Демек $\frac6{16}$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\frac38$.</p></div>
+      <div class="math-example" id="ex-5"><h3>Мысал 5. Ковариацияның маңызы</h3>
+        <p class="math-problem">$X_t\equiv Z$ және $Y_t$ - тәуелсіз $N(0,1)$ шамалар.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Әр $t$ үшін $X_t\sim N(0,1)$ және $Y_t\sim N(0,1)$ - бір өлшемді үлестірімдер бірдей.</li>
+          <li><b>2-қадам.</b> $\operatorname{Cov}(X_1,X_2)=DZ=1$, $\operatorname{Cov}(Y_1,Y_2)=0$.</li>
+          <li><b>3-қадам.</b> $X_1-X_2=0$ әрдайым, ал $Y_1-Y_2\sim N(0,2)$.</li>
+          <li><b>4-қадам.</b> Процестер мүлде әртүрлі: $X$ траекториялары - тұрақты, $Y$ траекториялары - «шу». Сондықтан ақырлы өлшемді үлестірімдер керек.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Бір өлшемді үлестірімдер жеткіліксіз.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$DS_n=n^2$ деп санау</span> → <span class="math-good">$DS_n=4npq$, симметриялыда $n$</span><br>Неге қате: Ауытқу $\sqrt n$ ретімен.</li>
+        <li><span class="math-bad">$\operatorname{Cov}(S_m,S_n)=0$, өйткені қадамдар тәуелсіз</span> → <span class="math-good">$S_m$ және $S_n$ ортақ қадамдарды бөліседі</span><br>Неге қате: $\operatorname{Cov}=4pq\min(m,n)$.</li>
+        <li><span class="math-bad">$P(S_5=0)=\binom5{2.5}\dots$</span> → <span class="math-good">$n+k$ тақ болса, ықтималдық $0$</span><br>Неге қате: Жұптылық.</li>
+        <li><span class="math-bad">Процесті тек $X_t$-ның үлестірімдерімен беру</span> → <span class="math-good">ақырлы өлшемді бірлескен үлестірімдер керек</span><br>Неге қате: $X_t\equiv Z$ мен ақ шу.</li>
+        <li><span class="math-bad">Шағылу принципін $p\ne\frac12$ үшін қолдану</span> → <span class="math-good">шағылыстыру ықтималдықты сақтамайды</span><br>Неге қате: Тек симметриялы жүру.</li>
+        <li><span class="math-bad">Кездейсоқ жүру стационар деп санау</span> → <span class="math-good">өсімшелері стационар, бірақ процестің өзі емес</span><br>Неге қате: $DS_n=n$ өседі.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Кездейсоқ жүру: орта мән және ±2σ белдеуі" data-config='{"fns": [{"f": "x*(2*p - 1)", "label": "E Sₙ = n(p − q)"}, {"f": "x*(2*p - 1) + 2*sqrt(4*p*(1 - p)*x)", "label": "E Sₙ + 2σ", "color": 1, "dash": [5, 4]}, {"f": "x*(2*p - 1) - 2*sqrt(4*p*(1 - p)*x)", "label": "E Sₙ − 2σ", "color": 1, "dash": [5, 4]}], "params": [{"n": "p", "min": 0.05, "max": 0.95, "step": 0.05, "v": 0.5}], "view": [0, 100, -100, 100]}'></div>
+      <p><b>Бақылаңыз:</b> Орта мән $n$-ге сызықты, ал белдеудің ені $\sqrt n$-ге пропорционал. $p=\frac12$ болғанда орта мән нөл, белдеу $\pm2\sqrt n$ - траекториялардың шамамен $95\%$-ы осы белдеуде. $p$-ны өзгертсеңіз, «дрейф» $n(p-q)$ ауытқу $\sqrt n$-ден тез өседі - ұзақ уақытта бағыт кездейсоқтықты жеңеді.</p>
+      <div class="math-viz" data-viz="graph" data-title="Ковариация функциялары: C(s, t) тиянақталған s үшін" data-config='{"fns": [{"f": "min(s, x)", "label": "жүру/Броун: min(s, t)"}, {"f": "cos(x - s)/2", "label": "синусоида: cos(t − s)/2", "color": 1}], "params": [{"n": "s", "min": 0, "max": 5, "step": 0.25, "v": 2}], "view": [0, 6, -1, 5.5]}'></div>
+      <p><b>Бақылаңыз:</b> Кездейсоқ жүрудің ковариациясы $\min(s,t)$: $t&gt;s$ болғанда тұрақты - болашақ өсімшелер $S_s$-тен тәуелсіз. Синусоиданың ковариациясы тек $t-s$-ке тәуелді - $s$-ты өзгерткенде график жай жылжиды. Бұл әлсіз стационарлықтың суреті.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m24-1-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m24-1-t1">1. Симметриялы жүру</h3></div>
+        <p>$p=\frac12$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$DS_{10}$","a":10,"v":"10","hint":"$DS_n=n$.","sol":{"steps":["$4\\cdot10\\cdot\\frac14$."],"ans":"$10$"}},{"q":"$\\operatorname{Cov}(S_3,S_7)$","a":3,"v":"min(3, 7)","hint":"$\\min(m,n)$.","sol":{"steps":["$\\min(3,7)$."],"ans":"$3$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m24-1-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m24-1-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Кездейсоқ жүрудің өсімшелері тәуелсіз.","a":true,"e":"Әртүрлі $\\xi_i$-лардан құралады.","hint":"Анықтама."},{"q":"Симметриялы жүру үшін $P(S_7=0)>0$.","a":false,"e":"$7$ тақ - $S_7$ тақ.","hint":"Жұптылық."},{"q":"Ковариация функциясы теріс емес анықталған.","a":true,"e":"$\\sum c_ic_jC(t_i,t_j)=D\\left(\\sum c_iX_{t_i}\\right)$.","hint":"Теорема 1.1."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m24-1-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m24-1-t3">3. Траектория</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Процестің траекториясы дегеніміз:","o":["тиянақталған $\\omega$ үшін $t\\mapsto X_t(\\omega)$","тиянақталған $t$ үшін $\\omega\\mapsto X_t(\\omega)$","$EX_t$ функциясы","$X_t$-ның тығыздығы"],"a":0,"e":"Бір тәжірибе - бір функция.","hint":"Анықтама."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m24-1-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-1-t4">4. Ауытқымалы жүру</h3></div>
+        <p>$p=0.7$, $n=10$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$ES_{10}$","a":4,"v":"10*(Rational(7, 10) - Rational(3, 10))","hint":"$n(p-q)$.","sol":{"steps":["$10\\cdot0.4$."],"ans":"$4$"}},{"q":"$DS_{10}$","a":"42/5","v":"4*10*Rational(7, 10)*Rational(3, 10)","hint":"$4npq$.","sol":{"steps":["$40\\cdot0.21$."],"ans":"$8.4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m24-1-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-1-t5">5. Нақты ықтималдықтар</h3></div>
+        <p>Симметриялы жүру.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(S_4=2)$","a":"1/4","v":"binomial(4, 3)/Rational(16)","hint":"$u=3$ оң қадам.","sol":{"steps":["$\\frac{\\binom43}{16}$."],"ans":"$\\frac14$"}},{"q":"$P(S_6=0)$","a":"5/16","v":"binomial(6, 3)/Rational(64)","hint":"$u=3$.","sol":{"steps":["$\\frac{20}{64}$."],"ans":"$\\frac5{16}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m24-1-num6">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m24-1-t6">6. Шағылу принципі</h3></div>
+        <p>Симметриялы жүру, $M_n=\max_{k\le n}S_k$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(M_4\\ge2)$","a":"3/8","v":"2*binomial(4, 4)/Rational(16) + binomial(4, 3)/Rational(16)","hint":"$2P(S_4>2)+P(S_4=2)$.","sol":{"steps":["$\\frac{2+4}{16}$."],"ans":"$\\frac38$"}},{"q":"$P(M_6\\ge3)$","a":"7/32","v":"2*(binomial(6, 5) + binomial(6, 6))/Rational(64)","hint":"$P(S_6>3)=P(S_6=4)+P(S_6=6)$, $P(S_6=3)=0$.","sol":{"steps":["$P(S_6=4)=\\frac6{64}$, $P(S_6=6)=\\frac1{64}$.","$2\\cdot\\frac7{64}+0=\\frac{14}{64}$."],"ans":"$\\frac7{32}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m24-1-exp7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-1-t7">7. Дисперсия формуласы</h3></div>
+        <p>$p=\frac14$ жүру үшін $DS_n$-ді $n$ арқылы ($n$-ді $x$ деп).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$DS_n=?$","a":"3*x/4","v":"4*x*Rational(1, 4)*Rational(3, 4)","hint":"$4npq$.","sol":{"steps":["$4n\\cdot\\frac14\\cdot\\frac34$."],"ans":"$\\frac{3n}4$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m24-1-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-1-t8">8. Процесс - қасиет</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Процесс - оның ковариация функциясы.","pairs":[["симметриялы жүру Sₙ","min(m, n)"],["A cos(t + Θ), EA² = 2","cos(t − s)"],["тәуелсіз N(0, 1) тізбегі","s = t болса 1, әйтпесе 0"],["Xₜ = Z барлық t үшін","1 барлық s, t үшін"]],"hint":"Анықтамалар мен мысалдар.","sol":{"steps":["$\\frac{EA^2}2\\cos(t-s)$, $\\operatorname{Cov}(Z,Z)=1$."]},"e":"Ковариация процестің құрылымын көрсетеді."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m24-1-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-1-t9">9. Параметрлік: ковариация</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,9]},"b":{"int":[1,9]}},"type":"num","q":"Симметриялы жүру: $\\operatorname{Cov}(S_{#{a}},S_{#{a+b}})=?$","a":"a","v":"min(int(a), int(a) + int(b))","hint":"$\\min(m,n)$.","sol":{"steps":["$\\min(#{a},#{a+b})$."],"ans":"$#{a}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m24-1-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m24-1-t10">10. Параметрлік: ауытқымалы жүрудің дисперсиясы</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[1,9]},"n":{"int":[5,20]}},"type":"num","q":"$p=0.#{a}$ болатын жүру үшін $DS_{#{n}}=?$","a":"n*a*(10 - a)/25","v":"4*int(n)*Rational(int(a), 10)*(1 - Rational(int(a), 10))","hint":"$4npq$, $q=1-p$.","sol":{"steps":["$4\\cdot#{n}\\cdot0.#{a}\\cdot#{(10-a)/10}$."],"ans":"$#{n*a*(10-a)/25}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m24-1-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m24-1-t11">11. Шағылу принципінің дәлелі</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$P(M_n\\ge a)=P(S_n\\ge a)+P(S_n>a)$.","steps":["Әр траекторияның ықтималдығы $2^{-n}$.","$\\tau$ - $a$-ға алғаш жеткен сәт.","$\\tau$-дан кейін $a$ түзуіне қатысты шағылыстыру.","$b\\lt a$-да аяқталатын траектория $\\leftrightarrow$ $2a-b$-да аяқталатын траектория.","$b\\ge a$ және $b\\lt a$ бойынша қосындылау."],"hint":"Теорема 1.4.","sol":{"ans":"$2P(S_n>a)+P(S_n=a)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m24-1-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m24-1-t12">12. Қадамдық шешім: жүрудің ковариациясы</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$m\\le n$ үшін $\\operatorname{Cov}(S_m,S_n)=4pq\\,m$ екенін дәлелдеңіз.","steps":["$S_n=S_m+(S_n-S_m)$.","$S_n-S_m=\\xi_{m+1}+\\dots+\\xi_n$ - $S_m$-нен тәуелсіз.","$\\operatorname{Cov}(S_m,S_n)=DS_m+\\operatorname{Cov}(S_m,S_n-S_m)=DS_m+0$.","$DS_m=4pq\\,m$."],"ans":"$4pq\\min(m,n)$."}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m24-1-cho13">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m24-1-t13">13. Стационарлық</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Қай процесс әлсіз стационар?","o":["$A\\cos(t+\\Theta)$, $\\Theta\\sim U[0,2\\pi]$","симметриялы жүру $S_n$","$X_t=tZ$","ауытқымалы жүру, $p=0.7$"],"a":0,"e":"$m\\equiv0$, $C=\\frac{EA^2}2\\cos(t-s)$.","hint":"$DS_n$ және $D(tZ)=t^2$ өседі."}]}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Кездейсоқ жүру - ойын теориясының (ойыншының капиталы), физиканың (диффузия, полимерлер), қаржының (баға өзгерісінің биномдық моделі), алгоритмдердің (рандомдалған 2-SAT, графта кездейсоқ жүру, PageRank) және биологияның (бактерия қозғалысы) негізгі моделі.</p>
+      <p><b>Мини-жоба: «Мас жүруші».</b> Кездейсоқ жүруді көп рет модельдеп, $ES_n$, $DS_n$, $\operatorname{Cov}(S_m,S_n)$ эмпирикалық мәндерін формулалармен салыстырамыз, сосын барлық $2^n$ траекторияны санап, шағылу принципін нақты тексереміз.</p>
+<pre data-lang="python"><code class="language-python">import random
+from itertools import product
+from math import comb
+
+random.seed(7)
+
+def walk(n, p):
+    s, path = 0, [0]
+    for _ in range(n):
+        s += 1 if random.random() &lt; p else -1
+        path.append(s)
+    return path
+
+R, n, p = 20000, 50, 0.7
+paths = [walk(n, p) for _ in range(R)]
+end = [w[n] for w in paths]
+mean = sum(end) / R
+var = sum((x - mean) ** 2 for x in end) / (R - 1)
+print(f"E S_50:  модель {mean:.3f}   формула {n * (2 * p - 1):.3f}")
+print(f"D S_50:  модель {var:.3f}   формула {4 * n * p * (1 - p):.3f}")
+
+m = 20
+a20 = [w[m] for w in paths]
+ma = sum(a20) / R
+cov = sum((x - ma) * (y - mean) for x, y in zip(a20, end)) / (R - 1)
+print(f"Cov(S_20, S_50):  модель {cov:.3f}   формула {4 * p * (1 - p) * m:.3f}")
+
+n, a = 10, 3
+hit = 0
+for steps in product((1, -1), repeat=n):
+    s, top = 0, 0
+    for x in steps:
+        s += x
+        top = max(top, s)
+    hit += top &gt;= a
+P = lambda k: comb(n, (n + k) // 2) / 2 ** n if (n + k) % 2 == 0 and abs(k) &lt;= n else 0.0
+formula = 2 * sum(P(k) for k in range(a + 1, n + 1)) + P(a)
+print(f"P(M_10 &gt;= 3):  санау {hit}/{2 ** n} = {hit / 2 ** n:.5f}   шағылу {formula:.5f}")
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$p=0.5$ етіп, $DS_{50}$ мен $50$-ді салыстырыңыз; $R$-ді $2000$-ға азайтқанда қате қалай өседі ($\sim\frac1{\sqrt R}$)?</li>
+        <li>$p=0.6$ үшін шағылу формуласы мен нақты санауды салыстырыңыз (санауда әр траекторияны $p^uq^d$ салмағымен алыңыз) - формула неге бұзылады?</li>
+        <li>$M_n$-нің эмпирикалық үлестірімін $n=100$ үшін тауып, $P(M_n\ge a)\approx2P(S_n&gt;a)$ жуықтауымен салыстырыңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Процесс</td><td>$\{X_t:t\in T\}$, траектория $t\mapsto X_t(\omega)$</td><td>ақырлы өлшемді үлестірімдер</td></tr>
+        <tr><td>Екінші ретті сипаттама</td><td>$m(t)$, $C(s,t)$</td><td>$C$ теріс емес анықталған</td></tr>
+        <tr><td>Кездейсоқ жүру</td><td>$ES_n=n(p-q)$, $DS_n=4npq$</td><td>$\operatorname{Cov}=4pq\min(m,n)$</td></tr>
+        <tr><td>Үлестірім</td><td>$P(S_n=k)=\binom n{\frac{n+k}2}p^{\frac{n+k}2}q^{\frac{n-k}2}$</td><td>$n+k$ жұп</td></tr>
+        <tr><td>Шағылу принципі</td><td>$P(M_n\ge a)=2P(S_n&gt;a)+P(S_n=a)$</td><td>симметриялы жүру</td></tr>
+        <tr><td>Стационарлық</td><td>$m$ тұрақты, $C(s,t)=R(t-s)$</td><td>кездейсоқ синусоида</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m24-1-self">
+        <li><input type="checkbox"> <span>Мен кездейсоқ процесті, траекторияны және ақырлы өлшемді үлестірімдерді анықтай аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен ковариация функциясының теріс емес анықталғанын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен кездейсоқ жүрудің орта мәнін, дисперсиясын және ковариациясын есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $P(S_n=k)$ ықтималдығын таба аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен шағылу принципін дәлелдеп, қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен әлсіз стационар процесті мысалмен көрсете аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="a">
+<p class="q-text">1. Траектория - бұл:</p>
+<label><input type="radio" value="a"> тиянақталған ω үшін t ↦ Xₜ(ω)</label>
+<label><input type="radio" value="b"> тиянақталған t үшін ω ↦ Xₜ(ω)</label>
+<label><input type="radio" value="c"> E Xₜ</label>
+<label><input type="radio" value="d"> Xₜ тығыздығы</label>
+<p class="explain">Анықтама.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">2. Симметриялы жүру үшін D S₁₀₀ =</p>
+<label><input type="radio" value="a"> 10</label>
+<label><input type="radio" value="b"> 10000</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> 100</label>
+<p class="explain">D Sₙ = n.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">3. Симметриялы жүру үшін Cov(S₄, S₉) =</p>
+<label><input type="radio" value="a"> 9</label>
+<label><input type="radio" value="b"> 0</label>
+<label><input type="radio" value="c"> 4</label>
+<label><input type="radio" value="d"> 36</label>
+<p class="explain">min(m, n).</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. p = 0.7 болса, E S₁₀ =</p>
+<label><input type="radio" value="a"> 7</label>
+<label><input type="radio" value="b"> 4</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> 3</label>
+<p class="explain">n(p − q).</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. Симметриялы жүру үшін P(S₅ = 0) =</p>
+<label><input type="radio" value="a"> 0</label>
+<label><input type="radio" value="b"> 1/2</label>
+<label><input type="radio" value="c"> 5/16</label>
+<label><input type="radio" value="d"> 1/32</label>
+<p class="explain">Жұптылық.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">6. Ковариация функциясы:</p>
+<label><input type="radio" value="a"> әрдайым оң</label>
+<label><input type="radio" value="b"> әрдайым нөл</label>
+<label><input type="radio" value="c"> кері симметриялы</label>
+<label><input type="radio" value="d"> теріс емес анықталған</label>
+<p class="explain">Теорема 1.1.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">7. Шағылу принципі бойынша P(M₄ ≥ 2) =</p>
+<label><input type="radio" value="a"> 1/4</label>
+<label><input type="radio" value="b"> 1/16</label>
+<label><input type="radio" value="c"> 3/8</label>
+<label><input type="radio" value="d"> 1/2</label>
+<p class="explain">2/16 + 4/16.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. Қай процесс әлсіз стационар?</p>
+<label><input type="radio" value="a"> симметриялы жүру</label>
+<label><input type="radio" value="b"> A cos(t + Θ), Θ бірқалыпты</label>
+<label><input type="radio" value="c"> Xₜ = tZ</label>
+<label><input type="radio" value="d"> ауытқымалы жүру</label>
+<p class="explain">C тек t − s-ке тәуелді.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=stochastic">Stochastic Processes емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-147.html"><small>Алдыңғы</small>← Functional Analysis · 6-сабақ: Спектр және компакт операторлар</a>
