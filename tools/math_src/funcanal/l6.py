@@ -87,7 +87,7 @@ LESSON = L(
           r"Әр $\lambda\ne0$ үшін солай - $\sigma(V)=\{0\}$."],
          r"$f=-\frac12e^{x/2}$."),
         ("Ішек тербелісі", r"$\min(x,y)$ ядролы операторның алғашқы меншікті мәндері.",
-         [r"$\lambda_n=\frac1{(n-\frac12)^2\pi^2}$: $\lambda_1=\frac4{\pi^2}\approx0.405$, $\lambda_2=\frac4{9\pi^2}\approx0.045$.",
+         [r"$\lambda_n=\frac1{(n-\frac12)^2\pi^2}$: $\lambda_1=\frac4{\pi^2}\approx0{,}405$, $\lambda_2=\frac4{9\pi^2}\approx0{,}045$.",
           r"Меншікті функциялар $\sin\frac{\pi x}2$, $\sin\frac{3\pi x}2$ - бір шеті бекітілген, бір шеті еркін ішектің тербеліс модалары.",
           r"$\lambda_n\to0$ - компакт оператордың белгісі.",
           r"$\sum\lambda_n=\frac12$: $\frac4{\pi^2}\sum\frac1{(2n-1)^2}=\frac12$."],

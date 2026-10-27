@@ -126,7 +126,7 @@ LESSON = L(
           {"items": [{"q": r"$P=\left(\frac35,\frac45\right)$ нүктесінің бейнесі $t$", "a": 3, "v": "Rational(3, 5) / (1 - Rational(4, 5))", "hint": r"$\frac x{1-y}$.", "sol": {"steps": [r"$\frac{3/5}{1/5}$."], "ans": r"$3$"}},
                      {"q": r"$t=2$ нүктесінің алғы бейнесінің $y$ координатасы", "a": "3/5", "v": "Rational(4 - 1, 4 + 1)", "hint": r"$\frac{t^2-1}{t^2+1}$.", "sol": {"steps": [r"$\frac{3}{5}$."], "ans": r"$\frac35$"}}]}),
         X("num", "m", "Аффин гомеоморфизм", r"$f:(0,1)\to(2,5)$ өсетін аффин гомеоморфизм.",
-          {"items": [{"q": r"$f\left(\frac12\right)$", "a": "7/2", "v": "2 + 3*Rational(1, 2)", "hint": r"$f(t)=2+3t$.", "sol": {"steps": [r"$2+1.5$."], "ans": r"$3.5$"}},
+          {"items": [{"q": r"$f\left(\frac12\right)$", "a": "7/2", "v": "2 + 3*Rational(1, 2)", "hint": r"$f(t)=2+3t$.", "sol": {"steps": [r"$2+1{,}5$."], "ans": r"$3{,}5$"}},
                      {"q": r"$f^{-1}(4)$", "a": "2/3", "v": "Rational(4 - 2, 3)", "hint": r"$f^{-1}(s)=\frac{s-2}3$.", "sol": {"steps": [r"$\frac23$."], "ans": r"$\frac23$"}}]}),
         X("expr", "m", "Кері гомеоморфизм", r"$f:(0,1)\to(0,\infty)$, $f(t)=\frac t{1-t}$. $f^{-1}(s)$-ті $s$ арқылы ($s$-ті $x$ деп).",
           {"items": [{"q": r"$f^{-1}(s)=?$", "a": "x/(1+x)", "v": "x/(1+x)", "hint": r"$s=\frac t{1-t}$-ден $t$-ны табыңыз.", "sol": {"steps": [r"$s-st=t$, $t=\frac s{1+s}$."], "ans": r"$\frac s{1+s}$"}}]}),

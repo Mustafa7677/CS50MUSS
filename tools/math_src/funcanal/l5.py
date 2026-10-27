@@ -75,7 +75,7 @@ LESSON = L(
          r"$1$, $\frac12$, $2$."),
         ("$\\ell^2$-дегі функционал", r"$\varphi(x)=\sum\frac{x_k}k$.",
          [r"$y_k=\frac1k\in\ell^2$, $p=q=2$.",
-          r"$\|\varphi\|=\|y\|_2=\sqrt{\sum\frac1{k^2}}=\frac\pi{\sqrt6}\approx1.28$ (Базель, 3-сабақ).",
+          r"$\|\varphi\|=\|y\|_2=\sqrt{\sum\frac1{k^2}}=\frac\pi{\sqrt6}\approx1{,}28$ (Базель, 3-сабақ).",
           r"Теңдікке жететін $x=\frac y{\|y\|}$.",
           r"Ал $\ell^1$-де сол $\varphi$: $\|\varphi\|=\|y\|_\infty=1$."],
          r"$\frac\pi{\sqrt6}$."),
