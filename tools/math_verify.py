@@ -58,7 +58,7 @@ def _ns():
           if hasattr(sp, k)}
     ns.update(SYMS)
     ns.update({"ln": sp.log, "e": sp.E, "len": len, "range": range, "sum": sum, "min": min, "max": max, "abs": abs, "int": int, "float": float, "list": list, "tuple": tuple,
-               "function_range": function_range, "continuous_domain": continuous_domain, "math": math, "zip": zip, "enumerate": enumerate, "sorted": sorted, "set": set, "round": round, "pow": pow})
+               "function_range": function_range, "continuous_domain": continuous_domain, "math": math, "zip": zip, "enumerate": enumerate, "sorted": sorted, "set": set, "round": round, "pow": pow, "all": all, "any": any})
     return ns
 
 
