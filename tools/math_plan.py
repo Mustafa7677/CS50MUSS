@@ -241,7 +241,7 @@ STYLE = {
     "intcalc": ("#047857", "∫"), "multivar": ("#0f766e", "∬"), "veccalc": ("#4338ca", "∇"), "series": ("#6d28d9", "Σ"),
     "ode": ("#be123c", "y′"), "pde": ("#9f1239", "∂"), "complex": ("#7e22ce", "ℂ"), "transforms": ("#a21caf", "ℱ"),
     "prob": ("#c2410c", "ℙ"), "stats": ("#b91c1c", "σ"), "discrete": ("#0369a1", "∪"), "numerical": ("#155e75", "≈"),
-    "optim": ("#a16207", "min"), "real": ("#1e40af", "ℝ"), "abstract": ("#5b21b6", "≅"), "numtheory": ("#9a3412", "ℤ"),
+    "optim": ("#975b06", "min"), "real": ("#1e40af", "ℝ"), "abstract": ("#5b21b6", "≅"), "numtheory": ("#9a3412", "ℤ"),
     "topology": ("#3730a3", "τ"), "diffgeom": ("#115e59", "κ"), "funcanal": ("#6b21a8", "ℋ"), "stochastic": ("#854d0e", "∿"),
     "arith": ("#9d174d", "÷"),
 }

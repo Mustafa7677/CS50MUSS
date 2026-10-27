@@ -97,6 +97,10 @@
       }
     } catch (e) { /* формула көрсетілмесе - мәтін қалады, бет бұзылмайды */ }
     markScrollable(el);
+    if (window.ResizeObserver && el.querySelectorAll) {
+      if (!renderMath.ro) renderMath.ro = new ResizeObserver(function (es) { es.forEach(function (e) { markScrollable(e.target.parentNode || e.target); }); });
+      el.querySelectorAll(".katex-display").forEach(function (d) { renderMath.ro.observe(d); });
+    }
   }
   /* Ұзын display-формула өз ішінде айналады: пернетақтамен де айналдыруға болсын (WCAG: scrollable-region-focusable) */
   function markScrollable(root) {
@@ -109,7 +113,11 @@
   }
   if (HAS_DOM) {
     var msT = 0;
-    window.addEventListener("resize", function () { clearTimeout(msT); msT = setTimeout(function () { markScrollable(document); }, 200); });
+    var remark = function () { clearTimeout(msT); msT = setTimeout(function () { markScrollable(document); }, 200); };
+    window.addEventListener("resize", remark);
+    // KaTeX қаріптері кейін жүктеледі не жабық блок ашылады: формула енді ғана кеңейуі мүмкін, сондықтан қайта тексереміз
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(remark);
+    document.addEventListener("toggle", remark, true);
   }
   /* Бір TeX жолын элементке рендерлеу (алдын ала көру үшін) */
   function renderTeX(el, tex, display) {
