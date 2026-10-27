@@ -233,7 +233,15 @@ for (const f of READY) {
         for (let k = 0; k < data.items.length; k++) {
           const it = data.items[k], ans = (it.a && it.a.length ? it.a[0] : it.w.join(" ")).replace(/[.,!?]/g, "").split(/\s+/);
           const box = ex.locator(".en-order").nth(k);
-          for (const w of ans) await box.locator(".en-pool .en-chip", { hasText: new RegExp("^" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[.,!?]?$", "i") }).first().click();
+          const pool = box.locator(".en-pool .en-chip");
+          for (const w of ans) {
+            // әр басу сөзді бассейннен шығаруы керек: жүктеме кезінде басу жоғалса, қайта басамыз (бір сөз бір-ақ рет шығады)
+            const left = await pool.count();
+            await expect(async () => {
+              if ((await pool.count()) === left) await pool.filter({ hasText: new RegExp("^" + w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "[.,!?]?$", "i") }).first().click({ timeout: 2000 });
+              expect(await pool.count()).toBe(left - 1);
+            }).toPass({ timeout: 10_000 });
+          }
         }
       } else if (type === "write") {
         await ex.locator("textarea").fill(data.model);

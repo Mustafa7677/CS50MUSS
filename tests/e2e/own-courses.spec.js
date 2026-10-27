@@ -80,7 +80,8 @@ test("нав pill: курсты ауыстырады, авторлық курс�
   await page.click(".course-pill");
   await expect(page.locator(".course-menu .cm-row")).toHaveCount(9);
   await expect(page.locator(".course-menu .cm-row.on")).toContainText("C++");
-  await expect(page.locator(".course-menu .cm-sep")).toContainText("Авторлық");
+  // мәзір үш академия бойынша топталған: әр топтың тақырыбы - академия беті
+  await expect(page.locator(".course-menu .cm-sep")).toHaveText(["Бағдарламалау академиясы", "English Academy", "Математика академиясы"]);
   await page.click('.course-menu .cm-row:has-text("Java")');
   await expect(page).toHaveURL(/java\/index\.html$/);
   await expect(page.locator(".course-pill .cp-label")).toHaveText("Java");
