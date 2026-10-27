@@ -151,12 +151,36 @@ def sync_math_index(path):
         path.write_text(s2, encoding="utf-8")
 
 
+def tex_free_excerpt(text):
+    """Мәтіннің $...$ формуласы жоқ сөйлемдері (бастан, ретімен); бәрінде формула болса - бірінші формулаға дейінгі бөлігі."""
+    sents = re.split(r"(?<=[.!?])\s+(?=[A-ZА-ЯӘҒҚҢӨҰҮҺІЁ«])", text)
+    lead = []
+    for x in sents:
+        if "$" in x:
+            break
+        lead.append(x)
+    start = next((i for i, x in enumerate(sents) if x.startswith("Бұл сабақ") and "$" not in x), None)
+    if len(" ".join(lead)) < 60:  # басы қысқа не формулалы: «Бұл сабақта ...» сөйлемінен, ол да жоқ болса - бос (жоспардағы сипаттама)
+        lead = []
+        for x in (sents[start:] if start is not None else []):
+            if "$" in x:
+                break
+            lead.append(x)
+    keep = lead
+    out = ""
+    for x in keep:
+        if len(out) > 150:
+            break
+        out = (out + " " + x).strip()
+    return out
+
+
 def write_math_plan():
     """math/data/plan.js: браузер үшін жоспар (math-course.js: формулалар, сөздік, жаттықтырғыш, «қайдан бастау»)."""
     subs = []
     for i, sb in enumerate(math_plan.SUBJECTS):
         subs.append({"no": sb[0], "slug": sb[1], "kz": sb[2], "en": sb[3], "group": sb[4], "start": math_plan.STARTS[i], "count": len(sb[7]),
-                     "lessons": [t for t, _ in sb[7]]})
+                     "color": math_plan.STYLE[sb[1]][0], "glyph": math_plan.STYLE[sb[1]][1], "lessons": [t for t, _ in sb[7]]})
     out = ("window.CS50KZ_MATH_PLAN = " + json.dumps({"total": math_plan.TOTAL, "subjects": subs}, ensure_ascii=False, separators=(",", ":")) + ";\n")
     (ROOT / "math" / "data").mkdir(parents=True, exist_ok=True)
     fp = ROOT / "math" / "data" / "plan.js"
@@ -413,7 +437,11 @@ def process_page(path, prefix, active):
     for code, c in ALL_COURSES.items():  # басқа курс лекцияларының баннер түсі мен нөмірі
         m = re.match(rf"{code}/lectures/week-(\d+)\.html$", rel)
         if m:
-            HEAD_STYLE.setdefault(rel, (c["color"], m.group(1)))
+            if code == "math":  # математика: әр пәннің өз түсі мен белгісі (math_plan.STYLE)
+                slug, col, glyph = math_plan.subject_style(int(m.group(1)))
+                HEAD_STYLE.setdefault(rel, (col, m.group(1), f' data-msubj="{slug}" data-glyph="{html.escape(glyph)}"'))
+            else:
+                HEAD_STYLE.setdefault(rel, (c["color"], m.group(1)))
     kind = license_kind(rel)
     block = head_block(prefix, title, desc, url, og if (ROOT / og).exists() else "assets/img/og.jpg", kind)
     if "<!-- build:head -->" in s:
@@ -430,7 +458,7 @@ def process_page(path, prefix, active):
     s = re.sub(r'<footer class="footer">.*?</footer>', lambda _: footer_block(prefix), s, count=1, flags=re.S)
     hs = HEAD_STYLE.get(rel)
     if hs:
-        attrs = f' style="--lc:{hs[0]}"' + (f' data-n="{hs[1]}"' if hs[1] else "")
+        attrs = f' style="--lc:{hs[0]}"' + (f' data-n="{hs[1]}"' if hs[1] else "") + (hs[2] if len(hs) > 2 else "")
         s = re.sub(r'<div class="lecture-head"[^>]*>', f'<div class="lecture-head"{attrs}>', s, count=1)
     s = re.sub(r'<body(?: data-license="[A-Z]")?' if own else r'<body(?![^>]*data-license)', f'<body data-license="{kind}"', s, count=1)
     if 'class="skip-link"' not in s:
@@ -807,6 +835,9 @@ def main():
                     lp = ROOT / code / "lectures" / f"{m_['id']}.html"
                     dm = re.search(r'<div class="lecture-head"[^>]*>.*?<p>(.*?)</p>', lp.read_text(encoding="utf-8"), re.S)
                     d = strip_tags(dm.group(1)) if dm else ""
+                    if code == "math":  # курс беті KaTeX жүктемейді: үзіндіде TeX формуласы бар сөйлемдер алынбайды
+                        si, sk = math_plan.locate(int(m_["id"].split("-")[1]))
+                        d = tex_free_excerpt(d) or math_plan.SUBJECTS[si][7][sk][1]  # бәрінде формула болса - жоспардағы сипаттама
                     if len(d) > 150:
                         d = d[:147].rsplit(" ", 1)[0].rstrip(",;:") + "..."
                     info[m_["id"]] = (m_["title"], d)

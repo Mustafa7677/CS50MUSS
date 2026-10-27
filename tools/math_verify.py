@@ -54,11 +54,11 @@ def _ns():
                                       "factorial", "binomial", "Sum", "series", "summation", "gcd", "lcm", "factorint", "isprime", "Symbol", "symbols", "Function", "dsolve",
                                       "Derivative", "Integral", "FiniteSet", "EmptySet", "Poly", "det", "eye", "zeros", "Max", "Min", "sign", "atan2", "N", "expand", "factor",
                                       "nsimplify", "solveset", "Integer", "Float", "cbrt", "root", "erf", "gamma", "I", "re", "im", "conjugate", "arg", "Complement", "Intersection", "Piecewise", "sequence",
-                                      "fourier_transform", "laplace_transform", "inverse_laplace_transform", "mod_inverse", "totient", "divisors", "primerange", "nextprime", "Dummy")
+                                      "fourier_transform", "laplace_transform", "inverse_laplace_transform", "mod_inverse", "totient", "divisors", "primerange", "nextprime", "Dummy", "minimal_polynomial", "degree")
           if hasattr(sp, k)}
     ns.update(SYMS)
     ns.update({"ln": sp.log, "e": sp.E, "len": len, "range": range, "sum": sum, "min": min, "max": max, "abs": abs, "int": int, "float": float, "list": list, "tuple": tuple,
-               "function_range": function_range, "continuous_domain": continuous_domain, "math": math, "zip": zip, "enumerate": enumerate, "sorted": sorted, "set": set, "round": round})
+               "function_range": function_range, "continuous_domain": continuous_domain, "math": math, "zip": zip, "enumerate": enumerate, "sorted": sorted, "set": set, "round": round, "pow": pow})
     return ns
 
 

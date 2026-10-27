@@ -499,7 +499,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 22,
+  "minutes": 23,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -611,7 +611,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 22,
+  "minutes": 23,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1675,7 +1675,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 24,
+  "minutes": 25,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2123,7 +2123,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2403,7 +2403,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 21,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -4163,7 +4163,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 14,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -4891,7 +4891,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 16,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -5171,7 +5171,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 14,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6581,6 +6581,342 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "num": "Real Analysis · 7-сабақ",
   "title": "Метрикалық кеңістіктер және компактылық",
   "url": "math/lectures/week-117.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 15,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-125",
+  "num": "Number Theory · 1-сабақ",
+  "title": "Бөлінгіштік және ЕҮОБ",
+  "url": "math/lectures/week-125.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-126",
+  "num": "Number Theory · 2-сабақ",
+  "title": "Жай сандар және арифметиканың негізгі теоремасы",
+  "url": "math/lectures/week-126.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-127",
+  "num": "Number Theory · 3-сабақ",
+  "title": "Салыстырулар",
+  "url": "math/lectures/week-127.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 13,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-128",
+  "num": "Number Theory · 4-сабақ",
+  "title": "Ферма, Эйлер және қытай қалдықтары теоремалары",
+  "url": "math/lectures/week-128.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-129",
+  "num": "Number Theory · 5-сабақ",
+  "title": "Квадраттық қалдықтар",
+  "url": "math/lectures/week-129.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 14,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-130",
+  "num": "Number Theory · 6-сабақ",
+  "title": "Диофант теңдеулері және RSA",
+  "url": "math/lectures/week-130.html",
   "topics": [
    {
     "t": "Сабақ мақсаттары",

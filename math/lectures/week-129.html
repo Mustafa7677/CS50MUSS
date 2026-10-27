@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Number Theory · 5-сабақ: Квадраттық қалдықтар - CS50 қазақша">
-  <meta property="og:description" content="Математика, Number Theory · 5-сабақ: Квадраттық қалдықтар. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Лежандр символы, Эйлер критерийі, квадраттық өзара заң.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-129.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Number Theory · 5-сабақ: Квадраттық қалдықтар - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-129.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Number Theory · 5-сабақ: Квадраттық қалдықтар. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Лежандр символы, Эйлер критерийі, квадраттық өзара заң.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,420 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="129">
+    <article class="content math-lesson" style="--sc:#9a3412" id="main">
+      <div class="lecture-head" style="--lc:#9a3412" data-n="129" data-msubj="numtheory" data-glyph="ℤ">
         <div class="num">Number Theory · 5-сабақ</div>
         <h1>Квадраттық қалдықтар</h1>
-        <p>Лежандр символы, Эйлер критерийі, квадраттық өзара заң.</p>
+        <p>$x^2\equiv2\pmod7$ теңдеуінің шешімі бар ма? Бар: $3^2=9\equiv2$. Ал $x^2\equiv3\pmod7$ ше? $1,\dots,6$ сандарының квадраттары $7$ бойынша тек $1,2,4$ қалдықтарын береді, демек жоқ.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 40 мин</span><span>Есептер ≈ 1 сағ</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 1 сағ 40 мин</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Модуль бойынша квадрат түбір алу - сандар теориясының классикалық есебі. Ол криптографияда (Рабин шифры, эллипстік қисықтағы нүктелер), кездейсоқ сандар генераторларында және факторлау алгоритмдерінде қолданылады. Бұл сабақта жай модуль бойынша квадраттық қалдықтарды зерттейміз: олардың санын, Эйлер критерийін, Лежандр символын және Гаусстың квадраттық өзарлық заңын. Соңғысының дәлелі ұзақ, сондықтан оны дәлелсіз келтіріп, жобада сандық түрде тексереміз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-20">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=numtheory">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Number Theory: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-20">Number Theory</a></span><ol><li><a href="week-125.html" title="Бөлінгіштік және ЕҮОБ">1</a></li><li><a href="week-126.html" title="Жай сандар және арифметиканың негізгі теоремасы">2</a></li><li><a href="week-127.html" title="Салыстырулар">3</a></li><li><a href="week-128.html" title="Ферма, Эйлер және қытай қалдықтары теоремалары">4</a></li><li><a href="week-129.html" aria-current="page" title="Квадраттық қалдықтар">5</a></li><li><a href="week-130.html" title="Диофант теңдеулері және RSA">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-20">Number Theory</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>квадраттық қалдық пен Лежандр символын анықтап, кіші модульдер үшін қалдықтар тізімін құру;</li>
+        <li>Лагранж теоремасын (жай модуль бойынша көпмүшенің түбірлер саны) дәлелдеп, құрама модульде жалған екенін көрсету;</li>
+        <li>$\mathbb Z_p^*$-да қалдықтар мен бейқалдықтардың саны тең екенін дәлелдеу;</li>
+        <li>Эйлер критерийін дәлелдеп, одан Лежандр символының мультипликативтілігін және $\left(\frac{-1}p\right)$ формуласын алу;</li>
+        <li>квадраттық өзарлық заңын және $\left(\frac2p\right)$ формуласын Лежандр символын есептеуге қолдану;</li>
+        <li>$p\equiv3\pmod4$ үшін модуль бойынша квадрат түбірді формуламен табу.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Салыстырулар, модуль бойынша кері элемент, жылдам дәрежелеу (3-сабақ). Ферманың кіші теоремасы, Вильсон теоремасы (4-сабақ). Евклид леммасы (1-сабақ). Көпмүшелерді бөлу, Безу теоремасы (көпмүше үшін: $f(r)=0\Rightarrow(t-r)\mid f$).</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-128.html">Number Theory · 4-сабақ: Ферма, Эйлер және қытай қалдықтары теоремалары</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Жай $p$ бойынша $x$ пен $-x$-тің квадраттары бірдей: $x^2=(-x)^2$. Сондықтан $1,\dots,p-1$ сандарының квадраттары жұп-жұбымен сәйкес келеді, және әртүрлі квадраттар саны $\frac{p-1}2$. $p=11$: $1,4,9,5,3$ - бес қалдық, қалған бесеуі ($2,6,7,8,10$) квадрат емес.</p>
+      <p>Ферма бойынша $a^{p-1}\equiv1$, демек $a^{(p-1)/2}$ саны - $1$-дің квадрат түбірі, яғни $\pm1$. Қай таңба? Эйлер критерийі: $a$ квадрат болса $+1$, болмаса $-1$. Бұл $a$-ның квадрат екенін түбірді іздемей-ақ, бір дәрежелеумен тексеруге мүмкіндік береді.</p>
+      <p>Лежандр символы $\left(\frac ap\right)$ - $+1$ (квадрат), $-1$ (квадрат емес) не $0$ ($p\mid a$). Ол мультипликативті: квадрат $\times$ квадрат $=$ квадрат, бейқалдық $\times$ бейқалдық $=$ квадрат (минус $\times$ минус $=$ плюс сияқты).</p>
+      <p>Квадраттық өзарлық заңы $\left(\frac pq\right)$ мен $\left(\frac qp\right)$ таңбаларын байланыстырады - бір қарағанда $p$ модулі бойынша мәселе мен $q$ модулі бойынша мәселенің ешқандай байланысы жоқ сияқты. Гаусс бұл заңды «алтын теорема» деп атап, оның сегіз түрлі дәлелін берген.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 5.1 · Квадраттық қалдық және Лежандр символы</span>
+        <p>$p$ - тақ жай сан, $p\nmid a$. $a$ - $p$ модулі бойынша <strong>квадраттық қалдық</strong> (<span class="term-en">quadratic residue</span>), егер $x^2\equiv a\pmod p$ шешілетін болса; әйтпесе - <strong>квадраттық бейқалдық</strong> (<span class="term-en">quadratic nonresidue</span>). <strong>Лежандр символы</strong> (<span class="term-en">Legendre symbol</span>): $\left(\frac ap\right)=1$ (қалдық), $-1$ (бейқалдық), $0$ ($p\mid a$). Ол тек $a\bmod p$-ға тәуелді.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 5.1 · Лагранж теоремасы</span>
+        <p>$p$ жай, $f(t)=c_dt^d+\dots+c_0$ бүтін коэффициентті, $p\nmid c_d$. Онда $f(t)\equiv0\pmod p$ салыстыруының $p$ модулі бойынша әртүрлі шешімдері $d$-дан аспайды.</p></div>
+      <p><em>Негіздеме.</em> Құрама модульде жалған: $t^2\equiv1\pmod8$ - төрт шешім $1,3,5,7$.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 5.2 · Қалдықтар саны</span>
+        <p>$p$ тақ жай болса, $1,\dots,p-1$ ішінде дәл $\frac{p-1}2$ квадраттық қалдық және $\frac{p-1}2$ бейқалдық бар; қалдықтар - $1^2,2^2,\dots,\left(\frac{p-1}2\right)^2$ сандарының қалдықтары.</p></div>
+      <p><em>Негіздеме.</em> $p=7$: $\{1,2,4\}$; $p=11$: $\{1,3,4,5,9\}$.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 5.3 · Эйлер критерийі</span>
+        <p>$p$ тақ жай болса, кез келген $a$ үшін $\left(\frac ap\right)\equiv a^{\frac{p-1}2}\pmod p$. Салдарлар: (1) $\left(\frac{ab}p\right)=\left(\frac ap\right)\left(\frac bp\right)$; (2) $\left(\frac{-1}p\right)=(-1)^{\frac{p-1}2}$, яғни $-1$ - квадраттық қалдық $\iff p\equiv1\pmod4$.</p></div>
+      <p><em>Негіздеме.</em> <strong>Эйлер критерийі</strong> (<span class="term-en">Euler's criterion</span>).</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 5.4 · Квадраттық өзарлық заңы</span>
+        <p>$p\ne q$ - тақ жай сандар. (1) $\left(\frac pq\right)\left(\frac qp\right)=(-1)^{\frac{p-1}2\cdot\frac{q-1}2}$: таңбалар тек $p\equiv q\equiv3\pmod4$ болғанда қарама-қарсы. (2) $\left(\frac2p\right)=(-1)^{\frac{p^2-1}8}$: $2$ - қалдық $\iff p\equiv\pm1\pmod8$.</p></div>
+      <p><em>Негіздеме.</em> <strong>Квадраттық өзарлық заңы</strong> (<span class="term-en">law of quadratic reciprocity</span>). Бұл сабақта дәлелсіз келтіреміз (дәлелі Гаусс леммасы арқылы); жобада барлық $p,q&lt;200$ үшін тексереміз.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 5.1 · Лежандр символы</span>
+        <div class="math-fbody">$$\left(\frac ap\right)\in\{-1,0,1\},\quad\left(\frac{ab}p\right)=\left(\frac ap\right)\left(\frac bp\right)$$</div>
+        <p class="math-fnote">$p$ тақ жай.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 5.2 · Эйлер критерийі</span>
+        <div class="math-fbody">$$\left(\frac ap\right)\equiv a^{\frac{p-1}2}\pmod p$$</div>
+        <p class="math-fnote">Бір дәрежелеу.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 5.3 · Минус бір</span>
+        <div class="math-fbody">$$\left(\frac{-1}p\right)=(-1)^{\frac{p-1}2}$$</div>
+        <p class="math-fnote">$p\equiv1\pmod4\iff-1$ квадрат.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 5.4 · Екі</span>
+        <div class="math-fbody">$$\left(\frac2p\right)=(-1)^{\frac{p^2-1}8}$$</div>
+        <p class="math-fnote">$p\equiv\pm1\pmod8\iff2$ квадрат.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 5.5 · Квадраттық өзарлық</span>
+        <div class="math-fbody">$$\left(\frac pq\right)\left(\frac qp\right)=(-1)^{\frac{p-1}2\cdot\frac{q-1}2}$$</div>
+        <p class="math-fnote">$p\ne q$ тақ жай.</p></div>
+      <div class="math-formula" id="f-6"><span class="math-fname">Формула 5.6 · Түбір, $p\equiv3\pmod4$</span>
+        <div class="math-fbody">$$\left(\frac ap\right)=1\ \Rightarrow\ x\equiv\pm a^{\frac{p+1}4}\pmod p$$</div>
+        <p class="math-fnote">$x^2\equiv a$.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Лежандр символын есептеу жоспары: (1) $a$-ны $p$ бойынша $[0;p)$-ға келтіріңіз; (2) $a$-ны көбейткіштерге жіктеп, мультипликативтілікті қолданыңыз ($\left(\frac{k^2}p\right)=1$ - квадрат көбейткіштерді алып тастаңыз); (3) $-1$ мен $2$ үшін арнайы формулалар; (4) тақ жай $q$ үшін өзарлық заңы бойынша $\left(\frac qp\right)$-ны $\left(\frac pq\right)$-ға аударыңыз, ол кішірек модуль - қайтадан (1)-ге. Немесе тікелей: Эйлер критерийі, бір жылдам дәрежелеу.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Шарттарға назар аударыңыз. (1) Эйлер критерийі мен өзарлық заңы тек <em>жай</em> модуль үшін. Құрама $n$ үшін Якоби символы $\left(\frac an\right)=1$ болса да, $a$ квадрат болмауы мүмкін: $\left(\frac2{15}\right)=\left(\frac23\right)\left(\frac25\right)=(-1)(-1)=1$, бірақ $15$ бойынша квадраттар $\{0,1,4,6,9,10\}$ - $2$ жоқ. (2) Лагранж теоремасы құрама модульде жалған: $t^2\equiv1\pmod8$ төрт түбірі бар. (3) $p=2$ - ерекше: барлық қалдық квадрат, символ анықталмайды.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: Лагранж теоремасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 5.1-ді $d$ бойынша индукциямен дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$d=0$: $f=c_0$, $p\nmid c_0$ - шешім жоқ. $d=1$: $c_1t+c_0\equiv0$, $\gcd(c_1,p)=1$ - Теорема 3.4 бойынша жалғыз шешім.</li>
+            <li>$d\ge1$ және $r$ - шешім болсын (жоқ болса, дәлелдейтін ештеңе жоқ). Көпмүшені бөлу: $f(t)=(t-r)g(t)+f(r)$, $g$-ның дәрежесі $d-1$, басқы коэффициенті $c_d$.</li>
+            <li>$f(r)\equiv0$, демек $f(t)\equiv(t-r)g(t)\pmod p$ әр бүтін $t$ үшін.</li>
+            <li>$s\not\equiv r$ - басқа шешім болса, $p\mid(s-r)g(s)$, $p\nmid s-r$; Евклид леммасы: $p\mid g(s)$.</li>
+            <li>Индукция болжамы: $g$-ның шешімдері $\le d-1$, демек $f$-тің шешімдері $\le1+(d-1)=d$. ∎ Құрама модульде Евклид леммасы жоқ, сондықтан дәлел құлайды.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: қалдықтар саны</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 5.2-ні дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>Әр қалдық $a\equiv x^2$, $x\in\{1,\dots,p-1\}$, және $x^2\equiv(p-x)^2$; $x$ мен $p-x$ сандарының бірі $\le\frac{p-1}2$. Демек қалдықтар - $1^2,\dots,\left(\frac{p-1}2\right)^2$.</li>
+            <li>Олар әртүрлі: $x^2\equiv y^2\Rightarrow p\mid(x-y)(x+y)$; $1\le x,y\le\frac{p-1}2$ болса, $2\le x+y\le p-1$, $p\nmid x+y$, демек $p\mid x-y$, $x=y$.</li>
+            <li>Сонымен дәл $\frac{p-1}2$ қалдық, қалған $\frac{p-1}2$ - бейқалдық. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: Эйлер критерийі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 5.3-ті дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$p\mid a$: екі жақ та $0$. $p\nmid a$ алайық, $h=\frac{p-1}2$. Ферма: $(a^h)^2=a^{p-1}\equiv1$, демек $p\mid(a^h-1)(a^h+1)$, $a^h\equiv\pm1$.</li>
+            <li>$a$ қалдық, $a\equiv x^2$: $a^h\equiv x^{p-1}\equiv1$ (Ферма, $p\nmid x$). Демек барлық $h$ қалдық - $t^h-1\equiv0$ салыстыруының шешімдері.</li>
+            <li>Лагранж (Теорема 5.1): $t^h-1$-дің шешімдері $\le h$. Олар дәл $h$ қалдық, демек бейқалдықтар шешім емес: бейқалдық үшін $a^h\equiv-1$.</li>
+            <li>(1): $(ab)^h=a^hb^h$, ал $\pm1$ мәндер $p\ge3$ бойынша әртүрлі, демек салыстыру теңдікке айналады.</li>
+            <li>(2): $a=-1$: $\left(\frac{-1}p\right)\equiv(-1)^h$, екі жақ та $\pm1$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: $p\equiv3\pmod4$ үшін түбір</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> $\left(\frac ap\right)=1$, $p\equiv3\pmod4$ болса, $x=a^{\frac{p+1}4}$ - $x^2\equiv a$ түбірі.</p>
+          <ol class="math-steps">
+            <li>$p\equiv3\pmod4\Rightarrow p+1$ саны $4$-ке бөлінеді, $\frac{p+1}4$ - бүтін.</li>
+            <li>$x^2=a^{\frac{p+1}2}=a\cdot a^{\frac{p-1}2}$.</li>
+            <li>Эйлер критерийі: $a^{\frac{p-1}2}\equiv\left(\frac ap\right)=1$.</li>
+            <li>Демек $x^2\equiv a$; екінші түбір $-x$. ∎ $p\equiv1\pmod4$ үшін мұндай қарапайым формула жоқ (Тонелли-Шенкс алгоритмі қолданылады).</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5">
+        <summary>Қорытып шығару 5: $4k+1$ түріндегі жай сандар шексіз</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Эйлер критерийінің салдары.</p>
+          <ol class="math-steps">
+            <li>Шекті деп алайық: $p_1,\dots,p_k$. $N=(2p_1\cdots p_k)^2+1$, $q$ - $N$-нің жай бөлгіші.</li>
+            <li>$N$ тақ, демек $q$ тақ; $q\ne p_i$ ($p_i\mid N-1$).</li>
+            <li>$(2p_1\cdots p_k)^2\equiv-1\pmod q$, демек $\left(\frac{-1}q\right)=1$.</li>
+            <li>Теорема 5.3 (2): $q\equiv1\pmod4$ - тізімде жоқ, қайшылық. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Қалдықтар тізімі</h3>
+        <p class="math-problem">$p=13$ үшін квадраттық қалдықтар.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $1^2,\dots,6^2$: $1,4,9,16,25,36$.</li>
+          <li><b>2-қадам.</b> $\bmod13$: $1,4,9,3,12,10$.</li>
+          <li><b>3-қадам.</b> Қалдықтар $\{1,3,4,9,10,12\}$ - алты ($\frac{13-1}2$), бейқалдықтар $\{2,5,6,7,8,11\}$.</li>
+          <li><b>4-қадам.</b> $12\equiv-1$ қалдық - $13\equiv1\pmod4$ ✓ ($5^2=25\equiv-1$).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\{1,3,4,9,10,12\}$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Эйлер критерийі</h3>
+        <p class="math-problem">$\left(\frac37\right)$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\frac{7-1}2=3$: $3^3=27\equiv6\equiv-1\pmod7$.</li>
+          <li><b>2-қадам.</b> Демек $\left(\frac37\right)=-1$.</li>
+          <li><b>3-қадам.</b> Тексеру: $7$ бойынша квадраттар $\{1,2,4\}$ - $3$ жоқ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $-1$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Өзарлық заңы</h3>
+        <p class="math-problem">$\left(\frac{17}{31}\right)$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $17\equiv1\pmod4$: $\left(\frac{17}{31}\right)=\left(\frac{31}{17}\right)=\left(\frac{14}{17}\right)=\left(\frac2{17}\right)\left(\frac7{17}\right)$.</li>
+          <li><b>2-қадам.</b> $17\equiv1\pmod8$: $\left(\frac2{17}\right)=1$.</li>
+          <li><b>3-қадам.</b> $\left(\frac7{17}\right)=\left(\frac{17}7\right)=\left(\frac37\right)=-1$ (алдыңғы мысал).</li>
+          <li><b>4-қадам.</b> Нәтиже $1\cdot(-1)=-1$: $x^2\equiv17\pmod{31}$ шешімсіз.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $-1$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Модуль бойынша түбір</h3>
+        <p class="math-problem">$x^2\equiv5\pmod{11}$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Эйлер: $5^5=3125=284\cdot11+1\equiv1$ - қалдық.</li>
+          <li><b>2-қадам.</b> $11\equiv3\pmod4$: $x\equiv5^{\frac{11+1}4}=5^3=125\equiv4\pmod{11}$.</li>
+          <li><b>3-қадам.</b> Тексеру: $4^2=16\equiv5$ ✓. Екінші түбір $-4\equiv7$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $x\equiv4,7\pmod{11}$.</p></div>
+      <div class="math-example" id="ex-5"><h3>Мысал 5. Құрама модуль</h3>
+        <p class="math-problem">$x^2\equiv1\pmod{8}$ және $x^2\equiv2\pmod{15}$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\bmod8$: $1^2=1$, $3^2=9\equiv1$, $5^2=25\equiv1$, $7^2=49\equiv1$ - төрт түбір, Лагранж теоремасы құрама модульде жалған.</li>
+          <li><b>2-қадам.</b> $\bmod15$: ҚҚТ бойынша $x^2\equiv2\pmod3$ және $x^2\equiv2\pmod5$ қажет.</li>
+          <li><b>3-қадам.</b> $\left(\frac23\right)=-1$ - бірінші шешімсіз. Демек жүйе де шешімсіз, бірақ Якоби символы $\left(\frac2{15}\right)=(-1)(-1)=1$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $4$ түбір; шешімсіз.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Жай модуль бойынша $x^2\equiv a$-ның түбірі әрдайым бар</span> → <span class="math-good">тек $\frac{p-1}2$ қалдық үшін</span><br>Неге қате: $x^2\equiv3\pmod7$ шешімсіз.</li>
+        <li><span class="math-bad">$d$ дәрежелі көпмүшенің кез келген модуль бойынша $\le d$ түбірі</span> → <span class="math-good">тек жай модуль</span><br>Неге қате: $t^2\equiv1\pmod8$ - 4 түбір.</li>
+        <li><span class="math-bad">Екі бейқалдықтың көбейтіндісі - бейқалдық</span> → <span class="math-good">қалдық</span><br>Неге қате: $(-1)(-1)=1$; $3\cdot5=15\equiv1\pmod7$.</li>
+        <li><span class="math-bad">$-1$ әрдайым квадрат емес</span> → <span class="math-good">$p\equiv1\pmod4$ болса - квадрат</span><br>Неге қате: $5^2\equiv-1\pmod{13}$.</li>
+        <li><span class="math-bad">Якоби символы $1$ - квадрат</span> → <span class="math-good">құрама $n$-де қажетті ғана</span><br>Неге қате: $\left(\frac2{15}\right)=1$.</li>
+        <li><span class="math-bad">Өзарлық заңында таңба әрдайым өзгереді</span> → <span class="math-good">тек $p\equiv q\equiv3\pmod4$</span><br>Неге қате: $\left(\frac{17}{31}\right)=\left(\frac{31}{17}\right)$.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="n² mod p: квадраттар симметриясы" data-config='{"fns": [{"f": "floor(x)^2 - p*floor(floor(x)^2/p)", "label": "n² mod p (n = ⌊x⌋)"}], "params": [{"n": "p", "min": 3, "max": 23, "step": 2, "v": 11}], "view": [0, 24, -0.5, 23]}'></div>
+      <p><b>Бақылаңыз:</b> $n=1,\dots,p-1$ үшін сатылар $n=\frac p2$ түзуіне қатысты симметриялы: $n^2\equiv(p-n)^2$. Сондықтан әр қалдық екі рет кездеседі, ал әртүрлі мәндер саны $\frac{p-1}2$. $p$-ны жай сандарға ($7$, $11$, $13$, $19$) қойып, қалдықтар тізімін оқыңыз. $p=9$ немесе $15$ (құрама) қойсаңыз, мәндер саны басқаша болады.</p>
+      <div class="math-viz" data-viz="graph" data-title="Эйлер критерийі: a^((p−1)/2) mod p" data-config='{"fns": [{"f": "floor(x)^((p-1)/2) - p*floor(floor(x)^((p-1)/2)/p)", "label": "a^((p−1)/2) mod p (a = ⌊x⌋)"}, {"f": "1", "label": "+1", "color": 1, "dash": [4, 3]}, {"f": "p-1", "label": "p − 1 ≡ −1", "color": 2, "dash": [4, 3]}], "params": [{"n": "p", "min": 3, "max": 13, "step": 2, "v": 7}], "view": [0, 13, -0.5, 13]}'></div>
+      <p><b>Бақылаңыз:</b> Жай $p$ үшін $a=1,\dots,p-1$ мәндерінде график тек екі деңгейде: $1$ (квадраттық қалдық) немесе $p-1\equiv-1$ (бейқалдық), және әр деңгейде дәл $\frac{p-1}2$ саты. $p=7$: $a=1,2,4$ - $1$ деңгейінде, $a=3,5,6$ - $6$ деңгейінде. $p=9$ (құрама) - басқа мәндер де шығады.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m20-5-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m20-5-t1">1. Қалдықтар</h3></div>
+        <p>Есептеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$13$ модулі бойынша $1,\\dots,12$ ішінде неше квадраттық қалдық бар?","a":6,"v":"len(set([t*t % 13 for t in range(1, 13)]))","hint":"Теорема 5.2.","sol":{"steps":["$\\frac{13-1}2=6$."],"ans":"$6$"}},{"q":"$\\left(\\frac5{11}\\right)=?$","a":1,"v":"1 if 5 in [t*t % 11 for t in range(1, 11)] else -1","hint":"$11$ бойынша квадраттар: $1,4,9,5,3$.","sol":{"steps":["$4^2=16\\equiv5$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m20-5-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m20-5-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x^2\\equiv-1\\pmod7$ шешілетін.","a":false,"e":"$7\\equiv3\\pmod4$; квадраттар $\\{1,2,4\\}$, ал $-1\\equiv6$.","hint":"Теорема 5.3 (2)."},{"q":"Жай $p$ бойынша екі бейқалдықтың көбейтіндісі - квадраттық қалдық.","a":true,"e":"$(-1)(-1)=1$, мультипликативтілік.","hint":"Лежандр символы."},{"q":"$d$ дәрежелі көпмүшенің кез келген $m$ модулі бойынша $d$-дан көп түбірі болмайды.","a":false,"e":"$t^2\\equiv1\\pmod8$: $1,3,5,7$.","hint":"Теорема 5.1 тек жай модуль үшін."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m20-5-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m20-5-t3">3. Квадраттық қалдық</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$7$ модулі бойынша қайсысы квадраттық қалдық?","o":["$2$","$3$","$5$","$6$"],"a":0,"e":"$3^2=9\\equiv2$.","hint":"$1^2,2^2,3^2\\bmod7$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m20-5-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-5-t4">4. Эйлер критерийі</h3></div>
+        <p>Лежандр символын табыңыз ($1$ не $-1$).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\left(\\frac2{13}\\right)$","a":-1,"v":"1 if pow(2,6,13) == 1 else -1","hint":"$2^6=64\\equiv12\\equiv-1\\pmod{13}$.","sol":{"steps":["Немесе $13\\equiv5\\pmod8$."],"ans":"$-1$"}},{"q":"$\\left(\\frac3{13}\\right)$","a":1,"v":"1 if pow(3,6,13) == 1 else -1","hint":"$3^3=27\\equiv1$.","sol":{"steps":["$3^6\\equiv1$; $4^2=16\\equiv3$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m20-5-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-5-t5">5. Модуль бойынша түбір</h3></div>
+        <p>Ең кіші натурал түбірін табыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x^2\\equiv5\\pmod{11}$","a":4,"v":"min([t for t in range(1, 11) if t*t % 11 == 5])","hint":"$11\\equiv3\\pmod4$: $5^3\\bmod11$.","sol":{"steps":["$125\\equiv4$; түбірлер $4$, $7$."],"ans":"$4$"}},{"q":"$x^2\\equiv2\\pmod7$","a":3,"v":"min([t for t in range(1, 7) if t*t % 7 == 2])","hint":"$2^{2}=4$; $4^2\\equiv2$; екінші түбір $-4\\equiv3$.","sol":{"steps":["$9\\equiv2$."],"ans":"$3$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m20-5-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-5-t6">6. Өзарлық заңы</h3></div>
+        <p>Лежандр символын табыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\left(\\frac{17}{31}\\right)$","a":-1,"v":"1 if pow(17,15,31) == 1 else -1","hint":"$\\left(\\frac{31}{17}\\right)=\\left(\\frac{14}{17}\\right)$.","sol":{"steps":["$\\left(\\frac2{17}\\right)\\left(\\frac7{17}\\right)=1\\cdot\\left(\\frac37\\right)=-1$."],"ans":"$-1$"}},{"q":"$\\left(\\frac{-1}{29}\\right)$","a":1,"v":"1 if pow(28,14,29) == 1 else -1","hint":"$29\\equiv1\\pmod4$.","sol":{"steps":["$12^2=144\\equiv-1\\pmod{29}$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m20-5-exp7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-5-t7">7. Қалдықтар саны</h3></div>
+        <p>Тақ жай $p$ үшін квадраттық қалдықтар санын $p$ арқылы жазыңыз ($p$-ны $x$ деп).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$N(p)=?$","a":"(x-1)/2","v":"(x-1)/2","hint":"Теорема 5.2.","sol":{"steps":["$x$ пен $-x$ - бір квадрат."],"ans":"$\\frac{p-1}2$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m20-5-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-5-t8">8. Символ - шарт</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Лежандр символы $+1$ $\\iff$","pairs":[["(−1/p) = 1","p ≡ 1 (mod 4)"],["(2/p) = 1","p ≡ ±1 (mod 8)"],["(a/p) ≡","a^((p−1)/2)"],["(p/q) = −(q/p)","p ≡ q ≡ 3 (mod 4)"]],"hint":"Теоремалар 5.3-5.4.","sol":{"steps":["Эйлер критерийі және өзарлық заңы."]},"e":"Барлығы тақ жай $p$, $q$ үшін."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m20-5-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-5-t9">9. Параметрлік: Эйлер критерийі</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"p":{"pick":[7,11,13]},"a":{"int":[2,6]}},"type":"num","q":"$\\left(\\frac{#{a}}{#{p}}\\right)=?$ ($1$ не $-1$)","a":"1 - 2*sign(pow(a, (p-1)/2) - p*floor(pow(a, (p-1)/2)/p) - 1)","v":"1 if pow(int(a), (int(p)-1)//2, int(p)) == 1 else -1","hint":"$#{a}^{#{(p-1)/2}}\\bmod#{p}$ есептеңіз.","sol":{"steps":["$#{a}^{#{(p-1)/2}}\\equiv#{pow(a, (p-1)/2) - p*floor(pow(a, (p-1)/2)/p)}\\pmod{#{p}}$; $#{p-1}\\equiv-1$."],"ans":"$#{1 - 2*sign(pow(a, (p-1)/2) - p*floor(pow(a, (p-1)/2)/p) - 1)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m20-5-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m20-5-t10">10. Параметрлік: модуль бойынша түбір</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"p":{"pick":[11,19,23]},"k":{"int":[3,9]}},"type":"num","q":"$x^2\\equiv#{k^2 - p*floor(k^2/p)}\\pmod{#{p}}$. Ең кіші натурал түбір $x=?$","a":"min(k, p-k)","v":"min([t for t in range(1, int(p)) if (t*t - int(k)**2) % int(p) == 0])","hint":"$#{p}\\equiv3\\pmod4$: $x\\equiv a^{#{(p+1)/4}}\\pmod{#{p}}$; екі түбір $x$, $#{p}-x$.","sol":{"steps":["Түбірлер $#{k}$ және $#{p-k}$."],"ans":"$#{min(k, p-k)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m20-5-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m20-5-t11">11. Лежандр символын есептеу</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\left(\\frac ap\\right)$, $p$ тақ жай.","steps":["$a$-ны $\\bmod p$ бойынша $[0;p)$-ға келтіреміз.","$a$-ны жай көбейткіштерге жіктеп, мультипликативтілікті қолданамыз.","Квадрат көбейткіштерді алып тастаймыз.","$-1$ мен $2$ үшін арнайы формулаларды қолданамыз.","Тақ жай $q$ үшін $\\left(\\frac qp\\right)$-ны өзарлық заңымен $\\left(\\frac pq\\right)$-ға аударып, қайталаймыз."],"hint":"Модуль әр қадамда кішірейеді.","sol":{"ans":"$\\pm1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m20-5-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m20-5-t12">12. Қадамдық шешім: $4k+1$ жай сандар</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$p\\equiv1\\pmod4$ түріндегі жай сандар шексіз көп екенін дәлелдеңіз.","steps":["Шекті деп алайық: $p_1,\\dots,p_k$. $N=(2p_1\\cdots p_k)^2+1$ санын қараймыз.","$q$ - $N$-нің кез келген жай бөлгіші. $N$ тақ, демек $q\\ne2$; $q\\ne p_i$, себебі $p_i\\mid N-1$.","$(2p_1\\cdots p_k)^2\\equiv-1\\pmod q$, яғни $-1$ - $q$ бойынша квадраттық қалдық.","Теорема 5.3 (2): $q\\equiv1\\pmod4$. Бірақ $q$ тізімде жоқ - қайшылық."],"ans":"Шексіз көп."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Модуль бойынша квадрат түбір эллипстік қисық криптографиясында нүктені сығылған түрден қалпына келтіруде қолданылады ($y^2=x^3+ax+b$ бойынша $y$ табу). Рабин шифры $n=pq$ бойынша квадрат түбір алудың қиындығына сүйенеді - бұл $n$-ді факторлаумен тең күшті. Соловей-Штрассен жайлық тесті Эйлер критерийін тексереді.</p>
+      <p><b>Мини-жоба: «Квадраттық өзарлық заңын тексеру».</b> Лежандр символын Эйлер критерийімен есептейміз, $200$-ге дейінгі барлық тақ жай жұптар үшін өзарлық заңын тексереміз, $p\equiv3\pmod4$ үшін түбір формуласын тексереміз және $4k+1$, $4k+3$ түріндегі жай сандарды санаймыз.</p>
+<pre data-lang="python"><code class="language-python">def primes_upto(n):
+    sieve = [True] * (n + 1)
+    sieve[0] = sieve[1] = False
+    for i in range(2, int(n ** 0.5) + 1):
+        if sieve[i]:
+            sieve[i * i::i] = [False] * len(sieve[i * i::i])
+    return [i for i in range(n + 1) if sieve[i]]
+
+def legendre(a, p):
+    r = pow(a, (p - 1) // 2, p)
+    return -1 if r == p - 1 else r
+
+print("p = 11 қалдықтары:", sorted({x * x % 11 for x in range(1, 11)}))
+print("(17/31) =", legendre(17, 31), " (3/7) =", legendre(3, 7))
+
+odd = [p for p in primes_upto(200) if p &gt; 2]
+checked, bad = 0, 0
+for p in odd:
+    for q in odd:
+        if p &lt; q:
+            checked += 1
+            sign = (-1) ** (((p - 1) // 2) * ((q - 1) // 2))
+            if legendre(p, q) * legendre(q, p) != sign:
+                bad += 1
+print("өзарлық заңы:", checked, "жұп, бұзылу:", bad)
+print("(2/p) формуласы:", all(legendre(2, p) == (-1) ** ((p * p - 1) // 8) for p in odd))
+
+ok = 0
+for p in odd:
+    if p % 4 == 3:
+        for a in range(1, p):
+            if legendre(a, p) == 1:
+                x = pow(a, (p + 1) // 4, p)
+                ok += (x * x % p == a)
+print("p ≡ 3 (mod 4) түбірлері дұрыс:", ok)
+
+P = primes_upto(100000)
+print("4k+1:", sum(1 for p in P if p % 4 == 1), " 4k+3:", sum(1 for p in P if p % 4 == 3))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Өзарлық заңы қанша жұпта тексерілді? Бұл тексеру заңды дәлелдей ме?</li>
+        <li>$100\,000$-ға дейін $4k+3$ түріндегі жай сандар $4k+1$ түріндегілерден сәл көп. Бұл «Чебышёв ауытқуы» деп аталады. $10^6$-ға дейін тексеріңіз.</li>
+        <li>$p=13$ ($\equiv1\pmod4$) үшін $a^{\frac{p+1}4}$ формуласы неге жарамайды? $\frac{p+1}4$ мәнін қараңыз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Қалдықтар саны</td><td>$\frac{p-1}2$ қалдық, $\frac{p-1}2$ бейқалдық</td><td>$x^2=(-x)^2$</td></tr>
+        <tr><td>Лагранж</td><td>$\le d$ түбір</td><td>тек жай модуль</td></tr>
+        <tr><td>Эйлер критерийі</td><td>$\left(\frac ap\right)\equiv a^{\frac{p-1}2}$</td><td>мультипликативтілік</td></tr>
+        <tr><td>$-1$ және $2$</td><td>$p\equiv1\ (4)$; $p\equiv\pm1\ (8)$</td><td>арнайы формулалар</td></tr>
+        <tr><td>Өзарлық заңы</td><td>$\left(\frac pq\right)\left(\frac qp\right)=(-1)^{\frac{p-1}2\frac{q-1}2}$</td><td>дәлелсіз</td></tr>
+        <tr><td>Түбір</td><td>$\pm a^{\frac{p+1}4}$</td><td>$p\equiv3\pmod4$</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m20-5-self">
+        <li><input type="checkbox"> <span>Мен кіші жай модуль үшін квадраттық қалдықтар тізімін құра аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Лагранж теоремасын дәлелдеп, құрама модульдегі қарсы мысалды келтіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен қалдықтар саны $\frac{p-1}2$ екенін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Эйлер критерийін дәлелдеп, Лежандр символын есептеуге қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Лежандр символын өзарлық заңымен есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен $p\equiv3\pmod4$ үшін модуль бойынша квадрат түбір таба аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="b">
+<p class="q-text">1. 11 бойынша квадраттық қалдықтар:</p>
+<label><input type="radio" value="a"> 1, 2, 4, 8</label>
+<label><input type="radio" value="b"> 1, 3, 4, 5, 9</label>
+<label><input type="radio" value="c"> 1, 4, 9</label>
+<label><input type="radio" value="d"> 2, 6, 7, 8, 10</label>
+<p class="explain">1², …, 5² mod 11.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">2. Тақ жай p бойынша қалдықтар саны (1..p−1 ішінде):</p>
+<label><input type="radio" value="a"> (p − 1)/2</label>
+<label><input type="radio" value="b"> p − 1</label>
+<label><input type="radio" value="c"> √p</label>
+<label><input type="radio" value="d"> (p + 1)/2</label>
+<p class="explain">Теорема 5.2.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">3. Эйлер критерийі: (a/p) ≡</p>
+<label><input type="radio" value="a"> a^(p−1)</label>
+<label><input type="radio" value="b"> a^p</label>
+<label><input type="radio" value="c"> a²</label>
+<label><input type="radio" value="d"> a^((p−1)/2)</label>
+<p class="explain">Теорема 5.3.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">4. −1 квадраттық қалдық ⇔</p>
+<label><input type="radio" value="a"> p ≡ 3 (mod 4)</label>
+<label><input type="radio" value="b"> p ≡ 1 (mod 8)</label>
+<label><input type="radio" value="c"> p ≡ 1 (mod 4)</label>
+<label><input type="radio" value="d"> әрдайым</label>
+<p class="explain">(−1)^((p−1)/2).</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">5. (17/31) =</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> −1</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> 17</label>
+<p class="explain">Өзарлық заңы.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">6. x² ≡ 1 (mod 8) түбірлер саны:</p>
+<label><input type="radio" value="a"> 4</label>
+<label><input type="radio" value="b"> 2</label>
+<label><input type="radio" value="c"> 1</label>
+<label><input type="radio" value="d"> 8</label>
+<p class="explain">Лагранж құрама модульде жалған.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">7. x² ≡ 5 (mod 11) ең кіші түбірі:</p>
+<label><input type="radio" value="a"> 5</label>
+<label><input type="radio" value="b"> 3</label>
+<label><input type="radio" value="c"> 7</label>
+<label><input type="radio" value="d"> 4</label>
+<p class="explain">5³ ≡ 4.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">8. Екі бейқалдықтың көбейтіндісі:</p>
+<label><input type="radio" value="a"> бейқалдық</label>
+<label><input type="radio" value="b"> 0</label>
+<label><input type="radio" value="c"> қалдық</label>
+<label><input type="radio" value="d"> анықталмаған</label>
+<p class="explain">(−1)(−1) = 1.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=numtheory">Number Theory емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-128.html"><small>Алдыңғы</small>← Number Theory · 4-сабақ: Ферма, Эйлер және қытай қалдықтары теоремалары</a>

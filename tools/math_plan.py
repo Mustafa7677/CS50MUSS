@@ -224,6 +224,22 @@ for _c in COUNTS:
     STARTS.append(_acc)
     _acc += _c
 
+# Әр пәннің өз белгісі: баннер түсі (ақ мәтінмен контраст >= 4.5) және белгі-символ (курс беті мен сабақ баннерінде)
+STYLE = {
+    "precalc": ("#b45309", "ƒ"), "linalg": ("#1d4ed8", "⊞"), "analgeo": ("#0e7490", "◎"), "diffcalc": ("#15803d", "Δ"),
+    "intcalc": ("#047857", "∫"), "multivar": ("#0f766e", "∬"), "veccalc": ("#4338ca", "∇"), "series": ("#6d28d9", "Σ"),
+    "ode": ("#be123c", "y′"), "pde": ("#9f1239", "∂"), "complex": ("#7e22ce", "ℂ"), "transforms": ("#a21caf", "ℱ"),
+    "prob": ("#c2410c", "ℙ"), "stats": ("#b91c1c", "σ"), "discrete": ("#0369a1", "∪"), "numerical": ("#155e75", "≈"),
+    "optim": ("#a16207", "min"), "real": ("#1e40af", "ℝ"), "abstract": ("#5b21b6", "≅"), "numtheory": ("#9a3412", "ℤ"),
+    "topology": ("#3730a3", "τ"), "diffgeom": ("#115e59", "κ"), "funcanal": ("#6b21a8", "ℋ"), "stochastic": ("#854d0e", "∿"),
+}
+
+
+def subject_style(n):
+    """week-N -> (slug, түс, белгі)"""
+    slug = SUBJECTS[locate(n)[0]][1]
+    return (slug,) + STYLE[slug]
+
 
 def locate(n):
     """week-N -> (пән индексі 0.., пән ішіндегі сабақ нөмірі 0..)"""

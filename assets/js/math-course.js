@@ -1366,6 +1366,37 @@
         var rdEl = sec.querySelector(".mx-sread"); if (rdEl) rdEl.textContent = rd;
       }
     });
+    homeFilter();
+  }
+
+  /* Курс беті: пәндерді оқу жолының кезеңі бойынша сүзу (батырмалар: tools/math_pedagogy.py, «mfilter») */
+  function homeFilter() {
+    var bar = document.querySelector(".mx-filter");
+    if (!bar) return;
+    var KEY = "cs50kz:math:stage";
+    function apply(stage) {
+      bar.querySelectorAll(".mx-fchip").forEach(function (b) { b.setAttribute("aria-pressed", String(b.dataset.stage === stage)); });
+      document.querySelectorAll(".mx-subj").forEach(function (sec) { sec.classList.toggle("is-hidden", stage !== "" && sec.dataset.stage !== stage); });
+      document.querySelectorAll(".mx-group-h").forEach(function (hd) {
+        var any = false, el = hd.nextElementSibling;
+        while (el && !el.classList.contains("mx-group-h")) { if (el.classList.contains("mx-subj") && !el.classList.contains("is-hidden")) any = true; el = el.nextElementSibling; }
+        hd.classList.toggle("is-hidden", !any);
+      });
+      try { if (stage) sessionStorage.setItem(KEY, stage); else sessionStorage.removeItem(KEY); } catch (e) { /* жад жоқ */ }
+    }
+    bar.addEventListener("click", function (e) {
+      var b = e.target.closest(".mx-fchip");
+      if (b) apply(b.dataset.stage);
+    });
+    // жасырылған пәнге сілтеме («Пәндерге өту», «Алдымен: ...») басылса, сүзгі алынады
+    document.addEventListener("click", function (e) {
+      var a = e.target.closest && e.target.closest('a[href^="#subj-"]');
+      var sec = a && document.getElementById(a.getAttribute("href").slice(1));
+      if (sec && sec.classList.contains("is-hidden")) apply("");
+    }, true);
+    var saved = "";
+    try { saved = sessionStorage.getItem(KEY) || ""; } catch (e) { /* жад жоқ */ }
+    if (saved && bar.querySelector('.mx-fchip[data-stage="' + saved + '"]') && !location.hash) apply(saved);
   }
 
   /* --- Оқу жолы: оқылған сабақтарды белгілеу және келесі қадам (math/route.html, tools/math_pedagogy.py) --- */

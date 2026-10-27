@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Number Theory · 4-сабақ: Ферма, Эйлер және қытай қалдықтары теоремалары - CS50 қазақша">
-  <meta property="og:description" content="Математика, Number Theory · 4-сабақ: Ферма, Эйлер және қытай қалдықтары теоремалары. Сабақ жақында жазылады.">
+  <meta property="og:description" content="Эйлер функциясы, Ферма кіші теоремасы, жүйелерді шешу.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-128.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Number Theory · 4-сабақ: Ферма, Эйлер және қытай қалдықтары теоремалары - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-128.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Number Theory · 4-сабақ: Ферма, Эйлер және қытай қалдықтары теоремалары. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="Эйлер функциясы, Ферма кіші теоремасы, жүйелерді шешу.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,432 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
-      <div class="lecture-head" style="--lc:#15803d" data-n="128">
+    <article class="content math-lesson" style="--sc:#9a3412" id="main">
+      <div class="lecture-head" style="--lc:#9a3412" data-n="128" data-msubj="numtheory" data-glyph="ℤ">
         <div class="num">Number Theory · 4-сабақ</div>
         <h1>Ферма, Эйлер және қытай қалдықтары теоремалары</h1>
-        <p>Эйлер функциясы, Ферма кіші теоремасы, жүйелерді шешу.</p>
+        <p>$7^{2026}$ санының соңғы екі цифрын қалай табамыз? Алдыңғы сабақта дәрежелердің циклі бар екенін көрдік: $7^n\bmod10$ тізбегінің периоды $4$. Бұл кездейсоқ емес.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 40 мин</span><span>Есептер ≈ 1 сағ</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 1 сағ 40 мин</b></span></p><!-- /build:mmeta -->
+      </div><!-- build:mintro -->
+      <p class="mx-intro">Ферманың кіші теоремасы мен оның Эйлер жалпылауы цикл ұзындығы әрдайым $\varphi(m)$-ді бөлетінін айтады, мұндағы $\varphi$ - Эйлер функциясы. Ал қытай қалдықтары туралы теорема бір үлкен модульдегі есепті бірнеше кіші, өзара жай модульдегі есептерге бөлуге мүмкіндік береді. Бұл үш нәтиже - RSA шифрлауының, жайлыққа тесттердің және компьютерлік алгебраның тиімді алгоритмдерінің негізі. Бұл сабақта олардың барлығын дәлелдеп, шарттарын қарсы мысалдармен тексереміз және Вильсон теоремасын қосамыз.</p>
+      <!-- /build:mintro -->
+
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-20">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=numtheory">Емтихан</a></nav><!-- build:mstrip --><nav class="mx-strip" aria-label="Number Theory: пән сабақтары"><span class="mx-strip-h"><a href="../index.html#subj-20">Number Theory</a></span><ol><li><a href="week-125.html" title="Бөлінгіштік және ЕҮОБ">1</a></li><li><a href="week-126.html" title="Жай сандар және арифметиканың негізгі теоремасы">2</a></li><li><a href="week-127.html" title="Салыстырулар">3</a></li><li><a href="week-128.html" aria-current="page" title="Ферма, Эйлер және қытай қалдықтары теоремалары">4</a></li><li><a href="week-129.html" title="Квадраттық қалдықтар">5</a></li><li><a href="week-130.html" title="Диофант теңдеулері және RSA">6</a></li></ol></nav><!-- /build:mstrip -->
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-20">Number Theory</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>Эйлер функциясын анықтап, $\varphi(p^k)$ формуласын және мультипликативтілігін дәлелдеу;</li>
+        <li>Эйлер теоремасын келтірілген қалдықтар жүйесі арқылы дәлелдеп, Ферманың кіші теоремасын салдар ретінде алу;</li>
+        <li>дәреже көрсеткішін $\varphi(m)$ модулі бойынша қысқартып, үлкен дәрежелерді есептеу;</li>
+        <li>қытай қалдықтары туралы теореманы дәлелдеп, салыстырулар жүйесін конструктивті шешу;</li>
+        <li>Вильсон теоремасын дәлелдеу;</li>
+        <li>Ферма теоремасына кері тұжырымның жалған екенін псевдожай және Кармайкл сандарымен көрсету.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Салыстырулар, қысқарту ережесі, модуль бойынша кері элемент, сызықтық салыстыру, жылдам дәрежелеу (3-сабақ). Канондық жіктеу (2-сабақ). Безу теңдігі және кеңейтілген Евклид алгоритмі (1-сабақ). Биекция, жиынның қуаты (дискретті математика).</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-127.html">Number Theory · 3-сабақ: Салыстырулар</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>$a=3$, $m=7$ алайық. $3\cdot1,3\cdot2,\dots,3\cdot6$ сандарын $7$ бойынша қалдықтарға келтірсек: $3,6,2,5,1,4$ - сол $1,\dots,6$ сандары, тек басқа ретпен. Демек көбейтінділері тең: $3^6\cdot6!\equiv6!\pmod7$. $6!$ саны $7$-мен өзара жай, оны қысқартамыз: $3^6\equiv1\pmod7$. Ферма теоремасының бүкіл дәлелі осы.</p>
+      <p>Құрама модульде $1,\dots,m-1$ сандарының бәрі жарамайды: $\gcd(r,m)>1$ сандарды қысқартуға болмайды. Сондықтан $m$-мен өзара жай қалдықтарды ғана аламыз, олардың саны $\varphi(m)$. Сол дәлел $a^{\varphi(m)}\equiv1\pmod m$ береді, мұндағы $\gcd(a,m)=1$.</p>
+      <p>Қытай қалдықтары туралы теорема: $0,\dots,14$ санын $3$-ке және $5$-ке бөлгендегі қалдықтар жұбы толығымен анықтайды. $15$ сан және $3\cdot5=15$ жұп бар, әр жұп дәл бір рет кездеседі. Ал $4$ пен $6$ үшін бұлай емес: $x\equiv1\pmod4$, $x\equiv2\pmod6$ мүмкін емес, себебі бірінші шарт $x$-ті тақ, екіншісі жұп етеді.</p>
+      <p>Ферма теоремасына кері тұжырым жалған: $2^{340}\equiv1\pmod{341}$, бірақ $341=11\cdot31$. Сондықтан «$a^{n-1}\equiv1$» тесті жай санды дәлелдемейді. Бірақ тест өтпесе, $n$ міндетті түрде құрама - бұл практикада өте пайдалы.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 4.1 · Эйлер функциясы</span>
+        <p>$n\in\mathbb N$ үшін <strong>Эйлер функциясы</strong> (<span class="term-en">Euler's totient function</span>) $\varphi(n)=\left|\{r:1\le r\le n,\ \gcd(r,n)=1\}\right|$. $m$-мен өзара жай, $m$ бойынша жұптап салыстырылмайтын $\varphi(m)$ саннан тұратын жиын - <strong>келтірілген қалдықтар жүйесі</strong> (<span class="term-en">reduced residue system</span>); мысалы $\{1,5,7,11\}$, $m=12$. $\varphi(1)=1$.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 4.1 · Эйлер теоремасы</span>
+        <p>$m\ge1$, $\gcd(a,m)=1$ болса, $a^{\varphi(m)}\equiv1\pmod m$.</p></div>
+      <p><em>Негіздеме.</em> <strong>Эйлер теоремасы</strong> (<span class="term-en">Euler's theorem</span>). Шарт $\gcd(a,m)=1$ міндетті: $2^{\varphi(4)}=4\equiv0\pmod4$.</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 4.2 · Ферманың кіші теоремасы</span>
+        <p>$p$ жай. (1) $p\nmid a$ болса, $a^{p-1}\equiv1\pmod p$. (2) Кез келген $a\in\mathbb Z$ үшін $a^p\equiv a\pmod p$.</p></div>
+      <p><em>Негіздеме.</em> <strong>Ферманың кіші теоремасы</strong> (<span class="term-en">Fermat's little theorem</span>). Кері тұжырым жалған: $2^{340}\equiv1\pmod{341}$, $341=11\cdot31$.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 4.3 · Қытай қалдықтары туралы теорема</span>
+        <p>$m_1,\dots,m_k$ жұптап өзара жай, $M=m_1\cdots m_k$. Кез келген $a_1,\dots,a_k$ үшін $x\equiv a_i\pmod{m_i}$ ($i=1,\dots,k$) жүйесінің шешімі бар және ол $M$ модулі бойынша жалғыз: $x\equiv\sum_{i=1}^k a_iM_iy_i\pmod M$, мұнда $M_i=\frac M{m_i}$, $y_i\equiv M_i^{-1}\pmod{m_i}$.</p></div>
+      <p><em>Негіздеме.</em> <strong>Қытай қалдықтары туралы теорема</strong> (<span class="term-en">Chinese remainder theorem</span>). Жұптап өзара жайлық шарты міндетті: $x\equiv1\pmod4$, $x\equiv2\pmod6$ - шешім жоқ.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 4.4 · Эйлер функциясының формуласы</span>
+        <p>(1) $p$ жай болса, $\varphi(p^k)=p^k-p^{k-1}$. (2) $\gcd(m,n)=1$ болса, $\varphi(mn)=\varphi(m)\varphi(n)$ (<strong>мультипликативті</strong> (<span class="term-en">multiplicative</span>)). (3) $n=p_1^{k_1}\cdots p_s^{k_s}$ болса, $\varphi(n)=n\prod_{i=1}^s\left(1-\frac1{p_i}\right)$.</p></div>
+      <p><em>Негіздеме.</em> $\gcd(m,n)>1$ болса, (2) жалған: $\varphi(4)=2\ne\varphi(2)^2=1$.</p>
+      <div class="math-thm" id="thm-5"><span class="math-tag">Теорема 4.5 · Вильсон теоремасы</span>
+        <p>$p$ жай болса, $(p-1)!\equiv-1\pmod p$. Керісінше, $n>4$ құрама болса, $(n-1)!\equiv0\pmod n$; $n=4$ үшін $3!\equiv2\pmod4$. Демек $n\ge2$ үшін: $n$ жай $\iff(n-1)!\equiv-1\pmod n$.</p></div>
+      <p><em>Негіздеме.</em> <strong>Вильсон теоремасы</strong> (<span class="term-en">Wilson's theorem</span>). Критерий ретінде дұрыс, бірақ тест ретінде баяу: $n-2$ көбейту.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 4.1 · Эйлер теоремасы</span>
+        <div class="math-fbody">$$\gcd(a,m)=1\ \Rightarrow\ a^{\varphi(m)}\equiv1\pmod m$$</div>
+        <p class="math-fnote">Шарт міндетті.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 4.2 · Ферманың кіші теоремасы</span>
+        <div class="math-fbody">$$p\nmid a\Rightarrow a^{p-1}\equiv1\pmod p;\qquad a^p\equiv a\pmod p$$</div>
+        <p class="math-fnote">$p$ жай.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 4.3 · Көрсеткішті қысқарту</span>
+        <div class="math-fbody">$$\gcd(a,m)=1:\ a^n\equiv a^{\,n\bmod\varphi(m)}\pmod m$$</div>
+        <p class="math-fnote">Көрсеткіштер $\varphi(m)$ бойынша.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 4.4 · Эйлер функциясы</span>
+        <div class="math-fbody">$$\varphi(n)=n\prod_{p\mid n}\left(1-\frac1p\right)$$</div>
+        <p class="math-fnote">$\varphi(p^k)=p^k-p^{k-1}$; мультипликативті.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 4.5 · Қытай қалдықтары</span>
+        <div class="math-fbody">$$x\equiv\sum_i a_iM_iy_i\pmod M,\quad M_i=\frac M{m_i},\ M_iy_i\equiv1\pmod{m_i}$$</div>
+        <p class="math-fnote">$m_i$ жұптап өзара жай.</p></div>
+      <div class="math-formula" id="f-6"><span class="math-fname">Формула 4.6 · Вильсон теоремасы</span>
+        <div class="math-fbody">$$(p-1)!\equiv-1\pmod p$$</div>
+        <p class="math-fnote">$p$ жай; керісінше, $n\ge2$ және $(n-1)!\equiv-1\pmod n$ болса, $n$ жай.</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Үлкен дәрежені есептеу жоспары: (1) $\gcd(a,m)=1$ екенін тексеріңіз; (2) $\varphi(m)$-ді канондық жіктеу арқылы табыңыз; (3) $n$-ді $\varphi(m)$-ге бөлгендегі қалдықты алыңыз; (4) кіші дәрежені жылдам дәрежелеумен есептеңіз. $m$ құрама болса, қытай қалдықтары туралы теорема бойынша $m$-ді жай дәрежелерге бөліп, әрқайсысында бөлек есептеп, қайта жинау жиі оңайырақ. Нақты цикл $\varphi(m)$-ден қысқа болуы мүмкін ($7^4\equiv1\pmod{100}$, ал $\varphi(100)=40$), бірақ ол әрдайым $\varphi(m)$-ді бөледі (абстракт алгебрада: элементтің реті топтың ретін бөледі).</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>Үш жиі қате. (1) $\gcd(a,m)>1$ болғанда Эйлер теоремасын қолдану: $6^{\varphi(10)}=6^4=1296\equiv6\not\equiv1\pmod{10}$. (2) Дәреже көрсеткішін $m$ бойынша қысқарту: $\varphi(m)$ бойынша қысқарту керек. (3) Қытай қалдықтары туралы теореманы өзара жай емес модульдерге қолдану: $x\equiv1\pmod4$, $x\equiv3\pmod6$ жүйесінің шешімі бар ($x=9$), бірақ $24$ бойынша емес, $\operatorname{lcm}(4,6)=12$ бойынша жалғыз; ал $x\equiv1\pmod4$, $x\equiv2\pmod6$ шешімсіз.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: Эйлер теоремасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 4.1-ді дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$r_1,\dots,r_\varphi$ - келтірілген қалдықтар жүйесі ($\varphi=\varphi(m)$), $\gcd(a,m)=1$.</li>
+            <li>$ar_1,\dots,ar_\varphi$ сандары да $m$-мен өзара жай (екі көбейткіш те өзара жай).</li>
+            <li>Олар жұптап салыстырылмайды: $ar_i\equiv ar_j\Rightarrow r_i\equiv r_j$ (қысқарту, $\gcd(a,m)=1$) $\Rightarrow i=j$.</li>
+            <li>Демек $\{ar_i\}$ - сол $\varphi$ класс, басқа ретпен. Көбейтінділер: $a^\varphi\prod r_i\equiv\prod r_i\pmod m$.</li>
+            <li>$\gcd\left(\prod r_i,m\right)=1$, қысқартамыз: $a^{\varphi(m)}\equiv1\pmod m$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: Ферма теоремасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 4.2-ні Эйлер теоремасынан алу.</p>
+          <ol class="math-steps">
+            <li>$p$ жай: $1,\dots,p-1$ барлығы $p$-мен өзара жай, $\varphi(p)=p-1$.</li>
+            <li>$p\nmid a\Rightarrow\gcd(a,p)=1$, Эйлер: $a^{p-1}\equiv1\pmod p$. Бұл (1).</li>
+            <li>(2): $p\nmid a$ болса, (1)-ді $a$-ға көбейтеміз: $a^p\equiv a$.</li>
+            <li>$p\mid a$ болса, екі жақ та $\equiv0$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: қытай қалдықтары туралы теорема</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 4.3-ті дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>Бар болуы: $M_i=\frac M{m_i}$ - $m_i$-ден басқа барлық модульдердің көбейтіндісі, демек $\gcd(M_i,m_i)=1$ (жұптап өзара жай). Теорема 3.3: $y_i\equiv M_i^{-1}\pmod{m_i}$ бар.</li>
+            <li>$x=\sum_j a_jM_jy_j$. $j\ne i$ болса, $m_i\mid M_j$, сондықтан $x\equiv a_iM_iy_i\equiv a_i\pmod{m_i}$.</li>
+            <li>Жалғыздығы: $x$, $x'$ екеуі де шешім болса, әр $i$ үшін $m_i\mid x-x'$.</li>
+            <li>Жұптап өзара жай сандардың әрқайсысына бөлінетін сан олардың көбейтіндісіне бөлінеді (Евклид леммасы, индукция): $M\mid x-x'$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-4">
+        <summary>Қорытып шығару 4: Эйлер функциясының формуласы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 4.4-ті дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>(1) $1,\dots,p^k$ ішінде $p^k$-мен өзара жай емес сандар - тек $p$-ға еселілер: $p,2p,\dots,p^{k-1}\cdot p$, саны $p^{k-1}$. Демек $\varphi(p^k)=p^k-p^{k-1}$.</li>
+            <li>(2) $\gcd(m,n)=1$. Теорема 4.3: $x\bmod mn\mapsto(x\bmod m,\ x\bmod n)$ - $\mathbb Z_{mn}$ мен $\mathbb Z_m\times\mathbb Z_n$ арасындағы биекция.</li>
+            <li>$\gcd(x,mn)=1\iff\gcd(x,m)=1$ және $\gcd(x,n)=1$ (ортақ жай бөлгіш $mn$-ді бөлсе, $m$-ді немесе $n$-ді бөледі).</li>
+            <li>Демек биекция $mn$-мен өзара жай кластарды өзара жай жұптарға аударады: $\varphi(mn)=\varphi(m)\varphi(n)$.</li>
+            <li>(3) Жай дәрежелер жұптап өзара жай: $\varphi(n)=\prod(p_i^{k_i}-p_i^{k_i-1})=\prod p_i^{k_i}\left(1-\frac1{p_i}\right)=n\prod\left(1-\frac1{p_i}\right)$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-5">
+        <summary>Қорытып шығару 5: Вильсон теоремасы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 4.5-ті дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$p=2$: $1!=1\equiv-1\pmod2$. $p\ge3$ алайық.</li>
+            <li>Теорема 3.3: әр $a\in\{1,\dots,p-1\}$-дің $p$ бойынша жалғыз кері элементі бар. $a\equiv a^{-1}\iff a^2\equiv1\iff p\mid(a-1)(a+1)\iff a\equiv\pm1$ (Евклид леммасы).</li>
+            <li>Қалған $2,\dots,p-2$ сандары өзара кері жұптарға бөлінеді, әр жұптың көбейтіндісі $\equiv1$. Демек $(p-1)!\equiv1\cdot(p-1)\equiv-1\pmod p$.</li>
+            <li>Кері бағыт: $n=ab$, $1&lt;a&lt;b&lt;n$ болса, $a$ мен $b$ - $(n-1)!$ ішіндегі әртүрлі көбейткіштер, $n\mid(n-1)!$.</li>
+            <li>$n=q^2$, $q$ жай, $q\ge3$: $q$ мен $2q$ ($2q\le n-1$) екеуі де көбейткіш, $q^2\mid(n-1)!$. $n=4$: $3!=6\equiv2$. Барлық жағдайда $(n-1)!\not\equiv-1$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Ферма бойынша дәреже</h3>
+        <p class="math-problem">$3^{2026}\bmod13$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $13$ жай, $13\nmid3$: $3^{12}\equiv1\pmod{13}$.</li>
+          <li><b>2-қадам.</b> $2026=12\cdot168+10$: $3^{2026}\equiv3^{10}\pmod{13}$.</li>
+          <li><b>3-қадам.</b> Шын циклі қысқа: $3^3=27\equiv1\pmod{13}$, $10=3\cdot3+1$, $3^{10}\equiv3$.</li>
+          <li><b>4-қадам.</b> Тексеру: $3$ - $12$-ні бөледі ✓ (цикл ұзындығы $\varphi$-ді бөледі).</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $3$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Эйлер функциясы</h3>
+        <p class="math-problem">$\varphi(360)$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $360=2^3\cdot3^2\cdot5$.</li>
+          <li><b>2-қадам.</b> $\varphi(360)=360\cdot\frac12\cdot\frac23\cdot\frac45$.</li>
+          <li><b>3-қадам.</b> $=360\cdot\frac{8}{30}=96$.</li>
+          <li><b>4-қадам.</b> Басқаша: $(8-4)(9-3)(5-1)=4\cdot6\cdot4=96$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $96$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Сунь-цзы есебі</h3>
+        <p class="math-problem">$x\equiv2\pmod3$, $x\equiv3\pmod5$, $x\equiv2\pmod7$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $M=105$; $M_1=35$, $M_2=21$, $M_3=15$.</li>
+          <li><b>2-қадам.</b> $35\equiv2\pmod3$, $y_1=2$; $21\equiv1\pmod5$, $y_2=1$; $15\equiv1\pmod7$, $y_3=1$.</li>
+          <li><b>3-қадам.</b> $x\equiv2\cdot35\cdot2+3\cdot21\cdot1+2\cdot15\cdot1=140+63+30=233\equiv23\pmod{105}$.</li>
+          <li><b>4-қадам.</b> Тексеру: $23=7\cdot3+2=4\cdot5+3=3\cdot7+2$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $x\equiv23\pmod{105}$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Соңғы екі цифр</h3>
+        <p class="math-problem">$7^{2026}\bmod100$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\gcd(7,100)=1$, $\varphi(100)=100\cdot\frac12\cdot\frac45=40$.</li>
+          <li><b>2-қадам.</b> $2026=40\cdot50+26$: $7^{2026}\equiv7^{26}$.</li>
+          <li><b>3-қадам.</b> Шын циклі: $7^2=49$, $7^4=2401\equiv1\pmod{100}$. $26=4\cdot6+2$: $7^{26}\equiv49$.</li>
+          <li><b>4-қадам.</b> Соңғы екі цифр - $49$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $49$.</p></div>
+      <div class="math-example" id="ex-5"><h3>Мысал 5. Вильсон және псевдожай</h3>
+        <p class="math-problem">(а) $10!\bmod11$. (ә) $2^{340}\bmod341$ және $341$ жай ма?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> (а) $11$ жай, Вильсон: $10!\equiv-1\equiv10\pmod{11}$.</li>
+          <li><b>2-қадам.</b> (ә) $341=11\cdot31$. $2^{10}=1024=3\cdot341+1$, яғни $2^{10}\equiv1\pmod{341}$.</li>
+          <li><b>3-қадам.</b> $2^{340}=(2^{10})^{34}\equiv1\pmod{341}$.</li>
+          <li><b>4-қадам.</b> Ферма тесті «жай» дейді, бірақ $341$ құрама - $2$ негізіндегі <strong>псевдожай сан</strong> (<span class="term-en">pseudoprime</span>). $3$ негізі әшкерелейді: $3^{340}\equiv56\pmod{341}$.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> (а) $10$; (ә) $1$, $341$ құрама.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">$a^{\varphi(m)}\equiv1$ кез келген $a$ үшін</span> → <span class="math-good">тек $\gcd(a,m)=1$</span><br>Неге қате: $6^4\equiv6\pmod{10}$.</li>
+        <li><span class="math-bad">$a^n\equiv a^{n\bmod m}\pmod m$</span> → <span class="math-good">$a^n\equiv a^{n\bmod\varphi(m)}$</span><br>Неге қате: $\gcd(a,m)=1$ шартымен.</li>
+        <li><span class="math-bad">$a^{n-1}\equiv1\pmod n$ болса, $n$ жай</span> → <span class="math-good">кері тұжырым жалған</span><br>Неге қате: $341$, $561$.</li>
+        <li><span class="math-bad">$\varphi(mn)=\varphi(m)\varphi(n)$ әрдайым</span> → <span class="math-good">тек $\gcd(m,n)=1$</span><br>Неге қате: $\varphi(4)=2$, $\varphi(2)^2=1$.</li>
+        <li><span class="math-bad">Кез келген модульдер жүйесін ҚҚТ шешеді</span> → <span class="math-good">жұптап өзара жай модульдер</span><br>Неге қате: $x\equiv1\ (4)$, $x\equiv2\ (6)$.</li>
+        <li><span class="math-bad">Цикл ұзындығы дәл $\varphi(m)$</span> → <span class="math-good">$\varphi(m)$-нің бөлгіші</span><br>Неге қате: $7^4\equiv1\pmod{100}$.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="aⁿ mod m: дәрежелер циклі" data-config='{"fns": [{"f": "a^floor(x) - m*floor(a^floor(x)/m)", "label": "aⁿ mod m (n = ⌊x⌋)"}, {"f": "1", "label": "1", "color": 1, "dash": [4, 3]}], "params": [{"n": "a", "min": 2, "max": 6, "step": 1, "v": 3}, {"n": "m", "min": 2, "max": 13, "step": 1, "v": 7}], "view": [0, 17, -0.5, 13]}'></div>
+      <p><b>Бақылаңыз:</b> $a=3$, $m=7$: $n=6$ нүктесінде мән $1$-ге тең, сосын тізбек қайталанады - Ферма, $3^{6}\equiv1$. $m=13$: $3^3\equiv1$, цикл $3$, ол $12$-ні бөледі. $a=2$, $m=6$ ($\gcd=2$) қойыңыз: мән ешқашан $1$ болмайды - Эйлер теоремасының шарты бұзылған.</p>
+      <div class="math-viz" data-viz="graph" data-title="Қытай қалдықтары: n mod 3 және n mod 5" data-config='{"fns": [{"f": "floor(x) - 3*floor(floor(x)/3)", "label": "n mod 3"}, {"f": "floor(x) - 5*floor(floor(x)/5)", "label": "n mod 5", "color": 1}], "view": [0, 30, -0.5, 5]}'></div>
+      <p><b>Бақылаңыз:</b> $n=0,\dots,14$ үшін $(n\bmod3,\ n\bmod5)$ жұптары барлық $15$ комбинацияны дәл бір реттен береді; $n=15$-тен бастап бәрі қайталанады. Бұл - $\mathbb Z_{15}\to\mathbb Z_3\times\mathbb Z_5$ биекциясы (Теорема 4.3).</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m20-4-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m20-4-t1">1. Эйлер функциясы</h3></div>
+        <p>Есептеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\varphi(36)$","a":12,"v":"totient(36)","hint":"$36=2^2\\cdot3^2$.","sol":{"steps":["$36\\cdot\\frac12\\cdot\\frac23=12$."],"ans":"$12$"}},{"q":"$\\varphi(17)$","a":16,"v":"totient(17)","hint":"$17$ жай.","sol":{"steps":["$p-1$."],"ans":"$16$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m20-4-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m20-4-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$a^{n-1}\\equiv1\\pmod n$ болса, $n$ жай.","a":false,"e":"$2^{340}\\equiv1\\pmod{341}$, $341=11\\cdot31$.","hint":"Ферма теоремасына кері тұжырым."},{"q":"$p$ жай болса, кез келген $a$ үшін $a^p\\equiv a\\pmod p$.","a":true,"e":"Теорема 4.2 (2).","hint":"$p\\mid a$ жағдайын да қараңыз."},{"q":"$\\varphi(mn)=\\varphi(m)\\varphi(n)$ кез келген $m,n$ үшін.","a":false,"e":"$\\varphi(4)=2\\ne1=\\varphi(2)^2$.","hint":"Шарт $\\gcd(m,n)=1$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m20-4-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m20-4-t3">3. Ферма</h3></div>
+        <p>Таңдаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$2^{100}\\bmod101$","o":["$1$","$2$","$100$","$0$"],"a":0,"e":"$101$ жай, $2^{100}=2^{p-1}\\equiv1$.","hint":"Теорема 4.2."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m20-4-num4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-4-t4">4. Көрсеткішті қысқарту</h3></div>
+        <p>Есептеңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$3^{1000}\\bmod7$","a":4,"v":"pow(3,1000,7)","hint":"$3^6\\equiv1$, $1000\\bmod6=4$.","sol":{"steps":["$3^4=81=11\\cdot7+4$."],"ans":"$4$"}},{"q":"$3^{2026}\\bmod100$","a":29,"v":"pow(3,2026,100)","hint":"$\\varphi(100)=40$; шын циклі $20$: $3^{20}\\equiv1\\pmod{100}$.","sol":{"steps":["$2026\\bmod20=6$: $3^6=729\\equiv29$."],"ans":"$29$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m20-4-num5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-4-t5">5. Салыстырулар жүйесі</h3></div>
+        <p>Ең кіші натурал шешімін табыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x\\equiv1\\pmod4$, $x\\equiv2\\pmod3$, $x\\equiv3\\pmod5$","a":53,"v":"[t for t in range(1, 61) if t % 4 == 1 and t % 3 == 2 and t % 5 == 3][0]","hint":"$M=60$. Алдымен $x\\equiv3\\pmod5$: $3,8,13,\\dots$","sol":{"steps":["$x\\equiv3\\ (5)$, $x\\equiv2\\ (3)$: $x\\equiv8\\pmod{15}$.","$8,23,38,53$: $53\\equiv1\\pmod4$ ✓."],"ans":"$53$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m20-4-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-4-t6">6. Вильсон</h3></div>
+        <p>$\bmod17$ бойынша.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$16!\\bmod17$","a":16,"v":"factorial(16) % 17","hint":"Теорема 4.5.","sol":{"steps":["$-1\\equiv16$."],"ans":"$16$"}},{"q":"$15!\\bmod17$","a":1,"v":"factorial(15) % 17","hint":"$16!=16\\cdot15!$, $16\\equiv-1$.","sol":{"steps":["$-1\\equiv(-1)\\cdot15!\\Rightarrow15!\\equiv1$."],"ans":"$1$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="expr" data-id="m20-4-exp7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-4-t7">7. Жай санның дәрежесі</h3></div>
+        <p>$\varphi(2^n)$ және $\varphi(3^n)$ өрнектерін $n$ арқылы жазыңыз ($n$-ді $x$ деп).</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\varphi(2^n)=?$","a":"2^(x-1)","v":"2**(x-1)","hint":"$\\varphi(p^k)=p^k-p^{k-1}$.","sol":{"steps":["$2^n-2^{n-1}=2^{n-1}$."],"ans":"$2^{n-1}$"}},{"q":"$\\varphi(3^n)=?$","a":"2*3^(x-1)","v":"2*3**(x-1)","hint":"$3^n-3^{n-1}$.","sol":{"steps":["$3^{n-1}(3-1)$."],"ans":"$2\\cdot3^{n-1}$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m20-4-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-4-t8">8. Теорема - шарт</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Теорема - қажетті шарт.","pairs":[["a^φ(m) ≡ 1 (mod m)","gcd(a, m) = 1"],["a^(p−1) ≡ 1 (mod p)","p жай, p ∤ a"],["ҚҚТ: M бойынша жалғыз шешім","модульдер жұптап өзара жай"],["φ(mn) = φ(m)φ(n)","gcd(m, n) = 1"]],"hint":"Теоремалар 4.1-4.4.","sol":{"steps":["Әр шарт қарсы мысалмен міндетті."]},"e":"Шартсыз қолдану - ең жиі қате."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m20-4-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m20-4-t9">9. Параметрлік: Ферма бойынша дәреже</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"p":{"pick":[5,7,11,13]},"a":{"int":[2,4]},"n":{"int":[50,200]}},"type":"num","q":"$#{a}^{#{n}}\\bmod#{p}=?$","a":"pow(a, n-(p-1)*floor(n/(p-1))) - p*floor(pow(a, n-(p-1)*floor(n/(p-1)))/p)","v":"pow(int(a), int(n), int(p))","hint":"$#{a}^{#{p-1}}\\equiv1\\pmod{#{p}}$; $#{n}\\bmod#{p-1}=#{n-(p-1)*floor(n/(p-1))}$.","sol":{"steps":["$#{a}^{#{n}}\\equiv#{a}^{#{n-(p-1)*floor(n/(p-1))}}\\pmod{#{p}}$."],"ans":"$#{pow(a, n-(p-1)*floor(n/(p-1))) - p*floor(pow(a, n-(p-1)*floor(n/(p-1)))/p)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m20-4-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m20-4-t10">10. Параметрлік: қытай қалдықтары</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"r":{"int":[0,2]},"s":{"int":[0,4]}},"type":"num","q":"$x\\equiv#{r}\\pmod3$, $x\\equiv#{s}\\pmod5$. $x\\bmod15=?$","a":"10*r + 6*s - 15*floor((10*r + 6*s)/15)","v":"[t for t in range(15) if t % 3 == int(r) and t % 5 == int(s)][0]","hint":"$M_1=5$, $y_1=2$ ($5\\cdot2\\equiv1\\pmod3$); $M_2=3$, $y_2=2$ ($3\\cdot2\\equiv1\\pmod5$).","sol":{"steps":["$x\\equiv#{r}\\cdot10+#{s}\\cdot6=#{10*r+6*s}\\pmod{15}$."],"ans":"$#{10*r + 6*s - 15*floor((10*r + 6*s)/15)}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m20-4-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m20-4-t11">11. Салыстырулар жүйесін шешу</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$x\\equiv a_i\\pmod{m_i}$, $i=1,\\dots,k$.","steps":["Модульдердің жұптап өзара жай екенін тексереміз.","$M=m_1\\cdots m_k$, $M_i=\\frac M{m_i}$ табамыз.","Кеңейтілген Евклидпен $y_i\\equiv M_i^{-1}\\pmod{m_i}$ табамыз.","$x=\\sum a_iM_iy_i$ қосындысын $\\bmod M$ келтіреміз.","Әр салыстыруға қойып тексереміз."],"hint":"Теорема 4.3.","sol":{"ans":"$x\\bmod M$ - жалғыз шешім"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m20-4-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m20-4-t12">12. Қадамдық шешім: Кармайкл саны</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$561=3\\cdot11\\cdot17$. $\\gcd(a,561)=1$ болатын кез келген $a$ үшін $a^{560}\\equiv1\\pmod{561}$ екенін дәлелдеңіз.","steps":["$\\gcd(a,561)=1$ болса, $a$ саны $3$, $11$, $17$-нің ешқайсысына бөлінбейді.","Ферма: $a^2\\equiv1\\pmod3$, $a^{10}\\equiv1\\pmod{11}$, $a^{16}\\equiv1\\pmod{17}$.","$560=2\\cdot280=10\\cdot56=16\\cdot35$ - барлығына бөлінеді. Демек $a^{560}\\equiv1$ әр модуль бойынша.","$3$, $11$, $17$ жұптап өзара жай: $561\\mid a^{560}-1$ (Теорема 4.3-тің жалғыздық бөлігі)."],"ans":"$561$ - Кармайкл саны: Ферма тесті өзара жай кез келген негізде алданады."}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> Ферма тесті - жайлыққа тесттердің ең қарапайымы (оны жетілдірген Миллер-Рабин тесті RSA кілттерін жасауда қолданылады). Қытай қалдықтары туралы теорема RSA шифрын ашуды шамамен $4$ есе жылдамдатады (CRT-RSA), компьютерлік алгебрада үлкен сандарды бірнеше кіші модуль бойынша параллель есептеуге мүмкіндік береді.</p>
+      <p><b>Мини-жоба: «Ферма тесті және оның алданулары».</b> Эйлер функциясын, қытай қалдықтары туралы теорема бойынша шешушіні жазамыз, сосын $10\,000$-ға дейінгі $2$ негізіндегі псевдожай сандарды және Кармайкл сандарын табамыз.</p>
+<pre data-lang="python"><code class="language-python">from math import gcd
+
+def phi(n):
+    result, p = n, 2
+    while p * p &lt;= n:
+        if n % p == 0:
+            while n % p == 0:
+                n //= p
+            result -= result // p
+        p += 1
+    if n &gt; 1:
+        result -= result // n
+    return result
+
+print("phi:", [(n, phi(n)) for n in (1, 12, 36, 100, 360, 561)])
+
+def crt(residues, moduli):
+    x, M = 0, 1
+    for m in moduli:
+        M *= m
+    for a, m in zip(residues, moduli):
+        Mi = M // m
+        x += a * Mi * pow(Mi, -1, m)
+    return x % M, M
+
+print("Сунь-цзы:", crt([2, 3, 2], [3, 5, 7]))
+
+def is_prime(n):
+    if n &lt; 2:
+        return False
+    d = 2
+    while d * d &lt;= n:
+        if n % d == 0:
+            return False
+        d += 1
+    return True
+
+N = 10000
+pseudo = [n for n in range(3, N, 2) if pow(2, n - 1, n) == 1 and not is_prime(n)]
+print("2 негізіндегі псевдожайлар:", len(pseudo), pseudo[:8])
+carm = [n for n in pseudo if all(pow(a, n - 1, n) == 1 for a in range(2, n) if gcd(a, n) == 1)]
+print("Кармайкл сандары:", carm)
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>$10\,000$-ға дейін неше жай сан бар және неше $2$ негізіндегі псевдожай? Тест қаншалықты сенімді?</li>
+        <li>Табылған әр Кармайкл санын жай көбейткіштерге жіктеп, $p-1\mid n-1$ шартын тексеріңіз (Корсельт критерийі).</li>
+        <li><code>crt</code> функциясын $x\equiv1\pmod4$, $x\equiv2\pmod6$ жүйесіне қолданып көріңіз. Не болады және неге?</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>Эйлер функциясы</td><td>$\varphi(n)=n\prod(1-\frac1p)$</td><td>мультипликативті</td></tr>
+        <tr><td>Эйлер теоремасы</td><td>$a^{\varphi(m)}\equiv1$</td><td>$\gcd(a,m)=1$</td></tr>
+        <tr><td>Ферма теоремасы</td><td>$a^{p-1}\equiv1$, $a^p\equiv a$</td><td>кері тұжырым жалған</td></tr>
+        <tr><td>Көрсеткіш</td><td>$\bmod\varphi(m)$ бойынша қысқарту</td><td>$\gcd(a,m)=1$</td></tr>
+        <tr><td>ҚҚТ</td><td>$x\equiv\sum a_iM_iy_i\pmod M$</td><td>жұптап өзара жай</td></tr>
+        <tr><td>Вильсон</td><td>$(p-1)!\equiv-1$</td><td>жайлық критерийі</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m20-4-self">
+        <li><input type="checkbox"> <span>Мен $\varphi(n)$-ді канондық жіктеу арқылы есептеп, формуласын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Эйлер және Ферма теоремаларын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен үлкен дәрежелерді көрсеткішті $\varphi(m)$ бойынша қысқартып есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен салыстырулар жүйесін қытай қалдықтары туралы теорема бойынша шешіп, шешімнің жалғыздығын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Вильсон теоремасын дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен Ферма тесті неге жайлықты дәлелдемейтінін мысалмен көрсете аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="a">
+<p class="q-text">1. φ(360) =</p>
+<label><input type="radio" value="a"> 96</label>
+<label><input type="radio" value="b"> 120</label>
+<label><input type="radio" value="c"> 144</label>
+<label><input type="radio" value="d"> 72</label>
+<p class="explain">360 · ½ · ⅔ · ⅘.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">2. Эйлер теоремасының шарты:</p>
+<label><input type="radio" value="a"> m жай</label>
+<label><input type="radio" value="b"> a < m</label>
+<label><input type="radio" value="c"> a жай</label>
+<label><input type="radio" value="d"> gcd(a, m) = 1</label>
+<p class="explain">Теорема 4.1.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">3. 3²⁰²⁶ mod 13 =</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 9</label>
+<label><input type="radio" value="c"> 3</label>
+<label><input type="radio" value="d"> 12</label>
+<p class="explain">3³ ≡ 1 (mod 13).</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">4. 7²⁰²⁶ соңғы екі цифры:</p>
+<label><input type="radio" value="a"> 07</label>
+<label><input type="radio" value="b"> 49</label>
+<label><input type="radio" value="c"> 01</label>
+<label><input type="radio" value="d"> 43</label>
+<p class="explain">7⁴ ≡ 1 (mod 100).</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">5. x ≡ 2 (mod 3), x ≡ 3 (mod 5), x ≡ 2 (mod 7):</p>
+<label><input type="radio" value="a"> 23</label>
+<label><input type="radio" value="b"> 53</label>
+<label><input type="radio" value="c"> 8</label>
+<label><input type="radio" value="d"> 38</label>
+<p class="explain">Сунь-цзы есебі.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">6. 10! mod 11 =</p>
+<label><input type="radio" value="a"> 1</label>
+<label><input type="radio" value="b"> 0</label>
+<label><input type="radio" value="c"> 5</label>
+<label><input type="radio" value="d"> 10</label>
+<p class="explain">Вильсон: −1.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">7. 341 саны:</p>
+<label><input type="radio" value="a"> жай</label>
+<label><input type="radio" value="b"> Кармайкл саны</label>
+<label><input type="radio" value="c"> 2 негізіндегі псевдожай</label>
+<label><input type="radio" value="d"> толық сан</label>
+<p class="explain">341 = 11 · 31, 2³⁴⁰ ≡ 1.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">8. x ≡ 1 (mod 4), x ≡ 2 (mod 6):</p>
+<label><input type="radio" value="a"> x = 10</label>
+<label><input type="radio" value="b"> шешім жоқ</label>
+<label><input type="radio" value="c"> x = 5</label>
+<label><input type="radio" value="d"> жалғыз шешім mod 24</label>
+<p class="explain">Біріншісі тақ, екіншісі жұп.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәнді толық өткен соң Білімді <a href="../exam.html?s=numtheory">Number Theory емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-127.html"><small>Алдыңғы</small>← Number Theory · 3-сабақ: Салыстырулар</a>

@@ -33,6 +33,7 @@ TASK_MIN = {"easy": 3, "medium": 5, "hard": 8}
 QUIZ_MIN = 5
 READ_CPM = 400
 EXAM_TYPES = {"num", "tf", "choice", "expr", "interval", "matrix"}
+STAGE = {slug: i for i, (_, _, subs) in enumerate(Q.ROUTE) for slug in subs}
 
 
 def week(slug, k):
@@ -207,6 +208,43 @@ OLD_NAMES = {1: "Жоғары математикаға дайындық", 2: "С
 OLD_NAME_RE = re.compile(r"\b(\d{1,2}) · (" + "|".join(map(re.escape, OLD_NAMES.values())) + r")(?= · )")
 
 
+def split_intro(text, lead_min=160, rest_min=80):
+    """Кіріспе абзацын «баннер үшін қысқа кіріспе» + «қалғаны» деп бөледі: сөйлем шекарасы бойынша, $...$ пен тег ішінен емес."""
+    cuts, in_math, in_tag = [], False, False
+    for i, ch in enumerate(text):
+        if ch == "<":
+            in_tag = True
+        elif ch == ">":
+            in_tag = False
+        elif ch == "$" and not in_tag:
+            in_math = not in_math
+        elif ch in ".?!" and not in_math and not in_tag and text[i + 1:i + 2] == " " and re.match(r"[A-ZА-ЯӘҒҚҢӨҰҮҺІЁ«$]", text[i + 2:i + 3]):
+            cuts.append(i + 1)
+    for c in cuts:
+        if len(plain(text[:c])) >= lead_min:
+            rest = text[c:].strip()
+            return (text[:c], rest) if len(plain(rest)) >= rest_min else (text, "")
+    return text, ""
+
+
+def strip_html(n, ready):
+    """Пән ішіндегі сабақтар жолағы: «Number Theory: 1 2 [3] 4 5 6» (дайын емес сабақ - сілтемесіз)."""
+    slug, k = ref(n)
+    sb = SUBJ[slug]
+    items = []
+    for j in range(1, len(sb[7]) + 1):
+        w = week(slug, j)
+        t = html.escape(sb[7][j - 1][0])
+        if j == k:
+            items.append(f'<li><a href="week-{w}.html" aria-current="page" title="{t}">{j}</a></li>')
+        elif w in ready:
+            items.append(f'<li><a href="week-{w}.html" title="{t}">{j}</a></li>')
+        else:
+            items.append(f'<li><span class="soon" title="{t} · жақында">{j}</span></li>')
+    return (f'<nav class="mx-strip" aria-label="{html.escape(sb[3])}: пән сабақтары"><span class="mx-strip-h">'
+            f'<a href="../index.html#subj-{sb[0]}">{html.escape(sb[3])}</a></span><ol>{"".join(items)}</ol></nav>')
+
+
 def fix_badges(s):
     s = s.replace('<span class="badge easy">Оңай</span>', '<span class="badge easy">Жеңіл</span>')
     return s.replace('<span class="badge hard">Қиын</span>', '<span class="badge hard">Күрделі</span>')
@@ -220,7 +258,16 @@ def apply_lesson(n, ready, minutes):
     s = OLD_NAME_RE.sub(lambda m: SUBJ_BY_NO[int(m.group(1))][3] if OLD_NAMES.get(int(m.group(1))) == m.group(2) else m.group(0), s)
     # тақырып белгісі тек ағылшынша пән атауымен: «Precalculus · 1-сабақ» (ескі «1 · <қазақша атау> · 1-сабақ» түрі түзетіледі)
     s = re.sub(r'(<div class="lecture-head"[^>]*>\s*<div class="num">)[^<]*', lambda m: m.group(1) + html.escape(P.unit_label(n), quote=False), s, count=1)
+    s = re.sub(r'<article class="content math-lesson"(?: style="--sc:#[0-9a-f]{6}")?', f'<article class="content math-lesson" style="--sc:{P.STYLE[slug][0]}"', s, count=1)
+    s = put_block(s, "mstrip", strip_html(n, ready), r'<nav class="math-subnav"[^>]*>.*?</nav>')
     if n in ready:
+        m = re.search(r'(<div class="lecture-head"[^>]*>.*?</h1>\s*<p>)(.*?)(</p>)', s, re.S)
+        if m:
+            lead, rest = split_intro(m.group(2))
+            if rest:
+                s = s[:m.start(2)] + lead + s[m.end(2):]
+                s = put_block(s, "mintro", f'\n      <p class="mx-intro">{rest}</p>\n      ',
+                              r'<div class="lecture-head"[^>]*>.*?</h1>\s*<p>.*?</p>(?:\s*<!-- build:mmeta -->.*?<!-- /build:mmeta -->)?\s*</div>')
         s = fix_badges(s)
         mins = lesson_minutes(s)
         if mins:
@@ -327,7 +374,7 @@ def route_page(ready, minutes):
             pre_txt = ("Алдымен: " + ", ".join(f'<a href="#r-{p}">{html.escape(SUBJ[p][3])}</a>' for p in pre)) if pre else "Алғышарт: орта мектеп математикасы"
             info = f"{len(s[7])} сабақ · дайын {rd}" + (f" · ≈ {hrs} сағ" if hrs else "")
             exam = f' · <a href="exam.html?s={slug}">емтихан</a>' if rd else ""
-            cards.append(f'''        <section class="mx-rsubj" id="r-{slug}" data-slug="{slug}">
+            cards.append(f'''        <section class="mx-rsubj" id="r-{slug}" data-slug="{slug}" style="--sc:{P.STYLE[slug][0]}" data-glyph="{html.escape(P.STYLE[slug][1])}">
           <h3><span class="mx-snum" aria-hidden="true">{s[0]}</span>{html.escape(s[3])}</h3>
           <p class="mx-rinfo">{info}{exam}</p>
           <p class="mx-rpre">{pre_txt}</p>
@@ -378,8 +425,19 @@ def sync_index(minutes, ready):
             bits.append(f"≈ {hrs} сағ")
         if rd:
             bits.append(f'<a href="exam.html?s={slug}">Пән емтиханы</a>')
-        return put_block(body, "msmeta", '<p class="mx-smeta">' + " · ".join(bits) + "</p>", r'<p class="mx-sdesc">.*?</p>')
+        body = put_block(body, "msmeta", '<p class="mx-smeta">' + " · ".join(bits) + "</p>", r'<p class="mx-sdesc">.*?</p>')
+        col, glyph = P.STYLE[slug]
+        attrs = f' style="--sc:{col}" data-stage="{STAGE[slug]}" data-glyph="{html.escape(glyph)}"'
+        body = re.sub(r'(class="week-card[^"]*" data-id="week-\d+"[^>]*style=")--c:#[0-9a-fA-F]{6}', lambda m_: m_.group(1) + "--c:" + col, body)
+        return re.sub(r'(<section class="mx-subj"[^>]*?data-slug="\w+")(?: style="[^"]*" data-stage="\d" data-glyph="[^"]*")?', lambda m_: m_.group(1) + attrs, body, count=1)
     s = re.sub(r'<section class="mx-subj".*?</section>', subj, s, flags=re.S)
+    # пәндерге өту тізімі: әр пәннің түсі
+    s = re.sub(r'<li(?: style="--sc:#[0-9a-f]{6}")?><a href="#subj-(\d+)">', lambda m_: f'<li style="--sc:{P.STYLE[P.SUBJECTS[int(m_.group(1)) - 1][1]][0]}"><a href="#subj-{m_.group(1)}">', s)
+    # кезең сүзгісі (math-course.js: appHome) - пәндер тізімінің алдында
+    chips = '<button type="button" class="mx-fchip" data-stage="" aria-pressed="true">Барлығы</button>' + "".join(
+        f'<button type="button" class="mx-fchip" data-stage="{i}" aria-pressed="false">{html.escape(t.split(":")[0])}</button>' for i, (t, _, _) in enumerate(Q.ROUTE))
+    s = put_block(s, "mfilter", f'\n      <div class="mx-filter" role="group" aria-label="Пәндерді оқу жолының кезеңі бойынша сүзу">{chips}</div>\n      ',
+                  r'<h2 id="weeks">.*?</h2>\s*<p>.*?</p>')
     stages = "".join(f'<li><a href="route.html#stage-{i}">{html.escape(t)}</a></li>' for i, (t, _, _) in enumerate(Q.ROUTE))
     s = put_block(s, "mroute", f'''
       <section class="mx-routebox" aria-labelledby="mroute-h">
@@ -391,6 +449,12 @@ def sync_index(minutes, ready):
       ''', r'<nav class="math-subnav"[^>]*>.*?</nav>')
     s = s.replace("Әр пән өз алдына тәуелсіз: кез келгенін таңдап оқуға болады.", "Пәндерді кез келген ретпен ашуға болады; нөлден бастасаңыз, оқу жолын ұстаныңыз.")
     s = s.replace("Пәндер бір-бірінен тәуелсіз: кез келгенінен бастауға болады.", "Нөлден бастасаңыз, оқу жолымен жүріңіз; әр сабақта алғышарттар мен шамамен ұзақтық көрсетілген.")
+    s = s.replace("17 пән: орта мектептен кейінгі негізгі математика - алгебрадан бастап есептеуге, ықтималдыққа, дискретті математикаға және оңтайландыруға дейін. Пәндерді кез келген ретпен ашуға болады; нөлден бастасаңыз, оқу жолын ұстаныңыз.",
+                  "17 пән: университеттің негізгі математикасы - сызықтық алгебра мен анализден ықтималдыққа, статистикаға, сандық әдістер мен оңтайландыруға дейін.")
+    s = s.replace("Пәндер бір-біріне байланбайды: кез келгенін ашып, оқи беруге болады. Қажет ұғымдар сабақтың өзінде қысқаша еске салынады. Пән атаулары ағылшынша, түсіндірме қазақша.",
+                  "Кез келген пәнге бірден өтуге болады: әр пәннің астында алғышарттары, шамамен ұзақтығы және емтиханы көрсетілген. Пән атаулары ағылшынша, түсіндірме қазақша.")
+    s = s.replace("<p>24 пән, әр пәнде 5-8 сабақ. Әр сабақта мақсаттар, интуиция, анықтама, теорема, қорытып шығару, қадамдық шешілген мысалдар, жиі қателер, визуализация, интерактивті есептер, қорытынды формулалар және қорытынды тест бар. Жазылып біткен сабақтар ашық, қалғандары «Жақында» белгісімен тұр.</p>",
+                  "<p>24 пән, әр пәнде 5-8 сабақ: интуиция, анықтама мен теорема, қорытып шығару, шешілген мысалдар, визуализация, автоматты тексерілетін есептер және тест. Жазылып біткен сабақтар ашық, қалғандары «Жақында» белгісімен тұр.</p>")
     s = s.replace("7 пән: қатаң дәлелдеу тілімен жазылған курстар. Әр пән өз алдына тәуелсіз.", "7 пән: қатаң дәлелдеу тілімен жазылған курстар. Алғышарттары әр пәннің астында көрсетілген.")
     if 'href="route.html">Оқу жолы</a>' not in s:
         s = s.replace('<a class="btn ghost" href="practice.html">Жаттықтырғыш</a>', '<a class="btn ghost" href="practice.html">Жаттықтырғыш</a>\n            <a class="btn ghost" href="route.html">Оқу жолы</a>', 1)

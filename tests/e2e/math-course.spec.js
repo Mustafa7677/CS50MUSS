@@ -997,3 +997,24 @@ test("көмекші, 390px: батырма көрінеді, мазмұнды �
   }
   await ctx.close();
 });
+
+test("дизайн: әр пәннің өз түсі мен белгісі, кезең сүзгісі, сабақтар жолағы, карта үзіндісінде TeX жоқ", async ({ page }) => {
+  await open(page, "math/index.html");
+  const cols = await page.locator(".mx-subj").evaluateAll((els) => els.map((e) => e.style.getPropertyValue("--sc")));
+  expect(new Set(cols).size).toBe(24);
+  expect(await page.locator(".mx-subj[data-glyph]").count()).toBe(24);
+  // карта үзінділерінде өңделмеген $...$ жоқ (курс беті KaTeX жүктемейді)
+  expect((await page.locator(".mx-subj .week-card p").allInnerTexts()).filter((t) => t.includes("$"))).toEqual([]);
+  // сүзгі: 4-кезең - тек сол кезеңнің пәндері; «Барлығы» - қайта 24
+  await page.click('.mx-fchip[data-stage="4"]');
+  await expect(page.locator(".mx-subj:not(.is-hidden)")).toHaveCount(7);
+  await expect(page.locator('.mx-fchip[data-stage="4"]')).toHaveAttribute("aria-pressed", "true");
+  await page.click('.mx-fchip[data-stage=""]');
+  await expect(page.locator(".mx-subj:not(.is-hidden)")).toHaveCount(24);
+  // сабақ беті: баннер мен блоктар пән түсімен, пән ішіндегі сабақтар жолағы
+  await open(page, "math/lectures/week-128.html");
+  await expect(page.locator(".lecture-head")).toHaveAttribute("data-msubj", "numtheory");
+  await expect(page.locator(".mx-strip li")).toHaveCount(6);
+  await expect(page.locator('.mx-strip a[aria-current="page"]')).toHaveText("4");
+  await expect(page.locator(".mx-intro")).toHaveCount(1);
+});
