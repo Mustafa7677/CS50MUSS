@@ -6731,12 +6731,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: сағат арифметикасы",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -6767,7 +6779,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 18,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6787,12 +6799,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: Z₁₂-ді бөлшектеу",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -6823,7 +6847,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 18,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6843,236 +6867,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
-    "t": "Интуиция",
-    "id": "intuition"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 14,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-121",
-  "num": "Abstract Algebra · 4-сабақ",
-  "title": "Симметриялық топтар",
-  "url": "math/lectures/week-121.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
+    "t": "Алдымен қолмен: жұп-тақ детекторы",
+    "id": "warmup"
    },
    {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 13,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-122",
-  "num": "Abstract Algebra · 5-сабақ",
-  "title": "Сақиналар және өрістер",
-  "url": "math/lectures/week-122.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Интуиция",
-    "id": "intuition"
+    "t": "Белгілерді оқу",
+    "id": "symbols"
    },
    {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
    {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 16,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-123",
-  "num": "Abstract Algebra · 6-сабақ",
-  "title": "Көпмүшелер сақинасы",
-  "url": "math/lectures/week-123.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Интуиция",
-    "id": "intuition"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 15,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-124",
-  "num": "Abstract Algebra · 7-сабақ",
-  "title": "Өріс кеңейтімдері және Галуа теориясына кіріспе",
-  "url": "math/lectures/week-124.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Интуиция",
-    "id": "intuition"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7109,10 +6921,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
-  "id": "week-125",
-  "num": "Number Theory · 1-сабақ",
-  "title": "Бөлінгіштік және ЕҮОБ",
-  "url": "math/lectures/week-125.html",
+  "id": "week-121",
+  "num": "Abstract Algebra · 4-сабақ",
+  "title": "Симметриялық топтар",
+  "url": "math/lectures/week-121.html",
   "topics": [
    {
     "t": "Сабақ мақсаттары",
@@ -7123,12 +6935,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: карталарды араластыру",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7159,7 +6983,279 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 17,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-122",
+  "num": "Abstract Algebra · 5-сабақ",
+  "title": "Сақиналар және өрістер",
+  "url": "math/lectures/week-122.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: Z₆ пен Z₇-де бөлу",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 19,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-123",
+  "num": "Abstract Algebra · 6-сабақ",
+  "title": "Көпмүшелер сақинасы",
+  "url": "math/lectures/week-123.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: бағанмен бөлу және түбір",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 18,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-124",
+  "num": "Abstract Algebra · 7-сабақ",
+  "title": "Өріс кеңейтімдері және Галуа теориясына кіріспе",
+  "url": "math/lectures/week-124.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: √2 қосылған сандар",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 20,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-125",
+  "num": "Number Theory · 1-сабақ",
+  "title": "Бөлінгіштік және ЕҮОБ",
+  "url": "math/lectures/week-125.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: Евклид алгоритмін қолмен",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 17,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7179,12 +7275,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: Эратосфен елегі",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7215,7 +7323,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 18,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7235,12 +7343,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: апта күні",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7271,7 +7391,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 16,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7291,12 +7411,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: соңғы цифр",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7327,7 +7459,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 17,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7347,12 +7479,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: 7 бойынша квадраттар кестесі",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7383,7 +7527,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 17,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7403,12 +7547,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: маркалар есебі",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7439,7 +7595,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 18,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7867,180 +8023,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
-    "t": "Интуиция",
-    "id": "intuition"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 14,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-138",
-  "num": "Differential Geometry · 2-сабақ",
-  "title": "Френе реперi және бұралу",
-  "url": "math/lectures/week-138.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
+    "t": "Алдымен қолмен: шеңбердің қисықтығын өлшеу",
+    "id": "warmup"
    },
    {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 14,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-139",
-  "num": "Differential Geometry · 3-сабақ",
-  "title": "Беттер және бірінші квадраттық форма",
-  "url": "math/lectures/week-139.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Интуиция",
-    "id": "intuition"
+    "t": "Белгілерді оқу",
+    "id": "symbols"
    },
    {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
    {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 15,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-140",
-  "num": "Differential Geometry · 4-сабақ",
-  "title": "Екінші квадраттық форма және Гаусс қисықтығы",
-  "url": "math/lectures/week-140.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Интуиция",
-    "id": "intuition"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -8077,10 +8077,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
-  "id": "week-141",
-  "num": "Differential Geometry · 5-сабақ",
-  "title": "Геодезиялық сызықтар және Гаусс–Бонне теоремасы",
-  "url": "math/lectures/week-141.html",
+  "id": "week-138",
+  "num": "Differential Geometry · 2-сабақ",
+  "title": "Френе реперi және бұралу",
+  "url": "math/lectures/week-138.html",
   "topics": [
    {
     "t": "Сабақ мақсаттары",
@@ -8091,12 +8091,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: бұрама спираль",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -8127,7 +8139,211 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 16,
+  "minutes": 17,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-139",
+  "num": "Differential Geometry · 3-сабақ",
+  "title": "Беттер және бірінші квадраттық форма",
+  "url": "math/lectures/week-139.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: глобустағы қашықтық",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 17,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-140",
+  "num": "Differential Geometry · 4-сабақ",
+  "title": "Екінші квадраттық форма және Гаусс қисықтығы",
+  "url": "math/lectures/week-140.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: үш беттің иілуі",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 20,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-141",
+  "num": "Differential Geometry · 5-сабақ",
+  "title": "Геодезиялық сызықтар және Гаусс–Бонне теоремасы",
+  "url": "math/lectures/week-141.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: сферадағы үшбұрыштың бұрыштары",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
