@@ -1432,7 +1432,13 @@
     var best = h("p", { class: "mx-count" }), stage = h("div", { class: "mx-estage" });
     box.append(h("div", { class: "mx-filters" }, h("label", null, "Пән ", sel), start, best), stage);
     var st = LS.get("cs50kz:math:exam", {}); if (!st || typeof st !== "object") st = {};
-    var paint = function () { var r = st[sel.value]; best.textContent = r ? "Үздік нәтиже: " + r.best + "% · соңғысы: " + r.last + "%" : ""; };
+    var paint = function () {
+      var r = st[sel.value], cur = subs.filter(function (x) { return x.slug === sel.value; })[0];
+      best.textContent = r ? "Үздік нәтиже: " + r.best + "% · соңғысы: " + r.last + "%" : "";
+      /* пәннің өз түсі мен белгісі (курс бетіндегідей) */
+      box.classList.add("mx-exam");
+      if (cur && cur.color) { box.style.setProperty("--sc", cur.color); box.setAttribute("data-glyph", cur.glyph || ""); }
+    };
     var hs = ""; try { hs = new URLSearchParams(location.search).get("s") || ""; } catch (e) { /* ескі браузер */ }
     if (have.indexOf(hs) >= 0) sel.value = hs;
     paint();
