@@ -4607,12 +4607,92 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: сынып жиналысы",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 20,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-80",
+  "num": "Probability Theory · 2-сабақ",
+  "title": "Ықтималдық және оның қасиеттері",
+  "url": "math/lectures/week-80.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: екі сүйек",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -4649,62 +4729,6 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
-  "id": "week-80",
-  "num": "Probability Theory · 2-сабақ",
-  "title": "Ықтималдық және оның қасиеттері",
-  "url": "math/lectures/week-80.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Интуиция",
-    "id": "intuition"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 15,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
   "id": "week-81",
   "num": "Probability Theory · 3-сабақ",
   "title": "Шартты ықтималдық және Байес формуласы",
@@ -4719,12 +4743,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: медициналық тест",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -4755,7 +4791,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 17,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -4775,236 +4811,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
-    "t": "Интуиция",
-    "id": "intuition"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 14,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-83",
-  "num": "Probability Theory · 5-сабақ",
-  "title": "Дискретті үлестірімдер",
-  "url": "math/lectures/week-83.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
+    "t": "Алдымен қолмен: лотерея билеті әділ ме",
+    "id": "warmup"
    },
    {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 14,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-84",
-  "num": "Probability Theory · 6-сабақ",
-  "title": "Үзіліссіз үлестірімдер",
-  "url": "math/lectures/week-84.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Интуиция",
-    "id": "intuition"
+    "t": "Белгілерді оқу",
+    "id": "symbols"
    },
    {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
    {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 13,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-85",
-  "num": "Probability Theory · 7-сабақ",
-  "title": "Үлкен сандар заңы және орталық шектік теорема",
-  "url": "math/lectures/week-85.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Интуиция",
-    "id": "intuition"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 14,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-86",
-  "num": "Mathematical Statistics · 1-сабақ",
-  "title": "Таңдама және сипаттамалық статистика",
-  "url": "math/lectures/week-86.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Интуиция",
-    "id": "intuition"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -5041,10 +4865,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
-  "id": "week-87",
-  "num": "Mathematical Statistics · 2-сабақ",
-  "title": "Нүктелік бағалау",
-  "url": "math/lectures/week-87.html",
+  "id": "week-83",
+  "num": "Probability Theory · 5-сабақ",
+  "title": "Дискретті үлестірімдер",
+  "url": "math/lectures/week-83.html",
   "topics": [
    {
     "t": "Сабақ мақсаттары",
@@ -5055,12 +4879,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: айыппұл соққылары",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -5091,7 +4927,279 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 16,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-84",
+  "num": "Probability Theory · 6-сабақ",
+  "title": "Үзіліссіз үлестірімдер",
+  "url": "math/lectures/week-84.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: бойлардың үлестірімі",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 15,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-85",
+  "num": "Probability Theory · 7-сабақ",
+  "title": "Үлкен сандар заңы және орталық шектік теорема",
+  "url": "math/lectures/week-85.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: 1000 монета",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 17,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-86",
+  "num": "Mathematical Statistics · 1-сабақ",
+  "title": "Таңдама және сипаттамалық статистика",
+  "url": "math/lectures/week-86.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: жалақылар",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 19,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-87",
+  "num": "Mathematical Statistics · 2-сабақ",
+  "title": "Нүктелік бағалау",
+  "url": "math/lectures/week-87.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: сирек оқиғаның жиілігін бағалау",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 15,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -5111,12 +5219,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: сауалнаманың қателігі",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -5147,7 +5267,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 16,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -5167,12 +5287,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: монета әділ ме",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -5203,7 +5335,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 17,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -5223,12 +5355,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: оқу уақыты мен баға",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -5259,7 +5403,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 15,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -5279,12 +5423,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: сүйек әділ ме",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -5315,7 +5471,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 16,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
