@@ -12,7 +12,7 @@
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="CS50 қазақша">
   <meta property="og:title" content="Math Fourier &amp;amp; Laplace Transforms · 6-сабақ: Дискретті Фурье түрлендіруі және FFT - CS50 қазақша">
-  <meta property="og:description" content="Математика, Fourier &amp;amp; Laplace Transforms · 6-сабақ: Дискретті Фурье түрлендіруі және FFT. Сабақ жақында жазылады.">
+  <meta property="og:description" content="ДФТ, жылдам алгоритм идеясы, сигналды талдау, Python мысалы.">
   <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/math/lectures/week-78.html">
   <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
   <meta property="og:image:width" content="1200">
@@ -24,13 +24,18 @@
   <link rel="license" href="../../copyright.html">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Math Fourier &amp; Laplace Transforms · 6-сабақ: Дискретті Фурье түрлендіруі және FFT - CS50 қазақша","url":"https://mustafa7677.github.io/CS50MUSS/math/lectures/week-78.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
   <!-- /build:head -->
-  <meta name="description" content="Математика, Fourier &amp; Laplace Transforms · 6-сабақ: Дискретті Фурье түрлендіруі және FFT. Сабақ жақында жазылады.">
-  <meta name="robots" content="noindex">
+  <meta name="description" content="ДФТ, жылдам алгоритм идеясы, сигналды талдау, Python мысалы.">
   <meta name="author" content="Sagid Mustafa">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">
   <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/vendor/katex/katex.min.css">
+  <link rel="stylesheet" href="../../assets/css/math-course.css">
   <script src="../../assets/js/main.js"></script>
+  <script defer src="../../assets/vendor/katex/katex.min.js"></script>
+  <script defer src="../../assets/vendor/katex/auto-render.min.js"></script>
+  <script defer src="../../assets/js/math-course.js"></script>
+  <script defer src="../../assets/js/math-viz.js"></script>
 </head>
 <body data-license="B" data-course="math">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -52,22 +57,395 @@
     </div>
   </header>
 
-  <!-- soon -->
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>
       <ol></ol>
     </aside>
 
-    <article class="content" id="main">
+    <article class="content math-lesson" id="main">
       <div class="lecture-head" style="--lc:#15803d" data-n="78">
-        <div class="num">Fourier & Laplace Transforms · 6-сабақ</div>
+        <div class="num">Fourier &amp; Laplace Transforms · 6-сабақ</div>
         <h1>Дискретті Фурье түрлендіруі және FFT</h1>
-        <p>ДФТ, жылдам алгоритм идеясы, сигналды талдау, Python мысалы.</p>
+        <p>Компьютер үзіліссіз функциямен емес, ақырлы сандар тізбегімен жұмыс істейді: микрофон секундына 44100 рет өлшейді, сурет - пиксельдер торы. Дискретті Фурье түрлендіруі (ДФТ) $N$ санды $N$ жиілік коэффициентіне аударады және бұл - қатар мен интегралдың орнына ақырлы қосынды, жуықтаусыз дәл түрлендіру. Оны тікелей есептеу $N^2$ амал талап етеді, ал 1965 жылы кең тараған Кули–Тьюки алгоритмі (FFT) - тек $N\log_2N$: миллион нүкте үшін бұл секунд пен сағаттың айырмасы. Бұл сабақта ДФТ-ны анықтап, кері формуласын бірдің түбірлерінің ортогональдығынан дәлелдейміз, қасиеттерін (симметрия, айналмалы үйірткі, Парсеваль), Фурье қатарымен байланысын және «бүркемелену» (aliasing) құбылысын қорытамыз, FFT алгоритмін және оның күрделілігін дәлелдейміз.</p><!-- build:mmeta --><p class="lecture-meta mx-meta" aria-label="Сабақтың шамамен ұзақтығы"><span>⏱ Оқу ≈ 40 мин</span><span>Есептер ≈ 1 сағ</span><span>Тест ≈ 5 мин</span><span><b>Барлығы ≈ 1 сағ 40 мин</b></span></p><!-- /build:mmeta -->
       </div>
 
-      <h2 id="soon">Бұл сабақ жақында</h2>
-      <p>Сабақ әлі жазылып жатыр. Осы кезде <a href="../index.html#subj-12">Fourier &amp; Laplace Transforms</a> пәнінің жоспарын қарап, <a href="../formulas.html">формулалар анықтамалығын</a> пайдалануға болады.</p>
+      <nav class="math-subnav" aria-label="Математика курсының бөлімдері"><a href="../index.html#subj-12">Пәндер</a><a href="../formulas.html">Формулалар</a><a href="../glossary.html">Сөздік</a><a href="../practice.html">Жаттықтырғыш</a><a href="../route.html">Оқу жолы</a><a href="../exam.html?s=transforms">Емтихан</a></nav>
+
+      <div class="callout note">
+        <span class="callout-title">Курс туралы</span>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+      </div>
+
+      <h2 id="goals">Сабақ мақсаттары</h2>
+      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>
+      <ul>
+        <li>ДФТ мен кері ДФТ-ны анықтап, кіші $N$ үшін қолмен есептеу;</li>
+        <li>бірдің $N$-ші түбірлерінің ортогональдығын дәлелдеп, кері формуланы қорыту;</li>
+        <li>нақты тізбектің спектріндегі симметрияны, айналмалы үйірткі теоремасын және Парсеваль теңдігін қолдану;</li>
+        <li>ДФТ мен Фурье коэффициенттерінің байланысын және бүркемелену формуласын дәлелдеу;</li>
+        <li>Кули–Тьюки FFT алгоритмін сипаттап, оның $O(N\log N)$ күрделілігін дәлелдеу;</li>
+        <li>FFT-ны көпмүшелерді көбейтуге және сигнал спектрін талдауға қолдану.</li>
+      </ul>
+
+      <h2 id="prereq">Қысқаша еске салу</h2>
+      <p class="math-prereq">Бірдің $n$-ші дәрежелі түбірлері $e^{2\pi ik/N}$ және олардың қосындысы $0$ (комплекс анализ, 1-сабақ). Фурье қатарының комплекс түрі, $c_n=\frac1{2\pi}\int fe^{-inx}$, Парсеваль теңдігі (2-сабақ). Геометриялық прогрессия қосындысы. Рекуррентті қатынастар және алгоритм күрделілігі $O(\cdot)$ ұғымы.</p><!-- build:mpre --><div class="mx-pre"><p class="mx-pre-h">Алдымен оқыңыз</p><ul><li><a href="week-77.html">Fourier &amp; Laplace Transforms · 5-сабақ: Кері Лаплас түрлендіруі және теңдеулерді шешу</a></li><li><a href="week-10.html">Linear Algebra · 4-сабақ: Матрицалар және матрицалық амалдар</a></li></ul><p class="mx-pre-note">Бұл сабақтар таныс болса, бірден бастай беріңіз. Толық реттілік: <a href="../route.html">оқу жолы</a>.</p></div><!-- /build:mpre -->
+
+      <h2 id="intuition">Интуиция</h2>
+      <p>Фурье қатарының коэффициенті $c_k=\frac1{2\pi}\int_0^{2\pi}f(x)e^{-ikx}dx$. Интегралды $N$ тең бөлікті тіктөртбұрыштар (не трапеция) әдісімен жуықтасақ, $c_k\approx\frac1N\sum_{n=0}^{N-1}f(x_n)e^{-ikx_n}$, $x_n=\frac{2\pi n}N$. Осы қосынды ($\frac1N$-сіз) - ДФТ. Демек ДФТ - сигналдың «өлшенген» нүктелері бойынша спектрі.</p>
+      <p>Бірақ дискреттеудің бағасы бар: $N$ нүктеде $e^{ikx}$ пен $e^{i(k+N)x}$ мәндері бірдей, өйткені $e^{iNx_n}=e^{2\pi in}=1$. Жиілігі $N$-ге айырмашылықты екі тербеліс өлшенген нүктелерде ажыратылмайды - <strong>бүркемелену</strong> (<span class="term-en">aliasing</span>). Кинодағы «кері айналатын» дөңгелек дәл осы құбылыс: кадр жиілігі дөңгелектің айналу жиілігінен аз.</p>
+      <p>FFT идеясы - «бөліп ал да билей бер»: $N$ нүктенің ДФТ-сын жұп және тақ индексті нүктелердің $\frac N2$ ұзындықты екі ДФТ-сына келтіреміз. Әр деңгейде $N$ амал, деңгей саны $\log_2N$, барлығы $N\log_2N$. $N=1024$ үшін $N^2\approx10^6$, ал $N\log_2N\approx10^4$ - 100 есе жылдам; $N=10^6$ үшін - 50 000 есе.</p>
+      <p>Ең таңғаларлық қолданыстардың бірі - көпмүшелерді көбейту. Коэффициенттер тізбегін көбейту - үйірткі, ал ДФТ үйірткіні көбейтіндіге айналдырады. Сондықтан екі $N$-дәрежелі көпмүшенің көбейтіндісін $N^2$ емес, $N\log N$ амалмен табуға болады - үлкен сандарды көбейтудің жылдам алгоритмдері осыған сүйенеді.</p>
+
+      <h2 id="theory">Анықтамалар мен теоремалар</h2>
+      <div class="math-def" id="def-1"><span class="math-tag">Анықтама 6.1 · Дискретті Фурье түрлендіруі</span>
+        <p>$x=(x_0,\dots,x_{N-1})\in\mathbb C^N$, $\omega=e^{2\pi i/N}$. <strong>Дискретті Фурье түрлендіруі</strong> (<span class="term-en">discrete Fourier transform</span>): $X_k=\sum_{n=0}^{N-1}x_n\omega^{-kn}$, $k=0,\dots,N-1$. Матрица түрінде $X=F_Nx$, $(F_N)_{kn}=\omega^{-kn}$. $X_k$ кез келген бүтін $k$ үшін анықталған және $N$ периодты: $X_{k+N}=X_k$.</p></div>
+      <div class="math-thm" id="thm-1"><span class="math-tag">Теорема 6.1 · Ортогональдық және кері ДФТ</span>
+        <p>(1) Бүтін $j$ үшін $\sum_{n=0}^{N-1}\omega^{jn}=N$, егер $N\mid j$, әйтпесе $0$. (2) <strong>Кері ДФТ</strong> (<span class="term-en">inverse DFT</span>): $x_n=\frac1N\sum_{k=0}^{N-1}X_k\omega^{kn}$. Демек $F_N^{-1}=\frac1N\overline{F_N}$, ал $\frac1{\sqrt N}F_N$ - унитар матрица.</p></div>
+      <p><em>Негіздеме.</em> (1) - бірдің түбірлерінің қосындысы (комплекс анализ, 1-сабақ, Қадамдық шешім).</p>
+      <div class="math-thm" id="thm-2"><span class="math-tag">Теорема 6.2 · ДФТ қасиеттері</span>
+        <p>(1) Нақты $x$: $X_{N-k}=\overline{X_k}$, дербес жағдайда $X_0$ нақты (және $N$ жұп болса, $X_{N/2}$ нақты). (2) Айналмалы жылжу $y_n=x_{n-m}$ (индекстер $N$ модулі бойынша): $Y_k=\omega^{-km}X_k$. (3) <strong>Айналмалы үйірткі</strong> (<span class="term-en">circular convolution</span>) $(x\circledast y)_n=\sum_{m=0}^{N-1}x_my_{n-m}$: $\mathcal F[x\circledast y]_k=X_kY_k$. (4) Парсеваль: $\sum_n|x_n|^2=\frac1N\sum_k|X_k|^2$.</p></div>
+      <p><em>Негіздеме.</em> Барлығы ортогональдықтан.</p>
+      <div class="math-thm" id="thm-3"><span class="math-tag">Теорема 6.3 · Бүркемелену формуласы</span>
+        <p>$f(x)=\sum_jc_je^{ijx}$, $\sum|c_j|&lt;\infty$ ($2\pi$ периодты), $x_n=f\left(\frac{2\pi n}N\right)$ болса, $$\frac{X_k}N=\sum_{m=-\infty}^{\infty}c_{k+mN}.$$ Дербес жағдайда $f$ - тригонометриялық көпмүше, $c_j=0$ барлық $|j|\ge\frac N2$ үшін (және $N$ жұп болса, $c_{\pm N/2}$ де нөл) болса, ДФТ коэффициенттерді дәл береді: $c_k=\frac{X_k}N$, $c_{-k}=\frac{X_{N-k}}N$.</p></div>
+      <p><em>Негіздеме.</em> Бұл - <strong>Найквист шарты</strong> (<span class="term-en">Nyquist criterion</span>) дискретті түрі: сигналдағы ең жоғары жиілік өлшеу жиілігінің жартысынан кіші болуы керек.</p>
+      <div class="math-thm" id="thm-4"><span class="math-tag">Теорема 6.4 · FFT (Кули–Тьюки)</span>
+        <p>$N=2M$. $E_k$ - жұп индексті $(x_0,x_2,\dots)$ тізбегінің, $O_k$ - тақ индекстілердің $M$-нүктелі ДФТ-сы. Онда $k=0,\dots,M-1$ үшін $$X_k=E_k+\omega_N^{-k}O_k,\qquad X_{k+M}=E_k-\omega_N^{-k}O_k.$$ $N=2^p$ болса, рекурсия <strong>жылдам Фурье түрлендіруі</strong> (<span class="term-en">fast Fourier transform</span>) береді: кешенді көбейту саны $\frac N2\log_2N$, жалпы амал саны $O(N\log N)$.</p></div>
+      <p><em>Негіздеме.</em> Тікелей есептеу $O(N^2)$ амал талап етеді.</p>
+      <div class="math-formula" id="f-1"><span class="math-fname">Формула 6.1 · ДФТ</span>
+        <div class="math-fbody">$$X_k=\sum_{n=0}^{N-1}x_n\,\omega^{-kn},\qquad\omega=e^{2\pi i/N}$$</div>
+        <p class="math-fnote">$k=0,\dots,N-1$; $X$ $N$ периодты.</p></div>
+      <div class="math-formula" id="f-2"><span class="math-fname">Формула 6.2 · Кері ДФТ</span>
+        <div class="math-fbody">$$x_n=\frac1N\sum_{k=0}^{N-1}X_k\,\omega^{kn}$$</div>
+        <p class="math-fnote">Бірдің түбірлерінің ортогональдығы.</p></div>
+      <div class="math-formula" id="f-3"><span class="math-fname">Формула 6.3 · Ортогональдық</span>
+        <div class="math-fbody">$$\sum_{n=0}^{N-1}\omega^{jn}=\begin{cases}N,&amp;N\mid j\\0,&amp;N\nmid j\end{cases}$$</div>
+        <p class="math-fnote">Геометриялық прогрессия.</p></div>
+      <div class="math-formula" id="f-4"><span class="math-fname">Формула 6.4 · Нақты сигнал</span>
+        <div class="math-fbody">$$X_{N-k}=\overline{X_k}$$</div>
+        <p class="math-fnote">$x_n\in\mathbb R$; спектрдің жартысы жеткілікті.</p></div>
+      <div class="math-formula" id="f-5"><span class="math-fname">Формула 6.5 · Айналмалы үйірткі</span>
+        <div class="math-fbody">$$\mathcal F[x\circledast y]=X\cdot Y,\qquad(x\circledast y)_n=\sum_mx_my_{(n-m)\bmod N}$$</div>
+        <p class="math-fnote">Көпмүшелерді көбейту үшін нөлдермен толықтырамыз.</p></div>
+      <div class="math-formula" id="f-6"><span class="math-fname">Формула 6.6 · Бүркемелену</span>
+        <div class="math-fbody">$$\frac{X_k}{N}=\sum_{m\in\mathbb Z}c_{k+mN}$$</div>
+        <p class="math-fnote">$\sum|c_j|&lt;\infty$; Найквист шартында $X_k=Nc_k$.</p></div>
+      <div class="math-formula" id="f-7"><span class="math-fname">Формула 6.7 · FFT қадамы</span>
+        <div class="math-fbody">$$X_k=E_k+\omega_N^{-k}O_k,\quad X_{k+N/2}=E_k-\omega_N^{-k}O_k$$</div>
+        <p class="math-fnote">$N$ жұп; «көбелек» (butterfly).</p></div>
+      <div class="math-remember"><span class="math-box-title">Есте сақта</span>
+        <p>Есептеу кеңестері: (1) кіші $N$ үшін $\omega$-ның дәрежелерін алдын ала жазыңыз ($N=4$: $\omega=i$, $\omega^{-1}=-i$, $\omega^{-2}=-1$, $\omega^{-3}=i$); (2) нақты сигналда $X_0,\dots,X_{N/2}$-ні есептеп, қалғанын $X_{N-k}=\overline{X_k}$ арқылы алыңыз; (3) тексеру: $X_0=\sum x_n$, ал $x_0=\frac1N\sum X_k$; (4) жиілік индексі $k>\frac N2$ шын мәнінде теріс жиілік $k-N$.</p></div>
+      <div class="math-attention"><span class="math-box-title">Назар аудар</span>
+        <p>ДФТ сигналды $N$ периодты деп «ойлайды». Үзіліссіз сигналдың кесіндісін алсақ, оның екі шеті сәйкес келмейді, және ДФТ бұл «секірісті» көреді - спектрге жалған жоғары жиіліктер «ағып» кетеді (spectral leakage). Сондай-ақ айналмалы үйірткі кәдімгі (сызықтық) үйірткі емес: көпмүшелерді көбейткенде тізбектерді нәтиже дәрежесінен ұзын болатындай нөлдермен толықтырмасаңыз, жоғарғы коэффициенттер төменгілерге «оралып» қосылады.</p></div>
+
+      <h2 id="derivations">Қорытып шығару</h2>
+      <div class="mx-derive-tools"></div>
+      <details class="math-derive" id="d-1" open>
+        <summary>Қорытып шығару 1: ортогональдық және кері ДФТ</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.1-ді дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>(1) $N\mid j$: $\omega^j=e^{2\pi ij/N}=1$, қосынды $N$. Әйтпесе $q=\omega^j\ne1$, геометриялық прогрессия: $\sum_{n=0}^{N-1}q^n=\frac{q^N-1}{q-1}=\frac{e^{2\pi ij}-1}{q-1}=0$.</li>
+            <li>(2) $\frac1N\sum_kX_k\omega^{kn}=\frac1N\sum_k\sum_mx_m\omega^{-km}\omega^{kn}=\frac1N\sum_mx_m\sum_k\omega^{k(n-m)}$.</li>
+            <li>Ішкі қосынды (1) бойынша $N[m=n]$ ($0\le m,n\le N-1$ болғандықтан $N\mid(n-m)\iff m=n$).</li>
+            <li>Нәтиже $x_n$. ∎</li>
+            <li>Матрица тілінде: $\overline{F_N}F_N=NI$, яғни $\frac1{\sqrt N}F_N$-ның бағандары ортонормаль - унитар матрица; Парсеваль теңдігі осыдан шығады.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-2">
+        <summary>Қорытып шығару 2: бүркемелену формуласы</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.4-ті дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$x_n=f\left(\frac{2\pi n}{N}\right)=\sum_jc_je^{2\pi ijn/N}=\sum_jc_j\omega^{jn}$ (қатар абсолютті жинақты).</li>
+            <li>$X_k=\sum_{n=0}^{N-1}\sum_jc_j\omega^{jn}\omega^{-kn}=\sum_jc_j\sum_n\omega^{(j-k)n}$ (ақырлы қосынды мен абсолютті жинақты қатардың ретін ауыстыруға болады).</li>
+            <li>Ортогональдық: ішкі қосынды $N$, егер $j\equiv k\pmod N$, әйтпесе $0$.</li>
+            <li>$X_k=N\sum_{j\equiv k}c_j=N\sum_mc_{k+mN}$. ∎</li>
+            <li>Найквист: $c_j=0$ үшін $|j|\ge\frac N2$ болса, $k\in[0;\frac N2)$ үшін қосындыда тек $m=0$ қалады ($|k+mN|\ge\frac N2$ кезінде $m\ne0$), $X_k=Nc_k$; $k\in(\frac N2;N)$ үшін тек $m=-1$: $X_k=Nc_{k-N}$.</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+      <details class="math-derive" id="d-3">
+        <summary>Қорытып шығару 3: FFT және оның күрделілігі</summary>
+        <div class="math-derive-body">
+          <p><b>Мақсат:</b> Теорема 6.5-ті дәлелдеу.</p>
+          <ol class="math-steps">
+            <li>$X_k=\sum_{r=0}^{M-1}x_{2r}\omega_N^{-2rk}+\sum_{r=0}^{M-1}x_{2r+1}\omega_N^{-(2r+1)k}$.</li>
+            <li>$\omega_N^2=e^{2\pi i/M}=\omega_M$: бірінші қосынды $E_k$, екіншісі $\omega_N^{-k}O_k$ (мұнда $E$, $O$ - $M$ периодты).</li>
+            <li>$k+M$ үшін: $E_{k+M}=E_k$, $O_{k+M}=O_k$, ал $\omega_N^{-(k+M)}=-\omega_N^{-k}$ ($\omega_N^{M}=e^{i\pi}=-1$). Демек $X_{k+M}=E_k-\omega_N^{-k}O_k$.</li>
+            <li>Күрделілік: $T(N)$ - кешенді көбейту саны. $T(N)=2T\left(\frac N2\right)+\frac N2$ ($\frac N2$ «бұралу» көбейткіші $\omega_N^{-k}O_k$), $T(1)=0$.</li>
+            <li>$N=2^p$: $\frac{T(2^p)}{2^p}=\frac{T(2^{p-1})}{2^{p-1}}+\frac12$, демек $\frac{T(N)}N=\frac p2$, $T(N)=\frac N2\log_2N$. Қосулар да $N\log_2N$. ∎</li>
+          </ol>
+          <p class="math-qed">∎</p>
+        </div>
+      </details>
+
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Қарапайым ДФТ</h3>
+        <p class="math-problem">$N=4$: $x=(1,0,0,0)$, $x=(1,1,1,1)$, $x=(0,1,0,-1)$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\omega=i$; $\omega^{-k}$: $1,-i,-1,i$.</li>
+          <li><b>2-қадам.</b> $(1,0,0,0)$: $X_k=x_0=1$ - барлық жиілік бірдей: $(1,1,1,1)$ («импульс - ақ спектр»).</li>
+          <li><b>3-қадам.</b> $(1,1,1,1)$: $X_0=4$, қалғаны $\sum_n\omega^{-kn}=0$ - тұрақты сигнал тек $k=0$-де.</li>
+          <li><b>4-қадам.</b> $(0,1,0,-1)$ - бұл $\sin\frac{2\pi n}4$: $X_k=\omega^{-k}-\omega^{-3k}$; $X_0=0$, $X_1=-i-i=-2i$, $X_2=-1-(-1)=0$, $X_3=i-(-i)=2i$.</li>
+          <li><b>5-қадам.</b> Тексеру: $X_3=\overline{X_1}$ ✓ (нақты сигнал); Парсеваль: $\sum|x|^2=2$, $\frac14(4+4)=2$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $(1,1,1,1)$; $(4,0,0,0)$; $(0,-2i,0,2i)$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Кері ДФТ</h3>
+        <p class="math-problem">$N=4$, $X=(2,0,2,0)$. $x=?$</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $x_n=\frac14\sum_kX_k\omega^{kn}=\frac14(2+2\cdot\omega^{2n})=\frac12(1+(-1)^n)$.</li>
+          <li><b>2-қадам.</b> $x=(1,0,1,0)$.</li>
+          <li><b>3-қадам.</b> Тексеру: $X_0=1+1=2$ ✓; $X_2=\sum x_n(-1)^n=1+1=2$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $x=(1,0,1,0)$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Бүркемелену</h3>
+        <p class="math-problem">$f(x)=\cos5x$, $N=4$ нүктеде өлшенеді. ДФТ қай жиілікті «көрсетеді»?</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\cos5x=\frac12(e^{5ix}+e^{-5ix})$: $c_5=c_{-5}=\frac12$.</li>
+          <li><b>2-қадам.</b> Формула: $\frac{X_k}4=\sum_mc_{k+4m}$. $5=1+4$, $-5=3-8$: $\frac{X_1}4=c_5=\frac12$, $\frac{X_3}4=c_{-5}=\frac12$.</li>
+          <li><b>3-қадам.</b> $X=(0,2,0,2)$ - бұл $\cos x$-тің ДФТ-сымен дәл бірдей!</li>
+          <li><b>4-қадам.</b> Шынында $\cos\frac{5\cdot2\pi n}{4}=\cos\left(\frac{2\pi n}4+2\pi n\right)=\cos\frac{2\pi n}{4}$: 4 нүктеде $\cos5x$ пен $\cos x$ ажыратылмайды. Найквист шарты $5&lt;\frac N2$ бұзылған.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $\cos x$ сияқты көрінеді.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Көпмүшелерді көбейту</h3>
+        <p class="math-problem">$p=1+2z$, $q=3+z$: $pq$ коэффициенттерін ДФТ арқылы табу.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> Нәтиженің дәрежесі $2$, 3 коэффициент - $N=4$ ұзындыққа нөлдермен толықтырамыз: $a=(1,2,0,0)$, $b=(3,1,0,0)$.</li>
+          <li><b>2-қадам.</b> $A_k=1+2\omega^{-k}$: $(3,1-2i,-1,1+2i)$; $B_k=3+\omega^{-k}$: $(4,3-i,2,3+i)$.</li>
+          <li><b>3-қадам.</b> $A_kB_k$: $(12,(1-2i)(3-i),-2,(1+2i)(3+i))=(12,1-7i,-2,1+7i)$.</li>
+          <li><b>4-қадам.</b> Кері ДФТ: $c_n=\frac14\sum_kA_kB_k\omega^{kn}$: $c_0=\frac{12+1-7i-2+1+7i}4=3$, $c_1=\frac{12+(1-7i)i+2+(1+7i)(-i)}4=\frac{12+7+2+7}{4}=7$, $c_2=\frac{12-(1-7i)-2-(1+7i)}{4}=2$, $c_3=0$.</li>
+          <li><b>5-қадам.</b> $pq=3+7z+2z^2$. Тексеру: $(1+2z)(3+z)=3+z+6z+2z^2$ ✓.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $3+7z+2z^2$.</p></div>
+
+      <h2 id="mistakes">Жиі қателер</h2>
+      <ul class="math-mistakes">
+        <li><span class="math-bad">Кері ДФТ-да $\frac1N$-ді ұмыту</span> → <span class="math-good">$x_n=\frac1N\sum X_k\omega^{kn}$</span><br>Неге қате: $\overline{F}F=NI$.</li>
+        <li><span class="math-bad">$X_k$ мен $X_{-k}$ тәуелсіз (нақты сигнал)</span> → <span class="math-good">$X_{N-k}=\overline{X_k}$</span><br>Неге қате: симметрия.</li>
+        <li><span class="math-bad">ДФТ кез келген жиілікті дұрыс көрсетеді</span> → <span class="math-good">Найквист: $|j|&lt;\frac N2$</span><br>Неге қате: бүркемелену.</li>
+        <li><span class="math-bad">Көпмүшелерді нөлдерсіз көбейту</span> → <span class="math-good">ұзындық $\ge$ нәтиже коэффициенттерінің саны</span><br>Неге қате: айналмалы «оралу».</li>
+        <li><span class="math-bad">FFT кез келген $N$ үшін бірдей тиімді</span> → <span class="math-good">$N=2^p$ ең қарапайым</span><br>Неге қате: басқа $N$ үшін басқа нұсқалары бар.</li>
+        <li><span class="math-bad">$k>\frac N2$ - жоғары жиілік</span> → <span class="math-good">шын мәнінде $k-N$ (теріс жиілік)</span><br>Неге қате: периодтылық.</li>
+      </ul>
+
+      <h2 id="viz">Визуализация</h2>
+      <div class="math-viz" data-viz="graph" data-title="Бүркемелену: cos(kx) пен cos((k + N)x) нүктелерде сәйкес" data-config='{"fns": [{"f": "cos(k*x)", "label": "cos(kx)"}, {"f": "cos((k+N)*x)", "label": "cos((k + N)x)", "color": 1}, {"f": "cos(k*2*pi/N*floor(x*N/(2*pi)+0.5))", "label": "өлшенген мәндер (сатылы)", "color": 2, "dash": [4, 3]}], "params": [{"n": "k", "min": 0, "max": 3, "step": 1, "v": 1}, {"n": "N", "min": 4, "max": 16, "step": 1, "v": 6}], "view": [0, 6.2832, -1.3, 1.3]}'></div>
+      <p><b>Бақылаңыз:</b> $N$ - өлшеу нүктелерінің саны ($x_n=\frac{2\pi n}N$), сатылы сызық - өлшенген мәндер. Екі тербеліс әртүрлі, бірақ әр $x_n$ нүктесінде мәндері бірдей - ДФТ оларды ажырата алмайды. $N$-ді арттырсаңыз да, $k+N$ жиілік сол $N$ үшін әрдайым «бүркенеді»; тек сигналдың ең жоғары жиілігі $\frac N2$-ден кіші болғанда ғана өлшеу оны дәл сипаттайды.</p>
+      <div class="math-viz" data-viz="graph" data-title="Амал саны: N² және N·log₂N" data-config='{"fns": [{"f": "x^2", "label": "тікелей ДФТ: N²"}, {"f": "x*lb(x)", "label": "FFT: N·log₂N", "color": 1}], "view": [2, 1100, 0, 120000]}'></div>
+      <p><b>Бақылаңыз:</b> Көлденең ось - $N$. $N=1024$ кезінде $N^2\approx1{,}05\cdot10^6$ (графиктен тыс), ал $N\log_2N=10240$. Айырма $N$ өскен сайын ұлғаяды: $\frac{N^2}{N\log_2N}=\frac{N}{\log_2N}$.</p>
+
+      <h2 id="exercises">Интерактивті есептер</h2>
+      <p>Есептер үш деңгейге бөлінген: <b>жеңіл</b> (анықтаманы тікелей қолдану), <b>орташа</b> (2-3 қадам) және <b>күрделі</b> (бірнеше идеяны біріктіру). Әр есепте «Кеңес» және қадамдық шешім бар: алдымен өзіңіз ойланыңыз.</p>
+      <p class="mx-sum"></p>
+      <div class="math-ex task" data-type="num" data-id="m12-6-num1">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m12-6-t1">1. ДФТ мәндері</h3></div>
+        <p>$x=(2,1,0,1)$, $N=4$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$X_0$","a":4,"v":"2+1+0+1","hint":"$X_0=\\sum x_n$.","sol":{"steps":["$2+1+0+1$."],"ans":"$4$"}},{"q":"$X_2$","a":0,"v":"2-1+0-1","hint":"$\\omega^{-2n}=(-1)^n$.","sol":{"steps":["$2-1+0-1$."],"ans":"$0$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="tf" data-id="m12-6-tf2">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m12-6-t2">2. Тұжырымдар</h3></div>
+        <p>Бағалаңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Нақты тізбек үшін $X_{N-k}=\\overline{X_k}$.","a":true,"e":"$\\overline{\\omega^{-kn}}=\\omega^{kn}=\\omega^{-(N-k)n}$.","hint":"Түйіндеу."},{"q":"ДФТ $N=8$ нүктеде $e^{ix}$ пен $e^{9ix}$-ті ажыратады.","a":false,"e":"$9=1+8$: бүркемелену.","hint":"$e^{8ix_n}=1$."},{"q":"FFT $N=2^p$ үшін шамамен $\\frac N2\\log_2N$ кешенді көбейту жасайды.","a":true,"e":"$T(N)=2T(N/2)+\\frac N2$.","hint":"Рекуррентті қатынас."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="choice" data-id="m12-6-cho3">
+        <div class="task-head"><span class="badge easy">Жеңіл</span><h3 id="m12-6-t3">3. Спектр</h3></div>
+        <p>$N=8$ нүктелі нақты сигнал.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$X_3=1+2i$ болса, $X_5=?$","o":["$1-2i$","$1+2i$","$-1-2i$","$2+i$"],"a":0,"e":"$X_{8-3}=\\overline{X_3}$.","hint":"Симметрия."},{"q":"$k=6$ индексі шын мәнінде қандай жиілік?","o":["$-2$","$6$","$2$","$-6$"],"a":0,"e":"$6-8$.","hint":"$k>\\frac N2$."}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m12-6-mat4">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m12-6-t4">4. Кері ДФТ</h3></div>
+        <p>$N=4$, $X=(4,0,0,0)$. $x$ тізбегін жазыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$(x_0,x_1,x_2,x_3)$","name":"$x=$","a":[1,1,1,1],"orient":"row","v":"[Rational(4,4)]*4","hint":"$x_n=\\frac14X_0$.","sol":{"steps":["Тек $k=0$."],"ans":"$(1,1,1,1)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="matrix" data-id="m12-6-mat5">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m12-6-t5">5. Синустың ДФТ-сы</h3></div>
+        <p>$x=(0,1,0,-1)$ ($N=4$). $(\operatorname{Im}X_1;\ \operatorname{Im}X_3)$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$(\\operatorname{Im}X_1;\\ \\operatorname{Im}X_3)$","name":"$\\mathbf v=$","a":[-2,2],"orient":"row","v":"[im((-I)-(I)), im(I-(-I))]","hint":"$X_k=\\omega^{-k}-\\omega^{-3k}$, $\\omega=i$.","sol":{"steps":["$X_1=-i-i$, $X_3=i+i$."],"ans":"$(-2;\\ 2)$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m12-6-num6">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m12-6-t6">6. Парсеваль</h3></div>
+        <p>$x=(1,2,3,4)$.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"$\\sum|X_k|^2$","a":120,"v":"4*(1+4+9+16)","hint":"$N\\sum|x_n|^2$.","sol":{"steps":["$4\\cdot30$."],"ans":"$120$"}},{"q":"$X_0$","a":10,"v":"1+2+3+4","hint":"Қосынды.","sol":{"steps":["$1+2+3+4$."],"ans":"$10$"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="num" data-id="m12-6-num7">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m12-6-t7">7. Бүркемелену</h3></div>
+        <p>$f(x)=\cos7x$, $N=5$ нүктеде өлшенеді.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"ДФТ көрсететін $0\\le k\\le2$ жиілік","a":2,"v":"7 % 5","hint":"$7=2+5$.","sol":{"steps":["$7\\equiv2\\pmod5$, $-7\\equiv3\\equiv-2$."],"ans":"$2$ ($\\cos2x$ сияқты)"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="match" data-id="m12-6-mat8">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m12-6-t8">8. Қасиеттер</h3></div>
+        <p>Сәйкестендіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"Тізбектегі амал - спектрдегі амал.","pairs":[["айналмалы жылжу x_{n−m}","ω^{−km}-ге көбейту"],["айналмалы үйірткі","көбейту X_k·Y_k"],["нақты тізбек","X_{N−k} = X̄_k"],["импульс (1, 0, …, 0)","барлық X_k = 1"]],"hint":"Ортогональдықтан.","sol":{"steps":["Импульс - «ақ» спектр."]},"e":"Үзіліссіз Фурье түрлендіруінің дискретті аналогтары."}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m12-6-par9">
+        <div class="task-head"><span class="badge medium">Орташа</span><h3 id="m12-6-t9">9. Параметрлік: X₀ және X_{N/2}</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"a":{"int":[-5,5]},"b":{"int":[-5,5]},"c":{"int":[-5,5]},"d":{"int":[-5,5]}},"type":"num","q":"$x=(#{a},#{b},#{c},#{d})$. $X_2=?$","a":"a-b+c-d","v":"a-b+c-d","hint":"$\\omega^{-2n}=(-1)^n$.","sol":{"steps":["$#{a}-(#{b})+(#{c})-(#{d})$."],"ans":"$#{a-b+c-d}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="param" data-id="m12-6-par10">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m12-6-t10">10. Параметрлік: FFT амал саны</h3></div>
+        <p>«Жаңа нұсқа» сандарды өзгертеді.</p>
+        <script type="application/json" class="math-ex-data">{"params":{"p":{"int":[3,20]}},"type":"num","q":"$N=2^{#{p}}$. FFT кешенді көбейту саны $\\frac N2\\log_2N=?$","a":"2^(p-1)*p","v":"2**(p-1)*p","hint":"$\\frac{2^p}{2}\\cdot p$.","sol":{"steps":["$2^{#{p-1}}\\cdot#{p}$."],"ans":"$#{2^(p-1)*p}$"}}</script>
+      </div>
+      <div class="math-ex task" data-type="order" data-id="m12-6-ord11">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m12-6-t11">11. FFT рекурсиясы</h3></div>
+        <p>Ретке келтіріңіз.</p>
+        <script type="application/json" class="math-ex-data">{"items":[{"q":"Алгоритм ($N=2^p$).","steps":["$N=1$ болса, $X_0=x_0$ қайтарамыз.","Тізбекті жұп және тақ индекстілерге бөлеміз.","Екі жартысының ДФТ-сын рекурсиямен табамыз: $E$, $O$.","$k\\lt \\frac N2$ үшін $t=\\omega_N^{-k}O_k$ есептейміз.","$X_k=E_k+t$, $X_{k+N/2}=E_k-t$."],"hint":"Алдымен рекурсия негізі.","sol":{"ans":"Кули–Тьюки"}}]}</script>
+      </div>
+      <div class="math-ex task" data-type="reveal" data-id="m12-6-rev12">
+        <div class="task-head"><span class="badge hard">Күрделі</span><h3 id="m12-6-t12">12. Қадамдық шешім: Парсеваль теңдігі</h3></div>
+        <p>Батырмалармен ашыңыз.</p>
+        <script type="application/json" class="math-ex-data">{"q":"$\\sum_{n=0}^{N-1}|x_n|^2=\\frac1N\\sum_{k=0}^{N-1}|X_k|^2$ екенін дәлелдеңіз.","hint":"$|X_k|^2=X_k\\overline{X_k}$ жазып, ортогональдықты қолданыңыз.","steps":["$\\sum_k|X_k|^2=\\sum_k\\left(\\sum_nx_n\\omega^{-kn}\\right)\\left(\\sum_m\\overline{x_m}\\omega^{km}\\right)$.","$=\\sum_n\\sum_mx_n\\overline{x_m}\\sum_k\\omega^{k(m-n)}$.","Ішкі қосынды $N[m=n]$ (Теорема 6.1).","$=N\\sum_n|x_n|^2$.","$N$-ге бөлсек, Парсеваль шығады. ∎ Тексеру: $x=(0,1,0,-1)$: $2=\\frac14(0+4+0+4)$ ✓."],"ans":"ортогональдықтан"}</script>
+      </div>
+
+      <h2 id="project">Қолданыс және мини-жоба</h2>
+      <p><b>Қолданыс.</b> FFT - XX ғасырдың ең маңызды алгоритмдерінің бірі: дыбыс пен суретті сығу (MP3, JPEG-те косинус нұсқасы), спектр анализаторлары, радиолокация, МРТ суретін қалпына келтіру, Wi-Fi және 4G/5G (OFDM - әр арна бір жиілік), үлкен сандарды көбейту, дифференциалдық теңдеулерді спектрлік әдіспен шешу. Python: <code>numpy.fft.fft</code>.</p>
+      <p><b>Мини-жоба: «FFT-ны өзің жаз».</b> Тікелей ДФТ мен рекурсиялық FFT-ны жазып, нәтижелерін салыстырамыз, уақытын өлшейміз, сосын FFT арқылы екі көпмүшені көбейтеміз және бүркемеленуді көреміз.</p>
+<pre data-lang="python"><code class="language-python">import cmath, math, time
+
+def dft(x):
+    N = len(x)
+    return [sum(x[n] * cmath.exp(-2j * math.pi * k * n / N) for n in range(N)) for k in range(N)]
+
+def fft(x):
+    N = len(x)
+    if N == 1:
+        return [x[0]]
+    E, O = fft(x[0::2]), fft(x[1::2])
+    out = [0] * N
+    for k in range(N // 2):
+        t = cmath.exp(-2j * math.pi * k / N) * O[k]
+        out[k], out[k + N // 2] = E[k] + t, E[k] - t
+    return out
+
+def ifft(X):
+    N = len(X)
+    return [v.conjugate() / N for v in fft([v.conjugate() for v in X])]
+
+x = [math.sin(2 * math.pi * 3 * n / 64) + 0.5 * math.cos(2 * math.pi * 10 * n / 64) for n in range(64)]
+X1, X2 = dft(x), fft(x)
+print("max|DFT - FFT| =", f"{max(abs(a - b) for a, b in zip(X1, X2)):.1e}")
+print("үлкен коэффициенттер:", [(k, round(abs(v), 2)) for k, v in enumerate(X2) if abs(v) &gt; 1])
+
+for N in (256, 1024):
+    y = [math.cos(n) for n in range(N)]
+    t0 = time.perf_counter(); dft(y); t1 = time.perf_counter(); fft(y); t2 = time.perf_counter()
+    print(f"N = {N}: ДФТ {t1 - t0:.3f} с, FFT {t2 - t1:.4f} с")
+
+# Көпмүшелерді көбейту: (1 + 2z)(3 + z) және (1 + z)^7
+def polymul(p, q):
+    n = 1
+    while n &lt; len(p) + len(q) - 1:
+        n *= 2
+    P, Q = fft(p + [0] * (n - len(p))), fft(q + [0] * (n - len(q)))
+    return [round(v.real) for v in ifft([a * b for a, b in zip(P, Q)])][: len(p) + len(q) - 1]
+
+print(polymul([1, 2], [3, 1]), polymul([1, 1, 1, 1], [1, 1, 1, 1, 1]))
+</code></pre>
+      <p><b>Өзіңіз жалғастырыңыз:</b></p>
+      <ol>
+        <li>Үлкен коэффициенттер қай $k$-ларда? Оларды $\sin$ пен $\cos$ жиіліктерімен (3 және 10) және $X_{N-k}=\overline{X_k}$ симметриясымен байланыстырыңыз.</li>
+        <li>$N$ 4 есе өскенде ДФТ мен FFT уақыттары шамамен неше есе өседі? Теориямен ($16$ есе және $\approx4{,}5$ есе) салыстырыңыз.</li>
+        <li><code>polymul</code>-да нөлдермен толықтыруды алып тастаңыз ($n=\max(\text{len})$): нәтиже қалай бұзылады? Мұны айналмалы үйірткімен түсіндіріңіз.</li>
+      </ol>
+
+      <h2 id="summary">Қорытынды формулалар</h2>
+      <table class="math-table"><thead><tr><th>Ұғым</th><th>Формула немесе ереже</th><th>Шарты</th></tr></thead>
+      <tbody>
+        <tr><td>ДФТ</td><td>$X_k=\sum x_n\omega^{-kn}$, $\omega=e^{2\pi i/N}$</td><td>$N$ периодты</td></tr>
+        <tr><td>Кері ДФТ</td><td>$x_n=\frac1N\sum X_k\omega^{kn}$</td><td>ортогональдық</td></tr>
+        <tr><td>Нақты сигнал</td><td>$X_{N-k}=\overline{X_k}$</td><td>-</td></tr>
+        <tr><td>Үйірткі</td><td>$\mathcal F[x\circledast y]=XY$</td><td>айналмалы</td></tr>
+        <tr><td>Парсеваль</td><td>$\sum|x|^2=\frac1N\sum|X|^2$</td><td>-</td></tr>
+        <tr><td>Бүркемелену</td><td>$\frac{X_k}N=\sum_mc_{k+mN}$</td><td>Найквист: $|j|&lt;\frac N2$</td></tr>
+        <tr><td>FFT</td><td>$X_k=E_k\pm\omega^{-k}O_k$</td><td>$\frac N2\log_2N$ көбейту</td></tr>
+      </tbody></table>
+
+      <h2 id="review">Қайталау тізімі</h2>
+      <p>Өзіңізді тексеріп көріңіз. Әр тармақты өз сөзіңізбен түсіндіре алсаңыз, белгілеңіз:</p>
+      <ul class="checklist" data-id="m12-6-self">
+        <li><input type="checkbox"> <span>Мен кіші $N$ үшін ДФТ мен кері ДФТ-ны есептей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бірдің түбірлерінің ортогональдығын дәлелдеп, кері формуланы қорыта аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен нақты сигнал спектрінің симметриясын және Парсеваль теңдігін қолдана аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен бүркемелену формуласын және Найквист шартын түсіндіре аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен FFT алгоритмін сипаттап, оның күрделілігін дәлелдей аламын.</span></li>
+        <li><input type="checkbox"> <span>Мен FFT арқылы көпмүшелерді көбейте аламын.</span></li>
+      </ul>
+      <p class="progress"></p>
+
+      <h2 id="quiz">Қорытынды тест</h2>
+<div class="quiz">
+<div class="question" data-answer="c">
+<p class="q-text">1. ДФТ-дағы ω:</p>
+<label><input type="radio" value="a"> e^{iN}</label>
+<label><input type="radio" value="b"> e^{2πiN}</label>
+<label><input type="radio" value="c"> e^{2πi/N}</label>
+<label><input type="radio" value="d"> e^{πi/N}</label>
+<p class="explain">Бірдің N-ші түбірі.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">2. Кері ДФТ формуласындағы көбейткіш:</p>
+<label><input type="radio" value="a"> N</label>
+<label><input type="radio" value="b"> 1/N</label>
+<label><input type="radio" value="c"> 1/√N</label>
+<label><input type="radio" value="d"> 2π</label>
+<p class="explain">F̄F = NI.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">3. x = (1, 1, 1, 1) ДФТ-сы:</p>
+<label><input type="radio" value="a"> (4, 0, 0, 0)</label>
+<label><input type="radio" value="b"> (1, 1, 1, 1)</label>
+<label><input type="radio" value="c"> (1, 0, 0, 0)</label>
+<label><input type="radio" value="d"> (0, 0, 0, 4)</label>
+<p class="explain">Тұрақты сигнал.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">4. Нақты сигнал үшін X_{N−k}:</p>
+<label><input type="radio" value="a"> X_k</label>
+<label><input type="radio" value="b"> −X_k</label>
+<label><input type="radio" value="c"> 0</label>
+<label><input type="radio" value="d"> X_k-ның түйіндесі</label>
+<p class="explain">Симметрия.</p>
+</div>
+<div class="question" data-answer="c">
+<p class="q-text">5. N нүктеде e^{ikx} пен e^{i(k+N)x}:</p>
+<label><input type="radio" value="a"> ажыратылады</label>
+<label><input type="radio" value="b"> ортогональ</label>
+<label><input type="radio" value="c"> ажыратылмайды</label>
+<label><input type="radio" value="d"> екеуі де нөл</label>
+<p class="explain">Бүркемелену.</p>
+</div>
+<div class="question" data-answer="b">
+<p class="q-text">6. FFT күрделілігі:</p>
+<label><input type="radio" value="a"> O(N²)</label>
+<label><input type="radio" value="b"> O(N log N)</label>
+<label><input type="radio" value="c"> O(N)</label>
+<label><input type="radio" value="d"> O(log N)</label>
+<p class="explain">Кули–Тьюки.</p>
+</div>
+<div class="question" data-answer="a">
+<p class="q-text">7. ДФТ үйірткіні айналдырады:</p>
+<label><input type="radio" value="a"> көбейтіндіге</label>
+<label><input type="radio" value="b"> қосындыға</label>
+<label><input type="radio" value="c"> туындыға</label>
+<label><input type="radio" value="d"> интегралға</label>
+<p class="explain">Айналмалы үйірткі теоремасы.</p>
+</div>
+<div class="question" data-answer="d">
+<p class="q-text">8. Көпмүшелерді FFT-мен көбейткенде:</p>
+<label><input type="radio" value="a"> толықтыру керек емес</label>
+<label><input type="radio" value="b"> тек жұп дәреже</label>
+<label><input type="radio" value="c"> тек N = 4</label>
+<label><input type="radio" value="d"> нөлдермен толықтыру керек</label>
+<p class="explain">Айналмалы оралу.</p>
+</div>
+<button class="btn quiz-check" type="button">Жауаптарды тексеру</button>
+<p class="result" aria-live="polite"></p>
+</div><!-- build:mexam --><p class="callout mx-examlink"><span class="callout-title">Пән емтиханы</span>Пәннің соңғы сабағын аяқтадыңыз. Білімді <a href="../exam.html?s=transforms">Fourier &amp; Laplace Transforms емтиханымен</a> тексеріңіз: барлық сабақтан автоматты тексерілетін есептер.</p><!-- /build:mexam -->
 
       <nav class="pager">
         <a href="week-77.html"><small>Алдыңғы</small>← Fourier & Laplace Transforms · 5-сабақ: Кері Лаплас түрлендіруі және теңдеулерді шешу</a>
