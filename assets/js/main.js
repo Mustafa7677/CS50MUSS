@@ -46,6 +46,8 @@
     return { fs: pr.fs || 17, lh: pr.lh || 1.7, cw: pr.cw || 760, rm: !!pr.rm };
   }
   applyPrefs(loadPrefs());
+  // Басты беттегі оқиға сахналары тек қозғалыс азайтылмаған кезде ойналады (әйтпесе бәрі соңғы күйінде тұрады)
+  if (!loadPrefs().rm && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) root.classList.add("st-js");
 
   document.addEventListener("DOMContentLoaded", () => {
     // Жылжыған кезде блоктардың біртіндеп көрінуі және баннердегі сандар
@@ -121,6 +123,8 @@
     initCourseHome();
     initWideTables();
     initCourseCards();
+    initStory();
+    initAcademyCode();
     initBeginnerPath();
     initCourseMenu();
     initMathHelper();
@@ -955,15 +959,17 @@
       menu.id = "course-menu";
       menu.setAttribute("role", "dialog");
       menu.setAttribute("aria-label", "Курстар");
-      const rows = COURSE_META.map((c, i) => {
+      // үш академия: әр топтың басында академия бетіне сілтеме
+      const ACAD = { x: ["Бағдарламалау академиясы", "programming.html"], en: ["English Academy", "en/"], math: ["Математика академиясы", "math/"] };
+      const rows = COURSE_META.map((c) => {
         const read = courseReadCount(p, c.id), pct = Math.round((read / c.total) * 100);
-        const sep = c.own && !COURSE_META[i - 1].own ? '<div class="cm-sep">Авторлық курстар</div>' : "";
+        const sep = ACAD[c.id] ? `<a class="cm-sep" href="${ROOT_URL + ACAD[c.id][1]}">${ACAD[c.id][0]}</a>` : "";
         return sep + `<a class="cm-row${c.own ? " own" : ""}${c.id === cur ? " on" : ""}" href="${ROOT_URL + c.href}" style="--c:${c.color}"${c.id === cur ? ' aria-current="page"' : ""}>
           <span class="cm-dot" aria-hidden="true"></span>
           <span class="cm-txt"><b>${c.name}</b><small>${escapeHtml(c.title)}</small></span>
           <span class="cm-prog"><i style="width:${pct}%"></i></span><span class="cm-n">${read}/${c.total}</span></a>`;
       }).join("");
-      menu.innerHTML = `<div class="cm-head">Курстар</div>${rows}
+      menu.innerHTML = `<div class="cm-head">Академиялар</div>${rows}
         <a class="cm-all" href="${ROOT_URL}courses.html">Барлық курстар және оқу жолы →</a>
         <div class="cm-site"><a href="${ROOT_URL}practice.html">Жаттығу</a><a href="${ROOT_URL}playground.html">Сынақ алаңы</a><a href="${ROOT_URL}glossary.html">Сөздік</a><a href="${ROOT_URL}map.html">CS50x картасы</a><a href="${ROOT_URL}cheatsheet.html">Шпаргалка</a><a href="${ROOT_URL}profile.html">Профиль</a></div>`;
       document.body.appendChild(menu);
@@ -983,6 +989,83 @@
     document.addEventListener("click", (e) => { if (menu && !menu.hidden && !menu.contains(e.target)) close(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && menu && !menu.hidden) { close(); pill.focus(); } });
     window.addEventListener("resize", () => { if (menu && !menu.hidden) close(); });
+  }
+
+  // ---------- Басты бет: «Білім көші» оқиғасы ----------
+  // 1-сахна бірден ойналады; келесі сахналар экранға кіргенде бір рет іске қосылады (.is-on), ал фондық қозғалыс
+  // (бұлт, шөп, бүркіт) тек сахна экранда тұрғанда жүреді (.is-vis). Скролл анимацияны басқармайды, тек бастайды.
+  function initStory() {
+    const scenes = document.querySelectorAll(".st-scene");
+    if (!scenes.length) return;
+    if (!("IntersectionObserver" in window)) { scenes.forEach((s) => s.classList.add("is-on", "is-vis")); return; }
+    scenes[0].classList.add("is-on");
+    const vis = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle("is-vis", e.isIntersecting)));
+    const on = new IntersectionObserver((es) => es.forEach((e) => {
+      if (e.isIntersecting) { e.target.classList.add("is-on"); on.unobserve(e.target); }
+    }), { rootMargin: "0px 0px -22% 0px" });
+    scenes.forEach((s) => { vis.observe(s); on.observe(s); });
+    // 1-сахнаның тереңдігі: скролл мен тінтуір қабаттарды әртүрлі жылдамдықпен жылжытады
+    const s1 = scenes[0];
+    if (!root.classList.contains("st-js")) return;
+    let raf = 0, px = 0;
+    const paint = () => {
+      raf = 0;
+      const r = s1.getBoundingClientRect();
+      s1.style.setProperty("--sy", Math.min(1, Math.max(0, -r.top / r.height)).toFixed(3));
+      s1.style.setProperty("--px", px.toFixed(3));
+    };
+    const ask = () => { if (!raf && s1.classList.contains("is-vis")) raf = requestAnimationFrame(paint); };
+    window.addEventListener("scroll", ask, { passive: true });
+    if (window.matchMedia && matchMedia("(pointer: fine)").matches) {
+      s1.addEventListener("pointermove", (e) => { px = (e.clientX / window.innerWidth - 0.5) * 2; ask(); });
+    }
+  }
+
+  // ---------- Бағдарламалау академиясы (programming.html): маршруттардағы прогресс және мақсат бойынша жол ----------
+  function initAcademyCode() {
+    const tracks = document.querySelectorAll(".pa-track");
+    if (!tracks.length) return;
+    const p = Progress.load();
+    tracks.forEach((t) => {
+      const items = [...t.querySelectorAll(".pa-line li")];
+      let read = 0, next = null;
+      items.forEach((li) => {
+        const done = !!p.read[li.dataset.id];
+        li.classList.toggle("done", done);
+        if (done) read++;
+        else if (!next) next = li;
+      });
+      if (next) { next.classList.add("cur"); next.querySelector("a").setAttribute("aria-current", "step"); }
+      const total = items.length, pct = total ? Math.round((read / total) * 100) : 0;
+      t.querySelector(".pa-bar i").style.width = pct + "%";
+      t.querySelector(".pa-stat").textContent = read ? `${read}/${total} оқылды` : `${total} лекция`;
+      const go = t.querySelector(".pa-next");
+      if (!read) return;
+      if (next) {
+        go.href = next.querySelector("a").getAttribute("href");
+        go.textContent = "Жалғастыру: " + next.querySelector(".pa-t").textContent;
+      } else {
+        go.href = t.querySelector(".pa-home").getAttribute("href");
+        go.textContent = "Аяқталды ✓";
+      }
+    });
+    const data = JSON.parse(document.getElementById("pa-goals-data")?.textContent || "{}");
+    const plan = document.querySelector(".pa-plan");
+    const buttons = document.querySelectorAll(".pa-goal");
+    const pick = (goal, save) => {
+      const g = data[goal];
+      if (!g || !plan) return;
+      buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.goal === goal)));
+      tracks.forEach((t) => t.classList.toggle("pa-pick", g.path.includes(t.dataset.course)));
+      const steps = g.path.map((id) => {
+        const t = document.getElementById("t-" + id), c = COURSE_META.find((m) => m.id === id);
+        return `<li style="--c:${c ? c.color : "#087a96"}"><a href="#t-${id}">${escapeHtml(t ? t.querySelector("h3").textContent : id)}</a></li>`;
+      }).join("");
+      plan.innerHTML = `<ol class="pa-steps">${steps}</ol><p>${escapeHtml(g.note)}</p>`;
+      if (save) { try { localStorage.setItem("cs50kz:acad:goal", goal); } catch (e) {} }
+    };
+    buttons.forEach((b) => b.addEventListener("click", () => pick(b.dataset.goal, true)));
+    try { const saved = localStorage.getItem("cs50kz:acad:goal"); if (saved) pick(saved, false); } catch (e) {}
   }
 
   // ---------- «Менің курстарым»: барлық курс бойынша прогресс және жалғастыру ----------
@@ -1023,6 +1106,17 @@
   function initCourseCards() {
     const p = Progress.load();
     const readOf = (c) => Object.keys(p.read).filter((k) => p.read[k] && (c === "x" ? ORDER.includes(k) : k.startsWith(c + ":"))).length;
+    // үш академия карточкасы: академиядағы барлық курс бойынша оқылғаны
+    document.querySelectorAll(".ac-card[data-courses]").forEach((card) => {
+      const ids = card.dataset.courses.split(",");
+      const read = ids.reduce((n, id) => n + readOf(id), 0);
+      const total = COURSE_META.filter((c) => ids.includes(c.id)).reduce((n, c) => n + c.total, 0);
+      const box = card.querySelector(".ac-prog");
+      if (!read || !total || !box) return;
+      box.hidden = false;
+      box.querySelector("i").style.setProperty("--p", Math.min(100, Math.round((read / total) * 100)) + "%");
+      box.querySelector("em").textContent = `${read}/${total} оқылды`;
+    });
     // басты беттегі «шаңырақ» тақтайшалары: оқылған үлес жолақпен және мәтінмен
     document.querySelectorAll(".kh-tile[data-total]").forEach((t) => {
       const read = readOf(t.dataset.course), total = +t.dataset.total || 0;

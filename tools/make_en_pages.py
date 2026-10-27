@@ -106,7 +106,7 @@ FOOT = '''
 
 
 def subnav(prefix, cur):
-    items = [("index.html#weeks", "Сабақтар", "weeks"), ("vocab.html", "Сөздік", "vocab"), ("grammar.html", "Грамматика", "grammar"),
+    items = [("index.html#weeks", "Сабақтар", "weeks"), ("skills.html", "Дағдылар", "skills"), ("vocab.html", "Сөздік", "vocab"), ("grammar.html", "Грамматика", "grammar"),
              ("phrasebank.html", "IT-фразалар", "phrasebank"), ("placement.html", "Деңгей тесті", "placement")]
     a = "".join(f'<a href="{prefix}{h}"' + (' aria-current="page"' if k == cur else "") + f">{t}</a>" for h, t, k in items)
     return f'<nav class="en-subnav" aria-label="Ағылшын курсының бөлімдері">{a}</nav>'
@@ -153,7 +153,7 @@ def index_page():
         <div class="py-hero-text">
           {switch}
           <span class="cx-eyebrow">Авторлық курс · Sagid Mustafa</span>
-          <h1>Ағылшын тілі <span>A0-C1</span></h1>
+          <h1>English Academy <span>A0-C1</span></h1>
           <p>Ағылшын тілін нөлден бастап үйреніңіз: грамматика, ереже, сөздік, оқу, жазу, тыңдау мен айту. Мысалдардың көбі IT және бағдарламалау жұмысынан алынған: stand-up, commit хабарламасы, баг-репорт, code review, e-mail, интервью.</p>
           <div class="hero-actions">
             <a class="btn gold" href="lectures/week-0.html">Бастау: A0 · 1-сабақ <span aria-hidden="true">→</span></a>
