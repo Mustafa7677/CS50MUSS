@@ -6255,12 +6255,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: √2-ге қадам-қадаммен жақындау",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -6291,7 +6303,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6311,12 +6323,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: ε-N ойынын ойнау",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -6347,7 +6371,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 17,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6367,12 +6391,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: дельтаны есептеп табу",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -6403,7 +6439,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 17,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6423,12 +6459,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: көлбеуді жақындап табу",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -6459,7 +6507,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 16,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6479,12 +6527,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: тіктөртбұрыштармен қысу",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -6515,7 +6575,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 17,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6535,12 +6595,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: xⁿ қисығы қалай «сынады»",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -6571,7 +6643,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 16,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6591,12 +6663,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: үш түрлі қашықтық",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -6627,7 +6711,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7375,12 +7459,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: үш нүктелі әлем",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7411,7 +7507,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 20,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7431,12 +7527,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: алғы бейнені санау",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7467,7 +7575,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7487,12 +7595,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: тамыр табу ойыны",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7523,7 +7643,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 16,
+  "minutes": 20,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7543,12 +7663,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: қақпақтар ойыны",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7579,7 +7711,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7599,12 +7731,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: қағаздан цилиндр мен шеңбер",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7635,7 +7779,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 16,
+  "minutes": 20,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7655,12 +7799,24 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "prereq"
    },
    {
+    "t": "Алдымен қолмен: бағананы айнала жүру",
+    "id": "warmup"
+   },
+   {
     "t": "Интуиция",
     "id": "intuition"
    },
    {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
    },
    {
     "t": "Қорытып шығару",
@@ -7691,7 +7847,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"

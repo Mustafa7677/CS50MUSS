@@ -79,8 +79,14 @@ def plain(s):
 
 
 # ---------------------------------------------------------------- жасау
-def theory_html(items, k, fm, terms_ctx):
+def theory_html(items, k, fm, terms_ctx, plain_map=None):
+    """plain_map: {"d1": "...", "t2": "..."} - анықтама/теореманың «қарапайым тілмен» түсіндірмесі (e<k>.py)."""
     out, c = [], {"def": 0, "thm": 0, "f": 0}
+    plain_map = dict(plain_map or {})
+
+    def pl(key):
+        t = plain_map.pop(key, None)
+        return f'\n        <p class="mx-plain"><b>Қарапайым тілмен:</b> {t}</p>' if t else ""
     for it in items:
         kind = it[0]
         if kind == "p":
@@ -88,14 +94,14 @@ def theory_html(items, k, fm, terms_ctx):
         elif kind == "def":
             c["def"] += 1
             i = c["def"]
-            out.append(f'      <div class="math-def" id="def-{i}"><span class="math-tag">Анықтама {k}.{i} · {it[1]}</span>\n        <p>{it[2]}</p></div>')
+            out.append(f'      <div class="math-def" id="def-{i}"><span class="math-tag">Анықтама {k}.{i} · {it[1]}</span>\n        <p>{it[2]}</p>{pl(f"d{i}")}</div>')
             terms_ctx.append(it[2])
         elif kind in ("thm", "prop"):
             c["thm"] += 1
             i = c["thm"]
             word = "Теорема" if kind == "thm" else "Ұсыныс"
             cls = "math-thm" if kind == "thm" else "math-prop"
-            out.append(f'      <div class="{cls}" id="thm-{i}"><span class="math-tag">{word} {k}.{i} · {it[1]}</span>\n        <p>{it[2]}</p></div>')
+            out.append(f'      <div class="{cls}" id="thm-{i}"><span class="math-tag">{word} {k}.{i} · {it[1]}</span>\n        <p>{it[2]}</p>{pl(f"t{i}")}</div>')
             if it[3]:
                 out.append(f"      <p><em>Негіздеме.</em> {it[3]}</p>")
         elif kind == "f":
@@ -113,6 +119,8 @@ def theory_html(items, k, fm, terms_ctx):
             out.append(f'      <div class="math-remark"><span class="math-box-title">{it[1]}</span>\n        <p>{it[2]}</p></div>')
         else:
             raise ValueError(kind)
+    if plain_map:
+        raise SystemExit(f"сабақ {k}: «plain» кілттері сәйкес келмейді: {sorted(plain_map)}")
     return "\n".join(out)
 
 
@@ -165,16 +173,41 @@ def render(n, Ls, probs):
     o = []
     o.append(f'<article class="content math-lesson" id="main">\n      <div class="lecture-head" style="--lc:{M.COLOR}" data-n="{n}">\n        <div class="num">{M.lesson_label(n)}</div>\n        <h1>{M.a(title)}</h1>\n        <p>{Ls["intro"]}</p>\n      </div>\n')
     o.append(f"      {subnav}\n\n      {callout}\n")
+    E = Ls.get("easy")
+    if E:
+        o.append(f'      <div class="mx-big"><span class="mx-big-k">Бір сөйлеммен</span>\n        <p>{E["big"]}</p></div>\n')
     o.append('      <h2 id="goals">Сабақ мақсаттары</h2>\n      <p>Сабақ соңында сіз мыналарды істей аласыз:</p>\n      <ul>\n' + "\n".join(f"        <li>{g}</li>" for g in Ls["goals"]) + "\n      </ul>\n")
     o.append(f'      <h2 id="prereq">Қысқаша еске салу</h2>\n      <p class="math-prereq">{Ls["prereq"]}</p>\n')
+    if E:
+        w = E["warmup"]
+        st = "\n".join(f"          <li>{x}</li>" for x in w["steps"])
+        o.append(f'      <h2 id="warmup">Алдымен қолмен: {w["title"]}</h2>\n      <p>Формулаға дейін нақты сандармен ойнап көрейік. Әр қадамды өзіңіз де қағазда қайталаңыз.</p>\n'
+                 f'      <div class="mx-warmup"><p class="math-problem">{w["problem"]}</p>\n        <ol class="math-steps">\n{st}\n        </ol>\n'
+                 f'        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> {w["takeaway"]}</p></div>\n')
     o.append('      <h2 id="intuition">Интуиция</h2>\n' + "\n".join(f"      <p>{p}</p>" for p in Ls["intuition"]) + "\n")
-    o.append('      <h2 id="theory">Анықтамалар мен теоремалар</h2>\n' + theory_html(Ls["theory"], k, fm, terms_ctx) + "\n")
+    if E:
+        for t_, b_ in E["analogies"]:
+            o.append(f'      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · {t_}</span>\n        <p>{b_}</p></div>')
+        rows = "\n".join(f"        <tr><td>${tx}$</td><td>{rd}</td><td>{mn}</td></tr>" for tx, rd, mn in E["symbols"])
+        o.append(f'\n      <h2 id="symbols">Белгілерді оқу</h2>\n      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>\n'
+                 f'      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>\n      <tbody>\n{rows}\n      </tbody></table>\n')
+    o.append('      <h2 id="theory">Анықтамалар мен теоремалар</h2>\n' + theory_html(Ls["theory"], k, fm, terms_ctx, E and E["plain"]) + "\n")
+    if E:
+        o.append('      <h2 id="checks">Тоқта, ойлан</h2>\n      <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>')
+        for i, (q_, a_) in enumerate(E["checks"], 1):
+            o.append(f'      <details class="mx-check" id="chk-{i}"><summary><span class="mx-q"><b>{i}.</b> {q_}</span></summary>\n        <p>{a_}</p></details>')
+        o.append("")
     # қорытулар
     o.append('      <h2 id="derivations">Қорытып шығару</h2>\n      <div class="mx-derive-tools"></div>')
+    ideas = dict((E or {}).get("ideas", {}))
     for i, (t, goal, steps) in enumerate(Ls["derivations"], 1):
         op = " open" if i == 1 else ""
         st = "\n".join(f"            <li>{x}</li>" for x in steps)
-        o.append(f'      <details class="math-derive" id="d-{i}"{op}>\n        <summary>Қорытып шығару {i}: {t}</summary>\n        <div class="math-derive-body">\n          <p><b>Мақсат:</b> {goal}</p>\n          <ol class="math-steps">\n{st}\n          </ol>\n          <p class="math-qed">∎</p>\n        </div>\n      </details>')
+        idea = ideas.pop(i, None)
+        idea = f'\n          <p class="mx-idea"><b>Идея:</b> {idea}</p>' if idea else ""
+        o.append(f'      <details class="math-derive" id="d-{i}"{op}>\n        <summary>Қорытып шығару {i}: {t}</summary>\n        <div class="math-derive-body">\n          <p><b>Мақсат:</b> {goal}</p>{idea}\n          <ol class="math-steps">\n{st}\n          </ol>\n          <p class="math-qed">∎</p>\n        </div>\n      </details>')
+    if ideas:
+        raise SystemExit(f"week-{n}: «ideas» нөмірлері қорытулармен сәйкес емес: {sorted(ideas)}")
     o.append("")
     o.append('      <h2 id="examples">Қадамдық шешілген мысалдар</h2>')
     for i, (t, prob, steps, ans) in enumerate(Ls["examples"], 1):
@@ -251,6 +284,36 @@ def _exec(path, name):
     return mod
 
 
+EASY_KEYS = ("big", "warmup", "analogies", "symbols", "plain", "ideas", "checks")
+
+
+def check_easy(E, name):
+    """«Жеңіл қабат» (e<k>.py, `EASY = dict(...)`): CS50 стиліндегі түсіндіру көмекшілері, бәрі міндетті."""
+    miss = [x for x in EASY_KEYS if not E.get(x)]
+    if miss:
+        raise SystemExit(f"{name}: жоқ кілттер {miss}")
+    w = E["warmup"]
+    assert set(w) >= {"title", "problem", "steps", "takeaway"} and len(w["steps"]) >= 3, name + ": warmup"
+    assert 1 <= len(E["analogies"]) <= 3 and all(len(a) == 2 for a in E["analogies"]), name + ": analogies"
+    assert len(E["symbols"]) >= 4 and all(len(a) == 3 for a in E["symbols"]), name + ": symbols (кемі 4)"
+    assert 3 <= len(E["checks"]) <= 6 and all(len(a) == 2 for a in E["checks"]), name + ": checks (3-6)"
+    assert len(E["big"]) <= 260, name + ": big тым ұзын"
+    bad = re.findall(r"[\x00-\x08\x0b-\x1f]", _flat(E))
+    if bad:
+        raise SystemExit(f"{name}: басқару таңбасы {bad!r} - жолды r\"...\" етіп жазыңыз (мысалы \\alpha, \\beta)")
+    return E
+
+
+def _flat(x):
+    if isinstance(x, str):
+        return x
+    if isinstance(x, dict):
+        return " ".join(_flat(v) for v in x.values())
+    if isinstance(x, (list, tuple)):
+        return " ".join(_flat(v) for v in x)
+    return ""
+
+
 class _Pack:
     """`tools/math_src/<slug>/l1.py, l2.py ...` (әр файлда `LESSON = L(...)`): бір пән - бір бума."""
     def __init__(self, slug, count):
@@ -258,7 +321,11 @@ class _Pack:
         self.LESSONS = []
         for k in range(1, count + 1):
             f = d / f"l{k}.py"
-            self.LESSONS.append(_exec(f, f"math_src_{slug}_{k}").LESSON if f.exists() else None)
+            les = _exec(f, f"math_src_{slug}_{k}").LESSON if f.exists() else None
+            e = d / f"e{k}.py"
+            if les is not None and e.exists():
+                les = dict(les, easy=check_easy(_exec(e, f"math_src_{slug}_e{k}").EASY, f"{slug}/e{k}.py"))
+            self.LESSONS.append(les)
 
 
 def load(slug, count):

@@ -1018,3 +1018,26 @@ test("дизайн: әр пәннің өз түсі мен белгісі, ке�
   await expect(page.locator('.mx-strip a[aria-current="page"]')).toHaveText("4");
   await expect(page.locator(".mx-intro")).toHaveCount(1);
 });
+
+test("жеңіл қабат: бір сөйлем, қолмен жылыту, ұқсастық, белгілер, қарапайым тілмен, идея, тоқта-ойлан", async ({ page }) => {
+  await open(page, "math/lectures/week-131.html");
+  await expect(page.locator(".mx-big p")).toHaveCount(1);
+  // бөлімдер ретті: мақсаттар → еске салу → қолмен → интуиция → белгілер → теория → тоқта-ойлан → қорытулар
+  const ids = await page.locator("article h2[id]").evaluateAll((els) => els.map((e) => e.id));
+  const order = ["goals", "prereq", "warmup", "intuition", "symbols", "theory", "checks", "derivations"];
+  expect(order.map((i) => ids.indexOf(i))).toEqual([...order.map((i) => ids.indexOf(i))].sort((a, b) => a - b));
+  for (const i of order) expect(ids).toContain(i);
+  expect(await page.locator(".mx-warmup .math-steps li").count()).toBeGreaterThanOrEqual(3);
+  expect(await page.locator(".mx-analogy").count()).toBeGreaterThanOrEqual(1);
+  expect(await page.locator(".mx-symbols tbody tr").count()).toBeGreaterThanOrEqual(4);
+  // әр анықтама мен теоремада «Қарапайым тілмен», әр қорытуда «Идея»
+  const boxes = await page.locator("#theory ~ .math-def, #theory ~ .math-thm, #theory ~ .math-prop").count();
+  expect(await page.locator(".math-def .mx-plain, .math-thm .mx-plain, .math-prop .mx-plain").count()).toBe(boxes);
+  expect(await page.locator("details.math-derive .mx-idea").count()).toBe(await page.locator("details.math-derive").count());
+  // тоқта-ойлан: жауап жасырын, басқанда ашылады
+  const chk = page.locator("details.mx-check").first();
+  await expect(chk.locator("p")).toBeHidden();
+  await chk.locator("summary").click();
+  await expect(chk.locator("p")).toBeVisible();
+  expect(await page.locator(".katex-error").count()).toBe(0);
+});
