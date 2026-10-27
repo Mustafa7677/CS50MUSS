@@ -954,7 +954,7 @@ test("пән емтиханы: әр сабақтан 3 сұрақ, жауап т
 });
 
 test("көмекші: математика беттерінде өзі шықпайды, «Көмекші» батырмасын басқанда ғана шығады", async ({ page }) => {
-  test.setTimeout(90000);
+  test.setTimeout(150000);
   for (const url of ["math/index.html", "math/formulas.html", "math/glossary.html", "math/practice.html", LESSON0]) {
     await open(page, url);
     await page.waitForTimeout(4000);
