@@ -268,7 +268,8 @@ def render(spec, uid, alt):
             if len(cur) > 1:
                 segs.append(cur)
             d = "".join("M" + "L".join(f"{_f(X(p[0]))} {_f(Y(p[1]))}" for p in s) for s in segs)
-            out.append(f'<path class="mf-fn {cls}{dash}" d="{d}" clip-path="url(#cp{uid})"/>')
+            pl = "" if dash else ' pathLength="1"'  # тұтас қисық өзі «сызылып» шығады (math-course.css); үзікті қисықта pathLength штрихты бұзар еді
+            out.append(f'<path class="mf-fn {cls}{dash}" d="{d}"{pl} clip-path="url(#cp{uid})"/>')
             if kind == "fn" and o["label"] and spec.get("legend"):
                 legend.append((cls, dash, o["label"]))
             elif kind == "fn" and o["label"]:
@@ -287,7 +288,8 @@ def render(spec, uid, alt):
         elif kind == "seg":
             m = f' marker-end="url(#ah{uid})"' if o["arrow"] else ""
             sw = f' style="stroke-width:{o["w"]}"' if o.get("w") else ""
-            out.append(f'<path class="mf-line {cls}{dash}" d="M{_f(X(o["x1"]))} {_f(Y(o["y1"]))}L{_f(X(o["x2"]))} {_f(Y(o["y2"]))}"{m}{sw}/>')
+            pl = "" if dash else ' pathLength="1"'
+            out.append(f'<path class="mf-line {cls}{dash}" d="M{_f(X(o["x1"]))} {_f(Y(o["y1"]))}L{_f(X(o["x2"]))} {_f(Y(o["y2"]))}"{pl}{m}{sw}/>')
             if o["label"]:
                 out.append(_label((X(o["x1"]) + X(o["x2"])) / 2 + 6, (Y(o["y1"]) + Y(o["y2"])) / 2 - 6, o["label"], f"mf-lab {cls}"))
         elif kind == "circ":
@@ -328,10 +330,10 @@ def _diagram(spec, uid, alt):
             m = f' marker-end="url(#ah{uid})"' if o["arrow"] else ""
             if o["bend"]:
                 cx, cy = (xa + xb) / 2 - uy * o["bend"], (ya + yb) / 2 + ux * o["bend"]
-                out.append(f'<path class="mf-line mf-c{o["c"]}" d="M{_f(xa)} {_f(ya)}Q{_f(cx)} {_f(cy)} {_f(xb)} {_f(yb)}"{m}/>')
+                out.append(f'<path class="mf-line mf-c{o["c"]}" pathLength="1" d="M{_f(xa)} {_f(ya)}Q{_f(cx)} {_f(cy)} {_f(xb)} {_f(yb)}"{m}/>')
                 lx, ly = cx, cy
             else:
-                out.append(f'<path class="mf-line mf-c{o["c"]}" d="M{_f(xa)} {_f(ya)}L{_f(xb)} {_f(yb)}"{m}/>')
+                out.append(f'<path class="mf-line mf-c{o["c"]}" pathLength="1" d="M{_f(xa)} {_f(ya)}L{_f(xb)} {_f(yb)}"{m}/>')
                 lx, ly = (xa + xb) / 2 - uy * 10, (ya + yb) / 2 + ux * 10
             if o["label"]:
                 out.append(_label(lx, ly + 4, o["label"], "mf-lab mf-c0", "middle"))

@@ -1544,11 +1544,57 @@
     go();
   }
 
+  // «Сызбамен түсіндіру»: кезеңдерді бір жол байланыстырады - скролл жолды толтырады, жол жеткен кезең жанады,
+  // сызба экранға кіргенде өзі сызылады (math-course.css). Қозғалыс азайтылған болса ештеңе қоспаймыз: бәрі соңғы күйінде.
+  function initExplain() {
+    var sec = document.querySelector(".mx-explain");
+    if (!sec || !("IntersectionObserver" in window)) return;
+    var root = document.documentElement;
+    if (root.classList.contains("reduce-motion") || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
+    var list = sec.querySelector(".mx-xsteps");
+    if (!list) return;
+    var steps = [].slice.call(list.querySelectorAll(".mx-xstep"));
+    // Экраннан жоғары қалған бөлікті жасырмаймыз (мысалы, бетті ортасынан ашқанда немесе #xs-3 сілтемесімен)
+    var r0 = list.getBoundingClientRect();
+    sec.querySelectorAll(".mx-fig svg.mf").forEach(function (svg) {
+      var i = 0, j = 0;
+      svg.querySelectorAll("[pathLength], .mf-fn, .mf-line").forEach(function (el) { el.style.setProperty("--i", Math.min(i++, 5)); });
+      svg.querySelectorAll(".mf-pt, .mf-node").forEach(function (el) { el.style.setProperty("--j", Math.min(j++, 8)); });
+    });
+    sec.classList.add("mx-anim");
+    var seen = function (el) { return el.getBoundingClientRect().bottom < 0; };
+    var on = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-on"); on.unobserve(e.target); } });
+    }, { rootMargin: "0px 0px -18% 0px" });
+    var parts = [].slice.call(sec.querySelectorAll(".mx-fig, .mx-xformula, .mx-xtry"));
+    parts.forEach(function (el) { if (seen(el)) el.classList.add("is-on"); else on.observe(el); });
+    // Жол: көру аймағының 60%-ындағы сызық қай жерде тұр - сол үлес толады; кезең белгісі жол жеткенде жанады
+    var raf = 0;
+    var paint = function () {
+      raf = 0;
+      var r = list.getBoundingClientRect(), mark = innerHeight * 0.6;
+      var p = Math.max(0, Math.min(1, (mark - r.top) / Math.max(1, r.height)));
+      list.style.setProperty("--p", p.toFixed(4));
+      steps.forEach(function (st) { if (st.getBoundingClientRect().top + 14 < mark) st.classList.add("is-on"); });
+    };
+    var ask = function () { if (!raf) raf = requestAnimationFrame(paint); };
+    var vis = new IntersectionObserver(function (es) {
+      es.forEach(function (e) {
+        if (e.isIntersecting) { window.addEventListener("scroll", ask, { passive: true }); window.addEventListener("resize", ask); ask(); }
+        else { window.removeEventListener("scroll", ask); window.removeEventListener("resize", ask); ask(); }
+      });
+    });
+    vis.observe(list);
+    if (r0.bottom < 0) list.style.setProperty("--p", "1");
+    paint();
+  }
+
   function init() {
     renderMath(document.querySelector("main, .content, article") || document.body);
     initDerive();
     initExercises();
     initApps();
+    initExplain();
     API.ready = true;
     document.dispatchEvent(new CustomEvent("math:ready"));
   }
