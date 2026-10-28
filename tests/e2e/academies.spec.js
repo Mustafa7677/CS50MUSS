@@ -14,7 +14,7 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("index.html");
   await expect(page.locator("html")).toHaveClass(/st-js/);
-  await expect(page.locator(".st-scene")).toHaveCount(6);
+  await expect(page.locator(".st-scene")).toHaveCount(7);
   await expect(page.locator(".st-s1")).toHaveClass(/is-on/);
   await expect(page.locator(".st-s1 .st-intro .st-word")).toHaveText("CS50 қазақша");
   await expect(page.locator("#scene-2")).not.toHaveClass(/is-on/);
@@ -36,7 +36,7 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await expect(page.locator(".bt-gate .bt-say")).toHaveText("Қай қақпаны ашамыз?");
   await expect(page.locator(".bt-gate .bt-say")).toHaveCSS("opacity", "1", { timeout: 6000 });
   // үш академия сахнасы: бағдарламалау (7 курс), English (6 деңгей), математика (25 пән)
-  for (const id of ["scene-code", "scene-en", "scene-math"]) {
+  for (const id of ["scene-code", "scene-en", "scene-math", "scene-journey"]) {
     await page.locator("#" + id).scrollIntoViewIfNeeded();
     await expect(page.locator("#" + id)).toHaveClass(/is-on/);
   }
@@ -45,7 +45,8 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await expect(page.locator(".axm-map a")).toHaveCount(25);
   await expect(page.locator(".axm-map a").first()).toHaveAttribute("href", "math/index.html#subj-25");
   await expect(page.locator(".axc-code .copy-btn")).toHaveCount(0);
-  await expect(page.locator(".bt-actor")).toHaveCount(4);
+  await expect(page.locator(".bt-actor")).toHaveCount(5);
+  await expect(page.locator(".jr-legend li")).toHaveCount(3);
   await expect(page.locator(".bt-math .bt-say")).toHaveCSS("opacity", "1", { timeout: 6000 });  // безендірілген код - көшіру батырмасы жоқ
   expect(errs).toEqual([]);
 });
