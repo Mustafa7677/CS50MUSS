@@ -129,6 +129,7 @@
     initStory();
     initPortal();
     initSay();
+    initJourney();
     initPortalLinks();
     initGoldenThread();
     initCompass();
@@ -1239,7 +1240,7 @@
   // Сол жақтағы жіп бүкіл фильмді байланыстырады: дала → шаңырақ → қақпалар → үш академия → сенің жолың.
   // Скролл жіпті толтырады, жеткен сахнаның түйіні жанады; соңғы түйін - барлық академия бойынша прогресіңіз.
   function initGoldenThread() {
-    const stops = [["#story", "Дала"], ["#scene-2", "Шаңырақ"], ["#academies", "Үш қақпа"], ["#scene-code", "Код"], ["#scene-en", "English"], ["#scene-math", "Математика"], ["#courses", "Сенің жолың"]]
+    const stops = [["#story", "Дала"], ["#scene-2", "Шаңырақ"], ["#academies", "Үш қақпа"], ["#scene-code", "Код"], ["#scene-en", "English"], ["#scene-math", "Математика"], ["#scene-journey", "Сенің жолың"]]
       .map(([sel, label]) => ({ el: document.querySelector(sel), sel, label })).filter((x) => x.el);
     if (stops.length < 5) return;
     const p = Progress.load();
@@ -1379,13 +1380,67 @@
       say.style.left = left.toFixed(1) + "px";            // transform емес: оны «пайда болу» анимациясы қолданады
       say.style.top = Math.max(pad, capY - bh - 14).toFixed(1) + "px";
       say.style.setProperty("--tx", Math.max(18, Math.min(bw - 18, headX - left)).toFixed(1) + "px");
+      hit.style.left = (sh.left + sh.width / 2 - sr.left - 30 + 20 * k).toFixed(1) + "px";
+      hit.style.top = (sh.top - sr.top - 70 * k).toFixed(1) + "px";
+      hit.style.width = hit.style.height = Math.max(44, 90 * k).toFixed(0) + "px";
     };
+    // Ботамен сәлемдесу: батырма Ботаның үстінде тұрады (пернетақтамен де қолжетімді)
+    const LINES = ["Сәлем! Мен - Бота. Жүр, үш академияға барайық!", "Скролл жаса - сапарымыз жалғасады!", "Қай академиядан бастаймыз: код, English әлде математика?", "Әр сабақ - жолдағы бір қадам. Мен сенімен біргемін!"];
+    let line = 0;
+    const hit = document.createElement("button");
+    hit.type = "button";
+    hit.className = "st-bota-hit";
+    hit.setAttribute("aria-label", "Ботамен сәлемдесу");
+    s1.append(hit);
+    hit.addEventListener("click", () => {
+      line = (line + 1) % LINES.length;
+      say.textContent = LINES[line];
+      s1.classList.remove("bt-joy");
+      say.classList.remove("bt-new");
+      void s1.offsetWidth;
+      s1.classList.add("bt-joy");
+      say.classList.add("bt-new");
+      again();
+    });
+    const head = s1.querySelector(".walker .b-head");
+    if (head && window.matchMedia && matchMedia("(pointer: fine)").matches && root.classList.contains("st-js")) {
+      s1.addEventListener("pointermove", (e) => {
+        const sh = shadow.getBoundingClientRect();
+        const dx = e.clientX - (sh.left + sh.width / 2), dy = e.clientY - (sh.top - sh.width);
+        head.style.setProperty("--look", Math.max(-14, Math.min(14, Math.atan2(dy, Math.abs(dx) + 40) * 30 * (dx < 0 ? -1 : 1))).toFixed(1) + "deg");
+      });
+      s1.addEventListener("pointerleave", () => head.style.setProperty("--look", "0deg"));
+    }
     let until = performance.now() + 9500;
     const loop = () => { place(); if (performance.now() < until) requestAnimationFrame(loop); };
     loop();
     const again = () => { until = Math.max(until, performance.now() + 400); loop(); };
     if (window.ResizeObserver) new ResizeObserver(again).observe(s1);
     window.addEventListener("orientationchange", again);
+  }
+
+  // ---------- 07 «Сенің саяхатың»: үш академияның жолы оқушының нақты прогресімен толады ----------
+  function initJourney() {
+    const sec = document.getElementById("scene-journey");
+    if (!sec) return;
+    const p = Progress.load();
+    let best = null, any = 0;
+    ACADEMIES.forEach((ac) => {
+      const pr = academyProgress(ac, p), f = pr.total ? pr.done / pr.total : 0;
+      any += pr.done;
+      const li = sec.querySelector(`.jr-legend li[data-ac="${ac.id}"]`);
+      if (li) { li.querySelector("b").textContent = `${pr.done}/${pr.total}`; li.style.setProperty("--w", (100 * f).toFixed(1) + "%"); }
+      // жол бос болса да кішкене бастама көрінсін: саяхат басталатын нүкте
+      const road = sec.querySelector(".jr-" + ac.id);
+      if (road) road.style.setProperty("--p", Math.max(0.03, f).toFixed(3));
+      if (pr.done && f < 1 && (!best || f > best.f)) best = { ac, f };
+    });
+    const go = sec.querySelector(".jr-go");
+    if (go && any) {
+      const ac = best ? best.ac : ACADEMIES[0];
+      go.href = ac.href;
+      go.textContent = "Жалғастыру: " + ac.name;
+    }
   }
 
   // ---------- Басты бет: шаңырақ арқылы өту ----------

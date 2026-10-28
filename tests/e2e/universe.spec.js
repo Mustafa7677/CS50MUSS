@@ -35,6 +35,9 @@ test("алтын жіп: басты бетте жеті түйін, скролл
   await page.goto("index.html");
   await expect(page.locator(".gt li")).toHaveCount(7);
   await expect(page.locator(".gt li").last()).toContainText("2/");
+  // 07 «Сенің саяхатың»: жол прогреспен толады, батырма - ең алға кеткен академияға
+  await expect(page.locator('.jr-legend li[data-ac="math"] b')).toHaveText("1/162");
+  await expect(page.locator(".jr-go")).toContainText("Жалғастыру:");
   const f0 = await page.locator(".gt").evaluate((n) => +getComputedStyle(n).getPropertyValue("--f"));
   await page.locator("#scene-math").scrollIntoViewIfNeeded();
   await expect.poll(() => page.locator(".gt").evaluate((n) => +n.style.getPropertyValue("--f"))).toBeGreaterThan(f0 + 0.5);
