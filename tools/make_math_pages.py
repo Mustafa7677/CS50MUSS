@@ -136,6 +136,7 @@ def subject_block(s):
           <div class="mx-sstat"><span>Дайын: <b class="mx-sready">0</b> / жоспар: <b class="mx-splan">{s["count"]}</b></span><span>оқылды: <b class="mx-sread">0</b></span></div>
         </div>
         <div class="mx-sbar" aria-hidden="true"><i></i></div>
+        <p class="mx-suni"><span>Университетте</span> {a(P.UNI[s["slug"]][0])}, {a(P.UNI[s["slug"]][1])}</p>
         <p class="mx-sdesc">{a(s["desc"])}</p>
         <div class="weeks course-weeks">
 {cards}

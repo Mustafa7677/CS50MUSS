@@ -57,7 +57,8 @@ def inject(page, E, name):
                   f'        <p class="mx-takeaway"><b>Байқадыңыз ба?</b> {w["takeaway"]}</p></div>\n', name)
     an = "\n".join(f'      <div class="mx-analogy"><span class="math-box-title">Өмірден ұқсастық · {t}</span>\n        <p>{b}</p></div>' for t, b in E["analogies"])
     rows = "\n".join(f"        <tr><td>${tx}$</td><td>{rd}</td><td>{mn}</td></tr>" for tx, rd, mn in E["symbols"])
-    page = before(page, '<h2 id="theory"',
+    # «Сызбамен түсіндіру» (tools/math_explain.py) теория алдында тұрса, жеңіл қабат одан бұрын қойылады: рет тұрақты
+    page = before(page, "<!--explain-->" if "<!--explain-->" in page else '<h2 id="theory"',
                   an.lstrip() + '\n\n      <h2 id="symbols">Белгілерді оқу</h2>\n      <p>Жоғары математиканың қиындығының жартысы - белгілерде. Теорияға дейін әр белгіні дауыстап оқып, мағынасын біліп алайық:</p>\n'
                   f'      <table class="math-table mx-symbols"><thead><tr><th>Белгі</th><th>Қалай оқылады</th><th>Нені білдіреді</th></tr></thead>\n      <tbody>\n{rows}\n      </tbody></table>\n', name)
     # анықтама/теорема қораптары: құжат ретімен d1, d2 ... және t1, t2 ...
