@@ -8,8 +8,8 @@ test("портал: академия карточкасы экранға жай�
   const errs = collectErrors(page);
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("index.html");
-  await page.evaluate(() => { const s = document.querySelector("#academies"); scrollTo(0, s.offsetTop + s.offsetHeight - innerHeight); });
-  await expect(page.locator(".ac-card.is-open")).toHaveCount(3);
+  await page.locator("#academies .ac-card").last().scrollIntoViewIfNeeded();
+  await expect(page.locator(".ac-card.is-open")).toHaveCount(3, { timeout: 8000 });
   // үлкейіп кеткен шаңырақ карточканы басуға кедергі емес
   await page.click('.ac-card[href="math/"]');
   await expect(page.locator(".portal.portal-math")).toHaveCount(1);
@@ -31,7 +31,7 @@ test("портал: қозғалыс азайтылса - әдеттегі сі�
 test("алтын жіп: басты бетте жеті түйін, скролл жіпті толтырады, соңғы түйін - прогресс", async ({ page }) => {
   await blockFonts(page.context());
   await page.addInitScript(() => localStorage.setItem("cs50kz:progress", JSON.stringify({ read: { "python:week-0": 1, "math:week-0": 1 } })));
-  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.setViewportSize({ width: 1440, height: 860 });
   await page.goto("index.html");
   await expect(page.locator(".gt li")).toHaveCount(7);
   await expect(page.locator(".gt li").last()).toContainText("2/");

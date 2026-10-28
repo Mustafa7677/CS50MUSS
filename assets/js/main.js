@@ -1355,50 +1355,21 @@
   }
 
   // ---------- Басты бет: шаңырақ арқылы өту ----------
-  // Компьютерде скролл кадрды басқарады: шаңырақ үлкейеді (--pz), «камера» ішінен өтеді (--sa), үш қақпа
-  // шығып (--ga, --gs) ашылады (.is-open); кері скролласа - кадр да кері жүреді. Телефонда сахна экранға
-  // кіргенде шаңырақ өзі үлкейіп жоғалады, әр қақпа экранға жеткенде ашылады (CSS: .pt).
+  // Скролл сахнаны тек іске қосады (initStory: .is-on): шаңырақ өзі үлкейіп, «камера» ішінен өтеді (CSS: .pt),
+  // артынан әр қақпа экранға жеткенде ашылады. Скроллдың орнына байланбайды - анимация өзі соңына дейін ойналады.
   function initPortal() {
     const pt = document.querySelector(".pt");
     if (!pt || !root.classList.contains("st-js")) return;
-    const cards = [...pt.querySelectorAll(".ac-card")];
-    const wide = matchMedia("(min-width: 900px) and (min-height: 620px)");
-    const smooth = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
-    let raf = 0;
-    const paint = () => {
-      raf = 0;
-      const r = pt.getBoundingClientRect(), span = r.height - innerHeight;
-      const p = span > 0 ? Math.max(0, Math.min(1, -r.top / span)) : 1;
-      const z = Math.min(1, p / 0.55), g = smooth(0.4, 0.62, p);
-      pt.style.setProperty("--pz", (z * z * z).toFixed(4));
-      pt.style.setProperty("--sa", (1 - smooth(0.36, 0.56, p)).toFixed(3));
-      pt.style.setProperty("--ga", g.toFixed(3));
-      pt.style.setProperty("--gs", (1.25 - 0.25 * g).toFixed(4));
-      pt.classList.toggle("pt-hide", g < 0.01);
-      cards.forEach((c) => c.classList.toggle("is-open", p > 0.6));
-      pt.classList.toggle("pt-open", p > 0.6);
-    };
-    const ask = () => { if (!raf) raf = requestAnimationFrame(paint); };
     const io = new IntersectionObserver((es) => es.forEach((e) => {
-      if (!e.isIntersecting || wide.matches) return;
+      if (!e.isIntersecting || !pt.classList.contains("is-on")) return;
       setTimeout(() => e.target.classList.add("is-open"), pt.dataset.opened ? 300 : 2100);
       pt.dataset.opened = "1";
       io.unobserve(e.target);
     }), { threshold: 0.4 });
-    const setup = () => {
-      if (wide.matches) {
-        pt.classList.add("pt-scroll");
-        window.addEventListener("scroll", ask, { passive: true });
-        window.addEventListener("resize", ask);
-        ask();
-      } else {
-        pt.classList.remove("pt-scroll");
-        window.removeEventListener("scroll", ask);
-        cards.forEach((c) => { if (!c.classList.contains("is-open")) io.observe(c); });
-      }
-    };
-    if (wide.addEventListener) wide.addEventListener("change", setup);
-    setup();
+    // сахна әлі басталмаса - басталғанда қайта тексереміз
+    new MutationObserver(() => { if (pt.classList.contains("is-on")) pt.querySelectorAll(".ac-card:not(.is-open)").forEach((c) => { io.unobserve(c); io.observe(c); }); })
+      .observe(pt, { attributes: true, attributeFilter: ["class"] });
+    pt.querySelectorAll(".ac-card").forEach((c) => io.observe(c));
   }
 
   // ---------- Басты бет: «Білім көші» оқиғасы ----------
