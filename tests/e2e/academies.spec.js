@@ -18,7 +18,7 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await expect(page.locator(".st-s1")).toHaveClass(/is-on/);
   await expect(page.locator("#scene-2")).not.toHaveClass(/is-on/);
   await expect(page.locator("#academies")).not.toHaveClass(/is-on/);
-  await expect(page.locator(".st-s1 h1")).toHaveText("Бір шаңырақ — үш академия");
+  await expect(page.locator(".st-s1 h1")).toHaveText("Бір шаңырақ үш академия");
   // скролл сахнаны тек бастайды: экранға кіргенде is-on, анимация өздігінен соңына дейін ойналады
   await page.locator("#scene-2").scrollIntoViewIfNeeded();
   await expect(page.locator("#scene-2")).toHaveClass(/is-on/);
