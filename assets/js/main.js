@@ -1383,6 +1383,8 @@
     // Логотип кадры: кез келген әрекет (скролл, басу, перне) оны өткізіп, мәтінді бірден көрсетеді
     const skipIntro = () => scenes[0].classList.add("st-skip");
     ["wheel", "touchstart", "keydown", "pointerdown"].forEach((ev) => window.addEventListener(ev, skipIntro, { once: true, passive: true }));
+    const skipBtn = scenes[0].querySelector(".st-skipbtn");
+    if (skipBtn) skipBtn.addEventListener("click", () => { skipIntro(); const h = scenes[0].querySelector("h1"); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); } });
     const vis = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle("is-vis", e.isIntersecting)));
     const on = new IntersectionObserver((es) => es.forEach((e) => {
       if (e.isIntersecting) { e.target.classList.add("is-on"); on.unobserve(e.target); }
