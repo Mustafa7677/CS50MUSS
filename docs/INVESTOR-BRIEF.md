@@ -73,6 +73,8 @@
 
 ## 9. Data room тізімі
 
+- Инвестор көзімен толық талдау, әлсіз жерлер және 90 күндік жоспар: `docs/DUE-DILIGENCE.md`
+
 - Бастапқы код: GitHub репозиторийі, CI тарихы
 - Лицензия аудиті: `licensing/components.json`, `copyright.html`, `TAKEDOWN.md`
 - Архитектура: `tools/build.py`, `docs/MOTION-SYSTEM.md`, `docs/MATH-COURSE-GUIDE.md`, `docs/EN-COURSE-GUIDE.md`
