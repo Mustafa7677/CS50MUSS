@@ -26,6 +26,7 @@ math_lesson_gen.py бетті қайта жазса, осы скриптті қ�
 """
 import html
 import importlib.util
+import math
 import re
 import sys
 from pathlib import Path
@@ -129,11 +130,43 @@ def md(t):
     return re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", html.escape(t, quote=False))
 
 
+def _short(title):
+    """Кезең картасындағы қысқа атау: «2. Тік жолақтар: ...» → «Тік жолақтар»."""
+    t = re.sub(r"^\d+\.\s*", "", title).split(":")[0].strip()
+    t = re.sub(r"\$[^$]*\$", "", t).strip(" -,")
+    return t if len(t) <= 34 else t[:32].rsplit(" ", 1)[0] + "…"
+
+
+# Шаңырақ: басты беттегі күн-шаңырақтың кішірейтілген белгісі - түсіндіру жолының соңы
+SHANYRAQ = ('<svg class="mx-xshan" viewBox="-40 -40 80 80" aria-hidden="true" focusable="false">'
+            '<circle r="27" class="s-disc"/><path class="s-kuld" d="M-24-9H24M-24 9H24M-9-24V24M9-24V24"/>'
+            '<path class="s-mid" d="M0-8 8 0 0 8-8 0Z"/><circle r="27" class="s-ring"/>'
+            + "".join(f'<path class="s-ray" d="M{34 * math.cos(a):.1f} {34 * math.sin(a):.1f}L{39 * math.cos(a):.1f} {39 * math.sin(a):.1f}"/>' for a in [i * math.pi / 8 for i in range(16)])
+            + "</svg>")
+
+
+def _map(steps):
+    """Кезеңдер картасы: шоқжұлдыз - әр кезең бір жұлдыз, алтын жолмен жалғанған (басты беттегі 3-сахна тілі)."""
+    n = len(steps)
+    pts = [(8 + 84 * i / max(1, n - 1), 34 if i % 2 == 0 else 66) for i in range(n)]
+    ds = [f"M{a[0]:.1f} {a[1]}L{b[0]:.1f} {b[1]}" for a, b in zip(pts, pts[1:])]
+    seg = f'<g class="mx-xtrack">{"".join(f"<path d=\"{d}\"/>" for d in ds)}</g><g class="mx-xroad">' + "".join(f'<path d="{d}"/>' for d in ds) + "</g>"
+    links = "".join(f'<li style="--x:{x:.1f}%;--y:{y}%"><a href="#xs-{i}"><span class="mx-xstar">{i}</span><span class="mx-xname">{html.escape(_short(s["title"]))}</span></a></li>'
+                    for i, ((x, y), s) in enumerate(zip(pts, steps), 1))
+    return (f'<nav class="mx-xmap" aria-label="Кезеңдер картасы"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">'
+            f'{seg}</svg><ol>{links}</ol></nav>')
+
+
 def render(ex, uni, k, uid, slug):
     o = [f'{OPEN}<section class="mx-explain" aria-labelledby="explain" style="{palette(slug)}">',
-         '        <h2 id="explain">Сызбамен түсіндіру</h2>',
-         f'        <p class="mx-xuni"><span>Университетте</span> {md(uni[0])}, {md(uni[1])}, {k}-дәріс</p>',
-         f'        <p class="mx-xintro">{md(ex["intro"])}</p>',
+         '        <header class="mx-xhead">',
+         '          <h2 id="explain">Сызбамен түсіндіру</h2>',
+         f'          <p class="mx-xuni"><span>Университетте</span> {md(uni[0])}, {md(uni[1])}, {k}-дәріс</p>',
+         f'          <p class="mx-xintro">{md(ex["intro"])}</p>',
+         f'          {_map(ex["steps"])}',
+         '        </header>',
+         '        <div class="mx-xtrail">',
+         '        <img class="mx-xbota" src="../../assets/img/bota.svg" alt="" width="44" height="44" loading="lazy">',
          '        <ol class="mx-xsteps">']
     for i, s in enumerate(ex["steps"], 1):
         text = "".join(f"<p>{md(t)}</p>" for t in s["theory"])
@@ -149,7 +182,8 @@ def render(ex, uni, k, uid, slug):
           </li>''')
     o.append("        </ol>")
     if ex.get("outro"):
-        o.append(f'        <p class="mx-xoutro"><b>Қорытынды.</b> {md(ex["outro"])}</p>')
+        o.append(f'        <div class="mx-xend">{SHANYRAQ}<p class="mx-xoutro"><b>Қорытынды.</b> {md(ex["outro"])}</p></div>')
+    o.append("        </div>")
     o.append(f"      </section>{CLOSE}\n      ")
     return "\n".join(o)
 
