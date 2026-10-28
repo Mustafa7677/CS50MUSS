@@ -1632,7 +1632,12 @@ parent.postMessage({tag:${JSON.stringify(tag)},res:__res},"*");<\/script>`;
   const MODULES = { filter: vizFilter, sort: vizSort, search: vizSearch, list: vizList, binary: vizBinary, swap: vizSwap, stackqueue: vizStackQueue, hash: vizHash, bst: vizBst };
   document.querySelectorAll(".viz[data-viz]").forEach((el) => MODULES[el.dataset.viz] && MODULES[el.dataset.viz](el));
   document.querySelectorAll(".flashcards").forEach(flashcards);
-  document.querySelectorAll(".daily-card").forEach(daily);
+  // Күннің сұрағы беттің төменгі жағында: 850 КБ тест банкін блок экранға жақындағанда ғана жүктейміз
+  document.querySelectorAll(".daily-card").forEach((el) => {
+    if (!("IntersectionObserver" in window)) return daily(el);
+    const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { io.disconnect(); daily(el); } }, { rootMargin: "800px 0px" });
+    io.observe(el.parentElement || el); // бос .daily-card:empty жасырын (display: none), сондықтан ата-анасын бақылаймыз
+  });
   document.querySelectorAll(".mixed-quiz").forEach(mixedQuiz);
   document.querySelectorAll(".bug-hunt").forEach(bugHunt);
   document.querySelectorAll(".trace-quiz").forEach(traceQuiz);

@@ -41,3 +41,16 @@ test("schema.org: басты бетте WebSite, курс беттерінде C
     expect(!!course.isBasedOn).toBe(c === "python");
   }
 });
+
+test("өнімділік: басты бет тест банкін (quiz.js) «Күннің сұрағы» жақындағанда ғана жүктейді", async ({ page }) => {
+  await blockFonts(page.context());
+  const got = [];
+  page.on("request", (r) => r.url().includes("assets/data/quiz.js") && got.push(r.url()));
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("index.html");
+  await page.waitForTimeout(1500);
+  expect(got).toHaveLength(0);
+  await page.locator(".dash-grid").scrollIntoViewIfNeeded();
+  await expect(page.locator(".daily-card .daily-q .mq-opts button").first()).toBeVisible({ timeout: 10000 });
+  expect(got.length).toBeGreaterThan(0);
+});
