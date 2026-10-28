@@ -164,6 +164,12 @@
     initSay();
     initJourney();
     initPortalLinks();
+    initTryCode();
+    document.querySelectorAll(".tb").forEach((el) => { // мұғалім сахнасы: көрінгенде бір рет ашылады
+      if (!("IntersectionObserver" in window)) return el.classList.add("is-on");
+      const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { el.classList.add("is-on"); io.disconnect(); } }, { threshold: 0.25 });
+      io.observe(el);
+    });
     initGoldenThread();
     initCompass();
     initConstellation();
@@ -1158,7 +1164,7 @@
     if (still || !("IntersectionObserver" in window)) return;
     const CARD = /(^|-)(card|tile|step|feature|tool)$/;
     // Ойын алаңы, тест, форма - интерактивті: олар ешқашан «ашылмайды», бірден тұрады
-    const skip = ".topbar, .footer, .has-film, .fm-finale, .toc, nav, dialog, .course-menu, .bota-pop, .game-stage, .gx-play, .quiz, form, [data-math-app] .mx-loading";
+    const skip = ".topbar, .footer, .has-film, .fm-finale, .toc, nav, dialog, .course-menu, .bota-pop, .game-stage, .gx-play, .quiz, form, .tb, .axc-studio, [data-math-app] .mx-loading";
     const seen = new WeakSet();
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       const el = e.target;
@@ -1269,6 +1275,42 @@
       document.body.append(w);
       requestAnimationFrame(() => requestAnimationFrame(() => w.classList.add("go")));
       setTimeout(() => { location.href = a.href; }, 760);
+    });
+  }
+
+  // ---------- Басты бет, код сахнасы: «Өзің жазып көр» - тірі HTML редакторы ----------
+  // Сәнді анимацияланған код нағыз редакторға ауысады; нәтиже sandbox iframe-де (скрипт іске қосылмайды).
+  const TRY_BASE = "<!doctype html><meta charset=utf-8><style>body{font:15px/1.5 system-ui,sans-serif;margin:12px;color:#0f172a}" +
+    "nav{background:#14213d;color:#fff;padding:8px 12px;border-radius:8px;font-weight:700}h1{font-size:24px;margin:12px 0 4px}" +
+    "p{margin:0 0 10px;color:#475569}button{background:#f2b705;color:#14213d;border:0;border-radius:8px;padding:8px 14px;font-weight:700}" +
+    ".cards{display:flex;gap:8px;margin-top:12px}article{flex:1;border:1px solid #cbd5e1;border-radius:8px;padding:10px;background:#fff}</style>";
+  function initTryCode() {
+    const btn = document.querySelector(".axc-try");
+    if (!btn) return;
+    btn.addEventListener("click", () => {
+      const studio = btn.closest(".axc-studio"), pre = studio.querySelector(".axc-code"), page = studio.querySelector(".axc-page");
+      const ta = document.createElement("textarea");
+      ta.className = "axc-input";
+      ta.spellcheck = false;
+      ta.maxLength = 4000;
+      ta.setAttribute("aria-label", "HTML коды: өзгертсең, оң жақта нәтиже бірден жаңарады");
+      ta.value = pre.textContent.replace(/\n+$/, "") + "\n<p>Атың: <b>...</b></p>";
+      const frame = document.createElement("iframe");
+      frame.className = "axc-frame";
+      frame.title = "Нәтиже";
+      frame.setAttribute("sandbox", "");
+      const render = () => { frame.srcdoc = TRY_BASE + ta.value; };
+      let t = 0;
+      ta.addEventListener("input", () => { clearTimeout(t); t = setTimeout(render, 120); });
+      pre.replaceWith(ta);
+      page.replaceWith(frame);
+      studio.classList.add("is-live");
+      btn.remove();
+      render();
+      ta.focus();
+      const end = ta.value.indexOf("...");
+      if (end > 0) ta.setSelectionRange(end, end + 3);
+      track("demo", "");
     });
   }
 

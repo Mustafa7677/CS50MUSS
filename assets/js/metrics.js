@@ -50,6 +50,7 @@
     set("lessons", nf(sum("lesson", null, d30)));
     set("done", nf(sum("done", null, d30)));
     set("ret", Math.round((100 * sum("return", null, d30)) / allVisits) + "%");
+    set("demo", nf(sum("demo", null, d30)));
     root.querySelector(".om-tiles").hidden = false;
 
     // Күнделікті бағандар: бір қатар, бір түс; дәл сан - тінтуір/фокус кеңесінде және кестеде

@@ -90,3 +90,26 @@ test("пилот өтінімі: бос форма жіберілмейді, т�
   expect(body.p_message).toContain("+7 700 000 0000");
   expect(page.url()).not.toContain("contact=");
 });
+
+test("басты бет: hero сандары, «Өзің жазып көр» тірі редакторы, мұғалім сахнасы", async ({ page }) => {
+  await blockFonts(page.context());
+  const errs = collectErrors(page);
+  await page.goto("index.html");
+  const proof = page.locator(".st-proof > div");
+  await expect(proof).toHaveCount(5);
+  expect(+(await proof.nth(1).locator("b").textContent())).toBeGreaterThan(200);
+  await page.locator("#scene-code").scrollIntoViewIfNeeded();
+  await page.click(".axc-try");
+  const ta = page.locator(".axc-input");
+  await expect(ta).toBeFocused();
+  await ta.fill("<h1>Сынақ</h1><script>parent.document.title='x'</script>");
+  await expect(page.frameLocator(".axc-frame").locator("h1")).toHaveText("Сынақ");
+  await expect(page.locator(".axc-frame")).toHaveAttribute("sandbox", "");
+  expect(await page.title()).not.toBe("x");
+  await page.locator("#teachers").scrollIntoViewIfNeeded();
+  await expect(page.locator("#teachers .tb-table tbody tr")).toHaveCount(6);
+  await expect(page.locator("#teachers .tb-demo")).toHaveText("Демо деректер");
+  await expect(page.locator('#teachers a[href="partners.html#contact"]')).toBeVisible();
+  for (const w of [320, 390]) { await page.setViewportSize({ width: w, height: 800 }); expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0); }
+  expect(errs).toEqual([]);
+});
