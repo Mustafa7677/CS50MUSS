@@ -503,6 +503,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -539,7 +543,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -571,6 +575,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -607,7 +615,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 29,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -637,6 +645,82 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
    {
     "t": "Белгілерді оқу",
     "id": "symbols"
+   },
+   {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 31,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-10",
+  "num": "Linear Algebra · 4-сабақ",
+  "title": "Матрицалар және матрицалық амалдар",
+  "url": "math/lectures/week-10.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: кафе мәзірі",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция: кесте және машина",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
    },
    {
     "t": "Анықтамалар мен теоремалар",
@@ -681,74 +765,6 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
-  "id": "week-10",
-  "num": "Linear Algebra · 4-сабақ",
-  "title": "Матрицалар және матрицалық амалдар",
-  "url": "math/lectures/week-10.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Алдымен қолмен: кафе мәзірі",
-    "id": "warmup"
-   },
-   {
-    "t": "Интуиция: кесте және машина",
-    "id": "intuition"
-   },
-   {
-    "t": "Белгілерді оқу",
-    "id": "symbols"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Тоқта, ойлан",
-    "id": "checks"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 25,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
   "id": "week-11",
   "num": "Linear Algebra · 5-сабақ",
   "title": "Кері матрица және LU жіктелуі",
@@ -775,6 +791,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -811,7 +831,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 28,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -843,6 +863,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -879,7 +903,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 28,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -911,6 +935,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -947,7 +975,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 26,
+  "minutes": 29,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -979,6 +1007,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1015,7 +1047,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 26,
+  "minutes": 28,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
