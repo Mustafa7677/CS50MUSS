@@ -113,3 +113,13 @@ test("басты бет: hero сандары, «Өзің жазып көр» т�
   for (const w of [320, 390]) { await page.setViewportSize({ width: w, height: 800 }); expect(await page.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0); }
   expect(errs).toEqual([]);
 });
+
+test("курс карточкалары: әр курстың тапсырма саны көрінеді (C++ мен Java «1 жоба» емес)", async ({ page }) => {
+  await blockFonts(page.context());
+  await page.goto("courses.html");
+  for (const c of ["x", "python", "sql", "ai", "web", "cpp", "java", "en", "math"]) {
+    const t = await page.locator(`.cx-card[data-course="${c}"] .cx-foot span`).first().textContent();
+    const n = +(t.match(/(\d+) тапсырма/) || [])[1];
+    expect(n, `${c}: ${t}`).toBeGreaterThan(10);
+  }
+});
