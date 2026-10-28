@@ -12,6 +12,39 @@
   // Кадр ауысуын CSS өшіреді (style.css: :root.is-lesson::view-transition-*); skipTransition() қолданбаймыз - ол уәдені қабылдамай, консольге қате шығарады
   if (PAGE) document.documentElement.classList.add("is-lesson");
 
+  // Ашық метрикалар (metrics.html): cookie-сіз жалпы санақ. Жіберілетіні тек (түр, академия не бет жолы):
+  // ID, IP, құрылғы туралы ештеңе жоқ. Әр түр құрылғыда күніне бір рет. Тек түпнұсқа мекенжайда; DNT/GPC не
+  // «cs50kz:noanalytics» болса - мүлде жібермейміз. Кесте мен функциялар: supabase/schema.sql (cs50kz_metrics).
+  const METRICS_API = "https://fuzkjjfpknnpauykzfip.supabase.co/rest/v1/rpc/";
+  const METRICS_KEY = "sb_publishable_Pc_d_L6MuzJI8_Ugs3QZ1Q_LqnRfzk_";
+  function trackingOff() {
+    try { if (localStorage.getItem("cs50kz:noanalytics") === "1") return true; } catch (e) { return true; }
+    return location.hostname !== "mustafa7677.github.io" || navigator.doNotTrack === "1" || navigator.globalPrivacyControl === true;
+  }
+  function track(kind, key) {
+    if (trackingOff()) return;
+    const day = new Date().toISOString().slice(0, 10), mark = `${kind}:${key || ""}`;
+    let seen;
+    try { seen = JSON.parse(localStorage.getItem("cs50kz:sent") || "{}"); } catch (e) { seen = {}; }
+    if (!seen || typeof seen !== "object" || seen.d !== day) seen = { d: day, k: [] };
+    if (!Array.isArray(seen.k)) seen.k = [];
+    if (seen.k.includes(mark)) return;
+    seen.k.push(mark);
+    try { localStorage.setItem("cs50kz:sent", JSON.stringify(seen)); } catch (e) { return; }
+    fetch(METRICS_API + "cs50kz_track", { method: "POST", keepalive: true, headers: { apikey: METRICS_KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ p_kind: kind, p_key: key || "" }) }).catch(() => {});
+  }
+  const SITE_PATH = (() => { try { return decodeURIComponent(location.pathname).replace(/^.*?\/CS50MUSS\//, "").replace(/^\//, "").toLowerCase() || "index.html"; } catch (e) { return ""; } })();
+  function trackVisit() {
+    const ac = ["en", "math"].includes(COURSE) ? COURSE : (PAGE || /^(python|sql|ai|web|cpp|java)\//.test(SITE_PATH) || SITE_PATH === "programming.html") ? "code" : "site";
+    let first = null;
+    try { first = localStorage.getItem("cs50kz:first"); if (!first) localStorage.setItem("cs50kz:first", new Date().toISOString().slice(0, 10)); } catch (e) { /* жоқ */ }
+    track("visit", "all"); // бүкіл сайт бойынша белсенді құрылғы
+    track("visit", ac);
+    if (first && first !== new Date().toISOString().slice(0, 10)) track("return", "");
+    if (PAGE) track("lesson", SITE_PATH);
+  }
+
   // Көшірмеден қорғау: сайт ресми мекенжайдан тыс жерде ашылса, түпнұсқаға сілтеме беретін ескерту көрсетеді.
   // (Тек GitHub Pages-тегі түпнұсқа, жергілікті сервер және file:// үшін көрсетілмейді. Өз доменіңізді қоссаңыз - тізімге қосыңыз.)
   (function () {
@@ -152,10 +185,13 @@
     initGlossary();
     initCertificate();
     initServiceWorker();
-    window.CS50KZ = { logDay, myCourses, botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), totalLectures: () => COURSE_META.reduce((n, c) => n + c.total, 0), COURSE_META, summary: summaryData, certStatus, certId, certVerifyCode, verifiedCourses, CERT_TASKS, ORDER, dayKey, COURSE, readJson };
+    (window.requestIdleCallback || ((f) => setTimeout(f, 1500)))(trackVisit);
+    window.CS50KZ = { track, trackingOff, logDay, myCourses, botaSay, ROOT_URL, loadScript, escapeHtml, celebrate, toast, mark, check: checkAchievements, getPyodide, getDb, bump: weekBump, profile, achievements: () => achievementList(), totalLectures: () => COURSE_META.reduce((n, c) => n + c.total, 0), COURSE_META, summary: summaryData, certStatus, certId, certVerifyCode, verifiedCourses, CERT_TASKS, ORDER, dayKey, COURSE, readJson };
     if (document.querySelector(".viz, .flashcards, .daily-card, .mixed-quiz, .bug-hunt, .course-map, .trace-quiz, .autograder, .weekly, .sql-grader, .js-grader, .detective, .web-lab, .homepage-check")) loadScript("assets/js/labs.js");
     if (document.querySelector(".flask-lab")) loadScript("assets/js/flask.js");
     if (document.querySelector(".exam")) loadScript("assets/js/exam.js");
+    if (document.querySelector(".om")) loadScript("assets/js/metrics.js");
+    if (document.querySelector(".inv-form")) loadScript("assets/js/feedback.js"); // өтінім формасы бірден жұмыс істесін
     if (document.querySelector(".profile")) loadScript("assets/js/profile.js");
     // Бұлттық синхрондау: қосылған болса әр бетте, профиль мен мұғалім бетінде әрқашан
     if (readJson("cs50kz:cloud", {}).on || document.querySelector(".profile, .teacher")) loadScript("assets/js/cloud.js").catch(() => {});
@@ -607,7 +643,7 @@
       done.querySelector("button").addEventListener("click", () => {
         const q = Progress.load();
         if (q.read[PAGE]) delete q.read[PAGE];
-        else { q.read[PAGE] = Date.now(); celebrate(); toast("Лекция оқылды деп белгіленді 🎉"); weekBump("read"); quoteCheer(); }
+        else { q.read[PAGE] = Date.now(); track("done", SITE_PATH); celebrate(); toast("Лекция оқылды деп белгіленді 🎉"); weekBump("read"); quoteCheer(); }
         Progress.save(q);
         checkAchievements();
         render();

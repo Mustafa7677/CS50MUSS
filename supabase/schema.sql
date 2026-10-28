@@ -328,5 +328,51 @@ end $$;
 
 grant execute on function public.cs50kz_feedback_send(text, text, text, text, text, text) to anon, authenticated;
 
+-- ---------------------------------------------------------------------------------------------
+-- Ашық метрикалар: cookie-сіз, жеке деректі жинамайтын жалпы санақ.
+-- Сақталатыны тек (күн, түр, кілт, сан). ID, IP, браузер, құрылғы туралы мәлімет ЖОҚ.
+-- Клиент әр түрді құрылғыда күніне бір рет қана жібереді (assets/js/main.js, track()).
+--   visit  - кілт: академия (code/en/math/site); күніне бір құрылғы = 1
+--   return - кілт: '' ; бұрын келген құрылғы бүгін қайта келді
+--   lesson - кілт: сабақ беті (python/lectures/week-1.html); бүгін ашылды
+--   done   - кілт: сабақ беті; оқылды деп белгіленді
+--   pilot  - кілт: '' ; серіктестер бетінен пилот өтінімі жіберілді
+create table if not exists public.cs50kz_metrics (
+  day  date not null default (now() at time zone 'Asia/Almaty')::date,
+  kind text not null check (kind in ('visit', 'return', 'lesson', 'done', 'pilot')),
+  key  text not null default '' check (length(key) <= 80),
+  n    integer not null default 0,
+  primary key (day, kind, key)
+);
+alter table public.cs50kz_metrics enable row level security;
+revoke all on public.cs50kz_metrics from anon, authenticated;
+
+create or replace function public.cs50kz_track(p_kind text, p_key text)
+returns void
+language plpgsql security definer set search_path = public as $$
+declare k text := left(coalesce(p_key, ''), 80);
+begin
+  if p_kind not in ('visit', 'return', 'lesson', 'done', 'pilot') then
+    raise exception 'bad kind' using errcode = '22023';
+  end if;
+  -- Кілт тек сайттағы жол не академия коды болады: басқа мәтінді (жеке дерек т.б.) қабылдамаймыз
+  if k !~ '^[a-z0-9/._-]*$' then
+    raise exception 'bad key' using errcode = '22023';
+  end if;
+  insert into public.cs50kz_metrics(kind, key, n) values (p_kind, k, 1)
+  on conflict (day, kind, key) do update set n = cs50kz_metrics.n + 1;
+end $$;
+grant execute on function public.cs50kz_track(text, text) to anon, authenticated;
+
+-- Жария оқу: соңғы p_days күннің жиынтығы (metrics.html). Тек сандар.
+create or replace function public.cs50kz_metrics_public(p_days integer)
+returns jsonb
+language sql stable security definer set search_path = public as $$
+  select coalesce(jsonb_agg(jsonb_build_object('day', day, 'kind', kind, 'key', key, 'n', n) order by day), '[]'::jsonb)
+  from public.cs50kz_metrics
+  where day > (now() at time zone 'Asia/Almaty')::date - least(greatest(coalesce(p_days, 30), 1), 366);
+$$;
+grant execute on function public.cs50kz_metrics_public(integer) to anon, authenticated;
+
 -- Supabase API (PostgREST) жаңа функцияларды бірден көруі үшін кэшті жаңарту
 notify pgrst, 'reload schema';

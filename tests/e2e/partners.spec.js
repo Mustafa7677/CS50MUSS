@@ -15,7 +15,7 @@ test("серіктестер беті: метрикалар build-тен тол�
   await expect(page.locator(".inv-cmp tbody tr")).toHaveCount(7);
   await expect(page.locator(".inv-own")).toContainText("барлық құқық қорғалған");
   await expect(page.locator(".inv-cc")).toContainText("CC BY-NC-SA 4.0");
-  await expect(page.locator(".inv-cta .fb-open")).toBeVisible();
+  await expect(page.locator(".inv-cta .inv-form")).toBeVisible();
   await expect(page.locator('.footer a[href="partners.html"]')).toHaveCount(1);
   expect(errs).toEqual([]);
 });
@@ -53,4 +53,40 @@ test("өнімділік: басты бет тест банкін (quiz.js) «К
   await page.locator(".dash-grid").scrollIntoViewIfNeeded();
   await expect(page.locator(".daily-card .daily-q .mq-opts button").first()).toBeVisible({ timeout: 10000 });
   expect(got.length).toBeGreaterThan(0);
+});
+
+test("ашық метрикалар: түпнұсқадан тыс жерде санақ жібермейді, бет түсіндіреді, санақты өшіруге болады", async ({ page }) => {
+  await blockFonts(page.context());
+  const errs = collectErrors(page);
+  const sent = [];
+  page.on("request", (r) => /supabase\.co/.test(r.url()) && sent.push(r.url()));
+  for (const u of ["index.html", "python/lectures/week-1.html", "metrics.html"]) { await page.goto(u); await page.waitForTimeout(1800); }
+  expect(sent).toEqual([]);
+  await expect(page.locator(".om-state")).toContainText("түпнұсқа мекенжайында");
+  await expect(page.locator(".om-opt-state")).toContainText("санақ жүрмейді");
+  await page.click(".om-toggle");
+  await expect(page.locator(".om-opt-state")).toContainText("өшірулі");
+  expect(await page.evaluate(() => localStorage.getItem("cs50kz:noanalytics"))).toBe("1");
+  await page.click(".om-toggle");
+  expect(await page.evaluate(() => localStorage.getItem("cs50kz:noanalytics"))).toBeNull();
+  expect(errs).toEqual([]);
+});
+
+test("пилот өтінімі: бос форма жіберілмейді, толтырылғаны cs50kz_feedback_send-ке pilot түрімен кетеді", async ({ page }) => {
+  await blockFonts(page.context());
+  let body = null;
+  await page.route(/supabase\.co\/rest\/v1\/rpc\/cs50kz_feedback_send/, (r) => { body = JSON.parse(r.request().postData()); r.fulfill({ status: 200, contentType: "application/json", body: '{"id":1}', headers: { "access-control-allow-origin": "*" } }); });
+  await page.goto("partners.html");
+  await page.click('.inv-form button[type="submit"]');
+  await expect(page.locator(".inv-result")).toContainText("толтырыңыз");
+  await expect(page.locator('.inv-form [name="org"]')).toHaveAttribute("aria-invalid", "true");
+  expect(page.url()).not.toContain("contact=");
+  await page.fill('[name="org"]', "Мектеп");
+  await page.fill('[name="contact"]', "+7 700 000 0000");
+  await page.click('.inv-form button[type="submit"]');
+  await expect(page.locator(".inv-result")).toContainText("Өтінім жіберілді");
+  expect(body.p_kind).toBe("pilot");
+  expect(body.p_quote).toBe("Мектеп");
+  expect(body.p_message).toContain("+7 700 000 0000");
+  expect(page.url()).not.toContain("contact=");
 });
