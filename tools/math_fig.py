@@ -124,8 +124,12 @@ def edge(a, b, label=None, arrow=False, c=0, bend=0):
     return ("edge", dict(a=a, b=b, label=label, arrow=arrow, c=c, bend=bend))
 
 
-def Plot(x, y, items, w=440, h=300, grid=True, xl="x", yl="y", ticks=True):
-    return dict(type="plot", x=x, y=y, items=items, w=w, h=h, grid=grid, xl=xl, yl=yl, ticks=ticks)
+def Plot(x, y, items, w=440, h=300, grid=True, xl="x", yl="y", ticks=True, legend=None, eq=False):
+    """legend: None - қисық атаулары қисықтың жанында; "tl" / "br" - атаулар бұрыштағы шартты белгілер тізімінде.
+    eq=True - осьтердің масштабы бірдей (шеңбер шеңбер болып көрінеді): биіктік енге қарай есептеледі."""
+    if eq:
+        h = round(PAD_T + PAD_B + (y[1] - y[0]) * (w - PAD_L - PAD_R) / (x[1] - x[0]))
+    return dict(type="plot", x=x, y=y, items=items, w=w, h=h, grid=grid, xl=xl, yl=yl, ticks=ticks, legend=legend)
 
 
 def Diagram(w, h, items):
@@ -138,11 +142,23 @@ def _arrowdefs(uid):
             f'<path d="M0 0L10 5L0 10z" class="mf-ahead"/></marker></defs>')
 
 
+_W = [440]  # ағымдағы сызбаның ені: жазу шетке шығып кетпесін
+
+
 def _label(x, y, s, cls="mf-lab", anchor="start", dy=0):
+    tw = 6.9 * len(s) + 4  # мәтін енінің бағасы (12,5px қаріп)
+    W = _W[0]
+    if anchor == "start" and x + tw > W - 2:
+        x, anchor = W - 2, "end"
+    elif anchor == "end" and x - tw < 2:
+        x, anchor = 2, "start"
+    elif anchor == "middle":
+        x = min(max(x, 2 + tw / 2), W - 2 - tw / 2)
     return f'<text x="{_f(x)}" y="{_f(y + dy)}" class="{cls}" text-anchor="{anchor}">{html.escape(s)}</text>'
 
 
 def render(spec, uid, alt):
+    _W[0] = spec["w"]
     if spec["type"] == "diagram":
         return _diagram(spec, uid, alt)
     W, H = spec["w"], spec["h"]
@@ -219,6 +235,7 @@ def render(spec, uid, alt):
             out.append(_label(ay - 5, ax + 15, "0", "mf-tick", "end"))
     out.append(_label(W - PAD_R + 2, ax - 6, spec["xl"], "mf-axl", "end"))
     out.append(_label(ay + 7, PAD_T + 4, spec["yl"], "mf-axl"))
+    legend = []
     for kind, o in spec["items"]:
         cls = f'mf-c{o.get("c", 1)}'
         dash = " mf-dash" if o.get("dash") else ""
@@ -249,7 +266,9 @@ def render(spec, uid, alt):
                 segs.append(cur)
             d = "".join("M" + "L".join(f"{_f(X(p[0]))} {_f(Y(p[1]))}" for p in s) for s in segs)
             out.append(f'<path class="mf-fn {cls}{dash}" d="{d}" clip-path="url(#cp{uid})"/>')
-            if kind == "fn" and o["label"]:
+            if kind == "fn" and o["label"] and spec.get("legend"):
+                legend.append((cls, dash, o["label"]))
+            elif kind == "fn" and o["label"]:
                 lx = o["lx"] if o["lx"] is not None else a + (b - a) * 0.85
                 ly = f(lx)
                 if ly is not None:
@@ -278,6 +297,15 @@ def render(spec, uid, alt):
         elif kind == "txt":
             out.append(_label(X(o["x"]), Y(o["y"]), o["s"], f"mf-lab {cls}", o["anchor"]))
     out += top
+    if legend:
+        lw = 26 + 7.2 * max(len(t) for _, _, t in legend)
+        lx = PAD_L + 8 if spec["legend"] == "tl" else W - PAD_R - 8 - lw
+        ly = PAD_T + 8 if spec["legend"] == "tl" else H - PAD_B - 8 - 17 * len(legend) - 6
+        out.append(f'<rect class="mf-legend" x="{_f(lx)}" y="{_f(ly)}" width="{_f(lw)}" height="{17 * len(legend) + 6}" rx="6"/>')
+        for i, (cls, dash, t) in enumerate(legend):
+            yy = ly + 14 + 17 * i
+            out.append(f'<path class="mf-fn {cls}{dash}" d="M{_f(lx + 7)} {_f(yy - 4)}h16"/>')
+            out.append(_label(lx + 28, yy, t, "mf-lab"))
     out.append("</svg>")
     return "".join(out)
 
