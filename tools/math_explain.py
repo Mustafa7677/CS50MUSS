@@ -76,6 +76,9 @@ def check(ex, name):
     return ex
 
 
+SAFE = {"__builtins__": {"sum": sum, "range": range, "abs": abs, "min": min, "max": max, "len": len, "list": list}}
+
+
 def verify(ex, name):
     try:
         import sympy as sp
@@ -88,7 +91,7 @@ def verify(ex, name):
     for i, s in enumerate(ex["steps"], 1):
         for lhs, rhs in s["v"]:
             try:
-                L, R = eval(lhs, {"__builtins__": {}}, ns), eval(rhs, {"__builtins__": {}}, ns)
+                L, R = eval(lhs, SAFE, ns), eval(rhs, SAFE, ns)
                 d = 0 if L == R else sp.simplify(L - R)  # L == R: шексіздіктер де (oo - oo = nan болмасын)
                 ok = d == 0 or (getattr(d, "is_number", False) and d.is_finite and abs(complex(sp.N(d))) < 1e-9)
             except Exception as e:  # noqa: BLE001
