@@ -128,6 +128,10 @@
     initCourseCards();
     initStory();
     initPortal();
+    initPortalLinks();
+    initGoldenThread();
+    initCompass();
+    initConstellation();
     initFilm();
     initCinema();
     initAcademyCode();
@@ -1189,6 +1193,167 @@
     }), { rootMargin: "0px 0px -10% 0px" }).observe(box);
   }
 
+  // ---------- «Үш әлем»: академиялар ортақ деректері ----------
+  const ACADEMIES = [
+    { id: "code", name: "Бағдарламалау академиясы", href: "programming.html", courses: ["x", "python", "sql", "ai", "web", "cpp", "java"], color: "#7cc4ff" },
+    { id: "en", name: "English Academy", href: "en/index.html", courses: ["en"], color: "#fda4af" },
+    { id: "math", name: "Математика академиясы", href: "math/index.html", courses: ["math"], color: "#fcd34d" },
+  ];
+  const motionOff = () => root.classList.contains("reduce-motion") || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+  const academyProgress = (ac, p) => {
+    const metas = COURSE_META.filter((m) => ac.courses.includes(m.id));
+    return { done: metas.reduce((a, m) => a + courseReadCount(p, m.id), 0), total: metas.reduce((a, m) => a + m.total, 0) };
+  };
+
+  // ---------- Portal Transition: академияға кіру - басқа әлемге ену ----------
+  // Карточка (не батырма) экранға жайылып, сол академияның әлеміне айналады: код таңбалары, әріптер не
+  // геометрия; сосын бет ауысады (жаңа бет «кадр ауысуымен» ашылады). Ctrl/Cmd/Shift-пен басу - әдеттегідей.
+  const PORTAL_GLYPHS = { code: ["{ }", "</>", "( )", ";", "=>", "[ ]", "#", "&&", "fn", "01"], en: ["Aa", "Hello", "B", "speak", "C", "read", "Ee", "listen", "Gg", "write"], math: ["∫", "∑", "π", "∞", "√", "Δ", "x²", "θ", "≈", "∂"] };
+  function initPortalLinks() {
+    if (motionOff()) return;
+    window.addEventListener("pageshow", (e) => { if (e.persisted) document.querySelectorAll(".portal").forEach((n) => n.remove()); });
+    document.addEventListener("click", (e) => {
+      const a = e.target.closest("a[data-portal]");
+      if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === "_blank") return;
+      const kind = a.dataset.portal, ac = ACADEMIES.find((x) => x.id === kind);
+      if (!ac) return;
+      e.preventDefault();
+      const r = a.getBoundingClientRect();
+      const rand = filmRand([...kind].reduce((n, c) => n + c.charCodeAt(0), 9));
+      const g = PORTAL_GLYPHS[kind];
+      let glyphs = "";
+      for (let i = 0; i < 26; i++) glyphs += `<span style="--x:${(rand() * 100).toFixed(1)}%;--y:${(20 + rand() * 75).toFixed(1)}%;--d:${(rand() * 0.5).toFixed(2)}s;--s:${(0.7 + rand() * 1.4).toFixed(2)}">${g[i % g.length]}</span>`;
+      const w = document.createElement("div");
+      w.className = "portal portal-" + kind;
+      w.setAttribute("aria-hidden", "true");
+      w.style.cssText = `--x:${r.left}px;--y:${r.top}px;--w:${r.width}px;--h:${r.height}px`;
+      w.innerHTML = `<div class="portal-glyphs">${glyphs}</div><div class="portal-title">${ac.name}</div>`;
+      document.body.append(w);
+      requestAnimationFrame(() => requestAnimationFrame(() => w.classList.add("go")));
+      setTimeout(() => { location.href = a.href; }, 760);
+    });
+  }
+
+  // ---------- Golden Thread: басты беттің алтын жібі ----------
+  // Сол жақтағы жіп бүкіл фильмді байланыстырады: дала → шаңырақ → қақпалар → үш академия → сенің жолың.
+  // Скролл жіпті толтырады, жеткен сахнаның түйіні жанады; соңғы түйін - барлық академия бойынша прогресіңіз.
+  function initGoldenThread() {
+    const stops = [["#story", "Дала"], ["#scene-2", "Шаңырақ"], ["#academies", "Үш қақпа"], ["#scene-code", "Код"], ["#scene-en", "English"], ["#scene-math", "Математика"], ["#courses", "Сенің жолың"]]
+      .map(([sel, label]) => ({ el: document.querySelector(sel), sel, label })).filter((x) => x.el);
+    if (stops.length < 5) return;
+    const p = Progress.load();
+    const done = ACADEMIES.reduce((a, ac) => a + academyProgress(ac, p).done, 0), total = ACADEMIES.reduce((a, ac) => a + academyProgress(ac, p).total, 0);
+    const nav = document.createElement("nav");
+    nav.className = "gt";
+    nav.setAttribute("aria-label", "Басты беттің сахналары");
+    nav.innerHTML = '<span class="gt-rail" aria-hidden="true"><i></i></span><ol>' + stops.map((s, i) =>
+      `<li style="--k:${i / (stops.length - 1)}"><a href="${s.sel}"><span class="gt-dot" aria-hidden="true"></span><span class="gt-lab">${s.label}${i === stops.length - 1 ? ` <b>${done}/${total}</b>` : ""}</span></a></li>`).join("") + "</ol>";
+    document.body.append(nav);
+    const items = [...nav.querySelectorAll("li")];
+    nav.querySelector("li:last-child").style.setProperty("--pr", total ? (done / total).toFixed(3) : 0);
+    let raf = 0;
+    const paint = () => {
+      raf = 0;
+      const first = stops[0].el.getBoundingClientRect().top + scrollY, last = stops[stops.length - 1].el.getBoundingClientRect().top + scrollY;
+      const y = scrollY + innerHeight * 0.45;
+      const f = Math.max(0, Math.min(1, (y - first) / Math.max(1, last - first)));
+      nav.style.setProperty("--f", f.toFixed(4));
+      let cur = 0;
+      stops.forEach((s, i) => { if (s.el.getBoundingClientRect().top < innerHeight * 0.45) cur = i; });
+      items.forEach((li, i) => { li.classList.toggle("is-past", i <= cur); li.toggleAttribute("aria-current", i === cur); });
+    };
+    const ask = () => { if (!raf) raf = requestAnimationFrame(paint); };
+    window.addEventListener("scroll", ask, { passive: true });
+    window.addEventListener("resize", ask);
+    paint();
+  }
+
+  // ---------- Smart Compass: бұрыштағы шағын шаңырақ ----------
+  // Қай академияда, қай курста, қай сабақта жүргеніңді көрсетеді; басқанда үш академияның прогресі мен
+  // жылдам жолдар ашылады. Басты бетте жоқ (онда алтын жіп бар).
+  function initCompass() {
+    if (document.querySelector(".st-scene") || !document.querySelector(".topbar")) return;
+    const path = location.pathname;
+    const own = (path.match(/\/(python|sql|ai|web|cpp|java|en|math)\//) || [])[1] || (/\/lectures\//.test(path) ? "x" : "");
+    const ac = ACADEMIES.find((a) => a.courses.includes(own)) || (/programming\.html$/.test(path) ? ACADEMIES[0] : null);
+    const meta = COURSE_META.find((m) => m.id === own);
+    const h1 = document.querySelector("h1");
+    const crumbs = [ac && ac.name, meta && own !== "en" && own !== "math" && meta.name, PAGE && h1 && h1.textContent.trim()].filter(Boolean);
+    const up = ROOT_URL;
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "compass";
+    btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-controls", "compass-panel");
+    btn.setAttribute("aria-label", "Компас: қайда тұрмын, қайда барамын");
+    btn.innerHTML = '<svg viewBox="-24 -24 48 48" aria-hidden="true"><circle r="17" class="c-ring"/><path class="c-kuld" d="M-15-5H15M-15 5H15M-5-15V15M5-15V15"/><path class="c-mid" d="M0-5 5 0 0 5-5 0Z"/><path class="c-uyk" d="M0-21v-2M0 21v2M-21 0h-2M21 0h2M14.8-14.8l1.4-1.4M-14.8 14.8l-1.4 1.4M14.8 14.8l1.4 1.4M-14.8-14.8l-1.4-1.4"/></svg>';
+    const panel = document.createElement("div");
+    panel.className = "compass-panel";
+    panel.id = "compass-panel";
+    panel.hidden = true;
+    panel.setAttribute("role", "dialog");
+    panel.setAttribute("aria-label", "Компас");
+    const fill = () => {
+      const p = Progress.load();
+      panel.innerHTML =
+        `<p class="cp-here"><span>Сен қазір</span>${crumbs.length ? crumbs.map((c) => `<b>${c.replace(/</g, "&lt;")}</b>`).join('<i aria-hidden="true">›</i>') : "<b>Жалпы бет</b>"}</p>` +
+        '<ul class="cp-acs">' + ACADEMIES.map((a) => {
+          const pr = academyProgress(a, p);
+          return `<li style="--a:${a.color};--p:${pr.total ? Math.round(100 * pr.done / pr.total) : 0}%"${ac === a ? ' class="is-here"' : ""}><a href="${up}${a.href}"><span>${a.name}</span><em>${pr.done}/${pr.total}</em><i aria-hidden="true"></i></a></li>`;
+        }).join("") + "</ul>" +
+        `<p class="cp-go"><a href="${up}index.html">Басты бет</a><a href="${up}map.html">Курс картасы</a><a href="${up}profile.html">Менің жолым</a></p>`;
+    };
+    const close = () => { panel.hidden = true; btn.setAttribute("aria-expanded", "false"); };
+    btn.addEventListener("click", () => {
+      if (!panel.hidden) { close(); return; }
+      fill();
+      panel.hidden = false;
+      btn.setAttribute("aria-expanded", "true");
+      const f = panel.querySelector("a");
+      if (f) f.focus();
+    });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !panel.hidden) { close(); btn.focus(); } });
+    document.addEventListener("click", (e) => { if (!panel.hidden && !panel.contains(e.target) && !btn.contains(e.target)) close(); });
+    document.body.append(btn, panel);
+  }
+
+  // ---------- Knowledge Constellation: бағдарламалау курстарының жұлдыздар жүйесі ----------
+  // Курс - жұлдыз, байланыс - бірінен кейін екіншісін оқу қисынды. Жұлдызға апарсаң (не мақсат таңдасаң),
+  // байланысты курстар мен жолдар жанады; басқанда сол курстың маршрутына түседі.
+  const CON_POS = { x: [50, 46], python: [28, 30], sql: [12, 64], ai: [36, 80], web: [70, 22], cpp: [76, 70], java: [92, 44] };
+  const CON_EDGES = [["x", "python"], ["x", "web"], ["x", "sql"], ["x", "cpp"], ["python", "sql"], ["python", "ai"], ["python", "web"], ["sql", "ai"], ["cpp", "java"], ["web", "java"], ["sql", "web"]];
+  function initConstellation() {
+    const tracks = [...document.querySelectorAll(".pa-track[data-course]")];
+    const anchor = document.getElementById("tracks");
+    if (tracks.length < 3 || !anchor) return;
+    const info = Object.fromEntries(tracks.map((t) => { const m = COURSE_META.find((x) => x.id === t.dataset.course); return [t.dataset.course, { el: t, name: m ? m.name : t.dataset.course, full: (t.querySelector("h3") || t).textContent.trim(), c: t.style.getPropertyValue("--c") }]; }));
+    const sky = document.createElement("div");
+    sky.className = "kc";
+    const lines = CON_EDGES.filter(([a, b]) => info[a] && info[b]).map(([a, b]) => `<line x1="${CON_POS[a][0]}" y1="${CON_POS[a][1]}" x2="${CON_POS[b][0]}" y2="${CON_POS[b][1]}" data-a="${a}" data-b="${b}"/>`).join("");
+    sky.innerHTML = `<p class="kc-hint">Курсқа апарыңыз: онымен байланысты курстар жанады. Басса - маршрутына өтесіз.</p><div class="kc-sky"><svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true" focusable="false">${lines}</svg><ul>` +
+      Object.keys(CON_POS).filter((k) => info[k]).map((k) => `<li style="left:${CON_POS[k][0]}%;top:${CON_POS[k][1]}%;--c:${info[k].c}"><a href="#t-${k}" data-k="${k}" aria-label="${info[k].full.replace(/"/g, "&quot;")}: маршрутқа өту"><span class="kc-star" aria-hidden="true"></span><span class="kc-name" aria-hidden="true">${info[k].name.replace(/</g, "&lt;")}</span></a></li>`).join("") + "</ul></div>";
+    anchor.after(sky);
+    const stars = [...sky.querySelectorAll("a[data-k]")], edges = [...sky.querySelectorAll("line")];
+    const light = (keys) => {
+      const set = new Set(keys);
+      const near = new Set(keys);
+      if (keys.length === 1) edges.forEach((l) => { if (set.has(l.dataset.a)) near.add(l.dataset.b); if (set.has(l.dataset.b)) near.add(l.dataset.a); });
+      sky.classList.toggle("kc-focus", keys.length > 0);
+      stars.forEach((s) => { s.classList.toggle("is-hot", set.has(s.dataset.k)); s.classList.toggle("is-near", near.has(s.dataset.k) && !set.has(s.dataset.k)); });
+      edges.forEach((l) => l.classList.toggle("is-hot", near.has(l.dataset.a) && near.has(l.dataset.b) && (set.has(l.dataset.a) || set.has(l.dataset.b) || keys.length > 1)));
+    };
+    const picked = () => tracks.filter((t) => t.classList.contains("pa-pick")).map((t) => t.dataset.course);
+    stars.forEach((s) => {
+      s.addEventListener("mouseenter", () => light([s.dataset.k]));
+      s.addEventListener("focus", () => light([s.dataset.k]));
+      s.addEventListener("mouseleave", () => light(picked()));
+      s.addEventListener("blur", () => light(picked()));
+    });
+    // мақсат таңдалса (бағдарламалау академиясының «Мақсатыңды таңда»), сол маршрут шоқжұлдызда жанады
+    new MutationObserver(() => light(picked())).observe(document.querySelector(".pa-tracks") || anchor.parentElement, { attributes: true, subtree: true, attributeFilter: ["class"] });
+    light(picked());
+  }
+
   // ---------- Басты бет: шаңырақ арқылы өту ----------
   // Компьютерде скролл кадрды басқарады: шаңырақ үлкейеді (--pz), «камера» ішінен өтеді (--sa), үш қақпа
   // шығып (--ga, --gs) ашылады (.is-open); кері скролласа - кадр да кері жүреді. Телефонда сахна экранға
@@ -1211,6 +1376,7 @@
       pt.style.setProperty("--gs", (1.25 - 0.25 * g).toFixed(4));
       pt.classList.toggle("pt-hide", g < 0.01);
       cards.forEach((c) => c.classList.toggle("is-open", p > 0.6));
+      pt.classList.toggle("pt-open", p > 0.6);
     };
     const ask = () => { if (!raf) raf = requestAnimationFrame(paint); };
     const io = new IntersectionObserver((es) => es.forEach((e) => {
