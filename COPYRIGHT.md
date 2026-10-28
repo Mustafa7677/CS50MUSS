@@ -12,7 +12,7 @@
 |---|---|
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
-| B · Sagid Mustafa-ның дербес әзірлемесі | 1120 |
+| B · Sagid Mustafa-ның дербес әзірлемесі | 1121 |
 | C · Үшінші тарап | 43 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 56 |
 
@@ -50,7 +50,7 @@
 | `games.html`<br>`assets/js/games-*.js`<br>`assets/css/games-ui*.css`<br>`assets/js/cabinet.js` | **B-games** Образовательные игры, система XP, кабинет (7 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/js/main.js`<br>`assets/js/exam.js`<br>`exam.html`<br>`assets/js/profile.js`<br>`profile.html`<br>`assets/js/cloud.js`<br>`teacher.html`<br>`assets/js/feedback.js`<br>`supabase/**`<br>`certificate.html`<br>`partners.html`<br>`sw.js`<br>`manifest.webmanifest` | **B-platform** Платформа: движок сайта, прогресс, достижения, редактор, тест-система, профиль, кабинеты ученика и преподавателя, синхронизация (14 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/css/style.css`<br>`docs/MOTION-SYSTEM.md`<br>`docs/INVESTOR-BRIEF.md`<br>`assets/img/bota*.svg`<br>`assets/img/icon*`<br>`assets/img/og.jpg`<br>`assets/img/og/**`<br>`tools/make_og.mjs` | **B-design** Дизайн, стили, фирменная графика (маскот Бота, иконки, превью) (26 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
-| `tools/build.py`<br>`tools/fetch_cs50.py`<br>`tools/__pycache__/**`<br>`tests/**`<br>`.github/**`<br>`licensing/**`<br>`robots.txt`<br>`sitemap.xml`<br>`.nojekyll`<br>`.gitignore`<br>`**/.gitkeep`<br>`tools/licence_audit.py` | **B-tools-tests** Скрипты сборки, тесты, CI (61 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `tools/build.py`<br>`tools/fetch_cs50.py`<br>`tools/__pycache__/**`<br>`tests/**`<br>`.github/**`<br>`licensing/**`<br>`robots.txt`<br>`sitemap.xml`<br>`.nojekyll`<br>`.gitignore`<br>`**/.gitkeep`<br>`tools/licence_audit.py` | **B-tools-tests** Скрипты сборки, тесты, CI (62 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `qazaqcode/**` | **B-qazaqcode** QazaqCode Platform (отдельный коммерческий продукт) (319 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `README.md`<br>`LICENSE.md`<br>`LICENSE-HARVARD.md`<br>`LICENSE-PROPRIETARY.md`<br>`COPYRIGHT.md`<br>`THIRD-PARTY-LICENSES.md`<br>`TAKEDOWN.md`<br>`copyright.html`<br>`404.html`<br>`test-results/**`<br>`MOBILE-TESTING.md` | **B-docs** Документы проекта: README, лицензии, правила обращения (10 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/vendor/sqljs/**` | **C-sqljs** sql.js (SQLite в WebAssembly) (4 файл) | sql.js authors; SQLite - общественное достояние | MIT | расталған |
