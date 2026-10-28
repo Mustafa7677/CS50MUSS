@@ -4257,3 +4257,247 @@ a.cx-card:hover { transform: none; box-shadow: none; }
 .fm-play .fm-fire { animation: fm-pop .8s cubic-bezier(.16, 1, .3, 1) 2.6s both; }
 @keyframes cine-flame { from { transform: scale(.92, .86) skewX(-3deg); } to { transform: scale(1.06, 1.1) skewX(3deg); } }
 @media (max-width: 560px) { .fm-finale { height: 128px; margin-top: 40px; } }
+
+/* ===================================================================
+   БАСТЫ БЕТ: бес сахналы фильм
+   1. Тірі дала (st-s1): ашылғанда ортада логотип алтын сәулемен пайда болып, далаға жол береді.
+   2. Шаңырақ арқылы өту (.pt): скролл шаңырақты үлкейтеді, «камера» ішінен өтеді, үш академияның
+      қақпасы ашылады (компьютерде скроллмен, телефонда сахна экранға кіргенде өзі ойналады).
+   3. Бағдарламалау (.ax-code): код өздігінен жазылады, қатар тұрған браузерде сайт элементі пайда болады.
+   4. English (.ax-en): кітап ашылады, сөздер ұшып шығады, дыбыс толқыны, деңгейлер бір-бірден.
+   5. Математика (.ax-math): x² + y² = r² шеңберге, нүктелер графикке, фигуралар 3D-ге айналады; 25 пән картасы.
+   Әдепкі күй - соңғы күй (JS жоқ, қозғалыс азайтылған); бастапқы күй мен анимация тек .st-js ішінде.
+   =================================================================== */
+
+/* --- 1. Логотип: кино басы --- */
+.st-intro { display: none; }
+.st-js .st-s1 .st-intro { display: grid; place-items: center; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  animation: st-intro-out .9s cubic-bezier(.65, 0, .35, 1) 2.6s forwards; }
+.st-logo { position: relative; display: flex; align-items: center; gap: .32em; font: 800 clamp(30px, 5.4vw, 60px)/1 "Unbounded", var(--display), sans-serif; color: #fff; letter-spacing: -.02em;
+  animation: st-logo-in 1.2s cubic-bezier(.16, 1, .3, 1) .35s both; }
+.st-logo .st-word span { color: #f5c542; }
+.st-mark { position: relative; z-index: 1; width: 1.25em; height: 1.25em; background: var(--orn-gold) center / contain no-repeat; filter: drop-shadow(0 0 22px rgb(255 211 107 / .9)); }
+.st-rays { position: absolute; left: .62em; top: 50%; width: 9em; height: 9em; margin: -4.5em 0 0 -4.5em; border-radius: 50%; pointer-events: none;
+  background: repeating-conic-gradient(rgb(255 214 120 / .5) 0deg 3.5deg, transparent 3.5deg 15deg);
+  -webkit-mask: radial-gradient(circle, #000 0 14%, transparent 62%); mask: radial-gradient(circle, #000 0 14%, transparent 62%);
+  animation: st-rays 3s cubic-bezier(.16, 1, .3, 1) .25s both; }
+@keyframes st-logo-in { from { opacity: 0; transform: scale(.72); filter: blur(10px); } }
+@keyframes st-rays { from { opacity: 0; transform: scale(.15) rotate(-50deg); } 35% { opacity: 1; } to { opacity: .75; transform: scale(1.25) rotate(25deg); } }
+@keyframes st-intro-out { to { opacity: 0; transform: translateY(-36px) scale(.9); visibility: hidden; } }
+/* мәтін логотиптен кейін келеді; кез келген әрекет (скролл, басу, перне) кадрды өткізіп жібереді */
+.st-js .st-s1 .st-copy > :nth-child(1) { animation-delay: 2.85s; }
+.st-js .st-s1 .st-copy > :nth-child(2) { animation-delay: 3s; }
+.st-js .st-s1 .st-copy > :nth-child(3) { animation-delay: 3.15s; }
+.st-js .st-s1 .st-copy > :nth-child(4) { animation-delay: 3.3s; }
+.st-js .st-s1 .st-copy > :nth-child(5) { animation-delay: 3.45s; }
+.st-js .st-s1.st-skip .st-intro { animation: st-intro-out .35s ease forwards; }
+.st-js .st-s1.st-skip .st-copy > * { animation-delay: 0s !important; }
+
+/* --- 2. Шаңырақ арқылы өту --- */
+.pt { padding: 0; overflow: clip; }
+.pt-stage { position: relative; max-width: 1200px; margin: 0 auto; padding: 56px 16px 80px; }
+.pt-sky { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.pt-shan { display: block; position: relative; z-index: 1; width: min(300px, 64vw); margin: 0 auto 6px; overflow: visible; }
+.pt-glow { opacity: .45; }
+.pt-kuld path { stroke: #e0a526; stroke-width: 7; }
+.pt-mid { fill: #0a7ea4; stroke: #f2b705; stroke-width: 3; }
+.pt-ring { fill: rgb(253 231 173 / .08); stroke: #f2b705; stroke-width: 12; }
+.pt-ring2 { fill: none; stroke: #c8862a; stroke-width: 4; }
+.pt-uyk { stroke: #e5c07a; stroke-width: 5; stroke-linecap: round; }
+.pt .st-s3-copy, .pt .ac-grid { position: relative; z-index: 2; }
+.pt .st-s3-copy h2 { text-wrap: balance; }
+/* қақпа жармалары: тек анимацияда, есік ашылған соң жоғалады; басуға кедергі емес */
+.ac-door { display: none; }
+.st-js .pt .ac-door { display: block; position: absolute; top: 0; bottom: 0; width: 50%; z-index: 3; pointer-events: none;
+  background:
+    var(--orn-gold) center / 44px no-repeat,
+    repeating-linear-gradient(45deg, rgb(242 183 5 / .2) 0 2px, transparent 2px 15px),
+    repeating-linear-gradient(-45deg, rgb(242 183 5 / .2) 0 2px, transparent 2px 15px),
+    linear-gradient(180deg, #8c241d, #5e1712);
+  box-shadow: inset 0 0 0 3px #e0a526, inset 0 0 0 7px #5e1712, inset 0 0 0 9px rgb(242 183 5 / .55);
+  transition: transform 1.2s cubic-bezier(.65, 0, .35, 1) calc(var(--i) * .2s), opacity .4s ease calc(1s + var(--i) * .2s), visibility 0s linear calc(1.4s + var(--i) * .2s); }
+.st-js .pt .ac-door.dl { left: 0; border-radius: 18px 0 0 18px; transform-origin: 0 50%; }
+.st-js .pt .ac-door.dr { right: 0; border-radius: 0 18px 18px 0; transform-origin: 100% 50%; }
+.st-js .pt .ac-door.dl::after, .st-js .pt .ac-door.dr::after { content: ""; position: absolute; top: 50%; width: 10px; height: 10px; margin-top: -5px; border-radius: 50%; background: #f5c542; box-shadow: 0 0 8px #f5c542; }
+.st-js .pt .ac-door.dl::after { right: 10px; }
+.st-js .pt .ac-door.dr::after { left: 10px; }
+.st-js .pt .ac-card.is-open .ac-door.dl { transform: perspective(900px) rotateY(-104deg); opacity: 0; visibility: hidden; }
+.st-js .pt .ac-card.is-open .ac-door.dr { transform: perspective(900px) rotateY(104deg); opacity: 0; visibility: hidden; }
+/* компьютер: скроллмен басқарылатын кадр (main.js initPortal: --pz үлкею, --sa шаңырақ, --ga қақпалар) */
+.pt-scroll { height: 300vh; }
+.pt-scroll .pt-stage { position: sticky; top: 0; height: 100vh; max-width: none; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 18px; padding: 70px 24px 30px; }
+.pt-scroll .pt-shan { position: absolute; left: 50%; top: 50%; width: 340px; margin: -170px 0 0 -170px; transform: scale(calc(1 + var(--pz, 0) * 18)); opacity: var(--sa, 1); will-change: transform, opacity; z-index: 4; }
+.pt-scroll .st-s3-copy, .pt-scroll .ac-grid { opacity: var(--ga, 0); transform: scale(var(--gs, 1.25)); width: 100%; }
+.pt-scroll .st-s3-copy { max-width: 760px; text-align: center; }
+.pt-scroll .st-s3-copy > *, .pt-scroll .ac-card { animation: none !important; opacity: 1 !important; }
+.pt-scroll .ac-grid { max-width: 1200px; }
+/* телефон: сахна экранға кіргенде шаңырақ үлкейіп жоғалады, артынан қақпалар */
+.st-js .pt:not(.pt-scroll) .pt-shan { position: absolute; left: 50%; top: 40px; width: 280px; margin-left: -140px; z-index: 4; }
+.st-js .pt:not(.pt-scroll) .pt-stage { padding-top: 330px; }
+.st-js .pt:not(.pt-scroll).is-on .pt-shan { animation: pt-zoom 1.8s cubic-bezier(.6, 0, .4, 1) .3s forwards; }
+.st-js .pt:not(.pt-scroll).is-on .pt-stage { animation: pt-lift 1.2s cubic-bezier(.65, 0, .35, 1) 1.2s forwards; }
+@keyframes pt-zoom { 60% { opacity: 1; } to { transform: scale(9); opacity: 0; visibility: hidden; } }
+@keyframes pt-lift { to { padding-top: 56px; } }
+
+/* --- Академия сахналарының ортақ қаңқасы --- */
+.ax { position: relative; overflow: clip; color: #fff; padding: 96px 24px; }
+.ax::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: var(--baskur); opacity: .85; }
+.ax-in { position: relative; max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 56px; align-items: center; }
+.ax-en .ax-in { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); }
+.ax-kick { margin: 0; font-weight: 700; font-size: .98rem; color: var(--k); }
+.ax-copy h2 { margin: 8px 0 14px; font: 800 clamp(28px, 4vw, 46px)/1.08 "Unbounded", var(--display), sans-serif; letter-spacing: -.02em; color: #fff; text-wrap: balance; }
+.ax-copy h2::before { display: none !important; }
+.ax-copy > p:not(.ax-kick) { margin: 0; max-width: 34rem; color: rgb(255 255 255 / .86); font-size: 1.04rem; line-height: 1.65; }
+.ax .btn { margin-top: 24px; }
+.ax-code { --k: #7cc4ff; background: radial-gradient(70% 90% at 85% 40%, rgb(56 189 248 / .14), transparent 60%), linear-gradient(170deg, #0b1630, #0d2347 60%, #0a1a38); }
+.ax-en { --k: #fda4af; background: radial-gradient(60% 80% at 25% 45%, rgb(253 164 175 / .16), transparent 60%), linear-gradient(170deg, #2a0f1f, #3d1426 55%, #26101c); }
+.ax-math { --k: #fcd34d; background: radial-gradient(60% 80% at 75% 35%, rgb(252 211 77 / .12), transparent 60%), linear-gradient(170deg, #062720, #0b3a30 55%, #072a23); }
+.st-js .ax:not(.is-on) .ax-copy > * { opacity: 0; }
+.st-js .ax.is-on .ax-copy > * { animation: st-in .8s cubic-bezier(.2, .75, .2, 1) both; }
+.st-js .ax.is-on .ax-copy > :nth-child(2) { animation-delay: .12s; }
+.st-js .ax.is-on .ax-copy > :nth-child(3) { animation-delay: .24s; }
+.st-js .ax.is-on .ax-copy > :nth-child(4) { animation-delay: .36s; }
+.st-js .ax.is-on .ax-copy > :nth-child(5) { animation-delay: .48s; }
+
+/* --- 3. Бағдарламалау: код → сайт --- */
+.axc-studio { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+.axc-ed, .axc-web { border-radius: 14px; overflow: hidden; box-shadow: 0 30px 60px -30px rgb(0 0 0 / .7); }
+.axc-ed { background: #0b1020; border: 1px solid rgb(255 255 255 / .12); }
+.axc-bar { display: flex; align-items: center; gap: 6px; padding: 9px 12px; background: rgb(255 255 255 / .06); font: 600 12px/1 var(--mono, ui-monospace, monospace); color: #cbd5e1; }
+.axc-bar i { width: 9px; height: 9px; border-radius: 50%; background: #ff5f57; }
+.axc-bar i:nth-child(2) { background: #febc2e; }
+.axc-bar i:nth-child(3) { background: #28c840; }
+.axc-bar span { margin-left: 8px; }
+.axc-code { margin: 0; padding: 14px 14px 18px; border: 0; background: none; font: 12.5px/1.8 var(--mono, ui-monospace, monospace); color: #e2e8f0; white-space: pre; overflow: hidden; }
+.axc-code code { background: none; padding: 0; color: inherit; font: inherit; }
+.axc-code .ln { display: block; }
+.axc-code .t { color: #7dd3fc; } .axc-code .a { color: #f9a8d4; } .axc-code .s { color: #bef264; }
+.axc-code code::after { content: "▍"; color: #f5c542; animation: axc-blink 1s steps(1) infinite; }
+@keyframes axc-blink { 50% { opacity: 0; } }
+.axc-web { background: #f8fafc; color: #0f172a; border: 1px solid rgb(255 255 255 / .2); }
+.axc-web .axc-bar { background: #e2e8f0; color: #475569; }
+.axc-page { display: grid; gap: 10px; padding: 14px; font-size: 13px; line-height: 1.4; }
+.w-nav { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 8px; background: #0f172a; color: #fff; font-weight: 700; font-size: 12px; }
+.w-nav b { width: 15px; height: 15px; background: var(--orn-gold) center / contain no-repeat; }
+.w-nav i { width: 24px; height: 6px; border-radius: 3px; background: rgb(255 255 255 / .4); }
+.w-nav i:first-of-type { margin-left: auto; }
+.w-h1 { font: 800 20px/1.1 "Unbounded", var(--display), sans-serif; }
+.w-p { color: #475569; }
+.w-btn { justify-self: start; padding: 7px 14px; border-radius: 8px; background: #f2b705; color: #1b1300; font-weight: 700; }
+.w-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.w-cards span { padding: 14px 10px; border-radius: 10px; background: #e0f2fe; color: #0c4a6e; font-weight: 700; }
+.w-cards span + span { background: #ede9fe; color: #4c1d95; }
+.axc-langs { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; margin: 22px 0 0; padding: 0; }
+.axc-langs a { display: inline-block; padding: 7px 14px; border-radius: 999px; font-weight: 700; font-size: .92rem; color: #fff; text-decoration: none;
+  background: color-mix(in srgb, var(--c) 34%, #0b1630); border: 1px solid color-mix(in srgb, var(--c) 75%, #fff 10%); transition: transform .2s ease; }
+.axc-langs a:hover { transform: translateY(-2px); }
+.st-js .ax-code .axc-code .ln { clip-path: inset(0 100% 0 0); }
+.st-js .ax-code.is-on .axc-code .ln { animation: axc-type .5s steps(20) calc(.6s + var(--l) * .5s) forwards; }
+.st-js .ax-code .axc-page .w { opacity: 0; transform: translateY(10px) scale(.96); }
+.st-js .ax-code.is-on .axc-page .w { animation: axc-pop .55s cubic-bezier(.16, 1, .3, 1) calc(1.05s + var(--l) * .5s) forwards; }
+.st-js .ax-code:not(.is-on) .axc-langs li { opacity: 0; }
+.st-js .ax-code.is-on .axc-langs li { animation: axc-pop .5s cubic-bezier(.16, 1, .3, 1) calc(4.8s + var(--i) * .13s) both; }
+@keyframes axc-type { to { clip-path: inset(0 0 0 0); } }
+@keyframes axc-pop { from { opacity: 0; transform: translateY(10px) scale(.96); } to { opacity: 1; transform: none; } }
+
+/* --- 4. English: сөйлейтін кітап --- */
+.axe-book { position: relative; height: 400px; display: grid; place-items: center; }
+.bk { position: relative; display: flex; filter: drop-shadow(0 26px 30px rgb(0 0 0 / .45)); }
+.bk-page { width: 150px; height: 210px; padding: 28px 16px; display: grid; gap: 10px; align-content: start; background: #fbf3e2; }
+.bk-left { border-radius: 10px 0 0 10px; box-shadow: inset -14px 0 18px -12px rgb(0 0 0 / .35); }
+.bk-right { border-radius: 0 10px 10px 0; box-shadow: inset 14px 0 18px -12px rgb(0 0 0 / .35); }
+.bk-page i { height: 6px; border-radius: 3px; background: #dcc9a2; }
+.bk-page i:nth-child(2n) { width: 82%; }
+.bk-page i:nth-child(3n) { width: 64%; }
+.bk-cover { position: absolute; left: 150px; top: -5px; width: 156px; height: 220px; display: grid; place-items: center; border-radius: 0 12px 12px 0;
+  background: var(--orn-gold) 50% 70% / 40px no-repeat, linear-gradient(135deg, #be123c, #7f1d1d); box-shadow: inset 0 0 0 3px #f2b705, inset 0 0 0 7px #7f1d1d, inset 0 0 0 9px rgb(242 183 5 / .5);
+  transform-origin: 0 50%; transform: perspective(1200px) rotateY(-180deg); backface-visibility: hidden; font: 800 18px "Unbounded", var(--display), sans-serif; color: #fde68a; }
+.bk-cover span { margin-top: -50px; }
+.bk-words { position: absolute; left: 50%; top: 46%; }
+.bk-w { position: absolute; left: 0; top: 0; padding: 6px 13px; border-radius: 999px; white-space: nowrap; font-weight: 700; font-size: 14px; color: #ffe4e6;
+  background: rgb(255 255 255 / .09); border: 1px solid rgb(253 164 175 / .5); transform: translate(-50%, -50%) translate(var(--x), var(--y)) rotate(var(--r)); }
+.bk-wave { position: absolute; left: 50%; bottom: 22px; height: 44px; display: flex; align-items: center; gap: 4px; transform: translateX(-50%); }
+.bk-wave i { width: 5px; height: 100%; border-radius: 3px; background: linear-gradient(#fda4af, #be123c); transform: scaleY(.45); }
+.st-js .ax-en .bk-cover { transform: perspective(1200px) rotateY(0deg); }
+.st-js .ax-en.is-on .bk-cover { animation: bk-open 1.4s cubic-bezier(.65, 0, .35, 1) .4s forwards; }
+.st-js .ax-en:not(.is-on) .bk-w, .st-js .ax-en:not(.is-on) .bk-wave { opacity: 0; }
+.st-js .ax-en.is-on .bk-w { animation: bk-fly .9s cubic-bezier(.16, 1, .3, 1) calc(1.5s + var(--i) * .13s) both, bk-float 3.4s ease-in-out calc(2.8s + var(--i) * .3s) infinite alternate; }
+.st-js .ax-en.is-on .bk-wave { animation: st-fade .6s ease 1.7s both; }
+.st-js .ax-en.is-on .bk-wave i { animation: bk-wave .9s ease-in-out calc(var(--i) * -.07s) infinite alternate; }
+.st-js .ax-en:not(.is-on) .axe-levels li { opacity: 0; }
+.st-js .ax-en.is-on .axe-levels li { animation: axc-pop .55s cubic-bezier(.16, 1, .3, 1) calc(2.6s + var(--i) * .22s) both; }
+@keyframes bk-open { to { transform: perspective(1200px) rotateY(-180deg); } }
+@keyframes bk-fly { from { opacity: 0; transform: translate(-50%, -50%) scale(.3); } }
+@keyframes bk-float { to { translate: 0 -7px; } }
+@keyframes bk-wave { from { transform: scaleY(.18); } to { transform: scaleY(1); } }
+.axe-levels { list-style: none; display: flex; align-items: flex-end; gap: 8px; margin: 22px 0 0; padding: 0; }
+.axe-levels li { flex: 1; min-width: 0; }
+.axe-levels a { display: flex; flex-direction: column; justify-content: flex-end; gap: 2px; min-height: calc(50px + var(--i) * 14px); padding: 8px 9px; border-radius: 10px 10px 4px 4px; text-decoration: none; color: #fff;
+  background: linear-gradient(180deg, rgb(253 164 175 / calc(.12 + var(--i) * .05)), rgb(190 18 60 / .38)); border: 1px solid rgb(253 164 175 / .38); transition: transform .2s ease; }
+.axe-levels a:hover { transform: translateY(-3px); }
+.axe-levels b { font: 800 16px "Unbounded", var(--display), sans-serif; }
+.axe-levels span { font-size: 12px; line-height: 1.25; color: #ffe4e6; }
+
+/* --- 5. Математика: тірі формулалар --- */
+.ax-math .ax-in { grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); }
+.axm-art { width: 100%; height: auto; max-width: 640px; justify-self: end; overflow: visible; }
+.am-grid path { stroke: rgb(255 255 255 / .07); }
+.am-axes path { fill: none; stroke: rgb(255 255 255 / .55); stroke-width: 1.6; }
+.am-f { font: 700 30px "Unbounded", var(--display), sans-serif; fill: #fde68a; transform-box: fill-box; transform-origin: center; transform: translateY(-150px) scale(.7); }
+.am-circle { fill: none; stroke: #fcd34d; stroke-width: 3; }
+.am-r { fill: none; stroke: #5eead4; stroke-width: 2.4; }
+.am-p { fill: #5eead4; }
+.am-rl { fill: #5eead4; font: italic 700 17px Georgia, serif; }
+.am-dots circle { fill: #fda4af; }
+.am-curve { fill: none; stroke: #fda4af; stroke-width: 2.6; stroke-linecap: round; }
+.am-sq, .am-tri { fill: rgb(94 234 212 / .12); stroke: #5eead4; stroke-width: 2; stroke-linejoin: round; }
+.am-3d { fill: none; stroke: #5eead4; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.am-3d.am-hid { stroke-dasharray: .05 .04; opacity: .6; }
+.st-js .ax-math .am-axes path, .st-js .ax-math .am-circle, .st-js .ax-math .am-r, .st-js .ax-math .am-curve, .st-js .ax-math .am-3d:not(.am-hid) { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.st-js .ax-math:not(.is-on) .am-f, .st-js .ax-math:not(.is-on) .am-p, .st-js .ax-math:not(.is-on) .am-rl, .st-js .ax-math:not(.is-on) .am-dots circle,
+.st-js .ax-math:not(.is-on) .am-sq, .st-js .ax-math:not(.is-on) .am-tri, .st-js .ax-math:not(.is-on) .am-hid { opacity: 0; }
+.st-js .ax-math.is-on .am-axes path { animation: st-draw .8s ease-out .3s forwards; }
+.st-js .ax-math.is-on .am-f { animation: am-f 1.6s cubic-bezier(.65, 0, .35, 1) .5s both; }
+.st-js .ax-math.is-on .am-circle { animation: st-draw 1.1s cubic-bezier(.65, 0, .35, 1) 1.5s forwards; }
+.st-js .ax-math.is-on .am-r { animation: st-draw .5s ease-out 2.4s forwards; }
+.st-js .ax-math.is-on .am-p, .st-js .ax-math.is-on .am-rl { animation: st-fade .4s ease 2.8s both; }
+.st-js .ax-math.is-on .am-dots circle { animation: st-pop .45s cubic-bezier(.3, 1.6, .5, 1) calc(2.9s + var(--i) * .1s) both; transform-box: fill-box; transform-origin: center; }
+.st-js .ax-math.is-on .am-curve { animation: st-draw 1s cubic-bezier(.65, 0, .35, 1) 3.5s forwards; }
+.st-js .ax-math.is-on .am-sq { animation: st-fade .5s ease 3.8s both; }
+.st-js .ax-math.is-on .am-cube .am-3d:not(.am-hid) { animation: st-draw .8s ease-out 4.2s forwards; }
+.st-js .ax-math.is-on .am-cube .am-hid { animation: st-fade .5s ease 4.8s both; }
+.st-js .ax-math.is-on .am-tri { animation: st-fade .5s ease 4.3s both; }
+.st-js .ax-math.is-on .am-pyr .am-3d { animation: st-draw .8s ease-out 4.7s forwards; }
+@keyframes am-f { from { opacity: 0; transform: translateY(0) scale(1.15); } 35% { opacity: 1; transform: translateY(0) scale(1); } 55% { transform: translateY(0) scale(1); } to { opacity: 1; transform: translateY(-150px) scale(.7); } }
+.axm-map { grid-column: 1 / -1; list-style: none; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; margin: 10px 0 0; padding: 0; }
+.axm-map a { display: flex; align-items: center; gap: 9px; height: 100%; padding: 8px 10px; border-radius: 10px; text-decoration: none; color: #f0fdf4; font-size: 13px; font-weight: 600; line-height: 1.25;
+  background: color-mix(in srgb, var(--c) 24%, #062720); border: 1px solid color-mix(in srgb, var(--c) 60%, rgb(255 255 255 / .15)); transition: transform .2s ease, border-color .2s ease; }
+.axm-map a:hover { transform: translateY(-2px); border-color: #fcd34d; }
+.axm-map b { flex: 0 0 28px; height: 28px; display: grid; place-items: center; border-radius: 8px; background: var(--c); color: #fff; font: 700 13px Georgia, serif; }
+.st-js .ax-math:not(.is-on) .axm-map li { opacity: 0; }
+.st-js .ax-math.is-on .axm-map li { animation: axc-pop .5s cubic-bezier(.16, 1, .3, 1) calc(5.1s + var(--i) * .05s) both; }
+
+@media (max-width: 900px) {
+  .ax { padding: 72px 16px; }
+  .ax-in, .ax-en .ax-in, .ax-math .ax-in { grid-template-columns: minmax(0, 1fr); gap: 32px; }
+  .ax-en .axe-book { order: 2; }
+  .axc-studio { grid-template-columns: minmax(0, 1fr); }
+  .axm-art { justify-self: center; }
+  .axm-map { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .axe-book { height: 330px; }
+  .axe-book > * { scale: .74; }
+  .axe-levels { gap: 5px; }
+  .axe-levels a { padding: 7px 5px; }
+  .axe-levels b { font-size: 13px; }
+  .axe-levels span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .axm-map a { font-size: 12px; padding: 7px 8px; }
+}
+/* телефон: мәтін мен қақпалар шаңырақ үлкейіп кеткен соң шығады */
+.st-js .pt:not(.pt-scroll).is-on .st-s3-copy > * { animation-delay: 1.5s; }
+.st-js .pt:not(.pt-scroll).is-on .st-s3-copy > :nth-child(2) { animation-delay: 1.65s; }
+.st-js .pt:not(.pt-scroll).is-on .ac-card { animation-delay: calc(1.9s + var(--i) * .3s); }
+@media (max-width: 560px) { .axe-book > .bk-words { scale: .56; } }
+/* қақпалар әлі көрінбей тұрғанда (скроллдың басы) - мүлде жасырын, экраннан шығып тұрмайды */
+.pt-scroll.pt-hide .st-s3-copy, .pt-scroll.pt-hide .ac-grid { visibility: hidden; }

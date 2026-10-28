@@ -127,6 +127,7 @@
     initWideTables();
     initCourseCards();
     initStory();
+    initPortal();
     initFilm();
     initCinema();
     initAcademyCode();
@@ -162,7 +163,7 @@
 
   // Код блоктарына «Көшіру» батырмасы
   function addCopyButtons() {
-    document.querySelectorAll("pre:not(.py-win-code)").forEach((pre) => {
+    document.querySelectorAll("pre:not(.py-win-code):not(.axc-code)").forEach((pre) => {
       const btn = document.createElement("button");
       btn.className = "copy-btn";
       btn.type = "button";
@@ -1188,6 +1189,52 @@
     }), { rootMargin: "0px 0px -10% 0px" }).observe(box);
   }
 
+  // ---------- Басты бет: шаңырақ арқылы өту ----------
+  // Компьютерде скролл кадрды басқарады: шаңырақ үлкейеді (--pz), «камера» ішінен өтеді (--sa), үш қақпа
+  // шығып (--ga, --gs) ашылады (.is-open); кері скролласа - кадр да кері жүреді. Телефонда сахна экранға
+  // кіргенде шаңырақ өзі үлкейіп жоғалады, әр қақпа экранға жеткенде ашылады (CSS: .pt).
+  function initPortal() {
+    const pt = document.querySelector(".pt");
+    if (!pt || !root.classList.contains("st-js")) return;
+    const cards = [...pt.querySelectorAll(".ac-card")];
+    const wide = matchMedia("(min-width: 900px) and (min-height: 620px)");
+    const smooth = (a, b, x) => { const t = Math.max(0, Math.min(1, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+    let raf = 0;
+    const paint = () => {
+      raf = 0;
+      const r = pt.getBoundingClientRect(), span = r.height - innerHeight;
+      const p = span > 0 ? Math.max(0, Math.min(1, -r.top / span)) : 1;
+      const z = Math.min(1, p / 0.55), g = smooth(0.4, 0.62, p);
+      pt.style.setProperty("--pz", (z * z * z).toFixed(4));
+      pt.style.setProperty("--sa", (1 - smooth(0.36, 0.56, p)).toFixed(3));
+      pt.style.setProperty("--ga", g.toFixed(3));
+      pt.style.setProperty("--gs", (1.25 - 0.25 * g).toFixed(4));
+      pt.classList.toggle("pt-hide", g < 0.01);
+      cards.forEach((c) => c.classList.toggle("is-open", p > 0.6));
+    };
+    const ask = () => { if (!raf) raf = requestAnimationFrame(paint); };
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      if (!e.isIntersecting || wide.matches) return;
+      setTimeout(() => e.target.classList.add("is-open"), pt.dataset.opened ? 300 : 2100);
+      pt.dataset.opened = "1";
+      io.unobserve(e.target);
+    }), { threshold: 0.4 });
+    const setup = () => {
+      if (wide.matches) {
+        pt.classList.add("pt-scroll");
+        window.addEventListener("scroll", ask, { passive: true });
+        window.addEventListener("resize", ask);
+        ask();
+      } else {
+        pt.classList.remove("pt-scroll");
+        window.removeEventListener("scroll", ask);
+        cards.forEach((c) => { if (!c.classList.contains("is-open")) io.observe(c); });
+      }
+    };
+    if (wide.addEventListener) wide.addEventListener("change", setup);
+    setup();
+  }
+
   // ---------- Басты бет: «Білім көші» оқиғасы ----------
   // 1-сахна бірден ойналады; келесі сахналар экранға кіргенде бір рет іске қосылады (.is-on), ал фондық қозғалыс
   // (бұлт, шөп, бүркіт) тек сахна экранда тұрғанда жүреді (.is-vis). Скролл анимацияны басқармайды, тек бастайды.
@@ -1196,6 +1243,9 @@
     if (!scenes.length) return;
     if (!("IntersectionObserver" in window)) { scenes.forEach((s) => s.classList.add("is-on", "is-vis")); return; }
     scenes[0].classList.add("is-on");
+    // Логотип кадры: кез келген әрекет (скролл, басу, перне) оны өткізіп, мәтінді бірден көрсетеді
+    const skipIntro = () => scenes[0].classList.add("st-skip");
+    ["wheel", "touchstart", "keydown", "pointerdown"].forEach((ev) => window.addEventListener(ev, skipIntro, { once: true, passive: true }));
     const vis = new IntersectionObserver((es) => es.forEach((e) => e.target.classList.toggle("is-vis", e.isIntersecting)));
     const on = new IntersectionObserver((es) => es.forEach((e) => {
       if (e.isIntersecting) { e.target.classList.add("is-on"); on.unobserve(e.target); }

@@ -8,27 +8,43 @@ const { blockFonts, collectErrors, ROOT } = require("../support/helpers");
 const { site_stats: S } = JSON.parse(execFileSync("python3", [path.join(ROOT, "tools/build.py"), "--stats"], { encoding: "utf8" }));
 const CODE = ["x", "python", "sql", "ai", "web", "cpp", "java"];
 
-test("оқиға: 1-сахна бірден ойналады, келесі сахналар тек скролл жеткенде іске қосылады", async ({ page }) => {
+test("оқиға: 1-сахна бірден ойналады, келесі сахналар скролл жеткенде; шаңырақ арқылы өту, үш академия сахнасы", async ({ page }) => {
   await blockFonts(page.context());
   const errs = collectErrors(page);
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("index.html");
   await expect(page.locator("html")).toHaveClass(/st-js/);
-  await expect(page.locator(".st-scene")).toHaveCount(3);
+  await expect(page.locator(".st-scene")).toHaveCount(6);
   await expect(page.locator(".st-s1")).toHaveClass(/is-on/);
+  await expect(page.locator(".st-s1 .st-intro .st-word")).toHaveText("CS50 қазақша");
   await expect(page.locator("#scene-2")).not.toHaveClass(/is-on/);
   await expect(page.locator("#academies")).not.toHaveClass(/is-on/);
   await expect(page.locator(".st-s1 h1")).toHaveText("Бір шаңырақ үш академия");
   // скролл сахнаны тек бастайды: экранға кіргенде is-on, анимация өздігінен соңына дейін ойналады
   await page.locator("#scene-2").scrollIntoViewIfNeeded();
   await expect(page.locator("#scene-2")).toHaveClass(/is-on/);
-  await expect(page.locator("#academies")).not.toHaveClass(/is-on/);
-  await page.locator("#academies .ac-grid").scrollIntoViewIfNeeded();
+  // компьютерде шаңырақ арқылы өтуді скролл басқарады: соңында үш қақпа ашылған
+  await expect(page.locator("#academies")).toHaveClass(/pt-scroll/);
+  await page.evaluate(() => { const s = document.querySelector("#academies"); scrollTo(0, s.offsetTop + s.offsetHeight - innerHeight); });
   await expect(page.locator("#academies")).toHaveClass(/is-on/);
   await expect(page.locator(".ac-card")).toHaveCount(3);
+  await expect(page.locator(".ac-card.is-open")).toHaveCount(3);
   await expect(page.locator(".ac-card").nth(2)).toHaveCSS("opacity", "1", { timeout: 6000 });
   expect(await page.locator(".ac-card").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["programming.html", "en/", "math/"]);
   await expect(page.locator('.ac-card[href="programming.html"] .ac-facts')).toContainText(`${S.by_course.x.lect + CODE.slice(1).reduce((n, c) => n + S.by_course[c].lect, 0)} лекция`);
+  // кері скролл - қақпалар қайта жабылады
+  await page.evaluate(() => { const s = document.querySelector("#academies"); scrollTo(0, s.offsetTop + 50); });
+  await expect(page.locator(".ac-card.is-open")).toHaveCount(0);
+  // үш академия сахнасы: бағдарламалау (7 курс), English (6 деңгей), математика (25 пән)
+  for (const id of ["scene-code", "scene-en", "scene-math"]) {
+    await page.locator("#" + id).scrollIntoViewIfNeeded();
+    await expect(page.locator("#" + id)).toHaveClass(/is-on/);
+  }
+  await expect(page.locator(".axc-langs a")).toHaveCount(7);
+  await expect(page.locator(".axe-levels a")).toHaveCount(6);
+  await expect(page.locator(".axm-map a")).toHaveCount(25);
+  await expect(page.locator(".axm-map a").first()).toHaveAttribute("href", "math/index.html#subj-25");
+  await expect(page.locator(".axc-code .copy-btn")).toHaveCount(0);  // безендірілген код - көшіру батырмасы жоқ
   expect(errs).toEqual([]);
 });
 
@@ -41,7 +57,8 @@ test("оқиға: қозғалыс азайтылса (жүйе не «Аа» б
     await page.goto("index.html");
     await expect(page.locator("html")).not.toHaveClass(/st-js/);
     // скроллсыз да 2 мен 3-сахна мәтіні мен карточкалары көрінеді
-    for (const sel of [".st-pillars li >> nth=3", ".ac-card >> nth=2", ".st-s1 .st-acts"]) await expect(page.locator(sel)).toHaveCSS("opacity", "1");
+    for (const sel of [".st-pillars li >> nth=3", ".ac-card >> nth=2", ".st-s1 .st-acts", ".axc-langs li >> nth=6", ".axe-levels li >> nth=5", ".axm-map li >> nth=24", ".axc-page .w >> nth=5"]) await expect(page.locator(sel)).toHaveCSS("opacity", "1");
+    await expect(page.locator(".st-intro")).toBeHidden();  // логотип кадры да жоқ
     expect(await page.locator(".st-s1 .sun-rise").evaluate((e) => getComputedStyle(e).animationName)).toBe("none");
     await ctx.close();
   }
