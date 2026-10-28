@@ -997,8 +997,7 @@
   // түнде киіз үйге жетумен аяқталады. Бота жердегі жолақта тұрады, орны - курстағы орныңыз; аспанда курстың
   // шоқжұлдызы. Бет ашылғанда қысқа «кадр» ойналады: төбелер көтеріледі, күн/ай шығады, шоқжұлдыз сызылады,
   // Бота өз орнына жүріп келеді. Қозғалыс азайтылса - бәрі бірден соңғы күйінде (CSS: .fm, style.css).
-  const FILM_TOTAL = { lectures: 11, python: 10, web: 9, java: 8, cpp: 8, sql: 7, ai: 7, en: 24 };
-  const FILM_CON = {
+    const FILM_CON = {
     code: [[[30, 20], [10, 50], [30, 80]], [[60, 14], [44, 86]], [[74, 20], [94, 50], [74, 80]]],
     python: [[[82, 18], [34, 16], [16, 36], [36, 52], [70, 54], [86, 72], [66, 88], [18, 86]]],
     math: [[[12, 24], [88, 24]], [[34, 24], [30, 86]], [[64, 24], [70, 86]]],
@@ -1008,20 +1007,20 @@
     // Жетіқарақшы (Үлкен аю): жалпы беттерге
     sky: [[[6, 34], [24, 26], [40, 36], [54, 44], [58, 74], [86, 80], [92, 50], [54, 44]]],
   };
+  // Сахна лекция беттерінде жоқ (мәтінге назар); қалған беттерде Бота - сіздің нақты жолыңыз:
+  // курс бетінде сол курстың оқылған сабақтары, жалпы беттерде барлық курстар бойынша.
   function filmInfo() {
     const path = location.pathname;
-    const course = document.body.dataset.course || (path.match(/\/(python|web|java|cpp|sql|ai)\//) || [])[1] || (/\/lectures\//.test(path) ? "lectures" : "");
-    const wk = path.match(/week-(\d+)\.html$/);
-    let p = -1;
-    if (course === "math") {
-      const items = [...document.querySelectorAll(".mx-strip li")];
-      const at = items.findIndex((li) => li.querySelector('[aria-current="page"]'));
-      if (at >= 0 && items.length > 1) p = at / (items.length - 1);
-    } else if (wk && FILM_TOTAL[course]) p = Math.min(1, +wk[1] / (FILM_TOTAL[course] - 1));
-    const con = { math: "math", en: "en", python: "python", sql: "sql", ai: "ai", lectures: "code", web: "code", java: "code", cpp: "code" }[course] || "sky";
-    // Курс беттері мен жалпы беттер: саяхаттың басы (таң) немесе түнгі аспан
-    const phase = p < 0 ? (course ? "dawn" : "night") : p < 0.2 ? "dawn" : p < 0.5 ? "day" : p < 0.8 ? "dusk" : "night";
-    return { p: Math.max(0, p), phase, con, seed: [...path].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) };
+    const own = (path.match(/\/(python|sql|ai|web|cpp|java|en|math)\//) || [])[1];
+    const p0 = Progress.load();
+    const metas = own ? COURSE_META.filter((m) => m.id === own) : COURSE_META;
+    const total = metas.reduce((a, m) => a + m.total, 0);
+    const done = metas.reduce((a, m) => a + courseReadCount(p0, m.id), 0);
+    const p = total ? Math.min(1, done / total) : 0;
+    const con = { math: "math", en: "en", python: "python", sql: "sql", ai: "ai", web: "code", java: "code", cpp: "code" }[own] || (/\/(lectures|courses|programming)/.test(path) ? "code" : "sky");
+    // Саяхат басталмаса - таң; жол жүрген сайын түс, кеш; соңына жақын - түн, киіз үйде от жанып тұр
+    const phase = p < 0.2 ? "dawn" : p < 0.5 ? "day" : p < 0.8 ? "dusk" : "night";
+    return { p, phase, con, done, total, seed: [...path].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) };
   }
   function filmRand(seed) { let s = seed || 1; return () => ((s = (s * 1103515245 + 12345) >>> 0) / 4294967296); }
   const BOTA_SVG = '<g class="bota fm-walker"><ellipse class="b-shadow" cx="62" cy="110" rx="32" ry="4.5"/>' +
@@ -1061,9 +1060,11 @@
     return `<svg class="fm-ground" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true" focusable="false">` +
       `<path class="fm-far" d="${wave(54, 9, 150, info.seed % 7)}"/><path class="fm-near" d="${wave(74, 5, 95, (info.seed >> 3) % 7)}"/>` +
       `<g class="fm-tufts">${tufts}</g>${yurt}` +
-      `<g class="fm-bota" style="--bx:${botaX.toFixed(1)}px"><g transform="translate(0 22) scale(.62)">${BOTA_SVG}</g></g></svg>`;
+      `<g class="fm-bota" style="--bx:${botaX.toFixed(1)}px"><g transform="translate(0 22) scale(.62)">${BOTA_SVG}</g>` +
+      (info.done ? `<g class="fm-tag" transform="translate(40 4)"><rect x="-26" y="-11" width="52" height="20" rx="10"/><text y="4" text-anchor="middle">${info.done}/${info.total}</text></g>` : "") + `</g></svg>`;
   }
   function initFilm() {
+    if (PAGE) return;  // лекция беті: мультфильм жоқ
     const cards = document.querySelectorAll(".content .lecture-head, .cx-hero, .py-hero");
     if (!cards.length) return;
     const info = filmInfo();
