@@ -4215,3 +4215,45 @@ a.cx-card:hover { transform: none; box-shadow: none; }
   .cx-hero.has-film, .py-hero.has-film { padding-bottom: 100px; }
 }
 @media print { .fm { display: none; } .content .lecture-head.has-film, .cx-hero.has-film, .py-hero.has-film { padding-bottom: 26px; } }
+
+/* ===================================================================
+   «Кино» қабаты (main.js initCinema): сабақтан басқа беттің бәрі бір фильм.
+   Сабақ беттері (.is-lesson) - тыныш: кадр ауысуы да, ашылу да жоқ.
+   =================================================================== */
+/* Беттер арасындағы кадр ауысуы: жаңа бет шаңырақтан түскен жарықтай дөңгелек болып ашылады */
+@media (prefers-reduced-motion: no-preference) {
+  :root:not(.is-lesson)::view-transition-old(root) { animation: cine-dim .7s ease both; }
+  :root:not(.is-lesson)::view-transition-new(root) { animation: cine-iris .8s cubic-bezier(.65, 0, .35, 1) both; }
+}
+:root.is-lesson::view-transition-old(root), :root.is-lesson::view-transition-new(root) { animation: none !important; }
+@keyframes cine-iris { from { clip-path: circle(0% at 50% 34%); } to { clip-path: circle(150% at 50% 34%); } }
+@keyframes cine-dim { to { filter: brightness(.55) saturate(.8); } }
+
+/* Бөлім тақырыбы: астында алтын керуен ізі (тұрақты белгі; экранға кіргенде сызылады) */
+:root:not(.is-lesson) .cine-h { padding-bottom: 10px; background: linear-gradient(90deg, var(--gold), #ffd75e 70%, transparent) 0 100% / 64px 3px no-repeat; }
+.cine-h.cine-wait { background-size: 0 3px; opacity: 0; transform: translateX(-14px); }
+.cine-h.cine-wait.cine-in { background-size: 64px 3px; opacity: 1; transform: none;
+  transition: opacity .6s ease, transform .8s cubic-bezier(.16, 1, .3, 1), background-size 1s cubic-bezier(.65, 0, .35, 1) .25s; }
+/* Карточкалар керуендей: бір қатардағылар кезекпен келеді */
+.cine-c.cine-wait { opacity: 0; transform: translateY(28px) scale(.97); }
+.cine-c.cine-wait.cine-in { opacity: 1; transform: none;
+  transition: opacity .7s ease var(--cd, 0ms), transform .9s cubic-bezier(.16, 1, .3, 1) var(--cd, 0ms); }
+@media print { .cine-wait { opacity: 1 !important; transform: none !important; } .fm-finale { display: none; } }
+
+/* Финал сахнасы: беттің соңы - түн, киіз үйде от, Бота үйге жетеді */
+.fm-finale { position: relative; height: 150px; margin-top: 56px; overflow: hidden;
+  background: linear-gradient(180deg, #1b2052 0%, #121838 100%);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 44px); mask-image: linear-gradient(to bottom, transparent, #000 44px); }
+.fm-finale + .footer { margin-top: 0; }
+.fm-finale .fm { border-radius: 0; }
+.fm-fire .f-log { fill: none; stroke: #8a5a2b; stroke-width: 3; stroke-linecap: round; }
+.fm-fire .f-out { fill: #ff9a3c; }
+.fm-fire .f-in { fill: #ffe08a; }
+.fm-fire { filter: drop-shadow(0 0 8px rgb(255 154 60 / .75)); }
+.fm-fire .f-out, .fm-fire .f-in { transform-origin: 50% 100%; }
+.fm-vis .fm-fire .f-out { animation: cine-flame 1.1s ease-in-out infinite alternate; }
+.fm-vis .fm-fire .f-in { animation: cine-flame .8s ease-in-out .2s infinite alternate-reverse; }
+.fm-anim:not(.fm-play) .fm-fire { opacity: 0; }
+.fm-play .fm-fire { animation: fm-pop .8s cubic-bezier(.16, 1, .3, 1) 2.6s both; }
+@keyframes cine-flame { from { transform: scale(.92, .86) skewX(-3deg); } to { transform: scale(1.06, 1.1) skewX(3deg); } }
+@media (max-width: 560px) { .fm-finale { height: 128px; margin-top: 40px; } }

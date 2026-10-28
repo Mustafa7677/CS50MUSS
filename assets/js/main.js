@@ -8,6 +8,11 @@
   // CS50x-тің прогресс кілттері бұрынғыдай (week-0), басқа курстарда курс атымен (python:week-0) - шатаспайды.
   const COURSE = (location.pathname.match(/\/(python|sql|ai|web|cpp|java|en|math)\/(?:lectures\/[\w-]+\.html|index\.html)?$/) || location.pathname.match(/\/(en|math)\/[\w-]+\.html$/) || [])[1] || "x";
   const PAGE = (() => { const n = (location.pathname.match(/lectures\/([\w-]+)\.html$/) || [])[1]; return n ? (COURSE === "x" ? n : COURSE + ":" + n) : null; })();
+  // Сабақ беті - тыныш: «кино» қабаты (кадр ауысуы, сахналар, ашылу) тек басқа беттерде (style.css: .is-lesson)
+  if (PAGE) {
+    document.documentElement.classList.add("is-lesson");
+    window.addEventListener("pagereveal", (e) => { if (e.viewTransition) e.viewTransition.skipTransition(); });
+  }
 
   // Көшірмеден қорғау: сайт ресми мекенжайдан тыс жерде ашылса, түпнұсқаға сілтеме беретін ескерту көрсетеді.
   // (Тек GitHub Pages-тегі түпнұсқа, жергілікті сервер және file:// үшін көрсетілмейді. Өз доменіңізді қоссаңыз - тізімге қосыңыз.)
@@ -125,6 +130,7 @@
     initCourseCards();
     initStory();
     initFilm();
+    initCinema();
     initAcademyCode();
     initBeginnerPath();
     initCourseMenu();
@@ -1097,6 +1103,82 @@
       }));
       io.observe(card);
     });
+  }
+
+  // ---------- «Кино» қабаты: сабақтан басқа беттің бәрі бір фильм сияқты ашылады ----------
+  // 1) Бөлім тақырыбы экранға кіргенде астында алтын керуен ізі сызылады.
+  // 2) Карточкалар керуендей бірінен соң бірі келеді (бір қатардағылар кезекпен).
+  // 3) Беттің соңы - финал сахнасы: түн, киіз үйде от жанады, Бота жолдан үйге жетеді.
+  // Тек экраннан төмен тұрғандар жасырылады (бірінші экран жыпылықтамайды); JS кейін салған карточкалар да қамтылады.
+  function initCinema() {
+    if (PAGE || document.querySelector(".st-scene")) return;  // сабақ пен басты бет (өз оқиғасы бар)
+    const still = root.classList.contains("reduce-motion") || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+    filmFinale(still);
+    if (still || !("IntersectionObserver" in window)) return;
+    const CARD = /(^|-)(card|tile|step|feature|tool)$/;
+    const skip = ".topbar, .footer, .has-film, .fm-finale, .toc, nav, dialog, .course-menu, .bota-pop";
+    const seen = new WeakSet();
+    const io = new IntersectionObserver((es) => es.forEach((e) => {
+      const el = e.target;
+      if (!seen.has(el)) {
+        seen.add(el);
+        if (e.isIntersecting || e.boundingClientRect.top < 0) { io.unobserve(el); return; }
+        el.classList.add("cine-wait");
+        return;
+      }
+      if (!e.isIntersecting && e.boundingClientRect.top > 0) return;
+      el.classList.add("cine-in");
+      io.unobserve(el);
+      setTimeout(() => el.classList.remove("cine-wait", "cine-in"), 1600);
+    }), { rootMargin: "0px 0px -6% 0px" });
+    const take = (scope) => {
+      scope.querySelectorAll("h2, [class]").forEach((el) => {
+        if (seen.has(el) || el.closest(skip)) return;
+        const isHead = el.tagName === "H2";
+        if (!isHead && !(el.classList && [...el.classList].some((c) => CARD.test(c)))) return;
+        if (!isHead && el.parentElement && el.parentElement.closest("[class*='card'], [class*='tile']")) return;  // карточка ішіндегі ұсақ бөлік емес
+        if (isHead) el.classList.add("cine-h");
+        else {
+          // бір қатардағы бауырларымен кезек: керуен
+          const sibs = [...el.parentElement.children];
+          el.style.setProperty("--cd", (Math.min(sibs.indexOf(el), 40) % 6) * 75 + "ms");
+          el.classList.add("cine-c");
+        }
+        io.observe(el);
+      });
+    };
+    take(document.body);
+    // Ойындар, курс карточкалары т.б. JS-пен кейін салынады
+    new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => { if (n.nodeType === 1) take(n.parentElement || n); })))
+      .observe(document.body, { childList: true, subtree: true });
+  }
+  function filmFinale(still) {
+    const foot = document.querySelector(".footer");
+    if (!foot || document.querySelector(".fm-finale")) return;
+    const box = document.createElement("div");
+    box.className = "fm-finale has-film";
+    box.dataset.phase = "night";
+    box.setAttribute("aria-hidden", "true");
+    const info = { p: 1, phase: "night", con: "sky", done: 0, total: 0, seed: 4242 };
+    box.innerHTML = '<div class="fm">' + filmSky(info) + '<div class="fm-floor"></div></div>';
+    foot.before(box);
+    const floor = box.querySelector(".fm-floor");
+    let w = 0;
+    const draw = () => {
+      const nw = Math.round(box.clientWidth);
+      if (!nw || nw === w) return;
+      w = nw;
+      // Бота киіз үйдің алдында; оттың жалыны - үйдің сол жағында
+      floor.innerHTML = filmGround(info, w).replace("</svg>", `<g transform="translate(${w - 104} 78)"><g class="fm-fire"><path class="f-log" d="M-10 8h20M-8 4l16 6M8 4l-16 6"/><path class="f-out" d="M0 6C-9 0-6-10 0-18 6-10 9 0 0 6Z"/><path class="f-in" d="M0 6C-4 2-3-4 0-9 3-4 4 2 0 6Z"/></g></g></svg>`);
+    };
+    draw();
+    if (window.ResizeObserver) new ResizeObserver(draw).observe(box);
+    if (still || !("IntersectionObserver" in window)) return;
+    box.classList.add("fm-anim");
+    new IntersectionObserver((es) => es.forEach((e) => {
+      box.classList.toggle("fm-vis", e.isIntersecting);
+      if (e.isIntersecting) box.classList.add("fm-play");
+    }), { rootMargin: "0px 0px -10% 0px" }).observe(box);
   }
 
   // ---------- Басты бет: «Білім көші» оқиғасы ----------
