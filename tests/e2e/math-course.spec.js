@@ -1073,3 +1073,34 @@ test("жеңіл қабат: 1-10 пәндердің беттері tools/math_e
   const out = execFileSync("python3", [path.join(ROOT, "tools/math_easy_inject.py"), "--check"], { encoding: "utf8" });
   expect(out).toMatch(/67 сабақ сәйкес/);
 });
+
+// ------------------------------------------------------------------ сызбамен түсіндіру (tools/math_explain.py)
+test("сызбамен түсіндіру: кезеңдер, сызбалар, формула, мысал; университеттегі орны; рет: белгілер → түсіндіру → теория", async ({ page }) => {
+  const files = fs.readdirSync(path.join(ROOT, "tools/math_explain")).flatMap((slug) => fs.readdirSync(path.join(ROOT, "tools/math_explain", slug)).filter((f) => /^x\d+\.py$/.test(f)));
+  expect(files.length).toBeGreaterThanOrEqual(1);
+  await open(page, "math/lectures/week-21.html");
+  const ids = await page.locator("article h2[id]").evaluateAll((els) => els.map((e) => e.id));
+  expect(ids.indexOf("symbols")).toBeLessThan(ids.indexOf("explain"));
+  expect(ids.indexOf("explain")).toBeLessThan(ids.indexOf("theory"));
+  await expect(page.locator(".mx-xuni")).toContainText("1-курс, 1-семестр, Математикалық анализ I, 1-дәріс");
+  const steps = page.locator(".mx-xstep");
+  expect(await steps.count()).toBeGreaterThanOrEqual(3);
+  for (let i = 0; i < (await steps.count()); i++) {
+    const s = steps.nth(i);
+    await expect(s.locator(".mx-xwhy")).toContainText("Сұрақ.");
+    await expect(s.locator(".mx-xtry .math-answer")).toContainText("Жауабы:");
+    expect(await s.locator(".mx-xtry .math-steps li").count()).toBeGreaterThanOrEqual(2);
+  }
+  // сызбалар: экран оқитын құралға сипаттама, бос емес график, KaTeX формулалары
+  const figs = page.locator(".mx-explain figure.mx-fig svg.mf[role=img]");
+  expect(await figs.count()).toBeGreaterThanOrEqual(2);
+  for (let i = 0; i < (await figs.count()); i++) {
+    expect((await figs.nth(i).getAttribute("aria-label")).length).toBeGreaterThan(20);
+    expect(await figs.nth(i).locator("path.mf-fn").count()).toBeGreaterThanOrEqual(1);
+  }
+  expect(await page.locator(".mx-explain .katex").count()).toBeGreaterThan(20);
+  // университеттегі орын пән карточкасында да
+  await open(page, "math/index.html");
+  await expect(page.locator("#subj-4 .mx-suni")).toContainText("1-курс, 1-семестр, Математикалық анализ I");
+  await expect(page.locator(".mx-suni")).toHaveCount(25);
+});
