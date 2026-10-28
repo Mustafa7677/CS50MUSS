@@ -23,18 +23,18 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   // скролл сахнаны тек бастайды: экранға кіргенде is-on, анимация өздігінен соңына дейін ойналады
   await page.locator("#scene-2").scrollIntoViewIfNeeded();
   await expect(page.locator("#scene-2")).toHaveClass(/is-on/);
-  // компьютерде шаңырақ арқылы өтуді скролл басқарады: соңында үш қақпа ашылған
-  await expect(page.locator("#academies")).toHaveClass(/pt-scroll/);
-  await page.evaluate(() => { const s = document.querySelector("#academies"); scrollTo(0, s.offsetTop + s.offsetHeight - innerHeight); });
+  // шаңырақ арқылы өту: скролл тек іске қосады, шаңырақ өзі үлкейіп жоғалады, үш қақпа өзі ашылады
+  await page.locator("#academies").scrollIntoViewIfNeeded();
   await expect(page.locator("#academies")).toHaveClass(/is-on/);
+  await page.locator("#academies .ac-grid").scrollIntoViewIfNeeded();
   await expect(page.locator(".ac-card")).toHaveCount(3);
-  await expect(page.locator(".ac-card.is-open")).toHaveCount(3);
+  await expect(page.locator(".ac-card.is-open")).toHaveCount(3, { timeout: 8000 });
   await expect(page.locator(".ac-card").nth(2)).toHaveCSS("opacity", "1", { timeout: 6000 });
   expect(await page.locator(".ac-card").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["programming.html", "en/", "math/"]);
   await expect(page.locator('.ac-card[href="programming.html"] .ac-facts')).toContainText(`${S.by_course.x.lect + CODE.slice(1).reduce((n, c) => n + S.by_course[c].lect, 0)} лекция`);
-  // кері скролл - қақпалар қайта жабылады
-  await page.evaluate(() => { const s = document.querySelector("#academies"); scrollTo(0, s.offsetTop + 50); });
-  await expect(page.locator(".ac-card.is-open")).toHaveCount(0);
+  // Бота - кейіпкер: әр сахнада сөйлейді
+  await expect(page.locator(".bt-gate .bt-say")).toHaveText("Қай қақпаны ашамыз?");
+  await expect(page.locator(".bt-gate .bt-say")).toHaveCSS("opacity", "1", { timeout: 6000 });
   // үш академия сахнасы: бағдарламалау (7 курс), English (6 деңгей), математика (25 пән)
   for (const id of ["scene-code", "scene-en", "scene-math"]) {
     await page.locator("#" + id).scrollIntoViewIfNeeded();
@@ -44,7 +44,9 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await expect(page.locator(".axe-levels a")).toHaveCount(6);
   await expect(page.locator(".axm-map a")).toHaveCount(25);
   await expect(page.locator(".axm-map a").first()).toHaveAttribute("href", "math/index.html#subj-25");
-  await expect(page.locator(".axc-code .copy-btn")).toHaveCount(0);  // безендірілген код - көшіру батырмасы жоқ
+  await expect(page.locator(".axc-code .copy-btn")).toHaveCount(0);
+  await expect(page.locator(".bt-actor")).toHaveCount(4);
+  await expect(page.locator(".bt-math .bt-say")).toHaveCSS("opacity", "1", { timeout: 6000 });  // безендірілген код - көшіру батырмасы жоқ
   expect(errs).toEqual([]);
 });
 
