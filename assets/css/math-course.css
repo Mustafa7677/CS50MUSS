@@ -432,7 +432,7 @@ details.mx-check > p { margin: 0; padding: 4px 16px 14px; border-top: 1px dashed
 .mx-xq { margin: 0 0 6px; }
 .mx-xq b { color: var(--text); }
 .mx-xtry .math-steps { margin-bottom: 6px; }
-.mx-xoutro { padding: 12px 16px; border-radius: 12px; border-left: 4px solid var(--sc, #15803d); background: var(--surface); }
+.mx-xoutro { padding: 12px 16px; border-radius: 12px; border-left: 4px solid var(--gold, #f2b705); background: var(--surface); }
 @media (min-width: 980px) { .mx-xbody.has-fig { grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); align-items: start; } }
 /* SVG сызба: түстер айнымалылармен, сондықтан жарық пен қараңғы режимде де анық */
 svg.mf { display: block; width: 100%; height: auto; max-width: 520px; margin: 0 auto; font: 12px var(--font); --mf1: var(--sc, #15803d); --mf2: var(--mx-c2, #d97706); --mf3: var(--mx-c3, #2563eb); --mf4: var(--mx-c4, #db2777); }
@@ -467,34 +467,114 @@ svg.mf { display: block; width: 100%; height: auto; max-width: 520px; margin: 0 
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) svg.mf { --mf1: color-mix(in srgb, var(--sc, #15803d) 55%, white); --mf2: var(--mx-c2d, #fbbf24); --mf3: var(--mx-c3d, #60a5fa); --mf4: var(--mx-c4d, #f472b6); } }
 .mf .mf-legend { fill: var(--surface); stroke: var(--border); stroke-width: 1; opacity: .94; }
 
-/* ===== «Сызбамен түсіндіру»: кезеңдерді байланыстыратын жол және өзі сызылатын сызбалар =====
-   Басты беттегі «Білім көші» оқиғасының тілімен: бір жол бүкіл түсіндіруден өтеді, скролл оны толтырады,
-   жол жеткен кезең жанады (.is-on), ал сызба экранға кіргенде қабат-қабатымен салынады:
-   аудан → қисық сызылады → көмекші сызықтар → нүктелер → жазулар.
-   JS жоқ немесе қозғалыс азайтылған болса (.mx-anim қосылмайды) - бәрі бірден соңғы күйінде. */
-.mx-explain { --ease: cubic-bezier(.16, 1, .3, 1); }
-.content .mx-xsteps { position: relative; padding-left: 40px; --p: 1; }
-.mx-xsteps::before, .mx-xsteps::after { content: ""; position: absolute; left: 11px; top: 10px; bottom: 26px; width: 3px; border-radius: 3px; }
-.mx-xsteps::before { background: var(--border); }
-.mx-xsteps::after { background: linear-gradient(var(--sc, #15803d), color-mix(in srgb, var(--sc, #15803d) 55%, var(--mx-c2, #d97706))); transform-origin: top; transform: scaleY(var(--p)); }
+/* ===== «Сызбамен түсіндіру»: басты беттегі «Білім көші» оқиғасымен бір тілде =====
+   Бір оқиға үш бөліктен тұрады:
+   1. Түнгі аспан тақтасы (3-сахнаның түстері): тақырып, университеттегі орны және кезеңдер шоқжұлдызы.
+      Әр кезең - бір жұлдыз, алтын жолмен жалғанған; жұлдызды басса, кезеңге апарады.
+   2. Алтын керуен жолы: кезеңдерді байланыстырады, скролл оны толтырады, Бота жолмен жүреді,
+      Бота жеткен кезеңнің жұлдызы жанады (тақтадағы шоқжұлдыз да бірге жанады).
+   3. Жолдың соңы - шаңырақ (басты беттегі күн-шаңырақ): қорытынды сонда тұрады.
+   Сызба экранға кіргенде қабат-қабатымен салынады: аудан → қисық → көмекші сызықтар → нүктелер → жазулар.
+   JS жоқ немесе қозғалыс азайтылған болса (.mx-anim қосылмайды) - бәрі бірден соңғы күйінде, Бота көрінбейді. */
+.mx-explain { --ease: cubic-bezier(.16, 1, .3, 1); --gold: #f2b705; --gold-2: #f2c46b; --star: #fff4c9; --night: #171d48; }
+
+/* --- 1. Түнгі аспан тақтасы --- */
+.mx-xhead { position: relative; isolation: isolate; overflow: hidden; margin: 0 0 34px; padding: 30px 32px 22px; border-radius: 22px; color: #e3e4fb;
+  background: linear-gradient(168deg, #2a2560 0%, #1b2052 48%, #0e1433 100%); box-shadow: 0 26px 50px -30px rgb(14 20 51 / .75); }
+.mx-xhead::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  background:
+    radial-gradient(circle at 88% -10%, rgb(255 211 107 / .26), transparent 42%),
+    radial-gradient(1.4px 1.4px at 6% 22%, #fff 60%, transparent 61%), radial-gradient(1px 1px at 18% 64%, #fff 60%, transparent 61%),
+    radial-gradient(1.6px 1.6px at 31% 12%, #fff 60%, transparent 61%), radial-gradient(1px 1px at 44% 40%, #fff 60%, transparent 61%),
+    radial-gradient(1.3px 1.3px at 57% 9%, #fff 60%, transparent 61%), radial-gradient(1px 1px at 63% 58%, #fff 60%, transparent 61%),
+    radial-gradient(1.5px 1.5px at 72% 30%, #fff 60%, transparent 61%), radial-gradient(1px 1px at 81% 72%, #fff 60%, transparent 61%),
+    radial-gradient(1.2px 1.2px at 94% 48%, #fff 60%, transparent 61%), radial-gradient(1px 1px at 26% 88%, #fff 60%, transparent 61%),
+    radial-gradient(1.2px 1.2px at 50% 80%, #fff 60%, transparent 61%), radial-gradient(1px 1px at 97% 90%, #fff 60%, transparent 61%);
+  opacity: .8; }
+.content .mx-xhead h2 { margin: 0 0 12px; color: #fff; font-family: "Unbounded", var(--display), system-ui, sans-serif; font-size: clamp(24px, 3.3vw, 32px); letter-spacing: -.02em; line-height: 1.15; }
+.mx-xhead .mx-xuni { margin: 0 0 14px; background: rgb(255 255 255 / .07); border-color: rgb(255 255 255 / .16); color: #fff; }
+.mx-xhead .mx-xuni span { background: var(--gold-2); color: #2b1d00; }
+.mx-xhead .mx-xintro { margin: 0; max-width: 46rem; color: #cfd2f2; }
+.mx-xhead .mx-xintro b { color: #fff; }
+
+/* Кезеңдер шоқжұлдызы */
+.mx-xmap { position: relative; height: 176px; margin: 14px -8px 0; }
+.mx-xmap svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+.mx-xmap path { fill: none; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+.mx-xtrack path { stroke: rgb(242 196 107 / .38); stroke-width: 2; stroke-dasharray: 2 7; }
+.mx-xroad path { stroke: var(--gold-2); stroke-width: 2.4; filter: drop-shadow(0 0 4px rgb(255 211 107 / .7)); }
+.content .mx-xmap ol { list-style: none; margin: 0; padding: 0; }
+.mx-xmap li { position: absolute; left: var(--x); top: var(--y); transform: translate(-50%, -50%); margin: 0; }
+.mx-xmap a { display: block; position: relative; text-decoration: none; color: #e6e6fd; border-radius: 50%; }
+.mx-xstar { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--star); color: var(--night); font: 700 14px/1 "Unbounded", var(--font), sans-serif;
+  box-shadow: 0 0 0 6px rgb(255 211 107 / .16), 0 0 22px rgb(255 211 107 / .65); transition: transform .5s var(--ease), box-shadow .5s var(--ease), background-color .5s var(--ease), color .5s var(--ease); }
+.mx-xname { position: absolute; left: 50%; width: 132px; margin-left: -66px; text-align: center; font-size: 12.5px; font-weight: 600; line-height: 1.3; color: #dcdcfa; }
+.mx-xmap li:nth-child(odd) .mx-xname { bottom: calc(100% + 8px); }
+.mx-xmap li:nth-child(even) .mx-xname { top: calc(100% + 8px); }
+.mx-xmap a:hover .mx-xstar { transform: scale(1.12); }
+.mx-xmap a:hover .mx-xname { color: #fff; }
+.mx-xmap a:focus-visible { outline: none; }
+.mx-xmap a:focus-visible .mx-xstar { outline: 3px solid #fff; outline-offset: 4px; }
+
+/* --- 2. Алтын керуен жолы --- */
+.mx-xtrail { position: relative; padding-left: 64px; --p: 1; --t0: 14px; }
+.mx-xtrail::before, .mx-xtrail::after { content: ""; position: absolute; left: 20px; top: var(--t0); width: 4px; border-radius: 4px; pointer-events: none; }
+.mx-xtrail::before { bottom: 40px; height: var(--len, auto); background: radial-gradient(circle, color-mix(in srgb, var(--gold) 55%, var(--border)) 1.6px, transparent 2.2px) center top / 4px 11px repeat-y; }
+.mx-xtrail::after { bottom: 40px; height: var(--len, auto); transform-origin: top; transform: scaleY(var(--p)); background: linear-gradient(var(--gold-2), var(--gold) 55%, #e08a00); box-shadow: 0 0 12px rgb(242 183 5 / .55); }
+.content .mx-xsteps { margin-top: 0; }
 .mx-xstep { position: relative; }
-.mx-xstep::before { content: ""; position: absolute; left: -36px; top: 4px; width: 19px; height: 19px; box-sizing: border-box; border-radius: 50%; border: 3px solid var(--sc, #15803d); background: var(--sc, #15803d); box-shadow: 0 0 0 4px var(--bg, #fff); z-index: 1; }
-.mx-xoutro { position: relative; }
-@media (max-width: 560px) {
-  .content .mx-xsteps { padding-left: 28px; }
-  .mx-xsteps::before, .mx-xsteps::after { left: 6px; }
-  .mx-xstep::before { left: -29px; width: 16px; height: 16px; }
+.mx-xstep::before { content: ""; position: absolute; left: -54px; top: 3px; width: 24px; height: 24px; box-sizing: border-box; border-radius: 50%; z-index: 1;
+  background: radial-gradient(circle, #fff 0 22%, var(--gold) 26%); box-shadow: 0 0 0 5px var(--bg, #fff), 0 0 0 8px rgb(242 183 5 / .28), 0 0 18px rgb(242 183 5 / .55); }
+.mx-xbota { display: none; }
+
+/* --- 3. Жолдың соңы: шаңырақ --- */
+.mx-xend { display: flex; align-items: flex-start; gap: 16px; margin: 4px 0 0 -64px; }
+.mx-xshan { flex: 0 0 44px; width: 44px; height: 44px; overflow: visible; position: relative; z-index: 1; }
+.mx-xshan .s-disc { fill: #fde7ad; }
+.mx-xshan .s-kuld { fill: none; stroke: #c8862a; stroke-width: 3; }
+.mx-xshan .s-mid { fill: #0a7ea4; }
+.mx-xshan .s-ring { fill: none; stroke: var(--gold); stroke-width: 5; }
+.mx-xshan .s-ray { stroke: var(--gold); stroke-width: 3.2; stroke-linecap: round; }
+.mx-xend .mx-xoutro { flex: 1; margin: 0; }
+
+@media (max-width: 600px) {
+  .mx-xhead { padding: 24px 18px 16px; border-radius: 18px; }
+  .mx-xmap { height: 112px; margin: 10px 0 0; }
+  .mx-xname { position: absolute !important; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .mx-xstar { width: 30px; height: 30px; font-size: 13px; }
+  .mx-xtrail { padding-left: 44px; }
+  .mx-xtrail::before, .mx-xtrail::after { left: 12px; }
+  .mx-xstep::before { left: -42px; width: 20px; height: 20px; }
+  .mx-xend { margin-left: -44px; gap: 10px; }
+  .mx-xshan { flex-basis: 28px; width: 28px; height: 28px; margin-top: 6px; }
+  .mx-xhead .mx-xuni { border-radius: 14px; padding: 6px 12px 6px 6px; font-size: .86rem; }
+  .mx-anim .mx-xbota { width: 36px; height: 36px; left: -4px; }
 }
 
-.mx-anim .mx-xsteps { --p: 0; }
-.mx-anim .mx-xsteps::after { transition: transform .25s linear; }
-.mx-anim .mx-xstep::before { background: var(--bg, #fff); border-color: var(--border); transition: background-color .5s var(--ease), border-color .5s var(--ease), transform .5s var(--ease); }
-.mx-anim .mx-xstep.is-on::before { background: var(--sc, #15803d); border-color: var(--sc, #15803d); animation: mx-ping .9s var(--ease); }
+/* --- Қозғалыс (.mx-anim: JS бар және қозғалыс азайтылмаған) --- */
+.mx-anim .mx-xtrail { --p: 0; }
+.mx-anim .mx-xtrail::after { transition: transform .2s linear; }
+.mx-anim .mx-xstep::before { background: var(--bg, #fff); border: 3px solid color-mix(in srgb, var(--gold) 45%, var(--border)); box-shadow: 0 0 0 5px var(--bg, #fff);
+  transition: background .5s var(--ease), border-color .5s var(--ease), box-shadow .5s var(--ease); }
+.mx-anim .mx-xstep.is-on::before { border-color: var(--gold); background: radial-gradient(circle, #fff 0 22%, var(--gold) 26%);
+  box-shadow: 0 0 0 5px var(--bg, #fff), 0 0 0 8px rgb(242 183 5 / .28), 0 0 18px rgb(242 183 5 / .55); animation: mx-ping .9s var(--ease); }
 .mx-anim .mx-xstep > h3 { transition: color .5s var(--ease); }
 .mx-anim .mx-xstep:not(.is-on) > h3 { color: var(--muted); }
-@keyframes mx-ping { 0% { transform: scale(.6); box-shadow: 0 0 0 4px var(--bg, #fff), 0 0 0 4px color-mix(in srgb, var(--sc, #15803d) 50%, transparent); }
-  60% { transform: scale(1.15); } 100% { transform: scale(1); box-shadow: 0 0 0 4px var(--bg, #fff), 0 0 0 16px transparent; } }
-
+@keyframes mx-ping { 0% { transform: scale(.5); } 55% { transform: scale(1.25); } 100% { transform: scale(1); } }
+/* Бота жолдың алтын ұшымен жүреді; скролл кезінде адымдайды */
+.mx-anim .mx-xbota { display: block; position: absolute; z-index: 2; left: -1px; top: calc(var(--t0) + var(--p) * var(--len, 0px) - 50px); width: 46px; height: 46px; pointer-events: none;
+  filter: drop-shadow(0 4px 6px rgb(0 0 0 / .18)); transition: top .2s linear; }
+.mx-anim .mx-xbota.is-walk { animation: mx-walk .5s ease-in-out infinite; }
+@keyframes mx-walk { 0%, 100% { transform: translateY(0) rotate(0); } 25% { transform: translateY(-3px) rotate(-4deg); } 75% { transform: translateY(-1px) rotate(3deg); } }
+/* Шоқжұлдыз: жұлдыз кезеңге жеткенде жанады, жол жанған жұлдыздарды жалғайды */
+.mx-anim .mx-xstar { background: rgb(255 255 255 / .1); color: #e6e6fd; box-shadow: 0 0 0 1.5px rgb(255 244 201 / .55); transform: scale(.88); }
+.mx-anim .mx-xmap li.is-on .mx-xstar { background: var(--star); color: var(--night); box-shadow: 0 0 0 6px rgb(255 211 107 / .16), 0 0 22px rgb(255 211 107 / .65); transform: scale(1); }
+/* сызба созылған (preserveAspectRatio="none"), сондықтан жол сызылмайды, жанып шығады */
+.mx-anim .mx-xroad path { opacity: 0; transition: opacity .8s var(--ease); }
+.mx-anim .mx-xroad path.is-on { opacity: 1; }
+.mx-anim .mx-xshan { transform: scale(.8); opacity: .55; transition: transform .8s var(--ease), opacity .8s var(--ease); }
+.mx-anim .mx-xend.is-on .mx-xshan { transform: scale(1); opacity: 1; animation: mx-shine 1.6s var(--ease); }
+@keyframes mx-shine { 0% { filter: drop-shadow(0 0 0 rgb(242 183 5 / 0)); } 40% { filter: drop-shadow(0 0 14px rgb(242 183 5 / .9)); } 100% { filter: drop-shadow(0 0 4px rgb(242 183 5 / .4)); } }
 /* Сызба: тек .mx-anim ішінде және .is-on болғанша жасырын */
 .mx-anim .mx-fig .mf-area, .mx-anim .mx-fig .mf-band, .mx-anim .mx-fig .mf-rect,
 .mx-anim .mx-fig .mf-line, .mx-anim .mx-fig .mf-fn, .mx-anim .mx-fig .mf-pt, .mx-anim .mx-fig .mf-node,

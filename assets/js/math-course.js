@@ -1544,48 +1544,81 @@
     go();
   }
 
-  // «Сызбамен түсіндіру»: кезеңдерді бір жол байланыстырады - скролл жолды толтырады, жол жеткен кезең жанады,
-  // сызба экранға кіргенде өзі сызылады (math-course.css). Қозғалыс азайтылған болса ештеңе қоспаймыз: бәрі соңғы күйінде.
+  // «Сызбамен түсіндіру»: басты беттегі оқиғамен бір тілде (math-course.css). Алтын жол кезеңдерді байланыстырады:
+  // скролл жолды толтырады, Бота жолдың ұшымен жүреді, ол жеткен кезең мен тақтадағы шоқжұлдыз жұлдызы жанады,
+  // жол соңында шаңырақ жанады. Сызба экранға кіргенде өзі салынады. Қозғалыс азайтылса ештеңе қоспаймыз.
   function initExplain() {
     var sec = document.querySelector(".mx-explain");
     if (!sec || !("IntersectionObserver" in window)) return;
     var root = document.documentElement;
     if (root.classList.contains("reduce-motion") || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) return;
-    var list = sec.querySelector(".mx-xsteps");
-    if (!list) return;
-    var steps = [].slice.call(list.querySelectorAll(".mx-xstep"));
-    // Экраннан жоғары қалған бөлікті жасырмаймыз (мысалы, бетті ортасынан ашқанда немесе #xs-3 сілтемесімен)
-    var r0 = list.getBoundingClientRect();
+    var trail = sec.querySelector(".mx-xtrail");
+    if (!trail) return;
+    var steps = [].slice.call(trail.querySelectorAll(".mx-xstep"));
+    var stars = [].slice.call(sec.querySelectorAll(".mx-xmap li"));
+    var roads = [].slice.call(sec.querySelectorAll(".mx-xroad path"));
+    var end = trail.querySelector(".mx-xend");
+    var bota = trail.querySelector(".mx-xbota");
     sec.querySelectorAll(".mx-fig svg.mf").forEach(function (svg) {
       var i = 0, j = 0;
       svg.querySelectorAll("[pathLength], .mf-fn, .mf-line").forEach(function (el) { el.style.setProperty("--i", Math.min(i++, 5)); });
       svg.querySelectorAll(".mf-pt, .mf-node").forEach(function (el) { el.style.setProperty("--j", Math.min(j++, 8)); });
     });
     sec.classList.add("mx-anim");
-    var seen = function (el) { return el.getBoundingClientRect().bottom < 0; };
     var on = new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add("is-on"); on.unobserve(e.target); } });
     }, { rootMargin: "0px 0px -18% 0px" });
-    var parts = [].slice.call(sec.querySelectorAll(".mx-fig, .mx-xformula, .mx-xtry"));
-    parts.forEach(function (el) { if (seen(el)) el.classList.add("is-on"); else on.observe(el); });
-    // Жол: көру аймағының 60%-ындағы сызық қай жерде тұр - сол үлес толады; кезең белгісі жол жеткенде жанады
-    var raf = 0;
+    sec.querySelectorAll(".mx-fig, .mx-xformula, .mx-xtry").forEach(function (el) {
+      if (el.getBoundingClientRect().bottom < 0) el.classList.add("is-on"); else on.observe(el);
+    });
+    // Жолдың басы - 1-кезең белгісінің ортасы, соңы - шаңырақтың ортасы (өлшемі өзгерсе қайта есептейміз)
+    var t0 = 0, len = 0;
+    var measure = function () {
+      var r = trail.getBoundingClientRect();
+      var a = steps.length ? steps[0].getBoundingClientRect().top - r.top + 15 : 14;
+      var e = end ? end.querySelector(".mx-xshan") : null;
+      var b = e ? e.getBoundingClientRect() : null;
+      var z = b ? b.top + b.height / 2 - r.top : r.height - 40;
+      t0 = a; len = Math.max(0, z - a);
+      trail.style.setProperty("--t0", t0.toFixed(1) + "px");
+      trail.style.setProperty("--len", len.toFixed(1) + "px");
+    };
+    var raf = 0, idle = 0, last = -1;
+    var mark = function (el, v) { if (el) el.classList.toggle("is-on", v); };
     var paint = function () {
       raf = 0;
-      var r = list.getBoundingClientRect(), mark = innerHeight * 0.6;
-      var p = Math.max(0, Math.min(1, (mark - r.top) / Math.max(1, r.height)));
-      list.style.setProperty("--p", p.toFixed(4));
-      steps.forEach(function (st) { if (st.getBoundingClientRect().top + 14 < mark) st.classList.add("is-on"); });
+      var r = trail.getBoundingClientRect(), eye = innerHeight * 0.6;
+      var p = len ? Math.max(0, Math.min(1, (eye - r.top - t0) / len)) : 0;
+      trail.style.setProperty("--p", p.toFixed(4));
+      var y = r.top + t0 + p * len;
+      var n = 0;
+      steps.forEach(function (st, i) {
+        var hit = st.classList.contains("is-on") || st.getBoundingClientRect().top + 15 <= y + 1;
+        if (hit) { st.classList.add("is-on"); n = i + 1; }
+      });
+      stars.forEach(function (li, i) { mark(li, i < n); });
+      roads.forEach(function (rd, i) { mark(rd, i + 1 < n); });
+      if (end && p > 0.995) end.classList.add("is-on");
+      if (bota && last >= 0 && Math.abs(p - last) > 0.0005) {
+        bota.classList.add("is-walk");
+        clearTimeout(idle);
+        idle = setTimeout(function () { bota.classList.remove("is-walk"); }, 260);
+      }
+      last = p;
     };
     var ask = function () { if (!raf) raf = requestAnimationFrame(paint); };
+    var resize = function () { measure(); ask(); };
     var vis = new IntersectionObserver(function (es) {
       es.forEach(function (e) {
-        if (e.isIntersecting) { window.addEventListener("scroll", ask, { passive: true }); window.addEventListener("resize", ask); ask(); }
-        else { window.removeEventListener("scroll", ask); window.removeEventListener("resize", ask); ask(); }
+        if (e.isIntersecting) { window.addEventListener("scroll", ask, { passive: true }); window.addEventListener("resize", resize); resize(); }
+        else { window.removeEventListener("scroll", ask); window.removeEventListener("resize", resize); ask(); }
       });
     });
-    vis.observe(list);
-    if (r0.bottom < 0) list.style.setProperty("--p", "1");
+    vis.observe(trail);
+    // Сызбалар мен KaTeX биіктікті өзгертеді: бет толық жүктелгенде жолды қайта өлшейміз
+    window.addEventListener("load", resize);
+    if (window.ResizeObserver) new ResizeObserver(resize).observe(trail);
+    measure();
     paint();
   }
 
