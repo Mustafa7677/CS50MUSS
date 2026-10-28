@@ -7,7 +7,7 @@ import ExcelJS from "exceljs";
 import pg from "pg";
 
 // Метрика (0013): /admin/metrics, /school/health, пилот есебі (PDF/XLSX), белсенділік журналы. Демо дерек (scripts/seed-demo.mjs) және DATABASE_URL керек.
-// Іске қосу: DATABASE_URL=... E2E_BASE_URL=http://127.0.0.1:3211 npx playwright test e2e/metrics.spec.ts --output=/tmp/claude-0/pwA
+// Іске қосу: DATABASE_URL=... E2E_BASE_URL=http://127.0.0.1:3211 npx playwright test e2e/metrics.spec.ts --output=/tmp/pwA
 const PASS = "DemoPass123";
 const ROOT = "root@demo.qazaqcode.kz", ADMIN = "admin@demo.qazaqcode.kz", T1 = "teacher1@demo.qazaqcode.kz", S1 = "student1@demo.qazaqcode.kz";
 const XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
