@@ -1107,6 +1107,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1143,7 +1147,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 29,
+  "minutes": 32,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1175,6 +1179,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1211,7 +1219,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1243,6 +1251,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1279,7 +1291,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1311,6 +1323,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1347,7 +1363,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1379,6 +1395,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1415,7 +1435,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1447,6 +1467,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1483,7 +1507,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 29,
+  "minutes": 32,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"

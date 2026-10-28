@@ -124,12 +124,13 @@ def edge(a, b, label=None, arrow=False, c=0, bend=0):
     return ("edge", dict(a=a, b=b, label=label, arrow=arrow, c=c, bend=bend))
 
 
-def Plot(x, y, items, w=440, h=300, grid=True, xl="x", yl="y", ticks=True, legend=None, eq=False):
-    """legend: None - қисық атаулары қисықтың жанында; "tl" / "br" - атаулар бұрыштағы шартты белгілер тізімінде.
+def Plot(x, y, items, w=440, h=300, grid=True, xl="x", yl="y", ticks=True, legend=None, eq=False, axes=True):
+    """axes=False - жазық осьтер салынбайды (мысалы, кеңістіктің қиғаш проекциясында осьтерді өзіміз саламыз).
+    legend: None - қисық атаулары қисықтың жанында; "tl" / "br" - атаулар бұрыштағы шартты белгілер тізімінде.
     eq=True - осьтердің масштабы бірдей (шеңбер шеңбер болып көрінеді): биіктік енге қарай есептеледі."""
     if eq:
         h = round(PAD_T + PAD_B + (y[1] - y[0]) * (w - PAD_L - PAD_R) / (x[1] - x[0]))
-    return dict(type="plot", x=x, y=y, items=items, w=w, h=h, grid=grid, xl=xl, yl=yl, ticks=ticks, legend=legend)
+    return dict(type="plot", x=x, y=y, items=items, w=w, h=h, grid=grid, xl=xl, yl=yl, ticks=ticks, legend=legend, axes=axes)
 
 
 def Diagram(w, h, items):
@@ -216,8 +217,9 @@ def render(spec, uid, alt):
             d = "M" + "L".join(f"{_f(X(a))} {_f(Y(b))}" for a, b in o["ps"]) + "Z"
             body.append(f'<path class="{"mf-area" if o["fill"] else "mf-line"} {cls}" d="{d}"/>')
     out += body
-    out.append(f'<path class="mf-axis" d="M{PAD_L} {_f(ax)}H{W - PAD_R + 6}" marker-end="url(#ah{uid})"/>')
-    out.append(f'<path class="mf-axis" d="M{_f(ay)} {H - PAD_B}V{PAD_T - 6}" marker-end="url(#ah{uid})"/>')
+    if spec["axes"]:
+        out.append(f'<path class="mf-axis" d="M{PAD_L} {_f(ax)}H{W - PAD_R + 6}" marker-end="url(#ah{uid})"/>')
+        out.append(f'<path class="mf-axis" d="M{_f(ay)} {H - PAD_B}V{PAD_T - 6}" marker-end="url(#ah{uid})"/>')
     if spec["ticks"]:
         t = []
         v = math.ceil(x0 / tx) * tx
@@ -233,8 +235,9 @@ def render(spec, uid, alt):
         out += t
         if x0 <= 0 <= x1 and y0 <= 0 <= y1:
             out.append(_label(ay - 5, ax + 15, "0", "mf-tick", "end"))
-    out.append(_label(W - PAD_R + 2, ax - 6, spec["xl"], "mf-axl", "end"))
-    out.append(_label(ay + 7, PAD_T + 4, spec["yl"], "mf-axl"))
+    if spec["axes"]:
+        out.append(_label(W - PAD_R + 2, ax - 6, spec["xl"], "mf-axl", "end"))
+        out.append(_label(ay + 7, PAD_T + 4, spec["yl"], "mf-axl"))
     legend = []
     for kind, o in spec["items"]:
         cls = f'mf-c{o.get("c", 1)}'
