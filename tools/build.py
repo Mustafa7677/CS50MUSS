@@ -782,7 +782,8 @@ def build_glossary(terms):
 #   courses      - курс саны (CS50x + ALL_COURSES)
 #   lect         - барлық лекция беті; lect_harvard (Harvard аудармасы, COURSES) және lect_own (авторлық, OWN_COURSES) бөлек
 #   quiz, terms  - лекциялардағы тест сұрақтары / бірегей терминдер (сөздік дедупликациясымен бірдей)
-#   tasks        - автотексеруші (autograder / js-grader / sql-grader) саны
+#   tasks        - автотексерілетін тапсырма: autograder / js-grader / sql-grader / answer-check / en-ex / math-ex
+#   ex           - сабақтағы барлық тапсырма (.task, en-ex, math-ex): курс карточкасындағы «N тапсырма»
 #   games        - assets/js/games-*.js ішіндегі G.register(...) саны (games-core META-мен салыстырылады)
 #   bugs         - assets/data/bugs.js «қатені тап» жаттығулары
 #   exam_q/min   - exam.js (PER_LECTURE * CS50x лекция саны, MINUTES)
@@ -796,7 +797,7 @@ def compute_stats():
     quiz, terms, by = [], [], {}
     sources = [("x", ROOT / "lectures", ORDER, None)] + [(code, ROOT / code / "lectures", c["order"], code) for code, c in ALL_COURSES.items()]
     for code, folder, order, prefix in sources:
-        n_lect = n_tasks = 0
+        n_lect = n_tasks = n_ex = 0
         q_code, t_code = [], []
         for name in order:
             p = folder / f"{name}.html"
@@ -807,7 +808,8 @@ def compute_stats():
                 continue
             meta = lecture_meta(name, s, f"{prefix}/lectures/{name}.html" if prefix else None)
             n_lect += 1
-            n_tasks += len(re.findall(r'class="(?:(?:autograder|js-grader|sql-grader)\b|en-ex[ "]|math-ex[ "])', s))
+            n_tasks += len(re.findall(r'class="(?:(?:autograder|js-grader|sql-grader|answer-check)\b|en-ex[ "]|math-ex[ "])', s))
+            n_ex += len(re.findall(r'class="(?:task|en-ex|math-ex)[ "]', s))  # сабақтағы барлық тапсырма (автотексерілетіні де, өзі орындайтыны да)
             q_code += quiz_questions(name, s, meta)
             t_code += glossary_terms(name, s, dict(meta, num=meta["num"]), code)
         quiz += q_code
@@ -816,7 +818,7 @@ def compute_stats():
         idx = ROOT / code / "index.html" if prefix else None
         if idx and idx.exists():
             proj = len(re.findall(r'\bid="project"', idx.read_text(encoding="utf-8")))
-        by[code] = {"lect": n_lect, "plan": len(order), "quiz": len(q_code), "terms": len({t["en"].lower() for t in t_code}), "tasks": n_tasks, "projects": proj}
+        by[code] = {"lect": n_lect, "plan": len(order), "quiz": len(q_code), "terms": len({t["en"].lower() for t in t_code}), "tasks": n_tasks, "ex": n_ex, "projects": proj}
     n_terms = len({t["en"].lower() for t in terms})  # build_glossary дедупликациясы: ағылшынша атау бойынша
     games = set()
     for f in sorted((ROOT / "assets/js").glob("games-*.js")):
@@ -894,9 +896,45 @@ def apply_descriptions(rel, s):
 
 def course_tasks_label(code):
     d = STATS["by_course"][code]
-    if d["tasks"]:
-        return f'{d["tasks"]} тапсырма'
+    if d["ex"]:
+        return f'{d["ex"]} тапсырма'
     return f'{d["projects"]} жоба' if d["projects"] else ""
+
+
+INV_NAMES = {"x": "CS50x", "python": "CS50P (Python)", "sql": "CS50 SQL", "ai": "CS50 AI", "web": "CS50 Web",
+             "cpp": "C++", "java": "Java", "en": "Ағылшын тілі A0-C1", "math": "Математика (25 пән)"}
+
+
+def write_inventory():
+    """docs/INVENTORY.md: сатып алушы не инвестор тексеретін мазмұн тізімдемесі (әр build сайын қайта жазылады)."""
+    acad = {c: a for a, ids in ACADEMIES.items() for c in ids}
+    acad_name = {"code": "Бағдарламалау", "en": "Ағылшын тілі", "math": "Математика"}
+    rows, tot = [], {"own": [0] * 5, "cc": [0] * 5}
+    for code in ["x", *COURSES, *OWN_COURSES]:
+        d = STATS["by_course"][code]
+        own = code in OWN_COURSES
+        vals = [d["lect"], d["ex"], d["tasks"], d["quiz"], d["terms"]]
+        for i, v in enumerate(vals):
+            tot["own" if own else "cc"][i] += v
+        kind = "Авторлық, © Sagid Mustafa, All Rights Reserved" if own else "Harvard CS50 аудармасы, CC BY-NC-SA 4.0"
+        rows.append(f"| {INV_NAMES[code]} | {acad_name[acad[code]]} | {kind} | " + " | ".join(str(v) for v in vals) + " |")
+    t = lambda k: " | ".join(f"**{v}**" for v in tot[k])
+    md = f"""# AO17: мазмұн тізімдемесі
+
+Бұл файлды `tools/build.py` әр құрастыру сайын сайттың өз беттерінен қайта есептейді: қолмен түзетпеңіз.
+Сатып алушы не инвестор сандарды `python3 tools/build.py --stats` арқылы өзі тексере алады.
+
+| Курс | Академия | Құқық | Сабақ | Тапсырма | Автотексерілетін | Тест сұрағы | Термин |
+|---|---|---|---|---|---|---|---|
+{chr(10).join(rows)}
+| **Авторлық (сатуға не лицензиялауға болады)** | | | {t("own")} |
+| **Harvard аудармасы (тегін қалады)** | | | {t("cc")} |
+
+- **Тапсырма:** сабақтағы барлық тапсырма. **Автотексерілетін:** автотексеруші, жауап тексеру, ағылшын мен математика жаттығулары.
+- Терминдер курс бойынша бірегей; сайттың жалпы сөздігінде қайталанбайтын термин саны: {STATS["terms"]}.
+- Қосымша: {STATS["games"]} оқу ойыны, {STATS["bugs"]} «қатені тап» жаттығуы, қорытынды емтихан ({STATS["exam_q"]} сұрақ, {STATS["exam_min"]} мин).
+"""
+    (ROOT / "docs/INVENTORY.md").write_text(md, encoding="utf-8")
 
 
 def main():
@@ -906,6 +944,7 @@ def main():
     if "--stats" in sys.argv:
         print(json.dumps({"site_stats": STATS, "flat": FLAT}, ensure_ascii=False, indent=1))
         return
+    write_inventory()
     # Мета-сипаттамалар process_page-ден БҰРЫН жаңарады (ол сипаттаманы файлдан оқиды)
     for rel in DESC_TEMPLATES:
         fp = ROOT / rel
