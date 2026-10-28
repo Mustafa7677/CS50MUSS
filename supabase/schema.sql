@@ -337,13 +337,17 @@ grant execute on function public.cs50kz_feedback_send(text, text, text, text, te
 --   lesson - кілт: сабақ беті (python/lectures/week-1.html); бүгін ашылды
 --   done   - кілт: сабақ беті; оқылды деп белгіленді
 --   pilot  - кілт: '' ; серіктестер бетінен пилот өтінімі жіберілді
+--   demo   - кілт: '' ; басты беттегі «Өзің жазып көр» редакторы ашылды
 create table if not exists public.cs50kz_metrics (
   day  date not null default (now() at time zone 'Asia/Almaty')::date,
-  kind text not null check (kind in ('visit', 'return', 'lesson', 'done', 'pilot')),
+  kind text not null,
   key  text not null default '' check (length(key) <= 80),
   n    integer not null default 0,
   primary key (day, kind, key)
 );
+-- Түрлер тізімі өскенде шектеуді жаңартамыз (қайта іске қосуға болады)
+alter table public.cs50kz_metrics drop constraint if exists cs50kz_metrics_kind_check;
+alter table public.cs50kz_metrics add constraint cs50kz_metrics_kind_check check (kind in ('visit', 'return', 'lesson', 'done', 'pilot', 'demo'));
 alter table public.cs50kz_metrics enable row level security;
 revoke all on public.cs50kz_metrics from anon, authenticated;
 
@@ -352,7 +356,7 @@ returns void
 language plpgsql security definer set search_path = public as $$
 declare k text := left(coalesce(p_key, ''), 80);
 begin
-  if p_kind not in ('visit', 'return', 'lesson', 'done', 'pilot') then
+  if p_kind not in ('visit', 'return', 'lesson', 'done', 'pilot', 'demo') then
     raise exception 'bad kind' using errcode = '22023';
   end if;
   -- Кілт тек сайттағы жол не академия коды болады: басқа мәтінді (жеке дерек т.б.) қабылдамаймыз

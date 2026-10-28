@@ -11,9 +11,15 @@ test("портал: академия карточкасы экранға жай�
   await page.locator("#academies .ac-card").last().scrollIntoViewIfNeeded();
   await expect(page.locator(".ac-card.is-open")).toHaveCount(3, { timeout: 8000 });
   // үлкейіп кеткен шаңырақ карточканы басуға кедергі емес
+  // Портал 760 мс тұрады да бет ауысады: баяу машинада тексеріс кеш қалмас үшін оны пайда болған сәтте ұстаймыз
+  const seen = page.evaluate(() => new Promise((ok) => new MutationObserver((_, o) => {
+    const t = document.querySelector(".portal .portal-title");
+    if (t) { o.disconnect(); ok([document.querySelector(".portal").className, t.textContent]); }
+  }).observe(document.body, { childList: true })));
   await page.click('.ac-card[href="math/"]');
-  await expect(page.locator(".portal.portal-math")).toHaveCount(1);
-  await expect(page.locator(".portal-title")).toHaveText("Математика академиясы");
+  const [cls, title] = await seen;
+  expect(cls).toContain("portal-math");
+  expect(title).toBe("Математика академиясы");
   await page.waitForURL(/math\/$/);
   expect(errs).toEqual([]);
 });
