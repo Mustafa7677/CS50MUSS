@@ -1,4 +1,4 @@
-// CS50 қазақша — браузерлік тесттер. Іске қосу: cd tests && npm ci && npx playwright test
+// AO17 — браузерлік тесттер. Іске қосу: cd tests && npm ci && npx playwright test
 const { defineConfig } = require("@playwright/test");
 
 const PORT = process.env.PW_PORT || 4173;

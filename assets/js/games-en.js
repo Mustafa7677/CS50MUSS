@@ -1,5 +1,5 @@
 /* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. Harvard CS50 материалдары мен үшінші тарап компоненттері өз лицензияларымен қалады. */
-/* CS50 қазақша: ойындар, «Ағылшын» тобы: Word Match, Spell It, Sentence Builder, Article Rush, Bug Report Fixer.
+/* AO17: ойындар, «Ағылшын» тобы: Word Match, Spell It, Sentence Builder, Article Rush, Bug Report Fixer.
    Дерек: assets/data/en-vocab-*.js, en-grammar-*.js (ойын ашылғанда ғана жүктеледі). Бос/аз болса, осы файлдағы өз жазған орнатылған қор қолданылады.
    Деңгей A0-C1 таңдалады (cs50kz:en:glevel). Пайдаланушы мәтіні тек textContent/DOM арқылы шығады. Дыбыстау: тек браузердің speechSynthesis (бар болса). */
 (function () {

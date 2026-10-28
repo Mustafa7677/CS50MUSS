@@ -1,5 +1,5 @@
 /* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. Harvard CS50 материалдары мен үшінші тарап компоненттері өз лицензияларымен қалады. */
-// CS50 қазақша - Қорытынды емтихан: уақыты шектеулі, әр лекциядан сұрақ, апталар бойынша талдау.
+// AO17 - Қорытынды емтихан: уақыты шектеулі, әр лекциядан сұрақ, апталар бойынша талдау.
 // main.js .exam бар бетте ғана жүктейді.
 
 (function () {
@@ -29,7 +29,7 @@
       const t = document.querySelector(".ex-title"), l = document.querySelector(".ex-lead");
       if (t) t.textContent = CODE + ": қорытынды емтихан 📝";
       if (l) l.textContent = "Курстың барлық лекциясын бір емтиханда тексеріңіз. Уақыт шектеулі, жауаптар соңында ғана ашылады. Нәтижеңіз осы курстың сертификатына жазылады.";
-      document.title = CODE + " қорытынды емтихан - CS50 қазақша";
+      document.title = CODE + " қорытынды емтихан - AO17";
     }
     await K.loadScript("assets/data/quiz.js");
     await K.loadScript(COURSE ? COURSE + "/data/lectures.js" : "assets/data/lectures.js");

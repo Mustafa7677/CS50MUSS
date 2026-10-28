@@ -1,5 +1,5 @@
 /* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. Harvard CS50 материалдары мен үшінші тарап компоненттері өз лицензияларымен қалады. */
-/* CS50 қазақша: ойындар орталығы, 1-жинақ: Code Runner, Bug Hunter, Code Battle, Algorithm Race.
+/* AO17: ойындар орталығы, 1-жинақ: Code Runner, Bug Hunter, Code Battle, Algorithm Race.
    Барлық сұрақ пен код үзіндісі осы жерде жазылған (өз мазмұны), интернетсіз, AI API-сіз. */
 (function () {
   "use strict";

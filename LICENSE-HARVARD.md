@@ -30,7 +30,7 @@
 
 > **Түпнұсқа дереккөз:** Harvard CS50 (David J. Malan және CS50 командасы, Harvard University), <https://cs50.harvard.edu/>, лицензия: CC BY-NC-SA 4.0.
 > **Қазақша аударманың авторы:** Sagid Mustafa. Түпнұсқа өзгертілген (аударылған/бейімделген).
-> CS50MUSS - Harvard University-ден тәуелсіз жоба; Harvard оны қолдамайды.
+> AO17 - Harvard University-ден тәуелсіз жоба; Harvard оны қолдамайды.
 
 ## 4. Шарттар (қысқаша; бекітілген мәтін - заңды кодта)
 
@@ -47,8 +47,8 @@
 
 ## 6. Тауар белгісі
 
-«CS50» және «Harvard» атаулары тиісті құқық иелерінікі. CS50MUSS атауы оларды ресми байланысты білдірмейді. Атаудың қолданылуы заңгер тексеруін қажет етеді (қараңыз [COPYRIGHT.md](COPYRIGHT.md)).
+«CS50» және «Harvard» атаулары тиісті құқық иелерінікі. AO17 атауы оларды ресми байланысты білдірмейді. Атаудың қолданылуы заңгер тексеруін қажет етеді (қараңыз [COPYRIGHT.md](COPYRIGHT.md)).
 
 ## English
 
-This file covers **Harvard CS50 materials and their Kazakh translations/adaptations**, licensed under CC BY-NC-SA 4.0 (<https://creativecommons.org/licenses/by-nc-sa/4.0/>). Original source: Harvard CS50, <https://cs50.harvard.edu/>. Kazakh translation by Sagid Mustafa; adapted from the original. Share-alike applies to the translations and adaptations. This notice is not legal advice and does not modify the licence terms. CS50MUSS is independent of Harvard University.
+This file covers **Harvard CS50 materials and their Kazakh translations/adaptations**, licensed under CC BY-NC-SA 4.0 (<https://creativecommons.org/licenses/by-nc-sa/4.0/>). Original source: Harvard CS50, <https://cs50.harvard.edu/>. Kazakh translation by Sagid Mustafa; adapted from the original. Share-alike applies to the translations and adaptations. This notice is not legal advice and does not modify the licence terms. AO17 is independent of Harvard University.

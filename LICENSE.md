@@ -1,8 +1,8 @@
-# Лицензиялар: CS50MUSS (CS50 қазақша)
+# Лицензиялар: AO17 (AO17)
 
 © 2026 Sagid Mustafa. Бұл жобада бірнеше түрлі материал бар, сондықтан **бір лицензия бүкіл жобаға қолданылмайды**. Қай файлға қандай лицензия тиесілі екені төменде және [COPYRIGHT.md](COPYRIGHT.md) тізілімінде көрсетілген.
 
-CS50MUSS - Harvard University-ден **тәуелсіз** жоба. Harvard университеті бұл жобаны ресми түрде иеленбейді, қолдамайды және растамайды.
+AO17 - Harvard University-ден **тәуелсіз** жоба. Harvard университеті бұл жобаны ресми түрде иеленбейді, қолдамайды және растамайды.
 
 ## Үш санат
 
@@ -33,4 +33,4 @@ CS50MUSS - Harvard University-ден **тәуелсіз** жоба. Harvard ун
 
 ## English summary
 
-CS50MUSS combines (A) Harvard CS50 materials and their Kazakh translations/adaptations, licensed under **CC BY-NC-SA 4.0**; (B) independent software, design and educational tools by Sagid Mustafa, **All Rights Reserved**; and (C) third-party components under their own licences. The Harvard licence does not extend to category B, and category B does not claim Harvard's material. Items whose origin has not been verified (category R) have **no new licence assigned**. Rights already granted under CC BY-NC-SA 4.0 for earlier published versions are not revoked. This is not legal advice. CS50MUSS is independent of, and not endorsed by, Harvard University.
+AO17 combines (A) Harvard CS50 materials and their Kazakh translations/adaptations, licensed under **CC BY-NC-SA 4.0**; (B) independent software, design and educational tools by Sagid Mustafa, **All Rights Reserved**; and (C) third-party components under their own licences. The Harvard licence does not extend to category B, and category B does not claim Harvard's material. Items whose origin has not been verified (category R) have **no new licence assigned**. Rights already granted under CC BY-NC-SA 4.0 for earlier published versions are not revoked. This is not legal advice. AO17 is independent of, and not endorsed by, Harvard University.

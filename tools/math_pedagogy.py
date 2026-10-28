@@ -345,7 +345,7 @@ def subject_pre(slug):
 
 def page_from_template(name, title, desc, num, h1, lead, body):
     t = (ROOT / "math" / "practice.html").read_text(encoding="utf-8")
-    t = t.replace("Math · Жаттықтырғыш - CS50 қазақша", f"Math · {title} - CS50 қазақша")
+    t = t.replace("Math · Жаттықтырғыш - AO17", f"Math · {title} - AO17")
     t = re.sub(r'(<meta name="description" content=")[^"]*', lambda m: m.group(1) + desc, t)
     t = re.sub(r'(<meta property="og:description" content=")[^"]*', lambda m: m.group(1) + desc, t)
     t = t.replace("math/practice.html", f"math/{name}")

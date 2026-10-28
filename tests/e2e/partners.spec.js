@@ -37,7 +37,7 @@ test("schema.org: басты бетте WebSite, курс беттерінде C
     expect(course, c).toBeTruthy();
     expect(course.inLanguage).toBe("kk");
     expect(course.offers.price).toBe(0);
-    expect(course.provider.name).toBe("CS50MUSS");
+    expect(course.provider.name).toBe("AO17");
     expect(!!course.isBasedOn).toBe(c === "python");
   }
 });

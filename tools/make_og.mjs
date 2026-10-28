@@ -38,7 +38,7 @@ function page(l) {
     .url{position:absolute;left:72px;bottom:40px;font-size:22px;opacity:.8}
     .bar{position:absolute;left:0;right:0;bottom:0;height:12px;background:linear-gradient(90deg,#f2b705,${c},#f2b705)}
   </style></head><body><div class="og"><div class="big">${big}</div>
-    <div class="brand"><i></i>CS50 <b>қазақша</b></div>
+    <div class="brand"><i></i>AO<b>17</b></div>
     <div class="num">${esc(l.num)}${l.minutes ? " · " + l.minutes + " мин" : ""}</div>
     <h1>${esc(l.title)}</h1>
     <div class="topics">${topics}</div>

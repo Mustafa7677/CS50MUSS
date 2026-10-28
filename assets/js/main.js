@@ -1,5 +1,5 @@
 /* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. Harvard CS50 материалдары мен үшінші тарап компоненттері өз лицензияларымен қалады. */
-// CS50 қазақша - интерактив элементтер
+// AO17 - интерактив элементтер
 
 (function () {
   // Сайттың түбір мекенжайы (main.js-тің орнынан анықталады: file:// пен GitHub Pages-те де жұмыс істейді)
@@ -55,7 +55,7 @@
       const d = document.createElement("div");
       d.id = "clone-notice"; d.setAttribute("role", "alert");
       d.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#7a1010;color:#fff;padding:12px 16px;font:600 15px/1.45 system-ui,sans-serif;text-align:center;box-shadow:0 -6px 24px rgba(0,0,0,.35)";
-      d.innerHTML = 'Назар аударыңыз: бұл - «CS50 қазақша» сайтының <b>көшірмесі</b> болуы мүмкін. Түпнұсқа: <a href="https://mustafa7677.github.io/CS50MUSS/" style="color:#ffd75e">mustafa7677.github.io/CS50MUSS</a>. Автор: Sagid Mustafa. © 2026, барлық құқықтар қорғалған; Harvard CS50 аудармалары - CC BY-NC-SA 4.0. Лицензиялар: <a href="https://mustafa7677.github.io/CS50MUSS/copyright.html" style="color:#ffd75e">авторлық құқық беті</a>.';
+      d.innerHTML = 'Назар аударыңыз: бұл - «AO17» сайтының <b>көшірмесі</b> болуы мүмкін. Түпнұсқа: <a href="https://mustafa7677.github.io/CS50MUSS/" style="color:#ffd75e">mustafa7677.github.io/CS50MUSS</a>. Автор: Sagid Mustafa. © 2026, барлық құқықтар қорғалған; Harvard CS50 аудармалары - CC BY-NC-SA 4.0. Лицензиялар: <a href="https://mustafa7677.github.io/CS50MUSS/copyright.html" style="color:#ffd75e">авторлық құқық беті</a>.';
       document.body.appendChild(d);
     };
     if (document.body) show(); else document.addEventListener("DOMContentLoaded", show);
@@ -866,7 +866,7 @@
     g.fillStyle = "#ffffff"; g.fillText(q.a, 120, 1080);
     g.fillStyle = "rgba(255,255,255,.75)"; g.font = "500 30px Inter, system-ui, sans-serif"; g.fillText(q.y + (q.src ? " · " + q.src : ""), 120, 1126);
     g.fillStyle = "rgba(255,255,255,.85)"; g.font = "700 28px Inter, system-ui, sans-serif"; g.textAlign = "center";
-    g.fillText("CS50 қазақша · mustafa7677.github.io/CS50MUSS", W / 2, H - 70);
+    g.fillText("AO17 · mustafa7677.github.io/CS50MUSS", W / 2, H - 70);
     const blob = await new Promise((r) => c.toBlob(r, "image/png"));
     if (!blob) return;
     const file = new File([blob], "cs50kz-soz.png", { type: "image/png" });
@@ -2093,7 +2093,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
       const set = (sel, t) => { const e = document.querySelector(sel); if (e) e.textContent = t; };
       set(".cert-code", CERT.code); set(".cert-intro", CERT.intro); set(".cert-text", CERT.text); set(".cert-note", CERT.note);
       if (CC.own) { const sg = document.querySelector(".cert-sign + small"); if (sg) sg.textContent = "Курс авторы"; }
-      document.title = CERT.code + " сертификаты - CS50 қазақша";
+      document.title = CERT.code + " сертификаты - AO17";
     }
     loadScript(CERT.src).then(() => {
       const lectures = CERT.list();
@@ -2216,7 +2216,7 @@ def __cs50kz_run(src, inputs, argv=None, files=None, limit=2000000, seed=None):
       btn.textContent = v ? "Басып шығару / PDF (расталған)" : "Басып шығару / PDF";
       reason.hidden = !(v && !st.verified);
       if (v && !st.verified) reason.textContent = `Расталған сертификат әзірге жүктелмейді: орындалмаған шарттар - ${missing.map((r) => r.short).join(", ")}. Жоғарыдағы карточкадан әрқайсысына қанша қалғанын көре аласыз.`;
-      document.title = (v ? "Расталған сертификат - " : "") + (course === "x" ? "Сертификат - CS50 қазақша" : code + " сертификаты - CS50 қазақша");
+      document.title = (v ? "Расталған сертификат - " : "") + (course === "x" ? "Сертификат - AO17" : code + " сертификаты - AO17");
     };
     document.querySelector(".cert-tiers").addEventListener("click", (ev) => {
       const a = ev.target.closest(".cert-tier");

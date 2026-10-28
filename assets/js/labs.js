@@ -1,5 +1,5 @@
 /* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. Harvard CS50 материалдары мен үшінші тарап компоненттері өз лицензияларымен қалады. */
-// CS50 қазақша - интерактив зертханалар: визуализациялар, флэш-карточкалар,
+// AO17 - интерактив зертханалар: визуализациялар, флэш-карточкалар,
 // күннің сұрағы, аралас тест. main.js керек беттерде ғана жүктейді.
 
 (function () {
@@ -1397,7 +1397,7 @@ parent.postMessage({tag:${JSON.stringify(tag)},res:__res},"*");<\/script>`;
       "script.js": "let counter = 0;\nlet p = document.querySelector('#count');\n\ndocument.querySelector('#plus').addEventListener('click', function() {\n    counter++;\n    p.innerHTML = counter;\n    p.style.color = counter % 10 == 0 ? 'red' : 'black';\n});\n",
     },
     "Bootstrap карточка": {
-      "index.html": '<!DOCTYPE html>\n<html lang="kk">\n    <head>\n        <meta name="viewport" content="width=device-width, initial-scale=1">\n        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">\n        <title>Карточка</title>\n    </head>\n    <body class="p-4">\n        <div class="card" style="max-width: 360px">\n            <div class="card-body">\n                <h5 class="card-title">CS50 қазақша</h5>\n                <p class="card-text">Bootstrap кластары: card, btn, p-4...</p>\n                <a href="#" class="btn btn-warning">Оқуды бастау</a>\n            </div>\n        </div>\n    </body>\n</html>\n',
+      "index.html": '<!DOCTYPE html>\n<html lang="kk">\n    <head>\n        <meta name="viewport" content="width=device-width, initial-scale=1">\n        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">\n        <title>Карточка</title>\n    </head>\n    <body class="p-4">\n        <div class="card" style="max-width: 360px">\n            <div class="card-body">\n                <h5 class="card-title">AO17</h5>\n                <p class="card-text">Bootstrap кластары: card, btn, p-4...</p>\n                <a href="#" class="btn btn-warning">Оқуды бастау</a>\n            </div>\n        </div>\n    </body>\n</html>\n',
       "styles.css": "", "script.js": "",
     },
     "CSS анимация": {
@@ -1604,7 +1604,7 @@ parent.postMessage({tag:${JSON.stringify(tag)},res:__res},"*");<\/script>`;
     const NAMES = { python: ["CS50P", "Python-ды нөлден тереңге дейін"], sql: ["CS50 SQL", "Бір кестеден масштабталатын дерекқорға дейін"], ai: ["CS50 AI", "Іздеуден тіл модельдеріне дейін"], web: ["CS50 Web", "HTML-ден тестілеу мен қауіпсіздікке дейін"], cpp: ["C++", "Жад пен көрсеткіштерден STL мен шаблондарға дейін"], java: ["Java", "Нысандардан Stream API мен көп ағынға дейін"] };
     if (C) {
       const h = document.querySelector(".map-title-h"); if (h) h.textContent = NAMES[C][1];
-      document.title = NAMES[C][0] + " курс картасы - CS50 қазақша";
+      document.title = NAMES[C][0] + " курс картасы - AO17";
     }
     const lecs = (C ? (window.CS50KZ_COURSE_LECTURES || {})[C] || [] : window.CS50KZ_LECTURES || []).map((l) => (C ? { ...l, id: C + ":" + l.id } : l));
     const p = store.get("cs50kz:progress", {}) || {};

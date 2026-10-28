@@ -91,7 +91,7 @@ def shell(prefix):
   <a class="skip-link" href="#main">Мазмұнға өту</a>
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="{prefix}index.html">CS50 <span>қазақша</span></a>
+      <a class="brand" href="{prefix}index.html">AO<span>17</span></a>
       <nav class="nav"></nav>
     </div>
   </header>
@@ -145,7 +145,7 @@ def index_page():
              ("phrasebank.html", "IT-фразалар жинағы", "Stand-up, code review, баг-репорт, e-mail, интервью: дайын тіркестер көшіріп алуға ыңғайлы."),
              ("placement.html", "Деңгей анықтау тесті", "30 шақты сұрақ; нәтиже «шамамен A?-B?» және қай сабақтан бастауға болатынын көрсетеді. Болжамды құрал.")]
     tool_html = "\n".join(f'        <a class="oc-card en-tool-card" href="{h}"><h3>{t}</h3><p>{d}</p></a>' for h, t, d in tools)
-    return head("English: Ағылшын тілі A0-C1 - CS50 қазақша",
+    return head("English: Ағылшын тілі A0-C1 - AO17",
                 "Ағылшын тілі A0-C1: авторлық қазақша курс. Грамматика, сөздік, оқу, жазу, тыңдау мен айту жаттығулары, IT-ағылшын. 24 сабақ, деңгей анықтау тесті.", "../", extra_css='  <link rel="stylesheet" href="../assets/css/en-course.css">', extra_js='\n  <script defer src="../assets/js/en-home.js"></script>') + shell("../") + f'''
   <div class="layout single wide">
     <article class="content course-home own-course en-course" id="main">
@@ -231,7 +231,7 @@ def placeholder(i):
     prev_ = f'<a href="week-{i - 1}.html"><small>Алдыңғы</small>← {lesson_label(i - 1)}: {LESSONS[i - 1][0]}</a>' if i else '<a href="../index.html"><small>Курс беті</small>← Ағылшын тілі курсы</a>'
     next_ = f'<a class="next" href="week-{i + 1}.html"><small>Келесі</small>{lesson_label(i + 1)}: {LESSONS[i + 1][0]} →</a>' if i < 23 else ""
     desc = f"Ағылшын тілі {lab}: {t}. Сабақ жақында жазылады."
-    return head(f"English {lab}: {t} - CS50 қазақша", desc, "../../",
+    return head(f"English {lab}: {t} - AO17", desc, "../../",
                 extra_css='  <link rel="stylesheet" href="../../assets/css/en-course.css">', noindex=True) + shell("../../") + f'''
   {SOON}
   <div class="layout">
@@ -288,7 +288,7 @@ def tool_page(key):
          '\n  <script defer src="../assets/js/en-course.js"></script>' + ('\n  <script defer src="../assets/js/en-trainer.js"></script>' if key in ("vocab", "grammar", "phrasebank") else "") + '\n  <script defer src="../assets/js/en-tools.js"></script>'
     warn = ('<div class="callout warn"><span class="callout-title">Болжамды құрал</span><p>Нәтиже ресми емтихан деңгейі емес және IELTS/TOEFL баламасы емес: тек қай сабақтан бастауға болатынын болжайды. '
             'Контентті тәжірибелі ағылшын тілі мұғалімімен тексерген жөн.</p></div>' if key == "placement" else "")
-    return head(f"English · {label} - CS50 қазақша", desc, "../", extra_css='  <link rel="stylesheet" href="../assets/css/en-course.css">', extra_js=js) + shell("../") + f'''
+    return head(f"English · {label} - AO17", desc, "../", extra_css='  <link rel="stylesheet" href="../assets/css/en-course.css">', extra_js=js) + shell("../") + f'''
   <div class="layout single wide">
     <article class="content en-tool" id="main">
       <div class="lecture-head" style="--lc:{COLOR}">

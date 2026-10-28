@@ -1,5 +1,5 @@
 /* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. Harvard CS50 материалдары мен үшінші тарап компоненттері өз лицензияларымен қалады. */
-// CS50 қазақша - бұлттық синхрондау (Supabase).
+// AO17 - бұлттық синхрондау (Supabase).
 // Оқушы: ID + 8 таңбалы кіру коды → кез келген құрылғыда прогресс өзі жалғасады.
 // Мұғалім: сынып коды + құпиясөз → сыныптың жанды кестесі.
 // Деректер тек supabase/schema.sql-дегі қорғалған функциялар арқылы жазылады/оқылады.
@@ -653,7 +653,7 @@ footer { margin-top: 24px; color: #8a92a3; font-size: 11px; display: flex; justi
 @media (max-width: 600px) { .kpi { grid-template-columns: repeat(2, 1fr); } .bar { width: 50px; } }
 </style></head><body>
 <div class="tools"><button onclick="print()">🖨 Басып шығару / PDF</button></div>
-<header><div><small>CS50 қазақша · сынып есебі</small><h1>${esc(v.title)}</h1></div><div style="text-align:right"><div class="code">${esc(v.code)}</div><small>${esc(date)}</small></div></header>
+<header><div><small>AO17 · сынып есебі</small><h1>${esc(v.title)}</h1></div><div style="text-align:right"><div class="code">${esc(v.code)}</div><small>${esc(date)}</small></div></header>
 <div class="kpi">
   <div><small>Оқушы</small><b>${n}</b></div>
   <div><small>Орташа оқылған</small><b>${n ? avg(S.map((x) => x.read)).toFixed(1) : "-"}</b> <small>/ ${ORDER.length} лекция</small></div>
