@@ -1116,7 +1116,8 @@
     filmFinale(still);
     if (still || !("IntersectionObserver" in window)) return;
     const CARD = /(^|-)(card|tile|step|feature|tool)$/;
-    const skip = ".topbar, .footer, .has-film, .fm-finale, .toc, nav, dialog, .course-menu, .bota-pop";
+    // Ойын алаңы, тест, форма - интерактивті: олар ешқашан «ашылмайды», бірден тұрады
+    const skip = ".topbar, .footer, .has-film, .fm-finale, .toc, nav, dialog, .course-menu, .bota-pop, .game-stage, .gx-play, .quiz, form, [data-math-app] .mx-loading";
     const seen = new WeakSet();
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       const el = e.target;
@@ -1150,12 +1151,15 @@
     };
     take(document.body);
     // Ойындар, курс карточкалары т.б. JS-пен кейін салынады: тек жаңа түйіндерді, кадрына бір рет қараймыз
+    // Тек бет ашылғандағы алғашқы көрсетілім (курс тізімі, ойындар каталогы); кейінгі өзгерістер - пайдаланушы әрекеті, оларды анимацияламаймыз
     const fresh = new Set();
     let tick = 0;
-    new MutationObserver((ms) => {
+    const mo = new MutationObserver((ms) => {
       ms.forEach((m) => m.addedNodes.forEach((n) => { if (n.nodeType === 1 && !n.closest(".fm")) fresh.add(n); }));
       if (fresh.size && !tick) tick = requestAnimationFrame(() => { tick = 0; fresh.forEach(take); fresh.clear(); });
-    }).observe(document.body, { childList: true, subtree: true });
+    });
+    mo.observe(document.body, { childList: true, subtree: true });
+    setTimeout(() => mo.disconnect(), 2000);
   }
   function filmFinale(still) {
     const foot = document.querySelector(".footer");
