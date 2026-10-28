@@ -11,7 +11,7 @@ const LECTURES = [
   ...fs.readdirSync(path.join(ROOT, "lectures")).filter((f) => f.endsWith(".html")).map((f) => "lectures/" + f),
   ...["python", "sql", "ai", "web"].flatMap((c) => fs.readdirSync(path.join(ROOT, c, "lectures")).filter((f) => f.endsWith(".html")).map((f) => `${c}/lectures/${f}`)),
 ];
-const B_PAGES = ["detective.html", "projects.html", "flask.html", "alash.html", "viz.html", "playground.html", "games.html", "profile.html", "teacher.html", "certificate.html", "copyright.html", "partners.html"];
+const B_PAGES = ["detective.html", "projects.html", "flask.html", "alash.html", "viz.html", "playground.html", "games.html", "profile.html", "teacher.html", "certificate.html", "copyright.html", "partners.html", "metrics.html"];
 const M_PAGES = ["index.html", "about.html", "practice.html", "exam.html", "flashcards.html", "debug.html", "glossary.html", "map.html", "courses.html"];
 const metaCopy = (s) => (s.match(/<meta name="copyright" content="([^"]*)"/) || [])[1] || "";
 const licHref = (s) => (s.match(/<link rel="license" href="([^"]*)"/) || [])[1] || "";

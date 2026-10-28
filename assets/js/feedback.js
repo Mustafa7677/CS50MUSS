@@ -84,5 +84,40 @@
     e.preventDefault();
     open({});
   });
+  // ---------- Серіктестер беті: пилот өтінімі (сол cs50kz_feedback кестесіне, түрі "pilot") ----------
+  const ROLES = { school: "Мектеп не колледж", partner: "Серіктес ұйым", investor: "Инвестор не қор" };
+  document.querySelectorAll(".inv-form").forEach((f) => {
+    f.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const out = f.querySelector(".inv-result"), btn = f.querySelector('button[type="submit"]');
+      const v = (n) => f.elements[n].value.trim();
+      const miss = ["org", "contact"].filter((n) => !v(n));
+      f.querySelectorAll("input").forEach((i) => i.setAttribute("aria-invalid", miss.includes(i.name) ? "true" : "false"));
+      if (miss.length) {
+        out.className = "inv-result bad";
+        out.textContent = "Ұйым атауы мен байланысты толтырыңыз.";
+        f.elements[miss[0]].focus();
+        return;
+      }
+      const d = { kind: "pilot", page: "partners.html", section: ROLES[v("role")] || "", quote: v("org"),
+        message: `Байланыс: ${v("contact")}\n${v("note")}`.trim() };
+      btn.disabled = true; btn.textContent = "Жіберілуде…";
+      try {
+        const r = await fetch(API, { method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
+          body: JSON.stringify({ p_kind: d.kind, p_page: d.page, p_section: d.section, p_quote: d.quote, p_message: d.message, p_student: null }) });
+        if (!r.ok) throw new Error("HTTP " + r.status);
+        K.track && K.track("pilot", "");
+        out.className = "inv-result ok";
+        out.textContent = "Өтінім жіберілді. Жақын арада хабарласамыз.";
+        f.querySelectorAll("input, select, textarea").forEach((x) => { x.disabled = true; });
+        btn.hidden = true;
+      } catch (err) {
+        out.className = "inv-result bad";
+        out.innerHTML = `Жіберу мүмкін болмады. GitHub арқылы жіберіңіз: <a href="${githubUrl(d)}" target="_blank" rel="noopener">өтінім ашу</a>`;
+        btn.disabled = false; btn.textContent = "Қайта жіберу";
+      }
+    });
+  });
+
   window.CS50KZ_FEEDBACK = { open };
 })();
