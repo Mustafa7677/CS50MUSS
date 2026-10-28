@@ -85,3 +85,27 @@ test("шоқжұлдыз: жеті курс жұлдыз; Python-ға апарс
   await expect(page).toHaveURL(/#t-sql$/);
   expect(errs).toEqual([]);
 });
+
+test("басты бет: Ботаның сөз бұлты мен Бота ешбір экранда қиылмайды, көлденең жылжу жоқ", async ({ browser }) => {
+  for (const [w, h] of [[320, 640], [360, 760], [375, 812], [390, 844], [414, 896], [768, 1024], [1280, 800]]) {
+    const ctx = await browser.newContext({ viewport: { width: w, height: h }, reducedMotion: "reduce" });
+    await blockFonts(ctx);
+    const page = await ctx.newPage();
+    await page.goto("index.html");
+    const say = page.locator(".st-s1 .st-say");
+    await expect(say).toBeVisible();
+    await expect(say).toHaveText(/Сәлем! Мен - Бота/);
+    const r = await page.evaluate(() => {
+      const q = document.querySelector(".st-s1 .st-say").getBoundingClientRect();
+      const b = document.querySelector(".st-s1 .walker").getBoundingClientRect();
+      return { l: q.left, r: q.right, bl: b.left, br: b.right, over: document.documentElement.scrollWidth - innerWidth, bubbleAbove: q.bottom <= b.top + 30 };
+    });
+    expect(r.l, `${w}px: бұлт сол жақтан`).toBeGreaterThanOrEqual(0);
+    expect(r.r, `${w}px: бұлт оң жақтан`).toBeLessThanOrEqual(w);
+    expect(r.bl, `${w}px: Бота сол жақтан`).toBeGreaterThanOrEqual(0);
+    expect(r.br, `${w}px: Бота оң жақтан`).toBeLessThanOrEqual(w);
+    expect(r.bubbleAbove, `${w}px: бұлт Ботаның үстінде`).toBe(true);
+    expect(r.over, `${w}px: көлденең жылжу`).toBe(0);
+    await ctx.close();
+  }
+});

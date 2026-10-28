@@ -3776,10 +3776,15 @@ html { scroll-padding-top: 84px; }
   .ac-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
 }
 @media (max-width: 759px) {
-  .st-s1 { align-items: flex-start; min-height: clamp(640px, 92svh, 820px); }
-  .st-copy { padding: 34px 18px 270px; }
-  .st-s1 .sun-pos { transform: translate(940px, 660px) scale(.68); }
-  .st-s1 .bota-walk { translate: 230px 0; }
+  /* Телефонға жеке кадр: сурет бүкіл секцияның биіктігіне емес, астындағы «сахнаға» сыяды.
+     Сахна биіктігі экран еніне байланған, сондықтан SVG 1600-дің ~800 бірлігін көрсетеді (бұрын ~400),
+     Бота, күн мен тау сол терезеге орналасады. Сахнаның жоғарғы жағы - аспан, мәтін соның үстінде. */
+  .st-s1 { --stage: clamp(380px, 112vw, 540px); display: block; min-height: 0; background: #121a45; }
+  .st-art { top: auto; bottom: 0; height: var(--stage); }
+  .st-copy { padding: 30px 18px calc(var(--stage) - 120px); }
+  .st-s1 .sun-pos { transform: translate(1080px, 470px) scale(.5); }
+  /* Бота телефонда - сахнаның басты кейіпкері: табанынан бастап үлкейеді (жүру анимациясына тимейді) */
+  .st-s1 .bota-walk { translate: 130px 0; transform-box: fill-box; transform-origin: 50% 100%; scale: 1.45; }
   .st-cue { bottom: 64px; left: auto; right: 14px; translate: none; }
   .st-s2 { padding: 44px 16px 52px; }
   .st-yurt { max-width: 460px; }
@@ -4586,8 +4591,6 @@ a.cx-card:hover { transform: none; box-shadow: none; }
    =================================================================== */
 .bota .b-shut { fill: none; stroke: #14213d; stroke-width: 2; stroke-linecap: round; opacity: 0; }
 .bt-zz { display: none; }
-.bt-bubble path { fill: #fff; stroke: #e0a526; stroke-width: 2; }
-.bt-bubble text { fill: #1b1300; font: 700 13px var(--font, system-ui), sans-serif; }
 .bt-wow { display: none; }
 /* 1-сахна: Бота ұйықтап жатыр (логотип кезінде), сосын оянып, керіліп, айналасына қарайды да, сөйлеп, қуанып секіреді */
 .st-js .st-s1 .walker { transform-box: fill-box; animation: bt-hop .7s cubic-bezier(.3, .7, .2, 1) 4.1s 2; }
@@ -4602,9 +4605,8 @@ a.cx-card:hover { transform: none; box-shadow: none; }
 .st-js .st-s1 .bt-zz text { fill: #ffe6a3; font: 800 14px var(--font, system-ui), sans-serif; animation: bt-zz 1.8s ease-in-out infinite; }
 .st-js .st-s1 .bt-zz text:nth-child(2) { animation-delay: .3s; }
 .st-js .st-s1 .bt-zz text:nth-child(3) { animation-delay: .6s; font-size: 18px; }
-.st-js .st-s1 .bt-bubble { transform-box: fill-box; transform-origin: 20% 100%; animation: bt-pop .55s cubic-bezier(.3, 1.5, .5, 1) 3.5s both; }
 .st-js .st-s1.st-skip .walker .b-shut, .st-js .st-s1.st-skip .walker .b-eyes, .st-js .st-s1.st-skip .walker .b-head, .st-js .st-s1.st-skip .walker .b-body,
-.st-js .st-s1.st-skip .bt-bubble, .st-js .st-s1.st-skip .bt-zz { animation-delay: 0s; }
+.st-js .st-s1.st-skip .st-say, .st-js .st-s1.st-skip .bt-zz { animation-delay: 0s; }
 /* 2-сахна: есік ашылғанда Бота таңданады */
 .st-js .st-s2 .bt-wow { display: block; opacity: 0; }
 .st-js .st-s2.is-on .bt-wow { transform-box: fill-box; transform-origin: 50% 100%; animation: bt-wow 2.4s ease 3.5s both; }
@@ -4748,3 +4750,12 @@ a.cx-card:hover { transform: none; box-shadow: none; }
 .st-js .ax-math.is-on .am-sph ellipse { animation: st-draw .9s cubic-bezier(.65, 0, .35, 1) 2.55s forwards; }
 .st-js .ax-math.is-on .am-sph ellipse + ellipse { animation-delay: 2.8s; }
 @media (max-width: 560px) { .st-js .st-s1 .st-skipbtn { top: 10px; right: 10px; } .bk-lesson { left: calc(50% - 20px); top: 60%; } }
+
+/* Ботаның сөз бұлты - жеке HTML (main.js initSay): Ботаның басының үстінде, экран шетінен шықпайды,
+   мәтін жолға өзі бөлінеді; Бота жүрсе не экран бұрылса - соңынан ереді */
+.st-say { position: absolute; z-index: 4; left: 0; top: 0; width: max-content; max-width: min(290px, calc(100% - 24px)); padding: 10px 14px; border-radius: 16px;
+  background: #fff; color: #1b1300; border: 2px solid #e0a526; box-shadow: 0 14px 30px -16px rgb(0 0 0 / .6); font: 700 14px/1.35 var(--font, system-ui), sans-serif; text-align: center; pointer-events: none; }
+.st-say::after { content: ""; position: absolute; left: var(--tx, 30px); bottom: -9px; width: 16px; height: 16px; margin-left: -8px; background: #fff; border: 2px solid #e0a526; border-top: 0; border-left: 0; transform: rotate(45deg); }
+.st-say[hidden] { display: none; }
+.st-js .st-s1 .st-say { transform-origin: var(--tx, 30px) 100%; animation: bt-pop .55s cubic-bezier(.3, 1.5, .5, 1) 3.5s both; }
+@media (max-width: 380px) { .st-say { font-size: 13px; padding: 8px 11px; } }

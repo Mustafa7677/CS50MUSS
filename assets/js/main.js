@@ -128,6 +128,7 @@
     initCourseCards();
     initStory();
     initPortal();
+    initSay();
     initPortalLinks();
     initGoldenThread();
     initCompass();
@@ -1352,6 +1353,39 @@
     // мақсат таңдалса (бағдарламалау академиясының «Мақсатыңды таңда»), сол маршрут шоқжұлдызда жанады
     new MutationObserver(() => light(picked())).observe(document.querySelector(".pa-tracks") || anchor.parentElement, { attributes: true, subtree: true, attributeFilter: ["class"] });
     light(picked());
+  }
+
+  // ---------- Ботаның сөз бұлты (басты бет, 1-сахна) ----------
+  // Бұлт SVG ішінде емес, жеке HTML: SVG «slice» масштабымен бірге экраннан шығып кетпейді. Орны - Ботаның
+  // көлеңкесінен есептеледі (көлеңке тек жүргенде қозғалады, бас изегенде бұлт дірілдемейді), экранның
+  // ішіне қысылады, құйрығы Ботаның басына қарайды. Бота жүргенде (алғашқы ~9 с) кадр сайын, кейін тек
+  // өлшем не бағыт өзгергенде қайта есептеледі.
+  function initSay() {
+    const s1 = document.querySelector(".st-s1");
+    const shadow = s1 && s1.querySelector(".walker .b-shadow");
+    if (!shadow) return;
+    const say = document.createElement("div");
+    say.className = "st-say";
+    say.setAttribute("aria-hidden", "true");
+    say.textContent = "Сәлем! Мен - Бота. Жүр, үш академияға барайық!";
+    s1.append(say);
+    const place = () => {
+      const sr = s1.getBoundingClientRect(), sh = shadow.getBoundingClientRect();
+      if (!sh.width) return;
+      const k = sh.width / 64;                      // көлеңкенің ені - 64 бірлік (rx 32)
+      const headX = sh.left + sh.width / 2 + 40 * k - sr.left, capY = sh.top + sh.height / 2 - 104 * k - sr.top;
+      const bw = say.offsetWidth, bh = say.offsetHeight, pad = 12;
+      const left = Math.max(pad, Math.min(sr.width - bw - pad, headX - bw * 0.3));
+      say.style.left = left.toFixed(1) + "px";            // transform емес: оны «пайда болу» анимациясы қолданады
+      say.style.top = Math.max(pad, capY - bh - 14).toFixed(1) + "px";
+      say.style.setProperty("--tx", Math.max(18, Math.min(bw - 18, headX - left)).toFixed(1) + "px");
+    };
+    let until = performance.now() + 9500;
+    const loop = () => { place(); if (performance.now() < until) requestAnimationFrame(loop); };
+    loop();
+    const again = () => { until = Math.max(until, performance.now() + 400); loop(); };
+    if (window.ResizeObserver) new ResizeObserver(again).observe(s1);
+    window.addEventListener("orientationchange", again);
   }
 
   // ---------- Басты бет: шаңырақ арқылы өту ----------
