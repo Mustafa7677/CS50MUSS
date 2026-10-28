@@ -1132,7 +1132,8 @@
       setTimeout(() => el.classList.remove("cine-wait", "cine-in"), 1600);
     }), { rootMargin: "0px 0px -6% 0px" });
     const take = (scope) => {
-      scope.querySelectorAll("h2, [class]").forEach((el) => {
+      if (!scope.isConnected || scope.closest(skip)) return;
+      [scope, ...scope.querySelectorAll("h2, [class]")].forEach((el) => {
         if (seen.has(el) || el.closest(skip)) return;
         const isHead = el.tagName === "H2";
         if (!isHead && !(el.classList && [...el.classList].some((c) => CARD.test(c)))) return;
@@ -1148,9 +1149,13 @@
       });
     };
     take(document.body);
-    // Ойындар, курс карточкалары т.б. JS-пен кейін салынады
-    new MutationObserver((ms) => ms.forEach((m) => m.addedNodes.forEach((n) => { if (n.nodeType === 1) take(n.parentElement || n); })))
-      .observe(document.body, { childList: true, subtree: true });
+    // Ойындар, курс карточкалары т.б. JS-пен кейін салынады: тек жаңа түйіндерді, кадрына бір рет қараймыз
+    const fresh = new Set();
+    let tick = 0;
+    new MutationObserver((ms) => {
+      ms.forEach((m) => m.addedNodes.forEach((n) => { if (n.nodeType === 1 && !n.closest(".fm")) fresh.add(n); }));
+      if (fresh.size && !tick) tick = requestAnimationFrame(() => { tick = 0; fresh.forEach(take); fresh.clear(); });
+    }).observe(document.body, { childList: true, subtree: true });
   }
   function filmFinale(still) {
     const foot = document.querySelector(".footer");
