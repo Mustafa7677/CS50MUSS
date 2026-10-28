@@ -898,7 +898,7 @@ test("педагогика: әр дайын сабақта нақты ұзақт
 });
 
 test("разметка: мәтіндегі (TeX ішіндегі) «<» әрдайым &lt; - браузер оны тег деп оқып, мәтінді жасырмауы керек", () => {
-  const TAGS = new Set("a abbr article aside b blockquote body br button canvas caption code col details div dl dt dd em figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hr html i img input kbd label li link main mark meta nav noscript ol option p path pre q s samp script section select small span strong style sub summary sup svg table tbody td textarea tfoot th thead time title tr u ul var circle line rect g polyline polygon text defs".split(" "));
+  const TAGS = new Set("a abbr article aside b blockquote body br button canvas caption code col details div dl dt dd em figcaption figure footer form h1 h2 h3 h4 h5 h6 head header hr html i img input kbd label li link main mark meta nav noscript ol option p path pre q s samp script section select small span strong style sub summary sup svg table tbody td textarea tfoot th thead time title tr u ul var circle line rect g polyline polygon text defs marker clippath".split(" "));
   const bad = [];
   for (const f of READY) {
     const s = fs.readFileSync(path.join(MATH, "lectures", f), "utf8").replace(/<script\b[\s\S]*?<\/script>|<pre\b[\s\S]*?<\/pre>|<code\b[\s\S]*?<\/code>|<!--[\s\S]*?-->|<style\b[\s\S]*?<\/style>/g, "");

@@ -27,6 +27,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -63,7 +67,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 31,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -95,6 +99,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -131,7 +139,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 29,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -163,6 +171,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -199,7 +211,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 30,
+  "minutes": 33,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -231,412 +243,8 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Тоқта, ойлан",
-    "id": "checks"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 26,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-4",
-  "num": "Precalculus · 5-сабақ",
-  "title": "Тригонометрия: бұрыш пен бірлік шеңбер",
-  "url": "math/lectures/week-4.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Алғышарттар",
-    "id": "prereq"
-   },
-   {
-    "t": "Алдымен қолмен: шолу дөңгелегі",
-    "id": "warmup"
-   },
-   {
-    "t": "Интуиция: айналатын дөңгелек және оның биіктігі",
-    "id": "intuition"
-   },
-   {
-    "t": "Белгілерді оқу",
-    "id": "symbols"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Тоқта, ойлан",
-    "id": "checks"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 25,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-5",
-  "num": "Precalculus · 6-сабақ",
-  "title": "Тригонометриялық функциялар мен теңдеулер",
-  "url": "math/lectures/week-5.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Алғышарттар",
-    "id": "prereq"
-   },
-   {
-    "t": "Алдымен қолмен: шолу дөңгелегінің биіктігі",
-    "id": "warmup"
-   },
-   {
-    "t": "Интуиция: тербелістің үш параметрі",
-    "id": "intuition"
-   },
-   {
-    "t": "Белгілерді оқу",
-    "id": "symbols"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Тоқта, ойлан",
-    "id": "checks"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 25,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-6",
-  "num": "Precalculus · 7-сабақ",
-  "title": "Қосынды белгісі, тізбектер және индукция",
-  "url": "math/lectures/week-6.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Алғышарттар",
-    "id": "prereq"
-   },
-   {
-    "t": "Алдымен қолмен: тақ сандардың қосындысы",
-    "id": "warmup"
-   },
-   {
-    "t": "Интуиция: домино тізбегі және Гаусс қосындысы",
-    "id": "intuition"
-   },
-   {
-    "t": "Белгілерді оқу",
-    "id": "symbols"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Тоқта, ойлан",
-    "id": "checks"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 25,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-7",
-  "num": "Linear Algebra · 1-сабақ",
-  "title": "Векторлар және олармен амалдар",
-  "url": "math/lectures/week-7.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Алдымен қолмен: қала көшелері",
-    "id": "warmup"
-   },
-   {
-    "t": "Интуиция: көрсеткі де, сандар жолы да",
-    "id": "intuition"
-   },
-   {
-    "t": "Белгілерді оқу",
-    "id": "symbols"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Тоқта, ойлан",
-    "id": "checks"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 27,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-8",
-  "num": "Linear Algebra · 2-сабақ",
-  "title": "Скаляр көбейтінді және ортогональдық",
-  "url": "math/lectures/week-8.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Алдымен қолмен: дүкендегі чек",
-    "id": "warmup"
-   },
-   {
-    "t": "Интуиция: бағыттардың үйлесімділігі",
-    "id": "intuition"
-   },
-   {
-    "t": "Белгілерді оқу",
-    "id": "symbols"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Тоқта, ойлан",
-    "id": "checks"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 25,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-9",
-  "num": "Linear Algebra · 3-сабақ",
-  "title": "Сызықтық теңдеулер жүйесі және Гаусс әдісі",
-  "url": "math/lectures/week-9.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Алдымен қолмен: қалам мен дәптер",
-    "id": "warmup"
-   },
-   {
-    "t": "Интуиция: жұмбақтан жүйеге",
-    "id": "intuition"
-   },
-   {
-    "t": "Белгілерді оқу",
-    "id": "symbols"
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
    },
    {
     "t": "Анықтамалар мен теоремалар",
@@ -681,30 +289,34 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
   "task": "exercises"
  },
  {
-  "id": "week-10",
-  "num": "Linear Algebra · 4-сабақ",
-  "title": "Матрицалар және матрицалық амалдар",
-  "url": "math/lectures/week-10.html",
+  "id": "week-4",
+  "num": "Precalculus · 5-сабақ",
+  "title": "Тригонометрия: бұрыш пен бірлік шеңбер",
+  "url": "math/lectures/week-4.html",
   "topics": [
    {
     "t": "Сабақ мақсаттары",
     "id": "goals"
    },
    {
-    "t": "Қысқаша еске салу",
+    "t": "Алғышарттар",
     "id": "prereq"
    },
    {
-    "t": "Алдымен қолмен: кафе мәзірі",
+    "t": "Алдымен қолмен: шолу дөңгелегі",
     "id": "warmup"
    },
    {
-    "t": "Интуиция: кесте және машина",
+    "t": "Интуиция: айналатын дөңгелек және оның биіктігі",
     "id": "intuition"
    },
    {
     "t": "Белгілерді оқу",
     "id": "symbols"
+   },
+   {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
    },
    {
     "t": "Анықтамалар мен теоремалар",
@@ -743,7 +355,439 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 28,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-5",
+  "num": "Precalculus · 6-сабақ",
+  "title": "Тригонометриялық функциялар мен теңдеулер",
+  "url": "math/lectures/week-5.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Алғышарттар",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: шолу дөңгелегінің биіктігі",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция: тербелістің үш параметрі",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 28,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-6",
+  "num": "Precalculus · 7-сабақ",
+  "title": "Қосынды белгісі, тізбектер және индукция",
+  "url": "math/lectures/week-6.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Алғышарттар",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: тақ сандардың қосындысы",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция: домино тізбегі және Гаусс қосындысы",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 27,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-7",
+  "num": "Linear Algebra · 1-сабақ",
+  "title": "Векторлар және олармен амалдар",
+  "url": "math/lectures/week-7.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: қала көшелері",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция: көрсеткі де, сандар жолы да",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 30,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-8",
+  "num": "Linear Algebra · 2-сабақ",
+  "title": "Скаляр көбейтінді және ортогональдық",
+  "url": "math/lectures/week-8.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: дүкендегі чек",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция: бағыттардың үйлесімділігі",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 29,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-9",
+  "num": "Linear Algebra · 3-сабақ",
+  "title": "Сызықтық теңдеулер жүйесі және Гаусс әдісі",
+  "url": "math/lectures/week-9.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: қалам мен дәптер",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция: жұмбақтан жүйеге",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 31,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-10",
+  "num": "Linear Algebra · 4-сабақ",
+  "title": "Матрицалар және матрицалық амалдар",
+  "url": "math/lectures/week-10.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: кафе мәзірі",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция: кесте және машина",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 28,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -775,6 +819,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -811,7 +859,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 28,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -843,6 +891,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -879,7 +931,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 28,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -911,6 +963,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -947,7 +1003,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 26,
+  "minutes": 29,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -979,6 +1035,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1015,7 +1075,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 26,
+  "minutes": 28,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1047,6 +1107,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1083,7 +1147,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 29,
+  "minutes": 32,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1115,6 +1179,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1151,7 +1219,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1183,6 +1251,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1219,7 +1291,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1251,6 +1323,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1287,7 +1363,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1319,6 +1395,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1355,7 +1435,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1387,6 +1467,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -1423,7 +1507,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 29,
+  "minutes": 32,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2031,6 +2115,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -2067,7 +2155,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2099,6 +2187,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -2135,7 +2227,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2167,6 +2259,10 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
     "t": "Анықтамалар мен теоремалар",
     "id": "theory"
    },
@@ -2203,7 +2299,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 26,
+  "minutes": 29,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2235,208 +2331,8 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "symbols"
    },
    {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Тоқта, ойлан",
-    "id": "checks"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 25,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-33",
-  "num": "Integral Calculus · 5-сабақ",
-  "title": "Бөліктеп интегралдау",
-  "url": "math/lectures/week-33.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Алдымен қолмен: x · eˣ",
-    "id": "warmup"
-   },
-   {
-    "t": "Интуиция: екі көбейткіш арасында «туындыны тасымалдау»",
-    "id": "intuition"
-   },
-   {
-    "t": "Белгілерді оқу",
-    "id": "symbols"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Тоқта, ойлан",
-    "id": "checks"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 25,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-34",
-  "num": "Integral Calculus · 6-сабақ",
-  "title": "Рационал және тригонометриялық өрнектерді интегралдау",
-  "url": "math/lectures/week-34.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Алдымен қолмен: бөлшекті бөлу",
-    "id": "warmup"
-   },
-   {
-    "t": "Интуиция: күрделі бөлшекті қарапайым бөліктерге бөлу",
-    "id": "intuition"
-   },
-   {
-    "t": "Белгілерді оқу",
-    "id": "symbols"
-   },
-   {
-    "t": "Анықтамалар мен теоремалар",
-    "id": "theory"
-   },
-   {
-    "t": "Тоқта, ойлан",
-    "id": "checks"
-   },
-   {
-    "t": "Қорытып шығару",
-    "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
-   },
-   {
-    "t": "Жиі қателер",
-    "id": "mistakes"
-   },
-   {
-    "t": "Визуализация",
-    "id": "viz"
-   },
-   {
-    "t": "Интерактивті есептер",
-    "id": "exercises"
-   },
-   {
-    "t": "Қолданыс және мини-жоба",
-    "id": "project"
-   },
-   {
-    "t": "Қайталау тізімі",
-    "id": "review"
-   }
-  ],
-  "minutes": 26,
-  "quiz": 8,
-  "tasks": 1,
-  "task": "exercises"
- },
- {
-  "id": "week-35",
-  "num": "Integral Calculus · 7-сабақ",
-  "title": "Меншіксіз интегралдар және геометриялық қолданыс",
-  "url": "math/lectures/week-35.html",
-  "topics": [
-   {
-    "t": "Сабақ мақсаттары",
-    "id": "goals"
-   },
-   {
-    "t": "Қысқаша еске салу",
-    "id": "prereq"
-   },
-   {
-    "t": "Алдымен қолмен: шексіз ұзын, бірақ шекті аудан",
-    "id": "warmup"
-   },
-   {
-    "t": "Интуиция: шексіздікке дейін созылатын аудан",
-    "id": "intuition"
-   },
-   {
-    "t": "Белгілерді оқу",
-    "id": "symbols"
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
    },
    {
     "t": "Анықтамалар мен теоремалар",
@@ -2476,6 +2372,222 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
    }
   ],
   "minutes": 27,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-33",
+  "num": "Integral Calculus · 5-сабақ",
+  "title": "Бөліктеп интегралдау",
+  "url": "math/lectures/week-33.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: x · eˣ",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция: екі көбейткіш арасында «туындыны тасымалдау»",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 28,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-34",
+  "num": "Integral Calculus · 6-сабақ",
+  "title": "Рационал және тригонометриялық өрнектерді интегралдау",
+  "url": "math/lectures/week-34.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: бөлшекті бөлу",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция: күрделі бөлшекті қарапайым бөліктерге бөлу",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 28,
+  "quiz": 8,
+  "tasks": 1,
+  "task": "exercises"
+ },
+ {
+  "id": "week-35",
+  "num": "Integral Calculus · 7-сабақ",
+  "title": "Меншіксіз интегралдар және геометриялық қолданыс",
+  "url": "math/lectures/week-35.html",
+  "topics": [
+   {
+    "t": "Сабақ мақсаттары",
+    "id": "goals"
+   },
+   {
+    "t": "Қысқаша еске салу",
+    "id": "prereq"
+   },
+   {
+    "t": "Алдымен қолмен: шексіз ұзын, бірақ шекті аудан",
+    "id": "warmup"
+   },
+   {
+    "t": "Интуиция: шексіздікке дейін созылатын аудан",
+    "id": "intuition"
+   },
+   {
+    "t": "Белгілерді оқу",
+    "id": "symbols"
+   },
+   {
+    "t": "Сызбамен түсіндіру",
+    "id": "explain"
+   },
+   {
+    "t": "Анықтамалар мен теоремалар",
+    "id": "theory"
+   },
+   {
+    "t": "Тоқта, ойлан",
+    "id": "checks"
+   },
+   {
+    "t": "Қорытып шығару",
+    "id": "derivations"
+   },
+   {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
+    "t": "Жиі қателер",
+    "id": "mistakes"
+   },
+   {
+    "t": "Визуализация",
+    "id": "viz"
+   },
+   {
+    "t": "Интерактивті есептер",
+    "id": "exercises"
+   },
+   {
+    "t": "Қолданыс және мини-жоба",
+    "id": "project"
+   },
+   {
+    "t": "Қайталау тізімі",
+    "id": "review"
+   }
+  ],
+  "minutes": 29,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"

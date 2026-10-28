@@ -76,6 +76,9 @@ def check(ex, name):
     return ex
 
 
+SAFE = {"__builtins__": {"sum": sum, "range": range, "abs": abs, "min": min, "max": max, "len": len, "list": list, "sorted": sorted, "set": set, "tuple": tuple}}
+
+
 def verify(ex, name):
     try:
         import sympy as sp
@@ -88,7 +91,7 @@ def verify(ex, name):
     for i, s in enumerate(ex["steps"], 1):
         for lhs, rhs in s["v"]:
             try:
-                L, R = eval(lhs, {"__builtins__": {}}, ns), eval(rhs, {"__builtins__": {}}, ns)
+                L, R = eval(lhs, SAFE, ns), eval(rhs, SAFE, ns)
                 d = 0 if L == R else sp.simplify(L - R)  # L == R: шексіздіктер де (oo - oo = nan болмасын)
                 ok = d == 0 or (getattr(d, "is_number", False) and d.is_finite and abs(complex(sp.N(d))) < 1e-9)
             except Exception as e:  # noqa: BLE001
@@ -98,12 +101,36 @@ def verify(ex, name):
     return bad
 
 
+# Сызбадағы көмекші түстер (c2, c3, c4) пәннің түсінен (c1) және бір-бірінен анық ажыралсын (реңк айырмасы).
+POOL = [("#d97706", "#fbbf24"), ("#2563eb", "#60a5fa"), ("#db2777", "#f472b6"), ("#7c3aed", "#a78bfa"), ("#0d9488", "#2dd4bf"), ("#dc2626", "#f87171")]
+
+
+def _hue(c):
+    import colorsys
+    r, g, b = (int(c[i:i + 2], 16) / 255 for i in (1, 3, 5))
+    return colorsys.rgb_to_hsv(r, g, b)[0] * 360
+
+
+def palette(slug):
+    used, out = [_hue(P.STYLE[slug][0])], []
+    dist = lambda h: min(min(abs(h - u), 360 - abs(h - u)) for u in used)  # noqa: E731
+    for light, dark in POOL:  # алдымен әдеттегі рет (сарғыш, көк, қызғылт ...), реңк айырмасы >= 40°
+        if len(out) < 3 and dist(_hue(light)) >= 40:
+            out.append((light, dark))
+            used.append(_hue(light))
+    while len(out) < 3:  # жетпесе - қалғандарының ішінен ең алысы
+        light, dark = max((c for c in POOL if c not in out), key=lambda c: dist(_hue(c[0])))
+        out.append((light, dark))
+        used.append(_hue(light))
+    return ";".join(f"--mx-c{i}:{l};--mx-c{i}d:{d}" for i, (l, d) in zip((2, 3, 4), out))
+
+
 def md(t):
     return re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", html.escape(t, quote=False))
 
 
-def render(ex, uni, k, uid):
-    o = [f'{OPEN}<section class="mx-explain" aria-labelledby="explain">',
+def render(ex, uni, k, uid, slug):
+    o = [f'{OPEN}<section class="mx-explain" aria-labelledby="explain" style="{palette(slug)}">',
          '        <h2 id="explain">Сызбамен түсіндіру</h2>',
          f'        <p class="mx-xuni"><span>Университетте</span> {md(uni[0])}, {md(uni[1])}, {k}-дәріс</p>',
          f'        <p class="mx-xintro">{md(ex["intro"])}</p>',
@@ -152,7 +179,7 @@ def main():
             bad += verify(ex, name)
             p = LECT / f"week-{P.STARTS[si] + k - 1}.html"
             old = p.read_text(encoding="utf-8")
-            new = inject(old, render(ex, P.UNI[slug], k, f"{slug}{k}"), name)
+            new = inject(old, render(ex, P.UNI[slug], k, f"{slug}{k}", slug), name)
             n += 1
             if new != old:
                 if chk:
