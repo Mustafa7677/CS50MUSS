@@ -8,11 +8,9 @@
   // CS50x-тің прогресс кілттері бұрынғыдай (week-0), басқа курстарда курс атымен (python:week-0) - шатаспайды.
   const COURSE = (location.pathname.match(/\/(python|sql|ai|web|cpp|java|en|math)\/(?:lectures\/[\w-]+\.html|index\.html)?$/) || location.pathname.match(/\/(en|math)\/[\w-]+\.html$/) || [])[1] || "x";
   const PAGE = (() => { const n = (location.pathname.match(/lectures\/([\w-]+)\.html$/) || [])[1]; return n ? (COURSE === "x" ? n : COURSE + ":" + n) : null; })();
-  // Сабақ беті - тыныш: «кино» қабаты (кадр ауысуы, сахналар, ашылу) тек басқа беттерде (style.css: .is-lesson)
-  if (PAGE) {
-    document.documentElement.classList.add("is-lesson");
-    window.addEventListener("pagereveal", (e) => { if (e.viewTransition) e.viewTransition.skipTransition(); });
-  }
+  // Сабақ беті - тыныш: «кино» қабаты (кадр ауысуы, сахналар, ашылу) тек басқа беттерде.
+  // Кадр ауысуын CSS өшіреді (style.css: :root.is-lesson::view-transition-*); skipTransition() қолданбаймыз - ол уәдені қабылдамай, консольге қате шығарады
+  if (PAGE) document.documentElement.classList.add("is-lesson");
 
   // Көшірмеден қорғау: сайт ресми мекенжайдан тыс жерде ашылса, түпнұсқаға сілтеме беретін ескерту көрсетеді.
   // (Тек GitHub Pages-тегі түпнұсқа, жергілікті сервер және file:// үшін көрсетілмейді. Өз доменіңізді қоссаңыз - тізімге қосыңыз.)
