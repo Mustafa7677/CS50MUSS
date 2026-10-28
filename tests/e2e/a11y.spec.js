@@ -7,7 +7,7 @@ const AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 
 for (const scheme of ["light", "dark"]) {
   test(`a11y: барлық беттер (${scheme})`, async ({ browser }) => {
-    test.setTimeout(Math.max(600_000, PAGES.length * 5_000)); // бет саны өскен сайын (математика сабақтары) уақыт шегі де өседі
+    test.setTimeout(Math.max(600_000, PAGES.length * 12_000)); // бет саны өскен сайын уақыт шегі де өседі; математика сабағы (KaTeX + сызбалар) бір бетке ~8 с алады
     const c = await browser.newContext({ colorScheme: scheme, reducedMotion: "reduce" });
     await blockFonts(c);
     const p = await c.newPage();
