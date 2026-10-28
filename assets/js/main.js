@@ -124,6 +124,7 @@
     initWideTables();
     initCourseCards();
     initStory();
+    initFilm();
     initAcademyCode();
     initBeginnerPath();
     initCourseMenu();
@@ -989,6 +990,112 @@
     document.addEventListener("click", (e) => { if (menu && !menu.hidden && !menu.contains(e.target)) close(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && menu && !menu.hidden) { close(); pill.focus(); } });
     window.addEventListener("resize", () => { if (menu && !menu.hidden) close(); });
+  }
+
+  // ---------- Әр беттің тақырып тақтасы: «Бота саяхаты» мультфильмі ----------
+  // Басты беттегі оқиғаның жалғасы. Әр курс - бір күндік саяхат: 0-сабақ таң атқанда басталады, соңғы сабақ
+  // түнде киіз үйге жетумен аяқталады. Бота жердегі жолақта тұрады, орны - курстағы орныңыз; аспанда курстың
+  // шоқжұлдызы. Бет ашылғанда қысқа «кадр» ойналады: төбелер көтеріледі, күн/ай шығады, шоқжұлдыз сызылады,
+  // Бота өз орнына жүріп келеді. Қозғалыс азайтылса - бәрі бірден соңғы күйінде (CSS: .fm, style.css).
+  const FILM_TOTAL = { lectures: 11, python: 10, web: 9, java: 8, cpp: 8, sql: 7, ai: 7, en: 24 };
+  const FILM_CON = {
+    code: [[[30, 20], [10, 50], [30, 80]], [[60, 14], [44, 86]], [[74, 20], [94, 50], [74, 80]]],
+    python: [[[82, 18], [34, 16], [16, 36], [36, 52], [70, 54], [86, 72], [66, 88], [18, 86]]],
+    math: [[[12, 24], [88, 24]], [[34, 24], [30, 86]], [[64, 24], [70, 86]]],
+    en: [[[16, 88], [50, 12], [84, 88]], [[30, 58], [70, 58]]],
+    sql: [[[14, 22], [86, 22], [86, 78], [14, 78], [14, 22]], [[14, 50], [86, 50]], [[50, 22], [50, 78]]],
+    ai: [[[14, 28], [50, 16], [86, 50], [50, 84], [14, 72]], [[14, 28], [50, 84]], [[14, 72], [50, 16]]],
+    // Жетіқарақшы (Үлкен аю): жалпы беттерге
+    sky: [[[6, 34], [24, 26], [40, 36], [54, 44], [58, 74], [86, 80], [92, 50], [54, 44]]],
+  };
+  function filmInfo() {
+    const path = location.pathname;
+    const course = document.body.dataset.course || (path.match(/\/(python|web|java|cpp|sql|ai)\//) || [])[1] || (/\/lectures\//.test(path) ? "lectures" : "");
+    const wk = path.match(/week-(\d+)\.html$/);
+    let p = -1;
+    if (course === "math") {
+      const items = [...document.querySelectorAll(".mx-strip li")];
+      const at = items.findIndex((li) => li.querySelector('[aria-current="page"]'));
+      if (at >= 0 && items.length > 1) p = at / (items.length - 1);
+    } else if (wk && FILM_TOTAL[course]) p = Math.min(1, +wk[1] / (FILM_TOTAL[course] - 1));
+    const con = { math: "math", en: "en", python: "python", sql: "sql", ai: "ai", lectures: "code", web: "code", java: "code", cpp: "code" }[course] || "sky";
+    // Курс беттері мен жалпы беттер: саяхаттың басы (таң) немесе түнгі аспан
+    const phase = p < 0 ? (course ? "dawn" : "night") : p < 0.2 ? "dawn" : p < 0.5 ? "day" : p < 0.8 ? "dusk" : "night";
+    return { p: Math.max(0, p), phase, con, seed: [...path].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) };
+  }
+  function filmRand(seed) { let s = seed || 1; return () => ((s = (s * 1103515245 + 12345) >>> 0) / 4294967296); }
+  const BOTA_SVG = '<g class="bota fm-walker"><ellipse class="b-shadow" cx="62" cy="110" rx="32" ry="4.5"/>' +
+    '<g class="b-far"><rect class="b-leg l1" x="40" y="82" width="8" height="27" rx="4"/><rect class="b-leg l3" x="76" y="82" width="8" height="27" rx="4"/></g>' +
+    '<g class="b-body"><path class="b-tail" d="M31 76q-8 2-6 12"/><path class="b-torso" d="M30 86C26 64 44 60 52 66C56 50 72 50 76 64C88 62 96 72 92 86Z"/>' +
+    '<path class="b-rug" d="M40 74h44v10H40z"/><path class="b-rug-o" d="M44 79l4-3 4 3-4 3zM58 79l4-3 4 3-4 3zM72 79l4-3 4 3-4 3z"/>' +
+    '<g class="b-head"><path class="b-neck" d="M84 70C90 54 88 40 92 32"/><ellipse class="b-skull" cx="98" cy="30" rx="15" ry="12"/><ellipse class="b-muzzle" cx="108" cy="34" rx="7" ry="6"/>' +
+    '<ellipse class="b-ear" cx="88" cy="20" rx="3.5" ry="6" transform="rotate(-20 88 20)"/><path class="b-cap" d="M86 18q12-14 24 0z"/><circle class="b-cap-b" cx="98" cy="9" r="2.6"/>' +
+    '<g class="b-eyes"><circle class="b-eye" cx="98" cy="27" r="4.2"/><circle class="b-glint" cx="99.3" cy="25.6" r="1.4"/></g><circle class="b-blush" cx="102" cy="33" r="2.4"/><path class="b-smile" d="M104 37q4 3 8 0"/></g></g>' +
+    '<g class="b-near"><rect class="b-leg l2" x="45" y="83" width="8" height="27" rx="4"/><rect class="b-leg l4" x="81" y="83" width="8" height="27" rx="4"/></g></g>';
+  function filmSky(info) {
+    const r = filmRand(info.seed);
+    let stars = "";
+    for (let i = 0; i < 34; i++) stars += `<circle cx="${(r() * 1000).toFixed(0)}" cy="${(r() * 190).toFixed(0)}" r="${(0.7 + r() * 1.3).toFixed(1)}" style="--d:${(r() * 3).toFixed(2)}s"/>`;
+    const lines = FILM_CON[info.con];
+    const con = lines.map((l) => `<path d="M${l.map((q) => q.join(" ")).join("L")}" pathLength="1"/>`).join("");
+    const dots = [...new Set(lines.flat().map((q) => q.join(",")))].map((q, i) => `<circle cx="${q.split(",")[0]}" cy="${q.split(",")[1]}" r="3" style="--i:${i}"/>`).join("");
+    const night = info.phase === "night";
+    const orb = night
+      ? '<g class="fm-orb fm-moon"><circle class="fm-glow" r="46"/><path class="fm-disc" d="M8-22.6A24 24 0 1 0 22.6 8 18 18 0 0 1 8-22.6Z"/></g>'
+      : '<g class="fm-orb fm-sun"><circle class="fm-glow" r="50"/><circle class="fm-disc" r="24"/><path class="fm-kuld" d="M-21-8H21M-21 8H21M-8-21V21M8-21V21"/><path class="fm-mid" d="M0-7 7 0 0 7-7 0Z"/><circle class="fm-ring" r="24"/></g>';
+    // Жұлдыздар бүкіл тақтаға жайылады; шоқжұлдыз бен күн/ай - оң жақ жоғарғы бұрышта, өлшемі тұрақты (мәтінге түспейді)
+    return `<svg class="fm-sky" viewBox="0 0 1000 300" preserveAspectRatio="xMaxYMin slice" aria-hidden="true" focusable="false">` +
+      `<g class="fm-stars">${stars}</g><g class="fm-cloud"><path d="M640 92c-4-16 12-26 26-18 6-16 32-18 40-4 12-8 32-2 30 16 12 2 12 18-2 18h-90c-14 0-14-10-4-12z"/></g></svg>` +
+      `<svg class="fm-corner" viewBox="0 0 200 96" aria-hidden="true" focusable="false">` +
+      `<g class="fm-con" transform="translate(30 10) scale(.62)">${con}${dots}</g><g transform="translate(160 38)">${orb}</g></svg>`;
+  }
+  function filmGround(info, W) {
+    const H = 96, r = filmRand(info.seed + 3);
+    const wave = (base, amp, k, ph) => { let d = `M0 ${H}`; for (let x = 0; x <= W + 20; x += 20) d += `L${x} ${(base + amp * Math.sin(x / k + ph)).toFixed(1)}`; return d + `L${W} ${H}Z`; };
+    let tufts = "";
+    for (let x = 30 + r() * 40; x < W - 20; x += 70 + r() * 90) tufts += `<path d="M${x.toFixed(0)} 88c-1-8-3-13-7-18M${x.toFixed(0)} 88c0-10 0-16 2-24M${x.toFixed(0)} 88c2-7 4-12 9-16"/>`;
+    const yurtX = W - 92, botaX = 14 + info.p * Math.max(0, yurtX - 122);
+    const yurt = `<g transform="translate(${yurtX} 40)"><g class="fm-yurt"><path class="y-dome" d="M4 22C10 4 54 4 60 22Z"/><rect class="y-wall" x="4" y="22" width="56" height="24"/>` +
+      `<path class="y-band" d="M4 22h56v4H4z"/><path class="y-lat" d="M8 30l8 12M16 30l8 12M24 30l8 12M40 30l8 12M48 30l8 12M16 30l-8 12M24 30l-8 12M48 30l-8 12M56 30l-8 12"/>` +
+      `<path class="y-door" d="M28 46V31h9v15z"/><circle class="y-top" cx="32" cy="7" r="3.5"/></g></g>`;
+    return `<svg class="fm-ground" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true" focusable="false">` +
+      `<path class="fm-far" d="${wave(54, 9, 150, info.seed % 7)}"/><path class="fm-near" d="${wave(74, 5, 95, (info.seed >> 3) % 7)}"/>` +
+      `<g class="fm-tufts">${tufts}</g>${yurt}` +
+      `<g class="fm-bota" style="--bx:${botaX.toFixed(1)}px"><g transform="translate(0 22) scale(.62)">${BOTA_SVG}</g></g></svg>`;
+  }
+  function initFilm() {
+    const cards = document.querySelectorAll(".content .lecture-head, .cx-hero, .py-hero");
+    if (!cards.length) return;
+    const info = filmInfo();
+    const still = root.classList.contains("reduce-motion") || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
+    cards.forEach((card) => {
+      if (card.querySelector(".fm")) return;
+      const box = document.createElement("div");
+      box.className = "fm";
+      box.setAttribute("aria-hidden", "true");
+      box.innerHTML = filmSky(info) + '<div class="fm-floor"></div>';
+      card.classList.add("has-film");
+      card.dataset.phase = info.phase;
+      card.prepend(box);
+      const floor = box.querySelector(".fm-floor");
+      let w = 0;
+      const draw = () => {
+        const nw = Math.round(card.clientWidth);
+        if (!nw || nw === w) return;
+        w = nw;
+        floor.innerHTML = filmGround(info, w);
+      };
+      draw();
+      if (window.ResizeObserver) new ResizeObserver(draw).observe(card);
+      if (still || !("IntersectionObserver" in window)) return;
+      card.classList.add("fm-anim");
+      // Кадр бір рет ойналады (экранға кіргенде); фондық қозғалыс тек тақта көрініп тұрғанда жүреді
+      const io = new IntersectionObserver((es) => es.forEach((e) => {
+        card.classList.toggle("fm-vis", e.isIntersecting);
+        if (e.isIntersecting) card.classList.add("fm-play");
+      }));
+      io.observe(card);
+    });
   }
 
   // ---------- Басты бет: «Білім көші» оқиғасы ----------

@@ -4119,3 +4119,97 @@ a.cx-card:hover { transform: none; box-shadow: none; }
 .cx-acad a:hover { color: var(--link); }
 .cx-acad span { font: 500 .9rem var(--font); color: var(--muted); }
 .content .cx-acad::before { content: none !important; }
+
+/* ===================================================================
+   «Бота саяхаты»: әр беттің тақырып тақтасы - мультфильм сахнасы (main.js initFilm)
+   Басты беттегі оқиғаның жалғасы. Курс - бір күндік саяхат: data-phase = dawn → day → dusk → night
+   (курстағы орныңызға қарай), Бота жердегі жолақта сол орында тұрады, соңында киіз үй.
+   Аспанда курстың шоқжұлдызы, оң жақта күн-шаңырақ не ай. Мәтін әрдайым үстінде (z-index), жер - мәтіннен төмен.
+   .fm-anim (қозғалыс рұқсат) → .fm-play: бір рет ойналатын кадр; .fm-vis: тақта экранда, фондық қозғалыс жүреді.
+   =================================================================== */
+.has-film { --fm-far: #1d2550; --fm-near: #121838; --fm-stars: 1; --fm-oy: 0px; }
+.content .lecture-head.has-film { padding-bottom: 104px; }
+.cx-hero.has-film, .py-hero.has-film { padding-bottom: 112px; }
+.has-film { isolation: isolate; }  /* сахна тақтаның фоны мен мазмұнының арасында: балаларының орналасуына тимейміз */
+.fm { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; border-radius: inherit; }
+.fm::before { content: ""; position: absolute; inset: 0; background: var(--fm-tint, none); }
+.fm-sky { position: absolute; inset: 0; width: 100%; height: 100%; }
+.fm-floor { position: absolute; left: 0; right: 0; bottom: 0; height: 96px; }
+.fm-ground { display: block; overflow: visible; }
+.fm svg * { transform-box: fill-box; }
+.fm-corner { position: absolute; top: 0; right: 0; width: 200px; height: 96px; overflow: visible; }
+.fm-corner .fm-orb, .fm-corner .fm-orb * { transform-box: view-box; }
+.fm-corner .fm-orb { opacity: .92; }
+@media (max-width: 560px) { .fm-corner { width: 150px; height: 72px; } }
+
+/* Тәулік мезгілдері (мәтін ақ болып қалады: бояу тек төменде және әлсіз) */
+.has-film[data-phase="dawn"] { --fm-far: #4a3a6e; --fm-near: #2e2550; --fm-stars: .35; --fm-oy: 10px;
+  --fm-tint: linear-gradient(to top, rgb(244 128 160 / .30), rgb(244 128 160 / 0) 45%); }
+.has-film[data-phase="day"] { --fm-far: #2d5566; --fm-near: #1d3a48; --fm-stars: 0; --fm-oy: -6px;
+  --fm-tint: linear-gradient(to bottom, rgb(130 200 255 / .12), transparent 40%); }
+.has-film[data-phase="dusk"] { --fm-far: #5a2f4f; --fm-near: #331f3c; --fm-stars: .6; --fm-oy: 16px;
+  --fm-tint: linear-gradient(to top, rgb(255 120 60 / .34), rgb(180 70 120 / .10) 40%, transparent 60%); }
+.has-film[data-phase="night"] { --fm-tint: radial-gradient(circle at 92% 18%, rgb(255 244 201 / .12), transparent 34%); }
+
+.fm-stars circle { fill: #fff; opacity: calc(var(--fm-stars) * .85); }
+.fm-cloud path { fill: rgb(255 255 255 / .07); }
+.fm-con path { fill: none; stroke: #ffe6a3; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; opacity: .42; }
+.fm-con circle { fill: #fff4c9; opacity: .75; }
+.fm-orb { transform: translateY(var(--fm-oy)); }
+.fm-sun .fm-glow { fill: rgb(255 211 107 / .1); }
+.fm-sun .fm-disc { fill: #ffd36b; }
+.fm-sun .fm-kuld { fill: none; stroke: #e0a526; stroke-width: 2.4; }
+.fm-sun .fm-mid { fill: #0a7ea4; }
+.fm-sun .fm-ring { fill: none; stroke: #f2b705; stroke-width: 4; }
+.has-film[data-phase="dusk"] .fm-sun .fm-disc { fill: #ffb35c; }
+.has-film[data-phase="dusk"] .fm-sun .fm-glow { fill: rgb(255 140 70 / .2); }
+.fm-moon .fm-glow { fill: rgb(255 244 201 / .06); }
+.fm-moon .fm-disc { fill: #fff4c9; }
+
+.fm-far { fill: var(--fm-far); opacity: .9; }
+.fm-near { fill: var(--fm-near); }
+.fm-tufts path { fill: none; stroke: #e8b65a; stroke-width: 1.6; stroke-linecap: round; opacity: .5; }
+.fm-yurt .y-dome { fill: #f3e7cc; }
+.fm-yurt .y-wall { fill: #e5d3ad; }
+.fm-yurt .y-band { fill: #b5352b; }
+.fm-yurt .y-lat { fill: none; stroke: #a8763c; stroke-width: 1.2; }
+.fm-yurt .y-door { fill: #8a3a1f; }
+.fm-yurt .y-top { fill: #f2b705; }
+.has-film[data-phase="night"] .fm-yurt .y-door { fill: #ffcf6b; filter: drop-shadow(0 0 6px rgb(255 207 107 / .8)); }
+.fm-bota { transform: translateX(var(--bx)); }
+
+/* Кадр: бет ашылғанда бір рет */
+.fm-anim:not(.fm-play) .fm-far, .fm-anim:not(.fm-play) .fm-near, .fm-anim:not(.fm-play) .fm-tufts,
+.fm-anim:not(.fm-play) .fm-yurt, .fm-anim:not(.fm-play) .fm-bota, .fm-anim:not(.fm-play) .fm-orb,
+.fm-anim:not(.fm-play) .fm-con circle, .fm-anim:not(.fm-play) .fm-stars { opacity: 0; }
+.fm-anim .fm-con path { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.fm-play .fm-far { animation: fm-rise .9s cubic-bezier(.16, 1, .3, 1) both; }
+.fm-play .fm-near { animation: fm-rise .9s cubic-bezier(.16, 1, .3, 1) .12s both; }
+.fm-play .fm-tufts { animation: fm-rise .8s cubic-bezier(.16, 1, .3, 1) .3s both; }
+.fm-play .fm-yurt { animation: fm-pop .8s cubic-bezier(.16, 1, .3, 1) .55s both; transform-origin: 50% 100%; }
+.fm-play .fm-orb { animation: fm-orb 1.6s cubic-bezier(.16, 1, .3, 1) .25s both; }
+.fm-play .fm-stars { animation: fm-fade 1.4s ease .3s both; }
+.fm-play .fm-con path { animation: fm-draw 1.5s cubic-bezier(.65, 0, .35, 1) .6s forwards; }
+.fm-play .fm-con circle { animation: fm-pop .5s cubic-bezier(.16, 1, .3, 1) calc(1.1s + var(--i) * .08s) both; transform-origin: center; }
+.fm-play .fm-bota { animation: fm-walk 2.6s cubic-bezier(.3, .1, .3, 1) .45s both; }
+.fm-play .fm-walker .b-leg { animation: st-leg .38s ease-in-out .45s 7 alternate both; }
+.fm-play .fm-walker .l2, .fm-play .fm-walker .l3 { animation-direction: alternate-reverse; }
+/* Фондық тыныс: тек тақта экранда тұрғанда */
+.fm-vis .fm-cloud { animation: fm-drift 38s linear infinite alternate; }
+.fm-vis[data-phase="night"] .fm-stars circle, .fm-vis[data-phase="dusk"] .fm-stars circle { animation: fm-twinkle 3.2s ease-in-out var(--d) infinite; }
+.fm-vis .fm-walker .b-body { animation: st-bob 2.6s ease-in-out infinite; }
+.fm-anim:not(.fm-vis) .fm *, .fm-anim:not(.fm-vis) .fm *::before { animation-play-state: paused !important; }
+.has-film:not(.fm-anim) .fm * { animation: none !important; }
+@keyframes fm-rise { from { opacity: 0; transform: translateY(42px); } }
+@keyframes fm-pop { from { opacity: 0; transform: scale(.4); } 70% { transform: scale(1.08); } to { opacity: 1; transform: none; } }
+@keyframes fm-orb { from { opacity: 0; transform: translateY(calc(var(--fm-oy) + 90px)); } to { opacity: 1; transform: translateY(var(--fm-oy)); } }
+@keyframes fm-fade { from { opacity: 0; } }
+@keyframes fm-draw { to { stroke-dashoffset: 0; } }
+@keyframes fm-walk { from { opacity: 0; transform: translateX(calc(var(--bx) - 170px)); } 12% { opacity: 1; } to { opacity: 1; transform: translateX(var(--bx)); } }
+@keyframes fm-drift { from { transform: translateX(-60px); } to { transform: translateX(60px); } }
+@keyframes fm-twinkle { 50% { opacity: calc(var(--fm-stars) * .25); } }
+@media (max-width: 560px) {
+  .content .lecture-head.has-film { padding-bottom: 96px; }
+  .cx-hero.has-film, .py-hero.has-film { padding-bottom: 100px; }
+}
+@media print { .fm { display: none; } .content .lecture-head.has-film, .cx-hero.has-film, .py-hero.has-film { padding-bottom: 26px; } }
