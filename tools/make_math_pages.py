@@ -88,7 +88,7 @@ def shell(prefix):
   <a class="skip-link" href="#main">Мазмұнға өту</a>
   <header class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="{prefix}index.html">CS50 <span>қазақша</span></a>
+      <a class="brand" href="{prefix}index.html">AO<span>17</span></a>
       <nav class="nav"></nav>
     </div>
   </header>
@@ -162,7 +162,7 @@ def index_page():
     shown = [x for g in "FHA" for x in SUBJ if x["group"] == g]  # бетте көрінетін рет: Foundations бірінші
     jump = "".join(f'<li><a href="#subj-{x["no"]}">{a(x["en"])}</a></li>' for x in shown)
     tool_html = "\n".join(f'        <a class="oc-card en-tool-card" href="{h}"><h3>{t}</h3><p>{d}</p></a>' for h, t, d in tools)
-    return head("Math: Математика - CS50 қазақша",
+    return head("Math: Математика - AO17",
                 "Математика: авторлық қазақша курс. 25 пән: Linear Algebra, Calculus, Probability Theory, Discrete Mathematics, Number Theory, Topology және т.б. Қорытып шығарулар, шешілген мысалдар, интерактивті есептер.",
                 "../", katex=False, plan=True) + shell("../") + f'''
   <div class="layout single wide">
@@ -247,7 +247,7 @@ def placeholder(n):
     else:
         next_ = ""
     desc = f"Математика, {lab}: {t}. Сабақ жақында жазылады."
-    return head(f"Math {lab}: {t} - CS50 қазақша", desc, "../../", noindex=True) + shell("../../") + f'''
+    return head(f"Math {lab}: {t} - AO17", desc, "../../", noindex=True) + shell("../../") + f'''
   {SOON}
   <div class="layout">
     <aside class="toc">
@@ -289,7 +289,7 @@ TOOLS = {
 
 def tool_page(key):
     label, h1, intro, desc = TOOLS[key]
-    return head(f"Math · {label} - CS50 қазақша", desc, "../", katex=True, plan=True) + shell("../") + f'''
+    return head(f"Math · {label} - AO17", desc, "../", katex=True, plan=True) + shell("../") + f'''
   <div class="layout single wide">
     <article class="content math-tool" id="main">
       <div class="lecture-head" style="--lc:{COLOR}">
@@ -322,7 +322,7 @@ def skeleton(n):
         next_ = f'<a class="next" href="week-{n + 1}.html"><small>Келесі</small>{lesson_label(n + 1)}: {a(ns["lessons"][nk][0])} →</a>'
     else:
         next_ = ""
-    return head(f"Math {lab}: {t} - CS50 қазақша", d, p, katex=True, plan=False, viz=True) + shell(p) + f'''
+    return head(f"Math {lab}: {t} - AO17", d, p, katex=True, plan=False, viz=True) + shell(p) + f'''
   <div class="layout">
     <aside class="toc">
       <h4>Мазмұны</h4>

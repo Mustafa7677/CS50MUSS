@@ -16,7 +16,7 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await expect(page.locator("html")).toHaveClass(/st-js/);
   await expect(page.locator(".st-scene")).toHaveCount(7);
   await expect(page.locator(".st-s1")).toHaveClass(/is-on/);
-  await expect(page.locator(".st-s1 .st-intro .st-word")).toHaveText("CS50 қазақша");
+  await expect(page.locator(".st-s1 .st-intro .st-word")).toHaveText("AO17");
   await expect(page.locator("#scene-2")).not.toHaveClass(/is-on/);
   await expect(page.locator("#academies")).not.toHaveClass(/is-on/);
   await expect(page.locator(".st-s1 h1")).toHaveText("Бір шаңырақ үш академия");

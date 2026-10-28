@@ -756,7 +756,7 @@ test("лицензия: барлық math беттері B, All Rights Reserved,
     expect(s, f).not.toMatch(/<meta name="copyright" content="[^"]*(Harvard|CC BY-NC-SA)/);
     expect(s, f).not.toContain('"isBasedOn"');
     expect(s, f).toContain("© 2026 Sagid Mustafa.");
-    expect(s, f).toContain("CS50MUSS — Harvard University-ден тәуелсіз жоба.");
+    expect(s, f).toContain("AO17 — Harvard University-ден тәуелсіз жоба.");
   }
   expect(fs.existsSync(path.join(MATH, "certificate.html"))).toBe(false);
   const reg = JSON.parse(fs.readFileSync(path.join(ROOT, "licensing/components.json"), "utf8")).components;

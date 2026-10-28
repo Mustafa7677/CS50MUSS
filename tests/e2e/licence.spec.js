@@ -90,10 +90,10 @@ test("әр HTML бетінде талап етілген footer мәтіні ж�
     const s = read(f);
     expect(s, f).toContain("© 2026 Sagid Mustafa.");
     expect(s, f).toContain("Барлық құқықтар қорғалған.");
-    expect(s, f).toContain("CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.");
+    expect(s, f).toContain("AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.");
     expect(s, f).toContain("Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады.");
     expect(s, f).toContain("Қазақша аудармалардың авторы: Sagid Mustafa.");
-    expect(s, f).toContain("CS50MUSS — Harvard University-ден тәуелсіз жоба.");
+    expect(s, f).toContain("AO17 — Harvard University-ден тәуелсіз жоба.");
     expect(s, f).toMatch(/href="(\.\.\/)*copyright\.html">Авторлық құқық және лицензиялар<\/a>/);
     expect(s, f).toContain("https://cs50.harvard.edu/x/");
     expect(s, f).not.toMatch(/Бұл - Sagid Mustafa-ның авторлық қазақша аудармасы/); // ескі «бәрі CC» тұжырымы жоқ

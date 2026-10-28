@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
 # Harvard CS50 материалдары (олар осы файлда сақталмайды) CC BY-NC-SA 4.0 бойынша; үшінші тарап компоненттері өз лицензияларымен.
-"""CS50 қазақша - сайтты құрастыру скрипті.
+"""AO17 - сайтты құрастыру скрипті.
 
 Іске қосу (репозиторийдің түбірінен):  python3 tools/build.py
 
@@ -390,20 +390,20 @@ def license_ld(kind, title, url):
     return json.dumps(base, ensure_ascii=False, separators=(",", ":"))
 
 
-ORG_LD = {"@type": "Organization", "name": "CS50MUSS", "url": SITE_URL, "logo": SITE_URL + "assets/img/icon-192.png",
+ORG_LD = {"@type": "Organization", "name": "AO17", "url": SITE_URL, "logo": SITE_URL + "assets/img/icon-192.png",
           "founder": {"@type": "Person", "name": "Sagid Mustafa"}, "sameAs": ["https://github.com/Mustafa7677/CS50MUSS"]}
 
 
 def extra_ld(rel, title, desc, url):
     """Іздеу жүйелеріне арналған қосымша schema.org: басты бетте WebSite + Organization, курс беттерінде Course."""
     if rel == "index.html":
-        site = {"@context": "https://schema.org", "@type": "WebSite", "name": "CS50 қазақша", "alternateName": "CS50MUSS", "url": SITE_URL,
+        site = {"@context": "https://schema.org", "@type": "WebSite", "name": "AO17", "alternateName": "AO17", "url": SITE_URL,
                 "inLanguage": "kk", "publisher": ORG_LD}
         return json.dumps(site, ensure_ascii=False, separators=(",", ":"))
     m = re.match(rf"({'|'.join(ALL_COURSES)})/index\.html$", rel)
     if not m:
         return ""
-    course = {"@context": "https://schema.org", "@type": "Course", "name": re.sub(r" - CS50 қазақша$", "", title), "description": desc, "url": url,
+    course = {"@context": "https://schema.org", "@type": "Course", "name": re.sub(r" - AO17$", "", title), "description": desc, "url": url,
               "inLanguage": "kk", "isAccessibleForFree": True, "provider": ORG_LD,
               "offers": {"@type": "Offer", "price": 0, "priceCurrency": "KZT", "category": "Free"},
               "hasCourseInstance": {"@type": "CourseInstance", "courseMode": "online", "inLanguage": "kk"}}
@@ -422,7 +422,7 @@ def head_block(prefix, title, desc, url, image="assets/img/og.jpg", kind="M", ex
   <link rel="apple-touch-icon" href="{prefix}assets/img/icon-192.png">
   <link rel="manifest" href="{prefix}manifest.webmanifest">
   <meta property="og:type" content="website">
-  <meta property="og:site_name" content="CS50 қазақша">
+  <meta property="og:site_name" content="AO17">
   <meta property="og:title" content="{html.escape(title)}">
   <meta property="og:description" content="{html.escape(desc)}">
   <meta property="og:url" content="{url}">
@@ -496,18 +496,18 @@ def footer_block(p):
     return (
         '<footer class="footer">\n    <div class="footer-inner">\n'
         f'      <div class="ft-brand"><a class="ft-logo" href="{p}index.html"><img src="{p}assets/img/bota.svg" alt="" width="52" height="52">'
-        '<span><b>CS50</b> қазақша</span></a>'
-        '<p>Harvard CS50 курстарының қазақша аудармалары және дербес интерактивті оқу құралдары: тапсырмалар, автотексеру, ойындар. Тегін және офлайн.</p></div>\n'
+        '<span><b>AO</b>17</span></a>'
+        '<p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>\n'
         + "      " + col("Академиялар", [("programming.html", "Бағдарламалау"), ("en/", "English Academy"), ("en/skills.html", "Ағылшын: дағдылар"), ("math/", "Математика")])
         + col("Оқу", [("index.html#main", "Лекциялар"), ("courses.html", "Барлық курстар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік"), ("exam.html", "Қорытынды емтихан")])
         + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("games.html", "Ойындар 🎮"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы"), ("projects.html", "Жобалар шеберханасы")])
         + col("Жоба", [("about.html", "Курс туралы"), ("alash.html", "Алаш тұлғалары"), ("certificate.html", "Сертификат"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің кабинетім"), ("partners.html", "Серіктестерге"), ("metrics.html", "Ашық метрикалар")])
         + '\n      <div class="ft-legal">'
         '<p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p>'
-        '<p>CS50MUSS платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p>'
+        '<p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p>'
         '<p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. '
         'Қазақша аудармалардың авторы: Sagid Mustafa.</p>'
-        '<p>CS50MUSS — Harvard University-ден тәуелсіз жоба.</p>'
+        '<p>AO17 — Harvard University-ден тәуелсіз жоба.</p>'
         '<p class="ft-src">Түпнұсқа (Harvard CS50): '
         '<a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · '
         '<a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · '
@@ -669,8 +669,8 @@ def build_cheatsheet(entries):  # entries: (meta, ul, course)
     tpl = (ROOT / "about.html").read_text(encoding="utf-8")
     top = tpl[:tpl.index('<div class="layout')]
     top = re.sub(r"<!-- build:head -->.*?<!-- /build:head -->", "", top, flags=re.S)
-    top = re.sub(r"<title>.*?</title>", "<title>Шпаргалка - CS50 қазақша</title>", top)
-    top = top.replace('<meta name="author"', '<meta name="description" content="CS50 қазақша: ' + FLAT["courses_word"] + ' курстың қысқаша конспектісі бір бетте, басып шығаруға ыңғайлы.">\n  <meta name="author"', 1)
+    top = re.sub(r"<title>.*?</title>", "<title>Шпаргалка - AO17</title>", top)
+    top = top.replace('<meta name="author"', '<meta name="description" content="AO17: ' + FLAT["courses_word"] + ' курстың қысқаша конспектісі бір бетте, басып шығаруға ыңғайлы.">\n  <meta name="author"', 1)
     foot = tpl[tpl.index("  <footer"):]
     cards = "\n".join(
         f'''      <section class="cs-card" id="{(c + "-" if c != "x" else "") + m["id"]}" data-c="{c}">
@@ -756,7 +756,7 @@ def build_glossary(terms):
             + "".join(f'<a class="g-src g-more" href="{m["u"]}">{html.escape(m["s"])} →</a>' for m in t["more"][:3]) + '</div>')
     tpl = (ROOT / "about.html").read_text(encoding="utf-8")
     top = tpl[:tpl.index('<div class="layout')]
-    top = re.sub(r"<title>.*?</title>", "<title>Терминдер сөздігі - CS50 қазақша</title>", top)
+    top = re.sub(r"<title>.*?</title>", "<title>Терминдер сөздігі - AO17</title>", top)
     top = top.replace('<meta name="author"', '<meta name="description" content="Информатика терминдерінің қазақша–ағылшынша сөздігі: CS50 лекцияларынан жиналған.">\n  <meta name="author"', 1) if 'name="description"' not in top else top
     foot = tpl[tpl.index("  <footer"):]
     page = top + f"""<div class="layout single">
@@ -870,8 +870,8 @@ SITE_DESC = ("{courses} курс, {lect} лекция, {quiz} тест сұра�
              "Браузерде орындалатын тапсырмалар. Тегін. Harvard CS50 аудармалары (Sagid Mustafa) CC BY-NC-SA 4.0; дербес құралдар мен C++/Java/ағылшын тілі курстары авторлық құқықпен қорғалған.")
 DESC_TEMPLATES = {
     "index.html": SITE_DESC,
-    "exam.html": "CS50 қазақша курсының қорытынды емтиханы: {exam_q} сұрақ, {exam_min} минут, барлық {lect_x} лекция. Нәтиже апталар бойынша талданып, сертификатқа жазылады.",
-    "map.html": "CS50 қазақша курсының картасы: {lect_x} лекция, тақырыптар және сіздің прогресіңіз.",
+    "exam.html": "AO17 курсының қорытынды емтиханы: {exam_q} сұрақ, {exam_min} минут, барлық {lect_x} лекция. Нәтиже апталар бойынша талданып, сертификатқа жазылады.",
+    "map.html": "AO17 курсының картасы: {lect_x} лекция, тақырыптар және сіздің прогресіңіз.",
     "cpp/index.html": "C++ бағдарламалау: авторлық қазақша курс. Жад пен көрсеткіштер, ООП, STL, шаблондар және өз жобаң. {lect_cpp} лекция, тесттер, жаттығулар.",
     "java/index.html": "Java бағдарламалау: авторлық қазақша курс. Нысандар, интерфейстер, Collections, Stream API, көп ағын және өз жобаң. {lect_java} лекция, тесттер, жаттығулар.",
     "en/index.html": "Ағылшын тілі A0-C1: авторлық қазақша курс. Грамматика, сөздік, оқу, жазу, тыңдау мен айту жаттығулары, IT-ағылшын. 24 сабақ, деңгей анықтау тесті.",

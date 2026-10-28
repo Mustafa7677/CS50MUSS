@@ -128,8 +128,8 @@ for code, c in COURSE.items():
     if WANT and code not in WANT:
         continue
     s = TPL
-    s = re.sub(r"<title>.*?</title>", f"<title>{c['short']}: {c['title']} - CS50 қазақша</title>", s, count=1)
-    s = re.sub(r'(<meta property="og:title" content=")[^"]*', rf"\g<1>{c['short']}: {c['title']} - CS50 қазақша", s)
+    s = re.sub(r"<title>.*?</title>", f"<title>{c['short']}: {c['title']} - AO17</title>", s, count=1)
+    s = re.sub(r'(<meta property="og:title" content=")[^"]*', rf"\g<1>{c['short']}: {c['title']} - AO17", s)
     s = re.sub(r'(<meta property="og:description" content=")[^"]*', rf"\g<1>{c['meta']}", s)
     s = s.replace("python/index.html", f"{code}/index.html")
     s = s.replace('<body data-course="python">', f'<body data-course="{code}">')
@@ -379,8 +379,8 @@ for code, c in OWN.items():
     if WANT and code not in WANT:
         continue
     s = TPL
-    s = re.sub(r"<title>.*?</title>", f"<title>{c['short']}: {c['title']} - CS50 қазақша</title>", s, count=1)
-    s = re.sub(r'(<meta property="og:title" content=")[^"]*', rf"\g<1>{c['short']}: {c['title']} - CS50 қазақша", s)
+    s = re.sub(r"<title>.*?</title>", f"<title>{c['short']}: {c['title']} - AO17</title>", s, count=1)
+    s = re.sub(r'(<meta property="og:title" content=")[^"]*', rf"\g<1>{c['short']}: {c['title']} - AO17", s)
     s = re.sub(r'(<meta property="og:description" content=")[^"]*', rf"\g<1>{c['meta']}", s)
     s = s.replace("python/index.html", f"{code}/index.html")
     s = s.replace('<body data-course="python">', f'<body data-course="{code}">')
