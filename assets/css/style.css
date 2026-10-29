@@ -5604,3 +5604,45 @@ html[data-ac="math"] .oc-hero { --hc: #9a7a3a !important; --hc2: #4a3a1c !import
 /* математика пәнінің түсі пергаментте сәл қоюланады (тек жарық режим) */
 @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) :is(.mx-subj, .math-lesson, .mx-rsubj, .mx-exam)[style*="--sc"] { --mc: color-mix(in srgb, var(--sc, #166534) 80%, #000); } }
 :root[data-theme="light"] :is(.mx-subj, .math-lesson, .mx-rsubj, .mx-exam)[style*="--sc"] { --mc: color-mix(in srgb, var(--sc, #166534) 80%, #000); }
+
+/* ===================================================================
+   Екінші кезең: навигациялық жол, жеңіл режим, Алаш мұрағатының ашылуы
+   =================================================================== */
+.crumbs { view-transition-name: ao-crumbs; margin: 0 0 14px; font: 400 14px/1.4 var(--font); }
+.crumbs ol { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 0; margin: 0; padding: 0; list-style: none; }
+.crumbs li { display: inline-flex; align-items: center; min-width: 0; margin: 0; }
+.crumbs li + li::before { content: ""; width: 5px; height: 5px; margin: 0 10px; transform: rotate(45deg); background: var(--bronze); opacity: .7; flex: 0 0 auto; }
+.content .crumbs a { color: var(--muted); text-decoration: none; padding: 4px 0; }
+.content .crumbs a:hover { color: var(--link); text-decoration: underline; }
+.crumbs [aria-current] { color: var(--text); font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 52ch; }
+@media (pointer: coarse) { .content .crumbs a { display: inline-flex; align-items: center; min-height: 44px; } .crumbs { margin-bottom: 4px; } }
+@media (max-width: 560px) { .crumbs [aria-current] { max-width: 60vw; } }
+::view-transition-group(ao-crumbs) { animation-duration: .44s; animation-timing-function: var(--e-out); }
+@media print { .crumbs { display: none; } }
+
+/* Жеңіл режим (әлсіз құрылғы, трафик үнемдеу): ауыр қабаттар жоқ, өтулер қысқа әрі қарапайым */
+html.lite::before { display: none; }
+html.lite :is(.search-modal, .al-doc::backdrop) { backdrop-filter: none; }
+@media (prefers-reduced-motion: no-preference) {
+  html.lite::view-transition-old(root) { animation: vt-fade-out .16s ease both !important; }
+  html.lite::view-transition-new(root) { animation: vt-ink-in .24s var(--e-out) both !important; }
+  html.lite::view-transition-group(*) { animation-duration: .24s !important; }
+}
+
+/* Алаш мұрағаты: карточка экранға кіргенде портрет сепиядан айқындалады, есім сиямен басылады */
+@media (prefers-reduced-motion: no-preference) {
+  :root:not(.reduce-motion) .is-alash .al-card.cine-wait .al-mono img { filter: sepia(1) blur(4px) brightness(1.25); transform: scale(1.12); }
+  :root:not(.reduce-motion) .is-alash .al-card.cine-wait.cine-in .al-mono img { filter: sepia(.35) contrast(1.06) brightness(.98); transform: none; transition: filter 1.1s var(--e-out) .15s, transform 1.1s var(--e-out) .15s; }
+  :root:not(.reduce-motion) .is-alash .al-card.cine-wait h3 { opacity: 0; letter-spacing: .08em; }
+  :root:not(.reduce-motion) .is-alash .al-card.cine-wait.cine-in h3 { opacity: 1; letter-spacing: 0; transition: opacity .6s ease .3s, letter-spacing .9s var(--e-out) .3s; }
+  /* іздеу нәтижелері кезекпен шығады */
+  :root:not(.reduce-motion) .search-results > li { animation: c-rise .3s var(--e-out) both; }
+  :root:not(.reduce-motion) .search-results > li:nth-child(2) { animation-delay: 25ms; }
+  :root:not(.reduce-motion) .search-results > li:nth-child(3) { animation-delay: 50ms; }
+  :root:not(.reduce-motion) .search-results > li:nth-child(4) { animation-delay: 75ms; }
+  :root:not(.reduce-motion) .search-results > li:nth-child(n+5) { animation-delay: 100ms; }
+}
+/* Бөлім соңындағы нәзік ою: футердің үстінде қола мүйіз өрнегі (ою тек белгі ретінде, бір рет) */
+.footer { position: relative; }
+.footer-inner::before { content: ""; position: absolute; left: 50%; top: -15px; width: 30px; height: 30px; transform: translateX(-50%); pointer-events: none;
+  background: var(--bronze); -webkit-mask: var(--orn-gold) center / contain no-repeat; mask: var(--orn-gold) center / contain no-repeat; }
