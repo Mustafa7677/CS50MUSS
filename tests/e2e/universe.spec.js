@@ -95,25 +95,21 @@ test("шоқжұлдыз: жеті курс жұлдыз; Python-ға апарс
   expect(errs).toEqual([]);
 });
 
-test("басты бет: Ботаның сөз бұлты мен Бота ешбір экранда қиылмайды, көлденең жылжу жоқ", async ({ browser }) => {
-  for (const [w, h] of [[320, 640], [360, 760], [375, 812], [390, 844], [414, 896], [768, 1024], [1280, 800]]) {
+test("басты бет: «1917, баспахананың түні» - шаңырақ, жарық бағаны, «Қазақ» газеті; мультфильм жоқ; ешбір экранда көлденең жылжу жоқ", async ({ browser }) => {
+  for (const [w, h] of [[320, 640], [390, 844], [768, 1024], [1280, 800]]) {
     const ctx = await browser.newContext({ viewport: { width: w, height: h }, reducedMotion: "reduce" });
     await blockFonts(ctx);
     const page = await ctx.newPage();
     await page.goto("index.html");
-    const say = page.locator(".st-s1 .st-say");
-    await expect(say).toBeVisible();
-    await expect(say).toHaveText(/Сәлем! Мен - Бота/);
-    const r = await page.evaluate(() => {
-      const q = document.querySelector(".st-s1 .st-say").getBoundingClientRect();
-      const b = document.querySelector(".st-s1 .walker").getBoundingClientRect();
-      return { l: q.left, r: q.right, bl: b.left, br: b.right, over: document.documentElement.scrollWidth - innerWidth, bubbleAbove: q.bottom <= b.top + 30 };
-    });
-    expect(r.l, `${w}px: бұлт сол жақтан`).toBeGreaterThanOrEqual(0);
-    expect(r.r, `${w}px: бұлт оң жақтан`).toBeLessThanOrEqual(w);
-    expect(r.bl, `${w}px: Бота сол жақтан`).toBeGreaterThanOrEqual(0);
-    expect(r.br, `${w}px: Бота оң жақтан`).toBeLessThanOrEqual(w);
-    expect(r.bubbleAbove, `${w}px: бұлт Ботаның үстінде`).toBe(true);
+    await expect(page.locator(".st-s1 .st-art17")).toBeVisible();
+    await expect(page.locator(".st-s1 .s17-mast")).toHaveText("ҚАЗАҚ");
+    await expect(page.locator(".st-s1 .s17-uyk path")).toHaveCount(36);
+    await expect(page.locator(".bota, .walker, .st-say, .eagle")).toHaveCount(0);
+    // шаңырақ (жарық көзі) экранда көрінеді: телефонда да кадрдан шықпайды
+    const r = await page.evaluate(() => { const b = document.querySelector(".st-s1 .s17-ring").getBoundingClientRect(); return { l: b.left, r: b.right, over: document.documentElement.scrollWidth - innerWidth }; });
+    expect(r.l, `${w}px: шаңырақ сол жақтан`).toBeGreaterThanOrEqual(-r.r + r.l);
+    expect(r.r, `${w}px: шаңырақ кадрда`).toBeGreaterThan(0);
+    expect(r.l, `${w}px: шаңырақ кадрда`).toBeLessThan(w);
     expect(r.over, `${w}px: көлденең жылжу`).toBe(0);
     await ctx.close();
   }

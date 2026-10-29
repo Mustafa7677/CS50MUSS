@@ -1248,7 +1248,7 @@ parent.postMessage({tag:${JSON.stringify(tag)},res:__res},"*");<\/script>`;
   const CASES = {
     domb: {
       script: "assets/data/mystery.js", data: () => window.CS50KZ_MYSTERY, db: "mystery", key: "cs50kz:mystery", flag: "detective",
-      bota: "bota.svg",
+      bota: "seal.svg",
       story: `<p><b>Бота:</b> Детектив, көмегіңіз керек! Наурыз мейрамында, <b>2026 жылғы 21 наурызда</b>, Алмалы қаласындағы <b>Абай көшесіндегі мұражайдан</b> халықтың мақтанышы - <b>алтын домбыра</b> ұрланды!</p>
           <p>Қаланың барлық деректері - тұрақ камерасы, банкоматтар, телефон қоңыраулары, әуежай - SQL дерекқорында. Табыңыз: <b>ұры кім</b>, ол <b>қай қалаға қашты</b> және оған <b>кім көмектесті</b>?</p>`,
       start: "SELECT description\nFROM crime_scene_reports\nWHERE year = 2026 AND month = 3 AND day = 21 AND street = 'Abai Street';",
@@ -1264,7 +1264,7 @@ parent.postMessage({tag:${JSON.stringify(tag)},res:__res},"*");<\/script>`;
     },
     baikonur: {
       script: "assets/data/mystery2.js", data: () => window.CS50KZ_MYSTERY2, db: "baikonur", key: "cs50kz:mystery2", flag: "detective2",
-      bota: "bota-wow.svg",
+      bota: "seal.svg",
       story: `<p><b>Бота:</b> Детектив, тағы да сізге жүгініп тұрмын! <b>2026 жылғы 12 сәуірде</b>, Ғарышкерлер күні мерекесі кезінде, <b>Байқоңыр</b> космодромының Конструкторлық бюросынан жаңа <b>«Тұлпар-1»</b> зымыранының құпия сызбалары жоғалды!</p>
           <p>Космодромның пропуск сканерлері, принтерлері, электрондық поштасы мен Төретам станциясының билеттері SQL дерекқорында. Бұл жолы <code>JOIN</code>, <code>GROUP BY</code> мен <code>LIKE</code> керек болады. Табыңыз: <b>ұры кім</b>, ол <b>қай қалаға қашты</b> және сызбаларды <b>кімге жіберді</b>?</p>`,
       start: "SELECT description\nFROM incident_reports\nWHERE date = '2026-04-12' AND building = 'Design Bureau';",
@@ -1308,7 +1308,7 @@ parent.postMessage({tag:${JSON.stringify(tag)},res:__res},"*");<\/script>`;
           <div class="dt-schema"></div>
           <h3>📓 Детектив дәптері</h3>
           <textarea class="dt-notes" placeholder="Күдіктілер, нөмірлер, ойлар..." aria-label="Детектив дәптері"></textarea>
-          <h3><img src="${K.ROOT_URL}assets/img/bota-think.svg" alt="" width="28" height="28" class="inline-bota"> Ботаның кеңестері</h3>
+          <h3><img src="${K.ROOT_URL}assets/img/seal.svg" alt="" width="28" height="28" class="inline-bota"> Ұстаздың кеңестері</h3>
           <div class="dt-hints"></div>
         </aside>
       </div>

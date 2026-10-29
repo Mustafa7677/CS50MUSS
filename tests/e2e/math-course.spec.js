@@ -987,7 +987,7 @@ test("көмекші: басқа курстарда бота мінезі өзг
   await page.goto("cpp/lectures/week-0.html");
   await page.waitForFunction(() => window.CS50KZ);
   await expect(page.locator(".bota-tip")).toHaveCount(1);
-  await expect(page.locator(".bota-tip")).toContainText("Ботаның кеңесі");
+  await expect(page.locator(".bota-tip")).toContainText("Ұстаздың кеңесі");
   await expect(page.locator(".math-help-btn")).toHaveCount(0);
 });
 

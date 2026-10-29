@@ -495,7 +495,7 @@ def footer_block(p):
         return f'<div class="ft-col"><h4>{title}</h4><ul>{lis}</ul></div>'
     return (
         '<footer class="footer">\n    <div class="footer-inner">\n'
-        f'      <div class="ft-brand"><a class="ft-logo" href="{p}index.html"><img src="{p}assets/img/bota.svg" alt="" width="52" height="52">'
+        f'      <div class="ft-brand"><a class="ft-logo" href="{p}index.html"><img src="{p}assets/img/seal.svg" alt="" width="52" height="52">'
         '<span><b>AO</b>17</span></a>'
         '<p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>\n'
         + "      " + col("Академиялар", [("programming.html", "Бағдарламалау"), ("en/", "English Academy"), ("en/skills.html", "Ағылшын: дағдылар"), ("math/", "Математика")])
