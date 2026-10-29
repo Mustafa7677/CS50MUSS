@@ -5024,3 +5024,47 @@ body.is-home .topbar::after { transition: opacity .35s ease; }
   .st-js .st-s1::before { content: ""; position: absolute; left: 0; right: 0; top: 0; bottom: var(--stage); z-index: -1; background: #0a0f2e; opacity: 0; pointer-events: none;
     animation: st-dawn 3.2s ease-out .1s both; }
 }
+
+/* ================= Әр беттің өз белгісі (.fm-em) және тақырыптың сөзбе-сөз көтерілуі (.fx-w) =================
+   main.js: EMBLEMS / EMBLEM_OF. Әдепкі күй - сызылған соңғы күй; сызылу тек .fm-anim.fm-play ішінде (қозғалыс рұқсат болса). */
+.fm-em { position: absolute; z-index: 0; right: clamp(20px, 5%, 64px); top: calc(50% - 44px); translate: 0 -50%; width: clamp(150px, 19vw, 228px); aspect-ratio: 1; pointer-events: none;
+  filter: drop-shadow(0 0 22px rgb(255 211 107 / .35)); }
+.fm-em svg { width: 100%; height: 100%; overflow: visible; }
+.em-orbit circle { fill: rgb(255 255 255 / .03); stroke: rgb(245 197 66 / .28); stroke-width: 1.5; stroke-dasharray: 2 7; }
+.em-orbit { transform-box: view-box; transform-origin: center; }
+.em-s { fill: none; stroke: #f5c542; stroke-width: 5; stroke-linecap: round; stroke-linejoin: round; }
+.em-a { fill: #2bc4dd; transform-box: fill-box; transform-origin: center; }
+.has-emblem > :not(.fm):not(.fm-em) { position: relative; z-index: 1; }
+@media (min-width: 760px) { .content .lecture-head.has-emblem > :not(.fm):not(.fm-em) { max-width: calc(100% - clamp(180px, 23vw, 280px)); } }
+@media (max-width: 759px) {
+  /* телефонда белгі жоғарғы жолда (белгі-чиппен қатар), тақырыптың енін тарылтпаймыз */
+  .fm-em { width: 52px; top: 12px; right: 14px; translate: none; filter: drop-shadow(0 0 12px rgb(255 211 107 / .35)); }
+  .fm-em .em-orbit { display: none; }
+  .content .lecture-head.has-emblem .num { max-width: calc(100% - 64px); }
+}
+/* сызылу: әр сызық кезекпен, сосын көгілдір нүкте; кейін белгі баяу қалқиды, орбита айналады */
+.fm-anim .em-s { stroke-dasharray: 1; stroke-dashoffset: 1; }
+.fm-anim.fm-play .em-s { animation: st-draw .9s cubic-bezier(.65, 0, .35, 1) forwards; }
+.fm-anim.fm-play .em-art > :nth-child(1) { animation-delay: .25s; }
+.fm-anim.fm-play .em-art > :nth-child(2) { animation-delay: .45s; }
+.fm-anim.fm-play .em-art > :nth-child(3) { animation-delay: .65s; }
+.fm-anim.fm-play .em-art > :nth-child(4) { animation-delay: .82s; }
+.fm-anim.fm-play .em-art > :nth-child(5) { animation-delay: .98s; }
+.fm-anim .em-a { scale: 0; }
+.fm-anim.fm-play .em-a { animation: em-pop .55s cubic-bezier(.3, 1.6, .5, 1) 1.3s forwards; }
+.fm-anim .em-orbit { opacity: 0; }
+.fm-anim.fm-play .em-orbit { animation: si-fade .8s ease .1s forwards; }
+.fm-anim.fm-vis .em-orbit circle { animation: em-spin 60s linear infinite; transform-box: view-box; transform-origin: center; }
+.fm-anim.fm-vis .fm-em svg { animation: em-float 6s ease-in-out 2s infinite; }
+@keyframes em-pop { to { scale: 1; } }
+@keyframes em-spin { to { rotate: 360deg; } }
+@keyframes em-float { 50% { translate: 0 -6px; } }
+/* тақырып: әр сөз маскадан көтеріледі */
+.fm-anim h1 .fx-w { display: inline-block; overflow: hidden; vertical-align: bottom; padding-bottom: .1em; margin-bottom: -.1em; }
+.fm-anim h1 .fx-w > span { display: inline-block; translate: 0 110%; }
+.fm-anim.fm-play h1 .fx-w > span { animation: fx-up .8s cubic-bezier(.16, 1, .3, 1) forwards; animation-delay: calc(.12s + var(--w) * .07s); }
+@keyframes fx-up { to { translate: 0 0; } }
+/* академия түсі: ағылшын - кешкі шие-күлгін, математика - терең жасыл тақта (фильм аспанының үстінде, мазмұнның астында) */
+.has-film[data-ac="en"] .fm { background: radial-gradient(120% 100% at 0% 0%, rgb(206 70 128 / .5), transparent 64%), linear-gradient(180deg, rgb(128 30 78 / .42), rgb(60 20 60 / .2) 80%); }
+.has-film[data-ac="math"] .fm { background: radial-gradient(120% 100% at 0% 0%, rgb(34 160 104 / .32), transparent 62%), linear-gradient(180deg, rgb(8 96 64 / .26), transparent 75%); }
+.has-emblem .fm-corner { display: none; }  /* батылдық бір жерде: эмблема бар тақтада бұрыштағы күн/ай жоқ */
