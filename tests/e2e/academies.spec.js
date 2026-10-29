@@ -16,7 +16,7 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await expect(page.locator("html")).toHaveClass(/st-js/);
   await expect(page.locator(".st-scene")).toHaveCount(7);
   await expect(page.locator(".st-s1")).toHaveClass(/is-on/);
-  await expect(page.locator(".st-s1 .st-intro .st-word")).toHaveText("AO17");
+  await expect(page.locator(".ax17")).toHaveCount(0);  // тесттерде кіріспе «көрілген» (helpers.js)
   await expect(page.locator("#scene-2")).not.toHaveClass(/is-on/);
   await expect(page.locator("#academies")).not.toHaveClass(/is-on/);
   await expect(page.locator(".st-s1 h1")).toHaveText("Бір шаңырақ үш академия");
@@ -61,7 +61,7 @@ test("оқиға: қозғалыс азайтылса (жүйе не «Аа» б
     await expect(page.locator("html")).not.toHaveClass(/st-js/);
     // скроллсыз да 2 мен 3-сахна мәтіні мен карточкалары көрінеді
     for (const sel of [".st-pillars li >> nth=3", ".ac-card >> nth=2", ".st-s1 .st-acts", ".axc-langs li >> nth=6", ".axe-levels li >> nth=5", ".axm-map li >> nth=24", ".axc-page .w >> nth=5"]) await expect(page.locator(sel)).toHaveCSS("opacity", "1");
-    await expect(page.locator(".st-intro")).toBeHidden();  // логотип кадры да жоқ
+    await expect(page.locator(".ax17")).toBeHidden();  // «АЛАШ 1917» кіріспесі де жоқ
     expect(await page.locator(".st-s1 .sun-rise").evaluate((e) => getComputedStyle(e).animationName)).toBe("none");
     await ctx.close();
   }

@@ -13,7 +13,7 @@
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
 | B · Sagid Mustafa-ның дербес әзірлемесі | 1130 |
-| C · Үшінші тарап | 59 |
+| C · Үшінші тарап | 72 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 56 |
 
 ## 2. Компоненттер кестесі
@@ -28,7 +28,7 @@
 | `math/**` | **B-course-math** Математика (24 пән): дербес авторлық курс (math/ сабақтары, курс беті, формулалар, сөздік және жаттықтырғыш беттері) (171 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/js/math-course.js`<br>`assets/js/math-viz.js`<br>`assets/css/math-course.css`<br>`assets/data/math-*.js`<br>`docs/MATH-COURSE-GUIDE.md`<br>`tools/make_math_pages.py`<br>`tools/math_plan.py`<br>`tools/math_verify.py`<br>`tools/math_lesson_gen.py`<br>`tools/math_src/**`<br>`tools/math_easy/**`<br>`tools/math_easy_inject.py`<br>`tools/math_explain.py`<br>`tools/math_explain/**`<br>`tools/math_fig.py`<br>`tools/math_pedagogy.py`<br>`tools/math_prereq.py` | **B-course-math-engine** Математика курсының қозғалтқышы (есептер, қауіпсіз өрнек парсері, визуализация), стильдері, деректері (assets/data/math-*.js), құжаты және құралдары (413 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/vendor/katex/**` | **C-katex** KaTeX 0.16.11 (формулаларды көрсету; жергілікті көшірме, CDN жоқ) (24 файл) | Khan Academy and other contributors | MIT | расталған |
-| `assets/fonts/**` | **C-fonts** Интерфейс қаріптері: Unbounded, Inter, JetBrains Mono (woff2, cyrillic/cyrillic-ext/latin/latin-ext; жергілікті көшірме) (16 файл) | The Inter / Unbounded / JetBrains Mono Project Authors | OFL-1.1 | расталған |
+| `assets/fonts/**` | **C-fonts** Интерфейс қаріптері: Unbounded, Inter, JetBrains Mono, PT Serif (woff2, cyrillic/cyrillic-ext/latin/latin-ext; жергілікті көшірме) (29 файл) | The Inter / Unbounded / JetBrains Mono Project Authors; ParaType (PT Serif) | OFL-1.1 | расталған |
 | `sources/**` | **A1-sources** Оригинальные тексты Harvard CS50 (конспекты и problem sets), сохранённые для перевода (141 файл) | David J. Malan, Carter Zenke, Brian Yu, Harvard University / CS50 (по заголовкам sources/*/README.md) | CC BY-NC-SA 4.0 | расталған |
 | `lectures/*.html` | **A2-lectures-x** CS50x: 12 лекций (перевод и адаптация) (12 файл) | Оригинал: David J. Malan, Harvard / CS50. Перевод и адаптация: Sagid Mustafa | CC BY-NC-SA 4.0 | расталған |
 | `python/lectures/*.html` | **A2-lectures-python** CS50P (Python): 10 лекций (10 файл) | Оригинал: David J. Malan, Harvard / CS50. Перевод и адаптация: Sagid Mustafa | CC BY-NC-SA 4.0 | расталған |
