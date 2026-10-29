@@ -123,3 +123,37 @@ test("курс карточкалары: әр курстың тапсырма с
     expect(n, `${c}: ${t}`).toBeGreaterThan(10);
   }
 });
+
+test("ашылу сәті: шаңырақ сызылып күнге ұшады, сессияда бір рет; шапка мөлдір, сахнадан өткенде қалыпты", async ({ page }) => {
+  await blockFonts(page.context());
+  const errs = collectErrors(page);
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("index.html");
+  await expect(page.locator(".st-intro .si-mark")).toBeVisible();
+  await expect(page.locator(".st-intro.si-fly")).toHaveCount(1, { timeout: 5000 });
+  const fs = await page.locator(".st-intro").evaluate((n) => +n.style.getPropertyValue("--fs"));
+  expect(fs).toBeGreaterThan(0.2);
+  await expect(page.locator(".st-s1.si-landed")).toHaveCount(1, { timeout: 3000 });
+  // шапка сахна үстінде мөлдір, мәтіні ақ
+  expect(await page.locator(".topbar").evaluate((n) => getComputedStyle(n).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
+  await page.mouse.wheel(0, 1400);
+  await expect(page.locator("html.tb-solid")).toHaveCount(1);
+  // қайта ашқанда кіріспе жоқ, мәтін бірден
+  await page.reload();
+  await expect(page.locator("html.st-seen")).toHaveCount(1);
+  await expect(page.locator(".st-intro")).toBeHidden();
+  await expect(page.locator(".st-s1 h1")).toBeVisible();
+  expect(errs).toEqual([]);
+});
+
+test("бренд: телефонда (сенсорлы) «AO17» толық көрінеді", async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  await blockFonts(ctx);
+  const page = await ctx.newPage();
+  for (const u of ["index.html", "math/lectures/week-0.html", "partners.html"]) {
+    await page.goto(u);
+    await expect(page.locator(".topbar .brand")).toHaveText(/^AO\s*17$/);
+    await expect(page.locator(".topbar .brand span")).toBeVisible();
+  }
+  await ctx.close();
+});
