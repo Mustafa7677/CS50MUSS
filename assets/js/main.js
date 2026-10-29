@@ -99,18 +99,114 @@
       sessionStorage.removeItem("ao17:tx");
     }
   } catch (e) { /* жеке режим */ }
-  // Беттер арасындағы камера (View Transitions, Chrome/Edge/Safari 18+): сабақтан сабаққа - бір кеңістікте көлденең;
-  // алға бір бағытта, артқа кері. Академия өтуі өзінің сахнасымен жүреді, сондықтан браузердің өтуі ол кезде өшеді.
+  // Академия мінезі (Дизайн 5.0): бет қай академияға тиесілі - түсі, фактурасы, өту сипаты осыдан
+  root.dataset.ac = /\/en\//.test(location.pathname) ? "en" : /\/math\//.test(location.pathname) ? "math"
+    : /\/(python|sql|ai|web|cpp|java)\/|\/lectures\/|\/(programming|courses|playground|practice|debug|flask|projects|map|cheatsheet|exam|games|detective|viz|flashcards)\.html$/.test(location.pathname) ? "code" : "core";
+  // ---------- Беттер арасындағы өту грамматикасы (View Transitions, Chrome/Edge/Safari 18+) ----------
+  // Әр бет сайт картасында орны бар сахна: деңгейі (басты 0, академия 1, құрал 1.5, курс 2, сабақ 3), тобы, академиясы, реті.
+  // Өтудің түрі екі беттің орнынан шығады, сондықтан «артқа» батырмасы өздігінен кері қозғалыс береді:
+  //   home - шаңыраққа қайту; iris - шаңырақтан түскен жарық (басты беттен); archive - мұрағат суреті шығады (Алаш);
+  //   dive - тереңге: таңдалған карточка жаңа беттің тақырыбына айналады; rise - кері: тақырып карточкаға оралады;
+  //   page-f / page-b - сабақтан сабаққа кітап парағы; cross-f / cross-b - академия ауысуы; side-f / side-b - бір деңгейдегі құралдар.
+  // Академия өтуі (tx) өзінің «АЛАШ 1917» сахнасымен жүреді, ол кезде браузердің өтуі өшеді.
+  const SITE_BASE = (() => {
+    const s = document.currentScript && document.currentScript.src;
+    return s ? new URL(s).pathname.replace(/assets\/js\/main\.js$/, "") : "/";
+  })();
+  const TOOLS = ["map.html", "practice.html", "playground.html", "cheatsheet.html", "glossary.html", "flashcards.html", "viz.html", "debug.html", "games.html", "detective.html", "flask.html", "projects.html", "exam.html"];
+  const INFO = ["about.html", "alash.html", "certificate.html", "teacher.html", "profile.html", "partners.html", "metrics.html", "copyright.html", "404.html"];
+  const AC_ORDER = { code: 0, en: 1, math: 2, core: 3 };
+  function routeOf(u) {
+    let p;
+    try { const x = new URL(u, location.href); if (x.origin !== location.origin) return null; p = x.pathname; } catch (e) { return null; }
+    if (p.indexOf(SITE_BASE) !== 0) return null;
+    p = p.slice(SITE_BASE.length);
+    if (p === "" || /\/$/.test(p)) p += "index.html";
+    let m;
+    if (p === "index.html") return { p, lv: 0, grp: "home", ac: "core", ord: 0 };
+    if ((m = p.match(/^(?:(\w+)\/)?lectures\/week-(\d+)\.html$/))) {
+      const c = m[1] || "x";
+      return { p, lv: 3, grp: "lec:" + c, ac: c === "en" ? "en" : c === "math" ? "math" : "code", ord: +m[2] };
+    }
+    if ((m = p.match(/^(en|math)\/index\.html$/))) return { p, lv: 1, grp: "hub", ac: m[1], ord: AC_ORDER[m[1]] };
+    if (p === "programming.html" || p === "courses.html") return { p, lv: 1, grp: "hub", ac: "code", ord: 0 };
+    if ((m = p.match(/^(python|sql|ai|web|cpp|java)\/index\.html$/))) return { p, lv: 2, grp: "course", ac: "code", ord: "python sql ai web cpp java".split(" ").indexOf(m[1]) };
+    if ((m = p.match(/^(en|math)\/(\w+)\.html$/))) return { p, lv: 2, grp: "tool:" + m[1], ac: m[1], ord: m[2].charCodeAt(0) };
+    if (TOOLS.indexOf(p) >= 0) return { p, lv: 1.5, grp: "tools", ac: "code", ord: TOOLS.indexOf(p) };
+    if (p === "alash.html") return { p, lv: 1.5, grp: "archive", ac: "core", ord: 1 };
+    return { p, lv: 1.5, grp: "info", ac: "core", ord: INFO.indexOf(p) };
+  }
+  function routeKind(fromUrl, toUrl) {
+    const a = routeOf(fromUrl), b = routeOf(toUrl);
+    if (!a || !b || a.p === b.p) return null;
+    if (b.lv === 0) return "home";
+    if (a.lv === 0) return "iris";
+    if (b.grp === "archive") return "archive";
+    if (a.grp === b.grp && a.lv === 3) return b.ord > a.ord ? "page-f" : "page-b";
+    if (b.lv > a.lv) return "dive";
+    if (b.lv < a.lv) return "rise";
+    if (a.ac !== b.ac) return AC_ORDER[b.ac] > AC_ORDER[a.ac] ? "cross-f" : "cross-b";
+    return b.ord >= a.ord ? "side-f" : "side-b";
+  }
+  window.AO17Motion = { routeOf, routeKind };
+  // Ортақ элемент: «карточка -> тақырып». Ескі бетте басылған сілтеменің карточкасы, жаңа бетте тақырып блогы бір атқа ие болады.
+  const HERO_SEL = ".content .lecture-head, .cx-hero, .py-hero, .gx-hero, .ar-head, .nf";
+  const CARD_SEL = "[class*='card'], [class*='tile'], .week-card, .pa-path, .cm-row, li";
+  let lastLink = null;
+  document.addEventListener("click", (e) => { const a = e.target.closest && e.target.closest("a[href]"); if (a) lastLink = a; }, true);
+  const named = [];
+  function vtName(el, name) { if (el) { el.style.viewTransitionName = name; named.push(el); } }
+  function vtClear() { named.splice(0).forEach((el) => { el.style.viewTransitionName = ""; }); }
+  function heroOf(doc) {
+    const h = doc.querySelector(HERO_SEL);
+    return h ? [h, h.querySelector("h1")] : [null, null];
+  }
+  function cardFor(url) {
+    let link = lastLink && lastLink.isConnected && lastLink.href.split("#")[0] === url.split("#")[0] ? lastLink : null;
+    if (!link) link = [...document.querySelectorAll("main a[href], .content a[href], .layout a[href]")].find((a) => a.href.split("#")[0] === url.split("#")[0] && !a.closest(".topbar, .footer, .toc, .pager, .course-menu"));
+    if (!link) return [null, null];
+    const card = link.closest(CARD_SEL) || link;
+    const r = card.getBoundingClientRect();
+    if (r.bottom < 0 || r.top > innerHeight || r.width > innerWidth * .98) return [null, null];  // экраннан тыс не тым үлкен: ортақ элемент жоқ
+    return [card, card.querySelector("h3, h2, strong, b, .title") || null];
+  }
+  function motionStill() { return root.classList.contains("reduce-motion") || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); }
+  window.addEventListener("pageswap", (e) => {
+    if (!e.viewTransition || motionStill()) return;
+    try {
+      const to = e.activation && e.activation.entry && e.activation.entry.url;
+      const kind = routeKind(location.href, to);
+      if (!kind) return;
+      if (kind === "dive") { const [c, t] = cardFor(to); vtName(c, "ao-hero"); if (t) vtName(t, "ao-title"); }
+      else if (kind === "rise") { const [h, t] = heroOf(document); vtName(h, "ao-hero"); vtName(t, "ao-title"); }
+    } catch (er) { /* ескі браузер */ }
+  });
   window.addEventListener("pagereveal", (e) => {
     if (!e.viewTransition) return;
     if (root.classList.contains("tx-in") || root.classList.contains("tx-back")) { e.viewTransition.types.add("tx"); return; }
+    if (motionStill()) { e.viewTransition.skipTransition(); return; }
     try {
       const from = window.navigation && navigation.activation && navigation.activation.from && navigation.activation.from.url;
-      const wk = (u) => { const m = String(u || "").match(/^(.*\/)lectures\/week-(\d+)\.html/); return m ? [m[1], +m[2]] : null; };
-      const a = wk(from), b = wk(location.href);
-      if (a && b && a[0] === b[0] && a[1] !== b[1]) e.viewTransition.types.add(b[1] > a[1] ? "fwd" : "back");
+      const kind = routeKind(from, location.href);
+      if (!kind) return;
+      e.viewTransition.types.add(kind);
+      root.dataset.vt = kind;
+      if (kind === "dive") { const [h, t] = heroOf(document); vtName(h, "ao-hero"); vtName(t, "ao-title"); }
+      else if (kind === "rise") { const [c, t] = cardFor(from); vtName(c, "ao-hero"); if (t) vtName(t, "ao-title"); }
+      e.viewTransition.finished.finally(() => { vtClear(); delete root.dataset.vt; });
     } catch (er) { /* ескі браузер */ }
   });
+  // View Transitions жоқ браузерде (Firefox): ақ жарқылсыз, мазмұн қағаздан жұмсақ шығады
+  if (!("onpagereveal" in window)) root.classList.add("no-vt");
+  // Сілтемеге меңзер тұрғанда келесі бетті алдын ала жүктейміз (тек prefetch: бет орындалмайды, санақ жіберілмейді)
+  try {
+    if (HTMLScriptElement.supports && HTMLScriptElement.supports("speculationrules")) {
+      const sr = document.createElement("script");
+      sr.type = "speculationrules";
+      sr.textContent = JSON.stringify({ prefetch: [{ source: "document", where: { and: [{ href_matches: SITE_BASE + "*" }, { not: { selector_matches: "[download], [target=_blank]" } }] }, eagerness: "moderate" }] });
+      document.head.appendChild(sr);
+    }
+  } catch (e) { /* қолдамайды */ }
 
   document.addEventListener("DOMContentLoaded", () => {
     // Жылжыған кезде блоктардың біртіндеп көрінуі және баннердегі сандар
@@ -213,6 +309,9 @@
     myCourses(document.querySelector(".my-courses"));
     if (PAGE || document.body.dataset.course) { try { localStorage.setItem("cs50kz:lastcourse", JSON.stringify(COURSE)); } catch (e) {} }
     initAlashPortraits();
+    initAlashDoc();
+    initResultReplay();
+    initHeroDepth();
     document.querySelectorAll(".qt-slot").forEach(miniQuote);
     initPythonRunner();
     initSqlRunner();
@@ -722,6 +821,105 @@
     return p
       ? `<span class="${cls} has-img"><img src="${ROOT_URL + p.img}" alt="${escapeHtml(name)}" width="320" height="400" loading="lazy" decoding="async"></span>`
       : `<span class="${cls}" aria-hidden="true">${escapeHtml(ini)}</span>`;
+  }
+  // ---------- LEVEL A: Алаш мұрағаты - карточка құжатқа жақындайды ----------
+  // Карточка орнынан ашылады (FLIP): камера архивтегі құжатқа жақындағандай; жабылғанда орнына қайтады, фокус батырмаға оралады.
+  // Құжат - сайттың өз мұрағат карточкасы (түпнұсқа ретінде көрсетілмейді); сурет дерегі Wikimedia Commons-тан.
+  function initAlashDoc() {
+    const cards = [...document.querySelectorAll(".alash .al-card")];
+    if (!cards.length) return;
+    cards.forEach((card, i) => {
+      const name = card.querySelector("h3").textContent.trim();
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "al-open";
+      b.textContent = "Құжатты ашу";
+      b.setAttribute("aria-label", name + ": мұрағат карточкасын ашу");
+      b.addEventListener("click", () => openDoc(card, i, cards.length, b));
+      card.appendChild(b);
+    });
+    function openDoc(card, i, n, opener) {
+      const name = card.querySelector("h3").textContent.trim();
+      const life = card.querySelector("header small")?.textContent.trim() || "";
+      const face = card.querySelector(".al-mono img");
+      const dlg = document.createElement("dialog");
+      dlg.className = "al-doc";
+      dlg.setAttribute("aria-labelledby", "al-doc-h");
+      dlg.innerHTML = `<div class="ad-sheet">
+        <p class="ad-mast"><span>AO17 мұрағат карточкасы</span><span>№ ${String(i + 1).padStart(2, "0")} / ${n}</span></p>
+        <div class="ad-body">
+          <figure class="ad-face">${face ? `<img src="${face.currentSrc || face.src}" alt="${escapeHtml(name)}" width="320" height="400">` : `<span class="ad-ini" aria-hidden="true">${escapeHtml(card.querySelector(".al-mono")?.textContent || "")}</span>`}<figcaption class="ad-src"></figcaption></figure>
+          <div class="ad-text"><h2 id="al-doc-h">${escapeHtml(name)}</h2><p class="ad-life">${escapeHtml(life)}</p></div>
+        </div>
+        <button type="button" class="ad-close">Жабу</button>
+      </div>`;
+      const text = dlg.querySelector(".ad-text");
+      card.querySelectorAll("ul, blockquote").forEach((n2) => text.appendChild(n2.cloneNode(true)));
+      portraits().then((P) => {
+        const p = P[name];
+        if (p) dlg.querySelector(".ad-src").innerHTML = `Сурет: ${escapeHtml(p.artist)}, ${escapeHtml(p.license)}${p.src ? `. <a href="${escapeHtml(p.src)}" target="_blank" rel="noopener">Wikimedia Commons</a>` : ""}`;
+      });
+      document.body.appendChild(dlg);
+      const sheet = dlg.querySelector(".ad-sheet");
+      const still = motionStill();
+      const from = card.getBoundingClientRect();
+      dlg.showModal();
+      dlg.querySelector(".ad-close").focus();
+      const flip = (reverse) => {
+        const to = sheet.getBoundingClientRect();
+        const dx = from.left + from.width / 2 - (to.left + to.width / 2), dy = from.top + from.height / 2 - (to.top + to.height / 2);
+        const k = [{ transform: `translate(${dx}px, ${dy}px) scale(${from.width / to.width}, ${from.height / to.height})`, opacity: .35, filter: "sepia(.6)" }, { transform: "none", opacity: 1, filter: "none" }];
+        return sheet.animate(reverse ? k.reverse() : k, { duration: reverse ? 380 : 560, easing: reverse ? "cubic-bezier(.5,0,.75,0)" : "cubic-bezier(.16,1,.3,1)", fill: "both" });
+      };
+      if (!still) {
+        card.style.visibility = "hidden";
+        flip(false).finished.then(() => { card.style.visibility = ""; });
+        const img = dlg.querySelector(".ad-face img");
+        if (img) img.animate([{ transform: "scale(1.18)", filter: "sepia(1) blur(3px)" }, { transform: "none", filter: "sepia(.3)" }], { duration: 900, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" });
+        [...text.children].forEach((c, j) => c.animate([{ opacity: 0, transform: "translateY(10px)" }, { opacity: 1, transform: "none" }], { duration: 420, delay: 180 + j * 60, easing: "cubic-bezier(.16,1,.3,1)", fill: "both" }));
+      }
+      let closing = false;
+      const close = () => {
+        if (closing) return;
+        closing = true;
+        const end = () => { dlg.close(); dlg.remove(); card.style.visibility = ""; opener.focus(); };
+        if (still) return end();
+        card.style.visibility = "hidden";
+        flip(true).finished.then(end, end);
+      };
+      dlg.querySelector(".ad-close").addEventListener("click", close);
+      dlg.addEventListener("cancel", (e) => { e.preventDefault(); close(); });
+      dlg.addEventListener("click", (e) => { if (e.target === dlg) close(); });
+    }
+  }
+  // Нәтиже жолы (тест, жауап тексеру) әр тексерілгенде қайта «басылады»: бірдей нәтиже де көзге түседі
+  function initResultReplay() {
+    if (motionStill() || !window.MutationObserver) return;
+    const seen = new WeakSet();
+    const watch = (el) => {
+      if (seen.has(el)) return;
+      seen.add(el);
+      new MutationObserver(() => el.animate && el.animate([{ opacity: .3, transform: "translateY(6px)" }, { opacity: 1, transform: "none" }], { duration: 320, easing: "cubic-bezier(.16,1,.3,1)" }))
+        .observe(el, { childList: true, characterData: true, subtree: true });
+    };
+    document.querySelectorAll(".quiz .result, .answer-check .result").forEach(watch);
+  }
+  // Тақырып блоктарының тереңдігі: меңзер жылжығанда белгі мен сахна қабаттары сәл ығысады (тек тышқан, тек қозғалыс рұқсат болса)
+  function initHeroDepth() {
+    if (motionStill() || !(window.matchMedia && matchMedia("(pointer: fine)").matches)) return;
+    document.querySelectorAll(".content .lecture-head, .cx-hero, .py-hero, .gx-hero").forEach((h) => {
+      let raf = 0;
+      h.addEventListener("pointermove", (e) => {
+        if (raf) return;
+        raf = requestAnimationFrame(() => {
+          raf = 0;
+          const r = h.getBoundingClientRect();
+          h.style.setProperty("--mx", ((e.clientX - r.left) / r.width - .5).toFixed(3));
+          h.style.setProperty("--my", ((e.clientY - r.top) / r.height - .5).toFixed(3));
+        });
+      });
+      h.addEventListener("pointerleave", () => { h.style.setProperty("--mx", 0); h.style.setProperty("--my", 0); });
+    });
   }
   function initAlashPortraits() {
     if (!document.querySelector(".alash .al-card")) return;

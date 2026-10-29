@@ -180,7 +180,7 @@ test("бренд: телефонда (сенсорлы) «AO17» толық кө
 });
 
 test("әр беттің белгісі: беттің өз эмблемасы сызылады, тақырып сөзбе-сөз, академия түсі; қозғалыс азайтылса эмблема бар, бөлу жоқ", async ({ browser }) => {
-  const map = { "practice.html": "target", "glossary.html": "book", "profile.html": "card", "metrics.html": "chart", "math/ubt.html": "watch", "math/formulas.html": "compass", "en/grammar.html": "book", "detective.html": "lens", "alash.html": "quill", "about.html": "shan" };
+  const map = { "practice.html": "target", "glossary.html": "book", "profile.html": "card", "metrics.html": "chart", "math/ubt.html": "watch", "math/formulas.html": "compass", "en/grammar.html": "book", "detective.html": "lens", "about.html": "shan" };
   const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
   await blockFonts(ctx);
   const page = await ctx.newPage();
@@ -207,4 +207,31 @@ test("әр беттің белгісі: беттің өз эмблемасы с�
   await expect(p2.locator(".has-film h1 .fx-w")).toHaveCount(0);
   expect(await p2.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
   await rm.close();
+});
+
+test("«Алаш тұлғалары» мұрағат беті: газет титулы, білім жолы академияларға жалғасады; 404 мұрағат парағы; телефонда hero сандары сынбайды", async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  await blockFonts(ctx);
+  const page = await ctx.newPage();
+  const errs = collectErrors(page);
+  await page.goto("alash.html");
+  await expect(page.locator("body.is-alash .ar-head h1")).toHaveText("Алаш тұлғалары");
+  await expect(page.locator(".lecture-head")).toHaveCount(0);
+  await expect(page.locator(".ar-line > li")).toHaveCount(8);
+  await expect(page.locator(".ar-line time").first()).toHaveText("1879");
+  expect(await page.locator(".ar-bridge").evaluateAll((a) => a.map((n) => n.getAttribute("href")))).toEqual(["programming.html", "en/", "math/"]);
+  await expect(page.locator(".al-card")).toHaveCount(12);
+  // мұрағат беті сериф қаріппен, қағаз фонында
+  expect(await page.locator(".ar-head h1").evaluate((n) => getComputedStyle(n).fontFamily)).toContain("PT Serif");
+  await page.goto("404.html");
+  await expect(page.locator(".nf-ink h1")).toHaveText("Бұл парақ мұрағатта жоқ");
+  await expect(page.locator(".nf-ways a")).toHaveCount(3);
+  // телефонда hero сандары бір жолда, сөз бөлінбейді
+  for (const u of ["programming.html", "courses.html"]) {
+    await page.goto(u);
+    const lines = await page.locator(".cx-stats b").evaluateAll((bs) => bs.map((b) => Math.round(b.getBoundingClientRect().height / parseFloat(getComputedStyle(b).lineHeight))));
+    expect(lines.every((n) => n === 1), u + " " + lines).toBe(true);
+  }
+  expect(errs).toEqual([]);
+  await ctx.close();
 });
