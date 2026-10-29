@@ -124,26 +124,47 @@ test("курс карточкалары: әр курстың тапсырма с
   }
 });
 
-test("ашылу сәті: шаңырақ сызылып күнге ұшады, сессияда бір рет; шапка мөлдір, сахнадан өткенде қалыпты", async ({ page }) => {
+test("«АЛАШ 1917» кіріспесі: қағаз, сия, 1917, АЛАШ, шаңырақ; жарықпен ашылады, сессияда бір рет, өткізуге болады; шапка мөлдір", async ({ page }) => {
+  test.setTimeout(60_000);
+  await page.context().addInitScript(() => sessionStorage.setItem("ao17:test-intro", "1"));
   await blockFonts(page.context());
   const errs = collectErrors(page);
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("index.html");
-  await expect(page.locator(".st-intro .si-mark")).toBeVisible();
-  await expect(page.locator(".st-intro.si-fly")).toHaveCount(1, { timeout: 5000 });
-  const fs = await page.locator(".st-intro").evaluate((n) => +n.style.getPropertyValue("--fs"));
-  expect(fs).toBeGreaterThan(0.2);
-  await expect(page.locator(".st-s1.si-landed")).toHaveCount(1, { timeout: 3000 });
-  // шапка сахна үстінде мөлдір, мәтіні ақ
+  const ax = page.locator(".ax17");
+  await expect(ax).toBeVisible();
+  await expect(page.locator(".ax17 .ax-year")).toHaveText("1917");
+  await expect(page.locator(".ax17 .ax-name")).toHaveText("АЛАШ");
+  await expect(page.locator(".ax17 .ax-shan .ax-uyk line")).toHaveCount(24);
+  // өзі аяқталады: жарық ашылып, қабат алынады, тақырып көрінеді
+  await expect(ax).toHaveCount(0, { timeout: 8000 });
+  await expect(page.locator(".st-s1 h1")).toBeVisible();
   expect(await page.locator(".topbar").evaluate((n) => getComputedStyle(n).backgroundColor)).toBe("rgba(0, 0, 0, 0)");
   await page.mouse.wheel(0, 1400);
   await expect(page.locator("html.tb-solid")).toHaveCount(1);
-  // қайта ашқанда кіріспе жоқ, мәтін бірден
+  // сессияда екінші рет - кіріспе жоқ
   await page.reload();
   await expect(page.locator("html.st-seen")).toHaveCount(1);
-  await expect(page.locator(".st-intro")).toBeHidden();
-  await expect(page.locator(".st-s1 h1")).toBeVisible();
+  await expect(page.locator(".ax17")).toHaveCount(0);
   expect(errs).toEqual([]);
+});
+
+test("«АЛАШ 1917» кіріспесін «Өткізу» батырмасы бірден ашады; қозғалыс азайтылса кіріспе жоқ", async ({ browser }) => {
+  const ctx = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  await ctx.addInitScript(() => sessionStorage.setItem("ao17:test-intro", "1"));
+  await blockFonts(ctx);
+  const page = await ctx.newPage();
+  await page.goto("index.html");
+  await page.locator(".ax-skip").click();
+  await expect(page.locator(".ax17")).toHaveCount(0, { timeout: 2000 });
+  await expect(page.locator(".st-s1 h1")).toBeVisible();
+  await ctx.close();
+  const rm = await browser.newContext({ reducedMotion: "reduce" });
+  await rm.addInitScript(() => sessionStorage.setItem("ao17:test-intro", "1"));
+  const p2 = await rm.newPage();
+  await p2.goto("index.html");
+  await expect(p2.locator(".ax17")).toHaveCount(0);
+  await rm.close();
 });
 
 test("бренд: телефонда (сенсорлы) «AO17» толық көрінеді", async ({ browser }) => {

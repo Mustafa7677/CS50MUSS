@@ -33,6 +33,8 @@ async function routePyodide(context) {
 // highlight.js (cdnjs) - жергілікті npm бумасынан: тесттер CI-дегідей (код бояуымен) және желісіз жүрсін.
 const HLDIR = path.join(__dirname, "../node_modules/@highlightjs/cdn-assets/");
 async function blockFonts(context) {
+  // «АЛАШ 1917» кіріспесі басты бетті ~5 с жабады: тесттерде әдепкі бойынша «көрілді» (кіріспенің өз тестінде бұл кілт алынады)
+  await context.addInitScript(() => { try { if (!sessionStorage.getItem("ao17:test-intro")) sessionStorage.setItem("ao17:intro", "1"); } catch (e) { /* about:blank */ } });
   await context.route(/fonts\.(googleapis|gstatic)\.com/, (r) => r.fulfill({ status: 200, body: "", headers: { "content-type": "text/css" } }));
   await context.route(/cdnjs\.cloudflare\.com\/ajax\/libs\/highlight\.js\/11\.9\.0\/(.*)$/, (r) => {
     const f = path.join(HLDIR, r.request().url().match(/11\.9\.0\/([^?]*)/)[1]);

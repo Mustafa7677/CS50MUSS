@@ -13,12 +13,12 @@ test("портал: академия карточкасы экранға жай�
   // үлкейіп кеткен шаңырақ карточканы басуға кедергі емес
   // Портал 760 мс тұрады да бет ауысады: баяу машинада тексеріс кеш қалмас үшін оны пайда болған сәтте ұстаймыз
   const seen = page.evaluate(() => new Promise((ok) => new MutationObserver((_, o) => {
-    const t = document.querySelector(".portal .portal-title");
-    if (t) { o.disconnect(); ok([document.querySelector(".portal").className, t.textContent]); }
+    const t = document.querySelector(".tx .tx-title");
+    if (t) { o.disconnect(); ok([document.querySelector(".tx").className, t.textContent]); }
   }).observe(document.body, { childList: true })));
   await page.click('.ac-card[href="math/"]');
   const [cls, title] = await seen;
-  expect(cls).toContain("portal-math");
+  expect(cls).toContain("tx-math");
   expect(title).toBe("Математика академиясы");
   await page.waitForURL(/math\/$/);
   expect(errs).toEqual([]);
@@ -117,4 +117,44 @@ test("басты бет: Ботаның сөз бұлты мен Бота ешб
     expect(r.over, `${w}px: көлденең жылжу`).toBe(0);
     await ctx.close();
   }
+});
+
+test("өтулер: код пен ағылшын сахналары; келгенде пластина ериді; артқа қайтқанда кадр кері жиналады", async ({ page }) => {
+  test.setTimeout(90_000);
+  await blockFonts(page.context());
+  const errs = collectErrors(page);
+  await page.setViewportSize({ width: 1280, height: 800 });
+  for (const [k, url, need] of [["code", /programming\.html$/, "<AO17 />"], ["en", /en\/$/, "Dear reader,"]]) {
+    await page.goto("index.html");
+    await page.locator("#academies .ac-card").last().scrollIntoViewIfNeeded();
+    await expect(page.locator(".ac-card.is-open")).toHaveCount(3, { timeout: 8000 });
+    // сахна қажетті трансформацияға жеткенде (газет атауы кодқа / хат ағылшынға) ұстаймыз
+    const seen = page.evaluate((need) => new Promise((ok) => {
+      const tick = () => { const t = document.querySelector(".tx"); if (t && t.textContent.includes(need)) ok(t.className); else requestAnimationFrame(tick); };
+      tick();
+    }), need);
+    await page.click(`.ac-card[data-portal="${k}"]`);
+    expect(await seen).toContain("tx-" + k);
+    await page.waitForURL(url);
+    // келу пластинасы 1.6 с ішінде міндетті түрде ериді
+    await expect.poll(() => page.evaluate(() => document.documentElement.classList.contains("tx-in")), { timeout: 3000 }).toBe(false);
+    expect(await page.evaluate(() => JSON.parse(sessionStorage.getItem("ao17:portal")).k)).toBe(k);
+  }
+  await page.goBack();
+  await page.waitForURL(/index\.html$/);
+  await expect(page.locator(".tx")).toHaveCount(0, { timeout: 3000 });
+  expect(errs).toEqual([]);
+});
+
+test("сабақтан сабаққа: келесі/алдыңғы - қатесіз, жылдам (камера өтуі тек браузердің View Transitions-ы)", async ({ page }) => {
+  await blockFonts(page.context());
+  const errs = collectErrors(page);
+  await page.goto("lectures/week-1.html");
+  const t0 = Date.now();
+  await page.locator(".pager a.next").click();
+  await page.waitForURL(/week-2\.html$/);
+  expect(Date.now() - t0).toBeLessThan(4000);
+  await page.locator(".pager a").first().click();
+  await page.waitForURL(/week-1\.html$/);
+  expect(errs).toEqual([]);
 });

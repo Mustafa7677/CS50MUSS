@@ -86,6 +86,31 @@
   if (!loadPrefs().rm && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) root.classList.add("st-js");
   // Басты беттің ашылу сәті (шаңырақ күнге айналады) сессияда бір рет: қайта келгенде мәтін бірден шығады
   try { if (sessionStorage.getItem("ao17:intro")) root.classList.add("st-seen"); } catch (e) { root.classList.add("st-seen"); }
+  // «АЛАШ 1917» өтуінің екінші жартысы: пластина бірінші кадрда тұруы үшін класс осы жерде (body әлі жоқ кезде) қойылады
+  try {
+    if (root.classList.contains("st-js")) {
+      const t = JSON.parse(sessionStorage.getItem("ao17:tx") || "null");
+      const nav = (performance.getEntriesByType && performance.getEntriesByType("navigation")[0]) || {};
+      if (t && Date.now() - t.t < 5000 && nav.type !== "back_forward") root.classList.add("tx-in", "tx-in-" + t.k);
+      else {
+        const pt = JSON.parse(sessionStorage.getItem("ao17:portal") || "null");
+        if (pt && nav.type === "back_forward" && pt.from === location.pathname) root.classList.add("tx-back", "tx-back-" + pt.k);
+      }
+      sessionStorage.removeItem("ao17:tx");
+    }
+  } catch (e) { /* жеке режим */ }
+  // Беттер арасындағы камера (View Transitions, Chrome/Edge/Safari 18+): сабақтан сабаққа - бір кеңістікте көлденең;
+  // алға бір бағытта, артқа кері. Академия өтуі өзінің сахнасымен жүреді, сондықтан браузердің өтуі ол кезде өшеді.
+  window.addEventListener("pagereveal", (e) => {
+    if (!e.viewTransition) return;
+    if (root.classList.contains("tx-in") || root.classList.contains("tx-back")) { e.viewTransition.types.add("tx"); return; }
+    try {
+      const from = window.navigation && navigation.activation && navigation.activation.from && navigation.activation.from.url;
+      const wk = (u) => { const m = String(u || "").match(/^(.*\/)lectures\/week-(\d+)\.html/); return m ? [m[1], +m[2]] : null; };
+      const a = wk(from), b = wk(location.href);
+      if (a && b && a[0] === b[0] && a[1] !== b[1]) e.viewTransition.types.add(b[1] > a[1] ? "fwd" : "back");
+    } catch (er) { /* ескі браузер */ }
+  });
 
   document.addEventListener("DOMContentLoaded", () => {
     // Жылжыған кезде блоктардың біртіндеп көрінуі және баннердегі сандар
@@ -166,7 +191,9 @@
     initSay();
     initJourney();
     initPortalLinks();
+    initArrival();
     initTryCode();
+    initAlash();
     initHomeBar();
     document.querySelectorAll(".tb").forEach((el) => { // мұғалім сахнасы: көрінгенде бір рет ашылады
       if (!("IntersectionObserver" in window)) return el.classList.add("is-on");
@@ -1313,30 +1340,125 @@
   // ---------- Portal Transition: академияға кіру - басқа әлемге ену ----------
   // Карточка (не батырма) экранға жайылып, сол академияның әлеміне айналады: код таңбалары, әріптер не
   // геометрия; сосын бет ауысады (жаңа бет «кадр ауысуымен» ашылады). Ctrl/Cmd/Shift-пен басу - әдеттегідей.
-  const PORTAL_GLYPHS = { code: ["{ }", "</>", "( )", ";", "=>", "[ ]", "#", "&&", "fn", "01"], en: ["Aa", "Hello", "B", "speak", "C", "read", "Ee", "listen", "Gg", "write"], math: ["∫", "∑", "π", "∞", "√", "Δ", "x²", "θ", "≈", "∂"] };
+  // ---------- «АЛАШ 1917» өтулері: академияға кіру бір үздіксіз кадр (style.css: «Өтулер») ----------
+  // Басылған карточка экранға жайылады (ортақ элемент), сосын академияның тарихи-символдық сахнасы:
+  //   code: 1917 жылғы «Қазақ» газеті -> баспа әріптері кодқа айналады;  en: көне хат -> бет аударылады, жазу ағылшын сөздеріне айналады;
+  //   math: шаңырақтың уықтары -> координаталық тор мен формулалар.
+  // Соңғы кадр («пластина») жаңа бетте бірінші сурет салынғанға дейін дәл қайталанады (html.tx-in, main.js басы), сосын камера ары қарай
+  // жылжып, бет ашылады. Артқа қайтқанда кадр кері ойналып, карточкаға жиналады. Кез келген басу/перне - бірден өту.
+  const TX_WORDS = "оқу білім мектеп ғылым кітап тіл ұлт болашақ жол жастар ағарту мұғалім өнер еңбек халық газет хат сабақ ой дала елім әліппе есеп жазу оқулық үміт жаңа заман бірлік ұрпақ".split(" ");
+  const TX_CODE = ["const", "let", "if", "return", "=>", "{ }", "[ ]", "===", "print()", "for", "while", "import", "class", "def", "true", "null", "fn()", "0x17", "&&", "//", "async", "await", "map()", "len()"];
+  const TX_EN = { "оқу": "read", "білім": "knowledge", "мектеп": "school", "ғылым": "science", "кітап": "book", "тіл": "language", "ұлт": "nation", "болашақ": "future",
+    "жол": "path", "жастар": "youth", "ағарту": "enlighten", "мұғалім": "teacher", "өнер": "art", "еңбек": "work", "халық": "people", "газет": "news", "хат": "letter",
+    "сабақ": "lesson", "ой": "idea", "дала": "steppe", "елім": "home", "әліппе": "alphabet", "есеп": "problem", "жазу": "write", "оқулық": "textbook", "үміт": "hope",
+    "жаңа": "new", "заман": "era", "бірлік": "unity", "ұрпақ": "generation" };
+  const txPick = (arr, k) => arr[(k * 7 + 3) % arr.length];
+  function txScene(kind, name) {
+    const words = (n, k0) => Array.from({ length: n }, (_, k) => `<span class="tx-w">${txPick(TX_WORDS, k + k0)}</span>`).join(" ");
+    const title = `<div class="tx-title">${name}</div>`;
+    if (kind === "code") return `<div class="tx-cam"><div class="tx-news"><div class="tx-mast"><span class="tx-w">ҚАЗАҚ</span></div>` +
+      `<div class="tx-dl"><span>№ 1917</span><span>Орынбор</span><span>ағарту</span></div><div class="tx-cols">` +
+      [0, 1, 2].map((c) => `<p>${words(34, c * 34)}</p>`).join("") + `</div></div></div>${title}`;
+    if (kind === "en") return `<div class="tx-cam"><div class="tx-book"><div class="tx-pg tx-l"><p class="tx-h"><span class="tx-w" data-en="Dear reader,">Құрметті оқушы,</span></p>` +
+      `<p>${words(26, 5)}</p></div><div class="tx-pg tx-r"><p>${words(30, 11)}</p></div><div class="tx-pg tx-flip"><p>${words(28, 2)}</p></div></div></div>${title}`;
+    const uyk = Array.from({ length: 16 }, (_, k) => {
+      // әр уық өз бағытына ең жақын көлденең/тік сызыққа бұрылады (толық айналым жасамайды)
+      const a = k * 22.5, hor = k % 2 === 0, idx = Math.floor(k / 2), off = -210 + idx * 60;
+      const to = (hor ? [0, 180, 360] : [90, 270]).reduce((m, x) => (Math.abs(x - a) < Math.abs(m - a) ? x : m));
+      return `<g class="tx-uyk" style="--a:${a}deg;--to:${to}deg;--tx:-280px;--ty:${off}px"><line x1="0" y1="0" x2="1" y2="0"/></g>`;
+    }).join("");
+    return `<div class="tx-cam"><svg class="tx-geo" viewBox="-300 -300 600 600" focusable="false"><g class="tx-uyks">${uyk}</g>` +
+      `<circle class="tx-ring" r="150"/><path class="tx-kuld" d="M-130-52H130M-130 52H130M-52-130V130M52-130V130"/>` +
+      `<g class="tx-axes"><path d="M-290 0H290M282-8L292 0 282 8M0 290V-290M-8-282L0-292 8-282"/></g>` +
+      `<g class="tx-f"><text x="118" y="-128">x² + y² = r²</text><text x="-262" y="-170">∑ 1/n²</text><text x="-250" y="196">∫₀¹ f(x) dx</text><text x="168" y="170">π</text></g></svg></div>${title}`;
+  }
+  function txArriveMark(kind) {
+    try { sessionStorage.setItem("ao17:tx", JSON.stringify({ k: kind, t: Date.now() })); sessionStorage.setItem("ao17:portal", JSON.stringify({ k: kind, from: location.pathname })); } catch (e) { /* жеке режим */ }
+  }
+  function playPassage(kind, a) {
+    const ac = ACADEMIES.find((x) => x.id === kind);
+    const r = a.getBoundingClientRect(), W = innerWidth, H = innerHeight;
+    const tx = document.createElement("div");
+    tx.className = "tx tx-" + kind;
+    tx.setAttribute("aria-hidden", "true");
+    tx.innerHTML = txScene(kind, ac ? ac.name : "") + `<div class="tx-plate plate-${kind}"></div>`;
+    document.body.append(tx);
+    let gone = false;
+    const go = () => { if (gone) return; gone = true; txArriveMark(kind); location.href = a.href; };
+    const cut = (e) => { if (e) e.preventDefault(); go(); };
+    setTimeout(() => { tx.addEventListener("click", cut); window.addEventListener("keydown", cut, { once: true }); }, 60);
+    // 1) күту (anticipation) мен ортақ элемент: карточка сәл басылады, оның шекарасы экранға жайылады
+    a.animate([{ transform: "scale(1)" }, { transform: "scale(.97)" }, { transform: "scale(1)" }], { duration: 260, easing: "ease-out" });
+    const ins = `inset(${Math.max(0, r.top)}px ${Math.max(0, W - r.right)}px ${Math.max(0, H - r.bottom)}px ${Math.max(0, r.left)}px round 18px)`;
+    tx.animate([{ clipPath: ins }, { clipPath: "inset(0px 0px 0px 0px round 0px)" }], { duration: 560, easing: "cubic-bezier(.7, 0, .2, 1)", fill: "forwards" });
+    tx.__clip = ins;
+    // 2) сахна: класс уақыты CSS-те (tx-morph, tx-dolly); код пен хат үшін сөздер JS-пен ауысады
+    const ws = [...tx.querySelectorAll(".tx-w")];
+    setTimeout(() => {
+      tx.classList.add("tx-morph");
+      if (kind === "code") {
+        const order = ws.map((w, k) => [w, (k * 37) % ws.length]).sort((p, q) => p[1] - q[1]).map((p) => p[0]);
+        let k = 0;
+        const step = () => { for (let n = 0; n < 8 && k < order.length; n++, k++) { const w = order[k]; w.textContent = k === 0 ? "<AO17/>" : txPick(TX_CODE, k); w.classList.add("is-code"); } if (k < order.length && !gone) requestAnimationFrame(step); };
+        const m = tx.querySelector(".tx-mast .tx-w"); if (m) { m.textContent = "<AO17 />"; m.classList.add("is-code"); }
+        requestAnimationFrame(step);
+      } else if (kind === "en") {
+        ws.forEach((w, k) => setTimeout(() => { w.textContent = w.dataset.en || TX_EN[w.textContent] || w.textContent; w.classList.add("is-en"); }, 120 + (k % 24) * 14));
+      }
+    }, 520);
+    setTimeout(() => {
+      tx.classList.add("tx-dolly");
+      if (kind === "en") ws.forEach((w, k) => {
+        const dx = ((k * 53) % 200 - 100) * 3, dy = ((k * 31) % 140 - 70) * 3;
+        w.animate([{ transform: "none", opacity: 1 }, { transform: `translate(${dx}px, ${dy}px) scale(3.2)`, opacity: 0 }], { duration: 340, delay: (k % 9) * 12, easing: "cubic-bezier(.5, 0, .9, .6)", fill: "forwards" });
+      });
+    }, 980);
+    setTimeout(go, 1180);
+  }
+  // Артқа қайту: кадр кері ойналады - пластина сөнеді, сахна карточканың шекарасына қайта жиналады
+  function reversePassage(tx, kind) {
+    const card = document.querySelector(`a[data-portal="${kind}"]`);
+    tx.classList.remove("tx-dolly", "tx-morph");
+    tx.classList.add("tx-back");
+    let ins = tx.__clip || "inset(40% 40% 40% 40% round 18px)";
+    if (card) { const r = card.getBoundingClientRect(); ins = `inset(${Math.max(0, r.top)}px ${Math.max(0, innerWidth - r.right)}px ${Math.max(0, innerHeight - r.bottom)}px ${Math.max(0, r.left)}px round 18px)`; }
+    const an = tx.animate([{ clipPath: "inset(0px 0px 0px 0px round 0px)", opacity: 1 }, { clipPath: ins, opacity: 0.9 }, { clipPath: ins, opacity: 0 }], { duration: 640, easing: "cubic-bezier(.4, 0, .2, 1)", fill: "forwards" });
+    an.onfinish = () => tx.remove();
+  }
   function initPortalLinks() {
+    window.addEventListener("pageshow", (e) => {
+      if (!e.persisted) return;
+      document.querySelectorAll(".tx").forEach((tx) => { const k = (tx.className.match(/tx-(code|en|math)/) || [])[1]; if (motionOff() || !k) tx.remove(); else reversePassage(tx, k); });
+    });
     if (motionOff()) return;
-    window.addEventListener("pageshow", (e) => { if (e.persisted) document.querySelectorAll(".portal").forEach((n) => n.remove()); });
     document.addEventListener("click", (e) => {
       const a = e.target.closest("a[data-portal]");
       if (!a || e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || a.target === "_blank") return;
-      const kind = a.dataset.portal, ac = ACADEMIES.find((x) => x.id === kind);
-      if (!ac) return;
+      const kind = a.dataset.portal;
+      if (!ACADEMIES.find((x) => x.id === kind) || document.querySelector(".tx")) return;
       e.preventDefault();
-      const r = a.getBoundingClientRect();
-      const rand = filmRand([...kind].reduce((n, c) => n + c.charCodeAt(0), 9));
-      const g = PORTAL_GLYPHS[kind];
-      let glyphs = "";
-      for (let i = 0; i < 26; i++) glyphs += `<span style="--x:${(rand() * 100).toFixed(1)}%;--y:${(20 + rand() * 75).toFixed(1)}%;--d:${(rand() * 0.5).toFixed(2)}s;--s:${(0.7 + rand() * 1.4).toFixed(2)}">${g[i % g.length]}</span>`;
-      const w = document.createElement("div");
-      w.className = "portal portal-" + kind;
-      w.setAttribute("aria-hidden", "true");
-      w.style.cssText = `--x:${r.left}px;--y:${r.top}px;--w:${r.width}px;--h:${r.height}px`;
-      w.innerHTML = `<div class="portal-glyphs">${glyphs}</div><div class="portal-title">${ac.name}</div>`;
-      document.body.append(w);
-      requestAnimationFrame(() => requestAnimationFrame(() => w.classList.add("go")));
-      setTimeout(() => { location.href = a.href; }, 760);
+      playPassage(kind, a);
     });
+  }
+  // Келу (html.tx-in, басында қойылады): пластина бірінші кадрда тұрады, мұнда камера оны «өтіп», бет ашылады.
+  // Артқа келу (html.tx-back): пластина карточкаға жиналады.
+  function initArrival() {
+    const m = root.className.match(/\btx-(in|back)-(code|en|math)\b/);
+    if (!m) return;
+    const clean = () => root.classList.remove("tx-in", "tx-back", "tx-in-" + m[2], "tx-back-" + m[2], "tx-go");
+    if (m[1] === "in") {
+      requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add("tx-go")));
+      setTimeout(clean, 900);
+      return;
+    }
+    const card = document.querySelector(`a[data-portal="${m[2]}"]`);
+    if (!card || !document.body.animate) { clean(); return; }
+    card.scrollIntoView({ block: "center" });
+    const r = card.getBoundingClientRect();
+    const ins = `inset(${Math.max(0, r.top)}px ${Math.max(0, innerWidth - r.right)}px ${Math.max(0, innerHeight - r.bottom)}px ${Math.max(0, r.left)}px round 18px)`;
+    const an = document.body.animate([{ clipPath: "inset(0px 0px 0px 0px round 0px)", opacity: 1 }, { clipPath: ins, opacity: 0.9 }, { clipPath: ins, opacity: 0 }],
+      { duration: 640, easing: "cubic-bezier(.4, 0, .2, 1)", fill: "forwards", pseudoElement: "::before" });
+    an.onfinish = clean;
   }
 
   // ---------- Басты бет, код сахнасы: «Өзің жазып көр» - тірі HTML редакторы ----------
@@ -1603,23 +1725,25 @@
   // ---------- Басты бет: «Білім көші» оқиғасы ----------
   // 1-сахна бірден ойналады; келесі сахналар экранға кіргенде бір рет іске қосылады (.is-on), ал фондық қозғалыс
   // (бұлт, шөп, бүркіт) тек сахна экранда тұрғанда жүреді (.is-vis). Скролл анимацияны басқармайды, тек бастайды.
-  // Ашылу сәті: 2.3 с-та шаңырақ сахнадағы күннің нақты орнына ұшады да, сол күнге айналады (style.css: «Ашылу сәті»)
-  function initIntro(s1) {
-    const intro = s1.querySelector(".st-intro"), mark = intro && intro.querySelector(".si-mark"), disc = s1.querySelector(".sun-disc");
-    if (!mark || !root.classList.contains("st-js") || root.classList.contains("st-seen")) return;
+  // «АЛАШ 1917» кіріспесі (style.css: .ax17): CSS бірінші кадрдан ойнайды (JS-ті күтпейді), мұнда тек өткізу мен тазалау.
+  // Кез келген әрекет (басу, перне, скролл, түрту) не «Өткізу» - жарық бірден ашылады. Сессияда бір рет.
+  function initAlash() {
+    const ax = document.querySelector(".ax17");
+    if (!ax) return;
+    if (!root.classList.contains("st-js") || root.classList.contains("st-seen")) { ax.remove(); return; }
     try { sessionStorage.setItem("ao17:intro", "1"); } catch (e) { /* жеке режим */ }
-    setTimeout(() => {
-      if (s1.classList.contains("st-skip")) return;
-      const m = mark.getBoundingClientRect(), d = disc && disc.getBoundingClientRect();
-      if (!d || !d.width || !m.width) return;
-      // шаңырақ шеңбері (r=62) viewBox-тың 220 бірлігінде; күн дискісінің диаметріне сәйкестендіреміз
-      const ring = m.width * 124 / 220;
-      intro.style.setProperty("--fx", (d.left + d.width / 2 - (m.left + m.width / 2)).toFixed(1) + "px");
-      intro.style.setProperty("--fy", (d.top + d.height / 2 - (m.top + m.height / 2)).toFixed(1) + "px");
-      intro.style.setProperty("--fs", (d.width / ring).toFixed(3));
-      intro.classList.add("si-fly");
-      setTimeout(() => s1.classList.add("si-landed"), 780);
-    }, 2300);
+    const s1 = document.querySelector(".st-s1");
+    const done = () => { ax.remove(); ["keydown", "wheel", "touchstart"].forEach((ev) => window.removeEventListener(ev, cut)); };
+    const cut = () => {
+      if (ax.classList.contains("ax-cut")) return;
+      ax.classList.add("ax-cut");
+      if (s1) s1.classList.add("st-skip");
+      setTimeout(done, 500);
+    };
+    ax.querySelector(".ax-skip").addEventListener("click", cut);
+    ["keydown", "wheel", "touchstart"].forEach((ev) => window.addEventListener(ev, cut, { once: true, passive: true }));
+    ax.addEventListener("click", cut);
+    setTimeout(done, 5200);
   }
 
   // Басты бет: шапка сахнамен бірігіп (мөлдір) тұрады, сахнадан өткенде қалыпты күйге оралады
@@ -1638,7 +1762,6 @@
     scenes[0].classList.add("is-on");
     // Логотип кадры: кез келген әрекет (скролл, басу, перне) оны өткізіп, мәтінді бірден көрсетеді
     const skipIntro = () => scenes[0].classList.add("st-skip");
-    initIntro(scenes[0]);
     ["wheel", "touchstart", "keydown", "pointerdown"].forEach((ev) => window.addEventListener(ev, skipIntro, { once: true, passive: true }));
     const skipBtn = scenes[0].querySelector(".st-skipbtn");
     if (skipBtn) skipBtn.addEventListener("click", () => { skipIntro(); const h = scenes[0].querySelector("h1"); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); } });
