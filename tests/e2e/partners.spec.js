@@ -157,3 +157,33 @@ test("бренд: телефонда (сенсорлы) «AO17» толық кө
   }
   await ctx.close();
 });
+
+test("әр беттің белгісі: беттің өз эмблемасы сызылады, тақырып сөзбе-сөз, академия түсі; қозғалыс азайтылса эмблема бар, бөлу жоқ", async ({ browser }) => {
+  const map = { "practice.html": "target", "glossary.html": "book", "profile.html": "card", "metrics.html": "chart", "math/ubt.html": "watch", "math/formulas.html": "compass", "en/grammar.html": "book", "detective.html": "lens", "alash.html": "quill", "about.html": "shan" };
+  const ctx = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  await blockFonts(ctx);
+  const page = await ctx.newPage();
+  const errs = collectErrors(page);
+  for (const [u, em] of Object.entries(map)) {
+    await page.goto(u);
+    await expect(page.locator(`.has-emblem .fm-em.fm-em-${em}`), u).toHaveCount(1);
+    await expect(page.locator(".has-film h1 .fx-w").first(), u).toBeVisible();
+    await expect.poll(() => page.locator(".fm-em .em-s").first().evaluate((n) => parseFloat(getComputedStyle(n).strokeDashoffset)), { timeout: 4000 }).toBeLessThan(0.01);
+  }
+  await page.goto("math/ubt.html");
+  await expect(page.locator(".lecture-head.has-film")).toHaveAttribute("data-ac", "math");
+  await page.goto("en/grammar.html");
+  await expect(page.locator(".lecture-head.has-film")).toHaveAttribute("data-ac", "en");
+  await page.goto("games.html");
+  await expect(page.locator(".fm-em")).toHaveCount(0);
+  expect(errs).toEqual([]);
+  await ctx.close();
+  const rm = await browser.newContext({ reducedMotion: "reduce", viewport: { width: 390, height: 844 } });
+  await blockFonts(rm);
+  const p2 = await rm.newPage();
+  await p2.goto("practice.html");
+  await expect(p2.locator(".fm-em")).toHaveCount(1);
+  await expect(p2.locator(".has-film h1 .fx-w")).toHaveCount(0);
+  expect(await p2.evaluate(() => document.documentElement.scrollWidth - innerWidth)).toBe(0);
+  await rm.close();
+});

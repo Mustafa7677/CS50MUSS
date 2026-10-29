@@ -1119,6 +1119,52 @@
       `<g class="fm-bota" style="--bx:${botaX.toFixed(1)}px"><g transform="translate(0 22) scale(.62)">${BOTA_SVG}</g>` +
       (info.done ? `<g class="fm-tag" transform="translate(40 4)"><rect x="-26" y="-11" width="52" height="20" rx="10"/><text y="4" text-anchor="middle">${info.done}/${info.total}</text></g>` : "") + `</g></svg>`;
   }
+  // ---------- Әр беттің өз белгісі: тақтаның бос оң жағында алтын эмблема өзі сызылады (басты беттің шаңырағы сияқты) ----------
+  // Сызықтар pathLength="1" (style.css: .fm-em), бір нүкте-акцент көгілдір. viewBox: -100..100.
+  const P = (d) => `<path class="em-s" d="${d}" pathLength="1"/>`;
+  const EMBLEMS = {
+    shan: P("M0-62A62 62 0 1 1 0 62A62 62 0 1 1 0-62") + P("M-50-22H50M-50 22H50") + P("M-22-50V50M22-50V50") + '<path class="em-a" d="M0-15L15 0 0 15-15 0Z"/>',
+    code: P("M-38-42L-78 0-38 42") + P("M38-42L78 0 38 42") + P("M16-60L-16 60") + '<rect class="em-a" x="50" y="50" width="12" height="20" rx="2"/>',
+    book: P("M0-44C-28-62-62-58-84-46V56C-62 44-28 42 0 60") + P("M0-44C28-62 62-58 84-46V56C62 44 28 42 0 60") + P("M0-44V60") + P("M-68-22C-50-30-26-28-14-20M-68 0C-50-8-26-6-14 2M14-20C26-28 50-30 68-22M14 2C26-6 50-8 68 0") + '<path class="em-a" d="M40-52V-12L50-20 60-12V-52Z"/>',
+    watch: P("M0-46A58 58 0 1 1 0 70A58 58 0 1 1 0-46") + P("M-12-66H12M0-66V-46") + P("M0-34V-26M58 12H50M0 58V50M-58 12H-50") + P("M0 12L26-16") + '<circle class="em-a" cx="0" cy="12" r="7"/>',
+    compass: P("M0-62A10 10 0 1 1 0-42A10 10 0 1 1 0-62") + P("M-5-44L-46 62") + P("M5-44L42 56") + P("M-70 40A80 80 0 0 0 66 34") + '<circle class="em-a" cx="42" cy="58" r="6"/>',
+    route: P("M-80 66C-40 10-6 72 20 14S64-50 80-70") + P("M-80 66m-10 0a10 10 0 1 0 20 0a10 10 0 1 0-20 0") + P("M80-70V-96L104-88 80-80") + '<circle class="em-a" cx="20" cy="14" r="7"/>',
+    chart: P("M-78-72V70H84") + P("M-54 70V30M-24 70V6M6 70V22M36 70V-14") + P("M-62 6L-24-20 8-6 58-58") + P("M58-58H38M58-58V-38") + '<circle class="em-a" cx="58" cy="-58" r="7"/>',
+    target: P("M0-70A70 70 0 1 1 0 70A70 70 0 1 1 0-70") + P("M0-44A44 44 0 1 1 0 44A44 44 0 1 1 0-44") + P("M0-18A18 18 0 1 1 0 18A18 18 0 1 1 0-18") + P("M78-78L6-6M78-78H58M78-78V-58") + '<circle class="em-a" r="6"/>',
+    medal: P("M0-74A40 40 0 1 1 0 6A40 40 0 1 1 0-74") + P("M-22 0L-38 76-18 62-4 80") + P("M22 0L38 76 18 62 4 80") + '<path class="em-a" d="M0-56L7-42 22-40 11-29 14-14 0-21-14-14-11-29-22-40-7-42Z"/>',
+    card: P("M-78-52H78V52H-78Z") + P("M-36-20A18 18 0 1 1-36 16A18 18 0 1 1-36-20") + P("M-62 40C-56 24-16 24-10 40") + P("M8-16H56M8 4H48M8 24H36") + '<circle class="em-a" cx="62" cy="-38" r="6"/>',
+    board: P("M-84-60H84V40H-84Z") + P("M-30 40L-46 80M30 40L46 80") + P("M-64 18L-30-14 0 4 52-36") + '<circle class="em-a" cx="52" cy="-36" r="7"/>',
+    lens: P("M-18-70A52 52 0 1 1-18 34A52 52 0 1 1-18-70") + P("M20 20L72 72") + P("M-46-34A34 34 0 0 1-18-52") + '<circle class="em-a" cx="72" cy="72" r="7"/>',
+    shield: P("M0-80L62-54V4C62 44 32 66 0 82C-32 66-62 44-62 4V-54Z") + P("M18-14A22 22 0 1 0 18 18") + '<circle class="em-a" cx="0" cy="40" r="5"/>',
+    quill: P("M66-80C16-66-26-26-48 52") + P("M66-80C60-24 22 18-48 52") + P("M26-46L2-6M40-58L18-28") + P("M-48 52L-60 74") + P("M-84 82H20") + '<circle class="em-a" cx="-60" cy="74" r="6"/>',
+    cards: P("M-70-40L30-62 48 30-52 52Z") + P("M-40-56L60-56 60 40-40 40Z") + P("M-10-70L82-48 64 44-28 22Z") + '<circle class="em-a" cx="10" cy="-8" r="7"/>'
+  };
+  const EMBLEM_OF = { "about.html": "shan", "alash.html": "quill", "certificate.html": "medal", "cheatsheet.html": "book", "copyright.html": "shield",
+    "debug.html": "code", "detective.html": "lens", "exam.html": "watch", "flashcards.html": "cards", "flask.html": "code", "glossary.html": "book",
+    "map.html": "route", "metrics.html": "chart", "partners.html": "chart", "playground.html": "code", "practice.html": "target", "profile.html": "card",
+    "teacher.html": "board", "viz.html": "chart", "math/exam.html": "watch", "math/ubt.html": "watch", "math/formulas.html": "compass",
+    "math/glossary.html": "book", "math/practice.html": "target", "math/route.html": "route" };
+  function pageKey() { const m = location.pathname.match(/(?:^|\/)((?:math|en)\/)?([\w-]+\.html)$/); return m ? (m[1] || "") + m[2] : "index.html"; }
+  function emblemFor(card) {
+    if (!card.classList.contains("lecture-head")) return "";
+    const k = pageKey();
+    return EMBLEM_OF[k] || (/^en\//.test(k) ? "book" : "");
+  }
+  // Тақырып сөзбе-сөз маскадан көтеріледі (басты беттің тақырыбымен бір тіл). Ішкі элемент (мысалы, түрлі түсті жол) бүтін бір бірлік.
+  function splitTitle(h) {
+    if (!h || h.dataset.fx) return;
+    h.dataset.fx = "1";
+    let i = 0;
+    const wrap = (node) => { const o = document.createElement("span"); o.className = "fx-w"; o.style.setProperty("--w", i++); const n = document.createElement("span"); n.append(node); o.append(n); return o; };
+    [...h.childNodes].forEach((n) => {
+      if (n.nodeType === 3) {
+        const parts = n.textContent.split(/(\s+)/), frag = document.createDocumentFragment();
+        parts.forEach((t) => { if (!t) return; frag.append(/^\s+$/.test(t) ? document.createTextNode(t) : wrap(document.createTextNode(t))); });
+        n.replaceWith(frag);
+      } else if (n.nodeType === 1) n.replaceWith(wrap(n.cloneNode(true)));
+    });
+  }
+
   function initFilm() {
     if (PAGE) return;  // лекция беті: мультфильм жоқ
     const cards = document.querySelectorAll(".content .lecture-head, .cx-hero, .py-hero");
@@ -1133,7 +1179,19 @@
       box.innerHTML = filmSky(info) + '<div class="fm-floor"></div>';
       card.classList.add("has-film");
       card.dataset.phase = info.phase;
+      const ac = /^en\//.test(pageKey()) || COURSE === "en" ? "en" : /^math\//.test(pageKey()) || COURSE === "math" ? "math" : "";
+      if (ac) card.dataset.ac = ac;
       card.prepend(box);
+      const em = emblemFor(card);
+      if (em && EMBLEMS[em]) {
+        const e = document.createElement("div");
+        e.className = "fm-em fm-em-" + em;
+        e.setAttribute("aria-hidden", "true");
+        e.innerHTML = `<svg viewBox="-110 -110 220 220" focusable="false"><g class="em-orbit"><circle r="100"/></g><g class="em-art">${EMBLEMS[em]}</g></svg>`;
+        card.append(e);
+        card.classList.add("has-emblem");
+      }
+      if (!still) splitTitle(card.querySelector("h1"));
       const floor = box.querySelector(".fm-floor");
       let w = 0;
       const draw = () => {
