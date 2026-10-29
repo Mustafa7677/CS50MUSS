@@ -153,7 +153,7 @@ def put_block(s, name, block, anchor_re, after=True):
 def subnav(prefix, cur, slug=None):
     items = [("index.html" + (f"#subj-{SUBJ[slug][0]}" if slug else ""), "Пәндер", "home"), ("formulas.html", "Формулалар", "formulas"),
              ("glossary.html", "Сөздік", "glossary"), ("practice.html", "Жаттықтырғыш", "practice"), ("route.html", "Оқу жолы", "route"),
-             ("exam.html" + (f"?s={slug}" if slug else ""), "Емтихан", "exam")]
+             ("exam.html" + (f"?s={slug}" if slug else ""), "Емтихан", "exam"), ("ubt.html", "ҰБТ", "ubt")]
     s = "".join(f'<a href="{prefix}{h}"' + (' aria-current="page"' if k == cur else "") + f">{t}</a>" for h, t, k in items)
     return f'<nav class="math-subnav" aria-label="Математика курсының бөлімдері">{s}</nav>'
 

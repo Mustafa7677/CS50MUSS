@@ -893,7 +893,7 @@ test("педагогика: әр дайын сабақта нақты ұзақт
     expect(s, f).toMatch(/class="callout mx-examlink"[\s\S]*?href="\.\.\/exam\.html\?s=\w+"/);
     const badges = [...s.matchAll(/<span class="badge (easy|medium|hard)">([^<]*)<\/span>/g)].map((m) => m[1] + ":" + m[2]);
     for (const b of badges) expect(["easy:Жеңіл", "medium:Орташа", "hard:Күрделі"], f).toContain(b);
-    expect(s, f).toMatch(/<a href="\.\.\/route\.html">Оқу жолы<\/a><a href="\.\.\/exam\.html\?s=\w+">Емтихан<\/a><\/nav>/);
+    expect(s, f).toMatch(/<a href="\.\.\/route\.html">Оқу жолы<\/a><a href="\.\.\/exam\.html\?s=\w+">Емтихан<\/a><a href="\.\.\/ubt\.html">ҰБТ<\/a><\/nav>/);
   }
 });
 
