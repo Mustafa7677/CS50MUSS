@@ -111,13 +111,15 @@
   const dayIndex = () => { const d = new Date(); return d.getFullYear() * 372 + d.getMonth() * 31 + d.getDate(); };
   const diffStars = (n) => `<span class="gx-diff" role="img" aria-label="Қиындық: ${n} / 3">${[1, 2, 3].map((i) => `<i class="${i <= n ? "on" : ""}" aria-hidden="true">★</i>`).join("")}</span>`;
   const colorVars = (c) => `--gc:${c || "#087a96"}`;
+  // Ойын белгісі: эмодзи емес, гравюра бас әрпі (кітаптағы безендірілген бас әріп сияқты)
+  const initial = (t) => (String(t || "").match(/[A-Za-zА-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі0-9]/) || ["•"])[0].toUpperCase();
 
   function card(d, t, daily) {
     const g = t.games[d.id] || {}, m = meta(d);
-    const rec = g.best ? `<span class="gx-rec" title="Рекорд">🏆 ${g.best}</span>` : `<span class="gx-rec gx-new">Жаңа</span>`;
+    const rec = g.best ? `<span class="gx-rec" title="Рекорд">Рекорд ${g.best}</span>` : `<span class="gx-rec gx-new">Жаңа</span>`;
     return `<a class="game-card gx-card" href="#${d.id}" style="${colorVars(d.color)}" data-cats="${m.cats.join(" ")}"${daily ? ' data-daily="1"' : ""}>
-      <span class="gx-card-bg" aria-hidden="true">${d.icon}</span>
-      <span class="gx-card-top"><span class="gc-ico gx-ico" aria-hidden="true">${d.icon}</span>${rec}</span>
+      <span class="gx-card-bg" aria-hidden="true">${esc(initial(d.title))}</span>
+      <span class="gx-card-top"><span class="gc-ico gx-ico" aria-hidden="true"><span class="gx-ini">${esc(initial(d.title))}</span></span>${rec}</span>
       <span class="gc-title">${esc(d.title)}</span>
       <span class="gc-blurb">${esc(d.blurb)}</span>
       <span class="gx-tags">${m.tags.map((x) => `<span class="gx-tag">${esc(x)}</span>`).join("")}</span>
@@ -131,13 +133,13 @@
     const d0 = defs.length ? defs[dayIndex() % defs.length] : null;
     const glyphs = GLYPHS.map((g, i) => `<span style="--i:${i}">${esc(g)}</span>`).join("");
     const daily = d0 ? `<a class="gx-daily" href="#${d0.id}" style="${colorVars(d0.color)}">
-        <span class="gx-daily-ico" aria-hidden="true">${d0.icon}</span>
-        <span class="gx-daily-txt"><span class="gx-daily-eyebrow">⚡ Күннің ойыны</span><b>${esc(d0.title)}</b><span>${esc(d0.blurb)}</span></span>
+        <span class="gx-daily-ico" aria-hidden="true"><span class="gx-ini">${esc(initial(d0.title))}</span></span>
+        <span class="gx-daily-txt"><span class="gx-daily-eyebrow">Күннің ойыны</span><b>${esc(d0.title)}</b><span>${esc(d0.blurb)}</span></span>
         <span class="gx-daily-go" aria-hidden="true">▶ Ойнау</span></a>` : "";
     root.innerHTML = `<section class="gx-hero" aria-label="Ойындар орталығы">
         <div class="gx-glyphs" aria-hidden="true">${glyphs}</div>
         <div class="gx-hero-body">
-          <p class="gx-eyebrow">🎮 Аркада</p>
+          <p class="gx-eyebrow">Аркада</p>
           <h2 class="gx-hero-title">Ойна. Үйрен. <span>Деңгейіңді өсір.</span></h2>
           <p class="gx-hero-sub">Python, C, C++, Java, SQL, веб және алгоритмдер: қысқа раундтар, рекордтар мен XP. Интернетсіз, тіркелусіз.</p>
         </div>
