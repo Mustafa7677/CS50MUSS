@@ -160,3 +160,66 @@ test("Дизайн 5.0: Алаш палитрасы мен баспа әрпі �
   expect(JSON.parse(rules).prefetch[0].eagerness).toBe("moderate");
   expect(rules).not.toContain("prerender");
 });
+
+test("навигациялық жол: академия › курс › сабақ, ағымдағы бет белгіленген, сілтемелер жұмыс істейді", async ({ page }) => {
+  await blockFonts(page.context());
+  const cases = {
+    "python/lectures/week-1.html": ["AO17", "Бағдарламалау", "CS50P", "1-апта"],
+    "lectures/week-3.html": ["AO17", "Бағдарламалау", "CS50x", "3-апта"],
+    "en/lectures/week-2.html": ["AO17", "English Academy", "A0 · 3-сабақ"],
+    "math/lectures/week-21.html": ["AO17", "Математика", "Differential Calculus · 1-сабақ"],
+    "practice.html": ["AO17", "Білімді бекіту"],
+  };
+  for (const [u, crumbs] of Object.entries(cases)) {
+    await page.goto(u);
+    expect(await page.locator(".crumbs li").allTextContents(), u).toEqual(crumbs);
+    await expect(page.locator('.crumbs [aria-current="page"]'), u).toHaveText(crumbs[crumbs.length - 1]);
+  }
+  await page.goto("python/lectures/week-1.html");
+  await page.locator(".crumbs a", { hasText: "CS50P" }).click();
+  await expect(page).toHaveURL(/python\/(index\.html)?$/);
+  await page.goto("index.html");
+  await expect(page.locator(".crumbs")).toHaveCount(0);
+});
+
+test("академияға келу: интерфейс өз мінезімен құрастырылады (code - терілу, en - жарық, math - сызық)", async ({ page }) => {
+  test.setTimeout(60_000);
+  await blockFonts(page.context());
+  const easing = { code: "steps(16, end)", en: "cubic-bezier(0.16, 1, 0.3, 1)", math: "cubic-bezier(0.16, 1, 0.3, 1)" };
+  // тақырыпқа берілген анимацияларды жазып аламыз (олар 1 с ішінде бітеді, кейін getAnimations() бос болады)
+  await page.context().addInitScript(() => {
+    const orig = Element.prototype.animate;
+    Element.prototype.animate = function (kf, opt) {
+      if (this.tagName === "H1") (window.__h1an = window.__h1an || []).push({ e: (opt && opt.easing) || "", k: Object.keys((kf && kf[0]) || {}).join(",") });
+      return orig.call(this, kf, opt);
+    };
+  });
+  for (const k of ["code", "en", "math"]) {
+    await page.goto("index.html");
+    await page.evaluate((kk) => sessionStorage.setItem("ao17:tx", JSON.stringify({ k: kk, t: Date.now() })), k);
+    await page.goto(k === "code" ? "programming.html" : k + "/index.html");
+    await expect.poll(() => page.evaluate(() => (window.__h1an || []).length)).toBeGreaterThan(0);
+    const kfs = await page.evaluate(() => window.__h1an);
+    expect(kfs.length, k).toBeGreaterThan(0);
+    if (k === "code") expect(kfs[0].e).toBe(easing.code);
+    if (k === "en") expect(kfs[0].k).toContain("filter");
+    if (k === "math") expect(kfs[0].k).toContain("clipPath");
+  }
+});
+
+test("пернетақтамен өткенде жаңа беттің фокусы тақырыпта; әлсіз құрылғыда жеңіл режим", async ({ browser }) => {
+  const ctx = await browser.newContext();
+  await blockFonts(ctx);
+  const page = await ctx.newPage();
+  await page.goto("python/");
+  await page.locator('a[href$="lectures/week-1.html"]').first().focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/week-1\.html$/);
+  await expect(page.locator("#main h1")).toBeFocused();
+  // жеңіл режим: трафик үнемдеу қосулы
+  await ctx.addInitScript(() => Object.defineProperty(navigator, "connection", { value: { saveData: true } }));
+  await page.goto("programming.html");
+  await expect(page.locator("html")).toHaveClass(/\blite\b/);
+  expect(await page.evaluate(() => getComputedStyle(document.documentElement, "::before").display)).toBe("none");
+  await ctx.close();
+});

@@ -99,6 +99,11 @@
       sessionStorage.removeItem("ao17:tx");
     }
   } catch (e) { /* жеке режим */ }
+  // Әлсіз құрылғы не трафик үнемдеу: жеңіл режим (қағаз түйіршігі, параллакс, ауыр сүзгілер жоқ; өтулер қысқа)
+  try {
+    const nc = navigator.connection || {};
+    if (nc.saveData || (navigator.deviceMemory && navigator.deviceMemory <= 2) || (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2)) root.classList.add("lite");
+  } catch (e) { /* ескі браузер */ }
   // Академия мінезі (Дизайн 5.0): бет қай академияға тиесілі - түсі, фактурасы, өту сипаты осыдан
   root.dataset.ac = /\/en\//.test(location.pathname) ? "en" : /\/math\//.test(location.pathname) ? "math"
     : /\/(python|sql|ai|web|cpp|java)\/|\/lectures\/|\/(programming|courses|playground|practice|debug|flask|projects|map|cheatsheet|exam|games|detective|viz|flashcards)\.html$/.test(location.pathname) ? "code" : "core";
@@ -312,6 +317,9 @@
     initAlashDoc();
     initResultReplay();
     initHeroDepth();
+    initCrumbs();
+    initListMotion();
+    initKeyboardArrival();
     document.querySelectorAll(".qt-slot").forEach(miniQuote);
     initPythonRunner();
     initSqlRunner();
@@ -906,7 +914,7 @@
   }
   // Тақырып блоктарының тереңдігі: меңзер жылжығанда белгі мен сахна қабаттары сәл ығысады (тек тышқан, тек қозғалыс рұқсат болса)
   function initHeroDepth() {
-    if (motionStill() || !(window.matchMedia && matchMedia("(pointer: fine)").matches)) return;
+    if (motionStill() || root.classList.contains("lite") || !(window.matchMedia && matchMedia("(pointer: fine)").matches)) return;
     document.querySelectorAll(".content .lecture-head, .cx-hero, .py-hero, .gx-hero").forEach((h) => {
       let raf = 0;
       h.addEventListener("pointermove", (e) => {
@@ -920,6 +928,103 @@
       });
       h.addEventListener("pointerleave", () => { h.style.setProperty("--mx", 0); h.style.setProperty("--my", 0); });
     });
+  }
+  // ---------- Навигациялық жол: AO17 › академия › курс › сабақ ----------
+  // Сайт картасынан (routeOf) құрылады; беттер арасында бір элемент ретінде жылжиды (view-transition-name: ao-crumbs).
+  function initCrumbs() {
+    const main = document.getElementById("main");
+    const r = routeOf(location.href);
+    if (!main || !r || r.lv === 0 || main.querySelector(".crumbs") || document.querySelector(".nf")) return;
+    const ACAD = { code: ["Бағдарламалау", "programming.html"], en: ["English Academy", "en/index.html"], math: ["Математика", "math/index.html"] };
+    const short = (s, n) => { s = String(s || "").replace(/\s+/g, " ").trim(); return s.length > n ? s.slice(0, n - 1).trimEnd() + "…" : s; };
+    const h1 = document.querySelector("#main h1");
+    const num = document.querySelector("#main .lecture-head .num");
+    const items = [["AO17", "index.html"]];
+    if (r.lv === 3 || r.lv === 2 || r.grp === "hub") {
+      const a = ACAD[r.ac];
+      if (a && r.grp !== "hub") items.push(a);
+      if (r.lv === 3 && r.ac === "code") {
+        const c = (r.grp.split(":")[1]) || "x";
+        const m = COURSE_META.find((x) => x.id === c);
+        if (m) items.push([m.name, c === "x" ? "index.html#main" : m.href]);
+      }
+      items.push([short(r.lv === 3 && num ? num.textContent : h1 && h1.textContent, 42), null]);
+    } else {
+      items.push([short(h1 && h1.textContent, 42) || document.title.split(" - ")[0], null]);
+    }
+    const nav = document.createElement("nav");
+    nav.className = "crumbs";
+    nav.setAttribute("aria-label", "Навигациялық жол");
+    nav.innerHTML = "<ol>" + items.map(([t, h], i) => `<li>${h ? `<a href="${ROOT_URL + h}">${escapeHtml(t)}</a>` : `<span aria-current="page">${escapeHtml(t)}</span>`}</li>`).join("") + "</ol>";
+    main.insertBefore(nav, main.firstChild);
+  }
+  // ---------- Академияға келу: интерфейс сахнадан «құрастырылады» (басты беттен өткен соң) ----------
+  // code - баспа әрпі терілгендей солдан оңға ашылады; en - жарықтан әріпке айналады; math - сызықтан жазықтыққа жайылады.
+  function assembleArrival(kind) {
+    const hero = document.querySelector(".cx-hero, .py-hero");
+    if (!hero || !hero.animate) return;
+    const parts = [...hero.querySelectorAll(":scope h1, :scope .cx-eyebrow, :scope p, :scope .cx-stats > *, :scope .hero-actions > *, :scope .oc-acts > *, :scope .py-win, :scope .cx-orbit")]
+      .filter((el, i, a) => !a.some((o) => o !== el && o.contains(el)));
+    const E = "cubic-bezier(.16,1,.3,1)";
+    parts.forEach((el, i) => {
+      const d = 120 + i * 70;
+      if (kind === "code") {
+        const type = el.matches("h1, p");
+        el.animate([{ clipPath: "inset(0 100% 0 0)", opacity: .2 }, { clipPath: "inset(0 0 0 0)", opacity: 1 }], { duration: type ? 620 : 380, delay: d, easing: type ? "steps(16, end)" : E, fill: "backwards" });
+      } else if (kind === "en") {
+        el.animate([{ opacity: 0, filter: "brightness(2.4) blur(6px)", transform: "translateY(-6px)" }, { opacity: 1, filter: "none", transform: "none" }], { duration: 640, delay: d, easing: E, fill: "backwards" });
+      } else {
+        el.animate([{ opacity: 0, clipPath: "inset(49% 0 49% 0)", transform: `translate${i % 2 ? "X" : "Y"}(${i % 2 ? 24 : 18}px)` }, { opacity: 1, clipPath: "inset(0 0 0 0)", transform: "none" }], { duration: 560, delay: d, easing: E, fill: "backwards" });
+      }
+    });
+    if (kind === "code") hero.querySelectorAll(".o-i").forEach((o, i) => o.animate([{ opacity: 0, translate: `${(i % 3 - 1) * 90}px ${(i % 2 ? -1 : 1) * 70}px`, scale: .4 }, { opacity: 1, translate: "0 0", scale: 1 }], { duration: 700, delay: 300 + i * 60, easing: "cubic-bezier(.34,1.56,.64,1)", fill: "backwards" }));
+  }
+  // ---------- Сүзгі, таб, іздеу: тізім ауысқанда жаңа элементтер кезекпен шығады ----------
+  // Пайдаланушы сүзгіні басқан соң 450 мс ішінде көрінген не қосылған карточкаларды ғана қозғаймыз (басқа өзгерістерге тимейді).
+  function initListMotion() {
+    if (motionStill() || !window.MutationObserver) return;
+    const CTRL = "[role='tab'], [aria-pressed], [class*='chip'], [class*='filter'], [class*='-tab'], .seg button, [role='group'] > button, .search-input input, [class*='search'] input, input[type='search']";
+    const CARDISH = /(card|tile|row|item|term|chip|game|week|g-|gx-)/;
+    let until = 0, lists = new Set(), raf = 0;
+    const visible = (el) => el.isConnected && !el.hidden && el.offsetParent !== null;
+    const flush = () => {
+      raf = 0;
+      lists.forEach((box) => {
+        [...box.children].filter((el) => visible(el) && CARDISH.test(String(el.className))).slice(0, 24)
+          .forEach((el, i) => el.animate([{ opacity: 0, transform: "translateY(10px) scale(.985)" }, { opacity: 1, transform: "none" }], { duration: 280, delay: i * 22, easing: "cubic-bezier(.16,1,.3,1)", fill: "backwards" }));
+      });
+      lists = new Set();
+    };
+    // өзгерген тізімнің өзін есте сақтаймыз: сүзгіден кейін қалған элементтер қайта орналасады, жаңалары шығады
+    const take = (el) => {
+      const box = el && el.nodeType === 1 ? el.parentElement : null;
+      if (!box || box.closest(".topbar, .game-stage, .course-menu, .toast-stack, .bota-pop") || !CARDISH.test(String(el.className))) return;
+      lists.add(box);
+      if (!raf) raf = requestAnimationFrame(flush);
+    };
+    const arm = (e) => { if (e.target.closest && e.target.closest(CTRL)) until = performance.now() + 450; };
+    document.addEventListener("click", arm, true);
+    document.addEventListener("input", arm, true);
+    new MutationObserver((ms) => {
+      if (performance.now() > until) return;
+      ms.forEach((m) => {
+        if (m.type === "childList") m.addedNodes.forEach(take);
+        else if (m.attributeName === "hidden") take(m.target);
+      });
+    }).observe(document.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["hidden"] });
+  }
+  // ---------- Пернетақтамен өткен адам жаңа бетте мазмұннан бастайды ----------
+  function initKeyboardArrival() {
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && e.target.closest && e.target.closest("a[href]")) try { sessionStorage.setItem("ao17:kbnav", "1"); } catch (er) { /* жеке режим */ }
+    }, true);
+    let kb = null;
+    try { kb = sessionStorage.getItem("ao17:kbnav"); sessionStorage.removeItem("ao17:kbnav"); } catch (er) { /* жеке режим */ }
+    if (!kb || location.hash) return;
+    const t = document.querySelector("#main h1") || document.getElementById("main");
+    if (!t) return;
+    if (!t.hasAttribute("tabindex")) t.setAttribute("tabindex", "-1");
+    t.focus({ preventScroll: true });
   }
   function initAlashPortraits() {
     if (!document.querySelector(".alash .al-card")) return;
@@ -1645,7 +1750,7 @@
     if (!m) return;
     const clean = () => root.classList.remove("tx-in", "tx-back", "tx-in-" + m[2], "tx-back-" + m[2], "tx-go");
     if (m[1] === "in") {
-      requestAnimationFrame(() => requestAnimationFrame(() => root.classList.add("tx-go")));
+      requestAnimationFrame(() => requestAnimationFrame(() => { root.classList.add("tx-go"); assembleArrival(m[2]); }));
       setTimeout(clean, 900);
       return;
     }
