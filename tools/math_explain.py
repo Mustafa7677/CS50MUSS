@@ -166,7 +166,7 @@ def render(ex, uni, k, uid, slug):
          f'          {_map(ex["steps"])}',
          '        </header>',
          '        <div class="mx-xtrail">',
-         '        <img class="mx-xbota" src="../../assets/img/bota.svg" alt="" width="44" height="44" loading="lazy">',
+         '        <img class="mx-xbota" src="../../assets/img/seal.svg" alt="" width="44" height="44" loading="lazy">',
          '        <ol class="mx-xsteps">']
     for i, s in enumerate(ex["steps"], 1):
         text = "".join(f"<p>{md(t)}</p>" for t in s["theory"])

@@ -32,9 +32,9 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await expect(page.locator(".ac-card").nth(2)).toHaveCSS("opacity", "1", { timeout: 6000 });
   expect(await page.locator(".ac-card").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["programming.html", "en/", "math/"]);
   await expect(page.locator('.ac-card[href="programming.html"] .ac-facts')).toContainText(`${S.by_course.x.lect + CODE.slice(1).reduce((n, c) => n + S.by_course[c].lect, 0)} лекция`);
-  // Бота - кейіпкер: әр сахнада сөйлейді
-  await expect(page.locator(".bt-gate .bt-say")).toHaveText("Қай қақпаны ашамыз?");
-  await expect(page.locator(".bt-gate .bt-say")).toHaveCSS("opacity", "1", { timeout: 6000 });
+  // Дизайн 6.0: мультфильм кейіпкері жоқ; сахна деректі фильмдегідей ара-жазумен (intertitle) сөйлейді
+  await expect(page.locator(".st-s3 .st-intertitle")).toHaveText("Қай қақпаны ашасыз?");
+  await expect(page.locator(".bota, .bt-actor, .walker")).toHaveCount(0);
   // үш академия сахнасы: бағдарламалау (7 курс), English (6 деңгей), математика (25 пән)
   for (const id of ["scene-code", "scene-en", "scene-math", "scene-journey"]) {
     await page.locator("#" + id).scrollIntoViewIfNeeded();
@@ -45,9 +45,8 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await expect(page.locator(".axm-map a")).toHaveCount(25);
   await expect(page.locator(".axm-map a").first()).toHaveAttribute("href", "math/index.html#subj-25");
   await expect(page.locator(".axc-code .copy-btn")).toHaveCount(0);
-  await expect(page.locator(".bt-actor")).toHaveCount(5);
   await expect(page.locator(".jr-legend li")).toHaveCount(3);
-  await expect(page.locator(".bt-math .bt-say")).toHaveCSS("opacity", "1", { timeout: 6000 });  // безендірілген код - көшіру батырмасы жоқ
+  // безендірілген код - көшіру батырмасы жоқ
   expect(errs).toEqual([]);
 });
 
@@ -62,7 +61,7 @@ test("оқиға: қозғалыс азайтылса (жүйе не «Аа» б
     // скроллсыз да 2 мен 3-сахна мәтіні мен карточкалары көрінеді
     for (const sel of [".st-pillars li >> nth=3", ".ac-card >> nth=2", ".st-s1 .st-acts", ".axc-langs li >> nth=6", ".axe-levels li >> nth=5", ".axm-map li >> nth=24", ".axc-page .w >> nth=5"]) await expect(page.locator(sel)).toHaveCSS("opacity", "1");
     await expect(page.locator(".ax17")).toBeHidden();  // «АЛАШ 1917» кіріспесі де жоқ
-    expect(await page.locator(".st-s1 .sun-rise").evaluate((e) => getComputedStyle(e).animationName)).toBe("none");
+    expect(await page.locator(".st-s1 .s17-eye").evaluate((e) => getComputedStyle(e).animationName)).toBe("none");  // шаңырақ жарығы да тыныш
     await ctx.close();
   }
 });

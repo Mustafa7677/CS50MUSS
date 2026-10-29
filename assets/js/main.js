@@ -157,8 +157,8 @@
   // Ортақ элемент: «карточка -> тақырып». Ескі бетте басылған сілтеменің карточкасы, жаңа бетте тақырып блогы бір атқа ие болады.
   const HERO_SEL = ".content .lecture-head, .cx-hero, .py-hero, .gx-hero, .ar-head, .nf";
   const CARD_SEL = "[class*='card'], [class*='tile'], .week-card, .pa-path, .cm-row, li";
-  let lastLink = null;
-  document.addEventListener("click", (e) => { const a = e.target.closest && e.target.closest("a[href]"); if (a) lastLink = a; }, true);
+  let lastLink = null, lastPt = null;
+  document.addEventListener("click", (e) => { const a = e.target.closest && e.target.closest("a[href]"); if (a) { lastLink = a; lastPt = e.clientX || e.clientY ? [e.clientX, e.clientY] : null; } }, true);
   const named = [];
   function vtName(el, name) { if (el) { el.style.viewTransitionName = name; named.push(el); } }
   function vtClear() { named.splice(0).forEach((el) => { el.style.viewTransitionName = ""; }); }
@@ -182,6 +182,7 @@
       const to = e.activation && e.activation.entry && e.activation.entry.url;
       const kind = routeKind(location.href, to);
       if (!kind) return;
+      try { sessionStorage.setItem("ao17:vtpt", JSON.stringify(lastPt ? [lastPt[0] / innerWidth, lastPt[1] / innerHeight] : [.5, .4])); } catch (er) { /* жеке режим */ }
       if (kind === "dive") { const [c, t] = cardFor(to); vtName(c, "ao-hero"); if (t) vtName(t, "ao-title"); }
       else if (kind === "rise") { const [h, t] = heroOf(document); vtName(h, "ao-hero"); vtName(t, "ao-title"); }
     } catch (er) { /* ескі браузер */ }
@@ -196,6 +197,12 @@
       if (!kind) return;
       e.viewTransition.types.add(kind);
       root.dataset.vt = kind;
+      // сия басылған нүктеден жайылады (жаңа беттің өлшемімен)
+      try {
+        const pt = JSON.parse(sessionStorage.getItem("ao17:vtpt") || "null") || [.5, .4];
+        root.style.setProperty("--vx", (pt[0] * 100).toFixed(1) + "vw");
+        root.style.setProperty("--vy", (pt[1] * 100).toFixed(1) + "vh");
+      } catch (er) { /* жеке режим */ }
       if (kind === "dive") { const [h, t] = heroOf(document); vtName(h, "ao-hero"); vtName(t, "ao-title"); }
       else if (kind === "rise") { const [c, t] = cardFor(from); vtName(c, "ao-hero"); if (t) vtName(t, "ao-title"); }
       e.viewTransition.finished.finally(() => { vtClear(); delete root.dataset.vt; });
@@ -289,7 +296,6 @@
     initCourseCards();
     initStory();
     initPortal();
-    initSay();
     initJourney();
     initPortalLinks();
     initArrival();
@@ -807,7 +813,7 @@
     if (COURSE === "math") return; // математика: «Ботаның кеңесі» өздігінен шықпайды (тек «Көмекші» батырмасы)
     const tip = document.createElement("div");
     tip.className = "bota-tip";
-    tip.innerHTML = `<img src="${ROOT_URL}assets/img/bota-think.svg" alt="" width="64" height="64"><p><b>Ботаның кеңесі:</b> ${BOTA_TIPS[(PAGE.length * 7 + new Date().getDate()) % BOTA_TIPS.length]}</p>`;
+    tip.innerHTML = `<img src="${ROOT_URL}assets/img/seal.svg" alt="" width="56" height="56"><p><b>Ұстаздың кеңесі:</b> ${BOTA_TIPS[(PAGE.length * 7 + new Date().getDate()) % BOTA_TIPS.length]}</p>`;
     done.before(tip);
 
     // ← → пернелерімен лекциялар арасында жүру
@@ -1409,45 +1415,42 @@
     return { p, phase, con, done, total, seed: [...path].reduce((a, c) => (a * 31 + c.charCodeAt(0)) >>> 0, 7) };
   }
   function filmRand(seed) { let s = seed || 1; return () => ((s = (s * 1103515245 + 12345) >>> 0) / 4294967296); }
-  const BOTA_SVG = '<g class="bota fm-walker"><ellipse class="b-shadow" cx="62" cy="110" rx="32" ry="4.5"/>' +
-    '<g class="b-far"><rect class="b-leg l1" x="40" y="82" width="8" height="27" rx="4"/><rect class="b-leg l3" x="76" y="82" width="8" height="27" rx="4"/></g>' +
-    '<g class="b-body"><path class="b-tail" d="M31 76q-8 2-6 12"/><path class="b-torso" d="M30 86C26 64 44 60 52 66C56 50 72 50 76 64C88 62 96 72 92 86Z"/>' +
-    '<path class="b-rug" d="M40 74h44v10H40z"/><path class="b-rug-o" d="M44 79l4-3 4 3-4 3zM58 79l4-3 4 3-4 3zM72 79l4-3 4 3-4 3z"/>' +
-    '<g class="b-head"><path class="b-neck" d="M84 70C90 54 88 40 92 32"/><ellipse class="b-skull" cx="98" cy="30" rx="15" ry="12"/><ellipse class="b-muzzle" cx="108" cy="34" rx="7" ry="6"/>' +
-    '<ellipse class="b-ear" cx="88" cy="20" rx="3.5" ry="6" transform="rotate(-20 88 20)"/><path class="b-cap" d="M86 18q12-14 24 0z"/><circle class="b-cap-b" cx="98" cy="9" r="2.6"/>' +
-    '<g class="b-eyes"><circle class="b-eye" cx="98" cy="27" r="4.2"/><circle class="b-glint" cx="99.3" cy="25.6" r="1.4"/></g><circle class="b-blush" cx="102" cy="33" r="2.4"/><path class="b-smile" d="M104 37q4 3 8 0"/></g></g>' +
-    '<g class="b-near"><rect class="b-leg l2" x="45" y="83" width="8" height="27" rx="4"/><rect class="b-leg l4" x="81" y="83" width="8" height="27" rx="4"/></g></g>';
+  // ---------- Мұрағат тақтасы (Дизайн 6.0): тақырып блогының артқы жоспары ----------
+  // Мультфильм (жұлдыз, бұлт, жүрген кейіпкер, киіз үй) алынды. Орнына: шаңырақтан түскен жарық бағаны, академия фактурасы
+  // (code - газеттің баспа жолдары, en - қолжазба жолдары, math - циркуль доғалары мен өлшем белгілері) және жарықта қалқыған шаң.
   function filmSky(info) {
     const r = filmRand(info.seed);
-    let stars = "";
-    for (let i = 0; i < 34; i++) stars += `<circle cx="${(r() * 1000).toFixed(0)}" cy="${(r() * 190).toFixed(0)}" r="${(0.7 + r() * 1.3).toFixed(1)}" style="--d:${(r() * 3).toFixed(2)}s"/>`;
-    const lines = FILM_CON[info.con];
-    const con = lines.map((l) => `<path d="M${l.map((q) => q.join(" ")).join("L")}" pathLength="1"/>`).join("");
-    const dots = [...new Set(lines.flat().map((q) => q.join(",")))].map((q, i) => `<circle cx="${q.split(",")[0]}" cy="${q.split(",")[1]}" r="3" style="--i:${i}"/>`).join("");
-    const night = info.phase === "night";
-    const orb = night
-      ? '<g class="fm-orb fm-moon"><circle class="fm-glow" r="46"/><path class="fm-disc" d="M8-22.6A24 24 0 1 0 22.6 8 18 18 0 0 1 8-22.6Z"/></g>'
-      : '<g class="fm-orb fm-sun"><circle class="fm-glow" r="50"/><circle class="fm-disc" r="24"/><path class="fm-kuld" d="M-21-8H21M-21 8H21M-8-21V21M8-21V21"/><path class="fm-mid" d="M0-7 7 0 0 7-7 0Z"/><circle class="fm-ring" r="24"/></g>';
-    // Жұлдыздар бүкіл тақтаға жайылады; шоқжұлдыз бен күн/ай - оң жақ жоғарғы бұрышта, өлшемі тұрақты (мәтінге түспейді)
-    return `<svg class="fm-sky" viewBox="0 0 1000 300" preserveAspectRatio="xMaxYMin slice" aria-hidden="true" focusable="false">` +
-      `<g class="fm-stars">${stars}</g><g class="fm-cloud"><path d="M640 92c-4-16 12-26 26-18 6-16 32-18 40-4 12-8 32-2 30 16 12 2 12 18-2 18h-90c-14 0-14-10-4-12z"/></g></svg>` +
-      `<svg class="fm-corner" viewBox="0 0 200 96" aria-hidden="true" focusable="false">` +
-      `<g class="fm-con" transform="translate(30 10) scale(.62)">${con}${dots}</g><g transform="translate(160 38)">${orb}</g></svg>`;
+    const ac = root.dataset.ac;
+    let tex = "";
+    if (ac === "en") {
+      for (let k = 0; k < 7; k++) {
+        const y = 60 + k * 30;
+        let d = `M560 ${y}`;
+        for (let x = 560; x < 990; x += 18) d += `q4 ${(r() * 10 - 6).toFixed(1)} 9 0t9 0`;
+        tex += `<path d="${d}"/>`;
+      }
+    } else if (ac === "math") {
+      for (let k = 0; k < 5; k++) { const rr = 60 + k * 34 + r() * 8; tex += `<circle cx="860" cy="120" r="${rr.toFixed(0)}" pathLength="1" style="--k:${k}"/>`; }
+      tex += '<path d="M600 120H990M860 0V300"/>';
+      for (let x = 620; x < 990; x += 30) tex += `<path d="M${x} 114v12"/>`;
+    } else {
+      for (let c = 0; c < 3; c++) for (let k = 0; k < 11; k++) {
+        const x0 = 560 + c * 146, w = 120 - (r() < .15 ? r() * 60 : 0), y = 34 + k * 22;
+        tex += `<path d="M${x0} ${y}h${w.toFixed(0)}"/>`;
+      }
+    }
+    let dust = "";
+    for (let k = 0; k < 12; k++) dust += `<circle cx="${(640 + r() * 300).toFixed(0)}" cy="${(40 + r() * 230).toFixed(0)}" r="${(0.8 + r() * 1.6).toFixed(1)}" style="--d:${(r() * 9).toFixed(1)}s;--dx:${(r() * 40 - 20).toFixed(0)}px"/>`;
+    return '<div class="fm-beam" aria-hidden="true"></div>' +
+      `<svg class="fm-sky fm-plate" viewBox="0 0 1000 300" preserveAspectRatio="xMaxYMin slice" aria-hidden="true" focusable="false"><g class="fm-tex fm-tex-${ac}">${tex}</g><g class="fm-dust">${dust}</g></svg>`;
   }
+  // Төменгі жиек: гравюра сызығы, ортасында ою-ромб; оқылған сабақ саны мөр болып басылады
   function filmGround(info, W) {
-    const H = 96, r = filmRand(info.seed + 3);
-    const wave = (base, amp, k, ph) => { let d = `M0 ${H}`; for (let x = 0; x <= W + 20; x += 20) d += `L${x} ${(base + amp * Math.sin(x / k + ph)).toFixed(1)}`; return d + `L${W} ${H}Z`; };
-    let tufts = "";
-    for (let x = 30 + r() * 40; x < W - 20; x += 70 + r() * 90) tufts += `<path d="M${x.toFixed(0)} 88c-1-8-3-13-7-18M${x.toFixed(0)} 88c0-10 0-16 2-24M${x.toFixed(0)} 88c2-7 4-12 9-16"/>`;
-    const yurtX = W - 92, botaX = 14 + info.p * Math.max(0, yurtX - 122);
-    const yurt = `<g transform="translate(${yurtX} 40)"><g class="fm-yurt"><path class="y-dome" d="M4 22C10 4 54 4 60 22Z"/><rect class="y-wall" x="4" y="22" width="56" height="24"/>` +
-      `<path class="y-band" d="M4 22h56v4H4z"/><path class="y-lat" d="M8 30l8 12M16 30l8 12M24 30l8 12M40 30l8 12M48 30l8 12M16 30l-8 12M24 30l-8 12M48 30l-8 12M56 30l-8 12"/>` +
-      `<path class="y-door" d="M28 46V31h9v15z"/><circle class="y-top" cx="32" cy="7" r="3.5"/></g></g>`;
-    return `<svg class="fm-ground" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true" focusable="false">` +
-      `<path class="fm-far" d="${wave(54, 9, 150, info.seed % 7)}"/><path class="fm-near" d="${wave(74, 5, 95, (info.seed >> 3) % 7)}"/>` +
-      `<g class="fm-tufts">${tufts}</g>${yurt}` +
-      `<g class="fm-bota" style="--bx:${botaX.toFixed(1)}px"><g transform="translate(0 22) scale(.62)">${BOTA_SVG}</g>` +
-      (info.done ? `<g class="fm-tag" transform="translate(40 4)"><rect x="-26" y="-11" width="52" height="20" rx="10"/><text y="4" text-anchor="middle">${info.done}/${info.total}</text></g>` : "") + `</g></svg>`;
+    const H = 40, m = W / 2;
+    const seal = info.done ? `<g class="fm-seal" transform="translate(34 20)"><circle r="15"/><circle r="11.5" class="fm-seal-in"/><text y="4" text-anchor="middle">${info.done}/${info.total}</text></g>` : "";
+    return `<svg class="fm-ground fm-rule" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" aria-hidden="true" focusable="false">` +
+      `<path class="fm-line" d="M${info.done ? 60 : 16} 22H${m - 22}M${m + 22} 22H${W - 16}"/><path class="fm-line fm-line2" d="M${info.done ? 60 : 16} 27H${m - 30}M${m + 30} 27H${W - 16}"/>` +
+      `<path class="fm-orn" d="M${m} 13l9 9-9 9-9-9z M${m} 18l4 4-4 4-4-4z"/>${seal}</svg>`;
   }
   // ---------- Әр беттің өз белгісі: тақтаның бос оң жағында алтын эмблема өзі сызылады (басты беттің шаңырағы сияқты) ----------
   // Сызықтар pathLength="1" (style.css: .fm-em), бір нүкте-акцент көгілдір. viewBox: -100..100.
@@ -1616,7 +1619,7 @@
       if (!nw || nw === w) return;
       w = nw;
       // Бота киіз үйдің алдында; оттың жалыны - үйдің сол жағында
-      floor.innerHTML = filmGround(info, w).replace("</svg>", `<g transform="translate(${w - 104} 78)"><g class="fm-fire"><path class="f-log" d="M-10 8h20M-8 4l16 6M8 4l-16 6"/><path class="f-out" d="M0 6C-9 0-6-10 0-18 6-10 9 0 0 6Z"/><path class="f-in" d="M0 6C-4 2-3-4 0-9 3-4 4 2 0 6Z"/></g></g></svg>`);
+      floor.innerHTML = filmGround(info, w);
     };
     draw();
     if (window.ResizeObserver) new ResizeObserver(draw).observe(box);
@@ -1918,69 +1921,6 @@
     // мақсат таңдалса (бағдарламалау академиясының «Мақсатыңды таңда»), сол маршрут шоқжұлдызда жанады
     new MutationObserver(() => light(picked())).observe(document.querySelector(".pa-tracks") || anchor.parentElement, { attributes: true, subtree: true, attributeFilter: ["class"] });
     light(picked());
-  }
-
-  // ---------- Ботаның сөз бұлты (басты бет, 1-сахна) ----------
-  // Бұлт SVG ішінде емес, жеке HTML: SVG «slice» масштабымен бірге экраннан шығып кетпейді. Орны - Ботаның
-  // көлеңкесінен есептеледі (көлеңке тек жүргенде қозғалады, бас изегенде бұлт дірілдемейді), экранның
-  // ішіне қысылады, құйрығы Ботаның басына қарайды. Бота жүргенде (алғашқы ~9 с) кадр сайын, кейін тек
-  // өлшем не бағыт өзгергенде қайта есептеледі.
-  function initSay() {
-    const s1 = document.querySelector(".st-s1");
-    const shadow = s1 && s1.querySelector(".walker .b-shadow");
-    if (!shadow) return;
-    const say = document.createElement("div");
-    say.className = "st-say";
-    say.setAttribute("aria-hidden", "true");
-    say.textContent = "Сәлем! Мен - Бота. Жүр, үш академияға барайық!";
-    s1.append(say);
-    const place = () => {
-      const sr = s1.getBoundingClientRect(), sh = shadow.getBoundingClientRect();
-      if (!sh.width) return;
-      const k = sh.width / 64;                      // көлеңкенің ені - 64 бірлік (rx 32)
-      const headX = sh.left + sh.width / 2 + 40 * k - sr.left, capY = sh.top + sh.height / 2 - 104 * k - sr.top;
-      const bw = say.offsetWidth, bh = say.offsetHeight, pad = 12;
-      const left = Math.max(pad, Math.min(sr.width - bw - pad, headX - bw * 0.3));
-      say.style.left = left.toFixed(1) + "px";            // transform емес: оны «пайда болу» анимациясы қолданады
-      say.style.top = Math.max(pad, capY - bh - 14).toFixed(1) + "px";
-      say.style.setProperty("--tx", Math.max(18, Math.min(bw - 18, headX - left)).toFixed(1) + "px");
-      hit.style.left = (sh.left + sh.width / 2 - sr.left - 30 + 20 * k).toFixed(1) + "px";
-      hit.style.top = (sh.top - sr.top - 70 * k).toFixed(1) + "px";
-      hit.style.width = hit.style.height = Math.max(44, 90 * k).toFixed(0) + "px";
-    };
-    // Ботамен сәлемдесу: батырма Ботаның үстінде тұрады (пернетақтамен де қолжетімді)
-    const LINES = ["Сәлем! Мен - Бота. Жүр, үш академияға барайық!", "Скролл жаса - сапарымыз жалғасады!", "Қай академиядан бастаймыз: код, English әлде математика?", "Әр сабақ - жолдағы бір қадам. Мен сенімен біргемін!"];
-    let line = 0;
-    const hit = document.createElement("button");
-    hit.type = "button";
-    hit.className = "st-bota-hit";
-    hit.setAttribute("aria-label", "Ботамен сәлемдесу");
-    s1.append(hit);
-    hit.addEventListener("click", () => {
-      line = (line + 1) % LINES.length;
-      say.textContent = LINES[line];
-      s1.classList.remove("bt-joy");
-      say.classList.remove("bt-new");
-      void s1.offsetWidth;
-      s1.classList.add("bt-joy");
-      say.classList.add("bt-new");
-      again();
-    });
-    const head = s1.querySelector(".walker .b-head");
-    if (head && window.matchMedia && matchMedia("(pointer: fine)").matches && root.classList.contains("st-js")) {
-      s1.addEventListener("pointermove", (e) => {
-        const sh = shadow.getBoundingClientRect();
-        const dx = e.clientX - (sh.left + sh.width / 2), dy = e.clientY - (sh.top - sh.width);
-        head.style.setProperty("--look", Math.max(-14, Math.min(14, Math.atan2(dy, Math.abs(dx) + 40) * 30 * (dx < 0 ? -1 : 1))).toFixed(1) + "deg");
-      });
-      s1.addEventListener("pointerleave", () => head.style.setProperty("--look", "0deg"));
-    }
-    let until = performance.now() + 9500;
-    const loop = () => { place(); if (performance.now() < until) requestAnimationFrame(loop); };
-    loop();
-    const again = () => { until = Math.max(until, performance.now() + 400); loop(); };
-    if (window.ResizeObserver) new ResizeObserver(again).observe(s1);
-    window.addEventListener("orientationchange", again);
   }
 
   // ---------- 07 «Сенің саяхатың»: үш академияның жолы оқушының нақты прогресімен толады ----------
@@ -2318,7 +2258,7 @@
       panel.innerHTML = `
         <div class="dash-ring" style="--pct:${pct}"><div><b>${pct}%</b><span>курс</span></div></div>
         <div class="dash-main">
-          <div class="bota-greet"><img src="${ROOT_URL}assets/img/${read ? "bota-happy" : "bota"}.svg" alt="" width="54" height="54"><div><small>Бота:</small><h3>${greeting(read, lectures.length, p.name)}</h3></div></div>
+          <div class="bota-greet"><img src="${ROOT_URL}assets/img/seal.svg" alt="" width="54" height="54"><div><small>Бота:</small><h3>${greeting(read, lectures.length, p.name)}</h3></div></div>
           <div class="dash-stats">
             <div><b>${read}<small>/${lectures.length}</small></b><span>лекция оқылды</span></div>
             <div><b>${qTotal ? Math.round((qBest / qTotal) * 100) + "%" : "-"}</b><span>тест нәтижесі</span></div>
@@ -3393,7 +3333,7 @@ try{\n${code.replace(/<\/script/gi, "<\\/script")}\n}catch(e){__s("Қате: "+e
     const b = document.createElement("div");
     b.className = "bota-pop" + (opts && opts.manual ? " math-help-pop" : "");
     if (opts && opts.manual) b.setAttribute("role", "status");
-    b.innerHTML = `<img src="${ROOT_URL}assets/img/bota-${mood}.svg" alt="Бота" width="72" height="72"><p>${escapeHtml(text)}</p><button type="button" aria-label="Жабу">✕</button>`;
+    b.innerHTML = `<img src="${ROOT_URL}assets/img/seal.svg" alt="" width="64" height="64"><p>${escapeHtml(text)}</p><button type="button" aria-label="Жабу">✕</button>`;
     document.body.appendChild(b);
     requestAnimationFrame(() => b.classList.add("show"));
     const close = () => { b.classList.remove("show"); setTimeout(() => b.remove(), 300); };

@@ -247,7 +247,7 @@
     };
     el.innerHTML = `
       <div class="pf-card">
-        <div class="pf-avatar"><img src="${K.ROOT_URL}assets/img/bota-happy.svg" alt="" width="84" height="84"></div>
+        <div class="pf-avatar"><img src="${K.ROOT_URL}assets/img/seal.svg" alt="" width="84" height="84"></div>
         <div class="pf-main">
           <label class="pf-label">Аты-жөніңіз<input class="pf-name" type="text" maxlength="40" placeholder="Мысалы: Аружан Серікқызы" autocomplete="name"></label>
           <div class="pf-idrow"><span class="pf-label">Жеке ID</span><code class="pf-id"></code><button type="button" class="btn secondary pf-copy-id">Көшіру</button></div>
