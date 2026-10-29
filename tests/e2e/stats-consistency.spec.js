@@ -29,7 +29,8 @@ const by = S.by_course;
 const LECT = new Set([S.lect, S.lect_harvard, S.lect_own, ...Object.values(by).map((c) => c.lect)]);
 const QUIZ = new Set([S.quiz, S.exam_q, ...Object.values(by).map((c) => c.quiz)]);
 const TERM = new Set([S.terms, ...Object.values(by).map((c) => c.terms)]);
-const TASK = new Set([S.tasks, ...Object.values(by).map((c) => c.tasks)]);
+// курс карточкасы тапсырма мен жаттығуды бірге санайды (ex), сайт деңгейі - tasks
+const TASK = new Set([S.tasks, ...Object.values(by).flatMap((c) => [c.tasks, c.ex])]);
 
 test("site_stats өз-өзімен келісімді және нақты файлдармен сәйкес", () => {
   expect(S.courses).toBe(Object.keys(by).length);
@@ -91,7 +92,8 @@ test("мета-сипаттамалар (description, og:description, JSON-LD) �
   expect(idx).toContain(`<meta name="description" content="${want}`);
   expect(idx).toContain(`<meta property="og:description" content="${want}`);
   expect(idx).toContain(`CS50x курсы қазақ тілінде: ${by.x.lect} лекция`);
-  expect(idx).toContain(`<!--n:site-->${F.site}<!--/n-->`);
+  // басты беттің дәлел жолағы: әр сан өз белгісімен (бір жалпы «site» жолы жоқ)
+  for (const k of ["courses", "lect", "tasks"]) expect(idx).toContain(`<!--n:${k}-->${S[k]}<!--/n-->`);
   const ex = fs.readFileSync(path.join(ROOT, "exam.html"), "utf8");
   expect(ex).toContain(`емтиханы: ${S.exam_q} сұрақ, ${S.exam_min} минут, барлық ${by.x.lect} лекция`);
   const ld = JSON.parse(idx.match(/<script type="application\/ld\+json">\s*(\{"@context": "https:\/\/schema\.org", "@type": "Course"[\s\S]*?\})\s*<\/script>/)[1]);
@@ -104,6 +106,6 @@ test("курстар витринасындағы «N лекция · M тапс
     const m = s.match(new RegExp(`data-course="${code}"[\\s\\S]*?<div class="cx-foot"><span>([^<]*)</span>`));
     expect(m, code).toBeTruthy();
     expect(m[1]).toContain(`${d.lect} лекция`);
-    expect(m[1]).toContain(d.tasks ? `${d.tasks} тапсырма` : `${d.projects} жоба`);
+    expect(m[1]).toContain(d.ex ? `${d.ex} тапсырма` : `${d.projects} жоба`);
   }
 });
