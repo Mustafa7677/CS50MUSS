@@ -84,6 +84,8 @@
   applyPrefs(loadPrefs());
   // Басты беттегі оқиға сахналары тек қозғалыс азайтылмаған кезде ойналады (әйтпесе бәрі соңғы күйінде тұрады)
   if (!loadPrefs().rm && !(window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches)) root.classList.add("st-js");
+  // Басты беттің ашылу сәті (шаңырақ күнге айналады) сессияда бір рет: қайта келгенде мәтін бірден шығады
+  try { if (sessionStorage.getItem("ao17:intro")) root.classList.add("st-seen"); } catch (e) { root.classList.add("st-seen"); }
 
   document.addEventListener("DOMContentLoaded", () => {
     // Жылжыған кезде блоктардың біртіндеп көрінуі және баннердегі сандар
@@ -165,6 +167,7 @@
     initJourney();
     initPortalLinks();
     initTryCode();
+    initHomeBar();
     document.querySelectorAll(".tb").forEach((el) => { // мұғалім сахнасы: көрінгенде бір рет ашылады
       if (!("IntersectionObserver" in window)) return el.classList.add("is-on");
       const io = new IntersectionObserver((es) => { if (es.some((e) => e.isIntersecting)) { el.classList.add("is-on"); io.disconnect(); } }, { threshold: 0.25 });
@@ -1542,6 +1545,34 @@
   // ---------- Басты бет: «Білім көші» оқиғасы ----------
   // 1-сахна бірден ойналады; келесі сахналар экранға кіргенде бір рет іске қосылады (.is-on), ал фондық қозғалыс
   // (бұлт, шөп, бүркіт) тек сахна экранда тұрғанда жүреді (.is-vis). Скролл анимацияны басқармайды, тек бастайды.
+  // Ашылу сәті: 2.3 с-та шаңырақ сахнадағы күннің нақты орнына ұшады да, сол күнге айналады (style.css: «Ашылу сәті»)
+  function initIntro(s1) {
+    const intro = s1.querySelector(".st-intro"), mark = intro && intro.querySelector(".si-mark"), disc = s1.querySelector(".sun-disc");
+    if (!mark || !root.classList.contains("st-js") || root.classList.contains("st-seen")) return;
+    try { sessionStorage.setItem("ao17:intro", "1"); } catch (e) { /* жеке режим */ }
+    setTimeout(() => {
+      if (s1.classList.contains("st-skip")) return;
+      const m = mark.getBoundingClientRect(), d = disc && disc.getBoundingClientRect();
+      if (!d || !d.width || !m.width) return;
+      // шаңырақ шеңбері (r=62) viewBox-тың 220 бірлігінде; күн дискісінің диаметріне сәйкестендіреміз
+      const ring = m.width * 124 / 220;
+      intro.style.setProperty("--fx", (d.left + d.width / 2 - (m.left + m.width / 2)).toFixed(1) + "px");
+      intro.style.setProperty("--fy", (d.top + d.height / 2 - (m.top + m.height / 2)).toFixed(1) + "px");
+      intro.style.setProperty("--fs", (d.width / ring).toFixed(3));
+      intro.classList.add("si-fly");
+      setTimeout(() => s1.classList.add("si-landed"), 780);
+    }, 2300);
+  }
+
+  // Басты бет: шапка сахнамен бірігіп (мөлдір) тұрады, сахнадан өткенде қалыпты күйге оралады
+  function initHomeBar() {
+    const s1 = document.querySelector(".is-home .st-s1");
+    if (!s1) return;
+    const set = () => root.classList.toggle("tb-solid", window.scrollY > s1.offsetHeight - 90);
+    set();
+    window.addEventListener("scroll", set, { passive: true });
+  }
+
   function initStory() {
     const scenes = document.querySelectorAll(".st-scene");
     if (!scenes.length) return;
@@ -1549,6 +1580,7 @@
     scenes[0].classList.add("is-on");
     // Логотип кадры: кез келген әрекет (скролл, басу, перне) оны өткізіп, мәтінді бірден көрсетеді
     const skipIntro = () => scenes[0].classList.add("st-skip");
+    initIntro(scenes[0]);
     ["wheel", "touchstart", "keydown", "pointerdown"].forEach((ev) => window.addEventListener(ev, skipIntro, { once: true, passive: true }));
     const skipBtn = scenes[0].querySelector(".st-skipbtn");
     if (skipBtn) skipBtn.addEventListener("click", () => { skipIntro(); const h = scenes[0].querySelector("h1"); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); } });
