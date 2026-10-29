@@ -1219,7 +1219,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 30,
+  "minutes": 31,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"

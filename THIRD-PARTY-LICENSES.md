@@ -27,7 +27,7 @@ Flask пакеті `tools/make_flask_bundle.py` арқылы PyPI-дегі ре�
 |---|---|---|---|
 | Pyodide 0.26.4 (CPython WebAssembly-де) | cdn.jsdelivr.net, unpkg.com | MPL-2.0 (Pyodide); ішіндегі CPython - PSF License және басқа кітапханалар өз лицензияларымен | Браузерде Python орындау |
 | highlight.js 11.9.0 және github-dark стилі | cdnjs.cloudflare.com | BSD-3-Clause | Код түстері |
-| Қаріптер: Unbounded, Inter, JetBrains Mono | fonts.googleapis.com / fonts.gstatic.com | SIL Open Font License 1.1 | Интерфейс қаріптері. Google Fonts сұрау кезінде қаріп серверіне IP жібереді: құпиялылық тұрғысынан қарау керек |
+| Қаріптер: Unbounded, Inter, JetBrains Mono | `assets/fonts/` | SIL Open Font License 1.1 | Интерфейс қаріптері, сайттың өзінде (офлайн, сыртқы серверге сұраныс жоқ). Лицензия мәтіндері: `assets/fonts/OFL-*.txt` |
 
 ## 3. Қызметтер
 

@@ -46,8 +46,8 @@ def subj_of(n):
 
 
 # ---------------------------------------------------------------- ортақ бөліктер
-FONT = ('  <link rel="preconnect" href="https://fonts.googleapis.com">\n'
-        '  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap">')
+# Қаріптер сайттың өзінде (assets/fonts): офлайн жұмыс істейді, Google-ға сұраныс жоқ
+FONT = '  <link rel="stylesheet" href="{prefix}assets/fonts/fonts.css">'
 
 
 def head(title, desc, prefix, *, katex=False, plan=False, viz=False, engine=False, noindex=False):
@@ -76,7 +76,7 @@ def head(title, desc, prefix, *, katex=False, plan=False, viz=False, engine=Fals
   <!-- /build:head -->
   <meta name="description" content="{a(desc)}">{robots}
   <meta name="author" content="Sagid Mustafa">
-{FONT}
+{FONT.format(prefix=prefix)}
 {css.rstrip()}
 {js.rstrip()}
 </head>
@@ -103,7 +103,7 @@ FOOT = '''
 
 
 def subnav(prefix, cur):
-    items = [("index.html", "Пәндер", "home"), ("formulas.html", "Формулалар", "formulas"), ("glossary.html", "Сөздік", "glossary"), ("practice.html", "Жаттықтырғыш", "practice"), ("route.html", "Оқу жолы", "route"), ("exam.html", "Емтихан", "exam")]
+    items = [("index.html", "Пәндер", "home"), ("formulas.html", "Формулалар", "formulas"), ("glossary.html", "Сөздік", "glossary"), ("practice.html", "Жаттықтырғыш", "practice"), ("route.html", "Оқу жолы", "route"), ("exam.html", "Емтихан", "exam"), ("ubt.html", "ҰБТ", "ubt")]
     s = "".join(f'<a href="{prefix}{h}"' + (' aria-current="page"' if k == cur else "") + f">{t}</a>" for h, t, k in items)
     return f'<nav class="math-subnav" aria-label="Математика курсының бөлімдері">{s}</nav>'
 
@@ -284,6 +284,8 @@ TOOLS = {
                  "Математика терминдерінің қазақша-ағылшынша сөздігі: пән бойынша сүзу және іздеу."),
     "practice": ("Жаттықтырғыш", "Кездейсоқ есептер жаттықтырғышы", "Пән мен қиындықты таңдап, кездейсоқ коэффициентті есептер сериясын шешіңіз. Әр сайын жаңа сандар.",
                  "Математика жаттықтырғышы: кездейсоқ коэффициентті есептер сериясы, пән мен қиындық бойынша сүзгі."),
+    "ubt": ("ҰБТ", "ҰБТ-ға дайындық: математика", "Мектеп математикасының алты блогы бойынша уақытпен өтетін сынақ: арифметика, алгебра, тригонометрия, координаталық геометрия, анализ бастамалары, ықтималдық. Соңында әлсіз тақырыптар мен оларды қайталайтын сабақтар көрсетіледі.",
+            "ҰБТ-ға дайындық: мектеп математикасы бойынша уақытпен өтетін сынақ, блоктар бойынша нәтиже, әлсіз тақырыптар және қайталау жоспары. Қазақ тілінде, тегін."),
 }
 
 

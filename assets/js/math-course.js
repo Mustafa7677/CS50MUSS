@@ -1524,6 +1524,150 @@
     stage.append(h("p", { class: "mx-hint0", text: "Пәнді таңдап, «Емтиханды бастау» батырмасын басыңыз. Әр сабақтан бір тест сұрағы, бір орташа және бір күрделі есеп алынады; әр жолы сұрақтар өзгереді." }));
   }
 
+  /* --- ҰБТ-ға дайындық (math/ubt.html): мектеп математикасының алты блогы, уақытпен, блок пен сабақ бойынша талдау ---
+   * Блоктар мектеп бағдарламасына сай сабақтардан құралады (slug: [сабақ нөмірлері]); қиын деңгей алынбайды.
+   * Сұрақтар ресми ҰБТ банкінен емес: AO17 өз емтихан банкінен (assets/data/math-exam-*.js) кездейсоқ құрастырады. */
+  var UBT_BLOCKS = [
+    { id: "arith", name: "Арифметика", parts: { arith: [5, 6, 7, 8] }, n: 6 },
+    { id: "alg", name: "Алгебра", parts: { precalc: [1, 2, 3, 4, 7] }, n: 12 },
+    { id: "trig", name: "Тригонометрия", parts: { precalc: [5, 6] }, n: 6 },
+    { id: "geo", name: "Координаталық геометрия", parts: { analgeo: [1, 2, 3] }, n: 5 },
+    { id: "calc", name: "Анализ бастамалары", parts: { diffcalc: [4, 5, 8], intcalc: [1, 3] }, n: 7 },
+    { id: "prob", name: "Ықтималдық және статистика", parts: { prob: [1, 2], stats: [1] }, n: 4 }
+  ];
+  var UBT_MODES = { full: { q: 40, min: 80, name: "Толық сынақ" }, short: { q: 20, min: 40, name: "Жылдам сынақ" } };
+  function appUbt(box, plan) {
+    var slugs = [];
+    UBT_BLOCKS.forEach(function (b) { Object.keys(b.parts).forEach(function (sl) { if (slugs.indexOf(sl) < 0) slugs.push(sl); }); });
+    var subjOf = function (sl) { return plan.subjects.filter(function (x) { return x.slug === sl; })[0]; };
+    var st = LS.get("cs50kz:math:ubt", {}); if (!st || typeof st !== "object" || !Array.isArray(st.hist)) st = { hist: [] };
+    var mode = "full";
+    var modeBox = h("div", { class: "seg ubt-modes", role: "group", "aria-label": "Сынақ түрі" });
+    Object.keys(UBT_MODES).forEach(function (k) {
+      var m = UBT_MODES[k];
+      modeBox.append(h("button", { type: "button", "data-mode": k, "aria-pressed": k === mode ? "true" : "false", class: k === mode ? "on" : "", text: m.name + ": " + m.q + " сұрақ, " + m.min + " мин" }));
+    });
+    var start = h("button", { type: "button", class: "btn gold", text: "Сынақты бастау" });
+    var hist = h("div", { class: "ubt-hist" }), stage = h("div", { class: "mx-estage ubt-stage" });
+    box.append(h("div", { class: "mx-filters ubt-top" }, modeBox, start), hist, stage);
+    modeBox.addEventListener("click", function (e) {
+      var b = e.target.closest("[data-mode]"); if (!b) return;
+      mode = b.dataset.mode;
+      modeBox.querySelectorAll("[data-mode]").forEach(function (x) { var on = x === b; x.classList.toggle("on", on); x.setAttribute("aria-pressed", on ? "true" : "false"); });
+    });
+    var paintHist = function () {
+      hist.textContent = "";
+      if (!st.hist.length) return;
+      var best = st.hist.reduce(function (m, x) { return Math.max(m, x.pct); }, 0);
+      var last = st.hist.slice(-6);
+      hist.append(h("p", { class: "mx-count", text: "Әрекеттер: " + st.hist.length + " · үздік нәтиже: " + best + "% · соңғысы: " + st.hist[st.hist.length - 1].pct + "%" }),
+        h("ol", { class: "ubt-trend", "aria-label": "Соңғы нәтижелер" }, last.map(function (x) {
+          var d = new Date(x.ts);
+          return h("li", { style: "--p:" + x.pct + "%", title: d.toLocaleDateString("kk-KZ") + ": " + x.pct + "%" }, h("i", null), h("span", { text: x.pct + "%" }));
+        })));
+    };
+    paintHist();
+    var shuffle = function (a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; };
+    var run = function () {
+      var M = UBT_MODES[mode];
+      stage.textContent = "";
+      stage.append(h("p", { class: "mx-loading", text: "Сұрақтар құрастырылуда..." }));
+      Promise.all(slugs.map(function (sl) { return loadData("exam", sl); })).then(function () {
+        var seq = [], used = {};
+        /* блок үлестері: жалпы саны дәл M.q болатындай (ең үлкен қалдық әдісі) */
+        var share = UBT_BLOCKS.map(function (bl) { var x = bl.n * M.q / 40; return { bl: bl, n: Math.floor(x), r: x - Math.floor(x) }; });
+        var rest = M.q - share.reduce(function (m, x) { return m + x.n; }, 0);
+        share.slice().sort(function (a, b) { return b.r - a.r; }).slice(0, rest).forEach(function (x) { x.n++; });
+        UBT_BLOCKS.forEach(function (bl, bi) {
+          var need = share[bi].n, pool = [];
+          Object.keys(bl.parts).forEach(function (sl) {
+            dataOf("exam", sl).forEach(function (x) { if (bl.parts[sl].indexOf(x.l) >= 0 && x.lvl !== "hard") pool.push({ sl: sl, it: x }); });
+          });
+          shuffle(pool);
+          /* деңгейлер араласады: шамамен 40% тест, 30% жеңіл, 30% орташа */
+          var want = { quiz: Math.round(need * 0.4), easy: Math.round(need * 0.3) }; want.medium = need - want.quiz - want.easy;
+          ["quiz", "easy", "medium"].forEach(function (lv) {
+            pool.filter(function (p) { return p.it.lvl === lv; }).slice(0, want[lv]).forEach(function (p) { used[p.sl + p.it.id] = 1; seq.push({ bl: bl, sl: p.sl, it: p.it }); });
+          });
+          var have = seq.filter(function (x) { return x.bl === bl; }).length;
+          pool.forEach(function (p) { if (have < need && !used[p.sl + p.it.id]) { used[p.sl + p.it.id] = 1; seq.push({ bl: bl, sl: p.sl, it: p.it }); have++; } });
+        });
+        stage.textContent = "";
+        if (!seq.length) { stage.append(emptyState("Сұрақтар банкі жүктелмеді. Интернетті тексеріп, қайталап көріңіз.")); return; }
+        var left = M.min * 60, ended = false;
+        var clock = h("span", { class: "mx-chip ubt-clock", role: "timer", "aria-live": "off", text: M.min + ":00" });
+        var fs = h("fieldset", { class: "mx-exam" }, h("legend", { class: "sr-only", text: "ҰБТ сынағы" }));
+        var built = seq.map(function (x, i) {
+          var s = subjOf(x.sl);
+          var b = buildItem(Object.assign({}, x.it), { key: "ubt:" + x.sl + ":" + x.it.id, type: x.it.type, scope: {}, fmt: function (v) { return v; } }, 0);
+          var card = h("section", { class: "mx-eitem", "aria-label": "Сұрақ " + (i + 1) },
+            h("div", { class: "mx-phead" }, h("b", { text: (i + 1) + "." }), h("span", { class: "mx-chip", text: x.bl.name })),
+            x.it.ctx ? h("p", { class: "mx-ectx", html: rich(x.it.ctx) }) : null, b.el);
+          fs.append(card);
+          return { b: b, x: x, s: s, card: card };
+        });
+        var res = h("div", { class: "mx-eres", role: "status", "aria-live": "polite" });
+        var submit = h("button", { type: "button", class: "btn gold", text: "Тапсыру және тексеру" });
+        stage.append(h("div", { class: "mx-phead ubt-bar" }, h("b", { text: M.name }), h("span", { class: "mx-chip", text: built.length + " сұрақ" }), clock),
+          h("p", { class: "mx-hint0", text: "Уақыт біткенде сынақ өзі тапсырылады. Жауаптар тек соңында тексеріледі; бос сұрақ қате саналады." }),
+          fs, h("div", { class: "mx-ctrl" }, submit), res);
+        renderMath(stage);
+        var finish = function () {
+          if (ended) return; ended = true;
+          clearInterval(tick);
+          var score = 0, perB = {}, perL = {};
+          built.forEach(function (y) {
+            var r = y.b.check(), ok = !!(r && r.ok && !r.empty);
+            if (!ok) y.b.showAnswer();
+            y.card.classList.add(ok ? "ok" : "bad");
+            var bk = y.x.bl.id; perB[bk] = perB[bk] || [0, 0]; perB[bk][1]++;
+            var lk = y.x.sl + ":" + y.x.it.l; perL[lk] = perL[lk] || { s: y.s, l: y.x.it.l, ok: 0, n: 0 }; perL[lk].n++;
+            if (ok) { score++; perB[bk][0]++; perL[lk].ok++; }
+          });
+          fs.disabled = true; submit.disabled = true;
+          var pct = Math.round(score / built.length * 100), used0 = M.min * 60 - Math.max(left, 0);
+          var blocks = {}; Object.keys(perB).forEach(function (k) { blocks[k] = Math.round(perB[k][0] / perB[k][1] * 100); });
+          st.hist.push({ pct: pct, ts: Date.now(), mode: mode, blocks: blocks }); if (st.hist.length > 30) st.hist = st.hist.slice(-30);
+          LS.set("cs50kz:math:ubt", st); paintHist();
+          if (K().logDay) K().logDay();
+          var weak = Object.keys(perL).map(function (k) { return perL[k]; }).filter(function (p) { return p.ok < p.n; })
+            .sort(function (a, b) { return (a.ok / a.n) - (b.ok / b.n); });
+          res.textContent = "";
+          res.append(h("h3", { text: "Нәтиже: " + score + " / " + built.length + " (" + pct + "%)" }),
+            h("p", { class: "mx-hint0", text: "Жұмсалған уақыт: " + Math.floor(used0 / 60) + " мин " + used0 % 60 + " с." }),
+            h("ul", { class: "ubt-blocks", "aria-label": "Блоктар бойынша нәтиже" }, UBT_BLOCKS.filter(function (bl) { return perB[bl.id]; }).map(function (bl) {
+              var p = perB[bl.id], q = Math.round(p[0] / p[1] * 100);
+              return h("li", { class: q < 60 ? "weak" : "" }, h("span", { class: "ubt-bn", text: bl.name }), h("span", { class: "ubt-bt" }, h("i", { style: "--w:" + q + "%" })), h("b", { text: p[0] + "/" + p[1] }));
+            })),
+            weak.length ? h("h4", { text: "Қайталау жоспары: әлсіз тақырыптар" }) : h("p", { class: "mx-pass", text: "Барлық тақырып бойынша қате жоқ." }),
+            weak.length ? h("ol", { class: "ubt-plan" }, weak.slice(0, 8).map(function (p) {
+              return h("li", null, h("a", { href: lessonHref(plan, p.s.no, p.l), text: p.s.lessons[p.l - 1] }), h("span", { text: " · " + p.s.en + " · дұрыс " + p.ok + "/" + p.n }));
+            })) : null,
+            h("p", { class: "mx-hint0", text: "Қате жауаптардың астында дұрыс жауап пен түсіндірме көрсетілді." }),
+            h("button", { type: "button", class: "btn", text: "Жаңа нұсқа", onclick: run }));
+          res.scrollIntoView({ block: "start" });
+        };
+        var tick = setInterval(function () {
+          left--;
+          if (left <= 0) { clock.textContent = "0:00"; finish(); return; }
+          clock.textContent = Math.floor(left / 60) + ":" + ("0" + left % 60).slice(-2);
+          if (left === 300) { clock.classList.add("ubt-late"); clock.setAttribute("aria-live", "assertive"); clock.setAttribute("aria-label", "5 минут қалды"); }
+        }, 1000);
+        submit.addEventListener("click", function () {
+          var empty = built.filter(function (y) { return y.b.wd.check().empty; }).length;
+          if (empty && !submit.dataset.armed) {
+            submit.dataset.armed = "1"; submit.textContent = "Бәрібір тапсыру";
+            res.textContent = ""; res.append(h("p", { class: "mx-fail", text: empty + " сұраққа жауап берілмеген: олар қате саналады. Тапсыру үшін батырманы тағы бір рет басыңыз." }));
+            return;
+          }
+          finish();
+        });
+      });
+    };
+    start.addEventListener("click", run);
+    stage.append(h("p", { class: "mx-hint0", text: "Сынақ түрін таңдап, «Сынақты бастау» батырмасын басыңыз. Әр жолы сұрақтар өзгереді. Сұрақтар ресми ҰБТ банкінен алынбаған: олар AO17 математика курсының мектеп бағдарламасына сай тақырыптарынан құрастырылады." }));
+  }
+
   function initApps() {
     var box = document.querySelector("[data-math-app]");
     if (!box) return;
@@ -1539,6 +1683,7 @@
         else if (kind === "home") appHome(box, plan);
         else if (kind === "route") appRoute(box, plan);
         else if (kind === "exam") appExam(box, plan);
+        else if (kind === "ubt") appUbt(box, plan);
       } catch (e) { if (window.console) console.warn("math-app:", e); box.append(emptyState("Бет жүктелмеді: " + e.message)); }
     };
     go();
