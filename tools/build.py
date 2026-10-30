@@ -416,7 +416,7 @@ def head_block(prefix, title, desc, url, image="assets/img/og.jpg", kind="M", ex
     copy, lic = license_meta(kind, prefix)
     more = f'\n  <script type="application/ld+json">{extra}</script>' if extra else ""
     return f"""<!-- build:head -->
-  <meta name="theme-color" content="#0a4c7a">
+  <meta name="theme-color" content="#120d0a">
   <meta name="color-scheme" content="light dark only">
   <link rel="icon" href="{prefix}assets/img/icon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="{prefix}assets/img/icon-192.png">
