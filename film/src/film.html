@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b0806">
-<meta name="color-scheme" content="dark">
+<meta name="color-scheme" content="dark only">
 <link rel="icon" href="../assets/img/icon.svg" type="image/svg+xml">
 <title>Шақыру: Алаш 1917 - AO17</title>
 <meta name="description" content="AO17 интерактивті тарихи фильмі: Қарқаралы петициясынан Алашордаға дейін, Алаш шақыруынан бүгінгі білімге дейін.">
@@ -18,6 +18,10 @@
    Әріп: PT Serif - бүкіл фильмнің дауысы; AO17 таңбасы контур (SVG).
    Жарық: бір көз - үстелдің үстіндегі шам (жоғарыдан, сәл оңнан). Барлық көлеңке сол жаққа және төменге түседі.
    ========================================================================== */
+/* Фильм өзі қараңғы. Samsung Internet пен Chrome-ның «күшпен қараңғылау» режимі қағаз бен суретті күңгірттемесін:
+   бет қараңғы тақырыпты өзі қолдайтынын осылай хабарлайды. */
+:root { color-scheme: dark only; }
+@media (prefers-color-scheme: dark) { :root { color-scheme: dark only; --paper: #e8dcc2; --paper-hi: #f3ead6; } }
 :root {
   --black: #0b0806; --ink: #1f1812; --gold: #c9a24a; --gold-hi: #e6c47c; --gold-lo: #8a6634; --paper: #e8dcc2; --paper-hi: #f3ead6; --wine: #7a1f2b;
   --serif: "PT Serif", Georgia, "Times New Roman", serif;
@@ -582,7 +586,7 @@ a { color: inherit; }
     /* 2 */ (p) => {
       hands.forEach((h, i) => { h.style.strokeDashoffset = 1 - seg(p, .05 + i * .06, .14 + i * .06); });
       sigN.textContent = fmt(Math.round(14500 * eo(seg(p, .35, .7)) / 10) * 10);
-      return { z: lerp(1.0, 1.07, io(p)), x: lerp(10, -20, io(p)), y: lerp(0, -6, p) };
+      return { z: lerp(1.0, portrait ? 1.03 : 1.07, io(p)), x: lerp(10, -20, io(p)), y: lerp(0, -6, p) };
     },
     /* 3 */ (p) => {
       const n1 = Math.round(VERSE1.length * seg(p, .25, .55)), n2 = Math.round(VERSE2.length * seg(p, .55, .8));
@@ -636,6 +640,7 @@ a { color: inherit; }
       const p = clamp((tt - s.a) / (s.b - s.a));
       const c = inner[i](p, s) || { z: 1, x: 0, y: 0 };
       let z = c.z, x = c.x, y = c.y, op = 1, clip = "none", origin = "50% 50%";
+      if (portrait) x *= .3;   // тар экранда камера аз жылжиды: мәтін шетте кесілмесін
       // кіру: алдыңғы сахна фокусынан дөңгелек терезе
       if (i > 0 && tt < s.a + T) {
         const q = (tt - s.a) / T;
