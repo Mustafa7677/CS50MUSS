@@ -1,0 +1,29 @@
+# «Шақыру» фильміне Commons-тан үміткер суреттерді іздейді (film/media/queries.json өзгергенде).
+# Нәтиже негізгі тарихты ауырлатпау үшін бөлек film-media-candidates тармағына жіберіледі.
+name: Фильм суреттері - іздеу
+
+on:
+  push:
+    paths: ["film/media/queries.json"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  search:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python tools/fetch_film_media.py search /tmp/cand
+      - name: Бөлек тармаққа жіберу
+        run: |
+          cd /tmp/cand
+          git init -q -b film-media-candidates
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A && git commit -qm "Film media candidates from Wikimedia Commons (free licences only)"
+          git push -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" film-media-candidates

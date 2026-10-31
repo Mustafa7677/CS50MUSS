@@ -1,0 +1,28 @@
+# Таңдалған суреттерді (film/media/picks.json) Commons-тан үлкен өлшемде алып, дерек көздерімен бірге коммит жасайды.
+name: Фильм суреттері - таңдалғандарын алу
+
+on:
+  push:
+    paths: ["film/media/picks.json"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  get:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python tools/fetch_film_media.py get
+      - name: Коммит
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A assets/img/film assets/data/film-media.json
+          git diff --cached --quiet && { echo "Өзгеріс жоқ"; exit 0; }
+          git commit -m "Film media from Wikimedia Commons (free licences, credits in assets/data/film-media.json)"
+          for i in 1 2 3 4; do git push && exit 0; sleep $((i * 5)); git pull --rebase -q; done; exit 1
