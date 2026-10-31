@@ -12,10 +12,16 @@
 academy.css және engine.js. Олар сайттың қаріптерін (assets/fonts/fonts.css) қолданады, сондықтан жеңіл.
 """
 import base64
+import html
+import json
 import math
 import random
 import re
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import make_posters  # noqa: E402  (финалдағы үш академияның бейнесі - курс постерлерімен бір)
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "film" / "src" / "film.html"
@@ -78,6 +84,15 @@ def routes():
 
 def cities():
     return "".join(f'<circle cx="{x}" cy="{y}" r="3.5" fill="#d9b468"/><text x="{x + 9}" y="{y + 5}">{n}</text>' for n, x, y in CITIES)
+
+
+def credits():
+    """Фильм соңындағы «Дерек көздері»: assets/data/film-media.json-дағы әр сурет (не, кімдікі, лицензия, сілтеме)."""
+    out = []
+    for c in json.loads((ROOT / "assets/data/film-media.json").read_text(encoding="utf8")).values():
+        link = f' <a href="{html.escape(c["page"])}" rel="noopener">дерек көзі</a>' if c.get("page") else ""
+        out.append(f'<li>{html.escape(c["what"])}, {html.escape(c["date"])}. {html.escape(c["author"])}. {html.escape(c["license"])}. {html.escape(c["source"])}.{link}</li>')
+    return "".join(out)
 
 
 def code_cols(rng):
@@ -311,7 +326,10 @@ def main():
         "<!--{{HAND}}-->": hand(rng),
         "<!--{{ROUTES}}-->": routes(),
         "<!--{{CITIES}}-->": cities(),
-        "<!--{{CODE}}-->": code_cols(rng),
+        "<!--{{EM_CODE}}-->": make_posters.em_python(),
+        "<!--{{EM_MATH}}-->": make_posters.em_math(),
+        "<!--{{EM_EN}}-->": make_posters.em_en(),
+        "<!--{{CREDITS}}-->": credits(),
         "{{IMG_BOKEIKHAN}}": img("bokeikhan"),
         "{{IMG_BAITURSYNULY}}": img("baitursynuly"),
         "{{IMG_DULATULY}}": img("dulatuly"),
