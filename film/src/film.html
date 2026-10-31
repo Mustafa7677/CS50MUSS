@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0806">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="../assets/img/icon.svg" type="image/svg+xml">
+<title>Шақыру: Алаш 1917 - AO17</title>
+<meta name="description" content="AO17 интерактивті тарихи фильмі: Қарқаралы петициясынан Алашордаға дейін, Алаш шақыруынан бүгінгі білімге дейін.">
+<meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+<!-- © 2026 Sagid Mustafa. AO17 «Шақыру» фильмі. Бастапқы мәтін: film/src/film.html; жинау: python3 tools/make_film.py -->
+<style>
+/*{{FONTS}}*/
+/* ==========================================================================
+   ДИЗАЙН ЖҮЙЕСІ
+   Түс: терең қара (#0b0806), көне алтын (#c9a24a / #e6c47c), пергамент (#e8dcc2), сия (#1f1812), шие (#7a1f2b).
+   Әріп: PT Serif - бүкіл фильмнің дауысы; AO17 таңбасы контур (SVG).
+   Жарық: бір көз - үстелдің үстіндегі шам (жоғарыдан, сәл оңнан). Барлық көлеңке сол жаққа және төменге түседі.
+   ========================================================================== */
+:root {
+  --black: #0b0806; --ink: #1f1812; --gold: #c9a24a; --gold-hi: #e6c47c; --gold-lo: #8a6634; --paper: #e8dcc2; --paper-hi: #f3ead6; --wine: #7a1f2b;
+  --serif: "PT Serif", Georgia, "Times New Roman", serif;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--black); color: var(--paper); overflow: hidden; overscroll-behavior: none; }
+body { font-family: var(--serif); -webkit-font-smoothing: antialiased; touch-action: none; }
+a { color: inherit; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Сахна: барлық кадр бір экранда, әр сахна өз камерасымен */
+#stage { position: fixed; inset: 0; overflow: hidden; contain: strict; }
+.sc { position: absolute; inset: 0; visibility: hidden; contain: layout paint; }
+.sc.on { visibility: visible; }
+.cam { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
+.lyr { position: absolute; will-change: transform; translate: calc(var(--cx, 0px) + var(--ppx, 0px) * var(--d, 0)) calc(var(--cy, 0px) + var(--ppy, 0px) * var(--d, 0)); }
+.h-m { font: 700 clamp(28px, 3.3vw, 54px)/1.06 var(--serif); color: var(--paper-hi); margin: 0; }
+
+/* Жалпы материалдар */
+.paper { background:
+  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .32 0 0 0 0 .24 0 0 0 0 .13 0 0 0 .22 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"),
+  radial-gradient(120% 90% at 50% 40%, var(--paper-hi), var(--paper) 55%, #cbb98f);
+  color: var(--ink); box-shadow: 0 30px 60px -20px rgb(0 0 0 / .85), 0 2px 0 rgb(255 255 255 / .1) inset; }
+.desk { position: absolute; inset: -10%; background:
+  radial-gradient(60% 55% at 56% 42%, rgb(240 200 120 / .22), transparent 70%),
+  repeating-linear-gradient(92deg, rgb(255 255 255 / .012) 0 2px, transparent 2px 9px),
+  linear-gradient(180deg, #1b130d, #120c08 60%, #0b0705); }
+.vign { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 90% at 50% 45%, transparent 45%, rgb(0 0 0 / .78)); }
+.lamp { position: absolute; left: 50%; top: -20%; width: 120vmax; height: 140vmax; transform: translateX(-50%); pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(50% 45% at 50% 30%, rgb(243 213 138 / .26), rgb(224 182 100 / .07) 55%, transparent 72%); }
+.tag { position: absolute; font: italic 400 12px/1.3 var(--serif); letter-spacing: .04em; color: rgb(232 220 194 / .62); }
+.tag b { font-style: normal; font-weight: 700; color: var(--gold-hi); letter-spacing: .08em; }
+
+/* Типографика */
+.kicker { font: italic 400 clamp(14px, 1.5vw, 19px)/1.3 var(--serif); color: var(--gold-hi); letter-spacing: .04em; }
+.h-xl { font: 700 clamp(46px, 9vw, 150px)/.95 var(--serif); letter-spacing: -.01em; color: var(--paper-hi); margin: 0; }
+.h-l { font: 700 clamp(34px, 5.2vw, 84px)/1.02 var(--serif); color: var(--paper-hi); margin: 0; }
+.lead { font: 400 clamp(16px, 1.45vw, 21px)/1.6 var(--serif); color: rgb(232 220 194 / .86); margin: 0; max-width: 34em; }
+.gold { color: var(--gold-hi); }
+.rule { height: 1px; background: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold) 80%, transparent); }
+
+/* Фото: үстелде жатқан баспа сурет (2.5D: тереңдік, жарық жолағы, көлеңке) */
+.print { position: absolute; margin: 0; padding: 3.2% 3.2% 12%; background: #efe6d1; box-shadow: 0 2px 0 rgb(255 255 255 / .4) inset, 0 40px 60px -24px rgb(0 0 0 / .9), 0 8px 18px rgb(0 0 0 / .5);
+  transform-style: preserve-3d; will-change: transform; }
+.print .ph { position: relative; overflow: hidden; aspect-ratio: 4 / 5; background: #222; }
+.print img { display: block; width: 100%; height: 100%; object-fit: cover; filter: sepia(.35) contrast(1.06) brightness(.97); will-change: transform; }
+.print .ph::after { content: ""; position: absolute; inset: -40%; background: linear-gradient(115deg, transparent 42%, rgb(255 240 200 / .22) 50%, transparent 58%); transform: translateX(var(--sweep, -60%)); mix-blend-mode: screen; }
+.print figcaption { position: absolute; left: 0; right: 0; bottom: 2.6%; text-align: center; font: italic 400 clamp(11px, 1vw, 14px)/1.25 var(--serif); color: #3a2a1a; }
+
+/* Кесу (монтаж) сәтіндегі жұқа жарқыл - тек ырғақ үшін */
+#flash { position: fixed; inset: 0; pointer-events: none; background: #fff2d6; opacity: 0; mix-blend-mode: soft-light; z-index: 5; }
+#grain { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .09; mix-blend-mode: overlay; z-index: 6; image-rendering: pixelated; }
+#dust { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
+.letterbox { position: fixed; left: 0; right: 0; height: 0; background: #000; z-index: 7; pointer-events: none; }
+#lbT { top: 0; } #lbB { bottom: 0; }
+
+/* ==== 0 · ПРОЛОГ ==== */
+#s0 .t1 { left: 0; right: 0; top: 42%; text-align: center; }
+#s0 .t2 { left: 8%; right: 8%; top: 52%; text-align: center; }
+
+/* ==== 1 · ҮШ СҰРАҚ ==== */
+#s1 .map { left: 7%; top: 9%; width: 36%; aspect-ratio: 4 / 3; transform: rotate(-4deg); }
+#s1 .ink { left: 60%; top: 18%; width: 9vmin; height: 9vmin; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #3a3a3a, #050505 60%); box-shadow: 0 18px 30px -8px #000, 0 0 0 .6vmin #2a1f15; }
+#s1 .pen { left: 63%; top: 31%; width: 28vmin; height: .7vmin; border-radius: 1vmin; background: linear-gradient(90deg, #d9b468, #8a6634 30%, #2a1f15 31%, #1a120b); transform: rotate(-28deg); box-shadow: 0 10px 14px -6px #000; }
+#s1 .petition { left: 58%; top: 50%; width: 30%; aspect-ratio: 3 / 4; transform: rotate(7deg); background-image: linear-gradient(transparent 0 0), repeating-linear-gradient(180deg, transparent 0 18px, rgb(42 29 18 / .45) 18px 19.5px); background-size: 100% 100%, 76% 62%; background-position: 0 0, 50% 62%; background-repeat: no-repeat; }
+#s1 .petition::before { content: "ПЕТИЦИЯ"; position: absolute; left: 0; right: 0; top: 12%; text-align: center; font: 700 clamp(11px, 1.2vw, 17px) var(--serif); letter-spacing: .08em; color: var(--ink); }
+#s1 .q { left: 7%; top: 67%; display: flex; gap: clamp(18px, 4vw, 70px); align-items: baseline; }
+#s1 .q .w { font: 700 clamp(40px, 6.5vw, 108px)/1 var(--serif); color: var(--paper-hi); opacity: 0; }
+#s1 .q .w small { display: block; margin-top: 12px; font: italic 400 clamp(12px, 1.1vw, 16px)/1.45 var(--serif); color: rgb(232 220 194 / .78); max-width: 14em; }
+#s1 .intro { left: 7%; top: 60%; }
+
+/* ==== 2 · 1905 ҚАРҚАРАЛЫ ==== */
+#s2 .doc { left: 6%; top: 9%; width: 32%; aspect-ratio: 3 / 4; transform: rotate(-3deg); padding: 6% 7%; }
+#s2 .doc h3 { margin: 0 0 6%; font: 700 clamp(14px, 1.6vw, 22px)/1.2 var(--serif); text-align: center; letter-spacing: .06em; }
+#s2 .doc svg { width: 100%; height: auto; display: block; }
+#s2 .doc .hand path { fill: none; stroke: #2a1d12; stroke-width: 1.4; stroke-linecap: round; }
+#s2 .doc .sig { margin-top: 5%; font: italic 400 clamp(12px, 1.2vw, 16px)/1.3 var(--serif); }
+#s2 .doc .sig b { display: block; font: 700 clamp(24px, 3vw, 44px)/1.05 var(--serif); font-style: normal; font-variant-numeric: lining-nums tabular-nums; color: var(--wine); }
+#s2 .print { left: 44%; top: 11%; width: 16%; transform: rotate(5deg); }
+#s2 .txt { left: 44%; top: 58%; right: 6%; }
+#s2 .book-mini { left: 70%; top: 16%; width: 12%; aspect-ratio: 3 / 4; transform: rotate(-9deg); background: linear-gradient(135deg, #4d1520, #2b0b12); box-shadow: 0 20px 34px -12px #000, inset 0 0 0 4px rgb(217 180 104 / .4); }
+
+/* ==== 3 · 1909 «ОЯН, ҚАЗАҚ!» ==== */
+#s3 .cover { left: 58%; top: 50%; width: min(32vw, 52vh); aspect-ratio: 3 / 4; --cx: -50%; --cy: -50%; background:
+  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"),
+  radial-gradient(110% 90% at 30% 20%, #6e1d2a, #45111b 60%, #2b0a10);
+  box-shadow: inset 0 0 0 10px rgb(0 0 0 / .12), inset 0 0 0 11px rgb(217 180 104 / .55), inset 0 0 0 17px transparent, inset 0 0 0 18px rgb(217 180 104 / .3), 0 50px 80px -30px #000;
+  display: grid; place-items: center; text-align: center; color: var(--gold-hi); border-radius: 2px 6px 6px 2px; }
+#s3 .cover .ct { font: 700 clamp(26px, 3.4vw, 54px)/1.1 var(--serif); letter-spacing: .04em; text-shadow: 0 1px 0 #000; }
+#s3 .cover .cs { margin-top: 14px; font: italic 400 clamp(12px, 1.1vw, 16px)/1.3 var(--serif); color: rgb(230 196 124 / .8); }
+#s3 .verse { left: 6%; bottom: 14%; width: 34vw; }
+#s3 .verse p { margin: 0; font: italic 400 clamp(18px, 1.9vw, 30px)/1.45 var(--serif); color: var(--paper-hi); }
+#s3 .print { right: 5%; top: 16%; width: 14%; transform: rotate(-4deg); }
+#s3 .ttl { left: 6%; top: 12%; }
+
+/* ==== 4 · 1913 «ҚАЗАҚ» ==== */
+#s4 .news { left: 45%; top: 48%; width: min(60vw, 92vh); aspect-ratio: 16 / 11; --cx: -50%; --cy: -50%; padding: 3% 3.6%; }
+#s4 .mast { text-align: center; border-bottom: 3px double var(--ink); padding-bottom: 1.2%; }
+#s4 .mast .ar { font: 700 clamp(46px, 8vw, 128px)/1 "Amiri", "Noto Naskh Arabic", "Scheherazade New", "Geeza Pro", "Arial", serif; direction: rtl; }
+#s4 .mast .cy { font: 400 clamp(11px, 1vw, 14px)/1.2 var(--serif); letter-spacing: .4em; margin-top: .4%; }
+#s4 .line { display: flex; justify-content: space-between; font: italic 400 clamp(10px, .95vw, 14px)/1 var(--serif); padding: 1% 0; border-bottom: 1px solid var(--ink); }
+#s4 .cols { display: grid; grid-template-columns: repeat(4, 1fr); gap: 3%; margin-top: 3%; height: 56%; overflow: hidden; }
+#s4 .cols div { background: repeating-linear-gradient(180deg, rgb(31 24 18 / .55) 0 2px, transparent 2px 11px); }
+#s4 .print { left: 3%; bottom: 12%; width: 12%; transform: rotate(-6deg); }
+#s4 .txt { right: 4%; top: 24%; width: 23%; text-align: right; }
+#s4 .txt .lead { margin-left: auto; }
+
+/* ==== 5 · 1917 ШІЛДЕ ==== */
+#s5 .map { left: 40%; top: 54%; width: min(74vw, 116vh); aspect-ratio: 16 / 10; --cx: -50%; --cy: -50%; }
+#s5 .map svg { width: 100%; height: 100%; display: block; }
+#s5 .ttl { left: 6%; top: 9%; }
+#s5 .txt { right: 5%; top: 44%; width: 25%; }
+
+/* ==== 6 · АЛАШОРДА ==== */
+#s6 .row { left: 50%; top: 36%; width: min(62vw, 92vh); --cx: -50%; --cy: -50%; display: grid; grid-template-columns: repeat(3, 1fr); gap: 6%; }
+#s6 .row .print { position: relative; transform: none; }
+#s6 .spot { position: absolute; inset: -30% -20%; pointer-events: none; background: radial-gradient(50% 50% at 50% 40%, rgb(243 213 138 / .3), transparent 70%); mix-blend-mode: screen; }
+#s6 .title { left: 0; right: 0; top: 66%; text-align: center; }
+#s6 .title .h-xl { font-size: clamp(42px, 6.6vw, 104px); }
+#s6 .title .h-xl { letter-spacing: .14em; background: linear-gradient(180deg, #f6e2b0, #d9b468 45%, #8a6634); -webkit-background-clip: text; background-clip: text; color: transparent; }
+#s6 .title .lead { margin: 14px auto 0; text-align: center; max-width: 42em; }
+
+/* ==== 7 · КІТАП ==== */
+#s7 .book { left: 50%; top: 50%; width: min(64vw, 98vh); aspect-ratio: 16 / 10; --cx: -50%; --cy: -50%; perspective: 2200px; }
+#s7 .pg { position: absolute; top: 0; bottom: 0; width: 50%; }
+#s7 .pg.l { left: 0; border-radius: 4px 0 0 4px; box-shadow: inset -30px 0 40px -26px rgb(60 35 15 / .8), 0 40px 60px -26px #000; }
+#s7 .pg.r { right: 0; border-radius: 0 4px 4px 0; box-shadow: inset 30px 0 40px -26px rgb(60 35 15 / .8), 0 40px 60px -26px #000; }
+#s7 .pg .tx { position: absolute; inset: 14% 12%; display: grid; align-content: center; gap: 8%; text-align: center; }
+#s7 .pg .tx p { margin: 0; font: italic 400 clamp(15px, 1.7vw, 26px)/1.45 var(--serif); color: var(--ink); }
+#s7 .lid { position: absolute; top: -1.5%; bottom: -1.5%; right: 0; width: 51%; transform-origin: 0 50%; transform-style: preserve-3d; border-radius: 2px 6px 6px 2px;
+  background: radial-gradient(110% 90% at 30% 20%, #6e1d2a, #45111b 60%, #2b0a10); box-shadow: inset 0 0 0 10px rgb(0 0 0 / .12), inset 0 0 0 11px rgb(217 180 104 / .55); backface-visibility: hidden;
+  display: grid; place-items: center; color: var(--gold-hi); font: 700 clamp(18px, 2vw, 30px)/1.2 var(--serif); letter-spacing: .3em; }
+#s7 .glow { position: absolute; left: 45%; top: 5%; width: 10%; height: 90%; background: radial-gradient(50% 50% at 50% 50%, rgb(255 240 200 / .9), transparent 70%); mix-blend-mode: screen; pointer-events: none; }
+
+/* ==== 8 · AO17 ==== */
+#s8 { background: radial-gradient(70% 60% at 50% 30%, #2a1f15, var(--black) 70%); }
+#s8 .hd { left: 0; right: 0; top: 9%; text-align: center; }
+#s8 .hd svg { width: min(42vw, 360px); height: auto; }
+#s8 .hd .lead { margin: 16px auto 0; text-align: center; }
+#s8 .worlds { left: 50%; top: 58%; --cx: -50%; --cy: -50%; width: min(90vw, 1180px); display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(12px, 2vw, 28px); }
+.world { position: relative; display: flex; flex-direction: column; justify-content: flex-end; min-height: clamp(230px, 34vh, 360px); padding: 22px; overflow: hidden; text-decoration: none;
+  border: 1px solid rgb(217 180 104 / .32); border-radius: 4px; color: var(--paper-hi); isolation: isolate; transition: border-color .3s, transform .5s var(--ease); }
+.world:hover, .world:focus-visible { border-color: var(--gold-hi); transform: translateY(-4px); outline: none; }
+.world:focus-visible { box-shadow: 0 0 0 3px var(--black), 0 0 0 5px var(--gold-hi); }
+.world .art { position: absolute; inset: 0; z-index: -1; }
+.world .k { font: italic 400 13px/1.2 var(--serif); color: var(--gold-hi); letter-spacing: .06em; }
+.world h3 { margin: 6px 0 6px; font: 700 clamp(22px, 2.2vw, 32px)/1.1 var(--serif); }
+.world p { margin: 0; font: 400 14.5px/1.5 var(--serif); color: rgb(232 220 194 / .8); }
+.world .go { margin-top: 14px; font: 700 14px var(--serif); color: var(--gold-hi); letter-spacing: .04em; }
+.w-code .art { background: linear-gradient(180deg, rgb(11 8 6 / .2), #0b0806 85%), #0c1013; }
+.w-code .art i { position: absolute; top: -20%; font: 400 12px/1.6 ui-monospace, Menlo, monospace; color: rgb(140 200 210 / .35); white-space: pre; }
+.w-math .art { background: linear-gradient(180deg, rgb(11 8 6 / .1), #0b0806 85%), radial-gradient(60% 60% at 60% 30%, #1c1810, #0b0806); }
+.w-math .art svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.w-en .art { background: linear-gradient(180deg, rgb(11 8 6 / .05), #0b0806 85%), linear-gradient(90deg, #2a1a10, #1b110a); }
+.w-en .art .shelf { position: absolute; left: 0; right: 0; height: 22%; background: repeating-linear-gradient(90deg, #4a2a18 0 9px, #5d3520 9px 15px, #3a2214 15px 26px, #6e2a20 26px 31px, #2e1b10 31px 40px); box-shadow: 0 6px 0 #1a0f08; }
+.w-en .art .win { position: absolute; right: 12%; top: 6%; width: 26%; height: 52%; border-radius: 50% 50% 0 0 / 30% 30% 0 0; background: linear-gradient(180deg, #f6e2b0, #c9a24a); box-shadow: 0 0 60px rgb(246 226 176 / .5); }
+.w-en .art .ray { position: absolute; right: 8%; top: 20%; width: 70%; height: 90%; background: linear-gradient(200deg, rgb(246 226 176 / .28), transparent 60%); clip-path: polygon(80% 0, 100% 0, 40% 100%, 0 100%); mix-blend-mode: screen; }
+#s8 .foot { left: 0; right: 0; bottom: 15%; text-align: center; }
+#s8 .foot a { font: 700 15px var(--serif); color: var(--gold-hi); text-decoration: none; border-bottom: 1px solid rgb(217 180 104 / .5); padding-bottom: 2px; }
+
+/* ==== Басқару: тарау шкаласы, ойнату, дыбыс, өткізу ==== */
+#ui { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; padding: 0 max(18px, env(safe-area-inset-left)) max(14px, env(safe-area-inset-bottom)); display: grid; gap: 10px;
+  background: linear-gradient(0deg, rgb(0 0 0 / .7), transparent); pointer-events: none; }
+#ui > * { pointer-events: auto; }
+.cap { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; min-height: 22px; }
+.cap .ch { font: 700 15px var(--serif); color: var(--paper-hi); letter-spacing: .03em; }
+.cap .src { font: italic 400 12.5px var(--serif); color: rgb(232 220 194 / .62); }
+.bar { display: flex; align-items: center; gap: 12px; }
+.btn { flex: 0 0 auto; min-width: 44px; height: 44px; padding: 0 14px; border-radius: 22px; border: 1px solid rgb(217 180 104 / .45); background: rgb(11 8 6 / .55); color: var(--gold-hi); font: 700 14px var(--serif); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: background .2s, border-color .2s; }
+.btn:hover { border-color: var(--gold-hi); background: rgb(40 28 18 / .7); }
+.btn:focus-visible, .tl:focus-visible, .chips button:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; }
+.btn svg { width: 16px; height: 16px; fill: currentColor; }
+.tl { position: relative; flex: 1; height: 44px; cursor: pointer; touch-action: none; }
+.tl .track { position: absolute; left: 0; right: 0; top: 50%; height: 2px; translate: 0 -50%; background: rgb(232 220 194 / .18); }
+.tl .fill { position: absolute; left: 0; top: 50%; height: 2px; translate: 0 -50%; background: linear-gradient(90deg, var(--gold-lo), var(--gold-hi)); width: 0; }
+.tl .tick { position: absolute; top: 50%; width: 7px; height: 7px; translate: -50% -50%; rotate: 45deg; background: var(--black); border: 1px solid rgb(217 180 104 / .7); }
+.tl .tick.done { background: var(--gold-hi); }
+.top { position: fixed; top: 0; left: 0; right: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: max(14px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 0 max(18px, env(safe-area-inset-left)); pointer-events: none; }
+.top > * { pointer-events: auto; }
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand svg { height: 26px; width: auto; }
+.top .r { display: flex; gap: 8px; }
+.hint { position: fixed; left: 50%; bottom: 112px; translate: -50% 0; z-index: 9; font: italic 400 13px var(--serif); color: rgb(232 220 194 / .7); letter-spacing: .04em; transition: opacity .8s; pointer-events: none; text-align: center; }
+.hint.off { opacity: 0; }
+
+/* ==== Телефон: әр сахнаның өз композициясы (тігінен) ==== */
+.portrait #s1 .map { left: 6%; top: 8%; width: 82%; }
+.portrait #s1 .ink { left: 76%; top: 36%; }
+.portrait #s1 .pen { left: 40%; top: 40%; width: 34vmin; }
+.portrait #s1 .petition { left: 60%; top: 42%; width: 32%; }
+.portrait #s1 .intro { display: none; }
+.portrait #s1 .q { left: 7%; right: 7%; top: 50%; flex-direction: column; gap: 12px; }
+.portrait #s1 .q .w { font-size: clamp(30px, 9vw, 44px); }
+.portrait #s1 .q .w small { margin-top: 4px; font-size: 13px; max-width: none; }
+.portrait #s2 .doc { left: 6%; top: 8%; width: 56%; }
+.portrait #s2 .print { left: 62%; top: 22%; width: 32%; }
+.portrait #s2 .book-mini { left: 74%; top: 9%; width: 18%; }
+.portrait #s2 .txt { left: 7%; right: 7%; top: 57%; }
+.portrait #s2 .txt .h-m { font-size: 26px; }
+.portrait .txt .lead { font-size: 14.5px; line-height: 1.5; }
+.portrait #s2 .rule { margin: 10px 0 !important; }
+.portrait #s3 .cover { left: 50%; top: 47%; width: 52vw; }
+.portrait #s3 .print { right: 6%; top: 8%; width: 23%; }
+.portrait #s3 .ttl { top: 9%; left: 7%; }
+.portrait #s3 .verse { left: 7%; right: 7%; bottom: 17%; width: auto; }
+.portrait #s3 .verse p { font-size: 18px; }
+.portrait #s4 .news { left: 50%; top: 34.5%; width: 80vw; aspect-ratio: 3 / 4; }
+.portrait #s4 .cols { grid-template-columns: repeat(2, 1fr); height: 62%; }
+.portrait #s4 .print { left: auto; right: 6%; bottom: auto; top: 62%; width: 24%; }
+.portrait #s4 .txt { left: 7%; right: 34%; top: 62%; width: auto; text-align: left; }
+.portrait #s4 .txt .lead { margin-left: 0; }
+.portrait #s5 .map { left: 50%; top: 40%; width: 128vw; }
+.portrait #s5 .ttl { top: 9%; left: 7%; right: 7%; }
+.portrait #s5 .txt { left: 7%; right: 7%; width: auto; top: auto; bottom: 18%; }
+.portrait #s6 .row { top: 30%; width: 90vw; gap: 4%; }
+.portrait #s6 .title { top: 56%; padding: 0 6%; }
+.portrait #s6 .title .h-xl { font-size: clamp(34px, 11vw, 64px); letter-spacing: .08em; }
+.portrait #s7 .book { width: 92vw; top: 46%; }
+.portrait #s8 .hd { top: 8%; }
+.portrait #s8 .worlds { top: 55%; grid-template-columns: 1fr; gap: 10px; width: 88vw; }
+.portrait #s8 .foot { bottom: 17%; }
+.portrait .world { min-height: 0; padding: 16px 16px 14px; }
+.portrait .world p { display: none; }
+.portrait .world .go { margin-top: 6px; }
+.portrait .hint { bottom: 120px; }
+.portrait .tag { display: none; }   /* телефонда дерек көзі төменгі жолда (capSrc) тұрады */
+
+/* Қозғалыс азайтылса: камера жоқ, тек тарау ауысады */
+.still .cam, .still .lyr, .still .print { transition: none !important; }
+@media print { #ui, .top, #grain, #dust { display: none; } }
+</style>
+</head>
+<body>
+<a class="sr" href="#s8" id="skipLink">Фильмді өткізіп, AO17 академияларына өту</a>
+<div class="top">
+  <a class="brand" href="../index.html" aria-label="AO17 басты беті"><svg viewBox="0 0 462 136" aria-hidden="true"><!--{{LOGO}}--></svg></a>
+  <div class="r">
+    <button class="btn" id="snd" type="button" aria-pressed="false" aria-label="Дыбыс: өшірулі"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/></svg><span>Дыбыс</span></button>
+    <button class="btn" id="skip" type="button">Өткізу</button>
+  </div>
+</div>
+
+<main id="stage" aria-label="Шақыру: Алаш 1917 - интерактивті тарихи фильм">
+  <!-- 0 · ПРОЛОГ -->
+  <section class="sc" id="s0" data-title="Пролог" data-src="Көркем кадр" aria-label="Пролог">
+    <div class="cam">
+      <div class="lamp lyr" data-depth="0.2"></div>
+      <div class="lyr t1 kicker" data-depth="0.6">ХХ ғасырдың басы</div>
+      <h1 class="lyr t2 h-l" data-depth="0.9" data-focus>Қазақ даласы үлкен сұрақтың алдында тұр.</h1>
+    </div>
+  </section>
+
+  <!-- 1 · ҮШ СҰРАҚ -->
+  <section class="sc" id="s1" data-title="Үш сұрақ" data-src="Көркем кадр: архив үстелі, карта - схема">
+    <div class="cam">
+      <div class="desk"></div>
+      <div class="lamp" style="left:56%"></div>
+      <div class="lyr map paper" data-depth="0.4">
+        <svg viewBox="0 0 400 300" aria-hidden="true"><g fill="none" stroke="#3a2a1a" stroke-width=".8" opacity=".55"><path d="M20 40 C80 30 140 60 200 50 S320 30 380 60"/><path d="M10 120 C90 100 160 140 240 120 S340 110 390 130"/><path d="M30 220 C100 200 180 240 250 220 S350 200 380 230"/><path d="M120 10 C110 80 140 160 120 290" stroke-dasharray="3 4"/><path d="M280 10 C300 90 260 170 290 290" stroke-dasharray="3 4"/></g>
+          <g font-family="PT Serif, serif" font-size="11" font-style="italic" fill="#2a1d12"><circle cx="70" cy="95" r="3"/><text x="78" y="99">Орынбор</text><circle cx="250" cy="150" r="3"/><text x="258" y="154">Қарқаралы</text><circle cx="300" cy="90" r="3"/><text x="308" y="94">Семей</text><circle cx="150" cy="140" r="3"/><text x="158" y="144">Торғай</text></g>
+          <g transform="translate(350 250)" fill="none" stroke="#3a2a1a"><circle r="20"/><path d="M0-26V26M-26 0H26"/><path d="M0-20l5 20-5 20-5-20z" fill="#3a2a1a"/></g>
+          <text x="20" y="285" font-family="PT Serif, serif" font-size="10" fill="#3a2a1a" font-style="italic">Схема, масштабсыз</text></svg>
+      </div>
+      <div class="lyr ink" data-depth="0.7"></div>
+      <div class="lyr pen" data-depth="0.85"></div>
+      <div class="lyr petition paper" data-depth="0.6" data-focus></div>
+      <p class="lyr intro kicker" data-depth="1">Халықтың алдында үш сұрақ тұрды</p>
+      <div class="lyr q" data-depth="1.1">
+        <div class="w" data-beat="0">Жер<small>Қоныстандыру саясаты қазақ жерін тарылтты.</small></div>
+        <div class="w" data-beat="1">Тіл<small>Ана тіліндегі мектеп, кітап, баспасөз жетіспеді.</small></div>
+        <div class="w" data-beat="2">Білім<small>Ұлттың болашағы оқуға байланды.</small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · 1905 ҚАРҚАРАЛЫ -->
+  <section class="sc" id="s2" data-title="1905 · Қарқаралы петициясы" data-src="Құжат: көркем реконструкция · Фото: архив, Wikimedia Commons, қоғамдық игілік">
+    <div class="cam">
+      <div class="desk"></div>
+      <div class="lamp" style="left:40%"></div>
+      <div class="lyr doc paper" data-depth="0.5">
+        <h3>ПЕТИЦИЯ</h3>
+        <svg viewBox="0 0 300 220" aria-hidden="true"><g class="hand"><!--{{HAND}}--></g></svg>
+        <div class="sig">Қол қойғандар:<b id="sigN">0</b></div>
+      </div>
+      <figure class="lyr print" data-depth="0.8"><div class="ph"><img src="{{IMG_BOKEIKHAN}}" alt="Әлихан Бөкейхан, архивтік фотосурет" width="320" height="400"></div><figcaption>Әлихан Бөкейхан</figcaption></figure>
+      <div class="lyr book-mini" data-depth="0.7" data-focus aria-hidden="true"></div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">1905 · Қарқаралы</p>
+        <h2 class="h-m">Халық патшаға үн қатты</h2>
+        <div class="rule" style="margin:18px 0;width:40%"></div>
+        <p class="lead">Қарқаралы петициясына 14 500-ден астам адам қол қойды. Талап: жерді тартып алуды тоқтату, ана тілінде оқыту, қазақ баспасөзі. Бастамашылардың бірі - Әлихан Бөкейхан.</p>
+      </div>
+      <span class="tag" style="left:10%;bottom:4%"><b>РЕКОНСТРУКЦИЯ</b> · құжат түпнұсқа емес</span>
+    </div>
+  </section>
+
+  <!-- 3 · 1909 «ОЯН, ҚАЗАҚ!» -->
+  <section class="sc" id="s3" data-title="1909 · «Оян, қазақ!»" data-src="Мұқаба: көркем реконструкция · Фото: архив, Wikimedia Commons, қоғамдық игілік">
+    <div class="cam">
+      <div class="desk"></div>
+      <div class="lamp"></div>
+      <div class="lyr ttl" data-depth="0.9"><p class="kicker">1909 · Уфа</p><h2 class="h-m">Міржақып<br>Дулатұлы</h2></div>
+      <div class="lyr cover" data-depth="0.5" data-focus><div><div class="ct">Оян, қазақ!</div><div class="cs">Міржақып Дулатұлы · 1909</div></div></div>
+      <figure class="lyr print" data-depth="0.8"><div class="ph"><img src="{{IMG_DULATULY}}" alt="Міржақып Дулатұлы, архивтік фотосурет" width="320" height="400"></div><figcaption>Міржақып Дулатұлы</figcaption></figure>
+      <div class="lyr verse" data-depth="1.1"><p id="verse1"></p><p id="verse2"></p></div>
+      <span class="tag" style="right:6%;bottom:4%"><b>РЕКОНСТРУКЦИЯ</b> · мұқаба түпнұсқа емес</span>
+    </div>
+  </section>
+
+  <!-- 4 · 1913 «ҚАЗАҚ» -->
+  <section class="sc" id="s4" data-title="1913 · «Қазақ» газеті" data-src="Газет беті: көркем реконструкция · Фото: архив, Wikimedia Commons, қоғамдық игілік">
+    <div class="cam">
+      <div class="desk"></div>
+      <div class="lamp" style="left:54%"></div>
+      <div class="lyr news paper" data-depth="0.5">
+        <div class="mast"><div class="ar" lang="kk-Arab">قازاق</div><div class="cy">«ҚАЗАҚ» · ТӨТЕ ЖАЗУМЕН</div></div>
+        <div class="line"><span>№ 1</span><span id="orb" data-focus>Орынбор</span><span>1913</span></div>
+        <div class="cols"><div></div><div></div><div></div><div></div></div>
+      </div>
+      <figure class="lyr print" data-depth="0.85"><div class="ph"><img src="{{IMG_BAITURSYNULY}}" alt="Ахмет Байтұрсынұлы, архивтік фотосурет" width="320" height="400"></div><figcaption>Ахмет Байтұрсынұлы</figcaption></figure>
+      <div class="lyr txt" data-depth="1.05">
+        <p class="kicker">1913 · Орынбор</p>
+        <h2 class="h-m">«Қазақ» газеті</h2>
+        <p class="lead" style="margin-top:14px">1913-1918 жылдары Орынборда шықты. Редакторы - Ахмет Байтұрсынұлы. Газет ұлттың ортақ мінберіне айналды.</p>
+      </div>
+      <span class="tag" style="left:50%;translate:-50% 0;top:4%"><b>РЕКОНСТРУКЦИЯ</b> · газет беті түпнұсқа емес</span>
+    </div>
+  </section>
+
+  <!-- 5 · 1917 ШІЛДЕ -->
+  <section class="sc" id="s5" data-title="1917, шілде · Бірінші жалпықазақ съезі" data-src="Карта: көркем схема, масштабсыз">
+    <div class="cam">
+      <div class="lamp"></div>
+      <div class="lyr map" data-depth="0.5">
+        <svg viewBox="0 0 800 500" aria-hidden="true">
+          <defs><radialGradient id="pulse"><stop offset="0" stop-color="#f6e2b0"/><stop offset="1" stop-color="#f6e2b0" stop-opacity="0"/></radialGradient></defs>
+          <g fill="none" stroke="rgb(217 180 104 / .14)"><path d="M0 120 C200 90 400 150 800 110"/><path d="M0 250 C220 220 420 280 800 240"/><path d="M0 380 C220 350 420 410 800 370"/></g>
+          <g id="routes" fill="none" stroke="#d9b468" stroke-width="1.6" stroke-linecap="round"><!--{{ROUTES}}--></g>
+          <circle id="obPulse" cx="150" cy="190" r="40" fill="url(#pulse)"/>
+          <g font-family="PT Serif, serif" fill="#e8dcc2" font-size="15" font-style="italic"><!--{{CITIES}}--></g>
+          <g transform="translate(150 190)"><circle r="7" fill="#d9b468" data-focus/><circle r="13" fill="none" stroke="#d9b468"/><text x="20" y="-14" font-family="PT Serif, serif" font-size="22" font-weight="700" fill="#f3ead6">Орынбор</text></g>
+        </svg>
+      </div>
+      <div class="lyr ttl" data-depth="0.9"><p class="kicker">21-26 шілде 1917 · Орынбор</p><h2 class="h-l">Бірінші жалпықазақ съезі</h2></div>
+      <div class="lyr txt" data-depth="1.05"><p class="lead">Елдің түкпір-түкпірінен келген өкілдер Алаш партиясын құрды. Жер, ана тілі, оқу - бәрі бір бағдарламаға жиналды.</p></div>
+    </div>
+  </section>
+
+  <!-- 6 · АЛАШОРДА -->
+  <section class="sc" id="s6" data-title="1917, желтоқсан · Алашорда" data-src="Фото: архив, Wikimedia Commons, қоғамдық игілік">
+    <div class="cam">
+      <div class="lyr row" data-depth="0.6">
+        <figure class="print p1"><div class="spot"></div><div class="ph"><img src="{{IMG_BOKEIKHAN}}" alt="Әлихан Бөкейхан" width="320" height="400"></div><figcaption>Әлихан Бөкейхан</figcaption></figure>
+        <figure class="print p2"><div class="spot"></div><div class="ph"><img src="{{IMG_BAITURSYNULY}}" alt="Ахмет Байтұрсынұлы" width="320" height="400"></div><figcaption>Ахмет Байтұрсынұлы</figcaption></figure>
+        <figure class="print p3"><div class="spot"></div><div class="ph"><img src="{{IMG_DULATULY}}" alt="Міржақып Дулатұлы" width="320" height="400"></div><figcaption>Міржақып Дулатұлы</figcaption></figure>
+      </div>
+      <div class="lyr title" data-depth="1">
+        <h2 class="h-xl" id="alashTitle" data-focus>АЛАШОРДА</h2>
+        <p class="lead">5-13 желтоқсан 1917, Орынбор. Екінші жалпықазақ съезі Алаш автономиясын жариялап, Алашорда үкіметін құрды. Төрағасы - Әлихан Бөкейхан.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 · КІТАП -->
+  <section class="sc" id="s7" data-title="Шақыру" data-src="Көркем кадр">
+    <div class="cam">
+      <div class="desk"></div>
+      <div class="lamp"></div>
+      <div class="lyr book" data-depth="0.6">
+        <div class="pg l paper"><div class="tx"><p>Олар халықты оқуға, ғылымға, ана тілінде білім алуға шақырды.</p></div></div>
+        <div class="pg r paper"><div class="tx"><p id="callTo">Бүгін біз сол шақыруды жалғастырамыз.</p></div></div>
+        <div class="glow" data-focus></div>
+        <div class="lid">АЛАШ</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 · AO17 -->
+  <section class="sc" id="s8" data-title="AO17" data-src="Бір шаңырақ - үш академия">
+    <div class="cam">
+      <div class="lyr hd" data-depth="0.5">
+        <svg viewBox="0 0 462 136" role="img" aria-label="AO17"><!--{{LOGO}}--></svg>
+        <p class="lead">Бір шаңырақ - үш академия. Ана тілінде, тегін, браузерде.</p>
+      </div>
+      <nav class="lyr worlds" data-depth="0.8" aria-label="Үш академия">
+        <a class="world w-code" href="../programming.html"><div class="art" aria-hidden="true"><!--{{CODE}}--></div><span class="k">Бағдарламалау академиясы</span><h3>Код - бүгінгі баспа әрпі</h3><p>CS50x, Python, SQL, AI, Web, C++, Java: браузерде орындалатын код, автотексеру.</p><span class="go">Академияға кіру</span></a>
+        <a class="world w-math" href="../math/"><div class="art" aria-hidden="true"><svg viewBox="0 0 300 220"><g fill="none" stroke="#d9b468" stroke-opacity=".5"><circle cx="190" cy="80" r="60"/><ellipse cx="190" cy="80" rx="60" ry="18"/><ellipse cx="190" cy="80" rx="22" ry="60"/><path d="M100 80H290M190 0V170" stroke-opacity=".25"/><path d="M110 160 C150 140 170 110 190 80 S240 20 280 10" stroke="#efe6d3" stroke-opacity=".5"/></g><text x="130" y="200" fill="#e6c47c" fill-opacity=".7" font-family="PT Serif, serif" font-style="italic" font-size="18">x² + y² = r²</text></svg></div><span class="k">Математика академиясы</span><h3>Шексіз геометрия</h3><p>Нөлден жоғары математикаға дейін 25 пән: сызбалар, формулалар, есептер.</p><span class="go">Академияға кіру</span></a>
+        <a class="world w-en" href="../en/"><div class="art" aria-hidden="true"><div class="win"></div><div class="ray"></div><div class="shelf" style="bottom:46%"></div><div class="shelf" style="bottom:20%"></div></div><span class="k">English Academy</span><h3>Кітапхана бөлмелері</h3><p>A0-ден C1-ге дейін алты деңгей: тыңдау, айту, оқу, жазу.</p><span class="go">Академияға кіру</span></a>
+      </nav>
+      <p class="lyr foot" data-depth="1"><a href="../index.html">AO17 сайтына кіру</a></p>
+    </div>
+  </section>
+</main>
+
+<canvas id="dust" aria-hidden="true"></canvas>
+<canvas id="grain" width="160" height="160" aria-hidden="true"></canvas>
+<div id="flash" aria-hidden="true"></div>
+<div class="letterbox" id="lbT" aria-hidden="true"></div><div class="letterbox" id="lbB" aria-hidden="true"></div>
+<p class="hint" id="hint">Фильм өзі жүреді · скролл не сырғыту камераны алға-артқа жүргізеді</p>
+
+<div id="ui">
+  <div class="cap" aria-live="polite"><span class="ch" id="capCh">Пролог</span><span class="src" id="capSrc"></span></div>
+  <div class="bar">
+    <button class="btn" id="play" type="button" aria-label="Тоқтату"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="playIco" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+    <div class="tl" id="tl" role="slider" tabindex="0" aria-label="Фильмнің уақыты" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="track"></div><div class="fill" id="fill"></div></div>
+  </div>
+</div>
+
+<script>
+/* © 2026 Sagid Mustafa. AO17 «Шақыру» фильмі.
+   АРХИТЕКТУРА
+   - Бір уақыт ойнатқышы (playhead, секунд). Бүкіл кадр - render(t) функциясы: кез келген t-ға секіруге, кері жүруге болады.
+   - Уақыт көздері: autoplay (1x), скролл/тач/перне (seek, инерциямен), шкала (scrub). Пайдаланушы әрекеті кезінде autoplay
+     тоқтамайды, тек «ұсталады»; әрекет біткен соң 0.9 с кейін сол t-дан жалғасады. Екі режим бір t-ны ғана басқарады - қақтығыс жоқ.
+   - Сахна = {a, b}: өз уақыт терезесі. Көрші сахналар T секунд қабаттасады: шығатын сахна камерасы өз фокусына (data-focus)
+     кіріп кетеді, келетін сахна сол нүктеден дөңгелек терезе болып ашылады («келесі сахна суреттің ішінен»).
+   - Ырғақ: 72 BPM. Кесулер мен сөздердің шығуы тактіге түседі; дыбыс қосылса, WebAudio ұрмасы дәл сол сәтте.
+   - Қоршаған өмір (шаң, түйіршік, жарық жолағы) нақты уақытпен жүреді: кадр тоқтап тұрса да тірі. */
+(() => {
+  "use strict";
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const io = (k) => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;   // easeInOutCubic
+  const eo = (k) => 1 - Math.pow(1 - k, 3);                                      // easeOutCubic
+  const ei = (k) => k * k * k;                                                   // easeInCubic
+  const seg = (p, a, b) => clamp((p - a) / (b - a));
+  const root = document.documentElement;
+  const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (still) root.classList.add("still");
+
+  // ---------- Уақыт кестесі (72 BPM: такт = 3.333 с) ----------
+  const BEAT = 60 / 72, BAR = BEAT * 4, T = 1.6;   // T - сахналар қабаттасуы (өту)
+  const DUR = [8, 11, 12, 10, 12, 10, 14, 10, 9];  // әр сахнаның өз ұзақтығы
+  const scenes = $$(".sc").map((el, i) => ({ el, i, cam: $(".cam", el), lyrs: $$(".lyr", el), focus: $("[data-focus]", el) }));
+  let acc = 0;
+  scenes.forEach((s, i) => { s.a = acc; s.b = acc + DUR[i]; acc = s.b - (i < scenes.length - 1 ? T : 0); });
+  const END = scenes[scenes.length - 1].b;
+  const CH = scenes.map((s) => s.a + (s.i ? T * .5 : 0));   // тарау басы (өту ортасы)
+
+  // ---------- Ойнатқыш күйі ----------
+  let t = 0, target = 0, playing = !still, lastInput = -1e9, interacting = false;
+  const now = () => performance.now() / 1000;
+  function seek(v, smooth = true) { target = clamp(v, 0, END); if (!smooth) t = target; lastInput = now(); interacting = true; }
+  function setPlaying(v) {
+    playing = v;
+    $("#play").setAttribute("aria-label", v ? "Тоқтату" : "Ойнату");
+    $("#playIco").setAttribute("d", v ? "M7 5h4v14H7zM13 5h4v14h-4z" : "M8 5v14l11-7z");
+  }
+
+  // ---------- Енгізу: скролл, тач, пернелер, шкала ----------
+  const K_WHEEL = 0.0065, K_TOUCH = 0.022;
+  addEventListener("wheel", (e) => { if (e.target.closest && e.target.closest(".world")) return; e.preventDefault(); seek(target + e.deltaY * K_WHEEL * (e.deltaMode === 1 ? 30 : 1)); hideHint(); }, { passive: false });
+  let ty = null, tvel = 0, tlast = 0;
+  addEventListener("touchstart", (e) => { if (e.target.closest("#ui, .top, .world")) return; ty = e.touches[0].clientY; tvel = 0; tlast = now(); seek(t); }, { passive: true });
+  addEventListener("touchmove", (e) => {
+    if (ty == null) return;
+    const y = e.touches[0].clientY, dy = ty - y, n = now();
+    tvel = dy / Math.max(.008, n - tlast); tlast = n; ty = y;
+    seek(target + dy * K_TOUCH); hideHint();
+  }, { passive: true });
+  addEventListener("touchend", () => { if (ty == null) return; ty = null; seek(target + clamp(tvel * K_TOUCH * .12, -3, 3)); });   // инерция
+  addEventListener("keydown", (e) => {
+    if (e.target.closest && e.target.closest("a, input")) return;
+    const cur = chapterAt(t);
+    if (e.key === " " && !e.target.closest("button")) { e.preventDefault(); setPlaying(!playing); }
+    else if (["ArrowDown", "ArrowRight", "PageDown"].includes(e.key)) { e.preventDefault(); seek(CH[Math.min(CH.length - 1, cur + 1)]); }
+    else if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); seek(t - CH[cur] > 1.2 ? CH[cur] : CH[Math.max(0, cur - 1)]); }
+    else if (e.key === "End") seek(END - .01);
+    else if (e.key === "Home") seek(0);
+  });
+  const tl = $("#tl");
+  const tlSeek = (x) => { const r = tl.getBoundingClientRect(); seek(clamp((x - r.left) / r.width) * END, false); };
+  tl.addEventListener("pointerdown", (e) => { tl.setPointerCapture(e.pointerId); tlSeek(e.clientX); });
+  tl.addEventListener("pointermove", (e) => { if (tl.hasPointerCapture(e.pointerId)) tlSeek(e.clientX); });
+  CH.forEach((c) => { const d = document.createElement("i"); d.className = "tick"; d.style.left = (c / END * 100) + "%"; tl.appendChild(d); });
+  const ticks = $$(".tick", tl);
+  $("#play").addEventListener("click", () => setPlaying(!playing));
+  $("#skip").addEventListener("click", () => { seek(CH[CH.length - 1]); });
+  $("#skipLink").addEventListener("click", (e) => { e.preventDefault(); seek(END - .01, false); setTimeout(() => $(".world").focus(), 50); });
+  let hinted = false;
+  function hideHint() { if (!hinted) { hinted = true; $("#hint").classList.add("off"); } }
+  setTimeout(hideHint, 9000);
+  document.addEventListener("visibilitychange", () => { if (document.hidden) wasPlaying = playing, setPlaying(false); else if (wasPlaying) setPlaying(true); });
+  let wasPlaying = false;
+  const chapterAt = (x) => { let c = 0; CH.forEach((v, i) => { if (x >= v - .01) c = i; }); return c; };
+
+  // ---------- Композиция: экран бағыты ----------
+  let W = innerWidth, H = innerHeight, portrait = H > W * 1.05;
+  function resize() { W = innerWidth; H = innerHeight; portrait = H > W * 1.05; root.classList.toggle("portrait", portrait); sizeCanvas(); }
+  addEventListener("resize", resize);
+
+  // ---------- Сахна ішіндегі қозғалыс (local p ∈ [0..1]) ----------
+  const sigN = $("#sigN"), v1 = $("#verse1"), v2 = $("#verse2");
+  const VERSE1 = "Көзіңді аш, оян, қазақ, көтер басты,", VERSE2 = "Өткізбей қараңғыда бекер жасты.";
+  const fmt = (n) => String(n).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+  const hands = $$("#s2 .hand path");
+  const routes = $$("#routes path");
+  const words = $$("#s1 .q .w"), intro1 = $("#s1 .intro");
+  const alash = $("#alashTitle"), s6prints = $$("#s6 .print"), lid = $("#s7 .lid"), glow = $("#s7 .glow");
+  const prints = $$(".print");
+  const BEATS_PER_SCENE = (s) => (s.b - s.a) / BEAT;
+
+  const inner = [
+    /* 0 */ (p, s) => { s.lyrs[0].style.opacity = eo(seg(p, 0, .35)); s.lyrs[1].style.opacity = eo(seg(p, .18, .4)); s.lyrs[2].style.opacity = eo(seg(p, .32, .6)); return { z: lerp(1, 1.08, p), x: 0, y: lerp(10, 0, p) }; },
+    /* 1 */ (p, s) => {
+      intro1.style.opacity = eo(seg(p, .08, .2)) * (1 - seg(p, .3, .38));
+      // үш сөз тактімен басылады
+      words.forEach((w, i) => { const k = seg(p, .3 + i * .14, .38 + i * .14); w.style.opacity = k; w.style.transform = `translateY(${(1 - eo(k)) * 24}px)`; w.style.filter = k < 1 ? `blur(${(1 - k) * 4}px)` : ""; });
+      return { z: lerp(1.08, 1.0, io(p)), x: lerp(-30, 10, io(p)), y: 0 };
+    },
+    /* 2 */ (p) => {
+      hands.forEach((h, i) => { h.style.strokeDashoffset = 1 - seg(p, .05 + i * .06, .14 + i * .06); });
+      sigN.textContent = fmt(Math.round(14500 * eo(seg(p, .35, .7)) / 10) * 10);
+      return { z: lerp(1.0, 1.07, io(p)), x: lerp(10, -20, io(p)), y: lerp(0, -6, p) };
+    },
+    /* 3 */ (p) => {
+      const n1 = Math.round(VERSE1.length * seg(p, .25, .55)), n2 = Math.round(VERSE2.length * seg(p, .55, .8));
+      v1.textContent = VERSE1.slice(0, n1); v2.textContent = VERSE2.slice(0, n2);
+      return { z: lerp(1.05, 1.0, eo(p)), x: 0, y: lerp(-8, 6, p) };
+    },
+    /* 4 */ (p, s) => {
+      // газетте ырғақты монтаж: үш жақын кадр, әрқайсысы бір тактінің басында, тегіс емес - кесіліп ауысады
+      const cut = p > .32 && p < .62 ? Math.floor((p - .32) / .1) : -1;
+      if (cut !== s.cut) { if (s.cut !== undefined && cut !== -1) flash(); s.cut = cut; }
+      if (cut === 0) return { z: 2.4, x: 0, y: portrait ? 18 : 22, fx: 1 };
+      if (cut === 1) return { z: 2.1, x: portrait ? 0 : 18, y: -10, fx: 1 };
+      if (cut === 2) return { z: 2.6, x: portrait ? -6 : -20, y: portrait ? 10 : 12, fx: 1 };
+      return { z: lerp(1.0, 1.06, io(p)), x: lerp(-10, 10, p), y: 0 };
+    },
+    /* 5 */ (p) => {
+      routes.forEach((r, i) => { r.style.strokeDashoffset = 1 - eo(seg(p, .15 + i * .05, .55 + i * .05)); });
+      const ob = $("#obPulse"); ob.setAttribute("r", 30 + 26 * (.5 + .5 * Math.sin(now() * 2.2)) * seg(p, .5, .7));
+      return { z: lerp(1.0, 1.12, io(p)), x: lerp(20, -10, io(p)), y: 0 };
+    },
+    /* 6 */ (p, s) => {
+      // қараңғыдан үш портрет тактімен жанады, сосын алтын атау
+      s6prints.forEach((pr, i) => { const k = seg(p, .08 + i * .1, .16 + i * .1); pr.style.opacity = k; pr.style.filter = `brightness(${.35 + .65 * k})`; pr.querySelector(".spot").style.opacity = k * (1 - seg(p, .6, .9) * .5); });
+      const kt = seg(p, .42, .62);
+      alash.style.opacity = kt; alash.style.letterSpacing = lerp(.5, .14, eo(kt)) * (portrait ? .6 : 1) + "em";
+      alash.nextElementSibling.style.opacity = seg(p, .6, .75);
+      return { z: lerp(1.12, 1.0, eo(p)), x: 0, y: lerp(0, -12, p) };
+    },
+    /* 7 */ (p) => {
+      const k = io(seg(p, .22, .62));
+      lid.style.transform = `rotateY(${-178 * k}deg)`;
+      lid.style.opacity = k > .98 ? 0 : 1;
+      glow.style.opacity = seg(p, .45, .8);
+      $("#callTo").style.opacity = seg(p, .62, .8);
+      return { z: lerp(1.15, 1.0, eo(p)), x: 0, y: 0 };
+    },
+    /* 8 */ (p) => ({ z: lerp(1.04, 1.0, eo(p)), x: 0, y: 0 }),
+  ];
+
+  // ---------- Негізгі рендер: t -> кадр ----------
+  let px = 0, py = 0;   // меңзер параллаксы (тек тышқан)
+  if (matchMedia("(pointer: fine)").matches && !still) addEventListener("pointermove", (e) => { px = e.clientX / W - .5; py = e.clientY / H - .5; });
+  let lastCh = -1, irisX = 50, irisY = 50;
+  const stage = $("#stage");
+  function render(tt, rt) {
+    if (!still) { stage.style.setProperty("--ppx", (px * -26).toFixed(2) + "px"); stage.style.setProperty("--ppy", (py * -18).toFixed(2) + "px"); }
+    scenes.forEach((s, i) => {
+      const vis = tt >= s.a - .001 && tt <= s.b + .001;
+      s.el.classList.toggle("on", vis);
+      if (!vis) return;
+      const p = clamp((tt - s.a) / (s.b - s.a));
+      const c = inner[i](p, s) || { z: 1, x: 0, y: 0 };
+      let z = c.z, x = c.x, y = c.y, op = 1, clip = "none", origin = "50% 50%";
+      // кіру: алдыңғы сахна фокусынан дөңгелек терезе
+      if (i > 0 && tt < s.a + T) {
+        const q = (tt - s.a) / T;
+        const r = io(seg(q, .42, 1)) * 150;
+        clip = still ? "none" : `circle(${r}% at ${irisX.toFixed(1)}% ${irisY.toFixed(1)}%)`;
+        op = still ? seg(q, .45, .55) : 1;
+        z *= still ? 1 : lerp(1.35, 1, eo(q));
+      }
+      // шығу: камера өз фокусына кіреді
+      if (i < scenes.length - 1 && tt > s.b - T && s.focus && !still) {
+        const q = (tt - (s.b - T)) / T;
+        const f = s.focus.getBoundingClientRect ? s.fRect || (s.fRect = s.focus.getBoundingClientRect()) : null;
+        if (f) {
+          const fx = f.left + f.width / 2, fy = f.top + f.height / 2;
+          origin = `${fx}px ${fy}px`;
+          const fill = clamp(Math.max(W / Math.max(8, f.width), H / Math.max(8, f.height)) * 1.4, 2, 16);
+          const e = ei(q);
+          z *= lerp(1, fill, e);
+          x += (W / 2 - fx) * e; y += (H / 2 - fy) * e;
+          irisX = (fx + (W / 2 - fx) * e) / W * 100; irisY = (fy + (H / 2 - fy) * e) / H * 100;   // келесі сахна дәл осы нүктеден ашылады
+        }
+      } else s.fRect = null;
+      s.cam.style.transformOrigin = origin;
+      s.cam.style.transform = still ? "none" : `translate3d(${x + px * -14}px, ${y + py * -10}px, 0) scale(${z})`;
+      s.el.style.clipPath = clip;
+      s.el.style.opacity = op;
+      s.el.style.zIndex = i;
+    });
+    // баспа суреттер: 2.5D тербелу мен жарық жолағы (нақты уақытпен)
+    if (!still) prints.forEach((pr, i) => {
+      if (!pr.offsetParent) return;
+      pr.style.setProperty("--sweep", ((rt * 9 + i * 37) % 160 - 80) + "%");
+      const img = pr.querySelector("img"); img.style.transform = `scale(${1.04 + .02 * Math.sin(rt * .3 + i)})`;
+    });
+    // летербокс: тарихи бөлімде кинотаспа кадры, AO17-де толық экран
+    const lb = (1 - seg(tt, scenes[8].a, scenes[8].a + T)) * seg(tt, 2, 6) * (portrait ? 0 : 1);
+    $("#lbT").style.height = $("#lbB").style.height = (lb * 5.2) + "vh";
+    // басқару
+    $("#fill").style.width = (tt / END * 100) + "%";
+    tl.setAttribute("aria-valuenow", Math.round(tt / END * 100));
+    tl.setAttribute("aria-valuetext", scenes[chapterAt(tt)].el.dataset.title);
+    const ch = chapterAt(tt);
+    ticks.forEach((k, i) => k.classList.toggle("done", i <= ch));
+    if (ch !== lastCh) { if (ch > 0) hideHint(); lastCh = ch; $("#capCh").textContent = scenes[ch].el.dataset.title; $("#capSrc").textContent = scenes[ch].el.dataset.src; beatHit(ch); }
+  }
+
+  // ---------- Монтаж жарқылы ----------
+  const fl = $("#flash");
+  function flash() { if (still) return; fl.animate([{ opacity: .55 }, { opacity: 0 }], { duration: 260, easing: "ease-out" }); tick(); }
+
+  // ---------- Шаң мен түйіршік (тірі атмосфера) ----------
+  const dc = $("#dust"), dx = dc.getContext("2d"), gc = $("#grain"), gx = gc.getContext("2d");
+  let motes = [];
+  function sizeCanvas() {
+    const r = Math.min(devicePixelRatio || 1, 1.5);
+    dc.width = W * r; dc.height = H * r; dx.setTransform(r, 0, 0, r, 0, 0);
+    motes = Array.from({ length: still ? 0 : Math.round(Math.min(70, W * H / 22000)) }, () => ({ x: Math.random() * W, y: Math.random() * H, r: .4 + Math.random() * 1.6, v: .05 + Math.random() * .25, ph: Math.random() * 6.28 }));
+  }
+  const grainImg = gx.createImageData(160, 160);
+  function drawAmbient(rt, tt) {
+    dx.clearRect(0, 0, W, H);
+    const inHistory = tt < scenes[8].a + T * .5;
+    if (inHistory) {
+      const cx = W * .55, top = -H * .1;
+      motes.forEach((m) => {
+        m.y -= m.v; m.x += Math.sin(rt * .4 + m.ph) * .15;
+        if (m.y < -10) { m.y = H + 10; m.x = Math.random() * W; }
+        const inBeam = Math.max(0, 1 - Math.abs(m.x - cx) / (W * .35 + (m.y - top) * .25));
+        const a = (.12 + .6 * inBeam) * (.6 + .4 * Math.sin(rt * 1.3 + m.ph));
+        dx.fillStyle = `rgba(246,226,176,${a.toFixed(3)})`; dx.beginPath(); dx.arc(m.x, m.y, m.r, 0, 6.283); dx.fill();
+      });
+    }
+    if ((rt * 24 | 0) % 2 === 0) {   // түйіршік кадрдың әр екіншісінде (24 fps сезімі)
+      const d = grainImg.data;
+      for (let i = 0; i < d.length; i += 4) { const v = Math.random() * 255 | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+      gx.putImageData(grainImg, 0, 0);
+    }
+  }
+
+  // ---------- Дыбыс (WebAudio, өз-өзінен генерацияланады; әдепкіде өшірулі) ----------
+  let ac = null, master = null;
+  function audioOn() {
+    ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+    master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
+    master.gain.linearRampToValueAtTime(.55, ac.currentTime + 2);
+    // дала дроны: екі баяу толқын + төмен өткізгіш сүзгі
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 420; lp.connect(master);
+    [55, 82.4, 110.2].forEach((f, i) => { const o = ac.createOscillator(); o.type = i ? "triangle" : "sine"; o.frequency.value = f; o.detune.value = (i - 1) * 6; const g = ac.createGain(); g.gain.value = i ? .05 : .09; o.connect(g); g.connect(lp); o.start(); });
+  }
+  function audioOff() { if (master) { master.gain.linearRampToValueAtTime(0, ac.currentTime + .6); const m = master; setTimeout(() => m.disconnect(), 700); master = null; } }
+  function thump(freq = 52, dur = 1.1, vol = .5) {
+    if (!master) return;
+    const o = ac.createOscillator(), g = ac.createGain(); o.frequency.setValueAtTime(freq * 2, ac.currentTime); o.frequency.exponentialRampToValueAtTime(freq, ac.currentTime + .12);
+    g.gain.setValueAtTime(vol, ac.currentTime); g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + dur); o.connect(g); g.connect(master); o.start(); o.stop(ac.currentTime + dur);
+  }
+  function tick() { thump(640, .25, .08); }
+  function beatHit(ch) { thump(ch === 6 ? 41 : 52, ch === 6 ? 2.4 : 1.2, ch === 6 ? .8 : .45); }
+  let lastBar = -1;
+  $("#snd").addEventListener("click", (e) => {
+    const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+    e.currentTarget.setAttribute("aria-pressed", on); e.currentTarget.setAttribute("aria-label", on ? "Дыбыс: қосулы" : "Дыбыс: өшірулі");
+    on ? audioOn() : audioOff();
+  });
+
+  // ---------- Негізгі цикл ----------
+  let prev = now();
+  function frame() {
+    const n = now(), dt = Math.min(.05, n - prev); prev = n;
+    if (interacting) {
+      t += (target - t) * (1 - Math.pow(.0009, dt));    // seek-ке жұмсақ жақындау (кадр жиілігіне тәуелсіз)
+      if (n - lastInput > .9 && Math.abs(target - t) < .01) interacting = false;
+    } else if (playing) { t = Math.min(END, t + dt); target = t; if (t >= END) setPlaying(false); }
+    // тактінің басында төменгі ұрма (тек фильм жүріп тұрғанда)
+    const bar = Math.floor(t / BAR);
+    if (bar !== lastBar) { if (playing && !interacting && master && bar > lastBar) thump(49, .9, .18); lastBar = bar; }
+    render(t, n);
+    drawAmbient(n, t);
+    requestAnimationFrame(frame);
+  }
+
+  // ---------- Іске қосу ----------
+  $$(".lyr").forEach((l) => { if (l.dataset.depth) l.style.setProperty("--d", l.dataset.depth); });
+  resize();
+  hands.forEach((h) => { h.setAttribute("pathLength", 1); h.style.strokeDasharray = 1; });
+  routes.forEach((r) => { r.setAttribute("pathLength", 1); r.style.strokeDasharray = 1; });
+  setPlaying(playing);
+  if (still) { $("#hint").textContent = "Тарауларды шкаладан не ← → пернелерімен ауыстырыңыз"; }
+  // суреттер мен қаріп дайын болғанда бастаймыз (бос кадр не секіріс болмасын)
+  Promise.all([document.fonts ? document.fonts.ready : 0, ...$$("img").map((i) => i.decode ? i.decode().catch(() => 0) : 0)]).then(() => { prev = now(); requestAnimationFrame(frame); });
+  window.AO17Film = { seek: (v) => seek(v, false), get t() { return t; }, END, CH, scenes };
+})();
+</script>
+</body>
+</html>
