@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0806">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<title>Шаңырақтан шексіздікке: Математика академиясы - AO17</title>
+<meta name="description" content="AO17 Математика академиясының фильм-прологы: шаңырақтағы шеңбер мен радиус, керегедегі ромб, айналудан туған толқын.">
+<meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+<!-- © 2026 Sagid Mustafa. Бастапқы мәтін: film/src/academy-math.html; жинау: python3 tools/make_film.py -->
+<style>
+/* © 2026 Sagid Mustafa. AO17 фильмдерінің ортақ дизайн жүйесі: түс, әріп, материалдар, басқару.
+   Қолданатындар: академия фильмдері (film/src/academy-*.html). «Шақыру» (film/src/film.html) осы жүйенің түпнұсқасы. */
+:root {
+  --black: #0b0806; --ink: #1f1812; --gold: #c9a24a; --gold-hi: #e6c47c; --gold-lo: #8a6634; --paper: #e8dcc2; --paper-hi: #f3ead6; --wine: #7a1f2b;
+  --serif: "PT Serif", Georgia, "Times New Roman", serif;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--black); color: var(--paper); overflow: hidden; overscroll-behavior: none; }
+body { font-family: var(--serif); -webkit-font-smoothing: antialiased; touch-action: none; }
+a { color: inherit; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Сахна: барлық кадр бір экранда, әр сахна өз камерасымен */
+#stage { position: fixed; inset: 0; overflow: hidden; contain: strict; }
+.sc { position: absolute; inset: 0; visibility: hidden; contain: layout paint; }
+.sc.on { visibility: visible; }
+.cam { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
+.lyr { position: absolute; will-change: transform; translate: calc(var(--cx, 0px) + var(--ppx, 0px) * var(--d, 0)) calc(var(--cy, 0px) + var(--ppy, 0px) * var(--d, 0)); }
+.h-m { font: 700 clamp(28px, 3.3vw, 54px)/1.06 var(--serif); color: var(--paper-hi); margin: 0; }
+
+/* Жалпы материалдар */
+.paper { background:
+  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .32 0 0 0 0 .24 0 0 0 0 .13 0 0 0 .22 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"),
+  radial-gradient(120% 90% at 50% 40%, var(--paper-hi), var(--paper) 55%, #cbb98f);
+  color: var(--ink); box-shadow: 0 30px 60px -20px rgb(0 0 0 / .85), 0 2px 0 rgb(255 255 255 / .1) inset; }
+.desk { position: absolute; inset: -10%; background:
+  radial-gradient(60% 55% at 56% 42%, rgb(240 200 120 / .22), transparent 70%),
+  repeating-linear-gradient(92deg, rgb(255 255 255 / .012) 0 2px, transparent 2px 9px),
+  linear-gradient(180deg, #1b130d, #120c08 60%, #0b0705); }
+.vign { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 90% at 50% 45%, transparent 45%, rgb(0 0 0 / .78)); }
+.lamp { position: absolute; left: 50%; top: -20%; width: 120vmax; height: 140vmax; transform: translateX(-50%); pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(50% 45% at 50% 30%, rgb(243 213 138 / .26), rgb(224 182 100 / .07) 55%, transparent 72%); }
+.tag { position: absolute; font: italic 400 12px/1.3 var(--serif); letter-spacing: .04em; color: rgb(232 220 194 / .62); }
+.tag b { font-style: normal; font-weight: 700; color: var(--gold-hi); letter-spacing: .08em; }
+
+/* Типографика */
+.kicker { font: italic 400 clamp(14px, 1.5vw, 19px)/1.3 var(--serif); color: var(--gold-hi); letter-spacing: .04em; }
+.h-xl { font: 700 clamp(46px, 9vw, 150px)/.95 var(--serif); letter-spacing: -.01em; color: var(--paper-hi); margin: 0; }
+.h-l { font: 700 clamp(34px, 5.2vw, 84px)/1.02 var(--serif); color: var(--paper-hi); margin: 0; }
+.lead { font: 400 clamp(16px, 1.45vw, 21px)/1.6 var(--serif); color: rgb(232 220 194 / .86); margin: 0; max-width: 34em; }
+.gold { color: var(--gold-hi); }
+.rule { height: 1px; background: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold) 80%, transparent); }
+
+/* Фото: үстелде жатқан баспа сурет (2.5D: тереңдік, жарық жолағы, көлеңке) */
+.print { position: absolute; margin: 0; padding: 0; container-type: inline-size; background: #efe6d1; box-shadow: 0 2px 0 rgb(255 255 255 / .4) inset, 0 40px 60px -24px rgb(0 0 0 / .9), 0 8px 18px rgb(0 0 0 / .5);
+  transform-style: preserve-3d; will-change: transform; }
+.print .ph { position: relative; overflow: hidden; aspect-ratio: 4 / 5; background: #222; margin: 6cqw 6cqw 17cqw; }   /* жиек картаның өз енінен (cqw), сахнадан емес */
+.print.wide .ph { aspect-ratio: 1100 / 676; margin: 4cqw 4cqw 10cqw; }
+.print .ph img { object-position: 50% 22%; }
+.print img { display: block; width: 100%; height: 100%; object-fit: cover; filter: sepia(.35) contrast(1.06) brightness(.97); will-change: transform; }
+.print .ph::after { content: ""; position: absolute; inset: -40%; background: linear-gradient(115deg, transparent 42%, rgb(255 240 200 / .22) 50%, transparent 58%); transform: translateX(var(--sweep, -60%)); mix-blend-mode: screen; }
+.print figcaption { position: absolute; left: 0; right: 0; bottom: 4cqw; text-align: center; font: italic 400 clamp(11px, 1vw, 14px)/1.25 var(--serif); color: #3a2a1a; }
+
+/* Кесу (монтаж) сәтіндегі жұқа жарқыл - тек ырғақ үшін */
+#flash { position: fixed; inset: 0; pointer-events: none; background: #fff2d6; opacity: 0; mix-blend-mode: soft-light; z-index: 5; }
+#grain { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .09; mix-blend-mode: overlay; z-index: 6; image-rendering: pixelated; }
+#dust { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
+.letterbox { position: fixed; left: 0; right: 0; height: 0; background: #000; z-index: 7; pointer-events: none; }
+
+/* ==== Басқару: тарау шкаласы, ойнату, дыбыс, өткізу ==== */
+#ui { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; padding: 0 max(18px, env(safe-area-inset-left)) max(14px, env(safe-area-inset-bottom)); display: grid; gap: 10px;
+  background: linear-gradient(0deg, rgb(0 0 0 / .7), transparent); pointer-events: none; }
+#ui > * { pointer-events: auto; }
+.cap { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; min-height: 22px; }
+.cap .ch { font: 700 15px var(--serif); color: var(--paper-hi); letter-spacing: .03em; }
+.cap .src { font: italic 400 12.5px var(--serif); color: rgb(232 220 194 / .62); }
+.bar { display: flex; align-items: center; gap: 12px; }
+.btn { flex: 0 0 auto; min-width: 44px; height: 44px; padding: 0 14px; border-radius: 22px; border: 1px solid rgb(217 180 104 / .45); background: rgb(11 8 6 / .55); color: var(--gold-hi); font: 700 14px var(--serif); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: background .2s, border-color .2s; }
+.btn:hover { border-color: var(--gold-hi); background: rgb(40 28 18 / .7); }
+.btn:focus-visible, .tl:focus-visible, .chips button:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; }
+.btn svg { width: 16px; height: 16px; fill: currentColor; }
+.tl { position: relative; flex: 1; height: 44px; cursor: pointer; touch-action: none; }
+.tl .track { position: absolute; left: 0; right: 0; top: 50%; height: 2px; translate: 0 -50%; background: rgb(232 220 194 / .18); }
+.tl .fill { position: absolute; left: 0; top: 50%; height: 2px; translate: 0 -50%; background: linear-gradient(90deg, var(--gold-lo), var(--gold-hi)); width: 0; }
+.tl .tick { position: absolute; top: 50%; width: 7px; height: 7px; translate: -50% -50%; rotate: 45deg; background: var(--black); border: 1px solid rgb(217 180 104 / .7); }
+.tl .tick.done { background: var(--gold-hi); }
+.top { position: fixed; top: 0; left: 0; right: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: max(14px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 0 max(18px, env(safe-area-inset-left)); pointer-events: none; }
+.top > * { pointer-events: auto; }
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand svg { height: 26px; width: auto; }
+.top .r { display: flex; gap: 8px; }
+.hint { position: fixed; left: 50%; bottom: 112px; translate: -50% 0; z-index: 9; font: italic 400 13px var(--serif); color: rgb(232 220 194 / .7); letter-spacing: .04em; transition: opacity .8s; pointer-events: none; text-align: center; }
+.hint.off { opacity: 0; }
+
+.portrait .hint { bottom: 120px; }
+.portrait .tag { display: none; }
+.still .cam, .still .lyr, .still .print { transition: none !important; }
+@media print { #ui, .top, #grain, #dust { display: none; } }
+/* © 2026 Sagid Mustafa. Академия фильмдерінің ортақ бөлігі: финал (академияға кіру), басқа фильмдер.
+   Әр академияның өз түсі бар: --ac (негізгі), --ac-hi (жарық). Алаш алтыны бәріне ортақ жіп болып қалады. */
+.fin { background: radial-gradient(70% 60% at 50% 34%, var(--fin-bg, #231a12), var(--black) 72%); }
+.fin .hd { left: 50%; top: 46%; --cx: -50%; --cy: -50%; width: min(88vw, 760px); text-align: center; }
+.fin .hd .kicker { margin: 0 0 14px; }
+.fin .hd .h-l { font-size: clamp(36px, 5.6vw, 76px); }
+.fin .hd .lead { margin: 18px auto 0; text-align: center; }
+.cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 30px; }
+.cta a { display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; border-radius: 24px; font: 700 16px var(--serif); text-decoration: none; letter-spacing: .02em;
+  border: 1px solid rgb(217 180 104 / .5); color: var(--gold-hi); transition: background .2s, border-color .2s; }
+.cta a.go { background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #1b130d; border-color: transparent; }
+.cta a:hover { border-color: var(--gold-hi); background: rgb(40 28 18 / .7); }
+.cta a.go:hover { background: linear-gradient(180deg, #f3d897, var(--gold-hi)); }
+.cta a:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; }
+.more { margin-top: 22px; font: italic 400 14px/1.6 var(--serif); color: rgb(232 220 194 / .66); }
+.more a { color: var(--gold-hi); text-decoration: none; border-bottom: 1px solid rgb(217 180 104 / .4); margin: 0 6px; white-space: nowrap; }
+.more a:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; }
+.txt { max-width: 30em; }
+.portrait .fin .hd { width: 88vw; top: 44%; }
+.portrait .fin .hd .lead { font-size: 15px; }
+.portrait .cta a { width: 100%; justify-content: center; }
+.hint { top: calc(max(14px, env(safe-area-inset-top)) + 58px); bottom: auto; }
+.portrait .hint { bottom: auto; }
+
+/* ==== «Шаңырақтан шексіздікке»: киіз үйдің өз геометриясы. Ағаш пен киіз -> алтын сызба -> таза функция. ==== */
+:root { --ac: #e6c47c; --wood: #6b4a2c; }
+
+/* 0 · Шаңырақ (төменнен жоғары қарап) */
+#m0 { background: radial-gradient(80% 80% at 50% 50%, #2a1d13, #120c08 70%); }
+#m0 .roof, #m1 .roof { left: 50%; top: 50%; width: max(100vw, 100vh); --cx: -50%; --cy: -50%; }
+#m0 .roof svg, #m1 .roof svg { width: 100%; height: auto; display: block; }
+#m0 .txt { left: 6%; bottom: 21%; padding: 16px 18px; background: linear-gradient(90deg, rgb(18 12 8 / .85), rgb(18 12 8 / .4)); }
+
+/* 1 · Шеңбер: сызба шаңырақтың үстіне түседі */
+#m1 { background: #120c08; }
+#m1 .roof { opacity: .25; }
+#m1 .dia { left: 50%; top: 50%; width: max(100vw, 100vh); --cx: -50%; --cy: -50%; }
+#m1 .dia svg { width: 100%; height: auto; display: block; overflow: visible; }
+#m1 .dia .g { fill: none; stroke: var(--ac); stroke-width: 2.4; }
+#m1 .dia text { fill: var(--paper-hi); font: italic 400 22px var(--serif); }
+#m1 .txt { right: 5%; top: 16%; width: 30%; padding: 16px 18px; background: rgb(18 12 8 / .78); }
+#m1 .fx { font: italic 700 clamp(22px, 2.4vw, 34px)/1.2 var(--serif); color: var(--gold-hi); margin: 14px 0 0; }
+
+/* 2 · Кереге */
+#m2 { background: radial-gradient(70% 70% at 40% 50%, #23170e, #0e0906 80%); }
+#m2 .wall { left: 34%; top: 50%; width: min(58vw, 100vh); --cx: -50%; --cy: -50%; }
+#m2 .wall svg { width: 100%; height: auto; display: block; overflow: visible; }
+#m2 .slat { stroke: #8a6034; stroke-width: 7; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+#m2 .slat.b { stroke: #6b4726; }
+#m2 .rh { fill: rgb(230 196 124 / .12); stroke: var(--gold-hi); stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+#m2 .dg { stroke: var(--gold-hi); stroke-width: 1.6; stroke-dasharray: 6 5; vector-effect: non-scaling-stroke; }
+#m2 .txt { right: 4%; top: 22%; width: 28%; }
+#m2 .fx { font: italic 700 clamp(22px, 2.4vw, 34px)/1.2 var(--serif); color: var(--gold-hi); margin: 14px 0 0; }
+
+/* 3 · Толқын */
+#m3 { background: radial-gradient(70% 70% at 40% 50%, #19130d, var(--black) 80%); }
+#m3 .wave { left: 50%; top: 38%; width: min(84vw, 140vh); --cx: -50%; --cy: -50%; }
+#m3 .wave svg { width: 100%; height: auto; display: block; overflow: visible; }
+#m3 .ax { stroke: rgb(232 220 194 / .25); stroke-width: 1.2; fill: none; }
+#m3 .cir { stroke: rgb(230 196 124 / .6); stroke-width: 2; fill: none; }
+#m3 .sin { stroke: var(--gold-hi); stroke-width: 3; fill: none; stroke-linecap: round; }
+#m3 .proj { stroke: rgb(243 234 214 / .5); stroke-width: 1.4; stroke-dasharray: 5 6; }
+#m3 .rad { stroke: var(--gold-hi); stroke-width: 2; }
+#m3 text { fill: var(--paper-hi); font: italic 400 22px var(--serif); }
+#m3 .txt { left: 8%; bottom: 20%; width: 46%; }
+
+/* финал */
+.fin { --fin-bg: #22190f; }
+.fin .art { left: 50%; top: 46%; width: min(80vh, 90vw); --cx: -50%; --cy: -50%; opacity: .22; }
+.fin .art svg { width: 100%; height: auto; display: block; }
+
+/* ==== Телефон ==== */
+.portrait #m0 .roof, .portrait #m1 .roof, .portrait #m1 .dia { width: 170vw; top: 40%; }
+.portrait #m0 .txt { left: 5%; right: 5%; bottom: 20%; }
+.portrait #m1 .txt { left: 5%; right: 5%; top: auto; bottom: 19%; width: auto; }
+.portrait #m2 .wall { left: 50%; top: 30%; width: 120vw; }
+.portrait #m2 .txt { left: 6%; right: 6%; top: auto; bottom: 19%; width: auto; }
+.portrait #m3 .wave { left: 50%; top: 33%; width: 100vw; }
+.portrait #m3 .txt { left: 6%; right: 6%; bottom: 20%; width: auto; }
+.portrait .txt .lead { font-size: 14.5px; line-height: 1.5; }
+.portrait .txt .h-m { font-size: 26px; }
+</style>
+</head>
+<body>
+<a class="sr" href="#stage" id="skipLink">Фильмді өткізіп, академияға өту</a>
+<div class="top">
+  <a class="brand" href="../../index.html" aria-label="AO17 басты беті"><svg viewBox="0 0 462 136" aria-hidden="true"><g transform="translate(6 10) scale(2.4)"><g fill="none" stroke="#d9b468" stroke-width="2.6" stroke-linecap="round"><path d="M24 44 V26"/><path d="M24 26 C24 14 12 8 7 14 C3 19 9 25 13 21 C15.5 18.5 13 15.5 11 17"/><path d="M24 26 C24 14 36 8 41 14 C45 19 39 25 35 21 C32.5 18.5 35 15.5 37 17"/><path d="M24 36 C20 32 15 33 15 37 M24 36 C28 32 33 33 33 37"/><path d="M24 4 L28 9 L24 14 L20 9 Z"/></g></g>
+  <path fill="#efe6d3" d="M160.7742734375 94.1374921875V78.1441171875H210.32950390625V94.1374921875ZM199.0204765625 36.0 231.79494921875 108.0H210.54086328124998L183.06550390625 44.48625H188.82546875L161.350109375 108.0H140.0960234375L172.87049609375 36.0Z M278.1823671875 109.574390625Q265.37598828125 109.574390625 255.74720117187502 104.870390625Q246.11841406250002 100.166390625 240.76162109375002 91.70879296875Q235.40482812500002 83.2511953125 235.40482812500002 72.0Q235.40482812500002 60.7488046875 240.76162109375002 52.291207031249996Q246.11841406250002 43.833609374999995 255.74720117187502 39.129609374999994Q265.37598828125 34.42560937499999 278.1823671875 34.42560937499999Q290.98874609375 34.42560937499999 300.61753320312505 39.129609374999994Q310.2463203125 43.833609374999995 315.60311328125 52.291207031249996Q320.95990625 60.7488046875 320.95990625 72.0Q320.95990625 83.2511953125 315.60311328125 91.70879296875Q310.2463203125 100.166390625 300.61753320312505 104.870390625Q290.98874609375 109.574390625 278.1823671875 109.574390625ZM278.1823671875 91.795453125Q285.19043750000003 91.795453125 290.2592890625 89.405021484375Q295.328140625 87.01458984375 298.08337109375 82.569732421875Q300.8386015625 78.124875 300.8386015625 72.0Q300.8386015625 65.875125 298.08337109375 61.430267578125Q295.328140625 56.98541015625 290.2592890625 54.594978515625Q285.19043750000003 52.204546875 278.1823671875 52.204546875Q271.21269921875 52.204546875 266.12464648437503 54.594978515625Q261.03659375 56.98541015625 258.28136328125004 61.430267578125Q255.5261328125 65.875125 255.5261328125 72.0Q255.5261328125 78.124875 258.28136328125004 82.569732421875Q261.03659375 87.01458984375 266.12464648437503 89.405021484375Q271.21269921875 91.795453125 278.1823671875 91.795453125Z"/>
+  <path fill="#d9b468" d="M367.32775390625 36.0V108.0H347.62883984375003V42.9502734375L356.90234375 51.45577734375L325.83678125 56.9085703125V41.5295859375L352.6975625 36.0Z M386.27847265625 108.0 425.88809375 46.21426171875 425.84969140625003 51.7437890625H375.69918359375004V36.0H444.0510078125V51.858972656249996L409.03009765625 108.0Z"/></svg></a>
+  <div class="r">
+    <button class="btn" id="snd" type="button" aria-pressed="false" aria-label="Дыбыс: өшірулі"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/></svg><span>Дыбыс</span></button>
+    <button class="btn" id="skip" type="button">Өткізу</button>
+  </div>
+</div>
+
+<main id="stage" aria-label="Шаңырақтан шексіздікке: Математика академиясының фильмі">
+  <!-- 0 · ШАҢЫРАҚ -->
+  <section class="sc" id="m0" data-title="Шаңырақ" data-src="Көркем кадр: киіз үйдің ішінен жоғары қарағанда">
+    <div class="cam">
+      <div class="lyr roof" data-depth="0.4"><svg viewBox="0 0 1000 1000" aria-hidden="true"><defs><radialGradient id="skya" cx=".5" cy=".45" r=".6"><stop offset="0" stop-color="#fbf0d2"/><stop offset=".7" stop-color="#e3c993"/><stop offset="1" stop-color="#b58f52"/></radialGradient>
+<linearGradient id="uyka" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6036"/><stop offset="1" stop-color="#4a3018"/></linearGradient></defs><rect x="-500" y="-500" width="2000" height="2000" fill="#1c130c"/><g transform="rotate(0 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(15 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(30 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(45 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(60 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(75 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(90 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(105 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(120 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(135 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(150 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(165 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(180 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(195 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(210 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(225 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(240 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(255 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(270 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(285 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(300 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(315 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(330 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><g transform="rotate(345 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uyka)"/></g><circle class="sky" cx="500" cy="500" r="139" fill="url(#skya)"/><path d="M375.6 438 Q500 412 624.4 438" fill="none" stroke="#6b4a2c" stroke-width="9"/><path d="M438 375.6 Q412 500 438 624.4" fill="none" stroke="#5b3d24" stroke-width="9"/><path d="M361.0 500 Q500 474 639.0 500" fill="none" stroke="#6b4a2c" stroke-width="9"/><path d="M500 361.0 Q474 500 500 639.0" fill="none" stroke="#5b3d24" stroke-width="9"/><path d="M375.6 562 Q500 536 624.4 562" fill="none" stroke="#6b4a2c" stroke-width="9"/><path d="M562 375.6 Q536 500 562 624.4" fill="none" stroke="#5b3d24" stroke-width="9"/><circle cx="500" cy="500" r="150" fill="none" stroke="#7a5434" stroke-width="22"/><circle cx="500" cy="500" r="137" fill="none" stroke="#3e2a18" stroke-width="4"/><circle cx="500" cy="500" r="20" fill="none" data-focus/></svg></div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">Киіз үйдің төбесі</p>
+        <h2 class="h-m">Шаңырақ</h2>
+        <p class="lead" style="margin-top:12px">Ата-бабамыз геометрияны кітапқа жазбай тұрып, үйдің өзіне салды: шеңбер, радиус, тең бөліктер.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 · ШЕҢБЕР -->
+  <section class="sc" id="m1" data-title="Шеңбер мен радиус" data-src="Сызба: уық саны үйдің өлшеміне қарай әр түрлі; мұнда 24">
+    <div class="cam">
+      <div class="lyr roof" data-depth="0.3"><svg viewBox="0 0 1000 1000" aria-hidden="true"><defs><radialGradient id="skyb" cx=".5" cy=".45" r=".6"><stop offset="0" stop-color="#fbf0d2"/><stop offset=".7" stop-color="#e3c993"/><stop offset="1" stop-color="#b58f52"/></radialGradient>
+<linearGradient id="uykb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6036"/><stop offset="1" stop-color="#4a3018"/></linearGradient></defs><rect x="-500" y="-500" width="2000" height="2000" fill="#1c130c"/><g transform="rotate(0 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(15 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(30 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(45 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(60 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(75 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(90 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(105 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(120 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(135 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(150 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(165 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(180 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(195 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(210 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(225 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(240 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(255 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(270 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(285 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(300 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(315 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(330 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><g transform="rotate(345 500 500)"><path class="uyk" d="M655 492 L1150 484 L1150 516 L655 508 Z" fill="url(#uykb)"/></g><circle class="sky" cx="500" cy="500" r="139" fill="url(#skyb)"/><path d="M375.6 438 Q500 412 624.4 438" fill="none" stroke="#6b4a2c" stroke-width="9"/><path d="M438 375.6 Q412 500 438 624.4" fill="none" stroke="#5b3d24" stroke-width="9"/><path d="M361.0 500 Q500 474 639.0 500" fill="none" stroke="#6b4a2c" stroke-width="9"/><path d="M500 361.0 Q474 500 500 639.0" fill="none" stroke="#5b3d24" stroke-width="9"/><path d="M375.6 562 Q500 536 624.4 562" fill="none" stroke="#6b4a2c" stroke-width="9"/><path d="M562 375.6 Q536 500 562 624.4" fill="none" stroke="#5b3d24" stroke-width="9"/><circle cx="500" cy="500" r="150" fill="none" stroke="#7a5434" stroke-width="22"/><circle cx="500" cy="500" r="137" fill="none" stroke="#3e2a18" stroke-width="4"/></svg></div>
+      <div class="lyr dia" data-depth="0.5"><svg viewBox="0 0 1000 1000" aria-hidden="true"><path class="g" d="M650 500 A150 150 0 1 0 350 500 A150 150 0 1 0 650 500" data-draw/><path class="g" d="M500 500 L650 500" data-draw/><path class="g" d="M500 500 L644.9 461.2" data-draw/><path class="g" d="M564 500 A64 64 0 0 0 561.8 483.4" data-draw/><path class="g" d="M80 500 L920 500 M500 80 L500 920" style="stroke-width:1;opacity:.5" data-draw/><circle cx="500" cy="500" r="6" fill="#e6c47c"/><text class="lbl" x="470" y="530">O</text><text class="lbl" x="570" y="528">r</text><text class="lbl" x="576" y="486">15°</text><circle cx="644.9" cy="461.2" r="5" fill="#e6c47c" data-focus/></svg></div>
+      <div class="lyr txt" data-depth="1">
+        <h2 class="h-m">Әр уық - радиус</h2>
+        <p class="lead" style="margin-top:12px">Уықтардың бәрі шаңырақтың центріне қарай бағытталған. 24 уық болса, көрші екеуінің арасы 360° : 24 = 15°.</p>
+        <p class="fx">x² + y² = r²</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · КЕРЕГЕ -->
+  <section class="sc" id="m2" data-title="Кереге" data-src="Сызба: керегенің ромбтар торы">
+    <div class="cam">
+      <div class="lyr wall" data-depth="0.5"><svg viewBox="-500 -260 1000 520" aria-hidden="true"><g id="lattice"><line class="slat" x1="-380" y1="-114" x2="-304" y2="-190"/><line class="slat" x1="-380" y1="-38" x2="-228" y2="-190"/><line class="slat" x1="-380" y1="38" x2="-152" y2="-190"/><line class="slat" x1="-380" y1="114" x2="-76" y2="-190"/><line class="slat" x1="-380" y1="190" x2="0" y2="-190"/><line class="slat" x1="-304" y1="190" x2="76" y2="-190"/><line class="slat" x1="-228" y1="190" x2="152" y2="-190"/><line class="slat" x1="-152" y1="190" x2="228" y2="-190"/><line class="slat" x1="-76" y1="190" x2="304" y2="-190"/><line class="slat" x1="0" y1="190" x2="380" y2="-190"/><line class="slat" x1="76" y1="190" x2="380" y2="-114"/><line class="slat" x1="152" y1="190" x2="380" y2="-38"/><line class="slat" x1="228" y1="190" x2="380" y2="38"/><line class="slat" x1="304" y1="190" x2="380" y2="114"/><line class="slat b" x1="-380" y1="114" x2="-304" y2="190"/><line class="slat b" x1="-380" y1="38" x2="-228" y2="190"/><line class="slat b" x1="-380" y1="-38" x2="-152" y2="190"/><line class="slat b" x1="-380" y1="-114" x2="-76" y2="190"/><line class="slat b" x1="-380" y1="-190" x2="0" y2="190"/><line class="slat b" x1="-304" y1="-190" x2="76" y2="190"/><line class="slat b" x1="-228" y1="-190" x2="152" y2="190"/><line class="slat b" x1="-152" y1="-190" x2="228" y2="190"/><line class="slat b" x1="-76" y1="-190" x2="304" y2="190"/><line class="slat b" x1="0" y1="-190" x2="380" y2="190"/><line class="slat b" x1="76" y1="-190" x2="380" y2="114"/><line class="slat b" x1="152" y1="-190" x2="380" y2="38"/><line class="slat b" x1="228" y1="-190" x2="380" y2="-38"/><line class="slat b" x1="304" y1="-190" x2="380" y2="-114"/><g class="hl" style="opacity:0"><polygon class="rh" points="-38,0 0,-38 38,0 0,38"/><line class="dg" x1="-38" y1="0" x2="38" y2="0"/><line class="dg" x1="0" y1="-38" x2="0" y2="38"/></g><circle cx="0" cy="0" r="3" fill="none" data-focus/></g></svg></div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">Үйдің қабырғасы</p>
+        <h2 class="h-m">Кереге - ромбтар торы</h2>
+        <p class="lead" style="margin-top:12px">Кереге ашылғанда ұзарып, аласарады, ал таяқтардың ұзындығы өзгермейді. Себебі ромбтың диагональдары тік бұрышпен қиылысады:</p>
+        <p class="fx">d₁² + d₂² = 4a²</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · ТОЛҚЫН -->
+  <section class="sc" id="m3" data-title="Айналу мен толқын" data-src="Сызба: бірлік шеңбер және y = sin x">
+    <div class="cam">
+      <div class="lyr wave" data-depth="0.6"><svg viewBox="0 0 1000 400" aria-hidden="true"><path class="ax" d="M30 200H970 M170 50V350 M340 60V340"/><circle class="cir" cx="170" cy="200" r="110"/><path class="sin" d="M340 200 L345.0 194.2 L350.0 188.5 L355.0 182.8 L360.0 177.1 L365.0 171.5 L370.0 166.0 L375.0 160.6 L380.0 155.3 L385.0 150.1 L390.0 145.0 L395.0 140.1 L400.0 135.3 L405.0 130.8 L410.0 126.4 L415.0 122.2 L420.0 118.3 L425.0 114.5 L430.0 111.0 L435.0 107.7 L440.0 104.7 L445.0 102.0 L450.0 99.5 L455.0 97.3 L460.0 95.4 L465.0 93.7 L470.0 92.4 L475.0 91.4 L480.0 90.6 L485.0 90.2 L490.0 90.0 L495.0 90.2 L500.0 90.6 L505.0 91.4 L510.0 92.4 L515.0 93.7 L520.0 95.4 L525.0 97.3 L530.0 99.5 L535.0 102.0 L540.0 104.7 L545.0 107.7 L550.0 111.0 L555.0 114.5 L560.0 118.3 L565.0 122.2 L570.0 126.4 L575.0 130.8 L580.0 135.3 L585.0 140.1 L590.0 145.0 L595.0 150.1 L600.0 155.3 L605.0 160.6 L610.0 166.0 L615.0 171.5 L620.0 177.1 L625.0 182.8 L630.0 188.5 L635.0 194.2 L640.0 200.0 L645.0 205.8 L650.0 211.5 L655.0 217.2 L660.0 222.9 L665.0 228.5 L670.0 234.0 L675.0 239.4 L680.0 244.7 L685.0 249.9 L690.0 255.0 L695.0 259.9 L700.0 264.7 L705.0 269.2 L710.0 273.6 L715.0 277.8 L720.0 281.7 L725.0 285.5 L730.0 289.0 L735.0 292.3 L740.0 295.3 L745.0 298.0 L750.0 300.5 L755.0 302.7 L760.0 304.6 L765.0 306.3 L770.0 307.6 L775.0 308.6 L780.0 309.4 L785.0 309.8 L790.0 310.0 L795.0 309.8 L800.0 309.4 L805.0 308.6 L810.0 307.6 L815.0 306.3 L820.0 304.6 L825.0 302.7 L830.0 300.5 L835.0 298.0 L840.0 295.3 L845.0 292.3 L850.0 289.0 L855.0 285.5 L860.0 281.7 L865.0 277.8 L870.0 273.6 L875.0 269.2 L880.0 264.7 L885.0 259.9 L890.0 255.0 L895.0 249.9 L900.0 244.7 L905.0 239.4 L910.0 234.0 L915.0 228.5 L920.0 222.9 L925.0 217.2 L930.0 211.5 L935.0 205.8 L940.0 200.0" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1"/><line class="rad" x1="170" y1="200" x2="280" y2="200"/><line class="proj" x1="280" y1="200" x2="340" y2="200"/><circle class="dot" cx="280" cy="200" r="8" fill="#f6e2b0"/><circle class="wdot" cx="340" cy="200" r="7" fill="#f6e2b0" data-focus/><text x="880" y="50">y = sin x</text><text x="630.0" y="234">π</text><text x="922" y="234">2π</text></svg></div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">Шеңбер айналса</p>
+        <h2 class="h-m">толқын туады</h2>
+        <p class="lead" style="margin-top:12px">Нүкте шеңбермен айналғанда оның биіктігі синусоида сызады: y = sin x. Дыбыс пен жарық, тербеліс пен толқын осы тілде сөйлейді.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · ФИНАЛ -->
+  <section class="sc fin" id="m4" data-title="Математика академиясы" data-src="AO17 · 25 пән, нөлден жоғары математикаға дейін">
+    <div class="cam">
+      <div class="lyr art" data-depth="0.2" aria-hidden="true"><svg viewBox="0 0 1000 1000"><line x1="660.0" y1="500.0" x2="980.0" y2="500.0" stroke="#d9b468" stroke-width="2"/><line x1="654.5" y1="541.4" x2="963.6" y2="624.2" stroke="#d9b468" stroke-width="2"/><line x1="638.6" y1="580.0" x2="915.7" y2="740.0" stroke="#d9b468" stroke-width="2"/><line x1="613.1" y1="613.1" x2="839.4" y2="839.4" stroke="#d9b468" stroke-width="2"/><line x1="580.0" y1="638.6" x2="740.0" y2="915.7" stroke="#d9b468" stroke-width="2"/><line x1="541.4" y1="654.5" x2="624.2" y2="963.6" stroke="#d9b468" stroke-width="2"/><line x1="500.0" y1="660.0" x2="500.0" y2="980.0" stroke="#d9b468" stroke-width="2"/><line x1="458.6" y1="654.5" x2="375.8" y2="963.6" stroke="#d9b468" stroke-width="2"/><line x1="420.0" y1="638.6" x2="260.0" y2="915.7" stroke="#d9b468" stroke-width="2"/><line x1="386.9" y1="613.1" x2="160.6" y2="839.4" stroke="#d9b468" stroke-width="2"/><line x1="361.4" y1="580.0" x2="84.3" y2="740.0" stroke="#d9b468" stroke-width="2"/><line x1="345.5" y1="541.4" x2="36.4" y2="624.2" stroke="#d9b468" stroke-width="2"/><line x1="340.0" y1="500.0" x2="20.0" y2="500.0" stroke="#d9b468" stroke-width="2"/><line x1="345.5" y1="458.6" x2="36.4" y2="375.8" stroke="#d9b468" stroke-width="2"/><line x1="361.4" y1="420.0" x2="84.3" y2="260.0" stroke="#d9b468" stroke-width="2"/><line x1="386.9" y1="386.9" x2="160.6" y2="160.6" stroke="#d9b468" stroke-width="2"/><line x1="420.0" y1="361.4" x2="260.0" y2="84.3" stroke="#d9b468" stroke-width="2"/><line x1="458.6" y1="345.5" x2="375.8" y2="36.4" stroke="#d9b468" stroke-width="2"/><line x1="500.0" y1="340.0" x2="500.0" y2="20.0" stroke="#d9b468" stroke-width="2"/><line x1="541.4" y1="345.5" x2="624.2" y2="36.4" stroke="#d9b468" stroke-width="2"/><line x1="580.0" y1="361.4" x2="740.0" y2="84.3" stroke="#d9b468" stroke-width="2"/><line x1="613.1" y1="386.9" x2="839.4" y2="160.6" stroke="#d9b468" stroke-width="2"/><line x1="638.6" y1="420.0" x2="915.7" y2="260.0" stroke="#d9b468" stroke-width="2"/><line x1="654.5" y1="458.6" x2="963.6" y2="375.8" stroke="#d9b468" stroke-width="2"/><circle cx="500" cy="500" r="150" fill="none" stroke="#d9b468" stroke-width="3"/><circle cx="500" cy="500" r="480" fill="none" stroke="#d9b468" stroke-width="1"/></svg></div>
+      <div class="lyr hd" data-depth="0.8">
+        <p class="kicker">AO17 · Шаңырақтан шексіздікке</p>
+        <h1 class="h-l">Математика академиясы</h1>
+        <p class="lead">Нөлден жоғары математикаға дейін 25 пән: теория, сызба, формула, қадамдық шешілген есептер.</p>
+        <nav class="cta" aria-label="Әрі қарай"><a class="go" href="../../math/">Академияға кіру</a><a href="../../index.html">AO17 басты беті</a></nav>
+        <p class="more">Басқа фильмдер: <a href="../code/">Бағдарламалау</a><a href="../en/">English</a><a href="../">«Шақыру»</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<canvas id="dust" aria-hidden="true"></canvas>
+<canvas id="grain" width="160" height="160" aria-hidden="true"></canvas>
+<div id="flash" aria-hidden="true"></div>
+<div class="letterbox" id="lbT" aria-hidden="true"></div><div class="letterbox" id="lbB" aria-hidden="true"></div>
+<p class="hint" id="hint">Фильм өзі жүреді · скролл не сырғыту камераны алға-артқа жүргізеді</p>
+<div id="ui">
+  <div class="cap" aria-live="polite"><span class="ch" id="capCh"></span><span class="src" id="capSrc"></span></div>
+  <div class="bar">
+    <button class="btn" id="play" type="button" aria-label="Тоқтату"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="playIco" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+    <div class="tl" id="tl" role="slider" tabindex="0" aria-label="Фильмнің уақыты" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="track"></div><div class="fill" id="fill"></div></div>
+  </div>
+</div>
+<script>
+/* © 2026 Sagid Mustafa. AO17 фильмдерінің ортақ қозғалтқышы (академия фильмдері осыны қолданады).
+   «Шақыру» фильмінің (film/src/film.html) архитектурасы, деректермен басқарылатын түрде:
+   - Бір уақыт ойнатқышы: бүкіл кадр render(t), t секундпен. Autoplay, скролл/тач/перне және шкала бір t-ны басқарады;
+     әрекет біткен соң 0.9 с кейін фильм сол жерден жалғасады.
+   - Сахна = {a, b}. Көршілер T секунд қабаттасады: шығатын камера өз [data-focus] элементіне кіреді, келесі сахна
+     сол нүктеден дөңгелек терезе болып ашылады.
+   - Әр фильм өзі береді: DUR (сахна ұзақтығы), inner[i](p, s) (сахна ішіндегі қозғалыс, камераны қайтарады),
+     setup() (бір реттік дайындық), beat(ch) (тарау басындағы ұрма), drone (дыбыс жиіліктері), ambient (шаң түсі). */
+(() => {
+  "use strict";
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const io = (k) => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+  const eo = (k) => 1 - Math.pow(1 - k, 3);
+  const ei = (k) => k * k * k;
+  const seg = (p, a, b) => clamp((p - a) / (b - a));
+  window.AO17Kit = { $, $$, clamp, lerp, io, eo, ei, seg };
+
+  window.AO17Engine = function (cfg) {
+    const root = document.documentElement;
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (still) root.classList.add("still");
+    const BEAT = 60 / (cfg.bpm || 72), BAR = BEAT * 4, T = 1.6;
+    const scenes = $$(".sc").map((el, i) => ({ el, i, cam: $(".cam", el), lyrs: $$(".lyr", el), focus: $("[data-focus]", el) }));
+    let acc = 0;
+    scenes.forEach((s, i) => { s.a = acc; s.b = acc + cfg.dur[i]; acc = s.b - (i < scenes.length - 1 ? T : 0); });
+    const LAST = scenes.length - 1, END = scenes[LAST].b;
+    const CH = scenes.map((s) => s.a + (s.i ? T * .5 : 0));
+    const ctx = { BEAT, T, still, get portrait() { return portrait; }, get W() { return W; }, get H() { return H; }, flash };
+
+    // ---------- Ойнатқыш ----------
+    let t = 0, target = 0, playing = !still, lastInput = -1e9, interacting = false, wasPlaying = false;
+    const now = () => performance.now() / 1000;
+    function seek(v, smooth = true) { target = clamp(v, 0, END); if (!smooth) t = target; lastInput = now(); interacting = true; }
+    function setPlaying(v) {
+      playing = v;
+      $("#play").setAttribute("aria-label", v ? "Тоқтату" : "Ойнату");
+      $("#playIco").setAttribute("d", v ? "M7 5h4v14H7zM13 5h4v14h-4z" : "M8 5v14l11-7z");
+    }
+    const chapterAt = (x) => { let c = 0; CH.forEach((v, i) => { if (x >= v - .01) c = i; }); return c; };
+
+    // ---------- Енгізу ----------
+    const K_WHEEL = 0.0065, K_TOUCH = 0.022, SAFE = "#ui, .top, .cta";
+    addEventListener("wheel", (e) => { if (e.target.closest && e.target.closest(".cta")) return; e.preventDefault(); seek(target + e.deltaY * K_WHEEL * (e.deltaMode === 1 ? 30 : 1)); hideHint(); }, { passive: false });
+    let ty = null, tvel = 0, tlast = 0;
+    addEventListener("touchstart", (e) => { if (e.target.closest(SAFE)) return; ty = e.touches[0].clientY; tvel = 0; tlast = now(); seek(t); }, { passive: true });
+    addEventListener("touchmove", (e) => {
+      if (ty == null) return;
+      const y = e.touches[0].clientY, dy = ty - y, n = now();
+      tvel = dy / Math.max(.008, n - tlast); tlast = n; ty = y;
+      seek(target + dy * K_TOUCH); hideHint();
+    }, { passive: true });
+    addEventListener("touchend", () => { if (ty == null) return; ty = null; seek(target + clamp(tvel * K_TOUCH * .12, -3, 3)); });
+    addEventListener("keydown", (e) => {
+      if (e.target.closest && e.target.closest("a, input")) return;
+      const cur = chapterAt(t);
+      if (e.key === " " && !e.target.closest("button")) { e.preventDefault(); setPlaying(!playing); }
+      else if (["ArrowDown", "ArrowRight", "PageDown"].includes(e.key)) { e.preventDefault(); seek(CH[Math.min(LAST, cur + 1)]); }
+      else if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); seek(t - CH[cur] > 1.2 ? CH[cur] : CH[Math.max(0, cur - 1)]); }
+      else if (e.key === "End") seek(END - .01);
+      else if (e.key === "Home") seek(0);
+    });
+    const tl = $("#tl");
+    const tlSeek = (x) => { const r = tl.getBoundingClientRect(); seek(clamp((x - r.left) / r.width) * END, false); };
+    tl.addEventListener("pointerdown", (e) => { tl.setPointerCapture(e.pointerId); tlSeek(e.clientX); });
+    tl.addEventListener("pointermove", (e) => { if (tl.hasPointerCapture(e.pointerId)) tlSeek(e.clientX); });
+    CH.forEach((c) => { const d = document.createElement("i"); d.className = "tick"; d.style.left = (c / END * 100) + "%"; tl.appendChild(d); });
+    const ticks = $$(".tick", tl);
+    $("#play").addEventListener("click", () => setPlaying(!playing));
+    $("#skip").addEventListener("click", () => seek(CH[LAST]));
+    $("#skipLink").addEventListener("click", (e) => { e.preventDefault(); seek(END - .01, false); setTimeout(() => $(".cta a").focus(), 50); });
+    let hinted = false;
+    function hideHint() { if (!hinted) { hinted = true; $("#hint").classList.add("off"); } }
+    setTimeout(hideHint, 7000);
+    document.addEventListener("visibilitychange", () => { if (document.hidden) { wasPlaying = playing; setPlaying(false); } else if (wasPlaying) setPlaying(true); });
+
+    // ---------- Композиция ----------
+    let W = innerWidth, H = innerHeight, portrait = H > W * 1.05;
+    function resize() { W = innerWidth; H = innerHeight; portrait = H > W * 1.05; root.classList.toggle("portrait", portrait); sizeCanvas(); scenes.forEach((s) => s.fRect = null); }
+    addEventListener("resize", resize);
+
+    // ---------- Рендер ----------
+    let px = 0, py = 0, lastCh = -1, irisX = 50, irisY = 50;
+    if (matchMedia("(pointer: fine)").matches && !still) addEventListener("pointermove", (e) => { px = e.clientX / W - .5; py = e.clientY / H - .5; });
+    const stage = $("#stage");
+    function render(tt, rt) {
+      if (!still) { stage.style.setProperty("--ppx", (px * -26).toFixed(2) + "px"); stage.style.setProperty("--ppy", (py * -18).toFixed(2) + "px"); }
+      scenes.forEach((s, i) => {
+        const vis = tt >= s.a - .001 && tt <= s.b + .001;
+        s.el.classList.toggle("on", vis);
+        if (!vis) return;
+        const p = clamp((tt - s.a) / (s.b - s.a));
+        const c = (cfg.inner[i] && cfg.inner[i](p, s, ctx, rt)) || { z: 1, x: 0, y: 0 };
+        let z = c.z, x = c.x, y = c.y, op = 1, clip = "none", origin = "50% 50%";
+        if (i > 0 && tt < s.a + T) {
+          const q = (tt - s.a) / T;
+          clip = still ? "none" : `circle(${io(seg(q, .42, 1)) * 150}% at ${irisX.toFixed(1)}% ${irisY.toFixed(1)}%)`;
+          op = still ? seg(q, .45, .55) : 1;
+          z *= still ? 1 : lerp(1.35, 1, eo(q));
+        }
+        if (i < LAST && tt > s.b - T && s.focus && !still) {
+          const q = (tt - (s.b - T)) / T;
+          const f = s.fRect || (s.fRect = s.focus.getBoundingClientRect());
+          const fx = f.left + f.width / 2, fy = f.top + f.height / 2;
+          origin = `${fx}px ${fy}px`;
+          const fill = clamp(Math.max(W / Math.max(8, f.width), H / Math.max(8, f.height)) * 1.4, 2, 16);
+          const e = ei(q);
+          z *= lerp(1, fill, e);
+          x += (W / 2 - fx) * e; y += (H / 2 - fy) * e;
+          irisX = (fx + (W / 2 - fx) * e) / W * 100; irisY = (fy + (H / 2 - fy) * e) / H * 100;
+        } else s.fRect = null;
+        s.cam.style.transformOrigin = origin;
+        s.cam.style.transform = still ? "none" : `translate3d(${x + px * -14}px, ${y + py * -10}px, 0) scale(${z})`;
+        s.el.style.clipPath = clip;
+        s.el.style.opacity = op;
+        s.el.style.zIndex = i;
+      });
+      const lb = (1 - seg(tt, scenes[LAST].a, scenes[LAST].a + T)) * seg(tt, 1, 4) * (portrait ? 0 : 1);
+      $("#lbT").style.height = $("#lbB").style.height = (lb * 5.2) + "vh";
+      $("#fill").style.width = (tt / END * 100) + "%";
+      const ch = chapterAt(tt);
+      tl.setAttribute("aria-valuenow", Math.round(tt / END * 100));
+      tl.setAttribute("aria-valuetext", scenes[ch].el.dataset.title);
+      ticks.forEach((k, i) => k.classList.toggle("done", i <= ch));
+      if (ch !== lastCh) { if (ch > 0) hideHint(); lastCh = ch; $("#capCh").textContent = scenes[ch].el.dataset.title; $("#capSrc").textContent = scenes[ch].el.dataset.src; if (cfg.beat) cfg.beat(ch, thump); }
+    }
+
+    // ---------- Монтаж жарқылы ----------
+    function flash() { if (still) return; $("#flash").animate([{ opacity: .55 }, { opacity: 0 }], { duration: 260, easing: "ease-out" }); thump(640, .25, .08); }
+
+    // ---------- Шаң мен түйіршік ----------
+    const dc = $("#dust"), dx = dc.getContext("2d"), gc = $("#grain"), gx = gc.getContext("2d");
+    const mote = cfg.ambient || "246,226,176";
+    let motes = [];
+    function sizeCanvas() {
+      const r = Math.min(devicePixelRatio || 1, 1.5);
+      dc.width = W * r; dc.height = H * r; dx.setTransform(r, 0, 0, r, 0, 0);
+      motes = Array.from({ length: still ? 0 : Math.round(Math.min(60, W * H / 24000)) }, () => ({ x: Math.random() * W, y: Math.random() * H, r: .4 + Math.random() * 1.5, v: .05 + Math.random() * .22, ph: Math.random() * 6.28 }));
+    }
+    const grainImg = gx.createImageData(160, 160);
+    function drawAmbient(rt, tt) {
+      dx.clearRect(0, 0, W, H);
+      if (tt < scenes[LAST].a + T * .5) motes.forEach((m) => {
+        m.y -= m.v; m.x += Math.sin(rt * .4 + m.ph) * .15;
+        if (m.y < -10) { m.y = H + 10; m.x = Math.random() * W; }
+        const a = (.1 + .5 * Math.max(0, 1 - Math.abs(m.x - W * .55) / (W * .4))) * (.6 + .4 * Math.sin(rt * 1.3 + m.ph));
+        dx.fillStyle = `rgba(${mote},${a.toFixed(3)})`; dx.beginPath(); dx.arc(m.x, m.y, m.r, 0, 6.283); dx.fill();
+      });
+      if ((rt * 24 | 0) % 2 === 0) {
+        const d = grainImg.data;
+        for (let i = 0; i < d.length; i += 4) { const v = Math.random() * 255 | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+        gx.putImageData(grainImg, 0, 0);
+      }
+    }
+
+    // ---------- Дыбыс (WebAudio, әдепкіде өшірулі) ----------
+    let ac = null, master = null;
+    function audioOn() {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
+      master.gain.linearRampToValueAtTime(.5, ac.currentTime + 2);
+      const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 520; lp.connect(master);
+      (cfg.drone || [55, 82.4, 110.2]).forEach((f, i) => { const o = ac.createOscillator(); o.type = i ? "triangle" : "sine"; o.frequency.value = f; o.detune.value = (i - 1) * 6; const g = ac.createGain(); g.gain.value = i ? .05 : .09; o.connect(g); g.connect(lp); o.start(); });
+    }
+    function audioOff() { if (master) { master.gain.linearRampToValueAtTime(0, ac.currentTime + .6); const m = master; setTimeout(() => m.disconnect(), 700); master = null; } }
+    function thump(freq = 52, dur = 1.1, vol = .5) {
+      if (!master) return;
+      const o = ac.createOscillator(), g = ac.createGain(); o.frequency.setValueAtTime(freq * 2, ac.currentTime); o.frequency.exponentialRampToValueAtTime(freq, ac.currentTime + .12);
+      g.gain.setValueAtTime(vol, ac.currentTime); g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + dur); o.connect(g); g.connect(master); o.start(); o.stop(ac.currentTime + dur);
+    }
+    $("#snd").addEventListener("click", (e) => {
+      const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+      e.currentTarget.setAttribute("aria-pressed", on); e.currentTarget.setAttribute("aria-label", on ? "Дыбыс: қосулы" : "Дыбыс: өшірулі");
+      on ? audioOn() : audioOff();
+    });
+
+    // ---------- Цикл ----------
+    let prev = now(), lastBar = -1;
+    function frame() {
+      const n = now(), dt = Math.min(.05, n - prev); prev = n;
+      if (interacting) {
+        t += (target - t) * (1 - Math.pow(.0009, dt));
+        if (n - lastInput > .9 && Math.abs(target - t) < .01) interacting = false;
+      } else if (playing) { t = Math.min(END, t + dt); target = t; if (t >= END) setPlaying(false); }
+      const bar = Math.floor(t / BAR);
+      if (bar !== lastBar) { if (playing && !interacting && master && bar > lastBar) thump(49, .9, .16); lastBar = bar; }
+      render(t, n);
+      drawAmbient(n, t);
+      requestAnimationFrame(frame);
+    }
+
+    $$(".lyr").forEach((l) => { if (l.dataset.depth) l.style.setProperty("--d", l.dataset.depth); });
+    $$("[data-draw]").forEach((p) => { p.setAttribute("pathLength", 1); p.style.strokeDasharray = 1; p.style.strokeDashoffset = 1; });
+    resize();
+    if (cfg.setup) cfg.setup(ctx);
+    setPlaying(playing);
+    if (still) $("#hint").textContent = "Тарауларды шкаладан не ← → пернелерімен ауыстырыңыз";
+    Promise.all([document.fonts ? document.fonts.ready : 0, ...$$("img").map((i) => i.decode ? i.decode().catch(() => 0) : 0)]).then(() => { prev = now(); requestAnimationFrame(frame); });
+    window.AO17Film = { seek: (v) => seek(v, false), get t() { return t; }, END, CH, scenes };
+  };
+})();
+
+(() => {
+  const { $, $$, seg, lerp, io, eo } = window.AO17Kit;
+  const sky = $("#m0 .sky"), uyks0 = $$("#m0 .uyk");
+  const dia = $$("#m1 [data-draw]"), labels = $$("#m1 .lbl");
+  const lat = $("#lattice"), rh = $$("#m2 .hl");
+  const sinP = $("#m3 .sin"), dot = $("#m3 .dot"), wdot = $("#m3 .wdot"), rad = $("#m3 .rad"), proj = $("#m3 .proj");
+  const C = { x: 170, y: 200, r: 110 }, X0 = 340, L = 600;   // шеңбер мен толқынның өлшемі (WAVE-пен бірдей)
+  AO17Engine({
+    dur: [8, 9, 9, 9, 9],
+    drone: [65.4, 98, 130.8],
+    inner: [
+      (p) => {   // аспан ашылады, уықтар біртіндеп жарық алады
+        sky.style.opacity = .35 + .65 * eo(seg(p, .05, .45));
+        uyks0.forEach((u, i) => u.style.opacity = .25 + .75 * seg(p, .1 + (i % 24) * .012, .2 + (i % 24) * .012));
+        return { z: lerp(1, 1.12, io(p)), x: 0, y: 0 };
+      },
+      (p) => {   // сызба сызылады: шеңбер, радиус, бұрыш
+        dia.forEach((d, i) => d.style.strokeDashoffset = 1 - eo(seg(p, .1 + i * .08, .32 + i * .08)));
+        labels.forEach((l, i) => l.style.opacity = seg(p, .4 + i * .06, .48 + i * .06));
+        return { z: lerp(1.05, 1, eo(p)), x: 0, y: 0 };
+      },
+      (p) => {   // кереге ашылады: φ 28°-тан 58°-қа, таяқ ұзындығы тұрақты
+        const f = (28 + 30 * io(seg(p, .15, .75))) * Math.PI / 180;
+        lat.setAttribute("transform", `scale(${(Math.SQRT2 * Math.sin(f)).toFixed(4)} ${(Math.SQRT2 * Math.cos(f)).toFixed(4)})`);
+        rh.forEach((r) => r.style.opacity = seg(p, .3, .45));
+        return { z: lerp(1.04, 1, eo(p)), x: lerp(-10, 10, p), y: 0 };
+      },
+      (p) => {   // нүкте бір рет айналады, синусоида сызылады
+        const k = io(seg(p, .08, .78)), a = k * Math.PI * 2;
+        const x = C.x + C.r * Math.cos(a), y = C.y - C.r * Math.sin(a), wx = X0 + L * k;
+        dot.setAttribute("cx", x.toFixed(1)); dot.setAttribute("cy", y.toFixed(1));
+        wdot.setAttribute("cx", wx.toFixed(1)); wdot.setAttribute("cy", y.toFixed(1));
+        rad.setAttribute("x2", x.toFixed(1)); rad.setAttribute("y2", y.toFixed(1));
+        proj.setAttribute("x1", x.toFixed(1)); proj.setAttribute("y1", y.toFixed(1)); proj.setAttribute("x2", wx.toFixed(1)); proj.setAttribute("y2", y.toFixed(1));
+        sinP.style.strokeDashoffset = 1 - k;
+        return { z: lerp(1, 1.06, io(p)), x: lerp(16, -16, p), y: 0 };
+      },
+      (p) => ({ z: lerp(1.05, 1, eo(p)), x: 0, y: 0 }),
+    ],
+    beat: (ch, thump) => thump(ch === 4 ? 41 : 52, ch === 4 ? 2.2 : 1.1, ch === 4 ? .7 : .4),
+  });
+})();
+</script>
+</body>
+</html>

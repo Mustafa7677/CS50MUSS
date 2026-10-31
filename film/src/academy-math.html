@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0806">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<title>Шаңырақтан шексіздікке: Математика академиясы - AO17</title>
+<meta name="description" content="AO17 Математика академиясының фильм-прологы: шаңырақтағы шеңбер мен радиус, керегедегі ромб, айналудан туған толқын.">
+<meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+<!-- © 2026 Sagid Mustafa. Бастапқы мәтін: film/src/academy-math.html; жинау: python3 tools/make_film.py -->
+<style>
+/*{{BASE}}*/
+/* ==== «Шаңырақтан шексіздікке»: киіз үйдің өз геометриясы. Ағаш пен киіз -> алтын сызба -> таза функция. ==== */
+:root { --ac: #e6c47c; --wood: #6b4a2c; }
+
+/* 0 · Шаңырақ (төменнен жоғары қарап) */
+#m0 { background: radial-gradient(80% 80% at 50% 50%, #2a1d13, #120c08 70%); }
+#m0 .roof, #m1 .roof { left: 50%; top: 50%; width: max(100vw, 100vh); --cx: -50%; --cy: -50%; }
+#m0 .roof svg, #m1 .roof svg { width: 100%; height: auto; display: block; }
+#m0 .txt { left: 6%; bottom: 21%; padding: 16px 18px; background: linear-gradient(90deg, rgb(18 12 8 / .85), rgb(18 12 8 / .4)); }
+
+/* 1 · Шеңбер: сызба шаңырақтың үстіне түседі */
+#m1 { background: #120c08; }
+#m1 .roof { opacity: .25; }
+#m1 .dia { left: 50%; top: 50%; width: max(100vw, 100vh); --cx: -50%; --cy: -50%; }
+#m1 .dia svg { width: 100%; height: auto; display: block; overflow: visible; }
+#m1 .dia .g { fill: none; stroke: var(--ac); stroke-width: 2.4; }
+#m1 .dia text { fill: var(--paper-hi); font: italic 400 22px var(--serif); }
+#m1 .txt { right: 5%; top: 16%; width: 30%; padding: 16px 18px; background: rgb(18 12 8 / .78); }
+#m1 .fx { font: italic 700 clamp(22px, 2.4vw, 34px)/1.2 var(--serif); color: var(--gold-hi); margin: 14px 0 0; }
+
+/* 2 · Кереге */
+#m2 { background: radial-gradient(70% 70% at 40% 50%, #23170e, #0e0906 80%); }
+#m2 .wall { left: 34%; top: 50%; width: min(58vw, 100vh); --cx: -50%; --cy: -50%; }
+#m2 .wall svg { width: 100%; height: auto; display: block; overflow: visible; }
+#m2 .slat { stroke: #8a6034; stroke-width: 7; stroke-linecap: round; vector-effect: non-scaling-stroke; }
+#m2 .slat.b { stroke: #6b4726; }
+#m2 .rh { fill: rgb(230 196 124 / .12); stroke: var(--gold-hi); stroke-width: 2.5; vector-effect: non-scaling-stroke; }
+#m2 .dg { stroke: var(--gold-hi); stroke-width: 1.6; stroke-dasharray: 6 5; vector-effect: non-scaling-stroke; }
+#m2 .txt { right: 4%; top: 22%; width: 28%; }
+#m2 .fx { font: italic 700 clamp(22px, 2.4vw, 34px)/1.2 var(--serif); color: var(--gold-hi); margin: 14px 0 0; }
+
+/* 3 · Толқын */
+#m3 { background: radial-gradient(70% 70% at 40% 50%, #19130d, var(--black) 80%); }
+#m3 .wave { left: 50%; top: 38%; width: min(84vw, 140vh); --cx: -50%; --cy: -50%; }
+#m3 .wave svg { width: 100%; height: auto; display: block; overflow: visible; }
+#m3 .ax { stroke: rgb(232 220 194 / .25); stroke-width: 1.2; fill: none; }
+#m3 .cir { stroke: rgb(230 196 124 / .6); stroke-width: 2; fill: none; }
+#m3 .sin { stroke: var(--gold-hi); stroke-width: 3; fill: none; stroke-linecap: round; }
+#m3 .proj { stroke: rgb(243 234 214 / .5); stroke-width: 1.4; stroke-dasharray: 5 6; }
+#m3 .rad { stroke: var(--gold-hi); stroke-width: 2; }
+#m3 text { fill: var(--paper-hi); font: italic 400 22px var(--serif); }
+#m3 .txt { left: 8%; bottom: 20%; width: 46%; }
+
+/* финал */
+.fin { --fin-bg: #22190f; }
+.fin .art { left: 50%; top: 46%; width: min(80vh, 90vw); --cx: -50%; --cy: -50%; opacity: .22; }
+.fin .art svg { width: 100%; height: auto; display: block; }
+
+/* ==== Телефон ==== */
+.portrait #m0 .roof, .portrait #m1 .roof, .portrait #m1 .dia { width: 170vw; top: 40%; }
+.portrait #m0 .txt { left: 5%; right: 5%; bottom: 20%; }
+.portrait #m1 .txt { left: 5%; right: 5%; top: auto; bottom: 19%; width: auto; }
+.portrait #m2 .wall { left: 50%; top: 30%; width: 120vw; }
+.portrait #m2 .txt { left: 6%; right: 6%; top: auto; bottom: 19%; width: auto; }
+.portrait #m3 .wave { left: 50%; top: 33%; width: 100vw; }
+.portrait #m3 .txt { left: 6%; right: 6%; bottom: 20%; width: auto; }
+.portrait .txt .lead { font-size: 14.5px; line-height: 1.5; }
+.portrait .txt .h-m { font-size: 26px; }
+</style>
+</head>
+<body>
+<!--{{CHROME_TOP}}-->
+
+<main id="stage" aria-label="Шаңырақтан шексіздікке: Математика академиясының фильмі">
+  <!-- 0 · ШАҢЫРАҚ -->
+  <section class="sc" id="m0" data-title="Шаңырақ" data-src="Көркем кадр: киіз үйдің ішінен жоғары қарағанда">
+    <div class="cam">
+      <div class="lyr roof" data-depth="0.4"><svg viewBox="0 0 1000 1000" aria-hidden="true"><!--{{ROOF}}--><circle cx="500" cy="500" r="20" fill="none" data-focus/></svg></div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">Киіз үйдің төбесі</p>
+        <h2 class="h-m">Шаңырақ</h2>
+        <p class="lead" style="margin-top:12px">Ата-бабамыз геометрияны кітапқа жазбай тұрып, үйдің өзіне салды: шеңбер, радиус, тең бөліктер.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 · ШЕҢБЕР -->
+  <section class="sc" id="m1" data-title="Шеңбер мен радиус" data-src="Сызба: уық саны үйдің өлшеміне қарай әр түрлі; мұнда 24">
+    <div class="cam">
+      <div class="lyr roof" data-depth="0.3"><svg viewBox="0 0 1000 1000" aria-hidden="true"><!--{{ROOF}}--></svg></div>
+      <div class="lyr dia" data-depth="0.5"><svg viewBox="0 0 1000 1000" aria-hidden="true"><!--{{DIA}}--></svg></div>
+      <div class="lyr txt" data-depth="1">
+        <h2 class="h-m">Әр уық - радиус</h2>
+        <p class="lead" style="margin-top:12px">Уықтардың бәрі шаңырақтың центріне қарай бағытталған. 24 уық болса, көрші екеуінің арасы 360° : 24 = 15°.</p>
+        <p class="fx">x² + y² = r²</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · КЕРЕГЕ -->
+  <section class="sc" id="m2" data-title="Кереге" data-src="Сызба: керегенің ромбтар торы">
+    <div class="cam">
+      <div class="lyr wall" data-depth="0.5"><svg viewBox="-500 -260 1000 520" aria-hidden="true"><g id="lattice"><!--{{KEREGE}}--></g></svg></div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">Үйдің қабырғасы</p>
+        <h2 class="h-m">Кереге - ромбтар торы</h2>
+        <p class="lead" style="margin-top:12px">Кереге ашылғанда ұзарып, аласарады, ал таяқтардың ұзындығы өзгермейді. Себебі ромбтың диагональдары тік бұрышпен қиылысады:</p>
+        <p class="fx">d₁² + d₂² = 4a²</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · ТОЛҚЫН -->
+  <section class="sc" id="m3" data-title="Айналу мен толқын" data-src="Сызба: бірлік шеңбер және y = sin x">
+    <div class="cam">
+      <div class="lyr wave" data-depth="0.6"><svg viewBox="0 0 1000 400" aria-hidden="true"><!--{{WAVE}}--></svg></div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">Шеңбер айналса</p>
+        <h2 class="h-m">толқын туады</h2>
+        <p class="lead" style="margin-top:12px">Нүкте шеңбермен айналғанда оның биіктігі синусоида сызады: y = sin x. Дыбыс пен жарық, тербеліс пен толқын осы тілде сөйлейді.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · ФИНАЛ -->
+  <section class="sc fin" id="m4" data-title="Математика академиясы" data-src="AO17 · 25 пән, нөлден жоғары математикаға дейін">
+    <div class="cam">
+      <div class="lyr art" data-depth="0.2" aria-hidden="true"><svg viewBox="0 0 1000 1000"><!--{{ROOF_LINES}}--></svg></div>
+      <div class="lyr hd" data-depth="0.8">
+        <p class="kicker">AO17 · Шаңырақтан шексіздікке</p>
+        <h1 class="h-l">Математика академиясы</h1>
+        <p class="lead">Нөлден жоғары математикаға дейін 25 пән: теория, сызба, формула, қадамдық шешілген есептер.</p>
+        <nav class="cta" aria-label="Әрі қарай"><a class="go" href="../../math/">Академияға кіру</a><a href="../../index.html">AO17 басты беті</a></nav>
+        <p class="more">Басқа фильмдер: <a href="../code/">Бағдарламалау</a><a href="../en/">English</a><a href="../">«Шақыру»</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!--{{CHROME_UI}}-->
+<script>
+/*{{ENGINE}}*/
+(() => {
+  const { $, $$, seg, lerp, io, eo } = window.AO17Kit;
+  const sky = $("#m0 .sky"), uyks0 = $$("#m0 .uyk");
+  const dia = $$("#m1 [data-draw]"), labels = $$("#m1 .lbl");
+  const lat = $("#lattice"), rh = $$("#m2 .hl");
+  const sinP = $("#m3 .sin"), dot = $("#m3 .dot"), wdot = $("#m3 .wdot"), rad = $("#m3 .rad"), proj = $("#m3 .proj");
+  const C = { x: 170, y: 200, r: 110 }, X0 = 340, L = 600;   // шеңбер мен толқынның өлшемі (WAVE-пен бірдей)
+  AO17Engine({
+    dur: [8, 9, 9, 9, 9],
+    drone: [65.4, 98, 130.8],
+    inner: [
+      (p) => {   // аспан ашылады, уықтар біртіндеп жарық алады
+        sky.style.opacity = .35 + .65 * eo(seg(p, .05, .45));
+        uyks0.forEach((u, i) => u.style.opacity = .25 + .75 * seg(p, .1 + (i % 24) * .012, .2 + (i % 24) * .012));
+        return { z: lerp(1, 1.12, io(p)), x: 0, y: 0 };
+      },
+      (p) => {   // сызба сызылады: шеңбер, радиус, бұрыш
+        dia.forEach((d, i) => d.style.strokeDashoffset = 1 - eo(seg(p, .1 + i * .08, .32 + i * .08)));
+        labels.forEach((l, i) => l.style.opacity = seg(p, .4 + i * .06, .48 + i * .06));
+        return { z: lerp(1.05, 1, eo(p)), x: 0, y: 0 };
+      },
+      (p) => {   // кереге ашылады: φ 28°-тан 58°-қа, таяқ ұзындығы тұрақты
+        const f = (28 + 30 * io(seg(p, .15, .75))) * Math.PI / 180;
+        lat.setAttribute("transform", `scale(${(Math.SQRT2 * Math.sin(f)).toFixed(4)} ${(Math.SQRT2 * Math.cos(f)).toFixed(4)})`);
+        rh.forEach((r) => r.style.opacity = seg(p, .3, .45));
+        return { z: lerp(1.04, 1, eo(p)), x: lerp(-10, 10, p), y: 0 };
+      },
+      (p) => {   // нүкте бір рет айналады, синусоида сызылады
+        const k = io(seg(p, .08, .78)), a = k * Math.PI * 2;
+        const x = C.x + C.r * Math.cos(a), y = C.y - C.r * Math.sin(a), wx = X0 + L * k;
+        dot.setAttribute("cx", x.toFixed(1)); dot.setAttribute("cy", y.toFixed(1));
+        wdot.setAttribute("cx", wx.toFixed(1)); wdot.setAttribute("cy", y.toFixed(1));
+        rad.setAttribute("x2", x.toFixed(1)); rad.setAttribute("y2", y.toFixed(1));
+        proj.setAttribute("x1", x.toFixed(1)); proj.setAttribute("y1", y.toFixed(1)); proj.setAttribute("x2", wx.toFixed(1)); proj.setAttribute("y2", y.toFixed(1));
+        sinP.style.strokeDashoffset = 1 - k;
+        return { z: lerp(1, 1.06, io(p)), x: lerp(16, -16, p), y: 0 };
+      },
+      (p) => ({ z: lerp(1.05, 1, eo(p)), x: 0, y: 0 }),
+    ],
+    beat: (ch, thump) => thump(ch === 4 ? 41 : 52, ch === 4 ? 2.2 : 1.1, ch === 4 ? .7 : .4),
+  });
+})();
+</script>
+</body>
+</html>

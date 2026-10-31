@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0806">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<title>Әріптен кодқа: Бағдарламалау академиясы - AO17</title>
+<meta name="description" content="AO17 Бағдарламалау академиясының фильм-прологы: баспахананың металл әрпінен битке, транзисторға және кодқа дейін.">
+<meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+<!-- © 2026 Sagid Mustafa. Бастапқы мәтін: film/src/academy-code.html; жинау: python3 tools/make_film.py -->
+<style>
+/* © 2026 Sagid Mustafa. AO17 фильмдерінің ортақ дизайн жүйесі: түс, әріп, материалдар, басқару.
+   Қолданатындар: академия фильмдері (film/src/academy-*.html). «Шақыру» (film/src/film.html) осы жүйенің түпнұсқасы. */
+:root {
+  --black: #0b0806; --ink: #1f1812; --gold: #c9a24a; --gold-hi: #e6c47c; --gold-lo: #8a6634; --paper: #e8dcc2; --paper-hi: #f3ead6; --wine: #7a1f2b;
+  --serif: "PT Serif", Georgia, "Times New Roman", serif;
+  --ease: cubic-bezier(.16, 1, .3, 1);
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; background: var(--black); color: var(--paper); overflow: hidden; overscroll-behavior: none; }
+body { font-family: var(--serif); -webkit-font-smoothing: antialiased; touch-action: none; }
+a { color: inherit; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* Сахна: барлық кадр бір экранда, әр сахна өз камерасымен */
+#stage { position: fixed; inset: 0; overflow: hidden; contain: strict; }
+.sc { position: absolute; inset: 0; visibility: hidden; contain: layout paint; }
+.sc.on { visibility: visible; }
+.cam { position: absolute; inset: 0; transform-origin: 50% 50%; will-change: transform; }
+.lyr { position: absolute; will-change: transform; translate: calc(var(--cx, 0px) + var(--ppx, 0px) * var(--d, 0)) calc(var(--cy, 0px) + var(--ppy, 0px) * var(--d, 0)); }
+.h-m { font: 700 clamp(28px, 3.3vw, 54px)/1.06 var(--serif); color: var(--paper-hi); margin: 0; }
+
+/* Жалпы материалдар */
+.paper { background:
+  url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .32 0 0 0 0 .24 0 0 0 0 .13 0 0 0 .22 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>"),
+  radial-gradient(120% 90% at 50% 40%, var(--paper-hi), var(--paper) 55%, #cbb98f);
+  color: var(--ink); box-shadow: 0 30px 60px -20px rgb(0 0 0 / .85), 0 2px 0 rgb(255 255 255 / .1) inset; }
+.desk { position: absolute; inset: -10%; background:
+  radial-gradient(60% 55% at 56% 42%, rgb(240 200 120 / .22), transparent 70%),
+  repeating-linear-gradient(92deg, rgb(255 255 255 / .012) 0 2px, transparent 2px 9px),
+  linear-gradient(180deg, #1b130d, #120c08 60%, #0b0705); }
+.vign { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(120% 90% at 50% 45%, transparent 45%, rgb(0 0 0 / .78)); }
+.lamp { position: absolute; left: 50%; top: -20%; width: 120vmax; height: 140vmax; transform: translateX(-50%); pointer-events: none; mix-blend-mode: screen;
+  background: radial-gradient(50% 45% at 50% 30%, rgb(243 213 138 / .26), rgb(224 182 100 / .07) 55%, transparent 72%); }
+.tag { position: absolute; font: italic 400 12px/1.3 var(--serif); letter-spacing: .04em; color: rgb(232 220 194 / .62); }
+.tag b { font-style: normal; font-weight: 700; color: var(--gold-hi); letter-spacing: .08em; }
+
+/* Типографика */
+.kicker { font: italic 400 clamp(14px, 1.5vw, 19px)/1.3 var(--serif); color: var(--gold-hi); letter-spacing: .04em; }
+.h-xl { font: 700 clamp(46px, 9vw, 150px)/.95 var(--serif); letter-spacing: -.01em; color: var(--paper-hi); margin: 0; }
+.h-l { font: 700 clamp(34px, 5.2vw, 84px)/1.02 var(--serif); color: var(--paper-hi); margin: 0; }
+.lead { font: 400 clamp(16px, 1.45vw, 21px)/1.6 var(--serif); color: rgb(232 220 194 / .86); margin: 0; max-width: 34em; }
+.gold { color: var(--gold-hi); }
+.rule { height: 1px; background: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold) 80%, transparent); }
+
+/* Фото: үстелде жатқан баспа сурет (2.5D: тереңдік, жарық жолағы, көлеңке) */
+.print { position: absolute; margin: 0; padding: 0; container-type: inline-size; background: #efe6d1; box-shadow: 0 2px 0 rgb(255 255 255 / .4) inset, 0 40px 60px -24px rgb(0 0 0 / .9), 0 8px 18px rgb(0 0 0 / .5);
+  transform-style: preserve-3d; will-change: transform; }
+.print .ph { position: relative; overflow: hidden; aspect-ratio: 4 / 5; background: #222; margin: 6cqw 6cqw 17cqw; }   /* жиек картаның өз енінен (cqw), сахнадан емес */
+.print.wide .ph { aspect-ratio: 1100 / 676; margin: 4cqw 4cqw 10cqw; }
+.print .ph img { object-position: 50% 22%; }
+.print img { display: block; width: 100%; height: 100%; object-fit: cover; filter: sepia(.35) contrast(1.06) brightness(.97); will-change: transform; }
+.print .ph::after { content: ""; position: absolute; inset: -40%; background: linear-gradient(115deg, transparent 42%, rgb(255 240 200 / .22) 50%, transparent 58%); transform: translateX(var(--sweep, -60%)); mix-blend-mode: screen; }
+.print figcaption { position: absolute; left: 0; right: 0; bottom: 4cqw; text-align: center; font: italic 400 clamp(11px, 1vw, 14px)/1.25 var(--serif); color: #3a2a1a; }
+
+/* Кесу (монтаж) сәтіндегі жұқа жарқыл - тек ырғақ үшін */
+#flash { position: fixed; inset: 0; pointer-events: none; background: #fff2d6; opacity: 0; mix-blend-mode: soft-light; z-index: 5; }
+#grain { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; opacity: .09; mix-blend-mode: overlay; z-index: 6; image-rendering: pixelated; }
+#dust { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 4; }
+.letterbox { position: fixed; left: 0; right: 0; height: 0; background: #000; z-index: 7; pointer-events: none; }
+
+/* ==== Басқару: тарау шкаласы, ойнату, дыбыс, өткізу ==== */
+#ui { position: fixed; left: 0; right: 0; bottom: 0; z-index: 10; padding: 0 max(18px, env(safe-area-inset-left)) max(14px, env(safe-area-inset-bottom)); display: grid; gap: 10px;
+  background: linear-gradient(0deg, rgb(0 0 0 / .7), transparent); pointer-events: none; }
+#ui > * { pointer-events: auto; }
+.cap { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; min-height: 22px; }
+.cap .ch { font: 700 15px var(--serif); color: var(--paper-hi); letter-spacing: .03em; }
+.cap .src { font: italic 400 12.5px var(--serif); color: rgb(232 220 194 / .62); }
+.bar { display: flex; align-items: center; gap: 12px; }
+.btn { flex: 0 0 auto; min-width: 44px; height: 44px; padding: 0 14px; border-radius: 22px; border: 1px solid rgb(217 180 104 / .45); background: rgb(11 8 6 / .55); color: var(--gold-hi); font: 700 14px var(--serif); cursor: pointer;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); transition: background .2s, border-color .2s; }
+.btn:hover { border-color: var(--gold-hi); background: rgb(40 28 18 / .7); }
+.btn:focus-visible, .tl:focus-visible, .chips button:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; }
+.btn svg { width: 16px; height: 16px; fill: currentColor; }
+.tl { position: relative; flex: 1; height: 44px; cursor: pointer; touch-action: none; }
+.tl .track { position: absolute; left: 0; right: 0; top: 50%; height: 2px; translate: 0 -50%; background: rgb(232 220 194 / .18); }
+.tl .fill { position: absolute; left: 0; top: 50%; height: 2px; translate: 0 -50%; background: linear-gradient(90deg, var(--gold-lo), var(--gold-hi)); width: 0; }
+.tl .tick { position: absolute; top: 50%; width: 7px; height: 7px; translate: -50% -50%; rotate: 45deg; background: var(--black); border: 1px solid rgb(217 180 104 / .7); }
+.tl .tick.done { background: var(--gold-hi); }
+.top { position: fixed; top: 0; left: 0; right: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; padding: max(14px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) 0 max(18px, env(safe-area-inset-left)); pointer-events: none; }
+.top > * { pointer-events: auto; }
+.brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+.brand svg { height: 26px; width: auto; }
+.top .r { display: flex; gap: 8px; }
+.hint { position: fixed; left: 50%; bottom: 112px; translate: -50% 0; z-index: 9; font: italic 400 13px var(--serif); color: rgb(232 220 194 / .7); letter-spacing: .04em; transition: opacity .8s; pointer-events: none; text-align: center; }
+.hint.off { opacity: 0; }
+
+.portrait .hint { bottom: 120px; }
+.portrait .tag { display: none; }
+.still .cam, .still .lyr, .still .print { transition: none !important; }
+@media print { #ui, .top, #grain, #dust { display: none; } }
+/* © 2026 Sagid Mustafa. Академия фильмдерінің ортақ бөлігі: финал (академияға кіру), басқа фильмдер.
+   Әр академияның өз түсі бар: --ac (негізгі), --ac-hi (жарық). Алаш алтыны бәріне ортақ жіп болып қалады. */
+.fin { background: radial-gradient(70% 60% at 50% 34%, var(--fin-bg, #231a12), var(--black) 72%); }
+.fin .hd { left: 50%; top: 46%; --cx: -50%; --cy: -50%; width: min(88vw, 760px); text-align: center; }
+.fin .hd .kicker { margin: 0 0 14px; }
+.fin .hd .h-l { font-size: clamp(36px, 5.6vw, 76px); }
+.fin .hd .lead { margin: 18px auto 0; text-align: center; }
+.cta { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 30px; }
+.cta a { display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; border-radius: 24px; font: 700 16px var(--serif); text-decoration: none; letter-spacing: .02em;
+  border: 1px solid rgb(217 180 104 / .5); color: var(--gold-hi); transition: background .2s, border-color .2s; }
+.cta a.go { background: linear-gradient(180deg, var(--gold-hi), var(--gold)); color: #1b130d; border-color: transparent; }
+.cta a:hover { border-color: var(--gold-hi); background: rgb(40 28 18 / .7); }
+.cta a.go:hover { background: linear-gradient(180deg, #f3d897, var(--gold-hi)); }
+.cta a:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; }
+.more { margin-top: 22px; font: italic 400 14px/1.6 var(--serif); color: rgb(232 220 194 / .66); }
+.more a { color: var(--gold-hi); text-decoration: none; border-bottom: 1px solid rgb(217 180 104 / .4); margin: 0 6px; white-space: nowrap; }
+.more a:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 3px; }
+.txt { max-width: 30em; }
+.portrait .fin .hd { width: 88vw; top: 44%; }
+.portrait .fin .hd .lead { font-size: 15px; }
+.portrait .cta a { width: 100%; justify-content: center; }
+.hint { top: calc(max(14px, env(safe-area-inset-top)) + 58px); bottom: auto; }
+.portrait .hint { bottom: auto; }
+
+/* ==== «Әріптен кодқа»: металл әріп -> бит -> ток -> код. Алтын (баспа) суық фосфорға (экран) біртіндеп ауысады. ==== */
+:root { --ac: #8cc8d2; --ac-hi: #c9eef3; --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; }
+
+/* 0 · Баспа әрпі */
+#c0 .stick { left: 50%; top: 31%; width: min(62vw, 96vh); --cx: -50%; --cy: -50%; }
+#c0 .stick svg { width: 100%; height: auto; display: block; overflow: visible; }
+#c0 .txt { left: 8%; top: 52%; width: 56%; }
+
+/* 1 · Әріп - сан */
+#c1 { background: radial-gradient(60% 60% at 40% 45%, #141a1c, var(--black) 75%); }
+#c1 .glyph { left: 30%; top: 48%; width: min(30vw, 54vh); --cx: -50%; --cy: -50%; }
+#c1 .glyph svg { width: 100%; height: auto; display: block; }
+#c1 .glyph rect { fill: rgb(140 200 210 / .06); stroke: rgb(140 200 210 / .14); stroke-width: .6; }
+#c1 .glyph rect.on { fill: var(--ac); }
+#c1 .num { left: 56%; top: 20%; width: 38%; }
+#c1 .num .u { font: 700 clamp(30px, 4vw, 60px)/1 var(--mono); color: var(--ac-hi); letter-spacing: .02em; }
+#c1 .num .d { margin: 10px 0 18px; font: italic 400 clamp(15px, 1.4vw, 19px)/1.4 var(--serif); color: rgb(232 220 194 / .7); }
+#c1 .bits { display: flex; gap: .8em; font: 700 clamp(20px, 2.4vw, 36px)/1 var(--mono); color: var(--ac); letter-spacing: .08em; }
+#c1 .bits i { font-style: normal; opacity: .12; }
+#c1 .txt { left: 56%; top: 55%; width: 36%; }
+
+/* 2 · Бит - ток */
+#c2 { background: radial-gradient(70% 70% at 50% 50%, #0f1a1c, #070a0b 80%); }
+#c2 .board { left: 50%; top: 50%; width: max(100vw, 166vh); --cx: -50%; --cy: -50%; }
+#c2 .board svg { width: 100%; height: auto; display: block; }
+#c2 .tr { fill: none; stroke: rgb(140 200 210 / .32); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+#c2 .pulse { fill: none; stroke: var(--ac-hi); stroke-width: 3; stroke-linecap: round; stroke-dasharray: .03 .25; filter: drop-shadow(0 0 4px var(--ac)); }
+#c2 .chip rect.core { fill: #10262a; stroke: rgb(140 200 210 / .4); }
+#c2 .txt { left: 6%; top: 10%; width: 32%; padding: 18px 20px; background: linear-gradient(90deg, rgb(7 10 11 / .9), rgb(7 10 11 / .6)); }
+
+/* 3 · Код */
+#c3 { background: radial-gradient(60% 60% at 40% 50%, #121719, var(--black) 75%); }
+#c3 .ed { left: 34%; top: 50%; width: min(52vw, 92vh); --cx: -50%; --cy: -50%; border-radius: 10px; overflow: hidden; background: #0d1214; box-shadow: 0 50px 90px -30px #000, 0 0 0 1px rgb(140 200 210 / .18); }
+#c3 .bar3 { display: flex; align-items: center; gap: 7px; padding: 10px 14px; background: #121a1d; font: 400 12.5px var(--mono); color: rgb(201 238 243 / .6); }
+#c3 .bar3 i { width: 10px; height: 10px; border-radius: 50%; background: rgb(201 238 243 / .18); }
+#c3 .bar3 span { margin-left: 8px; }
+#c3 pre { margin: 0; padding: 18px 20px; min-height: 9.2em; font: 400 clamp(13px, 1.35vw, 19px)/1.6 var(--mono); color: #d8eef1; white-space: pre; }
+#c3 pre .cm { color: rgb(201 238 243 / .45); font-style: italic; }
+#c3 .out { border-top: 1px solid rgb(140 200 210 / .16); padding: 12px 20px 16px; font: 400 clamp(13px, 1.35vw, 19px)/1.6 var(--mono); color: var(--gold-hi); min-height: 6.4em; }
+#c3 .out div { opacity: 0; }
+#c3 .out div::before { content: "> "; color: rgb(201 238 243 / .4); }
+#c3 .caret { display: inline-block; width: .55em; height: 1.1em; vertical-align: -.2em; background: var(--ac); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+#c3 .txt { left: 66%; top: 32%; width: 28%; }
+
+/* финал */
+.fin { --fin-bg: #12191b; }
+.fin .art { left: 0; right: 0; top: 0; bottom: 0; opacity: .5; }
+.fin .art i { position: absolute; top: -20%; font: 400 12px/1.6 var(--mono); color: rgb(140 200 210 / .22); white-space: pre; animation: codeflow 30s linear infinite; }
+@keyframes codeflow { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+
+/* ==== Телефон ==== */
+.portrait #c0 .stick { top: 30%; width: 92vw; }
+.portrait #c0 .txt { left: 7%; right: 7%; top: 50%; }
+.portrait #c1 .glyph { left: 50%; top: 24%; width: 52vw; }
+.portrait #c1 .num { left: 7%; right: 7%; top: 44%; width: auto; }
+.portrait #c1 .num .d { margin: 6px 0 10px; }
+.portrait #c1 .bits { font-size: 22px; }
+.portrait #c1 .txt { left: 7%; right: 7%; top: 63%; width: auto; }
+.portrait #c2 .board { width: 210vw; top: 32%; }
+.portrait #c2 .txt { left: 5%; right: 5%; top: auto; bottom: 22%; width: auto; }
+.portrait #c3 .ed { left: 50%; top: 34%; width: 92vw; }
+.portrait #c3 .txt { left: 7%; right: 7%; top: auto; bottom: 20%; width: auto; }
+.portrait .txt .lead { font-size: 14.5px; line-height: 1.5; }
+.portrait .txt .h-m { font-size: 26px; }
+</style>
+</head>
+<body>
+<a class="sr" href="#stage" id="skipLink">Фильмді өткізіп, академияға өту</a>
+<div class="top">
+  <a class="brand" href="../../index.html" aria-label="AO17 басты беті"><svg viewBox="0 0 462 136" aria-hidden="true"><g transform="translate(6 10) scale(2.4)"><g fill="none" stroke="#d9b468" stroke-width="2.6" stroke-linecap="round"><path d="M24 44 V26"/><path d="M24 26 C24 14 12 8 7 14 C3 19 9 25 13 21 C15.5 18.5 13 15.5 11 17"/><path d="M24 26 C24 14 36 8 41 14 C45 19 39 25 35 21 C32.5 18.5 35 15.5 37 17"/><path d="M24 36 C20 32 15 33 15 37 M24 36 C28 32 33 33 33 37"/><path d="M24 4 L28 9 L24 14 L20 9 Z"/></g></g>
+  <path fill="#efe6d3" d="M160.7742734375 94.1374921875V78.1441171875H210.32950390625V94.1374921875ZM199.0204765625 36.0 231.79494921875 108.0H210.54086328124998L183.06550390625 44.48625H188.82546875L161.350109375 108.0H140.0960234375L172.87049609375 36.0Z M278.1823671875 109.574390625Q265.37598828125 109.574390625 255.74720117187502 104.870390625Q246.11841406250002 100.166390625 240.76162109375002 91.70879296875Q235.40482812500002 83.2511953125 235.40482812500002 72.0Q235.40482812500002 60.7488046875 240.76162109375002 52.291207031249996Q246.11841406250002 43.833609374999995 255.74720117187502 39.129609374999994Q265.37598828125 34.42560937499999 278.1823671875 34.42560937499999Q290.98874609375 34.42560937499999 300.61753320312505 39.129609374999994Q310.2463203125 43.833609374999995 315.60311328125 52.291207031249996Q320.95990625 60.7488046875 320.95990625 72.0Q320.95990625 83.2511953125 315.60311328125 91.70879296875Q310.2463203125 100.166390625 300.61753320312505 104.870390625Q290.98874609375 109.574390625 278.1823671875 109.574390625ZM278.1823671875 91.795453125Q285.19043750000003 91.795453125 290.2592890625 89.405021484375Q295.328140625 87.01458984375 298.08337109375 82.569732421875Q300.8386015625 78.124875 300.8386015625 72.0Q300.8386015625 65.875125 298.08337109375 61.430267578125Q295.328140625 56.98541015625 290.2592890625 54.594978515625Q285.19043750000003 52.204546875 278.1823671875 52.204546875Q271.21269921875 52.204546875 266.12464648437503 54.594978515625Q261.03659375 56.98541015625 258.28136328125004 61.430267578125Q255.5261328125 65.875125 255.5261328125 72.0Q255.5261328125 78.124875 258.28136328125004 82.569732421875Q261.03659375 87.01458984375 266.12464648437503 89.405021484375Q271.21269921875 91.795453125 278.1823671875 91.795453125Z"/>
+  <path fill="#d9b468" d="M367.32775390625 36.0V108.0H347.62883984375003V42.9502734375L356.90234375 51.45577734375L325.83678125 56.9085703125V41.5295859375L352.6975625 36.0Z M386.27847265625 108.0 425.88809375 46.21426171875 425.84969140625003 51.7437890625H375.69918359375004V36.0H444.0510078125V51.858972656249996L409.03009765625 108.0Z"/></svg></a>
+  <div class="r">
+    <button class="btn" id="snd" type="button" aria-pressed="false" aria-label="Дыбыс: өшірулі"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/></svg><span>Дыбыс</span></button>
+    <button class="btn" id="skip" type="button">Өткізу</button>
+  </div>
+</div>
+
+<main id="stage" aria-label="Әріптен кодқа: Бағдарламалау академиясының фильмі">
+  <!-- 0 · БАСПА ӘРПІ -->
+  <section class="sc" id="c0" data-title="Металл әріп" data-src="Көркем кадр: баспаханадағы теру қалыбы">
+    <div class="cam">
+      <div class="desk"></div>
+      <div class="lamp" style="left:52%"></div>
+      <div class="lyr stick" data-depth="0.5">
+        <svg viewBox="0 0 620 220" aria-hidden="true">
+          <defs>
+            <linearGradient id="met" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9b3a6"/><stop offset=".5" stop-color="#7d776c"/><stop offset="1" stop-color="#4a463f"/></linearGradient>
+            <linearGradient id="face" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a352e"/><stop offset="1" stop-color="#1d1a16"/></linearGradient>
+          </defs>
+          <rect x="0" y="176" width="620" height="26" rx="3" fill="#5a3d24"/><rect x="0" y="176" width="620" height="5" fill="#7a5634"/>
+          <rect x="0" y="30" width="16" height="172" fill="#4a3220"/>
+          <g id="sorts" font-family="PT Serif, serif" font-weight="700" font-size="96" text-anchor="middle">
+            <g class="sort"><rect x="40" y="40" width="100" height="136" rx="3" fill="url(#met)"/><rect x="48" y="48" width="84" height="108" fill="url(#face)"/><text x="90" y="138" fill="#d9d2c4" transform="translate(180 0) scale(-1 1)">Қ</text></g>
+            <g class="sort"><rect x="150" y="40" width="100" height="136" rx="3" fill="url(#met)"/><rect x="158" y="48" width="84" height="108" fill="url(#face)"/><text x="200" y="138" fill="#d9d2c4" transform="translate(400 0) scale(-1 1)">А</text><rect x="190" y="60" width="20" height="20" fill="none" data-focus/></g>
+            <g class="sort"><rect x="260" y="40" width="100" height="136" rx="3" fill="url(#met)"/><rect x="268" y="48" width="84" height="108" fill="url(#face)"/><text x="310" y="138" fill="#d9d2c4" transform="translate(620 0) scale(-1 1)">З</text></g>
+            <g class="sort"><rect x="370" y="40" width="100" height="136" rx="3" fill="url(#met)"/><rect x="378" y="48" width="84" height="108" fill="url(#face)"/><text x="420" y="138" fill="#d9d2c4" transform="translate(840 0) scale(-1 1)">А</text></g>
+            <g class="sort"><rect x="480" y="40" width="100" height="136" rx="3" fill="url(#met)"/><rect x="488" y="48" width="84" height="108" fill="url(#face)"/><text x="530" y="138" fill="#d9d2c4" transform="translate(1060 0) scale(-1 1)">Қ</text></g>
+          </g>
+        </svg>
+      </div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">ХХ ғасырдың басы · баспахана</p>
+        <h2 class="h-m">Әр әріп қолмен терілді</h2>
+        <p class="lead" style="margin-top:12px">Газет беті мыңдаған металл әріптен жиналды. Әр әріп - айнадағыдай теріс құйылған бір қалып.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 · ӘРІП - САН -->
+  <section class="sc" id="c1" data-title="Әріп - сан" data-src="Unicode: Ә = U+04D8; UTF-8: D3 98">
+    <div class="cam">
+      <div class="lyr glyph" data-depth="0.5"><svg viewBox="0 0 80 100" aria-hidden="true"><rect x="0.6" y="0.6" width="8.8" height="8.8" rx="1"/><rect x="10.6" y="0.6" width="8.8" height="8.8" rx="1"/><rect x="20.6" y="0.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="30.6" y="0.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="40.6" y="0.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="50.6" y="0.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="60.6" y="0.6" width="8.8" height="8.8" rx="1"/><rect x="70.6" y="0.6" width="8.8" height="8.8" rx="1"/><rect x="0.6" y="10.6" width="8.8" height="8.8" rx="1"/><rect x="10.6" y="10.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="20.6" y="10.6" width="8.8" height="8.8" rx="1"/><rect x="30.6" y="10.6" width="8.8" height="8.8" rx="1"/><rect x="40.6" y="10.6" width="8.8" height="8.8" rx="1"/><rect x="50.6" y="10.6" width="8.8" height="8.8" rx="1"/><rect x="60.6" y="10.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="70.6" y="10.6" width="8.8" height="8.8" rx="1"/><rect x="0.6" y="20.6" width="8.8" height="8.8" rx="1"/><rect x="10.6" y="20.6" width="8.8" height="8.8" rx="1"/><rect x="20.6" y="20.6" width="8.8" height="8.8" rx="1"/><rect x="30.6" y="20.6" width="8.8" height="8.8" rx="1"/><rect x="40.6" y="20.6" width="8.8" height="8.8" rx="1"/><rect x="50.6" y="20.6" width="8.8" height="8.8" rx="1"/><rect x="60.6" y="20.6" width="8.8" height="8.8" rx="1"/><rect x="70.6" y="20.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="0.6" y="30.6" width="8.8" height="8.8" rx="1"/><rect x="10.6" y="30.6" width="8.8" height="8.8" rx="1"/><rect x="20.6" y="30.6" width="8.8" height="8.8" rx="1"/><rect x="30.6" y="30.6" width="8.8" height="8.8" rx="1"/><rect x="40.6" y="30.6" width="8.8" height="8.8" rx="1"/><rect x="50.6" y="30.6" width="8.8" height="8.8" rx="1"/><rect x="60.6" y="30.6" width="8.8" height="8.8" rx="1"/><rect x="70.6" y="30.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="0.6" y="40.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="10.6" y="40.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="20.6" y="40.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="30.6" y="40.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="40.6" y="40.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="50.6" y="40.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="60.6" y="40.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="70.6" y="40.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="0.6" y="50.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="10.6" y="50.6" width="8.8" height="8.8" rx="1"/><rect x="20.6" y="50.6" width="8.8" height="8.8" rx="1"/><rect x="30.6" y="50.6" width="8.8" height="8.8" rx="1"/><rect x="40.6" y="50.6" width="8.8" height="8.8" rx="1"/><rect x="50.6" y="50.6" width="8.8" height="8.8" rx="1"/><rect x="60.6" y="50.6" width="8.8" height="8.8" rx="1"/><rect x="70.6" y="50.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="0.6" y="60.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="10.6" y="60.6" width="8.8" height="8.8" rx="1"/><rect x="20.6" y="60.6" width="8.8" height="8.8" rx="1"/><rect x="30.6" y="60.6" width="8.8" height="8.8" rx="1"/><rect x="40.6" y="60.6" width="8.8" height="8.8" rx="1"/><rect x="50.6" y="60.6" width="8.8" height="8.8" rx="1"/><rect x="60.6" y="60.6" width="8.8" height="8.8" rx="1"/><rect x="70.6" y="60.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="0.6" y="70.6" width="8.8" height="8.8" rx="1"/><rect x="10.6" y="70.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="20.6" y="70.6" width="8.8" height="8.8" rx="1"/><rect x="30.6" y="70.6" width="8.8" height="8.8" rx="1"/><rect x="40.6" y="70.6" width="8.8" height="8.8" rx="1"/><rect x="50.6" y="70.6" width="8.8" height="8.8" rx="1"/><rect x="60.6" y="70.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="70.6" y="70.6" width="8.8" height="8.8" rx="1"/><rect x="0.6" y="80.6" width="8.8" height="8.8" rx="1"/><rect x="10.6" y="80.6" width="8.8" height="8.8" rx="1"/><rect x="20.6" y="80.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="30.6" y="80.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="40.6" y="80.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="50.6" y="80.6" width="8.8" height="8.8" rx="1" class="on"/><rect x="60.6" y="80.6" width="8.8" height="8.8" rx="1"/><rect x="70.6" y="80.6" width="8.8" height="8.8" rx="1"/><rect x="0.6" y="90.6" width="8.8" height="8.8" rx="1"/><rect x="10.6" y="90.6" width="8.8" height="8.8" rx="1"/><rect x="20.6" y="90.6" width="8.8" height="8.8" rx="1"/><rect x="30.6" y="90.6" width="8.8" height="8.8" rx="1"/><rect x="40.6" y="90.6" width="8.8" height="8.8" rx="1"/><rect x="50.6" y="90.6" width="8.8" height="8.8" rx="1"/><rect x="60.6" y="90.6" width="8.8" height="8.8" rx="1"/><rect x="70.6" y="90.6" width="8.8" height="8.8" rx="1"/></svg></div>
+      <div class="lyr num" data-depth="0.8">
+        <div class="u">Ә = U+04D8</div>
+        <div class="d">Unicode кестесіндегі № 1240. Жадта (UTF-8) - екі байт:</div>
+        <div class="bits" aria-label="11010011 10011000"><span><i>1</i><i>1</i><i>0</i><i>1</i><i>0</i><i>0</i><i>1</i><i>1</i></span><span><i>1</i><i>0</i><i>0</i><i>1</i><i>1</i><i>0</i><i>0</i><i>0</i></span></div>
+      </div>
+      <div class="lyr txt" data-depth="1">
+        <h2 class="h-m">Бүгін әріп - сан</h2>
+        <p class="lead" style="margin-top:12px">Компьютер «Ә» әрпін нөмірімен таниды. Экранда ол - жанған нүктелер, жадта - он алты бит: нөлдер мен бірлер.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · БИТ - ТОК -->
+  <section class="sc" id="c2" data-title="Бит - ток" data-src="Көркем кадр: процессор мен оның сымдары, схема">
+    <div class="cam">
+      <div class="lyr board" data-depth="0.4">
+        <svg viewBox="0 0 1000 600" aria-hidden="true"><path class="tr" d="M410 190L410 153L346 89L346 -511" data-draw/><path class="tr" d="M440 190L440 106L499 47L499 -553" data-draw/><path class="tr" d="M470 190L470 127L528 70L528 -530" data-draw/><path class="tr" d="M500 190L500 125L480 105L480 -495" data-draw/><path class="tr" d="M530 190L530 155L591 94L591 -506" data-draw/><path class="tr" d="M560 190L560 133L614 79L614 -521" data-draw/><path class="tr" d="M590 190L590 147L627 110L627 -490" data-draw/><path class="tr" d="M610 210L700 210L760 270L1360 270" data-draw/><path class="tr" d="M610 240L700 240L756 184L1356 184" data-draw/><path class="tr" d="M610 270L645 270L680 304L1280 304" data-draw/><path class="tr" d="M610 300L648 300L670 321L1270 321" data-draw/><path class="tr" d="M610 330L683 330L726 373L1326 373" data-draw/><path class="tr" d="M610 360L645 360L709 423L1309 423" data-draw/><path class="tr" d="M610 390L666 390L705 430L1305 430" data-draw/><path class="tr" d="M410 410L410 471L458 520L458 1120" data-draw/><path class="tr" d="M440 410L440 499L391 548L391 1148" data-draw/><path class="tr" d="M470 410L470 486L402 554L402 1154" data-draw/><path class="tr" d="M500 410L500 471L444 527L444 1127" data-draw/><path class="tr" d="M530 410L530 466L486 510L486 1110" data-draw/><path class="tr" d="M560 410L560 454L509 505L509 1105" data-draw/><path class="tr" d="M590 410L590 467L646 523L646 1123" data-draw/><path class="tr" d="M390 210L302 210L254 258L-346 258" data-draw/><path class="tr" d="M390 240L320 240L272 287L-328 287" data-draw/><path class="tr" d="M390 270L321 270L261 330L-339 330" data-draw/><path class="tr" d="M390 300L336 300L301 265L-299 265" data-draw/><path class="tr" d="M390 330L344 330L316 303L-284 303" data-draw/><path class="tr" d="M390 360L307 360L247 420L-353 420" data-draw/><path class="tr" d="M390 390L304 390L238 456L-362 456" data-draw/><path class="pulse" d="M410 190L410 153L346 89L346 -511" pathLength="1" style="opacity:0"/><path class="pulse" d="M500 190L500 125L480 105L480 -495" pathLength="1" style="opacity:0"/><path class="pulse" d="M590 190L590 147L627 110L627 -490" pathLength="1" style="opacity:0"/><path class="pulse" d="M610 270L645 270L680 304L1280 304" pathLength="1" style="opacity:0"/><path class="pulse" d="M610 360L645 360L709 423L1309 423" pathLength="1" style="opacity:0"/><path class="pulse" d="M440 410L440 499L391 548L391 1148" pathLength="1" style="opacity:0"/><path class="pulse" d="M530 410L530 466L486 510L486 1110" pathLength="1" style="opacity:0"/><path class="pulse" d="M390 210L302 210L254 258L-346 258" pathLength="1" style="opacity:0"/><path class="pulse" d="M390 300L336 300L301 265L-299 265" pathLength="1" style="opacity:0"/><path class="pulse" d="M390 390L304 390L238 456L-362 456" pathLength="1" style="opacity:0"/><g class="chip"><rect x="390" y="190" width="220" height="220" rx="10" fill="#0b1416" stroke="rgb(140 200 210 / .55)" stroke-width="2"/><rect class="core" x="412" y="212" width="38" height="38" rx="3"/><rect class="core" x="457" y="212" width="38" height="38" rx="3"/><rect class="core" x="502" y="212" width="38" height="38" rx="3"/><rect class="core" x="547" y="212" width="38" height="38" rx="3"/><rect class="core" x="412" y="257" width="38" height="38" rx="3"/><rect class="core" x="457" y="257" width="38" height="38" rx="3" data-focus/><rect class="core" x="502" y="257" width="38" height="38" rx="3"/><rect class="core" x="547" y="257" width="38" height="38" rx="3"/><rect class="core" x="412" y="302" width="38" height="38" rx="3"/><rect class="core" x="457" y="302" width="38" height="38" rx="3"/><rect class="core" x="502" y="302" width="38" height="38" rx="3"/><rect class="core" x="547" y="302" width="38" height="38" rx="3"/><rect class="core" x="412" y="347" width="38" height="38" rx="3"/><rect class="core" x="457" y="347" width="38" height="38" rx="3"/><rect class="core" x="502" y="347" width="38" height="38" rx="3"/><rect class="core" x="547" y="347" width="38" height="38" rx="3"/><text x="500" y="400" text-anchor="middle" font-family="ui-monospace, Menlo, monospace" font-size="11" fill="rgb(140 200 210 / .5)">CPU</text></g></svg>
+      </div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">Бір бит - бір қақпа</p>
+        <h2 class="h-m">Ток өтеді - 1. Өтпейді - 0.</h2>
+        <p class="lead" style="margin-top:12px">Транзистор - кішкентай қақпа. Қазіргі процессордың ішінде олар миллиардтап саналады, әрқайсысы секундына миллиард рет ауысады.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · КОД -->
+  <section class="sc" id="c3" data-title="Код" data-src="Python: бағдарлама шын, оны AO17 академиясында браузерде іске қосуға болады">
+    <div class="cam">
+      <div class="lyr ed" data-depth="0.6">
+        <div class="bar3"><i></i><i></i><i></i><span>alash.py</span></div>
+        <pre><code id="code"></code><span class="caret"></span></pre>
+        <div class="out" id="out"><div>Жер</div><div>Тіл</div><div data-focus>Білім</div></div>
+      </div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">Код</p>
+        <h2 class="h-m">Процессорды сөйлететін - код</h2>
+        <p class="lead" style="margin-top:12px">Төрт жол Python, және экранда Алаштың үш сұрағы. Ана тілінде жазылған алғашқы бағдарлама осындай қарапайым басталады.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · ФИНАЛ -->
+  <section class="sc fin" id="c4" data-title="Бағдарламалау академиясы" data-src="AO17 · CS50x, Python, SQL, AI, Web, C++, Java">
+    <div class="cam">
+      <div class="lyr art" data-depth="0.2" aria-hidden="true"><i style="left:4%;animation:codeflow 18s linear 0s infinite">int main() {
+x = [1917, 2026]
+const jol = 'bilim';
+const jol = 'bilim';
+print('Сәлем, әлем!')
+const jol = 'bilim';
+}
+print('Сәлем, әлем!')
+class Alash {}
+def oqu(sabaq):
+int main() {
+  return 0;
+const jol = 'bilim';
+  for bet in sabaq:
+const jol = 'bilim';
+x = [1917, 2026]
+x = [1917, 2026]
+print('Сәлем, әлем!')</i><i style="left:18%;animation:codeflow 21s linear -2s infinite">int main() {
+const jol = 'bilim';
+    oqu(bet)
+}
+x = [1917, 2026]
+const jol = 'bilim';
+  for bet in sabaq:
+class Alash {}
+int main() {
+const jol = 'bilim';
+  return 0;
+  for bet in sabaq:
+SELECT esim FROM alash;
+x = [1917, 2026]
+}
+    oqu(bet)
+const jol = 'bilim';
+def oqu(sabaq):</i><i style="left:32%;animation:codeflow 24s linear -4s infinite">  for bet in sabaq:
+def oqu(sabaq):
+const jol = 'bilim';
+while (true) oqy();
+print('Сәлем, әлем!')
+  for bet in sabaq:
+while (true) oqy();
+SELECT esim FROM alash;
+SELECT esim FROM alash;
+  for bet in sabaq:
+while (true) oqy();
+def oqu(sabaq):
+print('Сәлем, әлем!')
+int main() {
+class Alash {}
+class Alash {}
+  return 0;
+    oqu(bet)</i><i style="left:46%;animation:codeflow 27s linear -6s infinite">def oqu(sabaq):
+  return 0;
+class Alash {}
+while (true) oqy();
+while (true) oqy();
+const jol = 'bilim';
+x = [1917, 2026]
+x = [1917, 2026]
+    oqu(bet)
+print('Сәлем, әлем!')
+SELECT esim FROM alash;
+const jol = 'bilim';
+while (true) oqy();
+    oqu(bet)
+while (true) oqy();
+x = [1917, 2026]
+print('Сәлем, әлем!')
+int main() {</i><i style="left:60%;animation:codeflow 30s linear -8s infinite">  for bet in sabaq:
+}
+class Alash {}
+    oqu(bet)
+    oqu(bet)
+while (true) oqy();
+int main() {
+print('Сәлем, әлем!')
+}
+}
+    oqu(bet)
+print('Сәлем, әлем!')
+SELECT esim FROM alash;
+}
+def oqu(sabaq):
+  for bet in sabaq:
+}
+  for bet in sabaq:</i><i style="left:74%;animation:codeflow 33s linear -10s infinite">def oqu(sabaq):
+  return 0;
+class Alash {}
+  return 0;
+def oqu(sabaq):
+def oqu(sabaq):
+print('Сәлем, әлем!')
+const jol = 'bilim';
+  return 0;
+class Alash {}
+int main() {
+const jol = 'bilim';
+  return 0;
+  for bet in sabaq:
+const jol = 'bilim';
+const jol = 'bilim';
+while (true) oqy();
+while (true) oqy();</i><i style="left:88%;animation:codeflow 36s linear -12s infinite">    oqu(bet)
+    oqu(bet)
+while (true) oqy();
+print('Сәлем, әлем!')
+SELECT esim FROM alash;
+}
+while (true) oqy();
+  return 0;
+const jol = 'bilim';
+while (true) oqy();
+SELECT esim FROM alash;
+class Alash {}
+x = [1917, 2026]
+  for bet in sabaq:
+print('Сәлем, әлем!')
+}
+def oqu(sabaq):
+SELECT esim FROM alash;</i></div>
+      <div class="lyr hd" data-depth="0.8">
+        <p class="kicker">AO17 · Әріптен кодқа</p>
+        <h1 class="h-l">Бағдарламалау академиясы</h1>
+        <p class="lead">CS50x, Python, SQL, AI, Web, C++, Java: ана тілінде, тегін. Код браузерде орындалады, тапсырмалар бірден тексеріледі.</p>
+        <nav class="cta" aria-label="Әрі қарай"><a class="go" href="../../programming.html">Академияға кіру</a><a href="../../index.html">AO17 басты беті</a></nav>
+        <p class="more">Басқа фильмдер: <a href="../math/">Математика</a><a href="../en/">English</a><a href="../">«Шақыру»</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<canvas id="dust" aria-hidden="true"></canvas>
+<canvas id="grain" width="160" height="160" aria-hidden="true"></canvas>
+<div id="flash" aria-hidden="true"></div>
+<div class="letterbox" id="lbT" aria-hidden="true"></div><div class="letterbox" id="lbB" aria-hidden="true"></div>
+<p class="hint" id="hint">Фильм өзі жүреді · скролл не сырғыту камераны алға-артқа жүргізеді</p>
+<div id="ui">
+  <div class="cap" aria-live="polite"><span class="ch" id="capCh"></span><span class="src" id="capSrc"></span></div>
+  <div class="bar">
+    <button class="btn" id="play" type="button" aria-label="Тоқтату"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="playIco" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+    <div class="tl" id="tl" role="slider" tabindex="0" aria-label="Фильмнің уақыты" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="track"></div><div class="fill" id="fill"></div></div>
+  </div>
+</div>
+<script>
+/* © 2026 Sagid Mustafa. AO17 фильмдерінің ортақ қозғалтқышы (академия фильмдері осыны қолданады).
+   «Шақыру» фильмінің (film/src/film.html) архитектурасы, деректермен басқарылатын түрде:
+   - Бір уақыт ойнатқышы: бүкіл кадр render(t), t секундпен. Autoplay, скролл/тач/перне және шкала бір t-ны басқарады;
+     әрекет біткен соң 0.9 с кейін фильм сол жерден жалғасады.
+   - Сахна = {a, b}. Көршілер T секунд қабаттасады: шығатын камера өз [data-focus] элементіне кіреді, келесі сахна
+     сол нүктеден дөңгелек терезе болып ашылады.
+   - Әр фильм өзі береді: DUR (сахна ұзақтығы), inner[i](p, s) (сахна ішіндегі қозғалыс, камераны қайтарады),
+     setup() (бір реттік дайындық), beat(ch) (тарау басындағы ұрма), drone (дыбыс жиіліктері), ambient (шаң түсі). */
+(() => {
+  "use strict";
+  const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+  const lerp = (a, b, k) => a + (b - a) * k;
+  const io = (k) => k < .5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+  const eo = (k) => 1 - Math.pow(1 - k, 3);
+  const ei = (k) => k * k * k;
+  const seg = (p, a, b) => clamp((p - a) / (b - a));
+  window.AO17Kit = { $, $$, clamp, lerp, io, eo, ei, seg };
+
+  window.AO17Engine = function (cfg) {
+    const root = document.documentElement;
+    const still = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (still) root.classList.add("still");
+    const BEAT = 60 / (cfg.bpm || 72), BAR = BEAT * 4, T = 1.6;
+    const scenes = $$(".sc").map((el, i) => ({ el, i, cam: $(".cam", el), lyrs: $$(".lyr", el), focus: $("[data-focus]", el) }));
+    let acc = 0;
+    scenes.forEach((s, i) => { s.a = acc; s.b = acc + cfg.dur[i]; acc = s.b - (i < scenes.length - 1 ? T : 0); });
+    const LAST = scenes.length - 1, END = scenes[LAST].b;
+    const CH = scenes.map((s) => s.a + (s.i ? T * .5 : 0));
+    const ctx = { BEAT, T, still, get portrait() { return portrait; }, get W() { return W; }, get H() { return H; }, flash };
+
+    // ---------- Ойнатқыш ----------
+    let t = 0, target = 0, playing = !still, lastInput = -1e9, interacting = false, wasPlaying = false;
+    const now = () => performance.now() / 1000;
+    function seek(v, smooth = true) { target = clamp(v, 0, END); if (!smooth) t = target; lastInput = now(); interacting = true; }
+    function setPlaying(v) {
+      playing = v;
+      $("#play").setAttribute("aria-label", v ? "Тоқтату" : "Ойнату");
+      $("#playIco").setAttribute("d", v ? "M7 5h4v14H7zM13 5h4v14h-4z" : "M8 5v14l11-7z");
+    }
+    const chapterAt = (x) => { let c = 0; CH.forEach((v, i) => { if (x >= v - .01) c = i; }); return c; };
+
+    // ---------- Енгізу ----------
+    const K_WHEEL = 0.0065, K_TOUCH = 0.022, SAFE = "#ui, .top, .cta";
+    addEventListener("wheel", (e) => { if (e.target.closest && e.target.closest(".cta")) return; e.preventDefault(); seek(target + e.deltaY * K_WHEEL * (e.deltaMode === 1 ? 30 : 1)); hideHint(); }, { passive: false });
+    let ty = null, tvel = 0, tlast = 0;
+    addEventListener("touchstart", (e) => { if (e.target.closest(SAFE)) return; ty = e.touches[0].clientY; tvel = 0; tlast = now(); seek(t); }, { passive: true });
+    addEventListener("touchmove", (e) => {
+      if (ty == null) return;
+      const y = e.touches[0].clientY, dy = ty - y, n = now();
+      tvel = dy / Math.max(.008, n - tlast); tlast = n; ty = y;
+      seek(target + dy * K_TOUCH); hideHint();
+    }, { passive: true });
+    addEventListener("touchend", () => { if (ty == null) return; ty = null; seek(target + clamp(tvel * K_TOUCH * .12, -3, 3)); });
+    addEventListener("keydown", (e) => {
+      if (e.target.closest && e.target.closest("a, input")) return;
+      const cur = chapterAt(t);
+      if (e.key === " " && !e.target.closest("button")) { e.preventDefault(); setPlaying(!playing); }
+      else if (["ArrowDown", "ArrowRight", "PageDown"].includes(e.key)) { e.preventDefault(); seek(CH[Math.min(LAST, cur + 1)]); }
+      else if (["ArrowUp", "ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); seek(t - CH[cur] > 1.2 ? CH[cur] : CH[Math.max(0, cur - 1)]); }
+      else if (e.key === "End") seek(END - .01);
+      else if (e.key === "Home") seek(0);
+    });
+    const tl = $("#tl");
+    const tlSeek = (x) => { const r = tl.getBoundingClientRect(); seek(clamp((x - r.left) / r.width) * END, false); };
+    tl.addEventListener("pointerdown", (e) => { tl.setPointerCapture(e.pointerId); tlSeek(e.clientX); });
+    tl.addEventListener("pointermove", (e) => { if (tl.hasPointerCapture(e.pointerId)) tlSeek(e.clientX); });
+    CH.forEach((c) => { const d = document.createElement("i"); d.className = "tick"; d.style.left = (c / END * 100) + "%"; tl.appendChild(d); });
+    const ticks = $$(".tick", tl);
+    $("#play").addEventListener("click", () => setPlaying(!playing));
+    $("#skip").addEventListener("click", () => seek(CH[LAST]));
+    $("#skipLink").addEventListener("click", (e) => { e.preventDefault(); seek(END - .01, false); setTimeout(() => $(".cta a").focus(), 50); });
+    let hinted = false;
+    function hideHint() { if (!hinted) { hinted = true; $("#hint").classList.add("off"); } }
+    setTimeout(hideHint, 7000);
+    document.addEventListener("visibilitychange", () => { if (document.hidden) { wasPlaying = playing; setPlaying(false); } else if (wasPlaying) setPlaying(true); });
+
+    // ---------- Композиция ----------
+    let W = innerWidth, H = innerHeight, portrait = H > W * 1.05;
+    function resize() { W = innerWidth; H = innerHeight; portrait = H > W * 1.05; root.classList.toggle("portrait", portrait); sizeCanvas(); scenes.forEach((s) => s.fRect = null); }
+    addEventListener("resize", resize);
+
+    // ---------- Рендер ----------
+    let px = 0, py = 0, lastCh = -1, irisX = 50, irisY = 50;
+    if (matchMedia("(pointer: fine)").matches && !still) addEventListener("pointermove", (e) => { px = e.clientX / W - .5; py = e.clientY / H - .5; });
+    const stage = $("#stage");
+    function render(tt, rt) {
+      if (!still) { stage.style.setProperty("--ppx", (px * -26).toFixed(2) + "px"); stage.style.setProperty("--ppy", (py * -18).toFixed(2) + "px"); }
+      scenes.forEach((s, i) => {
+        const vis = tt >= s.a - .001 && tt <= s.b + .001;
+        s.el.classList.toggle("on", vis);
+        if (!vis) return;
+        const p = clamp((tt - s.a) / (s.b - s.a));
+        const c = (cfg.inner[i] && cfg.inner[i](p, s, ctx, rt)) || { z: 1, x: 0, y: 0 };
+        let z = c.z, x = c.x, y = c.y, op = 1, clip = "none", origin = "50% 50%";
+        if (i > 0 && tt < s.a + T) {
+          const q = (tt - s.a) / T;
+          clip = still ? "none" : `circle(${io(seg(q, .42, 1)) * 150}% at ${irisX.toFixed(1)}% ${irisY.toFixed(1)}%)`;
+          op = still ? seg(q, .45, .55) : 1;
+          z *= still ? 1 : lerp(1.35, 1, eo(q));
+        }
+        if (i < LAST && tt > s.b - T && s.focus && !still) {
+          const q = (tt - (s.b - T)) / T;
+          const f = s.fRect || (s.fRect = s.focus.getBoundingClientRect());
+          const fx = f.left + f.width / 2, fy = f.top + f.height / 2;
+          origin = `${fx}px ${fy}px`;
+          const fill = clamp(Math.max(W / Math.max(8, f.width), H / Math.max(8, f.height)) * 1.4, 2, 16);
+          const e = ei(q);
+          z *= lerp(1, fill, e);
+          x += (W / 2 - fx) * e; y += (H / 2 - fy) * e;
+          irisX = (fx + (W / 2 - fx) * e) / W * 100; irisY = (fy + (H / 2 - fy) * e) / H * 100;
+        } else s.fRect = null;
+        s.cam.style.transformOrigin = origin;
+        s.cam.style.transform = still ? "none" : `translate3d(${x + px * -14}px, ${y + py * -10}px, 0) scale(${z})`;
+        s.el.style.clipPath = clip;
+        s.el.style.opacity = op;
+        s.el.style.zIndex = i;
+      });
+      const lb = (1 - seg(tt, scenes[LAST].a, scenes[LAST].a + T)) * seg(tt, 1, 4) * (portrait ? 0 : 1);
+      $("#lbT").style.height = $("#lbB").style.height = (lb * 5.2) + "vh";
+      $("#fill").style.width = (tt / END * 100) + "%";
+      const ch = chapterAt(tt);
+      tl.setAttribute("aria-valuenow", Math.round(tt / END * 100));
+      tl.setAttribute("aria-valuetext", scenes[ch].el.dataset.title);
+      ticks.forEach((k, i) => k.classList.toggle("done", i <= ch));
+      if (ch !== lastCh) { if (ch > 0) hideHint(); lastCh = ch; $("#capCh").textContent = scenes[ch].el.dataset.title; $("#capSrc").textContent = scenes[ch].el.dataset.src; if (cfg.beat) cfg.beat(ch, thump); }
+    }
+
+    // ---------- Монтаж жарқылы ----------
+    function flash() { if (still) return; $("#flash").animate([{ opacity: .55 }, { opacity: 0 }], { duration: 260, easing: "ease-out" }); thump(640, .25, .08); }
+
+    // ---------- Шаң мен түйіршік ----------
+    const dc = $("#dust"), dx = dc.getContext("2d"), gc = $("#grain"), gx = gc.getContext("2d");
+    const mote = cfg.ambient || "246,226,176";
+    let motes = [];
+    function sizeCanvas() {
+      const r = Math.min(devicePixelRatio || 1, 1.5);
+      dc.width = W * r; dc.height = H * r; dx.setTransform(r, 0, 0, r, 0, 0);
+      motes = Array.from({ length: still ? 0 : Math.round(Math.min(60, W * H / 24000)) }, () => ({ x: Math.random() * W, y: Math.random() * H, r: .4 + Math.random() * 1.5, v: .05 + Math.random() * .22, ph: Math.random() * 6.28 }));
+    }
+    const grainImg = gx.createImageData(160, 160);
+    function drawAmbient(rt, tt) {
+      dx.clearRect(0, 0, W, H);
+      if (tt < scenes[LAST].a + T * .5) motes.forEach((m) => {
+        m.y -= m.v; m.x += Math.sin(rt * .4 + m.ph) * .15;
+        if (m.y < -10) { m.y = H + 10; m.x = Math.random() * W; }
+        const a = (.1 + .5 * Math.max(0, 1 - Math.abs(m.x - W * .55) / (W * .4))) * (.6 + .4 * Math.sin(rt * 1.3 + m.ph));
+        dx.fillStyle = `rgba(${mote},${a.toFixed(3)})`; dx.beginPath(); dx.arc(m.x, m.y, m.r, 0, 6.283); dx.fill();
+      });
+      if ((rt * 24 | 0) % 2 === 0) {
+        const d = grainImg.data;
+        for (let i = 0; i < d.length; i += 4) { const v = Math.random() * 255 | 0; d[i] = d[i + 1] = d[i + 2] = v; d[i + 3] = 255; }
+        gx.putImageData(grainImg, 0, 0);
+      }
+    }
+
+    // ---------- Дыбыс (WebAudio, әдепкіде өшірулі) ----------
+    let ac = null, master = null;
+    function audioOn() {
+      ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+      master = ac.createGain(); master.gain.value = 0; master.connect(ac.destination);
+      master.gain.linearRampToValueAtTime(.5, ac.currentTime + 2);
+      const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 520; lp.connect(master);
+      (cfg.drone || [55, 82.4, 110.2]).forEach((f, i) => { const o = ac.createOscillator(); o.type = i ? "triangle" : "sine"; o.frequency.value = f; o.detune.value = (i - 1) * 6; const g = ac.createGain(); g.gain.value = i ? .05 : .09; o.connect(g); g.connect(lp); o.start(); });
+    }
+    function audioOff() { if (master) { master.gain.linearRampToValueAtTime(0, ac.currentTime + .6); const m = master; setTimeout(() => m.disconnect(), 700); master = null; } }
+    function thump(freq = 52, dur = 1.1, vol = .5) {
+      if (!master) return;
+      const o = ac.createOscillator(), g = ac.createGain(); o.frequency.setValueAtTime(freq * 2, ac.currentTime); o.frequency.exponentialRampToValueAtTime(freq, ac.currentTime + .12);
+      g.gain.setValueAtTime(vol, ac.currentTime); g.gain.exponentialRampToValueAtTime(.001, ac.currentTime + dur); o.connect(g); g.connect(master); o.start(); o.stop(ac.currentTime + dur);
+    }
+    $("#snd").addEventListener("click", (e) => {
+      const on = e.currentTarget.getAttribute("aria-pressed") !== "true";
+      e.currentTarget.setAttribute("aria-pressed", on); e.currentTarget.setAttribute("aria-label", on ? "Дыбыс: қосулы" : "Дыбыс: өшірулі");
+      on ? audioOn() : audioOff();
+    });
+
+    // ---------- Цикл ----------
+    let prev = now(), lastBar = -1;
+    function frame() {
+      const n = now(), dt = Math.min(.05, n - prev); prev = n;
+      if (interacting) {
+        t += (target - t) * (1 - Math.pow(.0009, dt));
+        if (n - lastInput > .9 && Math.abs(target - t) < .01) interacting = false;
+      } else if (playing) { t = Math.min(END, t + dt); target = t; if (t >= END) setPlaying(false); }
+      const bar = Math.floor(t / BAR);
+      if (bar !== lastBar) { if (playing && !interacting && master && bar > lastBar) thump(49, .9, .16); lastBar = bar; }
+      render(t, n);
+      drawAmbient(n, t);
+      requestAnimationFrame(frame);
+    }
+
+    $$(".lyr").forEach((l) => { if (l.dataset.depth) l.style.setProperty("--d", l.dataset.depth); });
+    $$("[data-draw]").forEach((p) => { p.setAttribute("pathLength", 1); p.style.strokeDasharray = 1; p.style.strokeDashoffset = 1; });
+    resize();
+    if (cfg.setup) cfg.setup(ctx);
+    setPlaying(playing);
+    if (still) $("#hint").textContent = "Тарауларды шкаладан не ← → пернелерімен ауыстырыңыз";
+    Promise.all([document.fonts ? document.fonts.ready : 0, ...$$("img").map((i) => i.decode ? i.decode().catch(() => 0) : 0)]).then(() => { prev = now(); requestAnimationFrame(frame); });
+    window.AO17Film = { seek: (v) => seek(v, false), get t() { return t; }, END, CH, scenes };
+  };
+})();
+
+(() => {
+  const { $, $$, seg, lerp, io, eo } = window.AO17Kit;
+  const sorts = $$("#c0 .sort"), px = $$("#c1 .glyph rect.on"), bits = $$("#c1 .bits i");
+  const CODE = [["cm", "# Алаштың үш сұрағы"], ["", 'sozder = ["Жер", "Тіл", "Білім"]'], ["", "for soz in sozder:"], ["", "    print(soz)"]];
+  const FULL = CODE.map((l) => l[1]).join("\n"), codeEl = $("#code"), outs = $$("#out div");
+  const traces = $$("#c2 .tr"), pulses = $$("#c2 .pulse"), cores = $$("#c2 .core");
+  let lastN = -1;
+  function typeCode(n) {
+    if (n === lastN) return; lastN = n;
+    let left = n, html = "";
+    CODE.forEach(([cls, line], i) => {
+      const part = line.slice(0, Math.max(0, left)); left -= line.length + 1;
+      const esc = part.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+      html += (cls ? `<span class="${cls}">${esc}</span>` : esc) + (i < CODE.length - 1 && left >= 0 ? "\n" : "");
+    });
+    codeEl.innerHTML = html;
+  }
+  AO17Engine({
+    dur: [7.5, 8, 8, 9, 9],
+    drone: [55, 110, 164.8],
+    ambient: "201,238,243",
+    inner: [
+      (p) => {   // әріптер тактімен қалыпқа түседі
+        sorts.forEach((s, i) => { const k = eo(seg(p, .08 + i * .07, .2 + i * .07)); s.style.transform = `translateY(${(1 - k) * -260}px)`; s.style.opacity = k; });
+        return { z: lerp(1, 1.08, io(p)), x: lerp(-16, 10, p), y: 0 };
+      },
+      (p) => {   // нүктелер жанады, сосын биттер
+        px.forEach((r, i) => r.style.opacity = seg(p, .08 + i * .009, .12 + i * .009));
+        bits.forEach((b, i) => b.style.opacity = .12 + .88 * seg(p, .42 + i * .018, .46 + i * .018));
+        return { z: lerp(1.04, 1, eo(p)), x: 0, y: lerp(6, -6, p) };
+      },
+      (p, s, c, rt) => {   // сымдар сызылады, ток жүгіреді, ядролар жанады
+        traces.forEach((r, i) => r.style.strokeDashoffset = 1 - eo(seg(p, .02 + (i % 12) * .02, .3 + (i % 12) * .02)));
+        pulses.forEach((r, i) => { r.style.opacity = seg(p, .3, .4); r.style.strokeDashoffset = -((rt * .35 + i * .13) % 1); });
+        cores.forEach((r, i) => r.style.fill = `rgb(140 200 210 / ${(.08 + .55 * seg(p, .45 + (i % 7) * .03, .5 + (i % 7) * .03) * (.6 + .4 * Math.sin(rt * 3 + i))).toFixed(3)})`);
+        return { z: lerp(1.1, 1.0, eo(p)), x: lerp(20, -10, io(p)), y: 0 };
+      },
+      (p) => {   // код теріледі, сосын нәтиже
+        typeCode(Math.round(FULL.length * seg(p, .06, .5)));
+        outs.forEach((o, i) => o.style.opacity = seg(p, .56 + i * .07, .6 + i * .07));
+        return { z: lerp(1.02, 1.08, io(p)), x: lerp(10, -10, p), y: 0 };
+      },
+      (p) => ({ z: lerp(1.05, 1, eo(p)), x: 0, y: 0 }),
+    ],
+    beat: (ch, thump) => thump(ch === 4 ? 41 : 52, ch === 4 ? 2.2 : 1.1, ch === 4 ? .7 : .4),
+  });
+})();
+</script>
+</body>
+</html>
