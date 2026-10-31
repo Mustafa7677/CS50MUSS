@@ -324,6 +324,7 @@
     initResultReplay();
     initHeroDepth();
     initCrumbs();
+    initChapters();
     initListMotion();
     initKeyboardArrival();
     document.querySelectorAll(".qt-slot").forEach(miniQuote);
@@ -934,6 +935,56 @@
       });
       h.addEventListener("pointerleave", () => { h.style.setProperty("--mx", 0); h.style.setProperty("--my", 0); });
     });
+  }
+  // ---------- Тарау: әр сабақ кино тарауы сияқты («Тарау 03», English курсында «Chapter 03») ----------
+  // Сабақ тақтасында: «Тарау 03 ———» жолы. Курс бетіндегі карточкаларда: бұрышта тарау нөмірі.
+  // Сабақ ашылғанда (сеанста бір рет): тарау картасы - курс, нөмір, алтын сызық, атау; сосын шымылдық көтеріледі.
+  // Тарау картасы жоқ: «қозғалысты азайту», lite режим, артқа/жаңарту, #бөлімге сілтеме, автотест.
+  function chapterNo(text) {
+    const m = String(text || "").match(/(\d+)\s*-\s*(?:апта|сабақ)/) || String(text || "").match(/(\d+)(?!.*\d)/);
+    return m ? String(+m[1]).padStart(2, "0") : "";
+  }
+  function initChapters() {
+    const word = COURSE === "en" ? "Chapter" : "Тарау";
+    document.querySelectorAll(".week-card").forEach((card) => {
+      const num = card.querySelector(".num"), n = num && chapterNo(num.textContent);
+      if (!n || card.querySelector(".wc-chap")) return;
+      const el = document.createElement("span");
+      el.className = "wc-chap"; el.setAttribute("aria-hidden", "true"); el.textContent = n;
+      card.append(el);
+    });
+    const head = PAGE && document.querySelector("#main .lecture-head");
+    const num = head && head.querySelector(".num"), h1 = head && head.querySelector("h1");
+    const n = num && chapterNo(num.textContent);
+    if (!n || !h1 || head.querySelector(".chap")) return;
+    const row = document.createElement("div");
+    row.className = "chap";
+    row.innerHTML = `<span class="chap-w" aria-hidden="true">${word}</span><span class="chap-n" aria-hidden="true">${n}</span><span class="chap-r" aria-hidden="true"></span>`;
+    head.insertBefore(row, num);
+    row.append(num);
+    head.classList.add("has-chap");
+    const navType = ((performance.getEntriesByType && performance.getEntriesByType("navigation")[0]) || {}).type;
+    if (motionStill() || root.classList.contains("lite") || navigator.webdriver || location.hash || navType === "back_forward" || navType === "reload") return;
+    const key = "ao17-chap:" + PAGE;
+    try { if (sessionStorage.getItem(key)) return; sessionStorage.setItem(key, "1"); } catch (e) { return; }
+    const meta = COURSE_META.find((x) => x.id === COURSE);
+    const card = document.createElement("div");
+    card.className = "chap-card";
+    card.setAttribute("aria-hidden", "true");
+    card.style.setProperty("--lc", getComputedStyle(head).getPropertyValue("--lc") || "#c9a24a");
+    card.innerHTML = `<div class="cc-in"><p class="cc-k">${escapeHtml(meta ? meta.name : "AO17")}</p><p class="cc-w">${word}</p><p class="cc-n">${n}</p><span class="cc-r"></span><p class="cc-t">${escapeHtml(h1.textContent.replace(/\s+/g, " ").trim())}</p></div>`;
+    document.body.append(card);
+    let done = false;
+    const close = () => {
+      if (done) return; done = true;
+      card.classList.add("out");
+      removeEventListener("keydown", close); removeEventListener("wheel", close);
+      setTimeout(() => card.remove(), 900);
+    };
+    setTimeout(close, 1900);
+    card.addEventListener("pointerdown", close);
+    addEventListener("keydown", close);
+    addEventListener("wheel", close, { passive: true });
   }
   // ---------- Навигациялық жол: AO17 › академия › курс › сабақ ----------
   // Сайт картасынан (routeOf) құрылады; беттер арасында бір элемент ретінде жылжиды (view-transition-name: ao-crumbs).
