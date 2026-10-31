@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b0806">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../assets/fonts/fonts.css">
+<title>Әріптен кодқа: Бағдарламалау академиясы - AO17</title>
+<meta name="description" content="AO17 Бағдарламалау академиясының фильм-прологы: баспахананың металл әрпінен битке, транзисторға және кодқа дейін.">
+<meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+<!-- © 2026 Sagid Mustafa. Бастапқы мәтін: film/src/academy-code.html; жинау: python3 tools/make_film.py -->
+<style>
+/*{{BASE}}*/
+/* ==== «Әріптен кодқа»: металл әріп -> бит -> ток -> код. Алтын (баспа) суық фосфорға (экран) біртіндеп ауысады. ==== */
+:root { --ac: #8cc8d2; --ac-hi: #c9eef3; --mono: ui-monospace, "SF Mono", Menlo, Consolas, "Liberation Mono", monospace; }
+
+/* 0 · Баспа әрпі */
+#c0 .stick { left: 50%; top: 31%; width: min(62vw, 96vh); --cx: -50%; --cy: -50%; }
+#c0 .stick svg { width: 100%; height: auto; display: block; overflow: visible; }
+#c0 .txt { left: 8%; top: 52%; width: 56%; }
+
+/* 1 · Әріп - сан */
+#c1 { background: radial-gradient(60% 60% at 40% 45%, #141a1c, var(--black) 75%); }
+#c1 .glyph { left: 30%; top: 48%; width: min(30vw, 54vh); --cx: -50%; --cy: -50%; }
+#c1 .glyph svg { width: 100%; height: auto; display: block; }
+#c1 .glyph rect { fill: rgb(140 200 210 / .06); stroke: rgb(140 200 210 / .14); stroke-width: .6; }
+#c1 .glyph rect.on { fill: var(--ac); }
+#c1 .num { left: 56%; top: 20%; width: 38%; }
+#c1 .num .u { font: 700 clamp(30px, 4vw, 60px)/1 var(--mono); color: var(--ac-hi); letter-spacing: .02em; }
+#c1 .num .d { margin: 10px 0 18px; font: italic 400 clamp(15px, 1.4vw, 19px)/1.4 var(--serif); color: rgb(232 220 194 / .7); }
+#c1 .bits { display: flex; gap: .8em; font: 700 clamp(20px, 2.4vw, 36px)/1 var(--mono); color: var(--ac); letter-spacing: .08em; }
+#c1 .bits i { font-style: normal; opacity: .12; }
+#c1 .txt { left: 56%; top: 55%; width: 36%; }
+
+/* 2 · Бит - ток */
+#c2 { background: radial-gradient(70% 70% at 50% 50%, #0f1a1c, #070a0b 80%); }
+#c2 .board { left: 50%; top: 50%; width: max(100vw, 166vh); --cx: -50%; --cy: -50%; }
+#c2 .board svg { width: 100%; height: auto; display: block; }
+#c2 .tr { fill: none; stroke: rgb(140 200 210 / .32); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+#c2 .pulse { fill: none; stroke: var(--ac-hi); stroke-width: 3; stroke-linecap: round; stroke-dasharray: .03 .25; filter: drop-shadow(0 0 4px var(--ac)); }
+#c2 .chip rect.core { fill: #10262a; stroke: rgb(140 200 210 / .4); }
+#c2 .txt { left: 6%; top: 10%; width: 32%; padding: 18px 20px; background: linear-gradient(90deg, rgb(7 10 11 / .9), rgb(7 10 11 / .6)); }
+
+/* 3 · Код */
+#c3 { background: radial-gradient(60% 60% at 40% 50%, #121719, var(--black) 75%); }
+#c3 .ed { left: 34%; top: 50%; width: min(52vw, 92vh); --cx: -50%; --cy: -50%; border-radius: 10px; overflow: hidden; background: #0d1214; box-shadow: 0 50px 90px -30px #000, 0 0 0 1px rgb(140 200 210 / .18); }
+#c3 .bar3 { display: flex; align-items: center; gap: 7px; padding: 10px 14px; background: #121a1d; font: 400 12.5px var(--mono); color: rgb(201 238 243 / .6); }
+#c3 .bar3 i { width: 10px; height: 10px; border-radius: 50%; background: rgb(201 238 243 / .18); }
+#c3 .bar3 span { margin-left: 8px; }
+#c3 pre { margin: 0; padding: 18px 20px; min-height: 9.2em; font: 400 clamp(13px, 1.35vw, 19px)/1.6 var(--mono); color: #d8eef1; white-space: pre; }
+#c3 pre .cm { color: rgb(201 238 243 / .45); font-style: italic; }
+#c3 .out { border-top: 1px solid rgb(140 200 210 / .16); padding: 12px 20px 16px; font: 400 clamp(13px, 1.35vw, 19px)/1.6 var(--mono); color: var(--gold-hi); min-height: 6.4em; }
+#c3 .out div { opacity: 0; }
+#c3 .out div::before { content: "> "; color: rgb(201 238 243 / .4); }
+#c3 .caret { display: inline-block; width: .55em; height: 1.1em; vertical-align: -.2em; background: var(--ac); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+#c3 .txt { left: 66%; top: 32%; width: 28%; }
+
+/* финал */
+.fin { --fin-bg: #12191b; }
+.fin .art { left: 0; right: 0; top: 0; bottom: 0; opacity: .5; }
+.fin .art i { position: absolute; top: -20%; font: 400 12px/1.6 var(--mono); color: rgb(140 200 210 / .22); white-space: pre; animation: codeflow 30s linear infinite; }
+@keyframes codeflow { from { transform: translateY(0); } to { transform: translateY(-50%); } }
+
+/* ==== Телефон ==== */
+.portrait #c0 .stick { top: 30%; width: 92vw; }
+.portrait #c0 .txt { left: 7%; right: 7%; top: 50%; }
+.portrait #c1 .glyph { left: 50%; top: 24%; width: 52vw; }
+.portrait #c1 .num { left: 7%; right: 7%; top: 44%; width: auto; }
+.portrait #c1 .num .d { margin: 6px 0 10px; }
+.portrait #c1 .bits { font-size: 22px; }
+.portrait #c1 .txt { left: 7%; right: 7%; top: 63%; width: auto; }
+.portrait #c2 .board { width: 210vw; top: 32%; }
+.portrait #c2 .txt { left: 5%; right: 5%; top: auto; bottom: 22%; width: auto; }
+.portrait #c3 .ed { left: 50%; top: 34%; width: 92vw; }
+.portrait #c3 .txt { left: 7%; right: 7%; top: auto; bottom: 20%; width: auto; }
+.portrait .txt .lead { font-size: 14.5px; line-height: 1.5; }
+.portrait .txt .h-m { font-size: 26px; }
+</style>
+</head>
+<body>
+<!--{{CHROME_TOP}}-->
+
+<main id="stage" aria-label="Әріптен кодқа: Бағдарламалау академиясының фильмі">
+  <!-- 0 · БАСПА ӘРПІ -->
+  <section class="sc" id="c0" data-title="Металл әріп" data-src="Көркем кадр: баспаханадағы теру қалыбы">
+    <div class="cam">
+      <div class="desk"></div>
+      <div class="lamp" style="left:52%"></div>
+      <div class="lyr stick" data-depth="0.5">
+        <svg viewBox="0 0 620 220" aria-hidden="true">
+          <defs>
+            <linearGradient id="met" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b9b3a6"/><stop offset=".5" stop-color="#7d776c"/><stop offset="1" stop-color="#4a463f"/></linearGradient>
+            <linearGradient id="face" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#3a352e"/><stop offset="1" stop-color="#1d1a16"/></linearGradient>
+          </defs>
+          <rect x="0" y="176" width="620" height="26" rx="3" fill="#5a3d24"/><rect x="0" y="176" width="620" height="5" fill="#7a5634"/>
+          <rect x="0" y="30" width="16" height="172" fill="#4a3220"/>
+          <g id="sorts" font-family="PT Serif, serif" font-weight="700" font-size="96" text-anchor="middle">
+            <g class="sort"><rect x="40" y="40" width="100" height="136" rx="3" fill="url(#met)"/><rect x="48" y="48" width="84" height="108" fill="url(#face)"/><text x="90" y="138" fill="#d9d2c4" transform="translate(180 0) scale(-1 1)">Қ</text></g>
+            <g class="sort"><rect x="150" y="40" width="100" height="136" rx="3" fill="url(#met)"/><rect x="158" y="48" width="84" height="108" fill="url(#face)"/><text x="200" y="138" fill="#d9d2c4" transform="translate(400 0) scale(-1 1)">А</text><rect x="190" y="60" width="20" height="20" fill="none" data-focus/></g>
+            <g class="sort"><rect x="260" y="40" width="100" height="136" rx="3" fill="url(#met)"/><rect x="268" y="48" width="84" height="108" fill="url(#face)"/><text x="310" y="138" fill="#d9d2c4" transform="translate(620 0) scale(-1 1)">З</text></g>
+            <g class="sort"><rect x="370" y="40" width="100" height="136" rx="3" fill="url(#met)"/><rect x="378" y="48" width="84" height="108" fill="url(#face)"/><text x="420" y="138" fill="#d9d2c4" transform="translate(840 0) scale(-1 1)">А</text></g>
+            <g class="sort"><rect x="480" y="40" width="100" height="136" rx="3" fill="url(#met)"/><rect x="488" y="48" width="84" height="108" fill="url(#face)"/><text x="530" y="138" fill="#d9d2c4" transform="translate(1060 0) scale(-1 1)">Қ</text></g>
+          </g>
+        </svg>
+      </div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">ХХ ғасырдың басы · баспахана</p>
+        <h2 class="h-m">Әр әріп қолмен терілді</h2>
+        <p class="lead" style="margin-top:12px">Газет беті мыңдаған металл әріптен жиналды. Әр әріп - айнадағыдай теріс құйылған бір қалып.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 1 · ӘРІП - САН -->
+  <section class="sc" id="c1" data-title="Әріп - сан" data-src="Unicode: Ә = U+04D8; UTF-8: D3 98">
+    <div class="cam">
+      <div class="lyr glyph" data-depth="0.5"><svg viewBox="0 0 80 100" aria-hidden="true"><!--{{GLYPH}}--></svg></div>
+      <div class="lyr num" data-depth="0.8">
+        <div class="u">Ә = U+04D8</div>
+        <div class="d">Unicode кестесіндегі № 1240. Жадта (UTF-8) - екі байт:</div>
+        <div class="bits" aria-label="11010011 10011000"><span><!--{{BITS1}}--></span><span><!--{{BITS2}}--></span></div>
+      </div>
+      <div class="lyr txt" data-depth="1">
+        <h2 class="h-m">Бүгін әріп - сан</h2>
+        <p class="lead" style="margin-top:12px">Компьютер «Ә» әрпін нөмірімен таниды. Экранда ол - жанған нүктелер, жадта - он алты бит: нөлдер мен бірлер.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 2 · БИТ - ТОК -->
+  <section class="sc" id="c2" data-title="Бит - ток" data-src="Көркем кадр: процессор мен оның сымдары, схема">
+    <div class="cam">
+      <div class="lyr board" data-depth="0.4">
+        <svg viewBox="0 0 1000 600" aria-hidden="true"><!--{{BOARD}}--></svg>
+      </div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">Бір бит - бір қақпа</p>
+        <h2 class="h-m">Ток өтеді - 1. Өтпейді - 0.</h2>
+        <p class="lead" style="margin-top:12px">Транзистор - кішкентай қақпа. Қазіргі процессордың ішінде олар миллиардтап саналады, әрқайсысы секундына миллиард рет ауысады.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3 · КОД -->
+  <section class="sc" id="c3" data-title="Код" data-src="Python: бағдарлама шын, оны AO17 академиясында браузерде іске қосуға болады">
+    <div class="cam">
+      <div class="lyr ed" data-depth="0.6">
+        <div class="bar3"><i></i><i></i><i></i><span>alash.py</span></div>
+        <pre><code id="code"></code><span class="caret"></span></pre>
+        <div class="out" id="out"><div>Жер</div><div>Тіл</div><div data-focus>Білім</div></div>
+      </div>
+      <div class="lyr txt" data-depth="1">
+        <p class="kicker">Код</p>
+        <h2 class="h-m">Процессорды сөйлететін - код</h2>
+        <p class="lead" style="margin-top:12px">Төрт жол Python, және экранда Алаштың үш сұрағы. Ана тілінде жазылған алғашқы бағдарлама осындай қарапайым басталады.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 · ФИНАЛ -->
+  <section class="sc fin" id="c4" data-title="Бағдарламалау академиясы" data-src="AO17 · CS50x, Python, SQL, AI, Web, C++, Java">
+    <div class="cam">
+      <div class="lyr art" data-depth="0.2" aria-hidden="true"><!--{{CODE}}--></div>
+      <div class="lyr hd" data-depth="0.8">
+        <p class="kicker">AO17 · Әріптен кодқа</p>
+        <h1 class="h-l">Бағдарламалау академиясы</h1>
+        <p class="lead">CS50x, Python, SQL, AI, Web, C++, Java: ана тілінде, тегін. Код браузерде орындалады, тапсырмалар бірден тексеріледі.</p>
+        <nav class="cta" aria-label="Әрі қарай"><a class="go" href="../../programming.html">Академияға кіру</a><a href="../../index.html">AO17 басты беті</a></nav>
+        <p class="more">Басқа фильмдер: <a href="../math/">Математика</a><a href="../en/">English</a><a href="../">«Шақыру»</a></p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!--{{CHROME_UI}}-->
+<script>
+/*{{ENGINE}}*/
+(() => {
+  const { $, $$, seg, lerp, io, eo } = window.AO17Kit;
+  const sorts = $$("#c0 .sort"), px = $$("#c1 .glyph rect.on"), bits = $$("#c1 .bits i");
+  const CODE = [["cm", "# Алаштың үш сұрағы"], ["", 'sozder = ["Жер", "Тіл", "Білім"]'], ["", "for soz in sozder:"], ["", "    print(soz)"]];
+  const FULL = CODE.map((l) => l[1]).join("\n"), codeEl = $("#code"), outs = $$("#out div");
+  const traces = $$("#c2 .tr"), pulses = $$("#c2 .pulse"), cores = $$("#c2 .core");
+  let lastN = -1;
+  function typeCode(n) {
+    if (n === lastN) return; lastN = n;
+    let left = n, html = "";
+    CODE.forEach(([cls, line], i) => {
+      const part = line.slice(0, Math.max(0, left)); left -= line.length + 1;
+      const esc = part.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+      html += (cls ? `<span class="${cls}">${esc}</span>` : esc) + (i < CODE.length - 1 && left >= 0 ? "\n" : "");
+    });
+    codeEl.innerHTML = html;
+  }
+  AO17Engine({
+    dur: [7.5, 8, 8, 9, 9],
+    drone: [55, 110, 164.8],
+    ambient: "201,238,243",
+    inner: [
+      (p) => {   // әріптер тактімен қалыпқа түседі
+        sorts.forEach((s, i) => { const k = eo(seg(p, .08 + i * .07, .2 + i * .07)); s.style.transform = `translateY(${(1 - k) * -260}px)`; s.style.opacity = k; });
+        return { z: lerp(1, 1.08, io(p)), x: lerp(-16, 10, p), y: 0 };
+      },
+      (p) => {   // нүктелер жанады, сосын биттер
+        px.forEach((r, i) => r.style.opacity = seg(p, .08 + i * .009, .12 + i * .009));
+        bits.forEach((b, i) => b.style.opacity = .12 + .88 * seg(p, .42 + i * .018, .46 + i * .018));
+        return { z: lerp(1.04, 1, eo(p)), x: 0, y: lerp(6, -6, p) };
+      },
+      (p, s, c, rt) => {   // сымдар сызылады, ток жүгіреді, ядролар жанады
+        traces.forEach((r, i) => r.style.strokeDashoffset = 1 - eo(seg(p, .02 + (i % 12) * .02, .3 + (i % 12) * .02)));
+        pulses.forEach((r, i) => { r.style.opacity = seg(p, .3, .4); r.style.strokeDashoffset = -((rt * .35 + i * .13) % 1); });
+        cores.forEach((r, i) => r.style.fill = `rgb(140 200 210 / ${(.08 + .55 * seg(p, .45 + (i % 7) * .03, .5 + (i % 7) * .03) * (.6 + .4 * Math.sin(rt * 3 + i))).toFixed(3)})`);
+        return { z: lerp(1.1, 1.0, eo(p)), x: lerp(20, -10, io(p)), y: 0 };
+      },
+      (p) => {   // код теріледі, сосын нәтиже
+        typeCode(Math.round(FULL.length * seg(p, .06, .5)));
+        outs.forEach((o, i) => o.style.opacity = seg(p, .56 + i * .07, .6 + i * .07));
+        return { z: lerp(1.02, 1.08, io(p)), x: lerp(10, -10, p), y: 0 };
+      },
+      (p) => ({ z: lerp(1.05, 1, eo(p)), x: 0, y: 0 }),
+    ],
+    beat: (ch, thump) => thump(ch === 4 ? 41 : 52, ch === 4 ? 2.2 : 1.1, ch === 4 ? .7 : .4),
+  });
+})();
+</script>
+</body>
+</html>
