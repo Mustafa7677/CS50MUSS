@@ -13,7 +13,7 @@
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
 | B · Sagid Mustafa-ның дербес әзірлемесі | 1157 |
-| C · Үшінші тарап | 72 |
+| C · Үшінші тарап | 84 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 56 |
 
 ## 2. Компоненттер кестесі
@@ -58,7 +58,7 @@
 | `assets/vendor/qrcode/**` | **C-qrcode** QR Code Generator for JavaScript (1 файл) | Kazuhiko Arase | MIT | расталған |
 | `assets/vendor/flask/**` | **C-flask-bundle** Пакет Flask для Pyodide: Flask, Werkzeug, Jinja2, Click, ItsDangerous, Blinker, MarkupSafe (1 файл) | Pallets Projects и авторы пакетов | BSD-3-Clause (Flask, Werkzeug, Jinja2, Click, ItsDangerous, MarkupSafe), MIT (Blinker) | расталған |
 | `assets/img/alash/**` | **C-portraits** Портреты деятелей Алаш (13 фотографий) (13 файл) | Разные авторы; для каждого портрета сведения в assets/data/portraits.js | Public domain / CC (по каждому изображению, см. portraits.js); портрет Мұхтар Шаханов - 'сайт авторы ұсынған' | тексеру керек |
-| `assets/img/film/**`<br>`assets/data/film-media.json` | **C-film-media** «Шақыру» фильмінің архивтік суреттері (Wikimedia Commons) (0 файл) | Әртүрлі авторлар; әр сурет үшін автор, лицензия мен дерек көзі assets/data/film-media.json ішінде | Public domain / CC0 / CC BY / CC BY-SA (әр суретке бөлек, film-media.json) | тексеру керек |
+| `assets/img/film/**`<br>`assets/data/film-media.json` | **C-film-media** «Шақыру» фильмінің архивтік суреттері (Wikimedia Commons) (12 файл) | Әртүрлі авторлар; әр сурет үшін автор, лицензия мен дерек көзі assets/data/film-media.json ішінде | Public domain / CC0 / CC BY / CC BY-SA (әр суретке бөлек, film-media.json) | тексеру керек |
 | `assets/data/portraits.js` | **C-portraits-data** Реестр происхождения портретов (1 файл) | Sagid Mustafa (реестр); сведения об авторах изображений - сторонние | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 
 ### Ескертулер
@@ -101,7 +101,7 @@
 - **C-qrcode**: Заголовок файла. «QR Code» - зарегистрированный товарный знак DENSO WAVE.
 - **C-flask-bundle**: Сборка tools/make_flask_bundle.py из официальных пакетов PyPI: Flask 3.1.3, Werkzeug 3.1.9, Jinja2 3.1.6, Click 8.5.0, ItsDangerous 2.2.0, MarkupSafe 3.0.2, Blinker 1.9.0. Тексты лицензий лежат внутри архива в папке licenses/ (проверено).
 - **C-portraits**: Для портрета Шаханова права, согласие и источник не подтверждены.
-- **C-film-media**: tools/fetch_film_media.py тек еркін лицензиялыларды алады; CC BY/BY-SA үшін автор фильмде көрсетіледі.
+- **C-film-media**: 11 сурет, бәрі қоғамдық игілік (1925 жылға дейінгі фото, ашықхат, газет, кітап, карта); Википедия мен Wikimedia Commons-тан таңдалды. tools/fetch_film_media.py тек еркін лицензиялыларды алады; CC BY/BY-SA қосылса, автор фильмде көрсетіледі.
 - **C-portraits-data**: Служебный реестр; сохранять без изменений при публикации портретов.
 
 ## 3. 45 лекция

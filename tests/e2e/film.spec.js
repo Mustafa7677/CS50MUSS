@@ -31,19 +31,30 @@ test("фильм өзі жүреді; скролл алға-артқа жүрг�
   expect(errs).toEqual([]);
 });
 
-test("тарих адал: әр тарауда дерек көзі белгісі; архивтік фото мен реконструкция бөлек белгіленген", async ({ page }) => {
+test("тарих адал: әр тарауда дерек көзі; архив пен реконструкция бөлек белгіленген; әр архив суретінің дерек көзі жазылған", async ({ page }) => {
   await blockFonts(page.context());
   await page.goto("film/index.html");
   const src = await page.locator("#stage .sc").evaluateAll((s) => s.map((n) => n.dataset.src));
   expect(src.length).toBe(9);
   src.forEach((v) => expect(v && v.length).toBeGreaterThan(3));
-  for (const id of ["s2", "s3", "s4"]) {
-    await expect(page.locator(`#${id} .tag`)).toContainText("РЕКОНСТРУКЦИЯ");
-    expect(await page.locator(`#${id}`).getAttribute("data-src")).toContain("архив");
+  for (const id of ["s2", "s3", "s4", "s6"]) expect(await page.locator(`#${id}`).getAttribute("data-src")).toContain("архив");
+  await expect(page.locator("#s2 .tag")).toContainText("РЕКОНСТРУКЦИЯ");   // петиция беті - қайта жасалған
+  await expect(page.locator("#s3 .tag")).toContainText("АРХИВ");           // «Оян, қазақ!» мұқабасы - түпнұсқа көшірме
+  await expect(page.locator("#s4 .tag")).toContainText("22 наурыз 1913");  // «Қазақ» газетінің нақты нөмірі
+  // әр сурет сипатталған; үш тұлғаның портреті бар
+  const alts = await page.locator("#stage img").evaluateAll((im) => im.map((i) => i.alt));
+  alts.forEach((a) => expect(a.length).toBeGreaterThan(10));
+  for (const n of ["Әлихан Бөкейхан", "Ахмет Байтұрсынұлы", "Міржақып Дулатұлы"]) expect(alts.some((a) => a.startsWith(n))).toBe(true);
+  // фильмдегі әр архив файлының дерек көзі мен лицензиясы бар
+  const fs = require("fs"), path = require("path");
+  const root = path.join(__dirname, "..", "..");
+  const credits = JSON.parse(fs.readFileSync(path.join(root, "assets/data/film-media.json"), "utf8"));
+  for (const f of fs.readdirSync(path.join(root, "assets/img/film"))) {
+    const c = credits[f.replace(/\.jpg$/, "")];
+    expect(c, f).toBeTruthy();
+    expect(c.license).toMatch(/Public domain|CC/);
+    expect(c.file).toBe(`assets/img/film/${f}`);
   }
-  // тек түпнұсқа архивтік фотосуреттер (қоғамдық игілік): Бөкейхан, Байтұрсынұлы, Дулатұлы
-  const alts = await page.locator("#stage img").evaluateAll((im) => [...new Set(im.map((i) => i.alt.split(",")[0]))].sort());
-  expect(alts).toEqual(["Ахмет Байтұрсынұлы", "Міржақып Дулатұлы", "Әлихан Бөкейхан"]);
   await expect(page.locator("#s2 .lead")).toContainText("14 500");
   await expect(page.locator("#s6 .lead")).toContainText("5-13 желтоқсан 1917");
 });
