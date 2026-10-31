@@ -112,8 +112,7 @@ def chrome_top(skip_label):
 <div class="top">
   <a class="brand" href="../../index.html" aria-label="AO17 басты беті"><svg viewBox="0 0 462 136" aria-hidden="true">{logo()}</svg></a>
   <div class="r">
-    <button class="btn" id="snd" type="button" aria-pressed="false" aria-label="Дыбыс: өшірулі"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/></svg><span>Дыбыс</span></button>
-    <button class="btn" id="skip" type="button">Өткізу</button>
+    <button class="skipb" id="skip" type="button">Өткізу</button>
   </div>
 </div>'''
 
@@ -127,6 +126,7 @@ CHROME_UI = '''<canvas id="dust" aria-hidden="true"></canvas>
   <div class="cap" aria-live="polite"><span class="ch" id="capCh"></span><span class="src" id="capSrc"></span></div>
   <div class="bar">
     <button class="btn" id="play" type="button" aria-label="Тоқтату"><svg viewBox="0 0 24 24" aria-hidden="true"><path id="playIco" d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg></button>
+    <button class="btn" id="snd" type="button" aria-pressed="false" aria-label="Дыбыс: өшірулі"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z"/></svg></button>
     <div class="tl" id="tl" role="slider" tabindex="0" aria-label="Фильмнің уақыты" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="track"></div><div class="fill" id="fill"></div></div>
   </div>
 </div>'''

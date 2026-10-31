@@ -20,7 +20,8 @@ function files() {
 }
 // Harvard бейімдеулері туралы тікелей тұжырымдар (45 = lect_harvard) - құқықтық беттерде қалады
 const LEGAL = /^(copyright\.html|LICENSE.*\.md|COPYRIGHT\.md|THIRD-PARTY-LICENSES\.md|TAKEDOWN\.md|README\.md)$/;
-const text = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8").replace(/<(script|style)\b(?![^>]*ld\+json)[^>]*>[\s\S]*?<\/\1>/g, " ");
+const text = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8").replace(/<(script|style)\b(?![^>]*ld\+json)[^>]*>[\s\S]*?<\/\1>/g, " ")
+  .replace(/<svg\b[\s\S]*?<\/svg>/g, " ");   // SVG сызбаның координаттары (мысалы, 356.1) - оқушы көретін сан емес
 // «N <бірлік>»: CS50 курсы сияқты сөз ішіндегі санды ұстамау үшін алдында әріп/цифр болмауы керек
 const re = (unit) => new RegExp(`(?<![\\w.])(\\d+)\\+?\\s*(?:${unit})`, "gu");
 const nums = (s, unit) => [...s.matchAll(re(unit))].map((m) => +m[1]);
