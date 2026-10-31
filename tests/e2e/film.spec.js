@@ -118,7 +118,7 @@ test("фильм кезінде тек «Өткізу» көрінеді, дер
   await page.goto("film/index.html");
   await page.waitForFunction(() => window.AO17Film);
   await expect(page.locator("html")).toHaveClass(/idle/, { timeout: 6000 });   // басқару өзі жасырылады
-  expect(await page.locator("#ui").evaluate((n) => getComputedStyle(n).opacity)).toBe("0");
+  await expect.poll(() => page.locator("#ui").evaluate((n) => +getComputedStyle(n).opacity)).toBeLessThan(.01);   // 0.7 с біртіндеп сөнеді
   await expect(page.locator("#skip")).toBeVisible();
   await expect(page.locator("#capSrc")).toBeHidden();
   await expect(page.locator(".tag").first()).toBeHidden();
