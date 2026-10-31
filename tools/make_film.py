@@ -3,7 +3,7 @@
 """AO17 «Шақыру» фильмін бір файлға жинайды: film/src/film.html -> film/index.html.
 
 Шығыс файл дербес: PT Serif қаріптері (OFL) мен архивтік суреттер (assets/img/film/, Википедия / Wikimedia Commons,
-қоғамдық игілік; дерек көздері assets/data/film-media.json ішінде) base64 болып ішіне енеді, сондықтан фильмді интернетсіз де, жеке файл ретінде жіберіп те ашуға болады.
+қоғамдық игілік, бір фото автордікі; дерек көздері assets/data/film-media.json ішінде) base64 болып ішіне енеді, сондықтан фильмді интернетсіз де, жеке файл ретінде жіберіп те ашуға болады.
 Генерацияланатын бөліктер (қолжазба жолдары, карта, код бағандары) кездейсоқ емес: тұқымы тұрақты, нәтиже әр жинауда бірдей.
 
     python3 tools/make_film.py
@@ -109,6 +109,7 @@ def main():
         "{{IMG_ORB_VOKZAL}}": img("orenburg-vokzal"),
         "{{IMG_ORB_SOBRANIE}}": img("orenburg-sobranie"),
         "{{IMG_ESEP}}": img("esep-quraly"),
+        "{{IMG_TILQURAL}}": img("til-qural"),
         "{{IMG_MAP_SEMIPALATINSK}}": img("map-semipalatinsk"),
     }
     for k, v in rep.items():

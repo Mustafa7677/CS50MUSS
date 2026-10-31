@@ -52,7 +52,7 @@ test("тарих адал: әр тарауда дерек көзі; архив �
   for (const f of fs.readdirSync(path.join(root, "assets/img/film"))) {
     const c = credits[f.replace(/\.jpg$/, "")];
     expect(c, f).toBeTruthy();
-    expect(c.license).toMatch(/Public domain|CC/);
+    expect(c.license).toMatch(/Public domain|CC|рұқсатымен/);
     expect(c.file).toBe(`assets/img/film/${f}`);
   }
   await expect(page.locator("#s2 .lead")).toContainText("14 500");
