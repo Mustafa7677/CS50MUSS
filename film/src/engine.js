@@ -68,7 +68,26 @@
     CH.forEach((c) => { const d = document.createElement("i"); d.className = "tick"; d.style.left = (c / END * 100) + "%"; tl.appendChild(d); });
     const ticks = $$(".tick", tl);
     $("#play").addEventListener("click", () => setPlaying(!playing));
-    $("#skip").addEventListener("click", () => seek(CH[LAST]));
+    // Академияға кірер алдындағы пролог (?intro=1): «Өткізу» бірден академияға апарады,
+    // фильм біткен соң академия 4 с кейін өзі ашылады (кез келген әрекет мұны тоқтатады - таңдау адамда қалады).
+    const intro = /[?&]intro=1/.test(location.search), home = $(".cta a.go") && $(".cta a.go").href;
+    $("#skip").addEventListener("click", () => { if (intro && home) location.href = home; else seek(CH[LAST]); });
+    let autoGo = 0, autoOff = false;
+    function armAuto() {
+      if (!intro || !home || autoOff || autoGo) return;
+      root.classList.add("auto");
+      autoGo = setTimeout(() => { location.href = home; }, 4000);
+    }
+    function cancelAuto() { clearTimeout(autoGo); autoGo = 0; root.classList.remove("auto"); }
+    // Басқару фильм жүріп тұрғанда жасырылады; тышқан, тач не перне қайта көрсетеді. Шетте тек «Өткізу» қалады.
+    let idleT = 0;
+    function wake(e) {
+      root.classList.remove("idle"); clearTimeout(idleT);
+      if (e && e.type !== "focusin" && t > END - .3) { autoOff = true; cancelAuto(); }
+      idleT = setTimeout(() => { if (playing && chapterAt(t) < LAST && !$("#ui").contains(document.activeElement)) root.classList.add("idle"); else wake(); }, 2600);
+    }
+    ["pointerdown", "keydown", "touchstart", "wheel", "focusin"].forEach((ev) => addEventListener(ev, wake, { passive: true }));
+    addEventListener("pointermove", () => { root.classList.remove("idle"); clearTimeout(idleT); idleT = setTimeout(() => wake(), 0); }, { passive: true });
     $("#skipLink").addEventListener("click", (e) => { e.preventDefault(); seek(END - .01, false); setTimeout(() => $(".cta a").focus(), 50); });
     let hinted = false;
     function hideHint() { if (!hinted) { hinted = true; $("#hint").classList.add("off"); } }
@@ -123,7 +142,7 @@
       tl.setAttribute("aria-valuenow", Math.round(tt / END * 100));
       tl.setAttribute("aria-valuetext", scenes[ch].el.dataset.title);
       ticks.forEach((k, i) => k.classList.toggle("done", i <= ch));
-      if (ch !== lastCh) { if (ch > 0) hideHint(); lastCh = ch; $("#capCh").textContent = scenes[ch].el.dataset.title; $("#capSrc").textContent = scenes[ch].el.dataset.src; if (cfg.beat) cfg.beat(ch, thump); }
+      if (ch !== lastCh) { if (ch > 0) hideHint(); lastCh = ch; $("#skip").hidden = ch === LAST; $("#capCh").textContent = scenes[ch].el.dataset.title; $("#capSrc").textContent = scenes[ch].el.dataset.src; if (cfg.beat) cfg.beat(ch, thump); }
     }
 
     // ---------- Монтаж жарқылы ----------
@@ -182,7 +201,7 @@
       if (interacting) {
         t += (target - t) * (1 - Math.pow(.0009, dt));
         if (n - lastInput > .9 && Math.abs(target - t) < .01) interacting = false;
-      } else if (playing) { t = Math.min(END, t + dt); target = t; if (t >= END) setPlaying(false); }
+      } else if (playing) { t = Math.min(END, t + dt); target = t; if (t >= END) { setPlaying(false); armAuto(); } }
       const bar = Math.floor(t / BAR);
       if (bar !== lastBar) { if (playing && !interacting && master && bar > lastBar) thump(49, .9, .16); lastBar = bar; }
       render(t, n);
@@ -195,6 +214,7 @@
     resize();
     if (cfg.setup) cfg.setup(ctx);
     setPlaying(playing);
+    wake();
     if (still) $("#hint").textContent = "Тарауларды шкаладан не ← → пернелерімен ауыстырыңыз";
     Promise.all([document.fonts ? document.fonts.ready : 0, ...$$("img").map((i) => i.decode ? i.decode().catch(() => 0) : 0)]).then(() => { prev = now(); requestAnimationFrame(frame); });
     window.AO17Film = { seek: (v) => seek(v, false), get t() { return t; }, END, CH, scenes };

@@ -94,3 +94,40 @@ test("«Әріптен кодқа»: Ә әрпінің коды мен байт�
   await expect(page.locator("#c1 .bits")).toHaveAttribute("aria-label", bytes);
   expect((await page.locator("#c1 .bits").textContent()).replace(/\s/g, "")).toBe(bytes.replace(/ /g, ""));
 });
+
+test("бүкіл жол: сайт → «Шақыру» → академия → оның прологы → біткен соң академия өзі ашылады; екінші рет фильм жоқ", async ({ page }) => {
+  test.setTimeout(90000);
+  await blockFonts(page.context());
+  await page.addInitScript(() => Object.defineProperty(navigator, "webdriver", { get: () => false }));
+  await page.goto("index.html");
+  await page.waitForURL(/film\/\?intro=1/);
+  await page.waitForFunction(() => window.AO17Film);
+  await page.evaluate(() => window.AO17Film.seek(window.AO17Film.END - .01));
+  await page.click("#s8 .w-math");
+  await page.waitForURL(/film\/math\/\?intro=1/);                       // академияның прологы өзі ашылды
+  await page.waitForFunction(() => window.AO17Film);
+  await expect.poll(() => page.evaluate(() => window.AO17Film.t)).toBeGreaterThan(.3);   // өзі ойнайды
+  await page.evaluate(() => window.AO17Film.seek(window.AO17Film.END - .2));
+  await page.waitForURL(/\/math\/(index\.html)?$/, { timeout: 15000 });  // соңында академия өзі ашылады
+  await page.waitForTimeout(400);
+  expect(page.url()).not.toContain("film/");
+  await page.goto("math/index.html");                                    // сол сеанста қайта кірсе - фильм жоқ
+  await page.waitForTimeout(500);
+  expect(page.url()).not.toContain("film/");
+});
+
+test("академия прологы: «Өткізу» бірден академияға; финалда әрекет етсе - өзі ауыспайды", async ({ page }) => {
+  await blockFonts(page.context());
+  await page.goto("film/code/index.html?intro=1");
+  await page.waitForFunction(() => window.AO17Film);
+  await page.click("#skip");
+  await page.waitForURL(/programming\.html$/);
+  await page.goto("film/en/index.html?intro=1");
+  await page.waitForFunction(() => window.AO17Film);
+  await page.evaluate(() => window.AO17Film.seek(window.AO17Film.END - .2));
+  await expect(page.locator("html")).toHaveClass(/auto/, { timeout: 5000 });
+  await page.mouse.click(30, 300);                                       // адам әрекет етті - таңдау соның қолында
+  await expect(page.locator("html")).not.toHaveClass(/auto/);
+  await page.waitForTimeout(4500);
+  expect(page.url()).toContain("film/en/");
+});
