@@ -99,3 +99,37 @@ test("телефон: тігінен композиция, көлденең жы
   expect(errs).toEqual([]);
   await ctx.close();
 });
+
+test("сайтқа кірер алдында фильм: бірінші рет басты бет фильмге апарады, «Өткізу» сайтқа қайтарады, екінші рет фильм жоқ", async ({ page }) => {
+  await blockFonts(page.context());
+  await page.addInitScript(() => Object.defineProperty(navigator, "webdriver", { get: () => false }));
+  await page.goto("index.html");
+  await page.waitForURL(/film\/\?intro=1/);
+  await page.waitForFunction(() => window.AO17Film);
+  await page.click("#skip");
+  await page.waitForURL(/\/index\.html$/);
+  await page.waitForTimeout(500);
+  expect(page.url()).not.toContain("film/");
+});
+
+test("фильм кезінде тек «Өткізу» көрінеді, дерек көздері соңында", async ({ page }) => {
+  await blockFonts(page.context());
+  await page.setViewportSize({ width: 1280, height: 720 });
+  await page.goto("film/index.html");
+  await page.waitForFunction(() => window.AO17Film);
+  await expect(page.locator("html")).toHaveClass(/idle/, { timeout: 6000 });   // басқару өзі жасырылады
+  expect(await page.locator("#ui").evaluate((n) => getComputedStyle(n).opacity)).toBe("0");
+  await expect(page.locator("#skip")).toBeVisible();
+  await expect(page.locator("#capSrc")).toBeHidden();
+  await expect(page.locator(".tag").first()).toBeHidden();
+  await page.mouse.move(400, 300);
+  await expect(page.locator("html")).not.toHaveClass(/idle/);
+  await page.evaluate(() => window.AO17Film.seek(window.AO17Film.END - 0.01));
+  await expect(page.locator("#skip")).toBeHidden();
+  await page.click(".credits summary");
+  const box = page.locator(".credits .box");
+  await expect(box).toBeVisible();
+  expect(await box.locator("li").count()).toBeGreaterThanOrEqual(12);
+  await expect(box).toContainText("Сағид Мұстафа");
+  await expect(box).toContainText("реконструкция");
+});
