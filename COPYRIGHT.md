@@ -12,8 +12,8 @@
 |---|---|
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
-| B · Sagid Mustafa-ның дербес әзірлемесі | 1151 |
-| C · Үшінші тарап | 72 |
+| B · Sagid Mustafa-ның дербес әзірлемесі | 1157 |
+| C · Үшінші тарап | 84 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 56 |
 
 ## 2. Компоненттер кестесі
@@ -44,20 +44,21 @@
 | `assets/js/own-viz.js`<br>`assets/css/own-viz.css` | **B-own-viz** C++ және Java лекцияларының интерактивті визуализаторлары (own-viz) (2 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `detective.html`<br>`assets/data/mystery.js`<br>`assets/data/mystery2.js`<br>`tools/make_mystery.py`<br>`tools/make_mystery2.py`<br>`tools/make_demo_db.py` | **B-sql-detective** SQL детектив: «Алтын домбыра» и «Байқоңыр құпиясы» (6 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `projects.html`<br>`assets/js/projects.js`<br>`projects/**` | **B-projects** Жобалар шеберханасы: Python веб-қосымша, сайт генераторы, мәтін жіктегіші (AI), AI-интеграция (7 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
-| `alash.html`<br>`tools/fetch_portraits.py` | **B-alash** Алаш тұлғалары: образовательные тексты, исторические примеры, задания (2 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `alash.html`<br>`tools/fetch_portraits.py`<br>`tools/fetch_film_media.py`<br>`film/media/**` | **B-alash** Алаш тұлғалары: образовательные тексты, исторические примеры, задания (4 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/data/quotes.js` | **R-quotes** Цитаты и афоризмы исторических и современных деятелей (Алаш тұлғалары) (1 файл) | Авторы цитат (разные) | Лицензия не назначена: требует проверки. Ранее опубликованные версии остаются на условиях CC BY-NC-SA 4.0 | тексеру керек |
 | `flask.html`<br>`assets/js/flask.js`<br>`tools/make_flask_bundle.py` | **B-flask** Flask зертханасы (3 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `playground.html`<br>`viz.html`<br>`assets/js/labs.js` | **B-code-trainer** Код тренажері (редактор, запуск Python, автопроверка), алгоритмдерді көзбен көру (3 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `games.html`<br>`assets/js/games-*.js`<br>`assets/css/games-ui*.css`<br>`assets/js/cabinet.js` | **B-games** Образовательные игры, система XP, кабинет (7 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/js/main.js`<br>`assets/js/exam.js`<br>`exam.html`<br>`assets/js/profile.js`<br>`profile.html`<br>`assets/js/cloud.js`<br>`teacher.html`<br>`assets/js/feedback.js`<br>`supabase/**`<br>`certificate.html`<br>`partners.html`<br>`metrics.html`<br>`assets/js/metrics.js`<br>`sw.js`<br>`manifest.webmanifest` | **B-platform** Платформа: движок сайта, прогресс, достижения, редактор, тест-система, профиль, кабинеты ученика и преподавателя, синхронизация (16 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
-| `assets/css/style.css`<br>`docs/MOTION-SYSTEM.md`<br>`docs/INVESTOR-BRIEF.md`<br>`docs/DUE-DILIGENCE.md`<br>`docs/DATA-ROOM.md`<br>`docs/INVENTORY.md`<br>`assets/img/bota*.svg`<br>`assets/img/seal.svg`<br>`assets/img/brand/**`<br>`film/**`<br>`tools/make_film.py`<br>`docs/FILM.md`<br>`assets/img/icon*`<br>`assets/img/og.jpg`<br>`assets/img/og/**`<br>`tools/make_og.mjs`<br>`tools/make_og_main.mjs`<br>`tools/og-main.html` | **B-design** Дизайн, стили, фирменная графика (маскот Бота, иконки, превью) (50 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
-| `tools/build.py`<br>`tools/fetch_cs50.py`<br>`tools/__pycache__/**`<br>`tests/**`<br>`.github/**`<br>`licensing/**`<br>`robots.txt`<br>`sitemap.xml`<br>`.nojekyll`<br>`.gitignore`<br>`**/.gitkeep`<br>`tools/licence_audit.py` | **B-tools-tests** Скрипты сборки, тесты, CI (65 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `assets/css/style.css`<br>`docs/MOTION-SYSTEM.md`<br>`docs/INVESTOR-BRIEF.md`<br>`docs/DUE-DILIGENCE.md`<br>`docs/DATA-ROOM.md`<br>`docs/INVENTORY.md`<br>`assets/img/bota*.svg`<br>`assets/img/seal.svg`<br>`assets/img/brand/**`<br>`film/**`<br>`tools/make_film.py`<br>`docs/FILM.md`<br>`assets/img/icon*`<br>`assets/img/og.jpg`<br>`assets/img/og/**`<br>`tools/make_og.mjs`<br>`tools/make_og_main.mjs`<br>`tools/og-main.html` | **B-design** Дизайн, стили, фирменная графика (маскот Бота, иконки, превью) (52 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `tools/build.py`<br>`tools/fetch_cs50.py`<br>`tools/__pycache__/**`<br>`tests/**`<br>`.github/**`<br>`licensing/**`<br>`robots.txt`<br>`sitemap.xml`<br>`.nojekyll`<br>`.gitignore`<br>`**/.gitkeep`<br>`tools/licence_audit.py` | **B-tools-tests** Скрипты сборки, тесты, CI (67 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `qazaqcode/**` | **B-qazaqcode** QazaqCode Platform (отдельный коммерческий продукт) (319 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `README.md`<br>`LICENSE.md`<br>`LICENSE-HARVARD.md`<br>`LICENSE-PROPRIETARY.md`<br>`COPYRIGHT.md`<br>`THIRD-PARTY-LICENSES.md`<br>`TAKEDOWN.md`<br>`copyright.html`<br>`404.html`<br>`test-results/**`<br>`MOBILE-TESTING.md` | **B-docs** Документы проекта: README, лицензии, правила обращения (10 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/vendor/sqljs/**` | **C-sqljs** sql.js (SQLite в WebAssembly) (4 файл) | sql.js authors; SQLite - общественное достояние | MIT | расталған |
 | `assets/vendor/qrcode/**` | **C-qrcode** QR Code Generator for JavaScript (1 файл) | Kazuhiko Arase | MIT | расталған |
 | `assets/vendor/flask/**` | **C-flask-bundle** Пакет Flask для Pyodide: Flask, Werkzeug, Jinja2, Click, ItsDangerous, Blinker, MarkupSafe (1 файл) | Pallets Projects и авторы пакетов | BSD-3-Clause (Flask, Werkzeug, Jinja2, Click, ItsDangerous, MarkupSafe), MIT (Blinker) | расталған |
 | `assets/img/alash/**` | **C-portraits** Портреты деятелей Алаш (13 фотографий) (13 файл) | Разные авторы; для каждого портрета сведения в assets/data/portraits.js | Public domain / CC (по каждому изображению, см. portraits.js); портрет Мұхтар Шаханов - 'сайт авторы ұсынған' | тексеру керек |
+| `assets/img/film/**`<br>`assets/data/film-media.json` | **C-film-media** «Шақыру» фильмінің архивтік суреттері (Wikimedia Commons) (12 файл) | Әртүрлі авторлар; әр сурет үшін автор, лицензия мен дерек көзі assets/data/film-media.json ішінде | Public domain / CC0 / CC BY / CC BY-SA (әр суретке бөлек, film-media.json) | тексеру керек |
 | `assets/data/portraits.js` | **C-portraits-data** Реестр происхождения портретов (1 файл) | Sagid Mustafa (реестр); сведения об авторах изображений - сторонние | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 
 ### Ескертулер
@@ -100,6 +101,7 @@
 - **C-qrcode**: Заголовок файла. «QR Code» - зарегистрированный товарный знак DENSO WAVE.
 - **C-flask-bundle**: Сборка tools/make_flask_bundle.py из официальных пакетов PyPI: Flask 3.1.3, Werkzeug 3.1.9, Jinja2 3.1.6, Click 8.5.0, ItsDangerous 2.2.0, MarkupSafe 3.0.2, Blinker 1.9.0. Тексты лицензий лежат внутри архива в папке licenses/ (проверено).
 - **C-portraits**: Для портрета Шаханова права, согласие и источник не подтверждены.
+- **C-film-media**: 11 сурет, бәрі қоғамдық игілік (1925 жылға дейінгі фото, ашықхат, газет, кітап, карта); Википедия мен Wikimedia Commons-тан таңдалды. tools/fetch_film_media.py тек еркін лицензиялыларды алады; CC BY/BY-SA қосылса, автор фильмде көрсетіледі.
 - **C-portraits-data**: Служебный реестр; сохранять без изменений при публикации портретов.
 
 ## 3. 45 лекция

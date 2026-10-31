@@ -2,8 +2,8 @@
 # © 2026 Sagid Mustafa. All Rights Reserved.
 """AO17 «Шақыру» фильмін бір файлға жинайды: film/src/film.html -> film/index.html.
 
-Шығыс файл дербес: PT Serif қаріптері (OFL) мен үш архивтік фотосурет (Wikimedia Commons, қоғамдық игілік) base64 болып
-ішіне енеді, сондықтан фильмді интернетсіз де, жеке файл ретінде жіберіп те ашуға болады.
+Шығыс файл дербес: PT Serif қаріптері (OFL) мен архивтік суреттер (assets/img/film/, Википедия / Wikimedia Commons,
+қоғамдық игілік; дерек көздері assets/data/film-media.json ішінде) base64 болып ішіне енеді, сондықтан фильмді интернетсіз де, жеке файл ретінде жіберіп те ашуға болады.
 Генерацияланатын бөліктер (қолжазба жолдары, карта, код бағандары) кездейсоқ емес: тұқымы тұрақты, нәтиже әр жинауда бірдей.
 
     python3 tools/make_film.py
@@ -91,7 +91,7 @@ def code_cols(rng):
 def main():
     rng = random.Random(1917)
     s = SRC.read_text(encoding="utf8")
-    img = lambda n: b64(ROOT / "assets/img/alash" / n, "image/jpeg")
+    img = lambda n: b64(ROOT / "assets/img/film" / (n + ".jpg"), "image/jpeg")
     rep = {
         "/*{{FONTS}}*/": fonts() + "\n@keyframes codeflow { from { transform: translateY(0); } to { transform: translateY(-50%); } }",
         "<!--{{LOGO}}-->": logo(),
@@ -99,9 +99,17 @@ def main():
         "<!--{{ROUTES}}-->": routes(),
         "<!--{{CITIES}}-->": cities(),
         "<!--{{CODE}}-->": code_cols(rng),
-        "{{IMG_BOKEIKHAN}}": img("bokeikhan.jpg"),
-        "{{IMG_BAITURSYNULY}}": img("baitursynuly.jpg"),
-        "{{IMG_DULATULY}}": img("dulatuly.jpg"),
+        "{{IMG_BOKEIKHAN}}": img("bokeikhan"),
+        "{{IMG_BAITURSYNULY}}": img("baitursynuly"),
+        "{{IMG_DULATULY}}": img("dulatuly"),
+        "{{IMG_TRIO}}": img("trio-1913"),
+        "{{IMG_ALASH1918}}": img("alash-1918"),
+        "{{IMG_OYAN}}": img("oyan-qazaq"),
+        "{{IMG_QAZAQ}}": img("qazaq-1913"),
+        "{{IMG_ORB_VOKZAL}}": img("orenburg-vokzal"),
+        "{{IMG_ORB_SOBRANIE}}": img("orenburg-sobranie"),
+        "{{IMG_ESEP}}": img("esep-quraly"),
+        "{{IMG_MAP_SEMIPALATINSK}}": img("map-semipalatinsk"),
     }
     for k, v in rep.items():
         assert k in s, f"үлгіде {k} жоқ"
