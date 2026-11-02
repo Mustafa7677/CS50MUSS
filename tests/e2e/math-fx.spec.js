@@ -6,8 +6,13 @@ const path = require("path");
 const { blockFonts } = require("../support/helpers");
 const ROOT = path.join(__dirname, "..", "..");
 
-// Толық өңделген пәндер (docs/MATH-FX-PROGRESS.md): Арифметика 154-161, Precalculus 0-6, Сызықтық алгебра 7-14
-const DONE = [154, 155, 156, 157, 158, 159, 160, 161, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14];
+// Толық өңделген сабақтар - tools/math_fx/<пән>.py файлдарындағы FX кілттері (әр жаңа пән автоматты түрде тексеріледі)
+const DONE = fs.readdirSync(path.join(ROOT, "tools/math_fx")).filter((f) => f.endsWith(".py"))
+  .flatMap((f) => [...fs.readFileSync(path.join(ROOT, "tools/math_fx", f), "utf8").matchAll(/^    (\d+): \{/gm)].map((m) => +m[1]));
+
+test("дерек файлдарындағы сабақтар табылды (Арифметика … Дифференциалдық есептеу)", () => {
+  expect(DONE.length).toBeGreaterThanOrEqual(37);
+});
 
 test("өңделген сабақтарда әр формуланың астында 4 бөлімді жеке түсіндірме бар, мәтіндер қайталанбайды", () => {
   const seen = new Set();
