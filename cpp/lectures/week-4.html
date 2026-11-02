@@ -175,6 +175,11 @@ int main() {
 <pre class="terminal"><code class="language-plaintext">$ ./a03_book_ctor
 Кітап жасалды: Көшпенділер
 Көшпенділер - Ілияс Есенберлин, 560 бет</code></pre>
+      <div class="cx-fx" id="cx-2" aria-label="Код 3: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>Book(std::string title, std::string author, int pages)</code> - конструктор: класс атымен аттас, қайтару типі жоқ; нысан жасалғанда шақырылады.</li><li><code>: title_(title), author_(author), pages_(pages) {</code> - инициализация тізімі: өрістер дене орындалмай тұрып бірден дұрыс мәнмен жасалады.</li><li><code>std::string title() const { return title_; }</code> - <code>const</code> әдіс нысанды өзгертпейтініне уәде береді; жабық өріске тек осындай «терезе» арқылы қол жеткіземіз.</li><li><code>private:</code> - бұдан кейінгі өрістер сыртынан көрінбейді - тек класс ішінен.</li><li><code>Book b(&quot;Көшпенділер&quot;, &quot;Ілияс Есенберлин&quot;, 560);</code> - нысан жасалады - конструктор бірден хабар шығарады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Бірінші жол - конструктордан, екіншісі - <code>main</code>-нан. <code>main</code> өрістерге тікелей емес, әдістер арқылы жүгінді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Өрістерді конструктор денесінде меншіктеу (<code>title_ = title;</code>): алдымен бос жол жасалып, содан кейін қайта жазылады - артық жұмыс, ал <code>const</code> не сілтеме өрістер үшін мүлдем мүмкін емес.</p></div>
+      </div><!--/cx-fx-->
       <p>Конструктордың тақырыбына назар аударыңыз:</p>
 <pre data-lang="cpp"><code class="language-cpp">Book(std::string title, std::string author, int pages)
     : title_(title), author_(author), pages_(pages) { ... }</code></pre>
@@ -255,6 +260,11 @@ a04_reorder_warn.cpp:9:9: warning:   'int Point::x_' [-Wreorder]
 a04_reorder_warn.cpp:5:5: warning:   when initialized here [-Wreorder]
     5 |     Point(int x, int y) : y_(y), x_(x) {}
       |     ^~~~~</code></pre>
+      <div class="cx-fx" id="cx-5" aria-label="Код 6: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>Point(int x, int y) : y_(y), x_(x) {}</code> - тізімде <code>y_</code> бірінші жазылған, бірақ өрістер класта жарияланған ретпен жасалады: алдымен <code>x_</code>.</li><li><code>int x_;</code> - бірінші жарияланған өріс - бірінші инициализацияланады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Мұнда нәтиже дұрыс (3, 4), себебі өрістер бір-біріне тәуелсіз. Бірақ компилятор <code>-Wall</code>-мен ескертті (<code>-Wreorder</code>): егер бір өріс екіншісінің мәнін қолданса, ол әлі жасалмаған болар еді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>: y_(y), x_(y_ * 2)</code> сияқты тізбек: <code>x_</code> бірінші жасалады да, әлі инициализацияланбаған <code>y_</code>-ты оқиды. Тізімді әрқашан өрістер жарияланған ретпен жазыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Мұнда <code>y_</code> тізімде бірінші тұр, бірақ класта <code>x_</code> бұрын жарияланған, сондықтан шын мәнінде <code>x_</code> бірінші жасалады. Қарапайым бүтін сандарда бұл зиян келтірмейді, ал бір өріс екіншісінің мәніне сүйенсе, нағыз қате болады. Ереже: тізімді өрістердің жариялану тәртібімен жазыңыз, сонда ескерту де шықпайды.</p>
       <p>Қарапайым типтердің (<code>int</code>, <code>double</code>) өрісін конструкторда мәнсіз қалдырсаңыз, онда кездейсоқ «қоқыс» мән тұрады. Оны болдырмау үшін өрістің өзінде әдепкі мән беруге болады:</p>
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
@@ -307,6 +317,11 @@ int main() {
 Қош келдіңіз, Сәуле (31)!
 Қош келдіңіз, Мұрат (45)!
 Қош келдіңіз, Гүлнәр (27)!</code></pre>
+      <div class="cx-fx" id="cx-7" aria-label="Код 8: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>void greet() const {</code> - <code>const</code> әдіс - нысанды тек оқиды.</li><li><code>Guest a(&quot;Сәуле&quot;, 31);      // дөңгелек жақша</code> - дәстүрлі инициализация.</li><li><code>Guest b{&quot;Мұрат&quot;, 45};      // фигуралы жақша (C++11)</code> - біркелкі инициализация: сол конструктор, бірақ тарылтатын түрлендірулерге тыйым салады.</li><li><code>Guest c = Guest(&quot;Гүлнәр&quot;, 27);</code> - уақытша нысан жасалып, <code>c</code>-ге жылжытылады (C++17-де көшірмесіз).</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Үш түрлі жазу бір конструкторды шақырды - нәтижелері бірдей пішінде.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>Guest d();</code> - бұл нысан емес, <code>Guest</code> қайтаратын функцияның жариялануы («ең ұят талдау»). Бос конструктор үшін <code>Guest d;</code> не <code>Guest d{};</code> жазыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Қайсысын таңдау - стиль мәселесі. Негізгі ереже: бір жобада бір стильді ұстаныңыз.</p>
 
       <h2 id="destructor">Деструктор</h2>
@@ -437,6 +452,11 @@ int main() {
 <pre class="terminal"><code class="language-plaintext">$ ./a15_enc
 Астанада қаңтарда: -12.5 C = 260.65 K
 -300 C мүмкін емес, мән өзгерген жоқ: -12.5</code></pre>
+      <div class="cx-fx" id="cx-10" aria-label="Код 11: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>bool setCelsius(double c) {</code> - сеттер мәнді тексеріп, сәттілігін <code>bool</code>-мен хабарлайды.</li><li><code>if (c &lt; -273.15) return false;</code> - абсолют нөлден төмен температура жоқ - нысанды бұзатын мәнді қабылдамаймыз.</li><li><code>double kelvin() const { return c_ + 273.15; }</code> - есептелетін қасиет: Кельвин сақталмайды, сұралғанда шығарылады.</li><li><code>double c_ = 0;</code> - өрістің әдепкі мәні: конструктор жазбасақ та 0-мен басталады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>-12,5 + 273,15 = 260,65 К. -300 қабылданбады, сондықтан ескі мән -12,5 сақталды - нысан ешқашан мағынасыз күйге түспейді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Өрісті <code>public</code> қылу: кез келген код <code>t.c_ = -500;</code> жаза алады, тексеру айналып өтіледі. Инкапсуляцияның бүкіл мәні - инварианттарды тек класс өзі сақтауы.</p></div>
+      </div><!--/cx-fx-->
       <p>Бұл жерде бір деректі (Цельсий) сақтап, екінші түрін (Кельвин) есептеп береміз. Ертең ішкі сақтауды Кельвинге ауыстырсақ та, сыртқы код өзгермейді, себебі ол тек <code>celsius()</code> мен <code>kelvin()</code> әдістерін біледі. Инкапсуляция сыртқы қолданушыларға тиіспей, ішкі құрылымды өзгертуге мүмкіндік береді. Бұл - үлкен жобалар үшін өте маңызды артықшылық.</p>
 
       <h3 id="getters">Геттер мен сеттер: қашан керек?</h3>
@@ -474,6 +494,10 @@ a07_const_err.cpp:14:29: error: passing 'const Account' as 'this' argument disca
 a07_const_err.cpp:7:12: note:   in call to 'double Account::balance()'
     7 |     double balance() { return balance_; }
       |            ^~~~~~~</code></pre>
+      <div class="cx-fx" id="cx-11" aria-label="Код 12: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>double balance() { return balance_; }</code> - әдіс <code>const</code> деп белгіленбеген - компилятор ол нысанды өзгертуі мүмкін деп санайды.</li><li><code>void show(const Account&amp; acc) {</code> - нысан <code>const</code> сілтемемен келді: оған тек <code>const</code> әдістерді шақыруға болады.</li><li><code>acc.balance()</code> - осы жерде компиляция қатесі: «passing const Account as this argument discards qualifiers».</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бұл мысал әдейі компиляцияланбайды. Түзету - өзгертпейтін әдістің соңына <code>const</code> қосу: <code>double balance() const { ... }</code>. Ереже: нысан күйін өзгертпейтін әр әдісті бірден <code>const</code> етіп жазыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Қате хабарындағы «<code>discards qualifiers</code>» (сапа белгілерін тастап кетеді) дегені - «<code>const</code> нысанмен <code>const</code> емес әдісті шақыруға болмайды» деген сөз. Шешімі қарапайым: <code>double balance() const { ... }</code>. Тәжірибелі бағдарламашылар ереже ұстанады: <em>нысанды өзгертпейтін әдістің бәрін міндетті түрде <code>const</code> етіп жазу</em>.</p>
       <p>Тағы бір ескерту: <code>const std::string&amp; title() const</code> түріндегі жазуда екі <code>const</code> бар және олар әртүрлі мағынада. Біріншісі қайтарылатын мәннің өзгертілмейтінін, екіншісі әдістің нысанды өзгертпейтінін білдіреді (a10 мысалында көрдік).</p>
 
@@ -540,6 +564,11 @@ int main() {
   + баурсақ (600 тг)
   + қазы (2500 тг)
 Үстел 5, жалпы: 3500 тг</code></pre>
+      <div class="cx-fx" id="cx-12" aria-label="Код 13: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>Order&amp; add(std::string item, int price) {</code> - әдіс нысанның өзіне сілтеме қайтарады - сондықтан шақыруларды тізбектей аламыз.</li><li><code>return *this;</code> - <code>this</code> - ағымдағы нысанның мекенжайы; <code>*this</code> - нысанның өзі.</li><li><code>this-&gt;table_ = table;</code> - <code>this-&gt;</code> айқын жазылған: параметр мен өріс аттас болса, өрісті ажыратады.</li><li><code>o.add(&quot;қара шай&quot;, 400).add(&quot;баурсақ&quot;, 600).add(&quot;қазы&quot;, 2500);</code> - әр <code>add</code> сол <code>o</code> нысанын қайтарады, келесі <code>add</code> соған шақырылады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Үш тағам бір нысанға қосылды: 400+600+2500 = 3500 тг.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>Order add(...)</code> (сілтемесіз) деп қайтару: әр шақыру көшірме қайтарады да, екінші және үшінші <code>add</code> көшірмелерге қосылып, <code>o</code>-да тек 400 тг қалады.</p></div>
+      </div><!--/cx-fx-->
       <p>Мұнда <code>add</code> әдісі <code>Order&amp;</code> (нысанға <em>сілтеме</em>) қайтарады, сондықтан <code>o.add(...).add(...)</code> дәл сол бір нысанмен жұмыс істей береді. Егер қайтарым типін <code>Order</code> деп (сілтемесіз) жазсақ, әр қадамда нысанның <em>көшірмесі</em> қайтарылады да, келесі <code>add</code> көшірмеге қолданылады, ал түпнұсқа өзгермей қалады. Мұны тесттен көресіз.</p>
 
       <h2 id="static">static мүшелер</h2>
@@ -576,6 +605,11 @@ int main() {
 Билет №1: Алматы - Астана
 Билет №3: Алматы - Шымкент
 Барлығы берілді: 3</code></pre>
+      <div class="cx-fx" id="cx-13" aria-label="Код 14: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>Ticket(std::string route) : route_(route), number_(++counter_) {}</code> - әр жаңа билет ортақ санағышты арттырып, өз нөмірін алады.</li><li><code>static int issued() { return counter_; }</code> - <code>static</code> әдіс нысансыз шақырылады: <code>Ticket::issued()</code>.</li><li><code>inline static int counter_ = 0;</code> - <code>static</code> өріс бүкіл класқа біреу, нысандарға ортақ; <code>inline</code> (C++17) оны класс ішінде инициализациялауға мүмкіндік береді.</li><li><code>(void)t2;</code> - <code>t2</code> қолданылмаған айнымалы туралы ескертуді өшіреміз.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Нысан жасалмай тұрып санағыш 0. Үш билеттен кейін 3, ал <code>t3</code>-ке 3-нөмір тиді - санағыш барлық нысанда біреу.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>static</code> әдіс ішінде қарапайым өріске (<code>route_</code>) жүгіну: <code>static</code> әдісте <code>this</code> жоқ, қай нысанның өрісі екені белгісіз - компиляция қатесі.</p></div>
+      </div><!--/cx-fx-->
       <p>Мұнда екі <code>static</code> мүше бар: <code>counter_</code> (ортақ санауыш) және <code>issued()</code> (<strong>static әдіс</strong>, ол <code>this</code>-сіз жұмыс істейді, сондықтан тек static мүшелерді ғана көреді). Оны нысансыз, <code>Класс::әдіс()</code> түрінде шақырамыз: <code>Ticket::issued()</code>. Конструкторда <code>++counter_</code> әр жаңа билетке келесі нөмір береді.</p>
       <p>C++17-де static өрісті класстың ішінде <code>inline static int counter_ = 0;</code> деп бірден мәнімен жариялауға болады. Ескі C++ стандарттарында оны класстан тыс бөлек жариялау керек еді: <code>int Ticket::counter_ = 0;</code>. Екі жазуды да кездестіресіз.</p>
 
@@ -745,6 +779,11 @@ int main() {
 Үй құлады
 төбе жойылды
 қабырға жойылды</code></pre>
+      <div class="cx-fx" id="cx-16" aria-label="Код 17: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>Part(std::string name) : name_(name) { std::cout &lt;&lt; name_ &lt;&lt; &quot; жасалды\n&quot;; }</code> - әр бөлік жасалғанда және жойылғанда хабарлайды - ретін бақылаймыз.</li><li><code>House() : roof_(&quot;төбе&quot;), wall_(&quot;қабырға&quot;) { std::cout &lt;&lt; &quot;Үй дайын\n&quot;; }</code> - тізімде төбе бірінші, бірақ өрістер жарияланған ретпен жасалады.</li><li><code>Part wall_;</code> - <code>wall_</code> бірінші жарияланған - бірінші жасалады, соңғы жойылады.</li><li><code>House h;</code> - композиция: үй өз бөліктерін иеленеді, олар үймен бірге туып, бірге жойылады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Тәртіп қатаң: бөліктер (жариялану ретімен) → үйдің конструкторы → ... → үйдің деструкторы → бөліктер кері ретпен. Компилятор тізім реті туралы ескертті (<code>-Wreorder</code>).</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Деструктор ішінде бөліктер әлі бар деп ойламау: үйдің деструкторы орындалып жатқанда өрістер тірі, олар одан кейін жойылады - бұл қауіпсіз. Ал керісінше, өріс деструкторынан иесіне жүгіну қауіпті.</p></div>
+      </div><!--/cx-fx-->
       <p>Назар аударыңыз: инициализация тізімінде <code>roof_</code> бірінші жазылса да, <code>wall_</code> бірінші жасалды (класта ол бұрын жарияланған). Жойылу кері ретпен жүреді: алдымен үйдің өз деструкторы, содан кейін соңғы жасалған бөлік. Бұл - жоғарыда айтқан инициализация реті ережесінің нақты көрінісі. Осы мысал 6-жаттығуда да кездеседі.</p>
 
       <h2 id="bank">Толық мысал: Банк шоттары</h2>

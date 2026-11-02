@@ -118,6 +118,11 @@ int main() {
 Алматы-12: 45 орын
   ~Bus(Алматы-12)
   ~Vehicle(Алматы-12)</code></pre>
+      <div class="cx-fx" id="cx-0" aria-label="Код 1: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>protected:</code> - <code>protected</code> өріс туынды кластарға ашық, ал сыртқы кодқа жабық.</li><li><code>class Bus : public Vehicle {</code> - <code>Bus</code> - <code>Vehicle</code>-тің туындысы: оның барлық ашық мүшелерін мұраға алады.</li><li><code>Bus(std::string name, int seats) : Vehicle(name, 6), seats_(seats) {</code> - туынды класс алдымен базалық конструкторды шақырады: автобустың дөңгелегі - 6.</li><li><code>std::cout &lt;&lt; name_ &lt;&lt; &quot;: &quot; &lt;&lt; seats_ &lt;&lt; &quot; орын\n&quot;;</code> - <code>name_</code> - базалық класстың <code>protected</code> өрісі, туындыда қолжетімді.</li><li><code>b.info();         // Vehicle-дан мұраланған</code> - туынды нысанда базалық әдіс жазылмай-ақ бар.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Конструкторлар «негізден төбеге» (Vehicle → Bus), деструкторлар керісінше (~Bus → ~Vehicle) шақырылды. <code>wheels_</code> - <code>private</code>, туынды оны көрмейді, бірақ <code>info()</code> арқылы мәні шығады.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Базалық конструкторды тізімде шақыруды ұмыту: компилятор әдепкі <code>Vehicle()</code> іздейді, ол жоқ болса - қате. Ал <code>private</code> өріске туындыдан жүгіну де қате - <code>protected</code> не әдіс керек.</p></div>
+      </div><!--/cx-fx-->
       <p>Негізгі жазу: <code>class Bus : public Vehicle</code>. Қос нүктеден кейінгі <code>public</code> - мұрагерлік түрі (біз әрқашан дәл осыны қолданамыз). <code>Bus</code> нысанында <code>info()</code> әдісін шақыра аламыз, оны өзі жазбағанымен. Диаграммада мұрагерлік қуыс үшбұрышты көрсеткімен сызылады және ол <em>базалық кластқа</em> қарай бағытталады:</p>
       <svg viewBox="0 0 660 270" role="img" aria-label="Мұрагерлік диаграммасы: Animal базалық класынан Camel, Eagle және Sheep туынды кластары шығады. Animal: name_, sound(), legs(). Camel: humps_. Eagle: legs() қайта анықталған. Sheep: sound()" style="display:block;width:100%;max-width:660px;height:auto;margin:18px auto">
         <rect x="220" y="10" width="220" height="90" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:2"/>
@@ -194,6 +199,10 @@ a02_protected_err.cpp:21:20: error: 'std::string Animal::name_' is protected wit
 a02_protected_err.cpp:9:17: note: declared protected here
     9 |     std::string name_;
       |                 ^~~~~</code></pre>
+      <div class="cx-fx" id="cx-1" aria-label="Код 2: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>void say() const { std::cout &lt;&lt; name_ &lt;&lt; &quot; кісінеді\n&quot;; }   // protected - рұқсат</code> - туынды класс ішінде <code>protected</code> өріс қолжетімді.</li><li><code>std::cout &lt;&lt; h.name_ &lt;&lt; &quot;\n&quot;;   // сырттан - қате</code> - <code>main</code> - сыртқы код: <code>protected</code> оған <code>private</code> сияқты жабық.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бұл мысал әдейі компиляцияланбайды («'name_' is protected within this context»). <code>protected</code> - «отбасы ішінде» деген деңгей: туындыларға иә, басқаларға жоқ.</p></div>
+      </div><!--/cx-fx-->
       <div class="callout tip">
         <span class="callout-title">protected-ті үнемді қолданыңыз</span>
         <p>Өрісті <code>protected</code> қылу - инкапсуляцияны босаңсыту, себебі кез келген мұрагер оны өзгерте алады. Тәжірибелі бағдарламашылар өрісті <code>private</code> қалдырып, мұрагерлерге арнап <code>protected</code> <em>әдіс</em> береді. Оқу мысалдарында қарапайымдылық үшін <code>protected</code> өріс жазылады, бірақ нағыз жобада бұл ереже жақсырақ.</p>
@@ -215,6 +224,11 @@ int main() {
 }</code></pre>
 <pre class="terminal"><code class="language-plaintext">$ ./t01_vehicle_order
 A B C | ~C ~B ~A </code></pre>
+      <div class="cx-fx" id="cx-2" aria-label="Код 3: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>struct B : A { B() { std::cout &lt;&lt; &quot;B &quot;; } ~B() { std::cout &lt;&lt; &quot;~B &quot;; } };</code> - <code>struct</code>-та мұрагерлік әдепкі бойынша <code>public</code>.</li><li><code>C c;</code> - <code>C</code> жасалғанда алдымен оның бүкіл «шежіресі» жасалады: A, содан кейін B.</li><li><code>std::cout &lt;&lt; &quot;| &quot;;</code> - бұл жол нысан тірі кезде шығады; деструкторлар <code>main</code> соңында.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Конструкторлар: A B C (тамырдан бастап). Деструкторлар: ~C ~B ~A (кері ретпен) - әр деңгей өз ресурсын тазалағанда, оның негізі әлі тірі.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Деструктор ішінен туынды класс бөлігіне жүгінуге тырысу: базалық деструктор жұмыс істегенде туынды бөлік жойылып қойған.</p></div>
+      </div><!--/cx-fx-->
       <p>Конструкторлар <code>A B C</code> ретімен, деструкторлар <code>~C ~B ~A</code> ретімен жұмыс істеді. Егер туынды класстың өрісі де болса, ол базалық бөліктен кейін, бірақ туынды конструктордың денесінен бұрын жасалады:</p>
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
 
@@ -235,6 +249,11 @@ int main() {
 }</code></pre>
 <pre class="terminal"><code class="language-plaintext">$ ./q04_order
 Animal Tail Fox </code></pre>
+      <div class="cx-fx" id="cx-3" aria-label="Код 4: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>struct Fox : Animal {</code> - базалық класс - бірінші жасалатын бөлік.</li><li><code>Tail tail_;</code> - өріс-нысан: базалықтан кейін, бірақ <code>Fox</code> конструкторының денесінен бұрын жасалады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Тәртіп: базалық класс (Animal) → өрістер (Tail) → өз конструкторының денесі (Fox).</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Конструктор денесінде өрістер әлі жасалмаған деп ойлау: денеге кіргенде барлық өріс дайын. Керісінше, базалық конструктор ішінде туынды өрістер әлі жоқ.</p></div>
+      </div><!--/cx-fx-->
       <p>Алдымен базалық бөлік (<code>Animal</code>), содан кейін <code>Fox</code>-тың өрісі (<code>Tail</code>), ең соңында <code>Fox</code>-тың өз денесі.</p>
 
       <h2 id="virtual">virtual және override</h2>
@@ -264,6 +283,11 @@ int main() {
 <pre class="terminal"><code class="language-plaintext">$ ./a03_nonvirtual
 Circle арқылы: 12.5664
 Shape* арқылы: 0</code></pre>
+      <div class="cx-fx" id="cx-4" aria-label="Код 5: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>double area() const { return 0; }</code> - <code>virtual</code> жоқ - шақыру компиляция кезінде, көрсеткіштің типіне қарап байланады.</li><li><code>Shape* p = &amp;c;</code> - базалық класқа көрсеткіш туынды нысанды көрсетеді - бұл заңды.</li><li><code>p-&gt;area()</code> - <code>p</code> типі <code>Shape*</code>, сондықтан <code>Shape::area</code> шақырылады, нысан шеңбер болса да.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Бір нысан, екі түрлі жауап: тікелей - 12,5664, базалық көрсеткіш арқылы - 0. Полиморфизм жұмыс істемеді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бұл - мысалдың өзі көрсететін қате. Туынды класта аттас функция жазу «ауыстыру» емес, «жасыру»; көрсеткіш арқылы ауыстыру үшін базада <code>virtual</code> керек (келесі мысал).</p></div>
+      </div><!--/cx-fx-->
       <p>Күтпеген нәтиже: көрсеткіш арқылы <code>0</code> шықты, шеңбердің ауданы емес. Әдепкіде C++ қай нұсқаны шақыруды <em>көрсеткіштің типіне</em> қарап, компиляция кезінде шешеді. <code>p</code> типі - <code>Shape*</code>, сондықтан <code>Shape::area</code> шақырылды. Мұны <strong>статикалық байланыстыру</strong> (<span class="term-en">static binding</span>) дейді.</p>
       <p>Біз нысанның <em>нақты</em> типіне қарап шешім қабылдаған қалаймыз. Ол үшін базалық класта функцияны <code>virtual</code> деп белгілейміз:</p>
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
@@ -292,6 +316,11 @@ int main() {
 <pre class="terminal"><code class="language-plaintext">$ ./a04_virtual
 Circle арқылы: 12.5664
 Shape* арқылы: 12.5664</code></pre>
+      <div class="cx-fx" id="cx-5" aria-label="Код 6: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>virtual double area() const { return 0; }</code> - <code>virtual</code> - шақыру жұмыс кезінде нысанның нақты типіне қарап таңдалады.</li><li><code>virtual ~Shape() = default;</code> - виртуалды деструктор: базалық көрсеткіш арқылы жойғанда туынды бөлік те дұрыс тазаланады.</li><li><code>double area() const override { return 3.14159 * r_ * r_; }</code> - <code>override</code> - «базалық виртуалды функцияны ауыстырамын» деген уәде; қате болса, компилятор ескертеді.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Енді базалық көрсеткіш арқылы да шеңбердің ауданы шықты: π·2² ≈ 12,5664. Шақыру нысанның нақты типін «білді».</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Базалық класта <code>virtual</code> жазып, туындыда сигнатураны сәл өзгерту (мысалы, <code>const</code>-ты ұмыту) - функция ауыстырылмайды. <code>override</code> оны компиляция кезінде ұстайды.</p></div>
+      </div><!--/cx-fx-->
       <p>Енді <code>Shape*</code> арқылы да <code>Circle</code> нұсқасы шақырылды. Бұл <strong>динамикалық байланыстыру</strong> (<span class="term-en">dynamic binding</span>) немесе <strong>полиморфизм</strong> (<span class="term-en">polymorphism</span>, грекше «көп пішінділік»): бір ғана <code>p->area()</code> жазуы нысанға қарай әртүрлі код орындайды.</p>
       <p>Туынды класта <code>override</code> кілт сөзін жазғанымызға назар аударыңыз. Ол міндетті емес, бірақ өте пайдалы: «мен базалық кластың виртуалды функциясын қайта анықтап жатырмын» деп компиляторға айтады, ал сәйкес функция жоқ болса, компилятор қате береді. Қателесу өте оңай. Мысалы, <code>const</code> ұмыту:</p>
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
@@ -321,6 +350,10 @@ a05_override_err.cpp:5:18: warning: 'virtual void Animal::speak() const' was hid
 a05_override_err.cpp:11:10: note:   by 'void Dog::speak()'
    11 |     void speak() override { std::cout &lt;&lt; "Hau!\n"; }   // const ұмытылды
       |          ^~~~~</code></pre>
+      <div class="cx-fx" id="cx-6" aria-label="Код 7: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>void speak() override { std::cout &lt;&lt; &quot;Hau!\n&quot;; }   // const ұмытылды</code> - базада <code>speak() const</code>, мұнда <code>const</code>-сыз - басқа сигнатура, ауыстыратын ештеңе жоқ.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бұл мысал әдейі компиляцияланбайды: «marked 'override', but does not override». <code>override</code> дәл осы үшін керек - онсыз келесі мысалдағы жасырын қате пайда болар еді.</p></div>
+      </div><!--/cx-fx-->
       <p>Егер <code>override</code> жазылмаса, не болар еді? Қате шықпайды, бірақ бағдарлама дұрыс істемейді:</p>
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
 
@@ -344,6 +377,11 @@ int main() {
 <pre class="terminal"><code class="language-plaintext">$ ./a06_noverride_silent
 ...
 Hau!</code></pre>
+      <div class="cx-fx" id="cx-7" aria-label="Код 8: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>void speak() { std::cout &lt;&lt; &quot;Hau!\n&quot;; }   // const жоқ: бұл override емес, жаңа функция!</code> - <code>override</code> жазылмаған, сондықтан компилятор үндемейді (тек <code>-Wall</code> ескертеді).</li><li><code>a-&gt;speak();   // Dog емес, Animal нұсқасы</code> - базалық көрсеткіш арқылы виртуалды <code>Animal::speak() const</code> шақырылады - <code>Dog</code>-та оның ауыстырылуы жоқ.</li><li><code>d.speak();</code> - тікелей шақыру <code>Dog</code>-тың жаңа функциясын табады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Бірінші жол «...», екіншісі «Hau!» - бір нысан, екі түрлі мінез. Бұл қатені іздеу өте қиын, себебі код компиляцияланып, жұмыс істейді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Ауыстыратын әр функцияға <code>override</code> жазбау. Ереже: туынды класта виртуалды функцияны әрқашан <code>override</code>-пен белгілеңіз.</p></div>
+      </div><!--/cx-fx-->
       <p>Мұнда <code>Dog::speak()</code> (<code>const</code>-сыз) базалық функцияның қайта анықтамасы емес, <em>жаңа</em> функция болды. Сондықтан <code>Animal*</code> арқылы «Hau!» емес, «...» шықты. Компилятор тек <code>-Woverloaded-virtual</code> ескертуін берді, оған көңіл бөлмесең, бағдарлама үнсіз қате істейді. Ереже: <strong>әр қайта анықталған виртуалды функцияға <code>override</code> жазыңыз</strong>.</p>
 
       <h3 id="final">final</h3>
@@ -370,6 +408,11 @@ int main() {
 }</code></pre>
 <pre class="terminal"><code class="language-plaintext">$ ./a12_final
 студент билеті: 2500 тг</code></pre>
+      <div class="cx-fx" id="cx-8" aria-label="Код 9: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>class StudentTicket final : public Ticket {   // final: мұрагер болмайды</code> - <code>final</code> класстан ешкім мұрагерлей алмайды.</li><li><code>const char* kind() const final { return &quot;студент&quot;; }</code> - функцияға <code>final</code> - оны одан әрі ауыстыруға тыйым.</li><li><code>const Ticket&amp; r = t;</code> - базалық класқа сілтеме де полиморфты жұмыс істейді - көрсеткіш сияқты.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Базалық сілтеме арқылы студент билетінің түрі мен бағасы шықты: виртуалды шақырулар нақты нысанға барды.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>final</code>-ды қажетсіз қою: кейін кеңейту керек болса, жобалауды қайта қарауға тура келеді. Оны тек «бұл класс кеңейтуге арналмаған» деп нақты шешкенде қолданыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Ал финал кластан мұрагерлесек, компилятор тоқтатады:</p>
 <pre data-lang="cpp"><code class="language-cpp">class A final {};
 class B : public A {};
@@ -379,6 +422,10 @@ int main() {}</code></pre>
 a13_final_err.cpp:2:7: error: cannot derive from 'final' base 'A' in derived type 'B'
     2 | class B : public A {};
       |       ^</code></pre>
+      <div class="cx-fx" id="cx-9" aria-label="Код 10: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>class A final {};</code> - <code>final</code> класс.</li><li><code>class B : public A {};</code> - одан мұрагерлеу - компиляция қатесі: «cannot derive from 'final' base».</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бұл мысал әдейі компиляцияланбайды. Кітапханалық класстың <code>final</code> екенін білмей, одан мұрагерлеуге тырысу - мұндайда композицияны (нысанды өріс ретінде ұстау) қолданыңыз.</p></div>
+      </div><!--/cx-fx-->
 
       <h2 id="abstract">Абстрактілі класс және таза virtual</h2>
       <p>«Фигура» деген нысанды елестетіп көріңіз. Фигураның ауданы неше? Айту мүмкін емес: ол шеңбер ме, төртбұрыш па? Жалпы «фигураның» ауданын есептейтін формула жоқ. Осындай жағдайда функцияны <strong>таза виртуалды</strong> (<span class="term-en">pure virtual</span>) етіп жариялаймыз: денесі жоқ, соңында <code>= 0</code> тұрады. Кем дегенде бір таза виртуалды функциясы бар класс <strong>абстрактілі класс</strong> (<span class="term-en">abstract class</span>) деп аталады. Одан нысан жасауға болмайды:</p>
@@ -618,6 +665,11 @@ int main() {
 <pre class="terminal"><code class="language-plaintext">$ ./a09_slicing
 мәнмен: Ғалым - қызметкер
 сілтемемен: Ғалым - менеджер</code></pre>
+      <div class="cx-fx" id="cx-13" aria-label="Код 14: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::string role() const override { return &quot;менеджер&quot;; }</code> - виртуалды функция тек толық нысанда жұмыс істейді.</li><li><code>void byValue(Employee e) {</code> - мәнмен қабылдау: <code>Manager</code>-дің тек <code>Employee</code> бөлігі көшіріледі - «кесілу» (slicing).</li><li><code>void byRef(const Employee&amp; e) {</code> - сілтемемен қабылдау: нысан көшірілмейді, нақты типі сақталады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Мәнмен берілгенде рөл «қызметкер» болды - көшірме нағыз <code>Employee</code>, менеджер бөлігі кесіліп қалды. Сілтемемен - «менеджер».</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Полиморфты нысандарды мәнмен беру не <code>std::vector&lt;Employee&gt;</code>-де сақтау - бәрі кесіледі. Сілтеме, көрсеткіш не <code>std::vector&lt;std::unique_ptr&lt;Employee&gt;&gt;</code> қолданыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p><code>byValue</code> функциясына менеджерді мәнмен бердік. Функция ішінде <code>Employee</code> типті жаңа көшірме пайда болды, оған менеджер бөлігі көшірілмеді, сондықтан <code>role()</code> «қызметкер» деді, функция виртуалды болса да. <code>byRef</code> болса, нысанның өзіне сілтеме алды, сондықтан «менеджер» шықты. Тағы бір қысқа мысал:</p>
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
 
@@ -676,6 +728,10 @@ int main() {
     #1 0x5577ff59f30f in main (/tmp/bin_w5_a10_vdtor_bad+0x130f)
     #2 0x7fa3df02a1c9 in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
 ...</code></pre>
+      <div class="cx-fx" id="cx-15" aria-label="Код 16: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>~Base() { std::cout &lt;&lt; &quot;~Base\n&quot;; }</code> - деструктор виртуалды емес.</li><li><code>Base* p = new Derived();</code> - туынды нысан базалық көрсеткішке сақталды.</li><li><code>delete p;       // ~Derived шақырылмайды!</code> - компилятор тек <code>~Base</code>-ты шақырады - бұл стандарт бойынша анықталмаған тәртіп.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>~Derived</code> орындалмағандықтан, <code>new int[100]</code> ешқашан босатылмайды - жад ағады (біздің тексерісте де тек «~Base» шықты). Ереже: виртуалды функциясы бар әр базалық класқа <code>virtual ~Base() = default;</code> жазыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Мұнда <code>Base*</code> арқылы <code>delete</code> жасадық, бірақ деструктор виртуалды емес, сондықтан тек <code>~Base</code> шақырылуы мүмкін еді. Туынды бөлік дұрыс жойылмайды, ал бұл нақты бағдарламада жад ағып кетуіне (<span class="term-en">memory leak</span>) әкеледі. AddressSanitizer мұны орындау кезінде бірден ұстады: жойылатын нысанның типі (1 байт) бөлінген типпен (8 байт) сәйкес емес. Нәтиже қысқартылған, толық шығыс ұзағырақ.</p>
       <p>Түзету үшін базада деструкторды <code>virtual</code> қыламыз:</p>
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
@@ -704,6 +760,11 @@ int main() {
 <pre class="terminal"><code class="language-plaintext">$ ./a11_vdtor_good
 ~Derived
 ~Base</code></pre>
+      <div class="cx-fx" id="cx-16" aria-label="Код 17: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>virtual ~Base() { std::cout &lt;&lt; &quot;~Base\n&quot;; }</code> - виртуалды деструктор - жою нақты типке қарап жүреді.</li><li><code>~Derived() override {</code> - деструктор да <code>override</code>-пен белгіленеді.</li><li><code>delete p;</code> - алдымен <code>~Derived</code> (жадты босатады), содан кейін <code>~Base</code>.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Екі деструктор да дұрыс ретпен шақырылды: туынды, содан кейін базалық. Жад ағуы жоқ.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Виртуалды деструкторды «өнімділік» үшін алып тастау: бір кестелік сілтеменің құны полиморфты нысанды дұрыс жоюдан әлдеқайда арзан.</p></div>
+      </div><!--/cx-fx-->
       <p>Енді алдымен <code>~Derived</code> (ол жадты босатады), содан кейін <code>~Base</code> шақырылды. <strong>Ереже</strong>: егер класта кем дегенде бір виртуалды функция бар болса (немесе одан мұрагерлену жоспарланса), деструкторын да <code>virtual</code> етіңіз. Көбіне жаза салуға болады: <code>virtual ~Base() = default;</code>.</p>
 
       <h2 id="rule-of-three">Rule of Three және Rule of Five кіріспесі</h2>
@@ -862,6 +923,11 @@ int main() {
 a: 0, b: 10, c: 10
 жасалды (1000)
 d: 1000</code></pre>
+      <div class="cx-fx" id="cx-19" aria-label="Код 20: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>explicit Buffer(std::size_t n) : n_(n), data_(new int[n]()) {</code> - <code>explicit</code> - санның өзінен <code>Buffer</code>-ге жасырын түрлендіруге тыйым.</li><li><code>Buffer(const Buffer&amp; o) : n_(o.n_), data_(new int[o.n_]) {</code> - көшіру конструкторы: жаңа жад бөліп, мазмұнды көшіреді (терең көшіру).</li><li><code>Buffer(Buffer&amp;&amp; o) noexcept : n_(o.n_), data_(o.data_) {</code> - жылжыту конструкторы: жадты «ұрлап», ескі нысанды бос қалдырады - көшірусіз.</li><li><code>Buffer make() { return Buffer(1000); }</code> - функциядан қайтару: C++17-де нысан бірден орнында жасалады (көшіру де, жылжыту да жоқ).</li><li><code>Buffer c = std::move(a);      // жылжыту</code> - <code>std::move</code> - «<code>a</code> енді керек емес» деген белгі.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p><code>b</code> көшірілді, <code>c</code> жылжытылды - <code>a</code>-ның өлшемі 0-ге айналды. <code>d</code> үшін тек «жасалды (1000)» шықты: көшіру элизиясы арқасында ешқандай қосымша амал болмады.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Жылжытылған нысанды қайта қолдану: <code>a</code> заңды, бірақ бос күйде. Сондай-ақ жылжыту амалдарына <code>noexcept</code> жазбау: онда <code>std::vector</code> өсу кезінде жылжытудың орнына көшіреді.</p></div>
+      </div><!--/cx-fx-->
       <p>Нәтижеден көреміз: <code>Buffer b = a</code> көшірді, ал <code>std::move(a)</code> жадты <code>c</code>-ға жылжытты (<code>a</code> бос қалды: өлшемі 0). <code>make()</code> қайтарған нысан кейбір жағдайда (компилятор оңтайландыруы - <em>copy elision</em>) көшірусіз де тікелей <code>d</code> ішінде жасалады.</p>
       <div class="callout tip">
         <span class="callout-title">Rule of Zero: ең жақсы ереже</span>
@@ -940,6 +1006,11 @@ int main() {
  - Кітап «Көшпенділер»
  - Музей қоры (сатылмайды)
 Баға: 4200 тг</code></pre>
+      <div class="cx-fx" id="cx-20" aria-label="Код 21: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>virtual std::string describe() const = 0;</code> - <code>= 0</code> - таза виртуалды функция: класс абстрактілі, ол - интерфейс.</li><li><code>class Book : public Describable, public Priced {</code> - көп мұрагерлік: кітап әрі сипатталады, әрі бағасы бар.</li><li><code>void printAll(const std::vector&lt;const Describable*&gt;&amp; items) {</code> - функция нақты класстарды білмейді - тек интерфейсті.</li><li><code>printAll({&amp;b1, &amp;b2, &amp;m});</code> - кітаптар мен музей бір тізімде: ортақ интерфейс арқылы.</li><li><code>const Priced* p = &amp;b2;               // сол нысанға басқа интерфейс арқылы қарау</code> - бір нысан, басқа «көзқарас».</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Үш түрлі нысан бір функциямен сипатталды. Музей <code>Priced</code> емес, сондықтан оны бағалы тізімге қосу мүмкін емес - компилятор тексереді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Барлық класты бір «құдай-класстан» мұрагерлеу. Кішкене, нақты интерфейстер (<code>Describable</code>, <code>Priced</code>) икемдірек: әр класс өзіне керегін ғана іске асырады.</p></div>
+      </div><!--/cx-fx-->
       <p>Мұнда <code>printAll</code> функциясы кітап пен музей қорының айырмасын білмейді, ол тек <code>Describable</code> келісімшартын біледі. Ертең сипатталатын жаңа зат (мысалы, мұражай билеті) пайда болса, <code>printAll</code> өзгермейді. Сол <code>b2</code> нысанына екінші интерфейс (<code>Priced</code>) арқылы да қарадық. Мұндай бірнеше интерфейстен мұрагерлену C++-та қауіпсіз, өйткені интерфейстерде өріс жоқ және шатасатын ештеңе жоқ. Екі интерфейс-емес кластан бірден мұрагерлену күрделі, ол жағдайды әдетте композициямен ауыстыру жақсы.</p>
 
       <h3 id="hiding">Қайта анықтау мен жасыру</h3>

@@ -117,6 +117,11 @@ int main() {
 Астана
 7.5
 екінші бірінші</code></pre>
+      <div class="cx-fx" id="cx-0" aria-label="Код 1: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>template &lt;typename T&gt;</code> - «T - кез келген тип» деген үлгі: компилятор әр қолданылған тип үшін функцияның жеке нұсқасын жасайды.</li><li><code>T maxOf(T a, T b) {</code> - екі параметр де бір <code>T</code> типінде болуы керек.</li><li><code>void swapValues(T&amp; a, T&amp; b) {</code> - шаблон сілтемелермен де жұмыс істейді: жолдар орнында ауысады.</li><li><code>std::cout &lt;&lt; maxOf(3, 7) &lt;&lt; &quot;\n&quot;;                       // T = int</code> - <code>T</code> аргументтерден шығарылады: <code>int</code>.</li><li><code>maxOf&lt;double&gt;(3, 7.5)</code> - <code>3</code> мен <code>7.5</code> типтері әртүрлі - <code>T</code>-ны айқын көрсетпесек, компилятор шеше алмас еді.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Бір функция үш түрлі типке жұмыс істеді. «Астана» «Алматы»-дан үлкен: екінші әріптер салыстырылды («с» &gt; «л»).</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>maxOf(3, 7.5)</code> деп жазу: «deduced conflicting types» қатесі - <code>T</code> бірмәнді анықталмайды. Не типті айқын беріңіз, не екі түрлі шаблон параметрін қолданыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Негізгі жазу: <code>template &lt;typename T&gt;</code>. Мұндағы <code>T</code> - тип параметрі («қандай да бір тип»). Компилятор шақыруды көргенде, <code>T</code> орнына нақты типті қойып, кодтың сәйкес нұсқасын өзі жасайды. Мұны <strong>инстанцирлеу</strong> (<span class="term-en">template instantiation</span>) дейді. Типті компилятор аргументтерден анықтайды (<code>maxOf(3, 7)</code> → <code>T = int</code>), не біз өзіміз <code>maxOf&lt;double&gt;(3, 7.5)</code> деп көрсетеміз.</p>
       <p>Шаблон «ақылды» көшіру-қою сияқты, сондықтан оның қолданатын операциялары нақты типте болуы керек. <code>maxOf</code> ішінде <code>a &lt; b</code> бар, демек, тип <code>&lt;</code> операторын білуі керек. Тағы бір ереже: екі параметр де бірдей <code>T</code>, сондықтан <code>int</code> мен <code>double</code> араластырсақ, компилятор шатасады:</p>
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
@@ -201,6 +206,11 @@ int main() {
 30 20 (қалды: 1)
 Алпамыс
 шай = 350.5 тг</code></pre>
+      <div class="cx-fx" id="cx-2" aria-label="Код 3: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>template &lt;typename T&gt;</code> - класс шаблоны: <code>Stack&lt;int&gt;</code> мен <code>Stack&lt;std::string&gt;</code> - екі бөлек класс.</li><li><code>if (items_.empty()) throw std::out_of_range(&quot;стек бос&quot;);</code> - бос стектен алуға тырысқанда ерекше жағдай - қоқыс қайтарудың орнына.</li><li><code>T top = items_.back();</code> - соңғы элементті көшіріп алып, содан кейін жоямыз.</li><li><code>template &lt;typename A, typename B&gt;</code> - бірнеше тип параметрі бар шаблон.</li><li><code>std::cout &lt;&lt; s.pop() &lt;&lt; &quot; &quot; &lt;&lt; s.pop() &lt;&lt; &quot; (қалды: &quot; &lt;&lt; s.size() &lt;&lt; &quot;)\n&quot;;</code> - C++17-ден бастап <code>&lt;&lt;</code> операндтары солдан оңға есептеледі: алдымен 30, содан кейін 20.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Үш элемент қосылып, екеуі алынды - бір қалды. Жолдар стегі соңғы қосылған «Алпамыс»-ты берді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Шаблон класс әдістерін <code>.cpp</code> файлына бөліп жазу: шаблон кодын компилятор қолданылған жерде көруі керек, сондықтан ол әдетте толығымен тақырыпша файлда тұрады - әйтпесе сілтеме (linker) қатесі.</p></div>
+      </div><!--/cx-fx-->
       <p>Бір шаблоннан <code>Stack&lt;int&gt;</code> және <code>Stack&lt;std::string&gt;</code> екі бөлек класс пайда болды. Бос стектен <code>pop()</code> жасағанда біз ерекше жағдай лақтырамыз (келесі бөлімде түсіндіреміз). <code>Pair&lt;A, B&gt;</code> мысалында екі тип параметр бар.</p>
       <p>Тип қана емес, <em>тұрақты мәнді</em> де шаблон параметрі етуге болады. Мысалы, өлшемі компиляция кезінде белгілі жиым:</p>
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
@@ -275,6 +285,10 @@ int main() {
 <pre class="terminal"><code class="language-plaintext">$ ./a07_uncaught
 terminate called after throwing an instance of 'std::runtime_error'
   what():  ешкім ұстамады</code></pre>
+      <div class="cx-fx" id="cx-5" aria-label="Код 6: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>throw std::runtime_error(&quot;ешкім ұстамады&quot;);</code> - ерекше жағдай лақтырылды, бірақ ешбір <code>try/catch</code> жоқ.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Ұсталмаған ерекше жағдай <code>std::terminate</code>-ті шақырып, бағдарламаны апатты аяқтайды (лекциядағы «terminate called...» хабары, «Aborted»). Сондықтан біз оны мұнда іске қоспаймыз. <code>main</code>-да ең болмаса <code>catch (const std::exception&amp;)</code> болғаны жөн.</p></div>
+      </div><!--/cx-fx-->
       <p>Ол сөзбе-сөз «ешкім ұстамады» деп аварияға ұшырады. Бұл дұрыс: қатені үнсіз елемегеннен, дереу тоқтап, нені айтқанын көрсеткен жақсы.</p>
 
       <h3 id="std-exception">std::exception иерархиясы</h3>
@@ -380,6 +394,11 @@ t03_catch_order.cpp:9:7: warning: exception of type 'std::invalid_argument' will
 t03_catch_order.cpp:7:7: note: for type 'std::exception'
     7 |     } catch (const std::exception&amp;) {
       |       ^~~~~</code></pre>
+      <div class="cx-fx" id="cx-7" aria-label="Код 8: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>} catch (const std::exception&amp;) {</code> - бірінші <code>catch</code> базалық тип - кез келген стандарт ерекше жағдайды ұстайды.</li><li><code>} catch (const std::invalid_argument&amp;) {</code> - бұл блокқа ешқашан жетпейді: <code>invalid_argument</code> - <code>exception</code>-ның туындысы, оны алдыңғы блок ұстап қойды.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Тек «A» шықты. <code>catch</code> блоктары жоғарыдан төмен тексеріледі, бірінші сәйкесі таңдалады. Компилятор бұл туралы ескертті.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Жалпы <code>catch</code>-ты нақтыдан бұрын жазу. Ереже: ең нақты типтерден бастап, ең жалпысын соңына қойыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Бұл - тапсырмалардың бірінде кездесетін тұзақ. Басқа ескертулер: бірден барлығын ұстайтын <code>catch (...)</code> бар, бірақ қатені білмей ұстау қауіпті, сондықтан оны сирек, тек соңғы қорғаныс ретінде қолданамыз. Жалпы ереже: ерекше жағдайды <em>шынымен ерекше</em> жағдайлар үшін (файл жоқ, дұрыс емес енгізу, ресурс таусылды) қолданыңыз, қарапайым ағымды басқару үшін емес.</p>
 
       <h2 id="raii">RAII және ерекше жағдайлар</h2>
@@ -411,6 +430,11 @@ int main() {
 }</code></pre>
 <pre class="terminal"><code class="language-plaintext">$ ./a08_unwind
 +a +b -b -a | ұсталды | соңы</code></pre>
+      <div class="cx-fx" id="cx-8" aria-label="Код 9: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>Guard(std::string n) : name(n) { std::cout &lt;&lt; &quot;+&quot; &lt;&lt; name &lt;&lt; &quot; &quot;; }</code> - нысан жасалғанда «+», жойылғанда «-».</li><li><code>throw std::runtime_error(&quot;қате&quot;);</code> - ерекше жағдай функциядан «ұшып шығады».</li><li><code>Guard c(&quot;c&quot;);              // бұған жетпейді</code> - лақтырудан кейінгі код орындалмайды - <code>c</code> мүлдем жасалмайды.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p><code>a</code> мен <code>b</code> жасалып, ерекше жағдай кезінде кері ретпен жойылды (стекті «жазу»), содан кейін ғана <code>catch</code> орындалды.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Ресурсты қолмен басқару (<code>new</code> ... <code>delete</code>): лақтыру <code>delete</code>-ке жеткізбейді, жад ағады. Деструкторлар ғана кепілді шақырылады - сондықтан RAII.</p></div>
+      </div><!--/cx-fx-->
       <p><code>inner()</code> ішінде <code>a</code> мен <code>b</code> жасалып, <code>throw</code> болғанда стек артқа қарай тарқатылды: <code>b</code>, содан кейін <code>a</code> жойылды (деструкторлар жұмыс істеді), сосын <code>catch</code> орындалды. <code>c</code> жасалуға жеткен жоқ. Осы үшін деструкторлар ерекше жағдай кезінде де кепілді жұмыс істейді. Енді қолмен жадты басқарғанда не болатынын көрейік:</p>
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;stdexcept&gt;
@@ -477,6 +501,11 @@ int main() {
 [өңдеу басталды]
 [өңдеу аяқталды]
 ұсталды: ортасында қате</code></pre>
+      <div class="cx-fx" id="cx-10" aria-label="Код 11: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::vector&lt;int&gt; data(1000);                     // RAII: өзі босатады</code> - лақтыру кезінде де vector деструкторы жадты босатады.</li><li><code>auto p = std::make_unique&lt;int[]&gt;(1000);          // RAII: ақылды көрсеткіш</code> - массивке арналған <code>unique_ptr</code>: <code>delete[]</code>-ді өзі шақырады.</li><li><code>Timer t(&quot;өңдеу&quot;);</code> - <code>try</code> блогында жасалған таймер - блоктан шыққанда (тіпті ерекше жағдаймен) жойылады.</li><li><code>std::cout &lt;&lt; &quot;ұсталды: &quot; &lt;&lt; e.what() &lt;&lt; &quot;\n&quot;;</code> - <code>what()</code> - лақтырылған хабар.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Таймер «аяқталды» дегенді «ұсталды»-дан бұрын шығарды: <code>catch</code>-қа өтпес бұрын <code>try</code> блогындағы барлық нысан жойылады.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Деструктордан ерекше жағдай лақтыру: стек жазылып жатқанда екінші ерекше жағдай пайда болса, <code>std::terminate</code> шақырылады. Деструкторлар әдепкіде <code>noexcept</code>.</p></div>
+      </div><!--/cx-fx-->
       <p>Мұнда <code>std::vector</code> мен <code>std::unique_ptr</code> RAII-ды біз үшін орындайды, сондықтан <code>process</code> ішінде ерекше жағдай болса да, жад ағып кетпейді. Өз <code>Timer</code> класымыз да дәл осылай әрекет етті: «өңдеу аяқталды» жазуы қате болса да шықты. Сондықтан қазіргі C++-та <code>new</code>/<code>delete</code> қолмен жазу дерлік қажет емес: <code>vector</code>, <code>string</code>, <code>unique_ptr</code>, <code>fstream</code> (файл өзі жабылады) бәрін өздері жинайды.</p>
 
       <h2 id="files">Файлдармен жұмыс: fstream</h2>
@@ -584,6 +613,11 @@ int main() {
 }</code></pre>
 <pre class="terminal"><code class="language-plaintext">$ ./q05_nofile
 0 fail</code></pre>
+      <div class="cx-fx" id="cx-13" aria-label="Код 14: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::ifstream f(&quot;joq_file.txt&quot;);</code> - жоқ файлды ашуға тырысу ерекше жағдай лақтырмайды - ағын «қате» күйге өтеді.</li><li><code>f.is_open()</code> - файл ашылды ма - <code>false</code> (0).</li><li><code>(f ? &quot;ok&quot; : &quot;fail&quot;)</code> - ағынның өзі логикалық өрнекте күйін көрсетеді.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>0 және «fail»: файл ашылмады, бірақ бағдарлама жұмысын жалғастырды. Тексермесек, келесі оқулар үнсіз ештеңе оқымас еді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Файлды ашқаннан кейін тексермей оқу. Әрқашан <code>if (!f) { ... }</code> жазыңыз; ал жол файлы бағдарлама іске қосылған қалтаға (жұмыс каталогына) қатысты екенін есте сақтаңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Ашылмаған <code>ifstream</code> ерекше жағдай <em>лақтырмайды</em>, тек «сәтсіз» күйге ауысады (<code>is_open()</code> = <code>false</code>). Сондықтан оны өзіміз тексеріп, қажет болса, <code>throw</code> жасаймыз. Бұл - жоғарыдағы <code>loadBooks</code> функциясындағы шешім.</p>
 
       <h2 id="namespace">Namespace: атаулар кеңістігі</h2>
@@ -654,6 +688,10 @@ a14_ambiguous_err.cpp:1:19: note: candidate: 'int a::f()'
 a14_ambiguous_err.cpp:2:19: note: candidate: 'int b::f()'
     2 | namespace b { int f() { return 2; } }
       |                   ^</code></pre>
+      <div class="cx-fx" id="cx-15" aria-label="Код 16: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>using namespace a;</code> - <code>a::f</code>-ті ағымдағы аймаққа әкеледі.</li><li><code>using namespace b;</code> - <code>b::f</code>-ті де әкеледі - енді екі <code>f</code> бір атпен көрінеді.</li><li><code>return f();</code> - компилятор қайсысын шақыру керегін білмейді: «call of overloaded 'f()' is ambiguous».</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бұл мысал әдейі компиляцияланбайды. Тақырыпша файлдарда <code>using namespace std;</code> жазу - осындай қақтығыстардың басты көзі. Толық атты (<code>a::f()</code>) не тар <code>using a::f;</code> қолданыңыз.</p></div>
+      </div><!--/cx-fx-->
       <div class="callout warn">
         <span class="callout-title">Header файлында using namespace жазбаңыз</span>
         <p>Header-де жазылған <code>using namespace std;</code> бұл header-ді қосатын <em>әр файлға</em> тарайды және соқтығысу қаупін көбейтеді. Header-де әрқашан толық атауды (<code>std::string</code>) жазыңыз. <code>.cpp</code> файлдарында да мүмкіндігінше жеке атауларды әкеліңіз.</p>
@@ -680,6 +718,10 @@ double rectArea(double w, double h);
 }  // namespace geo
 
 #endif  // GEOMETRY_H</code></pre>
+      <div class="cx-fx" id="cx-16" aria-label="Код 17: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>#ifndef GEOMETRY_H</code> - қосу күзеті: файл бір компиляция бірлігіне екі рет қосылса, екінші рет өткізіледі.</li><li><code>constexpr double PI = 3.14159265;</code> - компиляция кезінде белгілі тұрақты; <code>constexpr</code> айнымалы тақырыпшада қауіпсіз.</li><li><code>double circleArea(double r);            // жариялау (declaration)</code> - тек «мұндай функция бар» деген уәде - денесі басқа файлда.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Тақырыпша файлға функцияның денесін (<code>inline</code>-сыз) жазу: оны екі <code>.cpp</code> қосса, сілтеуші «multiple definition» қатесін береді. Тақырыпшада - жариялау, <code>.cpp</code>-да - анықтау.</p></div>
+      </div><!--/cx-fx-->
 <pre data-lang="cpp"><code class="language-cpp">#include "geometry.h"
 
 namespace geo {
@@ -693,6 +735,10 @@ double rectArea(double w, double h) {
 }
 
 }  // namespace geo</code></pre>
+      <div class="cx-fx" id="cx-17" aria-label="Код 18: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>#include &quot;geometry.h&quot;</code> - өз тақырыпшамызды тырнақшамен қосамыз (стандарт кітапхана - бұрыштық жақшамен).</li><li><code>double circleArea(double r) {           // анықтау (definition)</code> - уәде етілген функцияның денесі; сол <code>geo</code> кеңістігінде болуы керек.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Анықтауды <code>namespace geo { ... }</code>-тан тыс жазу: онда жаһандық <code>circleArea</code> пайда болып, <code>geo::circleArea</code> анықталмаған күйде қалады - сілтеме қатесі.</p></div>
+      </div><!--/cx-fx-->
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
 #include "geometry.h"
 
@@ -700,6 +746,10 @@ int main() {
     std::cout &lt;&lt; "Шаңырақ радиусы 3 м: " &lt;&lt; geo::circleArea(3) &lt;&lt; " м2\n";
     std::cout &lt;&lt; "Киіз үй еденінің 4x5: " &lt;&lt; geo::rectArea(4, 5) &lt;&lt; " м2\n";
 }</code></pre>
+      <div class="cx-fx" id="cx-18" aria-label="Код 19: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>#include &quot;geometry.h&quot;</code> - <code>main.cpp</code> тек жариялауды көреді - денесі сілтеу кезінде қосылады.</li><li><code>geo::circleArea(3)</code> - кеңістік атымен толық шақыру.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Тек <code>g++ main.cpp</code> деп компиляциялау: «undefined reference to geo::circleArea». Барлық <code>.cpp</code> файлды бірге беру керек: <code>g++ main.cpp geometry.cpp -o app</code> (лекциядағы терминал).</p></div>
+      </div><!--/cx-fx-->
       <p><code>#include "geometry.h"</code> тырнақшамен жазылады (өз файлымыз), ал <code>&lt;iostream&gt;</code> бұрыштық жақшамен (жүйелік header). Қауіпті жағдай - бір header бірнеше рет қосылуы. Мысалы, <code>a.h</code> мен <code>b.h</code> екеуі де <code>point.h</code>-ді қосады, ал <code>main.cpp</code> екеуін де қосады:</p>
 <pre data-lang="cpp"><code class="language-cpp">struct Point {
     int x;
@@ -912,6 +962,10 @@ private:
 std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Book&amp; b);
 
 #endif  // BOOK_H</code></pre>
+      <div class="cx-fx" id="cx-21" aria-label="Код 22: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>Book(int id, std::string title, std::string author, int year);</code> - конструктор тек жарияланған; денесі <code>book.cpp</code>-та.</li><li><code>const std::string&amp; title() const { return title_; }</code> - жолды көшірмей, <code>const</code> сілтемемен қайтарамыз.</li><li><code>bool available_ = true;</code> - жаңа кітап әдепкіде бос.</li><li><code>std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Book&amp; b);</code> - кітапты <code>std::cout &lt;&lt; b</code> деп шығару үшін оператор жарияланды.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Тақырыпшадан <code>#include &lt;string&gt;</code>-ды алып тастау, себебі «басқа файлда бар»: тақырыпша өзі қолданатын барлық нәрсені өзі қосуы керек, әйтпесе қосу реті өзгергенде қате шығады.</p></div>
+      </div><!--/cx-fx-->
       </div></details>
       <details><summary>book.cpp</summary><div class="details-body">
 <pre data-lang="cpp"><code class="language-cpp">#include "book.h"
@@ -924,6 +978,10 @@ std::ostream&amp; operator&lt;&lt;(std::ostream&amp; out, const Book&amp; b) {
         &lt;&lt; (b.available() ? " [бос]" : " [берілген]");
     return out;
 }</code></pre>
+      <div class="cx-fx" id="cx-22" aria-label="Код 23: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>Book::Book(int id, std::string title, std::string author, int year)</code> - <code>Book::</code> - «Book класының» конструкторы деп көрсетеді.</li><li><code>title_(std::move(title))</code> - параметр мәнмен келді, оны өріске көшірмей жылжытамыз.</li><li><code>return out;</code> - ағынды қайтарамыз - <code>cout &lt;&lt; a &lt;&lt; b</code> тізбегі жұмыс істеуі үшін.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>operator&lt;&lt;</code>-ді класс мүшесі етіп жазу: онда сол операнд кітап болып, <code>b &lt;&lt; std::cout</code> деп жазуға тура келер еді. Шығару операторы - класстан тыс функция.</p></div>
+      </div><!--/cx-fx-->
       </div></details>
       <details><summary>library.h</summary><div class="details-body">
 <pre data-lang="cpp"><code class="language-cpp">#ifndef LIBRARY_H
@@ -962,6 +1020,10 @@ private:
 };
 
 #endif  // LIBRARY_H</code></pre>
+      <div class="cx-fx" id="cx-23" aria-label="Код 24: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>explicit Library(std::string name) : name_(std::move(name)) {}</code> - <code>explicit</code> - жолдан кітапханаға жасырын түрлендіруге тыйым.</li><li><code>std::vector&lt;const Book*&gt; search(const std::string&amp; text) const;</code> - іздеу кітаптарды көшірмейді - оларға <code>const</code> көрсеткіштер қайтарады.</li><li><code>int nextId_ = 1;</code> - келесі берілетін нөмір - кітап өшірілсе де нөмірлер қайталанбайды.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>search</code> нәтижесін сақтап, кейін кітап қосу: <code>books_</code> vector-і кеңейсе, бұрынғы көрсеткіштер жарамсыз болады. Нәтижені бірден қолданыңыз не id сақтаңыз.</p></div>
+      </div><!--/cx-fx-->
       </div></details>
       <details><summary>library.cpp</summary><div class="details-body">
 <pre data-lang="cpp"><code class="language-cpp">#include "library.h"
@@ -1009,6 +1071,10 @@ void Library::load(const std::string&amp; path) {
     (void)path;
     throw std::logic_error("load: әлі жазылмаған (TODO 3)");
 }</code></pre>
+      <div class="cx-fx" id="cx-24" aria-label="Код 25: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>books_.emplace_back(nextId_, title, author, year);</code> - <code>emplace_back</code> кітапты vector ішінде орнында жасайды - уақытша нысан жоқ.</li><li><code>return nextId_++;</code> - ағымдағы нөмірді қайтарып, санағышты арттырамыз.</li><li><code>(void)text;</code> - параметр әзірге қолданылмайды - ескертуді өшіреміз.</li><li><code>throw std::logic_error(&quot;search: әлі жазылмаған (TODO 1)&quot;);</code> - орындалмаған функция үнсіз «ештеңе істемей», айқын ерекше жағдай лақтырады - жобаның бастапқы нүктесі.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>TODO функцияларын бос қалдыру (<code>return {};</code>): бағдарлама «жұмыс істейтін» сияқты болып, қате байқалмайды. <code>logic_error</code> - сізге жазу керек жерді нақты көрсетеді.</p></div>
+      </div><!--/cx-fx-->
       </div></details>
       <details><summary>main.cpp</summary><div class="details-body">
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
@@ -1099,6 +1165,10 @@ int main() {
     }
     std::cout &lt;&lt; "Сау болыңыз!\n";
 }</code></pre>
+      <div class="cx-fx" id="cx-25" aria-label="Код 26: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>namespace {</code> - аты жоқ кеңістік: ішіндегі функциялар тек осы файлда көрінеді.</li><li><code>return std::stoi(line);</code> - жолды санға айналдырады; сан болмаса ерекше жағдай лақтырады.</li><li><code>return -1;                       // қате енгізу</code> - қате енгізуде -1 - мәзірде ондай пункт жоқ, <code>default</code> тармағы өңдейді.</li><li><code>case 2: {</code> - <code>case</code> ішінде айнымалы жариялау үшін фигуралық жақша керек.</li><li><code>} catch (const std::exception&amp; e) {</code> - кез келген әрекеттің қатесі бағдарламаны құлатпай, хабар болып шығады.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>std::cin &gt;&gt; choice</code> мен <code>getline</code>-ды араластыру - буферде қалған Enter. Бұл кодта бәрі <code>getline</code> арқылы оқылады, содан кейін түрлендіріледі - сенімді тәсіл.</p></div>
+      </div><!--/cx-fx-->
       </div></details>
       <p>Қаңқаны <code>library/</code> қалтасына салып (ішінде бос <code>data/</code> қалтасы бар), <code>make</code> жазыңыз. Төменде кітап қосып, тізімді көрсеткен, іздеуді тексерген нақты сессия. Енгізу: <code>2</code> (қосу), атауы, авторы, жылы, <code>1</code> (тізім), <code>3</code> (іздеу), <code>абай</code>, <code>0</code>:</p>
 <pre class="terminal"><code class="language-plaintext">$ make &amp;&amp; printf '2\nҚара сөздер\nАбай Құнанбайұлы\n1904\n1\n3\nабай\n0\n' | ./library

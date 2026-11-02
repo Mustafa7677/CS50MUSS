@@ -169,6 +169,11 @@ int main() {
 <pre class="terminal"><code class="language-plaintext">$ ./a02_at
 20
 Қате ұсталды: vector::_M_range_check: __n (which is 5) &gt;= this-&gt;size() (which is 3)</code></pre>
+      <div class="cx-fx" id="cx-1" aria-label="Код 2: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::vector&lt;int&gt; v{10, 20, 30};</code> - фигуралық жақшамен үш элемент.</li><li><code>std::cout &lt;&lt; v.at(5) &lt;&lt; &quot;\n&quot;;     // шектен тыс</code> - <code>at</code> шекараны тексеріп, <code>std::out_of_range</code> лақтырады; бұл жол ештеңе шығармайды.</li><li><code>} catch (const std::out_of_range&amp; e) {</code> - ерекше жағдайды <code>const</code> сілтемемен ұстаймыз - көшірмесіз.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>20 шығып, екінші оқу ерекше жағдайға айналды. Хабардағы 5 пен 3 - сұралған индекс пен өлшем; мәтіннің өзі кітапханаға тәуелді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Ерекше жағдайды мәнмен ұстау (<code>catch (std::out_of_range e)</code>): артық көшірме, ал базалық типпен ұстағанда (<code>catch (std::exception e)</code>) кесілу болады. Әрқашан <code>const&amp;</code>.</p></div>
+      </div><!--/cx-fx-->
       <p>Қате хабары компилятор мен кітапханаға байланысты болуы мүмкін, ол жерде индекс (5) мен өлшем (3) көрсетілген. <code>[]</code> жылдамырақ, <code>at()</code> қауіпсізірек. Қорытынды ереже: индекстің дұрыстығына 100% сенімді болсаңыз, <code>[]</code>, әйтпесе <code>at()</code>.</p>
 
       <h3 id="capacity">size пен capacity</h3>
@@ -230,6 +235,11 @@ int main() {
 <pre class="terminal"><code class="language-plaintext">$ ./a03_list_deque
 Сағын Дәурен Нұрсұлтан Айдана 
 deque: 0 1 2 3 | d[2] = 2</code></pre>
+      <div class="cx-fx" id="cx-3" aria-label="Код 4: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::list&lt;std::string&gt; queue;                 // екі жақты байланысқан тізім</code> - әр элемент жеке түйінде, көршілеріне сілтеме ұстайды.</li><li><code>queue.push_front(&quot;Сағын&quot;);                    // басына қосу - O(1)</code> - басына қосу элементтерді жылжытпайды - тек сілтемелер өзгереді.</li><li><code>++it;                                         // екінші элемент</code> - <code>list</code> итераторы тек бір қадаммен жүреді: <code>it + 1</code> жоқ.</li><li><code>queue.insert(it, &quot;Дәурен&quot;);                   // ортасына қыстыру - O(1) (орын белгілі болса)</code> - <code>it</code> алдына қыстырады: «Нұрсұлтан»-ның алдына.</li><li><code>d.push_front(0);</code> - <code>deque</code> басына да, соңына да тез қосады.</li><li><code>d[2]</code> - <code>deque</code> индекспен де жүгінуге мүмкіндік береді, <code>list</code>-тен айырмасы.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Тізім: «Сағын» басына, «Дәурен» екінші орынға қыстырылды. Deque: 0 мен 1 алдыға, 2 мен 3 соңына - нәтиже 0 1 2 3.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>list</code>-ті «ортасына қосу жылдам» деп ойлап таңдау: алдымен сол орынды табу үшін O(n) жүру керек, ал жадтағы шашыраңқылығы оны көбіне <code>vector</code>-ден баяу етеді.</p></div>
+      </div><!--/cx-fx-->
       <p>Практикалық кеңес: нағыз жобаларда <code>list</code> өте сирек керек болады, себебі вектор көбіне оны жылдамдықта басып озады (жадта қатар жатқандықтан процессордың кэші жақсы жұмыс істейді). Екі жақтан қосатын кезек керек болса, <code>deque</code> таңдаңыз. Ал вектордың алдына қосу тұрақты қажет болса, <code>deque</code> немесе басқа құрылым ойластырыңыз.</p>
 
       <h2 id="associative">map, unordered_map және set</h2>
@@ -308,6 +318,11 @@ int main() {
 Түркия -&gt; Анкара
 Жапония -&gt; табылмады
 Бірегей сандар: 6, қосындысы: 108</code></pre>
+      <div class="cx-fx" id="cx-5" aria-label="Код 6: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>capitals[&quot;Қазақстан&quot;] = &quot;Астана&quot;;</code> - <code>[]</code> кілт жоқ болса жасайды, бар болса мәнін ауыстырады.</li><li><code>auto it = capitals.find(k);</code> - <code>find</code> жаңа элемент жасамайды - табылмаса <code>end()</code> қайтарады.</li><li><code>it-&gt;second</code> - итератор жұпты көрсетеді: <code>first</code> - кілт, <code>second</code> - мән.</li><li><code>if (seen.insert(x).second) total += x;   // insert жаңа болса ғана true</code> - <code>insert</code> жұп қайтарады; <code>.second</code> - элемент жаңадан қосылды ма.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Жапония жоқ - <code>find</code> оны тапқан жоқ, және кестеге қоспады. Бірегей сандар: 4, 8, 15, 16, 23, 42 - алтау, қосындысы 108.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бар-жоғын <code>capitals[k]</code> арқылы тексеру: жоқ кілт үшін бос мәнмен жаңа жазба жасалып қалады. Іздеу үшін <code>find</code> не <code>count</code>/<code>contains</code> (C++20).</p></div>
+      </div><!--/cx-fx-->
       <p>Екінші бөлікте <code>std::unordered_set</code> қолданылды. <code>insert</code> жұп қайтарады: екінші мәні <code>true</code> болса, элемент жаңа қосылды. Осы тәсілмен қайталанатын сандарды сүзіп, бірегейлерін қостық: 4+8+15+16+23+42 = 108.</p>
       <p><code>std::set</code> - тек кілттен тұратын (мән жоқ), қайталанбайтын, сұрыпталған жиын. Бұл математикадағы «жиын» ұғымына сәйкес:</p>
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
@@ -337,6 +352,11 @@ int main() {
 Айгүл келді ме? иә
 Ерлан алынды, қалды: 3
 Бірегей бағалар: 3 4 5 </code></pre>
+      <div class="cx-fx" id="cx-6" aria-label="Код 7: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>attended.insert(s);</code> - <code>set</code> қайталанатын элементті қабылдамайды - «Дана» екінші рет қосылмайды.</li><li><code>for (const auto&amp; s : attended) std::cout &lt;&lt; s &lt;&lt; &quot; &quot;;</code> - <code>set</code> әрқашан сұрыпталған ретпен өтеді.</li><li><code>attended.count(&quot;Айгүл&quot;)</code> - <code>set</code>-те 0 не 1 - «бар ма?» сұрағы.</li><li><code>std::set&lt;int&gt; grades{5, 3, 4, 5, 3, 5};</code> - қайталанулар жойылып, өспелі ретпен сақталады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>6 атаудан 4 бірегей. Олар әліпби бойынша шықты (байттар бойынша, ал бұл атауларда ол әліпбимен сәйкес): Айгүл, Бақыт, Дана, Ерлан.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>set</code> енгізу ретін сақтайды деп күту - ол сұрыптайды. Енгізу ретін сақтап, қайталануларды жою керек болса, <code>vector</code> мен <code>unordered_set</code>-ті бірге қолданыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>«Дана» мен «Ерлан» екі рет енгізілсе де, жиында бір реттен ғана қалды, бәрі әліпби ретімен тұр. Реттің қажеті болмаса, <code>unordered_set</code> қолданыңыз.</p>
 
       <h2 id="pair-tuple">pair, tuple және құрылымдық байланыстыру</h2>
@@ -378,6 +398,11 @@ int main() {
 min = -3, max = 40
 Мөлдір, 17 жас, орташа балл 4.75
 1a</code></pre>
+      <div class="cx-fx" id="cx-7" aria-label="Код 8: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::pair&lt;int, int&gt; minMax(const std::vector&lt;int&gt;&amp; v) {</code> - функция екі мәнді <code>pair</code> ретінде қайтарады.</li><li><code>return {lo, hi};</code> - фигуралық жақша қайтару типінен <code>pair</code> жасайды.</li><li><code>std::tuple&lt;std::string, int, double&gt; student() {</code> - <code>tuple</code> - кез келген санды мәндер жиынтығы.</li><li><code>auto [lo, hi] = minMax({12, -3, 40, 7});</code> - құрылымдық байлау (C++17): жұпты бірден екі айнымалыға ашамыз.</li><li><code>std::get&lt;0&gt;(t)</code> - кортеж элементіне индекс арқылы (компиляция кезінде) жүгіну.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Бір функция екі не үш мән қайтарып, оларды бірден атаулы айнымалыларға тараттық.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>first</code>/<code>second</code>-ті көп жерде қолдану кодты түсініксіз етеді. Мәндердің мағынасы маңызды болса, атаулы өрістері бар <code>struct</code> қайтарыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>C++17-дегі <strong>құрылымдық байланыстыру</strong> (<span class="term-en">structured binding</span>) <code>auto [lo, hi] = ...;</code> нәтижені бірден бірнеше айнымалыға ашып береді. Бұл <code>.first/.second</code> жазудан әлдеқайда оқылымды. Біз оны <code>map</code> бойынша циклде де қолдандық: <code>for (const auto&amp; [name, price] : menu)</code>.</p>
 
       <h2 id="iterators">Итераторлар</h2>
@@ -467,6 +492,10 @@ READ of size 4 at 0x502000000010 thread T0
     #2 0x7f80c5c2a28a in __libc_start_main_impl ../csu/libc-start.c:360
     #3 0x55687e3413a4 in _start (/tmp/bin_w6_a13_invalid+0x83a4)
 ...</code></pre>
+      <div class="cx-fx" id="cx-9" aria-label="Код 10: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int* first = &amp;v[0];</code> - бірінші элементтің мекенжайы.</li><li><code>v.push_back(4);          // vector кеңейді -&gt; жад көшірілді: итератор мен көрсеткіш жарамсыз</code> - сыйымдылық жетпесе, vector жаңа жад бөліп, ескісін босатады.</li><li><code>std::cout &lt;&lt; *first &lt;&lt; &quot; &quot; &lt;&lt; *it &lt;&lt; &quot;\n&quot;;</code> - босатылған жадты оқу - анықталмаған тәртіп.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бұл мысал әдейі қате: нәтижесі әр жолы басқаша болуы мүмкін, сондықтан біз оны бекітіп көрсетпейміз. <code>-fsanitize=address</code> «heap-use-after-free» деп ұстайды. Емі: өзгертуден кейін итераторды қайта алу не алдын ала <code>reserve</code>.</p></div>
+      </div><!--/cx-fx-->
       <p>Ереже: векторды өзгертетін операциялардан (<code>push_back</code>, <code>insert</code>, <code>erase</code>) кейін бұрынғы итераторлар мен көрсеткіштерге сенбеңіз. Керек болса, жаңадан <code>begin()</code> алыңыз немесе индексті қолданыңыз. Тізімде (<code>list</code>) және ассоциативті контейнерлерде итераторлар тұрақтырақ: тек жойылған элементтікі ғана жарамсыз болады.</p>
 
       <h2 id="algorithms">&lt;algorithm&gt; алгоритмдері</h2>
@@ -545,6 +574,11 @@ int main() {
 }</code></pre>
 <pre class="terminal"><code class="language-plaintext">$ ./q03_listsort
 1 2 3 </code></pre>
+      <div class="cx-fx" id="cx-11" aria-label="Код 12: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::list&lt;int&gt; l{3, 1, 2};</code> - <code>list</code> итераторлары кездейсоқ қол жеткізуді қолдамайды.</li><li><code>l.sort();</code> - <code>list</code>-тің өз сұрыптау әдісі: түйіндерді жылжытпай, сілтемелерді қайта байлайды.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Лекциядағыдай: <code>std::sort(l.begin(), l.end())</code> компиляцияланбайды (кездейсоқ итератор керек), ал <code>l.sort()</code> 1 2 3 береді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Барлық контейнерге <code>std::sort</code> жарайды деп ойлау. Ол тек <code>vector</code>, <code>deque</code>, массив сияқты кездейсоқ қол жеткізуге арналған.</p></div>
+      </div><!--/cx-fx-->
       <p>Компилятор ұзын хабар берді, бірақ мәні қысқа: <code>no match for 'operator-'</code>, яғни <code>list</code> итераторларын азайтуға болмайды, сондықтан <code>std::sort</code> оларға қолданылмайды. (Шығыс тек бастапқы бөлігімен көрсетілген, оның ұзындығы ерекше.) Шешім - <code>l.sort()</code>.</p>
       <h3 id="erase-remove">erase-remove идиомасы</h3>
       <p>Вектордан барлық берілген мәнді жою үшін <code>std::remove</code> пен <code>erase</code> бірге қолданылады. Қызығы: <code>remove</code> элементтерді шын мәнінде жоймайды, тек керектілерді алдына жылжытып, «жаңа соңды» береді, ал <code>erase</code> қалған құйрықты кесіп тастайды:</p>
@@ -560,6 +594,11 @@ int main() {
 }</code></pre>
 <pre class="terminal"><code class="language-plaintext">$ ./q05_erase
 1 3 4 </code></pre>
+      <div class="cx-fx" id="cx-12" aria-label="Код 13: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>v.erase(</code> - <code>erase</code> сол жаңа соңнан нағыз соңға дейінгі қалдықтарды кесіп тастайды - vector өлшемі кішірейеді.</li><li><code>std::remove(v.begin(), v.end(), 2)</code> - <code>remove</code> ештеңені жоймайды: қалатын элементтерді алға жылжытып, «жаңа соңын» қайтарады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Үш «2» жойылып, 1 3 4 қалды. Бұл - erase-remove идиомасы: бір өтуде O(n).</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>erase</code>-сіз тек <code>std::remove</code> шақыру: өлшем өзгермейді, соңында ескі мәндер қалады. C++20-да бір жолмен: <code>std::erase(v, 2);</code>.</p></div>
+      </div><!--/cx-fx-->
 
       <h2 id="lambda">Lambda өрнектері</h2>
       <p>Алгоритмдерге көбіне өз шартымызды беру керек: «60-тан жоғары», «аты бойынша салыстыр». Ол үшін жеке функция жазу артық болуы мүмкін. <strong>Lambda өрнегі</strong> (<span class="term-en">lambda expression</span>) - аты жоқ шағын функцияны дәл керек жерде жазудың жолы. Жалпы түрі:</p>
@@ -612,6 +651,11 @@ int main() {
 Өткендер: 3
 90-нан жоғары: 2
 7*7 = 49</code></pre>
+      <div class="cx-fx" id="cx-14" aria-label="Код 15: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::sort(s.begin(), s.end(), [](const Student&amp; a, const Student&amp; b) {</code> - lambda - орнында жазылған салыстыру функциясы.</li><li><code>if (a.score != b.score) return a.score &gt; b.score;</code> - алдымен балл бойынша кему ретімен.</li><li><code>return a.name &lt; b.name;</code> - тең балл болса - аты бойынша: Гүлім Сәуледен алда.</li><li><code>auto passed = [limit](const Student&amp; x) { return x.score &gt;= limit; };   // мәнмен ұстау</code> - <code>[limit]</code> - сырттағы айнымалының көшірмесін lambda ішіне алады.</li><li><code>std::for_each(s.begin(), s.end(), [&amp;bonus](const Student&amp; x) {          // сілтемемен ұстау</code> - <code>[&amp;bonus]</code> - сыртқы айнымалыны өзгерту үшін сілтемемен ұстаймыз.</li><li><code>auto square = [](int x) { return x * x; };</code> - lambda-ны айнымалыға сақтап, функция сияқты шақыруға болады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Тең балдар аттары бойынша реттелді. 80-нен жоғары - үшеу (Айдардың 78-і өтпеді), 90-нан жоғары - екеу.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Салыстыруда <code>&gt;=</code> қолдану (<code>return a.score &gt;= b.score;</code>): <code>sort</code> «қатаң кіші» ережесін талап етеді; тең элементтерде бұл анықталмаған тәртіпке, тіпті құлауға әкеледі.</p></div>
+      </div><!--/cx-fx-->
       <p>Мұнда <code>sort</code>-ке өз салыстыру ережемізді бердік: балл кему ретімен, тең болса, аты бойынша. Бірдей 92 балл алған «Гүлім» мен «Сәуле» әліпби ретімен тұр. <code>passed</code> lambdasы <code>limit</code>-ті мәнмен алды, ал <code>bonus</code> санауышын <code>[&amp;bonus]</code> арқылы өзгертті.</p>
       <p>Мәнмен ұстаудың тұзағы: lambda құрылған сәтте көшірме алады және кейін түпнұсқа өзгерсе, ол өзгерісті көрмейді. Сонымен қатар мәнмен алынған көшірмені lambda ішінде өзгерту үшін <code>mutable</code> қажет, бірақ өзгеріс тек lambda көшірмесінде қалады:</p>
 <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
@@ -623,6 +667,11 @@ int main() {
 }</code></pre>
 <pre class="terminal"><code class="language-plaintext">$ ./q01_lambda
 11 21 1</code></pre>
+      <div class="cx-fx" id="cx-15" aria-label="Код 16: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>auto f = [x]() mutable { x += 10; return x; };</code> - <code>[x]</code> - көшірме; <code>mutable</code> оны lambda ішінде өзгертуге рұқсат береді.</li><li><code>std::cout &lt;&lt; f() &lt;&lt; &quot; &quot; &lt;&lt; f() &lt;&lt; &quot; &quot; &lt;&lt; x &lt;&lt; &quot;\n&quot;;</code> - екі шақыру бір lambda нысанын өзгертеді, ал сыртқы <code>x</code> - басқа айнымалы.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Бірінші шақыру 11, екіншісі 21: көшірме lambda ішінде «есте сақталады». Сыртқы <code>x</code> 1 күйінде қалды.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>mutable</code> сыртқы айнымалыны өзгертеді деп ойлау - ол тек lambda-ның өз көшірмесін өзгертеді. Сыртқысын өзгерту үшін <code>[&amp;x]</code>.</p></div>
+      </div><!--/cx-fx-->
       <p>Lambda екі рет шақырылды, ішкі көшірме 1 → 11 → 21 болды, бірақ сыртқы <code>x</code> өзгермей, <code>1</code> қалды.</p>
 
       <h2 id="function">std::function: функцияны мәнге айналдыру</h2>
@@ -658,6 +707,11 @@ int main() {
 көбейту(12, 5) = 60
 қосу(12, 5) = 17
 Сәлем, Қобыланды!</code></pre>
+      <div class="cx-fx" id="cx-16" aria-label="Код 17: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::map&lt;std::string, std::function&lt;int(int, int)&gt;&gt; ops;</code> - <code>std::function&lt;int(int,int)&gt;</code> - «екі int алып, int қайтаратын кез келген шақырылатын нәрсе».</li><li><code>ops[&quot;көбейту&quot;] = Multiplier{};                              // функтор</code> - <code>operator()</code>-ы бар нысан - функция сияқты шақырылады.</li><li><code>for (const auto&amp; [name, f] : ops) {</code> - <code>map</code> кілттер бойынша сұрыпталған ретпен өтеді.</li><li><code>std::function&lt;void(const std::string&amp;)&gt; greet = [](const std::string&amp; s) {</code> - lambda-ны да <code>std::function</code>-ға сақтауға болады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Үш түрлі нәрсе (функция, функтор, lambda) бір кестеде бірдей шақырылды. Ретті <code>map</code> кілттері анықтады: «айыру» &lt; «көбейту» &lt; «қосу».</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>std::function</code>-ды әрбір жерде қолдану: ол жадты бөлуі және жанама шақыру жасауы мүмкін. Шаблон параметрі не <code>auto</code> жеткілікті жерде оны қажетсіз жазбаңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Үш түрлі «шақырылатын нәрсе» (жай функция, функтор, lambda) бір <code>map</code>-та жатыр. Қолдану: <code>f(12, 5)</code>. Бұл - мәзірлер, батырма өңдеушілері, пәрмен кестелері үшін өте ыңғайлы. Бағасы: <code>std::function</code> қосымша аздап жылдамдықты жұмсайды, сондықтан өте қарқынды цикл ішінде оны қолдану керек емес. Кіріспе деңгейінде есте қалатыны: <em>функция да мән бола алады</em>.</p>
 
       <h2 id="bigo">Күрделілік: Big-O</h2>
@@ -789,6 +843,11 @@ int main() {
 3. Айдар - 4.25
 4. Ернар - 3.33333
 Орташа 4.5 және одан жоғары: 2 оқушы</code></pre>
+      <div class="cx-fx" id="cx-18" aria-label="Код 19: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::map&lt;std::string, std::vector&lt;int&gt;&gt; grades;</code> - әр оқушыға бағалар тізімі.</li><li><code>double a = std::accumulate(g.begin(), g.end(), 0.0) / g.size();</code> - <code>0.0</code> бастапқы мән - қосынды <code>double</code> болады, бүтін бөлу болмайды.</li><li><code>std::sort(avg.begin(), avg.end(), [](const auto&amp; x, const auto&amp; y) {</code> - <code>auto</code> параметрлі lambda (C++14) - жұптарды орташа бойынша сұрыптайды.</li><li><code>std::cout &lt;&lt; place++ &lt;&lt; &quot;. &quot; &lt;&lt; name &lt;&lt; &quot; - &quot; &lt;&lt; a &lt;&lt; &quot;\n&quot;;</code> - <code>place++</code> - алдымен ағымдағы мән шығады, содан кейін өседі.</li><li><code>auto good = std::count_if(avg.begin(), avg.end(), [](const auto&amp; p) { return p.second &gt;= 4.5; });</code> - шартқа сай элементтерді санайды.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Сәуле 19/4 = 4,75, Гүлім 23/5 = 4,6. Ернардың орташасы 10/3 ≈ 3,33333 - <code>cout</code> әдепкіде 6 маңызды цифр шығарады.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>std::accumulate(..., 0)</code> деп бүтін 0 беру: қосынды <code>int</code> болып, бөлшек бағаларда (не <code>double</code> мәндерде) нәтиже кесіледі.</p></div>
+      </div><!--/cx-fx-->
       <p>Мұндағы тізбек: <code>map</code> → <code>accumulate</code> (орташа) → жаңа <code>vector&lt;pair&gt;</code> → <code>sort</code> + lambda → <code>count_if</code>. Әр қадам бір сөйлеммен түсіндіріледі, ал циклдерді қолмен жазғанда мұндай бағдарлама бірнеше есе ұзын әрі қателікке бейім болар еді. Бұл - STL-дің басты пайдасы: көп жағдайда <em>«қалай істеу керек?»</em> деген сұраққа емес, <em>«не істеу керек?»</em> деген сұраққа жауап жазасыз.</p>
 
       <h2 id="adapters">Контейнер адаптерлері: stack, queue, priority_queue</h2>
@@ -834,6 +893,11 @@ int main() {
 кезекте: Ержан ... Мирас
 келесі: Зере
 басымдық кезегі: 80 30 12 5 </code></pre>
+      <div class="cx-fx" id="cx-19" aria-label="Код 20: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::stack&lt;std::string&gt; plates;</code> - стек (LIFO): тек үстінен қосамыз және аламыз.</li><li><code>plates.top()</code> - үстіңгі элементті көру - жоймайды.</li><li><code>plates.pop();</code> - <code>pop</code> ештеңе қайтармайды: алдымен <code>top</code>, содан кейін <code>pop</code>.</li><li><code>std::queue&lt;std::string&gt; line;</code> - кезек (FIFO): соңынан қосамыз, басынан аламыз.</li><li><code>std::priority_queue&lt;int&gt; pq;</code> - басымдық кезегі: әрқашан ең үлкені үстінде (үйме құрылымы).</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Стек соңғы қосылған «үшінші табақты» берді; кезек бірінші келген Ержанды шығарды; басымдық кезегі енгізу ретіне қарамай кему ретімен шықты.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бос стек не кезекке <code>top()</code>/<code>front()</code> шақыру - анықталмаған тәртіп. Алдымен <code>empty()</code> тексеріңіз.</p></div>
+      </div><!--/cx-fx-->
       <p>Стек пен кезекте итератор жоқ: оларға тек шеттен қол жеткізуге болады (<code>top</code>, <code>front</code>, <code>back</code>), ортасына қарай алмайсыз. Бұл шектеу қасақана жасалған: ол кодты оқитын адамға «мұнда тек осылай жұмыс істейді» деген кепілдік береді. Стек, мысалы, жақшалардың дұрыс жабылғанын тексеруде, браузердегі «артқа» батырмасында, функция шақыруларында қолданылады. Кезек кезекпен өңделетін тапсырмаларда, ал <code>priority_queue</code> «ең маңыздысын бірінші өңде» принципіндегі жүйелерде (мысалы, емхананың шұғыл науқастары) пайдалы.</p>
 
       <h2 id="docs">Құжаттаманы қалай оқу керек?</h2>

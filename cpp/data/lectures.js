@@ -55,7 +55,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 33,
+  "minutes": 39,
   "quiz": 8,
   "tasks": 3,
   "task": "exercises"
@@ -119,7 +119,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 38,
+  "minutes": 49,
   "quiz": 8,
   "tasks": 3,
   "task": "exercises"
@@ -179,7 +179,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 39,
+  "minutes": 49,
   "quiz": 8,
   "tasks": 3,
   "task": "exercises"
@@ -243,7 +243,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 38,
+  "minutes": 49,
   "quiz": 8,
   "tasks": 3,
   "task": "exercises"
@@ -311,7 +311,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 41,
+  "minutes": 46,
   "quiz": 8,
   "tasks": 3,
   "task": "exercises"
@@ -379,7 +379,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 42,
+  "minutes": 50,
   "quiz": 8,
   "tasks": 3,
   "task": "exercises"
@@ -447,7 +447,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 41,
+  "minutes": 49,
   "quiz": 8,
   "tasks": 3,
   "task": "exercises"
@@ -495,7 +495,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 47,
+  "minutes": 54,
   "quiz": 8,
   "tasks": 4,
   "task": "exercises"

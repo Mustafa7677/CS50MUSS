@@ -91,6 +91,10 @@ age мәні:        17
 age мекенжайы:   0x7f3cf4b00020
 heap мекенжайы:  0x502000000010
 sizeof(int*) = 8 байт</code></pre>
+      <div class="cx-fx" id="cx-0" aria-label="Код 1: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int age = 17;</code> - жергілікті айнымалы - стекте: функция аяқталғанда автоматты жойылады.</li><li><code>int* heapValue = new int(99);</code> - <code>new</code> үймеден (heap) бір <code>int</code> орын сұрап, оның мекенжайын қайтарады.</li><li><code>&amp;age</code> - <code>&amp;</code> - «мекенжайын ал» операторы; экранға он алтылық сан шығады.</li><li><code>sizeof(int*)</code> - көрсеткіштің өз өлшемі: 64 биттік жүйеде 8 байт, ол қандай типті көрсетсе де бірдей.</li><li><code>delete heapValue;</code> - <code>new</code>-мен алғанды өзіміз қайтарамыз - әйтпесе жад ағып кетеді.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Мекенжайлардың нақты мәнін есте сақтау не салыстыру: олар әр іске қосуда өзгереді (ASLR қауіпсіздік механизмі). Сондықтан біз бұл мысалдың шығысын бекітіп көрсетпейміз - тек стек мекенжайы (<code>0x7ff...</code>) мен үйме мекенжайының (<code>0x55...</code>) әртүрлі аймақта екенін байқаңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Мекенжайлар он алтылық (<code>0x...</code>) жүйесінде жазылады. Сіздің компьютеріңізде олар басқаша шығады, бағдарламаны келесі рет іске қосқанда да өзгереді: оған алаңдамаңыз, бұл қалыпты. Екі мекенжайдың түрі де бөлек: <code>age</code> стекте (<code>0x7f...</code>-пен басталады), ал <code>new</code> арқылы алынған орын үймеде (мұнда <code>0x5020...</code>) жатыр. Бұл екі аймақ туралы кейінірек айтамыз. <code>sizeof(int*)</code> - 8 байт: мекенжайдың өзі де жадта орын алады, 64-биттік жүйеде ол 8 байт.</p>
       <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 196" role="img" aria-label="Диаграмма: age айнымалысы 17 мәнін сақтайды және мекенжайы бар; p көрсеткіші сол мекенжайды сақтап, age-ге нұсқайды" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m10" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><text x="8" y="14" text-anchor="start" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12.5px;font-weight:600">Көрсеткіш - мекенжай жазылған қағаз</text><rect x="10" y="40" width="150" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="85.0" y="67.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">int age = 17</text><text x="85.0" y="85.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">мән үйдің ішінде</text><text x="85" y="126" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">мекенжай: 0x7ffc10</text><rect x="240" y="40" width="150" height="70" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="315.0" y="67.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:13px;font-weight:400">int* p = &amp;age</text><text x="315.0" y="85.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">p-да мекенжай</text><text x="315" y="126" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:12px;font-weight:400">p-ның өз орны бар</text><polyline points="240,75 162,75" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m10)"/><text x="201" y="62" text-anchor="middle" dominant-baseline="central" style="fill:var(--accent);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12px;font-weight:400">p -&gt; age</text><text x="8" y="156" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">*p  = «p көрсеткен үйге кіріп, ішіндегіні ал»</text><text x="8" y="178" text-anchor="start" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">&amp;age = «age үйінің мекенжайын ал»</text></svg><figcaption class="viz-note">Көрсеткіш - мәннің өзі емес, мәннің мекенжайы. Шаңырақ астындағы үйді мекенжай арқылы табатынымыз сияқты.</figcaption></figure>
 
@@ -124,6 +128,11 @@ age = 17, *p = 17
 p == &amp;age: 1
 age = 18
 other = 15, age = 18</code></pre>
+      <div class="cx-fx" id="cx-1" aria-label="Код 2: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int* p = &amp;age;          // p - age-тің мекенжайын сақтайды</code> - <code>int*</code> - «int-ке көрсеткіш» типі; мәні - <code>age</code>-тің мекенжайы.</li><li><code>*p</code> - <code>*</code> - «көрсеткен жердегі мәнді ал» (ашу): <code>age</code>-тің мәні.</li><li><code>*p = 18;                // p көрсеткен үйдің ішін өзгерттік</code> - көрсеткіш арқылы жазу: <code>age</code> өзгереді, <code>p</code> өзгермейді.</li><li><code>p = &amp;other;             // енді p басқа үйді көрсетеді</code> - көрсеткіштің өзін басқа айнымалыға бағыттаймыз - <code>age</code>-ке енді әсер жоқ.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p><code>*p = 18</code>-ден кейін <code>age</code> 18 болды. Содан кейін <code>p</code> <code>other</code>-ге бағытталып, <code>*p += 10</code> тек <code>other</code>-ді 15-ке айналдырды.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>*</code>-ды ұмытып, <code>p = 18;</code> жазу: бұл мекенжайға сан меншіктеу - компилятор қате береді. Ал <code>int* p, q;</code> жазбасында тек <code>p</code> көрсеткіш, <code>q</code> - кәдімгі <code>int</code>.</p></div>
+      </div><!--/cx-fx-->
       <p>Қадамдап қарайық. <code>p = &amp;age</code> болғаннан кейін <code>*p</code> мен <code>age</code> - бір үй. Сондықтан <code>*p = 18</code> жазғанда <code>age</code> өзгерді. Одан кейін <code>p = &amp;other</code> - қағазға жаңа мекенжай жаздық, енді <code>p</code> басқа үйді көрсетеді; <code>*p += 10</code> енді <code>other</code>-ды өзгертті (5 → 15), ал <code>age</code> 18-де қалды.</p>
       <div class="callout warn">
         <span class="callout-title">* белгісінің екі мағынасы</span>
@@ -182,6 +191,11 @@ int main() {
       <pre class="terminal"><code class="language-plaintext">$ ./main
 8 5
 5 8</code></pre>
+      <div class="cx-fx" id="cx-3" aria-label="Код 4: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>void swapRef(int&amp; a, int&amp; b) {</code> - параметрлер - сілтемелер: <code>a</code> мен <code>b</code> шақырушының айнымалыларының өзі (басқа аты).</li><li><code>int t = a;</code> - уақытша айнымалы - онсыз бір мән жоғалар еді.</li><li><code>void swapPtr(int* a, int* b) {</code> - сол әрекет көрсеткіштермен: мекенжайлар беріледі.</li><li><code>*a = *b;</code> - көрсеткіштерде мәнге қол жеткізу үшін <code>*</code> міндетті.</li><li><code>swapPtr(&amp;x, &amp;y);</code> - шақыруда мекенжайларды айқын береміз - шақырудың өзінен «бұл функция өзгертеді» деген белгі көрінеді.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Бірінші ауыстыру 5 пен 8-ді ауыстырды, екіншісі оларды қайтадан орнына қойды. Екі тәсілдің нәтижесі бірдей, тек жазылуы әртүрлі.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Параметрді <code>int a, int b</code> (мәнімен) деп жазу: функция көшірмелерді ауыстырады, ал <code>x</code> пен <code>y</code> өзгермейді - ескертусіз «ештеңе болмайды».</p></div>
+      </div><!--/cx-fx-->
       <p>Бірінші <code>swapRef(x, y)</code> шақырудан кейін <code>8 5</code> болды: сілтеме арқылы функция түпнұсқаны өзгерте алды. Шақыру өте таза: көрсеткіштегідей <code>&amp;</code> жазудың қажеті жоқ. Екінші, <code>swapPtr(&amp;x, &amp;y)</code>, көрсеткіштермен істейді: мекенжайларды береміз, ішінде <code>*a</code>, <code>*b</code> арқылы мәндерді өзгертеміз; нәтижесінде қайтадан <code>5 8</code>. Қазіргі C++ кодында көбіне сілтеме қолданылады, ал көрсеткіш «бос болуы мүмкін» немесе «динамикалық жад» жағдайларына қалдырылады.</p>
 
       <h2 id="const-ref">const сілтеме</h2>
@@ -207,6 +221,11 @@ int main() {
 }</code></pre>
       <pre class="terminal"><code class="language-plaintext">$ ./main
 Жиыны: 460!</code></pre>
+      <div class="cx-fx" id="cx-4" aria-label="Код 5: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int total(const std::vector&lt;int&gt;&amp; v) {      // көшірме жоқ, өзгертуге болмайды</code> - <code>const &amp;</code> - үлкен нысанды көшірмей беру және функция оны өзгертпейтініне кепілдік.</li><li><code>void shout(const std::string&amp; text) {</code> - уақытша жолды (қосынды нәтижесін) <code>const</code> сілтемеге беруге болады; <code>const</code>-сыз сілтеме оны қабылдамас еді.</li><li><code>shout(&quot;Жиыны: &quot; + std::to_string(total(sales)));</code> - алдымен <code>total</code> есептеледі, <code>to_string</code> санды мәтінге айналдырады, содан кейін жолдар қосылады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>120+90+150+100 = 460. <code>shout</code> мәтіннің соңына леп белгісін қосты.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>void shout(std::string&amp; text)</code> (<code>const</code>-сыз) жазу: <code>"Жиыны: " + ...</code> - уақытша нысан, оны тұрақты емес сілтемеге байлауға болмайды, компилятор қате береді.</p></div>
+      </div><!--/cx-fx-->
       <p><code>const std::vector&lt;int&gt;&amp; v</code> - «векторды көшірмей, тек оқу үшін ал». Егер функция ішінде <code>v.push_back(1)</code> жазсақ, компилятор қате береді. Бұл ереже 2-аптадағы <code>findIndex</code> функциясында да болды. Кесте:</p>
       <table>
         <thead><tr><th>Параметр жазылуы</th><th>Көшіреді ме?</th><th>Түпнұсқаны өзгерте ме?</th><th>Қашан</th></tr></thead>
@@ -243,6 +262,11 @@ int main() {
 p - a = 3
 a[3] == *(a + 3): 1
 12 7 30 4 9 </code></pre>
+      <div class="cx-fx" id="cx-5" aria-label="Код 6: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int* p = a;                 // массив атауы бірінші элементке көрсетеді</code> - массив атауы өрнекте бірінші элементтің мекенжайына айналады.</li><li><code>*(p + 4)</code> - <code>p + 4</code> - 4 элементке алға (4·4 = 16 байт), содан кейін ашамыз: <code>a[4]</code> = 9.</li><li><code>p++;                        // келесі int-ке (4 байт алға)</code> - көрсеткішті бір элементке жылжыту; ол енді <code>a[1]</code>-ді көрсетеді.</li><li><code>(p - a)</code> - екі көрсеткіштің айырмасы - байт емес, элементтер саны: 3.</li><li><code>for (int* q = a; q != a + 5; q++) std::cout &lt;&lt; *q &lt;&lt; &quot; &quot;;</code> - индекссіз өту: <code>a + 5</code> - соңғы элементтен кейінгі мекенжай, оны ашпаймыз, тек салыстырамыз.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p><code>a[3]</code> мен <code>*(a + 3)</code> бір нәрсе - индекс іс жүзінде көрсеткіш арифметикасы. <code>p</code> алдымен 1-ге, содан кейін тағы 2-ге жылжып, <code>a</code>-дан 3 элемент алыста тұр.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>a + 5</code>-ті ашу (<code>*(a + 5)</code>) - шекарадан тыс оқу. Соңынан кейінгі мекенжаймен тек салыстыруға болады.</p></div>
+      </div><!--/cx-fx-->
       <p>Бұдан көретініміз: <code>*(p + 1)</code> - <code>p[1]</code>-ге тең жазу. Шын мәнінде <code>a[3]</code> компилятор үшін <code>*(a + 3)</code> дегенді білдіреді. Көрсеткіштерді азайтсақ, олардың арасындағы <em>элемент санын</em> аламыз: <code>p - a == 3</code>. Соңғы цикл көрсеткішпен массивті аралап шығады (<code>a + 5</code> - соңғы элементтің «артындағы» орын). Сондықтан 2-аптадағы <code>begin()</code>/<code>end()</code> итераторлары көрсеткішке ұқсайды: олар да дәл осы идеяға негізделген.</p>
       <p>Ескерту: көрсеткішті массивтің шегінен тыс жылжыту (<code>p + 10</code>, егер массив 5 элементті болса) анықталмаған мінез. Бұл өткен апта көрген индекс қатесінің дәл өзі, тек басқа жазумен.</p>
 
@@ -268,6 +292,11 @@ int main() {
 main ішінде sizeof(sales) = 24
 функция ішінде sizeof(a) = 8
 қосынды: 600</code></pre>
+      <div class="cx-fx" id="cx-6" aria-label="Код 7: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int sumArray(int* a, int n) {</code> - функцияға массив емес, бірінші элементке көрсеткіш келеді - сондықтан өлшемін бөлек береміз.</li><li><code>sizeof(a)</code> - функция ішінде бұл көрсеткіштің өлшемі (8 байт), массивтің емес.</li><li><code>std::cout &lt;&lt; &quot;main ішінде sizeof(sales) = &quot; &lt;&lt; sizeof(sales) &lt;&lt; &quot;\n&quot;;</code> - мұнда <code>sales</code> - нағыз массив: 6·4 = 24 байт.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>24 мен 8 айырмасы массивтің «ыдырауын» (decay) көрсетеді: функцияға берілгенде өлшем туралы ақпарат жоғалады.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Функция ішінде <code>sizeof(a) / sizeof(a[0])</code> арқылы элементтер санын есептеу: 8/4 = 2 шығып, есеп үнсіз қате болады. <code>std::vector</code> не <code>std::array</code> өз өлшемін біледі.</p></div>
+      </div><!--/cx-fx-->
       <p><code>main</code> ішінде <code>sizeof(sales)</code> - 24 (6 × 4 байт). Ал функцияның ішінде <code>a</code> - жай <code>int*</code>, оның көлемі 8 байт, яғни мекенжайдың көлемі. Функция массив қанша элементті екенін білмейді, сондықтан өлшемді (<code>n</code>) бөлек параметр етіп береміз. Бұл - C стиліндегі массивтердің ең үлкен әлсіздігі. <code>std::vector</code> және <code>std::array</code> мұндай мәселені жояды: олар өлшемін өздері біледі. Осы себепті қазіргі кодта функцияға <code>const std::vector&lt;int&gt;&amp;</code> береміз.</p>
       <div class="callout note">
         <span class="callout-title">Қашан көрсеткіш, қашан сілтеме?</span>
@@ -293,6 +322,11 @@ int main() {
 p ешқайда көрсетпейді
 бұл да сол мағына
 енді *p = 4</code></pre>
+      <div class="cx-fx" id="cx-7" aria-label="Код 8: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int* p = nullptr;</code> - көрсеткіш «ешқайда көрсетпейді» - оны ашуға болмайды, бірақ тексеруге болады.</li><li><code>if (!p) std::cout &lt;&lt; &quot;бұл да сол мағына\n&quot;;</code> - нөлдік көрсеткіш логикалық өрнекте <code>false</code> болады.</li><li><code>p = &amp;x;</code> - енді нақты айнымалыны көрсетеді - ашу қауіпсіз.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Алғашқы екі тексеру бір нәрсені екі түрлі жазады. Мекенжай берілгеннен кейін ғана <code>*p</code> 4-ті шығарды.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Көрсеткішті бастапқы мәнсіз қалдыру (<code>int* p;</code>): онда кездейсоқ мекенжай, <code>if (p)</code> тексеруі ақиқат шығып, ашу бағдарламаны құлатады. Көрсеткішті әрқашан <code>nullptr</code>-мен бастаңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Көрсеткішті қолданбас бұрын <code>p != nullptr</code> тексеру - жақсы әдет. <code>nullptr</code> көрсеткішіне <code>*</code> жазу (дереференс) - ең жиі кездесетін құлау себебі:</p>
       <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
 
@@ -335,6 +369,11 @@ int main() {
       <pre class="terminal"><code class="language-plaintext">$ ./main
 2
 7</code></pre>
+      <div class="cx-fx" id="cx-9" aria-label="Код 10: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>const int* p = &amp;a;     // мән тек оқылады</code> - <code>const</code> <code>*</code>-тан сол жақта: көрсетілген мән тұрақты, ал көрсеткіштің өзі - жоқ.</li><li><code>p = &amp;b;                // көрсеткішті ауыстыруға болады</code> - <code>p</code> енді <code>b</code>-ні көрсетеді - заңды.</li><li><code>int* const q = &amp;a;     // көрсеткіш тұрақты</code> - <code>const</code> <code>*</code>-тан оң жақта: көрсеткіш басқа жерге бұрыла алмайды.</li><li><code>*q = 7;                // мәнді өзгертуге болады</code> - мән тұрақты емес, сондықтан <code>a</code> 7 болады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p><code>*p</code> 2 (<code>b</code>-ні көрсетеді), ал <code>q</code> арқылы <code>a</code> 7-ге өзгерді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>const</code>-тың орнын шатастыру. Оңнан солға оқыңыз: <code>const int* p</code> - «p - тұрақты int-ке көрсеткіш»; <code>int* const q</code> - «q - int-ке тұрақты көрсеткіш».</p></div>
+      </div><!--/cx-fx-->
       <p>Әр нұсқа өз шегінен шыққанда компилятор бірден тоқтатады:</p>
       <pre data-lang="cpp"><code class="language-cpp">int main() {
     int a = 1, b = 2;
@@ -352,6 +391,10 @@ main.cpp:4:8: error: assignment of read-only location ‘* p’
 main.cpp:6:7: error: assignment of read-only variable ‘q’
     6 |     q = &amp;b;                // қате: q басқа жерге көрсете алмайды
 ...</code></pre>
+      <div class="cx-fx" id="cx-10" aria-label="Код 11: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>*p = 5;                // қате: p арқылы өзгертуге болмайды</code> - <code>p</code> - <code>const int*</code>: ол арқылы жазу тыйым салынған.</li><li><code>q = &amp;b;                // қате: q басқа жерге көрсете алмайды</code> - <code>q</code> - <code>int* const</code>: көрсеткішті қайта бағыттауға болмайды.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бұл мысал әдейі компиляцияланбайды: компилятор екі жолды да «assignment of read-only» деп көрсетеді. Мұндай қателер - жақсы қателер: олар бағдарлама іске қосылмай тұрып ұсталады.</p></div>
+      </div><!--/cx-fx-->
       <p>«assignment of read-only location» - тұрақты мәнге жазбақ болдыңыз. Бұл қате емес, құрал: <code>const</code> сізді өз кодыңыздан қорғайды. Сілтемелер әрқашан «тұрақты көрсеткіш» сияқты (басқа айнымалыға ауыспайды), сондықтан <code>const T&amp;</code> тек «мәні тұрақты» нұсқасын қажет етеді.</p>
       <h2 id="stack-heap">Stack және heap</h2>
       <p>Бағдарламаның жады екі негізгі аймаққа бөлінеді:</p>
@@ -381,6 +424,11 @@ int main() {
       <pre class="terminal"><code class="language-plaintext">$ ./main
 қонақтар: 120
 баға: 2500</code></pre>
+      <div class="cx-fx" id="cx-11" aria-label="Код 12: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int* guests = new int;      // үймеден бір int сұрадық</code> - бастапқы мәнсіз: ішінде қоқыс, сондықтан келесі жолда бірден мән береміз.</li><li><code>delete guests;              // қайтарамыз</code> - әр <code>new</code>-ге дәл бір <code>delete</code>.</li><li><code>int* price = new int(2500); // бастапқы мәнмен</code> - жақшадағы мән бірден жазылады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Екі мән дұрыс шықты, және екі нысан да өз <code>delete</code>-імен босатылды - жад ағып кетпеді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>delete</code>-тен кейін көрсеткішті қолдану (use-after-free) не екі рет <code>delete</code> жасау. Қазіргі C++-та қолмен <code>new</code>/<code>delete</code> орнына <code>std::make_unique</code> жазған дұрыс.</p></div>
+      </div><!--/cx-fx-->
       <p>Әр <code>new</code>-ге дәл бір <code>delete</code> сәйкес келуі керек. <code>new int(2500)</code> орынды алып, оған бірден 2500 жазады. <code>delete</code>-тен кейін көрсеткіш әлі де ескі мекенжайды сақтап тұр, бірақ ол мекенжай енді сіздікі емес. Мұны төменде қауіпті қателер бөлімінде көреміз.</p>
       <h3 id="dyn-array">Динамикалық массив</h3>
       <p>Өткен аптада <code>std::array</code> өлшемі компиляция кезінде белгілі болуы керек екенін білдік. <code>new int[n]</code> өлшемді орындалу кезінде таңдауға мүмкіндік береді: <code>n</code> пернетақтадан оқылуы мүмкін. Жою үшін <strong>квадрат жақшалы</strong> нұсқа қолданылады: <code>delete[]</code>.</p>
@@ -405,6 +453,11 @@ int main() {
 Қанша сан? 4
 1 2 3 4
 квадраттар қосындысы: 30</code></pre>
+      <div class="cx-fx" id="cx-12" aria-label="Код 13: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int* data = new int[n];</code> - өлшемі жұмыс кезінде белгілі массив үймеден бөлінеді.</li><li><code>sumSquares += static_cast&lt;long long&gt;(data[i]) * data[i];</code> - көбейтуден бұрын <code>long long</code>-қа айналдырамыз - үлкен сандарда <code>int</code> көбейтіндісі толып кетпесін.</li><li><code>delete[] data;</code> - массивті <code>delete[]</code>-мен босатамыз (жақшасыз <code>delete</code> - UB).</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Кіріс: <code>3</code>, содан кейін <code>2 5 -4</code>. Квадраттар: 4+25+16 = 45 - теріс санның квадраты оң.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>new[]</code>-мен алынғанды <code>delete</code>-пен (жақшасыз) босату - анықталмаған тәртіп. Қарапайым шешім: <code>std::vector&lt;int&gt; data(n);</code> - жадты өзі басқарады.</p></div>
+      </div><!--/cx-fx-->
       <p>1² + 2² + 3² + 4² = 30. Назар аударыңыз: <code>new[]</code> үшін <code>delete[]</code>, ал жай <code>new</code> үшін жай <code>delete</code> жазамыз; оларды араластыру - анықталмаған мінез. Тәжірибеде динамикалық массивтің орнына <code>std::vector</code> қолданыңыз: ол дәл осы жұмысты (жадты алу, көшіру, қайтару) өзі автоматты атқарады. Құрал қалай жұмыс істейтінін түсіну үшін ғана қолмен жазуды үйрендік.</p>
 
       <p>Қадамдап көрейік. Көрсеткіш, сілтеме және <code>new</code>/<code>delete</code> жадта қалай көрінетінін төмендегі визуализатормен қадамдап қараңыз: стектегі ұяшықтар, үймедегі блок, көрсеткіштен нысанға баратын сызық, сондай-ақ жад ағуы мен dangling көрсеткіш.</p>
@@ -514,6 +567,10 @@ WRITE of size 4 at 0x50200000001c thread T0
 
 0x50200000001c is located 0 bytes after 12-byte region [0x502000000010,0x50200000001c)
 ...</code></pre>
+      <div class="cx-fx" id="cx-16" aria-label="Код 17: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int* a = new int[3];</code> - 3 элемент: индекстер 0, 1, 2.</li><li><code>for (int i = 0; i &lt;= 3; i++) {      // i &lt;= 3: бір артық!</code> - <code>&lt;=</code> салдарынан төртінші айналымда <code>a[3]</code>-ке жазамыз - бөлінген аймақтан тыс.</li><li><code>delete[] a;</code> - бүлінген үйме құрылымы көбіне дәл осы жерде «жарылады».</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Шекарадан тыс жазу кейде ешқандай белгі бермейді, кейде басқа айнымалыны бүлдіреді, кейде <code>delete[]</code> кезінде құлатады - сондықтан нәтижесін көрсетпейміз. <code>-fsanitize=address</code> жалауы қатені дәл жолымен көрсетеді (лекциядағы терминалда).</p></div>
+      </div><!--/cx-fx-->
       <p>«heap-buffer-overflow ... WRITE of size 4 ... located 0 bytes after 12-byte region». Яғни біз 12 байттық (3 int) массивтің <em>дәл артынан</em> жаздық. Бұл жад бөтен адамға тиесілі болуы мүмкін: нәтиже деректі бүлдіру немесе қауіпсіздік қатесі. Оңай ереже: <code>new int[n]</code> үшін жарамды индекс 0-ден <code>n - 1</code>-ге дейін.</p>
       <h3 id="vec-invalid">4. Вектор көшкенде көрсеткіштің ескіруі</h3>
       <p>2-аптада вектор орын таусылғанда жаңа жадқа көшетінін айттық. Егер сол векторға элементке көрсететін сілтеме немесе көрсеткіш алып қойсақ, ол көшкеннен кейін ескі, жойылған жадқа апарады:</p>
@@ -581,6 +638,11 @@ main басталды
 жабылды: үй B
 жабылды: үй A
 main аяқталуда</code></pre>
+      <div class="cx-fx" id="cx-18" aria-label="Код 19: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>Shanyrak(std::string n) : name(n) { std::cout &lt;&lt; &quot;ашылды: &quot; &lt;&lt; name &lt;&lt; &quot;\n&quot;; }</code> - конструктор: нысан жасалған сәтте ресурсты «ашады».</li><li><code>~Shanyrak() { std::cout &lt;&lt; &quot;жабылды: &quot; &lt;&lt; name &lt;&lt; &quot;\n&quot;; }</code> - деструктор (<code>~</code>): нысан жойылғанда автоматты шақырылады.</li><li><code>Shanyrak a(&quot;үй A&quot;);</code> - блок ішінде жасалған нысан блок соңында жойылады.</li><li><code>    }</code> - блоктың жабылатын жақшасы - деструкторлар дәл осы жерде іске қосылады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Нысандар жасалуына кері ретпен жойылды: алдымен B, содан кейін A. Бұл - RAII: ресурс нысанның өмір сүру уақытына байланған, оны ұмытып кету мүмкін емес.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Деструкторды «қолмен» шақыру (<code>a.~Shanyrak()</code>): блок соңында ол тағы шақырылып, ресурс екі рет босатылады.</p></div>
+      </div><!--/cx-fx-->
       <p>Назар аударыңыз: блоктан шыққанда нысандар <em>кері ретпен</em> жабылды: B бірінші, A екінші. Біз ешқайда «жап» деп жазбадық: <code>}</code> белгісінің өзі жаппады, компилятор деструкторды шақырып отыр. Егер біз бұл ішке <code>return</code> жазып, ерте шықсақ, немесе ерекше жағдай (exception) туса да, деструктор шақырылар еді. Қолмен <code>delete</code> жазғанда мұндай кепілдік жоқ.</p>
 
       <h2 id="smart-pointers">Смарт көрсеткіштер</h2>
@@ -612,6 +674,11 @@ int main() {
 a бос ма? 1
 b иесі: Айгерім
 кетті: Айгерім</code></pre>
+      <div class="cx-fx" id="cx-19" aria-label="Код 20: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::unique_ptr&lt;Guest&gt; a = std::make_unique&lt;Guest&gt;(&quot;Айгерім&quot;);</code> - үймеде нысан жасап, оның жалғыз иесі - <code>a</code>.</li><li><code>a-&gt;name</code> - <code>-&gt;</code> - көрсеткіш арқылы мүшеге қол жеткізу.</li><li><code>std::unique_ptr&lt;Guest&gt; b = std::move(a);      // иелік берілді</code> - көшіруге болмайды, тек иелікті жылжытуға болады: <code>a</code> бос қалады.</li><li><code>(a == nullptr)</code> - жылжытқаннан кейін <code>a</code> ештеңені көрсетпейді.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Нысан бір рет жасалып, бір рет жойылды («кетті» - <code>main</code> соңында, <code>b</code> жойылғанда). Ешқандай <code>delete</code> жазылмаған.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Жылжытқаннан кейін ескі көрсеткішті қолдану: <code>a-&gt;name</code> - нөлдік көрсеткішті ашу, бағдарлама құлайды.</p></div>
+      </div><!--/cx-fx-->
       <p>Қонақты <code>a</code> арқылы жасадық, содан кейін иелікті <code>b</code>-ға бердік: <code>a</code> бос болды (<code>nullptr</code>), нысан енді <code>b</code>-ға тиесілі. Бағдарламаның соңында <code>b</code> жойылғанда, «кетті: Айгерім» автоматты шықты. Біз ешқандай <code>delete</code> жазбадық. Көшіруге тырыссақ, компилятор тоқтатады:</p>
       <pre data-lang="cpp"><code class="language-cpp">#include &lt;memory&gt;
 
@@ -627,6 +694,10 @@ main.cpp:5:30: error: use of deleted function ‘std::unique_ptr&lt;_Tp, _Dp&gt;
       |                              ^
 In file included from /usr/include/c++/13/memory:78,
 ...</code></pre>
+      <div class="cx-fx" id="cx-20" aria-label="Код 21: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::unique_ptr&lt;int&gt; b = a;</code> - көшіру конструкторы жойылған (deleted): екі иесі бола алмайды.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бұл мысал әдейі компиляцияланбайды. <code>unique_ptr</code>-ді беру үшін <code>std::move(a)</code> жазыңыз, ал нысанды бірнеше иемен бөлісу керек болса - <code>std::shared_ptr</code>.</p></div>
+      </div><!--/cx-fx-->
       <p>«use of deleted function ... unique_ptr(const unique_ptr&amp;)»: көшіру құрылымдық түрде өшірілген, себебі екі ие бір нысанды екі рет жоймауы керек. Бұл ереже қатені бағдарлама іске қосылмай тұрып ұстайды.</p>
       <h3 id="shared-ptr">std::shared_ptr</h3>
       <p>Нысанды <em>бірнеше</em> ие бөліседі. Ішінде санауыш бар: көшіргенде артады, ие жойылғанда кемиді, нөлге жеткенде нысан жойылады.</p>
@@ -648,6 +719,11 @@ int main() {
 иелер: 1
 иелер: 2 (Адай)
 иелер: 1</code></pre>
+      <div class="cx-fx" id="cx-21" aria-label="Код 22: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>auto song = std::make_shared&lt;std::string&gt;(&quot;Адай&quot;);</code> - ортақ иелігі бар нысан; иелер санағышы 1.</li><li><code>song.use_count()</code> - қазіргі иелер саны.</li><li><code>std::shared_ptr&lt;std::string&gt; copy = song;</code> - көшіру иелер санын 2-ге арттырады - нысан біреу.</li><li><code>    }</code> - блок соңында <code>copy</code> жойылып, санағыш 1-ге қайтады; нысанды соңғы ие жойғанда ғана жад босайды.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>1 → 2 → 1: көшірме нысанды көшірмеді, тек санағышты өзгертті. «Адай» мәтіні жадта бір дана.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Екі нысан бір-бірін <code>shared_ptr</code>-мен көрсетсе (цикл), санағыш ешқашан 0-ге түспейді - жад ағады. Ондай байланыстың бір жағын <code>std::weak_ptr</code> етіңіз.</p></div>
+      </div><!--/cx-fx-->
       <p>Алғашында бір ие. Ішкі блокта көшірме жасалды, санауыш 2 болды. Блоктан шыққанда көшірме жойылып, санауыш қайтадан 1. Ең соңғы ие кеткенде нысан да кетеді.</p>
       <figure class="diagram" style="margin:0"><svg viewBox="0 0 400 236" role="img" aria-label="Диаграмма: unique_ptr нысанға жалғыз иелік етеді; екі shared_ptr бір нысанды бөліседі, санауыш 2" style="display:block;width:100%;max-width:400px;height:auto;margin:18px auto 6px"><defs><marker id="m12" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" style="fill:var(--muted)"/></marker></defs><rect x="10" y="20" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="37.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">unique_ptr a</text><text x="80.0" y="55.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">жалғыз иесі</text><rect x="230" y="20" width="160" height="50" rx="8" style="fill:var(--surface);stroke:var(--ok);stroke-width:1.8"/><text x="310.0" y="37.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">Шаңырақ нысаны</text><text x="310.0" y="55.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">үймеде</text><polyline points="150,45 228,45" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m12)"/><text x="189" y="32" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">иелік</text><rect x="10" y="110" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="127.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">shared_ptr b1</text><text x="80.0" y="145.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">санауыш = 2</text><rect x="10" y="170" width="140" height="50" rx="8" style="fill:var(--surface);stroke:var(--accent);stroke-width:1.8"/><text x="80.0" y="187.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--mono, 'JetBrains Mono', monospace);font-size:12.5px;font-weight:400">shared_ptr b2</text><text x="80.0" y="205.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">санауыш = 2</text><rect x="230" y="125" width="160" height="70" rx="8" style="fill:var(--surface);stroke:var(--ok);stroke-width:1.8"/><text x="310.0" y="152.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--text);font-family:var(--font, sans-serif);font-size:13px;font-weight:400">Нысан</text><text x="310.0" y="170.0" text-anchor="middle" dominant-baseline="central" style="fill:var(--muted);font-family:var(--font, sans-serif);font-size:11.5px;font-weight:400">соңғы ие кеткенде</text><polyline points="150,135 228,150" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m12)"/><polyline points="150,195 228,172" style="stroke:var(--muted);stroke-width:1.6;fill:none" marker-end="url(#m12)"/></svg><figcaption class="viz-note">unique_ptr бір ғана иені білдіреді, shared_ptr иелердің санын санайды. Екеуі де нысанды өзі жояды.</figcaption></figure>
       <p>Қайсысын таңдау керек? Әдепкі ереже: нысанның иесі бір ғана болса, <code>unique_ptr</code>; ал нақты бөлісу қажет болса ғана <code>shared_ptr</code>. Көп жағдайда мүлде көрсеткіш керек емес: жай жергілікті айнымалы немесе <code>std::vector</code> жеткілікті. Қазіргі C++ кодында жалаң <code>new</code>/<code>delete</code> дерлік кездеспейді.</p>
@@ -677,6 +753,11 @@ int main() {
 Ержан: 3 ішек
 Ержан домбырасын келтірді
 Ержан: 2 ішек</code></pre>
+      <div class="cx-fx" id="cx-22" aria-label="Код 23: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>d-&gt;strings = 2;                       // (*d).strings сияқты</code> - <code>-&gt;</code> - «ашып, мүшені ал» деген қысқа жазу.</li><li><code>Dombyra d{&quot;Ержан&quot;, 3};</code> - құрылымды фигуралық жақшамен толтыру: өрістер ретімен.</li><li><code>Dombyra* p = &amp;d;</code> - құрылымға көрсеткіш.</li><li><code>tune(p);</code> - функция көрсеткіш арқылы түпнұсқа нысанды өзгертеді.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p><code>tune</code>-дан кейін <code>d.strings</code> 2 болды: функция көшірмемен емес, нысанның өзімен жұмыс істеді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>*d.strings</code> жазу: нүктенің басымдығы жоғары, ол <code>*(d.strings)</code> болып оқылады - компилятор қатесі. Не <code>(*d).strings</code>, не <code>d-&gt;strings</code>.</p></div>
+      </div><!--/cx-fx-->
       <p><code>tune</code> функциясы <code>Dombyra*</code> алды және оның өрістерін өзгертті: <code>main</code>-дегі <code>d</code> өзгерді (3 ішектен 2 ішекке). Нүкте (<code>d.strings</code>) нысанның өзіне, көрсеткішке <code>-&gt;</code> жазылады.</p>
 
       <h3 id="factory">Көрсеткішті функциядан қайтару</h3>
@@ -710,6 +791,11 @@ main басталды
 иесі: Нұрлан
 домбыра жойылды: Нұрлан
 main аяқталды</code></pre>
+      <div class="cx-fx" id="cx-23" aria-label="Код 24: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::unique_ptr&lt;Dombyra&gt; makeDombyra(const std::string&amp; owner) {</code> - фабрика функциясы: нысанды жасап, иелікті шақырушыға береді.</li><li><code>return std::make_unique&lt;Dombyra&gt;(owner);   // үймедегі нысан функциядан шығады</code> - қайтарғанда иелік автоматты жылжиды - <code>std::move</code> жазудың қажеті жоқ.</li><li><code>auto d = makeDombyra(&quot;Нұрлан&quot;);</code> - <code>d</code> - жаңа ие; блок соңында нысан жойылады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Нысан функция ішінде жасалды, бірақ функция аяқталғанда жойылмады - иелік <code>d</code>-ге өтті. Ол блок соңында, «main аяқталды»-дан бұрын жойылды.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Жергілікті нысанның мекенжайын қайтару (<code>Dombyra d(...); return &amp;d;</code>): функция біткенде <code>d</code> жойылып, көрсеткіш жоқ нысанды көрсетеді.</p></div>
+      </div><!--/cx-fx-->
       <p><code>makeDombyra</code> функциясы нысанды үймеде жасап, <code>unique_ptr</code> арқылы <code>main</code>-ге береді. Ішкі блок аяқталғанда <code>d</code> жойылады, деструктор нысанды өзі қайтарады: «домбыра жойылды». Қолмен <code>delete</code> жоқ, ағу жоқ, ескірген мекенжай да жоқ. Мұндай функцияны <strong>зауыт</strong> (<span class="term-en">factory</span>) дейді. Бұл идеяны 4-аптада класстармен және нысандармен жұмыс істегенде көп қолданамыз.</p>
       <h2 id="mistakes">Жиі қателер</h2>
       <ul>

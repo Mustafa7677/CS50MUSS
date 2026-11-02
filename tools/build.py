@@ -953,6 +953,8 @@ def main():
     math_reorder.main()
     import math_fx  # математика: әр формуланың астына жеке түсіндірме мен «Бірден мысал»
     math_fx.main()
+    import code_fx  # C++/Java: код мысалдарының астына жолма-жол талдау, шын шығыс, жиі қате
+    code_fx.main()
     # Мета-сипаттамалар process_page-ден БҰРЫН жаңарады (ол сипаттаманы файлдан оқиды)
     for rel in DESC_TEMPLATES:
         fp = ROOT / rel
