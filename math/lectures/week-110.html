@@ -175,6 +175,47 @@
       <div class="math-attention"><span class="math-box-title">Назар аудар</span>
         <p>Логистикалық регрессияда <em>регуляризациясыз</em> минимумның бар болуы деректерге тәуелді. Бөлінетін деректерде градиенттік түсу «жинақталмайды»: шығын $0$-ге жақындайды, ал $\|\mathbf w\|\to\infty$. Сондықтан «итерация тоқтады» не «шығын кіші» - шешім табылды дегенді білдірмейді. Ал ең кіші квадраттарда минимум әрдайым бар, бірақ жалғыз болмауы мүмкін.</p></div>
 
+      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
+      <p class="mx-now">Теорияны бірден іске қосамыз: әр мысалда алдымен <b>не берілгенін</b>, сосын <b>қай формула не анықтама</b> қолданылатынын, соңында <b>неге дәл осылай</b> екенін көресіз. Қағаз бен қаламды алып, әр қадамды өзіңіз қайталаңыз.</p>
+      <div class="math-example" id="ex-1"><h3>Мысал 1. Түзу жүргізу</h3>
+        <p class="math-problem">$(0;1)$, $(1;3)$, $(2;4)$ нүктелеріне ең кіші квадраттар түзуі $y=c_0+c_1t$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $A=\begin{pmatrix}1&amp;0\\1&amp;1\\1&amp;2\end{pmatrix}$, $\mathbf b=\begin{pmatrix}1\\3\\4\end{pmatrix}$; бағандар тәуелсіз - шешім жалғыз.</li>
+          <li><b>2-қадам.</b> $A^TA=\begin{pmatrix}3&amp;3\\3&amp;5\end{pmatrix}$, $A^T\mathbf b=\begin{pmatrix}8\\11\end{pmatrix}$.</li>
+          <li><b>3-қадам.</b> $3c_0+3c_1=8$, $3c_0+5c_1=11$: $2c_1=3$, $c_1=\frac32$, $c_0=\frac76$.</li>
+          <li><b>4-қадам.</b> Қалдықтар: $\frac76-1=\frac16$, $\frac{8}{3}-3=-\frac13$, $\frac{25}{6}-4=\frac16$; қосындысы $0$ (бірінші қалыпты теңдеу дәл осыны айтады).</li>
+          <li><b>5-қадам.</b> $f=\frac1{36}+\frac19+\frac1{36}=\frac16$ - ең кіші квадраттық қате.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $y=\frac76+\frac32t$.</p></div>
+      <div class="math-example" id="ex-2"><h3>Мысал 2. Ridge қысуы</h3>
+        <p class="math-problem">Бір параметрді екі өлшеуден бағалау: $x\approx1$, $x\approx3$. $\min(x-1)^2+(x-3)^2+\lambda x^2$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $A=\begin{pmatrix}1\\1\end{pmatrix}$, $A^TA=2$, $A^T\mathbf b=4$.</li>
+          <li><b>2-қадам.</b> $x_\lambda=\frac{4}{2+\lambda}$.</li>
+          <li><b>3-қадам.</b> $\lambda=0$: $x=2$ (орта мән); $\lambda=2$: $x=1$; $\lambda\to\infty$: $x\to0$.</li>
+          <li><b>4-қадам.</b> Регуляризация бағаны нөлге қарай ығыстырады (ауытқу) бірақ шудың әсерін азайтады (дисперсия) - «ауытқу-дисперсия» ымырасы.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $x_\lambda=\frac{4}{2+\lambda}$.</p></div>
+      <div class="math-example" id="ex-3"><h3>Мысал 3. Бөлінетін деректер</h3>
+        <p class="math-problem">Бір мысал: $x=1$, $y=1$. $\ell(w)=\ln(1+e^{-w})$, және регуляризациямен $\ell(w)+\frac12w^2$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $\ell'(w)=-\sigma(-w)&lt;0$ барлық $w$ үшін - $\ell$ қатаң кемиді, $\ell\to0$ ($w\to\infty$), бірақ $\ell>0$: минимум жоқ.</li>
+          <li><b>2-қадам.</b> Регуляризациямен: $g(w)=\ln(1+e^{-w})+\frac12w^2$, $g'(w)=w-\sigma(-w)$.</li>
+          <li><b>3-қадам.</b> $g'(0)=-\frac12&lt;0$, $g'(1)=1-\sigma(-1)\approx0{,}73>0$ - түбір $(0;1)$ аралығында, жалғыз (қатаң дөңес).</li>
+          <li><b>4-қадам.</b> Ньютон: $g''(w)=1+\sigma(w)\sigma(-w)$; $w_0=0$: $w_1=0-\frac{-0{,}5}{1{,}25}=0{,}4$; $w_2\approx0{,}40106$.</li>
+          <li><b>5-қадам.</b> $w^*\approx0{,}4011$; $P(y=1)=\sigma(0{,}4011)\approx0{,}599$ - модель «сенімді, бірақ шексіз сенімді емес».</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> Регуляризациясыз минимум жоқ; $\lambda=1$ кезінде $w^*\approx0{,}401$.</p></div>
+      <div class="math-example" id="ex-4"><h3>Мысал 4. Жұмсақ табалдырық</h3>
+        <p class="math-problem">$\lambda=1$. $S_1(3)$, $S_1(-2{,}5)$, $S_1(0{,}4)$.</p>
+        <ol class="math-steps">
+          <li><b>1-қадам.</b> $S_1(3)=3-1=2$.</li>
+          <li><b>2-қадам.</b> $S_1(-2{,}5)=-(2{,}5-1)=-1{,}5$.</li>
+          <li><b>3-қадам.</b> $|0{,}4|\le1$: $S_1(0{,}4)=0$.</li>
+          <li><b>4-қадам.</b> L2 (ridge) бір айнымалыда $\frac{a}{1+2\lambda}$ береді - ешқашан дәл нөл емес; L1 кіші коэффициенттерді дәл нөлге айналдырады.</li>
+        </ol>
+        <p class="math-answer"><b>Жауабы:</b> $2$; $-1{,}5$; $0$.</p></div>
+
       <h2 id="checks">Тоқта, ойлан</h2>
       <p>Әрі қарай жүрмес бұрын, өзіңізді тексеріңіз: алдымен жауапты ойланыңыз, сосын ашыңыз.</p>
       <details class="mx-check" id="chk-1"><summary><span class="mx-q"><b>1.</b> $A$-ның екі бағаны бірдей болса, ең кіші квадраттар шешімі жалғыз ба?</span></summary>
@@ -248,46 +289,6 @@
           <p class="math-qed">∎</p>
         </div>
       </details>
-
-      <h2 id="examples">Қадамдық шешілген мысалдар</h2>
-      <div class="math-example" id="ex-1"><h3>Мысал 1. Түзу жүргізу</h3>
-        <p class="math-problem">$(0;1)$, $(1;3)$, $(2;4)$ нүктелеріне ең кіші квадраттар түзуі $y=c_0+c_1t$.</p>
-        <ol class="math-steps">
-          <li><b>1-қадам.</b> $A=\begin{pmatrix}1&amp;0\\1&amp;1\\1&amp;2\end{pmatrix}$, $\mathbf b=\begin{pmatrix}1\\3\\4\end{pmatrix}$; бағандар тәуелсіз - шешім жалғыз.</li>
-          <li><b>2-қадам.</b> $A^TA=\begin{pmatrix}3&amp;3\\3&amp;5\end{pmatrix}$, $A^T\mathbf b=\begin{pmatrix}8\\11\end{pmatrix}$.</li>
-          <li><b>3-қадам.</b> $3c_0+3c_1=8$, $3c_0+5c_1=11$: $2c_1=3$, $c_1=\frac32$, $c_0=\frac76$.</li>
-          <li><b>4-қадам.</b> Қалдықтар: $\frac76-1=\frac16$, $\frac{8}{3}-3=-\frac13$, $\frac{25}{6}-4=\frac16$; қосындысы $0$ (бірінші қалыпты теңдеу дәл осыны айтады).</li>
-          <li><b>5-қадам.</b> $f=\frac1{36}+\frac19+\frac1{36}=\frac16$ - ең кіші квадраттық қате.</li>
-        </ol>
-        <p class="math-answer"><b>Жауабы:</b> $y=\frac76+\frac32t$.</p></div>
-      <div class="math-example" id="ex-2"><h3>Мысал 2. Ridge қысуы</h3>
-        <p class="math-problem">Бір параметрді екі өлшеуден бағалау: $x\approx1$, $x\approx3$. $\min(x-1)^2+(x-3)^2+\lambda x^2$.</p>
-        <ol class="math-steps">
-          <li><b>1-қадам.</b> $A=\begin{pmatrix}1\\1\end{pmatrix}$, $A^TA=2$, $A^T\mathbf b=4$.</li>
-          <li><b>2-қадам.</b> $x_\lambda=\frac{4}{2+\lambda}$.</li>
-          <li><b>3-қадам.</b> $\lambda=0$: $x=2$ (орта мән); $\lambda=2$: $x=1$; $\lambda\to\infty$: $x\to0$.</li>
-          <li><b>4-қадам.</b> Регуляризация бағаны нөлге қарай ығыстырады (ауытқу) бірақ шудың әсерін азайтады (дисперсия) - «ауытқу-дисперсия» ымырасы.</li>
-        </ol>
-        <p class="math-answer"><b>Жауабы:</b> $x_\lambda=\frac{4}{2+\lambda}$.</p></div>
-      <div class="math-example" id="ex-3"><h3>Мысал 3. Бөлінетін деректер</h3>
-        <p class="math-problem">Бір мысал: $x=1$, $y=1$. $\ell(w)=\ln(1+e^{-w})$, және регуляризациямен $\ell(w)+\frac12w^2$.</p>
-        <ol class="math-steps">
-          <li><b>1-қадам.</b> $\ell'(w)=-\sigma(-w)&lt;0$ барлық $w$ үшін - $\ell$ қатаң кемиді, $\ell\to0$ ($w\to\infty$), бірақ $\ell>0$: минимум жоқ.</li>
-          <li><b>2-қадам.</b> Регуляризациямен: $g(w)=\ln(1+e^{-w})+\frac12w^2$, $g'(w)=w-\sigma(-w)$.</li>
-          <li><b>3-қадам.</b> $g'(0)=-\frac12&lt;0$, $g'(1)=1-\sigma(-1)\approx0{,}73>0$ - түбір $(0;1)$ аралығында, жалғыз (қатаң дөңес).</li>
-          <li><b>4-қадам.</b> Ньютон: $g''(w)=1+\sigma(w)\sigma(-w)$; $w_0=0$: $w_1=0-\frac{-0{,}5}{1{,}25}=0{,}4$; $w_2\approx0{,}40106$.</li>
-          <li><b>5-қадам.</b> $w^*\approx0{,}4011$; $P(y=1)=\sigma(0{,}4011)\approx0{,}599$ - модель «сенімді, бірақ шексіз сенімді емес».</li>
-        </ol>
-        <p class="math-answer"><b>Жауабы:</b> Регуляризациясыз минимум жоқ; $\lambda=1$ кезінде $w^*\approx0{,}401$.</p></div>
-      <div class="math-example" id="ex-4"><h3>Мысал 4. Жұмсақ табалдырық</h3>
-        <p class="math-problem">$\lambda=1$. $S_1(3)$, $S_1(-2{,}5)$, $S_1(0{,}4)$.</p>
-        <ol class="math-steps">
-          <li><b>1-қадам.</b> $S_1(3)=3-1=2$.</li>
-          <li><b>2-қадам.</b> $S_1(-2{,}5)=-(2{,}5-1)=-1{,}5$.</li>
-          <li><b>3-қадам.</b> $|0{,}4|\le1$: $S_1(0{,}4)=0$.</li>
-          <li><b>4-қадам.</b> L2 (ridge) бір айнымалыда $\frac{a}{1+2\lambda}$ береді - ешқашан дәл нөл емес; L1 кіші коэффициенттерді дәл нөлге айналдырады.</li>
-        </ol>
-        <p class="math-answer"><b>Жауабы:</b> $2$; $-1{,}5$; $0$.</p></div>
 
       <h2 id="mistakes">Жиі қателер</h2>
       <ul class="math-mistakes">
