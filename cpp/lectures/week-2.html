@@ -131,6 +131,10 @@ main.cpp:6:26: runtime error: load of address 0x7f0f24c00034 with insufficient s
 READ of size 4 at 0x7f0f24c00034 thread T0
     #0 0x55c601f476ae in main main.cpp:6
 ...</code></pre>
+      <div class="cx-fx" id="cx-1" aria-label="Код 2: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int a[5] = {12, 7, 30, 4, 9};</code> - 5 элементті массив: заңды индекстер 0-ден 4-ке дейін.</li><li><code>int i = 5;</code> - индекс массив өлшеміне тең - яғни шекарадан бір қадам тыс.</li><li><code>std::cout &lt;&lt; a[i] &lt;&lt; &quot;\n&quot;;   // 5-индекс жоқ!</code> - C массиві шекараны тексермейді: жадтағы келесі байттар оқылады - анықталмаған тәртіп (UB).</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Шекарадан шығу «бірдеңе» шығарып, бағдарлама жұмысын жалғастырады - қатені байқамай қалу оңай. Біздің компьютерде <code>0</code> шықты, басқасында қоқыс сан не құлау болуы мүмкін. Сондықтан нәтижесін мұнда көрсетпейміз. Тексеру үшін <code>-fsanitize=address</code> жалауымен компиляциялаңыз не <code>std::vector::at</code> қолданыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Санитайзер қатені дәл ұстады: «index 5 out of bounds for type 'int [5]'», әрі AddressSanitizer «stack-buffer-overflow» деп бағдарламаны тоқтатты. Санитайзерсіз бағдарлама қателеспей, кездейсоқ мән шығарар еді немесе кейінірек, мүлде басқа жерде құлар еді. Мұндай қателерді табу өте қиын, сондықтан санитайзермен жұмыс істеу әдетке айналсын. Қауіпсіздік үшін қолданылатын қысқа ереже: <em>әрдайым индекс 0-ден өлшем - 1-ге дейін болуы керек</em>.</p>
       <div class="callout warn">
         <span class="callout-title">Анықталмаған мінез</span>
@@ -159,6 +163,11 @@ int main() {
 бірінші: 200, соңғы: 350
 prices.at(2) = 800
 барлығы: 2850</code></pre>
+      <div class="cx-fx" id="cx-2" aria-label="Код 3: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::array&lt;int, 4&gt; prices = {200, 1500, 800, 350};</code> - өлшемі тип ішінде (<code>4</code>) жазылған массив: C массивінен айырмасы - өз өлшемін біледі және көшіріледі.</li><li><code>std::cout &lt;&lt; &quot;өлшемі: &quot; &lt;&lt; prices.size() &lt;&lt; &quot;\n&quot;;</code> - <code>size()</code> - элементтер саны; C массивінде мұндай әдіс жоқ.</li><li><code>prices.front()</code> - бірінші элемент; <code>back()</code> - соңғысы.</li><li><code>prices.at(2)</code> - индекспен алу, бірақ шекараны тексереді: қате индексте ерекше жағдай лақтырады.</li><li><code>for (int p : prices) total += p;</code> - барлық бағаны қосамыз: 200+1500+800+350.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Қосынды 2850, ал <code>at(2)</code> - үшінші элемент 800 (индекс 0-ден басталады).</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>std::array</code> өлшемін айнымалымен беру: <code>std::array&lt;int, n&gt;</code> - <code>n</code> компиляция кезінде белгілі тұрақты болуы керек. Өлшем жұмыс кезінде анықталса, <code>std::vector</code> алыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p><code>&lt;int, 4&gt;</code> - екі параметр: элемент типі және өлшемі. Өлшем компиляция кезінде белгілі болуы керек: оны пернетақтадан оқуға болмайды. Ал өлшемі белгісіз болса, бізге <code>vector</code> керек.</p>
 
       <h2 id="vector">std::vector</h2>
@@ -241,6 +250,11 @@ int main() {
       <pre class="terminal"><code class="language-plaintext">$ ./main
 20
 қате ұсталды: vector::_M_range_check: __n (which is 10) &gt;= this-&gt;size() (which is 3)</code></pre>
+      <div class="cx-fx" id="cx-5" aria-label="Код 6: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>try {</code> - ерекше жағдай лақтыруы мүмкін кодты «қорғалған» блокқа саламыз.</li><li><code>std::cout &lt;&lt; v.at(1) &lt;&lt; &quot;\n&quot;;</code> - индекс 1 бар - 20 шығады.</li><li><code>std::cout &lt;&lt; v.at(10) &lt;&lt; &quot;\n&quot;;</code> - индекс 10 жоқ: <code>at</code> <code>std::out_of_range</code> лақтырады, бұл жол ештеңе шығармайды.</li><li><code>} catch (const std::out_of_range&amp; e) {</code> - лақтырылған қатені ұстаймыз; бағдарлама құламай, жұмысын жалғастырады.</li><li><code>e.what()</code> - қате сипаттамасы - мәтіні кітапханаға тәуелді.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Бірінші жол дұрыс шықты, екіншісінің орнына <code>catch</code> блогы орындалды. Хабар мәтіні (біздегі <code>vector::_M_range_check ...</code>) компиляторға қарай өзгереді, бірақ онда 10 мен 3 сандары бар - кінәлі индекс пен өлшем.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>v[10]</code> жазып, ерекше жағдай күту: <code>[]</code> шекараны тексермейді, ешқандай <code>catch</code> оны ұстамайды. Тексеру керек жерде <code>at</code> қолданыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p><code>try</code> ішіндегі код орындалады; қате болса, бағдарлама бірден <code>catch</code> блогына секіреді. <code>e.what()</code> қатенің сипаттамасын береді: «<em>__n (which is 10) &gt;= this-&gt;size() (which is 3)</em>» - яғни сіз 10-ны сұрадыңыз, ал өлшемі тек 3. Егер <code>catch</code> болмаса, бағдарлама <code>terminate</code> шақырып, тоқтайды. Үйренуші үшін ереже: бастапқыда <code>at()</code> қолданыңыз, бағдарламаңыз дұрыс жұмыс істейтініне көз жеткізген соң ғана жылдам <code>[]</code>-ге ауыса аласыз.</p>
       <h3 id="capacity">Вектор ішінде не болады?</h3>
       <p>Вектор жадтағы үздіксіз блокты басқарады. Орын таусылғанда ол жаңа, үлкенірек блок алып, элементтерді көшіреді. Көрнекі: <code>size</code> - қазір қанша элемент бар, <code>capacity</code> - қанша элементке орын бар.</p>
@@ -268,6 +282,11 @@ size=2 capacity=2
 size=3 capacity=4
 size=5 capacity=8
 size=9 capacity=16</code></pre>
+      <div class="cx-fx" id="cx-6" aria-label="Код 7: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::size_t lastCap = v.capacity();</code> - <code>capacity</code> - қазір бөлінген орын саны; <code>size</code> - нақты элементтер саны.</li><li><code>v.push_back(i);</code> - элемент қосамыз; орын жетпесе, vector үлкенірек жад бөліп, бәрін көшіреді.</li><li><code>if (v.capacity() != lastCap) {</code> - тек сыйымдылық өзгерген сәтте ғана жол шығарамыз.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>GCC-де сыйымдылық екі еселенеді: 1, 2, 4, 8, 16. Сондықтан 9 элемент қосқанда тек 5 рет қайта бөлінді. Өсу коэффициенті стандартта бекітілмеген: MSVC-де 1,5 есе.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Элементке сілтеме не көрсеткіш сақтап, кейін <code>push_back</code> жасау: қайта бөлінгенде ескі жад босатылады, сілтеме «ілініп» қалады. Элементтер саны алдын ала белгілі болса, <code>v.reserve(n)</code> шақырыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Біздің компиляторда сиымдылық 1, 2, 4, 8, 16 болып екі еседен өсті (басқа компиляторда басқаша болуы мүмкін). Осы себепті <code>push_back</code> орташа алғанда жылдам: көшіру сирек болады. Бір маңызды салдар: вектор көшкен кезде ескі мекенжайлар жарамсыз болады. Бұл тақырыпқа 3-аптада көрсеткіштермен оралғанда егжей-тегжейлі тоқталамыз.</p>
 
       <h3 id="temps">Көрейік: температура тізімін оқу</h3>
@@ -298,6 +317,11 @@ int main() {
 Қанша күн? 5
 -4 -1 3 7 0
 нөлден төмен күндер: 2 / 5</code></pre>
+      <div class="cx-fx" id="cx-7" aria-label="Код 8: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::cin &gt;&gt; n;</code> - алдымен күндер санын оқимыз - ол vector өлшемін анықтайды.</li><li><code>std::vector&lt;int&gt; temps;</code> - бос vector; элементтер енгізу барысында қосылады.</li><li><code>temps.push_back(t);</code> - әр оқылған температураны соңына тіркейміз.</li><li><code>if (t &lt; 0) below++;</code> - екінші цикл сақталған деректерді өңдейді: нөлден төмендерді санаймыз.</li><li><code>temps.size()</code> - сақталған күндер саны - <code>n</code>-мен бірдей.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Кіріс <code>4</code>, содан кейін <code>-3 2 -7 0</code>: теріс сандар екеу (-3 және -7), ал 0 «нөлден төмен» емес. Сондықтан 2 / 4.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Деректерді оқу мен өңдеуді бір циклде жасап, кейін сол деректер қайта керек болып қалу. Деректер бірнеше рет қажет болса, оларды vector-ге сақтау - дұрыс шешім.</p></div>
+      </div><!--/cx-fx-->
       <p>Бес санның екеуі (-4 және -1) нөлден төмен. Бұл бағдарламада <code>int t;</code> айнымалысы цикл ішінде жарияланып, әр айналымда жаңадан жасалады, ал <code>temps.push_back(t)</code> оның көшірмесін векторға қояды. Вектор өсе бергендіктен, массивтің өлшемін алдын ала болжаудың қажеті жоқ. Бұл - C-массивке қарағанда векторды таңдаудың негізгі себебі.</p>
       <h3 id="insert-erase">Ортасына қою және өшіру</h3>
       <p><code>push_back</code> тек соңына қосады. Вектордың кез келген жеріне элемент қою үшін <code>insert</code>, өшіру үшін <code>erase</code> бар; олар орынды көрсетуге <em>итератор</em> алады (<code>v.begin() + i</code> - «бастан бастап i-ші орын»).</p>
@@ -352,6 +376,11 @@ int main() {
       <pre class="terminal"><code class="language-plaintext">$ ./main
 1000 2500 400 
 2000 5000 800 </code></pre>
+      <div class="cx-fx" id="cx-9" aria-label="Код 10: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>for (int x : tenge) x = x * 2;                  // көшірме: өзгермейді</code> - <code>x</code> - әр элементтің көшірмесі; оны өзгерту vector-ге әсер етпейді.</li><li><code>for (int&amp; x : tenge) x = x * 2;                 // сілтеме: өзгереді</code> - <code>int&amp;</code> - элементтің өзіне сілтеме: өзгеріс vector ішінде қалады.</li><li><code>for (const int&amp; x : tenge) std::cout &lt;&lt; x &lt;&lt; &quot; &quot;;</code> - оқу үшін <code>const</code> сілтеме: көшірмесіз әрі кездейсоқ өзгертуден қорғалған.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Бірінші жол бастапқы мәндерді көрсетеді - көшірмені екі еселеу ештеңені өзгертпеді. Екінші жолда бәрі екі есе: сілтеме арқылы өзгерттік.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Элементтерді өзгерткіңіз келгенде <code>&amp;</code> белгісін ұмыту - компилятор ескертпейді, бағдарлама жай ғана «ештеңе істемейді».</p></div>
+      </div><!--/cx-fx-->
       <p>Бірінші циклде <code>int x</code> - көшірме, сондықтан <code>x * 2</code> оны ғана өзгертті, вектор өзгеріссіз қалды: <code>1000 2500 400</code>. Екінші циклде <code>int&amp; x</code> - <strong>сілтеме</strong> (<span class="term-en">reference</span>), яғни элементтің өзінің басқа аты, сондықтан өзгеріс векторға түседі. Үшінші, <code>const int&amp;</code> - тек оқуға арналған сілтеме, көшірме жасамайды. Ереже: өзгертпейтін болсаңыз, <code>const auto&amp;</code>; өзгертсеңіз, <code>auto&amp;</code>; шағын типтерді (<code>int</code>) көшіре беруге болады. Сілтемені 3-аптада толық түсіндіреміз.</p>
 
       <h2 id="string">std::string</h2>
@@ -415,6 +444,11 @@ int main() {
       <pre class="terminal"><code class="language-plaintext">$ ./main
 NAURYZ 2026
 әріп: 6, сан: 4</code></pre>
+      <div class="cx-fx" id="cx-11" aria-label="Код 12: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>for (char&amp; c : s) {</code> - әр таңбаға сілтеме - оны орнында өзгерте аламыз.</li><li><code>std::isalpha(static_cast&lt;unsigned char&gt;(c))</code> - <code>isalpha</code> теріс санмен (UTF-8 байттары) шақырылса - UB, сондықтан алдымен <code>unsigned char</code>-ға айналдырамыз.</li><li><code>c = std::toupper(static_cast&lt;unsigned char&gt;(c));</code> - латын әрпін бас әріпке ауыстырамыз; нәтижені сілтеме арқылы жолға жазамыз.</li><li><code>std::isdigit(static_cast&lt;unsigned char&gt;(c))</code> - цифрларды санаймыз; бос орын екі шартқа да кірмейді.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>«nauryz» - 6 әріп, «2026» - 4 цифр, бос орын еш жерге саналмады. Жол орнында өзгерді: <code>NAURYZ 2026</code>.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бұл функцияларды қазақ әріптеріне қолдану: UTF-8-де «ә» екі байт, <code>toupper</code> оны бас әріпке айналдырмайды. Кириллица үшін арнайы кітапхана (ICU) не <code>std::wstring</code> керек.</p></div>
+      </div><!--/cx-fx-->
       <h3 id="freq">Көрейік: әріптердің жиілігі</h3>
       <p>Таңба да бүтін сан екенін (<code>'a'</code> = 97) еске алайық. Бұл жиілік массивін жасауға мүмкіндік береді: <code>c - 'a'</code> әріпті 0-ден 25-ке дейінгі индекске айналдырады (<code>'a' - 'a' = 0</code>, <code>'b' - 'a' = 1</code> және т.б.). Әр әріпке бір ұяшық, оған <code>++</code> жазамыз:</p>
       <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
@@ -562,6 +596,11 @@ int main() {
 қадам 2: 10 13 14 37 29 
 қадам 3: 10 13 14 37 29 
 қадам 4: 10 13 14 29 37 </code></pre>
+      <div class="cx-fx" id="cx-17" aria-label="Код 18: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>for (std::size_t i = 0; i + 1 &lt; a.size(); i++) {</code> - сыртқы цикл: <code>i</code>-ші орынға қалған бөліктің ең кішісін қоямыз; соңғы элемент өзі орнында қалады.</li><li><code>std::size_t minIdx = i;</code> - ең кіші элементтің индексін іздейміз, бастапқыда - ағымдағы.</li><li><code>if (a[j] &lt; a[minIdx]) minIdx = j;</code> - қалған бөлікте кішірек табылса, индексті жаңартамыз.</li><li><code>std::swap(a[i], a[minIdx]);</code> - табылған ең кішіні <code>i</code>-ші орынға ауыстырамыз - әр қадамда бір ғана ауыстыру.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Әр қадамнан кейін сол жақтағы бөлік сұрыпталған: 1-қадамда 10, 2-де 13 өз орнына келді. 3-қадамда 14 орнында тұр еді - ештеңе өзгермеді, бірақ салыстыру бәрібір жүрді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>i + 1 &lt; a.size()</code> орнына <code>i &lt; a.size() - 1</code> жазу: бос vector үшін <code>size() - 1</code> таңбасыз типте өте үлкен санға айналып, цикл шекарадан шығады.</p></div>
+      </div><!--/cx-fx-->
       <p>Бастапқы тізім: 29, 10, 14, 37, 13. Бірінші қадамда ең кіші 10 табылып, 29-бен орын алмасты. Екінші қадамда қалғандағы (29, 14, 37, 13) ең кішісі 13 табылып, екінші орындағы 29-бен ауысты. Үшінші қадамда 14 өз орнында тұр, ауыстыру қажет болмады. Төртінші қадамда 29 мен 37 ауысты. Әр қадамнан кейін сол жақ бөлік сұрыпталып бітеді. Элементтер саны <code>n</code> болса, шамамен <code>n * n</code> салыстыру керек.</p>
       <h3 id="bubble">Bubble sort (көпіршік арқылы)</h3>
       <p>Идея: көршілес екі элементті салыстырамыз; егер олар қате тәртіппен тұрса, орнын ауыстырамыз. Тізімнің соңына дейін өткенде ең үлкен элемент су бетіне шыққан көпіршік сияқты соңына жетеді.</p>
@@ -590,6 +629,11 @@ int main() {
 өту 1: 1 4 2 5 8 
 өту 2: 1 2 4 5 8 
 өту 3: 1 2 4 5 8 </code></pre>
+      <div class="cx-fx" id="cx-18" aria-label="Код 19: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>bool swapped = false;</code> - осы өтуде ауыстыру болды ма - соны бақылаймыз.</li><li><code>for (std::size_t j = 0; j + 1 &lt; a.size() - pass; j++) {</code> - әр өтуден кейін ең үлкен элемент соңына «қалқып» шығады, сондықтан келесі өтуде оны тексермейміз.</li><li><code>if (a[j] &gt; a[j + 1]) {</code> - көрші екі элемент дұрыс емес ретте болса, ауыстырамыз.</li><li><code>if (!swapped) break;</code> - бір өтуде ешқандай ауыстыру болмаса, массив сұрыпталған - ерте тоқтаймыз.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Екінші өтуден кейін массив дайын болды, үшінші өту оны тексеріп, ауыстыру таппады да, циклді тоқтатты - 4 өтудің орнына 3.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>swapped</code> тексерусіз жазу: сұрыпталған массивте де барлық өту орындалады. Ішкі шартты <code>j &lt; a.size()</code> деп жазсақ, <code>a[j + 1]</code> шекарадан шығады.</p></div>
+      </div><!--/cx-fx-->
       <p>Бірінші өтуде 5 саны оңға қарай жылжып, өзінен үлкен 8-ге жеткенше барлық кішілермен орын ауыстырды. Екінші өтуден кейін массив сұрыпталды, ал үшінші өтуде ауыстыру болмады (<code>swapped == false</code>), сондықтан цикл тоқтады. Бұл - жеңіл оңтайландыру: сұрыпталған тізімде артық жұмыс істемейміз.</p>
       <h3 id="std-sort">std::sort</h3>
       <p>Тәжірибеде өз алгоритміңізді жазбайсыз: стандартты кітапхана дайын, жылдам <code>std::sort</code> береді. <code>#include &lt;algorithm&gt;</code> керек. Ол <code>begin()</code> мен <code>end()</code> аралығын сұрыптайды:</p>
@@ -619,6 +663,11 @@ int main() {
 10 13 14 29 37 
 37 29 14 13 10 
 Aktau Almaty Astana Shymkent </code></pre>
+      <div class="cx-fx" id="cx-19" aria-label="Код 20: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::sort(a.begin(), a.end());</code> - бүкіл диапазонды өспелі ретпен сұрыптайды; әдетте O(n log n).</li><li><code>std::sort(a.begin(), a.end(), std::greater&lt;int&gt;());</code> - үшінші аргумент - салыстыру ережесі: «үлкені алдымен».</li><li><code>std::sort(cities.begin(), cities.end());</code> - жолдар лексикографиялық (сөздік) ретпен сұрыпталады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>«Aktau» мен «Almaty» екеуі «A»-дан басталады, екінші әріп шешеді: «k» &lt; «l». Сондықтан Aktau бірінші.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Кириллица жолдарын <code>std::sort</code>-пен сұрыптап, әліпби ретін күту: байттар бойынша салыстырылады, ал «Ә», «Ө», «Ү» кодтары «Я»-дан кейін тұрады.</p></div>
+      </div><!--/cx-fx-->
       <p>Үшінші аргумент - салыстыру ережесі: <code>std::greater&lt;int&gt;()</code> кему ретін береді. Жолдар алфавит ретімен сұрыпталады. <code>std::sort</code> шамамен <code>n * log n</code> қадамда жұмыс істейді, ол біздің <code>n * n</code> алгоритмдерден әлдеқайда жылдам: миллион элемент үшін айырмашылық - секунд пен сағат арасындағыдай. Әдеттегідей ереже: дайын құралды қолданыңыз, ал қолмен жазғаныңыз - алгоритмді түсіну үшін.</p>
 
       <h3 id="algorithms">Басқа пайдалы алгоритмдер</h3>
@@ -655,6 +704,11 @@ int main() {
 19 саны: 2 рет
 88 табылды ма? 1
 19 3 88 19 7 42 </code></pre>
+      <div class="cx-fx" id="cx-20" aria-label="Код 21: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int total = std::accumulate(v.begin(), v.end(), 0);</code> - барлық элементті 0-ден бастап қосады; <code>&lt;numeric&gt;</code> тақырыпшасынан.</li><li><code>auto mx = std::max_element(v.begin(), v.end());</code> - мәнді емес, ең үлкен элементке итератор қайтарады.</li><li><code>mx - v.begin()</code> - екі итератордың айырмасы - индекс.</li><li><code>std::count(v.begin(), v.end(), 19)</code> - 19-ға тең элементтер санын санайды.</li><li><code>auto it = std::find(v.begin(), v.end(), 88);</code> - бірінші сәйкестікті іздейді; табылмаса <code>v.end()</code> қайтарады.</li><li><code>std::reverse(v.begin(), v.end());</code> - ретін орнында кері айналдырады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>42+7+19+88+3+19 = 178. <code>(it != v.end())</code> логикалық мәні <code>boolalpha</code>-сыз <code>1</code> болып шықты.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>*std::max_element(...)</code>-ді бос vector-ге шақыру: ол <code>end()</code> қайтарады, оны ашу - UB. Алдымен <code>v.empty()</code> тексеріңіз.</p></div>
+      </div><!--/cx-fx-->
       <p><code>accumulate</code> қосындыны, <code>max_element</code> мен <code>min_element</code> ең үлкен және ең кіші элементтің <em>орнын</em> (итератор) береді; оның мәніне жету үшін алдына <code>*</code> қоямыз, ал индексті <code>mx - v.begin()</code> айырмасынан аламыз. <code>count</code> мәннің неше рет кездескенін санайды, <code>find</code> іздейді және табылмаса <code>end()</code> қайтарады, <code>reverse</code> тізімді аударады. Итераторды (<span class="term-en">iterator</span>) әзірге «элементке нұсқайтын көрсеткіш» деп түсінсеңіз жеткілікті, толық мағынасын 3-аптада көрсеткішті үйренгенде түсінесіз. Қалай болғанда да, ереже қарапайым: <strong>цикл жазбастан бұрын, дайын алгоритм бар ма екенін тексеріңіз</strong>.</p>
       <h2 id="searching">Іздеу</h2>
       <h3 id="linear">Сызықтық іздеу</h3>
@@ -678,6 +732,11 @@ int main() {
       <pre class="terminal"><code class="language-plaintext">$ ./main
 19 -&gt; 2
 50 -&gt; -1</code></pre>
+      <div class="cx-fx" id="cx-21" aria-label="Код 22: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int findIndex(const std::vector&lt;int&gt;&amp; v, int target) {</code> - vector <code>const</code> сілтемемен беріледі - көшірмесіз.</li><li><code>if (v[i] == target) return static_cast&lt;int&gt;(i);</code> - табылған бойда индексті қайтарамыз; <code>size_t</code>-ті <code>int</code>-ке айқын айналдырамыз.</li><li><code>return -1;</code> - цикл соңына жетсек - элемент жоқ; -1 индекс бола алмайды, сондықтан «табылмады» белгісі.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>19 үшінші орында (индекс 2), 50 жоқ - -1. Ең нашар жағдайда барлық элемент тексеріледі.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>«Табылмады» белгісі ретінде 0 қайтару: 0 - заңды индекс, шақырушы оны «бірінші элемент» деп түсінеді.</p></div>
+      </div><!--/cx-fx-->
       <p>Назар аударыңыз: функция векторды <code>const std::vector&lt;int&gt;&amp;</code> арқылы алды. Бұл «көшірмесіз, тек оқу үшін» дегенді білдіреді (3-аптада толық түсіндіреміз). Сызықтық іздеу <code>n</code> элементте ең көбі <code>n</code> қадам жасайды.</p>
       <h3 id="binary">Екілік іздеу</h3>
       <p>Тізім <strong>сұрыпталған</strong> болса, әлдеқайда ақылды әдіс бар. Сөздіктен сөз іздегенді еске алыңыз: ортасын ашасыз, іздеген сөзіңіз бұрын ма, кейін бе екенін білесіз де, қалған жартысына ауысасыз. Әр қадамда іздеу аймағы екі есе кішірейеді. Бұл - <strong>екілік іздеу</strong> (<span class="term-en">binary search</span>).</p>
@@ -710,6 +769,11 @@ int main() {
       <pre class="terminal"><code class="language-plaintext">$ ./main
 табылды: индекс 70, қадам саны: 5
 100: индекс -1, қадам саны: 7</code></pre>
+      <div class="cx-fx" id="cx-22" aria-label="Код 23: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int binarySearch(const std::vector&lt;int&gt;&amp; v, int target, int&amp; steps) {</code> - <code>steps</code> сілтемемен беріледі - функция қадамдар санын шақырушыға «қайтарады».</li><li><code>int lo = 0, hi = static_cast&lt;int&gt;(v.size()) - 1;</code> - іздеу аралығы - бүкіл массив.</li><li><code>int mid = lo + (hi - lo) / 2;</code> - ортаңғы индекс; <code>(lo + hi) / 2</code> үлкен сандарда толып кетуі мүмкін, бұл түрі қауіпсіз.</li><li><code>if (v[mid] &lt; target) lo = mid + 1;</code> - іздеген сан оң жақта - сол жартысын тастаймыз.</li><li><code>for (int i = 1; i &lt;= 100; i++) sorted.push_back(i * 3);   // 3, 6, ..., 300</code> - сұрыпталған массив - екілік іздеудің міндетті шарты.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>213 = 71·3, индекс 70, тек 5 қадам. 100 3-ке бөлінбейді: 7 қадамнан кейін аралық бос - -1. 100 элементте log₂100 ≈ 7, сызықтық іздеуде 100 қадам болар еді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Сұрыпталмаған массивте екілік іздеу - нәтиже кездейсоқ қате. Сондай-ақ <code>lo = mid</code> (+1-сіз) жазу мәңгілік цикл тудыруы мүмкін.</p></div>
+      </div><!--/cx-fx-->
       <p>100 элементтің ішінен 213-ті бар болғаны 5 қадамда таптық, ал жоқ сан (100) 7 қадамнан кейін жоқ деп шықты. Сызықтық іздеу 70 элемент қарар еді. Екілік іздеу <code>n</code> элементте шамамен <code>log2(n)</code> қадам жасайды: миллион элементте 20 қадам ғана. Бірақ есте сақтаңыз: екілік іздеу <em>тек сұрыпталған</em> деректе жұмыс істейді.</p>
       <p>Кодтағы <code>lo + (hi - lo) / 2</code> - <code>(lo + hi) / 2</code>-нің қауіпсіз түрі: үлкен сандарда <code>lo + hi</code> толып кетуі мүмкін (өткен аптадағы тақырып). Ал <code>int&amp; steps</code> - қадам санын сыртқа қайтарудың тәсілі (сілтеме).</p>
       <details class="think">
@@ -744,6 +808,11 @@ int main() {
       <pre class="terminal"><code class="language-plaintext">$ ./main
 Толық атыңыз: Айгерім Сәрсенбек
 Сәлем, Айгерім Сәрсенбек!</code></pre>
+      <div class="cx-fx" id="cx-23" aria-label="Код 24: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>std::getline(std::cin, fullName);</code> - бүкіл жолды Enter-ге дейін оқиды - бос орындармен бірге.</li><li><code>std::cout &lt;&lt; &quot;Сәлем, &quot; &lt;&lt; fullName &lt;&lt; &quot;!\n&quot;;</code> - оқылған толық атты шығарамыз.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Кіріс <code>Айгерім Сейтқали</code> - бос орынмен бірге толық сақталды. <code>std::cin &gt;&gt; fullName</code> болса, тек «Айгерім» оқылар еді.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>cin &gt;&gt; n;</code>-нан кейін бірден <code>getline</code> шақыру: алдыңғы жолдың Enter-і буферде қалып, <code>getline</code> бос жол оқиды. Арасына <code>std::cin.ignore()</code> қосыңыз.</p></div>
+      </div><!--/cx-fx-->
       <p>Енді қауіпті жағдай: <code>cin &gt;&gt;</code> мен <code>getline</code> араласса не болады? Алдымен жасты, сосын атын сұрайық:</p>
       <pre data-lang="cpp"><code class="language-cpp">#include &lt;iostream&gt;
 #include &lt;string&gt;
@@ -800,6 +869,11 @@ int main() {
       <pre class="terminal"><code class="language-plaintext">$ ./main
 Сан енгізіңіз: қырық
 бұл сан емес, n = 0</code></pre>
+      <div class="cx-fx" id="cx-26" aria-label="Код 27: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>int n = -1;</code> - бастапқы мән -1 - оқу сәтсіз болса, не болатынын көру үшін.</li><li><code>std::cin &gt;&gt; n;</code> - сан оқуға тырысамыз; мәтін келсе, оқу сәтсіз.</li><li><code>if (std::cin.fail()) {</code> - ағынның «қате» күйін тексереміз.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Кіріс <code>сәлем</code>: оқу сәтсіз, ал C++11-ден бастап мұндайда <code>n</code>-ге 0 жазылады - бастапқы -1 жоғалды. Сондықтан мәнді емес, <code>fail()</code>-ды тексеру керек.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Қатеден кейін <code>cin.clear()</code> мен <code>cin.ignore(...)</code> жасамай, қайта оқу: ағын «қате» күйде қалып, барлық келесі оқулар бірден сәтсіз аяқталады.</p></div>
+      </div><!--/cx-fx-->
       <p>Бұл жағдайда <code>n</code> нөлге тең болды (C++11-ден бастап сәтсіз оқу нөл қояды), ал <code>std::cin.fail()</code> дұрыс емес енгізуді анықтайды. Одан әрі оқу үшін ағынды <code>cin.clear()</code> арқылы қалпына келтіріп, қалған таңбаларды <code>cin.ignore(...)</code> арқылы тазалау керек. Бұл күрделі мәселе, ол кейінгі апталарда қайта айтылады. Әзірге түсінетініміз: <em>пернетақтадан оқу - сенімсіз қадам, оны әрдайым тексеру керек</em>.</p>
 
       <h2 id="mistakes">Жиі қателер</h2>
