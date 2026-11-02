@@ -99,6 +99,11 @@ drop trigger if exists ao_on_auth_user on auth.users;
 create trigger ao_on_auth_user after insert or update of email on auth.users
   for each row execute function public.ao_on_auth_user();
 
+-- Скрипттен бұрын ашылған аккаунттар (мысалы, Dashboard-та алдын ала жасалған әкімші): профильсіз қалмасын
+insert into public.ao_profiles (id, email, display_name)
+select u.id, u.email, coalesce(left(u.raw_user_meta_data->>'display_name', 80), '') from auth.users u
+on conflict (id) do nothing;
+
 -- ======================================================================== көмекшілер
 create or replace function public.ao_is_admin()
 returns boolean language sql stable security definer set search_path = public as $$
