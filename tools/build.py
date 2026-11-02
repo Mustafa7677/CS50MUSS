@@ -951,6 +951,8 @@ def main():
     write_inventory()
     import math_reorder  # математика: теория → бірден мысал (идемпотентті)
     math_reorder.main()
+    import math_fx  # математика: әр формуланың астына жеке түсіндірме мен «Бірден мысал»
+    math_fx.main()
     # Мета-сипаттамалар process_page-ден БҰРЫН жаңарады (ол сипаттаманы файлдан оқиды)
     for rel in DESC_TEMPLATES:
         fp = ROOT / rel
