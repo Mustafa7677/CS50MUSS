@@ -19,8 +19,10 @@ ADMIN_DOMAIN = "admin.ao17.local"
 
 
 def call(method, url, key, body):
-    req = urllib.request.Request(url, data=json.dumps(body).encode(), method=method, headers={
-        "Authorization": "Bearer " + key, "apikey": key, "Content-Type": "application/json"})
+    h = {"apikey": key, "Content-Type": "application/json"}
+    if key.startswith("eyJ"):
+        h["Authorization"] = "Bearer " + key
+    req = urllib.request.Request(url, data=json.dumps(body).encode(), method=method, headers=h)
     try:
         with urllib.request.urlopen(req, timeout=30) as r:
             raw = r.read()
