@@ -197,7 +197,9 @@ def _env():
 
 
 def _req(method, url, key, body=None, ctype="application/json", extra=None):
-    h = {"Authorization": "Bearer " + key, "apikey": key, "Content-Type": ctype}
+    h = {"apikey": key, "Content-Type": ctype}
+    if key.startswith("eyJ"):   # ескі service_role JWT; жаңа sb_secret_ кілті тек apikey тақырыбымен жүреді
+        h["Authorization"] = "Bearer " + key
     h.update(extra or {})
     data = body if isinstance(body, (bytes, type(None))) else json.dumps(body).encode()
     r = urllib.request.Request(url, data=data, method=method, headers=h)
@@ -208,8 +210,26 @@ def _req(method, url, key, body=None, ctype="application/json", extra=None):
         raise SystemExit(f"{method} {url.split('?')[0]} -> {e.code}: {e.read()[:300].decode('utf-8', 'replace')}")
 
 
+def _key_role(key):
+    """JWT кілттің рөлі (anon / service_role); sb_secret_ - service_role; басқасы - None."""
+    if key.startswith("sb_secret_"):
+        return "service_role"
+    if key.startswith("eyJ") and key.count(".") == 2:
+        import base64
+        part = key.split(".")[1]
+        try:
+            return json.loads(base64.urlsafe_b64decode(part + "=" * (-len(part) % 4))).get("role")
+        except ValueError:
+            return None
+    return None
+
+
 def upload():
     url, key = _env()
+    role = _key_role(key)
+    if role != "service_role":
+        sys.exit(f"SUPABASE_SERVICE_ROLE_KEY - service_role кілті емес (табылған рөл: {role or 'белгісіз'}). "
+                 "Supabase -> Settings -> API Keys -> Legacy -> service_role (secret) кілтін қойыңыз.")
     cat = json.loads((PRIV / "catalog.json").read_text(encoding="utf-8"))
     files = [p["path"] for p in cat["pages"]] + [a["asset"] for a in cat["assets"]]
     for i, rel in enumerate(files, 1):
