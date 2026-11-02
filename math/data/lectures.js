@@ -9167,7 +9167,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 20,
+  "minutes": 25,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -9235,7 +9235,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 19,
+  "minutes": 23,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -9303,7 +9303,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 20,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -9371,7 +9371,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 19,
+  "minutes": 23,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -9439,7 +9439,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 20,
+  "minutes": 25,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -9507,7 +9507,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 19,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -9575,7 +9575,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 21,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -9643,7 +9643,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 21,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -9711,7 +9711,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 18,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -9779,7 +9779,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 20,
+  "minutes": 25,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -9847,7 +9847,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 19,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -9915,7 +9915,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 21,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -9983,7 +9983,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10051,7 +10051,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10119,7 +10119,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 16,
+  "minutes": 20,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10187,7 +10187,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 16,
+  "minutes": 20,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10255,7 +10255,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 18,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10323,7 +10323,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 18,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10391,7 +10391,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10459,7 +10459,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10527,7 +10527,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10595,7 +10595,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10663,7 +10663,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 19,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
