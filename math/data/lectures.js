@@ -6107,7 +6107,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 19,
+  "minutes": 22,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6175,7 +6175,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 18,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6243,7 +6243,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 16,
+  "minutes": 21,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6311,7 +6311,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 20,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6379,7 +6379,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 16,
+  "minutes": 18,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6447,7 +6447,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 16,
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -6991,7 +6991,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 16,
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7059,7 +7059,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 16,
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7127,7 +7127,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 20,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7195,7 +7195,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 17,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7263,7 +7263,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 16,
+  "minutes": 19,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -7331,7 +7331,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 20,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
