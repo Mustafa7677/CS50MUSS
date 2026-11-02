@@ -74,6 +74,17 @@ def det(A):
     return sum((-1) ** j * Fraction(A[0][j]) * det([r[:j] + r[j + 1:] for r in A[1:]]) for j in range(len(A)))
 
 
+def quad(f, a, b, n=4000):
+    """Сандық интеграл (Симпсон әдісі): интегралдық мысалдарды тексеру үшін."""
+    h = (b - a) / n
+    return h / 3 * (f(a) + f(b) + sum((4 if i % 2 else 2) * f(a + i * h) for i in range(1, n)))
+
+
+def deriv(f, x, h=1e-5):
+    """Сандық туынды (орталық айырма): «алғашқы функция дұрыс па?» тексеруі."""
+    return (f(x + h) - f(x - h)) / (2 * h)
+
+
 def check(n, items, nums):
     if sorted(items) != sorted(nums):
         raise SystemExit(f"week-{n}: формулалар {sorted(nums)}, мәтін {sorted(items)}")
@@ -83,7 +94,7 @@ def check(n, items, nums):
                 raise SystemExit(f"week-{n} f-{i}: «{k}» жоқ")
         if len(d["now"]["steps"]) < 2:
             raise SystemExit(f"week-{n} f-{i}: мысалда кемінде 2 қадам керек")
-        if eval(d["check"], {"Fraction": Fraction, "isqrt": math.isqrt, "abs": abs, "divmod": divmod, "sum": sum, "range": range, "math": math, "round": round, "mm": mm, "det": det, "close": lambda a, b, e=1e-6: abs(a - b) <= e * max(1, abs(b))}) is not True:
+        if eval(d["check"], {"Fraction": Fraction, "isqrt": math.isqrt, "abs": abs, "divmod": divmod, "sum": sum, "range": range, "math": math, "round": round, "mm": mm, "det": det, "quad": quad, "deriv": deriv, "close": lambda a, b, e=1e-6: abs(a - b) <= e * max(1, abs(b))}) is not True:
             raise SystemExit(f"week-{n} f-{i}: мысалдың есебі тексеруден өтпеді: {d['check']}")
 
 
