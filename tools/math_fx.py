@@ -62,6 +62,18 @@ def block(n, i, d):
             f'\n      </div><!--/mx-fx-->')
 
 
+def mm(A, B):
+    """Матрица көбейту (тізімдер тізімі; вектор - бір бағанды матрица)."""
+    return [[sum(Fraction(A[i][k]) * B[k][j] for k in range(len(B))) for j in range(len(B[0]))] for i in range(len(A))]
+
+
+def det(A):
+    """Анықтауыш: бірінші жол бойынша жіктеу (кішкентай матрицалар үшін)."""
+    if len(A) == 1:
+        return Fraction(A[0][0])
+    return sum((-1) ** j * Fraction(A[0][j]) * det([r[:j] + r[j + 1:] for r in A[1:]]) for j in range(len(A)))
+
+
 def check(n, items, nums):
     if sorted(items) != sorted(nums):
         raise SystemExit(f"week-{n}: формулалар {sorted(nums)}, мәтін {sorted(items)}")
@@ -71,7 +83,7 @@ def check(n, items, nums):
                 raise SystemExit(f"week-{n} f-{i}: «{k}» жоқ")
         if len(d["now"]["steps"]) < 2:
             raise SystemExit(f"week-{n} f-{i}: мысалда кемінде 2 қадам керек")
-        if eval(d["check"], {"Fraction": Fraction, "isqrt": math.isqrt, "abs": abs, "divmod": divmod, "sum": sum, "range": range, "math": math, "round": round, "close": lambda a, b, e=1e-6: abs(a - b) <= e * max(1, abs(b))}) is not True:
+        if eval(d["check"], {"Fraction": Fraction, "isqrt": math.isqrt, "abs": abs, "divmod": divmod, "sum": sum, "range": range, "math": math, "round": round, "mm": mm, "det": det, "close": lambda a, b, e=1e-6: abs(a - b) <= e * max(1, abs(b))}) is not True:
             raise SystemExit(f"week-{n} f-{i}: мысалдың есебі тексеруден өтпеді: {d['check']}")
 
 
