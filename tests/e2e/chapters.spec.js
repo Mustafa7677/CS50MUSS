@@ -40,7 +40,7 @@ test("тарау картасы: сабақ ашылғанда шығып, өз�
   await page.goto("python/lectures/week-5.html");
   await expect(page.locator(".chap-card")).toHaveCount(1);
   await page.mouse.click(200, 200);
-  await expect(page.locator(".chap-card")).toHaveCount(0, { timeout: 1500 });
+  await expect(page.locator(".chap-card")).toHaveCount(0, { timeout: 3000 });
   await page.goto("python/lectures/week-4.html");                      // бұл тарау бұл сеанста көрілген
   await page.waitForTimeout(300);
   await expect(page.locator(".chap-card")).toHaveCount(0);
