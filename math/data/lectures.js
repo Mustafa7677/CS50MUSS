@@ -3159,7 +3159,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 26,
+  "minutes": 29,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3227,7 +3227,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 29,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3295,7 +3295,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 27,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3363,7 +3363,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 27,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3431,7 +3431,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 24,
+  "minutes": 27,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3499,7 +3499,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 29,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
