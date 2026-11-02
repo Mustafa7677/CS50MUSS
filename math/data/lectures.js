@@ -35,16 +35,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -107,16 +107,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -139,7 +139,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 29,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -179,16 +179,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -251,16 +251,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -283,7 +283,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 28,
+  "minutes": 29,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -323,16 +323,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -395,16 +395,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -467,16 +467,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -539,16 +539,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -611,16 +611,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -683,16 +683,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -715,7 +715,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 31,
+  "minutes": 32,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -755,16 +755,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -827,16 +827,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -899,16 +899,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -971,16 +971,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1043,16 +1043,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1115,16 +1115,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1187,16 +1187,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1259,16 +1259,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1331,16 +1331,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1403,16 +1403,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1475,16 +1475,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1547,16 +1547,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1619,16 +1619,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1651,7 +1651,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 28,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1691,16 +1691,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1763,16 +1763,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1835,16 +1835,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1907,16 +1907,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -1939,7 +1939,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 27,
+  "minutes": 28,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -1979,16 +1979,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2051,16 +2051,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2083,7 +2083,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 29,
+  "minutes": 30,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2123,16 +2123,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2155,7 +2155,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 30,
+  "minutes": 31,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2195,16 +2195,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2267,16 +2267,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2339,16 +2339,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2411,16 +2411,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2443,7 +2443,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 28,
+  "minutes": 29,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -2483,16 +2483,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2555,16 +2555,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2627,16 +2627,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2699,16 +2699,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2771,16 +2771,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2843,16 +2843,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2915,16 +2915,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -2987,16 +2987,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3059,16 +3059,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3091,7 +3091,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 26,
+  "minutes": 27,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3127,16 +3127,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3159,7 +3159,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 25,
+  "minutes": 26,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3195,16 +3195,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3263,16 +3263,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3331,16 +3331,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3399,16 +3399,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3467,16 +3467,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3539,16 +3539,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "strategy"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3615,16 +3615,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "technique"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3687,16 +3687,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "strategy"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3755,16 +3755,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3827,16 +3827,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "methods"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3899,16 +3899,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "applications"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -3931,7 +3931,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -3967,16 +3967,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -4035,16 +4035,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -4103,16 +4103,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -4171,16 +4171,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -4203,7 +4203,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -4239,16 +4239,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -4307,16 +4307,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -4339,7 +4339,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 23,
+  "minutes": 24,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -4375,16 +4375,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -4443,16 +4443,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -4511,16 +4511,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -4579,16 +4579,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -4647,16 +4647,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -4715,16 +4715,16 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "theory"
    },
    {
+    "t": "Қадамдық шешілген мысалдар",
+    "id": "examples"
+   },
+   {
     "t": "Тоқта, ойлан",
     "id": "checks"
    },
    {
     "t": "Қорытып шығару",
     "id": "derivations"
-   },
-   {
-    "t": "Қадамдық шешілген мысалдар",
-    "id": "examples"
    },
    {
     "t": "Жиі қателер",
@@ -10731,7 +10731,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 21,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10799,7 +10799,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 18,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10867,7 +10867,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 13,
+  "minutes": 16,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -10935,7 +10935,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 17,
+  "minutes": 21,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -11003,7 +11003,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 15,
+  "minutes": 18,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -11071,7 +11071,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 16,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -11139,7 +11139,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 17,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
@@ -11207,7 +11207,7 @@ window.CS50KZ_COURSE_LECTURES["math"] = [
     "id": "review"
    }
   ],
-  "minutes": 14,
+  "minutes": 18,
   "quiz": 8,
   "tasks": 1,
   "task": "exercises"
