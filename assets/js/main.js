@@ -359,6 +359,9 @@
     if (document.querySelector(".profile")) loadScript("assets/js/profile.js");
     // Бұлттық синхрондау: қосылған болса әр бетте, профиль мен мұғалім бетінде әрқашан
     if (readJson("cs50kz:cloud", {}).on || document.querySelector(".profile, .teacher")) loadScript("assets/js/cloud.js").catch(() => {});
+    // AO17 аккаунты: кірген болса, прогресс серверге (ao_progress) өзі синхрондалады; жабық платформа беттері ao.js-ті өзі қосады
+    let aoAuth = null; try { aoAuth = localStorage.getItem("ao17:auth"); } catch (e) {}
+    if (aoAuth && !document.querySelector(".ao-page")) loadScript("assets/js/ao.js").then(() => window.AO.startSync()).catch(() => {});
     // Кері байланыс: бет жүктеліп болған соң, асықпай
     (window.requestIdleCallback || ((f) => setTimeout(f, 800)))(() => loadScript("assets/js/feedback.js").catch(() => {}));
     initAchievements();
@@ -530,13 +533,15 @@
   function loadScript(rel) {
     const src = /^https?:/.test(rel) ? rel : ROOT_URL + rel;
     if (!loaded[src]) {
-      loaded[src] = new Promise((resolve, reject) => {
+      // Жабық платформа (dist): жабық дерек файлдары Pages-те жоқ, оларды ao-content функциясы рұқсат болса ғана береді
+      const gated = window.AO_GATED && window.AO_GATED.indexOf(rel) >= 0;
+      loaded[src] = (gated ? loadScript("assets/js/ao.js").then(() => window.AO.gatedScriptUrl(rel)) : Promise.resolve(src)).then((url) => new Promise((resolve, reject) => {
         const el = document.createElement("script");
-        el.src = src;
+        el.src = url;
         el.onload = resolve;
         el.onerror = () => { delete loaded[src]; reject(new Error("script: " + rel)); };
         document.head.appendChild(el);
-      });
+      })).catch((e) => { delete loaded[src]; throw e; });
     }
     return loaded[src];
   }

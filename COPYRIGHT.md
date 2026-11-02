@@ -12,8 +12,8 @@
 |---|---|
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
-| B · Sagid Mustafa-ның дербес әзірлемесі | 1236 |
-| C · Үшінші тарап | 85 |
+| B · Sagid Mustafa-ның дербес әзірлемесі | 1252 |
+| C · Үшінші тарап | 87 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 56 |
 
 ## 2. Компоненттер кестесі
@@ -49,12 +49,13 @@
 | `flask.html`<br>`assets/js/flask.js`<br>`tools/make_flask_bundle.py` | **B-flask** Flask зертханасы (3 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `playground.html`<br>`viz.html`<br>`assets/js/labs.js` | **B-code-trainer** Код тренажері (редактор, запуск Python, автопроверка), алгоритмдерді көзбен көру (3 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `games.html`<br>`assets/js/games-*.js`<br>`assets/css/games-ui*.css`<br>`assets/js/cabinet.js` | **B-games** Образовательные игры, система XP, кабинет (7 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
-| `assets/js/main.js`<br>`assets/js/exam.js`<br>`exam.html`<br>`assets/js/profile.js`<br>`profile.html`<br>`assets/js/cloud.js`<br>`teacher.html`<br>`assets/js/feedback.js`<br>`supabase/**`<br>`certificate.html`<br>`partners.html`<br>`posters.html`<br>`metrics.html`<br>`assets/js/metrics.js`<br>`sw.js`<br>`manifest.webmanifest` | **B-platform** Платформа: движок сайта, прогресс, достижения, редактор, тест-система, профиль, кабинеты ученика и преподавателя, синхронизация (17 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `assets/js/main.js`<br>`assets/js/exam.js`<br>`exam.html`<br>`assets/js/profile.js`<br>`profile.html`<br>`assets/js/cloud.js`<br>`teacher.html`<br>`assets/js/feedback.js`<br>`supabase/**`<br>`certificate.html`<br>`partners.html`<br>`posters.html`<br>`metrics.html`<br>`assets/js/metrics.js`<br>`sw.js`<br>`manifest.webmanifest`<br>`assets/js/ao.js`<br>`assets/js/ao-ui.js`<br>`assets/js/ao-gate.js`<br>`login.html`<br>`admin.html`<br>`student.html`<br>`tools/gate.py`<br>`tools/create_admin.py`<br>`docs/PLATFORM.md`<br>`.github/workflows/platform-deploy.yml` | **B-platform** Платформа: движок сайта, прогресс, достижения, редактор, тест-система, профиль, кабинеты ученика и преподавателя, синхронизация (33 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/css/style.css`<br>`docs/MOTION-SYSTEM.md`<br>`docs/INVESTOR-BRIEF.md`<br>`docs/DUE-DILIGENCE.md`<br>`docs/DATA-ROOM.md`<br>`docs/INVENTORY.md`<br>`assets/img/bota*.svg`<br>`assets/img/seal.svg`<br>`assets/img/brand/**`<br>`assets/img/posters/**`<br>`film/**`<br>`tools/make_film.py`<br>`tools/make_posters.py`<br>`docs/FILM.md`<br>`docs/MATH-FX-PROGRESS.md`<br>`docs/CODE-FX-PROGRESS.md`<br>`assets/img/icon*`<br>`assets/img/og.jpg`<br>`assets/img/og/**`<br>`tools/make_og.mjs`<br>`tools/make_og_main.mjs`<br>`tools/og-main.html` | **B-design** Дизайн, стили, фирменная графика (маскот Бота, иконки, превью) (82 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `tools/build.py`<br>`tools/fetch_cs50.py`<br>`tools/__pycache__/**`<br>`tests/**`<br>`.github/**`<br>`licensing/**`<br>`robots.txt`<br>`sitemap.xml`<br>`.nojekyll`<br>`.gitignore`<br>`**/.gitkeep`<br>`tools/licence_audit.py` | **B-tools-tests** Скрипты сборки, тесты, CI (71 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `qazaqcode/**` | **B-qazaqcode** QazaqCode Platform (отдельный коммерческий продукт) (319 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `README.md`<br>`LICENSE.md`<br>`LICENSE-HARVARD.md`<br>`LICENSE-PROPRIETARY.md`<br>`COPYRIGHT.md`<br>`THIRD-PARTY-LICENSES.md`<br>`TAKEDOWN.md`<br>`copyright.html`<br>`404.html`<br>`test-results/**`<br>`MOBILE-TESTING.md` | **B-docs** Документы проекта: README, лицензии, правила обращения (10 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/vendor/sqljs/**` | **C-sqljs** sql.js (SQLite в WebAssembly) (4 файл) | sql.js authors; SQLite - общественное достояние | MIT | расталған |
+| `assets/vendor/supabase/**` | **C-supabase-js** supabase-js (браузерлік клиент, 2.45.4 UMD) (2 файл) | Supabase | MIT | расталған |
 | `assets/vendor/qrcode/**` | **C-qrcode** QR Code Generator for JavaScript (1 файл) | Kazuhiko Arase | MIT | расталған |
 | `assets/vendor/flask/**` | **C-flask-bundle** Пакет Flask для Pyodide: Flask, Werkzeug, Jinja2, Click, ItsDangerous, Blinker, MarkupSafe (1 файл) | Pallets Projects и авторы пакетов | BSD-3-Clause (Flask, Werkzeug, Jinja2, Click, ItsDangerous, MarkupSafe), MIT (Blinker) | расталған |
 | `assets/img/alash/**` | **C-portraits** Портреты деятелей Алаш (13 фотографий) (13 файл) | Разные авторы; для каждого портрета сведения в assets/data/portraits.js | Public domain / CC (по каждому изображению, см. portraits.js); портрет Мұхтар Шаханов - 'сайт авторы ұсынған' | тексеру керек |
@@ -98,6 +99,7 @@
 - **B-qazaqcode**: Отдельная лицензия qazaqcode/LICENSE. Не содержит материалов Harvard (проверяется scripts/check-licence.mjs). Шрифты DejaVu и npm-зависимости - сторонние, см. qazaqcode/NOTICE.md.
 - **B-docs**: Служебные документы и страницы. Тексты лицензий сторонних лицензиаров (CC и др.) принадлежат им.
 - **C-sqljs**: assets/vendor/sqljs/LICENSE.
+- **C-supabase-js**: assets/vendor/supabase/LICENSE (MIT, Copyright (c) 2020 Supabase). npm @supabase/supabase-js@2.45.4, dist/umd/supabase.js өзгеріссіз.
 - **C-qrcode**: Заголовок файла. «QR Code» - зарегистрированный товарный знак DENSO WAVE.
 - **C-flask-bundle**: Сборка tools/make_flask_bundle.py из официальных пакетов PyPI: Flask 3.1.3, Werkzeug 3.1.9, Jinja2 3.1.6, Click 8.5.0, ItsDangerous 2.2.0, MarkupSafe 3.0.2, Blinker 1.9.0. Тексты лицензий лежат внутри архива в папке licenses/ (проверено).
 - **C-portraits**: Для портрета Шаханова права, согласие и источник не подтверждены.

@@ -31,6 +31,8 @@ jobs:
           python3 tools/make_mystery2.py
           python3 tools/make_demo_db.py
           git diff --stat --exit-code || (echo "::error::Генерацияланған файлдар ескірген: python3 tools/build.py іске қосып, commit жасаңыз" && exit 1)
+      - name: "Жабық платформа: жария нұсқада жабық мазмұн жоқ (gate)"
+        run: python3 tools/gate.py build
       - name: Лицензиялық реестр толық, COPYRIGHT.md жаңа
         run: |
           python3 tools/licence_audit.py --check
@@ -76,6 +78,8 @@ jobs:
           psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 -q -f supabase/schema.sql
           psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 -q -f supabase/schema.sql
           psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 -q -f supabase/security_test.sql
+          psql -h 127.0.0.1 -U postgres -v ON_ERROR_STOP=1 -q -c "create database aot"
+          psql -h 127.0.0.1 -U postgres -d aot -v ON_ERROR_STOP=1 -q -f supabase/platform_test_stub.sql -f supabase/platform.sql -f supabase/platform.sql -f supabase/platform_test.sql
           pip install psycopg2-binary
           nohup python3 tests/support/rest_mock.py > /tmp/rest_mock.log 2>&1 &
       - name: Тәуелділіктер
