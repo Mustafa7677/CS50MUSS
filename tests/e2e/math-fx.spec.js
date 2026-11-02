@@ -6,9 +6,14 @@ const path = require("path");
 const { blockFonts } = require("../support/helpers");
 const ROOT = path.join(__dirname, "..", "..");
 
-test("арифметиканың 8 сабағында әр формуланың астында 4 бөлімді жеке түсіндірме бар, мәтіндер қайталанбайды", () => {
+// Толық өңделген пәндер (docs/MATH-FX-PROGRESS.md): Арифметика 154-161, Precalculus 0-6
+const DONE = [154, 155, 156, 157, 158, 159, 160, 161, 0, 1, 2, 3, 4, 5, 6];
+
+test("өңделген сабақтарда әр формуланың астында 4 бөлімді жеке түсіндірме бар, мәтіндер қайталанбайды", () => {
   const seen = new Set();
-  for (let n = 154; n <= 161; n++) {
+  const all = fs.readdirSync(path.join(ROOT, "math/lectures")).map((f) => +(f.match(/week-(\d+)/) || [])[1]).filter((n) => !isNaN(n));
+  for (const n of all) {
+    if (!DONE.includes(n) && !fs.readFileSync(path.join(ROOT, `math/lectures/week-${n}.html`), "utf8").includes('class="mx-fx"')) continue;
     const s = fs.readFileSync(path.join(ROOT, `math/lectures/week-${n}.html`), "utf8");
     const f = [...s.matchAll(/<div class="math-formula" id="f-(\d+)">/g)].map((m) => m[1]);
     const x = [...s.matchAll(/<div class="mx-fx" id="fx-(\d+)"/g)].map((m) => m[1]);

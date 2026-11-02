@@ -71,7 +71,7 @@ def check(n, items, nums):
                 raise SystemExit(f"week-{n} f-{i}: «{k}» жоқ")
         if len(d["now"]["steps"]) < 2:
             raise SystemExit(f"week-{n} f-{i}: мысалда кемінде 2 қадам керек")
-        if eval(d["check"], {"Fraction": Fraction, "isqrt": math.isqrt, "abs": abs, "divmod": divmod, "sum": sum, "range": range}) is not True:
+        if eval(d["check"], {"Fraction": Fraction, "isqrt": math.isqrt, "abs": abs, "divmod": divmod, "sum": sum, "range": range, "math": math, "round": round, "close": lambda a, b, e=1e-6: abs(a - b) <= e * max(1, abs(b))}) is not True:
             raise SystemExit(f"week-{n} f-{i}: мысалдың есебі тексеруден өтпеді: {d['check']}")
 
 
