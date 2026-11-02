@@ -85,7 +85,7 @@ def block(lang, i, d, out, inp, has_term, code):
     lines = "".join(f'<li><code>{html.escape(a)}</code> - {b}</li>' for a, b in sorted(d["lines"], key=lambda ab: code.find(ab[0])))
     parts = [f'\n        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol>{lines}</ol></div>']
     if "out" in d:
-        cmd = "$ ./main" if lang == "cpp" else "$ java Main"
+        cmd = "$ ./main" if lang == "cpp" else "$ java " + (re.search(r"public\s+(?:final\s+)?class\s+(\w+)", code) or re.search(r"class\s+(\w+)", code)).group(1)
         term = html.escape(cmd + "\n" + (f"(кіріс: {inp.strip()})\n" if inp else "") + out.rstrip("\n"))
         if has_term:  # лекцияда шығыс бар: оны қайталамай, неге солай екенін түсіндіреміз (код бәрібір іске қосылып тексерілді)
             parts.append(f'\n        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>{d["out"]}</p></div>')
