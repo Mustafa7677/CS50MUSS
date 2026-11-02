@@ -224,7 +224,8 @@
     // Жылжыған кезде блоктардың біртіндеп көрінуі және баннердегі сандар
     const still = matchMedia("(prefers-reduced-motion: reduce)").matches || root.classList.contains("reduce-motion");
     if (!still && "IntersectionObserver" in window) {
-      const items = document.querySelectorAll(".week-card, .feature, .task, .question, .tool, .content h2, .callout, .ft-col");
+      // Тапсырма мен сұрақ ешқашан жасырылмайды: оқушы оларды бірден көруі керек
+      const items = document.querySelectorAll(".week-card, .feature, .tool, .content h2, .callout, .ft-col");
       // Өлшемді өзіміз оқымаймыз (layout мәжбүрлемейміз): бірінші есепте экраннан тыс тұрғандарын ғана жасырамыз
       const seen = new WeakSet();
       const io = new IntersectionObserver((ents) => {
@@ -245,6 +246,19 @@
         });
       }, { rootMargin: "0px 0px -8% 0px" });
       items.forEach((el) => io.observe(el));
+      // Сілтемемен (#бөлім) не жылдам айналдырып секіргенде IntersectionObserver аттап өткен блоктарға хабар бермейді:
+      // экраннан жоғары не экранда тұрған, әлі жасырын блоктардың бәрін бірден көрсетеміз.
+      let fq = 0;
+      const flush = () => {
+        fq = 0;
+        const h = innerHeight;
+        document.querySelectorAll(".reveal:not(.in), .cine-wait:not(.cine-in)").forEach((el) => {
+          if (el.getBoundingClientRect().top < h) { el.classList.add(el.classList.contains("reveal") ? "in" : "cine-in"); setTimeout(() => el.classList.remove("reveal", "in", "cine-wait", "cine-in"), 900); }
+        });
+      };
+      const later = () => { if (!fq) fq = setTimeout(flush, 120); };
+      addEventListener("scroll", later, { passive: true });
+      addEventListener("hashchange", later);
       document.querySelectorAll(".hero-stats [data-count]").forEach((b) => {
         const n = +b.dataset.count, t0 = performance.now();
         const step = (t) => {

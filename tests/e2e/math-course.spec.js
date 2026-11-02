@@ -1036,9 +1036,9 @@ test("дизайн: әр пәннің өз түсі мен белгісі, ке�
 test("жеңіл қабат: бір сөйлем, қолмен жылыту, ұқсастық, белгілер, қарапайым тілмен, идея, тоқта-ойлан", async ({ page }) => {
   await open(page, "math/lectures/week-131.html");
   await expect(page.locator(".mx-big p")).toHaveCount(1);
-  // бөлімдер ретті: мақсаттар → еске салу → қолмен → интуиция → белгілер → теория → тоқта-ойлан → қорытулар
+  // бөлімдер ретті: мақсаттар → еске салу → қолмен → интуиция → белгілер → теория → бірден мысал → тоқта-ойлан → қорытулар
   const ids = await page.locator("article h2[id]").evaluateAll((els) => els.map((e) => e.id));
-  const order = ["goals", "prereq", "warmup", "intuition", "symbols", "theory", "checks", "derivations"];
+  const order = ["goals", "prereq", "warmup", "intuition", "symbols", "theory", "examples", "checks", "derivations"];
   expect(order.map((i) => ids.indexOf(i))).toEqual([...order.map((i) => ids.indexOf(i))].sort((a, b) => a - b));
   for (const i of order) expect(ids).toContain(i);
   expect(await page.locator(".mx-warmup .math-steps li").count()).toBeGreaterThanOrEqual(3);

@@ -191,15 +191,15 @@ a { color: inherit; }
 #s3 .ttl { left: 6%; top: 12%; }
 
 /* ==== 4 · 1913 «ҚАЗАҚ» ==== */
-#s4 .news { left: 45%; top: 48%; width: min(58vw, 86vh); aspect-ratio: 1439 / 1080; --cx: -50%; --cy: -50%; margin: 0; box-shadow: 0 50px 80px -30px #000, 0 10px 20px rgb(0 0 0 / .5); }
+#s4 .news { left: 43%; top: 48%; width: min(54vw, 82vh); aspect-ratio: 1439 / 1080; --cx: -50%; --cy: -50%; margin: 0; box-shadow: 0 50px 80px -30px #000, 0 10px 20px rgb(0 0 0 / .5); }
 #s4 .news img { display: block; width: 100%; height: 100%; filter: sepia(.25) contrast(1.05); }
 #s4 #orb { position: absolute; left: 68%; top: 92%; width: 2%; height: 2%; }   /* «Оренбургъ» сөзі: камера осы нүктеге кіріп, картаға өтеді */
 #s4 .print { left: 2.5%; bottom: 17%; width: 19%; transform: rotate(-5deg); }
-#s4 .txt { right: 3%; top: 24%; width: 20%; text-align: right; }
+#s4 .txt { right: 6%; top: 26%; width: 19%; text-align: right; }
 #s4 .txt .lead { margin-left: auto; }
 
 /* ==== 5 · 1917 ШІЛДЕ ==== */
-#s5 .map { left: 40%; top: 54%; width: min(74vw, 116vh); aspect-ratio: 16 / 10; --cx: -50%; --cy: -50%; }
+#s5 .map { left: 40%; top: 57%; width: min(74vw, 116vh); aspect-ratio: 16 / 10; --cx: -50%; --cy: -50%; }
 #s5 .map svg { width: 100%; height: 100%; display: block; }
 #s5 .ttl { left: 6%; top: 9%; }
 #s5 .card { margin: 0; width: 17%; padding: .7%; background: #efe6d1; box-shadow: 0 30px 50px -20px #000; }
@@ -685,9 +685,15 @@ a { color: inherit; }
       // газетте ырғақты монтаж: үш жақын кадр, әрқайсысы бір тактінің басында, тегіс емес - кесіліп ауысады
       const cut = p > .32 && p < .62 ? Math.floor((p - .32) / .1) : -1;
       if (cut !== s.cut) { if (s.cut !== undefined && cut !== -1) flash(); s.cut = cut; }
-      if (cut === 0) return { z: 2.4, x: 0, y: portrait ? 18 : 22, fx: 1 };
-      if (cut === 1) return { z: 2.1, x: portrait ? 0 : 18, y: -10, fx: 1 };
-      if (cut === 2) return { z: 2.6, x: portrait ? -6 : -20, y: portrait ? 10 : 12, fx: 1 };
+      if (portrait) {   // газеттің центрі экран центрінен ~0.26H жоғары: әр кесу газеттің бір бөлігіне түседі
+        const ny = H * .26, nw = W * .92, nh = nw * .75;
+        if (cut === 0) return { z: 2.2, x: 0, y: ny * 2.2, fx: 1 };
+        if (cut === 1) return { z: 2.6, x: -nw * .22 * 2.6, y: (ny + nh * .12) * 2.6, fx: 1 };       // киіз үй бейнелі бас жазу
+        if (cut === 2) return { z: 2.3, x: nw * .22 * 2.3, y: (ny - nh * .22) * 2.3, fx: 1 };        // төменгі сол жақтағы мәтін
+      }
+      if (cut === 0) return { z: 2.4, x: 0, y: 22, fx: 1 };
+      if (cut === 1) return { z: 2.1, x: 18, y: -10, fx: 1 };
+      if (cut === 2) return { z: 2.6, x: -20, y: 12, fx: 1 };
       return { z: lerp(1.0, 1.06, io(p)), x: lerp(-10, 10, p), y: 0 };
     },
     /* 5 */ (p) => {
@@ -728,7 +734,7 @@ a { color: inherit; }
       const p = clamp((tt - s.a) / (s.b - s.a));
       const c = inner[i](p, s) || { z: 1, x: 0, y: 0 };
       let z = c.z, x = c.x, y = c.y, op = 1, clip = "none", origin = "50% 50%";
-      if (portrait) x *= .3;   // тар экранда камера аз жылжиды: мәтін шетте кесілмесін
+      if (portrait && !c.fx) x *= .3;   // тар экранда камера аз жылжиды: мәтін шетте кесілмесін
       // кіру: алдыңғы сахна фокусынан дөңгелек терезе
       if (i > 0 && tt < s.a + T) {
         const q = (tt - s.a) / T;

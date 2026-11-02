@@ -949,6 +949,8 @@ def main():
         print(json.dumps({"site_stats": STATS, "flat": FLAT}, ensure_ascii=False, indent=1))
         return
     write_inventory()
+    import math_reorder  # математика: теория → бірден мысал (идемпотентті)
+    math_reorder.main()
     # Мета-сипаттамалар process_page-ден БҰРЫН жаңарады (ол сипаттаманы файлдан оқиды)
     for rel in DESC_TEMPLATES:
         fp = ROOT / rel

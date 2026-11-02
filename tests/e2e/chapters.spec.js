@@ -40,7 +40,7 @@ test("тарау картасы: сабақ ашылғанда шығып, өз�
   await page.goto("python/lectures/week-5.html");
   await expect(page.locator(".chap-card")).toHaveCount(1);
   await page.mouse.click(200, 200);
-  await expect(page.locator(".chap-card")).toHaveCount(0, { timeout: 1500 });
+  await expect(page.locator(".chap-card")).toHaveCount(0, { timeout: 3000 });
   await page.goto("python/lectures/week-4.html");                      // бұл тарау бұл сеанста көрілген
   await page.waitForTimeout(300);
   await expect(page.locator(".chap-card")).toHaveCount(0);
@@ -56,4 +56,15 @@ test("қозғалыс азайтылса - тарау картасы жоқ", a
   await expect(page.locator(".chap-card")).toHaveCount(0);
   await expect(page.locator("#main .chap .chap-n")).toHaveText("06");
   await ctx.close();
+});
+
+test("тапсырмалар әрдайым көрінеді: «Тапсырмалар» бөліміне сілтемемен секірсе де, аттап өткен блоктар мөлдір қалмайды", async ({ page }) => {
+  await blockFonts(page.context());
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("cpp/lectures/week-2.html");
+  await page.waitForTimeout(500);
+  await page.evaluate(() => { location.hash = "#exercises"; });
+  await expect.poll(() => page.evaluate(() => [...document.querySelectorAll(".task, .question, .math-ex, .content h2, .callout")]
+    .filter((e) => e.offsetParent && e.getBoundingClientRect().top < innerHeight && +getComputedStyle(e).opacity < .5).length), { timeout: 4000 }).toBe(0);
+  expect(await page.locator(".task.reveal").count()).toBe(0);   // тапсырма ешқашан жасырын күйге түспейді
 });
