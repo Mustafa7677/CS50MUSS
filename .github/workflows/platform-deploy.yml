@@ -1,0 +1,44 @@
+# AO17 жабық платформа: жабық мазмұнды Supabase Storage-қа жүктеп, жария бөлігін (қабықтармен) GitHub Pages-ке шығарады.
+# Іске қосылу шарты: репозиторий айнымалысы AO_PLATFORM = on (Settings -> Secrets and variables -> Actions -> Variables)
+# және Settings -> Pages -> Source = GitHub Actions. Толық нұсқаулық: docs/PLATFORM.md
+name: Platform deploy
+
+on:
+  push:
+    branches: [main, claude/web-site-planning-77hrcp]
+  workflow_dispatch:
+
+concurrency:
+  group: platform-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    if: vars.AO_PLATFORM == 'on'
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.pages.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: dist/ (жария) және dist-private/ (жабық)
+        run: python3 tools/gate.py build
+      - name: Жабық мазмұн -> Storage, каталог -> ao_pages
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python3 tools/gate.py upload
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+      - id: pages
+        uses: actions/deploy-pages@v4
