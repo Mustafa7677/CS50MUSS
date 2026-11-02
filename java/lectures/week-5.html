@@ -152,6 +152,11 @@ public class Main {
 [Асылбек, Айгерім, Бауыржан, Дана, Ернар]
 Асылбек және Ернар шығарылды
 [Айгерім, Бауыржан, Дана]</code></pre>
+      <div class="cx-fx" id="cx-1" aria-label="Код 2: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>List&lt;String&gt; kezek = new LinkedList&lt;&gt;();</code> - айнымалы типі - интерфейс (<code>List</code>), нысан - нақты іске асыру; кейін <code>ArrayList</code>-ке бір сөзбен ауыстыруға болады.</li><li><code>kezek.get(1)</code> - индекс бойынша алу <code>LinkedList</code>-те O(n): тізімді басынан жүріп өтеді.</li><li><code>LinkedList&lt;String&gt; ll = new LinkedList&lt;&gt;(kezek);</code> - көшіру конструкторы: жаңа тізім, элементтері сол.</li><li><code>ll.addFirst(&quot;Асылбек&quot;);</code> - <code>addFirst</code>/<code>addLast</code> - <code>LinkedList</code>-ке тән, екеуі де O(1).</li><li><code>ll.removeFirst()</code> - бірінші элементті жойып, оны қайтарады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p><code>ll</code> - <code>kezek</code>-тің көшірмесі, сондықтан екі шетінен қосу/жою <code>kezek</code>-ке әсер етпеді. Соңында тізім бастапқы үш атауға оралды.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Әр жерде <code>LinkedList</code> таңдау: <code>get(i)</code>-ді циклде шақырсақ, O(n²) болады. Көп жағдайда <code>ArrayList</code> (не кезек үшін <code>ArrayDeque</code>) жылдамырақ.</p></div>
+      </div><!--/cx-fx-->
 <p>Іс жүзінде <code>LinkedList</code> өте сирек қажет болады, өйткені <code>ArrayList</code> көп жағдайда жылдамырақ (ол жадта жиналып тұрады, процессор оны жақсы көреді). Тізімнің басына/соңына жиі қосу-жою керек болса, <code>ArrayDeque</code> ең жақсы таңдау. Жалпы ереже: күмән болса, <code>ArrayList</code> қолданыңыз.</p>
 <h2 id="set">Set: қайталанбайтын жинақ</h2>
 <p><code>Set</code> (<span class="term-en">set</span>, жиын) - қайталанатын элементті қабылдамайтын жинақ. Сурет салып қарасақ: бұл математикадағы жиын, мысалы, «сыныптағы қолданылған әріптер». Бір әріп бір рет қана болады. Жиында индекс жоқ, <code>get(i)</code> әдісі де жоқ: тек «бар ма?» (<code>contains</code>) деп сұраймыз.</p>
@@ -498,6 +503,11 @@ public class Main {
 <pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
 6.0 4.0
 [10, 20, 30] [10, 20, 30]</code></pre>
+      <div class="cx-fx" id="cx-8" aria-label="Код 9: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>static double jiny(List&lt;? extends Number&gt; san) {</code> - «<code>Number</code>-дің кез келген ұрпағының тізімі» - <code>List&lt;Integer&gt;</code> да, <code>List&lt;Double&gt;</code> да жарайды; одан тек оқимыз.</li><li><code>s += n.doubleValue();</code> - әр <code>Number</code>-ды <code>double</code>-ға айналдырамыз.</li><li><code>static void toltyr(List&lt;? super Integer&gt; tizim) {</code> - «<code>Integer</code> сыятын кез келген тізім» - <code>List&lt;Number&gt;</code> не <code>List&lt;Object&gt;</code>; оған жазамыз.</li><li><code>List&lt;Integer&gt; a = List.of(1, 2, 3);</code> - <code>List.of</code> өзгермейтін тізім жасайды.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>1+2+3 = 6,0 және 1,5+2,5 = 4,0 - бір әдіс екі түрлі тізімді қабылдады. Екінші әдіс <code>Number</code> және <code>Object</code> тізімдеріне бірдей жазды.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>List&lt;Number&gt;</code> параметріне <code>List&lt;Integer&gt;</code> беру: дженериктер инвариантты, компилятор қабылдамайды. Ереже PECS: тек оқысаңыз - <code>extends</code>, тек жазсаңыз - <code>super</code>.</p></div>
+      </div><!--/cx-fx-->
 <p><code>jiny</code> әдісі <code>List&lt;Integer&gt;</code> пен <code>List&lt;Double&gt;</code>-ді де қабылдады: екеуіне де <code>? extends Number</code> сәйкес. Ал <code>toltyr</code> әдісі <code>Integer</code> қосу үшін <code>List&lt;Number&gt;</code> пен <code>List&lt;Object&gt;</code> тізімдерін де қабылдады. Wildcard-ты қазір терең меңгерудің қажеті жоқ: оның идеясын білсеңіз жеткілікті, ал көбіне <code>List&lt;? extends T&gt;</code> жазбасын тек кітапхана әдістерінің қолтаңбасынан оқисыз.</p>
 <h2 id="compare">Comparable және Comparator</h2>
 <p>Сандар мен жолдарды Java өзі салыстыра алады. Ал сіздің <code>Oqushy</code> класыңыздың нысандарын қалай сұрыптаймыз: баға бойынша ма, ат бойынша ма? Java-да екі құрал бар:</p>

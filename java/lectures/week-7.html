@@ -147,6 +147,11 @@
 2-жарты: 375000250000
 Қосынды: 500000500000
 Формула: 500000500000</code></pre>
+      <div class="cx-fx" id="cx-1" aria-label="Код 2: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>long[] bolik = new long[2];</code> - әр ағын массивтің өз ұяшығына жазады - ортақ айнымалыға таласпайды.</li><li><code>Thread a = new Thread(() -&gt; bolik[0] = qosyndy(1, n / 2));</code> - ағынға орындалатын жұмысты lambda ретінде береміз.</li><li><code>a.start();</code> - <code>start</code> жаңа ағынды іске қосады; <code>run()</code> шақырсақ, бәрі сол ағында орындалар еді.</li><li><code>a.join();</code> - <code>main</code> осы ағын біткенше күтеді - нәтижені тек содан кейін оқимыз.</li><li><code>System.out.println(&quot;Формула: &quot; + (long) n * (n + 1) / 2);</code> - тексеру: n(n+1)/2; <code>(long)</code> көбейтуден бұрын - <code>int</code> толып кетпейді.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Екі жартының қосындысы Гаусс формуласымен дәл сәйкес: 500 000 500 000. Ағындар бір-бірінің деректеріне тимегендіктен, нәтиже әр іске қосуда бірдей.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>join</code>-сыз нәтижені оқу: <code>main</code> ағындар бітпей тұрып <code>bolik</code>-ті оқып, 0 не жартылай мән шығаруы мүмкін - тек кейде, сондықтан байқау қиын.</p></div>
+      </div><!--/cx-fx-->
 <p>Бұл да <strong>детерминді</strong>: екі ағынның әрқайсысы өз <code>bolik[i]</code> ұясына жазады (бір-бірінің ұясына тимейді), ал <code>main</code> <code>join()</code>-нен кейін ғана оқиды. Нәтиже Гаусс формуласымен (<code>n(n+1)/2</code>) сәйкес келді. Негізгі идея: <strong>ортақ деректі бөлісудің орнына, ағындар бөлек бөліктермен жұмыс істесін</strong>, сонда мәселе болмайды.</p>
 <p>Ағындардың күйлері де бар: <code>NEW</code> (жасалды), <code>RUNNABLE</code> (жұмыс істеп жатыр), <code>WAITING</code>/<code>TIMED_WAITING</code> (күтіп тұр, мысалы <code>sleep</code> кезінде), <code>TERMINATED</code> (аяқталды). Мына мысалда үзу (<span class="term-en">interrupt</span>) де көрсетілген:</p>
 <pre data-lang="java"><code class="language-java">public class Main {
@@ -184,6 +189,11 @@
 Жұмыс 3
 Күй: TERMINATED, тірі ме: false
 Ұйқыдан оянды (interrupt)</code></pre>
+      <div class="cx-fx" id="cx-2" aria-label="Код 3: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>Thread.sleep(100);</code> - ағынды 100 мс тоқтатады; ол <code>InterruptedException</code> лақтыруы мүмкін, сондықтан <code>try</code> ішінде.</li><li><code>t.getState()</code> - ағын күйі: <code>join</code>-нен кейін - <code>TERMINATED</code>.</li><li><code>Thread.sleep(10_000);</code> - 10 секунд ұйқы - бірақ оны күтпейміз.</li><li><code>uzu.interrupt();</code> - ағынға «тоқта» сигналын жібереміз; ұйықтап жатқан ағын бірден оянып, ерекше жағдай алады.</li></ol></div>
+        <div class="cx-part cx-out"><span class="cx-k">Нәтиже неге осындай</span><p>Бірінші ағын үш жұмысты орындап аяқталды. Екіншісі 10 секунд ұйықтаудың орнына бірден «оянды» - бағдарлама 0,3 секундта бітті.</p></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>InterruptedException</code>-ды бос <code>catch</code>-пен жұтып қою: үзу сигналы жоғалып, ағынды сыпайы тоқтату мүмкін болмай қалады. Ең болмаса <code>Thread.currentThread().interrupt();</code> арқылы белгіні қалпына келтіріңіз.</p></div>
+      </div><!--/cx-fx-->
 <p><code>Thread.sleep(100)</code> ағынды 100 миллисекундқа «ұйықтатады». Ағын ұйықтап жатқанда <code>interrupt()</code> шақырсаңыз, ол <code>InterruptedException</code> лақтырып оянады, сондықтан <code>sleep</code> пен <code>join</code> әрқашан <code>try</code>/<code>catch</code> не <code>throws InterruptedException</code> талап етеді (өткен аптадағы checked қате). Бұл - ағынға «жұмысты тоқтат» дейтін жалпы тәсіл.</p>
 <h2 id="race">Race condition: ортақ айнымалының қауіпі</h2>
 <p>Енді бүгінгі ең маңызды ескертуге келдік. Екі ағын ортақ айнымалыны өзгертсе не болады?</p>
@@ -214,6 +224,10 @@
         }
     }
 }</code></pre>
+      <div class="cx-fx" id="cx-3" aria-label="Код 4: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>sanagysh = 0;</code> - әр сынама алдында санағышты нөлдейміз.</li><li><code>sanagysh++;                            // oqu -&gt; +1 -&gt; jazu: 3 қадам!</code> - <code>++</code> атомарлы емес: екі ағын бір мәнді бір мезгілде оқып, екеуі де +1 жазса, бір арттыру жоғалады.</li><li><code>Thread a = new Thread(Main::arttyr);</code> - әдіске сілтеме - lambda-ның қысқа түрі.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Бұл - жарыс жағдайы (race condition): нәтиже 200 000-нан кем және әр іске қосуда әртүрлі, сондықтан біз оны бекітіп көрсетпейміз. Емі - <code>synchronized</code>, <code>AtomicInteger</code> не жұмысты бөліп, нәтижелерді соңында біріктіру (алдыңғы мысалдағыдай).</p></div>
+      </div><!--/cx-fx-->
 <p>Мұнда әр ағын <code>sanagysh++</code> операциясын 100 000 рет жасайды. Екі ағын - демек, жауап <strong>200 000</strong> болуы керек. Шын мәнінде не болатынын көрейік. <strong>Мына мысал әдейі детермінді емес: нәтиже әр жолы басқаша болады.</strong> Төмендегі нәтиже - біздің компьютердегі бір іске қосу:</p>
 <pre class="terminal"><code class="language-plaintext">$ javac Main.java &amp;&amp; java Main
 Күтілген нәтиже: 200000
@@ -584,7 +598,11 @@ class ZhurnalTest {
         assertEquals(5.0, jana.tap("Дана Нұрбекқызы").get().ortaBaga().getAsDouble(), 0.0001);
         java.nio.file.Files.delete(f);
     }
-}</code></pre></div></details>
+}</code></pre>
+      <div class="cx-fx" id="cx-7" aria-label="Код 8: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>@BeforeEach</code> - әр тест алдында орындалады: әр тест жаңа, таза журналмен басталады.</li><li><code>assertEquals(4.5, orta.getAsDouble(), 0.0001);</code> - бөлшек сандарды рұқсат етілген айырмамен салыстырамыз.</li><li><code>assertThrows(ZhurnalQateligi.class, () -&gt; zhurnal.oqushyQosu(&quot;Дана Нұрбекқызы&quot;, &quot;7А&quot;));</code> - қате болуы күтілген жағдай да тест: дәл осы ерекше жағдай лақтырылуы керек.</li><li><code>@Disabled(&quot;TODO: oqushyJoyu жазылғаннан кейін қосыңыз&quot;)</code> - әзірге өшірілген тест - жобаны аяқтағанда қосасыз.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Тестер бір-біріне тәуелді болуы (бірі қосқан оқушыны екіншісі күтуі): JUnit тестерді кез келген ретпен орындайды. <code>@BeforeEach</code> әр тестке тәуелсіз бастапқы күй береді.</p></div>
+      </div><!--/cx-fx--></div></details>
 <p>Әр тест бір ғана нәрсені тексереді: «орташа баға дұрыс есептеле ме», «қайталанған оқушы қате бере ме», «6-баға қабылданбай ма». Тесттің атауы не тексеретінін айту керек. Тесттің құрылымы үш қадамнан тұрады: <strong>дайындау</strong> (оқушы қосу), <strong>әрекет</strong> (баға қою), <strong>тексеру</strong> (<code>assert...</code>). Іске қосып көрейік:</p>
 <pre class="terminal"><code class="language-plaintext">$ mvn test
 [INFO] -------------------------------------------------------
@@ -655,7 +673,11 @@ public enum Pan {
     public String getAtau() {
         return atau;
     }
-}</code></pre></div></details>
+}</code></pre>
+      <div class="cx-fx" id="cx-8" aria-label="Код 9: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>public enum Pan {</code> - <code>enum</code> - мәндер тізімі жабық тип: пәндер тек осылар.</li><li><code>MATEMATIKA(&quot;Математика&quot;),</code> - әр тұрақты өз конструкторымен жасалады - қазақша атауын сақтайды.</li><li><code>private final String atau;</code> - enum-да да өрістер мен әдістер болуы мүмкін.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Пәндерді жай <code>String</code> ретінде сақтау: «Математика» мен «математика» екі түрлі пән болып кетеді, ал қате жазуды компилятор ұстамайды. <code>enum</code> мұндай қателерді мүмкін емес етеді.</p></div>
+      </div><!--/cx-fx--></div></details>
 <details><summary>ZhurnalQateligi.java: өз қатеміз</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
 
 /** Журналдың бизнес-ережелері бұзылғанда лақтырылады (қайталанған оқушы, дұрыс емес баға...). */
@@ -663,7 +685,11 @@ public class ZhurnalQateligi extends RuntimeException {
     public ZhurnalQateligi(String habar) {
         super(habar);
     }
-}</code></pre></div></details>
+}</code></pre>
+      <div class="cx-fx" id="cx-9" aria-label="Код 10: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>public class ZhurnalQateligi extends RuntimeException {</code> - өз ерекше жағдайымыз; <code>RuntimeException</code>-нан - <code>throws</code> жазуды талап етпейді.</li><li><code>super(habar);</code> - хабарды базалық класқа береміз - <code>getMessage()</code> оны қайтарады.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Барлық қатеге <code>RuntimeException</code>-ның өзін лақтыру: шақырушы бизнес-ереже бұзылуын басқа қателерден ажырата алмайды. Өз класыңыз нақты <code>catch</code> жазуға мүмкіндік береді.</p></div>
+      </div><!--/cx-fx--></div></details>
 <details><summary>Baga.java: бір баға (record)</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
 
 /** Бір пәннен қойылған бір баға (5 балдық жүйе: 1-ден 5-ке дейін). */
@@ -673,7 +699,11 @@ public record Baga(Pan pan, int baga) {
             throw new ZhurnalQateligi("Баға 1..5 аралығында болуы керек: " + baga);
         }
     }
-}</code></pre></div></details>
+}</code></pre>
+      <div class="cx-fx" id="cx-10" aria-label="Код 11: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>public record Baga(Pan pan, int baga) {</code> - record - өзгермейтін деректер: өрістер, конструктор, <code>equals</code> автоматты.</li><li><code>public Baga {</code> - ықшам конструктор: параметрлер автоматты, тек тексеруді жазамыз.</li><li><code>if (baga &lt; 1 || baga &gt; 5) {</code> - дұрыс емес баға бар нысан мүлдем жасалмайды.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Тексеруді нысанды қолданатын жерге (журналға) қою: онда дұрыс емес <code>Baga</code> басқа жерден жасалып кетуі мүмкін. Инварианттарды нысан өзі сақтауы керек - ықшам конструктор дәл соған арналған.</p></div>
+      </div><!--/cx-fx--></div></details>
 <details><summary>Oqushy.java: оқушы және оның бағалары</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
 
 import java.util.ArrayList;
@@ -715,7 +745,11 @@ public class Oqushy {
     public String toString() {
         return aty + " (" + sinip + ")";
     }
-}</code></pre></div></details>
+}</code></pre>
+      <div class="cx-fx" id="cx-11" aria-label="Код 12: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>private final List&lt;Baga&gt; bagalar = new ArrayList&lt;&gt;();</code> - <code>final</code> - сілтеме өзгермейді, бірақ тізімнің мазмұны өзгереді.</li><li><code>return Collections.unmodifiableList(bagalar);</code> - сыртқа тек оқуға арналған көрініс береміз - бағаларды тек <code>bagaQosu</code> арқылы қосуға болады.</li><li><code>return bagalar.stream().mapToInt(Baga::baga).average();</code> - Stream: бағаларды санға айналдырып, орташасын табамыз; бос болса - <code>OptionalDouble.empty()</code>.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Ішкі тізімді тікелей қайтару (<code>return bagalar;</code>): сыртқы код <code>getBagalar().clear()</code> жазып, нысанның күйін бұза алады. Инкапсуляция қайтарылған коллекцияларға да қатысты.</p></div>
+      </div><!--/cx-fx--></div></details>
 <details><summary>Zhurnal.java: журнал (2 TODO әдісі бар)</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
 
 import java.util.ArrayList;
@@ -772,7 +806,11 @@ public class Zhurnal {
     public java.util.OptionalDouble sinipOrtasy(String sinip) {
         throw new UnsupportedOperationException("TODO");
     }
-}</code></pre></div></details>
+}</code></pre>
+      <div class="cx-fx" id="cx-12" aria-label="Код 13: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>private final Map&lt;String, Oqushy&gt; oqushylar = new LinkedHashMap&lt;&gt;();</code> - <code>LinkedHashMap</code> - қосылу ретін сақтайды: тізім әрқашан бірдей ретпен шығады.</li><li><code>return Optional.ofNullable(oqushylar.get(aty.trim()));</code> - табылмаса <code>null</code> емес, бос <code>Optional</code> - шақырушы оны тексеруге мәжбүр.</li><li><code>Oqushy o = tap(aty).orElseThrow(() -&gt; new ZhurnalQateligi(&quot;Оқушы табылмады: &quot; + aty));</code> - бар болса - оқушы, жоқ болса - түсінікті ерекше жағдай.</li><li><code>throw new UnsupportedOperationException(&quot;TODO&quot;);</code> - жазылмаған әдіс айқын қате береді - <code>@Disabled</code> тесттері оларды кейін тексереді.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p><code>Optional</code>-ды <code>.get()</code>-пен тексерусіз ашу: бос болса <code>NoSuchElementException</code>. <code>orElseThrow</code>, <code>orElse</code> не <code>ifPresent</code> қолданыңыз.</p></div>
+      </div><!--/cx-fx--></div></details>
 <details><summary>ZhurnalSaqtau.java: файлға сақтау (zhukteu - TODO)</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
 
 import java.io.IOException;
@@ -803,7 +841,11 @@ public class ZhurnalSaqtau {
     public static Zhurnal zhukteu(Path jol) throws IOException {
         throw new UnsupportedOperationException("TODO");
     }
-}</code></pre></div></details>
+}</code></pre>
+      <div class="cx-fx" id="cx-13" aria-label="Код 14: талдау">
+        <div class="cx-part cx-lines"><span class="cx-k">Жолма-жол</span><ol><li><code>StringBuilder sb = new StringBuilder();</code> - жолды бөлшектеп құру: әр <code>+</code> жаңа жол жасамайды.</li><li><code>sb.append(b.pan().name()).append(&#x27;:&#x27;).append(b.baga());</code> - <code>name()</code> - enum тұрақтысының аты (<code>MATEMATIKA</code>): файлдан оқығанда <code>Pan.valueOf</code> оны қайтарады.</li><li><code>Files.write(jol, joldar);</code> - барлық жолды бір әрекетпен UTF-8 кодтауында жазады.</li></ol></div>
+        <div class="cx-part cx-err"><span class="cx-k">Жиі қате</span><p>Пішімге бөлгіш таңба кіретін деректер: оқушы атында <code>;</code> болса, файл бұзылады. Нақты жобада бөлгішті экрандау не CSV/JSON кітапханасын қолдану керек.</p></div>
+      </div><!--/cx-fx--></div></details>
 <details><summary>Main.java: мәзір</summary><div class="details-body"><pre data-lang="java"><code class="language-java">package kz.zhurnal;
 
 import java.io.IOException;

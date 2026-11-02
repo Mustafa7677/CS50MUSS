@@ -55,7 +55,7 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 34,
+  "minutes": 38,
   "quiz": 8,
   "tasks": 3,
   "task": "exercises"
@@ -115,7 +115,7 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 38,
+  "minutes": 47,
   "quiz": 8,
   "tasks": 4,
   "task": "exercises"
@@ -171,7 +171,7 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 41,
+  "minutes": 47,
   "quiz": 8,
   "tasks": 4,
   "task": "exercises"
@@ -235,7 +235,7 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 38,
+  "minutes": 42,
   "quiz": 8,
   "tasks": 5,
   "task": "exercises"
@@ -303,7 +303,7 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
     "id": "tasks"
    }
   ],
-  "minutes": 41,
+  "minutes": 44,
   "quiz": 8,
   "tasks": 3,
   "task": ""
@@ -375,7 +375,7 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
     "id": "tasks"
    }
   ],
-  "minutes": 40,
+  "minutes": 42,
   "quiz": 8,
   "tasks": 3,
   "task": ""
@@ -503,7 +503,7 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
     "id": "tasks"
    }
   ],
-  "minutes": 44,
+  "minutes": 49,
   "quiz": 8,
   "tasks": 4,
   "task": ""
