@@ -39,5 +39,11 @@ check(builtins.input is not None and sys.stdout is sys.__stdout__ or True, "кү
 before = sys.gettrace()
 J.judge("def f(x):\n    return x", F)
 check(sys.gettrace() is before, "settrace қалпына келді")
+import json  # noqa: E402
+t = json.loads(J.trace_calls("def fib(n):\n    return n if n < 2 else fib(n - 1) + fib(n - 2)", "fib(5)"))
+check(t["ok"] and len(t["nodes"]) == 15 and t["value"] == "5", "trace_calls fib(5) = 15 шақыру")
+check(json.loads(J.trace_calls("def f(n):\n    return f(n + 1)", "f(0)"))["truncated"], "шексіз рекурсия шегі")
+check(J.judge("def g():\n    return 1", {"mode": "io", "suffix": "print(g())", "tests": [{"stdin": "", "stdout": "1"}]})["ok"], "suffix драйвері")
+check(sys.gettrace() is before, "trace_calls-тан кейін settrace қалпына келді")
 print(f"academy judge: {ok} өтті, {fail} өтпеді")
 sys.exit(1 if fail else 0)

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Рекурсияның дұрыстығы - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Рекурсияның дұрыстығы - AO17">
+  <meta property="og:description" content="AO17 CS Universe, Level I: Рекурсияның дұрыстығы. Рекурсивті функцияның дұрыстығын күшті индукциямен дәлелдеу: база + «кіші шақырулар дұрыс болса, бұл да дұрыс».">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/m07/l06.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/m07/l06.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Рекурсияның дұрыстығы - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/m07/l06.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 CS Universe, Level I: Рекурсияның дұрыстығы. Рекурсивті функцияның дұрыстығын күшті индукциямен дәлелдеу: база + «кіші шақырулар дұрыс болса, бұл да дұрыс».">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/academy-logic.js" defer></script>
+  <script src="../../assets/js/academy-arith.js" defer></script>
+  <script src="../../assets/js/academy-disc.js" defer></script>
+  <script src="../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../assets/js/academy-bits.js" defer></script>
+  <script src="../../assets/js/academy.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="ac-layout">
+    <aside class="ac-toc" aria-label="Сабақ бөлімдері"><p class="ac-toc-h">Бөлімдер</p><ol><li><a href="#s-a">Оқу мақсаттары</a></li><li><a href="#s-b">Алғышарттар</a></li><li><a href="#s-c">Ұғымға кіріспе</a></li><li><a href="#s-d">Академиялық теория</a></li><li><a href="#s-e">Көрнекі түсіндірме</a></li><li><a href="#s-f">Қадамдап қорыту</a></li><li><a href="#s-g">Жұмыс мысалдары</a></li><li><a href="#s-h">Интерактивті эксперимент</a></li><li><a href="#s-i">Жаттығулар</a></li><li><a href="#s-j">Математикалық пайымдау</a></li><li><a href="#s-k">Жиі қателер</a></li><li><a href="#s-l">Меңгеруді бағалау</a></li><li><a href="#s-m">Рефлексия</a></li><li><a href="#s-n">Тереңірек</a></li></ol>
+      <div class="ac-mastery" data-ac-mastery><span>Меңгеру</span><b>-</b></div></aside>
+    <article class="content ac-lesson" id="main" data-lesson="ao17-foundation.m07.l06">
+      <header class="ac-head">
+        <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#m07">Level I · Функциялар және абстракция</a> / 6-сабақ</p>
+        <h1>Рекурсияның дұрыстығы</h1>
+        <p class="ac-meta">Деңгей: күрделі · шамамен 55 мин · нұсқа 1.0.0 · тексеру: author-checked</p>
+      </header>
+      <section class="ac-sec" id="s-a"><h2><span class="ac-n">A</span>Оқу мақсаттары</h2><ul class="ac-obj"><li>Рекурсивті функцияның дұрыстығын күшті индукциямен дәлелдеу: база + «кіші шақырулар дұрыс болса, бұл да дұрыс».</li><li>Рекурсияның аяқталуын кемитін өлшеммен (m04 l06) дәлелдеу.</li><li>Бөліп ал да билей рекурсиясын (жылдам дәрежеге шығару) жазып, қадам санын бағалау.</li></ul></section>
+      <section class="ac-sec" id="s-b"><h2><span class="ac-n">B</span>Алғышарттар</h2><ul><li><a href="../m07/l05.html">Рекурсия</a></li></ul></section>
+      <section class="ac-sec" id="s-c"><h2><span class="ac-n">C</span>Ұғымға кіріспе</h2><p>«Рекурсия өзін шақырады, сенуге бола ма?» Бола алады, егер екі нәрсені дәлелдесек: 1) <b>аяқталу</b> - әр шақыру базаға жақындайды (вариант); 2) <b>дұрыстық</b> - базалық жағдай дұрыс және кіші шақырулар дұрыс жауап берсе, оларды біріктіру де дұрыс. Бұл - m02 l08 күшті индукциясының дәл өзі.</p><p>Бұл «рекурсивті сенім» (recursive leap of faith): функцияны жазғанда кіші шақыруды «ол дұрыс жұмыс істейді» деп ұйғарамыз - индукциялық болжам сияқты.</p></section>
+      <section class="ac-sec" id="s-d"><h2><span class="ac-n">D</span>Академиялық теория</h2><div class="ac-th ac-theorem"><div class="ac-th-k">Теорема</div><h4>Жылдам дәреже</h4><pre>def fast_pow(b, e):
+    if e == 0: return 1
+    h = fast_pow(b, e // 2)
+    return h * h if e % 2 == 0 else h * h * b</pre><p>fast_pow(b, e) = bᵉ барлық e ≥ 0 үшін.</p></div><div class="ac-th ac-proof"><div class="ac-th-k">Дәлелдеу</div><h4>Дәлелдеу (күшті индукция e бойынша)</h4><p><b>База:</b> e = 0 → 1 = b⁰. <b>Қадам:</b> e ≥ 1, барлық e' < e үшін дұрыс деп ұйғарамыз. e // 2 < e, сондықтан h = b^(e//2). e жұп: e = 2·(e//2), h·h = bᵉ. e тақ: e = 2·(e//2) + 1, h·h·b = bᵉ. <b>Аяқталу:</b> e әр шақыруда e // 2-ге кемиді, ал e ≥ 1 үшін e // 2 < e, вариант теріс емес. ∎</p></div><div class="ac-th ac-theorem"><div class="ac-th-k">Теорема</div><h4>Шақырулар саны</h4><p>fast_pow ⌊log₂ e⌋ + 2 шақыру жасайды (e ≥ 1): әр шақыру e-ні екі есе кемітеді (m04 l07 екілік іздеудің аргументі). Қарапайым power (m07 l05) - e + 1 шақыру.</p></div><div class="ac-th ac-note"><div class="ac-th-k">Ескерту</div><h4>Үлгі</h4><p>Рекурсивті функцияны дәлелдеу жоспары: (1) не қайтарады - кейінгі шарт; (2) база; (3) кіші шақырулар кейінгі шартты қанағаттандырады деп ұйғару; (4) біріктіру кейінгі шартты береді; (5) вариант.</p></div></section>
+      <section class="ac-sec" id="s-e"><h2><span class="ac-n">E</span>Көрнекі түсіндірме</h2><div class="ac-lab" data-lab="visual"></div><p class="ac-cap">fast_pow(3, 13): тек 5 шақыру (13 → 6 → 3 → 1 → 0). Қарапайым рекурсия 14 шақыру жасар еді.</p></section>
+      <section class="ac-sec" id="s-f"><h2><span class="ac-n">F</span>Қадамдап қорыту</h2><ol class="ac-steps"><li>Мақсат: binary_digits(n) - n ≥ 1 екілік жазуындағы цифрлар саны.</li><li>База: n == 1 → 1.</li><li>Қадам: n ≥ 2 үшін n // 2-нің екілік жазуы n-нің жазуынан соңғы цифрды алып тастағанға тең (m05 l02), сондықтан 1 + binary_digits(n // 2).</li><li>Вариант: n // 2 &lt; n (n ≥ 2). Күшті индукциямен дұрыс: нәтиже ⌊log₂ n⌋ + 1.</li></ol></section>
+      <section class="ac-sec" id="s-g"><h2><span class="ac-n">G</span>Жұмыс мысалдары</h2><figure class="ac-ex"><figcaption>Жылдам дәреже және шақырулар саны</figcaption><pre data-lang="python"><code class="language-python">calls = 0
+def fast_pow(b, e):
+    global calls
+    calls += 1
+    if e == 0:
+        return 1
+    h = fast_pow(b, e // 2)
+    return h * h if e % 2 == 0 else h * h * b
+
+for e in [0, 1, 13, 1000]:
+    calls = 0
+    ok = fast_pow(3, e) == 3 ** e
+    print(e, ok, calls)</code></pre><div class="ac-out"><span>Шығыс (тексерілген)</span><pre>0 True 1
+1 True 2
+13 True 5
+1000 True 11</pre></div><p>e = 1000: ⌊log₂ 1000⌋ + 2 = 11 шақыру. Python-дағы pow(b, e) іште осындай әдісті қолданады.</p></figure></section>
+      <section class="ac-sec" id="s-h"><h2><span class="ac-n">H</span>Интерактивті эксперимент</h2><p class="ac-task">Ағаштың тереңдігі неше? 100-дің екілік жазуы 1100100 - 7 цифр. binary_digits(0) шақырса не болады (алдын ала шарт)?</p><div class="ac-lab" data-lab="experiment"></div></section>
+      <section class="ac-sec" id="s-i"><h2><span class="ac-n">I</span>Жаттығулар</h2><div class="ac-exs" data-set="exercises"></div></section>
+      <section class="ac-sec" id="s-j"><h2><span class="ac-n">J</span>Математикалық пайымдау</h2><p>Рекурсия жазуда ең үлкен кедергі - бүкіл шақырулар тізбегін басқа ұстауға тырысу. Индукциялық ойлау оны керек етпейді: тек бір қадамды тексереміз. Бұл - күрделі алгоритмдерді (біріктіру сұрыптауы, ағаштар) жазудың негізгі ойлау құралы.</p></section>
+      <section class="ac-sec" id="s-k"><h2><span class="ac-n">K</span>Жиі қателер</h2><ul class="ac-mist"><li><b>Аяқталуды тексермеу (мысалы, e // 2 орнына e).</b><br>Себебі: Вариант кемімейді - шексіз рекурсия.<br>Түзету: Әр рекурсивті шақыруда кіріс қатаң кемитінін көрсетіңіз.</li><li><b>Бір мәнді екі рет рекурсивті есептеу: fast_pow(b, e//2) * fast_pow(b, e//2).</b><br>Себебі: Шақырулар саны log емес, e-ге айналады.<br>Түзету: Нәтижені айнымалыға сақтаңыз (h = ...).</li></ul></section>
+      <section class="ac-sec" id="s-l"><h2><span class="ac-n">L</span>Меңгеруді бағалау</h2><p class="ac-note">Барлық сұраққа дұрыс жауап берсеңіз, сабақ «меңгерілді» деп белгіленеді. Тексеру браузерде өтеді: бұл оқу тексерісі, емтихан емес.</p><div class="ac-exs" data-set="assessment"></div></section>
+      <section class="ac-sec" id="s-m"><h2><span class="ac-n">M</span>Рефлексия</h2><div data-ac-reflect></div></section>
+      <section class="ac-sec" id="s-n"><h2><span class="ac-n">N</span>Тереңірек</h2><h3>Honors</h3><ul><li>Ханой мұнараларының жүрістер саны T(n) = 2T(n−1) + 1 = 2ⁿ − 1 екенін рекурсивті функцияны санау арқылы тексеріп, индукциямен дәлелдеңіз.</li></ul><h3>Research</h3><ul><li>Мастер теоремасы бөліп ал да билей рекурсиясының күрделілігін T(n) = aT(n/b) + f(n) түрінде қалай береді? (Level II)</li></ul></section>
+      
+      <section class="ac-sec ac-src"><h2>Дереккөз және лицензия</h2><ul><li>H. Abelson, G. J. Sussman, Structure and Interpretation of Computer Programs - абстракция және рекурсия (ұғымдарды салыстыру үшін).</li><li>Python Software Foundation, The Python Tutorial, 4. More Control Flow Tools - функциялар.</li></ul>
+        <p>Сабақ мәтіні, мысалдары мен тапсырмалары AO17 үшін жаңадан жазылған (авторлық: Sagid Mustafa, All Rights Reserved). Дереккөздер ұғымдарды салыстыру үшін пайдаланылды, мәтін көшірілмеген. ID: <code>ao17-foundation.m07.l06</code></p></section>
+      <nav class="ac-pager"><a href="l05.html">← Рекурсия</a><a href="../index.html#m07">Модуль картасы</a><a href="l07.html">Жоғары ретті функциялар →</a></nav>
+    </article>
+  </div>
+  <script type="application/json" id="ac-data">{"id": "ao17-foundation.m07.l06", "visual": {"lab": "calltree", "code": "def fast_pow(b, e):\n    if e == 0:\n        return 1\n    h = fast_pow(b, e // 2)\n    return h * h if e % 2 == 0 else h * h * b", "call": "fast_pow(3, 13)", "caption": "fast_pow(3, 13): тек 5 шақыру (13 → 6 → 3 → 1 → 0). Қарапайым рекурсия 14 шақыру жасар еді."}, "experiment": {"lab": "calltree", "code": "def binary_digits(n):\n    if n == 1:\n        return 1\n    return 1 + binary_digits(n // 2)", "call": "binary_digits(100)", "task": "Ағаштың тереңдігі неше? 100-дің екілік жазуы 1100100 - 7 цифр. binary_digits(0) шақырса не болады (алдын ала шарт)?"}, "exercises": [{"type": "pycode", "q": "fast_pow(b, e) - bᵉ-ны бөліп ал да билей тәсілімен (e // 2 рекурсиясы) есептесін.", "mode": "func", "func": "fast_pow", "starter": "def fast_pow(b, e):\n    if e == 0:\n        return 1\n    return b * fast_pow(b, e - 1)\n", "tests": [{"args": [2, 10], "expect": 1024}, {"args": [3, 0], "expect": 1}, {"args": [7, 13], "expect": 96889010407}, {"args": [1, 5000], "expect": 1}], "solution": "def fast_pow(b, e):\n    if e == 0:\n        return 1\n    h = fast_pow(b, e // 2)\n    return h * h if e % 2 == 0 else h * h * b", "hints": ["Бастапқы код e = 5000-да RecursionError береді (5000 деңгей).", "h = fast_pow(b, e // 2)."]}, {"type": "pycode", "q": "binary_digits(n) - n ≥ 1 екілік жазуындағы цифрлар санын рекурсивті қайтарсын.", "mode": "func", "func": "binary_digits", "starter": "def binary_digits(n):\n    pass\n", "tests": [{"args": [1], "expect": 1}, {"args": [2], "expect": 2}, {"args": [100], "expect": 7}, {"args": [1024], "expect": 11}], "solution": "def binary_digits(n):\n    if n == 1:\n        return 1\n    return 1 + binary_digits(n // 2)", "hints": ["База n == 1.", "1 + binary_digits(n // 2)."]}, {"type": "order", "q": "count_down(n) = [n, ..., 1] функциясының дұрыстығын дәлелдеу қадамдарын ретке қойыңыз.", "steps": ["Кейінгі шарт: count_down(n) = [n, n−1, ..., 1].", "База: n = 0 → [] - бос тізбек, шарт орындалады.", "Болжам: count_down(n − 1) = [n−1, ..., 1].", "Біріктіру: [n] + [n−1, ..., 1] = [n, ..., 1]; вариант n кемиді. ∎"], "hints": ["Алдымен не дәлелденетінін жазыңыз."]}, {"type": "number", "q": "fast_pow(b, 1000) неше рет шақырылады (алғашқы шақыруды қоса)?", "answer": 11, "check": "(1000).bit_length() + 1", "hints": ["⌊log₂ e⌋ + 2."]}], "assessment": [{"type": "pycode", "q": "gcd(a, b) - Евклид алгоритмін рекурсивті жазыңыз (gcd(a, 0) = a).", "mode": "func", "func": "gcd", "starter": "def gcd(a, b):\n    pass\n", "tests": [{"args": [84, 36], "expect": 12}, {"args": [17, 5], "expect": 1}, {"args": [10, 0], "expect": 10}, {"args": [1071, 462], "expect": 21}], "solution": "def gcd(a, b):\n    if b == 0:\n        return a\n    return gcd(b, a % b)", "hints": ["m04 l05: инвариант ЕҮОБ(a, b) = ЕҮОБ(b, a mod b)."]}, {"type": "mc", "q": "Рекурсивті функцияның аяқталуын дәлелдеу үшін не керек?", "options": ["Тест", "Әр шақыруда қатаң кемитін, теріс емес шама", "Базалық жағдайдың болуы ғана", "Глобал айнымалы"], "answer": 1, "why": ["Тест дәлелдемейді.", "Дұрыс: вариант.", "База бар, бірақ оған жетпеуі мүмкін.", "Қатысы жоқ."], "hints": ["m04 l06."]}], "reflection": ["Өзіңіз жазған рекурсивті функцияның дұрыстығын 5 қадамдық жоспармен дәлелдеңіз."], "objectives": 3}</script>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

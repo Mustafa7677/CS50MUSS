@@ -132,7 +132,7 @@ def judge(code, spec):
             else:
                 results.append({"i": i, "passed": False, "args": t["args"], **{k: r[k] for k in ("error", "line", "detail", "hint")}})
         else:
-            r = _run(code, t.get("stdin", "").split("\n"))
+            r = _run(code + ("\n" + spec["suffix"] if spec.get("suffix") else ""), t.get("stdin", "").split("\n"))
             got = r["out"].rstrip("\n")
             if r["ok"]:
                 results.append({"i": i, "passed": got == t["stdout"].rstrip("\n"), "stdin": t.get("stdin", ""), "expect": t["stdout"], "got": got})
@@ -160,3 +160,43 @@ def run_json(code, stdin=""):
     """Еркін іске қосу (зертхана): шығыс және қате (бар болса)."""
     r = _run(code, stdin.split("\n") if stdin else [])
     return json.dumps({k: r.get(k) for k in ("ok", "out", "error", "line", "detail", "hint")}, ensure_ascii=False)
+
+
+def trace_calls(code, call_src, limit=400):
+    """Рекурсия ағашы (Code X-Ray): оқушы кодындағы функция шақырулары мен қайтарулары.
+    Нәтиже: [{"id", "parent", "func", "args", "ret"}]; limit-тен көп шақыру болса, тоқтатылады."""
+    ns = {"__name__": "__main__", "__builtins__": __builtins__}
+    nodes, stack = [], []
+    state = {"over": False}
+
+    def tracer(frame, event, arg):
+        if frame.f_code.co_filename != "<оқушы коды>" or frame.f_code.co_name == "<module>":
+            return tracer
+        if event == "call":
+            if len(nodes) >= limit:
+                state["over"] = True
+                raise StepLimit()
+            co = frame.f_code
+            args = {n: repr(frame.f_locals.get(n))[:40] for n in co.co_varnames[:co.co_argcount]}
+            node = {"id": len(nodes), "parent": stack[-1] if stack else None, "func": co.co_name, "args": args, "ret": None}
+            nodes.append(node)
+            stack.append(node["id"])
+        elif event == "return" and stack:
+            nodes[stack.pop()]["ret"] = repr(arg)[:60]
+        return tracer
+
+    old = sys.gettrace()
+    try:
+        exec(compile(code, "<оқушы коды>", "exec"), ns)
+        sys.settrace(tracer)
+        value = eval(compile(call_src, "<оқушы коды>", "eval"), ns)
+        sys.settrace(old)
+        return json.dumps({"ok": True, "nodes": nodes, "value": repr(value)[:80], "truncated": False}, ensure_ascii=False)
+    except StepLimit:
+        sys.settrace(old)
+        return json.dumps({"ok": True, "nodes": nodes, "value": None, "truncated": True}, ensure_ascii=False)
+    except (Exception, SystemExit) as e:  # noqa: BLE001
+        sys.settrace(old)
+        d = _describe(e)
+        d.update({"ok": False, "nodes": nodes})
+        return json.dumps(d, ensure_ascii=False)
