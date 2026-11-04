@@ -209,12 +209,22 @@ def _req(method, url, key, body=None, ctype="application/json", extra=None):
         h["Authorization"] = "Bearer " + key
     h.update(extra or {})
     data = body if isinstance(body, (bytes, type(None))) else json.dumps(body).encode()
-    r = urllib.request.Request(url, data=data, method=method, headers=h)
-    try:
-        with urllib.request.urlopen(r, timeout=60) as res:
-            return res.status, res.read()
-    except urllib.error.HTTPError as e:
-        raise SystemExit(f"{method} {url.split('?')[0]} -> {e.code}: {e.read()[:300].decode('utf-8', 'replace')}")
+    import time
+    for attempt in range(4):   # 5xx (мысалы Cloudflare 520) және желі үзілісі - уақытша: 2, 4, 8 с кейін қайталау
+        r = urllib.request.Request(url, data=data, method=method, headers=h)
+        try:
+            with urllib.request.urlopen(r, timeout=60) as res:
+                return res.status, res.read()
+        except urllib.error.HTTPError as e:
+            if e.code >= 500 and attempt < 3:
+                time.sleep(2 ** (attempt + 1))
+                continue
+            raise SystemExit(f"{method} {url.split('?')[0]} -> {e.code}: {e.read()[:300].decode('utf-8', 'replace')}")
+        except (urllib.error.URLError, TimeoutError) as e:
+            if attempt < 3:
+                time.sleep(2 ** (attempt + 1))
+                continue
+            raise SystemExit(f"{method} {url.split('?')[0]} -> желі қатесі: {e}")
 
 
 def _key_role(key):
