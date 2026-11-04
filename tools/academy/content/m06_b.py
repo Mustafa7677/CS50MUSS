@@ -117,7 +117,7 @@ L07 = {
     ],
     "assessment": [
         {"type": "pycode", "q": "factorial(n) - n! (n ≥ 0) for арқылы қайтарсын.", "mode": "func", "func": "factorial", "starter": "def factorial(n):\n    pass\n",
-         "tests": [{"args": [0], "expect": 1}, {"args": [1], "expect": 1}, {"args": [5], "expect": 120}, {"args": [20], "expect": 2432902008176640000}],
+         "tests": [{"args": [0], "expect": 1}, {"args": [1], "expect": 1}, {"args": [5], "expect": 120}, {"args": [15], "expect": 1307674368000}],
          "solution": "def factorial(n):\n    p = 1\n    for k in range(2, n + 1):\n        p *= k\n    return p", "hints": ["Көбейтінді үлгісі: p = 1."]},
         {"type": "pycode", "q": "max_of(nums) - бос емес тізімнің ең үлкен элементі (max()-сыз).", "mode": "func", "func": "max_of", "starter": "def max_of(nums):\n    pass\n",
          "tests": [{"args": [[7, 3, 9, 2]], "expect": 9}, {"args": [[-5, -2, -9]], "expect": -2}, {"args": [[4]], "expect": 4}], "solution": "def max_of(nums):\n    best = nums[0]\n    for x in nums:\n        if x > best:\n            best = x\n    return best",

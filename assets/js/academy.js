@@ -26,6 +26,7 @@
     return judgeP;
   }
   async function pyJudge(code, spec) { const py = await judgeReady(); return JSON.parse(py.globals.get("judge_json")(code, JSON.stringify(spec))); }
+  async function pyTrace(code, call) { const py = await judgeReady(); return JSON.parse(py.globals.get("trace_calls")(code, call)); }
   async function pyRun(code, stdin) { const py = await judgeReady(); return JSON.parse(py.globals.get("run_json")(code, stdin || "")); }
   const PY_FAIL = "Python жүктелмеді (интернет қажет, бірінші рет ~10 секунд). Байланысты тексеріп, қайта басыңыз.";
   function codeArea(value, rows) {
@@ -322,6 +323,27 @@
       };
       $("[data-run]", w).addEventListener("click", run);
       out.innerHTML = '<p class="ac-note">«Іске қосу» басыңыз: нағыз Python (Pyodide) браузерде орындалады.</p>';
+      el.append(ta, w, out);
+    } else if (spec.lab === "calltree") {
+      const ta = codeArea(spec.code);
+      const w = document.createElement("div");
+      w.className = "ac-pyrun";
+      w.innerHTML = `<label class="ac-codebox"><span>Шақыру</span><input type="text" class="ac-stdin" value="${esc(spec.call)}" spellcheck="false"></label><div class="ac-qa"><button type="button" class="btn gold" data-run>Ағашты салу</button><span class="ac-st" data-st></span></div>`;
+      const run = async () => {
+        $("[data-st]", w).textContent = "Орындалып жатыр...";
+        try {
+          const r = await pyTrace(ta.value, $(".ac-stdin", w).value);
+          const kids = {};
+          r.nodes.forEach((n) => (kids[n.parent] = kids[n.parent] || []).push(n));
+          const draw = (n) => `<li><span class="nd op">${esc(n.func)}(${esc(Object.values(n.args).join(", "))})</span>${n.ret != null ? ` <span class="nd var">→ ${esc(n.ret)}</span>` : ""}${kids[n.id] ? `<ul>${kids[n.id].map(draw).join("")}</ul>` : ""}</li>`;
+          const depth = (() => { let d = 0; const dep = {}; r.nodes.forEach((n) => { dep[n.id] = n.parent == null ? 1 : dep[n.parent] + 1; d = Math.max(d, dep[n.id]); }); return d; })();
+          out.innerHTML = r.ok ? `<p>Шақырулар: <b>${r.nodes.length}</b> · тереңдік: <b>${depth}</b>${r.truncated ? " · <b>400 шақырудан кейін тоқтатылды</b> (шексіз рекурсия болуы мүмкін)" : ` · нәтиже: <code>${esc(r.value)}</code>`}</p><div class="ac-tree-wrap"><ul class="ac-tree">${(kids[null] || []).slice(0, 1).map(draw).join("")}</ul></div>`
+            : `<p class="ac-fb bad">${esc(r.error)}${r.line ? ` (${r.line}-жол)` : ""}: ${esc(r.hint)}</p>`;
+          $("[data-st]", w).textContent = "";
+        } catch (e) { $("[data-st]", w).textContent = PY_FAIL; }
+      };
+      $("[data-run]", w).addEventListener("click", run);
+      out.innerHTML = '<p class="ac-note">«Ағашты салу» басыңыз: Python шақыруларды нақты орындап, әрқайсысын жазады.</p>';
       el.append(ta, w, out);
     } else if (spec.lab === "base") {
       const w = document.createElement("div");
@@ -686,7 +708,7 @@
       s.code = pyEd.value;
       fb.textContent = "Python тексеріп жатыр..."; fb.className = "ac-fb";
       let r;
-      try { r = await pyJudge(pyEd.value, { mode: ex.mode, func: ex.func, tests: ex.tests }); }
+      try { r = await pyJudge(pyEd.value, { mode: ex.mode, func: ex.func, tests: ex.tests, suffix: ex.suffix }); }
       catch (e) { fb.textContent = PY_FAIL; fb.className = "ac-fb bad"; return; }
       s.tries = (s.tries || 0) + 1;
       if (r.ok && !s.ok) { s.ok = true; s.rev = false; s.t = Date.now(); }
