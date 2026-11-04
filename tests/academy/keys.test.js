@@ -10,7 +10,7 @@ const items = JSON.parse(execFileSync("python3", [path.join(root, "tools/academy
 // academy.js-тегі checkFormula-ны браузерсіз жүктеу: DOM керек емес бөлігі
 const vm = require("vm");
 const fs = require("fs");
-const ctx = { window: { AOLogic: L }, document: { readyState: "complete", querySelector: () => null, querySelectorAll: () => [], addEventListener() {}, dispatchEvent() {} }, CustomEvent: function () {}, localStorage: { getItem: () => null, setItem() {} }, console };
+const ctx = { window: { AOLogic: L, AOArith: require("../../assets/js/academy-arith.js") }, document: { readyState: "complete", querySelector: () => null, querySelectorAll: () => [], addEventListener() {}, dispatchEvent() {} }, CustomEvent: function () {}, localStorage: { getItem: () => null, setItem() {} }, console };
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(root, "assets/js/academy.js"), "utf8"), ctx);
 const A = ctx.window.AOAcademy;
@@ -28,6 +28,13 @@ for (const it of items) {
       ok(!A.checkFormula(ex, "p ∧ ¬p ∧ q ∧ ¬q ∧ a ∧ ¬a").ok || ex.target === "0", where + " қайшылықты қабылдамауы керек");
       if (ex.allowed || ex.noNegatedGroups || ex.maxLength || ex.nandOnly) ok(!A.checkFormula(ex, ex.target).ok, where + " мақсаттың өзі шектеуден өтпеуі керек");
       break;
+    case "counterexample": {
+      const AR = require("../../assets/js/academy-arith.js");
+      ok(JSON.stringify(AR.searchCounterexamples(ex)) === JSON.stringify(it.key), where + " қарсы мысалдар тізімі Python-мен бірдей");
+      break;
+    }
+    case "closedform": { const AR = require("../../assets/js/academy-arith.js"); ok(AR.checkClosedForm(ex.term, it.key, ex.start, 30).ok, where + " closedform эталоны"); break; }
+    case "recurrence": { const AR = require("../../assets/js/academy-arith.js"); ok(AR.checkRecurrence(ex, it.key, 30).ok, where + " recurrence эталоны"); break; }
     default: pass++;
   }
 }
