@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Эмпирикалық салыстыру - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Эмпирикалық салыстыру - AO17">
+  <meta property="og:description" content="AO17 CS Universe, Level I: Эмпирикалық салыстыру. Алгоритм уақытын адал өлшеу: time.perf_counter, қайталау, медиана, жылыту.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/m09/l10.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/m09/l10.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Эмпирикалық салыстыру - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/m09/l10.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 CS Universe, Level I: Эмпирикалық салыстыру. Алгоритм уақытын адал өлшеу: time.perf_counter, қайталау, медиана, жылыту.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/academy-logic.js" defer></script>
+  <script src="../../assets/js/academy-arith.js" defer></script>
+  <script src="../../assets/js/academy-disc.js" defer></script>
+  <script src="../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../assets/js/academy-bits.js" defer></script>
+  <script src="../../assets/js/academy.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="ac-layout">
+    <aside class="ac-toc" aria-label="Сабақ бөлімдері"><p class="ac-toc-h">Бөлімдер</p><ol><li><a href="#s-a">Оқу мақсаттары</a></li><li><a href="#s-b">Алғышарттар</a></li><li><a href="#s-c">Ұғымға кіріспе</a></li><li><a href="#s-d">Академиялық теория</a></li><li><a href="#s-e">Көрнекі түсіндірме</a></li><li><a href="#s-f">Қадамдап қорыту</a></li><li><a href="#s-g">Жұмыс мысалдары</a></li><li><a href="#s-h">Интерактивті эксперимент</a></li><li><a href="#s-i">Жаттығулар</a></li><li><a href="#s-j">Математикалық пайымдау</a></li><li><a href="#s-k">Жиі қателер</a></li><li><a href="#s-l">Меңгеруді бағалау</a></li><li><a href="#s-m">Рефлексия</a></li><li><a href="#s-n">Тереңірек</a></li></ol>
+      <div class="ac-mastery" data-ac-mastery><span>Меңгеру</span><b>-</b></div></aside>
+    <article class="content ac-lesson" id="main" data-lesson="ao17-foundation.m09.l10">
+      <header class="ac-head">
+        <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#m09">Level I · Python-дағы алгоритмдер</a> / 10-сабақ</p>
+        <h1>Эмпирикалық салыстыру</h1>
+        <p class="ac-meta">Деңгей: орта · шамамен 60 мин · нұсқа 1.0.0 · тексеру: author-checked</p>
+      </header>
+      <section class="ac-sec" id="s-a"><h2><span class="ac-n">A</span>Оқу мақсаттары</h2><ul class="ac-obj"><li>Алгоритм уақытын адал өлшеу: time.perf_counter, қайталау, медиана, жылыту.</li><li>Еселеу тәжірибесі (doubling test) арқылы өсу дәрежесін бағалау: T(2n)/T(n) ≈ 2ᵏ.</li><li>Модуль жобасын (p09 Algorithm Benchmark Laboratory) жоспарлау: теория мен өлшеуді салыстыру.</li></ul></section>
+      <section class="ac-sec" id="s-b"><h2><span class="ac-n">B</span>Алғышарттар</h2><ul><li><a href="../m09/l09.html">Графты аралау</a></li></ul></section>
+      <section class="ac-sec" id="s-c"><h2><span class="ac-n">C</span>Ұғымға кіріспе</h2><p>Теория (O-белгілеуі, m04 l09) өсу <b>формасын</b> айтады, бірақ тұрақтыларды жасырады. Өлшеу нақты сандарды береді, бірақ шуылы бар: басқа бағдарламалар, кэш, жадты тазалаушы. Екеуі бірге ғана сенімді.</p><p>Ең пайдалы тәсіл - <b>еселеу тәжірибесі</b>: n-ді екі еселеп, T(2n)/T(n) қатынасын қараймыз. O(n) - ≈ 2, O(n²) - ≈ 4, O(n log n) - 2-ден сәл жоғары, O(2ⁿ) - қатынас n-мен бірге өседі. Санауға болатын амалдар (салыстырулар) уақыттан тұрақтырақ - сондықтан екеуін де өлшейміз.</p></section>
+      <section class="ac-sec" id="s-d"><h2><span class="ac-n">D</span>Академиялық теория</h2><div class="ac-th ac-definition"><div class="ac-th-k">Анықтама</div><h4>Адал өлшеу ережелері</h4><ul><li>time.perf_counter() - монотонды, жоғары дәлдікті сағат.</li><li>Әр өлшемді бірнеше рет қайталап, медиананы алу (шуылға төзімді).</li><li>Бірдей кіріс (random.seed) және кіріс құруды өлшемге қоспау.</li><li>Бір машинада, бір уақытта салыстыру.</li></ul></div><div class="ac-th ac-theorem"><div class="ac-th-k">Теорема</div><h4>Еселеу қатынасы</h4><p>T(n) = c·nᵏ болса, T(2n)/T(n) = 2ᵏ, демек k = log₂(T(2n)/T(n)).</p></div><div class="ac-th ac-proof"><div class="ac-th-k">Дәлелдеу</div><h4>Дәлелдеу</h4><p>T(2n)/T(n) = c·(2n)ᵏ / (c·nᵏ) = 2ᵏ·nᵏ / nᵏ = 2ᵏ - c қысқарады (сондықтан машина жылдамдығы маңызды емес). Логарифм алсақ, k = log₂ 2ᵏ. Нақты T(n) = c·nᵏ + (кіші мүшелер) болса, n өскен сайын кіші мүшелердің үлесі азайып, қатынас 2ᵏ-ге ұмтылады. ∎</p></div><div class="ac-th ac-note"><div class="ac-th-k">Ескерту</div><h4>Тұзақтар</h4><p>Тым кіші n: уақытты өлшеу шегінің шуылы басым. Python-ның sorted (C-да жазылған) өз сұрыптауыңыздан ондаған есе жылдам - асимптотикасы бірдей болса да, тұрақты әртүрлі. Өлшеу «қайсысы жақсы» емес, «осы шарттарда қайсысы жылдам» деп жауап береді.</p></div></section>
+      <section class="ac-sec" id="s-e"><h2><span class="ac-n">E</span>Көрнекі түсіндірме</h2><div class="ac-lab" data-lab="visual"></div><p class="ac-cap">Теориялық өсу қисықтары. Төмендегі тәжірибеде нақты өлшемдер осы формаларды қайталай ма, соны тексереміз.</p></section>
+      <section class="ac-sec" id="s-f"><h2><span class="ac-n">F</span>Қадамдап қорыту</h2><ol class="ac-steps"><li>Өлшейтін функция f және кіріс жасаушы make(n).</li><li>Әр n үшін: data = make(n); t0 = perf_counter(); f(data); t = perf_counter() − t0; 5 рет, медиана.</li><li>n = 1000, 2000, 4000, ...: қатынас r = T(2n)/T(n).</li><li>k ≈ log₂ r. Салыстыру санымен (K класы) бірге кестеге шығару.</li></ol></section>
+      <section class="ac-sec" id="s-g"><h2><span class="ac-n">G</span>Жұмыс мысалдары</h2><figure class="ac-ex"><figcaption>Еселеу тәжірибесі (салыстырулар бойынша)</figcaption><pre data-lang="python"><code class="language-python">class K:
+    n = 0
+    def __init__(s, v):
+        s.v = v
+    def _c(s, o):
+        K.n += 1
+        return o.v if isinstance(o, K) else o
+    def __eq__(s, o):
+        return s.v == s._c(o)
+    def __lt__(s, o):
+        return s.v &lt; s._c(o)
+    def __le__(s, o):
+        return s.v &lt;= s._c(o)
+    def __gt__(s, o):
+        return s.v &gt; s._c(o)
+    def __ge__(s, o):
+        return s.v &gt;= s._c(o)
+    def __hash__(s):
+        return hash(s.v)
+    def __repr__(s):
+        return repr(s.v)
+
+def insertion_sort(a):
+    for i in range(1, len(a)):
+        x = a[i]
+        j = i - 1
+        while j &gt;= 0 and a[j] &gt; x:
+            a[j + 1] = a[j]
+            j -= 1
+        a[j + 1] = x
+
+def merge_sort(a, lo=0, hi=None):
+    if hi is None:
+        hi = len(a)
+    if hi - lo &lt;= 1:
+        return
+    mid = (lo + hi) // 2
+    merge_sort(a, lo, mid)
+    merge_sort(a, mid, hi)
+    left, right = a[lo:mid], a[mid:hi]
+    i = j = 0
+    for k in range(lo, hi):
+        if j &gt;= len(right) or (i &lt; len(left) and left[i] &lt;= right[j]):
+            a[k] = left[i]
+            i += 1
+        else:
+            a[k] = right[j]
+            j += 1
+
+import math, random
+random.seed(4)
+prev = {}
+print(&#x27;n      кірістіру  қатынас   біріктіру  қатынас&#x27;)
+for n in [250, 500, 1000, 2000]:
+    data = random.sample(range(10 * n), n)
+    row = []
+    for name, sort in [(&#x27;ins&#x27;, insertion_sort), (&#x27;mrg&#x27;, merge_sort)]:
+        a = [K(v) for v in data]
+        K.n = 0
+        sort(a)
+        r = K.n / prev[name] if name in prev else float(&#x27;nan&#x27;)
+        prev[name] = K.n
+        row += [K.n, r]
+    print(f&#x27;{n:&lt;6} {row[0]:&gt;9} {row[1]:8.2f} {row[2]:&gt;10} {row[3]:8.2f}&#x27;)</code></pre><div class="ac-out"><span>Шығыс (тексерілген)</span><pre>n      кірістіру  қатынас   біріктіру  қатынас
+250        15830      nan       1676      nan
+500        65132     4.11       3863     2.30
+1000      245264     3.77       8704     2.25
+2000     1007463     4.11      19447     2.23</pre></div><p>Кірістіру сұрыптауының қатынасы ≈ 4 = 2² (квадраттық), біріктірудің қатынасы ≈ 2.2 (n log n: 2·log(2n)/log n). Салыстыру саны машинаға тәуелсіз - сондықтан нәтиже кез келген компьютерде бірдей.</p></figure></section>
+      <section class="ac-sec" id="s-h"><h2><span class="ac-n">H</span>Интерактивті эксперимент</h2><p class="ac-task">list.count (сызықтық) пен sorted (n log n) - екеуі де C-да жазылған, сондықтан мұнда Python-ның қадам шегі мен трассасы әсер етпейді. Қатынастар ≈ 2 және ≈ 2.1-2.3 бола ма? Нақты сандар компьютерге және жүктемеге қарай өзгереді - бірнеше рет іске қосып көріңіз.</p><div class="ac-lab" data-lab="experiment"></div></section>
+      <section class="ac-sec" id="s-i"><h2><span class="ac-n">I</span>Жаттығулар</h2><div class="ac-exs" data-set="exercises"></div></section>
+      <section class="ac-sec" id="s-j"><h2><span class="ac-n">J</span>Математикалық пайымдау</h2><p>Ғылыми әдіс алгоритмдерге де қолданылады: болжам (теория: O(n²)), тәжірибе (еселеу), салыстыру (қатынас ≈ 4 ме?), қорытынды. Тәжірибе теорияға қайшы келсе - не теориядағы болжам (мысалы, «кіріс кездейсоқ»), не өлшеу (шуыл, кэш) қате. Екеуін де тексеру - зерттеушінің әдеті.</p></section>
+      <section class="ac-sec" id="s-k"><h2><span class="ac-n">K</span>Жиі қателер</h2><ul class="ac-mist"><li><b>Бір рет өлшеп, нәтижені «нақты» деп қабылдау.</b><br>Себебі: Бір өлшем шуылға толы.<br>Түзету: Қайталау және медиана.</li><li><b>Сұрыпталған тізімді қайта сұрыптап өлшеу.</b><br>Себебі: Бірінші өлшемнен кейін кіріс өзгерді - кірістіру сұрыптауы кенет «жылдам».<br>Түзету: Әр өлшем алдында кірістің көшірмесі: a = list(data).</li></ul></section>
+      <section class="ac-sec" id="s-l"><h2><span class="ac-n">L</span>Меңгеруді бағалау</h2><p class="ac-note">Барлық сұраққа дұрыс жауап берсеңіз, сабақ «меңгерілді» деп белгіленеді. Тексеру браузерде өтеді: бұл оқу тексерісі, емтихан емес.</p><div class="ac-exs" data-set="assessment"></div></section>
+      <section class="ac-sec" id="s-m"><h2><span class="ac-n">M</span>Рефлексия</h2><div data-ac-reflect></div></section>
+      <section class="ac-sec" id="s-n"><h2><span class="ac-n">N</span>Тереңірек</h2><h3>Honors</h3><ul><li>Модуль жобасы - Algorithm Benchmark Laboratory (тапсырма төменде): m09 алгоритмдерін теория мен өлшеу бойынша салыстыратын зертхана.</li></ul><h3>Research</h3><ul><li>timeit модулі өлшеудің қандай тұзақтарын өзі шешеді (gc өшіру, қайталау)? Оны қолмен жазылған measure-мен салыстырыңыз.</li></ul></section>
+      <section class="ac-sec ac-project" id="project"><h2>Модуль жобасы: Algorithm Benchmark Laboratory</h2><p>m09 алгоритмдерін (кемінде 5 сұрыптау не іздеу алгоритмі) өлшейтін және теориямен салыстыратын Python зертханасын жасаңыз. Зертхана әр алгоритмді әр түрлі кірістерде (кездейсоқ, сұрыпталған, кері, қайталанатын) іске қосып, салыстыру санын және уақытты өлшейді, еселеу қатынастарын есептеп, өсу дәрежесін бағалайды және нәтижені кесте мен мәтіндік графикке шығарады.</p><h3>Функционалдық талаптар</h3><ul><li>Кемінде 5 алгоритм: таңдау, кірістіру, біріктіру, жылдам (кездейсоқ тірек) сұрыптау және Python sorted (салыстыру үшін).</li><li>4 кіріс түрі және кемінде 5 өлшем (n еселеніп өседі); кіріс random.seed-пен қайталанатын.</li><li>Салыстыру санағышы (K сияқты класс) және уақыт (perf_counter, 5 қайталау, медиана).</li><li>Еселеу қатынасы және k ≈ log₂ r бағасы; теориялық күтілетін мәнмен салыстыру бағаны.</li><li>Әр алгоритмге тесттер (кемінде 3 мутантты ұстайтын - m08 l08) және README-де қорытындылар.</li></ul><h3>Кезеңдер</h3><ul><li>1. Алгоритмдер және олардың тесттері.</li><li>2. Санағыш және кіріс жасаушылар.</li><li>3. Уақыт өлшеу және медиана.</li><li>4. Еселеу кестесі мен өсу бағасы.</li><li>5. Мәтіндік график, қорытынды және README.</li></ul><h3>Қабылдау тесттері</h3><ul><li>Кірістіру сұрыптауы кездейсоқ кірісте k ≈ 2, сұрыпталған кірісте k ≈ 1 болып бағаланады.</li><li>Біріктіру сұрыптауының салыстыру саны n·log₂ n шегінен аспайды (кестеде тексеріледі).</li><li>Ломуто тірегімен жылдам сұрыптаудың сұрыпталған кірістегі нашарлығы көрсетіледі, кездейсоқ тірекпен түзелгені өлшенеді.</li><li>Барлық тест өтеді; README-де кемінде 3 бақылау-түсіндірме бар.</li></ul><h3>Бағалау рубрикасы</h3><ul><li>Алгоритмдердің дұрыстығы және тесттер - 30%</li><li>Өлшеу әдістемесінің адалдығы - 25%</li><li>Теория мен тәжірибені салыстыру - 30%</li><li>Код сапасы, құжаттама - 15%</li></ul><p class="ac-note">Жобаны мұғалім рубрикамен бағалайды: бұл бетте автоматты бағаланбайды.</p></section>
+      <section class="ac-sec ac-src"><h2>Дереккөз және лицензия</h2><ul><li>T. H. Cormen және т.б., Introduction to Algorithms (CLRS), 15-16 (динамикалық бағдарламалау, ашкөз алгоритмдер), 22 (графтар) тараулар - салыстыру үшін.</li><li>J. Kleinberg, É. Tardos, Algorithm Design, 3-4, 6 тараулар.</li><li>R. Sedgewick, K. Wayne, Algorithms, 1.4 Analysis of Algorithms - еселеу тәжірибесі (doubling test).</li></ul>
+        <p>Сабақ мәтіні, мысалдары мен тапсырмалары AO17 үшін жаңадан жазылған (авторлық: Sagid Mustafa, All Rights Reserved). Дереккөздер ұғымдарды салыстыру үшін пайдаланылды, мәтін көшірілмеген. ID: <code>ao17-foundation.m09.l10</code></p></section>
+      <nav class="ac-pager"><a href="l09.html">← Графты аралау</a><a href="../index.html#m09">Модуль картасы</a><span></span></nav>
+    </article>
+  </div>
+  <script type="application/json" id="ac-data">{"id": "ao17-foundation.m09.l10", "visual": {"lab": "growth", "fns": ["log2(n)", "n", "n*log2(n)", "n^2"], "max": 64, "caption": "Теориялық өсу қисықтары. Төмендегі тәжірибеде нақты өлшемдер осы формаларды қайталай ма, соны тексереміз."}, "experiment": {"lab": "pyrun", "code": "import time, os\n\ndef measure(f, data, repeat=5):\n    times = []\n    for _ in range(repeat):\n        t0 = time.perf_counter()\n        f(data)\n        times.append(time.perf_counter() - t0)\n    times.sort()\n    return times[len(times) // 2]\n\nprev = {}\nfor n in [100000, 200000, 400000, 800000]:\n    data = list(os.urandom(n))  # кездейсоқ байттар; C-да жасалады\n    row = [n]\n    for name, f in [('count', lambda a: a.count(-1)), ('sorted', sorted)]:\n        t = measure(f, data)\n        row.append(f'{name} {t * 1000:7.2f} мс' + (f' x{t / prev[name]:.1f}' if name in prev else '     '))\n        prev[name] = t\n    print(*row)", "stdin": "", "task": "list.count (сызықтық) пен sorted (n log n) - екеуі де C-да жазылған, сондықтан мұнда Python-ның қадам шегі мен трассасы әсер етпейді. Қатынастар ≈ 2 және ≈ 2.1-2.3 бола ма? Нақты сандар компьютерге және жүктемеге қарай өзгереді - бірнеше рет іске қосып көріңіз."}, "exercises": [{"type": "pycode", "q": "doubling_ratios(counts) - n = n₀, 2n₀, 4n₀, ... үшін өлшенген сандар тізімінен көрші қатынастар тізімін (2 таңбаға дөңгелектеп) қайтарсын.", "mode": "func", "func": "doubling_ratios", "starter": "def doubling_ratios(counts):\n    return [counts[i] - counts[i - 1] for i in range(1, len(counts))]\n", "tests": [{"args": [[100, 400, 1600]], "expect": [4.0, 4.0]}, {"args": [[15830, 65132, 245264]], "expect": [4.11, 3.77]}, {"args": [[7]], "expect": []}], "solution": "def doubling_ratios(counts):\n    return [round(counts[i] / counts[i - 1], 2) for i in range(1, len(counts))]", "hints": ["Айырма емес, қатынас.", "round(x, 2)."]}, {"type": "pycode", "q": "estimate_power(counts) - еселеу тәжірибесінің соңғы екі өлшемінен k ≈ log₂(T(2n)/T(n)) дәрежесін бір таңбаға дейін дөңгелектеп қайтарсын.", "mode": "func", "func": "estimate_power", "starter": "def estimate_power(counts):\n    return counts[-1] / counts[-2]\n", "tests": [{"args": [[1000, 4000, 16000]], "expect": 2.0}, {"args": [[15830, 65132, 245264, 1007463]], "expect": 2.0}, {"args": [[10, 80, 640]], "expect": 3.0}, {"args": [[500, 1000]], "expect": 1.0}], "solution": "import math\n\ndef estimate_power(counts):\n    return round(math.log2(counts[-1] / counts[-2]), 1)", "hints": ["Теорема: k = log₂ r.", "math.log2."]}, {"type": "pycode", "q": "median_time(times) - өлшемдер тізімінің медианасын қайтарсын (жұп санда - ортаңғы екеуінің орташасы). Тізім өзгермесін.", "mode": "func", "func": "median_time", "starter": "def median_time(times):\n    return sum(times) / len(times)\n", "tests": [{"args": [[0.3, 0.1, 9.5]], "expect": 0.3}, {"args": [[4, 1, 3, 2]], "expect": 2.5}, {"args": [[5]], "expect": 5}], "solution": "def median_time(times):\n    s = sorted(times)\n    m = len(s) // 2\n    return s[m] if len(s) % 2 else (s[m - 1] + s[m]) / 2", "hints": ["Орташа мән бір «шуылды» өлшемге (9.5) сезімтал.", "sorted(times) - көшірме."]}, {"type": "mc", "q": "Еселеу тәжірибесінде T(2n)/T(n) ≈ 8 шықты. Алгоритмнің өсуі:", "options": ["O(n)", "O(n²)", "O(n³)", "O(2ⁿ)"], "answer": 2, "why": ["Қатынас 2 болар еді.", "Қатынас 4 болар еді.", "Дұрыс: 2³ = 8.", "Қатынас n-мен бірге өсер еді."], "hints": ["2ᵏ = 8."]}], "assessment": [{"type": "pycode", "q": "classify_growth(counts) - еселеу өлшемдерінің соңғы қатынасы бойынша 'O(log n)' (< 1.5), 'O(n)' (< 2.6), 'O(n²)' (< 5), 'O(n³)' (< 10) не 'экспоненциал' деп қайтарсын. (n log n-нің қатынасы ≈ 2.2 болғандықтан ол бұл сынауда 'O(n)' тобына түседі.)", "mode": "func", "func": "classify_growth", "starter": "def classify_growth(counts):\n    return 'O(n)'\n", "tests": [{"args": [[10, 11, 12]], "expect": "O(log n)"}, {"args": [[3863, 8704, 19447]], "expect": "O(n)"}, {"args": [[65132, 245264, 1007463]], "expect": "O(n²)"}, {"args": [[100, 800]], "expect": "O(n³)"}, {"args": [[10, 1000, 1000000]], "expect": "экспоненциал"}], "solution": "def classify_growth(counts):\n    r = counts[-1] / counts[-2]\n    if r < 1.5:\n        return 'O(log n)'\n    if r < 2.6:\n        return 'O(n)'\n    if r < 5:\n        return 'O(n²)'\n    if r < 10:\n        return 'O(n³)'\n    return 'экспоненциал'", "hints": ["r = counts[-1] / counts[-2].", "Шекараларды өсу ретімен тексеріңіз."]}, {"type": "mc", "q": "Неге салыстыру санын да, уақытты да өлшейміз?", "options": ["Уақыт әрқашан дұрыс емес", "Санақ машинаға тәуелсіз, уақыт нақты құнды көрсетеді (тұрақтылар, кэш)", "Салыстыру уақыттан жылдам", "Талап бойынша"], "answer": 1, "why": ["Уақыт - нағыз құн.", "Дұрыс: екеуі бір-бірін толықтырады.", "Бұл өлшеу туралы емес.", "Себебі бар."], "hints": ["Әр өлшемнің артықшылығы."]}], "reflection": ["Өз сұрыптауыңыз бен Python-ның sorted уақытын салыстырыңыз. Айырма неше есе? Оны асимптотика түсіндіре ме?"], "objectives": 3}</script>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

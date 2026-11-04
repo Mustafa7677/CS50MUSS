@@ -65,5 +65,21 @@ r = J.judge_tests("def test_a():\n    assert sq(1) == 1\n\n1 / 0", SQ)
 check(r["stage"] == "load" and r["line"] == 4, "pytests: жол нөмірі оқушы кодына қатысты")
 check(J.judge_tests("def test_loop():\n    while True:\n        pass", SQ)["stage"] == "correct", "pytests: шексіз цикл тестте StepLimit")
 check(sys.gettrace() is before and os.getcwd() == cwd, "pytests-тен кейін күй қалпына келді")
+INS = "def ins(a):\n    for i in range(1, len(a)):\n        x = a[i]\n        j = i - 1\n        while j >= 0 and a[j] > x:\n            a[j + 1] = a[j]\n            j -= 1\n        a[j + 1] = x"
+t = json.loads(J.trace_sort(INS, "ins", [3, 1, 2]))
+check(t["ok"] and t["sorted"] and t["final"] == [1, 2, 3] and t["stats"] == {"cmp": 3, "write": 4}, "trace_sort: кірістіру [3,1,2] = 3 салыстыру, 4 жазу")
+check(all(e["op"] in ("cmp", "set") for e in t["events"]) and len(t["events"]) == 7, "trace_sort: оқиғалар тізімі")
+st = [3, 1, 2]
+for e in t["events"]:
+    if e["op"] == "set":
+        st[e["i"]] = e["v"]
+check(st == [1, 2, 3], "trace_sort: оқиғаларды қайта ойнату соңғы күйді береді")
+t = json.loads(J.trace_sort("def s(a):\n    return sorted(a)", "s", [2, 1]))
+check(t["ok"] and t["returned"] == [1, 2] and t["sorted"] and t["stats"]["cmp"] >= 1, "trace_sort: жаңа тізім қайтаратын алгоритм, sorted салыстырулары да саналады")
+t = json.loads(J.trace_sort("def s(a):\n    a[0], a[1] = a[1], a[0]", "s", [1, 2]))
+check(t["ok"] and not t["sorted"], "trace_sort: сұрыптамайтын алгоритм анықталады")
+check(json.loads(J.trace_sort("def s(a):\n    while True:\n        a[0] = a[0]", "s", [1]))["truncated"], "trace_sort: оқиғалар шегі")
+check(json.loads(J.trace_sort("def s(a):\n    return a[5]", "s", [1]))["error"] == "IndexError", "trace_sort: қате")
+check(sys.gettrace() is before and os.getcwd() == cwd, "trace_sort-тан кейін күй қалпына келді")
 print(f"academy judge: {ok} өтті, {fail} өтпеді")
 sys.exit(1 if fail else 0)

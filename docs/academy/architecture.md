@@ -28,12 +28,12 @@ AO17 CS Universe - қазақ тіліндегі бес деңгейлі инф�
 | Schema validation | `tools/academy_build.py --check` | бар: міндетті өрістер, түрлер, ID, алғышарттар, бірегейлік |
 | Mathematics Engine (логика) | `assets/js/academy-logic.js` | бар: парсер, кесте, эквиваленттік, жіктеу, ДҚФ/КҚФ, аргумент |
 | Тәуелсіз тексеруші | `tools/academy/plogic.py` | бар: кілттерді JS-тен бөлек есептейді |
-| AO17 Judge (Python) | `assets/py/ao_judge.py` (бір файл: браузерде Pyodide, build-те CPython) + `academy.js` (`pyJudge`) | бар: функция және енгізу/шығару тесттері (АШЫҚ), қадам шегі (settrace, 200 000 жол), Traceback-ті қазақша диагностика, жол нөмірі; эталон шешімдер build кезінде дәл осы файлмен тексеріледі; `trace_calls` - рекурсия ағашы (Code X-Ray), `suffix` - оқушы кодынан кейінгі драйвер (екі рет шақыру, жанама әсерді тексеру), `files` - тест алдында уақытша бумадағы файлдар, `judge_tests` - мутациялық тестілеу |
+| AO17 Judge (Python) | `assets/py/ao_judge.py` (бір файл: браузерде Pyodide, build-те CPython) + `academy.js` (`pyJudge`) | бар: функция және енгізу/шығару тесттері (АШЫҚ), қадам шегі (settrace, 200 000 жол), Traceback-ті қазақша диагностика, жол нөмірі; эталон шешімдер build кезінде дәл осы файлмен тексеріледі; `trace_calls` - рекурсия ағашы (Code X-Ray), `suffix` - оқушы кодынан кейінгі драйвер (екі рет шақыру, жанама әсерді тексеру), `files` - тест алдында уақытша бумадағы файлдар, `judge_tests` - мутациялық тестілеу, `trace_sort` - Algorithm Arena (нақты орындау: салыстырулар мен жазулар) |
 | Екілік жүйе қозғалтқышы | `assets/js/academy-bits.js` + `tools/academy/pbits.py` | бар: 2-36 негіздер (BigInt), қосымша код және асып кету, IEEE 754 float32, UTF-8, жұптық бит, биттік өрнектер (C басымдығы), RLE, Python іске қосу (Pyodide), рекурсия ағашы (нақты шақырулар) |
 | Псевдокод интерпретаторы (Code X-Ray 1-қадамы) | `assets/js/academy-pseudo.js` + `tools/academy/ppseudo.py` | бар: AO17 оқу псевдокоды, қадамдық трасса, жол санағыштары; екі іске асыру нәтиже, шығыс, санағыш және қадам саны бойынша салыстырылады |
 | Дискретті құрылымдар қозғалтқышы | `assets/js/academy-disc.js` + `tools/academy/pdisc.py` | бар: жиын өрнектері, тепе-теңдік (логикаға аудару арқылы дәл), қатынас қасиеттері мен кластары, функция түрі, граф (дәреже, компонент, ағаш) |
 | Арифметика қозғалтқышы | `assets/js/academy-arith.js` + `tools/academy/parith.py` | бар: n, a айнымалылы өрнектер, дәл рационал сандар (BigInt/Fraction), қарсы мысал, жабық формула, рекуррент |
-| Interactive Visualization | `assets/js/academy.js` (`lab()`) | бар: кесте, эквиваленттік, аргумент, ағаш, ДҚФ/КҚФ, кванторлар, қарсы мысал іздеу, индукция кестесі, рекуррент, Венн (2-3 жиын), қатынас матрицасы, функция сызбасы, граф, псевдокод трассасы (қадамдап), өсу жылдамдығы графигі, санау жүйесі, бит панелі, UTF-8 байттары, IEEE 754 биттері, RLE |
+| Interactive Visualization | `assets/js/academy.js` (`lab()`) | бар: кесте, эквиваленттік, аргумент, ағаш, ДҚФ/КҚФ, кванторлар, қарсы мысал іздеу, индукция кестесі, рекуррент, Венн (2-3 жиын), қатынас матрицасы, функция сызбасы, граф, псевдокод трассасы (қадамдап), өсу жылдамдығы графигі, санау жүйесі, бит панелі, UTF-8 байттары, IEEE 754 биттері, RLE, Algorithm Arena (сұрыптаудың нақты қадамдары) |
 | Assessment Engine | `assets/js/academy.js` (`renderExercise`) | бар: mc, value, truthtable, classify, formula, argument, number |
 | Smart Hint Engine | әр тапсырмада `hints` (1-3 деңгей) | бар (ережеге негізделген, AI емес) |
 | Rule-based feedback | `checkFormula`, қарсы мысал | бар: қай шектеу бұзылды, қай бағалауда айырмашылық |
@@ -41,7 +41,7 @@ AO17 CS Universe - қазақ тіліндегі бес деңгейлі инф�
 | Spaced Repetition | `INTERVALS = [2, 7, 21, 60]` күн | бар (қарапайым) |
 | Recommendation | басты беттегі «Келесі ұсыныс» | бар: ретімен бірінші меңгерілмеген сабақ |
 | Knowledge Graph | `academy/map.html` | бар: модульдер, алғышарт байланысы, жеке күй |
-| Code X-Ray (Python/C нақты орындау), Algorithm Arena, Virtual Computer, C Playground, Judge, Certification | - | **әлі жоқ** (docs/academy/next-steps.md) |
+| C нақты орындау, Virtual Computer, C Playground, Judge, Certification | - | **әлі жоқ** (docs/academy/next-steps.md) |
 
 ## Сабақ деректерінің моделі
 Әр сабақ - Python сөздігі (`tools/academy/content/mNN_*.py`). Міндетті өрістер (`REQUIRED`, `tools/academy_build.py`):

@@ -28,7 +28,7 @@ import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
 
 OUT = ROOT / "academy"
-CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b"]
+CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b", "m09_a", "m09_b"]
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
@@ -39,7 +39,7 @@ REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "reviewStatus": (str, 2), "version": (str, 5),
 }
 EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence", "setexpr", "setid", "props", "func", "trace", "count", "convert", "encode", "bitop", "pycode", "pytests"}
-LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur", "venn", "relation", "graph", "func", "trace", "growth", "base", "bitpanel", "utf8", "float", "rle", "pyrun", "calltree"}
+LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur", "venn", "relation", "graph", "func", "trace", "growth", "base", "bitpanel", "utf8", "float", "rle", "pyrun", "calltree", "arena"}
 GROWTH = {"1", "log2(n)", "sqrt(n)", "n", "n*log2(n)", "n^2", "n^3", "2^n", "100*n", "n!"}
 ARITH_PROPS = set(AR.PROPS)
 QUANT_PREDS = {"even", "odd", "prime", "positive", "gt3", "square"}
@@ -84,6 +84,12 @@ def check_lab(spec, where, errs):
             r = json.loads(JG.trace_calls(spec["code"], spec["call"]))
             if not r["ok"] or r["truncated"]:
                 errs.append(f"{where}: calltree - шақыру қатемен не шексіз аяқталды")
+        elif lab == "arena":
+            r = json.loads(JG.trace_sort(spec["code"], spec["func"], spec["data"]))
+            if not r["ok"] or r["truncated"] or (not r["sorted"] and not spec.get("expectUnsorted")):
+                errs.append(f"{where}: arena - алгоритм қатемен, шексіз не сұрыптамай аяқталды: {r.get('error')}")
+            if len(spec["data"]) > 60:
+                errs.append(f"{where}: arena - кіріс 60 элементтен аспасын")
         elif lab == "base":
             BI.from_base(spec["value"].lstrip("-"), spec["from"])
         elif lab == "bitpanel":
