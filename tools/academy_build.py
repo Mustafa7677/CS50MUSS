@@ -20,9 +20,11 @@ sys.path.insert(0, str(ROOT / "tools" / "academy" / "content"))
 import curriculum as C  # noqa: E402
 import plogic as P  # noqa: E402
 import parith as AR  # noqa: E402
+import pdisc as DS  # noqa: E402
+import math  # noqa: E402,F401  (number.check өрнектері үшін)
 
 OUT = ROOT / "academy"
-CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b"]
+CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b"]
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
@@ -32,8 +34,8 @@ REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "reflection": (list, 1), "further": (dict, None), "references": (list, 1), "license": (str, 2), "authorship": (str, 2),
     "reviewStatus": (str, 2), "version": (str, 5),
 }
-EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence"}
-LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur"}
+EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence", "setexpr", "setid", "props", "func"}
+LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur", "venn", "relation", "graph", "func"}
 ARITH_PROPS = set(AR.PROPS)
 QUANT_PREDS = {"even", "odd", "prime", "positive", "gt3", "square"}
 REVIEW = {"draft", "author-checked", "peer-reviewed"}
@@ -64,6 +66,14 @@ def check_lab(spec, where, errs):
                 errs.append(f"{where}: search - белгісіз қасиет")
             lo, hi = spec["domain"]
             [AR.val(spec["expr"], n) for n in range(lo, hi + 1) if not spec.get("where") or AR.PROPS[spec["where"]](AR.F(n))]
+        elif lab == "venn":
+            DS.evaluate(spec["expr"], spec["sets"], spec["U"])
+        elif lab == "relation":
+            pairs(spec["R"])
+        elif lab == "graph":
+            edges(spec["E"])
+        elif lab == "func":
+            pairs(spec["pairs"])
         elif lab == "induction":
             AR.parse(spec["term"]), AR.parse(spec["closed"])
         elif lab == "recur":
@@ -101,6 +111,21 @@ def check_exercise(ex, where, errs):
         elif t == "number":
             if not isinstance(ex["answer"], int):
                 errs.append(f"{where}: number - жауап бүтін сан болуы керек")
+            elif "check" in ex and eval(ex["check"], {"math": math, "__builtins__": {"range": range, "sum": sum, "next": next, "len": len}}) != ex["answer"]:
+                errs.append(f"{where}: number - жауап ({ex['answer']}) check өрнегімен сәйкес емес")
+        elif t == "setexpr":
+            DS.evaluate(ex["expr"], ex["sets"], ex["U"])
+        elif t == "setid":
+            if not DS.identical(ex["solution"], ex["target"]):
+                errs.append(f"{where}: setid - эталон шешім мақсатпен тепе-тең ЕМЕС")
+            elif any(o in ex["solution"] for o in ex.get("forbid", [])):
+                errs.append(f"{where}: setid - эталон шешім тыйым салынған амалды қолданады")
+            elif ex.get("forbid") and not any(o in ex["target"] for o in ex["forbid"]):
+                errs.append(f"{where}: setid - мақсаттың өзі шектеуден өтеді (мағынасыз)")
+        elif t == "props":
+            pairs(ex["R"])
+        elif t == "func":
+            pairs(ex["pairs"])
         elif t == "order":
             st = ex["steps"]
             if len(st) < 3 or len(set(st)) != len(st):
@@ -133,6 +158,27 @@ def check_exercise(ex, where, errs):
                 errs.append(f"{where}: formula - мақсаттың өзі шектеулерден өтеді (тапсырма тым оңай/мағынасыз)")
     except (ValueError, KeyError, TypeError) as e:
         errs.append(f"{where}: {type(e).__name__}: {e}")
+
+
+def pairs(s):
+    """'(1,2), (a,b)' -> [(1, 2), ('a', 'b')] (JS parsePairs-пен бірдей)."""
+    out = []
+    for a, b in re.findall(r"\(\s*([^,()\s]+)\s*,\s*([^,()\s]+)\s*\)", s):
+        out.append(tuple(int(x) if re.fullmatch(r"-?\d+", x) else x for x in (a, b)))
+    rest = re.sub(r"\(\s*[^,()\s]+\s*,\s*[^,()\s]+\s*\)", "", s)
+    if re.sub(r"[\s,{}]", "", rest) and s.strip() not in ("", "∅"):
+        raise ValueError(f"жұптар қате: {s!r}")
+    return out
+
+
+def edges(s):
+    out = []
+    for t in filter(None, (x.strip() for x in re.split(r"[,;\n]+", s))):
+        m = re.fullmatch(r"(\w+)\s*[-–—]\s*(\w+)", t)
+        if not m:
+            raise ValueError(f"қабырға қате: {t!r}")
+        out.append(tuple(int(x) if x.isdigit() else x for x in m.groups()))
+    return out
 
 
 def run_example(code, timeout=10):
@@ -248,6 +294,7 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad"):
   <script src="{pre}assets/js/main.js"></script>
   <script src="{pre}assets/js/academy-logic.js" defer></script>
   <script src="{pre}assets/js/academy-arith.js" defer></script>
+  <script src="{pre}assets/js/academy-disc.js" defer></script>
   <script src="{pre}assets/js/academy.js" defer></script>{sc}
 </head>
 <body class="{body_cls}">
@@ -368,9 +415,9 @@ def index_html(lessons, st):
 def lab_html():
     body = """  <main class="content ac-labpage" id="main">
     <p class="ac-crumb"><a href="index.html">CS Universe</a> / Логика зертханасы</p>
-    <h1>Логика және дәлелдеу зертханасы</h1>
+    <h1>Логика, дәлелдеу және дискретті құрылымдар зертханасы</h1>
     <p>Формуланы енгізіңіз: кесте, ағаш, түрі, ДҚФ/КҚФ бірден шығады. Екі формуланы салыстыруға, аргументті тексеруге болады. Есептеу толық ақиқат кестесімен жүреді (ең көбі 12 айнымалы) - бұл нақты есептеу, болжам емес. «Қарсы мысал», «Индукция», «Рекуррент» қойындылары n айнымалысы бар өрнектерді дәл бөлшектермен есептейді: бұл сандық тексеріс, дәлелдеу емес.</p>
-    <div class="ac-tabs" role="tablist"><button type="button" role="tab" data-tab="truthtable" aria-selected="true">Кесте</button><button type="button" role="tab" data-tab="equiv" aria-selected="false">Эквиваленттік</button><button type="button" role="tab" data-tab="argument" aria-selected="false">Аргумент</button><button type="button" role="tab" data-tab="normal" aria-selected="false">ДҚФ/КҚФ</button><button type="button" role="tab" data-tab="tree" aria-selected="false">Ағаш</button><button type="button" role="tab" data-tab="quant" aria-selected="false">Кванторлар</button><button type="button" role="tab" data-tab="search" aria-selected="false">Қарсы мысал</button><button type="button" role="tab" data-tab="induction" aria-selected="false">Индукция</button><button type="button" role="tab" data-tab="recur" aria-selected="false">Рекуррент</button></div>
+    <div class="ac-tabs" role="tablist"><button type="button" role="tab" data-tab="truthtable" aria-selected="true">Кесте</button><button type="button" role="tab" data-tab="equiv" aria-selected="false">Эквиваленттік</button><button type="button" role="tab" data-tab="argument" aria-selected="false">Аргумент</button><button type="button" role="tab" data-tab="normal" aria-selected="false">ДҚФ/КҚФ</button><button type="button" role="tab" data-tab="tree" aria-selected="false">Ағаш</button><button type="button" role="tab" data-tab="quant" aria-selected="false">Кванторлар</button><button type="button" role="tab" data-tab="search" aria-selected="false">Қарсы мысал</button><button type="button" role="tab" data-tab="induction" aria-selected="false">Индукция</button><button type="button" role="tab" data-tab="recur" aria-selected="false">Рекуррент</button><button type="button" role="tab" data-tab="venn" aria-selected="false">Венн</button><button type="button" role="tab" data-tab="relation" aria-selected="false">Қатынас</button><button type="button" role="tab" data-tab="func" aria-selected="false">Функция</button><button type="button" role="tab" data-tab="graph" aria-selected="false">Граф</button></div>
     <div class="ac-lab ac-lab-big" data-lab="page"></div>
     <section class="ac-sec"><h2>Синтаксис</h2><p>Арифметика: сандар, n, + − * / % ^ және жақша; 2n және n(n+1) жасырын көбейту ретінде оқылады. Логика: ¬ (not, !, ~), ∧ (and, &amp;), ∨ (or, |), → (->), ↔ (&lt;->), ⊕ (xor, ^), тұрақтылар 0 және 1. Басымдық: ¬ &gt; ∧ &gt; ⊕ &gt; ∨ &gt; → &gt; ↔; → оңнан топтасады.</p></section>
   </main>"""
@@ -479,6 +526,14 @@ def dump_keys():
                     k = AR.counterexamples(ex)
                 elif t in ("closedform", "recurrence"):
                     k = ex["solution"]
+                elif t == "setexpr":
+                    k = sorted(DS.evaluate(ex["expr"], ex["sets"], ex["U"]), key=str)
+                elif t == "setid":
+                    k = ex["solution"]
+                elif t == "props":
+                    k = DS.rel_props(ex["S"], pairs(ex["R"]))
+                elif t == "func":
+                    k = DS.func_kind(ex["X"], ex["Y"], pairs(ex["pairs"]))
                 out.append({"lesson": L["id"], "set": set_, "i": i, "ex": ex, "key": k})
     print(json.dumps(out, ensure_ascii=False))
 
