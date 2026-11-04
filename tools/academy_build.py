@@ -29,7 +29,7 @@ import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
 
 OUT = ROOT / "academy"
-CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b", "m09_a", "m09_b", "m10_a", "m10_b", "m11_a", "m11_b"]
+CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b", "m09_a", "m09_b", "m10_a", "m10_b", "m11_a", "m11_b", "m12_a", "m12_b"]
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
@@ -310,7 +310,7 @@ def run_example(code, timeout=10):
 CFLAGS = ["-std=c11", "-O0", "-Wall", "-Wextra"]
 
 
-def run_c(code, stdin="", flags=None, werror=True, timeout=10):
+def run_c(code, stdin="", flags=None, werror=True, timeout=10, args=None):
     """C кодын нағыз gcc-мен компиляциялап іске қосу: (күй, stdout, stderr). күй: 'cc' - компиляция қатесі, иначе шығу коды."""
     import shutil
     import tempfile
@@ -325,13 +325,13 @@ def run_c(code, stdin="", flags=None, werror=True, timeout=10):
         c = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
         if c.returncode != 0:
             return "cc", "", c.stderr
-        r = subprocess.run([exe], input=stdin, capture_output=True, text=True, timeout=timeout, cwd=d)
+        r = subprocess.run([exe, *(args or [])], input=stdin, capture_output=True, text=True, timeout=timeout, cwd=d)
         return r.returncode, r.stdout.rstrip("\n"), r.stderr
 
 
 def c_check(spec, where, errs, want=None):
     """C мысалы не coutput тапсырмасы: компиляция, шығу коды, stdout, (қажет болса) stderr мәтіні."""
-    rc, out, err = run_c(spec["code"], spec.get("stdin", ""), spec.get("cflags"), not spec.get("warn"))
+    rc, out, err = run_c(spec["code"], spec.get("stdin", ""), spec.get("cflags"), not spec.get("warn"), args=spec.get("args"))
     if rc == "cc":
         errs.append(f"{where}: C компиляция қатесі (gcc {' '.join(CFLAGS)}): {err.strip()[:400]}")
         return
@@ -399,7 +399,7 @@ def validate(lessons, run_code=True):
                 if exm.get("lang") == "c":
                     c_check(exm, f"{lid} мысал {j + 1}", errs)
                     continue
-                if exm.get("lang") != "python":
+                if exm.get("lang") not in ("python", "python-local"):
                     continue
                 rc, out, err = run_example(exm["code"])
                 if rc != 0:
@@ -485,9 +485,10 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
         else f'<li>{E(plan_by_id[p]["title"])} <small>(жоспарда)</small></li>' for p in L["prerequisites"]) or "<li>Алғышарт жоқ: бұл - бастапқы сабақ.</li>"
     theory = "".join(f'<div class="ac-th ac-{t["kind"]}"><div class="ac-th-k">{KIND[t["kind"]]}</div><h4>{E(t["title"])}</h4>{t["body"]}</div>' for t in L["theory"])
     examples = "".join(
-        f'<figure class="ac-ex"><figcaption>{E(x["title"])}</figcaption><pre data-lang="{x.get("lang", "python")}"><code class="language-{x.get("lang", "python")}">{E(x["code"])}</code></pre>'
+        f'<figure class="ac-ex"><figcaption>{E(x["title"])}</figcaption><pre data-lang="{x.get("lang", "python")}"><code class="language-{x.get("lang", "python").replace("-local", "")}">{E(x["code"])}</code></pre>'
         + (f'<div class="ac-out"><span>stdin</span><pre>{E(x["stdin"])}</pre></div>' if x.get("stdin") else "")
-        + f'<div class="ac-out"><span>{"Шығыс (build кезінде gcc арқылы алынған)" if x.get("lang") == "c" else "Шығыс (тексерілген)"}</span><pre>{E(x["output"])}</pre></div>'
+        + (f'<div class="ac-out"><span>Іске қосу</span><pre>./prog {E(" ".join(x["args"]))}</pre></div>' if x.get("args") else "")
+        + f'<div class="ac-out"><span>{"Шығыс (build кезінде gcc арқылы алынған)" if x.get("lang") == "c" else "Шығыс (build кезінде CPython + gcc арқылы алынған; браузерде subprocess жоқ - өз компьютеріңізде іске қосыңыз)" if x.get("lang") == "python-local" else "Шығыс (тексерілген)"}</span><pre>{E(x["output"])}</pre></div>'
         + (f'<div class="ac-out"><span>stderr (gcc {E(" ".join(x["cflags"]))})</span><pre>{E(x["stderrShow"])}</pre></div>' if x.get("stderrShow") else "")
         + f'<p>{E(x["explain"])}</p></figure>' for x in L["examples"])
     mistakes = "".join(f'<li><b>{E(m["mistake"])}</b><br>Себебі: {E(m["why"])}<br>Түзету: {E(m["fix"])}</li>' for m in L["mistakes"])

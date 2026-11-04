@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Нұсқа бақылау (Git) - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Нұсқа бақылау (Git) - AO17">
+  <meta property="og:description" content="AO17 CS Universe, Level I: Нұсқа бақылау (Git). Git моделін түсіндіру: commit - сурет (snapshot) + ата-аналарына сілтеме, тарих - бағытталған ациклдік граф.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/m12/l07.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/m12/l07.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Нұсқа бақылау (Git) - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/m12/l07.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 CS Universe, Level I: Нұсқа бақылау (Git). Git моделін түсіндіру: commit - сурет (snapshot) + ата-аналарына сілтеме, тарих - бағытталған ациклдік граф.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/academy-logic.js" defer></script>
+  <script src="../../assets/js/academy-arith.js" defer></script>
+  <script src="../../assets/js/academy-disc.js" defer></script>
+  <script src="../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../assets/js/academy-bits.js" defer></script>
+  <script src="../../assets/js/academy.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="ac-layout">
+    <aside class="ac-toc" aria-label="Сабақ бөлімдері"><p class="ac-toc-h">Бөлімдер</p><ol><li><a href="#s-a">Оқу мақсаттары</a></li><li><a href="#s-b">Алғышарттар</a></li><li><a href="#s-c">Ұғымға кіріспе</a></li><li><a href="#s-d">Академиялық теория</a></li><li><a href="#s-e">Көрнекі түсіндірме</a></li><li><a href="#s-f">Қадамдап қорыту</a></li><li><a href="#s-g">Жұмыс мысалдары</a></li><li><a href="#s-h">Интерактивті эксперимент</a></li><li><a href="#s-i">Жаттығулар</a></li><li><a href="#s-j">Математикалық пайымдау</a></li><li><a href="#s-k">Жиі қателер</a></li><li><a href="#s-l">Меңгеруді бағалау</a></li><li><a href="#s-m">Рефлексия</a></li><li><a href="#s-n">Тереңірек</a></li></ol>
+      <div class="ac-mastery" data-ac-mastery><span>Меңгеру</span><b>-</b></div></aside>
+    <article class="content ac-lesson" id="main" data-lesson="ao17-foundation.m12.l07">
+      <header class="ac-head">
+        <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#m12">Level I · Жүйелік интеграция</a> / 7-сабақ</p>
+        <h1>Нұсқа бақылау (Git)</h1>
+        <p class="ac-meta">Деңгей: орта · шамамен 55 мин · нұсқа 1.0.0 · тексеру: author-checked</p>
+      </header>
+      <section class="ac-sec" id="s-a"><h2><span class="ac-n">A</span>Оқу мақсаттары</h2><ul class="ac-obj"><li>Git моделін түсіндіру: commit - сурет (snapshot) + ата-аналарына сілтеме, тарих - бағытталған ациклдік граф.</li><li>Тармақты (branch) commit-ке жылжымалы көрсеткіш ретінде, merge-ті екі тарихты біріктіру ретінде сипаттау.</li><li>Біріктіру негізін (merge base) және fast-forward шартын граф алгоритмімен табу.</li></ul></section>
+      <section class="ac-sec" id="s-b"><h2><span class="ac-n">B</span>Алғышарттар</h2><ul><li><a href="../m12/l06.html">Сенімді енгізу</a></li><li><a href="../m09/l09.html">Графты аралау</a></li></ul></section>
+      <section class="ac-sec" id="s-c"><h2><span class="ac-n">C</span>Ұғымға кіріспе</h2><p><b>Git</b> - кодтың тарихын сақтайтын жүйе. Әр <b>commit</b> - жобаның сол сәттегі толық суреті және ата-ана commit(тер)іне сілтеме. Барлық commit-тер бірге <b>бағытталған ациклдік граф</b> (DAG) құрайды (m03 l09, m09 l09). <b>Тармақ</b> - жай ғана атауы бар көрсеткіш (m11 l02 ұғымы!): жаңа commit жасағанда ол алға жылжиды.</p><p><b>Merge</b> екі тармақты біріктіреді: Git олардың ортақ ата-бабасын (<b>merge base</b>) тауып, екі жақтағы өзгерістерді салыстырады. Бір тармақ екіншісінің тікелей жалғасы болса - <b>fast-forward</b>: көрсеткіш жай жылжиды. Бұл сабақтағы Python модельдері нағыз Git-тің негізгі алгоритмдерін қайталайды.</p></section>
+      <section class="ac-sec" id="s-d"><h2><span class="ac-n">D</span>Академиялық теория</h2><div class="ac-th ac-definition"><div class="ac-th-k">Анықтама</div><h4>Негізгі ұғымдар</h4><p>commit c: parents(c) - ата-аналар тізімі (бос - бірінші commit, екеу - merge commit). ancestors(c) - c және оған parents бойымен жетуге болатын барлық commit. Тармақ b → commit. merge base(x, y) - ортақ ата-бабалардың ішіндегі «ең жаңасы» (басқа ортақ ата-бабаның ата-бабасы емес).</p></div><div class="ac-th ac-theorem"><div class="ac-th-k">Теорема</div><h4>Fast-forward шарты</h4><p>main тармағын feature-ге fast-forward арқылы біріктіруге болады ⇔ main көрсететін commit feature көрсететін commit-тің ата-бабасы (main ∈ ancestors(feature)).</p></div><div class="ac-th ac-proof"><div class="ac-th-k">Дәлелдеу</div><h4>Дәлелдеу</h4><p>(⇐) m = main ∈ ancestors(f). Онда f-тің тарихы m-нің бүкіл тарихын қамтиды (ата-бабалық транзитивті: ancestors(m) ⊆ ancestors(f)). main-ді f-ке жылжыту ешбір commit-ті жоғалтпайды - бұл fast-forward. (⇒) Fast-forward - main-ді f-ке жылжыту, нәтижеде main-нің жаңа тарихы ancestors(f). Ешбір commit жоғалмауы үшін ескі тарих ancestors(m) ⊆ ancestors(f) болуы керек, атап айтқанда m ∈ ancestors(f). ∎ Әйтпесе тарихтар айырылған - merge commit (екі ата-аналы) қажет.</p></div><div class="ac-th ac-note"><div class="ac-th-k">Ескерту</div><h4>Неге hash?</h4><p>commit идентификаторы - мазмұны мен ата-аналарының криптографиялық хэші (SHA). Сондықтан тарихты байқатпай өзгерту мүмкін емес: бір байт өзгерсе, барлық кейінгі хэштер өзгереді (Merkle ағашы идеясы).</p></div></section>
+      <section class="ac-sec" id="s-e"><h2><span class="ac-n">E</span>Көрнекі түсіндірме</h2><div class="ac-lab" data-lab="visual"></div><p class="ac-cap">A ← B ← C (main), B ← D ← E (feature), M - merge commit (C мен E). feature main-ге енген: E ∈ ancestors(M). C мен E-нің ортақ ата-бабалары A, B; merge base - B.</p></section>
+      <section class="ac-sec" id="s-f"><h2><span class="ac-n">F</span>Қадамдап қорыту</h2><ol class="ac-steps"><li>git init; файл; git add; git commit -m &#x27;бастау&#x27; - commit A.</li><li>git switch -c feature - жаңа көрсеткіш, сол A-ға.</li><li>feature-де commit-тер: D, E. main-де: C. Енді тарихтар айырылды.</li><li>git switch main; git merge feature - merge base B, екі жақтың өзгерістері біріктіріліп, M commit-і (ата-аналары C, E).</li></ol></section>
+      <section class="ac-sec" id="s-g"><h2><span class="ac-n">G</span>Жұмыс мысалдары</h2><figure class="ac-ex"><figcaption>Нағыз git: тармақ және merge</figcaption><pre data-lang="python-local"><code class="language-python">import os, subprocess, tempfile
+
+def git(*args, cwd):
+    env = dict(os.environ, GIT_AUTHOR_NAME=&#x27;AO17&#x27;, GIT_AUTHOR_EMAIL=&#x27;ao17@example.kz&#x27;, GIT_COMMITTER_NAME=&#x27;AO17&#x27;, GIT_COMMITTER_EMAIL=&#x27;ao17@example.kz&#x27;, GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM=&#x27;1&#x27;)
+    return subprocess.run([&#x27;git&#x27;, *args], cwd=cwd, env=env, capture_output=True, text=True, check=True).stdout.strip()
+
+with tempfile.TemporaryDirectory() as d:
+    git(&#x27;init&#x27;, &#x27;-q&#x27;, &#x27;-b&#x27;, &#x27;main&#x27;, cwd=d)
+    def commit(name, text, msg):
+        with open(os.path.join(d, name), &#x27;w&#x27;) as f:
+            f.write(text)
+        git(&#x27;add&#x27;, name, cwd=d)
+        git(&#x27;commit&#x27;, &#x27;-q&#x27;, &#x27;-m&#x27;, msg, cwd=d)
+    commit(&#x27;a.txt&#x27;, &#x27;1\n&#x27;, &#x27;A&#x27;)
+    commit(&#x27;a.txt&#x27;, &#x27;1\n2\n&#x27;, &#x27;B&#x27;)
+    git(&#x27;switch&#x27;, &#x27;-q&#x27;, &#x27;-c&#x27;, &#x27;feature&#x27;, cwd=d)
+    commit(&#x27;b.txt&#x27;, &#x27;x\n&#x27;, &#x27;D&#x27;)
+    commit(&#x27;b.txt&#x27;, &#x27;x\ny\n&#x27;, &#x27;E&#x27;)
+    git(&#x27;switch&#x27;, &#x27;-q&#x27;, &#x27;main&#x27;, cwd=d)
+    commit(&#x27;c.txt&#x27;, &#x27;z\n&#x27;, &#x27;C&#x27;)
+    base = git(&#x27;merge-base&#x27;, &#x27;main&#x27;, &#x27;feature&#x27;, cwd=d)
+    print(&#x27;merge base:&#x27;, git(&#x27;log&#x27;, &#x27;-1&#x27;, &#x27;--format=%s&#x27;, base, cwd=d))
+    git(&#x27;merge&#x27;, &#x27;-q&#x27;, &#x27;--no-edit&#x27;, &#x27;feature&#x27;, cwd=d)
+    print(&#x27;main (бірінші ата-аналар):&#x27;, git(&#x27;log&#x27;, &#x27;--first-parent&#x27;, &#x27;--format=%s&#x27;, cwd=d).splitlines())
+    print(&#x27;барлық commit:&#x27;, len(git(&#x27;rev-list&#x27;, &#x27;--all&#x27;, cwd=d).split()))
+    print(&#x27;ата-аналар саны:&#x27;, len(git(&#x27;log&#x27;, &#x27;-1&#x27;, &#x27;--format=%P&#x27;, cwd=d).split()))
+    print(&#x27;файлдар:&#x27;, sorted(f for f in os.listdir(d) if f != &#x27;.git&#x27;))</code></pre><div class="ac-out"><span>Шығыс (build кезінде CPython + gcc арқылы алынған; браузерде subprocess жоқ - өз компьютеріңізде іске қосыңыз)</span><pre>merge base: B
+main (бірінші ата-аналар): [&quot;Merge branch &#x27;feature&#x27;&quot;, &#x27;C&#x27;, &#x27;B&#x27;, &#x27;A&#x27;]
+барлық commit: 6
+ата-аналар саны: 2
+файлдар: [&#x27;a.txt&#x27;, &#x27;b.txt&#x27;, &#x27;c.txt&#x27;]</pre></div><p>Нағыз git (build кезінде іске қосылды) модельдегі графты құрды: merge base - B, 6 commit (A, B, C, D, E және merge), merge commit-тің 2 ата-анасы бар, екі тармақтың файлдары біріктірілді. --first-parent main-нің өз жолын көрсетеді. Хэштер әр іске қосуда әртүрлі (уақыт белгілері), сондықтан тек хабарламалар шығарылды.</p></figure></section>
+      <section class="ac-sec" id="s-h"><h2><span class="ac-n">H</span>Интерактивті эксперимент</h2><p class="ac-task">Теорема бойынша: B ∈ ancestors(E) - fast-forward мүмкін; C ∉ ancestors(E) - тарихтар айырылған, merge commit керек. Модельге жаңа commit қосып (F: [&#x27;E&#x27;]), feature-ді F-ке жылжытыңыз да, қайта тексеріңіз.</p><div class="ac-lab" data-lab="experiment"></div></section>
+      <section class="ac-sec" id="s-i"><h2><span class="ac-n">I</span>Жаттығулар</h2><div class="ac-exs" data-set="exercises"></div></section>
+      <section class="ac-sec" id="s-j"><h2><span class="ac-n">J</span>Математикалық пайымдау</h2><p>Git - Level I ұғымдарының тамаша жиынтығы: граф (m03, m09), көрсеткіштер (m11), хэш (m08 сөздіктері), өзгермейтіндік (m08 l02 - commit ешқашан өзгермейді, жаңасы жасалады). Оны «командалар тізімі» емес, деректер құрылымы ретінде түсінсеңіз, кез келген күрделі жағдайды (rebase, cherry-pick) өзіңіз түсіндіре аласыз.</p></section>
+      <section class="ac-sec" id="s-k"><h2><span class="ac-n">K</span>Жиі қателер</h2><ul class="ac-mist"><li><b>Үлкен, әртүрлі өзгерістерді бір commit-ке салу.</b><br>Себебі: Қатені іздеу (git bisect, m09 l02) мен қайтару қиындайды.<br>Түзету: Бір commit - бір логикалық өзгеріс, нақты хабарламамен.</li><li><b>Құпия кілттер мен парольдерді commit-ке қосу.</b><br>Себебі: Тарих мәңгі сақталады - кейін өшіру жеткіліксіз.<br>Түзету: .gitignore, орта айнымалылары; қате болса - кілтті ауыстыру.</li></ul></section>
+      <section class="ac-sec" id="s-l"><h2><span class="ac-n">L</span>Меңгеруді бағалау</h2><p class="ac-note">Барлық сұраққа дұрыс жауап берсеңіз, сабақ «меңгерілді» деп белгіленеді. Тексеру браузерде өтеді: бұл оқу тексерісі, емтихан емес.</p><div class="ac-exs" data-set="assessment"></div></section>
+      <section class="ac-sec" id="s-m"><h2><span class="ac-n">M</span>Рефлексия</h2><div data-ac-reflect></div></section>
+      <section class="ac-sec" id="s-n"><h2><span class="ac-n">N</span>Тереңірек</h2><h3>Honors</h3><ul><li>git log --graph --oneline-ның қарапайым нұсқасын Python-да жазыңыз: parents сөздігінен мәтіндік граф салу.</li></ul><h3>Research</h3><ul><li>Git-тің ішкі нысандары: blob, tree, commit. .git/objects бумасындағы файлдар қалай құрылған (zlib + SHA-1)?</li></ul></section>
+      
+      <section class="ac-sec ac-src"><h2>Дереккөз және лицензия</h2><ul><li>S. Chacon, B. Straub, Pro Git, 2-басылым (git-scm.com/book) - commit, branch, merge (салыстыру үшін).</li><li>Semantic Versioning 2.0.0 (semver.org); Python doctest және unittest құжаттамасы.</li><li>M. Cohn, Succeeding with Agile - тесттер пирамидасы идеясы (салыстыру үшін).</li></ul>
+        <p>Сабақ мәтіні, мысалдары мен тапсырмалары AO17 үшін жаңадан жазылған (авторлық: Sagid Mustafa, All Rights Reserved). Дереккөздер ұғымдарды салыстыру үшін пайдаланылды, мәтін көшірілмеген. ID: <code>ao17-foundation.m12.l07</code></p></section>
+      <nav class="ac-pager"><a href="l06.html">← Сенімді енгізу</a><a href="../index.html#m12">Модуль картасы</a><a href="l08.html">Құжаттама →</a></nav>
+    </article>
+  </div>
+  <script type="application/json" id="ac-data">{"id": "ao17-foundation.m12.l07", "visual": {"lab": "pyrun", "code": "parents = {'A': [], 'B': ['A'], 'C': ['B'], 'D': ['B'], 'E': ['D'], 'M': ['C', 'E']}\nbranches = {'main': 'M', 'feature': 'E'}\n\ndef ancestors(c):\n    seen, stack = set(), [c]\n    while stack:\n        x = stack.pop()\n        if x not in seen:\n            seen.add(x)\n            stack.extend(parents[x])\n    return seen\n\nprint('M-нің тарихы:', sorted(ancestors('M')))\nprint('C мен E-нің ортақ ата-бабалары:', sorted(ancestors('C') & ancestors('E')))\nprint('feature main-ге енген бе:', branches['feature'] in ancestors(branches['main']))", "stdin": "", "caption": "A ← B ← C (main), B ← D ← E (feature), M - merge commit (C мен E). feature main-ге енген: E ∈ ancestors(M). C мен E-нің ортақ ата-бабалары A, B; merge base - B."}, "experiment": {"lab": "pyrun", "code": "parents = {'A': [], 'B': ['A'], 'C': ['B'], 'D': ['B'], 'E': ['D'], 'M': ['C', 'E']}\nbranches = {'main': 'M', 'feature': 'E'}\n\ndef ancestors(c):\n    seen, stack = set(), [c]\n    while stack:\n        x = stack.pop()\n        if x not in seen:\n            seen.add(x)\n            stack.extend(parents[x])\n    return seen\n\nprint('M-нің тарихы:', sorted(ancestors('M')))\nprint('C мен E-нің ортақ ата-бабалары:', sorted(ancestors('C') & ancestors('E')))\nprint('feature main-ге енген бе:', branches['feature'] in ancestors(branches['main']))\n\ndef can_fast_forward(target, source):\n    return target in ancestors(source)\n\nprint('B -> E fast-forward:', can_fast_forward('B', 'E'))\nprint('C -> E fast-forward:', can_fast_forward('C', 'E'))", "stdin": "", "task": "Теорема бойынша: B ∈ ancestors(E) - fast-forward мүмкін; C ∉ ancestors(E) - тарихтар айырылған, merge commit керек. Модельге жаңа commit қосып (F: ['E']), feature-ді F-ке жылжытыңыз да, қайта тексеріңіз."}, "exercises": [{"type": "pycode", "q": "ancestors(parents, c) - commit c-ның өзі мен барлық ата-бабаларының жиынын сұрыпталған тізім ретінде қайтарсын (parents: commit → ата-аналар тізімі).", "mode": "func", "func": "ancestors", "starter": "def ancestors(parents, c):\n    return sorted([c] + parents[c])\n", "tests": [{"args": [{"A": [], "B": ["A"], "C": ["B"], "D": ["B"], "E": ["D"], "M": ["C", "E"]}, "M"], "expect": ["A", "B", "C", "D", "E", "M"]}, {"args": [{"A": [], "B": ["A"], "C": ["B"]}, "A"], "expect": ["A"]}, {"args": [{"A": [], "B": ["A"], "C": ["A"], "D": ["B", "C"]}, "D"], "expect": ["A", "B", "C", "D"]}], "solution": "def ancestors(parents, c):\n    seen, stack = set(), [c]\n    while stack:\n        x = stack.pop()\n        if x not in seen:\n            seen.add(x)\n            stack.extend(parents[x])\n    return sorted(seen)", "hints": ["Граф аралау (m09 l09): DFS стекпен.", "Бастапқы код тек тікелей ата-аналарды алады."]}, {"type": "pycode", "q": "merge_base(parents, x, y) - x пен y-тің ортақ ата-бабаларының ішінен басқа ортақ ата-бабаның (өзінен басқа) ата-бабасы емес болғандарды (сұрыпталған тізім) қайтарсын.", "mode": "func", "func": "merge_base", "starter": "def merge_base(parents, x, y):\n    return sorted(set(parents[x]) & set(parents[y]))\n", "tests": [{"args": [{"A": [], "B": ["A"], "C": ["B"], "D": ["B"], "E": ["D"]}, "C", "E"], "expect": ["B"]}, {"args": [{"A": [], "B": ["A"], "C": ["B"]}, "B", "C"], "expect": ["B"]}, {"args": [{"A": [], "B": ["A"], "C": ["A"], "X": ["B", "C"], "Y": ["B", "C"]}, "X", "Y"], "expect": ["B", "C"]}], "solution": "def merge_base(parents, x, y):\n    def anc(c):\n        seen, stack = set(), [c]\n        while stack:\n            v = stack.pop()\n            if v not in seen:\n                seen.add(v)\n                stack.extend(parents[v])\n        return seen\n    common = anc(x) & anc(y)\n    best = [c for c in common if not any(c != o and c in anc(o) for o in common)]\n    return sorted(best)", "hints": ["Ортақ ата-бабалар: anc(x) & anc(y).", "c басқа ортақ o-ның ата-бабасы болса - ол «ескі», алып тастаймыз.", "Соңғы тестте екі merge base бар («criss-cross merge»)."]}, {"type": "mc", "q": "Git тармағы (branch) дегеніміз:", "options": ["Файлдардың толық көшірмесі", "Белгілі бір commit-ке көрсететін, жаңа commit-пен жылжитын атау", "Бөлек репозиторий", "Тек серверде болатын нәрсе"], "answer": 1, "why": ["Көшірме жасалмайды - сондықтан тармақ жасау лезде.", "Дұрыс.", "Бір репозиторий ішінде.", "Жергілікті тармақтар бар."], "hints": ["Көрсеткіш (m11)."]}, {"type": "order", "q": "Жаңа мүмкіндікті тармақта жасап, біріктіру қадамдарын ретке қойыңыз.", "steps": ["git switch -c feature (тармақ жасау).", "Өзгерістер жасап, git add және git commit.", "Тесттерді іске қосу.", "git switch main және git merge feature."], "hints": ["Тест біріктіруден бұрын."]}], "assessment": [{"type": "pycode", "q": "can_fast_forward(parents, branches, target, source) - target тармағын source тармағына fast-forward арқылы жылжытуға бола ма (теорема)?", "mode": "func", "func": "can_fast_forward", "starter": "def can_fast_forward(parents, branches, target, source):\n    return branches[target] in parents[branches[source]]\n", "tests": [{"args": [{"A": [], "B": ["A"], "C": ["B"], "D": ["C"]}, {"main": "A", "f": "D"}, "main", "f"], "expect": true}, {"args": [{"A": [], "B": ["A"], "C": ["A"]}, {"main": "B", "f": "C"}, "main", "f"], "expect": false}, {"args": [{"A": []}, {"main": "A", "f": "A"}, "main", "f"], "expect": true}], "solution": "def can_fast_forward(parents, branches, target, source):\n    t, stack, seen = branches[target], [branches[source]], set()\n    while stack:\n        c = stack.pop()\n        if c == t:\n            return True\n        if c not in seen:\n            seen.add(c)\n            stack.extend(parents[c])\n    return False", "hints": ["target commit-і source-тің ата-бабасы ма (өзін қоса)?", "Бастапқы код тек тікелей ата-ананы тексереді."]}, {"type": "mc", "q": "Неге бір commit-ті «тыныш» өзгерту мүмкін емес?", "options": ["Git рұқсат бермейді", "commit ID - мазмұн мен ата-аналардың хэші; өзгеріс барлық кейінгі ID-лерді өзгертеді", "Файлдар тек оқуға арналған", "Сервер тексереді"], "answer": 1, "why": ["Техникалық тұрғыдан жаңа commit жасауға болады - бірақ ол басқа ID.", "Дұрыс.", "Жоқ.", "Жергілікті де солай."], "hints": ["Хэш."]}], "reflection": ["Өз жобаңызды Git-ке қосыңыз. Қандай commit хабарламалары болашақ сізге пайдалы болады?"], "objectives": 3}</script>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>
