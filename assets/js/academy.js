@@ -9,6 +9,41 @@
   const DS = window.AODisc;
   const PS = window.AOPseudo;
   const BI = window.AOBits;
+  // ---------------- AO17 Judge: Pyodide + assets/py/ao_judge.py (build кезінде де дәл осы файл тексеріледі)
+  const SCRIPT_ROOT = (() => { const sc = document.querySelector('script[src*="assets/js/academy.js"]'); return sc ? sc.src.replace(/assets\/js\/academy\.js.*$/, "") : new URL(".", location.href).href; })();
+  let judgeP = null;
+  function judgeReady() {
+    if (!judgeP) {
+      judgeP = (async () => {
+        if (!window.CS50KZ || !window.CS50KZ.getPyodide) throw new Error("Python ортасы табылмады");
+        const py = await window.CS50KZ.getPyodide();
+        const res = await fetch(SCRIPT_ROOT + "assets/py/ao_judge.py");
+        if (!res.ok) throw new Error("ao_judge.py жүктелмеді");
+        py.runPython(await res.text());
+        return py;
+      })().catch((e) => { judgeP = null; throw e; });
+    }
+    return judgeP;
+  }
+  async function pyJudge(code, spec) { const py = await judgeReady(); return JSON.parse(py.globals.get("judge_json")(code, JSON.stringify(spec))); }
+  async function pyRun(code, stdin) { const py = await judgeReady(); return JSON.parse(py.globals.get("run_json")(code, stdin || "")); }
+  const PY_FAIL = "Python жүктелмеді (интернет қажет, бірінші рет ~10 секунд). Байланысты тексеріп, қайта басыңыз.";
+  function codeArea(value, rows) {
+    const ta = document.createElement("textarea");
+    ta.className = "ac-pyed"; ta.spellcheck = false; ta.setAttribute("autocapitalize", "off"); ta.rows = rows || Math.min(18, Math.max(4, String(value).split("\n").length + 1));
+    ta.value = value;
+    ta.addEventListener("keydown", (e) => {
+      if (e.key === "Tab" && !e.shiftKey) { e.preventDefault(); const a = ta.selectionStart; ta.setRangeText("    ", a, ta.selectionEnd, "end"); }
+      else if (e.key === "Enter") {
+        const a = ta.selectionStart, line = ta.value.slice(0, a).split("\n").pop();
+        let ind = (/^\s*/.exec(line) || [""])[0];
+        if (/:\s*$/.test(line)) ind += "    ";
+        if (ind) { e.preventDefault(); ta.setRangeText("\n" + ind, a, ta.selectionEnd, "end"); }
+      }
+    });
+    return ta;
+  }
+  const pyVal = (v) => (v === null ? "None" : v === true ? "True" : v === false ? "False" : typeof v === "string" ? JSON.stringify(v).replace(/^"|"$/g, "'") : Array.isArray(v) ? "[" + v.map(pyVal).join(", ") + "]" : String(v));
   function bitsKey(ex) {
     if (ex.type === "convert") return BI.convert(ex.value, ex.from, ex.to);
     if (ex.type === "bitop") return String(BI.bitExpr(ex.expr, ex.width));
@@ -272,6 +307,22 @@
       });
       $$("input", w).forEach((x) => x.addEventListener("input", draw));
       el.append(w, out); draw();
+    } else if (spec.lab === "pyrun") {
+      const ta = codeArea(spec.code);
+      const w = document.createElement("div");
+      w.className = "ac-pyrun";
+      w.innerHTML = `<label class="ac-codebox"><span>Енгізу (stdin), әр жолға бір мән</span><textarea class="ac-stdin" rows="2" spellcheck="false">${esc(spec.stdin || "")}</textarea></label><div class="ac-qa"><button type="button" class="btn gold" data-run>▶ Іске қосу</button><span class="ac-st" data-st></span></div>`;
+      const run = async () => {
+        $("[data-st]", w).textContent = "Орындалып жатыр...";
+        try {
+          const r = await pyRun(ta.value, $(".ac-stdin", w).value);
+          out.innerHTML = `<pre class="run-output${r.ok ? "" : " err"}">${esc(r.out || (r.ok ? "(шығыс жоқ)" : ""))}${r.ok ? "" : `\n${esc(r.error)}${r.line ? ` (${r.line}-жол)` : ""}: ${esc(r.detail || "")}`}</pre>${r.ok ? "" : `<p class="ac-fb bad">${esc(r.hint)}</p>`}`;
+          $("[data-st]", w).textContent = "";
+        } catch (e) { $("[data-st]", w).textContent = PY_FAIL; }
+      };
+      $("[data-run]", w).addEventListener("click", run);
+      out.innerHTML = '<p class="ac-note">«Іске қосу» басыңыз: нағыз Python (Pyodide) браузерде орындалады.</p>';
+      el.append(ta, w, out);
     } else if (spec.lab === "base") {
       const w = document.createElement("div");
       w.className = "ac-quant";
@@ -511,6 +562,16 @@
     box.innerHTML = `<p class="ac-qt">${esc(ex.q)}</p>${body}<div class="ac-qa"><button type="button" class="btn gold ac-check">Тексеру</button><button type="button" class="btn secondary ac-hint">Кеңес</button><button type="button" class="btn secondary ac-reveal" hidden>Жауабын көрсету</button><span class="ac-st"></span></div><div class="ac-hints"></div><p class="ac-fb" role="status" aria-live="polite"></p>`;
     let fi = null;
     if (ex.type === "formula") { fi = formulaInput("", "Сіздің өрнегіңіз", null); box.insertBefore(fi, $(".ac-qa", box)); }
+    let pyEd = null;
+    if (ex.type === "pycode") {
+      const saved = rec.ex[key] && rec.ex[key].code;
+      pyEd = codeArea(saved != null ? saved : ex.starter || "");
+      box.insertBefore(pyEd, $(".ac-qa", box));
+      const tl = document.createElement("p");
+      tl.className = "ac-note";
+      tl.textContent = `${ex.mode === "func" ? `Функция: ${ex.func}(...). ` : "Бағдарлама: енгізу/шығару. "}Тесттер: ${ex.tests.length} (ашық, браузерде тексеріледі).`;
+      box.insertBefore(tl, pyEd);
+    }
     if (ex.type === "closedform" || ex.type === "recurrence") { fi = exprInput("", "g(n) = (мысалы: n(n+1)/2, 2^n - 1)", null); box.insertBefore(fi, $(".ac-qa", box)); }
     $$(".ac-order li", box).forEach((li) => {
       $(".ac-up", li).addEventListener("click", () => { if (li.previousElementSibling) li.parentNode.insertBefore(li, li.previousElementSibling); $(".ac-up", li).focus(); });
@@ -562,6 +623,7 @@
             return { ok: false, msg: `n = ${b.N} болғанда сіздің формула ${AR.str(b.closed)}, ал керегі ${AR.str(ex.type === "closedform" ? b.sum : b.a)}.` };
           } catch (e) { return { ok: false, msg: e.message, soft: true }; }
         }
+        case "pycode": return { async: true };
         case "convert": case "encode": case "bitop": {
           const v = $(".ac-setin", box).value.trim(); if (!v) return null;
           const want = bitsKey(ex);
@@ -619,7 +681,28 @@
       }
       return null;
     }
+    async function checkPy() {
+      const s = rec.ex[key] = rec.ex[key] || {};
+      s.code = pyEd.value;
+      fb.textContent = "Python тексеріп жатыр..."; fb.className = "ac-fb";
+      let r;
+      try { r = await pyJudge(pyEd.value, { mode: ex.mode, func: ex.func, tests: ex.tests }); }
+      catch (e) { fb.textContent = PY_FAIL; fb.className = "ac-fb bad"; return; }
+      s.tries = (s.tries || 0) + 1;
+      if (r.ok && !s.ok) { s.ok = true; s.rev = false; s.t = Date.now(); }
+      const rows = r.results.map((t) => {
+        const inp = ex.mode === "func" ? `${ex.func}(${t.args.map(pyVal).join(", ")})` : `stdin: ${JSON.stringify(t.stdin || "")}`;
+        if (t.passed) return `<li class="y">✓ ${esc(inp)}</li>`;
+        if (t.error) return `<li class="n">✗ ${esc(inp)} → <b>${esc(t.error)}</b>${t.line ? ` (${t.line}-жол)` : ""}: ${esc(t.hint)}${t.detail ? `<br><small>${esc(t.detail)}</small>` : ""}</li>`;
+        return `<li class="n">✗ ${esc(inp)} → күтілгені <code>${esc(ex.mode === "func" ? pyVal(t.expect) : t.expect)}</code>, сіздікі <code>${esc(ex.mode === "func" ? pyVal(t.got) : t.got)}</code></li>`;
+      }).join("");
+      fb.innerHTML = `<b>${r.passed} / ${r.total} тест өтті</b>${r.ok ? " - дұрыс!" : ""}<ul class="ac-props">${rows}</ul>`;
+      fb.className = "ac-fb " + (r.ok ? "good" : "bad");
+      showState(s);
+      onResult();
+    }
     $(".ac-check", box).addEventListener("click", () => {
+      if (ex.type === "pycode") { checkPy(); return; }
       const r = evaluate();
       if (!r) { fb.textContent = "Алдымен жауап беріңіз."; fb.className = "ac-fb"; return; }
       const s = rec.ex[key] = rec.ex[key] || {};
@@ -642,6 +725,7 @@
       else if (ex.type === "closedform" || ex.type === "recurrence") ans = ex.solution + " (эквивалент жазылу да қабылданады)";
       else if (ex.type === "counterexample") ans = "n = " + AR.searchCounterexamples(ex, 1)[0];
       else if (ex.type === "convert" || ex.type === "encode" || ex.type === "bitop") ans = bitsKey(ex);
+      else if (ex.type === "pycode") { ans = "төмендегі эталон шешім (өзіңіз түсініп, қайта жазыңыз)"; const pre = document.createElement("pre"); pre.className = "ac-pseudo"; pre.textContent = ex.solution; fb.after(pre); }
       else if (ex.type === "trace") ans = traceKey(ex);
       else if (ex.type === "count") ans = String(PS.run(ex.code, ex.inputs || {}).counts[ex.line] || 0);
       else if (ex.type === "setexpr") ans = DS.fmt(DS.evalSet(ex.expr, ex.sets, ex.U));
