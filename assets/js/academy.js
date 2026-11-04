@@ -8,6 +8,17 @@
   const AR = window.AOArith;
   const DS = window.AODisc;
   const PS = window.AOPseudo;
+  const BI = window.AOBits;
+  function bitsKey(ex) {
+    if (ex.type === "convert") return BI.convert(ex.value, ex.from, ex.to);
+    if (ex.type === "bitop") return String(BI.bitExpr(ex.expr, ex.width));
+    if (ex.kind === "twos") return BI.twos(ex.input, ex.bits);
+    if (ex.kind === "utf8") return BI.utf8Hex(ex.input);
+    if (ex.kind === "parity") return BI.parity(ex.input);
+    if (ex.kind === "float32") return BI.float32(ex.input).bits;
+    if (ex.kind === "rle") return BI.rle(ex.input);
+    throw new Error("белгісіз түр");
+  }
   const fmtVal = (v) => (v === true ? "true" : v === false ? "false" : Array.isArray(v) ? "[" + v.map(fmtVal).join(", ") + "]" : String(v));
   function traceKey(ex) {
     const r = PS.run(ex.code, ex.inputs || {});
@@ -261,6 +272,67 @@
       });
       $$("input", w).forEach((x) => x.addEventListener("input", draw));
       el.append(w, out); draw();
+    } else if (spec.lab === "base") {
+      const w = document.createElement("div");
+      w.className = "ac-quant";
+      w.innerHTML = `<label><span>Сан</span><input type="text" data-v value="${esc(spec.value)}" autocapitalize="characters"></label><label><span>Негізі</span><select data-b>${[2, 8, 10, 16].map((b) => `<option value="${b}"${b === spec.from ? " selected" : ""}>${b}</option>`).join("")}</select></label>`;
+      const draw = () => guard(() => {
+        const b = +$("[data-b]", w).value, raw = $("[data-v]", w).value.trim();
+        const v = BI.fromBase(raw, b);
+        const rows = [[2, "екілік"], [8, "сегіздік"], [10, "ондық"], [16, "он алтылық"]].map(([bb, n]) => `<tr><th>${n} (${bb})</th><td><code>${esc(BI.toBase(v, bb))}</code></td></tr>`).join("");
+        let tw = "";
+        [8, 16, 32].forEach((bits) => { try { tw += `<tr><th>қосымша код, ${bits} бит</th><td><code>${BI.twos(v, bits).replace(/(.{4})(?=.)/g, "$1 ")}</code></td></tr>`; } catch (e) {} });
+        out.innerHTML = `<div class="ac-tt-wrap"><table class="ac-tt ac-left"><tbody>${rows}${tw}</tbody></table></div>${v >= 0n ? `<p class="ac-note">Жайылу: ${esc(raw.toUpperCase())}<sub>${b}</sub> = ${esc(BI.expansion(raw.replace(/^-/, ""), b))} = ${esc(String(v))}</p>` : ""}<p class="ac-note">Биттер саны: ${v >= 0n ? BI.toBase(v, 2).length : "-"}</p>`;
+      });
+      $$("input, select", w).forEach((x) => x.addEventListener("input", draw));
+      el.append(w, out); draw();
+    } else if (spec.lab === "bitpanel") {
+      const w = document.createElement("div");
+      w.className = "ac-quant";
+      w.innerHTML = `<label><span>a</span><input type="text" data-a value="${esc(spec.a)}"></label><label><span>Амал</span><select data-op>${["&", "|", "^", "+", "-", "<<", ">>"].map((o) => `<option${o === spec.op ? " selected" : ""}>${o}</option>`).join("")}</select></label><label><span>b</span><input type="text" data-bb value="${esc(spec.b)}"></label><label><span>Ені (бит)</span><select data-w>${[4, 8, 16].map((x) => `<option${x === spec.width ? " selected" : ""}>${x}</option>`).join("")}</select></label>`;
+      const draw = () => guard(() => {
+        const W = +$("[data-w]", w).value, op = $("[data-op]", w).value;
+        const a = BI.bitExpr($("[data-a]", w).value, W), b = BI.bitExpr($("[data-bb]", w).value, W), r = BI.bitExpr(`${a} ${op} ${b}`, W);
+        const bin = (x) => BI.toBase(x, 2).padStart(W, "0");
+        const cells = (x) => [...bin(x)].map((c) => `<span class="bt b${c}">${c}</span>`).join("");
+        const ones = (x) => [...bin(x)].filter((c) => c === "1").length;
+        const signed = (x) => String(BI.fromTwos(bin(x)));
+        const raw = op === "+" ? a + b : op === "-" ? a - b : null;
+        out.innerHTML = `<div class="ac-bits"><div><span>a</span>${cells(a)}<em>${a} · таңбалы ${signed(a)}</em></div><div><span>${esc(op)}</span>${op === "<<" || op === ">>" ? `<em>${b} орын</em>` : cells(b) + `<em>${b}</em>`}</div><div class="res"><span>=</span>${cells(r)}<em>${r} · таңбалы ${signed(r)} · 0x${BI.toBase(r, 16)}</em></div></div>
+          <p class="ac-note">Бірліктер саны: a - ${ones(a)}, нәтиже - ${ones(r)} (жұптылық: ${ones(r) % 2 ? "тақ" : "жұп"}).${raw !== null && (raw < 0n || raw >= 1n << BigInt(W)) ? ` <b>Таңбасыз асып кету:</b> нақты нәтиже ${raw}, ${W} битке сыймады.` : ""}</p>`;
+      });
+      $$("input, select", w).forEach((x) => x.addEventListener("input", draw));
+      el.append(w, out); draw();
+    } else if (spec.lab === "utf8" || spec.lab === "rle") {
+      const w = document.createElement("div");
+      w.className = "ac-quant";
+      w.innerHTML = `<label><span>Мәтін</span><input type="text" data-t value="${esc(spec.text)}"></label>`;
+      const draw = () => guard(() => {
+        const t = $("[data-t]", w).value;
+        if (spec.lab === "rle") {
+          const c = BI.rle(t), n = [...t].length;
+          out.innerHTML = `<p class="ac-formula">${esc(c) || "∅"}</p><p>Бастапқы: ${n} символ · RLE: ${[...c].length} символ · коэффициент ${n ? ([...c].length / n).toFixed(2) : "-"} ${[...c].length > n ? "(ұзарды!)" : ""}</p>`;
+        } else {
+          const u = BI.utf8(t);
+          out.innerHTML = `<div class="ac-tt-wrap"><table class="ac-tt"><thead><tr><th>символ</th><th>код нүктесі</th><th>байттар (hex)</th><th>байттар (екілік)</th></tr></thead><tbody>${u.map((x) => `<tr><td>${esc(x.ch === " " ? "␠" : x.ch)}</td><td><code>${x.hex}</code></td><td><code>${x.bytesHex}</code></td><td><code>${x.bytes.map((b) => b.toString(2).padStart(8, "0")).join(" ")}</code></td></tr>`).join("")}</tbody></table></div><p>Символ: ${u.length} · байт: ${u.reduce((s, x) => s + x.bytes.length, 0)}</p>`;
+        }
+      });
+      $("input", w).addEventListener("input", draw);
+      el.append(w, out); draw();
+    } else if (spec.lab === "float") {
+      const w = document.createElement("div");
+      w.className = "ac-quant";
+      w.innerHTML = `<label><span>Ондық сан</span><input type="text" data-f value="${esc(spec.value)}" inputmode="decimal"></label>`;
+      const draw = () => guard(() => {
+        const x = Number($("[data-f]", w).value.replace(",", "."));
+        if (Number.isNaN(x) && $("[data-f]", w).value.trim().toLowerCase() !== "nan") throw new Error("Сан енгізіңіз (мысалы 0.1, -2.5, 1e10)");
+        const f = BI.float32(x);
+        out.innerHTML = `<div class="ac-bits ac-float"><div><span>s</span>${[...f.sign].map((c) => `<span class="bt b${c} ac-fs">${c}</span>`).join("")}<em>таңба (1 бит)</em></div><div><span>e</span>${[...f.exponent].map((c) => `<span class="bt b${c} ac-fe">${c}</span>`).join("")}<em>дәреже (8 бит)</em></div><div class="wrap"><span>m</span>${[...f.mantissa].map((c) => `<span class="bt b${c} ac-fm">${c}</span>`).join("")}</div><p class="ac-note">мантисса (23 бит)</p></div>
+          <p>Таңба: ${f.sign === "1" ? "теріс" : "оң"} · дәреже өрісі ${f.e} → 2^${f.unbiased} · түрі: ${esc(f.kind)}</p>
+          <p>Сақталған мән: <code>${esc(String(f.stored))}</code> ${f.stored === x ? "(дәл)" : "<b>(дәл емес - жуықтау)</b>"}</p>`;
+      });
+      $("input", w).addEventListener("input", draw);
+      el.append(w, out); draw();
     } else if (spec.lab === "venn") {
       const names = Object.keys(spec.sets);
       const fe = exprInput(spec.expr, "Жиын өрнегі (∪ ∩ \\ △ ')", () => draw());
@@ -424,6 +496,9 @@
     else if (ex.type === "argument") body = `<p class="ac-formula">${esc(ex.premises.join(",  "))}  ⊨  ${esc(ex.conclusion)}</p><div class="ac-opts" role="radiogroup"><label><input type="radio" name="${esc(key)}" value="1"> Дұрыс аргумент</label><label><input type="radio" name="${esc(key)}" value="0"> Дұрыс емес</label></div>`;
     else if (ex.type === "number") body = `<label class="ac-num"><span>Жауап</span><input type="number" inputmode="numeric" step="1"></label>`;
     else if (ex.type === "trace" || ex.type === "count") body = `<pre class="ac-pseudo"><code>${ex.code.split("\n").map((l, i) => `<span class="ln">${i + 1}</span>${esc(l)}`).join("\n")}</code></pre>${Object.keys(ex.inputs || {}).length ? `<p class="ac-note">Кіріс: ${esc(Object.entries(ex.inputs).map(([k, v]) => k + " = " + fmtVal(v)).join(", "))}</p>` : ""}<label class="ac-num"><span>${ex.type === "count" ? ex.line + "-жол неше рет орындалады" : ex.ask === "result" ? "Нәтиже (return)" : ex.ask === "output" ? "Шығыс (print)" : ex.ask + " мәні"}</span><input type="text" class="ac-setin" autocomplete="off"></label>`;
+    else if (ex.type === "convert") body = `<p class="ac-formula">${esc(ex.value)}<sub>${ex.from}</sub> → ?<sub>${ex.to}</sub></p><label class="ac-num"><span>${ex.to}-лік жүйедегі жазылуы</span><input type="text" class="ac-setin" autocomplete="off" autocapitalize="characters"></label>`;
+    else if (ex.type === "bitop") body = `<p class="ac-formula">${esc(ex.expr)} <small>(${ex.width} бит)</small></p><label class="ac-num"><span>Нәтиже (ондық, 0b... не 0x...)</span><input type="text" class="ac-setin" autocomplete="off"></label>`;
+    else if (ex.type === "encode") body = `<label class="ac-num"><span>${ex.kind === "twos" ? ex.bits + " бит (0 және 1)" : ex.kind === "utf8" ? "Байттар (он алтылық, бос орынмен)" : ex.kind === "parity" ? "Жұптық бит (0 не 1)" : ex.kind === "float32" ? "32 бит (бос орындарға рұқсат)" : "RLE коды"}</span><input type="text" class="ac-setin" autocomplete="off" autocapitalize="characters"></label>`;
     else if (ex.type === "setexpr") body = `<p class="ac-formula">${esc(ex.expr)}</p><label class="ac-num"><span>Жиын (мысалы: {1, 3, 5} не ∅)</span><input type="text" class="ac-setin" autocomplete="off"></label>`;
     else if (ex.type === "setid") body = `<p class="ac-formula">${esc(ex.target)}</p>${ex.forbid ? `<p class="ac-note">Тыйым салынған: ${esc(ex.forbid.join(" "))}</p>` : ""}<label class="ac-num"><span>Тепе-тең өрнек (A, B, C, ∪ ∩ \\ △ ')</span><input type="text" class="ac-setin" autocomplete="off"></label>`;
     else if (ex.type === "props") body = `<p class="ac-formula">S = {${esc(ex.S.join(", "))}}, R = {${esc(ex.R || "")}}</p><div class="ac-opts">${Object.entries(PROPN).map(([k, v]) => `<label><input type="checkbox" value="${k}"> ${esc(v)}</label>`).join("")}</div>`;
@@ -486,6 +561,17 @@
             const b = r.first;
             return { ok: false, msg: `n = ${b.N} болғанда сіздің формула ${AR.str(b.closed)}, ал керегі ${AR.str(ex.type === "closedform" ? b.sum : b.a)}.` };
           } catch (e) { return { ok: false, msg: e.message, soft: true }; }
+        }
+        case "convert": case "encode": case "bitop": {
+          const v = $(".ac-setin", box).value.trim(); if (!v) return null;
+          const want = bitsKey(ex);
+          let ok;
+          if (ex.type === "bitop") { try { ok = BI.bitExpr(v, 64) === BigInt(want); } catch (e) { return { ok: false, msg: "Санды ондық, 0b... не 0x... түрінде жазыңыз", soft: true }; } }
+          else if (ex.type === "encode" && ex.kind === "rle") ok = v === want;
+          else ok = v.replace(/\s+/g, "").toUpperCase().replace(/^0+(?=.)/, ex.type === "convert" ? "" : "$&") === want.replace(/\s+/g, "").toUpperCase();
+          if (ok) return { ok: true, msg: "Дұрыс: " + want };
+          const hint = ex.type === "encode" && (ex.kind === "twos" || ex.kind === "float32") && v.replace(/\s+/g, "").length !== (ex.kind === "twos" ? ex.bits : 32) ? ` Ұзындығы ${ex.kind === "twos" ? ex.bits : 32} бит болуы керек.` : "";
+          return { ok: false, msg: "Қате." + hint + " Зертханада тексеріп көріңіз." };
         }
         case "trace": case "count": {
           const v = $(".ac-setin", box).value.trim(); if (!v) return null;
@@ -555,6 +641,7 @@
       else if (ex.type === "formula") ans = ex.solution + " (басқа эквивалент жауап та қабылданады)";
       else if (ex.type === "closedform" || ex.type === "recurrence") ans = ex.solution + " (эквивалент жазылу да қабылданады)";
       else if (ex.type === "counterexample") ans = "n = " + AR.searchCounterexamples(ex, 1)[0];
+      else if (ex.type === "convert" || ex.type === "encode" || ex.type === "bitop") ans = bitsKey(ex);
       else if (ex.type === "trace") ans = traceKey(ex);
       else if (ex.type === "count") ans = String(PS.run(ex.code, ex.inputs || {}).counts[ex.line] || 0);
       else if (ex.type === "setexpr") ans = DS.fmt(DS.evalSet(ex.expr, ex.sets, ex.U));
@@ -635,7 +722,9 @@
       relation: { lab: "relation", S: [1, 2, 3, 4], R: "(1,1), (2,2), (3,3), (4,4), (1,2), (2,1)" }, graph: { lab: "graph", V: [1, 2, 3, 4, 5, 6], E: "1-2, 1-3, 2-4, 2-5, 3-6" },
       func: { lab: "func", X: [1, 2, 3], Y: ["a", "b", "c"], pairs: "(1,a), (2,c), (3,b)" },
       trace: { lab: "trace", code: "a ← 84\nb ← 36\nwhile b ≠ 0 do\n  t ← b\n  b ← a mod b\n  a ← t\nend\nreturn a", inputs: {} },
-      growth: { lab: "growth", fns: ["log2(n)", "n", "n*log2(n)", "n^2", "2^n"], max: 30 } };
+      growth: { lab: "growth", fns: ["log2(n)", "n", "n*log2(n)", "n^2", "2^n"], max: 30 },
+      base: { lab: "base", value: "2026", from: 10 }, bitpanel: { lab: "bitpanel", a: "0b11001010", b: "0b10100110", op: "^", width: 8 },
+      utf8: { lab: "utf8", text: "Қазақ тілі 😀" }, float: { lab: "float", value: "0.1" } };
     const show = (k) => {
       $$("[data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === k)));
       el.className = "ac-lab ac-lab-big";

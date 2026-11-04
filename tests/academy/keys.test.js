@@ -42,6 +42,8 @@ for (const it of items) {
     case "trace": { const PS = require("../../assets/js/academy-pseudo.js"); const r = PS.run(ex.code, ex.inputs || {}); const f = (v) => (v === true ? "true" : v === false ? "false" : Array.isArray(v) ? "[" + v.map(f).join(", ") + "]" : String(v));
       const k = ex.ask === "result" ? f(r.result) : ex.ask === "output" ? r.output.join("\n") : f(r.env[ex.ask]); ok(k === it.key, where + " trace JS=Python: " + k + " / " + it.key); break; }
     case "count": { const PS = require("../../assets/js/academy-pseudo.js"); ok((PS.run(ex.code, ex.inputs || {}).counts[ex.line] || 0) === it.key, where + " count JS=Python"); break; }
+    case "convert": case "encode": case "bitop": { const BI = require("../../assets/js/academy-bits.js"); const k = ex.type === "convert" ? BI.convert(ex.value, ex.from, ex.to) : ex.type === "bitop" ? String(BI.bitExpr(ex.expr, ex.width)) : ex.kind === "twos" ? BI.twos(ex.input, ex.bits) : ex.kind === "utf8" ? BI.utf8Hex(ex.input) : ex.kind === "parity" ? BI.parity(ex.input) : ex.kind === "float32" ? BI.float32(ex.input).bits : BI.rle(ex.input);
+      ok(k === it.key, where + " bits JS=" + k + " Python=" + it.key); break; }
     default: pass++;
   }
 }
