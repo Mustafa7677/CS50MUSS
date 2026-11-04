@@ -63,8 +63,36 @@ def _describe(exc):
     return {"error": name, "line": line, "detail": str(exc)[:300], "hint": MESSAGES.get(name, "Орындау кезінде қате шықты.")}
 
 
-def _run(code, stdin_lines, call=None):
+def _with_files(files):
+    """Тест алдында уақытша бумаға файлдар жазып, сонда өту; (ескі_бума, жаңа_бума) қайтарады."""
+    import os
+    import tempfile
+    old = os.getcwd()
+    d = tempfile.mkdtemp(prefix="ao17_")
+    for name, text in (files or {}).items():
+        with open(os.path.join(d, name), "w", encoding="utf-8") as f:
+            f.write(text)
+    os.chdir(d)
+    return old, d
+
+
+def _restore_dir(old, d):
+    import os
+    import shutil
+    os.chdir(old)
+    shutil.rmtree(d, ignore_errors=True)
+
+
+def _run(code, stdin_lines, call=None, files=None):
     """Кодты оқшау аттар кеңістігінде орындау; stdout ұсталады."""
+    old_dir, tmp_dir = _with_files(files)
+    try:
+        return _run_inner(code, stdin_lines, call)
+    finally:
+        _restore_dir(old_dir, tmp_dir)
+
+
+def _run_inner(code, stdin_lines, call=None):
     out = io.StringIO()
     lines = list(stdin_lines)
 
@@ -108,7 +136,11 @@ def _same(a, b):
             return abs(float(a) - float(b)) <= 1e-9 * max(1.0, abs(float(b)))
         except (TypeError, ValueError):
             return False
-    return a == b and type(a) is type(b) or (isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)) and list(a) == list(b))
+    if isinstance(a, (list, tuple)) and isinstance(b, (list, tuple)):  # JSON-да кортеж жоқ: (2, 1) == [2, 1]
+        return len(a) == len(b) and all(_same(x, y) for x, y in zip(a, b))
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_same(a[k], b[k]) for k in a)
+    return a == b and type(a) is type(b)
 
 
 def judge(code, spec):
@@ -125,14 +157,14 @@ def judge(code, spec):
                 if fname not in ns or not callable(ns[fname]):
                     raise NameError(f"«{fname}» функциясы анықталмаған")
                 return ns[fname](*t["args"])
-            r = _run(code, [], call)
+            r = _run(code, [], call, spec.get("files"))
             if r["ok"]:
                 passed = _same(r["result"], t["expect"])
                 results.append({"i": i, "passed": passed, "args": t["args"], "expect": t["expect"], "got": r["result"] if _jsonable(r["result"]) else repr(r["result"])})
             else:
                 results.append({"i": i, "passed": False, "args": t["args"], **{k: r[k] for k in ("error", "line", "detail", "hint")}})
         else:
-            r = _run(code + ("\n" + spec["suffix"] if spec.get("suffix") else ""), t.get("stdin", "").split("\n"))
+            r = _run(code + ("\n" + spec["suffix"] if spec.get("suffix") else ""), t.get("stdin", "").split("\n"), None, spec.get("files"))
             got = r["out"].rstrip("\n")
             if r["ok"]:
                 results.append({"i": i, "passed": got == t["stdout"].rstrip("\n"), "stdin": t.get("stdin", ""), "expect": t["stdout"], "got": got})
@@ -200,3 +232,59 @@ def trace_calls(code, call_src, limit=400):
         d = _describe(e)
         d.update({"ok": False, "nodes": nodes})
         return json.dumps(d, ensure_ascii=False)
+
+
+def _run_tests(impl, tests_code, files=None):
+    """impl (іске асыру) + оқушы тесттері бір кеңістікте; әр test_* функциясының нәтижесі."""
+    def call(ns):
+        names = sorted(n for n, v in ns.items() if n.startswith("test_") and callable(v))
+        res = []
+        for n in names:
+            try:
+                sys.settrace(_tracer())
+                ns[n]()
+                sys.settrace(None)
+                res.append({"name": n, "ok": True})
+            except StepLimit:
+                sys.settrace(None)
+                res.append({"name": n, "ok": False, "error": "StepLimit"})
+            except AssertionError as e:
+                sys.settrace(None)
+                res.append({"name": n, "ok": False, "error": "AssertionError", "detail": str(e)[:200]})
+            except Exception as e:  # noqa: BLE001
+                sys.settrace(None)
+                res.append({"name": n, "ok": False, "error": type(e).__name__, "detail": str(e)[:200]})
+        return res
+    r = _run(impl + "\n\n" + tests_code, [], call, files)
+    if r.get("line"):  # жол нөмірі оқушы тест кодына қатысты болсын
+        r["line"] = r["line"] - impl.count("\n") - 2 if r["line"] > impl.count("\n") + 2 else None
+    return r
+
+
+def judge_tests(tests_code, spec):
+    """Оқушы ТЕСТ жазады. spec: {"impl": дұрыс код, "mutants": [{"name", "code"}], "min_tests": n}.
+    Талап: (1) кемінде min_tests тест; (2) дұрыс кодта бәрі өтеді; (3) әр мутантта кемінде бір тест құлайды."""
+    if isinstance(spec, str):
+        spec = json.loads(spec)
+    base = _run_tests(spec["impl"], tests_code, spec.get("files"))
+    if not base["ok"]:
+        return {"ok": False, "stage": "load", **{k: base.get(k) for k in ("error", "line", "detail", "hint")}}
+    tests = base["result"]
+    report = {"count": len(tests), "on_correct": tests, "mutants": []}
+    if len(tests) < spec.get("min_tests", 1):
+        report.update({"ok": False, "stage": "count"})
+        return report
+    if not all(t["ok"] for t in tests):
+        report.update({"ok": False, "stage": "correct"})
+        return report
+    for m in spec["mutants"]:
+        r = _run_tests(m["code"], tests_code, spec.get("files"))
+        killed = (not r["ok"]) or any(not t["ok"] for t in r["result"])
+        report["mutants"].append({"name": m["name"], "killed": killed})
+    report["ok"] = all(m["killed"] for m in report["mutants"])
+    report["stage"] = "mutants"
+    return report
+
+
+def judge_tests_json(tests_code, spec_json):
+    return json.dumps(judge_tests(tests_code, spec_json), ensure_ascii=False)

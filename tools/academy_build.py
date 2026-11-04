@@ -28,7 +28,7 @@ import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
 
 OUT = ROOT / "academy"
-CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b"]
+CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b"]
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
@@ -38,7 +38,7 @@ REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "reflection": (list, 1), "further": (dict, None), "references": (list, 1), "license": (str, 2), "authorship": (str, 2),
     "reviewStatus": (str, 2), "version": (str, 5),
 }
-EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence", "setexpr", "setid", "props", "func", "trace", "count", "convert", "encode", "bitop", "pycode"}
+EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence", "setexpr", "setid", "props", "func", "trace", "count", "convert", "encode", "bitop", "pycode", "pytests"}
 LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur", "venn", "relation", "graph", "func", "trace", "growth", "base", "bitpanel", "utf8", "float", "rle", "pyrun", "calltree"}
 GROWTH = {"1", "log2(n)", "sqrt(n)", "n", "n*log2(n)", "n^2", "n^3", "2^n", "100*n", "n!"}
 ARITH_PROPS = set(AR.PROPS)
@@ -155,7 +155,7 @@ def check_exercise(ex, where, errs):
         elif t in ("convert", "encode", "bitop"):
             bits_key(ex)
         elif t == "pycode":
-            spec = {k: ex[k] for k in ("mode", "func", "tests", "suffix") if k in ex}
+            spec = {k: ex[k] for k in ("mode", "func", "tests", "suffix", "files") if k in ex}
             if len(ex["tests"]) < (1 if ex["mode"] == "io" else 2) and ex["mode"] == "func":
                 errs.append(f"{where}: pycode - func үшін кемінде 2 тест")
             big = [v for v in json.loads(json.dumps(ex["tests"]), parse_int=int) for v in [v] if any(isinstance(x, int) and abs(x) > 2 ** 53 for x in _ints(v))]
@@ -167,6 +167,15 @@ def check_exercise(ex, where, errs):
                 errs.append(f"{where}: pycode - эталон шешім тесттен өтпеді: {bad}")
             if JG.judge(ex.get("starter", ""), spec)["ok"]:
                 errs.append(f"{where}: pycode - бастапқы код (starter) тесттерден өтіп кетеді (мағынасыз)")
+        elif t == "pytests":
+            if len(ex["mutants"]) < 2:
+                errs.append(f"{where}: pytests - кемінде 2 мутант керек")
+            spec = {"impl": ex["impl"], "mutants": ex["mutants"], "min_tests": ex.get("min_tests", 1), "files": ex.get("files")}
+            r = JG.judge_tests(ex["solution"], spec)
+            if not r["ok"]:
+                errs.append(f"{where}: pytests - эталон тесттер талапты орындамады: {r}")
+            if JG.judge_tests(ex.get("starter", ""), spec)["ok"]:
+                errs.append(f"{where}: pytests - бастапқы тесттер (starter) талаптан өтіп кетеді (мағынасыз)")
         elif t == "count":
             r = PS.run(ex["code"], ex.get("inputs", {}))
             if ex["line"] not in r["counts"]:
@@ -281,7 +290,9 @@ def trace_key(ex):
 
 
 def run_example(code, timeout=10):
-    r = subprocess.run([sys.executable, "-I", "-c", code], capture_output=True, text=True, timeout=timeout)
+    import tempfile
+    with tempfile.TemporaryDirectory(prefix="ao17_ex_") as d:  # файл жазатын мысалдар репозиторийді ластамасын
+        r = subprocess.run([sys.executable, "-I", "-c", code], capture_output=True, text=True, timeout=timeout, cwd=d)
     return r.returncode, r.stdout.rstrip("\n"), r.stderr
 
 
@@ -631,7 +642,7 @@ def dump_keys():
                     k = trace_key(ex)
                 elif t in ("convert", "encode", "bitop"):
                     k = bits_key(ex)
-                elif t == "pycode":
+                elif t in ("pycode", "pytests"):
                     k = ex["solution"]
                 elif t == "count":
                     k = PS.run(ex["code"], ex.get("inputs", {}))["counts"].get(ex["line"], 0)
