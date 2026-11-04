@@ -19,9 +19,10 @@ sys.path.insert(0, str(ROOT / "tools" / "academy"))
 sys.path.insert(0, str(ROOT / "tools" / "academy" / "content"))
 import curriculum as C  # noqa: E402
 import plogic as P  # noqa: E402
+import parith as AR  # noqa: E402
 
 OUT = ROOT / "academy"
-CONTENT_MODULES = ["m01_a", "m01_b"]
+CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b"]
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
@@ -31,8 +32,9 @@ REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "reflection": (list, 1), "further": (dict, None), "references": (list, 1), "license": (str, 2), "authorship": (str, 2),
     "reviewStatus": (str, 2), "version": (str, 5),
 }
-EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number"}
-LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant"}
+EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence"}
+LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur"}
+ARITH_PROPS = set(AR.PROPS)
 QUANT_PREDS = {"even", "odd", "prime", "positive", "gt3", "square"}
 REVIEW = {"draft", "author-checked", "peer-reviewed"}
 
@@ -57,6 +59,15 @@ def check_lab(spec, where, errs):
             P.parse(spec["a"]), P.parse(spec["b"])
         elif lab == "argument":
             [P.parse(x) for x in spec["premises"]], P.parse(spec["conclusion"])
+        elif lab == "search":
+            if spec.get("prop") not in ARITH_PROPS or (spec.get("where") and spec["where"] not in ARITH_PROPS):
+                errs.append(f"{where}: search - белгісіз қасиет")
+            lo, hi = spec["domain"]
+            [AR.val(spec["expr"], n) for n in range(lo, hi + 1) if not spec.get("where") or AR.PROPS[spec["where"]](AR.F(n))]
+        elif lab == "induction":
+            AR.parse(spec["term"]), AR.parse(spec["closed"])
+        elif lab == "recur":
+            AR.parse(spec["rule"]), AR.parse(spec["closed"])
         elif lab == "quant":
             if spec.get("pred") not in QUANT_PREDS or not all(isinstance(x, int) for x in spec.get("domain", [])):
                 errs.append(f"{where}: quant зертханасы қате")
@@ -90,6 +101,25 @@ def check_exercise(ex, where, errs):
         elif t == "number":
             if not isinstance(ex["answer"], int):
                 errs.append(f"{where}: number - жауап бүтін сан болуы керек")
+        elif t == "order":
+            st = ex["steps"]
+            if len(st) < 3 or len(set(st)) != len(st):
+                errs.append(f"{where}: order - кемінде 3, қайталанбайтын қадам керек")
+        elif t == "counterexample":
+            if ex["prop"] not in ARITH_PROPS or (ex.get("where") and ex["where"] not in ARITH_PROPS):
+                errs.append(f"{where}: counterexample - белгісіз қасиет")
+            elif not AR.counterexamples(ex):
+                errs.append(f"{where}: counterexample - облыста қарсы мысал ЖОҚ (тапсырма шешілмейді)")
+        elif t == "closedform":
+            ok, bad = AR.closed_ok(ex["term"], ex["solution"], ex["start"])
+            if not ok:
+                errs.append(f"{where}: closedform - эталон шешім N={bad}-де сәйкес емес")
+            elif AR.closed_ok(ex["term"], ex["term"], ex["start"])[0]:
+                errs.append(f"{where}: closedform - мүшенің өзі жауап бола алады (мағынасыз)")
+        elif t == "recurrence":
+            ok, bad = AR.recurrence_ok(ex, ex["solution"])
+            if not ok:
+                errs.append(f"{where}: recurrence - эталон шешім N={bad}-де сәйкес емес")
         elif t == "formula":
             P.parse(ex["target"])
             sol = ex.get("solution")
@@ -217,6 +247,7 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad"):
   <link rel="stylesheet" href="{pre}assets/css/academy.css">
   <script src="{pre}assets/js/main.js"></script>
   <script src="{pre}assets/js/academy-logic.js" defer></script>
+  <script src="{pre}assets/js/academy-arith.js" defer></script>
   <script src="{pre}assets/js/academy.js" defer></script>{sc}
 </head>
 <body class="{body_cls}">
@@ -337,11 +368,11 @@ def index_html(lessons, st):
 def lab_html():
     body = """  <main class="content ac-labpage" id="main">
     <p class="ac-crumb"><a href="index.html">CS Universe</a> / Логика зертханасы</p>
-    <h1>Логика зертханасы</h1>
-    <p>Формуланы енгізіңіз: кесте, ағаш, түрі, ДҚФ/КҚФ бірден шығады. Екі формуланы салыстыруға, аргументті тексеруге болады. Есептеу толық ақиқат кестесімен жүреді (ең көбі 12 айнымалы) - бұл нақты есептеу, болжам емес.</p>
-    <div class="ac-tabs" role="tablist"><button type="button" role="tab" data-tab="truthtable" aria-selected="true">Кесте</button><button type="button" role="tab" data-tab="equiv" aria-selected="false">Эквиваленттік</button><button type="button" role="tab" data-tab="argument" aria-selected="false">Аргумент</button><button type="button" role="tab" data-tab="normal" aria-selected="false">ДҚФ/КҚФ</button><button type="button" role="tab" data-tab="tree" aria-selected="false">Ағаш</button><button type="button" role="tab" data-tab="quant" aria-selected="false">Кванторлар</button></div>
+    <h1>Логика және дәлелдеу зертханасы</h1>
+    <p>Формуланы енгізіңіз: кесте, ағаш, түрі, ДҚФ/КҚФ бірден шығады. Екі формуланы салыстыруға, аргументті тексеруге болады. Есептеу толық ақиқат кестесімен жүреді (ең көбі 12 айнымалы) - бұл нақты есептеу, болжам емес. «Қарсы мысал», «Индукция», «Рекуррент» қойындылары n айнымалысы бар өрнектерді дәл бөлшектермен есептейді: бұл сандық тексеріс, дәлелдеу емес.</p>
+    <div class="ac-tabs" role="tablist"><button type="button" role="tab" data-tab="truthtable" aria-selected="true">Кесте</button><button type="button" role="tab" data-tab="equiv" aria-selected="false">Эквиваленттік</button><button type="button" role="tab" data-tab="argument" aria-selected="false">Аргумент</button><button type="button" role="tab" data-tab="normal" aria-selected="false">ДҚФ/КҚФ</button><button type="button" role="tab" data-tab="tree" aria-selected="false">Ағаш</button><button type="button" role="tab" data-tab="quant" aria-selected="false">Кванторлар</button><button type="button" role="tab" data-tab="search" aria-selected="false">Қарсы мысал</button><button type="button" role="tab" data-tab="induction" aria-selected="false">Индукция</button><button type="button" role="tab" data-tab="recur" aria-selected="false">Рекуррент</button></div>
     <div class="ac-lab ac-lab-big" data-lab="page"></div>
-    <section class="ac-sec"><h2>Синтаксис</h2><p>¬ (not, !, ~), ∧ (and, &amp;), ∨ (or, |), → (->), ↔ (&lt;->), ⊕ (xor, ^), тұрақтылар 0 және 1. Басымдық: ¬ &gt; ∧ &gt; ⊕ &gt; ∨ &gt; → &gt; ↔; → оңнан топтасады.</p></section>
+    <section class="ac-sec"><h2>Синтаксис</h2><p>Арифметика: сандар, n, + − * / % ^ және жақша; 2n және n(n+1) жасырын көбейту ретінде оқылады. Логика: ¬ (not, !, ~), ∧ (and, &amp;), ∨ (or, |), → (->), ↔ (&lt;->), ⊕ (xor, ^), тұрақтылар 0 және 1. Басымдық: ¬ &gt; ∧ &gt; ⊕ &gt; ∨ &gt; → &gt; ↔; → оңнан топтасады.</p></section>
   </main>"""
     return "academy/lab.html", page("academy/lab.html", "Логика зертханасы", "AO17 логика зертханасы: ақиқат кестесі, эквиваленттік, аргумент, ДҚФ/КҚФ, кванторлар.", body)
 
@@ -443,6 +474,10 @@ def dump_keys():
                 elif t == "argument":
                     k = P.valid(ex["premises"], ex["conclusion"])
                 elif t == "formula":
+                    k = ex["solution"]
+                elif t == "counterexample":
+                    k = AR.counterexamples(ex)
+                elif t in ("closedform", "recurrence"):
                     k = ex["solution"]
                 out.append({"lesson": L["id"], "set": set_, "i": i, "ex": ex, "key": k})
     print(json.dumps(out, ensure_ascii=False))

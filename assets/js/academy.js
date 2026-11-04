@@ -5,6 +5,7 @@
 (function () {
   "use strict";
   const L = window.AOLogic;
+  const AR = window.AOArith;
   if (!L) return;
   const $ = (s, el) => (el || document).querySelector(s);
   const $$ = (s, el) => [...(el || document).querySelectorAll(s)];
@@ -53,6 +54,26 @@
     w.input = inp;
     w.error = (m) => { $(".ac-err", w).textContent = m || ""; };
     return w;
+  }
+
+  function exprInput(value, label, onInput) {
+    const w = document.createElement("div");
+    w.className = "ac-fin";
+    w.innerHTML = `<label><span>${esc(label)}</span><input type="text" spellcheck="false" autocomplete="off" autocapitalize="off" inputmode="text" value="${esc(value)}"></label><p class="ac-err" role="alert"></p>`;
+    const inp = $("input", w);
+    if (onInput) inp.addEventListener("input", () => onInput(inp.value));
+    w.input = inp;
+    w.error = (m) => { $(".ac-err", w).textContent = m || ""; };
+    return w;
+  }
+  // Детерминистік араластыру: қадамдар ешқашан дұрыс ретпен көрсетілмейді
+  function shuffled(arr, seed) {
+    const idx = arr.map((_, i) => i);
+    let h = 0;
+    for (const ch of seed) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    for (let i = idx.length - 1; i > 0; i--) { h = (h * 1103515245 + 12345) >>> 0; const j = h % (i + 1); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+    if (idx.every((v, i) => v === i)) idx.push(idx.shift());
+    return idx;
   }
 
   // ================================================================ көрсету құралдары
@@ -126,6 +147,52 @@
           : `<p class="ac-verdict k-contradiction">Аргумент ДҰРЫС ЕМЕС. Қарсы мысал: ${esc(envText(r.counterexample, r.vars))} - алғышарттар ақиқат, қорытынды жалған.</p>`;
       });
       el.append(ps, plus, fc, out); draw();
+    } else if (spec.lab === "search") {
+      const fe = exprInput(spec.expr, "Өрнек f(n)", () => draw());
+      const w = document.createElement("div");
+      w.className = "ac-quant";
+      w.innerHTML = `<label><span>Қасиет: f(n) ...</span><select>${Object.entries(AR.PROPS).filter(([k]) => k !== "any").map(([k, v]) => `<option value="${k}"${k === spec.prop ? " selected" : ""}>${esc(v[0])}</option>`).join("")}</select></label>
+        <label><span>n облысы</span><input type="text" value="${spec.domain[0]}..${spec.domain[1]}"></label>`;
+      const draw = () => guard(() => {
+        const m = /^\s*(-?\d+)\s*\.\.\s*(-?\d+)\s*$/.exec($("input", w).value);
+        if (!m) throw new Error("Облыс: мысалы 0..40");
+        const lo = +m[1], hi = Math.min(+m[2], +m[1] + 200);
+        const sp = { expr: fe.input.value, prop: $("select", w).value, where: spec.where, domain: [lo, hi] };
+        AR.parse(sp.expr);
+        const cells = [];
+        let bad = 0;
+        for (let n = lo; n <= hi; n++) {
+          if (sp.where && !AR.PROPS[sp.where][1](AR.Q(BigInt(n)))) continue;
+          let v;
+          try { v = AR.val(sp.expr, n); } catch (e) { cells.push(`<span class="n" title="${esc(e.message)}">${n}: ?</span>`); continue; }
+          const ok = AR.PROPS[sp.prop][1](v);
+          bad += !ok;
+          cells.push(`<span class="${ok ? "y" : "n"}" title="f(${n}) = ${esc(AR.str(v))}">${n}: ${esc(AR.str(v))}</span>`);
+        }
+        out.innerHTML = `<div class="ac-qd ac-search">${cells.join("")}</div><p class="ac-verdict ${bad ? "k-contradiction" : "k-tautology"}">${bad ? `${bad} қарсы мысал табылды (қызыл). Тұжырым «барлық n үшін» жалған.` : "Бұл облыста қарсы мысал жоқ. Бұл - дәлелдеу емес, тек тексеріс."}</p>`;
+      }, fe);
+      $$("input, select", w).forEach((x) => x.addEventListener("input", draw));
+      el.append(fe, w, out); draw();
+    } else if (spec.lab === "induction" || spec.lab === "recur") {
+      const ind = spec.lab === "induction";
+      const f1 = exprInput(ind ? spec.term : spec.rule, ind ? "Мүше f(n)" : "Ереже: a(n) = ... (a - алдыңғы мүше)", () => draw());
+      const f2 = exprInput(spec.closed, "Жабық формула g(n)", () => draw());
+      const draw = () => guard(() => {
+        const r = ind ? AR.checkClosedForm(f1.input.value, f2.input.value, spec.start, 12) : AR.checkRecurrence({ first: spec.first, start: spec.start, rule: f1.input.value }, f2.input.value, 12);
+        const rows = r.rows.map((x, i) => {
+          let step = "";
+          if (ind && i + 1 < r.rows.length) {
+            const nxt = r.rows[i + 1];
+            const stepOk = AR.eq(AR.sub(nxt.closed, x.closed), AR.sub(nxt.sum, x.sum));
+            step = `<td class="${stepOk ? "v1" : "v0"}">${stepOk ? "✓" : "✗"}</td>`;
+          } else if (ind) step = "<td></td>";
+          return `<tr><td>${x.N}</td><td>${esc(AR.str(ind ? x.sum : x.a))}</td><td>${esc(AR.str(x.closed))}</td><td class="${x.ok ? "v1" : "v0"}">${x.ok ? "=" : "≠"}</td>${step}</tr>`;
+        }).join("");
+        const base = r.rows[0].ok;
+        out.innerHTML = `<div class="ac-tt-wrap"><table class="ac-tt"><thead><tr><th>n</th><th>${ind ? "Σ f(i), i ≤ n" : "a(n)"}</th><th>g(n)</th><th></th>${ind ? "<th>қадам g(n+1) − g(n) = f(n+1)</th>" : ""}</tr></thead><tbody>${rows}</tbody></table></div>
+          <p class="ac-verdict ${r.ok ? "k-tautology" : "k-contradiction"}">${r.ok ? `Алғашқы ${r.rows.length} мәнде сәйкес. Негіз ${base ? "ақиқат" : "жалған"}.` : `n = ${r.first.N}-де сәйкес емес${base ? "" : " (негіздің өзі жалған)"}.`} Бұл - сандық тексеріс; дәлелдеу үшін индукция керек.</p>`;
+      }, f1);
+      el.append(f1, f2, out); draw();
     } else if (spec.lab === "quant") {
       const w = document.createElement("div");
       w.className = "ac-quant";
@@ -188,10 +255,19 @@
     else if (ex.type === "classify") body = `<p class="ac-formula">${esc(ex.formula)}</p><div class="ac-opts" role="radiogroup">${Object.entries(KIND).map(([k, v]) => `<label><input type="radio" name="${esc(key)}" value="${k}"> ${esc(v)}</label>`).join("")}</div>`;
     else if (ex.type === "argument") body = `<p class="ac-formula">${esc(ex.premises.join(",  "))}  ⊨  ${esc(ex.conclusion)}</p><div class="ac-opts" role="radiogroup"><label><input type="radio" name="${esc(key)}" value="1"> Дұрыс аргумент</label><label><input type="radio" name="${esc(key)}" value="0"> Дұрыс емес</label></div>`;
     else if (ex.type === "number") body = `<label class="ac-num"><span>Жауап</span><input type="number" inputmode="numeric" step="1"></label>`;
+    else if (ex.type === "counterexample") body = `<label class="ac-num"><span>Қарсы мысал n</span><input type="number" inputmode="numeric" step="1"></label>`;
+    else if (ex.type === "closedform") body = `<p class="ac-formula">Σ f(i), i = ${ex.start}..n, мұнда f(n) = ${esc(ex.term)}</p>`;
+    else if (ex.type === "recurrence") body = `<p class="ac-formula">a(${ex.start}) = ${ex.first}, a(n) = ${esc(ex.rule.replace(/a/g, "a(n−1)"))}</p>`;
+    else if (ex.type === "order") body = `<ol class="ac-order">${shuffled(ex.steps, key + ex.q).map((i) => `<li data-i="${i}"><span>${esc(ex.steps[i])}</span><button type="button" class="ac-up" aria-label="Жоғары">↑</button><button type="button" class="ac-down" aria-label="Төмен">↓</button></li>`).join("")}</ol>`;
     else if (ex.type === "truthtable") body = `<p class="ac-formula">${esc(ex.formula)}</p><div class="ac-tt-wrap"><table class="ac-tt ac-fill"><thead><tr>${ttVars.vars.map((v) => `<th>${esc(v)}</th>`).join("")}<th class="res">мәні</th></tr></thead><tbody>${ttVars.rows.map((r, i) => `<tr>${ttVars.vars.map((v) => `<td>${b01(r.env[v])}</td>`).join("")}<td class="res"><button type="button" class="ac-cell" data-row="${i}" aria-label="${i + 1}-жолдың мәні">?</button></td></tr>`).join("")}</tbody></table></div><p class="ac-note">Ұяшықты басыңыз: ? → 0 → 1.</p>`;
     box.innerHTML = `<p class="ac-qt">${esc(ex.q)}</p>${body}<div class="ac-qa"><button type="button" class="btn gold ac-check">Тексеру</button><button type="button" class="btn secondary ac-hint">Кеңес</button><button type="button" class="btn secondary ac-reveal" hidden>Жауабын көрсету</button><span class="ac-st"></span></div><div class="ac-hints"></div><p class="ac-fb" role="status" aria-live="polite"></p>`;
     let fi = null;
     if (ex.type === "formula") { fi = formulaInput("", "Сіздің өрнегіңіз", null); box.insertBefore(fi, $(".ac-qa", box)); }
+    if (ex.type === "closedform" || ex.type === "recurrence") { fi = exprInput("", "g(n) = (мысалы: n(n+1)/2, 2^n - 1)", null); box.insertBefore(fi, $(".ac-qa", box)); }
+    $$(".ac-order li", box).forEach((li) => {
+      $(".ac-up", li).addEventListener("click", () => { if (li.previousElementSibling) li.parentNode.insertBefore(li, li.previousElementSibling); $(".ac-up", li).focus(); });
+      $(".ac-down", li).addEventListener("click", () => { if (li.nextElementSibling) li.parentNode.insertBefore(li.nextElementSibling, li); $(".ac-down", li).focus(); });
+    });
     $$(".ac-cell", box).forEach((c) => c.addEventListener("click", () => { c.textContent = c.textContent === "?" ? "0" : c.textContent === "0" ? "1" : "?"; c.classList.remove("bad", "good"); }));
     const fb = $(".ac-fb", box), stEl = $(".ac-st", box);
     const showState = (s) => {
@@ -224,6 +300,27 @@
           return { ok: !wrong, msg: wrong ? `${wrong} жол қате (қызылмен белгіленді).` : "Дұрыс: барлық жол сәйкес." };
         }
         case "formula": return checkFormula(ex, fi.input.value);
+        case "counterexample": {
+          const v = $("input[type=number]", box).value;
+          if (v === "") return null;
+          try { const r = AR.isCounterexample(ex, Number(v)); return { ok: r.ok, msg: r.msg }; } catch (e) { return { ok: false, msg: e.message, soft: true }; }
+        }
+        case "closedform": case "recurrence": {
+          if (!fi.input.value.trim()) return null;
+          try {
+            const r = ex.type === "closedform" ? AR.checkClosedForm(ex.term, fi.input.value, ex.start, 30) : AR.checkRecurrence(ex, fi.input.value, 30);
+            if (r.ok) return { ok: true, msg: `Дұрыс: n = ${ex.start}..${ex.start + 29} мәндерінің бәрінде сәйкес. Енді оны индукциямен дәлелдеп көріңіз.` };
+            const b = r.first;
+            return { ok: false, msg: `n = ${b.N} болғанда сіздің формула ${AR.str(b.closed)}, ал керегі ${AR.str(ex.type === "closedform" ? b.sum : b.a)}.` };
+          } catch (e) { return { ok: false, msg: e.message, soft: true }; }
+        }
+        case "order": {
+          const lis = $$(".ac-order li", box);
+          const order = lis.map((li) => +li.dataset.i);
+          lis.forEach((li, pos) => { li.classList.toggle("good", +li.dataset.i === pos); li.classList.toggle("bad", +li.dataset.i !== pos); });
+          const firstBad = order.findIndex((v, i) => v !== i);
+          return firstBad < 0 ? { ok: true, msg: "Дұрыс: дәлелдеу логикалық ретпен құрылды." } : { ok: false, msg: `${firstBad + 1}-қадамнан бастап рет бұзылған (қызыл белгіленді). Әр қадам тек өзінен бұрынғыларға сүйенуі керек.` };
+        }
       }
       return null;
     }
@@ -247,6 +344,9 @@
       else if (ex.type === "number") ans = String(ex.answer);
       else if (ex.type === "truthtable") ans = ttVars.rows.map((r) => b01(r.value)).join(" ");
       else if (ex.type === "formula") ans = ex.solution + " (басқа эквивалент жауап та қабылданады)";
+      else if (ex.type === "closedform" || ex.type === "recurrence") ans = ex.solution + " (эквивалент жазылу да қабылданады)";
+      else if (ex.type === "counterexample") ans = "n = " + AR.searchCounterexamples(ex, 1)[0];
+      else if (ex.type === "order") ans = ex.steps.map((s, i) => `${i + 1}) ${s}`).join(" ");
       fb.textContent = "Жауабы: " + ans;
       fb.className = "ac-fb";
       const s = rec.ex[key] = rec.ex[key] || {};
@@ -313,7 +413,9 @@
     if (!el) return;
     const presets = { truthtable: { lab: "truthtable", formula: "(p → q) ∧ (q → r) → (p → r)" }, equiv: { lab: "equiv", a: "¬(p ∧ q)", b: "¬p ∨ ¬q" },
       argument: { lab: "argument", premises: ["p → q", "¬q"], conclusion: "¬p" }, normal: { lab: "normal", formula: "p ⊕ q ⊕ r" },
-      tree: { lab: "tree", formula: "¬p ∨ q ∧ r → s" }, quant: { lab: "quant", domain: [1, 2, 3, 4, 5, 6, 7, 8, 9], pred: "prime" } };
+      tree: { lab: "tree", formula: "¬p ∨ q ∧ r → s" }, quant: { lab: "quant", domain: [1, 2, 3, 4, 5, 6, 7, 8, 9], pred: "prime" },
+      search: { lab: "search", expr: "n^2 + n + 41", prop: "prime", domain: [0, 45] }, induction: { lab: "induction", term: "n^2", closed: "n(n+1)(2n+1)/6", start: 1 },
+      recur: { lab: "recur", first: 1, start: 1, rule: "2a + 1", closed: "2^n - 1" } };
     const show = (k) => {
       $$("[data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === k)));
       el.className = "ac-lab ac-lab-big";
