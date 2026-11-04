@@ -28,6 +28,7 @@
   async function pyJudge(code, spec) { const py = await judgeReady(); return JSON.parse(py.globals.get("judge_json")(code, JSON.stringify(spec))); }
   async function pyJudgeTests(code, spec) { const py = await judgeReady(); return JSON.parse(py.globals.get("judge_tests_json")(code, JSON.stringify(spec))); }
   async function pyTrace(code, call) { const py = await judgeReady(); return JSON.parse(py.globals.get("trace_calls")(code, call)); }
+  async function pySort(code, func, data) { const py = await judgeReady(); return JSON.parse(py.globals.get("trace_sort")(code, func, JSON.stringify(data))); }
   async function pyRun(code, stdin) { const py = await judgeReady(); return JSON.parse(py.globals.get("run_json")(code, stdin || "")); }
   const PY_FAIL = "Python жүктелмеді (интернет қажет, бірінші рет ~10 секунд). Байланысты тексеріп, қайта басыңыз.";
   function codeArea(value, rows) {
@@ -345,6 +346,44 @@
       };
       $("[data-run]", w).addEventListener("click", run);
       out.innerHTML = '<p class="ac-note">«Ағашты салу» басыңыз: Python шақыруларды нақты орындап, әрқайсысын жазады.</p>';
+      el.append(ta, w, out);
+    } else if (spec.lab === "arena") {
+      const ta = codeArea(spec.code);
+      const w = document.createElement("div");
+      w.className = "ac-pyrun";
+      w.innerHTML = `<label class="ac-codebox"><span>Функция және кіріс тізімі (үтірмен)</span><span class="ac-arena-in"><input type="text" class="ac-stdin" data-fn value="${esc(spec.func)}" spellcheck="false" aria-label="Функция аты"><input type="text" class="ac-stdin" data-data value="${esc(spec.data.join(", "))}" spellcheck="false" aria-label="Кіріс тізімі"></span></label><div class="ac-qa"><button type="button" class="btn gold" data-run>▶ Орындау</button><span class="ac-st" data-st></span></div>`;
+      let R = null, base = [], k = 0, timer = null;
+      const stateAt = (n) => { let a = base.slice(); let hi = [], kind = ""; for (let i = 0; i < n; i++) { const e = R.events[i]; if (e.op === "set") a[e.i] = e.v; else if (e.op === "all") a = e.arr.slice(); } const e = R.events[n - 1]; if (e) { kind = e.op; if (e.op === "set") hi = [e.i]; else if (e.op === "cmp") { const ia = a.indexOf(e.a); const ib = a.findIndex((v, j) => v === e.b && j !== ia); hi = [ia, ib].filter((x) => x >= 0); } } return { a, hi, kind, e }; };
+      const counts = (n) => { let c = 0, wr = 0; for (let i = 0; i < n; i++) { if (R.events[i].op === "cmp") c++; else wr++; } return [c, wr]; };
+      const bars = (a, hi, kind) => { const mx = Math.max(...a.map((v) => Math.abs(+v) || 0), 1), W = 340, H = 150, bw = W / Math.max(a.length, 1); return `<svg viewBox="0 0 ${W} ${H + 18}" class="ac-graph ac-arena" role="img" aria-label="Тізім күйі: ${esc(a.join(", "))}">${a.map((v, i) => { const h = Math.max(3, (Math.abs(+v) / mx) * H); return `<rect x="${(i * bw + 1).toFixed(1)}" y="${(H - h).toFixed(1)}" width="${Math.max(bw - 2, 1).toFixed(1)}" height="${h.toFixed(1)}" class="${hi.includes(i) ? (kind === "set" ? "ar-set" : "ar-cmp") : "ar"}"/>${a.length <= 24 ? `<text x="${(i * bw + bw / 2).toFixed(1)}" y="${H + 13}" text-anchor="middle" class="gl">${esc(v)}</text>` : ""}`; }).join("")}</svg>`; };
+      const show = () => {
+        const st = stateAt(k), [c, wr] = counts(k);
+        const what = !st.e ? "Бастапқы күй" : st.e.op === "cmp" ? `Салыстыру: ${st.e.a} ? ${st.e.b}` : st.e.op === "set" ? `Жазу: a[${st.e.i}] = ${st.e.v}` : "Кесіндіге жазу";
+        $("[data-view]", out).innerHTML = bars(st.a, st.hi, st.kind) + `<p class="ac-note">Қадам <b>${k}</b> / ${R.events.length} · ${esc(what)} · салыстыру: <b>${c}</b> · жазу: <b>${wr}</b></p>`;
+        $("input[type=range]", out).value = k;
+      };
+      const stop = () => { if (timer) { clearInterval(timer); timer = null; $("[data-play]", out).textContent = "▶ Ойнату"; } };
+      const run = async () => {
+        stop();
+        $("[data-st]", w).textContent = "Орындалып жатыр...";
+        try {
+          base = $("[data-data]", w).value.split(",").map((x) => x.trim()).filter(Boolean).map((x) => (isNaN(+x) ? x : +x));
+          if (base.length > 60) throw new Error("big");
+          R = await pySort(ta.value, $("[data-fn]", w).value.trim(), base);
+          $("[data-st]", w).textContent = "";
+          if (!R.ok) { out.innerHTML = `<p class="ac-fb bad">${esc(R.error)}${R.line ? ` (${R.line}-жол)` : ""}: ${esc(R.hint)}${R.detail ? `<br><small>${esc(R.detail)}</small>` : ""}</p>`; return; }
+          const fin = R.returned || R.final;
+          out.innerHTML = `<div data-view></div><div class="ac-qa"><button type="button" class="btn secondary" data-prev aria-label="Артқа">◀</button><button type="button" class="btn secondary" data-play>▶ Ойнату</button><button type="button" class="btn secondary" data-next aria-label="Алға">▶|</button><input type="range" min="0" max="${R.events.length}" value="0" aria-label="Қадам"></div>
+            <p class="ac-note">${R.truncated ? "<b>4000 оқиғадан кейін тоқтатылды</b> (шексіз цикл болуы мүмкін). " : `Барлығы: <b>${R.stats.cmp}</b> салыстыру, <b>${R.stats.write}</b> жазу. Нәтиже ${R.sorted ? "<b>сұрыпталған</b>" : "<b>сұрыпталмаған!</b>"}: <code>${esc(fin.join(", "))}</code>. `}${R.returned ? "Функция ЖАҢА тізім қайтарды: бастапқы тізімге жазу болмаса, бағандар тек салыстыруларды көрсетеді." : ""}</p>`;
+          k = 0; show();
+          $("[data-prev]", out).addEventListener("click", () => { stop(); k = Math.max(0, k - 1); show(); });
+          $("[data-next]", out).addEventListener("click", () => { stop(); k = Math.min(R.events.length, k + 1); show(); });
+          $("input[type=range]", out).addEventListener("input", (e) => { stop(); k = +e.target.value; show(); });
+          $("[data-play]", out).addEventListener("click", () => { if (timer) return stop(); if (k >= R.events.length) k = 0; $("[data-play]", out).textContent = "❚❚ Тоқтату"; timer = setInterval(() => { if (k >= R.events.length || !out.isConnected) return stop(); k++; show(); }, Math.max(40, 2400 / Math.max(R.events.length, 1))); });
+        } catch (e) { $("[data-st]", w).textContent = e.message === "big" ? "Кіріс 60 элементтен аспасын." : PY_FAIL; }
+      };
+      $("[data-run]", w).addEventListener("click", run);
+      out.innerHTML = '<p class="ac-note">«Орындау» басыңыз: Python функцияны нақты орындап, әр салыстыру мен әр жазуды тіркейді. Бағандар - тізімнің сол сәттегі нақты күйі.</p>';
       el.append(ta, w, out);
     } else if (spec.lab === "base") {
       const w = document.createElement("div");

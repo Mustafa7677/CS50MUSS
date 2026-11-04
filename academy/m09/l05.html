@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Жылдам сұрыптау - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Жылдам сұрыптау - AO17">
+  <meta property="og:description" content="AO17 CS Universe, Level I: Жылдам сұрыптау. Бөлу (partition) процедурасын инвариантпен жазу (Ломуто схемасы).">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/m09/l05.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/m09/l05.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Жылдам сұрыптау - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/m09/l05.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 CS Universe, Level I: Жылдам сұрыптау. Бөлу (partition) процедурасын инвариантпен жазу (Ломуто схемасы).">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/academy-logic.js" defer></script>
+  <script src="../../assets/js/academy-arith.js" defer></script>
+  <script src="../../assets/js/academy-disc.js" defer></script>
+  <script src="../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../assets/js/academy-bits.js" defer></script>
+  <script src="../../assets/js/academy.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="ac-layout">
+    <aside class="ac-toc" aria-label="Сабақ бөлімдері"><p class="ac-toc-h">Бөлімдер</p><ol><li><a href="#s-a">Оқу мақсаттары</a></li><li><a href="#s-b">Алғышарттар</a></li><li><a href="#s-c">Ұғымға кіріспе</a></li><li><a href="#s-d">Академиялық теория</a></li><li><a href="#s-e">Көрнекі түсіндірме</a></li><li><a href="#s-f">Қадамдап қорыту</a></li><li><a href="#s-g">Жұмыс мысалдары</a></li><li><a href="#s-h">Интерактивті эксперимент</a></li><li><a href="#s-i">Жаттығулар</a></li><li><a href="#s-j">Математикалық пайымдау</a></li><li><a href="#s-k">Жиі қателер</a></li><li><a href="#s-l">Меңгеруді бағалау</a></li><li><a href="#s-m">Рефлексия</a></li><li><a href="#s-n">Тереңірек</a></li></ol>
+      <div class="ac-mastery" data-ac-mastery><span>Меңгеру</span><b>-</b></div></aside>
+    <article class="content ac-lesson" id="main" data-lesson="ao17-foundation.m09.l05">
+      <header class="ac-head">
+        <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#m09">Level I · Python-дағы алгоритмдер</a> / 5-сабақ</p>
+        <h1>Жылдам сұрыптау</h1>
+        <p class="ac-meta">Деңгей: күрделі · шамамен 60 мин · нұсқа 1.0.0 · тексеру: author-checked</p>
+      </header>
+      <section class="ac-sec" id="s-a"><h2><span class="ac-n">A</span>Оқу мақсаттары</h2><ul class="ac-obj"><li>Бөлу (partition) процедурасын инвариантпен жазу (Ломуто схемасы).</li><li>Тірек таңдаудың әсерін көрсету: ең нашар жағдай n(n−1)/2, орташа ≈ 1.39·n log₂ n.</li><li>Кездейсоқ тірек және quickselect (k-шы ең кіші элемент) идеясын қолдану.</li></ul></section>
+      <section class="ac-sec" id="s-b"><h2><span class="ac-n">B</span>Алғышарттар</h2><ul><li><a href="../m09/l04.html">Біріктіру сұрыптауы</a></li></ul></section>
+      <section class="ac-sec" id="s-c"><h2><span class="ac-n">C</span>Ұғымға кіріспе</h2><p>Жылдам сұрыптау да «бөліп ал да билей», бірақ жұмыс <b>бөлуде</b>: тірек (pivot) таңдап, тізімді «тіректен кіші | тірек | тіректен үлкен» етіп орнында қайта реттейміз. Сосын екі бөлікті рекурсивті сұрыптаймыз - біріктіру керек емес.</p><p>Бөліктер тең болса - n log n. Бірақ тірек әрқашан ең үлкен элемент болса (мысалы, сұрыпталған кірісте соңғы элемент), бір бөлік бос, екіншісі n − 1: n(n−1)/2 салыстыру. Кездейсоқ тірек мұндай «жаман кірісті» іс жүзінде мүмкін емес етеді.</p></section>
+      <section class="ac-sec" id="s-d"><h2><span class="ac-n">D</span>Академиялық теория</h2><div class="ac-th ac-definition"><div class="ac-th-k">Анықтама</div><h4>Ломуто бөлуі</h4><p>pivot = a[hi]; i = lo. j = lo..hi−1 үшін: a[j] &lt; pivot болса, a[i] мен a[j]-ді айырбастап, i += 1. Соңында a[i] мен a[hi]-ді айырбастау. Инвариант: a[lo..i−1] &lt; pivot, a[i..j−1] ≥ pivot.</p></div><div class="ac-th ac-theorem"><div class="ac-th-k">Теорема</div><h4>Ең нашар жағдай</h4><p>Әр бөлуде тірек бөліктегі ең үлкен (не ең кіші) элемент болса, жылдам сұрыптау n(n−1)/2 салыстыру жасайды.</p></div><div class="ac-th ac-proof"><div class="ac-th-k">Дәлелдеу</div><h4>Дәлелдеу</h4><p>Ұзындығы m бөлікті бөлу m − 1 салыстыру жасайды (тіректен басқа әр элемент бір рет). Тірек ең үлкен болса, бөліктер m − 1 және 0 болады. Сондықтан ұзындықтар n, n − 1, ..., 2 болып кемиді, салыстырулар: (n − 1) + (n − 2) + ... + 1 = n(n−1)/2 (m02 l07). ∎ Ломуто схемасында сұрыпталған кіріс дәл осы жағдай: a[hi] әрқашан ең үлкен.</p></div><div class="ac-th ac-note"><div class="ac-th-k">Ескерту</div><h4>Неге бәрібір «жылдам»?</h4><p>Орташа жағдайда (кездейсоқ тірек) ≈ 2n ln n ≈ 1.39·n log₂ n салыстыру, қосымша жадсыз (орнында) және кэшке ыңғайлы. Тәжірибеде жиі ең жылдам. Кемшілігі - тұрақты емес.</p></div></section>
+      <section class="ac-sec" id="s-e"><h2><span class="ac-n">E</span>Көрнекі түсіндірме</h2><div class="ac-lab" data-lab="visual"></div><p class="ac-cap">Тірек - бөліктің соңғы элементі. Әр бөлуден кейін тірек өз соңғы орнына түседі.</p></section>
+      <section class="ac-sec" id="s-f"><h2><span class="ac-n">F</span>Қадамдап қорыту</h2><ol class="ac-steps"><li>quick_sort(a, lo, hi): lo &gt;= hi болса - тоқтау (0 не 1 элемент).</li><li>p = partition(a, lo, hi) - тіректің соңғы орны.</li><li>quick_sort(a, lo, p - 1); quick_sort(a, p + 1, hi).</li><li>Тірек p-де тұр және енді ешқашан жылжымайды: солында кішілер, оңында үлкендер.</li></ol></section>
+      <section class="ac-sec" id="s-g"><h2><span class="ac-n">G</span>Жұмыс мысалдары</h2><figure class="ac-ex"><figcaption>Тірек таңдау маңызды</figcaption><pre data-lang="python"><code class="language-python">class K:
+    n = 0
+    def __init__(s, v):
+        s.v = v
+    def _c(s, o):
+        K.n += 1
+        return o.v if isinstance(o, K) else o
+    def __eq__(s, o):
+        return s.v == s._c(o)
+    def __lt__(s, o):
+        return s.v &lt; s._c(o)
+    def __le__(s, o):
+        return s.v &lt;= s._c(o)
+    def __gt__(s, o):
+        return s.v &gt; s._c(o)
+    def __ge__(s, o):
+        return s.v &gt;= s._c(o)
+    def __hash__(s):
+        return hash(s.v)
+    def __repr__(s):
+        return repr(s.v)
+
+import random
+
+def quick_sort(a, lo, hi, rnd):
+    while lo &lt; hi:
+        if rnd:
+            r = random.randint(lo, hi)
+            a[r], a[hi] = a[hi], a[r]
+        pivot, i = a[hi], lo
+        for j in range(lo, hi):
+            if a[j] &lt; pivot:
+                a[i], a[j] = a[j], a[i]
+                i += 1
+        a[i], a[hi] = a[hi], a[i]
+        if i - lo &lt; hi - i:
+            quick_sort(a, lo, i - 1, rnd)
+            lo = i + 1
+        else:
+            quick_sort(a, i + 1, hi, rnd)
+            hi = i - 1
+
+random.seed(3)
+n = 400
+for name, data in [(&#x27;сұрыпталған&#x27;, list(range(n))), (&#x27;кездейсоқ&#x27;, random.sample(range(n), n))]:
+    for rnd in [False, True]:
+        a = [K(v) for v in data]
+        K.n = 0
+        quick_sort(a, 0, n - 1, rnd)
+        print(f&#x27;{name:12} кездейсоқ тірек={rnd!s:5} салыстыру {K.n}&#x27;)
+print(&#x27;n(n-1)/2 =&#x27;, n * (n - 1) // 2)</code></pre><div class="ac-out"><span>Шығыс (тексерілген)</span><pre>сұрыпталған  кездейсоқ тірек=False салыстыру 79800
+сұрыпталған  кездейсоқ тірек=True  салыстыру 3657
+кездейсоқ    кездейсоқ тірек=False салыстыру 3181
+кездейсоқ    кездейсоқ тірек=True  салыстыру 3618
+n(n-1)/2 = 79800</pre></div><p>Сұрыпталған кірісте соңғы элементті тірек ету теореманың ең нашар жағдайын береді (79800). Кездейсоқ тірек оны ≈ 3600-ге түсірді (n log₂ n ≈ 3460). (Кіші бөлікке рекурсия - стек тереңдігін log n-де ұстайды.)</p></figure></section>
+      <section class="ac-sec" id="s-h"><h2><span class="ac-n">H</span>Интерактивті эксперимент</h2><p class="ac-task">Сұрыпталған кірісте салыстыру саны n(n−1)/2 = 66 болады - тексеріңіз. Кодқа кездейсоқ тірек қосыңыз (import random; r = random.randint(lo, hi); a[r], a[hi] = a[hi], a[r]) және қайта іске қосыңыз.</p><div class="ac-lab" data-lab="experiment"></div></section>
+      <section class="ac-sec" id="s-i"><h2><span class="ac-n">I</span>Жаттығулар</h2><div class="ac-exs" data-set="exercises"></div></section>
+      <section class="ac-sec" id="s-j"><h2><span class="ac-n">J</span>Математикалық пайымдау</h2><p>Жылдам сұрыптау - «ықтималдық алгоритмге қалай көмектеседі?» сұрағының классикалық жауабы. Кездейсоқ тірек ең нашар жағдайды жоймайды, бірақ оны кез келген кіріс үшін болмашы ықтималдыққа айналдырады: ешбір «жаман» кірісті алдын ала құрастыру мүмкін емес.</p></section>
+      <section class="ac-sec" id="s-k"><h2><span class="ac-n">K</span>Жиі қателер</h2><ul class="ac-mist"><li><b>Тіректі бөліктердің біріне қосып рекурсия жасау.</b><br>Себебі: Барлық элемент тең болса, бөлік кішірейемей шексіз рекурсия.<br>Түзету: Тірек өз орнында қалады: (lo, p − 1) және (p + 1, hi).</li><li><b>Жылдам сұрыптауды тұрақты деп ойлау.</b><br>Себебі: Алыс айырбастар тең элементтердің ретін бұзады.<br>Түзету: Тұрақтылық керек болса - біріктіру сұрыптауы не Python-ның sorted.</li></ul></section>
+      <section class="ac-sec" id="s-l"><h2><span class="ac-n">L</span>Меңгеруді бағалау</h2><p class="ac-note">Барлық сұраққа дұрыс жауап берсеңіз, сабақ «меңгерілді» деп белгіленеді. Тексеру браузерде өтеді: бұл оқу тексерісі, емтихан емес.</p><div class="ac-exs" data-set="assessment"></div></section>
+      <section class="ac-sec" id="s-m"><h2><span class="ac-n">M</span>Рефлексия</h2><div data-ac-reflect></div></section>
+      <section class="ac-sec" id="s-n"><h2><span class="ac-n">N</span>Тереңірек</h2><h3>Honors</h3><ul><li>Хоар бөлуі (екі көрсеткіш екі жақтан) Ломутодан неге аз айырбас жасайды? Arena-да салыстырыңыз.</li></ul><h3>Research</h3><ul><li>Introsort (C++ std::sort): жылдам сұрыптау тым терең кеткенде үйме сұрыптауына (heapsort) ауысады. Неге?</li></ul></section>
+      
+      <section class="ac-sec ac-src"><h2>Дереккөз және лицензия</h2><ul><li>T. H. Cormen және т.б., Introduction to Algorithms (CLRS), 2-бөлім - сұрыптау және іздеу (салыстыру үшін).</li><li>J. Kleinberg, É. Tardos, Algorithm Design, 2-5 тараулар.</li><li>Python Software Foundation, bisect модулінің құжаттамасы; Sorting HOW TO.</li></ul>
+        <p>Сабақ мәтіні, мысалдары мен тапсырмалары AO17 үшін жаңадан жазылған (авторлық: Sagid Mustafa, All Rights Reserved). Дереккөздер ұғымдарды салыстыру үшін пайдаланылды, мәтін көшірілмеген. ID: <code>ao17-foundation.m09.l05</code></p></section>
+      <nav class="ac-pager"><a href="l04.html">← Біріктіру сұрыптауы</a><a href="../index.html#m09">Модуль картасы</a><a href="l06.html">Рекурсия мен итерация →</a></nav>
+    </article>
+  </div>
+  <script type="application/json" id="ac-data">{"id": "ao17-foundation.m09.l05", "visual": {"lab": "arena", "code": "def quick_sort(a, lo=0, hi=None):\n    if hi is None:\n        hi = len(a) - 1\n    if lo >= hi:\n        return\n    pivot = a[hi]\n    i = lo\n    for j in range(lo, hi):\n        if a[j] < pivot:\n            a[i], a[j] = a[j], a[i]\n            i += 1\n    a[i], a[hi] = a[hi], a[i]\n    quick_sort(a, lo, i - 1)\n    quick_sort(a, i + 1, hi)", "func": "quick_sort", "data": [6, 2, 9, 4, 1, 8, 3, 7, 5], "caption": "Тірек - бөліктің соңғы элементі. Әр бөлуден кейін тірек өз соңғы орнына түседі."}, "experiment": {"lab": "arena", "code": "def quick_sort(a, lo=0, hi=None):\n    if hi is None:\n        hi = len(a) - 1\n    if lo >= hi:\n        return\n    pivot = a[hi]\n    i = lo\n    for j in range(lo, hi):\n        if a[j] < pivot:\n            a[i], a[j] = a[j], a[i]\n            i += 1\n    a[i], a[hi] = a[hi], a[i]\n    quick_sort(a, lo, i - 1)\n    quick_sort(a, i + 1, hi)", "func": "quick_sort", "data": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12], "task": "Сұрыпталған кірісте салыстыру саны n(n−1)/2 = 66 болады - тексеріңіз. Кодқа кездейсоқ тірек қосыңыз (import random; r = random.randint(lo, hi); a[r], a[hi] = a[hi], a[r]) және қайта іске қосыңыз."}, "exercises": [{"type": "pycode", "q": "partition(a, lo, hi) - Ломуто бөлуі: pivot = a[hi]; a[lo..hi]-ді орнында қайта реттеп, тіректің соңғы индексін қайтарсын.", "mode": "io", "suffix": "a = [7, 2, 9, 4, 1, 5]\np = partition(a, 0, 5)\nprint(p, a[p], all(x < a[p] for x in a[:p]), all(x >= a[p] for x in a[p + 1:]), sorted(a) == [1, 2, 4, 5, 7, 9])\nb = [3, 8, 1, 9, 5, 2]\nq = partition(b, 1, 4)\nprint(q, b)", "starter": "def partition(a, lo, hi):\n    pivot = a[hi]\n    left = [x for x in a[lo:hi] if x < pivot]\n    right = [x for x in a[lo:hi] if x >= pivot]\n    return len(left)\n", "tests": [{"stdin": "", "stdout": "3 5 True True True\n2 [3, 1, 5, 9, 8, 2]"}], "solution": "def partition(a, lo, hi):\n    pivot = a[hi]\n    i = lo\n    for j in range(lo, hi):\n        if a[j] < pivot:\n            a[i], a[j] = a[j], a[i]\n            i += 1\n    a[i], a[hi] = a[hi], a[i]\n    return i", "hints": ["Бастапқы код a-ны өзгертпейді және lo-ны ескермейді.", "i - келесі «кіші» элементтің орны; соңында a[i], a[hi] айырбасы."]}, {"type": "pycode", "q": "quick_sort(a) - тізімді орнында жылдам сұрыптасын (кез келген тірек схемасы). Тест сұрыпталған 1500 элементті кірісте салыстыру санын тексереді - кездейсоқ не ортаңғы тірек қолданыңыз.", "mode": "io", "suffix": "class K:\n    n = 0\n    def __init__(s, v):\n        s.v = v\n    def _c(s, o):\n        K.n += 1\n        return o.v if isinstance(o, K) else o\n    def __eq__(s, o):\n        return s.v == s._c(o)\n    def __lt__(s, o):\n        return s.v < s._c(o)\n    def __le__(s, o):\n        return s.v <= s._c(o)\n    def __gt__(s, o):\n        return s.v > s._c(o)\n    def __ge__(s, o):\n        return s.v >= s._c(o)\n    def __hash__(s):\n        return hash(s.v)\n    def __repr__(s):\n        return repr(s.v)\nimport random\nrandom.seed(1)\nb = [K(v) for v in range(1500)]\nK.n = 0\nquick_sort(b)\nprint([k.v for k in b] == list(range(1500)), K.n < 60000)\na = [K(v) for v in [5, 3, 8, 3, 1]]\nquick_sort(a)\nprint(a)", "starter": "def quick_sort(a, lo=0, hi=None):\n    if hi is None:\n        hi = len(a) - 1\n    if lo >= hi:\n        return\n    pivot = a[hi]\n    i = lo\n    for j in range(lo, hi):\n        if a[j] < pivot:\n            a[i], a[j] = a[j], a[i]\n            i += 1\n    a[i], a[hi] = a[hi], a[i]\n    quick_sort(a, lo, i - 1)\n    quick_sort(a, i + 1, hi)\n", "tests": [{"stdin": "", "stdout": "True True\n[1, 3, 3, 5, 8]"}], "solution": "import random\n\ndef quick_sort(a, lo=0, hi=None):\n    if hi is None:\n        hi = len(a) - 1\n    if lo >= hi:\n        return\n    r = random.randint(lo, hi)\n    a[r], a[hi] = a[hi], a[r]\n    pivot = a[hi]\n    i = lo\n    for j in range(lo, hi):\n        if a[j] < pivot:\n            a[i], a[j] = a[j], a[i]\n            i += 1\n    a[i], a[hi] = a[hi], a[i]\n    quick_sort(a, lo, i - 1)\n    quick_sort(a, i + 1, hi)", "hints": ["Бастапқы код сұрыпталған кірісте n(n−1)/2 ≈ 1 100 000 салыстыру жасайды (және рекурсия тым терең).", "Бөлуден бұрын кездейсоқ элементті a[hi]-мен айырбастаңыз."]}, {"type": "mc", "q": "Ломуто схемасында (тірек - соңғы элемент) ең нашар кіріс:", "options": ["Кездейсоқ тізім", "Сұрыпталған тізім", "Барлық элемент әр түрлі", "Ұзындығы тақ тізім"], "answer": 1, "why": ["Орташа n log n.", "Дұрыс: тірек әрқашан ең үлкен - бөліктер n−1 және 0.", "Бұл маңызды емес.", "Маңызды емес."], "hints": ["Тірек қашан әрқашан ең үлкен?"]}, {"type": "number", "q": "Ломуто жылдам сұрыптауы сұрыпталған 20 элементті тізімде неше салыстыру жасайды?", "answer": 190, "check": "20 * 19 // 2", "hints": ["Теорема: n(n−1)/2."]}], "assessment": [{"type": "pycode", "q": "kth_smallest(a, k) - k-шы ең кіші элементті (k = 1 - ең кішісі) quickselect арқылы, ТОЛЫҚ сұрыптаусыз қайтарсын. Кіріс тізімі өзгермесін.", "mode": "io", "suffix": "class K:\n    n = 0\n    def __init__(s, v):\n        s.v = v\n    def _c(s, o):\n        K.n += 1\n        return o.v if isinstance(o, K) else o\n    def __eq__(s, o):\n        return s.v == s._c(o)\n    def __lt__(s, o):\n        return s.v < s._c(o)\n    def __le__(s, o):\n        return s.v <= s._c(o)\n    def __gt__(s, o):\n        return s.v > s._c(o)\n    def __ge__(s, o):\n        return s.v >= s._c(o)\n    def __hash__(s):\n        return hash(s.v)\n    def __repr__(s):\n        return repr(s.v)\nimport random\nrandom.seed(2)\ndata = random.sample(range(100000), 3000)\na = [K(v) for v in data]\nK.n = 0\nprint(kth_smallest(a, 1500) == sorted(data)[1499], K.n < 30000, [x.v for x in a] == data)\nprint(kth_smallest([K(4), K(1), K(3)], 1), kth_smallest([K(4), K(1), K(3)], 3))", "starter": "def kth_smallest(a, k):\n    b = list(a)\n    for i in range(len(b)):\n        m = i\n        for j in range(i + 1, len(b)):\n            if b[j] < b[m]:\n                m = j\n        b[i], b[m] = b[m], b[i]\n    return b[k - 1]\n", "tests": [{"stdin": "", "stdout": "True True True\n1 4"}], "solution": "import random\n\ndef kth_smallest(a, k):\n    b = list(a)\n    lo, hi = 0, len(b) - 1\n    while True:\n        r = random.randint(lo, hi)\n        b[r], b[hi] = b[hi], b[r]\n        pivot, i = b[hi], lo\n        for j in range(lo, hi):\n            if b[j] < pivot:\n                b[i], b[j] = b[j], b[i]\n                i += 1\n        b[i], b[hi] = b[hi], b[i]\n        if i == k - 1:\n            return b[i]\n        if i < k - 1:\n            lo = i + 1\n        else:\n            hi = i - 1", "hints": ["Бөлуден кейін тірек i-де: i == k − 1 болса - жауап.", "Тек k жатқан бөлікке ғана жалғастырыңыз - орташа O(n).", "Бастапқы код - таңдау сұрыптауы: ≈ 4 500 000 салыстыру."]}, {"type": "mc", "q": "Кездейсоқ тірек не береді?", "options": ["Ең нашар жағдайды толық жояды", "Кез келген кіріс үшін күтілетін уақыт O(n log n) болады", "Алгоритмді тұрақты етеді", "Жадты азайтады"], "answer": 1, "why": ["Ең нашар жағдай мүмкін, бірақ ықтималдығы болмашы.", "Дұрыс.", "Тұрақтылыққа әсері жоқ.", "Жадқа әсері жоқ."], "hints": ["«Күтілетін» сөзі."]}], "reflection": ["Сіз білетін алгоритмдердің қайсысына кездейсоқтық қосу пайдалы болар еді? Неге?"], "objectives": 3}</script>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

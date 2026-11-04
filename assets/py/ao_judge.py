@@ -288,3 +288,84 @@ def judge_tests(tests_code, spec):
 
 def judge_tests_json(tests_code, spec_json):
     return json.dumps(judge_tests(tests_code, spec_json), ensure_ascii=False)
+
+
+def trace_sort(code, func, data_json, limit=4000):
+    """Algorithm Arena: оқушы сұрыптау функциясын НАҚТЫ орындап, тізімге жазу мен салыстыруларды тіркейді.
+    Элементтер Item-ге оралады (салыстыру саналады), тізім Tracked-ке (a[i] = x жазулары тіркеледі).
+    Жаңа тізім жасайтын алгоритм (return sorted_list) үшін нәтиже бөлек қайтарылады."""
+    data = json.loads(data_json) if isinstance(data_json, str) else data_json
+    events = []
+    stats = {"cmp": 0, "write": 0}
+
+    class TooMany(Exception):
+        pass
+
+    def log(e):
+        if len(events) >= limit:
+            raise TooMany()
+        events.append(e)
+
+    class Item:
+        __slots__ = ("v",)
+
+        def __init__(self, v):
+            self.v = v
+
+        def _c(self, o, r):
+            stats["cmp"] += 1
+            log({"op": "cmp", "a": self.v, "b": o.v if isinstance(o, Item) else o})
+            return r
+
+        def __lt__(self, o):
+            return self._c(o, self.v < (o.v if isinstance(o, Item) else o))
+
+        def __le__(self, o):
+            return self._c(o, self.v <= (o.v if isinstance(o, Item) else o))
+
+        def __gt__(self, o):
+            return self._c(o, self.v > (o.v if isinstance(o, Item) else o))
+
+        def __ge__(self, o):
+            return self._c(o, self.v >= (o.v if isinstance(o, Item) else o))
+
+        def __eq__(self, o):
+            return self._c(o, self.v == (o.v if isinstance(o, Item) else o))
+
+        def __hash__(self):
+            return hash(self.v)
+
+        def __repr__(self):
+            return repr(self.v)
+
+    class Tracked(list):
+        def __setitem__(self, i, x):
+            list.__setitem__(self, i, x)
+            if isinstance(i, int):
+                stats["write"] += 1
+                log({"op": "set", "i": i if i >= 0 else len(self) + i, "v": x.v if isinstance(x, Item) else x})
+            else:
+                stats["write"] += 1
+                log({"op": "all", "arr": [y.v if isinstance(y, Item) else y for y in self]})
+
+    arr = Tracked(Item(v) for v in data)
+
+    def call(ns):
+        if func not in ns or not callable(ns[func]):
+            raise NameError(f"«{func}» функциясы анықталмаған")
+        return ns[func](arr)
+
+    def plain(xs):
+        return [y.v if isinstance(y, Item) else y for y in xs]
+
+    r = _run(code, [], call)
+    if not r["ok"] and r.get("error") == "TooMany":  # оқиғалар шегі (шексіз цикл не тым ұзын кіріс)
+        return json.dumps({"ok": True, "truncated": True, "events": events, "final": plain(arr), "stats": stats}, ensure_ascii=False)
+    if not r["ok"]:
+        d = {k: r.get(k) for k in ("error", "line", "detail", "hint", "out")}
+        d.update({"ok": False, "events": events, "stats": stats})
+        return json.dumps(d, ensure_ascii=False)
+    res = r["result"]
+    returned = plain(res) if isinstance(res, list) and res is not arr else None
+    return json.dumps({"ok": True, "truncated": False, "events": events, "final": plain(arr), "returned": returned,
+                       "sorted": (returned if returned is not None else plain(arr)) == sorted(data), "stats": stats, "out": r["out"]}, ensure_ascii=False)
