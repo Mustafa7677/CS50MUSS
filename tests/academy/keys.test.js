@@ -10,7 +10,7 @@ const items = JSON.parse(execFileSync("python3", [path.join(root, "tools/academy
 // academy.js-тегі checkFormula-ны браузерсіз жүктеу: DOM керек емес бөлігі
 const vm = require("vm");
 const fs = require("fs");
-const ctx = { window: { AOLogic: L, AOArith: require("../../assets/js/academy-arith.js"), AODisc: require("../../assets/js/academy-disc.js"), AOPseudo: require("../../assets/js/academy-pseudo.js") }, document: { readyState: "complete", querySelector: () => null, querySelectorAll: () => [], addEventListener() {}, dispatchEvent() {} }, CustomEvent: function () {}, localStorage: { getItem: () => null, setItem() {} }, console };
+const ctx = { URL, location: { href: "http://localhost/academy/" }, window: { AOLogic: L, AOArith: require("../../assets/js/academy-arith.js"), AODisc: require("../../assets/js/academy-disc.js"), AOPseudo: require("../../assets/js/academy-pseudo.js") }, document: { readyState: "complete", querySelector: () => null, querySelectorAll: () => [], addEventListener() {}, dispatchEvent() {} }, CustomEvent: function () {}, localStorage: { getItem: () => null, setItem() {} }, console };
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(root, "assets/js/academy.js"), "utf8"), ctx);
 const A = ctx.window.AOAcademy;
