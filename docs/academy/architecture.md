@@ -41,7 +41,8 @@ AO17 CS Universe - қазақ тіліндегі бес деңгейлі инф�
 | Spaced Repetition | `INTERVALS = [2, 7, 21, 60]` күн | бар (қарапайым) |
 | Recommendation | басты беттегі «Келесі ұсыныс» | бар: ретімен бірінші меңгерілмеген сабақ |
 | Knowledge Graph | `academy/map.html` | бар: модульдер, алғышарт байланысы, жеке күй |
-| C нақты орындау, Virtual Computer, C Playground, Judge, Certification | - | **әлі жоқ** (docs/academy/next-steps.md) |
+| C (build кезінде gcc: мысалдар, `cshow`, `coutput`) | `tools/academy_build.py` (`run_c`, `c_check`) | бар: -std=c11 -Wall -Wextra -Werror, stdin, шығу коды, UBSan/ASan хабарлары |
+| Браузердегі C, Virtual Computer, C Playground, Judge, Certification | - | **әлі жоқ** (docs/academy/next-steps.md) |
 
 ## Сабақ деректерінің моделі
 Әр сабақ - Python сөздігі (`tools/academy/content/mNN_*.py`). Міндетті өрістер (`REQUIRED`, `tools/academy_build.py`):
@@ -64,6 +65,7 @@ AO17 CS Universe - қазақ тіліндегі бес деңгейлі инф�
 | `closedform` | Σ f(i)-мен n = start..start+29 салыстыру | кез келген тең формула қабылданады |
 | `pycode` | AO17 Judge, ашық тесттер | оқушы Python коды; әр тест: аргументтер/күтілгені/алынғаны не қате түрі + кеңес |
 | `pytests` | AO17 Judge `judge_tests`: дұрыс іске асыру + мутанттар | оқушы тест жазады; тесттер дұрыс кодта өтіп, әр мутантты ұстауы керек |
+| `coutput` | build кезінде gcc шығысы | оқушы C бағдарламасының шығысын болжайды; бірінші айырмашылық жолы айтылады |
 | `convert` | санау жүйесін аудару - есептеледі | бастағы нөлдер, регистр еленбейді |
 | `encode` | twos / utf8 / parity / float32 / rle - есептеледі | ұзындық қатесі бөлек айтылады |
 | `bitop` | биттік өрнек (ені берілген) - есептеледі | ондық, 0b, 0x жауап қабылданады |
