@@ -6,6 +6,10 @@
   "use strict";
   const L = window.AOLogic;
   const AR = window.AOArith;
+  const DS = window.AODisc;
+  const PROPN = { reflexive: "рефлексивті", symmetric: "симметриялы", antisymmetric: "антисимметриялы", transitive: "транзитивті" };
+  const FUNCN = { bijective: "биекция", injective: "инъекция (бірақ сюръекция емес)", surjective: "сюръекция (бірақ инъекция емес)", neither: "функция, бірақ инъекция да, сюръекция да емес", notfunction: "функция емес" };
+  const elText = (arr) => arr.join(", ");
   if (!L) return;
   const $ = (s, el) => (el || document).querySelector(s);
   const $$ = (s, el) => [...(el || document).querySelectorAll(s)];
@@ -193,6 +197,106 @@
           <p class="ac-verdict ${r.ok ? "k-tautology" : "k-contradiction"}">${r.ok ? `Алғашқы ${r.rows.length} мәнде сәйкес. Негіз ${base ? "ақиқат" : "жалған"}.` : `n = ${r.first.N}-де сәйкес емес${base ? "" : " (негіздің өзі жалған)"}.`} Бұл - сандық тексеріс; дәлелдеу үшін индукция керек.</p>`;
       }, f1);
       el.append(f1, f2, out); draw();
+    } else if (spec.lab === "venn") {
+      const names = Object.keys(spec.sets);
+      const fe = exprInput(spec.expr, "Жиын өрнегі (∪ ∩ \\ △ ')", () => draw());
+      const keys = document.createElement("div");
+      keys.className = "ac-keys";
+      keys.innerHTML = ["∪", "∩", "\\", "△", "'", "(", ")", "U", "∅", ...names].map((k) => `<button type="button" data-k="${esc(k)}">${esc(k)}</button>`).join("");
+      $$("button", keys).forEach((b) => b.addEventListener("click", () => { const i = fe.input; i.value += (b.dataset.k.length === 1 && /[∪∩△\\]/.test(b.dataset.k)) ? " " + b.dataset.k + " " : b.dataset.k; i.dispatchEvent(new Event("input")); i.focus(); }));
+      const sw = document.createElement("div");
+      sw.className = "ac-quant";
+      sw.innerHTML = names.map((n) => `<label><span>${n}</span><input type="text" data-set="${n}" value="${esc(elText(spec.sets[n]))}"></label>`).join("") + `<label><span>U</span><input type="text" data-set="U" value="${esc(elText(spec.U))}"></label>`;
+      const cv = document.createElement("canvas");
+      cv.width = 360; cv.height = 240; cv.className = "ac-venn"; cv.setAttribute("role", "img");
+      const draw = () => guard(() => {
+        const sets = {};
+        names.forEach((n) => (sets[n] = DS.parseSet($(`[data-set="${n}"]`, sw).value)));
+        const U = DS.parseSet($('[data-set="U"]', sw).value);
+        const tree = DS.parseExpr(fe.input.value);
+        const res = DS.evalSet(tree, sets, U);
+        const logic = L.parse(DS.toLogic(tree));
+        // аймақтарды бояу: әр пиксел үшін мүшелік шарты (2-3 жиын)
+        const ctx = cv.getContext("2d"), W = cv.width, H = cv.height;
+        const C = names.length === 2 ? [[140, 120], [220, 120]] : [[145, 95], [215, 95], [180, 155]];
+        const R = names.length === 2 ? 85 : 72;
+        const css = getComputedStyle(document.body);
+        const fill = css.getPropertyValue("--ac-green").trim() || "#173e35", line = css.getPropertyValue("--text").trim() || "#222";
+        const img = ctx.createImageData(W, H);
+        const hex = fill.replace("#", ""); const fr = parseInt(hex.slice(0, 2), 16), fg = parseInt(hex.slice(2, 4), 16), fb = parseInt(hex.slice(4, 6), 16);
+        const memo = {};
+        for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+          const env = {}; let code = "";
+          names.forEach((n, i) => { const inside = (x - C[i][0]) ** 2 + (y - C[i][1]) ** 2 <= R * R; env[n.toLowerCase()] = inside; code += inside ? 1 : 0; });
+          const v = code in memo ? memo[code] : (memo[code] = L.evaluate(logic, env));
+          if (v) { const o = (y * W + x) * 4; img.data[o] = fr; img.data[o + 1] = fg; img.data[o + 2] = fb; img.data[o + 3] = 110; }
+        }
+        ctx.putImageData(img, 0, 0);
+        ctx.strokeStyle = line; ctx.lineWidth = 1.5; ctx.strokeRect(1, 1, W - 2, H - 2);
+        ctx.fillStyle = line; ctx.font = "bold 15px sans-serif";
+        C.forEach((c, i) => { ctx.beginPath(); ctx.arc(c[0], c[1], R, 0, 2 * Math.PI); ctx.stroke(); ctx.fillText(names[i], c[0] + (i === 0 ? -R + 6 : i === 1 ? R - 18 : -5), c[1] + (i === 2 ? R - 8 : -R + 20)); });
+        ctx.fillText("U", 10, 22);
+        cv.setAttribute("aria-label", `Венн диаграммасы: ${fe.input.value} аймағы боялған`);
+        out.innerHTML = `<p class="ac-formula">${esc(fe.input.value)} = ${esc(DS.fmt(res))}</p><p class="ac-note">Мүшелік шарты: ${esc(L.toStr(logic).replace(/\b([a-z])\b/g, (m) => "x ∈ " + m.toUpperCase()))}</p>`;
+      }, fe);
+      $$("input", sw).forEach((x) => x.addEventListener("input", draw));
+      el.append(fe, keys, sw, cv, out); draw();
+    } else if (spec.lab === "relation") {
+      const w = document.createElement("div");
+      w.className = "ac-quant";
+      w.innerHTML = `<label><span>Жиын S</span><input type="text" data-s value="${esc(elText(spec.S))}"></label><label><span>Жұптар R</span><input type="text" data-r value="${esc(spec.R)}"></label>`;
+      const draw = () => guard(() => {
+        const S = DS.parseSet($("[data-s]", w).value), R = DS.parsePairs($("[data-r]", w).value);
+        const has = (a, b) => R.some(([x, y]) => String(x) === String(a) && String(y) === String(b));
+        const P = DS.relProps(S, R);
+        const tbl = `<table class="ac-tt"><thead><tr><th>R</th>${S.map((b) => `<th>${esc(b)}</th>`).join("")}</tr></thead><tbody>${S.map((a) => `<tr><th>${esc(a)}</th>${S.map((b) => `<td class="${has(a, b) ? "v1" : ""}">${has(a, b) ? "●" : ""}</td>`).join("")}</tr>`).join("")}</tbody></table>`;
+        const why = { reflexive: () => { const a = S.find((x) => !has(x, x)); return a !== undefined ? `(${a}, ${a}) жоқ` : ""; },
+          symmetric: () => { const p = R.find(([a, b]) => !has(b, a)); return p ? `(${p[0]}, ${p[1]}) бар, (${p[1]}, ${p[0]}) жоқ` : ""; },
+          antisymmetric: () => { const p = R.find(([a, b]) => String(a) !== String(b) && has(b, a)); return p ? `(${p[0]}, ${p[1]}) және (${p[1]}, ${p[0]})` : ""; },
+          transitive: () => (P.transWitness ? `(${P.transWitness[0]}, ${P.transWitness[1]}), (${P.transWitness[1]}, ${P.transWitness[2]}) бар, (${P.transWitness[0]}, ${P.transWitness[2]}) жоқ` : "") };
+        out.innerHTML = `<div class="ac-tt-wrap">${tbl}</div><ul class="ac-props">${Object.keys(PROPN).map((k) => `<li class="${P[k] ? "y" : "n"}">${P[k] ? "✓" : "✗"} ${PROPN[k]}${P[k] ? "" : ": " + esc(why[k]())}</li>`).join("")}</ul>`
+          + (P.equivalence ? `<p class="ac-verdict k-tautology">Эквиваленттік қатынас. Кластары: ${P.classes.map(DS.fmt).join(", ")}</p>` : P.partialOrder ? `<p class="ac-verdict k-contingent">Ішінара реттілік.</p>` : "");
+      });
+      $$("input", w).forEach((x) => x.addEventListener("input", draw));
+      el.append(w, out); draw();
+    } else if (spec.lab === "graph") {
+      const w = document.createElement("div");
+      w.className = "ac-quant";
+      w.innerHTML = `<label><span>Төбелер V</span><input type="text" data-v value="${esc(elText(spec.V))}"></label><label><span>Қабырғалар (u-v, үтірмен)</span><input type="text" data-e value="${esc(spec.E)}"></label>`;
+      const draw = () => guard(() => {
+        const V = DS.parseSet($("[data-v]", w).value), E = DS.parseEdges($("[data-e]", w).value);
+        const g = DS.graphInfo(V, E);
+        const n = g.vertices.length, cx = 170, cy = 120, r = n > 1 ? 90 : 0;
+        const pos = {};
+        g.vertices.forEach((v, i) => (pos[String(v)] = [cx + r * Math.cos((2 * Math.PI * i) / n - Math.PI / 2), cy + r * Math.sin((2 * Math.PI * i) / n - Math.PI / 2)]));
+        const lines = E.map(([a, b]) => { const p = pos[String(a)], q = pos[String(b)]; return String(a) === String(b) ? `<circle cx="${p[0]}" cy="${p[1] - 18}" r="12" class="ge"/>` : `<line x1="${p[0]}" y1="${p[1]}" x2="${q[0]}" y2="${q[1]}" class="ge"/>`; }).join("");
+        const dots = g.vertices.map((v) => { const p = pos[String(v)]; return `<g class="gv"><circle cx="${p[0]}" cy="${p[1]}" r="15"/><text x="${p[0]}" y="${p[1] + 5}" text-anchor="middle">${esc(v)}</text></g>`; }).join("");
+        out.innerHTML = `<svg viewBox="0 0 340 240" class="ac-graph" role="img" aria-label="Граф: ${n} төбе, ${g.edges} қабырға">${lines}${dots}</svg>
+          <p>Төбе: <b>${n}</b> · қабырға: <b>${g.edges}</b> · дәрежелер: ${Object.entries(g.degrees).map(([v, d]) => `${esc(v)}:${d}`).join(", ")} · Σ deg = ${g.degreeSum} = 2·${g.edges}</p>
+          <p>Компоненттер: ${g.components.map(DS.fmt).join(", ")} · ${g.connected ? "байланысқан" : "байланыспаған"} · ${g.tree ? "<b>ағаш</b>" : g.acyclic ? "орман (циклсыз)" : g.simple ? "циклы бар" : "қарапайым емес (тұзақ не еселі қабырға)"}</p>`;
+      });
+      $$("input", w).forEach((x) => x.addEventListener("input", draw));
+      el.append(w, out); draw();
+    } else if (spec.lab === "func") {
+      const w = document.createElement("div");
+      w.className = "ac-quant";
+      w.innerHTML = `<label><span>X</span><input type="text" data-x value="${esc(elText(spec.X))}"></label><label><span>Y</span><input type="text" data-y value="${esc(elText(spec.Y))}"></label><label><span>f жұптары</span><input type="text" data-p value="${esc(spec.pairs)}"></label>`;
+      const draw = () => guard(() => {
+        const X = DS.parseSet($("[data-x]", w).value), Y = DS.parseSet($("[data-y]", w).value), Pp = DS.parsePairs($("[data-p]", w).value);
+        const k = DS.funcKind(X, Y, Pp);
+        const h = Math.max(X.length, Y.length) * 34 + 20;
+        const yx = (i, n) => 20 + i * ((h - 40) / Math.max(1, n - 1)) + (n === 1 ? (h - 40) / 2 : 0);
+        const px = {}, py = {};
+        X.forEach((x, i) => (px[String(x)] = yx(i, X.length)));
+        Y.forEach((y, i) => (py[String(y)] = yx(i, Y.length)));
+        const arrows = Pp.filter(([a, b]) => String(a) in px && String(b) in py).map(([a, b]) => `<line x1="70" y1="${px[String(a)]}" x2="250" y2="${py[String(b)]}" class="ge" marker-end="url(#ah)"/>`).join("");
+        out.innerHTML = `<svg viewBox="0 0 320 ${h}" class="ac-graph" role="img" aria-label="f: X → Y сызбасы"><defs><marker id="ah" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" class="gah"/></marker></defs>${arrows}
+          ${X.map((x) => `<g class="gv"><circle cx="55" cy="${px[String(x)]}" r="14"/><text x="55" y="${px[String(x)] + 5}" text-anchor="middle">${esc(x)}</text></g>`).join("")}
+          ${Y.map((y) => `<g class="gv"><circle cx="265" cy="${py[String(y)]}" r="14"/><text x="265" y="${py[String(y)] + 5}" text-anchor="middle">${esc(y)}</text></g>`).join("")}</svg>
+          <p class="ac-verdict ${k.kind === "bijective" ? "k-tautology" : k.kind === "notfunction" ? "k-contradiction" : "k-contingent"}">${esc(FUNCN[k.kind])}${k.why ? ": " + esc(k.why) : ""}</p>`;
+      });
+      $$("input", w).forEach((x) => x.addEventListener("input", draw));
+      el.append(w, out); draw();
     } else if (spec.lab === "quant") {
       const w = document.createElement("div");
       w.className = "ac-quant";
@@ -255,6 +359,10 @@
     else if (ex.type === "classify") body = `<p class="ac-formula">${esc(ex.formula)}</p><div class="ac-opts" role="radiogroup">${Object.entries(KIND).map(([k, v]) => `<label><input type="radio" name="${esc(key)}" value="${k}"> ${esc(v)}</label>`).join("")}</div>`;
     else if (ex.type === "argument") body = `<p class="ac-formula">${esc(ex.premises.join(",  "))}  ⊨  ${esc(ex.conclusion)}</p><div class="ac-opts" role="radiogroup"><label><input type="radio" name="${esc(key)}" value="1"> Дұрыс аргумент</label><label><input type="radio" name="${esc(key)}" value="0"> Дұрыс емес</label></div>`;
     else if (ex.type === "number") body = `<label class="ac-num"><span>Жауап</span><input type="number" inputmode="numeric" step="1"></label>`;
+    else if (ex.type === "setexpr") body = `<p class="ac-formula">${esc(ex.expr)}</p><label class="ac-num"><span>Жиын (мысалы: {1, 3, 5} не ∅)</span><input type="text" class="ac-setin" autocomplete="off"></label>`;
+    else if (ex.type === "setid") body = `<p class="ac-formula">${esc(ex.target)}</p>${ex.forbid ? `<p class="ac-note">Тыйым салынған: ${esc(ex.forbid.join(" "))}</p>` : ""}<label class="ac-num"><span>Тепе-тең өрнек (A, B, C, ∪ ∩ \\ △ ')</span><input type="text" class="ac-setin" autocomplete="off"></label>`;
+    else if (ex.type === "props") body = `<p class="ac-formula">S = {${esc(ex.S.join(", "))}}, R = {${esc(ex.R || "")}}</p><div class="ac-opts">${Object.entries(PROPN).map(([k, v]) => `<label><input type="checkbox" value="${k}"> ${esc(v)}</label>`).join("")}</div>`;
+    else if (ex.type === "func") body = `<div class="ac-opts" role="radiogroup">${Object.entries(FUNCN).map(([k, v]) => `<label><input type="radio" name="${esc(key)}" value="${k}"> ${esc(v)}</label>`).join("")}</div>`;
     else if (ex.type === "counterexample") body = `<label class="ac-num"><span>Қарсы мысал n</span><input type="number" inputmode="numeric" step="1"></label>`;
     else if (ex.type === "closedform") body = `<p class="ac-formula">Σ f(i), i = ${ex.start}..n, мұнда f(n) = ${esc(ex.term)}</p>`;
     else if (ex.type === "recurrence") body = `<p class="ac-formula">a(${ex.start}) = ${ex.first}, a(n) = ${esc(ex.rule.replace(/a/g, "a(n−1)"))}</p>`;
@@ -314,6 +422,36 @@
             return { ok: false, msg: `n = ${b.N} болғанда сіздің формула ${AR.str(b.closed)}, ал керегі ${AR.str(ex.type === "closedform" ? b.sum : b.a)}.` };
           } catch (e) { return { ok: false, msg: e.message, soft: true }; }
         }
+        case "setexpr": {
+          const v = $(".ac-setin", box).value; if (!v.trim()) return null;
+          try {
+            const got = DS.parseSet(v), want = DS.evalSet(ex.expr, ex.sets, ex.U);
+            if (DS.eqSet(got, want)) return { ok: true, msg: "Дұрыс: " + DS.fmt(want) };
+            const extra = got.filter((x) => !want.some((y) => String(y) === String(x))), miss = want.filter((x) => !got.some((y) => String(y) === String(x)));
+            return { ok: false, msg: `Қате.${extra.length ? " Артық: " + extra.join(", ") + "." : ""}${miss.length ? " Жетіспейді: " + miss.length + " элемент." : ""}` };
+          } catch (e) { return { ok: false, msg: e.message, soft: true }; }
+        }
+        case "setid": {
+          const v = $(".ac-setin", box).value; if (!v.trim()) return null;
+          try {
+            DS.parseExpr(v);
+            const bad = (ex.forbid || []).find((o) => v.includes(o));
+            if (bad) return { ok: false, msg: `Бұл тапсырмада «${bad}» қолдануға болмайды.` };
+            const r = DS.identical(v, ex.target);
+            return r.identical ? { ok: true, msg: "Дұрыс: барлық мүшелік жағдайында тең (тепе-теңдік)." } : { ok: false, msg: `Тепе-тең емес. Қарсы мысал аймағы: x ${r.region} болғанда сіздің өрнекте x ${r.left ? "бар" : "жоқ"}, ал мақсатта ${r.right ? "бар" : "жоқ"}.` };
+          } catch (e) { return { ok: false, msg: e.message, soft: true }; }
+        }
+        case "props": {
+          const P = DS.relProps(ex.S, DS.parsePairs(ex.R || ""));
+          const chosen = new Set($$("input[type=checkbox]:checked", box).map((c) => c.value));
+          const wrong = Object.keys(PROPN).filter((k) => P[k] !== chosen.has(k));
+          return wrong.length ? { ok: false, msg: `Қате белгіленген қасиет саны: ${wrong.length}. Әр қасиетті анықтамасымен қайта тексеріңіз.` } : { ok: true, msg: "Дұрыс." + (P.equivalence ? " Бұл - эквиваленттік қатынас." : P.partialOrder ? " Бұл - ішінара реттілік." : "") };
+        }
+        case "func": {
+          const v = picked(); if (v == null) return null;
+          const k = DS.funcKind(ex.X, ex.Y, DS.parsePairs(ex.pairs));
+          return { ok: v === k.kind, msg: v === k.kind ? "Дұрыс" + (k.why ? ": " + k.why : ".") : "Қате. Алдымен функция екенін, сосын инъекция мен сюръекцияны бөлек тексеріңіз." };
+        }
         case "order": {
           const lis = $$(".ac-order li", box);
           const order = lis.map((li) => +li.dataset.i);
@@ -346,6 +484,10 @@
       else if (ex.type === "formula") ans = ex.solution + " (басқа эквивалент жауап та қабылданады)";
       else if (ex.type === "closedform" || ex.type === "recurrence") ans = ex.solution + " (эквивалент жазылу да қабылданады)";
       else if (ex.type === "counterexample") ans = "n = " + AR.searchCounterexamples(ex, 1)[0];
+      else if (ex.type === "setexpr") ans = DS.fmt(DS.evalSet(ex.expr, ex.sets, ex.U));
+      else if (ex.type === "setid") ans = ex.solution;
+      else if (ex.type === "props") { const P = DS.relProps(ex.S, DS.parsePairs(ex.R || "")); ans = Object.keys(PROPN).filter((k) => P[k]).map((k) => PROPN[k]).join(", ") || "ешқайсысы"; }
+      else if (ex.type === "func") ans = FUNCN[DS.funcKind(ex.X, ex.Y, DS.parsePairs(ex.pairs)).kind];
       else if (ex.type === "order") ans = ex.steps.map((s, i) => `${i + 1}) ${s}`).join(" ");
       fb.textContent = "Жауабы: " + ans;
       fb.className = "ac-fb";
@@ -415,7 +557,10 @@
       argument: { lab: "argument", premises: ["p → q", "¬q"], conclusion: "¬p" }, normal: { lab: "normal", formula: "p ⊕ q ⊕ r" },
       tree: { lab: "tree", formula: "¬p ∨ q ∧ r → s" }, quant: { lab: "quant", domain: [1, 2, 3, 4, 5, 6, 7, 8, 9], pred: "prime" },
       search: { lab: "search", expr: "n^2 + n + 41", prop: "prime", domain: [0, 45] }, induction: { lab: "induction", term: "n^2", closed: "n(n+1)(2n+1)/6", start: 1 },
-      recur: { lab: "recur", first: 1, start: 1, rule: "2a + 1", closed: "2^n - 1" } };
+      recur: { lab: "recur", first: 1, start: 1, rule: "2a + 1", closed: "2^n - 1" },
+      venn: { lab: "venn", sets: { A: [1, 2, 3, 4], B: [3, 4, 5, 6], C: [2, 4, 6, 8] }, U: [1, 2, 3, 4, 5, 6, 7, 8], expr: "(A ∪ B)' ∩ C" },
+      relation: { lab: "relation", S: [1, 2, 3, 4], R: "(1,1), (2,2), (3,3), (4,4), (1,2), (2,1)" }, graph: { lab: "graph", V: [1, 2, 3, 4, 5, 6], E: "1-2, 1-3, 2-4, 2-5, 3-6" },
+      func: { lab: "func", X: [1, 2, 3], Y: ["a", "b", "c"], pairs: "(1,a), (2,c), (3,b)" } };
     const show = (k) => {
       $$("[data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === k)));
       el.className = "ac-lab ac-lab-big";
