@@ -9,6 +9,7 @@
 """
 import html
 import json
+import os
 import re
 import subprocess
 import sys
@@ -28,7 +29,7 @@ import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
 
 OUT = ROOT / "academy"
-CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b", "m09_a", "m09_b"]
+CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b", "m09_a", "m09_b", "m10_a", "m10_b"]
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
@@ -38,8 +39,8 @@ REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "reflection": (list, 1), "further": (dict, None), "references": (list, 1), "license": (str, 2), "authorship": (str, 2),
     "reviewStatus": (str, 2), "version": (str, 5),
 }
-EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence", "setexpr", "setid", "props", "func", "trace", "count", "convert", "encode", "bitop", "pycode", "pytests"}
-LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur", "venn", "relation", "graph", "func", "trace", "growth", "base", "bitpanel", "utf8", "float", "rle", "pyrun", "calltree", "arena"}
+EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence", "setexpr", "setid", "props", "func", "trace", "count", "convert", "encode", "bitop", "pycode", "pytests", "coutput"}
+LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur", "venn", "relation", "graph", "func", "trace", "growth", "base", "bitpanel", "utf8", "float", "rle", "pyrun", "calltree", "arena", "cshow"}
 GROWTH = {"1", "log2(n)", "sqrt(n)", "n", "n*log2(n)", "n^2", "n^3", "2^n", "100*n", "n!"}
 ARITH_PROPS = set(AR.PROPS)
 QUANT_PREDS = {"even", "odd", "prime", "positive", "gt3", "square"}
@@ -84,6 +85,8 @@ def check_lab(spec, where, errs):
             r = json.loads(JG.trace_calls(spec["code"], spec["call"]))
             if not r["ok"] or r["truncated"]:
                 errs.append(f"{where}: calltree - шақыру қатемен не шексіз аяқталды")
+        elif lab == "cshow":
+            c_check(spec, f"{where}: cshow", errs)
         elif lab == "arena":
             r = json.loads(JG.trace_sort(spec["code"], spec["func"], spec["data"]))
             if not r["ok"] or r["truncated"] or (not r["sorted"] and not spec.get("expectUnsorted")):
@@ -173,6 +176,8 @@ def check_exercise(ex, where, errs):
                 errs.append(f"{where}: pycode - эталон шешім тесттен өтпеді: {bad}")
             if JG.judge(ex.get("starter", ""), spec)["ok"]:
                 errs.append(f"{where}: pycode - бастапқы код (starter) тесттерден өтіп кетеді (мағынасыз)")
+        elif t == "coutput":
+            c_check(ex, where, errs, ex["answer"])
         elif t == "pytests":
             if len(ex["mutants"]) < 2:
                 errs.append(f"{where}: pytests - кемінде 2 мутант керек")
@@ -302,6 +307,44 @@ def run_example(code, timeout=10):
     return r.returncode, r.stdout.rstrip("\n"), r.stderr
 
 
+CFLAGS = ["-std=c11", "-O0", "-Wall", "-Wextra"]
+
+
+def run_c(code, stdin="", flags=None, werror=True, timeout=10):
+    """C кодын нағыз gcc-мен компиляциялап іске қосу: (күй, stdout, stderr). күй: 'cc' - компиляция қатесі, иначе шығу коды."""
+    import shutil
+    import tempfile
+    gcc = shutil.which("gcc")
+    if not gcc:
+        raise RuntimeError("gcc табылмады: C мысалдарын тексеру үшін gcc орнатыңыз")
+    with tempfile.TemporaryDirectory(prefix="ao17_c_") as d:
+        src, exe = os.path.join(d, "prog.c"), os.path.join(d, "prog")
+        with open(src, "w", encoding="utf-8") as f:
+            f.write(code)
+        cmd = [gcc, *CFLAGS, *(["-Werror"] if werror else []), *(flags or []), "-o", exe, src, "-lm"]
+        c = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+        if c.returncode != 0:
+            return "cc", "", c.stderr
+        r = subprocess.run([exe], input=stdin, capture_output=True, text=True, timeout=timeout, cwd=d)
+        return r.returncode, r.stdout.rstrip("\n"), r.stderr
+
+
+def c_check(spec, where, errs, want=None):
+    """C мысалы не coutput тапсырмасы: компиляция, шығу коды, stdout, (қажет болса) stderr мәтіні."""
+    rc, out, err = run_c(spec["code"], spec.get("stdin", ""), spec.get("cflags"), not spec.get("warn"))
+    if rc == "cc":
+        errs.append(f"{where}: C компиляция қатесі (gcc {' '.join(CFLAGS)}): {err.strip()[:400]}")
+        return
+    if rc != spec.get("exit", 0):
+        errs.append(f"{where}: C бағдарлама шығу коды {rc} (күтілгені {spec.get('exit', 0)}); stderr: {err.strip()[:200]}")
+    want = spec["output"] if want is None else want
+    norm = lambda t: "\n".join(l.rstrip() for l in t.rstrip().split("\n"))  # noqa: E731 - жол соңындағы бос орындар еленбейді (JS тексерісі сияқты)
+    if norm(out) != norm(want):
+        errs.append(f"{where}: C шығысы сәйкес емес\n  күтілген: {want!r}\n  нақты:    {out!r}")
+    if spec.get("stderrHas") and spec["stderrHas"] not in err:
+        errs.append(f"{where}: stderr-де «{spec['stderrHas']}» жоқ: {err.strip()[:200]}")
+
+
 def validate(lessons, run_code=True):
     errs = []
     plan = {p["id"]: p for p in C.plan()}
@@ -353,6 +396,9 @@ def validate(lessons, run_code=True):
                 errs.append(f"{lid}: mistakes элементі толық емес")
         if run_code:
             for j, exm in enumerate(L.get("examples", [])):
+                if exm.get("lang") == "c":
+                    c_check(exm, f"{lid} мысал {j + 1}", errs)
+                    continue
                 if exm.get("lang") != "python":
                     continue
                 rc, out, err = run_example(exm["code"])
@@ -439,8 +485,11 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
         else f'<li>{E(plan_by_id[p]["title"])} <small>(жоспарда)</small></li>' for p in L["prerequisites"]) or "<li>Алғышарт жоқ: бұл - бастапқы сабақ.</li>"
     theory = "".join(f'<div class="ac-th ac-{t["kind"]}"><div class="ac-th-k">{KIND[t["kind"]]}</div><h4>{E(t["title"])}</h4>{t["body"]}</div>' for t in L["theory"])
     examples = "".join(
-        f'<figure class="ac-ex"><figcaption>{E(x["title"])}</figcaption><pre data-lang="python"><code class="language-python">{E(x["code"])}</code></pre>'
-        f'<div class="ac-out"><span>Шығыс (тексерілген)</span><pre>{E(x["output"])}</pre></div><p>{E(x["explain"])}</p></figure>' for x in L["examples"])
+        f'<figure class="ac-ex"><figcaption>{E(x["title"])}</figcaption><pre data-lang="{x.get("lang", "python")}"><code class="language-{x.get("lang", "python")}">{E(x["code"])}</code></pre>'
+        + (f'<div class="ac-out"><span>stdin</span><pre>{E(x["stdin"])}</pre></div>' if x.get("stdin") else "")
+        + f'<div class="ac-out"><span>{"Шығыс (build кезінде gcc арқылы алынған)" if x.get("lang") == "c" else "Шығыс (тексерілген)"}</span><pre>{E(x["output"])}</pre></div>'
+        + (f'<div class="ac-out"><span>stderr (gcc {E(" ".join(x["cflags"]))})</span><pre>{E(x["stderrShow"])}</pre></div>' if x.get("stderrShow") else "")
+        + f'<p>{E(x["explain"])}</p></figure>' for x in L["examples"])
     mistakes = "".join(f'<li><b>{E(m["mistake"])}</b><br>Себебі: {E(m["why"])}<br>Түзету: {E(m["fix"])}</li>' for m in L["mistakes"])
     proj = ""
     if L.get("project"):
@@ -650,6 +699,8 @@ def dump_keys():
                     k = bits_key(ex)
                 elif t in ("pycode", "pytests"):
                     k = ex["solution"]
+                elif t == "coutput":
+                    k = ex["answer"]
                 elif t == "count":
                     k = PS.run(ex["code"], ex.get("inputs", {}))["counts"].get(ex["line"], 0)
                 elif t == "setexpr":

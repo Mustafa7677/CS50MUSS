@@ -385,6 +385,17 @@
       $("[data-run]", w).addEventListener("click", run);
       out.innerHTML = '<p class="ac-note">«Орындау» басыңыз: Python функцияны нақты орындап, әр салыстыру мен әр жазуды тіркейді. Бағандар - тізімнің сол сәттегі нақты күйі.</p>';
       el.append(ta, w, out);
+    } else if (spec.lab === "cshow") {
+      const w = document.createElement("div");
+      w.className = "ac-pyrun";
+      w.innerHTML = `<pre class="ac-pseudo ac-c"><code>${spec.code.split("\n").map((l, i) => `<span class="ln">${i + 1}</span>${esc(l)}`).join("\n")}</code></pre>${spec.stdin ? `<p class="ac-note">stdin: <code>${esc(spec.stdin).replace(/\n/g, "↵")}</code></p>` : ""}<label class="ac-codebox"><span>Алдымен болжаңыз: бағдарлама не шығарады?</span><textarea rows="3" spellcheck="false"></textarea></label><div class="ac-qa"><button type="button" class="btn gold" data-run>Шығысты көрсету</button></div>`;
+      $("[data-run]", w).addEventListener("click", () => {
+        const guess = $("textarea", w).value.replace(/\s+$/, "");
+        const same = guess && guess.split("\n").map((l) => l.trimEnd()).join("\n") === spec.output.replace(/\s+$/, "");
+        out.innerHTML = `<div class="ac-out"><span>Шығыс (build кезінде gcc -std=c11 арқылы алынған${spec.cflags ? ", " + esc(spec.cflags.join(" ")) : ""})</span><pre class="run-output">${esc(spec.output)}</pre></div>${spec.stderrShow ? `<div class="ac-out"><span>stderr</span><pre class="run-output err">${esc(spec.stderrShow)}</pre></div>` : ""}${guess ? `<p class="ac-fb ${same ? "good" : "bad"}">${same ? "Болжамыңыз дәл сәйкес." : "Болжам сәйкес емес - қай жолда айырмашылық бар екенін табыңыз."}</p>` : ""}`;
+      });
+      out.innerHTML = '<p class="ac-note">Браузерде C компиляторы жоқ. Бұл бағдарламаның шығысы сайтты құрастыру кезінде нағыз gcc-мен алынып, тексерілген.</p>';
+      el.append(w, out);
     } else if (spec.lab === "base") {
       const w = document.createElement("div");
       w.className = "ac-quant";
@@ -608,6 +619,7 @@
     else if (ex.type === "classify") body = `<p class="ac-formula">${esc(ex.formula)}</p><div class="ac-opts" role="radiogroup">${Object.entries(KIND).map(([k, v]) => `<label><input type="radio" name="${esc(key)}" value="${k}"> ${esc(v)}</label>`).join("")}</div>`;
     else if (ex.type === "argument") body = `<p class="ac-formula">${esc(ex.premises.join(",  "))}  ⊨  ${esc(ex.conclusion)}</p><div class="ac-opts" role="radiogroup"><label><input type="radio" name="${esc(key)}" value="1"> Дұрыс аргумент</label><label><input type="radio" name="${esc(key)}" value="0"> Дұрыс емес</label></div>`;
     else if (ex.type === "number") body = `<label class="ac-num"><span>Жауап</span><input type="number" inputmode="numeric" step="1"></label>`;
+    else if (ex.type === "coutput") body = `<pre class="ac-pseudo ac-c"><code>${ex.code.split("\n").map((l, i) => `<span class="ln">${i + 1}</span>${esc(l)}`).join("\n")}</code></pre>${ex.stdin ? `<p class="ac-note">stdin: <code>${esc(ex.stdin).replace(/\n/g, "↵")}</code></p>` : ""}<label class="ac-codebox"><span>Бағдарлама не шығарады? (әр жол - жеке жол)</span><textarea class="ac-setin ac-cout" rows="${Math.min(8, ex.answer.split("\n").length + 1)}" spellcheck="false" autocomplete="off"></textarea></label><p class="ac-note">Дұрыс жауап build кезінде нағыз gcc (C11) арқылы алынған. Браузерде C компиляторы жоқ - өзіңіз тексеру үшін: <code>gcc -Wall -o prog prog.c && ./prog</code></p>`;
     else if (ex.type === "trace" || ex.type === "count") body = `<pre class="ac-pseudo"><code>${ex.code.split("\n").map((l, i) => `<span class="ln">${i + 1}</span>${esc(l)}`).join("\n")}</code></pre>${Object.keys(ex.inputs || {}).length ? `<p class="ac-note">Кіріс: ${esc(Object.entries(ex.inputs).map(([k, v]) => k + " = " + fmtVal(v)).join(", "))}</p>` : ""}<label class="ac-num"><span>${ex.type === "count" ? ex.line + "-жол неше рет орындалады" : ex.ask === "result" ? "Нәтиже (return)" : ex.ask === "output" ? "Шығыс (print)" : ex.ask + " мәні"}</span><input type="text" class="ac-setin" autocomplete="off"></label>`;
     else if (ex.type === "convert") body = `<p class="ac-formula">${esc(ex.value)}<sub>${ex.from}</sub> → ?<sub>${ex.to}</sub></p><label class="ac-num"><span>${ex.to}-лік жүйедегі жазылуы</span><input type="text" class="ac-setin" autocomplete="off" autocapitalize="characters"></label>`;
     else if (ex.type === "bitop") body = `<p class="ac-formula">${esc(ex.expr)} <small>(${ex.width} бит)</small></p><label class="ac-num"><span>Нәтиже (ондық, 0b... не 0x...)</span><input type="text" class="ac-setin" autocomplete="off"></label>`;
@@ -696,6 +708,15 @@
           if (ok) return { ok: true, msg: "Дұрыс: " + want };
           const hint = ex.type === "encode" && (ex.kind === "twos" || ex.kind === "float32") && v.replace(/\s+/g, "").length !== (ex.kind === "twos" ? ex.bits : 32) ? ` Ұзындығы ${ex.kind === "twos" ? ex.bits : 32} бит болуы керек.` : "";
           return { ok: false, msg: "Қате." + hint + " Зертханада тексеріп көріңіз." };
+        }
+        case "coutput": {
+          const v = $(".ac-setin", box).value; if (!v.trim()) return null;
+          const lines = (x) => x.replace(/\r/g, "").replace(/\s+$/, "").split("\n").map((l) => l.replace(/\s+$/, ""));
+          const got = lines(v), want = lines(ex.answer);
+          const bad = want.findIndex((l, i) => l !== got[i]);
+          if (bad < 0 && got.length === want.length) return { ok: true, msg: "Дұрыс: шығыс gcc нәтижесімен дәл сәйкес." };
+          const at = bad < 0 ? want.length : bad;
+          return { ok: false, msg: `${at + 1}-жолдан бастап айырмашылық бар${got[at] != null ? ` (сіздікі: «${got[at]}»)` : " (жол жетіспейді)"}. Типтерді, бүтін бөлуді және printf форматын қайта тексеріңіз.` };
         }
         case "trace": case "count": {
           const v = $(".ac-setin", box).value.trim(); if (!v) return null;
@@ -809,6 +830,7 @@
       else if (ex.type === "convert" || ex.type === "encode" || ex.type === "bitop") ans = bitsKey(ex);
       else if (ex.type === "pycode" || ex.type === "pytests") { ans = "төмендегі эталон шешім (өзіңіз түсініп, қайта жазыңыз)"; const pre = document.createElement("pre"); pre.className = "ac-pseudo"; pre.textContent = ex.solution; fb.after(pre); }
       else if (ex.type === "trace") ans = traceKey(ex);
+      else if (ex.type === "coutput") { ans = "төмендегі шығыс (gcc)"; const pre = document.createElement("pre"); pre.className = "ac-pseudo"; pre.textContent = ex.answer; fb.after(pre); }
       else if (ex.type === "count") ans = String(PS.run(ex.code, ex.inputs || {}).counts[ex.line] || 0);
       else if (ex.type === "setexpr") ans = DS.fmt(DS.evalSet(ex.expr, ex.sets, ex.U));
       else if (ex.type === "setid") ans = ex.solution;
