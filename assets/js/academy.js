@@ -7,6 +7,15 @@
   const L = window.AOLogic;
   const AR = window.AOArith;
   const DS = window.AODisc;
+  const PS = window.AOPseudo;
+  const fmtVal = (v) => (v === true ? "true" : v === false ? "false" : Array.isArray(v) ? "[" + v.map(fmtVal).join(", ") + "]" : String(v));
+  function traceKey(ex) {
+    const r = PS.run(ex.code, ex.inputs || {});
+    if (ex.ask === "result") return fmtVal(r.result);
+    if (ex.ask === "output") return r.output.join("\n");
+    return fmtVal(r.env[ex.ask]);
+  }
+  const GROWTH = { "1": () => 1, "log2(n)": (n) => Math.log2(n), "sqrt(n)": (n) => Math.sqrt(n), n: (n) => n, "n*log2(n)": (n) => n * Math.log2(n), "n^2": (n) => n * n, "n^3": (n) => n ** 3, "2^n": (n) => 2 ** n, "100*n": (n) => 100 * n, "n!": (n) => { let f = 1; for (let i = 2; i <= n; i++) f *= i; return f; } };
   const PROPN = { reflexive: "рефлексивті", symmetric: "симметриялы", antisymmetric: "антисимметриялы", transitive: "транзитивті" };
   const FUNCN = { bijective: "биекция", injective: "инъекция (бірақ сюръекция емес)", surjective: "сюръекция (бірақ инъекция емес)", neither: "функция, бірақ инъекция да, сюръекция да емес", notfunction: "функция емес" };
   const elText = (arr) => arr.join(", ");
@@ -197,6 +206,61 @@
           <p class="ac-verdict ${r.ok ? "k-tautology" : "k-contradiction"}">${r.ok ? `Алғашқы ${r.rows.length} мәнде сәйкес. Негіз ${base ? "ақиқат" : "жалған"}.` : `n = ${r.first.N}-де сәйкес емес${base ? "" : " (негіздің өзі жалған)"}.`} Бұл - сандық тексеріс; дәлелдеу үшін индукция керек.</p>`;
       }, f1);
       el.append(f1, f2, out); draw();
+    } else if (spec.lab === "trace") {
+      const w = document.createElement("div");
+      w.className = "ac-trace";
+      const inp = spec.inputs || {};
+      w.innerHTML = `<label class="ac-codebox"><span>Псевдокод</span><textarea rows="${Math.min(16, spec.code.split("\n").length + 1)}" spellcheck="false" autocapitalize="off">${esc(spec.code)}</textarea></label>
+        ${Object.keys(inp).length ? `<div class="ac-quant">${Object.entries(inp).map(([k, v]) => `<label><span>Кіріс ${esc(k)}</span><input type="text" data-in="${esc(k)}" value="${esc(fmtVal(v))}"></label>`).join("")}</div>` : ""}
+        <div class="ac-qa"><button type="button" class="btn gold" data-run>▶ Орындау</button><button type="button" class="btn secondary" data-prev>← Қадам</button><button type="button" class="btn secondary" data-next>Қадам →</button><span class="ac-st" data-pos></span></div>
+        <p class="ac-note">Бұл - AO17 оқу псевдокодының интерпретаторы: әр орындалған жолдан кейінгі айнымалылар күйі көрсетіледі.</p>`;
+      let res = null, pos = 0;
+      const show = () => {
+        if (!res) return;
+        const t = res.trace, n = t.length;
+        pos = Math.max(0, Math.min(pos, n - 1));
+        const cur = t[pos] || { line: 0, env: {} };
+        const lines = $("textarea", w).value.split("\n");
+        const vars = Object.keys(res.env);
+        const shown = vars.map((v) => `<tr><th>${esc(v)}</th><td>${v in cur.env ? esc(fmtVal(cur.env[v])) : "-"}</td></tr>`).join("");
+        out.innerHTML = `<div class="ac-trace-grid"><ol class="ac-codeview">${lines.map((l, i) => `<li class="${i + 1 === cur.line ? "cur" : ""}"><span class="cnt" title="орындалу саны">${res.counts[i + 1] || ""}</span><code>${esc(l) || " "}</code></li>`).join("")}</ol>
+          <div><table class="ac-tt"><thead><tr><th>айнымалы</th><th>мәні</th></tr></thead><tbody>${shown || "<tr><td colspan=2>-</td></tr>"}</tbody></table>
+          ${cur.cond !== undefined ? `<p>Шарт: <b>${cur.cond ? "ақиқат" : "жалған"}</b></p>` : ""}${res.output.length ? `<p>Шығыс: <code>${esc(res.output.join(" | "))}</code></p>` : ""}${res.result !== undefined ? `<p>Нәтиже (return): <b>${esc(fmtVal(res.result))}</b></p>` : ""}</div></div>`;
+        $("[data-pos]", w).textContent = `${pos + 1} / ${n} қадам · барлығы ${res.steps} нұсқау`;
+      };
+      const runIt = () => guard(() => {
+        const inputs = {};
+        $$("[data-in]", w).forEach((x) => { const v = x.value.trim(); inputs[x.dataset.in] = /^\[/.test(v) ? JSON.parse(v) : v === "true" ? true : v === "false" ? false : Number(v); });
+        res = PS.run($("textarea", w).value, inputs);
+        pos = res.trace.length - 1;
+        show();
+      });
+      $("[data-run]", w).addEventListener("click", runIt);
+      $("[data-prev]", w).addEventListener("click", () => { pos--; show(); });
+      $("[data-next]", w).addEventListener("click", () => { pos++; show(); });
+      el.append(w, out); runIt();
+    } else if (spec.lab === "growth") {
+      const w = document.createElement("div");
+      w.className = "ac-quant";
+      w.innerHTML = `<label><span>n шекарасы</span><input type="number" min="2" max="200" value="${spec.max || 20}"></label>
+        <div class="ac-opts">${Object.keys(GROWTH).map((f) => `<label><input type="checkbox" value="${esc(f)}"${spec.fns.includes(f) ? " checked" : ""}> ${esc(f)}</label>`).join("")}</div>`;
+      const COLORS = ["#173e35", "#733c3c", "#8a6a2f", "#2563eb", "#7c3aed", "#0f766e", "#b45309", "#be123c", "#4d7c0f", "#475569"];
+      const draw = () => guard(() => {
+        const N = Math.max(2, Math.min(200, +$("input[type=number]", w).value || 20));
+        const fs = $$("input[type=checkbox]:checked", w).map((c) => c.value);
+        const W = 340, H = 220, pad = 28;
+        const ymax = Math.max(...fs.map((f) => GROWTH[f](N)), 1);
+        const lg = (v) => Math.log10(Math.max(v, 1e-9) + 1);
+        const Y = (v) => H - pad - (lg(v) / lg(ymax)) * (H - 2 * pad);
+        const X = (n) => pad + ((n - 1) / (N - 1)) * (W - 2 * pad);
+        const paths = fs.map((f, i) => { const pts = []; for (let n = 1; n <= N; n++) { const v = GROWTH[f](n); if (Number.isFinite(v)) pts.push(`${X(n).toFixed(1)},${Y(v).toFixed(1)}`); } return `<polyline fill="none" stroke="${COLORS[Object.keys(GROWTH).indexOf(f)]}" stroke-width="2" points="${pts.join(" ")}"/>`; }).join("");
+        const rows = [1, 2, 5, 10, 20, 50, 100, 200].filter((n) => n <= N).map((n) => `<tr><td>${n}</td>${fs.map((f) => { const v = GROWTH[f](n); return `<td>${v < 1e6 ? (Number.isInteger(v) ? v : v.toFixed(2)) : v.toExponential(2)}</td>`; }).join("")}</tr>`).join("");
+        out.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="ac-graph" role="img" aria-label="Өсу функцияларының графигі (логарифмдік шкала)"><line x1="${pad}" y1="${H - pad}" x2="${W - pad}" y2="${H - pad}" class="ge"/><line x1="${pad}" y1="${pad}" x2="${pad}" y2="${H - pad}" class="ge"/>${paths}<text x="${W - pad}" y="${H - 8}" text-anchor="end" class="gl">n = ${N}</text></svg>
+          <p class="ac-note">Тік ось - логарифмдік (log₁₀). Түстер: ${fs.map((f) => `<b style="color:${COLORS[Object.keys(GROWTH).indexOf(f)]}">${esc(f)}</b>`).join(", ")}</p>
+          <div class="ac-tt-wrap"><table class="ac-tt"><thead><tr><th>n</th>${fs.map((f) => `<th>${esc(f)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
+      });
+      $$("input", w).forEach((x) => x.addEventListener("input", draw));
+      el.append(w, out); draw();
     } else if (spec.lab === "venn") {
       const names = Object.keys(spec.sets);
       const fe = exprInput(spec.expr, "Жиын өрнегі (∪ ∩ \\ △ ')", () => draw());
@@ -359,6 +423,7 @@
     else if (ex.type === "classify") body = `<p class="ac-formula">${esc(ex.formula)}</p><div class="ac-opts" role="radiogroup">${Object.entries(KIND).map(([k, v]) => `<label><input type="radio" name="${esc(key)}" value="${k}"> ${esc(v)}</label>`).join("")}</div>`;
     else if (ex.type === "argument") body = `<p class="ac-formula">${esc(ex.premises.join(",  "))}  ⊨  ${esc(ex.conclusion)}</p><div class="ac-opts" role="radiogroup"><label><input type="radio" name="${esc(key)}" value="1"> Дұрыс аргумент</label><label><input type="radio" name="${esc(key)}" value="0"> Дұрыс емес</label></div>`;
     else if (ex.type === "number") body = `<label class="ac-num"><span>Жауап</span><input type="number" inputmode="numeric" step="1"></label>`;
+    else if (ex.type === "trace" || ex.type === "count") body = `<pre class="ac-pseudo"><code>${ex.code.split("\n").map((l, i) => `<span class="ln">${i + 1}</span>${esc(l)}`).join("\n")}</code></pre>${Object.keys(ex.inputs || {}).length ? `<p class="ac-note">Кіріс: ${esc(Object.entries(ex.inputs).map(([k, v]) => k + " = " + fmtVal(v)).join(", "))}</p>` : ""}<label class="ac-num"><span>${ex.type === "count" ? ex.line + "-жол неше рет орындалады" : ex.ask === "result" ? "Нәтиже (return)" : ex.ask === "output" ? "Шығыс (print)" : ex.ask + " мәні"}</span><input type="text" class="ac-setin" autocomplete="off"></label>`;
     else if (ex.type === "setexpr") body = `<p class="ac-formula">${esc(ex.expr)}</p><label class="ac-num"><span>Жиын (мысалы: {1, 3, 5} не ∅)</span><input type="text" class="ac-setin" autocomplete="off"></label>`;
     else if (ex.type === "setid") body = `<p class="ac-formula">${esc(ex.target)}</p>${ex.forbid ? `<p class="ac-note">Тыйым салынған: ${esc(ex.forbid.join(" "))}</p>` : ""}<label class="ac-num"><span>Тепе-тең өрнек (A, B, C, ∪ ∩ \\ △ ')</span><input type="text" class="ac-setin" autocomplete="off"></label>`;
     else if (ex.type === "props") body = `<p class="ac-formula">S = {${esc(ex.S.join(", "))}}, R = {${esc(ex.R || "")}}</p><div class="ac-opts">${Object.entries(PROPN).map(([k, v]) => `<label><input type="checkbox" value="${k}"> ${esc(v)}</label>`).join("")}</div>`;
@@ -422,6 +487,12 @@
             return { ok: false, msg: `n = ${b.N} болғанда сіздің формула ${AR.str(b.closed)}, ал керегі ${AR.str(ex.type === "closedform" ? b.sum : b.a)}.` };
           } catch (e) { return { ok: false, msg: e.message, soft: true }; }
         }
+        case "trace": case "count": {
+          const v = $(".ac-setin", box).value.trim(); if (!v) return null;
+          const want = ex.type === "count" ? String(PS.run(ex.code, ex.inputs || {}).counts[ex.line] || 0) : traceKey(ex);
+          const norm = (x) => x.replace(/\s+/g, "").toLowerCase();
+          return norm(v) === norm(want) ? { ok: true, msg: "Дұрыс." } : { ok: false, msg: "Қате. Зертханада бағдарламаны қадамдап орындап, айнымалыларды бақылаңыз." };
+        }
         case "setexpr": {
           const v = $(".ac-setin", box).value; if (!v.trim()) return null;
           try {
@@ -484,6 +555,8 @@
       else if (ex.type === "formula") ans = ex.solution + " (басқа эквивалент жауап та қабылданады)";
       else if (ex.type === "closedform" || ex.type === "recurrence") ans = ex.solution + " (эквивалент жазылу да қабылданады)";
       else if (ex.type === "counterexample") ans = "n = " + AR.searchCounterexamples(ex, 1)[0];
+      else if (ex.type === "trace") ans = traceKey(ex);
+      else if (ex.type === "count") ans = String(PS.run(ex.code, ex.inputs || {}).counts[ex.line] || 0);
       else if (ex.type === "setexpr") ans = DS.fmt(DS.evalSet(ex.expr, ex.sets, ex.U));
       else if (ex.type === "setid") ans = ex.solution;
       else if (ex.type === "props") { const P = DS.relProps(ex.S, DS.parsePairs(ex.R || "")); ans = Object.keys(PROPN).filter((k) => P[k]).map((k) => PROPN[k]).join(", ") || "ешқайсысы"; }
@@ -560,7 +633,9 @@
       recur: { lab: "recur", first: 1, start: 1, rule: "2a + 1", closed: "2^n - 1" },
       venn: { lab: "venn", sets: { A: [1, 2, 3, 4], B: [3, 4, 5, 6], C: [2, 4, 6, 8] }, U: [1, 2, 3, 4, 5, 6, 7, 8], expr: "(A ∪ B)' ∩ C" },
       relation: { lab: "relation", S: [1, 2, 3, 4], R: "(1,1), (2,2), (3,3), (4,4), (1,2), (2,1)" }, graph: { lab: "graph", V: [1, 2, 3, 4, 5, 6], E: "1-2, 1-3, 2-4, 2-5, 3-6" },
-      func: { lab: "func", X: [1, 2, 3], Y: ["a", "b", "c"], pairs: "(1,a), (2,c), (3,b)" } };
+      func: { lab: "func", X: [1, 2, 3], Y: ["a", "b", "c"], pairs: "(1,a), (2,c), (3,b)" },
+      trace: { lab: "trace", code: "a ← 84\nb ← 36\nwhile b ≠ 0 do\n  t ← b\n  b ← a mod b\n  a ← t\nend\nreturn a", inputs: {} },
+      growth: { lab: "growth", fns: ["log2(n)", "n", "n*log2(n)", "n^2", "2^n"], max: 30 } };
     const show = (k) => {
       $$("[data-tab]").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === k)));
       el.className = "ac-lab ac-lab-big";
