@@ -1,0 +1,70 @@
+# AO17 CS Universe: архитектура
+
+© 2026 Sagid Mustafa. All Rights Reserved.
+
+## Мақсат және шекара
+AO17 CS Universe - қазақ тіліндегі бес деңгейлі информатика академиясы. Ол сайтта бұрыннан бар CS50 аудармаларынан **бөлек** тұрады: файлдары, идентификаторлары және авторлық есебі бөлек.
+
+| | CS50 аудармалары (бұрыннан бар) | CS Universe (жаңа) |
+|---|---|---|
+| Бумасы | `lectures/`, `python/`, `sql/`, `ai/`, `web/` | `academy/` |
+| Дереккөзі | Harvard CS50 материалының аудармасы (A санаты, CC BY-NC-SA) | AO17 үшін жаңадан жазылған (B санаты, All Rights Reserved) |
+| ID | `week-N` | `ao17-foundation.mNN.lNN` |
+| Мазмұн дерегі | HTML ішінде | `tools/academy/content/*.py` (құрылымдалған дерек) |
+
+## Аудит нәтижесі (1-кезең)
+- Сайт статикалық (GitHub Pages). Беттерді `tools/build.py` өңдейді: бас (`build:head`), навигация, футер, лицензия белгісі, sitemap, іздеу индексі.
+- Python кодын браузерде орындау: `assets/js/main.js` → Pyodide (`pre[data-lang="python"]`). Академия мысалдары осы механизмді пайдаланады, сондықтан «▶ Іске қосу» батырмасы шын Python-ды іске қосады.
+- Прогресс: `localStorage`, `cs50kz:` префиксі. `assets/js/profile.js` оны экспорттайды, ал `assets/js/ao.js` (жабық платформа) кірген оқушының прогресін `ao_progress` кестесіне синхрондайды. Академия кілті `cs50kz:academy` сол жүйеге өзі кіреді.
+- Жабық платформа (`docs/PLATFORM.md`): `tools/gate.py` жабық беттерді Storage-қа шығарады, Pages-те тек қабық қалады. Академия сабақтары мен зертхана жабылады (курс `academy`), ал каталог (`academy/index.html`) пен білім картасы (`academy/map.html`) жария.
+- Математика курсында (`math/`) KaTeX бар. Логика модулінде формулалар Unicode белгілерімен жазылады, KaTeX қажет емес.
+- Дизайн токендері: `assets/css/style.css` (`--bg`, `--surface`, `--text`, `--accent` ...), қаріптер: Inter, PT Serif, JetBrains Mono (`assets/fonts`, лицензиясы тіркелген).
+
+## Қозғалтқыштар
+| Жүйе | Файл | Күйі |
+|---|---|---|
+| Curriculum Engine | `tools/academy/curriculum.py` | бар: 5 деңгей, Level I 12×10 жоспары, модуль алғышарттары |
+| Lesson Rendering Engine | `tools/academy_build.py` → `academy/**.html` | бар: 14 бөлімді (A-N) сабақ беті |
+| Schema validation | `tools/academy_build.py --check` | бар: міндетті өрістер, түрлер, ID, алғышарттар, бірегейлік |
+| Mathematics Engine (логика) | `assets/js/academy-logic.js` | бар: парсер, кесте, эквиваленттік, жіктеу, ДҚФ/КҚФ, аргумент |
+| Тәуелсіз тексеруші | `tools/academy/plogic.py` | бар: кілттерді JS-тен бөлек есептейді |
+| Interactive Visualization | `assets/js/academy.js` (`lab()`) | бар: кесте, эквиваленттік, аргумент, ағаш, ДҚФ/КҚФ, кванторлар |
+| Assessment Engine | `assets/js/academy.js` (`renderExercise`) | бар: mc, value, truthtable, classify, formula, argument, number |
+| Smart Hint Engine | әр тапсырмада `hints` (1-3 деңгей) | бар (ережеге негізделген, AI емес) |
+| Rule-based feedback | `checkFormula`, қарсы мысал | бар: қай шектеу бұзылды, қай бағалауда айырмашылық |
+| Progress / Mastery | `cs50kz:academy` v1 | бар: тапсырма күйі, меңгеру, рефлексия, экспорт/импорт |
+| Spaced Repetition | `INTERVALS = [2, 7, 21, 60]` күн | бар (қарапайым) |
+| Recommendation | басты беттегі «Келесі ұсыныс» | бар: ретімен бірінші меңгерілмеген сабақ |
+| Knowledge Graph | `academy/map.html` | бар: модульдер, алғышарт байланысы, жеке күй |
+| Code X-Ray, Algorithm Arena, Virtual Computer, C Playground, Judge, Certification | - | **әлі жоқ** (docs/academy/next-steps.md) |
+
+## Сабақ деректерінің моделі
+Әр сабақ - Python сөздігі (`tools/academy/content/mNN_*.py`). Міндетті өрістер (`REQUIRED`, `tools/academy_build.py`):
+`id, courseId, moduleId, slug, title, language, academicLevel, difficulty, minutes, objectives, prerequisites, concept, theory, visual, derivation, examples, experiment, exercises, reasoning, mistakes, assessment, reflection, further{honors, research}, references, license, authorship, reviewStatus, version`.
+
+Қосымша: `project` (модуль жобасы). `theory[].kind` ∈ {definition, theorem, proof, note}, кемінде бір `proof` міндетті.
+
+### Тапсырма түрлері
+| Түр | Кілт қайдан | Тексеру |
+|---|---|---|
+| `mc` | `answer` индексі, әр нұсқаға `why` | таңдау |
+| `value` | формуладан **есептеледі** | 0/1 |
+| `truthtable` | формуладан есептеледі | әр жол бөлек, қате жолдар белгіленеді |
+| `classify` | формуладан есептеледі | тавтология / қайшылық / бейтарап |
+| `argument` | алғышарт пен қорытындыдан есептеледі | дұрыс/дұрыс емес + қарсы мысал |
+| `formula` | `target`-ке эквиваленттік + шектеулер (`allowed`, `noNegatedGroups`, `maxLength`, `form`, `nandOnly`, `requireVars`) | кез келген эквивалент жауап қабылданады |
+| `number` | `answer` | сан |
+
+Кілттердің көбі сақталмайды, қозғалтқышпен есептеледі. `formula` тапсырмасында эталон `solution` бар: тексеруші оны мақсатпен салыстырып, шектеулерге сай екенін дәлелдейді.
+
+## Тексеру тізбегі
+1. `python3 tools/academy_build.py --check`: схема, ID, оқу картасымен сәйкестік, тапсырмалардың шешімділігі, Python мысалдарын **шын іске қосып** шығысын салыстыру, сұрақ пен мәтіннің қайталанбауы.
+2. `node tests/academy/logic.test.js`: қозғалтқыштың бекітілген мысалдары мен қасиетке негізделген тесттері (кездейсоқ 300 формула × 8 заң).
+3. `node tests/academy/keys.test.js`: Python мен JS кілттері бірдей ме; эталон шешімді JS тексерушісі қабылдай ма; мақсаттың өзі шектеуден өтпей ме.
+4. `python3 tools/build.py`: беттер мен `docs/academy/curriculum.md`, `docs/academy/status.json`.
+5. `python3 tools/gate.py build`: академия сабақтары жария нұсқада тек қабық болып тұр ма.
+
+## Шектеулер (адал сипаттама)
+- Тексеру браузерде өтеді. GitHub Pages-те клиентке жеткен кілтті толық жасыру мүмкін емес. Жабық платформа беттің өзін рұқсатсыз адамнан жасырады, бірақ рұқсаты бар оқушы бет кодын оқи алады. Сондықтан бұл - **оқу тексерісі**, емтихан емес. Құпия тесттер серверлік тексеруді талап етеді (жоспарда).
+- Еркін мәтінді дәлелдеу (Proof Construction) автоматты бағаланбайды. Модуль жобасы мұғалім рубрикасымен бағаланады.
+- Логика қозғалтқышы 12 айнымалыға дейін толық кесте құрады. Бұл - нақты есептеу, әмбебап теорема дәлелдеуші емес.
