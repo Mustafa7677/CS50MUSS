@@ -353,6 +353,8 @@ B_PAGES = {"detective.html", "projects.html", "flask.html", "alash.html", "viz.h
 
 
 def license_kind(rel):
+    if rel.startswith("academy/"):
+        return "B"   # AO17 CS Universe - толық авторлық мазмұн (tools/academy/)
     if re.match(rf"({OWN_RE})/", rel):
         return "B"
     if rel.startswith("lectures/") or re.match(r"(python|sql|ai|web)/lectures/", rel) or rel == "cheatsheet.html":
@@ -498,7 +500,7 @@ def footer_block(p):
         f'      <div class="ft-brand"><a class="ft-logo" href="{p}index.html"><img src="{p}assets/img/seal.svg" alt="" width="52" height="52">'
         '<span><b>AO</b>17</span></a>'
         '<p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>\n'
-        + "      " + col("Академиялар", [("programming.html", "Бағдарламалау"), ("en/", "English Academy"), ("en/skills.html", "Ағылшын: дағдылар"), ("math/", "Математика")])
+        + "      " + col("Академиялар", [("academy/index.html", "CS Universe"), ("programming.html", "Бағдарламалау"), ("en/", "English Academy"), ("en/skills.html", "Ағылшын: дағдылар"), ("math/", "Математика")])
         + col("Оқу", [("index.html#main", "Лекциялар"), ("courses.html", "Барлық курстар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік"), ("exam.html", "Қорытынды емтихан")])
         + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("games.html", "Ойындар"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы"), ("projects.html", "Жобалар шеберханасы")])
         + col("Жоба", [("about.html", "Курс туралы"), ("alash.html", "Алаш тұлғалары"), ("posters.html", "Афиша: постер мен фильм"), ("certificate.html", "Сертификат"), ("login.html", "Кіру: оқушы мен мұғалім"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің кабинетім"), ("partners.html", "Серіктестерге"), ("metrics.html", "Ашық метрикалар")])
@@ -1033,6 +1035,11 @@ def main():
     COURSE_LISTS["x"] = lectures
     build_cheatsheet(sheets)
     n = build_glossary(terms)
+    # AO17 CS Universe: тексеру + беттерді жасау (tools/academy_build.py), сосын жалпы бас/нав/футер
+    import academy_build
+    academy_pages = academy_build.build()
+    for rel in academy_pages:
+        process_page(ROOT / rel, "../" * rel.count("/"), "courses")
     for page, active in [("index.html", "index"), ("about.html", "about"),
                          ("glossary.html", "glossary"), ("certificate.html", ""),
                          ("playground.html", "playground"), ("practice.html", "practice"),
@@ -1060,7 +1067,7 @@ def main():
     (ROOT / "assets/data/quiz.js").write_text(
         "window.CS50KZ_QUIZ = " + json.dumps(quiz, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     pages = ["", "practice.html", "playground.html", "viz.html", "flashcards.html", "glossary.html",
-             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "projects.html", "exam.html", "profile.html", "games.html", "copyright.html", "alash.html", "courses.html", "programming.html", "partners.html", "metrics.html", "posters.html"] + [l["url"] for l in lectures] + course_pages
+             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "projects.html", "exam.html", "profile.html", "games.html", "copyright.html", "alash.html", "courses.html", "programming.html", "partners.html", "metrics.html", "posters.html"] + [l["url"] for l in lectures] + course_pages + academy_pages
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"  <url><loc>{SITE_URL}{u}</loc></url>\n" for u in pages) + "</urlset>\n", encoding="utf-8")

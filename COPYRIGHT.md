@@ -12,7 +12,7 @@
 |---|---|
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
-| B · Sagid Mustafa-ның дербес әзірлемесі | 1252 |
+| B · Sagid Mustafa-ның дербес әзірлемесі | 1282 |
 | C · Үшінші тарап | 87 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 56 |
 
@@ -20,6 +20,7 @@
 
 | Файл / жол | Компонент | Құқық иесі | Лицензия | Статус |
 |---|---|---|---|---|
+| `academy/**`<br>`assets/js/academy-logic.js`<br>`assets/js/academy.js`<br>`assets/css/academy.css`<br>`tools/academy/**`<br>`tools/academy_build.py`<br>`docs/academy/**`<br>`tests/academy/**` | **B-academy** AO17 CS Universe: авторлық академия (оқу картасы, сабақтар, логика қозғалтқышы, зертханалар, тексерушілер, тесттер, құжаттар) (30 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `cpp/**` | **B-course-cpp** C++ бағдарламалау: дербес авторлық курс (cpp/ лекциялары, курс беті) (10 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `java/**` | **B-course-java** Java бағдарламалау: дербес авторлық курс (java/ лекциялары, курс беті) (10 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `en/**` | **B-course-en** Ағылшын тілі A0-C1: дербес авторлық курс (en/ сабақтары, курс беті, ортақ беттер) (31 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
@@ -64,6 +65,7 @@
 
 ### Ескертулер
 
+- **B-academy**: Мазмұн AO17 үшін жаңадан жазылған; CS50 материалдары қолданылмаған. Ғылыми ұғымдар жалпы білім; references өрісі салыстыру үшін, мәтін көшірілмеген (docs/academy/content-quality.md).
 - **B-course-cpp**: Дербес авторлық курс; Harvard CS50 мәтіні/есептері көшірілмеген (жазу кезінде ескертілген талап)
 - **B-course-java**: Дербес авторлық курс; Harvard CS50 мәтіні/есептері көшірілмеген (жазу кезінде ескертілген талап)
 - **B-course-en**: Дербес авторлық курс; Harvard CS50 материалы емес. Мазмұнның авторы әрі жауаптысы - Sagid Mustafa. Oxford/Cambridge/British Council т.б. сөздік тізімдері мен мәтіндері көшірілмеген (жазу кезінде ескертілген талап).

@@ -10,7 +10,7 @@
   const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
   const ROOT = AO.CFG && document.querySelector('script[src$="assets/js/ao-ui.js"]') ? document.querySelector('script[src$="assets/js/ao-ui.js"]').src.replace(/assets\/js\/ao-ui\.js.*$/, "") : new URL(".", location.href).href;
   const qs = new URLSearchParams(location.search);
-  const COURSES = { x: "CS50x · Информатикаға кіріспе", python: "CS50P · Python", sql: "CS50 SQL", ai: "CS50 AI", web: "CS50 Web", cpp: "C++", java: "Java", en: "English A0-C1", math: "Математика", tools: "Жаттығу, ойын, емтихан", projects: "Жобалар" };
+  const COURSES = { x: "CS50x · Информатикаға кіріспе", python: "CS50P · Python", sql: "CS50 SQL", ai: "CS50 AI", web: "CS50 Web", cpp: "C++", java: "Java", en: "English A0-C1", math: "Математика", tools: "Жаттығу, ойын, емтихан", projects: "Жобалар", academy: "AO17 CS Universe" };
   const cname = (c) => COURSES[c] || c;
   const fmt = (t) => (t ? new Date(t).toLocaleString("kk-KZ", { dateStyle: "medium", timeStyle: "short" }) : "-");
   const ago = (t) => {
