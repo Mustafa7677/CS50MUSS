@@ -21,10 +21,11 @@ import curriculum as C  # noqa: E402
 import plogic as P  # noqa: E402
 import parith as AR  # noqa: E402
 import pdisc as DS  # noqa: E402
+import ppseudo as PS  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
 
 OUT = ROOT / "academy"
-CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b"]
+CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b"]
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
@@ -34,8 +35,9 @@ REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "reflection": (list, 1), "further": (dict, None), "references": (list, 1), "license": (str, 2), "authorship": (str, 2),
     "reviewStatus": (str, 2), "version": (str, 5),
 }
-EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence", "setexpr", "setid", "props", "func"}
-LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur", "venn", "relation", "graph", "func"}
+EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence", "setexpr", "setid", "props", "func", "trace", "count"}
+LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur", "venn", "relation", "graph", "func", "trace", "growth"}
+GROWTH = {"1", "log2(n)", "sqrt(n)", "n", "n*log2(n)", "n^2", "n^3", "2^n", "100*n", "n!"}
 ARITH_PROPS = set(AR.PROPS)
 QUANT_PREDS = {"even", "odd", "prime", "positive", "gt3", "square"}
 REVIEW = {"draft", "author-checked", "peer-reviewed"}
@@ -66,6 +68,11 @@ def check_lab(spec, where, errs):
                 errs.append(f"{where}: search - белгісіз қасиет")
             lo, hi = spec["domain"]
             [AR.val(spec["expr"], n) for n in range(lo, hi + 1) if not spec.get("where") or AR.PROPS[spec["where"]](AR.F(n))]
+        elif lab == "trace":
+            PS.run(spec["code"], spec.get("inputs", {}))
+        elif lab == "growth":
+            if not set(spec["fns"]) <= GROWTH:
+                errs.append(f"{where}: growth - белгісіз функция")
         elif lab == "venn":
             DS.evaluate(spec["expr"], spec["sets"], spec["U"])
         elif lab == "relation":
@@ -111,7 +118,7 @@ def check_exercise(ex, where, errs):
         elif t == "number":
             if not isinstance(ex["answer"], int):
                 errs.append(f"{where}: number - жауап бүтін сан болуы керек")
-            elif "check" in ex and eval(ex["check"], {"math": math, "__builtins__": {"range": range, "sum": sum, "next": next, "len": len}}) != ex["answer"]:
+            elif "check" in ex and eval(ex["check"], {"math": math, "__builtins__": {"range": range, "sum": sum, "next": next, "len": len, "min": min, "max": max, "all": all, "any": any, "abs": abs}}) != ex["answer"]:
                 errs.append(f"{where}: number - жауап ({ex['answer']}) check өрнегімен сәйкес емес")
         elif t == "setexpr":
             DS.evaluate(ex["expr"], ex["sets"], ex["U"])
@@ -124,6 +131,12 @@ def check_exercise(ex, where, errs):
                 errs.append(f"{where}: setid - мақсаттың өзі шектеуден өтеді (мағынасыз)")
         elif t == "props":
             pairs(ex["R"])
+        elif t == "trace":
+            trace_key(ex)
+        elif t == "count":
+            r = PS.run(ex["code"], ex.get("inputs", {}))
+            if ex["line"] not in r["counts"]:
+                errs.append(f"{where}: count - {ex['line']}-жол мүлде орындалмайды")
         elif t == "func":
             pairs(ex["pairs"])
         elif t == "order":
@@ -181,6 +194,26 @@ def edges(s):
     return out
 
 
+def fmt_val(v):
+    if v is True or v is False:
+        return "true" if v else "false"
+    if isinstance(v, list):
+        return "[" + ", ".join(fmt_val(x) for x in v) + "]"
+    return str(v)
+
+
+def trace_key(ex):
+    r = PS.run(ex["code"], ex.get("inputs", {}))
+    ask = ex["ask"]
+    if ask == "result":
+        if r["result"] is None:
+            raise ValueError("бағдарлама return жасамайды")
+        return fmt_val(r["result"])
+    if ask == "output":
+        return "\n".join(r["output"])
+    return fmt_val(r["env"][ask])
+
+
 def run_example(code, timeout=10):
     r = subprocess.run([sys.executable, "-I", "-c", code], capture_output=True, text=True, timeout=timeout)
     return r.returncode, r.stdout.rstrip("\n"), r.stderr
@@ -228,7 +261,7 @@ def validate(lessons, run_code=True):
             errs.append(f"{lid}: further.honors және further.research керек")
         for i, ex in enumerate(L.get("exercises", []) + L.get("assessment", [])):
             check_exercise(ex, f"{lid} тапсырма {i + 1}", errs)
-            key = re.sub(r"\s+", " ", ex.get("q", "")).strip()
+            key = re.sub(r"\s+", " ", ex.get("q", "") + "|" + ex.get("code", "") + "|" + json.dumps(ex.get("inputs", {}))).strip()
             if key in seen_q:
                 errs.append(f"{lid}: сұрақ қайталанады ({seen_q[key]}): {key[:50]}")
             seen_q[key] = lid
@@ -295,6 +328,7 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad"):
   <script src="{pre}assets/js/academy-logic.js" defer></script>
   <script src="{pre}assets/js/academy-arith.js" defer></script>
   <script src="{pre}assets/js/academy-disc.js" defer></script>
+  <script src="{pre}assets/js/academy-pseudo.js" defer></script>
   <script src="{pre}assets/js/academy.js" defer></script>{sc}
 </head>
 <body class="{body_cls}">
@@ -415,9 +449,9 @@ def index_html(lessons, st):
 def lab_html():
     body = """  <main class="content ac-labpage" id="main">
     <p class="ac-crumb"><a href="index.html">CS Universe</a> / Логика зертханасы</p>
-    <h1>Логика, дәлелдеу және дискретті құрылымдар зертханасы</h1>
+    <h1>CS Universe зертханасы</h1>
     <p>Формуланы енгізіңіз: кесте, ағаш, түрі, ДҚФ/КҚФ бірден шығады. Екі формуланы салыстыруға, аргументті тексеруге болады. Есептеу толық ақиқат кестесімен жүреді (ең көбі 12 айнымалы) - бұл нақты есептеу, болжам емес. «Қарсы мысал», «Индукция», «Рекуррент» қойындылары n айнымалысы бар өрнектерді дәл бөлшектермен есептейді: бұл сандық тексеріс, дәлелдеу емес.</p>
-    <div class="ac-tabs" role="tablist"><button type="button" role="tab" data-tab="truthtable" aria-selected="true">Кесте</button><button type="button" role="tab" data-tab="equiv" aria-selected="false">Эквиваленттік</button><button type="button" role="tab" data-tab="argument" aria-selected="false">Аргумент</button><button type="button" role="tab" data-tab="normal" aria-selected="false">ДҚФ/КҚФ</button><button type="button" role="tab" data-tab="tree" aria-selected="false">Ағаш</button><button type="button" role="tab" data-tab="quant" aria-selected="false">Кванторлар</button><button type="button" role="tab" data-tab="search" aria-selected="false">Қарсы мысал</button><button type="button" role="tab" data-tab="induction" aria-selected="false">Индукция</button><button type="button" role="tab" data-tab="recur" aria-selected="false">Рекуррент</button><button type="button" role="tab" data-tab="venn" aria-selected="false">Венн</button><button type="button" role="tab" data-tab="relation" aria-selected="false">Қатынас</button><button type="button" role="tab" data-tab="func" aria-selected="false">Функция</button><button type="button" role="tab" data-tab="graph" aria-selected="false">Граф</button></div>
+    <div class="ac-tabs" role="tablist"><button type="button" role="tab" data-tab="truthtable" aria-selected="true">Кесте</button><button type="button" role="tab" data-tab="equiv" aria-selected="false">Эквиваленттік</button><button type="button" role="tab" data-tab="argument" aria-selected="false">Аргумент</button><button type="button" role="tab" data-tab="normal" aria-selected="false">ДҚФ/КҚФ</button><button type="button" role="tab" data-tab="tree" aria-selected="false">Ағаш</button><button type="button" role="tab" data-tab="quant" aria-selected="false">Кванторлар</button><button type="button" role="tab" data-tab="search" aria-selected="false">Қарсы мысал</button><button type="button" role="tab" data-tab="induction" aria-selected="false">Индукция</button><button type="button" role="tab" data-tab="recur" aria-selected="false">Рекуррент</button><button type="button" role="tab" data-tab="venn" aria-selected="false">Венн</button><button type="button" role="tab" data-tab="relation" aria-selected="false">Қатынас</button><button type="button" role="tab" data-tab="func" aria-selected="false">Функция</button><button type="button" role="tab" data-tab="graph" aria-selected="false">Граф</button><button type="button" role="tab" data-tab="trace" aria-selected="false">Трасса</button><button type="button" role="tab" data-tab="growth" aria-selected="false">Өсу жылдамдығы</button></div>
     <div class="ac-lab ac-lab-big" data-lab="page"></div>
     <section class="ac-sec"><h2>Синтаксис</h2><p>Арифметика: сандар, n, + − * / % ^ және жақша; 2n және n(n+1) жасырын көбейту ретінде оқылады. Логика: ¬ (not, !, ~), ∧ (and, &amp;), ∨ (or, |), → (->), ↔ (&lt;->), ⊕ (xor, ^), тұрақтылар 0 және 1. Басымдық: ¬ &gt; ∧ &gt; ⊕ &gt; ∨ &gt; → &gt; ↔; → оңнан топтасады.</p></section>
   </main>"""
@@ -526,6 +560,10 @@ def dump_keys():
                     k = AR.counterexamples(ex)
                 elif t in ("closedform", "recurrence"):
                     k = ex["solution"]
+                elif t == "trace":
+                    k = trace_key(ex)
+                elif t == "count":
+                    k = PS.run(ex["code"], ex.get("inputs", {}))["counts"].get(ex["line"], 0)
                 elif t == "setexpr":
                     k = sorted(DS.evaluate(ex["expr"], ex["sets"], ex["U"]), key=str)
                 elif t == "setid":

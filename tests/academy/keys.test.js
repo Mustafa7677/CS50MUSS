@@ -10,7 +10,7 @@ const items = JSON.parse(execFileSync("python3", [path.join(root, "tools/academy
 // academy.js-тегі checkFormula-ны браузерсіз жүктеу: DOM керек емес бөлігі
 const vm = require("vm");
 const fs = require("fs");
-const ctx = { window: { AOLogic: L, AOArith: require("../../assets/js/academy-arith.js"), AODisc: require("../../assets/js/academy-disc.js") }, document: { readyState: "complete", querySelector: () => null, querySelectorAll: () => [], addEventListener() {}, dispatchEvent() {} }, CustomEvent: function () {}, localStorage: { getItem: () => null, setItem() {} }, console };
+const ctx = { window: { AOLogic: L, AOArith: require("../../assets/js/academy-arith.js"), AODisc: require("../../assets/js/academy-disc.js"), AOPseudo: require("../../assets/js/academy-pseudo.js") }, document: { readyState: "complete", querySelector: () => null, querySelectorAll: () => [], addEventListener() {}, dispatchEvent() {} }, CustomEvent: function () {}, localStorage: { getItem: () => null, setItem() {} }, console };
 vm.createContext(ctx);
 vm.runInContext(fs.readFileSync(path.join(root, "assets/js/academy.js"), "utf8"), ctx);
 const A = ctx.window.AOAcademy;
@@ -39,6 +39,9 @@ for (const it of items) {
     case "setid": { const DS = require("../../assets/js/academy-disc.js"); ok(DS.identical(it.key, ex.target).identical, where + " setid эталоны"); ok(!DS.identical("A", ex.target).identical || ex.target === "A", where + " setid жалған жауапты қабылдамайды"); break; }
     case "props": { const DS = require("../../assets/js/academy-disc.js"); const P = DS.relProps(ex.S, DS.parsePairs(ex.R || "")); ok(["reflexive", "symmetric", "antisymmetric", "transitive"].every((k) => P[k] === it.key[k]), where + " props Python-мен бірдей"); break; }
     case "func": { const DS = require("../../assets/js/academy-disc.js"); ok(DS.funcKind(ex.X, ex.Y, DS.parsePairs(ex.pairs)).kind === it.key, where + " func Python-мен бірдей"); break; }
+    case "trace": { const PS = require("../../assets/js/academy-pseudo.js"); const r = PS.run(ex.code, ex.inputs || {}); const f = (v) => (v === true ? "true" : v === false ? "false" : Array.isArray(v) ? "[" + v.map(f).join(", ") + "]" : String(v));
+      const k = ex.ask === "result" ? f(r.result) : ex.ask === "output" ? r.output.join("\n") : f(r.env[ex.ask]); ok(k === it.key, where + " trace JS=Python: " + k + " / " + it.key); break; }
+    case "count": { const PS = require("../../assets/js/academy-pseudo.js"); ok((PS.run(ex.code, ex.inputs || {}).counts[ex.line] || 0) === it.key, where + " count JS=Python"); break; }
     default: pass++;
   }
 }
