@@ -23,10 +23,12 @@ import parith as AR  # noqa: E402
 import pdisc as DS  # noqa: E402
 import ppseudo as PS  # noqa: E402
 import pbits as BI  # noqa: E402
+sys.path.insert(0, str(ROOT / "assets" / "py"))
+import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
 
 OUT = ROOT / "academy"
-CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b"]
+CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b"]
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
@@ -36,8 +38,8 @@ REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "reflection": (list, 1), "further": (dict, None), "references": (list, 1), "license": (str, 2), "authorship": (str, 2),
     "reviewStatus": (str, 2), "version": (str, 5),
 }
-EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence", "setexpr", "setid", "props", "func", "trace", "count", "convert", "encode", "bitop"}
-LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur", "venn", "relation", "graph", "func", "trace", "growth", "base", "bitpanel", "utf8", "float", "rle"}
+EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence", "setexpr", "setid", "props", "func", "trace", "count", "convert", "encode", "bitop", "pycode"}
+LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur", "venn", "relation", "graph", "func", "trace", "growth", "base", "bitpanel", "utf8", "float", "rle", "pyrun"}
 GROWTH = {"1", "log2(n)", "sqrt(n)", "n", "n*log2(n)", "n^2", "n^3", "2^n", "100*n", "n!"}
 ARITH_PROPS = set(AR.PROPS)
 QUANT_PREDS = {"even", "odd", "prime", "positive", "gt3", "square"}
@@ -74,6 +76,10 @@ def check_lab(spec, where, errs):
         elif lab == "growth":
             if not set(spec["fns"]) <= GROWTH:
                 errs.append(f"{where}: growth - белгісіз функция")
+        elif lab == "pyrun":
+            r = json.loads(JG.run_json(spec["code"], spec.get("stdin", "")))
+            if bool(spec.get("expectError")) == bool(r["ok"]):
+                errs.append(f"{where}: pyrun - {'қате күтілген, бірақ код дұрыс орындалды' if r['ok'] else 'код қатемен аяқталды: ' + str(r.get('error')) + ' ' + str(r.get('detail'))}")
         elif lab == "base":
             BI.from_base(spec["value"].lstrip("-"), spec["from"])
         elif lab == "bitpanel":
@@ -144,6 +150,16 @@ def check_exercise(ex, where, errs):
             trace_key(ex)
         elif t in ("convert", "encode", "bitop"):
             bits_key(ex)
+        elif t == "pycode":
+            spec = {k: ex[k] for k in ("mode", "func", "tests") if k in ex}
+            if len(ex["tests"]) < (1 if ex["mode"] == "io" else 2) and ex["mode"] == "func":
+                errs.append(f"{where}: pycode - func үшін кемінде 2 тест")
+            r = JG.judge(ex["solution"], spec)
+            if not r["ok"]:
+                bad = next(x for x in r["results"] if not x["passed"])
+                errs.append(f"{where}: pycode - эталон шешім тесттен өтпеді: {bad}")
+            if JG.judge(ex.get("starter", ""), spec)["ok"]:
+                errs.append(f"{where}: pycode - бастапқы код (starter) тесттерден өтіп кетеді (мағынасыз)")
         elif t == "count":
             r = PS.run(ex["code"], ex.get("inputs", {}))
             if ex["line"] not in r["counts"]:
@@ -596,6 +612,8 @@ def dump_keys():
                     k = trace_key(ex)
                 elif t in ("convert", "encode", "bitop"):
                     k = bits_key(ex)
+                elif t == "pycode":
+                    k = ex["solution"]
                 elif t == "count":
                     k = PS.run(ex["code"], ex.get("inputs", {}))["counts"].get(ex["line"], 0)
                 elif t == "setexpr":
