@@ -94,6 +94,7 @@ def _run(code, stdin_lines, call=None, files=None):
 
 def _run_inner(code, stdin_lines, call=None):
     out = io.StringIO()
+    err = io.StringIO()  # stderr бөлек ұсталады: тесттер тек stdout-ты салыстырады
     lines = list(stdin_lines)
 
     def fake_input(prompt=""):
@@ -106,18 +107,19 @@ def _run_inner(code, stdin_lines, call=None):
         return v
 
     ns = {"__name__": "__main__", "__builtins__": __builtins__}
-    old_out, old_in = sys.stdout, None
+    old_out, old_err, old_in = sys.stdout, sys.stderr, None
     import builtins
     old_in = builtins.input
     builtins.input = fake_input
     sys.stdout = out
+    sys.stderr = err
     old_trace = sys.gettrace()
     try:
         compiled = compile(code, "<оқушы коды>", "exec")
         sys.settrace(_tracer())
         exec(compiled, ns)
         result = call(ns) if call else None
-        return {"ok": True, "out": out.getvalue(), "result": result}
+        return {"ok": True, "out": out.getvalue(), "err": err.getvalue(), "result": result}
     except StepLimit:
         return {"ok": False, "out": out.getvalue(), "error": "StepLimit", "line": None, "detail": "", "hint": MESSAGES["StepLimit"]}
     except (Exception, SystemExit) as e:  # noqa: BLE001 - оқушы кодының кез келген қатесі есепке жатады
@@ -127,6 +129,7 @@ def _run_inner(code, stdin_lines, call=None):
     finally:
         sys.settrace(old_trace)
         sys.stdout = old_out
+        sys.stderr = old_err
         builtins.input = old_in
 
 
@@ -191,7 +194,7 @@ def judge_json(code, spec_json):
 def run_json(code, stdin=""):
     """Еркін іске қосу (зертхана): шығыс және қате (бар болса)."""
     r = _run(code, stdin.split("\n") if stdin else [])
-    return json.dumps({k: r.get(k) for k in ("ok", "out", "error", "line", "detail", "hint")}, ensure_ascii=False)
+    return json.dumps({k: r.get(k) for k in ("ok", "out", "err", "error", "line", "detail", "hint")}, ensure_ascii=False)
 
 
 def trace_calls(code, call_src, limit=400):

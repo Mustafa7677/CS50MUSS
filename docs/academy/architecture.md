@@ -41,7 +41,8 @@ AO17 CS Universe - қазақ тіліндегі бес деңгейлі инф�
 | Spaced Repetition | `INTERVALS = [2, 7, 21, 60]` күн | бар (қарапайым) |
 | Recommendation | басты беттегі «Келесі ұсыныс» | бар: ретімен бірінші меңгерілмеген сабақ |
 | Knowledge Graph | `academy/map.html` | бар: модульдер, алғышарт байланысы, жеке күй |
-| C (build кезінде gcc: мысалдар, `cshow`, `coutput`) | `tools/academy_build.py` (`run_c`, `c_check`) | бар: -std=c11 -Wall -Wextra -Werror, stdin, шығу коды, UBSan/ASan хабарлары |
+| C (build кезінде gcc: мысалдар, `cshow`, `coutput`) | `tools/academy_build.py` (`run_c`, `c_check`) | бар: -std=c11 -Wall -Wextra -Werror, stdin, аргументтер, шығу коды, UBSan/ASan/LSan хабарлары |
+| Жергілікті Python мысалдары (`python-local`) | `tools/academy_build.py` | бар: subprocess/gcc/git қолданатын мысалдар build кезінде CPython-да орындалады; браузерде іске қосу батырмасы жоқ |
 | Браузердегі C, Virtual Computer, C Playground, Judge, Certification | - | **әлі жоқ** (docs/academy/next-steps.md) |
 
 ## Сабақ деректерінің моделі
