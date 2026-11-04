@@ -26,6 +26,7 @@
     return judgeP;
   }
   async function pyJudge(code, spec) { const py = await judgeReady(); return JSON.parse(py.globals.get("judge_json")(code, JSON.stringify(spec))); }
+  async function pyJudgeTests(code, spec) { const py = await judgeReady(); return JSON.parse(py.globals.get("judge_tests_json")(code, JSON.stringify(spec))); }
   async function pyTrace(code, call) { const py = await judgeReady(); return JSON.parse(py.globals.get("trace_calls")(code, call)); }
   async function pyRun(code, stdin) { const py = await judgeReady(); return JSON.parse(py.globals.get("run_json")(code, stdin || "")); }
   const PY_FAIL = "Python жүктелмеді (интернет қажет, бірінші рет ~10 секунд). Байланысты тексеріп, қайта басыңыз.";
@@ -585,13 +586,13 @@
     let fi = null;
     if (ex.type === "formula") { fi = formulaInput("", "Сіздің өрнегіңіз", null); box.insertBefore(fi, $(".ac-qa", box)); }
     let pyEd = null;
-    if (ex.type === "pycode") {
+    if (ex.type === "pycode" || ex.type === "pytests") {
       const saved = rec.ex[key] && rec.ex[key].code;
       pyEd = codeArea(saved != null ? saved : ex.starter || "");
       box.insertBefore(pyEd, $(".ac-qa", box));
       const tl = document.createElement("p");
       tl.className = "ac-note";
-      tl.textContent = `${ex.mode === "func" ? `Функция: ${ex.func}(...). ` : "Бағдарлама: енгізу/шығару. "}Тесттер: ${ex.tests.length} (ашық, браузерде тексеріледі).`;
+      tl.textContent = ex.type === "pytests" ? `Сіз ТЕСТ жазасыз: test_ деп басталатын функциялар, ішінде assert. Тексерілетін функция: ${ex.func}(...) - ол дайын, оны жазбаңыз. Кемінде ${ex.min_tests || 1} тест; олар дұрыс іске асыруда өтуі және ${ex.mutants.length} әдейі қате нұсқаның (мутанттың) әрқайсысын «ұстауы» керек.` : `${ex.mode === "func" ? `Функция: ${ex.func}(...). ` : "Бағдарлама: енгізу/шығару. "}Тесттер: ${ex.tests.length} (ашық, браузерде тексеріледі).`;
       box.insertBefore(tl, pyEd);
     }
     if (ex.type === "closedform" || ex.type === "recurrence") { fi = exprInput("", "g(n) = (мысалы: n(n+1)/2, 2^n - 1)", null); box.insertBefore(fi, $(".ac-qa", box)); }
@@ -645,7 +646,7 @@
             return { ok: false, msg: `n = ${b.N} болғанда сіздің формула ${AR.str(b.closed)}, ал керегі ${AR.str(ex.type === "closedform" ? b.sum : b.a)}.` };
           } catch (e) { return { ok: false, msg: e.message, soft: true }; }
         }
-        case "pycode": return { async: true };
+        case "pycode": case "pytests": return { async: true };
         case "convert": case "encode": case "bitop": {
           const v = $(".ac-setin", box).value.trim(); if (!v) return null;
           const want = bitsKey(ex);
@@ -708,7 +709,8 @@
       s.code = pyEd.value;
       fb.textContent = "Python тексеріп жатыр..."; fb.className = "ac-fb";
       let r;
-      try { r = await pyJudge(pyEd.value, { mode: ex.mode, func: ex.func, tests: ex.tests, suffix: ex.suffix }); }
+      if (ex.type === "pytests") return checkTests(s);
+      try { r = await pyJudge(pyEd.value, { mode: ex.mode, func: ex.func, tests: ex.tests, suffix: ex.suffix, files: ex.files }); }
       catch (e) { fb.textContent = PY_FAIL; fb.className = "ac-fb bad"; return; }
       s.tries = (s.tries || 0) + 1;
       if (r.ok && !s.ok) { s.ok = true; s.rev = false; s.t = Date.now(); }
@@ -723,8 +725,27 @@
       showState(s);
       onResult();
     }
+    async function checkTests(s) {
+      let r;
+      try { r = await pyJudgeTests(pyEd.value, { impl: ex.impl, mutants: ex.mutants, min_tests: ex.min_tests || 1 }); }
+      catch (e) { fb.textContent = PY_FAIL; fb.className = "ac-fb bad"; return; }
+      s.tries = (s.tries || 0) + 1;
+      if (r.ok && !s.ok) { s.ok = true; s.rev = false; s.t = Date.now(); }
+      let html;
+      if (r.stage === "load") html = `<b>Тест коды іске қосылмады</b>: <b>${esc(r.error)}</b>${r.line ? ` (${r.line}-жол)` : ""} - ${esc(r.hint || "")}${r.detail ? `<br><small>${esc(r.detail)}</small>` : ""}`;
+      else {
+        const rows = (r.on_correct || []).map((t) => t.ok ? `<li class="y">✓ ${esc(t.name)} дұрыс кодта өтті</li>` : `<li class="n">✗ ${esc(t.name)} ДҰРЫС кодта құлады (${esc(t.error)}${t.detail ? ": " + esc(t.detail) : ""}) - тесттің өзі қате</li>`).join("");
+        const ms = (r.mutants || []).map((m) => { const d = ex.mutants.find((x) => x.name === m.name); return `<li class="${m.killed ? "y" : "n"}">${m.killed ? "✓ ұсталды" : "✗ ұсталмады"}: ${esc(d && d.desc ? d.desc : m.name)}</li>`; }).join("");
+        const head = r.stage === "count" ? `Тест саны ${r.count}, кемінде ${ex.min_tests || 1} керек. test_ деп басталатын функциялар жазыңыз.` : r.stage === "correct" ? "Кейбір тест дұрыс іске асыруда құлады." : `${(r.mutants || []).filter((m) => m.killed).length} / ${ex.mutants.length} мутант ұсталды${r.ok ? " - тесттеріңіз күшті!" : ""}`;
+        html = `<b>${esc(head)}</b><ul class="ac-props">${rows}${ms}</ul>`;
+      }
+      fb.innerHTML = html;
+      fb.className = "ac-fb " + (r.ok ? "good" : "bad");
+      showState(s);
+      onResult();
+    }
     $(".ac-check", box).addEventListener("click", () => {
-      if (ex.type === "pycode") { checkPy(); return; }
+      if (ex.type === "pycode" || ex.type === "pytests") { checkPy(); return; }
       const r = evaluate();
       if (!r) { fb.textContent = "Алдымен жауап беріңіз."; fb.className = "ac-fb"; return; }
       const s = rec.ex[key] = rec.ex[key] || {};
@@ -747,7 +768,7 @@
       else if (ex.type === "closedform" || ex.type === "recurrence") ans = ex.solution + " (эквивалент жазылу да қабылданады)";
       else if (ex.type === "counterexample") ans = "n = " + AR.searchCounterexamples(ex, 1)[0];
       else if (ex.type === "convert" || ex.type === "encode" || ex.type === "bitop") ans = bitsKey(ex);
-      else if (ex.type === "pycode") { ans = "төмендегі эталон шешім (өзіңіз түсініп, қайта жазыңыз)"; const pre = document.createElement("pre"); pre.className = "ac-pseudo"; pre.textContent = ex.solution; fb.after(pre); }
+      else if (ex.type === "pycode" || ex.type === "pytests") { ans = "төмендегі эталон шешім (өзіңіз түсініп, қайта жазыңыз)"; const pre = document.createElement("pre"); pre.className = "ac-pseudo"; pre.textContent = ex.solution; fb.after(pre); }
       else if (ex.type === "trace") ans = traceKey(ex);
       else if (ex.type === "count") ans = String(PS.run(ex.code, ex.inputs || {}).counts[ex.line] || 0);
       else if (ex.type === "setexpr") ans = DS.fmt(DS.evalSet(ex.expr, ex.sets, ex.U));
