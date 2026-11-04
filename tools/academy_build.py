@@ -22,10 +22,11 @@ import plogic as P  # noqa: E402
 import parith as AR  # noqa: E402
 import pdisc as DS  # noqa: E402
 import ppseudo as PS  # noqa: E402
+import pbits as BI  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
 
 OUT = ROOT / "academy"
-CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b"]
+CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b"]
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
@@ -35,8 +36,8 @@ REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "reflection": (list, 1), "further": (dict, None), "references": (list, 1), "license": (str, 2), "authorship": (str, 2),
     "reviewStatus": (str, 2), "version": (str, 5),
 }
-EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence", "setexpr", "setid", "props", "func", "trace", "count"}
-LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur", "venn", "relation", "graph", "func", "trace", "growth"}
+EX_TYPES = {"mc", "value", "truthtable", "classify", "formula", "argument", "number", "order", "counterexample", "closedform", "recurrence", "setexpr", "setid", "props", "func", "trace", "count", "convert", "encode", "bitop"}
+LABS = {"truthtable", "equiv", "argument", "tree", "normal", "quant", "search", "induction", "recur", "venn", "relation", "graph", "func", "trace", "growth", "base", "bitpanel", "utf8", "float", "rle"}
 GROWTH = {"1", "log2(n)", "sqrt(n)", "n", "n*log2(n)", "n^2", "n^3", "2^n", "100*n", "n!"}
 ARITH_PROPS = set(AR.PROPS)
 QUANT_PREDS = {"even", "odd", "prime", "positive", "gt3", "square"}
@@ -73,6 +74,14 @@ def check_lab(spec, where, errs):
         elif lab == "growth":
             if not set(spec["fns"]) <= GROWTH:
                 errs.append(f"{where}: growth - белгісіз функция")
+        elif lab == "base":
+            BI.from_base(spec["value"].lstrip("-"), spec["from"])
+        elif lab == "bitpanel":
+            BI.bit_expr(f"{spec['a']} {spec['op']} {spec['b']}", spec["width"])
+        elif lab in ("utf8", "rle"):
+            str(spec["text"])
+        elif lab == "float":
+            BI.float32_bits(float(spec["value"]))
         elif lab == "venn":
             DS.evaluate(spec["expr"], spec["sets"], spec["U"])
         elif lab == "relation":
@@ -118,7 +127,7 @@ def check_exercise(ex, where, errs):
         elif t == "number":
             if not isinstance(ex["answer"], int):
                 errs.append(f"{where}: number - жауап бүтін сан болуы керек")
-            elif "check" in ex and eval(ex["check"], {"math": math, "__builtins__": {"range": range, "sum": sum, "next": next, "len": len, "min": min, "max": max, "all": all, "any": any, "abs": abs}}) != ex["answer"]:
+            elif "check" in ex and eval(ex["check"], {"math": math, "__builtins__": {"range": range, "sum": sum, "next": next, "len": len, "min": min, "max": max, "all": all, "any": any, "abs": abs, "int": int, "round": round}}) != ex["answer"]:
                 errs.append(f"{where}: number - жауап ({ex['answer']}) check өрнегімен сәйкес емес")
         elif t == "setexpr":
             DS.evaluate(ex["expr"], ex["sets"], ex["U"])
@@ -133,6 +142,8 @@ def check_exercise(ex, where, errs):
             pairs(ex["R"])
         elif t == "trace":
             trace_key(ex)
+        elif t in ("convert", "encode", "bitop"):
+            bits_key(ex)
         elif t == "count":
             r = PS.run(ex["code"], ex.get("inputs", {}))
             if ex["line"] not in r["counts"]:
@@ -200,6 +211,26 @@ def fmt_val(v):
     if isinstance(v, list):
         return "[" + ", ".join(fmt_val(x) for x in v) + "]"
     return str(v)
+
+
+def bits_key(ex):
+    t = ex["type"]
+    if t == "convert":
+        return BI.convert(ex["value"], ex["from"], ex["to"])
+    if t == "bitop":
+        return str(BI.bit_expr(ex["expr"], ex["width"]))
+    k = ex["kind"]
+    if k == "twos":
+        return BI.twos(ex["input"], ex["bits"])
+    if k == "utf8":
+        return BI.utf8_hex(ex["input"])
+    if k == "parity":
+        return BI.parity(ex["input"])
+    if k == "float32":
+        return BI.float32_bits(float(ex["input"]))
+    if k == "rle":
+        return BI.rle(ex["input"])
+    raise ValueError(f"белгісіз encode түрі {k}")
 
 
 def trace_key(ex):
@@ -329,6 +360,7 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad"):
   <script src="{pre}assets/js/academy-arith.js" defer></script>
   <script src="{pre}assets/js/academy-disc.js" defer></script>
   <script src="{pre}assets/js/academy-pseudo.js" defer></script>
+  <script src="{pre}assets/js/academy-bits.js" defer></script>
   <script src="{pre}assets/js/academy.js" defer></script>{sc}
 </head>
 <body class="{body_cls}">
@@ -451,7 +483,7 @@ def lab_html():
     <p class="ac-crumb"><a href="index.html">CS Universe</a> / Логика зертханасы</p>
     <h1>CS Universe зертханасы</h1>
     <p>Формуланы енгізіңіз: кесте, ағаш, түрі, ДҚФ/КҚФ бірден шығады. Екі формуланы салыстыруға, аргументті тексеруге болады. Есептеу толық ақиқат кестесімен жүреді (ең көбі 12 айнымалы) - бұл нақты есептеу, болжам емес. «Қарсы мысал», «Индукция», «Рекуррент» қойындылары n айнымалысы бар өрнектерді дәл бөлшектермен есептейді: бұл сандық тексеріс, дәлелдеу емес.</p>
-    <div class="ac-tabs" role="tablist"><button type="button" role="tab" data-tab="truthtable" aria-selected="true">Кесте</button><button type="button" role="tab" data-tab="equiv" aria-selected="false">Эквиваленттік</button><button type="button" role="tab" data-tab="argument" aria-selected="false">Аргумент</button><button type="button" role="tab" data-tab="normal" aria-selected="false">ДҚФ/КҚФ</button><button type="button" role="tab" data-tab="tree" aria-selected="false">Ағаш</button><button type="button" role="tab" data-tab="quant" aria-selected="false">Кванторлар</button><button type="button" role="tab" data-tab="search" aria-selected="false">Қарсы мысал</button><button type="button" role="tab" data-tab="induction" aria-selected="false">Индукция</button><button type="button" role="tab" data-tab="recur" aria-selected="false">Рекуррент</button><button type="button" role="tab" data-tab="venn" aria-selected="false">Венн</button><button type="button" role="tab" data-tab="relation" aria-selected="false">Қатынас</button><button type="button" role="tab" data-tab="func" aria-selected="false">Функция</button><button type="button" role="tab" data-tab="graph" aria-selected="false">Граф</button><button type="button" role="tab" data-tab="trace" aria-selected="false">Трасса</button><button type="button" role="tab" data-tab="growth" aria-selected="false">Өсу жылдамдығы</button></div>
+    <div class="ac-tabs" role="tablist"><button type="button" role="tab" data-tab="truthtable" aria-selected="true">Кесте</button><button type="button" role="tab" data-tab="equiv" aria-selected="false">Эквиваленттік</button><button type="button" role="tab" data-tab="argument" aria-selected="false">Аргумент</button><button type="button" role="tab" data-tab="normal" aria-selected="false">ДҚФ/КҚФ</button><button type="button" role="tab" data-tab="tree" aria-selected="false">Ағаш</button><button type="button" role="tab" data-tab="quant" aria-selected="false">Кванторлар</button><button type="button" role="tab" data-tab="search" aria-selected="false">Қарсы мысал</button><button type="button" role="tab" data-tab="induction" aria-selected="false">Индукция</button><button type="button" role="tab" data-tab="recur" aria-selected="false">Рекуррент</button><button type="button" role="tab" data-tab="venn" aria-selected="false">Венн</button><button type="button" role="tab" data-tab="relation" aria-selected="false">Қатынас</button><button type="button" role="tab" data-tab="func" aria-selected="false">Функция</button><button type="button" role="tab" data-tab="graph" aria-selected="false">Граф</button><button type="button" role="tab" data-tab="trace" aria-selected="false">Трасса</button><button type="button" role="tab" data-tab="growth" aria-selected="false">Өсу жылдамдығы</button><button type="button" role="tab" data-tab="base" aria-selected="false">Санау жүйесі</button><button type="button" role="tab" data-tab="bitpanel" aria-selected="false">Бит панелі</button><button type="button" role="tab" data-tab="utf8" aria-selected="false">UTF-8</button><button type="button" role="tab" data-tab="float" aria-selected="false">IEEE 754</button></div>
     <div class="ac-lab ac-lab-big" data-lab="page"></div>
     <section class="ac-sec"><h2>Синтаксис</h2><p>Арифметика: сандар, n, + − * / % ^ және жақша; 2n және n(n+1) жасырын көбейту ретінде оқылады. Логика: ¬ (not, !, ~), ∧ (and, &amp;), ∨ (or, |), → (->), ↔ (&lt;->), ⊕ (xor, ^), тұрақтылар 0 және 1. Басымдық: ¬ &gt; ∧ &gt; ⊕ &gt; ∨ &gt; → &gt; ↔; → оңнан топтасады.</p></section>
   </main>"""
@@ -562,6 +594,8 @@ def dump_keys():
                     k = ex["solution"]
                 elif t == "trace":
                     k = trace_key(ex)
+                elif t in ("convert", "encode", "bitop"):
+                    k = bits_key(ex)
                 elif t == "count":
                     k = PS.run(ex["code"], ex.get("inputs", {}))["counts"].get(ex["line"], 0)
                 elif t == "setexpr":
