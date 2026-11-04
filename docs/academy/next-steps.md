@@ -3,8 +3,7 @@
 Нақты күйі: `docs/academy/status.json` (автоматты) және `docs/academy/implementation-progress.md`.
 
 ## Келесі сессияның бірінші тапсырмасы
-m01-m10 дайын (100 сабақ). Келесі - **m11 Memory & Pointers** (C, gcc-мен тексерілетін `coutput`/`cshow`; мекенжайлар бағдарлама сайын өзгеретіндіктен, тек салыстырмалы айырмалар шығарылады) және **m12** (Level I-дің соңғы модулі).
-Жоба: p11 Memory Address Explorer, p12 Python–C Comparative Computing Project.
+m01-m11 дайын (110 сабақ). Келесі - **m12 Systems Integration** (Level I-дің соңғы модулі): командалық жол, CSV/JSON, Python + C (subprocess), өнімділік, сенімді енгізу, Git, құжаттама, интеграциялық тест; қорытынды жоба p12 Python–C Comparative Computing Project.
 
 ## Кейінгі кезеңдер (басымдықпен)
 1. **m03-m05** (дискретті құрылымдар, алгоритмдік ойлау, екілік жүйе) және **Set Operations Laboratory**.

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Жады қателері - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Жады қателері - AO17">
+  <meta property="og:description" content="AO17 CS Universe, Level I: Жады қателері. Жад қателерінің түрлерін тану: ағып кету, ілулі көрсеткіш (use-after-free), қос босату, шекарадан тыс жазу.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/m11/l06.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/m11/l06.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Жады қателері - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/m11/l06.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 CS Universe, Level I: Жады қателері. Жад қателерінің түрлерін тану: ағып кету, ілулі көрсеткіш (use-after-free), қос босату, шекарадан тыс жазу.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/academy-logic.js" defer></script>
+  <script src="../../assets/js/academy-arith.js" defer></script>
+  <script src="../../assets/js/academy-disc.js" defer></script>
+  <script src="../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../assets/js/academy-bits.js" defer></script>
+  <script src="../../assets/js/academy.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="ac-layout">
+    <aside class="ac-toc" aria-label="Сабақ бөлімдері"><p class="ac-toc-h">Бөлімдер</p><ol><li><a href="#s-a">Оқу мақсаттары</a></li><li><a href="#s-b">Алғышарттар</a></li><li><a href="#s-c">Ұғымға кіріспе</a></li><li><a href="#s-d">Академиялық теория</a></li><li><a href="#s-e">Көрнекі түсіндірме</a></li><li><a href="#s-f">Қадамдап қорыту</a></li><li><a href="#s-g">Жұмыс мысалдары</a></li><li><a href="#s-h">Интерактивті эксперимент</a></li><li><a href="#s-i">Жаттығулар</a></li><li><a href="#s-j">Математикалық пайымдау</a></li><li><a href="#s-k">Жиі қателер</a></li><li><a href="#s-l">Меңгеруді бағалау</a></li><li><a href="#s-m">Рефлексия</a></li><li><a href="#s-n">Тереңірек</a></li></ol>
+      <div class="ac-mastery" data-ac-mastery><span>Меңгеру</span><b>-</b></div></aside>
+    <article class="content ac-lesson" id="main" data-lesson="ao17-foundation.m11.l06">
+      <header class="ac-head">
+        <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#m11">Level I · Жады және көрсеткіштер</a> / 6-сабақ</p>
+        <h1>Жады қателері</h1>
+        <p class="ac-meta">Деңгей: күрделі · шамамен 55 мин · нұсқа 1.0.0 · тексеру: author-checked</p>
+      </header>
+      <section class="ac-sec" id="s-a"><h2><span class="ac-n">A</span>Оқу мақсаттары</h2><ul class="ac-obj"><li>Жад қателерінің түрлерін тану: ағып кету, ілулі көрсеткіш (use-after-free), қос босату, шекарадан тыс жазу.</li><li>AddressSanitizer есебін оқып, қатенің түрі мен жолын табу.</li><li>Қатеден сақтану тәртібін қолдану: free-ден кейін NULL, бір иесі, жұптық бөлу/босату.</li></ul></section>
+      <section class="ac-sec" id="s-b"><h2><span class="ac-n">B</span>Алғышарттар</h2><ul><li><a href="../m11/l05.html">Үйме (heap)</a></li></ul></section>
+      <section class="ac-sec" id="s-c"><h2><span class="ac-n">C</span>Ұғымға кіріспе</h2><p>Үйме қуатты, бірақ әр қате үнсіз болуы мүмкін: бағдарлама «жұмыс істей береді», кейін кездейсоқ жерде құлайды. Негізгі төрт қате: <b>ағып кету</b> (free ұмытылды), <b>ілулі көрсеткіш</b> (босатылған жадты пайдалану), <b>қос босату</b>, <b>шекарадан тыс жазу</b> (heap-buffer-overflow).</p><p>Бұл сабақтың мысалдары нағыз AddressSanitizer-мен компиляцияланып, іске қосылған - төмендегі stderr үзінділері сол есептерден алынған (мекенжайлар алынып тасталған). Ереже: тестілеу кезінде әрқашан <code>-fsanitize=address</code>.</p></section>
+      <section class="ac-sec" id="s-d"><h2><span class="ac-n">D</span>Академиялық теория</h2><div class="ac-th ac-definition"><div class="ac-th-k">Анықтама</div><h4>Төрт қате</h4><ul><li>Leak: бөлінген блокқа ешбір көрсеткіш қалмады, бірақ free болмады.</li><li>Use-after-free: free(p) кейін *p.</li><li>Double free: бір блокты екі рет free.</li><li>Heap overflow: malloc(n) блогынан тыс оқу/жазу.</li></ul></div><div class="ac-th ac-theorem"><div class="ac-th-k">Теорема</div><h4>free-ден кейін NULL қою қос босатуды болдырмайды</h4><p>Блоктың жалғыз көрсеткіші p болса және әр free(p)-тен кейін бірден p = NULL жазылса, бұл блок екі рет босатылмайды.</p></div><div class="ac-th ac-proof"><div class="ac-th-k">Дәлелдеу</div><h4>Дәлелдеу</h4><p>Блоққа тек p көрсетеді (жалғыз иесі). Бірінші free(p)-тен кейін p = NULL, демек блокқа көрсететін ешбір көрсеткіш қалмады. Блокты тағы босату үшін оның мекенжайы бар көрсеткіш керек - ондай жоқ. Ал free(p) қайта шақырылса, бұл free(NULL), ол стандарт бойынша ештеңе істемейді (C11 7.22.3.3). ∎ Ескерту: блоктың көшірме көрсеткіштері (q = p) болса, теорема шарты бұзылады - сондықтан «бір иесі» ережесі маңызды.</p></div><div class="ac-th ac-note"><div class="ac-th-k">Ескерту</div><h4>Неге қате үнсіз?</h4><p>free жадты операциялық жүйеге бірден қайтармайды - ол аллокатордың «бос» тізіміне түседі. Сондықтан *p оқу көбіне ескі мәнді не келесі malloc-тың деректерін береді. Құлау кейінірек, басқа жерде болады - себебін табу өте қиын.</p></div></section>
+      <section class="ac-sec" id="s-e"><h2><span class="ac-n">E</span>Көрнекі түсіндірме</h2><div class="ac-lab" data-lab="visual"></div><p class="ac-cap">ASan үш жолды көрсетті: қай жерде оқылды (11), қай жерде босатылды (10), қай жерде бөлінді (6). gcc 13 бұл қатені компиляция кезінде де байқап ескертеді (-Wuse-after-free).</p></section>
+      <section class="ac-sec" id="s-f"><h2><span class="ac-n">F</span>Қадамдап қорыту</h2><ol class="ac-steps"><li>Ағып кету табу: бағдарламаның соңында LeakSanitizer тірі блоктарды тізімдейді.</li><li>«Direct leak of 40 byte(s) ... allocated from: main prog.c:6» - қай malloc босатылмағаны.</li><li>Түзету: сол блоктың иесі кім? Иесі біткен жерге free қосу.</li><li>Қайта іске қосу: ASan үнсіз - енді таза.</li></ol></section>
+      <section class="ac-sec" id="s-g"><h2><span class="ac-n">G</span>Жұмыс мысалдары</h2><figure class="ac-ex"><figcaption>Ағып кету: LeakSanitizer</figcaption><pre data-lang="c"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+
+char *copy_word(const char *w)
+{
+    char *c = malloc(strlen(w) + 1);
+    if (c)
+        strcpy(c, w);
+    return c;
+}
+
+int main(void)
+{
+    const char *words[] = {&quot;жад&quot;, &quot;стек&quot;, &quot;үйме&quot;};
+    for (int i = 0; i &lt; 3; i++) {
+        char *c = copy_word(words[i]);
+        if (c &amp;&amp; i &lt; 2)
+            printf(&quot;%s\n&quot;, c);
+        if (i &lt; 2)
+            free(c);
+    }
+    fflush(stdout);
+    return 0;
+}</code></pre><div class="ac-out"><span>Шығыс (build кезінде gcc арқылы алынған)</span><pre>жад
+стек</pre></div><div class="ac-out"><span>stderr (gcc -fsanitize=address -g)</span><pre>ERROR: LeakSanitizer: detected memory leaks
+Direct leak of 9 byte(s) in 1 object(s) allocated from:
+    #1 in copy_word prog.c:7
+    #2 in main prog.c:17</pre></div><p>Үшінші сөздің көшірмесі (i = 2) босатылмады: «үйме» 8 байт + &#x27;\0&#x27; = 9 байт. LeakSanitizer бағдарлама соңында тірі блокты тауып, оның қай жерде бөлінгенін көрсетті және шығу кодын 1 етті. (fflush(stdout) - LSan процесті аяқтамас бұрын шығысты жазу үшін.)</p></figure></section>
+      <section class="ac-sec" id="s-h"><h2><span class="ac-n">H</span>Интерактивті эксперимент</h2><p class="ac-task">i &lt;= 4 - бір артық жазу (m10 l06). ASan оны жазу сәтінде ұстады: «16 байттық аймақтан кейін 0 байт». Санитайзерсіз бұл жазу көрші блоктың ішкі деректерін бүлдіріп, кейінгі free-де құлауы мүмкін еді.</p><div class="ac-lab" data-lab="experiment"></div></section>
+      <section class="ac-sec" id="s-i"><h2><span class="ac-n">I</span>Жаттығулар</h2><div class="ac-exs" data-set="exercises"></div></section>
+      <section class="ac-sec" id="s-j"><h2><span class="ac-n">J</span>Математикалық пайымдау</h2><p>Жад қателері - қауіпсіздік осалдықтарының ең үлкен класы: Microsoft пен Google есептері бойынша олардың ~70%-ы жад қауіпсіздігіне қатысты. Сондықтан қазіргі тілдер (Rust, Go, Python) бұл қателерді тіл деңгейінде мүмкін емес етеді. C-да біздің қорғанысымыз - тәртіп пен құралдар.</p></section>
+      <section class="ac-sec" id="s-k"><h2><span class="ac-n">K</span>Жиі қателер</h2><ul class="ac-mist"><li><b>free(p) кейін p-ны қолдана беру («әлі мән бар ғой»).</b><br>Себебі: Блок аллокаторға қайтты - кез келген сәтте қайта бөлінеді.<br>Түзету: free(p); p = NULL;</li><li><b>Бір блокты екі құрылымның екеуі де «иеленеді» деп, екеуі де босатады.</b><br>Себебі: Қос босату.<br>Түзету: Әр блоктың бір ғана иесі; басқалары - тек «қарызға алушы».</li></ul></section>
+      <section class="ac-sec" id="s-l"><h2><span class="ac-n">L</span>Меңгеруді бағалау</h2><p class="ac-note">Барлық сұраққа дұрыс жауап берсеңіз, сабақ «меңгерілді» деп белгіленеді. Тексеру браузерде өтеді: бұл оқу тексерісі, емтихан емес.</p><div class="ac-exs" data-set="assessment"></div></section>
+      <section class="ac-sec" id="s-m"><h2><span class="ac-n">M</span>Рефлексия</h2><div data-ac-reflect></div></section>
+      <section class="ac-sec" id="s-n"><h2><span class="ac-n">N</span>Тереңірек</h2><h3>Honors</h3><ul><li>Valgrind (memcheck) мен AddressSanitizer-ді салыстырыңыз: жылдамдық, табатын қателер, қайта компиляция қажеттілігі.</li></ul><h3>Research</h3><ul><li>Rust-тың иелік (ownership) және қарызға алу (borrowing) жүйесі осы сабақтағы төрт қатенің әрқайсысын компиляция кезінде қалай болдырмайды?</li></ul></section>
+      
+      <section class="ac-sec ac-src"><h2>Дереккөз және лицензия</h2><ul><li>ISO/IEC 9899:2011 (C11), 6.7.2.1 (құрылымдар), 7.22.3 (жадты басқару).</li><li>B. W. Kernighan, D. M. Ritchie, The C Programming Language, 6-тарау (Structures).</li><li>Python Software Foundation, Python/C API: Reference Counting; gc модулінің құжаттамасы.</li></ul>
+        <p>Сабақ мәтіні, мысалдары мен тапсырмалары AO17 үшін жаңадан жазылған (авторлық: Sagid Mustafa, All Rights Reserved). Дереккөздер ұғымдарды салыстыру үшін пайдаланылды, мәтін көшірілмеген. ID: <code>ao17-foundation.m11.l06</code></p></section>
+      <nav class="ac-pager"><a href="l05.html">← Үйме (heap)</a><a href="../index.html#m11">Модуль картасы</a><a href="l07.html">Құрылымдар (struct) →</a></nav>
+    </article>
+  </div>
+  <script type="application/json" id="ac-data">{"id": "ao17-foundation.m11.l06", "visual": {"lab": "cshow", "code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int *p = malloc(3 * sizeof *p);\n    if (!p)\n        return 1;\n    p[0] = 7;\n    free(p);\n    printf(\"%d\\n\", p[0]);\n    return 0;\n}", "cflags": ["-fsanitize=address", "-g"], "output": "", "exit": 1, "warn": true, "stderrHas": "heap-use-after-free", "stderrShow": "ERROR: AddressSanitizer: heap-use-after-free ... READ of size 4\n    #0 in main prog.c:11\nfreed by thread T0 here:\n    #1 in main prog.c:10\npreviously allocated by thread T0 here:\n    #1 in main prog.c:6", "caption": "ASan үш жолды көрсетті: қай жерде оқылды (11), қай жерде босатылды (10), қай жерде бөлінді (6). gcc 13 бұл қатені компиляция кезінде де байқап ескертеді (-Wuse-after-free)."}, "experiment": {"lab": "cshow", "code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int *p = malloc(4 * sizeof *p);\n    if (!p)\n        return 1;\n    for (int i = 0; i <= 4; i++)\n        p[i] = i;\n    printf(\"%d\\n\", p[3]);\n    free(p);\n    return 0;\n}", "cflags": ["-fsanitize=address", "-g"], "output": "", "exit": 1, "stderrHas": "heap-buffer-overflow", "stderrShow": "ERROR: AddressSanitizer: heap-buffer-overflow ... WRITE of size 4\n    #0 in main prog.c:10\n0x... is located 0 bytes after 16-byte region", "task": "i <= 4 - бір артық жазу (m10 l06). ASan оны жазу сәтінде ұстады: «16 байттық аймақтан кейін 0 байт». Санитайзерсіз бұл жазу көрші блоктың ішкі деректерін бүлдіріп, кейінгі free-де құлауы мүмкін еді."}, "exercises": [{"type": "mc", "q": "ASan есебі: «attempting double-free». Қате қандай?", "options": ["Жад жетпеді", "Бір блок екі рет босатылды", "Шекарадан тыс оқу", "Ағып кету"], "answer": 1, "why": ["Бұл - malloc NULL.", "Дұрыс.", "Бұл - buffer-overflow.", "Бұл - LeakSanitizer."], "hints": ["double - екі рет."]}, {"type": "coutput", "q": "Бұл бағдарлама қателерден таза (ASan-мен тексерілген). Не шығарады?", "code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int *a = malloc(2 * sizeof *a);\n    if (!a)\n        return 1;\n    a[0] = 5;\n    a[1] = 6;\n    int *b = a;\n    free(a);\n    a = NULL;\n    b = NULL;\n    free(a);\n    printf(\"%d %d\\n\", a == NULL, b == NULL);\n    return 0;\n}", "answer": "1 1", "cflags": ["-fsanitize=address", "-g"], "hints": ["free(NULL) - ештеңе істемейді (теорема).", "b да NULL етілді - ілулі көшірме қалмады."]}, {"type": "pycode", "q": "asan_kind(report) - ASan есебінің мәтінінен қатенің түрін қайтарсын: 'use-after-free', 'double-free', 'overflow', 'leak' не 'unknown'.", "mode": "func", "func": "asan_kind", "starter": "def asan_kind(report):\n    return 'unknown'\n", "tests": [{"args": ["ERROR: AddressSanitizer: heap-use-after-free on address"], "expect": "use-after-free"}, {"args": ["ERROR: AddressSanitizer: attempting double-free on 0x50"], "expect": "double-free"}, {"args": ["ERROR: AddressSanitizer: heap-buffer-overflow on address"], "expect": "overflow"}, {"args": ["ERROR: AddressSanitizer: stack-buffer-overflow"], "expect": "overflow"}, {"args": ["ERROR: LeakSanitizer: detected memory leaks"], "expect": "leak"}, {"args": ["Segmentation fault"], "expect": "unknown"}], "solution": "def asan_kind(report):\n    if 'use-after-free' in report:\n        return 'use-after-free'\n    if 'double-free' in report:\n        return 'double-free'\n    if 'buffer-overflow' in report:\n        return 'overflow'\n    if 'LeakSanitizer' in report or 'leak' in report:\n        return 'leak'\n    return 'unknown'", "hints": ["Кілт сөздер: use-after-free, double-free, buffer-overflow, LeakSanitizer."]}, {"type": "pycode", "q": "Модель: dangling(ops) - ('malloc', p), ('copy', q, p) (q = p), ('free', p), ('use', p) операцияларынан кейін use-after-free болған көрсеткіштердің атауларын реті бойынша қайтарсын. Көшірмелер бір блокқа көрсетеді.", "mode": "func", "func": "dangling", "starter": "def dangling(ops):\n    freed = set()\n    out = []\n    for op in ops:\n        if op[0] == 'free':\n            freed.add(op[1])\n        elif op[0] == 'use' and op[1] in freed:\n            out.append(op[1])\n    return out\n", "tests": [{"args": [[["malloc", "p"], ["copy", "q", "p"], ["free", "p"], ["use", "q"]]], "expect": ["q"]}, {"args": [[["malloc", "p"], ["use", "p"], ["free", "p"], ["malloc", "p"], ["use", "p"]]], "expect": []}, {"args": [[["malloc", "a"], ["copy", "b", "a"], ["copy", "c", "b"], ["free", "c"], ["use", "a"], ["use", "b"]]], "expect": ["a", "b"]}], "solution": "def dangling(ops):\n    block, alive, out, nxt = {}, set(), [], 0\n    for op in ops:\n        if op[0] == 'malloc':\n            nxt += 1\n            block[op[1]] = nxt\n            alive.add(nxt)\n        elif op[0] == 'copy':\n            block[op[1]] = block[op[2]]\n        elif op[0] == 'free':\n            alive.discard(block[op[1]])\n        elif op[0] == 'use' and block[op[1]] not in alive:\n            out.append(op[1])\n    return out", "hints": ["Бастапқы код атауларды бақылайды, блоктарды емес - көшірмені байқамайды.", "Әр malloc - жаңа блок нөмірі; көрсеткіш → блок сөздігі."]}], "assessment": [{"type": "coutput", "q": "Бағдарлама ASan-мен таза. Не шығарады?", "code": "#include <stdio.h>\n#include <stdlib.h>\n\nint *make(int n)\n{\n    int *a = calloc(n, sizeof *a);\n    if (a)\n        for (int i = 0; i < n; i++)\n            a[i] = i + 1;\n    return a;\n}\n\nint main(void)\n{\n    int total = 0;\n    for (int k = 1; k <= 3; k++) {\n        int *a = make(k);\n        if (!a)\n            return 1;\n        total += a[k - 1];\n        free(a);\n    }\n    printf(\"%d\\n\", total);\n    return 0;\n}", "answer": "6", "cflags": ["-fsanitize=address", "-g"], "hints": ["a[k − 1] = k.", "Әр итерацияда бөлу және босату - ағып кету жоқ."]}, {"type": "mc", "q": "Неге use-after-free бағдарламасы кейде «дұрыс» жұмыс істейді?", "options": ["Ол қате емес", "free жадты бірден өшірмейді; ескі мән кездейсоқ қалуы мүмкін", "Компилятор түзетеді", "ОЖ жадты қорғайды"], "answer": 1, "why": ["Бұл - UB.", "Дұрыс.", "Түзетпейді.", "Блок процесстің өз үймесінде."], "hints": ["Аллокатордың бос тізімі."]}], "reflection": ["Сіз жазған C бағдарламаларының бірін -fsanitize=address-пен компиляциялаңыз. Не табылды?"], "objectives": 3}</script>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

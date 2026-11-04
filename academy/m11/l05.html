@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Үйме (heap) - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Үйме (heap) - AO17">
+  <meta property="og:description" content="AO17 CS Universe, Level I: Үйме (heap). malloc, calloc, realloc және free арқылы динамикалық жад бөлу және босату.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/m11/l05.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/m11/l05.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Үйме (heap) - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/m11/l05.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 CS Universe, Level I: Үйме (heap). malloc, calloc, realloc және free арқылы динамикалық жад бөлу және босату.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/academy-logic.js" defer></script>
+  <script src="../../assets/js/academy-arith.js" defer></script>
+  <script src="../../assets/js/academy-disc.js" defer></script>
+  <script src="../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../assets/js/academy-bits.js" defer></script>
+  <script src="../../assets/js/academy.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="ac-layout">
+    <aside class="ac-toc" aria-label="Сабақ бөлімдері"><p class="ac-toc-h">Бөлімдер</p><ol><li><a href="#s-a">Оқу мақсаттары</a></li><li><a href="#s-b">Алғышарттар</a></li><li><a href="#s-c">Ұғымға кіріспе</a></li><li><a href="#s-d">Академиялық теория</a></li><li><a href="#s-e">Көрнекі түсіндірме</a></li><li><a href="#s-f">Қадамдап қорыту</a></li><li><a href="#s-g">Жұмыс мысалдары</a></li><li><a href="#s-h">Интерактивті эксперимент</a></li><li><a href="#s-i">Жаттығулар</a></li><li><a href="#s-j">Математикалық пайымдау</a></li><li><a href="#s-k">Жиі қателер</a></li><li><a href="#s-l">Меңгеруді бағалау</a></li><li><a href="#s-m">Рефлексия</a></li><li><a href="#s-n">Тереңірек</a></li></ol>
+      <div class="ac-mastery" data-ac-mastery><span>Меңгеру</span><b>-</b></div></aside>
+    <article class="content ac-lesson" id="main" data-lesson="ao17-foundation.m11.l05">
+      <header class="ac-head">
+        <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#m11">Level I · Жады және көрсеткіштер</a> / 5-сабақ</p>
+        <h1>Үйме (heap)</h1>
+        <p class="ac-meta">Деңгей: күрделі · шамамен 55 мин · нұсқа 1.0.0 · тексеру: author-checked</p>
+      </header>
+      <section class="ac-sec" id="s-a"><h2><span class="ac-n">A</span>Оқу мақсаттары</h2><ul class="ac-obj"><li>malloc, calloc, realloc және free арқылы динамикалық жад бөлу және босату.</li><li>malloc нәтижесін (NULL) тексеру және өлшемді sizeof арқылы дұрыс есептеу.</li><li>«Бөлдің бе - босат» ережесін және иелік (ownership) ұғымын қолдану.</li></ul></section>
+      <section class="ac-sec" id="s-b"><h2><span class="ac-n">B</span>Алғышарттар</h2><ul><li><a href="../m11/l04.html">Стек және шақырулар</a></li></ul></section>
+      <section class="ac-sec" id="s-c"><h2><span class="ac-n">C</span>Ұғымға кіріспе</h2><p><b>Үйме</b> (heap) - бағдарлама орындау кезінде сұрайтын жад. <code>int *a = malloc(n * sizeof *a);</code> n int-ке орын береді; ол функциядан кейін де өмір сүреді, бірақ <code>free(a)</code> шақырылғанша. Стектен айырмашылығы: өлшемі орындау кезінде анықталады, өмірін бағдарламашы басқарады.</p><p>malloc жад таппаса NULL қайтарады - оны тексеру міндетті. malloc берген жад инициализацияланбаған («қоқыс»); calloc нөлдейді. Әр malloc-қа дәл бір free керек: босатылмаса - <b>ағып кету</b> (leak), екі рет босатылса - <b>қос босату</b> (6-сабақ).</p></section>
+      <section class="ac-sec" id="s-d"><h2><span class="ac-n">D</span>Академиялық теория</h2><div class="ac-th ac-definition"><div class="ac-th-k">Анықтама</div><h4>Функциялар (stdlib.h)</h4><p>malloc(bytes) - бөлу (инициализациясыз). calloc(n, size) - n · size байт, нөлдермен. realloc(p, new_bytes) - өлшемді өзгерту (мазмұн сақталады, мекенжай өзгеруі мүмкін). free(p) - босату; free(NULL) - ештеңе істемейді.</p></div><div class="ac-th ac-theorem"><div class="ac-th-k">Теорема</div><h4>Өлшемді дұрыс есептеу</h4><p>T *p = malloc(n * sizeof *p); жазылуы p-ның типі қандай болса да n элементке дәл жеткілікті жад сұрайды.</p></div><div class="ac-th ac-proof"><div class="ac-th-k">Дәлелдеу</div><h4>Дәлелдеу</h4><p>sizeof *p - өрнектің типінің өлшемі; *p-ның типі T (p - T*), сондықтан sizeof *p = sizeof(T), ал sizeof есептелмейді (тек тип қаралады) - p әлі инициализацияланбаса да қауіпсіз. n элементке n · sizeof(T) байт керек (m10 l06 теоремасы). Кейін p-ның типін, мысалы, double-ға өзгертсек, sizeof *p өзі 8-ге өзгереді - sizeof(int) жазылуындай «ескірген» тип қатесі мүмкін емес. ∎ (n · sizeof *p асып кетпеуі үшін n-нің шегін тексеру не calloc.)</p></div><div class="ac-th ac-note"><div class="ac-th-k">Ескерту</div><h4>Иелік</h4><p>Жадты кім босатады? Ереже: функция жадты бөліп қайтарса, оны босату - шақырушының міндеті, және бұл құжатта (docstring сияқты түсініктемеде) айтылуы керек. Python-да бұл мәселені қоқыс жинаушы шешеді (10-сабақ).</p></div></section>
+      <section class="ac-sec" id="s-e"><h2><span class="ac-n">E</span>Көрнекі түсіндірме</h2><div class="ac-lab" data-lab="visual"></div><p class="ac-cap">Бұл бағдарлама AddressSanitizer-мен (ағып кетуді де тексереді) таза өтті: әр бөлуге бір free. calloc нөлдеді.</p></section>
+      <section class="ac-sec" id="s-f"><h2><span class="ac-n">F</span>Қадамдап қорыту</h2><ol class="ac-steps"><li>Есеп: n санды оқып, оларды кері ретпен шығару; n орындау кезінде белгілі.</li><li>int *a = malloc(n * sizeof *a); if (!a) { fprintf(stderr, ...); return 1; }</li><li>Оқу: for (i ...) scanf(&quot;%d&quot;, &amp;a[i]);</li><li>Шығару: for (i = n - 1; i &gt;= 0; i--) ...; соңында free(a).</li></ol></section>
+      <section class="ac-sec" id="s-g"><h2><span class="ac-n">G</span>Жұмыс мысалдары</h2><figure class="ac-ex"><figcaption>Функция жад бөліп қайтарады</figcaption><pre data-lang="c"><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+
+/* Жаңа массив қайтарады: a-ның префикстік қосындылары.
+   Босату - шақырушының міндеті. Жад жетпесе NULL. */
+long long *prefix_sums(const int *a, int n)
+{
+    long long *ps = malloc((size_t)(n + 1) * sizeof *ps);
+    if (ps == NULL)
+        return NULL;
+    ps[0] = 0;
+    for (int i = 0; i &lt; n; i++)
+        ps[i + 1] = ps[i] + a[i];
+    return ps;
+}
+
+int main(void)
+{
+    int n;
+    if (scanf(&quot;%d&quot;, &amp;n) != 1 || n &lt;= 0)
+        return 1;
+    int *a = malloc((size_t)n * sizeof *a);
+    if (a == NULL)
+        return 1;
+    for (int i = 0; i &lt; n; i++)
+        if (scanf(&quot;%d&quot;, &amp;a[i]) != 1) {
+            free(a);
+            return 1;
+        }
+    long long *ps = prefix_sums(a, n);
+    if (ps == NULL) {
+        free(a);
+        return 1;
+    }
+    printf(&quot;%lld %lld\n&quot;, ps[n], ps[3] - ps[1]);
+    free(ps);
+    free(a);
+    return 0;
+}</code></pre><div class="ac-out"><span>stdin</span><pre>4
+7 3 9 1
+</pre></div><div class="ac-out"><span>Шығыс (build кезінде gcc арқылы алынған)</span><pre>20 12</pre></div><p>prefix_sums жадты үймеден бөлді - ол функциядан кейін де бар (стектен айырмашылығы). Әр қате жолында бұрын бөлінгенді босатамыз. ASan ағып кету таппады. ps[3] − ps[1] = 3 + 9.</p></figure></section>
+      <section class="ac-sec" id="s-h"><h2><span class="ac-n">H</span>Интерактивті эксперимент</h2><p class="ac-task">realloc нәтижесін бөлек айнымалыға аламыз: NULL болса, ескі a жоғалмауы керек. Бұл - 9-сабақтағы динамикалық массивтің ядросы.</p><div class="ac-lab" data-lab="experiment"></div></section>
+      <section class="ac-sec" id="s-i"><h2><span class="ac-n">I</span>Жаттығулар</h2><div class="ac-exs" data-set="exercises"></div></section>
+      <section class="ac-sec" id="s-j"><h2><span class="ac-n">J</span>Математикалық пайымдау</h2><p>Үйме бағдарламашыға толық бақылау береді: деректер қанша керек болса сонша, қанша уақыт керек болса сонша. Бағасы - жауапкершілік: әр бөлудің иесі болуы керек. Бұл - C-ның ең көп қате туатын жері, сондықтан келесі сабақ толығымен жад қателеріне арналған.</p></section>
+      <section class="ac-sec" id="s-k"><h2><span class="ac-n">K</span>Жиі қателер</h2><ul class="ac-mist"><li><b>malloc(n) - элемент санын байт деп беру.</b><br>Себебі: n int-ке n · 4 байт керек.<br>Түзету: malloc(n * sizeof *p).</li><li><b>p = realloc(p, ...);</b><br>Себебі: realloc NULL қайтарса, ескі p жоғалады - ағып кету.<br>Түзету: Уақытша айнымалыға алып, тексеру.</li></ul></section>
+      <section class="ac-sec" id="s-l"><h2><span class="ac-n">L</span>Меңгеруді бағалау</h2><p class="ac-note">Барлық сұраққа дұрыс жауап берсеңіз, сабақ «меңгерілді» деп белгіленеді. Тексеру браузерде өтеді: бұл оқу тексерісі, емтихан емес.</p><div class="ac-exs" data-set="assessment"></div></section>
+      <section class="ac-sec" id="s-m"><h2><span class="ac-n">M</span>Рефлексия</h2><div data-ac-reflect></div></section>
+      <section class="ac-sec" id="s-n"><h2><span class="ac-n">N</span>Тереңірек</h2><h3>Honors</h3><ul><li>malloc-тың қарапайым іске асыруын (бос блоктар тізімі, first-fit) Python-да модельдеңіз: бөлу, босату, фрагментация.</li></ul><h3>Research</h3><ul><li>glibc malloc (ptmalloc) пен jemalloc, tcmalloc айырмашылықтары. Неге браузерлер мен деректер базалары өз аллокаторларын қолданады?</li></ul></section>
+      
+      <section class="ac-sec ac-src"><h2>Дереккөз және лицензия</h2><ul><li>ISO/IEC 9899:2011 (C11), 6.5.3.2 (&amp; және *), 6.5.6 (көрсеткіш арифметикасы), 7.22.3 (жадты басқару функциялары).</li><li>B. W. Kernighan, D. M. Ritchie, The C Programming Language, 5-тарау (Pointers and Arrays).</li><li>R. E. Bryant, D. R. O&#x27;Hallaron, Computer Systems: A Programmer&#x27;s Perspective, 3, 9 тараулар (салыстыру үшін).</li></ul>
+        <p>Сабақ мәтіні, мысалдары мен тапсырмалары AO17 үшін жаңадан жазылған (авторлық: Sagid Mustafa, All Rights Reserved). Дереккөздер ұғымдарды салыстыру үшін пайдаланылды, мәтін көшірілмеген. ID: <code>ao17-foundation.m11.l05</code></p></section>
+      <nav class="ac-pager"><a href="l04.html">← Стек және шақырулар</a><a href="../index.html#m11">Модуль картасы</a><a href="l06.html">Жады қателері →</a></nav>
+    </article>
+  </div>
+  <script type="application/json" id="ac-data">{"id": "ao17-foundation.m11.l05", "visual": {"lab": "cshow", "code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int n = 5;\n    int *a = malloc(n * sizeof *a);\n    if (a == NULL)\n        return 1;\n    for (int i = 0; i < n; i++)\n        a[i] = (i + 1) * 10;\n    int *z = calloc(3, sizeof *z);\n    if (z == NULL) {\n        free(a);\n        return 1;\n    }\n    printf(\"%d %d | %d %d %d\\n\", a[0], a[4], z[0], z[1], z[2]);\n    free(a);\n    free(z);\n    return 0;\n}", "output": "10 50 | 0 0 0", "cflags": ["-fsanitize=address"], "caption": "Бұл бағдарлама AddressSanitizer-мен (ағып кетуді де тексереді) таза өтті: әр бөлуге бір free. calloc нөлдеді."}, "experiment": {"lab": "cshow", "code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int cap = 2, n = 0;\n    int *a = malloc(cap * sizeof *a);\n    if (!a)\n        return 1;\n    for (int v = 1; v <= 9; v++) {\n        if (n == cap) {\n            cap *= 2;\n            int *bigger = realloc(a, cap * sizeof *a);\n            if (!bigger) {\n                free(a);\n                return 1;\n            }\n            a = bigger;\n            printf(\"сыйымдылық -> %d\\n\", cap);\n        }\n        a[n++] = v * v;\n    }\n    printf(\"n=%d соңғы=%d\\n\", n, a[n - 1]);\n    free(a);\n    return 0;\n}", "output": "сыйымдылық -> 4\nсыйымдылық -> 8\nсыйымдылық -> 16\nn=9 соңғы=81", "cflags": ["-fsanitize=address"], "task": "realloc нәтижесін бөлек айнымалыға аламыз: NULL болса, ескі a жоғалмауы керек. Бұл - 9-сабақтағы динамикалық массивтің ядросы."}, "exercises": [{"type": "coutput", "q": "Бағдарлама не шығарады?", "code": "#include <stdio.h>\n#include <stdlib.h>\n\nint main(void)\n{\n    int *p = malloc(4 * sizeof *p);\n    if (!p)\n        return 1;\n    for (int i = 0; i < 4; i++)\n        p[i] = 4 - i;\n    int *q = p + 1;\n    q[1] = 100;\n    printf(\"%d %d %d %d\\n\", p[0], p[1], p[2], p[3]);\n    free(p);\n    return 0;\n}", "answer": "4 3 100 1", "cflags": ["-fsanitize=address"], "hints": ["q[1] ≡ p[2].", "free(p) - q емес (q бөлінген блоктың басы емес)."]}, {"type": "mc", "q": "malloc(n * sizeof(int)) нәтижесін тексермеу қаупі:", "options": ["Жоқ, malloc ешқашан қателеспейді", "Жад жетпесе NULL қайтады; *NULL - анықталмаған әрекет", "Бағдарлама баяулайды", "Жад екі есе бөлінеді"], "answer": 1, "why": ["Жад шектеулі, үлкен сұраныс сәтсіз болуы мүмкін.", "Дұрыс.", "Қатысы жоқ.", "Жоқ."], "hints": ["Қайтару мәні."]}, {"type": "pycode", "q": "Үйме моделі: allocator(ops) - ('malloc', id) және ('free', id) операциялар тізбегін өңдеп, ['leak', ...] не қателер тізімін қайтарсын: босатылмаған id-лер (сұрыпталған) үшін 'leak:id', жоқ id-ді босату - 'bad-free:id', қос босату - 'double-free:id' (оқиға ретімен). Қате жоқ болса - бос тізім.", "mode": "func", "func": "allocator", "starter": "def allocator(ops):\n    return []\n", "tests": [{"args": [[["malloc", "a"], ["free", "a"]]], "expect": []}, {"args": [[["malloc", "a"], ["malloc", "b"], ["free", "a"]]], "expect": ["leak:b"]}, {"args": [[["malloc", "a"], ["free", "a"], ["free", "a"]]], "expect": ["double-free:a"]}, {"args": [[["free", "x"], ["malloc", "c"], ["malloc", "b"]]], "expect": ["bad-free:x", "leak:b", "leak:c"]}], "solution": "def allocator(ops):\n    live, freed, errors = set(), set(), []\n    for op, k in ops:\n        if op == 'malloc':\n            live.add(k)\n            freed.discard(k)\n        elif k in live:\n            live.remove(k)\n            freed.add(k)\n        elif k in freed:\n            errors.append(f'double-free:{k}')\n        else:\n            errors.append(f'bad-free:{k}')\n    return errors + [f'leak:{k}' for k in sorted(live)]", "hints": ["Тірі блоктар (live) және босатылғандар (freed) жиындары.", "Соңында live-та қалғандар - ағып кету."]}, {"type": "number", "q": "int *p = malloc(n * sizeof *p); - n = 250 болса, неше байт сұралады (int - 4 байт)?", "answer": 1000, "check": "250 * 4", "hints": ["Теорема."]}], "assessment": [{"type": "coutput", "q": "Бағдарлама не шығарады?", "code": "#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n\nchar *repeat(const char *s, int k)\n{\n    size_t len = strlen(s);\n    char *out = malloc(len * k + 1);\n    if (!out)\n        return NULL;\n    for (int i = 0; i < k; i++)\n        memcpy(out + i * len, s, len);\n    out[len * k] = '\\0';\n    return out;\n}\n\nint main(void)\n{\n    char *r = repeat(\"ab\", 3);\n    if (!r)\n        return 1;\n    printf(\"%s %zu\\n\", r, strlen(r));\n    free(r);\n    return 0;\n}", "answer": "ababab 6", "cflags": ["-fsanitize=address"], "hints": ["len · k + 1 байт - терминатор үшін +1 (m10 l07).", "Шақырушы босатады."]}, {"type": "mc", "q": "malloc мен calloc айырмасы:", "options": ["Айырма жоқ", "calloc жадты нөлдейді және n, size екі аргументін алады", "malloc үйме емес, стек", "calloc жадты босатады"], "answer": 1, "why": ["Бар.", "Дұрыс.", "Екеуі де үйме.", "Босату - free."], "hints": ["c - cleared."]}], "reflection": ["Python-да list.append жасағанда жад қайдан келеді деп ойлайсыз? (9 және 10-сабақтар.)"], "objectives": 3}</script>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

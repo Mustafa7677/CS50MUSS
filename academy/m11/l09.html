@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Динамикалық массив - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Динамикалық массив - AO17">
+  <meta property="og:description" content="AO17 CS Universe, Level I: Динамикалық массив. Өлшемі өсетін массивті (len, cap, data) struct және realloc арқылы іске асыру.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/m11/l09.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/m11/l09.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Динамикалық массив - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/m11/l09.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 CS Universe, Level I: Динамикалық массив. Өлшемі өсетін массивті (len, cap, data) struct және realloc арқылы іске асыру.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/academy-logic.js" defer></script>
+  <script src="../../assets/js/academy-arith.js" defer></script>
+  <script src="../../assets/js/academy-disc.js" defer></script>
+  <script src="../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../assets/js/academy-bits.js" defer></script>
+  <script src="../../assets/js/academy.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="ac-layout">
+    <aside class="ac-toc" aria-label="Сабақ бөлімдері"><p class="ac-toc-h">Бөлімдер</p><ol><li><a href="#s-a">Оқу мақсаттары</a></li><li><a href="#s-b">Алғышарттар</a></li><li><a href="#s-c">Ұғымға кіріспе</a></li><li><a href="#s-d">Академиялық теория</a></li><li><a href="#s-e">Көрнекі түсіндірме</a></li><li><a href="#s-f">Қадамдап қорыту</a></li><li><a href="#s-g">Жұмыс мысалдары</a></li><li><a href="#s-h">Интерактивті эксперимент</a></li><li><a href="#s-i">Жаттығулар</a></li><li><a href="#s-j">Математикалық пайымдау</a></li><li><a href="#s-k">Жиі қателер</a></li><li><a href="#s-l">Меңгеруді бағалау</a></li><li><a href="#s-m">Рефлексия</a></li><li><a href="#s-n">Тереңірек</a></li></ol>
+      <div class="ac-mastery" data-ac-mastery><span>Меңгеру</span><b>-</b></div></aside>
+    <article class="content ac-lesson" id="main" data-lesson="ao17-foundation.m11.l09">
+      <header class="ac-head">
+        <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#m11">Level I · Жады және көрсеткіштер</a> / 9-сабақ</p>
+        <h1>Динамикалық массив</h1>
+        <p class="ac-meta">Деңгей: күрделі · шамамен 55 мин · нұсқа 1.0.0 · тексеру: author-checked</p>
+      </header>
+      <section class="ac-sec" id="s-a"><h2><span class="ac-n">A</span>Оқу мақсаттары</h2><ul class="ac-obj"><li>Өлшемі өсетін массивті (len, cap, data) struct және realloc арқылы іске асыру.</li><li>Сыйымдылықты еселеу стратегиясының амортизацияланған O(1) құнын дәлелдеу.</li><li>Python list.append-тің ішкі жұмысын осы модельмен түсіндіру.</li></ul></section>
+      <section class="ac-sec" id="s-b"><h2><span class="ac-n">B</span>Алғышарттар</h2><ul><li><a href="../m11/l08.html">Байланысқан тізім</a></li></ul></section>
+      <section class="ac-sec" id="s-c"><h2><span class="ac-n">C</span>Ұғымға кіріспе</h2><p>Массивтің артықшылығы (i-ші элементке O(1)) мен тізімнің икемділігін біріктіру: <b>динамикалық массив</b>. Ол үш өрісті сақтайды: data (үймедегі массив), len (элементтер саны), cap (сыйымдылық). Орын бітсе - realloc арқылы <b>екі есе</b> үлкен массив сұраймыз.</p><p>Бір қосу кейде қымбат (барлық элементті көшіру - O(n)), бірақ бұл сирек болады. Орташа алғанда әр append тұрақты уақыт алады - бұл <b>амортизациялық талдау</b>. Python list, C++ vector, Java ArrayList - бәрі осылай жұмыс істейді.</p></section>
+      <section class="ac-sec" id="s-d"><h2><span class="ac-n">D</span>Академиялық теория</h2><div class="ac-th ac-definition"><div class="ac-th-k">Анықтама</div><h4>Амортизацияланған құн</h4><p>n амалдың жалпы құны T(n) болса, бір амалдың амортизацияланған құны T(n) / n. Жеке амал қымбат болуы мүмкін, бірақ тізбектің орташасы кіші.</p></div><div class="ac-th ac-theorem"><div class="ac-th-k">Теорема</div><h4>Еселеу - амортизацияланған O(1)</h4><p>Сыйымдылық 1-ден басталып, толғанда екі есе өссе, n рет push жасағанда барлық көшірулер саны 2n-нен кем; демек бір push-тың амортизацияланған құны O(1).</p></div><div class="ac-th ac-proof"><div class="ac-th-k">Дәлелдеу</div><h4>Дәлелдеу</h4><p>Көшіру тек сыйымдылық 1, 2, 4, ..., 2ᵏ толғанда болады, мұнда 2ᵏ < n (n-ші push-қа дейін). 2ʲ-ден 2ʲ⁺¹-ге өскенде 2ʲ элемент көшіріледі. Барлығы: 1 + 2 + 4 + ... + 2ᵏ = 2ᵏ⁺¹ − 1 < 2n (өйткені 2ᵏ < n). Көшірусіз жазулар - n. Жалпы жұмыс < 3n, бір push-қа < 3. ∎ Ал сыйымдылықты тұрақты c-ға арттырсақ (cap += 10), көшірулер ≈ n²/(2c) - квадраттық.</p></div><div class="ac-th ac-note"><div class="ac-th-k">Ескерту</div><h4>Python list</h4><p>CPython list сыйымдылықты шамамен 1.125 есе (+ кішкене тұрақты) өсіреді - жадты үнемдейді, бірақ амортизацияланған құн бәрібір O(1) (кез келген тұрақты еселік > 1 жеткілікті). sys.getsizeof(lst) сыйымдылықтың секірістерін көрсетеді.</p></div></section>
+      <section class="ac-sec" id="s-e"><h2><span class="ac-n">E</span>Көрнекі түсіндірме</h2><div class="ac-lab" data-lab="visual"></div><p class="ac-cap">20 push - тек 6 рет қайта бөлу (1, 2, 4, 8, 16, 32). ASan-мен таза.</p></section>
+      <section class="ac-sec" id="s-f"><h2><span class="ac-n">F</span>Қадамдап қорыту</h2><ol class="ac-steps"><li>Vec v = {0}; - data = NULL, len = cap = 0. realloc(NULL, ...) ≡ malloc.</li><li>push: len == cap болса - new_cap = cap ? 2·cap : 1; realloc.</li><li>realloc сәтсіз болса - ескі data сақталады (l05: уақытша айнымалы), 0 қайтарамыз.</li><li>data[len++] = x. Соңында vec_free.</li></ol></section>
+      <section class="ac-sec" id="s-g"><h2><span class="ac-n">G</span>Жұмыс мысалдары</h2><figure class="ac-ex"><figcaption>Көшірулерді санау: еселеу және +10</figcaption><pre data-lang="c"><code class="language-c">#include &lt;stdio.h&gt;
+
+long long copies(long long n, int doubling)
+{
+    long long cap = 0, len = 0, total = 0;
+    for (long long i = 0; i &lt; n; i++) {
+        if (len == cap) {
+            total += len;
+            cap = doubling ? (cap ? cap * 2 : 1) : cap + 10;
+        }
+        len++;
+    }
+    return total;
+}
+
+int main(void)
+{
+    for (long long n = 1000; n &lt;= 100000; n *= 10)
+        printf(&quot;n=%-7lld еселеу: %-7lld +10: %lld\n&quot;, n, copies(n, 1), copies(n, 0));
+    return 0;
+}</code></pre><div class="ac-out"><span>Шығыс (build кезінде gcc арқылы алынған)</span><pre>n=1000    еселеу: 1023    +10: 49500
+n=10000   еселеу: 16383   +10: 4995000
+n=100000  еселеу: 131071  +10: 499950000</pre></div><p>Еселеуде көшірулер &lt; 2n (теорема), ал «+10» стратегиясында ≈ n²/20 - n 10 есе өскенде 100 есе өсті (m09 l10 еселеу тәжірибесі).</p></figure></section>
+      <section class="ac-sec" id="s-h"><h2><span class="ac-n">H</span>Интерактивті эксперимент</h2><p class="ac-task">Python list-тің өлшемі секірістермен өседі - бұл сыйымдылықтың артуы (бір көрсеткіш - 8 байт). Секірістер арасы біртіндеп ұлғаяды ма? (Нақты сандар Python нұсқасына байланысты.)</p><div class="ac-lab" data-lab="experiment"></div></section>
+      <section class="ac-sec" id="s-i"><h2><span class="ac-n">I</span>Жаттығулар</h2><div class="ac-exs" data-set="exercises"></div></section>
+      <section class="ac-sec" id="s-j"><h2><span class="ac-n">J</span>Математикалық пайымдау</h2><p>Амортизациялық талдау - «кейде қымбат, орташа арзан» құрылымдарды бағалаудың құралы. Ол m09 l10-дағы өлшеу мен m04-тегі O-белгілеуін біріктіреді: еселеу тәжірибесі (кестедегі 100 есе өсу) теорияны растайды. Python list.append-тің «O(1)» деген сөзі енді дәлелденген факт.</p></section>
+      <section class="ac-sec" id="s-k"><h2><span class="ac-n">K</span>Жиі қателер</h2><ul class="ac-mist"><li><b>v-&gt;data = realloc(v-&gt;data, ...);</b><br>Себебі: NULL қайтса, ескі массив жоғалады (ағып кету).<br>Түзету: Уақытша айнымалы + тексеру.</li><li><b>data массивіне сақталған көрсеткішті push-тан кейін қолдану.</b><br>Себебі: realloc массивті басқа жерге көшіруі мүмкін - ескі көрсеткіш ілулі.<br>Түзету: Индекс сақтау, көрсеткіш емес.</li></ul></section>
+      <section class="ac-sec" id="s-l"><h2><span class="ac-n">L</span>Меңгеруді бағалау</h2><p class="ac-note">Барлық сұраққа дұрыс жауап берсеңіз, сабақ «меңгерілді» деп белгіленеді. Тексеру браузерде өтеді: бұл оқу тексерісі, емтихан емес.</p><div class="ac-exs" data-set="assessment"></div></section>
+      <section class="ac-sec" id="s-m"><h2><span class="ac-n">M</span>Рефлексия</h2><div data-ac-reflect></div></section>
+      <section class="ac-sec" id="s-n"><h2><span class="ac-n">N</span>Тереңірек</h2><h3>Honors</h3><ul><li>Сыйымдылықты кішірейту: len &lt; cap/4 болғанда cap/2-ге азайту. Неге cap/2 шегінде емес, cap/4-те (тербелісті болдырмау)?</li></ul><h3>Research</h3><ul><li>CPython-ның list_resize (Objects/listobject.c) формуласын оқыңыз: new_allocated = ... Ол неге 1.125 еселікке жақын?</li></ul></section>
+      
+      <section class="ac-sec ac-src"><h2>Дереккөз және лицензия</h2><ul><li>ISO/IEC 9899:2011 (C11), 6.7.2.1 (құрылымдар), 7.22.3 (жадты басқару).</li><li>B. W. Kernighan, D. M. Ritchie, The C Programming Language, 6-тарау (Structures).</li><li>Python Software Foundation, Python/C API: Reference Counting; gc модулінің құжаттамасы.</li></ul>
+        <p>Сабақ мәтіні, мысалдары мен тапсырмалары AO17 үшін жаңадан жазылған (авторлық: Sagid Mustafa, All Rights Reserved). Дереккөздер ұғымдарды салыстыру үшін пайдаланылды, мәтін көшірілмеген. ID: <code>ao17-foundation.m11.l09</code></p></section>
+      <nav class="ac-pager"><a href="l08.html">← Байланысқан тізім</a><a href="../index.html#m11">Модуль картасы</a><a href="l10.html">Python-да жады қалай басқарылады →</a></nav>
+    </article>
+  </div>
+  <script type="application/json" id="ac-data">{"id": "ao17-foundation.m11.l09", "visual": {"lab": "cshow", "code": "#include <stdio.h>\n#include <stdlib.h>\n\ntypedef struct {\n    int *data;\n    size_t len, cap;\n} Vec;\n\nint vec_push(Vec *v, int x)\n{\n    if (v->len == v->cap) {\n        size_t new_cap = v->cap ? v->cap * 2 : 1;\n        int *bigger = realloc(v->data, new_cap * sizeof *bigger);\n        if (!bigger)\n            return 0;\n        v->data = bigger;\n        v->cap = new_cap;\n    }\n    v->data[v->len++] = x;\n    return 1;\n}\n\nvoid vec_free(Vec *v)\n{\n    free(v->data);\n    v->data = NULL;\n    v->len = v->cap = 0;\n}\n\nint main(void)\n{\n    Vec v = {0};\n    size_t last_cap = 0;\n    for (int i = 0; i < 20; i++) {\n        if (!vec_push(&v, i * i)) {\n            vec_free(&v);\n            return 1;\n        }\n        if (v.cap != last_cap) {\n            printf(\"len=%zu cap=%zu\\n\", v.len, v.cap);\n            last_cap = v.cap;\n        }\n    }\n    printf(\"data[19]=%d\\n\", v.data[19]);\n    vec_free(&v);\n    return 0;\n}", "cflags": ["-fsanitize=address", "-g"], "output": "len=1 cap=1\nlen=2 cap=2\nlen=3 cap=4\nlen=5 cap=8\nlen=9 cap=16\nlen=17 cap=32\ndata[19]=361", "caption": "20 push - тек 6 рет қайта бөлу (1, 2, 4, 8, 16, 32). ASan-мен таза."}, "experiment": {"lab": "pyrun", "code": "import sys\nlst, last = [], sys.getsizeof([])\nprint('бос:', last, 'байт')\nfor i in range(40):\n    lst.append(i)\n    size = sys.getsizeof(lst)\n    if size != last:\n        print(f'len={len(lst):3}  өлшем={size} байт  (+{size - last})')\n        last = size", "stdin": "", "task": "Python list-тің өлшемі секірістермен өседі - бұл сыйымдылықтың артуы (бір көрсеткіш - 8 байт). Секірістер арасы біртіндеп ұлғаяды ма? (Нақты сандар Python нұсқасына байланысты.)"}, "exercises": [{"type": "coutput", "q": "Бағдарлама не шығарады? (VEC_C: vec_push, vec_free.)", "code": "#include <stdio.h>\n#include <stdlib.h>\n\ntypedef struct {\n    int *data;\n    size_t len, cap;\n} Vec;\n\nint vec_push(Vec *v, int x)\n{\n    if (v->len == v->cap) {\n        size_t new_cap = v->cap ? v->cap * 2 : 1;\n        int *bigger = realloc(v->data, new_cap * sizeof *bigger);\n        if (!bigger)\n            return 0;\n        v->data = bigger;\n        v->cap = new_cap;\n    }\n    v->data[v->len++] = x;\n    return 1;\n}\n\nvoid vec_free(Vec *v)\n{\n    free(v->data);\n    v->data = NULL;\n    v->len = v->cap = 0;\n}\n\nint main(void)\n{\n    Vec v = {0};\n    int reallocs = 0;\n    for (int i = 1; i <= 100; i++) {\n        size_t before = v.cap;\n        if (!vec_push(&v, i))\n            return 1;\n        if (v.cap != before)\n            reallocs++;\n    }\n    long long s = 0;\n    for (size_t i = 0; i < v.len; i++)\n        s += v.data[i];\n    printf(\"%zu %zu %d %lld\\n\", v.len, v.cap, reallocs, s);\n    vec_free(&v);\n    return 0;\n}", "answer": "100 128 8 5050", "cflags": ["-fsanitize=address", "-g"], "hints": ["Сыйымдылықтар: 1, 2, 4, ..., 128 - 8 рет.", "1 + ... + 100."]}, {"type": "pycode", "q": "total_copies(n, factor) - сыйымдылық 1-ден басталып, толғанда ceil(cap · factor) болатын динамикалық массивке n push жасағанда барлық көшірілген элементтер санын қайтарсын (factor > 1).", "mode": "func", "func": "total_copies", "starter": "def total_copies(n, factor):\n    return n\n", "tests": [{"args": [1000, 2], "expect": 1023}, {"args": [1, 2], "expect": 0}, {"args": [20000, 2], "expect": 32767}, {"args": [10, 1.5], "expect": 19}], "solution": "import math\n\ndef total_copies(n, factor):\n    cap, length, total = 0, 0, 0\n    for _ in range(n):\n        if length == cap:\n            total += length\n            cap = 1 if cap == 0 else math.ceil(cap * factor)\n        length += 1\n    return total", "hints": ["Толғанда барлық len элемент көшіріледі.", "Бастапқы cap = 0, бірінші push-та 1."]}, {"type": "number", "q": "Еселеу стратегиясында n = 1000 push кезінде барлық көшірулер саны (1 + 2 + 4 + ... + 512):", "answer": 1023, "check": "sum(2 ** j for j in range(10))", "hints": ["2¹⁰ − 1."]}, {"type": "mc", "q": "Неге сыйымдылықты 10-ға емес, 2 есе арттырады?", "options": ["2 әдемірек сан", "Тұрақты қосымшада көшірулер O(n²), еселеуде O(n) (амортизацияланған O(1))", "Жад аз жұмсалады", "realloc тек 2 еселігін қабылдайды"], "answer": 1, "why": ["Себеп - асимптотика.", "Дұрыс (теорема).", "Еселеу көбірек бос орын қалдыруы мүмкін.", "Кез келген өлшем."], "hints": ["Мысалдағы кесте."]}], "assessment": [{"type": "coutput", "q": "Бағдарлама не шығарады?", "code": "#include <stdio.h>\n#include <stdlib.h>\n\ntypedef struct {\n    int *data;\n    size_t len, cap;\n} Vec;\n\nint vec_push(Vec *v, int x)\n{\n    if (v->len == v->cap) {\n        size_t new_cap = v->cap ? v->cap * 2 : 1;\n        int *bigger = realloc(v->data, new_cap * sizeof *bigger);\n        if (!bigger)\n            return 0;\n        v->data = bigger;\n        v->cap = new_cap;\n    }\n    v->data[v->len++] = x;\n    return 1;\n}\n\nvoid vec_free(Vec *v)\n{\n    free(v->data);\n    v->data = NULL;\n    v->len = v->cap = 0;\n}\n\nint vec_pop(Vec *v, int *out)\n{\n    if (v->len == 0)\n        return 0;\n    *out = v->data[--v->len];\n    return 1;\n}\n\nint main(void)\n{\n    Vec v = {0};\n    for (int i = 1; i <= 5; i++)\n        if (!vec_push(&v, i * 10))\n            return 1;\n    int x, s = 0;\n    while (vec_pop(&v, &x) && x > 20)\n        s += x;\n    printf(\"%d %zu %zu\\n\", s, v.len, v.cap);\n    vec_free(&v);\n    return 0;\n}", "answer": "120 1 8", "cflags": ["-fsanitize=address", "-g"], "hints": ["50 + 40 + 30; 20 шығарылды, бірақ қосылмады.", "pop сыйымдылықты азайтпайды."]}, {"type": "mc", "q": "Еселеу стратегиясында бір push-тың ЕҢ НАШАР (жеке) құны:", "options": ["O(1)", "O(log n)", "O(n) - қайта бөлу кезінде", "O(n²)"], "answer": 2, "why": ["Бұл - амортизацияланған құн.", "Жоқ.", "Дұрыс: барлық элемент көшіріледі.", "Тым көп."], "hints": ["Жеке және амортизацияланған."]}], "reflection": ["Нақты уақыт жүйелерінде (ойын кадры, ұшақ басқаруы) амортизацияланған O(1) неге жеткіліксіз болуы мүмкін?"], "objectives": 3}</script>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>
