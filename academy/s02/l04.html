@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Репликация және кворум - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Репликация және кворум - AO17">
+  <meta property="og:description" content="AO17 CS Universe, Senior · Level III: Репликация және кворум. Лидер-ізбасар және лидерсіз (кворумдық) репликацияны салыстыру.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/s02/l04.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/s02/l04.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Репликация және кворум - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/s02/l04.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 CS Universe, Senior · Level III: Репликация және кворум. Лидер-ізбасар және лидерсіз (кворумдық) репликацияны салыстыру.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../assets/css/ao-viz.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/academy-logic.js" defer></script>
+  <script src="../../assets/js/academy-arith.js" defer></script>
+  <script src="../../assets/js/academy-disc.js" defer></script>
+  <script src="../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../assets/js/academy-bits.js" defer></script>
+  <script src="../../assets/js/academy.js" defer></script>
+  <script src="../../assets/js/ao-viz.js" defer></script>
+  <script src="../../assets/js/ao-viz2.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="ac-layout">
+    <aside class="ac-toc" aria-label="Сабақ бөлімдері"><p class="ac-toc-h">Бөлімдер</p><ol><li><a href="#s-a">Оқу мақсаттары</a></li><li><a href="#s-b">Алғышарттар</a></li><li><a href="#s-c">Ұғымға кіріспе</a></li><li><a href="#s-d">Академиялық теория</a></li><li><a href="#s-e">Көрнекі түсіндірме</a></li><li><a href="#s-f">Қадамдап қорыту</a></li><li><a href="#s-g">Жұмыс мысалдары</a></li><li><a href="#s-h">Интерактивті эксперимент</a></li><li><a href="#s-i">Жаттығулар</a></li><li><a href="#s-j">Математикалық пайымдау</a></li><li><a href="#s-k">Жиі қателер</a></li><li><a href="#s-l">Меңгеруді бағалау</a></li><li><a href="#s-m">Рефлексия</a></li><li><a href="#s-n">Тереңірек</a></li></ol>
+      <div class="ac-mastery" data-ac-mastery><span>Меңгеру</span><b>-</b></div></aside>
+    <article class="content ac-lesson" id="main" data-lesson="ao17-senior.s02.l04" style="--mh:#2a5f7a">
+      <header class="ac-head">
+        <div class="ac-head-t">
+          <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#s02">Senior · Level III · Таралған жүйелер</a> / 4-сабақ</p>
+          <p class="ac-folio"><span>S02</span><i>·</i><span>04</span><small>Distributed Systems</small></p>
+          <h1>Репликация және кворум</h1>
+          <ul class="ac-chips"><li>күрделі</li><li>≈ 55 мин</li><li>3 мақсат</li><li>5 тапсырма</li></ul>
+          <p class="ac-meta">нұсқа 1.0.0 · тексеру: author-checked</p>
+        </div>
+        <svg class="ac-emblem" viewBox="0 0 160 120" role="img" aria-hidden="true" focusable="false" style="color:#2a5f7a"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><circle class="em-d" cx="80" cy="60" r="42"/><path class="em-d" d="M80 18L120 47M120 47L105 94M105 94H55M55 94L40 47M40 47L80 18"/><circle class="em-g" cx="80" cy="18" r="7"/><circle class="em-g" cx="120" cy="47" r="5"/><circle class="em-g" cx="105" cy="94" r="5"/><circle class="em-g" cx="55" cy="94" r="5"/><circle class="em-g" cx="40" cy="47" r="5"/></g></svg>
+      </header>
+      <section class="ac-sec" id="s-a"><h2><span class="ac-n">A</span>Оқу мақсаттары</h2><ul class="ac-obj"><li>Лидер-ізбасар және лидерсіз (кворумдық) репликацияны салыстыру.</li><li>R + W &gt; N болғанда кез келген оқу кворумы соңғы сәтті жазуды көретінін көгершін ұясы принципімен дәлелдеу.</li><li>N, R, W параметрлерін қолжетімділік, кешігу және консистенттік бойынша таңдау.</li></ul></section>
+      <section class="ac-sec" id="s-b"><h2><span class="ac-n">B</span>Алғышарттар</h2><ul><li><a href="../s02/l03.html">Векторлық сағаттар және себептілік</a></li></ul></section>
+      <section class="ac-sec" id="s-c"><h2><span class="ac-n">C</span>Ұғымға кіріспе</h2><p>Деректі бір серверде сақтау - бір нүктелік ақау. Шешім - <b>репликация</b>: деректің N көшірмесі. Бірақ көшірмелер бір мезетте жаңармайды: желі кешігеді, бір реплика уақытша өшірулі. Сонда оқу ескі мән қайтармауы үшін не істеу керек?</p><p>Кворумдық тәсіл: жазу W репликадан растау алғанда сәтті, оқу R репликадан жауап алып, ең жаңа нұсқасын (версия нөмірі бойынша) таңдайды. Сиқыр - бір теңсіздікте: <b>R + W &gt; N</b> болса, оқу мен жазу жиындары міндетті түрде қиылысады - яғни оқу кемінде бір жаңа көшірмені көреді. Бұл дәлелі бір жолдық, ал практикадағы салдары өте кең (Dynamo, Cassandra, Riak).</p></section>
+      <section class="ac-sec" id="s-d"><h2><span class="ac-n">D</span>Академиялық теория</h2><div class="ac-th ac-definition"><div class="ac-th-k">Анықтама</div><h4>Кворумдық жүйе</h4><p>N реплика. Жазу (мән, версия v) кемінде W репликаға жазылғанда сәтті. Оқу кемінде R репликадан (мән, версия) алып, ең үлкен версиялысын қайтарады. Версия жазуды бастаған клиент не координатор береді және уақыт бойы өседі.</p></div><div class="ac-th ac-theorem"><div class="ac-th-k">Теорема</div><h4>Кворумдардың қиылысуы</h4><p>R + W &gt; N болса, кез келген W өлшемді жиын мен кез келген R өлшемді жиын (N реплика ішінен) ортақ элементке ие. Демек соңғы сәтті жазудан кейін басталған оқу оның версиясын (не одан жаңасын) қайтарады. R + W ≤ N болса, қиылыспайтын жиындар бар.</p></div><div class="ac-th ac-proof"><div class="ac-th-k">Дәлелдеу</div><h4>Дәлелдеу</h4><p>W-жиын A мен R-жиын B қиылыспасын деп жориық. Онда |A ∪ B| = |A| + |B| = W + R &gt; N, бірақ A ∪ B N элементті жиынның ішкі жиыны - |A ∪ B| ≤ N. Қайшылық (көгершін ұясы принципі, m03). Демек A ∩ B ≠ ∅: ортақ реплика соңғы жазудың версиясын сақтайды, ал оқу ең үлкен версияны таңдайтындықтан, ол кемінде сол версияны қайтарады. Кері бағыт: R + W ≤ N болса, A = алғашқы W реплика, B = соңғы R реплика - олар қиылыспайды. ∎</p></div><div class="ac-th ac-note"><div class="ac-th-k">Ескерту</div><h4>Параметрлерді таңдау</h4><p>N = 3, W = 2, R = 2 - бір реплика өшсе де оқу да, жазу да жұмыс істейді. W = N, R = 1 - оқу жылдам, бірақ бір реплика өшсе жазу тоқтайды. Кворум «ескі емес оқуды» береді, бірақ толық сызықтық консистенттікті емес (жарыс жағдайларын «read repair» пен қосымша ережелер шешеді, 5-сабақ).</p></div></section>
+      <section class="ac-sec" id="s-e"><h2><span class="ac-n">E</span>Көрнекі түсіндірме</h2><div class="ac-lab" data-lab="visual"></div><p class="ac-cap">N = 5. R + W &gt; 5 болатын үш жұп әрқашан қиылысады (толық іріктеу дәлелдеуді растайды). R = 2, W = 3 (қосынды 5) кезінде жазу {0,1,2}, оқу {3,4} - оқу жаңа мәнді көрмейді.</p></section>
+      <section class="ac-sec" id="s-f"><h2><span class="ac-n">F</span>Қадамдап қорыту</h2><div class="ac-anim" data-anim><p class="ac-anim-h">Анимациялық түсіндіру: қадамдар кезекпен ашылады. «Ойнату» не → пернесі.</p><ol class="ac-steps"><li>N-ді таңдау: қанша ақауға төзу керек.</li><li>Жазуға W, оқуға R растау талап ету.</li><li>Қиылысу шартын тексеру: R + W &gt; N.</li><li>Оқуда версиялар ішінен ең үлкенін таңдау.</li><li>Қолжетімділікті есептеу: жазу N − W, оқу N − R реплика өшсе де жұмыс істейді.</li></ol></div></section>
+      <section class="ac-sec" id="s-g"><h2><span class="ac-n">G</span>Жұмыс мысалдары</h2><figure class="ac-ex"><figcaption>Кворумдық оқу мен жазудың симуляциясы</figcaption><pre data-lang="python"><code class="language-python">import random
+
+N, W, R = 5, 3, 3
+rng = random.Random(8)
+store = [(0, &#x27;бос&#x27;)] * N              # (версия, мән)
+
+def write(version, value):
+    for i in rng.sample(range(N), W):
+        store[i] = (version, value)
+
+def read():
+    return max(store[i] for i in rng.sample(range(N), R))
+
+write(1, &#x27;көк&#x27;)
+write(2, &#x27;жасыл&#x27;)
+print([v for v, _ in store])
+print(&#x27;оқулар:&#x27;, [read()[1] for _ in range(5)])</code></pre><div class="ac-out"><span>Шығыс (тексерілген)</span><pre>[0, 2, 2, 0, 2]
+оқулар: [&#x27;жасыл&#x27;, &#x27;жасыл&#x27;, &#x27;жасыл&#x27;, &#x27;жасыл&#x27;, &#x27;жасыл&#x27;]</pre></div><p>Тек үш реплика соңғы версияны (2) сақтайды, екеуінде тіпті бірінші жазу да жоқ (0), бірақ кез келген үш репликадан оқу кемінде біреуіне тиеді - бес оқудың бәрі &#x27;жасыл&#x27;. W-ны 2-ге түсіріп көріңіз: ескі оқу пайда болады.</p></figure></section>
+      <section class="ac-sec" id="s-h"><h2><span class="ac-n">H</span>Интерактивті эксперимент</h2><p class="ac-task">N = 6. Қай жұптар әрқашан қиылысады? (3, 3) неге жеткіліксіз? Жұп санды N-де «көпшілік» деген не - N/2 ме, N/2 + 1 ме? Бұл консенсуста (7-сабақ) неге маңызды?</p><div class="ac-lab" data-lab="experiment"></div></section>
+      <section class="ac-sec" id="s-i"><h2><span class="ac-n">I</span>Жаттығулар</h2><div class="ac-exs" data-set="exercises"></div></section>
+      <section class="ac-sec" id="s-j"><h2><span class="ac-n">J</span>Математикалық пайымдау</h2><p>Кворум теоремасы - таралған жүйелердегі «көгершін ұясы»: ортақ үйлестірушісіз-ақ оқу мен жазудың кездесетінін кепілдейді. Бірақ кепілдік шартты: версиялар дұрыс реттелуі керек (2-3 сабақтар), ал «сәтті жазу» дегеніміз W растау - ішінара жазылған, сәтсіз жазу кейінгі оқуларда кенет пайда болуы мүмкін. Сызықтық консистенттікке жету үшін бұл жеткіліксіз екенін келесі сабақта көреміз.</p></section>
+      <section class="ac-sec" id="s-k"><h2><span class="ac-n">K</span>Жиі қателер</h2><ul class="ac-mist"><li><b>W = 1, R = 1 таңдап, «бізде 3 реплика бар, демек сенімді» деу.</b><br>Себебі: R + W ≤ N: оқу жаңа жазуды көрмеуі мүмкін.<br>Түзету: Консистенттік керек жерде R + W &gt; N.</li><li><b>Версия ретінде серверлердің физикалық уақытын қолдану.</b><br>Себебі: Сағат ауытқуы жаңа жазуды «ескі» етеді.<br>Түзету: Монотонды версия не векторлық сағат.</li></ul></section>
+      <section class="ac-sec" id="s-l"><h2><span class="ac-n">L</span>Меңгеруді бағалау</h2><p class="ac-note">Барлық сұраққа дұрыс жауап берсеңіз, сабақ «меңгерілді» деп белгіленеді. Тексеру браузерде өтеді: бұл оқу тексерісі, емтихан емес.</p><div class="ac-exs" data-set="assessment"></div></section>
+      <section class="ac-sec" id="s-m"><h2><span class="ac-n">M</span>Рефлексия</h2><div data-ac-reflect></div></section>
+      <section class="ac-sec" id="s-n"><h2><span class="ac-n">N</span>Тереңірек</h2><h3>Honors</h3><ul><li>«Sloppy quorum» және «hinted handoff» (Dynamo) механизмдерін модельдеңіз: желі бөлінгенде жазу кворумы басқа репликаларға уақытша жазылады. Бұл R + W &gt; N кепілдігін қалай әлсіретеді?</li></ul><h3>Research</h3><ul><li>Салмақталған кворумдар (Gifford, 1979): әр репликаның дауыс салмағы әртүрлі болса, қиылысу шарты қалай өзгереді?</li></ul></section>
+      
+      <section class="ac-sec ac-src"><h2>Дереккөз және лицензия</h2><ul><li>L. Lamport, Time, Clocks, and the Ordering of Events in a Distributed System, CACM 21(7), 1978.</li><li>M. van Steen, A. S. Tanenbaum, Distributed Systems (4th ed.) - уақыт, репликация, консистенттік тараулары (салыстыру үшін).</li><li>M. Kleppmann, Designing Data-Intensive Applications - репликация және консистенттік тараулары (салыстыру үшін).</li><li>G. DeCandia et al., Dynamo: Amazon&#x27;s Highly Available Key-value Store, SOSP 2007.</li></ul>
+        <p>Сабақ мәтіні, мысалдары мен тапсырмалары AO17 үшін жаңадан жазылған (авторлық: Sagid Mustafa, All Rights Reserved). Дереккөздер ұғымдарды салыстыру үшін пайдаланылды, мәтін көшірілмеген. ID: <code>ao17-senior.s02.l04</code></p></section>
+      <nav class="ac-pager"><a href="l03.html">← Векторлық сағаттар және себептілік</a><a href="../index.html#s02">Модуль картасы</a><a href="l05.html">Консистенттік модельдері →</a></nav>
+    </article>
+  </div>
+  <script type="application/json" id="ac-data">{"id": "ao17-senior.s02.l04", "visual": {"lab": "pyrun", "code": "import itertools\n\nN = 5\nreplicas = list(range(N))\n\ndef always_overlap(R, W):\n    \"\"\"кез келген W-жиын мен R-жиын қиылыса ма (толық іріктеу)\"\"\"\n    for w in itertools.combinations(replicas, W):\n        for r in itertools.combinations(replicas, R):\n            if not set(w) & set(r):\n                return False, (w, r)\n    return True, None\n\nfor R, W in [(1, 5), (2, 4), (3, 3), (2, 3), (1, 1)]:\n    ok, bad = always_overlap(R, W)\n    print(f'R={R} W={W} R+W={R + W}:', 'әрқашан қиылысады' if ok else f'қиылыспауы мүмкін: жазу {bad[0]}, оқу {bad[1]}')", "stdin": "", "caption": "N = 5. R + W > 5 болатын үш жұп әрқашан қиылысады (толық іріктеу дәлелдеуді растайды). R = 2, W = 3 (қосынды 5) кезінде жазу {0,1,2}, оқу {3,4} - оқу жаңа мәнді көрмейді."}, "experiment": {"lab": "pyrun", "code": "import itertools\n\nN = 6\nreplicas = list(range(N))\n\ndef always_overlap(R, W):\n    \"\"\"кез келген W-жиын мен R-жиын қиылыса ма (толық іріктеу)\"\"\"\n    for w in itertools.combinations(replicas, W):\n        for r in itertools.combinations(replicas, R):\n            if not set(w) & set(r):\n                return False, (w, r)\n    return True, None\n\nfor R, W in [(3, 4), (3, 3), (2, 5), (4, 2)]:\n    ok, bad = always_overlap(R, W)\n    print(f'R={R} W={W} R+W={R + W}:', 'әрқашан қиылысады' if ok else f'қиылыспауы мүмкін: жазу {bad[0]}, оқу {bad[1]}')", "stdin": "", "task": "N = 6. Қай жұптар әрқашан қиылысады? (3, 3) неге жеткіліксіз? Жұп санды N-де «көпшілік» деген не - N/2 ме, N/2 + 1 ме? Бұл консенсуста (7-сабақ) неге маңызды?"}, "exercises": [{"type": "pycode", "q": "quorum_read(responses) - responses: [[версия, мән], ...] (R репликаның жауабы). Ең үлкен версиялы мәнді қайтарсын; тең версия болса (бір жазудың көшірмелері) - кез келгені бірдей мән.", "mode": "func", "func": "quorum_read", "starter": "def quorum_read(responses):\n    return responses[0][1]\n", "tests": [{"args": [[[1, "a"], [3, "c"], [2, "b"]]], "expect": "c"}, {"args": [[[5, "x"], [5, "x"]]], "expect": "x"}, {"args": [[[0, "бос"], [7, "жаңа"]]], "expect": "жаңа"}], "solution": "def quorum_read(responses):\n    return max(responses, key=lambda r: r[0])[1]", "hints": ["Мән емес, версия бойынша салыстырыңыз."]}, {"type": "number", "q": "N = 7 реплика, оқу кворумы R = 3. Әрбір оқу соңғы жазуды көруі үшін ең аз W қандай?", "answer": 5, "check": "next(w for w in range(1, 8) if 3 + w > 7)", "hints": ["R + W > N."]}, {"type": "pycode", "q": "tolerance(N, R, W) - R + W > N шартын тексеріп, [оқу_төзімділігі, жазу_төзімділігі] қайтарсын: оқу N − R, жазу N − W реплика өшсе де жұмыс істейді. Шарт орындалмаса None.", "mode": "func", "func": "tolerance", "starter": "def tolerance(N, R, W):\n    return [N - R, N - W]\n", "tests": [{"args": [3, 2, 2], "expect": [1, 1]}, {"args": [5, 1, 5], "expect": [4, 0]}, {"args": [4, 2, 2], "expect": null}], "solution": "def tolerance(N, R, W):\n    if R + W <= N:\n        return None\n    return [N - R, N - W]", "hints": ["Алдымен қиылысу шартын тексеріңіз."]}], "assessment": [{"type": "pycode", "q": "stale_possible(N, R, W) - кез келген W және R өлшемді жиындар әрқашан қиылыспаса (яғни ескі оқу мүмкін болса) True қайтарсын. Шешімді itertools.combinations арқылы тікелей тексеріңіз (N ≤ 8).", "mode": "func", "func": "stale_possible", "starter": "def stale_possible(N, R, W):\n    return False\n", "tests": [{"args": [5, 2, 3], "expect": true}, {"args": [5, 3, 3], "expect": false}, {"args": [3, 1, 3], "expect": false}, {"args": [4, 2, 2], "expect": true}], "solution": "import itertools\n\ndef stale_possible(N, R, W):\n    for w in itertools.combinations(range(N), W):\n        for r in itertools.combinations(range(N), R):\n            if not set(w) & set(r):\n                return True\n    return False", "hints": ["Бір қиылыспайтын жұп жеткілікті.", "Нәтиже R + W ≤ N шартымен сәйкес келуі керек."]}, {"type": "mc", "q": "Неге кворумдық оқу ең үлкен версияны таңдайды, кез келгенін емес?", "options": ["Жылдамдық үшін.", "Қиылысу тек кемінде бір репликаның жаңа екенін кепілдейді; қалғандары ескі болуы мүмкін.", "Себебі барлық реплика бірдей.", "Себебі R = N."], "answer": 1, "why": ["Қатысы жоқ.", "Дұрыс.", "Кворумда бірдей емес.", "Жалпы жағдайда R < N."], "hints": ["Теорема «кемінде біреуі» дейді."]}], "reflection": ["Сыныптағы бағалар журналы үш мұғалімнің дәптерінде сақталады делік. Бағаны қанша мұғалімге жазу керек, ал оқығанда қаншасынан сұрау керек? Бір мұғалім ауырып қалса не болады?"], "objectives": 3}</script>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

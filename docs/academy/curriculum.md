@@ -2,14 +2,14 @@
 
 _Бұл файлды `tools/academy_build.py` жасайды: қолмен өңдемеңіз, `tools/academy/curriculum.py`-ны өзгертіңіз._
 
-Нақты күй: **130** толық сабақ дайын, Foundation жоспары 120 сабақ. Автоматты тексерілетін тапсырма: 771, тексерілген Python мысалы: 133.
+Нақты күй: **140** толық сабақ дайын, Foundation жоспары 120 сабақ. Автоматты тексерілетін тапсырма: 821, тексерілген Python мысалы: 143.
 
 ## Бес деңгей
 
 - **I. Foundation Academy** (Іргетас академиясы): жоспар 120 сабақ, дайын 120. Математикалық логика мен дәлелдеуден бастап, Python, C және компьютер жадына дейінгі берік негіз.
 - **II. Computer Science Core** (Информатика өзегі): жоспар 160 сабақ, дайын 0. Алгоритмдердің дұрыстығы мен күрделілігін дәлелдеу, деректер құрылымдары, компьютер архитектурасы, есептеу теориясы.
   - Пәндер: Advanced Discrete Mathematics, Data Structures, Algorithm Design, Algorithm Analysis, Computer Organization, Digital Logic, Object-Oriented Design, Linear Algebra for Computing, Probability for Computer Science, Databases, Software Verification, Formal Languages, Theory of Computation, Numerical Computing, Programming Language Concepts, Scientific Problem Solving
-- **III. Systems Engineering** (Жүйелік инженерия): жоспар 140 сабақ, дайын 10. Операциялық жүйе, компилятор, дерекқор қозғалтқышы және желілік жүйелерді жобалау.
+- **III. Systems Engineering** (Жүйелік инженерия): жоспар 140 сабақ, дайын 20. Операциялық жүйе, компилятор, дерекқор қозғалтқышы және желілік жүйелерді жобалау.
   - Пәндер: Operating Systems, Computer Networks, Compiler Construction, Concurrent Programming, Memory Management, Distributed Systems, Database Internals, Systems Programming, Computer Security Fundamentals, Performance Engineering, Networking Protocols, Software Architecture, Reliability Engineering, Virtualization
 - **IV. Advanced Specializations** (Тереңдетілген мамандану): жоспар 150 сабақ, дайын 0. AI, ML, киберқауіпсіздік, криптография, графика, робототехника және ғылыми есептеулер.
   - Пәндер: Artificial Intelligence, Machine Learning, Deep Learning Foundations, Cybersecurity, Cryptography, Cloud Computing, Distributed Applications, Computer Graphics, Robotics, Backend Engineering, Advanced Web Engineering, Data Engineering, Computational Mathematics, Scientific Computing, Human-Computer Interaction
