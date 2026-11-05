@@ -39,6 +39,34 @@ EMBLEMS = {
     # m12 жүйелік интеграция: конвейер түйіндері
     "m12": ("#4a5a2a", '<circle class="em-d" cx="22" cy="60" r="12"/><rect class="em-d" x="56" y="44" width="32" height="32" rx="6"/><path class="em-d" d="M122 44l16 16-16 16-16-16z"/>'
             '<path class="em-d" d="M34 60h22M88 60h18"/><path class="em-d" d="M50 55l6 5-6 5M100 55l6 5-6 5"/><circle class="em-g" cx="22" cy="60" r="4"/><circle class="em-g" cx="122" cy="60" r="4"/>'),
+    # --- Senior сатысы ---
+    # s01 архитектура: үш қабат және оларды тесіп өтетін тәуелділік бағыты (ішке қарай)
+    "s01": ("#173e35", '<rect class="em-d" x="14" y="14" width="132" height="92" rx="6"/><rect class="em-d" x="38" y="32" width="84" height="56" rx="5"/><rect class="em-d" x="62" y="48" width="36" height="24" rx="4"/>'
+            '<path class="em-d" d="M26 60h30M134 60h-30"/><rect class="em-g" x="74" y="56" width="12" height="8"/>'),
+    # s02 таралған жүйелер: шеңбер бойындағы бес түйін және репликация жебелері
+    "s02": ("#2a5f7a", '<circle class="em-d" cx="80" cy="60" r="42"/><path class="em-d" d="M80 18L120 47M120 47L105 94M105 94H55M55 94L40 47M40 47L80 18"/>'
+            '<circle class="em-g" cx="80" cy="18" r="7"/><circle class="em-g" cx="120" cy="47" r="5"/><circle class="em-g" cx="105" cy="94" r="5"/><circle class="em-g" cx="55" cy="94" r="5"/><circle class="em-g" cx="40" cy="47" r="5"/>'),
+    # s03 сенімділік: SLO шегі және оның астындағы кешігу графигі
+    "s03": ("#6b3a2a", '<path class="em-d" d="M14 100h132M14 100V14"/><path class="em-d" d="M14 36h132" stroke-dasharray="4 6"/><path class="em-d" d="M18 86l18-6 16 4 18-20 14 10 16-30 14 24 16-8 12 6"/>'
+            '<circle class="em-g" cx="102" cy="44" r="5"/>'),
+    # s04 көшбасшылық: баспалдақ және ұсынылған қол (жоғары көтеру)
+    "s04": ("#733c3c", '<path class="em-d" d="M14 104h30V80h30V56h30V32h30"/><circle class="em-d" cx="118" cy="18" r="8"/><path class="em-d" d="M88 74l14-14M102 60h-10M102 60v10"/>'
+            '<rect class="em-g" x="20" y="92" width="16" height="8"/>'),
+    # s05 компиляторлар: мәтін -> ағаш -> командалар
+    "s05": ("#5b4a8a", '<path class="em-d" d="M12 30h40M12 44h28M12 58h36"/><path class="em-d" d="M58 44h14M66 38l6 6-6 6"/><circle class="em-d" cx="98" cy="24" r="8"/>'
+            '<path class="em-d" d="M93 30l-10 20M103 30l10 20"/><circle class="em-d" cx="80" cy="56" r="7"/><circle class="em-d" cx="116" cy="56" r="7"/><path class="em-d" d="M70 88h76M70 100h60"/><rect class="em-g" x="94" y="20" width="8" height="8"/>'),
+    # s06 веб қауіпсіздігі: қалқан және кілт тесігі
+    "s06": ("#7a3b5c", '<path class="em-d" d="M80 12l46 16v30c0 28-20 46-46 54-26-8-46-26-46-54V28z"/><circle class="em-d" cx="80" cy="54" r="10"/><path class="em-d" d="M80 64v18"/>'
+            '<circle class="em-g" cx="80" cy="54" r="4"/>'),
+    # s07 MLOps: тұйық цикл - дерек, оқыту, беру, бақылау
+    "s07": ("#1f5f8b", '<path class="em-d" d="M80 20a40 40 0 0 1 40 40"/><path class="em-d" d="M120 60a40 40 0 0 1-40 40"/><path class="em-d" d="M80 100a40 40 0 0 1-40-40"/><path class="em-d" d="M40 60a40 40 0 0 1 40-40"/>'
+            '<path class="em-d" d="M114 48l6 12 8-10"/><circle class="em-g" cx="80" cy="20" r="6"/><circle class="em-g" cx="120" cy="60" r="6"/><circle class="em-g" cx="80" cy="100" r="6"/><circle class="em-g" cx="40" cy="60" r="6"/>'),
+    # s08 сенімді AI: таразы
+    "s08": ("#2f6b4f", '<path class="em-d" d="M80 16v84M50 104h60M30 34h100"/><path class="em-d" d="M30 34l-16 34h32zM130 34l-16 34h32z"/><path class="em-d" d="M14 68a16 8 0 0 0 32 0M114 68a16 8 0 0 0 32 0"/>'
+            '<circle class="em-g" cx="80" cy="16" r="6"/>'),
+    # s09 зерттеу: деректер нүктелері, болжам сызығы және сенімділік белдеуі
+    "s09": ("#8a5a14", '<path class="em-d" d="M14 104h132M14 104V14"/><path class="em-d" d="M22 92L138 30"/><path class="em-d" d="M22 78L138 18M22 104L138 44" stroke-dasharray="3 6"/>'
+            '<circle class="em-g" cx="40" cy="80" r="4"/><circle class="em-g" cx="62" cy="74" r="4"/><circle class="em-g" cx="84" cy="58" r="4"/><circle class="em-g" cx="104" cy="52" r="4"/><circle class="em-g" cx="126" cy="34" r="4"/>'),
 }
 
 

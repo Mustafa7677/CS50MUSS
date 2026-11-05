@@ -61,3 +61,22 @@ for (const scheme of ["light", "dark"]) {
     await c.close();
   });
 }
+
+test("Senior сабағы: S-фолио, эмблема, ойнатқыш, тапсырма тексеріледі; бағыттан сілтеме бар", async ({ page }) => {
+  test.setTimeout(90_000);
+  await blockFonts(page.context());
+  await page.context().route(/cdn\.jsdelivr\.net|unpkg\.com|supabase\.co/, (r) => r.abort());
+  const errs = collectErrors(page);
+  await page.goto("academy/tracks/software.html");
+  await expect(page.locator('#g-senior .tl-ok a[href$="academy/s01/l01.html"]')).toHaveCount(1);
+  await page.goto("academy/s01/l01.html");
+  await expect(page.locator(".ac-folio")).toContainText("S01");
+  await expect(page.locator(".ac-head .ac-emblem")).toHaveCount(1);
+  await expect(page.locator(".ac-crumb")).toContainText("Senior · Level III");
+  const box = page.locator("[data-anim]");
+  await box.scrollIntoViewIfNeeded();
+  await box.locator("[data-a=all]").click();
+  await expect(box).toHaveClass(/done/);
+  await expect(page.getByText("Қайсысы өлшенетін сапа атрибутының сценарийі?").first()).toBeVisible();
+  expect(errs).toEqual([]);
+});

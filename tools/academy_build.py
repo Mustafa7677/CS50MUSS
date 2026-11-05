@@ -31,7 +31,7 @@ import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
 
 OUT = ROOT / "academy"
-CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b", "m09_a", "m09_b", "m10_a", "m10_b", "m11_a", "m11_b", "m12_a", "m12_b"]
+CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b", "m09_a", "m09_b", "m10_a", "m10_b", "m11_a", "m11_b", "m12_a", "m12_b", "s01_a", "s01_b"]
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
@@ -434,8 +434,9 @@ def stats(lessons, errs_by_lesson=None):
         m["planned"] += 1
         m["complete"] += p["id"] in done
     ex = sum(len(L["exercises"]) + len(L["assessment"]) for L in lessons)
-    return {"levels": [{"id": lv["id"], "target": lv["target"], "complete": len(done) if lv["id"] == "I" else 0} for lv in C.LEVELS],
-            "foundation_planned": len(plan), "complete_lessons": len(done), "auto_checked_tasks": ex,
+    return {"levels": [{"id": lv["id"], "target": lv["target"], "complete": sum(L["academicLevel"] == lv["id"] for L in lessons)} for lv in C.LEVELS],
+            "foundation_planned": sum(p["module"].startswith("m") for p in plan), "senior_planned": sum(p["module"].startswith("s") for p in plan),
+            "senior_complete": sum(L["moduleId"].startswith("s") for L in lessons), "complete_lessons": len(done), "auto_checked_tasks": ex,
             "python_examples": sum(len(L["examples"]) for L in lessons), "modules": by_mod}
 
 
@@ -494,7 +495,8 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad"):
 
 def lesson_html(L, plan_by_id, prev_l, next_l):
     rel = f"academy/{L['moduleId']}/{L['slug']}.html"
-    mod = next(m for m in C.MODULES if m[0] == L["moduleId"])
+    mod = next(m for m in C.ALL_MODULES if m[0] == L["moduleId"])
+    lvl = f"Senior · Level {C.SENIOR_LEVEL[mod[0]]}" if mod[0] in C.SENIOR_LEVEL else "Level I"
     n = int(L["slug"][1:])
     pre_links = "".join(
         f'<li><a href="../{plan_by_id[p]["module"]}/{plan_by_id[p]["slug"]}.html">{E(plan_by_id[p]["title"])}</a></li>' if p in DONE
@@ -528,8 +530,8 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
     <article class="content ac-lesson" id="main" data-lesson="{E(L['id'])}" style="--mh:{EM.hue(L['moduleId'])}">
       <header class="ac-head">
         <div class="ac-head-t">
-          <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#{L['moduleId']}">Level I · {E(mod[2])}</a> / {n}-сабақ</p>
-          <p class="ac-folio"><span>{L['moduleId'][1:]}</span><i>·</i><span>{n:02d}</span><small>{E(mod[1])}</small></p>
+          <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#{L['moduleId']}">{lvl} · {E(mod[2])}</a> / {n}-сабақ</p>
+          <p class="ac-folio"><span>{L['moduleId'].upper() if L['moduleId'].startswith('s') else L['moduleId'][1:]}</span><i>·</i><span>{n:02d}</span><small>{E(mod[1])}</small></p>
           <h1>{E(L['title'])}</h1>
           <ul class="ac-chips"><li>{DIFF[L['difficulty']]}</li><li>≈ {L['minutes']} мин</li><li>{len(L['objectives'])} мақсат</li><li>{len(L['exercises']) + len(L['assessment'])} тапсырма</li></ul>
           <p class="ac-meta">нұсқа {E(L['version'])} · тексеру: {E(L['reviewStatus'])}</p>
@@ -557,7 +559,7 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
     </article>
   </div>
   <script type="application/json" id="ac-data">{json.dumps(data, ensure_ascii=False).replace("</", "<\\/")}</script>"""
-    return rel, page(rel, L["title"], f"AO17 CS Universe, Level I: {L['title']}. {L['objectives'][0]}", body)
+    return rel, page(rel, L["title"], f"AO17 CS Universe, {lvl}: {L['title']}. {L['objectives'][0]}", body)
 
 
 DONE = set()
@@ -570,19 +572,21 @@ def index_html(lessons, st):
         f'<p>{E(x["goal"])}</p><p class="ac-count">Жоспар: {x["target"]} сабақ · дайын: <b>{st["levels"][i]["complete"]}</b></p>'
         + (f'<p class="ac-subj">{E(", ".join(x["subjects"]))}</p>' if x.get("subjects") else "") + "</div></li>"
         for i, x in enumerate(C.LEVELS))
-    mods = []
-    for mid, en, kk, ls in C.MODULES:
-        m = st["modules"][mid]
-        items = []
-        for slug, title, goal in ls:
-            lid = C.lesson_id(mid, slug)
-            if lid in by_id:
-                items.append(f'<li class="done" data-lid="{lid}"><a href="{mid}/{slug}.html">{E(title)}</a><small>{E(goal)}</small></li>')
-            else:
-                items.append(f'<li class="plan"><span>{E(title)}</span><small>{E(goal)}</small></li>')
-        pre = ", ".join(next(x[2] for x in C.MODULES if x[0] == p) for p in C.MODULE_PREREQ.get(mid, [])) or "жоқ"
-        mods.append(f'<details class="ac-mod" id="{mid}" style="--mh:{EM.hue(mid)}"{" open" if m["complete"] else ""}><summary>{EM.svg(mid).replace('class="ac-emblem"', 'class="ac-emblem ac-emblem-s"')}<span class="ac-mn">{mid[1:]}</span><b>{E(kk)}</b> <i>{E(en)}</i>'
-                    f'<span class="ac-mc">{m["complete"]}/{m["planned"]} дайын</span></summary><p class="ac-pre">Алғышарт модульдер: {E(pre)}</p><ol>{"".join(items)}</ol></details>')
+    def mod_list(modules):
+        out = []
+        for mid, en, kk, ls in modules:
+            m = st["modules"][mid]
+            items = []
+            for slug, title, goal in ls:
+                lid = C.lesson_id(mid, slug)
+                if lid in by_id:
+                    items.append(f'<li class="done" data-lid="{lid}"><a href="{mid}/{slug}.html">{E(title)}</a><small>{E(goal)}</small></li>')
+                else:
+                    items.append(f'<li class="plan"><span>{E(title)}</span><small>{E(goal)}</small></li>')
+            pre = ", ".join(next(x[2] for x in C.ALL_MODULES if x[0] == p) for p in C.ALL_PREREQ.get(mid, [])) or "жоқ"
+            out.append(f'<details class="ac-mod" id="{mid}" style="--mh:{EM.hue(mid)}"{" open" if m["complete"] else ""}><summary>{EM.svg(mid).replace('class="ac-emblem"', 'class="ac-emblem ac-emblem-s"')}<span class="ac-mn">{mid[1:]}</span><b>{E(kk)}</b> <i>{E(en)}</i>'
+                        f'<span class="ac-mc">{m["complete"]}/{m["planned"]} дайын</span></summary><p class="ac-pre">Алғышарт модульдер: {E(pre)}</p><ol>{"".join(items)}</ol></details>')
+        return "".join(out)
     body = f"""  <main class="content ac-home" id="main">
     <header class="ac-hero">
       <p class="ac-kicker">AO17 Computer Science Universe</p>
@@ -597,7 +601,10 @@ def index_html(lessons, st):
     <section class="ac-sec"><h2>Бес деңгей</h2><ol class="ac-levels">{lv}</ol></section>
     <section class="ac-sec"><h2>Level I · Foundation: 12 модуль, 120 сабақ</h2>
       <p class="ac-note">Белгі: сілтемесі бар сабақ - толық дайын және тексерілген; сұр түстегісі - оқу мақсаты бекітілген жоспар.</p>
-      {"".join(mods)}</section>
+      {mod_list(C.MODULES)}</section>
+    <section class="ac-sec" id="senior"><h2>Senior сатысы: 9 модуль, 90 сабақ</h2>
+      <p class="ac-note">Бағыттардың ең жоғарғы сатысы: архитектура, таралған жүйелер, сенімділік, көшбасшылық, компиляторлар, қауіпсіздік, MLOps, сенімді AI және зерттеу. Дайын: <b>{st["senior_complete"]}</b> / {st["senior_planned"]} сабақ; әр сабақ Level I-дің сапа талаптарымен тексеріледі (дәлелдеу, орындалатын мысал, автоматты тапсырма).</p>
+      {mod_list([m for m in C.ALL_MODULES if m[0].startswith("s")])}</section>
     <section class="ac-sec"><h2>Әр сабақтың құрылымы</h2><ol class="ac-struct">{"".join(f"<li><b>{k.upper()}</b> {E(t)}</li>" for k, t in SECTIONS)}</ol></section>
     <section class="ac-sec"><h2>Прогресс</h2><div data-ac-progress></div></section>
   </main>"""
