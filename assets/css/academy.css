@@ -425,3 +425,105 @@ g.mn.plan { opacity: .72; }
 }
 /* Академияның барлық беті: телефонда мәтін экран шетіне жабыспайды (16px шет) */
 @media (max-width: 900px) { .ao-acad #main.content:not(.aov-gallery) { padding-inline: 16px; } }
+
+/* ---------- Кино-түсіндіру (assets/js/academy-cine.js) ----------
+   Сахна - «түнгі тақта»: экран сияқты екі режимде де қараңғы; сызықтар бормен сызылып шығады,
+   модуль реңі мен Ботаның алтыны - тек екпін. Мәтіннің негізгісі сахнада емес, субтитрде (оқуға ыңғайлы). */
+.ac-cine { --cn-night: #11243a; --cn-night2: #1a3554; --cn-chalk: #eef1e4; --cn-chalk2: #a9bcc2; --cn-gold: #f2b705; --cn-good: #8fe0a8; --cn-bad: #ff9c8f;
+  --cn-acc: color-mix(in srgb, var(--mh, #7fc4ad) 40%, #f4f1e6); margin: 22px 0 6px; outline: none; }
+.ac-cine:focus-visible .cn-frame { outline: 2px solid var(--accent); outline-offset: 3px; }
+.cn-frame { border-radius: 16px; background: var(--surface); border: 1px solid color-mix(in srgb, var(--mh-t) 28%, var(--border)); overflow: hidden; }
+.cn-tabs { display: flex; gap: 2px; overflow-x: auto; padding: 0 6px; background: var(--cn-night); scrollbar-width: none; }
+.cn-tabs button { flex: 1 0 auto; display: inline-flex; align-items: center; gap: 6px; padding: 10px 10px 9px; border: 0; background: none; color: var(--cn-chalk2); font: 600 13px/1 var(--font); cursor: pointer; border-bottom: 2px solid transparent; }
+.cn-tabs button span { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; border: 1px solid currentColor; font-size: 11px; }
+.cn-tabs button.on { color: var(--cn-chalk); border-bottom-color: var(--cn-gold); }
+.cn-tabs button:hover { color: var(--cn-chalk); }
+.cn-tabs button:focus-visible { outline: 2px solid var(--cn-gold); outline-offset: -2px; }
+.cn-stage { position: relative; background: radial-gradient(120% 90% at 50% 40%, var(--cn-night2), var(--cn-night) 70%); box-shadow: inset 0 0 60px rgba(0,0,0,.45); }
+.cn-stage svg { display: block; width: 100%; height: auto; aspect-ratio: 640 / 300; font-family: var(--ac-serif); }
+.cn-grain { fill: #fff; opacity: .05; }
+.cp { opacity: 0; transition: opacity .55s ease, transform .8s cubic-bezier(.3,.7,.2,1); color: var(--cn-chalk); }
+.cp.cn-in { opacity: 1; }
+.cp.cn-dim { opacity: .22; }
+.cp .cn-tx { fill: currentColor; }
+.cp .cn-lab { fill: var(--cn-chalk2); }
+.cp .cn-mono { font-family: var(--mono); }
+.cp .cn-line, .cn-edge { fill: none; stroke: currentColor; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1s ease .1s, stroke .3s; }
+.cp.cn-in .cn-line, .cn-edge.cn-in { stroke-dashoffset: 0; }
+.cp .cn-dash { stroke-dasharray: .02 .025; stroke-dashoffset: 0; }
+.cp .cn-fill { fill: color-mix(in srgb, currentColor 14%, transparent); }
+.cp .cn-axis { stroke-width: 1.6; color: var(--cn-chalk2); }
+.cn-edge { opacity: 0; transition: opacity .5s, stroke-dashoffset 1s ease; color: var(--cn-chalk2); }
+.cn-edge.cn-in { opacity: 1; } .cn-edge.cn-hl { color: var(--cn-gold); stroke: var(--cn-gold); }
+.cp .cn-chip { fill: color-mix(in srgb, currentColor 13%, var(--cn-night)); stroke: currentColor; stroke-width: 2; }
+.cp .cn-node { fill: var(--cn-night); stroke: currentColor; stroke-width: 2.4; }
+.cp .cn-cellr { fill: color-mix(in srgb, currentColor 6%, var(--cn-night)); stroke: var(--cn-chalk2); stroke-width: 1.6; transition: fill .35s, stroke .35s; }
+.cp .cn-cell.cn-on .cn-cellr, .cp .cn-bar.cn-on .cn-barr { fill: color-mix(in srgb, var(--cn-gold) 30%, var(--cn-night)); stroke: var(--cn-gold); }
+.cp .cn-cell.cn-on .cn-tx { fill: var(--cn-gold); }
+.cp .cn-barr { fill: color-mix(in srgb, var(--cn-acc) 42%, var(--cn-night)); stroke: var(--cn-acc); stroke-width: 1.6; transform-box: fill-box; transform-origin: 50% 100%; transition: transform .9s cubic-bezier(.3,.7,.2,1), fill .3s; }
+.cp .cn-codebg { fill: rgba(0,0,0,.28); stroke: var(--cn-chalk2); stroke-width: 1; }
+.cp .cn-codehl { fill: color-mix(in srgb, var(--cn-gold) 26%, transparent); stroke: var(--cn-gold); stroke-width: 1.2; }
+.cp .cn-codehl.cn-off { opacity: 0; }
+.cp.t-acc { color: var(--cn-acc); } .cp.t-gold { color: var(--cn-gold); } .cp.t-good { color: var(--cn-good); } .cp.t-bad { color: var(--cn-bad); } .cp.t-dim { color: var(--cn-chalk2); }
+.cp.cn-hl { color: var(--cn-gold); filter: drop-shadow(0 0 6px color-mix(in srgb, var(--cn-gold) 70%, transparent)); }
+.cp.cn-pop > * { animation: cn-pop .5s ease; transform-box: fill-box; transform-origin: center; }
+@keyframes cn-pop { 0% { transform: scale(.82); opacity: .2; } 60% { transform: scale(1.06); } 100% { transform: none; opacity: 1; } }
+.ac-cine.cn-jump .cp, .ac-cine.cn-jump .cp .cn-line, .ac-cine.cn-jump .cn-edge, .ac-cine.cn-jump .cn-barr { transition: none !important; }
+/* постер */
+.cn-poster { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 8px; text-align: center; padding: 16px;
+  background: radial-gradient(70% 80% at 50% 50%, rgba(17,36,58,.55), rgba(17,36,58,.94)); color: var(--cn-chalk); transition: opacity .5s, visibility 0s .5s; }
+.cn-poster h3 { margin: 0 !important; font: 700 clamp(20px, 4vw, 30px)/1.15 var(--ac-serif); color: var(--cn-chalk); max-width: 22ch; text-wrap: balance; }
+.cn-pk { margin: 0; font-size: 13px; color: var(--cn-chalk2); }
+.cn-big { margin-top: 8px; display: inline-flex; align-items: center; gap: 10px; padding: 12px 22px 12px 16px; border-radius: 999px; border: 0; background: var(--cn-gold); color: #1d1606; font: 700 16px/1 var(--font); cursor: pointer; box-shadow: 0 6px 24px rgba(242,183,5,.25); }
+.cn-big svg { width: 22px; height: 22px; fill: currentColor; }
+.cn-big:hover { filter: brightness(1.06); } .cn-big:focus-visible { outline: 3px solid var(--cn-chalk); outline-offset: 3px; }
+.ac-cine.cn-started .cn-poster { opacity: 0; visibility: hidden; pointer-events: none; }
+/* субтитр - Бота сөйлейді */
+.cn-sub { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: start; padding: 14px 16px 6px; }
+.cn-bota { width: 64px; height: 64px; }
+.cn-bota.talk { animation: cn-talk .6s ease; }
+@keyframes cn-talk { 0% { transform: translateY(0) rotate(0); } 35% { transform: translateY(-5px) rotate(-3deg); } 70% { transform: translateY(1px) rotate(1deg); } 100% { transform: none; } }
+.cn-bubble { position: relative; border-radius: 12px; padding: 10px 14px; background: color-mix(in srgb, var(--mh-t) 7%, var(--surface)); border: 1px solid color-mix(in srgb, var(--mh-t) 24%, var(--border)); min-height: 64px; }
+.cn-bubble::before { content: ""; position: absolute; left: -7px; top: 22px; width: 12px; height: 12px; background: inherit; border-left: inherit; border-bottom: inherit; transform: rotate(45deg); }
+.cn-say { margin: 0; font: 17px/1.55 var(--ac-serif); color: var(--text); }
+.cn-opts { display: grid; gap: 8px; margin-top: 10px; }
+.cn-opts button { text-align: left; padding: 10px 12px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); font: 15px/1.4 var(--font); cursor: pointer; }
+.cn-opts button:hover:not(:disabled) { border-color: var(--mh-t); }
+.cn-opts button.ok { border-color: var(--ac-good); box-shadow: inset 4px 0 0 var(--ac-good); }
+.cn-opts button.no { border-color: var(--ac-bad); box-shadow: inset 4px 0 0 var(--ac-bad); }
+.cn-opts button:disabled { cursor: default; opacity: 1; }
+.cn-why { margin: 10px 0 0; font-size: 15px; line-height: 1.55; }
+.cn-why.ok { color: var(--ac-good); } .cn-why.no { color: var(--text); }
+.cn-cont { margin-top: 10px; padding: 9px 16px; border-radius: 999px; border: 0; background: var(--cn-gold); color: #1d1606; font: 700 14px/1 var(--font); cursor: pointer; }
+/* басқару және уақыт шкаласы */
+.cn-ctl { display: flex; align-items: center; gap: 6px; padding: 8px 14px 14px; }
+.cn-b { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 50%; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; }
+.cn-b svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.cn-b[data-a=play] { background: var(--mh-t); border-color: var(--mh-t); color: var(--surface); }
+.cn-b[data-a=play] svg { fill: currentColor; stroke: none; }
+.cn-b:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.cn-tl { flex: 1; display: flex; gap: 3px; margin: 0 6px; }
+.cn-tl i { flex: 1; height: 8px; border-radius: 4px; background: color-mix(in srgb, var(--mh-t) 16%, var(--border)); overflow: hidden; cursor: pointer; position: relative; }
+.cn-tl i[data-c="0"], .cn-tl i[data-c="2"], .cn-tl i[data-c="4"] { background: color-mix(in srgb, var(--mh-t) 24%, var(--border)); }
+.cn-tl i b { position: absolute; inset: 0; width: 0; background: var(--mh-t); }
+.cn-tl i.done b, .cn-tl i.cur b { width: 100%; }
+.cn-tl i.cur.run b { animation: cn-run var(--d, 4s) linear; }
+@keyframes cn-run { from { width: 0; } to { width: 100%; } }
+.cn-n { font-size: 13px; color: var(--muted); min-width: 4.5ch; text-align: right; font-variant-numeric: tabular-nums; }
+.cn-tr { margin: 8px 2px 0; font-size: 14px; }
+.cn-tr summary { cursor: pointer; color: var(--muted); }
+.cn-tr ol { margin: 8px 0 0; padding-left: 22px; line-height: 1.6; }
+.cn-tr li b { font-weight: 600; color: var(--mh-t); }
+.ac-cine:not(.on) .cn-noscript { display: block; }
+@media (max-width: 560px) {
+  .cn-sub { grid-template-columns: 44px minmax(0, 1fr); gap: 8px; padding: 12px 10px 4px; }
+  .cn-bota { width: 44px; height: 44px; }
+  .cn-say { font-size: 16px; }
+  .cn-ctl { padding: 6px 10px 12px; }
+  .cn-tabs button { padding: 9px 8px; font-size: 12px; }
+  .cn-tabs button span { display: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cp, .cp .cn-line, .cn-edge, .cp .cn-barr, .cn-poster { transition: none !important; }
+  .cp.cn-pop > *, .cn-bota.talk, .cn-tl i.cur.run b { animation: none !important; }
+}

@@ -26,6 +26,7 @@ import emblems as EM  # noqa: E402
 import ppseudo as PS  # noqa: E402
 import pbits as BI  # noqa: E402
 import tracks as TR  # noqa: E402
+import cine as CN  # noqa: E402
 sys.path.insert(0, str(ROOT / "assets" / "py"))
 import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
@@ -394,6 +395,10 @@ def validate(lessons, run_code=True):
         f = L.get("further", {})
         if not f.get("honors") or not f.get("research"):
             errs.append(f"{lid}: further.honors және further.research керек")
+        try:
+            errs += CN.validate(lid, CN.for_lesson(L))
+        except (KeyError, IndexError, TypeError) as e:
+            errs.append(f"{lid} cine: сценарий құрылмады: {e!r}")
         for i, ex in enumerate(L.get("exercises", []) + L.get("assessment", [])):
             check_exercise(ex, f"{lid} тапсырма {i + 1}", errs)
             key = re.sub(r"\s+", " ", ex.get("q", "") + "|" + ex.get("code", "") + "|" + json.dumps(ex.get("inputs", {}))).strip()
@@ -475,6 +480,7 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad"):
   <script src="{pre}assets/js/academy-pseudo.js" defer></script>
   <script src="{pre}assets/js/academy-bits.js" defer></script>
   <script src="{pre}assets/js/academy.js" defer></script>
+  <script src="{pre}assets/js/academy-cine.js" defer></script>
   <script src="{pre}assets/js/ao-viz.js" defer></script>
   <script src="{pre}assets/js/ao-viz2.js" defer></script>{sc}
 </head>
@@ -519,8 +525,13 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
                 f'<h3>Қабылдау тесттері</h3><ul>{li(pj["acceptance"])}</ul><h3>Бағалау рубрикасы</h3><ul>{li(pj["rubric"])}</ul>'
                 f'<p class="ac-note">Жобаны мұғалім рубрикамен бағалайды: бұл бетте автоматты бағаланбайды.</p></section>')
     data = {"id": L["id"], "visual": L["visual"], "experiment": L["experiment"], "exercises": L["exercises"], "assessment": L["assessment"],
-            "reflection": L["reflection"], "objectives": len(L["objectives"])}
-    toc = "".join(f'<li><a href="#s-{k}">{E(t)}</a></li>' for k, t in SECTIONS)
+            "reflection": L["reflection"], "objectives": len(L["objectives"]), "cine": CN.for_lesson(L)}
+    film = data["cine"]
+    film_tr = "".join(f"<li><b>{E(c)}.</b> {E(t)}</li>" for c, t in CN.transcript(film))
+    film_html = (f'<section class="ac-cine" id="s-film" data-cine data-title="{E(L["title"])}" data-img="../../assets/img/" aria-label="Кино-түсіндіру: {E(L["title"])}">'
+                 f'<p class="ac-note">Кино-түсіндіру: сабақтың өзегі бір минуттық мультфильмде. Мәтіні төменде.</p></section>'
+                 f'<details class="cn-tr"><summary>Фильмнің мәтіні ({"авторлық сценарий" if film["kind"] == "авторлық" else "сабақ қадамдарынан құрастырылған"})</summary><ol>{film_tr}</ol></details>')
+    toc = '<li><a href="#s-film">▶ Кино-түсіндіру</a></li>' + "".join(f'<li><a href="#s-{k}">{E(t)}</a></li>' for k, t in SECTIONS)
     nav = (f'<nav class="ac-pager">' + (f'<a href="{prev_l["slug"]}.html">← {E(prev_l["title"])}</a>' if prev_l else '<span></span>')
            + f'<a href="../index.html#{L["moduleId"]}">Модуль картасы</a>' + (f'<a href="{next_l["slug"]}.html">{E(next_l["title"])} →</a>' if next_l else '<span></span>') + "</nav>")
     sec = lambda k, inner: f'<section class="ac-sec" id="s-{k}"><h2><span class="ac-n">{k.upper()}</span>{dict(SECTIONS)[k]}</h2>{inner}</section>'  # noqa: E731
@@ -538,6 +549,7 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
         </div>
         {EM.svg(L['moduleId'])}
       </header>
+      {film_html}
       {sec('a', '<ul class="ac-obj">' + ''.join(f'<li>{E(o)}</li>' for o in L['objectives']) + '</ul>')}
       {sec('b', f'<ul>{pre_links}</ul>')}
       {sec('c', L['concept'])}
