@@ -2,7 +2,7 @@
 
 _Бұл файлды `tools/academy_build.py` жасайды: қолмен өңдемеңіз, `tools/academy/curriculum.py`-ны өзгертіңіз._
 
-Нақты күй: **170** толық сабақ дайын, Foundation жоспары 120 сабақ. Автоматты тексерілетін тапсырма: 971, тексерілген Python мысалы: 173.
+Нақты күй: **180** толық сабақ дайын, Foundation жоспары 120 сабақ. Автоматты тексерілетін тапсырма: 1021, тексерілген Python мысалы: 183.
 
 ## Бес деңгей
 
@@ -11,7 +11,7 @@ _Бұл файлды `tools/academy_build.py` жасайды: қолмен өң�
   - Пәндер: Advanced Discrete Mathematics, Data Structures, Algorithm Design, Algorithm Analysis, Computer Organization, Digital Logic, Object-Oriented Design, Linear Algebra for Computing, Probability for Computer Science, Databases, Software Verification, Formal Languages, Theory of Computation, Numerical Computing, Programming Language Concepts, Scientific Problem Solving
 - **III. Systems Engineering** (Жүйелік инженерия): жоспар 140 сабақ, дайын 40. Операциялық жүйе, компилятор, дерекқор қозғалтқышы және желілік жүйелерді жобалау.
   - Пәндер: Operating Systems, Computer Networks, Compiler Construction, Concurrent Programming, Memory Management, Distributed Systems, Database Internals, Systems Programming, Computer Security Fundamentals, Performance Engineering, Networking Protocols, Software Architecture, Reliability Engineering, Virtualization
-- **IV. Advanced Specializations** (Тереңдетілген мамандану): жоспар 150 сабақ, дайын 0. AI, ML, киберқауіпсіздік, криптография, графика, робототехника және ғылыми есептеулер.
+- **IV. Advanced Specializations** (Тереңдетілген мамандану): жоспар 150 сабақ, дайын 10. AI, ML, киберқауіпсіздік, криптография, графика, робототехника және ғылыми есептеулер.
   - Пәндер: Artificial Intelligence, Machine Learning, Deep Learning Foundations, Cybersecurity, Cryptography, Cloud Computing, Distributed Applications, Computer Graphics, Robotics, Backend Engineering, Advanced Web Engineering, Data Engineering, Computational Mathematics, Scientific Computing, Human-Computer Interaction
 - **V. Research & Innovation** (Зерттеу және инновация): жоспар 30 сабақ, дайын 10. Ғылыми сұрақ, гипотеза, эксперимент, алгоритмдерді салыстыру, техникалық есеп және қорғау.
   - Пәндер: Research Questions, Experiment Design, Benchmarking, Technical Writing, Research Defense
