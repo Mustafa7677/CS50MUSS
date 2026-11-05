@@ -31,7 +31,7 @@ import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
 
 OUT = ROOT / "academy"
-CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b", "m09_a", "m09_b", "m10_a", "m10_b", "m11_a", "m11_b", "m12_a", "m12_b", "s01_a", "s01_b", "s02_a", "s02_b", "s03_a", "s03_b", "s04_a", "s04_b", "s05_a", "s05_b", "s06_a", "s06_b", "s07_a", "s07_b"]
+CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b", "m09_a", "m09_b", "m10_a", "m10_b", "m11_a", "m11_b", "m12_a", "m12_b", "s01_a", "s01_b", "s02_a", "s02_b", "s03_a", "s03_b", "s04_a", "s04_b", "s05_a", "s05_b", "s06_a", "s06_b", "s07_a", "s07_b", "s08_a", "s08_b"]
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
