@@ -935,7 +935,7 @@
     const next = done.find((li) => !(d.lessons[li.dataset.lid] && d.lessons[li.dataset.lid].mastered));
     const link = (id) => { const a = $(`li[data-lid="${id}"] a`); return a ? `<a href="${a.getAttribute("href")}">${esc(a.textContent)}</a>` : esc(id); };
     box.innerHTML = `<div class="ac-prog"><p>Меңгерілген: <b>${mastered.length}</b> / ${ids.length} дайын сабақ</p>
-      <div class="ac-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${ids.length}" aria-valuenow="${mastered.length}"><i style="width:${ids.length ? (mastered.length / ids.length) * 100 : 0}%"></i></div>
+      <div class="ac-bar" role="progressbar" aria-label="Меңгерілген сабақтар" aria-valuemin="0" aria-valuemax="${ids.length}" aria-valuenow="${mastered.length}"><i style="width:${ids.length ? (mastered.length / ids.length) * 100 : 0}%"></i></div>
       ${next ? `<p>Келесі ұсыныс: ${link(next.dataset.lid)} <small>(алғышарттары ретімен)</small></p>` : ids.length ? "<p>Дайын сабақтардың бәрі меңгерілді ✓</p>" : ""}
       ${due.length ? `<p>Қайталау уақыты келді: ${due.map(link).join(", ")}</p>` : ""}
       <p class="ac-note">Прогресс осы браузерде сақталады: браузер деректерін тазаласаңыз, ол өшеді. Сақтық көшірме жасаңыз. AO17 аккаунтымен кірсеңіз, прогресс серверге де синхрондалады.</p>

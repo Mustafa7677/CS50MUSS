@@ -25,6 +25,7 @@ import pdisc as DS  # noqa: E402
 import emblems as EM  # noqa: E402
 import ppseudo as PS  # noqa: E402
 import pbits as BI  # noqa: E402
+import tracks as TR  # noqa: E402
 sys.path.insert(0, str(ROOT / "assets" / "py"))
 import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
@@ -585,11 +586,14 @@ def index_html(lessons, st):
     body = f"""  <main class="content ac-home" id="main">
     <header class="ac-hero">
       <p class="ac-kicker">AO17 Computer Science Universe</p>
-      <h1>Алаш бастаған білім жолы бүгінгі технологиямен жалғасады</h1>
-      <p>Логика мен дәлелдеуден бастап, алгоритмдер, жүйелер және зерттеуге дейінгі бес деңгейлі қазақша академиялық бағдарлама. Мазмұн AO17 үшін жаңадан жазылады; ақылы сервис пен AI API қажет емес.</p>
+      <h1>Негізден Senior деңгейіне дейін, қазақ тілінде</h1>
+      <p>Курс таңдамайсыз - бағыт таңдайсыз. Әр бағыт төрт сатыдан тұрады: Негіз, Junior, Middle, Senior. Әр сатыда не үйренетініңіз, қай модульді оқитыныңыз және портфолиоға қандай жоба жасайтыныңыз алдын ала жазылған. Мазмұн AO17 үшін жаңадан жазылады, әр тапсырма автоматты тексеріледі.</p>
       <p class="ac-honest">Қазір дайын: <b>{st["complete_lessons"]}</b> толық сабақ, <b>{st["auto_checked_tasks"]}</b> автоматты тексерілетін тапсырма, <b>{st["python_examples"]}</b> тексерілген Python мысалы. Қалғаны - жоспар, ол бөлек белгіленген.</p>
-      <p class="ac-cta"><a class="btn gold" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
+      <p class="ac-cta"><a class="btn gold" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
     </header>
+    <section class="ac-sec tl-sec" id="tracks"><h2>Бес бағыт, төрт саты</h2>
+      <p class="ac-note">Баспалдақтың әр сызығы - бір модуль: тұтас сызық - дайын, үзік сызық - жоспарда. Бір модуль бірнеше бағытқа ортақ болуы мүмкін: мысалы, Python негіздері бәріне керек.</p>
+      {tracks_hub()}</section>
     <section class="ac-sec"><h2>Бес деңгей</h2><ol class="ac-levels">{lv}</ol></section>
     <section class="ac-sec"><h2>Level I · Foundation: 12 модуль, 120 сабақ</h2>
       <p class="ac-note">Белгі: сілтемесі бар сабақ - толық дайын және тексерілген; сұр түстегісі - оқу мақсаты бекітілген жоспар.</p>
@@ -598,6 +602,92 @@ def index_html(lessons, st):
     <section class="ac-sec"><h2>Прогресс</h2><div data-ac-progress></div></section>
   </main>"""
     return "academy/index.html", page("academy/index.html", "CS Universe", "AO17 Computer Science Universe: қазақ тіліндегі бес деңгейлі информатика академиясы. Логика, дәлелдеу, алгоритмдер, Python, C.", body)
+
+
+# ---------- Академия 2.0: бағыттар × сатылар (tools/academy/tracks.py) ----------
+MOD_KIND = {"ao": "AO17 сабағы", "tr": "Аударма курс", "lab": "Интерактивті модель"}
+
+
+def _exists(href):
+    return bool(href) and (ROOT / href.split("#")[0]).exists()
+
+
+def ladder_svg(t, big=False):
+    """Бағыттың баспалдағы: 4 саты солдан оңға көтеріледі. Әр сатының табаны модульдерге бөлінген:
+    тұтас сызық - дайын модуль, үзік сызық - жоспарда. Сурет мәтінді қайталайды (aria-hidden), мәтін бөлек бар."""
+    W, H, sw = (640, 168, 6) if big else (240, 72, 4)
+    step_w, rise = W / 4, (H - 16) / 4
+    parts = []
+    for i, (gk, _, _) in enumerate(TR.GRADES):
+        mods = t["grades"][gk]["mods"]
+        y = H - 8 - i * rise - rise / 2
+        x0 = i * step_w
+        if i:
+            parts.append(f'<path class="tl-rise" d="M{x0:.1f} {y + rise:.1f}V{y:.1f}"/>')
+        seg = (step_w - 6) / len(mods)
+        for j, (_, href, _) in enumerate(mods):
+            a, b = x0 + 3 + j * seg + sw / 2 + 1, x0 + 3 + (j + 1) * seg - sw / 2 - 1
+            parts.append(f'<path class="tl-{"ok" if _exists(href) else "plan"}" d="M{a:.1f} {y:.1f}H{b:.1f}"/>')
+    return (f'<svg class="tl-ladder{" tl-big" if big else ""}" viewBox="0 0 {W} {H}" aria-hidden="true" focusable="false">'
+            f'<g fill="none" stroke="currentColor" stroke-width="{sw}" stroke-linecap="round">{"".join(parts)}</g></svg>')
+
+
+def _grade_counts(t):
+    return [(sum(_exists(h) for _, h, _ in t["grades"][gk]["mods"]), len(t["grades"][gk]["mods"])) for gk, _, _ in TR.GRADES]
+
+
+def tracks_hub():
+    st = TR.stats(_exists)
+    rows = []
+    for t in TR.TRACKS:
+        r, n = st[t["id"]]
+        gc = _grade_counts(t)
+        lbl = ", ".join(f"{g[1]} {a}/{b}" for g, (a, b) in zip(TR.GRADES, gc))
+        emb = EM.svg(t["glyph"]).replace('class="ac-emblem"', 'class="ac-emblem ac-emblem-s"')
+        rows.append(f'<li class="tl-row" style="--th:{t["hue"]}"><a href="tracks/{t["id"]}.html">{emb}'
+                    f'<span class="tl-name"><b>{E(t["title"])}</b><small>{E(t["lead"])}</small></span>'
+                    f'<span class="tl-mini">{ladder_svg(t)}<small>{r} / {n} модуль дайын<span class="sr-only"> ({E(lbl)})</span></small></span></a></li>')
+    return f'<ol class="tl-hub">{"".join(rows)}</ol>'
+
+
+def track_html(t):
+    rel = f"academy/tracks/{t['id']}.html"
+    gc = _grade_counts(t)
+    r, n = TR.stats(_exists)[t["id"]]
+    steps = "".join(f'<li><a href="#g-{gk}"><b>{E(gn)}</b><span>{a} / {b} дайын</span></a></li>' for (gk, gn, _), (a, b) in zip(TR.GRADES, gc))
+    secs = []
+    for i, (gk, gn, gtag) in enumerate(TR.GRADES):
+        g = t["grades"][gk]
+        mods = "".join(
+            (f'<li class="tl-ok"><a href="../../{E(h)}">{E(nm)}</a><span class="tl-kind">{MOD_KIND[k]}</span></li>' if _exists(h)
+             else f'<li class="tl-plan"><span>{E(nm)}</span><span class="tl-kind">{MOD_KIND[k]}, жоспарда</span></li>')
+            for nm, h, k in g["mods"])
+        skills = "".join(f"<li>{E(x)}</li>" for x in g["skills"])
+        secs.append(f"""    <section class="tl-grade" id="g-{gk}" aria-labelledby="h-{gk}">
+      <header><p class="tl-step">{i + 1}-саты</p><h2 id="h-{gk}">{E(gn)}</h2><p class="tl-tag">{E(gtag)}</p><p class="tl-goal">{E(g["goal"])}</p></header>
+      <div class="tl-body">
+        <h3>Сатының соңында сіз</h3><ul class="tl-skills">{skills}</ul>
+        <h3>Модульдер</h3><ol class="tl-mods">{mods}</ol>
+        <p class="tl-proj"><b>Портфолио жобасы.</b> {E(g["project"])}</p>
+      </div>
+    </section>
+""")
+    others = "".join(f'<li style="--th:{o["hue"]}"><a href="{o["id"]}.html">{E(o["title"])}</a></li>' for o in TR.TRACKS if o["id"] != t["id"])
+    body = f"""  <main class="content tl-page" id="main" style="--th:{t["hue"]}">
+    <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#tracks">Бағыттар</a> / {E(t["title"])}</p>
+    <header class="tl-hero">
+      {EM.svg(t["glyph"])}
+      <div><h1>{E(t["title"])}</h1><p class="tl-lead">{E(t["lead"])}</p>
+      <p class="tl-out"><b>Бағыттың соңында:</b> {E(t["outcome"])}</p></div>
+    </header>
+    <figure class="tl-fig">
+      {ladder_svg(t, big=True)}
+      <ol class="tl-steps">{steps}</ol>
+      <figcaption>Әр сатының сызығы - оның модульдері: тұтас сызық - дайын, ашық модуль; үзік сызық - мазмұны жоспарда. Барлығы {r} / {n} модуль дайын.</figcaption>
+    </figure>
+{"".join(secs)}    <nav class="tl-others" aria-label="Басқа бағыттар"><h2>Басқа бағыттар</h2><ul>{others}</ul></nav>
+  </main>"""
+    return rel, page(rel, t["title"], f"AO17 Академия: {t['title']}, Негізден Senior деңгейіне дейінгі бағыт. {t['lead']}", body)
 
 
 MODELS = [
@@ -680,7 +770,7 @@ def build(write=True):
         print(f"academy check: OK ({st['complete_lessons']} сабақ, {st['auto_checked_tasks']} тапсырма, {st['python_examples']} мысал)")
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
-    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html()]
+    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html()] + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)
