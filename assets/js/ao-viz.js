@@ -23,7 +23,7 @@
   // ---------------------------------------------------------------- ойнатқыш
   function mount(el, type, params) {
     const M = MACHINES[type];
-    if (!M) { el.textContent = "Белгісіз модель: " + type; return; }
+    if (!M) return;   // 2-кезең модельдері (ao-viz2.js) тіркелгенде init қайта шақырылады
     const P = Object.assign({}, ...M.params.map((p) => ({ [p.key]: p.value })), params || {});
     el.classList.add("aov");
     el.innerHTML = `<div class="aov-head"><b>${esc(M.title)}</b><span class="aov-tag">${esc(M.tag)}</span></div>

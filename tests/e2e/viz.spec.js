@@ -6,14 +6,14 @@ const AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 
 const ready = async (v) => expect(v.locator(".aov-n")).toHaveText(/^1 \/ \d+$/, { timeout: 20_000 });
 
-test("галерея: 7 модель, әрқайсысы қадамдайды, артқа жүреді, жылдамдық бар, қатесіз", async ({ page }) => {
+test("галерея: 20 модель, әрқайсысы қадамдайды, артқа жүреді, жылдамдық бар, қатесіз", async ({ page }) => {
   await blockFonts(page.context());
   await routePyodide(page.context());
   const errs = collectErrors(page);
   await page.goto("academy/models.html");
   const all = page.locator("[data-viz]");
-  await expect(all).toHaveCount(7);
-  for (const t of ["graph", "cpu", "mem", "func", "gd", "nn"]) {
+  await expect(all).toHaveCount(20);
+  for (const t of ["graph", "cpu", "mem", "func", "gd", "nn", "sort", "bst", "heap", "hash", "matrix", "prob", "logic", "dtree", "kmeans", "linreg", "sched", "tcp", "compiler"]) {
     const v = page.locator(`[data-viz="${t}"]`);
     await ready(v);
     await v.locator("[data-c=fwd]").click();
@@ -96,4 +96,24 @@ test("қозғалыс азайтылса ойнату бір қадам ған�
     .filter((x) => x.impact === "serious" || x.impact === "critical").map((x) => `${x.id}: ${x.nodes[0].target.join(" ")}`));
   expect(bad, bad.join("\n")).toEqual([]);
   await c.close();
+});
+
+test("2-кезең модельдері нақты есептейді: сұрыптау, үйме, компилятор, TCP байттары, толық қосқыш", async ({ page }) => {
+  await blockFonts(page.context());
+  await page.goto("academy/models.html");
+  const end = async (t) => { const v = page.locator(`[data-viz="${t}"]`); await ready(v); await v.locator("[data-c=seek]").evaluate((e) => { e.value = e.max; e.dispatchEvent(new Event("input")); }); return v.locator(".aov-msg"); };
+  await expect(await end("sort")).toContainText("[1, 2, 3, 4, 6, 7, 8, 9]");
+  await expect(await end("heap")).toContainText("[6, 7, 8, 9]");
+  await expect(await end("compiler")).toContainText("Нәтиже: 7");
+  await expect(await end("tcp")).toContainText("16 байт, 3 сегмент");
+  await expect(await end("logic")).toContainText("S = 1, Cout = 1");
+  await expect(await end("bst")).toContainText("35 табылды");
+  const s = page.locator('[data-viz="sort"]');
+  await s.locator("input[name=data]").fill("1, 2, 3, 4, 5");
+  await s.locator("input[name=data]").dispatchEvent("change");
+  await expect(await end("sort")).toContainText("4 салыстыру");   // кірістіру: сұрыпталған тізімде n - 1
+  const c = page.locator('[data-viz="compiler"]');
+  await c.locator("input[name=expr]").fill("2 + * 3");
+  await c.locator("input[name=expr]").dispatchEvent("change");
+  await expect(c.locator(".aov-msg")).toContainText("Операнд жетіспейді");
 });

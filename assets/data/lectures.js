@@ -310,7 +310,7 @@ window.CS50KZ_LECTURES = [
     "id": "sweetgreen"
    }
   ],
-  "minutes": 42,
+  "minutes": 43,
   "quiz": 7,
   "tasks": 2,
   "task": "practice"

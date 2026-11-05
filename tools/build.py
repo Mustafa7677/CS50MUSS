@@ -1038,6 +1038,8 @@ def main():
     # AO17 CS Universe: тексеру + беттерді жасау (tools/academy_build.py), сосын жалпы бас/нав/футер
     import academy_build
     academy_pages = academy_build.build()
+    import viz_links   # курс лекцияларынан AO17 интерактивті модельдеріне сілтемелер (tools/viz_links.py)
+    viz_links.apply()
     for rel in academy_pages:
         process_page(ROOT / rel, "../" * rel.count("/"), "courses")
     for page, active in [("index.html", "index"), ("about.html", "about"),

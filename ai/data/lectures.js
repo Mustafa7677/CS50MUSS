@@ -163,7 +163,7 @@ window.CS50KZ_COURSE_LECTURES["ai"] = [
     "id": "backtracking"
    }
   ],
-  "minutes": 44,
+  "minutes": 45,
   "quiz": 8,
   "tasks": 1,
   "task": "problem-set"
