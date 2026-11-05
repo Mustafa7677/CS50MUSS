@@ -110,7 +110,7 @@ AO17 CS Universe - қазақ тіліндегі бес деңгейлі инф�
 | Smart Tutor: Mastery, 3 деңгейлі көмек, қателер дәптері, Лейтнер қайталауы, экспорт/импорт | **жаңа** | `assets/js/ao-tutor.js`, тест `tests/academy/tutor.test.js` |
 | Student Dashboard «Менің оқуым» | **жаңа** | `academy/study.html` (`study_html`), `assets/js/ao-study.js` |
 | Lab UI компоненттері | **жаңа** | `assets/css/ao-labs.css` |
-| Exam Engine (SAT симуляторы) | 1-пакетте | `academy/sat/exam.html` |
+| Exam Engine (SAT симуляторы) | **жаңа** | `academy/sat/exam.html` |
 | Knowledge Graph | бар (CS Universe алғышарттары, `academy/map.html`); IELTS/SAT үшін жоспар | |
 | Teacher Dashboard | бар (Supabase, `teacher.html`); IELTS эссесі мен Speaking жазбасын серверде тексеру - backend керек | |
 | Content Registry / Validation | бар (CS Universe: build тексеруі); IELTS/SAT банктері үшін жоспар | |

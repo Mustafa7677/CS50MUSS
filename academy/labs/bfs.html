@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<!-- © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. -->
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BFS және DFS зертханасы - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="BFS және DFS зертханасы - AO17">
+  <meta property="og:description" content="BFS және DFS зертханасы: графты өзіңіз өңдеп, кезек пен стектің жұмысын қадамдап көріңіз, келесі төбені болжаңыз және жаңа графта көмексіз тексеріңіз.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/labs/bfs.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/labs/bfs.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"BFS және DFS зертханасы - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/labs/bfs.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="BFS және DFS зертханасы: графты өзіңіз өңдеп, кезек пен стектің жұмысын қадамдап көріңіз, келесі төбені болжаңыз және жаңа графта көмексіз тексеріңіз.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../assets/css/cslab.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/ao-tutor.js" defer></script>
+  <script src="../../assets/js/cslab-bfs.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <main class="content cslab-page" id="main">
+    <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="index.html">Зертханалар</a> / BFS және DFS</p>
+    <header class="lab-hero">
+      <p class="lab-kicker">Алгоритмдер · графтар</p>
+      <h1>BFS және DFS зертханасы</h1>
+      <p>Метро картасында ең аз аялдамамен қалай жетеміз? Лабиринттен шығудың жолы бар ма? Екі сұрақ та граф аралаумен шешіледі. Бір графты екі тәсілмен аралаймыз: <b>BFS</b> (ені бойынша, кезекпен) және <b>DFS</b> (тереңдігі бойынша, стекпен). Айырмашылық бір ғана нәрседе - келесі төбені қайдан аламыз.</p>
+      <p class="lab-honest">Келісім: көршілер әрқашан <b>өсу ретімен</b> қаралады (1, 2, 3 ...), сондықтан жауап бірмәнді. Граф бағытсыз. Алгоритм браузерде нақты есептеледі, әр қадамның түсіндірмесі сол есептеуден шығады.</p>
+      <p class="lab-row"><span data-badge="cs.bfs" data-title="BFS"></span> <span data-badge="cs.dfs" data-title="DFS"></span></p>
+    </header>
+
+    <section class="lab" data-cslab="bfs" aria-labelledby="h-run">
+      <h2 id="h-run">1. Алгоритмді қадамдап көру</h2>
+      <p class="lab-goal"><b>Мақсат:</b> Queue (FIFO) мен Stack (LIFO) аралау ретін қалай өзгертетінін көру; BFS-тің d мәні неге ең қысқа қашықтық екенін түсіну.</p>
+      <div class="lab-split">
+        <div>
+          <div class="lab-board cg-board"><svg viewBox="0 0 600 400" aria-hidden="true" focusable="false"></svg></div>
+          <ul class="cg-legend" aria-label="Белгілер">
+            <li><i aria-hidden="true"></i>әлі көрілмеген</li>
+            <li><i class="front" aria-hidden="true"></i>кезекте / стекте</li>
+            <li><i class="cur" aria-hidden="true"></i>қазір өңделуде</li>
+            <li><i class="vis" aria-hidden="true"></i>өңделді</li>
+            <li><i class="tree" aria-hidden="true"></i>BFS/DFS ағашының қабырғасы</li>
+          </ul>
+          <p class="cs-small">BFS-те төбенің астында <b>d</b> - бастапқы төбеден қашықтық (қабырға саны), <b>p</b> - ата-анасы (кімнен келдік). DFS-те <b>#</b> - көрілу реті.</p>
+          <p class="cg-edges"></p>
+          <label class="cs-check"><input type="checkbox" data-k="edit"> Өңдеу режимі: қабырға қосу не өшіру</label>
+          <div class="cg-edit" hidden>
+            <p class="cs-small">Графта екі төбені кезекпен басыңыз немесе пернетақтамен төменнен таңдаңыз. Қабырға болса өшіріледі, болмаса қосылады.</p>
+            <div class="lab-row">
+              <label class="cs-field"><span>Бірінші төбе</span><select data-k="ea"></select></label>
+              <label class="cs-field"><span>Екінші төбе</span><select data-k="eb"></select></label>
+              <button type="button" class="btn secondary" data-c="toggle">Қабырға қосу / өшіру</button>
+              <button type="button" class="btn secondary" data-c="restore">Бастапқы граф</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="cs-grid">
+            <label class="cs-field"><span>Граф</span><select data-k="preset"></select></label>
+            <label class="cs-field"><span>Бастапқы төбе</span><select data-k="start"></select></label>
+          </div>
+          <div class="lab-row">
+            <div class="cs-toggle" role="group" aria-label="Алгоритм"><button type="button" data-algo="bfs" aria-pressed="true">BFS (Queue)</button><button type="button" data-algo="dfs" aria-pressed="false">DFS (Stack)</button></div>
+            <label class="cs-check"><input type="checkbox" data-k="predict"> Болжау режимі</label>
+          </div>
+          <div class="cs-ctl">
+            <button type="button" class="btn gold" data-c="play">▶ Ойнату</button>
+            <button type="button" class="btn secondary" data-c="pause">❚❚ Кідірту</button>
+            <button type="button" class="btn secondary" data-c="prev">← Алдыңғы</button>
+            <button type="button" class="btn secondary" data-c="next">Келесі →</button>
+            <button type="button" class="btn secondary" data-c="reset">↺ Басынан</button>
+            <label class="cs-field" style="grid-template-columns:auto auto;align-items:center"><span>Жылдамдық</span><select data-c="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+            <span class="cs-n" aria-label="Қадам нөмірі"></span>
+          </div>
+          <p class="cs-say" aria-live="polite"></p>
+          <p class="cs-ask" hidden><b>Болжа:</b> келесі қадамда қай төбе алынады? Графтағы төбені басыңыз (Tab арқылы да болады). «Келесі →» - болжамсыз көрсету. <span class="cs-score"></span></p>
+          <div data-fb="pred" aria-live="polite"></div>
+          <p class="cs-h"><span data-k="striplab">Кезек (Queue)</span></p>
+          <div class="cs-strip"><span data-k="l">басы →</span><div class="cs-cells" role="img"></div><span data-k="r">← соңы</span></div>
+          <p class="cs-small" data-k="rule"></p>
+          <dl class="cs-kv"><dt>Көрілгендер (visited)</dt><dd data-k="vis"></dd><dt>Өңделу реті</dt><dd data-k="order"></dd></dl>
+        </div>
+      </div>
+      <p class="lab-note">Байқаңыз: «Тор 3 × 3» графында 1-ден BFS бастасаңыз, d мәндері қабат-қабатпен өседі (0, 1, 2, 3, 4), ал DFS бір тармақпен терең кетеді. «Екі бөлек бөлік» графында бір бөліктен екіншісіне жол жоқ - кезек босағанда кейбір төбелер көрілмей қалады.</p>
+    </section>
+
+    <section class="lab" data-cslab="bfs-task" aria-labelledby="h-task">
+      <h2 id="h-task">2. Тексеру: жаңа граф, көмексіз</h2>
+      <p class="lab-goal"><b>Мақсат:</b> алгоритмді экрандағы анимациясыз, өз басыңызда орындау. Әр жолы граф кездейсоқ құрылады. Сары төбе - бастапқы (қашықтық есебінде - екеуі де).</p>
+      <div class="lab-split">
+        <div>
+          <div class="lab-board cg-board"><svg viewBox="0 0 600 400" role="img" aria-label="Тапсырма графы" focusable="false"></svg></div>
+          <p class="cg-edges" data-k="tedges"></p>
+        </div>
+        <div class="lab-task">
+          <label class="cs-field"><span>Тапсырма түрі</span><select data-k="kind"><option value="bfs">BFS: кезектен алыну реті</option><option value="dist">BFS: ең қысқа қашықтық</option><option value="dfs">DFS: көрілу реті</option></select></label>
+          <p data-k="q"></p>
+          <label class="cs-field"><span>Жауабыңыз</span><input class="cs-in" data-k="ans" autocomplete="off" inputmode="numeric"></label>
+          <div class="lab-row">
+            <button type="button" class="btn gold" data-c="check">Тексеру</button>
+            <button type="button" class="btn secondary" data-c="new">Жаңа есеп</button>
+          </div>
+          <div data-fb="task" aria-live="polite"></div>
+          <div data-k="hints"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab" aria-labelledby="h-key">
+      <h2 id="h-key">Түйін</h2>
+      <ul>
+        <li><b>BFS</b> = кезек (FIFO). Төбелер бастапқыдан қашықтығы бойынша, қабат-қабатпен шығады; d мәні - ең аз қабырға саны (салмақсыз графта ең қысқа жол).</li>
+        <li><b>DFS</b> = стек (LIFO) немесе рекурсия. Бір тармақпен соңына дейін барып, кейін шегінеді; ең қысқа жолды кепілдемейді, бірақ байланыстылықты, циклдарды, топологиялық ретті табуға ыңғайлы.</li>
+        <li>Екеуі де әр төбені және әр қабырғаны бір рет қарайды: уақыты O(V + E).</li>
+        <li>«Көрілді» белгісі болмаса, циклды графта алгоритм шексіз айналады.</li>
+      </ul>
+      <p class="cs-small">Салмақты графтағы ең қысқа жол (Дейкстра) - <a href="../models.html#v-graph">Интерактивті модельдер: Граф алгоритмдері</a>. Барлық зертханалар: <a href="index.html">CS Universe зертханалары</a>.</p>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>
