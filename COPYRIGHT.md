@@ -12,7 +12,7 @@
 |---|---|
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
-| B · Sagid Mustafa-ның дербес әзірлемесі | 1492 |
+| B · Sagid Mustafa-ның дербес әзірлемесі | 1504 |
 | C · Үшінші тарап | 87 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 56 |
 
@@ -20,7 +20,7 @@
 
 | Файл / жол | Компонент | Құқық иесі | Лицензия | Статус |
 |---|---|---|---|---|
-| `academy/**`<br>`assets/js/academy-logic.js`<br>`assets/js/academy-arith.js`<br>`assets/js/academy-disc.js`<br>`assets/js/academy-pseudo.js`<br>`assets/js/academy-bits.js`<br>`assets/py/**`<br>`assets/js/academy.js`<br>`assets/css/academy.css`<br>`assets/js/ao-viz.js`<br>`assets/js/ao-viz2.js`<br>`tools/viz_links.py`<br>`assets/css/ao-viz.css`<br>`tests/e2e/academy-lesson.spec.js`<br>`tests/e2e/academy-tracks.spec.js`<br>`tests/e2e/viz.spec.js`<br>`tools/academy/**`<br>`tools/academy_build.py`<br>`docs/academy/**`<br>`tests/academy/**` | **B-academy** AO17 CS Universe: авторлық академия (оқу картасы, сабақтар, логика қозғалтқышы, зертханалар, тексерушілер, тесттер, құжаттар) (240 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `academy/**`<br>`assets/js/academy-logic.js`<br>`assets/js/academy-arith.js`<br>`assets/js/academy-disc.js`<br>`assets/js/academy-pseudo.js`<br>`assets/js/academy-bits.js`<br>`assets/py/**`<br>`assets/js/academy.js`<br>`assets/css/academy.css`<br>`assets/js/ao-viz.js`<br>`assets/js/ao-viz2.js`<br>`tools/viz_links.py`<br>`assets/css/ao-viz.css`<br>`tests/e2e/academy-lesson.spec.js`<br>`tests/e2e/academy-tracks.spec.js`<br>`tests/e2e/viz.spec.js`<br>`tools/academy/**`<br>`tools/academy_build.py`<br>`docs/academy/**`<br>`tests/academy/**` | **B-academy** AO17 CS Universe: авторлық академия (оқу картасы, сабақтар, логика қозғалтқышы, зертханалар, тексерушілер, тесттер, құжаттар) (252 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `cpp/**` | **B-course-cpp** C++ бағдарламалау: дербес авторлық курс (cpp/ лекциялары, курс беті) (10 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `java/**` | **B-course-java** Java бағдарламалау: дербес авторлық курс (java/ лекциялары, курс беті) (10 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `en/**` | **B-course-en** Ағылшын тілі A0-C1: дербес авторлық курс (en/ сабақтары, курс беті, ортақ беттер) (31 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |

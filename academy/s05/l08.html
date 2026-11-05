@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Оңтайландыру - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Оңтайландыру - AO17">
+  <meta property="og:description" content="AO17 CS Universe, Senior · Level III: Оңтайландыру. Тұрақтыларды бүктеуді (constant folding) және алгебралық жеңілдетулерді іске асыру.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/s05/l08.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/s05/l08.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Оңтайландыру - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/s05/l08.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="AO17 CS Universe, Senior · Level III: Оңтайландыру. Тұрақтыларды бүктеуді (constant folding) және алгебралық жеңілдетулерді іске асыру.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../assets/css/ao-viz.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/academy-logic.js" defer></script>
+  <script src="../../assets/js/academy-arith.js" defer></script>
+  <script src="../../assets/js/academy-disc.js" defer></script>
+  <script src="../../assets/js/academy-pseudo.js" defer></script>
+  <script src="../../assets/js/academy-bits.js" defer></script>
+  <script src="../../assets/js/academy.js" defer></script>
+  <script src="../../assets/js/ao-viz.js" defer></script>
+  <script src="../../assets/js/ao-viz2.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <div class="ac-layout">
+    <aside class="ac-toc" aria-label="Сабақ бөлімдері"><p class="ac-toc-h">Бөлімдер</p><ol><li><a href="#s-a">Оқу мақсаттары</a></li><li><a href="#s-b">Алғышарттар</a></li><li><a href="#s-c">Ұғымға кіріспе</a></li><li><a href="#s-d">Академиялық теория</a></li><li><a href="#s-e">Көрнекі түсіндірме</a></li><li><a href="#s-f">Қадамдап қорыту</a></li><li><a href="#s-g">Жұмыс мысалдары</a></li><li><a href="#s-h">Интерактивті эксперимент</a></li><li><a href="#s-i">Жаттығулар</a></li><li><a href="#s-j">Математикалық пайымдау</a></li><li><a href="#s-k">Жиі қателер</a></li><li><a href="#s-l">Меңгеруді бағалау</a></li><li><a href="#s-m">Рефлексия</a></li><li><a href="#s-n">Тереңірек</a></li></ol>
+      <div class="ac-mastery" data-ac-mastery><span>Меңгеру</span><b>-</b></div></aside>
+    <article class="content ac-lesson" id="main" data-lesson="ao17-senior.s05.l08" style="--mh:#5b4a8a">
+      <header class="ac-head">
+        <div class="ac-head-t">
+          <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#s05">Senior · Level III · Компиляторлар</a> / 8-сабақ</p>
+          <p class="ac-folio"><span>S05</span><i>·</i><span>08</span><small>Compiler Construction</small></p>
+          <h1>Оңтайландыру</h1>
+          <ul class="ac-chips"><li>зерттеу</li><li>≈ 60 мин</li><li>3 мақсат</li><li>5 тапсырма</li></ul>
+          <p class="ac-meta">нұсқа 1.0.0 · тексеру: author-checked</p>
+        </div>
+        <svg class="ac-emblem" viewBox="0 0 160 120" role="img" aria-hidden="true" focusable="false" style="color:#5b4a8a"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path class="em-d" d="M12 30h40M12 44h28M12 58h36"/><path class="em-d" d="M58 44h14M66 38l6 6-6 6"/><circle class="em-d" cx="98" cy="24" r="8"/><path class="em-d" d="M93 30l-10 20M103 30l10 20"/><circle class="em-d" cx="80" cy="56" r="7"/><circle class="em-d" cx="116" cy="56" r="7"/><path class="em-d" d="M70 88h76M70 100h60"/><rect class="em-g" x="94" y="20" width="8" height="8"/></g></svg>
+      </header>
+      <section class="ac-sec" id="s-a"><h2><span class="ac-n">A</span>Оқу мақсаттары</h2><ul class="ac-obj"><li>Тұрақтыларды бүктеуді (constant folding) және алгебралық жеңілдетулерді іске асыру.</li><li>Бүктеу мағынаны сақтайтынын (eval(fold(e)) = eval(e)) құрылымдық индукциямен дәлелдеу.</li><li>Тірі айнымалылар талдауымен өлі кодты (нәтижеге әсер етпейтін меншіктеулерді) жою.</li></ul></section>
+      <section class="ac-sec" id="s-b"><h2><span class="ac-n">B</span>Алғышарттар</h2><ul><li><a href="../s05/l07.html">Аралық көрініс: үш адресті код</a></li></ul></section>
+      <section class="ac-sec" id="s-c"><h2><span class="ac-n">C</span>Ұғымға кіріспе</h2><p>Компилятор кодты тек аудармайды - оны <b>жақсартады</b>. Бағдарламашы <code>2 * 60 * 60</code> деп оқылатындай жазады, ал компилятор оны бір рет, компиляция кезінде 7200-ге айналдырады. Бағдарламашы бір айнымалыны есептеп, кейін қолданбауы мүмкін - компилятор ол есептеуді алып тастайды. Бұл - <b>оңтайландыру</b>.</p><p>Оңтайландырудың алтын ережесі: <b>мағынаны сақта</b>. Жылдам, бірақ басқа нәтиже беретін код - қате код. Сондықтан әр түрлендіру дәлелденуі керек. Бұл сабақта екі классикалық түрлендіруді жасаймыз: <b>тұрақтыларды бүктеу</b> (ағашта) және <b>өлі кодты жою</b> (тірі айнымалылар талдауы арқылы, TAC тізбегінде) - және біріншісінің дұрыстығын дәлелдейміз.</p></section>
+      <section class="ac-sec" id="s-d"><h2><span class="ac-n">D</span>Академиялық теория</h2><div class="ac-th ac-definition"><div class="ac-th-k">Анықтама</div><h4>Бүктеу ережелері</h4><p>fold(e): жапырақ - өзі. (op, a, b): a' = fold(a), b' = fold(b); екеуі де сан болса - op(a', b') саны; әйтпесе алгебралық ережелер: x * 0 → 0, 0 * x → 0, x + 0 → x, x * 1 → x; қалған жағдайда (op, a', b').</p></div><div class="ac-th ac-theorem"><div class="ac-th-k">Теорема</div><h4>Бүктеу мағынаны сақтайды</h4><p>Бүтін сандар үстіндегі, жанама әсері жоқ өрнектер үшін: кез келген орта ρ-да eval(fold(e), ρ) = eval(e, ρ).</p></div><div class="ac-th ac-proof"><div class="ac-th-k">Дәлелдеу</div><h4>Дәлелдеу (құрылымдық индукция)</h4><p>Жапырақ: fold(e) = e. (op, a, b): индукция бойынша eval(a', ρ) = eval(a, ρ) = u және eval(b', ρ) = eval(b, ρ) = v. Онда eval((op, a', b'), ρ) = op(u, v) = eval(e, ρ). Енді әр нәтижелік түр сол мәнді береді: (і) a', b' сандар: op(a', b') = op(u, v). (іі) x * 0: v = 0, сондықтан op(u, v) = u·0 = 0 - кез келген u үшін (бүтін сандарда). (ііі) x + 0: u + 0 = u = eval(a', ρ). (іv) x * 1: u·1 = u. (v) өзгеріссіз (op, a', b') - жоғарыда көрсетілді. ∎ Шарттар маңызды: қалқымалы нүктеде x * 0 ≠ 0 болуы мүмкін (x = ∞ не NaN), ал x жанама әсері бар шақыру болса (f() * 0), оны жою бағдарламаның мінезін өзгертеді.</p></div><div class="ac-th ac-note"><div class="ac-th-k">Ескерту</div><h4>Тірі айнымалылар</h4><p>Айнымалы x бағдарламаның бір нүктесінде <b>тірі</b>, егер оның мәні кейін (қайта меншіктелмей тұрып) оқылса. Кері бағытта аралау: live := live \ {dst} ∪ uses(e). Тірі емес айнымалыға меншіктеу (жанама әсерсіз) - өлі код, оны жою нәтижені өзгертпейді.</p></div></section>
+      <section class="ac-sec" id="s-e"><h2><span class="ac-n">E</span>Көрнекі түсіндірме</h2><div class="ac-lab" data-lab="visual"></div><p class="ac-cap">(2 + 3) * x → 5 * x; (y − y) * (0 + 0) → … * 0 → 0; соңында + 0 жойылды: бүкіл ағаш (&#x27;*&#x27;, 5, &#x27;x&#x27;)-ке айналды. Өлі код: c ешқайда қолданылмайды, ал бірінші a кейін қайта меншіктелді, бірақ b арқылы тірі - сақталды.</p></section>
+      <section class="ac-sec" id="s-f"><h2><span class="ac-n">F</span>Қадамдап қорыту</h2><div class="ac-anim" data-anim><p class="ac-anim-h">Анимациялық түсіндіру: қадамдар кезекпен ашылады. «Ойнату» не → пернесі.</p><ol class="ac-steps"><li>Ағашты төменнен жоғары аралау: алдымен балаларды бүктеу.</li><li>Екі баласы да сан болса - бірден есептеу.</li><li>Алгебралық ережелерді қолдану, олардың шарттарын (бүтін сан, жанама әсерсіз) тексеру.</li><li>TAC тізбегін кері аралап, тірі айнымалылар жиынын жүргізу.</li><li>Тірі емес мақсатқа меншіктеулерді жою және дифференциалды тестпен мағынаның сақталғанын тексеру.</li></ol></div></section>
+      <section class="ac-sec" id="s-g"><h2><span class="ac-n">G</span>Жұмыс мысалдары</h2><figure class="ac-ex"><figcaption>Дифференциалды тест: бүктеуден кейін мағына өзгермейді</figcaption><pre data-lang="python"><code class="language-python">def fold(e):
+    &quot;&quot;&quot;тұрақтыларды бүктеу: екі балалары да сан болатын түйінді алдын ала есептеу&quot;&quot;&quot;
+    if not isinstance(e, tuple):
+        return e
+    op, a, b = e[0], fold(e[1]), fold(e[2])
+    if isinstance(a, int) and isinstance(b, int):
+        return {&#x27;+&#x27;: a + b, &#x27;-&#x27;: a - b, &#x27;*&#x27;: a * b}[op]
+    if op == &#x27;*&#x27; and (a == 0 or b == 0):
+        return 0                    # x * 0 = 0 (x - бүтін сан, жанама әсерсіз)
+    if op == &#x27;+&#x27; and b == 0: return a
+    if op == &#x27;*&#x27; and b == 1: return a
+    return (op, a, b)
+
+def ev(e, env):
+    if isinstance(e, int): return e
+    if isinstance(e, str): return env[e]
+    a, b = ev(e[1], env), ev(e[2], env)
+    return {&#x27;+&#x27;: a + b, &#x27;-&#x27;: a - b, &#x27;*&#x27;: a * b}[e[0]]
+
+import random
+rng = random.Random(5)
+
+def rand_tree(d):
+    if d == 0 or rng.random() &lt; 0.3:
+        return rng.choice([0, 1, 2, 3, &#x27;x&#x27;, &#x27;y&#x27;])
+    return (rng.choice(&#x27;+-*&#x27;), rand_tree(d - 1), rand_tree(d - 1))
+
+ok = smaller = 0
+for _ in range(300):
+    t = rand_tree(5)
+    env = {&#x27;x&#x27;: rng.randint(-9, 9), &#x27;y&#x27;: rng.randint(-9, 9)}
+    ok += ev(fold(t), env) == ev(t, env)
+    smaller += len(str(fold(t))) &lt;= len(str(t))
+print(ok, &#x27;/ 300 мағына сақталды;&#x27;, smaller, &#x27;/ 300 ағаш кішірейді не өзгермеді&#x27;)</code></pre><div class="ac-out"><span>Шығыс (тексерілген)</span><pre>300 / 300 мағына сақталды; 300 / 300 ағаш кішірейді не өзгермеді</pre></div><p>Кездейсоқ ағаштар мен орталарда бүктеу әрқашан бірдей мән берді - теореманың эмпирикалық тексерісі. Нақты компиляторлардағы оңтайландыру қателері дәл осындай тестпен табылады.</p></figure></section>
+      <section class="ac-sec" id="s-h"><h2><span class="ac-n">H</span>Интерактивті эксперимент</h2><p class="ac-task">Қате ереже қостық: x − 0 → 0. Бағдарлама қате бермейді. Мысал ағашта нәтиже өзгерді ме? Дифференциалды тест (жұмыс мысалындағы) бұл қатені қанша итерацияда табар еді? Дәлелдеудің қай жерінде бұл ереже құлайды?</p><div class="ac-lab" data-lab="experiment"></div></section>
+      <section class="ac-sec" id="s-i"><h2><span class="ac-n">I</span>Жаттығулар</h2><div class="ac-exs" data-set="exercises"></div></section>
+      <section class="ac-sec" id="s-j"><h2><span class="ac-n">J</span>Математикалық пайымдау</h2><p>Оңтайландырудың әр ережесі - кішкентай теорема, ал оның шарттары (бүтін сандар, жанама әсердің жоқтығы) - оның қолданылу шекарасы. Құрылымдық индукция бүктеудің дұрыстығын бір рет дәлелдейді; эксперимент көрсеткендей, бір қате ереже үнсіз бұзады, ал дифференциалды тест оны тез табады. Нақты компиляторлар (GCC, LLVM) жүздеген осындай ережені қолданады - және олардың әрқайсысының дұрыстығы дәл осылай негізделеді.</p></section>
+      <section class="ac-sec" id="s-k"><h2><span class="ac-n">K</span>Жиі қателер</h2><ul class="ac-mist"><li><b>Қалқымалы нүктелі сандарда x * 0 → 0 ережесін қолдану.</b><br>Себебі: x = ∞ не NaN болса, нәтиже NaN, 0 емес.<br>Түзету: Ережені тек бүтін сандарға (не -ffast-math баптауымен ғана).</li><li><b>Оңтайландыруды тексерусіз қосу.</b><br>Себебі: Қате оңтайландыру бағдарламаның мағынасын үнсіз өзгертеді.<br>Түзету: Әр ережеге дәлел не кемінде дифференциалды тест.</li></ul></section>
+      <section class="ac-sec" id="s-l"><h2><span class="ac-n">L</span>Меңгеруді бағалау</h2><p class="ac-note">Барлық сұраққа дұрыс жауап берсеңіз, сабақ «меңгерілді» деп белгіленеді. Тексеру браузерде өтеді: бұл оқу тексерісі, емтихан емес.</p><div class="ac-exs" data-set="assessment"></div></section>
+      <section class="ac-sec" id="s-m"><h2><span class="ac-n">M</span>Рефлексия</h2><div data-ac-reflect></div></section>
+      <section class="ac-sec" id="s-n"><h2><span class="ac-n">N</span>Тереңірек</h2><h3>Honors</h3><ul><li>Тұрақтыларды тарату (constant propagation) мен бүктеуді TAC-та біріктіріп, бекітілген нүктеге (fixpoint) дейін қайталаңыз. Қанша итерация керек?</li></ul><h3>Research</h3><ul><li>Alive (Lopes et al., PLDI 2015): LLVM-нің peephole оңтайландыруларын SMT шешушімен автоматты дәлелдеу. Ол қанша қате тапты?</li></ul></section>
+      
+      <section class="ac-sec ac-src"><h2>Дереккөз және лицензия</h2><ul><li>A. V. Aho, M. S. Lam, R. Sethi, J. D. Ullman, Compilers: Principles, Techniques, and Tools (2nd ed.) - фазалар, лексер, парсер (салыстыру үшін).</li><li>R. Nystrom, Crafting Interpreters - рекурсивті түсу және Pratt парсері (салыстыру үшін).</li><li>V. Pratt, Top Down Operator Precedence, POPL 1973.</li><li>N. P. Lopes et al., Provably Correct Peephole Optimizations with Alive, PLDI 2015.</li></ul>
+        <p>Сабақ мәтіні, мысалдары мен тапсырмалары AO17 үшін жаңадан жазылған (авторлық: Sagid Mustafa, All Rights Reserved). Дереккөздер ұғымдарды салыстыру үшін пайдаланылды, мәтін көшірілмеген. ID: <code>ao17-senior.s05.l08</code></p></section>
+      <nav class="ac-pager"><a href="l07.html">← Аралық көрініс: үш адресті код</a><a href="../index.html#s05">Модуль картасы</a><a href="l09.html">Код генерациясы: стек машинасы →</a></nav>
+    </article>
+  </div>
+  <script type="application/json" id="ac-data">{"id": "ao17-senior.s05.l08", "visual": {"lab": "pyrun", "code": "def fold(e):\n    \"\"\"тұрақтыларды бүктеу: екі балалары да сан болатын түйінді алдын ала есептеу\"\"\"\n    if not isinstance(e, tuple):\n        return e\n    op, a, b = e[0], fold(e[1]), fold(e[2])\n    if isinstance(a, int) and isinstance(b, int):\n        return {'+': a + b, '-': a - b, '*': a * b}[op]\n    if op == '*' and (a == 0 or b == 0):\n        return 0                    # x * 0 = 0 (x - бүтін сан, жанама әсерсіз)\n    if op == '+' and b == 0: return a\n    if op == '*' and b == 1: return a\n    return (op, a, b)\n\ndef ev(e, env):\n    if isinstance(e, int): return e\n    if isinstance(e, str): return env[e]\n    a, b = ev(e[1], env), ev(e[2], env)\n    return {'+': a + b, '-': a - b, '*': a * b}[e[0]]\n\ntree = ('+', ('*', ('+', 2, 3), 'x'), ('*', ('-', 'y', 'y'), ('+', 0, 0)))\nprint('бастапқы:', tree)\nprint('бүктелген:', fold(tree))\n\n# Өлі кодты жою: нәтижеге әсер етпейтін меншіктеулерді кері ретпен табу\nprog = [('a', ('+', 'x', 1)), ('b', ('*', 'a', 2)), ('c', ('+', 'x', 'x')), ('a', ('-', 'b', 3)), ('out', ('+', 'a', 0))]\ndef uses(e):\n    return set() if isinstance(e, int) else {e} if isinstance(e, str) else uses(e[1]) | uses(e[2])\nlive, kept = {'out'}, []\nfor dst, e in reversed(prog):\n    if dst in live:\n        kept.append((dst, e))\n        live = (live - {dst}) | uses(e)\nprint('қалғаны:', list(reversed(kept)))", "stdin": "", "caption": "(2 + 3) * x → 5 * x; (y − y) * (0 + 0) → … * 0 → 0; соңында + 0 жойылды: бүкіл ағаш ('*', 5, 'x')-ке айналды. Өлі код: c ешқайда қолданылмайды, ал бірінші a кейін қайта меншіктелді, бірақ b арқылы тірі - сақталды."}, "experiment": {"lab": "pyrun", "code": "def fold(e):\n    \"\"\"тұрақтыларды бүктеу: екі балалары да сан болатын түйінді алдын ала есептеу\"\"\"\n    if not isinstance(e, tuple):\n        return e\n    op, a, b = e[0], fold(e[1]), fold(e[2])\n    if isinstance(a, int) and isinstance(b, int):\n        return {'+': a + b, '-': a - b, '*': a * b}[op]\n    if op == '*' and (a == 0 or b == 0):\n        return 0                    # x * 0 = 0 (x - бүтін сан, жанама әсерсіз)\n    if op == '-' and b == 0: return b       # ҚАТЕ ереже: x - 0 -> 0\n    if op == '*' and b == 1: return a\n    return (op, a, b)\n\ndef ev(e, env):\n    if isinstance(e, int): return e\n    if isinstance(e, str): return env[e]\n    a, b = ev(e[1], env), ev(e[2], env)\n    return {'+': a + b, '-': a - b, '*': a * b}[e[0]]\n\ntree = ('+', ('*', ('+', 2, 3), 'x'), ('*', ('-', 'y', 'y'), ('+', 0, 0)))\nprint('бастапқы:', tree)\nprint('бүктелген:', fold(tree))\n\n# Өлі кодты жою: нәтижеге әсер етпейтін меншіктеулерді кері ретпен табу\nprog = [('a', ('+', 'x', 1)), ('b', ('*', 'a', 2)), ('c', ('+', 'x', 'x')), ('a', ('-', 'b', 3)), ('out', ('+', 'a', 0))]\ndef uses(e):\n    return set() if isinstance(e, int) else {e} if isinstance(e, str) else uses(e[1]) | uses(e[2])\nlive, kept = {'out'}, []\nfor dst, e in reversed(prog):\n    if dst in live:\n        kept.append((dst, e))\n        live = (live - {dst}) | uses(e)\nprint('қалғаны:', list(reversed(kept)))", "stdin": "", "task": "Қате ереже қостық: x − 0 → 0. Бағдарлама қате бермейді. Мысал ағашта нәтиже өзгерді ме? Дифференциалды тест (жұмыс мысалындағы) бұл қатені қанша итерацияда табар еді? Дәлелдеудің қай жерінде бұл ереже құлайды?"}, "exercises": [{"type": "pycode", "q": "fold(e) - ағаш: int, айнымалы (жол) не [op, a, b] (op ∈ + - *). Тұрақтыларды бүктеп, x + 0 → x, 0 + x → x, x * 1 → x, 1 * x → x, x * 0 → 0, 0 * x → 0, x − 0 → x ережелерін қолданып, нәтижені (тізім түрінде) қайтарсын.", "mode": "func", "func": "fold", "starter": "def fold(e):\n    return e\n", "tests": [{"args": [["+", ["*", 2, 3], "x"]], "expect": ["+", 6, "x"]}, {"args": [["*", ["+", "x", 0], 1]], "expect": "x"}, {"args": [["*", ["-", "y", "y"], 0]], "expect": 0}, {"args": [["-", ["+", 1, 1], 0]], "expect": 2}, {"args": ["z"], "expect": "z"}], "solution": "def fold(e):\n    if not isinstance(e, list):\n        return e\n    op, a, b = e[0], fold(e[1]), fold(e[2])\n    if isinstance(a, int) and isinstance(b, int):\n        return {'+': a + b, '-': a - b, '*': a * b}[op]\n    if op == '*' and 0 in (a, b):\n        return 0\n    if op == '+' and b == 0: return a\n    if op == '+' and a == 0: return b\n    if op == '*' and b == 1: return a\n    if op == '*' and a == 1: return b\n    if op == '-' and b == 0: return a\n    return [op, a, b]", "hints": ["Алдымен балаларды бүктеңіз - сосын ережелер.", "isinstance(a, int) - айнымалы (жол) емес екенін тексеру."]}, {"type": "pycode", "q": "dead_code(prog, outputs) - prog: [[мақсат, [пайдаланылатын айнымалылар]], ...] меншіктеулер тізбегі, outputs: соңында керек айнымалылар. Тірі айнымалылар талдауымен сақталатын меншіктеулердің индекстерін (өспелі ретпен) қайтарсын.", "mode": "func", "func": "dead_code", "starter": "def dead_code(prog, outputs):\n    return list(range(len(prog)))\n", "tests": [{"args": [[["a", ["x"]], ["b", ["a"]], ["c", ["x"]], ["a", ["b"]], ["out", ["a"]]], ["out"]], "expect": [0, 1, 3, 4]}, {"args": [[["t", ["x"]], ["t", ["y"]], ["r", ["t"]]], ["r"]], "expect": [1, 2]}, {"args": [[["a", []]], []], "expect": []}], "solution": "def dead_code(prog, outputs):\n    live, kept = set(outputs), []\n    for i in range(len(prog) - 1, -1, -1):\n        dst, used = prog[i]\n        if dst in live:\n            kept.append(i)\n            live = (live - {dst}) | set(used)\n    return sorted(kept)", "hints": ["Кері аралау: live := live − {dst} ∪ used.", "Екінші тестте бірінші t екінші меншіктеумен «көміледі»."]}, {"type": "mc", "q": "Неге f() * 0 → 0 ережесі қауіпті болуы мүмкін?", "options": ["Себебі 0 теріс.", "Себебі f() жанама әсері бар (басып шығару, файлға жазу) шақыру болса, оны жою бағдарламаның мінезін өзгертеді.", "Себебі көбейту коммутативті емес.", "Себебі ол баяу."], "answer": 1, "why": ["Қате.", "Дұрыс: теорема жанама әсерсіз өрнектерге ғана.", "Бүтін сандарда коммутативті.", "Керісінше, жылдам."], "hints": ["Теореманың шарттарын қараңыз."]}], "assessment": [{"type": "pycode", "q": "cse(code) - ортақ ішкі өрнектерді жою: code: [[мақсат, op, a, b], ...] (TAC, әр мақсат бір рет меншіктеледі). Бұрын есептелген (op, a, b) қайталанса, ол команданы [мақсат, '=', бұрынғы_мақсат, None] етіп ауыстырып, жаңа кодты қайтарсын.", "mode": "func", "func": "cse", "starter": "def cse(code):\n    return code\n", "tests": [{"args": [[["t1", "+", "a", "b"], ["t2", "+", "a", "b"], ["t3", "*", "t1", "t2"]]], "expect": [["t1", "+", "a", "b"], ["t2", "=", "t1", null], ["t3", "*", "t1", "t2"]]}, {"args": [[["t1", "-", "a", "b"], ["t2", "-", "b", "a"]]], "expect": [["t1", "-", "a", "b"], ["t2", "-", "b", "a"]]}, {"args": [[]], "expect": []}], "solution": "def cse(code):\n    seen, out = {}, []\n    for dst, op, a, b in code:\n        key = (op, a, b)\n        if key in seen:\n            out.append([dst, '=', seen[key], None])\n        else:\n            seen[key] = dst\n            out.append([dst, op, a, b])\n    return out", "hints": ["(op, a, b) → мақсат сөздігі.", "a − b мен b − a - әртүрлі өрнектер."]}, {"type": "mc", "q": "Бүктеудің дәлелінде x * 0 → 0 жағдайы неге дұрыс?", "options": ["Себебі бүтін сандарда кез келген u үшін u·0 = 0, ал v = eval(b') = 0.", "Себебі x = 0.", "Себебі көбейту жоқ.", "Себебі ағаш бос."], "answer": 0, "why": ["Дұрыс.", "x кез келген.", "Қате.", "Қате."], "hints": ["Индукция болжамы: eval(b', ρ) = v = 0."]}], "reflection": ["Өзіңіз жазған кодта компилятор қандай оңтайландыруды жасай алар еді (қайталанған есептеу, қолданылмаған айнымалы)? Python оны жасай ма (dis модулімен тексеріңіз)?"], "objectives": 3}</script>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>
