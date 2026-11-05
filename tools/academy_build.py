@@ -22,6 +22,7 @@ import curriculum as C  # noqa: E402
 import plogic as P  # noqa: E402
 import parith as AR  # noqa: E402
 import pdisc as DS  # noqa: E402
+import emblems as EM  # noqa: E402
 import ppseudo as PS  # noqa: E402
 import pbits as BI  # noqa: E402
 sys.path.insert(0, str(ROOT / "assets" / "py"))
@@ -509,18 +510,23 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
     body = f"""  <div class="ac-layout">
     <aside class="ac-toc" aria-label="Сабақ бөлімдері"><p class="ac-toc-h">Бөлімдер</p><ol>{toc}</ol>
       <div class="ac-mastery" data-ac-mastery><span>Меңгеру</span><b>-</b></div></aside>
-    <article class="content ac-lesson" id="main" data-lesson="{E(L['id'])}">
+    <article class="content ac-lesson" id="main" data-lesson="{E(L['id'])}" style="--mh:{EM.hue(L['moduleId'])}">
       <header class="ac-head">
-        <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#{L['moduleId']}">Level I · {E(mod[2])}</a> / {n}-сабақ</p>
-        <h1>{E(L['title'])}</h1>
-        <p class="ac-meta">Деңгей: {DIFF[L['difficulty']]} · шамамен {L['minutes']} мин · нұсқа {E(L['version'])} · тексеру: {E(L['reviewStatus'])}</p>
+        <div class="ac-head-t">
+          <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#{L['moduleId']}">Level I · {E(mod[2])}</a> / {n}-сабақ</p>
+          <p class="ac-folio"><span>{L['moduleId'][1:]}</span><i>·</i><span>{n:02d}</span><small>{E(mod[1])}</small></p>
+          <h1>{E(L['title'])}</h1>
+          <ul class="ac-chips"><li>{DIFF[L['difficulty']]}</li><li>≈ {L['minutes']} мин</li><li>{len(L['objectives'])} мақсат</li><li>{len(L['exercises']) + len(L['assessment'])} тапсырма</li></ul>
+          <p class="ac-meta">нұсқа {E(L['version'])} · тексеру: {E(L['reviewStatus'])}</p>
+        </div>
+        {EM.svg(L['moduleId'])}
       </header>
       {sec('a', '<ul class="ac-obj">' + ''.join(f'<li>{E(o)}</li>' for o in L['objectives']) + '</ul>')}
       {sec('b', f'<ul>{pre_links}</ul>')}
       {sec('c', L['concept'])}
       {sec('d', theory)}
       {sec('e', f'<div class="ac-lab" data-lab="visual"></div><p class="ac-cap">{E(L["visual"].get("caption", ""))}</p>')}
-      {sec('f', '<ol class="ac-steps">' + ''.join(f'<li>{E(s)}</li>' for s in L['derivation']) + '</ol>')}
+      {sec('f', '<div class="ac-anim" data-anim><p class="ac-anim-h">Анимациялық түсіндіру: қадамдар кезекпен ашылады. «Ойнату» не → пернесі.</p><ol class="ac-steps">' + ''.join(f'<li>{E(s)}</li>' for s in L['derivation']) + '</ol></div>')}
       {sec('g', examples)}
       {sec('h', f'<p class="ac-task">{E(L["experiment"]["task"])}</p><div class="ac-lab" data-lab="experiment"></div>')}
       {sec('i', '<div class="ac-exs" data-set="exercises"></div>')}
@@ -560,7 +566,7 @@ def index_html(lessons, st):
             else:
                 items.append(f'<li class="plan"><span>{E(title)}</span><small>{E(goal)}</small></li>')
         pre = ", ".join(next(x[2] for x in C.MODULES if x[0] == p) for p in C.MODULE_PREREQ.get(mid, [])) or "жоқ"
-        mods.append(f'<details class="ac-mod" id="{mid}"{" open" if m["complete"] else ""}><summary><span class="ac-mn">{mid[1:]}</span><b>{E(kk)}</b> <i>{E(en)}</i>'
+        mods.append(f'<details class="ac-mod" id="{mid}" style="--mh:{EM.hue(mid)}"{" open" if m["complete"] else ""}><summary>{EM.svg(mid).replace('class="ac-emblem"', 'class="ac-emblem ac-emblem-s"')}<span class="ac-mn">{mid[1:]}</span><b>{E(kk)}</b> <i>{E(en)}</i>'
                     f'<span class="ac-mc">{m["complete"]}/{m["planned"]} дайын</span></summary><p class="ac-pre">Алғышарт модульдер: {E(pre)}</p><ol>{"".join(items)}</ol></details>')
     body = f"""  <main class="content ac-home" id="main">
     <header class="ac-hero">
