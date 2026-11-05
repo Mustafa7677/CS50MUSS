@@ -37,7 +37,9 @@ TOOLS = {"practice.html": "task", "exam.html": "test", "flashcards.html": "task"
          "detective.html": "game", "debug.html": "task", "playground.html": "task", "glossary.html": "page",
          "cheatsheet.html": "page", "viz.html": "page", "flask.html": "task"}
 PROJECTS = {"projects.html": "task"}
-ACADEMY_PUBLIC = {"academy/index.html", "academy/map.html", "academy/models.html"}
+ACADEMY_PUBLIC = {"academy/index.html", "academy/map.html", "academy/models.html", "academy/study.html"}
+# IELTS, Digital SAT және CS зертханалары - ашық жаттығу орталары (деректері браузерде): жария
+ACADEMY_PUBLIC_DIRS = ("academy/tracks/", "academy/ielts/", "academy/sat/", "academy/labs/")
 # Курстың ішкі беттерінің түрі (атауы бойынша)
 SUB_KIND = {"exam": "test", "ubt": "test", "placement": "test", "practice": "task", "vocab": "task",
             "grammar": "task", "phrasebank": "task", "skills": "task"}
@@ -59,7 +61,7 @@ def page_rule(rel):
         return parts[0], SUB_KIND.get(parts[1][:-5], "page")
     # AO17 CS Universe: каталог (index) мен білім картасы жария; сабақтар мен зертхана - жабық, курс «academy»
     # Бағыт беттері (academy/tracks/*) - каталог, сондықтан жария
-    if parts[0] == "academy" and rel.endswith(".html") and rel not in ACADEMY_PUBLIC and not rel.startswith("academy/tracks/"):
+    if parts[0] == "academy" and rel.endswith(".html") and rel not in ACADEMY_PUBLIC and not rel.startswith(ACADEMY_PUBLIC_DIRS):
         return "academy", "task" if parts[-1] == "lab.html" else "lecture"
     if rel in TOOLS:
         return "tools", TOOLS[rel]

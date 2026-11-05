@@ -473,6 +473,7 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad"):
   <link rel="stylesheet" href="{pre}assets/css/style.css">
   <link rel="stylesheet" href="{pre}assets/css/academy.css">
   <link rel="stylesheet" href="{pre}assets/css/ao-viz.css">
+  <link rel="stylesheet" href="{pre}assets/css/ao-labs.css">
   <script src="{pre}assets/js/main.js"></script>
   <script src="{pre}assets/js/academy-logic.js" defer></script>
   <script src="{pre}assets/js/academy-arith.js" defer></script>
@@ -575,6 +576,30 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
 
 
 DONE = set()
+
+
+def study_html(lessons):
+    """«Менің оқуым»: үш академияның ортақ оқушы кабинеті (assets/js/ao-study.js, деректер браузерде)."""
+    cat = {L["id"]: [f'{L["moduleId"].upper() if L["moduleId"].startswith("s") else L["moduleId"][1:]}.{L["slug"][1:]} · {L["title"]}', f'{L["moduleId"]}/{L["slug"]}.html'] for L in lessons}
+    sec = lambda i, h, note="": f'<section class="ac-sec st-sec"><h2>{h}</h2>{f"<p class=ac-note>{note}</p>" if note else ""}<div id="{i}"></div></section>'  # noqa: E731
+    body = f"""  <main class="content ac-home st-home" id="main">
+    <header class="lab-hero"><p class="lab-kicker">AO17 · үш академия</p><h1>Менің оқуым</h1>
+      <p>CS Universe, IELTS және Digital SAT бойынша жеке оқу картаңыз: қай жерде тоқтадыңыз, не меңгерілді, қай ұғым қиын, қандай қателер қайталанады және бүгін нені қайталау керек.</p>
+      <p class="lab-honest">Деректер тек осы браузерде сақталады (тіркелгі қажет емес). Басқа құрылғыға көшіру үшін экспорт/импортты қолданыңыз. Меңгеру ережесі: соңғы үш әрекет көмексіз дұрыс және дәлдік кемінде 80%; бұл - AO17-нің ережесі, ресми емтихан бағасы емес.</p></header>
+    {sec("st-today", "Бүгін")}
+    {sec("st-review", "Қайталау жоспары", "Аралықпен қайталау: дұрыс жауаптан кейін аралық ұзарады (1, 2, 4, 8, 16 күн), қатеден кейін қайта басынан.")}
+    {sec("st-skills", "Дағдылар картасы")}
+    {sec("st-hard", "Қиындық тудыратын ұғымдар")}
+    {sec("st-notebook", "Қателер дәптері", "Әр қатенің себебі - зертхана берген түсіндірме. Қайта оқып, сол зертханаға оралыңыз.")}
+    {sec("st-history", "Оқу тарихы")}
+    <section class="ac-sec st-sec"><h2>Прогресті сақтау</h2>
+      <p class="lab-row"><button type="button" class="btn gold" id="st-export">Экспорт (JSON)</button>
+      <label class="btn secondary" for="st-import">Импорт</label><input type="file" id="st-import" accept="application/json" class="sr-only">
+      <button type="button" class="btn secondary" id="st-clear">Зертхана прогресін өшіру</button></p><p id="st-msg" class="ac-note" role="status"></p></section>
+  </main>
+  <script type="application/json" id="study-data">{json.dumps(cat, ensure_ascii=False).replace("</", "<\\/")}</script>"""
+    return "academy/study.html", page("academy/study.html", "Менің оқуым", "AO17 оқушы кабинеті: CS Universe, IELTS және Digital SAT бойынша меңгеру картасы, қателер дәптері, қайталау жоспары және прогресс экспорты.", body,
+                                      scripts=("assets/js/ao-tutor.js", "assets/js/ao-study.js"))
 
 
 def index_html(lessons, st):
@@ -782,6 +807,11 @@ def build(write=True):
     if errs:
         print("academy: ТЕКСЕРУДЕН ӨТПЕДІ:", *errs, sep="\n  ")
         sys.exit(1)
+    # Мазмұн фабрикасы: Draft (reviewStatus «draft») тексеріледі, бірақ жарияланбайды; Reviewed (author-checked, peer-reviewed) - жарияланады
+    drafts = [L["id"] for L in lessons if L["reviewStatus"] == "draft"]
+    if drafts:
+        print(f"academy: {len(drafts)} draft сабақ жарияланбайды: {', '.join(drafts[:5])}{' ...' if len(drafts) > 5 else ''}")
+        lessons = [L for L in lessons if L["reviewStatus"] != "draft"]
     DONE.clear()
     DONE.update(L["id"] for L in lessons)
     st = stats(lessons)
@@ -789,7 +819,7 @@ def build(write=True):
         print(f"academy check: OK ({st['complete_lessons']} сабақ, {st['auto_checked_tasks']} тапсырма, {st['python_examples']} мысал)")
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
-    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html()] + [track_html(t) for t in TR.TRACKS]
+    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons)] + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)

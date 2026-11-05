@@ -19,6 +19,7 @@
 """
 import html
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -1041,6 +1042,9 @@ def main():
     # AO17 CS Universe: тексеру + беттерді жасау (tools/academy_build.py), сосын жалпы бас/нав/футер
     import academy_build
     academy_pages = academy_build.build()
+    # IELTS, Digital SAT және CS зертханалары: қолмен жазылған беттер (academy/<бөлім>/*.html), жалпы бас/нав/футер осы жерде
+    for sub in () if os.environ.get("AO17_SKIP_LABS") else ("ielts", "sat", "labs"):  # AO17_SKIP_LABS=1: бұл беттер әзірленіп жатқанда
+        academy_pages += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / "academy" / sub).glob("*.html"))
     for rel in academy_pages:
         process_page(ROOT / rel, "../" * rel.count("/"), "courses")
     for page, active in [("index.html", "index"), ("about.html", "about"),
