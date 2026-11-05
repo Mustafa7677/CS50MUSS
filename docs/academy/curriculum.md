@@ -2,7 +2,7 @@
 
 _Бұл файлды `tools/academy_build.py` жасайды: қолмен өңдемеңіз, `tools/academy/curriculum.py`-ны өзгертіңіз._
 
-Нақты күй: **150** толық сабақ дайын, Foundation жоспары 120 сабақ. Автоматты тексерілетін тапсырма: 871, тексерілген Python мысалы: 153.
+Нақты күй: **160** толық сабақ дайын, Foundation жоспары 120 сабақ. Автоматты тексерілетін тапсырма: 921, тексерілген Python мысалы: 163.
 
 ## Бес деңгей
 
@@ -13,7 +13,7 @@ _Бұл файлды `tools/academy_build.py` жасайды: қолмен өң�
   - Пәндер: Operating Systems, Computer Networks, Compiler Construction, Concurrent Programming, Memory Management, Distributed Systems, Database Internals, Systems Programming, Computer Security Fundamentals, Performance Engineering, Networking Protocols, Software Architecture, Reliability Engineering, Virtualization
 - **IV. Advanced Specializations** (Тереңдетілген мамандану): жоспар 150 сабақ, дайын 0. AI, ML, киберқауіпсіздік, криптография, графика, робототехника және ғылыми есептеулер.
   - Пәндер: Artificial Intelligence, Machine Learning, Deep Learning Foundations, Cybersecurity, Cryptography, Cloud Computing, Distributed Applications, Computer Graphics, Robotics, Backend Engineering, Advanced Web Engineering, Data Engineering, Computational Mathematics, Scientific Computing, Human-Computer Interaction
-- **V. Research & Innovation** (Зерттеу және инновация): жоспар 30 сабақ, дайын 0. Ғылыми сұрақ, гипотеза, эксперимент, алгоритмдерді салыстыру, техникалық есеп және қорғау.
+- **V. Research & Innovation** (Зерттеу және инновация): жоспар 30 сабақ, дайын 10. Ғылыми сұрақ, гипотеза, эксперимент, алгоритмдерді салыстыру, техникалық есеп және қорғау.
   - Пәндер: Research Questions, Experiment Design, Benchmarking, Technical Writing, Research Defense
 
 ## Level I · Foundation: 12 модуль × 10 сабақ
