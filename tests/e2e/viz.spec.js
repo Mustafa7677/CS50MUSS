@@ -11,10 +11,10 @@ test("галерея: 20 модель, әрқайсысы қадамдайды, 
   await routePyodide(page.context());
   const errs = collectErrors(page);
   await page.goto("academy/models.html");
-  const all = page.locator("[data-viz]");
+  const all = page.locator("[data-aov]");
   await expect(all).toHaveCount(20);
   for (const t of ["graph", "cpu", "mem", "func", "gd", "nn", "sort", "bst", "heap", "hash", "matrix", "prob", "logic", "dtree", "kmeans", "linreg", "sched", "tcp", "compiler"]) {
-    const v = page.locator(`[data-viz="${t}"]`);
+    const v = page.locator(`[data-aov="${t}"]`);
     await ready(v);
     await v.locator("[data-c=fwd]").click();
     await v.locator("[data-c=fwd]").click();
@@ -30,7 +30,7 @@ test("галерея: 20 модель, әрқайсысы қадамдайды, 
 test("граф: BFS реті және Дейкстра қашықтықтары дұрыс; қате енгізу түсіндіріледі", async ({ page }) => {
   await blockFonts(page.context());
   await page.goto("academy/models.html");
-  const v = page.locator('[data-viz="graph"]');
+  const v = page.locator('[data-aov="graph"]');
   await ready(v);
   await v.locator("[data-c=seek]").evaluate((e) => { e.value = e.max; e.dispatchEvent(new Event("input")); });
   await expect(v.locator(".aov-msg")).toContainText("A → B → C → D → E");
@@ -47,11 +47,11 @@ test("процессор: 1..5 қосындысы 15; нейрон желі: XOR
   test.setTimeout(60_000);
   await blockFonts(page.context());
   await page.goto("academy/models.html");
-  const cpu = page.locator('[data-viz="cpu"]');
+  const cpu = page.locator('[data-aov="cpu"]');
   await ready(cpu);
   await cpu.locator("[data-c=seek]").evaluate((e) => { e.value = e.max; e.dispatchEvent(new Event("input")); });
   await expect(cpu.locator(".aov-msg")).toContainText("Шығыс: 15");
-  const nn = page.locator('[data-viz="nn"]');
+  const nn = page.locator('[data-aov="nn"]');
   await ready(nn);
   await nn.locator("[data-c=seek]").evaluate((e) => { e.value = e.max; e.dispatchEvent(new Event("input")); });
   await expect(nn.locator(".aov-msg")).toContainText("дәлдік 100%");
@@ -67,7 +67,7 @@ test("Code X-Ray: нағыз Python, рекурсия тереңдігі мен 
   await blockFonts(page.context());
   await routePyodide(page.context());
   await page.goto("academy/m07/l05.html");
-  const v = page.locator('[data-viz="pyx"]');
+  const v = page.locator('[data-aov="pyx"]');
   await expect(v.locator(".aov-msg")).toContainText("Ойнату");   // Python бет ашылғанда жүктелмейді
   await v.locator("[data-c=fwd]").click();
   await ready(v);
@@ -84,7 +84,7 @@ test("қозғалыс азайтылса ойнату бір қадам ған�
   await blockFonts(c);
   const p = await c.newPage();
   await p.goto("academy/models.html");
-  const v = p.locator('[data-viz="graph"]');
+  const v = p.locator('[data-aov="graph"]');
   await ready(v);
   await v.locator("[data-c=play]").click();
   await expect(v.locator(".aov-n")).toHaveText(/^2 \//);
@@ -101,19 +101,38 @@ test("қозғалыс азайтылса ойнату бір қадам ған�
 test("2-кезең модельдері нақты есептейді: сұрыптау, үйме, компилятор, TCP байттары, толық қосқыш", async ({ page }) => {
   await blockFonts(page.context());
   await page.goto("academy/models.html");
-  const end = async (t) => { const v = page.locator(`[data-viz="${t}"]`); await ready(v); await v.locator("[data-c=seek]").evaluate((e) => { e.value = e.max; e.dispatchEvent(new Event("input")); }); return v.locator(".aov-msg"); };
+  const end = async (t) => { const v = page.locator(`[data-aov="${t}"]`); await ready(v); await v.locator("[data-c=seek]").evaluate((e) => { e.value = e.max; e.dispatchEvent(new Event("input")); }); return v.locator(".aov-msg"); };
   await expect(await end("sort")).toContainText("[1, 2, 3, 4, 6, 7, 8, 9]");
   await expect(await end("heap")).toContainText("[6, 7, 8, 9]");
   await expect(await end("compiler")).toContainText("Нәтиже: 7");
   await expect(await end("tcp")).toContainText("16 байт, 3 сегмент");
   await expect(await end("logic")).toContainText("S = 1, Cout = 1");
   await expect(await end("bst")).toContainText("35 табылды");
-  const s = page.locator('[data-viz="sort"]');
+  const s = page.locator('[data-aov="sort"]');
   await s.locator("input[name=data]").fill("1, 2, 3, 4, 5");
   await s.locator("input[name=data]").dispatchEvent("change");
   await expect(await end("sort")).toContainText("4 салыстыру");   // кірістіру: сұрыпталған тізімде n - 1
-  const c = page.locator('[data-viz="compiler"]');
+  const c = page.locator('[data-aov="compiler"]');
   await c.locator("input[name=expr]").fill("2 + * 3");
   await c.locator("input[name=expr]").dispatchEvent("change");
   await expect(c.locator(".aov-msg")).toContainText("Операнд жетіспейді");
+});
+
+test("курс лекцияларының ішіндегі модельдер: үш сұрақ, жұмыс істейді, математиканың өз визуализацияларымен қақтығыспайды", async ({ page }) => {
+  test.setTimeout(90_000);
+  await blockFonts(page.context());
+  const errs = collectErrors(page);
+  for (const [url, n] of [["lectures/week-5.html", 3], ["ai/lectures/week-5.html", 2], ["cpp/lectures/week-6.html", 3], ["java/lectures/week-5.html", 2], ["math/lectures/week-98.html", 1]]) {
+    await page.goto(url);
+    await expect(page.locator(".aov-embed")).toHaveCount(n);
+    await expect(page.locator(".aov-embed .aov-3q b")).toHaveCount(3 * n);
+    const v = page.locator(".aov-embed .aov").first();
+    await ready(v);
+    await v.locator("[data-c=fwd]").click();
+    await expect(v.locator(".aov-n")).toHaveText(/^2 \//);
+  }
+  await page.goto("math/lectures/week-10.html");
+  await expect(page.locator(".math-viz").first()).not.toBeEmpty();   // математика курсының өз data-viz жүйесі бұзылмады
+  await expect(page.locator('.aov-embed [data-aov="matrix"]')).toHaveClass(/aov/);
+  expect(errs).toEqual([]);
 });

@@ -2,7 +2,7 @@
    AO17 Viz: оқушы басқаратын интерактивті модельдер. Әр модель нақты есептеу жүргізеді (алгоритм, формула, backprop,
    оқу процессоры, Python-ның өз орындалуы) және КАДРЛАР тізбегін береді: {state, msg}. Ойнатқыш кадрлар бойымен
    алға/артқа жүреді, жылдамдықты өзгертеді, параметрлер өзгерсе модельді қайта есептейді; әр кадрда қазақша
-   «не орындалды» деген түсіндірме бар. Пайдалану: <div data-viz="graph" data-viz-params='{"algo":"bfs"}'></div>. */
+   «не орындалды» деген түсіндірме бар. Пайдалану: <div data-aov="graph" data-aov-params='{"algo":"bfs"}'></div>. */
 (function () {
   "use strict";
   const $ = (s, r = document) => r.querySelector(s);
@@ -443,7 +443,7 @@
   };
 
   const MACHINES = { graph: GRAPH, gd: GD, nn: NN, cpu: CPU, mem: MEMM, pyx: PYX, func: FUNC };
-  const init = (root = document) => root.querySelectorAll("[data-viz]:not(.aov)").forEach((el) => { let p = {}; try { p = JSON.parse(el.dataset.vizParams || "{}"); } catch (e) { /* бос */ } mount(el, el.dataset.viz, p); });
+  const init = (root = document) => root.querySelectorAll("[data-aov]:not(.aov)").forEach((el) => { let p = {}; try { p = JSON.parse(el.dataset.aovParams || "{}"); } catch (e) { /* бос */ } mount(el, el.dataset.aov, p); });
   window.AOViz = { mount, init, MACHINES };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => init()); else init();
 })();

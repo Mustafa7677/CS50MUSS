@@ -235,7 +235,7 @@ window.CS50KZ_COURSE_LECTURES["ai"] = [
     "id": "kmeans"
    }
   ],
-  "minutes": 51,
+  "minutes": 52,
   "quiz": 8,
   "tasks": 2,
   "task": "problem-set"
@@ -295,7 +295,7 @@ window.CS50KZ_COURSE_LECTURES["ai"] = [
     "id": "rnn"
    }
   ],
-  "minutes": 41,
+  "minutes": 42,
   "quiz": 8,
   "tasks": 3,
   "task": "problem-set"

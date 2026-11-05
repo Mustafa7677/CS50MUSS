@@ -503,7 +503,7 @@ window.CS50KZ_COURSE_LECTURES["java"] = [
     "id": "tasks"
    }
   ],
-  "minutes": 49,
+  "minutes": 50,
   "quiz": 8,
   "tasks": 4,
   "task": ""

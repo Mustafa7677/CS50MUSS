@@ -539,7 +539,7 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
       {sec('b', f'<ul>{pre_links}</ul>')}
       {sec('c', L['concept'])}
       {sec('d', theory)}
-      {sec('e', f'<div class="ac-lab" data-lab="visual"></div><p class="ac-cap">{E(L["visual"].get("caption", ""))}</p>' + "".join(f'<h3 class="ac-viz-h">Интерактивті модель: өзің басқар</h3><p class="ac-cap">{E(v["why"])}</p><div data-viz="{E(v["type"])}" data-viz-params="{E(json.dumps(v.get("params", {}), ensure_ascii=False))}"></div>' for v in L.get("viz", [])))}
+      {sec('e', f'<div class="ac-lab" data-lab="visual"></div><p class="ac-cap">{E(L["visual"].get("caption", ""))}</p>' + "".join(f'<h3 class="ac-viz-h">Интерактивті модель: өзің басқар</h3><p class="ac-cap">{E(v["why"])}</p><div data-aov="{E(v["type"])}" data-aov-params="{E(json.dumps(v.get("params", {}), ensure_ascii=False))}"></div>' for v in L.get("viz", [])))}
       {sec('f', '<div class="ac-anim" data-anim><p class="ac-anim-h">Анимациялық түсіндіру: қадамдар кезекпен ашылады. «Ойнату» не → пернесі.</p><ol class="ac-steps">' + ''.join(f'<li>{E(s)}</li>' for s in L['derivation']) + '</ol></div>')}
       {sec('g', examples)}
       {sec('h', f'<p class="ac-task">{E(L["experiment"]["task"])}</p><div class="ac-lab" data-lab="experiment"></div>')}
@@ -627,7 +627,7 @@ MODELS = [
 def models_html():
     toc = "".join(f'<li><a href="#v-{t}">{E(h)}</a></li>' for t, _, _, h, _, _ in MODELS)
     secs = "".join(f'<section class="aov-sec" id="v-{t}"><p class="ac-kicker">{E(k)}</p><h2>{E(h)}</h2><p>{E(d)}</p><p class="ac-note">Қолданылатын сабақтар: {E(where)}</p>'
-                   f'<div data-viz="{t}" data-viz-params="{E(json.dumps(p))}"></div></section>' for t, p, k, h, d, where in MODELS)
+                   f'<div data-aov="{t}" data-aov-params="{E(json.dumps(p))}"></div></section>' for t, p, k, h, d, where in MODELS)
     body = f"""  <main class="content aov-gallery" id="main">
     <p class="ac-crumb"><a href="index.html">CS Universe</a> / Интерактивті модельдер</p>
     <h1>Интерактивті модельдер</h1>
