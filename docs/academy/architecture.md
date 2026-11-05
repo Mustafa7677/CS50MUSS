@@ -43,7 +43,8 @@ AO17 CS Universe - қазақ тіліндегі бес деңгейлі инф�
 | Knowledge Graph | `academy/map.html` | бар: модульдер, алғышарт байланысы, жеке күй |
 | C (build кезінде gcc: мысалдар, `cshow`, `coutput`) | `tools/academy_build.py` (`run_c`, `c_check`) | бар: -std=c11 -Wall -Wextra -Werror, stdin, аргументтер, шығу коды, UBSan/ASan/LSan хабарлары |
 | Жергілікті Python мысалдары (`python-local`) | `tools/academy_build.py` | бар: subprocess/gcc/git қолданатын мысалдар build кезінде CPython-да орындалады; браузерде іске қосу батырмасы жоқ |
-| Браузердегі C, Virtual Computer, C Playground, Judge, Certification | - | **әлі жоқ** (docs/academy/next-steps.md) |
+| AO17 Viz (оқушы басқаратын модельдер) | `assets/js/ao-viz.js`, `assets/css/ao-viz.css`, `tools/academy/viz_map.py` | бар (1-кезең): ортақ ойнатқыш (ойнату/тоқтату, қадам алға/артқа, басынан, жылдамдық 0.25-4×, жылжытқыш, параметрлер, қазақша түсіндірме, пернетақта, қозғалыс азайту) + 7 модель: граф (BFS/DFS/Дейкстра), Code X-Ray (нағыз Python, `ao_judge.trace_lines`), оқу процессоры (Virtual Computer), C жады (стек/үйме/көрсеткіш - модель), функция түрлендірулері, градиенттік түсу, нейрон желі (нағыз backprop). Галерея: `academy/models.html` (жария) |
+| Браузердегі C, C Playground, серверлік Judge, Certification | - | **әлі жоқ** (docs/academy/next-steps.md) |
 
 ## Сабақ деректерінің моделі
 Әр сабақ - Python сөздігі (`tools/academy/content/mNN_*.py`). Міндетті өрістер (`REQUIRED`, `tools/academy_build.py`):

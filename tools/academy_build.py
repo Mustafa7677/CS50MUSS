@@ -49,9 +49,16 @@ REVIEW = {"draft", "author-checked", "peer-reviewed"}
 
 
 def load_lessons():
+    import viz_map
     out = []
     for name in CONTENT_MODULES:
         out += __import__(name).LESSONS
+    for L in out:
+        if L["id"] in viz_map.VIZ:
+            L["viz"] = viz_map.VIZ[L["id"]]
+    unknown = set(viz_map.VIZ) - {L["id"] for L in out}
+    if unknown:
+        raise SystemExit(f"viz_map: белгісіз сабақтар {sorted(unknown)}")
     return out
 
 
@@ -392,6 +399,9 @@ def validate(lessons, run_code=True):
             if key in seen_q:
                 errs.append(f"{lid}: сұрақ қайталанады ({seen_q[key]}): {key[:50]}")
             seen_q[key] = lid
+        for v in L.get("viz", []):
+            if v.get("type") not in VIZ_TYPES or not v.get("why"):
+                errs.append(f"{lid}: viz - түрі белгісіз не «why» (неге бұл модель көмектеседі) жоқ: {v.get('type')}")
         for m in L.get("mistakes", []):
             if not all(m.get(k) for k in ("mistake", "why", "fix")):
                 errs.append(f"{lid}: mistakes элементі толық емес")
@@ -430,6 +440,7 @@ def stats(lessons, errs_by_lesson=None):
 
 # ---------------------------------------------------------------- HTML
 E = html.escape
+VIZ_TYPES = {"graph", "gd", "nn", "cpu", "mem", "pyx", "func"}   # assets/js/ao-viz.js MACHINES
 DIFF = {1: "бастапқы", 2: "негізгі", 3: "орта", 4: "күрделі", 5: "зерттеу"}
 KIND = {"definition": "Анықтама", "theorem": "Теорема", "proof": "Дәлелдеу", "note": "Ескерту"}
 SECTIONS = [("a", "Оқу мақсаттары"), ("b", "Алғышарттар"), ("c", "Ұғымға кіріспе"), ("d", "Академиялық теория"),
@@ -454,13 +465,15 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad"):
   <link rel="stylesheet" href="{pre}assets/fonts/fonts.css">
   <link rel="stylesheet" href="{pre}assets/css/style.css">
   <link rel="stylesheet" href="{pre}assets/css/academy.css">
+  <link rel="stylesheet" href="{pre}assets/css/ao-viz.css">
   <script src="{pre}assets/js/main.js"></script>
   <script src="{pre}assets/js/academy-logic.js" defer></script>
   <script src="{pre}assets/js/academy-arith.js" defer></script>
   <script src="{pre}assets/js/academy-disc.js" defer></script>
   <script src="{pre}assets/js/academy-pseudo.js" defer></script>
   <script src="{pre}assets/js/academy-bits.js" defer></script>
-  <script src="{pre}assets/js/academy.js" defer></script>{sc}
+  <script src="{pre}assets/js/academy.js" defer></script>
+  <script src="{pre}assets/js/ao-viz.js" defer></script>{sc}
 </head>
 <body class="{body_cls}">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -525,7 +538,7 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
       {sec('b', f'<ul>{pre_links}</ul>')}
       {sec('c', L['concept'])}
       {sec('d', theory)}
-      {sec('e', f'<div class="ac-lab" data-lab="visual"></div><p class="ac-cap">{E(L["visual"].get("caption", ""))}</p>')}
+      {sec('e', f'<div class="ac-lab" data-lab="visual"></div><p class="ac-cap">{E(L["visual"].get("caption", ""))}</p>' + "".join(f'<h3 class="ac-viz-h">Интерактивті модель: өзің басқар</h3><p class="ac-cap">{E(v["why"])}</p><div data-viz="{E(v["type"])}" data-viz-params="{E(json.dumps(v.get("params", {}), ensure_ascii=False))}"></div>' for v in L.get("viz", [])))}
       {sec('f', '<div class="ac-anim" data-anim><p class="ac-anim-h">Анимациялық түсіндіру: қадамдар кезекпен ашылады. «Ойнату» не → пернесі.</p><ol class="ac-steps">' + ''.join(f'<li>{E(s)}</li>' for s in L['derivation']) + '</ol></div>')}
       {sec('g', examples)}
       {sec('h', f'<p class="ac-task">{E(L["experiment"]["task"])}</p><div class="ac-lab" data-lab="experiment"></div>')}
@@ -574,7 +587,7 @@ def index_html(lessons, st):
       <h1>Алаш бастаған білім жолы бүгінгі технологиямен жалғасады</h1>
       <p>Логика мен дәлелдеуден бастап, алгоритмдер, жүйелер және зерттеуге дейінгі бес деңгейлі қазақша академиялық бағдарлама. Мазмұн AO17 үшін жаңадан жазылады; ақылы сервис пен AI API қажет емес.</p>
       <p class="ac-honest">Қазір дайын: <b>{st["complete_lessons"]}</b> толық сабақ, <b>{st["auto_checked_tasks"]}</b> автоматты тексерілетін тапсырма, <b>{st["python_examples"]}</b> тексерілген Python мысалы. Қалғаны - жоспар, ол бөлек белгіленген.</p>
-      <p class="ac-cta"><a class="btn gold" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
+      <p class="ac-cta"><a class="btn gold" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
     </header>
     <section class="ac-sec"><h2>Бес деңгей</h2><ol class="ac-levels">{lv}</ol></section>
     <section class="ac-sec"><h2>Level I · Foundation: 12 модуль, 120 сабақ</h2>
@@ -584,6 +597,32 @@ def index_html(lessons, st):
     <section class="ac-sec"><h2>Прогресс</h2><div data-ac-progress></div></section>
   </main>"""
     return "academy/index.html", page("academy/index.html", "CS Universe", "AO17 Computer Science Universe: қазақ тіліндегі бес деңгейлі информатика академиясы. Логика, дәлелдеу, алгоритмдер, Python, C.", body)
+
+
+MODELS = [
+    ("graph", {}, "Алгоритмдер · графтар", "Граф алгоритмдері", "BFS, DFS және Дейкстра бір графта. Әр кадр - бір амал: кезектен алу, көршіні тексеру, қашықтықты жаңарту. Қабырғалар мен салмақтарды өзгертіп, нәтиженің қалай өзгеретінін бақылаңыз.", "m09.l09, m09.l07"),
+    ("pyx", {}, "Python · бағдарламалау", "Code X-Ray", "Сіз жазған Python коды браузерде нағыз орындалады; әр жолдан бұрынғы айнымалылар, шақыру тереңдігі және шығыс көрінеді. Рекурсия, циклдар, тізімдер - бәрі «ішінен».", "m06.l06, m06.l07, m07.l05, m09.l02"),
+    ("cpu", {}, "Компьютер архитектурасы", "Оқу процессоры (Virtual Computer)", "4 регистр, 16 ұяшық жад, PC және 13 команда. Өз бағдарламаңызды жазып, циклдың машиналық деңгейде шартты өтуге айналатынын, 8 биттік асып кетуді көріңіз.", "m05.l03, m10.l01, m10.l04, m11.l01"),
+    ("mem", {}, "C · жад", "Стек, үйме, көрсеткіш", "swap(&x, &y), malloc/free және ілулі көрсеткіш сценарийлері: жақтаулардың пайда болуы мен жоғалуы, үйме блогының өмірі.", "m11.l02, m11.l04, m11.l05, m11.l06"),
+    ("func", {}, "Математика · функциялар", "Функция түрлендірулері", "y = a·f(b·x + c) + d: әр параметрдің графикке әсері. Параметрді ойнату арқылы бірқалыпты өзгертіп, «неге солға жылжиды?» сұрағына жауап табыңыз.", "m03.l06; математика курсы"),
+    ("gd", {}, "Оңтайландыру · Machine Learning", "Градиенттік түсу", "x ← x − η·f′(x). Қадам ұзындығы мен бастапқы нүктенің жинақталуға, алшақтауға және жергілікті минимумға әсері.", "m12.l05; AI курсы"),
+    ("nn", {}, "AI · нейрондық желілер", "Нейрондық желіні оқыту", "2 кіріс, жасырын қабат, 1 шығыс; тура өту, кросс-энтропия, backprop - бәрі нақты есептеледі. Жасырын нейрондар санын өзгертіп, XOR-ды неге сызықтық модель шеше алмайтынын көріңіз.", "AI курсы; Level II-III"),
+]
+
+
+def models_html():
+    toc = "".join(f'<li><a href="#v-{t}">{E(h)}</a></li>' for t, _, _, h, _, _ in MODELS)
+    secs = "".join(f'<section class="aov-sec" id="v-{t}"><p class="ac-kicker">{E(k)}</p><h2>{E(h)}</h2><p>{E(d)}</p><p class="ac-note">Қолданылатын сабақтар: {E(where)}</p>'
+                   f'<div data-viz="{t}" data-viz-params="{E(json.dumps(p))}"></div></section>' for t, p, k, h, d, where in MODELS)
+    body = f"""  <main class="content aov-gallery" id="main">
+    <p class="ac-crumb"><a href="index.html">CS Universe</a> / Интерактивті модельдер</p>
+    <h1>Интерактивті модельдер</h1>
+    <p>Бұл беттегі әр модель - сурет не видео емес, нақты есептеу: алгоритм, формула, нейрондық желі, процессор не Python-ның өз орындалуы. Сіз оны іске қосып, тоқтатып, бір қадам алға-артқа жылжытып, жылдамдығын және кіріс деректерін өзгерте аласыз; әр қадамда не болғаны қазақша жазылады.</p>
+    <p class="ac-note">Басқару: Бос орын - ойнату/тоқтату, ← → - қадам, R - басынан (модельге фокус қойып). Қозғалыс азайтылған режимде ойнату тек бір қадам жасайды.</p>
+    <ul class="aov-toc">{toc}</ul>
+{secs}
+  </main>"""
+    return "academy/models.html", page("academy/models.html", "Интерактивті модельдер", "AO17: граф алгоритмдері, Code X-Ray, оқу процессоры, C жады, функциялар, градиенттік түсу, нейрондық желі - оқушы басқаратын нақты модельдер.", body)
 
 
 def lab_html():
@@ -627,7 +666,7 @@ def build(write=True):
         print(f"academy check: OK ({st['complete_lessons']} сабақ, {st['auto_checked_tasks']} тапсырма, {st['python_examples']} мысал)")
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
-    pages = [index_html(lessons, st), lab_html(), map_html(lessons)]
+    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html()]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)

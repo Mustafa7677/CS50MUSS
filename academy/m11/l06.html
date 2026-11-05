@@ -30,6 +30,7 @@
   <link rel="stylesheet" href="../../assets/fonts/fonts.css">
   <link rel="stylesheet" href="../../assets/css/style.css">
   <link rel="stylesheet" href="../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../assets/css/ao-viz.css">
   <script src="../../assets/js/main.js"></script>
   <script src="../../assets/js/academy-logic.js" defer></script>
   <script src="../../assets/js/academy-arith.js" defer></script>
@@ -37,6 +38,7 @@
   <script src="../../assets/js/academy-pseudo.js" defer></script>
   <script src="../../assets/js/academy-bits.js" defer></script>
   <script src="../../assets/js/academy.js" defer></script>
+  <script src="../../assets/js/ao-viz.js" defer></script>
 </head>
 <body data-license="B" class="ao-acad">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -75,7 +77,7 @@
       <section class="ac-sec" id="s-b"><h2><span class="ac-n">B</span>Алғышарттар</h2><ul><li><a href="../m11/l05.html">Үйме (heap)</a></li></ul></section>
       <section class="ac-sec" id="s-c"><h2><span class="ac-n">C</span>Ұғымға кіріспе</h2><p>Үйме қуатты, бірақ әр қате үнсіз болуы мүмкін: бағдарлама «жұмыс істей береді», кейін кездейсоқ жерде құлайды. Негізгі төрт қате: <b>ағып кету</b> (free ұмытылды), <b>ілулі көрсеткіш</b> (босатылған жадты пайдалану), <b>қос босату</b>, <b>шекарадан тыс жазу</b> (heap-buffer-overflow).</p><p>Бұл сабақтың мысалдары нағыз AddressSanitizer-мен компиляцияланып, іске қосылған - төмендегі stderr үзінділері сол есептерден алынған (мекенжайлар алынып тасталған). Ереже: тестілеу кезінде әрқашан <code>-fsanitize=address</code>.</p></section>
       <section class="ac-sec" id="s-d"><h2><span class="ac-n">D</span>Академиялық теория</h2><div class="ac-th ac-definition"><div class="ac-th-k">Анықтама</div><h4>Төрт қате</h4><ul><li>Leak: бөлінген блокқа ешбір көрсеткіш қалмады, бірақ free болмады.</li><li>Use-after-free: free(p) кейін *p.</li><li>Double free: бір блокты екі рет free.</li><li>Heap overflow: malloc(n) блогынан тыс оқу/жазу.</li></ul></div><div class="ac-th ac-theorem"><div class="ac-th-k">Теорема</div><h4>free-ден кейін NULL қою қос босатуды болдырмайды</h4><p>Блоктың жалғыз көрсеткіші p болса және әр free(p)-тен кейін бірден p = NULL жазылса, бұл блок екі рет босатылмайды.</p></div><div class="ac-th ac-proof"><div class="ac-th-k">Дәлелдеу</div><h4>Дәлелдеу</h4><p>Блоққа тек p көрсетеді (жалғыз иесі). Бірінші free(p)-тен кейін p = NULL, демек блокқа көрсететін ешбір көрсеткіш қалмады. Блокты тағы босату үшін оның мекенжайы бар көрсеткіш керек - ондай жоқ. Ал free(p) қайта шақырылса, бұл free(NULL), ол стандарт бойынша ештеңе істемейді (C11 7.22.3.3). ∎ Ескерту: блоктың көшірме көрсеткіштері (q = p) болса, теорема шарты бұзылады - сондықтан «бір иесі» ережесі маңызды.</p></div><div class="ac-th ac-note"><div class="ac-th-k">Ескерту</div><h4>Неге қате үнсіз?</h4><p>free жадты операциялық жүйеге бірден қайтармайды - ол аллокатордың «бос» тізіміне түседі. Сондықтан *p оқу көбіне ескі мәнді не келесі malloc-тың деректерін береді. Құлау кейінірек, басқа жерде болады - себебін табу өте қиын.</p></div></section>
-      <section class="ac-sec" id="s-e"><h2><span class="ac-n">E</span>Көрнекі түсіндірме</h2><div class="ac-lab" data-lab="visual"></div><p class="ac-cap">ASan үш жолды көрсетті: қай жерде оқылды (11), қай жерде босатылды (10), қай жерде бөлінді (6). gcc 13 бұл қатені компиляция кезінде де байқап ескертеді (-Wuse-after-free).</p></section>
+      <section class="ac-sec" id="s-e"><h2><span class="ac-n">E</span>Көрнекі түсіндірме</h2><div class="ac-lab" data-lab="visual"></div><p class="ac-cap">ASan үш жолды көрсетті: қай жерде оқылды (11), қай жерде босатылды (10), қай жерде бөлінді (6). gcc 13 бұл қатені компиляция кезінде де байқап ескертеді (-Wuse-after-free).</p><h3 class="ac-viz-h">Интерактивті модель: өзің басқар</h3><p class="ac-cap">q = p көшірмесі free(p)-тен кейін де ескі мекенжайды сақтайды - бұл ілулі көрсеткіш. Модель use-after-free сәтін көрсетеді.</p><div data-viz="mem" data-viz-params="{&quot;scen&quot;: &quot;dangling&quot;}"></div></section>
       <section class="ac-sec" id="s-f"><h2><span class="ac-n">F</span>Қадамдап қорыту</h2><div class="ac-anim" data-anim><p class="ac-anim-h">Анимациялық түсіндіру: қадамдар кезекпен ашылады. «Ойнату» не → пернесі.</p><ol class="ac-steps"><li>Ағып кету табу: бағдарламаның соңында LeakSanitizer тірі блоктарды тізімдейді.</li><li>«Direct leak of 40 byte(s) ... allocated from: main prog.c:6» - қай malloc босатылмағаны.</li><li>Түзету: сол блоктың иесі кім? Иесі біткен жерге free қосу.</li><li>Қайта іске қосу: ASan үнсіз - енді таза.</li></ol></div></section>
       <section class="ac-sec" id="s-g"><h2><span class="ac-n">G</span>Жұмыс мысалдары</h2><figure class="ac-ex"><figcaption>Ағып кету: LeakSanitizer</figcaption><pre data-lang="c"><code class="language-c">#include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
