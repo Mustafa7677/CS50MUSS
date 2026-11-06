@@ -1433,6 +1433,9 @@
           <span class="cm-prog"><i style="width:${pct}%"></i></span><span class="cm-n">${read}/${c.total}</span></a>`;
       }).join("");
       menu.innerHTML = `<div class="cm-head">Академиялар</div>${rows}
+        <div class="cm-head cm-head2">Терең информатика және емтихан дайындығы</div>
+        <div class="cm-acad">${[["academy/index.html", "CS Universe", "Информатика: Негізден Senior-ға", "#2f7d68"], ["academy/labs/index.html", "CS зертханалары", "BFS, Дейкстра, Python, желі, ДҚ", "#173e35"], ["academy/ielts/index.html", "IELTS", "Төрт дағды, толық сынақтар", "#733c3c"], ["academy/sat/index.html", "Digital SAT", "Math, R&W, емтихан тренажері", "#8a6a2f"], ["academy/study.html", "Менің оқуым", "Меңгеру, қателер, қайталау", "#56627a"]]
+          .map(([h, n, d, c]) => `<a class="cm-ac" href="${ROOT_URL + h}" style="--c:${c}"><span class="cm-dot" aria-hidden="true"></span><span class="cm-txt"><b>${n}</b><small>${d}</small></span></a>`).join("")}</div>
         <a class="cm-all" href="${ROOT_URL}courses.html">Барлық курстар және оқу жолы →</a>
         <div class="cm-site"><a href="${ROOT_URL}practice.html">Жаттығу</a><a href="${ROOT_URL}playground.html">Сынақ алаңы</a><a href="${ROOT_URL}glossary.html">Сөздік</a><a href="${ROOT_URL}map.html">CS50x картасы</a><a href="${ROOT_URL}cheatsheet.html">Шпаргалка</a><a href="${ROOT_URL}profile.html">Профиль</a></div>`;
       document.body.appendChild(menu);
