@@ -19,7 +19,7 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await expect(page.locator(".ax17")).toHaveCount(0);  // тесттерде кіріспе «көрілген» (helpers.js)
   await expect(page.locator("#scene-2")).not.toHaveClass(/is-on/);
   await expect(page.locator("#academies")).not.toHaveClass(/is-on/);
-  await expect(page.locator(".st-s1 h1")).toHaveText("Бір шаңырақ үш академия");
+  await expect(page.locator(".st-s1 h1")).toHaveText("Бір шаңырақ алты академия");
   // скролл сахнаны тек бастайды: экранға кіргенде is-on, анимация өздігінен соңына дейін ойналады
   await page.locator("#scene-2").scrollIntoViewIfNeeded();
   await expect(page.locator("#scene-2")).toHaveClass(/is-on/);
@@ -27,12 +27,11 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await page.locator("#academies").scrollIntoViewIfNeeded();
   await expect(page.locator("#academies")).toHaveClass(/is-on/);
   await page.locator("#academies .ac-grid").scrollIntoViewIfNeeded();
-  await expect(page.locator(".ac-card")).toHaveCount(3);
-  await expect(page.locator(".ac-card.is-open")).toHaveCount(3, { timeout: 8000 });
-  await expect(page.locator(".ac-card").nth(2)).toHaveCSS("opacity", "1", { timeout: 6000 });
-  expect(await page.locator(".ac-card").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["programming.html", "en/", "math/"]);
-  // шаңырақ ішіндегі үш бөлме: CS Universe, IELTS, Digital SAT және ортақ «Менің оқуым»
-  expect(await page.locator(".ac-more .ac2").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["academy/index.html", "academy/ielts/index.html", "academy/sat/index.html"]);
+  // алты қақпа: үш негізгі академия + CS Universe, IELTS, Digital SAT
+  await expect(page.locator(".ac-card")).toHaveCount(6);
+  await expect(page.locator(".ac-card.is-open")).toHaveCount(6, { timeout: 10000 });
+  await expect(page.locator(".ac-card").nth(5)).toHaveCSS("opacity", "1", { timeout: 8000 });
+  expect(await page.locator(".ac-card").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["programming.html", "en/", "math/", "academy/index.html", "academy/ielts/index.html", "academy/sat/index.html"]);
   await expect(page.locator('.ac-more-f a[href="academy/study.html"]')).toHaveCount(1);
   await expect(page.locator('.ac-card[href="programming.html"] .ac-facts')).toContainText(`${S.by_course.x.lect + CODE.slice(1).reduce((n, c) => n + S.by_course[c].lect, 0)} лекция`);
   // Дизайн 6.0: мультфильм кейіпкері жоқ; сахна деректі фильмдегідей ара-жазумен (intertitle) сөйлейді
