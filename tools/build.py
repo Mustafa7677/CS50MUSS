@@ -19,6 +19,7 @@
 """
 import html
 import json
+import os
 import re
 import sys
 from pathlib import Path
@@ -500,7 +501,7 @@ def footer_block(p):
         f'      <div class="ft-brand"><a class="ft-logo" href="{p}index.html"><img src="{p}assets/img/seal.svg" alt="" width="52" height="52">'
         '<span><b>AO</b>17</span></a>'
         '<p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>\n'
-        + "      " + col("Академиялар", [("academy/index.html", "CS Universe"), ("programming.html", "Бағдарламалау"), ("en/", "English Academy"), ("en/skills.html", "Ағылшын: дағдылар"), ("math/", "Математика")])
+        + "      " + col("Академиялар", [("academy/index.html", "CS Universe"), ("programming.html", "Бағдарламалау"), ("en/", "English Academy"), ("en/skills.html", "Ағылшын: дағдылар"), ("math/", "Математика"), ("academy/ielts/index.html", "IELTS"), ("academy/sat/index.html", "Digital SAT"), ("academy/labs/index.html", "CS зертханалары"), ("academy/study.html", "Менің оқуым")])
         + col("Оқу", [("index.html#main", "Лекциялар"), ("courses.html", "Барлық курстар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік"), ("exam.html", "Қорытынды емтихан")])
         + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("games.html", "Ойындар"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы"), ("projects.html", "Жобалар шеберханасы")])
         + col("Жоба", [("about.html", "Курс туралы"), ("alash.html", "Алаш тұлғалары"), ("posters.html", "Афиша: постер мен фильм"), ("certificate.html", "Сертификат"), ("login.html", "Кіру: оқушы мен мұғалім"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің кабинетім"), ("partners.html", "Серіктестерге"), ("metrics.html", "Ашық метрикалар")])
@@ -944,6 +945,9 @@ def write_inventory():
 
 
 def main():
+    # AO17 интерактивті модельдері курс лекцияларына - ЕҢ АЛДЫМЕН, іздеу индексі мен лекция деректері соңғы мәтіннен жасалуы үшін
+    import viz_links  # tools/viz_links.py
+    viz_links.apply()
     global STATS, FLAT
     STATS = compute_stats()
     FLAT = flat_stats(STATS)
@@ -1038,6 +1042,9 @@ def main():
     # AO17 CS Universe: тексеру + беттерді жасау (tools/academy_build.py), сосын жалпы бас/нав/футер
     import academy_build
     academy_pages = academy_build.build()
+    # IELTS, Digital SAT және CS зертханалары: қолмен жазылған беттер (academy/<бөлім>/*.html), жалпы бас/нав/футер осы жерде
+    for sub in () if os.environ.get("AO17_SKIP_LABS") else ("ielts", "sat", "labs"):  # AO17_SKIP_LABS=1: бұл беттер әзірленіп жатқанда
+        academy_pages += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / "academy" / sub).glob("*.html"))
     for rel in academy_pages:
         process_page(ROOT / rel, "../" * rel.count("/"), "courses")
     for page, active in [("index.html", "index"), ("about.html", "about"),

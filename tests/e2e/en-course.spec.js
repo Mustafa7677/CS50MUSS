@@ -28,8 +28,8 @@ test("курс беті: ескерту, 24 карточка, дайын сан�
   await page.goto("en/index.html");
   await expect(page.locator("body")).toHaveAttribute("data-license", "B");
   await expect(page.locator(".course-pill .cp-label")).toHaveText("English");
-  await expect(page.locator("#ai-note")).toContainText("жасанды интеллект");
-  await expect(page.locator("#ai-note")).toContainText("мұғалім");
+  await expect(page.locator("#ai-note")).toContainText("Sagid Mustafa");   // 8b9ad58: ескерту авторлық туралы
+  await expect(page.locator("#ai-note")).toContainText("хабарлаңыз");
   await expect(page.locator("#ai-note")).toContainText("шамамен");
   await expect(page.locator("#ai-note")).toContainText("болжамды");
   await expect(page.locator(".week-card")).toHaveCount(24);

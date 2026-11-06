@@ -447,7 +447,7 @@ window.CS50KZ_COURSE_LECTURES["cpp"] = [
     "id": "exercises"
    }
   ],
-  "minutes": 49,
+  "minutes": 50,
   "quiz": 8,
   "tasks": 3,
   "task": "exercises"

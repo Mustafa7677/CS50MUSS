@@ -37,7 +37,9 @@ TOOLS = {"practice.html": "task", "exam.html": "test", "flashcards.html": "task"
          "detective.html": "game", "debug.html": "task", "playground.html": "task", "glossary.html": "page",
          "cheatsheet.html": "page", "viz.html": "page", "flask.html": "task"}
 PROJECTS = {"projects.html": "task"}
-ACADEMY_PUBLIC = {"academy/index.html", "academy/map.html"}
+ACADEMY_PUBLIC = {"academy/index.html", "academy/map.html", "academy/models.html", "academy/study.html"}
+# IELTS, Digital SAT және CS зертханалары - ашық жаттығу орталары (деректері браузерде): жария
+ACADEMY_PUBLIC_DIRS = ("academy/tracks/", "academy/ielts/", "academy/sat/", "academy/labs/")
 # Курстың ішкі беттерінің түрі (атауы бойынша)
 SUB_KIND = {"exam": "test", "ubt": "test", "placement": "test", "practice": "task", "vocab": "task",
             "grammar": "task", "phrasebank": "task", "skills": "task"}
@@ -58,7 +60,8 @@ def page_rule(rel):
     if len(parts) == 2 and parts[0] in COURSES and parts[1].endswith(".html") and parts[1] != "index.html":
         return parts[0], SUB_KIND.get(parts[1][:-5], "page")
     # AO17 CS Universe: каталог (index) мен білім картасы жария; сабақтар мен зертхана - жабық, курс «academy»
-    if parts[0] == "academy" and rel.endswith(".html") and rel not in ACADEMY_PUBLIC:
+    # Бағыт беттері (academy/tracks/*) - каталог, сондықтан жария
+    if parts[0] == "academy" and rel.endswith(".html") and rel not in ACADEMY_PUBLIC and not rel.startswith(ACADEMY_PUBLIC_DIRS):
         return "academy", "task" if parts[-1] == "lab.html" else "lecture"
     if rel in TOOLS:
         return "tools", TOOLS[rel]
@@ -209,12 +212,22 @@ def _req(method, url, key, body=None, ctype="application/json", extra=None):
         h["Authorization"] = "Bearer " + key
     h.update(extra or {})
     data = body if isinstance(body, (bytes, type(None))) else json.dumps(body).encode()
-    r = urllib.request.Request(url, data=data, method=method, headers=h)
-    try:
-        with urllib.request.urlopen(r, timeout=60) as res:
-            return res.status, res.read()
-    except urllib.error.HTTPError as e:
-        raise SystemExit(f"{method} {url.split('?')[0]} -> {e.code}: {e.read()[:300].decode('utf-8', 'replace')}")
+    import time
+    for attempt in range(4):   # 5xx (мысалы Cloudflare 520) және желі үзілісі - уақытша: 2, 4, 8 с кейін қайталау
+        r = urllib.request.Request(url, data=data, method=method, headers=h)
+        try:
+            with urllib.request.urlopen(r, timeout=60) as res:
+                return res.status, res.read()
+        except urllib.error.HTTPError as e:
+            if e.code >= 500 and attempt < 3:
+                time.sleep(2 ** (attempt + 1))
+                continue
+            raise SystemExit(f"{method} {url.split('?')[0]} -> {e.code}: {e.read()[:300].decode('utf-8', 'replace')}")
+        except (urllib.error.URLError, TimeoutError) as e:
+            if attempt < 3:
+                time.sleep(2 ** (attempt + 1))
+                continue
+            raise SystemExit(f"{method} {url.split('?')[0]} -> желі қатесі: {e}")
 
 
 def _key_role(key):

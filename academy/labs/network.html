@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<!-- © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. -->
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Желі пакеттері зертханасы - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="Желі пакеттері зертханасы - AO17">
+  <meta property="og:description" content="Желі пакеттері зертханасы: инкапсуляция қабаттары, маршруттау кестесі мен ең ұзын префикс, TTL, TCP қол алысуы, seq/ack, жоғалту мен қайта жіберу, DNS - қадамдап көріп, болжап, көмексіз тексеру.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/labs/network.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/labs/network.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"Желі пакеттері зертханасы - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/labs/network.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="Желі пакеттері зертханасы: инкапсуляция қабаттары, маршруттау кестесі мен ең ұзын префикс, TTL, TCP қол алысуы, seq/ack, жоғалту мен қайта жіберу, DNS - қадамдап көріп, болжап, көмексіз тексеру.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../assets/css/cslab.css">
+  <link rel="stylesheet" href="../../assets/css/cslab-b.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/ao-tutor.js" defer></script>
+  <script src="../../assets/js/cslab-b-common.js" defer></script>
+  <script src="../../assets/js/cslab-net.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <main class="content cslab-page csb-page" id="main">
+    <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="index.html">Зертханалар</a> / Желі пакеттері</p>
+    <header class="lab-hero">
+      <p class="lab-kicker">Жүйелік инженерия · желілер</p>
+      <h1>Желі пакеттері зертханасы</h1>
+      <p>Браузерде сілтемені бастыңыз - бір секундтан аз уақытта сұрау бірнеше маршрутизатор арқылы басқа қаладағы серверге жетіп, жауап қайтады. Жолда хабар «конвертке» оралады, әр маршрутизатор кестесіне қарап бағыт таңдайды, жоғалған бөлік қайта жіберіледі. Осының бәрін қадамдап көреміз және әр шешімді алдын ала болжаймыз.</p>
+      <p class="lab-honest">Бұл - оқу моделі: адрестер құжаттамаға арналған мысал адрестер (10.x, 192.168.x, 203.0.113.x, 198.51.100.x), тақырыптардың тек негізгі өрістері көрсетілген. TCP бөлімінде тығыздықты басқару (congestion control), терезе өлшемі мен RTO-ның екі есе өсуі модельде жоқ - бұл айтылған жерінде белгіленеді. Барлық сан (байт, TTL, seq/ack, префикс сәйкестігі) браузерде нақты есептеледі.</p>
+      <p class="lab-row"><span data-badge="cs.net.encap" data-title="Инкапсуляция"></span> <span data-badge="cs.net.route" data-title="Маршруттау"></span> <span data-badge="cs.net.tcp" data-title="TCP seq/ack"></span></p>
+    </header>
+
+    <section class="lab" data-cslab="encap" aria-labelledby="h-encap">
+      <h2 id="h-encap">1. Инкапсуляция: хабар қабаттар арқылы төмен түсіп, қайта көтеріледі</h2>
+      <p class="lab-goal"><b>Мақсат:</b> әр қабат өз тақырыбын (header) қосатынын, маршрутизатор тек 3-қабатқа дейін ашатынын және жолда MAC-адрестер мен TTL өзгеріп, IP-адрестер мен порттар өзгермейтінін көру.</p>
+      <div class="lab-split">
+        <div>
+          <ol class="nw-path" aria-label="Құрылғылар жолы"></ol>
+          <div class="lab-board nw-board"><div class="nw-pdu" role="img"></div></div>
+          <p class="cs-small" data-k="size"></p>
+        </div>
+        <div>
+          <label class="cs-field"><span>Қолданбаның хабары (HTTP сұрауы)</span><input class="cs-in" data-k="msg" value="GET /index.html HTTP/1.1" maxlength="120" autocomplete="off"></label>
+          <ol class="nw-layers" aria-label="Қабаттар"></ol>
+          <div class="lab-row"><label class="cs-check"><input type="checkbox" data-k="predict"> Болжау режимі</label> <span class="cs-score"></span></div>
+          <div class="cs-ctl">
+            <button type="button" class="btn gold" data-c="play">▶ Ойнату</button>
+            <button type="button" class="btn secondary" data-c="pause">❚❚ Кідірту</button>
+            <button type="button" class="btn secondary" data-c="prev">← Алдыңғы</button>
+            <button type="button" class="btn secondary" data-c="next">Келесі →</button>
+            <button type="button" class="btn secondary" data-c="reset">↺ Басынан</button>
+            <label class="cs-field csb-speed"><span>Жылдамдық</span><select data-c="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+            <span class="cs-n" aria-label="Қадам нөмірі"></span>
+          </div>
+          <p class="cs-say" aria-live="polite"></p>
+          <div class="cs-ask csb-ask" hidden></div>
+          <div data-fb="pred" aria-live="polite"></div>
+        </div>
+      </div>
+      <p class="lab-note">Байқаңыз: R1 кадрды ашып, IP тақырыбын оқиды да, <b>жаңа</b> кадр құрады - MAC-адрестер ауысады, TTL бірге азаяды. Ал IP-адрестер (қайдан → қайда) мен TCP порттары жол бойы өзгермейді. NAT сияқты ерекше құрылғыларды бұл модель қарастырмайды.</p>
+    </section>
+
+    <section class="lab" data-cslab="route" aria-labelledby="h-route">
+      <h2 id="h-route">2. Маршруттау: ең ұзын префикс және TTL</h2>
+      <p class="lab-goal"><b>Мақсат:</b> маршрутизатор кестедегі <b>сәйкес келетін</b> жолдардың ішінен префиксі ең ұзынын (ең нақтысын) таңдайтынын, әр маршрутизатор TTL-ді 1-ге азайтатынын және TTL 0-ге жеткенде пакет тасталатынын (маршрут циклынан қорғаныс) көру.</p>
+      <div class="lab-split">
+        <div>
+          <div class="lab-board nw-topo"><svg viewBox="0 0 600 360" role="img" aria-label="Желі топологиясы" focusable="false"></svg></div>
+          <p class="cs-small" data-k="hops"></p>
+          <div class="nw-bits" data-k="bits" aria-label="Екілік салыстыру"></div>
+        </div>
+        <div>
+          <div class="cs-grid">
+            <label class="cs-field"><span>Қабылдаушы IP</span><select data-k="dst"></select></label>
+            <label class="cs-field"><span>Немесе өз адресіңіз</span><input class="cs-in" data-k="custom" placeholder="мысалы: 10.1.2.130" autocomplete="off" inputmode="decimal"></label>
+            <label class="cs-field"><span>Бастапқы TTL</span><select data-k="ttl"><option>1</option><option>2</option><option>3</option><option>4</option><option>8</option><option selected>64</option></select></label>
+          </div>
+          <div class="lab-row">
+            <label class="cs-check"><input type="checkbox" data-k="loop"> Қате баптау: R1 мен R2 10.1.2.0/24 үшін бір-біріне сілтейді</label>
+          </div>
+          <p class="nw-err" data-k="err" aria-live="polite"></p>
+          <div class="lab-row"><label class="cs-check"><input type="checkbox" data-k="predict"> Болжау режимі</label> <span class="cs-score"></span></div>
+          <div class="cs-ctl">
+            <button type="button" class="btn gold" data-c="play">▶ Ойнату</button>
+            <button type="button" class="btn secondary" data-c="pause">❚❚ Кідірту</button>
+            <button type="button" class="btn secondary" data-c="prev">← Алдыңғы</button>
+            <button type="button" class="btn secondary" data-c="next">Келесі →</button>
+            <button type="button" class="btn secondary" data-c="reset">↺ Басынан</button>
+            <label class="cs-field csb-speed"><span>Жылдамдық</span><select data-c="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+            <span class="cs-n" aria-label="Қадам нөмірі"></span>
+          </div>
+          <p class="cs-say" aria-live="polite"></p>
+          <div class="cs-ask csb-ask" hidden></div>
+          <div data-fb="pred" aria-live="polite"></div>
+          <p class="cs-h" data-k="tname">Маршруттау кестесі</p>
+          <div class="csb-scroll"><table class="csb-table nw-rt" data-k="rt"></table></div>
+        </div>
+      </div>
+      <p class="lab-note">Ереже: <b>сәйкес келу</b> - адрестің алғашқы /n биті префикстің алғашқы n битімен бірдей. Бірнеше жол сәйкес келсе, n ең үлкені жеңеді. 0.0.0.0/0 (әдепкі маршрут) кез келген адреске сәйкес келеді, бірақ префиксі ең қысқа - сондықтан басқа ешнәрсе сәйкес келмегенде ғана қолданылады. «Қате баптау» белгісін қосып, 10.1.2.77-ге жіберіп көріңіз: пакет R1 мен R2 арасында айналып, TTL таусылғанда тасталады.</p>
+    </section>
+
+    <section class="lab" data-cslab="tcp" aria-labelledby="h-tcp">
+      <h2 id="h-tcp">3. TCP: қол алысу, seq/ack, жоғалту және қайта жіберу</h2>
+      <p class="lab-goal"><b>Мақсат:</b> ack нөмірі - «келесі күтілетін байт» екенін, жиынтық (cumulative) ack саңылаудан секіре алмайтынын, сондықтан қайталанған ACK пайда болатынын және жоғалған сегментті уақыт шегі (RTO) не үш қайталанған ACK (жылдам қайта жіберу) қалай қалпына келтіретінін көру.</p>
+      <div class="lab-split">
+        <div>
+          <div class="lab-board nw-seq"><svg role="img" aria-label="TCP хабарларының уақыт диаграммасы" focusable="false"></svg></div>
+          <p class="cs-small">Уақыт жоғарыдан төмен ағады. Сол жақ - клиент, оң жақ - сервер. Көлбеу сызық - желідегі сегмент (бір жол 3 уақыт бірлігі жүреді). ✕ - жоғалған сегмент.</p>
+        </div>
+        <div>
+          <div class="cs-grid">
+            <label class="cs-field"><span>Деректер сегменттері (әрқайсысы 100 байт)</span><select data-k="n"><option>3</option><option>4</option><option selected>5</option><option>6</option></select></label>
+            <label class="cs-field"><span>Жоғалатын сегмент</span><select data-k="lost"></select></label>
+          </div>
+          <div class="lab-row"><label class="cs-check"><input type="checkbox" data-k="fr" checked> Жылдам қайта жіберу (3 қайталанған ACK)</label></div>
+          <div class="lab-row"><label class="cs-check"><input type="checkbox" data-k="predict"> Болжау режимі</label> <span class="cs-score"></span></div>
+          <div class="cs-ctl">
+            <button type="button" class="btn gold" data-c="play">▶ Ойнату</button>
+            <button type="button" class="btn secondary" data-c="pause">❚❚ Кідірту</button>
+            <button type="button" class="btn secondary" data-c="prev">← Алдыңғы</button>
+            <button type="button" class="btn secondary" data-c="next">Келесі →</button>
+            <button type="button" class="btn secondary" data-c="reset">↺ Басынан</button>
+            <label class="cs-field csb-speed"><span>Жылдамдық</span><select data-c="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+            <span class="cs-n" aria-label="Қадам нөмірі"></span>
+          </div>
+          <p class="cs-say" aria-live="polite"></p>
+          <div class="cs-ask csb-ask" hidden></div>
+          <div data-fb="pred" aria-live="polite"></div>
+          <dl class="cs-kv" data-k="state"></dl>
+        </div>
+      </div>
+      <p class="lab-note">Модельдің келісімі: клиент ISN = 4000, сервер ISN = 9000; терезе барлық сегментті бірден жіберуге жетеді; RTO = 16 уақыт бірлігі, жаңа деректі растайтын ACK келгенде таймер қайта басталады (RFC 6298 бойынша); сервер ретсіз келген сегменттерді буферде сақтайды. Клиент тек ең ескі расталмаған сегментті қайта жібереді.</p>
+    </section>
+
+    <section class="lab" data-cslab="dns" aria-labelledby="h-dns">
+      <h2 id="h-dns">4. Қосымша: DNS - атаудан IP-адреске</h2>
+      <p class="lab-goal"><b>Мақсат:</b> рекурсивті резолвер түбір → TLD → авторитетті серверден кезекпен сұрайтынын (итеративті сұраулар) және жауап кэште TTL уақытына сақталатынын көру.</p>
+      <div class="lab-split">
+        <div>
+          <div class="lab-board nw-seq nw-dns"><svg role="img" aria-label="DNS сұрауларының диаграммасы" focusable="false"></svg></div>
+          <p class="cs-small">Мысал атау <b>lab.ao17.example</b>: .example - құжаттамаға арналған резервтелген домен (RFC 2606), адрес 192.0.2.17 - мысал адрес.</p>
+        </div>
+        <div>
+          <div class="lab-row"><label class="cs-check"><input type="checkbox" data-k="warm"> Резолвердің кэшінде жауап бар (5 минут бұрын біреу сұраған)</label></div>
+          <div class="lab-row"><label class="cs-check"><input type="checkbox" data-k="predict"> Болжау режимі</label> <span class="cs-score"></span></div>
+          <div class="cs-ctl">
+            <button type="button" class="btn gold" data-c="play">▶ Ойнату</button>
+            <button type="button" class="btn secondary" data-c="pause">❚❚ Кідірту</button>
+            <button type="button" class="btn secondary" data-c="prev">← Алдыңғы</button>
+            <button type="button" class="btn secondary" data-c="next">Келесі →</button>
+            <button type="button" class="btn secondary" data-c="reset">↺ Басынан</button>
+            <label class="cs-field csb-speed"><span>Жылдамдық</span><select data-c="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+            <span class="cs-n" aria-label="Қадам нөмірі"></span>
+          </div>
+          <p class="cs-say" aria-live="polite"></p>
+          <div class="cs-ask csb-ask" hidden></div>
+          <div data-fb="pred" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab" data-cslab="net-task" aria-labelledby="h-ntask">
+      <h2 id="h-ntask">5. Тексеру: жаңа есеп, көмексіз</h2>
+      <p class="lab-goal"><b>Мақсат:</b> анимациясыз шешу. Әр жолы есеп кездейсоқ құрылады; жауап нақты есептеуден (ең ұзын префикс, TCP қабылдаушы моделі, маршрут симуляциясы) шығады, қате болса - қай ұғым шатасқаны айтылады.</p>
+      <div class="lab-task">
+        <label class="cs-field"><span>Тапсырма түрі</span><select data-k="kind"><option value="lpm">Маршруттау кестесі: қай интерфейс?</option><option value="ack">TCP: келесі ack нөмірі</option><option value="diag">Диагноз: traceroute не көрсетеді?</option></select></label>
+        <div data-k="q" class="nw-q"></div>
+        <div data-k="ansbox"></div>
+        <div class="lab-row">
+          <button type="button" class="btn gold" data-c="check">Тексеру</button>
+          <button type="button" class="btn secondary" data-c="new">Жаңа есеп</button>
+        </div>
+        <div data-fb="task" aria-live="polite"></div>
+        <div data-k="hints"></div>
+      </div>
+    </section>
+
+    <section class="lab" aria-labelledby="h-key">
+      <h2 id="h-key">Түйін</h2>
+      <ul>
+        <li><b>Инкапсуляция:</b> деректер → TCP сегменті (порттар, seq/ack) → IP пакеті (адрестер, TTL) → кадр (MAC-адрестер, FCS) → биттер. Қабылдаушы оларды кері ретпен ашады.</li>
+        <li><b>Маршрутизатор</b> 3-қабатқа дейін ашады: IP-адрестерді өзгертпейді, TTL-ді азайтып, әр арнаға жаңа кадр (жаңа MAC-адрестер) құрады.</li>
+        <li><b>Ең ұзын префикс:</b> сәйкес келетін жолдардың ең нақтысы жеңеді; 0.0.0.0/0 - соңғы амал.</li>
+        <li><b>TTL</b> - пакеттің «өмір мерзімі»: әр маршрутизатор 1-ге азайтады, 0 болғанда тастап, жіберушіге ICMP Time Exceeded хабарын қайтарады. traceroute дәл осыны пайдаланады.</li>
+        <li><b>TCP ack</b> = келесі күтілетін байт. Саңылау болса, ack бір орында тұрады (қайталанған ACK); 3 қайталанған ACK - жылдам қайта жіберу, әйтпесе RTO күтіледі.</li>
+      </ul>
+      <p class="cs-small">Бастапқы модель (қол алысу мен stop-and-wait): <a href="../models.html#v-tcp">Интерактивті модельдер: TCP байланысы</a>. Барлық зертханалар: <a href="index.html">CS Universe зертханалары</a>.</p>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li><li><a href="../../academy/ielts/index.html">IELTS</a></li><li><a href="../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

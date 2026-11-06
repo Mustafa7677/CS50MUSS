@@ -31,6 +31,9 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await expect(page.locator(".ac-card.is-open")).toHaveCount(3, { timeout: 8000 });
   await expect(page.locator(".ac-card").nth(2)).toHaveCSS("opacity", "1", { timeout: 6000 });
   expect(await page.locator(".ac-card").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["programming.html", "en/", "math/"]);
+  // шаңырақ ішіндегі үш бөлме: CS Universe, IELTS, Digital SAT және ортақ «Менің оқуым»
+  expect(await page.locator(".ac-more .ac2").evaluateAll((as) => as.map((a) => a.getAttribute("href")))).toEqual(["academy/index.html", "academy/ielts/index.html", "academy/sat/index.html"]);
+  await expect(page.locator('.ac-more-f a[href="academy/study.html"]')).toHaveCount(1);
   await expect(page.locator('.ac-card[href="programming.html"] .ac-facts')).toContainText(`${S.by_course.x.lect + CODE.slice(1).reduce((n, c) => n + S.by_course[c].lect, 0)} лекция`);
   // Дизайн 6.0: мультфильм кейіпкері жоқ; сахна деректі фильмдегідей ара-жазумен (intertitle) сөйлейді
   await expect(page.locator(".st-s3 .st-intertitle")).toHaveText("Қай қақпаны ашасыз?");
@@ -158,5 +161,6 @@ test("мәзір мен витрина: курстар үш академия б�
   await expect(page.locator(".course-menu .cm-sep")).toHaveCount(3);
   expect(await page.locator(".course-menu .cm-sep").evaluateAll((as) => as.map((a) => a.getAttribute("href").replace(/^https?:\/\/[^/]+\//, "")))).toEqual(["programming.html", "en/", "math/"]);
   await expect(page.locator(".course-menu .cm-row")).toHaveCount(9);
+  expect(await page.locator(".course-menu .cm-ac").evaluateAll((as) => as.map((a) => a.getAttribute("href").replace(/^https?:\/\/[^/]+\//, "")))).toEqual(["academy/index.html", "academy/labs/index.html", "academy/ielts/index.html", "academy/sat/index.html", "academy/study.html"]);
   await expect(page.locator('.footer .ft-col h4:text-is("Академиялар")')).toHaveCount(1);
 });

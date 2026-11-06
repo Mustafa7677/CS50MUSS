@@ -106,7 +106,7 @@ window.CS50KZ_LECTURES = [
     "id": "limits"
    }
   ],
-  "minutes": 60,
+  "minutes": 61,
   "quiz": 7,
   "tasks": 5,
   "task": "practice"
@@ -198,7 +198,7 @@ window.CS50KZ_LECTURES = [
     "id": "merge-sort"
    }
   ],
-  "minutes": 43,
+  "minutes": 44,
   "quiz": 7,
   "tasks": 4,
   "task": "practice"
@@ -310,7 +310,7 @@ window.CS50KZ_LECTURES = [
     "id": "sweetgreen"
    }
   ],
-  "minutes": 42,
+  "minutes": 44,
   "quiz": 7,
   "tasks": 2,
   "task": "practice"

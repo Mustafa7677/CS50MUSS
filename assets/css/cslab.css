@@ -1,0 +1,144 @@
+/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* CS Universe зертханалары (academy/labs/): граф, Python орындалуы, екілік іздеу. Жаңа стиль емес - тек academy.css пен
+   ao-labs.css токендері (--ac-*, --lab-*, --text, --muted, --border, --surface, --mono). Ашық/қараңғы режим токендермен ауысады. */
+.cslab-page { max-width: 1060px; margin: 0 auto; }
+.cslab-page .lab-hero h1 { max-width: 24ch; }
+.cs-h { font: 700 17px/1.3 var(--ac-serif); color: var(--ac-green); margin: 14px 0 6px; }
+.cs-small { font-size: 13.5px; color: var(--muted); margin: 6px 0; line-height: 1.5; }
+.cs-field { display: grid; gap: 4px; font-size: 14px; }
+.cs-field > span { color: var(--muted); }
+.cs-field select, .cs-field input, .cs-in { padding: 8px 10px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font: 15px/1.3 var(--font); min-width: 0; }
+.cs-in { font-family: var(--mono); width: 100%; max-width: 420px; }
+.cs-field select:focus-visible, .cs-in:focus-visible, .cs-field input:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+.cs-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+.cs-toggle { display: inline-flex; border: 1.5px solid var(--border); border-radius: 999px; overflow: hidden; }
+.cs-toggle button { border: 0; background: var(--surface); color: var(--text); padding: 8px 14px; font: 600 14px/1.2 var(--font); cursor: pointer; }
+.cs-toggle button[aria-pressed=true] { background: var(--ac-green); color: var(--surface); }
+.cs-toggle button:focus-visible { outline: 2px solid var(--accent); outline-offset: -3px; }
+.cs-check { display: inline-flex; gap: 8px; align-items: center; font-size: 14.5px; cursor: pointer; }
+.cs-check input { width: 18px; height: 18px; accent-color: var(--ac-green); }
+.cs-ctl { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin: 10px 0; }
+.cs-ctl .btn { padding: 8px 12px; font-size: 14px; }
+.cs-ctl .btn:disabled { opacity: .5; cursor: default; }
+.cs-n { font: 13px var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.cs-say { margin: 10px 0 0; padding: 10px 14px; border-radius: 10px; border-left: 3px solid var(--ac-gold-soft); background: color-mix(in srgb, var(--ac-gold-soft) 14%, var(--surface)); font-size: 15px; line-height: 1.6; min-height: 3.2em; }
+.cs-say b { color: var(--ac-burg); }
+.cs-ask { margin: 10px 0 0; padding: 8px 12px; border-radius: 10px; border: 1.5px dashed var(--ac-gold-soft); font-size: 14.5px; }
+.cs-ask[hidden] { display: none; }
+
+/* ---------- граф тақтасы ---------- */
+.cg-board { aspect-ratio: 3 / 2; }
+.cg-board svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.cg-board .cg-e { stroke: var(--lab-chalk2); stroke-width: 2.5; opacity: .55; }
+.cg-board .cg-e.tree { stroke: var(--lab-gold); stroke-width: 5; opacity: 1; }
+.cg-board .cg-e.hot { stroke: var(--lab-chalk); opacity: .95; stroke-dasharray: 8 6; }
+.cg-board .cg-lab { font: 600 17px var(--mono); fill: var(--lab-chalk2); }
+.cg-board .cg-lab.on { fill: var(--lab-gold); }
+.cg-node { position: absolute; width: max(30px, 8.6%); aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; border: 2px solid var(--lab-chalk2); background: var(--lab-night2); color: var(--lab-chalk); font: 700 clamp(13px, 2.6vw, 19px)/1 var(--ac-serif); display: grid; place-items: center; padding: 0; cursor: pointer; transition: background .25s, border-color .25s, box-shadow .25s; }
+button.cg-node:hover { border-color: var(--lab-chalk); }
+.cg-node:focus-visible { outline: 3px solid var(--lab-chalk); outline-offset: 3px; }
+.cg-node.front { border: 2.5px dashed var(--lab-gold); }
+.cg-node.vis { background: var(--lab-chalk); color: var(--lab-night); border-color: var(--lab-chalk); }
+.cg-node.cur { background: var(--lab-gold); color: var(--lab-night); border-color: var(--lab-gold); box-shadow: 0 0 0 5px color-mix(in srgb, var(--lab-gold) 35%, transparent); }
+.cg-node.sel { box-shadow: 0 0 0 4px var(--lab-chalk); }
+.cg-node.right { box-shadow: 0 0 0 5px color-mix(in srgb, var(--lab-gold) 60%, transparent); }
+.cg-node.wrong { box-shadow: 0 0 0 5px rgba(255, 138, 128, .75); }
+.cg-legend { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: 13px; color: var(--muted); margin: 8px 0 0; padding: 0; list-style: none; }
+.cg-legend i { display: inline-block; width: 14px; height: 14px; border-radius: 50%; vertical-align: -2px; margin-right: 5px; border: 2px solid var(--lab-chalk2); background: var(--lab-night2); }
+.cg-legend i.front { border: 2px dashed var(--lab-gold); }
+.cg-legend i.vis { background: var(--lab-chalk); border-color: var(--lab-night2); }
+.cg-legend i.cur { background: var(--lab-gold); border-color: var(--lab-gold); }
+.cg-legend i.tree { border-radius: 2px; height: 4px; width: 18px; border: 0; background: var(--lab-gold); vertical-align: 3px; }
+.cg-edit { margin-top: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; }
+.cg-edit[hidden] { display: none; }
+.cg-edges { font: 13.5px/1.6 var(--mono); color: var(--muted); margin: 8px 0 0; overflow-wrap: anywhere; }
+
+/* кезек / стек жолағы */
+.cs-strip { display: flex; align-items: stretch; gap: 8px; margin: 8px 0 0; font-size: 12.5px; color: var(--muted); }
+.cs-strip > span { align-self: center; white-space: nowrap; }
+.cs-cells { display: flex; flex-wrap: wrap; gap: 4px; min-height: 38px; padding: 4px; border: 1.5px solid color-mix(in srgb, var(--ac-green) 40%, var(--border)); border-radius: 8px; flex: 1; min-width: 0; align-items: center; }
+.cs-cells b { min-width: 30px; height: 28px; display: inline-grid; place-items: center; padding: 0 6px; border-radius: 6px; border: 1px solid var(--border); background: color-mix(in srgb, var(--ac-green) 8%, var(--surface)); color: var(--text); font: 700 15px var(--mono); }
+.cs-cells b.end { border-color: var(--ac-gold); box-shadow: inset 0 0 0 1px var(--ac-gold); }
+.cs-cells b.dead { opacity: .5; text-decoration: line-through; }
+.cs-cells em { font-style: normal; color: var(--muted); padding: 0 6px; }
+.cs-kv { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 4px 10px; font-size: 14px; margin: 10px 0 0; }
+.cs-kv dt { color: var(--muted); }
+.cs-kv dd { margin: 0; font-family: var(--mono); overflow-wrap: anywhere; }
+.cs-score { font-size: 13.5px; color: var(--muted); }
+
+/* ---------- Python визуализаторы ---------- */
+.py-ed { display: grid; grid-template-columns: auto minmax(0, 1fr); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; background: var(--surface); }
+.py-gut { margin: 0; padding: 10px 8px 10px 10px; text-align: right; color: var(--muted); font: 14px/1.6 var(--mono); user-select: none; border-right: 1px solid var(--border); background: color-mix(in srgb, var(--ac-gold-soft) 10%, var(--surface)); overflow: hidden; }
+.py-gut span { display: block; }
+.py-gut span.err { color: var(--ac-bad); font-weight: 700; }
+.py-ta { border: 0; margin: 0; padding: 10px 12px; min-height: 300px; resize: vertical; background: transparent; color: var(--text); font: 14px/1.6 var(--mono); white-space: pre; overflow: auto; tab-size: 4; }
+.py-ta:focus { outline: none; }
+.py-ed:focus-within { outline: 2px solid color-mix(in srgb, var(--ac-green) 55%, transparent); }
+.py-code { list-style: none; margin: 0; padding: 8px 0; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); font: 14px/1.6 var(--mono); counter-reset: ln; overflow-x: auto; }
+.py-code li { counter-increment: ln; display: grid; grid-template-columns: 2.2em 1.6em minmax(0, 1fr); align-items: start; padding: 0 10px 0 0; border-left: 4px solid transparent; }
+.py-code li::before { content: counter(ln); color: var(--muted); text-align: right; padding-right: 6px; }
+.py-code li .mk { font: 700 12px/1.6 var(--font); color: var(--muted); white-space: nowrap; }
+.py-code li code { white-space: pre; font: inherit; background: none; padding: 0; color: inherit; }
+.py-code li.next { background: color-mix(in srgb, var(--ac-gold) 16%, transparent); border-left-color: var(--ac-gold); }
+.py-code li.next .mk { color: var(--ac-gold); }
+.py-code li.prev { background: color-mix(in srgb, var(--ac-green) 8%, transparent); }
+.py-code li.prev .mk { color: var(--ac-green); }
+.py-code li.err { background: color-mix(in srgb, var(--ac-bad) 14%, transparent); border-left-color: var(--ac-bad); }
+.py-code li.err .mk { color: var(--ac-bad); }
+.py-frames { display: grid; gap: 8px; }
+.py-frame { border: 1px solid var(--border); border-radius: 10px; padding: 8px 10px; background: var(--surface); }
+.py-frame.cur { border-color: var(--ac-gold); box-shadow: inset 4px 0 0 var(--ac-gold); }
+.py-frame h4 { margin: 0 0 6px; font: 700 14.5px/1.3 var(--ac-serif); color: var(--ac-green); }
+.py-frame h4 small { font: 12px var(--font); color: var(--muted); margin-left: 6px; }
+.py-vars { width: 100%; border-collapse: collapse; font: 13.5px/1.45 var(--mono); table-layout: fixed; }
+.py-vars th { text-align: left; font-weight: 600; width: 34%; padding: 3px 6px; vertical-align: top; overflow-wrap: anywhere; }
+.py-vars td { padding: 3px 6px; overflow-wrap: anywhere; }
+.py-vars tr { border-top: 1px solid var(--border); }
+.py-vars tr.ch { background: color-mix(in srgb, var(--ac-gold) 20%, transparent); }
+.py-vars tr.ch th::after { content: " ●"; color: var(--ac-gold); font-size: 10px; }
+.py-ref { display: inline-block; margin-left: 6px; padding: 0 6px; border-radius: 999px; border: 1px solid var(--ac-gold-soft); color: var(--ac-burg); font-size: 11.5px; }
+.py-out { margin: 0; min-height: 3.2em; max-height: 220px; overflow: auto; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border); background: color-mix(in srgb, var(--ac-green) 5%, var(--surface)); font: 14px/1.55 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.py-status { font-size: 14px; color: var(--muted); margin: 6px 0 0; }
+.py-status.bad { color: var(--ac-bad); }
+.py-err { margin: 10px 0 0; padding: 10px 14px; border-radius: 10px; border: 1px solid var(--ac-bad); box-shadow: inset 4px 0 0 var(--ac-bad); font-size: 14.5px; line-height: 1.55; }
+.py-err[hidden] { display: none; }
+.py-err b { color: var(--ac-bad); font-family: var(--ac-serif); }
+.py-err p { margin: 4px 0 0; }
+
+/* ---------- екілік іздеу ---------- */
+.bs-arr { display: grid; grid-template-columns: repeat(var(--n, 15), minmax(0, 1fr)); gap: 3px; padding: 22px 12px 10px; }
+.bs-cell { display: grid; gap: 2px; justify-items: center; }
+.bs-cell b { width: 100%; aspect-ratio: 1 / 1.15; display: grid; place-items: center; border-radius: 6px; border: 1.5px solid var(--lab-chalk2); background: var(--lab-night2); color: var(--lab-chalk); font: 700 clamp(10px, 2.3vw, 17px)/1 var(--mono); transition: opacity .3s, background .3s; }
+.bs-cell small { font: clamp(9px, 1.8vw, 12px)/1 var(--mono); color: var(--lab-chalk2); }
+.bs-cell.out b { opacity: .28; border-style: dashed; }
+.bs-cell.mid b { background: var(--lab-gold); color: var(--lab-night); border-color: var(--lab-gold); }
+.bs-cell.hit b { background: var(--lab-chalk); color: var(--lab-night); border-color: var(--lab-chalk); }
+.bs-ptr { display: grid; grid-template-columns: repeat(var(--n, 15), minmax(0, 1fr)); gap: 3px; padding: 0 12px 14px; min-height: 40px; }
+.bs-ptr span { text-align: center; font: 700 clamp(9px, 1.9vw, 13px)/1.25 var(--mono); color: var(--lab-gold); white-space: pre-line; }
+.bs-ptr span.lohi { color: var(--lab-chalk); }
+.bs-bars { display: grid; gap: 6px; margin: 10px 0 0; }
+.bs-bar { display: grid; grid-template-columns: 9.5em minmax(0, 1fr) 2.6em; gap: 8px; align-items: center; font-size: 13.5px; }
+.bs-bar > i { display: block; height: 12px; border-radius: 6px; background: color-mix(in srgb, var(--ac-green) 15%, var(--surface)); border: 1px solid var(--border); overflow: hidden; }
+.bs-bar > i > s { display: block; height: 100%; background: var(--ac-green); text-decoration: none; transition: width .3s; }
+.bs-bar.lin > i > s { background: var(--ac-burg); }
+.bs-bar b { font: 700 14px var(--mono); text-align: right; }
+
+/* ---------- хаб ---------- */
+.cs-hub h2 { margin-top: 28px !important; }
+.lab-map li.planned { border-style: dashed; }
+.lab-map li.exists { box-shadow: inset 4px 0 0 var(--ac-gold-soft); }
+.lab-map .lab-st b { font-weight: 700; }
+
+@media (max-width: 520px) {
+  .bs-arr, .bs-ptr { padding-left: 6px; padding-right: 6px; gap: 2px; }
+  .bs-bar { grid-template-columns: 7.5em minmax(0, 1fr) 2.4em; }
+  .cs-ctl .btn { padding: 8px 10px; }
+}
+@media (prefers-reduced-motion: reduce) { .cg-node, .bs-cell b, .bs-bar > i > s { transition: none !important; } }
+.py-ed[hidden], .py-code[hidden], .cs-ctl [hidden] { display: none; }
+.content .py-frame table.py-vars.py-vars { display: table; margin: 0; border: 0; border-radius: 0; border-collapse: collapse; font-size: 13.5px; }
+.content .py-frame .py-vars.py-vars tr th, .content .py-frame .py-vars.py-vars tr td { background: transparent; border: 0; border-top: 1px solid var(--border); padding: 3px 6px; color: var(--text); }
+.content .py-frame .py-vars.py-vars tr:first-child th, .content .py-frame .py-vars.py-vars tr:first-child td { border-top: 0; }
+.content .py-frame .py-vars.py-vars tr th { font-weight: 600; }
+.content .py-frame .py-vars.py-vars tr.ch th, .content .py-frame .py-vars.py-vars tr.ch td { background: color-mix(in srgb, var(--ac-gold) 20%, transparent); }
+.content ul.lab-map { padding-left: 0; margin-left: 0; }

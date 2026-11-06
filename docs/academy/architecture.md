@@ -43,7 +43,8 @@ AO17 CS Universe - қазақ тіліндегі бес деңгейлі инф�
 | Knowledge Graph | `academy/map.html` | бар: модульдер, алғышарт байланысы, жеке күй |
 | C (build кезінде gcc: мысалдар, `cshow`, `coutput`) | `tools/academy_build.py` (`run_c`, `c_check`) | бар: -std=c11 -Wall -Wextra -Werror, stdin, аргументтер, шығу коды, UBSan/ASan/LSan хабарлары |
 | Жергілікті Python мысалдары (`python-local`) | `tools/academy_build.py` | бар: subprocess/gcc/git қолданатын мысалдар build кезінде CPython-да орындалады; браузерде іске қосу батырмасы жоқ |
-| Браузердегі C, Virtual Computer, C Playground, Judge, Certification | - | **әлі жоқ** (docs/academy/next-steps.md) |
+| AO17 Viz (оқушы басқаратын модельдер) | `assets/js/ao-viz.js`, `assets/css/ao-viz.css`, `tools/academy/viz_map.py` | бар (1-кезең): ортақ ойнатқыш (ойнату/тоқтату, қадам алға/артқа, басынан, жылдамдық 0.25-4×, жылжытқыш, параметрлер, қазақша түсіндірме, пернетақта, қозғалыс азайту) + 7 модель: граф (BFS/DFS/Дейкстра), Code X-Ray (нағыз Python, `ao_judge.trace_lines`), оқу процессоры (Virtual Computer), C жады (стек/үйме/көрсеткіш - модель), функция түрлендірулері, градиенттік түсу, нейрон желі (нағыз backprop). Галерея: `academy/models.html` (жария). **2-кезең** (`assets/js/ao-viz2.js`): сұрыптау (5 алгоритм), BST, үйме, хэш-кесте, матрица түрлендіруі, үлкен сандар заңы, логикалық схема (қосқыштар, мультиплексор), шешім ағашы (Gini), k-means, сызықтық регрессия, процесс жоспарлау (FCFS/SJF/RR), TCP (қол алысу, қайта жіберу), компилятор (лексер → шунт алгоритмі → стек машинасы) - барлығы 20 модель. `tools/viz_links.py` (build-тің ЕҢ БАСЫНДА, іздеу индексінен бұрын) 28 курс лекциясының ішіне (CS50x, CS50P, C++, Java, AI, Математика) 40 модельді тікелей кірістіреді: әрқайсысы сол лекцияның тақырыбына баптаған кіріс пен үш сұрақпен («Неге? Қалай? Егер өзгертсек?»). Атрибут - `data-aov` (математика курсының өз `data-viz` жүйесімен қақтығыспау үшін) |
+| Браузердегі C, C Playground, серверлік Judge, Certification | - | **әлі жоқ** (docs/academy/next-steps.md) |
 
 ## Сабақ деректерінің моделі
 Әр сабақ - Python сөздігі (`tools/academy/content/mNN_*.py`). Міндетті өрістер (`REQUIRED`, `tools/academy_build.py`):
@@ -92,3 +93,43 @@ AO17 CS Universe - қазақ тіліндегі бес деңгейлі инф�
 - Еркін мәтінді дәлелдеу (Proof Construction) автоматты бағаланбайды. Модуль жобасы мұғалім рубрикасымен бағаланады.
 - Логика қозғалтқышы 12 айнымалыға дейін толық кесте құрады. Бұл - нақты есептеу, әмбебап теорема дәлелдеуші емес.
 - `closedform`/`recurrence` формуланы 30 мәнде тексереді. Бұл - сандық тексеріс, дәлелдеу емес. Интерфейс мұны оқушыға айтады және индукциямен дәлелдеуді ұсынады.
+
+## Үш академия: ортақ архитектура (2026-11, 1-пакет)
+
+### Алаш дизайнын қорғау
+- Эталон: commit `6933393` (git тег `alash-design-baseline-2026-11` жергілікті; прокси тегті жібермейді, сондықтан хэш негізгі сілтеме).
+- Визуал регрессия: `tests/e2e/visual-alash.spec.js` - 8 бет × (ашық, қараңғы) × (1280, 390) = 32 сурет, `tests/e2e/visual-alash.spec.js-snapshots/`. Іске қосу: `cd tests && VISUAL=1 npx playwright test visual-alash`. Шрифт пен ОЖ-ге тәуелді болғандықтан CI-де әдепкі бойынша өткізіледі; эталон тек келісілген дизайн өзгерісінде `--update-snapshots` арқылы жаңартылады.
+- Жаңа академиялар жаңа стиль ойлап таппайды: `academy.css` токендері (орман жасылы, бургунди, көне алтын, піл сүйегі, PT Serif) және `assets/css/ao-labs.css` ортақ компоненттері (зертхана жақтауы, «түнгі тақта» сахнасы, формула, слайдерлер, таңдау батырмалары, мәтін белгілеу, таймер, редактор, Tutor).
+
+### Ортақ қозғалтқыштар (бар / жаңа / жоспар)
+| Компонент | Күйі | Қайда |
+|---|---|---|
+| Lesson Engine (сабақ схемасы, 14 бөлім, build-тексеру) | бар | `tools/academy_build.py`, `tools/academy/content/*` |
+| Exercise Engine (mc, number, formula, pycode, C ...) | бар | `assets/js/academy.js`, `assets/py/ao_judge.py` |
+| Animation Engine (кино-түсіндіру; AO17 Viz модельдері) | бар | `assets/js/academy-cine.js`, `ao-viz*.js` |
+| Smart Tutor: Mastery, 3 деңгейлі көмек, қателер дәптері, Лейтнер қайталауы, экспорт/импорт | **жаңа** | `assets/js/ao-tutor.js`, тест `tests/academy/tutor.test.js` |
+| Student Dashboard «Менің оқуым» | **жаңа** | `academy/study.html` (`study_html`), `assets/js/ao-study.js` |
+| Lab UI компоненттері | **жаңа** | `assets/css/ao-labs.css` |
+| Exam Engine (SAT симуляторы) | **жаңа** | `academy/sat/exam.html` |
+| Knowledge Graph | бар (CS Universe алғышарттары, `academy/map.html`); IELTS/SAT үшін жоспар | |
+| Teacher Dashboard | бар (Supabase, `teacher.html`); IELTS эссесі мен Speaking жазбасын серверде тексеру - backend керек | |
+| Content Registry / Validation | бар (CS Universe: build тексеруі); IELTS/SAT банктері үшін жоспар | |
+
+Tutor келісімі: әр зертхана тексерілген жауаптан кейін `AO17Tutor.record(skillId, {item, ok, hints, error, note, title, url})` шақырады; skill id префиксі академияны білдіреді (`cs.`, `ielts.`, `sat.`). Меңгеру ережесі: соңғы 3 әрекет көмексіз дұрыс және дәлдік ≥ 80%. 3-көмек (толық шешім) ашылса - зертхана жаңа есеп береді.
+
+### Командалар және жұмыс пакеттері (1-пакет)
+Әр пакет тек өз файлдарында жұмыс істейді; ортақ файлдарды (build, nav, sw, лицензия) интегратор өзгертеді.
+- **Core Architecture + Alash Design System + Learning Science** (интегратор): визуал эталон, `ao-tutor.js`, `ao-labs.css`, «Менің оқуым», build/gate/лицензия интеграциясы, жариялау ережесі.
+- **SAT Curriculum & Practice**: `academy/sat/*`, `assets/js/sat-*.js`, `assets/data/sat-*.js`, `tests/e2e/sat.spec.js`.
+- **IELTS Curriculum & Practice**: `academy/ielts/*`, `assets/js/ielts-*.js`, `assets/data/ielts-*.js`, `tests/e2e/ielts.spec.js`.
+- **CS Universe Labs & Animation**: `academy/labs/*`, `assets/js/cslab-*.js`, `tests/e2e/cslabs.spec.js`.
+Қабылдау талаптары (барлығына): Алаш токендері, 360px жылжусыз, axe (wcag2a/aa) serious/critical = 0 екі режимде, пернетақта, reduced motion, түпнұсқа мазмұн, әр қатеге себеп, көмексіз жаңа есеппен меңгеру, e2e тест.
+
+### Мазмұн фабрикасы: күйлер
+Curriculum → Lesson Specification → Content Draft → Academic Review → Animation Storyboard → Implementation → Exercises → Tests → Publishing.
+- **Draft** = `reviewStatus: "draft"`: build тексереді, бірақ **жарияламайды** (`academy_build.build`).
+- **Reviewed** = `author-checked` (автор тексерді) не `peer-reviewed` (екінші адам тексерді).
+- **Published** = Reviewed + build тексеруінен (схема, кілттер, код мысалдары, сценарий) өткен сабақ.
+
+### Backend қажет ететін функциялар (GitHub Pages-те жоқ)
+Мұғалімнің IELTS эссесі мен Speaking жазбасын қашықтан тексеруі (файлды серверде сақтау), сыныптар арасында прогресті синхрондау (қазір Supabase арқылы тек CS Universe сабақ прогресі), құпия тесттері бар Judge, сертификат беру. Ақылы қызмет міндетті тәуелділік ретінде қосылмайды; Supabase-тің тегін деңгейі - қосымша.

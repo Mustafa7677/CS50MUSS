@@ -33,7 +33,7 @@
   const PY_FAIL = "Python жүктелмеді (интернет қажет, бірінші рет ~10 секунд). Байланысты тексеріп, қайта басыңыз.";
   function codeArea(value, rows) {
     const ta = document.createElement("textarea");
-    ta.className = "ac-pyed"; ta.spellcheck = false; ta.setAttribute("autocapitalize", "off"); ta.rows = rows || Math.min(18, Math.max(4, String(value).split("\n").length + 1));
+    ta.className = "ac-pyed"; ta.spellcheck = false; ta.setAttribute("autocapitalize", "off"); ta.setAttribute("aria-label", "Код өрісі (Tab - шегініс)"); ta.rows = rows || Math.min(18, Math.max(4, String(value).split("\n").length + 1));
     ta.value = value;
     ta.addEventListener("keydown", (e) => {
       if (e.key === "Tab" && !e.shiftKey) { e.preventDefault(); const a = ta.selectionStart; ta.setRangeText("    ", a, ta.selectionEnd, "end"); }
@@ -305,7 +305,7 @@
         const paths = fs.map((f, i) => { const pts = []; for (let n = 1; n <= N; n++) { const v = GROWTH[f](n); if (Number.isFinite(v)) pts.push(`${X(n).toFixed(1)},${Y(v).toFixed(1)}`); } return `<polyline fill="none" stroke="${COLORS[Object.keys(GROWTH).indexOf(f)]}" stroke-width="2" points="${pts.join(" ")}"/>`; }).join("");
         const rows = [1, 2, 5, 10, 20, 50, 100, 200].filter((n) => n <= N).map((n) => `<tr><td>${n}</td>${fs.map((f) => { const v = GROWTH[f](n); return `<td>${v < 1e6 ? (Number.isInteger(v) ? v : v.toFixed(2)) : v.toExponential(2)}</td>`; }).join("")}</tr>`).join("");
         out.innerHTML = `<svg viewBox="0 0 ${W} ${H}" class="ac-graph" role="img" aria-label="Өсу функцияларының графигі (логарифмдік шкала)"><line x1="${pad}" y1="${H - pad}" x2="${W - pad}" y2="${H - pad}" class="ge"/><line x1="${pad}" y1="${pad}" x2="${pad}" y2="${H - pad}" class="ge"/>${paths}<text x="${W - pad}" y="${H - 8}" text-anchor="end" class="gl">n = ${N}</text></svg>
-          <p class="ac-note">Тік ось - логарифмдік (log₁₀). Түстер: ${fs.map((f) => `<b style="color:${COLORS[Object.keys(GROWTH).indexOf(f)]}">${esc(f)}</b>`).join(", ")}</p>
+          <p class="ac-note">Тік ось - логарифмдік (log₁₀). Түстер: ${fs.map((f) => `<b><i class="ac-sw" style="background:${COLORS[Object.keys(GROWTH).indexOf(f)]}"></i>${esc(f)}</b>`).join(", ")}</p>
           <div class="ac-tt-wrap"><table class="ac-tt"><thead><tr><th>n</th>${fs.map((f) => `<th>${esc(f)}</th>`).join("")}</tr></thead><tbody>${rows}</tbody></table></div>`;
       });
       $$("input", w).forEach((x) => x.addEventListener("input", draw));
@@ -935,7 +935,7 @@
     const next = done.find((li) => !(d.lessons[li.dataset.lid] && d.lessons[li.dataset.lid].mastered));
     const link = (id) => { const a = $(`li[data-lid="${id}"] a`); return a ? `<a href="${a.getAttribute("href")}">${esc(a.textContent)}</a>` : esc(id); };
     box.innerHTML = `<div class="ac-prog"><p>Меңгерілген: <b>${mastered.length}</b> / ${ids.length} дайын сабақ</p>
-      <div class="ac-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${ids.length}" aria-valuenow="${mastered.length}"><i style="width:${ids.length ? (mastered.length / ids.length) * 100 : 0}%"></i></div>
+      <div class="ac-bar" role="progressbar" aria-label="Меңгерілген сабақтар" aria-valuemin="0" aria-valuemax="${ids.length}" aria-valuenow="${mastered.length}"><i style="width:${ids.length ? (mastered.length / ids.length) * 100 : 0}%"></i></div>
       ${next ? `<p>Келесі ұсыныс: ${link(next.dataset.lid)} <small>(алғышарттары ретімен)</small></p>` : ids.length ? "<p>Дайын сабақтардың бәрі меңгерілді ✓</p>" : ""}
       ${due.length ? `<p>Қайталау уақыты келді: ${due.map(link).join(", ")}</p>` : ""}
       <p class="ac-note">Прогресс осы браузерде сақталады: браузер деректерін тазаласаңыз, ол өшеді. Сақтық көшірме жасаңыз. AO17 аккаунтымен кірсеңіз, прогресс серверге де синхрондалады.</p>
@@ -1000,7 +1000,99 @@
     open("m01");
   }
 
-  const run = () => { lessonPage(); labPage(); homePage(); mapPage(); };
+  // ---------- сабақ бетінің анимациялық түсіндіруі (барлық сабақта: derivation қадамдары, дәлелдеу сөйлемдері) ----------
+  const REDUCED = () => window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function animPlayers() {
+    $$("[data-anim]").forEach((box) => {
+      const ol = $("ol", box), items = $$("li", ol);
+      if (!items.length) return;
+      box.classList.add("on");
+      let k = REDUCED() ? items.length : 0, timer = null;
+      const bar = document.createElement("div");
+      bar.className = "ac-anim-ctl";
+      bar.innerHTML = `<button type="button" class="btn gold" data-a="play">▶ Ойнату</button><button type="button" class="btn secondary" data-a="prev" aria-label="Алдыңғы қадам">←</button><button type="button" class="btn secondary" data-a="next" aria-label="Келесі қадам">→</button><button type="button" class="btn secondary" data-a="all">Бәрін көрсету</button><span class="ac-anim-n" aria-live="polite"></span><span class="ac-anim-p" aria-hidden="true"><i></i></span>`;
+      box.append(bar);
+      const play = $("[data-a=play]", bar);
+      const show = () => {
+        items.forEach((li, i) => { li.classList.toggle("shown", i < k); li.classList.toggle("cur", i === k - 1); });
+        $(".ac-anim-n", bar).textContent = `${k} / ${items.length} қадам`;
+        $(".ac-anim-p i", bar).style.width = (100 * k / items.length) + "%";
+        box.classList.toggle("done", k === items.length);
+      };
+      const stop = () => { if (timer) { clearInterval(timer); timer = null; } play.textContent = k >= items.length ? "↺ Қайта ойнату" : "▶ Ойнату"; };
+      const step = (d) => { k = Math.max(0, Math.min(items.length, k + d)); show(); if (k >= items.length) stop(); };
+      play.addEventListener("click", () => {
+        if (timer) { stop(); return; }
+        if (k >= items.length) k = 0;
+        step(1);
+        if (k >= items.length) return;
+        play.textContent = "❚❚ Тоқтату";
+        timer = setInterval(() => { if (k >= items.length || !box.isConnected) stop(); else step(1); }, 2600);
+      });
+      $("[data-a=prev]", bar).addEventListener("click", () => { stop(); step(-1); stop(); });
+      $("[data-a=next]", bar).addEventListener("click", () => { stop(); step(1); stop(); });
+      $("[data-a=all]", bar).addEventListener("click", () => { stop(); k = items.length; show(); stop(); });
+      box.tabIndex = 0;
+      box.setAttribute("aria-label", "Анимациялық түсіндіру: → келесі қадам, ← алдыңғы");
+      box.addEventListener("keydown", (e) => {
+        if (e.target !== box) return;
+        if (e.key === "ArrowRight") { e.preventDefault(); stop(); step(1); stop(); }
+        else if (e.key === "ArrowLeft") { e.preventDefault(); stop(); step(-1); stop(); }
+      });
+      // экранға бірінші рет кіргенде бірінші қадам өзі ашылады (бір рет; қозғалыс азайтылса - бәрі бірден көрінеді)
+      if (!REDUCED() && "IntersectionObserver" in window) {
+        const io = new IntersectionObserver((es) => { if (es.some((x) => x.isIntersecting)) { io.disconnect(); if (k === 0) { step(1); stop(); } } }, { threshold: 0.4 });
+        io.observe(box);
+      }
+      show(); stop();
+    });
+  }
+  // дәлелдеуді сөйлем-сөйлеммен оқу: әр сөйлем кезекпен жанады, ∎ - соңында
+  function proofSteppers() {
+    $$(".ac-proof").forEach((card) => {
+      const ps = $$("p", card);
+      if (!ps.length) return;
+      const parts = [];
+      ps.forEach((p) => {
+        const pieces = p.innerHTML.split(/(?<=[.!?∎])\s+(?=[A-ZА-ЯӘҒҚҢӨҰҮҺІ(«<0-9])/u);
+        if (pieces.length < 2) { parts.push(p); return; }
+        p.innerHTML = pieces.map((x) => `<span class="ac-ps">${x}</span>`).join(" ");
+        parts.push(...$$(".ac-ps", p));
+      });
+      if (parts.length < 3) return;
+      const b = document.createElement("button");
+      b.type = "button"; b.className = "btn secondary ac-proof-btn"; b.textContent = "Қадамдап оқу";
+      $("h4", card).after(b);
+      let k = -1;
+      b.addEventListener("click", () => {
+        if (k === -1) card.classList.add("stepping");
+        k++;
+        parts.forEach((x, i) => { x.classList.toggle("lit", i <= k); x.classList.toggle("now", i === k); });
+        if (k >= parts.length - 1) { b.textContent = "Дәлелдеу толық ашылды ∎"; b.disabled = true; card.classList.add("proved"); }
+        else b.textContent = `Келесі сөйлем (${k + 1}/${parts.length})`;
+      });
+    });
+  }
+  // мазмұн: оқып жатқан бөлім белгіленеді, оқылғандары белгі алады
+  function tocSpy() {
+    const links = $$(".ac-toc li a");
+    if (!links.length || !("IntersectionObserver" in window)) return;
+    const map = new Map(links.map((a) => [a.getAttribute("href").slice(1), a]));
+    const seen = new Set();
+    const io = new IntersectionObserver((es) => {
+      es.forEach((e) => {
+        if (!e.isIntersecting) return;
+        seen.add(e.target.id);
+        links.forEach((a) => { a.classList.remove("on"); a.removeAttribute("aria-current"); });
+        const a = map.get(e.target.id);
+        if (a) { a.classList.add("on"); a.setAttribute("aria-current", "location"); }
+      });
+      map.forEach((a, id) => a.classList.toggle("read", seen.has(id)));
+    }, { rootMargin: "-20% 0px -70% 0px" });
+    map.forEach((_, id) => { const el = document.getElementById(id); if (el) io.observe(el); });
+  }
+
+  const run = () => { lessonPage(); labPage(); homePage(); mapPage(); if ($("[data-lesson]")) { animPlayers(); proofSteppers(); tocSpy(); } };
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", run); else run();
   window.AOAcademy = { checkFormula, load, KEY, VERSION };
 })();

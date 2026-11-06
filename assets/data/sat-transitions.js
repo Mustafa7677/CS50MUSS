@@ -1,0 +1,56 @@
+/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* SAT Transitions зертханасының түпнұсқа сөйлем жұптары (AO17 авторлық мәтіндері, ресми SAT сұрақтары емес).
+   rel - екі сөйлемнің логикалық қатынасы; opts - төрт нұсқа (біреуі ғана сәйкес келеді); note - нақты қатынастың түсіндірмесі;
+   why - жеке нұсқаға арналған қосымша түсіндірме (болмаса, қатынас сөздігінен құрастырылады). */
+window.SAT_TRANS = {
+  rels: {
+    contrast: { sym: "↔", kk: "қарама-қайшылық", desc: "2-сөйлем 1-сөйлемге қарсы қойылады: басқа нысан, басқа нәтиже немесе керісінше белгі." },
+    concession: { sym: "⤳", kk: "қарамастан", desc: "1-сөйлемдегі кедергіге қарамастан, 2-сөйлемде күтпеген нәтиже болады." },
+    cause: { sym: "→", kk: "себеп → салдар", desc: "2-сөйлем 1-сөйлемнің нәтижесі не салдары." },
+    example: { sym: "⊂", kk: "мысал", desc: "2-сөйлем 1-сөйлемдегі жалпы тұжырымның нақты бір жағдайы." },
+    addition: { sym: "+", kk: "қосымша", desc: "2-сөйлем сол бағыттағы тағы бір жаңа ақпарат қосады." },
+    similarity: { sym: "≈", kk: "ұқсастық", desc: "2-сөйлем басқа нысанда дәл сондай құбылыс барын көрсетеді." },
+  },
+  words: {
+    "However": "contrast", "In contrast": "contrast", "By contrast": "contrast", "On the other hand": "contrast",
+    "Nevertheless": "concession", "Even so": "concession", "Still": "concession",
+    "Therefore": "cause", "Consequently": "cause", "As a result": "cause", "Thus": "cause",
+    "For example": "example", "For instance": "example",
+    "In addition": "addition", "Moreover": "addition", "Furthermore": "addition",
+    "Similarly": "similarity", "Likewise": "similarity",
+  },
+  practice: [
+    { id: "t01", rel: "cause", s1: "The bakery's new oven uses forty percent less electricity than the old one.", s2: "the owners expect their monthly energy bill to drop significantly.", ans: "Consequently", opts: ["Consequently", "For example", "In contrast", "Similarly"],
+      note: "Пеш аз электр жұмсайды (себеп) → шот азаяды (салдар)." },
+    { id: "t02", rel: "contrast", s1: "Most bats find insects in the dark by echolocation, bouncing sounds off their prey.", s2: "many fruit bats rely mainly on their sharp eyesight and sense of smell to find food.", ans: "In contrast", opts: ["In contrast", "Therefore", "For instance", "In addition"],
+      note: "Көпшілік жарқанат - дыбыспен, ал жеміс жарқанаттары - көзбен және иіспен: екі түрлі тәсіл қарсы қойылған.", why: { "For instance": "Жеміс жарқанаттары эхолокацияның мысалы емес - олар дәл басқа тәсілді қолданады." } },
+    { id: "t03", rel: "example", s1: "Some plants have developed clever ways to spread their seeds.", s2: "the seeds of the burdock plant are covered in tiny hooks that cling to the fur of passing animals.", ans: "For example", opts: ["For example", "Nevertheless", "Consequently", "Similarly"],
+      note: "Жалпы тұжырым (тұқым таратудың айлалы тәсілдері) → нақты жағдай (түйетікеннің ілгектері)." },
+    { id: "t04", rel: "addition", s1: "Learning a second language can improve a person's career opportunities.", s2: "studies suggest that it may strengthen memory and attention.", ans: "In addition", opts: ["In addition", "However", "For instance", "As a result"],
+      note: "Екінші тілдің тағы бір пайдасы қосылады: мансап + жады мен зейін.", why: { "For instance": "Жады мен зейін - мансап мүмкіндігінің мысалы емес, бұл бөлек, жаңа пайда." } },
+    { id: "t05", rel: "similarity", s1: "Camels store fat in their humps, which they can use for energy when food is scarce.", s2: "bears build up thick layers of fat before winter so they can survive months without eating.", ans: "Similarly", opts: ["Similarly", "For example", "However", "Therefore"],
+      note: "Екі түрлі жануар, бір құбылыс: майды қор етіп жинап, тамақсыз кезеңде пайдаланады.", why: { "For example": "Аю түйенің мысалы емес. 1-сөйлемде жалпы тұжырым жоқ - нақты бір жануар ғана." } },
+    { id: "t06", rel: "concession", s1: "The first version of the app was slow and often crashed.", s2: "thousands of people downloaded it in its first week, eager to try its new features.", ans: "Nevertheless", opts: ["Nevertheless", "Therefore", "For example", "Similarly"],
+      note: "Кемшілік (баяу, жиі сынады) болса да, күтпеген нәтиже: мыңдаған адам жүктеді." },
+    { id: "t07", rel: "cause", s1: "Heavy rains flooded the main road into the village for three days.", s2: "the weekly market was moved to a field on higher ground.", ans: "As a result", opts: ["As a result", "However", "Likewise", "For instance"],
+      note: "Жол су астында қалды (себеп) → базар биік жерге көшірілді (салдар)." },
+    { id: "t08", rel: "contrast", s1: "The northern slope of the mountain receives little direct sunlight and stays snowy until June.", s2: "the southern slope is usually free of snow by early April.", ans: "On the other hand", opts: ["On the other hand", "Consequently", "For example", "In addition"],
+      note: "Солтүстік беткей мен оңтүстік беткей қарсы қойылған: бірінде қар маусымға дейін, екіншісінде сәуірде кетеді." },
+    { id: "t09", rel: "example", s1: "Many everyday products were invented by accident.", s2: "the microwave oven was developed after an engineer noticed that a candy bar in his pocket had melted while he worked near radar equipment.", ans: "For instance", opts: ["For instance", "However", "Similarly", "Therefore"],
+      note: "Жалпы тұжырым (көп зат кездейсоқ ойлап табылған) → нақты мысал (микротолқынды пеш)." },
+    { id: "t10", rel: "addition", s1: "The new library will offer free internet access to all visitors.", s2: "it will host weekly workshops on coding and digital safety.", ans: "Furthermore", opts: ["Furthermore", "In contrast", "Consequently", "Nevertheless"],
+      note: "Кітапхананың тағы бір қызметі қосылады: тегін интернет + апталық шеберханалар." },
+    { id: "t11", rel: "similarity", s1: "A violin produces sound when its hollow wooden body amplifies the vibrations of its strings.", s2: "a guitar's body amplifies the vibrations of its strings to make them louder.", ans: "Likewise", opts: ["Likewise", "In contrast", "As a result", "For instance"],
+      note: "Скрипка мен гитара - екі аспап, бір механизм: қуыс корпус ішек тербелісін күшейтеді.", why: { "For instance": "Гитара скрипканың мысалы емес - бұл басқа аспап, бірақ ұқсас жұмыс істейді." } },
+    { id: "t12", rel: "concession", s1: "Scientists have not yet found a complete explanation for why cats purr.", s2: "they have identified the muscles in the larynx that produce the sound.", ans: "Even so", opts: ["Even so", "Therefore", "For example", "Similarly"],
+      note: "Толық түсіндірме жоқ (кемшілік), сонда да бір нәрсе анықталды: дыбысты шығаратын бұлшықеттер." },
+  ],
+  check: [
+    { id: "c01", rel: "cause", s1: "The river near the town froze solid during the unusually cold winter.", s2: "the ferry stopped running until spring.", ans: "Therefore", opts: ["Therefore", "For example", "Similarly", "Nevertheless"], note: "Өзен қатты (себеп) → паром тоқтады (салдар)." },
+    { id: "c02", rel: "contrast", s1: "Early cameras needed several minutes of exposure to capture a single image.", s2: "modern digital cameras can take dozens of pictures in one second.", ans: "By contrast", opts: ["By contrast", "For instance", "As a result", "In addition"], note: "Ертедегі (бірнеше минут) мен қазіргі (секундына ондаған сурет) камералар қарсы қойылған." },
+    { id: "c03", rel: "example", s1: "Some animals use tools to get food.", s2: "sea otters break open shellfish by hitting them against rocks they hold on their chests.", ans: "For example", opts: ["For example", "However", "Consequently", "Likewise"], note: "Жалпы тұжырым (құрал қолданатын жануарлар) → нақты мысал (теңіз құндызы)." },
+    { id: "c04", rel: "concession", s1: "The marathon route included a long, steep hill near the finish line.", s2: "the winner set a new course record.", ans: "Still", opts: ["Still", "Therefore", "For instance", "Similarly"], note: "Қиын бөлік (тік төбе) болса да, күтпеген нәтиже: жаңа рекорд." },
+    { id: "c05", rel: "addition", s1: "Planting trees along city streets provides shade on hot days.", s2: "the trees' roots help absorb rainwater that would otherwise flood the gutters.", ans: "Moreover", opts: ["Moreover", "However", "For example", "Consequently"], note: "Ағаштың тағы бір пайдасы қосылады: көлеңке + жаңбыр суын сіңіру." },
+    { id: "c06", rel: "similarity", s1: "Honeybees perform a \"waggle dance\" to tell other bees where to find flowers.", s2: "some ant species leave chemical trails that guide other ants to food.", ans: "Similarly", opts: ["Similarly", "In contrast", "Therefore", "For instance"], note: "Ара мен құмырсқа - екеуі де басқаларға тамақтың орнын хабарлайды: ұқсас құбылыс.", why: { "In contrast": "Тәсілі әртүрлі (би мен иіс ізі), бірақ сөйлемдер айырмашылыққа емес, ортақ мақсатқа (тамақтың орнын хабарлау) құрылған." } },
+  ],
+};

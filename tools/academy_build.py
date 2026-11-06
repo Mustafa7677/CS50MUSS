@@ -22,14 +22,17 @@ import curriculum as C  # noqa: E402
 import plogic as P  # noqa: E402
 import parith as AR  # noqa: E402
 import pdisc as DS  # noqa: E402
+import emblems as EM  # noqa: E402
 import ppseudo as PS  # noqa: E402
 import pbits as BI  # noqa: E402
+import tracks as TR  # noqa: E402
+import cine as CN  # noqa: E402
 sys.path.insert(0, str(ROOT / "assets" / "py"))
 import ao_judge as JG  # noqa: E402
 import math  # noqa: E402,F401  (number.check өрнектері үшін)
 
 OUT = ROOT / "academy"
-CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b", "m09_a", "m09_b", "m10_a", "m10_b", "m11_a", "m11_b", "m12_a", "m12_b"]
+CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b", "m09_a", "m09_b", "m10_a", "m10_b", "m11_a", "m11_b", "m12_a", "m12_b", "s01_a", "s01_b", "s02_a", "s02_b", "s03_a", "s03_b", "s04_a", "s04_b", "s05_a", "s05_b", "s06_a", "s06_b", "s07_a", "s07_b", "s08_a", "s08_b", "s09_a", "s09_b"]
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
@@ -48,9 +51,16 @@ REVIEW = {"draft", "author-checked", "peer-reviewed"}
 
 
 def load_lessons():
+    import viz_map
     out = []
     for name in CONTENT_MODULES:
         out += __import__(name).LESSONS
+    for L in out:
+        if L["id"] in viz_map.VIZ:
+            L["viz"] = viz_map.VIZ[L["id"]]
+    unknown = set(viz_map.VIZ) - {L["id"] for L in out}
+    if unknown:
+        raise SystemExit(f"viz_map: белгісіз сабақтар {sorted(unknown)}")
     return out
 
 
@@ -385,12 +395,19 @@ def validate(lessons, run_code=True):
         f = L.get("further", {})
         if not f.get("honors") or not f.get("research"):
             errs.append(f"{lid}: further.honors және further.research керек")
+        try:
+            errs += CN.validate(lid, CN.for_lesson(L))
+        except (KeyError, IndexError, TypeError) as e:
+            errs.append(f"{lid} cine: сценарий құрылмады: {e!r}")
         for i, ex in enumerate(L.get("exercises", []) + L.get("assessment", [])):
             check_exercise(ex, f"{lid} тапсырма {i + 1}", errs)
             key = re.sub(r"\s+", " ", ex.get("q", "") + "|" + ex.get("code", "") + "|" + json.dumps(ex.get("inputs", {}))).strip()
             if key in seen_q:
                 errs.append(f"{lid}: сұрақ қайталанады ({seen_q[key]}): {key[:50]}")
             seen_q[key] = lid
+        for v in L.get("viz", []):
+            if v.get("type") not in VIZ_TYPES or not v.get("why"):
+                errs.append(f"{lid}: viz - түрі белгісіз не «why» (неге бұл модель көмектеседі) жоқ: {v.get('type')}")
         for m in L.get("mistakes", []):
             if not all(m.get(k) for k in ("mistake", "why", "fix")):
                 errs.append(f"{lid}: mistakes элементі толық емес")
@@ -422,13 +439,15 @@ def stats(lessons, errs_by_lesson=None):
         m["planned"] += 1
         m["complete"] += p["id"] in done
     ex = sum(len(L["exercises"]) + len(L["assessment"]) for L in lessons)
-    return {"levels": [{"id": lv["id"], "target": lv["target"], "complete": len(done) if lv["id"] == "I" else 0} for lv in C.LEVELS],
-            "foundation_planned": len(plan), "complete_lessons": len(done), "auto_checked_tasks": ex,
+    return {"levels": [{"id": lv["id"], "target": lv["target"], "complete": sum(L["academicLevel"] == lv["id"] for L in lessons)} for lv in C.LEVELS],
+            "foundation_planned": sum(p["module"].startswith("m") for p in plan), "senior_planned": sum(p["module"].startswith("s") for p in plan),
+            "senior_complete": sum(L["moduleId"].startswith("s") for L in lessons), "complete_lessons": len(done), "auto_checked_tasks": ex,
             "python_examples": sum(len(L["examples"]) for L in lessons), "modules": by_mod}
 
 
 # ---------------------------------------------------------------- HTML
 E = html.escape
+VIZ_TYPES = {"graph", "gd", "nn", "cpu", "mem", "pyx", "func", "sort", "bst", "heap", "hash", "matrix", "prob", "logic", "dtree", "kmeans", "linreg", "sched", "tcp", "compiler"}   # assets/js/ao-viz.js MACHINES
 DIFF = {1: "бастапқы", 2: "негізгі", 3: "орта", 4: "күрделі", 5: "зерттеу"}
 KIND = {"definition": "Анықтама", "theorem": "Теорема", "proof": "Дәлелдеу", "note": "Ескерту"}
 SECTIONS = [("a", "Оқу мақсаттары"), ("b", "Алғышарттар"), ("c", "Ұғымға кіріспе"), ("d", "Академиялық теория"),
@@ -453,13 +472,18 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad"):
   <link rel="stylesheet" href="{pre}assets/fonts/fonts.css">
   <link rel="stylesheet" href="{pre}assets/css/style.css">
   <link rel="stylesheet" href="{pre}assets/css/academy.css">
+  <link rel="stylesheet" href="{pre}assets/css/ao-viz.css">
+  <link rel="stylesheet" href="{pre}assets/css/ao-labs.css">
   <script src="{pre}assets/js/main.js"></script>
   <script src="{pre}assets/js/academy-logic.js" defer></script>
   <script src="{pre}assets/js/academy-arith.js" defer></script>
   <script src="{pre}assets/js/academy-disc.js" defer></script>
   <script src="{pre}assets/js/academy-pseudo.js" defer></script>
   <script src="{pre}assets/js/academy-bits.js" defer></script>
-  <script src="{pre}assets/js/academy.js" defer></script>{sc}
+  <script src="{pre}assets/js/academy.js" defer></script>
+  <script src="{pre}assets/js/academy-cine.js" defer></script>
+  <script src="{pre}assets/js/ao-viz.js" defer></script>
+  <script src="{pre}assets/js/ao-viz2.js" defer></script>{sc}
 </head>
 <body class="{body_cls}">
   <a class="skip-link" href="#main">Мазмұнға өту</a>
@@ -478,7 +502,8 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad"):
 
 def lesson_html(L, plan_by_id, prev_l, next_l):
     rel = f"academy/{L['moduleId']}/{L['slug']}.html"
-    mod = next(m for m in C.MODULES if m[0] == L["moduleId"])
+    mod = next(m for m in C.ALL_MODULES if m[0] == L["moduleId"])
+    lvl = f"Senior · Level {C.SENIOR_LEVEL[mod[0]]}" if mod[0] in C.SENIOR_LEVEL else "Level I"
     n = int(L["slug"][1:])
     pre_links = "".join(
         f'<li><a href="../{plan_by_id[p]["module"]}/{plan_by_id[p]["slug"]}.html">{E(plan_by_id[p]["title"])}</a></li>' if p in DONE
@@ -501,26 +526,37 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
                 f'<h3>Қабылдау тесттері</h3><ul>{li(pj["acceptance"])}</ul><h3>Бағалау рубрикасы</h3><ul>{li(pj["rubric"])}</ul>'
                 f'<p class="ac-note">Жобаны мұғалім рубрикамен бағалайды: бұл бетте автоматты бағаланбайды.</p></section>')
     data = {"id": L["id"], "visual": L["visual"], "experiment": L["experiment"], "exercises": L["exercises"], "assessment": L["assessment"],
-            "reflection": L["reflection"], "objectives": len(L["objectives"])}
-    toc = "".join(f'<li><a href="#s-{k}">{E(t)}</a></li>' for k, t in SECTIONS)
+            "reflection": L["reflection"], "objectives": len(L["objectives"]), "cine": CN.for_lesson(L)}
+    film = data["cine"]
+    film_tr = "".join(f"<li><b>{E(c)}.</b> {E(t)}</li>" for c, t in CN.transcript(film))
+    film_html = (f'<section class="ac-cine" id="s-film" data-cine data-title="{E(L["title"])}" data-img="../../assets/img/" aria-label="Кино-түсіндіру: {E(L["title"])}">'
+                 f'<p class="ac-note">Кино-түсіндіру: сабақтың өзегі бір минуттық мультфильмде. Мәтіні төменде.</p></section>'
+                 f'<details class="cn-tr"><summary>Фильмнің мәтіні ({"авторлық сценарий" if film["kind"] == "авторлық" else "сабақ қадамдарынан құрастырылған"})</summary><ol>{film_tr}</ol></details>')
+    toc = '<li><a href="#s-film">▶ Кино-түсіндіру</a></li>' + "".join(f'<li><a href="#s-{k}">{E(t)}</a></li>' for k, t in SECTIONS)
     nav = (f'<nav class="ac-pager">' + (f'<a href="{prev_l["slug"]}.html">← {E(prev_l["title"])}</a>' if prev_l else '<span></span>')
            + f'<a href="../index.html#{L["moduleId"]}">Модуль картасы</a>' + (f'<a href="{next_l["slug"]}.html">{E(next_l["title"])} →</a>' if next_l else '<span></span>') + "</nav>")
     sec = lambda k, inner: f'<section class="ac-sec" id="s-{k}"><h2><span class="ac-n">{k.upper()}</span>{dict(SECTIONS)[k]}</h2>{inner}</section>'  # noqa: E731
     body = f"""  <div class="ac-layout">
     <aside class="ac-toc" aria-label="Сабақ бөлімдері"><p class="ac-toc-h">Бөлімдер</p><ol>{toc}</ol>
       <div class="ac-mastery" data-ac-mastery><span>Меңгеру</span><b>-</b></div></aside>
-    <article class="content ac-lesson" id="main" data-lesson="{E(L['id'])}">
+    <article class="content ac-lesson" id="main" data-lesson="{E(L['id'])}" style="--mh:{EM.hue(L['moduleId'])}">
       <header class="ac-head">
-        <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#{L['moduleId']}">Level I · {E(mod[2])}</a> / {n}-сабақ</p>
-        <h1>{E(L['title'])}</h1>
-        <p class="ac-meta">Деңгей: {DIFF[L['difficulty']]} · шамамен {L['minutes']} мин · нұсқа {E(L['version'])} · тексеру: {E(L['reviewStatus'])}</p>
+        <div class="ac-head-t">
+          <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#{L['moduleId']}">{lvl} · {E(mod[2])}</a> / {n}-сабақ</p>
+          <p class="ac-folio"><span>{L['moduleId'].upper() if L['moduleId'].startswith('s') else L['moduleId'][1:]}</span><i>·</i><span>{n:02d}</span><small>{E(mod[1])}</small></p>
+          <h1>{E(L['title'])}</h1>
+          <ul class="ac-chips"><li>{DIFF[L['difficulty']]}</li><li>≈ {L['minutes']} мин</li><li>{len(L['objectives'])} мақсат</li><li>{len(L['exercises']) + len(L['assessment'])} тапсырма</li></ul>
+          <p class="ac-meta">нұсқа {E(L['version'])} · тексеру: {E(L['reviewStatus'])}</p>
+        </div>
+        {EM.svg(L['moduleId'])}
       </header>
+      {film_html}
       {sec('a', '<ul class="ac-obj">' + ''.join(f'<li>{E(o)}</li>' for o in L['objectives']) + '</ul>')}
       {sec('b', f'<ul>{pre_links}</ul>')}
       {sec('c', L['concept'])}
       {sec('d', theory)}
-      {sec('e', f'<div class="ac-lab" data-lab="visual"></div><p class="ac-cap">{E(L["visual"].get("caption", ""))}</p>')}
-      {sec('f', '<ol class="ac-steps">' + ''.join(f'<li>{E(s)}</li>' for s in L['derivation']) + '</ol>')}
+      {sec('e', f'<div class="ac-lab" data-lab="visual"></div><p class="ac-cap">{E(L["visual"].get("caption", ""))}</p>' + "".join(f'<h3 class="ac-viz-h">Интерактивті модель: өзің басқар</h3><p class="ac-cap">{E(v["why"])}</p><div data-aov="{E(v["type"])}" data-aov-params="{E(json.dumps(v.get("params", {}), ensure_ascii=False))}"></div>' for v in L.get("viz", [])))}
+      {sec('f', '<div class="ac-anim" data-anim><p class="ac-anim-h">Анимациялық түсіндіру: қадамдар кезекпен ашылады. «Ойнату» не → пернесі.</p><ol class="ac-steps">' + ''.join(f'<li>{E(s)}</li>' for s in L['derivation']) + '</ol></div>')}
       {sec('g', examples)}
       {sec('h', f'<p class="ac-task">{E(L["experiment"]["task"])}</p><div class="ac-lab" data-lab="experiment"></div>')}
       {sec('i', '<div class="ac-exs" data-set="exercises"></div>')}
@@ -536,10 +572,34 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
     </article>
   </div>
   <script type="application/json" id="ac-data">{json.dumps(data, ensure_ascii=False).replace("</", "<\\/")}</script>"""
-    return rel, page(rel, L["title"], f"AO17 CS Universe, Level I: {L['title']}. {L['objectives'][0]}", body)
+    return rel, page(rel, L["title"], f"AO17 CS Universe, {lvl}: {L['title']}. {L['objectives'][0]}", body)
 
 
 DONE = set()
+
+
+def study_html(lessons):
+    """«Менің оқуым»: үш академияның ортақ оқушы кабинеті (assets/js/ao-study.js, деректер браузерде)."""
+    cat = {L["id"]: [f'{L["moduleId"].upper() if L["moduleId"].startswith("s") else L["moduleId"][1:]}.{L["slug"][1:]} · {L["title"]}', f'{L["moduleId"]}/{L["slug"]}.html'] for L in lessons}
+    sec = lambda i, h, note="": f'<section class="ac-sec st-sec"><h2>{h}</h2>{f"<p class=ac-note>{note}</p>" if note else ""}<div id="{i}"></div></section>'  # noqa: E731
+    body = f"""  <main class="content ac-home st-home" id="main">
+    <header class="lab-hero"><p class="lab-kicker">AO17 · үш академия</p><h1>Менің оқуым</h1>
+      <p>CS Universe, IELTS және Digital SAT бойынша жеке оқу картаңыз: қай жерде тоқтадыңыз, не меңгерілді, қай ұғым қиын, қандай қателер қайталанады және бүгін нені қайталау керек.</p>
+      <p class="lab-honest">Деректер тек осы браузерде сақталады (тіркелгі қажет емес). Басқа құрылғыға көшіру үшін экспорт/импортты қолданыңыз. Меңгеру ережесі: соңғы үш әрекет көмексіз дұрыс және дәлдік кемінде 80%; бұл - AO17-нің ережесі, ресми емтихан бағасы емес.</p></header>
+    {sec("st-today", "Бүгін")}
+    {sec("st-review", "Қайталау жоспары", "Аралықпен қайталау: дұрыс жауаптан кейін аралық ұзарады (1, 2, 4, 8, 16 күн), қатеден кейін қайта басынан.")}
+    {sec("st-skills", "Дағдылар картасы")}
+    {sec("st-hard", "Қиындық тудыратын ұғымдар")}
+    {sec("st-notebook", "Қателер дәптері", "Әр қатенің себебі - зертхана берген түсіндірме. Қайта оқып, сол зертханаға оралыңыз.")}
+    {sec("st-history", "Оқу тарихы")}
+    <section class="ac-sec st-sec"><h2>Прогресті сақтау</h2>
+      <p class="lab-row"><button type="button" class="btn gold" id="st-export">Экспорт (JSON)</button>
+      <label class="btn secondary" for="st-import">Импорт</label><input type="file" id="st-import" accept="application/json" class="sr-only">
+      <button type="button" class="btn secondary" id="st-clear">Зертхана прогресін өшіру</button></p><p id="st-msg" class="ac-note" role="status"></p></section>
+  </main>
+  <script type="application/json" id="study-data">{json.dumps(cat, ensure_ascii=False).replace("</", "<\\/")}</script>"""
+    return "academy/study.html", page("academy/study.html", "Менің оқуым", "AO17 оқушы кабинеті: CS Universe, IELTS және Digital SAT бойынша меңгеру картасы, қателер дәптері, қайталау жоспары және прогресс экспорты.", body,
+                                      scripts=("assets/js/ao-tutor.js", "assets/js/ao-study.js"))
 
 
 def index_html(lessons, st):
@@ -549,35 +609,168 @@ def index_html(lessons, st):
         f'<p>{E(x["goal"])}</p><p class="ac-count">Жоспар: {x["target"]} сабақ · дайын: <b>{st["levels"][i]["complete"]}</b></p>'
         + (f'<p class="ac-subj">{E(", ".join(x["subjects"]))}</p>' if x.get("subjects") else "") + "</div></li>"
         for i, x in enumerate(C.LEVELS))
-    mods = []
-    for mid, en, kk, ls in C.MODULES:
-        m = st["modules"][mid]
-        items = []
-        for slug, title, goal in ls:
-            lid = C.lesson_id(mid, slug)
-            if lid in by_id:
-                items.append(f'<li class="done" data-lid="{lid}"><a href="{mid}/{slug}.html">{E(title)}</a><small>{E(goal)}</small></li>')
-            else:
-                items.append(f'<li class="plan"><span>{E(title)}</span><small>{E(goal)}</small></li>')
-        pre = ", ".join(next(x[2] for x in C.MODULES if x[0] == p) for p in C.MODULE_PREREQ.get(mid, [])) or "жоқ"
-        mods.append(f'<details class="ac-mod" id="{mid}"{" open" if m["complete"] else ""}><summary><span class="ac-mn">{mid[1:]}</span><b>{E(kk)}</b> <i>{E(en)}</i>'
-                    f'<span class="ac-mc">{m["complete"]}/{m["planned"]} дайын</span></summary><p class="ac-pre">Алғышарт модульдер: {E(pre)}</p><ol>{"".join(items)}</ol></details>')
+    def mod_list(modules):
+        out = []
+        for mid, en, kk, ls in modules:
+            m = st["modules"][mid]
+            items = []
+            for slug, title, goal in ls:
+                lid = C.lesson_id(mid, slug)
+                if lid in by_id:
+                    items.append(f'<li class="done" data-lid="{lid}"><a href="{mid}/{slug}.html">{E(title)}</a><small>{E(goal)}</small></li>')
+                else:
+                    items.append(f'<li class="plan"><span>{E(title)}</span><small>{E(goal)}</small></li>')
+            pre = ", ".join(next(x[2] for x in C.ALL_MODULES if x[0] == p) for p in C.ALL_PREREQ.get(mid, [])) or "жоқ"
+            out.append(f'<details class="ac-mod" id="{mid}" style="--mh:{EM.hue(mid)}"{" open" if m["complete"] else ""}><summary>{EM.svg(mid).replace('class="ac-emblem"', 'class="ac-emblem ac-emblem-s"')}<span class="ac-mn">{mid[1:]}</span><b>{E(kk)}</b> <i>{E(en)}</i>'
+                        f'<span class="ac-mc">{m["complete"]}/{m["planned"]} дайын</span></summary><p class="ac-pre">Алғышарт модульдер: {E(pre)}</p><ol>{"".join(items)}</ol></details>')
+        return "".join(out)
     body = f"""  <main class="content ac-home" id="main">
     <header class="ac-hero">
       <p class="ac-kicker">AO17 Computer Science Universe</p>
-      <h1>Алаш бастаған білім жолы бүгінгі технологиямен жалғасады</h1>
-      <p>Логика мен дәлелдеуден бастап, алгоритмдер, жүйелер және зерттеуге дейінгі бес деңгейлі қазақша академиялық бағдарлама. Мазмұн AO17 үшін жаңадан жазылады; ақылы сервис пен AI API қажет емес.</p>
+      <h1>Негізден Senior деңгейіне дейін, қазақ тілінде</h1>
+      <p>Курс таңдамайсыз - бағыт таңдайсыз. Әр бағыт төрт сатыдан тұрады: Негіз, Junior, Middle, Senior. Әр сатыда не үйренетініңіз, қай модульді оқитыныңыз және портфолиоға қандай жоба жасайтыныңыз алдын ала жазылған. Мазмұн AO17 үшін жаңадан жазылады, әр тапсырма автоматты тексеріледі.</p>
       <p class="ac-honest">Қазір дайын: <b>{st["complete_lessons"]}</b> толық сабақ, <b>{st["auto_checked_tasks"]}</b> автоматты тексерілетін тапсырма, <b>{st["python_examples"]}</b> тексерілген Python мысалы. Қалғаны - жоспар, ол бөлек белгіленген.</p>
-      <p class="ac-cta"><a class="btn gold" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
+      <p class="ac-cta"><a class="btn gold" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="labs/index.html">CS зертханалары</a> <a class="btn secondary" href="ielts/index.html">IELTS</a> <a class="btn secondary" href="sat/index.html">Digital SAT</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="study.html">Менің оқуым</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
     </header>
+    <section class="ac-sec tl-sec" id="tracks"><h2>Бес бағыт, төрт саты</h2>
+      <p class="ac-note">Баспалдақтың әр сызығы - бір модуль: тұтас сызық - дайын, үзік сызық - жоспарда. Бір модуль бірнеше бағытқа ортақ болуы мүмкін: мысалы, Python негіздері бәріне керек.</p>
+      {tracks_hub()}</section>
     <section class="ac-sec"><h2>Бес деңгей</h2><ol class="ac-levels">{lv}</ol></section>
     <section class="ac-sec"><h2>Level I · Foundation: 12 модуль, 120 сабақ</h2>
       <p class="ac-note">Белгі: сілтемесі бар сабақ - толық дайын және тексерілген; сұр түстегісі - оқу мақсаты бекітілген жоспар.</p>
-      {"".join(mods)}</section>
+      {mod_list(C.MODULES)}</section>
+    <section class="ac-sec" id="senior"><h2>Senior сатысы: 9 модуль, 90 сабақ</h2>
+      <p class="ac-note">Бағыттардың ең жоғарғы сатысы: архитектура, таралған жүйелер, сенімділік, көшбасшылық, компиляторлар, қауіпсіздік, MLOps, сенімді AI және зерттеу. Дайын: <b>{st["senior_complete"]}</b> / {st["senior_planned"]} сабақ; әр сабақ Level I-дің сапа талаптарымен тексеріледі (дәлелдеу, орындалатын мысал, автоматты тапсырма).</p>
+      {mod_list([m for m in C.ALL_MODULES if m[0].startswith("s")])}</section>
     <section class="ac-sec"><h2>Әр сабақтың құрылымы</h2><ol class="ac-struct">{"".join(f"<li><b>{k.upper()}</b> {E(t)}</li>" for k, t in SECTIONS)}</ol></section>
     <section class="ac-sec"><h2>Прогресс</h2><div data-ac-progress></div></section>
   </main>"""
     return "academy/index.html", page("academy/index.html", "CS Universe", "AO17 Computer Science Universe: қазақ тіліндегі бес деңгейлі информатика академиясы. Логика, дәлелдеу, алгоритмдер, Python, C.", body)
+
+
+# ---------- Академия 2.0: бағыттар × сатылар (tools/academy/tracks.py) ----------
+MOD_KIND = {"ao": "AO17 сабағы", "tr": "Аударма курс", "lab": "Интерактивті модель"}
+
+
+def _exists(href):
+    return bool(href) and (ROOT / href.split("#")[0]).exists()
+
+
+def ladder_svg(t, big=False):
+    """Бағыттың баспалдағы: 4 саты солдан оңға көтеріледі. Әр сатының табаны модульдерге бөлінген:
+    тұтас сызық - дайын модуль, үзік сызық - жоспарда. Сурет мәтінді қайталайды (aria-hidden), мәтін бөлек бар."""
+    W, H, sw = (640, 168, 6) if big else (240, 72, 4)
+    step_w, rise = W / 4, (H - 16) / 4
+    parts = []
+    for i, (gk, _, _) in enumerate(TR.GRADES):
+        mods = t["grades"][gk]["mods"]
+        y = H - 8 - i * rise - rise / 2
+        x0 = i * step_w
+        if i:
+            parts.append(f'<path class="tl-rise" d="M{x0:.1f} {y + rise:.1f}V{y:.1f}"/>')
+        seg = (step_w - 6) / len(mods)
+        for j, (_, href, _) in enumerate(mods):
+            a, b = x0 + 3 + j * seg + sw / 2 + 1, x0 + 3 + (j + 1) * seg - sw / 2 - 1
+            parts.append(f'<path class="tl-{"ok" if _exists(href) else "plan"}" d="M{a:.1f} {y:.1f}H{b:.1f}"/>')
+    return (f'<svg class="tl-ladder{" tl-big" if big else ""}" viewBox="0 0 {W} {H}" aria-hidden="true" focusable="false">'
+            f'<g fill="none" stroke="currentColor" stroke-width="{sw}" stroke-linecap="round">{"".join(parts)}</g></svg>')
+
+
+def _grade_counts(t):
+    return [(sum(_exists(h) for _, h, _ in t["grades"][gk]["mods"]), len(t["grades"][gk]["mods"])) for gk, _, _ in TR.GRADES]
+
+
+def tracks_hub():
+    st = TR.stats(_exists)
+    rows = []
+    for t in TR.TRACKS:
+        r, n = st[t["id"]]
+        gc = _grade_counts(t)
+        lbl = ", ".join(f"{g[1]} {a}/{b}" for g, (a, b) in zip(TR.GRADES, gc))
+        emb = EM.svg(t["glyph"]).replace('class="ac-emblem"', 'class="ac-emblem ac-emblem-s"')
+        rows.append(f'<li class="tl-row" style="--th:{t["hue"]}"><a href="tracks/{t["id"]}.html">{emb}'
+                    f'<span class="tl-name"><b>{E(t["title"])}</b><small>{E(t["lead"])}</small></span>'
+                    f'<span class="tl-mini">{ladder_svg(t)}<small>{r} / {n} модуль дайын<span class="sr-only"> ({E(lbl)})</span></small></span></a></li>')
+    return f'<ol class="tl-hub">{"".join(rows)}</ol>'
+
+
+def track_html(t):
+    rel = f"academy/tracks/{t['id']}.html"
+    gc = _grade_counts(t)
+    r, n = TR.stats(_exists)[t["id"]]
+    steps = "".join(f'<li><a href="#g-{gk}"><b>{E(gn)}</b><span>{a} / {b} дайын</span></a></li>' for (gk, gn, _), (a, b) in zip(TR.GRADES, gc))
+    secs = []
+    for i, (gk, gn, gtag) in enumerate(TR.GRADES):
+        g = t["grades"][gk]
+        mods = "".join(
+            (f'<li class="tl-ok"><a href="../../{E(h)}">{E(nm)}</a><span class="tl-kind">{MOD_KIND[k]}</span></li>' if _exists(h)
+             else f'<li class="tl-plan"><span>{E(nm)}</span><span class="tl-kind">{MOD_KIND[k]}, жоспарда</span></li>')
+            for nm, h, k in g["mods"])
+        skills = "".join(f"<li>{E(x)}</li>" for x in g["skills"])
+        secs.append(f"""    <section class="tl-grade" id="g-{gk}" aria-labelledby="h-{gk}">
+      <header><p class="tl-step">{i + 1}-саты</p><h2 id="h-{gk}">{E(gn)}</h2><p class="tl-tag">{E(gtag)}</p><p class="tl-goal">{E(g["goal"])}</p></header>
+      <div class="tl-body">
+        <h3>Сатының соңында сіз</h3><ul class="tl-skills">{skills}</ul>
+        <h3>Модульдер</h3><ol class="tl-mods">{mods}</ol>
+        <p class="tl-proj"><b>Портфолио жобасы.</b> {E(g["project"])}</p>
+      </div>
+    </section>
+""")
+    others = "".join(f'<li style="--th:{o["hue"]}"><a href="{o["id"]}.html">{E(o["title"])}</a></li>' for o in TR.TRACKS if o["id"] != t["id"])
+    body = f"""  <main class="content tl-page" id="main" style="--th:{t["hue"]}">
+    <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#tracks">Бағыттар</a> / {E(t["title"])}</p>
+    <header class="tl-hero">
+      {EM.svg(t["glyph"])}
+      <div><h1>{E(t["title"])}</h1><p class="tl-lead">{E(t["lead"])}</p>
+      <p class="tl-out"><b>Бағыттың соңында:</b> {E(t["outcome"])}</p></div>
+    </header>
+    <figure class="tl-fig">
+      {ladder_svg(t, big=True)}
+      <ol class="tl-steps">{steps}</ol>
+      <figcaption>Әр сатының сызығы - оның модульдері: тұтас сызық - дайын, ашық модуль; үзік сызық - мазмұны жоспарда. Барлығы {r} / {n} модуль дайын.</figcaption>
+    </figure>
+{"".join(secs)}    <nav class="tl-others" aria-label="Басқа бағыттар"><h2>Басқа бағыттар</h2><ul>{others}</ul></nav>
+  </main>"""
+    return rel, page(rel, t["title"], f"AO17 Академия: {t['title']}, Негізден Senior деңгейіне дейінгі бағыт. {t['lead']}", body)
+
+
+MODELS = [
+    ("graph", {}, "Алгоритмдер · графтар", "Граф алгоритмдері", "BFS, DFS және Дейкстра бір графта. Әр кадр - бір амал: кезектен алу, көршіні тексеру, қашықтықты жаңарту. Қабырғалар мен салмақтарды өзгертіп, нәтиженің қалай өзгеретінін бақылаңыз.", "m09.l09, m09.l07"),
+    ("pyx", {}, "Python · бағдарламалау", "Code X-Ray", "Сіз жазған Python коды браузерде нағыз орындалады; әр жолдан бұрынғы айнымалылар, шақыру тереңдігі және шығыс көрінеді. Рекурсия, циклдар, тізімдер - бәрі «ішінен».", "m06.l06, m06.l07, m07.l05, m09.l02"),
+    ("cpu", {}, "Компьютер архитектурасы", "Оқу процессоры (Virtual Computer)", "4 регистр, 16 ұяшық жад, PC және 13 команда. Өз бағдарламаңызды жазып, циклдың машиналық деңгейде шартты өтуге айналатынын, 8 биттік асып кетуді көріңіз.", "m05.l03, m10.l01, m10.l04, m11.l01"),
+    ("mem", {}, "C · жад", "Стек, үйме, көрсеткіш", "swap(&x, &y), malloc/free және ілулі көрсеткіш сценарийлері: жақтаулардың пайда болуы мен жоғалуы, үйме блогының өмірі.", "m11.l02, m11.l04, m11.l05, m11.l06"),
+    ("func", {}, "Математика · функциялар", "Функция түрлендірулері", "y = a·f(b·x + c) + d: әр параметрдің графикке әсері. Параметрді ойнату арқылы бірқалыпты өзгертіп, «неге солға жылжиды?» сұрағына жауап табыңыз.", "m03.l06; математика курсы"),
+    ("gd", {}, "Оңтайландыру · Machine Learning", "Градиенттік түсу", "x ← x − η·f′(x). Қадам ұзындығы мен бастапқы нүктенің жинақталуға, алшақтауға және жергілікті минимумға әсері.", "m12.l05; AI курсы"),
+    ("sort", {}, "Алгоритмдер · сұрыптау", "Сұрыптау алгоритмдері", "Көпіршік, таңдау, кірістіру, біріктіру және жылдам сұрыптау бір тізімде: әр салыстыру мен жазу санағышымен.", "m09.l03, m09.l04, m09.l05"),
+    ("bst", {}, "Деректер құрылымдары", "Екілік іздеу ағашы", "Кірістіру ретінің ағаш пішініне әсері және іздеудің тереңдікке тәуелділігі.", "m08; Level II"),
+    ("heap", {}, "Деректер құрылымдары", "Үйме (heap)", "Басымдық кезегі массивте: sift-up және sift-down қадамдары.", "m09.l07 (Дейкстра кезегі); Level II"),
+    ("hash", {}, "Деректер құрылымдары", "Хэш-кесте", "Хэш функциясының есебі, коллизиялар және жүктеменің іздеу уақытына әсері.", "m08.l03, m08.l04"),
+    ("matrix", {}, "Математика · сызықтық алгебра", "Матрица - жазықтықтың түрлендіруі", "2×2 матрицаның бірлік шаршыны қалай өзгертетіні; анықтауыштың геометриялық мағынасы.", "математика курсы; Level II"),
+    ("prob", {}, "Математика · ықтималдық", "Үлкен сандар заңы", "Тиын лақтырудың жиілігі p-ге қалай жақындайды және ауытқудың 1/√n заңы.", "математика курсы"),
+    ("logic", {}, "Математика · логика · архитектура", "Логикалық схема", "Жартылай/толық қосқыш пен мультиплексор: сигналдың вентильдер арқылы өтуі және ақиқат кестесі.", "m01.l10, m05.l03"),
+    ("dtree", {}, "AI · классификация", "Шешім ағашы", "Gini бойынша ашкөз бөлу, тереңдік және артық үйрену.", "AI курсы; Level III"),
+    ("kmeans", {}, "AI · кластерлеу", "k-means", "Тағайындау мен жаңарту қадамдары, жинақталу және бастапқы нүктеге тәуелділік.", "AI курсы; Level III"),
+    ("linreg", {}, "AI · регрессия", "Сызықтық регрессия", "MSE шығыны, градиенттер және оқу қадамының жинақталуға әсері.", "AI курсы; m12.l05"),
+    ("sched", {}, "Жүйелік инженерия · ОЖ", "Процесстерді жоспарлау", "FCFS, SJF және Round Robin: Гант диаграммасы мен күту уақыты.", "Level IV (операциялық жүйелер)"),
+    ("tcp", {}, "Жүйелік инженерия · желі", "TCP байланысы", "Үш қадамды қол алысу, сегменттер, ack нөмірлері және жоғалған сегментті қайта жіберу.", "Level IV (желілер)"),
+    ("compiler", {}, "Жүйелік инженерия · компиляторлар", "Компилятор: лексер → парсер → есептеу", "Өрнек токендерге, сосын шунт алгоритмімен RPN-ге аударылып, стек машинасында есептеледі.", "m10.l01, m12.l01; Level IV"),
+    ("nn", {}, "AI · нейрондық желілер", "Нейрондық желіні оқыту", "2 кіріс, жасырын қабат, 1 шығыс; тура өту, кросс-энтропия, backprop - бәрі нақты есептеледі. Жасырын нейрондар санын өзгертіп, XOR-ды неге сызықтық модель шеше алмайтынын көріңіз.", "AI курсы; Level II-III"),
+]
+
+
+def models_html():
+    toc = "".join(f'<li><a href="#v-{t}">{E(h)}</a></li>' for t, _, _, h, _, _ in MODELS)
+    secs = "".join(f'<section class="aov-sec" id="v-{t}"><p class="ac-kicker">{E(k)}</p><h2>{E(h)}</h2><p>{E(d)}</p><p class="ac-note">Қолданылатын сабақтар: {E(where)}</p>'
+                   f'<div data-aov="{t}" data-aov-params="{E(json.dumps(p))}"></div></section>' for t, p, k, h, d, where in MODELS)
+    body = f"""  <main class="content aov-gallery" id="main">
+    <p class="ac-crumb"><a href="index.html">CS Universe</a> / Интерактивті модельдер</p>
+    <h1>Интерактивті модельдер</h1>
+    <p>Бұл беттегі әр модель - сурет не видео емес, нақты есептеу: алгоритм, формула, нейрондық желі, процессор не Python-ның өз орындалуы. Сіз оны іске қосып, тоқтатып, бір қадам алға-артқа жылжытып, жылдамдығын және кіріс деректерін өзгерте аласыз; әр қадамда не болғаны қазақша жазылады.</p>
+    <p class="ac-note">Басқару: Бос орын - ойнату/тоқтату, ← → - қадам, R - басынан (модельге фокус қойып). Қозғалыс азайтылған режимде ойнату тек бір қадам жасайды.</p>
+    <ul class="aov-toc">{toc}</ul>
+{secs}
+  </main>"""
+    return "academy/models.html", page("academy/models.html", "Интерактивті модельдер", "AO17: граф алгоритмдері, Code X-Ray, оқу процессоры, C жады, функциялар, градиенттік түсу, нейрондық желі - оқушы басқаратын нақты модельдер.", body)
 
 
 def lab_html():
@@ -614,6 +807,11 @@ def build(write=True):
     if errs:
         print("academy: ТЕКСЕРУДЕН ӨТПЕДІ:", *errs, sep="\n  ")
         sys.exit(1)
+    # Мазмұн фабрикасы: Draft (reviewStatus «draft») тексеріледі, бірақ жарияланбайды; Reviewed (author-checked, peer-reviewed) - жарияланады
+    drafts = [L["id"] for L in lessons if L["reviewStatus"] == "draft"]
+    if drafts:
+        print(f"academy: {len(drafts)} draft сабақ жарияланбайды: {', '.join(drafts[:5])}{' ...' if len(drafts) > 5 else ''}")
+        lessons = [L for L in lessons if L["reviewStatus"] != "draft"]
     DONE.clear()
     DONE.update(L["id"] for L in lessons)
     st = stats(lessons)
@@ -621,7 +819,7 @@ def build(write=True):
         print(f"academy check: OK ({st['complete_lessons']} сабақ, {st['auto_checked_tasks']} тапсырма, {st['python_examples']} мысал)")
         return
     plan_by_id = {p["id"]: p for p in C.plan()}
-    pages = [index_html(lessons, st), lab_html(), map_html(lessons)]
+    pages = [index_html(lessons, st), lab_html(), map_html(lessons), models_html(), study_html(lessons)] + [track_html(t) for t in TR.TRACKS]
     by_mod = {}
     for L in lessons:
         by_mod.setdefault(L["moduleId"], []).append(L)

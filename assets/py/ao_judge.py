@@ -372,3 +372,75 @@ def trace_sort(code, func, data_json, limit=4000):
     returned = plain(res) if isinstance(res, list) and res is not arr else None
     return json.dumps({"ok": True, "truncated": False, "events": events, "final": plain(arr), "returned": returned,
                        "sorted": (returned if returned is not None else plain(arr)) == sorted(data), "stats": stats, "out": r["out"]}, ensure_ascii=False)
+
+
+def trace_lines(code, stdin="", limit=600):
+    """Code X-Ray: оқушы кодын НАҚТЫ орындап, әр жолдың алдындағы күйді тіркейді.
+    Кадр: {"line", "func", "depth", "locals": {атау: repr}, "out": осы сәтке дейінгі stdout, "event": line|return|exception}.
+    limit кадрдан кейін тоқтайды (шексіз цикл қаупі)."""
+    frames = []
+    out = io.StringIO()
+    lines = stdin.split("\n") if stdin else []
+
+    def fake_input(prompt=""):
+        if not lines:
+            raise EOFError()
+        v = lines.pop(0)
+        if prompt:
+            out.write(str(prompt) + v + "\n")
+        return v
+
+    def snap(frame):
+        res = {}
+        for k, v in frame.f_locals.items():
+            if k.startswith("__") or callable(v) and not isinstance(v, (list, dict, set, tuple)) or type(v).__name__ == "module":
+                continue
+            try:
+                r = repr(v)
+            except Exception:  # noqa: BLE001
+                r = "<?>"
+            res[k] = r if len(r) <= 80 else r[:77] + "..."
+        return res
+
+    class Stop(Exception):
+        pass
+
+    def tracer(frame, event, arg):
+        if frame.f_code.co_filename != "<оқушы коды>":
+            return tracer
+        if event in ("line", "return", "exception"):
+            depth, f = 0, frame
+            while f is not None and f.f_code.co_filename == "<оқушы коды>":
+                depth += 1
+                f = f.f_back
+            fr = {"line": frame.f_lineno, "func": frame.f_code.co_name, "depth": depth, "locals": snap(frame), "out": out.getvalue(), "event": event}
+            if event == "return":
+                try:
+                    fr["ret"] = repr(arg)[:80]
+                except Exception:  # noqa: BLE001
+                    fr["ret"] = "<?>"
+            frames.append(fr)
+            if len(frames) >= limit:
+                raise Stop()
+        return tracer
+
+    import builtins
+    old_in, old_out, old_trace = builtins.input, sys.stdout, sys.gettrace()
+    builtins.input, sys.stdout = fake_input, out
+    ns = {"__name__": "__main__", "__builtins__": __builtins__}
+    result = {"ok": True, "truncated": False}
+    try:
+        compiled = compile(code, "<оқушы коды>", "exec")
+        sys.settrace(tracer)
+        exec(compiled, ns)
+    except Stop:
+        result["truncated"] = True
+    except (Exception, SystemExit) as e:  # noqa: BLE001
+        sys.settrace(None)
+        result.update({"ok": False, **_describe(e)})
+    finally:
+        sys.settrace(old_trace)
+        builtins.input, sys.stdout = old_in, old_out
+    result["frames"] = frames
+    result["out"] = out.getvalue()
+    return json.dumps(result, ensure_ascii=False)

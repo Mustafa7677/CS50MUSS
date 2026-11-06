@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<!-- © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. -->
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ДҚ сұрау жоспарлаушысы - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="ДҚ сұрау жоспарлаушысы - AO17">
+  <meta property="og:description" content="ДҚ сұрау жоспарлаушысы: толық сканерлеу мен B-ағаш индексі, nested loop, hash және index join құны, селективтілік - жоспарды болжап, ең тиімді индексті таңдау.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/labs/database.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/labs/database.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"ДҚ сұрау жоспарлаушысы - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/labs/database.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="ДҚ сұрау жоспарлаушысы: толық сканерлеу мен B-ағаш индексі, nested loop, hash және index join құны, селективтілік - жоспарды болжап, ең тиімді индексті таңдау.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../assets/css/cslab.css">
+  <link rel="stylesheet" href="../../assets/css/cslab-b.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/ao-tutor.js" defer></script>
+  <script src="../../assets/js/cslab-b-common.js" defer></script>
+  <script src="../../assets/js/cslab-db.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <main class="content cslab-page csb-page" id="main">
+    <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="index.html">Зертханалар</a> / ДҚ сұрау жоспарлаушысы</p>
+    <header class="lab-hero">
+      <p class="lab-kicker">Деректер қоры · SQL · индекстер</p>
+      <h1>ДҚ сұрау жоспарлаушысы</h1>
+      <p>Бір SQL сұрауын деректер қоры әртүрлі жолмен орындай алады: кестені басынан аяғына қарап шығу, B-ағаш индексімен тура іздеу, екі кестені циклмен не хэш-кестемен біріктіру. Жоспарлаушы әр жолдың «құнын» есептеп, арзанын таңдайды. Осы зертханада сол есепті өзіміз жүргіземіз, арзан жоспарды алдын ала болжаймыз және қай индекс шынымен көмектесетінін анықтаймыз.</p>
+      <p class="lab-honest"><b>Бұл - оқу моделі, нағыз ДҚБЖ оптимизаторы емес.</b> Құн = сканерленген жолдар + барылған B-ағаш түйіндері. B+ ағашта жапыраққа 4 жазба, ішкі түйінге 4 бала сыяды. Кесте id бойынша өз ағашында сақталады (SQLite-тың rowid кестесі сияқты), сондықтан қосымша индекспен табылған әр жол үшін кесте ағашымен тағы бір түсу (3 түйін) керек. Нағыз жүйелер беттерді (page), кэшті, статистиканы, қамтитын индекстерді ескереді - сандар басқа болады, бірақ «аз жол сай келсе - индекс, көп болса - сканерлеу» қағидасы сол күйі. SQL-дің шағын бөлігі ғана: SELECT ... FROM ... [JOIN ... ON ...] [WHERE ... AND ...] [ORDER BY ...]. Сұрау өзіміздің талдауышпен (парсер) оқылады, ешқандай eval жоқ.</p>
+      <p class="lab-row"><span data-badge="cs.db.plan" data-title="Жоспарды болжау"></span> <span data-badge="cs.db.index" data-title="Индекс таңдау"></span></p>
+    </header>
+
+    <section class="lab" data-cslab="db-single" aria-labelledby="h-db1">
+      <h2 id="h-db1">1. Бір кесте: толық сканерлеу ме, индекс пе?</h2>
+      <p class="lab-goal"><b>Мақсат:</b> SCAN кестенің барлық жолын оқитынын, ал индекспен іздеу түбірден жапыраққа түсіп, тек сай жазбаларды алатынын көру; «оқылған жолдар» мен «құнды» санау.</p>
+      <div class="lab-split">
+        <div>
+          <div class="lab-board db-tree"><svg role="img" aria-label="B-ағаш" focusable="false"></svg></div>
+          <ul class="csb-legend" aria-label="Белгілер"><li><i class="dash" aria-hidden="true"></i>барылған түйін</li><li><i class="gold" aria-hidden="true"></i>қазіргі түйін</li></ul>
+          <div class="db-cnt" aria-live="off"></div>
+          <div class="db-tables"></div>
+        </div>
+        <div>
+          <label class="cs-field"><span>Дайын сұраулар</span><select data-k="preset"></select></label>
+          <label class="cs-field"><span>SQL сұрауы (өзгертуге болады; Ctrl+Enter - есептеу)</span><textarea class="db-sql" data-k="sql" spellcheck="false" autocomplete="off"></textarea></label>
+          <p class="cs-small">Қосымша индекстер (id - бастапқы кілт, әрқашан бар):</p>
+          <div class="db-idx" role="group" aria-label="Индекстер"></div>
+          <div class="lab-row"><button type="button" class="btn gold" data-c="run">Жоспарларды есептеу</button> <label class="cs-check"><input type="checkbox" data-k="dbpredict"> Болжау режимі</label></div>
+          <div class="db-err" role="alert" hidden></div>
+          <div class="db-pred"></div>
+          <p class="cs-h">Жоспарлар және құны</p>
+          <div class="db-bars"></div>
+          <pre class="db-plan"></pre>
+          <label class="cs-field"><span>Қадамдап көрсетілетін жоспар</span><select data-k="plan"></select></label>
+          <div class="cs-ctl">
+            <button type="button" class="btn gold" data-c="play">▶ Ойнату</button>
+            <button type="button" class="btn secondary" data-c="pause">❚❚ Кідірту</button>
+            <button type="button" class="btn secondary" data-c="prev">← Алдыңғы</button>
+            <button type="button" class="btn secondary" data-c="next">Келесі →</button>
+            <button type="button" class="btn secondary" data-c="reset">↺ Басынан</button>
+            <label class="cs-field csb-speed"><span>Жылдамдық</span><select data-c="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+            <span class="cs-n" aria-label="Қадам нөмірі"></span>
+          </div>
+          <p class="cs-say" aria-live="polite"></p>
+          <div class="db-res"></div>
+        </div>
+      </div>
+      <p class="lab-note">Салыстырыңыз: <b>name = 'Дана'</b> (1 жол сай) - индекс 7, сканерлеу 24. <b>city = 'Алматы'</b> (10 жол сай) - индекс 35, сканерлеу 24: индекс бар, бірақ жоспарлаушы оны таңдамайды. SQL курсындағы <code>EXPLAIN QUERY PLAN</code>-дің SCAN / SEARCH сөздері осы екі жолды білдіреді.</p>
+    </section>
+
+    <section class="lab" data-cslab="db-sel" aria-labelledby="h-db2">
+      <h2 id="h-db2">2. Неге селективтілігі төмен бағандағы индекс көмектеспейді?</h2>
+      <p class="lab-goal"><b>Мақсат:</b> селективтілік (сай жолдардың үлесі) өскен сайын индекс құны сызықты өсетінін, ал сканерлеу құны тұрақты екенін көріп, шекараны табу.</p>
+      <div class="lab-split">
+        <div><div class="lab-board"><svg viewBox="0 0 600 300" role="img" aria-label="Құн графигі" focusable="false"></svg></div></div>
+        <div>
+          <div class="ds-sliders"><label><span>m</span><input type="range" data-k="m" min="0" max="24" value="10" aria-label="Шартқа сай жолдар саны m"><output data-k="mo">10</output></label></div>
+          <p class="cs-say" data-k="selmsg" aria-live="polite"></p>
+          <p class="cs-small">Индекс жазбасы тек кілт пен rowid-ті сақтайды. Жолдың қалған бағандары кестеде, сондықтан әр табылған жазба үшін кесте ағашымен түсу керек: 24 жолдық кестеде бұл 3 түйін. 10 жол сай келсе, 30 түйін - бұл бүкіл кестені бір рет оқудан (24) қымбат. «Қала», «сынып жылы», «жынысы» сияқты мәні аз қайталанатын бағандарда индекс сирек ұтады; мәні жиі өзгеше бағандарда (аты, телефон, ID) - әрдайым дерлік.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="lab" data-cslab="db-join" aria-labelledby="h-db3">
+      <h2 id="h-db3">3. JOIN: nested loop, hash join, index join</h2>
+      <p class="lab-goal"><b>Мақсат:</b> біріктірудің үш тәсілінің құнын салыстыру және сыртқы кестенің (outer) реті мен ішкі кестедегі индекстің әсерін көру.</p>
+      <div class="lab-split">
+        <div>
+          <div class="lab-board db-tree"><svg role="img" aria-label="B-ағаш" focusable="false"></svg></div>
+          <div class="db-cnt"></div>
+          <div class="db-tables"></div>
+        </div>
+        <div>
+          <label class="cs-field"><span>Дайын сұраулар</span><select data-k="preset"></select></label>
+          <label class="cs-field"><span>SQL сұрауы</span><textarea class="db-sql" data-k="sql" spellcheck="false" autocomplete="off"></textarea></label>
+          <p class="cs-small">Қосымша индекстер:</p>
+          <div class="db-idx" role="group" aria-label="Индекстер"></div>
+          <div class="lab-row"><button type="button" class="btn gold" data-c="run">Жоспарларды есептеу</button> <label class="cs-check"><input type="checkbox" data-k="dbpredict"> Болжау режимі</label></div>
+          <div class="db-err" role="alert" hidden></div>
+          <div class="db-pred"></div>
+          <p class="cs-h">Жоспарлар және құны</p>
+          <div class="db-bars"></div>
+          <pre class="db-plan"></pre>
+          <label class="cs-field"><span>Қадамдап көрсетілетін жоспар</span><select data-k="plan"></select></label>
+          <div class="cs-ctl">
+            <button type="button" class="btn gold" data-c="play">▶ Ойнату</button>
+            <button type="button" class="btn secondary" data-c="pause">❚❚ Кідірту</button>
+            <button type="button" class="btn secondary" data-c="prev">← Алдыңғы</button>
+            <button type="button" class="btn secondary" data-c="next">Келесі →</button>
+            <button type="button" class="btn secondary" data-c="reset">↺ Басынан</button>
+            <label class="cs-field csb-speed"><span>Жылдамдық</span><select data-c="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+            <span class="cs-n" aria-label="Қадам нөмірі"></span>
+          </div>
+          <p class="cs-say" aria-live="polite"></p>
+          <div class="db-res"></div>
+        </div>
+      </div>
+      <p class="lab-note">Модельдің формулалары (O - сыртқы кестеден шыққан жолдар, N<sub>i</sub> - ішкі кестенің өлшемі): <b>nested loop</b> = сыртқы құн + O × N<sub>i</sub>; <b>hash join</b> = сыртқы құн + N<sub>i</sub> (хэш-кестені ішкі кестеден бір рет құру) + O (әр жолға бір зонд); <b>index join</b> = сыртқы құн + әр сыртқы жол үшін ішкі индекспен іздеу. Хэш-кесте әрқашан ішкі кестеден құрылады - сондықтан ретті ауыстыру құнды өзгертеді.</p>
+    </section>
+
+    <section class="lab" data-cslab="db-task" aria-labelledby="h-db4">
+      <h2 id="h-db4">4. Тексеру: ең тиімді индексті таңдаңыз</h2>
+      <p class="lab-goal"><b>Мақсат:</b> жаңа сұрау үшін қай бағанға индекс құру құнды ең көп төмендететінін көмексіз анықтау. Сұрау әр жолы кездейсоқ құрылады; жауап жоғарыдағы модельдің нақты есебінен шығады.</p>
+      <div class="lab-task">
+        <div data-k="q"></div>
+        <div data-k="ansbox"></div>
+        <div class="lab-row">
+          <button type="button" class="btn gold" data-c="check">Тексеру</button>
+          <button type="button" class="btn secondary" data-c="new">Жаңа есеп</button>
+        </div>
+        <div data-fb="task" aria-live="polite"></div>
+        <div data-k="hints"></div>
+      </div>
+    </section>
+
+    <section class="lab" aria-labelledby="h-dbkey">
+      <h2 id="h-dbkey">Түйін</h2>
+      <ul>
+        <li><b>Толық сканерлеу (SCAN)</b> әр жолды бір рет оқиды: құны кесте өлшеміне тең, шартқа тәуелсіз.</li>
+        <li><b>B-ағаш индексі</b> түбірден жапыраққа бірнеше түйінмен түседі (биіктігі log<sub>4</sub>N шамасында), сосын тек сай жазбаларды оқиды.</li>
+        <li><b>Селективтілік</b> = сай жолдар / барлық жол. Төмен селективтілікте (көп жол сай) индекс әр жолға кестеге бөлек барады, сондықтан сканерлеуден қымбат.</li>
+        <li><b>JOIN:</b> nested loop кіші сыртқы жиында жақсы; hash join үлкен, индекссіз біріктіруде; index join ішкі кестенің біріктіру бағанында индекс болса.</li>
+        <li>Индекс тегін емес: әр INSERT/UPDATE оны да жаңартады және орын алады - сондықтан «бәріне индекс» дұрыс шешім емес.</li>
+      </ul>
+      <p class="cs-small">SQL курсындағы индекстер мен EXPLAIN QUERY PLAN: <a href="../../sql/index.html">SQL курсы</a>. Барлық зертханалар: <a href="index.html">CS Universe зертханалары</a>.</p>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li><li><a href="../../academy/ielts/index.html">IELTS</a></li><li><a href="../../academy/sat/index.html">Digital SAT</a></li><li><a href="../../academy/labs/index.html">CS зертханалары</a></li><li><a href="../../academy/study.html">Менің оқуым</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>
