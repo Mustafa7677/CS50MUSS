@@ -9,7 +9,7 @@ test("портал: академия карточкасы экранға жай�
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("index.html");
   await page.locator("#academies .ac-card").last().scrollIntoViewIfNeeded();
-  await expect(page.locator(".ac-card.is-open")).toHaveCount(3, { timeout: 8000 });
+  await expect(page.locator(".ac-card.is-open")).toHaveCount(6, { timeout: 10000 });
   // үлкейіп кеткен шаңырақ карточканы басуға кедергі емес
   // Портал 760 мс тұрады да бет ауысады: баяу машинада тексеріс кеш қалмас үшін оны пайда болған сәтте ұстаймыз
   const seen = page.evaluate(() => new Promise((ok) => new MutationObserver((_, o) => {
@@ -123,7 +123,7 @@ test("өтулер: код пен ағылшын сахналары; келге�
   for (const [k, url, need] of [["code", /programming\.html$/, "<AO17 />"], ["en", /en\/$/, "Dear reader,"]]) {
     await page.goto("index.html");
     await page.locator("#academies .ac-card").last().scrollIntoViewIfNeeded();
-    await expect(page.locator(".ac-card.is-open")).toHaveCount(3, { timeout: 8000 });
+    await expect(page.locator(".ac-card.is-open")).toHaveCount(6, { timeout: 10000 });
     // сахна қажетті трансформацияға жеткенде (газет атауы кодқа / хат ағылшынға) ұстаймыз
     const seen = page.evaluate((need) => new Promise((ok) => {
       const tick = () => { const t = document.querySelector(".tx"); if (t && t.textContent.includes(need)) ok(t.className); else requestAnimationFrame(tick); };

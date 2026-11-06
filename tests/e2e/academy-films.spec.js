@@ -1,5 +1,5 @@
 // © 2026 Sagid Mustafa. All Rights Reserved.
-// Академия фильмдері (film/code/, film/math/, film/en/): ортақ қозғалтқыш, финалдағы академияға кіру, телефон композициясы,
+// Академия фильмдері (film/code/, film/math/, film/en/, film/cs/, film/ielts/, film/sat/): ортақ қозғалтқыш, финалдағы академияға кіру, телефон композициясы,
 // қозғалыс азайту, академия бетінен фильмге сілтеме.
 const { test, expect } = require("@playwright/test");
 const { blockFonts, collectErrors } = require("../support/helpers");
@@ -8,6 +8,9 @@ const FILMS = [
   { dir: "code", page: "programming.html", go: "../../programming.html", fin: "#c4" },
   { dir: "math", page: "math/index.html", go: "../../math/", fin: "#m4" },
   { dir: "en", page: "en/index.html", go: "../../en/", fin: "#e4" },
+  { dir: "cs", page: "academy/index.html", go: "../../academy/index.html", fin: "#u4" },
+  { dir: "ielts", page: "academy/ielts/index.html", go: "../../academy/ielts/index.html", fin: "#i4" },
+  { dir: "sat", page: "academy/sat/index.html", go: "../../academy/sat/index.html", fin: "#t4" },
 ];
 const T = (page) => page.evaluate(() => window.AO17Film.t);
 

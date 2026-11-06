@@ -456,14 +456,21 @@ SECTIONS = [("a", "Оқу мақсаттары"), ("b", "Алғышарттар"
             ("m", "Рефлексия"), ("n", "Тереңірек")]
 
 
-def page(rel, title, desc, body, scripts=(), body_cls="ao-acad"):
+def page(rel, title, desc, body, scripts=(), body_cls="ao-acad", intro=""):
     pre = "../" * rel.count("/")
+    intro_js = ("\n  <script>/* Академияға кірер алдында - оның фильм-прологы: әр сеанста бір рет. Сілтемеде #… болса, ?nofilm, іздеу роботы не автотест болса - жоқ. */\n"
+                "  (function () { try {\n"
+                f'    var k = "ao17-intro-{intro}";\n'
+                "    if (sessionStorage.getItem(k) || location.hash || /nofilm/.test(location.search) || navigator.webdriver || /bot|crawl|spider|slurp|preview|lighthouse/i.test(navigator.userAgent) || matchMedia(\"(prefers-reduced-motion: reduce)\").matches) return;\n"
+                "    sessionStorage.setItem(k, \"1\");\n"
+                f'    location.replace("{pre}film/{intro}/?intro=1");\n'
+                "  } catch (e) {} })();\n  </script>") if intro else ""
     sc = "".join(f'\n  <script src="{pre}{s}" defer></script>' for s in scripts)
     return f"""<!DOCTYPE html>
 <html lang="kk">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">{intro_js}
   <title>{E(title)} - AO17</title>
   <!-- build:head -->
   <!-- /build:head -->
@@ -631,6 +638,7 @@ def index_html(lessons, st):
       <p>Курс таңдамайсыз - бағыт таңдайсыз. Әр бағыт төрт сатыдан тұрады: Негіз, Junior, Middle, Senior. Әр сатыда не үйренетініңіз, қай модульді оқитыныңыз және портфолиоға қандай жоба жасайтыныңыз алдын ала жазылған. Мазмұн AO17 үшін жаңадан жазылады, әр тапсырма автоматты тексеріледі.</p>
       <p class="ac-honest">Қазір дайын: <b>{st["complete_lessons"]}</b> толық сабақ, <b>{st["auto_checked_tasks"]}</b> автоматты тексерілетін тапсырма, <b>{st["python_examples"]}</b> тексерілген Python мысалы. Қалғаны - жоспар, ол бөлек белгіленген.</p>
       <p class="ac-cta"><a class="btn gold" href="#tracks">Бағыт таңдау</a> <a class="btn secondary" href="m01/l01.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="lab.html">Логика зертханасы</a> <a class="btn secondary" href="labs/index.html">CS зертханалары</a> <a class="btn secondary" href="ielts/index.html">IELTS</a> <a class="btn secondary" href="sat/index.html">Digital SAT</a> <a class="btn secondary" href="models.html">Интерактивті модельдер</a> <a class="btn secondary" href="study.html">Менің оқуым</a> <a class="btn secondary" href="map.html">Білім картасы</a></p>
+      <p><a class="ac-film" href="../film/cs/">Фильм: «Даладан жұлдызға», 36 секунд</a></p>
     </header>
     <section class="ac-sec tl-sec" id="tracks"><h2>Бес бағыт, төрт саты</h2>
       <p class="ac-note">Баспалдақтың әр сызығы - бір модуль: тұтас сызық - дайын, үзік сызық - жоспарда. Бір модуль бірнеше бағытқа ортақ болуы мүмкін: мысалы, Python негіздері бәріне керек.</p>
@@ -645,7 +653,7 @@ def index_html(lessons, st):
     <section class="ac-sec"><h2>Әр сабақтың құрылымы</h2><ol class="ac-struct">{"".join(f"<li><b>{k.upper()}</b> {E(t)}</li>" for k, t in SECTIONS)}</ol></section>
     <section class="ac-sec"><h2>Прогресс</h2><div data-ac-progress></div></section>
   </main>"""
-    return "academy/index.html", page("academy/index.html", "CS Universe", "AO17 Computer Science Universe: қазақ тіліндегі бес деңгейлі информатика академиясы. Логика, дәлелдеу, алгоритмдер, Python, C.", body)
+    return "academy/index.html", page("academy/index.html", "CS Universe", "AO17 Computer Science Universe: қазақ тіліндегі бес деңгейлі информатика академиясы. Логика, дәлелдеу, алгоритмдер, Python, C.", body, intro="cs")
 
 
 # ---------- Академия 2.0: бағыттар × сатылар (tools/academy/tracks.py) ----------

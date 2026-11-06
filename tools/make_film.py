@@ -290,6 +290,119 @@ SKILLS = {
 }
 
 
+# ---------- CS Universe, IELTS, Digital SAT фильмдерінің сызбалары ----------
+CS_NODES = [(120, 300), (250, 170), (300, 380), (420, 260), (520, 120), (560, 400), (680, 230), (800, 130), (820, 360), (930, 250)]
+CS_EDGES = [(0, 1), (0, 2), (1, 3), (2, 3), (1, 4), (3, 6), (2, 5), (4, 7), (6, 7), (5, 8), (6, 8), (7, 9), (8, 9), (3, 5)]
+
+
+def cs_bfs():
+    """BFS реті (көршілер өсу ретімен) және ағаш қабырғалары: фильм осыны ғана көрсетеді."""
+    adj = {i: sorted({b for a, b in CS_EDGES if a == i} | {a for a, b in CS_EDGES if b == i}) for i in range(len(CS_NODES))}
+    order, seen, q, tree = [0], {0}, [0], []
+    while q:
+        v = q.pop(0)
+        for w in adj[v]:
+            if w not in seen:
+                seen.add(w); q.append(w); order.append(w)
+                e = next(i for i, (a, b) in enumerate(CS_EDGES) if {a, b} == {v, w})
+                tree.append([e, len(order) - 1])
+    return order, tree
+
+
+def cs_graph(faint=False):
+    order, tree = cs_bfs()
+    rank = {v: i + 1 for i, v in enumerate(order)}
+    out = [f'<line class="edge" x1="{CS_NODES[a][0]}" y1="{CS_NODES[a][1]}" x2="{CS_NODES[b][0]}" y2="{CS_NODES[b][1]}"/>' for a, b in CS_EDGES]
+    for i, (x, y) in enumerate(CS_NODES):
+        if faint:
+            out.append(f'<circle cx="{x}" cy="{y}" r="6" fill="#c9d6cf"/>')
+        else:
+            out.append(f'<circle class="halo" cx="{x}" cy="{y}" r="34"/><circle class="star" cx="{x}" cy="{y}" r="9"{" data-focus" if i == order[-1] else ""}/>'
+                       f'<text class="ord" x="{x + 14}" y="{y - 14}">{rank[i]}</text>')
+    svg = "".join(out)
+    if faint:
+        return svg.replace('class="edge"', 'stroke="#7fc4ad" stroke-width="2"')
+    return svg
+
+
+def cs_steps():
+    lv = [("Негіз", "логика, Python"), ("Junior", "алгоритм"), ("Middle", "C, жад"), ("Senior", "архитектура"), ("Зерттеу", "эксперимент")]
+    out = []
+    for i, (a, d) in enumerate(lv):
+        x, y, w, h = 30 + i * 172, 430 - i * 85, 166, 90 + i * 85
+        out.append(f'<g class="st"><rect x="{x}" y="{y}" width="{w}" height="{h}" rx="3"/><rect class="lit" x="{x}" y="{y}" width="{w}" height="{h}" rx="3"/>'
+                   f'<text class="lv" x="{x + 12}" y="{y + 38}"{" data-focus" if i == 4 else ""}>{a}</text><text class="ds" x="{x + 12}" y="{y + 64}">{d}</text></g>')
+    return "".join(out)
+
+
+def ie_wave(faint=False):
+    import math
+    pts = []
+    for i in range(0, 361):
+        x = 40 + i * 2.5
+        env = math.exp(-((i - 180) / 110) ** 2)
+        y = 170 + 90 * env * math.sin(i / 6) * (0.6 + 0.4 * math.sin(i / 23))
+        pts.append(f"{x:.1f} {y:.1f}")
+    d = "M" + " L".join(pts)
+    return f'<path d="{d}" fill="none" stroke="#e3a2a2" stroke-width="2"/>' if faint else f'<path class="wv" d="{d}" data-draw/>'
+
+
+def ie_syl():
+    out, x = [], 160
+    for t, stress in [("pho", False), ("TO", True), ("gra", False), ("phy", False)]:
+        w = 150 if stress else 130
+        out.append(f'<g class="syl{" stress" if stress else ""}" style="opacity:0;transform-box:fill-box;transform-origin:center">'
+                   f'<rect x="{x}" y="{95 if stress else 105}" width="{w}" height="{90 if stress else 70}" rx="10"/><text x="{x + w / 2}" y="{155 if stress else 152}">{t}</text></g>')
+        x += w + 20
+    return "".join(out)
+
+
+def sat_scale():
+    def blocks(cx, xs, us):
+        g, y = [], 200
+        for i in range(xs):
+            g.append(f'<rect class="xb rm-x" x="{cx - 70 + i * 36}" y="{y - 46}" width="32" height="40" rx="5" style="{"" if i else ""}"/>' if i == xs - 1 else f'<rect class="xb" x="{cx - 70 + i * 36}" y="{y - 46}" width="32" height="40" rx="5"/>')
+        for i in range(us):
+            cls = "ub rm-u" if i < 5 else "ub"
+            g.append(f'<circle class="{cls}" cx="{cx - 50 + (i % 5) * 24}" cy="{y - 62 - 22 * (i // 5)}" r="10"/>')
+        return "".join(g)
+    # 3x + 5 (сол) және 2x + 9 (оң): соңғы x блогы мен 5 бірлік екі жақтан да алынады
+    return ('<line class="post" x1="500" y1="120" x2="500" y2="420"/><path class="post" d="M420 420 H580"/>'
+            '<g class="beamg"><line class="beam" x1="200" y1="120" x2="800" y2="120"/>'
+            '<path class="line" d="M200 120 L150 220 M200 120 L250 220 M800 120 L750 220 M800 120 L850 220"/>'
+            '<path class="pan" d="M120 220 H280 Q280 250 200 250 Q120 250 120 220Z"/><path class="pan" d="M720 220 H880 Q880 250 800 250 Q720 250 720 220Z"/>'
+            f'<g transform="translate(0 20)">{blocks(200, 3, 5)}</g><g transform="translate(600 20)">{blocks(200, 2, 9)}</g></g>'
+            '<text class="eq" x="500" y="330" data-focus>3x + 5 = 2x + 9</text>')
+
+
+def sat_arc(faint=False):
+    # координаттар: x ∈ [-2, 8], y ∈ [-4, 7]; бірлік = 70 px (x), 45 px (y); y = 0.5 (x − 3)² − 2
+    X = lambda x: 160 + (x + 2) * 70
+    Y = lambda y: 380 - y * 45
+    pts = " L".join(f"{X(x / 10):.1f} {Y(0.5 * (x / 10 - 3) ** 2 - 2):.1f}" for x in range(-10, 81) if 0.5 * (x / 10 - 3) ** 2 - 2 <= 7)
+    if faint:
+        return f'<path d="M{pts}" fill="none" stroke="#e6c47c" stroke-width="3"/>'
+    grid = "".join(f'<line class="grid" x1="{X(i)}" y1="{Y(-4)}" x2="{X(i)}" y2="{Y(7)}"/>' for i in range(-2, 9)) + \
+        "".join(f'<line class="grid" x1="{X(-2)}" y1="{Y(j)}" x2="{X(8)}" y2="{Y(j)}"/>' for j in range(-4, 8))
+    return (grid + f'<line class="axis" x1="{X(-2)}" y1="{Y(0)}" x2="{X(8)}" y2="{Y(0)}"/><line class="axis" x1="{X(0)}" y1="{Y(-4)}" x2="{X(0)}" y2="{Y(7)}"/>'
+            f'<path class="uyk" d="M{X(-1)} {Y(6)} Q{X(3)} {Y(-10)} {X(7)} {Y(6)}"/>'
+            f'<path class="par" d="M{pts}" pathLength="1" style="stroke-dasharray:1;stroke-dashoffset:1"/>'
+            f'<circle class="vtx" cx="{X(3)}" cy="{Y(-2)}" r="9" style="opacity:0" data-focus/>'
+            f'<text class="fx" x="{X(3) + 18}" y="{Y(-2) + 40}" style="opacity:0">(3, −2)</text>'
+            f'<text class="fx" x="{X(4.4)}" y="{Y(5.6)}" style="opacity:0">y = ½(x − 3)² − 2</text>')
+
+
+def sat_road():
+    mods = [("1", "R&amp;W", "27 сұрақ · 32 мин", 32), ("2", "R&amp;W", "27 сұрақ · 32 мин", 32), ("", "☕", "10′", 10), ("1", "Math", "22 сұрақ · 35 мин", 35), ("2", "Math", "22 сұрақ · 35 мин", 35)]
+    total, x, out = sum(m[3] for m in mods), 20, ['<defs><linearGradient id="modGlow" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#c9a24a" stop-opacity=".25"/><stop offset="1" stop-color="#e6c47c" stop-opacity=".7"/></linearGradient></defs>']
+    for i, (n, sec, d, m) in enumerate(mods):
+        w = 940 * m / total - 8
+        out.append(f'<g class="md"><rect x="{x:.1f}" y="80" width="{w:.1f}" height="110" rx="6"/><rect class="fill" data-w="{w:.1f}" x="{x:.1f}" y="80" width="0" height="110" rx="6"/>'
+                   f'<text class="n" x="{x + 12:.1f}" y="120"{" data-focus" if i == 4 else ""}>{sec}{" " + n if n else ""}</text><text class="d" x="{x + 12:.1f}" y="160">{d}</text></g>')
+        x += w + 8
+    return "".join(out)
+
+
 def build_academy(name, out_dir, extra, rng):
     s = (ROOT / "film/src" / f"academy-{name}.html").read_text(encoding="utf8")
     base = (ROOT / "film/src/base.css").read_text(encoding="utf8") + (ROOT / "film/src/academy.css").read_text(encoding="utf8")
@@ -314,6 +427,12 @@ def academies():
     build_academy("math", "math", {"<!--{{ROOF}}-->": [roof("a"), roof("b")], "<!--{{DIA}}-->": dia(), "<!--{{KEREGE}}-->": kerege(),
                                    "<!--{{WAVE}}-->": wave(), "<!--{{ROOF_LINES}}-->": roof_lines()}, rng)
     build_academy("en", "en", {"<!--{{DOOR}}-->": door(), "<!--{{STAIRS}}-->": stairs(), **{f"<!--{{{{{k}}}}}-->": v for k, v in SKILLS.items()}}, rng)
+    order, tree = cs_bfs()
+    build_academy("cs", "cs", {"<!--{{CS_GRAPH}}-->": cs_graph(), "<!--{{CS_GRAPH_FAINT}}-->": cs_graph(True), "<!--{{CS_STEPS}}-->": cs_steps(),
+                               '<svg viewBox="0 0 1000 520" aria-hidden="true">\n        <defs><radialGradient id="starGlow">':
+                               f'<svg viewBox="0 0 1000 520" aria-hidden="true" data-order=\'{json.dumps(order)}\' data-tree=\'{json.dumps(tree)}\'>\n        <defs><radialGradient id="starGlow">'}, rng)
+    build_academy("ielts", "ielts", {"<!--{{IE_WAVE}}-->": ie_wave(), "<!--{{IE_WAVE_FAINT}}-->": ie_wave(True), "<!--{{IE_SYL}}-->": ie_syl()}, rng)
+    build_academy("sat", "sat", {"<!--{{SAT_SCALE}}-->": sat_scale(), "<!--{{SAT_ARC}}-->": sat_arc(), "<!--{{SAT_ARC_FAINT}}-->": sat_arc(True), "<!--{{SAT_ROAD}}-->": sat_road()}, rng)
 
 
 def main():
