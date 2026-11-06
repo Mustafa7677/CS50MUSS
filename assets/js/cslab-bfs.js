@@ -246,7 +246,7 @@
       const lab = shuffle([1, 2, 3, 4, 5, 6, 7]), cand = shuffle(CAND.slice());
       const par = [0, 1, 2, 3, 4, 5, 6], find = (x) => (par[x] === x ? x : (par[x] = find(par[x])));
       const pick = [];
-      cand.forEach(([a, b]) => { if (find(a) !== find(b)) { par[find(a)] = find(b); pick.push([a, b]); } });
+      cand.forEach((e0) => { const [a, b] = e0; if (find(a) !== find(b)) { par[find(a)] = find(b); pick.push(e0); } });
       cand.filter((e) => !pick.includes(e)).slice(0, 2 + rnd(2)).forEach((e) => pick.push(e));
       const pos = {}; SLOT.forEach((xy, i) => (pos[lab[i]] = xy));
       const g = makeGraph({ pos, edges: pick.map(([a, b]) => [lab[a], lab[b]]) });

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<!-- © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. -->
+<html lang="kk">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CPU зертханасы: кэш және конвейер - AO17</title>
+  <!-- build:head -->
+  <meta name="theme-color" content="#120d0a">
+  <meta name="color-scheme" content="light dark only">
+  <link rel="icon" href="../../assets/img/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="../../assets/img/icon-192.png">
+  <link rel="manifest" href="../../manifest.webmanifest">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="AO17">
+  <meta property="og:title" content="CPU зертханасы: кэш және конвейер - AO17">
+  <meta property="og:description" content="CPU зертханасы: адресті тег, индекс және ығысуға бөліңіз, тікелей сәйкестік пен 2 жолды LRU кэште hit пен miss-ті қадамдап көріңіз, локальдылықты салыстырыңыз, бес сатылы конвейердегі тоқтау мен форвардингті зерттеңіз.">
+  <meta property="og:url" content="https://mustafa7677.github.io/CS50MUSS/academy/labs/cpu.html">
+  <meta property="og:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="https://mustafa7677.github.io/CS50MUSS/assets/img/og.jpg">
+  <link rel="canonical" href="https://mustafa7677.github.io/CS50MUSS/academy/labs/cpu.html">
+  <meta name="copyright" content="© 2026 Sagid Mustafa. All Rights Reserved.">
+  <link rel="license" href="../../copyright.html">
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"LearningResource","name":"CPU зертханасы: кэш және конвейер - AO17","url":"https://mustafa7677.github.io/CS50MUSS/academy/labs/cpu.html","inLanguage":"kk","author":{"@type":"Person","name":"Sagid Mustafa"},"isAccessibleForFree":true,"license":"https://mustafa7677.github.io/CS50MUSS/copyright.html","copyrightHolder":{"@type":"Person","name":"Sagid Mustafa"},"copyrightYear":2026,"copyrightNotice":"© 2026 Sagid Mustafa. All Rights Reserved."}</script>
+  <!-- /build:head -->
+  <meta name="description" content="CPU зертханасы: адресті тег, индекс және ығысуға бөліңіз, тікелей сәйкестік пен 2 жолды LRU кэште hit пен miss-ті қадамдап көріңіз, локальдылықты салыстырыңыз, бес сатылы конвейердегі тоқтау мен форвардингті зерттеңіз.">
+  <meta name="author" content="Sagid Mustafa">
+  <link rel="stylesheet" href="../../assets/fonts/fonts.css">
+  <link rel="stylesheet" href="../../assets/css/style.css">
+  <link rel="stylesheet" href="../../assets/css/academy.css">
+  <link rel="stylesheet" href="../../assets/css/ao-labs.css">
+  <link rel="stylesheet" href="../../assets/css/cslab.css">
+  <link rel="stylesheet" href="../../assets/css/cslab-a.css">
+  <script src="../../assets/js/main.js"></script>
+  <script src="../../assets/js/ao-tutor.js" defer></script>
+  <script src="../../assets/js/cslab-a-common.js" defer></script>
+  <script src="../../assets/js/cslab-cpu.js" defer></script>
+</head>
+<body data-license="B" class="ao-acad">
+  <a class="skip-link" href="#main">Мазмұнға өту</a>
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../../index.html">AO<span>17</span></a>
+      <nav class="nav">
+        <button class="course-pill" type="button" aria-haspopup="true" aria-expanded="false" aria-label="Курсты таңдау" data-course="" style="--c:#087a96"><span class="cp-dot" aria-hidden="true"></span><span class="cp-label">Курстар</span><span class="cp-chev" aria-hidden="true">▾</span></button>
+        <a href="../../index.html#main">Лекциялар</a>
+        <a href="../../practice.html">Жаттығу</a>
+        <a href="../../games.html">Ойындар</a>
+        <a href="../../playground.html" class="hide-sm">Сынақ алаңы</a>
+        <a href="../../glossary.html" class="hide-sm">Сөздік</a>
+        <button class="search-open" type="button" aria-label="Іздеу"><span class="ico">⌕</span><span class="label">Іздеу</span><kbd>Ctrl K</kbd></button>
+        <button class="prefs-open" type="button" aria-label="Аа - оқу баптаулары" title="Оқу баптаулары">Аа</button>
+        <button class="theme-toggle" type="button" aria-label="Түсті ауыстыру">☾</button>
+        <a class="profile-open" href="../../profile.html" aria-label="Менің кабинетім" title="Менің кабинетім"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg></a>
+      </nav>
+    </div>
+  </header>
+  <main class="content cslab-page" id="main">
+    <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="index.html">Зертханалар</a> / CPU: кэш және конвейер</p>
+    <header class="lab-hero">
+      <p class="lab-kicker">Компьютер архитектурасы · жад иерархиясы</p>
+      <h1>CPU зертханасы: кэш және конвейер</h1>
+      <p>Процессор регистрге бір тактіде жетеді, ал жедел жадқа (RAM) жүздеген такт кетеді. Арадағы шағын әрі жылдам <b>кэш</b> «жақында керек болғанды» және «көршісін» сақтайды. Неге бір цикл екінші циклдан бірнеше есе баяу? Неге матрицаны жол бойынша аралаған дұрыс? Мұнда адрестің биттерінен бастап кэштің әр hit пен miss-ін, соңында конвейердегі тоқтауларды қадамдап көреміз.</p>
+      <p class="lab-honest">Оқу моделі: 8 биттік байт адрес (0 … 255), кэш 4 не 8 жол, блок 4 / 8 / 16 байт, тек оқу. Нағыз процессорларда адрес 48-64 бит, кэш бірнеше деңгейлі, бірақ тег/индекс/ығысу ережесі дәл осындай. Барлық нәтиже браузерде нақты есептеледі.</p>
+      <p class="lab-row"><span data-badge="cs.cache" data-title="Кэш"></span> <span data-badge="cs.cache.predict" data-title="Hit/miss болжау"></span> <span data-badge="cs.pipeline" data-title="Конвейер"></span></p>
+    </header>
+
+    <section class="lab" data-cslab="cache" aria-labelledby="h-addr">
+      <h2 id="h-addr">1. Адрес: тег, индекс, ығысу</h2>
+      <p class="lab-goal"><b>Мақсат:</b> кэш адресті үш бөлікке қалай бөлетінін көру: ығысу - блок ішіндегі байт, индекс - қай жиын, тег - жиындағы блоктың «аты».</p>
+      <div class="cs-grid">
+        <label class="cs-field"><span>Блок өлшемі B</span><select data-k="B"><option value="4">4 байт</option><option value="8">8 байт</option><option value="16" selected>16 байт</option></select></label>
+        <label class="cs-field"><span>Жол саны L</span><select data-k="L"><option value="4" selected>4 жол</option><option value="8">8 жол</option></select></label>
+        <label class="cs-field"><span>Ассоциативтілік</span><select data-k="W"><option value="1" selected>тікелей сәйкестік (1 жол)</option><option value="2">2 жолды жиын, LRU</option></select></label>
+      </div>
+      <p class="cs-small" data-k="cfgtext"></p>
+      <div class="lab-split">
+        <div>
+          <label class="cs-field"><span>Адрес (0 … 255 не 0x00 … 0xFF)</span><input class="cs-in" data-k="addr" value="92" autocomplete="off"></label>
+          <div class="cc-bits" data-k="abits" role="img"></div>
+          <p class="cs-small" data-k="amsg" aria-live="polite"></p>
+        </div>
+        <div class="lab-task" data-cslab="cache-addr">
+          <b>Өзіңіз бөліңіз.</b>
+          <p data-k="qq"></p>
+          <div class="ca-two">
+            <label class="cs-field"><span>Тег</span><input class="cs-in" data-k="tag" inputmode="numeric" autocomplete="off"></label>
+            <label class="cs-field"><span>Индекс</span><input class="cs-in" data-k="idx" inputmode="numeric" autocomplete="off"></label>
+            <label class="cs-field"><span>Ығысу</span><input class="cs-in" data-k="off" inputmode="numeric" autocomplete="off"></label>
+          </div>
+          <div class="lab-row"><button type="button" class="btn gold" data-c="qcheck">Тексеру</button><button type="button" class="btn secondary" data-c="qnew">Жаңа адрес</button></div>
+          <div data-fb="addr" aria-live="polite"></div>
+          <div data-k="qhints"></div>
+        </div>
+      </div>
+
+      <h2 id="h-sim">2. Кэш симуляторы: адрес тізбегін қадамдау</h2>
+      <p class="lab-goal"><b>Мақсат:</b> әр қатынаста hit не miss болатынын, қай блок жүктеліп, қайсысы ығыстырылатынын және hit rate-тің локальдылыққа тәуелділігін көру.</p>
+      <div class="lab-split">
+        <div>
+          <label class="cs-field"><span>Адрес тізбегі (trace)</span><select data-k="tsel"></select></label>
+          <p class="cs-small" data-k="tnote"></p>
+          <div class="cc-custom" hidden>
+            <label class="cs-field"><span>Адрестер</span><input class="cs-in" data-k="tin" autocomplete="off"></label>
+            <div class="lab-row"><button type="button" class="btn secondary" data-c="tapply">Жүктеу</button></div>
+            <p class="cs-small" data-k="tmsg" aria-live="polite"></p>
+          </div>
+          <ol class="cc-trace" data-k="trace" aria-label="Адрес тізбегі; H - hit, M - miss"></ol>
+          <div class="cc-stat" data-k="stat" aria-live="polite"></div>
+          <div class="ca-scroll"><table class="ca-tab cc-cache" data-k="cache"></table></div>
+        </div>
+        <div>
+          <div class="lab-row"><label class="cs-check"><input type="checkbox" data-k="predict"> Болжау режимі</label></div>
+          <div class="cs-ctl">
+            <button type="button" class="btn gold" data-c="play">▶ Ойнату</button>
+            <button type="button" class="btn secondary" data-c="pause">❚❚ Кідірту</button>
+            <button type="button" class="btn secondary" data-c="prev">← Алдыңғы</button>
+            <button type="button" class="btn secondary" data-c="next">Келесі →</button>
+            <button type="button" class="btn secondary" data-c="reset">↺ Басынан</button>
+            <label class="cs-field ca-speed"><span>Жылдамдық</span><select data-c="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+            <span class="cs-n" aria-label="Қадам нөмірі"></span>
+          </div>
+          <div class="cc-bits" data-k="bits" role="img"></div>
+          <p data-k="res"></p>
+          <p class="cs-say" aria-live="polite"></p>
+          <div class="cs-ask" hidden><p><b>Болжа:</b> <span data-k="askq"></span> «Келесі →» - болжамсыз көрсету. <span class="cs-score"></span></p>
+            <div class="lab-choice" role="group" aria-label="Hit не miss"><button type="button" data-hm="h">Hit</button><button type="button" data-hm="m">Miss</button></div></div>
+          <div data-fb="pred" aria-live="polite"></div>
+        </div>
+      </div>
+      <details class="ca-steps" data-k="steps"><summary>Барлық қатынастың мәтіні (анимациясыз нұсқа)</summary><ol></ol></details>
+
+      <h2 id="h-loc">3. Локальдылық: бір есеп, екі түрлі жылдамдық</h2>
+      <p class="lab-goal"><b>Мақсат:</b> жадқа қатынас ретінің hit rate-ке әсерін салыстыру.</p>
+      <div class="ca-scroll"><table class="ca-tab"><caption class="cs-small" data-k="cmpcap"></caption><thead><tr><th scope="col">Тізбек</th><th scope="col">Тікелей сәйкестік</th><th scope="col">2 жолды, LRU</th></tr></thead><tbody data-k="cmp"></tbody></table></div>
+      <div class="lab-row">
+        <button type="button" class="btn secondary" data-demo="row:16:4:1">Жол бойынша ↑</button>
+        <button type="button" class="btn secondary" data-demo="col:16:4:1">Баған бойынша ↑</button>
+        <button type="button" class="btn secondary" data-demo="conflict:16:4:1">Қақтығыс, тікелей ↑</button>
+        <button type="button" class="btn secondary" data-demo="conflict:16:4:2">Қақтығыс, 2 жолды ↑</button>
+        <button type="button" class="btn secondary" data-demo="stride:16:8:1">Қадаммен, L = 8 ↑</button>
+      </div>
+      <p class="lab-note">C-да <code>for (r…) for (c…) sum += m[r][c];</code> жадта ретімен жүреді. Циклдарды ауыстырсаңыз (<code>for (c…) for (r…)</code>), нәтиже бірдей, бірақ әр қатынас жаңа блокқа түседі. Ассоциативтілік қақтығысты азайтады, бірақ сыйымдылық miss-терді тек үлкенірек кэш (не жақсырақ қатынас реті) жояды.</p>
+    </section>
+
+    <section class="lab" data-cslab="pipe" aria-labelledby="h-pipe">
+      <h2 id="h-pipe">4. Бес сатылы конвейер: деректер қаупі, тоқтау, форвардинг</h2>
+      <p class="lab-goal"><b>Мақсат:</b> келесі команда алдыңғысының нәтижесін күткенде (RAW қаупі) конвейер неге тоқтайтынын және форвардинг тоқтауды қалай азайтатынын көру.</p>
+      <p class="cs-small">Сатылар: <b>IF</b> - команданы алу, <b>ID</b> - декодтау және регистрлерді оқу, <b>EX</b> - ALU, <b>MEM</b> - жадқа қатынас, <b>WB</b> - нәтижені регистрге жазу. Тоқтау ID-да болады; артындағы команда IF-те күтеді.</p>
+      <div class="lab-split">
+        <div>
+          <div class="cs-grid">
+            <label class="cs-field"><span>Бағдарлама</span><select data-k="psel"></select></label>
+          </div>
+          <div class="lab-row"><label class="cs-check"><input type="checkbox" data-k="fwd"> Форвардинг (EX/MEM, MEM/WB → EX)</label></div>
+          <pre class="cc-asm" data-k="asm"></pre>
+        </div>
+        <div>
+          <div class="cs-ctl">
+            <button type="button" class="btn gold" data-c="play">▶ Ойнату</button>
+            <button type="button" class="btn secondary" data-c="pause">❚❚ Кідірту</button>
+            <button type="button" class="btn secondary" data-c="prev">← Алдыңғы</button>
+            <button type="button" class="btn secondary" data-c="next">Келесі →</button>
+            <button type="button" class="btn secondary" data-c="reset">↺ Басынан</button>
+            <label class="cs-field ca-speed"><span>Жылдамдық</span><select data-c="speed"><option value="0.5">0.5×</option><option value="1" selected>1×</option><option value="2">2×</option></select></label>
+            <span class="cs-n" aria-label="Цикл нөмірі"></span>
+          </div>
+          <p class="cs-say" aria-live="polite"></p>
+          <div class="cc-stat" data-k="pstat"></div>
+        </div>
+      </div>
+      <div class="ca-scroll"><table class="ca-tab cc-pipe" data-k="grid"></table></div>
+      <details class="ca-steps" data-k="steps"><summary>Барлық циклдың мәтіні (анимациясыз нұсқа)</summary><ol></ol></details>
+      <div class="lab-task" data-cslab="pipe-task">
+        <b>Тексеру: жаңа бағдарлама.</b>
+        <pre class="cc-asm" data-k="pasm"></pre>
+        <p data-k="pq"></p>
+        <label class="cs-field"><span>Циклдар саны</span><input class="cs-in" data-k="pans" inputmode="numeric" autocomplete="off"></label>
+        <div class="lab-row"><button type="button" class="btn gold" data-c="pcheck">Тексеру</button><button type="button" class="btn secondary" data-c="pnew">Жаңа бағдарлама</button><button type="button" class="btn secondary" data-c="pload">Диаграммада ашу ↑</button></div>
+        <div data-fb="pipe" aria-live="polite"></div>
+        <div data-k="phints"></div>
+      </div>
+    </section>
+
+    <section class="lab" data-cslab="cache-task" aria-labelledby="h-task">
+      <h2 id="h-task">5. Қорытынды тексеру: трассаны жіктеу</h2>
+      <p class="lab-goal"><b>Мақсат:</b> кэшті симуляторсыз, қағазда жүргізу. Әр жолы кэш баптауы мен адрестер кездейсоқ.</p>
+      <div class="lab-task">
+        <p data-k="q"></p>
+        <label class="cs-field"><span>H / M тізбегі (мысалы: M H M M H M H H)</span><input class="cs-in" data-k="cls" autocomplete="off"></label>
+        <label class="cs-field"><span>Hit rate (3/8, 37,5% не 0,375)</span><input class="cs-in" data-k="rate" autocomplete="off"></label>
+        <div class="lab-row"><button type="button" class="btn gold" data-c="check">Тексеру</button><button type="button" class="btn secondary" data-c="new">Жаңа есеп</button></div>
+        <div data-fb="task" aria-live="polite"></div>
+        <div data-k="hints"></div>
+      </div>
+    </section>
+
+    <section class="lab" aria-labelledby="h-key">
+      <h2 id="h-key">Түйін</h2>
+      <ul>
+        <li>Ығысу = адрес mod B; блок = ⌊адрес / B⌋; индекс = блок mod S; тег = ⌊блок / S⌋; S = L / W.</li>
+        <li>Hit rate кеңістіктік (көрші адрестер) және уақыттық (қайта қолдану) локальдылыққа тәуелді. Miss түрлері: міндетті, қақтығыс, сыйымдылық (3C).</li>
+        <li>Конвейер өткізу қабілетін арттырады; RAW тәуелділік тоқтау тудырады; форвардинг ALU тізбегін тоқтаусыз етеді, ал lw-дан кейін бірден қолдану (load-use) бәрібір 1 цикл тоқтатады.</li>
+      </ul>
+      <p class="cs-small">Машина деңгейіндегі бағдарлама: <a href="../models.html#v-cpu">Интерактивті модельдер: Оқу процессоры</a>; C жады: <a href="../models.html#v-mem">Стек, үйме, көрсеткіш</a>. Барлық зертханалар: <a href="index.html">CS Universe зертханалары</a>.</p>
+    </section>
+  </main>
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="ft-brand"><a class="ft-logo" href="../../index.html"><img src="../../assets/img/seal.svg" alt="" width="52" height="52"><span><b>AO</b>17</span></a><p>Бағдарламалау, математика және ағылшын тілі бір қазақша платформада. Атауы: Алаш Орда, 1917 - ұлтты біліммен көтерген ағартушыларға құрмет. Тегін және офлайн.</p></div>
+      <div class="ft-col"><h4>Академиялар</h4><ul><li><a href="../../academy/index.html">CS Universe</a></li><li><a href="../../programming.html">Бағдарламалау</a></li><li><a href="../../en/">English Academy</a></li><li><a href="../../en/skills.html">Ағылшын: дағдылар</a></li><li><a href="../../math/">Математика</a></li></ul></div><div class="ft-col"><h4>Оқу</h4><ul><li><a href="../../index.html#main">Лекциялар</a></li><li><a href="../../courses.html">Барлық курстар</a></li><li><a href="../../map.html">Курс картасы</a></li><li><a href="../../cheatsheet.html">Шпаргалка</a></li><li><a href="../../glossary.html">Сөздік</a></li><li><a href="../../exam.html">Қорытынды емтихан</a></li></ul></div><div class="ft-col"><h4>Жаттығу</h4><ul><li><a href="../../practice.html">Жаттығулар</a></li><li><a href="../../playground.html">Сынақ алаңы</a></li><li><a href="../../viz.html">Визуализациялар</a></li><li><a href="../../flashcards.html">Флэш-карточкалар</a></li><li><a href="../../games.html">Ойындар</a></li><li><a href="../../debug.html">Қатені тап</a></li><li><a href="../../detective.html">SQL детектив</a></li><li><a href="../../flask.html">Flask зертханасы</a></li><li><a href="../../projects.html">Жобалар шеберханасы</a></li></ul></div><div class="ft-col"><h4>Жоба</h4><ul><li><a href="../../about.html">Курс туралы</a></li><li><a href="../../alash.html">Алаш тұлғалары</a></li><li><a href="../../posters.html">Афиша: постер мен фильм</a></li><li><a href="../../certificate.html">Сертификат</a></li><li><a href="../../login.html">Кіру: оқушы мен мұғалім</a></li><li><a href="../../teacher.html">Мұғалім беті</a></li><li><a href="../../profile.html">Менің кабинетім</a></li><li><a href="../../partners.html">Серіктестерге</a></li><li><a href="../../metrics.html">Ашық метрикалар</a></li></ul></div>
+      <div class="ft-legal"><p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p><p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p><p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. Қазақша аудармалардың авторы: Sagid Mustafa.</p><p>AO17 — Harvard University-ден тәуелсіз жоба.</p><p class="ft-src">Түпнұсқа (Harvard CS50): <a href="https://cs50.harvard.edu/x/" target="_blank" rel="noopener">CS50x</a> · <a href="https://cs50.harvard.edu/python/" target="_blank" rel="noopener">CS50P</a> · <a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · <a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · <a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p><p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="../../cpp/">C++</a> · <a href="../../java/">Java</a> · <a href="../../en/">Ағылшын тілі</a> · <a href="../../math/">Математика</a></p><p class="ft-links"><a href="../../copyright.html">Авторлық құқық және лицензиялар</a> · <a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · <a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>
+    </div>
+  </footer>
+</body>
+</html>

@@ -297,8 +297,9 @@ test("Python: Pyodide жүктелмесе - адал хабар", async ({ page
 // ---------------------------------------------------------------- хаб, телефон, a11y
 test("Хаб: дайын зертханалар сілтемесі бар, жоспардағылар белгіленген", async ({ page }) => {
   const errs = await open(page, "academy/labs/index.html");
-  for (const h of ["bfs.html", "python.html", "binary-search.html", "../models.html#v-graph", "../models.html#v-sort", "../lab.html"]) await expect(page.locator(`.lab-map a[href="${h}"]`)).toHaveCount(1);
-  await expect(page.locator(".lab-map li.planned .lab-st", { hasText: "жоспарда" })).toHaveCount(6);
+  for (const h of ["bfs.html", "python.html", "binary-search.html", "dijkstra.html", "scheduler.html", "cpu.html", "network.html", "database.html", "distributed.html", "../models.html#v-graph", "../models.html#v-sort", "../lab.html"]) await expect(page.locator(`.lab-map a[href="${h}"]`)).toHaveCount(1);
+  // 2-пакеттен кейін жоспарда қалған зертхана жоқ: бәрі «дайын» не «модель бар»
+  await expect(page.locator(".lab-map li.planned")).toHaveCount(0);
   await expect(page.locator(".lab-map li.planned a")).toHaveCount(0);
   expect(errs).toEqual([]);
 });

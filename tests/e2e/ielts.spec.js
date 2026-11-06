@@ -40,7 +40,9 @@ test("хаб: құрылым, тәуелсіздік ескертуі, дайы�
   await expect(page.locator(".lab-hero .lab-honest")).toContainText("ресми band бағасын бермейді");
   await expect(page.locator(".lab-hero .lab-honest")).toContainText("байланысты емес");
   for (const f of ["reading.html", "listening.html", "writing.html#t1", "writing.html#t2", "speaking.html"]) await expect(page.locator(`.lab-map li.ready a[href="${f}"]`)).toHaveCount(1);
-  await expect(page.locator(".lab-map li:not(.ready) .lab-st").first()).toHaveText("жоспарда");
+  for (const f of ["reading-test.html", "listening-test.html", "task1-visuals.html", "letter.html", "pronunciation.html"]) await expect(page.locator(`.lab-map li.ready a[href="${f}"]`).first()).toBeVisible();
+  // 2-пакеттен кейін IELTS картасында жоспардағы бөлім қалмады
+  await expect(page.locator(".lab-map li:not(.ready)")).toHaveCount(0);
   await expect(page.locator(".ie-fact")).toHaveCount(4);
   expect(errs).toEqual([]);
 });
