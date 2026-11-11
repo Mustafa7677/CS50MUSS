@@ -70,11 +70,16 @@ EMBLEMS = {
 }
 
 
+def _core(mid):
+    import curriculum as C
+    return next(tuple(M["emblem"]) for M in C.CORE_MODULES if M["id"] == mid)
+
+
 def svg(mid):
-    hue, inner = EMBLEMS[mid]
+    hue, inner = EMBLEMS[mid] if mid in EMBLEMS else _core(mid)
     return (f'<svg class="ac-emblem" viewBox="0 0 160 120" role="img" aria-hidden="true" focusable="false" style="color:{hue}">'
             f'<g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">{inner}</g></svg>')
 
 
 def hue(mid):
-    return EMBLEMS[mid][0]
+    return EMBLEMS[mid][0] if mid in EMBLEMS else _core(mid)[0]

@@ -33,6 +33,12 @@ import math  # noqa: E402,F401  (number.check өрнектері үшін)
 
 OUT = ROOT / "academy"
 CONTENT_MODULES = ["m01_a", "m01_b", "m02_a", "m02_b", "m03_a", "m03_b", "m04_a", "m04_b", "m05_a", "m05_b", "m06_a", "m06_b", "m07_a", "m07_b", "m08_a", "m08_b", "m09_a", "m09_b", "m10_a", "m10_b", "m11_a", "m11_b", "m12_a", "m12_b", "s01_a", "s01_b", "s02_a", "s02_b", "s03_a", "s03_b", "s04_a", "s04_b", "s05_a", "s05_b", "s06_a", "s06_b", "s07_a", "s07_b", "s08_a", "s08_b", "s09_a", "s09_b"]
+# Core модульдерінің мазмұны: tools/academy/content/cNN_a.py, cNN_b.py - бар файлдар өздігінен қосылады.
+# AO17_CONTENT=c03,c04 - тек аталған Core модульдерін жүктеу (қатар жазылып жатқан басқа модуль тексеруді бұзбасын).
+_only = [x for x in os.environ.get("AO17_CONTENT", "").split(",") if x]
+if _only:
+    CONTENT_MODULES = []
+CONTENT_MODULES += sorted(f.stem for f in (Path(__file__).parent / "academy" / "content").glob("c[0-9][0-9]_[ab].py") if not _only or f.stem[:3] in _only)
 
 REQUIRED = {  # өріс -> (тип, ең аз ұзындық)
     "id": (str, 1), "courseId": (str, 1), "moduleId": (str, 1), "slug": (str, 1), "title": (str, 3), "language": (str, 2),
@@ -59,7 +65,7 @@ def load_lessons():
         if L["id"] in viz_map.VIZ:
             L["viz"] = viz_map.VIZ[L["id"]]
     unknown = set(viz_map.VIZ) - {L["id"] for L in out}
-    if unknown:
+    if unknown and not _only:
         raise SystemExit(f"viz_map: белгісіз сабақтар {sorted(unknown)}")
     return out
 
@@ -416,7 +422,17 @@ def validate(lessons, run_code=True):
                 if exm.get("lang") == "c":
                     c_check(exm, f"{lid} мысал {j + 1}", errs)
                     continue
+                if exm.get("lang") == "javascript":   # нағыз Node.js-пен орындалып, шығысы салыстырылады
+                    r = subprocess.run(["node", "-e", exm["code"]], capture_output=True, text=True, timeout=15)
+                    out = r.stdout.rstrip("\n")
+                    if r.returncode != 0:
+                        errs.append(f"{lid} мысал {j + 1}: JS қатемен аяқталды: {(r.stderr.strip().splitlines() or [r.returncode])[-1]}")
+                    elif out != exm["output"]:
+                        errs.append(f"{lid} мысал {j + 1}: шығыс сәйкес емес\n  күтілген: {exm['output']!r}\n  нақты:    {out!r}")
+                    continue
                 if exm.get("lang") not in ("python", "python-local"):
+                    if exm.get("lang") not in ("html", "css", "sql", "http", "text"):
+                        errs.append(f"{lid} мысал {j + 1}: белгісіз тіл {exm.get('lang')!r}")
                     continue
                 rc, out, err = run_example(exm["code"])
                 if rc != 0:
@@ -510,7 +526,7 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad", intro=""):
 def lesson_html(L, plan_by_id, prev_l, next_l):
     rel = f"academy/{L['moduleId']}/{L['slug']}.html"
     mod = next(m for m in C.ALL_MODULES if m[0] == L["moduleId"])
-    lvl = f"Senior · Level {C.SENIOR_LEVEL[mod[0]]}" if mod[0] in C.SENIOR_LEVEL else "Level I"
+    lvl = f"Senior · Level {C.SENIOR_LEVEL[mod[0]]}" if mod[0] in C.SENIOR_LEVEL else "Core · Level II" if mod[0] in C.CORE_IDS else "Level I"
     n = int(L["slug"][1:])
     pre_links = "".join(
         f'<li><a href="../{plan_by_id[p]["module"]}/{plan_by_id[p]["slug"]}.html">{E(plan_by_id[p]["title"])}</a></li>' if p in DONE
@@ -520,7 +536,7 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
         f'<figure class="ac-ex"><figcaption>{E(x["title"])}</figcaption><pre data-lang="{x.get("lang", "python")}"><code class="language-{x.get("lang", "python").replace("-local", "")}">{E(x["code"])}</code></pre>'
         + (f'<div class="ac-out"><span>stdin</span><pre>{E(x["stdin"])}</pre></div>' if x.get("stdin") else "")
         + (f'<div class="ac-out"><span>Іске қосу</span><pre>./prog {E(" ".join(x["args"]))}</pre></div>' if x.get("args") else "")
-        + f'<div class="ac-out"><span>{"Шығыс (build кезінде gcc арқылы алынған)" if x.get("lang") == "c" else "Шығыс (build кезінде CPython + gcc арқылы алынған; браузерде subprocess жоқ - өз компьютеріңізде іске қосыңыз)" if x.get("lang") == "python-local" else "Шығыс (тексерілген)"}</span><pre>{E(x["output"])}</pre></div>'
+        + f'<div class="ac-out"><span>{"Шығыс (build кезінде gcc арқылы алынған)" if x.get("lang") == "c" else "Шығыс (build кезінде CPython + gcc арқылы алынған; браузерде subprocess жоқ - өз компьютеріңізде іске қосыңыз)" if x.get("lang") == "python-local" else "Шығыс (build кезінде Node.js арқылы алынған)" if x.get("lang") == "javascript" else "Нәтиже (сипаттама, автоматты тексерілмеген)" if x.get("lang") in ("html", "css", "sql", "http", "text") else "Шығыс (тексерілген)"}</span><pre>{E(x["output"])}</pre></div>'
         + (f'<div class="ac-out"><span>stderr (gcc {E(" ".join(x["cflags"]))})</span><pre>{E(x["stderrShow"])}</pre></div>' if x.get("stderrShow") else "")
         + f'<p>{E(x["explain"])}</p></figure>' for x in L["examples"])
     mistakes = "".join(f'<li><b>{E(m["mistake"])}</b><br>Себебі: {E(m["why"])}<br>Түзету: {E(m["fix"])}</li>' for m in L["mistakes"])
@@ -550,7 +566,7 @@ def lesson_html(L, plan_by_id, prev_l, next_l):
       <header class="ac-head">
         <div class="ac-head-t">
           <p class="ac-crumb"><a href="../index.html">CS Universe</a> / <a href="../index.html#{L['moduleId']}">{lvl} · {E(mod[2])}</a> / {n}-сабақ</p>
-          <p class="ac-folio"><span>{L['moduleId'].upper() if L['moduleId'].startswith('s') else L['moduleId'][1:]}</span><i>·</i><span>{n:02d}</span><small>{E(mod[1])}</small></p>
+          <p class="ac-folio"><span>{L['moduleId'].upper() if L['moduleId'][0] in 'sc' else L['moduleId'][1:]}</span><i>·</i><span>{n:02d}</span><small>{E(mod[1])}</small></p>
           <h1>{E(L['title'])}</h1>
           <ul class="ac-chips"><li>{DIFF[L['difficulty']]}</li><li>≈ {L['minutes']} мин</li><li>{len(L['objectives'])} мақсат</li><li>{len(L['exercises']) + len(L['assessment'])} тапсырма</li></ul>
           <p class="ac-meta">нұсқа {E(L['version'])} · тексеру: {E(L['reviewStatus'])}</p>
@@ -587,7 +603,7 @@ DONE = set()
 
 def study_html(lessons):
     """«Менің оқуым»: үш академияның ортақ оқушы кабинеті (assets/js/ao-study.js, деректер браузерде)."""
-    cat = {L["id"]: [f'{L["moduleId"].upper() if L["moduleId"].startswith("s") else L["moduleId"][1:]}.{L["slug"][1:]} · {L["title"]}', f'{L["moduleId"]}/{L["slug"]}.html'] for L in lessons}
+    cat = {L["id"]: [f'{L["moduleId"].upper() if L["moduleId"][0] in "sc" else L["moduleId"][1:]}.{L["slug"][1:]} · {L["title"]}', f'{L["moduleId"]}/{L["slug"]}.html'] for L in lessons}
     sec = lambda i, h, note="": f'<section class="ac-sec st-sec"><h2>{h}</h2>{f"<p class=ac-note>{note}</p>" if note else ""}<div id="{i}"></div></section>'  # noqa: E731
     body = f"""  <main class="content ac-home st-home" id="main">
     <header class="lab-hero"><p class="lab-kicker">AO17 · үш академия</p><h1>Менің оқуым</h1>
@@ -647,6 +663,9 @@ def index_html(lessons, st):
     <section class="ac-sec"><h2>Level I · Foundation: 12 модуль, 120 сабақ</h2>
       <p class="ac-note">Белгі: сілтемесі бар сабақ - толық дайын және тексерілген; сұр түстегісі - оқу мақсаты бекітілген жоспар.</p>
       {mod_list(C.MODULES)}</section>
+    {f"""<section class="ac-sec" id="core"><h2>Level II · Computer Science Core: {len(C.CORE_MODULES)} модуль</h2>
+      <p class="ac-note">AO17-нің өз авторлық модульдері: жасанды интеллект, машиналық оқыту, деректер қоры, операциялық жүйелер, желілер, веб және бағдарлама жобалау. Дайын: <b>{sum(st["modules"][M["id"]]["complete"] for M in C.CORE_MODULES)}</b> / {10 * len(C.CORE_MODULES)} сабақ.</p>
+      {mod_list([m for m in C.ALL_MODULES if m[0] in C.CORE_IDS])}</section>""" if C.CORE_MODULES else ""}
     <section class="ac-sec" id="senior"><h2>Senior сатысы: 9 модуль, 90 сабақ</h2>
       <p class="ac-note">Бағыттардың ең жоғарғы сатысы: архитектура, таралған жүйелер, сенімділік, көшбасшылық, компиляторлар, қауіпсіздік, MLOps, сенімді AI және зерттеу. Дайын: <b>{st["senior_complete"]}</b> / {st["senior_planned"]} сабақ; әр сабақ Level I-дің сапа талаптарымен тексеріледі (дәлелдеу, орындалатын мысал, автоматты тапсырма).</p>
       {mod_list([m for m in C.ALL_MODULES if m[0].startswith("s")])}</section>

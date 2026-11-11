@@ -202,7 +202,7 @@ PROJECTS = [
 
 
 def lesson_id(module, slug):
-    return f"{SENIOR_COURSE_ID if module.startswith('s') else COURSE_ID}.{module}.{slug}"
+    return f"{SENIOR_COURSE_ID if module.startswith('s') else 'ao17-core' if module.startswith('c') else COURSE_ID}.{module}.{slug}"
 
 
 def plan():
@@ -334,5 +334,28 @@ SENIOR_PREREQ = {
     "s06": ["m12"], "s07": ["m12"], "s08": ["s07"], "s09": ["m12"],
 }
 SENIOR_LEVEL = {mid: lv for mid, _, _, lv, _ in SENIOR_MODULES}
-ALL_MODULES = MODULES + [(mid, en, kk, ls) for mid, en, kk, _, ls in SENIOR_MODULES]
-ALL_PREREQ = {**MODULE_PREREQ, **SENIOR_PREREQ}
+
+# ---- Core (Level II · Computer Science Core): әр модульдің жоспары бөлек файлда - tools/academy/core/cNN.py
+#      MODULE = {"id": "c03", "en": ..., "kk": ..., "prereq": [...], "emblem": (рең, SVG ішкі мазмұны),
+#                "lessons": [(slug, атауы, мақсаты) × 10]}. Мазмұны: tools/academy/content/cNN_a.py, cNN_b.py.
+CORE_COURSE_ID = "ao17-core"
+
+
+def _load_core():
+    import importlib.util
+    from pathlib import Path
+    out = []
+    for f in sorted((Path(__file__).parent / "core").glob("c[0-9][0-9].py")):
+        spec = importlib.util.spec_from_file_location("core_" + f.stem, f)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        M = mod.MODULE
+        assert M["id"] == f.stem and len(M["lessons"]) == 10, f"{f.name}: id не сабақ саны қате"
+        out.append(M)
+    return out
+
+
+CORE_MODULES = _load_core()
+CORE_IDS = {M["id"] for M in CORE_MODULES}
+ALL_MODULES = MODULES + [(M["id"], M["en"], M["kk"], M["lessons"]) for M in CORE_MODULES] + [(mid, en, kk, ls) for mid, en, kk, _, ls in SENIOR_MODULES]
+ALL_PREREQ = {**MODULE_PREREQ, **{M["id"]: M.get("prereq", ["m12"]) for M in CORE_MODULES}, **SENIOR_PREREQ}
