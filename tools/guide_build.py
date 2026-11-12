@@ -220,15 +220,27 @@ def lesson_html(L, prev_l, next_l, tmpl):
     return rel, head + body
 
 
+# Курстың соңғы қадамы - сынақтар (бар беттер): сабақтардан кейін ғана ұсынылады
+FINALS = {"sat": [("exam.html", "Емтихан тренажері", "Қысқа және толық нұсқа: 98 сұрақ, ресми уақыт, модульдер. Нәтиже - домен бойынша шикі балл.")],
+          "ielts": [("reading-test.html", "Толық Reading сынағы", "3 мәтін, 40 сұрақ, 60 минут; шолуда әр жауаптың дәлелі."),
+                    ("listening-test.html", "Толық Listening сынағы", "4 бөлім, 40 сұрақ; жаттығу және емтихан режимі."),
+                    ("writing.html", "Writing студиясы", "Task 1 және Task 2: жоспар, редактор, өзін-өзі тексеру."),
+                    ("speaking.html", "Speaking студиясы", "Part 1-3: таймер, жазба, өзін-өзі бағалау.")]}
+
+
 def hub_block(lessons):
-    """Хабтағы «Оқулық» тізімі: бөлім бойынша топталған сабақтар."""
+    """Хабтағы «Нөлден дайындық курсы»: бөлім бойынша топталған сабақтар, соңында - сынақтар."""
     secs = {}
     for L in lessons:
         secs.setdefault(L["section"], []).append(L)
-    out = ['<p class="ac-note">Әр сабақ: нақты мәселе, түсіндірме, емтихандағы әдіс, қадамдық мысалдар, жиі қателер, жаттығу және көмексіз меңгеру тексерісі.</p>']
+    out = ['<p class="ac-note">Курс нөлден басталады: сабақтарды ретімен өтіңіз. Әр сабақ: нақты мәселе, түсіндірме, емтихандағы әдіс, қадамдық мысалдар, жиі қателер, жаттығу және көмексіз меңгеру тексерісі.</p>']
     for sec, ls in secs.items():
         out.append(f'<h3 class="gd-hsec">{E(sec)}</h3><ol class="gd-list">' + "".join(
             f'<li><a href="lesson-{L["slug"]}.html">{E(L["title"])}</a><small>{E(L["goals"][0])} · ≈ {L["minutes"]} мин</small></li>' for L in ls) + "</ol>")
+    fin = FINALS.get(lessons[0]["acad"], [])
+    if fin:
+        out.append('<h3 class="gd-hsec">Курс соңы: сынақтар</h3><p class="ac-note">Сабақтарды өткен соң білімді емтихан форматында тексеріңіз.</p><ol class="gd-list gd-fin">' + "".join(
+            f'<li><a href="{h}">{E(t)}</a><small>{E(d)}</small></li>' for h, t, d in fin) + "</ol>")
     return "\n      ".join(out)
 
 
