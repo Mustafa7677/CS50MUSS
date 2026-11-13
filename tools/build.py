@@ -1043,6 +1043,8 @@ def main():
     import academy_build
     academy_pages = academy_build.build()
     # IELTS, Digital SAT және CS зертханалары: қолмен жазылған беттер (academy/<бөлім>/*.html), жалпы бас/нав/футер осы жерде
+    import guide_build   # IELTS, Digital SAT оқулығы: tools/guides/** -> academy/<академия>/lesson-*.html
+    guide_build.build()
     for sub in () if os.environ.get("AO17_SKIP_LABS") else ("ielts", "sat", "labs"):  # AO17_SKIP_LABS=1: бұл беттер әзірленіп жатқанда
         academy_pages += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / "academy" / sub).glob("*.html"))
     for rel in academy_pages:
