@@ -1,0 +1,131 @@
+/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
+   «Мәтін тергеушісі» (academy/ielts/detective.html). Жаңа дизайн емес: Алаш токендері мен ao-labs.css компоненттерінің үстіне
+   тек осы сабаққа керек орналасу мен «дәлел жібі» қосылған. Екпін түсі - бір айнымалы (--rd-acc, IELTS бургундиі). */
+.rd-page { --cw: 1080px; max-width: 1080px; margin: 0 auto; --rd-acc: var(--ac-burg); --rd-good: var(--ac-good); --rd-bad: var(--ac-bad); }
+.rd-page .rl { overflow: clip; }                 /* жабысқақ (sticky) карточка жұмыс істеуі үшін: clip айналдыру контейнерін жасамайды */
+.rd-page .rl-nav { border-radius: 15px 15px 0 0; }
+.rd-lead { margin: 0 0 12px; max-width: 72ch; line-height: 1.65; }
+.rd-h { font: 700 19px/1.3 var(--ac-serif); color: var(--rd-acc); margin: 22px 0 6px !important; }
+.rd-lbl, .rd-step { margin: 0 0 4px; font: italic 400 13.5px/1.3 var(--ac-serif); color: var(--rd-acc); }
+.rd-stmt { font: 600 18px/1.5 var(--ac-serif); margin: 0 0 8px; }
+.rd-stmt:focus { outline: none; }
+.rd-ask { margin: 0 0 8px; font-size: 14.5px; line-height: 1.55; color: var(--muted); }
+.rd-link { margin: 8px 0 0; font-size: 14px; line-height: 1.5; }
+.rd-link:empty { display: none; }
+.rd-sum { font: 700 17px/1.4 var(--ac-serif); color: var(--ac-green); margin: 0 0 6px; }
+
+/* ---------- мәтін және дәлел жібі ---------- */
+.rd-host { position: relative; }
+.rd-threads { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; z-index: 3; }
+.rd-th path { fill: none; stroke: var(--ac-gold); stroke-width: 2.5; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: 0; animation: rd-draw .7s ease-out; }
+.rd-th circle { fill: var(--ac-gold); }
+.rd-th.dim { opacity: .4; }
+.rd-th.good path { stroke: var(--rd-good); } .rd-th.good circle { fill: var(--rd-good); }
+.rd-th.bad path { stroke: var(--rd-bad); } .rd-th.bad circle { fill: var(--rd-bad); }
+@keyframes rd-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.rd-pass { padding: 12px 16px; border-radius: 10px; border: 1px solid var(--border); background: color-mix(in srgb, var(--ac-paper) 40%, var(--surface)); }
+.rd-pass p { margin: 0 0 10px; }
+.rd-pass p:last-child { margin-bottom: 0; }
+.rd-ptitle { font-weight: 700; color: var(--ac-green); }
+.rd-pass .lab-sel { padding: 1px 0; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+.rd-pass .lab-sel.rd-locked { cursor: default; }
+.rd-pass .lab-sel.rd-locked:hover:not(.ok) { background: none; }
+.rd-pass .lab-sel.ok { box-shadow: 0 2px 0 var(--rd-good); }
+.rd-pass .lab-sel.no { box-shadow: 0 2px 0 var(--rd-bad); }
+mark.rd-kw { background: color-mix(in srgb, var(--ac-gold-soft) 45%, transparent); color: inherit; border-radius: 3px; padding: 0 2px; box-shadow: 0 2px 0 var(--ac-gold); }
+mark.rd-kw.good { background: color-mix(in srgb, var(--rd-good) 20%, transparent); box-shadow: 0 2px 0 var(--rd-good); }
+mark.rd-kw.bad { background: color-mix(in srgb, var(--rd-bad) 16%, transparent); box-shadow: 0 2px 0 var(--rd-bad); }
+.rd-quote { font-size: 16px; line-height: 1.65; }
+p.rd-quote { font-family: var(--ac-serif); margin: 0 0 6px; padding: 8px 12px; border-left: 3px solid var(--ac-gold-soft); background: color-mix(in srgb, var(--ac-paper) 40%, var(--surface)); border-radius: 0 8px 8px 0; }
+
+/* ---------- сахна: мәтін + іс карточкасы ---------- */
+.rd-scene { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; align-items: start; }
+.rd-scene .rd-pass { grid-column: 1; grid-row: 1; }
+.rd-card { grid-column: 2; grid-row: 1; position: sticky; top: 76px; z-index: 4; padding: 12px 14px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--rd-acc) 40%, var(--border)); background: var(--surface); box-shadow: 0 6px 18px -12px rgba(0,0,0,.5); }
+.rd-ctl { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.rd-ctl .lab-choice { margin: 0; }
+.rd-verdicts button { font-weight: 600; }
+@media (max-width: 860px) {
+  .rd-scene { grid-template-columns: minmax(0, 1fr); }
+  .rd-scene .rd-pass { grid-column: 1; grid-row: 2; }
+  .rd-card { grid-column: 1; grid-row: 1; top: 62px; max-height: 50vh; overflow-y: auto; padding: 10px 12px; }
+  .rd-card .rd-ask { font-size: 13.5px; margin-bottom: 6px; }
+  .rd-card .tt-fb { padding: 7px 10px; font-size: 14px; margin-top: 8px; }
+  .rd-card .rd-link { font-size: 13px; }
+  .rd-card .rd-stmt { font-size: 16.5px; }
+}
+.rd-stamp { display: inline-block; font: 700 15px/1 var(--ac-serif); letter-spacing: .04em; text-transform: uppercase; padding: 5px 9px; border: 2px solid currentColor; border-radius: 6px; transform: rotate(-2deg); }
+.rd-v-T { color: var(--rd-good); } .rd-v-F { color: var(--rd-bad); } .rd-v-NG { color: var(--ac-gold); }
+
+/* ---------- кіріспе ---------- */
+.rd-duo { display: grid; gap: 34px; margin: 0 0 10px; }
+.rd-blk { padding: 10px 14px; border: 1px solid var(--border); border-radius: 10px; background: color-mix(in srgb, var(--ac-paper) 40%, var(--surface)); }
+.rd-wline { font: 18px/1.9 var(--ac-serif); margin: 0; }
+.rd-w { border-radius: 3px; padding: 1px 2px; }
+.rd-w.rd-shared { background: color-mix(in srgb, var(--ac-gold-soft) 45%, transparent); box-shadow: 0 2px 0 var(--ac-gold); }
+.rd-w.rd-flip { background: color-mix(in srgb, var(--rd-bad) 18%, transparent); box-shadow: 0 2px 0 var(--rd-bad); font-weight: 700; }
+.rd-count { margin: 0 0 10px; font-size: 15px; }
+.rd-task2 { margin-top: 14px; }
+
+/* ---------- «Көр» тақтасы ---------- */
+.rd-board { padding: 16px 16px 12px; overflow: visible; }
+.rd-board p { margin: 0; }
+.rd-b-lbl { font: italic 400 13px/1.3 var(--ac-serif); color: var(--lab-chalk2); margin: 0 0 4px !important; }
+.rd-b-stmt { font: 600 18px/1.5 var(--ac-serif); color: var(--lab-chalk); margin: 0 0 14px !important; }
+.rd-claims { list-style: none; padding: 0; margin: 0 0 46px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.rd-claim { margin: 0; padding: 8px 10px; border: 1.5px solid var(--lab-chalk2); border-radius: 10px; font: 15px/1.4 var(--ac-serif); color: var(--lab-chalk); background: rgba(0,0,0,.18); }
+.rd-claim.rd-cur { box-shadow: 0 0 0 2px var(--lab-gold); }
+.rd-claim.rd-ok { border-color: #7ddf9f; } .rd-claim.rd-no { border-color: #ff8a80; } .rd-claim.rd-abs { border-color: var(--lab-gold); }
+.rd-mk { display: block; font: 600 13px/1.3 var(--font); min-height: 1.3em; }
+.rd-ok .rd-mk { color: #7ddf9f; } .rd-no .rd-mk { color: #ff8a80; } .rd-abs .rd-mk { color: var(--lab-gold); }
+.rd-b-sents { display: grid; gap: 8px; margin: 0 0 12px; }
+.rd-b-sent { font: 16px/1.7 var(--ac-serif); color: var(--lab-chalk); padding: 8px 12px; border-left: 3px solid var(--lab-chalk2); background: rgba(0,0,0,.18); border-radius: 0 8px 8px 0; }
+mark.rd-bm { background: none; color: inherit; border-radius: 3px; padding: 0 2px; }
+mark.rd-bm.on { background: rgba(242,183,5,.28); box-shadow: 0 2px 0 var(--lab-gold); }
+.rd-b-out { font: 600 16px/1.4 var(--ac-serif); color: var(--lab-chalk); margin: 0 0 10px !important; }
+.rd-board .rd-v-F { color: #ff8a80; } .rd-board .rd-v-T { color: #7ddf9f; } .rd-board .rd-v-NG { color: var(--lab-gold); }
+.rd-board .rd-th path { stroke: var(--lab-gold); } .rd-board .rd-th circle { fill: var(--lab-gold); }
+.rd-board .rd-th.good path { stroke: #7ddf9f; } .rd-board .rd-th.good circle { fill: #7ddf9f; }
+.rd-board .rd-th.bad path { stroke: #ff8a80; } .rd-board .rd-th.bad circle { fill: #ff8a80; }
+.rd-cap { min-height: 3.2em; font-size: 15px; line-height: 1.55; color: var(--lab-chalk); border-top: 1px dashed rgba(238,241,228,.25); padding-top: 8px; }
+.rd-off { visibility: hidden; }
+.rd-askbox { margin-top: 6px; }
+@media (max-width: 620px) { .rd-claims { grid-template-columns: minmax(0, 1fr); margin-bottom: 30px; } }
+
+/* ---------- «Өзің зертте» ---------- */
+.rd-track { margin: 0 0 12px; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; font-size: 14.5px; }
+.rd-chip { padding: 3px 10px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); font-size: 13.5px; }
+.rd-chip.on { color: var(--rd-good); border-color: var(--rd-good); }
+.rd-exp { margin: 0 0 14px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 12px; }
+.rd-slotline { line-height: 2.3; margin-bottom: 4px; }
+.rd-slot { display: inline-flex; flex-wrap: wrap; gap: 4px; vertical-align: middle; padding: 3px; border-radius: 10px; border: 1px dashed color-mix(in srgb, var(--rd-acc) 55%, var(--border)); }
+.rd-opt { padding: 4px 10px; border-radius: 7px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); font: 600 16px/1.3 var(--ac-serif); cursor: pointer; }
+.rd-opt:hover { border-color: var(--ac-green); }
+.rd-opt[aria-pressed=true] { border-color: var(--ac-green); background: color-mix(in srgb, var(--ac-green) 14%, var(--surface)); box-shadow: inset 0 -2px 0 var(--ac-green); }
+.rd-opt:focus-visible, .rd-ph:focus-visible, .rd-page .lab-choice button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.rd-out { margin: 0 0 4px; font-size: 15px; min-height: 30px; }
+.rd-why { margin: 0 0 34px; font-size: 14.5px; line-height: 1.55; min-height: 1.5em; }
+.rd-exp .rd-pass { padding: 8px 12px; }
+
+/* ---------- «Тексер»: парафраз ---------- */
+.rd-details { margin: 0 0 6px; }
+.rd-details > summary { cursor: pointer; font: 600 15px/1.4 var(--ac-serif); color: var(--ac-green); padding: 6px 0; }
+.rd-match { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; margin: 8px 0; }
+.rd-col { display: grid; gap: 8px; align-content: start; }
+.rd-colh { margin: 0; font: italic 400 13.5px/1.3 var(--ac-serif); color: var(--rd-acc); }
+.rd-ph { position: relative; text-align: left; padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text); font: 15.5px/1.4 var(--ac-serif); cursor: pointer; overflow-wrap: anywhere; }
+.rd-ph:hover:not(:disabled) { border-color: var(--ac-green); }
+.rd-ph[aria-pressed=true] { border-color: var(--ac-green); background: color-mix(in srgb, var(--ac-green) 12%, var(--surface)); }
+.rd-ph.ok { border-color: var(--rd-good); box-shadow: inset 4px 0 0 var(--rd-good); cursor: default; opacity: 1; }
+.rd-pn { display: inline-grid; place-items: center; margin-left: 6px; width: 20px; height: 20px; border-radius: 50%; background: var(--rd-good); color: var(--surface); font: 700 12px/1 var(--font); }
+.rd-cand { margin: 8px 0; }
+.rd-cand.ok .rd-quote { border-left-color: var(--rd-good); }
+.rd-step2:empty { display: none; }
+
+/* ---------- «Қатені талда» ---------- */
+.rd-mq { margin: 0 0 6px; }
+.rd-mq b { font-family: var(--font); font-size: 13.5px; color: var(--rd-acc); }
+.rd-mq.rd-wrong { padding: 6px 10px; border-left: 3px solid var(--rd-bad); background: var(--surface); border-radius: 0 8px 8px 0; font-family: var(--font); font-size: 15px; }
+
+@media (max-width: 560px) { .rd-match { gap: 8px; } .rd-ph { padding: 8px 9px; font-size: 14.5px; } .rd-pass { padding: 10px 12px; } }
+@media (prefers-reduced-motion: reduce) { .rd-th path { animation: none; } }
