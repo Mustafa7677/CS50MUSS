@@ -191,9 +191,12 @@
 
   show(0, false);
   if (!motion()) return;   // қозғалыс азайтылған: тек қолмен
-  film.classList.add("is-intro");
-  setTimeout(() => film.classList.remove("is-intro"), 3800);   // ашылу бір рет: кейінгі кадр ауысуында шеңбер қайталанбайды
-  const start = () => { if (started) return; started = true; setTimeout(() => { if (!playing && k === 0) play(); }, 2600); };
+  // фильм экранға кірген сәтте: шаңырақ сызылып, кадр ашылады (бір рет), сосын ойнай бастайды
+  const start = () => {
+    if (started) return; started = true;
+    film.classList.add("is-intro"); setTimeout(() => film.classList.remove("is-intro"), 3800);
+    setTimeout(() => { if (!playing && k === 0) play(); }, 2600);
+  };
   if ("IntersectionObserver" in window) {
     new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) start(); else if (playing) pause(); }), { threshold: 0.45 }).observe(frame);
   } else start();

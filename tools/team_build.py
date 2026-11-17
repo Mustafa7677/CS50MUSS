@@ -93,8 +93,8 @@ def shell(prefix, title, desc, main, scripts=""):
 # ---------- team.html ----------
 def film_shots(prefix):
     g = "assets/img/team/group-hd.jpg"
-    shots = [{"img": g, "x": 50, "y": 50, "s": 1.0, "to": [50, 52, 1.06], "hold": 5200, "k": TEAM["name"], "t": "Бір шаңырақ - бес адам",
-              "d": "Екеуі - дизайн, үшеуі - бағдарлама мен мазмұн. Камера әрқайсысына кезекпен жақындайды."}]
+    shots = [{"img": g, "x": 50, "y": 50, "s": 1.0, "to": [50, 52, 1.06], "hold": 5200, "k": TEAM["name"], "t": "Бес адам, бір кадр",
+              "d": "Камера әрқайсысына кезекпен жақындайды: солдан оңға қарай."}]
     for m in sorted(M, key=lambda m: m["face"][0]):   # кадрдағы орны бойынша - солдан оңға
         fx, fy = in_frame(g, *m["face"])
         shots.append({"img": g, "x": round(fx, 1), "y": round(fy + 9, 1), "s": 2.3, "hold": 3800, "who": m["slug"],
@@ -196,9 +196,14 @@ def team_page():
       <script type="application/json" id="tf-data">{json.dumps(shots, ensure_ascii=False)}</script>
     </section>
 
-    <section class="tm-sec tm-note" aria-labelledby="tn-h">
-      <h2 id="tn-h">Авторлық құқық</h2>
-      <p>AO17 платформасының бағдарламасы, дизайны және авторлық оқу материалдары бес автордың ортақ еңбегі: {E(", ".join(m["name"] for m in M))}. Толық шарттар: <a href="copyright.html">Авторлық құқық және лицензиялар</a>. Harvard CS50 материалдарының қазақша аудармалары өз лицензиясымен (CC BY-NC-SA 4.0) таратылады.</p>
+    <section class="tm-sec tm-seal" aria-labelledby="tn-h" data-reveal>
+      <img class="tm-seal-img" src="assets/img/seal.svg" alt="" width="132" height="132">
+      <div class="tm-seal-tx">
+        <p class="st-intertitle">Мөр басылды</p>
+        <h2 id="tn-h">Авторлық құқық</h2>
+        <p>AO17 платформасының бағдарламасы, дизайны және авторлық оқу материалдары бес автордың ортақ еңбегі. Толық шарттар: <a href="copyright.html">Авторлық құқық және лицензиялар</a>. Harvard CS50 материалдарының қазақша аудармалары өз лицензиясымен (CC BY-NC-SA 4.0) таратылады.</p>
+        <ul class="tm-signs" aria-label="Авторлар">{"".join(f'<li style="--i:{i}"><a href="team/{m['slug']}.html">{E(m['name'])}</a><span>{E(m['role'])}</span></li>' for i, m in enumerate(M))}</ul>
+      </div>
     </section>
   </main>"""
     return shell("", "Команда - AO17", "AO17 командасы: бес автор - екі дизайнер, үш бағдарлама мен мазмұн авторы. Скроллмен ашылатын фильм, әрқайсысының сайттағы ісі.", main)
