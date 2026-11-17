@@ -177,6 +177,7 @@
   }
   function motionStill() { return root.classList.contains("reduce-motion") || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches); }
   window.addEventListener("pageswap", (e) => {
+    if (e.viewTransition) quiet(e.viewTransition);
     if (!e.viewTransition || motionStill()) return;
     try {
       const to = e.activation && e.activation.entry && e.activation.entry.url;
@@ -187,8 +188,11 @@
       else if (kind === "rise") { const [h, t] = heroOf(document); vtName(h, "ao-hero"); vtName(t, "ao-title"); }
     } catch (er) { /* ескі браузер */ }
   });
+  // тоқтатылған ауысудың (терезе өлшемі өзгерді, бет ерте ашылды) уәделері қатемен аяқталады - оларды «ұстамасақ», консольге қате шығады
+  const quiet = (vt) => [vt.ready, vt.finished, vt.updateCallbackDone].forEach((p) => { if (p && p.catch) p.catch(() => {}); });
   window.addEventListener("pagereveal", (e) => {
     if (!e.viewTransition) return;
+    quiet(e.viewTransition);
     if (root.classList.contains("tx-in") || root.classList.contains("tx-back")) { e.viewTransition.types.add("tx"); return; }
     if (motionStill()) { e.viewTransition.skipTransition(); return; }
     try {
@@ -205,7 +209,7 @@
       } catch (er) { /* жеке режим */ }
       if (kind === "dive") { const [h, t] = heroOf(document); vtName(h, "ao-hero"); vtName(t, "ao-title"); }
       else if (kind === "rise") { const [c, t] = cardFor(from); vtName(c, "ao-hero"); if (t) vtName(t, "ao-title"); }
-      e.viewTransition.finished.finally(() => { vtClear(); delete root.dataset.vt; });
+      e.viewTransition.finished.finally(() => { vtClear(); delete root.dataset.vt; }).catch(() => {});
     } catch (er) { /* ескі браузер */ }
   });
   // View Transitions жоқ браузерде (Firefox): ақ жарқылсыз, мазмұн қағаздан жұмсақ шығады
