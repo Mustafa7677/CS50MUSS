@@ -147,7 +147,9 @@ def team_page():
     main = f"""  <main class="tm shx" id="main">
     <section class="shx-open" data-scrub="pin" aria-labelledby="shx-h">
       <div class="shx-stick">
+        <i class="shx-bar shx-bt" aria-hidden="true"></i><i class="shx-bar shx-bb" aria-hidden="true"></i>
         <div class="shx-photo"><img src="assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус." width="2400" height="1681" fetchpriority="high"></div>
+        <canvas class="shx-dust" aria-hidden="true"></canvas>
         <svg class="shx-shan" viewBox="-220 -220 440 440" aria-hidden="true" focusable="false">
           <circle class="shx-r1" r="190" pathLength="1"/><circle class="shx-r2" r="174" pathLength="1"/>
           <path class="shx-kd" pathLength="1" d="M-174-56H174M-174 56H174M-56-174V174M56-174V174"/>
@@ -163,6 +165,8 @@ def team_page():
       </div>
     </section>
 
+    <div class="orn" data-scrub="through" aria-hidden="true"><svg viewBox="0 0 1200 80" preserveAspectRatio="xMidYMid meet"><path class="orn-l" pathLength="1" d="M520 40H40M680 40H1160"/><path class="orn-h" pathLength="1" d="M600 58V40C600 22 584 12 570 18C556 24 558 44 572 44C582 44 584 32 576 30M600 40C600 22 616 12 630 18C644 24 642 44 628 44C618 44 616 32 624 30"/><path class="orn-h" pathLength="1" d="M520 40C536 40 540 30 532 26M680 40C664 40 660 30 668 26M40 40l-14-10M40 40l-14 10M1160 40l14-10M1160 40l14 10"/><path class="orn-d" d="M600 62l6 6-6 6-6-6z"/></svg></div>
+
     <section class="uyq" data-scrub="pin" aria-labelledby="uyq-h" style="--n:{len(M)}">
       <div class="uyq-stick">
         <h2 class="uyq-h" id="uyq-h"><span class="st-intertitle">Бес уық</span>Кім не жасады</h2>
@@ -172,6 +176,8 @@ def team_page():
         <div class="uyq-hud" role="group" aria-label="Мүшеге өту">{hud}</div>
       </div>
     </section>
+
+    <div class="orn" data-scrub="through" aria-hidden="true"><svg viewBox="0 0 1200 80" preserveAspectRatio="xMidYMid meet"><path class="orn-l" pathLength="1" d="M520 40H40M680 40H1160"/><path class="orn-h" pathLength="1" d="M600 58V40C600 22 584 12 570 18C556 24 558 44 572 44C582 44 584 32 576 30M600 40C600 22 616 12 630 18C644 24 642 44 628 44C618 44 616 32 624 30"/><path class="orn-h" pathLength="1" d="M520 40C536 40 540 30 532 26M680 40C664 40 660 30 668 26M40 40l-14-10M40 40l-14 10M1160 40l14-10M1160 40l14 10"/><path class="orn-d" d="M600 62l6 6-6 6-6-6z"/></svg></div>
 
     <section class="tf" aria-labelledby="tf-h" data-film>
       <p class="st-intertitle">Фото-фильм</p>

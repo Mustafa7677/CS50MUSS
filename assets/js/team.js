@@ -54,6 +54,31 @@
     });
   }
 
+
+  // ---------- алтын тозаң: ашылу сахнасында ауада қалқыған ұсақ ұшқындар (canvas; тек көрінгенде және қозғалыс рұқсат болса) ----------
+  const dust = $(".shx-dust");
+  if (dust && motion()) {
+    const ctx = dust.getContext("2d"), N = innerWidth < 700 ? 38 : 72;
+    let W = 0, H = 0, dpr = 1, on = false, raf2 = 0;
+    const size = () => { dpr = Math.min(2, devicePixelRatio || 1); W = dust.clientWidth; H = dust.clientHeight; dust.width = W * dpr; dust.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); };
+    const P = Array.from({ length: N }, () => ({ x: Math.random(), y: Math.random(), r: .6 + Math.random() * 1.8, v: .00025 + Math.random() * .0006, w: Math.random() * 6.28, s: .4 + Math.random() * .6 }));
+    const tick = (t) => {
+      raf2 = 0; if (!on) return;
+      ctx.clearRect(0, 0, W, H);
+      for (const q of P) {
+        q.y -= q.v; q.x += Math.sin(t / 2400 + q.w) * .00018;
+        if (q.y < -.02) { q.y = 1.02; q.x = Math.random(); }
+        const a = (.35 + .65 * Math.abs(Math.sin(t / 900 * q.s + q.w))) * .8;
+        ctx.beginPath(); ctx.arc(q.x * W, q.y * H, q.r, 0, 6.283);
+        ctx.fillStyle = `rgba(242, 205, 130, ${a.toFixed(3)})`; ctx.shadowColor = "rgba(242, 190, 90, .9)"; ctx.shadowBlur = 6; ctx.fill();
+      }
+      raf2 = requestAnimationFrame(tick);
+    };
+    size(); addEventListener("resize", size);
+    new IntersectionObserver((es) => es.forEach((e) => { on = e.isIntersecting; if (on && !raf2) raf2 = requestAnimationFrame(tick); })).observe(dust);
+    document.addEventListener("visibilitychange", () => { on = !document.hidden && dust.getBoundingClientRect().bottom > 0; if (on && !raf2) raf2 = requestAnimationFrame(tick); });
+  }
+
   // ---------- көрінгенде ашылатын бөлімдер және санағыштар ----------
   const count = (b) => {
     const to = +b.dataset.to; if (!to || !motion()) return;
