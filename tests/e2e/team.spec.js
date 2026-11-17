@@ -44,7 +44,8 @@ test("команда беті: скролл-фильм, көлденең гал�
   expect(shots.filter((s) => s.who).map((s) => s.who).sort()).toEqual(M.map((m) => m.slug).sort());
   await expect(page.locator(".tf-bar")).toBeVisible();
   await expect(page.locator(".tf-dot")).toHaveCount(9);
-  await expect(page.locator(".tf-t")).toHaveText("Бір шаңырақ - бес адам");
+  await expect(page.locator(".tf-t")).toHaveText(shots[0].t);
+  await expect(page.locator(".shx-l1")).toHaveText("Бір шаңырақ");
   await page.locator(".tf-next").click();
   await expect(page.locator(".tf-t")).toHaveText(shots[1].t);
   await expect(page.locator(".tf-n")).toHaveText("2 / 9");
