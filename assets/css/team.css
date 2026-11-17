@@ -428,3 +428,45 @@ html:not(.st-js) .rng-shan, html:not(.st-js) .rng-now { display: none; }
 @media (max-width: 760px) { .rng-now { margin-top: 40px; } .st-js .rng-c { opacity: clamp(.12, calc(var(--f, 1) * .7 + .45), 1); } }
 
 .tm :is(.rng-head h2, h2.uyq-h).cine-h { background-position: 50% 100%; }
+
+/* =========================================================================================
+   Әлемдік деңгейдегі ұсақ сиқыр: прелоадер, жүгірме жол, алтын курсор, магнитті батырмалар.
+   Бәрі тек html.st-js кезінде (қозғалыс рұқсат); курсор мен магнит - тек дәл тінтуірде.
+   ========================================================================================= */
+/* прелоадер: шаңырақ сызылады, санақ 000→100, перде екіге бөлініп ашылады */
+.pl { position: fixed; inset: 0; z-index: 10000; pointer-events: none; }
+.pl-half { position: absolute; left: 0; right: 0; height: 50.5%; background: var(--grain), #0a0705; transition: transform 1.05s cubic-bezier(.76, 0, .24, 1); }
+.pl-top { top: 0; } .pl-bot { bottom: 0; }
+.pl-core { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 18px; transition: opacity .45s ease; }
+.pl-core svg { width: 120px; height: 120px; overflow: visible; }
+.pl-core :is(circle, path) { fill: none; stroke: #d9b468; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--k, 0)); }
+.pl-n { margin: 0; font: 700 clamp(56px, 9vw, 110px)/1 var(--display); color: #efe6d3; font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.02em; }
+.pl-n small { font-size: .35em; color: #d9b468; margin-left: .15em; vertical-align: .9em; }
+.pl-l { margin: 0; font: italic 400 16px var(--display); color: #b9ab92; }
+.pl.is-out .pl-core { opacity: 0; }
+.pl.is-out .pl-top { transform: translateY(-101%); } .pl.is-out .pl-bot { transform: translateY(101%); }
+
+/* жүгірме жол: алып контурлы әріптер, скроллдың жылдамдығына жауап береді */
+.mq { overflow: hidden; padding: 70px 0 10px; margin-top: 40px; }
+.mq-track { display: flex; width: max-content; transform: translate3d(var(--mx, 0px), 0, 0) skewX(var(--sk, 0deg)); will-change: transform; }
+.mq span { flex: none; padding-right: .3em; white-space: nowrap; font: 700 clamp(64px, 11vw, 168px)/1 var(--display); letter-spacing: -.02em;
+  color: transparent; -webkit-text-stroke: 1px rgb(217 180 104 / .55); }
+.mq em { font-style: italic; font-weight: 400; color: #d9b468; -webkit-text-stroke: 0; }
+.mq i { font-style: normal; font-size: .4em; vertical-align: .5em; color: #7a1f2b; -webkit-text-stroke: 0; }
+
+/* алтын курсор */
+.cur { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; width: 38px; height: 38px; margin: -19px 0 0 -19px; border-radius: 50%;
+  border: 1px solid rgb(217 180 104 / .85); transform: translate3d(var(--cx, -100px), var(--cy, -100px), 0) scale(var(--cs, 1)); transition: width .3s, height .3s, margin .3s, background-color .3s, border-color .3s;
+  display: grid; place-items: center; mix-blend-mode: normal; }
+.cur b { font: 700 11px/1 var(--font, sans-serif); color: #120d0a; opacity: 0; transition: opacity .2s; letter-spacing: .02em; }
+.cur.is-link { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: rgb(217 180 104 / .14); }
+.cur.is-open { width: 86px; height: 86px; margin: -43px 0 0 -43px; background: #d9b468; border-color: #d9b468; }
+.cur.is-open b { opacity: 1; }
+.cur.is-down { --cs: .85; }
+.cur-dot { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%; background: #d9b468;
+  transform: translate3d(var(--dx, -100px), var(--dy, -100px), 0); }
+@media (hover: none), (pointer: coarse) { .cur, .cur-dot { display: none; } }
+
+/* магнитті батырмалар */
+.st-js .tm [data-mag] { transform: translate3d(var(--mgx, 0px), var(--mgy, 0px), 0); transition: transform .45s cubic-bezier(.2, .9, .2, 1.2); }
+.st-js .tm [data-mag].is-mag { transition: transform .12s linear; }

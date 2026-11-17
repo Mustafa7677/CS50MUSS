@@ -160,7 +160,7 @@ def team_page():
     names = " ".join(f'<span>{E(m["name"])}</span>' for m in M)
     ring_cards = "".join(f'<a class="rng-c" href="team/{m["slug"]}.html" style="--i:{i}" data-name="{E(m["name"])}"><img src="{photo(m["slug"])}" alt="" width="640" height="800" loading="lazy" decoding="async"><span>{E(m["name"])}</span></a>' for i, m in enumerate(M))
     ring = RING.format(n=len(M), cards=ring_cards, first=E(M[0]["name"]))
-    main = f"""  <main class="tm shx" id="main">
+    main = f"""  <main class="tm shx" id="main" data-preload>
     <section class="shx-open" data-scrub="pin" aria-labelledby="shx-h">
       <div class="shx-stick">
         <i class="shx-bar shx-bt" aria-hidden="true"></i><i class="shx-bar shx-bb" aria-hidden="true"></i>
@@ -196,6 +196,7 @@ def team_page():
     <div class="orn" data-scrub="through" aria-hidden="true"><svg viewBox="0 0 1200 80" preserveAspectRatio="xMidYMid meet"><path class="orn-l" pathLength="1" d="M520 40H40M680 40H1160"/><path class="orn-h" pathLength="1" d="M600 58V40C600 22 584 12 570 18C556 24 558 44 572 44C582 44 584 32 576 30M600 40C600 22 616 12 630 18C644 24 642 44 628 44C618 44 616 32 624 30"/><path class="orn-h" pathLength="1" d="M520 40C536 40 540 30 532 26M680 40C664 40 660 30 668 26M40 40l-14-10M40 40l-14 10M1160 40l14-10M1160 40l14 10"/><path class="orn-d" d="M600 62l6 6-6 6-6-6z"/></svg></div>
 
 {ring}
+    <div class="mq" aria-hidden="true"><div class="mq-track"><span>Бір шаңырақ <i>◆</i> <em>бес адам</em> <i>◆</i> AO17 командасы <i>◆</i> </span><span>Бір шаңырақ <i>◆</i> <em>бес адам</em> <i>◆</i> AO17 командасы <i>◆</i> </span><span>Бір шаңырақ <i>◆</i> <em>бес адам</em> <i>◆</i> AO17 командасы <i>◆</i> </span><span>Бір шаңырақ <i>◆</i> <em>бес адам</em> <i>◆</i> AO17 командасы <i>◆</i> </span></div></div>
     <section class="tf" aria-labelledby="tf-h" data-film>
       <p class="st-intertitle">Фото-фильм</p>
       <h2 id="tf-h">Бір күннің кадрлары</h2>

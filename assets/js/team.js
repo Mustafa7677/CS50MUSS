@@ -85,6 +85,83 @@
     new IntersectionObserver((es) => es.forEach((e) => { on = e.isIntersecting && !document.hidden; if (on && !raf2) raf2 = requestAnimationFrame(tick); })).observe(dust);
   });
 
+
+  // ---------- әлемдік деңгейдегі ұсақ сиқыр ----------
+  const fine = window.matchMedia && matchMedia("(pointer: fine)").matches;
+
+  // прелоадер: команда беті, сессияда бір рет; санақ суреттердің жүктелуіне байланған (ең аз 1.1 с, ең көп 3.2 с)
+  const pre = $("[data-preload]");
+  let seen = false; try { seen = sessionStorage.getItem("ao17:team-pl") === "1"; sessionStorage.setItem("ao17:team-pl", "1"); } catch (e) { seen = true; }
+  if (pre && motion() && !seen) {
+    const pl = document.createElement("div"); pl.className = "pl"; pl.setAttribute("aria-hidden", "true");
+    pl.innerHTML = '<div class="pl-half pl-top"></div><div class="pl-half pl-bot"></div><div class="pl-core"><svg viewBox="-60 -60 120 120"><circle r="52" pathLength="1"/><path pathLength="1" d="M-50-16H50M-50 16H50M-16-50V50M16-50V50"/></svg><p class="pl-n">000<small>%</small></p><p class="pl-l">AO17 командасы</p></div>';
+    document.body.append(pl);
+    const imgs = $$("img", pre).filter((im) => im.loading !== "lazy").slice(0, 6), t0 = performance.now(), num = $(".pl-n", pl);
+    let shown = 0;
+    const done = () => imgs.filter((im) => im.complete).length / Math.max(1, imgs.length);
+    const step = (t) => {
+      const el = t - t0, target = Math.min(1, Math.max(Math.min(1, el / 1100) * done(), el / 3200));
+      shown += (target - shown) * .12; if (target === 1 && shown > .995) shown = 1;
+      num.firstChild.nodeValue = String(Math.round(shown * 100)).padStart(3, "0"); pl.style.setProperty("--k", shown.toFixed(3));
+      if (shown < 1) requestAnimationFrame(step);
+      else { setTimeout(() => pl.classList.add("is-out"), 180); setTimeout(() => pl.remove(), 1400); }
+    };
+    requestAnimationFrame(step);
+  }
+
+  // жүгірме жол: тұрақты ағыс + скроллдың жылдамдығы (бағыты мен күші), қисаю да жылдамдыққа байланысты
+  const mq = $(".mq-track");
+  if (mq && motion()) {
+    let x = 0, last = scrollY, vel = 0, raf4 = 0, vis = false;
+    const loop = () => {
+      raf4 = 0; if (!vis) return;
+      const y = scrollY, dy = y - last; last = y;
+      vel += (dy - vel) * .12;
+      x -= 0.6 + vel * .45;
+      const w = mq.scrollWidth / 4;
+      if (x <= -w) x += w; if (x > 0) x -= w;
+      mq.style.setProperty("--mx", x.toFixed(1) + "px"); mq.style.setProperty("--sk", clamp(-vel * .25, -12, 12).toFixed(2) + "deg");
+      raf4 = requestAnimationFrame(loop);
+    };
+    new IntersectionObserver((es) => es.forEach((e) => { vis = e.isIntersecting; last = scrollY; if (vis && !raf4) raf4 = requestAnimationFrame(loop); })).observe(mq);
+  }
+
+  // алтын курсор: сақина тегіс ілеседі, нүкте дәл жүреді; сілтемеде үлкейеді, портретте «Ашу»
+  if ($(".tm") && motion() && fine) {
+    const ring = document.createElement("div"), dot = document.createElement("div");
+    ring.className = "cur"; ring.innerHTML = "<b>Ашу</b>"; dot.className = "cur-dot";
+    ring.setAttribute("aria-hidden", "true"); dot.setAttribute("aria-hidden", "true");
+    document.body.append(ring, dot);
+    let mx = -100, my = -100, rx = -100, ry = -100, raf5 = 0;
+    const follow = () => {
+      rx += (mx - rx) * .18; ry += (my - ry) * .18;
+      ring.style.setProperty("--cx", rx.toFixed(1) + "px"); ring.style.setProperty("--cy", ry.toFixed(1) + "px");
+      raf5 = Math.abs(mx - rx) + Math.abs(my - ry) > .3 ? requestAnimationFrame(follow) : 0;
+    };
+    addEventListener("pointermove", (e) => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.setProperty("--dx", mx + "px"); dot.style.setProperty("--dy", my + "px");
+      const t = e.target.closest ? e.target.closest("a, button, [data-tilt]") : null;
+      const open = t && (t.matches(".rng-c, .tp-mini") || !!t.closest(".uyq-ph, .rng-c"));
+      ring.classList.toggle("is-open", !!open); ring.classList.toggle("is-link", !!t && !open);
+      if (!raf5) raf5 = requestAnimationFrame(follow);
+    }, { passive: true });
+    addEventListener("pointerdown", () => ring.classList.add("is-down")); addEventListener("pointerup", () => ring.classList.remove("is-down"));
+    document.addEventListener("pointerleave", () => { mx = my = -100; });
+  }
+
+  // магнитті батырмалар: тінтуір жақындағанда батырма соған қарай тартылады
+  if (motion() && fine) $$(".tm .btn.gold, .tm .tp-all, .tm .uyq-hb").forEach((b) => {
+    b.setAttribute("data-mag", "");
+    b.addEventListener("pointermove", (e) => {
+      const r = b.getBoundingClientRect();
+      b.classList.add("is-mag");
+      b.style.setProperty("--mgx", ((e.clientX - r.left - r.width / 2) * .3).toFixed(1) + "px");
+      b.style.setProperty("--mgy", ((e.clientY - r.top - r.height / 2) * .35).toFixed(1) + "px");
+    });
+    b.addEventListener("pointerleave", () => { b.classList.remove("is-mag"); b.style.setProperty("--mgx", "0px"); b.style.setProperty("--mgy", "0px"); });
+  });
+
   // ---------- тақырыпты әріптерге бөлу (экран оқу құралы толық сөйлемді aria-label-дан оқиды) ----------
   $$("[data-split] > span").forEach((line) => {
     const t = line.textContent, n = t.length;
