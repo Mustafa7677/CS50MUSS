@@ -90,7 +90,7 @@ test("әр HTML бетінде талап етілген footer мәтіні ж�
     const s = read(f);
     expect(s, f).toContain("© 2026 AO17 командасы.");
     expect(s, f).toContain("Барлық құқықтар қорғалған.");
-    expect(s, f).toContain("AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Magzhan Romanov, Kopenova Merey, Sagid Mustafa.");
+    expect(s, f).toContain("AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey.");
     expect(s, f).toContain("Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады.");
     expect(s, f).toContain("Қазақша аудармалардың авторы: Sagid Mustafa.");
     expect(s, f).toContain("AO17 — Harvard University-ден тәуелсіз жоба.");

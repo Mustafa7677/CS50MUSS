@@ -127,16 +127,58 @@ def arch_card(m, prefix, i):
             f'<span class="ta-t">{E(m["tag"])}</span></a></li>')
 
 
+def panel(m, i):
+    k, acc = KIND[m["kind"]]
+    ph = photo(m["slug"])
+    face = (f'<img src="{ph}" alt="{E(m["name"])}, портрет" width="640" height="800" loading="{"eager" if i < 2 else "lazy"}" decoding="async">' if ph
+            else f'<span class="ta-ini" aria-hidden="true">{E(m["initials"])}</span>')
+    return (f'<li class="uyq-p" style="--i:{i};--acc:{acc}"><div class="uyq-ph"><div class="uyq-img">{face}</div></div>'
+            f'<div class="uyq-tx"><p class="uyq-no" aria-hidden="true">{i + 1:02d}</p><p class="uyq-k">{E(k)} · {age(m)}</p>'
+            f'<h3 class="uyq-n">{E(m["name"])}</h3><p class="uyq-r">{E(m["role"])}</p><p class="uyq-t">{E(m["tag"])}</p>'
+            f'<p class="uyq-a">{E(m["areas"])}</p><a class="btn gold uyq-go" href="team/{m["slug"]}.html">Жеке беті</a></div></li>')
+
+
 def team_page():
     shots = film_shots("")
     first = shots[0]
-    cards = "\n        ".join(arch_card(m, "", i) for i, m in enumerate(M))
-    main = f"""  <main class="tm" id="main">
+    panels = "\n        ".join(panel(m, i) for i, m in enumerate(M))
+    hud = "".join(f'<button type="button" class="uyq-hb" data-i="{i}"><i></i><span>{E(m["name"])}</span></button>' for i, m in enumerate(M))
+    names = " ".join(f'<span>{E(m["name"])}</span>' for m in M)
+    main = f"""  <main class="tm shx" id="main">
+    <section class="shx-open" data-scrub="pin" aria-labelledby="shx-h">
+      <div class="shx-stick">
+        <div class="shx-photo"><img src="assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус." width="2400" height="1681" fetchpriority="high"></div>
+        <svg class="shx-shan" viewBox="-220 -220 440 440" aria-hidden="true" focusable="false">
+          <circle class="shx-r1" r="190" pathLength="1"/><circle class="shx-r2" r="174" pathLength="1"/>
+          <path class="shx-kd" pathLength="1" d="M-174-56H174M-174 56H174M-56-174V174M56-174V174"/>
+          <path class="shx-uy" pathLength="1" d="M0-190V-214M134-134 151-151M190 0H214M134 134 151 151M0 190V214M-134 134-151 151M-190 0H-214M-134-134-151-151"/>
+          <path class="shx-mid" d="M0-20 20 0 0 20-20 0Z"/>
+        </svg>
+        <div class="shx-copy">
+          <p class="shx-kick">AO17 командасы</p>
+          <h1 id="shx-h"><span class="shx-l1">Бір шаңырақ</span><span class="shx-l2">бес адам</span></h1>
+          <p class="shx-names">{names}</p>
+        </div>
+        <p class="shx-hint" aria-hidden="true"><span>Төмен айналдырыңыз</span><i></i></p>
+      </div>
+    </section>
+
+    <section class="uyq" data-scrub="pin" aria-labelledby="uyq-h" style="--n:{len(M)}">
+      <div class="uyq-stick">
+        <h2 class="uyq-h" id="uyq-h"><span class="st-intertitle">Бес уық</span>Кім не жасады</h2>
+        <ul class="uyq-track" aria-label="Команда мүшелері">
+        {panels}
+        </ul>
+        <div class="uyq-hud" role="group" aria-label="Мүшеге өту">{hud}</div>
+      </div>
+    </section>
+
     <section class="tf" aria-labelledby="tf-h" data-film>
-      <h1 class="sr-only" id="tf-h">AO17 командасы</h1>
+      <p class="st-intertitle">Фото-фильм</p>
+      <h2 id="tf-h">Бір күннің кадрлары</h2>
       <div class="tf-stage">
       <div class="tf-frame">
-        <div class="tf-l is-cur"><img src="{first['img']}" alt="{E(first['alt'])}" width="2400" height="1681" fetchpriority="high"></div>
+        <div class="tf-l is-cur"><img src="{first['img']}" alt="{E(first['alt'])}" width="2400" height="1681" loading="lazy"></div>
         <svg class="tf-shan" viewBox="0 0 600 400" aria-hidden="true" focusable="false"><g transform="translate(300 200)">
           <circle r="150" class="tf-ring"/><circle r="138" class="tf-ring2"/>
           <path class="tf-kuld" d="M-138-40H138M-138 40H138M-40-138V138M40-138V138"/>
@@ -148,21 +190,12 @@ def team_page():
       <script type="application/json" id="tf-data">{json.dumps(shots, ensure_ascii=False)}</script>
     </section>
 
-    <section class="tm-sec" aria-labelledby="ta-h">
-      <p class="st-intertitle">Бес уық</p>
-      <h2 id="ta-h">Кім не жасады</h2>
-      <p class="tm-lead">Сайт бес бөлікке бөлінді, әр бөліктің өз иесі бар. Карточканы ашсаңыз - сол адамның сайттағы нақты ісі.</p>
-      <ul class="ta-row" aria-label="Команда мүшелері">
-        {cards}
-      </ul>
-    </section>
-
     <section class="tm-sec tm-note" aria-labelledby="tn-h">
       <h2 id="tn-h">Авторлық құқық</h2>
       <p>AO17 платформасының бағдарламасы, дизайны және авторлық оқу материалдары бес автордың ортақ еңбегі: {E(", ".join(m["name"] for m in M))}. Толық шарттар: <a href="copyright.html">Авторлық құқық және лицензиялар</a>. Harvard CS50 материалдарының қазақша аудармалары өз лицензиясымен (CC BY-NC-SA 4.0) таратылады.</p>
     </section>
   </main>"""
-    return shell("", "Команда - AO17", "AO17 командасы: бес автор - екі дизайнер, үш бағдарлама мен мазмұн авторы. Фото-фильм және әрқайсысының сайттағы ісі.", main)
+    return shell("", "Команда - AO17", "AO17 командасы: бес автор - екі дизайнер, үш бағдарлама мен мазмұн авторы. Скроллмен ашылатын фильм, әрқайсысының сайттағы ісі.", main)
 
 
 # ---------- жеке бет: «қолтаңба» ----------
@@ -226,7 +259,8 @@ def person_page(m, i):
     mini = lambda o, lab: (f'<a class="tp-mini" href="{o["slug"]}.html"><img src="{p}{photo(o["slug"])}" alt="" width="64" height="80" loading="lazy">'  # noqa: E731
                            f'<span><small>{lab}</small>{E(o["name"])}</span></a>')
     main = f"""  <main class="tm tp" id="main" style="--acc:{acc}">
-    <section class="tp-hero" aria-labelledby="tp-h">
+    <section class="tp-hero" aria-labelledby="tp-h" data-scrub="through">
+      <p class="tp-bg" aria-hidden="true">{E(m["name"])}</p>
       <div class="tp-door"><div class="tp-ph">{face}</div><span class="tp-leaf tp-l" aria-hidden="true"></span><span class="tp-leaf tp-r" aria-hidden="true"></span></div>
       <div class="tp-copy">
         <p class="tp-crumb"><a href="{p}team.html">Команда</a> · {i + 1} / {len(M)}</p>
@@ -258,7 +292,7 @@ def person_page(m, i):
 def landing():
     names = "".join(f'<li style="--i:{i};--acc:{KIND[m["kind"]][1]}"><b>{E(m["name"])}</b><span>{E(KIND[m["kind"]][0].lower())}</span></li>' for i, m in enumerate(M))
     dots = "".join(f'<circle class="at-dot" style="--i:{i}" cx="{200 + 168 * math.sin(i * 1.2566 + .3):.1f}" cy="{200 - 168 * math.cos(i * 1.2566 + .3):.1f}" r="7"/>' for i in range(len(M)))
-    return f"""<section class="st-scene ax ax-team" id="scene-team" aria-labelledby="axt-t" data-scene="8">
+    return f"""<section class="st-scene ax ax-team" id="scene-team" aria-labelledby="axt-t" data-scene="8" data-scrub="through">
     <div class="ax-in">
       <div class="ax-copy">
         <p class="ax-kick">Сайтты кім жасады</p>

@@ -192,3 +192,117 @@
   .tp-mini small { display: none; } .tp-mini span { font-size: 14px; }
   .tm-sec { padding-top: 56px; }
 }
+
+/* =====================================================================================================
+   Скроллмен басқарылатын фильм (team.js: data-scrub → --p 0..1, тегіс ілесумен). Барлық қозғалыс - html.st-js кезінде ғана;
+   қозғалыс азайтылса, сахналар қарапайым тізімге айналады (жабысқақ, кесу, масштаб жоқ).
+   ===================================================================================================== */
+.tm { overflow-x: clip; }
+
+/* ---------- 1. Ашылу: шаңырақтың түндігінен кіру ---------- */
+.shx-open { position: relative; }
+.shx-stick { position: relative; height: 100vh; height: 100svh; min-height: 520px; overflow: hidden; display: grid; place-items: center;
+  background: radial-gradient(55% 55% at 50% 50%, rgb(217 180 104 / .12), transparent 70%), #0a0705; }
+.shx-photo { position: absolute; inset: 0; }
+.shx-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; display: block; }
+.shx-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(8 5 3 / .5), transparent 24%, transparent 34%, rgb(8 5 3 / .72) 62%, rgb(8 5 3 / .94)); }
+.shx-shan { position: absolute; left: 50%; top: 50%; width: 62vmin; height: 62vmin; margin: -31vmin 0 0 -31vmin; overflow: visible; pointer-events: none; z-index: 2; }
+.shx-shan :is(circle, path) { fill: none; stroke: #d9b468; stroke-linecap: round; }
+.shx-r1 { stroke-width: 3.2; } .shx-r2 { stroke-width: 1.2; stroke: #8a6634 !important; } .shx-kd { stroke-width: 2.4; } .shx-uy { stroke-width: 2.2; }
+.shx-mid { fill: #7a1f2b !important; stroke-width: 1.6; }
+.shx-copy { position: relative; z-index: 3; align-self: end; text-align: center; padding: 0 16px; margin-bottom: 11vh; }
+.shx-kick { margin: 0 0 12px; font: italic 400 clamp(15px, 1.6vw, 20px) var(--display); color: var(--gold); }
+.shx-copy h1 { margin: 0; font: 700 clamp(46px, 9.4vw, 140px)/.92 var(--display); color: #fff; letter-spacing: -.025em; text-shadow: 0 6px 40px rgb(0 0 0 / .55); }
+.shx-copy h1 span { display: block; }
+.shx-l2 { font-style: italic; font-weight: 400; color: var(--gold); }
+.shx-names { margin: 26px auto 0; max-width: 900px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 26px; font: 600 clamp(13px, 1.3vw, 15px)/1.3 var(--font, inherit); color: var(--cream); }
+.shx-names span::before { content: "◆"; margin-right: 8px; font-size: .6em; vertical-align: .25em; color: var(--gold); }
+.shx-hint { position: absolute; left: 50%; bottom: 3.5vh; z-index: 3; margin: 0; transform: translateX(-50%); display: grid; justify-items: center; gap: 10px; font-size: 13px; color: var(--cream2); }
+.shx-hint i { width: 1px; height: 46px; background: linear-gradient(var(--gold), transparent); transform-origin: 50% 0; animation: shx-hint 2s cubic-bezier(.6, 0, .4, 1) infinite; }
+@keyframes shx-hint { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+html:not(.st-js) .shx-shan, html:not(.st-js) .shx-hint { display: none; }
+
+.st-js .shx-open { height: 300vh; --o: clamp(0, calc((var(--p, 0) - .12) / .46), 1); --t: clamp(0, calc((var(--p, 0) - .5) / .2), 1); --u: clamp(0, calc((var(--p, 0) - .6) / .2), 1); }
+.st-js .shx-stick { position: sticky; top: 0; }
+.st-js .shx-photo { clip-path: circle(calc(var(--o) * 80vmax + 22vmin) at 50% 50%); }
+.st-js .shx-photo img { transform: scale(calc(1.32 - .32 * var(--o))); will-change: transform; }
+.st-js .shx-photo::after { opacity: var(--o); }
+.st-js .shx-shan { transform: scale(calc(1 + var(--o) * 3.6)) rotate(calc(var(--o) * 24deg)); opacity: calc(1 - var(--o) * 1.3); will-change: transform, opacity; }
+.st-js .shx-shan :is(.shx-r1, .shx-r2, .shx-kd, .shx-uy) { stroke-dasharray: 1; stroke-dashoffset: 1; animation: shx-draw 1.9s cubic-bezier(.65, 0, .35, 1) .25s forwards; }
+.st-js .shx-shan .shx-r2 { animation-delay: .45s; } .st-js .shx-shan .shx-kd { animation-delay: .8s; } .st-js .shx-shan .shx-uy { animation-delay: 1.1s; }
+.st-js .shx-shan .shx-mid { transform-box: fill-box; transform-origin: center; animation: at-pop .8s cubic-bezier(.16, 1.4, .3, 1) 1.6s both; }
+@keyframes shx-draw { to { stroke-dashoffset: 0; } }
+@keyframes at-pop { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: none; } }
+.st-js .shx-kick { opacity: var(--t); transform: translateY(calc((1 - var(--t)) * 24px)); }
+.st-js .shx-l1 { opacity: var(--t); transform: translateY(calc((1 - var(--t)) * 70px)); filter: blur(calc((1 - var(--t)) * 8px)); }
+.st-js .shx-l2 { opacity: var(--u); transform: translateY(calc((1 - var(--u)) * 80px)); filter: blur(calc((1 - var(--u)) * 8px)); }
+.st-js .shx-names { opacity: clamp(0, calc((var(--p, 0) - .72) / .16), 1); }
+.st-js .shx-hint { opacity: clamp(0, calc(1 - var(--p, 0) / .06), 1); }
+
+/* ---------- 2. Бес уық: көлденең галерея (тігінен айналдырғанда көлденең жылжиды) ---------- */
+.uyq { position: relative; --W: min(86vw, 1080px); }
+.uyq-stick { position: relative; padding: 80px 0 24px; }
+.uyq-h { margin: 0 auto 36px !important; padding: 0 16px; max-width: 1080px; text-align: center; }
+.uyq-h .st-intertitle { display: block; font-size: clamp(16px, 1.6vw, 19px); }
+.uyq-track { list-style: none; margin: 0; padding: 0; display: flex; }
+.uyq-p { flex: 0 0 var(--W); display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 5fr); gap: clamp(22px, 4.5vw, 64px); align-items: center; padding: 0 clamp(12px, 2vw, 28px); }
+.uyq-ph { justify-self: end; width: 100%; max-width: 420px; aspect-ratio: 4 / 5; border-radius: 999px 999px 10px 10px; overflow: hidden;
+  box-shadow: 0 0 0 1px rgb(217 180 104 / .55), 0 0 0 10px #120d0a, 0 0 0 11px rgb(217 180 104 / .22), 0 50px 90px -40px #000; }
+.uyq-img { width: 100%; height: 100%; overflow: hidden; }
+.uyq-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.uyq-no { margin: 0 0 10px; font: 700 clamp(72px, 11vw, 168px)/.8 var(--display); color: transparent; -webkit-text-stroke: 1px rgb(217 180 104 / .6); letter-spacing: -.03em; }
+.uyq-k { margin: 0 0 8px; color: var(--acc); font-weight: 700; font-size: 14.5px; }
+.uyq-n { margin: 0 0 14px; font: 700 clamp(34px, 5.4vw, 76px)/1 var(--display); color: #fff; letter-spacing: -.015em; text-wrap: balance; }
+.uyq-r { display: inline-block; margin: 0 0 14px; padding: 5px 14px; border-radius: 99px; background: var(--acc); color: #120d0a; font-weight: 700; font-size: 14px; }
+.uyq-t { margin: 0 0 10px; font: italic 400 clamp(18px, 2vw, 25px)/1.4 var(--display); color: var(--gold); }
+.uyq-a { margin: 0 0 22px; max-width: 46ch; color: var(--cream2); font-size: 15.5px; line-height: 1.7; }
+.uyq-go { color: #120d0a !important; }
+.uyq-hud { display: flex; justify-content: center; gap: 8px; padding: 0 16px; margin: 3vh auto 0; max-width: 1080px; }
+.uyq-hb { flex: 1 1 0; min-width: 0; background: none; border: 0; padding: 12px 0 4px; color: var(--cream2); cursor: pointer; text-align: left; font: 600 13px var(--font, inherit); transition: color .3s ease; }
+.uyq-hb i { position: relative; display: block; height: 2px; margin-bottom: 8px; overflow: hidden; background: rgb(239 230 211 / .16); }
+.uyq-hb i::after { content: ""; position: absolute; inset: 0; background: var(--gold); transform: scaleX(var(--f, 0)); transform-origin: 0 50%; }
+.uyq-hb span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.uyq-hb.is-on { color: #fff; }
+html:not(.st-js) .uyq-hud { display: none; }
+html:not(.st-js) .uyq-track { flex-direction: column; gap: 64px; max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+html:not(.st-js) .uyq-p { flex-basis: auto; }
+
+.st-js .uyq { height: calc(var(--n) * 90vh + 100vh); }
+.st-js .uyq-stick { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 560px; padding: 64px 0 18px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+.st-js .uyq-h { position: absolute; top: 74px; left: 0; right: 0; margin: 0 auto !important; font-size: clamp(20px, 2.1vw, 28px); opacity: calc(1 - var(--p, 0) * 2.5); }
+.st-js .uyq-track { padding-left: calc(50vw - var(--W) / 2); transform: translate3d(calc(var(--p, 0) * -1 * (var(--n) - 1) * var(--W)), 0, 0); will-change: transform; }
+.st-js .uyq-ph { transform: scale(calc(.8 + .2 * var(--a, 1))) rotate(calc(var(--d, 0) * -4deg)); opacity: calc(.3 + .7 * var(--a, 1)); will-change: transform; }
+.st-js .uyq-img img { transform: translateX(calc(var(--d, 0) * -10%)) scale(1.2); will-change: transform; }
+.st-js .uyq-tx { opacity: calc(.1 + .9 * var(--a, 1)); transform: translateX(calc(var(--d, 0) * 110px)); }
+.st-js .uyq-no { transform: translateX(calc(var(--d, 0) * 220px)); }
+
+/* фото-фильм бөлімі енді бет ортасында */
+.tm .tf { padding-top: 96px; }
+.tm .tf > h2 { margin-bottom: 22px; }
+
+/* ---------- жеке бет: артқы жоспардағы алып есім, параллакс ---------- */
+.tp-hero { position: relative; }
+.tp-bg { position: absolute; left: 0; top: 46%; margin: 0; z-index: 0; white-space: nowrap; pointer-events: none;
+  font: 700 clamp(96px, 17vw, 260px)/1 var(--display); color: transparent; -webkit-text-stroke: 1px rgb(217 180 104 / .16); letter-spacing: -.03em;
+  transform: translate(calc(10% - var(--p, .5) * 46%), -50%); will-change: transform; }
+.tp-door, .tp-copy { position: relative; z-index: 1; }
+.st-js .tp-door { translate: 0 calc((var(--p, .5) - .5) * -60px); }
+.st-js .tp-copy { translate: 0 calc((var(--p, .5) - .5) * 30px); }
+
+@media (max-width: 760px) {
+  .uyq { --W: 92vw; }
+  .uyq-p { grid-template-columns: minmax(0, 1fr); gap: 14px; text-align: center; }
+  .uyq-ph { justify-self: center; max-width: min(240px, 34vh); }
+  .uyq-no { font-size: 56px; margin-bottom: 4px; }
+  .uyq-n { font-size: 30px; margin-bottom: 8px; }
+  .uyq-r { margin-bottom: 8px; }
+  .uyq-t { font-size: 17px; margin-bottom: 12px; }
+  .uyq-a { display: none; }
+  .uyq-hb span { display: none; }
+  .st-js .uyq-h { top: 68px; }
+  .st-js .uyq-stick { padding-top: 96px; }
+  .st-js .uyq-no { transform: translateX(calc(var(--d, 0) * 90px)); }
+  .st-js .uyq-tx { transform: translateX(calc(var(--d, 0) * 50px)); }
+  .shx-copy { margin-bottom: 14vh; }
+  .tp-bg { top: 30%; }
+}

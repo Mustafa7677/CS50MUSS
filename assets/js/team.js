@@ -7,6 +7,53 @@
   const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const motion = () => document.documentElement.classList.contains("st-js");
 
+  const clamp = (v, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+
+  // ---------- скроллмен басқарылатын сахналар: data-scrub="pin" (жабысқақ сахна) | "through" (экраннан өту) ----------
+  // Скроллдың нақты орны (t) мен көрсетілетін орны (c) бөлек: c әр кадрда t-ға 12%-ке жақындайды - қозғалыс «ілесіп», тегіс жүреді.
+  // Тек transform мен opacity өзгереді (CSS айнымалысы --p арқылы). Қозғалыс азайтылса - c = t бірден.
+  const scrubs = $$("[data-scrub]").map((el) => ({ el, pin: el.dataset.scrub === "pin", t: 0, c: -1, panels: $$(".uyq-p", el), hud: $$(".uyq-hb", el) }));
+  if (scrubs.length) {
+    let raf = 0;
+    const measure = () => {
+      const vh = innerHeight;
+      scrubs.forEach((s) => { const r = s.el.getBoundingClientRect(); s.t = s.pin ? clamp(-r.top / Math.max(1, r.height - vh)) : clamp((vh - r.top) / (r.height + vh)); });
+    };
+    const paint = () => {
+      raf = 0;
+      let moving = false;
+      const mo = motion();
+      scrubs.forEach((s) => {
+        let c = !mo || s.c < 0 ? s.t : s.c + (s.t - s.c) * 0.12;
+        if (Math.abs(c - s.t) < 0.0004) c = s.t; else moving = true;
+        if (c === s.c) return;
+        s.c = c;
+        s.el.style.setProperty("--p", c.toFixed(4));
+        if (s.panels.length) {
+          const pos = c * (s.panels.length - 1);
+          s.panels.forEach((p, i) => { const d = clamp(pos - i, -1.5, 1.5); p.style.setProperty("--d", d.toFixed(3)); p.style.setProperty("--a", clamp(1 - Math.abs(d)).toFixed(3)); });
+          const on = Math.round(pos);
+          s.hud.forEach((h, i) => { h.style.setProperty("--f", clamp(pos - i + 0.5).toFixed(3)); h.classList.toggle("is-on", i === on); h.setAttribute("aria-current", i === on ? "true" : "false"); });
+        }
+      });
+      if (moving) raf = requestAnimationFrame(paint);
+    };
+    const kick = () => { measure(); if (!raf) raf = requestAnimationFrame(paint); };
+    addEventListener("scroll", kick, { passive: true });
+    addEventListener("resize", kick);
+    kick();
+    // көлденең галерея: атауды басқанда не ішіндегі сілтемеге фокус түскенде - сол адамның кадрына апару
+    scrubs.filter((s) => s.panels.length).forEach((s) => {
+      const go = (i, smooth) => {
+        if (!motion()) return;
+        const r = s.el.getBoundingClientRect(), span = s.el.offsetHeight - innerHeight;
+        scrollTo({ top: scrollY + r.top + span * (i / (s.panels.length - 1)), behavior: smooth ? "smooth" : "auto" });
+      };
+      s.hud.forEach((h, i) => h.addEventListener("click", () => { go(i, true); if (!motion()) { const a = $("a", s.panels[i]); if (a) a.focus(); } }));
+      s.panels.forEach((p, i) => p.addEventListener("focusin", () => go(i, false)));
+    });
+  }
+
   // ---------- көрінгенде ашылатын бөлімдер және санағыштар ----------
   const count = (b) => {
     const to = +b.dataset.to; if (!to || !motion()) return;

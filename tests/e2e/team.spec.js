@@ -14,9 +14,10 @@ const M = TEAM.members;
 test.beforeEach(async ({ context }) => { await blockFonts(context); });
 
 test("дерек көзі: бес автор, екі дизайнер, жас пен фото бар", () => {
-  expect(M.map((m) => m.name)).toEqual(["Tutkabayeva Gulzat", "Toktybay Dastan", "Magzhan Romanov", "Kopenova Merey", "Sagid Mustafa"]);
+  expect(M.map((m) => m.name)).toEqual(["Tutkabayeva Gulzat", "Toktybay Dastan", "Sagid Mustafa", "Magzhan Romanov", "Kopenova Merey"]);
+  expect(M[2].slug).toBe("sagid");   // жоба жетекшісі - ортада
   expect(M.filter((m) => m.kind === "design").map((m) => m.slug).sort()).toEqual(["gulzat", "merey"]);
-  expect(M.map((m) => m.age)).toEqual([18, 17, 17, 17, 18]);
+  expect(M.map((m) => m.age)).toEqual([18, 17, 18, 17, 17]);
   for (const m of M) {
     expect(fs.existsSync(path.join(ROOT, `assets/img/team/${m.slug}.jpg`)), m.slug).toBe(true);
     for (const [href] of m.works) expect(fs.existsSync(path.join(ROOT, href.endsWith("/") ? href + "index.html" : href)), href).toBe(true);
@@ -35,7 +36,7 @@ test("авторлық жол: футер, JSON-LD және мета барлы�
   expect(ld.copyrightHolder.member.map((p) => p.name)).toEqual(M.map((m) => m.name));
 });
 
-test("команда беті: фото-фильм кадрлары, басқару, карточкалар", async ({ page }) => {
+test("команда беті: скролл-фильм, көлденең галерея, фото-фильм кадрлары мен басқару", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto("team.html");
   const shots = JSON.parse(await page.locator("#tf-data").textContent());
@@ -53,14 +54,15 @@ test("команда беті: фото-фильм кадрлары, басқа�
   await expect(page.locator(".tf-l.is-cur img")).toHaveAttribute("src", /duo\.jpg$/);
   await page.locator(".tf-prev").click();
   await expect(page.locator(".tf-l.is-cur img")).toHaveAttribute("src", /work\.jpg$/);
-  // карточкалар: бесеуі, әрқайсысы жеке бетке
-  const cards = page.locator(".ta a");
-  await expect(cards).toHaveCount(5);
+  // көлденең галерея: бес кадр, әрқайсысы жеке бетке
+  const panels = page.locator(".uyq-p");
+  await expect(panels).toHaveCount(5);
   for (const [i, m] of M.entries()) {
-    await expect(cards.nth(i)).toHaveAttribute("href", `team/${m.slug}.html`);
-    await expect(cards.nth(i)).toContainText(`${m.age} жас`);
+    await expect(panels.nth(i).locator("a")).toHaveAttribute("href", `team/${m.slug}.html`);
+    await expect(panels.nth(i)).toContainText(`${m.age} жас`);
   }
-  await cards.nth(0).click();
+  await expect(page.locator(".uyq-hb")).toHaveCount(5);
+  await page.goto("team/gulzat.html");
   await expect(page).toHaveURL(/team\/gulzat\.html$/);
   await expect(page.locator("h1")).toHaveText("Tutkabayeva Gulzat");
   expect(errors).toEqual([]);
@@ -98,6 +100,20 @@ test("жеке беттер: рөл, жас, қолтаңба, нақты сіл
   // Magzhan: код үзіндісі - нақты файлдан
   await page.goto("team/magzhan.html");
   expect(fs.readFileSync(path.join(ROOT, "assets/js/rl-mathexpr.js"), "utf8")).toContain((await page.locator(".sg-ln").nth(1).textContent()).trim());
+});
+
+test("скролл: ашылу сахнасы мен галерея --p бойынша жылжиды, Sagid ортада", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("team.html");
+  const open = page.locator(".shx-open");
+  await expect(open).toHaveAttribute("style", /--p: 0/);
+  await page.evaluate(() => { const o = document.querySelector(".shx-open"); scrollTo(0, o.getBoundingClientRect().top + scrollY + o.offsetHeight - innerHeight); });
+  await expect.poll(async () => +(await open.evaluate((e) => e.style.getPropertyValue("--p")))).toBeGreaterThan(0.99);
+  await expect(page.locator(".shx-l1")).toHaveCSS("opacity", "1");
+  // галереяның ортасы - үшінші кадр (Sagid Mustafa)
+  await page.evaluate(() => { const t = document.querySelector(".uyq"); scrollTo(0, t.getBoundingClientRect().top + scrollY + (t.offsetHeight - innerHeight) / 2); });
+  await expect(page.locator(".uyq-hb.is-on")).toHaveText("Sagid Mustafa");
+  await expect.poll(async () => { const b = await page.locator(".uyq-p").nth(2).boundingBox(); return Math.abs(b.x + b.width / 2 - 640); }).toBeLessThan(12);
 });
 
 test("басты бет: 8-сахна, бес есім, команда бетіне сілтеме", async ({ page }) => {
