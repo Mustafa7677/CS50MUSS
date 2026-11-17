@@ -158,7 +158,7 @@ def team_page():
         </svg>
         <div class="shx-copy">
           <p class="shx-kick">AO17 командасы</p>
-          <h1 id="shx-h"><span class="shx-l1">Бір шаңырақ</span><span class="shx-l2">бес адам</span></h1>
+          <h1 id="shx-h" aria-label="Бір шаңырақ - бес адам" data-split><span class="shx-l1">Бір шаңырақ</span><span class="shx-l2">бес адам</span></h1>
           <p class="shx-names">{names}</p>
         </div>
         <p class="shx-hint" aria-hidden="true"><span>Төмен айналдырыңыз</span><i></i></p>

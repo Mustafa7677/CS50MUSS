@@ -80,6 +80,14 @@
   }
 
 
+
+  // ---------- тақырыпты әріптерге бөлу (экран оқу құралы толық сөйлемді aria-label-дан оқиды) ----------
+  $$("[data-split] > span").forEach((line) => {
+    const t = line.textContent, n = t.length;
+    line.setAttribute("aria-hidden", "true");
+    line.innerHTML = [...t].map((ch, i) => `<span class="shx-ch" style="--ci:${i};--cn:${n}">${ch === " " ? " " : ch}</span>`).join("");
+  });
+
   // ---------- 3D еңкею: тінтуір портреттің қай жерінде болса, сол жаққа сәл еңкейеді (тек дәл тінтуірде, қозғалыс рұқсат болса) ----------
   if (motion() && window.matchMedia && matchMedia("(pointer: fine)").matches) {
     $$("[data-tilt]").forEach((el) => {
