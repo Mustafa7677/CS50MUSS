@@ -79,6 +79,22 @@
     document.addEventListener("visibilitychange", () => { on = !document.hidden && dust.getBoundingClientRect().bottom > 0; if (on && !raf2) raf2 = requestAnimationFrame(tick); });
   }
 
+
+  // ---------- 3D еңкею: тінтуір портреттің қай жерінде болса, сол жаққа сәл еңкейеді (тек дәл тінтуірде, қозғалыс рұқсат болса) ----------
+  if (motion() && window.matchMedia && matchMedia("(pointer: fine)").matches) {
+    $$("[data-tilt]").forEach((el) => {
+      let raf3 = 0, ev = null;
+      const paint = () => {
+        raf3 = 0; if (!ev) return;
+        const r = el.getBoundingClientRect(), x = (ev.clientX - r.left) / r.width, y = (ev.clientY - r.top) / r.height;
+        el.style.setProperty("--ry", ((x - .5) * 12).toFixed(2) + "deg"); el.style.setProperty("--rx", ((.5 - y) * 10).toFixed(2) + "deg");
+        el.style.setProperty("--gx", (x * 100).toFixed(1) + "%"); el.style.setProperty("--gy", (y * 100).toFixed(1) + "%");
+      };
+      el.addEventListener("pointermove", (e) => { ev = e; el.classList.add("is-tilt"); if (!raf3) raf3 = requestAnimationFrame(paint); });
+      el.addEventListener("pointerleave", () => { ev = null; el.classList.remove("is-tilt"); el.style.setProperty("--rx", "0deg"); el.style.setProperty("--ry", "0deg"); });
+    });
+  }
+
   // ---------- көрінгенде ашылатын бөлімдер және санағыштар ----------
   const count = (b) => {
     const to = +b.dataset.to; if (!to || !motion()) return;

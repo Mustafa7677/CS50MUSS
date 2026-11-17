@@ -329,3 +329,27 @@ html:not(.st-js) .shx-dust { display: none; }
 .st-js .orn { --q: clamp(0, calc((var(--p, 1) - .18) / .32), 1); }
 .st-js .orn :is(.orn-l, .orn-h) { stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--q)); }
 .st-js .orn .orn-d { opacity: var(--q); }
+
+/* ---------- портрет беттер арасында ағып өтеді (View Transitions: галерея ↔ жеке бет) ---------- */
+::view-transition-group(*) { animation-duration: .65s; animation-timing-function: cubic-bezier(.6, 0, .2, 1); }
+@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
+
+/* ---------- тінтуірге ілесетін 3D еңкею және алтын жарқыл (data-tilt; тек дәл тінтуірде) ---------- */
+[data-tilt] { position: relative; }
+.st-js [data-tilt] { transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .5s cubic-bezier(.2, .7, .2, 1); transform-style: preserve-3d; }
+.st-js [data-tilt].is-tilt { transition: transform .12s linear; }
+[data-tilt]::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .4s ease;
+  background: radial-gradient(40% 35% at var(--gx, 50%) var(--gy, 30%), rgb(255 226 160 / .28), transparent 70%); mix-blend-mode: soft-light; }
+.st-js [data-tilt].is-tilt::after { opacity: 1; }
+
+/* ---------- жеке бет: есім алтын сиямен «жазылып», сосын толады ---------- */
+.st-js .tp-copy h1 { color: transparent; -webkit-text-stroke: 1px #d9b468;
+  background: linear-gradient(90deg, #fff 0 50%, transparent 50% 100%) 100% 0 / 200% 100% no-repeat; -webkit-background-clip: text; background-clip: text;
+  animation: tp-write 1.4s cubic-bezier(.65, 0, .35, 1) .7s both, tp-fill 1.3s cubic-bezier(.65, 0, .35, 1) 1.9s forwards; }
+@keyframes tp-write { from { clip-path: inset(-10% 100% -30% 0); } to { clip-path: inset(-10% 0 -30% 0); } }
+@keyframes tp-fill { to { background-position: 0 0; -webkit-text-stroke-color: transparent; } }
+.tp-dust { z-index: 2; }
+
+/* басты беттегі есімдер - сілтеме */
+.at-names a { display: flex; align-items: baseline; gap: 12px; width: 100%; color: inherit; text-decoration: none; }
+.at-names a:hover b, .at-names a:focus-visible b { color: var(--acc); }

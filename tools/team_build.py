@@ -132,7 +132,7 @@ def panel(m, i):
     ph = photo(m["slug"])
     face = (f'<img src="{ph}" alt="{E(m["name"])}, портрет" width="640" height="800" loading="{"eager" if i < 2 else "lazy"}" decoding="async">' if ph
             else f'<span class="ta-ini" aria-hidden="true">{E(m["initials"])}</span>')
-    return (f'<li class="uyq-p" style="--i:{i};--acc:{acc}"><div class="uyq-ph"><div class="uyq-img">{face}</div></div>'
+    return (f'<li class="uyq-p" style="--i:{i};--acc:{acc}"><div class="uyq-ph" style="view-transition-name:tm-{m["slug"]}"><div class="uyq-img" data-tilt>{face}</div></div>'
             f'<div class="uyq-tx"><p class="uyq-no" aria-hidden="true">{i + 1:02d}</p><p class="uyq-k">{E(k)} · {age(m)}</p>'
             f'<h3 class="uyq-n">{E(m["name"])}</h3><p class="uyq-r">{E(m["role"])}</p><p class="uyq-t">{E(m["tag"])}</p>'
             f'<p class="uyq-a">{E(m["areas"])}</p><a class="btn gold uyq-go" href="team/{m["slug"]}.html">Жеке беті</a></div></li>')
@@ -267,7 +267,8 @@ def person_page(m, i):
     main = f"""  <main class="tm tp" id="main" style="--acc:{acc}">
     <section class="tp-hero" aria-labelledby="tp-h" data-scrub="through">
       <p class="tp-bg" aria-hidden="true">{E(m["name"])}</p>
-      <div class="tp-door"><div class="tp-ph">{face}</div><span class="tp-leaf tp-l" aria-hidden="true"></span><span class="tp-leaf tp-r" aria-hidden="true"></span></div>
+      <canvas class="shx-dust tp-dust" aria-hidden="true"></canvas>
+      <div class="tp-door" style="view-transition-name:tm-{m["slug"]}"><div class="tp-ph" data-tilt>{face}</div><span class="tp-leaf tp-l" aria-hidden="true"></span><span class="tp-leaf tp-r" aria-hidden="true"></span></div>
       <div class="tp-copy">
         <p class="tp-crumb"><a href="{p}team.html">Команда</a> · {i + 1} / {len(M)}</p>
         <h1 id="tp-h">{E(m["name"])}</h1>
@@ -296,7 +297,7 @@ def person_page(m, i):
 
 # ---------- басты бет: 8-сахна ----------
 def landing():
-    names = "".join(f'<li style="--i:{i};--acc:{KIND[m["kind"]][1]}"><b>{E(m["name"])}</b><span>{E(KIND[m["kind"]][0].lower())}</span></li>' for i, m in enumerate(M))
+    names = "".join(f'<li style="--i:{i};--acc:{KIND[m["kind"]][1]}"><a href="team/{m["slug"]}.html"><b>{E(m["name"])}</b><span>{E(KIND[m["kind"]][0].lower())}</span></a></li>' for i, m in enumerate(M))
     dots = "".join(f'<circle class="at-dot" style="--i:{i}" cx="{200 + 168 * math.sin(i * 1.2566 + .3):.1f}" cy="{200 - 168 * math.cos(i * 1.2566 + .3):.1f}" r="7"/>' for i in range(len(M)))
     return f"""<section class="st-scene ax ax-team" id="scene-team" aria-labelledby="axt-t" data-scene="8" data-scrub="through">
     <div class="ax-in">
