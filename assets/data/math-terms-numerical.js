@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Numerical Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Numerical Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.numerical = [
  {"id": "numerical-t1", "kz": "Абсолют қателік", "en": "absolute error", "def": "$x$ - дәл мән, $\\tilde x$ - жуық мән. Абсолют қателік (absolute error) $|x-\\tilde x|$; салыстырмалы қателік (relative error) $\\frac{|x-\\tilde x|}{|x|}$ ($x\\ne0$).", "lesson": 1},

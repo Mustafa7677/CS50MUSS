@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Дифференциалдық есептеу» пәні. Формат: §9.2 (терминдер). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Дифференциалдық есептеу» пәні. Формат: §9.2 (терминдер). */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.diffcalc = [
   {"id": "dc-limit", "kz": "шек", "en": "limit", "def": "Аргумент нүктеге жақындағанда функция мәндері ұмтылатын сан.", "lesson": 1},

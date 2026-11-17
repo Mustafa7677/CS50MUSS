@@ -14,7 +14,7 @@ test("көшірме доменінде түпнұсқаға сілтеме бе
   const n = page.locator("#clone-notice");
   await expect(n).toBeVisible();
   await expect(n).toContainText("mustafa7677.github.io/CS50MUSS");
-  await expect(n).toContainText("Sagid Mustafa");
+  await expect(n).toContainText("AO17 командасы");
   // өшіріп көрсек те, қайта шығады
   await page.evaluate(() => document.getElementById("clone-notice").remove());
   await expect(n).toBeVisible();

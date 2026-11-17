@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Real Analysis · 2-сабақ: Тізбек шегі және Коши тізбектері
 from math_lesson_gen import L, D, T, F, REM, ATT, NOTE, P_, X
 

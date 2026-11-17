@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // AO17 дискретті құрылымдар қозғалтқышының тесттері: node tests/academy/disc.test.js
 const D = require("../../assets/js/academy-disc.js");
 let pass = 0, fail = 0;

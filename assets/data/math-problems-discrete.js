@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Discrete Mathematics пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Discrete Mathematics пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.discrete = [
  {"id": "discrete-p1", "lvl": "medium", "params": {"a": {"int": [20, 60]}, "b": {"int": [15, 50]}, "c": {"int": [5, 15]}, "n": {"calc": "a+b"}}, "type": "num", "q": "$#{n}$ адамның $#{a}$-і шай, $#{b}$-і кофе ішеді, $#{c}$-і екеуін де ішеді. Ешқайсысын ішпейтіндер саны?", "a": "c", "v": "n-(a+b-c)", "hint": "$|A\\cup B|=|A|+|B|-|A\\cap B|$.", "sol": {"steps": ["$|A\\cup B|=#{a}+#{b}-#{c}=#{a+b-c}$.", "$#{n}-#{a+b-c}$."], "ans": "$#{c}$"}},

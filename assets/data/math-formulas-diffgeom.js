@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Differential Geometry пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Differential Geometry пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.diffgeom = [
  {"id": "diffgeom-1-1", "name": "Доға ұзындығы", "tex": "L=\\int_a^b|\\gamma'(t)|\\,dt=\\int_a^b\\sqrt{x'^2+y'^2+z'^2}\\,dt", "cond": "", "note": "Параметрлеуге тәуелсіз.", "tags": ["Differential Geometry", "Қисықтар: параметрлеу, доға ұзындығы, қисықтық"], "lesson": 1, "anchor": "f-1"},

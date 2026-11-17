@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // «Үш әлем» жүйесі: академияға кіру порталы, басты беттің алтын жібі, компас, бағдарламалау курстарының шоқжұлдызы.
 const { test, expect } = require("@playwright/test");
 const { blockFonts, collectErrors } = require("../support/helpers");

@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
 /* SAT R&W «Central Ideas and Details» + «Inferences» зертханасы: 9 мәтін (AO17 авторлық).
    cards - мәтіннен алынған детальдар; core: true - негізгі ойды құрайтын деталь. mains - негізгі ой нұсқалары: covers (қамтитын карталар), ok, flaw.
    inf - мәтінді логикалық аяқтау сұрағы (Inferences). Соңғы 3 мәтін (check: true) - көмексіз меңгеру тексерісі. */

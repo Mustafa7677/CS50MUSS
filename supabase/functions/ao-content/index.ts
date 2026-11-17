@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // AO17: Supabase Edge Function «ao-content». Орнату: docs/PLATFORM.md.
 // Орта айнымалылары (Supabase өзі береді): SUPABASE_URL, SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY.
 // Өзіңіз қосасыз: AO_ALLOWED_ORIGINS="https://mustafa7677.github.io" (үтірмен бірнешеу болуы мүмкін).

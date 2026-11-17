@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Ағылшын тілі A0-C1 курсының деректері (дербес авторлық материал, өз сөзімізбен жазылған). */
+/* © 2026 AO17 командасы. All Rights Reserved. Ағылшын тілі A0-C1 курсының деректері (дербес авторлық материал, өз сөзімізбен жазылған). */
 /* Формат: docs/EN-COURSE-GUIDE.md. Әр жазба бір жолда. Мазмұн агенті осы файлды толықтырады. */
 window.CS50KZ_EN_PHRASES = [
   {"id": "ph-standup-1", "cat": "standup", "lvl": "a1", "en": "Yesterday I worked on the login page.", "kz": "Кеше мен кіру бетімен жұмыс істедім.", "note": "Кешегі істі айтқанда Past Simple қолданылады."},

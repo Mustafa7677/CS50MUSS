@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // Академия фильмдері (film/code/, film/math/, film/en/, film/cs/, film/ielts/, film/sat/): ортақ қозғалтқыш, финалдағы академияға кіру, телефон композициясы,
 // қозғалыс азайту, академия бетінен фильмге сілтеме.
 const { test, expect } = require("@playwright/test");

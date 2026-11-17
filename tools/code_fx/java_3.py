@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Java 3-апта: кластар, инкапсуляция, static, Object әдістері, пакеттер, қоқыс жинау - жолма-жол талдау.
 
 CX = {

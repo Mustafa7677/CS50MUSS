@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // Ағылшын ойындары (assets/js/games-en.js): Word Match, Spell It, Sentence Builder, Article Rush, Bug Report Fixer.
 // Хабта «Ағылшын» тобы, ойын іске қосылады және аяқталады, ұпай/XP cs50kz:games-қа жазылады, деңгей таңдалады, дерек жоқ болса да жұмыс істейді,
 // мобильді 390px (≥44px батырмалар, көлденең айналусыз), a11y, дыбыс өшіріледі.

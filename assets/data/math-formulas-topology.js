@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Topology пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Topology пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.topology = [
  {"id": "topology-1-1", "name": "Топология аксиомалары", "tex": "\\varnothing,X\\in\\tau;\\quad\\bigcup_\\alpha U_\\alpha\\in\\tau;\\quad U\\cap V\\in\\tau", "cond": "", "note": "Қиылысу - тек ақырлы.", "tags": ["Topology", "Топологиялық кеңістіктер"], "lesson": 1, "anchor": "f-1"},

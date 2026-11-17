@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Java 4-апта: мұрагерлік, абстракт кластар, интерфейстер, композиция, sealed - жолма-жол талдау.
 
 CX = {

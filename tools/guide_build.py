@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17 Оқулық: IELTS және Digital SAT академияларының сабақтары (түсіндірме, әдіс, қадамдық мысал, жаттығу).
 
 Мазмұн интерфейстен бөлек: әр сабақ - tools/guides/<академия>/<NN>_<slug>.py файлындағы LESSON сөздігі.
@@ -227,7 +227,7 @@ def lesson_html(L, prev_l, next_l, tmpl):
   <script type="application/json" id="gd-data">{json.dumps(data, ensure_ascii=False).replace("</", "<\\/")}</script>
   {ftr}"""
     head = (top + f"<title>{E(L['title'])} - {E(name)} оқулығы - AO17</title>\n  <!-- build:head -->\n  <!-- /build:head -->\n"
-            f'  <meta name="description" content="{E(desc[:300])}">\n  <meta name="author" content="Sagid Mustafa">\n'
+            f'  <meta name="description" content="{E(desc[:300])}">\n  <meta name="author" content="AO17 командасы">\n'
             '  <link rel="stylesheet" href="../../assets/fonts/fonts.css">\n  <link rel="stylesheet" href="../../assets/css/style.css">\n'
             '  <link rel="stylesheet" href="../../assets/css/academy.css">\n  <link rel="stylesheet" href="../../assets/css/ao-labs.css">\n'
             '  <script src="../../assets/js/main.js"></script>\n  <script src="../../assets/js/ao-tutor.js" defer></script>\n  <script src="../../assets/js/ao-guide.js" defer></script>\n'

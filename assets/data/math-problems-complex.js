@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Complex Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Complex Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.complex = [
  {"id": "complex-p1", "lvl": "medium", "params": {"a": {"int": [-6, 6]}, "b": {"int": [-6, 6]}, "c": {"int": [-6, 6]}, "d": {"int": [-6, 6]}}, "require": ["b != 0", "d != 0"], "type": "num", "q": "$(#{a}#{+b}i)(#{c}#{+d}i)$ көбейтіндісінің нақты бөлігі?", "a": "a*c-b*d", "v": "a*c-b*d", "hint": "$ac-bd$.", "sol": {"steps": ["$#{a}\\cdot#{c}-(#{b})\\cdot(#{d})$."], "ans": "$#{a*c-b*d}$"}},

@@ -1,6 +1,6 @@
 # AO17 жабық платформа: орнату және басқару
 
-© 2026 Sagid Mustafa. All Rights Reserved.
+© 2026 AO17 командасы. All Rights Reserved.
 
 ## Қалай жұмыс істейді
 

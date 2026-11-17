@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
 /* CS Universe: Python Execution Visualizer (academy/labs/python.html).
    Код нағыз Python-да орындалады: Pyodide академиядағыдай main.js-тегі CS50KZ.getPyodide() арқылы жүктеледі,
    assets/py/cslab_trace.py ішіндегі sys.settrace трассалаушысы әр жолдың алдындағы күйді (жақтаулар, айнымалылар, stdout)

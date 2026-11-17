@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
 /* Digital SAT толық нұсқасының Math сұрақ банкі - AO17 авторлық түпнұсқа сұрақтары (College Board сұрақтары емес).
    Құрылымы assets/data/sat-bank.js-пен бірдей: m1 (1-модуль, аралас қиындық), hard (2-модуль, қиын пул), easy (2-модуль, жеңіл пул),
    әр пулда 22 сұрақ: ≈ 35% Algebra, ≈ 35% Advanced Math, ≈ 15% Problem-Solving and Data Analysis, ≈ 15% Geometry and Trigonometry;

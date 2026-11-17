@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
  * «Ағылшын тілі A0-C1» курсының ортақ беттері: сөздік (vocab), грамматика (grammar), IT-фразалар (phrasebank), деңгей тесті (placement).
  * Дерек (assets/data/en-*.js) бос болса да беттер қате бермей, «әзірше бос» күйін көрсетеді (EmptyState).
  * Сақтау: cs50kz:en:vocab (сөздік күйі, en-course.js), cs50kz:en:placement (деңгей тесті нәтижесі).

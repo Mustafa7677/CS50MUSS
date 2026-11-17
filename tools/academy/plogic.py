@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17: пікірлер логикасының Python-дағы ТӘУЕЛСІЗ іске асырылуы.
 
 Мақсаты - тапсырма кілттерін JS қозғалтқышынан (assets/js/academy-logic.js) бөлек тексеру:

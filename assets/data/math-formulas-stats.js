@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Mathematical Statistics пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Mathematical Statistics пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.stats = [
  {"id": "stats-1-1", "name": "Орта мән мен дисперсия", "tex": "\\bar x=\\frac1n\\sum_{i=1}^nx_i,\\qquad s^2=\\frac{1}{n-1}\\sum_{i=1}^n(x_i-\\bar x)^2=\\frac{\\sum x_i^2-n\\bar x^2}{n-1}", "cond": "n\\ge2", "note": "$n\\ge2$. Екінші түрі есептеуге ыңғайлы, бірақ компьютерде үлкен сандармен дөңгелектеу қатесін арттыруы мүмкін.", "tags": ["Mathematical Statistics", "Таңдама және сипаттамалық статистика"], "lesson": 1, "anchor": "f-1"},

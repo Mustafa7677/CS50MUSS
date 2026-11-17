@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Mathematical Optimization · 6-сабақ: Дөңес оңтайландыру және машиналық оқыту
 from math_lesson_gen import L, D, T, F, REM, ATT, NOTE, P_, X
 

@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
 // AO17 CS Universe: ақпарат және екілік жүйе қозғалтқышы.
 // Санау жүйелері (2-36, BigInt), қосымша код (n бит), IEEE 754 float32 бөлшектеу, UTF-8, жұптық бит, биттік өрнектер, RLE.
 (function (root, factory) {

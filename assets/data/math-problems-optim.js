@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Mathematical Optimization пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Mathematical Optimization пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.optim = [
  {"id": "optim-p1", "lvl": "medium", "params": {"a": {"int": [1, 5]}, "b": {"int": [-10, 10]}, "c": {"int": [-5, 5]}}, "type": "num", "q": "$f(x)=#{a}x^2#{+b}x#{+c}$ дөңес функциясының ең кіші мәні?", "a": "c-b^2/(4*a)", "v": "c-Rational(b**2,4*a)", "hint": "$f'(x)=0$: $x^*=-\\frac{b}{2a}$.", "sol": {"steps": ["$x^*=-\\frac{#{b}}{#{2*a}}$.", "$f(x^*)=#{c}-\\frac{#{b^2}}{#{4*a}}$."], "ans": "$#{c-b^2/(4*a)}$"}},

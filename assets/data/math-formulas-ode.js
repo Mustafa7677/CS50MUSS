@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Ordinary Differential Equations пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Ordinary Differential Equations пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.ode = [
  {"id": "ode-order", "name": "Теңдеудің реті", "tex": "F\\big(x,y,y',\\dots,y^{(n)}\\big)=0", "note": "Ең жоғары туындының реті теңдеудің реті. Туындының дәрежесі ретке әсер етпейді.", "tags": ["рет", "дифференциалдық теңдеу"], "lesson": 1, "anchor": "def-1"},

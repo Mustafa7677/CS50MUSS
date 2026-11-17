@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 CS Universe · Senior · s01 Software Architecture · 6-10 сабақтар. Авторлық мазмұн (AO17 үшін жаңадан жазылған).
 
 from s01_a import META, REFS

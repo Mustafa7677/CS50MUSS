@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 Digital SAT оқулығы · Math · Algebra · Сызықтық теңдеулер жүйесі. Авторлық мазмұн.
 EN = lambda s: '<span class="gd-en">' + s + '</span>'  # noqa: E731
 FX = lambda s: '<p class="gd-fx">' + s + '</p>'  # noqa: E731
@@ -142,5 +142,5 @@ LESSON = {
         "x + y сияқты өрнек сұралса, алдымен теңдеулерді қосып не азайтып көріңіз.",
     ],
     "lab": {"href": "linear.html#h-sys", "title": "Теңдеулер жүйесі: екі түзу"},
-    "sources": ["Сабақ мәтіні, мысалдары мен жаттығулары AO17 үшін жаңадан жазылған (авторы: Sagid Mustafa). College Board материалдары көшірілмеген; AO17 College Board-пен байланысты емес."],
+    "sources": ["Сабақ мәтіні, мысалдары мен жаттығулары AO17 үшін жаңадан жазылған (авторлары: AO17 командасы). College Board материалдары көшірілмеген; AO17 College Board-пен байланысты емес."],
 }

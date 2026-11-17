@@ -1,4 +1,4 @@
--- © 2026 Sagid Mustafa. All Rights Reserved.
+-- © 2026 AO17 командасы. All Rights Reserved.
 -- AO17 Academy — жабық оқу платформасы (Supabase / Postgres).
 --
 -- Орнату: Supabase → SQL Editor → осы файлды толық қойып, Run. Қайта іске қосуға болады (идемпотентті).

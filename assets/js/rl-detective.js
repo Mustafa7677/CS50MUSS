@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
    «Мәтін тергеушісі» (IELTS Reading Detective) - AO17 Reality Engine сабағы, id: ielts.reality.detective.
    Мазмұн: assets/data/rl-detective.js (window.RL_DETECTIVE). Бұл файлда тек көрсету мен тексеру логикасы бар.
    Негізгі бөліктер:

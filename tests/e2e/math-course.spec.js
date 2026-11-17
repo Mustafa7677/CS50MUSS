@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // «Математика» курсы (math/): беттер, KaTeX, есеп қозғалтқышы (барлық түр), қауіпсіз парсер, қадамдық шешім, параметрлік есеп, прогресс,
 // визуализация, ортақ беттер, статистика, офлайн кэш, лицензия (B), math_verify.py. Нұсқаулық: docs/MATH-COURSE-GUIDE.md.
 const { test, expect } = require("@playwright/test");
@@ -755,7 +755,7 @@ test("лицензия: барлық math беттері B, All Rights Reserved,
     expect(s, f).toMatch(/<meta name="copyright" content="[^"]*All Rights Reserved/);
     expect(s, f).not.toMatch(/<meta name="copyright" content="[^"]*(Harvard|CC BY-NC-SA)/);
     expect(s, f).not.toContain('"isBasedOn"');
-    expect(s, f).toContain("© 2026 Sagid Mustafa.");
+    expect(s, f).toContain("© 2026 AO17 командасы.");
     expect(s, f).toContain("AO17 — Harvard University-ден тәуелсіз жоба.");
   }
   expect(fs.existsSync(path.join(MATH, "certificate.html"))).toBe(false);

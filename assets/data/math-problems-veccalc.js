@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Векторлық анализ» пәні. Формат: §9.3 (параметрлік есептер банкі). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Векторлық анализ» пәні. Формат: §9.3 (параметрлік есептер банкі). */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.veccalc = [
 {"id": "vc-grad-x", "lvl": "easy", "type": "num", "params": {"a": {"int": [2, 5]}, "b": {"int": [1, 4]}, "p": {"int": [1, 3]}, "q": {"int": [-3, 3], "nz": true}}, "q": "$u=#{a}x^2+#{b}xy$ өрісінің $(#{p},\\,#{p:q})$ нүктесіндегі $\\partial u/\\partial x$ мәнін табыңыз.", "a": "2*a*p+b*q", "v": "diff(a*x**2+b*x*y,x).subs({x:p,y:q})", "hint": "$u_x=2ax+by$ формуласын нүктеге қойыңыз.", "sol": {"steps": ["$u_x=2\\cdot#{a}\\,x+#{b}\\,y$.", "$u_x(#{p},#{p:q})=#{2*a*p}+#{p:b*q}$."], "ans": "$#{2*a*p+b*q}$"}},

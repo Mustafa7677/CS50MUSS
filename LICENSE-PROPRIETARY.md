@@ -1,8 +1,8 @@
-# LICENSE-PROPRIETARY: Sagid Mustafa-ның дербес әзірлемелері
+# LICENSE-PROPRIETARY: AO17 командасының дербес әзірлемелері
 
-**© 2026 Sagid Mustafa. Барлық құқықтар қорғалған. / All Rights Reserved.**
+**© 2026 AO17 командасы. Барлық құқықтар қорғалған. / All Rights Reserved.**
 
-Бұл құжат **B санатына** қатысты: Sagid Mustafa құқықтарына ие дербес авторлық материалдар. Harvard CS50 материалдары (A санаты) мен үшінші тарап компоненттері (C санаты) бұған кірмейді: [LICENSE.md](LICENSE.md).
+Бұл құжат **B санатына** қатысты: AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Magzhan Romanov, Kopenova Merey, Sagid Mustafa) бірлесіп құқықтарына ие дербес авторлық материалдар. Команда: [team.html](https://mustafa7677.github.io/CS50MUSS/team.html). Harvard CS50 материалдары (A санаты) мен үшінші тарап компоненттері (C санаты) бұған кірмейді: [LICENSE.md](LICENSE.md).
 
 ## 1. Қамту аясы
 
@@ -55,4 +55,4 @@
 
 ## English
 
-**© 2026 Sagid Mustafa. All Rights Reserved.** This covers the independent software, design, educational tools and original materials listed in `COPYRIGHT.md` (category B). Permitted without written consent: using the published website for personal learning/teaching in a browser; viewing the source code on GitHub and actions allowed by the GitHub Terms of Service; uses permitted by applicable law. Prohibited without written permission: copying, redistributing, publishing elsewhere, selling, sublicensing, modifying or creating derivative works, commercial use, removing notices, bulk scraping for AI training, and implying endorsement. This licence does **not** apply to Harvard CS50 materials (CC BY-NC-SA 4.0, see `LICENSE-HARVARD.md`) or to third-party components (see `THIRD-PARTY-LICENSES.md`). Rights already granted under CC BY-NC-SA 4.0 for earlier published versions are not revoked. Software is provided "as is" without warranty. This document is not legal advice.
+**© 2026 AO17 командасы. All Rights Reserved.** This covers the independent software, design, educational tools and original materials listed in `COPYRIGHT.md` (category B). Permitted without written consent: using the published website for personal learning/teaching in a browser; viewing the source code on GitHub and actions allowed by the GitHub Terms of Service; uses permitted by applicable law. Prohibited without written permission: copying, redistributing, publishing elsewhere, selling, sublicensing, modifying or creating derivative works, commercial use, removing notices, bulk scraping for AI training, and implying endorsement. This licence does **not** apply to Harvard CS50 materials (CC BY-NC-SA 4.0, see `LICENSE-HARVARD.md`) or to third-party components (see `THIRD-PARTY-LICENSES.md`). Rights already granted under CC BY-NC-SA 4.0 for earlier published versions are not revoked. Software is provided "as is" without warranty. This document is not legal advice.

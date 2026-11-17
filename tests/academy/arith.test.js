@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // AO17 арифметика қозғалтқышының тесттері: node tests/academy/arith.test.js
 const A = require("../../assets/js/academy-arith.js");
 let pass = 0, fail = 0;

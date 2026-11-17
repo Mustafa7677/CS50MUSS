@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Probability Theory пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Probability Theory пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.prob = [
  {"id": "prob-p1", "lvl": "medium", "params": {"n": {"int": [6, 12]}, "k": {"int": [2, 4]}}, "type": "num", "q": "$#{n}$ адамнан $#{k}$ адамдық команда (рет маңызды емес) неше тәсілмен таңдалады?", "a": "n!/(k!*(n-k)!)", "v": "binomial(n,k)", "hint": "$C_n^k=\\dfrac{n!}{k!\\,(n-k)!}$.", "sol": {"steps": ["$C_{#{n}}^{#{k}}=\\dfrac{#{n}!}{#{k}!\\,#{n-k}!}$."], "ans": "$#{n!/(k!*(n-k)!)}$"}},

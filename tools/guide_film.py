@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17 Оқулық: SAT және IELTS сабақтарына кино-түсіндіру (қозғалтқыш: assets/js/academy-cine.js).
 
 Фильм сабақтың өз мазмұнынан құрастырылады, сондықтан әр сабақтың фильмі - өзінікі:

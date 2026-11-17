@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 CS Universe · Level I · m10 C Programming Foundations · 6-10 сабақтар. Авторлық мазмұн (AO17 үшін жаңадан жазылған).
 # Барлық C коды build кезінде нағыз gcc арқылы компиляцияланып, шығысы тексеріледі (UB мысалдары - санитайзерлермен).
 

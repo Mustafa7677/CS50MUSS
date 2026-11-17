@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 IELTS оқулығы · Reading · True / False / Not Given. Авторлық мазмұн.
 _TEA = ("<p><b>Tea on Mount Aruna</b></p>"
         "<p>[[Tea was first planted on the slopes of Mount Aruna in 1871 by a schoolteacher, Hugo Brandt. The earliest bushes were grown from seed that Brandt had brought back from a journey abroad. For the first twenty years the leaves were sold only in the nearby town. Today the estate produces around 300 tonnes a year, most of which is exported. Picking is still done by hand, because machines damage the youngest leaves.]]</p>")
@@ -143,7 +143,7 @@ LESSON = {
         "Тұжырымдар мәтін ретімен жүреді: жауапты көрші тұжырымдардың арасынан ғана іздеңіз.",
     ],
     "lab": {"href": "reading.html", "title": "Reading зертханасы"},
-    "sources": ["Сабақ мәтіні, оқу мәтіндері мен жаттығулары AO17 үшін жаңадан жазылған (авторы: Sagid Mustafa); Mount Aruna, Brenmoor, Kessel, Lake Tavira және барлық есімдер мен деректер ойдан алынған. AO17 IELTS иелерімен байланысты емес және ресми балл бермейді."],
+    "sources": ["Сабақ мәтіні, оқу мәтіндері мен жаттығулары AO17 үшін жаңадан жазылған (авторлары: AO17 командасы); Mount Aruna, Brenmoor, Kessel, Lake Tavira және барлық есімдер мен деректер ойдан алынған. AO17 IELTS иелерімен байланысты емес және ресми балл бермейді."],
 }
 
 

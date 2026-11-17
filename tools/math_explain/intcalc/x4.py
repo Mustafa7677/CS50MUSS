@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Integral Calculus · 4-сабақ: айнымалыны ауыстыру (tools/math_explain.py)
 from math import asin, pi, sqrt
 from math_explain import S

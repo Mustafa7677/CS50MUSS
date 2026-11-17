@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Real Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Real Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.real = [
  {"id": "real-1-1", "name": "ε-сипаттама", "tex": "s=\\sup A\\iff\\big(\\forall a\\in A:\\ a\\le s\\big)\\ \\wedge\\ \\big(\\forall\\varepsilon>0\\ \\exists a\\in A:\\ a>s-\\varepsilon\\big)", "cond": "", "note": "$A\\ne\\varnothing$.", "tags": ["Real Analysis", "Нақты сандар және супремум"], "lesson": 1, "anchor": "f-1"},

@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
 /* Digital SAT толық ұзындықты режимі: Reading and Writing сұрақ банкі (81 сұрақ) - AO17 авторлық түпнұсқа сұрақтары (College Board сұрақтары емес).
    Құрылым assets/data/sat-bank.js-пен бірдей: m1 (1-модуль, аралас), hard (2-модуль, қиын пул), easy (2-модуль, жеңіл пул), әрқайсысында 27 сұрақ.
    Әр модульдегі домен үлесі ресми үлеске жақын: Craft and Structure 8, Information and Ideas 7, Standard English Conventions 7, Expression of Ideas 5;

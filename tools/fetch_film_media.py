@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """«Шақыру» фильміне архивтік суреттерді Wikimedia Commons-тан алады (GitHub Actions-та іске қосылады).
 
 Екі кезең:

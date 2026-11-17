@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Differential Geometry пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Differential Geometry пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.diffgeom = [
  {"id": "diffgeom-p1", "lvl": "medium", "params": {"a": {"int": [1, 5]}, "b": {"int": [1, 5]}}, "type": "num", "q": "$\\gamma(t)=(#{a}\\cos t,#{a}\\sin t,#{b}t)$ спиралінің қисықтығы?", "a": "a/(a^2+b^2)", "v": "Rational(int(a), int(a)**2 + int(b)**2)", "hint": "$\\kappa=\\frac a{a^2+b^2}$.", "sol": {"steps": ["$\\frac{#{a}}{#{a^2+b^2}}$."], "ans": "$#{a/(a^2+b^2)}$"}},

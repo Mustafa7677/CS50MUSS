@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Probability Theory пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Probability Theory пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.prob = [
  {"id": "prob-t1", "kz": "қосу ережесі", "en": "sum rule", "def": "Егер $A$ және $B$ жиындарының ортақ элементі жоқ болса ($A\\cap B=\\varnothing$), онда $|A\\cup B|=|A|+|B|$. Жалпы, қос-қостан қиылыспайтын $A_1,\\dots,A_m$ үшін $|A_1\\cup\\dots\\cup A_m|=|A_1|+\\dots+|A_m|$. Бұл - қосу ережесі (sum rule).", "lesson": 1},

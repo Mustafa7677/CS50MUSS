@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 Digital SAT оқулығы · Math · Problem-Solving and Data Analysis · Бөлшек, қатынас, жылдамдық, өлшем бірлік. Авторлық мазмұн.
 EN = lambda s: '<span class="gd-en">' + s + '</span>'  # noqa: E731
 FX = lambda s: '<p class="gd-fx">' + s + '</p>'  # noqa: E731
@@ -120,5 +120,5 @@ LESSON = {
         "Бірлікті түрлендіру - 1-ге тең бөлшекке көбейту; ауданда коэффициент квадратталады.",
     ],
     "lab": {"href": "percent.html", "title": "Пайыз және қатынас зертханасы"},
-    "sources": ["Сабақ мәтіні, мысалдары мен жаттығулары AO17 үшін жаңадан жазылған (авторы: Sagid Mustafa). College Board материалдары көшірілмеген; AO17 College Board-пен байланысты емес."],
+    "sources": ["Сабақ мәтіні, мысалдары мен жаттығулары AO17 үшін жаңадан жазылған (авторлары: AO17 командасы). College Board материалдары көшірілмеген; AO17 College Board-пен байланысты емес."],
 }

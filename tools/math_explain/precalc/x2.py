@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Precalculus · 2-сабақ: алгебралық өрнектер мен теңдеулер (tools/math_explain.py)
 from math_explain import S
 from math_fig import Plot, fn, pt, hline, vline

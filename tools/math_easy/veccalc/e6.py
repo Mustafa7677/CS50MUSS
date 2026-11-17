@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Vector Calculus · 6-сабақтың жеңіл қабаты (tools/math_easy_inject.py)
 
 EASY = dict(

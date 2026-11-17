@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
 """«Математика» курсының ЖАЛҒЫЗ жоспары: 25 пән, әр пәнде сабақтар тізімі.
 
 Бұл файлды tools/build.py, tools/make_math_pages.py және tools/math_verify.py оқиды; браузер үшін build math/data/plan.js жасайды.

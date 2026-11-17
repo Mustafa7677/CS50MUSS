@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Number Theory пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Number Theory пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.numtheory = [
  {"id": "numtheory-t1", "kz": "бөледі", "en": "divides", "def": "$a,b\\in\\mathbb Z$, $a\\ne0$. $a$ $b$-ны бөледі (divides) ($a\\mid b$), егер $b=ak$ болатын $k\\in\\mathbb Z$ бар. Қасиеттері: $a\\mid b$, $b\\mid c\\Rightarrow a\\mid c$; $a\\mid b$, $a\\mid c\\Rightarrow a\\mid(bx+cy)$ кез келген $x,y\\in\\mathbb Z$ үшін; $a\\mid b$…", "lesson": 1},

@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // ҰБТ-ға дайындық (math/ubt.html): блоктардан құралған сынақ, кері санақ, өзі тапсыру, нәтиже мен қайталау жоспары.
 const { test, expect } = require("@playwright/test");
 const { blockFonts, collectErrors } = require("../support/helpers");

@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Complex Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Complex Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.complex = [
  {"id": "complex-1-1", "name": "Көбейту", "tex": "(a+bi)(c+di)=(ac-bd)+(ad+bc)i", "cond": "", "note": "Жақшаны ашып, $i^2=-1$.", "tags": ["Complex Analysis", "Комплекс сандар"], "lesson": 1, "anchor": "f-1"},

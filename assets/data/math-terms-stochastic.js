@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Stochastic Processes пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Stochastic Processes пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.stochastic = [
  {"id": "stochastic-t1", "kz": "Кездейсоқ процесс", "en": "stochastic process", "def": "$(\\Omega,\\mathcal F,P)$ - ықтималдық кеңістігі, $T$ - индекстер жиыны (уақыт). Кездейсоқ процесс (stochastic process) - кездейсоқ шамалар тұқымдасы $\\{X_t:t\\in T\\}$, $X_t:\\Omega\\to E$.", "lesson": 1},

@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
 /* IELTS General Training Writing Task 1 - Letter Studio: авторлық хат тапсырмалары (компания мен адамдар ойдан шығарылған),
    регистр зертханасы (ашылу, мақсат, өтініш, аяқталу) және жаңа жағдайлар генераторы. reg: formal | semi | informal. */
 window.IELTS_WTL = {

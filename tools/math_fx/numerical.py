@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Сандық әдістер (week-99…104): әр формулаға жеке түсіндірме. Құрылымы tools/math_fx/arith.py-дағыдай.
 # check: әр әдісті Python-да тікелей орындап, қатесін шын мәнмен салыстырамыз.
 

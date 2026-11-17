@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. Harvard CS50 материалдары мен үшінші тарап компоненттері өз лицензияларымен қалады. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. Harvard CS50 материалдары мен үшінші тарап компоненттері өз лицензияларымен қалады. */
 // AO17 - интерактив элементтер
 
 (function () {
@@ -55,7 +55,7 @@
       const d = document.createElement("div");
       d.id = "clone-notice"; d.setAttribute("role", "alert");
       d.style.cssText = "position:fixed;left:0;right:0;bottom:0;z-index:99999;background:#7a1010;color:#fff;padding:12px 16px;font:600 15px/1.45 system-ui,sans-serif;text-align:center;box-shadow:0 -6px 24px rgba(0,0,0,.35)";
-      d.innerHTML = 'Назар аударыңыз: бұл - «AO17» сайтының <b>көшірмесі</b> болуы мүмкін. Түпнұсқа: <a href="https://mustafa7677.github.io/CS50MUSS/" style="color:#ffd75e">mustafa7677.github.io/CS50MUSS</a>. Автор: Sagid Mustafa. © 2026, барлық құқықтар қорғалған; Harvard CS50 аудармалары - CC BY-NC-SA 4.0. Лицензиялар: <a href="https://mustafa7677.github.io/CS50MUSS/copyright.html" style="color:#ffd75e">авторлық құқық беті</a>.';
+      d.innerHTML = 'Назар аударыңыз: бұл - «AO17» сайтының <b>көшірмесі</b> болуы мүмкін. Түпнұсқа: <a href="https://mustafa7677.github.io/CS50MUSS/" style="color:#ffd75e">mustafa7677.github.io/CS50MUSS</a>. Авторлары: AO17 командасы (Tutkabayeva Gulzat, Toktybay Dastan, Magzhan Romanov, Kopenova Merey, Sagid Mustafa). © 2026, барлық құқықтар қорғалған; Harvard CS50 аудармалары - CC BY-NC-SA 4.0. Лицензиялар: <a href="https://mustafa7677.github.io/CS50MUSS/copyright.html" style="color:#ffd75e">авторлық құқық беті</a>.';
       document.body.appendChild(d);
     };
     if (document.body) show(); else document.addEventListener("DOMContentLoaded", show);

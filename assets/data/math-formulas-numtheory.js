@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Number Theory пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Number Theory пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.numtheory = [
  {"id": "numtheory-1-1", "name": "Қалдықпен бөлу", "tex": "a=qb+r,\\qquad0\\le r<b,\\qquad q=\\left\\lfloor\\frac ab\\right\\rfloor", "cond": "", "note": "$b>0$; теріс $a$ үшін де.", "tags": ["Number Theory", "Бөлінгіштік және ЕҮОБ"], "lesson": 1, "anchor": "f-1"},

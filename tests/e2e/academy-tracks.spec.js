@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. AO17 Академия 2.0: бағыттар × сатылар (Негіз → Junior → Middle → Senior).
+// © 2026 AO17 командасы. AO17 Академия 2.0: бағыттар × сатылар (Негіз → Junior → Middle → Senior).
 // Ереже: дайын модуль - жұмыс істейтін сілтеме; жоспардағы модуль сілтемесіз және «жоспарда» деп белгіленеді.
 const { test, expect } = require("@playwright/test");
 const fs = require("fs");

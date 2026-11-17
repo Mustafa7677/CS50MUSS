@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 Digital SAT оқулығы · Math · Algebra · Бір айнымалысы бар сызықтық теңдеу. Авторлық мазмұн.
 LESSON = {
     "id": "sat.math.linear-equations",
@@ -114,5 +114,5 @@ LESSON = {
         "Сұрақтың нені сұрап тұрғанын соңында қайта оқыңыз.",
     ],
     "lab": {"href": "linear.html", "title": "Сызықтық теңдеу таразысы"},
-    "sources": ["Сабақ мәтіні, мысалдары мен жаттығулары AO17 үшін жаңадан жазылған (авторы: Sagid Mustafa). College Board материалдары көшірілмеген; AO17 College Board-пен байланысты емес."],
+    "sources": ["Сабақ мәтіні, мысалдары мен жаттығулары AO17 үшін жаңадан жазылған (авторлары: AO17 командасы). College Board материалдары көшірілмеген; AO17 College Board-пен байланысты емес."],
 }

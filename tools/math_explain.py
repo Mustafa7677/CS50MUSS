@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
 """Математика: «Сызбамен түсіндіру» - әр сабақтың әдістемелік түсіндірмесі (docs/MATH-COURSE-GUIDE.md §4.4).
 
 Тақырып университеттегідей кезең-кезеңімен ашылады. Әр қадам:

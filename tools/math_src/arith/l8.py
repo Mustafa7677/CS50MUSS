@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Arithmetic · 8-сабақ: Дәреже, түбір және алғашқы теңдеу
 from math_lesson_gen import L, D, T, F, REM, ATT, NOTE, P_, X
 

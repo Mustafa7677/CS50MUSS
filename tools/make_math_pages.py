@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
 # Harvard CS50 материалдары (олар осы файлда сақталмайды) CC BY-NC-SA 4.0 бойынша; үшінші тарап компоненттері өз лицензияларымен.
 """«Математика» курсының (math/) бастапқы беттерін жасайды. Жоспар: tools/math_plan.py (25 пән, жалпы 162 сабақ).
 
@@ -27,10 +27,10 @@ MATH = ROOT / "math"
 COLOR, COLOR2, GLOW = "#15803d", "#14532d", "rgb(74 222 128 / .28)"
 SOON = "<!-- soon -->"
 
-OWN_NOTE = ('Бұл курс - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 курсының аудармасы емес, одан мәтін алынбаған. '
+OWN_NOTE = ('Бұл курс - AO17 командасының авторлық оқу материалы: Harvard CS50 курсының аудармасы емес, одан мәтін алынбаған. '
             'Математиканың өзі (анықтамалар, теоремалар, формулалар) жалпыға ортақ білім; ал баяндау, мысалдар мен есептер өз сөзімізбен жазылған және '
-            'белгілі оқулықтар мен есептер жинақтарынан көшірілмеген. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. {a}Авторлық құқық және лицензиялар</a>.')
-AI_NOTE = ('<b>Автор туралы.</b> Курстың авторы - Sagid Mustafa; мазмұн үшін жауапкершілікті автор өзіне алады. '
+            'белгілі оқулықтар мен есептер жинақтарынан көшірілмеген. © 2026 AO17 командасы, барлық құқықтар қорғалған. {a}Авторлық құқық және лицензиялар</a>.')
+AI_NOTE = ('<b>Автор туралы.</b> Курстың авторлары - AO17 командасы; мазмұн үшін жауапкершілікті автор өзіне алады. '
            'Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан, куәлік не диплом баламасы емес және оған сертификат берілмейді.')
 
 SUBJ = [dict(no=s[0], slug=s[1], kz=s[2], en=s[3], group=s[4], pre=s[5], desc=s[6], lessons=s[7], start=P.STARTS[i], count=len(s[7])) for i, s in enumerate(P.SUBJECTS)]
@@ -75,7 +75,7 @@ def head(title, desc, prefix, *, katex=False, plan=False, viz=False, engine=Fals
   <!-- build:head -->
   <!-- /build:head -->
   <meta name="description" content="{a(desc)}">{robots}
-  <meta name="author" content="Sagid Mustafa">
+  <meta name="author" content="AO17 командасы">
 {FONT.format(prefix=prefix)}
 {css.rstrip()}
 {js.rstrip()}
@@ -170,7 +170,7 @@ def index_page():
       <section class="py-hero oc-hero" data-c="math" style="--hc:{COLOR};--hc2:{COLOR2};--hglow:{GLOW}">
         <div class="py-hero-text">
           {switch}
-          <span class="cx-eyebrow">Авторлық курс · Sagid Mustafa</span>
+          <span class="cx-eyebrow">Авторлық курс · AO17 командасы</span>
           <h1>Математика академиясы <span>25 пән</span></h1>
           <p>Математиканы мүлде нөлден - сандар мен бөлуден - бастап жоғары математикаға дейін түсіндіріп оқыңыз: теория, анықтама, теорема, формулаларды қорытып шығару, қадамдық шешілген мысалдар, интерактивті есептер мен визуализация. Пәндер бір-бірінен тәуелсіз: кез келгенінен бастауға болады.</p>
           <div class="hero-actions">
@@ -342,7 +342,7 @@ def skeleton(n):
 
       <div class="callout note">
         <span class="callout-title">Курс туралы</span>
-        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторы Sagid Mustafa өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
+        <p>Бұл сабақтың мазмұны үшін жауапкершілікті курс авторлары (AO17 командасы) өзіне алады. Қате немесе түсініксіз жер тапсаңыз, хабарлаңыз. Бұл курс ресми емтихан не куәлік баламасы емес.</p>
       </div>
 
       <h2 id="goals">Сабақ мақсаттары</h2>
@@ -446,7 +446,7 @@ def write(path, text, force, replace_if=None):
 def data_stub(kind):
     glob = {"formulas": "CS50KZ_MATH_FORMULAS", "terms": "CS50KZ_MATH_TERMS", "problems": "CS50KZ_MATH_PROBLEMS"}[kind]
     fmt = {"formulas": "docs/MATH-COURSE-GUIDE.md §9.1 (формулалар)", "terms": "§9.2 (терминдер)", "problems": "§9.3 (параметрлік есептер банкі)"}[kind]
-    return lambda slug, kz: (f"/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «{kz}» пәні. Формат: {fmt}. */\n"
+    return lambda slug, kz: (f"/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «{kz}» пәні. Формат: {fmt}. */\n"
                              f"window.{glob} = window.{glob} || {{}};\nwindow.{glob}.{slug} = [];\n")
 
 

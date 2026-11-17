@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
    AO17 «Менің оқуым»: үш академияның (CS Universe, IELTS, SAT) ортақ оқушы кабинеті.
    Деректер көзі: CS Universe сабақтары - localStorage «cs50kz:academy» (academy.js), зертханалар - AO17Tutor («ao17:tutor:v1»).
    Сабақтар каталогы build кезінде бетке енгізіледі (#study-data). Бәрі осы браузерде; экспорт/импорт - JSON файл. */

@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 CS Universe · Level I · m11 Memory & Pointers · 1-5 сабақтар. Авторлық мазмұн (AO17 үшін жаңадан жазылған).
 # C коды build кезінде gcc-мен тексеріледі. Мекенжайлар әр іске қосуда өзгереді (ASLR), сондықтан тек айырмалар мен салыстырулар шығарылады.
 

@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 IELTS оқулығы · Writing · Task 1: өзгеріс пен салыстыру тілі. Авторлық мазмұн. Барлық деректер ойдан алынған.
 import re as _re
 

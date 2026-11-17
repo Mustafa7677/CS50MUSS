@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 CS Universe · Level I · m11 Memory & Pointers · 6-10 сабақтар. Авторлық мазмұн (AO17 үшін жаңадан жазылған).
 # C коды build кезінде gcc-мен тексеріледі; жад қателері AddressSanitizer/LeakSanitizer арқылы нақты ұсталады.
 

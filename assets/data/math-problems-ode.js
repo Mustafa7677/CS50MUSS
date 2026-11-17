@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Ordinary Differential Equations пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Ordinary Differential Equations пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.ode = [
  {"id": "ode-exp-slope", "lvl": "easy", "type": "num", "params": {"a": {"int": [2, 6]}, "k": {"int": [-4, 4], "nz": true}}, "q": "$y=#{a}e^{#{k}x}$ функциясы $y'=ky$ теңдеуінің шешімі. $y'(0)$ неге тең?", "a": "a*k", "v": "diff(a*exp(k*x),x).subs(x,0)", "hint": "$y'=#{k}\\,y$, $y(0)=#{a}$.", "sol": {"steps": ["$y'=#{a}\\cdot #{p:k}e^{#{k}x}$.", "$x=0$: $y'(0)=#{a}\\cdot #{p:k}$."], "ans": "$#{a*k}$"}},

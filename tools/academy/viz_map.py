@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 CS Universe: қай сабаққа қай интерактивті модель (assets/js/ao-viz.js) қойылады және НЕГЕ.
 # Ереже (docs/academy/content-quality.md): модель тек тақырыпты шын түсіндіретін жерде; «why» - оқушыға не көрсететіні.
 

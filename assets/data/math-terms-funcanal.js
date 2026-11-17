@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Functional Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Functional Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.funcanal = [
  {"id": "funcanal-t1", "kz": "Норма", "en": "norm", "def": "$V$ - нақты (не комплекс) векторлық кеңістік. Норма (norm) $\\|\\cdot\\|:V\\to[0,\\infty)$: (N1) $\\|x\\|=0\\iff x=0$; (N2) $\\|\\lambda x\\|=|\\lambda|\\|x\\|$; (N3) $\\|x+y\\|\\le\\|x\\|+\\|y\\|$.", "lesson": 1},

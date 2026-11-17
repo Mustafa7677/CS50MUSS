@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Stochastic Processes пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Stochastic Processes пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.stochastic = [
  {"id": "stochastic-1-1", "name": "Траектория", "tex": "t\\mapsto X_t(\\omega)", "cond": "", "note": "Тиянақталған нәтиже $\\omega$.", "tags": ["Stochastic Processes", "Кездейсоқ процестер негіздері"], "lesson": 1, "anchor": "f-1"},

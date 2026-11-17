@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Көп айнымалы функциялар (week-36…42): әр формулаға жеке түсіндірме. Құрылымы tools/math_fx/arith.py-дағыдай.
 
 FX = {

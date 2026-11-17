@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Комплекс анализ (week-67…72): әр формулаға жеке түсіндірме. Құрылымы tools/math_fx/arith.py-дағыдай.
 # check: Python-ның complex түрімен есептейміз; контурлық интегралдар z=γ(t), dz=γ'(t)dt арқылы Симпсонмен.
 

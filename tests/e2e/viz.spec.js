@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. AO17 Viz: оқушы басқаратын модельдер нақты есептейді және басқарылады.
+// © 2026 AO17 командасы. AO17 Viz: оқушы басқаратын модельдер нақты есептейді және басқарылады.
 const { test, expect } = require("@playwright/test");
 const fs = require("fs");
 const { routePyodide, blockFonts, collectErrors } = require("../support/helpers");

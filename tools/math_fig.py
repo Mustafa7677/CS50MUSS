@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
 """Математика сызбалары: ықшам сипаттамадан дәл SVG (tools/math_explain.py қолданады).
 
 Координаталық сызба:

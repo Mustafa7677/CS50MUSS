@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Topology пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Topology пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.topology = [
  {"id": "topology-p1", "lvl": "medium", "params": {"n": {"int": [2, 8]}}, "type": "num", "q": "$#{n}$ нүктелі жиынның дискретті топологиясында неше ашық жиын бар?", "a": "2^n", "v": "2**int(n)", "hint": "Әр ішкі жиын ашық.", "sol": {"steps": ["$|\\mathcal P(X)|=2^{#{n}}$."], "ans": "$#{2^n}$"}},

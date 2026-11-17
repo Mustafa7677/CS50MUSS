@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Arithmetic пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Arithmetic пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.arith = [
  {"id": "arith-1-1", "name": "Разрядқа жіктеу", "tex": "3407=3\\cdot1000+4\\cdot100+0\\cdot10+7", "cond": "", "note": "Әр цифр × оның орнының «салмағы».", "tags": ["Arithmetic", "Сандар және санау"], "lesson": 1, "anchor": "f-1"},

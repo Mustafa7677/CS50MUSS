@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Numerical Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Numerical Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.numerical = [
  {"id": "numerical-p1", "lvl": "medium", "params": {"w": {"int": [50, 500]}, "d": {"int": [1, 9]}}, "type": "num", "q": "Дәл мән $#{w}$, жуық мән $#{w+d}$. Салыстырмалы қателік (пайызбен)?", "a": "100*d/w", "v": "Rational(100*d,w)", "hint": "$\\frac{|x-\\tilde x|}{|x|}\\cdot100\\%$.", "sol": {"steps": ["$\\frac{#{d}}{#{w}}\\cdot100$."], "ans": "$#{100*d/w}\\%$"}},

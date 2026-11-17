@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
    «Сұрақ анатомиясы» (sat.reality.anatomy) сабағының мазмұны. Логика: assets/js/rl-anatomy.js.
    Барлық сұрақ AO17 үшін жазылған түпнұсқа жаттығу (College Board мәтіні емес). Математикалық жауаптар
    tests/e2e/reality-anatomy.spec.js ішінде тәуелсіз есептеумен тексеріледі.

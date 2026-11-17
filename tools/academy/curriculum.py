@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17 CS Universe: бес деңгейлі оқу картасы (жоспар) және Foundation деңгейінің 120 сабағы.
 
 Бұл файл - ЖОСПАР. Сабақтың «дайын» болуы мұнда емес, tools/academy/content/ ішіндегі толық

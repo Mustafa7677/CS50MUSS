@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Интегралдық есептеу» пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2 (терминдер). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Интегралдық есептеу» пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2 (терминдер). */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.intcalc = [
   {"id":"ic-t-antiderivative","kz":"алғашқы функция","en":"antiderivative","def":"$F'=f$ болатын $F$ функциясы.","lesson":1},

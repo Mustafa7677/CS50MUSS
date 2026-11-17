@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Linear Algebra · 5-сабақ: кері матрица және LU жіктелуі (tools/math_explain.py)
 from math_explain import S
 from math_fig import Plot, poly, fn, pt

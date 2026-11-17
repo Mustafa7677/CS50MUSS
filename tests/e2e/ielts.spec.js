@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
+// © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
 // AO17 IELTS Academy: хаб, Reading Analyzer, Listening Laboratory, Writing Studio, Speaking Studio.
 // Тексереміз: негізгі әрекеттер, дұрыс/қате жауаптың түсіндірмесі, дәлел-сөйлем, валидатор, емтихан режимі, fallback,
 // редактор тарихы мен экспорт, жергілікті жазба (IndexedDB), консоль қатесі жоқ, 360px-те көлденең жылжу жоқ, axe (жарық/қараңғы).

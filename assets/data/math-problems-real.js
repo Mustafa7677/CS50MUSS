@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Real Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Real Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.real = [
  {"id": "real-p1", "lvl": "medium", "params": {"a": {"int": [-9, 9]}, "b": {"int": [1, 9]}}, "type": "num", "q": "$\\sup\\left\\{#{a}-\\frac{#{b}}{n}:n\\in\\mathbb N\\right\\}=?$", "a": "a", "v": "a", "hint": "$\\frac{#{b}}n\\to0$, бірақ оң.", "sol": {"steps": ["$#{a}-\\frac{#{b}}n&lt;#{a}$, ал $\\varepsilon$ үшін $n>\\frac{#{b}}{\\varepsilon}$."], "ans": "$#{a}$ (max жоқ)"}},

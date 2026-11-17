@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Дифференциалдық есептеу» пәні. Формат: §9.1 (формулалар). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Дифференциалдық есептеу» пәні. Формат: §9.1 (формулалар). */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.diffcalc = [
   {"id": "dc-eps-delta", "name": "Шектің ε-δ анықтамасы", "tex": "0<|x-a|<\\delta\\ \\Rightarrow\\ |f(x)-L|<\\varepsilon", "cond": "\\varepsilon>0,\\ \\delta>0", "note": "Әр ε үшін δ табылады: аргумент a-ға жақын болса, мән L-ге ε-дан жақын.", "tags": ["шек", "ε-δ"], "lesson": 1, "anchor": "def-2"},

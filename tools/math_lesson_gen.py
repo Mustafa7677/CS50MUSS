@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
 """Математика сабақтарын ықшам Python сипаттамасынан жасайды.
 
   python3 tools/math_lesson_gen.py prob            # tools/math_src/prob/l1..l7.py → math/lectures/week-79..85.html + деректер
@@ -343,7 +343,7 @@ def load(slug, count):
 
 
 def js_file(kind, var, slug, en, rows):
-    head = f"/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, {en} пәні. Формат: docs/MATH-COURSE-GUIDE.md §{ {'formulas': '9.1', 'terms': '9.2', 'problems': '9.3'}[kind] }. */\n"
+    head = f"/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, {en} пәні. Формат: docs/MATH-COURSE-GUIDE.md §{ {'formulas': '9.1', 'terms': '9.2', 'problems': '9.3'}[kind] }. */\n"
     body = ",\n".join(" " + json.dumps(r, ensure_ascii=False) for r in rows)
     return head + f"window.{var} = window.{var} || {{}};\nwindow.{var}.{slug} = [\n{body}\n];\n"
 

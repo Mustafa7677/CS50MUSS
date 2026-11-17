@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Ordinary Differential Equations пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Ordinary Differential Equations пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.ode = [
  {"id": "ode-ode", "kz": "жай дифференциалдық теңдеу", "en": "ordinary differential equation", "def": "Бір айнымалының белгісіз функциясын, оның туындыларын және айнымалыны байланыстыратын теңдеу.", "lesson": 1},

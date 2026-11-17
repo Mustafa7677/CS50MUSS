@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 CS Universe · Senior · s04 Technical Leadership · 6-10 сабақтар. Авторлық мазмұн (AO17 үшін жаңадан жазылған).
 
 from s04_a import META, REFS

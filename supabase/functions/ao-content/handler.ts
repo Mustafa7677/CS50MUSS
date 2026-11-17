@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // AO17: жабық мазмұнды беретін функцияның логикасы (тәуелділіктері сырттан беріледі - тестке ыңғайлы).
 //
 // GET /ao-content?path=python/lectures/week-3.html   (Authorization: Bearer <пайдаланушы JWT>)

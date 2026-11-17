@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Multivariable Calculus · 4-сабақ: күрделі және айқын емес функциялардың туындысы (tools/math_explain.py)
 from math_explain import S
 from math_fig import Plot, Diagram, fn, par, pt, node, edge

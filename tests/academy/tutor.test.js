@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // AO17 Smart Tutor (assets/js/ao-tutor.js): меңгеру ережесі, қайталау кестесі, қателер дәптері, экспорт/импорт.
 // node --test tests/academy/tutor.test.js
 const test = require("node:test");

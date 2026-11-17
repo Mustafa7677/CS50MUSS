@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 CS Universe · Level I · m03 Discrete Structures · 6-10 сабақтар. Авторлық мазмұн (AO17 үшін жаңадан жазылған).
 from m03_a import META, REFS
 

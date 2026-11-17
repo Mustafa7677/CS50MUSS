@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 CS Universe · Level I · m01 Logic & Reasoning · 6-10 сабақтар. Авторлық мазмұн (AO17 үшін жаңадан жазылған).
 from m01_a import META, REFS
 

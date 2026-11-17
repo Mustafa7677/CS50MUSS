@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
+# © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
 """CS Universe: Python Execution Visualizer үшін трассалаушы (academy/labs/python.html).
 
 cslab_trace(code) оқушы кодын НАҚТЫ орындайды (Pyodide-те не CPython-да) және sys.settrace арқылы әр орындалатын жолдың

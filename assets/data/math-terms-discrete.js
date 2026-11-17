@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Discrete Mathematics пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Discrete Mathematics пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.discrete = [
  {"id": "discrete-t1", "kz": "Пікір", "en": "proposition", "def": "Пікір (proposition) - ақиқат (1) не жалған (0) болатын хабарлы сөйлем. $p,q$ пікірлері үшін: $\\neg p$ (терістеу) - $p$ жалған болғанда ғана ақиқат; $p\\land q$ (конъюнкция (conjunction), «және») - екеуі де ақиқат болғанда ғана ақиқат; $p\\lor q$ (дизъюнкция (…", "lesson": 1},

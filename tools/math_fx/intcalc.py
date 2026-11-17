@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Интегралдық есептеу (week-29…35): әр формулаға жеке түсіндірме. Құрылымы tools/math_fx/arith.py-дағыдай.
 # check: quad (Симпсон бойынша сандық интеграл), deriv (сандық туынды) - tools/math_fx.py.
 

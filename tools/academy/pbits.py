@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17: ақпарат және екілік жүйенің Python-дағы ТӘУЕЛСІЗ іске асырылуы (JS: assets/js/academy-bits.js)."""
 import re
 import struct

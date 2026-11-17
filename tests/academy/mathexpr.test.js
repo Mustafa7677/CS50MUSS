@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // AO17 Reality Engine: сызықтық теңдеу моделі (assets/js/rl-mathexpr.js) - дәл арифметика, заңды амалдар, кеңес.
 // node --test tests/academy/mathexpr.test.js
 const test = require("node:test");

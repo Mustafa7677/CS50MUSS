@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Java 0-апта: алғашқы бағдарлама, типтер, жолдар - код мысалдарының жолма-жол талдауы.
 
 CX = {

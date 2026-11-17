@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Mathematical Optimization · 2-сабақтың жеңіл қабаты (docs/MATH-COURSE-GUIDE.md §4.3)
 
 EASY = dict(

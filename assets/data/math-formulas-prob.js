@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Probability Theory пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Probability Theory пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.prob = [
  {"id": "prob-1-1", "name": "Негізгі санау формулалары", "tex": "P_n=n!,\\qquad A_n^k=\\frac{n!}{(n-k)!},\\qquad C_n^k=\\frac{n!}{k!\\,(n-k)!}", "cond": "0\\le k\\le n", "note": "Шарты: $n,k$ - бүтін, $0\\le k\\le n$. Егер $k>n$ болса, таңдау мүмкін емес, сондықтан $A_n^k=C_n^k=0$ деп келісеміз (формуладағы $(n-k)!$ бұл жағдайда анықталмаған).", "tags": ["Probability Theory", "Комбинаторика негіздері"], "lesson": 1, "anchor": "f-1"},

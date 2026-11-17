@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Differential Calculus · 6-сабақ: күрделі, айқын емес және кері функция туындысы (tools/math_explain.py)
 from math import e
 from math_explain import S

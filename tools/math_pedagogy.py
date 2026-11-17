@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
 """«Математика» курсының педагогикалық қабаты (tools/build.py әр жинақта шақырады, қолмен де іске қосуға болады).
 
 Не істейді (бәрі идемпотентті, <!-- build:m... --> белгілерінің арасында):
@@ -313,7 +313,7 @@ def write_exam_data(ready):
             if fp.exists():
                 fp.unlink()
             continue
-        out = (f"/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, {SUBJ[slug][3]} пәнінің емтихан банкі. "
+        out = (f"/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, {SUBJ[slug][3]} пәнінің емтихан банкі. "
                "tools/math_pedagogy.py сабақтардан жасайды: қолмен өзгертпеңіз. */\n"
                "window.CS50KZ_MATH_EXAM = window.CS50KZ_MATH_EXAM || {};\n"
                f"window.CS50KZ_MATH_EXAM.{slug} = " + json.dumps(bank, ensure_ascii=False, separators=(",", ":")) + ";\n")

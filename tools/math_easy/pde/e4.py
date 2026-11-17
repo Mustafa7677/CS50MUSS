@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Partial Differential Equations · 4-сабақтың жеңіл қабаты (tools/math_easy_inject.py)
 
 EASY = dict(

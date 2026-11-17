@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 CS Universe · Senior · s01 Software Architecture · 1-5 сабақтар. Авторлық мазмұн (AO17 үшін жаңадан жазылған).
 # Барлық Python мысалы build кезінде орындалып, шығысы тексеріледі.
 
