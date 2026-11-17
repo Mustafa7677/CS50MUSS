@@ -117,6 +117,16 @@ test("скролл: ашылу сахнасы мен галерея --p бойы
   await expect.poll(async () => { const b = await page.locator(".uyq-p").nth(2).boundingBox(); return Math.abs(b.x + b.width / 2 - 640); }).toBeLessThan(12);
 });
 
+test("3D айналым: скроллмен бұрылады, алдыңғы адамның есімі жазылады", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("team.html");
+  await expect(page.locator(".rng-c")).toHaveCount(5);
+  await expect(page.locator(".rng-now")).toHaveText("Tutkabayeva Gulzat");
+  await page.evaluate(() => { const t = document.querySelector(".rng"); scrollTo(0, t.getBoundingClientRect().top + scrollY + (t.offsetHeight - innerHeight) / 2); });
+  await expect(page.locator(".rng-now")).toHaveText("Sagid Mustafa");
+  await expect(page.locator(".rng-c").nth(2)).toHaveAttribute("href", "team/sagid.html");
+});
+
 test("басты бет: 8-сахна, бес есім, команда бетіне сілтеме", async ({ page }) => {
   await page.goto("index.html");
   const s = page.locator("#scene-team");

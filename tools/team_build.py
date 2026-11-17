@@ -138,12 +138,28 @@ def panel(m, i):
             f'<p class="uyq-a">{E(m["areas"])}</p><a class="btn gold uyq-go" href="team/{m["slug"]}.html">Жеке беті</a></div></li>')
 
 
+RING = '''
+    <section class="rng" data-scrub="pin" aria-labelledby="rng-h" style="--n:{n}">
+      <div class="rng-stick">
+        <canvas class="shx-dust" aria-hidden="true"></canvas>
+        <div class="rng-head"><p class="st-intertitle">Бес уық - бір шаңырақ</p><h2 id="rng-h">Бір шеңберде</h2></div>
+        <div class="rng-scene"><div class="rng-stage">{cards}</div>
+          <svg class="rng-shan" viewBox="-60 -60 120 120" aria-hidden="true" focusable="false"><circle r="52"/><circle r="46"/><path d="M-46-14H46M-46 14H46M-14-46V46M14-46V46"/><path class="rng-mid" d="M0-7 7 0 0 7-7 0Z"/></svg>
+        </div>
+        <p class="rng-now" aria-hidden="true" data-i="0">{first}</p>
+      </div>
+    </section>
+'''
+
+
 def team_page():
     shots = film_shots("")
     first = shots[0]
     panels = "\n        ".join(panel(m, i) for i, m in enumerate(M))
     hud = "".join(f'<button type="button" class="uyq-hb" data-i="{i}"><i></i><span>{E(m["name"])}</span></button>' for i, m in enumerate(M))
     names = " ".join(f'<span>{E(m["name"])}</span>' for m in M)
+    ring_cards = "".join(f'<a class="rng-c" href="team/{m["slug"]}.html" style="--i:{i}" data-name="{E(m["name"])}"><img src="{photo(m["slug"])}" alt="" width="640" height="800" loading="lazy" decoding="async"><span>{E(m["name"])}</span></a>' for i, m in enumerate(M))
+    ring = RING.format(n=len(M), cards=ring_cards, first=E(M[0]["name"]))
     main = f"""  <main class="tm shx" id="main">
     <section class="shx-open" data-scrub="pin" aria-labelledby="shx-h">
       <div class="shx-stick">
@@ -179,6 +195,7 @@ def team_page():
 
     <div class="orn" data-scrub="through" aria-hidden="true"><svg viewBox="0 0 1200 80" preserveAspectRatio="xMidYMid meet"><path class="orn-l" pathLength="1" d="M520 40H40M680 40H1160"/><path class="orn-h" pathLength="1" d="M600 58V40C600 22 584 12 570 18C556 24 558 44 572 44C582 44 584 32 576 30M600 40C600 22 616 12 630 18C644 24 642 44 628 44C618 44 616 32 624 30"/><path class="orn-h" pathLength="1" d="M520 40C536 40 540 30 532 26M680 40C664 40 660 30 668 26M40 40l-14-10M40 40l-14 10M1160 40l14-10M1160 40l14 10"/><path class="orn-d" d="M600 62l6 6-6 6-6-6z"/></svg></div>
 
+{ring}
     <section class="tf" aria-labelledby="tf-h" data-film>
       <p class="st-intertitle">Фото-фильм</p>
       <h2 id="tf-h">Бір күннің кадрлары</h2>
@@ -305,6 +322,7 @@ def landing():
     names = "".join(f'<li style="--i:{i};--acc:{KIND[m["kind"]][1]}"><a href="team/{m["slug"]}.html"><b>{E(m["name"])}</b><span>{E(KIND[m["kind"]][0].lower())}</span></a></li>' for i, m in enumerate(M))
     dots = "".join(f'<circle class="at-dot" style="--i:{i}" cx="{200 + 168 * math.sin(i * 1.2566 + .3):.1f}" cy="{200 - 168 * math.cos(i * 1.2566 + .3):.1f}" r="7"/>' for i in range(len(M)))
     return f"""<section class="st-scene ax ax-team" id="scene-team" aria-labelledby="axt-t" data-scene="8" data-scrub="through">
+    <canvas class="shx-dust" aria-hidden="true"></canvas>
     <div class="ax-in">
       <div class="ax-copy">
         <p class="ax-kick">Сайтты кім жасады</p>
