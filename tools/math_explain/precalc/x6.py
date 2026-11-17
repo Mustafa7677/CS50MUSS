@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Precalculus · 6-сабақ: тригонометриялық функциялар мен теңдеулер (tools/math_explain.py)
 from math import pi, sqrt
 from math_explain import S

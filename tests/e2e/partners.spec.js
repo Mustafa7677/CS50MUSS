@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // Серіктестер беті мен іздеу жүйелеріне арналған schema.org деректері.
 const { test, expect } = require("@playwright/test");
 const { blockFonts, collectErrors } = require("../support/helpers");

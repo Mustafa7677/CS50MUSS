@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Differential Calculus · 7-сабақ: орта мән теоремалары және Лопиталь ережесі (tools/math_explain.py)
 from math import sqrt
 from math_explain import S

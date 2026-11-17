@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17 Оқулық: IELTS және Digital SAT академияларының сабақтары (түсіндірме, әдіс, қадамдық мысал, жаттығу).
 
 Мазмұн интерфейстен бөлек: әр сабақ - tools/guides/<академия>/<NN>_<slug>.py файлындағы LESSON сөздігі.
@@ -37,6 +37,9 @@ import re
 import sys
 from fractions import Fraction
 from pathlib import Path
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import guide_film as GF  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "tools" / "guides"
@@ -150,6 +153,10 @@ def validate(lessons):
             errs.append(f"{w}: 3-6 түйін керек")
         if L.get("lab") and not (ROOT / "academy" / L["acad"] / L["lab"]["href"].split("#")[0]).exists():
             errs.append(f"{w}: lab.href жоқ бетке сілтейді: {L['lab']['href']}")
+        try:
+            errs += GF.check(GF.film(L), w)
+        except Exception as e:  # noqa: BLE001
+            errs.append(f"{w}: фильм құрылмады: {e!r}")
     return errs
 
 
@@ -187,6 +194,11 @@ def lesson_html(L, prev_l, next_l, tmpl):
            + '<a href="index.html#guide">Оқулық мазмұны</a>' + (f'<a href="lesson-{next_l["slug"]}.html">{E(next_l["title"])} →</a>' if next_l else "<span></span>") + "</nav>")
     lab = f'<p class="lab-row"><a class="btn gold" href="{E(L["lab"]["href"])}">Зертханада бекіту: {E(L["lab"]["title"])}</a></p>' if L.get("lab") else ""
     src = f'<section class="gd-sec gd-src"><h2>Дереккөз және ескерту</h2><ul>{li(L["sources"])}</ul></section>' if L.get("sources") else ""
+    film = GF.film(L)
+    film_tr = "".join(f"<li><b>{E(c)}.</b> {E(t)}</li>" for c, t in GF.CN.transcript(film))
+    film_html = (f'<section class="ac-cine gd-cine" id="s-film" data-cine data-title="{E(L["title"])}" data-img="../../assets/img/" aria-label="Кино-түсіндіру: {E(L["title"])}">'
+                 f'<p class="ac-note">Кино-түсіндіру: сабақтың өзегі бір минуттық фильмде. Мәтіні төменде.</p></section>'
+                 f'<details class="cn-tr"><summary>Фильмнің мәтіні</summary><ol>{film_tr}</ol></details>')
     desc = f"AO17 {name} оқулығы: {L['title']}. {L['goals'][0]}"
     body = f"""{hdr}<main class="content gd" id="main" data-guide="{E(L['id'])}">
     <header class="lab-hero gd-head">
@@ -196,6 +208,7 @@ def lesson_html(L, prev_l, next_l, tmpl):
       <ul class="ac-chips"><li>{E(L['level'])}</li><li>≈ {L['minutes']} мин</li><li>{len(L['practice']) + len(L['mastery'])} жаттығу</li><li><span data-gd-badge></span></li></ul>
     </header>
     <section class="gd-sec"><h2>Не үйренесіз</h2><ul class="ac-obj">{li(L['goals'])}</ul></section>
+    {film_html}
     <section class="gd-sec gd-hook"><h2>Алдымен ойланыңыз</h2>{L['hook']['text']}
       <div class="gd-predict" data-gd-predict><p class="gd-q">{E(pr['q'])}</p><ol type="A">{li(pr['options'])}</ol></div></section>
     <section class="gd-sec"><h2>Түсіндірме</h2>{explain}</section>
@@ -210,13 +223,15 @@ def lesson_html(L, prev_l, next_l, tmpl):
     {src}
     {nav}
   </main>
+  <script type="application/json" id="ac-data">{json.dumps({"cine": film}, ensure_ascii=False).replace("</", "<\\/")}</script>
   <script type="application/json" id="gd-data">{json.dumps(data, ensure_ascii=False).replace("</", "<\\/")}</script>
   {ftr}"""
     head = (top + f"<title>{E(L['title'])} - {E(name)} оқулығы - AO17</title>\n  <!-- build:head -->\n  <!-- /build:head -->\n"
-            f'  <meta name="description" content="{E(desc[:300])}">\n  <meta name="author" content="Sagid Mustafa">\n'
+            f'  <meta name="description" content="{E(desc[:300])}">\n  <meta name="author" content="AO17 командасы">\n'
             '  <link rel="stylesheet" href="../../assets/fonts/fonts.css">\n  <link rel="stylesheet" href="../../assets/css/style.css">\n'
             '  <link rel="stylesheet" href="../../assets/css/academy.css">\n  <link rel="stylesheet" href="../../assets/css/ao-labs.css">\n'
-            '  <script src="../../assets/js/main.js"></script>\n  <script src="../../assets/js/ao-tutor.js" defer></script>\n  <script src="../../assets/js/ao-guide.js" defer></script>\n</head>\n')
+            '  <script src="../../assets/js/main.js"></script>\n  <script src="../../assets/js/ao-tutor.js" defer></script>\n  <script src="../../assets/js/ao-guide.js" defer></script>\n'
+            '  <script src="../../assets/js/academy-cine.js" defer></script>\n</head>\n')
     return rel, head + body
 
 

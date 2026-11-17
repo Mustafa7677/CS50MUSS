@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Векторлық анализ» пәні. Формат: §9.1 (формулалар). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Векторлық анализ» пәні. Формат: §9.1 (формулалар). */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.veccalc = [
 {"id": "vc-grad", "name": "Градиент", "tex": "\\nabla u=(u_x,\\,u_y,\\,u_z)", "cond": "u\\ \\text{дифференциалданады}", "note": "Скаляр өрістің дербес туындылардан құралған векторы.", "tags": ["градиент", "скаляр өріс"], "lesson": 1, "anchor": "f-1"},

@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17: жалғыз Super Admin аккаунтын бір рет жасау.
 
     SUPABASE_URL=https://<жоба>.supabase.co SUPABASE_SERVICE_ROLE_KEY=... python3 tools/create_admin.py mustafa_admin

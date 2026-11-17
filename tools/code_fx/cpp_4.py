@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # C++ 4-апта: кластар мен нысандар - код мысалдарының жолма-жол талдауы.
 
 CX = {

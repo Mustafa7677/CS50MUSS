@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Differential Calculus · 2-сабақ: шектерді есептеу тәсілдері (tools/math_explain.py)
 from math import cos, pi, sin, tan
 from math_explain import S

@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17: дискретті құрылымдардың Python-дағы ТӘУЕЛСІЗ іске асырылуы (JS: assets/js/academy-disc.js).
 Жиын өрнегі: ∪ ∩ \\ △ және постфикс ' (толықтауыш), A-Z атаулары, U (әмбебап), ∅."""
 import re

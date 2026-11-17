@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Ағылшын тілі A0-C1 курсының деректері (дербес авторлық материал, өз сөзімізбен жазылған). */
+/* © 2026 AO17 командасы. All Rights Reserved. Ағылшын тілі A0-C1 курсының деректері (дербес авторлық материал, өз сөзімізбен жазылған). */
 /* Формат: docs/EN-COURSE-GUIDE.md. Әр жазба бір жолда. */
 window.CS50KZ_EN_GRAMMAR = window.CS50KZ_EN_GRAMMAR || {};
 window.CS50KZ_EN_GRAMMAR.a2 = [

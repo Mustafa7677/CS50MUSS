@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
  * «Ағылшын тілі A0-C1» курс беті (en/index.html): «Бүгін не істеймін» тақтасы, A0 -> C1 деңгей жолы, жалпы прогресс, нәтижелер.
  * Тек осы құрылғының localStorage деректері оқылады (cs50kz:progress, cs50kz:en:ex, cs50kz:en:vocab, cs50kz:en:vstats, cs50kz:en:placement, cs50kz:games).
  * Сабақ карточкалары (.week-card) build.py жасайды; бұл файл оларды өзгертпейді, тек оқиды. Дерек жоқ болса да қате бермейді.

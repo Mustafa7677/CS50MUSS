@@ -1,4 +1,4 @@
--- © 2026 Sagid Mustafa. All Rights Reserved.
+-- © 2026 AO17 командасы. All Rights Reserved.
 -- AO17 платформасының қауіпсіздік тесттері. Жергілікті таза Postgres-те жүреді:
 --   psql -v ON_ERROR_STOP=1 -f supabase/platform_test_stub.sql -f supabase/platform.sql -f supabase/platform_test.sql
 -- Кез келген сәтсіздік - exception. Пайдаланушы JWT-сі request.jwt.claims GUC арқылы имитацияланады (Supabase-тегідей).

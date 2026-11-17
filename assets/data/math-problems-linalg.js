@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Сызықтық алгебра» пәні. Формат: §9.3 (параметрлік есептер банкі). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Сызықтық алгебра» пәні. Формат: §9.3 (параметрлік есептер банкі). */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.linalg = [
   {"id": "la-len-triple", "lvl": "easy", "type": "num", "params": {"k": {"int": [1, 7]}}, "q": "$\\mathbf{v}=(#{3*k},\\,#{4*k})$ векторының ұзындығын табыңыз.", "a": "5*k", "v": "sqrt((3*k)**2+(4*k)**2)", "hint": "Квадраттардың қосындысынан түбір алыңыз.", "sol": {"steps": ["$|\\mathbf{v}|^2=#{(3*k)^2}+#{(4*k)^2}=#{25*k^2}$."], "ans": "$|\\mathbf{v}|=#{5*k}$"}},

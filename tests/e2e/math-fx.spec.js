@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // Әр формуланың дәл астында жеке түсіндірме: қарапайым тілмен, бірден мысал, өмірден, неге (tools/math_fx.py).
 const { test, expect } = require("@playwright/test");
 const fs = require("fs");

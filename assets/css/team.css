@@ -1,0 +1,472 @@
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
+   «Команда» беттері (tools/team_build.py): кинозал - Алаштың сия түні, қола мен алтын, бордо киіз.
+   Бір ғана батыл элемент - фото-фильм; қалғаны тыныш. Қозғалыс тек html.st-js кезінде (main.js: қозғалысты азайту баптауы мен жүйе баптауы ескеріледі). */
+.tm { --ink: #120d0a; --ink2: #1b140e; --cream: #efe6d3; --cream2: #b9ab92; --gold: #d9b468; --bronze: #8a6634; --burg: #7a1f2b; --acc: #d9b468;
+  background: var(--grain), radial-gradient(80% 50% at 50% 0%, rgb(217 180 104 / .08), transparent 70%), linear-gradient(180deg, #120d0a, #0d0a07);
+  color: var(--cream); padding-bottom: 72px; }
+.tm a { color: var(--gold); }
+.tm a:focus-visible, .tm button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+.tm h2 { font: 700 clamp(26px, 3.4vw, 40px)/1.12 var(--display); color: var(--cream); margin: 0 0 12px; letter-spacing: -.005em; }
+.tm h2::before { display: none !important; }
+.tm-sec { max-width: 1160px; margin: 0 auto; padding: 72px 16px 0; }
+.tm-lead { max-width: 60ch; margin: 0 0 30px; color: var(--cream2); line-height: 1.7; }
+.tm .st-intertitle { margin-bottom: 6px; }
+
+/* ---------- фото-фильм ---------- */
+.tf { position: relative; max-width: min(1280px, calc((100vh - 170px) * 1.5 + 32px)); margin: 0 auto; padding: 22px 16px 0; }
+.tf-stage { position: relative; }
+.tm > .crumbs { display: none; }
+.tf-frame { position: relative; aspect-ratio: 3 / 2; overflow: hidden; border-radius: 6px; background: #0a0806;
+  box-shadow: 0 0 0 1px rgb(217 180 104 / .35), 0 0 0 7px #0d0a07, 0 0 0 8px rgb(217 180 104 / .18), 0 40px 80px -30px rgb(0 0 0 / .8); }
+.tf-l { position: absolute; inset: 0; opacity: 0; transition: opacity 1.2s ease; }
+.tf-l.is-cur { opacity: 1; }
+.tf-l img { width: 100%; height: 100%; object-fit: cover; display: block; transform-origin: 50% 50%; will-change: transform; }
+.tf-frame::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(8 5 3 / .55)), linear-gradient(180deg, transparent 52%, rgb(8 5 3 / .82)); }
+.tf-shan { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: none; opacity: 0; }
+.tf-shan circle, .tf-shan path { fill: none; stroke: var(--gold); stroke-linecap: round; }
+.tf-ring { stroke-width: 2.4; } .tf-ring2 { stroke-width: .8; opacity: .6; } .tf-kuld { stroke-width: 1.6; opacity: .75; } .tf-uyk path { stroke-width: 1.4; opacity: .7; }
+.tf-cap { position: absolute; left: 0; right: 0; bottom: 0; z-index: 3; padding: 0 clamp(18px, 4vw, 48px) clamp(18px, 3.4vw, 40px); }
+.tf-cap p { margin: 0; text-shadow: 0 2px 18px rgb(0 0 0 / .7); }
+.tf-k { font: italic 400 clamp(14px, 1.5vw, 18px)/1.3 var(--display); color: var(--gold); }
+.tf-t { font: 700 clamp(26px, 4.6vw, 58px)/1.05 var(--display); color: #fff; margin: 6px 0 8px !important; text-wrap: balance; letter-spacing: -.01em; }
+.tf-d { max-width: 52ch; color: rgb(239 230 211 / .88); font-size: clamp(14px, 1.4vw, 17px); line-height: 1.55; }
+.tf-cap.is-swap p { animation: tf-cap .9s cubic-bezier(.2, .7, .2, 1) both; }
+.tf-cap.is-swap .tf-t { animation-delay: .08s; } .tf-cap.is-swap .tf-d { animation-delay: .16s; }
+@keyframes tf-cap { from { opacity: 0; transform: translateY(14px); filter: blur(4px); } to { opacity: 1; transform: none; filter: none; } }
+/* басқару тақтасы */
+.tf-bar { display: flex; align-items: center; gap: 10px; padding: 14px 2px 0; flex-wrap: wrap; }
+.tf-bar[hidden] { display: none; }
+.tf-b { width: 42px; height: 42px; border-radius: 50%; border: 1px solid rgb(217 180 104 / .45); background: rgb(217 180 104 / .06); color: var(--cream); display: grid; place-items: center; cursor: pointer; }
+.tf-b:hover { background: rgb(217 180 104 / .16); }
+.tf-b svg { width: 18px; height: 18px; fill: currentColor; }
+.tf-dots { display: flex; gap: 6px; flex: 1; min-width: 0; }
+.tf-dot { flex: 1; height: 24px; border: 0; padding: 10px 0; background: none; cursor: pointer; }
+.tf-dot i { display: block; height: 3px; border-radius: 2px; background: rgb(239 230 211 / .18); overflow: hidden; }
+.tf-dot i::after { content: ""; display: block; height: 100%; width: 0; background: var(--gold); }
+.tf-dot.is-done i::after { width: 100%; }
+.tf-dot.is-cur i::after { width: var(--p, 0%); }
+.tf-n { font: 600 13px/1 var(--mono, monospace); color: var(--cream2); min-width: 44px; text-align: right; }
+/* ашылу: шаңырақ сызылып, сосын фото ашылады */
+.st-js .tf.is-intro .tf-shan { animation: tf-shan 3.2s ease both; }
+.st-js .tf.is-intro .tf-shan :is(circle, path) { stroke-dasharray: 1200; stroke-dashoffset: 1200; animation: tf-draw 1.8s cubic-bezier(.65, 0, .35, 1) .2s forwards; }
+.st-js .tf.is-intro .tf-kuld { animation-delay: .7s !important; } .st-js .tf.is-intro .tf-uyk path { animation-delay: 1s !important; }
+.st-js .tf.is-intro .tf-l.is-cur { animation: tf-open 2.6s cubic-bezier(.6, 0, .2, 1) .9s both; }
+@keyframes tf-draw { to { stroke-dashoffset: 0; } }
+@keyframes tf-shan { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes tf-open { from { clip-path: circle(0% at 50% 50%); } to { clip-path: circle(100% at 50% 50%); } }
+
+/* ---------- бес уық: доғалы карточкалар ---------- */
+.ta-row { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 18px; }
+.ta a { display: flex; flex-direction: column; text-decoration: none; color: var(--cream); height: 100%; }
+.ta-ph { position: relative; display: block; aspect-ratio: 4 / 5; border-radius: 999px 999px 8px 8px; overflow: hidden; background: #1b140e;
+  box-shadow: inset 0 0 0 1px rgb(217 180 104 / .35); isolation: isolate; }
+.ta-ph::after { content: ""; position: absolute; inset: 6px; border-radius: inherit; border: 1px solid rgb(217 180 104 / .0); transition: border-color .4s ease, inset .4s ease; z-index: 2; }
+.ta-ph img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(.35) contrast(1.02); transition: transform .9s cubic-bezier(.2, .7, .2, 1), filter .6s ease; }
+.ta a:hover .ta-ph img, .ta a:focus-visible .ta-ph img { transform: scale(1.06); filter: none; }
+.ta a:hover .ta-ph::after, .ta a:focus-visible .ta-ph::after { border-color: var(--acc); inset: 10px; }
+.ta-k { position: absolute; z-index: 3; left: 50%; bottom: 12px; transform: translateX(-50%); padding: 4px 12px; border-radius: 99px; font-size: 12.5px; font-weight: 700;
+  background: rgb(18 13 10 / .78); color: var(--acc); border: 1px solid color-mix(in srgb, var(--acc) 55%, transparent); white-space: nowrap; }
+.ta-n { margin: 16px 0 2px; font: 700 18px/1.25 var(--display); }
+.ta-r { color: var(--acc); font-size: 14px; font-weight: 600; }
+.ta-t { margin-top: 8px; color: var(--cream2); font: italic 400 14.5px/1.5 var(--display); }
+.ta-ini { position: absolute; inset: 0; display: grid; place-items: center; font: 700 44px var(--display); color: var(--gold); }
+.st-js .ta-row:not(.is-in) .ta { opacity: 0; transform: translateY(26px); }
+.st-js .ta-row.is-in .ta { animation: ta-in .9s cubic-bezier(.2, .7, .2, 1) calc(var(--i) * .12s) both; }
+@keyframes ta-in { from { opacity: 0; transform: translateY(26px); } to { opacity: 1; transform: none; } }
+
+.tm-note { padding-bottom: 8px; }
+.tm-note p { max-width: 75ch; color: var(--cream2); line-height: 1.75; }
+
+/* ---------- жеке бет ---------- */
+.tp-hero { max-width: 1160px; margin: 0 auto; padding: 40px 16px 0; display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 72px); align-items: center; }
+.tp-door { position: relative; aspect-ratio: 4 / 5; border-radius: 999px 999px 10px 10px; overflow: hidden; perspective: 1400px;
+  box-shadow: 0 0 0 1px rgb(217 180 104 / .5), 0 0 0 9px #120d0a, 0 0 0 10px rgb(217 180 104 / .25), 0 50px 90px -40px rgb(0 0 0 / .9); }
+.tp-ph { position: absolute; inset: 0; }
+.tp-ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.tp-leaf { position: absolute; top: 0; bottom: 0; width: 50.5%; z-index: 2; pointer-events: none; display: none;
+  background: var(--orn-gold) center 46% / 54px no-repeat, repeating-linear-gradient(90deg, rgb(0 0 0 / .16) 0 2px, transparent 2px 18px), linear-gradient(180deg, #8a2533, #5c1620);
+  box-shadow: inset 0 0 0 2px #8a6634, inset 0 0 0 7px #4a121a, inset 0 0 0 8px rgb(217 180 104 / .5); }
+.tp-l { left: 0; transform-origin: 0 50%; } .tp-r { right: 0; transform-origin: 100% 50%; }
+.st-js .tp-leaf { display: block; }
+.st-js .tp-l { animation: tp-l 1.6s cubic-bezier(.7, 0, .2, 1) .45s forwards; }
+.st-js .tp-r { animation: tp-r 1.6s cubic-bezier(.7, 0, .2, 1) .45s forwards; }
+.st-js .tp-ph img { animation: tp-zoom 3.4s cubic-bezier(.2, .7, .2, 1) .5s both; }
+@keyframes tp-l { to { transform: rotateY(-104deg); opacity: .0; } }
+@keyframes tp-r { to { transform: rotateY(104deg); opacity: .0; } }
+@keyframes tp-zoom { from { transform: scale(1.14); } to { transform: none; } }
+.tp-crumb { margin: 0 0 14px; font: italic 400 16px var(--display); color: var(--cream2); }
+.tp-copy h1 { position: relative; margin: 0 0 18px; padding-bottom: 14px; font: 700 clamp(36px, 5.6vw, 68px)/1.02 var(--display); color: #fff; letter-spacing: -.015em; text-wrap: balance; }
+.tp-copy h1::after { content: ""; position: absolute; left: 0; bottom: 0; height: 3px; width: 120px; background: var(--baskur); }
+.st-js .tp-copy h1::after { animation: tp-line 1.2s cubic-bezier(.65, 0, .35, 1) 1.2s both; }
+@keyframes tp-line { from { width: 0; } to { width: 120px; } }
+.tp-meta { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; padding: 0; }
+.tp-meta span { padding: 5px 13px; border-radius: 99px; border: 1px solid rgb(217 180 104 / .35); font-size: 14px; font-weight: 600; color: var(--cream); }
+.tp-meta span:first-child { background: var(--acc); color: #120d0a; border-color: var(--acc); }
+.tp-tag { margin: 0 0 14px; font: italic 400 clamp(19px, 2.2vw, 25px)/1.4 var(--display); color: var(--gold); }
+.tp-areas { margin: 0; max-width: 56ch; color: var(--cream2); font-size: 16.5px; line-height: 1.75; }
+.st-js .tp-copy > * { animation: st-in .9s cubic-bezier(.2, .75, .2, 1) both; }
+.st-js .tp-copy > :nth-child(2) { animation-delay: .9s; } .st-js .tp-copy > :nth-child(3) { animation-delay: 1.05s; }
+.st-js .tp-copy > :nth-child(4) { animation-delay: 1.2s; } .st-js .tp-copy > :nth-child(5) { animation-delay: 1.35s; }
+
+/* қолтаңба */
+.sg { margin: 26px 0 0; }
+.sg-cap { margin: 18px 0 0; max-width: 64ch; color: var(--cream2); font-size: 14.5px; line-height: 1.65; }
+.sg-pal { display: grid; grid-template-columns: minmax(0, 1fr) 160px; gap: 28px; align-items: center; }
+.sg-sw { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.sg-sw li { display: grid; gap: 6px; }
+.sg-sw i { height: 150px; border-radius: 999px 999px 6px 6px; background: var(--c); box-shadow: inset 0 0 0 1px rgb(217 180 104 / .4); transform-origin: 50% 100%; }
+.sg-sw b { font: 700 15px var(--display); } .sg-sw code { font-size: 12px; color: var(--cream2); background: rgb(217 180 104 / .08); padding: 2px 6px; border-radius: 4px; justify-self: start; }
+.sg-seal { width: 160px; height: 160px; }
+.st-js .tp-sig:not(.is-in) .sg-sw i { transform: scaleY(0); }
+.st-js .tp-sig.is-in .sg-sw i { animation: sg-rise 1s cubic-bezier(.2, .7, .2, 1) calc(var(--i) * .14s) both; }
+.st-js .tp-sig:not(.is-in) .sg-seal { opacity: 0; }
+.st-js .tp-sig.is-in .sg-seal { animation: sg-seal 1.6s cubic-bezier(.2, .7, .2, 1) .8s both; }
+@keyframes sg-rise { from { transform: scaleY(0); } to { transform: none; } }
+@keyframes sg-seal { from { opacity: 0; transform: rotate(-120deg) scale(.6); } to { opacity: 1; transform: none; } }
+.sg-bota { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.sg-bota li { text-align: center; padding: 22px 12px; border-radius: 12px; background: rgb(217 180 104 / .05); border: 1px solid rgb(217 180 104 / .2); }
+.sg-bota img { width: 110px; height: 110px; } .sg-bota b { display: block; margin: 8px 0 2px; font: 700 18px var(--display); } .sg-bota span { color: var(--cream2); font-size: 14px; }
+.st-js .tp-sig:not(.is-in) .sg-bota li { opacity: 0; }
+.st-js .tp-sig.is-in .sg-bota li { animation: sg-pop .9s cubic-bezier(.16, 1.3, .3, 1) calc(var(--i) * .25s) both; }
+@keyframes sg-pop { from { opacity: 0; transform: translateY(20px) scale(.85); } to { opacity: 1; transform: none; } }
+.sg-code { padding: 22px 24px; border-radius: 10px; background: #0b0806; border: 1px solid rgb(217 180 104 / .25); overflow-x: auto; font: 14.5px/1.75 var(--mono, monospace); color: #e8dcc2; }
+.sg-code code { white-space: pre; display: block; }
+.sg-ln { display: inline-block; }
+.st-js .tp-sig:not(.is-in) .sg-ln { clip-path: inset(0 100% 0 0); }
+.st-js .tp-sig.is-in .sg-ln { animation: sg-type .9s steps(28) calc(var(--i) * .7s) both; }
+@keyframes sg-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.sg-stats { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.sg-stats li { padding: 22px 18px; border-top: 3px solid var(--acc); background: rgb(217 180 104 / .05); border-radius: 0 0 10px 10px; }
+.sg-stats b { display: block; font: 700 clamp(34px, 4.4vw, 52px)/1 var(--display); color: #fff; font-variant-numeric: tabular-nums; }
+.sg-stats span { display: block; margin: 8px 0 4px; font-weight: 700; color: var(--acc); } .sg-stats small { color: var(--cream2); font-size: 13.5px; line-height: 1.5; }
+.sg-flow { width: 100%; height: auto; overflow: visible; }
+.sg-wire { fill: none; stroke: rgb(217 180 104 / .3); stroke-width: 2; }
+.sg-pulse { fill: none; stroke: var(--acc); stroke-width: 3; stroke-dasharray: .08 .92; stroke-dashoffset: 0; }
+.st-js .tp-sig.is-in .sg-pulse { animation: sg-pulse 3.2s linear infinite; }
+@keyframes sg-pulse { to { stroke-dashoffset: -1; } }
+.sg-node circle { fill: #120d0a; stroke: var(--gold); stroke-width: 2; }
+.sg-flow { max-width: 900px; }
+.sg-node text { text-anchor: middle; fill: var(--cream); }
+.sg-a { font: 700 17px var(--display); } .sg-b { font: 400 12.5px var(--mono, monospace); fill: var(--cream2) !important; }
+.st-js .tp-sig:not(.is-in) .sg-node { opacity: 0; }
+.st-js .tp-sig.is-in .sg-node { animation: sg-fade .7s ease calc(var(--i) * .3s) both; }
+@keyframes sg-fade { from { opacity: 0; } to { opacity: 1; } }
+
+/* жұмыстары */
+.tp-works { list-style: none; margin: 22px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 250px), 1fr)); gap: 14px; }
+.tp-works a { display: block; height: 100%; padding: 18px 20px; border-radius: 10px; text-decoration: none; background: rgb(217 180 104 / .05);
+  border: 1px solid rgb(217 180 104 / .22); transition: border-color .3s ease, background .3s ease, transform .3s ease; }
+.tp-works a:hover { border-color: var(--acc); background: rgb(217 180 104 / .1); transform: translateY(-3px); }
+.tp-works b { display: block; font: 700 18px var(--display); color: #fff; margin-bottom: 6px; }
+.tp-works span { color: var(--cream2); font-size: 14.5px; line-height: 1.55; }
+.st-js .tm-sec[data-reveal]:not(.is-in) .tp-works li { opacity: 0; }
+.st-js .tm-sec.is-in .tp-works li { animation: ta-in .8s cubic-bezier(.2, .7, .2, 1) calc(var(--i) * .1s) both; }
+
+.tp-nav { max-width: 1160px; margin: 64px auto 0; padding: 22px 16px 0; display: flex; align-items: center; justify-content: space-between; gap: 14px; border-top: 1px solid rgb(217 180 104 / .2); }
+.tp-mini { display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--cream) !important; min-width: 0; }
+.tp-mini img { width: 52px; height: 65px; object-fit: cover; border-radius: 99px 99px 4px 4px; box-shadow: 0 0 0 1px rgb(217 180 104 / .4); }
+.tp-mini span { display: grid; font: 700 16px/1.3 var(--display); } .tp-mini small { font: 400 13px var(--font, inherit); color: var(--cream2); }
+.tp-nav .tp-mini:last-child { flex-direction: row-reverse; text-align: right; }
+.tp-all { font-weight: 700; }
+
+/* ---------- телефон ---------- */
+@media (max-width: 980px) { .ta-row { grid-template-columns: repeat(3, minmax(0, 1fr)); } .sg-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 760px) {
+  .tf { padding: 12px 12px 0; }
+  .tf-frame::after { background: radial-gradient(120% 90% at 50% 40%, transparent 55%, rgb(8 5 3 / .5)); }
+  .tf-cap { position: static; padding: 16px 2px 0; min-height: 9.5em; }
+  .tf-t { font-size: 26px; }
+  .sg-a { font-size: 22px; } .sg-b { font-size: 15px; }
+  .tf-cap p { text-shadow: none; }
+  .tp-hero { grid-template-columns: minmax(0, 1fr); padding-top: 24px; }
+  .tp-door { max-width: 360px; width: 100%; margin: 0 auto; }
+  .sg-pal { grid-template-columns: minmax(0, 1fr); } .sg-seal { justify-self: center; }
+  .sg-sw i { height: 110px; }
+  .tp-all { display: none; }
+}
+@media (max-width: 560px) {
+  .ta-row { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+  .ta-n { font-size: 16px; } .ta-t { display: none; }
+  .sg-bota { grid-template-columns: minmax(0, 1fr); } .sg-stats { grid-template-columns: minmax(0, 1fr); }
+  .tp-mini small { display: none; } .tp-mini span { font-size: 14px; }
+  .tm-sec { padding-top: 56px; }
+}
+
+/* =====================================================================================================
+   Скроллмен басқарылатын фильм (team.js: data-scrub → --p 0..1, тегіс ілесумен). Барлық қозғалыс - html.st-js кезінде ғана;
+   қозғалыс азайтылса, сахналар қарапайым тізімге айналады (жабысқақ, кесу, масштаб жоқ).
+   ===================================================================================================== */
+.tm { overflow-x: clip; }
+
+/* ---------- 1. Ашылу: шаңырақтың түндігінен кіру ---------- */
+.shx-open { position: relative; }
+.shx-stick { position: relative; height: 100vh; height: 100svh; min-height: 520px; overflow: hidden; display: grid; place-items: center;
+  background: radial-gradient(55% 55% at 50% 50%, rgb(217 180 104 / .12), transparent 70%), #0a0705; }
+.shx-photo { position: absolute; inset: 0; }
+.shx-photo img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 42%; display: block; }
+.shx-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(8 5 3 / .5), transparent 24%, transparent 34%, rgb(8 5 3 / .72) 62%, rgb(8 5 3 / .94)); }
+.shx-shan { position: absolute; left: 50%; top: 50%; width: 62vmin; height: 62vmin; margin: -31vmin 0 0 -31vmin; overflow: visible; pointer-events: none; z-index: 2; }
+.shx-shan :is(circle, path) { fill: none; stroke: #d9b468; stroke-linecap: round; }
+.shx-r1 { stroke-width: 3.2; } .shx-r2 { stroke-width: 1.2; stroke: #8a6634 !important; } .shx-kd { stroke-width: 2.4; } .shx-uy { stroke-width: 2.2; }
+.shx-mid { fill: #7a1f2b !important; stroke-width: 1.6; }
+.shx-copy { position: relative; z-index: 3; align-self: end; text-align: center; padding: 0 16px; margin-bottom: 11vh; }
+.shx-kick { margin: 0 0 12px; font: italic 400 clamp(15px, 1.6vw, 20px) var(--display); color: var(--gold); }
+.shx-copy h1 { margin: 0; font: 700 clamp(46px, 9.4vw, 140px)/.92 var(--display); color: #fff; letter-spacing: -.025em; text-shadow: 0 6px 40px rgb(0 0 0 / .55); }
+.shx-copy h1 > span { display: block; }
+.shx-l2 { font-style: italic; font-weight: 400; color: var(--gold); }
+.shx-names { margin: 26px auto 0; max-width: 900px; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px 26px; font: 600 clamp(13px, 1.3vw, 15px)/1.3 var(--font, inherit); color: var(--cream); }
+.shx-names span::before { content: "◆"; margin-right: 8px; font-size: .6em; vertical-align: .25em; color: var(--gold); }
+.shx-hint { position: absolute; left: 50%; bottom: 3.5vh; z-index: 3; margin: 0; transform: translateX(-50%); display: grid; justify-items: center; gap: 10px; font-size: 13px; color: var(--cream2); }
+.shx-hint i { width: 1px; height: 46px; background: linear-gradient(var(--gold), transparent); transform-origin: 50% 0; animation: shx-hint 2s cubic-bezier(.6, 0, .4, 1) infinite; }
+@keyframes shx-hint { 0% { transform: scaleY(0); } 50% { transform: scaleY(1); } 100% { transform: scaleY(1); opacity: 0; } }
+html:not(.st-js) .shx-shan, html:not(.st-js) .shx-hint { display: none; }
+
+.st-js .shx-open { height: 300vh; --o: clamp(0, calc((var(--p, 0) - .12) / .46), 1); --t: clamp(0, calc((var(--p, 0) - .5) / .2), 1); --u: clamp(0, calc((var(--p, 0) - .6) / .2), 1); }
+.st-js .shx-stick { position: sticky; top: 0; }
+.st-js .shx-photo { clip-path: circle(calc(var(--o) * 80vmax + 22vmin) at 50% 50%); }
+.st-js .shx-photo img { transform: scale(calc(1.32 - .32 * var(--o))); will-change: transform; }
+.st-js .shx-photo::after { opacity: var(--o); }
+.st-js .shx-shan { transform: scale(calc(1 + var(--o) * 3.6)) rotate(calc(var(--o) * 24deg)); opacity: calc(1 - var(--o) * 1.3); will-change: transform, opacity; }
+.st-js .shx-shan :is(.shx-r1, .shx-r2, .shx-kd, .shx-uy) { stroke-dasharray: 1; stroke-dashoffset: 1; animation: shx-draw 1.9s cubic-bezier(.65, 0, .35, 1) .25s forwards; }
+.st-js .shx-shan .shx-r2 { animation-delay: .45s; } .st-js .shx-shan .shx-kd { animation-delay: .8s; } .st-js .shx-shan .shx-uy { animation-delay: 1.1s; }
+.st-js .shx-shan .shx-mid { transform-box: fill-box; transform-origin: center; animation: at-pop .8s cubic-bezier(.16, 1.4, .3, 1) 1.6s both; }
+@keyframes shx-draw { to { stroke-dashoffset: 0; } }
+@keyframes at-pop { from { opacity: 0; transform: scale(0); } to { opacity: 1; transform: none; } }
+.st-js .shx-kick { opacity: var(--t); transform: translateY(calc((1 - var(--t)) * 24px)); }
+.st-js .shx-l1 { opacity: var(--t); transform: translateY(calc((1 - var(--t)) * 70px)); filter: blur(calc((1 - var(--t)) * 8px)); }
+.st-js .shx-l2 { opacity: var(--u); transform: translateY(calc((1 - var(--u)) * 80px)); filter: blur(calc((1 - var(--u)) * 8px)); }
+.st-js .shx-names { opacity: clamp(0, calc((var(--p, 0) - .72) / .16), 1); }
+.st-js .shx-hint { opacity: clamp(0, calc(1 - var(--p, 0) / .06), 1); }
+
+/* ---------- 2. Бес уық: көлденең галерея (тігінен айналдырғанда көлденең жылжиды) ---------- */
+.uyq { position: relative; --W: min(86vw, 1080px); }
+.uyq-stick { position: relative; padding: 80px 0 24px; }
+.uyq-h { margin: 0 auto 36px !important; padding: 0 16px; max-width: 1080px; text-align: center; }
+.uyq-h .st-intertitle { display: block; font-size: clamp(16px, 1.6vw, 19px); }
+.uyq-track { list-style: none; margin: 0; padding: 0; display: flex; }
+.uyq-p { flex: 0 0 var(--W); display: grid; grid-template-columns: minmax(0, 4fr) minmax(0, 5fr); gap: clamp(22px, 4.5vw, 64px); align-items: center; padding: 0 clamp(12px, 2vw, 28px); }
+.uyq-ph { justify-self: end; width: 100%; max-width: 420px; aspect-ratio: 4 / 5; border-radius: 999px 999px 10px 10px; overflow: hidden;
+  box-shadow: 0 0 0 1px rgb(217 180 104 / .55), 0 0 0 10px #120d0a, 0 0 0 11px rgb(217 180 104 / .22), 0 50px 90px -40px #000; }
+.uyq-img { width: 100%; height: 100%; overflow: hidden; }
+.uyq-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.uyq-no { margin: 0 0 10px; font: 700 clamp(72px, 11vw, 168px)/.8 var(--display); color: transparent; -webkit-text-stroke: 1px rgb(217 180 104 / .6); letter-spacing: -.03em; }
+.uyq-k { margin: 0 0 8px; color: var(--acc); font-weight: 700; font-size: 14.5px; }
+.uyq-n { margin: 0 0 14px; font: 700 clamp(34px, 5.4vw, 76px)/1 var(--display); color: #fff; letter-spacing: -.015em; text-wrap: balance; }
+.uyq-r { display: inline-block; margin: 0 0 14px; padding: 5px 14px; border-radius: 99px; background: var(--acc); color: #120d0a; font-weight: 700; font-size: 14px; }
+.uyq-t { margin: 0 0 10px; font: italic 400 clamp(18px, 2vw, 25px)/1.4 var(--display); color: var(--gold); }
+.uyq-a { margin: 0 0 22px; max-width: 46ch; color: var(--cream2); font-size: 15.5px; line-height: 1.7; }
+.uyq-go { color: #120d0a !important; }
+.uyq-hud { display: flex; justify-content: center; gap: 8px; padding: 0 16px; margin: 3vh auto 0; max-width: 1080px; }
+.uyq-hb { flex: 1 1 0; min-width: 0; background: none; border: 0; padding: 12px 0 4px; color: var(--cream2); cursor: pointer; text-align: left; font: 600 13px var(--font, inherit); transition: color .3s ease; }
+.uyq-hb i { position: relative; display: block; height: 2px; margin-bottom: 8px; overflow: hidden; background: rgb(239 230 211 / .16); }
+.uyq-hb i::after { content: ""; position: absolute; inset: 0; background: var(--gold); transform: scaleX(var(--f, 0)); transform-origin: 0 50%; }
+.uyq-hb span { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.uyq-hb.is-on { color: #fff; }
+html:not(.st-js) .uyq-hud { display: none; }
+html:not(.st-js) .uyq-track { flex-direction: column; gap: 64px; max-width: 1080px; margin: 0 auto; padding: 0 16px; }
+html:not(.st-js) .uyq-p { flex-basis: auto; }
+
+.st-js .uyq { height: calc(var(--n) * 90vh + 100vh); }
+.st-js .uyq-stick { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 560px; padding: 64px 0 18px; display: flex; flex-direction: column; justify-content: center; overflow: hidden; }
+.st-js .uyq-h { position: absolute; top: 74px; left: 0; right: 0; margin: 0 auto !important; font-size: clamp(20px, 2.1vw, 28px); opacity: calc(1 - var(--p, 0) * 2.5); }
+.st-js .uyq-track { padding-left: calc(50vw - var(--W) / 2); transform: translate3d(calc(var(--p, 0) * -1 * (var(--n) - 1) * var(--W)), 0, 0); will-change: transform; }
+.st-js .uyq-ph { transform: scale(calc(.8 + .2 * var(--a, 1))) rotate(calc(var(--d, 0) * -4deg)); opacity: calc(.3 + .7 * var(--a, 1)); will-change: transform; }
+.st-js .uyq-img img { transform: translateX(calc(var(--d, 0) * -10%)) scale(1.2); will-change: transform; }
+.st-js .uyq-tx { opacity: calc(.1 + .9 * var(--a, 1)); transform: translateX(calc(var(--d, 0) * 110px)); }
+.st-js .uyq-no { transform: translateX(calc(var(--d, 0) * 220px)); }
+
+/* фото-фильм бөлімі енді бет ортасында */
+.tm .tf { padding-top: 96px; }
+.tm .tf > h2 { margin-bottom: 22px; }
+
+/* ---------- жеке бет: артқы жоспардағы алып есім, параллакс ---------- */
+.tp-hero { position: relative; }
+.tp-bg { position: absolute; left: 0; top: 46%; margin: 0; z-index: 0; white-space: nowrap; pointer-events: none;
+  font: 700 clamp(96px, 17vw, 260px)/1 var(--display); color: transparent; -webkit-text-stroke: 1px rgb(217 180 104 / .16); letter-spacing: -.03em;
+  transform: translate(calc(10% - var(--p, .5) * 46%), -50%); will-change: transform; }
+.tp-door, .tp-copy { position: relative; z-index: 1; }
+.st-js .tp-door { translate: 0 calc((var(--p, .5) - .5) * -60px); }
+.st-js .tp-copy { translate: 0 calc((var(--p, .5) - .5) * 30px); }
+
+@media (max-width: 760px) {
+  .uyq { --W: 92vw; }
+  .uyq-p { grid-template-columns: minmax(0, 1fr); gap: 14px; text-align: center; }
+  .uyq-ph { justify-self: center; max-width: min(240px, 34vh); }
+  .uyq-no { font-size: 56px; margin-bottom: 4px; }
+  .uyq-n { font-size: 30px; margin-bottom: 8px; }
+  .uyq-r { margin-bottom: 8px; }
+  .uyq-t { font-size: 17px; margin-bottom: 12px; }
+  .uyq-a { display: none; }
+  .uyq-hb span { display: none; }
+  .st-js .uyq-h { top: 68px; }
+  .st-js .uyq-stick { padding-top: 96px; }
+  .st-js .uyq-no { transform: translateX(calc(var(--d, 0) * 90px)); }
+  .st-js .uyq-tx { transform: translateX(calc(var(--d, 0) * 50px)); }
+  .shx-copy { margin-bottom: 14vh; }
+  .tp-bg { top: 30%; }
+}
+
+/* ---------- кино-қабаттар: жолақтар, пленка түйіршігі, алтын тозаң ---------- */
+.shx-bar { position: absolute; left: 0; right: 0; z-index: 5; height: 0; background: #050302; pointer-events: none; }
+.shx-bt { top: 0; } .shx-bb { bottom: 0; }
+.st-js .shx-bar { height: calc((1 - var(--o, 1)) * 7vh + var(--t, 0) * 0vh); }
+.shx-stick::before { content: ""; position: absolute; inset: -40%; z-index: 4; pointer-events: none; background: var(--grain); opacity: .55; }
+.st-js .shx-stick::before { animation: shx-grain .9s steps(6) infinite; }
+@keyframes shx-grain { 0% { transform: translate(0, 0); } 20% { transform: translate(-3%, 2%); } 40% { transform: translate(2%, -3%); } 60% { transform: translate(-2%, -1%); } 80% { transform: translate(3%, 3%); } 100% { transform: translate(0, 0); } }
+.shx-dust { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; pointer-events: none; }
+html:not(.st-js) .shx-dust { display: none; }
+
+/* ---------- галерея: назардағысы толық түсті, қалғаны көне фото (сепия) ---------- */
+.st-js .uyq-img img { filter: grayscale(calc(1 - var(--a, 1))) sepia(calc((1 - var(--a, 1)) * .55)) brightness(calc(.72 + .28 * var(--a, 1))); }
+
+/* ---------- қошқар мүйіз өрнегі: скроллмен сызылады ---------- */
+.orn { max-width: 1200px; margin: 0 auto; padding: 56px 16px 0; }
+.orn svg { display: block; width: 100%; height: auto; overflow: visible; }
+.orn path { fill: none; stroke: #d9b468; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.orn .orn-l { stroke: #8a6634; stroke-width: 1.4; }
+.orn .orn-d { fill: #7a1f2b; stroke-width: 1.2; }
+.st-js .orn { --q: clamp(0, calc((var(--p, 1) - .18) / .32), 1); }
+.st-js .orn :is(.orn-l, .orn-h) { stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--q)); }
+.st-js .orn .orn-d { opacity: var(--q); }
+
+/* ---------- портрет беттер арасында ағып өтеді (View Transitions: галерея ↔ жеке бет) ---------- */
+::view-transition-group(*) { animation-duration: .65s; animation-timing-function: cubic-bezier(.6, 0, .2, 1); }
+@media (prefers-reduced-motion: reduce) { ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; } }
+
+/* ---------- тінтуірге ілесетін 3D еңкею және алтын жарқыл (data-tilt; тек дәл тінтуірде) ---------- */
+[data-tilt] { position: relative; }
+.st-js [data-tilt] { transform: perspective(1000px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg)); transition: transform .5s cubic-bezier(.2, .7, .2, 1); transform-style: preserve-3d; }
+.st-js [data-tilt].is-tilt { transition: transform .12s linear; }
+[data-tilt]::after { content: ""; position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; transition: opacity .4s ease;
+  background: radial-gradient(40% 35% at var(--gx, 50%) var(--gy, 30%), rgb(255 226 160 / .28), transparent 70%); mix-blend-mode: soft-light; }
+.st-js [data-tilt].is-tilt::after { opacity: 1; }
+
+/* ---------- жеке бет: есім алтын сиямен «жазылып», сосын толады ---------- */
+.st-js .tp-copy h1 { color: transparent; -webkit-text-stroke: 1px #d9b468;
+  background: linear-gradient(90deg, #fff 0 50%, transparent 50% 100%) 100% 0 / 200% 100% no-repeat; -webkit-background-clip: text; background-clip: text;
+  animation: tp-write 1.4s cubic-bezier(.65, 0, .35, 1) .7s both, tp-fill 1.3s cubic-bezier(.65, 0, .35, 1) 1.9s forwards; }
+@keyframes tp-write { from { clip-path: inset(-10% 100% -30% 0); } to { clip-path: inset(-10% 0 -30% 0); } }
+@keyframes tp-fill { to { background-position: 0 0; -webkit-text-stroke-color: transparent; } }
+.tp-dust { z-index: 2; }
+
+/* басты беттегі есімдер - сілтеме */
+.at-names a { display: flex; align-items: baseline; gap: 12px; width: 100%; color: inherit; text-decoration: none; }
+.at-names a:hover b, .at-names a:focus-visible b { color: var(--acc); }
+
+/* ---------- соңғы кадр: мөр мен бес қолтаңба ---------- */
+.tm-seal { display: grid; grid-template-columns: 132px minmax(0, 1fr); gap: clamp(22px, 4vw, 48px); align-items: start; margin-top: 64px; padding-top: 48px; padding-bottom: 8px;
+  border-top: 1px solid rgb(217 180 104 / .22); }
+.tm-seal-img { width: 132px; height: 132px; filter: drop-shadow(0 18px 30px rgb(0 0 0 / .55)); }
+.tm-seal-tx > p:not(.st-intertitle) { max-width: 70ch; color: var(--cream2); line-height: 1.75; }
+.tm-signs { list-style: none; margin: 26px 0 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 190px), 1fr)); gap: 18px 26px; }
+.tm-signs li { display: grid; gap: 4px; padding-top: 12px; border-top: 1px solid rgb(217 180 104 / .35); }
+.tm-signs a { font: italic 400 22px/1.2 var(--display); color: #fff !important; text-decoration: none; }
+.tm-signs a:hover { color: var(--gold) !important; }
+.tm-signs span { font-size: 13px; color: var(--cream2); }
+.st-js .tm-seal:not(.is-in) .tm-seal-img { opacity: 0; transform: scale(1.6) rotate(-30deg); }
+.st-js .tm-seal.is-in .tm-seal-img { animation: tm-stamp .9s cubic-bezier(.2, 1.6, .4, 1) .1s both; }
+@keyframes tm-stamp { 0% { opacity: 0; transform: scale(1.7) rotate(-30deg); } 60% { opacity: 1; transform: scale(.94) rotate(4deg); } 100% { opacity: 1; transform: none; } }
+.st-js .tm-seal:not(.is-in) .tm-signs li { opacity: 0; }
+.st-js .tm-seal.is-in .tm-signs li { animation: tm-sign .9s cubic-bezier(.2, .7, .2, 1) calc(.6s + var(--i) * .14s) both; }
+@keyframes tm-sign { from { opacity: 0; clip-path: inset(0 100% 0 0); } to { opacity: 1; clip-path: inset(0 0 0 0); } }
+@media (max-width: 560px) { .tm-seal { grid-template-columns: minmax(0, 1fr); } .tm-seal-img { width: 96px; height: 96px; } }
+
+/* ---------- сеньор деңгейі: ұсақ дәлдік ---------- */
+/* ашылу: түндіктен алдымен Gulzat-тың беті көрінеді, шаңырақ ашылған сайын камера бүкіл кадрға шегінеді */
+.st-js .shx-photo img { transform: translate3d(0, calc((1 - var(--o)) * 19%), 0) scale(calc(1.42 - .42 * var(--o))); transform-origin: 52% 30%; }
+/* тақырып әріп-әріп: әр әріп өз кезегімен көтеріледі (скроллмен) */
+.shx-ch { display: inline-block; white-space: pre; }
+.st-js .shx-l1 .shx-ch { --q: clamp(0, calc(var(--t) * 1.9 - var(--ci) / var(--cn) * .9), 1); }
+.st-js .shx-l2 .shx-ch { --q: clamp(0, calc(var(--u) * 1.9 - var(--ci) / var(--cn) * .9), 1); }
+.st-js .shx-copy h1 .shx-ch { opacity: var(--q); transform: translate3d(0, calc((1 - var(--q)) * .55em), 0) rotate(calc((1 - var(--q)) * 7deg)); transform-origin: 0 100%; }
+.st-js [data-split] .shx-l1, .st-js [data-split] .shx-l2 { opacity: 1 !important; transform: none !important; filter: none !important; }
+.shx-copy h1 { font-kerning: normal; font-feature-settings: "kern", "liga"; }
+/* галерея: назардан тыс мәтін толық жасырылады - шетте тек сепия портреттер қалады */
+.st-js .uyq-tx { opacity: clamp(0, calc((var(--a, 1) - .35) / .65), 1); }
+.st-js .uyq-no { opacity: clamp(0, calc((var(--a, 1) - .2) / .8), 1); }
+.st-js .uyq-h { opacity: clamp(0, calc(1 - var(--p, 0) * 4), 1); }
+.uyq-no, .uyq-hb, .tf-n { font-variant-numeric: lining-nums tabular-nums; }
+.uyq-n, .tp-copy h1, .tf-t { font-kerning: normal; hanging-punctuation: first; }
+/* батырма мен сілтеме: тыныш, бірақ анық күйлер */
+.tm .btn.gold { transition: transform .35s cubic-bezier(.2, .7, .2, 1), box-shadow .35s ease; }
+.tm .btn.gold:hover { transform: translateY(-2px); box-shadow: 0 14px 30px -12px rgb(217 180 104 / .55); }
+
+/* ---------- 3D айналым: бес портрет шаңырақтың айналасында, скроллмен айналады ---------- */
+.rng { position: relative; --R: clamp(190px, 30vw, 380px); --cw: clamp(150px, 17vw, 230px); }
+.rng-stick { position: relative; padding: 80px 16px 40px; overflow: hidden; text-align: center; }
+.rng-head h2 { margin-bottom: 0 !important; }
+.rng-scene { position: relative; height: calc(var(--cw) * 1.25 + 60px); margin: 26px auto 0; perspective: 1500px; display: grid; place-items: center; }
+.rng-stage { position: relative; width: var(--cw); aspect-ratio: 4 / 5; transform-style: preserve-3d; transform: rotateX(-6deg) rotateY(var(--rot, 0deg)); will-change: transform; }
+.rng-c { position: absolute; inset: 0; display: block; border-radius: 999px 999px 8px 8px; overflow: hidden; text-decoration: none; backface-visibility: visible;
+  transform: rotateY(calc(var(--i) * 360deg / var(--n))) translateZ(var(--R)) rotateY(calc(-1 * var(--i) * 360deg / var(--n) - var(--rot, 0deg)));
+  box-shadow: 0 0 0 1px rgb(217 180 104 / .55), 0 30px 60px -30px #000; }
+.rng-c img { width: 100%; height: 100%; object-fit: cover; display: block;
+  filter: grayscale(calc(1 - max(var(--f, 1), 0))) sepia(calc((1 - max(var(--f, 1), 0)) * .6)) brightness(calc(.45 + .55 * max(var(--f, 1), 0))); }
+.st-js .rng-c span { display: none; }
+.rng-c span { position: absolute; left: 0; right: 0; bottom: 0; padding: 30px 8px 10px; font: 700 14px var(--display); color: #fff; background: linear-gradient(transparent, rgb(8 5 3 / .85)); opacity: clamp(0, calc((var(--f, 1) - .6) * 3), 1); }
+.rng-c:focus-visible { outline: 2px solid var(--gold); outline-offset: 4px; }
+.rng-shan { position: absolute; left: 50%; top: 50%; z-index: 0; width: calc(var(--R) * 2.3); height: calc(var(--R) * 2.3); margin: calc(var(--R) * -1.15) 0 0 calc(var(--R) * -1.15); transform: rotateX(78deg) rotate(calc(var(--rot, 0deg) * -1)) translateY(calc(var(--cw) * .2)); pointer-events: none; opacity: .55; }
+.rng-stage { z-index: 1; }
+.rng-shan :is(circle, path) { fill: none; stroke: #d9b468; stroke-width: 1.6; }
+.rng-shan circle + circle { stroke: #8a6634; stroke-width: 1; }
+.rng-shan .rng-mid { fill: #7a1f2b; stroke-width: 1; }
+.rng-now { margin: 26px 0 0; font: italic 400 clamp(22px, 2.6vw, 32px) var(--display); color: var(--gold); min-height: 1.4em; }
+.rng .shx-dust { z-index: 0; }
+.rng-head, .rng-scene, .rng-now { position: relative; z-index: 1; }
+.st-js .rng { height: 300vh; }
+.st-js .rng-stick { position: sticky; top: 0; height: 100vh; height: 100svh; min-height: 600px; display: flex; flex-direction: column; justify-content: center; padding-top: 70px; }
+html:not(.st-js) .rng-stage { transform: none; width: auto; aspect-ratio: auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+html:not(.st-js) .rng-c { position: relative; inset: auto; width: 140px; aspect-ratio: 4 / 5; transform: none; }
+html:not(.st-js) .rng-scene { height: auto; perspective: none; }
+html:not(.st-js) .rng-shan, html:not(.st-js) .rng-now { display: none; }
+@media (max-width: 760px) { .rng { --R: 170px; --cw: 130px; } .rng-c span { font-size: 12px; } }
+
+.st-js .rng-c { opacity: clamp(.18, calc(var(--f, 1) * .6 + .55), 1); }
+.rng-now { margin-top: 54px; }
+.rng-head h2::after, .uyq-h::after { display: none !important; }
+@media (max-width: 760px) { .rng-now { margin-top: 40px; } .st-js .rng-c { opacity: clamp(.12, calc(var(--f, 1) * .7 + .45), 1); } }
+
+.tm :is(.rng-head h2, h2.uyq-h).cine-h { background-position: 50% 100%; }
+
+/* =========================================================================================
+   Әлемдік деңгейдегі ұсақ сиқыр: прелоадер, жүгірме жол, алтын курсор, магнитті батырмалар.
+   Бәрі тек html.st-js кезінде (қозғалыс рұқсат); курсор мен магнит - тек дәл тінтуірде.
+   ========================================================================================= */
+/* прелоадер: шаңырақ сызылады, санақ 000→100, перде екіге бөлініп ашылады */
+.pl { position: fixed; inset: 0; z-index: 10000; pointer-events: none; }
+.pl-half { position: absolute; left: 0; right: 0; height: 50.5%; background: var(--grain), #0a0705; transition: transform 1.05s cubic-bezier(.76, 0, .24, 1); }
+.pl-top { top: 0; } .pl-bot { bottom: 0; }
+.pl-core { position: absolute; inset: 0; display: grid; place-items: center; align-content: center; gap: 18px; transition: opacity .45s ease; }
+.pl-core svg { width: 120px; height: 120px; overflow: visible; }
+.pl-core :is(circle, path) { fill: none; stroke: #d9b468; stroke-width: 2; stroke-linecap: round; stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--k, 0)); }
+.pl-n { margin: 0; font: 700 clamp(56px, 9vw, 110px)/1 var(--display); color: #efe6d3; font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.02em; }
+.pl-n small { font-size: .35em; color: #d9b468; margin-left: .15em; vertical-align: .9em; }
+.pl-l { margin: 0; font: italic 400 16px var(--display); color: #b9ab92; }
+.pl.is-out .pl-core { opacity: 0; }
+.pl.is-out .pl-top { transform: translateY(-101%); } .pl.is-out .pl-bot { transform: translateY(101%); }
+
+/* жүгірме жол: алып контурлы әріптер, скроллдың жылдамдығына жауап береді */
+.mq { overflow: hidden; padding: 70px 0 10px; margin-top: 40px; }
+.mq-track { display: flex; width: max-content; transform: translate3d(var(--mx, 0px), 0, 0) skewX(var(--sk, 0deg)); will-change: transform; }
+.mq span { flex: none; padding-right: .3em; white-space: nowrap; font: 700 clamp(64px, 11vw, 168px)/1 var(--display); letter-spacing: -.02em;
+  color: transparent; -webkit-text-stroke: 1px rgb(217 180 104 / .55); }
+.mq em { font-style: italic; font-weight: 400; color: #d9b468; -webkit-text-stroke: 0; }
+.mq i { font-style: normal; font-size: .4em; vertical-align: .5em; color: #7a1f2b; -webkit-text-stroke: 0; }
+
+/* алтын курсор */
+.cur { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; width: 38px; height: 38px; margin: -19px 0 0 -19px; border-radius: 50%;
+  border: 1px solid rgb(217 180 104 / .85); transform: translate3d(var(--cx, -100px), var(--cy, -100px), 0) scale(var(--cs, 1)); transition: width .3s, height .3s, margin .3s, background-color .3s, border-color .3s;
+  display: grid; place-items: center; mix-blend-mode: normal; }
+.cur b { font: 700 11px/1 var(--font, sans-serif); color: #120d0a; opacity: 0; transition: opacity .2s; letter-spacing: .02em; }
+.cur.is-link { width: 64px; height: 64px; margin: -32px 0 0 -32px; background: rgb(217 180 104 / .14); }
+.cur.is-open { width: 86px; height: 86px; margin: -43px 0 0 -43px; background: #d9b468; border-color: #d9b468; }
+.cur.is-open b { opacity: 1; }
+.cur.is-down { --cs: .85; }
+.cur-dot { position: fixed; left: 0; top: 0; z-index: 9999; pointer-events: none; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%; background: #d9b468;
+  transform: translate3d(var(--dx, -100px), var(--dy, -100px), 0); }
+@media (hover: none), (pointer: coarse) { .cur, .cur-dot { display: none; } }
+
+/* магнитті батырмалар */
+.st-js .tm [data-mag] { transform: translate3d(var(--mgx, 0px), var(--mgy, 0px), 0); transition: transform .45s cubic-bezier(.2, .9, .2, 1.2); }
+.st-js .tm [data-mag].is-mag { transition: transform .12s linear; }

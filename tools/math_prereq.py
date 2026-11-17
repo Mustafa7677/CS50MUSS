@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
 """«Математика» курсының оқу жолы мен сабақ алғышарттары.
 
 PRE: «slug:k» (k - пән ішіндегі сабақ нөмірі, 1-ден) -> басқа пәндердің сабақтары, оларды алдымен оқу ұсынылады.

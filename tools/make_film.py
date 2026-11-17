@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17 «Шақыру» фильмін бір файлға жинайды: film/src/film.html -> film/index.html.
 
 Шығыс файл дербес: PT Serif қаріптері (OFL) мен архивтік суреттер (assets/img/film/, Википедия / Wikimedia Commons,

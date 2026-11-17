@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // Дербес авторлық курстар (C++ және Java): курс беттері, нав, лекциялар (бар болса), тест, answer-check, прогресс, мобиль.
 const { test, expect } = require("@playwright/test");
 const fs = require("fs");
@@ -153,7 +153,7 @@ for (const c of OWN) {
       await expect(page.locator(".lecture-head")).toHaveAttribute("style", new RegExp(`--lc:${META[c].color}`));
       await expect(page.locator(".lecture-head")).toHaveAttribute("data-n", w.split("-")[1]);
       await expect(page.locator(".course-pill .cp-label")).toHaveText(META[c].short);
-      await expect(page.locator(".translator-note")).toContainText("Sagid Mustafa-ның авторлық оқу материалы");
+      await expect(page.locator(".translator-note")).toContainText("AO17 командасының авторлық оқу материалы");
       await expect(page.locator(".source-link")).toHaveCount(0);
       await expect(page.locator('meta[name="copyright"]')).toHaveAttribute("content", /All Rights Reserved/);
       await expect(page.locator(".toc ol li").first()).toBeVisible();

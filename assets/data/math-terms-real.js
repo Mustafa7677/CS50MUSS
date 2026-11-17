@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Real Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Real Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.real = [
  {"id": "real-t1", "kz": "реттелген өріс", "en": "ordered field", "def": "$\\mathbb R$ - реттелген өріс (ordered field): қосу мен көбейтудің әдеттегі аксиомалары (ауыстырымдылық, терімділік, үлестірімділік, $0$, $1$, қарама-қарсы және кері элементтер) және реттік аксиомалар: кез келген $a,b$ үшін дәл біреуі $a<b$, $a=b$, $b<a$…", "lesson": 1},

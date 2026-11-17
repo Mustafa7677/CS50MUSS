@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
 # Harvard CS50 материалдары (олар осы файлда сақталмайды) CC BY-NC-SA 4.0 бойынша; үшінші тарап компоненттері өз лицензияларымен.
 """Бір реттік генератор: sql/, ai/, web/ (Harvard аудармасы) және cpp/, java/ (дербес авторлық курстар) курс беттерінің
 index.html файлдарын python/index.html үлгісінен жасайды.
@@ -169,7 +169,7 @@ for code, c in COURSE.items():
       <div class="weeks course-weeks">
 {cards}
       </div>
-      <p class="translator-note">{c['short']} (Гарвард университеті, David J. Malan) курсының қазақша аудармасы. Аударған: Sagid Mustafa. Аударма мен бейімдеу: CC BY-NC-SA 4.0 (түпнұсқа: Harvard CS50). Сайт кодының дизайны мен бағдарламасы - © 2026 Sagid Mustafa, барлық құқықтар қорғалған. <a href="../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
+      <p class="translator-note">{c['short']} (Гарвард университеті, David J. Malan) курсының қазақша аудармасы. Аударған: Sagid Mustafa. Аударма мен бейімдеу: CC BY-NC-SA 4.0 (түпнұсқа: Harvard CS50). Сайт кодының дизайны мен бағдарламасы - © 2026 AO17 командасы, барлық құқықтар қорғалған. <a href="../copyright.html">Авторлық құқық және лицензиялар</a>.</p>
     </article>'''
     s = re.sub(r'<article class="content course-home" id="main">.*?</article>', lambda _: article, s, count=1, flags=re.S)
     (ROOT / code).mkdir(exist_ok=True)
@@ -178,7 +178,7 @@ for code, c in COURSE.items():
 
 
 # ======================================================================================================
-# Дербес авторлық курстар (Sagid Mustafa): cpp/, java/ - Harvard аудармасы ЕМЕС, лицензиясы «B».
+# Дербес авторлық курстар (AO17 командасы): cpp/, java/ - Harvard аудармасы ЕМЕС, лицензиясы «B».
 # Апта карточкаларының атаулары мен сипаттамасы - бастапқы жоспар: build.py лекция файлы пайда болғанда
 # оларды лекцияның өз h1 және кіріспе сөйлемімен автоматты түрде ауыстырады (sync_own_cards).
 # ======================================================================================================
@@ -277,8 +277,8 @@ OWN = {
     ),
 }
 
-OWN_NOTE = ('Бұл курс - Sagid Mustafa-ның авторлық оқу материалы: Harvard CS50 курсының аудармасы емес, онан мәтін алынбаған. '
-            'Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 Sagid Mustafa, барлық құқықтар қорғалған. '
+OWN_NOTE = ('Бұл курс - AO17 командасының авторлық оқу материалы: Harvard CS50 курсының аудармасы емес, онан мәтін алынбаған. '
+            'Оқыту тәсілі (түсіндірме, тапсырма, тест, ойын) CS50 стилінен шабыттанған. © 2026 AO17 командасы, барлық құқықтар қорғалған. '
             '<a href="../copyright.html">Авторлық құқық және лицензиялар</a>.')
 
 
@@ -297,7 +297,7 @@ def own_article(code, c):
     hero = f'''<section class="py-hero oc-hero" data-c="{code}" style="--hc:{c['color']};--hc2:{c['c2']};--hglow:{c['glow']}">
         <div class="py-hero-text">
           {switch(code)}
-          <span class="cx-eyebrow">Авторлық курс · Sagid Mustafa</span>
+          <span class="cx-eyebrow">Авторлық курс · AO17 командасы</span>
           <h1>{c['h1']}</h1>
           <p>{c['intro']}</p>
           <div class="hero-actions">

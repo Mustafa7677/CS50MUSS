@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // AO17 екілік жүйе қозғалтқышының тесттері: node tests/academy/bits.test.js (JS ⇄ тәуелсіз Python салыстыру бар)
 const B = require("../../assets/js/academy-bits.js");
 const { execFileSync } = require("child_process");

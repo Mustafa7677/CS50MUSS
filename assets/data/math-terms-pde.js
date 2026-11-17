@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Дербес туындылы дифференциалдық теңдеулер» пәні. Формат: §9.2 (терминдер). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Дербес туындылы дифференциалдық теңдеулер» пәні. Формат: §9.2 (терминдер). */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.pde = [
   {"id":"pde-term-pde","kz":"дербес туындылы теңдеу","en":"partial differential equation","def":"Бірнеше айнымалының белгісіз функциясы мен оның дербес туындылары арасындағы байланыс.","lesson":1},

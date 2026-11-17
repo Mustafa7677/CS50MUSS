@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Mathematical Statistics пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Mathematical Statistics пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.stats = [
  {"id": "stats-t1", "kz": "бас жиынтық", "en": "population", "def": "Зерттелетін барлық объектілердің жиыны - бас жиынтық (population). Оның бөлігі - таңдама (sample). Математикалық модельде кездейсоқ таңдама - тәуелсіз және бірдей үлестірілген $X_1,\\dots,X_n$ кездейсоқ шамалары; бақыланған мәндер $x_1,\\dots,x_n$ - олардың н…", "lesson": 1},

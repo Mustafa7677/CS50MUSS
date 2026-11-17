@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Number Theory пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Number Theory пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.numtheory = [
  {"id": "numtheory-p1", "lvl": "medium", "params": {"q": {"int": [-9, 9]}, "b": {"int": [2, 12]}, "r": {"int": [0, 11]}}, "require": ["r < b"], "type": "num", "q": "$a=#{q*b+r}$. $a\\bmod#{b}=?$", "a": "r", "v": "r", "hint": "$a=q\\cdot#{b}+r$, $0\\le r&lt;#{b}$.", "sol": {"steps": ["$#{q*b+r}=#{q}\\cdot#{b}+#{r}$."], "ans": "$#{r}$"}},

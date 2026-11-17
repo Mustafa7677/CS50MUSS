@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 IELTS оқулығы · Reading · Абзацқа тақырып таңдау (Matching headings). Авторлық мазмұн.
 _HONEY = ("<p>[[Honey has been eaten for thousands of years, and paintings of people collecting it survive from ancient times. Yet the honey sold in most shops today has little in common with what our ancestors knew. It is heated, filtered and often blended from several countries, a process that removes much of its original flavour.]]</p>")
 _FARM = ("<p><b>A</b> [[When the first indoor farm opened in the port city of Daleth, critics dismissed it as an expensive toy. Lettuce grown under lamps, they pointed out, cost three times as much as lettuce from a field. Ten years later the gap has almost closed, largely because the lamps now use a fraction of the electricity they once did.]]</p>"
@@ -145,7 +145,7 @@ LESSON = {
         "Оңай абзацтардан бастап, қолданылған тақырыптарды сызыңыз; жауапты рим цифрымен дәл жазыңыз (iv ≠ vi).",
     ],
     "lab": {"href": "reading.html", "title": "Reading зертханасы"},
-    "sources": ["Сабақ мәтіні, абзацтар мен жаттығулары AO17 үшін жаңадан жазылған (авторы: Sagid Mustafa); Daleth, Eskdale, Carrow, Soren, Varn, Norland Institute және оларға қатысты барлық дерек ойдан алынған, ғылыми дәлел ретінде қолдануға болмайды. AO17 IELTS иелерімен байланысты емес және ресми балл бермейді."],
+    "sources": ["Сабақ мәтіні, абзацтар мен жаттығулары AO17 үшін жаңадан жазылған (авторлары: AO17 командасы); Daleth, Eskdale, Carrow, Soren, Varn, Norland Institute және оларға қатысты барлық дерек ойдан алынған, ғылыми дәлел ретінде қолдануға болмайды. AO17 IELTS иелерімен байланысты емес және ресми балл бермейді."],
 }
 
 

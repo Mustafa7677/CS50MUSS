@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17 CS Universe: сабақ деректерін тексеру және беттерді жасау.
 
     python3 tools/academy_build.py            # тексеру + academy/ беттерін жасау (build.py өзі шақырады)
@@ -491,7 +491,7 @@ def page(rel, title, desc, body, scripts=(), body_cls="ao-acad", intro=""):
   <!-- build:head -->
   <!-- /build:head -->
   <meta name="description" content="{E(desc)}">
-  <meta name="author" content="Sagid Mustafa">
+  <meta name="author" content="AO17 командасы">
   <link rel="stylesheet" href="{pre}assets/fonts/fonts.css">
   <link rel="stylesheet" href="{pre}assets/css/style.css">
   <link rel="stylesheet" href="{pre}assets/css/academy.css">

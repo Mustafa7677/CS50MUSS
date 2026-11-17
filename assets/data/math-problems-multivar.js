@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Multivariable Calculus» пәні. Формат: §9.3 (параметрлік есептер банкі). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Multivariable Calculus» пәні. Формат: §9.3 (параметрлік есептер банкі). */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.multivar = [
   {"id":"mv-level-c","lvl":"easy","type":"num","params":{"xa":{"int":[1,5]},"ya":{"int":[1,5]}},"q":"$f(x,y)=x^2+y^2$ функциясының $(#{xa};\\,#{ya})$ нүктесі арқылы өтетін деңгей сызығының $c$ мәнін табыңыз.","a":"xa^2+ya^2","v":"(x**2+y**2).subs({x:xa,y:ya})","hint":"$c=f(#{xa},#{ya})$.","sol":{"steps":["$c=#{xa}^2+#{ya}^2$."],"ans":"$c=#{xa^2+ya^2}$"}},

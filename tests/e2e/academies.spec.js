@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // Үш академия: басты беттегі анимациялық оқиға, бағдарламалау академиясының маршруттары, ағылшын дағдылар зертханасы, мәзір.
 const { test, expect } = require("@playwright/test");
 const { execFileSync } = require("child_process");
@@ -14,7 +14,7 @@ test("оқиға: 1-сахна бірден ойналады, келесі са�
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("index.html");
   await expect(page.locator("html")).toHaveClass(/st-js/);
-  await expect(page.locator(".st-scene")).toHaveCount(7);
+  await expect(page.locator(".st-scene")).toHaveCount(8);
   await expect(page.locator(".st-s1")).toHaveClass(/is-on/);
   await expect(page.locator(".ax17")).toHaveCount(0);  // тесттерде кіріспе «көрілген» (helpers.js)
   await expect(page.locator("#scene-2")).not.toHaveClass(/is-on/);

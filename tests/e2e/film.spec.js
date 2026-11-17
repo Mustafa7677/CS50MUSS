@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // «Шақыру» интерактивті тарихи фильмі (film/index.html): бір уақыт ойнатқышы, скролл/перне/шкала, қозғалыс азайту,
 // архив пен реконструкцияның белгісі, телефон композициясы, финалдағы үш академия.
 const { test, expect } = require("@playwright/test");

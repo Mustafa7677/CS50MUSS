@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Complex Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Complex Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.complex = [
  {"id": "complex-t1", "kz": "Комплекс сан", "en": "complex number", "def": "Комплекс сан (complex number) - $z=a+bi$ түріндегі өрнек, $a,b\\in\\mathbb R$, мұнда $i$ - жорамал бірлік (imaginary unit), $i^2=-1$.", "lesson": 1},

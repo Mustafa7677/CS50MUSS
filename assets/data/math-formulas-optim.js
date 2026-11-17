@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Mathematical Optimization пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Mathematical Optimization пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.optim = [
  {"id": "optim-1-1", "name": "Дөңестік (Йенсен теңсіздігі)", "tex": "f\\big((1-t)\\mathbf a+t\\mathbf b\\big)\\le(1-t)f(\\mathbf a)+tf(\\mathbf b),\\quad t\\in[0,1]", "cond": "", "note": "Анықтама. Жалпы түрі: $f\\left(\\sum\\lambda_i\\mathbf x_i\\right)\\le\\sum\\lambda_if(\\mathbf x_i)$, $\\lambda_i\\ge0$, $\\sum\\lambda_i=1$.", "tags": ["Mathematical Optimization", "Оңтайландыру есептері және дөңес жиындар"], "lesson": 1, "anchor": "f-1"},

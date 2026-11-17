@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Topology пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Topology пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.topology = [
  {"id": "topology-t1", "kz": "топология", "en": "topology", "def": "$X$ - жиын, $\\tau\\subseteq\\mathcal P(X)$. $\\tau$ - $X$-тегі топология (topology), егер (T1) $\\varnothing,X\\in\\tau$; (T2) $\\tau$-дағы жиындардың кез келген (шексіз де) бірігуі $\\tau$-да; (T3) $\\tau$-дағы екі (демек ақырлы) жиынның қиылысуы $\\tau$-да.", "lesson": 1},

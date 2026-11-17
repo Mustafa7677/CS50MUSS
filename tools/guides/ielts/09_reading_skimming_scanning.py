@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 IELTS оқулығы · Reading · Skimming және scanning: мәтінді толық оқымай басқару. Авторлық мазмұн.
 _MILL = ("<p><b>The Tide Mill at Marlow Creek</b></p>"
          "<p><b>A</b> [[For almost three centuries, the mill at Marlow Creek ground grain using nothing but the movement of the sea. Twice a day the rising tide filled a pond behind the building; when the water flowed out again, it turned a wooden wheel.]]</p>"
@@ -169,7 +169,7 @@ LESSON = {
         "Көп сұрақ түрінде жауаптар мәтін ретімен жүреді - іздеу аумағын содан тарылтыңыз.",
     ],
     "lab": {"href": "reading.html", "title": "Reading зертханасы"},
-    "sources": ["Сабақ мәтіні, оқу мәтіндері мен жаттығулары AO17 үшін жаңадан жазылған (авторы: Sagid Mustafa); Marlow Creek диірмені, Hollin Ridge қоймасы, Velmont қаласы және барлық есімдер ойдан алынған, нақты дерек емес. AO17 IELTS иелерімен байланысты емес және ресми балл бермейді."],
+    "sources": ["Сабақ мәтіні, оқу мәтіндері мен жаттығулары AO17 үшін жаңадан жазылған (авторлары: AO17 командасы); Marlow Creek диірмені, Hollin Ridge қоймасы, Velmont қаласы және барлық есімдер ойдан алынған, нақты дерек емес. AO17 IELTS иелерімен байланысты емес және ресми балл бермейді."],
 }
 
 

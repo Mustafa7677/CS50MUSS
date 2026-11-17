@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Arithmetic пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Arithmetic пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.arith = [
  {"id": "arith-p1", "lvl": "medium", "params": {"a": {"int": [1, 9]}, "b": {"int": [0, 9]}, "c": {"int": [0, 9]}, "d": {"int": [0, 9]}}, "type": "num", "q": "$#{a}$ мыңдық, $#{b}$ жүздік, $#{c}$ ондық және $#{d}$ бірліктен тұратын сан?", "a": "1000*a + 100*b + 10*c + d", "v": "1000*int(a) + 100*int(b) + 10*int(c) + int(d)", "hint": "Әр цифрды орнының салмағына көбейтіп қосыңыз.", "sol": {"steps": ["$#{a}\\cdot1000+#{b}\\cdot100+#{c}\\cdot10+#{d}$."], "ans": "$#{1000*a + 100*b + 10*c + d}$"}},

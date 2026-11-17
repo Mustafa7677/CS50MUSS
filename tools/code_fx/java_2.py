@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Java 2-апта: массивтер, жолдар, ArrayList - код мысалдарының жолма-жол талдауы.
 
 CX = {

@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық оқу материалы (LICENSE-PROPRIETARY.md, COPYRIGHT.md). */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық оқу материалы (LICENSE-PROPRIETARY.md, COPYRIGHT.md). */
 // English Academy - дағдылар зертханасы (en/skills.html, assets/js/en-skills.js).
 // Әр деңгейде: тыңдау (диктант + қысқа монолог), айту (көлеңкелеу фразалары), оқу (мәтін + сұрақтар), жазу (тапсырма + тексеру тізімі).
 // Мәтіндер өз сөзімізбен жазылған. Оқу мәтініндегі [[сөз|аударма]] - басқанда аудармасы шығатын сөз.

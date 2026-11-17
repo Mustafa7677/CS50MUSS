@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // «Ағылшын тілі A0-C1» курсы (en/): беттер, жаттығу автотексеру, прогресс, сөздік/грамматика/фразалар/деңгей тесті, лицензия (B), статистика.
 const { test, expect } = require("@playwright/test");
 const fs = require("fs");
@@ -28,7 +28,7 @@ test("курс беті: ескерту, 24 карточка, дайын сан�
   await page.goto("en/index.html");
   await expect(page.locator("body")).toHaveAttribute("data-license", "B");
   await expect(page.locator(".course-pill .cp-label")).toHaveText("English");
-  await expect(page.locator("#ai-note")).toContainText("Sagid Mustafa");   // 8b9ad58: ескерту авторлық туралы
+  await expect(page.locator("#ai-note")).toContainText("AO17 командасы");   // 8b9ad58: ескерту авторлық туралы
   await expect(page.locator("#ai-note")).toContainText("хабарлаңыз");
   await expect(page.locator("#ai-note")).toContainText("шамамен");
   await expect(page.locator("#ai-note")).toContainText("болжамды");
@@ -52,7 +52,7 @@ test("лицензия: барлық en беттері B, All Rights Reserved, H
     expect(s, f).toMatch(/<meta name="copyright" content="[^"]*All Rights Reserved/);
     expect(s, f).not.toMatch(/<meta name="copyright" content="[^"]*(Harvard|CC BY-NC-SA)/);
     expect(s, f).not.toContain('"isBasedOn"');
-    expect(s, f).toContain("© 2026 Sagid Mustafa.");
+    expect(s, f).toContain("© 2026 AO17 командасы.");
     expect(s, f).toContain("AO17 — Harvard University-ден тәуелсіз жоба.");
   }
   expect(fs.existsSync(path.join(EN, "certificate.html"))).toBe(false);
@@ -203,7 +203,7 @@ for (const f of READY) {
     await page.goto(`en/lectures/${f}`);
     await expect(page.locator("body")).toHaveAttribute("data-license", "B");
     await expect(page.locator(".course-pill .cp-label")).toHaveText("English");
-    await expect(page.locator(".translator-note")).toContainText("Sagid Mustafa-ның авторлық оқу материалы");
+    await expect(page.locator(".translator-note")).toContainText("AO17 командасының авторлық оқу материалы");
     await expect(page.locator(".lecture-head .num")).toHaveText(/^(A0|A1|A2|B1|B2|C1) · [1-4]-сабақ$/);
     for (const id of ["goals", "mistakes", "it-english", "exercises", "summary", "quiz"]) await expect(page.locator("#" + id), id).toHaveCount(1);
     const n = await page.locator(".en-ex").count();

@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Numerical Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Numerical Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.numerical = [
  {"id": "numerical-1-1", "name": "Салыстырмалы қателік", "tex": "\\delta=\\frac{|x-\\tilde x|}{|x|},\\qquad \\mathrm{fl}(x)=x(1+\\delta),\\ |\\delta|\\le2^{-53}", "cond": "x\\ne0", "note": "Double форматында (ең жақынға дөңгелектеу, нормаланған сандар, толып кетусіз).", "tags": ["Numerical Analysis", "Қателіктер және есептеу тұрақтылығы"], "lesson": 1, "anchor": "f-1"},

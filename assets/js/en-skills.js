@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
 /*
  * English Academy - дағдылар зертханасы (en/skills.html). Дерек: assets/data/en-skills.js (window.CS50KZ_EN_SKILLS).
  *   Тыңдау - диктант (TTS оқиды, оқушы жазады, сөз бойынша тексеру) және қысқа монолог + сұрақтар.

@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Қатарлар (week-49…54): әр формулаға жеке түсіндірме. Құрылымы tools/math_fx/arith.py-дағыдай.
 
 FX = {

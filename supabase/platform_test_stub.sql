@@ -1,4 +1,4 @@
--- © 2026 Sagid Mustafa. All Rights Reserved.
+-- © 2026 AO17 командасы. All Rights Reserved.
 -- Supabase-сіз таза Postgres-те тест үшін: auth схемасы мен рөлдердің ең аз имитациясы.
 -- ӨНДІРІСКЕ ҚОЛДАНБАҢЫЗ (Supabase-те бұлар бұрыннан бар).
 do $$ begin

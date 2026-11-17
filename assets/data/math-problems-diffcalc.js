@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Дифференциалдық есептеу» пәні. Формат: §9.3 (параметрлік есептер банкі). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Дифференциалдық есептеу» пәні. Формат: §9.3 (параметрлік есептер банкі). */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.diffcalc = [
   {"id": "dc-lim-factor", "lvl": "easy", "type": "num", "params": {"a": {"int": [1, 9]}}, "q": "$\\displaystyle\\lim_{x\\to #{a}}\\dfrac{x^2-#{a^2}}{x-#{a}}$ шегін табыңыз.", "a": "2*a", "v": "limit((x**2-a**2)/(x-a), x, a)", "hint": "Алымды жіктеңіз: $x^2-a^2=(x-a)(x+a)$.", "sol": {"steps": ["$\\dfrac{(x-#{a})(x+#{a})}{x-#{a}}=x+#{a}$.", "$x=#{a}$ қойыңыз."], "ans": "$#{2*a}$"}},

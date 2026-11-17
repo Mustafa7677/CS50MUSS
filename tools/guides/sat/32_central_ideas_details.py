@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 Digital SAT оқулығы · Reading & Writing · Information and Ideas · Central Ideas and Details. Авторлық мазмұн.
 def _f(x):
     if isinstance(x, str):
@@ -167,5 +167,5 @@ LESSON = _f({
     ],
     "lab": {"href": "central-ideas.html", "title": "Central Ideas зертханасы"},
     "sources": ["Барлық мәтіндер, зерттеушілер мен зерттеулер ойдан құрастырылған (hypothetical).",
-                "Сабақ AO17 үшін жаңадан жазылған (авторы: Sagid Mustafa). College Board материалдары көшірілмеген; AO17 College Board-пен байланысты емес."],
+                "Сабақ AO17 үшін жаңадан жазылған (авторлары: AO17 командасы). College Board материалдары көшірілмеген; AO17 College Board-пен байланысты емес."],
 })

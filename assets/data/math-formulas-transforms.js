@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Fourier & Laplace Transforms пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Fourier & Laplace Transforms пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.transforms = [
  {"id": "transforms-1-1", "name": "Фурье коэффициенттері", "tex": "a_n=\\frac1\\pi\\int_{-\\pi}^{\\pi}f(x)\\cos nx\\,dx,\\qquad b_n=\\frac1\\pi\\int_{-\\pi}^{\\pi}f(x)\\sin nx\\,dx", "cond": "", "note": "$2\\pi$ период; $\\frac{a_0}{2}$ - орташа мән.", "tags": ["Fourier & Laplace Transforms", "Фурье қатарлары"], "lesson": 1, "anchor": "f-1"},

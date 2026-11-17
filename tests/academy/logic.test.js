@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // AO17 логика қозғалтқышының тесттері: node tests/academy/logic.test.js
 // Бекітілген мысалдар + қасиетке негізделген тесттер (кездейсоқ өрнектер, белгілі заңдар).
 const L = require("../../assets/js/academy-logic.js");

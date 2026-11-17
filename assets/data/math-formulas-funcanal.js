@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Functional Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Functional Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.funcanal = [
  {"id": "funcanal-1-1", "name": "Норма аксиомалары", "tex": "\\|x\\|=0\\iff x=0,\\quad\\|\\lambda x\\|=|\\lambda|\\|x\\|,\\quad\\|x+y\\|\\le\\|x\\|+\\|y\\|", "cond": "", "note": "Метрика: $d(x,y)=\\|x-y\\|$.", "tags": ["Functional Analysis", "Нормаланған және Банах кеңістіктері"], "lesson": 1, "anchor": "f-1"},

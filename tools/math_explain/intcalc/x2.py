@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Integral Calculus · 2-сабақ: анықталған интеграл және Риман қосындылары (tools/math_explain.py)
 from math import pi
 from math_explain import S

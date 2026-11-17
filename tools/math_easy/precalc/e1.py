@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Precalculus · 1-сабақтың жеңіл қабаты (tools/math_easy_inject.py, docs/MATH-COURSE-GUIDE.md §4.3)
 
 EASY = dict(

@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Discrete Mathematics пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Discrete Mathematics пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.discrete = [
  {"id": "discrete-1-1", "name": "Импликация", "tex": "p\\to q\\ \\equiv\\ \\neg p\\lor q\\ \\equiv\\ \\neg q\\to\\neg p", "cond": "", "note": "Кері пікір $q\\to p$ және қарама-қарсы $\\neg p\\to\\neg q$ - бастапқысымен тепе-тең күшті емес (бірақ өзара тепе-тең күшті).", "tags": ["Discrete Mathematics", "Логика және жиындар"], "lesson": 1, "anchor": "f-1"},

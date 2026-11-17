@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
 # Harvard CS50 материалдары (олар осы файлда сақталмайды) CC BY-NC-SA 4.0 бойынша; үшінші тарап компоненттері өз лицензияларымен.
 """AO17 - сайтты құрастыру скрипті.
 
@@ -27,8 +27,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import math_plan  # noqa: E402  («Математика» курсының жалғыз жоспары: tools/math_plan.py)
-import math_pedagogy  # noqa: E402  (математика: сабақ ұзақтығы, алғышарттар, оқу жолы, емтихан банкі)
+import math_pedagogy  # noqa: E402
+import team_build  # noqa: E402  («Команда»: team.html, team/*.html, басты беттің 8-сахнасы - licensing/team.json-нан)  (математика: сабақ ұзақтығы, алғышарттар, оқу жолы, емтихан банкі)
 SITE_URL = "https://mustafa7677.github.io/CS50MUSS/"
+TEAM = json.loads((ROOT / "licensing" / "team.json").read_text(encoding="utf-8"))   # авторлар: жалғыз дерек көзі
+TEAM_NAME = TEAM["name"]
+TEAM_NAMES = ", ".join(m["name"] for m in TEAM["members"])
+TEAM_COPY = f"© {TEAM['year']} {TEAM_NAME} ({TEAM_NAMES}). All Rights Reserved."
+TEAM_PERSONS = [{"@type": "Person", "name": m["name"], "jobTitle": m["role"]} for m in TEAM["members"]]
+TEAM_ORG = {"@type": "Organization", "name": TEAM_NAME, "member": TEAM_PERSONS}
 ORDER = [f"week-{i}" for i in range(8)] + ["ai"] + [f"week-{i}" for i in range(8, 11)]
 
 # Қосымша курстар: әрқайсысы өз қалтасында (<код>/index.html, <код>/lectures/week-N.html, <код>/data/lectures.js)
@@ -38,7 +45,7 @@ COURSES = {
     "ai": {"short": "CS50 AI", "color": "#c42a68", "order": [f"week-{i}" for i in range(7)]},
     "web": {"short": "CS50 Web", "color": "#d4580c", "order": [f"week-{i}" for i in range(9)]},
 }
-# Дербес авторлық курстар (Sagid Mustafa): Harvard аудармасы ЕМЕС, лицензиясы «B» (All Rights Reserved).
+# Дербес авторлық курстар (AO17 командасы): Harvard аудармасы ЕМЕС, лицензиясы «B» (All Rights Reserved).
 # COURSES тізімі (Harvard аудармалары) лицензия мен «45 лекция» сандары үшін өзгермейді; барлық цикл ALL_COURSES арқылы.
 OWN_COURSES = {
     "cpp": {"short": "C++", "color": "#4f46e5", "order": [f"week-{i}" for i in range(8)]},
@@ -347,14 +354,14 @@ HARVARD_URL = "https://cs50.harvard.edu/"
 
 # Беттің лицензиялық түрі (licensing/components.json және copyright.html-мен келісілген):
 #   A - Harvard CS50 материалының аудармасы/бейімдеуі (мәтін: CC BY-NC-SA 4.0; бағдарлама коды мен дизайн: All Rights Reserved)
-#   B - Sagid Mustafa-ның дербес әзірлемесі (All Rights Reserved)
+#   B - AO17 командасының дербес әзірлемесі (All Rights Reserved)
 #   M - аралас бет (интерфейс - B, Harvard бейімдеулері мен тексерілетін материал - A/R)
 B_PAGES = {"detective.html", "projects.html", "flask.html", "alash.html", "viz.html", "playground.html", "games.html", "profile.html",
-           "teacher.html", "login.html", "admin.html", "student.html", "certificate.html", "404.html", "copyright.html", "partners.html", "metrics.html", "posters.html"}
+           "teacher.html", "login.html", "admin.html", "student.html", "certificate.html", "404.html", "copyright.html", "partners.html", "metrics.html", "posters.html", "team.html"}
 
 
 def license_kind(rel):
-    if rel.startswith("academy/"):
+    if rel.startswith(("academy/", "team/")):
         return "B"   # AO17 CS Universe - толық авторлық мазмұн (tools/academy/)
     if re.match(rf"({OWN_RE})/", rel):
         return "B"
@@ -363,15 +370,16 @@ def license_kind(rel):
     return "B" if rel in B_PAGES else "M"
 
 
+
 def license_meta(kind, prefix):
     if kind == "A":
         copy = ("Harvard CS50 материалының қазақша аудармасы/бейімдеуі: CC BY-NC-SA 4.0 (түпнұсқа: Harvard CS50, cs50.harvard.edu; аудармашы: Sagid Mustafa). "
-                "Бағдарламалық компоненттер мен дизайн: © 2026 Sagid Mustafa, All Rights Reserved.")
+                f"Бағдарламалық компоненттер мен дизайн: {TEAM_COPY}")
         lic = CC_URL
     elif kind == "B":
-        copy, lic = "© 2026 Sagid Mustafa. All Rights Reserved.", f"{prefix}copyright.html"
+        copy, lic = TEAM_COPY, f"{prefix}copyright.html"
     else:
-        copy = ("© 2026 Sagid Mustafa (бағдарлама, дизайн, авторлық материалдар): All Rights Reserved. "
+        copy = (f"{TEAM_COPY} (бағдарлама, дизайн, авторлық материалдар). "
                 "Harvard CS50 материалдарының қазақша бейімдеулері: CC BY-NC-SA 4.0. Қараңыз: Авторлық құқық және лицензиялар.")
         lic = f"{prefix}copyright.html"
     return copy, lic
@@ -379,22 +387,21 @@ def license_meta(kind, prefix):
 
 def license_ld(kind, title, url):
     base = {"@context": "https://schema.org", "@type": "LearningResource", "name": title, "url": url, "inLanguage": "kk",
-            "author": {"@type": "Person", "name": "Sagid Mustafa"}, "isAccessibleForFree": True}
+            "author": TEAM_PERSONS, "isAccessibleForFree": True}
     if kind == "A":
         base.update({"license": CC_URL, "isBasedOn": HARVARD_URL, "translator": {"@type": "Person", "name": "Sagid Mustafa"},
                      "copyrightNotice": "Түпнұсқа: Harvard CS50 (David J. Malan және CS50 командасы), CC BY-NC-SA 4.0. Қазақша аударма: Sagid Mustafa. "
-                                        "Бағдарламалық компоненттер мен дизайн: © 2026 Sagid Mustafa, All Rights Reserved."})
+                                        f"Бағдарламалық компоненттер мен дизайн: {TEAM_COPY}"})
     elif kind == "B":
-        base.update({"license": SITE_URL + "copyright.html", "copyrightHolder": {"@type": "Person", "name": "Sagid Mustafa"}, "copyrightYear": 2026,
-                     "copyrightNotice": "© 2026 Sagid Mustafa. All Rights Reserved."})
+        base.update({"license": SITE_URL + "copyright.html", "copyrightHolder": TEAM_ORG, "copyrightYear": TEAM["year"], "copyrightNotice": TEAM_COPY})
     else:
-        base.update({"license": SITE_URL + "copyright.html", "isBasedOn": HARVARD_URL, "copyrightHolder": {"@type": "Person", "name": "Sagid Mustafa"},
-                     "copyrightYear": 2026, "copyrightNotice": "© 2026 Sagid Mustafa (бағдарлама, дизайн, авторлық материалдар). Harvard CS50 бейімдеулері: CC BY-NC-SA 4.0."})
+        base.update({"license": SITE_URL + "copyright.html", "isBasedOn": HARVARD_URL, "copyrightHolder": TEAM_ORG,
+                     "copyrightYear": TEAM["year"], "copyrightNotice": f"{TEAM_COPY} (бағдарлама, дизайн, авторлық материалдар). Harvard CS50 бейімдеулері: CC BY-NC-SA 4.0."})
     return json.dumps(base, ensure_ascii=False, separators=(",", ":"))
 
 
 ORG_LD = {"@type": "Organization", "name": "AO17", "url": SITE_URL, "logo": SITE_URL + "assets/img/icon-192.png",
-          "founder": {"@type": "Person", "name": "Sagid Mustafa"}, "sameAs": ["https://github.com/Mustafa7677/CS50MUSS"]}
+          "founder": TEAM_PERSONS, "sameAs": ["https://github.com/Mustafa7677/CS50MUSS"]}
 
 
 def extra_ld(rel, title, desc, url):
@@ -504,10 +511,10 @@ def footer_block(p):
         + "      " + col("Академиялар", [("academy/index.html", "CS Universe"), ("programming.html", "Бағдарламалау"), ("en/", "English Academy"), ("en/skills.html", "Ағылшын: дағдылар"), ("math/", "Математика"), ("academy/ielts/index.html", "IELTS"), ("academy/sat/index.html", "Digital SAT"), ("academy/labs/index.html", "CS зертханалары"), ("academy/study.html", "Менің оқуым")])
         + col("Оқу", [("index.html#main", "Лекциялар"), ("courses.html", "Барлық курстар"), ("map.html", "Курс картасы"), ("cheatsheet.html", "Шпаргалка"), ("glossary.html", "Сөздік"), ("exam.html", "Қорытынды емтихан")])
         + col("Жаттығу", [("practice.html", "Жаттығулар"), ("playground.html", "Сынақ алаңы"), ("viz.html", "Визуализациялар"), ("flashcards.html", "Флэш-карточкалар"), ("games.html", "Ойындар"), ("debug.html", "Қатені тап"), ("detective.html", "SQL детектив"), ("flask.html", "Flask зертханасы"), ("projects.html", "Жобалар шеберханасы")])
-        + col("Жоба", [("about.html", "Курс туралы"), ("alash.html", "Алаш тұлғалары"), ("posters.html", "Афиша: постер мен фильм"), ("certificate.html", "Сертификат"), ("login.html", "Кіру: оқушы мен мұғалім"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің кабинетім"), ("partners.html", "Серіктестерге"), ("metrics.html", "Ашық метрикалар")])
+        + col("Жоба", [("about.html", "Курс туралы"), ("team.html", "Команда"), ("alash.html", "Алаш тұлғалары"), ("posters.html", "Афиша: постер мен фильм"), ("certificate.html", "Сертификат"), ("login.html", "Кіру: оқушы мен мұғалім"), ("teacher.html", "Мұғалім беті"), ("profile.html", "Менің кабинетім"), ("partners.html", "Серіктестерге"), ("metrics.html", "Ашық метрикалар")])
         + '\n      <div class="ft-legal">'
-        '<p class="ft-copy"><strong>© 2026 Sagid Mustafa.</strong> Барлық құқықтар қорғалған.</p>'
-        '<p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.</p>'
+        '<p class="ft-copy"><strong>© 2026 AO17 командасы.</strong> Барлық құқықтар қорғалған.</p>'
+        f'<p>AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: {TEAM_NAMES}. <a href="{p}team.html">Команда</a></p>'
         '<p>Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады. '
         'Қазақша аудармалардың авторы: Sagid Mustafa.</p>'
         '<p>AO17 — Harvard University-ден тәуелсіз жоба.</p>'
@@ -517,7 +524,7 @@ def footer_block(p):
         '<a href="https://cs50.harvard.edu/sql/" target="_blank" rel="noopener">SQL</a> · '
         '<a href="https://cs50.harvard.edu/ai/" target="_blank" rel="noopener">AI</a> · '
         '<a href="https://cs50.harvard.edu/web/" target="_blank" rel="noopener">Web</a></p>'
-        f'<p class="ft-own">Авторлық курстар (Sagid Mustafa): <a href="{p}cpp/">C++</a> · <a href="{p}java/">Java</a> · <a href="{p}en/">Ағылшын тілі</a> · <a href="{p}math/">Математика</a></p>'
+        f'<p class="ft-own">Авторлық курстар (AO17 командасы): <a href="{p}cpp/">C++</a> · <a href="{p}java/">Java</a> · <a href="{p}en/">Ағылшын тілі</a> · <a href="{p}math/">Математика</a></p>'
         f'<p class="ft-links"><a href="{p}copyright.html">Авторлық құқық және лицензиялар</a> · '
         '<a href="https://github.com/Mustafa7677/CS50MUSS" target="_blank" rel="noopener">GitHub</a> · '
         '<a href="#" class="fb-open">💬 Пікір қалдыру</a></p></div>\n'
@@ -536,7 +543,7 @@ HEAD_STYLE = {
     "exam.html": ("#c99500", ""), "detective.html": ("#b5651d", ""), "viz.html": ("#e0457b", ""),
     "flashcards.html": ("#f08a24", ""), "debug.html": ("#e04545", ""), "glossary.html": ("#2b7bd6", ""),
     "cheatsheet.html": ("#2fa36b", ""), "map.html": ("#8b5cf6", ""), "teacher.html": ("#f08a24", ""), "login.html": ("#0a4c7a", ""), "admin.html": ("#0a4c7a", ""), "student.html": ("#0a4c7a", ""), "profile.html": ("#0f9fb5", ""), "games.html": ("#7c3aed", ""), "copyright.html": ("#475569", ""), "alash.html": ("#c99500", ""),
-    "partners.html": ("#0a4c7a", ""), "metrics.html": ("#0086b3", ""), "posters.html": ("#8a6634", ""),
+    "partners.html": ("#0a4c7a", ""), "metrics.html": ("#0086b3", ""), "posters.html": ("#8a6634", ""), "team.html": ("#7a2f2f", ""),
 }
 
 
@@ -923,7 +930,7 @@ def write_inventory():
         vals = [d["lect"], d["ex"], d["tasks"], d["quiz"], d["terms"]]
         for i, v in enumerate(vals):
             tot["own" if own else "cc"][i] += v
-        kind = "Авторлық, © Sagid Mustafa, All Rights Reserved" if own else "Harvard CS50 аудармасы, CC BY-NC-SA 4.0"
+        kind = "Авторлық, © AO17 командасы, All Rights Reserved" if own else "Harvard CS50 аудармасы, CC BY-NC-SA 4.0"
         rows.append(f"| {INV_NAMES[code]} | {acad_name[acad[code]]} | {kind} | " + " | ".join(str(v) for v in vals) + " |")
     t = lambda k: " | ".join(f"**{v}**" for v in tot[k])
     md = f"""# AO17: мазмұн тізімдемесі
@@ -1049,15 +1056,18 @@ def main():
         academy_pages += sorted(f.relative_to(ROOT).as_posix() for f in (ROOT / "academy" / sub).glob("*.html"))
     for rel in academy_pages:
         process_page(ROOT / rel, "../" * rel.count("/"), "courses")
+    TEAM_PAGES = team_build.build()
     for page, active in [("index.html", "index"), ("about.html", "about"),
                          ("glossary.html", "glossary"), ("certificate.html", ""),
                          ("playground.html", "playground"), ("practice.html", "practice"),
                          ("flashcards.html", "practice"), ("viz.html", "practice"),
                          ("teacher.html", ""), ("login.html", "profile"), ("admin.html", "profile"), ("student.html", "profile"), ("404.html", ""), ("cheatsheet.html", "practice"),
                          ("debug.html", "practice"), ("map.html", "practice"),
-                         ("detective.html", "practice"), ("flask.html", "practice"), ("projects.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("games.html", "games"), ("copyright.html", "about"), ("alash.html", "about"), ("courses.html", "courses"), ("programming.html", "courses"), ("partners.html", "about"), ("metrics.html", "about"), ("posters.html", "courses")]:
+                         ("detective.html", "practice"), ("flask.html", "practice"), ("projects.html", "practice"), ("exam.html", "practice"), ("profile.html", "profile"), ("games.html", "games"), ("copyright.html", "about"), ("team.html", "about"), ("alash.html", "about"), ("courses.html", "courses"), ("programming.html", "courses"), ("partners.html", "about"), ("metrics.html", "about"), ("posters.html", "courses")]:
         if (ROOT / page).exists():
             process_page(ROOT / page, "", active)
+    for tp in TEAM_PAGES:
+        process_page(ROOT / tp, "../", "about")
     # Сандар: бір дерекқөз (STATS). Циклдағы нақты есеппен сәйкестігін тексереміз (айырмашылық - build қатесі).
     assert (len(quiz), n, len(lectures) + sum(1 for c, cc in ALL_COURSES.items() for n_ in cc["order"] if is_ready(c, n_))) == \
         (STATS["quiz"], STATS["terms"], STATS["lect"]), "compute_stats() цикл нәтижесімен сәйкес емес"
@@ -1076,7 +1086,7 @@ def main():
     (ROOT / "assets/data/quiz.js").write_text(
         "window.CS50KZ_QUIZ = " + json.dumps(quiz, ensure_ascii=False, separators=(",", ":")) + ";\n", encoding="utf-8")
     pages = ["", "practice.html", "playground.html", "viz.html", "flashcards.html", "glossary.html",
-             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "projects.html", "exam.html", "profile.html", "games.html", "copyright.html", "alash.html", "courses.html", "programming.html", "partners.html", "metrics.html", "posters.html"] + [l["url"] for l in lectures] + course_pages + academy_pages
+             "certificate.html", "teacher.html", "about.html", "cheatsheet.html", "debug.html", "map.html", "detective.html", "flask.html", "projects.html", "exam.html", "profile.html", "games.html", "copyright.html", "alash.html", "courses.html", "programming.html", "partners.html", "metrics.html", "posters.html", "team.html"] + TEAM_PAGES + [l["url"] for l in lectures] + course_pages + academy_pages
     (ROOT / "sitemap.xml").write_text(
         '<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
         "".join(f"  <url><loc>{SITE_URL}{u}</loc></url>\n" for u in pages) + "</urlset>\n", encoding="utf-8")

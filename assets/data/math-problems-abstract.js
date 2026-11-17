@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Abstract Algebra пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Abstract Algebra пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.abstract = [
  {"id": "abstract-p1", "lvl": "medium", "params": {"k": {"int": [1, 9]}}, "type": "num", "q": "$a*b=a+b+ab$. $#{k}$-нің кері элементі ($a*b$ тобында)?", "a": "-k/(1+k)", "v": "Rational(-int(k), 1 + int(k))", "hint": "$#{k}+x+#{k}x=0$.", "sol": {"steps": ["$x(1+#{k})=-#{k}$."], "ans": "$-\\frac{#{k}}{#{k+1}}$"}},

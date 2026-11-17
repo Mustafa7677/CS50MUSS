@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // deno test supabase/functions/ao-content/handler_test.ts
 import { handle, validPath, type Deps } from "./handler.ts";
 

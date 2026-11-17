@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // «АЛАШ 1917» қозғалыс жүйесі: беттер арасындағы өту грамматикасы (Level B), микро-интеракциялар (Level C),
 // Алаш мұрағаты (Level A), Дизайн 5.0 токендері. Анимация бар-жоғы емес, оның дұрыс маршрутқа түсетіні тексеріледі.
 const { test, expect } = require("@playwright/test");

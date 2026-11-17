@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Abstract Algebra пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Abstract Algebra пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.abstract = [
  {"id": "abstract-t1", "kz": "бинарлық амал", "en": "binary operation", "def": "$G$ жиынындағы бинарлық амал (binary operation) - бейнелеу $G\\times G\\to G$, $(a,b)\\mapsto ab$. $(G,\\cdot)$ - топ (group), егер: (G1) ассоциативтілік (associativity) $(ab)c=a(bc)$; (G2) бірлік элемент (identity element) $e$ бар: $ea=ae=a$; (G3) әр $a$-ның к…", "lesson": 1},

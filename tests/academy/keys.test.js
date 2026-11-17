@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // AO17: тапсырма кілттерін екі тәуелсіз іске асырумен салыстыру (Python plogic ⇄ JS academy-logic).
 // node tests/academy/keys.test.js
 const { execFileSync } = require("child_process");

@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Сызықтық алгебра» пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1 (формулалар). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Сызықтық алгебра» пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1 (формулалар). */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.linalg = [
   {"id": "la-vec-add", "name": "Векторларды қосу және санға көбейту", "tex": "(\\mathbf{u}+\\mathbf{v})_i=u_i+v_i,\\quad (k\\mathbf{u})_i=ku_i", "cond": "\\text{бірдей өлшем}", "note": "Қосу мен санға көбейту координата-координатасымен орындалады.", "tags": ["вектор", "қосу"], "lesson": 1, "anchor": "def-3"},

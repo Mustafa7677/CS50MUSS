@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Fourier & Laplace Transforms пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Fourier & Laplace Transforms пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.transforms = [
  {"id": "transforms-p1", "lvl": "medium", "params": {"n": {"int": [1, 12]}, "h": {"int": [1, 5]}}, "type": "num", "q": "$f=-#{h}$ ($-\\pi&lt;x&lt;0$), $f=#{h}$ ($0&lt;x&lt;\\pi$). $b_{#{n}}=?$ ($0{,}001$ дәлдік)", "a": "2*h*(1-(-1)^n)/(pi*n)", "v": "2*h*(1-(-1)**n)/(pi*n)", "tol": 0.001, "hint": "$b_n=\\frac{2h(1-(-1)^n)}{\\pi n}$.", "sol": {"steps": ["$\\frac{2\\cdot#{h}(1-(-1)^{#{n}})}{\\pi\\cdot#{n}}$."], "ans": "$\\approx#{round(1000*2*h*(1-(-1)^n)/(pi*n))/1000}$"}},

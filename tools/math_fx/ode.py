@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Дифференциалдық теңдеулер (week-55…61): әр формулаға жеке түсіндірме. Құрылымы tools/math_fx/arith.py-дағыдай.
 # check: шешімді теңдеуге қойып, сандық туындымен тексереміз.
 

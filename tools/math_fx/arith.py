@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Арифметика (week-154…161): әр формулаға жеке түсіндірме - қарапайым тілмен, бірден мысал, өмірден, неге жұмыс істейді.
 # Құрылым: FX[week][формула нөмірі] = dict(plain, terms, now=dict(q, steps, ans, res), life, why, check)
 # check - мысалдағы есептің дұрыстығын Python-мен тексеретін өрнек (tools/math_fx.py іске қосады).

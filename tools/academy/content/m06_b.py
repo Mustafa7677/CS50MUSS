@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 CS Universe · Level I · m06 Python Foundations · 6-10 сабақтар. Авторлық мазмұн (AO17 үшін жаңадан жазылған).
 from m06_a import META, REFS
 

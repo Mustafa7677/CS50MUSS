@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Сызықтық алгебра» пәні. Формат: §9.2 (терминдер). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Сызықтық алгебра» пәні. Формат: §9.2 (терминдер). */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.linalg = [
   {"id": "la-vector", "kz": "вектор", "en": "vector", "def": "Бағыты мен шамасы бар шама; координаталық түрде - сандардың реттелген тізімі.", "lesson": 1},

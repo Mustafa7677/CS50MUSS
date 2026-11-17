@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // Дербес курстардың интерактивті визуализаторлары (assets/js/own-viz.js): қадамдау, нәтиже, пернетақта, мобиль, қателіксіз консоль.
 const { test, expect } = require("@playwright/test");
 const { blockFonts, collectErrors } = require("../support/helpers");

@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 CS Universe: модуль эмблемалары - әр модульдің ұғымын көрсететін сызба (SVG, viewBox 0 0 160 120).
 # Сызықтар бет ашылғанда бір рет «сызылады» (stroke-dashoffset, assets/css/academy.css); қозғалыс азайтылса - бірден көрінеді.
 # Түстер: currentColor (модуль реңі) және var(--ac-gold) (екпін). Тек геометрия - мәтін, сурет, шрифт жоқ.

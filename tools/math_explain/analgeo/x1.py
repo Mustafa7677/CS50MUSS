@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Analytic Geometry · 1-сабақ: жазықтықтағы координаталар (tools/math_explain.py)
 from math import pi, sqrt, cos, sin
 from math_explain import S

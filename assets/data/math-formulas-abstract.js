@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Abstract Algebra пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Abstract Algebra пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1. */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.abstract = [
  {"id": "abstract-1-1", "name": "Топ аксиомалары", "tex": "(ab)c=a(bc),\\quad ea=ae=a,\\quad aa^{-1}=a^{-1}a=e", "cond": "", "note": "Тұйықтық амалдың анықтамасында.", "tags": ["Abstract Algebra", "Топтар және олардың негізгі қасиеттері"], "lesson": 1, "anchor": "f-1"},

@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # AO17 IELTS оқулығы · Writing · Төрт ашық критерий. Авторлық мазмұн. [[...]] - ағылшынша үлгі (төменде span-ға айналады).
 import re as _re
 

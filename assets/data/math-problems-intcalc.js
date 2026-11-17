@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Интегралдық есептеу» пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3 (параметрлік есептер банкі). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Интегралдық есептеу» пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3 (параметрлік есептер банкі). */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.intcalc = [
   {"id":"ic-poly-1","lvl":"easy","type":"num","params":{"c":{"int":[1,4]},"b":{"int":[-5,5],"nz":true},"m":{"int":[1,4]},"ak":{"calc":"3*c"}},"q":"$f(x)=#{ak}x^2#{+b}$, $F(0)=0$ болсын. $F(#{m})$ мәнін табыңыз.","a":"c*m^3+b*m","v":"integrate(3*c*t**2+b,(t,0,m))","hint":"Әр мүшені интегралдаңыз.","sol":{"steps":["$F(x)=#{c}x^3#{+b}x$.","$F(#{m})=#{c}\\cdot#{m}^3#{+b}\\cdot#{m}$."],"ans":"$F(#{m})=#{c*m^3+b*m}$"}},

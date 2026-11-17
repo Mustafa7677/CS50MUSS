@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Mathematical Statistics пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Mathematical Statistics пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.stats = [
  {"id": "stats-p1", "lvl": "medium", "params": {"a": {"int": [1, 9]}, "b": {"int": [10, 19]}, "c": {"int": [20, 29]}, "d": {"int": [30, 39]}}, "type": "num", "q": "Таңдама: $#{a},\\ #{b},\\ #{c},\\ #{d}$. Таңдама орта мәні?", "a": "(a+b+c+d)/4", "v": "Rational(a+b+c+d,4)", "hint": "Қосындыны 4-ке бөліңіз.", "sol": {"steps": ["$\\frac{#{a}+#{b}+#{c}+#{d}}{4}=\\frac{#{a+b+c+d}}{4}$."], "ans": "$#{(a+b+c+d)/4}$"}},

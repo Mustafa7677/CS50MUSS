@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Mathematical Optimization пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Mathematical Optimization пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.optim = [
  {"id": "optim-t1", "kz": "оңтайландыру есебі", "en": "optimization problem", "def": "$\\min f(\\mathbf x)$, $\\mathbf x\\in S\\subseteq\\mathbb R^n$ - оңтайландыру есебі (optimization problem). $f$ - мақсат функциясы (objective function), $S$ - жарамды облыс (feasible set) (әдетте шектеулер (constraints) $g_i(\\mathbf x)\\le0$, $h_j(\\mathbf x)=0$ а…", "lesson": 1},

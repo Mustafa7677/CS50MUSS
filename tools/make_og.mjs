@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. Harvard CS50 материалдары мен үшінші тарап компоненттері өз лицензияларымен қалады. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. Harvard CS50 материалдары мен үшінші тарап компоненттері өз лицензияларымен қалады. */
 // Әр лекцияға жеке Open Graph суреті (1200×630 JPEG): әлеуметтік желіде бөліскенде көрінеді.
 // Іске қосу: cd tests && node ../tools/make_og.mjs   (тек cpp/java мұқабалары: COVERS_ONLY=1 node ../tools/make_og.mjs)
 // (ескі жол:)   (Playwright tests/node_modules ішінде)

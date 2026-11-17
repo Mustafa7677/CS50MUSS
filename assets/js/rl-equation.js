@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
    «Теңдеу таразысы» (Reality Engine): оқушы теңдеуді таразы ретінде қолмен шешеді.
    Модель - assets/js/rl-mathexpr.js (AO17Math), мазмұн - assets/data/rl-equation.js (RL_EQUATION), қаңқа - ao-reality.js.
    Сахна: таразы SVG-і. Заңды амал (екі жаққа бірдей) теңдікті сақтайды; бір жаққа ғана жасалған амал таразыны аударады. */

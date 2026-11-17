@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
 /* CS Universe: екілік іздеу зертханасы (academy/labs/binary-search.html).
    Алгоритм: lo = 0, hi = n − 1; lo ≤ hi болғанша mid = (lo + hi) // 2; a[mid] = t → табылды; a[mid] < t → lo = mid + 1;
    әйтпесе hi = mid − 1. «Бір салыстыру» = a[mid]-ті мақсатпен бір рет салыстыру (нәтижесі: тең, кіші не үлкен).

@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17: n айнымалысы бар арифметикалық өрнектердің Python-дағы ТӘУЕЛСІЗ іске асырылуы (fractions.Fraction).
 JS нұсқасы: assets/js/academy-arith.js. Грамматика бірдей: + - * / % ^, унарлы минус, жасырын көбейту (2n, n(n+1))."""
 import re

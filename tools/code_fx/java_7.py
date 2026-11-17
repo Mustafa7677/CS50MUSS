@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Java 7-апта: ағындар, синхрондау, JUnit, қорытынды жоба - код мысалдарының жолма-жол талдауы.
 
 CX = {

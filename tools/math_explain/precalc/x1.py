@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Precalculus · 1-сабақ: функция ұғымы мен графигі (tools/math_explain.py)
 from math_explain import S
 from math_fig import Plot, fn, par, pt, vline

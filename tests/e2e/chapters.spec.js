@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // Тараулар: сабақ кино тарауы сияқты - тақтада «Тарау 03», ашылғанда тарау картасы (сеансқа бір рет), курс карточкаларында нөмір.
 const { test, expect } = require("@playwright/test");
 const { blockFonts, collectErrors } = require("../support/helpers");

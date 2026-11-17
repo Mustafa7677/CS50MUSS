@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Multivariable Calculus» пәні. Формат: §9.2 (терминдер). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Multivariable Calculus» пәні. Формат: §9.2 (терминдер). */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.multivar = [
   {"id":"mv-fn2","kz":"екі айнымалы функция","en":"function of two variables","def":"Жазықтықтағы әр (x, y) жұбына бір ғана сан сәйкес қоятын ереже.","lesson":1},

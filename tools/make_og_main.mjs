@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
 // Сайттың негізгі бөлісу суреті (assets/img/og.jpg, 1200×630): AO17 бренді және index.html-дегі нақты сандар.
 // Үлгі: tools/og-main.html (NUM_LECT, NUM_TASKS, NUM_QUIZ). Іске қосу: cd tests && node ../tools/make_og_main.mjs
 // (build.py-дан кейін, сандар жаңарғанда)

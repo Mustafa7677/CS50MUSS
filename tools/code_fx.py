@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """C++ және Java лекциялары: код мысалының ДӘЛ АСТЫНА жеке талдау енгізеді.
 
 Әр код блогына (лекциядағы реті бойынша нөмір, 0-ден) tools/code_fx/<тіл>_<апта>.py ішіндегі

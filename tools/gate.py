@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17 жабық платформа: жариялау нұсқасын (dist/) жасау және жабық мазмұнды Storage-қа жүктеу.
 
     python3 tools/gate.py build            # dist/ (жария) + dist-private/ (жабық) + dist-private/catalog.json

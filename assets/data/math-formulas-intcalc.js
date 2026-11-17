@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Интегралдық есептеу» пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1 (формулалар). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Интегралдық есептеу» пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1 (формулалар). */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.intcalc = [
   {"id":"ic-antiderivative","name":"Алғашқы функция мен интегралдың байланысы","tex":"\\left(\\int f(x)\\,dx\\right)'=f(x),\\quad \\int F'(x)\\,dx=F(x)+C","note":"Дифференциалдау мен интегралдау бір-бірін жояды; тұрақты C міндетті.","tags":["алғашқы функция","анықталмаған интеграл"],"lesson":1,"anchor":"f-1"},

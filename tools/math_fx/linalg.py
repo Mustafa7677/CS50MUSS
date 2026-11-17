@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Сызықтық алгебра (week-7…14): әр формулаға жеке түсіндірме. Құрылымы tools/math_fx/arith.py-дағыдай.
 # check ішінде mm (матрица көбейту) мен det (анықтауыш) бар - tools/math_fx.py.
 

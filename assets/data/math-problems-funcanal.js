@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Functional Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Functional Analysis пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.funcanal = [
  {"id": "funcanal-p1", "lvl": "medium", "params": {"a": {"int": [-9, 9]}, "b": {"int": [-9, 9]}, "c": {"int": [-9, 9]}}, "type": "num", "q": "$\\|(#{a},#{b},#{c})\\|_\\infty+\\|(#{a},#{b},#{c})\\|_1=?$", "a": "max(abs(a), abs(b), abs(c)) + abs(a) + abs(b) + abs(c)", "v": "max(abs(int(a)), abs(int(b)), abs(int(c))) + abs(int(a)) + abs(int(b)) + abs(int(c))", "hint": "$\\max$ және модульдер қосындысы.", "sol": {"steps": ["$#{max(abs(a), abs(b), abs(c))}+#{abs(a)+abs(b)+abs(c)}$."], "ans": "$#{max(abs(a), abs(b), abs(c)) + abs(a) + abs(b) + abs(c)}$"}},

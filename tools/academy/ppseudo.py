@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 """AO17 оқу псевдокодының Python-дағы ТӘУЕЛСІЗ интерпретаторы (JS: assets/js/academy-pseudo.js).
 Мақсаты - trace/count тапсырмаларының кілттерін JS-тен бөлек есептеу. Семантика бірдей:
 div - төменге дөңгелектеу, mod - теріс емес қалдық, for/while жолы «итерация саны + 1» рет есептеледі."""

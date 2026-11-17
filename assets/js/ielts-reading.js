@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
 /* IELTS Reading Analyzer: мәтін (сол жақ) + сұрақтар (оң жақ), белгілеу, абзац ескертулері, Абзац картасы, сөздік,
    TRUE/FALSE/NOT GIVEN түсіндіргіші, Matching Headings, Summary Completion және дәлел-сөйлемді көрсететін жауап шолуы.
    Нәтижелер AO17Tutor-ға: ielts.reading.tfng, ielts.reading.tfng.concept, ielts.reading.headings, ielts.reading.summary, ielts.reading.vocab. */

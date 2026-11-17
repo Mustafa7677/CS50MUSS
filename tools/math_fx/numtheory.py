@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Сандар теориясы (week-125…130): әр формулаға жеке түсіндірме. Құрылымы tools/math_fx/arith.py-дағыдай.
 # check: Python-ның бүтін арифметикасымен (pow, math.gcd) тікелей есептеп, толық іріктеумен тексереміз.
 

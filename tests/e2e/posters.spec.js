@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // Афиша (posters.html): тоғыз курс постері, жүктеу сілтемесі, фильмдер; курс беттерін бөліскенде курс постерінің баннері.
 const { test, expect } = require("@playwright/test");
 const fs = require("fs");

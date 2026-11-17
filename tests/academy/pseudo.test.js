@@ -1,4 +1,4 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
+// © 2026 AO17 командасы. All Rights Reserved.
 // AO17 псевдокод интерпретаторының тесттері: node tests/academy/pseudo.test.js
 // Бекітілген нәтижелер + JS пен тәуелсіз Python интерпретаторын (tools/academy/ppseudo.py) бірдей бағдарламаларда салыстыру.
 const P = require("../../assets/js/academy-pseudo.js");

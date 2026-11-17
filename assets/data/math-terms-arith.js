@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Arithmetic пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Arithmetic пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.arith = [
  {"id": "arith-t1", "kz": "натурал сандар", "en": "natural numbers", "def": "Санағанда қолданатын сандар $1,2,3,4,\\dots$ - натурал сандар (natural numbers), олардың жиыны $\\mathbb N$. Натурал сандар шексіз: әр санға $1$ қоссақ, келесі сан шығады.", "lesson": 1},

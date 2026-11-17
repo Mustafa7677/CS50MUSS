@@ -1,5 +1,5 @@
-// © 2026 Sagid Mustafa. All Rights Reserved.
-// Лицензиялық бөліну тесттері: Harvard CS50 (A), Sagid Mustafa (B), аралас (M); footer, meta, JSON-LD, copyright беті.
+// © 2026 AO17 командасы. All Rights Reserved.
+// Лицензиялық бөліну тесттері: Harvard CS50 (A, аудармашы - Sagid Mustafa), AO17 командасы (B), аралас (M); footer, meta, JSON-LD, copyright беті.
 const { test, expect } = require("@playwright/test");
 const fs = require("fs");
 const path = require("path");
@@ -45,8 +45,8 @@ test("C++ және Java курстары (B): All Rights Reserved, CC BY-NC-SA �
     expect(s, f).not.toContain("creativecommons.org/licenses/by-nc-sa");
     expect(s, f).not.toContain('"isBasedOn"');
     expect(s, f).not.toContain('class="source-link"');
-    expect(s, f).toContain("© 2026 Sagid Mustafa.");
-    expect(s, f).toMatch(/class="translator-note"[^>]*>[^]*Sagid Mustafa-ның авторлық оқу материалы[^]*copyright\.html/);
+    expect(s, f).toContain("© 2026 AO17 командасы.");
+    expect(s, f).toMatch(/class="translator-note"[^>]*>[^]*AO17 командасының авторлық оқу материалы[^]*copyright\.html/);
     expect(s, f).not.toMatch(/Аударған: Sagid Mustafa/);
     const ld = JSON.parse(s.match(/<script type="application\/ld\+json">(\{.*?\})<\/script>/)[1]);
     expect(ld.license, f).toMatch(/copyright\.html$/);
@@ -58,7 +58,7 @@ test("C++ және Java курстары (B): All Rights Reserved, CC BY-NC-SA �
     expect(e, c).toBeTruthy();
     expect(e.cat).toBe("B");
     expect(e.paths).toEqual([`${c}/**`]);
-    expect(e.holder).toBe("Sagid Mustafa");
+    expect(e.holder).toBe("AO17 командасы");
     expect(e.license).toBe("ARR");
   }
 });
@@ -88,19 +88,19 @@ test("әр HTML бетінде талап етілген footer мәтіні ж�
   const pages = [...LECTURES, ...B_PAGES, ...M_PAGES, "python/index.html", "sql/index.html", "ai/index.html", "web/index.html", "cpp/index.html", "java/index.html", "404.html"];
   for (const f of pages) {
     const s = read(f);
-    expect(s, f).toContain("© 2026 Sagid Mustafa.");
+    expect(s, f).toContain("© 2026 AO17 командасы.");
     expect(s, f).toContain("Барлық құқықтар қорғалған.");
-    expect(s, f).toContain("AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары Sagid Mustafa-ға тиесілі.");
+    expect(s, f).toContain("AO17 платформасының тәуелсіз бағдарламалық жасақтамасы, дизайны және авторлық оқу материалдары командаға тиесілі: Tutkabayeva Gulzat, Toktybay Dastan, Sagid Mustafa, Magzhan Romanov, Kopenova Merey.");
     expect(s, f).toContain("Harvard CS50 курстарының бастапқы материалдары мен олардың қазақша бейімдеулері тиісті Creative Commons лицензиясының талаптарына сәйкес таратылады.");
     expect(s, f).toContain("Қазақша аудармалардың авторы: Sagid Mustafa.");
     expect(s, f).toContain("AO17 — Harvard University-ден тәуелсіз жоба.");
     expect(s, f).toMatch(/href="(\.\.\/)*copyright\.html">Авторлық құқық және лицензиялар<\/a>/);
     expect(s, f).toContain("https://cs50.harvard.edu/x/");
-    expect(s, f).not.toMatch(/Бұл - Sagid Mustafa-ның авторлық қазақша аудармасы/); // ескі «бәрі CC» тұжырымы жоқ
+    expect(s, f).not.toMatch(/Бұл - AO17 командасының авторлық қазақша аудармасы/); // ескі «бәрі CC» тұжырымы жоқ
   }
 });
 
-test("copyright.html: тақырып, санаттар кестесі, Harvard және Sagid Mustafa бөлімдері, тәуелсіздік ескертуі", async ({ page }) => {
+test("copyright.html: тақырып, санаттар кестесі, Harvard және AO17 командасы бөлімдері, тәуелсіздік ескертуі", async ({ page }) => {
   await blockFonts(page);
   await page.goto("copyright.html");
   await expect(page).toHaveTitle(/Авторлық құқық және лицензиялар/);
@@ -123,7 +123,7 @@ test("мобильде: copyright беті мен footer көлденең айн
     await page.goto(u);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1), u).toBe(true);
     await expect(page.locator(".ft-legal")).toBeVisible();
-    await expect(page.locator(".ft-legal .ft-copy")).toContainText("© 2026 Sagid Mustafa.");
+    await expect(page.locator(".ft-legal .ft-copy")).toContainText("© 2026 AO17 командасы.");
   }
   await ctx.close();
 });

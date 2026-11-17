@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Fourier & Laplace Transforms пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Fourier & Laplace Transforms пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.2. */
 window.CS50KZ_MATH_TERMS = window.CS50KZ_MATH_TERMS || {};
 window.CS50KZ_MATH_TERMS.transforms = [
  {"id": "transforms-t1", "kz": "Тригонометриялық қатар", "en": "trigonometric series", "def": "Тригонометриялық қатар (trigonometric series): $\\frac{a_0}2+\\sum_{n=1}^\\infty(a_n\\cos nx+b_n\\sin nx)$. $2\\pi$ периодты, $[-\\pi;\\pi]$-де интегралданатын $f$ үшін оның Фурье коэффициенттері (Fourier coefficients)…", "lesson": 1},

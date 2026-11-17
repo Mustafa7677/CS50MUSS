@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
+/* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md. */
 /* Digital SAT симуляторының сұрақ банкі - AO17 авторлық түпнұсқа сұрақтары (College Board сұрақтары емес).
    Құрылым: section (rw | math) → m1 (1-модуль, аралас), hard (2-модуль, қиын пул), easy (2-модуль, жеңіл пул).
    Сұрақ: id, domain, skill, diff (easy|medium|hard), passage? (R&W мәтіні; массив = абзацтар), table?, stem,

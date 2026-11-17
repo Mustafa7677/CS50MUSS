@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Precalculus · 5-сабақ: тригонометрия - бұрыш пен бірлік шеңбер (tools/math_explain.py)
 from math import cos, pi, sin, sqrt
 from math_explain import S

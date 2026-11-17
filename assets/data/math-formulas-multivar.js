@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, «Multivariable Calculus» пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1 (формулалар). */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, «Multivariable Calculus» пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.1 (формулалар). */
 window.CS50KZ_MATH_FORMULAS = window.CS50KZ_MATH_FORMULAS || {};
 window.CS50KZ_MATH_FORMULAS.multivar = [
   {"id":"mv-surfaces","name":"Негізгі беттердің теңдеулері","tex":"z=x^2+y^2,\\ z=x^2-y^2,\\ z=\\sqrt{x^2+y^2},\\ x^2+y^2+z^2=R^2","note":"Параболоид, ер тәрізді бет, конус және сфера: қималары мен деңгей сызықтарынан танылады.","tags":["бет","деңгей сызығы","сфера"],"lesson":1,"anchor":"f-1"},

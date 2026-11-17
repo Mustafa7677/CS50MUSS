@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Differential Calculus · 1-сабақ: шек ұғымы және анықтамасы - сызбамен әдістемелік түсіндіру (tools/math_explain.py)
 from math_explain import S
 from math_fig import Plot, fn, pt, vline, hline, band_x, band_y, seg

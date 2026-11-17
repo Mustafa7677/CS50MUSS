@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# © 2026 Sagid Mustafa. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
+# © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама (LICENSE-PROPRIETARY.md, COPYRIGHT.md).
 # Harvard CS50 материалдары (олар осы файлда сақталмайды) CC BY-NC-SA 4.0 бойынша; үшінші тарап компоненттері өз лицензияларымен.
 """Лицензиялық аудит: licensing/components.json реестрін git-тегі барлық файлмен салыстырады,
 COPYRIGHT.md мен licensing/LECTURE-AUDIT.md құрады.
@@ -17,7 +17,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 REG = json.loads((ROOT / "licensing/components.json").read_text(encoding="utf-8"))
 LIC = REG["licenses"]
-CAT_NAME = {"A1": "A1 · Harvard CS50 түпнұсқасы", "A2": "A2 · Harvard материалының аудармасы/бейімдеуі", "B": "B · Sagid Mustafa-ның дербес әзірлемесі",
+CAT_NAME = {"A1": "A1 · Harvard CS50 түпнұсқасы", "A2": "A2 · Harvard материалының аудармасы/бейімдеуі", "B": "B · AO17 командасының дербес әзірлемесі",
             "C": "C · Үшінші тарап", "R": "R · Тексеруді қажет етеді (лицензия тағайындалмаған)"}
 STATUS = {"verified": "расталған", "declared": "иесі мәлімдеген", "review": "тексеру керек"}
 COURSES = {"lectures": ("CS50x", "https://cs50.harvard.edu/x/"), "python": ("CS50P", "https://cs50.harvard.edu/python/"), "sql": ("CS50 SQL", "https://cs50.harvard.edu/sql/"),
@@ -111,7 +111,7 @@ def write_copyright(owner, rows):
     L.append("# COPYRIGHT.md: авторлық құқықтар тізілімі\n")
     L.append("Бұл файл `tools/licence_audit.py` арқылы `licensing/components.json` реестрінен автоматты құрылады. Қолмен өңдемеңіз: реестрді өзгертіп, құралды қайта іске қосыңыз.\n")
     L.append("**Бұл құжат заңды кеңес емес.** Статусы «иесі мәлімдеген» компоненттер бойынша авторлық құқық иесі өзі жауап береді, «тексеру керек» компоненттерге жаңа лицензия тағайындалмаған. Тәртіп: [LICENSE.md](LICENSE.md).\n")
-    L.append("Негізгі қағида: Harvard CS50 материалдары мен олардың аудармалары/бейімдеулері - **CC BY-NC-SA 4.0** ([LICENSE-HARVARD.md](LICENSE-HARVARD.md)); Sagid Mustafa-ның дербес әзірлемелері - **All Rights Reserved** ([LICENSE-PROPRIETARY.md](LICENSE-PROPRIETARY.md)); үшінші тарап компоненттері - өз лицензиясымен ([THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md)). Бұрын CC BY-NC-SA 4.0 бойынша жарияланған нұсқаларға берілген құқықтар жойылмайды.\n")
+    L.append("Негізгі қағида: Harvard CS50 материалдары мен олардың аудармалары/бейімдеулері - **CC BY-NC-SA 4.0** ([LICENSE-HARVARD.md](LICENSE-HARVARD.md)); AO17 командасының дербес әзірлемелері - **All Rights Reserved** ([LICENSE-PROPRIETARY.md](LICENSE-PROPRIETARY.md)); үшінші тарап компоненттері - өз лицензиясымен ([THIRD-PARTY-LICENSES.md](THIRD-PARTY-LICENSES.md)). Бұрын CC BY-NC-SA 4.0 бойынша жарияланған нұсқаларға берілген құқықтар жойылмайды.\n")
     counts = {}
     for c in REG["components"]:
         counts[c["cat"]] = counts.get(c["cat"], 0) + len(by[c["id"]])

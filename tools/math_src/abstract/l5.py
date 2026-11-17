@@ -1,4 +1,4 @@
-# © 2026 Sagid Mustafa. All Rights Reserved.
+# © 2026 AO17 командасы. All Rights Reserved.
 # Abstract Algebra · 5-сабақ: Сақиналар және өрістер
 from math_lesson_gen import L, D, T, F, REM, ATT, NOTE, P_, X
 

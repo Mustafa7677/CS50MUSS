@@ -1,4 +1,4 @@
-/* © 2026 Sagid Mustafa. All Rights Reserved. Математика курсы, Stochastic Processes пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
+/* © 2026 AO17 командасы. All Rights Reserved. Математика курсы, Stochastic Processes пәні. Формат: docs/MATH-COURSE-GUIDE.md §9.3. */
 window.CS50KZ_MATH_PROBLEMS = window.CS50KZ_MATH_PROBLEMS || {};
 window.CS50KZ_MATH_PROBLEMS.stochastic = [
  {"id": "stochastic-p1", "lvl": "medium", "params": {"a": {"int": [1, 9]}, "b": {"int": [1, 9]}}, "type": "num", "q": "Симметриялы жүру: $\\operatorname{Cov}(S_{#{a}},S_{#{a+b}})=?$", "a": "a", "v": "min(int(a), int(a) + int(b))", "hint": "$\\min(m,n)$.", "sol": {"steps": ["$\\min(#{a},#{a+b})$."], "ans": "$#{a}$"}},
