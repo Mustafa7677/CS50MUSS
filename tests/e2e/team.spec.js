@@ -186,12 +186,54 @@ test("басты бет: 8-сахна, бес есім, команда беті�
   await expect(s.locator('a[href="team.html"]')).toBeVisible();
 });
 
+test("3D фильм (team/3d.html): жеті көрініс, әлемге кіру, соңғы сөз", async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto("team/3d.html");
+  await expect(page.locator(".t3")).toHaveClass(/t3-(live|static)/);
+  await expect(page.locator(".t3-fchs li")).toHaveCount(7);
+  await expect(page.locator(".t3-fpp li")).toHaveCount(5);
+  await expect(page.locator('.t3-links a[href="../team.html"]')).toHaveCount(1);
+  if (await page.locator(".t3").evaluate((e) => e.classList.contains("t3-live"))) {
+    await expect(page.locator(".t3-ch")).toHaveCount(7);
+    const go = (t) => page.evaluate((t) => { const s = document.querySelector(".t3-scroll"); scrollTo(0, s.getBoundingClientRect().top + scrollY + t * (s.offsetHeight - innerHeight)); }, t);
+    await go(0.45);
+    await expect(page.locator(".t3-people")).toBeVisible({ timeout: 15000 });
+    await page.locator(".t3-people button").nth(2).click();
+    await expect(page.locator(".t3-world")).toHaveJSProperty("open", true);
+    await expect(page.locator(".t3w-n")).toHaveText("Sagid Mustafa");
+    await expect(page.locator(".t3w-go")).toHaveAttribute("href", "sagid.html");
+    await page.locator(".t3w-x").click();
+    await expect(page.locator(".t3-world")).toHaveJSProperty("open", false);
+    await go(1);
+    await expect(page.locator(".t3-ch").nth(6)).toHaveAttribute("aria-current", "step", { timeout: 15000 });
+    await expect(page.locator(".t3-end-a")).toHaveText("Біз есікті аштық.");
+  }
+  expect(errors).toEqual([]);
+});
+
+test("3D фильм: қозғалыс азайса - мәтіндік нұсқа, WebGL іске қосылмайды", async ({ browser }) => {
+  const c = await browser.newContext({ reducedMotion: "reduce" });
+  await blockFonts(c);
+  const p = await c.newPage();
+  await p.goto("team/3d.html");
+  await expect(p.locator(".t3")).toHaveClass(/t3-static/);
+  await expect(p.locator(".t3-scroll")).toBeHidden();
+  await expect(p.locator(".t3-fb h2")).toBeVisible();
+  await expect(p.locator('.t3-fpp a[href="sagid.html"]')).toHaveCount(1);
+  await c.close();
+});
+
+test("команда бетінде 3D фильмге сілтеме бар", async ({ page }) => {
+  await page.goto("team.html");
+  await expect(page.locator('a.shx-3d[href="team/3d.html"]')).toHaveCount(1);
+});
+
 for (const scheme of ["light", "dark"]) {
   test(`360px, ${scheme}: көлденең жылжу жоқ, axe таза`, async ({ browser }) => {
     const c = await browser.newContext({ viewport: { width: 360, height: 740 }, colorScheme: scheme, reducedMotion: "reduce" });
     await blockFonts(c);
     const p = await c.newPage();
-    for (const u of ["team.html", ...M.map((m) => `team/${m.slug}.html`)]) {
+    for (const u of ["team.html", "team/3d.html", ...M.map((m) => `team/${m.slug}.html`)]) {
       await p.goto(u);
       expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), u + ": horizontal scroll").toBe(true);
       await p.addScriptTag({ content: AXE });
