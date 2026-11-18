@@ -213,7 +213,7 @@ async function start(D) {
     const ar = cutTex[slug] && cutTex[slug].image ? cutTex[slug].image.width / cutTex[slug].image.height : .68;
     const portrait = new THREE.Mesh(new THREE.PlaneGeometry(PH * ar, PH), new THREE.MeshBasicMaterial({ map: cutTex[slug], transparent: true, depthWrite: false, color: 0x000000 }));
     { const w = PH * ar / 2 + .12, h = PH / 2 + .12; portrait.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-w, -h, .01), new THREE.Vector3(w, -h, .01), new THREE.Vector3(w, h, .01), new THREE.Vector3(-w, h, .01)]), new THREE.LineBasicMaterial({ color: PORC, transparent: true, opacity: .28 }))); }
-    portrait.position.set(x, 0, PZP); portrait.renderOrder = 40; scene.add(portrait);
+    portrait.position.set(mobile ? x : x + 1.6, 0, PZP); portrait.renderOrder = 40; scene.add(portrait);   // компьютерде портрет оңда, алып есім солда - бір-бірін жаппайды
     const key = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: PORC, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); key.scale.set(9, 10, 1); key.position.set(x, 1.8, PZP - 1.5); key.renderOrder = 30; scene.add(key);
     // алып есім: екі текстура (тұтас фарфор / ішінде платформаның қабаты), 12 көлденең жолақ
     const lines = [m.given.toUpperCase()];   // бір сөз: телефонда да басының үстінде толық оқылады (толық аты - HTML-де)
@@ -222,8 +222,8 @@ async function start(D) {
     const fit = (x) => { let s = size; x.font = `700 ${s}px ${F.b}`; const wmax = Math.max(...lines.map((l) => x.measureText(l).width)); if (wmax > cw * .94) s = Math.floor(s * cw * .94 / wmax); x.font = `700 ${s}px ${F.b}`; return s; };
     const s0 = fit(A.x); A.x.fillStyle = "#ece8e1"; A.x.textAlign = "center"; lines.forEach((l, k) => A.x.fillText(l, cw / 2, s0 * .9 * (k + 1)));
     const texA = mkTex(A.c), texB = mkTex(B.c);
-    const nw = mobile ? 6 : 17.5, nh = nw * chh / cw, strips = [];
-    const grp = new THREE.Group(); grp.position.set(mobile ? x : x - 2.4, mobile ? 4.7 : 1.25, PZP - 3.2); scene.add(grp);
+    const nw = mobile ? 4.7 : 6.4 * clamp(innerWidth / innerHeight / 1.6, .82, 1.15), nh = nw * chh / cw, strips = [];
+    const grp = new THREE.Group(); grp.position.set(mobile ? x : x - 5.6, mobile ? 4.7 : 2.3, PZP - .4); scene.add(grp);
     for (let k = 0; k < NAME_K; k++) {
       const g = new THREE.PlaneGeometry(nw, nh / NAME_K), uv = g.attributes.uv, v0 = 1 - (k + 1) / NAME_K, v1 = 1 - k / NAME_K;
       for (let j = 0; j < uv.count; j++) uv.setY(j, uv.getY(j) > .5 ? v1 : v0);
@@ -234,7 +234,7 @@ async function start(D) {
     return { slug, m, i, x, portrait, key, grp, strips, A, B, texA, texB, lines, cw, chh, s0, archDrawn: -1 };
   });
   // «Үзілмейтін жіп»: бес автордың сахнасы арқылы өтетін бір құрылымдық сызық; әр адамның еңбегімен ұзарады
-  const thrPts = people.map((P) => new THREE.Vector3(mobile ? P.x : P.x - 2.4, mobile ? -.6 : -1.9, PZP - 3.2));
+  const thrPts = people.map((P) => new THREE.Vector3(mobile ? P.x : P.x - 2.4, mobile ? -.6 : -1.9, PZP - .6));
   const thread = new THREE.Line(new THREE.BufferGeometry().setFromPoints(new Array(64).fill(0).map(() => new THREE.Vector3())), new THREE.LineBasicMaterial({ color: CHAMP, transparent: true, opacity: 0, depthWrite: false }));
   thread.frustumCulled = false; scene.add(thread);
   const threadCurve = new THREE.CatmullRomCurve3([thrPts[0].clone().add(new THREE.Vector3(-14, 0, 0)), ...thrPts, thrPts[4].clone().add(new THREE.Vector3(14, 0, 0))]);
@@ -415,12 +415,12 @@ async function start(D) {
       if (!act) return;
       const lit = eo(seg(u, 1.4, 4)) * (1 - seg(u, T.per - 1.2, T.per + .6)), dim = seg(u, -2.5, 1) * (1 - seg(u, T.per - .4, T.per + 1));
       P.portrait.material.color.setScalar(.16 + .84 * lit); P.portrait.material.opacity = dim;
-      P.portrait.position.x = P.x + (mobile ? 0 : px * .15); P.portrait.position.y = Math.sin(now * .45) * .03;
+      P.portrait.position.x = P.x + (mobile ? 0 : 1.6 + px * .15); P.portrait.position.y = Math.sin(now * .45) * .03;
       P.key.material.opacity = .16 * lit;
       const reveal = eo(seg(u, .6, 2.2)), mixv = eio(seg(u, 4.6, 6.4)) * (mobile ? .28 : 1), brk = eio(seg(u, 9, 10.8));
       if (mixv > 0 && (P.archDrawn < 0 || (P.i === 3 && now - P.archDrawn > .14) || (P.i === 4 && now - P.archDrawn > .2))) { drawArch(P, now); P.archDrawn = now; }
       P.strips.forEach((S, k) => { S.mat.uniforms.reveal.value = reveal * 1.02; S.mat.uniforms.mixv.value = mixv; S.mat.uniforms.op.value = (1 - seg(u, 9.6, 10.9)) * .94; S.mesh.position.set(S.dir * brk * (1.2 + S.rnd * 2.4), S.y0 + (k - NAME_K / 2) * brk * .12, -brk * (2 + S.rnd * 9)); S.mesh.rotation.y = S.dir * brk * .25; });
-      P.grp.position.x = (mobile ? P.x : P.x - 2.4) + px * (mobile ? .1 : .5);
+      P.grp.position.x = (mobile ? P.x : P.x - 5.6) + px * (mobile ? .1 : .2);
     });
     { const u = clamp((t - T.act + 1) / (T.col - T.act), 0, 1), pos = thread.geometry.attributes.position, n = pos.count;
       for (let i = 0; i < n; i++) { const p = threadCurve.getPoint(Math.min(u, i / (n - 1)) * .86 + .02); pos.setXYZ(i, p.x, p.y, p.z); }
