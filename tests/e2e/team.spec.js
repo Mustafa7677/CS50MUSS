@@ -223,6 +223,30 @@ test("3D фильм: қозғалыс азайса - мәтіндік нұсқа
   await c.close();
 });
 
+test("басты бет: 1-сахнаның 3D шаңырағы (WebGL), әдепкі автотестте - SVG", async ({ browser }) => {
+  const c = await browser.newContext();
+  await blockFonts(c);
+  await c.addInitScript(() => { try { sessionStorage.setItem("ao17:test-gl", "1"); sessionStorage.setItem("ao17:intro", "1"); } catch (e) { /* */ } });
+  const p = await c.newPage();
+  const errors = collectErrors(p);
+  await p.goto("index.html?nofilm");
+  const gl = await p.evaluate(() => { const c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); });
+  if (gl) {
+    await expect(p.locator(".st-s1.st-3d canvas.st-gl[aria-hidden=true]")).toHaveCount(1, { timeout: 15000 });
+    await expect(p.locator(".st-s1 .s17-ring")).toHaveCSS("opacity", "0");
+    await expect(p.locator(".st-s1 .s17-mast")).toBeVisible();   // «Қазақ» газеті орнында
+  }
+  expect(errors).toEqual([]);
+  await c.close();
+  const c2 = await browser.newContext({ reducedMotion: "reduce" });
+  await c2.addInitScript(() => { try { sessionStorage.setItem("ao17:test-gl", "1"); } catch (e) { /* */ } });
+  const p2 = await c2.newPage();
+  await p2.goto("index.html?nofilm");
+  await p2.waitForTimeout(1500);
+  await expect(p2.locator(".st-gl")).toHaveCount(0);
+  await c2.close();
+});
+
 test("команда бетінде 3D фильмге сілтеме бар", async ({ page }) => {
   await page.goto("team.html");
   await expect(page.locator('a.shx-3d[href="team/3d.html"]')).toHaveCount(1);
