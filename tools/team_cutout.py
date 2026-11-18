@@ -63,7 +63,35 @@ def cut(slug):
     return float((a > 128).mean())
 
 
+def dark(slug):
+    """Команданың өзі қара фонда өңдеген портреті (assets/img/team/dark/<slug>.jpg) үшін мөлдірлік маскасы.
+    Қара костюм қара фонға сіңіп кетпес үшін маска қараңғы суреттен емес, түпнұсқа фотодағы GrabCut контурынан алынады:
+    екі фото SIFT нүктелерімен сәйкестендіріліп (гомография), контур жаңа кадрға көшіріледі. Ашық пикселдер әрқашан адамға жатады."""
+    src = cv2.imread(str(ROOT / f"assets/img/team/{slug}.jpg"))
+    cut = np.array(Image.open(OUT / f"{slug}.webp"))[:, :, 3]
+    drk = cv2.imread(str(ROOT / f"assets/img/team/dark/{slug}.jpg"))
+    sift = cv2.SIFT_create(4000)
+    k1, d1 = sift.detectAndCompute(cv2.cvtColor(src, cv2.COLOR_BGR2GRAY), None)
+    k2, d2 = sift.detectAndCompute(cv2.cvtColor(drk, cv2.COLOR_BGR2GRAY), None)
+    good = [m for m, n in cv2.BFMatcher().knnMatch(d1, d2, k=2) if m.distance < .72 * n.distance]
+    A = np.float32([k1[m.queryIdx].pt for m in good]); B = np.float32([k2[m.trainIdx].pt for m in good])
+    Hm, inl = cv2.findHomography(A, B, cv2.RANSAC, 4.0)
+    h, w = drk.shape[:2]
+    a = cv2.warpPerspective(cut, Hm, (w, h), flags=cv2.INTER_LINEAR, borderMode=cv2.BORDER_REPLICATE)
+    lum = cv2.cvtColor(drk, cv2.COLOR_BGR2GRAY)
+    a = np.maximum(a, np.where((lum > 60) & (cv2.GaussianBlur(a, (0, 0), 12) > 40), 255, 0).astype(np.uint8))   # ашық бөліктер (жүз, көйлек) - адам
+    a = cv2.GaussianBlur(a, (0, 0), 1.4)
+    rgb = cv2.cvtColor(drk, cv2.COLOR_BGR2RGB)
+    Image.fromarray(np.dstack([rgb, a]), "RGBA").save(OUT / f"{slug}.webp", "WEBP", quality=88, method=6)
+    return int(inl.sum()), len(good)
+
+
 if __name__ == "__main__":
+    if "--dark" in sys.argv:
+        team = json.loads((ROOT / "licensing/team.json").read_text(encoding="utf-8"))
+        for m in team["members"]:
+            cut(m["slug"]); print(m["slug"], "сәйкес нүктелер (inlier, барлығы):", dark(m["slug"]))
+        sys.exit(0)
     team = json.loads((ROOT / "licensing/team.json").read_text(encoding="utf-8"))
     slugs = sys.argv[1:] or [m["slug"] for m in team["members"]]
     for s in slugs:

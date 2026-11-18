@@ -416,7 +416,7 @@ def film3d_page():
                          "cut": f"{p}assets/img/team/cut/{m['slug']}.webp"} for m in M]}
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     credits = "".join(f'<div><dt>{E(m["role"])}</dt><dd><a href="{m["slug"]}.html">{E(m["name"])}</a></dd></div>' for m in sorted(M, key=lambda m: ["sagid", "gulzat", "dastan", "magzhan", "merey"].index(m["slug"])))
-    faces = "".join(f'<li style="--i:{k}"><img src="{p}{photo(m["slug"])}" alt="{E(m["name"])}, портрет" width="640" height="800" loading="lazy" decoding="async"><b>{E(m["name"])}</b><span>{E(m["role"])}</span></li>' for k, m in enumerate(M))
+    faces = "".join(f'<li style="--i:{k}"><img src="{p}assets/img/team/dark/{m["slug"]}.jpg" alt="{E(m["name"])}, портрет" width="820" height="1200" loading="lazy" decoding="async"><b>{E(m["name"])}</b><span>{E(m["role"])}</span></li>' for k, m in enumerate(M))
     steps = "".join(f'<li><b>{n}</b> <span>{E(t)}</span><p>{E(d)}</p></li>' for n, t, d in FILM_STEPS)
     main = f"""<main id="main" class="um">
   <script type="application/json" id="um-data">{js}</script>
