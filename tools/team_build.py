@@ -380,7 +380,8 @@ def film3d_page():
     p = "../"
     data = {"acts": [{"from": a, "to": b, "k": k, "t": t, "d": d} for a, b, k, t, d in ACTS],
             "members": [{"slug": m["slug"], "name": m["name"], "role": m["role"], "law": LAW[m["slug"]], "en": EN[m["slug"]], "given": GIVEN[m["slug"]],
-                         "cut": f"{p}assets/img/team/cut/{m['slug']}.webp"} for m in M]}
+                         "cut": f"{p}assets/img/team/cut/{m['slug']}.webp", "works": [[p + h, t] for h, t, d in m["works"]]} for m in M],
+            "group": {"bg": f"{p}assets/img/team/group-bg.jpg", "fg": f"{p}assets/img/team/group-fg.webp"}}
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     credits = "".join(f'<div><dt>{E(m["role"])}</dt><dd><a href="{m["slug"]}.html">{E(m["name"])}</a></dd></div>' for m in sorted(M, key=lambda m: ["sagid", "gulzat", "dastan", "magzhan", "merey"].index(m["slug"])))
     faces = "".join(f'<li style="--i:{k}"><img src="{p}assets/img/team/dark/{m["slug"]}.jpg" alt="{E(m["name"])}, портрет" width="820" height="1200" loading="lazy" decoding="async"><b>{E(m["name"])}</b><span>{E(m["role"])}</span></li>' for k, m in enumerate(M))
@@ -405,12 +406,12 @@ def film3d_page():
       </div>
       <p class="um-story" lang="en">Every system has a story.</p>
       <p class="um-q">Ал егер осының бәрін жасаған адамдарды алып тастасақ ше?</p>
-      <div class="um-pp" aria-live="polite"><p class="um-pp-i"></p><p class="um-pp-e" lang="en"></p><h2 class="um-pp-n"></h2><p class="um-pp-r"></p><p class="um-pp-l"></p><a class="um-pp-a" href="#">Жұмысын көру</a><p class="um-pp-note">Кадрдағы интерфейс - сайттың көрнекі көшірмесі; нақты беттері - сілтемеде.</p></div>
+      <div class="um-pp" aria-live="polite"><p class="um-pp-i"></p><p class="um-pp-e" lang="en"></p><h2 class="um-pp-n"></h2><p class="um-pp-r"></p><p class="um-pp-l"></p><div class="um-pp-row"><a class="um-pp-a" href="#">Жұмысын көру</a><button type="button" class="um-xr" aria-expanded="false" aria-controls="um-xr-l">X-Ray: нақты беттері</button></div><ul class="um-xr-l" id="um-xr-l" hidden></ul><p class="um-pp-note">Кадрдағы интерфейс - сайттың көрнекі көшірмесі; нақты беттері - сілтемеде.</p></div>
       <div class="um-cap" aria-live="polite"><p class="um-k"></p><p class="um-t"></p><p class="um-d"></p></div>
       <p class="um-hint" aria-hidden="true">Тінтуірмен не саусақпен тартыңыз</p>
       <p class="um-void">Бір идея ешқашан өздігінен шындыққа айналмайды.</p>
       <ul class="um-faces" aria-label="Команда">{faces}</ul>
-      <div class="um-group"><img src="{p}assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус." width="2400" height="1681" loading="lazy" decoding="async"><p class="um-g1" lang="en">Not built by magic.<br>Built by people.</p><p class="um-g2">Бес адам. Бір шаңырақ. Бір болашақ.</p></div>
+      <div class="um-group"><img src="{p}assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус." width="2400" height="1681" loading="lazy" decoding="async"><p class="um-g1" lang="en">Not built by magic.<br>Built by people.</p><p class="um-g2">Болашақты адамдар жасайды.</p></div>
       <div class="um-hand"><p class="um-hand-k">Соңғы бөлігі - сенде</p><p class="um-hand-t">Бесеуі платформаны жасады. Алтыншысы - сен, оны қолданатын оқушы. Шаңырақтың соңғы бөлігін ортаға сүйреп апар.</p><button type="button" class="um-place">Орнату</button></div>
       <div class="um-fin">
         <p class="um-f1" lang="en">We built the foundation.<br>You build what's next.</p>

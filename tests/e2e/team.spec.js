@@ -149,6 +149,15 @@ test("3D фильм «The Unmade»: постер → ENTER, өзі ойнайд�
     await expect(page.locator(".um-pp")).toHaveClass(/is-on/, { timeout: 15000 });
     await expect(page.locator(".um-pp-e")).toHaveText("The Architect");
     await expect(page.locator(".um-pp-a")).toHaveAttribute("href", "sagid.html");
+    // X-Ray: Sagid-тің сайттағы нақты беттері (team.json works), ашық тұрғанда фильм кідіреді
+    await page.locator(".um-xr").click();
+    await expect(page.locator(".um-xr")).toHaveAttribute("aria-expanded", "true");
+    await expect(page.locator(".um-pause")).toHaveAttribute("aria-pressed", "true");
+    const works = M.find((m) => m.slug === "sagid").works;
+    await expect(page.locator(".um-xr-l a")).toHaveCount(works.length);
+    await expect(page.locator(".um-xr-l a").first()).toHaveAttribute("href", "../" + works[0][0]);
+    await page.locator(".um-xr").click();
+    await page.locator(".um-pause").dispatchEvent("click");
     // IV: бөлшектерді тарту
     await page.goto("team/3d.html?seek2#t=83.2");
     await expect(page.locator(".um-hint")).toHaveClass(/is-on/, { timeout: 15000 });
