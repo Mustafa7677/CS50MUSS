@@ -108,6 +108,27 @@ test("манифест: сөздер скроллмен кезекпен жан�
   await expect(page.locator(".mf-t").first()).toContainText("Бес адам, бір шаңырақ.");
 });
 
+test("телефон (360px): бес портрет жүктеледі, бас шапканың астына кірмейді, «Жеке беті» толық көрінеді және басылады", async ({ browser }) => {
+  const c = await browser.newContext({ viewport: { width: 360, height: 780 }, isMobile: true, hasTouch: true });
+  await blockFonts(c);
+  const p = await c.newPage();
+  await p.goto("team.html");
+  for (let i = 0; i < 5; i++) {
+    const panel = p.locator(".uyq-p").nth(i);
+    await panel.scrollIntoViewIfNeeded();
+    const img = panel.locator(".uyq-img img");
+    await expect(img).toHaveAttribute("loading", "eager");
+    await expect.poll(() => img.evaluate((e) => e.complete && e.naturalWidth > 0)).toBe(true);
+    await p.evaluate((i) => { const el = document.querySelectorAll(".uyq-ph")[i]; scrollTo({ top: el.getBoundingClientRect().top + scrollY - 70, behavior: "instant" }); }, i);
+    const head = await p.locator(".topbar").evaluate((e) => e.getBoundingClientRect().bottom);
+    const top = await panel.locator(".uyq-ph").evaluate((e) => e.getBoundingClientRect().top);
+    expect(top, `портрет ${i}`).toBeGreaterThanOrEqual(head - 1);
+    await panel.locator(".uyq-go").click({ trial: true });
+  }
+  expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await c.close();
+});
+
 test("тірі қолтаңбалар: назардағы кадр ойнайды", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("team.html");

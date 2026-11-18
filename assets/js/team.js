@@ -13,6 +13,7 @@
   // Скроллдың нақты орны (t) мен көрсетілетін орны (c) бөлек: c әр кадрда t-ға 12%-ке жақындайды - қозғалыс «ілесіп», тегіс жүреді.
   // Тек transform мен opacity өзгереді (CSS айнымалысы --p арқылы). Қозғалыс азайтылса - c = t бірден.
   const scrubs = $$("[data-scrub]").map((el) => ({ el, pin: el.dataset.scrub === "pin", t: 0, c: -1, panels: $$(".uyq-p", el), hud: $$(".uyq-hb", el), ring: el.classList.contains("rng") ? $$(".rng-c", el) : null, now: $(".rng-now", el) }));
+  const stack = () => window.matchMedia && matchMedia("(max-width: 760px)").matches;
   if (scrubs.length) {
     let raf = 0;
     const measure = () => {
@@ -36,7 +37,9 @@
           s.ring.forEach((card, i) => { const f = Math.cos((i * 360 / n - rot) * Math.PI / 180); card.style.setProperty("--f", f.toFixed(3)); if (f > bf) { bf = f; best = i; } });
           if (s.now && s.now.dataset.i !== String(best)) { s.now.dataset.i = String(best); s.now.textContent = s.ring[best].dataset.name; }
         }
-        if (s.panels.length) {
+        if (s.panels.length && stack()) {   // телефон: тік тізім - бәрі толық көрінеді, демо экран ортасындағы панельде ойнайды
+          s.panels.forEach((p) => { p.style.setProperty("--d", "0"); p.style.setProperty("--a", "1"); const r = p.getBoundingClientRect(); p.classList.toggle("is-act", r.top < innerHeight * .7 && r.bottom > innerHeight * .3); });
+        } else if (s.panels.length) {
           const pos = c * (s.panels.length - 1);
           s.panels.forEach((p, i) => { const d = clamp(pos - i, -1.5, 1.5); p.style.setProperty("--d", d.toFixed(3)); p.style.setProperty("--a", clamp(1 - Math.abs(d)).toFixed(3)); p.classList.toggle("is-act", Math.abs(d) < .35); });
           const on = Math.round(pos);
@@ -52,7 +55,7 @@
     // көлденең галерея: атауды басқанда не ішіндегі сілтемеге фокус түскенде - сол адамның кадрына апару
     scrubs.filter((s) => s.panels.length).forEach((s) => {
       const go = (i, smooth) => {
-        if (!motion()) return;
+        if (!motion() || stack()) return;
         const r = s.el.getBoundingClientRect(), span = s.el.offsetHeight - innerHeight;
         scrollTo({ top: scrollY + r.top + span * (i / (s.panels.length - 1)), behavior: smooth ? "smooth" : "auto" });
       };
