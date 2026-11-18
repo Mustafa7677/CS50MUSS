@@ -383,9 +383,9 @@ def landing():
 
 # ---------- team/3d.html: «Ертеңнің сәулетшілері» - 3D режиссер нұсқасы ----------
 CHAPTERS = [
-    (0.0, "01 · Мүмкін емес құрылыс", "Жоқтан бар жасау", "Бір платформа. Бес адам. Скроллды бастаңыз: бәрі бөлшектерге ыдырайды, тек бес жарық қалады."),
+    (0.0, "01 · Мүмкін емес құрылыс", "Жоқтан бар жасау", "Бір платформа. Бес адам. Бәрі бөлшектерге ыдырайды, тек бес жарық қалады."),
     (0.14, "02 · Бесеуі", "Бес жарық - бір шаңырақ", "Жарықтар уық болып тоғысады. Камера шаңырақтың ортасынан өтеді."),
-    (0.30, "03 · Жасаушылар әлемі", "Бес әлем", "Әр адамның өз әлемі бар. Тінтуірмен не саусақпен бұрыңыз, порталды басып ішіне кіріңіз."),
+    (0.30, "03 · Жасаушылар әлемі", "Бес әлем", "Әр адамның өз әлемі бар. Порталды басып, ішіне кіріңіз."),
     (0.62, "04 · Тоғысу", "Бесеуі - бір болды", "Дизайн, код және мазмұн бір нүктеге ағады."),
     (0.74, "05 · Құрастыру", "Шаңырақ көтерілді", "Бес адамның еңбегі бір платформаға айналды."),
     (0.87, "06 · Кодтың артында", "Шын адамдар", "Мұның бәрін 17-18 жастағы бес оқушы жасады."),
@@ -401,8 +401,6 @@ def film3d_page():
                          "demo": f'<div class="dm dm-{m["sig"]}" role="img" aria-label="{E(DEMO_CAP[m["sig"]])}"><span class="dm-cap">{E(DEMO_CAP[m["sig"]])}</span>{DEMO[m["sig"]]}</div>'}
                         for m in M]}
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
-    dots = "".join(f'<li><button type="button" class="t3-ch" aria-label="{E(k)}: {E(t)}"><span>{i + 1:02d}</span></button></li>' for i, (a, k, t, d) in enumerate(CHAPTERS))
-    people = "".join(f'<button type="button" style="--acc:{KIND[m["kind"]][1]}">{E(m["name"].split()[-1] if m["slug"] != "sagid" else "Mustafa")}</button>' for m in M)
     photo_names = "".join(f'<li><a href="{m["slug"]}.html"><b>{E(m["name"])}</b><span>{E(m["role"])}</span></a></li>' for m in M)
     fb_chap = "".join(f'<li><p class="t3-fk">{E(k)}</p><h3>{E(t)}</h3><p>{E(d)}</p></li>' for a, k, t, d in CHAPTERS)
     fb_people = "".join(f'<li style="--acc:{KIND[m["kind"]][1]}"><a href="{m["slug"]}.html"><img src="{p}{photo(m["slug"])}" alt="{E(m["name"])}, портрет" width="640" height="800" loading="lazy" decoding="async"><b>{E(m["name"])}</b><span>{E(m["role"])} · {age(m)}</span></a></li>' for m in M)
@@ -420,25 +418,18 @@ def film3d_page():
         <p class="t3-end-a">Біз есікті аштық.</p>
         <p class="t3-end-b">Болашақты сен жасайсың.</p>
         <p class="t3-end-c" lang="en">We built the door. You build the future.</p>
-        <div class="t3-end-row"><a class="btn gold" href="{p}index.html">Оқуды бастау</a><a class="btn ghost" href="{p}team.html">Команда беті</a></div>
+        <div class="t3-end-row"><a class="btn gold" href="{p}index.html">Оқуды бастау</a><a class="btn ghost" href="{p}team.html">Команда беті</a><button type="button" class="btn ghost t3-replay">Қайта көру</button></div>
       </div>
       <div class="t3-cap" aria-live="polite"><p class="t3-k">{E(CHAPTERS[0][1])}</p><h1 class="t3-t">{E(CHAPTERS[0][2])}</h1><p class="t3-d">{E(CHAPTERS[0][3])}</p></div>
-      <div class="t3-people" hidden>{people}</div>
-      <button type="button" class="btn gold t3-enter" hidden>Әлемге кіру</button>
-      <div class="t3-ui">
-        <button type="button" class="t3-dir" aria-pressed="false">▶ Режиссер нұсқасы</button>
-        <ol class="t3-chs" aria-label="Көріністер">{dots}</ol>
-        <div class="t3-links"><a href="{p}team.html">Explore нұсқасы</a><a href="#t3-fb">Өткізу</a></div>
-        <span class="t3-bar" aria-hidden="true"><i></i></span>
-      </div>
-      <p class="t3-hint" aria-hidden="true">Скролл · жеті көрініс</p>
+      <button type="button" class="t3-skip">Өткізу</button>
+      <span class="t3-bar" aria-hidden="true"><i></i></span>
     </div>
   </section>
   <section class="t3-fb" id="t3-fb" aria-labelledby="t3-fb-h">
     <div class="t3-fb-in">
       <p class="st-intertitle">Ертеңнің сәулетшілері</p>
       <h2 id="t3-fb-h">Жеті көріністе - бес адам</h2>
-      <p class="t3-fb-note">3D фильм WebGL арқылы құрылады: барлық пішін кодпен сызылған, дыбыс жоқ. Қозғалыс азайтылған режимде осы мәтіндік нұсқа көрсетіледі.</p>
+      <p class="t3-fb-note">3D фильм өзі ойнайды (шамамен 1,5 минут), WebGL арқылы құрылады: барлық пішін кодпен сызылған, дыбыс жоқ. Қозғалыс азайтылған режимде осы мәтіндік нұсқа көрсетіледі.</p>
       <ol class="t3-fchs">{fb_chap}</ol>
       <ul class="t3-fpp">{fb_people}</ul>
       <p class="t3-fb-end">Біз есікті аштық. Болашақты сен жасайсың.</p>
