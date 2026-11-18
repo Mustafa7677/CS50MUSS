@@ -195,6 +195,8 @@ def team_page():
     </div>
       <div class="tmx-ui">
         <div class="tmx-cap" aria-live="polite"><p class="tmx-k"></p><h2 class="tmx-n"></h2><p class="tmx-r"></p><p class="tmx-t"></p><p class="tmx-a"><a class="tmx-go" href="#">Жеке беті</a><a class="tmx-film" href="#">Фильмдегі сахнасы</a></p></div>
+        <div class="tmx-work" aria-hidden="true"><iframe data-src="index.html?nofilm#academies" title="AO17 басты беті" tabindex="-1" loading="lazy"></iframe><span class="tmx-work-l">Тірі AO17 беті · фотодағы ноутбук статикалық</span></div>
+        <div class="tmx-side">{orbit("tmx-orb", "", False)}<button type="button" class="tmx-replay">Басынан</button><a class="tmx-skip" href="#uyq-h">Өткізу: бес автор</a></div>
         <div class="tmx-nav"><button type="button" class="tmx-prev" aria-label="Алдыңғы">&#8592;</button><span class="tmx-hint">Скролл - уақыт · сүйреу - кеңістік</span><button type="button" class="tmx-next" aria-label="Келесі">&#8594;</button></div>
         <span class="tmx-bar" aria-hidden="true"><i></i></span>
       </div>
@@ -390,7 +392,9 @@ def tm_data():
                       "href": f"team/{slug}.html", "film": f"team/3d.html#t={film_at(slug)}"})
     stops.append({"kind": "photo", "img": "assets/img/team/duo.jpg", "ar": round(img_ar("assets/img/team/duo.jpg"), 4), "k": "Дизайн", "n": "Kopenova Merey мен Tutkabayeva Gulzat",
                   "r": "Екі дизайнер", "t": "Алаш стилі мен оқу беттерінің интерфейсі осы екеуінің қолынан шықты."})
-    return json.dumps({"group": "assets/img/team/group-hd.jpg", "gar": round(img_ar("assets/img/team/group-hd.jpg"), 4), "stops": stops}, ensure_ascii=False).replace("</", "<\\/")
+    return json.dumps({"group": "assets/img/team/group-hd.jpg", "gar": round(img_ar("assets/img/team/group-hd.jpg"), 4),
+                       "alt": "assets/img/team/group.jpg", "aar": round(img_ar("assets/img/team/group.jpg"), 4),
+                       "laptop": [.33, .69, .75, .99], "stops": stops}, ensure_ascii=False).replace("</", "<\\/")
 
 
 def orbit(cls, p, film):
