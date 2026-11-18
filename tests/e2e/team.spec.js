@@ -186,28 +186,36 @@ test("басты бет: 8-сахна, бес есім, команда беті�
   await expect(s.locator('a[href="team.html"]')).toBeVisible();
 });
 
-test("3D фильм «Жасалмаған сайт»: өзі ойнайды, сайт сілтемелері шынайы, тарту, «Өткізу» - шынайы фото", async ({ page }) => {
+test("3D фильм «The Unmade»: постер → ENTER, өзі ойнайды, кейіпкер беті, тарту, «Өткізу» - шынайы фото", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto("team/3d.html");
   await expect(page.locator(".um")).toHaveClass(/um-(live|static)/);
   await expect(page.locator(".um-cr-l > div")).toHaveCount(5);
   await expect(page.locator('.um-cr-l a[href="sagid.html"]')).toHaveText("Sagid Mustafa");
   if (await page.locator(".um").evaluate((e) => e.classList.contains("um-live"))) {
-    await expect(page.locator(".um-site")).toHaveClass(/is-on/);
-    await expect(page.locator('.um-site a[href="../index.html#academies"]')).toHaveCount(1);
+    await expect(page.locator(".um")).toHaveAttribute("data-act", "0");
+    await expect(page.locator(".um-enter")).toBeVisible();
+    await page.locator(".um-enter").click();
     await expect(page.locator(".um")).toHaveAttribute("data-act", "1");
+    await expect(page.locator(".um")).toHaveClass(/is-started/);
     const w0 = await page.locator(".um-bar i").evaluate((e) => e.style.transform);
     await page.waitForTimeout(1500);
     expect(await page.locator(".um-bar i").evaluate((e) => e.style.transform)).not.toBe(w0);   // скроллсыз алға жүреді
+    await expect(page.locator(".um-site")).toHaveClass(/is-on/, { timeout: 15000 });
+    await expect(page.locator('.um-site a[href="../index.html#academies"]')).toHaveCount(1);
+    // кейіпкер: портрет, алып есім, журнал бетіндегідей жазу және жеке бетке сілтеме
+    await page.goto("team/3d.html?seek#t=27");
+    await expect(page.locator(".um-pp")).toHaveClass(/is-on/, { timeout: 15000 });
+    await expect(page.locator(".um-pp-e")).toHaveText("The Architect");
+    await expect(page.locator(".um-pp-a")).toHaveAttribute("href", "sagid.html");
     // IV: бөлшектерді тарту
-    await page.goto("team/3d.html?seek#t=74");
-    await expect(page.locator(".um")).toHaveAttribute("data-act", "4", { timeout: 15000 });
+    await page.goto("team/3d.html?seek2#t=83.2");
     await expect(page.locator(".um-hint")).toHaveClass(/is-on/, { timeout: 15000 });
     const box = await page.locator(".um-cv").boundingBox();
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down();
     await page.mouse.move(box.x + box.width / 2 + 160, box.y + box.height / 2 + 40, { steps: 8 }); await page.mouse.up();
     await expect(page.locator(".um-hint")).not.toHaveClass(/is-on/);
-    // «Өткізу» - VI, шынайы фото және соңғы сөз; «Қайта көру» - басынан
+    // «Өткізу» - VI, шынайы фото және соңғы сөз; «Қайта көру» - постерге
     await page.mouse.move(40, 300);
     await page.locator(".um-skip").click();
     await expect(page.locator(".um")).toHaveAttribute("data-act", "6", { timeout: 15000 });
@@ -215,7 +223,7 @@ test("3D фильм «Жасалмаған сайт»: өзі ойнайды, с
     await expect(page.locator(".um-f2")).toHaveText("Бес адамның еңбегімен жасалды.");
     await expect(page.locator(".um-fin")).toHaveClass(/is-end/, { timeout: 15000 });
     await page.locator(".um-replay").click();
-    await expect(page.locator(".um")).toHaveAttribute("data-act", "1", { timeout: 15000 });
+    await expect(page.locator(".um")).toHaveAttribute("data-act", "0", { timeout: 15000 });
   }
   expect(errors).toEqual([]);
 });
