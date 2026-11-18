@@ -148,7 +148,7 @@ def panel(m, i):
     k, acc = KIND[m["kind"]]
     ph = photo(m["slug"])
     # барлығы eager: көлденең лента transform-мен жылжиды, ал Android Chrome transform ішіндегі lazy суретті кейде жүктемейді (бос арка)
-    face = (f'<img src="assets/img/team/dark/{m["slug"]}.jpg" alt="{E(m["name"])}, портрет" width="820" height="1200" loading="eager" decoding="async">' if ph
+    face = (f'<img src="assets/img/team/orig/{m["slug"]}.jpg" alt="{E(m["name"])}, портрет" width="960" height="1400" loading="eager" decoding="async">' if ph
             else f'<span class="ta-ini" aria-hidden="true">{E(m["initials"])}</span>')
     return (f'<li class="uyq-p" id="m-{m["slug"]}" style="--i:{i};--acc:{acc}"><div class="uyq-ph" style="view-transition-name:tm-{m["slug"]}"><div class="uyq-img" data-tilt>{face}</div></div>'
             f'<div class="uyq-tx"><p class="uyq-no" aria-hidden="true">{i + 1:02d}</p><p class="uyq-k">{E(k)} · {age(m)}</p>'
@@ -176,7 +176,11 @@ def team_page():
     names = " ".join(f'<a href="team/{m["slug"]}.html">{E(m["name"])}</a>' for m in M)
     main = f"""  <main class="tm shx" id="main">
     <div class="mh" aria-hidden="true"><span>Алаш · 1917</span><span><b>AO17</b> · Команда үндеуі</span><span>Бес автор · 2026</span></div><div class="mh-rule" aria-hidden="true"></div>
-    <section class="lf-hero" aria-labelledby="shx-h">
+    <section class="tmx" aria-label="AO17: уақыт машинасы - скролл фильмді алға және артқа жүргізеді">
+     <script type="application/json" id="tmx-data">{tm_data()}</script>
+     <div class="tmx-stick">
+      <canvas class="tmx-cv" aria-hidden="true"></canvas>
+    <div class="lf-hero">
       <div class="lf-copy">
         <p class="lf-k" lang="en">AO17 · The people behind the future</p>
         <h1 id="shx-h"><span class="shx-l1">Бір шаңырақ</span> <span class="shx-l2">бес адам</span></h1>
@@ -188,10 +192,13 @@ def team_page():
         <a class="lf-zoom" href="assets/img/team/group-hd.jpg" aria-label="Топ фотосын толық өлшемде ашу"><img src="assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус: артта Magzhan Romanov, Tutkabayeva Gulzat, Toktybay Dastan; алдында Sagid Mustafa мен Kopenova Merey." width="2400" height="1681" fetchpriority="high" decoding="async"></a>
         <figcaption>{names}</figcaption>
       </figure>
-    </section>
-
-    <section class="mf" data-scrub="pin" aria-label="Манифест">
-      <div class="mf-stick"><p class="mf-t" data-words>Бес адам, бір <em>шаңырақ</em>. Дизайн, код және мазмұн қазақ тілінде оқитын әр оқушы үшін бір <em>жерге</em> жиналды.</p></div>
+    </div>
+      <div class="tmx-ui">
+        <div class="tmx-cap" aria-live="polite"><p class="tmx-k"></p><h2 class="tmx-n"></h2><p class="tmx-r"></p><p class="tmx-t"></p><p class="tmx-a"><a class="tmx-go" href="#">Жеке беті</a><a class="tmx-film" href="#">Фильмдегі сахнасы</a></p></div>
+        <div class="tmx-nav"><button type="button" class="tmx-prev" aria-label="Алдыңғы">&#8592;</button><span class="tmx-hint">Скролл - уақыт · сүйреу - кеңістік</span><button type="button" class="tmx-next" aria-label="Келесі">&#8594;</button></div>
+        <span class="tmx-bar" aria-hidden="true"><i></i></span>
+      </div>
+     </div>
     </section>
 
     <div class="orn" data-scrub="through" aria-hidden="true"><svg viewBox="0 0 1200 80" preserveAspectRatio="xMidYMid meet"><path class="orn-l" pathLength="1" d="M520 40H40M680 40H1160"/><path class="orn-h" pathLength="1" d="M600 58V40C600 22 584 12 570 18C556 24 558 44 572 44C582 44 584 32 576 30M600 40C600 22 616 12 630 18C644 24 642 44 628 44C618 44 616 32 624 30"/><path class="orn-h" pathLength="1" d="M520 40C536 40 540 30 532 26M680 40C664 40 660 30 668 26M40 40l-14-10M40 40l-14 10M1160 40l14-10M1160 40l14 10"/><path class="orn-d" d="M600 62l6 6-6 6-6-6z"/></svg></div>
@@ -218,7 +225,7 @@ def team_page():
       </div>
     </section>
   </main>"""
-    return shell("", "Команда - AO17", "AO17 командасы: бес автор - екі дизайнер, үш бағдарлама мен мазмұн авторы. Әрқайсысының сайттағы ісі және 3D фильм «The Unmade».", main)
+    return shell("", "Команда - AO17", "AO17 командасы: бес автор - екі дизайнер, үш бағдарлама мен мазмұн авторы. Әрқайсысының сайттағы ісі және 3D фильм «The Unmade».", main, '\n  <script type="module" src="assets/js/team-tm.js"></script>')
 
 
 # ---------- жеке бет: «қолтаңба» ----------
@@ -370,6 +377,22 @@ FILM_STEPS = [
 ]
 
 
+def tm_data():
+    """«Уақыт машинасы» (assets/js/team-tm.js): топ фотосы, шаңырақ айналасындағы жеті рамка - бес түпнұсқа портрет, бірлескен жұмыс, дуэт."""
+    stops = []
+    for slug in FILM_ORDER:
+        m = next(x for x in M if x["slug"] == slug)
+        if slug == "magzhan":
+            stops.append({"kind": "photo", "img": "assets/img/team/work.jpg", "ar": round(img_ar("assets/img/team/work.jpg"), 4), "k": "Бірге", "n": "Бір экранға бес көз",
+                          "r": "Бірлескен жұмыс", "t": "Дизайн, код және мазмұн бір жобаға осылай тоғысты."})
+        stops.append({"kind": "member", "slug": slug, "img": f"assets/img/team/orig/{slug}.jpg", "ar": round(img_ar(f"assets/img/team/orig/{slug}.jpg"), 4),
+                      "k": f"{FILM_ORDER.index(slug) + 1:02d} / 05 · {EN[slug]}", "n": m["name"], "r": m["role"], "t": m["tag"],
+                      "href": f"team/{slug}.html", "film": f"team/3d.html#t={film_at(slug)}"})
+    stops.append({"kind": "photo", "img": "assets/img/team/duo.jpg", "ar": round(img_ar("assets/img/team/duo.jpg"), 4), "k": "Дизайн", "n": "Kopenova Merey мен Tutkabayeva Gulzat",
+                  "r": "Екі дизайнер", "t": "Алаш стилі мен оқу беттерінің интерфейсі осы екеуінің қолынан шықты."})
+    return json.dumps({"group": "assets/img/team/group-hd.jpg", "gar": round(img_ar("assets/img/team/group-hd.jpg"), 4), "stops": stops}, ensure_ascii=False).replace("</", "<\\/")
+
+
 def orbit(cls, p, film):
     """Шаңырақ - бес автордың навигациясы: бес түйін (фильмде - сахнасына #t=, команда бетінде - галереядағы кадрына). Фотоның үстіне түспейді."""
     nodes = []
@@ -378,7 +401,7 @@ def orbit(cls, p, film):
         a = -math.pi / 2 + k * 2 * math.pi / 5
         x, y = 50 + 38 * math.cos(a), 50 + 38 * math.sin(a)
         href = f"#t={film_at(slug)}" if film else f"#m-{slug}"
-        nodes.append(f'<a class="orb-n" data-slug="{slug}" href="{href}" style="left:{x:.1f}%;top:{y:.1f}%" aria-label="{E(m["name"])}"><i aria-hidden="true"></i><span>{E(m["name"].split()[-1] if slug != "sagid" else "Mustafa")}</span></a>')
+        nodes.append(f'<a class="orb-n" data-slug="{slug}" href="{href}" style="left:{x:.1f}%;top:{y:.1f}%" aria-label="{E(m["name"])}"><i aria-hidden="true"></i><span>{E(GIVEN[slug])}</span></a>')
     return (f'<nav class="orb {cls}" aria-label="Бес автор - шаңырақ навигациясы"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="38"/><circle cx="50" cy="50" r="33"/>'
             f'<path d="M17 37H83M17 63H83M37 17V83M63 17V83"/></svg>{"".join(nodes)}</nav>')
 
@@ -387,11 +410,11 @@ def film3d_page():
     p = "../"
     data = {"acts": [{"from": a, "to": b, "k": k, "t": t, "d": d} for a, b, k, t, d in ACTS],
             "members": [{"slug": m["slug"], "name": m["name"], "role": m["role"], "law": LAW[m["slug"]], "en": EN[m["slug"]], "given": GIVEN[m["slug"]],
-                         "photo": f"{p}assets/img/team/dark/{m['slug']}.jpg", "works": [[p + h, t] for h, t, d in m["works"]]} for m in M],
+                         "photo": f"{p}assets/img/team/orig/{m['slug']}.jpg", "works": [[p + h, t] for h, t, d in m["works"]]} for m in M],
             "group": {"photo": f"{p}assets/img/team/group-hd.jpg"}}
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     credits = "".join(f'<div><dt>{E(m["role"])}</dt><dd><a href="{m["slug"]}.html">{E(m["name"])}</a></dd></div>' for m in sorted(M, key=lambda m: ["sagid", "gulzat", "dastan", "magzhan", "merey"].index(m["slug"])))
-    faces = "".join(f'<li style="--i:{k}"><img src="{p}assets/img/team/dark/{m["slug"]}.jpg" alt="{E(m["name"])}, портрет" width="820" height="1200" loading="lazy" decoding="async"><b>{E(m["name"])}</b><span>{E(m["role"])}</span></li>' for k, m in enumerate(M))
+    faces = "".join(f'<li style="--i:{k}"><img src="{p}assets/img/team/orig/{m["slug"]}.jpg" alt="{E(m["name"])}, портрет" width="960" height="1400" loading="lazy" decoding="async"><b>{E(m["name"])}</b><span>{E(m["role"])}</span></li>' for k, m in enumerate(M))
     chapters = "".join(f'<a href="#t={a}">{i + 1:02d} <span>{E(n)}</span></a>' for i, (a, n) in enumerate(CHAPTERS3D))
     steps = "".join(f'<li><b>{n}</b> <span>{E(t)}</span><p>{E(d)}</p></li>' for n, t, d in FILM_STEPS)
     main = f"""<main id="main" class="um">
