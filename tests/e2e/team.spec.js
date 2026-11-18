@@ -79,18 +79,23 @@ test("жеке беттер: рөл, жас, қолтаңба, нақты сіл
   expect(fs.readFileSync(path.join(ROOT, "assets/js/rl-mathexpr.js"), "utf8")).toContain((await page.locator(".sg-ln").nth(1).textContent()).trim());
 });
 
-test("скролл: ашылу сахнасы мен галерея --p бойынша жылжиды, Sagid ортада", async ({ page }) => {
+test("фото - басты кейіпкер: топ фотосы толық (кесілмейді), шаңырақ - бес түйінді навигация; галерея Sagid-ке жетеді", async ({ page }) => {
+  for (const [w, h] of [[390, 844], [1440, 900]]) {
+    await page.setViewportSize({ width: w, height: h });
+    await page.goto("team.html");
+    const img = page.locator(".lf-photo img");
+    await expect.poll(() => img.evaluate((e) => e.complete && e.naturalWidth === 2400)).toBe(true);
+    const r = await img.evaluate((e) => { const b = e.getBoundingClientRect(); return { ar: b.width / b.height, fit: getComputedStyle(e).objectFit, left: b.left, right: b.right, vw: innerWidth }; });
+    expect(Math.abs(r.ar - 2400 / 1681)).toBeLessThan(.01);   // табиғи пропорция - бүйірі не басы кесілмейді
+    expect(r.fit).not.toBe("cover");
+    expect(r.left).toBeGreaterThanOrEqual(0); expect(r.right).toBeLessThanOrEqual(r.vw);
+    await expect(page.locator(".lf-photo figcaption a")).toHaveCount(5);
+    await expect(page.locator(".lf-orb .orb-n")).toHaveCount(5);
+  }
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("team.html");
-  const open = page.locator(".shx-open");
-  await expect(open).toHaveAttribute("style", /--p: 0/);
-  await page.evaluate(() => { const o = document.querySelector(".shx-open"); scrollTo(0, o.getBoundingClientRect().top + scrollY + o.offsetHeight - innerHeight); });
-  await expect.poll(async () => +(await open.evaluate((e) => e.style.getPropertyValue("--p")))).toBeGreaterThan(0.99);
-  await expect(page.locator(".shx-l1")).toHaveCSS("opacity", "1");
-  // галереяның ортасы - үшінші кадр (Sagid Mustafa)
-  await page.evaluate(() => { const t = document.querySelector(".uyq"); scrollTo(0, t.getBoundingClientRect().top + scrollY + (t.offsetHeight - innerHeight) / 2); });
-  await expect(page.locator(".uyq-hb.is-on")).toHaveText("Sagid Mustafa");
-  await expect.poll(async () => { const b = await page.locator(".uyq-p").nth(2).boundingBox(); return Math.abs(b.x + b.width / 2 - 640); }).toBeLessThan(12);
+  await page.locator('.lf-orb .orb-n[data-slug="sagid"]').click();
+  await expect(page.locator(".uyq-hb.is-on")).toHaveText("Sagid Mustafa", { timeout: 10000 });
 });
 
 test("манифест: сөздер скроллмен кезекпен жанады", async ({ page }) => {

@@ -9,7 +9,8 @@
                 платформаның сол адам жасаған қабатымен толады (әріп → құрылым → өнім), сосын әріптер жолақтарға ажырап, тереңге кетеді;
      IV       - камера сайтқа оралады: ол қабат-қабатымен қайта жиналып, мыңдаған бөлшекке айналады; тартуға болады;
      V        - бөлшектер алып шаңыраққа бірігеді;   VI - жарықтан шынайы топ фотосы, «BUILT BY PEOPLE.»
-   Портреттер: tools/team_cutout.py (GrabCut, модельсіз). Қозғалыс азайса не WebGL жоқ болса - титрлер. */
+   7.1 «фото - басты кейіпкер»: барлық фото түпнұсқа тікбұрыш (кесілмейді, фоннан бөлінбейді), рамкаға салынған зат ретінде қозғалады;
+   шаңырақ пен әріптер фотоның сыртында. Қозғалыс азайса не WebGL жоқ болса - титрлер. */
 import * as THREE from "../vendor/three/three.module.min.js";
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -134,7 +135,7 @@ async function start(D) {
   const mkTex = (c) => { const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
   const loader = new THREE.TextureLoader();
   const load = (src) => new Promise((res) => loader.load(src, (t) => { t.colorSpace = THREE.SRGBColorSpace; res(t); }, undefined, () => res(null)));
-  const cutTex = Object.fromEntries(await Promise.all(M.map(async (m) => [m.slug, await load(m.cut)])));
+  const cutTex = Object.fromEntries(await Promise.all(M.map(async (m) => [m.slug, await load(m.photo)])));   // түпнұсқа фото (assets/img/team/dark), альфасыз
 
   // ---------- сайттың қабаттары (I және IV) ----------
   const FULL = { struct: 1, design: 1, content: 1, interact: 0 }, EMPTY = { struct: 0, design: 0, content: 0, interact: 0 };
@@ -181,15 +182,19 @@ async function start(D) {
     textPlane(["THE FUTURE."], { size: 168, z: 64, y: mobile ? -8.6 : -7.6, width: pw }),
   ];
   poster.forEach((m, i) => { m.renderOrder = 60 + i; });
-  // «The Living Frame»: шынайы топ фотосы екі қабат (tools/team_cutout.py --group): фон және адамдар; камера жақындағанда бөлінеді
+  // «The Living Frame» 7.1: шынайы топ фотосы - бір тұтас, өзгертілмеген тікбұрыш; рамкасымен бірге қатты зат ретінде сәл қисаяды
   const PHZ = 46, PHW = mobile ? 15.5 : 19, PHH = PHW * 1681 / 2400;
-  const [bgTex, fgTex] = await Promise.all([load(D.group.bg), load(D.group.fg)]);
-  const photoBg = new THREE.Mesh(new THREE.PlaneGeometry(PHW, PHH), new THREE.MeshBasicMaterial({ map: bgTex, transparent: true, depthWrite: false, fog: false }));
-  const photoFg = new THREE.Mesh(new THREE.PlaneGeometry(PHW, PHH), new THREE.MeshBasicMaterial({ map: fgTex, transparent: true, depthWrite: false, fog: false }));
-  photoBg.position.set(0, 0, PHZ); photoFg.position.set(0, 0, PHZ + .01); photoBg.renderOrder = 48; photoFg.renderOrder = 49; scene.add(photoBg, photoFg);
-  const crowd = [photoBg, photoFg];
-  const ringPts = []; for (let i = 0; i <= 160; i++) { const a = i / 160 * Math.PI * 2; ringPts.push(new THREE.Vector3(Math.cos(a) * 9, Math.sin(a) * 9, 0)); }
-  const ring = new THREE.Group(); ring.position.set(0, 0, 40); scene.add(ring);
+  const gTex = await load(D.group.photo);
+  if (gTex) { gTex.anisotropy = renderer.capabilities.getMaxAnisotropy(); gTex.generateMipmaps = true; }
+  const photoFrame = new THREE.Group(); photoFrame.position.set(0, 0, PHZ); scene.add(photoFrame);
+  const photoBg = new THREE.Mesh(new THREE.PlaneGeometry(PHW, PHH), new THREE.MeshBasicMaterial({ map: gTex, transparent: true, depthWrite: false, fog: false }));
+  photoBg.renderOrder = 48; photoFrame.add(photoBg);
+  const pfLine = new THREE.LineBasicMaterial({ color: PORC, transparent: true, opacity: .35, fog: false });
+  { const w = PHW / 2 + .28, h = PHH / 2 + .28; photoFrame.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-w, -h, 0), new THREE.Vector3(w, -h, 0), new THREE.Vector3(w, h, 0), new THREE.Vector3(-w, h, 0)]), pfLine)); }
+  const crowd = [photoBg];
+  const RR = mobile ? 9.6 : 12.6;   // шаңырақ шеңбері фотодан үлкен және оның артында: адамдардың үстінен өтпейді
+  const ringPts = []; for (let i = 0; i <= 160; i++) { const a = i / 160 * Math.PI * 2; ringPts.push(new THREE.Vector3(Math.cos(a) * RR, Math.sin(a) * RR, 0)); }
+  const ring = new THREE.Group(); ring.position.set(0, 0, PHZ - 1.5); ring.scale.setScalar(RR / 9); scene.add(ring);
   const lineMat = new THREE.LineBasicMaterial({ color: CHAMP, transparent: true, opacity: .32, fog: false });
   ring.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts), lineMat));
   ring.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts.map((p) => p.clone().multiplyScalar(.93))), lineMat));
@@ -205,7 +210,9 @@ async function start(D) {
   });
   const people = ORDER.map((slug, i) => {
     const m = BY[slug], x = PX(i);
-    const portrait = new THREE.Mesh(new THREE.PlaneGeometry(PH * .8, PH), new THREE.MeshBasicMaterial({ map: cutTex[slug], transparent: true, depthWrite: false, color: 0x000000 }));
+    const ar = cutTex[slug] && cutTex[slug].image ? cutTex[slug].image.width / cutTex[slug].image.height : .68;
+    const portrait = new THREE.Mesh(new THREE.PlaneGeometry(PH * ar, PH), new THREE.MeshBasicMaterial({ map: cutTex[slug], transparent: true, depthWrite: false, color: 0x000000 }));
+    { const w = PH * ar / 2 + .12, h = PH / 2 + .12; portrait.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-w, -h, .01), new THREE.Vector3(w, -h, .01), new THREE.Vector3(w, h, .01), new THREE.Vector3(-w, h, .01)]), new THREE.LineBasicMaterial({ color: PORC, transparent: true, opacity: .28 }))); }
     portrait.position.set(x, 0, PZP); portrait.renderOrder = 40; scene.add(portrait);
     const key = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: PORC, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); key.scale.set(9, 10, 1); key.position.set(x, 1.8, PZP - 1.5); key.renderOrder = 30; scene.add(key);
     // алып есім: екі текстура (тұтас фарфор / ішінде платформаның қабаты), 12 көлденең жолақ
@@ -312,7 +319,7 @@ async function start(D) {
 
   // ---------- HTML қабаттары ----------
   const q = $(".um-q"), cap = $(".um-cap"), capK = $(".um-k"), capT = $(".um-t"), capD = $(".um-d"), hint = $(".um-hint"), site = $(".um-site"), bar0 = $(".um-bar i"), fin = $(".um-fin");
-  const storyEl = $(".um-story"), groupEl = $(".um-group"), voidEl = $(".um-void"), facesEl = $(".um-faces"), handEl = $(".um-hand");
+  const orbNodes = [...document.querySelectorAll(".um-orb .orb-n")], storyEl = $(".um-story"), groupEl = $(".um-group"), voidEl = $(".um-void"), facesEl = $(".um-faces"), handEl = $(".um-hand");
   const pp = $(".um-pp"), ppI = $(".um-pp-i"), ppE = $(".um-pp-e"), ppN = $(".um-pp-n"), ppR = $(".um-pp-r"), ppL = $(".um-pp-l"), ppA = $(".um-pp-a"), xrB = $(".um-xr"), xrL = $(".um-xr-l");
   const CAP = D.acts; let capKey = "", ppKey = -1;
   function caption(t) {
@@ -325,6 +332,7 @@ async function start(D) {
     const i = Math.floor((t - T.act) / T.per), u = t - T.act - i * T.per, on = t >= T.act && t < T.col && u > 1.9 && u < T.per - 1.5;
     if (on && ppKey !== i) { ppKey = i; const P = people[i], m = P.m; ppI.textContent = `${String(i + 1).padStart(2, "0")} / 05`; ppE.textContent = m.en; ppN.textContent = m.name; ppR.textContent = m.role; ppL.textContent = m.law; ppA.href = m.slug + ".html"; xrL.replaceChildren(...m.works.map(([h, tt]) => { const li = document.createElement("li"), a = document.createElement("a"); a.href = h; a.textContent = tt; li.append(a); return li; })); }
     pp.classList.toggle("is-on", on);
+    const cur = t >= T.act && t < T.col ? ORDER[i] : null; orbNodes.forEach((n) => n.classList.toggle("is-on", n.dataset.slug === cur));
     if (!on && !xrL.hidden) { xrL.hidden = true; xrB.setAttribute("aria-expanded", "false"); }
   }
 
@@ -396,11 +404,9 @@ async function start(D) {
     // постер
     const pA = 1 - seg(t, 1.6, 3.4);
     poster.forEach((m, i) => { m.material.opacity = (started ? 1 : eo(posterT * 1.2 - i * .3)) * (1 - seg(cam.position.z, m.position.z + 3, m.position.z + .5)); m.visible = m.material.opacity > .01; });
-    { const sep = eio(seg(t, .3, 3.2)), into = 1 - seg(cam.position.z, PHZ + 4, PHZ + .6), fadeIn = started ? 1 : eo(posterT * .7 - .2);
-      photoBg.position.z = PHZ - sep * 3.2; photoBg.scale.setScalar(1 + sep * .07); photoBg.material.color.setScalar(1 - sep * .55);   // фон артқа кетіп, күңгірттенеді
-      photoFg.position.z = PHZ + sep * 2.6;                                                                                              // адамдар алға шығады
-      photoBg.material.opacity = fadeIn * into; photoFg.material.opacity = fadeIn * (1 - seg(cam.position.z, PHZ + 3.2, PHZ + 2.65));
-      crowd.forEach((m) => { m.visible = m.material.opacity > .01; }); }
+    { const into = 1 - seg(cam.position.z, PHZ + 15, PHZ + 7), fadeIn = started ? 1 : eo(posterT * .7 - .2), tilt = eio(seg(t, .3, 3.2));
+      photoFrame.rotation.set(-tilt * .05, tilt * .07 + px * .02, 0);   // 3-4° - тек рамкамен бірге, адамдардың пішіні өзгермейді
+      photoBg.material.opacity = fadeIn * into; pfLine.opacity = .35 * fadeIn * into; photoFrame.visible = photoBg.material.opacity > .01; }
     ring.rotation.z = now * .02; lineMat.opacity = .32 * pA * (started ? 1 : eo(posterT * .6 - .3)); ring.visible = lineMat.opacity > .01;
     // кейіпкерлер
     people.forEach((P) => {
