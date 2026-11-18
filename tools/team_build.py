@@ -187,7 +187,7 @@ def team_page():
           <p class="shx-kick">AO17 командасы</p>
           <h1 id="shx-h" aria-label="Бір шаңырақ - бес адам" data-split><span class="shx-l1">Бір шаңырақ</span><span class="shx-l2">бес адам</span></h1>
           <p class="shx-names">{names}</p>
-          <a class="shx-3d" href="team/3d.html"><i aria-hidden="true">▶</i> 3D фильм: «Ертеңнің сәулетшілері»</a>
+          <a class="shx-3d" href="team/3d.html"><i aria-hidden="true">▶</i> 3D фильм: «Жасалмаған сайт»</a>
         </div>
         <p class="shx-hint" aria-hidden="true"><span>Төмен айналдырыңыз</span><i></i></p>
       </div>
@@ -381,75 +381,76 @@ def landing():
   </section>"""
 
 
-# ---------- team/3d.html: «Ертеңнің сәулетшілері» - 3D режиссер нұсқасы ----------
-CHAPTERS = [
-    (0.0, "01 · Мүмкін емес құрылыс", "Жоқтан бар жасау", "Бір платформа. Бес адам. Бәрі бөлшектерге ыдырайды, тек бес жарық қалады."),
-    (0.14, "02 · Бесеуі", "Бес жарық - бір шаңырақ", "Жарықтар уық болып тоғысады. Камера шаңырақтың ортасынан өтеді."),
-    (0.30, "03 · Жасаушылар әлемі", "Бес әлем", "Әр адамның өз әлемі бар. Порталды басып, ішіне кіріңіз."),
-    (0.62, "04 · Тоғысу", "Бесеуі - бір болды", "Дизайн, код және мазмұн бір нүктеге ағады."),
-    (0.74, "05 · Құрастыру", "Шаңырақ көтерілді", "Бес адамның еңбегі бір платформаға айналды."),
-    (0.87, "06 · Кодтың артында", "Шын адамдар", "Мұның бәрін 17-18 жастағы бес оқушы жасады."),
-    (0.955, "07 · Келесі тарау", "Біз есікті аштық", "Болашақты сен жасайсың."),
+# ---------- team/3d.html: «Жасалмаған сайт» - сайттың өзі бөлшектеніп, оны жасаған адамдар ашылады ----------
+LAW = {
+    "sagid": "Алдымен қаңқа: әр элементтің орны мен байланысы. Платформаның ішкі жүйесі осылай басталды.",
+    "gulzat": "Қаңқа жарыққа, түске және әріпке ие болады: Алаштың көркем тілі.",
+    "dastan": "Бос құрылым білімге толады: сабақтар, есептер, тесттер және тексерілген жауаптар.",
+    "magzhan": "Интерфейс тіріледі: код орындалады, батырма мен карточка әрекетке жауап береді.",
+    "merey": "Бәрі оқушының қолындағы телефонға бейімделеді: ыңғайлы әрі түсінікті.",
+}
+ACTS = [   # (басы, соңы, белгі, тақырып, сипаттама) - секунд, assets/js/team3d.js уақыт сызығымен сәйкес
+    (7.6, 13.0, "I · Беті", "Сайттың астындағы әлем", "Әр сайттың астында қабаттар жатыр: әріп, интерфейс, логика, мазмұн."),
+    (13.0, 18.3, "I · Беті", "Адамдарсыз - бос шыны", "Оны жасаған адамдарды алып тастасақ, сайттан тек бос құрылым қалады."),
+    (18.5, 22.0, "II · Авторлар", "Бес адам - бір кеңістік", "Сайттың әр қабаты осы бесеуінің қолынан өтті."),
+    (70.0, 78.0, "IV · Құлау", "Құрылымды өз қолыңмен бұз", "Енді сайт - мыңдаған бөлшек. Тартып көріңіз: олар қайта жиналады."),
+    (78.5, 87.0, "V · Шаңырақ", "Бес бағыт - бір шаңырақ", "Интерфейстің бөлшектері бір шаңыраққа бірігеді."),
+]
+FILM_STEPS = [
+    ("I", "Беті", "Ауада AO17 сайты тұр. Ол қабаттарға ажырап, код жолдары алтын жіп болып тартылады; адамдарсыз сайт бос шыныға айналады."),
+    ("II", "Авторлар", "Бес шынайы портрет бір кеңістікте, әртүрлі тереңдікте тұр."),
+    ("III", "Еңбек", "Әр адамға жақындағанда сайт сол адамның үлесімен қайта жасалады: қаңқа, түс пен әріп, мазмұн, қозғалыс, телефон."),
+    ("IV", "Құлау", "Сайт мыңдаған бөлшекке айналады; оларды тартуға болады, олар қайта жиналады."),
+    ("V", "Шаңырақ", "Камера көтеріледі: бөлшектер алып шаңыраққа бірігеді."),
+    ("VI", "Ашылу", "Шаңырақтың ортасынан жарық. Виртуал әлем жоғалып, шынайы топ фотосы ашылады."),
 ]
 
 
 def film3d_page():
     p = "../"
-    data = {"chapters": [{"at": a, "k": k, "t": t, "d": d} for a, k, t, d in CHAPTERS],
-            "members": [{"slug": m["slug"], "name": m["name"], "role": m["role"], "tag": m["tag"], "areas": m["areas"], "age": m["age"],
-                         "sig": m["sig"], "kind_kk": KIND[m["kind"]][0], "photo": p + photo(m["slug"]),
-                         "demo": f'<div class="dm dm-{m["sig"]}" role="img" aria-label="{E(DEMO_CAP[m["sig"]])}"><span class="dm-cap">{E(DEMO_CAP[m["sig"]])}</span>{DEMO[m["sig"]]}</div>'}
-                        for m in M]}
+    data = {"acts": [{"from": a, "to": b, "k": k, "t": t, "d": d} for a, b, k, t, d in ACTS],
+            "members": [{"slug": m["slug"], "name": m["name"], "role": m["role"], "law": LAW[m["slug"]], "photo": p + photo(m["slug"])} for m in M]}
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
-    photo_names = "".join(f'<li><a href="{m["slug"]}.html"><b>{E(m["name"])}</b><span>{E(m["role"])}</span></a></li>' for m in M)
-    fb_chap = "".join(f'<li><p class="t3-fk">{E(k)}</p><h3>{E(t)}</h3><p>{E(d)}</p></li>' for a, k, t, d in CHAPTERS)
-    fb_people = "".join(f'<li style="--acc:{KIND[m["kind"]][1]}"><a href="{m["slug"]}.html"><img src="{p}{photo(m["slug"])}" alt="{E(m["name"])}, портрет" width="640" height="800" loading="lazy" decoding="async"><b>{E(m["name"])}</b><span>{E(m["role"])} · {age(m)}</span></a></li>' for m in M)
-    main = f"""<main id="main" class="t3">
-  <script type="application/json" id="t3-data">{js}</script>
-  <section class="t3-scroll" aria-label="3D фильм: Ертеңнің сәулетшілері">
-    <div class="t3-stage">
-      <canvas class="t3-cv" aria-hidden="true"></canvas>
-      <div class="t3-flash" aria-hidden="true"></div>
-      <div class="t3-photo">
-        <img src="{p}assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус." width="2400" height="1681" loading="lazy" decoding="async">
-        <ol class="t3-pn">{photo_names}</ol>
+    credits = "".join(f'<div><dt>{E(m["role"])}</dt><dd><a href="{m["slug"]}.html">{E(m["name"])}</a></dd></div>' for m in sorted(M, key=lambda m: ["sagid", "gulzat", "dastan", "magzhan", "merey"].index(m["slug"])))
+    steps = "".join(f'<li><b>{n}</b> <span>{E(t)}</span><p>{E(d)}</p></li>' for n, t, d in FILM_STEPS)
+    main = f"""<main id="main" class="um">
+  <script type="application/json" id="um-data">{js}</script>
+  <section class="um-film" aria-label="3D фильм: Жасалмаған сайт">
+    <div class="um-stage">
+      <canvas class="um-cv" aria-hidden="true"></canvas>
+      <div class="um-site" aria-label="AO17 сайтының беті">
+        <a class="um-a um-a1" href="{p}index.html#academies">Академияны таңдау</a>
+        <a class="um-a um-a2" href="{p}lectures/week-0.html">CS50x-тен бастау</a>
+        <a class="um-a um-a0" href="{p}index.html">AO17 басты беті</a>
       </div>
-      <div class="t3-end">
-        <p class="t3-end-a">Біз есікті аштық.</p>
-        <p class="t3-end-b">Болашақты сен жасайсың.</p>
-        <p class="t3-end-c" lang="en">We built the door. You build the future.</p>
-        <div class="t3-end-row"><a class="btn gold" href="{p}index.html">Оқуды бастау</a><a class="btn ghost" href="{p}team.html">Команда беті</a><button type="button" class="btn ghost t3-replay">Қайта көру</button></div>
+      <p class="um-q">Ал егер осының бәрін жасаған адамдарды алып тастасақ ше?</p>
+      <div class="um-cap" aria-live="polite"><p class="um-k"></p><h1 class="um-t">Жасалмаған сайт</h1><p class="um-d"></p></div>
+      <p class="um-hint" aria-hidden="true">Тінтуірмен не саусақпен тартыңыз</p>
+      <div class="um-flash" aria-hidden="true"></div>
+      <div class="um-photo"><img src="{p}assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус." width="2400" height="1681" loading="lazy" decoding="async"></div>
+      <div class="um-fin">
+        <p class="um-f1">Сиқырмен жасалған жоқ.</p>
+        <p class="um-f2">Бес адамның еңбегімен жасалды.</p>
+        <p class="um-f3">Болашақ өздігінен жасалмайды. Оны адамдар жасайды.</p>
+        <div class="um-row"><a class="btn gold" href="{p}index.html">Оқуды бастау</a><a class="btn ghost" href="#um-cr">Титрлер</a><button type="button" class="btn ghost um-replay">Қайта көру</button></div>
       </div>
-      <div class="t3-cap" aria-live="polite"><p class="t3-k">{E(CHAPTERS[0][1])}</p><h1 class="t3-t">{E(CHAPTERS[0][2])}</h1><p class="t3-d">{E(CHAPTERS[0][3])}</p></div>
-      <button type="button" class="t3-skip">Өткізу</button>
-      <span class="t3-bar" aria-hidden="true"><i></i></span>
+      <button type="button" class="um-skip">Өткізу</button>
+      <span class="um-bar" aria-hidden="true"><i></i></span>
     </div>
   </section>
-  <section class="t3-fb" id="t3-fb" aria-labelledby="t3-fb-h">
-    <div class="t3-fb-in">
-      <p class="st-intertitle">Ертеңнің сәулетшілері</p>
-      <h2 id="t3-fb-h">Жеті көріністе - бес адам</h2>
-      <p class="t3-fb-note">3D фильм өзі ойнайды (шамамен 1,5 минут), WebGL арқылы құрылады: барлық пішін кодпен сызылған, дыбыс жоқ. Қозғалыс азайтылған режимде осы мәтіндік нұсқа көрсетіледі.</p>
-      <ol class="t3-fchs">{fb_chap}</ol>
-      <ul class="t3-fpp">{fb_people}</ul>
-      <p class="t3-fb-end">Біз есікті аштық. Болашақты сен жасайсың.</p>
-      <p class="t3-fb-row"><a class="btn gold" href="{p}team.html">Команда беті</a></p>
-    </div>
+  <section class="um-cr" id="um-cr" aria-labelledby="um-cr-h">
+    <figure class="um-cr-ph"><img src="{p}assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус." width="2400" height="1681" loading="lazy" decoding="async"></figure>
+    <p class="um-cr-k">Жасалмаған сайт · титрлер</p>
+    <h2 id="um-cr-h">Сайтты жасағандар</h2>
+    <dl class="um-cr-l">{credits}</dl>
+    <ol class="um-cr-steps" aria-label="Фильмнің көріністері">{steps}</ol>
+    <p class="um-cr-note">Фильм өзі ойнайды (шамамен 1,5 минут), дыбыссыз. Барлық пішін кодпен құрылған, фотолар шынайы. Қозғалыс азайтылған режимде осы титрлер ғана көрсетіледі.</p>
+    <p class="um-cr-end">Болашақ өздігінен жасалмайды. Оны адамдар жасайды.</p>
+    <p class="um-row"><a class="btn gold" href="{p}team.html">Команда беті</a></p>
   </section>
-  <dialog class="t3-world" aria-labelledby="t3w-n">
-    <div class="t3w-in">
-      <button type="button" class="t3w-x" aria-label="Жабу">×</button>
-      <img class="t3w-img" src="" alt="" width="640" height="800">
-      <div class="t3w-tx">
-        <p class="t3w-k"></p><h2 class="t3w-n" id="t3w-n"></h2><p class="t3w-r"></p><p class="t3w-t"></p><p class="t3w-a"></p>
-        <div class="t3w-demo"></div>
-        <a class="btn gold t3w-go" href="#">Жеке беті</a>
-      </div>
-    </div>
-  </dialog>
 </main>"""
-    return shell(p, f"Ертеңнің сәулетшілері - 3D фильм | {TEAM['name']}",
-                 "AO17 командасы туралы интерактивті 3D фильм: жеті көрініс, бес адамның әлемі, шынайы фото.",
+    return shell(p, f"Жасалмаған сайт - 3D фильм | {TEAM['name']}",
+                 "AO17 туралы 3D фильм: сайттың өзі қабаттарға бөлшектеніп, оны жасаған бес адам ашылады.",
                  main, f'\n  <script type="module" src="{p}assets/js/team3d.js"></script>')
 
 
