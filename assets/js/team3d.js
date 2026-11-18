@@ -1,14 +1,15 @@
 /* © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
-   «Жасалмаған сайт» (team/3d.html) - бір үздіксіз камера кадры, өзі ойнайды (~100 с), WebGL: three.js r160 (MIT, assets/vendor/three).
-     I   Беті       - ауада AO17 сайты тұр (сілтемелері шынайы); «адамдарды алып тастасақ ше?»; сайт қабаттарға ажырайды,
-                      код жолдары алтын жіп болып тартылады, камера қабаттардың жанынан, сосын арасынан өтеді; сайт бос шыныға айналады;
-     II  Авторлар   - бес шынайы портрет бір кеңістікте, әртүрлі тереңдікте;
-     III Еңбек      - әр адамға жақындағанда құрылым сол адамның үлесімен қайта жасалады:
-                      Sagid - қаңқа мен байланыстар, Gulzat - түс пен әріп, Dastan - мазмұн, Magzhan - қозғалыс, Merey - телефон;
-     IV  Құлау      - сайт мыңдаған бөлшекке айналады, оны тінтуірмен не саусақпен тартуға болады, бөлшектер қайта жиналады;
-     V   Шаңырақ    - камера көтеріледі, бөлшектер алып шаңыраққа бірігеді;
-     VI  Ашылу      - шаңырақтың ортасынан жарық, виртуал әлем жоғалып, шынайы топ фотосы ашылады. Дыбыс жоқ.
-   Барлық пішін кодпен құрылады; сайттың көрінісі canvas-та қолмен сызылады (DOM-ның суреті емес). Қозғалыс азайса не WebGL жоқ болса - титрлер. */
+   «THE UNMADE / Жасалмаған сайт» (team/3d.html) - қараңғы кинематографиялық журнал стиліндегі 3D фильм, three.js r160 (MIT, assets/vendor/three).
+   Визуал жүйесі: обсидиан, фарфор, графит - негіз; шампань-алтын - тек 5%-дық акцент. Bodoni Moda - алып тақырыптар, Inter - белгілер,
+   PT Serif - қазақша жолдар. Бір үздіксіз камера кадры (~110 с), дыбыссыз:
+     Постер   - «THE PEOPLE BEHIND THE FUTURE.» кеңістіктегі алып әріптер, артында қараңғыдағы бес адам; «ENTER EXPERIENCE» (не 6 с) -
+                камера әріптердің, сосын адамдардың арасынан өтеді;
+     I        - ауада AO17 сайты (сілтемелері шынайы): «адамдарды алып тастасақ ше?» - қабаттарға ажырайды, бос шыныға айналады;
+     II-III   - бір кеңістікте бес кейіпкер: фоннан бөлінген портрет қараңғыдан жарыққа шығады, артында алып есім. Есімнің іші
+                платформаның сол адам жасаған қабатымен толады (әріп → құрылым → өнім), сосын әріптер жолақтарға ажырап, тереңге кетеді;
+     IV       - камера сайтқа оралады: ол қабат-қабатымен қайта жиналып, мыңдаған бөлшекке айналады; тартуға болады;
+     V        - бөлшектер алып шаңыраққа бірігеді;   VI - жарықтан шынайы топ фотосы, «BUILT BY PEOPLE.»
+   Портреттер: tools/team_cutout.py (GrabCut, модельсіз). Қозғалыс азайса не WebGL жоқ болса - титрлер. */
 import * as THREE from "../vendor/three/three.module.min.js";
 
 const $ = (s, r = document) => r.querySelector(s);
@@ -27,11 +28,12 @@ if (root && raw) {
   else start(D).catch((e) => { console.warn(e); root.classList.remove("um-live"); root.classList.add("um-static"); });
 }
 
-// ---------- уақыт сызығы (секунд) ----------
-const T = { q: 2.2, brk: 5.5, strip: 13, auth: 18.5, act: 22, per: 9.5, col: 69.5, shan: 78, rev: 88, fin: 92, end: 100 };
+// ---------- уақыт сызығы (секунд, «ENTER»-ден кейін) ----------
+const T = { q: 6.5, brk: 10, strip: 17.5, act: 24, per: 11, col: 79, shan: 87.5, rev: 97.5, fin: 101.5, end: 110 };
 const FW = 1280, FH = 800, UW = 16, UH = 10, GAP = 1.4;
 const GOLD = "#d9b468", CREAM = "#efe6d3";
-const F = { u: "Unbounded, sans-serif", s: "'PT Serif', Georgia, serif", i: "Inter, system-ui, sans-serif", m: "'JetBrains Mono', ui-monospace, monospace" };
+const PORC = 0xece8e1, CHAMP = 0xc9b48a;
+const F = { u: "Unbounded, sans-serif", s: "'PT Serif', Georgia, serif", i: "Inter, system-ui, sans-serif", m: "'JetBrains Mono', ui-monospace, monospace", b: "'Bodoni Moda', 'PT Serif', serif" };
 
 // ---------- сайттың көрінісі: элементтер (1280×800 кадрда) және қабаттар ----------
 // 0 - негіз (бет, шапка, шаңырақ суреті), 1 - типографика, 2 - интерфейс, 3 - логика (код), 4 - мазмұн (академиялар)
@@ -111,118 +113,174 @@ function drawPhone(c, tt) {
 
 async function start(D) {
   root.classList.add("um-live");
+  const hdr = document.querySelector(".topbar"); const fitStage = () => { const st = $(".um-stage"); if (st && hdr) st.style.height = Math.max(420, innerHeight - hdr.offsetHeight) + "px"; }; fitStage(); addEventListener("resize", fitStage);
   const M = D.members, mobile = innerWidth < 760, R = mobile ? 1 : 1.25;
+  const ORDER = ["sagid", "gulzat", "dastan", "magzhan", "merey"];   // қаңқа → дизайн → мазмұн → қозғалыс → телефон
   const BY = Object.fromEntries(M.map((m) => [m.slug, m]));
-  const ORDER = ["sagid", "gulzat", "dastan", "magzhan", "merey"];   // құрылыстың реті: қаңқа → дизайн → мазмұн → қозғалыс → телефон
-  const PLACE = { gulzat: [-11, -.3, 3], dastan: [-6, .35, 7], sagid: [0, 0, 9.5], magzhan: [6, -.2, 6.5], merey: [11, .35, 2.8] };
   const cv = $(".um-cv"), stage = $(".um-stage");
   const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: !mobile, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.5 : 2));
-  renderer.setClearColor(0x050403, 1);
-  const scene = new THREE.Scene(); scene.fog = new THREE.Fog(0x050403, 30, 80);
-  const cam = new THREE.PerspectiveCamera(50, 1, .1, 200);
-  try { await Promise.all([`800 27px Unbounded`, `700 70px "PT Serif"`, `400 19px Inter`, `600 17px Inter`, `500 14px "JetBrains Mono"`].map((f) => document.fonts.load(f))); } catch (e) { /* әдепкі қаріп */ }
+  renderer.setClearColor(0x0e0d0c, 1);
+  const scene = new THREE.Scene(); scene.fog = new THREE.Fog(0x0e0d0c, 34, 90);
+  const cam = new THREE.PerspectiveCamera(50, 1, .1, 220);
+  try { await Promise.all([`800 27px Unbounded`, `700 70px "PT Serif"`, `400 19px Inter`, `600 17px Inter`, `500 14px "JetBrains Mono"`, `500 120px "Bodoni Moda"`, `700 120px "Bodoni Moda"`].map((f) => document.fonts.load(f))); } catch (e) { /* әдепкі қаріп */ }
 
-  const dot = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, "rgba(255,250,232,1)"); gr.addColorStop(.3, "rgba(255,226,170,.65)"); gr.addColorStop(1, "rgba(255,210,140,0)"); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
+  const dot = (() => { const c = document.createElement("canvas"); c.width = c.height = 64; const x = c.getContext("2d"), gr = x.createRadialGradient(32, 32, 0, 32, 32, 32); gr.addColorStop(0, "rgba(255,253,248,1)"); gr.addColorStop(.3, "rgba(236,232,225,.55)"); gr.addColorStop(1, "rgba(236,232,225,0)"); x.fillStyle = gr; x.fillRect(0, 0, 64, 64); return new THREE.CanvasTexture(c); })();
   const mkCanvas = (w, h, r) => { const c = document.createElement("canvas"); c.width = Math.round(w * r); c.height = Math.round(h * r); const x = c.getContext("2d"); x.scale(r, r); return { c, x }; };
   const mkTex = (c) => { const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; };
+  const loader = new THREE.TextureLoader();
+  const load = (src) => new Promise((res) => loader.load(src, (t) => { t.colorSpace = THREE.SRGBColorSpace; res(t); }, undefined, () => res(null)));
+  const cutTex = Object.fromEntries(await Promise.all(M.map(async (m) => [m.slug, await load(m.cut)])));
 
-  // ---------- қабаттар: әрқайсысында екі бет (A - қазіргі, B - келесі күй), шыны жиегі ----------
+  // ---------- сайттың қабаттары (I және IV) ----------
   const FULL = { struct: 1, design: 1, content: 1, interact: 0 }, EMPTY = { struct: 0, design: 0, content: 0, interact: 0 };
   const layers = [0, 1, 2, 3, 4].map((L) => {
     const g = new THREE.Group(); scene.add(g);
     const mk = () => { const cc = mkCanvas(FW, FH, R), tex = mkTex(cc.c), m = new THREE.Mesh(new THREE.PlaneGeometry(UW, UH), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, side: THREE.DoubleSide })); m.renderOrder = L * 3; g.add(m); return { ...cc, tex, m }; };
     const A = mk(), B = mk(); B.m.material.opacity = 0; B.m.renderOrder = L * 3 + 1;
-    const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(UW, UH, .05)), new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0 })); g.add(edge);
-    const glass = new THREE.Mesh(new THREE.PlaneGeometry(UW, UH), new THREE.MeshBasicMaterial({ color: 0xd9b468, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })); glass.position.z = -.01; g.add(glass);
+    const edge = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(UW, UH, .04)), new THREE.LineBasicMaterial({ color: PORC, transparent: true, opacity: 0 })); g.add(edge);
+    const glass = new THREE.Mesh(new THREE.PlaneGeometry(UW, UH), new THREE.MeshBasicMaterial({ color: PORC, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending })); glass.position.z = -.01; g.add(glass);
     drawLayer(A.x, L, FULL, 0); A.tex.needsUpdate = true;
     return { L, g, A, B, edge, glass, fade: null, z: 0 };
   });
-  let stageKey = "full", S = { ...FULL };
+  const clock = new THREE.Clock();
+  let stageKey = "full";
   function setStage(next, key, stagger = .12, dur = 1.1) {
-    if (key === stageKey) return; stageKey = key; S = next;
+    if (key === stageKey) return; stageKey = key;
     const now = clock.elapsedTime;
-    layers.forEach((l) => { if (l.fade) { swap(l); } drawLayer(l.B.x, l.L, S, now); l.B.tex.needsUpdate = true; l.fade = { t0: now + l.L * stagger, dur }; });
+    layers.forEach((l) => { if (l.fade) swap(l); drawLayer(l.B.x, l.L, next, now); l.B.tex.needsUpdate = true; l.fade = { t0: now + l.L * stagger, dur }; });
   }
   function swap(l) { const a = l.A; l.A = l.B; l.B = a; l.A.m.material.opacity = 1; l.B.m.material.opacity = 0; l.fade = null; }
 
-  // ---------- алтын жіптер: код жолдары тартылады (I) және элементтер арасындағы байланыс (III, Sagid) ----------
+  // код жолдары тартылатын жіңішке жіптер (фарфор; алтын емес)
   const W2 = (x, y) => [(x / FW - .5) * UW, -(y / FH - .5) * UH];
-  const NTH = mobile ? 36 : 70, thr = new Float32Array(NTH * 6), thrSeed = [];
+  const NTH = mobile ? 30 : 56, thr = new Float32Array(NTH * 6), thrSeed = [];
   for (let i = 0; i < NTH; i++) { const li = i % CODE.length, [x, y] = W2(812 + Math.random() * 300, 400 + li * 21 + (Math.random() - .5) * 6); thrSeed.push({ x, y, dx: (Math.random() - .5) * 6, dy: (Math.random() - .5) * 4, dz: -(8 + Math.random() * 16), d: Math.random() * .5 }); }
   const thrGeo = new THREE.BufferGeometry(); thrGeo.setAttribute("position", new THREE.BufferAttribute(thr, 3));
-  const thrMat = new THREE.LineBasicMaterial({ color: 0xe8c77e, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
+  const thrMat = new THREE.LineBasicMaterial({ color: PORC, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false });
   const threads = new THREE.LineSegments(thrGeo, thrMat); scene.add(threads);
-  const LINKS = [[2, 3], [2, 5], [5, 6], [6, 7], [7, 8], [7, 9], [9, 11], [8, 10], [10, 11], [4, 5], [3, 10], [1, 2], [0, 1], [4, 10]];
-  const cen = (i) => { const e = EL[i], [x, y] = W2(e.x + e.w / 2, e.y + e.h / 2); return [x, y, e.L]; };
-  const arch = new Float32Array(LINKS.length * 6), archGeo = new THREE.BufferGeometry(); archGeo.setAttribute("position", new THREE.BufferAttribute(arch, 3));
-  const archMat = new THREE.LineBasicMaterial({ color: 0xd9b468, transparent: true, opacity: 0, depthWrite: false });
-  const archL = new THREE.LineSegments(archGeo, archMat); scene.add(archL);
-  const nodes = new THREE.Points(new THREE.BufferGeometry(), new THREE.PointsMaterial({ map: dot, size: .55, color: 0xffe2a8, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending }));
-  nodes.geometry.setAttribute("position", new THREE.BufferAttribute(new Float32Array(EL.length * 3), 3)); scene.add(nodes);
 
-  // ---------- портреттер: шынайы фото, жиегі қараңғыға сіңеді (карточка емес) ----------
-  const vig = (() => { const c = document.createElement("canvas"); c.width = 256; c.height = 320; const x = c.getContext("2d"); x.fillStyle = "#000"; x.fillRect(0, 0, 256, 320); const g = x.createRadialGradient(128, 128, 30, 128, 140, 150); g.addColorStop(0, "#fff"); g.addColorStop(.62, "#fff"); g.addColorStop(1, "#000"); x.fillStyle = g; x.fillRect(0, 0, 256, 320); const b = x.createLinearGradient(0, 230, 0, 320); b.addColorStop(0, "rgba(0,0,0,0)"); b.addColorStop(1, "rgba(0,0,0,1)"); x.fillStyle = b; x.fillRect(0, 230, 256, 90); return new THREE.CanvasTexture(c); })();
-  const loader = new THREE.TextureLoader();
-  const ptex = await Promise.all(M.map((m) => new Promise((res) => loader.load(m.photo, (t) => { t.colorSpace = THREE.SRGBColorSpace; res(t); }, undefined, () => res(null)))));
-  const sx = mobile ? .55 : 1;
-  const people = {};
-  M.forEach((m, i) => {
-    const [x, y, z] = PLACE[m.slug], mesh = new THREE.Mesh(new THREE.PlaneGeometry(3.4, 4.25), new THREE.MeshBasicMaterial({ map: ptex[i], alphaMap: vig, transparent: true, opacity: 0, depthWrite: false }));
-    mesh.position.set(x * sx, y, z); mesh.rotation.y = -x * sx * .025; mesh.renderOrder = 30; scene.add(mesh);
-    const halo = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: 0xffd9a0, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); halo.scale.set(6, 7, 1); halo.position.set(x * sx, y + .3, z - .4); halo.renderOrder = 29; scene.add(halo);
-    people[m.slug] = { mesh, halo, p: new THREE.Vector3(x * sx, y, z) };
+  // ---------- постер: кеңістіктегі алып әріптер, қараңғыдағы бес адам, шаңырақ сызығы ----------
+  const PZ = 92;   // постердегі камераның орны
+  const textPlane = (lines, opts) => {
+    const { size = 200, weight = 500, color = "#ece8e1", w = 2048, lh = 1.0, italic = false, z, y, width } = opts;
+    const cc = mkCanvas(w, Math.round(size * lh * lines.length + size * .5), 1), x = cc.x;
+    x.font = `${italic ? "italic " : ""}${weight} ${size}px ${F.b}`; x.fillStyle = color; x.textAlign = "center"; x.textBaseline = "alphabetic";
+    lines.forEach((s, i) => x.fillText(s, w / 2, size * (i + 1) * lh));
+    const tex = mkTex(cc.c), ar = cc.c.width / cc.c.height;
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(width, width / ar), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, fog: false }));
+    m.position.set(0, y, z); scene.add(m); return m;
+  };
+  const pw = mobile ? 19 : 26;
+  const poster = [
+    textPlane(["THE PEOPLE"], { size: 220, z: 70, y: mobile ? 2.6 : 3.1, width: pw }),
+    textPlane(["BEHIND"], { size: 220, z: 66, y: mobile ? .95 : .55, width: pw * .62 }),
+    textPlane(["THE FUTURE."], { size: 220, z: 62, y: mobile ? -.9 : -2.3, width: pw * 1.05 }),
+  ];
+  poster.forEach((m, i) => { m.renderOrder = 60 + i; });
+  const crowd = ORDER.map((slug, i) => {
+    const k = i - 2, m = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 5.75), new THREE.MeshBasicMaterial({ map: cutTex[slug], transparent: true, depthWrite: false, color: 0x6a6560 }));
+    const order = [1, 0, 2, 3, 4][i];   // постерде: Gulzat, Sagid (ортада), Dastan... - кадрдағы реті
+    m.position.set((order - 2) * (mobile ? 2.25 : 3.4), mobile ? -10.6 : -7.6 + Math.abs(order - 2) * .1, 54 - Math.abs(order - 2) * .5); m.scale.setScalar(mobile ? 1 : .86); m.renderOrder = 50; scene.add(m); void k; return m;
   });
+  const ringPts = []; for (let i = 0; i <= 160; i++) { const a = i / 160 * Math.PI * 2; ringPts.push(new THREE.Vector3(Math.cos(a) * 9, Math.sin(a) * 9, 0)); }
+  const ring = new THREE.Group(); ring.position.set(0, .6, 46); scene.add(ring);
+  const lineMat = new THREE.LineBasicMaterial({ color: CHAMP, transparent: true, opacity: .32, fog: false });
+  ring.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts), lineMat));
+  ring.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts.map((p) => p.clone().multiplyScalar(.93))), lineMat));
+  { const lp = []; [-.3, .3].forEach((d) => { const h = Math.sqrt(1 - d * d) * 8.4; lp.push(new THREE.Vector3(d * 8.4, -h, 0), new THREE.Vector3(d * 8.4, h, 0), new THREE.Vector3(-h, d * 8.4, 0), new THREE.Vector3(h, d * 8.4, 0)); }); for (let i = 0; i < 36; i++) { const a = i / 36 * Math.PI * 2; lp.push(new THREE.Vector3(Math.cos(a) * 9.2, Math.sin(a) * 9.2, 0), new THREE.Vector3(Math.cos(a) * 13, Math.sin(a) * 13, -3)); } ring.add(new THREE.LineSegments(new THREE.BufferGeometry().setFromPoints(lp), new THREE.LineBasicMaterial({ color: PORC, transparent: true, opacity: .1, fog: false }))); }
 
-  // ---------- телефон (Merey) ----------
-  const ph = mkCanvas(390, 844, mobile ? 1.4 : 2), phTex = mkTex(ph.c);
-  const phone = new THREE.Group(); scene.add(phone); phone.renderOrder = 31;
-  const phScreen = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 9.1), new THREE.MeshBasicMaterial({ map: phTex, transparent: true, opacity: 0, depthWrite: false })); phone.add(phScreen);
-  const bz = new THREE.Shape(); { const w = 2.3, h = 4.75, r = .5; bz.moveTo(-w + r, -h); bz.lineTo(w - r, -h); bz.quadraticCurveTo(w, -h, w, -h + r); bz.lineTo(w, h - r); bz.quadraticCurveTo(w, h, w - r, h); bz.lineTo(-w + r, h); bz.quadraticCurveTo(-w, h, -w, h - r); bz.lineTo(-w, -h + r); bz.quadraticCurveTo(-w, -h, -w + r, -h); }
-  const bezel = new THREE.Line(new THREE.BufferGeometry().setFromPoints(bz.getPoints(48)), new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0 })); phone.add(bezel);
-  const PH_HOME = new THREE.Vector3(mobile ? 4.4 : 8.1, mobile ? 1.6 : .4, mobile ? 4.4 : 3.6);
+  // ---------- II-III: бір кеңістіктегі бес кейіпкер ----------
+  const PX = (i) => -36 + i * 18, PZP = -40, PH = 7;
+  const NAME_K = 12;
+  const nameMat = () => new THREE.ShaderMaterial({
+    uniforms: { mapA: { value: null }, mapB: { value: null }, mixv: { value: 0 }, op: { value: 0 }, reveal: { value: 0 } }, transparent: true, depthWrite: false,
+    vertexShader: "varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }",
+    fragmentShader: "uniform sampler2D mapA; uniform sampler2D mapB; uniform float mixv; uniform float op; uniform float reveal; varying vec2 vUv; void main(){ if (vUv.y > reveal) discard; vec4 a = texture2D(mapA, vUv); vec4 b = texture2D(mapB, vUv); vec4 c = mix(a, b, mixv); gl_FragColor = vec4(c.rgb, c.a * op);\n#include <colorspace_fragment>\n}",
+  });
+  const people = ORDER.map((slug, i) => {
+    const m = BY[slug], x = PX(i);
+    const portrait = new THREE.Mesh(new THREE.PlaneGeometry(PH * .8, PH), new THREE.MeshBasicMaterial({ map: cutTex[slug], transparent: true, depthWrite: false, color: 0x000000 }));
+    portrait.position.set(x, 0, PZP); portrait.renderOrder = 40; scene.add(portrait);
+    const key = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: PORC, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); key.scale.set(9, 10, 1); key.position.set(x, 1.8, PZP - 1.5); key.renderOrder = 30; scene.add(key);
+    // алып есім: екі текстура (тұтас фарфор / ішінде платформаның қабаты), 12 көлденең жолақ
+    const lines = mobile ? m.name.toUpperCase().split(" ") : [m.given.toUpperCase()];
+    const cw = mobile ? 1400 : 2400, size = mobile ? 300 : 420, chh = Math.round(size * .92 * lines.length + size * .3);
+    const A = mkCanvas(cw, chh, 1), B = mkCanvas(cw, chh, 1);
+    const fit = (x) => { let s = size; x.font = `700 ${s}px ${F.b}`; const wmax = Math.max(...lines.map((l) => x.measureText(l).width)); if (wmax > cw * .94) s = Math.floor(s * cw * .94 / wmax); x.font = `700 ${s}px ${F.b}`; return s; };
+    const s0 = fit(A.x); A.x.fillStyle = "#ece8e1"; A.x.textAlign = "center"; lines.forEach((l, k) => A.x.fillText(l, cw / 2, s0 * .9 * (k + 1)));
+    const texA = mkTex(A.c), texB = mkTex(B.c);
+    const nw = mobile ? 6.2 : 17.5, nh = nw * chh / cw, strips = [];
+    const grp = new THREE.Group(); grp.position.set(mobile ? x : x - 2.4, mobile ? 2.35 : 1.25, PZP - 3.2); scene.add(grp);
+    for (let k = 0; k < NAME_K; k++) {
+      const g = new THREE.PlaneGeometry(nw, nh / NAME_K), uv = g.attributes.uv, v0 = 1 - (k + 1) / NAME_K, v1 = 1 - k / NAME_K;
+      for (let j = 0; j < uv.count; j++) uv.setY(j, uv.getY(j) > .5 ? v1 : v0);
+      const mat = nameMat(); mat.uniforms.mapA.value = texA; mat.uniforms.mapB.value = texB;
+      const mesh = new THREE.Mesh(g, mat); mesh.position.y = nh / 2 - (k + .5) * nh / NAME_K; mesh.renderOrder = 20; grp.add(mesh);
+      strips.push({ mesh, mat, y0: mesh.position.y, dir: k % 2 ? 1 : -1, rnd: Math.random() });
+    }
+    return { slug, m, i, x, portrait, key, grp, strips, A, B, texA, texB, lines, cw, chh, s0, archDrawn: -1 };
+  });
+  // есімнің ішіне - сол адам жасаған қабат: әріп → құрылым → өнім
+  const STAGE = [{ struct: 1, design: 0, content: 0, interact: 0 }, { struct: 1, design: 1, content: 0, interact: 0 }, { struct: 1, design: 1, content: 1, interact: 0 }, { struct: 1, design: 1, content: 1, interact: 1 }, null];
+  const tmpSite = mkCanvas(FW, FH, 1);
+  const tmpPhone = mkCanvas(390, 844, 1);
+  function drawArch(P, now) {
+    const x = P.B.x, { cw, chh } = P; x.globalCompositeOperation = "source-over"; x.clearRect(0, 0, cw, chh);
+    x.fillStyle = "#121110"; x.fillRect(0, 0, cw, chh);
+    if (STAGE[P.i]) {
+      tmpSite.x.clearRect(0, 0, FW, FH); for (let L = 0; L < 5; L++) { const ly = mkLayerOnce(L, STAGE[P.i], now); tmpSite.x.drawImage(ly, 0, 0, FW, FH); }
+      const sc = Math.max(cw / FW, chh / FH) * 1.05; x.drawImage(tmpSite.c, (cw - FW * sc) / 2, (chh - FH * sc) / 2, FW * sc, FH * sc);
+    } else {
+      drawPhone(tmpPhone.x, now); const ph = chh * 1.02, pw2 = ph * 390 / 844; for (let k = -3; k <= 3; k++) x.drawImage(tmpPhone.c, cw / 2 + k * (pw2 * 1.08) - pw2 / 2, (chh - ph) / 2, pw2, ph);
+    }
+    x.globalCompositeOperation = "destination-in"; x.font = `700 ${P.s0}px ${F.b}`; x.textAlign = "center"; x.fillStyle = "#000"; P.lines.forEach((l, k) => x.fillText(l, cw / 2, P.s0 * .9 * (k + 1)));
+    x.globalCompositeOperation = "source-over"; x.strokeStyle = "rgba(236,232,225,.55)"; x.lineWidth = 2; x.font = `700 ${P.s0}px ${F.b}`; P.lines.forEach((l, k) => x.strokeText(l, cw / 2, P.s0 * .9 * (k + 1)));
+    P.texB.needsUpdate = true;
+  }
+  const layerCache = [0, 1, 2, 3, 4].map(() => mkCanvas(FW, FH, 1));
+  function mkLayerOnce(L, S, now) { drawLayer(layerCache[L].x, L, S, now); return layerCache[L].c; }
 
-  // ---------- IV-V: сайттың бөлшектері (бір текстура, әр бөлшек өз үзіндісін көрсетеді) ----------
+  // ---------- IV-V: бөлшектер мен шаңырақ ----------
   const COLS = mobile ? 30 : 46, ROWS = mobile ? 19 : 29, NF = COLS * ROWS;
   const comp = mkCanvas(FW, FH, R), compTex = mkTex(comp.c);
   const fGeo = new THREE.BoxGeometry(UW / COLS * .96, UH / ROWS * .96, .05), uvr = new Float32Array(NF * 4);
   const fMat = new THREE.ShaderMaterial({
     uniforms: { map: { value: compTex }, op: { value: 0 }, glow: { value: 0 } }, transparent: true, depthWrite: false,
     vertexShader: "attribute vec4 uvr; varying vec2 vUv; void main(){ vUv = uvr.xy + uv * uvr.zw; gl_Position = projectionMatrix * modelViewMatrix * instanceMatrix * vec4(position, 1.0); }",
-    fragmentShader: "uniform sampler2D map; uniform float op; uniform float glow; varying vec2 vUv; void main(){ vec4 c = texture2D(map, vUv); vec3 col = mix(c.rgb, vec3(.95, .78, .45), glow); float a = max(c.a, glow * .85); gl_FragColor = vec4(col, a * op);\n#include <colorspace_fragment>\n}",
+    fragmentShader: "uniform sampler2D map; uniform float op; uniform float glow; varying vec2 vUv; void main(){ vec4 c = texture2D(map, vUv); vec3 col = mix(c.rgb, vec3(.86, .84, .8), glow); float a = max(c.a, glow * .9); gl_FragColor = vec4(col, a * op);\n#include <colorspace_fragment>\n}",
   });
   const frag = new THREE.InstancedMesh(fGeo, fMat, NF); frag.frustumCulled = false; frag.visible = false; scene.add(frag);
   const home = new Float32Array(NF * 3), off = new Float32Array(NF * 3), vel = new Float32Array(NF * 3), tgt = new Float32Array(NF * 3), tq = [], delay = new Float32Array(NF);
   for (let r = 0, i = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++, i++) { uvr.set([c / COLS, 1 - (r + 1) / ROWS, 1 / COLS, 1 / ROWS], i * 4); home.set([(c + .5) / COLS * UW - UW / 2, UH / 2 - (r + .5) / ROWS * UH, 0], i * 3); delay[i] = Math.random() * .38; }
   fGeo.setAttribute("uvr", new THREE.InstancedBufferAttribute(uvr, 4));
-  // шаңырақ: сыртқы шеңбер, ішкі шеңбер, төрт күлдіреуіш, 36 уық (көлденең жатады; камера жоғарыдан көреді)
-  { const RS = 7.4, order = [...Array(NF).keys()].sort(() => Math.random() - .5), n1 = Math.floor(NF * .26), n2 = Math.floor(NF * .1), n3 = Math.floor(NF * .26), up = new THREE.Euler(-Math.PI / 2, 0, 0);
+  { const RS = 7.4, order = [...Array(NF).keys()].sort(() => Math.random() - .5), n1 = Math.floor(NF * .26), n2 = Math.floor(NF * .1), n3 = Math.floor(NF * .26);
     order.forEach((idx, j) => { let x, y = -1, z, yaw = 0, pitch = -Math.PI / 2;
       if (j < n1) { const a = j / n1 * Math.PI * 2, rr2 = RS + (Math.random() - .5) * .5; x = Math.cos(a) * rr2; z = Math.sin(a) * rr2; yaw = -a; y += (Math.random() - .5) * .15; }
       else if (j < n1 + n2) { const a = (j - n1) / n2 * Math.PI * 2, rr2 = RS * .9; x = Math.cos(a) * rr2; z = Math.sin(a) * rr2; yaw = -a; }
       else if (j < n1 + n2 + n3) { const k = j - n1 - n2, bar = k % 4, f = (Math.floor(k / 4) / (n3 / 4)) * 2 - 1, d = [-.3, .3][bar % 2] * RS, h = Math.sqrt(RS * RS - d * d) * .97; if (bar < 2) { x = d; z = f * h; yaw = Math.PI / 2; } else { z = d; x = f * h; } y += .05; }
       else { const k = j - n1 - n2 - n3, u = k % 36, f = Math.floor(k / 36) / Math.ceil((NF - n1 - n2 - n3) / 36), a = u / 36 * Math.PI * 2, rr2 = RS * (1.04 + f * .95); x = Math.cos(a) * rr2; z = Math.sin(a) * rr2; y -= f * 3.2; yaw = -a; pitch = -Math.PI / 2 + .35; }
-      tgt.set([x, y, z], idx * 3); tq[idx] = new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch, 0, yaw, "XZY")); void up; }); }
-  const gems = [0, 1, 2, 3, 4].map((i) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: i % 2 ? 0xffd28a : 0xff9fa8, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); const a = Math.PI / 2 + i / 5 * Math.PI * 2; s.position.set(Math.cos(a) * 7.4, -.8, Math.sin(a) * 7.4); s.scale.setScalar(1.6); scene.add(s); return s; });
-  const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: 0xfff0cf, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); sun.position.set(0, -9, 0); scene.add(sun);
-  const dust = (() => { const n = mobile ? 300 : 700, p = new Float32Array(n * 3); for (let i = 0; i < n; i++) p.set([(Math.random() - .5) * 60, (Math.random() - .5) * 30, (Math.random() - .5) * 60], i * 3); const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(p, 3)); const pts = new THREE.Points(g, new THREE.PointsMaterial({ map: dot, size: .14, color: 0xf3d9a4, transparent: true, opacity: .35, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(pts); return pts; })();
+      tgt.set([x, y, z], idx * 3); tq[idx] = new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch, 0, yaw, "XZY")); }); }
+  const gems = [0, 1, 2, 3, 4].map((i) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: i === 0 ? CHAMP : PORC, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); const a = Math.PI / 2 + i / 5 * Math.PI * 2; s.position.set(Math.cos(a) * 7.4, -.8, Math.sin(a) * 7.4); s.scale.setScalar(1.4); scene.add(s); return s; });
+  const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: 0xfffdf8, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); sun.position.set(0, -9, 0); scene.add(sun);
+  const dust = (() => { const n = mobile ? 260 : 600, p = new Float32Array(n * 3); for (let i = 0; i < n; i++) p.set([(Math.random() - .5) * 120, (Math.random() - .5) * 30, (Math.random() - .5) * 200], i * 3); const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(p, 3)); const pts = new THREE.Points(g, new THREE.PointsMaterial({ map: dot, size: .12, color: PORC, transparent: true, opacity: .3, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(pts); return pts; })();
 
-  // ---------- камера: бір үздіксіз кадр (Catmull-Rom; әр кілттің уақыты бар) ----------
+  // ---------- камера: бір үздіксіз, ауыр кадр ----------
   let keys = [], posC = null, lookC = null, Dd = 20;
   function layout() {
     const w = stage.clientWidth, h = stage.clientHeight, asp = w / h; renderer.setSize(w, h, false);
     cam.aspect = asp; cam.fov = asp < .8 ? 68 : 50; cam.updateProjectionMatrix();
     const tn = Math.tan(cam.fov * Math.PI / 360); Dd = Math.max(UW / (.86 * 2 * tn * asp), UH / (.7 * 2 * tn));
     const V = (x, y, z) => new THREE.Vector3(x, y, z), K = [];
-    K.push([0, V(0, 0, Dd), V(0, 0, 0)], [T.brk, V(0, .2, Dd * .93), V(0, 0, 0)], [8.5, V(Dd * .62, 1.6, Dd * .5), V(0, 0, 0)], [11.2, V(Dd * .78, 1.3, 1.2), V(0, 0, .7)],
-      [13.4, V(12, .4, .7), V(0, .1, .7)], [15.6, V(-3, .2, .7), V(-14, 0, .7)], [17.6, V(-13 * sx, 1.8, 7), V(-5 * sx, 0, 2)], [20.5, V(0, mobile ? 8 : 5.5, mobile ? 36 : 26), V(0, 0, 3.5)]);
-    ORDER.forEach((slug, i) => {
-      const p = people[slug].p, s0 = T.act + i * T.per, sg = Math.sign(p.x);
-      const cp = mobile ? V(p.x, p.y + 1.6, p.z + 8.2) : V(p.x + sg * 1.5, p.y + .5, p.z + 6), lk = mobile ? V(p.x * .85, p.y + 1.4, p.z - 6) : V(p.x * .6, p.y + .1, p.z - 7);
-      if (!mobile && !sg) { cp.set(.6, p.y + .7, p.z + 6.4); lk.set(0, p.y + .4, p.z - 7); }
-      K.push([s0 + 1.6, cp, lk], [s0 + T.per - 1.4, cp.clone().add(V(-sg * .35 - (sg ? 0 : .5), .12, -.5)), lk.clone().add(V(0, .05, 0))]);
+    K.push([0, V(0, 0, PZ), V(0, 0, 0)], [2.2, V(0, .1, 68), V(0, 0, 0)], [3.8, V(0, .2, 48), V(0, 0, 0)], [6, V(0, .1, Dd * 1.02), V(0, 0, 0)],
+      [T.brk, V(0, .2, Dd * .93), V(0, 0, 0)], [13, V(Dd * .62, 1.6, Dd * .5), V(0, 0, 0)], [15.7, V(Dd * .78, 1.3, 1.2), V(0, 0, .7)],
+      [17.9, V(12, .4, .7), V(0, .1, .7)], [20.1, V(-3, .2, .7), V(-14, 0, .7)], [22.3, V(-20, .6, -18), V(PX(0) - 4, .7, -48)]);
+    people.forEach((P) => {
+      const s0 = T.act + P.i * T.per, cx = mobile ? P.x : P.x - 2.4, cy = mobile ? 1.36 : .7, cz = PZP + (mobile ? 7.2 : 9);
+      K.push([s0 + 1.2, V(cx, cy, cz), V(cx, cy, PZP - 10)], [s0 + T.per - 2.2, V(cx + (mobile ? 0 : .5), cy + .1, cz - .9), V(cx + (mobile ? 0 : .4), cy + .05, PZP - 10)]);
     });
-    K.push([T.col + 1.5, V(0, .3, Dd * 1.02), V(0, 0, 0)], [T.shan, V(0, .2, Dd), V(0, 0, 0)], [T.shan + 5.5, V(0, mobile ? 30 : 23, 9), V(0, -1, 0)], [T.rev - 1, V(0, mobile ? 26 : 19, .5), V(0, -1, 0)], [T.rev + 2.5, V(0, 6, .01), V(0, -9, 0)], [T.end, V(0, 5, .01), V(0, -9, 0)]);
+    K.push([T.col + 1.8, V(26, 3, -10), V(0, 0, 0)], [T.col + 4.4, V(0, .3, Dd * 1.02), V(0, 0, 0)], [T.shan, V(0, .2, Dd), V(0, 0, 0)],
+      [T.shan + 5.5, V(0, mobile ? 30 : 23, 9), V(0, -1, 0)], [T.rev - 1, V(0, mobile ? 26 : 19, .5), V(0, -1, 0)], [T.rev + 2.5, V(0, 6, .01), V(0, -9, 0)], [T.end, V(0, 5, .01), V(0, -9, 0)]);
     keys = K.map((k) => k[0]); posC = new THREE.CatmullRomCurve3(K.map((k) => k[1]), false, "centripetal"); lookC = new THREE.CatmullRomCurve3(K.map((k) => k[2]), false, "centripetal");
   }
   const camU = (t) => { let i = 0; while (i < keys.length - 2 && t > keys[i + 1]) i++; return (i + clamp((t - keys[i]) / (keys[i + 1] - keys[i]))) / (keys.length - 1); };
@@ -230,27 +288,33 @@ async function start(D) {
 
   // ---------- HTML қабаттары ----------
   const q = $(".um-q"), cap = $(".um-cap"), capK = $(".um-k"), capT = $(".um-t"), capD = $(".um-d"), hint = $(".um-hint"), site = $(".um-site"), bar0 = $(".um-bar i"), fin = $(".um-fin");
-  const CAP = D.acts;   // [{from, to, k, t, d}]
-  let capKey = "";
+  const pp = $(".um-pp"), ppI = $(".um-pp-i"), ppE = $(".um-pp-e"), ppN = $(".um-pp-n"), ppR = $(".um-pp-r"), ppL = $(".um-pp-l"), ppA = $(".um-pp-a");
+  const CAP = D.acts; let capKey = "", ppKey = -1;
   function caption(t) {
-    let c = CAP.find((a) => t >= a.from && t < a.to) || null, side = "";
-    const pi = Math.floor((t - T.act) / T.per);
-    if (t >= T.act && t < T.col && pi >= 0 && pi < 5) { const m = BY[ORDER[pi]]; c = { k: `III · Еңбек · ${pi + 1}/5`, t: m.name, d: `${m.role}. ${m.law}` }; side = mobile ? "" : (people[ORDER[pi]].p.x < 0 ? "r" : "l"); }
-    const key = c ? c.t + side : "";
-    if (key === capKey) return; capKey = key;
-    cap.classList.remove("is-on");
+    const c = CAP.find((a) => t >= a.from && t < a.to) || null, key = c ? c.t : "";
+    if (key === capKey) return; capKey = key; cap.classList.remove("is-on");
     if (!c) return;
-    setTimeout(() => { if (capKey !== key) return; capK.textContent = c.k; capT.textContent = c.t; capD.textContent = c.d; cap.dataset.side = side; cap.classList.add("is-on"); }, 380);
+    setTimeout(() => { if (capKey !== key) return; capK.textContent = c.k; capT.textContent = c.t; capD.textContent = c.d; cap.classList.add("is-on"); }, 380);
+  }
+  function person(t) {
+    const i = Math.floor((t - T.act) / T.per), u = t - T.act - i * T.per, on = t >= T.act && t < T.col && u > 1.9 && u < T.per - 1.5;
+    if (on && ppKey !== i) { ppKey = i; const P = people[i], m = P.m; ppI.textContent = `${String(i + 1).padStart(2, "0")} / 05`; ppE.textContent = m.en; ppN.textContent = m.name; ppR.textContent = m.role; ppL.textContent = m.law; ppA.href = m.slug + ".html"; }
+    pp.classList.toggle("is-on", on);
   }
 
-  // ---------- басқару: өзі ойнайды; «Өткізу», тарту (IV), қайта көру ----------
-  let pt = +((location.hash.match(/t=(\d+(?:\.\d+)?)/) || [])[1] || 0), onStage = true, idleT = 0, fragsBuilt = false, dragging = null, touched = false;
-  const clock = new THREE.Clock();
+  // ---------- басқару: постер → «ENTER» не 6 с → өзі ойнайды ----------
+  const seek = +((location.hash.match(/t=(\d+(?:\.\d+)?)/) || [])[1] || 0);
+  let pt = seek, started = seek > 0, onStage = true, idleT = 0, fragsBuilt = false, dragging = null, touched = false, posterT = 0;
+  const begin = () => { if (started) return; started = true; root.classList.add("is-started"); };
+  if (started) root.classList.add("is-started");
+  $(".um-enter").addEventListener("click", begin);
   new IntersectionObserver((es) => { onStage = es[0].intersectionRatio > .35; }, { threshold: [0, .35, .7] }).observe(stage);
   const wake = () => { stage.classList.remove("is-idle"); clearTimeout(idleT); idleT = setTimeout(() => stage.classList.add("is-idle"), 2600); };
+  let px = 0, py = 0, tx = 0, ty = 0;
+  addEventListener("pointermove", (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, { passive: true });
   ["pointermove", "pointerdown", "keydown"].forEach((ev) => addEventListener(ev, wake, { passive: true })); wake();
-  $(".um-skip").addEventListener("click", () => { pt = Math.max(pt, T.rev - .5); });
-  $(".um-replay").addEventListener("click", () => { pt = 0; fragsBuilt = false; touched = false; stageKey = ""; setStage({ ...FULL }, "full", 0, .01); });
+  $(".um-skip").addEventListener("click", () => { begin(); pt = Math.max(pt, T.rev - .5); });
+  $(".um-replay").addEventListener("click", () => { pt = 0; started = false; posterT = 0; root.classList.remove("is-started"); fragsBuilt = false; touched = false; stageKey = ""; setStage({ ...FULL }, "full", 0, .01); });
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), plane0 = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hitP = new THREE.Vector3();
   const toPlane = (e) => { const r = cv.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, cam); return ray.ray.intersectPlane(plane0, hitP) ? hitP.clone() : null; };
   cv.addEventListener("pointerdown", (e) => { if (!frag.visible || pt > T.shan) return; const p = toPlane(e); if (p) { dragging = p; touched = true; cv.setPointerCapture(e.pointerId); } });
@@ -265,48 +329,51 @@ async function start(D) {
   function frame() {
     requestAnimationFrame(frame);
     if (document.hidden) return;
-    const dt = Math.min(.05, clock.getDelta()), now = clock.elapsedTime;
-    if (onStage && !document.hidden) pt = Math.min(T.end, pt + dt);
+    const dt = Math.min(.05, clock.getDelta()), now = clock.elapsedTime, kk = 1 - Math.exp(-dt * 4);
+    if (!started && onStage) { posterT += dt; if (posterT > 6) begin(); }
+    if (started && onStage) pt = Math.min(T.end, pt + dt);
     const t = pt;
-    // күй: толық → бос → бес адам қайта құрады → толық
+    px += (tx - px) * (1 - Math.exp(-dt * 2)); py += (ty - py) * (1 - Math.exp(-dt * 2));
+    // сайт: толық → бос (I) → адамдар қайта құрғаннан кейін қабат-қабатымен оралады (IV)
     let want = FULL, key = "full", stag = .12;
-    if (t >= T.strip && t < T.act + 3) { want = EMPTY; key = "empty"; stag = .55; }
-    else if (t >= T.act + 3 && t < T.col) { const n = Math.floor((t - T.act - 3) / T.per) + 1; want = { struct: n >= 1 ? 1 : 0, design: n >= 2 ? 1 : 0, content: n >= 3 ? 1 : 0, interact: n >= 4 ? 1 : 0 }; key = "p" + Math.min(n, 4); stag = .2; }
-    else if (t >= T.col) { want = { ...FULL, interact: 0 }; key = "full2"; }
-    if (key !== stageKey && !(key === "full2" && stageKey === "p4")) setStage(want, key, stag);
-    if (key === "full2" && stageKey === "p4") { stageKey = "full2"; S = { ...FULL }; }
-    layers.forEach((l) => {
-      if (l.fade) { const k = clamp((now - l.fade.t0) / l.fade.dur); l.B.m.material.opacity = eio(k); l.A.m.material.opacity = 1 - eio(k); if (k >= 1) swap(l); }
-      else if (S.interact && now - lastDraw > .09 && l.L >= 2) { drawLayer(l.A.x, l.L, S, now); l.A.tex.needsUpdate = true; }
-    });
-    if (S.interact && now - lastDraw > .09) lastDraw = now;
-    // қабаттардың арасы: I-де ажырайды, IV-те қайта жалпақ
-    const gap = GAP * eio(seg(t, T.brk, T.brk + 2.4)) * (1 - eio(seg(t, T.col, T.col + 3))), lift = Math.sin(now * .6) * .06;
-    const glassA = seg(t, 9, 12) * (1 - seg(t, T.col, T.col + 2.5));
-    const fragOn = t >= T.col + 3.4 && t < T.rev + 3;
-    layers.forEach((l) => { l.z = (l.L - 2) * gap; l.g.position.set(0, lift * (l.L - 2) * .3, l.z); l.g.rotation.y = gap * .02 * (l.L - 2); l.edge.material.opacity = glassA * .7; l.glass.material.opacity = glassA * .035; l.g.visible = !fragOn; });
-    // алтын жіптер (I)
-    const tg = eo(seg(t, T.brk + .6, T.brk + 3.6)), tOut = 1 - seg(t, T.strip - .5, T.strip + 1.5); thrMat.opacity = .5 * tg * tOut; threads.visible = thrMat.opacity > .01;
+    if (t >= T.strip && t < T.col + 1.5) { want = EMPTY; key = "empty"; stag = .55; }
+    else if (t >= T.col + 1.5) { key = "full2"; stag = .45; }
+    if (key !== stageKey) setStage(want, key, stag, key === "full2" ? 1.4 : 1.1);
+    layers.forEach((l) => { if (l.fade) { const k = clamp((now - l.fade.t0) / l.fade.dur); l.B.m.material.opacity = eio(k); l.A.m.material.opacity = 1 - eio(k); if (k >= 1) swap(l); } });
+    const gap = GAP * eio(seg(t, T.brk, T.brk + 2.4)) * (1 - eio(seg(t, T.col + 2, T.col + 4.5))), lift = Math.sin(now * .6) * .06;
+    const glassA = seg(t, 13.5, 16.5) * (1 - seg(t, T.col + 3, T.col + 4.5));
+    const fragOn = t >= T.col + 4.8 && t < T.rev + 3;
+    const siteA = seg(t, 3.6, 5.6);
+    layers.forEach((l) => { l.z = (l.L - 2) * gap; l.g.position.set(0, lift * (l.L - 2) * .3, l.z); l.g.rotation.y = gap * .02 * (l.L - 2); l.edge.material.opacity = glassA * .45; l.glass.material.opacity = glassA * .018; l.g.visible = !fragOn && siteA > .01; l.A.m.material.color.setScalar(siteA); l.B.m.material.color.setScalar(siteA); });
+    const tg = eo(seg(t, T.brk + .6, T.brk + 3.6)), tOut = 1 - seg(t, T.strip - .5, T.strip + 1.5); thrMat.opacity = .38 * tg * tOut; threads.visible = thrMat.opacity > .01;
     if (threads.visible) { const z3 = layers[3].z; thrSeed.forEach((s, i) => { const k = clamp((tg - s.d) / (1 - s.d)); thr.set([s.x, s.y, z3, s.x + s.dx * k, s.y + s.dy * k + Math.sin(now + i) * .05 * k, z3 + s.dz * k], i * 6); }); thrGeo.attributes.position.needsUpdate = true; }
-    // байланыс желісі (Sagid): элементтер арасындағы алтын сызықтар мен түйіндер
-    const archA = seg(t, T.act + 2.6, T.act + 4.5) * (1 - seg(t, T.col - 1, T.col + 1)); archMat.opacity = archA * .8; nodes.material.opacity = archA; archL.visible = nodes.visible = archA > .01;
-    if (archL.visible) { const grow = eo(seg(t, T.act + 2.6, T.act + 6)); LINKS.forEach(([a, b], i) => { const A = cen(a), B = cen(b), za = layers[A[2]].z + .03, zb = layers[B[2]].z + .03, k = clamp(grow * 1.6 - i / LINKS.length * .6); arch.set([A[0], A[1], za, lerp(A[0], B[0], k), lerp(A[1], B[1], k), lerp(za, zb, k)], i * 6); }); archGeo.attributes.position.needsUpdate = true; const np = nodes.geometry.attributes.position; EL.forEach((e, i) => { const c = cen(i); np.setXYZ(i, c[0], c[1], layers[c[2]].z + .05); }); np.needsUpdate = true; }
-    // портреттер
-    const pA = seg(t, T.auth - 1.5, T.auth + 1.5) * (1 - seg(t, T.col - .5, T.col + 1.5));
-    const cur = t >= T.act && t < T.col ? ORDER[Math.floor((t - T.act) / T.per)] : null;
-    M.forEach((m) => { const P = people[m.slug], f = cur ? (cur === m.slug ? 1 : .32) : 1; const kk = 1 - Math.exp(-dt * 4); P.mesh.material.opacity += ((pA * f) - P.mesh.material.opacity) * kk; P.halo.material.opacity += ((pA * (cur === m.slug ? .28 : .06)) - P.halo.material.opacity) * kk; P.mesh.position.y = PLACE[m.slug][1] + Math.sin(now * .5 + P.p.x) * .05; });
-    // телефон (Merey)
-    const phA = seg(t, T.act + 4 * T.per + 2.5, T.act + 4 * T.per + 4.5) * (1 - seg(t, T.col, T.col + 1.5));
-    phScreen.material.opacity = phA; phScreen.renderOrder = 31; bezel.renderOrder = 32; bezel.material.opacity = phA; phone.visible = phA > .01;
-    if (phone.visible) { const k = eo(phA); phone.position.lerpVectors(new THREE.Vector3(UW / 2 - 2, 0, layers[2].z), PH_HOME, k); phone.rotation.y = -.22 * k; phone.scale.setScalar(.3 + (mobile ? .16 : .22) * k); if (now - (phone.userData.d || 0) > .1) { drawPhone(ph.x, now); phTex.needsUpdate = true; phone.userData.d = now; } }
-    // IV: бөлшектер, тарту, V: шаңырақ
+    // постер
+    const pA = 1 - seg(t, 1.6, 3.4);
+    poster.forEach((m, i) => { m.material.opacity = (started ? 1 : eo(posterT * 1.2 - i * .3)) * (1 - seg(cam.position.z, m.position.z + 3, m.position.z + .5)); m.visible = m.material.opacity > .01; });
+    crowd.forEach((m, i) => { m.material.opacity = (started ? 1 : eo(posterT * .8 - .6 - i * .08)) * (1 - seg(cam.position.z, m.position.z + 5, m.position.z + 1)); m.visible = m.material.opacity > .01; m.position.y += Math.sin(now * .4 + i) * .0015; });
+    ring.rotation.z = now * .02; lineMat.opacity = .32 * pA * (started ? 1 : eo(posterT * .6 - .3)); ring.visible = lineMat.opacity > .01;
+    // кейіпкерлер
+    people.forEach((P) => {
+      const s0 = T.act + P.i * T.per, u = t - s0, act = u > -3 && u < T.per + 1;
+      P.portrait.visible = P.key.visible = P.grp.visible = act;
+      if (!act) return;
+      const lit = eo(seg(u, 1.4, 4)) * (1 - seg(u, T.per - 1.2, T.per + .6)), dim = seg(u, -2.5, 1) * (1 - seg(u, T.per - .4, T.per + 1));
+      P.portrait.material.color.setScalar(.16 + .84 * lit); P.portrait.material.opacity = dim;
+      P.portrait.position.x = P.x + (mobile ? 0 : px * .15); P.portrait.position.y = Math.sin(now * .45) * .03;
+      P.key.material.opacity = .16 * lit;
+      const reveal = eo(seg(u, .6, 2.2)), mixv = eio(seg(u, 4.6, 6.4)), brk = eio(seg(u, 7.2, 10));
+      if (mixv > 0 && (P.archDrawn < 0 || (P.i === 3 && now - P.archDrawn > .14) || (P.i === 4 && now - P.archDrawn > .2))) { drawArch(P, now); P.archDrawn = now; }
+      P.strips.forEach((S, k) => { S.mat.uniforms.reveal.value = reveal * 1.02; S.mat.uniforms.mixv.value = mixv; S.mat.uniforms.op.value = (1 - seg(u, 8.4, 10.2)) * .94; S.mesh.position.set(S.dir * brk * (1.2 + S.rnd * 2.4), S.y0 + (k - NAME_K / 2) * brk * .12, -brk * (2 + S.rnd * 9)); S.mesh.rotation.y = S.dir * brk * .25; });
+      P.grp.position.x = (mobile ? P.x : P.x - 2.4) + px * (mobile ? .1 : .5);
+    });
+    // IV: бөлшектер, тарту; V: шаңырақ
     if (fragOn && !fragsBuilt) buildFrags();
     if (!fragOn && t < T.col) fragsBuilt = false;
     frag.visible = fragOn;
     if (fragOn) {
-      if (!touched && t > T.col + 6 && t < T.col + 6.1) push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(.5, .25, 0), 1.2);   // ешкім тартпаса - өзі бір «соғылады»
-      const fly = t >= T.shan ? (t - T.shan) / 5.5 : 0, glow = seg(t, T.shan + 3, T.shan + 6) * .3 + seg(t, T.rev - 2, T.rev) * .5;
-      fMat.uniforms.op.value = seg(t, T.col + 3.4, T.col + 3.6) * (1 - seg(t, T.rev + .5, T.rev + 2.6)); fMat.uniforms.glow.value = glow;
+      if (!touched && t > T.col + 7 && t < T.col + 7.1) push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(.5, .25, 0), 1.2);
+      const fly = t >= T.shan ? (t - T.shan) / 5.5 : 0, glow = seg(t, T.shan + 3, T.shan + 6) * .12 + seg(t, T.rev - 2, T.rev) * .6;
+      fMat.uniforms.op.value = seg(t, T.col + 4.8, T.col + 5) * (1 - seg(t, T.rev + .5, T.rev + 2.6)); fMat.uniforms.glow.value = glow;
       for (let i = 0; i < NF; i++) {
         const j = i * 3;
         vel[j] += (-off[j] * 14 - vel[j] * 3.2) * dt; vel[j + 1] += (-off[j + 1] * 14 - vel[j + 1] * 3.2) * dt; vel[j + 2] += (-off[j + 2] * 14 - vel[j + 2] * 3.2) * dt;
@@ -317,25 +384,28 @@ async function start(D) {
       }
       frag.instanceMatrix.needsUpdate = true;
     }
-    gems.forEach((g, i) => { g.material.opacity = seg(t, T.shan + 4.5 + i * .25, T.shan + 6 + i * .25) * (1 - seg(t, T.rev, T.rev + 1.5)) * (.7 + Math.sin(now * 2 + i) * .3); });
+    gems.forEach((g, i) => { g.material.opacity = seg(t, T.shan + 4.5 + i * .25, T.shan + 6 + i * .25) * (1 - seg(t, T.rev, T.rev + 1.5)) * (.55 + Math.sin(now * 2 + i) * .25); });
     const sA = seg(t, T.rev - 2, T.rev + 2.6); sun.material.opacity = sA; sun.scale.setScalar(2 + eio(sA) * 40);
-    dust.rotation.y = now * .01; dust.material.opacity = .35 * (1 - seg(t, T.rev, T.rev + 2));
-    // камера
-    const u = camU(t); posC.getPoint(u, cam.position); lookC.getPoint(u, lookV); cam.lookAt(lookV);
-    // HTML: сайттың шынайы сілтемелері (I-дің басында), сұрақ, тақырыптар, фото, соңғы сөз
-    const live = t < T.brk; site.classList.toggle("is-on", live);
+    dust.rotation.y = now * .006; dust.material.opacity = .3 * (1 - seg(t, T.rev, T.rev + 2));
+    // камера (постерде - тінтуірмен сәл қозғалады)
+    const u = camU(t); posC.getPoint(u, cam.position); lookC.getPoint(u, lookV);
+    const par = (1 - seg(t, 0, 2)) * (mobile ? .4 : 1.6); cam.position.x += px * par; cam.position.y -= py * par * .6;
+    cam.lookAt(lookV);
+    // HTML
+    const live = t > 5 && t < T.brk; site.classList.toggle("is-on", live);
     if (live) { const a = new THREE.Vector3(-UW / 2, UH / 2, 0).project(cam), b = new THREE.Vector3(UW / 2, -UH / 2, 0).project(cam), w = stage.clientWidth, h = stage.clientHeight; site.style.cssText = `left:${(a.x + 1) / 2 * w}px;top:${(1 - a.y) / 2 * h}px;width:${(b.x - a.x) / 2 * w}px;height:${(a.y - b.y) / 2 * h}px`; }
     q.classList.toggle("is-on", t > T.q && t < T.brk + 2.2);
     hint.classList.toggle("is-on", fragOn && t < T.shan - .5 && !touched);
-    caption(t);
+    caption(t); person(t);
     stage.style.setProperty("--flash", (seg(t, T.rev + .6, T.rev + 2.2) * (1 - seg(t, T.rev + 2.6, T.rev + 4))).toFixed(3));
     stage.style.setProperty("--photo", seg(t, T.rev + 2.4, T.rev + 4).toFixed(3));
     stage.style.setProperty("--fin", seg(t, T.fin, T.fin + 1).toFixed(3));
-    fin.classList.toggle("is-on", t >= T.fin); fin.classList.toggle("is-end", t >= T.end - 1.5);
+    fin.classList.toggle("is-on", t >= T.fin); fin.classList.toggle("is-end", t >= T.end - 2);
     stage.classList.toggle("is-end", t >= T.fin);
-    root.dataset.act = t < T.auth ? "1" : t < T.act ? "2" : t < T.col ? "3" : t < T.shan ? "4" : t < T.rev ? "5" : "6";
+    root.dataset.act = !started ? "0" : t < T.act ? "1" : t < T.col ? "3" : t < T.shan ? "4" : t < T.rev ? "5" : "6";
     if (bar0) bar0.style.transform = `scaleX(${(t / T.end).toFixed(4)})`;
     renderer.render(scene, cam);
+    void lastDraw;
   }
   frame();
 }

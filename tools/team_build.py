@@ -389,17 +389,19 @@ LAW = {
     "magzhan": "Интерфейс тіріледі: код орындалады, батырма мен карточка әрекетке жауап береді.",
     "merey": "Бәрі оқушының қолындағы телефонға бейімделеді: ыңғайлы әрі түсінікті.",
 }
-ACTS = [   # (басы, соңы, белгі, тақырып, сипаттама) - секунд, assets/js/team3d.js уақыт сызығымен сәйкес
-    (7.6, 13.0, "I · Беті", "Сайттың астындағы әлем", "Әр сайттың астында қабаттар жатыр: әріп, интерфейс, логика, мазмұн."),
-    (13.0, 18.3, "I · Беті", "Адамдарсыз - бос шыны", "Оны жасаған адамдарды алып тастасақ, сайттан тек бос құрылым қалады."),
-    (18.5, 22.0, "II · Авторлар", "Бес адам - бір кеңістік", "Сайттың әр қабаты осы бесеуінің қолынан өтті."),
-    (70.0, 78.0, "IV · Құлау", "Құрылымды өз қолыңмен бұз", "Енді сайт - мыңдаған бөлшек. Тартып көріңіз: олар қайта жиналады."),
-    (78.5, 87.0, "V · Шаңырақ", "Бес бағыт - бір шаңырақ", "Интерфейстің бөлшектері бір шаңыраққа бірігеді."),
+EN = {"sagid": "The Architect", "gulzat": "The Art Director", "dastan": "The Curator", "magzhan": "The Engineer", "merey": "The Designer"}
+GIVEN = {"sagid": "Mustafa", "gulzat": "Gulzat", "dastan": "Dastan", "magzhan": "Magzhan", "merey": "Merey"}
+ACTS = [   # (басы, соңы, белгі, тақырып, сипаттама) - секунд «ENTER»-ден кейін, assets/js/team3d.js уақыт сызығымен сәйкес
+    (12.1, 17.5, "I · Беті", "Сайттың астындағы әлем", "Әр сайттың астында қабаттар жатыр: әріп, интерфейс, логика, мазмұн."),
+    (17.5, 22.8, "I · Беті", "Адамдарсыз - бос шыны", "Оны жасаған адамдарды алып тастасақ, сайттан тек бос құрылым қалады."),
+    (79.6, 83.8, "IV · Оралу", "Бесеуі қайта құрды", "Сайт қабат-қабатымен орнына оралады."),
+    (83.8, 87.5, "IV · Құлау", "Құрылымды өз қолыңмен бұз", "Енді сайт - мыңдаған бөлшек. Тартып көріңіз: олар қайта жиналады."),
+    (88.0, 96.8, "V · Шаңырақ", "Бес бағыт - бір шаңырақ", "Интерфейстің бөлшектері бір шаңыраққа бірігеді."),
 ]
 FILM_STEPS = [
-    ("I", "Беті", "Ауада AO17 сайты тұр. Ол қабаттарға ажырап, код жолдары алтын жіп болып тартылады; адамдарсыз сайт бос шыныға айналады."),
-    ("II", "Авторлар", "Бес шынайы портрет бір кеңістікте, әртүрлі тереңдікте тұр."),
-    ("III", "Еңбек", "Әр адамға жақындағанда сайт сол адамның үлесімен қайта жасалады: қаңқа, түс пен әріп, мазмұн, қозғалыс, телефон."),
+    ("0", "Постер", "Кеңістіктегі алып әріптер: THE PEOPLE BEHIND THE FUTURE. Камера әріптердің, сосын қараңғыдағы бес адамның арасынан өтеді."),
+    ("I", "Беті", "Ауада AO17 сайты тұр. Ол қабаттарға ажырап, код жолдары жіңішке жіп болып тартылады; адамдарсыз сайт бос шыныға айналады."),
+    ("II-III", "Кейіпкерлер", "Бес адам қараңғыдан жарыққа шығады. Әр адамның алып есімінің іші оның сайттағы еңбегімен толады: қаңқа, түс пен әріп, мазмұн, қозғалыс, телефон; сосын әріптер құрылымға ажырайды."),
     ("IV", "Құлау", "Сайт мыңдаған бөлшекке айналады; оларды тартуға болады, олар қайта жиналады."),
     ("V", "Шаңырақ", "Камера көтеріледі: бөлшектер алып шаңыраққа бірігеді."),
     ("VI", "Ашылу", "Шаңырақтың ортасынан жарық. Виртуал әлем жоғалып, шынайы топ фотосы ашылады."),
@@ -409,13 +411,14 @@ FILM_STEPS = [
 def film3d_page():
     p = "../"
     data = {"acts": [{"from": a, "to": b, "k": k, "t": t, "d": d} for a, b, k, t, d in ACTS],
-            "members": [{"slug": m["slug"], "name": m["name"], "role": m["role"], "law": LAW[m["slug"]], "photo": p + photo(m["slug"])} for m in M]}
+            "members": [{"slug": m["slug"], "name": m["name"], "role": m["role"], "law": LAW[m["slug"]], "en": EN[m["slug"]], "given": GIVEN[m["slug"]],
+                         "cut": f"{p}assets/img/team/cut/{m['slug']}.webp"} for m in M]}
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     credits = "".join(f'<div><dt>{E(m["role"])}</dt><dd><a href="{m["slug"]}.html">{E(m["name"])}</a></dd></div>' for m in sorted(M, key=lambda m: ["sagid", "gulzat", "dastan", "magzhan", "merey"].index(m["slug"])))
     steps = "".join(f'<li><b>{n}</b> <span>{E(t)}</span><p>{E(d)}</p></li>' for n, t, d in FILM_STEPS)
     main = f"""<main id="main" class="um">
   <script type="application/json" id="um-data">{js}</script>
-  <section class="um-film" aria-label="3D фильм: Жасалмаған сайт">
+  <section class="um-film" aria-label="3D фильм: The Unmade, Жасалмаған сайт">
     <div class="um-stage">
       <canvas class="um-cv" aria-hidden="true"></canvas>
       <div class="um-site" aria-label="AO17 сайтының беті">
@@ -423,13 +426,21 @@ def film3d_page():
         <a class="um-a um-a2" href="{p}lectures/week-0.html">CS50x-тен бастау</a>
         <a class="um-a um-a0" href="{p}index.html">AO17 басты беті</a>
       </div>
+      <div class="um-poster">
+        <p class="um-mark"><svg viewBox="-12 -12 24 24" aria-hidden="true" focusable="false"><circle r="9.5"/><path d="M-9.5-3H9.5M-9.5 3H9.5M-3-9.5V9.5M3-9.5V9.5"/></svg>AO17</p>
+        <p class="um-film-k" lang="en">An interactive film<br>2026</p>
+        <h1 class="um-ph" lang="en">The people behind the future.</h1>
+        <p class="um-sub">Бес адам. Бір болашақ.</p>
+        <button type="button" class="um-enter" lang="en">Enter experience</button>
+      </div>
       <p class="um-q">Ал егер осының бәрін жасаған адамдарды алып тастасақ ше?</p>
-      <div class="um-cap" aria-live="polite"><p class="um-k"></p><h1 class="um-t">Жасалмаған сайт</h1><p class="um-d"></p></div>
+      <div class="um-pp" aria-live="polite"><p class="um-pp-i"></p><p class="um-pp-e" lang="en"></p><h2 class="um-pp-n"></h2><p class="um-pp-r"></p><p class="um-pp-l"></p><a class="um-pp-a" href="#">Жұмысын көру</a></div>
+      <div class="um-cap" aria-live="polite"><p class="um-k"></p><p class="um-t"></p><p class="um-d"></p></div>
       <p class="um-hint" aria-hidden="true">Тінтуірмен не саусақпен тартыңыз</p>
       <div class="um-flash" aria-hidden="true"></div>
       <div class="um-photo"><img src="{p}assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус." width="2400" height="1681" loading="lazy" decoding="async"></div>
       <div class="um-fin">
-        <p class="um-f1">Сиқырмен жасалған жоқ.</p>
+        <p class="um-f1" lang="en">Built by people.</p>
         <p class="um-f2">Бес адамның еңбегімен жасалды.</p>
         <p class="um-f3">Болашақ өздігінен жасалмайды. Оны адамдар жасайды.</p>
         <div class="um-row"><a class="btn gold" href="{p}index.html">Оқуды бастау</a><a class="btn ghost" href="#um-cr">Титрлер</a><button type="button" class="btn ghost um-replay">Қайта көру</button></div>
@@ -440,7 +451,7 @@ def film3d_page():
   </section>
   <section class="um-cr" id="um-cr" aria-labelledby="um-cr-h">
     <figure class="um-cr-ph"><img src="{p}assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус." width="2400" height="1681" loading="lazy" decoding="async"></figure>
-    <p class="um-cr-k">Жасалмаған сайт · титрлер</p>
+    <p class="um-cr-k" lang="en">The people behind the future</p>
     <h2 id="um-cr-h">Сайтты жасағандар</h2>
     <dl class="um-cr-l">{credits}</dl>
     <ol class="um-cr-steps" aria-label="Фильмнің көріністері">{steps}</ol>
@@ -449,7 +460,7 @@ def film3d_page():
     <p class="um-row"><a class="btn gold" href="{p}team.html">Команда беті</a></p>
   </section>
 </main>"""
-    return shell(p, f"Жасалмаған сайт - 3D фильм | {TEAM['name']}",
+    return shell(p, f"The Unmade - 3D фильм | {TEAM['name']}",
                  "AO17 туралы 3D фильм: сайттың өзі қабаттарға бөлшектеніп, оны жасаған бес адам ашылады.",
                  main, f'\n  <script type="module" src="{p}assets/js/team3d.js"></script>')
 
