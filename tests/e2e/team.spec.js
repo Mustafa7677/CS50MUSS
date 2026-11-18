@@ -129,6 +129,32 @@ test("уақыт машинасы (team.html): скролл алға - топс�
   await c.close();
 });
 
+test("уақыт машинасы: ноутбуктағы тірі бет жүктелгеннен кейін де сахна ішінен айналмайды (төмен-жоғары скролл, бастапқы кадр орнында)", async ({ browser }) => {
+  const c = await browser.newContext({ viewport: { width: 1366, height: 768 } });
+  await blockFonts(c);
+  await c.addInitScript(() => { try { sessionStorage.setItem("ao17:test-gl", "1"); } catch (e) { /* */ } });
+  const p = await c.newPage();
+  await p.goto("team.html");
+  const tm = p.locator(".tmx");
+  // iframe мекенжайында якорь жоқ - якорь секіруі ата-ана контейнерін айналдырып жіберетін
+  await expect(p.locator(".tmx-work iframe")).toHaveAttribute("data-src", /^[^#]+$/);
+  const gl = await p.evaluate(() => { const c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); });
+  if (gl) {
+    await expect(tm).toHaveClass(/tmx-live/, { timeout: 15000 });
+    const go = (t) => p.evaluate((t) => { const r = document.querySelector(".tmx"), s = r.querySelector(".tmx-stick"); scrollTo(0, r.getBoundingClientRect().top + scrollY + t * (r.offsetHeight - s.offsetHeight)); }, t);
+    const data = JSON.parse(await p.locator("#tmx-data").textContent());
+    const wk = data.stops.findIndex((s) => /work\./.test(s.img));
+    await go(0.18 + 0.64 * (wk + 0.28) / data.stops.length);   // ноутбукқа жақындау: iframe жүктеледі
+    await expect(p.locator(".tmx-work iframe")).toHaveAttribute("src", /index\.html/, { timeout: 15000 });
+    await p.waitForTimeout(2500);
+    await go(0);
+    await expect(tm).toHaveClass(/is-still/, { timeout: 10000 });
+    const off = await p.evaluate(() => { const s = document.querySelector(".tmx-stick"); return [s.scrollTop, s.scrollLeft]; });
+    expect(off).toEqual([0, 0]);
+  }
+  await c.close();
+});
+
 test("телефон (360px): бес портрет жүктеледі, бас шапканың астына кірмейді, «Жеке беті» толық көрінеді және басылады", async ({ browser }) => {
   const c = await browser.newContext({ viewport: { width: 360, height: 780 }, isMobile: true, hasTouch: true });
   await blockFonts(c);
