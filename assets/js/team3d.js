@@ -175,20 +175,21 @@ async function start(D) {
     const m = new THREE.Mesh(new THREE.PlaneGeometry(width, width / ar), new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false, fog: false }));
     m.position.set(0, y, z); scene.add(m); return m;
   };
-  const pw = mobile ? 19 : 26;
+  const pw = mobile ? 15 : 24;
   const poster = [
-    textPlane(["THE PEOPLE"], { size: 220, z: 70, y: mobile ? 2.6 : 3.1, width: pw }),
-    textPlane(["BEHIND"], { size: 220, z: 66, y: mobile ? .95 : .55, width: pw * .62 }),
-    textPlane(["THE FUTURE."], { size: 220, z: 62, y: mobile ? -.9 : -2.3, width: pw * 1.05 }),
+    textPlane(["THE PEOPLE BEHIND"], { size: 168, z: 64, y: mobile ? 8.4 : 7.4, width: pw }),
+    textPlane(["THE FUTURE."], { size: 168, z: 64, y: mobile ? -8.6 : -7.6, width: pw }),
   ];
   poster.forEach((m, i) => { m.renderOrder = 60 + i; });
-  const crowd = ORDER.map((slug, i) => {
-    const k = i - 2, m = new THREE.Mesh(new THREE.PlaneGeometry(4.6, 5.75), new THREE.MeshBasicMaterial({ map: cutTex[slug], transparent: true, depthWrite: false, color: 0x6a6560 }));
-    const order = [1, 0, 2, 3, 4][i];   // постерде: Gulzat, Sagid (ортада), Dastan... - кадрдағы реті
-    m.position.set((order - 2) * (mobile ? 2.25 : 3.4), mobile ? -10.6 : -7.6 + Math.abs(order - 2) * .1, 54 - Math.abs(order - 2) * .5); m.scale.setScalar(mobile ? 1 : .86); m.renderOrder = 50; scene.add(m); void k; return m;
-  });
+  // «The Living Frame»: шынайы топ фотосы екі қабат (tools/team_cutout.py --group): фон және адамдар; камера жақындағанда бөлінеді
+  const PHZ = 46, PHW = mobile ? 15.5 : 19, PHH = PHW * 1681 / 2400;
+  const [bgTex, fgTex] = await Promise.all([load(D.group.bg), load(D.group.fg)]);
+  const photoBg = new THREE.Mesh(new THREE.PlaneGeometry(PHW, PHH), new THREE.MeshBasicMaterial({ map: bgTex, transparent: true, depthWrite: false, fog: false }));
+  const photoFg = new THREE.Mesh(new THREE.PlaneGeometry(PHW, PHH), new THREE.MeshBasicMaterial({ map: fgTex, transparent: true, depthWrite: false, fog: false }));
+  photoBg.position.set(0, 0, PHZ); photoFg.position.set(0, 0, PHZ + .01); photoBg.renderOrder = 48; photoFg.renderOrder = 49; scene.add(photoBg, photoFg);
+  const crowd = [photoBg, photoFg];
   const ringPts = []; for (let i = 0; i <= 160; i++) { const a = i / 160 * Math.PI * 2; ringPts.push(new THREE.Vector3(Math.cos(a) * 9, Math.sin(a) * 9, 0)); }
-  const ring = new THREE.Group(); ring.position.set(0, .6, 46); scene.add(ring);
+  const ring = new THREE.Group(); ring.position.set(0, 0, 40); scene.add(ring);
   const lineMat = new THREE.LineBasicMaterial({ color: CHAMP, transparent: true, opacity: .32, fog: false });
   ring.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts), lineMat));
   ring.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(ringPts.map((p) => p.clone().multiplyScalar(.93))), lineMat));
@@ -225,6 +226,11 @@ async function start(D) {
     }
     return { slug, m, i, x, portrait, key, grp, strips, A, B, texA, texB, lines, cw, chh, s0, archDrawn: -1 };
   });
+  // «Үзілмейтін жіп»: бес автордың сахнасы арқылы өтетін бір құрылымдық сызық; әр адамның еңбегімен ұзарады
+  const thrPts = people.map((P) => new THREE.Vector3(mobile ? P.x : P.x - 2.4, mobile ? -.6 : -1.9, PZP - 3.2));
+  const thread = new THREE.Line(new THREE.BufferGeometry().setFromPoints(new Array(64).fill(0).map(() => new THREE.Vector3())), new THREE.LineBasicMaterial({ color: CHAMP, transparent: true, opacity: 0, depthWrite: false }));
+  thread.frustumCulled = false; scene.add(thread);
+  const threadCurve = new THREE.CatmullRomCurve3([thrPts[0].clone().add(new THREE.Vector3(-14, 0, 0)), ...thrPts, thrPts[4].clone().add(new THREE.Vector3(14, 0, 0))]);
   // есімнің ішіне - сол адам жасаған қабат: әріп → құрылым → өнім
   const STAGE = [{ struct: 1, design: 0, content: 0, interact: 0 }, { struct: 1, design: 1, content: 0, interact: 0 }, { struct: 1, design: 1, content: 1, interact: 0 }, { struct: 1, design: 1, content: 1, interact: 1 }, null];
   const tmpSite = mkCanvas(FW, FH, 1);
@@ -297,11 +303,17 @@ async function start(D) {
   }
   const camU = (t) => { let i = 0; while (i < keys.length - 2 && t > keys[i + 1]) i++; return (i + clamp((t - keys[i]) / (keys[i + 1] - keys[i]))) / (keys.length - 1); };
   addEventListener("resize", layout);
+  // «мүмкін емес оралу»: финалдағы топ фотосы ашылудағы кадрдың тура орнында, тура өлшемінде (бастапқы камерадан проекциялау)
+  function frameGroup() {
+    const c0 = cam.clone(); c0.position.set(0, 0, PZ); c0.lookAt(0, 0, 0); c0.updateMatrixWorld(); c0.updateProjectionMatrix();
+    const w = stage.clientWidth, h = stage.clientHeight, a = new THREE.Vector3(-PHW / 2, PHH / 2, PHZ).project(c0), b = new THREE.Vector3(PHW / 2, -PHH / 2, PHZ).project(c0);
+    const img = $(".um-group img"); img.style.cssText = `left:${(a.x + 1) / 2 * w}px;top:${(1 - a.y) / 2 * h}px;width:${(b.x - a.x) / 2 * w}px;height:${(a.y - b.y) / 2 * h}px`;
+  }
 
   // ---------- HTML қабаттары ----------
   const q = $(".um-q"), cap = $(".um-cap"), capK = $(".um-k"), capT = $(".um-t"), capD = $(".um-d"), hint = $(".um-hint"), site = $(".um-site"), bar0 = $(".um-bar i"), fin = $(".um-fin");
   const storyEl = $(".um-story"), groupEl = $(".um-group"), voidEl = $(".um-void"), facesEl = $(".um-faces"), handEl = $(".um-hand");
-  const pp = $(".um-pp"), ppI = $(".um-pp-i"), ppE = $(".um-pp-e"), ppN = $(".um-pp-n"), ppR = $(".um-pp-r"), ppL = $(".um-pp-l"), ppA = $(".um-pp-a");
+  const pp = $(".um-pp"), ppI = $(".um-pp-i"), ppE = $(".um-pp-e"), ppN = $(".um-pp-n"), ppR = $(".um-pp-r"), ppL = $(".um-pp-l"), ppA = $(".um-pp-a"), xrB = $(".um-xr"), xrL = $(".um-xr-l");
   const CAP = D.acts; let capKey = "", ppKey = -1;
   function caption(t) {
     const c = CAP.find((a) => t >= a.from && t < a.to) || null, key = c ? c.t : "";
@@ -311,8 +323,9 @@ async function start(D) {
   }
   function person(t) {
     const i = Math.floor((t - T.act) / T.per), u = t - T.act - i * T.per, on = t >= T.act && t < T.col && u > 1.9 && u < T.per - 1.5;
-    if (on && ppKey !== i) { ppKey = i; const P = people[i], m = P.m; ppI.textContent = `${String(i + 1).padStart(2, "0")} / 05`; ppE.textContent = m.en; ppN.textContent = m.name; ppR.textContent = m.role; ppL.textContent = m.law; ppA.href = m.slug + ".html"; }
+    if (on && ppKey !== i) { ppKey = i; const P = people[i], m = P.m; ppI.textContent = `${String(i + 1).padStart(2, "0")} / 05`; ppE.textContent = m.en; ppN.textContent = m.name; ppR.textContent = m.role; ppL.textContent = m.law; ppA.href = m.slug + ".html"; xrL.replaceChildren(...m.works.map(([h, tt]) => { const li = document.createElement("li"), a = document.createElement("a"); a.href = h; a.textContent = tt; li.append(a); return li; })); }
     pp.classList.toggle("is-on", on);
+    if (!on && !xrL.hidden) { xrL.hidden = true; xrB.setAttribute("aria-expanded", "false"); }
   }
 
   // ---------- басқару: постер → «ENTER» не 6 с → өзі ойнайды ----------
@@ -328,6 +341,8 @@ async function start(D) {
   const pauseB = $(".um-pause"), chs = [...document.querySelectorAll(".um-chs a")];
   const setPause = (v) => { paused = v; pauseB.setAttribute("aria-pressed", String(v)); pauseB.textContent = v ? "Жалғастыру" : "Кідірту"; root.classList.toggle("is-paused", v); };
   pauseB.addEventListener("click", () => setPause(!paused));
+  // X-Ray: таңдалған автордың сайттағы нақты беттері (licensing/team.json works); ашық тұрғанда фильм кідіреді
+  xrB.addEventListener("click", () => { const open = xrL.hidden; xrL.hidden = !open; xrB.setAttribute("aria-expanded", String(open)); setPause(open); });
   addEventListener("keydown", (e) => { if (e.code === "Space" && started && !/^(A|BUTTON|INPUT|TEXTAREA)$/.test(e.target.tagName)) { e.preventDefault(); setPause(!paused); } });
   $(".um-enter").addEventListener("click", begin);
   new IntersectionObserver((es) => { onStage = es[0].intersectionRatio > .35; }, { threshold: [0, .35, .7] }).observe(stage);
@@ -354,7 +369,7 @@ async function start(D) {
   function buildFrags() { comp.x.clearRect(0, 0, FW, FH); layers.forEach((l) => comp.x.drawImage(l.A.c, 0, 0, FW, FH)); compTex.needsUpdate = true; off.fill(0); vel.fill(0); fragsBuilt = true; }
 
   const m4 = new THREE.Matrix4(), qI = new THREE.Quaternion(), qq = new THREE.Quaternion(), pv = new THREE.Vector3(), one = new THREE.Vector3(1, 1, 1), lookV = new THREE.Vector3();
-  layout();
+  layout(); frameGroup(); addEventListener("resize", frameGroup);
   let lastDraw = 0;
   function frame() {
     requestAnimationFrame(frame);
@@ -381,7 +396,11 @@ async function start(D) {
     // постер
     const pA = 1 - seg(t, 1.6, 3.4);
     poster.forEach((m, i) => { m.material.opacity = (started ? 1 : eo(posterT * 1.2 - i * .3)) * (1 - seg(cam.position.z, m.position.z + 3, m.position.z + .5)); m.visible = m.material.opacity > .01; });
-    crowd.forEach((m, i) => { m.material.opacity = (started ? 1 : eo(posterT * .8 - .6 - i * .08)) * (1 - seg(cam.position.z, m.position.z + 5, m.position.z + 1)); m.visible = m.material.opacity > .01; m.position.y += Math.sin(now * .4 + i) * .0015; });
+    { const sep = eio(seg(t, .3, 3.2)), into = 1 - seg(cam.position.z, PHZ + 4, PHZ + .6), fadeIn = started ? 1 : eo(posterT * .7 - .2);
+      photoBg.position.z = PHZ - sep * 3.2; photoBg.scale.setScalar(1 + sep * .07); photoBg.material.color.setScalar(1 - sep * .55);   // фон артқа кетіп, күңгірттенеді
+      photoFg.position.z = PHZ + sep * 2.6;                                                                                              // адамдар алға шығады
+      photoBg.material.opacity = fadeIn * into; photoFg.material.opacity = fadeIn * (1 - seg(cam.position.z, PHZ + 3.2, PHZ + 2.65));
+      crowd.forEach((m) => { m.visible = m.material.opacity > .01; }); }
     ring.rotation.z = now * .02; lineMat.opacity = .32 * pA * (started ? 1 : eo(posterT * .6 - .3)); ring.visible = lineMat.opacity > .01;
     // кейіпкерлер
     people.forEach((P) => {
@@ -397,6 +416,9 @@ async function start(D) {
       P.strips.forEach((S, k) => { S.mat.uniforms.reveal.value = reveal * 1.02; S.mat.uniforms.mixv.value = mixv; S.mat.uniforms.op.value = (1 - seg(u, 8.4, 10.2)) * .94; S.mesh.position.set(S.dir * brk * (1.2 + S.rnd * 2.4), S.y0 + (k - NAME_K / 2) * brk * .12, -brk * (2 + S.rnd * 9)); S.mesh.rotation.y = S.dir * brk * .25; });
       P.grp.position.x = (mobile ? P.x : P.x - 2.4) + px * (mobile ? .1 : .5);
     });
+    { const u = clamp((t - T.act + 1) / (T.col - T.act), 0, 1), pos = thread.geometry.attributes.position, n = pos.count;
+      for (let i = 0; i < n; i++) { const p = threadCurve.getPoint(Math.min(u, i / (n - 1)) * .86 + .02); pos.setXYZ(i, p.x, p.y, p.z); }
+      pos.needsUpdate = true; thread.material.opacity = .55 * seg(t, T.act - 1, T.act + 1) * (1 - seg(t, T.col - .5, T.col + 1)); thread.visible = thread.material.opacity > .01; }
     // IV: бөлшектер, тарту; V: шаңырақ
     if (fragOn && !fragsBuilt) buildFrags();
     if (!fragOn && t < T.col) fragsBuilt = false;
