@@ -215,12 +215,24 @@ test("3D фильм «The Unmade»: постер → ENTER, өзі ойнайд�
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2); await page.mouse.down();
     await page.mouse.move(box.x + box.width / 2 + 160, box.y + box.height / 2 + 40, { steps: 8 }); await page.mouse.up();
     await expect(page.locator(".um-hint")).not.toHaveClass(/is-on/);
-    // «Өткізу» - VI, шынайы фото және соңғы сөз; «Қайта көру» - постерге
+    // VI-VII: «AO17-сіз әлем», бес шынайы фото, «алтыншы қол» - соңғы бөлікті көрермен орнатады; оған дейін уақыт тоқтап тұрады
+    await page.goto("team/3d.html?seek3#t=106");
+    await expect(page.locator(".um-faces li")).toHaveCount(5);
+    await expect(page.locator(".um")).toHaveAttribute("data-act", "7", { timeout: 15000 });
+    await expect(page.locator(".um-hand")).toHaveClass(/is-on/, { timeout: 15000 });
+    await page.waitForTimeout(1500);
+    await expect(page.locator(".um")).toHaveAttribute("data-act", "7");
+    await page.locator(".um-place").click();
+    await expect(page.locator(".um")).toHaveAttribute("data-act", "8");
+    await expect(page.locator(".um-fin")).toHaveClass(/is-on/, { timeout: 20000 });
+    await expect(page.locator(".um-f2")).toHaveText("Біз іргетасын қаладық. Әрі қарай сен саласың.");
+    await expect(page.locator(".um-site")).toHaveClass(/is-on/);   // сайт қайта тірі: сілтемелері жұмыс істейді
+    // «Өткізу» - бірден соңғы кадрға; «Қайта көру» - постерге
+    await page.goto("team/3d.html?seek4#t=40");
     await page.mouse.move(40, 300);
     await page.locator(".um-skip").click();
-    await expect(page.locator(".um")).toHaveAttribute("data-act", "6", { timeout: 15000 });
+    await expect(page.locator(".um")).toHaveAttribute("data-act", "8", { timeout: 15000 });
     await expect(page.locator(".um-fin")).toHaveClass(/is-on/, { timeout: 15000 });
-    await expect(page.locator(".um-f2")).toHaveText("Бес адамның еңбегімен жасалды.");
     await expect(page.locator(".um-fin")).toHaveClass(/is-end/, { timeout: 15000 });
     await page.locator(".um-replay").click();
     await expect(page.locator(".um")).toHaveAttribute("data-act", "0", { timeout: 15000 });
@@ -236,7 +248,7 @@ test("3D фильм: қозғалыс азайса - титрлер мен фо�
   await expect(p.locator(".um")).toHaveClass(/um-static/);
   await expect(p.locator(".um-film")).toBeHidden();
   await expect(p.locator(".um-cr-ph img")).toBeVisible();
-  await expect(p.locator(".um-cr-steps li")).toHaveCount(6);
+  await expect(p.locator(".um-cr-steps li")).toHaveCount(7);
   await c.close();
 });
 

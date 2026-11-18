@@ -29,7 +29,8 @@ if (root && raw) {
 }
 
 // ---------- уақыт сызығы (секунд, «ENTER»-ден кейін) ----------
-const T = { q: 6.5, brk: 10, strip: 17.5, act: 24, per: 11, col: 79, shan: 87.5, rev: 97.5, fin: 101.5, end: 110 };
+const T = { q: 6.5, brk: 10, strip: 17.5, act: 24, per: 11, col: 79, shan: 87.5, void: 95.5, faces: 99.5, hand: 108, back: 110, live: 114.5, fin: 115, end: 121 };
+const P1 = T.hand + 1;   // «алтыншы қол»: бөлік орнатылғанша уақыт осында тоқтайды
 const FW = 1280, FH = 800, UW = 16, UH = 10, GAP = 1.4;
 const GOLD = "#d9b468", CREAM = "#efe6d3";
 const PORC = 0xece8e1, CHAMP = 0xc9b48a;
@@ -254,15 +255,22 @@ async function start(D) {
   const home = new Float32Array(NF * 3), off = new Float32Array(NF * 3), vel = new Float32Array(NF * 3), tgt = new Float32Array(NF * 3), tq = [], delay = new Float32Array(NF);
   for (let r = 0, i = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++, i++) { uvr.set([c / COLS, 1 - (r + 1) / ROWS, 1 / COLS, 1 / ROWS], i * 4); home.set([(c + .5) / COLS * UW - UW / 2, UH / 2 - (r + .5) / ROWS * UH, 0], i * 3); delay[i] = Math.random() * .38; }
   fGeo.setAttribute("uvr", new THREE.InstancedBufferAttribute(uvr, 4));
+  const isBar = new Uint8Array(NF);   // шаңырақтың күлдіреуіші - соңғы бөлік, оны пайдаланушы орнатады
   { const RS = 7.4, order = [...Array(NF).keys()].sort(() => Math.random() - .5), n1 = Math.floor(NF * .26), n2 = Math.floor(NF * .1), n3 = Math.floor(NF * .26);
     order.forEach((idx, j) => { let x, y = -1, z, yaw = 0, pitch = -Math.PI / 2;
       if (j < n1) { const a = j / n1 * Math.PI * 2, rr2 = RS + (Math.random() - .5) * .5; x = Math.cos(a) * rr2; z = Math.sin(a) * rr2; yaw = -a; y += (Math.random() - .5) * .15; }
       else if (j < n1 + n2) { const a = (j - n1) / n2 * Math.PI * 2, rr2 = RS * .9; x = Math.cos(a) * rr2; z = Math.sin(a) * rr2; yaw = -a; }
-      else if (j < n1 + n2 + n3) { const k = j - n1 - n2, bar = k % 4, f = (Math.floor(k / 4) / (n3 / 4)) * 2 - 1, d = [-.3, .3][bar % 2] * RS, h = Math.sqrt(RS * RS - d * d) * .97; if (bar < 2) { x = d; z = f * h; yaw = Math.PI / 2; } else { z = d; x = f * h; } y += .05; }
+      else if (j < n1 + n2 + n3) { const k = j - n1 - n2, bar = k % 4, f = (Math.floor(k / 4) / (n3 / 4)) * 2 - 1, d = [-.3, .3][bar % 2] * RS, h = Math.sqrt(RS * RS - d * d) * .97; if (bar < 2) { x = d; z = f * h; yaw = Math.PI / 2; } else { z = d; x = f * h; } y += .05; isBar[idx] = 1; }
       else { const k = j - n1 - n2 - n3, u = k % 36, f = Math.floor(k / 36) / Math.ceil((NF - n1 - n2 - n3) / 36), a = u / 36 * Math.PI * 2, rr2 = RS * (1.04 + f * .95); x = Math.cos(a) * rr2; z = Math.sin(a) * rr2; y -= f * 3.2; yaw = -a; pitch = -Math.PI / 2 + .35; }
       tgt.set([x, y, z], idx * 3); tq[idx] = new THREE.Quaternion().setFromEuler(new THREE.Euler(pitch, 0, yaw, "XZY")); }); }
   const gems = [0, 1, 2, 3, 4].map((i) => { const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: i === 0 ? CHAMP : PORC, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); const a = Math.PI / 2 + i / 5 * Math.PI * 2; s.position.set(Math.cos(a) * 7.4, -.8, Math.sin(a) * 7.4); s.scale.setScalar(1.4); scene.add(s); return s; });
-  const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: 0xfffdf8, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); sun.position.set(0, -9, 0); scene.add(sun);
+  const sun = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: 0xfffdf8, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); sun.position.set(0, -.5, 0); scene.add(sun);
+  // соңғы бөлік: төрт күлдіреуіш, бір тұтас зат болып қалқып тұрады
+  const RSx = 7.4, piece = new THREE.Group(); scene.add(piece);
+  { const pm = new THREE.MeshBasicMaterial({ color: PORC, transparent: true, opacity: 0, depthWrite: false }); [-.3, .3].forEach((d) => { const h = Math.sqrt(1 - d * d) * RSx * .97 * 2; const a = new THREE.Mesh(new THREE.BoxGeometry(.3, .14, h), pm); a.position.x = d * RSx; piece.add(a); const b = new THREE.Mesh(new THREE.BoxGeometry(h, .14, .3), pm); b.position.z = d * RSx; piece.add(b); }); piece.userData.mat = pm; }
+  const pieceGlow = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: CHAMP, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); pieceGlow.scale.setScalar(10); piece.add(pieceGlow);
+  const PIECE0 = new THREE.Vector3(mobile ? 0 : RSx * 1.95, -1, mobile ? -RSx * 1.6 : RSx * .55), piecePos = PIECE0.clone(), CENTER = new THREE.Vector3(0, -1, 0);
+  let placed = false, placeAt = null;
   const dust = (() => { const n = mobile ? 260 : 600, p = new Float32Array(n * 3); for (let i = 0; i < n; i++) p.set([(Math.random() - .5) * 120, (Math.random() - .5) * 30, (Math.random() - .5) * 200], i * 3); const g = new THREE.BufferGeometry(); g.setAttribute("position", new THREE.BufferAttribute(p, 3)); const pts = new THREE.Points(g, new THREE.PointsMaterial({ map: dot, size: .12, color: PORC, transparent: true, opacity: .3, depthWrite: false, blending: THREE.AdditiveBlending })); scene.add(pts); return pts; })();
 
   // ---------- камера: бір үздіксіз, ауыр кадр ----------
@@ -280,7 +288,8 @@ async function start(D) {
       K.push([s0 + 1.2, V(cx, cy, cz), V(cx, cy, PZP - 10)], [s0 + T.per - 2.2, V(cx + (mobile ? 0 : .5), cy + .1, cz - .9), V(cx + (mobile ? 0 : .4), cy + .05, PZP - 10)]);
     });
     K.push([T.col + 1.8, V(26, 3, -10), V(0, 0, 0)], [T.col + 4.4, V(0, .3, Dd * 1.02), V(0, 0, 0)], [T.shan, V(0, .2, Dd), V(0, 0, 0)],
-      [T.shan + 5.5, V(0, mobile ? 30 : 23, 9), V(0, -1, 0)], [T.rev - 1, V(0, mobile ? 26 : 19, .5), V(0, -1, 0)], [T.rev + 2.5, V(0, 6, .01), V(0, -9, 0)], [T.end, V(0, 5, .01), V(0, -9, 0)]);
+      [T.shan + 5.5, V(0, mobile ? 33 : 24, 9), V(0, -1, 0)], [T.void + 2, V(0, mobile ? 34 : 25, 8.5), V(0, -1, 0)], [T.hand, V(0, mobile ? 35 : 25.5, 8), V(0, -1, 0)], [P1, V(0, mobile ? 35 : 25.5, 8), V(0, -1, 0)],
+      [T.back + 1.6, V(0, 9, Dd * .9), V(0, -.5, 0)], [T.back + 4, V(0, .2, Dd * 1.02), V(0, 0, 0)], [T.fin + .5, V(0, mobile ? -4.2 : -3.1, Dd * 1.42), V(0, mobile ? -4.2 : -3.1, 0)], [T.end, V(0, mobile ? -4.3 : -3.2, Dd * 1.46), V(0, mobile ? -4.3 : -3.2, 0)]);
     keys = K.map((k) => k[0]); posC = new THREE.CatmullRomCurve3(K.map((k) => k[1]), false, "centripetal"); lookC = new THREE.CatmullRomCurve3(K.map((k) => k[2]), false, "centripetal");
   }
   const camU = (t) => { let i = 0; while (i < keys.length - 2 && t > keys[i + 1]) i++; return (i + clamp((t - keys[i]) / (keys[i + 1] - keys[i]))) / (keys.length - 1); };
@@ -288,6 +297,7 @@ async function start(D) {
 
   // ---------- HTML қабаттары ----------
   const q = $(".um-q"), cap = $(".um-cap"), capK = $(".um-k"), capT = $(".um-t"), capD = $(".um-d"), hint = $(".um-hint"), site = $(".um-site"), bar0 = $(".um-bar i"), fin = $(".um-fin");
+  const voidEl = $(".um-void"), facesEl = $(".um-faces"), handEl = $(".um-hand");
   const pp = $(".um-pp"), ppI = $(".um-pp-i"), ppE = $(".um-pp-e"), ppN = $(".um-pp-n"), ppR = $(".um-pp-r"), ppL = $(".um-pp-l"), ppA = $(".um-pp-a");
   const CAP = D.acts; let capKey = "", ppKey = -1;
   function caption(t) {
@@ -313,10 +323,18 @@ async function start(D) {
   let px = 0, py = 0, tx = 0, ty = 0;
   addEventListener("pointermove", (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, { passive: true });
   ["pointermove", "pointerdown", "keydown"].forEach((ev) => addEventListener(ev, wake, { passive: true })); wake();
-  $(".um-skip").addEventListener("click", () => { begin(); pt = Math.max(pt, T.rev - .5); });
-  $(".um-replay").addEventListener("click", () => { pt = 0; started = false; posterT = 0; root.classList.remove("is-started"); fragsBuilt = false; touched = false; stageKey = ""; setStage({ ...FULL }, "full", 0, .01); });
+  $(".um-skip").addEventListener("click", () => { begin(); placed = true; pt = Math.max(pt, T.live - .3); });
+  $(".um-replay").addEventListener("click", () => { placed = false; placeAt = null; piecePos.copy(PIECE0); pt = 0; started = false; posterT = 0; root.classList.remove("is-started"); fragsBuilt = false; touched = false; stageKey = ""; setStage({ ...FULL }, "full", 0, .01); });
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), plane0 = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hitP = new THREE.Vector3();
   const toPlane = (e) => { const r = cv.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, cam); return ray.ray.intersectPlane(plane0, hitP) ? hitP.clone() : null; };
+  // «алтыншы қол»: соңғы бөлікті сүйреп ортаға апару (не «Орнату» батырмасы)
+  const planeY = new THREE.Plane(new THREE.Vector3(0, 1, 0), 1), hitY = new THREE.Vector3(); let pieceDrag = false;
+  const toY = (e) => { const r = cv.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, cam); return ray.ray.intersectPlane(planeY, hitY) ? hitY.clone() : null; };
+  function place() { if (placed) return; placed = true; placeAt = { t: clock.elapsedTime, from: piece.position.clone() }; $(".um-hand").classList.remove("is-on"); }
+  $(".um-place").addEventListener("click", place);
+  cv.addEventListener("pointerdown", (e) => { if (placed || pt < T.hand) return; const p = toY(e); if (p && p.distanceTo(piece.position) < 6) { pieceDrag = true; cv.setPointerCapture(e.pointerId); root.classList.add("is-grab"); } }, true);
+  cv.addEventListener("pointermove", (e) => { if (!pieceDrag) return; const p = toY(e); if (p) piecePos.set(p.x, -1, p.z); if (piecePos.distanceTo(CENTER) < 2.2) { pieceDrag = false; root.classList.remove("is-grab"); place(); } });
+  const endPiece = () => { if (!pieceDrag) return; pieceDrag = false; root.classList.remove("is-grab"); if (piecePos.distanceTo(CENTER) < 4) place(); }; cv.addEventListener("pointerup", endPiece); cv.addEventListener("pointercancel", endPiece);
   cv.addEventListener("pointerdown", (e) => { if (!frag.visible || pt > T.shan) return; const p = toPlane(e); if (p) { dragging = p; touched = true; cv.setPointerCapture(e.pointerId); } });
   cv.addEventListener("pointermove", (e) => { if (!dragging) return; const p = toPlane(e); if (!p) return; push(p, p.clone().sub(dragging), 1); dragging = p; });
   const endDrag = () => { dragging = null; }; cv.addEventListener("pointerup", endDrag); cv.addEventListener("pointercancel", endDrag);
@@ -332,6 +350,7 @@ async function start(D) {
     const dt = Math.min(.05, clock.getDelta()), now = clock.elapsedTime, kk = 1 - Math.exp(-dt * 4);
     if (!started && onStage) { posterT += dt; if (posterT > 6) begin(); }
     if (started && onStage) pt = Math.min(T.end, pt + dt);
+    if (!placed && pt > P1) pt = P1;
     const t = pt;
     px += (tx - px) * (1 - Math.exp(-dt * 2)); py += (ty - py) * (1 - Math.exp(-dt * 2));
     // сайт: толық → бос (I) → адамдар қайта құрғаннан кейін қабат-қабатымен оралады (IV)
@@ -342,9 +361,9 @@ async function start(D) {
     layers.forEach((l) => { if (l.fade) { const k = clamp((now - l.fade.t0) / l.fade.dur); l.B.m.material.opacity = eio(k); l.A.m.material.opacity = 1 - eio(k); if (k >= 1) swap(l); } });
     const gap = GAP * eio(seg(t, T.brk, T.brk + 2.4)) * (1 - eio(seg(t, T.col + 2, T.col + 4.5))), lift = Math.sin(now * .6) * .06;
     const glassA = seg(t, 13.5, 16.5) * (1 - seg(t, T.col + 3, T.col + 4.5));
-    const fragOn = t >= T.col + 4.8 && t < T.rev + 3;
+    const fragOn = t >= T.col + 4.8 && t < T.live + .4;
     const siteA = seg(t, 3.6, 5.6);
-    layers.forEach((l) => { l.z = (l.L - 2) * gap; l.g.position.set(0, lift * (l.L - 2) * .3, l.z); l.g.rotation.y = gap * .02 * (l.L - 2); l.edge.material.opacity = glassA * .45; l.glass.material.opacity = glassA * .018; l.g.visible = !fragOn && siteA > .01; l.A.m.material.color.setScalar(siteA); l.B.m.material.color.setScalar(siteA); });
+    layers.forEach((l) => { l.z = (l.L - 2) * gap; l.g.position.set(0, lift * (l.L - 2) * .3, l.z); l.g.rotation.y = gap * .02 * (l.L - 2); l.edge.material.opacity = glassA * .45; l.glass.material.opacity = glassA * .018; l.g.visible = !fragOn && siteA > .01; const dimF = siteA * (1 - .25 * seg(t, T.fin, T.fin + 1.5)); l.A.m.material.color.setScalar(dimF); l.B.m.material.color.setScalar(dimF); });
     const tg = eo(seg(t, T.brk + .6, T.brk + 3.6)), tOut = 1 - seg(t, T.strip - .5, T.strip + 1.5); thrMat.opacity = .38 * tg * tOut; threads.visible = thrMat.opacity > .01;
     if (threads.visible) { const z3 = layers[3].z; thrSeed.forEach((s, i) => { const k = clamp((tg - s.d) / (1 - s.d)); thr.set([s.x, s.y, z3, s.x + s.dx * k, s.y + s.dy * k + Math.sin(now + i) * .05 * k, z3 + s.dz * k], i * 6); }); thrGeo.attributes.position.needsUpdate = true; }
     // постер
@@ -372,37 +391,52 @@ async function start(D) {
     frag.visible = fragOn;
     if (fragOn) {
       if (!touched && t > T.col + 7 && t < T.col + 7.1) push(new THREE.Vector3(0, 0, 0), new THREE.Vector3(.5, .25, 0), 1.2);
-      const fly = t >= T.shan ? (t - T.shan) / 5.5 : 0, glow = seg(t, T.shan + 3, T.shan + 6) * .12 + seg(t, T.rev - 2, T.rev) * .6;
-      fMat.uniforms.op.value = seg(t, T.col + 4.8, T.col + 5) * (1 - seg(t, T.rev + .5, T.rev + 2.6)); fMat.uniforms.glow.value = glow;
+      const flyF = t >= T.shan ? (t - T.shan) / 5.5 : 0, flyR = t >= T.back ? (t - T.back) / 4 : 0;
+      const glow = seg(t, T.shan + 3, T.shan + 6) * .12 * (1 - seg(t, P1, P1 + .3)) + seg(t, P1, P1 + .4) * (1 - seg(t, P1 + .8, T.back + 1.2)) * .55;
+      const opV = t < T.void ? 1 : t < T.hand - .5 ? 1 - seg(t, T.void, T.void + 1.6) : seg(t, T.hand - .5, T.hand + .8);
+      fMat.uniforms.op.value = seg(t, T.col + 4.8, T.col + 5) * opV * (1 - seg(t, T.live, T.live + .4)); fMat.uniforms.glow.value = glow;
+      const sv = new THREE.Vector3();
       for (let i = 0; i < NF; i++) {
         const j = i * 3;
         vel[j] += (-off[j] * 14 - vel[j] * 3.2) * dt; vel[j + 1] += (-off[j + 1] * 14 - vel[j + 1] * 3.2) * dt; vel[j + 2] += (-off[j + 2] * 14 - vel[j + 2] * 3.2) * dt;
         off[j] += vel[j] * dt; off[j + 1] += vel[j + 1] * dt; off[j + 2] += vel[j + 2] * dt;
-        const k = eio(clamp((fly - delay[i]) / .62)), arc = Math.sin(k * Math.PI) * 3.5;
-        pv.set(lerp(home[j] + off[j], tgt[j], k), lerp(home[j + 1] + off[j + 1], tgt[j + 1], k) + arc, lerp(home[j + 2] + off[j + 2], tgt[j + 2], k));
-        qq.slerpQuaternions(qI, tq[i], k); m4.compose(pv, qq, one); frag.setMatrixAt(i, m4);
+        let k = eio(clamp((flyF - delay[i]) / .62)), sc = 1;
+        if (flyR > 0) k = 1 - eio(clamp((flyR - (.38 - delay[i])) / .62));
+        const arc = Math.sin(k * Math.PI) * 3.5;
+        if (isBar[i] && t < P1 + .001 && flyR <= 0) {   // соңғы бөліктің бөлшектері: тұтас бөлікке жиналып, ішіне сіңеді
+          pv.set(lerp(home[j] + off[j], piece.position.x, k), lerp(home[j + 1] + off[j + 1], piece.position.y, k) + arc, lerp(home[j + 2] + off[j + 2], piece.position.z, k)); sc = 1 - k;
+        } else {
+          if (isBar[i] && flyR <= 0) sc = seg(t, P1 + .2, P1 + .8);
+          pv.set(lerp(home[j] + off[j], tgt[j], k), lerp(home[j + 1] + off[j + 1], tgt[j + 1], k) + arc, lerp(home[j + 2] + off[j + 2], tgt[j + 2], k));
+        }
+        qq.slerpQuaternions(qI, tq[i], k); sv.setScalar(Math.max(1e-3, sc)); m4.compose(pv, qq, sv); frag.setMatrixAt(i, m4);
       }
       frag.instanceMatrix.needsUpdate = true;
     }
-    gems.forEach((g, i) => { g.material.opacity = seg(t, T.shan + 4.5 + i * .25, T.shan + 6 + i * .25) * (1 - seg(t, T.rev, T.rev + 1.5)) * (.55 + Math.sin(now * 2 + i) * .25); });
-    const sA = seg(t, T.rev - 2, T.rev + 2.6); sun.material.opacity = sA; sun.scale.setScalar(2 + eio(sA) * 40);
-    dust.rotation.y = now * .006; dust.material.opacity = .3 * (1 - seg(t, T.rev, T.rev + 2));
+    gems.forEach((g, i) => { g.material.opacity = seg(t, T.shan + 4.5 + i * .25, T.shan + 6 + i * .25) * (1 - seg(t, T.void, T.void + 1.2)) * (.55 + Math.sin(now * 2 + i) * .25); });
+    const sA = seg(t, P1 + .15, P1 + .5) * (1 - seg(t, P1 + .6, T.back + 1)); sun.material.opacity = sA; sun.scale.setScalar(2 + sA * 30);
+    const pieceA = (seg(t, T.shan + 3.5, T.shan + 5.5) * (1 - seg(t, T.void, T.void + 1.2)) + seg(t, T.hand - .3, T.hand + .8)) * (placed ? 1 - seg(t, P1 + .3, P1 + .9) : 1);
+    piece.visible = pieceA > .01; piece.userData.mat.opacity = pieceA * .9; pieceGlow.material.opacity = pieceA * (.22 + Math.sin(now * 2.2) * .08);
+    if (placed && placeAt) { const k = eo(clamp((now - placeAt.t) / .6)); piece.position.lerpVectors(placeAt.from, CENTER, k); piece.scale.setScalar(lerp(.62, 1, k)); piece.rotation.y *= 1 - k; }
+    else { piece.position.copy(piecePos); if (!pieceDrag) piece.position.y += Math.sin(now * 1.4) * .15; piece.scale.setScalar(.62); piece.rotation.y = Math.sin(now * .5) * .2; }
+    dust.rotation.y = now * .006; dust.material.opacity = .3 * (1 - seg(t, T.void, T.void + 1.5) * (1 - seg(t, T.hand, T.hand + 1)));
     // камера (постерде - тінтуірмен сәл қозғалады)
     const u = camU(t); posC.getPoint(u, cam.position); lookC.getPoint(u, lookV);
     const par = (1 - seg(t, 0, 2)) * (mobile ? .4 : 1.6); cam.position.x += px * par; cam.position.y -= py * par * .6;
     cam.lookAt(lookV);
     // HTML
-    const live = t > 5 && t < T.brk; site.classList.toggle("is-on", live);
+    const live = (t > 5 && t < T.brk) || t > T.live; site.classList.toggle("is-on", live);
     if (live) { const a = new THREE.Vector3(-UW / 2, UH / 2, 0).project(cam), b = new THREE.Vector3(UW / 2, -UH / 2, 0).project(cam), w = stage.clientWidth, h = stage.clientHeight; site.style.cssText = `left:${(a.x + 1) / 2 * w}px;top:${(1 - a.y) / 2 * h}px;width:${(b.x - a.x) / 2 * w}px;height:${(a.y - b.y) / 2 * h}px`; }
     q.classList.toggle("is-on", t > T.q && t < T.brk + 2.2);
     hint.classList.toggle("is-on", fragOn && t < T.shan - .5 && !touched);
     caption(t); person(t);
-    stage.style.setProperty("--flash", (seg(t, T.rev + .6, T.rev + 2.2) * (1 - seg(t, T.rev + 2.6, T.rev + 4))).toFixed(3));
-    stage.style.setProperty("--photo", seg(t, T.rev + 2.4, T.rev + 4).toFixed(3));
+    voidEl.classList.toggle("is-on", t > T.void + .8 && t < T.faces - .2);
+    facesEl.classList.toggle("is-on", t > T.faces + .8 && t < T.hand - 1);
+    handEl.classList.toggle("is-on", t > T.hand + .4 && !placed);
     stage.style.setProperty("--fin", seg(t, T.fin, T.fin + 1).toFixed(3));
-    fin.classList.toggle("is-on", t >= T.fin); fin.classList.toggle("is-end", t >= T.end - 2);
+    fin.classList.toggle("is-on", t >= T.fin); fin.classList.toggle("is-end", t >= T.fin + 4);
     stage.classList.toggle("is-end", t >= T.fin);
-    root.dataset.act = !started ? "0" : t < T.act ? "1" : t < T.col ? "3" : t < T.shan ? "4" : t < T.rev ? "5" : "6";
+    root.dataset.act = !started ? "0" : t < T.act ? "1" : t < T.col ? "3" : t < T.shan ? "4" : t < T.void ? "5" : t < T.hand ? "6" : !placed ? "7" : "8";
     if (bar0) bar0.style.transform = `scaleX(${(t / T.end).toFixed(4)})`;
     renderer.render(scene, cam);
     void lastDraw;
