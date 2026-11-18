@@ -209,14 +209,14 @@ async function start(D) {
     portrait.position.set(x, 0, PZP); portrait.renderOrder = 40; scene.add(portrait);
     const key = new THREE.Sprite(new THREE.SpriteMaterial({ map: dot, color: PORC, transparent: true, opacity: 0, depthWrite: false, blending: THREE.AdditiveBlending })); key.scale.set(9, 10, 1); key.position.set(x, 1.8, PZP - 1.5); key.renderOrder = 30; scene.add(key);
     // алып есім: екі текстура (тұтас фарфор / ішінде платформаның қабаты), 12 көлденең жолақ
-    const lines = mobile ? m.name.toUpperCase().split(" ") : [m.given.toUpperCase()];
-    const cw = mobile ? 1400 : 2400, size = mobile ? 300 : 420, chh = Math.round(size * .92 * lines.length + size * .3);
+    const lines = [m.given.toUpperCase()];   // бір сөз: телефонда да басының үстінде толық оқылады (толық аты - HTML-де)
+    const cw = mobile ? 1600 : 2400, size = mobile ? 360 : 420, chh = Math.round(size * .92 * lines.length + size * .3);
     const A = mkCanvas(cw, chh, 1), B = mkCanvas(cw, chh, 1);
     const fit = (x) => { let s = size; x.font = `700 ${s}px ${F.b}`; const wmax = Math.max(...lines.map((l) => x.measureText(l).width)); if (wmax > cw * .94) s = Math.floor(s * cw * .94 / wmax); x.font = `700 ${s}px ${F.b}`; return s; };
     const s0 = fit(A.x); A.x.fillStyle = "#ece8e1"; A.x.textAlign = "center"; lines.forEach((l, k) => A.x.fillText(l, cw / 2, s0 * .9 * (k + 1)));
     const texA = mkTex(A.c), texB = mkTex(B.c);
-    const nw = mobile ? 6.2 : 17.5, nh = nw * chh / cw, strips = [];
-    const grp = new THREE.Group(); grp.position.set(mobile ? x : x - 2.4, mobile ? 2.35 : 1.25, PZP - 3.2); scene.add(grp);
+    const nw = mobile ? 6 : 17.5, nh = nw * chh / cw, strips = [];
+    const grp = new THREE.Group(); grp.position.set(mobile ? x : x - 2.4, mobile ? 4.7 : 1.25, PZP - 3.2); scene.add(grp);
     for (let k = 0; k < NAME_K; k++) {
       const g = new THREE.PlaneGeometry(nw, nh / NAME_K), uv = g.attributes.uv, v0 = 1 - (k + 1) / NAME_K, v1 = 1 - k / NAME_K;
       for (let j = 0; j < uv.count; j++) uv.setY(j, uv.getY(j) > .5 ? v1 : v0);
@@ -411,9 +411,9 @@ async function start(D) {
       P.portrait.material.color.setScalar(.16 + .84 * lit); P.portrait.material.opacity = dim;
       P.portrait.position.x = P.x + (mobile ? 0 : px * .15); P.portrait.position.y = Math.sin(now * .45) * .03;
       P.key.material.opacity = .16 * lit;
-      const reveal = eo(seg(u, .6, 2.2)), mixv = eio(seg(u, 4.6, 6.4)), brk = eio(seg(u, 7.2, 10));
+      const reveal = eo(seg(u, .6, 2.2)), mixv = eio(seg(u, 4.6, 6.4)) * (mobile ? .28 : 1), brk = eio(seg(u, 9, 10.8));
       if (mixv > 0 && (P.archDrawn < 0 || (P.i === 3 && now - P.archDrawn > .14) || (P.i === 4 && now - P.archDrawn > .2))) { drawArch(P, now); P.archDrawn = now; }
-      P.strips.forEach((S, k) => { S.mat.uniforms.reveal.value = reveal * 1.02; S.mat.uniforms.mixv.value = mixv; S.mat.uniforms.op.value = (1 - seg(u, 8.4, 10.2)) * .94; S.mesh.position.set(S.dir * brk * (1.2 + S.rnd * 2.4), S.y0 + (k - NAME_K / 2) * brk * .12, -brk * (2 + S.rnd * 9)); S.mesh.rotation.y = S.dir * brk * .25; });
+      P.strips.forEach((S, k) => { S.mat.uniforms.reveal.value = reveal * 1.02; S.mat.uniforms.mixv.value = mixv; S.mat.uniforms.op.value = (1 - seg(u, 9.6, 10.9)) * .94; S.mesh.position.set(S.dir * brk * (1.2 + S.rnd * 2.4), S.y0 + (k - NAME_K / 2) * brk * .12, -brk * (2 + S.rnd * 9)); S.mesh.rotation.y = S.dir * brk * .25; });
       P.grp.position.x = (mobile ? P.x : P.x - 2.4) + px * (mobile ? .1 : .5);
     });
     { const u = clamp((t - T.act + 1) / (T.col - T.act), 0, 1), pos = thread.geometry.attributes.position, n = pos.count;

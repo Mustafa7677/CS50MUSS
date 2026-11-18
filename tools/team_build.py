@@ -147,7 +147,8 @@ DEMO_CAP = {"palette": "Палитра құрылады", "stats": "Есеп ш�
 def panel(m, i):
     k, acc = KIND[m["kind"]]
     ph = photo(m["slug"])
-    face = (f'<img src="{ph}" alt="{E(m["name"])}, портрет" width="640" height="800" loading="{"eager" if i < 2 else "lazy"}" decoding="async">' if ph
+    # барлығы eager: көлденең лента transform-мен жылжиды, ал Android Chrome transform ішіндегі lazy суретті кейде жүктемейді (бос арка)
+    face = (f'<img src="assets/img/team/dark/{m["slug"]}.jpg" alt="{E(m["name"])}, портрет" width="820" height="1200" loading="eager" decoding="async">' if ph
             else f'<span class="ta-ini" aria-hidden="true">{E(m["initials"])}</span>')
     return (f'<li class="uyq-p" style="--i:{i};--acc:{acc}"><div class="uyq-ph" style="view-transition-name:tm-{m["slug"]}"><div class="uyq-img" data-tilt>{face}</div></div>'
             f'<div class="uyq-tx"><p class="uyq-no" aria-hidden="true">{i + 1:02d}</p><p class="uyq-k">{E(k)} · {age(m)}</p>'
