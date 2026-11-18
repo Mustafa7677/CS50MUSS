@@ -127,6 +127,20 @@ test("3D айналым: скроллмен бұрылады, алдыңғы а�
   await expect(page.locator(".rng-c").nth(2)).toHaveAttribute("href", "team/sagid.html");
 });
 
+test("манифест: сөздер скроллмен кезекпен жанады", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("team.html");
+  const w = page.locator(".mf .mf-w");
+  expect(await w.count()).toBeGreaterThan(10);
+  const op = async (i) => +(await w.nth(i).evaluate((e) => getComputedStyle(e).opacity));
+  await page.evaluate(() => { const t = document.querySelector(".mf"); scrollTo(0, t.getBoundingClientRect().top + scrollY + (t.offsetHeight - innerHeight) * .3); });
+  await expect.poll(() => op(0)).toBeGreaterThan(.95);
+  expect(await op((await w.count()) - 1)).toBeLessThan(.5);
+  await page.evaluate(() => { const t = document.querySelector(".mf"); scrollTo(0, t.getBoundingClientRect().top + scrollY + t.offsetHeight - innerHeight); });
+  await expect.poll(() => op(0 + 0) && w.count().then((n) => op(n - 1))).toBeGreaterThan(.95);
+  await expect(page.locator(".mf-t")).toContainText("Бес адам, бір шаңырақ.");
+});
+
 test("басты бет: 8-сахна, бес есім, команда бетіне сілтеме", async ({ page }) => {
   await page.goto("index.html");
   const s = page.locator("#scene-team");

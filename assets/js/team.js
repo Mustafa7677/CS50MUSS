@@ -162,6 +162,27 @@
     b.addEventListener("pointerleave", () => { b.classList.remove("is-mag"); b.style.setProperty("--mgx", "0px"); b.style.setProperty("--mgy", "0px"); });
   });
 
+
+  // ---------- манифест: мәтінді сөздерге бөлу (em ішіндегілер де); экран оқу құралы толық мәтінді оқиды ----------
+  $$("[data-words]").forEach((p) => {
+    let i = 0;
+    const wrap = (node) => {
+      [...node.childNodes].forEach((ch) => {
+        if (ch.nodeType === 3) {
+          const frag = document.createDocumentFragment();
+          ch.textContent.split(/(\s+)/).forEach((t) => {
+            if (!t) return;
+            if (/^\s+$/.test(t)) { frag.append(t); return; }
+            const s = document.createElement("span"); s.className = "mf-w"; s.style.setProperty("--wi", i++); s.textContent = t; frag.append(s);
+          });
+          ch.replaceWith(frag);
+        } else if (ch.nodeType === 1) wrap(ch);
+      });
+    };
+    wrap(p);
+    p.style.setProperty("--wn", i);
+  });
+
   // ---------- тақырыпты әріптерге бөлу (экран оқу құралы толық сөйлемді aria-label-дан оқиды) ----------
   $$("[data-split] > span").forEach((line) => {
     const t = line.textContent, n = t.length;
@@ -227,6 +248,7 @@
 
   function show(i, manual) {
     if (i < 0 || i >= shots.length) return;
+    if (manual) { started = true; film.classList.remove("is-intro"); }   // қолмен басылса - ашылу анимациясы бірден тоқтайды
     const s = shots[i], prev = shots[k], fresh = !prev || prev.img !== s.img;
     const layer = prev && prev.img !== s.img ? (cur === A ? B : A) : cur, im = $("img", layer);
     const start = tf(s.x, s.y, s.s), end = s.to ? tf(s.to[0], s.to[1], s.to[2]) : start;

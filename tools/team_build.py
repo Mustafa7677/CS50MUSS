@@ -181,6 +181,10 @@ def team_page():
       </div>
     </section>
 
+    <section class="mf" data-scrub="pin" aria-label="Манифест">
+      <div class="mf-stick"><p class="mf-t" data-words>Бес адам, бір <em>шаңырақ</em>. Дизайн, код және мазмұн қазақ тілінде оқитын әр оқушы үшін бір <em>жерге</em> жиналды.</p></div>
+    </section>
+
     <div class="orn" data-scrub="through" aria-hidden="true"><svg viewBox="0 0 1200 80" preserveAspectRatio="xMidYMid meet"><path class="orn-l" pathLength="1" d="M520 40H40M680 40H1160"/><path class="orn-h" pathLength="1" d="M600 58V40C600 22 584 12 570 18C556 24 558 44 572 44C582 44 584 32 576 30M600 40C600 22 616 12 630 18C644 24 642 44 628 44C618 44 616 32 624 30"/><path class="orn-h" pathLength="1" d="M520 40C536 40 540 30 532 26M680 40C664 40 660 30 668 26M40 40l-14-10M40 40l-14 10M1160 40l14-10M1160 40l14 10"/><path class="orn-d" d="M600 62l6 6-6 6-6-6z"/></svg></div>
 
     <section class="uyq" data-scrub="pin" aria-labelledby="uyq-h" style="--n:{len(M)}">
@@ -299,6 +303,10 @@ def person_page(m, i):
         <p class="tp-tag">{E(m["tag"])}</p>
         <p class="tp-areas">{E(m["areas"])}</p>
       </div>
+    </section>
+
+    <section class="mf mf-p" data-scrub="pin" aria-label="Сайттағы ісі">
+      <div class="mf-stick"><p class="mf-k">{E(m["role"])}</p><p class="mf-t" data-words>{E(m["areas"])}</p></div>
     </section>
 
     <section class="tm-sec tp-sig" aria-labelledby="sg-h" data-reveal>
