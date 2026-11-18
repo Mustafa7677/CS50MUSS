@@ -29,11 +29,13 @@ if (root && raw) {
 }
 
 // ---------- уақыт сызығы (секунд, «ENTER»-ден кейін) ----------
-const T = { q: 6.5, brk: 10, strip: 17.5, act: 24, per: 11, col: 79, shan: 87.5, void: 95.5, faces: 99.5, hand: 108, back: 110, live: 114.5, fin: 115, end: 121 };
+const T = { story: 2.4, q: 6.5, brk: 10, strip: 17.5, act: 24, per: 11, col: 79, shan: 87.5, void: 95.5, faces: 99.5, group: 104, hand: 113, back: 115, live: 119.5, fin: 120, end: 126 };
+// тараулар (секунд) - «#t=…» сілтемесі кез келгеніне апарады; seek(t) күйді уақыттан қайта есептейді
+const CHAPTERS = [[0, "Кіру"], [10, "Ыдырау"], [26, "Бес автор"], [79, "Тоғысу"], [87.5, "Шаңырақ"], [95.5, "Адамдар"], [113, "Алтыншы қол"]];
 const P1 = T.hand + 1;   // «алтыншы қол»: бөлік орнатылғанша уақыт осында тоқтайды
 const FW = 1280, FH = 800, UW = 16, UH = 10, GAP = 1.4;
 const GOLD = "#d9b468", CREAM = "#efe6d3";
-const PORC = 0xece8e1, CHAMP = 0xc9b48a;
+const PORC = 0xece8df, CHAMP = 0xbfa276;   // Ivory, Champagne (Obsidian #08090B, Graphite #444D59 - CSS-те)
 const F = { u: "Unbounded, sans-serif", s: "'PT Serif', Georgia, serif", i: "Inter, system-ui, sans-serif", m: "'JetBrains Mono', ui-monospace, monospace", b: "'Bodoni Moda', 'PT Serif', serif" };
 
 // ---------- сайттың көрінісі: элементтер (1280×800 кадрда) және қабаттар ----------
@@ -121,8 +123,9 @@ async function start(D) {
   const cv = $(".um-cv"), stage = $(".um-stage");
   const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: !mobile, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.5 : 2));
-  renderer.setClearColor(0x0e0d0c, 1);
-  const scene = new THREE.Scene(); scene.fog = new THREE.Fog(0x0e0d0c, 34, 90);
+  renderer.setClearColor(0x08090b, 1);
+  cv.addEventListener("webglcontextlost", (e) => { e.preventDefault(); root.classList.remove("um-live"); root.classList.add("um-static"); }, false);
+  const scene = new THREE.Scene(); scene.fog = new THREE.Fog(0x08090b, 34, 90);
   const cam = new THREE.PerspectiveCamera(50, 1, .1, 220);
   try { await Promise.all([`800 27px Unbounded`, `700 70px "PT Serif"`, `400 19px Inter`, `600 17px Inter`, `500 14px "JetBrains Mono"`, `500 120px "Bodoni Moda"`, `700 120px "Bodoni Moda"`].map((f) => document.fonts.load(f))); } catch (e) { /* әдепкі қаріп */ }
 
@@ -297,7 +300,7 @@ async function start(D) {
 
   // ---------- HTML қабаттары ----------
   const q = $(".um-q"), cap = $(".um-cap"), capK = $(".um-k"), capT = $(".um-t"), capD = $(".um-d"), hint = $(".um-hint"), site = $(".um-site"), bar0 = $(".um-bar i"), fin = $(".um-fin");
-  const voidEl = $(".um-void"), facesEl = $(".um-faces"), handEl = $(".um-hand");
+  const storyEl = $(".um-story"), groupEl = $(".um-group"), voidEl = $(".um-void"), facesEl = $(".um-faces"), handEl = $(".um-hand");
   const pp = $(".um-pp"), ppI = $(".um-pp-i"), ppE = $(".um-pp-e"), ppN = $(".um-pp-n"), ppR = $(".um-pp-r"), ppL = $(".um-pp-l"), ppA = $(".um-pp-a");
   const CAP = D.acts; let capKey = "", ppKey = -1;
   function caption(t) {
@@ -313,10 +316,19 @@ async function start(D) {
   }
 
   // ---------- басқару: постер → «ENTER» не 6 с → өзі ойнайды ----------
-  const seek = +((location.hash.match(/t=(\d+(?:\.\d+)?)/) || [])[1] || 0);
-  let pt = seek, started = seek > 0, onStage = true, idleT = 0, fragsBuilt = false, dragging = null, touched = false, posterT = 0;
+  const hashT = () => { const m = location.hash.match(/t=(\d+(?:\.\d+)?)/); return m ? +m[1] : null; };
+  let back = null; try { const nav = performance.getEntriesByType("navigation")[0]; if (nav && nav.type === "back_forward") back = +sessionStorage.getItem("ao17:um-t") || null; } catch (e) { /* */ }
+  const seek = hashT() ?? back ?? 0;
+  let paused = false, pt = seek, started = seek > 0, onStage = true, idleT = 0, fragsBuilt = false, dragging = null, touched = false, posterT = 0;
   const begin = () => { if (started) return; started = true; root.classList.add("is-started"); };
   if (started) root.classList.add("is-started");
+  function seekTo(t) { begin(); pt = clamp(t, 0, T.end); placed = pt > T.hand + 1.01; placeAt = placed ? { t: -9, from: CENTER.clone() } : null; if (!placed) piecePos.copy(PIECE0); touched = pt > T.shan; fragsBuilt = false; stageKey = ""; ppKey = -1; capKey = "x"; }
+  addEventListener("hashchange", () => { const t = hashT(); if (t != null) seekTo(t); });
+  addEventListener("pagehide", () => { try { sessionStorage.setItem("ao17:um-t", String(Math.round(pt))); } catch (e) { /* */ } });
+  const pauseB = $(".um-pause"), chs = [...document.querySelectorAll(".um-chs a")];
+  const setPause = (v) => { paused = v; pauseB.setAttribute("aria-pressed", String(v)); pauseB.textContent = v ? "Жалғастыру" : "Кідірту"; root.classList.toggle("is-paused", v); };
+  pauseB.addEventListener("click", () => setPause(!paused));
+  addEventListener("keydown", (e) => { if (e.code === "Space" && started && !/^(A|BUTTON|INPUT|TEXTAREA)$/.test(e.target.tagName)) { e.preventDefault(); setPause(!paused); } });
   $(".um-enter").addEventListener("click", begin);
   new IntersectionObserver((es) => { onStage = es[0].intersectionRatio > .35; }, { threshold: [0, .35, .7] }).observe(stage);
   const wake = () => { stage.classList.remove("is-idle"); clearTimeout(idleT); idleT = setTimeout(() => stage.classList.add("is-idle"), 2600); };
@@ -324,7 +336,7 @@ async function start(D) {
   addEventListener("pointermove", (e) => { tx = e.clientX / innerWidth - .5; ty = e.clientY / innerHeight - .5; }, { passive: true });
   ["pointermove", "pointerdown", "keydown"].forEach((ev) => addEventListener(ev, wake, { passive: true })); wake();
   $(".um-skip").addEventListener("click", () => { begin(); placed = true; pt = Math.max(pt, T.live - .3); });
-  $(".um-replay").addEventListener("click", () => { placed = false; placeAt = null; piecePos.copy(PIECE0); pt = 0; started = false; posterT = 0; root.classList.remove("is-started"); fragsBuilt = false; touched = false; stageKey = ""; setStage({ ...FULL }, "full", 0, .01); });
+  $(".um-replay").addEventListener("click", () => { setPause(false); history.replaceState(null, "", location.pathname); placed = false; placeAt = null; piecePos.copy(PIECE0); pt = 0; started = false; posterT = 0; root.classList.remove("is-started"); fragsBuilt = false; touched = false; stageKey = ""; setStage({ ...FULL }, "full", 0, .01); });
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), plane0 = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0), hitP = new THREE.Vector3();
   const toPlane = (e) => { const r = cv.getBoundingClientRect(); ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ndc, cam); return ray.ray.intersectPlane(plane0, hitP) ? hitP.clone() : null; };
   // «алтыншы қол»: соңғы бөлікті сүйреп ортаға апару (не «Орнату» батырмасы)
@@ -349,7 +361,7 @@ async function start(D) {
     if (document.hidden) return;
     const dt = Math.min(.05, clock.getDelta()), now = clock.elapsedTime, kk = 1 - Math.exp(-dt * 4);
     if (!started && onStage) { posterT += dt; if (posterT > 6) begin(); }
-    if (started && onStage) pt = Math.min(T.end, pt + dt);
+    if (started && onStage && !paused) pt = Math.min(T.end, pt + dt);
     if (!placed && pt > P1) pt = P1;
     const t = pt;
     px += (tx - px) * (1 - Math.exp(-dt * 2)); py += (ty - py) * (1 - Math.exp(-dt * 2));
@@ -430,8 +442,11 @@ async function start(D) {
     q.classList.toggle("is-on", t > T.q && t < T.brk + 2.2);
     hint.classList.toggle("is-on", fragOn && t < T.shan - .5 && !touched);
     caption(t); person(t);
+    storyEl.classList.toggle("is-on", started && t > T.story && t < 5.6);
+    groupEl.classList.toggle("is-on", t > T.group && t < T.hand - .6);
+    chs.forEach((a, i) => a.classList.toggle("is-on", t >= CHAPTERS[i][0] && t < (CHAPTERS[i + 1] ? CHAPTERS[i + 1][0] : 1e9)));
     voidEl.classList.toggle("is-on", t > T.void + .8 && t < T.faces - .2);
-    facesEl.classList.toggle("is-on", t > T.faces + .8 && t < T.hand - 1);
+    facesEl.classList.toggle("is-on", t > T.faces + .8 && t < T.group - .2);
     handEl.classList.toggle("is-on", t > T.hand + .4 && !placed);
     stage.style.setProperty("--fin", seg(t, T.fin, T.fin + 1).toFixed(3));
     fin.classList.toggle("is-on", t >= T.fin); fin.classList.toggle("is-end", t >= T.fin + 4);
