@@ -27,7 +27,7 @@ async function start(D) {
   root.classList.add("t3-live");
   const M = D.members, N = M.length, mobile = innerWidth < 760;
   const GOLD = new THREE.Color("#d9b468"), BURG = new THREE.Color("#b0384a"), CREAM = new THREE.Color("#efe6d3");
-  const cv = $(".t3-cv"), stage = $(".t3-stage"), scroller = $(".t3-scroll");
+  const cv = $(".t3-cv"), stage = $(".t3-stage");
   const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: !mobile, powerPreference: "high-performance" });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile ? 1.5 : 2));
   renderer.setClearColor(0x0a0705, 1);
@@ -56,10 +56,11 @@ async function start(D) {
     [[140, 430], [380, 430], [620, 430], [860, 430]].forEach(([x, y]) => { g.fillRect(x, y, 120, 22); });
     const img = g.getImageData(0, 0, W, H).data, cand = [];
     for (let y = 0; y < H; y += 3) for (let x = 0; x < W; x += 3) if (img[(y * W + x) * 4 + 3] > 128) cand.push([x, y]);
+    const asp = innerWidth / Math.max(1, innerHeight), fv = (asp < .8 ? 70 : 55) * Math.PI / 360, fit = Math.min(1, 2 * 12 * Math.tan(fv) * asp * .88 / 14);   // жазу экранға сыйсын
     const n = Math.min(cand.length, mobile ? 4200 : 9000), pos = new Float32Array(n * 3), base = new Float32Array(n * 3), dir = new Float32Array(n * 3), col = new Float32Array(n * 3);
     for (let i = 0; i < n; i++) {
       const [x, y] = cand[Math.floor(Math.random() * cand.length)];
-      base[i * 3] = (x / W - .5) * 14; base[i * 3 + 1] = -(y / H - .5) * 6.6; base[i * 3 + 2] = (Math.random() - .5) * .2;
+      base[i * 3] = (x / W - .5) * 14 * fit; base[i * 3 + 1] = -(y / H - .5) * 6.6 * fit; base[i * 3 + 2] = (Math.random() - .5) * .2;
       const a = Math.random() * Math.PI * 2, b = Math.acos(2 * Math.random() - 1), r = 6 + Math.random() * 18;
       dir[i * 3] = Math.sin(b) * Math.cos(a) * r; dir[i * 3 + 1] = Math.sin(b) * Math.sin(a) * r; dir[i * 3 + 2] = Math.cos(b) * r - 4;
       const k = Math.random(), cc = k < .12 ? BURG : k < .7 ? GOLD : CREAM; col[i * 3] = cc.r; col[i * 3 + 1] = cc.g; col[i * 3 + 2] = cc.b;
@@ -143,29 +144,29 @@ async function start(D) {
     const p = new THREE.Points(geo, mat); scene.add(p); return { p, geo, mat, pos, from, n };
   })();
 
-  // ---------- уақыт сызығы, басқару ----------
-  const CH = D.chapters;   // [{k, t, d, at}]
-  const cap = { k: $(".t3-k"), t: $(".t3-t"), d: $(".t3-d") }, enter = $(".t3-enter"), dots = $$(".t3-ch"), bar0 = $(".t3-bar i");
-  const people = $(".t3-people"), pbtn = $$(".t3-people button");
-  let tT = 0, tC = 0, yawDrag = 0, focus = 0, chap = -1, who = -1;
-  const range = () => { const r = scroller.getBoundingClientRect(); return clamp(-r.top / Math.max(1, scroller.offsetHeight - innerHeight)); };
+  // ---------- уақыт сызығы: фильм өзі ойнайды (скролл да, батырма да керек емес) ----------
+  // Ойнау уақыты тек сахна көрініп тұрғанда және әлем терезесі жабық кезде жүреді. «Өткізу» - соңғы көрініске.
+  const CH = D.chapters, DUR = 84;   // секунд
+  const cap = { k: $(".t3-k"), t: $(".t3-t"), d: $(".t3-d") }, bar0 = $(".t3-bar i"), skipB = $(".t3-skip");
+  let pt = 0, tT = 0, tC = 0, yawDrag = 0, focus = 0, chap = -1, who = -1, onStage = true;
   const resize = () => { const w = stage.clientWidth, h = stage.clientHeight; renderer.setSize(w, h, false); cam.aspect = w / h; cam.fov = w / h < .8 ? 70 : 55; cam.updateProjectionMatrix(); };
   addEventListener("resize", resize); resize();
-  addEventListener("scroll", () => { tT = range(); }, { passive: true }); tT = range();
-  const goT = (t, smooth = true) => { const top = scroller.getBoundingClientRect().top + scrollY + t * (scroller.offsetHeight - innerHeight); scrollTo({ top, behavior: smooth ? "smooth" : "auto" }); };
-  dots.forEach((b, i) => b.addEventListener("click", () => { stopDir(); goT(CH[i].at); }));
-  pbtn.forEach((b, i) => b.addEventListener("click", () => openWorld(i)));
-  // тінтуірмен (саусақпен) әлемдерді бұру
+  new IntersectionObserver((es) => { onStage = es[0].intersectionRatio > .35; }, { threshold: [0, .35, .7] }).observe(stage);
+  skipB.addEventListener("click", () => { pt = Math.max(pt, DUR * .955); tC = Math.max(tC, .9); });
+  // басқару элементтері тыныш тұрғанда жасырылады (бейнеплеердегідей), қозғалыс не түрту қайта көрсетеді
+  let idleT = 0; const wake = () => { stage.classList.remove("is-idle"); clearTimeout(idleT); idleT = setTimeout(() => stage.classList.add("is-idle"), 2600); };
+  ["pointermove", "pointerdown", "keydown"].forEach((ev) => addEventListener(ev, wake, { passive: true })); wake();
+  // тінтуірмен (саусақпен) әлемдерді бұру, порталды басу - сол адамның әлемі
   let drag = null;
-  cv.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y: 0, y0: yawDrag, moved: false }; });
-  addEventListener("pointermove", (e) => { if (!drag) return; const dx = e.clientX - drag.x; if (Math.abs(dx) > 4) drag.moved = true; yawDrag = drag.y0 - dx / innerWidth * Math.PI; });
+  cv.addEventListener("pointerdown", (e) => { drag = { x: e.clientX, y0: yawDrag, moved: false }; });
+  addEventListener("pointermove", (e) => { if (!drag) return; const dx = e.clientX - drag.x; if (Math.abs(dx) > 6) drag.moved = true; yawDrag = drag.y0 - dx / innerWidth * Math.PI; });
   addEventListener("pointerup", (e) => { if (drag && !drag.moved) pick(e); drag = null; });
   const ray = new THREE.Raycaster(), mv = new THREE.Vector2();
   function pick(e) { const r = cv.getBoundingClientRect(); mv.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(mv, cam); const hit = ray.intersectObjects(portals.map((p) => p.face))[0]; if (hit && tC > .26 && tC < .66) openWorld(hit.object.userData.i); }
-  // әлемге кіру: HTML терезе - адамның тірі қолтаңбасы және жеке беті
+  // әлемге кіру: HTML терезе - адамның тірі қолтаңбасы және жеке беті; ашық тұрғанда фильм кідіреді
   const dlg = $(".t3-world");
   function openWorld(i) {
-    const m = M[i]; stopDir();
+    const m = M[i];
     $(".t3w-img", dlg).src = m.photo; $(".t3w-img", dlg).alt = m.name + ", портрет";
     $(".t3w-k", dlg).textContent = `${String(i + 1).padStart(2, "0")} · ${m.kind_kk} · ${m.age} жас`;
     $(".t3w-n", dlg).textContent = m.name; $(".t3w-r", dlg).textContent = m.role; $(".t3w-t", dlg).textContent = m.tag; $(".t3w-a", dlg).textContent = m.areas;
@@ -175,13 +176,7 @@ async function start(D) {
   }
   $(".t3w-x", dlg).addEventListener("click", () => dlg.close());
   dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
-  enter.addEventListener("click", () => openWorld(who < 0 ? 0 : who));
-  // режиссер нұсқасы: бет өзі баяу ағады (~3 минут); кез келген әрекет тоқтатады
-  const dirB = $(".t3-dir"); let dir = false, dirRaf = 0, lastTs = 0;
-  const stopDir = () => { if (!dir) return; dir = false; cancelAnimationFrame(dirRaf); dirB.textContent = "▶ Режиссер нұсқасы"; dirB.setAttribute("aria-pressed", "false"); };
-  const dirStep = (ts) => { if (!dir) return; const dt = lastTs ? ts - lastTs : 16; lastTs = ts; const span = scroller.offsetHeight - innerHeight, slow = tC > .3 && tC < .62 ? .55 : 1; scrollBy(0, span / 180000 * dt * slow); if (range() >= .999) { stopDir(); return; } dirRaf = requestAnimationFrame(dirStep); };
-  dirB.addEventListener("click", () => { if (dir) { stopDir(); return; } dir = true; lastTs = 0; dirB.textContent = "❚❚ Тоқтату"; dirB.setAttribute("aria-pressed", "true"); if (range() >= .99) goT(0, false); dirRaf = requestAnimationFrame(dirStep); });
-  ["wheel", "touchstart", "keydown"].forEach((ev) => addEventListener(ev, (e) => { if (ev === "keydown" && e.target === dirB) return; stopDir(); }, { passive: true }));
+  $(".t3-replay").addEventListener("click", () => { pt = 0; tC = 0; yawDrag = 0; });
 
   // ---------- кадр ----------
   const v = new THREE.Vector3(), look = new THREE.Vector3(), tmp = new THREE.Vector3();
@@ -191,6 +186,7 @@ async function start(D) {
     if (!visible) return;
     requestAnimationFrame(loop);
     const dtF = Math.min(.1, clock.getDelta()), time = clock.elapsedTime;
+    if (onStage && !dlg.open) pt = Math.min(DUR, pt + dtF); tT = pt / DUR;
     tC += (tT - tC) * (1 - Math.exp(-dtF * 5)); if (Math.abs(tT - tC) < 1e-5) tC = tT;
     const t = tC;
     // 01: ыдырау
@@ -211,7 +207,7 @@ async function start(D) {
     gold.emissiveIntensity = .4 + assem * 2.2 + seg(t, .62, .7) * .6;
     // камера
     const fly = ease(seg(t, .22, .32)), inside = seg(t, .3, .62);
-    focus = inside * (N - 1);
+    { const x = Math.min(N - 1e-4, inside * N), k = Math.floor(x); focus = Math.min(N - 1, k + ease(clamp(((x - k) - .72) / .28))); }   // әр адамда ~5 с тоқтайды
     const yaw = focus * Math.PI * 2 / N + yawDrag;
     if (t < .32) {
       cam.position.set(Math.sin(time * .1) * .3, Math.cos(time * .13) * .2, lerp(12, -9, fly)); look.set(0, 0, lerp(-2, HUB.z, fly));
@@ -254,9 +250,6 @@ async function start(D) {
       const ch = CH[c], m = who >= 0 ? M[who] : null;
       cap.k.textContent = ch.k; cap.t.textContent = m ? m.name : ch.t; cap.d.textContent = m ? `${m.role} · ${m.tag}` : ch.d;
       root.dataset.chap = String(c + 1);
-      dots.forEach((b, i) => { b.classList.toggle("is-on", i === c); b.setAttribute("aria-current", i === c ? "step" : "false"); });
-      enter.hidden = !inWorlds; people.hidden = !inWorlds;
-      pbtn.forEach((b, i) => b.classList.toggle("is-on", i === who));
       $(".t3-cap").classList.remove("is-swap"); void $(".t3-cap").offsetWidth; $(".t3-cap").classList.add("is-swap");
     }
     renderer.render(scene, cam);

@@ -186,27 +186,24 @@ test("басты бет: 8-сахна, бес есім, команда беті�
   await expect(s.locator('a[href="team.html"]')).toBeVisible();
 });
 
-test("3D фильм (team/3d.html): жеті көрініс, әлемге кіру, соңғы сөз", async ({ page }) => {
+test("3D фильм (team/3d.html): өзі ойнайды, басқару батырмалары жоқ, «Өткізу» - соңғы көрініс", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto("team/3d.html");
   await expect(page.locator(".t3")).toHaveClass(/t3-(live|static)/);
   await expect(page.locator(".t3-fchs li")).toHaveCount(7);
   await expect(page.locator(".t3-fpp li")).toHaveCount(5);
-  await expect(page.locator('.t3-links a[href="../team.html"]')).toHaveCount(1);
+  await expect(page.locator(".t3-ui, .t3-people, .t3-enter, .t3-ch")).toHaveCount(0);
   if (await page.locator(".t3").evaluate((e) => e.classList.contains("t3-live"))) {
-    await expect(page.locator(".t3-ch")).toHaveCount(7);
-    const go = (t) => page.evaluate((t) => { const s = document.querySelector(".t3-scroll"); scrollTo(0, s.getBoundingClientRect().top + scrollY + t * (s.offsetHeight - innerHeight)); }, t);
-    await go(0.45);
-    await expect(page.locator(".t3-people")).toBeVisible({ timeout: 15000 });
-    await page.locator(".t3-people button").nth(2).click();
-    await expect(page.locator(".t3-world")).toHaveJSProperty("open", true);
-    await expect(page.locator(".t3w-n")).toHaveText("Sagid Mustafa");
-    await expect(page.locator(".t3w-go")).toHaveAttribute("href", "sagid.html");
-    await page.locator(".t3w-x").click();
-    await expect(page.locator(".t3-world")).toHaveJSProperty("open", false);
-    await go(1);
-    await expect(page.locator(".t3-ch").nth(6)).toHaveAttribute("aria-current", "step", { timeout: 15000 });
+    await expect(page.locator(".t3")).toHaveAttribute("data-chap", "1");
+    const w0 = await page.locator(".t3-bar i").evaluate((e) => e.style.transform);
+    await page.waitForTimeout(1500);
+    expect(await page.locator(".t3-bar i").evaluate((e) => e.style.transform)).not.toBe(w0);   // скроллсыз алға жүреді
+    await page.mouse.move(200, 200);
+    await page.locator(".t3-skip").click();
+    await expect(page.locator(".t3")).toHaveAttribute("data-chap", "7", { timeout: 15000 });
     await expect(page.locator(".t3-end-a")).toHaveText("Біз есікті аштық.");
+    await page.locator(".t3-replay").click();
+    await expect(page.locator(".t3")).toHaveAttribute("data-chap", "1", { timeout: 15000 });
   }
   expect(errors).toEqual([]);
 });
@@ -233,7 +230,7 @@ test("басты бет: 1-сахнаның 3D шаңырағы (WebGL), әде�
   const gl = await p.evaluate(() => { const c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); });
   if (gl) {
     await expect(p.locator(".st-s1.st-3d canvas.st-gl[aria-hidden=true]")).toHaveCount(1, { timeout: 15000 });
-    await expect(p.locator(".st-s1 .s17-ring")).toHaveCSS("opacity", "0");
+    await expect(p.locator(".st-s1 .s17-ring").first()).toHaveCSS("opacity", "0");
     await expect(p.locator(".st-s1 .s17-mast")).toBeVisible();   // «Қазақ» газеті орнында
   }
   expect(errors).toEqual([]);
