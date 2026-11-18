@@ -195,7 +195,7 @@ def team_page():
     </div>
       <div class="tmx-ui">
         <div class="tmx-cap" aria-live="polite"><p class="tmx-k"></p><h2 class="tmx-n"></h2><p class="tmx-r"></p><p class="tmx-t"></p><p class="tmx-a"><a class="tmx-go" href="#">Жеке беті</a><a class="tmx-film" href="#">Фильмдегі сахнасы</a></p></div>
-        <div class="tmx-work" aria-hidden="true"><iframe data-src="index.html?nofilm#academies" title="AO17 басты беті" tabindex="-1" loading="lazy"></iframe><span class="tmx-work-l">Тірі AO17 беті · фотодағы ноутбук статикалық</span></div>
+        <div class="tmx-work" aria-hidden="true"><iframe data-src="index.html?nofilm" data-anchor="academies" title="AO17 басты беті" tabindex="-1" loading="lazy"></iframe><span class="tmx-work-l">Тірі AO17 беті · фотодағы ноутбук статикалық</span></div>
         <div class="tmx-side">{orbit("tmx-orb", "", False)}<button type="button" class="tmx-replay">Басынан</button><a class="tmx-skip" href="#uyq-h">Өткізу: бес автор</a></div>
         <div class="tmx-nav"><button type="button" class="tmx-prev" aria-label="Алдыңғы">&#8592;</button><span class="tmx-hint">Скролл - уақыт · сүйреу - кеңістік</span><button type="button" class="tmx-next" aria-label="Келесі">&#8594;</button></div>
         <span class="tmx-bar" aria-hidden="true"><i></i></span>

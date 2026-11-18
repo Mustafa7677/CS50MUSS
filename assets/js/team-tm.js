@@ -173,6 +173,9 @@ async function start(THREE, D) {
     lookDrop = asp < .8 ? .14 * 2 * dOrbit * tn : .09 * 2 * dOrbit * tn;
   }
   layout(); addEventListener("resize", () => { layout(); kick(); });
+  // қорғаныс: overflow контейнерін ешнәрсе (якорь, фокус, scrollIntoView) ішінен айналдырмасын - әйтпесе сахна жоғары жылжып, қайтпай қалады
+  const unshift = () => { if (stick.scrollTop || stick.scrollLeft) { stick.scrollTop = 0; stick.scrollLeft = 0; } };
+  stick.addEventListener("scroll", unshift, { passive: true });
 
   // ---------- басқару: скролл (уақыт), сүйреу (кеңістік) ----------
   let p = 0, pc = -1, yawOff = 0, yawT = 0, drag = null, raf = 0, visible = true;
@@ -289,7 +292,8 @@ async function start(THREE, D) {
     // ноутбук экраны → тірі бет: экрандағы проекциясына дәл орналасады
     if (wk) {
       const s = workK >= 0 ? orbitT - workK : -1, on = p > P.enter && p < P.orbit && s >= 0 && s < 1 ? seg(s, .24, .32) * (1 - seg(s, .42, .5)) : 0;
-      if (on > 0 && wkFrame && !wkFrame.getAttribute("src")) { try { sessionStorage.setItem("ao17:intro", "1"); } catch (e) { /* */ } wkFrame.setAttribute("src", wkFrame.dataset.src); }   // ішкі беттің кіріспе фильмі ойнамасын
+      if (on > 0 && wkFrame && !wkFrame.getAttribute("src")) { try { sessionStorage.setItem("ao17:intro", "1"); } catch (e) { /* */ } wkFrame.addEventListener("load", () => { try { const w = wkFrame.contentWindow, el = w.document.getElementById(wkFrame.dataset.anchor || ""); if (el) w.scrollTo(0, el.getBoundingClientRect().top + w.scrollY); } catch (e) { /* */ } }, { once: true });
+        wkFrame.setAttribute("src", wkFrame.dataset.src); }   // ішкі беттің кіріспе фильмі ойнамасын
       wk.style.opacity = on.toFixed(3); wk.classList.toggle("is-on", on > .5);
       if (on > 0) {
         cam.updateMatrixWorld();
@@ -299,6 +303,7 @@ async function start(THREE, D) {
       }
     }
     { const a = seg(p, .02, .08) * (1 - seg(p, P.enter - .03, P.enter + .01)) + seg(p, P.rise, P.rise + .03) * (1 - seg(p, .97, .99)); altMat.opacity = a; altLine.opacity = .3 * a; altG.visible = a > .01; }
+    unshift();
     renderer.render(scene, cam);
     if (pc !== target || Math.abs(yawOff - yawT) > 1e-3 || (worldA > .01 && document.visibilityState === "visible")) kick();   // шаң тірі тұрсын
   }
