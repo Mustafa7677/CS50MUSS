@@ -36,50 +36,26 @@ test("авторлық жол: футер, JSON-LD және мета барлы�
   expect(ld.copyrightHolder.member.map((p) => p.name)).toEqual(M.map((m) => m.name));
 });
 
-test("команда беті: скролл-фильм, көлденең галерея, фото-фильм кадрлары мен басқару", async ({ page }) => {
+test("команда беті (Explore): бір жол - ашылу, бес автор, қолтаңбалар; қайталанатын сахналар жоқ", async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto("team.html");
-  const shots = JSON.parse(await page.locator("#tf-data").textContent());
-  expect(shots).toHaveLength(9);
-  expect(shots.filter((s) => s.who).map((s) => s.who).sort()).toEqual(M.map((m) => m.slug).sort());
-  await expect(page.locator(".tf-bar")).toBeVisible();
-  await expect(page.locator(".tf-dot")).toHaveCount(9);
-  await expect(page.locator(".tf-t")).toHaveText(shots[0].t);
   await expect(page.locator(".shx-l1")).toHaveText("Бір шаңырақ");
-  await page.locator(".tf-next").click();
-  await expect(page.locator(".tf-t")).toHaveText(shots[1].t);
-  await expect(page.locator(".tf-n")).toHaveText("2 / 9");
-  await expect(page.locator(".tf-cap")).toHaveAttribute("aria-live", "polite");
-  await page.locator(".tf-dot").nth(7).click();
-  await expect(page.locator(".tf-t")).toHaveText(shots[7].t);
-  await expect(page.locator(".tf-l.is-cur img")).toHaveAttribute("src", /duo\.jpg$/);
-  await page.locator(".tf-prev").click();
-  await expect(page.locator(".tf-l.is-cur img")).toHaveAttribute("src", /work\.jpg$/);
-  // көлденең галерея: бес кадр, әрқайсысы жеке бетке
+  await expect(page.locator(".gt, .rng, .cr, .tf, .mq, .mf-end")).toHaveCount(0);   // міндетті кіріспе мен қайталау жоқ
+  await expect(page.locator('.shx-modes a[href="team/3d.html"]')).toHaveCount(1);
+  await expect(page.locator('.shx-modes a[href="#uyq-h"]')).toHaveCount(1);
   const panels = page.locator(".uyq-p");
   await expect(panels).toHaveCount(5);
   for (const [i, m] of M.entries()) {
-    await expect(panels.nth(i).locator("a")).toHaveAttribute("href", `team/${m.slug}.html`);
+    await expect(panels.nth(i).locator(".uyq-go")).toHaveAttribute("href", `team/${m.slug}.html`);
+    await expect(panels.nth(i).locator(".uyq-film")).toHaveAttribute("href", /^team\/3d\.html#t=\d+$/);
     await expect(panels.nth(i)).toContainText(`${m.age} жас`);
   }
   await expect(page.locator(".uyq-hb")).toHaveCount(5);
+  await expect(page.locator(".tm-signs a")).toHaveCount(5);
   await page.goto("team/gulzat.html");
-  await expect(page).toHaveURL(/team\/gulzat\.html$/);
   await expect(page.locator("h1")).toHaveText("Tutkabayeva Gulzat");
+  await expect(page.locator('a.tp-all[href^="3d.html#t="]')).toHaveCount(1);   // профиль фильмдегі сахнасына апарады
   expect(errors).toEqual([]);
-});
-
-test("қозғалыс азайтылса: фильм өздігінен ойнамайды, қолмен ауысады", async ({ browser }) => {
-  const c = await browser.newContext({ reducedMotion: "reduce" });
-  await blockFonts(c);
-  const p = await c.newPage();
-  await p.goto("team.html");
-  await p.waitForTimeout(3500);
-  await expect(p.locator(".tf-n")).toHaveText("1 / 9");
-  await expect(p.locator(".tf-play")).toHaveAttribute("aria-label", "Ойнату");
-  await p.locator(".tf-next").click();
-  await expect(p.locator(".tf-n")).toHaveText("2 / 9");
-  await c.close();
 });
 
 test("жеке беттер: рөл, жас, қолтаңба, нақты сілтемелер, көршілер", async ({ page }) => {
@@ -117,16 +93,6 @@ test("скролл: ашылу сахнасы мен галерея --p бойы
   await expect.poll(async () => { const b = await page.locator(".uyq-p").nth(2).boundingBox(); return Math.abs(b.x + b.width / 2 - 640); }).toBeLessThan(12);
 });
 
-test("3D айналым: скроллмен бұрылады, алдыңғы адамның есімі жазылады", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("team.html");
-  await expect(page.locator(".rng-c")).toHaveCount(5);
-  await expect(page.locator(".rng-now")).toHaveText("Tutkabayeva Gulzat");
-  await page.evaluate(() => { const t = document.querySelector(".rng"); scrollTo(0, t.getBoundingClientRect().top + scrollY + (t.offsetHeight - innerHeight) / 2); });
-  await expect(page.locator(".rng-now")).toHaveText("Sagid Mustafa");
-  await expect(page.locator(".rng-c").nth(2)).toHaveAttribute("href", "team/sagid.html");
-});
-
 test("манифест: сөздер скроллмен кезекпен жанады", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("team.html");
@@ -142,38 +108,13 @@ test("манифест: сөздер скроллмен кезекпен жан�
   await expect(page.locator(".mf-t").first()).toContainText("Бес адам, бір шаңырақ.");
 });
 
-test("қақпа: шеңберді жүргізу ашады, «Өткізу» бірден жабады, сессияда бір рет", async ({ browser }) => {
-  const c = await browser.newContext({ viewport: { width: 1280, height: 800 } });
-  await c.addInitScript(() => { try { sessionStorage.setItem("ao17:test-gate", "1"); } catch (e) {} });
-  await blockFonts(c);
-  const p = await c.newPage();
-  await p.goto("team.html");
-  const g = p.locator(".gt");
-  await expect(g).toBeVisible();
-  await expect(p.locator("html")).toHaveClass(/gt-lock/);
-  for (let k = 0; k < 30; k++) await p.mouse.wheel(0, 120);
-  await expect(p.locator(".gt-t")).toHaveText("Бес адам. Бір шаңырақ.");
-  await expect(g).toHaveCount(0, { timeout: 5000 });
-  await expect(p.locator("html")).not.toHaveClass(/gt-lock/);
-  await p.reload();
-  await expect(p.locator(".gt")).toHaveCount(0);
-  await p.evaluate(() => sessionStorage.removeItem("ao17:team-pl")); await p.reload();
-  await p.locator(".gt-skip").click();
-  await expect(p.locator(".gt")).toHaveCount(0, { timeout: 3000 });
-  await c.close();
-});
-
-test("тірі қолтаңбалар мен құрылу: назардағы кадр ойнайды, бөлшектер терезеге жиналады", async ({ page }) => {
+test("тірі қолтаңбалар: назардағы кадр ойнайды", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("team.html");
   await expect(page.locator(".uyq-p .dm")).toHaveCount(5);
   await page.evaluate(() => { const t = document.querySelector(".uyq"); scrollTo(0, t.getBoundingClientRect().top + scrollY + (t.offsetHeight - innerHeight) * .25); });
   await expect(page.locator(".uyq-p").nth(1)).toHaveClass(/is-act/);
   await expect(page.locator(".uyq-p").nth(3)).not.toHaveClass(/is-act/);
-  await expect(page.locator(".cr-pc")).toHaveCount(5);
-  await page.evaluate(() => { const t = document.querySelector(".cr"); scrollTo(0, t.getBoundingClientRect().top + scrollY + t.offsetHeight - innerHeight); });
-  await expect.poll(async () => { const w = await page.locator(".cr-win").boundingBox(); const a = await page.locator(".cr-a").boundingBox(); return a.x >= w.x - 2 && a.x + a.width <= w.x + w.width + 2; }).toBe(true);
-  await expect(page.locator(".mf-end .mf-t")).toContainText("мыңдаған оқушы");
 });
 
 test("басты бет: 8-сахна, бес есім, команда бетіне сілтеме", async ({ page }) => {
@@ -216,7 +157,7 @@ test("3D фильм «The Unmade»: постер → ENTER, өзі ойнайд�
     await page.mouse.move(box.x + box.width / 2 + 160, box.y + box.height / 2 + 40, { steps: 8 }); await page.mouse.up();
     await expect(page.locator(".um-hint")).not.toHaveClass(/is-on/);
     // VI-VII: «AO17-сіз әлем», бес шынайы фото, «алтыншы қол» - соңғы бөлікті көрермен орнатады; оған дейін уақыт тоқтап тұрады
-    await page.goto("team/3d.html?seek3#t=106");
+    await page.goto("team/3d.html?seek3#t=111");
     await expect(page.locator(".um-faces li")).toHaveCount(5);
     await expect(page.locator(".um")).toHaveAttribute("data-act", "7", { timeout: 15000 });
     await expect(page.locator(".um-hand")).toHaveClass(/is-on/, { timeout: 15000 });
@@ -227,6 +168,18 @@ test("3D фильм «The Unmade»: постер → ENTER, өзі ойнайд�
     await expect(page.locator(".um-fin")).toHaveClass(/is-on/, { timeout: 20000 });
     await expect(page.locator(".um-f2")).toHaveText("Біз іргетасын қаладық. Әрі қарай сен саласың.");
     await expect(page.locator(".um-site")).toHaveClass(/is-on/);   // сайт қайта тірі: сілтемелері жұмыс істейді
+    // тараулар мен кідірту: тарау сілтемесі seek(t) жасайды, «Кідірту» уақытты тоқтатады
+    await page.goto("team/3d.html?seek5#t=1");
+    await expect(page.locator(".um-chs a")).toHaveCount(7);
+    await page.locator(".um-chs a").nth(2).dispatchEvent("click");
+    await expect(page.locator(".um")).toHaveAttribute("data-act", "3", { timeout: 15000 });
+    await expect(page.locator(".um-pp-e")).toHaveText("The Architect", { timeout: 15000 });
+    await page.locator(".um-pause").dispatchEvent("click");
+    await expect(page.locator(".um-pause")).toHaveAttribute("aria-pressed", "true");
+    const b0 = await page.locator(".um-bar i").evaluate((e) => e.style.transform);
+    await page.waitForTimeout(1200);
+    expect(await page.locator(".um-bar i").evaluate((e) => e.style.transform)).toBe(b0);
+    await page.locator(".um-pause").dispatchEvent("click");
     // «Өткізу» - бірден соңғы кадрға; «Қайта көру» - постерге
     await page.goto("team/3d.html?seek4#t=40");
     await page.mouse.move(40, 300);
@@ -249,6 +202,21 @@ test("3D фильм: қозғалыс азайса - титрлер мен фо�
   await expect(p.locator(".um-film")).toBeHidden();
   await expect(p.locator(".um-cr-ph img")).toBeVisible();
   await expect(p.locator(".um-cr-steps li")).toHaveCount(7);
+  await c.close();
+});
+
+test("3D фильм: WebGL жоқ болса - титрлер, фото және барлық профиль сілтемелері", async ({ browser }) => {
+  const c = await browser.newContext();
+  await blockFonts(c);
+  await c.addInitScript(() => { const g = HTMLCanvasElement.prototype.getContext; HTMLCanvasElement.prototype.getContext = function (k, ...a) { return /webgl/.test(k) ? null : g.call(this, k, ...a); }; });
+  const p = await c.newPage();
+  const errors = collectErrors(p);
+  await p.goto("team/3d.html");
+  await expect(p.locator(".um")).toHaveClass(/um-static/);
+  await expect(p.locator(".um-film")).toBeHidden();
+  await expect(p.locator(".um-cr-ph img")).toBeVisible();
+  for (const m of M) await expect(p.locator(`.um-cr-l a[href="${m.slug}.html"]`)).toHaveText(m.name);
+  expect(errors).toEqual([]);
   await c.close();
 });
 

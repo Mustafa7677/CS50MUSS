@@ -127,6 +127,13 @@ def arch_card(m, prefix, i):
             f'<span class="ta-t">{E(m["tag"])}</span></a></li>')
 
 
+FILM_ORDER = ["sagid", "gulzat", "dastan", "magzhan", "merey"]   # 3D фильмдегі реті (assets/js/team3d.js, T.act = 24, T.per = 11)
+
+
+def film_at(slug):
+    return 24 + 11 * FILM_ORDER.index(slug) + 2
+
+
 DEMO = {
     "palette": '<span class="dm-sw" style="--c:#0e0a07;--i:0"></span><span class="dm-sw" style="--c:#8c2433;--i:1"></span><span class="dm-sw" style="--c:#8a6634;--i:2"></span><span class="dm-sw" style="--c:#d9b468;--i:3"></span><span class="dm-sw" style="--c:#efe6d3;--i:4"></span><b class="dm-aa">Аа</b>',
     "stats": '<span class="dm-q">2x + 5 = 17 · x = ?</span><span class="dm-o">4</span><span class="dm-o dm-ok">6</span><span class="dm-o">11</span>',
@@ -145,7 +152,7 @@ def panel(m, i):
     return (f'<li class="uyq-p" style="--i:{i};--acc:{acc}"><div class="uyq-ph" style="view-transition-name:tm-{m["slug"]}"><div class="uyq-img" data-tilt>{face}</div></div>'
             f'<div class="uyq-tx"><p class="uyq-no" aria-hidden="true">{i + 1:02d}</p><p class="uyq-k">{E(k)} · {age(m)}</p>'
             f'<h3 class="uyq-n">{E(m["name"])}</h3><p class="uyq-r">{E(m["role"])}</p><p class="uyq-t">{E(m["tag"])}</p>'
-            f'<p class="uyq-a">{E(m["areas"])}</p><div class="dm dm-{m["sig"]}" role="img" aria-label="{E(DEMO_CAP[m["sig"]])}"><span class="dm-cap">{E(DEMO_CAP[m["sig"]])}</span>{DEMO[m["sig"]]}</div><a class="btn gold uyq-go" href="team/{m["slug"]}.html">Жеке беті</a></div></li>')
+            f'<p class="uyq-a">{E(m["areas"])}</p><div class="dm dm-{m["sig"]}" role="img" aria-label="{E(DEMO_CAP[m["sig"]])}"><span class="dm-cap">{E(DEMO_CAP[m["sig"]])}</span>{DEMO[m["sig"]]}</div><a class="btn gold uyq-go" href="team/{m["slug"]}.html">Жеке беті</a><a class="uyq-film" href="team/3d.html#t={film_at(m["slug"])}">Фильмдегі сахнасы</a></div></li>')
 
 
 RING = '''
@@ -163,14 +170,10 @@ RING = '''
 
 
 def team_page():
-    shots = film_shots("")
-    first = shots[0]
     panels = "\n        ".join(panel(m, i) for i, m in enumerate(M))
     hud = "".join(f'<button type="button" class="uyq-hb" data-i="{i}"><i></i><span>{E(m["name"])}</span></button>' for i, m in enumerate(M))
     names = " ".join(f'<span>{E(m["name"])}</span>' for m in M)
-    ring_cards = "".join(f'<a class="rng-c" href="team/{m["slug"]}.html" style="--i:{i}" data-name="{E(m["name"])}"><img src="{photo(m["slug"])}" alt="" width="640" height="800" loading="lazy" decoding="async"><span>{E(m["name"])}</span></a>' for i, m in enumerate(M))
-    ring = RING.format(n=len(M), cards=ring_cards, first=E(M[0]["name"]))
-    main = f"""  <main class="tm shx" id="main" data-preload>
+    main = f"""  <main class="tm shx" id="main">
     <div class="mh" aria-hidden="true"><span>Алаш · 1917</span><span><b>AO17</b> · Команда үндеуі</span><span>Бес автор · 2026</span></div><div class="mh-rule" aria-hidden="true"></div>
     <section class="shx-open" data-scrub="pin" aria-labelledby="shx-h">
       <div class="shx-stick">
@@ -187,7 +190,7 @@ def team_page():
           <p class="shx-kick">AO17 командасы</p>
           <h1 id="shx-h" aria-label="Бір шаңырақ - бес адам" data-split><span class="shx-l1">Бір шаңырақ</span><span class="shx-l2">бес адам</span></h1>
           <p class="shx-names">{names}</p>
-          <a class="shx-3d" href="team/3d.html"><i aria-hidden="true">▶</i> 3D фильм: «Жасалмаған сайт»</a>
+          <nav class="shx-modes" aria-label="Команда бетінің режимі"><a class="shx-3d" href="team/3d.html"><i aria-hidden="true">▶</i> Cinema: 3D фильм «The Unmade»</a><a class="shx-ex" href="#uyq-h">Explore: бес автор</a></nav>
         </div>
         <p class="shx-hint" aria-hidden="true"><span>Төмен айналдырыңыз</span><i></i></p>
       </div>
@@ -211,43 +214,6 @@ def team_page():
 
     <div class="orn" data-scrub="through" aria-hidden="true"><svg viewBox="0 0 1200 80" preserveAspectRatio="xMidYMid meet"><path class="orn-l" pathLength="1" d="M520 40H40M680 40H1160"/><path class="orn-h" pathLength="1" d="M600 58V40C600 22 584 12 570 18C556 24 558 44 572 44C582 44 584 32 576 30M600 40C600 22 616 12 630 18C644 24 642 44 628 44C618 44 616 32 624 30"/><path class="orn-h" pathLength="1" d="M520 40C536 40 540 30 532 26M680 40C664 40 660 30 668 26M40 40l-14-10M40 40l-14 10M1160 40l14-10M1160 40l14 10"/><path class="orn-d" d="M600 62l6 6-6 6-6-6z"/></svg></div>
 
-{ring}
-    <section class="cr" data-scrub="pin" aria-labelledby="cr-h">
-      <div class="cr-stick">
-        <div class="cr-head"><p class="st-intertitle">Құрылу</p><h2 id="cr-h">Бес еңбек - бір платформа</h2></div>
-        <div class="cr-win" role="img" aria-label="AO17 платформасы бес адамның еңбегінен құралады: стиль, мазмұн, зертхана, телефон нұсқасы және қаңқа.">
-          <div class="cr-pc cr-a" style="--i:0;--x:-48vw;--y:-34vh;--r:-14deg"><b class="cr-tag">Gulzat · стиль</b><span class="cr-seal"></span><span class="cr-brand">AO17</span><span class="cr-dots"><i></i><i></i><i></i><i></i><i></i></span></div>
-          <div class="cr-pc cr-b" style="--i:1;--x:46vw;--y:-30vh;--r:10deg"><b class="cr-tag">Dastan · мазмұн</b><span class="cr-h">Сызықтық теңдеу</span><i></i><i></i><i class="cr-s"></i><span class="cr-chip">2x + 5 = 17 → x = 6 ✓</span></div>
-          <div class="cr-pc cr-c" style="--i:2;--x:-44vw;--y:36vh;--r:9deg"><b class="cr-tag">Magzhan · зертхана</b><svg viewBox="0 0 160 70" class="dm-bal"><path class="dm-st" d="M80 64V18M64 64h32"/><g><path d="M24 18h112"/><rect x="18" y="20" width="22" height="16" rx="2"/><circle cx="124" cy="28" r="7"/></g><circle class="dm-pv" cx="80" cy="18" r="3.5"/></svg></div>
-          <div class="cr-pc cr-d" style="--i:3;--x:44vw;--y:34vh;--r:-10deg"><b class="cr-tag">Merey · телефон</b><span class="cr-ph"><i></i><i></i><i></i></span></div>
-          <div class="cr-pc cr-e" style="--i:4;--x:0vw;--y:52vh;--r:4deg"><b class="cr-tag">Sagid · қаңқа</b><span class="cr-flow"><i>Мазмұн</i><i>Жинау</i><i>Тексеру</i><i>Жариялау</i><i>Оқушы</i></span></div>
-        </div>
-        <p class="cr-cap">Әр бөлік - бір адамның еңбегі. Бірге олар бір оқу әлемін құрайды.</p>
-      </div>
-    </section>
-
-    <div class="mq" aria-hidden="true"><div class="mq-track"><span>Бір шаңырақ <i>◆</i> <em>бес адам</em> <i>◆</i> AO17 командасы <i>◆</i> </span><span>Бір шаңырақ <i>◆</i> <em>бес адам</em> <i>◆</i> AO17 командасы <i>◆</i> </span><span>Бір шаңырақ <i>◆</i> <em>бес адам</em> <i>◆</i> AO17 командасы <i>◆</i> </span><span>Бір шаңырақ <i>◆</i> <em>бес адам</em> <i>◆</i> AO17 командасы <i>◆</i> </span></div></div>
-    <section class="tf" aria-labelledby="tf-h" data-film>
-      <p class="st-intertitle">Фото-фильм</p>
-      <h2 id="tf-h">Бір күннің кадрлары</h2>
-      <div class="tf-stage">
-      <div class="tf-frame">
-        <div class="tf-l is-cur"><img src="{first['img']}" alt="{E(first['alt'])}" width="2400" height="1681" loading="lazy"></div>
-        <svg class="tf-shan" viewBox="0 0 600 400" aria-hidden="true" focusable="false"><g transform="translate(300 200)">
-          <circle r="150" class="tf-ring"/><circle r="138" class="tf-ring2"/>
-          <path class="tf-kuld" d="M-138-40H138M-138 40H138M-40-138V138M40-138V138"/>
-          <g class="tf-uyk"><path d="M0-150V-196M130-75 170-98M130 75 170 98M0 150V196M-130 75-170 98M-130-75-170-98"/></g></g></svg>
-      </div>
-        <div class="tf-cap" aria-live="off"><p class="tf-k">{E(first['k'])}</p><p class="tf-t">{E(first['t'])}</p><p class="tf-d">{E(first['d'])}</p></div>
-      </div>
-      <div class="tf-bar" hidden></div>
-      <script type="application/json" id="tf-data">{json.dumps(shots, ensure_ascii=False)}</script>
-    </section>
-
-    <section class="mf mf-end" data-scrub="pin" aria-label="Соңғы сөз">
-      <div class="mf-stick"><p class="mf-t" data-words>Бес адам бір жобаны <em>бастады</em>. Ертең оны мыңдаған оқушы <em>жалғастырады</em>.</p></div>
-    </section>
-
     <section class="tm-sec tm-seal" aria-labelledby="tn-h" data-reveal>
       <img class="tm-seal-img" src="assets/img/seal.svg" alt="" width="132" height="132">
       <div class="tm-seal-tx">
@@ -258,7 +224,7 @@ def team_page():
       </div>
     </section>
   </main>"""
-    return shell("", "Команда - AO17", "AO17 командасы: бес автор - екі дизайнер, үш бағдарлама мен мазмұн авторы. Скроллмен ашылатын фильм, әрқайсысының сайттағы ісі.", main)
+    return shell("", "Команда - AO17", "AO17 командасы: бес автор - екі дизайнер, үш бағдарлама мен мазмұн авторы. Әрқайсысының сайттағы ісі және 3D фильм «The Unmade».", main)
 
 
 # ---------- жеке бет: «қолтаңба» ----------
@@ -351,7 +317,7 @@ def person_page(m, i):
       <ul class="tp-works">{works}</ul>
     </section>
 
-    <nav class="tp-nav" aria-label="Команда мүшелері">{mini(prv, "Алдыңғы")}<a class="tp-all" href="{p}team.html">Бүкіл команда</a>{mini(nxt, "Келесі")}</nav>
+    <nav class="tp-nav" aria-label="Команда мүшелері">{mini(prv, "Алдыңғы")}<a class="tp-all" href="{p}team.html">Бүкіл команда</a><a class="tp-all" href="3d.html#t={film_at(m["slug"])}">Фильмдегі сахнасы</a>{mini(nxt, "Келесі")}</nav>
   </main>"""
     return shell(p, f"{m['name']} - AO17 командасы", f"{m['name']}, {m['age']} жас: {m['role']}. {m['areas']}", main)
 
@@ -398,13 +364,14 @@ ACTS = [   # (басы, соңы, белгі, тақырып, сипаттама
     (83.8, 87.5, "IV · Құлау", "Құрылымды өз қолыңмен бұз", "Енді сайт - мыңдаған бөлшек. Тартып көріңіз: олар қайта жиналады."),
     (88.0, 95.2, "V · Шаңырақ", "Бес бағыт - бір шаңырақ", "Интерфейстің бөлшектері шаңыраққа бірігеді. Бірақ оның соңғы бөлігі әлі орнында емес."),
 ]
+CHAPTERS3D = [(0, "Кіру"), (10, "Ыдырау"), (26, "Бес автор"), (79, "Тоғысу"), (87.5, "Шаңырақ"), (95.5, "Адамдар"), (113, "Алтыншы қол")]   # team3d.js CHAPTERS
 FILM_STEPS = [
     ("0", "Постер", "Кеңістіктегі алып әріптер: THE PEOPLE BEHIND THE FUTURE. Камера әріптердің, сосын қараңғыдағы бес адамның арасынан өтеді."),
     ("I", "Беті", "Ауада AO17 сайты тұр. Ол қабаттарға ажырап, код жолдары жіңішке жіп болып тартылады; адамдарсыз сайт бос шыныға айналады."),
     ("II-III", "Кейіпкерлер", "Бес адам қараңғыдан жарыққа шығады. Әр адамның алып есімінің іші оның сайттағы еңбегімен толады: қаңқа, түс пен әріп, мазмұн, қозғалыс, телефон; сосын әріптер құрылымға ажырайды."),
     ("IV", "Құлау", "Сайт мыңдаған бөлшекке айналады; оларды тартуға болады, олар қайта жиналады."),
     ("V", "Шаңырақ", "Камера көтеріледі: бөлшектер алып шаңыраққа бірігеді."),
-    ("VI", "AO17-сіз әлем", "Бәрі жоғалады: «Бір идея ешқашан өздігінен шындыққа айналмайды». Бес адамның шынайы фотосы мен есімі."),
+    ("VI", "AO17-сіз әлем", "Бәрі жоғалады: «Бір идея ешқашан өздігінен шындыққа айналмайды». Бес адамның шынайы фотосы мен есімі, сосын топ фотосы: Not built by magic. Built by people."),
     ("VII", "Алтыншы қол", "Шаңырақтың соңғы бөлігін көрермен өзі орнатады. Шаңырақ қайта сайтқа айналады: біз іргетасын қаладық, әрі қарай сен саласың."),
 ]
 
@@ -417,6 +384,7 @@ def film3d_page():
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     credits = "".join(f'<div><dt>{E(m["role"])}</dt><dd><a href="{m["slug"]}.html">{E(m["name"])}</a></dd></div>' for m in sorted(M, key=lambda m: ["sagid", "gulzat", "dastan", "magzhan", "merey"].index(m["slug"])))
     faces = "".join(f'<li style="--i:{k}"><img src="{p}assets/img/team/dark/{m["slug"]}.jpg" alt="{E(m["name"])}, портрет" width="820" height="1200" loading="lazy" decoding="async"><b>{E(m["name"])}</b><span>{E(m["role"])}</span></li>' for k, m in enumerate(M))
+    chapters = "".join(f'<a href="#t={a}">{i + 1:02d} <span>{E(n)}</span></a>' for i, (a, n) in enumerate(CHAPTERS3D))
     steps = "".join(f'<li><b>{n}</b> <span>{E(t)}</span><p>{E(d)}</p></li>' for n, t, d in FILM_STEPS)
     main = f"""<main id="main" class="um">
   <script type="application/json" id="um-data">{js}</script>
@@ -433,14 +401,16 @@ def film3d_page():
         <p class="um-film-k" lang="en">An interactive film<br>2026</p>
         <h1 class="um-ph" lang="en">The people behind the future.</h1>
         <p class="um-sub">Бес адам. Бір болашақ.</p>
-        <button type="button" class="um-enter" lang="en">Enter experience</button>
+        <div class="um-entry"><button type="button" class="um-enter" lang="en">Enter experience</button><a class="um-alt" href="{p}team.html#uyq-h" lang="en">Explore team</a><a class="um-alt" href="#um-cr" lang="en">Skip film</a></div>
       </div>
+      <p class="um-story" lang="en">Every system has a story.</p>
       <p class="um-q">Ал егер осының бәрін жасаған адамдарды алып тастасақ ше?</p>
-      <div class="um-pp" aria-live="polite"><p class="um-pp-i"></p><p class="um-pp-e" lang="en"></p><h2 class="um-pp-n"></h2><p class="um-pp-r"></p><p class="um-pp-l"></p><a class="um-pp-a" href="#">Жұмысын көру</a></div>
+      <div class="um-pp" aria-live="polite"><p class="um-pp-i"></p><p class="um-pp-e" lang="en"></p><h2 class="um-pp-n"></h2><p class="um-pp-r"></p><p class="um-pp-l"></p><a class="um-pp-a" href="#">Жұмысын көру</a><p class="um-pp-note">Кадрдағы интерфейс - сайттың көрнекі көшірмесі; нақты беттері - сілтемеде.</p></div>
       <div class="um-cap" aria-live="polite"><p class="um-k"></p><p class="um-t"></p><p class="um-d"></p></div>
       <p class="um-hint" aria-hidden="true">Тінтуірмен не саусақпен тартыңыз</p>
       <p class="um-void">Бір идея ешқашан өздігінен шындыққа айналмайды.</p>
       <ul class="um-faces" aria-label="Команда">{faces}</ul>
+      <div class="um-group"><img src="{p}assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус." width="2400" height="1681" loading="lazy" decoding="async"><p class="um-g1" lang="en">Not built by magic.<br>Built by people.</p><p class="um-g2">Бес адам. Бір шаңырақ. Бір болашақ.</p></div>
       <div class="um-hand"><p class="um-hand-k">Соңғы бөлігі - сенде</p><p class="um-hand-t">Бесеуі платформаны жасады. Алтыншысы - сен, оны қолданатын оқушы. Шаңырақтың соңғы бөлігін ортаға сүйреп апар.</p><button type="button" class="um-place">Орнату</button></div>
       <div class="um-fin">
         <p class="um-f1" lang="en">We built the foundation.<br>You build what's next.</p>
@@ -448,6 +418,7 @@ def film3d_page():
         <p class="um-f3">Сайт тірі: төмендегі батырмадан оқуды бастаңыз.</p>
         <div class="um-row"><a class="btn gold" href="{p}index.html">Оқуды бастау</a><a class="btn ghost" href="#um-cr">Титрлер</a><button type="button" class="btn ghost um-replay">Қайта көру</button></div>
       </div>
+      <div class="um-ctl"><button type="button" class="um-pause" aria-pressed="false">Кідірту</button><nav class="um-chs" aria-label="Фильм тараулары">{chapters}</nav></div>
       <button type="button" class="um-skip">Өткізу</button>
       <span class="um-bar" aria-hidden="true"><i></i></span>
     </div>
