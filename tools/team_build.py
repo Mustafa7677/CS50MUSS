@@ -127,6 +127,16 @@ def arch_card(m, prefix, i):
             f'<span class="ta-t">{E(m["tag"])}</span></a></li>')
 
 
+DEMO = {
+    "palette": '<span class="dm-sw" style="--c:#0e0a07;--i:0"></span><span class="dm-sw" style="--c:#8c2433;--i:1"></span><span class="dm-sw" style="--c:#8a6634;--i:2"></span><span class="dm-sw" style="--c:#d9b468;--i:3"></span><span class="dm-sw" style="--c:#efe6d3;--i:4"></span><b class="dm-aa">Аа</b>',
+    "stats": '<span class="dm-q">2x + 5 = 17 · x = ?</span><span class="dm-o">4</span><span class="dm-o dm-ok">6</span><span class="dm-o">11</span>',
+    "flow": '<span class="dm-n" style="--i:0">Мазмұн</span><span class="dm-n" style="--i:1">Жинау</span><span class="dm-n" style="--i:2">Тексеру</span><span class="dm-n" style="--i:3">Жариялау</span><span class="dm-n" style="--i:4">Оқушы</span>',
+    "code": '<svg viewBox="0 0 160 70" class="dm-bal"><path class="dm-st" d="M80 64V18M64 64h32"/><g class="dm-beam"><path d="M24 18h112"/><rect x="18" y="20" width="22" height="16" rx="2"/><text x="29" y="32">x</text><circle cx="124" cy="28" r="7"/></g><circle class="dm-pv" cx="80" cy="18" r="3.5"/></svg><span class="dm-x">x = 4</span>',
+    "bota": '<span class="dm-dev"><i></i><i></i><i></i></span><span class="dm-lbl">компьютер → телефон</span>',
+}
+DEMO_CAP = {"palette": "Палитра құрылады", "stats": "Есеп шешіледі", "flow": "Платформаның жолы", "code": "Таразы теңеседі", "bota": "Интерфейс телефонға бейімделеді"}
+
+
 def panel(m, i):
     k, acc = KIND[m["kind"]]
     ph = photo(m["slug"])
@@ -135,7 +145,7 @@ def panel(m, i):
     return (f'<li class="uyq-p" style="--i:{i};--acc:{acc}"><div class="uyq-ph" style="view-transition-name:tm-{m["slug"]}"><div class="uyq-img" data-tilt>{face}</div></div>'
             f'<div class="uyq-tx"><p class="uyq-no" aria-hidden="true">{i + 1:02d}</p><p class="uyq-k">{E(k)} · {age(m)}</p>'
             f'<h3 class="uyq-n">{E(m["name"])}</h3><p class="uyq-r">{E(m["role"])}</p><p class="uyq-t">{E(m["tag"])}</p>'
-            f'<p class="uyq-a">{E(m["areas"])}</p><a class="btn gold uyq-go" href="team/{m["slug"]}.html">Жеке беті</a></div></li>')
+            f'<p class="uyq-a">{E(m["areas"])}</p><div class="dm dm-{m["sig"]}" role="img" aria-label="{E(DEMO_CAP[m["sig"]])}"><span class="dm-cap">{E(DEMO_CAP[m["sig"]])}</span>{DEMO[m["sig"]]}</div><a class="btn gold uyq-go" href="team/{m["slug"]}.html">Жеке беті</a></div></li>')
 
 
 RING = '''
@@ -201,6 +211,20 @@ def team_page():
     <div class="orn" data-scrub="through" aria-hidden="true"><svg viewBox="0 0 1200 80" preserveAspectRatio="xMidYMid meet"><path class="orn-l" pathLength="1" d="M520 40H40M680 40H1160"/><path class="orn-h" pathLength="1" d="M600 58V40C600 22 584 12 570 18C556 24 558 44 572 44C582 44 584 32 576 30M600 40C600 22 616 12 630 18C644 24 642 44 628 44C618 44 616 32 624 30"/><path class="orn-h" pathLength="1" d="M520 40C536 40 540 30 532 26M680 40C664 40 660 30 668 26M40 40l-14-10M40 40l-14 10M1160 40l14-10M1160 40l14 10"/><path class="orn-d" d="M600 62l6 6-6 6-6-6z"/></svg></div>
 
 {ring}
+    <section class="cr" data-scrub="pin" aria-labelledby="cr-h">
+      <div class="cr-stick">
+        <div class="cr-head"><p class="st-intertitle">Құрылу</p><h2 id="cr-h">Бес еңбек - бір платформа</h2></div>
+        <div class="cr-win" role="img" aria-label="AO17 платформасы бес адамның еңбегінен құралады: стиль, мазмұн, зертхана, телефон нұсқасы және қаңқа.">
+          <div class="cr-pc cr-a" style="--i:0;--x:-48vw;--y:-34vh;--r:-14deg"><b class="cr-tag">Gulzat · стиль</b><span class="cr-seal"></span><span class="cr-brand">AO17</span><span class="cr-dots"><i></i><i></i><i></i><i></i><i></i></span></div>
+          <div class="cr-pc cr-b" style="--i:1;--x:46vw;--y:-30vh;--r:10deg"><b class="cr-tag">Dastan · мазмұн</b><span class="cr-h">Сызықтық теңдеу</span><i></i><i></i><i class="cr-s"></i><span class="cr-chip">2x + 5 = 17 → x = 6 ✓</span></div>
+          <div class="cr-pc cr-c" style="--i:2;--x:-44vw;--y:36vh;--r:9deg"><b class="cr-tag">Magzhan · зертхана</b><svg viewBox="0 0 160 70" class="dm-bal"><path class="dm-st" d="M80 64V18M64 64h32"/><g><path d="M24 18h112"/><rect x="18" y="20" width="22" height="16" rx="2"/><circle cx="124" cy="28" r="7"/></g><circle class="dm-pv" cx="80" cy="18" r="3.5"/></svg></div>
+          <div class="cr-pc cr-d" style="--i:3;--x:44vw;--y:34vh;--r:-10deg"><b class="cr-tag">Merey · телефон</b><span class="cr-ph"><i></i><i></i><i></i></span></div>
+          <div class="cr-pc cr-e" style="--i:4;--x:0vw;--y:52vh;--r:4deg"><b class="cr-tag">Sagid · қаңқа</b><span class="cr-flow"><i>Мазмұн</i><i>Жинау</i><i>Тексеру</i><i>Жариялау</i><i>Оқушы</i></span></div>
+        </div>
+        <p class="cr-cap">Әр бөлік - бір адамның еңбегі. Бірге олар бір оқу әлемін құрайды.</p>
+      </div>
+    </section>
+
     <div class="mq" aria-hidden="true"><div class="mq-track"><span>Бір шаңырақ <i>◆</i> <em>бес адам</em> <i>◆</i> AO17 командасы <i>◆</i> </span><span>Бір шаңырақ <i>◆</i> <em>бес адам</em> <i>◆</i> AO17 командасы <i>◆</i> </span><span>Бір шаңырақ <i>◆</i> <em>бес адам</em> <i>◆</i> AO17 командасы <i>◆</i> </span><span>Бір шаңырақ <i>◆</i> <em>бес адам</em> <i>◆</i> AO17 командасы <i>◆</i> </span></div></div>
     <section class="tf" aria-labelledby="tf-h" data-film>
       <p class="st-intertitle">Фото-фильм</p>
@@ -217,6 +241,10 @@ def team_page():
       </div>
       <div class="tf-bar" hidden></div>
       <script type="application/json" id="tf-data">{json.dumps(shots, ensure_ascii=False)}</script>
+    </section>
+
+    <section class="mf mf-end" data-scrub="pin" aria-label="Соңғы сөз">
+      <div class="mf-stick"><p class="mf-t" data-words>Бес адам бір жобаны <em>бастады</em>. Ертең оны мыңдаған оқушы <em>жалғастырады</em>.</p></div>
     </section>
 
     <section class="tm-sec tm-seal" aria-labelledby="tn-h" data-reveal>

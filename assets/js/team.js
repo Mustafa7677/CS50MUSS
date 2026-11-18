@@ -38,7 +38,7 @@
         }
         if (s.panels.length) {
           const pos = c * (s.panels.length - 1);
-          s.panels.forEach((p, i) => { const d = clamp(pos - i, -1.5, 1.5); p.style.setProperty("--d", d.toFixed(3)); p.style.setProperty("--a", clamp(1 - Math.abs(d)).toFixed(3)); });
+          s.panels.forEach((p, i) => { const d = clamp(pos - i, -1.5, 1.5); p.style.setProperty("--d", d.toFixed(3)); p.style.setProperty("--a", clamp(1 - Math.abs(d)).toFixed(3)); p.classList.toggle("is-act", Math.abs(d) < .35); });
           const on = Math.round(pos);
           s.hud.forEach((h, i) => { h.style.setProperty("--f", clamp(pos - i + 0.5).toFixed(3)); h.classList.toggle("is-on", i === on); h.setAttribute("aria-current", i === on ? "true" : "false"); });
         }
@@ -89,24 +89,51 @@
   // ---------- әлемдік деңгейдегі ұсақ сиқыр ----------
   const fine = window.matchMedia && matchMedia("(pointer: fine)").matches;
 
-  // прелоадер: команда беті, сессияда бір рет; санақ суреттердің жүктелуіне байланған (ең аз 1.1 с, ең көп 3.2 с)
+  // I акт - Қақпа: оқушы шаңырақ шеңберін өзі «жүргізеді» (тінтуір, саусақ, скролл не пернетақта); «Өткізу» әрқашан бар. Сессияда бір рет.
   const pre = $("[data-preload]");
   let seen = false; try { seen = sessionStorage.getItem("ao17:team-pl") === "1"; sessionStorage.setItem("ao17:team-pl", "1"); } catch (e) { seen = true; }
   if (pre && motion() && !seen) {
-    const pl = document.createElement("div"); pl.className = "pl"; pl.setAttribute("aria-hidden", "true");
-    pl.innerHTML = '<div class="pl-half pl-top"></div><div class="pl-half pl-bot"></div><div class="pl-core"><svg viewBox="-60 -60 120 120"><circle r="52" pathLength="1"/><path pathLength="1" d="M-50-16H50M-50 16H50M-16-50V50M16-50V50"/></svg><p class="pl-n">000<small>%</small></p><p class="pl-l">AO17 командасы</p></div>';
-    document.body.append(pl);
-    const imgs = $$("img", pre).filter((im) => im.loading !== "lazy").slice(0, 6), t0 = performance.now(), num = $(".pl-n", pl);
-    let shown = 0;
-    const done = () => imgs.filter((im) => im.complete).length / Math.max(1, imgs.length);
-    const step = (t) => {
-      const el = t - t0, target = Math.min(1, Math.max(Math.min(1, el / 1100) * done(), el / 3200));
-      shown += (target - shown) * .12; if (target === 1 && shown > .995) shown = 1;
-      num.firstChild.nodeValue = String(Math.round(shown * 100)).padStart(3, "0"); pl.style.setProperty("--k", shown.toFixed(3));
-      if (shown < 1) requestAnimationFrame(step);
-      else { setTimeout(() => pl.classList.add("is-out"), 180); setTimeout(() => pl.remove(), 1400); }
+    const uy = [0, 60, 120, 180, 240, 300].map((d) => { const r = d * Math.PI / 180, s = Math.sin(r), c = -Math.cos(r); return `<path pathLength="1" d="M${(s * 112).toFixed(1)} ${(c * 112).toFixed(1)}L${(s * 150).toFixed(1)} ${(c * 150).toFixed(1)}"/>`; }).join("");
+    const g = document.createElement("div");
+    g.className = "gt"; g.setAttribute("role", "dialog"); g.setAttribute("aria-modal", "true"); g.setAttribute("aria-labelledby", "gt-t");
+    g.innerHTML = `<div class="gt-half gt-top"></div><div class="gt-half gt-bot"></div><div class="gt-core"><p class="gt-k">AO17 · Жасаушылар · 001 - 005</p>
+      <svg class="gt-svg" viewBox="-160 -160 320 320" aria-hidden="true"><circle class="gt-track" r="100"/><path class="gt-kd" d="M-96-30H96M-96 30H96M-30-96V96M30-96V96"/><circle class="gt-prog" r="100" pathLength="1" transform="rotate(-90)"/><g class="gt-uyk">${uy}</g><path class="gt-mid" d="M0-14 14 0 0 14-14 0Z"/><circle class="gt-dot" r="9" cx="0" cy="-100"/></svg>
+      <p class="gt-t" id="gt-t">Шаңырақты өзіңіз ашыңыз</p><p class="gt-s">Шеңберді айналдыра сызыңыз: тінтуір, саусақ не скролл</p>
+      <div class="gt-row"><button type="button" class="btn gold gt-auto">Шаңырақты ашу</button><button type="button" class="gt-skip">Өткізу</button></div></div>`;
+    document.body.append(g); document.documentElement.classList.add("gt-lock");
+    const svg = $(".gt-svg", g), dot = $(".gt-dot", g), title = $(".gt-t", g);
+    let prog = 0, done = false, last = null, down = false;
+    const close = (fast) => {
+      if (g.classList.contains("is-out")) return;
+      done = true; document.documentElement.classList.remove("gt-lock");
+      g.classList.add("is-out"); setTimeout(() => g.remove(), fast ? 1100 : 1300);
+      const h = $("#shx-h"); if (h) { h.tabIndex = -1; h.focus({ preventScroll: true }); }
     };
-    requestAnimationFrame(step);
+    const open = () => { done = true; g.classList.add("is-open"); title.textContent = "Бес адам. Бір шаңырақ."; setTimeout(() => close(false), 1300); };
+    const set = (v) => {
+      if (done) return;
+      prog = clamp(v); g.style.setProperty("--g", prog.toFixed(4));
+      const a = prog * Math.PI * 2; dot.setAttribute("cx", (Math.sin(a) * 100).toFixed(1)); dot.setAttribute("cy", (-Math.cos(a) * 100).toFixed(1));
+      if (prog >= 1) open();
+    };
+    const ang = (e) => { const r = svg.getBoundingClientRect(); return Math.atan2(e.clientX - (r.left + r.width / 2), -(e.clientY - (r.top + r.height / 2))); };
+    g.addEventListener("pointerdown", (e) => { if (e.target.closest("button")) return; down = true; last = ang(e); g.setPointerCapture && g.setPointerCapture(e.pointerId); });
+    g.addEventListener("pointermove", (e) => {
+      if (!down) return;
+      const a = ang(e); let d = a - last; last = a;
+      if (d > Math.PI) d -= Math.PI * 2; if (d < -Math.PI) d += Math.PI * 2;
+      if (Math.abs(d) < 1.2) set(prog + Math.abs(d) / (Math.PI * 2));
+    });
+    addEventListener("pointerup", () => { down = false; });
+    g.addEventListener("wheel", (e) => { e.preventDefault(); set(prog + Math.min(80, Math.abs(e.deltaY)) / 1600); }, { passive: false });
+    g.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") { e.preventDefault(); close(true); }
+      else if (["ArrowRight", "ArrowDown", "ArrowLeft", "ArrowUp"].includes(e.key)) { e.preventDefault(); set(prog + .06); }
+      else if (e.key === "Tab") { const f = $$("button", g); const i = f.indexOf(document.activeElement); e.preventDefault(); f[(i + (e.shiftKey ? -1 : 1) + f.length) % f.length].focus(); }
+    });
+    $(".gt-auto", g).addEventListener("click", () => { const t0 = performance.now(), p0 = prog; const step = (t) => { const k = Math.min(1, (t - t0) / 1400); set(p0 + (1 - p0) * (1 - Math.pow(1 - k, 3))); if (k < 1 && !done) requestAnimationFrame(step); }; requestAnimationFrame(step); });
+    $(".gt-skip", g).addEventListener("click", () => close(true));
+    $(".gt-auto", g).focus();
   }
 
   // жүгірме жол: тұрақты ағыс + скроллдың жылдамдығы (бағыты мен күші), қисаю да жылдамдыққа байланысты
