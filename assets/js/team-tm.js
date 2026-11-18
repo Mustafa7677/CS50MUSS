@@ -25,14 +25,14 @@ async function start(THREE, D) {
   const stick = root.querySelector(".tmx-stick"), cv = root.querySelector(".tmx-cv"), photoImg = root.querySelector(".lf-photo img");
   const loader = new THREE.TextureLoader();
   const load = (src) => new Promise((res) => loader.load(src, (t) => { t.colorSpace = THREE.SRGBColorSpace; res(t); }, undefined, () => res(null)));
-  const [gTex, ...sTex] = await Promise.all([load(D.group), ...D.stops.map((s) => load(s.img))]);
+  const [gTex, altTex, ...sTex] = await Promise.all([load(D.group), load(D.alt), ...D.stops.map((s) => load(s.img))]);
   if (!gTex) return;
   const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true, alpha: true, powerPreference: "high-performance" });
   const mobile = () => innerWidth < 760;
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, mobile() ? 1.75 : 2));
   renderer.setClearColor(0x000000, 0);
   const maxAniso = renderer.capabilities.getMaxAnisotropy();
-  [gTex, ...sTex].forEach((t) => { if (t) { t.anisotropy = maxAniso; t.needsUpdate = true; } });
+  [gTex, altTex, ...sTex].forEach((t) => { if (t) { t.anisotropy = maxAniso; t.needsUpdate = true; } });
   cv.addEventListener("webglcontextlost", (e) => { e.preventDefault(); root.classList.remove("tmx-live"); }, false);
   root.classList.add("tmx-live");
 
@@ -52,6 +52,14 @@ async function start(THREE, D) {
   const edgeMat = new THREE.LineBasicMaterial({ color: GOLD, transparent: true, opacity: 0 });
   const rectLine = (w, h, mat) => new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-w / 2, -h / 2, 0), new THREE.Vector3(w / 2, -h / 2, 0), new THREE.Vector3(w / 2, h / 2, 0), new THREE.Vector3(-w / 2, h / 2, 0)]), mat);
   { const l = rectLine(PW + .16, PH + .16, edgeMat); l.position.copy(gMesh.position); l.position.z = .01; door.add(l); }
+
+  // есіктің артында - екінші түпнұсқа топ фотосы (басқа композиция), рамкада; камера оның оң жағынан өтеді
+  const AW = 6, AH = AW / D.aar;
+  const altG = new THREE.Group(); altG.position.set(-3.4, 0, -7.6); altG.rotation.y = .18; scene.add(altG);
+  const altMat = new THREE.MeshBasicMaterial({ map: altTex, transparent: true, opacity: 0 });
+  altG.add(new THREE.Mesh(new THREE.PlaneGeometry(AW, AH), altMat));
+  const altLine = new THREE.LineBasicMaterial({ color: IVORY, transparent: true, opacity: 0 });
+  { const l = rectLine(AW + .2, AH + .2, altLine); l.position.z = .01; altG.add(l); }
 
   // ---------- киіз үй: төбеде шаңырақ, айналада жеті рамка (түпнұсқа фото, кесілмейді) ----------
   const C = new THREE.Vector3(0, 0, -19), RF = 10, N = D.stops.length, HP = 6.2;
@@ -113,6 +121,7 @@ async function start(THREE, D) {
   const curStop = () => clamp(Math.round((p - P.enter) / ((P.orbit - P.enter) / N) - .25), 0, N - 1);
   const step = (dir) => { if (p < P.enter - .02) { goP(stopP(0)); return; } const k = curStop() + dir; if (k < 0) goP(0); else if (k >= N) goP(P.rise + .02); else goP(stopP(k)); };
   root.querySelector(".tmx-prev").addEventListener("click", () => step(-1));
+  root.querySelector(".tmx-replay").addEventListener("click", () => goP(0));
   root.querySelector(".tmx-next").addEventListener("click", () => step(1));
   addEventListener("keydown", (e) => { if (!visible || /^(INPUT|TEXTAREA|SELECT)$/.test(e.target.tagName)) return; if (e.key === "ArrowRight") { step(1); e.preventDefault(); } if (e.key === "ArrowLeft") { step(-1); e.preventDefault(); } });
   stick.addEventListener("pointerdown", (e) => { if (e.target.closest("a, button")) return; drag = { x: e.clientX, y: e.clientY, on: false }; });
@@ -127,9 +136,15 @@ async function start(THREE, D) {
   addEventListener("scroll", kick, { passive: true });
   function kick() { if (!raf && visible) raf = requestAnimationFrame(frame); }
 
+  // ---------- «Камера жұмысқа кіреді»: work.jpg-дағы ноутбук → тірі AO17 беті (iframe, тек жақындағанда жүктеледі) ----------
+  const workK = D.stops.findIndex((s) => s.kind === "photo" && /work\./.test(s.img));
+  const LAP = D.laptop;   // [u0, v0, u1, v1] - фотодағы ноутбук экранының шамамен орны
+  const wk = root.querySelector(".tmx-work"), wkFrame = wk && wk.querySelector("iframe");
+  const lapPt = (u, v) => { const f = frames[workK]; return f.g.localToWorld(new THREE.Vector3((u - .5) * f.w, (.5 - v) * f.h, .02)); };
+
   // ---------- HTML ----------
   const cap = root.querySelector(".tmx-cap"), ck = cap.querySelector(".tmx-k"), cn = cap.querySelector(".tmx-n"), cr = cap.querySelector(".tmx-r"), ct = cap.querySelector(".tmx-t"),
-    cgo = cap.querySelector(".tmx-go"), cfilm = cap.querySelector(".tmx-film"), bar = root.querySelector(".tmx-bar i"), orbLinks = [...root.querySelectorAll(".lf-orb .orb-n")];
+    cgo = cap.querySelector(".tmx-go"), cfilm = cap.querySelector(".tmx-film"), bar = root.querySelector(".tmx-bar i"), orbLinks = [...root.querySelectorAll(".lf-orb .orb-n, .tmx-orb .orb-n")];
   let capK = -2;
   orbLinks.forEach((a) => a.addEventListener("click", (e) => { const k = D.stops.findIndex((s) => s.slug === a.dataset.slug); if (k >= 0) { e.preventDefault(); goP(stopP(k)); } }));
 
@@ -165,6 +180,13 @@ async function start(THREE, D) {
       cam.position.x += yawOff * 2;
     } else if (p < P.orbit) {
       cam.position.copy(orbitPos); lookV.copy(orbitLook);
+      if (workK >= 0 && Math.floor(orbitT) === workK) {   // ноутбукқа жақындау (қайту - кері)
+        const s = orbitT - workK, k = eio(seg(s, .06, .3)) * (1 - eio(seg(s, .4, .54)));
+        const c = lapPt((LAP[0] + LAP[2]) / 2, (LAP[1] + LAP[3]) / 2), lw = (LAP[2] - LAP[0]) * frames[workK].w;
+        const dist = lw / (.92 * 2 * Math.tan(cam.fov * Math.PI / 360) * Math.min(cam.aspect, 1.6));
+        const dir = v1.clone().sub(c).normalize(), near = c.clone().addScaledVector(dir.lengthSq() ? dir : new THREE.Vector3(0, 0, 1), Math.max(.6, dist));
+        cam.position.lerp(near, k); lookV.lerp(c, k);
+      }
     } else {
       const top = new THREE.Vector3(C.x, ringY + 16, C.z + RF + 15), topLook = new THREE.Vector3(C.x, 0, C.z);
       if (p < P.rise) { const k = eio(seg(p, P.orbit, P.rise)); cam.position.lerpVectors(orbitPos, top, k); lookV.lerpVectors(orbitLook, topLook, k); }
@@ -195,6 +217,19 @@ async function start(THREE, D) {
       orbLinks.forEach((a) => a.classList.toggle("is-on", showK >= 0 && D.stops[showK].slug === a.dataset.slug));
     }
     root.dataset.k = String(ki);
+    // ноутбук экраны → тірі бет: экрандағы проекциясына дәл орналасады
+    if (wk) {
+      const s = workK >= 0 ? orbitT - workK : -1, on = p > P.enter && p < P.orbit && s >= 0 && s < 1 ? seg(s, .24, .32) * (1 - seg(s, .42, .5)) : 0;
+      if (on > 0 && wkFrame && !wkFrame.getAttribute("src")) { try { sessionStorage.setItem("ao17:intro", "1"); } catch (e) { /* */ } wkFrame.setAttribute("src", wkFrame.dataset.src); }   // ішкі беттің кіріспе фильмі ойнамасын
+      wk.style.opacity = on.toFixed(3); wk.classList.toggle("is-on", on > .5);
+      if (on > 0) {
+        cam.updateMatrixWorld();
+        const pts = [lapPt(LAP[0], LAP[1]), lapPt(LAP[2], LAP[3])].map((v) => v.project(cam));
+        const x0 = (Math.min(pts[0].x, pts[1].x) + 1) / 2 * W, x1 = (Math.max(pts[0].x, pts[1].x) + 1) / 2 * W, y0 = (1 - Math.max(pts[0].y, pts[1].y)) / 2 * H, y1 = (1 - Math.min(pts[0].y, pts[1].y)) / 2 * H;
+        wk.style.setProperty("--ws", ((x1 - x0) / 1280).toFixed(4)); wk.style.left = x0 + "px"; wk.style.top = y0 + "px"; wk.style.width = (x1 - x0) + "px"; wk.style.height = (y1 - y0) + "px";
+      }
+    }
+    { const a = seg(p, .02, .08) * (1 - seg(p, P.enter - .03, P.enter + .01)) + seg(p, P.rise, P.rise + .03) * (1 - seg(p, .97, .99)); altMat.opacity = a; altLine.opacity = .3 * a; altG.visible = a > .01; }
     renderer.render(scene, cam);
     if (pc !== target || Math.abs(yawOff - yawT) > 1e-3) kick();
   }
