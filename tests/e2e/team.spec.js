@@ -130,15 +130,50 @@ test("3D айналым: скроллмен бұрылады, алдыңғы а�
 test("манифест: сөздер скроллмен кезекпен жанады", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 800 });
   await page.goto("team.html");
-  const w = page.locator(".mf .mf-w");
+  const w = page.locator(".mf").first().locator(".mf-w");
   expect(await w.count()).toBeGreaterThan(10);
   const op = async (i) => +(await w.nth(i).evaluate((e) => getComputedStyle(e).opacity));
   await page.evaluate(() => { const t = document.querySelector(".mf"); scrollTo(0, t.getBoundingClientRect().top + scrollY + (t.offsetHeight - innerHeight) * .3); });
   await expect.poll(() => op(0)).toBeGreaterThan(.95);
   expect(await op((await w.count()) - 1)).toBeLessThan(.5);
   await page.evaluate(() => { const t = document.querySelector(".mf"); scrollTo(0, t.getBoundingClientRect().top + scrollY + t.offsetHeight - innerHeight); });
-  await expect.poll(() => op(0 + 0) && w.count().then((n) => op(n - 1))).toBeGreaterThan(.95);
-  await expect(page.locator(".mf-t")).toContainText("Бес адам, бір шаңырақ.");
+  const n = await w.count();
+  await expect.poll(() => op(n - 1)).toBeGreaterThan(.95);
+  await expect(page.locator(".mf-t").first()).toContainText("Бес адам, бір шаңырақ.");
+});
+
+test("қақпа: шеңберді жүргізу ашады, «Өткізу» бірден жабады, сессияда бір рет", async ({ browser }) => {
+  const c = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  await c.addInitScript(() => { try { sessionStorage.setItem("ao17:test-gate", "1"); } catch (e) {} });
+  await blockFonts(c);
+  const p = await c.newPage();
+  await p.goto("team.html");
+  const g = p.locator(".gt");
+  await expect(g).toBeVisible();
+  await expect(p.locator("html")).toHaveClass(/gt-lock/);
+  for (let k = 0; k < 30; k++) await p.mouse.wheel(0, 120);
+  await expect(p.locator(".gt-t")).toHaveText("Бес адам. Бір шаңырақ.");
+  await expect(g).toHaveCount(0, { timeout: 5000 });
+  await expect(p.locator("html")).not.toHaveClass(/gt-lock/);
+  await p.reload();
+  await expect(p.locator(".gt")).toHaveCount(0);
+  await p.evaluate(() => sessionStorage.removeItem("ao17:team-pl")); await p.reload();
+  await p.locator(".gt-skip").click();
+  await expect(p.locator(".gt")).toHaveCount(0, { timeout: 3000 });
+  await c.close();
+});
+
+test("тірі қолтаңбалар мен құрылу: назардағы кадр ойнайды, бөлшектер терезеге жиналады", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 800 });
+  await page.goto("team.html");
+  await expect(page.locator(".uyq-p .dm")).toHaveCount(5);
+  await page.evaluate(() => { const t = document.querySelector(".uyq"); scrollTo(0, t.getBoundingClientRect().top + scrollY + (t.offsetHeight - innerHeight) * .25); });
+  await expect(page.locator(".uyq-p").nth(1)).toHaveClass(/is-act/);
+  await expect(page.locator(".uyq-p").nth(3)).not.toHaveClass(/is-act/);
+  await expect(page.locator(".cr-pc")).toHaveCount(5);
+  await page.evaluate(() => { const t = document.querySelector(".cr"); scrollTo(0, t.getBoundingClientRect().top + scrollY + t.offsetHeight - innerHeight); });
+  await expect.poll(async () => { const w = await page.locator(".cr-win").boundingBox(); const a = await page.locator(".cr-a").boundingBox(); return a.x >= w.x - 2 && a.x + a.width <= w.x + w.width + 2; }).toBe(true);
+  await expect(page.locator(".mf-end .mf-t")).toContainText("мыңдаған оқушы");
 });
 
 test("басты бет: 8-сахна, бес есім, команда бетіне сілтеме", async ({ page }) => {
