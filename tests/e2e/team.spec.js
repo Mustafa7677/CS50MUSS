@@ -98,19 +98,35 @@ test("фото - басты кейіпкер: топ фотосы толық (к
   await expect(page.locator(".uyq-hb.is-on")).toHaveText("Sagid Mustafa", { timeout: 10000 });
 });
 
-test("манифест: сөздер скроллмен кезекпен жанады", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 800 });
-  await page.goto("team.html");
-  const w = page.locator(".mf").first().locator(".mf-w");
-  expect(await w.count()).toBeGreaterThan(10);
-  const op = async (i) => +(await w.nth(i).evaluate((e) => getComputedStyle(e).opacity));
-  await page.evaluate(() => { const t = document.querySelector(".mf"); scrollTo(0, t.getBoundingClientRect().top + scrollY + (t.offsetHeight - innerHeight) * .3); });
-  await expect.poll(() => op(0)).toBeGreaterThan(.95);
-  expect(await op((await w.count()) - 1)).toBeLessThan(.5);
-  await page.evaluate(() => { const t = document.querySelector(".mf"); scrollTo(0, t.getBoundingClientRect().top + scrollY + t.offsetHeight - innerHeight); });
-  const n = await w.count();
-  await expect.poll(() => op(n - 1)).toBeGreaterThan(.95);
-  await expect(page.locator(".mf-t").first()).toContainText("Бес адам, бір шаңырақ.");
+test("уақыт машинасы (team.html): скролл алға - топса ашылып, рамкаларға өтеді; артқа - тура бастапқы фотоға оралады; ← → көрші рамка", async ({ browser }) => {
+  const c = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  await blockFonts(c);
+  await c.addInitScript(() => { try { sessionStorage.setItem("ao17:test-gl", "1"); } catch (e) { /* */ } });
+  const p = await c.newPage();
+  const errors = collectErrors(p);
+  await p.goto("team.html");
+  const gl = await p.evaluate(() => { const c = document.createElement("canvas"); return !!(c.getContext("webgl2") || c.getContext("webgl")); });
+  if (gl) {
+    const tm = p.locator(".tmx");
+    await expect(tm).toHaveClass(/tmx-live/, { timeout: 15000 });
+    await expect(tm).toHaveClass(/is-still/);
+    const go = (t) => p.evaluate((t) => { const r = document.querySelector(".tmx"), s = r.querySelector(".tmx-stick"); scrollTo(0, r.getBoundingClientRect().top + scrollY + t * (r.offsetHeight - s.offsetHeight)); }, t);
+    const data = JSON.parse(await p.locator("#tmx-data").textContent());
+    expect(data.stops.map((s) => s.slug || s.img.split("/").pop())).toEqual(["sagid", "gulzat", "dastan", "work.jpg", "magzhan", "merey", "duo.jpg"]);
+    await go(0.3);
+    await expect(tm).not.toHaveClass(/is-still/);
+    await expect(p.locator(".tmx-cap")).toHaveClass(/is-on/, { timeout: 10000 });
+    await expect(p.locator(".tmx-n")).toHaveText("Tutkabayeva Gulzat");
+    await expect(p.locator(".tmx-go")).toHaveAttribute("href", "team/gulzat.html");
+    await p.locator(".tmx-next").click();
+    await expect(p.locator(".tmx-n")).toHaveText("Toktybay Dastan", { timeout: 10000 });
+    await go(0);   // артқа: бастапқы кадр, DOM фото қайта көрінеді
+    await expect(tm).toHaveClass(/is-still/, { timeout: 10000 });
+    await go(1);   // соңы: тура сол кадр
+    await expect(tm).toHaveClass(/is-still/, { timeout: 10000 });
+  }
+  expect(errors).toEqual([]);
+  await c.close();
 });
 
 test("телефон (360px): бес портрет жүктеледі, бас шапканың астына кірмейді, «Жеке беті» толық көрінеді және басылады", async ({ browser }) => {
