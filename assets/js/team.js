@@ -52,6 +52,11 @@
     addEventListener("scroll", kick, { passive: true });
     addEventListener("resize", kick);
     kick();
+    // шаңырақ навигациясы (ашылу): түйін - галереядағы сол адамның кадрына (компьютерде көлденең лентада, телефонда тізімде)
+    document.querySelectorAll(".lf-orb .orb-n").forEach((n) => n.addEventListener("click", (e) => {
+      const ps = [...document.querySelectorAll(".uyq-p")], i = ps.findIndex((p) => p.id === "m-" + n.dataset.slug), hb = document.querySelectorAll(".uyq-hb")[i];
+      if (i >= 0 && hb && !stack() && motion()) { e.preventDefault(); hb.click(); }
+    }));
     // көлденең галерея: атауды басқанда не ішіндегі сілтемеге фокус түскенде - сол адамның кадрына апару
     scrubs.filter((s) => s.panels.length).forEach((s) => {
       const go = (i, smooth) => {

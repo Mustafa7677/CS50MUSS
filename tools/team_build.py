@@ -150,7 +150,7 @@ def panel(m, i):
     # барлығы eager: көлденең лента transform-мен жылжиды, ал Android Chrome transform ішіндегі lazy суретті кейде жүктемейді (бос арка)
     face = (f'<img src="assets/img/team/dark/{m["slug"]}.jpg" alt="{E(m["name"])}, портрет" width="820" height="1200" loading="eager" decoding="async">' if ph
             else f'<span class="ta-ini" aria-hidden="true">{E(m["initials"])}</span>')
-    return (f'<li class="uyq-p" style="--i:{i};--acc:{acc}"><div class="uyq-ph" style="view-transition-name:tm-{m["slug"]}"><div class="uyq-img" data-tilt>{face}</div></div>'
+    return (f'<li class="uyq-p" id="m-{m["slug"]}" style="--i:{i};--acc:{acc}"><div class="uyq-ph" style="view-transition-name:tm-{m["slug"]}"><div class="uyq-img" data-tilt>{face}</div></div>'
             f'<div class="uyq-tx"><p class="uyq-no" aria-hidden="true">{i + 1:02d}</p><p class="uyq-k">{E(k)} · {age(m)}</p>'
             f'<h3 class="uyq-n">{E(m["name"])}</h3><p class="uyq-r">{E(m["role"])}</p><p class="uyq-t">{E(m["tag"])}</p>'
             f'<p class="uyq-a">{E(m["areas"])}</p><div class="dm dm-{m["sig"]}" role="img" aria-label="{E(DEMO_CAP[m["sig"]])}"><span class="dm-cap">{E(DEMO_CAP[m["sig"]])}</span>{DEMO[m["sig"]]}</div><a class="btn gold uyq-go" href="team/{m["slug"]}.html">Жеке беті</a><a class="uyq-film" href="team/3d.html#t={film_at(m["slug"])}">Фильмдегі сахнасы</a></div></li>')
@@ -173,28 +173,21 @@ RING = '''
 def team_page():
     panels = "\n        ".join(panel(m, i) for i, m in enumerate(M))
     hud = "".join(f'<button type="button" class="uyq-hb" data-i="{i}"><i></i><span>{E(m["name"])}</span></button>' for i, m in enumerate(M))
-    names = " ".join(f'<span>{E(m["name"])}</span>' for m in M)
+    names = " ".join(f'<a href="team/{m["slug"]}.html">{E(m["name"])}</a>' for m in M)
     main = f"""  <main class="tm shx" id="main">
     <div class="mh" aria-hidden="true"><span>Алаш · 1917</span><span><b>AO17</b> · Команда үндеуі</span><span>Бес автор · 2026</span></div><div class="mh-rule" aria-hidden="true"></div>
-    <section class="shx-open" data-scrub="pin" aria-labelledby="shx-h">
-      <div class="shx-stick">
-        <i class="shx-bar shx-bt" aria-hidden="true"></i><i class="shx-bar shx-bb" aria-hidden="true"></i>
-        <div class="shx-photo"><img src="assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус." width="2400" height="1681" fetchpriority="high"></div>
-        <canvas class="shx-dust" aria-hidden="true"></canvas>
-        <svg class="shx-shan" viewBox="-220 -220 440 440" aria-hidden="true" focusable="false">
-          <circle class="shx-r1" r="190" pathLength="1"/><circle class="shx-r2" r="174" pathLength="1"/>
-          <path class="shx-kd" pathLength="1" d="M-174-56H174M-174 56H174M-56-174V174M56-174V174"/>
-          <path class="shx-uy" pathLength="1" d="M0-190V-214M134-134 151-151M190 0H214M134 134 151 151M0 190V214M-134 134-151 151M-190 0H-214M-134-134-151-151"/>
-          <path class="shx-mid" d="M0-20 20 0 0 20-20 0Z"/>
-        </svg>
-        <div class="shx-copy">
-          <p class="shx-kick">AO17 командасы</p>
-          <h1 id="shx-h" aria-label="Бір шаңырақ - бес адам" data-split><span class="shx-l1">Бір шаңырақ</span><span class="shx-l2">бес адам</span></h1>
-          <p class="shx-names">{names}</p>
-          <nav class="shx-modes" aria-label="Команда бетінің режимі"><a class="shx-3d" href="team/3d.html"><i aria-hidden="true">▶</i> Cinema: 3D фильм «The Unmade»</a><a class="shx-ex" href="#uyq-h">Explore: бес автор</a></nav>
-        </div>
-        <p class="shx-hint" aria-hidden="true"><span>Төмен айналдырыңыз</span><i></i></p>
+    <section class="lf-hero" aria-labelledby="shx-h">
+      <div class="lf-copy">
+        <p class="lf-k" lang="en">AO17 · The people behind the future</p>
+        <h1 id="shx-h"><span class="shx-l1">Бір шаңырақ</span> <span class="shx-l2">бес адам</span></h1>
+        <p class="lf-sub">Бес адам. Бір шаңырақ. Бір болашақ.</p>
+        <nav class="shx-modes" aria-label="Команда бетінің режимі"><a class="shx-3d" href="team/3d.html"><i aria-hidden="true">▶</i> Cinema: 3D фильм «The Unmade»</a><a class="shx-ex" href="#uyq-h">Explore: бес автор</a></nav>
+        {orbit("lf-orb", "", False)}
       </div>
+      <figure class="lf-photo">
+        <a class="lf-zoom" href="assets/img/team/group-hd.jpg" aria-label="Топ фотосын толық өлшемде ашу"><img src="assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус: артта Magzhan Romanov, Tutkabayeva Gulzat, Toktybay Dastan; алдында Sagid Mustafa мен Kopenova Merey." width="2400" height="1681" fetchpriority="high" decoding="async"></a>
+        <figcaption>{names}</figcaption>
+      </figure>
     </section>
 
     <section class="mf" data-scrub="pin" aria-label="Манифест">
@@ -377,12 +370,25 @@ FILM_STEPS = [
 ]
 
 
+def orbit(cls, p, film):
+    """Шаңырақ - бес автордың навигациясы: бес түйін (фильмде - сахнасына #t=, команда бетінде - галереядағы кадрына). Фотоның үстіне түспейді."""
+    nodes = []
+    for k, slug in enumerate(FILM_ORDER):
+        m = next(x for x in M if x["slug"] == slug)
+        a = -math.pi / 2 + k * 2 * math.pi / 5
+        x, y = 50 + 38 * math.cos(a), 50 + 38 * math.sin(a)
+        href = f"#t={film_at(slug)}" if film else f"#m-{slug}"
+        nodes.append(f'<a class="orb-n" data-slug="{slug}" href="{href}" style="left:{x:.1f}%;top:{y:.1f}%" aria-label="{E(m["name"])}"><i aria-hidden="true"></i><span>{E(m["name"].split()[-1] if slug != "sagid" else "Mustafa")}</span></a>')
+    return (f'<nav class="orb {cls}" aria-label="Бес автор - шаңырақ навигациясы"><svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><circle cx="50" cy="50" r="38"/><circle cx="50" cy="50" r="33"/>'
+            f'<path d="M17 37H83M17 63H83M37 17V83M63 17V83"/></svg>{"".join(nodes)}</nav>')
+
+
 def film3d_page():
     p = "../"
     data = {"acts": [{"from": a, "to": b, "k": k, "t": t, "d": d} for a, b, k, t, d in ACTS],
             "members": [{"slug": m["slug"], "name": m["name"], "role": m["role"], "law": LAW[m["slug"]], "en": EN[m["slug"]], "given": GIVEN[m["slug"]],
-                         "cut": f"{p}assets/img/team/cut/{m['slug']}.webp", "works": [[p + h, t] for h, t, d in m["works"]]} for m in M],
-            "group": {"bg": f"{p}assets/img/team/group-bg.jpg", "fg": f"{p}assets/img/team/group-fg.webp"}}
+                         "photo": f"{p}assets/img/team/dark/{m['slug']}.jpg", "works": [[p + h, t] for h, t, d in m["works"]]} for m in M],
+            "group": {"photo": f"{p}assets/img/team/group-hd.jpg"}}
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     credits = "".join(f'<div><dt>{E(m["role"])}</dt><dd><a href="{m["slug"]}.html">{E(m["name"])}</a></dd></div>' for m in sorted(M, key=lambda m: ["sagid", "gulzat", "dastan", "magzhan", "merey"].index(m["slug"])))
     faces = "".join(f'<li style="--i:{k}"><img src="{p}assets/img/team/dark/{m["slug"]}.jpg" alt="{E(m["name"])}, портрет" width="820" height="1200" loading="lazy" decoding="async"><b>{E(m["name"])}</b><span>{E(m["role"])}</span></li>' for k, m in enumerate(M))
@@ -420,7 +426,7 @@ def film3d_page():
         <p class="um-f3">Сайт тірі: төмендегі батырмадан оқуды бастаңыз.</p>
         <div class="um-row"><a class="btn gold" href="{p}index.html">Оқуды бастау</a><a class="btn ghost" href="#um-cr">Титрлер</a><button type="button" class="btn ghost um-replay">Қайта көру</button></div>
       </div>
-      <div class="um-ctl"><button type="button" class="um-pause" aria-pressed="false">Кідірту</button><nav class="um-chs" aria-label="Фильм тараулары">{chapters}</nav></div>
+      <div class="um-ctl"><button type="button" class="um-pause" aria-pressed="false">Кідірту</button><nav class="um-chs" aria-label="Фильм тараулары">{chapters}</nav>{orbit("um-orb", "", True)}</div>
       <button type="button" class="um-skip">Өткізу</button>
       <span class="um-bar" aria-hidden="true"><i></i></span>
     </div>
