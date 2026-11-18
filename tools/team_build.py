@@ -396,7 +396,7 @@ ACTS = [   # (басы, соңы, белгі, тақырып, сипаттама
     (17.5, 22.8, "I · Беті", "Адамдарсыз - бос шыны", "Оны жасаған адамдарды алып тастасақ, сайттан тек бос құрылым қалады."),
     (79.6, 83.8, "IV · Оралу", "Бесеуі қайта құрды", "Сайт қабат-қабатымен орнына оралады."),
     (83.8, 87.5, "IV · Құлау", "Құрылымды өз қолыңмен бұз", "Енді сайт - мыңдаған бөлшек. Тартып көріңіз: олар қайта жиналады."),
-    (88.0, 96.8, "V · Шаңырақ", "Бес бағыт - бір шаңырақ", "Интерфейстің бөлшектері бір шаңыраққа бірігеді."),
+    (88.0, 95.2, "V · Шаңырақ", "Бес бағыт - бір шаңырақ", "Интерфейстің бөлшектері шаңыраққа бірігеді. Бірақ оның соңғы бөлігі әлі орнында емес."),
 ]
 FILM_STEPS = [
     ("0", "Постер", "Кеңістіктегі алып әріптер: THE PEOPLE BEHIND THE FUTURE. Камера әріптердің, сосын қараңғыдағы бес адамның арасынан өтеді."),
@@ -404,7 +404,8 @@ FILM_STEPS = [
     ("II-III", "Кейіпкерлер", "Бес адам қараңғыдан жарыққа шығады. Әр адамның алып есімінің іші оның сайттағы еңбегімен толады: қаңқа, түс пен әріп, мазмұн, қозғалыс, телефон; сосын әріптер құрылымға ажырайды."),
     ("IV", "Құлау", "Сайт мыңдаған бөлшекке айналады; оларды тартуға болады, олар қайта жиналады."),
     ("V", "Шаңырақ", "Камера көтеріледі: бөлшектер алып шаңыраққа бірігеді."),
-    ("VI", "Ашылу", "Шаңырақтың ортасынан жарық. Виртуал әлем жоғалып, шынайы топ фотосы ашылады."),
+    ("VI", "AO17-сіз әлем", "Бәрі жоғалады: «Бір идея ешқашан өздігінен шындыққа айналмайды». Бес адамның шынайы фотосы мен есімі."),
+    ("VII", "Алтыншы қол", "Шаңырақтың соңғы бөлігін көрермен өзі орнатады. Шаңырақ қайта сайтқа айналады: біз іргетасын қаладық, әрі қарай сен саласың."),
 ]
 
 
@@ -415,6 +416,7 @@ def film3d_page():
                          "cut": f"{p}assets/img/team/cut/{m['slug']}.webp"} for m in M]}
     js = json.dumps(data, ensure_ascii=False).replace("</", "<\\/")
     credits = "".join(f'<div><dt>{E(m["role"])}</dt><dd><a href="{m["slug"]}.html">{E(m["name"])}</a></dd></div>' for m in sorted(M, key=lambda m: ["sagid", "gulzat", "dastan", "magzhan", "merey"].index(m["slug"])))
+    faces = "".join(f'<li style="--i:{k}"><img src="{p}{photo(m["slug"])}" alt="{E(m["name"])}, портрет" width="640" height="800" loading="lazy" decoding="async"><b>{E(m["name"])}</b><span>{E(m["role"])}</span></li>' for k, m in enumerate(M))
     steps = "".join(f'<li><b>{n}</b> <span>{E(t)}</span><p>{E(d)}</p></li>' for n, t, d in FILM_STEPS)
     main = f"""<main id="main" class="um">
   <script type="application/json" id="um-data">{js}</script>
@@ -437,12 +439,13 @@ def film3d_page():
       <div class="um-pp" aria-live="polite"><p class="um-pp-i"></p><p class="um-pp-e" lang="en"></p><h2 class="um-pp-n"></h2><p class="um-pp-r"></p><p class="um-pp-l"></p><a class="um-pp-a" href="#">Жұмысын көру</a></div>
       <div class="um-cap" aria-live="polite"><p class="um-k"></p><p class="um-t"></p><p class="um-d"></p></div>
       <p class="um-hint" aria-hidden="true">Тінтуірмен не саусақпен тартыңыз</p>
-      <div class="um-flash" aria-hidden="true"></div>
-      <div class="um-photo"><img src="{p}assets/img/team/group-hd.jpg" alt="AO17 командасының бес мүшесі кітап сөрелерінің алдында, ортада глобус." width="2400" height="1681" loading="lazy" decoding="async"></div>
+      <p class="um-void">Бір идея ешқашан өздігінен шындыққа айналмайды.</p>
+      <ul class="um-faces" aria-label="Команда">{faces}</ul>
+      <div class="um-hand"><p class="um-hand-k">Соңғы бөлігі - сенде</p><p class="um-hand-t">Бесеуі платформаны жасады. Алтыншысы - сен, оны қолданатын оқушы. Шаңырақтың соңғы бөлігін ортаға сүйреп апар.</p><button type="button" class="um-place">Орнату</button></div>
       <div class="um-fin">
-        <p class="um-f1" lang="en">Built by people.</p>
-        <p class="um-f2">Бес адамның еңбегімен жасалды.</p>
-        <p class="um-f3">Болашақ өздігінен жасалмайды. Оны адамдар жасайды.</p>
+        <p class="um-f1" lang="en">We built the foundation.<br>You build what's next.</p>
+        <p class="um-f2">Біз іргетасын қаладық. Әрі қарай сен саласың.</p>
+        <p class="um-f3">Сайт тірі: төмендегі батырмадан оқуды бастаңыз.</p>
         <div class="um-row"><a class="btn gold" href="{p}index.html">Оқуды бастау</a><a class="btn ghost" href="#um-cr">Титрлер</a><button type="button" class="btn ghost um-replay">Қайта көру</button></div>
       </div>
       <button type="button" class="um-skip">Өткізу</button>
@@ -455,7 +458,7 @@ def film3d_page():
     <h2 id="um-cr-h">Сайтты жасағандар</h2>
     <dl class="um-cr-l">{credits}</dl>
     <ol class="um-cr-steps" aria-label="Фильмнің көріністері">{steps}</ol>
-    <p class="um-cr-note">Фильм өзі ойнайды (шамамен 1,5 минут), дыбыссыз. Барлық пішін кодпен құрылған, фотолар шынайы. Қозғалыс азайтылған режимде осы титрлер ғана көрсетіледі.</p>
+    <p class="um-cr-note">Фильм өзі ойнайды (шамамен 2 минут), дыбыссыз; соңында шаңырақтың соңғы бөлігін өзіңіз орнатасыз. Барлық пішін кодпен құрылған, фотолар шынайы. Қозғалыс азайтылған режимде осы титрлер ғана көрсетіледі.</p>
     <p class="um-cr-end">Болашақ өздігінен жасалмайды. Оны адамдар жасайды.</p>
     <p class="um-row"><a class="btn gold" href="{p}team.html">Команда беті</a></p>
   </section>
