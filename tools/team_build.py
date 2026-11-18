@@ -23,7 +23,7 @@ ROOT = Path(__file__).resolve().parent.parent
 E = html.escape
 TEAM = json.loads((ROOT / "licensing" / "team.json").read_text(encoding="utf-8"))
 M = TEAM["members"]
-KIND = {"design": ("Дизайн", "#d48f98"), "code": ("Бағдарлама", "#86cdb6"), "content": ("Мазмұн", "#e6c47c")}
+KIND = {"design": ("Дизайн", "#c9505f"), "code": ("Бағдарлама", "#d9b468"), "content": ("Мазмұн", "#e8d9b8")}
 FRAME_AR = 1.5   # фото-фильм кадрының пропорциясы (3:2)
 
 
@@ -161,6 +161,7 @@ def team_page():
     ring_cards = "".join(f'<a class="rng-c" href="team/{m["slug"]}.html" style="--i:{i}" data-name="{E(m["name"])}"><img src="{photo(m["slug"])}" alt="" width="640" height="800" loading="lazy" decoding="async"><span>{E(m["name"])}</span></a>' for i, m in enumerate(M))
     ring = RING.format(n=len(M), cards=ring_cards, first=E(M[0]["name"]))
     main = f"""  <main class="tm shx" id="main" data-preload>
+    <div class="mh" aria-hidden="true"><span>Алаш · 1917</span><span><b>AO17</b> · Команда үндеуі</span><span>Бес автор · 2026</span></div><div class="mh-rule" aria-hidden="true"></div>
     <section class="shx-open" data-scrub="pin" aria-labelledby="shx-h">
       <div class="shx-stick">
         <i class="shx-bar shx-bt" aria-hidden="true"></i><i class="shx-bar shx-bb" aria-hidden="true"></i>
