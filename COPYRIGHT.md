@@ -12,7 +12,7 @@
 |---|---|
 | A1 · Harvard CS50 түпнұсқасы | 141 |
 | A2 · Harvard материалының аудармасы/бейімдеуі | 52 |
-| B · AO17 командасының дербес әзірлемесі | 1840 |
+| B · AO17 командасының дербес әзірлемесі | 1844 |
 | C · Үшінші тарап | 94 |
 | R · Тексеруді қажет етеді (лицензия тағайындалмаған) | 56 |
 
@@ -53,7 +53,7 @@
 | `games.html`<br>`assets/js/games-*.js`<br>`assets/css/games-ui*.css`<br>`assets/js/cabinet.js` | **B-games** Образовательные игры, система XP, кабинет (7 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/js/main.js`<br>`assets/js/exam.js`<br>`exam.html`<br>`assets/js/profile.js`<br>`profile.html`<br>`assets/js/cloud.js`<br>`teacher.html`<br>`assets/js/feedback.js`<br>`supabase/**`<br>`certificate.html`<br>`partners.html`<br>`posters.html`<br>`metrics.html`<br>`assets/js/metrics.js`<br>`sw.js`<br>`manifest.webmanifest`<br>`assets/js/ao.js`<br>`assets/js/ao-ui.js`<br>`assets/js/ao-gate.js`<br>`login.html`<br>`admin.html`<br>`student.html`<br>`tools/gate.py`<br>`tools/create_admin.py`<br>`docs/PLATFORM.md`<br>`.github/workflows/platform-deploy.yml` | **B-platform** Платформа: движок сайта, прогресс, достижения, редактор, тест-система, профиль, кабинеты ученика и преподавателя, синхронизация (33 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `assets/css/style.css`<br>`docs/MOTION-SYSTEM.md`<br>`docs/TEAM-EXPERIENCE.md`<br>`docs/team-mobile-before-after.jpg`<br>`docs/team-photo-first-prototypes.png`<br>`docs/INVESTOR-BRIEF.md`<br>`docs/DUE-DILIGENCE.md`<br>`docs/DATA-ROOM.md`<br>`docs/INVENTORY.md`<br>`assets/img/bota*.svg`<br>`assets/img/seal.svg`<br>`assets/img/brand/**`<br>`assets/img/posters/**`<br>`film/**`<br>`tools/make_film.py`<br>`tools/make_posters.py`<br>`docs/FILM.md`<br>`docs/MATH-FX-PROGRESS.md`<br>`docs/CODE-FX-PROGRESS.md`<br>`assets/img/icon*`<br>`assets/img/og.jpg`<br>`assets/img/og/**`<br>`tools/make_og.mjs`<br>`tools/make_og_main.mjs`<br>`tools/og-main.html` | **B-design** Дизайн, стили, фирменная графика (маскот Бота, иконки, превью) (91 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
-| `tools/build.py`<br>`tools/fetch_cs50.py`<br>`tools/__pycache__/**`<br>`tests/**`<br>`.github/**`<br>`licensing/**`<br>`robots.txt`<br>`sitemap.xml`<br>`.nojekyll`<br>`.gitignore`<br>`**/.gitkeep`<br>`tools/licence_audit.py` | **B-tools-tests** Скрипты сборки, тесты, CI (74 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `tools/build.py`<br>`tools/fetch_cs50.py`<br>`tools/__pycache__/**`<br>`tests/**`<br>`.github/**`<br>`licensing/**`<br>`robots.txt`<br>`sitemap.xml`<br>`.nojekyll`<br>`.gitignore`<br>`**/.gitkeep`<br>`tools/licence_audit.py` | **B-tools-tests** Скрипты сборки, тесты, CI (75 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `team.html`<br>`team/**`<br>`assets/css/team.css`<br>`assets/js/team.js`<br>`assets/js/team3d.js`<br>`assets/js/home3d.js`<br>`assets/js/team-tm.js`<br>`assets/img/team/**`<br>`tools/team_build.py`<br>`tools/team_photos.py`<br>`tools/team_cutout.py` | **B-team** «Команда»: команда беті, бес жеке бет, фото-фильм, басты беттің 8-сахнасы (40 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 | `qazaqcode/**` | **B-qazaqcode** QazaqCode Platform (отдельный коммерческий продукт) (319 файл) | Sagid Mustafa | © 2026 Sagid Mustafa. All Rights Reserved (qazaqcode/LICENSE) | иесі мәлімдеген |
 | `README.md`<br>`LICENSE.md`<br>`LICENSE-HARVARD.md`<br>`LICENSE-PROPRIETARY.md`<br>`COPYRIGHT.md`<br>`THIRD-PARTY-LICENSES.md`<br>`TAKEDOWN.md`<br>`copyright.html`<br>`404.html`<br>`test-results/**`<br>`MOBILE-TESTING.md` | **B-docs** Документы проекта: README, лицензии, правила обращения (10 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
@@ -64,6 +64,7 @@
 | `assets/img/alash/**` | **C-portraits** Портреты деятелей Алаш (13 фотографий) (13 файл) | Разные авторы; для каждого портрета сведения в assets/data/portraits.js | Public domain / CC (по каждому изображению, см. portraits.js); портрет Мұхтар Шаханов - 'сайт авторы ұсынған' | тексеру керек |
 | `assets/img/film/**`<br>`assets/data/film-media.json` | **C-film-media** «Шақыру» фильмінің архивтік суреттері (Wikimedia Commons) (13 файл) | Әртүрлі авторлар; әр сурет үшін автор, лицензия мен дерек көзі assets/data/film-media.json ішінде | Public domain / CC0 / CC BY / CC BY-SA / © Сағид Мұстафа (әр суретке бөлек, film-media.json) | тексеру керек |
 | `assets/data/portraits.js` | **C-portraits-data** Реестр происхождения портретов (1 файл) | AO17 командасы (реестр); сведения об авторах изображений - сторонние | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
+| `yurt.html`<br>`assets/js/yurt.js`<br>`assets/css/yurt.css` | **B-yurt** «Менің шаңырағым»: прогресс қазақ үйіне айналады, бөлісу картасы (3 файл) | AO17 командасы | © 2026 AO17 командасы. All Rights Reserved (LICENSE-PROPRIETARY.md) | иесі мәлімдеген |
 
 ### Ескертулер
 
@@ -111,6 +112,7 @@
 - **C-portraits**: Для портрета Шаханова права, согласие и источник не подтверждены.
 - **C-film-media**: 12 сурет: til-qural.jpg - Сағид Мұстафаның өз фотосы; қалған 11-і қоғамдық игілік (1925 жылға дейінгі фото, ашықхат, газет, кітап, карта); Википедия мен Wikimedia Commons-тан таңдалды. tools/fetch_film_media.py тек еркін лицензиялыларды алады; CC BY/BY-SA қосылса, автор фильмде көрсетіледі.
 - **C-portraits-data**: Служебный реестр; сохранять без изменений при публикации портретов.
+- **B-yurt**: Сурет (canvas) толық бағдарламамен салынады: сыртқы сурет, шрифт не кітапхана жоқ; деректің бәрі осы құрылғының localStorage-інен оқылады, ешқайда жіберілмейді.
 
 ## 3. 45 лекция
 
