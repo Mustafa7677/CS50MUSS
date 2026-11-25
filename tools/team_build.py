@@ -34,12 +34,45 @@ def photo(slug):
     return None
 
 
+def img_size(path):
+    """Суреттің ені мен биіктігі (JPEG, PNG, WebP) файлдың басынан оқылады, Pillow керек емес.
+    Бұрын Pillow қолданылатын: ол жоқ ортада (CI) пропорция 1.5 болып, team.html басқаша шығатын - build қайталанбайтын."""
+    b = Path(path).read_bytes()
+    if b[:8] == b"\x89PNG\r\n\x1a\n":
+        return int.from_bytes(b[16:20], "big"), int.from_bytes(b[20:24], "big")
+    if b[:4] == b"RIFF" and b[8:12] == b"WEBP":
+        kind = b[12:16]
+        if kind == b"VP8X":
+            return 1 + int.from_bytes(b[24:27], "little"), 1 + int.from_bytes(b[27:30], "little")
+        if kind == b"VP8 ":
+            return int.from_bytes(b[26:28], "little") & 0x3FFF, int.from_bytes(b[28:30], "little") & 0x3FFF
+        if kind == b"VP8L":
+            v = int.from_bytes(b[21:25], "little")
+            return 1 + (v & 0x3FFF), 1 + ((v >> 14) & 0x3FFF)
+    if b[:2] == b"\xff\xd8":
+        i = 2
+        while i + 9 < len(b):
+            if b[i] != 0xFF:
+                break
+            while b[i] == 0xFF:      # толтырғыш байттар
+                i += 1
+            m = b[i]
+            i += 1
+            if m == 0x01 or 0xD0 <= m <= 0xD7:
+                continue
+            if m in (0xD9, 0xDA):    # сурет соңы не деректер: SOF табылмады
+                break
+            if m in (0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7, 0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF):
+                return int.from_bytes(b[i + 5:i + 7], "big"), int.from_bytes(b[i + 3:i + 5], "big")
+            i += int.from_bytes(b[i:i + 2], "big")
+    raise ValueError(f"суреттің өлшемі оқылмады: {path}")
+
+
 def img_ar(rel):
     try:
-        from PIL import Image
-        with Image.open(ROOT / rel) as im:
-            return im.width / im.height
-    except Exception:   # noqa: BLE001 - Pillow жоқ болса, жалпы фотолардың пропорциясы
+        w, h = img_size(ROOT / rel)
+        return w / h
+    except (OSError, ValueError):   # файл жоқ не пішімі белгісіз: жалпы фотолардың пропорциясы
         return 1.5
 
 
