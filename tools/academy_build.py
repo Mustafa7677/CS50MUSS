@@ -703,7 +703,8 @@ def course_html(lessons, st):
         lab_links = ", ".join(f'<a href="{L3.href(h, "")}">{E(t)}</a>' for h, t in labs)
         items = (f'<li class="crs-comic"><span>Комикс</span><a href="{mid}/l01.html#s-comic">{E(ep["title"])}</a></li>' if ep else "") \
             + f'<li class="crs-3d"><span>3D зертхана</span><p>{lab_links}</p></li>' \
-            + (f'<li class="crs-pj"><span>Жоба</span><a href="{mid}/{pj["slug"]}.html#project">{E(pj["project"]["title"])}</a></li>' if pj else "")
+            + (f'<li class="crs-pj"><span>Жоба</span><p><a href="{mid}/{pj["slug"]}.html#project">{E(CRS.PROJECT_KK.get(pj["project"]["id"], pj["project"]["title"]))}</a>'
+               + (f' <small lang="en">{E(pj["project"]["title"])}</small>' if pj["project"]["id"] in CRS.PROJECT_KK else "") + '</p></li>' if pj else "")
         thumb = f"assets/img/posters/thumb/ao17cs-w{n:02d}.jpg"
         cover = (f'<a class="crs-wv" href="../posters.html#cs-w{n:02d}" aria-label="{n}-аптаның комикс-мұқабасы"><img src="../{thumb}" alt="" width="240" height="360" loading="lazy"></a>'
                  if (ROOT / thumb).exists() else "")
@@ -756,7 +757,7 @@ def course_html(lessons, st):
         <ol class="crs-pillars">{pillars}</ol>
         <ol class="crs-weeks">{"".join(weeks)}</ol>
         <section class="crs-final"><h3>1-бөлімнің қорытынды жобасы</h3>
-          <p>Он екінші аптаның жобасы{(" - «" + E(final["project"]["title"]) + "»") if final else ""}: бөлімнің бәрін бір жүйеге жинайсың. Деректі оқитын, тексеретін, есептейтін және нәтиже шығаратын компоненттерді Python мен C-да жазып, екеуін тестпен салыстырасың. Жобаны мұғалім рубрикамен бағалайды.</p>
+          <p>Он екінші аптаның жобасы{(" - «" + E(CRS.PROJECT_KK.get(final["project"]["id"], final["project"]["title"])) + "»") if final else ""}: бөлімнің бәрін бір жүйеге жинайсың. Деректі оқитын, тексеретін, есептейтін және нәтиже шығаратын компоненттерді Python мен C-да жазып, екеуін тестпен салыстырасың. Жобаны мұғалім рубрикамен бағалайды.</p>
           {f'<p><a class="btn secondary" href="m12/{final["slug"]}.html#project">Жобаның талаптары</a></p>' if final else ""}</section>
       </section>
       <section class="crs-sec" id="part2" aria-labelledby="part2-h">
