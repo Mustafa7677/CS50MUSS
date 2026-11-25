@@ -2,11 +2,15 @@
 # AO17 · 3D зертхана: INSIDE TECH (AO17 командасының 3D платформасы) сабақтарының AO17 ішіндегі лекция беттері.
 # Дерек: tools/academy/data/inside_lessons.json (tools/sync_inside.py жаңартады). Әр сабақ: дәріс (Markdown), 3D симуляциядағы тапсырма,
 # болжам, тест (түсіндірмесімен), кеңес, шешілген мысал, «қатені тап», өз сөзіңмен түсіндіру. Комикстер алынбайды.
+# Сабақтың басты атауы - қазақша (lab3d_kk.TITLE_KK), ағылшынша атауы астында (lang="en").
 # 3D симуляцияның өзі academy/3d/app/ ішінде (бір origin: прогресс «inside-tech:*» кілттерінде ортақ).
+# Бұл - AO17 CS курсының 2-бөлімі «Технологияның ішінен»: зертханалардың реті мен сабақтардың қазақша атаулары lab3d_kk.py-да.
 import html
 import json
 import pathlib
 import re
+
+import lab3d_kk as KK
 
 E = lambda s: html.escape(str(s), quote=True)  # noqa: E731
 DATA = pathlib.Path(__file__).resolve().parent / "data" / "inside_lessons.json"
@@ -24,10 +28,33 @@ def data():
     if "d" not in _cache:
         d = json.loads(DATA.read_text(encoding="utf-8"))
         labs = [l for l in d["labs"] if any(x["labId"] == l["id"] for x in d["lessons"])]
+        labs.sort(key=lambda l: KK.ORDER.index(l["id"]) if l["id"] in KK.ORDER else len(KK.ORDER))   # курстағы ұсынылатын рет
         by_lab = {l["id"]: sorted([x["lesson"] for x in d["lessons"] if x["labId"] == l["id"]], key=lambda s: s["order"]) for l in labs}
         lab_of = {s["id"]: lab for lab, ls in by_lab.items() for s in ls}
         _cache["d"] = (labs, by_lab, lab_of)
     return _cache["d"]
+
+
+def kk(L):
+    """Сабақтың AO17-дегі басты атауы (қазақша; тізімде жоқ болса - өз атауы)."""
+    return KK.TITLE_KK.get(L["id"], L["title"])
+
+
+def en(L):
+    """Сабақтың ағылшынша атауы - қазақшадан өзгеше болса ғана (терминді екі тілде тану үшін)."""
+    return L["title"] if L["title"] != kk(L) else ""
+
+
+def quiz_total(L):
+    return sum(len(s.get("quiz", [])) for s in L.get("steps", []))
+
+
+def lab_summary():
+    """Курс беті үшін: әр зертхананың реті, түсі, атауы, сабақтары (id, қазақша атауы, тест саны)."""
+    labs, by_lab, _ = data()
+    return [{"id": lab["id"], "kk": LAB_KK.get(lab["id"], lab["title"]), "en": lab["title"], "tag": lab.get("inside", ""),
+             "color": LAB_COLOR.get(lab["id"], "#0a4c7a"), "minutes": sum(L.get("estimatedMinutes", 10) for L in by_lab[lab["id"]]),
+             "lessons": [{"id": L["id"], "kk": kk(L), "quiz": quiz_total(L)} for L in by_lab[lab["id"]]]} for lab in labs]
 
 
 def href(lesson_or_route, base="academy/"):
@@ -174,15 +201,16 @@ def lesson_page(lab, L, idx, prev_l, next_l, page):
     steps = L.get("steps", [])
     nq = sum(len(s.get("quiz", [])) for s in steps)
     toc = "".join(f'<li><a href="#s{i}">{inline(s["title"])}</a></li>' for i, s in enumerate(steps, 1))
-    nav = ('<nav class="ac-pager" aria-label="Зертхананың сабақтары">' + (f'<a href="{E(prev_l["id"])}.html">← <span lang="en">{E(prev_l["title"])}</span></a>' if prev_l else "<span></span>")
+    nav = ('<nav class="ac-pager" aria-label="Зертхананың сабақтары">' + (f'<a href="{E(prev_l["id"])}.html">← {E(kk(prev_l))}</a>' if prev_l else "<span></span>")
            + f'<a href="../index.html#{lab["id"]}">{E(LAB_KK.get(lab["id"], lab["title"]))}</a>'
-           + (f'<a href="{E(next_l["id"])}.html"><span lang="en">{E(next_l["title"])}</span> →</a>' if next_l else "<span></span>") + "</nav>")
+           + (f'<a href="{E(next_l["id"])}.html">{E(kk(next_l))} →</a>' if next_l else "<span></span>") + "</nav>")
+    sub = f'<p class="l3-en" lang="en">{E(en(L))}</p>' if en(L) else ""
     body = f"""  <div class="layout single">
     <article class="content l3" id="main" data-lesson="{E(L['id'])}" style="--lc:{LAB_COLOR.get(lab['id'], '#0a4c7a')}">
-      <p class="ac-crumb"><a href="../../index.html">CS Universe</a> / <a href="../index.html">3D зертхана</a> / <a href="../index.html#{lab['id']}">{E(LAB_KK.get(lab['id'], lab['title']))}</a></p>
+      <p class="ac-crumb"><a href="../../course.html">AO17 CS курсы</a> / <a href="../index.html">2-бөлім: 3D зертхана</a> / <a href="../index.html#{lab['id']}">{E(LAB_KK.get(lab['id'], lab['title']))}</a></p>
       <header class="l3-head">
         <p class="l3-k">{E(LAB_KK.get(lab['id'], lab['title']))} · {idx}-сабақ · ≈{L.get('estimatedMinutes', 10)} мин · {len(steps)} қадам · {nq} сұрақ</p>
-        <h1 lang="en">{E(L['title'])}</h1>
+        <h1>{E(kk(L))}</h1>{sub}
         <p class="l3-lede">{inline(L.get('summary', ''))}</p>
         <p class="l3-cta"><a class="btn gold" href="../app/index.html#{E(L['id'])}">3D симуляцияны ашу</a> <a class="btn secondary" href="#s1">Дәрісті оқу</a></p>
         <p class="l3-prog" id="l3-progress" aria-live="polite"></p>
@@ -194,7 +222,7 @@ def lesson_page(lab, L, idx, prev_l, next_l, page):
     </article>
   </div>"""
     rel = f"academy/3d/{lab['id']}/{L['id']}.html"
-    return rel, page(rel, f"{L['title']} · {LAB_KK.get(lab['id'], lab['title'])}", f"AO17 3D зертхана: {L.get('summary', '')}"[:300], body,
+    return rel, page(rel, f"{kk(L)} · {LAB_KK.get(lab['id'], lab['title'])}", f"AO17 CS, 2-бөлім (3D зертхана): {L.get('summary', '')}"[:300], body,
                      scripts=("assets/js/lab3d.js",), styles=("assets/css/lab3d.css",))
 
 
@@ -204,23 +232,26 @@ def hub_page(page):
     n_s = sum(len(L["steps"]) for v in by_lab.values() for L in v)
     n_q = sum(len(s.get("quiz", [])) for v in by_lab.values() for L in v for s in L["steps"])
     secs = []
-    for lab in labs:
+    for no, lab in enumerate(labs, 1):
         ls = by_lab[lab["id"]]
-        items = "".join(f'<li><a href="{lab["id"]}/{E(L["id"])}.html"><b lang="en">{E(L["title"])}</b><span>{inline(L.get("summary", ""))}</span>'
-                        f'<small>≈{L.get("estimatedMinutes", 10)} мин · {len(L["steps"])} қадам</small></a></li>' for L in ls)
+        items = "".join(f'<li><a href="{lab["id"]}/{E(L["id"])}.html"><b>{E(kk(L))}</b>' + (f'<i lang="en">{E(en(L))}</i>' if en(L) else "")
+                        + f'<span>{inline(L.get("summary", ""))}</span><small>≈{L.get("estimatedMinutes", 10)} мин · {len(L["steps"])} қадам · {quiz_total(L)} сұрақ</small></a></li>' for L in ls)
+        mins = sum(L.get("estimatedMinutes", 10) for L in ls)
         secs.append(f'<section class="l3-lab" id="{lab["id"]}" style="--lc:{LAB_COLOR.get(lab["id"], "#0a4c7a")}" aria-labelledby="h-{lab["id"]}">'
-                    f'<h2 id="h-{lab["id"]}">{E(LAB_KK.get(lab["id"], lab["title"]))} <small lang="en">{E(lab["title"])}</small></h2>'
-                    f'<p class="l3-labn">{len(ls)} сабақ</p><ol class="l3-lessons">{items}</ol></section>')
+                    f'<h2 id="h-{lab["id"]}"><span class="l3-no">{no}</span>{E(LAB_KK.get(lab["id"], lab["title"]))} <small lang="en">{E(lab["title"])}</small></h2>'
+                    + (f'<p class="l3-tag">{E(lab["inside"])}</p>' if lab.get("inside") else "")
+                    + f'<p class="l3-labn">{len(ls)} сабақ · ≈{round(mins / 60, 1):g} сағат</p><ol class="l3-lessons">{items}</ol></section>')
     games = "".join(f'<li><a href="app/index.html#{k}">{E(v)}</a></li>' for k, v in SPECIAL.items())
     jump = "".join(f'<li><a href="#{lab["id"]}">{E(LAB_KK.get(lab["id"], lab["title"]))}</a></li>' for lab in labs)
     body = f"""  <div class="layout single">
     <article class="content l3 l3-hub" id="main">
+      <p class="ac-crumb"><a href="../course.html">AO17 CS курсы</a> / 2-бөлім: 3D зертхана</p>
       <header class="l3-hero">
-        <p class="l3-k">AO17 · 3D зертхана</p>
+        <p class="l3-k">AO17 CS курсы · 2-бөлім</p>
         <h1>Технологияның ішінен</h1>
-        <p class="l3-lede">Процессор, желі, дерекқор, нейрон желі, алгоритм - әрқайсысының ішін 3D симуляцияда көріп, параметрін өзгертіп, нәтижесін өлшейсің. Әр сабақтың толық дәрісі, тесті және шешілген мысалдары осы жерде.</p>
+        <p class="l3-lede">Курстың бірінші бөлімінде логикадан жүйеге дейін жүрдің. Енді машинаның ішіне кіресің: процессор, желі, дерекқор, нейрон желі, алгоритм - әрқайсысының ішін 3D симуляцияда көріп, параметрін өзгертіп, нәтижесін өлшейсің. Зертханалар ұсынылатын ретпен берілген, әр сабақтың толық дәрісі, тесті және шешілген мысалдары осы жерде.</p>
         <ul class="l3-stats"><li><b>{len(labs)}</b><span>зертхана</span></li><li><b>{n_l}</b><span>сабақ</span></li><li><b>{n_s}</b><span>дәріс қадамы</span></li><li><b>{n_q}</b><span>тест сұрағы</span></li></ul>
-        <p class="l3-cta"><a class="btn gold" href="app/index.html">3D қолданбаны ашу</a> <a class="btn secondary" href="../course.html">AO17 CS курсы</a></p>
+        <p class="l3-cta"><a class="btn gold" href="{labs[0]["id"]}/{by_lab[labs[0]["id"]][0]["id"]}.html">Бірінші сабақтан бастау</a> <a class="btn secondary" href="app/index.html">3D қолданбаны ашу</a> <a class="btn secondary" href="../course.html#part2">Курс бағдарламасы</a></p>
       </header>
       <nav class="l3-jump" aria-label="Зертханалар"><ul>{jump}</ul></nav>
       <section class="l3-games" aria-labelledby="g-h"><h2 id="g-h">Ойын түріндегі зертханалар</h2><ul>{games}</ul></section>
@@ -228,8 +259,8 @@ def hub_page(page):
       <p class="l3-src">Материалдар AO17 командасының INSIDE TECH 3D платформасынан алынған. Үшінші тарап кітапханаларының лицензиялары: <a href="app/THIRD-PARTY-NOTICES.txt">THIRD-PARTY-NOTICES.txt</a>.</p>
     </article>
   </div>"""
-    return "academy/3d/index.html", page("academy/3d/index.html", "3D зертхана: технологияның ішінен",
-                                         f"AO17 3D зертхана: {len(labs)} зертхана, {n_l} сабақ, {n_q} тест сұрағы. Процессор, желі, дерекқор, AI ішінен 3D симуляциямен.",
+    return "academy/3d/index.html", page("academy/3d/index.html", "Технологияның ішінен: AO17 CS курсының 2-бөлімі (3D зертхана)",
+                                         f"AO17 CS курсының 2-бөлімі: {len(labs)} зертхана, {n_l} сабақ, {n_q} тест сұрағы. Процессор, желі, дерекқор, AI ішінен 3D симуляциямен.",
                                          body, styles=("assets/css/lab3d.css",))
 
 
@@ -255,6 +286,8 @@ def validate():
             ids.add(L["id"])
             if not L.get("steps"):
                 errs.append(f"3D {L['id']}: қадам жоқ")
+            if not re.search(r"[А-Яа-яӘәҒғҚқҢңӨөҰұҮүҺһІі]", kk(L)):
+                errs.append(f"3D {L['id']}: қазақша атауы жоқ (tools/academy/lab3d_kk.py: TITLE_KK)")
             for s in L.get("steps", []):
                 if len(s.get("body", "")) < 200:
                     errs.append(f"3D {L['id']}/{s.get('id')}: дәріс тым қысқа")

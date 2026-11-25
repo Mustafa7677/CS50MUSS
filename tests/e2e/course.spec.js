@@ -1,9 +1,12 @@
 // © 2026 AO17 командасы. All Rights Reserved. Дербес авторлық бағдарлама: рұқсатсыз көшіруге, таратуға, өзгертуге және коммерциялық пайдалануға болмайды. LICENSE-PROPRIETARY.md, COPYRIGHT.md.
-// AO17 CS курсы (academy/course.html): 12 апта, әр аптада сабақтар, комикс эпизоды, INSIDE TECH 3D зертханасы, жоба.
+// AO17 CS курсы (academy/course.html): екі бөлім. 1-бөлім - 12 апта (сабақтар, комикс эпизоды, 3D сабақ, жоба),
+// 2-бөлім - 3D зертханалар ұсынылатын ретпен. Оқушы прогресі (assets/js/course.js) апта мен зертхана астында, «Жалғастыру» батырмасы.
 // Тексереміз: апталар саны мен сілтемелері (сабақ беті бар, комикс бөлімі бар), 3D зертхана сілтемелері AO17-нің ішінде,
 // Course JSON-LD, басты беттің негізгі батырмасы, телефонда көлденең жылжу жоқ, axe таза.
 const { test, expect } = require("@playwright/test");
 const fs = require("fs");
+const path = require("path");
+const ROOT = path.resolve(__dirname, "../..");
 const { blockFonts, collectErrors } = require("../support/helpers");
 const AXE = fs.readFileSync(require.resolve("axe-core/axe.min.js"), "utf8");
 // 3D зертхана AO17-нің ішінде: сабақ - 3d/<зертхана>/<id>.html, ойын беттері - 3d/app/index.html#<маршрут>
@@ -39,6 +42,53 @@ test("Course JSON-LD жарамды; басты беттің негізгі ба
   await expect(page.locator('a.btn[href="academy/course.html"]')).toHaveText("AO17 CS курсы");
   await page.goto("academy/index.html");
   await expect(page.locator('.ac-cta a.btn.gold')).toHaveAttribute("href", "course.html");
+});
+
+test("екі бөлім: 2-бөлімде 3D зертханалар ұсынылатын ретпен, әр зертхананың бірінші сабағы бар бет", async ({ page }) => {
+  const errors = collectErrors(page);
+  await page.goto("academy/course.html");
+  await expect(page.locator(".crs-parts a.crs-part")).toHaveCount(2);
+  await expect(page.locator("#part1 .crs-w")).toHaveCount(12);
+  const labs = page.locator("#part2 .crs-lab");
+  await expect(labs).toHaveCount(11);
+  await expect(labs.first()).toHaveAttribute("id", "lab-arch");
+  await expect(labs.first().locator(".crs-ln")).toHaveText("1");
+  await expect(labs.first().locator(".crs-l1 a")).toHaveText("Екілік жүйе");
+  for (const h of await page.locator("#part2 .crs-l1 a").evaluateAll((as) => as.map((a) => a.getAttribute("href"))))
+    expect(fs.existsSync(path.join(ROOT, "academy", h)), h).toBe(true);
+  // прогресс жоқ: жолақтар мен жеке жазу көрінбейді, батырма 1-аптаға апарады
+  await expect(page.locator(".has-pr")).toHaveCount(0);
+  await expect(page.locator("#crs-me")).toBeHidden();
+  await expect(page.locator("#crs-go")).toHaveAttribute("href", "m01/l01.html");
+  expect(errors).toEqual([]);
+});
+
+test("прогресс: апта мен зертхана астында шығады, «Жалғастыру» 1-бөлімнің келесі сабағына апарады", async ({ page }) => {
+  await page.goto("academy/course.html");
+  const data = JSON.parse(await page.locator("#crs-data").textContent());
+  const w1 = data.weeks.w1, arch1 = data.labs.arch[0];
+  await page.evaluate(([w1, arch1]) => {
+    const L = {};
+    w1.slice(0, 3).forEach((x) => (L[x[0]] = { ex: { "exercises:0": { ok: true } }, mastered: 1 }));
+    localStorage.setItem("cs50kz:academy", JSON.stringify({ v: 1, lessons: L }));
+    localStorage.setItem("ao17:lab3d", JSON.stringify({ [arch1[0]]: Array.from({ length: arch1[3] }, (_, i) => "q" + i) }));
+  }, [w1, arch1]);
+  await page.reload();
+  await expect(page.locator("#w1 .crs-pr")).toHaveText(`3 / ${w1.length} сабақ аяқталды`);
+  await expect(page.locator("#lab-arch .crs-pr")).toHaveText(`1 / ${data.labs.arch.length} сабақ аяқталды`);
+  await expect(page.locator("#w2.has-pr")).toHaveCount(0);
+  await expect(page.locator("#crs-me")).toContainText("1-бөлім - 3 / 120");
+  // 1-бөлім басталған, бітпеген: 3D сабағы шешілсе де, келесі қадам - 1-бөлімнің 4-сабағы
+  await expect(page.locator("#crs-go")).toHaveAttribute("href", w1[3][1]);
+  await expect(page.locator("#crs-go")).toHaveText("Жалғастыру: " + w1[3][2]);
+  // тек 2-бөлімде әрекет болса - 2-бөлімнің келесі сабағы
+  await page.evaluate(() => localStorage.removeItem("cs50kz:academy"));
+  await page.reload();
+  await expect(page.locator("#crs-go")).toHaveAttribute("href", data.labs.arch[1][1]);
+  await page.addScriptTag({ content: AXE });
+  const v = await page.evaluate(async () => (await axe.run(document.getElementById("main"), { runOnly: ["wcag2a", "wcag2aa"], resultTypes: ["violations"] })).violations
+    .filter((x) => ["serious", "critical"].includes(x.impact)).map((x) => `${x.id}: ${x.nodes.length} (${x.nodes[0].html.slice(0, 140)})`));
+  expect(v).toEqual([]);
 });
 
 for (const scheme of ["light", "dark"]) {

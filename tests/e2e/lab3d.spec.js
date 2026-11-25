@@ -15,6 +15,8 @@ test("хаб: 11 зертхана, 160 сабақ; әр сілтеме бар ф
   const errors = collectErrors(page);
   await page.goto("academy/3d/index.html");
   await expect(page.locator(".l3-lab")).toHaveCount(11);
+  await expect(page.locator(".l3-lab").first()).toHaveAttribute("id", "arch");   // курстың 2-бөліміндегі ұсынылатын рет
+  await expect(page.locator(".l3-hero .l3-k")).toHaveText("AO17 CS курсы · 2-бөлім");
   const hrefs = await page.locator(".l3-lessons a").evaluateAll((as) => as.map((a) => a.getAttribute("href")));
   expect(hrefs.length).toBe(DATA.lessons.length);
   for (const h of hrefs) expect(fs.existsSync(path.join(ROOT, "academy/3d", h)), h).toBe(true);
@@ -28,7 +30,9 @@ test("лекция беті: дәріс Markdown-нан, тапсырма, те�
   const p = await c.newPage(); const errors = collectErrors(p);
   await p.goto("academy/3d/arch/arch-1-binary.html");
   const L = DATA.lessons.find((x) => x.lesson.id === "arch-1-binary").lesson;
-  await expect(p.locator("h1")).toHaveText(L.title);
+  await expect(p.locator("h1")).toHaveText("Екілік жүйе");   // басты атау қазақша, ағылшынша атауы астында
+  await expect(p.locator(".l3-en")).toHaveText(L.title);
+  await expect(p.locator(".ac-crumb a").first()).toHaveAttribute("href", "../../course.html");
   await expect(p.locator(".l3-step")).toHaveCount(L.steps.length);
   const s1 = p.locator("#s1");
   await expect(s1.locator(".l3-body h3").first()).toHaveText("Идея");
@@ -97,7 +101,7 @@ test("AO17 CS курсы 3D сабақтарға AO17-нің ішінде апа
     expect(fs.existsSync(path.join(ROOT, "academy", h.split("#")[0])), h).toBe(true);
   }
   await page.locator('.crs-3d a[href="3d/arch/arch-1-binary.html"]').click();
-  await expect(page.locator("h1")).toHaveText("Binary");
+  await expect(page.locator("h1")).toHaveText("Екілік жүйе");
 });
 
 test("қауіпсіздік: дәрістегі HTML/XSS мысалдары мәтін болып көрінеді, бетте орындалмайды", async ({ page }) => {
