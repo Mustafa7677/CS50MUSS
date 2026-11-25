@@ -164,7 +164,7 @@ def _gestures(gesture, sleeve, skin):
     return ""
 
 
-def mustafa(mood="calm", gesture=None):
+def mustafa(mood="calm", gesture=None, mirror=False):
     """Мустафа, оңға қарап тұр: қысқа қара шаш, көк кепка (күнқағары алдында), жасыл куртка. Координат басы - кеуде суретінің төменгі ортасы."""
     p = []
     # куртка
@@ -173,7 +173,9 @@ def mustafa(mood="calm", gesture=None):
     p.append(f'<path d="M-12 -76 L1 -54 L14 -76 L28 -70 L12 -44 L1 -56 L-10 -44 L-26 -70 Z" fill="{JACKET_HI}" stroke="{INK}" stroke-width="2.4" stroke-linejoin="round"/>')
     p.append(f'<path d="M1 -54 V0" stroke="{GOLD}" stroke-width="3"/><path d="M1 -54 V0" stroke="{INK}" stroke-width="1" stroke-dasharray="2 4"/>')
     p.append(f'<rect x="-44" y="-36" width="22" height="14" rx="3" fill="#fffdf7" stroke="{INK}" stroke-width="1.8"/>'
-             f'<text x="-33" y="-25.5" text-anchor="middle" font-family="Unbounded, Inter, sans-serif" font-weight="800" font-size="9" fill="{HOOD}">AO</text>')
+             # кейіпкер айналып (солға) тұрса, төсбелгі жазуы қайта айналады: «AO» әрқашан оқылады (айнадағыдай «OA» емес)
+             + (f'<text x="33" y="-25.5" transform="scale(-1 1)"' if mirror else '<text x="-33" y="-25.5"')
+             + f' text-anchor="middle" font-family="Unbounded, Inter, sans-serif" font-weight="800" font-size="9" fill="{HOOD}">AO</text>')
     # мойын мен бас
     p.append(f'<path d="M-10 -96 L-10 -72 Q1 -64 12 -72 L12 -96 Z" fill="{MSKIN}" stroke="{INK}" stroke-width="2.6"/>')
     p.append(f'<path d="M-9 -88 Q2 -80 11 -88 L11 -82 Q2 -76 -9 -82 Z" fill="{MSKIN_SH}" opacity=".8"/>')
@@ -252,7 +254,7 @@ def actor(who, mood, x, s, face, gesture=None):
     if who == "N":
         body, k = nurai(mood, gesture), s
     elif who == "M":
-        body, k = mustafa(mood, gesture), s
+        body, k = mustafa(mood, gesture, mirror=face < 0), s
     else:
         body, k = bota(mood), s * BK
     return f'<g transform="translate({_n(x)} {H}) scale({_n(k * face)} {_n(k)})">{body}</g>'

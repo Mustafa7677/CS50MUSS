@@ -704,9 +704,12 @@ def course_html(lessons, st):
         items = (f'<li class="crs-comic"><span>Комикс</span><a href="{mid}/l01.html#s-comic">{E(ep["title"])}</a></li>' if ep else "") \
             + f'<li class="crs-3d"><span>3D зертхана</span><p>{lab_links}</p></li>' \
             + (f'<li class="crs-pj"><span>Жоба</span><a href="{mid}/{pj["slug"]}.html#project">{E(pj["project"]["title"])}</a></li>' if pj else "")
-        weeks.append(f'<li class="crs-w" id="w{n}"><p class="crs-wn"><span>Апта</span><b>{n}</b></p><div class="crs-wb">'
+        thumb = f"assets/img/posters/thumb/ao17cs-w{n:02d}.jpg"
+        cover = (f'<a class="crs-wv" href="../posters.html#cs-w{n:02d}" aria-label="{n}-аптаның комикс-мұқабасы"><img src="../{thumb}" alt="" width="240" height="360" loading="lazy"></a>'
+                 if (ROOT / thumb).exists() else "")
+        weeks.append(f'<li class="crs-w{" has-cover" if cover else ""}" id="w{n}">{cover}<p class="crs-wn"><span>Апта</span><b>{n}</b></p><div class="crs-wb">'
                      f'<h3><a href="{mid}/l01.html">{E(mods[mid][2])}</a></h3><p class="crs-wq">{E(question)}</p>'
-                     f'<p class="crs-wm">{len(ls)} сабақ · {tasks} тапсырма · ≈{round(mins / 60)} сағат</p><ul class="crs-wl">{items}</ul>{bar}</div></li>')
+                     f'<p class="crs-wm">{len(ls)} сабақ · {tasks} тапсырма · ≈{round(mins / 60)} сағат</p></div><ul class="crs-wl">{items}</ul>{bar}</li>')
     final = next((x for x in sorted(by_mod.get("m12", []), key=lambda x: x["slug"]) if x.get("project")), None)
     pillars = "".join(f'<li><b>{E(a)}</b><p>{E(b)}</p></li>' for a, b in CRS.PILLARS)
     # 2-бөлім: 3D зертханалар ұсынылатын ретпен
@@ -740,7 +743,7 @@ def course_html(lessons, st):
         <p class="crs-lede">Екі бөлім, бір жол. Бірінші бөлімде он екі аптада логикадан жүйеге дейін жүресің: ұғымды түсіндірме мен комикстен аласың, кодты өзің жазасың. Екінші бөлімде технологияның ішіне кіресің: процессордың, желінің, дерекқордың, нейрон желінің ішін 3D симуляцияда көріп, өлшейсің. Қазақ тілінде, тегін, браузерде.</p>
         <ul class="crs-stats"><li><b>2</b><span>бөлім</span></li><li><b>{tot_l + n3_l}</b><span>сабақ</span></li><li><b>{tot_t + n3_q}</b><span>тапсырма мен тест</span></li>
           <li><b>{len(CXE.EPISODES)}</b><span>комикс эпизоды</span></li><li><b>{len(LS)}</b><span>3D зертхана</span></li><li><b>≈{hours}</b><span>сағат</span></li></ul>
-        <p class="crs-cta"><a class="btn gold" id="crs-go" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="#part2">2-бөлім: 3D зертхана</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="../posters.html#posters">Курс постерлері</a></p>
+        <p class="crs-cta"><a class="btn gold" id="crs-go" href="m01/l01.html">1-аптадан бастау</a> <a class="btn secondary" href="#part2">2-бөлім: 3D зертхана</a> <a class="btn secondary" href="comics.html">Комикстер</a> <a class="btn secondary" href="../posters.html#ao17cs">Курс мұқабалары</a></p>
         <p class="crs-me" id="crs-me" hidden></p>
       </header>
       <nav class="crs-parts" aria-label="Курстың екі бөлімі">
