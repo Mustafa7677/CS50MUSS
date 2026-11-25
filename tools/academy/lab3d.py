@@ -234,13 +234,13 @@ def hub_page(page):
     secs = []
     for no, lab in enumerate(labs, 1):
         ls = by_lab[lab["id"]]
-        items = "".join(f'<li><a href="{lab["id"]}/{E(L["id"])}.html"><b>{E(kk(L))}</b>' + (f'<i lang="en">{E(en(L))}</i>' if en(L) else "")
+        items = "".join(f'<li><a href="{lab["id"]}/{E(L["id"])}.html" data-lid="{E(L["id"])}" data-q="{quiz_total(L)}"><b>{E(kk(L))}</b>' + (f'<i lang="en">{E(en(L))}</i>' if en(L) else "")
                         + f'<span>{inline(L.get("summary", ""))}</span><small>≈{L.get("estimatedMinutes", 10)} мин · {len(L["steps"])} қадам · {quiz_total(L)} сұрақ</small></a></li>' for L in ls)
         mins = sum(L.get("estimatedMinutes", 10) for L in ls)
         secs.append(f'<section class="l3-lab" id="{lab["id"]}" style="--lc:{LAB_COLOR.get(lab["id"], "#0a4c7a")}" aria-labelledby="h-{lab["id"]}">'
                     f'<h2 id="h-{lab["id"]}"><span class="l3-no">{no}</span>{E(LAB_KK.get(lab["id"], lab["title"]))} <small lang="en">{E(lab["title"])}</small></h2>'
                     + (f'<p class="l3-tag">{E(lab["inside"])}</p>' if lab.get("inside") else "")
-                    + f'<p class="l3-labn">{len(ls)} сабақ · ≈{round(mins / 60, 1):g} сағат</p><ol class="l3-lessons">{items}</ol></section>')
+                    + f'<p class="l3-labn">{len(ls)} сабақ · ≈{round(mins / 60, 1):g} сағат<span class="l3-labp" aria-live="polite"></span></p><ol class="l3-lessons">{items}</ol></section>')
     games = "".join(f'<li><a href="app/index.html#{k}">{E(v)}</a></li>' for k, v in SPECIAL.items())
     jump = "".join(f'<li><a href="#{lab["id"]}">{E(LAB_KK.get(lab["id"], lab["title"]))}</a></li>' for lab in labs)
     body = f"""  <div class="layout single">
@@ -261,7 +261,7 @@ def hub_page(page):
   </div>"""
     return "academy/3d/index.html", page("academy/3d/index.html", "Технологияның ішінен: AO17 CS курсының 2-бөлімі (3D зертхана)",
                                          f"AO17 CS курсының 2-бөлімі: {len(labs)} зертхана, {n_l} сабақ, {n_q} тест сұрағы. Процессор, желі, дерекқор, AI ішінен 3D симуляциямен.",
-                                         body, styles=("assets/css/lab3d.css",))
+                                         body, scripts=("assets/js/lab3d.js",), styles=("assets/css/lab3d.css",))
 
 
 def pages(page):

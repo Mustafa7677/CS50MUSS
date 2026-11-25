@@ -39,7 +39,11 @@ test("Course JSON-LD жарамды; басты беттің негізгі ба
   expect(course.isAccessibleForFree).toBe(true);
   expect(course.hasCourseInstance.courseWorkload).toMatch(/^PT\d+H$/);
   await page.goto("index.html?nofilm");
-  await expect(page.locator('a.btn[href="academy/course.html"]')).toHaveText("AO17 CS курсы");
+  await expect(page.locator('#story a.btn[href="academy/course.html"]')).toHaveText("AO17 CS курсы");
+  // басты беттегі AO17 CS бөлімі: курсқа батырма және 12 аптаның мұқабасы
+  await expect(page.locator('#ao17cs a.btn.gold')).toHaveAttribute("href", "academy/course.html");
+  await expect(page.locator("#ao17cs .csh-shelf a")).toHaveCount(12);
+  await expect(page.locator("#ao17cs .csh-shelf a").first()).toHaveAttribute("href", "academy/course.html#w1");
   await page.goto("academy/index.html");
   await expect(page.locator('.ac-cta a.btn.gold')).toHaveAttribute("href", "course.html");
 });
@@ -81,6 +85,16 @@ test("прогресс: апта мен зертхана астында шыға
   // 1-бөлім басталған, бітпеген: 3D сабағы шешілсе де, келесі қадам - 1-бөлімнің 4-сабағы
   await expect(page.locator("#crs-go")).toHaveAttribute("href", w1[3][1]);
   await expect(page.locator("#crs-go")).toHaveText("Жалғастыру: " + w1[3][2]);
+  // мұқаба коллекциясы: 2-аптаның бәрі аяқталса - мұқабасы «жиналды»
+  await page.evaluate((w2) => {
+    const d = JSON.parse(localStorage.getItem("cs50kz:academy"));
+    w2.forEach((x) => (d.lessons[x[0]] = { ex: { "exercises:0": { ok: true } }, mastered: 1 }));
+    localStorage.setItem("cs50kz:academy", JSON.stringify(d));
+  }, data.weeks.w2);
+  await page.reload();
+  await expect(page.locator("#w2.is-got")).toHaveCount(1);
+  await expect(page.locator(".crs-w.is-got")).toHaveCount(1);
+  await expect(page.locator("#crs-me")).toContainText("Мұқаба коллекциясы: 1 / 12");
   // тек 2-бөлімде әрекет болса - 2-бөлімнің келесі сабағы
   await page.evaluate(() => localStorage.removeItem("cs50kz:academy"));
   await page.reload();

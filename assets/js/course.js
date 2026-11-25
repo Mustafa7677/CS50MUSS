@@ -18,10 +18,12 @@
     var n = a.filter(function (q) { return !/:(predict|contrast)$/.test(q); }).length;
     return !a.length ? 0 : total && n >= total ? 2 : 1;
   }
-  var order = [[], []], done = [0, 0], all = [0, 0];
+  var order = [[], []], done = [0, 0], all = [0, 0], got = 0;
   function paint(el, items, st) {
     var d = 0, s = 0;
     st.forEach(function (v) { if (v === 2) d++; if (v) s++; });
+    // мұқаба коллекциясы: аптаның барлық сабағы аяқталса, оның комикс-мұқабасы «жиналды»
+    if (el && d === items.length && el.querySelector(".crs-wv")) { el.classList.add("is-got"); got++; }
     if (el && s) {
       el.classList.add("has-pr");
       var bar = el.querySelector(".crs-bar i");
@@ -52,7 +54,7 @@
   var me = document.getElementById("crs-me");
   if (me) {
     me.hidden = false;
-    me.textContent = "Сенің прогресің: 1-бөлім - " + done[0] + " / " + all[0] + " сабақ, 2-бөлім - " + done[1] + " / " + all[1] + " сабақ.";
+    me.textContent = "Сенің прогресің: 1-бөлім - " + done[0] + " / " + all[0] + " сабақ, 2-бөлім - " + done[1] + " / " + all[1] + " сабақ. Мұқаба коллекциясы: " + got + " / " + Object.keys(D.weeks || {}).length + ".";
   }
   // келесі қадам: бөлімдегі соңғы әрекеттен кейінгі бірінші аяқталмаған сабақ (болмаса - бөлімдегі бірінші аяқталмаған).
   // 1-бөлім басталып, әлі бітпесе - сонда (апталардағы 3D сілтемелері 2-бөлімге ерте апаруы мүмкін); әйтпесе 2-бөлім.

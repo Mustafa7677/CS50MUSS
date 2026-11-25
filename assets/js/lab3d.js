@@ -4,10 +4,30 @@
    Бір origin болғандықтан, бұл белсенділікті 3D қолданба да, «Менің шаңырағым» беті де көреді. Шешілген сұрақтар: «ao17:lab3d». */
 (function () {
   "use strict";
+  function J(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
+  function real(q) { return !/:(predict|contrast)$/.test(q); }
+  // хаб (academy/3d/index.html): басталған және аяқталған сабақтар, әр зертхананың прогресі
+  var hub = document.querySelector(".l3-hub");
+  if (hub) {
+    var all = J("ao17:lab3d", {});
+    if (!all || typeof all !== "object") all = {};
+    Array.prototype.forEach.call(hub.querySelectorAll(".l3-lab"), function (sec) {
+      var links = sec.querySelectorAll(".l3-lessons a[data-lid]"), done = 0, started = 0;
+      Array.prototype.forEach.call(links, function (a) {
+        var arr = Array.isArray(all[a.getAttribute("data-lid")]) ? all[a.getAttribute("data-lid")] : [];
+        var q = +a.getAttribute("data-q");
+        if (!arr.length) return;
+        started++;
+        if (q && arr.filter(real).length >= q) { done++; a.classList.add("is-done"); a.setAttribute("title", "Сабақтың барлық тесті шешілді"); }
+        else a.classList.add("is-started");
+      });
+      var p = sec.querySelector(".l3-labp");
+      if (p && started) p.textContent = " · аяқталды: " + done + " / " + links.length;
+    });
+  }
   var root = document.querySelector(".l3[data-lesson]");
   if (!root) return;
   var lesson = root.getAttribute("data-lesson");
-  function J(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
   function S(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* сақтау қолжетімсіз */ } }
   function dayKey() { var d = new Date(); return new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10); }
   function record(kind) {

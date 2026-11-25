@@ -24,6 +24,23 @@ test("хаб: 11 зертхана, 160 сабақ; әр сілтеме бар ф
   expect(errors).toEqual([]);
 });
 
+test("хаб: шешілген сабақтар белгіленеді, зертхана астында «аяқталды: N / 15»", async ({ page }) => {
+  await page.goto("academy/3d/index.html");
+  const a1 = page.locator('.l3-lessons a[data-lid="arch-1-binary"]');
+  const q = +(await a1.getAttribute("data-q"));
+  expect(q).toBeGreaterThan(0);
+  await expect(page.locator(".l3-lessons a.is-done, .l3-lessons a.is-started")).toHaveCount(0);
+  await page.evaluate((q) => localStorage.setItem("ao17:lab3d", JSON.stringify({
+    "arch-1-binary": Array.from({ length: q }, (_, i) => "arch-1-binary:s:q" + i).concat(["arch-1-binary:s1:predict"]),
+    "arch-2-arith": ["arch-2-arith:s1:q1"],
+  })), q);
+  await page.reload();
+  await expect(a1).toHaveClass(/is-done/);
+  await expect(page.locator('.l3-lessons a[data-lid="arch-2-arith"]')).toHaveClass(/is-started/);
+  await expect(page.locator("#arch .l3-labp")).toHaveText(" · аяқталды: 1 / 15");
+  await expect(page.locator("#algo .l3-labp")).toHaveText("");
+});
+
 test("лекция беті: дәріс Markdown-нан, тапсырма, тест; дұрыс жауап ортақ күнделікке жазылады", async ({ browser }) => {
   const c = await browser.newContext({ reducedMotion: "reduce" });
   await blockFonts(c);
